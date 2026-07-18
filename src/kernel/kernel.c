@@ -18,6 +18,7 @@
 #include "ac97.h"
 #include "taskbar.h"
 #include "desktop.h"
+#include "settings.h"
 
 void kernel_main(uint32_t mmap_addr) {
     video_init();
@@ -170,6 +171,10 @@ void kernel_main(uint32_t mmap_addr) {
     video_print("[..] Iniciando desktop...\n", 0x08);
     desktop_init();
     video_print("[OK] Desktop pronto\n", 0x07);
+
+    video_print("[..] Iniciando configuracoes...\n", 0x08);
+    settings_init();
+    video_print("[OK] Configuracoes prontas\n", 0x07);
 
     video_set_color(VGA_COLOR_YELLOW, VGA_COLOR_BLACK);
     video_print("\nMiniOS pronto! Digite 'help' para comandos.\n", 0x0E);

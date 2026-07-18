@@ -10,6 +10,7 @@
 #include "taskmanager.h"
 #include "taskbar.h"
 #include "desktop.h"
+#include "settings.h"
 
 static char input_buffer[SHELL_BUFFER_SIZE];
 static int input_pos = 0;
@@ -73,6 +74,7 @@ static void cmd_help(void) {
     video_print("  help     - Mostra esta mensagem\n", 0x07);
     video_print("  clear    - Limpa a tela\n", 0x07);
     video_print("  desktop  - Abre a area de trabalho\n", 0x07);
+    video_print("  settings - Abre o painel de configuracoes\n", 0x07);
     video_print("  ls       - Lista arquivos\n", 0x07);
     video_print("  cat      - Exibe conteudo de arquivo\n", 0x07);
     video_print("  echo     - Exibe texto\n", 0x07);
@@ -322,7 +324,14 @@ void shell_handle_key(uint8_t scancode) {
         } else if (tb_result == 7) {
             desktop_set_active(1);
             desktop_draw();
+        } else if (tb_result == 8) {
+            settings_open();
         }
+        return;
+    }
+
+    if (settings_is_open()) {
+        settings_handle_key(scancode);
         return;
     }
 
@@ -448,6 +457,36 @@ int shell_process_command(const char* input) {
         taskmgr_open();
     } else if (strcmp(cmd, "taskcfg") == 0) {
         taskbar_draw_config_menu();
+    } else if (strcmp(cmd, "settings") == 0) {
+        settings_open();
+    } else if (strcmp(cmd, "play") == 0) {
+        if (!*input) {
+            video_print("Uso: play <arquivo.wav>\n", 0x0C);
+        } else {
+            char name[13];
+            int n = 0;
+            while (input[n] && n < 12) { name[n] = input[n]; n++; }
+            name[n] = '\0';
+            str_upper(name);
+            video_print("Tocando: ", 0x0A);
+            video_print(name, 0x0A);
+            video_print("\n", 0x0A);
+            mp_play_audio(name);
+        }
+    } else if (strcmp(cmd, "view") == 0) {
+        if (!*input) {
+            video_print("Uso: view <arquivo.bmp>\n", 0x0C);
+        } else {
+            char name[13];
+            int n = 0;
+            while (input[n] && n < 12) { name[n] = input[n]; n++; }
+            name[n] = '\0';
+            str_upper(name);
+            mp_play_image(name);
+        }
+    } else if (strcmp(cmd, "stop") == 0) {
+        mp_stop();
+        video_print("Player parado.\n", 0x0A);
     } else {
         video_print("Comando nao encontrado: ", 0x0C);
         video_print(cmd, 0x0C);
