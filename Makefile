@@ -62,6 +62,12 @@ ATA_OBJ = build/ata.o
 SPEAKER_C = src/drivers/speaker.c
 SPEAKER_OBJ = build/speaker.o
 
+PCI_C = src/drivers/pci.c
+PCI_OBJ = build/pci.o
+
+AC97_C = src/drivers/ac97.c
+AC97_OBJ = build/ac97.o
+
 # Arquivos - Memoria
 MEMORY_C = src/memory/memory.c
 MEMORY_OBJ = build/memory.o
@@ -102,6 +108,10 @@ FILEMANAGER_OBJ = build/filemanager.o
 TASKBAR_C = src/taskbar/taskbar.c
 TASKBAR_OBJ = build/taskbar.o
 
+# Arquivos - Desktop
+DESKTOP_C = src/desktop/desktop.c
+DESKTOP_OBJ = build/desktop.o
+
 # Output
 KERNEL_BIN = build/kernel.bin
 OS_IMG = build/minios.img
@@ -111,7 +121,7 @@ OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) \
-       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(PROCESS_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ)
+       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(PROCESS_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ)
 
 # Targets
 all: $(OS_IMG)
@@ -180,6 +190,14 @@ $(SPEAKER_OBJ): $(SPEAKER_C)
 	@mkdir -p build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
+$(PCI_OBJ): $(PCI_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(AC97_OBJ): $(AC97_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
 $(MEMORY_OBJ): $(MEMORY_C)
 	@mkdir -p build
 	$(GCC) $(CFLAGS) -c $< -o $@
@@ -221,6 +239,10 @@ $(FILEMANAGER_OBJ): $(FILEMANAGER_C)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(TASKBAR_OBJ): $(TASKBAR_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(DESKTOP_OBJ): $(DESKTOP_C)
 	@mkdir -p build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

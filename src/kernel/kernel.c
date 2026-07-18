@@ -13,9 +13,11 @@
 #include "shell.h"
 #include "speaker.h"
 #include "thread.h"
-#include "taskbar.h"
 #include "vesa.h"
 #include "font.h"
+#include "ac97.h"
+#include "taskbar.h"
+#include "desktop.h"
 
 void kernel_main(uint32_t mmap_addr) {
     video_init();
@@ -149,12 +151,25 @@ void kernel_main(uint32_t mmap_addr) {
         video_print("[!!] VESA nao encontrado\n", 0x0C);
     }
 
+    video_print("[..] Iniciando AC97...\n", 0x08);
+    ac97_init();
+    ac97_device_t* ac97 = ac97_get_device();
+    if (ac97 && ac97->initialized) {
+        video_print("[OK] AC97 pronto\n", 0x07);
+    } else {
+        video_print("[!!] AC97 nao encontrado\n", 0x0C);
+    }
+
     video_print("[..] Iniciando shell...\n", 0x08);
     video_print("[OK] Shell pronta\n", 0x07);
 
     video_print("[..] Iniciando taskbar...\n", 0x08);
     taskbar_init();
     video_print("[OK] Taskbar pronta\n", 0x07);
+
+    video_print("[..] Iniciando desktop...\n", 0x08);
+    desktop_init();
+    video_print("[OK] Desktop pronto\n", 0x07);
 
     video_set_color(VGA_COLOR_YELLOW, VGA_COLOR_BLACK);
     video_print("\nMiniOS pronto! Digite 'help' para comandos.\n", 0x0E);
@@ -163,6 +178,8 @@ void kernel_main(uint32_t mmap_addr) {
 
     taskbar_draw();
     shell_init();
+    desktop_set_active(1);
+    desktop_draw();
 
     while (1) {
         asm volatile("hlt");

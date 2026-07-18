@@ -9,8 +9,9 @@ static int menu_open = 0;
 static int menu_selection = 0;
 static uint32_t last_second = 0;
 
-#define MENU_ITEM_COUNT 5
+#define MENU_ITEM_COUNT 6
 static const char* menu_items[MENU_ITEM_COUNT] = {
+    "Desktop",
     "Shell",
     "Explorer",
     "Task Manager",
@@ -198,11 +199,12 @@ int taskbar_handle_key(uint8_t scancode) {
             taskbar_close_menu();
 
             switch (selected) {
-                case 0: return 2;
-                case 1: return 3;
-                case 2: return 4;
-                case 3: return 5;
-                case 4: return 6;
+                case 0: return 7;
+                case 1: return 2;
+                case 2: return 3;
+                case 3: return 4;
+                case 4: return 5;
+                case 5: return 6;
             }
             return 1;
         }

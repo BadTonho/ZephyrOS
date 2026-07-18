@@ -9,6 +9,7 @@
 #include "thread.h"
 #include "taskmanager.h"
 #include "taskbar.h"
+#include "desktop.h"
 
 static char input_buffer[SHELL_BUFFER_SIZE];
 static int input_pos = 0;
@@ -71,6 +72,7 @@ static void cmd_help(void) {
     video_print("Comandos disponiveis:\n", 0x0B);
     video_print("  help     - Mostra esta mensagem\n", 0x07);
     video_print("  clear    - Limpa a tela\n", 0x07);
+    video_print("  desktop  - Abre a area de trabalho\n", 0x07);
     video_print("  ls       - Lista arquivos\n", 0x07);
     video_print("  cat      - Exibe conteudo de arquivo\n", 0x07);
     video_print("  echo     - Exibe texto\n", 0x07);
@@ -81,6 +83,7 @@ static void cmd_help(void) {
     video_print("  beep     - Toca um beep (freq duracao_ms)\n", 0x07);
     video_print("  melody   - Toca uma melodia\n", 0x07);
     video_print("  explorer - Abre o gerenciador de arquivos\n", 0x07);
+    video_print("  taskmgr  - Abre o gerenciador de tarefas\n", 0x07);
     video_print("  reboot   - Reinicia o sistema\n", 0x07);
     video_print("  shutdown - Desliga o sistema\n", 0x07);
 }
@@ -311,6 +314,38 @@ void shell_handle_key(uint8_t scancode) {
             cmd_reboot();
         } else if (tb_result == 6) {
             cmd_shutdown();
+        } else if (tb_result == 7) {
+            desktop_set_active(1);
+            desktop_draw();
+        }
+        return;
+    }
+
+    if (desktop_is_active()) {
+        int result = desktop_handle_key(scancode);
+        if (result == -1) {
+            desktop_set_active(0);
+            video_clear();
+            shell_print_prompt();
+            taskbar_draw();
+            return;
+        }
+        if (result == 3) {
+            desktop_set_active(0);
+            fm_run();
+            return;
+        }
+        if (result == 4) {
+            desktop_set_active(0);
+            taskmgr_open();
+            return;
+        }
+        if (result == 2) {
+            desktop_set_active(0);
+            video_clear();
+            shell_print_prompt();
+            taskbar_draw();
+            return;
         }
         return;
     }
@@ -395,6 +430,9 @@ int shell_process_command(const char* input) {
         cmd_beep(input);
     } else if (strcmp(cmd, "melody") == 0) {
         cmd_melody();
+    } else if (strcmp(cmd, "desktop") == 0) {
+        desktop_set_active(1);
+        desktop_draw();
     } else if (strcmp(cmd, "explorer") == 0) {
         fm_run();
     } else if (strcmp(cmd, "reboot") == 0) {
