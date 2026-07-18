@@ -48,6 +48,15 @@ MEMORY_OBJ = build/memory.o
 PAGING_C = src/kernel/paging.c
 PAGING_OBJ = build/paging.o
 
+TSS_C = src/kernel/tss.c
+TSS_OBJ = build/tss.o
+
+PROCESS_C = src/kernel/process.c
+PROCESS_OBJ = build/process.o
+
+SWITCH_ASM = src/kernel/switch.asm
+SWITCH_OBJ = build/switch.o
+
 KERNEL_BIN = build/kernel.bin
 OS_IMG = build/minios.img
 
@@ -102,7 +111,19 @@ $(PAGING_OBJ): $(PAGING_C)
 	@mkdir -p build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(KERNEL_BIN): $(ENTRY_OBJ) $(KERNEL_OBJ) $(VIDEO_OBJ) $(PANIC_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(IDT_OBJ) $(KEYBOARD_OBJ) $(TIMER_OBJ) $(MEMORY_OBJ) $(PAGING_OBJ)
+$(TSS_OBJ): $(TSS_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(PROCESS_OBJ): $(PROCESS_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SWITCH_OBJ): $(SWITCH_ASM)
+	@mkdir -p build
+	$(NASM) -f elf32 $< -o $@
+
+$(KERNEL_BIN): $(ENTRY_OBJ) $(KERNEL_OBJ) $(VIDEO_OBJ) $(PANIC_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(IDT_OBJ) $(KEYBOARD_OBJ) $(TIMER_OBJ) $(MEMORY_OBJ) $(PAGING_OBJ) $(TSS_OBJ) $(PROCESS_OBJ) $(SWITCH_OBJ)
 	$(LD) $(LDFLAGS) $^ -o $@
 
 $(OS_IMG): $(BOOT_BIN) $(KERNEL_BIN)

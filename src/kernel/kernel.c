@@ -5,6 +5,32 @@
 #include "timer.h"
 #include "memory.h"
 #include "paging.h"
+#include "process.h"
+#include "tss.h"
+
+static void task_a(void) {
+    while (1) {
+        video_set_color(VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK);
+        video_print("[A] ", 0x0A);
+        process_block(50);
+    }
+}
+
+static void task_b(void) {
+    while (1) {
+        video_set_color(VGA_COLOR_LIGHT_CYAN, VGA_COLOR_BLACK);
+        video_print("[B] ", 0x0B);
+        process_block(30);
+    }
+}
+
+static void task_c(void) {
+    while (1) {
+        video_set_color(VGA_COLOR_LIGHT_RED, VGA_COLOR_BLACK);
+        video_print("[C] ", 0x0C);
+        process_block(20);
+    }
+}
 
 void kernel_main(uint32_t mmap_addr) {
     video_init();
@@ -73,12 +99,30 @@ void kernel_main(uint32_t mmap_addr) {
     paging_init();
     video_print("[OK] Paging ativo\n", 0x07);
 
+    video_print("[..] Iniciando processos...\n", 0x08);
+    tss_init();
+    process_init();
+    video_print("[OK] TSS configurado\n", 0x07);
+
+    process_create("task_a", task_a);
+    process_create("task_b", task_b);
+    process_create("task_c", task_c);
+    video_print("[OK] 3 processos criados\n", 0x07);
+
     video_set_color(VGA_COLOR_YELLOW, VGA_COLOR_BLACK);
-    video_print("\nSistema operacional funcional!\n", 0x0E);
+    video_print("\nSistema funcional com processos!\n", 0x0E);
     video_print("Em breve: shell.\n", 0x0E);
 
     video_set_color(VGA_COLOR_WHITE, VGA_COLOR_BLACK);
     video_print("\n> ", 0x0F);
 
-    while (1) {}
+    current_process = process_get_current();
+    if (!current_process) {
+        process_t* idle = process_create("idle", 0);
+        if (idle) current_process = idle;
+    }
+
+    while (1) {
+        process_yield();
+    }
 }

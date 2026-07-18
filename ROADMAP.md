@@ -29,11 +29,11 @@ Sistema operacional educacional em C, do zero.
 - [x] Heap simples (malloc/free)
 - [x] Virtual Memory (page tables)
 
-## Fase 5 - Processos
-- [ ] TSS (Task State Segment)
-- [ ] Gerenciador de processos (PID, estado, contexto)
-- [ ] Scheduler básico (round-robin)
-- [ ] Context switch em Assembly
+## Fase 5 - Processos ✅
+- [x] TSS (Task State Segment)
+- [x] Gerenciador de processos (PID, estado, contexto)
+- [x] Scheduler básico (round-robin)
+- [x] Context switch em Assembly
 
 ## Fase 6 - Sistema de Arquivos
 - [ ] Driver de disco (ATA/ATAPI PIO)
