@@ -11,6 +11,8 @@
 #include "taskbar.h"
 #include "desktop.h"
 #include "settings.h"
+#include "compress.h"
+#include "mediaplayer.h"
 
 static char input_buffer[SHELL_BUFFER_SIZE];
 static int input_pos = 0;
@@ -87,6 +89,8 @@ static void cmd_help(void) {
     video_print("  explorer - Abre o gerenciador de arquivos\n", 0x07);
     video_print("  taskmgr  - Abre o gerenciador de tarefas\n", 0x07);
     video_print("  taskcfg  - Configura a barra de tarefas\n", 0x07);
+    video_print("  compress - Liga/desliga compressao de RAM\n", 0x07);
+    video_print("  stats    - Mostra estatisticas de compressao\n", 0x07);
     video_print("  reboot   - Reinicia o sistema\n", 0x07);
     video_print("  shutdown - Desliga o sistema\n", 0x07);
 }
@@ -487,6 +491,16 @@ int shell_process_command(const char* input) {
     } else if (strcmp(cmd, "stop") == 0) {
         mp_stop();
         video_print("Player parado.\n", 0x0A);
+    } else if (strcmp(cmd, "compress") == 0) {
+        if (compress_is_enabled()) {
+            compress_disable();
+            video_print("Compressao de RAM DESATIVADA\n", 0x0C);
+        } else {
+            compress_enable();
+            video_print("Compressao de RAM ATIVADA\n", 0x0A);
+        }
+    } else if (strcmp(cmd, "stats") == 0) {
+        compress_print_stats();
     } else {
         video_print("Comando nao encontrado: ", 0x0C);
         video_print(cmd, 0x0C);

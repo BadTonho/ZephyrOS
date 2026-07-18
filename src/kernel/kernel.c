@@ -187,6 +187,7 @@ void kernel_main(uint32_t mmap_addr) {
     desktop_draw();
 
     while (1) {
+        taskbar_update_clock();
         asm volatile("hlt");
     }
 }

@@ -75,6 +75,9 @@ MEMORY_OBJ = build/memory.o
 PAGING_C = src/memory/paging.c
 PAGING_OBJ = build/paging.o
 
+COMPRESS_C = src/memory/compress.c
+COMPRESS_OBJ = build/compress.o
+
 # Arquivos - Sistema de Arquivos
 FAT12_C = src/fs/fat12.c
 FAT12_OBJ = build/fat12.o
@@ -133,7 +136,7 @@ OS_IMG = build/minios.img
 OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(AC97_OBJ) \
-       $(MEMORY_OBJ) $(PAGING_OBJ) \
+       $(MEMORY_OBJ) $(PAGING_OBJ) $(COMPRESS_OBJ) \
        $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ)
 
 # Targets
@@ -216,6 +219,10 @@ $(MEMORY_OBJ): $(MEMORY_C)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(PAGING_OBJ): $(PAGING_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(COMPRESS_OBJ): $(COMPRESS_C)
 	@mkdir -p build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
