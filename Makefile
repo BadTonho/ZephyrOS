@@ -42,6 +42,12 @@ KEYBOARD_OBJ = build/keyboard.o
 TIMER_C = src/kernel/timer.c
 TIMER_OBJ = build/timer.o
 
+MEMORY_C = src/kernel/memory.c
+MEMORY_OBJ = build/memory.o
+
+PAGING_C = src/kernel/paging.c
+PAGING_OBJ = build/paging.o
+
 KERNEL_BIN = build/kernel.bin
 OS_IMG = build/minios.img
 
@@ -88,7 +94,15 @@ $(TIMER_OBJ): $(TIMER_C)
 	@mkdir -p build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(KERNEL_BIN): $(ENTRY_OBJ) $(KERNEL_OBJ) $(VIDEO_OBJ) $(PANIC_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(IDT_OBJ) $(KEYBOARD_OBJ) $(TIMER_OBJ)
+$(MEMORY_OBJ): $(MEMORY_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(PAGING_OBJ): $(PAGING_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(KERNEL_BIN): $(ENTRY_OBJ) $(KERNEL_OBJ) $(VIDEO_OBJ) $(PANIC_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(IDT_OBJ) $(KEYBOARD_OBJ) $(TIMER_OBJ) $(MEMORY_OBJ) $(PAGING_OBJ)
 	$(LD) $(LDFLAGS) $^ -o $@
 
 $(OS_IMG): $(BOOT_BIN) $(KERNEL_BIN)

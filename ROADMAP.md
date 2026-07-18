@@ -23,11 +23,11 @@ Sistema operacional educacional em C, do zero.
 - [x] Driver de temporizador (PIT - Programmable Interval Timer)
 - [x] IDT (Interrupt Descriptor Table) e ISRs
 
-## Fase 4 - Memória
-- [ ] Detecção de memória (BIOS int 0x15, eax=0xE820)
-- [ ] Gerenciador de memória (bitmap allocator)
-- [ ] Heap simples (malloc/free)
-- [ ] Virtual Memory (page tables)
+## Fase 4 - Memória ✅
+- [x] Detecção de memória (BIOS int 0x15, eax=0xE820)
+- [x] Gerenciador de memória (bitmap allocator)
+- [x] Heap simples (malloc/free)
+- [x] Virtual Memory (page tables)
 
 ## Fase 5 - Processos
 - [ ] TSS (Task State Segment)

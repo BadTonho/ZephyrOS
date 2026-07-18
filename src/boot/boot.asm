@@ -2,6 +2,7 @@
 [ORG 0x7C00]
 
 KERNEL_OFFSET equ 0x1000
+MEMORY_MAP    equ 0x8000
 
     jmp short start
     nop
@@ -40,6 +41,10 @@ start:
     mov si, msg_boot
     call print_string_16
 
+    mov si, msg_mem
+    call print_string_16
+    call detect_memory
+
     mov si, msg_load
     call print_string_16
 
@@ -58,6 +63,35 @@ start:
     mov cr0, eax
 
     jmp 0x08:protected_mode
+
+detect_memory:
+    mov di, MEMORY_MAP
+    xor ebx, ebx
+    mov dword [mmap_count], 0
+
+.mmap_loop:
+    mov eax, 0xE820
+    mov ecx, 24
+    mov edx, 0x534D4150
+    int 0x15
+
+    jc .mmap_done
+
+    cmp eax, 0x534D4150
+    jne .mmap_done
+
+    inc dword [mmap_count]
+
+    cmp ebx, 0
+    je .mmap_done
+
+    add di, 24
+    jmp .mmap_loop
+
+.mmap_done:
+    mov eax, [mmap_count]
+    mov [MEMORY_MAP - 4], eax
+    ret
 
 print_string_16:
     pusha
@@ -108,6 +142,7 @@ protected_mode:
     mov ss, ax
     mov esp, 0x90000
 
+    mov esi, MEMORY_MAP
     call KERNEL_OFFSET
 
     jmp $
@@ -139,8 +174,10 @@ gdt_descriptor:
     dd gdt_start
 
 BOOT_DRIVE: db 0
+mmap_count: dd 0
 
 msg_boot:    db "[Boot] Iniciando MiniOS...", 13, 10, 0
+msg_mem:     db "[Boot] Detectando memoria...", 13, 10, 0
 msg_load:    db "[Boot] Carregando kernel...", 13, 10, 0
 msg_done:    db "[Boot] Kernel carregado!", 13, 10, 0
 msg_disk_err:db "[ERRO] Falha ao ler disco!", 13, 10, 0

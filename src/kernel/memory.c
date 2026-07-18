@@ -1,0 +1,206 @@
+#include "memory.h"
+#include "video.h"
+#include "panic.h"
+
+static memory_info_t mem_info;
+
+static void memset(void* dst, uint8_t val, uint32_t size) {
+    uint8_t* d = (uint8_t*)dst;
+    for (uint32_t i = 0; i < size; i++) {
+        d[i] = val;
+    }
+}
+
+static uint32_t align_up(uint32_t value, uint32_t alignment) {
+    return (value + alignment - 1) & ~(alignment - 1);
+}
+
+void memory_init(uint32_t mmap_addr) {
+    uint32_t mmap_count = *(uint32_t*)(mmap_addr - 4);
+    mem_info.mmap = (mmap_entry_t*)mmap_addr;
+    mem_info.mmap_entries = mmap_count;
+
+    mem_info.total_memory = 0;
+    mem_info.free_memory = 0;
+
+    for (uint32_t i = 0; i < mmap_count; i++) {
+        mmap_entry_t* entry = &mem_info.mmap[i];
+        uint64_t base = ((uint64_t)entry->base_high << 32) | entry->base_low;
+        uint64_t length = ((uint64_t)entry->length_high << 32) | entry->length_low;
+        uint64_t end = base + length;
+
+        if (entry->type == 1 && base >= KERNEL_END) {
+            mem_info.free_memory += (uint32_t)length;
+        }
+        if (end > mem_info.total_memory) {
+            mem_info.total_memory = (uint32_t)end;
+        }
+    }
+
+    mem_info.total_pages = mem_info.total_memory / PAGE_SIZE;
+    mem_info.free_pages = mem_info.free_memory / PAGE_SIZE;
+    mem_info.bitmap_size = align_up(mem_info.total_pages / 8, PAGE_SIZE);
+
+    mem_info.bitmap = (uint8_t*)KERNEL_END;
+    memset(mem_info.bitmap, 0xFF, mem_info.bitmap_size);
+
+    for (uint32_t i = 0; i < mmap_count; i++) {
+        mmap_entry_t* entry = &mem_info.mmap[i];
+        if (entry->type != 1) continue;
+
+        uint64_t base = ((uint64_t)entry->base_high << 32) | entry->base_low;
+        uint64_t length = ((uint64_t)entry->length_high << 32) | entry->length_low;
+
+        if (base < KERNEL_END) {
+            uint64_t new_base = align_up(KERNEL_END, PAGE_SIZE);
+            if (new_base >= base + length) continue;
+            length -= (new_base - base);
+            base = new_base;
+        }
+
+        uint32_t start_page = (uint32_t)(base / PAGE_SIZE);
+        uint32_t end_page = (uint32_t)((base + length) / PAGE_SIZE);
+
+        for (uint32_t p = start_page; p < end_page; p++) {
+            mem_info.bitmap[p / 8] &= ~(1 << (p % 8));
+        }
+    }
+
+    uint32_t bitmap_end = KERNEL_END + mem_info.bitmap_size;
+    uint32_t bitmap_pages = (bitmap_end + PAGE_SIZE - 1) / PAGE_SIZE;
+    for (uint32_t p = 0; p < bitmap_pages; p++) {
+        mem_info.bitmap[p / 8] |= (1 << (p % 8));
+    }
+
+    mem_info.used_memory = 0;
+    for (uint32_t p = 0; p < mem_info.total_pages; p++) {
+        if (mem_info.bitmap[p / 8] & (1 << (p % 8))) {
+            mem_info.used_memory += PAGE_SIZE;
+        }
+    }
+    mem_info.free_memory = mem_info.total_memory - mem_info.used_memory;
+    mem_info.free_pages = mem_info.free_memory / PAGE_SIZE;
+}
+
+void* pmm_alloc_page(void) {
+    for (uint32_t i = 0; i < mem_info.total_pages; i++) {
+        if (!(mem_info.bitmap[i / 8] & (1 << (i % 8)))) {
+            mem_info.bitmap[i / 8] |= (1 << (i % 8));
+            mem_info.free_pages--;
+            mem_info.used_memory += PAGE_SIZE;
+            mem_info.free_memory -= PAGE_SIZE;
+            return (void*)(i * PAGE_SIZE);
+        }
+    }
+    return 0;
+}
+
+void pmm_free_page(void* addr) {
+    uint32_t page = (uint32_t)addr / PAGE_SIZE;
+    mem_info.bitmap[page / 8] &= ~(1 << (page % 8));
+    mem_info.free_pages++;
+    mem_info.used_memory -= PAGE_SIZE;
+    mem_info.free_memory += PAGE_SIZE;
+}
+
+void* pmm_alloc_pages(uint32_t count) {
+    for (uint32_t i = 0; i < mem_info.total_pages - count; i++) {
+        int found = 1;
+        for (uint32_t j = 0; j < count; j++) {
+            if (mem_info.bitmap[(i + j) / 8] & (1 << ((i + j) % 8))) {
+                found = 0;
+                break;
+            }
+        }
+        if (found) {
+            for (uint32_t j = 0; j < count; j++) {
+                mem_info.bitmap[(i + j) / 8] |= (1 << ((i + j) % 8));
+            }
+            mem_info.free_pages -= count;
+            mem_info.used_memory += count * PAGE_SIZE;
+            mem_info.free_memory -= count * PAGE_SIZE;
+            return (void*)(i * PAGE_SIZE);
+        }
+    }
+    return 0;
+}
+
+void pmm_free_pages(void* addr, uint32_t count) {
+    uint32_t page = (uint32_t)addr / PAGE_SIZE;
+    for (uint32_t i = 0; i < count; i++) {
+        mem_info.bitmap[(page + i) / 8] &= ~(1 << ((page + i) % 8));
+    }
+    mem_info.free_pages += count;
+    mem_info.used_memory -= count * PAGE_SIZE;
+    mem_info.free_memory += count * PAGE_SIZE;
+}
+
+typedef struct heap_block {
+    uint32_t size;
+    int free;
+    struct heap_block* next;
+} heap_block_t;
+
+static heap_block_t* heap_base = 0;
+
+static void* kmalloc_internal(uint32_t size) {
+    if (!heap_base) {
+        heap_base = (heap_block_t*)HEAP_START;
+        heap_base->size = HEAP_SIZE - sizeof(heap_block_t);
+        heap_base->free = 1;
+        heap_base->next = 0;
+    }
+
+    heap_block_t* curr = heap_base;
+    while (curr) {
+        if (curr->free && curr->size >= size) {
+            if (curr->size > size + sizeof(heap_block_t) + 16) {
+                heap_block_t* new_block = (heap_block_t*)((uint8_t*)curr + sizeof(heap_block_t) + size);
+                new_block->size = curr->size - size - sizeof(heap_block_t);
+                new_block->free = 1;
+                new_block->next = curr->next;
+                curr->next = new_block;
+                curr->size = size;
+            }
+            curr->free = 0;
+            return (void*)((uint8_t*)curr + sizeof(heap_block_t));
+        }
+        curr = curr->next;
+    }
+
+    return 0;
+}
+
+void* kmalloc(uint32_t size) {
+    return kmalloc_internal(size);
+}
+
+void* kmalloc_aligned(uint32_t size) {
+    uint32_t aligned_size = align_up(size + PAGE_SIZE, PAGE_SIZE);
+    void* ptr = kmalloc_internal(aligned_size);
+    if (!ptr) return 0;
+
+    uint32_t addr = (uint32_t)ptr;
+    uint32_t aligned = align_up(addr, PAGE_SIZE);
+    return (void*)aligned;
+}
+
+void kfree(void* ptr) {
+    if (!ptr) return;
+    heap_block_t* block = (heap_block_t*)((uint8_t*)ptr - sizeof(heap_block_t));
+    block->free = 1;
+
+    heap_block_t* curr = heap_base;
+    while (curr && curr->next) {
+        if (curr->free && curr->next->free) {
+            curr->size += sizeof(heap_block_t) + curr->next->size;
+            curr->next = curr->next->next;
+        } else {
+            curr = curr->next;
+        }
+    }
+}
+
+uint32_t memory_get_total(void) { return mem_info.total_memory; }
+uint32_t memory_get_free(void) { return mem_info.free_memory; }
+uint32_t memory_get_used(void) { return mem_info.used_memory; }
