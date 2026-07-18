@@ -6,6 +6,7 @@
 #include "speaker.h"
 #include "timer.h"
 #include "taskbar.h"
+#include "icons.h"
 
 static fm_state_t state;
 static char input_buffer[32];
@@ -142,12 +143,16 @@ static void fm_draw_file_list(void) {
 
         if (file_idx < state.file_count) {
             fm_file_entry_t* f = &state.files[file_idx];
-            uint8_t name_color = f->is_dir ? FM_DIR_COLOR : FM_FILE_COLOR;
+            icon_entry_t* icon = icons_get_fm(f->is_dir ? ICON_FM_FOLDER : ICON_FM_FILE);
+            uint8_t name_color = f->is_dir ? icon->color : icon->color;
 
             if (file_idx == state.selected) {
                 name_color = FM_SELECTED_COLOR;
                 video_fill_rect(0, row, 80, 1, ' ', FM_SELECTED_COLOR);
             }
+
+            video_put_char_at(icon->ch, name_color, 2, row);
+            video_put_char_at(icon->ch, name_color, 3, row);
 
             char display_name[FM_NAME_LEN + 4];
             int d = 0;
@@ -167,7 +172,7 @@ static void fm_draw_file_list(void) {
             }
             display_name[d] = '\0';
 
-            video_print_at(2, row, display_name, name_color);
+            video_print_at(5, row, display_name, name_color);
 
             if (!f->is_dir) {
                 char buf[12];

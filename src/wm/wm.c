@@ -2,6 +2,7 @@
 #include "video.h"
 #include "keyboard.h"
 #include "timer.h"
+#include "icons.h"
 
 static wm_manager_t wm;
 static int wm_active = 0;
@@ -76,40 +77,43 @@ void wm_draw_desktop(void) {
 }
 
 static void draw_buttons_right(wm_window_t* win) {
-    uint8_t title_color = win->focused ? 0x1F : 0x07;
+    icon_entry_t* close = icons_get_wm(ICON_WM_CLOSE);
+    icon_entry_t* minimize = icons_get_wm(ICON_WM_MINIMIZE);
+    icon_entry_t* maximize = icons_get_wm(ICON_WM_MAXIMIZE);
+
     char btn_chars[3];
     uint8_t btn_colors[3];
 
     switch (wm.config.btn_order) {
         case WM_BTN_CLOSE_MIN_MAX:
-            btn_chars[0] = 'x'; btn_colors[0] = 0x4F;
-            btn_chars[1] = '_'; btn_colors[1] = win->focused ? 0x1F : 0x08;
-            btn_chars[2] = 0x10; btn_colors[2] = win->focused ? 0x1F : 0x08;
+            btn_chars[0] = close->ch; btn_colors[0] = win->focused ? close->color : close->color_selected;
+            btn_chars[1] = minimize->ch; btn_colors[1] = win->focused ? minimize->color : minimize->color_selected;
+            btn_chars[2] = maximize->ch; btn_colors[2] = win->focused ? maximize->color : maximize->color_selected;
             break;
         case WM_BTN_CLOSE_MAX_MIN:
-            btn_chars[0] = 'x'; btn_colors[0] = 0x4F;
-            btn_chars[1] = 0x10; btn_colors[1] = win->focused ? 0x1F : 0x08;
-            btn_chars[2] = '_'; btn_colors[2] = win->focused ? 0x1F : 0x08;
+            btn_chars[0] = close->ch; btn_colors[0] = win->focused ? close->color : close->color_selected;
+            btn_chars[1] = maximize->ch; btn_colors[1] = win->focused ? maximize->color : maximize->color_selected;
+            btn_chars[2] = minimize->ch; btn_colors[2] = win->focused ? minimize->color : minimize->color_selected;
             break;
         case WM_BTN_MIN_MAX_CLOSE:
-            btn_chars[0] = '_'; btn_colors[0] = win->focused ? 0x1F : 0x08;
-            btn_chars[1] = 0x10; btn_colors[1] = win->focused ? 0x1F : 0x08;
-            btn_chars[2] = 'x'; btn_colors[2] = 0x4F;
+            btn_chars[0] = minimize->ch; btn_colors[0] = win->focused ? minimize->color : minimize->color_selected;
+            btn_chars[1] = maximize->ch; btn_colors[1] = win->focused ? maximize->color : maximize->color_selected;
+            btn_chars[2] = close->ch; btn_colors[2] = win->focused ? close->color : close->color_selected;
             break;
         case WM_BTN_MAX_MIN_CLOSE:
-            btn_chars[0] = 0x10; btn_colors[0] = win->focused ? 0x1F : 0x08;
-            btn_chars[1] = '_'; btn_colors[1] = win->focused ? 0x1F : 0x08;
-            btn_chars[2] = 'x'; btn_colors[2] = 0x4F;
+            btn_chars[0] = maximize->ch; btn_colors[0] = win->focused ? maximize->color : maximize->color_selected;
+            btn_chars[1] = minimize->ch; btn_colors[1] = win->focused ? minimize->color : minimize->color_selected;
+            btn_chars[2] = close->ch; btn_colors[2] = win->focused ? close->color : close->color_selected;
             break;
         case WM_BTN_MIN_CLOSE_MAX:
-            btn_chars[0] = '_'; btn_colors[0] = win->focused ? 0x1F : 0x08;
-            btn_chars[1] = 'x'; btn_colors[1] = 0x4F;
-            btn_chars[2] = 0x10; btn_colors[2] = win->focused ? 0x1F : 0x08;
+            btn_chars[0] = minimize->ch; btn_colors[0] = win->focused ? minimize->color : minimize->color_selected;
+            btn_chars[1] = close->ch; btn_colors[1] = win->focused ? close->color : close->color_selected;
+            btn_chars[2] = maximize->ch; btn_colors[2] = win->focused ? maximize->color : maximize->color_selected;
             break;
         case WM_BTN_MAX_CLOSE_MIN:
-            btn_chars[0] = 0x10; btn_colors[0] = win->focused ? 0x1F : 0x08;
-            btn_chars[1] = 'x'; btn_colors[1] = 0x4F;
-            btn_chars[2] = '_'; btn_colors[2] = win->focused ? 0x1F : 0x08;
+            btn_chars[0] = maximize->ch; btn_colors[0] = win->focused ? maximize->color : maximize->color_selected;
+            btn_chars[1] = close->ch; btn_colors[1] = win->focused ? close->color : close->color_selected;
+            btn_chars[2] = minimize->ch; btn_colors[2] = win->focused ? minimize->color : minimize->color_selected;
             break;
     }
 
@@ -120,39 +124,43 @@ static void draw_buttons_right(wm_window_t* win) {
 }
 
 static void draw_buttons_left(wm_window_t* win) {
+    icon_entry_t* close = icons_get_wm(ICON_WM_CLOSE);
+    icon_entry_t* minimize = icons_get_wm(ICON_WM_MINIMIZE);
+    icon_entry_t* maximize = icons_get_wm(ICON_WM_MAXIMIZE);
+
     char btn_chars[3];
     uint8_t btn_colors[3];
 
     switch (wm.config.btn_order) {
         case WM_BTN_CLOSE_MIN_MAX:
-            btn_chars[0] = 'x'; btn_colors[0] = 0x4F;
-            btn_chars[1] = '_'; btn_colors[1] = win->focused ? 0x1F : 0x08;
-            btn_chars[2] = 0x10; btn_colors[2] = win->focused ? 0x1F : 0x08;
+            btn_chars[0] = close->ch; btn_colors[0] = win->focused ? close->color : close->color_selected;
+            btn_chars[1] = minimize->ch; btn_colors[1] = win->focused ? minimize->color : minimize->color_selected;
+            btn_chars[2] = maximize->ch; btn_colors[2] = win->focused ? maximize->color : maximize->color_selected;
             break;
         case WM_BTN_CLOSE_MAX_MIN:
-            btn_chars[0] = 'x'; btn_colors[0] = 0x4F;
-            btn_chars[1] = 0x10; btn_colors[1] = win->focused ? 0x1F : 0x08;
-            btn_chars[2] = '_'; btn_colors[2] = win->focused ? 0x1F : 0x08;
+            btn_chars[0] = close->ch; btn_colors[0] = win->focused ? close->color : close->color_selected;
+            btn_chars[1] = maximize->ch; btn_colors[1] = win->focused ? maximize->color : maximize->color_selected;
+            btn_chars[2] = minimize->ch; btn_colors[2] = win->focused ? minimize->color : minimize->color_selected;
             break;
         case WM_BTN_MIN_MAX_CLOSE:
-            btn_chars[0] = '_'; btn_colors[0] = win->focused ? 0x1F : 0x08;
-            btn_chars[1] = 0x10; btn_colors[1] = win->focused ? 0x1F : 0x08;
-            btn_chars[2] = 'x'; btn_colors[2] = 0x4F;
+            btn_chars[0] = minimize->ch; btn_colors[0] = win->focused ? minimize->color : minimize->color_selected;
+            btn_chars[1] = maximize->ch; btn_colors[1] = win->focused ? maximize->color : maximize->color_selected;
+            btn_chars[2] = close->ch; btn_colors[2] = win->focused ? close->color : close->color_selected;
             break;
         case WM_BTN_MAX_MIN_CLOSE:
-            btn_chars[0] = 0x10; btn_colors[0] = win->focused ? 0x1F : 0x08;
-            btn_chars[1] = '_'; btn_colors[1] = win->focused ? 0x1F : 0x08;
-            btn_chars[2] = 'x'; btn_colors[2] = 0x4F;
+            btn_chars[0] = maximize->ch; btn_colors[0] = win->focused ? maximize->color : maximize->color_selected;
+            btn_chars[1] = minimize->ch; btn_colors[1] = win->focused ? minimize->color : minimize->color_selected;
+            btn_chars[2] = close->ch; btn_colors[2] = win->focused ? close->color : close->color_selected;
             break;
         case WM_BTN_MIN_CLOSE_MAX:
-            btn_chars[0] = '_'; btn_colors[0] = win->focused ? 0x1F : 0x08;
-            btn_chars[1] = 'x'; btn_colors[1] = 0x4F;
-            btn_chars[2] = 0x10; btn_colors[2] = win->focused ? 0x1F : 0x08;
+            btn_chars[0] = minimize->ch; btn_colors[0] = win->focused ? minimize->color : minimize->color_selected;
+            btn_chars[1] = close->ch; btn_colors[1] = win->focused ? close->color : close->color_selected;
+            btn_chars[2] = maximize->ch; btn_colors[2] = win->focused ? maximize->color : maximize->color_selected;
             break;
         case WM_BTN_MAX_CLOSE_MIN:
-            btn_chars[0] = 0x10; btn_colors[0] = win->focused ? 0x1F : 0x08;
-            btn_chars[1] = 'x'; btn_colors[1] = 0x4F;
-            btn_chars[2] = '_'; btn_colors[2] = win->focused ? 0x1F : 0x08;
+            btn_chars[0] = maximize->ch; btn_colors[0] = win->focused ? maximize->color : maximize->color_selected;
+            btn_chars[1] = close->ch; btn_colors[1] = win->focused ? close->color : close->color_selected;
+            btn_chars[2] = minimize->ch; btn_colors[2] = win->focused ? minimize->color : minimize->color_selected;
             break;
     }
 

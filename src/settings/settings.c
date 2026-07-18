@@ -8,6 +8,7 @@
 #include "process.h"
 #include "thread.h"
 #include "wm.h"
+#include "icons.h"
 
 static int settings_active = 0;
 static int selected_category = 0;
@@ -71,6 +72,21 @@ static void init_categories(void) {
     categories[SETTINGS_CAT_WINDOWS].options[3] = (settings_option_t){
         "Borda", SETTINGS_OPT_LIST, 0, 1,
         (const char*[]){"Simples", "Dupla"}, 2
+    };
+
+    categories[SETTINGS_CAT_ICONS].name = "Icones";
+    categories[SETTINGS_CAT_ICONS].option_count = 4;
+    categories[SETTINGS_CAT_ICONS].options[0] = (settings_option_t){
+        "Desktop", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
+    };
+    categories[SETTINGS_CAT_ICONS].options[1] = (settings_option_t){
+        "Janela (WM)", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
+    };
+    categories[SETTINGS_CAT_ICONS].options[2] = (settings_option_t){
+        "Arquivos", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
+    };
+    categories[SETTINGS_CAT_ICONS].options[3] = (settings_option_t){
+        "Restaurar padrao", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
     };
 
     categories[SETTINGS_CAT_SYSTEM].name = "Sistema";
@@ -202,6 +218,123 @@ static void apply_wm_settings(void) {
     wm_set_border_style(wm->options[3].value);
 }
 
+static void int_to_str(uint32_t num, char* buf) {
+    int i = 0;
+    if (num == 0) { buf[i++] = '0'; }
+    else {
+        char tmp[16];
+        int j = 0;
+        while (num > 0) { tmp[j++] = '0' + (num % 10); num /= 10; }
+        while (j > 0) { buf[i++] = tmp[--j]; }
+    }
+    buf[i] = '\0';
+}
+
+static void icon_editor(const char* title, icon_entry_t* entries, int count, const char** names) {
+    int sel = 0;
+    int field = 0;
+
+    while (1) {
+        video_clear();
+        video_print_at(2, 1, title, 0x0F);
+        video_draw_hline(2, 2, 76, 0xC4, 0x08);
+
+        for (int i = 0; i < count; i++) {
+            uint8_t color = (sel == i) ? 0x1F : 0x07;
+            video_print_at(4, 4 + i * 2, names[i], color);
+
+            video_print_at(6, 5 + i * 2, "Caractere:", 0x08);
+            video_put_char_at(entries[i].ch, entries[i].color, 17, 5 + i * 2);
+
+            video_print_at(20, 5 + i * 2, "Cor:", 0x08);
+            char cbuf[4];
+            int_to_str(entries[i].color, cbuf);
+            video_print_at(25, 5 + i * 2, cbuf, 0x07);
+
+            video_print_at(30, 5 + i * 2, "Cor sel:", 0x08);
+            int_to_str(entries[i].color_selected, cbuf);
+            video_print_at(39, 5 + i * 2, cbuf, 0x07);
+
+            if (sel == i) {
+                if (field == 0) video_put_char_at('>', 0x0E, 15, 5 + i * 2);
+                else if (field == 1) video_put_char_at('>', 0x0E, 23, 5 + i * 2);
+                else video_put_char_at('>', 0x0E, 37, 5 + i * 2);
+            }
+        }
+
+        video_draw_hline(2, 22, 76, 0xC4, 0x08);
+        video_print_at(3, 23, "Up/Down:Item  Left/Right:Campo  +/-:Valor  Enter:Ok  Esc:Voltar", 0x08);
+
+        uint8_t scancode = 0;
+        while (!scancode) { scancode = keyboard_get_scancode(); }
+        if (scancode & 0x80) continue;
+
+        if (scancode == 0x01) return;
+
+        if (scancode == 0x48) {
+            if (sel > 0) sel--;
+            else sel = count - 1;
+        }
+        if (scancode == 0x50) {
+            if (sel < count - 1) sel++;
+            else sel = 0;
+        }
+
+        if (scancode == 0x4B) {
+            if (field > 0) field--;
+        }
+        if (scancode == 0x4D) {
+            if (field < 2) field++;
+        }
+
+        if (scancode == 0x0D || scancode == 0x2B) {
+            if (field == 0) {
+                entries[sel].ch++;
+                if (entries[sel].ch > 0x7E) entries[sel].ch = 0x20;
+            } else if (field == 1) {
+                entries[sel].color++;
+            } else {
+                entries[sel].color_selected++;
+            }
+        }
+        if (scancode == 0x0A) {
+            if (field == 0) {
+                entries[sel].ch--;
+                if (entries[sel].ch < 0x20) entries[sel].ch = 0x7E;
+            } else if (field == 1) {
+                entries[sel].color--;
+            } else {
+                entries[sel].color_selected--;
+            }
+        }
+    }
+}
+
+static void execute_icons_action(int option) {
+    icon_registry_t* reg = icons_get_registry();
+
+    switch (option) {
+        case 0:
+            icon_editor("Icones - Desktop",
+                reg->desktop, ICON_DESKTOP_COUNT,
+                (const char*[]){"Shell", "Explorer", "TaskMgr"});
+            break;
+        case 1:
+            icon_editor("Icones - Janela",
+                reg->wm, ICON_WM_COUNT,
+                (const char*[]){"Fechar", "Minimizar", "Maximizar"});
+            break;
+        case 2:
+            icon_editor("Icones - Arquivos",
+                reg->fm, ICON_FM_COUNT,
+                (const char*[]){"Pasta", "Arquivo"});
+            break;
+        case 3:
+            icons_reset_defaults();
+            break;
+    }
+}
+
 static void execute_system_action(int option) {
     switch (option) {
         case 0:
@@ -298,6 +431,8 @@ int settings_handle_key(uint8_t scancode) {
                     execute_system_action(selected_option);
                 } else if (selected_category == SETTINGS_CAT_ABOUT) {
                     execute_about_action(selected_option);
+                } else if (selected_category == SETTINGS_CAT_ICONS) {
+                    execute_icons_action(selected_option);
                 }
             }
 

@@ -36,8 +36,13 @@ typedef struct {
     uint8_t encoding;
     uint8_t line_ending;
     uint8_t syntax_mode;
+    uint8_t word_wrap;
+    uint8_t show_formatting;
+    uint32_t wrap_width;
     uint32_t total_chars;
     uint32_t total_bytes;
+    uint8_t bold_active;
+    uint8_t italic_active;
 } editor_t;
 
 void editor_init(void);
@@ -48,5 +53,6 @@ void editor_run_file(const char* filename);
 void editor_close(void);
 void editor_handle_key(uint8_t scancode);
 uint8_t editor_is_running(void);
+void editor_close_app(void);
 
 #endif

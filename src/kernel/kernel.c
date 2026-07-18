@@ -20,6 +20,7 @@
 #include "desktop.h"
 #include "settings.h"
 #include "wm.h"
+#include "icons.h"
 
 void kernel_main(uint32_t mmap_addr) {
     video_init();
@@ -164,6 +165,10 @@ void kernel_main(uint32_t mmap_addr) {
 
     video_print("[..] Iniciando shell...\n", 0x08);
     video_print("[OK] Shell pronta\n", 0x07);
+
+    video_print("[..] Iniciando icones...\n", 0x08);
+    icons_init();
+    video_print("[OK] Icones prontos\n", 0x07);
 
     video_print("[..] Iniciando taskbar...\n", 0x08);
     taskbar_init();

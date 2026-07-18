@@ -3,15 +3,17 @@
 #include "keyboard.h"
 #include "speaker.h"
 #include "taskbar.h"
+#include "icons.h"
 
-static desktop_icon_t icons[DESKTOP_MAX_ICONS];
+static desktop_icon_t desktop_icons[DESKTOP_MAX_ICONS];
 static int icon_count = 0;
 static int selected_icon = 0;
 static int desktop_active = 0;
 
 static void draw_single_icon(desktop_icon_t* icon) {
-    uint8_t bg = icon->selected ? DESKTOP_ICON_SELECTED : DESKTOP_BG_COLOR;
-    uint8_t fg = icon->selected ? 0x17 : DESKTOP_ICON_COLOR;
+    icon_entry_t* entry = icons_get_desktop((icon_desktop_id_t)icon->type);
+    uint8_t bg = icon->selected ? entry->color_selected : DESKTOP_BG_COLOR;
+    uint8_t fg = icon->selected ? 0x17 : entry->color;
 
     video_fill_rect(icon->x, icon->y, DESKTOP_ICON_WIDTH, 5, ' ', bg);
 
@@ -29,11 +31,8 @@ static void draw_single_icon(desktop_icon_t* icon) {
         video_put_char_at(0xBA, fg, icon->x + DESKTOP_ICON_WIDTH - 1, icon->y + i);
     }
 
-    video_put_char_at(0xDB, fg, icon->x + 3, icon->y + 1);
-    video_put_char_at(0xDB, fg, icon->x + 4, icon->y + 1);
-    video_put_char_at(0xDB, fg, icon->x + 5, icon->y + 1);
-    video_put_char_at(0xDB, fg, icon->x + 3, icon->y + 2);
-    video_put_char_at(0xDB, fg, icon->x + 5, icon->y + 2);
+    video_put_char_at(entry->ch, fg, icon->x + 4, icon->y + 1);
+    video_put_char_at(entry->ch, fg, icon->x + 4, icon->y + 2);
 
     int name_len = 0;
     while (icon->name[name_len]) name_len++;
@@ -63,7 +62,7 @@ void desktop_draw(void) {
 
 void desktop_draw_icons(void) {
     for (int i = 0; i < icon_count; i++) {
-        draw_single_icon(&icons[i]);
+        draw_single_icon(&desktop_icons[i]);
     }
 }
 
@@ -73,18 +72,18 @@ void desktop_add_icon(const char* name, desktop_app_type_t type) {
     int col = icon_count % 5;
     int row = icon_count / 5;
 
-    icons[icon_count].name = name;
-    icons[icon_count].type = type;
-    icons[icon_count].x = DESKTOP_START_X + col * DESKTOP_ICON_SPACING_X;
-    icons[icon_count].y = DESKTOP_START_Y + row * DESKTOP_ICON_SPACING_Y;
-    icons[icon_count].selected = (icon_count == selected_icon) ? 1 : 0;
+    desktop_icons[icon_count].name = name;
+    desktop_icons[icon_count].type = type;
+    desktop_icons[icon_count].x = DESKTOP_START_X + col * DESKTOP_ICON_SPACING_X;
+    desktop_icons[icon_count].y = DESKTOP_START_Y + row * DESKTOP_ICON_SPACING_Y;
+    desktop_icons[icon_count].selected = (icon_count == selected_icon) ? 1 : 0;
 
     icon_count++;
 }
 
 void desktop_update_selection(void) {
     for (int i = 0; i < icon_count; i++) {
-        icons[i].selected = (i == selected_icon) ? 1 : 0;
+        desktop_icons[i].selected = (i == selected_icon) ? 1 : 0;
     }
     desktop_draw_icons();
 }
@@ -145,7 +144,7 @@ int desktop_get_selected_app(void) {
     if (selected_icon < 0 || selected_icon >= icon_count) {
         return 0;
     }
-    return icons[selected_icon].type;
+    return desktop_icons[selected_icon].type;
 }
 
 void desktop_set_active(int active) {
