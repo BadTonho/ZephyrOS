@@ -4,17 +4,17 @@ Sistema operacional educacional em C, do zero.
 
 ---
 
-## Fase 1 - Bootloader
-- [ ] Escrever bootloader em Assembly (16-bit Real Mode)
-- [ ] Carregar kernel do disco para memória
-- [ ] Switch para Protected Mode (32-bit)
-- [ ] Configurar GDT (Global Descriptor Table)
-- [ ] Jump para o kernel em C
+## Fase 1 - Bootloader ✅
+- [x] Escrever bootloader em Assembly (16-bit Real Mode)
+- [x] Carregar kernel do disco para memória
+- [x] Switch para Protected Mode (32-bit)
+- [x] Configurar GDT (Global Descriptor Table)
+- [x] Jump para o kernel em C
 
-## Fase 2 - Kernel Base
-- [ ] Entry point do kernel em C
-- [ ] Inicialização do vídeo (VGA Text Mode)
-- [ ] Funções de impressão na tela (`print`, `clear`, `set_color`)
+## Fase 2 - Kernel Base ✅
+- [x] Entry point do kernel em C
+- [x] Inicialização do vídeo (VGA Text Mode)
+- [x] Funções de impressão na tela (`print`, `clear`, `set_color`)
 - [ ] Tratamento de erros (panic handler)
 
 ## Fase 3 - Drivers Básicos
