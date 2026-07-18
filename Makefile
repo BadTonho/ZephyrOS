@@ -112,6 +112,9 @@ TASKMGR_OBJ = build/taskmanager.o
 MEDIAPLAYER_C = src/shell/mediaplayer.c
 MEDIAPLAYER_OBJ = build/mediaplayer.o
 
+EDITOR_C = src/shell/editor.c
+EDITOR_OBJ = build/editor.o
+
 # Arquivos - File Manager
 FILEMANAGER_C = src/filemanager/filemanager.c
 FILEMANAGER_OBJ = build/filemanager.o
@@ -128,6 +131,10 @@ DESKTOP_OBJ = build/desktop.o
 SETTINGS_C = src/settings/settings.c
 SETTINGS_OBJ = build/settings.o
 
+# Arquivos - Window Manager
+WM_C = src/wm/wm.c
+WM_OBJ = build/wm.o
+
 # Output
 KERNEL_BIN = build/kernel.bin
 OS_IMG = build/minios.img
@@ -137,7 +144,7 @@ OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(AC97_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(COMPRESS_OBJ) \
-       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ)
+        $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(WM_OBJ)
 
 # Targets
 all: $(OS_IMG)
@@ -266,6 +273,10 @@ $(MEDIAPLAYER_OBJ): $(MEDIAPLAYER_C)
 	@mkdir -p build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
+$(EDITOR_OBJ): $(EDITOR_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
 $(FILEMANAGER_OBJ): $(FILEMANAGER_C)
 	@mkdir -p build
 	$(GCC) $(CFLAGS) -c $< -o $@
@@ -279,6 +290,10 @@ $(DESKTOP_OBJ): $(DESKTOP_C)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SETTINGS_OBJ): $(SETTINGS_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(WM_OBJ): $(WM_C)
 	@mkdir -p build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

@@ -11,8 +11,10 @@
 #include "taskbar.h"
 #include "desktop.h"
 #include "settings.h"
+#include "wm.h"
 #include "compress.h"
 #include "mediaplayer.h"
+#include "editor.h"
 
 static char input_buffer[SHELL_BUFFER_SIZE];
 static int input_pos = 0;
@@ -77,6 +79,7 @@ static void cmd_help(void) {
     video_print("  clear    - Limpa a tela\n", 0x07);
     video_print("  desktop  - Abre a area de trabalho\n", 0x07);
     video_print("  settings - Abre o painel de configuracoes\n", 0x07);
+    video_print("  wm       - Abre gerenciador de janelas\n", 0x07);
     video_print("  ls       - Lista arquivos\n", 0x07);
     video_print("  cat      - Exibe conteudo de arquivo\n", 0x07);
     video_print("  echo     - Exibe texto\n", 0x07);
@@ -89,8 +92,6 @@ static void cmd_help(void) {
     video_print("  explorer - Abre o gerenciador de arquivos\n", 0x07);
     video_print("  taskmgr  - Abre o gerenciador de tarefas\n", 0x07);
     video_print("  taskcfg  - Configura a barra de tarefas\n", 0x07);
-    video_print("  compress - Liga/desliga compressao de RAM\n", 0x07);
-    video_print("  stats    - Mostra estatisticas de compressao\n", 0x07);
     video_print("  reboot   - Reinicia o sistema\n", 0x07);
     video_print("  shutdown - Desliga o sistema\n", 0x07);
 }
@@ -339,6 +340,11 @@ void shell_handle_key(uint8_t scancode) {
         return;
     }
 
+    if (wm_is_active()) {
+        wm_handle_key(scancode);
+        return;
+    }
+
     if (desktop_is_active()) {
         int result = desktop_handle_key(scancode);
         if (result == -1) {
@@ -463,6 +469,8 @@ int shell_process_command(const char* input) {
         taskbar_draw_config_menu();
     } else if (strcmp(cmd, "settings") == 0) {
         settings_open();
+    } else if (strcmp(cmd, "wm") == 0) {
+        wm_set_active(1);
     } else if (strcmp(cmd, "play") == 0) {
         if (!*input) {
             video_print("Uso: play <arquivo.wav>\n", 0x0C);
@@ -501,6 +509,9 @@ int shell_process_command(const char* input) {
         }
     } else if (strcmp(cmd, "stats") == 0) {
         compress_print_stats();
+    } else if (strcmp(cmd, "edit") == 0) {
+        editor_run();
+        shell_init();
     } else {
         video_print("Comando nao encontrado: ", 0x0C);
         video_print(cmd, 0x0C);

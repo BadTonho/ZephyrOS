@@ -19,6 +19,7 @@
 #include "taskbar.h"
 #include "desktop.h"
 #include "settings.h"
+#include "wm.h"
 
 void kernel_main(uint32_t mmap_addr) {
     video_init();
@@ -176,6 +177,10 @@ void kernel_main(uint32_t mmap_addr) {
     settings_init();
     video_print("[OK] Configuracoes prontas\n", 0x07);
 
+    video_print("[..] Iniciando gerenciador de janelas...\n", 0x08);
+    wm_init();
+    video_print("[OK] Gerenciador de janelas pronto\n", 0x07);
+
     video_set_color(VGA_COLOR_YELLOW, VGA_COLOR_BLACK);
     video_print("\nMiniOS pronto! Digite 'help' para comandos.\n", 0x0E);
 
@@ -188,6 +193,7 @@ void kernel_main(uint32_t mmap_addr) {
 
     while (1) {
         taskbar_update_clock();
+        wm_update_cpu_stats();
         asm volatile("hlt");
     }
 }
