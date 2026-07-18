@@ -79,6 +79,13 @@ THREAD_OBJ = build/thread.o
 SHELL_C = src/shell/shell.c
 SHELL_OBJ = build/shell.o
 
+TASKMGR_C = src/shell/taskmanager.c
+TASKMGR_OBJ = build/taskmanager.o
+
+# Arquivos - File Manager
+FILEMANAGER_C = src/filemanager/filemanager.c
+FILEMANAGER_OBJ = build/filemanager.o
+
 # Output
 KERNEL_BIN = build/kernel.bin
 OS_IMG = build/minios.img
@@ -88,7 +95,7 @@ OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) \
-       $(FAT12_OBJ) $(PROCESS_OBJ) $(THREAD_OBJ) $(SHELL_OBJ)
+       $(FAT12_OBJ) $(PROCESS_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(FILEMANAGER_OBJ)
 
 # Targets
 all: $(OS_IMG)
@@ -170,6 +177,14 @@ $(THREAD_OBJ): $(THREAD_C)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SHELL_OBJ): $(SHELL_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(TASKMGR_OBJ): $(TASKMGR_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(FILEMANAGER_OBJ): $(FILEMANAGER_C)
 	@mkdir -p build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

@@ -308,3 +308,92 @@ int fat12_list_dir(void) {
 fat12_fs_t* fat12_get_fs(void) {
     return &fs;
 }
+
+int fat12_delete_file(const char* filename) {
+    if (!fs.initialized) return -1;
+
+    for (uint32_t i = 0; i < fs.bpb.root_entries; i++) {
+        if (fs.root_dir[i].name[0] == 0x00) break;
+        if (fs.root_dir[i].name[0] == 0xE5) continue;
+        if (fs.root_dir[i].attributes & 0x08) continue;
+
+        if (strncmp(fs.root_dir[i].name, filename, 11) == 0) {
+            uint16_t cluster = fs.root_dir[i].cluster_low;
+
+            while (cluster >= 2 && cluster < 0xFF8) {
+                uint16_t next = fat12_get_cluster(cluster);
+                fat12_set_cluster(cluster, FAT12_CLUSTER_FREE);
+                cluster = next;
+            }
+
+            fs.root_dir[i].name[0] = 0xE5;
+            fs.root_dir[i].file_size = 0;
+            fs.root_dir[i].cluster_low = 0;
+
+            for (int j = 0; j < fs.bpb.sectors_per_fat; j++) {
+                if (ata_write_sectors(fs.fat_start + j, 1, (uint8_t*)fs.fat + j * 512) != 0) {
+                    return -1;
+                }
+            }
+
+            uint32_t root_size = fs.bpb.root_entries * 32;
+            uint32_t root_sectors = (root_size + 511) / 512;
+            for (uint32_t j = 0; j < root_sectors; j++) {
+                if (ata_write_sectors(fs.root_start + j, 1, (uint8_t*)fs.root_dir + j * 512) != 0) {
+                    return -1;
+                }
+            }
+
+            return 0;
+        }
+    }
+    return -1;
+}
+
+int fat12_get_file_count(void) {
+    if (!fs.initialized) return 0;
+
+    int count = 0;
+    for (uint32_t i = 0; i < fs.bpb.root_entries; i++) {
+        if (fs.root_dir[i].name[0] == 0x00) break;
+        if (fs.root_dir[i].name[0] == 0xE5) continue;
+        if (fs.root_dir[i].attributes & 0x08) continue;
+        count++;
+    }
+    return count;
+}
+
+int fat12_get_file_info(int index, char* name_out, uint32_t* size_out, uint8_t* attr_out) {
+    if (!fs.initialized) return -1;
+
+    int count = 0;
+    for (uint32_t i = 0; i < fs.bpb.root_entries; i++) {
+        if (fs.root_dir[i].name[0] == 0x00) break;
+        if (fs.root_dir[i].name[0] == 0xE5) continue;
+        if (fs.root_dir[i].attributes & 0x08) continue;
+
+        if (count == index) {
+            int pos = 0;
+            for (int j = 0; j < 8; j++) {
+                if (fs.root_dir[i].name[j] != ' ') {
+                    name_out[pos++] = fs.root_dir[i].name[j];
+                }
+            }
+            if (fs.root_dir[i].ext[0] != ' ') {
+                name_out[pos++] = '.';
+                for (int j = 0; j < 3; j++) {
+                    if (fs.root_dir[i].ext[j] != ' ') {
+                        name_out[pos++] = fs.root_dir[i].ext[j];
+                    }
+                }
+            }
+            name_out[pos] = '\0';
+
+            if (size_out) *size_out = fs.root_dir[i].file_size;
+            if (attr_out) *attr_out = fs.root_dir[i].attributes;
+            return 0;
+        }
+        count++;
+    }
+    return -1;
+}

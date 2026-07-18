@@ -4,10 +4,10 @@ Sistema operacional educacional em C + Assembly (x86), do zero.
 
 ---
 
-## Progresso Geral: 8/8 fases concluídas
+## Progresso Geral: 9/9 fases concluídas
 
 ```
-[████████████████████████████████████████] 100%
+[████████████████████████████████████████████] 100%
 ```
 
 ---
@@ -92,6 +92,7 @@ Sistema operacional educacional em C + Assembly (x86), do zero.
 | `uptime` | Tempo desde boot |
 | `beep` | Toca beep (freq duracao) |
 | `melody` | Toca escala musical |
+| `explorer` | Abre gerenciador de arquivos |
 | `reboot` | Reinicia o sistema |
 | `shutdown` | Desliga o sistema |
 
@@ -102,6 +103,21 @@ Sistema operacional educacional em C + Assembly (x86), do zero.
 - [x] Reprodução de melodias (array de frequências)
 - [x] Multi-threading básico (create, block, yield)
 - [x] Thread scheduler (round-robin)
+
+## Fase 9 - File Manager ✅
+> Arquivos: `src/filemanager/filemanager.c`, `src/include/filemanager.h`
+
+- [x] Funções de vídeo TUI (set_cursor, put_char_at, fill_rect, draw_box)
+- [x] fat12_delete_file() - exclusão de arquivos
+- [x] fat12_get_file_count() / fat12_get_file_info() - listagem detalhada
+- [x] Interface estilo Windows Explorer (TUI)
+- [x] Navegação com setas, Page Up/Down, Home/End
+- [x] Visualização de conteúdo de arquivos (F3)
+- [x] Criação de arquivos (F7)
+- [x] Exclusão de arquivos com confirmação (F8)
+- [x] Renomeação de arquivos (F2)
+- [x] Barra de título, menu, colunas, status bar
+- [x] Comando `explorer` no shell
 
 ---
 

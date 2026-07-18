@@ -94,3 +94,77 @@ void video_newline(void) {
 void video_backspace(void) {
     video_put_char('\b', current_color);
 }
+
+void video_set_cursor(int x, int y) {
+    cursor_x = x;
+    cursor_y = y;
+    update_cursor();
+}
+
+int video_get_cursor_x(void) {
+    return cursor_x;
+}
+
+int video_get_cursor_y(void) {
+    return cursor_y;
+}
+
+void video_put_char_at(char c, uint8_t color, int x, int y) {
+    if (x >= 0 && x < VGA_WIDTH && y >= 0 && y < VGA_HEIGHT) {
+        video_memory[y * VGA_WIDTH + x] = (uint16_t)c | ((uint16_t)color << 8);
+    }
+}
+
+void video_print_at(int x, int y, const char* str, uint8_t color) {
+    int cx = x;
+    for (int i = 0; str[i] != '\0'; i++) {
+        if (str[i] == '\n') {
+            cx = x;
+            y++;
+            if (y >= VGA_HEIGHT) break;
+            continue;
+        }
+        video_put_char_at(str[i], color, cx, y);
+        cx++;
+        if (cx >= VGA_WIDTH) {
+            cx = x;
+            y++;
+            if (y >= VGA_HEIGHT) break;
+        }
+    }
+}
+
+void video_fill_rect(int x, int y, int w, int h, char c, uint8_t color) {
+    for (int row = 0; row < h; row++) {
+        for (int col = 0; col < w; col++) {
+            video_put_char_at(c, color, x + col, y + row);
+        }
+    }
+}
+
+void video_draw_hline(int x, int y, int w, char c, uint8_t color) {
+    for (int i = 0; i < w; i++) {
+        video_put_char_at(c, color, x + i, y);
+    }
+}
+
+void video_draw_vline(int x, int y, int h, char c, uint8_t color) {
+    for (int i = 0; i < h; i++) {
+        video_put_char_at(c, color, x, y + i);
+    }
+}
+
+void video_draw_box(int x, int y, int w, int h, uint8_t color) {
+    for (int i = 0; i < w; i++) {
+        video_put_char_at(0xCD, color, x + i, y);
+        video_put_char_at(0xCD, color, x + i, y + h - 1);
+    }
+    for (int i = 0; i < h; i++) {
+        video_put_char_at(0xBA, color, x, y + i);
+        video_put_char_at(0xBA, color, x + w - 1, y + i);
+    }
+    video_put_char_at(0xC9, color, x, y);
+    video_put_char_at(0xBB, color, x + w - 1, y);
+    video_put_char_at(0xC8, color, x, y + h - 1);
+    video_put_char_at(0xBC, color, x + w - 1, y + h - 1);
+}

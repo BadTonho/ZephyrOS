@@ -20,10 +20,11 @@ Sistema operacional do zero em C + Assembly (x86), para aprendizado de como um S
 | Processos | ✅ | PID, estados, scheduler round-robin |
 | Context Switch | ✅ | Salva/restaura registradores em Assembly |
 | ATA Driver | ✅ | Leitura/escrita de setores (PIO) |
-| FAT12 | ✅ | Ler/escrever arquivos, listar diretório |
-| Shell | ✅ | 13 comandos interativos |
+| FAT12 | ✅ | Ler/escrever/deletar arquivos, listar diretório |
+| Shell | ✅ | 14 comandos interativos |
 | PC Speaker | ✅ | Beep, melodias |
 | Threads | ✅ | Create, block, yield |
+| File Manager | ✅ | Gerenciador de arquivos estilo Windows Explorer |
 
 ---
 
@@ -63,6 +64,8 @@ Sistema/
     │   └── thread.c         # Thread scheduler
     ├── shell/               # Terminal
     │   └── shell.c          # Shell interativo
+    ├── filemanager/         # Gerenciador de arquivos
+    │   └── filemanager.c    # Explorer estilo Windows
     ├── include/             # Headers
     │   ├── types.h          # Typedefs (uint8_t, etc)
     │   ├── video.h          # Funções de vídeo
@@ -78,6 +81,7 @@ Sistema/
     │   ├── shell.h          # Shell
     │   ├── speaker.h        # PC Speaker
     │   ├── tss.h            # TSS
+    │   ├── filemanager.h    # File Manager
     │   └── panic.h          # Panic handler
     └── linker.ld            # Linker script
 ```
@@ -151,6 +155,7 @@ O shell inicia automaticamente após a inicialização do sistema.
 | `uptime` | Tempo desde boot | `uptime` |
 | `beep` | Toca um beep | `beep` ou `beep 440 500` |
 | `melody` | Toca uma escala musical | `melody` |
+| `explorer` | Abre gerenciador de arquivos | `explorer` |
 | `reboot` | Reinicia o sistema | `reboot` |
 | `shutdown` | Desliga o sistema | `shutdown` |
 

@@ -7,6 +7,8 @@
 #include "process.h"
 #include "speaker.h"
 #include "thread.h"
+#include "filemanager.h"
+#include "taskmanager.h"
 
 static char input_buffer[SHELL_BUFFER_SIZE];
 static int input_pos = 0;
@@ -78,6 +80,7 @@ static void cmd_help(void) {
     video_print("  uptime   - Mostra tempo ligado\n", 0x07);
     video_print("  beep     - Toca um beep (freq duracao_ms)\n", 0x07);
     video_print("  melody   - Toca uma melodia\n", 0x07);
+    video_print("  explorer - Abre o gerenciador de arquivos\n", 0x07);
     video_print("  reboot   - Reinicia o sistema\n", 0x07);
     video_print("  shutdown - Desliga o sistema\n", 0x07);
 }
@@ -297,6 +300,11 @@ static void process_input(void) {
 }
 
 void shell_handle_key(uint8_t scancode) {
+    if (taskmgr_is_open()) {
+        taskmgr_handle_key(scancode);
+        return;
+    }
+
     static const char scancode_table[128] = {
         0,  27, '1','2','3','4','5','6','7','8','9','0','-','=','\b',
         '\t','q','w','e','r','t','y','u','i','o','p','[',']','\n',
@@ -370,10 +378,14 @@ int shell_process_command(const char* input) {
         cmd_beep(input);
     } else if (strcmp(cmd, "melody") == 0) {
         cmd_melody();
+    } else if (strcmp(cmd, "explorer") == 0) {
+        fm_run();
     } else if (strcmp(cmd, "reboot") == 0) {
         cmd_reboot();
     } else if (strcmp(cmd, "shutdown") == 0) {
         cmd_shutdown();
+    } else if (strcmp(cmd, "taskmgr") == 0) {
+        taskmgr_open();
     } else {
         video_print("Comando nao encontrado: ", 0x0C);
         video_print(cmd, 0x0C);

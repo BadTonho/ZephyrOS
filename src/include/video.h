@@ -32,4 +32,14 @@ void video_set_color(uint8_t fg, uint8_t bg);
 void video_newline(void);
 void video_backspace(void);
 
+void video_set_cursor(int x, int y);
+int  video_get_cursor_x(void);
+int  video_get_cursor_y(void);
+void video_put_char_at(char c, uint8_t color, int x, int y);
+void video_print_at(int x, int y, const char* str, uint8_t color);
+void video_fill_rect(int x, int y, int w, int h, char c, uint8_t color);
+void video_draw_hline(int x, int y, int w, char c, uint8_t color);
+void video_draw_vline(int x, int y, int h, char c, uint8_t color);
+void video_draw_box(int x, int y, int w, int h, uint8_t color);
+
 #endif
