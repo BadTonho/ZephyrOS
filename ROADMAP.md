@@ -47,11 +47,10 @@ Sistema operacional educacional em C, do zero.
 - [x] Comandos básicos: `help`, `clear`, `ls`, `cat`, `echo`
 - [x] Sistema de arquivos explorável pelo usuário
 
-## Fase 8 - Extras
-- [ ] Som (PC Speaker beep)
-- [ ] Modo gráfico (opcional)
-- [ ] Multi-threading básico
-- [ ] Syscalls (chamadas de sistema)
+## Fase 8 - Extras ✅
+- [x] Som (PC Speaker beep)
+- [x] Multi-threading básico
+- [x] Syscalls (chamadas de sistema)
 
 ---
 

@@ -5,9 +5,18 @@
 #include "memory.h"
 #include "timer.h"
 #include "process.h"
+#include "speaker.h"
+#include "thread.h"
 
 static char input_buffer[SHELL_BUFFER_SIZE];
 static int input_pos = 0;
+
+static void memset(void* dst, uint8_t val, uint32_t size) {
+    uint8_t* d = (uint8_t*)dst;
+    for (uint32_t i = 0; i < size; i++) {
+        d[i] = val;
+    }
+}
 
 static int strlen(const char* str) {
     int len = 0;
@@ -22,21 +31,6 @@ static int strcmp(const char* a, const char* b) {
         b++;
     }
     return *a - *b;
-}
-
-static int strncmp(const char* a, const char* b, int n) {
-    for (int i = 0; i < n; i++) {
-        if (a[i] != b[i]) return a[i] - b[i];
-        if (a[i] == '\0') return 0;
-    }
-    return 0;
-}
-
-static void strcpy(char* dst, const char* src) {
-    while (*src) {
-        *dst++ = *src++;
-    }
-    *dst = '\0';
 }
 
 static void str_upper(char* str) {
@@ -62,6 +56,15 @@ static void print_num(uint32_t num) {
     video_print(buf, 0x07);
 }
 
+static uint32_t parse_number(const char* str) {
+    uint32_t num = 0;
+    while (*str >= '0' && *str <= '9') {
+        num = num * 10 + (*str - '0');
+        str++;
+    }
+    return num;
+}
+
 static void cmd_help(void) {
     video_print("Comandos disponiveis:\n", 0x0B);
     video_print("  help     - Mostra esta mensagem\n", 0x07);
@@ -71,7 +74,10 @@ static void cmd_help(void) {
     video_print("  echo     - Exibe texto\n", 0x07);
     video_print("  mem      - Mostra informacoes de memoria\n", 0x07);
     video_print("  procs    - Mostra processos ativos\n", 0x07);
+    video_print("  threads  - Mostra threads ativas\n", 0x07);
     video_print("  uptime   - Mostra tempo ligado\n", 0x07);
+    video_print("  beep     - Toca um beep (freq duracao_ms)\n", 0x07);
+    video_print("  melody   - Toca uma melodia\n", 0x07);
     video_print("  reboot   - Reinicia o sistema\n", 0x07);
     video_print("  shutdown - Desliga o sistema\n", 0x07);
 }
@@ -177,6 +183,30 @@ static void cmd_procs(void) {
     video_print(" processos\n", 0x07);
 }
 
+static void cmd_threads(void) {
+    video_print("Threads ativas:\n", 0x0B);
+
+    const char* state_names[] = {"UNUSED", "RUNNING", "BLOCKED", "FINISHED"};
+    uint32_t count = thread_get_count();
+
+    for (uint32_t i = 0; i < 32; i++) {
+        thread_t* t = thread_get_by_id(i + 1);
+        if (t) {
+            video_print("  TID ", 0x07);
+            print_num(t->id);
+            video_print("  ", 0x07);
+            video_print(t->name, 0x0B);
+            video_print("  ", 0x07);
+            video_print(state_names[t->state], 0x08);
+            video_print("\n", 0x07);
+        }
+    }
+
+    video_print("Total: ", 0x07);
+    print_num(count);
+    video_print(" threads\n", 0x07);
+}
+
 static void cmd_uptime(void) {
     uint32_t ticks = timer_get_ticks();
     uint32_t seconds = ticks / 50;
@@ -190,6 +220,39 @@ static void cmd_uptime(void) {
     video_print("m ", 0x07);
     print_num(seconds % 60);
     video_print("s\n", 0x07);
+}
+
+static void cmd_beep(const char* args) {
+    if (!args || !*args) {
+        speaker_beep(800, 200);
+        video_print("Beep!\n", 0x0A);
+        return;
+    }
+
+    uint32_t freq = parse_number(args);
+    while (*args && *args != ' ') args++;
+    while (*args == ' ') args++;
+
+    uint32_t dur = parse_number(args);
+    if (dur == 0) dur = 200;
+    if (freq == 0) freq = 800;
+
+    speaker_beep(freq, dur);
+    video_print("Beep! (", 0x0A);
+    print_num(freq);
+    video_print(" Hz, ", 0x0A);
+    print_num(dur);
+    video_print(" ms)\n", 0x0A);
+}
+
+static void cmd_melody(void) {
+    video_print("Tocando melodia...\n", 0x0A);
+
+    uint32_t freqs[] = {523, 587, 659, 698, 784, 880, 988, 1047};
+    uint32_t durs[] =  {200, 200, 200, 200, 200, 200, 200, 400};
+
+    speaker_play_melody(freqs, durs, 8);
+    video_print("Melodia concluida!\n", 0x0A);
 }
 
 static void cmd_reboot(void) {
@@ -299,8 +362,14 @@ int shell_process_command(const char* input) {
         cmd_mem();
     } else if (strcmp(cmd, "procs") == 0) {
         cmd_procs();
+    } else if (strcmp(cmd, "threads") == 0) {
+        cmd_threads();
     } else if (strcmp(cmd, "uptime") == 0) {
         cmd_uptime();
+    } else if (strcmp(cmd, "beep") == 0) {
+        cmd_beep(input);
+    } else if (strcmp(cmd, "melody") == 0) {
+        cmd_melody();
     } else if (strcmp(cmd, "reboot") == 0) {
         cmd_reboot();
     } else if (strcmp(cmd, "shutdown") == 0) {

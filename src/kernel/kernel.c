@@ -10,6 +10,8 @@
 #include "ata.h"
 #include "fat12.h"
 #include "shell.h"
+#include "speaker.h"
+#include "thread.h"
 
 void kernel_main(uint32_t mmap_addr) {
     video_init();
@@ -83,6 +85,10 @@ void kernel_main(uint32_t mmap_addr) {
     process_init();
     video_print("[OK] TSS configurado\n", 0x07);
 
+    video_print("[..] Iniciando threads...\n", 0x08);
+    thread_init();
+    video_print("[OK] Thread scheduler pronto\n", 0x07);
+
     video_print("[..] Detectando disco...\n", 0x08);
     ata_init();
     ata_device_t* dev = ata_get_device();
@@ -102,6 +108,10 @@ void kernel_main(uint32_t mmap_addr) {
     } else {
         video_print("[!!] FAT12 nao encontrado\n", 0x0C);
     }
+
+    video_print("[..] Iniciando PC Speaker...\n", 0x08);
+    speaker_init();
+    video_print("[OK] PC Speaker pronto\n", 0x07);
 
     video_print("[..] Iniciando shell...\n", 0x08);
     video_print("[OK] Shell pronta\n", 0x07);
