@@ -32,6 +32,12 @@ SWITCH_OBJ = build/switch.o
 VIDEO_C = src/drivers/video.c
 VIDEO_OBJ = build/video.o
 
+VESA_C = src/drivers/vesa.c
+VESA_OBJ = build/vesa.o
+
+FONT_C = src/drivers/font.c
+FONT_OBJ = build/font.o
+
 IDT_C = src/drivers/idt.c
 IDT_OBJ = build/idt.o
 
@@ -67,6 +73,12 @@ PAGING_OBJ = build/paging.o
 FAT12_C = src/fs/fat12.c
 FAT12_OBJ = build/fat12.o
 
+FAT32_C = src/fs/fat32.c
+FAT32_OBJ = build/fat32.o
+
+FS_C = src/fs/fs.c
+FS_OBJ = build/fs.o
+
 # Arquivos - Processos
 PROCESS_C = src/process/process.c
 PROCESS_OBJ = build/process.o
@@ -86,6 +98,10 @@ TASKMGR_OBJ = build/taskmanager.o
 FILEMANAGER_C = src/filemanager/filemanager.c
 FILEMANAGER_OBJ = build/filemanager.o
 
+# Arquivos - Taskbar
+TASKBAR_C = src/taskbar/taskbar.c
+TASKBAR_OBJ = build/taskbar.o
+
 # Output
 KERNEL_BIN = build/kernel.bin
 OS_IMG = build/minios.img
@@ -95,7 +111,7 @@ OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) \
-       $(FAT12_OBJ) $(PROCESS_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(FILEMANAGER_OBJ)
+       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(PROCESS_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ)
 
 # Targets
 all: $(OS_IMG)
@@ -121,6 +137,14 @@ $(SWITCH_OBJ): $(SWITCH_ASM)
 	$(NASM) -f elf32 $< -o $@
 
 $(VIDEO_OBJ): $(VIDEO_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(VESA_OBJ): $(VESA_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(FONT_OBJ): $(FONT_C)
 	@mkdir -p build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -168,6 +192,14 @@ $(FAT12_OBJ): $(FAT12_C)
 	@mkdir -p build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
+$(FAT32_OBJ): $(FAT32_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(FS_OBJ): $(FS_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
 $(PROCESS_OBJ): $(PROCESS_C)
 	@mkdir -p build
 	$(GCC) $(CFLAGS) -c $< -o $@
@@ -185,6 +217,10 @@ $(TASKMGR_OBJ): $(TASKMGR_C)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(FILEMANAGER_OBJ): $(FILEMANAGER_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(TASKBAR_OBJ): $(TASKBAR_C)
 	@mkdir -p build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

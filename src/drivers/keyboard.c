@@ -46,6 +46,8 @@ void keyboard_handler(registers_t* regs) {
     }
 }
 
-void keyboard_set_callback(keyboard_callback_t cb) {
+keyboard_callback_t keyboard_set_callback(keyboard_callback_t cb) {
+    keyboard_callback_t prev = callback;
     callback = cb;
+    return prev;
 }

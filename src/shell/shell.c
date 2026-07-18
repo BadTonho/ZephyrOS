@@ -1,14 +1,14 @@
 #include "shell.h"
 #include "video.h"
 #include "keyboard.h"
-#include "fat12.h"
+#include "fs.h"
 #include "memory.h"
 #include "timer.h"
 #include "process.h"
 #include "speaker.h"
 #include "thread.h"
-#include "filemanager.h"
 #include "taskmanager.h"
+#include "taskbar.h"
 
 static char input_buffer[SHELL_BUFFER_SIZE];
 static int input_pos = 0;
@@ -87,11 +87,12 @@ static void cmd_help(void) {
 
 static void cmd_clear(void) {
     video_clear();
+    taskbar_draw();
 }
 
 static void cmd_ls(void) {
     video_print("Arquivos no disco:\n", 0x0B);
-    int count = fat12_list_dir();
+    int count = fs_list_dir();
     if (count == 0) {
         video_print("  (vazio)\n", 0x08);
     }
@@ -118,7 +119,7 @@ static void cmd_cat(const char* filename) {
         return;
     }
 
-    int bytes = fat12_read_file(name, buffer, 4095);
+    int bytes = fs_read_file(name, buffer, 4095);
     if (bytes < 0) {
         video_print("Erro: arquivo nao encontrado: ", 0x0C);
         video_print(filename, 0x0C);
@@ -300,6 +301,20 @@ static void process_input(void) {
 }
 
 void shell_handle_key(uint8_t scancode) {
+    int tb_result = taskbar_handle_key(scancode);
+    if (tb_result) {
+        if (tb_result == 3) {
+            fm_run();
+        } else if (tb_result == 4) {
+            taskmgr_open();
+        } else if (tb_result == 5) {
+            cmd_reboot();
+        } else if (tb_result == 6) {
+            cmd_shutdown();
+        }
+        return;
+    }
+
     if (taskmgr_is_open()) {
         taskmgr_handle_key(scancode);
         return;
@@ -340,6 +355,8 @@ void shell_handle_key(uint8_t scancode) {
         input_buffer[input_pos] = '\0';
         video_put_char(c, 0x07);
     }
+
+    taskbar_update_clock();
 }
 
 int shell_process_command(const char* input) {

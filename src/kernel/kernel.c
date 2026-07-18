@@ -9,10 +9,13 @@
 #include "process.h"
 #include "tss.h"
 #include "ata.h"
-#include "fat12.h"
+#include "fs.h"
 #include "shell.h"
 #include "speaker.h"
 #include "thread.h"
+#include "taskbar.h"
+#include "vesa.h"
+#include "font.h"
 
 void kernel_main(uint32_t mmap_addr) {
     video_init();
@@ -101,27 +104,64 @@ void kernel_main(uint32_t mmap_addr) {
         video_print("[!!] Nenhum disco encontrado\n", 0x0C);
     }
 
-    video_print("[..] Montando FAT12...\n", 0x08);
-    fat12_init();
-    fat12_fs_t* fs = fat12_get_fs();
-    if (fs && fs->initialized) {
-        video_print("[OK] FAT12 montado\n", 0x07);
+    video_print("[..] Montando sistema de arquivos...\n", 0x08);
+    fs_init();
+    if (fs_get_type() != 0) {
+        video_print("[OK] Sistema de arquivos montado\n", 0x07);
     } else {
-        video_print("[!!] FAT12 nao encontrado\n", 0x0C);
+        video_print("[!!] Nenhum sistema de arquivos encontrado\n", 0x0C);
     }
 
     video_print("[..] Iniciando PC Speaker...\n", 0x08);
     speaker_init();
     video_print("[OK] PC Speaker pronto\n", 0x07);
 
+    video_print("[..] Iniciando VESA...\n", 0x08);
+    font_init();
+    vesa_init();
+    vesa_mode_t* vmode = vesa_get_mode();
+    if (vmode && vmode->initialized) {
+        video_print("[OK] VESA ", 0x07);
+        char res_buf[16];
+        uint32_t num = vmode->width;
+        int i = 0;
+        if (num == 0) { res_buf[i++] = '0'; }
+        else {
+            char tmp[16];
+            int j = 0;
+            while (num > 0) { tmp[j++] = '0' + (num % 10); num /= 10; }
+            while (j > 0) { res_buf[i++] = tmp[--j]; }
+        }
+        res_buf[i] = 'x';
+        i++;
+        num = vmode->height;
+        if (num == 0) { res_buf[i++] = '0'; }
+        else {
+            char tmp[16];
+            int j = 0;
+            while (num > 0) { tmp[j++] = '0' + (num % 10); num /= 10; }
+            while (j > 0) { res_buf[i++] = tmp[--j]; }
+        }
+        res_buf[i] = '\0';
+        video_print(res_buf, 0x07);
+        video_print("x32\n", 0x07);
+    } else {
+        video_print("[!!] VESA nao encontrado\n", 0x0C);
+    }
+
     video_print("[..] Iniciando shell...\n", 0x08);
     video_print("[OK] Shell pronta\n", 0x07);
+
+    video_print("[..] Iniciando taskbar...\n", 0x08);
+    taskbar_init();
+    video_print("[OK] Taskbar pronta\n", 0x07);
 
     video_set_color(VGA_COLOR_YELLOW, VGA_COLOR_BLACK);
     video_print("\nMiniOS pronto! Digite 'help' para comandos.\n", 0x0E);
 
     video_set_color(VGA_COLOR_WHITE, VGA_COLOR_BLACK);
 
+    taskbar_draw();
     shell_init();
 
     while (1) {

@@ -6,6 +6,7 @@
 #include "process.h"
 #include "thread.h"
 #include "panic.h"
+#include "taskbar.h"
 
 #define TSKMGR_WIDTH  78
 #define TSKMGR_HEIGHT 23
@@ -28,6 +29,7 @@ static int is_open = 0;
 static int selected_tab = 0;
 static int selected_row = 0;
 static int scroll_offset = 0;
+static keyboard_callback_t prev_callback = 0;
 
 static uint32_t last_cpu_ticks = 0;
 static uint32_t last_proc_ticks[64] = {0};
@@ -56,15 +58,20 @@ void taskmgr_open(void) {
     selected_tab = 0;
     selected_row = 0;
     scroll_offset = 0;
+    prev_callback = keyboard_set_callback(taskmgr_handle_key);
+    taskbar_add_app(TB_APP_TASKMGR, "TaskMgr");
     video_clear();
     taskmgr_refresh();
 }
 
 void taskmgr_close(void) {
     is_open = 0;
+    taskbar_remove_app(TB_APP_TASKMGR);
+    keyboard_set_callback(prev_callback);
     video_clear();
     video_print("MiniOS Shell\n\n", 0x0B);
     video_print("minios> ", 0x0A);
+    taskbar_draw();
 }
 
 static void draw_box(int x, int y, int w, int h, uint8_t color) {
@@ -383,6 +390,10 @@ void taskmgr_refresh(void) {
 
 void taskmgr_handle_key(uint8_t scancode) {
     if (!is_open) return;
+
+    if (taskbar_handle_key(scancode)) {
+        return;
+    }
 
     if (scancode == 0x01) {
         taskmgr_close();

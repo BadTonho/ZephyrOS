@@ -26,14 +26,14 @@ static void update_cursor(void) {
 }
 
 static void scroll(void) {
-    if (cursor_y >= VGA_HEIGHT) {
-        for (int i = 0; i < (VGA_HEIGHT - 1) * VGA_WIDTH; i++) {
+    if (cursor_y >= VGA_HEIGHT - 1) {
+        for (int i = 0; i < (VGA_HEIGHT - 2) * VGA_WIDTH; i++) {
             video_memory[i] = video_memory[i + VGA_WIDTH];
         }
-        for (int i = (VGA_HEIGHT - 1) * VGA_WIDTH; i < VGA_HEIGHT * VGA_WIDTH; i++) {
+        for (int i = (VGA_HEIGHT - 2) * VGA_WIDTH; i < (VGA_HEIGHT - 1) * VGA_WIDTH; i++) {
             video_memory[i] = make_entry(' ', current_color);
         }
-        cursor_y = VGA_HEIGHT - 1;
+        cursor_y = VGA_HEIGHT - 2;
     }
 }
 
@@ -44,7 +44,7 @@ void video_init(void) {
 }
 
 void video_clear(void) {
-    for (int i = 0; i < VGA_WIDTH * VGA_HEIGHT; i++) {
+    for (int i = 0; i < (VGA_HEIGHT - 1) * VGA_WIDTH; i++) {
         video_memory[i] = make_entry(' ', current_color);
     }
     cursor_x = 0;
