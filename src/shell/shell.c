@@ -84,6 +84,7 @@ static void cmd_help(void) {
     video_print("  melody   - Toca uma melodia\n", 0x07);
     video_print("  explorer - Abre o gerenciador de arquivos\n", 0x07);
     video_print("  taskmgr  - Abre o gerenciador de tarefas\n", 0x07);
+    video_print("  taskcfg  - Configura a barra de tarefas\n", 0x07);
     video_print("  reboot   - Reinicia o sistema\n", 0x07);
     video_print("  shutdown - Desliga o sistema\n", 0x07);
 }
@@ -304,6 +305,10 @@ static void process_input(void) {
 }
 
 void shell_handle_key(uint8_t scancode) {
+    if (taskbar_handle_config_key(scancode)) {
+        return;
+    }
+
     int tb_result = taskbar_handle_key(scancode);
     if (tb_result) {
         if (tb_result == 3) {
@@ -441,6 +446,8 @@ int shell_process_command(const char* input) {
         cmd_shutdown();
     } else if (strcmp(cmd, "taskmgr") == 0) {
         taskmgr_open();
+    } else if (strcmp(cmd, "taskcfg") == 0) {
+        taskbar_draw_config_menu();
     } else {
         video_print("Comando nao encontrado: ", 0x0C);
         video_print(cmd, 0x0C);

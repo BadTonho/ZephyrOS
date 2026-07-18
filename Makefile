@@ -85,6 +85,12 @@ FAT32_OBJ = build/fat32.o
 FS_C = src/fs/fs.c
 FS_OBJ = build/fs.o
 
+WAV_C = src/fs/wav.c
+WAV_OBJ = build/wav.o
+
+BMP_C = src/fs/bmp.c
+BMP_OBJ = build/bmp.o
+
 # Arquivos - Processos
 PROCESS_C = src/process/process.c
 PROCESS_OBJ = build/process.o
@@ -119,9 +125,9 @@ OS_IMG = build/minios.img
 # Todas as variáveis de objetos
 OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
-       $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) \
+       $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(AC97_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) \
-       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(PROCESS_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ)
+       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ)
 
 # Targets
 all: $(OS_IMG)
@@ -215,6 +221,14 @@ $(FAT32_OBJ): $(FAT32_C)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(FS_OBJ): $(FS_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(WAV_OBJ): $(WAV_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(BMP_OBJ): $(BMP_C)
 	@mkdir -p build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

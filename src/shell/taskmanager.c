@@ -391,6 +391,10 @@ void taskmgr_refresh(void) {
 void taskmgr_handle_key(uint8_t scancode) {
     if (!is_open) return;
 
+    if (taskbar_handle_config_key(scancode)) {
+        return;
+    }
+
     if (taskbar_handle_key(scancode)) {
         return;
     }

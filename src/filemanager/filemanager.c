@@ -330,6 +330,10 @@ void fm_run(void) {
 }
 
 void fm_handle_key(uint8_t scancode) {
+    if (taskbar_handle_config_key(scancode)) {
+        return;
+    }
+
     if (taskbar_handle_key(scancode)) {
         return;
     }

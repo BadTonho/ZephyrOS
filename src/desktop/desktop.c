@@ -2,6 +2,7 @@
 #include "video.h"
 #include "keyboard.h"
 #include "speaker.h"
+#include "taskbar.h"
 
 static desktop_icon_t icons[DESKTOP_MAX_ICONS];
 static int icon_count = 0;
@@ -90,6 +91,10 @@ void desktop_update_selection(void) {
 
 int desktop_handle_key(uint8_t scancode) {
     if (!desktop_active) return 0;
+
+    if (taskbar_handle_config_key(scancode)) {
+        return 1;
+    }
 
     if (scancode & 0x80) return 0;
 
