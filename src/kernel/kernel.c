@@ -7,6 +7,8 @@
 #include "paging.h"
 #include "process.h"
 #include "tss.h"
+#include "ata.h"
+#include "fat12.h"
 
 static void task_a(void) {
     while (1) {
@@ -104,13 +106,48 @@ void kernel_main(uint32_t mmap_addr) {
     process_init();
     video_print("[OK] TSS configurado\n", 0x07);
 
+    video_print("[..] Detectando disco...\n", 0x08);
+    ata_init();
+    ata_device_t* dev = ata_get_device();
+    if (dev) {
+        video_print("[OK] Disco: ", 0x07);
+        video_print(dev->model, 0x07);
+        video_print("\n", 0x07);
+    } else {
+        video_print("[!!] Nenhum disco encontrado\n", 0x0C);
+    }
+
+    video_print("[..] Montando FAT12...\n", 0x08);
+    fat12_init();
+    fat12_fs_t* fs = fat12_get_fs();
+    if (fs && fs->initialized) {
+        video_print("[OK] FAT12 montado\n", 0x07);
+        int files = fat12_list_dir();
+        char fbuf[16];
+        int fnum = files;
+        int fi = 0;
+        if (fnum == 0) { fbuf[fi++] = '0'; }
+        else {
+            char tmp[16];
+            int fj = 0;
+            while (fnum > 0) { tmp[fj++] = '0' + (fnum % 10); fnum /= 10; }
+            while (fj > 0) { fbuf[fi++] = tmp[--fj]; }
+        }
+        fbuf[fi] = '\0';
+        video_print("     ", 0x07);
+        video_print(fbuf, 0x0B);
+        video_print(" arquivos encontrados\n", 0x07);
+    } else {
+        video_print("[!!] FAT12 nao encontrado\n", 0x0C);
+    }
+
     process_create("task_a", task_a);
     process_create("task_b", task_b);
     process_create("task_c", task_c);
     video_print("[OK] 3 processos criados\n", 0x07);
 
     video_set_color(VGA_COLOR_YELLOW, VGA_COLOR_BLACK);
-    video_print("\nSistema funcional com processos!\n", 0x0E);
+    video_print("\nSistema funcional!\n", 0x0E);
     video_print("Em breve: shell.\n", 0x0E);
 
     video_set_color(VGA_COLOR_WHITE, VGA_COLOR_BLACK);

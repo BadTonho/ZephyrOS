@@ -35,11 +35,11 @@ Sistema operacional educacional em C, do zero.
 - [x] Scheduler básico (round-robin)
 - [x] Context switch em Assembly
 
-## Fase 6 - Sistema de Arquivos
-- [ ] Driver de disco (ATA/ATAPI PIO)
-- [ ] Sistema de arquivos simples (FAT12 ou próprio)
-- [ ] Leitura/escrita de arquivos
-- [ ] Conceito de diretórios
+## Fase 6 - Sistema de Arquivos ✅
+- [x] Driver de disco (ATA/ATAPI PIO)
+- [x] Sistema de arquivos simples (FAT12)
+- [x] Leitura/escrita de arquivos
+- [x] Conceito de diretórios
 
 ## Fase 7 - Shell
 - [ ] Terminal com input do usuário

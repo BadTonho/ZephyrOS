@@ -57,6 +57,12 @@ PROCESS_OBJ = build/process.o
 SWITCH_ASM = src/kernel/switch.asm
 SWITCH_OBJ = build/switch.o
 
+ATA_C = src/kernel/ata.c
+ATA_OBJ = build/ata.o
+
+FAT12_C = src/kernel/fat12.c
+FAT12_OBJ = build/fat12.o
+
 KERNEL_BIN = build/kernel.bin
 OS_IMG = build/minios.img
 
@@ -123,7 +129,15 @@ $(SWITCH_OBJ): $(SWITCH_ASM)
 	@mkdir -p build
 	$(NASM) -f elf32 $< -o $@
 
-$(KERNEL_BIN): $(ENTRY_OBJ) $(KERNEL_OBJ) $(VIDEO_OBJ) $(PANIC_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(IDT_OBJ) $(KEYBOARD_OBJ) $(TIMER_OBJ) $(MEMORY_OBJ) $(PAGING_OBJ) $(TSS_OBJ) $(PROCESS_OBJ) $(SWITCH_OBJ)
+$(ATA_OBJ): $(ATA_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(FAT12_OBJ): $(FAT12_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(KERNEL_BIN): $(ENTRY_OBJ) $(KERNEL_OBJ) $(VIDEO_OBJ) $(PANIC_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(IDT_OBJ) $(KEYBOARD_OBJ) $(TIMER_OBJ) $(MEMORY_OBJ) $(PAGING_OBJ) $(TSS_OBJ) $(PROCESS_OBJ) $(SWITCH_OBJ) $(ATA_OBJ) $(FAT12_OBJ)
 	$(LD) $(LDFLAGS) $^ -o $@
 
 $(OS_IMG): $(BOOT_BIN) $(KERNEL_BIN)
