@@ -1,3 +1,4 @@
+#include "types.h"
 #include "video.h"
 #include "panic.h"
 #include "idt.h"
