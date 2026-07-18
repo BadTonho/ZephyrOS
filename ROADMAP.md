@@ -15,7 +15,7 @@ Sistema operacional educacional em C, do zero.
 - [x] Entry point do kernel em C
 - [x] Inicialização do vídeo (VGA Text Mode)
 - [x] Funções de impressão na tela (`print`, `clear`, `set_color`)
-- [ ] Tratamento de erros (panic handler)
+- [x] Tratamento de erros (panic handler)
 
 ## Fase 3 - Drivers Básicos
 - [ ] Driver de teclado (PS/2)

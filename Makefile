@@ -24,6 +24,9 @@ KERNEL_OBJ = build/kernel.o
 VIDEO_C = src/kernel/video.c
 VIDEO_OBJ = build/video.o
 
+PANIC_C = src/kernel/panic.c
+PANIC_OBJ = build/panic.o
+
 KERNEL_BIN = build/kernel.bin
 OS_IMG = build/minios.img
 
@@ -46,7 +49,11 @@ $(KERNEL_OBJ): $(KERNEL_C)
 	@mkdir -p build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(KERNEL_BIN): $(ENTRY_OBJ) $(KERNEL_OBJ) $(VIDEO_OBJ)
+$(PANIC_OBJ): $(PANIC_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(KERNEL_BIN): $(ENTRY_OBJ) $(KERNEL_OBJ) $(VIDEO_OBJ) $(PANIC_OBJ)
 	$(LD) $(LDFLAGS) $^ -o $@
 
 $(OS_IMG): $(BOOT_BIN) $(KERNEL_BIN)
