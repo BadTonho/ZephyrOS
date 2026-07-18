@@ -27,6 +27,21 @@ VIDEO_OBJ = build/video.o
 PANIC_C = src/kernel/panic.c
 PANIC_OBJ = build/panic.o
 
+IDT_C = src/kernel/idt.c
+IDT_OBJ = build/idt.o
+
+ISR_ASM = src/kernel/isr.asm
+ISR_OBJ = build/isr.o
+
+IRQ_ASM = src/kernel/irq.asm
+IRQ_OBJ = build/irq.o
+
+KEYBOARD_C = src/kernel/keyboard.c
+KEYBOARD_OBJ = build/keyboard.o
+
+TIMER_C = src/kernel/timer.c
+TIMER_OBJ = build/timer.o
+
 KERNEL_BIN = build/kernel.bin
 OS_IMG = build/minios.img
 
@@ -53,7 +68,27 @@ $(PANIC_OBJ): $(PANIC_C)
 	@mkdir -p build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(KERNEL_BIN): $(ENTRY_OBJ) $(KERNEL_OBJ) $(VIDEO_OBJ) $(PANIC_OBJ)
+$(ISR_OBJ): $(ISR_ASM)
+	@mkdir -p build
+	$(NASM) -f elf32 $< -o $@
+
+$(IRQ_OBJ): $(IRQ_ASM)
+	@mkdir -p build
+	$(NASM) -f elf32 $< -o $@
+
+$(IDT_OBJ): $(IDT_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(KEYBOARD_OBJ): $(KEYBOARD_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(TIMER_OBJ): $(TIMER_C)
+	@mkdir -p build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(KERNEL_BIN): $(ENTRY_OBJ) $(KERNEL_OBJ) $(VIDEO_OBJ) $(PANIC_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(IDT_OBJ) $(KEYBOARD_OBJ) $(TIMER_OBJ)
 	$(LD) $(LDFLAGS) $^ -o $@
 
 $(OS_IMG): $(BOOT_BIN) $(KERNEL_BIN)

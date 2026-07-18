@@ -17,11 +17,11 @@ Sistema operacional educacional em C, do zero.
 - [x] Funções de impressão na tela (`print`, `clear`, `set_color`)
 - [x] Tratamento de erros (panic handler)
 
-## Fase 3 - Drivers Básicos
-- [ ] Driver de teclado (PS/2)
-- [ ] Driver de vídeo (cores, cursor, scroll)
-- [ ] Driver de temporizador (PIT - Programmable Interval Timer)
-- [ ] IDT (Interrupt Descriptor Table) e ISRs
+## Fase 3 - Drivers Básicos ✅
+- [x] Driver de teclado (PS/2)
+- [x] Driver de vídeo (cores, cursor, scroll)
+- [x] Driver de temporizador (PIT - Programmable Interval Timer)
+- [x] IDT (Interrupt Descriptor Table) e ISRs
 
 ## Fase 4 - Memória
 - [ ] Detecção de memória (BIOS int 0x15, eax=0xE820)
