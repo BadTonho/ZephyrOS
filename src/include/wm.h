@@ -23,6 +23,20 @@ typedef enum {
     WM_APP_CUSTOM
 } wm_app_type_t;
 
+typedef enum {
+    WM_BTNS_RIGHT = 0,
+    WM_BTNS_LEFT
+} wm_btn_position_t;
+
+typedef enum {
+    WM_BTN_CLOSE_MIN_MAX = 0,
+    WM_BTN_CLOSE_MAX_MIN,
+    WM_BTN_MIN_MAX_CLOSE,
+    WM_BTN_MAX_MIN_CLOSE,
+    WM_BTN_MIN_CLOSE_MAX,
+    WM_BTN_MAX_CLOSE_MIN
+} wm_btn_order_t;
+
 typedef void (*wm_key_handler_t)(uint8_t scancode);
 typedef void (*wm_redraw_handler_t)(int x, int y, int w, int h);
 
@@ -46,7 +60,16 @@ typedef struct {
 } wm_window_t;
 
 typedef struct {
+    wm_btn_position_t btn_position;
+    wm_btn_order_t btn_order;
+    int show_title_text;
+    int title_bar_height;
+    int border_style;
+} wm_config_t;
+
+typedef struct {
     wm_window_t windows[WM_MAX_WINDOWS];
+    wm_config_t config;
     int window_count;
     int focused_id;
     int z_counter;
@@ -88,5 +111,11 @@ int  wm_is_active(void);
 void wm_set_active(int active);
 
 void wm_update_cpu_stats(void);
+
+wm_config_t* wm_get_config(void);
+void wm_set_btn_position(wm_btn_position_t pos);
+void wm_set_btn_order(wm_btn_order_t order);
+void wm_set_show_title(int show);
+void wm_set_border_style(int style);
 
 #endif

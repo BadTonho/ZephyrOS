@@ -31,6 +31,36 @@ void wm_init(void) {
     wm.drag_active = 0;
     wm.resize_active = 0;
     wm_active = 0;
+
+    wm.config.btn_position = WM_BTNS_RIGHT;
+    wm.config.btn_order = WM_BTN_CLOSE_MIN_MAX;
+    wm.config.show_title_text = 1;
+    wm.config.title_bar_height = 1;
+    wm.config.border_style = 0;
+}
+
+wm_config_t* wm_get_config(void) {
+    return &wm.config;
+}
+
+void wm_set_btn_position(wm_btn_position_t pos) {
+    wm.config.btn_position = pos;
+    wm_draw_all();
+}
+
+void wm_set_btn_order(wm_btn_order_t order) {
+    wm.config.btn_order = order;
+    wm_draw_all();
+}
+
+void wm_set_show_title(int show) {
+    wm.config.show_title_text = show;
+    wm_draw_all();
+}
+
+void wm_set_border_style(int style) {
+    wm.config.border_style = style;
+    wm_draw_all();
 }
 
 void wm_draw_desktop(void) {
@@ -45,23 +75,124 @@ void wm_draw_desktop(void) {
     }
 }
 
+static void draw_buttons_right(wm_window_t* win) {
+    uint8_t title_color = win->focused ? 0x1F : 0x07;
+    char btn_chars[3];
+    uint8_t btn_colors[3];
+
+    switch (wm.config.btn_order) {
+        case WM_BTN_CLOSE_MIN_MAX:
+            btn_chars[0] = 'x'; btn_colors[0] = 0x4F;
+            btn_chars[1] = '_'; btn_colors[1] = win->focused ? 0x1F : 0x08;
+            btn_chars[2] = 0x10; btn_colors[2] = win->focused ? 0x1F : 0x08;
+            break;
+        case WM_BTN_CLOSE_MAX_MIN:
+            btn_chars[0] = 'x'; btn_colors[0] = 0x4F;
+            btn_chars[1] = 0x10; btn_colors[1] = win->focused ? 0x1F : 0x08;
+            btn_chars[2] = '_'; btn_colors[2] = win->focused ? 0x1F : 0x08;
+            break;
+        case WM_BTN_MIN_MAX_CLOSE:
+            btn_chars[0] = '_'; btn_colors[0] = win->focused ? 0x1F : 0x08;
+            btn_chars[1] = 0x10; btn_colors[1] = win->focused ? 0x1F : 0x08;
+            btn_chars[2] = 'x'; btn_colors[2] = 0x4F;
+            break;
+        case WM_BTN_MAX_MIN_CLOSE:
+            btn_chars[0] = 0x10; btn_colors[0] = win->focused ? 0x1F : 0x08;
+            btn_chars[1] = '_'; btn_colors[1] = win->focused ? 0x1F : 0x08;
+            btn_chars[2] = 'x'; btn_colors[2] = 0x4F;
+            break;
+        case WM_BTN_MIN_CLOSE_MAX:
+            btn_chars[0] = '_'; btn_colors[0] = win->focused ? 0x1F : 0x08;
+            btn_chars[1] = 'x'; btn_colors[1] = 0x4F;
+            btn_chars[2] = 0x10; btn_colors[2] = win->focused ? 0x1F : 0x08;
+            break;
+        case WM_BTN_MAX_CLOSE_MIN:
+            btn_chars[0] = 0x10; btn_colors[0] = win->focused ? 0x1F : 0x08;
+            btn_chars[1] = 'x'; btn_colors[1] = 0x4F;
+            btn_chars[2] = '_'; btn_colors[2] = win->focused ? 0x1F : 0x08;
+            break;
+    }
+
+    int btn_start = win->x + win->width - 4;
+    video_put_char_at(btn_chars[0], btn_colors[0], btn_start, win->y);
+    video_put_char_at(btn_chars[1], btn_colors[1], btn_start + 1, win->y);
+    video_put_char_at(btn_chars[2], btn_colors[2], btn_start + 2, win->y);
+}
+
+static void draw_buttons_left(wm_window_t* win) {
+    char btn_chars[3];
+    uint8_t btn_colors[3];
+
+    switch (wm.config.btn_order) {
+        case WM_BTN_CLOSE_MIN_MAX:
+            btn_chars[0] = 'x'; btn_colors[0] = 0x4F;
+            btn_chars[1] = '_'; btn_colors[1] = win->focused ? 0x1F : 0x08;
+            btn_chars[2] = 0x10; btn_colors[2] = win->focused ? 0x1F : 0x08;
+            break;
+        case WM_BTN_CLOSE_MAX_MIN:
+            btn_chars[0] = 'x'; btn_colors[0] = 0x4F;
+            btn_chars[1] = 0x10; btn_colors[1] = win->focused ? 0x1F : 0x08;
+            btn_chars[2] = '_'; btn_colors[2] = win->focused ? 0x1F : 0x08;
+            break;
+        case WM_BTN_MIN_MAX_CLOSE:
+            btn_chars[0] = '_'; btn_colors[0] = win->focused ? 0x1F : 0x08;
+            btn_chars[1] = 0x10; btn_colors[1] = win->focused ? 0x1F : 0x08;
+            btn_chars[2] = 'x'; btn_colors[2] = 0x4F;
+            break;
+        case WM_BTN_MAX_MIN_CLOSE:
+            btn_chars[0] = 0x10; btn_colors[0] = win->focused ? 0x1F : 0x08;
+            btn_chars[1] = '_'; btn_colors[1] = win->focused ? 0x1F : 0x08;
+            btn_chars[2] = 'x'; btn_colors[2] = 0x4F;
+            break;
+        case WM_BTN_MIN_CLOSE_MAX:
+            btn_chars[0] = '_'; btn_colors[0] = win->focused ? 0x1F : 0x08;
+            btn_chars[1] = 'x'; btn_colors[1] = 0x4F;
+            btn_chars[2] = 0x10; btn_colors[2] = win->focused ? 0x1F : 0x08;
+            break;
+        case WM_BTN_MAX_CLOSE_MIN:
+            btn_chars[0] = 0x10; btn_colors[0] = win->focused ? 0x1F : 0x08;
+            btn_chars[1] = 'x'; btn_colors[1] = 0x4F;
+            btn_chars[2] = '_'; btn_colors[2] = win->focused ? 0x1F : 0x08;
+            break;
+    }
+
+    video_put_char_at(btn_chars[0], btn_colors[0], win->x + 1, win->y);
+    video_put_char_at(btn_chars[1], btn_colors[1], win->x + 2, win->y);
+    video_put_char_at(btn_chars[2], btn_colors[2], win->x + 3, win->y);
+}
+
 void wm_draw_title_bar(wm_window_t* win) {
     uint8_t title_color = win->focused ? 0x1F : 0x07;
 
     video_fill_rect(win->x, win->y, win->width, 1, ' ', title_color);
 
-    int title_x = win->x + 1;
-    int title_len = str_len(win->title);
-    if (title_len > win->width - 8) title_len = win->width - 8;
+    if (wm.config.btn_position == WM_BTNS_LEFT) {
+        draw_buttons_left(win);
 
-    for (int i = 0; i < title_len; i++) {
-        video_put_char_at(win->title[i], title_color, title_x + i, win->y);
+        if (wm.config.show_title_text) {
+            int title_x = win->x + 5;
+            int title_len = str_len(win->title);
+            int max_title = win->width - 6;
+            if (title_len > max_title) title_len = max_title;
+
+            for (int i = 0; i < title_len; i++) {
+                video_put_char_at(win->title[i], title_color, title_x + i, win->y);
+            }
+        }
+    } else {
+        if (wm.config.show_title_text) {
+            int title_x = win->x + 1;
+            int title_len = str_len(win->title);
+            int max_title = win->width - 5;
+            if (title_len > max_title) title_len = max_title;
+
+            for (int i = 0; i < title_len; i++) {
+                video_put_char_at(win->title[i], title_color, title_x + i, win->y);
+            }
+        }
+
+        draw_buttons_right(win);
     }
-
-    int btn_x = win->x + win->width - 3;
-    video_put_char_at('_', win->focused ? 0x1F : 0x08, btn_x, win->y);
-    video_put_char_at(0x10, win->focused ? 0x1F : 0x08, btn_x + 1, win->y);
-    video_put_char_at('x', 0x4F, btn_x + 2, win->y);
 }
 
 void wm_draw_window(int id) {
@@ -77,7 +208,22 @@ void wm_draw_window(int id) {
 
     uint8_t border_color = win->focused ? 0x08 : 0x07;
 
-    video_draw_box(win->x, win->y, win->width, win->height, border_color);
+    if (wm.config.border_style == 0) {
+        video_draw_box(win->x, win->y, win->width, win->height, border_color);
+    } else {
+        for (int i = 0; i < win->width; i++) {
+            video_put_char_at(0xC4, border_color, win->x + i, win->y);
+            video_put_char_at(0xC4, border_color, win->x + i, win->y + win->height - 1);
+        }
+        for (int i = 0; i < win->height; i++) {
+            video_put_char_at(0xB3, border_color, win->x, win->y + i);
+            video_put_char_at(0xB3, border_color, win->x + win->width - 1, win->y + i);
+        }
+        video_put_char_at(0xDA, border_color, win->x, win->y);
+        video_put_char_at(0xBF, border_color, win->x + win->width - 1, win->y);
+        video_put_char_at(0xC0, border_color, win->x, win->y + win->height - 1);
+        video_put_char_at(0xD9, border_color, win->x + win->width - 1, win->y + win->height - 1);
+    }
 
     wm_draw_title_bar(win);
 
@@ -276,17 +422,6 @@ void wm_handle_key(uint8_t scancode) {
     if (!wm_active) return;
 
     if (scancode & 0x80) return;
-
-    if (scancode == 0x1C) {
-        if (wm.focused_id >= 0 && wm.windows[wm.focused_id].on_key) {
-            wm.windows[wm.focused_id].on_key(scancode);
-        }
-        return;
-    }
-
-    if (scancode == 0x38) {
-        return;
-    }
 
     if (scancode == 0x0F) {
         wm_focus_next();

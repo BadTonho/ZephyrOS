@@ -92,6 +92,13 @@ static void cmd_help(void) {
     video_print("  explorer - Abre o gerenciador de arquivos\n", 0x07);
     video_print("  taskmgr  - Abre o gerenciador de tarefas\n", 0x07);
     video_print("  taskcfg  - Configura a barra de tarefas\n", 0x07);
+    video_print("  compress - Liga/desliga compressao de RAM\n", 0x07);
+    video_print("  stats    - Mostra estatisticas de compressao\n", 0x07);
+    video_print("  play     - Toca arquivo WAV\n", 0x07);
+    video_print("  view     - Exibe imagem BMP\n", 0x07);
+    video_print("  stop     - Para player de midia\n", 0x07);
+    video_print("  edit     - Editor de texto\n", 0x07);
+    video_print("             edit (novo) | edit arquivo.txt\n", 0x08);
     video_print("  reboot   - Reinicia o sistema\n", 0x07);
     video_print("  shutdown - Desliga o sistema\n", 0x07);
 }
@@ -510,7 +517,16 @@ int shell_process_command(const char* input) {
     } else if (strcmp(cmd, "stats") == 0) {
         compress_print_stats();
     } else if (strcmp(cmd, "edit") == 0) {
-        editor_run();
+        if (*input) {
+            char name[13];
+            int n = 0;
+            while (input[n] && n < 12) { name[n] = input[n]; n++; }
+            name[n] = '\0';
+            str_upper(name);
+            editor_run_file(name);
+        } else {
+            editor_run();
+        }
         shell_init();
     } else {
         video_print("Comando nao encontrado: ", 0x0C);

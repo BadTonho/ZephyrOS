@@ -7,6 +7,7 @@
 #include "timer.h"
 #include "process.h"
 #include "thread.h"
+#include "wm.h"
 
 static int settings_active = 0;
 static int selected_category = 0;
@@ -52,6 +53,24 @@ static void init_categories(void) {
     };
     categories[SETTINGS_CAT_TASKBAR].options[4] = (settings_option_t){
         "Auto-ocultar", SETTINGS_OPT_TOGGLE, 0, 1, NULL, 0
+    };
+
+    categories[SETTINGS_CAT_WINDOWS].name = "Janelas";
+    categories[SETTINGS_CAT_WINDOWS].option_count = 4;
+    categories[SETTINGS_CAT_WINDOWS].options[0] = (settings_option_t){
+        "Botoes lado", SETTINGS_OPT_LIST, 0, 1,
+        (const char*[]){"Direita", "Esquerda"}, 2
+    };
+    categories[SETTINGS_CAT_WINDOWS].options[1] = (settings_option_t){
+        "Ordem botoes", SETTINGS_OPT_LIST, 0, 5,
+        (const char*[]){"x _ <>", "x <> _", "_ <> x", "<> _ x", "_ x <>", "<> x _"}, 6
+    };
+    categories[SETTINGS_CAT_WINDOWS].options[2] = (settings_option_t){
+        "Mostrar titulo", SETTINGS_OPT_TOGGLE, 1, 1, NULL, 0
+    };
+    categories[SETTINGS_CAT_WINDOWS].options[3] = (settings_option_t){
+        "Borda", SETTINGS_OPT_LIST, 0, 1,
+        (const char*[]){"Simples", "Dupla"}, 2
     };
 
     categories[SETTINGS_CAT_SYSTEM].name = "Sistema";
@@ -173,6 +192,16 @@ static void apply_taskbar_settings(void) {
     taskbar_set_pinned(tb->options[2].value);
 }
 
+static void apply_wm_settings(void) {
+    settings_page_t* wm = &categories[SETTINGS_CAT_WINDOWS];
+    wm_config_t* cfg = wm_get_config();
+
+    wm_set_btn_position((wm_btn_position_t)wm->options[0].value);
+    wm_set_btn_order((wm_btn_order_t)wm->options[1].value);
+    wm_set_show_title(wm->options[2].value);
+    wm_set_border_style(wm->options[3].value);
+}
+
 static void execute_system_action(int option) {
     switch (option) {
         case 0:
@@ -276,6 +305,10 @@ int settings_handle_key(uint8_t scancode) {
                 apply_taskbar_settings();
             }
 
+            if (selected_category == SETTINGS_CAT_WINDOWS) {
+                apply_wm_settings();
+            }
+
             settings_draw();
             return 1;
         }
@@ -286,6 +319,9 @@ int settings_handle_key(uint8_t scancode) {
                 editing_option = 0;
                 if (selected_category == SETTINGS_CAT_TASKBAR) {
                     apply_taskbar_settings();
+                }
+                if (selected_category == SETTINGS_CAT_WINDOWS) {
+                    apply_wm_settings();
                 }
                 settings_draw();
                 return 1;
@@ -302,6 +338,9 @@ int settings_handle_key(uint8_t scancode) {
                 if (selected_category == SETTINGS_CAT_TASKBAR) {
                     apply_taskbar_settings();
                 }
+                if (selected_category == SETTINGS_CAT_WINDOWS) {
+                    apply_wm_settings();
+                }
                 settings_draw();
                 return 1;
             }
@@ -313,6 +352,9 @@ int settings_handle_key(uint8_t scancode) {
                 }
                 if (selected_category == SETTINGS_CAT_TASKBAR) {
                     apply_taskbar_settings();
+                }
+                if (selected_category == SETTINGS_CAT_WINDOWS) {
+                    apply_wm_settings();
                 }
                 settings_draw();
                 return 1;

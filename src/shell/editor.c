@@ -46,6 +46,15 @@ static void str_remove(char* str, int pos) {
     }
 }
 
+static int str_compare(const char* a, const char* b) {
+    while (*a && *b) {
+        if (*a != *b) return *a - *b;
+        a++;
+        b++;
+    }
+    return *a - *b;
+}
+
 static char* alloc_line(void) {
     char* line = (char*)kmalloc(EDITOR_MAX_LINE_LENGTH);
     if (line) {
@@ -54,11 +63,198 @@ static char* alloc_line(void) {
     return line;
 }
 
+static uint8_t detect_encoding(const uint8_t* data, uint32_t size) {
+    uint8_t utf8_bom = 0;
+    if (size >= 3 && data[0] == 0xEF && data[1] == 0xBB && data[2] == 0xBF) {
+        utf8_bom = 1;
+    }
+
+    uint32_t non_ascii = 0;
+    uint32_t utf8_sequences = 0;
+
+    for (uint32_t i = 0; i < size; i++) {
+        if (data[i] > 127) {
+            non_ascii++;
+            if (i + 1 < size && (data[i] & 0xE0) == 0xC0 && (data[i + 1] & 0xC0) == 0x80) {
+                utf8_sequences++;
+                i++;
+            }
+        }
+    }
+
+    if (utf8_bom || utf8_sequences > non_ascii / 2) {
+        return EDITOR_ENCODING_UTF8;
+    }
+
+    if (non_ascii > 0) {
+        return EDITOR_ENCODING_LATIN1;
+    }
+
+    return EDITOR_ENCODING_ASCII;
+}
+
+static uint8_t detect_line_ending(const uint8_t* data, uint32_t size) {
+    uint32_t lf = 0, cr = 0, crlf = 0;
+
+    for (uint32_t i = 0; i < size; i++) {
+        if (data[i] == '\r') {
+            if (i + 1 < size && data[i + 1] == '\n') {
+                crlf++;
+                i++;
+            } else {
+                cr++;
+            }
+        } else if (data[i] == '\n') {
+            lf++;
+        }
+    }
+
+    if (crlf > lf && crlf > cr) return EDITOR_CRLF;
+    if (cr > lf && cr > crlf) return EDITOR_CR;
+    return EDITOR_LF;
+}
+
+static uint8_t detect_syntax(const char* filename) {
+    int len = str_len(filename);
+    if (len < 3) return EDITOR_SYNTAX_NONE;
+
+    const char* ext = filename + len - 1;
+    while (ext > filename && *(ext - 1) != '.') ext--;
+
+    if (str_compare(ext, "C") == 0 || str_compare(ext, "H") == 0 ||
+        str_compare(ext, "c") == 0 || str_compare(ext, "h") == 0) {
+        return EDITOR_SYNTAX_C;
+    }
+
+    if (str_compare(ext, "PY") == 0 || str_compare(ext, "py") == 0) {
+        return EDITOR_SYNTAX_PYTHON;
+    }
+
+    if (str_compare(ext, "ASM") == 0 || str_compare(ext, "asm") == 0 ||
+        str_compare(ext, "S") == 0 || str_compare(ext, "s") == 0) {
+        return EDITOR_SYNTAX_ASM;
+    }
+
+    if (str_compare(ext, "MD") == 0 || str_compare(ext, "md") == 0) {
+        return EDITOR_SYNTAX_MARKDOWN;
+    }
+
+    return EDITOR_SYNTAX_NONE;
+}
+
+static uint8_t is_keyword_c(const char* word) {
+    const char* keywords[] = {
+        "int", "char", "void", "return", "if", "else", "while", "for",
+        "do", "switch", "case", "break", "continue", "struct", "typedef",
+        "static", "extern", "const", "unsigned", "signed", "long", "short",
+        "float", "double", "enum", "union", "sizeof", "NULL", "true", "false",
+        0
+    };
+    for (int i = 0; keywords[i]; i++) {
+        if (str_compare(word, keywords[i]) == 0) return 1;
+    }
+    return 0;
+}
+
+static uint8_t is_keyword_python(const char* word) {
+    const char* keywords[] = {
+        "def", "class", "return", "if", "elif", "else", "while", "for",
+        "in", "import", "from", "as", "try", "except", "finally", "raise",
+        "with", "yield", "lambda", "pass", "break", "continue", "and",
+        "or", "not", "is", "None", "True", "False", "self", "print",
+        0
+    };
+    for (int i = 0; keywords[i]; i++) {
+        if (str_compare(word, keywords[i]) == 0) return 1;
+    }
+    return 0;
+}
+
+static uint8_t is_keyword_asm(const char* word) {
+    const char* keywords[] = {
+        "mov", "push", "pop", "call", "ret", "jmp", "je", "jne", "jg",
+        "jl", "jge", "jle", "cmp", "test", "add", "sub", "mul", "div",
+        "and", "or", "xor", "not", "shl", "shr", "inc", "dec", "int",
+        "global", "extern", "section", "db", "dw", "dd", "dq", "times",
+        "nop", "hlt", "cli", "sti", "in", "out", "align", 0
+    };
+    for (int i = 0; keywords[i]; i++) {
+        if (str_compare(word, keywords[i]) == 0) return 1;
+    }
+    return 0;
+}
+
+static uint8_t get_syntax_color(const char* line, uint32_t pos, uint8_t syntax) {
+    if (syntax == EDITOR_SYNTAX_NONE) return 0x07;
+
+    char c = line[pos];
+
+    if (c == '#' && syntax == EDITOR_SYNTAX_C) return 0x0B;
+    if (c == '#' && syntax == EDITOR_SYNTAX_PYTHON) return 0x0B;
+    if (c == ';' && syntax == EDITOR_SYNTAX_ASM) return 0x0B;
+
+    if ((c == '"' || c == '\'') && syntax != EDITOR_SYNTAX_ASM) {
+        return 0x0A;
+    }
+
+    if (syntax == EDITOR_SYNTAX_C) {
+        if (c == '/' && pos + 1 < str_len(line)) {
+            if (line[pos + 1] == '/' || line[pos + 1] == '*') return 0x08;
+        }
+    }
+    if (syntax == EDITOR_SYNTAX_PYTHON) {
+        if (c == '#' ) return 0x08;
+    }
+    if (syntax == EDITOR_SYNTAX_ASM) {
+        if (c == ';') return 0x08;
+    }
+
+    if (c >= '0' && c <= '9') return 0x0E;
+
+    if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_') {
+        char word[64];
+        int w = 0;
+        int start = pos;
+        while (start > 0 && ((line[start-1] >= 'a' && line[start-1] <= 'z') ||
+               (line[start-1] >= 'A' && line[start-1] <= 'Z') ||
+               (line[start-1] >= '0' && line[start-1] <= '9') ||
+               line[start-1] == '_')) {
+            start--;
+        }
+        while (pos < str_len(line) && w < 63 &&
+               ((line[pos] >= 'a' && line[pos] <= 'z') ||
+                (line[pos] >= 'A' && line[pos] <= 'Z') ||
+                (line[pos] >= '0' && line[pos] <= '9') ||
+                line[pos] == '_')) {
+            word[w++] = line[pos++];
+        }
+        word[w] = '\0';
+
+        if (syntax == EDITOR_SYNTAX_C && is_keyword_c(word)) return 0x0D;
+        if (syntax == EDITOR_SYNTAX_PYTHON && is_keyword_python(word)) return 0x0D;
+        if (syntax == EDITOR_SYNTAX_ASM && is_keyword_asm(word)) return 0x0D;
+
+        return 0x07;
+    }
+
+    if (syntax == EDITOR_SYNTAX_MARKDOWN) {
+        if (c == '#') return 0x0D;
+        if (c == '*') return 0x0E;
+        if (c == '_') return 0x0E;
+        if (c == '`') return 0x0B;
+    }
+
+    return 0x07;
+}
+
 void editor_init(void) {
     memset(&editor, 0, sizeof(editor_t));
     editor.running = 0;
     editor.view_width = 80;
     editor.view_height = 23;
+    editor.encoding = EDITOR_ENCODING_ASCII;
+    editor.line_ending = EDITOR_LF;
+    editor.syntax_mode = EDITOR_SYNTAX_NONE;
 }
 
 void editor_new(void) {
@@ -76,6 +272,11 @@ void editor_new(void) {
     editor.scroll_x = 0;
     editor.scroll_y = 0;
     editor.modified = 0;
+    editor.total_chars = 0;
+    editor.total_bytes = 0;
+    editor.encoding = EDITOR_ENCODING_ASCII;
+    editor.line_ending = EDITOR_LF;
+    editor.syntax_mode = EDITOR_SYNTAX_NONE;
     editor.filename[0] = '\0';
     str_copy(editor.filename, "UNNAMED.TXT", 64);
 }
@@ -94,17 +295,20 @@ void editor_open(const char* filename) {
     editor.scroll_x = 0;
     editor.scroll_y = 0;
     editor.modified = 0;
+    editor.total_chars = 0;
+    editor.total_bytes = 0;
 
     str_copy(editor.filename, filename, 64);
+    editor.syntax_mode = detect_syntax(filename);
 
-    uint8_t* buffer = (uint8_t*)kmalloc(65536);
+    uint8_t* buffer = (uint8_t*)kmalloc(131072);
     if (!buffer) {
         editor.line_count = 1;
         editor.lines[0] = alloc_line();
         return;
     }
 
-    int bytes = fs_read_file(filename, buffer, 65535);
+    int bytes = fs_read_file(filename, buffer, 131071);
     if (bytes <= 0) {
         editor.line_count = 1;
         editor.lines[0] = alloc_line();
@@ -112,7 +316,16 @@ void editor_open(const char* filename) {
         return;
     }
 
-    buffer[bytes] = '\0';
+    editor.total_bytes = bytes;
+    editor.encoding = detect_encoding(buffer, bytes);
+    editor.line_ending = detect_line_ending(buffer, bytes);
+
+    uint32_t start_offset = 0;
+    if (editor.encoding == EDITOR_ENCODING_UTF8 && bytes >= 3) {
+        if (buffer[0] == 0xEF && buffer[1] == 0xBB && buffer[2] == 0xBF) {
+            start_offset = 3;
+        }
+    }
 
     uint32_t line = 0;
     uint32_t pos = 0;
@@ -123,16 +336,19 @@ void editor_open(const char* filename) {
         return;
     }
 
-    for (int i = 0; i < bytes; i++) {
+    for (uint32_t i = start_offset; i < (uint32_t)bytes; i++) {
         if (buffer[i] == '\n') {
             editor.lines[line][pos] = '\0';
+            editor.total_chars += pos;
             line++;
             pos = 0;
             if (line >= EDITOR_MAX_LINES) break;
             editor.lines[line] = alloc_line();
             if (!editor.lines[line]) break;
         } else if (buffer[i] == '\r') {
-            continue;
+            if (i + 1 < (uint32_t)bytes && buffer[i + 1] == '\n') {
+                i++;
+            }
         } else {
             if (pos < EDITOR_MAX_LINE_LENGTH - 1) {
                 editor.lines[line][pos++] = buffer[i];
@@ -140,6 +356,7 @@ void editor_open(const char* filename) {
         }
     }
     editor.lines[line][pos] = '\0';
+    editor.total_chars += pos;
     editor.line_count = line + 1;
 
     kfree(buffer);
@@ -162,7 +379,8 @@ static void editor_save(void) {
             total_size += str_len(editor.lines[i]);
         }
         if (i < editor.line_count - 1) {
-            total_size++;
+            if (editor.line_ending == EDITOR_CRLF) total_size += 2;
+            else total_size++;
         }
     }
 
@@ -181,7 +399,14 @@ static void editor_save(void) {
             }
         }
         if (i < editor.line_count - 1) {
-            buffer[pos++] = '\n';
+            if (editor.line_ending == EDITOR_CRLF) {
+                buffer[pos++] = '\r';
+                buffer[pos++] = '\n';
+            } else if (editor.line_ending == EDITOR_CR) {
+                buffer[pos++] = '\r';
+            } else {
+                buffer[pos++] = '\n';
+            }
         }
     }
     buffer[pos] = '\0';
@@ -191,9 +416,24 @@ static void editor_save(void) {
 
     if (result >= 0) {
         editor.modified = 0;
+        editor.total_bytes = pos;
         video_print("Arquivo salvo: ", 0x0A);
         video_print(editor.filename, 0x0A);
-        video_print("\n", 0x0A);
+        video_print(" (", 0x0A);
+
+        char buf[16];
+        uint32_t num = pos;
+        int i = 0;
+        if (num == 0) { buf[i++] = '0'; }
+        else {
+            char tmp[16];
+            int j = 0;
+            while (num > 0) { tmp[j++] = '0' + (num % 10); num /= 10; }
+            while (j > 0) { buf[i++] = tmp[--j]; }
+        }
+        buf[i] = '\0';
+        video_print(buf, 0x0A);
+        video_print(" bytes)\n", 0x0A);
     } else {
         video_print("Erro ao salvar arquivo!\n", 0x0C);
     }
@@ -206,7 +446,23 @@ static void editor_draw(void) {
     if (editor.modified) {
         video_print(" *", 0x0C);
     }
-    video_print("  [F2=Salvar] [ESC=Sair]\n", 0x08);
+
+    video_print("  ", 0x08);
+
+    if (editor.encoding == EDITOR_ENCODING_UTF8) video_print("UTF-8 ", 0x08);
+    else if (editor.encoding == EDITOR_ENCODING_LATIN1) video_print("LATIN1 ", 0x08);
+    else video_print("ASCII ", 0x08);
+
+    if (editor.line_ending == EDITOR_CRLF) video_print("CRLF ", 0x08);
+    else if (editor.line_ending == EDITOR_CR) video_print("CR ", 0x08);
+    else video_print("LF ", 0x08);
+
+    if (editor.syntax_mode == EDITOR_SYNTAX_C) video_print("C ", 0x08);
+    else if (editor.syntax_mode == EDITOR_SYNTAX_PYTHON) video_print("PY ", 0x08);
+    else if (editor.syntax_mode == EDITOR_SYNTAX_ASM) video_print("ASM ", 0x08);
+    else if (editor.syntax_mode == EDITOR_SYNTAX_MARKDOWN) video_print("MD ", 0x08);
+
+    video_print("[F2=Salva] [F3=Wrap] [F4=Syntax] [ESC=Sai]", 0x08);
 
     uint32_t view_h = editor.view_height - 2;
 
@@ -218,13 +474,14 @@ static void editor_draw(void) {
             uint32_t len = str_len(line);
 
             uint32_t display_x = 0;
-            for (uint32_t x = 0; x < editor.view_width - 5; x++) {
+            for (uint32_t x = 0; x < editor.view_width - 7; x++) {
                 uint32_t char_idx = x + editor.scroll_x;
 
                 if (char_idx < len) {
-                    video_put_char_at(line[char_idx], 0x07, 5 + display_x, 1 + y);
+                    uint8_t color = get_syntax_color(line, char_idx, editor.syntax_mode);
+                    video_put_char_at(line[char_idx], color, 7 + display_x, 1 + y);
                 } else {
-                    video_put_char_at(' ', 0x07, 5 + display_x, 1 + y);
+                    video_put_char_at(' ', 0x07, 7 + display_x, 1 + y);
                 }
                 display_x++;
             }
@@ -242,20 +499,21 @@ static void editor_draw(void) {
         }
         line_num[i] = '\0';
 
-        int padding = 4 - i;
+        int padding = 6 - i;
         for (int p = 0; p < padding; p++) {
             video_put_char_at(' ', 0x08, 0, 1 + y);
         }
         video_print_at(0, 1 + y, line_num, 0x08);
-        video_put_char_at(' ', 0x08, 4, 1 + y);
+        video_put_char_at(' ', 0x08, 6, 1 + y);
     }
 
     uint32_t cursor_screen_y = editor.cursor_y - editor.scroll_y;
-    uint32_t cursor_screen_x = editor.cursor_x - editor.scroll_x + 5;
+    uint32_t cursor_screen_x = editor.cursor_x - editor.scroll_x + 7;
     video_set_cursor(cursor_screen_x, 1 + cursor_screen_y);
 
-    char status[64];
+    char status[80];
     uint32_t pos = 0;
+
     status[pos++] = 'L';
     status[pos++] = 'i';
     status[pos++] = 'n';
@@ -305,9 +563,31 @@ static void editor_draw(void) {
     status[pos++] = 'h';
     status[pos++] = 'a';
     status[pos++] = 's';
+    status[pos++] = ' ';
+    status[pos++] = '|';
+    status[pos++] = ' ';
+
+    num = editor.total_chars;
+    t = 0;
+    if (num == 0) { tmp[t++] = '0'; }
+    else {
+        while (num > 0) { tmp[t++] = '0' + (num % 10); num /= 10; }
+    }
+    while (t > 0) { status[pos++] = tmp[--t]; }
+
+    status[pos++] = ' ';
+    status[pos++] = 'c';
+    status[pos++] = 'a';
+    status[pos++] = 'r';
+    status[pos++] = 'a';
+    status[pos++] = 'c';
+    status[pos++] = 't';
+    status[pos++] = 'e';
+    status[pos++] = 'r';
+    status[pos++] = 'e';
     status[pos] = '\0';
 
-    video_print_at(0, 24, "                                                                                ", 0x08);
+    video_print_at(0, 24, "                                                                                          ", 0x08);
     video_print_at(0, 24, status, 0x08);
 }
 
@@ -318,12 +598,14 @@ static void editor_insert_char(char c) {
     str_insert(editor.lines[editor.cursor_y], editor.cursor_x, c);
     editor.cursor_x++;
     editor.modified = 1;
+    editor.total_chars++;
 }
 
 static void editor_backspace(void) {
     if (editor.cursor_x > 0) {
         str_remove(editor.lines[editor.cursor_y], editor.cursor_x - 1);
         editor.cursor_x--;
+        editor.total_chars--;
     } else if (editor.cursor_y > 0) {
         uint32_t prev_len = str_len(editor.lines[editor.cursor_y - 1]);
         uint32_t cur_len = str_len(editor.lines[editor.cursor_y]);
@@ -344,6 +626,7 @@ static void editor_backspace(void) {
 
         editor.cursor_y--;
         editor.cursor_x = prev_len;
+        editor.total_chars--;
     }
     editor.modified = 1;
 }
@@ -351,6 +634,7 @@ static void editor_backspace(void) {
 static void editor_delete(void) {
     if (editor.cursor_x < str_len(editor.lines[editor.cursor_y])) {
         str_remove(editor.lines[editor.cursor_y], editor.cursor_x);
+        editor.total_chars--;
     } else if (editor.cursor_y < editor.line_count - 1) {
         uint32_t cur_len = str_len(editor.lines[editor.cursor_y]);
         uint32_t next_len = str_len(editor.lines[editor.cursor_y + 1]);
@@ -368,6 +652,7 @@ static void editor_delete(void) {
         }
         editor.lines[editor.line_count - 1] = 0;
         editor.line_count--;
+        editor.total_chars--;
     }
     editor.modified = 1;
 }
@@ -394,6 +679,7 @@ static void editor_newline(void) {
     editor.cursor_y++;
     editor.cursor_x = 0;
     editor.modified = 1;
+    editor.total_chars++;
 }
 
 static void editor_tab(void) {
@@ -455,6 +741,13 @@ void editor_handle_key(uint8_t scancode) {
 
     if (scancode == 0x3C) {
         editor_save();
+        editor_draw();
+        return;
+    }
+
+    if (scancode == 0x3E) {
+        editor.syntax_mode = (editor.syntax_mode + 1) % 5;
+        editor_draw();
         return;
     }
 
@@ -568,6 +861,22 @@ void editor_handle_key(uint8_t scancode) {
 void editor_run(void) {
     editor_init();
     editor_new();
+    editor.running = 1;
+
+    keyboard_set_callback(editor_handle_key);
+
+    editor_draw();
+
+    while (editor.running) {
+        asm volatile("hlt");
+    }
+
+    keyboard_set_callback(0);
+}
+
+void editor_run_file(const char* filename) {
+    editor_init();
+    editor_open(filename);
     editor.running = 1;
 
     keyboard_set_callback(editor_handle_key);
