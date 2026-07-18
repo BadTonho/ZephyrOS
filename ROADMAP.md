@@ -41,11 +41,11 @@ Sistema operacional educacional em C, do zero.
 - [x] Leitura/escrita de arquivos
 - [x] Conceito de diretórios
 
-## Fase 7 - Shell
-- [ ] Terminal com input do usuário
-- [ ] Parser de comandos
-- [ ] Comandos básicos: `help`, `clear`, `ls`, `cat`, `echo`
-- [ ] Sistema de arquivos explorável pelo usuário
+## Fase 7 - Shell ✅
+- [x] Terminal com input do usuário
+- [x] Parser de comandos
+- [x] Comandos básicos: `help`, `clear`, `ls`, `cat`, `echo`
+- [x] Sistema de arquivos explorável pelo usuário
 
 ## Fase 8 - Extras
 - [ ] Som (PC Speaker beep)

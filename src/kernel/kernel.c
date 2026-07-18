@@ -9,30 +9,7 @@
 #include "tss.h"
 #include "ata.h"
 #include "fat12.h"
-
-static void task_a(void) {
-    while (1) {
-        video_set_color(VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK);
-        video_print("[A] ", 0x0A);
-        process_block(50);
-    }
-}
-
-static void task_b(void) {
-    while (1) {
-        video_set_color(VGA_COLOR_LIGHT_CYAN, VGA_COLOR_BLACK);
-        video_print("[B] ", 0x0B);
-        process_block(30);
-    }
-}
-
-static void task_c(void) {
-    while (1) {
-        video_set_color(VGA_COLOR_LIGHT_RED, VGA_COLOR_BLACK);
-        video_print("[C] ", 0x0C);
-        process_block(20);
-    }
-}
+#include "shell.h"
 
 void kernel_main(uint32_t mmap_addr) {
     video_init();
@@ -122,44 +99,21 @@ void kernel_main(uint32_t mmap_addr) {
     fat12_fs_t* fs = fat12_get_fs();
     if (fs && fs->initialized) {
         video_print("[OK] FAT12 montado\n", 0x07);
-        int files = fat12_list_dir();
-        char fbuf[16];
-        int fnum = files;
-        int fi = 0;
-        if (fnum == 0) { fbuf[fi++] = '0'; }
-        else {
-            char tmp[16];
-            int fj = 0;
-            while (fnum > 0) { tmp[fj++] = '0' + (fnum % 10); fnum /= 10; }
-            while (fj > 0) { fbuf[fi++] = tmp[--fj]; }
-        }
-        fbuf[fi] = '\0';
-        video_print("     ", 0x07);
-        video_print(fbuf, 0x0B);
-        video_print(" arquivos encontrados\n", 0x07);
     } else {
         video_print("[!!] FAT12 nao encontrado\n", 0x0C);
     }
 
-    process_create("task_a", task_a);
-    process_create("task_b", task_b);
-    process_create("task_c", task_c);
-    video_print("[OK] 3 processos criados\n", 0x07);
+    video_print("[..] Iniciando shell...\n", 0x08);
+    video_print("[OK] Shell pronta\n", 0x07);
 
     video_set_color(VGA_COLOR_YELLOW, VGA_COLOR_BLACK);
-    video_print("\nSistema funcional!\n", 0x0E);
-    video_print("Em breve: shell.\n", 0x0E);
+    video_print("\nMiniOS pronto! Digite 'help' para comandos.\n", 0x0E);
 
     video_set_color(VGA_COLOR_WHITE, VGA_COLOR_BLACK);
-    video_print("\n> ", 0x0F);
 
-    current_process = process_get_current();
-    if (!current_process) {
-        process_t* idle = process_create("idle", 0);
-        if (idle) current_process = idle;
-    }
+    shell_init();
 
     while (1) {
-        process_yield();
+        asm volatile("hlt");
     }
 }
