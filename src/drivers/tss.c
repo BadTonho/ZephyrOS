@@ -1,7 +1,13 @@
 #include "drivers/tss.h"
-#include "drivers/idt.h"
+#include "core/log.h"
 
 static tss_entry_t tss;
+static uint64_t gdt[6];
+
+typedef struct {
+    uint16_t limit;
+    uint32_t base;
+} __attribute__((packed)) gdt_ptr_t;
 
 extern void tss_flush(void);
 
@@ -12,11 +18,41 @@ static void memset(void* dst, uint8_t val, uint32_t size) {
     }
 }
 
-void tss_init(void) {
-    uint32_t base = (uint32_t)&tss;
-    uint32_t limit = base + sizeof(tss_entry_t);
+static void tss_load_gdt(uint32_t base, uint32_t limit) {
+    gdt_ptr_t pointer;
+    uint64_t tss_descriptor = 0;
 
-    idt_set_gate(40, 0, 0, 0);
+    gdt[0] = 0;
+    gdt[1] = 0x00CF9A000000FFFFULL;
+    gdt[2] = 0x00CF92000000FFFFULL;
+    gdt[3] = 0;
+    gdt[4] = 0;
+
+    tss_descriptor |= (uint64_t)(limit & 0xFFFF);
+    tss_descriptor |= (uint64_t)(base & 0xFFFFFF) << 16;
+    tss_descriptor |= (uint64_t)0x89 << 40;
+    tss_descriptor |= (uint64_t)((limit >> 16) & 0x0F) << 48;
+    tss_descriptor |= (uint64_t)((base >> 24) & 0xFF) << 56;
+    gdt[5] = tss_descriptor;
+
+    pointer.limit = sizeof(gdt) - 1;
+    pointer.base = (uint32_t)&gdt;
+    asm volatile("lgdt %0" : : "m"(pointer) : "memory");
+    asm volatile(
+        "mov $0x10, %%ax\n"
+        "mov %%ax, %%ds\n"
+        "mov %%ax, %%es\n"
+        "mov %%ax, %%fs\n"
+        "mov %%ax, %%gs\n"
+        "mov %%ax, %%ss\n"
+        : : : "ax", "memory");
+}
+
+void tss_init(void) {
+    LOG_INFO("THRD", "Inicializando TSS");
+
+    uint32_t base = (uint32_t)&tss;
+    uint32_t limit = sizeof(tss_entry_t) - 1;
 
     memset(&tss, 0, sizeof(tss_entry_t));
 
@@ -30,21 +66,9 @@ void tss_init(void) {
     tss.ss = 0x10;
     tss.iomap_base = sizeof(tss_entry_t);
 
-    uint32_t tss_base_low = base & 0xFFFF;
-    uint32_t tss_base_mid = (base >> 16) & 0xFF;
-    uint32_t tss_base_high = (base >> 24) & 0xFF;
-
-    uint8_t* gdt_tss = (uint8_t*)0x800 + 40;
-    gdt_tss[0] = (uint8_t)(limit & 0xFF);
-    gdt_tss[1] = (uint8_t)((limit >> 8) & 0xFF);
-    gdt_tss[2] = (uint8_t)(tss_base_low & 0xFF);
-    gdt_tss[3] = (uint8_t)((tss_base_low >> 8) & 0xFF);
-    gdt_tss[4] = (uint8_t)(tss_base_mid & 0xFF);
-    gdt_tss[5] = 0x89;
-    gdt_tss[6] = 0x60;
-    gdt_tss[7] = (uint8_t)(tss_base_high & 0xFF);
-
+    tss_load_gdt(base, limit);
     tss_flush();
+    LOG_INFO("THRD", "TSS inicializada");
 }
 
 void tss_set_kernel_stack(uint32_t stack) {

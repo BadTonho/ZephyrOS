@@ -9,6 +9,10 @@ static uint8_t make_color(uint8_t fg, uint8_t bg) {
     return fg | (bg << 4);
 }
 
+static void video_outb(uint16_t port, uint8_t value) {
+    asm volatile("outb %0, %1" : : "a"(value), "Nd"(port));
+}
+
 static uint16_t make_entry(char c, uint8_t color) {
     return (uint16_t)c | ((uint16_t)color << 8);
 }
@@ -18,11 +22,10 @@ static void update_cursor(void) {
     uint8_t high = (uint8_t)((pos >> 8) & 0xFF);
     uint8_t low = (uint8_t)(pos & 0xFF);
 
-    uint8_t* ports = (uint8_t*)0x3D4;
-    ports[0] = 0x0F;
-    ports[1] = low;
-    ports[0] = 0x0E;
-    ports[1] = high;
+    video_outb(0x3D4, 0x0F);
+    video_outb(0x3D5, low);
+    video_outb(0x3D4, 0x0E);
+    video_outb(0x3D5, high);
 }
 
 static void scroll(void) {
