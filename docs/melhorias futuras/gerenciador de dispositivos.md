@@ -489,7 +489,7 @@
 
 5. **Sem rede** — Não há stack de rede. Windows Update, drivers online e exportação remota não são possíveis.
 
-6. **Adaptação do conceito** — O documento original descreve o Device Manager do Windows. Para o MiniOS, o conceito é adaptado para um gerenciador de dispositivos educacional que mostra o hardware detectado e permite operações básicas.
+6. **Adaptação do conceito** — O documento original descreve o Device Manager do Windows. Para o MiniOS, o conceito é adaptado para um gerenciador de dispositivos que mostra o hardware detectado e permite operações básicas.
 
 7. **Integração existente** — Os dados já estão disponíveis nos structs dos drivers (pci_device_t, ata_device_t, ac97_device_t). A interface TUI precisa apenas ler e exibir esses dados de forma organizada.
 

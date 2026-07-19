@@ -2,45 +2,41 @@
 
 ## Visão Geral
 
-O MiniOS é um sistema operacional educacional que demonstra os conceitos fundamentais de como um SO funciona.
+O MiniOS é um sistema operacional desenvolvido do zero em C + Assembly (x86), com o objetivo de ser funcional e completo o suficiente para uso real. O projeto começou como exercício educacional e evoluiu para um OS com ambições de produção.
 
-## Objetivos de Aprendizado
+## O que o MiniOS faz
 
-Ao estudar o código do MiniOS, você vai aprender:
+- Inicia sozinho (bootloader → Protected Mode)
+- Gerencia memória (detecção E820, bitmap allocator, heap, paging)
+- Roda processos e threads com scheduler preemptivo
+- Lê e escreve arquivos em disco (FAT12, FAT32 com subdiretórios)
+- Suporta imagens BMP e áudio WAV
+- Interface completa: shell, desktop, janelas, ícones, barra de tarefas
+- Editor de texto, media player, file manager, task manager
 
-1. **Como um computador liga** — do BIOS ao primeiro código executado
-2. **Modo protegido** — como o processador muda de 16-bit para 32-bit
-3. **Drivers** — como o software comunica com o hardware
-4. **Memória** — como o SO gerencia RAM
-5. **Processos** — como múltiplas tarefas rodam ao mesmo tempo
-6. **Sistema de arquivos** — como dados são persistidos em disco
-7. **Shell** — como o usuário interage com o sistema
-
-## Tecnologias Utilizadas
+## Stack Técnica
 
 | Tecnologia | Uso |
 |-----------|-----|
 | **Assembly x86** | Bootloader, ISRs, context switch |
-| **C** | Kernel, drivers, shell |
-| **Makefile** | Sistema de build |
-| **NASM** | Assembler (monta Assembly) |
-| **GCC cross-compiler** | Compilador C freestanding |
+| **C** | Kernel, drivers, apps |
+| **NASM** | Assembler |
+| **GCC cross-compiler** | Compilador C freestanding (i686-elf) |
+| **GNU ld** | Linker |
 | **QEMU** | Emulador para testes |
 
-## Pré-requisitos para Estudar
+## Status Atual
 
-- Conhecimento básico de **C** (ponteiros, structs, funções)
-- Conhecimento básico de **Assembly** (registradores, instruções)
-- Conhecimento de **como um PC funciona** (CPU, memória, periféricos)
+O sistema funciona em emuladores (QEMU) com todos os módulos listados operando. Existem limitações técnicas conhecidas que estão sendo endereçadas — ver `ROADMAP.md` e os documentos na pasta `docs/melhorias futuras/` para detalhes.
 
-## Como Usar Esta Documentação
+## Documentação
 
-A documentação está organizada em categorias, seguindo a ordem que o sistema é executado:
+A documentação está organizada seguindo a ordem de execução do sistema:
 
-1. Comece pelo **Bootloader** (como tudo começa)
-2. Depois o **Kernel** (o coração)
-3. Os **Drivers** (comunicação com hardware)
-4. **Memória** (gerenciamento de recursos)
-5. **Processos** (execução concorrente)
-6. **Sistema de Arquivos** (persistência)
-7. **Shell** (interface com o usuário)
+1. **Bootloader** — como tudo começa
+2. **Kernel** — o coração do sistema
+3. **Drivers** — comunicação com hardware
+4. **Memória** — gerenciamento de recursos
+5. **Processos** — execução concorrente
+6. **Sistema de Arquivos** — persistência
+7. **Shell** — interface com o usuário

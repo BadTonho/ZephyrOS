@@ -1,12 +1,12 @@
 # MiniOS
 
-Sistema operacional educacional desenvolvido do zero em C + Assembly (x86).
+Sistema operacional desenvolvido do zero em C + Assembly (x86).
 
 ---
 
 ## O que é o MiniOS?
 
-O MiniOS é um sistema operacional funcional criado para fins educacionais. Ele demonstra como um SO real funciona internamente, desde o boot do computador até um shell interativo onde o usuário pode digitar comandos.
+O MiniOS é um sistema operacional funcional, construído desde o bootloader até um ambiente desktop completo. O projeto tem o objetivo de ser um OS real e utilizável, não apenas educacional.
 
 ## O que ele faz?
 
@@ -15,7 +15,7 @@ O MiniOS é um sistema operacional funcional criado para fins educacionais. Ele 
 - Responde a teclado (input do usuário)
 - Gerencia memória (alocação dinâmica, compressão LZSS)
 - Roda processos e threads concorrentemente
-- Lê e escreve arquivos em disco (FAT12, FAT32)
+- Lê e escreve arquivos em disco (FAT12, FAT32 com subdiretórios)
 - Suporta imagens BMP e áudio WAV
 - Tem um shell com 20+ comandos
 - Ambiente desktop com janelas, ícones e barra de tarefas
@@ -24,7 +24,7 @@ O MiniOS é um sistema operacional funcional criado para fins educacionais. Ele 
 
 ## Por que existe?
 
-Para aprender como um sistema operacional funciona de verdade, codificando cada parte do zero — sem usar bibliotecas prontas ou frameworks.
+Para construir um sistema operacional funcional do zero — codificando cada componente sem usar bibliotecas prontas ou frameworks.
 
 ---
 

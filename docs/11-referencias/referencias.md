@@ -8,16 +8,16 @@
 |------|-----------|
 | [OSDev Wiki](https://wiki.osdev.org) | Wiki principal de OS development |
 | [OSDev Wiki - Getting Started](https://wiki.osdev.org/Getting_Started) | Primeiros passos |
-| [OSDev Wiki - Bare Bones](https://wiki.osdev.org/Bare_Bones) | Tutorial mínimo |
+| [OSDev Wiki - Bare Bones](https://wiki.osdev.org/Bare_Bones) | Guia mínimo para kernel básico |
 | [OSDev Wiki - GCC Cross-Compiler](https://wiki.osdev.org/GCC_Cross-Compiler) | Como criar cross-compiler |
 
 ### Documentos
 
 | Documento | Autor | Descrição |
 |-----------|-------|-----------|
-| [Writing a Simple OS from Scratch](https://www.cs.bham.ac.uk/~exr/lectures/opsys/10_11/lectures/os-dev.pdf) | Nick Blundell | PDF didático completo |
-| [James Molloy's Kernel Tutorial](http://www.jamesmolloy.co.uk/tutorial_html/) | James Molloy | Tutorial passo a passo |
-| [OS Development Series](http://www.osdever.net/bkerndev/Sections/Introduction) | Blaine Garfolo | Série de tutoriais |
+| [Writing a Simple OS from Scratch](https://www.cs.bham.ac.uk/~exr/lectures/opsys/10_11/lectures/os-dev.pdf) | Nick Blundell | Referência completa de OS development |
+| [James Molloy's Kernel Tutorial](http://www.jamesmolloy.co.uk/tutorial_html/) | James Molloy | Referência de kernel development |
+| [OS Development Series](http://www.osdever.net/bkerndev/Sections/Introduction) | Blaine Garfolo | Série de referências de OS development |
 
 ### Wiki Entries
 

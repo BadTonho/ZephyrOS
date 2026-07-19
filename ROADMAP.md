@@ -1,6 +1,6 @@
 # MiniOS - Roadmap de Desenvolvimento
 
-Sistema operacional educacional em C + Assembly (x86), do zero.
+Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
@@ -244,7 +244,7 @@ Sistema operacional educacional em C + Assembly (x86), do zero.
 ## Referências
 
 - [OSDev Wiki](https://wiki.osdev.org) - Wiki principal de OS development
-- [Writing a Simple OS from Scratch](https://www.cs.bham.ac.uk/~exr/lectures/opsys/10_11/lectures/os-dev.pdf) - PDF didático
-- [James Molloy's Kernel Tutorial](http://www.jamesmolloy.co.uk/tutorial_html/) - Tutorial passo a passo
+- [Writing a Simple OS from Scratch](https://www.cs.bham.ac.uk/~exr/lectures/opsys/10_11/lectures/os-dev.pdf) - Referência de OS development
+- [James Molloy's Kernel Tutorial](http://www.jamesmolloy.co.uk/tutorial_html/) - Referência de kernel development
 - [OSDev Wiki - FAT12](https://wiki.osdev.org/FAT12) - Formato FAT12
 - [OSDev Wiki - ATA PIO](https://wiki.osdev.org/ATA PIO_Mode) - Driver ATA

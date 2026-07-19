@@ -1,6 +1,6 @@
-# MiniOS - Sistema Operacional Educacional
+# MiniOS
 
-Sistema operacional do zero em C + Assembly (x86), para aprendizado de como um SO funciona.
+Sistema operacional do zero em C + Assembly (x86), com o objetivo de ser um OS real e funcional.
 
 ---
 
@@ -369,4 +369,4 @@ Verifique se o cross-compiler está correto. Use `i686-elf-gcc` em vez de `gcc` 
 
 ## Licença
 
-Projeto educacional. Livre para uso e modificação.
+Livre para uso e modificação.
