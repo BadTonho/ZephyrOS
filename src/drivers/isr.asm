@@ -53,12 +53,20 @@ ISR_NOERRCODE 31
 
 isr_common_stub:
     pusha
-    ; A estrutura registers_t comeca por ds. Empilhe os segmentos
-    ; em ordem inversa para que ds seja o primeiro valor lido pelo C.
-    push gs
-    push fs
-    push es
-    push ds
+    ; A estrutura registers_t usa campos de 32 bits. Expanda os
+    ; seletores antes do push para nao deslocar a pilha do C.
+    xor eax, eax
+    mov ax, gs
+    push eax
+    xor eax, eax
+    mov ax, fs
+    push eax
+    xor eax, eax
+    mov ax, es
+    push eax
+    xor eax, eax
+    mov ax, ds
+    push eax
 
     mov ax, 0x10
     mov ds, ax
@@ -70,10 +78,14 @@ isr_common_stub:
     call isr_handler
     add esp, 4
 
-    pop ds
-    pop es
-    pop fs
-    pop gs
+    pop eax
+    mov ds, ax
+    pop eax
+    mov es, ax
+    pop eax
+    mov fs, ax
+    pop eax
+    mov gs, ax
     popa
     add esp, 8
     sti

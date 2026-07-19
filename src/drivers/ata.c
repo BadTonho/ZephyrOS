@@ -1,5 +1,6 @@
 #include "drivers/ata.h"
 #include "core/video.h"
+#include "core/log.h"
 
 static ata_device_t devices[2];
 
@@ -27,8 +28,11 @@ static void ata_delay(uint16_t port) {
 
 static int ata_wait_ready(uint16_t port) {
     uint8_t status;
-    for (int i = 0; i < 100000; i++) {
+    for (uint32_t i = 0; i < ATA_WAIT_LIMIT; i++) {
         status = inb(port + ATA_REG_STATUS);
+        if (status == 0 || status == 0xFF || (status & ATA_SR_ERR)) {
+            return -1;
+        }
         if (!(status & ATA_SR_BSY) && (status & ATA_SR_DRDY)) {
             return 0;
         }
@@ -38,11 +42,32 @@ static int ata_wait_ready(uint16_t port) {
 
 static int ata_wait_drq(uint16_t port) {
     uint8_t status;
-    for (int i = 0; i < 100000; i++) {
+    for (uint32_t i = 0; i < ATA_WAIT_LIMIT; i++) {
         status = inb(port + ATA_REG_STATUS);
-        if (status & ATA_SR_ERR) return -1;
+        if (status == 0 || status == 0xFF || (status & ATA_SR_ERR)) {
+            return -1;
+        }
         if (status & ATA_SR_DRQ) return 0;
     }
+    return -1;
+}
+
+static int ata_wait_identify(uint16_t port) {
+    uint8_t status;
+
+    for (uint32_t i = 0; i < ATA_WAIT_LIMIT; i++) {
+        status = inb(port + ATA_REG_STATUS);
+        if (status == 0 || status == 0xFF || (status & ATA_SR_ERR)) {
+            return -1;
+        }
+        if (status & ATA_SR_BSY) continue;
+        if (inb(port + ATA_REG_LBA_MID) != 0 ||
+            inb(port + ATA_REG_LBA_HIGH) != 0) {
+            return -1;
+        }
+        if (status & ATA_SR_DRQ) return 0;
+    }
+
     return -1;
 }
 
@@ -53,12 +78,12 @@ static void ata_select_drive(uint16_t port, uint8_t slave) {
 
 static void ata_soft_reset(uint16_t ctrl) {
     outb(ctrl, 0x04);
-    ata_delay(ctrl);
+    for (int i = 0; i < 4; i++) inb(ctrl);
     outb(ctrl, 0x00);
-    ata_delay(ctrl);
+    for (int i = 0; i < 4; i++) inb(ctrl);
 }
 
-static void ata_detect(uint16_t io, uint16_t ctrl, uint8_t slave, ata_device_t* dev) {
+static int ata_detect(uint16_t io, uint16_t ctrl, uint8_t slave, ata_device_t* dev) {
     dev->base_port = io;
     dev->ctrl_port = ctrl;
     dev->slave = slave;
@@ -76,18 +101,14 @@ static void ata_detect(uint16_t io, uint16_t ctrl, uint8_t slave, ata_device_t* 
     ata_delay(io);
 
     uint8_t status = inb(io + ATA_REG_STATUS);
-    if (status == 0) return;
-
-    if (ata_wait_ready(io) != 0) return;
-
-    if (inb(io + ATA_REG_LBA_MID) != 0 || inb(io + ATA_REG_LBA_HIGH) != 0) {
-        return;
+    if (status == 0 || status == 0xFF) {
+        LOG_DEBUG("ATA", "Nenhum dispositivo no canal selecionado");
+        return -1;
     }
 
-    while (1) {
-        status = inb(io + ATA_REG_STATUS);
-        if (status & ATA_SR_ERR) return;
-        if (status & ATA_SR_DRQ) break;
+    if (ata_wait_identify(io) != 0) {
+        LOG_WARN("ATA", "IDENTIFY expirou ou foi rejeitado");
+        return -1;
     }
 
     uint16_t ident[256];
@@ -106,6 +127,8 @@ static void ata_detect(uint16_t io, uint16_t ctrl, uint8_t slave, ata_device_t* 
     dev->model[40] = '\0';
 
     dev->present = 1;
+    LOG_INFO("ATA", "Dispositivo ATA identificado");
+    return 0;
 }
 
 static void outw(uint16_t port, uint16_t val) {
@@ -113,12 +136,20 @@ static void outw(uint16_t port, uint16_t val) {
 }
 
 void ata_init(void) {
+    LOG_INFO("ATA", "Inicializando controlador ATA");
+
     for (int i = 0; i < 2; i++) {
         devices[i].present = 0;
     }
 
     ata_detect(ATA_PRIMARY_IO, ATA_PRIMARY_CTRL, 0, &devices[0]);
     ata_detect(ATA_PRIMARY_IO, ATA_PRIMARY_CTRL, 1, &devices[1]);
+
+    if (!ata_get_device()) {
+        LOG_WARN("ATA", "Nenhum disco ATA disponivel");
+    } else {
+        LOG_INFO("ATA", "Controlador ATA inicializado");
+    }
 }
 
 ata_device_t* ata_get_device(void) {
@@ -130,13 +161,20 @@ ata_device_t* ata_get_device(void) {
 
 int ata_read_sectors(uint32_t lba, uint8_t count, uint8_t* buffer) {
     ata_device_t* dev = ata_get_device();
-    if (!dev) return -1;
+    if (!dev) {
+        LOG_ERROR("ATA", "Leitura sem dispositivo ATA");
+        return -1;
+    }
+    if (!buffer || count == 0) {
+        LOG_ERROR("ATA", "Buffer ou quantidade de setores invalida");
+        return -1;
+    }
 
     uint16_t io = dev->base_port;
 
     if (ata_wait_ready(io) != 0) return -1;
 
-    outb(io + ATA_REG_CTRL, 0x02);
+    outb(dev->ctrl_port, 0x02);
     ata_delay(io);
 
     ata_select_drive(io, dev->slave);
@@ -164,13 +202,20 @@ int ata_read_sectors(uint32_t lba, uint8_t count, uint8_t* buffer) {
 
 int ata_write_sectors(uint32_t lba, uint8_t count, const uint8_t* buffer) {
     ata_device_t* dev = ata_get_device();
-    if (!dev) return -1;
+    if (!dev) {
+        LOG_ERROR("ATA", "Escrita sem dispositivo ATA");
+        return -1;
+    }
+    if (!buffer || count == 0) {
+        LOG_ERROR("ATA", "Buffer ou quantidade de setores invalida");
+        return -1;
+    }
 
     uint16_t io = dev->base_port;
 
     if (ata_wait_ready(io) != 0) return -1;
 
-    outb(io + ATA_REG_CTRL, 0x02);
+    outb(dev->ctrl_port, 0x02);
     ata_delay(io);
 
     ata_select_drive(io, dev->slave);

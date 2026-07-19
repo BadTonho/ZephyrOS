@@ -30,10 +30,18 @@ IRQ 15
 irq_common_stub:
     pusha
     ; Mantem a pilha alinhada com registers_t usado pelo C.
-    push gs
-    push fs
-    push es
-    push ds
+    xor eax, eax
+    mov ax, gs
+    push eax
+    xor eax, eax
+    mov ax, fs
+    push eax
+    xor eax, eax
+    mov ax, es
+    push eax
+    xor eax, eax
+    mov ax, ds
+    push eax
 
     mov ax, 0x10
     mov ds, ax
@@ -45,10 +53,14 @@ irq_common_stub:
     call irq_handler
     add esp, 4
 
-    pop ds
-    pop es
-    pop fs
-    pop gs
+    pop eax
+    mov ds, ax
+    pop eax
+    mov es, ax
+    pop eax
+    mov fs, ax
+    pop eax
+    mov gs, ax
     popa
     add esp, 8
     sti

@@ -27,6 +27,7 @@
 #define ATA_CMD_READ   0x20
 #define ATA_CMD_WRITE  0x30
 #define ATA_CMD_IDENTIFY 0xEC
+#define ATA_WAIT_LIMIT 100000U
 
 typedef struct {
     uint16_t base_port;
