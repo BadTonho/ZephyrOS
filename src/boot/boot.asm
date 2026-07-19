@@ -144,20 +144,33 @@ detect_memory:
 
 set_vesa_mode:
     ; Query mode info for 800x600x32 (VESA mode 0x115)
-    ; es is already 0 from start
-    mov di, 0x7E00
+    push es
+    xor ax, ax
+    mov es, ax
+    mov di, 0x7E00             ; temp buffer for VESA mode info (256 bytes)
     mov ax, 0x4F01
-    mov cx, 0x115
+    mov cx, 0x115              ; 800x600x32
     int 0x10
+    pop es
 
-    ; Check if mode supported (bit 0) and linear framebuffer (bit 7)
-    test word [0x7E00], 0x81
+    ; Check if mode is supported (bit 0 of ModeAttributes)
+    test word [0x7E00], 0x01
+    jz .vesa_fail
+
+    ; Check if linear framebuffer is supported (bit 7)
+    test word [0x7E00], 0x80
     jz .vesa_fail
 
     ; Save framebuffer info at VESA_INFO (0x7000)
-    mov eax, [0x7E00 + 40]     ; PhysBasePtr
+    ; Offset 0: framebuffer address (32-bit)
+    ; Offset 4: pitch (16-bit)
+    ; Offset 6: width (16-bit)
+    ; Offset 8: height (16-bit)
+    ; Offset 10: bpp (8-bit)
+    ; Offset 11: initialized flag (8-bit)
+    mov eax, [0x7E00 + 40]     ; PhysBasePtr at offset 40
     mov [VESA_INFO], eax
-    mov ax, [0x7E00 + 16]      ; BytesPerScanLine
+    mov ax, [0x7E00 + 16]      ; BytesPerScanLine (pitch)
     mov [VESA_INFO + 4], ax
     mov ax, [0x7E00 + 18]      ; XResolution
     mov [VESA_INFO + 6], ax
@@ -165,15 +178,16 @@ set_vesa_mode:
     mov [VESA_INFO + 8], ax
     mov al, [0x7E00 + 25]      ; BitsPerPixel
     mov [VESA_INFO + 10], al
-    mov byte [VESA_INFO + 11], 1
+    mov byte [VESA_INFO + 11], 1 ; initialized = true
 
-    ; Set VESA mode 0x115 with linear framebuffer
+    ; Set VESA mode 0x115 with linear framebuffer (bit 14 = 0x4000)
     mov ax, 0x4F02
-    mov bx, 0x4115
+    mov bx, 0x4115             ; 0x115 | 0x4000
     int 0x10
     ret
 
 .vesa_fail:
+    ; VESA not available, mark as not initialized
     mov byte [VESA_INFO + 11], 0
     ret
 

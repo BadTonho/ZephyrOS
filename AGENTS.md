@@ -22,6 +22,12 @@ Ferramentas (Windows):
 
 ---
 
+## Regra #0: NÃO MEXER NO BOOT
+
+NÃO edite, otimize, reduza ou modifique `src/boot/boot.asm` sem perguntar ao usuário primeiro. O boot sector tem limites rígidos (512 bytes) e o usuário é responsável por alterações nesse arquivo.
+
+---
+
 ## Regra #1: Log de Erros
 
 TODA função que pode falhar DEVE ter log.
