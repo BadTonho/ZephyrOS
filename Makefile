@@ -1,4 +1,4 @@
-# Makefile para MiniOS
+# Makefile para ZephyrOS
 
 # Ferramentas
 NASM = nasm
@@ -141,7 +141,7 @@ ICONS_OBJ = build/icons.o
 
 # Output
 KERNEL_BIN = build/kernel.bin
-OS_IMG = build/minios.img
+OS_IMG = build/zephyros.img
 
 # Todas as variáveis de objetos
 OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(SWITCH_OBJ) \

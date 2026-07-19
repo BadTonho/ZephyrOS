@@ -153,7 +153,7 @@ void settings_draw(void) {
     video_fill_rect(0, 0, 80, 25, ' ', 0x07);
 
     video_fill_rect(0, 0, 80, 1, ' ', 0x1F);
-    video_print_at(30, 0, " Configuracoes do MiniOS ", 0x1F);
+    video_print_at(30, 0, " Configuracoes do ZephyrOS ", 0x1F);
 
     video_fill_rect(0, 1, 25, 24, ' ', 0x07);
     video_draw_box(0, 1, 25, 23, 0x08);
@@ -339,8 +339,8 @@ static void execute_system_action(int option) {
     switch (option) {
         case 0:
             video_clear();
-            video_print_at(10, 10, "MiniOS v0.1", 0x0F);
-            video_print_at(10, 12, "Computador: MiniOS-PC", 0x07);
+            video_print_at(10, 10, "ZephyrOS v0.1", 0x0F);
+            video_print_at(10, 12, "Computador: ZephyrOS-PC", 0x07);
             video_print_at(10, 14, "Pressione Esc para voltar", 0x08);
             break;
         case 1: {
@@ -393,7 +393,7 @@ static void execute_system_action(int option) {
 static void execute_about_action(int option) {
     video_clear();
     if (option == 0) {
-        video_print_at(10, 8, "MiniOS v0.1", 0x0F);
+        video_print_at(10, 8, "ZephyrOS v0.1", 0x0F);
         video_print_at(10, 10, "Sistema Operacional Educacional", 0x07);
         video_print_at(10, 12, "Desenvolvido em C e Assembly x86", 0x07);
         video_print_at(10, 14, "VGA Text Mode 80x25", 0x07);

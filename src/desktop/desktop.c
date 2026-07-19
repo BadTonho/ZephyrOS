@@ -55,7 +55,7 @@ void desktop_draw(void) {
     video_fill_rect(0, 0, 80, 24, ' ', DESKTOP_BG_COLOR);
 
     video_fill_rect(0, 0, 80, 1, ' ', 0x1F);
-    video_print_at(30, 0, " MiniOS Desktop ", 0x1F);
+    video_print_at(30, 0, " ZephyrOS Desktop ", 0x1F);
 
     desktop_draw_icons();
 }

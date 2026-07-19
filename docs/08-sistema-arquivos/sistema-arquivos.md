@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-O MiniOS usa um sistema de arquivos com interface unificada que suporta **FAT12** e **FAT32**, além de formatos de arquivo como **BMP** e **WAV**.
+O ZephyrOS usa um sistema de arquivos com interface unificada que suporta **FAT12** e **FAT32**, além de formatos de arquivo como **BMP** e **WAV**.
 
 ## Arquivos
 
@@ -23,7 +23,7 @@ src/fs/
 
 ### O que é ATA?
 
-**ATA** (AT Attachment) é o padrão para comunicação com discos rígidos. O MiniOS usa o modo **PIO** (Programmed I/O), onde o CPU lê/escreve dados diretamente via portas.
+**ATA** (AT Attachment) é o padrão para comunicação com discos rígidos. O ZephyrOS usa o modo **PIO** (Programmed I/O), onde o CPU lê/escreve dados diretamente via portas.
 
 ### Portas de Comunicação
 

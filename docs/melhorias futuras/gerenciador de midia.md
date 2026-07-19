@@ -1,4 +1,4 @@
-# Gerenciador de Mídia — MiniOS v0.1
+# Gerenciador de Mídia — ZephyrOS v0.1
 
 ## Resumo de Progresso
 

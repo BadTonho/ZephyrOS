@@ -1,4 +1,4 @@
-# Atualizações do Sistema — MiniOS v0.1
+# Atualizações do Sistema — ZephyrOS v0.1
 
 ## Resumo de Progresso
 
@@ -104,13 +104,13 @@
 ### 2.1 Header de Versão
 
 - [ ] Criar arquivo `src/include/version.h`
-- [ ] Definir `#define MINIOS_VERSION "0.2.0"` (ou próxima versão)
-- [ ] Definir `#define MINIOS_VERSION_MAJOR 0`
-- [ ] Definir `#define MINIOS_VERSION_MINOR 2`
-- [ ] Definir `#define MINIOS_VERSION_PATCH 0`
-- [ ] Definir `#define MINIOS_BUILD_DATE __DATE__ __TIME__`
-- [ ] Definir `#define MINIOS_BUILD_NUMBER` (auto-increment ou timestamp)
-- [ ] Criar função `version_get_string()` retorna "MiniOS vX.Y.Z"
+- [ ] Definir `#define ZEPHYROS_VERSION "0.2.0"` (ou próxima versão)
+- [ ] Definir `#define ZEPHYROS_VERSION_MAJOR 0`
+- [ ] Definir `#define ZEPHYROS_VERSION_MINOR 2`
+- [ ] Definir `#define ZEPHYROS_VERSION_PATCH 0`
+- [ ] Definir `#define ZEPHYROS_BUILD_DATE __DATE__ __TIME__`
+- [ ] Definir `#define ZEPHYROS_BUILD_NUMBER` (auto-increment ou timestamp)
+- [ ] Criar função `version_get_string()` retorna "ZephyrOS vX.Y.Z"
 - [ ] Criar função `version_compare(v1, v2)` retorna -1, 0, 1
 - [ ] Criar função `version_is_newer(current, available)` retorna bool
 - [ ] Integrar com `kernel.c` para mostrar versão no boot
@@ -141,7 +141,7 @@
 ### 3.1 Design do Formato
 
 - [ ] Criar módulo `src/updater/package.c` e `package.h`
-- [ ] Definir extensão: `.minios` ou `.mup` (MiniOS Update Package)
+- [ ] Definir extensão: `.zephyros` ou `.mup` (ZephyrOS Update Package)
 - [ ] Criar struct `package_header_t`:
   ```
   - magic[4]        = "MUPK"
@@ -176,17 +176,17 @@
 - [ ] Empacotar arquivos com header + entries + dados
 - [ ] Opcionalmente comprimir cada arquivo com LZSS
 - [ ] Calcular checksums e preencher header
-- [ ] Gerar pacote `.minios` pronto para upload
+- [ ] Gerar pacote `.zephyros` pronto para upload
 
 ### 3.3 Manifesto de Atualização
 
 - [ ] Criar formato `update-manifest.txt`:
   ```
-  # MiniOS Update Manifest
+  # ZephyrOS Update Manifest
   version=0.2.0
   previous=0.1.0
   description=Correções de bugs e novas funcionalidades
-  author=MiniOS Team
+  author=ZephyrOS Team
   reboot_required=yes
   # Arquivos incluídos:
   file:kernel.bin
@@ -308,9 +308,9 @@
 - [ ] Compilar kernel + boot loader
 - [ ] Criar filesystem FAT12
 - [ ] Montar ISO com mkisofs
-- [ ] Gerar `minios-vX.Y.Z.iso`
+- [ ] Gerar `zephyros-vX.Y.Z.iso`
 - [ ] Criar checksum SHA256 da ISO
-- [ ] Criar `minios-vX.Y.Z.iso.sha256`
+- [ ] Criar `zephyros-vX.Y.Z.iso.sha256`
 
 ---
 
@@ -386,20 +386,20 @@
 - [ ] Criar repositório no GitHub para releases
 - [ ] Organizar releases por versão (v0.1.0, v0.2.0, etc.)
 - [ ] Incluir em cada release:
-  - [ ] `minios-vX.Y.Z.iso` — ISO de instalação
-  - [ ] `minios-vX.Y.Z.minios` — Pacote de atualização
-  - [ ] `minios-vX.Y.Z.iso.sha256` — Checksum da ISO
-  - [ ] `minios-vX.Y.Z.minios.sha256` — Checksum do pacote
+  - [ ] `zephyros-vX.Y.Z.iso` — ISO de instalação
+  - [ ] `zephyros-vX.Y.Z.zephyros` — Pacote de atualização
+  - [ ] `zephyros-vX.Y.Z.iso.sha256` — Checksum da ISO
+  - [ ] `zephyros-vX.Y.Z.zephyros.sha256` — Checksum do pacote
   - [ ] `CHANGELOG.md` — Lista de mudanças
   - [ ] `README.md` — Instruções de instalação/atualização
 
 ### 7.2 Download Manual (Sem Rede)
 
 - [ ] Criar instruções no README para download manual
-- [ ] Usuário baixa `.minios` do GitHub no PC
+- [ ] Usuário baixa `.zephyros` do GitHub no PC
 - [ ] Copia para pendrive FAT12
-- [ ] No MiniOS, monta pendrive e instala
-- [ ] Criar comando `update install /mnt/pendrive/update.minios`
+- [ ] No ZephyrOS, monta pendrive e instala
+- [ ] Criar comando `update install /mnt/pendrive/update.zephyros`
 
 ### 7.3 Future: Download Automático (Com Rede)
 
@@ -419,7 +419,7 @@
   ```json
   {
     "latest": "0.2.0",
-    "url": "https://github.com/.../releases/download/v0.2.0/minios-v0.2.0.minios",
+    "url": "https://github.com/.../releases/download/v0.2.0/zephyros-v0.2.0.zephyros",
     "sha256": "abc123...",
     "size": 102400,
     "changelog": "Correções de bugs..."
@@ -444,7 +444,7 @@
 | Download | Manual | Sem rede (future: RTL8139 + TCP/IP) |
 | Versão mínima | 0.1.0 | Primeira versão release |
 | Rollback | Último backup | Sem versionamento completo |
-| Formato de pacote | .minios | Proprietário (não compatível com outros SOs) |
+| Formato de pacote | .zephyros | Proprietário (não compatível com outros SOs) |
 | Instalação | Disco inteiro | Sem particionamento avançado |
 | Boot | BIOS only | Sem suporte UEFI |
 | Rede | Nenhum | Sem driver de NIC, sem TCP/IP |
@@ -455,11 +455,11 @@
 
 ## Notas de Implementação
 
-1. **Sem rede** — O MiniOS não possui stack de rede. O download de atualizações deve ser manual (usuário baixa no PC e copia para pendrive). Para download automático, seria necessário implementar driver de NIC + TCP/IP.
+1. **Sem rede** — O ZephyrOS não possui stack de rede. O download de atualizações deve ser manual (usuário baixa no PC e copia para pendrive). Para download automático, seria necessário implementar driver de NIC + TCP/IP.
 
-2. **ISO vs Image** — O Makefile atual gera uma raw disk image (`minios.img`), não uma ISO. Para criar ISO, seria necessário usar `mkisofs` ou `genisoimage` com El Torito boot.
+2. **ISO vs Image** — O Makefile atual gera uma raw disk image (`zephyros.img`), não uma ISO. Para criar ISO, seria necessário usar `mkisofs` ou `genisoimage` com El Torito boot.
 
-3. **Formato proprietário** — O pacote `.minios` é um formato proprietário simples (header + file entries + data). Não usa formats existentes como .deb, .rpm, ou .appx.
+3. **Formato proprietário** — O pacote `.zephyros` é um formato proprietário simples (header + file entries + data). Não usa formats existentes como .deb, .rpm, ou .appx.
 
 4. **Backup limitado** — O sistema mantém apenas 3 backups para economizar espaço em disco (FAT12 tem limite de 224 arquivos no root).
 

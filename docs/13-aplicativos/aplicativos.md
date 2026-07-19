@@ -1,6 +1,6 @@
 # 13 - Aplicativos
 
-Aplicativos do MiniOS: Editor, Media Player, File Manager e Task Manager.
+Aplicativos do ZephyrOS: Editor, Media Player, File Manager e Task Manager.
 
 ## Arquivos
 
@@ -147,7 +147,7 @@ typedef enum {
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                   MiniOS Media Player                       │
+│                   ZephyrOS Media Player                       │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │   Estado: PLAYING                                           │
@@ -284,7 +284,7 @@ typedef struct {
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    MiniOS Explorer                          │
+│                    ZephyrOS Explorer                          │
 ├─────────────────────────────────────────────────────────────┤
 │ F1=Ajuda F3=Ver F5=Atualizar F7=Novo F8=Excluir Esc=Sair  │
 ├─────────────────────────────────────────────────────────────┤

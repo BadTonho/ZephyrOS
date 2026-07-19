@@ -69,8 +69,8 @@ void taskmgr_close(void) {
     taskbar_remove_app(TB_APP_TASKMGR);
     keyboard_set_callback(prev_callback);
     video_clear();
-    video_print("MiniOS Shell\n\n", 0x0B);
-    video_print("minios> ", 0x0A);
+    video_print("ZephyrOS Shell\n\n", 0x0B);
+    video_print("zephyr> ", 0x0A);
     taskbar_draw();
 }
 
@@ -138,7 +138,7 @@ static void draw_bar(int x, int y, int w, uint32_t filled, uint32_t total, uint8
 }
 
 static void draw_header(void) {
-    print_at(TSKMGR_START_X + 2, TSKMGR_START_Y + 1, "MiniOS Task Manager", COLOR_TITLE);
+    print_at(TSKMGR_START_X + 2, TSKMGR_START_Y + 1, "ZephyrOS Task Manager", COLOR_TITLE);
     print_at(TSKMGR_START_X + TSKMGR_WIDTH - 22, TSKMGR_START_Y + 1, "Fechar: ESC", COLOR_BORDER);
 
     const char* tabs[] = {"[Processos]", "[Memoria]", "[Threads]"};

@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-O MiniOS suporta **processos** (com espaço de memória próprio) e **threads** (compartilham memória).
+O ZephyrOS suporta **processos** (com espaço de memória próprio) e **threads** (compartilham memória).
 
 ## Arquivos
 

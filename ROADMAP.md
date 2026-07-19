@@ -1,4 +1,4 @@
-# MiniOS - Roadmap de Desenvolvimento
+# ZephyrOS - Roadmap de Desenvolvimento
 
 Sistema operacional em C + Assembly (x86), do zero.
 
@@ -74,7 +74,7 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 - [x] Terminal interativo com input via teclado
 - [x] Parser de comandos (split comando + argumentos)
-- [x] Prompt `minios>` colorido
+- [x] Prompt `zephyr>` colorido
 - [x] 13 comandos disponíveis
 
 ### Comandos

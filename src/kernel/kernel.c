@@ -27,7 +27,7 @@ void kernel_main(uint32_t mmap_addr) {
 
     video_set_color(VGA_COLOR_CYAN, VGA_COLOR_BLACK);
     video_print("========================================\n", 0x0B);
-    video_print("           MiniOS v0.1                  \n", 0x0B);
+    video_print("           ZephyrOS v0.1                 \n", 0x0B);
     video_print("========================================\n", 0x0B);
 
     video_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
@@ -187,7 +187,7 @@ void kernel_main(uint32_t mmap_addr) {
     video_print("[OK] Gerenciador de janelas pronto\n", 0x07);
 
     video_set_color(VGA_COLOR_YELLOW, VGA_COLOR_BLACK);
-    video_print("\nMiniOS pronto! Digite 'help' para comandos.\n", 0x0E);
+    video_print("\nZephyrOS pronto! Digite 'help' para comandos.\n", 0x0E);
 
     video_set_color(VGA_COLOR_WHITE, VGA_COLOR_BLACK);
 

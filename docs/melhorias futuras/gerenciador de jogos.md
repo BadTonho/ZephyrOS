@@ -1,4 +1,4 @@
-# Gerenciador de Jogos — MiniOS v0.1
+# Gerenciador de Jogos — ZephyrOS v0.1
 
 ## Resumo de Progresso
 
@@ -119,7 +119,7 @@
 
 ### 2.2 Formato de Jogo
 
-- [ ] Criar formato `.miniosgame` para pacotes de jogos
+- [ ] Criar formato `.zephyrosgame` para pacotes de jogos
 - [ ] Criar struct `game_package_t`:
   ```
   - magic[4]        = "MGME"
@@ -456,7 +456,7 @@
 
 ## Notas de Implementação
 
-1. **Sem mouse** — O MiniOS funciona apenas com teclado PS/2. Jogos devem ser navegáveis por teclado. Gamepad via serial seria uma extensão futura.
+1. **Sem mouse** — O ZephyrOS funciona apenas com teclado PS/2. Jogos devem ser navegáveis por teclado. Gamepad via serial seria uma extensão futura.
 
 2. **FPS limitado a 50** — O PIT roda a 50 Hz, então FPS máximo é 50. Para jogos mais rápidos, seria necessário usar RDTSC ou aumentar frequência do PIT.
 
@@ -468,11 +468,11 @@
 
 6. **Double buffering** — Para jogos smooth, seria necessário implementar double buffering (renderizar em buffer off-screen, depois copiar para tela). Isto requer memória extra (resolução × bpp × 2).
 
-7. **Formato de jogo** — O `.miniosgame` é um formato proprietário simples (header + ELF binary + assets). Não é compatível com outros sistemas.
+7. **Formato de jogo** — O `.zephyrosgame` é um formato proprietário simples (header + ELF binary + assets). Não é compatível com outros sistemas.
 
 8. **Screenshots em BMP** — BMP é simples mas grande. Compressão RLE reduziria tamanho mas增加了复杂性。
 
-9. **Gamepad via serial** — Ports 0x200-0x207 são para gameports legacy. Muitos emuladores (QEMU, VirtualBox) suportam gamepad via USB emulada, mas o MiniOS não tem driver USB.
+9. **Gamepad via serial** — Ports 0x200-0x207 são para gameports legacy. Muitos emuladores (QEMU, VirtualBox) suportam gamepad via USB emulada, mas o ZephyrOS não tem driver USB.
 
 10. **Integração existente** — O PCSista já fornece FPS counter e hardware monitoring. O Game Overlay estende isso com elementos específicos para jogos.
 

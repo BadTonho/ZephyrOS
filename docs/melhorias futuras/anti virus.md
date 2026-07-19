@@ -1,4 +1,4 @@
-# Anti-Virus — MiniOS v0.1
+# Anti-Virus — ZephyrOS v0.1
 
 ## Resumo de Progresso
 
@@ -410,7 +410,7 @@
 ### 6.1 Janela Principal
 
 - [ ] Criar módulo `src/security/antivirus_ui.c` e `antivirus_ui.h`
-- [ ] Criar janela "MiniOS Anti-Virus"
+- [ ] Criar janela "ZephyrOS Anti-Virus"
 - [ ] Mostrar status atual: "Protegido" ou "Em risco"
 - [ ] Mostrar: Último scan, Ameaças encontradas, Arquivos escaneados
 - [ ] Botão: "Scan Rápido" (F4)
@@ -586,7 +586,7 @@
 
 ## Notas de Implementação
 
-1. **Sem rede** — O MiniOS não possui stack de rede. Atualizações de assinaturas devem ser manuais (usuário baixa no PC e copia para pendrive).
+1. **Sem rede** — O ZephyrOS não possui stack de rede. Atualizações de assinaturas devem ser manuais (usuário baixa no PC e copia para pendrive).
 
 2. **MD5 em vez de SHA-256** — SHA-256 é mais seguro mas requer mais computação. MD5 é suficiente para um anti-vírus educacional. Para uso real, SHA-256 seria necessário.
 

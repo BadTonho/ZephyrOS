@@ -7,7 +7,7 @@ MEMORY_MAP    equ 0x8000
     jmp short start
     nop
 
-bpb_oem:            db "MINI    "
+bpb_oem:            db "ZEPHYR  "
 bpb_bytes_per_sec:  dw 512
 bpb_sec_per_clust: db 1
 bpb_reserved_secs:  dw 1
@@ -24,7 +24,7 @@ bpb_drive_num:      db 0
 bpb_reserved:       db 0
 bpb_signature:      db 0x29
 bpb_volume_id:      dd 0x12345678
-bpb_volume_label:   db "MINIOS     "
+bpb_volume_label:   db "ZEPHYROS   "
 bpb_filesystem:     db "FAT12   "
 
 start:
@@ -176,7 +176,7 @@ gdt_descriptor:
 BOOT_DRIVE: db 0
 mmap_count: dd 0
 
-msg_boot:    db "[Boot] Iniciando MiniOS...", 13, 10, 0
+msg_boot:    db "[Boot] Iniciando ZephyrOS...", 13, 10, 0
 msg_mem:     db "[Boot] Detectando memoria...", 13, 10, 0
 msg_load:    db "[Boot] Carregando kernel...", 13, 10, 0
 msg_done:    db "[Boot] Kernel carregado!", 13, 10, 0

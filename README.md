@@ -1,4 +1,4 @@
-# MiniOS
+# ZephyrOS
 
 Sistema operacional do zero em C + Assembly (x86), com o objetivo de ser um OS real e funcional.
 
@@ -347,7 +347,7 @@ O shell inicia automaticamente após a inicialização do sistema.
 ## Troubleshooting
 
 ### "Nenhum disco encontrado"
-O QEMU precisa de uma imagem de disco. O Makefile já gera `build/minios.img`.
+O QEMU precisa de uma imagem de disco. O Makefile já gera `build/zephyros.img`.
 
 ### "FAT12 não encontrado"
 A imagem precisa ter partição FAT12. Para testar, crie uma imagem FAT12 separada ou use um floppy virtual.

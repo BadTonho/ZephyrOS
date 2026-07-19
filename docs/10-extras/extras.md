@@ -116,7 +116,7 @@ Syscalls são a forma como processos de usuário pedem serviços ao kernel.
 
 ### Implementação Atual
 
-O MiniOS tem uma implementação básica via interrupções:
+O ZephyrOS tem uma implementação básica via interrupções:
 
 ```nasm
 ; Exemplo de syscall

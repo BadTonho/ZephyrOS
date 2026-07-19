@@ -1,4 +1,4 @@
-# Gerenciador de Rede — MiniOS v0.1
+# Gerenciador de Rede — ZephyrOS v0.1
 
 ## Resumo de Progresso
 
@@ -416,7 +416,7 @@
   - method[8]     = "GET"
   - url[256]      = "/index.html"
   - host[128]     = "example.com"
-  - headers[][64] = {"User-Agent: MiniOS/0.1"}
+  - headers[][64] = {"User-Agent: ZephyrOS/0.1"}
   - body[]        = NULL
   ```
 - [ ] Criar struct `http_response_t`:
@@ -747,7 +747,7 @@
 
 1. **RTL8139 como driver inicial** — O RTL8139 é o NIC mais comum em emuladores (QEMU, VirtualBox, Bochs). É simples de implementar e suporta 100 Mbps Fast Ethernet.
 
-2. **Sem WiFi** — O MiniOS não suporta WiFi. Seria necessário driver para chip WiFi (RTL8188, Intel Wireless, etc.) que é muito mais complexo que Ethernet.
+2. **Sem WiFi** — O ZephyrOS não suporta WiFi. Seria necessário driver para chip WiFi (RTL8188, Intel Wireless, etc.) que é muito mais complexo que Ethernet.
 
 3. **TCP/IP simplificado** — O stack TCP/IP é educacional. Não suporta todas as opções RFC (window scaling, SACK, ECN, etc.). É suficiente para HTTP básico e downloads.
 

@@ -1,4 +1,4 @@
-# Gerenciador de Dispositivos — MiniOS v0.1
+# Gerenciador de Dispositivos — ZephyrOS v0.1
 
 ## Resumo de Progresso
 
@@ -479,7 +479,7 @@
 
 ## Notas de Implementação
 
-1. **Drivers existentes** — O MiniOS já possui drivers de baixo nível para PCI, ATA, Teclado, AC97, PC Speaker, VGA, VESA, Timer, IDT/PIC e TSS. Estes são compilados estaticamente no kernel.
+1. **Drivers existentes** — O ZephyrOS já possui drivers de baixo nível para PCI, ATA, Teclado, AC97, PC Speaker, VGA, VESA, Timer, IDT/PIC e TSS. Estes são compilados estaticamente no kernel.
 
 2. **Sem drivers dinâmicos** — O sistema é monolítico. Não há mecanismo de carregar drivers em runtime. Para implementar gerenciamento real, seria necessário criar um sistema de módulos.
 
@@ -489,7 +489,7 @@
 
 5. **Sem rede** — Não há stack de rede. Windows Update, drivers online e exportação remota não são possíveis.
 
-6. **Adaptação do conceito** — O documento original descreve o Device Manager do Windows. Para o MiniOS, o conceito é adaptado para um gerenciador de dispositivos que mostra o hardware detectado e permite operações básicas.
+6. **Adaptação do conceito** — O documento original descreve o Device Manager do Windows. Para o ZephyrOS, o conceito é adaptado para um gerenciador de dispositivos que mostra o hardware detectado e permite operações básicas.
 
 7. **Integração existente** — Os dados já estão disponíveis nos structs dos drivers (pci_device_t, ata_device_t, ac97_device_t). A interface TUI precisa apenas ler e exibir esses dados de forma organizada.
 

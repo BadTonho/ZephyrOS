@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-O MiniOS gerencia memória em duas camadas:
+O ZephyrOS gerencia memória em duas camadas:
 
 1. **Física** — Alocador de páginas (bitmap)
 2. **Virtual** — Paging (page tables)

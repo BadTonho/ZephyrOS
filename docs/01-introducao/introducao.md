@@ -2,9 +2,9 @@
 
 ## Visão Geral
 
-O MiniOS é um sistema operacional desenvolvido do zero em C + Assembly (x86), com o objetivo de ser funcional e completo o suficiente para uso real. O projeto começou como exercício educacional e evoluiu para um OS com ambições de produção.
+O ZephyrOS é um sistema operacional desenvolvido do zero em C + Assembly (x86), com o objetivo de ser funcional e completo o suficiente para uso real. O projeto começou como exercício educacional e evoluiu para um OS com ambições de produção.
 
-## O que o MiniOS faz
+## O que o ZephyrOS faz
 
 - Inicia sozinho (bootloader → Protected Mode)
 - Gerencia memória (detecção E820, bitmap allocator, heap, paging)

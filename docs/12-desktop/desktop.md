@@ -1,6 +1,6 @@
 # 12 - Desktop e Interface
 
-Ambiente desktop do MiniOS com gerenciador de janelas, barra de tarefas, configurações e ícones.
+Ambiente desktop do ZephyrOS com gerenciador de janelas, barra de tarefas, configurações e ícones.
 
 ## Arquivos
 
@@ -30,7 +30,7 @@ Os ícones são organizados em grade (5 colunas):
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    MiniOS Desktop                           │
+│                    ZephyrOS Desktop                           │
 │                                                             │
 │  [Shell]    [Explorer]  [TaskMgr]                           │
 │                                                             │

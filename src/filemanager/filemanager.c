@@ -141,7 +141,7 @@ static void fm_go_forward(void) {
 
 static void fm_draw_title_bar(void) {
     video_fill_rect(0, 0, 80, 1, ' ', FM_TITLE_BAR_COLOR);
-    video_print_at(30, 0, " MiniOS Explorer ", FM_TITLE_BAR_COLOR);
+    video_print_at(30, 0, " ZephyrOS Explorer ", FM_TITLE_BAR_COLOR);
 }
 
 static void fm_draw_menu_bar(void) {
@@ -312,7 +312,7 @@ static void fm_draw_help(void) {
     video_draw_box(10, 3, 60, 19, 0x07);
     video_fill_rect(11, 4, 58, 17, ' ', 0x07);
 
-    video_print_at(28, 4, "MiniOS Explorer - Ajuda", 0x0F);
+    video_print_at(28, 4, "ZephyrOS Explorer - Ajuda", 0x0F);
     video_draw_hline(11, 5, 58, 0xC4, 0x07);
 
     video_print_at(13, 7,  "Setas      Navegar na lista", 0x07);

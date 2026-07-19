@@ -2,11 +2,11 @@
 
 ## Visão Geral
 
-O MiniOS é organizado em camadas, cada uma responsável por uma parte específica do sistema.
+O ZephyrOS é organizado em camadas, cada uma responsável por uma parte específica do sistema.
 
 ```
 ┌─────────────────────────────────────┐
-│            Shell (minios>)          │  ← Interface com o usuário
+│            Shell (zephyr>)           │  ← Interface com o usuário
 ├─────────────────────────────────────┤
 │         Sistema de Arquivos         │  ← FAT12, leitura/escrita
 ├─────────────────────────────────────┤

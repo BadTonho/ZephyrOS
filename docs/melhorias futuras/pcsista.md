@@ -221,7 +221,7 @@
 - [ ] Criar função `hwmon_get_thread_count()` retorna threads ativas
 - [ ] Criar função `hwmon_get_irq_count()` retorna interrupções processadas
 - [ ] Criar função `hwmon_get_timer_freq()` retorna frequência do PIT (50 Hz)
-- [ ] Criar função `hwmon_get_kernel_version()` retorna "MiniOS v0.1"
+- [ ] Criar função `hwmon_get_kernel_version()` retorna "ZephyrOS v0.1"
 - [ ] Criar função `hwmon_get_boot_time()` retorna timestamp do boot
 
 ---
@@ -448,7 +448,7 @@
 
 1. **FPS Limitado a 50** — O PIT roda a 50 Hz, então o FPS máximo mensurável é 50. Para FPS mais alto, seria necessário usar RDTSC ou aumentar a frequência do PIT.
 
-2. **Sem hardware real** — O MiniOS roda em emuladores (QEMU, VirtualBox) que não expõem sensores de temperatura, fan speed, ou GPU stats. As funções de hardware monitoring são placeholders.
+2. **Sem hardware real** — O ZephyrOS roda em emuladores (QEMU, VirtualBox) que não expõem sensores de temperatura, fan speed, ou GPU stats. As funções de hardware monitoring são placeholders.
 
 3. **Overlay em VGA** — O overlay usa caracteres VGA, não pixels. Transparência é limitada a fundo preto/transparente. VESA overlay seria mais flexível mas requer mais memória.
 
@@ -456,7 +456,7 @@
 
 5. **RDTSC** — Para medir frequência do CPU com precisão, seria necessário usar a instrução RDTSC (Time Stamp Counter). Isto requer detecção de suporte via CPUID.
 
-6. **Sem multi-core** — O MiniOS roda em modo real (single-core). CPU monitoring é simplificado (sem per-core stats).
+6. **Sem multi-core** — O ZephyrOS roda em modo real (single-core). CPU monitoring é simplificado (sem per-core stats).
 
 7. **Persistência** — Configurações do PCSista podem ser salvas em arquivo se o filesystem suportar. Caso contrário, ficam em memória (perdidas no reboot).
 

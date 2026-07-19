@@ -18,7 +18,7 @@
 ### Interface do painel
 - ✅ Tela de categorias (sidebar esquerda). *(settings.c:155-167)*
 - ✅ Painel de opções (área direita). *(settings.c:169-197)*
-- ✅ Barra de título "Configurações do MiniOS". *(settings.c:155-156)*
+- ✅ Barra de título "Configurações do ZephyrOS". *(settings.c:155-156)*
 - ✅ Barra de status com atalhos. *(settings.c:199-200)*
 - ✅ Navegação por Tab entre categorias. *(settings.c:507-516)*
 - ✅ Navegação por setas nas opções. *(settings.c:518-536)*
@@ -32,7 +32,7 @@
 > Objetivo: Configurações de sistema, janelas, taskbar e ícones.
 
 ### 1. Sistema
-- ✅ Nome do computador. *(settings.c:94-95 — exibe "MiniOS v0.1")*
+- ✅ Nome do computador. *(settings.c:94-95 — exibe "ZephyrOS v0.1")*
 - ✅ Informações de memória. *(settings.c:97-98 — total/livre/usado em KB)*
 - ✅ Lista de processos ativos. *(settings.c:100-101 — lista com PID/nome/estado)*
 - ✅ Reiniciar o computador. *(settings.c:103-104 — outb 0xFE, 0x64)*
@@ -422,7 +422,7 @@
 - ⬜ Definir dispositivos padrão de entrada e saída.
 
 ### 15. Sobre
-- ✅ Versão. *(settings.c:122-124 — "MiniOS v0.1")*
+- ✅ Versão. *(settings.c:122-124 — "ZephyrOS v0.1")*
 - ✅ Créditos. *(settings.c:125-127 — Kernel, Drivers, FS, Interface)*
 
 ### 16. Ferramentas clássicas

@@ -43,7 +43,7 @@ O buffer armazena até 255 caracteres + null terminator.
 ### Prompt
 
 ```
-minios> _
+zephyr> _
 ```
 
 O prompt é verde (`0x0A`) e aparece após cada comando.
@@ -112,7 +112,7 @@ int shell_process_command(const char* input) {
 Mostra a lista de todos os comandos.
 
 ```
-minios> help
+zephyr> help
 Comandos disponiveis:
   help      - Mostra esta mensagem
   clear     - Limpa a tela
@@ -143,7 +143,7 @@ Limpa a tela e volta ao topo.
 Lista todos os arquivos no disco FAT12.
 
 ```
-minios> ls
+zephyr> ls
 Arquivos no disco:
   ARQUIVO.TXT  128 bytes
   DADOS.DAT    256 bytes
@@ -153,7 +153,7 @@ Arquivos no disco:
 Exibe o conteúdo de um arquivo de texto.
 
 ```
-minios> cat ARQUIVO.TXT
+zephyr> cat ARQUIVO.TXT
 Olá, este é o conteúdo do arquivo!
 ```
 
@@ -161,7 +161,7 @@ Olá, este é o conteúdo do arquivo!
 Imprime texto na tela.
 
 ```
-minios> echo Ola Mundo
+zephyr> echo Ola Mundo
 Ola Mundo
 ```
 
@@ -169,7 +169,7 @@ Ola Mundo
 Mostra informações de memória.
 
 ```
-minios> mem
+zephyr> mem
 Memoria:
   Total: 128 MB
   Livre: 120 MB
@@ -180,7 +180,7 @@ Memoria:
 Lista todos os processos ativos.
 
 ```
-minios> procs
+zephyr> procs
 Processos ativos:
   PID 1  idle  RUNNING
   PID 2  shell  RUNNING
@@ -191,7 +191,7 @@ Total: 2 processos
 Lista todas as threads ativas.
 
 ```
-minios> threads
+zephyr> threads
 Threads ativas:
   TID 1  main  RUNNING
   TID 2  timer  BLOCKED
@@ -202,7 +202,7 @@ Total: 2 threads
 Mostra o tempo desde que o sistema foi ligado.
 
 ```
-minios> uptime
+zephyr> uptime
 Uptime: 2h 30m 15s
 ```
 
@@ -210,15 +210,15 @@ Uptime: 2h 30m 15s
 Toca um beep pelo PC Speaker.
 
 ```
-minios> beep          → Beep padrão (800Hz, 200ms)
-minios> beep 440 500  → 440 Hz por 500ms
+zephyr> beep          → Beep padrão (800Hz, 200ms)
+zephyr> beep 440 500  → 440 Hz por 500ms
 ```
 
 ### `melody`
 Toca uma escala musical (C4→C5).
 
 ```
-minios> melody
+zephyr> melody
 Tocando melodia...
 Melodia concluida!
 ```
@@ -233,7 +233,7 @@ Desliga o computador (para o CPU).
 Abre o gerenciador de arquivos estilo Windows Explorer (TUI).
 
 ```
-minios> explorer
+zephyr> explorer
 ```
 
 Navegação com setas, F3 visualizar, F7 criar, F8 excluir com confirmação, F2 renomear.
@@ -242,14 +242,14 @@ Navegação com setas, F3 visualizar, F7 criar, F8 excluir com confirmação, F2
 Ativa o ambiente desktop com ícones e menu Iniciar.
 
 ```
-minios> desktop
+zephyr> desktop
 ```
 
 ### `taskman`
 Abre o gerenciador de tarefas com monitoramento de processos, threads, CPU e memória.
 
 ```
-minios> taskman
+zephyr> taskman
 ```
 
 Guias: Processos, CPU, Memória e Threads.
@@ -258,7 +258,7 @@ Guias: Processos, CPU, Memória e Threads.
 Editor de texto com syntax highlighting e word wrap.
 
 ```
-minios> edit TESTE.TXT
+zephyr> edit TESTE.TXT
 ```
 
 Funcionalidades:
@@ -282,23 +282,23 @@ Teclas:
 Reproduz um arquivo de áudio WAV via AC97.
 
 ```
-minios> play MUSICA.WAV
+zephyr> play MUSICA.WAV
 ```
 
 ### `compress on|off|status`
 Gerencia o módulo de compressão de RAM.
 
 ```
-minios> compress on      → Ativa compressão
-minios> compress off     → Desativa
-minios> compress status  → Mostra estatísticas
+zephyr> compress on      → Ativa compressão
+zephyr> compress off     → Desativa
+zephyr> compress status  → Mostra estatísticas
 ```
 
 ### `settings`
-Abre o sistema de configurações do MiniOS.
+Abre o sistema de configurações do ZephyrOS.
 
 ```
-minios> settings
+zephyr> settings
 ```
 
 Categorias: Tela, Barra de Tarefas, Janelas, Ícones, Sistema, Som, Sobre.
@@ -354,7 +354,7 @@ Gerenciador de arquivos estilo Windows Explorer.
 
 ```
 ┌──────────────────────────────────────────────┐
-│           MiniOS Explorer                     │
+│                    ZephyrOS Explorer                     │
 ├──────────────────────────────────────────────┤
 │ F1=Ajuda F3=Ver F5=Atualizar F7=Novo F8=Exc │
 ├──────┬─────────┬──────────┬──────────────────┤
