@@ -140,21 +140,21 @@ static void fm_go_forward(void) {
 }
 
 static void fm_draw_title_bar(void) {
-    video_fill_rect(0, 0, 80, 1, ' ', FM_TITLE_BAR_COLOR);
-    video_print_at(30, 0, " ZephyrOS Explorer ", FM_TITLE_BAR_COLOR);
+    video_fill_rect(0, 0, SCREEN_COLS, 1, ' ', FM_TITLE_BAR_COLOR);
+    video_print_at((SCREEN_COLS - 20) / 2, 0, " ZephyrOS Explorer ", FM_TITLE_BAR_COLOR);
 }
 
 static void fm_draw_menu_bar(void) {
-    video_fill_rect(0, 1, 80, 1, ' ', 0x70);
+    video_fill_rect(0, 1, SCREEN_COLS, 1, ' ', 0x70);
     video_print_at(1, 1, "F1=Ajuda F3=Ver F5=Atualizar F7=Novo F8=Excluir Esc=Sair", 0x70);
 }
 
 static void fm_draw_address_bar(void) {
-    video_fill_rect(0, 2, 80, 1, ' ', FM_ADDRESS_COLOR);
+    video_fill_rect(0, 2, SCREEN_COLS, 1, ' ', FM_ADDRESS_COLOR);
     video_print_at(1, 2, ">", FM_ADDRESS_COLOR);
 
     if (state.address_mode) {
-        video_fill_rect(3, 2, 76, 1, ' ', FM_ADDRESS_INPUT_COLOR);
+        video_fill_rect(3, 2, SCREEN_COLS - 4, 1, ' ', FM_ADDRESS_INPUT_COLOR);
         video_print_at(3, 2, state.address_buffer, FM_ADDRESS_INPUT_COLOR);
     } else {
         char display_path[78];
@@ -167,14 +167,14 @@ static void fm_draw_address_bar(void) {
         } else {
             display_path[2] = '\\';
             int di = 3;
-            for (int i = 0; state.current_path[i] && di < 76; i++) {
+            for (int i = 0; state.current_path[i] && di < SCREEN_COLS - 4; i++) {
                 display_path[di++] = state.current_path[i];
             }
             display_path[di] = '\0';
         }
 
         int plen = str_len(display_path);
-        video_fill_rect(3, 2, 76, 1, ' ', FM_ADDRESS_COLOR);
+        video_fill_rect(3, 2, SCREEN_COLS - 4, 1, ' ', FM_ADDRESS_COLOR);
         video_print_at(3, 2, display_path, FM_ADDRESS_COLOR);
 
         if (state.current_path[0] != '\0') {
@@ -184,51 +184,51 @@ static void fm_draw_address_bar(void) {
 }
 
 static void fm_draw_column_headers(void) {
-    video_fill_rect(0, 3, 80, 1, ' ', 0x07);
+    video_fill_rect(0, 3, SCREEN_COLS, 1, ' ', 0x07);
     video_print_at(2, 3, "Nome", 0x0F);
     video_print_at(22, 3, "Tamanho", 0x0F);
     video_print_at(35, 3, "Tipo", 0x0F);
-    video_draw_hline(0, 4, 80, 0xC4, 0x07);
+    video_draw_hline(0, 4, SCREEN_COLS, 0xC4, 0x07);
 }
 
 static void fm_draw_separator_bottom(void) {
-    video_draw_hline(0, 22, 80, 0xC4, 0x07);
+    video_draw_hline(0, SCREEN_ROWS - 3, SCREEN_COLS, 0xC4, 0x07);
 }
 
 static void fm_draw_status_bar(void) {
-    video_fill_rect(0, 23, 80, 1, ' ', FM_STATUS_COLOR);
+    video_fill_rect(0, SCREEN_ROWS - 2, SCREEN_COLS, 1, ' ', FM_STATUS_COLOR);
 
     if (state.file_count == 0) {
-        video_print_at(2, 23, "Nenhum arquivo encontrado", FM_STATUS_COLOR);
+        video_print_at(2, SCREEN_ROWS - 2, "Nenhum arquivo encontrado", FM_STATUS_COLOR);
         return;
     }
 
-    video_print_at(2, 23, "Arquivo: ", FM_STATUS_COLOR);
+    video_print_at(2, SCREEN_ROWS - 2, "Arquivo: ", FM_STATUS_COLOR);
 
     if (state.selected >= 0 && state.selected < state.file_count) {
         fm_file_entry_t* f = &state.files[state.selected];
-        video_print_at(11, 23, f->name, FM_STATUS_COLOR);
+        video_print_at(11, SCREEN_ROWS - 2, f->name, FM_STATUS_COLOR);
 
         if (f->is_dir) {
-            video_print_at(24, 23, "| Pasta", FM_STATUS_COLOR);
+            video_print_at(24, SCREEN_ROWS - 2, "| Pasta", FM_STATUS_COLOR);
         } else {
-            video_print_at(24, 23, "| Arquivo | ", FM_STATUS_COLOR);
+            video_print_at(24, SCREEN_ROWS - 2, "| Arquivo | ", FM_STATUS_COLOR);
             char buf[16];
             int_to_str(f->size, buf);
-            video_print_at(36, 23, buf, FM_STATUS_COLOR);
+            video_print_at(36, SCREEN_ROWS - 2, buf, FM_STATUS_COLOR);
             int blen = str_len(buf);
-            video_print_at(36 + blen, 23, " bytes", FM_STATUS_COLOR);
+            video_print_at(36 + blen, SCREEN_ROWS - 2, " bytes", FM_STATUS_COLOR);
         }
     }
 
-    video_print_at(60, 23, "Sel: ", FM_STATUS_COLOR);
+    video_print_at(60, SCREEN_ROWS - 2, "Sel: ", FM_STATUS_COLOR);
     char buf[8];
     int_to_str(state.selected + 1, buf);
-    video_print_at(65, 23, buf, FM_STATUS_COLOR);
+    video_print_at(65, SCREEN_ROWS - 2, buf, FM_STATUS_COLOR);
     int blen = str_len(buf);
-    video_print_at(65 + blen, 23, "/", FM_STATUS_COLOR);
+    video_print_at(65 + blen, SCREEN_ROWS - 2, "/", FM_STATUS_COLOR);
     int_to_str(state.file_count, buf);
-    video_print_at(66 + blen, 23, buf, FM_STATUS_COLOR);
+    video_print_at(66 + blen, SCREEN_ROWS - 2, buf, FM_STATUS_COLOR);
 }
 
 static void fm_refresh_files(void) {
@@ -269,7 +269,7 @@ static void fm_draw_file_list(void) {
 
             if (file_idx == state.selected) {
                 name_color = FM_SELECTED_COLOR;
-                video_fill_rect(0, row, 80, 1, ' ', FM_SELECTED_COLOR);
+                video_fill_rect(0, row, SCREEN_COLS, 1, ' ', FM_SELECTED_COLOR);
             }
 
             video_put_char_at(icon->ch, name_color, 2, row);
@@ -352,8 +352,8 @@ static void fm_draw_confirm_delete(void) {
 
 static void fm_draw_view_file(void) {
     video_clear();
-    video_fill_rect(0, 0, 80, 1, ' ', 0x1F);
-    video_print_at(30, 0, " Visualizando Arquivo ", 0x1F);
+    video_fill_rect(0, 0, SCREEN_COLS, 1, ' ', 0x1F);
+    video_print_at((SCREEN_COLS - 22) / 2, 0, " Visualizando Arquivo ", 0x1F);
 
     if (state.selected < 0 || state.selected >= state.file_count) return;
 
@@ -404,7 +404,7 @@ static void fm_draw_view_file(void) {
     buffer[bytes] = '\0';
     int row = 2;
     int col = 0;
-    for (int i = 0; i < bytes && row < 23; i++) {
+    for (int i = 0; i < bytes && row < SCREEN_ROWS - 2; i++) {
         if (buffer[i] == '\n') {
             col = 0;
             row++;
@@ -412,19 +412,19 @@ static void fm_draw_view_file(void) {
             col = 0;
         } else if (buffer[i] == '\t') {
             col = (col + 8) & ~7;
-            if (col >= 78) { col = 0; row++; }
+            if (col >= SCREEN_COLS - 2) { col = 0; row++; }
         } else {
             video_put_char_at(buffer[i], 0x07, col, row);
             col++;
-            if (col >= 78) {
+            if (col >= SCREEN_COLS - 2) {
                 col = 0;
                 row++;
             }
         }
     }
 
-    video_fill_rect(0, 23, 80, 1, ' ', 0x70);
-    video_print_at(2, 23, "Pressione Esc para voltar", 0x70);
+    video_fill_rect(0, SCREEN_ROWS - 2, SCREEN_COLS, 1, ' ', 0x70);
+    video_print_at(2, SCREEN_ROWS - 2, "Pressione Esc para voltar", 0x70);
 
     kfree(buffer);
 }

@@ -174,13 +174,13 @@ void settings_close(void) {
 }
 
 void settings_draw(void) {
-    video_fill_rect(0, 0, 80, 25, ' ', 0x07);
+    video_fill_rect(0, 0, SCREEN_COLS, SCREEN_ROWS, ' ', 0x07);
 
-    video_fill_rect(0, 0, 80, 1, ' ', 0x1F);
-    video_print_at(30, 0, " Configuracoes do ZephyrOS ", 0x1F);
+    video_fill_rect(0, 0, SCREEN_COLS, 1, ' ', 0x1F);
+    video_print_at((SCREEN_COLS - 28) / 2, 0, " Configuracoes do ZephyrOS ", 0x1F);
 
-    video_fill_rect(0, 1, 25, 24, ' ', 0x07);
-    video_draw_box(0, 1, 25, 23, 0x08);
+    video_fill_rect(0, 1, 25, SCREEN_ROWS - 1, ' ', 0x07);
+    video_draw_box(0, 1, 25, SCREEN_ROWS - 3, 0x08);
 
     for (int i = 0; i < SETTINGS_CAT_COUNT; i++) {
         uint8_t color = (selected_category == i) ? 0x1F : 0x07;
@@ -190,10 +190,10 @@ void settings_draw(void) {
         video_print_at(2, 2 + i, categories[i].name, color);
     }
 
-    video_draw_box(26, 1, 53, 23, 0x08);
+    video_draw_box(26, 1, SCREEN_COLS - 28, SCREEN_ROWS - 3, 0x08);
 
     video_print_at(28, 2, categories[selected_category].name, 0x0F);
-    video_draw_hline(27, 3, 51, 0xC4, 0x08);
+    video_draw_hline(27, 3, SCREEN_COLS - 30, 0xC4, 0x08);
 
     settings_page_t* page = &categories[selected_category];
 
@@ -201,7 +201,7 @@ void settings_draw(void) {
         uint8_t color = 0x07;
         if (selected_option == i) {
             color = editing_option ? 0x1E : 0x1F;
-            video_fill_rect(27, 4 + i, 51, 1, ' ', editing_option ? 0x1E : 0x1F);
+            video_fill_rect(27, 4 + i, SCREEN_COLS - 30, 1, ' ', editing_option ? 0x1E : 0x1F);
         }
 
         video_print_at(28, 4 + i, page->options[i].name, color);
@@ -221,8 +221,8 @@ void settings_draw(void) {
         }
     }
 
-    video_draw_hline(27, 22, 51, 0xC4, 0x08);
-    video_print_at(28, 23, "Tab:Categorias  Enter:Alterar  Esc:Fechar", 0x08);
+    video_draw_hline(27, SCREEN_ROWS - 3, SCREEN_COLS - 30, 0xC4, 0x08);
+    video_print_at(28, SCREEN_ROWS - 2, "Tab:Categorias  Enter:Alterar  Esc:Fechar", 0x08);
 }
 
 static void apply_taskbar_settings(void) {

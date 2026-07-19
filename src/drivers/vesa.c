@@ -1,171 +1,48 @@
 #include "drivers/vesa.h"
-#include "core/memory.h"
-#include "core/video.h"
-#include "core/log.h"
 #include "drivers/font.h"
-#include "core/panic.h"
+#include "core/log.h"
 
 static vesa_mode_t current_mode;
 
-static void memset(void* dst, uint8_t val, uint32_t size) {
+static void* memset_simple(void* dst, uint8_t val, uint32_t size) {
     uint8_t* d = (uint8_t*)dst;
     for (uint32_t i = 0; i < size; i++) {
         d[i] = val;
     }
+    return dst;
 }
 
-static uint8_t vesa_info_block[512];
-static uint8_t vesa_mode_block[256];
-
-static uint16_t best_mode = 0;
-static uint32_t best_width = 0;
-static uint32_t best_height = 0;
-
-static void (*bios_call)(void) = 0;
-
-static void try_mode(uint16_t mode, uint32_t width, uint32_t height, uint32_t bpp) {
-    uint16_t* mode_info = (uint16_t*)vesa_mode_block;
-
-    mode_info[0] = mode;
-
-    asm volatile(
-        "int $0x10"
-        :
-        : "a"(0x4F01), "c"(mode), "D"(vesa_mode_block)
-    );
-
-    uint8_t supported = mode_info[0] & 0x01;
-    if (!supported) return;
-
-    uint8_t mem_model = (mode_info[28] >> 4) & 0x0F;
-    if (mem_model != 4 && mem_model != 6) return;
-
-    if (width >= best_width && height >= best_height) {
-        best_mode = mode;
-        best_width = width;
-        best_height = height;
-    }
-}
-
-static void vesa_scan_modes(void) {
-    best_mode = 0;
-    best_width = 0;
-    best_height = 0;
-
-    asm volatile(
-        "int $0x10"
-        :
-        : "a"(0x4F00), "D"(vesa_info_block)
-    );
-
-    uint16_t* info = (uint16_t*)vesa_info_block;
-    if (info[0] != 0x4F55) return;
-
-    uint32_t mode_ptr = info[2] | ((uint32_t)info[3] << 16);
-    uint16_t* modes = (uint16_t*)mode_ptr;
-
-    for (int i = 0; modes[i] != 0xFFFF; i++) {
-        uint16_t mode = modes[i] & 0x1FF;
-
-        if (mode == 0x101) try_mode(mode, 640, 480, 32);
-        else if (mode == 0x103) try_mode(mode, 800, 600, 32);
-        else if (mode == 0x105) try_mode(mode, 1024, 768, 32);
-        else if (mode == 0x107) try_mode(mode, 1280, 1024, 32);
-        else if (mode == 0x112) try_mode(mode, 640, 480, 32);
-        else if (mode == 0x114) try_mode(mode, 800, 600, 32);
-        else if (mode == 0x115) try_mode(mode, 1024, 768, 32);
-        else if (mode == 0x118) try_mode(mode, 1024, 768, 32);
-        else if (mode == 0x11B) try_mode(mode, 1280, 1024, 32);
-        else if (mode == 0x164) try_mode(mode, 1280, 1024, 32);
-        else if (mode == 0x165) try_mode(mode, 1600, 1200, 32);
-        else if (mode == 0x166) try_mode(mode, 1600, 1200, 32);
-        else if (mode == 0x167) try_mode(mode, 1600, 1200, 32);
-        else if (mode == 0x168) try_mode(mode, 1600, 1200, 32);
-        else if (mode == 0x169) try_mode(mode, 1600, 1200, 32);
-        else if (mode == 0x16C) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x16D) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x16E) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x16F) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x170) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x171) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x172) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x173) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x174) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x175) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x176) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x177) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x178) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x179) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x17A) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x17B) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x17C) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x17D) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x17E) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x17F) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x180) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x181) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x182) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x183) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x184) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x185) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x186) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x187) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x188) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x189) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x18A) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x18B) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x18C) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x18D) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x18E) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x18F) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x190) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x191) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x192) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x193) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x194) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x195) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x196) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x197) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x198) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x199) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x19A) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x19B) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x19C) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x19D) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x19E) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x19F) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x1A0) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x1A1) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x1A2) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x1A3) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x1A4) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x1A5) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x1A6) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x1A7) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x1A8) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x1A9) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x1AA) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x1AB) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x1AC) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x1AD) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x1AE) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x1AF) try_mode(mode, 1920, 1200, 32);
-        else if (mode == 0x1B0) try_mode(mode, 1920, 1200, 32);
-    }
-}
-
-void vesa_init(void) {
+void vesa_init(uint32_t boot_info_addr) {
     LOG_INFO("VESA", "Inicializando suporte VESA");
-    memset(&current_mode, 0, sizeof(vesa_mode_t));
+    memset_simple(&current_mode, 0, sizeof(vesa_mode_t));
 
-    LOG_WARN("VESA", "BIOS VESA indisponivel em modo protegido");
+    if (!boot_info_addr) {
+        LOG_ERROR("VESA", "Endereco do boot info nulo");
+        return;
+    }
+
+    vesa_boot_info_t* boot = (vesa_boot_info_t*)boot_info_addr;
+
+    if (!boot->initialized) {
+        LOG_WARN("VESA", "VESA nao disponivel no boot");
+        return;
+    }
+
+    current_mode.width = boot->width;
+    current_mode.height = boot->height;
+    current_mode.bpp = boot->bpp;
+    current_mode.pitch = boot->pitch;
+    current_mode.framebuffer = (uint32_t*)(uint32_t)boot->framebuffer_addr;
+    current_mode.initialized = 1;
+
+    LOG_INFO("VESA", "Framebuffer detectado");
 }
 
 void vesa_set_mode(uint32_t width, uint32_t height, uint32_t bpp) {
     (void)width;
     (void)height;
     (void)bpp;
-    LOG_WARN("VESA", "Troca de modo desabilitada sem thunk BIOS");
+    LOG_WARN("VESA", "Troca de modo desabilitada em runtime");
 }
 
 void vesa_put_pixel(uint32_t x, uint32_t y, vesa_color_t color) {

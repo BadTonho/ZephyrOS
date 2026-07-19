@@ -295,8 +295,8 @@ static void editor_do_word_wrap(uint32_t line_idx) {
 void editor_init(void) {
     memset(&editor, 0, sizeof(editor_t));
     editor.running = 0;
-    editor.view_width = 80;
-    editor.view_height = 23;
+    editor.view_width = SCREEN_COLS;
+    editor.view_height = SCREEN_ROWS - 1;
     editor.encoding = EDITOR_ENCODING_ASCII;
     editor.line_ending = EDITOR_LF;
     editor.syntax_mode = EDITOR_SYNTAX_NONE;
@@ -598,8 +598,8 @@ static void editor_draw(void) {
 
     status[pos] = '\0';
 
-    video_print_at(0, 24, "                                                                                          ", 0x08);
-    video_print_at(0, 24, status, 0x08);
+    video_print_at(0, SCREEN_ROWS - 1, "                                                                                          ", 0x08);
+    video_print_at(0, SCREEN_ROWS - 1, status, 0x08);
 }
 
 static void editor_insert_char(char c) {

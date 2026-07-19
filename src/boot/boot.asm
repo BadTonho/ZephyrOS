@@ -3,6 +3,7 @@
 
 KERNEL_OFFSET equ 0x10000
 MEMORY_MAP    equ 0x8000
+VESA_INFO     equ 0x7000
 E820_ENTRY_SIZE equ 24
 
 %ifndef KERNEL_SECTORS
@@ -103,6 +104,8 @@ start:
     dec word [remaining]
     jmp .read_loop
 
+    call set_vesa_mode
+
 .read_done:
     lgdt [gdt_descriptor]
     mov eax, cr0
@@ -139,6 +142,41 @@ detect_memory:
     mov [MEMORY_MAP - 4], eax
     ret
 
+set_vesa_mode:
+    ; Query mode info for 800x600x32 (VESA mode 0x115)
+    ; es is already 0 from start
+    mov di, 0x7E00
+    mov ax, 0x4F01
+    mov cx, 0x115
+    int 0x10
+
+    ; Check if mode supported (bit 0) and linear framebuffer (bit 7)
+    test word [0x7E00], 0x81
+    jz .vesa_fail
+
+    ; Save framebuffer info at VESA_INFO (0x7000)
+    mov eax, [0x7E00 + 40]     ; PhysBasePtr
+    mov [VESA_INFO], eax
+    mov ax, [0x7E00 + 16]      ; BytesPerScanLine
+    mov [VESA_INFO + 4], ax
+    mov ax, [0x7E00 + 18]      ; XResolution
+    mov [VESA_INFO + 6], ax
+    mov ax, [0x7E00 + 20]      ; YResolution
+    mov [VESA_INFO + 8], ax
+    mov al, [0x7E00 + 25]      ; BitsPerPixel
+    mov [VESA_INFO + 10], al
+    mov byte [VESA_INFO + 11], 1
+
+    ; Set VESA mode 0x115 with linear framebuffer
+    mov ax, 0x4F02
+    mov bx, 0x4115
+    int 0x10
+    ret
+
+.vesa_fail:
+    mov byte [VESA_INFO + 11], 0
+    ret
+
 print16:
     pusha
 .lp:
@@ -169,6 +207,7 @@ protected_mode:
     mov ss, ax
     mov esp, 0x90000
     mov esi, MEMORY_MAP
+    mov edi, VESA_INFO
     call KERNEL_OFFSET
     jmp $
 

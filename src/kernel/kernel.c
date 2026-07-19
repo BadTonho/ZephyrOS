@@ -23,9 +23,42 @@
 #include "ui/wm.h"
 #include "ui/icons.h"
 
-void kernel_main(uint32_t mmap_addr) {
+void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
+    vesa_init(vesa_info_addr);
+    font_init();
     video_init();
     log_init();
+
+    vesa_mode_t* vmode = vesa_get_mode();
+    if (vmode && vmode->initialized) {
+        video_print("[OK] VESA framebuffer ativo\n", 0x0A);
+        video_print("[OK] Modo: ", 0x07);
+        char res_buf[16];
+        uint32_t num = vmode->width;
+        int i = 0;
+        if (num == 0) { res_buf[i++] = '0'; }
+        else {
+            char tmp[16];
+            int j = 0;
+            while (num > 0) { tmp[j++] = '0' + (num % 10); num /= 10; }
+            while (j > 0) { res_buf[i++] = tmp[--j]; }
+        }
+        res_buf[i] = 'x';
+        i++;
+        num = vmode->height;
+        if (num == 0) { res_buf[i++] = '0'; }
+        else {
+            char tmp[16];
+            int j = 0;
+            while (num > 0) { tmp[j++] = '0' + (num % 10); num /= 10; }
+            while (j > 0) { res_buf[i++] = tmp[--j]; }
+        }
+        res_buf[i] = '\0';
+        video_print(res_buf, 0x0B);
+        video_print("x32\n", 0x07);
+    } else {
+        video_print("[!!] VESA nao encontrado, usando VGA fallback\n", 0x0C);
+    }
 
     video_set_color(VGA_COLOR_CYAN, VGA_COLOR_BLACK);
     video_print("========================================\n", 0x0B);
@@ -122,39 +155,6 @@ void kernel_main(uint32_t mmap_addr) {
     video_print("[..] Iniciando PC Speaker...\n", 0x08);
     speaker_init();
     video_print("[OK] PC Speaker pronto\n", 0x07);
-
-    video_print("[..] Iniciando VESA...\n", 0x08);
-    font_init();
-    vesa_init();
-    vesa_mode_t* vmode = vesa_get_mode();
-    if (vmode && vmode->initialized) {
-        video_print("[OK] VESA ", 0x07);
-        char res_buf[16];
-        uint32_t num = vmode->width;
-        int i = 0;
-        if (num == 0) { res_buf[i++] = '0'; }
-        else {
-            char tmp[16];
-            int j = 0;
-            while (num > 0) { tmp[j++] = '0' + (num % 10); num /= 10; }
-            while (j > 0) { res_buf[i++] = tmp[--j]; }
-        }
-        res_buf[i] = 'x';
-        i++;
-        num = vmode->height;
-        if (num == 0) { res_buf[i++] = '0'; }
-        else {
-            char tmp[16];
-            int j = 0;
-            while (num > 0) { tmp[j++] = '0' + (num % 10); num /= 10; }
-            while (j > 0) { res_buf[i++] = tmp[--j]; }
-        }
-        res_buf[i] = '\0';
-        video_print(res_buf, 0x07);
-        video_print("x32\n", 0x07);
-    } else {
-        video_print("[!!] VESA nao encontrado\n", 0x0C);
-    }
 
     video_print("[..] Iniciando AC97...\n", 0x08);
     ac97_init();

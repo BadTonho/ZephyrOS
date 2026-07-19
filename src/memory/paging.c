@@ -3,6 +3,7 @@
 #include "core/video.h"
 #include "core/panic.h"
 #include "core/log.h"
+#include "drivers/vesa.h"
 
 static page_directory_t* current_directory = 0;
 
@@ -101,6 +102,16 @@ void paging_init(void) {
 
     for (uint32_t i = 0xB8000; i < 0xC0000; i += PAGE_SIZE) {
         paging_map_page(i, i, 0x03);
+    }
+
+    vesa_mode_t* mode = vesa_get_mode();
+    if (mode && mode->initialized) {
+        uint32_t fb_phys = (uint32_t)mode->framebuffer;
+        uint32_t fb_size = mode->pitch * mode->height;
+        for (uint32_t i = fb_phys; i < fb_phys + fb_size; i += PAGE_SIZE) {
+            paging_map_page(i, i, 0x03);
+        }
+        LOG_INFO("MEM", "Framebuffer mapeado na pagina");
     }
 
     paging_switch_directory(dir);

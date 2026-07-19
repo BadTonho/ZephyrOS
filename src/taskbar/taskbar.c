@@ -18,7 +18,7 @@ static tb_config_t config = {
     .pinned = 1,
     .custom_x = 0,
     .custom_y = 0,
-    .width = 80,
+    .width = SCREEN_COLS,
     .height = 1
 };
 
@@ -64,13 +64,13 @@ static void update_dimensions(void) {
     switch (config.position) {
         case TB_POS_BOTTOM:
         case TB_POS_TOP:
-            config.width = 80;
+            config.width = SCREEN_COLS;
             config.height = 1;
             break;
         case TB_POS_LEFT:
         case TB_POS_RIGHT:
             config.width = 1;
-            config.height = 25;
+            config.height = SCREEN_ROWS;
             break;
         case TB_POS_CUSTOM:
             config.width = 40;
@@ -94,15 +94,15 @@ void taskbar_init(void) {
 static int get_row(void) {
     if (config.position == TB_POS_BOTTOM || config.position == TB_POS_CUSTOM) {
         if (config.position == TB_POS_CUSTOM) return config.custom_y;
-        return 24;
+        return SCREEN_ROWS - 1;
     }
     if (config.position == TB_POS_TOP) return 0;
-    return 24;
+    return SCREEN_ROWS - 1;
 }
 
 static int get_col(void) {
     if (config.position == TB_POS_LEFT) return 0;
-    if (config.position == TB_POS_RIGHT) return 79;
+    if (config.position == TB_POS_RIGHT) return SCREEN_COLS - 1;
     if (config.position == TB_POS_CUSTOM) return config.custom_x;
     return 0;
 }
@@ -122,7 +122,7 @@ void taskbar_draw(void) {
     int is_horizontal = (config.position == TB_POS_BOTTOM || config.position == TB_POS_TOP || config.position == TB_POS_CUSTOM);
 
     if (is_horizontal) {
-        video_fill_rect(col, row, 80, 1, ' ', 0x07);
+        video_fill_rect(col, row, SCREEN_COLS, 1, ' ', 0x07);
 
         int x = col + 1;
 
@@ -135,7 +135,7 @@ void taskbar_draw(void) {
         int icon_chars = get_icon_char_count();
 
         for (int i = 0; i < button_count; i++) {
-            if (x > 68) break;
+            if (x > SCREEN_COLS - 12) break;
 
             video_put_char_at(' ', 0x07, x, row);
             x++;
@@ -157,12 +157,12 @@ void taskbar_draw(void) {
 
         taskbar_update_clock();
     } else {
-        for (int y = 0; y < 25; y++) {
+        for (int y = 0; y < SCREEN_ROWS; y++) {
             video_put_char_at(0xBA, 0x07, col, y);
         }
 
         video_put_char_at(0xC9, 0x07, col, 0);
-        video_put_char_at(0xC8, 0x07, col, 24);
+        video_put_char_at(0xC8, 0x07, col, SCREEN_ROWS - 1);
 
         video_put_char_at('I', 0x0F, col, 2);
         video_put_char_at('n', 0x0F, col, 3);
@@ -179,11 +179,11 @@ void taskbar_draw(void) {
             while (btn->name[name_len]) name_len++;
 
             int start_y = 9 + i * 2;
-            if (start_y + 1 > 23) break;
+            if (start_y + 1 > SCREEN_ROWS - 2) break;
 
             video_put_char_at('[', color, col, start_y);
             if (name_len > 0) video_put_char_at(btn->name[0], color, col, start_y + 1);
-            video_put_char_at(']', color, col, start_y + 2 < 24 ? start_y + 2 : 23);
+            video_put_char_at(']', color, col, start_y + 2 < SCREEN_ROWS - 1 ? start_y + 2 : SCREEN_ROWS - 2);
         }
 
         taskbar_update_clock();
@@ -220,9 +220,9 @@ void taskbar_update_clock(void) {
     int is_horizontal = (config.position == TB_POS_BOTTOM || config.position == TB_POS_TOP || config.position == TB_POS_CUSTOM);
 
     if (is_horizontal) {
-        video_print_at(70, row, time_str, 0x07);
+        video_print_at(SCREEN_COLS - 10, row, time_str, 0x07);
     } else {
-        int clock_y = 22;
+        int clock_y = SCREEN_ROWS - 5;
         video_put_char_at(time_str[0], 0x07, col, clock_y);
         video_put_char_at(time_str[1], 0x07, col, clock_y + 1);
         video_put_char_at(time_str[2], 0x07, col, clock_y + 2);
@@ -454,7 +454,7 @@ int taskbar_handle_key(uint8_t scancode) {
         return 1;
     }
 
-    if (scancode == 0x38) {
+    if (scancode == 0x5B || scancode == 0x5C) {
         menu_open = 1;
         menu_selection = 0;
         taskbar_draw_menu();

@@ -39,7 +39,16 @@ typedef union {
     vesa_pixel_t channels;
 } vesa_color_t;
 
-void vesa_init(void);
+typedef struct {
+    uint32_t framebuffer_addr;
+    uint16_t pitch;
+    uint16_t width;
+    uint16_t height;
+    uint8_t  bpp;
+    uint8_t  initialized;
+} __attribute__((packed)) vesa_boot_info_t;
+
+void vesa_init(uint32_t boot_info_addr);
 void vesa_set_mode(uint32_t width, uint32_t height, uint32_t bpp);
 void vesa_put_pixel(uint32_t x, uint32_t y, vesa_color_t color);
 vesa_color_t vesa_get_pixel(uint32_t x, uint32_t y);

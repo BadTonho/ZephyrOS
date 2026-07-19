@@ -65,8 +65,8 @@ void wm_set_border_style(int style) {
 }
 
 void wm_draw_desktop(void) {
-    for (int y = 0; y < 24; y++) {
-        for (int x = 0; x < 80; x++) {
+    for (int y = 0; y < SCREEN_ROWS - 1; y++) {
+        for (int x = 0; x < SCREEN_COLS; x++) {
             if ((x + y) % 2 == 0) {
                 video_put_char_at(' ', 0x17, x, y);
             } else {
@@ -210,8 +210,8 @@ void wm_draw_window(int id) {
     if (win->state == WM_STATE_MAXIMIZED) {
         win->x = 0;
         win->y = 0;
-        win->width = 80;
-        win->height = 24;
+        win->width = SCREEN_COLS;
+        win->height = SCREEN_ROWS - 1;
     }
 
     uint8_t border_color = win->focused ? 0x08 : 0x07;
@@ -237,7 +237,7 @@ void wm_draw_window(int id) {
 
     for (int y = win->y + 1; y < win->y + win->height - 1; y++) {
         for (int x = win->x + 1; x < win->x + win->width - 1; x++) {
-            if (x < 80 && y < 24) {
+            if (x < SCREEN_COLS && y < SCREEN_ROWS - 1) {
                 video_put_char_at(' ', 0x07, x, y);
             }
         }

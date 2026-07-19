@@ -2,9 +2,10 @@
 #define TASKBAR_H
 
 #include "types.h"
+#include "core/video.h"
 
 #define TASKBAR_BUTTON_MAX 8
-#define TASKBAR_DEFAULT_ROW 24
+#define TASKBAR_DEFAULT_ROW (SCREEN_ROWS - 1)
 
 typedef enum {
     TB_POS_BOTTOM = 0,

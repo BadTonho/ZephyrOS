@@ -4,8 +4,12 @@
 #include "types.h"
 
 #define VIDEO_MEMORY 0xB8000
-#define VGA_WIDTH 80
-#define VGA_HEIGHT 25
+
+#define VGA_WIDTH  100
+#define VGA_HEIGHT 37
+
+#define SCREEN_COLS VGA_WIDTH
+#define SCREEN_ROWS VGA_HEIGHT
 
 #define VGA_COLOR_BLACK 0
 #define VGA_COLOR_BLUE 1
