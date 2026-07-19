@@ -109,7 +109,7 @@ set_vesa_mode:
     mov es, ax
     mov di, VESA_MODE_INFO
     mov ax, 0x4F01
-    mov cx, 0x115
+    mov cx, 0x118
     int 0x10
     pop es
 
@@ -132,7 +132,7 @@ set_vesa_mode:
     mov [VESA_INFO + 10], al
 
     mov ax, 0x4F02
-    mov bx, 0x4115
+    mov bx, 0x4118
     int 0x10
     cmp ax, 0x004F
     jne .fail

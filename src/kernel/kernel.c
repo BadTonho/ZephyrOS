@@ -55,7 +55,15 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         }
         res_buf[i] = '\0';
         video_print(res_buf, 0x0B);
-        video_print("x32\n", 0x07);
+        video_print("x", 0x07);
+        if (vmode->bpp == VESA_BPP_24) {
+            video_print("24", 0x07);
+        } else if (vmode->bpp == VESA_BPP_32) {
+            video_print("32", 0x07);
+        } else {
+            video_print("??", 0x0C);
+        }
+        video_print(" bpp\n", 0x07);
     } else {
         video_print("[!!] VESA nao encontrado, usando VGA fallback\n", 0x0C);
     }

@@ -28,6 +28,12 @@ void vesa_init(uint32_t boot_info_addr) {
         return;
     }
 
+    if (!boot->framebuffer_addr || !boot->width || !boot->height ||
+        !boot->pitch || (boot->bpp != 24 && boot->bpp != 32)) {
+        LOG_ERROR("VESA", "Parametros de framebuffer invalidos");
+        return;
+    }
+
     current_mode.width = boot->width;
     current_mode.height = boot->height;
     current_mode.bpp = boot->bpp;
@@ -49,8 +55,16 @@ void vesa_put_pixel(uint32_t x, uint32_t y, vesa_color_t color) {
     if (!current_mode.initialized) return;
     if (x >= current_mode.width || y >= current_mode.height) return;
 
-    uint32_t offset = y * (current_mode.pitch / 4) + x;
-    current_mode.framebuffer[offset] = color.raw;
+    uint8_t* row = (uint8_t*)current_mode.framebuffer + y * current_mode.pitch;
+    if (current_mode.bpp == 24) {
+        uint8_t* pixel = row + x * 3;
+        pixel[0] = color.channels.blue;
+        pixel[1] = color.channels.green;
+        pixel[2] = color.channels.red;
+        return;
+    }
+
+    ((uint32_t*)row)[x] = color.raw;
 }
 
 vesa_color_t vesa_get_pixel(uint32_t x, uint32_t y) {
@@ -59,18 +73,37 @@ vesa_color_t vesa_get_pixel(uint32_t x, uint32_t y) {
     if (!current_mode.initialized) return c;
     if (x >= current_mode.width || y >= current_mode.height) return c;
 
-    uint32_t offset = y * (current_mode.pitch / 4) + x;
-    c.raw = current_mode.framebuffer[offset];
+    uint8_t* row = (uint8_t*)current_mode.framebuffer + y * current_mode.pitch;
+    if (current_mode.bpp == 24) {
+        uint8_t* pixel = row + x * 3;
+        c.channels.blue = pixel[0];
+        c.channels.green = pixel[1];
+        c.channels.red = pixel[2];
+        c.channels.alpha = 0xFF;
+        return c;
+    }
+
+    c.raw = ((uint32_t*)row)[x];
     return c;
 }
 
 void vesa_clear(vesa_color_t color) {
     if (!current_mode.initialized) return;
 
-    uint32_t pixels_per_row = current_mode.pitch / 4;
     for (uint32_t y = 0; y < current_mode.height; y++) {
-        for (uint32_t x = 0; x < current_mode.width; x++) {
-            current_mode.framebuffer[y * pixels_per_row + x] = color.raw;
+        uint8_t* row = (uint8_t*)current_mode.framebuffer + y * current_mode.pitch;
+        if (current_mode.bpp == 24) {
+            for (uint32_t x = 0; x < current_mode.width; x++) {
+                uint8_t* pixel = row + x * 3;
+                pixel[0] = color.channels.blue;
+                pixel[1] = color.channels.green;
+                pixel[2] = color.channels.red;
+            }
+        } else {
+            uint32_t* pixels = (uint32_t*)row;
+            for (uint32_t x = 0; x < current_mode.width; x++) {
+                pixels[x] = color.raw;
+            }
         }
     }
 }
@@ -80,8 +113,7 @@ void vesa_fill_rect(uint32_t x, uint32_t y, uint32_t w, uint32_t h, vesa_color_t
 
     for (uint32_t row = y; row < y + h && row < current_mode.height; row++) {
         for (uint32_t col = x; col < x + w && col < current_mode.width; col++) {
-            uint32_t offset = row * (current_mode.pitch / 4) + col;
-            current_mode.framebuffer[offset] = color.raw;
+            vesa_put_pixel(col, row, color);
         }
     }
 }

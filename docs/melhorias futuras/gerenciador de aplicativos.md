@@ -43,7 +43,7 @@ Estes aplicativos fazem parte do sistema e não precisam ser instalados:
 
 | Aplicativo | Arquivo | Descrição |
 |-----------|---------|-----------|
-| Shell | `src/shell/shell.c` | Terminal interativo com 22+ comandos |
+| Shell | `src/shell/shell.c` | Terminal interativo com 25 comandos |
 | Editor | `src/shell/editor.c` | Editor de texto com syntax highlight |
 | Media Player | `src/shell/mediaplayer.c` | Reprodutor de áudio WAV e visualizador BMP |
 | Task Manager | `src/shell/taskmanager.c` | Monitor de processos, memória e threads |
@@ -52,18 +52,17 @@ Estes aplicativos fazem parte do sistema e não precisam ser instalados:
 | Desktop | `src/desktop/desktop.c` | Ambiente desktop com ícones |
 | Window Manager | `src/wm/wm.c` | Gerenciador de janelas com foco e Z-order |
 | Taskbar | `src/taskbar/taskbar.c` | Barra de tarefas com Menu Iniciar |
-| System Updater | `src/updater/updater.c` | Sistema de atualização do OS |
 
 ### Módulos com funções CLI nativas (TUI é opcional)
 
-Estes módulos têm suas funções core compiladas no kernel e acessíveis via comandos do shell. A interface visual (TUI) é um app opcional distribuído pela Loja:
+Estes módulos terão suas funções core compiladas no kernel e acessíveis via comandos do shell. A interface visual (TUI) é um app opcional distribuído pela Loja:
 
-| Módulo | Funções nativas (shell) | App visual (loja) |
-|--------|------------------------|-------------------|
-| Device Manager | `devices`, `device-info`, `device-scan` | `gerenciador de dispositivos.md` |
-| Game Manager | `games`, `games list/play/info` | `gerenciador de jogos.md` |
-| Media Manager | `play`, `stop`, `pause`, `volume`, `eq` | `gerenciador de midia.md` |
-| Network Manager | `net`, `ifconfig`, `ping`, `wget`, `ftp` | `gerenciador de rede.md` |
+| Módulo | Funções planejadas (shell) | App visual (loja) | Status |
+|--------|---------------------------|-------------------|--------|
+| Device Manager | `devices`, `device-info`, `device-scan` | `gerenciador de dispositivos.md` | ⬜ Não implementado |
+| Game Manager | `games`, `games list/play/info` | `gerenciador de jogos.md` | ⬜ Não implementado |
+| Media Manager | `play`, `stop`, `view` | `gerenciador de midia.md` | 🟡 Parcial (play/stop/view existem) |
+| Network Manager | `net`, `ifconfig`, `ping`, `wget`, `ftp` | `gerenciador de rede.md` | ⬜ Não implementado |
 
 ---
 

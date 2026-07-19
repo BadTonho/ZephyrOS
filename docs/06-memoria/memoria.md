@@ -12,7 +12,8 @@ O ZephyrOS gerencia memória em duas camadas:
 ```
 src/memory/
 ├── memory.c         → Alocador de memória física + heap
-└── paging.c         → Page tables (memória virtual)
+├── paging.c         → Page tables (memória virtual)
+└── compress.c       → Compressão LZSS (compactação de RAM)
 ```
 
 ---

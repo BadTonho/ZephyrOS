@@ -23,7 +23,7 @@
 - ⬜ Mecanismo da GPU utilizado.
 - ⬜ Consumo de energia e tendência de consumo.
 - ⬜ Processos suspensos ou executados em modo de eficiência.
-- ✅ Ordenar as listas clicando nas colunas. *(parcial — colunas existem mas sem sorting por clique)*
+- 🟡 Ordenar as listas clicando nas colunas. *(parcial — colunas existem mas sem sorting por clique)*
 
 ### 2. Controle dos processos
 - ✅ Finalizar tarefa. *(taskmanager.c:435-451 — tecla Delete, protege PID 1)*

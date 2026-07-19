@@ -8,7 +8,7 @@ O shell é a interface que permite ao usuário interagir com o sistema operacion
 
 ```
 src/shell/
-│   ├── shell.c          → Shell interativo com 20+ comandos
+│   ├── shell.c          → Shell interativo com 25 comandos
 │   ├── editor.c         → Editor de texto com syntax highlight
 │   ├── mediaplayer.c    → Media player (WAV)
 │   └── taskmanager.c    → Gerenciador de tarefas
@@ -116,6 +116,9 @@ zephyr> help
 Comandos disponiveis:
   help      - Mostra esta mensagem
   clear     - Limpa a tela
+  desktop   - Abre a area de trabalho
+  settings  - Abre o painel de configuracoes
+  wm        - Abre gerenciador de janelas
   ls        - Lista arquivos
   cat       - Exibe conteudo de arquivo
   echo      - Exibe texto
@@ -125,13 +128,15 @@ Comandos disponiveis:
   uptime    - Mostra tempo ligado
   beep      - Toca um beep (freq duracao_ms)
   melody    - Toca uma melodia
-  explorer  - Abre gerenciador de arquivos (Explorer TUI)
-  desktop   - Abre o ambiente desktop
-  taskman   - Abre o gerenciador de tarefas
-  edit      - Abre o editor de texto (edit ARQUIVO.TXT)
-  play      - Toca arquivo WAV (play MUSICA.WAV)
-  compress  - Gerencia compressao (on/off/status)
-  settings  - Abre configuracoes do sistema
+  explorer  - Abre o gerenciador de arquivos
+  taskmgr   - Abre o gerenciador de tarefas
+  taskcfg   - Configura a barra de tarefas
+  compress  - Liga/desliga compressao de RAM
+  stats     - Mostra estatisticas de compressao
+  play      - Toca arquivo WAV
+  view      - Exibe imagem BMP
+  stop      - Para player de midia
+  edit      - Editor de texto (edit ARQUIVO.TXT)
   reboot    - Reinicia o sistema
   shutdown  - Desliga o sistema
 ```
@@ -292,6 +297,43 @@ Gerencia o módulo de compressão de RAM.
 zephyr> compress on      → Ativa compressão
 zephyr> compress off     → Desativa
 zephyr> compress status  → Mostra estatísticas
+```
+
+### `stats`
+Mostra estatísticas detalhadas de compressão.
+
+```
+zephyr> stats
+```
+
+Exibe: total de compressões, bytes comprimidos, espaço economizado.
+
+### `view <arquivo.bmp>`
+Exibe uma imagem BMP na tela (modo VESA).
+
+```
+zephyr> view IMAGEM.BMP
+```
+
+### `stop`
+Para a reprodução de mídia (áudio WAV em reprodução).
+
+```
+zephyr> stop
+```
+
+### `wm`
+Abre o gerenciador de janelas (Window Manager).
+
+```
+zephyr> wm
+```
+
+### `taskcfg`
+Configura a barra de tarefas (posição, tamanho, fixação).
+
+```
+zephyr> taskcfg
 ```
 
 ### `settings`

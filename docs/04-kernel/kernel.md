@@ -43,20 +43,29 @@ A função `kernel_main()` é o ponto de entrada em C. Ela:
 ### Ordem de Inicialização
 
 ```c
-void kernel_main(uint32_t mmap_addr) {
-    video_init();        // VGA 80x25
-    idt_init();          // Interrupções
-    keyboard_init();     // PS/2
-    timer_init(50);      // PIT 50 Hz
-    memory_init(mmap_addr); // E820 + heap
-    paging_init();       // Page tables
-    tss_init();          // Kernel stack
-    process_init();      // Processos
-    thread_init();       // Threads
-    ata_init();          // Disco
-    fat12_init();        // FAT12
-    speaker_init();      // PC Speaker
-    shell_init();        // Shell interativo
+void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
+    vesa_init(vesa_info_addr);     // Modo gráfico VESA
+    font_init();                   // Fonte bitmap 8x16
+    video_init();                  // VGA 80x25
+    log_init();                    // Sistema de logging
+    idt_init();                    // Interrupções
+    keyboard_init();               // PS/2
+    timer_init(50);                // PIT 50 Hz
+    memory_init(mmap_addr);        // E820 + heap
+    paging_init();                 // Page tables
+    tss_init();                    // Kernel stack
+    process_init();                // Processos
+    thread_init();                 // Threads
+    ata_init();                    // Disco
+    fs_init();                     // FAT12/FAT32
+    speaker_init();                // PC Speaker
+    ac97_init();                   // Driver de áudio
+    icons_init();                  // Ícones
+    taskbar_init();                // Barra de tarefas
+    desktop_init();                // Desktop
+    settings_init();               // Configurações
+    wm_init();                     // Window Manager
+    shell_init();                  // Shell interativo
 }
 ```
 

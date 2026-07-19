@@ -44,7 +44,7 @@ LOG_WARN("MODULO", "Memoria baixa, continuando...");
 LOG_DEBUG("MODULO", "Variavel x = 5");
 ```
 
-Módulos: `BOOT`, `IDT`, `KBD`, `TIMER`, `MEM`, `ATA`, `FAT12`, `FAT32`, `AC97`, `PCI`, `SHELL`, `WM`, `PROC`, `THRD`, `FS`, `DRIVER`, `VIDEO`, `VESA`
+Módulos: `BOOT`, `LOG`, `IDT`, `KBD`, `TIMER`, `MEM`, `ATA`, `VESA`, `FAT12`, `FAT32`, `AC97`, `PCI`, `THRD`, `SHELL`, `WM`, `PROC`, `FS`, `DESKTOP`
 
 ---
 
@@ -122,11 +122,12 @@ Novos arquivos DEVEM seguir esta estrutura:
 src/
 ├── boot/           → Bootloader (ASM)
 ├── kernel/         → Kernel core (entry, panic, switch)
-├── core/           → Serviços centrais (video, log, memory, keyboard, timer)
-├── drivers/        → Drivers de hardware (ata, ac97, pci, vesa, idt, isr, irq)
+├── core/           → Serviços centrais (log)
+├── drivers/        → Drivers de hardware (video, vesa, font, idt, isr, irq, keyboard, timer, tss, ata, speaker, pci, ac97)
 ├── memory/         → Gerenciamento de memória (memory, paging, compress)
 ├── fs/             → Sistema de arquivos (fat12, fat32, fs, wav, bmp)
-├── process/        → Processos e threads (process, thread)
+├── process/        → Gerenciador de processos
+├── thread/         → Gerenciador de threads
 ├── shell/          → Apps do shell (editor, taskmanager, mediaplayer)
 ├── filemanager/    → File Manager
 ├── taskbar/        → Taskbar
@@ -134,16 +135,14 @@ src/
 ├── settings/       → Settings
 ├── wm/             → Window Manager
 ├── icons/          → Sistema de ícones
-├── ui/             → Headers de interface (taskbar.h, desktop.h, settings.h, wm.h)
-├── apps/           → Framework de apps (app.h, registry, loader)
 └── include/        → Headers organizados por módulo
     ├── core/       → video.h, panic.h, log.h, keyboard.h, timer.h, memory.h
-    ├── drivers/    → idt.h, ata.h, ac97.h, pci.h, vesa.h, speaker.h
+    ├── drivers/    → idt.h, ata.h, ac97.h, pci.h, vesa.h, speaker.h, font.h, tss.h
     ├── fs/         → fat12.h, fat32.h, fs.h, wav.h, bmp.h
     ├── memory/     → paging.h, compress.h
     ├── process/    → process.h, thread.h
-    ├── apps/       → shell.h
-    └── ui/         → taskbar.h, desktop.h, settings.h, wm.h, icons.h
+    ├── apps/       → shell.h, editor.h, mediaplayer.h, taskmanager.h
+    └── ui/         → taskbar.h, desktop.h, settings.h, wm.h, filemanager.h, icons.h
 ```
 
 ### Regras

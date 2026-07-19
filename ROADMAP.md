@@ -75,7 +75,7 @@ Sistema operacional em C + Assembly (x86), do zero.
 - [x] Terminal interativo com input via teclado
 - [x] Parser de comandos (split comando + argumentos)
 - [x] Prompt `zephyr>` colorido
-- [x] 13 comandos disponíveis
+- [x] 25 comandos disponíveis
 
 ### Comandos
 
@@ -83,6 +83,9 @@ Sistema operacional em C + Assembly (x86), do zero.
 |---------|-----------|
 | `help` | Lista todos os comandos |
 | `clear` | Limpa a tela |
+| `desktop` | Abre a área de trabalho |
+| `settings` | Abre o painel de configurações |
+| `wm` | Abre gerenciador de janelas |
 | `ls` | Lista arquivos no disco |
 | `cat <arq>` | Exibe conteúdo de arquivo |
 | `echo <texto>` | Imprime texto |
@@ -93,6 +96,14 @@ Sistema operacional em C + Assembly (x86), do zero.
 | `beep` | Toca beep (freq duracao) |
 | `melody` | Toca escala musical |
 | `explorer` | Abre gerenciador de arquivos |
+| `taskmgr` | Abre gerenciador de tarefas |
+| `taskcfg` | Configura a barra de tarefas |
+| `compress` | Liga/desliga compressão de RAM |
+| `stats` | Mostra estatísticas de compressão |
+| `play` | Toca arquivo WAV |
+| `view` | Exibe imagem BMP |
+| `stop` | Para player de mídia |
+| `edit` | Editor de texto (edit ARQUIVO.TXT) |
 | `reboot` | Reinicia o sistema |
 | `shutdown` | Desliga o sistema |
 

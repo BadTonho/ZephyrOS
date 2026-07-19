@@ -7,13 +7,17 @@ section .text
 global _start
 
 _start:
+    ; kernel_main(mmap_addr, vesa_info_addr)
+    ; Salvar os registradores antes de usar EDI para limpar a .bss.
+    ; O cdecl exige que o segundo argumento seja empilhado primeiro.
+    push edi
+    push esi
     cld
     xor eax, eax
     mov edi, __bss_start
     mov ecx, __bss_end
     sub ecx, edi
     rep stosb
-    push esi
     call kernel_main
-    add esp, 4
+    add esp, 8
     jmp $

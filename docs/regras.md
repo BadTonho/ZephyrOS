@@ -49,20 +49,23 @@ void driver_init(void) {
 | Módulo | Arquivo | Exemplo de log |
 |--------|---------|----------------|
 | `BOOT` | `boot.asm` | `LOG_INFO("BOOT", "Kernel carregado")` |
+| `LOG` | `log.c` | `LOG_INFO("LOG", "Sistema de log inicializado")` |
 | `IDT` | `idt.c` | `LOG_INFO("IDT", "Interrupcoes configuradas")` |
 | `KBD` | `keyboard.c` | `LOG_INFO("KBD", "Teclado PS/2 inicializado")` |
 | `TIMER` | `timer.c` | `LOG_INFO("TIMER", "PIT configurado a 50Hz")` |
 | `MEM` | `memory.c` | `LOG_INFO("MEM", "Memoria detectada: 128MB")` |
 | `ATA` | `ata.c` | `LOG_ERROR("ATA", "Falha ao ler setor!")` |
+| `VESA` | `vesa.c` | `LOG_INFO("VESA", "Framebuffer detectado")` |
 | `FAT12` | `fat12.c` | `LOG_INFO("FAT12", "Sistema de arquivos montado")` |
 | `FAT32` | `fat32.c` | `LOG_INFO("FAT32", "Sistema de arquivos montado")` |
 | `AC97` | `ac97.c` | `LOG_INFO("AC97", "Controladora de audio encontrada")` |
 | `PCI` | `pci.c` | `LOG_INFO("PCI", "Enumeracao concluida: 5 dispositivos")` |
+| `THRD` | `tss.c` | `LOG_INFO("THRD", "TSS inicializada")` |
 | `SHELL` | `shell.c` | `LOG_INFO("SHELL", "Shell inicializado")` |
 | `WM` | `wm.c` | `LOG_INFO("WM", "Gerenciador de janelas pronto")` |
 | `PROC` | `process.c` | `LOG_WARN("PROC", "Limite de processos atingido")` |
-| `THRD` | `thread.c` | `LOG_DEBUG("THRD", "Thread 3 bloqueada")` |
 | `FS` | `fs.c` | `LOG_INFO("FS", "Sistema de arquivos unificado ativo")` |
+| `DESKTOP` | `desktop.c` | `LOG_ERROR("DESKTOP", "Tipo de icone invalido")` |
 
 ### Integração com panic
 

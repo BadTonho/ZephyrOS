@@ -267,14 +267,14 @@
 - ⬜ Ícones ocultos.
 - ⬜ Distintivos dos aplicativos.
 - ⬜ Ícones piscando.
-- ✅ Ocultação automática. *(settings.c:55-57 — toggle existe, sem lógica funcional)*
+- 🟡 Ocultação automática. *(settings.c:55-57 — toggle existe, sem lógica funcional)*
 - ⬜ Barra em vários monitores.
 - ⬜ Agrupamento dos botões.
 - ⬜ Exibição de rótulos.
 - ⬜ Alinhamento dos ícones.
 - ⬜ Cor e transparência.
 - ⬜ Exibição do botão Mostrar área de trabalho.
-- ✅ Relógio e segundos. *(parcial — HH:MM sem segundos)*
+- 🟡 Relógio e segundos. *(parcial — HH:MM sem segundos)*
 - ✅ Posições (5 opções). *(taskbar.c:9-15 — Bottom/Top/Left/Right/Custom)*
 - ✅ Tamanhos de ícone (3). *(taskbar.c:17-21 — Small/Medium/Large)*
 - ✅ Menu de configuração (F1). *(taskbar.c:297-402 — 8 itens configuráveis)*
