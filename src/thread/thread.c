@@ -104,6 +104,20 @@ void thread_destroy(thread_t* thread) {
     thread_count--;
 }
 
+thread_t* thread_schedule_next(void) {
+    for (int i = 0; i < MAX_THREADS; i++) {
+        if (threads[i].state == THREAD_RUNNING && &threads[i] != current_thread) {
+            return &threads[i];
+        }
+    }
+    for (int i = 0; i < MAX_THREADS; i++) {
+        if (threads[i].state == THREAD_RUNNING) {
+            return &threads[i];
+        }
+    }
+    return current_thread;
+}
+
 void thread_yield(void) {
     thread_t* next = thread_schedule_next();
     if (next && next != current_thread) {
@@ -152,18 +166,4 @@ void thread_scheduler_tick(void) {
             }
         }
     }
-}
-
-thread_t* thread_schedule_next(void) {
-    for (int i = 0; i < MAX_THREADS; i++) {
-        if (threads[i].state == THREAD_RUNNING && &threads[i] != current_thread) {
-            return &threads[i];
-        }
-    }
-    for (int i = 0; i < MAX_THREADS; i++) {
-        if (threads[i].state == THREAD_RUNNING) {
-            return &threads[i];
-        }
-    }
-    return current_thread;
 }

@@ -1,0 +1,14 @@
+# Build artifacts
+build/
+*.o
+*.bin
+*.img
+
+# Editor/IDE
+.vscode/
+*.swp
+*~
+
+# OS
+Thumbs.db
+Desktop.ini

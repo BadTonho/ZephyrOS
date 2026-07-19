@@ -5,6 +5,13 @@ static tss_entry_t tss;
 
 extern void tss_flush(void);
 
+static void memset(void* dst, uint8_t val, uint32_t size) {
+    uint8_t* d = (uint8_t*)dst;
+    for (uint32_t i = 0; i < size; i++) {
+        d[i] = val;
+    }
+}
+
 void tss_init(void) {
     uint32_t base = (uint32_t)&tss;
     uint32_t limit = base + sizeof(tss_entry_t);
@@ -42,11 +49,4 @@ void tss_init(void) {
 
 void tss_set_kernel_stack(uint32_t stack) {
     tss.esp0 = stack;
-}
-
-static void memset(void* dst, uint8_t val, uint32_t size) {
-    uint8_t* d = (uint8_t*)dst;
-    for (uint32_t i = 0; i < size; i++) {
-        d[i] = val;
-    }
 }

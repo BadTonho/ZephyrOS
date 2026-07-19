@@ -1,10 +1,12 @@
 # Makefile para ZephyrOS
 
+SHELL = cmd.exe
+
 # Ferramentas
-NASM = nasm
-GCC = gcc
-LD = ld
-QEMU = qemu-system-i386
+NASM = "C:\Users\Admin\AppData\Local\bin\NASM\nasm.exe"
+GCC = D:\code\i686-elf-tools-windows\bin\i686-elf-gcc.exe
+LD = D:\code\i686-elf-tools-windows\bin\i686-elf-ld.exe
+QEMU = "C:\Program Files\QEMU\qemu-system-i386.exe"
 
 # Flags
 CFLAGS = -m32 -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -I src/include -I src/include/core -I src/include/drivers -I src/include/fs -I src/include/memory -I src/include/process -I src/include/apps -I src/include/ui
@@ -154,162 +156,162 @@ OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(SWITCH_OBJ) \
 all: $(OS_IMG)
 
 $(BOOT_BIN): $(BOOT_SRC)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(NASM) $(NASMFLAGS) $< -o $@
 
 $(ENTRY_OBJ): $(ENTRY_SRC)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(NASM) -f elf32 $< -o $@
 
 $(KERNEL_OBJ): $(KERNEL_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(PANIC_OBJ): $(PANIC_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SWITCH_OBJ): $(SWITCH_ASM)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(NASM) -f elf32 $< -o $@
 
 $(VIDEO_OBJ): $(VIDEO_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(VESA_OBJ): $(VESA_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(FONT_OBJ): $(FONT_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(IDT_OBJ): $(IDT_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(ISR_OBJ): $(ISR_ASM)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(NASM) -f elf32 $< -o $@
 
 $(IRQ_OBJ): $(IRQ_ASM)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(NASM) -f elf32 $< -o $@
 
 $(KEYBOARD_OBJ): $(KEYBOARD_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(TIMER_OBJ): $(TIMER_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(TSS_OBJ): $(TSS_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(ATA_OBJ): $(ATA_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SPEAKER_OBJ): $(SPEAKER_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(PCI_OBJ): $(PCI_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(AC97_OBJ): $(AC97_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(MEMORY_OBJ): $(MEMORY_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(PAGING_OBJ): $(PAGING_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(COMPRESS_OBJ): $(COMPRESS_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(FAT12_OBJ): $(FAT12_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(FAT32_OBJ): $(FAT32_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(FS_OBJ): $(FS_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(WAV_OBJ): $(WAV_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(BMP_OBJ): $(BMP_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(PROCESS_OBJ): $(PROCESS_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(THREAD_OBJ): $(THREAD_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SHELL_OBJ): $(SHELL_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(TASKMGR_OBJ): $(TASKMGR_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(MEDIAPLAYER_OBJ): $(MEDIAPLAYER_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(EDITOR_OBJ): $(EDITOR_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(FILEMANAGER_OBJ): $(FILEMANAGER_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(TASKBAR_OBJ): $(TASKBAR_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(DESKTOP_OBJ): $(DESKTOP_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SETTINGS_OBJ): $(SETTINGS_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(WM_OBJ): $(WM_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(ICONS_OBJ): $(ICONS_C)
-	@mkdir -p build
+	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(KERNEL_BIN): $(OBJS)
 	$(LD) $(LDFLAGS) $^ -o $@
 
 $(OS_IMG): $(BOOT_BIN) $(KERNEL_BIN)
-	cat $^ > $@
+	cmd /c "copy /b build\boot.bin+build\kernel.bin build\zephyros.img"
 
 run: $(OS_IMG)
 	$(QEMU) -drive format=raw,file=$(OS_IMG)
@@ -318,6 +320,6 @@ debug: $(OS_IMG)
 	$(QEMU) -drive format=raw,file=$(OS_IMG) -s -S &
 
 clean:
-	rm -rf build/*
+	rmdir /s /q build
 
 .PHONY: all run debug clean

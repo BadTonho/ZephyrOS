@@ -17,6 +17,7 @@
 #define ATA_REG_DRIVE      6
 #define ATA_REG_STATUS     7
 #define ATA_REG_COMMAND    7
+#define ATA_REG_CTRL       6
 
 #define ATA_SR_BSY   0x80
 #define ATA_SR_DRDY  0x40

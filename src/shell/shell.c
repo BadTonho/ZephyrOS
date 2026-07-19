@@ -15,6 +15,7 @@
 #include "memory/compress.h"
 #include "apps/mediaplayer.h"
 #include "apps/editor.h"
+#include "ui/filemanager.h"
 
 static char input_buffer[SHELL_BUFFER_SIZE];
 static int input_pos = 0;

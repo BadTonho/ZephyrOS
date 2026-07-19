@@ -1,6 +1,12 @@
 #include "drivers/speaker.h"
 #include "core/timer.h"
 
+static uint8_t inb(uint16_t port) {
+    uint8_t result;
+    asm volatile("inb %1, %0" : "=a"(result) : "Nd"(port));
+    return result;
+}
+
 static void outb(uint16_t port, uint8_t val) {
     asm volatile("outb %0, %1" : : "a"(val), "Nd"(port));
 }
@@ -52,10 +58,4 @@ void speaker_play_melody(const uint32_t* frequencies, const uint32_t* durations,
             speaker_beep(frequencies[i], durations[i]);
         }
     }
-}
-
-static uint8_t inb(uint16_t port) {
-    uint8_t result;
-    asm volatile("inb %1, %0" : "=a"(result) : "Nd"(port));
-    return result;
 }

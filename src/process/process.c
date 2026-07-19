@@ -4,9 +4,9 @@
 #include "core/panic.h"
 #include "core/timer.h"
 
-static process_t processes[MAX_PROCESSES];
+process_t processes[MAX_PROCESSES];
 static process_t* current_process = 0;
-static uint32_t process_count = 0;
+uint32_t process_count = 0;
 static uint32_t next_pid = 1;
 
 extern page_directory_t* current_directory;
@@ -149,35 +149,6 @@ uint32_t process_get_count(void) {
     return process_count;
 }
 
-void process_yield(void) {
-    process_t* next = scheduler_schedule();
-    if (next && next != current_process) {
-        process_t* prev = current_process;
-        current_process = next;
-        current_process->state = PROCESS_STATE_RUNNING;
-
-        if (prev && prev->state == PROCESS_STATE_RUNNING) {
-            prev->state = PROCESS_STATE_READY;
-        }
-
-        context_switch(&prev->context, &next->context);
-    }
-}
-
-void process_block(uint32_t ticks) {
-    if (!current_process) return;
-    current_process->state = PROCESS_STATE_BLOCKED;
-    current_process->wait_ticks = ticks;
-    process_yield();
-}
-
-void process_unblock(process_t* proc) {
-    if (!proc) return;
-    if (proc->state == PROCESS_STATE_BLOCKED) {
-        proc->state = PROCESS_STATE_READY;
-    }
-}
-
 process_t* scheduler_schedule(void) {
     process_t* best = 0;
     uint32_t min_ticks = 0xFFFFFFFF;
@@ -210,6 +181,35 @@ process_t* scheduler_schedule(void) {
     }
 
     return best;
+}
+
+void process_yield(void) {
+    process_t* next = scheduler_schedule();
+    if (next && next != current_process) {
+        process_t* prev = current_process;
+        current_process = next;
+        current_process->state = PROCESS_STATE_RUNNING;
+
+        if (prev && prev->state == PROCESS_STATE_RUNNING) {
+            prev->state = PROCESS_STATE_READY;
+        }
+
+        context_switch(&prev->context, &next->context);
+    }
+}
+
+void process_block(uint32_t ticks) {
+    if (!current_process) return;
+    current_process->state = PROCESS_STATE_BLOCKED;
+    current_process->wait_ticks = ticks;
+    process_yield();
+}
+
+void process_unblock(process_t* proc) {
+    if (!proc) return;
+    if (proc->state == PROCESS_STATE_BLOCKED) {
+        proc->state = PROCESS_STATE_READY;
+    }
 }
 
 void scheduler_init(void) {

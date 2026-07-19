@@ -1,0 +1,1 @@
+criar um sistema que ajude os programadores, pode ser desde um editor de codigo nativo, e vai até ajudar a instalar as linguagens e dependencias mais facil

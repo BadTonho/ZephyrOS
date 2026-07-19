@@ -56,7 +56,17 @@ extern void irq13(void);
 extern void irq14(void);
 extern void irq15(void);
 
-static void idt_set_gate(uint8_t num, uint32_t base, uint16_t selector, uint8_t flags) {
+static uint8_t inb(uint16_t port) {
+    uint8_t result;
+    asm volatile("inb %1, %0" : "=a"(result) : "Nd"(port));
+    return result;
+}
+
+static void outb(uint16_t port, uint8_t val) {
+    asm volatile("outb %0, %1" : : "a"(val), "Nd"(port));
+}
+
+void idt_set_gate(uint8_t num, uint32_t base, uint16_t selector, uint8_t flags) {
     idt[num].base_low = base & 0xFFFF;
     idt[num].base_high = (base >> 16) & 0xFFFF;
     idt[num].selector = selector;
@@ -84,16 +94,6 @@ static void pic_remap(void) {
 
     outb(0x21, a1);
     outb(0xA1, a2);
-}
-
-static uint8_t inb(uint16_t port) {
-    uint8_t result;
-    asm volatile("inb %1, %0" : "=a"(result) : "Nd"(port));
-    return result;
-}
-
-static void outb(uint16_t port, uint8_t val) {
-    asm volatile("outb %0, %1" : : "a"(val), "Nd"(port));
 }
 
 void idt_init(void) {

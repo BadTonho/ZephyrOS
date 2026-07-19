@@ -2,6 +2,7 @@
 #define KEYBOARD_H
 
 #include "types.h"
+#include "drivers/idt.h"
 
 typedef void (*keyboard_callback_t)(uint8_t scancode);
 

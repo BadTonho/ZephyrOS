@@ -10,6 +10,18 @@
 #include "ui/wm.h"
 #include "ui/icons.h"
 
+#ifndef NULL
+#define NULL ((void*)0)
+#endif
+
+static uint8_t keyboard_get_scancode(void) {
+    uint8_t scancode = 0;
+    while (!scancode) {
+        __asm__ volatile("inb $0x60, %0" : "=a"(scancode));
+    }
+    return scancode;
+}
+
 static int settings_active = 0;
 static int selected_category = 0;
 static int selected_option = 0;

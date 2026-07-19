@@ -35,14 +35,6 @@ static uint32_t last_cpu_ticks = 0;
 static uint32_t last_proc_ticks[64] = {0};
 static uint32_t cpu_usage[64] = {0};
 
-static void draw_box(int x, int y, int w, int h, uint8_t color);
-static void draw_hline(int x, int y, int w, uint8_t color);
-static void draw_vline(int x, int y, int h, uint8_t color);
-static void draw_bar(int x, int y, int w, uint32_t filled, uint32_t total, uint8_t color_fg, uint8_t color_bg);
-static void print_at(int x, int y, const char* str, uint8_t color);
-static void print_num_at(int x, int y, uint32_t num, uint8_t color);
-static int num_digits(uint32_t num);
-
 extern process_t processes[];
 extern uint32_t process_count;
 
@@ -72,6 +64,18 @@ void taskmgr_close(void) {
     video_print("ZephyrOS Shell\n\n", 0x0B);
     video_print("zephyr> ", 0x0A);
     taskbar_draw();
+}
+
+static void draw_hline(int x, int y, int w, uint8_t color) {
+    for (int i = 0; i < w; i++) {
+        video_put_char_at(0xC4, color, x + i, y);
+    }
+}
+
+static void draw_vline(int x, int y, int h, uint8_t color) {
+    for (int i = 0; i < h; i++) {
+        video_put_char_at(0xB3, color, x, y + i);
+    }
 }
 
 static void draw_box(int x, int y, int w, int h, uint8_t color) {

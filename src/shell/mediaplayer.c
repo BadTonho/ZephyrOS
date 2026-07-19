@@ -34,12 +34,6 @@ static void str_copy(char* dst, const char* src, uint32_t max) {
     dst[i] = '\0';
 }
 
-void mp_init(void) {
-    memset(&status, 0, sizeof(mp_status_t));
-    status.state = MP_STATE_IDLE;
-    last_update_tick = 0;
-}
-
 static void mp_cleanup(void) {
     if (wav_data) {
         kfree(wav_data);
@@ -67,6 +61,12 @@ static uint8_t* load_file(const char* filename, uint32_t* out_size) {
 
     *out_size = bytes;
     return buffer;
+}
+
+void mp_init(void) {
+    memset(&status, 0, sizeof(mp_status_t));
+    status.state = MP_STATE_IDLE;
+    last_update_tick = 0;
 }
 
 int mp_play_audio(const char* filename) {
@@ -137,8 +137,8 @@ int mp_play_image(const char* filename) {
         }
         info[i] = '\0';
 
-        vesa_draw_string(10, 10, info, vesa_rgb(255, 255, 255), 2);
-        vesa_draw_string(10, 40, "Pressione ESC para voltar", vesa_rgb(200, 200, 200), 1);
+        vesa_draw_string(10, 10, info, (vesa_color_t)vesa_rgb(255, 255, 255), 2);
+        vesa_draw_string(10, 40, "Pressione ESC para voltar", (vesa_color_t)vesa_rgb(200, 200, 200), 1);
     }
 
     return 0;

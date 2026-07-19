@@ -108,6 +108,10 @@ static void ata_detect(uint16_t io, uint16_t ctrl, uint8_t slave, ata_device_t* 
     dev->present = 1;
 }
 
+static void outw(uint16_t port, uint16_t val) {
+    asm volatile("outw %0, %1" : : "a"(val), "Nd"(port));
+}
+
 void ata_init(void) {
     for (int i = 0; i < 2; i++) {
         devices[i].present = 0;
@@ -193,8 +197,4 @@ int ata_write_sectors(uint32_t lba, uint8_t count, const uint8_t* buffer) {
     }
 
     return 0;
-}
-
-static void outw(uint16_t port, uint16_t val) {
-    asm volatile("outw %0, %1" : : "a"(val), "Nd"(port));
 }

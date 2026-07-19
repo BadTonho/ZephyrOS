@@ -2,6 +2,7 @@
 #define AC97_H
 
 #include "types.h"
+#include "drivers/idt.h"
 
 #define AC97_PCI_CLASS    0x04
 #define AC97_PCI_SUBCLASS 0x01
