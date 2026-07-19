@@ -9,6 +9,7 @@
 #include "process/thread.h"
 #include "ui/wm.h"
 #include "ui/icons.h"
+#include "core/log.h"
 
 #ifndef NULL
 #define NULL ((void*)0)
@@ -29,6 +30,17 @@ static int editing_option = 0;
 
 static settings_page_t categories[SETTINGS_CAT_COUNT];
 
+static const char* display_theme_values[] = {"Classico", "Escuro", "Azul"};
+static const char* display_resolution_values[] = {"80x25", "80x50", "Auto"};
+static const char* taskbar_position_values[] = {"Baixo", "Cima", "Esquerda", "Direita", "Custom"};
+static const char* taskbar_size_values[] = {"Pequeno", "Medio", "Grande"};
+static const char* windows_button_side_values[] = {"Direita", "Esquerda"};
+static const char* windows_button_order_values[] = {
+    "x _ <>", "x <> _", "_ <> x", "<> _ x", "_ x <>", "<> x _"
+};
+static const char* windows_border_values[] = {"Simples", "Dupla"};
+static const char* sound_volume_values[] = {"Mudo", "Baixo", "Medio", "Alto", "Maximo"};
+
 static void init_categories(void) {
     for (int i = 0; i < SETTINGS_CAT_COUNT; i++) {
         categories[i].option_count = 0;
@@ -38,11 +50,11 @@ static void init_categories(void) {
     categories[SETTINGS_CAT_DISPLAY].option_count = 3;
     categories[SETTINGS_CAT_DISPLAY].options[0] = (settings_option_t){
         "Tema", SETTINGS_OPT_LIST, 0, 2,
-        (const char*[]){"Classico", "Escuro", "Azul"}, 3
+        display_theme_values, 3
     };
     categories[SETTINGS_CAT_DISPLAY].options[1] = (settings_option_t){
         "Resolucao", SETTINGS_OPT_LIST, 0, 2,
-        (const char*[]){"80x25", "80x50", "Auto"}, 3
+        display_resolution_values, 3
     };
     categories[SETTINGS_CAT_DISPLAY].options[2] = (settings_option_t){
         "Mostrar grade", SETTINGS_OPT_TOGGLE, 0, 1, NULL, 0
@@ -52,11 +64,11 @@ static void init_categories(void) {
     categories[SETTINGS_CAT_TASKBAR].option_count = 5;
     categories[SETTINGS_CAT_TASKBAR].options[0] = (settings_option_t){
         "Posicao", SETTINGS_OPT_LIST, 0, 4,
-        (const char*[]){"Baixo", "Cima", "Esquerda", "Direita", "Custom"}, 5
+        taskbar_position_values, 5
     };
     categories[SETTINGS_CAT_TASKBAR].options[1] = (settings_option_t){
         "Tamanho icone", SETTINGS_OPT_LIST, 1, 2,
-        (const char*[]){"Pequeno", "Medio", "Grande"}, 3
+        taskbar_size_values, 3
     };
     categories[SETTINGS_CAT_TASKBAR].options[2] = (settings_option_t){
         "Fixada", SETTINGS_OPT_TOGGLE, 1, 1, NULL, 0
@@ -72,18 +84,18 @@ static void init_categories(void) {
     categories[SETTINGS_CAT_WINDOWS].option_count = 4;
     categories[SETTINGS_CAT_WINDOWS].options[0] = (settings_option_t){
         "Botoes lado", SETTINGS_OPT_LIST, 0, 1,
-        (const char*[]){"Direita", "Esquerda"}, 2
+        windows_button_side_values, 2
     };
     categories[SETTINGS_CAT_WINDOWS].options[1] = (settings_option_t){
         "Ordem botoes", SETTINGS_OPT_LIST, 0, 5,
-        (const char*[]){"x _ <>", "x <> _", "_ <> x", "<> _ x", "_ x <>", "<> x _"}, 6
+        windows_button_order_values, 6
     };
     categories[SETTINGS_CAT_WINDOWS].options[2] = (settings_option_t){
         "Mostrar titulo", SETTINGS_OPT_TOGGLE, 1, 1, NULL, 0
     };
     categories[SETTINGS_CAT_WINDOWS].options[3] = (settings_option_t){
         "Borda", SETTINGS_OPT_LIST, 0, 1,
-        (const char*[]){"Simples", "Dupla"}, 2
+        windows_border_values, 2
     };
 
     categories[SETTINGS_CAT_ICONS].name = "Icones";
@@ -120,7 +132,7 @@ static void init_categories(void) {
     categories[SETTINGS_CAT_SOUND].option_count = 3;
     categories[SETTINGS_CAT_SOUND].options[0] = (settings_option_t){
         "Volume", SETTINGS_OPT_LIST, 2, 4,
-        (const char*[]){"Mudo", "Baixo", "Medio", "Alto", "Maximo"}, 5
+        sound_volume_values, 5
     };
     categories[SETTINGS_CAT_SOUND].options[1] = (settings_option_t){
         "Beep ao iniciar", SETTINGS_OPT_TOGGLE, 1, 1, NULL, 0
@@ -198,7 +210,8 @@ void settings_draw(void) {
             video_print_at(55, 4 + i, page->options[i].value ? "[x]" : "[ ]", color);
         } else if (page->options[i].type == SETTINGS_OPT_LIST) {
             int val = page->options[i].value;
-            if (val >= 0 && val < page->options[i].list_count) {
+            if (page->options[i].list_values &&
+                val >= 0 && val < page->options[i].list_count) {
                 video_print_at(55, 4 + i, "< ", color);
                 video_print_at(57, 4 + i, page->options[i].list_values[val], color);
                 video_print_at(57 + 10, 4 + i, " >", color);
