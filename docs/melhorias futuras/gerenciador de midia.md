@@ -1,5 +1,7 @@
 # Gerenciador de Mídia — ZephyrOS v0.1
 
+> **Arquitetura:** As funções core (comandos shell: `play`, `stop`, `pause`, `volume`, `eq`) são nativas do sistema. A interface visual (TUI com equalizer, playlists, galeria) é um app opcional distribuído pelo [Gerenciador de Aplicativos](gerenciador%20de%20aplicativos.md).
+
 ## Resumo de Progresso
 
 | Fase | Total | Feito | Parcial | Restante |

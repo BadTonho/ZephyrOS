@@ -1,6 +1,7 @@
 #include "types.h"
 #include "core/video.h"
 #include "core/panic.h"
+#include "core/log.h"
 #include "drivers/idt.h"
 #include "core/keyboard.h"
 #include "core/timer.h"
@@ -24,6 +25,7 @@
 
 void kernel_main(uint32_t mmap_addr) {
     video_init();
+    log_init();
 
     video_set_color(VGA_COLOR_CYAN, VGA_COLOR_BLACK);
     video_print("========================================\n", 0x0B);

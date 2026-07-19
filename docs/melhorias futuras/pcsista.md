@@ -1,5 +1,7 @@
 # PCSista — Monitor de Sistema e FPS (RivaTuner-like)
 
+> **Distribuição:** Este aplicativo é distribuído como pacote `.zephyrosapp` através do [Gerenciador de Aplicativos](gerenciador%20de%20aplicativos.md). Não é compilado no kernel padrão.
+
 ## Resumo de Progresso
 
 | Fase | Total | Feito | Parcial | Restante |

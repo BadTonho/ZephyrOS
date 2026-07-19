@@ -1,5 +1,7 @@
 # Gerenciador de Jogos — ZephyrOS v0.1
 
+> **Arquitetura:** As funções core (comandos shell: `games`, `games list/play/info`) são nativas do sistema. A interface visual (TUI + overlay) é um app opcional distribuído pelo [Gerenciador de Aplicativos](gerenciador%20de%20aplicativos.md).
+
 ## Resumo de Progresso
 
 | Fase | Total | Feito | Parcial | Restante |

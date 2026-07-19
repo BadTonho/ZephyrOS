@@ -1,5 +1,7 @@
 # Gerenciador de Dispositivos — ZephyrOS v0.1
 
+> **Arquitetura:** As funções core (comandos shell: `devices`, `device-info`, `device-scan`) são nativas do sistema. A interface visual (TUI) é um app opcional distribuído pelo [Gerenciador de Aplicativos](gerenciador%20de%20aplicativos.md).
+
 ## Resumo de Progresso
 
 | Fase | Total | Feito | Parcial | Restante |

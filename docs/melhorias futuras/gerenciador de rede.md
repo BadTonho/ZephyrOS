@@ -1,5 +1,7 @@
 # Gerenciador de Rede — ZephyrOS v0.1
 
+> **Arquitetura:** As funções core (comandos shell: `net`, `ifconfig`, `ping`, `wget`, `ftp`) são nativas do sistema. A interface visual (TUI com painel de rede, firewall) é um app opcional distribuído pelo [Gerenciador de Aplicativos](gerenciador%20de%20aplicativos.md).
+
 ## Resumo de Progresso
 
 | Fase | Total | Feito | Parcial | Restante |
