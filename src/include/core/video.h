@@ -8,8 +8,9 @@
 #define VGA_WIDTH  100
 #define VGA_HEIGHT 37
 
-#define SCREEN_COLS VGA_WIDTH
-#define SCREEN_ROWS VGA_HEIGHT
+/* O modo VESA 0x118 usado pelo stage2 tem 1024x768 pixels. */
+#define SCREEN_COLS 128
+#define SCREEN_ROWS 48
 
 #define VGA_COLOR_BLACK 0
 #define VGA_COLOR_BLUE 1

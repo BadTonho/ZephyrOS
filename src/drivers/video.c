@@ -82,7 +82,15 @@ static void render_cell(int x, int y) {
 
 static void update_cursor(void) {
     if (use_framebuffer) return;
-    uint16_t pos = cursor_y * VGA_WIDTH + cursor_x;
+
+    int vga_x = cursor_x;
+    int vga_y = cursor_y;
+    if (vga_x >= VGA_WIDTH) vga_x = VGA_WIDTH - 1;
+    if (vga_y >= VGA_HEIGHT) vga_y = VGA_HEIGHT - 1;
+    if (vga_x < 0) vga_x = 0;
+    if (vga_y < 0) vga_y = 0;
+
+    uint16_t pos = vga_y * VGA_WIDTH + vga_x;
     asm volatile("outb %0, %1" : : "a"((uint8_t)(pos & 0xFF)), "Nd"((uint16_t)0x3D4));
     asm volatile("outb %0, %1" : : "a"((uint8_t)((pos >> 8) & 0xFF)), "Nd"((uint16_t)0x3D5));
     asm volatile("outb %0, %1" : : "a"((uint8_t)0x0E), "Nd"((uint16_t)0x3D4));
@@ -227,7 +235,9 @@ void video_put_char_at(char c, uint8_t color, int x, int y) {
 
     if (!use_framebuffer) {
         uint16_t* vm = (uint16_t*)VIDEO_MEMORY;
-        vm[y * VGA_WIDTH + x] = (uint16_t)c | ((uint16_t)color << 8);
+        if (x < VGA_WIDTH && y < VGA_HEIGHT) {
+            vm[y * VGA_WIDTH + x] = (uint16_t)c | ((uint16_t)color << 8);
+        }
     }
 }
 
