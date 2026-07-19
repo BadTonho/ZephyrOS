@@ -3,6 +3,7 @@
 
 KERNEL_OFFSET equ 0x10000
 MEMORY_MAP    equ 0x8000
+E820_ENTRY_SIZE equ 24
 
 %ifndef KERNEL_SECTORS
 %define KERNEL_SECTORS 272
@@ -115,20 +116,23 @@ detect_memory:
     mov dword [mmap_count], 0
 .lp:
     mov eax, 0xE820
-    mov ecx, 20
+    mov ecx, E820_ENTRY_SIZE
     mov edx, 0x534D4150
     int 0x15
     jc .dn
     cmp eax, 0x534D4150
     jne .dn
 
-    ; Solicitamos o formato E820 mínimo e usamos entradas de 20 bytes.
     cmp ecx, 20
     jb .dn
     inc dword [mmap_count]
     test ebx, ebx
     jz .dn
-    add di, 20
+    cmp ecx, E820_ENTRY_SIZE
+    jae .next_entry
+    mov dword [es:di + 20], 0
+.next_entry:
+    add di, E820_ENTRY_SIZE
     jmp .lp
 .dn:
     mov eax, [mmap_count]

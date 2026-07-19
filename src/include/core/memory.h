@@ -8,8 +8,9 @@
 #define KERNEL_END 0x40000
 #define HEAP_START 0x100000
 #define HEAP_SIZE 0x100000
+#define MAX_PHYSICAL_ADDRESS 0xFFFFFFFFULL
 
-#define MMAP_ENTRY_SIZE 20
+#define MMAP_ENTRY_SIZE 24
 
 typedef struct {
     uint32_t base_low;
@@ -17,6 +18,7 @@ typedef struct {
     uint32_t length_low;
     uint32_t length_high;
     uint32_t type;
+    uint32_t acpi;
 } __attribute__((packed)) mmap_entry_t;
 
 typedef struct {

@@ -44,10 +44,18 @@ void memory_init(uint32_t mmap_addr) {
         uint64_t length = ((uint64_t)entry->length_high << 32) | entry->length_low;
         uint64_t end = base + length;
 
-        if (entry->type == 1 && base >= KERNEL_END) {
-            mem_info.free_memory += (uint32_t)length;
+        if (entry->type != 1 || base > MAX_PHYSICAL_ADDRESS) {
+            continue;
         }
-        if (end > mem_info.total_memory) {
+
+        if (end > MAX_PHYSICAL_ADDRESS) {
+            end = MAX_PHYSICAL_ADDRESS;
+        }
+
+        if (base >= KERNEL_END && end > base) {
+            mem_info.free_memory += (uint32_t)(end - base);
+        }
+        if ((uint32_t)end > mem_info.total_memory) {
             mem_info.total_memory = (uint32_t)end;
         }
     }
@@ -74,6 +82,12 @@ void memory_init(uint32_t mmap_addr) {
 
         uint64_t base = ((uint64_t)entry->base_high << 32) | entry->base_low;
         uint64_t length = ((uint64_t)entry->length_high << 32) | entry->length_low;
+        uint64_t end = base + length;
+
+        if (base > MAX_PHYSICAL_ADDRESS) continue;
+        if (end > MAX_PHYSICAL_ADDRESS) end = MAX_PHYSICAL_ADDRESS;
+        if (end <= base) continue;
+        length = end - base;
 
         if (base < KERNEL_END) {
             uint64_t new_base = align_up(KERNEL_END, PAGE_SIZE);
