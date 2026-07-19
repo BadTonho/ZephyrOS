@@ -1,12 +1,10 @@
-#include "filemanager.h"
-#include "video.h"
-#include "keyboard.h"
-#include "fat12.h"
-#include "memory.h"
-#include "speaker.h"
-#include "timer.h"
-#include "taskbar.h"
-#include "icons.h"
+#include "ui/filemanager.h"
+#include "core/video.h"
+#include "core/keyboard.h"
+#include "fs/fs.h"
+#include "core/memory.h"
+#include "ui/taskbar.h"
+#include "ui/icons.h"
 
 static fm_state_t state;
 static char input_buffer[32];
@@ -15,6 +13,17 @@ static int input_mode = 0;
 static int rename_mode = 0;
 static int confirm_delete = 0;
 static char old_name[FM_NAME_LEN];
+
+static void fm_refresh_files(void);
+static void fm_draw_all(void);
+static void fm_draw_address_bar(void);
+static void fm_draw_file_list(void);
+static void fm_draw_status_bar(void);
+static void fm_draw_help(void);
+static void fm_draw_create_file(void);
+static void fm_draw_rename_file(void);
+static void fm_draw_confirm_delete(void);
+static void fm_draw_view_file(void);
 
 static void int_to_str(uint32_t num, char* buf) {
     int i = 0;
@@ -28,29 +37,105 @@ static void int_to_str(uint32_t num, char* buf) {
     buf[i] = '\0';
 }
 
-static void name_to_fat12(const char* name, char* fat12_name) {
-    int i, j;
-    for (i = 0; i < 8; i++) fat12_name[i] = ' ';
-    for (i = 8; i < 11; i++) fat12_name[i] = ' ';
+static int str_len(const char* s) {
+    int len = 0;
+    while (s[len]) len++;
+    return len;
+}
 
-    i = 0;
-    j = 0;
-    while (name[i] && name[i] != '.' && j < 8) {
-        char c = name[i];
-        if (c >= 'a' && c <= 'z') c -= 32;
-        fat12_name[j++] = c;
-        i++;
+static void str_copy(char* dst, const char* src) {
+    int i = 0;
+    while (src[i]) { dst[i] = src[i]; i++; }
+    dst[i] = '\0';
+}
+
+static int str_equal(const char* a, const char* b) {
+    while (*a && *b) {
+        if (*a != *b) return 0;
+        a++; b++;
+    }
+    return *a == *b;
+}
+
+static void fm_push_history(void) {
+    if (state.history_count < FM_MAX_HISTORY) {
+        str_copy(state.history[state.history_count], state.current_path);
+        state.history_count++;
+        state.history_pos = state.history_count - 1;
+    } else {
+        for (int i = 0; i < FM_MAX_HISTORY - 1; i++) {
+            str_copy(state.history[i], state.history[i + 1]);
+        }
+        str_copy(state.history[FM_MAX_HISTORY - 1], state.current_path);
+        state.history_pos = FM_MAX_HISTORY - 1;
+    }
+}
+
+static void fm_navigate_to(const char* path) {
+    fm_push_history();
+    str_copy(state.current_path, path);
+    state.selected = 0;
+    state.scroll_offset = 0;
+    fm_refresh_files();
+    fm_draw_all();
+}
+
+static void fm_navigate_to_no_history(const char* path) {
+    str_copy(state.current_path, path);
+    state.selected = 0;
+    state.scroll_offset = 0;
+    fm_refresh_files();
+    fm_draw_all();
+}
+
+static void fm_go_up(void) {
+    if (state.current_path[0] == '\0') return;
+
+    int len = str_len(state.current_path);
+    if (len > 0 && state.current_path[len - 1] == '/') {
+        state.current_path[len - 1] = '\0';
+        len--;
     }
 
-    if (name[i] == '.') {
-        i++;
-        j = 0;
-        while (name[i] && j < 3) {
-            char c = name[i];
-            if (c >= 'a' && c <= 'z') c -= 32;
-            fat12_name[8 + j++] = c;
-            i++;
-        }
+    int last_slash = -1;
+    for (int i = 0; i < len; i++) {
+        if (state.current_path[i] == '/') last_slash = i;
+    }
+
+    if (last_slash < 0) {
+        state.current_path[0] = '\0';
+    } else if (last_slash == 0) {
+        state.current_path[0] = '/';
+        state.current_path[1] = '\0';
+    } else {
+        state.current_path[last_slash] = '\0';
+    }
+
+    state.selected = 0;
+    state.scroll_offset = 0;
+    fm_refresh_files();
+    fm_draw_all();
+}
+
+static void fm_go_back(void) {
+    if (state.history_pos > 0) {
+        state.history_pos--;
+        str_copy(state.current_path, state.history[state.history_pos]);
+        state.selected = 0;
+        state.scroll_offset = 0;
+        fm_refresh_files();
+        fm_draw_all();
+    }
+}
+
+static void fm_go_forward(void) {
+    if (state.history_pos < state.history_count - 1) {
+        state.history_pos++;
+        str_copy(state.current_path, state.history[state.history_pos]);
+        state.selected = 0;
+        state.scroll_offset = 0;
+        fm_refresh_files();
+        fm_draw_all();
     }
 }
 
@@ -64,12 +149,46 @@ static void fm_draw_menu_bar(void) {
     video_print_at(1, 1, "F1=Ajuda F3=Ver F5=Atualizar F7=Novo F8=Excluir Esc=Sair", 0x70);
 }
 
+static void fm_draw_address_bar(void) {
+    video_fill_rect(0, 2, 80, 1, ' ', FM_ADDRESS_COLOR);
+    video_print_at(1, 2, ">", FM_ADDRESS_COLOR);
+
+    if (state.address_mode) {
+        video_fill_rect(3, 2, 76, 1, ' ', FM_ADDRESS_INPUT_COLOR);
+        video_print_at(3, 2, state.address_buffer, FM_ADDRESS_INPUT_COLOR);
+    } else {
+        char display_path[78];
+        display_path[0] = 'C';
+        display_path[1] = ':';
+
+        if (state.current_path[0] == '\0') {
+            display_path[2] = '\\';
+            display_path[3] = '\0';
+        } else {
+            display_path[2] = '\\';
+            int di = 3;
+            for (int i = 0; state.current_path[i] && di < 76; i++) {
+                display_path[di++] = state.current_path[i];
+            }
+            display_path[di] = '\0';
+        }
+
+        int plen = str_len(display_path);
+        video_fill_rect(3, 2, 76, 1, ' ', FM_ADDRESS_COLOR);
+        video_print_at(3, 2, display_path, FM_ADDRESS_COLOR);
+
+        if (state.current_path[0] != '\0') {
+            video_print_at(3 + plen, 2, "\\", FM_ADDRESS_COLOR);
+        }
+    }
+}
+
 static void fm_draw_column_headers(void) {
     video_fill_rect(0, 3, 80, 1, ' ', 0x07);
     video_print_at(2, 3, "Nome", 0x0F);
     video_print_at(22, 3, "Tamanho", 0x0F);
     video_print_at(35, 3, "Tipo", 0x0F);
-    video_draw_hline(0, 2, 80, 0xC4, 0x07);
+    video_draw_hline(0, 4, 80, 0xC4, 0x07);
 }
 
 static void fm_draw_separator_bottom(void) {
@@ -97,7 +216,8 @@ static void fm_draw_status_bar(void) {
             char buf[16];
             int_to_str(f->size, buf);
             video_print_at(36, 23, buf, FM_STATUS_COLOR);
-            video_print_at(36 + (int)sizeof(buf), 23, " bytes", FM_STATUS_COLOR);
+            int blen = str_len(buf);
+            video_print_at(36 + blen, 23, " bytes", FM_STATUS_COLOR);
         }
     }
 
@@ -105,20 +225,21 @@ static void fm_draw_status_bar(void) {
     char buf[8];
     int_to_str(state.selected + 1, buf);
     video_print_at(65, 23, buf, FM_STATUS_COLOR);
-    video_print_at(65 + (int)sizeof(buf), 23, "/", FM_STATUS_COLOR);
+    int blen = str_len(buf);
+    video_print_at(65 + blen, 23, "/", FM_STATUS_COLOR);
     int_to_str(state.file_count, buf);
-    video_print_at(67 + (int)sizeof(buf), 23, buf, FM_STATUS_COLOR);
+    video_print_at(66 + blen, 23, buf, FM_STATUS_COLOR);
 }
 
 static void fm_refresh_files(void) {
-    state.file_count = fat12_get_file_count();
+    state.file_count = fs_get_file_count_at(state.current_path);
     if (state.file_count > FM_MAX_FILES) {
         state.file_count = FM_MAX_FILES;
     }
 
     for (int i = 0; i < state.file_count; i++) {
         uint8_t attr;
-        fat12_get_file_info(i, state.files[i].name, &state.files[i].size, &attr);
+        fs_get_file_info_at(state.current_path, i, state.files[i].name, &state.files[i].size, &attr);
         state.files[i].attributes = attr;
         state.files[i].is_dir = (attr & 0x10) ? 1 : 0;
     }
@@ -133,10 +254,10 @@ static void fm_refresh_files(void) {
 
 static void fm_draw_file_list(void) {
     int visible_start = state.scroll_offset;
-    int visible_count = 18;
+    int visible_count = 17;
 
     for (int i = 0; i < visible_count; i++) {
-        int row = 4 + i;
+        int row = 5 + i;
         int file_idx = visible_start + i;
 
         video_fill_rect(2, row, 76, 1, ' ', 0x07);
@@ -144,7 +265,7 @@ static void fm_draw_file_list(void) {
         if (file_idx < state.file_count) {
             fm_file_entry_t* f = &state.files[file_idx];
             icon_entry_t* icon = icons_get_fm(f->is_dir ? ICON_FM_FOLDER : ICON_FM_FILE);
-            uint8_t name_color = f->is_dir ? icon->color : icon->color;
+            uint8_t name_color = icon->color;
 
             if (file_idx == state.selected) {
                 name_color = FM_SELECTED_COLOR;
@@ -188,24 +309,27 @@ static void fm_draw_file_list(void) {
 
 static void fm_draw_help(void) {
     video_clear();
-    video_draw_box(10, 3, 60, 18, 0x07);
-    video_fill_rect(11, 4, 58, 16, ' ', 0x07);
+    video_draw_box(10, 3, 60, 19, 0x07);
+    video_fill_rect(11, 4, 58, 17, ' ', 0x07);
 
     video_print_at(28, 4, "MiniOS Explorer - Ajuda", 0x0F);
     video_draw_hline(11, 5, 58, 0xC4, 0x07);
 
     video_print_at(13, 7,  "Setas      Navegar na lista", 0x07);
     video_print_at(13, 8,  "Enter      Abrir pasta/arquivo", 0x07);
-    video_print_at(13, 9,  "Backspace  Atualizar lista", 0x07);
-    video_print_at(13, 10, "F3         Visualizar conteudo", 0x07);
-    video_print_at(13, 11, "F5         Atualizar lista", 0x07);
-    video_print_at(13, 12, "F7         Criar novo arquivo", 0x07);
-    video_print_at(13, 13, "F8         Excluir arquivo", 0x07);
-    video_print_at(13, 14, "F2         Renomear arquivo", 0x07);
-    video_print_at(13, 15, "Esc        Sair do Explorer", 0x07);
+    video_print_at(13, 9,  "Backspace  Subir um nivel", 0x07);
+    video_print_at(13, 10, "Alt+<-     Voltar", 0x07);
+    video_print_at(13, 11, "Alt+->     Avancar", 0x07);
+    video_print_at(13, 12, "F2         Renomear arquivo", 0x07);
+    video_print_at(13, 13, "F3         Visualizar conteudo", 0x07);
+    video_print_at(13, 14, "F5         Atualizar lista", 0x07);
+    video_print_at(13, 15, "F7         Criar novo arquivo", 0x07);
+    video_print_at(13, 16, "F8         Excluir arquivo", 0x07);
+    video_print_at(13, 17, "Ctrl+L     Digitar caminho", 0x07);
+    video_print_at(13, 18, "Esc        Sair do Explorer", 0x07);
 
-    video_draw_hline(11, 17, 58, 0xC4, 0x07);
-    video_print_at(22, 18, "Pressione Esc para voltar...", 0x08);
+    video_draw_hline(11, 20, 58, 0xC4, 0x07);
+    video_print_at(22, 21, "Pressione Esc para voltar...", 0x08);
 }
 
 static void fm_draw_create_file(void) {
@@ -246,10 +370,22 @@ static void fm_draw_view_file(void) {
         return;
     }
 
-    char fat12_name[11];
-    name_to_fat12(f->name, fat12_name);
+    char file_path[FM_MAX_PATH];
+    if (state.current_path[0] == '\0') {
+        str_copy(file_path, f->name);
+    } else {
+        int pi = 0;
+        for (int i = 0; state.current_path[i]; i++) {
+            file_path[pi++] = state.current_path[i];
+        }
+        file_path[pi++] = '/';
+        for (int i = 0; f->name[i]; i++) {
+            file_path[pi++] = f->name[i];
+        }
+        file_path[pi] = '\0';
+    }
 
-    int bytes = fat12_read_file(fat12_name, buffer, 4095);
+    int bytes = fs_read_file_at(file_path, buffer, 4095);
     if (bytes < 0) {
         video_print_at(2, 2, "Erro ao ler arquivo: ", 0x0C);
         video_print_at(22, 2, f->name, 0x0C);
@@ -297,6 +433,7 @@ static void fm_draw_all(void) {
     video_clear();
     fm_draw_title_bar();
     fm_draw_menu_bar();
+    fm_draw_address_bar();
     fm_draw_column_headers();
     fm_draw_separator_bottom();
     fm_draw_status_bar();
@@ -308,12 +445,18 @@ void fm_init(void) {
     state.scroll_offset = 0;
     state.view_mode = 0;
     state.running = 1;
+    state.current_path[0] = '\0';
+    state.history_count = 0;
+    state.history_pos = 0;
+    state.address_mode = 0;
+    state.address_pos = 0;
     input_pos = 0;
     input_mode = 0;
     rename_mode = 0;
     confirm_delete = 0;
     old_name[0] = '\0';
 
+    fm_push_history();
     fm_refresh_files();
 }
 
@@ -334,28 +477,102 @@ void fm_run(void) {
     taskbar_draw();
 }
 
+static const char scancode_table[128] = {
+    0,  27, '1','2','3','4','5','6','7','8','9','0','-','=','\b',
+    '\t','q','w','e','r','t','y','u','i','o','p','[',']','\n',
+    0,  'a','s','d','f','g','h','j','k','l',';','\'','`',
+    0,  '\\','z','x','c','v','b','n','m',',','.','/',0,
+    '*', 0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0
+};
+
+static int alt_pressed = 0;
+
 void fm_handle_key(uint8_t scancode) {
-    if (taskbar_handle_config_key(scancode)) {
+    if (taskbar_handle_config_key(scancode)) return;
+    if (taskbar_handle_key(scancode)) return;
+
+    if (scancode == 0x38) {
+        alt_pressed = 1;
         return;
     }
-
-    if (taskbar_handle_key(scancode)) {
+    if (scancode == 0x38 + 0x80) {
+        alt_pressed = 0;
         return;
     }
-
-    static const char scancode_table[128] = {
-        0,  27, '1','2','3','4','5','6','7','8','9','0','-','=','\b',
-        '\t','q','w','e','r','t','y','u','i','o','p','[',']','\n',
-        0,  'a','s','d','f','g','h','j','k','l',';','\'','`',
-        0,  '\\','z','x','c','v','b','n','m',',','.','/',0,
-        '*', 0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
 
     if (scancode & 0x80) return;
+
+    if (state.address_mode) {
+        char c = scancode_table[scancode];
+
+        if (scancode == 0x0E) {
+            if (state.address_pos > 0) {
+                state.address_pos--;
+                state.address_buffer[state.address_pos] = '\0';
+                int cx = 3 + state.address_pos;
+                video_put_char_at(' ', FM_ADDRESS_INPUT_COLOR, cx, 2);
+            }
+            return;
+        }
+
+        if (scancode == 0x1C) {
+            state.address_buffer[state.address_pos] = '\0';
+            state.address_mode = 0;
+
+            if (state.address_pos > 0) {
+                char new_path[FM_MAX_PATH];
+                int pi = 0;
+
+                if (state.address_buffer[0] == 'c' || state.address_buffer[0] == 'C') {
+                    if (state.address_buffer[1] == ':') {
+                        pi = 2;
+                        if (state.address_buffer[2] == '\\') pi = 3;
+                    }
+                }
+
+                for (int i = pi; state.address_buffer[i]; i++) {
+                    new_path[pi - pi + i - pi] = state.address_buffer[i];
+                }
+                int len = str_len(state.address_buffer) - pi;
+                new_path[len] = '\0';
+
+                if (len == 0 || str_equal(new_path, "\\")) {
+                    new_path[0] = '\0';
+                }
+
+                if (new_path[0] == '\\') {
+                    int shifted = 0;
+                    for (int i = 1; new_path[i]; i++) {
+                        new_path[shifted++] = new_path[i];
+                    }
+                    new_path[shifted] = '\0';
+                }
+
+                fm_navigate_to(new_path);
+            } else {
+                fm_draw_all();
+            }
+            return;
+        }
+
+        if (scancode == 0x01) {
+            state.address_mode = 0;
+            fm_draw_all();
+            return;
+        }
+
+        if (c && state.address_pos < FM_MAX_PATH - 1) {
+            state.address_buffer[state.address_pos++] = c;
+            state.address_buffer[state.address_pos] = '\0';
+            int cx = 3 + state.address_pos - 1;
+            video_put_char_at(c, FM_ADDRESS_INPUT_COLOR, cx, 2);
+        }
+        return;
+    }
 
     if (input_mode) {
         char c = scancode_table[scancode];
@@ -376,9 +593,7 @@ void fm_handle_key(uint8_t scancode) {
             if (confirm_delete) {
                 if (input_buffer[0] == 's' || input_buffer[0] == 'S') {
                     if (state.selected >= 0 && state.selected < state.file_count) {
-                        char fat12_name[11];
-                        name_to_fat12(state.files[state.selected].name, fat12_name);
-                        fat12_delete_file(fat12_name);
+                        fs_delete_file_in_dir(state.current_path, state.files[state.selected].name);
                         fm_refresh_files();
                     }
                 }
@@ -390,18 +605,23 @@ void fm_handle_key(uint8_t scancode) {
 
             if (rename_mode) {
                 if (input_pos > 0 && state.selected >= 0 && state.selected < state.file_count) {
-                    char new_fat12_name[11];
-                    name_to_fat12(input_buffer, new_fat12_name);
-
                     uint8_t* content = 0;
                     uint32_t size = 0;
 
                     if (!state.files[state.selected].is_dir && state.files[state.selected].size > 0) {
                         content = (uint8_t*)kmalloc(state.files[state.selected].size);
                         if (content) {
-                            char old_fat12[11];
-                            name_to_fat12(old_name, old_fat12);
-                            int bytes = fat12_read_file(old_fat12, content, state.files[state.selected].size);
+                            char file_path[FM_MAX_PATH];
+                            if (state.current_path[0] == '\0') {
+                                str_copy(file_path, old_name);
+                            } else {
+                                int pi = 0;
+                                for (int i = 0; state.current_path[i]; i++) file_path[pi++] = state.current_path[i];
+                                file_path[pi++] = '/';
+                                for (int i = 0; old_name[i]; i++) file_path[pi++] = old_name[i];
+                                file_path[pi] = '\0';
+                            }
+                            int bytes = fs_read_file_at(file_path, content, state.files[state.selected].size);
                             if (bytes > 0) {
                                 size = bytes;
                             } else {
@@ -411,13 +631,14 @@ void fm_handle_key(uint8_t scancode) {
                         }
                     }
 
-                    char old_fat12[11];
-                    name_to_fat12(old_name, old_fat12);
-                    fat12_delete_file(old_fat12);
+                    fs_delete_file_in_dir(state.current_path, old_name);
 
                     if (content && size > 0) {
-                        fat12_write_file(new_fat12_name, content, size);
+                        fs_write_file_in_dir(state.current_path, input_buffer, content, size);
                         kfree(content);
+                    } else {
+                        uint8_t empty[1] = {0};
+                        fs_write_file_in_dir(state.current_path, input_buffer, empty, 0);
                     }
 
                     fm_refresh_files();
@@ -429,10 +650,8 @@ void fm_handle_key(uint8_t scancode) {
             }
 
             if (input_pos > 0) {
-                char fat12_name[11];
-                name_to_fat12(input_buffer, fat12_name);
                 uint8_t empty_data[1] = {0};
-                fat12_write_file(fat12_name, empty_data, 0);
+                fs_write_file_in_dir(state.current_path, input_buffer, empty_data, 0);
                 fm_refresh_files();
             }
 
@@ -458,8 +677,29 @@ void fm_handle_key(uint8_t scancode) {
         return;
     }
 
+    if (alt_pressed) {
+        if (scancode == 0x4B) {
+            alt_pressed = 0;
+            fm_go_back();
+            return;
+        }
+        if (scancode == 0x4D) {
+            alt_pressed = 0;
+            fm_go_forward();
+            return;
+        }
+    }
+
     if (scancode == 0x01) {
         state.running = 0;
+        return;
+    }
+
+    if (scancode == 0x26) {
+        state.address_mode = 1;
+        state.address_pos = 0;
+        state.address_buffer[0] = '\0';
+        fm_draw_address_bar();
         return;
     }
 
@@ -526,8 +766,17 @@ void fm_handle_key(uint8_t scancode) {
         if (state.selected >= 0 && state.selected < state.file_count) {
             fm_file_entry_t* f = &state.files[state.selected];
             if (f->is_dir) {
-                fm_refresh_files();
-                fm_draw_all();
+                char new_path[FM_MAX_PATH];
+                if (state.current_path[0] == '\0') {
+                    str_copy(new_path, f->name);
+                } else {
+                    int pi = 0;
+                    for (int i = 0; state.current_path[i]; i++) new_path[pi++] = state.current_path[i];
+                    new_path[pi++] = '/';
+                    for (int i = 0; f->name[i]; i++) new_path[pi++] = f->name[i];
+                    new_path[pi] = '\0';
+                }
+                fm_navigate_to(new_path);
             } else {
                 fm_draw_view_file();
             }
@@ -536,8 +785,7 @@ void fm_handle_key(uint8_t scancode) {
     }
 
     if (scancode == 0x0E) {
-        fm_refresh_files();
-        fm_draw_all();
+        fm_go_up();
         return;
     }
 
@@ -558,8 +806,8 @@ void fm_handle_key(uint8_t scancode) {
     if (scancode == 0x50) {
         if (state.selected < state.file_count - 1) {
             state.selected++;
-            if (state.selected >= state.scroll_offset + 18) {
-                state.scroll_offset = state.selected - 17;
+            if (state.selected >= state.scroll_offset + 17) {
+                state.scroll_offset = state.selected - 16;
             }
         }
         fm_draw_file_list();
@@ -568,7 +816,7 @@ void fm_handle_key(uint8_t scancode) {
     }
 
     if (scancode == 0x49) {
-        state.selected -= 18;
+        state.selected -= 17;
         if (state.selected < 0) state.selected = 0;
         if (state.selected < state.scroll_offset) {
             state.scroll_offset = state.selected;
@@ -579,12 +827,12 @@ void fm_handle_key(uint8_t scancode) {
     }
 
     if (scancode == 0x51) {
-        state.selected += 18;
+        state.selected += 17;
         if (state.selected >= state.file_count) {
             state.selected = state.file_count - 1;
         }
-        if (state.selected >= state.scroll_offset + 18) {
-            state.scroll_offset = state.selected - 17;
+        if (state.selected >= state.scroll_offset + 17) {
+            state.scroll_offset = state.selected - 16;
         }
         fm_draw_file_list();
         fm_draw_status_bar();
@@ -601,8 +849,8 @@ void fm_handle_key(uint8_t scancode) {
 
     if (scancode == 0x4F) {
         state.selected = state.file_count - 1;
-        if (state.selected >= 18) {
-            state.scroll_offset = state.selected - 17;
+        if (state.selected >= 17) {
+            state.scroll_offset = state.selected - 16;
         }
         fm_draw_file_list();
         fm_draw_status_bar();

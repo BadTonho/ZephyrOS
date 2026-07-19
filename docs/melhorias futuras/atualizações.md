@@ -1,0 +1,1 @@
+atualizações do sistema como eu nao vou ter um servidor pra fazer as atualizações do sistema, vamos impletar 2 arquivos a iso pra instalar, outro arquivo ( a descedir ) pra baixar as atualizações, eu vou postar no github esses 2

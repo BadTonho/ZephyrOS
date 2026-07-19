@@ -1,5 +1,5 @@
-#include "pci.h"
-#include "video.h"
+#include "drivers/pci.h"
+#include "core/video.h"
 
 static pci_device_t devices[32];
 static uint8_t device_count = 0;

@@ -1,6 +1,6 @@
-#include "keyboard.h"
-#include "idt.h"
-#include "video.h"
+#include "core/keyboard.h"
+#include "drivers/idt.h"
+#include "core/video.h"
 
 static keyboard_callback_t callback = 0;
 

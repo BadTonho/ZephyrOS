@@ -7,7 +7,7 @@ LD = ld
 QEMU = qemu-system-i386
 
 # Flags
-CFLAGS = -m32 -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -I src/include
+CFLAGS = -m32 -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -I src/include -I src/include/core -I src/include/drivers -I src/include/fs -I src/include/memory -I src/include/process -I src/include/apps -I src/include/ui
 LDFLAGS = -m elf_i386 -T src/linker.ld
 NASMFLAGS = -f bin
 

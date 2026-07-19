@@ -1,9 +1,9 @@
-#include "editor.h"
-#include "video.h"
-#include "keyboard.h"
-#include "fs.h"
-#include "memory.h"
-#include "timer.h"
+#include "apps/editor.h"
+#include "core/video.h"
+#include "core/keyboard.h"
+#include "fs/fs.h"
+#include "core/memory.h"
+#include "core/timer.h"
 
 static editor_t editor;
 static uint8_t shift_pressed = 0;

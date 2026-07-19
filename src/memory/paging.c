@@ -1,7 +1,7 @@
-#include "paging.h"
-#include "memory.h"
-#include "video.h"
-#include "panic.h"
+#include "memory/paging.h"
+#include "core/memory.h"
+#include "core/video.h"
+#include "core/panic.h"
 
 static page_directory_t* current_directory = 0;
 

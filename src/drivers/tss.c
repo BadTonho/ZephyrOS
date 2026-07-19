@@ -1,5 +1,5 @@
-#include "tss.h"
-#include "idt.h"
+#include "drivers/tss.h"
+#include "drivers/idt.h"
 
 static tss_entry_t tss;
 

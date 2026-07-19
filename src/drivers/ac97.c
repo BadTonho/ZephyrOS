@@ -1,8 +1,8 @@
-#include "ac97.h"
-#include "pci.h"
-#include "memory.h"
-#include "idt.h"
-#include "video.h"
+#include "drivers/ac97.h"
+#include "drivers/pci.h"
+#include "core/memory.h"
+#include "drivers/idt.h"
+#include "core/video.h"
 
 static ac97_device_t ac97_dev;
 static ac97_stream_t output_stream;

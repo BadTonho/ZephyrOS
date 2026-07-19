@@ -2,7 +2,7 @@
 #define BMP_H
 
 #include "types.h"
-#include "vesa.h"
+#include "drivers/vesa.h"
 
 typedef struct {
     char     signature[2];

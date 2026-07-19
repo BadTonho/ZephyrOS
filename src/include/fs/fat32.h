@@ -2,7 +2,7 @@
 #define FAT32_H
 
 #include "types.h"
-#include "ata.h"
+#include "drivers/ata.h"
 
 #define FAT32_CLUSTER_FREE      0x00000000
 #define FAT32_CLUSTER_RESERVED  0x0FFFFFF0
@@ -76,5 +76,13 @@ int  fat32_list_dir(void);
 int  fat32_get_file_count(void);
 int  fat32_get_file_info(int index, char* name_out, uint32_t* size_out, uint8_t* attr_out);
 fat32_fs_t* fat32_get_fs(void);
+
+int  fat32_read_file_at(const char* path, uint8_t* buffer, uint32_t max_size);
+int  fat32_get_file_count_at(uint32_t dir_cluster);
+int  fat32_get_file_info_at(uint32_t dir_cluster, int index, char* name_out, uint32_t* size_out, uint8_t* attr_out);
+uint32_t fat32_resolve_path(const char* path);
+int  fat32_create_dir_entry(uint32_t dir_cluster, const char* name, uint8_t attributes);
+int  fat32_write_file_in_dir(uint32_t dir_cluster, const char* filename, const uint8_t* data, uint32_t size);
+int  fat32_delete_file_in_dir(uint32_t dir_cluster, const char* filename);
 
 #endif

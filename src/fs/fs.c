@@ -1,8 +1,8 @@
-#include "fs.h"
-#include "fat12.h"
-#include "fat32.h"
-#include "video.h"
-#include "panic.h"
+#include "fs/fs.h"
+#include "fs/fat12.h"
+#include "fs/fat32.h"
+#include "core/video.h"
+#include "core/panic.h"
 
 static uint8_t current_fs_type = FS_TYPE_NONE;
 
@@ -112,4 +112,83 @@ int fs_get_info(fs_info_t* info) {
 
 uint8_t fs_get_type(void) {
     return current_fs_type;
+}
+
+static uint32_t fs_resolve_dir_cluster(const char* dir_path) {
+    if (!dir_path || dir_path[0] == '\0') {
+        if (current_fs_type == FS_TYPE_FAT12) return 0;
+        if (current_fs_type == FS_TYPE_FAT32) return fat32_get_fs()->root_cluster;
+        return 0;
+    }
+
+    if (current_fs_type == FS_TYPE_FAT12) {
+        return (uint32_t)fat12_resolve_path(dir_path);
+    } else if (current_fs_type == FS_TYPE_FAT32) {
+        return fat32_resolve_path(dir_path);
+    }
+    return 0;
+}
+
+int fs_read_file_at(const char* path, uint8_t* buffer, uint32_t max_size) {
+    if (current_fs_type == FS_TYPE_FAT12) {
+        return fat12_read_file_at(path, buffer, max_size);
+    } else if (current_fs_type == FS_TYPE_FAT32) {
+        return fat32_read_file_at(path, buffer, max_size);
+    }
+    return -1;
+}
+
+int fs_get_file_count_at(const char* dir_path) {
+    uint32_t cluster = fs_resolve_dir_cluster(dir_path);
+
+    if (current_fs_type == FS_TYPE_FAT12) {
+        return fat12_get_file_count_at((uint16_t)cluster);
+    } else if (current_fs_type == FS_TYPE_FAT32) {
+        return fat32_get_file_count_at(cluster);
+    }
+    return 0;
+}
+
+int fs_get_file_info_at(const char* dir_path, int index, char* name_out, uint32_t* size_out, uint8_t* attr_out) {
+    uint32_t cluster = fs_resolve_dir_cluster(dir_path);
+
+    if (current_fs_type == FS_TYPE_FAT12) {
+        return fat12_get_file_info_at((uint16_t)cluster, index, name_out, size_out, attr_out);
+    } else if (current_fs_type == FS_TYPE_FAT32) {
+        return fat32_get_file_info_at(cluster, index, name_out, size_out, attr_out);
+    }
+    return -1;
+}
+
+int fs_create_dir_entry(const char* dir_path, const char* name, uint8_t attributes) {
+    uint32_t cluster = fs_resolve_dir_cluster(dir_path);
+
+    if (current_fs_type == FS_TYPE_FAT12) {
+        return fat12_create_dir_entry((uint16_t)cluster, name, attributes);
+    } else if (current_fs_type == FS_TYPE_FAT32) {
+        return fat32_create_dir_entry(cluster, name, attributes);
+    }
+    return -1;
+}
+
+int fs_write_file_in_dir(const char* dir_path, const char* filename, const uint8_t* data, uint32_t size) {
+    uint32_t cluster = fs_resolve_dir_cluster(dir_path);
+
+    if (current_fs_type == FS_TYPE_FAT12) {
+        return fat12_write_file_in_dir((uint16_t)cluster, filename, data, size);
+    } else if (current_fs_type == FS_TYPE_FAT32) {
+        return fat32_write_file_in_dir(cluster, filename, data, size);
+    }
+    return -1;
+}
+
+int fs_delete_file_in_dir(const char* dir_path, const char* filename) {
+    uint32_t cluster = fs_resolve_dir_cluster(dir_path);
+
+    if (current_fs_type == FS_TYPE_FAT12) {
+        return fat12_delete_file_in_dir((uint16_t)cluster, filename);
+    } else if (current_fs_type == FS_TYPE_FAT32) {
+        return fat32_delete_file_in_dir(cluster, filename);
+    }
+    return -1;
 }

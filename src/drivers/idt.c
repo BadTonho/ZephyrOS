@@ -1,6 +1,6 @@
-#include "idt.h"
-#include "video.h"
-#include "panic.h"
+#include "drivers/idt.h"
+#include "core/video.h"
+#include "core/panic.h"
 
 idt_entry_t idt[256];
 idt_ptr_t idt_ptr;

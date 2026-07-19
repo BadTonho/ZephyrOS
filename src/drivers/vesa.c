@@ -1,8 +1,8 @@
-#include "vesa.h"
-#include "memory.h"
-#include "video.h"
-#include "font.h"
-#include "panic.h"
+#include "drivers/vesa.h"
+#include "core/memory.h"
+#include "core/video.h"
+#include "drivers/font.h"
+#include "core/panic.h"
 
 static vesa_mode_t current_mode;
 

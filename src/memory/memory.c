@@ -1,6 +1,6 @@
-#include "memory.h"
-#include "video.h"
-#include "panic.h"
+#include "core/memory.h"
+#include "core/video.h"
+#include "core/panic.h"
 
 static memory_info_t mem_info;
 

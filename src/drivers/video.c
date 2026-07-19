@@ -1,4 +1,4 @@
-#include "video.h"
+#include "core/video.h"
 
 static uint16_t* video_memory = (uint16_t*)VIDEO_MEMORY;
 static int cursor_x = 0;

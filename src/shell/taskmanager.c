@@ -1,12 +1,12 @@
-#include "taskmanager.h"
-#include "video.h"
-#include "keyboard.h"
-#include "timer.h"
-#include "memory.h"
-#include "process.h"
-#include "thread.h"
-#include "panic.h"
-#include "taskbar.h"
+#include "apps/taskmanager.h"
+#include "core/video.h"
+#include "core/keyboard.h"
+#include "core/timer.h"
+#include "core/memory.h"
+#include "process/process.h"
+#include "process/thread.h"
+#include "core/panic.h"
+#include "ui/taskbar.h"
 
 #define TSKMGR_WIDTH  78
 #define TSKMGR_HEIGHT 23

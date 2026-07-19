@@ -1,5 +1,5 @@
-#include "panic.h"
-#include "video.h"
+#include "core/panic.h"
+#include "core/video.h"
 
 void panic(const char* message) {
     video_clear();

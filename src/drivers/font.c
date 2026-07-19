@@ -1,5 +1,5 @@
-#include "font.h"
-#include "vesa.h"
+#include "drivers/font.h"
+#include "drivers/vesa.h"
 
 static const uint8_t font_8x16[128][16] = {
     [0 ... 127] = {0},

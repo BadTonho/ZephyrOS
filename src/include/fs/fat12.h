@@ -2,7 +2,7 @@
 #define FAT12_H
 
 #include "types.h"
-#include "ata.h"
+#include "drivers/ata.h"
 
 #define FAT12_CLUSTER_FREE      0x000
 #define FAT12_CLUSTER_RESERVED  0xFF0
@@ -67,5 +67,13 @@ fat12_fs_t* fat12_get_fs(void);
 
 int  fat12_get_file_count(void);
 int  fat12_get_file_info(int index, char* name_out, uint32_t* size_out, uint8_t* attr_out);
+
+int  fat12_read_file_at(const char* path, uint8_t* buffer, uint32_t max_size);
+int  fat12_get_file_count_at(uint16_t dir_cluster);
+int  fat12_get_file_info_at(uint16_t dir_cluster, int index, char* name_out, uint32_t* size_out, uint8_t* attr_out);
+uint16_t fat12_resolve_path(const char* path);
+int  fat12_create_dir_entry(uint16_t dir_cluster, const char* name, uint8_t attributes);
+int  fat12_write_file_in_dir(uint16_t dir_cluster, const char* filename, const uint8_t* data, uint32_t size);
+int  fat12_delete_file_in_dir(uint16_t dir_cluster, const char* filename);
 
 #endif

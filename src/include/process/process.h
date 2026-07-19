@@ -2,7 +2,7 @@
 #define PROCESS_H
 
 #include "types.h"
-#include "paging.h"
+#include "memory/paging.h"
 
 #define MAX_PROCESSES 64
 #define KERNEL_STACK_SIZE 4096

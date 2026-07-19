@@ -1,5 +1,5 @@
-#include "speaker.h"
-#include "timer.h"
+#include "drivers/speaker.h"
+#include "core/timer.h"
 
 static void outb(uint16_t port, uint8_t val) {
     asm volatile("outb %0, %1" : : "a"(val), "Nd"(port));

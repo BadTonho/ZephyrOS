@@ -1,8 +1,8 @@
-#include "process.h"
-#include "memory.h"
-#include "video.h"
-#include "panic.h"
-#include "timer.h"
+#include "process/process.h"
+#include "core/memory.h"
+#include "core/video.h"
+#include "core/panic.h"
+#include "core/timer.h"
 
 static process_t processes[MAX_PROCESSES];
 static process_t* current_process = 0;

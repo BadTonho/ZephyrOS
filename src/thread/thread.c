@@ -1,6 +1,6 @@
-#include "thread.h"
-#include "memory.h"
-#include "timer.h"
+#include "process/thread.h"
+#include "core/memory.h"
+#include "core/timer.h"
 
 static thread_t threads[MAX_THREADS];
 static thread_t* current_thread = 0;

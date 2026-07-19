@@ -1,6 +1,6 @@
-#include "compress.h"
-#include "memory.h"
-#include "video.h"
+#include "memory/compress.h"
+#include "core/memory.h"
+#include "core/video.h"
 
 static compress_stats_t stats;
 static uint8_t enabled = 0;

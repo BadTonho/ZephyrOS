@@ -38,4 +38,11 @@ int      fs_get_file_info(int index, char* name_out, uint32_t* size_out, uint8_t
 int      fs_get_info(fs_info_t* info);
 uint8_t  fs_get_type(void);
 
+int      fs_read_file_at(const char* path, uint8_t* buffer, uint32_t max_size);
+int      fs_get_file_count_at(const char* dir_path);
+int      fs_get_file_info_at(const char* dir_path, int index, char* name_out, uint32_t* size_out, uint8_t* attr_out);
+int      fs_create_dir_entry(const char* dir_path, const char* name, uint8_t attributes);
+int      fs_write_file_in_dir(const char* dir_path, const char* filename, const uint8_t* data, uint32_t size);
+int      fs_delete_file_in_dir(const char* dir_path, const char* filename);
+
 #endif

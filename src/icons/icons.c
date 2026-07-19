@@ -1,4 +1,4 @@
-#include "icons.h"
+#include "ui/icons.h"
 
 static icon_registry_t registry;
 

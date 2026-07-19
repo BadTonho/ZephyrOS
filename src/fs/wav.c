@@ -1,7 +1,7 @@
-#include "wav.h"
-#include "memory.h"
-#include "video.h"
-#include "ac97.h"
+#include "fs/wav.h"
+#include "core/memory.h"
+#include "core/video.h"
+#include "drivers/ac97.h"
 
 static void memset(void* dst, uint8_t val, uint32_t size) {
     uint8_t* d = (uint8_t*)dst;

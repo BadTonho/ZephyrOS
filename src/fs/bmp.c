@@ -1,6 +1,6 @@
-#include "bmp.h"
-#include "memory.h"
-#include "video.h"
+#include "fs/bmp.h"
+#include "core/memory.h"
+#include "core/video.h"
 
 static void memset(void* dst, uint8_t val, uint32_t size) {
     uint8_t* d = (uint8_t*)dst;

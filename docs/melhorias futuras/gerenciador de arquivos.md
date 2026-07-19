@@ -9,15 +9,15 @@
 > Objetivo: Ter um explorador funcional com navegação e operações básicas.
 
 ### 1. Navegação por arquivos e pastas
-- 🟡 Abrir discos internos, SSDs, HDs e partições. *(detecta ATA e FAT12/FAT32, mas só root dir)*
+- ✅ Abrir discos internos, SSDs, HDs e partições. *(suporte a subdiretórios em FAT12/FAT32)*
 - ⬜ Acessar pendrives, cartões de memória, celulares e discos externos.
-- 🟡 Navegar pelas pastas Desktop, Documentos, Downloads, Imagens, Música e Vídeos. *(lista root dir apenas)*
+- ✅ Navegar pelas pastas Desktop, Documentos, Downloads, Imagens, Música e Vídeos. *(navegação completa por subdiretórios)*
 - ⬜ Usar Este Computador para visualizar unidades e espaço disponível.
 - ⬜ Navegar por pastas usando o painel lateral em formato de árvore.
-- ⬜ Voltar para a pasta anterior.
-- ⬜ Avançar para a próxima pasta.
-- ⬜ Subir um nível na hierarquia.
-- ⬜ Digitar ou colar um caminho diretamente na barra de endereço.
+- ✅ Voltar para a pasta anterior. *(Alt+← com histórico)*
+- ✅ Avançar para a próxima pasta. *(Alt+→ com histórico)*
+- ✅ Subir um nível na hierarquia. *(Backspace)*
+- ✅ Digitar ou colar um caminho diretamente na barra de endereço. *(Ctrl+L abre barra de endereço)*
 - ⬜ Copiar o caminho completo de um arquivo ou pasta.
 
 ### 2. Criação de itens
@@ -267,12 +267,12 @@
 
 | Fase | Total | Feito | Parcial | Restante |
 |------|-------|-------|---------|----------|
-| 1 — Fundamentos | 42 | 4 | 3 | 35 |
+| 1 — Fundamentos | 42 | 9 | 2 | 31 |
 | 2 — Visualização | 38 | 4 | 1 | 33 |
 | 3 — Pesquisa/Metadados | 31 | 3 | 1 | 27 |
 | 4 — Segurança/Compressão | 30 | 0 | 1 | 29 |
 | 5 — Rede/Nuvem/Manutenção | 43 | 0 | 2 | 41 |
-| **Total** | **184** | **11** | **8** | **165** |
+| **Total** | **184** | **16** | **7** | **161** |
 
 ---
 
@@ -292,11 +292,12 @@
 | `Alt + Enter` | Abrir propriedades | ⬜ |
 | `Alt + P` | Mostrar ou ocultar a visualização | ⬜ |
 | `Alt + ↑` | Subir uma pasta | ⬜ |
-| `Alt + ←` | Voltar | ⬜ |
-| `Alt + →` | Avançar | ⬜ |
+| `Alt + ←` | Voltar | ✅ (Alt+← no Explorer) |
+| `Alt + →` | Avançar | ✅ (Alt+→ no Explorer) |
 | `Ctrl + N` | Abrir uma nova janela | ⬜ |
 | `Ctrl + W` | Fechar a janela ou aba ativa | ⬜ |
 | `Ctrl + Tab` | Trocar de aba (Windows 11) | ⬜ |
+| `Ctrl + L` | Digitar caminho na barra de endereço | ✅ (no Explorer) |
 | `F11` | Tela cheia | ⬜ |
 | `F3` | Visualizar conteúdo | ✅ |
 | `F5` | Atualizar | ✅ |
@@ -307,8 +308,8 @@
 
 ## Limitações Técnicas Conhecidas
 
-- **Apenas root directory**: O FAT12/FAT32 implementado só trabalha com o diretório raiz. Subdiretórios ainda não são suportados.
 - **Máximo 64 arquivos**: `FM_MAX_FILES` limita a 64 itens por diretório.
-- **Nomes 8.3**: Limitados a 8+3 caracteres pelo formato FAT12.
+- **Nomes 8.3**: Limitados a 8+3 caracteres pelo formato FAT12/FAT32.
 - **Sem mouse**: Toda interação é por teclado via scancodes PS/2.
 - **Tela de texto**: VGA text mode 80x25 colunas.
+- **FAT12 subdiretórios**: Suporte a navegação por subdiretórios implementado, mas criação de pastas ainda usa apenas o método de arquivo vazio (sem `.` e `..`).

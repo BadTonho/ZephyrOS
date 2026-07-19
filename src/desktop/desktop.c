@@ -1,9 +1,9 @@
-#include "desktop.h"
-#include "video.h"
-#include "keyboard.h"
-#include "speaker.h"
-#include "taskbar.h"
-#include "icons.h"
+#include "ui/desktop.h"
+#include "core/video.h"
+#include "core/keyboard.h"
+#include "drivers/speaker.h"
+#include "ui/taskbar.h"
+#include "ui/icons.h"
 
 static desktop_icon_t desktop_icons[DESKTOP_MAX_ICONS];
 static int icon_count = 0;

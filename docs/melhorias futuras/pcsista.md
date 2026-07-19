@@ -1,0 +1,1 @@
+colocar um sistema de ver fps e informações do computador assim como no riva mas isso nativo

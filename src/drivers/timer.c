@@ -1,5 +1,5 @@
-#include "timer.h"
-#include "idt.h"
+#include "core/timer.h"
+#include "drivers/idt.h"
 
 static uint32_t ticks = 0;
 

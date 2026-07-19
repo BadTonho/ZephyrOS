@@ -1,13 +1,13 @@
-#include "mediaplayer.h"
-#include "wav.h"
-#include "bmp.h"
-#include "ac97.h"
-#include "fs.h"
-#include "vesa.h"
-#include "video.h"
-#include "memory.h"
-#include "timer.h"
-#include "font.h"
+#include "apps/mediaplayer.h"
+#include "fs/wav.h"
+#include "fs/bmp.h"
+#include "drivers/ac97.h"
+#include "fs/fs.h"
+#include "drivers/vesa.h"
+#include "core/video.h"
+#include "core/memory.h"
+#include "core/timer.h"
+#include "drivers/font.h"
 
 static mp_status_t status;
 static wav_file_t current_wav;

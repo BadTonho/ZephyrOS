@@ -1,8 +1,8 @@
-#include "taskbar.h"
-#include "video.h"
-#include "keyboard.h"
-#include "timer.h"
-#include "settings.h"
+#include "ui/taskbar.h"
+#include "core/video.h"
+#include "core/keyboard.h"
+#include "core/timer.h"
+#include "ui/settings.h"
 
 static tb_button_t buttons[TASKBAR_BUTTON_MAX];
 static int button_count = 0;

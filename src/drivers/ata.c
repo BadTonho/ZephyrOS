@@ -1,5 +1,5 @@
-#include "ata.h"
-#include "video.h"
+#include "drivers/ata.h"
+#include "core/video.h"
 
 static ata_device_t devices[2];
 

@@ -1,8 +1,8 @@
-#include "wm.h"
-#include "video.h"
-#include "keyboard.h"
-#include "timer.h"
-#include "icons.h"
+#include "ui/wm.h"
+#include "core/video.h"
+#include "core/keyboard.h"
+#include "core/timer.h"
+#include "ui/icons.h"
 
 static wm_manager_t wm;
 static int wm_active = 0;
