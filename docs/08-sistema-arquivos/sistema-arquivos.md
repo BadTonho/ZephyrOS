@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-O MiniOS usa **FAT12** (File Allocation Table 12-bit), o mesmo formato de disquetes de 1.44 MB.
+O MiniOS usa um sistema de arquivos com interface unificada que suporta **FAT12** e **FAT32**, além de formatos de arquivo como **BMP** e **WAV**.
 
 ## Arquivos
 
@@ -10,7 +10,11 @@ O MiniOS usa **FAT12** (File Allocation Table 12-bit), o mesmo formato de disque
 src/drivers/
 │   └── ata.c         → Driver de disco (leitura/escrita de setores)
 src/fs/
-│   └── fat12.c       → Sistema de arquivos FAT12
+│   ├── fat12.c       → Sistema de arquivos FAT12
+│   ├── fat32.c       → Sistema de arquivos FAT32
+│   ├── fs.c          → Interface unificada FAT12/FAT32
+│   ├── bmp.c         → Leitura de imagens BMP
+│   └── wav.c         → Leitura de áudio WAV
 ```
 
 ---
@@ -209,3 +213,229 @@ Espaços são usados para preencher:
 ```
 
 O shell converte automaticamente para maiúsculas.
+
+---
+
+## FAT32 (`fat32.c`)
+
+Suporte a discos com **FAT32** (File Allocation Table 32-bit).
+
+### Diferenças do FAT12
+
+| Característica | FAT12 | FAT32 |
+|---------------|-------|-------|
+| Bits por entrada | 12 | 32 (apenas 28 usados) |
+| Clusters máximos | 4.096 | ~268 milhões |
+| Tamanho máximo | 32 MB | 2 TB |
+| Root directory | Área fixa | Cluster encadeado |
+
+### BPB FAT32
+
+```c
+typedef struct {
+    uint8_t  jmp[3];
+    char     oem[8];
+    uint16_t bytes_per_sector;
+    uint8_t  sectors_per_cluster;
+    uint16_t reserved_sectors;
+    uint8_t  num_fats;
+    uint16_t max_root_entries;
+    uint16_t total_sectors_16;
+    uint8_t  media_descriptor;
+    uint16_t sectors_per_fat_16;
+    uint16_t sectors_per_track;
+    uint16_t num_heads;
+    uint32_t hidden_sectors;
+    uint32_t total_sectors_large;
+    uint32_t sectors_per_fat;      // FAT32: > 0
+    uint16_t flags;
+    uint16_t version;
+    uint32_t root_cluster;         // FAT32: cluster do root dir
+    uint16_t fsinfo_sector;
+    uint16_t backup_boot_sector;
+    char     reserved[12];
+    uint8_t  drive_number;
+    uint8_t  reserved1;
+    uint8_t  boot_signature;
+    uint32_t volume_id;
+    char     volume_label[11];
+    char     fs_type[8];
+} fat32_bpb_t;
+```
+
+### Cluster Chain (32-bit)
+
+```c
+uint32_t value = fat32_get_cluster(cluster);
+// value & 0x0FFFFFFF = próximo cluster
+// FAT32_CLUSTER_FREE (0)      = livre
+// FAT32_CLUSTER_END (0x0FFFFFFF) = último cluster da chain
+// FAT32_CLUSTER_BAD (0x0FFFFFF7) = cluster defeituoso
+```
+
+### API
+
+```c
+void fat32_init(void);
+int  fat32_read_file(filename, buffer, max_size);
+int  fat32_write_file(filename, data, size);
+int  fat32_delete_file(filename);
+int  fat32_list_dir(void);
+int  fat32_get_file_count(void);
+int  fat32_get_file_info(index, name, size, attr);
+```
+
+---
+
+## FS Unificado (`fs.c`)
+
+Interface única que abstrai FAT12 e FAT32, detectando automaticamente o formato do disco.
+
+### Inicialização
+
+```c
+fs_init();
+// Detecta FAT12 primeiro; se falhar, tenta FAT32
+```
+
+### API Unificada
+
+```c
+int  fs_read_file(filename, buffer, max_size);
+int  fs_write_file(filename, data, size);
+int  fs_delete_file(filename);
+int  fs_list_dir(void);
+int  fs_get_file_count(void);
+int  fs_get_file_info(index, name, size, attr);
+int  fs_get_info(fs_info_t* info);   // Obtém info do FS ativo
+uint8_t fs_get_type(void);           // FS_TYPE_FAT12 ou FS_TYPE_FAT32
+```
+
+### Estrutura de Informação
+
+```c
+typedef struct {
+    uint8_t  type;
+    uint16_t bytes_per_sector;
+    uint8_t  sectors_per_cluster;
+    uint32_t total_sectors;
+    uint32_t free_sectors;
+    uint32_t total_clusters;
+    uint32_t free_clusters;
+    char     label[12];
+} fs_info_t;
+```
+
+---
+
+## BMP (`bmp.c`)
+
+Leitura e renderização de imagens **BMP** (Bitmap).
+
+### Formatos Suportados
+
+| BPP | Tipo | Paleta |
+|-----|------|--------|
+| 1 | Monocromático | 2 cores |
+| 4 | 16 cores | 16 entradas |
+| 8 | 256 cores | 256 entradas |
+| 24 | True color | Sem paleta |
+
+### Estrutura
+
+```c
+typedef struct {
+    char     signature[2];      // "BM"
+    uint32_t file_size;
+    uint32_t data_offset;
+} bmp_file_header_t;
+
+typedef struct {
+    uint32_t header_size;
+    int32_t  width, height;
+    uint16_t planes, bits_per_pixel;
+    uint32_t compression;
+    uint32_t image_size;
+    // ...
+} bmp_info_header_t;
+
+typedef struct {
+    uint32_t width, height, bpp;
+    uint8_t* pixel_data;
+    bmp_color_table_t* color_table;
+    int initialized;
+} bmp_image_t;
+```
+
+### API
+
+```c
+int  bmp_load(raw_data, size, &image);      // Carrega BMP da memória
+void bmp_draw(&image, x, y);                 // Renderiza na tela (VESA)
+void bmp_draw_scaled(&image, x, y, scale);   // Renderiza com escala
+void bmp_free(&image);                       // Libera memória
+```
+
+### Exemplo
+
+```c
+uint8_t* data = fs_read_file("IMAGEM.BMP", buffer, 65536);
+bmp_image_t img;
+if (bmp_load(data, size, &img) == 0) {
+    bmp_draw(&img, 10, 10);   // Desenha no modo VESA
+    bmp_free(&img);
+}
+```
+
+---
+
+## WAV (`wav.c`)
+
+Leitura e reprodução de arquivos de áudio **WAV** (Waveform Audio).
+
+### Formato
+
+O WAV usa o container RIFF com chunks:
+
+```
+RIFF header: "RIFF" + size + "WAVE"
+  fmt chunk: "fmt " + size + audio_format + channels + sample_rate + ...
+  data chunk: "data" + size + PCM data
+```
+
+### Estrutura
+
+```c
+typedef struct {
+    uint16_t audio_format;     // 1 = PCM
+    uint16_t num_channels;     // 1 = mono, 2 = stereo
+    uint32_t sample_rate;      // 44100, 22050, etc.
+    uint32_t byte_rate;
+    uint16_t block_align;
+    uint16_t bits_per_sample;  // 8 ou 16
+    uint8_t* data;
+    uint32_t data_size;
+    int initialized;
+} wav_file_t;
+```
+
+### API
+
+```c
+void wav_init(void);
+int  wav_load(raw_data, size, &wav);     // Carrega WAV da memória
+void wav_play(&wav);                      // Reproduz via AC97
+void wav_free(&wav);                      // Libera memória
+uint32_t wav_get_duration_ms(&wav);       // Duração em ms
+```
+
+### Exemplo
+
+```c
+uint8_t* data = fs_read_file("MUSICA.WAV", buffer, 65536);
+wav_file_t wav;
+if (wav_load(data, size, &wav) == 0) {
+    wav_play(&wav);   // Toca o áudio
+    wav_free(&wav);
+}
+```

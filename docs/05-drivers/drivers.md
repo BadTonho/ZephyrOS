@@ -8,14 +8,18 @@ Drivers são programas que permitem ao kernel comunicar com o hardware (disco, t
 
 ```
 src/drivers/
+├── ac97.c           → Driver de áudio AC97
 ├── ata.c            → Driver de disco (ATA PIO)
+├── font.c           → Fonte bitmap 8x16
 ├── idt.c            → Tabela de interrupções
 ├── irq.asm          → Handlers de interrupção de hardware
 ├── isr.asm          → Handlers de exceção do CPU
 ├── keyboard.c       → Driver de teclado PS/2
+├── pci.c            → Enumeração do barramento PCI
 ├── speaker.c        → PC Speaker (som)
 ├── timer.c          → Timer (PIT)
 ├── tss.c            → Task State Segment
+├── vesa.c           → VESA BIOS Extensions (modo gráfico)
 └── video.c          → VGA Text Mode
 ```
 
@@ -227,4 +231,160 @@ speaker_beep(800, 200);  // 800 Hz por 200ms
 uint32_t freqs[] = {523, 587, 659, 698, 784, 880, 988, 1047};
 uint32_t durs[] =  {200, 200, 200, 200, 200, 200, 200, 400};
 speaker_play_melody(freqs, durs, 8);
+
+---
+
+## VESA (`vesa.c`)
+
+**VESA BIOS Extensions (VBE)** permite usar modos gráficos de alta resolução.
+
+### Inicialização
+
+```c
+vesa_init();
+```
+
+Escaneia todos os modos suportados pela placa de vídeo e seleciona a melhor resolução disponível (até 1920x1200, 32bpp).
+
+### Primitivas Gráficas
+
+| Função | Descrição |
+|--------|-----------|
+| `vesa_put_pixel(x, y, color)` | Desenha um pixel |
+| `vesa_get_pixel(x, y)` | Retorna cor de um pixel |
+| `vesa_clear(color)` | Limpa a tela com uma cor |
+| `vesa_fill_rect(x, y, w, h, color)` | Preenche retângulo |
+| `vesa_draw_rect(x, y, w, h, color)` | Desenha borda de retângulo |
+| `vesa_draw_line(x0, y0, x1, y1, color)` | Desenha linha (Bresenham) |
+| `vesa_draw_circle(cx, cy, r, color)` | Desenha círculo |
+| `vesa_fill_circle(cx, cy, r, color)` | Preenche círculo |
+| `vesa_draw_bitmap(x, y, bitmap, w, h, color)` | Desenha bitmap monocromático |
+| `vesa_draw_char(x, y, c, color, scale)` | Desenha caractere com fonte |
+| `vesa_draw_string(x, y, str, color, scale)` | Desenha texto |
+
+### Cores
+
+```c
+uint32_t color = vesa_rgb(255, 0, 0);    // Vermelho
+uint32_t color = vesa_rgba(0, 255, 0, 128); // Verde com alpha
+```
+
+### Framebuffer
+
+O framebuffer é mapeado diretamente na memória:
+
+```c
+vesa_mode_t* mode = vesa_get_mode();
+// mode->framebuffer → ponteiro para memória de vídeo
+// mode->width, mode->height, mode->pitch, mode->bpp
+```
+
+---
+
+## Font (`font.c`)
+
+Fonte bitmap **8x16** para renderização de texto em modo gráfico (VESA).
+
+### Carregamento
+
+```c
+font_init();
+```
+
+### Obtendo Glyph
+
+```c
+const uint8_t* glyph = font_get_glyph('A');
+// glyph[0..15] = 16 bytes representando 8x16 pixels
+```
+
+Cada byte representa uma linha de 8 pixels (1 bit por pixel).
+
+---
+
+## PCI (`pci.c`)
+
+**Peripheral Component Interconnect** - Barramento para detectar dispositivos de hardware.
+
+### Enumeração
+
+```c
+pci_init();
+```
+
+Escaneia 256 buses × 32 devices × 8 functions.
+
+### Estrutura
+
+```c
+typedef struct {
+    uint16_t vendor_id, device_id;
+    uint8_t class, subclass, prog_if, revision;
+    uint32_t bar0..bar5;  // Base Address Registers
+    uint8_t irq;
+    uint8_t bus, device, function;
+    uint8_t present;
+} pci_device_t;
+```
+
+### Busca de Dispositivos
+
+```c
+// Por classe/subclasse (ex: 0x04/0x01 = audio)
+pci_device_t* dev = pci_get_device(0x04, 0x01);
+
+// Por vendor/device ID
+pci_device_t* dev = pci_get_device_by_id(0x8086, 0x2415);
+```
+
+### Bus Mastering
+
+```c
+pci_enable_bus_mastering(dev);  // Habilita DMA
+```
+
+---
+
+## AC97 (`ac97.c`)
+
+**Audio Codec '97** - Driver de áudio para reprodução de som.
+
+### Inicialização
+
+```c
+ac97_init();
+```
+
+Localiza o dispositivo via PCI (classe 0x04, subclasse 0x01), configura sample rate (44100 Hz) e volume.
+
+### Reprodução
+
+```c
+ac97_play(data, size, sample_rate, channels, bits);
+```
+
+- `data`: buffer PCM (Pulse Code Modulation)
+- `size`: tamanho em bytes
+- `sample_rate`: 44100, 22050, etc.
+- `channels`: 1 (mono) ou 2 (stereo)
+- `bits`: 8 ou 16 bits por sample
+
+### Controles
+
+```c
+ac97_stop();              // Para reprodução
+ac97_set_volume(20);      // Volume 0-31
+ac97_get_device();        // Obtém estado do device
+```
+
+### Registros
+
+| Registro | Endereço | Função |
+|----------|----------|--------|
+| AC97_REG_RESET | 0x00 | Reset do codec |
+| AC97_REG_MASTER_VOL | 0x02 | Volume master (esquerdo/direito) |
+| AC97_REG_PCM_OUT_VOL | 0x18 | Volume PCM |
+| AC97_REG_PCM_FRONT_DAC_RATE | 0x2C | Sample rate |
+| AC97_REG_POWER | 0x26 | Power management |
+| AC97_REG_EXT_AUDIO | 0x28 | Audio estendido |
 ```

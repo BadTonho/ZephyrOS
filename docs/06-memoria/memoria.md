@@ -257,3 +257,80 @@ void paging_switch_directory(page_directory_t* dir) {
 0x90000 - 0x9FFFF  Kernel stack
 0xB8000 - 0xBFFFF  VGA memory
 ```
+
+---
+
+## Compressão LZSS (`compress.c`)
+
+Algoritmo de compressão LZSS (Lempel-Ziv-Storer-Szymanski) para compactar dados na memória RAM.
+
+### Arquivo
+
+```
+src/memory/compress.c
+```
+
+### Algoritmo
+
+LZSS usa um dicionário deslizante para encontrar sequências repetidas:
+
+```
+Flag byte (8 bits):
+  Bit = 1 → par (posição, comprimento) — referência ao dicionário
+  Bit = 0 → literal — byte literal
+
+Par (posição, comprimento):
+  2 bytes: [posição 12 bits][comprimento 4 bits]
+  posição: offset no dicionário (0-4095)
+  comprimento: 3-18 bytes (valor 0-15 + threshold)
+```
+
+### Constantes
+
+| Parâmetro | Valor | Descrição |
+|-----------|-------|-----------|
+| COMPRESS_LZSS_N | 4096 | Tamanho do dicionário |
+| COMPRESS_LZSS_F | 18 | Lookahead buffer |
+| COMPRESS_LZSS_THRESHOLD | 3 | Mínimo para match |
+
+### API
+
+```c
+void compress_init(void);                       // Inicializa
+void compress_enable(void);                     // Ativa compressão
+void compress_disable(void);                    // Desativa
+uint8_t compress_is_enabled(void);              // Verifica estado
+
+int compress_data(src, src_size, dst, dst_size);   // Comprime
+int decompress_data(src, src_size, dst, dst_size); // Descomprime
+```
+
+### Estatísticas
+
+```c
+compress_stats_t* stats = compress_get_stats();
+// stats->compression_count     — total de compressões
+// stats->total_compressed      — bytes comprimidos
+// stats->total_saved           — espaço economizado
+// stats->original_size         — tamanho original
+// stats->compressed_size       — tamanho comprimido
+
+compress_print_stats();  // Exibe no terminal
+```
+
+### Exemplo
+
+```c
+uint8_t original[] = "AAAAABBBBBCCCCC";
+uint32_t src_size = 15;
+uint32_t max_dst = compress_get_max_size(src_size);
+uint8_t* compressed = kmalloc(max_dst);
+uint32_t dst_size;
+
+compress_data(original, src_size, compressed, &dst_size);
+// compressed agora tem ~5 bytes (muito repetitivo)
+
+uint8_t* decompressed = kmalloc(src_size);
+uint32_t out_size;
+decompress_data(compressed, dst_size, decompressed, &out_size);
+```

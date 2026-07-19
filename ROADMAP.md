@@ -4,7 +4,7 @@ Sistema operacional educacional em C + Assembly (x86), do zero.
 
 ---
 
-## Progresso Geral: 9/9 fases concluídas
+## Progresso Geral: 9/9 fases concluídas + Pós-Fase
 
 ```
 [████████████████████████████████████████████] 100%
@@ -117,6 +117,116 @@ Sistema operacional educacional em C + Assembly (x86), do zero.
 - [x] Exclusão de arquivos com confirmação (F8)
 - [x] Renomeação de arquivos (F2)
 - [x] Barra de título, menu, colunas, status bar
+- [x] Comando `explorer` no shell
+
+---
+
+## Pós-Fase 9 - Módulos Adicionais
+
+### FAT32 (`src/fs/fat32.c`)
+- [x] BPB FAT32 (sectors_per_fat > 0)
+- [x] Cluster chain de 32 bits (0x0FFFFFFF = EOF)
+- [x] Leitura/escrita/exclusão de arquivos
+- [x] Listagem de diretório com suporte a cluster chain
+
+### FS Unificado (`src/fs/fs.c`)
+- [x] Interface única: read, write, delete, list_dir
+- [x] Detecção automática FAT12 ou FAT32
+- [x] fs_get_info() com informações do FS ativo
+
+### BMP (`src/fs/bmp.c`)
+- [x] Leitura de BMP (1, 4, 8, 24 bpp)
+- [x] Renderização na tela VESA (bmp_draw, bmp_draw_scaled)
+- [x] Suporte a paleta de cores (bpp <= 8)
+
+### WAV (`src/fs/wav.c`)
+- [x] Parse de arquivos WAV (RIFF/WAVE)
+- [x] Suporte a múltiplos formatos (sample rate, bits, canais)
+- [x] Reprodução via AC97
+
+### PCI (`src/drivers/pci.c`)
+- [x] Enumeração do barramento PCI (256 buses × 32 devices × 8 functions)
+- [x] Leitura/escrita de configuração (BARs, IRQ, classe/subclasse)
+- [x] Busca por vendor/device ID e classe/subclasse
+- [x] Bus Mastering enable
+
+### AC97 (`src/drivers/ac97.c`)
+- [x] Driver de áudio via controladora AC97 no PCI
+- [x] Configuração de sample rate (44100 Hz)
+- [x] Play/Stop com buffer, controle de volume (0-31)
+- [x] Handler de interrupção
+
+### VESA (`src/drivers/vesa.c`)
+- [x] Modo gráfico via VESA BIOS Extensions
+- [x] Enumeração automática de modos (640x480 a 1920x1200, 32bpp)
+- [x] Primitivas: pixel, retângulo, linha, círculo, bitmap, texto com fonte
+
+### Font (`src/drivers/font.c`)
+- [x] Fonte bitmap 8x16 para renderização em modo gráfico
+
+### RAM Compression (`src/memory/compress.c`)
+- [x] Algoritmo LZSS com dicionário deslizante (4KB)
+- [x] compress_data() / decompress_data()
+- [x] Estatísticas de compressão
+- [x] Comando shell `compress on|off|status`
+
+### Desktop Environment (`src/desktop/desktop.c`)
+- [x] Ambiente desktop com ícones grade (5 colunas)
+- [x] Navegação por setas, Enter para abrir apps
+- [x] Integração com taskbar
+
+### Window Manager (`src/wm/wm.c`)
+- [x] Múltiplas janelas com foco, Z-order, título
+- [x] Botões: fechar, minimizar, maximizar (posição e ordem configuráveis)
+- [x] Barra de título com texto
+- [x] Redimensionamento e movimentação
+- [x] Estatísticas de CPU por janela
+
+### Taskbar (`src/taskbar/taskbar.c`)
+- [x] Botões de aplicativos com indicador ativo/inativo
+- [x] Menu Iniciar (Desktop, Shell, Explorer, TaskMgr, Config, Reiniciar, Desligar)
+- [x] Menu de configuração (F1): posição, tamanho, fixar
+- [x] Relógio HH:MM (atualizado a cada segundo)
+- [x] 5 posições: baixo, cima, esquerda, direita, custom
+
+### Settings (`src/settings/settings.c`)
+- [x] Sistema completo com 7 categorias: Tela, Taskbar, Janelas, Ícones, Sistema, Som, Sobre
+- [x] Tipos de opção: toggle, lista, ação
+- [x] Editor visual de ícones (caractere, cor, cor de seleção)
+- [x] Aplicação em tempo real das configurações
+
+### Icons (`src/icons/icons.c`)
+- [x] Registry com 4 categorias: desktop, WM, file manager, taskbar
+- [x] Funções get/set para cada ícone
+- [x] Restauração de valores padrão
+
+### Editor de Texto (`src/shell/editor.c`)
+- [x] Buffer de linhas dinâmicas (até 1000 linhas, 256 chars cada)
+- [x] Syntax highlight: C, Python, Assembly, Markdown
+- [x] Word wrap automático
+- [x] Detecção de encoding (ASCII, Latin1, UTF-8)
+- [x] Detecção de line ending (LF, CR, CRLF)
+- [x] Numeração de linhas e scroll vertical
+- [x] Comando `edit ARQUIVO.TXT` no shell
+
+### Media Player (`src/shell/mediaplayer.c`)
+- [x] Reprodução de WAV via driver AC97
+- [x] Display com estado, informações do áudio, duração
+- [x] Controles: Play/Pause, Stop, Volume
+- [x] Comando `play MUSICA.WAV` no shell
+
+### Task Manager (`src/shell/taskmanager.c`)
+- [x] 4 guias: Processos, CPU, Memória, Threads
+- [x] Barras de uso com cores (verde/amarelo/vermelho)
+- [x] Cálculo de CPU por processo (delta ticks)
+- [x] Atualização periódica
+- [x] Comando `taskman` no shell
+
+### File Manager (`src/filemanager/filemanager.c`)
+- [x] Interface Explorer TUI com colunas e status bar
+- [x] Navegação: setas, Page Up/Down, Home/End
+- [x] F2: Renomear, F3: Visualizar, F5: Refresh, F7: Novo, F8: Excluir
+- [x] Integração com taskbar
 - [x] Comando `explorer` no shell
 
 ---

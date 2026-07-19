@@ -9,22 +9,38 @@ Sistema operacional do zero em C + Assembly (x86), para aprendizado de como um S
 | Módulo | Status | Descrição |
 |--------|--------|-----------|
 | Bootloader | ✅ | Assembly 16-bit → Protected Mode 32-bit |
-| Kernel | ✅ | Entry point, panic handler |
+| Kernel | ✅ | Entry point, panic handler, context switch |
 | VGA Video | ✅ | Text mode 80x25, cores, cursor |
+| VESA | ✅ | Modo gráfico, múltiplas resoluções (640x480 a 1920x1200) |
+| Font | ✅ | Fonte bitmap 8x16 para renderização gráfica |
 | Teclado | ✅ | Driver PS/2, scancode → ASCII |
 | Timer | ✅ | PIT 50 Hz, ticks |
 | IDT/IRQ/ISR | ✅ | 32 exceções + 16 IRQs mapeadas |
 | Memória | ✅ | Detecção E820, bitmap allocator, heap |
 | Paging | ✅ | Page directory/table, mapeamento virtual |
+| Compress (RAM) | ✅ | Compressão LZSS para dados em memória |
 | TSS | ✅ | Kernel stack ring 0 |
 | Processos | ✅ | PID, estados, scheduler round-robin |
-| Context Switch | ✅ | Salva/restaura registradores em Assembly |
+| Threads | ✅ | Create, block, yield, round-robin |
 | ATA Driver | ✅ | Leitura/escrita de setores (PIO) |
 | FAT12 | ✅ | Ler/escrever/deletar arquivos, listar diretório |
-| Shell | ✅ | 14 comandos interativos |
+| FAT32 | ✅ | Suporte a discos maiores (BPB, clusters de 32 bits) |
+| FS Unificado | ✅ | Interface única sobre FAT12/FAT32 |
+| BMP | ✅ | Leitura e renderização de imagens BMP (1/4/8/24 bpp) |
+| WAV | ✅ | Leitura e reprodução de áudio WAV |
+| PCI | ✅ | Enumeração do barramento PCI |
+| AC97 | ✅ | Driver de áudio AC97 (play, stop, volume) |
 | PC Speaker | ✅ | Beep, melodias |
-| Threads | ✅ | Create, block, yield |
-| File Manager | ✅ | Gerenciador de arquivos estilo Windows Explorer |
+| Shell | ✅ | 14+ comandos interativos |
+| Editor | ✅ | Editor de texto com syntax highlight, word wrap |
+| Media Player | ✅ | Player de áudio WAV com visualização |
+| Task Manager | ✅ | Monitor de processos/threads/CPU/memória |
+| File Manager | ✅ | Explorer TUI (navegar, criar, renomear, excluir) |
+| Desktop | ✅ | Ambiente desktop com ícones e menu Iniciar |
+| Window Manager | ✅ | Gerenciador de janelas (mover, redimensionar, minimizar) |
+| Taskbar | ✅ | Barra de tarefas configurável (posição, tamanho, relógio) |
+| Settings | ✅ | Sistema de configurações (tela, taskbar, janelas, ícones, som) |
+| Icons | ✅ | Sistema de ícones customizáveis (desktop, janelas, arquivos) |
 
 ---
 
@@ -35,15 +51,17 @@ Sistema/
 ├── Makefile                 # Sistema de build
 ├── ROADMAP.md               # Roadmap de desenvolvimento
 ├── build/                   # Arquivos de saída
+├── docs/                    # Documentação (11 capítulos)
 └── src/
+    ├── linker.ld            # Linker script
     ├── boot/                # Bootloader (Assembly 16-bit)
     │   └── boot.asm
     ├── kernel/              # Kernel core
     │   ├── entry.asm        # Entry point Assembly
-    │   ├── kernel.c         # Kernel principal
+    │   ├── kernel.c         # Kernel principal (inicializa 20+ subsistemas)
     │   ├── panic.c          # Kernel panic
     │   └── switch.asm       # Context switch
-    ├── drivers/             # Drivers de hardware
+    ├── drivers/             # Drivers de hardware (13 arquivos)
     │   ├── ata.c            # Driver ATA PIO (disco)
     │   ├── idt.c            # IDT + remapeamento PIC
     │   ├── irq.asm          # IRQ handlers
@@ -52,38 +70,50 @@ Sistema/
     │   ├── speaker.c        # PC Speaker (som)
     │   ├── timer.c          # Timer PIT
     │   ├── tss.c            # Task State Segment
-    │   └── video.c          # VGA Text Mode
+    │   ├── video.c          # VGA Text Mode
+    │   ├── vesa.c           # VESA BIOS Extensions (modo gráfico)
+    │   ├── font.c           # Fonte bitmap 8x16
+    │   ├── pci.c            # Enumeração PCI
+    │   └── ac97.c           # Driver de áudio AC97
     ├── memory/              # Gerenciamento de memória
     │   ├── memory.c         # Bitmap allocator + heap
-    │   └── paging.c         # Page tables
+    │   ├── paging.c         # Page tables
+    │   └── compress.c       # Compressão LZSS
     ├── fs/                  # Sistema de arquivos
-    │   └── fat12.c          # FAT12
+    │   ├── fat12.c          # FAT12
+    │   ├── fat32.c          # FAT32
+    │   ├── fs.c             # Interface unificada FAT12/FAT32
+    │   ├── bmp.c            # Leitura de imagens BMP
+    │   └── wav.c            # Leitura de áudio WAV
     ├── process/             # Processos
     │   └── process.c        # Process manager + scheduler
     ├── thread/              # Threads
     │   └── thread.c         # Thread scheduler
-    ├── shell/               # Terminal
-    │   └── shell.c          # Shell interativo
+    ├── shell/               # Terminal e aplicativos
+    │   ├── shell.c          # Shell interativo (14+ comandos)
+    │   ├── editor.c         # Editor de texto com syntax highlight
+    │   ├── mediaplayer.c    # Media player (WAV)
+    │   └── taskmanager.c    # Gerenciador de tarefas
     ├── filemanager/         # Gerenciador de arquivos
-    │   └── filemanager.c    # Explorer estilo Windows
-    ├── include/             # Headers
-    │   ├── types.h          # Typedefs (uint8_t, etc)
-    │   ├── video.h          # Funções de vídeo
-    │   ├── keyboard.h       # Driver de teclado
-    │   ├── idt.h            # IDT + registers_t
-    │   ├── timer.h          # Timer
-    │   ├── memory.h         # Memória
-    │   ├── paging.h         # Paging
-    │   ├── ata.h            # Driver ATA
-    │   ├── fat12.h          # FAT12
-    │   ├── process.h        # Processos
-    │   ├── thread.h         # Threads
-    │   ├── shell.h          # Shell
-    │   ├── speaker.h        # PC Speaker
-    │   ├── tss.h            # TSS
-    │   ├── filemanager.h    # File Manager
-    │   └── panic.h          # Panic handler
-    └── linker.ld            # Linker script
+    │   └── filemanager.c    # Explorer TUI estilo Windows
+    ├── desktop/             # Ambiente desktop
+    │   └── desktop.c        # Desktop com ícones
+    ├── wm/                  # Gerenciador de janelas
+    │   └── wm.c             # Window manager (título, botões, borda)
+    ├── taskbar/             # Barra de tarefas
+    │   └── taskbar.c        # Taskbar com menu Iniciar e relógio
+    ├── settings/            # Sistema de configurações
+    │   └── settings.c       # Configurações (tela, taskbar, janelas, som)
+    ├── icons/               # Sistema de ícones
+    │   └── icons.c          # Ícones customizáveis
+    └── include/             # Headers (33 arquivos)
+        ├── types.h, video.h, keyboard.h, idt.h, timer.h,
+        ├── memory.h, paging.h, ata.h, fat12.h, fat32.h,
+        ├── process.h, thread.h, shell.h, speaker.h, tss.h,
+        ├── filemanager.h, panic.h, compress.h, editor.h,
+        ├── mediaplayer.h, settings.h, wm.h, icons.h,
+        ├── ac97.h, pci.h, bmp.h, wav.h, fs.h, font.h,
+        ├── vesa.h, desktop.h, taskbar.h, taskmanager.h
 ```
 
 ---
@@ -156,6 +186,12 @@ O shell inicia automaticamente após a inicialização do sistema.
 | `beep` | Toca um beep | `beep` ou `beep 440 500` |
 | `melody` | Toca uma escala musical | `melody` |
 | `explorer` | Abre gerenciador de arquivos | `explorer` |
+| `desktop` | Abre ambiente desktop | `desktop` |
+| `taskman` | Abre gerenciador de tarefas | `taskman` |
+| `edit` | Editor de texto | `edit ARQUIVO.TXT` |
+| `play` | Toca arquivo WAV | `play MUSICA.WAV` |
+| `compress` | Gerencia compressão de RAM | `compress on/off/status` |
+| `settings` | Abre configurações | `settings` |
 | `reboot` | Reinicia o sistema | `reboot` |
 | `shutdown` | Desliga o sistema | `shutdown` |
 
@@ -182,8 +218,12 @@ O shell inicia automaticamente após a inicialização do sistema.
 6. Configura paging (page tables)
 7. Inicializa TSS (Task State Segment)
 8. Cria processos e threads
-9. Detecta disco e monta FAT12
-10. Inicia shell interativo
+9. Detecta disco e monta FAT12/FAT32 (fs unificado)
+10. Inicializa PC Speaker
+11. Inicializa VESA (modo gráfico) e fontes
+12. Inicializa AC97 (áudio)
+13. Inicializa ícones, taskbar, desktop, configurações, window manager
+14. Inicia shell interativo com desktop
 
 ### Memória
 
@@ -219,16 +259,88 @@ O shell inicia automaticamente após a inicialização do sistema.
 - 16 IRQs mapeadas para IDT 32-47
 - Remapeamento PIC master (0x20) → 32, slave (0xA0) → 40
 
+### VESA (`src/drivers/vesa.c`)
+- Modo gráfico via VESA BIOS Extensions (VBE)
+- Enumeração automática de modos (640x480 a 1920x1200, 32bpp)
+- Primitivas: pixel, retângulo, linha, círculo, bitmap, texto com fonte
+
+### PCI (`src/drivers/pci.c`)
+- Enumeração do barramento PCI (256 buses × 32 devices × 8 functions)
+- Leitura/escrita de configuração (BARs, IRQ, classe)
+- Busca por vendor/device ID e classe/subclasse
+- Bus Mastering enable
+
+### AC97 (`src/drivers/ac97.c`)
+- Driver de áudio via controladora AC97 encontrada no PCI
+- Reset, power management, configuração de sample rate (44100 Hz)
+- Play/Stop com buffer DMA, controle de volume (0-31)
+- Handler de interrupção
+
 ### Memória (`src/memory/memory.c`)
 - Bitmap allocator: 1 bit por página (4KB)
 - Heap: first-fit com coalescência de blocos livres
 - `kmalloc()`, `kfree()`, `kmalloc_aligned()`
+
+### Compress (`src/memory/compress.c`)
+- Compressão LZSS com dicionário deslizante
+- `compress_data()` / `decompress_data()`
+- Estatísticas de compressão (taxa, espaço economizado)
+- Ativável/desativável via shell
 
 ### FAT12 (`src/fs/fat12.c`)
 - Leitura do BPB (BIOS Parameter Block)
 - Interpretação da FAT (File Allocation Table)
 - Leitura/escrita de arquivos por cluster chain
 - Listagem de diretório raiz
+
+### FAT32 (`src/fs/fat32.c`)
+- Suporte a discos com BPB FAT32 (sectors_per_fat > 0)
+- Cluster chain de 32 bits (0x0FFFFFFF = EOF)
+- Leitura/escrita/exclusão de arquivos
+- Listagem de diretório com suporte a cluster chain
+
+### FS Unificado (`src/fs/fs.c`)
+- Interface única: `fs_read_file()`, `fs_write_file()`, `fs_delete_file()`, `fs_list_dir()`
+- Detecta automaticamente FAT12 ou FAT32
+- `fs_get_info()` retorna informações do sistema de arquivos ativo
+
+### BMP (`src/fs/bmp.c`)
+- Leitura de imagens BMP (1, 4, 8, 24 bpp)
+- Renderização (`bmp_draw`) e redimensionamento (`bmp_draw_scaled`)
+- Suporte a paleta de cores (bpp <= 8)
+
+### WAV (`src/fs/wav.c`)
+- Parse de arquivos WAV (RIFF/WAVE)
+- Suporte a múltiplos formatos (sample rate, bits, canais)
+- Reprodução via AC97 (`wav_play`)
+- Cálculo de duração
+
+### Desktop (`src/desktop/desktop.c`)
+- Ambiente desktop com ícones (Shell, Explorer, TaskMgr)
+- Navegação por setas e Enter para abrir apps
+- Integração com taskbar
+
+### Window Manager (`src/wm/wm.c`)
+- Múltiplas janelas com foco, Z-order, título e botões
+- Botões de fechar/minimizar/maximizar (posição e ordem configuráveis)
+- Redimensionamento e movimentação
+- Atalhos: F1=foco próximo, Esc=fechar, F5=minimizar, F6=max/min
+
+### Taskbar (`src/taskbar/taskbar.c`)
+- Barra de tarefas com botões de aplicativos e relógio (HH:MM)
+- Menu Iniciar: Desktop, Shell, Explorer, TaskMgr, Config, Reiniciar, Desligar
+- Menu de configuração (F1): posição, tamanho, fixar
+- Posições: baixo, cima, esquerda, direita, custom
+
+### Settings (`src/settings/settings.c`)
+- Sistema completo de configurações com categorias: Tela, Taskbar, Janelas, Ícones, Sistema, Som, Sobre
+- Editor visual de ícones (caractere, cor, cor de seleção)
+- Aplicação em tempo real das configurações (taskbar, WM)
+
+### Icons (`src/icons/icons.c`)
+- Registry com 4 categorias: desktop, WM, file manager, taskbar
+- Funções get/set para cada ícone
+- `icons_reset_defaults()` restaura valores padrão
 
 ---
 

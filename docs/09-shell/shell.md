@@ -8,7 +8,10 @@ O shell é a interface que permite ao usuário interagir com o sistema operacion
 
 ```
 src/shell/
-│   └── shell.c      → Shell interativo com 13 comandos
+│   ├── shell.c          → Shell interativo com 20+ comandos
+│   ├── editor.c         → Editor de texto com syntax highlight
+│   ├── mediaplayer.c    → Media player (WAV)
+│   └── taskmanager.c    → Gerenciador de tarefas
 ```
 
 ---
@@ -111,19 +114,26 @@ Mostra a lista de todos os comandos.
 ```
 minios> help
 Comandos disponiveis:
-  help     - Mostra esta mensagem
-  clear    - Limpa a tela
-  ls       - Lista arquivos
-  cat      - Exibe conteudo de arquivo
-  echo     - Exibe texto
-  mem      - Mostra informacoes de memoria
-  procs    - Mostra processos ativos
-  threads  - Mostra threads ativas
-  uptime   - Mostra tempo ligado
-  beep     - Toca um beep (freq duracao_ms)
-  melody   - Toca uma melodia
-  reboot   - Reinicia o sistema
-  shutdown - Desliga o sistema
+  help      - Mostra esta mensagem
+  clear     - Limpa a tela
+  ls        - Lista arquivos
+  cat       - Exibe conteudo de arquivo
+  echo      - Exibe texto
+  mem       - Mostra informacoes de memoria
+  procs     - Mostra processos ativos
+  threads   - Mostra threads ativas
+  uptime    - Mostra tempo ligado
+  beep      - Toca um beep (freq duracao_ms)
+  melody    - Toca uma melodia
+  explorer  - Abre gerenciador de arquivos (Explorer TUI)
+  desktop   - Abre o ambiente desktop
+  taskman   - Abre o gerenciador de tarefas
+  edit      - Abre o editor de texto (edit ARQUIVO.TXT)
+  play      - Toca arquivo WAV (play MUSICA.WAV)
+  compress  - Gerencia compressao (on/off/status)
+  settings  - Abre configuracoes do sistema
+  reboot    - Reinicia o sistema
+  shutdown  - Desliga o sistema
 ```
 
 ### `clear`
@@ -218,6 +228,152 @@ Reinicia o computador.
 
 ### `shutdown`
 Desliga o computador (para o CPU).
+
+### `explorer`
+Abre o gerenciador de arquivos estilo Windows Explorer (TUI).
+
+```
+minios> explorer
+```
+
+Navegação com setas, F3 visualizar, F7 criar, F8 excluir com confirmação, F2 renomear.
+
+### `desktop`
+Ativa o ambiente desktop com ícones e menu Iniciar.
+
+```
+minios> desktop
+```
+
+### `taskman`
+Abre o gerenciador de tarefas com monitoramento de processos, threads, CPU e memória.
+
+```
+minios> taskman
+```
+
+Guias: Processos, CPU, Memória e Threads.
+
+### `edit <arquivo>`
+Editor de texto com syntax highlighting e word wrap.
+
+```
+minios> edit TESTE.TXT
+```
+
+Funcionalidades:
+- Syntax highlight: C, Python, Assembly, Markdown
+- Word wrap automático
+- Detecção de encoding (ASCII, Latin1, UTF-8)
+- Detecção de line ending (LF, CR, CRLF)
+- Numeração de linhas
+- Scroll vertical
+
+Teclas:
+| Tecla | Ação |
+|-------|------|
+| Setas | Navegação |
+| Ctrl+S | Salvar |
+| Ctrl+Q | Sair |
+| Home/End | Início/fim da linha |
+| Page Up/Down | Rola página |
+
+### `play <arquivo.wav>`
+Reproduz um arquivo de áudio WAV via AC97.
+
+```
+minios> play MUSICA.WAV
+```
+
+### `compress on|off|status`
+Gerencia o módulo de compressão de RAM.
+
+```
+minios> compress on      → Ativa compressão
+minios> compress off     → Desativa
+minios> compress status  → Mostra estatísticas
+```
+
+### `settings`
+Abre o sistema de configurações do MiniOS.
+
+```
+minios> settings
+```
+
+Categorias: Tela, Barra de Tarefas, Janelas, Ícones, Sistema, Som, Sobre.
+
+---
+
+## Aplicativos
+
+### Editor de Texto (`editor.c`)
+
+Editor completo com interface TUI. Características:
+
+- **Buffer**: linhas dinâmicas (até 1000), 256 caracteres por linha
+- **Modos**: inserção, navegação, seleção
+- **Syntax Highlight**: detecta linguagem pela extensão (.c, .py, .asm, .md)
+  - C: palavras-chave azul, strings verde, comentários vermelho, diretivas magenta
+  - Python: palavras-chave azul, strings verde, comentários vermelho
+  - Assembly: instruções azul, registradores ciano, diretivas magenta
+  - Markdown: títulos amarelo, links azul, code backticks verde
+- **Word Wrap**: quebra linhas longas na exibição sem modificar o arquivo
+- **Encoding**: detecta BOM UTF-8, sequências UTF-8, Latin1 ou ASCII
+- **Line Endings**: detecta CRLF (Windows), LF (Unix) ou CR (Mac)
+
+### Media Player (`mediaplayer.c`)
+
+Player de áudio com suporte a WAV.
+
+```
+Estado: IDLE | PLAYING | PAUSED
+Arquivo: MUSICA.WAV
+Duração: 00:30
+```
+
+- Carrega arquivo WAV do sistema de arquivos
+- Reproduz via driver AC97
+- Exibe informações: sample rate, bits, canais
+- Controles: P=Play/Pause, S=Stop, +/- Volume
+
+### Task Manager (`taskmanager.c`)
+
+Gerenciador de tarefas com 4 guias:
+
+**Processos**: lista PID, nome, estado (RUNNING/READY/BLOCKED/ZOMBIE)
+**CPU**: uso de CPU por processo (barra gráfica)
+**Memória**: total, livre, usada (barra gráfica com alertas >80% e >90%)
+**Threads**: lista TID, nome, estado
+
+Atalhos: Tab=alterna guia, Up/Down=navega, Esc=sair.
+
+### File Manager (`filemanager.c`)
+
+Gerenciador de arquivos estilo Windows Explorer.
+
+```
+┌──────────────────────────────────────────────┐
+│           MiniOS Explorer                     │
+├──────────────────────────────────────────────┤
+│ F1=Ajuda F3=Ver F5=Atualizar F7=Novo F8=Exc │
+├──────┬─────────┬──────────┬──────────────────┤
+│ Nome │ Tamanho │ Tipo     │                  │
+├──────┼─────────┼──────────┼──────────────────┤
+│ TESTE│ 128     │ ARQUIVO  │                  │
+│ DADOS│ 256     │ ARQUIVO  │                  │
+└──────┴─────────┴──────────┴──────────────────┘
+```
+
+Funcionalidades:
+- Navegação com setas, Page Up/Down, Home/End
+- F2: Renomear arquivo
+- F3: Visualizar conteúdo
+- F5: Atualizar lista
+- F7: Criar novo arquivo
+- F8: Excluir com confirmação
+- Barra de status com info do arquivo selecionado
+- Integração com taskbar
 
 ---
 
