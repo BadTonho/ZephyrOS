@@ -26,5 +26,5 @@ SECTIONS {
     }
 
     __kernel_end = .;
-    ASSERT(__kernel_end <= 0x40000, "kernel exceeds reserved memory")
+    ASSERT(__kernel_end <= 0x80000, "kernel exceeds reserved memory")
 }

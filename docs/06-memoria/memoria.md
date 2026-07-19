@@ -252,8 +252,8 @@ void paging_switch_directory(page_directory_t* dir) {
 0x00000 - 0x7C00   Bootloader (reusado)
 0x7C00  - 0x8000   Boot sector
 0x8000  - 0x10000  Mapa E820
-0x10000 - 0x40000  Kernel e BSS
-0x40000 - 0x41000  Bitmap PMM (tamanho varia com a RAM)
+0x10000 - 0x80000  Kernel e BSS
+0x80000 - 0x81000  Bitmap PMM (tamanho varia com a RAM)
 0x90000 - 0xA0000  Kernel stack
 0x100000 - 0x200000 Heap (1 MB)
 0xB8000 - 0xBFFFF  VGA memory

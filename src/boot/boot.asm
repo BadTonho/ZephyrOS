@@ -2,12 +2,18 @@
 [ORG 0x7C00]
 
 KERNEL_OFFSET equ 0x10000
+KERNEL_LIMIT  equ 0x80000
 MEMORY_MAP    equ 0x8000
 VESA_INFO     equ 0x7000
 E820_ENTRY_SIZE equ 24
 
 %ifndef KERNEL_SECTORS
-%define KERNEL_SECTORS 272
+; Limite de seguranca quando o bootloader e montado sem o Makefile.
+%define KERNEL_SECTORS ((KERNEL_LIMIT - KERNEL_OFFSET) / 512)
+%endif
+
+%if KERNEL_SECTORS > ((KERNEL_LIMIT - KERNEL_OFFSET) / 512)
+    %error "kernel excede o limite de memoria reservado pelo bootloader"
 %endif
 
     jmp short start
@@ -40,6 +46,8 @@ start:
     mov es, ax
     mov ss, ax
     mov sp, 0x7C00
+    ; O primeiro estagio nao chama BIOS VESA; informa explicitamente o fallback.
+    mov byte [VESA_INFO + 11], 0
     ; Mantem as IRQs mascaradas ate o kernel carregar a IDT.
     mov [BOOT_DRIVE], dl
 
@@ -91,7 +99,8 @@ start:
     mov es, bx
     mov bx, [LOAD_OFF]
 
-    ; Read 1 sector
+    ; Le um setor por vez; o primeiro estagio continua limitado a 512 bytes,
+    ; mas o kernel pode ocupar varios setores consecutivos.
     mov ax, 0x0201
     int 0x13
     jc disk_error
@@ -103,8 +112,6 @@ start:
 .no_seg:
     dec word [remaining]
     jmp .read_loop
-
-    call set_vesa_mode
 
 .read_done:
     lgdt [gdt_descriptor]
@@ -140,55 +147,6 @@ detect_memory:
 .dn:
     mov eax, [mmap_count]
     mov [MEMORY_MAP - 4], eax
-    ret
-
-set_vesa_mode:
-    ; Query mode info for 800x600x32 (VESA mode 0x115)
-    push es
-    xor ax, ax
-    mov es, ax
-    mov di, 0x7E00             ; temp buffer for VESA mode info (256 bytes)
-    mov ax, 0x4F01
-    mov cx, 0x115              ; 800x600x32
-    int 0x10
-    pop es
-
-    ; Check if mode is supported (bit 0 of ModeAttributes)
-    test word [0x7E00], 0x01
-    jz .vesa_fail
-
-    ; Check if linear framebuffer is supported (bit 7)
-    test word [0x7E00], 0x80
-    jz .vesa_fail
-
-    ; Save framebuffer info at VESA_INFO (0x7000)
-    ; Offset 0: framebuffer address (32-bit)
-    ; Offset 4: pitch (16-bit)
-    ; Offset 6: width (16-bit)
-    ; Offset 8: height (16-bit)
-    ; Offset 10: bpp (8-bit)
-    ; Offset 11: initialized flag (8-bit)
-    mov eax, [0x7E00 + 40]     ; PhysBasePtr at offset 40
-    mov [VESA_INFO], eax
-    mov ax, [0x7E00 + 16]      ; BytesPerScanLine (pitch)
-    mov [VESA_INFO + 4], ax
-    mov ax, [0x7E00 + 18]      ; XResolution
-    mov [VESA_INFO + 6], ax
-    mov ax, [0x7E00 + 20]      ; YResolution
-    mov [VESA_INFO + 8], ax
-    mov al, [0x7E00 + 25]      ; BitsPerPixel
-    mov [VESA_INFO + 10], al
-    mov byte [VESA_INFO + 11], 1 ; initialized = true
-
-    ; Set VESA mode 0x115 with linear framebuffer (bit 14 = 0x4000)
-    mov ax, 0x4F02
-    mov bx, 0x4115             ; 0x115 | 0x4000
-    int 0x10
-    ret
-
-.vesa_fail:
-    ; VESA not available, mark as not initialized
-    mov byte [VESA_INFO + 11], 0
     ret
 
 print16:
