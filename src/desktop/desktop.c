@@ -2,6 +2,7 @@
 #include "core/video.h"
 #include "core/keyboard.h"
 #include "drivers/speaker.h"
+#include "core/log.h"
 #include "ui/taskbar.h"
 #include "ui/icons.h"
 
@@ -10,8 +11,27 @@ static int icon_count = 0;
 static int selected_icon = 0;
 static int desktop_active = 0;
 
+static icon_entry_t* desktop_get_icon_entry(desktop_app_type_t type) {
+    switch (type) {
+        case DESKTOP_APP_SHELL:
+            return icons_get_desktop(ICON_DESKTOP_SHELL);
+        case DESKTOP_APP_EXPLORER:
+            return icons_get_desktop(ICON_DESKTOP_EXPLORER);
+        case DESKTOP_APP_TASKMGR:
+            return icons_get_desktop(ICON_DESKTOP_TASKMGR);
+        default:
+            LOG_ERROR("DESKTOP", "Tipo de icone invalido");
+            return 0;
+    }
+}
+
 static void draw_single_icon(desktop_icon_t* icon) {
-    icon_entry_t* entry = icons_get_desktop((icon_desktop_id_t)icon->type);
+    icon_entry_t* entry = desktop_get_icon_entry(icon->type);
+    if (!entry) {
+        LOG_ERROR("DESKTOP", "Registro do icone nao encontrado");
+        return;
+    }
+
     uint8_t bg = icon->selected ? entry->color_selected : DESKTOP_BG_COLOR;
     uint8_t fg = icon->selected ? 0x17 : entry->color;
 
