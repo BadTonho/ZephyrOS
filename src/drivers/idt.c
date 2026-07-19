@@ -66,6 +66,17 @@ static void outb(uint16_t port, uint8_t val) {
     asm volatile("outb %0, %1" : : "a"(val), "Nd"(port));
 }
 
+static void idt_print_hex32(uint32_t value) {
+    char hex[9];
+
+    for (int i = 7; i >= 0; i--) {
+        hex[i] = "0123456789ABCDEF"[value & 0xF];
+        value >>= 4;
+    }
+    hex[8] = '\0';
+    video_print(hex, 0x4E);
+}
+
 void idt_set_gate(uint8_t num, uint32_t base, uint16_t selector, uint8_t flags) {
     idt[num].base_low = base & 0xFFFF;
     idt[num].base_high = (base >> 16) & 0xFFFF;
@@ -228,16 +239,18 @@ void isr_handler(registers_t* regs) {
             }
         }
         video_print(buf, 0x4E);
-        video_print("\nEIP: 0x", 0x4F);
+        video_print("\nCodigo de erro: 0x", 0x4F);
+        idt_print_hex32(regs->err_code);
 
-        char hex[9];
-        uint32_t val = regs->eip;
-        for (int i = 7; i >= 0; i--) {
-            hex[i] = "0123456789ABCDEF"[val & 0xF];
-            val >>= 4;
+        if (regs->int_no == 14) {
+            uint32_t fault_address;
+            asm volatile("mov %%cr2, %0" : "=r"(fault_address));
+            video_print("\nEndereco acessado: 0x", 0x4F);
+            idt_print_hex32(fault_address);
         }
-        hex[8] = '\0';
-        video_print(hex, 0x4E);
+
+        video_print("\nEIP: 0x", 0x4F);
+        idt_print_hex32(regs->eip);
         video_print("\n", 0x4F);
 
         panic_halt();

@@ -1,6 +1,7 @@
 #include "drivers/vesa.h"
 #include "core/memory.h"
 #include "core/video.h"
+#include "core/log.h"
 #include "drivers/font.h"
 #include "core/panic.h"
 
@@ -154,62 +155,17 @@ static void vesa_scan_modes(void) {
 }
 
 void vesa_init(void) {
+    LOG_INFO("VESA", "Inicializando suporte VESA");
     memset(&current_mode, 0, sizeof(vesa_mode_t));
 
-    vesa_scan_modes();
-
-    if (best_mode == 0) {
-        video_print("[!!] VESA nao encontrado\n", 0x0C);
-        return;
-    }
-
-    uint16_t* mode_info = (uint16_t*)vesa_mode_block;
-    uint16_t mode = best_mode;
-
-    asm volatile(
-        "int $0x10"
-        :
-        : "a"(0x4F01), "c"(mode), "D"(vesa_mode_block)
-    );
-
-    uint32_t framebuffer = mode_info[28] | ((uint32_t)mode_info[29] << 16);
-    uint32_t pitch = mode_info[16];
-
-    current_mode.width = best_width;
-    current_mode.height = best_height;
-    current_mode.bpp = 32;
-    current_mode.pitch = pitch;
-    current_mode.framebuffer = (uint32_t*)framebuffer;
-    current_mode.initialized = 1;
+    LOG_WARN("VESA", "BIOS VESA indisponivel em modo protegido");
 }
 
 void vesa_set_mode(uint32_t width, uint32_t height, uint32_t bpp) {
-    if (!current_mode.initialized) return;
-
-    best_width = 0;
-    best_height = 0;
-    best_mode = 0;
-
-    vesa_scan_modes();
-
-    if (best_mode == 0) return;
-
-    uint16_t* mode_info = (uint16_t*)vesa_mode_block;
-
-    asm volatile(
-        "int $0x10"
-        :
-        : "a"(0x4F01), "c"(best_mode), "D"(vesa_mode_block)
-    );
-
-    uint32_t framebuffer = mode_info[28] | ((uint32_t)mode_info[29] << 16);
-    uint32_t pitch = mode_info[16];
-
-    current_mode.width = best_width;
-    current_mode.height = best_height;
-    current_mode.bpp = 32;
-    current_mode.pitch = pitch;
-    current_mode.framebuffer = (uint32_t*)framebuffer;
+    (void)width;
+    (void)height;
+    (void)bpp;
+    LOG_WARN("VESA", "Troca de modo desabilitada sem thunk BIOS");
 }
 
 void vesa_put_pixel(uint32_t x, uint32_t y, vesa_color_t color) {
