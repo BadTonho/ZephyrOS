@@ -9,7 +9,7 @@
 #define HEAP_START 0x100000
 #define HEAP_SIZE 0x100000
 
-#define MMAP_ENTRY_SIZE 24
+#define MMAP_ENTRY_SIZE 20
 
 typedef struct {
     uint32_t base_low;
@@ -17,7 +17,6 @@ typedef struct {
     uint32_t length_low;
     uint32_t length_high;
     uint32_t type;
-    uint32_t acpi;
 } __attribute__((packed)) mmap_entry_t;
 
 typedef struct {
@@ -45,5 +44,8 @@ void kfree(void* ptr);
 uint32_t memory_get_total(void);
 uint32_t memory_get_free(void);
 uint32_t memory_get_used(void);
+uint32_t memory_get_total_pages(void);
+uint32_t memory_get_free_pages(void);
+uint32_t memory_get_mmap_entries(void);
 
 #endif

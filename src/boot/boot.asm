@@ -3,7 +3,6 @@
 
 KERNEL_OFFSET equ 0x10000
 MEMORY_MAP    equ 0x8000
-E820_ENTRY_SIZE equ 24
 
 %ifndef KERNEL_SECTORS
 %define KERNEL_SECTORS 272
@@ -116,25 +115,20 @@ detect_memory:
     mov dword [mmap_count], 0
 .lp:
     mov eax, 0xE820
-    mov ecx, 24
+    mov ecx, 20
     mov edx, 0x534D4150
     int 0x15
     jc .dn
     cmp eax, 0x534D4150
     jne .dn
 
-    ; Alguns BIOS retornam entradas E820 antigas de 20 bytes.
-    ; Normalizamos cada entrada para 24 bytes antes de avançar o buffer.
+    ; Solicitamos o formato E820 mínimo e usamos entradas de 20 bytes.
     cmp ecx, 20
     jb .dn
-    cmp ecx, E820_ENTRY_SIZE
-    jae .entry_ready
-    mov dword [es:di + 20], 0
-.entry_ready:
     inc dword [mmap_count]
     test ebx, ebx
     jz .dn
-    add di, E820_ENTRY_SIZE
+    add di, 20
     jmp .lp
 .dn:
     mov eax, [mmap_count]

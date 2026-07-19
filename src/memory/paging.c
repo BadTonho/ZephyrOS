@@ -87,7 +87,9 @@ void paging_switch_directory(page_directory_t* dir) {
 void paging_init(void) {
     page_directory_t* dir = paging_create_directory();
     if (!dir) {
-        panic("Falha ao criar diretorio de paginas!");
+        panic_memory("Falha ao criar diretorio de paginas!",
+                     memory_get_mmap_entries(), memory_get_total(),
+                     memory_get_free(), memory_get_free_pages());
         return;
     }
 

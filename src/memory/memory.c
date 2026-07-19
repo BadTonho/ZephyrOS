@@ -1,6 +1,7 @@
 #include "core/memory.h"
 #include "core/video.h"
 #include "core/panic.h"
+#include "core/log.h"
 
 static memory_info_t mem_info;
 
@@ -16,9 +17,23 @@ static uint32_t align_up(uint32_t value, uint32_t alignment) {
 }
 
 void memory_init(uint32_t mmap_addr) {
+    LOG_INFO("MEM", "Iniciando mapa de memoria");
+
+    if (!mmap_addr) {
+        LOG_ERROR("MEM", "Endereco do mapa E820 nulo");
+        panic_memory("Mapa E820 nao foi recebido", 0, 0, 0, 0);
+        return;
+    }
+
     uint32_t mmap_count = *(uint32_t*)(mmap_addr - 4);
     mem_info.mmap = (mmap_entry_t*)mmap_addr;
     mem_info.mmap_entries = mmap_count;
+
+    if (mmap_count == 0) {
+        LOG_ERROR("MEM", "Mapa E820 sem entradas");
+        panic_memory("Mapa E820 vazio", mmap_count, 0, 0, 0);
+        return;
+    }
 
     mem_info.total_memory = 0;
     mem_info.free_memory = 0;
@@ -39,7 +54,16 @@ void memory_init(uint32_t mmap_addr) {
 
     mem_info.total_pages = mem_info.total_memory / PAGE_SIZE;
     mem_info.free_pages = mem_info.free_memory / PAGE_SIZE;
-    mem_info.bitmap_size = align_up(mem_info.total_pages / 8, PAGE_SIZE);
+
+    if (mem_info.total_memory <= KERNEL_END || mem_info.free_memory == 0) {
+        LOG_ERROR("MEM", "Mapa E820 sem memoria utilizavel");
+        panic_memory("Nenhuma pagina livre foi encontrada", mmap_count,
+                     mem_info.total_memory, mem_info.free_memory,
+                     mem_info.free_pages);
+        return;
+    }
+
+    mem_info.bitmap_size = align_up((mem_info.total_pages + 7) / 8, PAGE_SIZE);
 
     mem_info.bitmap = (uint8_t*)KERNEL_END;
     memset(mem_info.bitmap, 0xFF, mem_info.bitmap_size);
@@ -80,6 +104,7 @@ void memory_init(uint32_t mmap_addr) {
     }
     mem_info.free_memory = mem_info.total_memory - mem_info.used_memory;
     mem_info.free_pages = mem_info.free_memory / PAGE_SIZE;
+    LOG_INFO("MEM", "Mapa de memoria inicializado");
 }
 
 void* pmm_alloc_page(void) {
@@ -204,3 +229,6 @@ void kfree(void* ptr) {
 uint32_t memory_get_total(void) { return mem_info.total_memory; }
 uint32_t memory_get_free(void) { return mem_info.free_memory; }
 uint32_t memory_get_used(void) { return mem_info.used_memory; }
+uint32_t memory_get_total_pages(void) { return mem_info.total_pages; }
+uint32_t memory_get_free_pages(void) { return mem_info.free_pages; }
+uint32_t memory_get_mmap_entries(void) { return mem_info.mmap_entries; }
