@@ -16,6 +16,8 @@ NASMFLAGS = -f bin
 # Arquivos - Boot
 BOOT_SRC = src/boot/boot.asm
 BOOT_BIN = build/boot.bin
+STAGE2_SRC = src/boot/stage2.asm
+STAGE2_BIN = build/stage2.bin
 
 # Arquivos - Kernel
 ENTRY_SRC = src/kernel/entry.asm
@@ -158,7 +160,11 @@ OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(SWITCH_OBJ) \
 # Targets
 all: $(OS_IMG)
 
-$(BOOT_BIN): $(BOOT_SRC) $(KERNEL_BIN)
+$(BOOT_BIN): $(BOOT_SRC) $(STAGE2_BIN)
+	@if not exist build mkdir build
+	for /f %%S in ('powershell -NoProfile -Command "$$size = (Get-Item '$(STAGE2_BIN)').Length; [math]::Ceiling($$size / 512)"') do $(NASM) $(NASMFLAGS) -dSTAGE2_SECTORS=%%S $< -o $@
+
+$(STAGE2_BIN): $(STAGE2_SRC) $(KERNEL_BIN)
 	@if not exist build mkdir build
 	for /f %%S in ('powershell -NoProfile -Command "$$size = (Get-Item '$(KERNEL_BIN)').Length; [math]::Ceiling($$size / 512)"') do $(NASM) $(NASMFLAGS) -dKERNEL_SECTORS=%%S $< -o $@
 
@@ -317,8 +323,8 @@ $(ICONS_OBJ): $(ICONS_C)
 $(KERNEL_BIN): $(OBJS) src/linker.ld
 	$(LD) $(LDFLAGS) $(OBJS) -o $@
 
-$(OS_IMG): $(BOOT_BIN) $(KERNEL_BIN)
-	cmd /c "copy /b build\boot.bin+build\kernel.bin build\zephyros.img"
+$(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(KERNEL_BIN)
+	cmd /c "copy /b build\boot.bin+build\stage2.bin+build\kernel.bin build\zephyros.img"
 
 run: $(OS_IMG)
 	$(QEMU) -drive format=raw,file=$(OS_IMG)

@@ -1,27 +1,20 @@
 [BITS 16]
 [ORG 0x7C00]
 
-KERNEL_OFFSET equ 0x10000
-KERNEL_LIMIT  equ 0x80000
-MEMORY_MAP    equ 0x8000
-VESA_INFO     equ 0x7000
-E820_ENTRY_SIZE equ 24
+STAGE2_LOAD  equ 0x5000
+STAGE2_INFO  equ 0x4FFE
 
-%ifndef KERNEL_SECTORS
-; Limite de seguranca quando o bootloader e montado sem o Makefile.
-%define KERNEL_SECTORS ((KERNEL_LIMIT - KERNEL_OFFSET) / 512)
-%endif
-
-%if KERNEL_SECTORS > ((KERNEL_LIMIT - KERNEL_OFFSET) / 512)
-    %error "kernel excede o limite de memoria reservado pelo bootloader"
+%ifndef STAGE2_SECTORS
+%define STAGE2_SECTORS 1
 %endif
 
     jmp short start
     nop
 
+; BPB mantido para que o setor continue identificavel como FAT12.
 bpb_oem:            db "ZEPHYR  "
 bpb_bytes_per_sec:  dw 512
-bpb_sec_per_clust: db 1
+bpb_sec_per_clust:  db 1
 bpb_reserved_secs:  dw 1
 bpb_num_fats:       db 2
 bpb_root_entries:   dw 224
@@ -46,40 +39,47 @@ start:
     mov es, ax
     mov ss, ax
     mov sp, 0x7C00
-    ; O primeiro estagio nao chama BIOS VESA; informa explicitamente o fallback.
-    mov byte [VESA_INFO + 11], 0
-    ; Mantem as IRQs mascaradas ate o kernel carregar a IDT.
     mov [BOOT_DRIVE], dl
 
-    call detect_memory
+    call detect_geometry
 
-    ; Query drive geometry INT 13h AH=08h
+    mov word [LBA], 1
+    mov word [LOAD_SEG], (STAGE2_LOAD >> 4)
+    mov word [LOAD_OFF], 0
+    mov word [remaining], STAGE2_SECTORS
+    call load_sectors
+
+    ; O stage2 le este valor para encontrar o primeiro setor do kernel.
+    mov word [STAGE2_INFO], STAGE2_SECTORS
+    mov dl, [BOOT_DRIVE]
+    jmp 0x0000:STAGE2_LOAD
+
+detect_geometry:
     mov ah, 0x08
     xor di, di
     mov dl, [BOOT_DRIVE]
     int 0x13
-    jc .no_geom
+    jc .fallback
+
     and cl, 0x3F
     mov [SPT], cl
-    movzx ax, dh
+    xor ax, ax
+    mov al, dh
     inc ax
     mov [NUM_HEADS], ax
-    jmp .geom_ok
-.no_geom:
+    ret
+
+.fallback:
     mov word [SPT], bpb_secs_per_track
     mov word [NUM_HEADS], bpb_num_heads
-.geom_ok:
+    ret
 
-    mov word [LBA], 1
-    mov word [LOAD_SEG], (KERNEL_OFFSET >> 4)
-    mov word [LOAD_OFF], 0x0000
-    mov word [remaining], KERNEL_SECTORS
-
+load_sectors:
 .read_loop:
     cmp word [remaining], 0
-    je .read_done
+    je .done
 
-    ; LBA to CHS
+    ; Converte LBA para CHS usando a geometria informada pelo BIOS.
     mov ax, [LBA]
     xor dx, dx
     div word [SPT]
@@ -94,117 +94,55 @@ start:
     shl cl, 6
     or cl, bl
 
-    ; ES:BX
     mov bx, [LOAD_SEG]
     mov es, bx
     mov bx, [LOAD_OFF]
-
-    ; Le um setor por vez; o primeiro estagio continua limitado a 512 bytes,
-    ; mas o kernel pode ocupar varios setores consecutivos.
     mov ax, 0x0201
     int 0x13
     jc disk_error
 
     inc word [LBA]
     add word [LOAD_OFF], 512
-    jnc .no_seg
+    jnc .no_segment_carry
     add word [LOAD_SEG], 0x1000
-.no_seg:
+.no_segment_carry:
     dec word [remaining]
     jmp .read_loop
 
-.read_done:
-    lgdt [gdt_descriptor]
-    mov eax, cr0
-    or eax, 1
-    mov cr0, eax
-    jmp 0x08:protected_mode
-
-detect_memory:
-    mov di, MEMORY_MAP
-    xor ebx, ebx
-    mov dword [mmap_count], 0
-.lp:
-    mov eax, 0xE820
-    mov ecx, E820_ENTRY_SIZE
-    mov edx, 0x534D4150
-    int 0x15
-    jc .dn
-    cmp eax, 0x534D4150
-    jne .dn
-
-    cmp ecx, 20
-    jb .dn
-    inc dword [mmap_count]
-    test ebx, ebx
-    jz .dn
-    cmp ecx, E820_ENTRY_SIZE
-    jae .next_entry
-    mov dword [es:di + 20], 0
-.next_entry:
-    add di, E820_ENTRY_SIZE
-    jmp .lp
-.dn:
-    mov eax, [mmap_count]
-    mov [MEMORY_MAP - 4], eax
+.done:
     ret
 
 print16:
     pusha
-.lp:
+.loop:
     lodsb
     test al, al
-    jz .dn
+    jz .done
     mov ah, 0x0E
     xor bh, bh
     mov bl, 0x07
     int 0x10
-    jmp .lp
-.dn:
+    jmp .loop
+.done:
     popa
     ret
 
 disk_error:
     mov si, msg_err
     call print16
-    jmp $
-
-[BITS 32]
-protected_mode:
-    mov ax, 0x10
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    mov ss, ax
-    mov esp, 0x90000
-    mov esi, MEMORY_MAP
-    mov edi, VESA_INFO
-    call KERNEL_OFFSET
-    jmp $
-
-gdt_start:
-    dd 0x0, 0x0
-gdt_code:
-    dw 0xFFFF, 0x0000
-    db 0x00, 10011010b, 11001111b, 0x00
-gdt_data:
-    dw 0xFFFF, 0x0000
-    db 0x00, 10010010b, 11001111b, 0x00
-gdt_end:
-gdt_descriptor:
-    dw gdt_end - gdt_start - 1
-    dd gdt_start
+    cli
+.halt:
+    hlt
+    jmp .halt
 
 BOOT_DRIVE: db 0
-mmap_count: dd 0
-SPT: dw 0
-NUM_HEADS: dw 0
-LBA: dw 0
-LOAD_OFF: dw 0
-LOAD_SEG: dw 0
-remaining: dw 0
-msg_err:  db "Disk error!", 0
+SPT:        dw 0
+NUM_HEADS:  dw 0
+LBA:        dw 0
+LOAD_OFF:   dw 0
+LOAD_SEG:   dw 0
+remaining:  dw 0
+msg_err:    db "Stage2 disk error!", 0
 
 times 510-($-$$) db 0
 dw 0xAA55

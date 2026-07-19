@@ -96,6 +96,11 @@ void paging_init(void) {
 
     current_directory = dir;
 
+    /* A GDT do stage2 continua ativa ate o tss_init instalar a GDT do kernel. */
+    for (uint32_t i = BOOT_TRANSITION_START; i < BOOT_TRANSITION_END; i += PAGE_SIZE) {
+        paging_map_page(i, i, 0x03);
+    }
+
     for (uint32_t i = KERNEL_START; i < HEAP_START + HEAP_SIZE; i += PAGE_SIZE) {
         paging_map_page(i, i, 0x03);
     }
