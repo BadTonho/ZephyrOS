@@ -158,9 +158,9 @@ OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(SWITCH_OBJ) \
 # Targets
 all: $(OS_IMG)
 
-$(BOOT_BIN): $(BOOT_SRC)
+$(BOOT_BIN): $(BOOT_SRC) $(KERNEL_BIN)
 	@if not exist build mkdir build
-	$(NASM) $(NASMFLAGS) $< -o $@
+	for /f %%S in ('powershell -NoProfile -Command "$$size = (Get-Item '$(KERNEL_BIN)').Length; [math]::Ceiling($$size / 512)"') do $(NASM) $(NASMFLAGS) -dKERNEL_SECTORS=%%S $< -o $@
 
 $(ENTRY_OBJ): $(ENTRY_SRC)
 	@if not exist build mkdir build
@@ -314,8 +314,8 @@ $(ICONS_OBJ): $(ICONS_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(KERNEL_BIN): $(OBJS)
-	$(LD) $(LDFLAGS) $^ -o $@
+$(KERNEL_BIN): $(OBJS) src/linker.ld
+	$(LD) $(LDFLAGS) $(OBJS) -o $@
 
 $(OS_IMG): $(BOOT_BIN) $(KERNEL_BIN)
 	cmd /c "copy /b build\boot.bin+build\kernel.bin build\zephyros.img"

@@ -22,7 +22,7 @@ start:
     mov es, ax
     mov ss, ax
     mov sp, 0x7C00         ; Stack no início do boot sector
-    sti                    ; Habilita interrupções
+    ; Interrupções permanecem desabilitadas até a IDT do kernel estar pronta
 ```
 
 O CPU começa em **Real Mode** (16-bit), endereçando apenas 1 MB de RAM.
@@ -46,12 +46,13 @@ O BIOS retorna uma tabela com as regiões de memória disponíveis:
 ```nasm
 disk_load:
     mov ah, 0x02           ; Função: ler setores
-    mov al, 30             ; 30 setores (15 KB)
+    ; O Makefile passa a quantidade real de setores em KERNEL_SECTORS
     mov cl, 0x02           ; Começa no setor 2
     int 0x13               ; Chama BIOS
 ```
 
-Lê 30 setores do disco e copia para `0x1000` na memória.
+Lê o kernel setor a setor e copia para `0x10000` na memória. A quantidade de
+setores é calculada durante o build, evitando truncar o kernel quando ele cresce.
 
 ### Etapa 4: Configurar GDT
 
@@ -92,7 +93,7 @@ protected_mode:
     mov esp, 0x90000       ; Kernel stack
 
     mov esi, 0x8000        ; Passa mapa de memória
-    call 0x1000            ; Chama kernel_main()
+    call 0x10000           ; Chama kernel_main()
 ```
 
 ## Layout da Memória
@@ -100,7 +101,7 @@ protected_mode:
 ```
 0x7C00   → Boot sector (512 bytes)
 0x8000   → Mapa de memória E820
-0x1000   → Kernel carregado do disco
+0x10000  → Kernel carregado do disco
 0x90000  → Kernel stack
 ```
 

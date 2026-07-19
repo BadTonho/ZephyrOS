@@ -4,6 +4,10 @@
 KERNEL_OFFSET equ 0x10000
 MEMORY_MAP    equ 0x8000
 
+%ifndef KERNEL_SECTORS
+%define KERNEL_SECTORS 272
+%endif
+
     jmp short start
     nop
 
@@ -34,7 +38,7 @@ start:
     mov es, ax
     mov ss, ax
     mov sp, 0x7C00
-    sti
+    ; Mantem as IRQs mascaradas ate o kernel carregar a IDT.
     mov [BOOT_DRIVE], dl
 
     call detect_memory
@@ -52,14 +56,14 @@ start:
     mov [NUM_HEADS], ax
     jmp .geom_ok
 .no_geom:
-    mov word [SPT], 63
-    mov word [NUM_HEADS], 16
+    mov word [SPT], bpb_secs_per_track
+    mov word [NUM_HEADS], bpb_num_heads
 .geom_ok:
 
     mov word [LBA], 1
     mov word [LOAD_SEG], (KERNEL_OFFSET >> 4)
     mov word [LOAD_OFF], 0x0000
-    mov word [remaining], 272
+    mov word [remaining], KERNEL_SECTORS
 
 .read_loop:
     cmp word [remaining], 0

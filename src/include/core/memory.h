@@ -4,9 +4,9 @@
 #include "types.h"
 
 #define PAGE_SIZE 4096
-#define KERNEL_START 0x1000
-#define KERNEL_END 0x20000
-#define HEAP_START 0x20000
+#define KERNEL_START 0x10000
+#define KERNEL_END 0x40000
+#define HEAP_START 0x100000
 #define HEAP_SIZE 0x100000
 
 #define MMAP_ENTRY_SIZE 24

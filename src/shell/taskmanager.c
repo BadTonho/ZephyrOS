@@ -294,7 +294,7 @@ static void draw_memory(void) {
     draw_hline(start_x, start_y + 13, TSKMGR_WIDTH - 4, COLOR_BORDER);
 
     print_at(start_x, start_y + 15, "Heap:", COLOR_HEADER);
-    print_at(start_x, start_y + 17, "  Inicio: 0x20000", COLOR_TEXT);
+    print_at(start_x, start_y + 17, "  Inicio: 0x100000", COLOR_TEXT);
     print_at(start_x, start_y + 18, "  Tamanho: 1 MB", COLOR_TEXT);
 
     draw_hline(start_x, start_y + 20, TSKMGR_WIDTH - 4, COLOR_BORDER);
