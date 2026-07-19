@@ -18,9 +18,8 @@ typedef struct {
 } __attribute__((aligned(4096))) page_table_t;
 
 typedef struct {
-    page_table_t* tables[1024];
-    uint32_t physical_addr;
-} __attribute__((packed)) page_directory_t;
+    uint32_t entries[1024];
+} __attribute__((aligned(4096))) page_directory_t;
 
 void paging_init(void);
 void paging_switch_directory(page_directory_t* dir);
