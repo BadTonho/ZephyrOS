@@ -42,7 +42,9 @@ typedef struct {
 } fm_state_t;
 
 void fm_init(void);
-void fm_run(void);
+void fm_open(void);
+void fm_close(void);
+int fm_is_running(void);
 void fm_handle_key(uint8_t scancode);
 
 #endif

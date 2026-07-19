@@ -4,10 +4,12 @@
 #include "fs/fs.h"
 #include "core/memory.h"
 #include "core/timer.h"
+#include "ui/taskbar.h"
 
 static editor_t editor;
 static uint8_t shift_pressed = 0;
 static uint8_t ctrl_pressed = 0;
+static keyboard_callback_t editor_prev_callback = 0;
 
 static void memset(void* dst, uint8_t val, uint32_t size) {
     uint8_t* d = (uint8_t*)dst;
@@ -423,7 +425,13 @@ void editor_close(void) {
             editor.lines[i] = 0;
         }
     }
+    editor.line_count = 0;
     editor.running = 0;
+    keyboard_set_callback(editor_prev_callback);
+    video_clear();
+    video_print("ZephyrOS Shell\n\n", 0x0B);
+    video_print("zephyr> ", 0x0A);
+    taskbar_draw();
 }
 
 static void editor_save(void) {
@@ -870,14 +878,8 @@ void editor_run(void) {
     editor_new();
     editor.running = 1;
 
-    keyboard_set_callback(editor_handle_key);
+    editor_prev_callback = keyboard_set_callback(editor_handle_key);
     editor_draw();
-
-    while (editor.running) {
-        asm volatile("hlt");
-    }
-
-    keyboard_set_callback(0);
 }
 
 void editor_run_file(const char* filename) {
@@ -885,25 +887,8 @@ void editor_run_file(const char* filename) {
     editor_open(filename);
     editor.running = 1;
 
-    keyboard_set_callback(editor_handle_key);
+    editor_prev_callback = keyboard_set_callback(editor_handle_key);
     editor_draw();
-
-    while (editor.running) {
-        asm volatile("hlt");
-    }
-
-    keyboard_set_callback(0);
-}
-
-void editor_close_app(void) {
-    for (uint32_t i = 0; i < editor.line_count; i++) {
-        if (editor.lines[i]) {
-            kfree(editor.lines[i]);
-            editor.lines[i] = 0;
-        }
-    }
-    editor.line_count = 0;
-    editor.running = 0;
 }
 
 uint8_t editor_is_running(void) {

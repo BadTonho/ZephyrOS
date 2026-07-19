@@ -460,21 +460,27 @@ void fm_init(void) {
     fm_refresh_files();
 }
 
-void fm_run(void) {
+static keyboard_callback_t fm_prev_callback = 0;
+
+void fm_open(void) {
     fm_init();
-    keyboard_callback_t prev_callback = keyboard_set_callback(fm_handle_key);
+    fm_prev_callback = keyboard_set_callback(fm_handle_key);
     taskbar_add_app(TB_APP_EXPLORER, "Explorer");
     fm_draw_all();
+}
 
-    while (state.running) {
-        taskbar_update_clock();
-        asm volatile("hlt");
-    }
-
+void fm_close(void) {
+    state.running = 0;
     taskbar_remove_app(TB_APP_EXPLORER);
+    keyboard_set_callback(fm_prev_callback);
     video_clear();
-    keyboard_set_callback(prev_callback);
+    video_print("ZephyrOS Shell\n\n", 0x0B);
+    video_print("zephyr> ", 0x0A);
     taskbar_draw();
+}
+
+int fm_is_running(void) {
+    return state.running;
 }
 
 static const char scancode_table[128] = {
@@ -691,7 +697,7 @@ void fm_handle_key(uint8_t scancode) {
     }
 
     if (scancode == 0x01) {
-        state.running = 0;
+        fm_close();
         return;
     }
 

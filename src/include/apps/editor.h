@@ -53,6 +53,5 @@ void editor_run_file(const char* filename);
 void editor_close(void);
 void editor_handle_key(uint8_t scancode);
 uint8_t editor_is_running(void);
-void editor_close_app(void);
 
 #endif

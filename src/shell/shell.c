@@ -326,8 +326,9 @@ void shell_handle_key(uint8_t scancode) {
 
     int tb_result = taskbar_handle_key(scancode);
     if (tb_result) {
-        if (tb_result == 3) {
-            fm_run();
+        if (tb_result == 2) {
+        } else if (tb_result == 3) {
+            fm_open();
         } else if (tb_result == 4) {
             taskmgr_open();
         } else if (tb_result == 5) {
@@ -362,21 +363,21 @@ void shell_handle_key(uint8_t scancode) {
             taskbar_draw();
             return;
         }
-        if (result == 3) {
-            desktop_set_active(0);
-            fm_run();
-            return;
-        }
-        if (result == 4) {
-            desktop_set_active(0);
-            taskmgr_open();
-            return;
-        }
-        if (result == 2) {
+        if (result == 1) {
             desktop_set_active(0);
             video_clear();
             shell_print_prompt();
             taskbar_draw();
+            return;
+        }
+        if (result == 2) {
+            desktop_set_active(0);
+            fm_open();
+            return;
+        }
+        if (result == 3) {
+            desktop_set_active(0);
+            taskmgr_open();
             return;
         }
         return;
@@ -466,7 +467,7 @@ int shell_process_command(const char* input) {
         desktop_set_active(1);
         desktop_draw();
     } else if (strcmp(cmd, "explorer") == 0) {
-        fm_run();
+        fm_open();
     } else if (strcmp(cmd, "reboot") == 0) {
         cmd_reboot();
     } else if (strcmp(cmd, "shutdown") == 0) {
@@ -528,7 +529,6 @@ int shell_process_command(const char* input) {
         } else {
             editor_run();
         }
-        shell_init();
     } else {
         video_print("Comando nao encontrado: ", 0x0C);
         video_print(cmd, 0x0C);
