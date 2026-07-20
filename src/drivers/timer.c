@@ -25,6 +25,10 @@ void timer_handler(registers_t* regs) {
     ticks++;
     scheduler_tick();
     
+    // Como process_yield não retorna no caso de uma preempção,
+    // precisamos confirmar a interrupção no PIC antes de trocar de contexto.
+    outb(0x20, 0x20);
+
     // Troca de contexto a cada 1 tick (20ms considerando 50Hz)
     process_yield();
 }

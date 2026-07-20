@@ -178,35 +178,18 @@ uint32_t process_get_count(void) {
     return process_count;
 }
 
+static int last_scheduled_idx = -1;
+
 process_t* scheduler_schedule(void) {
     process_t* best = 0;
-    uint32_t min_ticks = 0xFFFFFFFF;
 
-    for (int i = 0; i < MAX_PROCESSES; i++) {
-        if (processes[i].state == PROCESS_STATE_READY) {
-            if (processes[i].total_ticks < min_ticks) {
-                min_ticks = processes[i].total_ticks;
-                best = &processes[i];
-            }
+    for (int i = 1; i <= MAX_PROCESSES; i++) {
+        int idx = (last_scheduled_idx + i) % MAX_PROCESSES;
+        if (processes[idx].state == PROCESS_STATE_READY) {
+            best = &processes[idx];
+            last_scheduled_idx = idx;
+            break;
         }
-    }
-
-    if (!best) {
-        for (int i = 0; i < MAX_PROCESSES; i++) {
-            if (processes[i].state == PROCESS_STATE_READY) {
-                best = &processes[i];
-                break;
-            }
-        }
-    }
-
-    if (best) {
-        for (int i = 0; i < MAX_PROCESSES; i++) {
-            if (processes[i].state == PROCESS_STATE_READY) {
-                processes[i].total_ticks = 0;
-            }
-        }
-        best->total_ticks = 1;
     }
 
     return best;
