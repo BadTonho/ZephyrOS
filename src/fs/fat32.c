@@ -849,7 +849,17 @@ int fat32_create_dir_entry(uint32_t dir_cluster, const char* name, uint8_t attri
     uint32_t new_cluster = fat32_find_free_cluster();
     if (!new_cluster) return -1;
 
+
     fat32_set_cluster(new_cluster, FAT32_CLUSTER_END);
+
+    uint32_t c_size = fs.bpb.sectors_per_cluster * 512;
+    uint8_t* zero_buf = (uint8_t*)kmalloc(c_size);
+    if (zero_buf) {
+        kmemset(zero_buf, 0, c_size);
+        fat32_write_cluster(new_cluster, zero_buf);
+        kfree(zero_buf);
+    }
+
 
     uint32_t cluster_size = fs.bpb.sectors_per_cluster * 512;
     uint8_t* cluster_buf = (uint8_t*)kmalloc(cluster_size);
