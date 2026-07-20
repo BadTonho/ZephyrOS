@@ -591,13 +591,18 @@ int taskmgr_is_open(void) {
 void taskmgr_run(void) {
     taskmgr_open();
     ipc_msg_t msg;
+    uint32_t last_tick = timer_get_ticks();
     while (is_open) {
         if (ipc_receive(&msg)) {
             if (msg.type == IPC_MSG_KEYBOARD) {
                 taskmgr_handle_key((uint8_t)msg.data1);
             }
         } else {
-            taskmgr_refresh(); // Refresh
+            uint32_t current_tick = timer_get_ticks();
+            if (current_tick - last_tick >= 50) { // 1 second if 50Hz
+                taskmgr_refresh();
+                last_tick = current_tick;
+            }
             process_yield();
         }
     }
