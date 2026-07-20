@@ -118,6 +118,26 @@ int fat12_init(void) {
         kmemcpy((uint8_t*)fs.root_dir + copied, sector, copy_size);
     }
 
+    int has_free = 0;
+    for (uint32_t i = 0; i < fs.bpb.root_entries; i++) {
+        if (fs.root_dir[i].name[0] == 0x00 || fs.root_dir[i].name[0] == 0xE5) {
+            has_free = 1;
+            break;
+        }
+    }
+
+    if (!has_free) {
+        LOG_INFO("FAT12", "Sistema de arquivos sem formatacao detectado. Formatando...");
+        kmemset(fs.root_dir, 0, root_size);
+        for (uint32_t i = 0; i < root_sectors; i++) {
+            ata_write_sectors(fs.root_start + i, 1, (uint8_t*)fs.root_dir + i * 512);
+        }
+        kmemset(fs.fat, 0, fat_size);
+        for (int i = 0; i < fs.bpb.sectors_per_fat; i++) {
+            ata_write_sectors(fs.fat_start + i, 1, (uint8_t*)fs.fat + i * 512);
+        }
+    }
+
     fs.initialized = 1;
     LOG_INFO("FAT12", "Sistema FAT12 inicializado");
     return OK;
@@ -625,10 +645,10 @@ uint16_t fat12_resolve_path(const char* path) {
             entry = fat12_find_in_dir(current_cluster, fat12_name);
         }
         
-        if (!entry) return 0;
+        if (!entry) return 0xFFFF;
 
         if (!(entry->attributes & 0x10)) {
-            return 0;
+            return 0xFFFF;
         }
 
         current_cluster = entry->cluster_low;
