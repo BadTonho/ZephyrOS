@@ -31,14 +31,14 @@ static const char* side_pane_names[] = {
     "Videos"
 };
 static const char* side_pane_paths[] = {
-    "C:\\",
-    "C:\\.trash",
-    "C:\\Desktop",
-    "C:\\Documentos",
-    "C:\\Downloads",
-    "C:\\Imagens",
-    "C:\\Musica",
-    "C:\\Videos"
+    "",
+    "/.trash",
+    "/Desktop",
+    "/Documentos",
+    "/Downloads",
+    "/Imagens",
+    "/Musica",
+    "/Videos"
 };
 static const int side_pane_count = 8;
 
@@ -214,8 +214,10 @@ static void fm_draw_address_bar(void) {
         } else {
             display_path[2] = '\\';
             int di = 3;
-            for (int i = 0; state.current_path[i] && di < SCREEN_COLS - 4; i++) {
-                display_path[di++] = state.current_path[i];
+            int start_idx = (state.current_path[0] == '/') ? 1 : 0;
+            for (int i = start_idx; state.current_path[i] && di < SCREEN_COLS - 4; i++) {
+                if (state.current_path[i] == '/') display_path[di++] = '\\';
+                else display_path[di++] = state.current_path[i];
             }
             display_path[di] = '\0';
         }
@@ -519,6 +521,15 @@ void fm_init(void) {
     state.scroll_offset = 0;
     state.view_mode = 0;
     state.running = 1;
+
+    fs_create_dir_entry("", ".trash", 0x10);
+    fs_create_dir_entry("", "Desktop", 0x10);
+    fs_create_dir_entry("", "Documentos", 0x10);
+    fs_create_dir_entry("", "Downloads", 0x10);
+    fs_create_dir_entry("", "Imagens", 0x10);
+    fs_create_dir_entry("", "Musica", 0x10);
+    fs_create_dir_entry("", "Videos", 0x10);
+
     state.current_path[0] = '\0';
     state.history_count = 0;
     state.history_pos = 0;
@@ -803,8 +814,8 @@ void fm_handle_key(uint8_t scancode) {
     }
     if (scancode == 0x53) { // DELETE = Mover para Lixeira
         if (state.file_count > 0 && !state.files[state.selected].is_dir) {
-            char trash_path[] = "C:\\.trash";
-            fs_create_dir_entry("C:\\", ".trash", 0x10); // Ensure trash exists
+            char trash_path[] = "/.trash";
+            fs_create_dir_entry("", ".trash", 0x10); // Ensure trash exists
             uint32_t size = state.files[state.selected].size;
             uint8_t* buf = kmalloc(size + 1);
             if (buf) {
