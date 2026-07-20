@@ -16,7 +16,31 @@ static int input_pos = 0;
 static int input_mode = 0;
 static int rename_mode = 0;
 static int confirm_delete = 0;
+static int create_dir_mode = 0;
 static char old_name[FM_NAME_LEN];
+
+
+static const char* side_pane_names[] = {
+    "Este Computador",
+    "Lixeira",
+    "Desktop",
+    "Documentos",
+    "Downloads",
+    "Imagens",
+    "Musica",
+    "Videos"
+};
+static const char* side_pane_paths[] = {
+    "C:\\",
+    "C:\\.trash",
+    "C:\\Desktop",
+    "C:\\Documentos",
+    "C:\\Downloads",
+    "C:\\Imagens",
+    "C:\\Musica",
+    "C:\\Videos"
+};
+static const int side_pane_count = 8;
 
 static void fm_refresh_files(void);
 static void fm_draw_all(void);
@@ -206,12 +230,35 @@ static void fm_draw_address_bar(void) {
     }
 }
 
+
+static void fm_draw_side_pane(void) {
+    video_fill_rect(0, 3, 20, SCREEN_ROWS - 5, ' ', 0x07);
+    video_draw_vline(20, 3, SCREEN_ROWS - 5, 0xB3, 0x07);
+    
+    video_print_at(2, 4, "Acesso Rapido", 0x0F);
+    
+    for (int i = 0; i < side_pane_count; i++) {
+        uint8_t color = 0x07;
+        if (state.focus_pane == 0 && state.side_selected == i) {
+            color = FM_SELECTED_COLOR;
+            video_fill_rect(0, 6 + i, 20, 1, ' ', color);
+        }
+        
+        char buf[20];
+        int d = 0;
+        for (int j = 0; side_pane_names[i][j] && d < 18; j++) buf[d++] = side_pane_names[i][j];
+        buf[d] = '\0';
+        
+        video_print_at(1, 6 + i, buf, color);
+    }
+}
+
 static void fm_draw_column_headers(void) {
-    video_fill_rect(0, 3, SCREEN_COLS, 1, ' ', 0x07);
-    video_print_at(2, 3, "Nome", 0x0F);
-    video_print_at(22, 3, "Tamanho", 0x0F);
-    video_print_at(35, 3, "Tipo", 0x0F);
-    video_draw_hline(0, 4, SCREEN_COLS, 0xC4, 0x07);
+    video_fill_rect(21, 3, SCREEN_COLS - 21, 1, ' ', 0x07);
+    video_print_at(23, 3, "Nome", 0x0F);
+    video_print_at(43, 3, "Tamanho", 0x0F);
+    video_print_at(56, 3, "Tipo", 0x0F);
+    video_draw_hline(21, 4, SCREEN_COLS - 21, 0xC4, 0x07);
 }
 
 static void fm_draw_separator_bottom(void) {
@@ -283,7 +330,7 @@ static void fm_draw_file_list(void) {
         int row = 5 + i;
         int file_idx = visible_start + i;
 
-        video_fill_rect(2, row, 76, 1, ' ', 0x07);
+        video_fill_rect(21, row, SCREEN_COLS - 21, 1, ' ', 0x07);
 
         if (file_idx < state.file_count) {
             fm_file_entry_t* f = &state.files[file_idx];
@@ -292,11 +339,11 @@ static void fm_draw_file_list(void) {
 
             if (file_idx == state.selected) {
                 name_color = FM_SELECTED_COLOR;
-                video_fill_rect(0, row, SCREEN_COLS, 1, ' ', FM_SELECTED_COLOR);
+                video_fill_rect(21, row, SCREEN_COLS - 21, 1, ' ', state.focus_pane == 1 ? FM_SELECTED_COLOR : 0x70);
             }
 
-            video_put_char_at(icon->ch, name_color, 2, row);
-            video_put_char_at(icon->ch, name_color, 3, row);
+            video_put_char_at(icon->ch, name_color, 23, row);
+            video_put_char_at(icon->ch, name_color, 24, row);
 
             char display_name[FM_NAME_LEN + 4];
             int d = 0;
@@ -316,15 +363,15 @@ static void fm_draw_file_list(void) {
             }
             display_name[d] = '\0';
 
-            video_print_at(5, row, display_name, name_color);
+            video_print_at(26, row, display_name, name_color);
 
             if (!f->is_dir) {
                 char buf[12];
                 int_to_str(f->size, buf);
-                video_print_at(22, row, buf, file_idx == state.selected ? FM_SELECTED_COLOR : FM_SIZE_COLOR);
-                video_print_at(35, row, "Arquivo", file_idx == state.selected ? FM_SELECTED_COLOR : 0x08);
+                video_print_at(43, row, buf, file_idx == state.selected && state.focus_pane == 1 ? FM_SELECTED_COLOR : (file_idx == state.selected ? 0x70 : FM_SIZE_COLOR));
+                video_print_at(56, row, "Arquivo", file_idx == state.selected && state.focus_pane == 1 ? FM_SELECTED_COLOR : (file_idx == state.selected ? 0x70 : 0x08));
             } else {
-                video_print_at(35, row, "Pasta", file_idx == state.selected ? FM_SELECTED_COLOR : 0x0B);
+                video_print_at(56, row, "Pasta", file_idx == state.selected && state.focus_pane == 1 ? FM_SELECTED_COLOR : (file_idx == state.selected ? 0x70 : 0x0B));
             }
         }
     }
@@ -353,6 +400,13 @@ static void fm_draw_help(void) {
 
     video_draw_hline(11, 20, 58, 0xC4, 0x07);
     video_print_at(22, 21, "Pressione Esc para voltar...", 0x08);
+}
+
+
+static void fm_draw_create_dir(void) {
+    video_fill_rect(10, 10, 60, 3, ' ', 0x17);
+    video_draw_box(10, 10, 60, 3, 0x17);
+    video_print_at(12, 11, "Nova pasta: ", 0x17);
 }
 
 static void fm_draw_create_file(void) {
@@ -453,6 +507,7 @@ static void fm_draw_all(void) {
     fm_draw_title_bar();
     fm_draw_menu_bar();
     fm_draw_address_bar();
+    fm_draw_side_pane();
     fm_draw_column_headers();
     fm_draw_separator_bottom();
     fm_draw_status_bar();
@@ -540,60 +595,7 @@ void fm_handle_key(uint8_t scancode) {
             return;
         }
 
-        if (scancode == 0x1C) {
-            state.address_buffer[state.address_pos] = '\0';
-            state.address_mode = 0;
-
-            if (state.address_pos > 0) {
-                char new_path[FM_MAX_PATH];
-                int pi = 0;
-
-                if (state.address_buffer[0] == 'c' || state.address_buffer[0] == 'C') {
-                    if (state.address_buffer[1] == ':') {
-                        pi = 2;
-                        if (state.address_buffer[2] == '\\') pi = 3;
-                    }
-                }
-
-                for (int i = pi; state.address_buffer[i]; i++) {
-                    new_path[pi - pi + i - pi] = state.address_buffer[i];
-                }
-                int len = str_len(state.address_buffer) - pi;
-                new_path[len] = '\0';
-
-                if (len == 0 || str_equal(new_path, "\\")) {
-                    new_path[0] = '\0';
-                }
-
-                if (new_path[0] == '\\') {
-                    int shifted = 0;
-                    for (int i = 1; new_path[i]; i++) {
-                        new_path[shifted++] = new_path[i];
-                    }
-                    new_path[shifted] = '\0';
-                }
-
-                fm_navigate_to(new_path);
-            } else {
-                fm_draw_all();
-            }
-            return;
-        }
-
-        if (scancode == 0x01) {
-            state.address_mode = 0;
-            fm_draw_all();
-            return;
-        }
-
-        if (c && state.address_pos < FM_MAX_PATH - 1) {
-            state.address_buffer[state.address_pos++] = c;
-            state.address_buffer[state.address_pos] = '\0';
-            int cx = 3 + state.address_pos - 1;
-            video_put_char_at(c, FM_ADDRESS_INPUT_COLOR, cx, 2);
-        }
-        return;
-    }
+        
 
     if (input_mode) {
         char c = scancode_table[scancode];
@@ -608,23 +610,9 @@ void fm_handle_key(uint8_t scancode) {
             return;
         }
 
-        if (scancode == 0x1C) {
-            input_buffer[input_pos] = '\0';
+        
 
-            if (confirm_delete) {
-                if (input_buffer[0] == 's' || input_buffer[0] == 'S') {
-                    if (state.selected >= 0 && state.selected < state.file_count) {
-                        fs_delete_file_in_dir(state.current_path, state.files[state.selected].name);
-                        fm_refresh_files();
-                    }
-                }
-                confirm_delete = 0;
-                input_mode = 0;
-                fm_draw_all();
-                return;
-            }
-
-            if (rename_mode) {
+    if (rename_mode) {
                 if (input_pos > 0 && state.selected >= 0 && state.selected < state.file_count) {
                     uint8_t* content = 0;
                     uint32_t size = 0;
@@ -776,22 +764,7 @@ void fm_handle_key(uint8_t scancode) {
         return;
     }
 
-    if (scancode == 0x1C) {
-        if (state.selected >= 0 && state.selected < state.file_count) {
-            fm_file_entry_t* f = &state.files[state.selected];
-            if (f->is_dir) {
-                char new_path[FM_MAX_PATH];
-                if (fm_join_path(new_path, state.current_path, f->name) != OK) {
-                    video_print_at(2, SCREEN_ROWS - 2, "Erro: caminho muito longo.", 0x0C);
-                    return;
-                }
-                fm_navigate_to(new_path);
-            } else {
-                fm_draw_view_file();
-            }
-        }
-        return;
-    }
+    
 
     if (scancode == 0x0E) {
         fm_go_up();
@@ -800,29 +773,9 @@ void fm_handle_key(uint8_t scancode) {
 
     if (state.file_count == 0) return;
 
-    if (scancode == 0x48) {
-        if (state.selected > 0) {
-            state.selected--;
-            if (state.selected < state.scroll_offset) {
-                state.scroll_offset = state.selected;
-            }
-        }
-        fm_draw_file_list();
-        fm_draw_status_bar();
-        return;
-    }
+    
 
-    if (scancode == 0x50) {
-        if (state.selected < state.file_count - 1) {
-            state.selected++;
-            if (state.selected >= state.scroll_offset + 17) {
-                state.scroll_offset = state.selected - 16;
-            }
-        }
-        fm_draw_file_list();
-        fm_draw_status_bar();
-        return;
-    }
+    
 
     if (scancode == 0x49) {
         state.selected -= 17;

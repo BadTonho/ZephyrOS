@@ -39,7 +39,17 @@ typedef struct {
     int address_mode;
     char address_buffer[FM_MAX_PATH];
     int address_pos;
+
+    int focus_pane;
+    int side_selected;
+    char clipboard_path[FM_MAX_PATH];
+    char clipboard_dir[FM_MAX_PATH];
+    char clipboard_name[FM_NAME_LEN];
+    uint32_t clipboard_size;
+    int clipboard_op;
+    int create_dir_mode;
 } fm_state_t;
+
 
 void fm_init(void);
 void fm_open(void);

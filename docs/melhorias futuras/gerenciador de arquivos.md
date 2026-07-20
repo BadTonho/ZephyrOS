@@ -12,8 +12,8 @@
 - ✅ Abrir discos internos, SSDs, HDs e partições. *(suporte a subdiretórios em FAT12/FAT32)*
 - ⬜ Acessar pendrives, cartões de memória, celulares e discos externos.
 - ✅ Navegar pelas pastas Desktop, Documentos, Downloads, Imagens, Música e Vídeos. *(navegação completa por subdiretórios)*
-- ⬜ Usar Este Computador para visualizar unidades e espaço disponível.
-- ⬜ Navegar por pastas usando o painel lateral em formato de árvore.
+- ✅ Usar Este Computador para visualizar unidades e espaço disponível. *(via Painel Lateral)*
+- ✅ Navegar por pastas usando o painel lateral em formato de árvore. *(Painel lateral 'Acesso Rápido' adicionado)*
 - ✅ Voltar para a pasta anterior. *(Alt+← com histórico)*
 - ✅ Avançar para a próxima pasta. *(Alt+→ com histórico)*
 - ✅ Subir um nível na hierarquia. *(Backspace)*
@@ -21,7 +21,7 @@
 - ⬜ Copiar o caminho completo de um arquivo ou pasta.
 
 ### 2. Criação de itens
-- ⬜ Criar novas pastas.
+- ✅ Criar novas pastas. *(Atalho F6)*
 - ⬜ Criar atalhos.
 - 🟡 Criar documentos e outros tipos de arquivo disponibilizados pelos programas instalados. *(F7 cria arquivo vazio, 1 byte)*
 - ⬜ Criar arquivos compactados.
@@ -31,16 +31,15 @@
 ### 3. Operações com arquivos e pastas
 - ✅ Abrir arquivos. *(Enter abre, F3 visualiza conteúdo)*
 - ⬜ Escolher outro programa usando "Abrir com".
-- ⬜ Copiar.
-- ⬜ Recortar.
-- ⬜ Colar.
+- ✅ Copiar. *(Atalho F9)*
+- ✅ Recortar. *(Atalho F10)*
+- ✅ Colar. *(Atalho F11)*
 - ⬜ Mover.
 - ⬜ Duplicar usando copiar e colar.
 - ⬜ Arrastar e soltar entre pastas.
 - ✅ Renomear arquivos e pastas. *(F2 com diálago, recria arquivo com novo nome)*
 - ⬜ Renomear vários itens selecionados.
-- ⬜ Excluir enviando para a Lixeira.
-- ✅ Excluir permanentemente com `Shift + Delete`. *(F8 com confirmação S/N, exclui direto)*
+- ✅ Excluir enviando para a Lixeira. *(Atalho Delete move para C:\.trash)*
 - ⬜ Restaurar itens da Lixeira para o local original.
 - ⬜ Esvaziar a Lixeira.
 - ⬜ Criar atalhos para arquivos, pastas, programas e unidades.
