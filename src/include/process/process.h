@@ -39,6 +39,7 @@ typedef struct {
 } process_t;
 
 void process_init(void);
+void process_bootstrap_idle(void);
 process_t* process_create(const char* name, void (*entry_point)());
 void process_destroy(process_t* proc);
 process_t* process_get_current(void);

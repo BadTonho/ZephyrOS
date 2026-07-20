@@ -21,6 +21,30 @@ void process_init(void) {
     scheduler_init();
 }
 
+void process_bootstrap_idle(void) {
+    process_t* proc = &processes[0];
+    kmemset(proc, 0, sizeof(process_t));
+    proc->pid = 0;
+    
+    const char* name = "System Idle";
+    int i = 0;
+    while (name[i] && i < PROCESS_NAME_LENGTH - 1) {
+        proc->name[i] = name[i];
+        i++;
+    }
+    proc->name[i] = '\0';
+    
+    proc->state = PROCESS_STATE_RUNNING;
+    proc->total_ticks = 0;
+    proc->wait_ticks = 0;
+    
+    proc->kernel_stack = 0; // Utiliza a stack inicial do boot
+    proc->page_directory = current_directory;
+    
+    current_process = proc;
+    process_count = 1;
+}
+
 process_t* process_create(const char* name, void (*entry_point)()) {
     process_t* proc = 0;
 
@@ -189,6 +213,8 @@ process_t* scheduler_schedule(void) {
 }
 
 void process_yield(void) {
+    if (!current_process) return;
+    
     process_t* next = scheduler_schedule();
     if (next && next != current_process) {
         process_t* prev = current_process;

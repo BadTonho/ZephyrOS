@@ -23,6 +23,30 @@
 #include "ui/wm.h"
 #include "ui/icons.h"
 
+void system_process_main(void) {
+    while (1) {
+        keyboard_process_events();
+        taskbar_update_clock();
+        wm_update_cpu_stats();
+        process_yield(); // Nao trava a CPU
+    }
+}
+
+void shell_process_main(void) {
+    shell_init();
+    while (1) {
+        process_yield();
+    }
+}
+
+void desktop_process_main(void) {
+    desktop_set_active(1);
+    desktop_draw();
+    while (1) {
+        process_yield();
+    }
+}
+
 void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     vesa_init(vesa_info_addr);
     font_init();
@@ -135,6 +159,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     video_print("[..] Iniciando processos...\n", 0x08);
     tss_init();
     process_init();
+    process_bootstrap_idle();
     video_print("[OK] TSS configurado\n", 0x07);
 
     video_print("[..] Iniciando threads...\n", 0x08);
@@ -202,14 +227,13 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     video_set_color(VGA_COLOR_WHITE, VGA_COLOR_BLACK);
 
     taskbar_draw();
-    shell_init();
-    desktop_set_active(1);
-    desktop_draw();
+
+    process_create("Zephyr System", system_process_main);
+    process_create("Shell", shell_process_main);
+    process_create("Desktop", desktop_process_main);
 
     while (1) {
-        keyboard_process_events();
-        taskbar_update_clock();
-        wm_update_cpu_stats();
+        process_yield();
         asm volatile("hlt");
     }
 }

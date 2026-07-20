@@ -6,7 +6,7 @@
 #include "drivers/vesa.h"
 #include "core/string.h"
 
-static page_directory_t* current_directory = 0;
+page_directory_t* current_directory = 0;
 
 page_directory_t* paging_create_directory(void) {
     page_directory_t* dir = (page_directory_t*)pmm_alloc_page();

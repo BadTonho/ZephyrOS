@@ -1,6 +1,7 @@
 #include "core/timer.h"
 #include "drivers/idt.h"
 #include "core/log.h"
+#include "process/process.h"
 
 static uint32_t ticks = 0;
 
@@ -22,6 +23,10 @@ void timer_init(uint32_t freq) {
 void timer_handler(registers_t* regs) {
     (void)regs;
     ticks++;
+    scheduler_tick();
+    
+    // Troca de contexto a cada 1 tick (20ms considerando 50Hz)
+    process_yield();
 }
 
 uint32_t timer_get_ticks(void) {
