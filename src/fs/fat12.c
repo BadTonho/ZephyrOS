@@ -610,7 +610,21 @@ uint16_t fat12_resolve_path(const char* path) {
             }
         }
 
-        fat12_dir_entry_t* entry = fat12_find_in_dir(current_cluster, fat12_name);
+        fat12_dir_entry_t* entry = 0;
+        if (current_cluster == 0) {
+            for (uint32_t idx = 0; idx < fs.bpb.root_entries; idx++) {
+                if (fs.root_dir[idx].name[0] == 0x00) break;
+                if (fs.root_dir[idx].name[0] == 0xE5) continue;
+                if (fs.root_dir[idx].attributes & 0x08) continue;
+                if (strncmp(fs.root_dir[idx].name, fat12_name, 11) == 0) {
+                    entry = &fs.root_dir[idx];
+                    break;
+                }
+            }
+        } else {
+            entry = fat12_find_in_dir(current_cluster, fat12_name);
+        }
+        
         if (!entry) return 0;
 
         if (!(entry->attributes & 0x10)) {
