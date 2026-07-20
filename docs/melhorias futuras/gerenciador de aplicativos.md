@@ -510,8 +510,8 @@ Estes aplicativos são distribuídos através da Loja de Aplicativos. Apenas a i
 - [OSDev Wiki - ELF](https://wiki.osdev.org/ELF) — Formato ELF (para referência futura)
 - [AppImage](https://appimage.org/) — Formato de pacote Linux (inspiração)
 - [Flatpak](https://flatpak.org/) — Sistema de pacotes Linux (inspiração)
-- [Windows Installer](https://learn.microsoft.com/en-us/windows/win32/msi/) — Instalador do Windows (inspiração)
-- [Chocolatey](https://chocolatey.org/) — Gerenciador de pacotes Windows (inspiração)
+- [ZephyrOS Installer](https://learn.microsoft.com/en-us/ZephyrOS/win32/msi/) — Instalador do ZephyrOS (inspiração)
+- [Chocolatey](https://chocolatey.org/) — Gerenciador de pacotes ZephyrOS (inspiração)
 
 ---
 

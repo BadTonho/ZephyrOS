@@ -11,7 +11,7 @@
 ### 1. Visualização dos processos
 - ✅ Aplicativos abertos. *(taskmanager.c:156-252 — lista completa de processos)*
 - ✅ Processos executados em segundo plano. *(mostra todos os processos do scheduler)*
-- ⬜ Processos internos do Windows.
+- ⬜ Processos internos do ZephyrOS.
 - ⬜ Processos agrupados pelo aplicativo responsável.
 - ✅ Nome e ícone do programa. *(taskmanager.c:199-204 — exibe nome, max 12 chars)*
 - ✅ Estado do processo. *(taskmanager.c:206-215 — Pronto/Rodando/Bloqueado/Zombie)*
@@ -144,7 +144,7 @@
 - ⬜ Opção para apagar o histórico de utilização.
 
 ### 10. Aplicativos de inicialização
-- ⬜ Ver programas configurados para iniciar com o Windows.
+- ⬜ Ver programas configurados para iniciar com o ZephyrOS.
 - ⬜ Ativar um aplicativo de inicialização.
 - ⬜ Desativar um aplicativo.
 - ⬜ Ver o nome do fabricante.
@@ -222,7 +222,7 @@
 - ⬜ Testar problemas de compatibilidade.
 - ⬜ Reservar determinados núcleos para outros programas.
 
-### 15. Serviços do Windows
+### 15. Serviços do ZephyrOS
 - ⬜ Nome interno do serviço.
 - ⬜ PID relacionado.
 - ⬜ Descrição.
@@ -271,7 +271,7 @@
 - ✅ Delete para finalizar. *(taskmanager.c:435-451)*
 - ⬜ Ctrl + Shift + Esc: abre diretamente.
 - ⬜ Ctrl + Alt + Delete: tela de segurança.
-- ⬜ Windows + X: menu avançado.
+- ⬜ Super + X: menu avançado.
 - ⬜ Clique direito no botão Iniciar.
 
 ### 19. Limitações do Gerenciador

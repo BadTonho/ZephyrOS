@@ -33,7 +33,7 @@
 ### 2. Alternância entre janelas
 - ✅ Tab: alternar entre janelas abertas. *(wm.c:434-437 — wm_focus_next)*
 - ⬜ Alt + Shift + Tab: alternar no sentido contrário.
-- ⬜ Windows + Tab: abrir a Visão de Tarefas.
+- ⬜ Super + Tab: abrir a Visão de Tarefas.
 - ✅ Clicar no ícone do aplicativo na barra de tarefas. *(taskbar.c:137-156 — botões com indicador)*
 - ⬜ Alternar entre janelas do mesmo aplicativo.
 - ⬜ Visualizar miniaturas ao passar o mouse sobre a barra de tarefas.
@@ -135,9 +135,9 @@
 - ✅ Indicar qual janela está ativa. *(cor diferente no botão)*
 
 ### 10. Mostrar a área de trabalho
-- ⬜ Windows + D: mostrar ou restaurar a área de trabalho.
-- ⬜ Windows + M: minimizar todas as janelas.
-- ⬜ Windows + Shift + M: restaurar as janelas minimizadas.
+- ⬜ Super + D: mostrar ou restaurar a área de trabalho.
+- ⬜ Super + M: minimizar todas as janelas.
+- ⬜ Super + Shift + M: restaurar as janelas minimizadas.
 - ⬜ Clicar no canto direito da barra de tarefas.
 - ⬜ Usar a visualização temporária da área de trabalho.
 
@@ -256,7 +256,7 @@
 - ✅ Mostrar e ocultar. *(wm.c:302-314 — destroy = invisível)*
 - ✅ Minimizar e maximizar. *(wm.c:385-403)*
 - ✅ Alterar posição e tamanho. *(wm.c:413-427)*
-- ✅ Enumerar janelas abertas. *(wm.c — array wm.windows[16])*
+- ✅ Enumerar janelas abertas. *(wm.c — array wm.ZephyrOS[16])*
 - ✅ Obter o título. *(wm.h:98 — wm_get_window retorna struct)*
 - ⬜ Localizar uma janela.
 - ✅ Alterar o foco. *(wm.c:322-383)*

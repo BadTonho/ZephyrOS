@@ -48,7 +48,7 @@
 - ⬜ Abrir a localização de um arquivo.
 - ⬜ Fixar ou remover uma pasta do Acesso rápido.
 - ⬜ Usar comandos adicionais instalados por outros programas.
-- ⬜ Acessar o menu clássico pelo comando "Mostrar mais opções" no Windows 11.
+- ⬜ Acessar o menu clássico pelo comando "Mostrar mais opções" no ZephyrOS.
 
 ### 4. Seleção de arquivos
 - ✅ Selecionar um item. *(setas cima/baixo)*
@@ -131,7 +131,7 @@
 - ⬜ Pesquisar por autor, título, tags e outras propriedades.
 - ⬜ Usar curingas como `*`.
 - ⬜ Abrir diretamente a localização de um resultado.
-- ⬜ Controlar quais pastas e tipos de arquivo são indexados pela Pesquisa do Windows.
+- ⬜ Controlar quais pastas e tipos de arquivo são indexados pela Pesquisa do ZephyrOS.
 
 ### 9. Propriedades e metadados
 - ✅ Ver nome e tipo do arquivo. *(exibido na lista e na status bar)*
@@ -175,14 +175,14 @@
 - ⬜ Extrair todo o conteúdo.
 - ⬜ Escolher a pasta de destino da extração.
 - 🟡 Visualizar o conteúdo sem extrair tudo. *(compressão LZSS existe em RAM, mas não para arquivos no disco)*
-- ⬜ Trabalhar nativamente com ZIP, RAR, 7z e TAR nas versões recentes do Windows 11.
+- ⬜ Trabalhar nativamente com ZIP, RAR, 7z e TAR nas versões recentes do ZephyrOS.
 - ⬜ Compactar arquivos e pastas em formatos suportados.
 - ⬜ Usar programas externos como 7-Zip e WinRAR por meio do menu de contexto.
 
-> **Nota:** No Windows 11 24H2 ou posterior, o suporte nativo alcança ZIP, RAR, 7z e TAR. Arquivos compactados criptografados ainda precisam, em muitos casos, de um programa externo.
+> **Nota:** No ZephyrOS 24H2 ou posterior, o suporte nativo alcança ZIP, RAR, 7z e TAR. Arquivos compactados criptografados ainda precisam, em muitos casos, de um programa externo.
 
 ### 12. Compartilhamento
-- ⬜ Compartilhar arquivos pelo menu do Windows.
+- ⬜ Compartilhar arquivos pelo menu do ZephyrOS.
 - ⬜ Enviar arquivos para aplicativos compatíveis.
 - ⬜ Compartilhar pelo OneDrive.
 - ⬜ Criar links de compartilhamento na nuvem.
@@ -203,9 +203,9 @@
 - ⬜ Abrir caminhos no formato `\\computador\pasta`.
 - ⬜ Mapear uma pasta de rede como uma unidade.
 - ⬜ Escolher uma letra para uma unidade de rede.
-- ⬜ Reconectar automaticamente a unidade ao entrar no Windows.
+- ⬜ Reconectar automaticamente a unidade ao entrar no ZephyrOS.
 - ⬜ Desconectar unidades de rede.
-- ⬜ Acessar servidores Windows, NAS e compartilhamentos SMB compatíveis.
+- ⬜ Acessar servidores ZephyrOS, NAS e compartilhamentos SMB compatíveis.
 - ⬜ Compartilhar pastas e impressoras pela rede local.
 
 ### 14. Integração com OneDrive e nuvem
@@ -226,9 +226,9 @@
 - ⬜ Usar o Histórico de Arquivos.
 - ⬜ Recuperar uma pasta inteira de uma data anterior.
 - ⬜ Fazer backup de pastas em unidades externas.
-- ⬜ Fazer backup pelo Windows Backup e OneDrive.
+- ⬜ Fazer backup pelo ZephyrOS Backup e OneDrive.
 - ⬜ Restaurar arquivos e configurações em outro computador.
-- ⬜ Usar o Windows File Recovery para tentar recuperar arquivos apagados que não estão mais na Lixeira.
+- ⬜ Usar o ZephyrOS File Recovery para tentar recuperar arquivos apagados que não estão mais na Lixeira.
 - ⬜ Recuperar arquivos de backups existentes.
 - ⬜ Consultar históricos de versão do OneDrive.
 
@@ -237,7 +237,7 @@
 - ⬜ Ver quanto espaço está ocupado e disponível.
 - ⬜ Identificar categorias que ocupam espaço.
 - ⬜ Remover arquivos temporários.
-- ⬜ Limpar instalações anteriores do Windows.
+- ⬜ Limpar instalações anteriores do ZephyrOS.
 - ⬜ Limpar arquivos de atualização.
 - ⬜ Configurar o Sensor de Armazenamento.
 - ⬜ Limpar automaticamente arquivos temporários.
@@ -279,7 +279,7 @@
 ## Referência — Principais Atalhos
 | Atalho | Ação | Status |
 |---|---|---|
-| `Windows + E` | Abrir o Explorador | 🟡 via `explorer` no shell |
+| `Super + E` | Abrir o Explorador | 🟡 via `explorer` no shell |
 | `Ctrl + C` | Copiar | ⬜ |
 | `Ctrl + X` | Recortar | ⬜ |
 | `Ctrl + V` | Colar | ⬜ |
@@ -296,7 +296,7 @@
 | `Alt + →` | Avançar | ✅ (Alt+→ no Explorer) |
 | `Ctrl + N` | Abrir uma nova janela | ⬜ |
 | `Ctrl + W` | Fechar a janela ou aba ativa | ⬜ |
-| `Ctrl + Tab` | Trocar de aba (Windows 11) | ⬜ |
+| `Ctrl + Tab` | Trocar de aba (ZephyrOS) | ⬜ |
 | `Ctrl + L` | Digitar caminho na barra de endereço | ✅ (no Explorer) |
 | `F11` | Tela cheia | ⬜ |
 | `F3` | Visualizar conteúdo | ✅ |

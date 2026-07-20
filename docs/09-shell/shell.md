@@ -235,7 +235,7 @@ Reinicia o computador.
 Desliga o computador (para o CPU).
 
 ### `explorer`
-Abre o gerenciador de arquivos estilo Windows Explorer (TUI).
+Abre o gerenciador de arquivos estilo ZephyrOS Explorer (TUI).
 
 ```
 zephyr> explorer
@@ -362,7 +362,7 @@ Editor completo com interface TUI. Características:
   - Markdown: títulos amarelo, links azul, code backticks verde
 - **Word Wrap**: quebra linhas longas na exibição sem modificar o arquivo
 - **Encoding**: detecta BOM UTF-8, sequências UTF-8, Latin1 ou ASCII
-- **Line Endings**: detecta CRLF (Windows), LF (Unix) ou CR (Mac)
+- **Line Endings**: detecta CRLF (ZephyrOS), LF (Unix) ou CR (Mac)
 
 ### Media Player (`mediaplayer.c`)
 
@@ -392,7 +392,7 @@ Atalhos: Tab=alterna guia, Up/Down=navega, Esc=sair.
 
 ### File Manager (`filemanager.c`)
 
-Gerenciador de arquivos estilo Windows Explorer.
+Gerenciador de arquivos estilo ZephyrOS Explorer.
 
 ```
 ┌──────────────────────────────────────────────┐

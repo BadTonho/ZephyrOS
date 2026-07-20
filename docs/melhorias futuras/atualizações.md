@@ -171,7 +171,7 @@
 
 ### 3.2 Empacotador (Host-side Tool)
 
-- [ ] Criar script `tools/make-package.sh` (Linux/Mac) ou `tools/make-package.bat` (Windows)
+- [ ] Criar script `tools/make-package.sh` (Linux/Mac) ou `tools/make-package.bat` (ZephyrOS)
 - [ ] Ler lista de arquivos de manifesto `update-manifest.txt`
 - [ ] Empacotar arquivos com header + entries + dados
 - [ ] Opcionalmente comprimir cada arquivo com LZSS

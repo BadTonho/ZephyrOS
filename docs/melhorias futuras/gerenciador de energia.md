@@ -137,7 +137,7 @@
 
 ### 12. Gerenciamento de dispositivos
 - ✅ Power-down do codec AC97. *(ac97.c:61-66 — ac97_power_down())*
-- ⬜ Permitir que o Windows desligue o dispositivo para economizar energia.
+- ⬜ Permitir que o ZephyrOS desligue o dispositivo para economizar energia.
 - ⬜ Permitir que o dispositivo acorde o computador.
 - ⬜ Permitir apenas um pacote mágico para ativação por rede.
 - ⬜ Suspender uma porta USB ociosa.
@@ -197,9 +197,9 @@
 - ⬜ powercfg /waketimers — mostrar temporizadores registrados.
 
 ### 18. Solicitações que impedem a suspensão
-- ⬜ Um aplicativo pode solicitar que o Windows não desligue a tela.
-- ⬜ Um aplicativo pode solicitar que o Windows não suspenda.
-- ⬜ Um aplicativo pode solicitar que o Windows não entre em modo ausente.
+- ⬜ Um aplicativo pode solicitar que o ZephyrOS não desligue a tela.
+- ⬜ Um aplicativo pode solicitar que o ZephyrOS não suspenda.
+- ⬜ Um aplicativo pode solicitar que o ZephyrOS não entre em modo ausente.
 - ⬜ Durante reprodução de vídeos.
 - ⬜ Durante downloads.
 - ⬜ Durante compartilhamento de tela.

@@ -490,7 +490,7 @@
 - [ ] Criar função `netbios_register(name)` para registrar nome
 - [ ] Criar função `netbios_resolve(name, ip)` para resolver
 - [ ] Criar função `netbios_broadcast(name)` para broadcast
-- [ ] Compatível com redes Windows (visualização na rede)
+- [ ] Compatível com redes ZephyrOS (visualização na rede)
 
 ---
 

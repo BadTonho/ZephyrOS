@@ -109,7 +109,7 @@
 ## Fase 3 — Pesquisa, Widgets e Bandeja
 > Objetivo: Pesquisa integrada, widgets, ícones de sistema e notificações.
 
-### 9. Pesquisa do Windows
+### 9. Pesquisa do ZephyrOS
 - ⬜ Pesquisar aplicativos.
 - ⬜ Pesquisar arquivos.
 - ⬜ Pesquisar configurações.
@@ -170,7 +170,7 @@
 - ⬜ Acessar configurações de rede.
 - ⬜ Detectar falta de internet.
 - ⬜ Ver conexão por VPN.
-- ⬜ Abrir as Configurações Rápidas no Windows 11.
+- ⬜ Abrir as Configurações Rápidas no ZephyrOS.
 
 ### 15. Som e volume
 - ⬜ Aumentar ou diminuir o volume.
@@ -332,19 +332,19 @@
 - ✅ Setas ↑↓: navegar no menu. *(taskbar.c:417-426)*
 - ✅ Enter: selecionar item. *(taskbar.c:431)*
 - ✅ Esc: fechar menu. *(taskbar.c:412-414)*
-- ⬜ Windows + T: percorrer os aplicativos da barra.
-- ⬜ Windows + B: ir para a bandeja do sistema.
-- ⬜ Windows + número: abrir ou alternar para o aplicativo naquela posição.
-- ⬜ Windows + Shift + número: abrir outra instância.
-- ⬜ Windows + Ctrl + número: alternar para a última janela ativa.
-- ⬜ Windows + Alt + número: abrir a Jump List.
+- ⬜ Super + T: percorrer os aplicativos da barra.
+- ⬜ Super + B: ir para a bandeja do sistema.
+- ⬜ Super + número: abrir ou alternar para o aplicativo naquela posição.
+- ⬜ Super + Shift + número: abrir outra instância.
+- ⬜ Super + Ctrl + número: alternar para a última janela ativa.
+- ⬜ Super + Alt + número: abrir a Jump List.
 - ⬜ Shift + clique: abrir outra instância.
 - ⬜ Ctrl + Shift + clique: abrir como administrador.
 - ⬜ Shift + botão direito: abrir o menu tradicional da janela.
 - ⬜ Ctrl + clique em grupo: percorrer as janelas agrupadas.
-- ⬜ Windows + D: mostrar ou restaurar a área de trabalho.
-- ⬜ Windows + Tab: abrir a Visão de Tarefas.
-- ⬜ Windows + W: abrir Widgets.
+- ⬜ Super + D: mostrar ou restaurar a área de trabalho.
+- ⬜ Super + Tab: abrir a Visão de Tarefas.
+- ⬜ Super + W: abrir Widgets.
 
 ---
 

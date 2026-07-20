@@ -104,13 +104,13 @@
 - ⬜ Área de Trabalho Remota.
 - ⬜ Recursos opcionais.
 - ⬜ Solução de problemas.
-- ⬜ Recuperação e restauração do Windows.
+- ⬜ Recuperação e restauração do ZephyrOS.
 - ⬜ Inicialização avançada.
 - ⬜ Restaurar o computador.
 - ⬜ Voltar para uma versão anterior.
 - ✅ Informações do dispositivo. *(settings.c:94-95 — versão e nome)*
 - ⬜ Especificações de CPU, RAM e sistema.
-- ⬜ Ativação e chave do Windows.
+- ⬜ Ativação e chave do ZephyrOS.
 - ⬜ Recursos para desenvolvedores.
 
 ### 2. Personalização
@@ -118,7 +118,7 @@
 - ✅ Resolução (80x25/80x50/Auto). *(settings.c:31-34 — 3 opções)*
 - ✅ Mostrar grade. *(settings.c:35-37 — toggle)*
 - ⬜ Escolher imagem, cor sólida ou apresentação de slides.
-- ⬜ Usar Windows Spotlight.
+- ⬜ Usar ZephyrOS Spotlight.
 - ⬜ Escolher como a imagem se ajusta à tela.
 - ⬜ Aplicar temas.
 - ⬜ Salvar temas personalizados.
@@ -204,7 +204,7 @@
 - ⬜ Configurar rolagem.
 - ⬜ Configurar touchpad e gestos.
 - ⬜ Configurar teclado virtual.
-- ⬜ Configurar caneta e Windows Ink.
+- ⬜ Configurar caneta e ZephyrOS Ink.
 - ⬜ Configurar telas sensíveis ao toque.
 - ⬜ Gerenciar câmeras.
 - ⬜ Gerenciar dispositivos de áudio.
@@ -255,7 +255,7 @@
 - ⬜ Exigir entrada ao sair da suspensão.
 - ⬜ Configurar bloqueio dinâmico.
 - ⬜ Definir reinício automático de aplicativos.
-- ⬜ Escolher quando o Windows solicitar nova autenticação.
+- ⬜ Escolher quando o ZephyrOS solicitar nova autenticação.
 - ⬜ Criar conta de usuário.
 - ⬜ Adicionar conta Microsoft.
 - ⬜ Criar conta local.
@@ -269,7 +269,7 @@
 - ⬜ Entrar ou sair de uma organização.
 - ⬜ Gerenciar contas utilizadas por aplicativos.
 - ⬜ Sincronizar configurações.
-- ⬜ Configurar Backup do Windows.
+- ⬜ Configurar Backup do ZephyrOS.
 - ⬜ Sincronizar arquivos e preferências pela conta Microsoft.
 
 ---
@@ -386,7 +386,7 @@
 ## Fase 5 — Updates, Som e Ferramentas Clássicas
 > Objetivo: Atualizações, configurações de som avançadas e ferramentas do sistema.
 
-### 13. Windows Update
+### 13. ZephyrOS Update
 - ⬜ Procurar atualizações.
 - ⬜ Baixar e instalar atualizações.
 - ⬜ Reiniciar para concluir instalação.
@@ -401,7 +401,7 @@
 - ⬜ Configurar Otimização de Entrega.
 - ⬜ Limitar largura de banda.
 - ⬜ Compartilhar atualizações com outros computadores.
-- ⬜ Participar do Programa Windows Insider.
+- ⬜ Participar do Programa ZephyrOS Insider.
 - ⬜ Ver versão e compilação do sistema.
 - ⬜ Receber atualizações assim que estiverem disponíveis.
 - ⬜ Usar recuperação para corrigir problemas de atualização.
@@ -471,7 +471,7 @@
 
 ## Limitações Técnicas Conhecidas
 
-- **7 categorias** implementadas de 12 do Windows (Tela, Taskbar, Janelas, Ícones, Sistema, Som, Sobre).
+- **7 categorias** implementadas de 12 do ZephyrOS (Tela, Taskbar, Janelas, Ícones, Sistema, Som, Sobre).
 - **5 categorias completas** (Bluetooth/Rede/Contas/Hora/Jogos/Acessibilidade/Privacidade/Updates) — nenhuma implementada.
 - **Opções sem efeito real**: Tema, Resolução, Volume e Beep são definidas mas não alteram o comportamento do sistema.
 - **Sem pesquisa**: Não é possível pesquisar por configurações.

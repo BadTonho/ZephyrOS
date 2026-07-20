@@ -72,7 +72,7 @@ uint8_t detect_encoding(const uint8_t* data, uint32_t size) {
 
 ```c
 uint8_t detect_line_ending(const uint8_t* data, uint32_t size) {
-    // CRLF (\r\n) → Windows
+    // CRLF (\r\n) → ZephyrOS
     // CR (\r)     → Mac
     // LF (\n)     → Unix
 }
@@ -257,7 +257,7 @@ int  taskmgr_handle_key(scancode);
 
 ### Visão Geral
 
-Gerenciador de arquivos estilo Windows Explorer com interface TUI.
+Gerenciador de arquivos estilo ZephyrOS Explorer com interface TUI.
 
 ### Estrutura
 
