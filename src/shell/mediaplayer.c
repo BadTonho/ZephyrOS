@@ -5,6 +5,7 @@
 #include "fs/fs.h"
 #include "drivers/vesa.h"
 #include "core/video.h"
+#include "process/process.h"
 #include "core/memory.h"
 #include "core/timer.h"
 #include "drivers/font.h"
@@ -234,3 +235,6 @@ void mp_update(void) {
         }
     }
 }
+
+
+

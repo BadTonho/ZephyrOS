@@ -1,8 +1,8 @@
 #include "core/keyboard.h"
 #include "drivers/idt.h"
 #include "core/log.h"
+#include "process/process.h"
 
-static keyboard_callback_t callback = 0;
 
 #define KEYBOARD_QUEUE_SIZE 64
 
@@ -73,14 +73,13 @@ void keyboard_process_events(void) {
         uint8_t scancode = event_queue[queue_tail];
         queue_tail = (uint8_t)((queue_tail + 1) % KEYBOARD_QUEUE_SIZE);
 
-        if (callback) {
-            callback(scancode);
-        }
+        uint32_t focus = process_get_focus();
+        ipc_msg_t msg;
+        msg.type = IPC_MSG_KEYBOARD;
+        msg.data1 = scancode;
+        msg.data2 = 0;
+        ipc_send(focus, &msg);
     }
 }
 
-keyboard_callback_t keyboard_set_callback(keyboard_callback_t cb) {
-    keyboard_callback_t prev = callback;
-    callback = cb;
-    return prev;
-}
+

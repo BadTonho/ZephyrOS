@@ -107,6 +107,9 @@ BMP_OBJ = build/bmp.o
 # Arquivos - Processos
 PROCESS_C = src/process/process.c
 PROCESS_OBJ = build/process.o
+IPC_C = src/process/ipc.c
+IPC_OBJ = build/ipc.o
+
 
 # Arquivos - Threads
 THREAD_C = src/thread/thread.c
@@ -158,7 +161,7 @@ OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(STRING_OBJ) $(SWITCH
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(AC97_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(COMPRESS_OBJ) \
-       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(WM_OBJ) $(ICONS_OBJ)
+       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(WM_OBJ) $(ICONS_OBJ)
 
 # Targets
 all: $(OS_IMG)
@@ -280,6 +283,10 @@ $(BMP_OBJ): $(BMP_C)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(PROCESS_OBJ): $(PROCESS_C)
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(IPC_OBJ): $(IPC_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

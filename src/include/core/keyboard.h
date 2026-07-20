@@ -9,7 +9,6 @@ typedef void (*keyboard_callback_t)(uint8_t scancode);
 void keyboard_init(void);
 void keyboard_handler(registers_t* regs);
 void keyboard_process_events(void);
-keyboard_callback_t keyboard_set_callback(keyboard_callback_t cb);
 char keyboard_scancode_to_ascii(uint8_t scancode);
 
 #endif

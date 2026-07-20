@@ -35,7 +35,6 @@ static int scroll_offset = 0;
 static int sort_column = 0;
 static int show_properties = 0;
 static int prop_pid = 0;
-static keyboard_callback_t prev_callback = 0;
 
 static uint32_t last_cpu_ticks = 0;
 static uint32_t last_proc_ticks[64] = {0};
@@ -58,7 +57,6 @@ void taskmgr_open(void) {
     selected_row = 0;
     scroll_offset = 0;
     show_properties = 0;
-    prev_callback = keyboard_set_callback(taskmgr_handle_key);
     taskbar_add_app(TB_APP_TASKMGR, "TaskMgr");
     video_clear();
     taskmgr_refresh();
@@ -67,7 +65,6 @@ void taskmgr_open(void) {
 void taskmgr_close(void) {
     is_open = 0;
     taskbar_remove_app(TB_APP_TASKMGR);
-    keyboard_set_callback(prev_callback);
     desktop_set_active(1);
     desktop_draw();
     taskbar_draw();
@@ -589,4 +586,19 @@ void taskmgr_handle_key(uint8_t scancode) {
 
 int taskmgr_is_open(void) {
     return is_open;
+}
+
+void taskmgr_run(void) {
+    taskmgr_open();
+    ipc_msg_t msg;
+    while (is_open) {
+        if (ipc_receive(&msg)) {
+            if (msg.type == IPC_MSG_KEYBOARD) {
+                taskmgr_handle_key((uint8_t)msg.data1);
+            }
+        } else {
+            taskmgr_refresh(); // Refresh
+            process_yield();
+        }
+    }
 }

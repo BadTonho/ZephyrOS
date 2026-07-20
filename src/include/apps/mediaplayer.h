@@ -27,4 +27,5 @@ void mp_resume(void);
 mp_status_t* mp_get_status(void);
 void mp_update(void);
 
+void mp_main(void);
 #endif

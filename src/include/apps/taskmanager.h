@@ -10,4 +10,5 @@ void taskmgr_refresh(void);
 void taskmgr_handle_key(uint8_t scancode);
 int taskmgr_is_open(void);
 
+void taskmgr_run(void);
 #endif

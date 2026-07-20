@@ -1,5 +1,6 @@
 #include "apps/editor.h"
 #include "core/video.h"
+#include "process/process.h"
 #include "core/keyboard.h"
 #include "fs/fs.h"
 #include "core/memory.h"
@@ -13,7 +14,6 @@
 static editor_t editor;
 static uint8_t shift_pressed = 0;
 static uint8_t ctrl_pressed = 0;
-static keyboard_callback_t editor_prev_callback = 0;
 
 static void str_copy(char* dst, const char* src, uint32_t max) {
     uint32_t i = 0;
@@ -476,7 +476,6 @@ void editor_close(void) {
     }
     editor.line_count = 0;
     editor.running = 0;
-    keyboard_set_callback(editor_prev_callback);
     desktop_set_active(1);
     desktop_draw();
     taskbar_draw();
@@ -945,9 +944,18 @@ void editor_run(void) {
         return;
     }
     editor.running = 1;
-
-    editor_prev_callback = keyboard_set_callback(editor_handle_key);
     editor_draw();
+
+    ipc_msg_t msg;
+    while (editor.running) {
+        if (ipc_receive(&msg)) {
+            if (msg.type == IPC_MSG_KEYBOARD) {
+                editor_handle_key((uint8_t)msg.data1);
+            }
+        } else {
+            process_yield();
+        }
+    }
 }
 
 void editor_run_file(const char* filename) {
@@ -957,11 +965,22 @@ void editor_run_file(const char* filename) {
         return;
     }
     editor.running = 1;
-
-    editor_prev_callback = keyboard_set_callback(editor_handle_key);
     editor_draw();
+
+    ipc_msg_t msg;
+    while (editor.running) {
+        if (ipc_receive(&msg)) {
+            if (msg.type == IPC_MSG_KEYBOARD) {
+                editor_handle_key((uint8_t)msg.data1);
+            }
+        } else {
+            process_yield();
+        }
+    }
 }
 
 uint8_t editor_is_running(void) {
     return editor.running;
 }
+
+

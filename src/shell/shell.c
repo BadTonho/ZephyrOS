@@ -282,7 +282,7 @@ static void cmd_shutdown(void) {
 void shell_init(void) {
     input_pos = 0;
     input_buffer[0] = '\0';
-    keyboard_set_callback(shell_handle_key);
+    
     shell_print_prompt();
 }
 
@@ -329,9 +329,9 @@ void shell_handle_key(uint8_t scancode) {
             shell_print_prompt();
             taskbar_draw();
         } else if (tb_result == 3) {
-            fm_open();
+            fm_run();
         } else if (tb_result == 4) {
-            taskmgr_open();
+            taskmgr_run();
         } else if (tb_result == 5) {
             cmd_reboot();
         } else if (tb_result == 6) {
@@ -375,12 +375,12 @@ void shell_handle_key(uint8_t scancode) {
         }
         if (result == 2) {
             desktop_set_active(0);
-            fm_open();
+            fm_run();
             return;
         }
         if (result == 3) {
             desktop_set_active(0);
-            taskmgr_open();
+            taskmgr_run();
             return;
         }
         return;
@@ -472,13 +472,13 @@ int shell_process_command(const char* input) {
             desktop_draw();
         }
     } else if (kstrcmp(cmd, "explorer") == 0) {
-        fm_open();
+        fm_run();
     } else if (kstrcmp(cmd, "reboot") == 0) {
         cmd_reboot();
     } else if (kstrcmp(cmd, "shutdown") == 0) {
         cmd_shutdown();
     } else if (kstrcmp(cmd, "taskmgr") == 0) {
-        taskmgr_open();
+        taskmgr_run();
     } else if (kstrcmp(cmd, "taskcfg") == 0) {
         taskbar_draw_config_menu();
     } else if (kstrcmp(cmd, "settings") == 0) {

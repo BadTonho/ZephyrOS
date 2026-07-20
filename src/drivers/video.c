@@ -1,8 +1,10 @@
 #include "core/video.h"
+#include "core/spinlock.h"
 #include "drivers/vesa.h"
 #include "drivers/font.h"
 #include "core/log.h"
 
+spinlock_t video_lock;
 static int cursor_x = 0;
 static int cursor_y = 0;
 static uint8_t current_color = 0x07;
@@ -122,6 +124,7 @@ static void scroll(void) {
 
 void video_init(void) {
     LOG_INFO("VIDEO", "Inicializando video");
+    spinlock_init(&video_lock);
     vesa_mode_t* mode = vesa_get_mode();
     use_framebuffer = (mode && mode->initialized) ? 1 : 0;
 
@@ -137,6 +140,7 @@ void video_init(void) {
 }
 
 void video_clear(void) {
+    spinlock_acquire(&video_lock);
     for (int i = 0; i < SCREEN_COLS * SCREEN_ROWS; i++) {
         text_buffer[i] = ' ';
         color_buffer[i] = current_color;
@@ -161,9 +165,11 @@ void video_clear(void) {
     }
 
     update_cursor();
+    spinlock_release(&video_lock);
 }
 
 void video_put_char(char c, uint8_t color) {
+    spinlock_acquire(&video_lock);
     if (c == '\n') {
         cursor_x = 0;
         cursor_y++;
@@ -193,6 +199,7 @@ void video_put_char(char c, uint8_t color) {
     }
     scroll();
     update_cursor();
+    spinlock_release(&video_lock);
 }
 
 void video_print(const char* str, uint8_t color) {
@@ -214,9 +221,11 @@ void video_backspace(void) {
 }
 
 void video_set_cursor(int x, int y) {
+    spinlock_acquire(&video_lock);
     cursor_x = x;
     cursor_y = y;
     update_cursor();
+    spinlock_release(&video_lock);
 }
 
 int video_get_cursor_x(void) {
@@ -229,7 +238,8 @@ int video_get_cursor_y(void) {
 
 void video_put_char_at(char c, uint8_t color, int x, int y) {
     if (x < 0 || x >= SCREEN_COLS || y < 0 || y >= SCREEN_ROWS) return;
-
+    
+    spinlock_acquire(&video_lock);
     int idx = y * SCREEN_COLS + x;
     text_buffer[idx] = c;
     color_buffer[idx] = color;
@@ -242,6 +252,7 @@ void video_put_char_at(char c, uint8_t color, int x, int y) {
             vm[y * VGA_WIDTH + x] = (uint16_t)c | ((uint16_t)color << 8);
         }
     }
+    spinlock_release(&video_lock);
 }
 
 void video_print_at(int x, int y, const char* str, uint8_t color) {

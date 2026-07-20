@@ -8,6 +8,19 @@
 #define KERNEL_STACK_SIZE 4096
 #define PROCESS_NAME_LENGTH 32
 
+#define IPC_MSG_QUEUE_SIZE 32
+
+typedef enum {
+    IPC_MSG_NONE = 0,
+    IPC_MSG_KEYBOARD
+} ipc_msg_type_t;
+
+typedef struct {
+    ipc_msg_type_t type;
+    uint32_t data1;
+    uint32_t data2;
+} ipc_msg_t;
+
 typedef enum {
     PROCESS_STATE_UNUSED = 0,
     PROCESS_STATE_READY,
@@ -36,6 +49,9 @@ typedef struct {
     uint32_t wait_ticks;
     uint32_t total_ticks;
     uint32_t next_pid;
+    ipc_msg_t msg_queue[IPC_MSG_QUEUE_SIZE];
+    uint32_t msg_head;
+    uint32_t msg_tail;
 } process_t;
 
 void process_init(void);
@@ -48,10 +64,17 @@ uint32_t process_get_count(void);
 void process_yield(void);
 void process_block(uint32_t ticks);
 void process_unblock(process_t* proc);
+void ipc_init(void);
 
 process_t* scheduler_schedule(void);
 void scheduler_init(void);
 void scheduler_tick(void);
+
+
+int ipc_send(uint32_t pid, ipc_msg_t* msg);
+int ipc_receive(ipc_msg_t* msg);
+void process_set_focus(uint32_t pid);
+uint32_t process_get_focus(void);
 
 extern void process_context_switch(process_context_t* prev, process_context_t* next);
 

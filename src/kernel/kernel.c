@@ -34,8 +34,16 @@ void system_process_main(void) {
 
 void shell_process_main(void) {
     shell_init();
+    process_set_focus(process_get_current()->pid);
+    ipc_msg_t msg;
     while (1) {
-        process_yield();
+        if (ipc_receive(&msg)) {
+            if (msg.type == IPC_MSG_KEYBOARD) {
+                shell_handle_key((uint8_t)msg.data1);
+            }
+        } else {
+            process_yield();
+        }
     }
 }
 

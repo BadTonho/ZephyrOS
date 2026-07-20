@@ -1,5 +1,6 @@
 #include "ui/filemanager.h"
 #include "core/video.h"
+#include "process/process.h"
 #include "core/keyboard.h"
 #include "fs/fs.h"
 #include "core/memory.h"
@@ -478,11 +479,9 @@ void fm_init(void) {
     fm_refresh_files();
 }
 
-static keyboard_callback_t fm_prev_callback = 0;
 
 void fm_open(void) {
     fm_init();
-    fm_prev_callback = keyboard_set_callback(fm_handle_key);
     taskbar_add_app(TB_APP_EXPLORER, "Explorer");
     fm_draw_all();
 }
@@ -490,7 +489,6 @@ void fm_open(void) {
 void fm_close(void) {
     state.running = 0;
     taskbar_remove_app(TB_APP_EXPLORER);
-    keyboard_set_callback(fm_prev_callback);
     desktop_set_active(1);
     desktop_draw();
     taskbar_draw();
@@ -866,5 +864,19 @@ void fm_handle_key(uint8_t scancode) {
         fm_draw_file_list();
         fm_draw_status_bar();
         return;
+    }
+}
+
+void fm_run(void) {
+    fm_open();
+    ipc_msg_t msg;
+    while (state.running) {
+        if (ipc_receive(&msg)) {
+            if (msg.type == IPC_MSG_KEYBOARD) {
+                fm_handle_key((uint8_t)msg.data1);
+            }
+        } else {
+            process_yield();
+        }
     }
 }
