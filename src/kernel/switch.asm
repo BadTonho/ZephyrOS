@@ -8,40 +8,46 @@ tss_flush:
     ret
 
 process_context_switch:
-    push ebx
-    push esi
-    push edi
-    push ebp
+    ; [esp + 4] = prev
+    ; [esp + 8] = next
 
-    mov eax, [esp + 20]
-    mov [eax + 0],  eax
-    mov [eax + 4],  ebx
-    mov [eax + 8],  ecx
-    mov [eax + 12], edx
+    ; 1. Load prev pointer into EAX
+    mov eax, [esp + 4]
+
+    ; 2. Save registers into prev
+    mov [eax + 4], ebx
     mov [eax + 16], esi
     mov [eax + 20], edi
     mov [eax + 24], ebp
-    mov [eax + 28], esp
-
-    push eax
+    
+    ; Save EFLAGS
     pushfd
-    pop ecx
-    mov [eax + 32], ecx
-    pop eax
+    pop dword [eax + 36]
 
-    mov eax, [esp + 24]
-    mov ecx, [eax + 8]
-    mov edx, [eax + 12]
+    ; Save ESP and EIP
+    mov ebx, esp
+    add ebx, 4 ; Caller's ESP (before CALL process_context_switch)
+    mov [eax + 28], ebx
+
+    mov ecx, [esp] ; Return address (EIP)
+    mov [eax + 32], ecx
+
+    ; 3. Load next pointer into EAX
+    mov eax, [esp + 8]
+
+    ; 4. Restore registers from next
+    mov ebx, [eax + 4]
     mov esi, [eax + 16]
     mov edi, [eax + 20]
     mov ebp, [eax + 24]
-    mov esp, [eax + 28]
-
-    push dword [eax + 32]
+    
+    ; Restore EFLAGS
+    push dword [eax + 36]
     popfd
 
-    push dword [eax + 32]
+    ; Restore ESP and EIP
+    mov esp, [eax + 28]
+    mov ecx, [eax + 32]
 
-    mov ebx, [eax + 4]
-
-    ret
+    ; Jump to EIP (Returns to caller, or jumps to new thread's entry_point)
+    jmp ecx
