@@ -9,6 +9,9 @@ static ata_device_t devices[2];
 static int driver_initialized = 0;
 static thread_t* ata_waiting_thread = 0;
 
+static uint32_t ata_read_ops = 0;
+static uint32_t ata_write_ops = 0;
+
 static uint8_t inb(uint16_t port);
 
 static void ata_irq_handler(registers_t* regs) {
@@ -193,6 +196,14 @@ ata_device_t* ata_get_device(void) {
     return 0;
 }
 
+uint32_t ata_get_read_ops(void) {
+    return ata_read_ops;
+}
+
+uint32_t ata_get_write_ops(void) {
+    return ata_write_ops;
+}
+
 int ata_read_sectors(uint32_t lba, uint8_t count, uint8_t* buffer) {
     if (!driver_initialized) {
         LOG_ERROR("ATA", "Driver nao inicializado");
@@ -209,6 +220,7 @@ int ata_read_sectors(uint32_t lba, uint8_t count, uint8_t* buffer) {
         return ERR_NULL;
     }
 
+    ata_read_ops++;
     uint16_t io = dev->base_port;
 
     for (int attempt = 0; attempt < ATA_READ_RETRIES; attempt++) {
@@ -270,6 +282,7 @@ int ata_write_sectors(uint32_t lba, uint8_t count, const uint8_t* buffer) {
         return ERR_NULL;
     }
 
+    ata_write_ops++;
     uint16_t io = dev->base_port;
 
     if (ata_wait_ready(io) != 0) return ERR_DISK;

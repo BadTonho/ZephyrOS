@@ -45,4 +45,7 @@ int  ata_read_sectors(uint32_t lba, uint8_t count, uint8_t* buffer);
 int  ata_write_sectors(uint32_t lba, uint8_t count, const uint8_t* buffer);
 ata_device_t* ata_get_device(void);
 
+uint32_t ata_get_read_ops(void);
+uint32_t ata_get_write_ops(void);
+
 #endif

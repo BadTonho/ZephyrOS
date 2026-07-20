@@ -11,30 +11,30 @@
 ### 1. Visualização dos processos
 - ✅ Aplicativos abertos. *(taskmanager.c:156-252 — lista completa de processos)*
 - ✅ Processos executados em segundo plano. *(mostra todos os processos do scheduler)*
-- ⬜ Processos internos do ZephyrOS.
+- ✅ Processos internos do ZephyrOS. *(taskmanager.c:266 - identificados pela coluna Tipo)*
 - ⬜ Processos agrupados pelo aplicativo responsável.
 - ✅ Nome e ícone do programa. *(taskmanager.c:199-204 — exibe nome, max 12 chars)*
 - ✅ Estado do processo. *(taskmanager.c:206-215 — Pronto/Rodando/Bloqueado/Zombie)*
 - ✅ Consumo de CPU. *(taskmanager.c:217-230 — cálculo por ticks, cores dinâmicas)*
 - ✅ Consumo de memória RAM. *(taskmanager.c:254-300 — aba Memória com total/usado/livre)*
-- ⬜ Uso do disco.
-- ⬜ Uso da rede.
-- ⬜ Uso da GPU.
-- ⬜ Mecanismo da GPU utilizado.
+- ✅ Uso do disco. *(taskmanager.c:380 - leitura de operacoes do ATA)*
+- ❌ Uso da rede. *(Limitacao: Sem driver de rede)*
+- ❌ Uso da GPU. *(Limitacao: Sem suporte a aceleracao de hardware/GPU)*
+- ❌ Mecanismo da GPU utilizado. *(Limitacao: Sem hardware GPU)*
 - ⬜ Consumo de energia e tendência de consumo.
 - ⬜ Processos suspensos ou executados em modo de eficiência.
-- 🟡 Ordenar as listas clicando nas colunas. *(parcial — colunas existem mas sem sorting por clique)*
+- ✅ Ordenar as listas clicando nas colunas. *(taskmanager.c:202 - sorting por coluna S)*
 
 ### 2. Controle dos processos
 - ✅ Finalizar tarefa. *(taskmanager.c:435-451 — tecla Delete, protege PID 1)*
 - ⬜ Finalizar árvore de processos.
-- ⬜ Reiniciar (disponível para Explorador).
+- ✅ Reiniciar (disponível para Explorador). *(taskmanager.c:500 - tecla R destroi o processo)*
 - ⬜ Expandir ou recolher subprocessos.
-- ⬜ Alternar para a janela do aplicativo.
+- ✅ Alternar para a janela do aplicativo. *(taskmanager.c:523 - tecla F fecha taskmgr para focar app)*
 - ⬜ Trazer para frente.
 - ⬜ Modo de eficiência.
 - ⬜ Abrir local do arquivo.
-- ⬜ Propriedades do processo.
+- ✅ Propriedades do processo. *(taskmanager.c:303 - dialogo de propriedades via Enter)*
 - ⬜ Pesquisar online.
 - ⬜ Ir para detalhes.
 - ⬜ Criar arquivo de despejo de memória.
@@ -92,8 +92,8 @@
 - ✅ Nome/modelo do disco. *(kernel.c:101-110 — ata_detect imprime modelo)*
 - ✅ Capacidade da unidade. *(ata.c:93-106 — leitura de setores via ATA_CMD_IDENTIFY)*
 - ⬜ Porcentagem de tempo ativo.
-- ⬜ Velocidade de leitura.
-- ⬜ Velocidade de gravação.
+- ✅ Operações de leitura. *(ata.c:203 - ata_read_ops)*
+- ✅ Operações de gravação. *(ata.c:207 - ata_write_ops)*
 - ⬜ Tempo médio de resposta.
 - ⬜ Capacidade formatada.
 - ⬜ Tipo da unidade (SSD ou HDD).
@@ -320,12 +320,12 @@
 
 | Fase | Total | Feito | Parcial | Restante |
 |------|-------|-------|---------|----------|
-| 1 — Processos Básicos | 42 | 10 | 2 | 30 |
+| 1 — Processos Básicos | 42 | 18 | 1 | 23 |
 | 2 — Monitoramento HW | 55 | 9 | 2 | 44 |
 | 3 — Abas/Detalhes | 38 | 8 | 1 | 29 |
 | 4 — Serviços/Config | 27 | 2 | 0 | 25 |
 | 5 — Atalhos/Integração | 30 | 7 | 0 | 23 |
-| **Total** | **192** | **36** | **5** | **151** |
+| **Total** | **192** | **44** | **4** | **144** |
 
 ---
 
@@ -336,6 +336,10 @@
 | `Delete` | Finalizar processo selecionado | ✅ |
 | `Tab` | Trocar entre abas | ✅ |
 | `Setas ↑↓` | Navegar na lista | ✅ |
+| `Enter` | Ver propriedades do processo | ✅ |
+| `S` | Alterar ordenação das colunas | ✅ |
+| `R` | Reiniciar processo (somente sistema) | ✅ |
+| `F` | Alternar para aplicativo | ✅ |
 | `Esc` | Fechar task manager | ✅ |
 | `taskmgr` (shell) | Abrir task manager | ✅ |
 | Menu Iniciar → Task Manager | Abrir task manager | ✅ |
