@@ -346,7 +346,7 @@ int taskbar_handle_config_key(uint8_t scancode) {
 
     if (scancode == 0x01) {
         taskbar_close_config_menu();
-        return 1;
+        return 9;
     }
 
     if (scancode == 0x48) {
@@ -411,7 +411,7 @@ int taskbar_handle_key(uint8_t scancode) {
     if (menu_open) {
         if (scancode == 0x01) {
             taskbar_close_menu();
-            return 1;
+            return 9;
         }
 
         if (scancode == 0x48) {

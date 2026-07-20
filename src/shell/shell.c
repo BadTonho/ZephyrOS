@@ -307,7 +307,17 @@ static void process_input(void) {
 }
 
 void shell_handle_key(uint8_t scancode) {
-    if (taskbar_handle_config_key(scancode)) {
+    int config_result = taskbar_handle_config_key(scancode);
+    if (config_result) {
+        if (config_result == 9) {
+            if (desktop_is_active()) desktop_draw();
+            else if (wm_is_active()) wm_draw_all();
+            else {
+                video_clear();
+                shell_print_prompt();
+                taskbar_draw();
+            }
+        }
         return;
     }
 
@@ -329,10 +339,18 @@ void shell_handle_key(uint8_t scancode) {
         } else if (tb_result == 7) {
             if (!desktop_is_active()) {
                 desktop_set_active(1);
-                desktop_draw();
             }
+            desktop_draw();
         } else if (tb_result == 8) {
             settings_open();
+        } else if (tb_result == 9) {
+            if (desktop_is_active()) desktop_draw();
+            else if (wm_is_active()) wm_draw_all();
+            else {
+                video_clear();
+                shell_print_prompt();
+                taskbar_draw();
+            }
         }
         return;
     }
