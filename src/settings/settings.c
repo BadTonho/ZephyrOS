@@ -2,6 +2,7 @@
 #include "core/video.h"
 #include "core/keyboard.h"
 #include "ui/taskbar.h"
+#include "ui/desktop.h"
 #include "drivers/speaker.h"
 #include "core/memory.h"
 #include "core/timer.h"
@@ -172,7 +173,8 @@ void settings_open(void) {
 
 void settings_close(void) {
     settings_active = 0;
-    video_clear();
+    desktop_set_active(1);
+    desktop_draw();
     taskbar_draw();
 }
 

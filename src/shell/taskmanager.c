@@ -7,6 +7,7 @@
 #include "process/thread.h"
 #include "core/panic.h"
 #include "ui/taskbar.h"
+#include "ui/desktop.h"
 
 #define TSKMGR_WIDTH  78
 #define TSKMGR_HEIGHT 23
@@ -60,9 +61,8 @@ void taskmgr_close(void) {
     is_open = 0;
     taskbar_remove_app(TB_APP_TASKMGR);
     keyboard_set_callback(prev_callback);
-    video_clear();
-    video_print("ZephyrOS Shell\n\n", 0x0B);
-    video_print("zephyr> ", 0x0A);
+    desktop_set_active(1);
+    desktop_draw();
     taskbar_draw();
 }
 

@@ -4,6 +4,7 @@
 #include "fs/fs.h"
 #include "core/memory.h"
 #include "ui/taskbar.h"
+#include "ui/desktop.h"
 #include "ui/icons.h"
 #include "core/errors.h"
 #include "core/log.h"
@@ -486,9 +487,8 @@ void fm_close(void) {
     state.running = 0;
     taskbar_remove_app(TB_APP_EXPLORER);
     keyboard_set_callback(fm_prev_callback);
-    video_clear();
-    video_print("ZephyrOS Shell\n\n", 0x0B);
-    video_print("zephyr> ", 0x0A);
+    desktop_set_active(1);
+    desktop_draw();
     taskbar_draw();
 }
 

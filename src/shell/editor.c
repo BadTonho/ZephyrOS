@@ -5,6 +5,7 @@
 #include "core/memory.h"
 #include "core/timer.h"
 #include "ui/taskbar.h"
+#include "ui/desktop.h"
 #include "core/errors.h"
 #include "core/log.h"
 
@@ -477,9 +478,8 @@ void editor_close(void) {
     editor.line_count = 0;
     editor.running = 0;
     keyboard_set_callback(editor_prev_callback);
-    video_clear();
-    video_print("ZephyrOS Shell\n\n", 0x0B);
-    video_print("zephyr> ", 0x0A);
+    desktop_set_active(1);
+    desktop_draw();
     taskbar_draw();
 }
 
