@@ -207,6 +207,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     desktop_draw();
 
     while (1) {
+        keyboard_process_events();
         taskbar_update_clock();
         wm_update_cpu_stats();
         asm volatile("hlt");

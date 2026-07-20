@@ -1,6 +1,7 @@
 #include "process/thread.h"
 #include "core/memory.h"
 #include "core/timer.h"
+#include "core/log.h"
 
 static thread_t threads[MAX_THREADS];
 static thread_t* current_thread = 0;
@@ -31,7 +32,10 @@ thread_t* thread_create(const char* name, void (*entry)(void)) {
         }
     }
 
-    if (!thread) return 0;
+    if (!thread || !name || !entry) {
+        LOG_ERROR("THRD", "Parametros invalidos ao criar thread");
+        return 0;
+    }
 
     memset(thread, 0, sizeof(thread_t));
 
@@ -48,7 +52,12 @@ thread_t* thread_create(const char* name, void (*entry)(void)) {
     thread->wait_ticks = 0;
 
     thread->stack = (uint32_t*)kmalloc(THREAD_STACK_SIZE);
-    if (!thread->stack) return 0;
+    if (!thread->stack) {
+        LOG_ERROR("THRD", "Falha ao alocar stack da thread");
+        memset(thread, 0, sizeof(thread_t));
+        thread->state = THREAD_UNUSED;
+        return 0;
+    }
 
     uint32_t stack_top = (uint32_t)thread->stack + THREAD_STACK_SIZE;
     uint32_t* stack_ptr = (uint32_t*)stack_top;
@@ -96,12 +105,13 @@ thread_t* thread_create(const char* name, void (*entry)(void)) {
 }
 
 void thread_destroy(thread_t* thread) {
-    if (!thread) return;
+    if (!thread || thread->state == THREAD_UNUSED) return;
     thread->state = THREAD_UNUSED;
     if (thread->stack) {
         kfree(thread->stack);
     }
-    thread_count--;
+    if (thread_count > 0) thread_count--;
+    thread->stack = 0;
 }
 
 thread_t* thread_schedule_next(void) {

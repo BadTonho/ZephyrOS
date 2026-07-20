@@ -15,18 +15,17 @@
 #define NULL ((void*)0)
 #endif
 
-static uint8_t keyboard_get_scancode(void) {
-    uint8_t scancode = 0;
-    while (!scancode) {
-        __asm__ volatile("inb $0x60, %0" : "=a"(scancode));
-    }
-    return scancode;
-}
-
 static int settings_active = 0;
 static int selected_category = 0;
 static int selected_option = 0;
 static int editing_option = 0;
+static int icon_editor_active = 0;
+static int icon_editor_selected = 0;
+static int icon_editor_field = 0;
+static int icon_editor_count = 0;
+static icon_entry_t* icon_editor_entries = 0;
+static const char* icon_editor_title = 0;
+static const char** icon_editor_names = 0;
 
 static settings_page_t categories[SETTINGS_CAT_COUNT];
 
@@ -161,6 +160,10 @@ void settings_init(void) {
 
 void settings_open(void) {
     settings_active = 1;
+    icon_editor_active = 0;
+    icon_editor_entries = 0;
+    icon_editor_names = 0;
+    icon_editor_title = 0;
     selected_category = 0;
     selected_option = 0;
     editing_option = 0;
@@ -255,84 +258,93 @@ static void int_to_str(uint32_t num, char* buf) {
     buf[i] = '\0';
 }
 
-static void icon_editor(const char* title, icon_entry_t* entries, int count, const char** names) {
-    int sel = 0;
-    int field = 0;
+static const char* desktop_icon_names[] = {"Shell", "Explorer", "TaskMgr"};
+static const char* window_icon_names[] = {"Fechar", "Minimizar", "Maximizar"};
+static const char* file_icon_names[] = {"Pasta", "Arquivo"};
 
-    while (1) {
-        video_clear();
-        video_print_at(2, 1, title, 0x0F);
-        video_draw_hline(2, 2, 76, 0xC4, 0x08);
+static void icon_editor_draw(void) {
+    video_clear();
+    video_print_at(2, 1, icon_editor_title, 0x0F);
+    video_draw_hline(2, 2, 76, 0xC4, 0x08);
 
-        for (int i = 0; i < count; i++) {
-            uint8_t color = (sel == i) ? 0x1F : 0x07;
-            video_print_at(4, 4 + i * 2, names[i], color);
+    for (int i = 0; i < icon_editor_count; i++) {
+        uint8_t color = (icon_editor_selected == i) ? 0x1F : 0x07;
+        video_print_at(4, 4 + i * 2, icon_editor_names[i], color);
+        video_print_at(6, 5 + i * 2, "Caractere:", 0x08);
+        video_put_char_at(icon_editor_entries[i].ch, icon_editor_entries[i].color, 17, 5 + i * 2);
+        video_print_at(20, 5 + i * 2, "Cor:", 0x08);
+        char cbuf[4];
+        int_to_str(icon_editor_entries[i].color, cbuf);
+        video_print_at(25, 5 + i * 2, cbuf, 0x07);
+        video_print_at(30, 5 + i * 2, "Cor sel:", 0x08);
+        int_to_str(icon_editor_entries[i].color_selected, cbuf);
+        video_print_at(39, 5 + i * 2, cbuf, 0x07);
 
-            video_print_at(6, 5 + i * 2, "Caractere:", 0x08);
-            video_put_char_at(entries[i].ch, entries[i].color, 17, 5 + i * 2);
-
-            video_print_at(20, 5 + i * 2, "Cor:", 0x08);
-            char cbuf[4];
-            int_to_str(entries[i].color, cbuf);
-            video_print_at(25, 5 + i * 2, cbuf, 0x07);
-
-            video_print_at(30, 5 + i * 2, "Cor sel:", 0x08);
-            int_to_str(entries[i].color_selected, cbuf);
-            video_print_at(39, 5 + i * 2, cbuf, 0x07);
-
-            if (sel == i) {
-                if (field == 0) video_put_char_at('>', 0x0E, 15, 5 + i * 2);
-                else if (field == 1) video_put_char_at('>', 0x0E, 23, 5 + i * 2);
-                else video_put_char_at('>', 0x0E, 37, 5 + i * 2);
-            }
-        }
-
-        video_draw_hline(2, 22, 76, 0xC4, 0x08);
-        video_print_at(3, 23, "Up/Down:Item  Left/Right:Campo  +/-:Valor  Enter:Ok  Esc:Voltar", 0x08);
-
-        uint8_t scancode = 0;
-        while (!scancode) { scancode = keyboard_get_scancode(); }
-        if (scancode & 0x80) continue;
-
-        if (scancode == 0x01) return;
-
-        if (scancode == 0x48) {
-            if (sel > 0) sel--;
-            else sel = count - 1;
-        }
-        if (scancode == 0x50) {
-            if (sel < count - 1) sel++;
-            else sel = 0;
-        }
-
-        if (scancode == 0x4B) {
-            if (field > 0) field--;
-        }
-        if (scancode == 0x4D) {
-            if (field < 2) field++;
-        }
-
-        if (scancode == 0x0D || scancode == 0x2B) {
-            if (field == 0) {
-                entries[sel].ch++;
-                if (entries[sel].ch > 0x7E) entries[sel].ch = 0x20;
-            } else if (field == 1) {
-                entries[sel].color++;
-            } else {
-                entries[sel].color_selected++;
-            }
-        }
-        if (scancode == 0x0A) {
-            if (field == 0) {
-                entries[sel].ch--;
-                if (entries[sel].ch < 0x20) entries[sel].ch = 0x7E;
-            } else if (field == 1) {
-                entries[sel].color--;
-            } else {
-                entries[sel].color_selected--;
-            }
+        if (icon_editor_selected == i) {
+            int x = icon_editor_field == 0 ? 15 : (icon_editor_field == 1 ? 23 : 37);
+            video_put_char_at('>', 0x0E, x, 5 + i * 2);
         }
     }
+
+    video_draw_hline(2, 22, 76, 0xC4, 0x08);
+    video_print_at(3, 23, "Up/Down:Item  Left/Right:Campo  +/-:Valor  Enter:Ok  Esc:Voltar", 0x08);
+}
+
+static void icon_editor_open(const char* title, icon_entry_t* entries,
+                             int count, const char** names) {
+    if (!entries || !names || count <= 0) return;
+    icon_editor_active = 1;
+    icon_editor_selected = 0;
+    icon_editor_field = 0;
+    icon_editor_count = count;
+    icon_editor_entries = entries;
+    icon_editor_title = title;
+    icon_editor_names = names;
+    icon_editor_draw();
+}
+
+static int icon_editor_handle_key(uint8_t scancode) {
+    if (scancode & 0x80) return 1;
+    if (scancode == 0x01 || scancode == 0x1C) {
+        icon_editor_active = 0;
+        settings_draw();
+        return 1;
+    }
+
+    if (scancode == 0x48) {
+        icon_editor_selected = icon_editor_selected > 0 ? icon_editor_selected - 1 : icon_editor_count - 1;
+    } else if (scancode == 0x50) {
+        icon_editor_selected = icon_editor_selected + 1 < icon_editor_count ? icon_editor_selected + 1 : 0;
+    } else if (scancode == 0x4B && icon_editor_field > 0) {
+        icon_editor_field--;
+    } else if (scancode == 0x4D && icon_editor_field < 2) {
+        icon_editor_field++;
+    } else if (scancode == 0x0D || scancode == 0x2B) {
+        if (icon_editor_field == 0) {
+            icon_editor_entries[icon_editor_selected].ch++;
+            if (icon_editor_entries[icon_editor_selected].ch > 0x7E) {
+                icon_editor_entries[icon_editor_selected].ch = 0x20;
+            }
+        } else if (icon_editor_field == 1) {
+            icon_editor_entries[icon_editor_selected].color++;
+        } else {
+            icon_editor_entries[icon_editor_selected].color_selected++;
+        }
+    } else if (scancode == 0x0A) {
+        if (icon_editor_field == 0) {
+            icon_editor_entries[icon_editor_selected].ch--;
+            if (icon_editor_entries[icon_editor_selected].ch < 0x20) {
+                icon_editor_entries[icon_editor_selected].ch = 0x7E;
+            }
+        } else if (icon_editor_field == 1) {
+            icon_editor_entries[icon_editor_selected].color--;
+        } else {
+            icon_editor_entries[icon_editor_selected].color_selected--;
+        }
+    }
+
+    icon_editor_draw();
+    return 1;
 }
 
 static void execute_icons_action(int option) {
@@ -340,19 +352,16 @@ static void execute_icons_action(int option) {
 
     switch (option) {
         case 0:
-            icon_editor("Icones - Desktop",
-                reg->desktop, ICON_DESKTOP_COUNT,
-                (const char*[]){"Shell", "Explorer", "TaskMgr"});
+            icon_editor_open("Icones - Desktop", reg->desktop,
+                ICON_DESKTOP_COUNT, desktop_icon_names);
             break;
         case 1:
-            icon_editor("Icones - Janela",
-                reg->wm, ICON_WM_COUNT,
-                (const char*[]){"Fechar", "Minimizar", "Maximizar"});
+            icon_editor_open("Icones - Janela", reg->wm,
+                ICON_WM_COUNT, window_icon_names);
             break;
         case 2:
-            icon_editor("Icones - Arquivos",
-                reg->fm, ICON_FM_COUNT,
-                (const char*[]){"Pasta", "Arquivo"});
+            icon_editor_open("Icones - Arquivos", reg->fm,
+                ICON_FM_COUNT, file_icon_names);
             break;
         case 3:
             icons_reset_defaults();
@@ -410,7 +419,7 @@ static void execute_system_action(int option) {
             video_print_at(25, 11, "Reiniciando...", 0x0E);
             asm volatile("cli");
             asm volatile("outb %0, %1" : : "a"((uint8_t)0xFE), "Nd"((uint16_t)0x64));
-            while (1) {}
+            for (;;) asm volatile("hlt");
             break;
     }
 }
@@ -437,6 +446,8 @@ static void execute_about_action(int option) {
 int settings_handle_key(uint8_t scancode) {
     if (!settings_active) return 0;
 
+    if (icon_editor_active) return icon_editor_handle_key(scancode);
+
     if (scancode & 0x80) return 0;
 
     settings_page_t* page = &categories[selected_category];
@@ -460,6 +471,8 @@ int settings_handle_key(uint8_t scancode) {
                     execute_icons_action(selected_option);
                 }
             }
+
+            if (icon_editor_active) return 1;
 
             if (selected_category == SETTINGS_CAT_TASKBAR) {
                 apply_taskbar_settings();

@@ -1,10 +1,46 @@
 #include "fs/fat12.h"
 #include "core/memory.h"
 #include "core/video.h"
-#include "core/panic.h"
+#include "core/log.h"
+#include "core/errors.h"
 
 static fat12_fs_t fs;
 static uint8_t boot_sector[512];
+
+static void memset(void* dst, uint8_t val, uint32_t size);
+
+static void fat12_release(void) {
+    if (fs.fat) kfree(fs.fat);
+    if (fs.root_dir) kfree(fs.root_dir);
+    if (fs.data_area) kfree(fs.data_area);
+    memset(&fs, 0, sizeof(fat12_fs_t));
+}
+
+static int fat12_validate_bpb(void) {
+    uint32_t total_sectors = fs.bpb.total_sectors;
+    if (total_sectors == 0) total_sectors = fs.bpb.large_sector_count;
+
+    if (fs.bpb.bytes_per_sector != 512 || fs.bpb.sectors_per_cluster == 0 ||
+        fs.bpb.sectors_per_cluster > 128 ||
+        (fs.bpb.sectors_per_cluster & (fs.bpb.sectors_per_cluster - 1)) != 0 ||
+        fs.bpb.reserved_sectors == 0 || fs.bpb.num_fats == 0 || fs.bpb.num_fats > 4 ||
+        fs.bpb.root_entries == 0 || fs.bpb.sectors_per_fat == 0 || total_sectors == 0) {
+        return ERR_INVALID;
+    }
+
+    uint32_t root_sectors = (fs.bpb.root_entries * 32 + 511) / 512;
+    uint32_t data_start = fs.bpb.reserved_sectors +
+        fs.bpb.num_fats * fs.bpb.sectors_per_fat + root_sectors;
+    if (data_start >= total_sectors) return ERR_INVALID;
+
+    uint32_t clusters = (total_sectors - data_start) / fs.bpb.sectors_per_cluster;
+    if (clusters >= 4085) return ERR_NOT_FOUND;
+    if (clusters < 1) return ERR_INVALID;
+
+    uint32_t required_fat_bytes = ((clusters + 2) * 3 + 1) / 2;
+    if ((uint32_t)fs.bpb.sectors_per_fat * 512 < required_fat_bytes) return ERR_INVALID;
+    return OK;
+}
 
 static void memset(void* dst, uint8_t val, uint32_t size) {
     uint8_t* d = (uint8_t*)dst;
@@ -37,15 +73,22 @@ static void to_upper(char* str, int max_len) {
     }
 }
 
-void fat12_init(void) {
-    memset(&fs, 0, sizeof(fat12_fs_t));
+#define FAT12_CHAIN_LIMIT 4096
+
+int fat12_init(void) {
+    fat12_release();
 
     if (ata_read_sectors(0, 1, boot_sector) != 0) {
-        panic("FAT12: Falha ao ler boot sector!");
-        return;
+        LOG_WARN("FAT12", "Falha ao ler boot sector");
+        return ERR_DISK;
     }
 
     memcpy(&fs.bpb, boot_sector, sizeof(fat12_bpb_t));
+    int validation = fat12_validate_bpb();
+    if (validation != OK) {
+        fat12_release();
+        return validation;
+    }
 
     fs.fat_start = fs.bpb.reserved_sectors;
     fs.root_start = fs.fat_start + (fs.bpb.num_fats * fs.bpb.sectors_per_fat);
@@ -54,15 +97,17 @@ void fat12_init(void) {
     uint32_t fat_size = fs.bpb.sectors_per_fat * fs.bpb.bytes_per_sector;
     fs.fat = (uint16_t*)kmalloc(fat_size);
     if (!fs.fat) {
-        panic("FAT12: Falha ao alocar FAT!");
-        return;
+        LOG_ERROR("FAT12", "Falha ao alocar FAT");
+        fat12_release();
+        return ERR_MEM;
     }
 
     for (int i = 0; i < fs.bpb.sectors_per_fat; i++) {
         uint8_t sector[512];
         if (ata_read_sectors(fs.fat_start + i, 1, sector) != 0) {
-            panic("FAT12: Falha ao ler FAT!");
-            return;
+            LOG_ERROR("FAT12", "Falha ao ler FAT");
+            fat12_release();
+            return ERR_DISK;
         }
         memcpy((uint8_t*)fs.fat + i * fs.bpb.bytes_per_sector, sector, fs.bpb.bytes_per_sector);
     }
@@ -70,21 +115,28 @@ void fat12_init(void) {
     uint32_t root_size = fs.bpb.root_entries * 32;
     fs.root_dir = (fat12_dir_entry_t*)kmalloc(root_size);
     if (!fs.root_dir) {
-        panic("FAT12: Falha ao alocar root dir!");
-        return;
+        LOG_ERROR("FAT12", "Falha ao alocar diretorio raiz");
+        fat12_release();
+        return ERR_MEM;
     }
 
     uint32_t root_sectors = (root_size + fs.bpb.bytes_per_sector - 1) / fs.bpb.bytes_per_sector;
     for (uint32_t i = 0; i < root_sectors; i++) {
         uint8_t sector[512];
         if (ata_read_sectors(fs.root_start + i, 1, sector) != 0) {
-            panic("FAT12: Falha ao ler root dir!");
-            return;
+            LOG_ERROR("FAT12", "Falha ao ler diretorio raiz");
+            fat12_release();
+            return ERR_DISK;
         }
-        memcpy((uint8_t*)fs.root_dir + i * fs.bpb.bytes_per_sector, sector, fs.bpb.bytes_per_sector);
+        uint32_t copied = i * fs.bpb.bytes_per_sector;
+        uint32_t remaining = root_size - copied;
+        uint32_t copy_size = remaining < fs.bpb.bytes_per_sector ? remaining : fs.bpb.bytes_per_sector;
+        memcpy((uint8_t*)fs.root_dir + copied, sector, copy_size);
     }
 
     fs.initialized = 1;
+    LOG_INFO("FAT12", "Sistema FAT12 inicializado");
+    return OK;
 }
 
 static uint16_t fat12_get_cluster(uint16_t cluster) {
@@ -167,8 +219,10 @@ int fat12_read_file(const char* filename, uint8_t* buffer, uint32_t max_size) {
     uint32_t bytes_read = 0;
     uint16_t cluster = entry->cluster_low;
     uint32_t file_size = entry->file_size;
+    uint32_t chain_steps = 0;
 
-    while (cluster < 0xFF8 && cluster != 0 && bytes_read < max_size) {
+    while (cluster < 0xFF8 && cluster != 0 && bytes_read < max_size &&
+           chain_steps++ < FAT12_CHAIN_LIMIT) {
         uint32_t data_lba = fs.data_start + (cluster - 2) * fs.bpb.sectors_per_cluster;
 
         for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {
@@ -341,8 +395,9 @@ int fat12_delete_file(const char* filename) {
     if (!entry) return -1;
 
     uint16_t cluster = entry->cluster_low;
+    uint32_t chain_steps = 0;
 
-    while (cluster >= 2 && cluster < 0xFF8) {
+    while (cluster >= 2 && cluster < 0xFF8 && chain_steps++ < FAT12_CHAIN_LIMIT) {
         uint16_t next = fat12_get_cluster(cluster);
         fat12_set_cluster(cluster, FAT12_CLUSTER_FREE);
         cluster = next;
@@ -442,8 +497,10 @@ static fat12_dir_entry_t* fat12_read_dir_cluster(uint16_t cluster, fat12_dir_ent
 
     uint32_t entry_idx = 0;
     uint16_t c = cluster;
+    uint32_t chain_steps = 0;
 
-    while (c >= 2 && c < 0xFF8 && entry_idx < max_entries) {
+    while (c >= 2 && c < 0xFF8 && entry_idx < max_entries &&
+           chain_steps++ < FAT12_CHAIN_LIMIT) {
         uint32_t data_lba = fs.data_start + (c - 2) * fs.bpb.sectors_per_cluster;
 
         for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {
@@ -480,9 +537,10 @@ static fat12_dir_entry_t* fat12_find_in_dir(uint16_t dir_cluster, const char* fa
     if (!cluster_buf) return 0;
 
     uint16_t c = dir_cluster;
+    uint32_t chain_steps = 0;
     static fat12_dir_entry_t found;
 
-    while (c >= 2 && c < 0xFF8) {
+    while (c >= 2 && c < 0xFF8 && chain_steps++ < FAT12_CHAIN_LIMIT) {
         uint32_t data_lba = fs.data_start + (c - 2) * fs.bpb.sectors_per_cluster;
 
         for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {
@@ -698,8 +756,10 @@ int fat12_read_file_at(const char* path, uint8_t* buffer, uint32_t max_size) {
     uint32_t bytes_read = 0;
     uint16_t cluster = entry->cluster_low;
     uint32_t file_size = entry->file_size;
+    uint32_t chain_steps = 0;
 
-    while (cluster < 0xFF8 && cluster != 0 && bytes_read < max_size) {
+    while (cluster < 0xFF8 && cluster != 0 && bytes_read < max_size &&
+           chain_steps++ < FAT12_CHAIN_LIMIT) {
         uint32_t data_lba = fs.data_start + (cluster - 2) * fs.bpb.sectors_per_cluster;
 
         for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {
@@ -819,8 +879,9 @@ int fat12_write_file_in_dir(uint16_t dir_cluster, const char* filename, const ui
 
     uint16_t c = dir_cluster;
     int found_slot = 0;
+    uint32_t chain_steps = 0;
 
-    while (c >= 2 && c < 0xFF8) {
+    while (c >= 2 && c < 0xFF8 && chain_steps++ < FAT12_CHAIN_LIMIT) {
         uint32_t data_lba = fs.data_start + (c - 2) * fs.bpb.sectors_per_cluster;
 
         for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {
@@ -943,7 +1004,8 @@ int fat12_delete_file_in_dir(uint16_t dir_cluster, const char* filename) {
         }
 
         uint16_t cluster = entry->cluster_low;
-        while (cluster >= 2 && cluster < 0xFF8) {
+        uint32_t chain_steps = 0;
+        while (cluster >= 2 && cluster < 0xFF8 && chain_steps++ < FAT12_CHAIN_LIMIT) {
             uint16_t next = fat12_get_cluster(cluster);
             fat12_set_cluster(cluster, FAT12_CLUSTER_FREE);
             cluster = next;
@@ -973,7 +1035,8 @@ int fat12_delete_file_in_dir(uint16_t dir_cluster, const char* filename) {
         return 0;
     }
 
-    while (c >= 2 && c < 0xFF8) {
+    uint32_t chain_steps = 0;
+    while (c >= 2 && c < 0xFF8 && chain_steps++ < FAT12_CHAIN_LIMIT) {
         uint32_t data_lba = fs.data_start + (c - 2) * fs.bpb.sectors_per_cluster;
 
         for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {
@@ -995,7 +1058,9 @@ int fat12_delete_file_in_dir(uint16_t dir_cluster, const char* filename) {
 
             if (strncmp(entry->name, fat12_name, 11) == 0) {
                 uint16_t cluster = entry->cluster_low;
-                while (cluster >= 2 && cluster < 0xFF8) {
+                uint32_t file_chain_steps = 0;
+                while (cluster >= 2 && cluster < 0xFF8 &&
+                       file_chain_steps++ < FAT12_CHAIN_LIMIT) {
                     uint16_t next = fat12_get_cluster(cluster);
                     fat12_set_cluster(cluster, FAT12_CLUSTER_FREE);
                     cluster = next;
@@ -1090,8 +1155,9 @@ int fat12_create_dir_entry(uint16_t dir_cluster, const char* name, uint8_t attri
 
     uint16_t c = dir_cluster;
     int found_slot = 0;
+    uint32_t chain_steps = 0;
 
-    while (c >= 2 && c < 0xFF8) {
+    while (c >= 2 && c < 0xFF8 && chain_steps++ < FAT12_CHAIN_LIMIT) {
         uint32_t data_lba = fs.data_start + (c - 2) * fs.bpb.sectors_per_cluster;
 
         for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {

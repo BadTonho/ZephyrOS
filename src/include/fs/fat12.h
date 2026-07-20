@@ -58,7 +58,7 @@ typedef struct {
     int initialized;
 } fat12_fs_t;
 
-void fat12_init(void);
+int  fat12_init(void);
 int  fat12_read_file(const char* filename, uint8_t* buffer, uint32_t max_size);
 int  fat12_write_file(const char* filename, const uint8_t* data, uint32_t size);
 int  fat12_delete_file(const char* filename);

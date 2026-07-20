@@ -5,6 +5,8 @@
 #include "core/memory.h"
 #include "core/timer.h"
 #include "ui/taskbar.h"
+#include "core/errors.h"
+#include "core/log.h"
 
 static editor_t editor;
 static uint8_t shift_pressed = 0;
@@ -33,12 +35,21 @@ static int str_len(const char* str) {
     return len;
 }
 
-static void str_insert(char* str, int pos, char c) {
+static int str_insert(char* str, int pos, char c) {
+    if (!str || pos < 0 || pos >= EDITOR_MAX_LINE_LENGTH - 1) {
+        return ERR_OVERFLOW;
+    }
+
     int len = str_len(str);
+    if (len >= EDITOR_MAX_LINE_LENGTH - 1 || pos > len) {
+        return ERR_OVERFLOW;
+    }
+
     for (int i = len; i >= pos; i--) {
         str[i + 1] = str[i];
     }
     str[pos] = c;
+    return OK;
 }
 
 static void str_remove(char* str, int pos) {
@@ -63,6 +74,16 @@ static char* alloc_line(void) {
         line[0] = '\0';
     }
     return line;
+}
+
+static void editor_free_lines(void) {
+    for (uint32_t i = 0; i < editor.line_count; i++) {
+        if (editor.lines[i]) {
+            kfree(editor.lines[i]);
+            editor.lines[i] = 0;
+        }
+    }
+    editor.line_count = 0;
 }
 
 static uint8_t detect_encoding(const uint8_t* data, uint32_t size) {
@@ -285,6 +306,10 @@ static void editor_do_word_wrap(uint32_t line_idx) {
     }
 
     editor.lines[line_idx + 1] = alloc_line();
+    if (!editor.lines[line_idx + 1]) {
+        LOG_WARN("EDITOR", "Sem memoria para aplicar word wrap");
+        return;
+    }
     uint32_t remaining = len - break_pos;
     for (uint32_t i = 0; i < remaining; i++) {
         editor.lines[line_idx + 1][i] = editor.lines[line_idx][break_pos + i];
@@ -310,15 +335,15 @@ void editor_init(void) {
 }
 
 void editor_new(void) {
-    for (uint32_t i = 0; i < editor.line_count; i++) {
-        if (editor.lines[i]) {
-            kfree(editor.lines[i]);
-            editor.lines[i] = 0;
-        }
-    }
+    editor_free_lines();
 
     editor.line_count = 1;
     editor.lines[0] = alloc_line();
+    if (!editor.lines[0]) {
+        editor.line_count = 0;
+        LOG_ERROR("EDITOR", "Falha ao criar linha inicial");
+        return;
+    }
     editor.cursor_x = 0;
     editor.cursor_y = 0;
     editor.scroll_x = 0;
@@ -333,13 +358,13 @@ void editor_new(void) {
     str_copy(editor.filename, "UNNAMED.TXT", 64);
 }
 
-void editor_open(const char* filename) {
-    for (uint32_t i = 0; i < editor.line_count; i++) {
-        if (editor.lines[i]) {
-            kfree(editor.lines[i]);
-            editor.lines[i] = 0;
-        }
+int editor_open(const char* filename) {
+    if (!filename) {
+        LOG_ERROR("EDITOR", "Nome de arquivo nulo");
+        return ERR_NULL;
     }
+
+    editor_free_lines();
 
     editor.line_count = 0;
     editor.cursor_x = 0;
@@ -355,17 +380,29 @@ void editor_open(const char* filename) {
 
     uint8_t* buffer = (uint8_t*)kmalloc(131072);
     if (!buffer) {
-        editor.line_count = 1;
-        editor.lines[0] = alloc_line();
-        return;
+        LOG_ERROR("EDITOR", "Falha ao alocar buffer do arquivo");
+        return ERR_MEM;
     }
 
     int bytes = fs_read_file(filename, buffer, 131071);
-    if (bytes <= 0) {
-        editor.line_count = 1;
-        editor.lines[0] = alloc_line();
+    if (bytes < 0) {
+        LOG_ERROR("EDITOR", "Falha ao ler arquivo");
         kfree(buffer);
-        return;
+        return ERR_DISK;
+    }
+
+    editor.line_count = 1;
+    editor.lines[0] = alloc_line();
+    if (!editor.lines[0]) {
+        LOG_ERROR("EDITOR", "Falha ao alocar linha inicial");
+        kfree(buffer);
+        editor.line_count = 0;
+        return ERR_MEM;
+    }
+
+    if (bytes == 0) {
+        kfree(buffer);
+        return OK;
     }
 
     editor.total_bytes = bytes;
@@ -381,41 +418,53 @@ void editor_open(const char* filename) {
 
     uint32_t line = 0;
     uint32_t pos = 0;
-
-    editor.lines[line] = alloc_line();
-    if (!editor.lines[line]) {
-        kfree(buffer);
-        return;
-    }
+    uint8_t truncated = 0;
 
     for (uint32_t i = start_offset; i < (uint32_t)bytes; i++) {
         if (buffer[i] == '\n') {
             editor.lines[line][pos] = '\0';
             editor.total_chars += pos;
+
+            if (line + 1 >= EDITOR_MAX_LINES) {
+                truncated = 1;
+                break;
+            }
+
             line++;
             pos = 0;
-            if (line >= EDITOR_MAX_LINES) break;
             editor.lines[line] = alloc_line();
-            if (!editor.lines[line]) break;
+            if (!editor.lines[line]) {
+                LOG_ERROR("EDITOR", "Falha ao alocar linha do arquivo");
+                editor_free_lines();
+                kfree(buffer);
+                return ERR_MEM;
+            }
         } else if (buffer[i] == '\r') {
             if (i + 1 < (uint32_t)bytes && buffer[i + 1] == '\n') i++;
+        } else if (pos < EDITOR_MAX_LINE_LENGTH - 1) {
+            editor.lines[line][pos++] = buffer[i];
         } else {
-            if (pos < EDITOR_MAX_LINE_LENGTH - 1) {
-                editor.lines[line][pos++] = buffer[i];
-            }
+            truncated = 1;
         }
     }
+
     editor.lines[line][pos] = '\0';
     editor.total_chars += pos;
     editor.line_count = line + 1;
 
     kfree(buffer);
 
+    if (truncated) {
+        LOG_WARN("EDITOR", "Arquivo excede os limites; conteudo truncado");
+    }
+
     if (editor.word_wrap) {
         for (uint32_t i = 0; i < editor.line_count; i++) {
             editor_do_word_wrap(i);
         }
     }
+
+    return OK;
 }
 
 void editor_close(void) {
@@ -614,7 +663,10 @@ static void editor_insert_char(char c) {
     if (editor.cursor_y >= editor.line_count) return;
     if (!editor.lines[editor.cursor_y]) return;
 
-    str_insert(editor.lines[editor.cursor_y], editor.cursor_x, c);
+    if (str_insert(editor.lines[editor.cursor_y], editor.cursor_x, c) != OK) {
+        LOG_WARN("EDITOR", "Limite de caracteres da linha atingido");
+        return;
+    }
     editor.cursor_x++;
     editor.modified = 1;
     editor.total_chars++;
@@ -635,13 +687,16 @@ static void editor_backspace(void) {
     } else if (editor.cursor_y > 0) {
         uint32_t prev_len = str_len(editor.lines[editor.cursor_y - 1]);
         uint32_t cur_len = str_len(editor.lines[editor.cursor_y]);
-
-        for (uint32_t i = 0; i < cur_len; i++) {
-            if (prev_len + i < EDITOR_MAX_LINE_LENGTH - 1) {
-                editor.lines[editor.cursor_y - 1][prev_len + i] = editor.lines[editor.cursor_y][i];
-            }
+        uint32_t copy_len = cur_len;
+        if (prev_len >= EDITOR_MAX_LINE_LENGTH - 1) copy_len = 0;
+        else if (copy_len > EDITOR_MAX_LINE_LENGTH - 1 - prev_len) {
+            copy_len = EDITOR_MAX_LINE_LENGTH - 1 - prev_len;
         }
-        editor.lines[editor.cursor_y - 1][prev_len + cur_len] = '\0';
+
+        for (uint32_t i = 0; i < copy_len; i++) {
+            editor.lines[editor.cursor_y - 1][prev_len + i] = editor.lines[editor.cursor_y][i];
+        }
+        editor.lines[editor.cursor_y - 1][prev_len + copy_len] = '\0';
 
         kfree(editor.lines[editor.cursor_y]);
         for (uint32_t i = editor.cursor_y; i < editor.line_count - 1; i++) {
@@ -651,8 +706,8 @@ static void editor_backspace(void) {
         editor.line_count--;
 
         editor.cursor_y--;
-        editor.cursor_x = prev_len;
-        editor.total_chars--;
+        editor.cursor_x = prev_len + copy_len;
+        editor.total_chars -= cur_len + 1;
     }
     editor.modified = 1;
 }
@@ -664,13 +719,16 @@ static void editor_delete(void) {
     } else if (editor.cursor_y < editor.line_count - 1) {
         uint32_t cur_len = str_len(editor.lines[editor.cursor_y]);
         uint32_t next_len = str_len(editor.lines[editor.cursor_y + 1]);
-
-        for (uint32_t i = 0; i < next_len; i++) {
-            if (cur_len + i < EDITOR_MAX_LINE_LENGTH - 1) {
-                editor.lines[editor.cursor_y][cur_len + i] = editor.lines[editor.cursor_y + 1][i];
-            }
+        uint32_t copy_len = next_len;
+        if (cur_len >= EDITOR_MAX_LINE_LENGTH - 1) copy_len = 0;
+        else if (copy_len > EDITOR_MAX_LINE_LENGTH - 1 - cur_len) {
+            copy_len = EDITOR_MAX_LINE_LENGTH - 1 - cur_len;
         }
-        editor.lines[editor.cursor_y][cur_len + next_len] = '\0';
+
+        for (uint32_t i = 0; i < copy_len; i++) {
+            editor.lines[editor.cursor_y][cur_len + i] = editor.lines[editor.cursor_y + 1][i];
+        }
+        editor.lines[editor.cursor_y][cur_len + copy_len] = '\0';
 
         kfree(editor.lines[editor.cursor_y + 1]);
         for (uint32_t i = editor.cursor_y + 1; i < editor.line_count - 1; i++) {
@@ -678,7 +736,7 @@ static void editor_delete(void) {
         }
         editor.lines[editor.line_count - 1] = 0;
         editor.line_count--;
-        editor.total_chars--;
+        editor.total_chars -= next_len + 1;
     }
     editor.modified = 1;
 }
@@ -693,6 +751,10 @@ static void editor_newline(void) {
     }
 
     editor.lines[editor.cursor_y + 1] = alloc_line();
+    if (!editor.lines[editor.cursor_y + 1]) {
+        LOG_ERROR("EDITOR", "Falha ao alocar linha apos quebra");
+        return;
+    }
 
     uint32_t split_pos = editor.cursor_x;
     for (uint32_t i = split_pos; i < cur_len; i++) {
@@ -876,6 +938,10 @@ void editor_handle_key(uint8_t scancode) {
 void editor_run(void) {
     editor_init();
     editor_new();
+    if (editor.line_count == 0) {
+        video_print("Erro: sem memoria para abrir o editor.\n", 0x0C);
+        return;
+    }
     editor.running = 1;
 
     editor_prev_callback = keyboard_set_callback(editor_handle_key);
@@ -884,7 +950,10 @@ void editor_run(void) {
 
 void editor_run_file(const char* filename) {
     editor_init();
-    editor_open(filename);
+    if (editor_open(filename) != OK) {
+        video_print("Erro: nao foi possivel abrir o arquivo.\n", 0x0C);
+        return;
+    }
     editor.running = 1;
 
     editor_prev_callback = keyboard_set_callback(editor_handle_key);

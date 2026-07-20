@@ -3,6 +3,8 @@
 #include "core/video.h"
 #include "core/panic.h"
 #include "core/timer.h"
+#include "core/log.h"
+#include "core/errors.h"
 
 process_t processes[MAX_PROCESSES];
 static process_t* current_process = 0;
@@ -44,7 +46,10 @@ process_t* process_create(const char* name, void (*entry_point)()) {
         }
     }
 
-    if (!proc) return 0;
+    if (!proc || !name || !entry_point) {
+        LOG_ERROR("PROC", "Parametros invalidos ao criar processo");
+        return 0;
+    }
 
     memset(proc, 0, sizeof(process_t));
 
@@ -61,10 +66,21 @@ process_t* process_create(const char* name, void (*entry_point)()) {
     proc->wait_ticks = 0;
 
     proc->kernel_stack = (uint32_t)kmalloc(KERNEL_STACK_SIZE);
+    if (!proc->kernel_stack) {
+        LOG_ERROR("PROC", "Falha ao alocar stack do processo");
+        proc->state = PROCESS_STATE_UNUSED;
+        return 0;
+    }
     proc->kernel_stack_top = proc->kernel_stack + KERNEL_STACK_SIZE;
 
     proc->page_directory = paging_create_directory();
-    if (!proc->page_directory) return 0;
+    if (!proc->page_directory) {
+        LOG_ERROR("PROC", "Falha ao criar diretorio do processo");
+        kfree((void*)proc->kernel_stack);
+        memset(proc, 0, sizeof(process_t));
+        proc->state = PROCESS_STATE_UNUSED;
+        return 0;
+    }
 
     for (uint32_t addr = 0xB8000; addr < 0xC0000; addr += 0x1000) {
         page_entry_t* page = paging_get_page(addr, 1);
@@ -130,7 +146,7 @@ process_t* process_create(const char* name, void (*entry_point)()) {
 }
 
 void process_destroy(process_t* proc) {
-    if (!proc) return;
+    if (!proc || proc->state == PROCESS_STATE_UNUSED) return;
     proc->state = PROCESS_STATE_UNUSED;
     if (proc->kernel_stack) {
         kfree((void*)proc->kernel_stack);
@@ -138,7 +154,9 @@ void process_destroy(process_t* proc) {
     if (proc->page_directory) {
         paging_free_directory(proc->page_directory);
     }
-    process_count--;
+    if (process_count > 0) process_count--;
+    proc->kernel_stack = 0;
+    proc->page_directory = 0;
 }
 
 process_t* process_get_current(void) {

@@ -39,7 +39,7 @@ void panic(const char* message) {
     video_set_color(VGA_COLOR_WHITE, VGA_COLOR_RED);
     video_print("\nO kernel encontrou um erro fatal:\n\n", 0x4F);
     video_set_color(VGA_COLOR_YELLOW, VGA_COLOR_RED);
-    video_print(message, 0x4E);
+    video_print(message ? message : "Mensagem de panic ausente", 0x4E);
     video_print("\n\n", 0x4F);
     video_set_color(VGA_COLOR_WHITE, VGA_COLOR_RED);
     video_print("O sistema foi interrompido.\n", 0x4F);
@@ -55,7 +55,7 @@ void panic_memory(const char* message, uint32_t mmap_entries,
     video_set_color(VGA_COLOR_WHITE, VGA_COLOR_RED);
     video_print("\nFalha durante a inicializacao da memoria:\n\n", 0x4F);
     video_set_color(VGA_COLOR_YELLOW, VGA_COLOR_RED);
-    video_print(message, 0x4E);
+    video_print(message ? message : "Detalhe de memoria ausente", 0x4E);
     video_print("\n\nDiagnostico:\n", 0x4F);
     panic_print_metric("  Entradas E820: ", mmap_entries);
     panic_print_metric("  Memoria total (bytes): ", total_memory);
@@ -69,6 +69,7 @@ void panic_memory(const char* message, uint32_t mmap_entries,
 
 void panic_halt(void) {
     asm volatile("cli");
-    asm volatile("hlt");
-    while (1) {}
+    for (;;) {
+        asm volatile("hlt");
+    }
 }

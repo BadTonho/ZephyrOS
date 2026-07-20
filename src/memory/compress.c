@@ -1,9 +1,12 @@
 #include "memory/compress.h"
 #include "core/memory.h"
 #include "core/video.h"
+#include "core/errors.h"
 
 static compress_stats_t stats;
 static uint8_t enabled = 0;
+static uint8_t compress_ring[COMPRESS_LZSS_N];
+static uint8_t decompress_ring[COMPRESS_LZSS_N];
 
 static void memset(void* dst, uint8_t val, uint32_t size) {
     uint8_t* d = (uint8_t*)dst;
@@ -47,18 +50,21 @@ uint32_t compress_get_max_size(uint32_t original_size) {
     return original_size + (original_size / 8) + 64;
 }
 
-int compress_data(const uint8_t* src, uint32_t src_size, uint8_t* dst, uint32_t* dst_size) {
-    if (!src || !dst || !dst_size) return -1;
+int compress_data(const uint8_t* src, uint32_t src_size, uint8_t* dst,
+                  uint32_t dst_capacity, uint32_t* dst_size) {
+    if (!src || !dst || !dst_size) return ERR_NULL;
+    *dst_size = 0;
+    if (dst_capacity == 0) return ERR_OVERFLOW;
 
     uint32_t si = 0;
     uint32_t di = 0;
 
     uint8_t flags = 0;
     uint32_t flag_pos = 0;
+    if (di >= dst_capacity) return ERR_OVERFLOW;
     uint32_t flag_offset = di++;
 
-    uint8_t ring[COMPRESS_LZSS_N];
-    memset(ring, 0x20, COMPRESS_LZSS_N);
+    memset(compress_ring, 0x20, COMPRESS_LZSS_N);
 
     uint32_t r = COMPRESS_LZSS_N - COMPRESS_LZSS_F;
 
@@ -71,7 +77,7 @@ int compress_data(const uint8_t* src, uint32_t src_size, uint8_t* dst, uint32_t*
             for (uint32_t j = search_start; j < si; j++) {
                 uint32_t len = 0;
                 while (len < COMPRESS_LZSS_F && si + len < src_size) {
-                    if (ring[(j + len) % COMPRESS_LZSS_N] != src[si + len]) break;
+                    if (compress_ring[(j + len) % COMPRESS_LZSS_N] != src[si + len]) break;
                     len++;
                 }
                 if (len > best_len && len >= COMPRESS_LZSS_THRESHOLD) {
@@ -82,19 +88,21 @@ int compress_data(const uint8_t* src, uint32_t src_size, uint8_t* dst, uint32_t*
         }
 
         if (best_len >= COMPRESS_LZSS_THRESHOLD) {
+            if (di + 2 > dst_capacity) return ERR_OVERFLOW;
             uint16_t pos = (si - best_pos) & (COMPRESS_LZSS_N - 1);
             dst[di++] = (uint8_t)(pos & 0xFF);
             dst[di++] = (uint8_t)(((pos >> 8) & 0x0F) | ((best_len - COMPRESS_LZSS_THRESHOLD) << 4));
             flags |= (1 << flag_pos);
 
             for (uint32_t k = 0; k < best_len; k++) {
-                ring[r] = src[si + k];
+                compress_ring[r] = src[si + k];
                 r = (r + 1) & (COMPRESS_LZSS_N - 1);
                 si++;
             }
         } else {
+            if (di + 1 > dst_capacity) return ERR_OVERFLOW;
             dst[di++] = src[si];
-            ring[r] = src[si];
+            compress_ring[r] = src[si];
             r = (r + 1) & (COMPRESS_LZSS_N - 1);
             si++;
         }
@@ -104,7 +112,10 @@ int compress_data(const uint8_t* src, uint32_t src_size, uint8_t* dst, uint32_t*
             dst[flag_offset] = flags;
             flags = 0;
             flag_pos = 0;
-            flag_offset = di++;
+            if (si < src_size) {
+                if (di >= dst_capacity) return ERR_OVERFLOW;
+                flag_offset = di++;
+            }
         }
     }
 
@@ -123,14 +134,15 @@ int compress_data(const uint8_t* src, uint32_t src_size, uint8_t* dst, uint32_t*
     return 0;
 }
 
-int decompress_data(const uint8_t* src, uint32_t src_size, uint8_t* dst, uint32_t* dst_size) {
-    if (!src || !dst || !dst_size) return -1;
+int decompress_data(const uint8_t* src, uint32_t src_size, uint8_t* dst,
+                    uint32_t dst_capacity, uint32_t* dst_size) {
+    if (!src || !dst || !dst_size) return ERR_NULL;
+    *dst_size = 0;
 
     uint32_t si = 0;
     uint32_t di = 0;
 
-    uint8_t ring[COMPRESS_LZSS_N];
-    memset(ring, 0x20, COMPRESS_LZSS_N);
+    memset(decompress_ring, 0x20, COMPRESS_LZSS_N);
 
     uint32_t r = COMPRESS_LZSS_N - COMPRESS_LZSS_F;
 
@@ -138,7 +150,7 @@ int decompress_data(const uint8_t* src, uint32_t src_size, uint8_t* dst, uint32_
         uint8_t flags = src[si++];
         for (int bit = 0; bit < 8 && si < src_size; bit++) {
             if (flags & (1 << bit)) {
-                if (si + 1 >= src_size) break;
+                if (si + 1 >= src_size) return ERR_INVALID;
 
                 uint8_t b1 = src[si++];
                 uint8_t b2 = src[si++];
@@ -146,17 +158,19 @@ int decompress_data(const uint8_t* src, uint32_t src_size, uint8_t* dst, uint32_
                 uint32_t len = ((b2 >> 4) & 0x0F) + COMPRESS_LZSS_THRESHOLD;
 
                 for (uint32_t k = 0; k < len; k++) {
-                    uint8_t c = ring[(pos + k) & (COMPRESS_LZSS_N - 1)];
+                    if (di >= dst_capacity) return ERR_OVERFLOW;
+                    uint8_t c = decompress_ring[(pos + k) & (COMPRESS_LZSS_N - 1)];
                     dst[di++] = c;
-                    ring[r] = c;
+                    decompress_ring[r] = c;
                     r = (r + 1) & (COMPRESS_LZSS_N - 1);
                 }
             } else {
-                if (si >= src_size) break;
+                if (si >= src_size) return ERR_INVALID;
 
                 uint8_t c = src[si++];
+                if (di >= dst_capacity) return ERR_OVERFLOW;
                 dst[di++] = c;
-                ring[r] = c;
+                decompress_ring[r] = c;
                 r = (r + 1) & (COMPRESS_LZSS_N - 1);
             }
         }

@@ -4,6 +4,8 @@
 
 static ata_device_t devices[2];
 
+#define ATA_READ_RETRIES 3
+
 static void outb(uint16_t port, uint8_t val) {
     asm volatile("outb %0, %1" : : "a"(val), "Nd"(port));
 }
@@ -172,32 +174,47 @@ int ata_read_sectors(uint32_t lba, uint8_t count, uint8_t* buffer) {
 
     uint16_t io = dev->base_port;
 
-    if (ata_wait_ready(io) != 0) return -1;
-
-    outb(dev->ctrl_port, 0x02);
-    ata_delay(io);
-
-    ata_select_drive(io, dev->slave);
-    ata_delay(io);
-
-    outb(io + ATA_REG_SECCOUNT, count);
-    outb(io + ATA_REG_LBA_LOW, lba & 0xFF);
-    outb(io + ATA_REG_LBA_MID, (lba >> 8) & 0xFF);
-    outb(io + ATA_REG_LBA_HIGH, (lba >> 16) & 0xFF);
-    outb(io + ATA_REG_DRIVE, 0xE0 | (dev->slave << 4) | ((lba >> 24) & 0x0F));
-    outb(io + ATA_REG_COMMAND, ATA_CMD_READ);
-
-    for (uint8_t s = 0; s < count; s++) {
-        if (ata_wait_drq(io) != 0) return -1;
-
-        for (int i = 0; i < 256; i++) {
-            uint16_t data = inw(io + ATA_REG_DATA);
-            buffer[s * 512 + i * 2] = data & 0xFF;
-            buffer[s * 512 + i * 2 + 1] = (data >> 8) & 0xFF;
+    for (int attempt = 0; attempt < ATA_READ_RETRIES; attempt++) {
+        if (ata_wait_ready(io) != 0) {
+            LOG_WARN("ATA", "Disco nao ficou pronto para leitura");
+            ata_soft_reset(dev->ctrl_port);
+            continue;
         }
+
+        outb(dev->ctrl_port, 0x02);
+        ata_delay(io);
+
+        ata_select_drive(io, dev->slave);
+        ata_delay(io);
+
+        outb(io + ATA_REG_SECCOUNT, count);
+        outb(io + ATA_REG_LBA_LOW, lba & 0xFF);
+        outb(io + ATA_REG_LBA_MID, (lba >> 8) & 0xFF);
+        outb(io + ATA_REG_LBA_HIGH, (lba >> 16) & 0xFF);
+        outb(io + ATA_REG_DRIVE, 0xE0 | (dev->slave << 4) | ((lba >> 24) & 0x0F));
+        outb(io + ATA_REG_COMMAND, ATA_CMD_READ);
+
+        int failed = 0;
+        for (uint8_t s = 0; s < count; s++) {
+            if (ata_wait_drq(io) != 0) {
+                failed = 1;
+                break;
+            }
+
+            for (int i = 0; i < 256; i++) {
+                uint16_t data = inw(io + ATA_REG_DATA);
+                buffer[s * 512 + i * 2] = data & 0xFF;
+                buffer[s * 512 + i * 2 + 1] = (data >> 8) & 0xFF;
+            }
+        }
+
+        if (!failed) return 0;
+        LOG_WARN("ATA", "Falha durante leitura; tentando novamente");
+        ata_soft_reset(dev->ctrl_port);
     }
 
-    return 0;
+    LOG_ERROR("ATA", "Leitura ATA falhou apos tentativas");
+    return -1;
 }
 
 int ata_write_sectors(uint32_t lba, uint8_t count, const uint8_t* buffer) {

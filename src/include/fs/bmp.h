@@ -40,6 +40,8 @@ typedef struct {
     uint8_t* pixel_data;
     uint32_t width;
     uint32_t height;
+    uint32_t pixel_data_size;
+    uint32_t color_table_entries;
     uint16_t bpp;
     uint8_t  initialized;
 } bmp_image_t;

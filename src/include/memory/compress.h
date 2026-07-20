@@ -17,8 +17,10 @@ typedef struct {
 } compress_stats_t;
 
 void compress_init(void);
-int  compress_data(const uint8_t* src, uint32_t src_size, uint8_t* dst, uint32_t* dst_size);
-int  decompress_data(const uint8_t* src, uint32_t src_size, uint8_t* dst, uint32_t* dst_size);
+int  compress_data(const uint8_t* src, uint32_t src_size, uint8_t* dst,
+                   uint32_t dst_capacity, uint32_t* dst_size);
+int  decompress_data(const uint8_t* src, uint32_t src_size, uint8_t* dst,
+                     uint32_t dst_capacity, uint32_t* dst_size);
 void compress_enable(void);
 void compress_disable(void);
 uint8_t compress_is_enabled(void);

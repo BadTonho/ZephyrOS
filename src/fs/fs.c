@@ -2,7 +2,8 @@
 #include "fs/fat12.h"
 #include "fs/fat32.h"
 #include "core/video.h"
-#include "core/panic.h"
+#include "core/log.h"
+#include "core/errors.h"
 
 static void memcpy(void* dst, const void* src, uint32_t size) {
     uint8_t* d = (uint8_t*)dst;
@@ -14,22 +15,27 @@ static void memcpy(void* dst, const void* src, uint32_t size) {
 
 static uint8_t current_fs_type = FS_TYPE_NONE;
 
-void fs_init(void) {
-    fat12_init();
-    if (fat12_get_fs()->initialized) {
+int fs_init(void) {
+    current_fs_type = FS_TYPE_NONE;
+
+    int fat12_result = fat12_init();
+    if (fat12_result == OK && fat12_get_fs()->initialized) {
         current_fs_type = FS_TYPE_FAT12;
         video_print("Sistema de arquivos: FAT12\n", 0x0A);
-        return;
+        return OK;
     }
 
-    fat32_init();
-    if (fat32_get_fs()->initialized) {
+    int fat32_result = fat32_init();
+    if (fat32_result == OK && fat32_get_fs()->initialized) {
         current_fs_type = FS_TYPE_FAT32;
         video_print("Sistema de arquivos: FAT32\n", 0x0A);
-        return;
+        return OK;
     }
 
+    LOG_WARN("FS", "Nenhum sistema de arquivos montado");
     video_print("Nenhum sistema de arquivos encontrado!\n", 0x0C);
+    if (fat12_result == ERR_DISK || fat32_result == ERR_DISK) return ERR_DISK;
+    return ERR_NOT_FOUND;
 }
 
 int fs_read_file(const char* filename, uint8_t* buffer, uint32_t max_size) {

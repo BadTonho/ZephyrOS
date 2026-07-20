@@ -46,7 +46,7 @@ typedef struct {
 } editor_t;
 
 void editor_init(void);
-void editor_open(const char* filename);
+int editor_open(const char* filename);
 void editor_new(void);
 void editor_run(void);
 void editor_run_file(const char* filename);

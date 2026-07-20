@@ -1,6 +1,8 @@
 #include "fs/bmp.h"
 #include "core/memory.h"
 #include "core/video.h"
+#include "core/errors.h"
+#include "core/log.h"
 
 static void memset(void* dst, uint8_t val, uint32_t size) {
     uint8_t* d = (uint8_t*)dst;
@@ -33,12 +35,14 @@ void bmp_init(void) {
 }
 
 int bmp_load(const uint8_t* raw_data, uint32_t size, bmp_image_t* out) {
-    if (!raw_data || !out || size < 54) return -1;
+    if (!raw_data || !out) return ERR_NULL;
+    if (size < 54) return ERR_INVALID;
 
     memset(out, 0, sizeof(bmp_image_t));
 
     if (raw_data[0] != 'B' || raw_data[1] != 'M') {
-        return -1;
+        LOG_ERROR("BMP", "Assinatura BMP invalida");
+        return ERR_INVALID;
     }
 
     out->file_header.signature[0] = raw_data[0];
@@ -60,32 +64,60 @@ int bmp_load(const uint8_t* raw_data, uint32_t size, bmp_image_t* out) {
     out->info_header.colors_used = read_u32(raw_data + 46);
     out->info_header.colors_important = read_u32(raw_data + 50);
 
+    if (out->info_header.header_size < 40 || out->info_header.planes != 1 ||
+        out->info_header.width <= 0 || out->info_header.height == 0) {
+        return ERR_INVALID;
+    }
+
     out->width = (uint32_t)out->info_header.width;
-    out->height = out->info_header.height > 0 ? (uint32_t)out->info_header.height : (uint32_t)(-out->info_header.height);
+    out->height = out->info_header.height > 0 ?
+        (uint32_t)out->info_header.height : (uint32_t)(-out->info_header.height);
     out->bpp = out->info_header.bits_per_pixel;
 
-    if (out->info_header.compression != 0) return -1;
-    if (out->bpp != 24 && out->bpp != 8 && out->bpp != 4 && out->bpp != 1) return -1;
+    if (out->info_header.compression != 0) return ERR_INVALID;
+    if (out->bpp != 24 && out->bpp != 8 && out->bpp != 4 && out->bpp != 1) return ERR_INVALID;
 
     uint32_t color_table_size = 0;
     if (out->bpp <= 8) {
-        color_table_size = (1 << out->bpp) * 4;
+        out->color_table_entries = out->info_header.colors_used;
+        if (out->color_table_entries == 0) out->color_table_entries = 1u << out->bpp;
+        if (out->color_table_entries > (1u << out->bpp) ||
+            out->color_table_entries > 0x3FFFFFFF) return ERR_INVALID;
+        color_table_size = out->color_table_entries * 4;
+        if (54 + color_table_size > size) return ERR_INVALID;
         out->color_table = (bmp_color_table_t*)kmalloc(color_table_size);
-        if (!out->color_table) return -1;
+        if (!out->color_table) return ERR_MEM;
         memcpy(out->color_table, raw_data + 54, color_table_size);
     }
 
     uint32_t data_offset = out->file_header.data_offset;
+    if (data_offset < 54 + color_table_size || data_offset > size) {
+        bmp_free(out);
+        return ERR_INVALID;
+    }
+    if (out->width > (0xFFFFFFFFu - 31) / out->bpp) {
+        bmp_free(out);
+        return ERR_OVERFLOW;
+    }
     uint32_t row_size = ((out->bpp * out->width + 31) / 32) * 4;
+    if (row_size == 0 || out->height > 0xFFFFFFFFu / row_size) {
+        bmp_free(out);
+        return ERR_OVERFLOW;
+    }
     uint32_t pixel_data_size = row_size * out->height;
+    if (pixel_data_size > size - data_offset) {
+        bmp_free(out);
+        return ERR_INVALID;
+    }
 
     out->pixel_data = (uint8_t*)kmalloc(pixel_data_size);
     if (!out->pixel_data) {
-        if (out->color_table) kfree(out->color_table);
-        return -1;
+        bmp_free(out);
+        return ERR_MEM;
     }
 
     memcpy(out->pixel_data, raw_data + data_offset, pixel_data_size);
+    out->pixel_data_size = pixel_data_size;
 
     out->initialized = 1;
     return 0;
@@ -94,6 +126,8 @@ int bmp_load(const uint8_t* raw_data, uint32_t size, bmp_image_t* out) {
 static vesa_color_t bmp_get_pixel(bmp_image_t* img, uint32_t x, uint32_t y) {
     vesa_color_t color;
     color.raw = 0;
+
+    if (!img || !img->pixel_data || x >= img->width || y >= img->height) return color;
 
     uint32_t row_size = ((img->bpp * img->width + 31) / 32) * 4;
 
@@ -106,6 +140,7 @@ static vesa_color_t bmp_get_pixel(bmp_image_t* img, uint32_t x, uint32_t y) {
 
     if (img->bpp == 24) {
         uint32_t offset = actual_y * row_size + x * 3;
+        if (offset > img->pixel_data_size || img->pixel_data_size - offset < 3) return color;
         color.channels.blue = img->pixel_data[offset];
         color.channels.green = img->pixel_data[offset + 1];
         color.channels.red = img->pixel_data[offset + 2];
@@ -113,8 +148,9 @@ static vesa_color_t bmp_get_pixel(bmp_image_t* img, uint32_t x, uint32_t y) {
     }
     else if (img->bpp == 8) {
         uint32_t offset = actual_y * row_size + x;
+        if (offset >= img->pixel_data_size) return color;
         uint8_t idx = img->pixel_data[offset];
-        if (img->color_table) {
+        if (img->color_table && idx < img->color_table_entries) {
             color.channels.blue = img->color_table[idx].blue;
             color.channels.green = img->color_table[idx].green;
             color.channels.red = img->color_table[idx].red;
@@ -123,6 +159,7 @@ static vesa_color_t bmp_get_pixel(bmp_image_t* img, uint32_t x, uint32_t y) {
     }
     else if (img->bpp == 4) {
         uint32_t offset = actual_y * row_size + x / 2;
+        if (offset >= img->pixel_data_size) return color;
         uint8_t byte = img->pixel_data[offset];
         uint8_t idx;
         if (x & 1) {
@@ -130,7 +167,7 @@ static vesa_color_t bmp_get_pixel(bmp_image_t* img, uint32_t x, uint32_t y) {
         } else {
             idx = (byte >> 4) & 0x0F;
         }
-        if (img->color_table) {
+        if (img->color_table && idx < img->color_table_entries) {
             color.channels.blue = img->color_table[idx].blue;
             color.channels.green = img->color_table[idx].green;
             color.channels.red = img->color_table[idx].red;
@@ -139,10 +176,11 @@ static vesa_color_t bmp_get_pixel(bmp_image_t* img, uint32_t x, uint32_t y) {
     }
     else if (img->bpp == 1) {
         uint32_t offset = actual_y * row_size + x / 8;
+        if (offset >= img->pixel_data_size) return color;
         uint8_t byte = img->pixel_data[offset];
         uint8_t bit = 7 - (x % 8);
         uint8_t idx = (byte >> bit) & 1;
-        if (img->color_table) {
+        if (img->color_table && idx < img->color_table_entries) {
             color.channels.blue = img->color_table[idx].blue;
             color.channels.green = img->color_table[idx].green;
             color.channels.red = img->color_table[idx].red;
@@ -191,4 +229,6 @@ void bmp_free(bmp_image_t* out) {
         out->color_table = 0;
     }
     out->initialized = 0;
+    out->pixel_data_size = 0;
+    out->color_table_entries = 0;
 }

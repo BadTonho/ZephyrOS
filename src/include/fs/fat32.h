@@ -65,10 +65,11 @@ typedef struct {
     uint32_t* root_cache;
     uint32_t root_cluster;
     uint32_t cluster_size;
+    uint32_t total_clusters;
     int initialized;
 } fat32_fs_t;
 
-void fat32_init(void);
+int  fat32_init(void);
 int  fat32_read_file(const char* filename, uint8_t* buffer, uint32_t max_size);
 int  fat32_write_file(const char* filename, const uint8_t* data, uint32_t size);
 int  fat32_delete_file(const char* filename);

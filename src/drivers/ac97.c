@@ -3,6 +3,7 @@
 #include "core/memory.h"
 #include "drivers/idt.h"
 #include "core/video.h"
+#include "core/log.h"
 
 static ac97_device_t ac97_dev;
 static ac97_stream_t output_stream;
@@ -124,8 +125,14 @@ void ac97_init(void) {
 }
 
 void ac97_play(const uint8_t* data, uint32_t size, uint32_t sample_rate, uint8_t channels, uint8_t bits) {
-    if (!ac97_dev.initialized) return;
-    if (!data || size == 0) return;
+    if (!ac97_dev.initialized) {
+        LOG_WARN("AC97", "Reproducao solicitada sem dispositivo inicializado");
+        return;
+    }
+    if (!data || size == 0) {
+        LOG_ERROR("AC97", "Buffer de audio invalido");
+        return;
+    }
 
     ac97_stop();
 
@@ -137,7 +144,11 @@ void ac97_play(const uint8_t* data, uint32_t size, uint32_t sample_rate, uint8_t
     if (buf_size > AC97_BUF_SIZE) buf_size = AC97_BUF_SIZE;
 
     output_stream.buffer = (uint32_t*)kmalloc(buf_size);
-    if (!output_stream.buffer) return;
+    if (!output_stream.buffer) {
+        LOG_ERROR("AC97", "Falha ao alocar buffer de audio");
+        ac97_playing = 0;
+        return;
+    }
 
     for (uint32_t i = 0; i < buf_size / 2; i++) {
         if (i * 2 + 1 < size) {

@@ -498,3 +498,37 @@ Após implementar as correções, verificar:
 | `ac97.c` | 1 (C12) | Baixa |
 | `bmp.c` | 1 (C18) | Baixa |
 | `speaker.c` | 1 (C20) | Baixa |
+
+---
+
+## Status da implementacao - 2026-07-19
+
+### Corrigido nesta fase
+
+- C2/C3: Settings nao faz mais polling direto do teclado. A IRQ apenas enfileira scancodes e o loop principal despacha os eventos.
+- C1: loops terminais de reboot, shutdown e panic agora usam `hlt`; o editor de icones deixou de bloquear o sistema e virou uma maquina de estados.
+- C4/C13: `process_create()` e `thread_create()` fazem validacao e rollback completo quando uma alocacao falha.
+- C7/C8/C9/C10: editor verifica alocacoes, limites de linha e limite de caracteres; operacoes de merge e quebra de linha nao escrevem fora do buffer.
+- C11: `panic()` aceita mensagem nula sem causar uma segunda falha.
+- C12: AC97 registra falha de alocacao e mantem a reproducao desativada.
+- C14: FAT32 copia a entrada encontrada para uma estrutura de saida antes de liberar o buffer do diretorio.
+- C15: cadeias FAT12/FAT32 possuem limite de passos para evitar loops em discos corrompidos.
+- C16: caminhos construidos pelo File Manager sao limitados a `FM_MAX_PATH`.
+- C17/C21: compressao e descompressao recebem capacidade de destino e rejeitam overflow ou stream truncado.
+- C18: BMP valida dimensoes, tabela de cores, offset e tamanho dos pixels antes de copiar ou acessar dados.
+- Falhas ATA agora possuem tentativas limitadas e retornam erro ao filesystem sem provocar panic.
+
+### Correcoes de contrato
+
+- `fs_init()`, `fat12_init()` e `fat32_init()` retornam codigo de erro.
+- Falhas esperadas de disco, memoria e formato deixam o modulo inativo e permitem que o kernel continue.
+- `panic()` permanece reservado para invariantes de paging, IDT, GDT e memoria essencial.
+
+### Itens ainda classificados como terminais intencionais
+
+- Reboot, shutdown e `panic_halt()` interrompem deliberadamente a execucao. Eles nao sao tratados como falhas recuperaveis.
+- O loop de desenho de linhas VESA termina pela condicao geometrica e nao e um loop de espera.
+
+### Observacao sobre a auditoria original
+
+As contagens originais de C5, C6 e C12 misturavam pontos ja protegidos com pontos realmente vulneraveis. A correcao foi aplicada aos caminhos de inicializacao que podiam chamar `panic()` e aos buffers sem limite, mantendo os checks existentes que ja eram validos.

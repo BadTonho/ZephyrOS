@@ -5,6 +5,8 @@
 #include "core/memory.h"
 #include "ui/taskbar.h"
 #include "ui/icons.h"
+#include "core/errors.h"
+#include "core/log.h"
 
 static fm_state_t state;
 static char input_buffer[32];
@@ -47,6 +49,25 @@ static void str_copy(char* dst, const char* src) {
     int i = 0;
     while (src[i]) { dst[i] = src[i]; i++; }
     dst[i] = '\0';
+}
+
+static int fm_join_path(char* dst, const char* base, const char* name) {
+    if (!dst || !base || !name) return ERR_NULL;
+
+    int base_len = str_len(base);
+    int name_len = str_len(name);
+    int separator = (base_len > 0) ? 1 : 0;
+    if (base_len + separator + name_len >= FM_MAX_PATH) {
+        LOG_ERROR("FM", "Caminho excede o limite do File Manager");
+        return ERR_OVERFLOW;
+    }
+
+    int pos = 0;
+    for (int i = 0; i < base_len; i++) dst[pos++] = base[i];
+    if (separator) dst[pos++] = '/';
+    for (int i = 0; i < name_len; i++) dst[pos++] = name[i];
+    dst[pos] = '\0';
+    return OK;
 }
 
 static int str_equal(const char* a, const char* b) {
@@ -371,18 +392,10 @@ static void fm_draw_view_file(void) {
     }
 
     char file_path[FM_MAX_PATH];
-    if (state.current_path[0] == '\0') {
-        str_copy(file_path, f->name);
-    } else {
-        int pi = 0;
-        for (int i = 0; state.current_path[i]; i++) {
-            file_path[pi++] = state.current_path[i];
-        }
-        file_path[pi++] = '/';
-        for (int i = 0; f->name[i]; i++) {
-            file_path[pi++] = f->name[i];
-        }
-        file_path[pi] = '\0';
+    if (fm_join_path(file_path, state.current_path, f->name) != OK) {
+        video_print_at(2, 2, "Erro: caminho muito longo.", 0x0C);
+        kfree(buffer);
+        return;
     }
 
     int bytes = fs_read_file_at(file_path, buffer, 4095);
@@ -618,19 +631,11 @@ void fm_handle_key(uint8_t scancode) {
                         content = (uint8_t*)kmalloc(state.files[state.selected].size);
                         if (content) {
                             char file_path[FM_MAX_PATH];
-                            if (state.current_path[0] == '\0') {
-                                str_copy(file_path, old_name);
-                            } else {
-                                int pi = 0;
-                                for (int i = 0; state.current_path[i]; i++) file_path[pi++] = state.current_path[i];
-                                file_path[pi++] = '/';
-                                for (int i = 0; old_name[i]; i++) file_path[pi++] = old_name[i];
-                                file_path[pi] = '\0';
+                            if (fm_join_path(file_path, state.current_path, old_name) == OK) {
+                                int bytes = fs_read_file_at(file_path, content, state.files[state.selected].size);
+                                if (bytes > 0) size = bytes;
                             }
-                            int bytes = fs_read_file_at(file_path, content, state.files[state.selected].size);
-                            if (bytes > 0) {
-                                size = bytes;
-                            } else {
+                            if (size == 0) {
                                 kfree(content);
                                 content = 0;
                             }
@@ -773,14 +778,9 @@ void fm_handle_key(uint8_t scancode) {
             fm_file_entry_t* f = &state.files[state.selected];
             if (f->is_dir) {
                 char new_path[FM_MAX_PATH];
-                if (state.current_path[0] == '\0') {
-                    str_copy(new_path, f->name);
-                } else {
-                    int pi = 0;
-                    for (int i = 0; state.current_path[i]; i++) new_path[pi++] = state.current_path[i];
-                    new_path[pi++] = '/';
-                    for (int i = 0; f->name[i]; i++) new_path[pi++] = f->name[i];
-                    new_path[pi] = '\0';
+                if (fm_join_path(new_path, state.current_path, f->name) != OK) {
+                    video_print_at(2, SCREEN_ROWS - 2, "Erro: caminho muito longo.", 0x0C);
+                    return;
                 }
                 fm_navigate_to(new_path);
             } else {

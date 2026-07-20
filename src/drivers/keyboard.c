@@ -1,8 +1,15 @@
 #include "core/keyboard.h"
 #include "drivers/idt.h"
-#include "core/video.h"
+#include "core/log.h"
 
 static keyboard_callback_t callback = 0;
+
+#define KEYBOARD_QUEUE_SIZE 64
+
+static volatile uint8_t event_queue[KEYBOARD_QUEUE_SIZE];
+static volatile uint8_t queue_head;
+static volatile uint8_t queue_tail;
+static volatile uint32_t dropped_events;
 
 static uint8_t inb(uint16_t port) {
     uint8_t result;
@@ -30,6 +37,9 @@ char scancode_to_ascii(uint8_t scancode) {
 }
 
 void keyboard_init(void) {
+    queue_head = 0;
+    queue_tail = 0;
+    dropped_events = 0;
     register_interrupt_handler(33, keyboard_handler);
 }
 
@@ -41,8 +51,29 @@ void keyboard_handler(registers_t* regs) {
         return;
     }
 
-    if (callback) {
-        callback(scancode);
+    uint8_t next_head = (uint8_t)((queue_head + 1) % KEYBOARD_QUEUE_SIZE);
+    if (next_head == queue_tail) {
+        dropped_events++;
+        return;
+    }
+
+    event_queue[queue_head] = scancode;
+    queue_head = next_head;
+}
+
+void keyboard_process_events(void) {
+    if (dropped_events > 0) {
+        dropped_events = 0;
+        LOG_WARN("KBD", "Fila de teclado cheia; eventos descartados");
+    }
+
+    while (queue_tail != queue_head) {
+        uint8_t scancode = event_queue[queue_tail];
+        queue_tail = (uint8_t)((queue_tail + 1) % KEYBOARD_QUEUE_SIZE);
+
+        if (callback) {
+            callback(scancode);
+        }
     }
 }
 

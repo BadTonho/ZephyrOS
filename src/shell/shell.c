@@ -282,14 +282,13 @@ static void cmd_reboot(void) {
     video_print("Reiniciando...\n", 0x0E);
     asm volatile("cli");
     asm volatile("outb %0, %1" : : "a"((uint8_t)0xFE), "Nd"((uint16_t)0x64));
-    while (1) {}
+    for (;;) asm volatile("hlt");
 }
 
 static void cmd_shutdown(void) {
     video_print("Desligando...\n", 0x0E);
     asm volatile("cli");
-    asm volatile("hlt");
-    while (1) {}
+    for (;;) asm volatile("hlt");
 }
 
 void shell_init(void) {

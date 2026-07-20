@@ -28,7 +28,7 @@ typedef struct {
     char     label[12];
 } fs_info_t;
 
-void     fs_init(void);
+int      fs_init(void);
 int      fs_read_file(const char* filename, uint8_t* buffer, uint32_t max_size);
 int      fs_write_file(const char* filename, const uint8_t* data, uint32_t size);
 int      fs_delete_file(const char* filename);
