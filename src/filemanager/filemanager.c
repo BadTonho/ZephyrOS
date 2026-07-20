@@ -732,8 +732,10 @@ void fm_handle_key(uint8_t scancode) {
             if (input_pos > 0) {
                 input_pos--;
                 input_buffer[input_pos] = '\0';
-                int cx = 12 + input_pos;
-                if (rename_mode) cx = 27 + input_pos;
+                int cx = 12 + input_pos; // Default fallback
+                if (create_dir_mode) cx = 24 + input_pos;
+                else if (create_file_mode) cx = 26 + input_pos;
+                else if (rename_mode) cx = 27 + input_pos;
                 video_put_char_at(' ', 0x17, cx, 11);
             }
             return;
@@ -742,8 +744,10 @@ void fm_handle_key(uint8_t scancode) {
         if (c && input_pos < 31) {
             input_buffer[input_pos++] = c;
             input_buffer[input_pos] = '\0';
-            int cx = 12 + input_pos - 1;
-            if (rename_mode) cx = 27 + input_pos - 1;
+            int cx = 12 + input_pos - 1; // Default fallback
+            if (create_dir_mode) cx = 24 + input_pos - 1;
+            else if (create_file_mode) cx = 26 + input_pos - 1;
+            else if (rename_mode) cx = 27 + input_pos - 1;
             video_put_char_at(c, 0x17, cx, 11);
         }
         return;

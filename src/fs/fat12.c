@@ -1150,6 +1150,19 @@ int fat12_create_dir_entry(uint16_t dir_cluster, const char* name, uint8_t attri
     uint16_t new_cluster = fat12_find_free_cluster();
     if (!new_cluster) return -1;
 
+    fat12_set_cluster(new_cluster, FAT12_CLUSTER_END);
+
+    uint32_t cluster_size_1 = fs.bpb.sectors_per_cluster * fs.bpb.bytes_per_sector;
+    uint8_t* zero_buf_1 = (uint8_t*)kmalloc(cluster_size_1);
+    if (zero_buf_1) {
+        kmemset(zero_buf_1, 0, cluster_size_1);
+        uint32_t data_lba = fs.data_start + (new_cluster - 2) * fs.bpb.sectors_per_cluster;
+        for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {
+            ata_write_sectors(data_lba + s, 1, zero_buf_1 + s * fs.bpb.bytes_per_sector);
+        }
+        kfree(zero_buf_1);
+    }
+
     if (dir_cluster == 0) {
         for (uint32_t idx = 0; idx < fs.bpb.root_entries; idx++) {
             if (fs.root_dir[idx].name[0] == 0x00 || fs.root_dir[idx].name[0] == 0xE5) {
@@ -1157,21 +1170,6 @@ int fat12_create_dir_entry(uint16_t dir_cluster, const char* name, uint8_t attri
                 kmemcpy(fs.root_dir[idx].name, fat12_name, 11);
                 fs.root_dir[idx].attributes = attributes;
                 fs.root_dir[idx].cluster_low = new_cluster;
-
-
-                fat12_set_cluster(new_cluster, FAT12_CLUSTER_END);
-                
-                uint32_t cluster_size_1 = fs.bpb.sectors_per_cluster * fs.bpb.bytes_per_sector;
-                uint8_t* zero_buf_1 = (uint8_t*)kmalloc(cluster_size_1);
-                if (zero_buf_1) {
-                    kmemset(zero_buf_1, 0, cluster_size_1);
-                    uint32_t data_lba = fs.data_start + (new_cluster - 2) * fs.bpb.sectors_per_cluster;
-                    for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {
-                        ata_write_sectors(data_lba + s, 1, zero_buf_1 + s * fs.bpb.bytes_per_sector);
-                    }
-                    kfree(zero_buf_1);
-                }
-
 
                 for (int x = 0; x < fs.bpb.sectors_per_fat; x++) {
                     if (ata_write_sectors(fs.fat_start + x, 1, (uint8_t*)fs.fat + x * 512) != 0) return -1;
@@ -1239,8 +1237,6 @@ int fat12_create_dir_entry(uint16_t dir_cluster, const char* name, uint8_t attri
         cluster_buf = 0;
         return -1;
     }
-
-    fat12_set_cluster(new_cluster, FAT12_CLUSTER_END);
 
     for (int x = 0; x < fs.bpb.sectors_per_fat; x++) {
         if (ata_write_sectors(fs.fat_start + x, 1, (uint8_t*)fs.fat + x * 512) != 0) {
