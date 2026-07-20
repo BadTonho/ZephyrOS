@@ -117,10 +117,6 @@ int desktop_handle_key(uint8_t scancode) {
 
     if (scancode & 0x80) return 0;
 
-    if (scancode == 0x01) {
-        return -1;
-    }
-
     if (scancode == 0x48) {
         if (selected_icon >= 5) {
             selected_icon -= 5;
