@@ -129,12 +129,14 @@ static void cmd_cat(const char* filename) {
         video_print(filename, 0x0C);
         video_print("\n", 0x0C);
         kfree(buffer);
+        buffer = 0;
         return;
     }
 
     if (bytes == 0) {
         video_print("(arquivo vazio)\n", 0x08);
         kfree(buffer);
+        buffer = 0;
         return;
     }
 
@@ -142,6 +144,7 @@ static void cmd_cat(const char* filename) {
     video_print((char*)buffer, 0x07);
     video_print("\n", 0x07);
     kfree(buffer);
+    buffer = 0;
 }
 
 static void cmd_echo(const char* text) {

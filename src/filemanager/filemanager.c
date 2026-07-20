@@ -396,6 +396,7 @@ static void fm_draw_view_file(void) {
     if (fm_join_path(file_path, state.current_path, f->name) != OK) {
         video_print_at(2, 2, "Erro: caminho muito longo.", 0x0C);
         kfree(buffer);
+        buffer = 0;
         return;
     }
 
@@ -405,6 +406,7 @@ static void fm_draw_view_file(void) {
         video_print_at(22, 2, f->name, 0x0C);
         video_print_at(2, 4, "Pressione Esc para voltar.", 0x08);
         kfree(buffer);
+        buffer = 0;
         return;
     }
 
@@ -412,6 +414,7 @@ static void fm_draw_view_file(void) {
         video_print_at(2, 2, "(arquivo vazio)", 0x08);
         video_print_at(2, 4, "Pressione Esc para voltar.", 0x08);
         kfree(buffer);
+        buffer = 0;
         return;
     }
 
@@ -441,6 +444,7 @@ static void fm_draw_view_file(void) {
     video_print_at(2, SCREEN_ROWS - 2, "Pressione Esc para voltar", 0x70);
 
     kfree(buffer);
+    buffer = 0;
 }
 
 static void fm_draw_all(void) {
@@ -647,6 +651,7 @@ void fm_handle_key(uint8_t scancode) {
                     if (content && size > 0) {
                         fs_write_file_in_dir(state.current_path, input_buffer, content, size);
                         kfree(content);
+                        content = 0;
                     } else {
                         uint8_t empty[1] = {0};
                         fs_write_file_in_dir(state.current_path, input_buffer, empty, 0);

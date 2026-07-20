@@ -29,6 +29,8 @@ thread_t* thread_create(const char* name, void (*entry)(void));
 void thread_destroy(thread_t* thread);
 void thread_yield(void);
 void thread_block(uint32_t ticks);
+void thread_block_indefinite(void);
+void thread_unblock(thread_t* thread);
 thread_t* thread_get_current(void);
 thread_t* thread_get_by_id(uint32_t id);
 uint32_t thread_get_count(void);

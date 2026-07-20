@@ -103,6 +103,7 @@ void thread_destroy(thread_t* thread) {
     thread->state = THREAD_UNUSED;
     if (thread->stack) {
         kfree(thread->stack);
+        thread->stack = 0;
     }
     if (thread_count > 0) thread_count--;
     thread->stack = 0;
@@ -140,6 +141,20 @@ void thread_block(uint32_t ticks) {
     current_thread->state = THREAD_BLOCKED;
     current_thread->wait_ticks = ticks;
     thread_yield();
+}
+
+void thread_block_indefinite(void) {
+    if (!current_thread) return;
+    current_thread->state = THREAD_BLOCKED;
+    current_thread->wait_ticks = 0;
+    thread_yield();
+}
+
+void thread_unblock(thread_t* thread) {
+    if (thread && thread->state == THREAD_BLOCKED) {
+        thread->state = THREAD_RUNNING;
+        thread->wait_ticks = 0;
+    }
 }
 
 thread_t* thread_get_current(void) {

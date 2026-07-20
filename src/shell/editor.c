@@ -383,6 +383,7 @@ int editor_open(const char* filename) {
     if (bytes < 0) {
         LOG_ERROR("EDITOR", "Falha ao ler arquivo");
         kfree(buffer);
+        buffer = 0;
         return ERR_DISK;
     }
 
@@ -391,12 +392,14 @@ int editor_open(const char* filename) {
     if (!editor.lines[0]) {
         LOG_ERROR("EDITOR", "Falha ao alocar linha inicial");
         kfree(buffer);
+        buffer = 0;
         editor.line_count = 0;
         return ERR_MEM;
     }
 
     if (bytes == 0) {
         kfree(buffer);
+        buffer = 0;
         return OK;
     }
 
@@ -432,6 +435,7 @@ int editor_open(const char* filename) {
                 LOG_ERROR("EDITOR", "Falha ao alocar linha do arquivo");
                 editor_free_lines();
                 kfree(buffer);
+                buffer = 0;
                 return ERR_MEM;
             }
         } else if (buffer[i] == '\r') {
@@ -448,6 +452,7 @@ int editor_open(const char* filename) {
     editor.line_count = line + 1;
 
     kfree(buffer);
+    buffer = 0;
 
     if (truncated) {
         LOG_WARN("EDITOR", "Arquivo excede os limites; conteudo truncado");
@@ -515,6 +520,7 @@ static void editor_save(void) {
 
     int result = fs_write_file(editor.filename, buffer, pos);
     kfree(buffer);
+    buffer = 0;
 
     if (result >= 0) {
         editor.modified = 0;
@@ -693,6 +699,7 @@ static void editor_backspace(void) {
         editor.lines[editor.cursor_y - 1][prev_len + copy_len] = '\0';
 
         kfree(editor.lines[editor.cursor_y]);
+        editor.lines[editor.cursor_y] = 0;
         for (uint32_t i = editor.cursor_y; i < editor.line_count - 1; i++) {
             editor.lines[i] = editor.lines[i + 1];
         }
@@ -725,6 +732,7 @@ static void editor_delete(void) {
         editor.lines[editor.cursor_y][cur_len + copy_len] = '\0';
 
         kfree(editor.lines[editor.cursor_y + 1]);
+        editor.lines[editor.cursor_y + 1] = 0;
         for (uint32_t i = editor.cursor_y + 1; i < editor.line_count - 1; i++) {
             editor.lines[i] = editor.lines[i + 1];
         }

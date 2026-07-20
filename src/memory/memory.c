@@ -168,10 +168,15 @@ void pmm_free_pages(void* addr, uint32_t count) {
     mem_info.free_memory += count * PAGE_SIZE;
 }
 
+#define HEAP_MAGIC         0x48454150
+#define HEAP_MAGIC_ALIGNED 0x414C4947
+
 typedef struct heap_block {
+    uint32_t magic;
     uint32_t size;
     int free;
     struct heap_block* next;
+    struct heap_block* prev;
 } heap_block_t;
 
 static heap_block_t* heap_base = 0;
@@ -179,9 +184,11 @@ static heap_block_t* heap_base = 0;
 static void* kmalloc_internal(uint32_t size) {
     if (!heap_base) {
         heap_base = (heap_block_t*)HEAP_START;
+        heap_base->magic = HEAP_MAGIC;
         heap_base->size = HEAP_SIZE - sizeof(heap_block_t);
         heap_base->free = 1;
         heap_base->next = 0;
+        heap_base->prev = 0;
     }
 
     heap_block_t* curr = heap_base;
@@ -189,9 +196,14 @@ static void* kmalloc_internal(uint32_t size) {
         if (curr->free && curr->size >= size) {
             if (curr->size > size + sizeof(heap_block_t) + 16) {
                 heap_block_t* new_block = (heap_block_t*)((uint8_t*)curr + sizeof(heap_block_t) + size);
+                new_block->magic = HEAP_MAGIC;
                 new_block->size = curr->size - size - sizeof(heap_block_t);
                 new_block->free = 1;
                 new_block->next = curr->next;
+                new_block->prev = curr;
+                if (new_block->next) {
+                    new_block->next->prev = new_block;
+                }
                 curr->next = new_block;
                 curr->size = size;
             }
@@ -209,27 +221,50 @@ void* kmalloc(uint32_t size) {
 }
 
 void* kmalloc_aligned(uint32_t size) {
-    uint32_t aligned_size = align_up(size + PAGE_SIZE, PAGE_SIZE);
-    void* ptr = kmalloc_internal(aligned_size);
+    uint32_t total_size = size + PAGE_SIZE + sizeof(heap_block_t);
+    void* ptr = kmalloc_internal(total_size);
     if (!ptr) return 0;
 
     uint32_t addr = (uint32_t)ptr;
     uint32_t aligned = align_up(addr, PAGE_SIZE);
+
+    if (aligned != addr) {
+        heap_block_t* dummy = (heap_block_t*)(aligned - sizeof(heap_block_t));
+        dummy->magic = HEAP_MAGIC_ALIGNED;
+        dummy->next = (heap_block_t*)((uint8_t*)ptr - sizeof(heap_block_t));
+    }
+
     return (void*)aligned;
 }
 
 void kfree(void* ptr) {
     if (!ptr) return;
     heap_block_t* block = (heap_block_t*)((uint8_t*)ptr - sizeof(heap_block_t));
+    
+    if (block->magic == HEAP_MAGIC_ALIGNED) {
+        block = block->next;
+    }
+
+    if (block->magic != HEAP_MAGIC) {
+        LOG_ERROR("MEM", "kfree em ponteiro invalido (magic errado)");
+        return;
+    }
+
     block->free = 1;
 
-    heap_block_t* curr = heap_base;
-    while (curr && curr->next) {
-        if (curr->free && curr->next->free) {
-            curr->size += sizeof(heap_block_t) + curr->next->size;
-            curr->next = curr->next->next;
-        } else {
-            curr = curr->next;
+    if (block->next && block->next->free) {
+        block->size += sizeof(heap_block_t) + block->next->size;
+        block->next = block->next->next;
+        if (block->next) {
+            block->next->prev = block;
+        }
+    }
+
+    if (block->prev && block->prev->free) {
+        block->prev->size += sizeof(heap_block_t) + block->size;
+        block->prev->next = block->next;
+        if (block->next) {
+            block->next->prev = block->prev;
         }
     }
 }

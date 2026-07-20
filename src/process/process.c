@@ -62,6 +62,7 @@ process_t* process_create(const char* name, void (*entry_point)()) {
     if (!proc->page_directory) {
         LOG_ERROR("PROC", "Falha ao criar diretorio do processo");
         kfree((void*)proc->kernel_stack);
+        proc->kernel_stack = 0;
         kmemset(proc, 0, sizeof(process_t));
         proc->state = PROCESS_STATE_UNUSED;
         return 0;
@@ -135,6 +136,7 @@ void process_destroy(process_t* proc) {
     proc->state = PROCESS_STATE_UNUSED;
     if (proc->kernel_stack) {
         kfree((void*)proc->kernel_stack);
+        proc->kernel_stack = 0;
     }
     if (proc->page_directory) {
         paging_free_directory(proc->page_directory);

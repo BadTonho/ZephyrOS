@@ -51,6 +51,7 @@ static uint8_t* load_file(const char* filename, uint32_t* out_size) {
     int bytes = fs_read_file(filename, buffer, 65535);
     if (bytes <= 0) {
         kfree(buffer);
+        buffer = 0;
         return 0;
     }
 

@@ -9,9 +9,9 @@ static fat12_fs_t fs;
 static uint8_t boot_sector[512];
 
 static void fat12_release(void) {
-    if (fs.fat) kfree(fs.fat);
-    if (fs.root_dir) kfree(fs.root_dir);
-    if (fs.data_area) kfree(fs.data_area);
+    if (fs.fat) { kfree(fs.fat); fs.fat = 0; }
+    if (fs.root_dir) { kfree(fs.root_dir); fs.root_dir = 0; }
+    if (fs.data_area) { kfree(fs.data_area); fs.data_area = 0; }
     kmemset(&fs, 0, sizeof(fat12_fs_t));
 }
 
@@ -490,6 +490,7 @@ static fat12_dir_entry_t* fat12_read_dir_cluster(uint16_t cluster, fat12_dir_ent
         for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {
             if (ata_read_sectors(data_lba + s, 1, cluster_buf + s * fs.bpb.bytes_per_sector) != 0) {
                 kfree(cluster_buf);
+                cluster_buf = 0;
                 return 0;
             }
         }
@@ -499,6 +500,7 @@ static fat12_dir_entry_t* fat12_read_dir_cluster(uint16_t cluster, fat12_dir_ent
             fat12_dir_entry_t* entry = (fat12_dir_entry_t*)(cluster_buf + i * 32);
             if (entry->name[0] == 0x00) {
                 kfree(cluster_buf);
+                cluster_buf = 0;
                 return entries;
             }
             if (entry->name[0] == 0xE5) continue;
@@ -512,6 +514,7 @@ static fat12_dir_entry_t* fat12_read_dir_cluster(uint16_t cluster, fat12_dir_ent
     }
 
     kfree(cluster_buf);
+    cluster_buf = 0;
     return entries;
 }
 
@@ -530,6 +533,7 @@ static fat12_dir_entry_t* fat12_find_in_dir(uint16_t dir_cluster, const char* fa
         for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {
             if (ata_read_sectors(data_lba + s, 1, cluster_buf + s * fs.bpb.bytes_per_sector) != 0) {
                 kfree(cluster_buf);
+                cluster_buf = 0;
                 return 0;
             }
         }
@@ -539,6 +543,7 @@ static fat12_dir_entry_t* fat12_find_in_dir(uint16_t dir_cluster, const char* fa
             fat12_dir_entry_t* entry = (fat12_dir_entry_t*)(cluster_buf + i * 32);
             if (entry->name[0] == 0x00) {
                 kfree(cluster_buf);
+                cluster_buf = 0;
                 return 0;
             }
             if (entry->name[0] == 0xE5) continue;
@@ -547,6 +552,7 @@ static fat12_dir_entry_t* fat12_find_in_dir(uint16_t dir_cluster, const char* fa
             if (strncmp(entry->name, fat12_name, 11) == 0) {
                 kmemcpy(&found, entry, sizeof(fat12_dir_entry_t));
                 kfree(cluster_buf);
+                cluster_buf = 0;
                 return &found;
             }
         }
@@ -555,6 +561,7 @@ static fat12_dir_entry_t* fat12_find_in_dir(uint16_t dir_cluster, const char* fa
     }
 
     kfree(cluster_buf);
+    cluster_buf = 0;
     return 0;
 }
 
@@ -631,6 +638,7 @@ int fat12_get_file_count_at(uint16_t dir_cluster) {
     fat12_dir_entry_t* result = fat12_read_dir_cluster(dir_cluster, entries, max_entries);
     if (!result) {
         kfree(entries);
+        entries = 0;
         return 0;
     }
 
@@ -643,6 +651,7 @@ int fat12_get_file_count_at(uint16_t dir_cluster) {
     }
 
     kfree(entries);
+    entries = 0;
     return count;
 }
 
@@ -661,6 +670,7 @@ int fat12_get_file_info_at(uint16_t dir_cluster, int index, char* name_out, uint
     fat12_dir_entry_t* result = fat12_read_dir_cluster(dir_cluster, entries, max_entries);
     if (!result) {
         kfree(entries);
+        entries = 0;
         return -1;
     }
 
@@ -675,12 +685,14 @@ int fat12_get_file_info_at(uint16_t dir_cluster, int index, char* name_out, uint
             if (size_out) *size_out = entries[i].file_size;
             if (attr_out) *attr_out = entries[i].attributes;
             kfree(entries);
+            entries = 0;
             return 0;
         }
         count++;
     }
 
     kfree(entries);
+    entries = 0;
     return -1;
 }
 
@@ -871,6 +883,7 @@ int fat12_write_file_in_dir(uint16_t dir_cluster, const char* filename, const ui
         for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {
             if (ata_read_sectors(data_lba + s, 1, cluster_buf + s * fs.bpb.bytes_per_sector) != 0) {
                 kfree(cluster_buf);
+                cluster_buf = 0;
                 return -1;
             }
         }
@@ -888,6 +901,7 @@ int fat12_write_file_in_dir(uint16_t dir_cluster, const char* filename, const ui
                 for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {
                     if (ata_write_sectors(data_lba + s, 1, cluster_buf + s * fs.bpb.bytes_per_sector) != 0) {
                         kfree(cluster_buf);
+                        cluster_buf = 0;
                         return -1;
                     }
                 }
@@ -903,6 +917,7 @@ int fat12_write_file_in_dir(uint16_t dir_cluster, const char* filename, const ui
 
     if (!found_slot) {
         kfree(cluster_buf);
+        cluster_buf = 0;
         return -1;
     }
 
@@ -920,6 +935,7 @@ int fat12_write_file_in_dir(uint16_t dir_cluster, const char* filename, const ui
             kmemcpy(sector, data + bytes_written, to_copy);
             if (ata_write_sectors(data_lba + s, 1, sector) != 0) {
                 kfree(cluster_buf);
+                cluster_buf = 0;
                 return -1;
             }
             bytes_written += to_copy;
@@ -930,6 +946,7 @@ int fat12_write_file_in_dir(uint16_t dir_cluster, const char* filename, const ui
             uint16_t next = fat12_find_free_cluster();
             if (!next) {
                 kfree(cluster_buf);
+                cluster_buf = 0;
                 return -1;
             }
             fat12_set_cluster(cluster, next);
@@ -942,11 +959,13 @@ int fat12_write_file_in_dir(uint16_t dir_cluster, const char* filename, const ui
     for (int x = 0; x < fs.bpb.sectors_per_fat; x++) {
         if (ata_write_sectors(fs.fat_start + x, 1, (uint8_t*)fs.fat + x * 512) != 0) {
             kfree(cluster_buf);
+            cluster_buf = 0;
             return -1;
         }
     }
 
     kfree(cluster_buf);
+    cluster_buf = 0;
     return size;
 }
 
@@ -984,6 +1003,7 @@ int fat12_delete_file_in_dir(uint16_t dir_cluster, const char* filename) {
         fat12_dir_entry_t* entry = fat12_find_in_dir(0, fat12_name);
         if (!entry) {
             kfree(cluster_buf);
+            cluster_buf = 0;
             return -1;
         }
 
@@ -1002,6 +1022,7 @@ int fat12_delete_file_in_dir(uint16_t dir_cluster, const char* filename) {
         for (int x = 0; x < fs.bpb.sectors_per_fat; x++) {
             if (ata_write_sectors(fs.fat_start + x, 1, (uint8_t*)fs.fat + x * 512) != 0) {
                 kfree(cluster_buf);
+                cluster_buf = 0;
                 return -1;
             }
         }
@@ -1011,11 +1032,13 @@ int fat12_delete_file_in_dir(uint16_t dir_cluster, const char* filename) {
         for (uint32_t x = 0; x < root_sectors; x++) {
             if (ata_write_sectors(fs.root_start + x, 1, (uint8_t*)fs.root_dir + x * 512) != 0) {
                 kfree(cluster_buf);
+                cluster_buf = 0;
                 return -1;
             }
         }
 
         kfree(cluster_buf);
+        cluster_buf = 0;
         return 0;
     }
 
@@ -1026,6 +1049,7 @@ int fat12_delete_file_in_dir(uint16_t dir_cluster, const char* filename) {
         for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {
             if (ata_read_sectors(data_lba + s, 1, cluster_buf + s * fs.bpb.bytes_per_sector) != 0) {
                 kfree(cluster_buf);
+                cluster_buf = 0;
                 return -1;
             }
         }
@@ -1035,6 +1059,7 @@ int fat12_delete_file_in_dir(uint16_t dir_cluster, const char* filename) {
             fat12_dir_entry_t* entry = (fat12_dir_entry_t*)(cluster_buf + i * 32);
             if (entry->name[0] == 0x00) {
                 kfree(cluster_buf);
+                cluster_buf = 0;
                 return -1;
             }
             if (entry->name[0] == 0xE5) continue;
@@ -1057,6 +1082,7 @@ int fat12_delete_file_in_dir(uint16_t dir_cluster, const char* filename) {
                 for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {
                     if (ata_write_sectors(data_lba + s, 1, cluster_buf + s * fs.bpb.bytes_per_sector) != 0) {
                         kfree(cluster_buf);
+                        cluster_buf = 0;
                         return -1;
                     }
                 }
@@ -1064,11 +1090,13 @@ int fat12_delete_file_in_dir(uint16_t dir_cluster, const char* filename) {
                 for (int x = 0; x < fs.bpb.sectors_per_fat; x++) {
                     if (ata_write_sectors(fs.fat_start + x, 1, (uint8_t*)fs.fat + x * 512) != 0) {
                         kfree(cluster_buf);
+                        cluster_buf = 0;
                         return -1;
                     }
                 }
 
                 kfree(cluster_buf);
+                cluster_buf = 0;
                 return 0;
             }
         }
@@ -1077,6 +1105,7 @@ int fat12_delete_file_in_dir(uint16_t dir_cluster, const char* filename) {
     }
 
     kfree(cluster_buf);
+    cluster_buf = 0;
     return -1;
 }
 
@@ -1147,6 +1176,7 @@ int fat12_create_dir_entry(uint16_t dir_cluster, const char* name, uint8_t attri
         for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {
             if (ata_read_sectors(data_lba + s, 1, cluster_buf + s * fs.bpb.bytes_per_sector) != 0) {
                 kfree(cluster_buf);
+                cluster_buf = 0;
                 return -1;
             }
         }
@@ -1163,6 +1193,7 @@ int fat12_create_dir_entry(uint16_t dir_cluster, const char* name, uint8_t attri
                 for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {
                     if (ata_write_sectors(data_lba + s, 1, cluster_buf + s * fs.bpb.bytes_per_sector) != 0) {
                         kfree(cluster_buf);
+                        cluster_buf = 0;
                         return -1;
                     }
                 }
@@ -1178,6 +1209,7 @@ int fat12_create_dir_entry(uint16_t dir_cluster, const char* name, uint8_t attri
 
     if (!found_slot) {
         kfree(cluster_buf);
+        cluster_buf = 0;
         return -1;
     }
 
@@ -1186,10 +1218,12 @@ int fat12_create_dir_entry(uint16_t dir_cluster, const char* name, uint8_t attri
     for (int x = 0; x < fs.bpb.sectors_per_fat; x++) {
         if (ata_write_sectors(fs.fat_start + x, 1, (uint8_t*)fs.fat + x * 512) != 0) {
             kfree(cluster_buf);
+            cluster_buf = 0;
             return -1;
         }
     }
 
     kfree(cluster_buf);
+    cluster_buf = 0;
     return 0;
 }
