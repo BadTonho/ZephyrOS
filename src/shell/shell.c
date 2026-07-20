@@ -326,6 +326,10 @@ void shell_handle_key(uint8_t scancode) {
     int tb_result = taskbar_handle_key(scancode);
     if (tb_result) {
         if (tb_result == 2) {
+            desktop_set_active(0);
+            video_clear();
+            shell_print_prompt();
+            taskbar_draw();
         } else if (tb_result == 3) {
             fm_open();
         } else if (tb_result == 4) {
@@ -358,14 +362,6 @@ void shell_handle_key(uint8_t scancode) {
         if (result == -1) {
             desktop_set_active(0);
             video_clear();
-            shell_print_prompt();
-            taskbar_draw();
-            return;
-        }
-        if (result == 1) {
-            desktop_set_active(0);
-            video_clear();
-            shell_print_prompt();
             taskbar_draw();
             return;
         }

@@ -126,7 +126,7 @@ int desktop_handle_key(uint8_t scancode) {
             selected_icon -= 5;
         }
         desktop_update_selection();
-        return 1;
+        return 0;
     }
 
     if (scancode == 0x50) {
@@ -134,7 +134,7 @@ int desktop_handle_key(uint8_t scancode) {
             selected_icon += 5;
         }
         desktop_update_selection();
-        return 1;
+        return 0;
     }
 
     if (scancode == 0x4B) {
@@ -142,7 +142,7 @@ int desktop_handle_key(uint8_t scancode) {
             selected_icon--;
         }
         desktop_update_selection();
-        return 1;
+        return 0;
     }
 
     if (scancode == 0x4D) {
@@ -150,7 +150,7 @@ int desktop_handle_key(uint8_t scancode) {
             selected_icon++;
         }
         desktop_update_selection();
-        return 1;
+        return 0;
     }
 
     if (scancode == 0x1C) {
