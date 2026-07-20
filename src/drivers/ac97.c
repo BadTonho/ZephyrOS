@@ -76,13 +76,14 @@ static uint32_t ac97_get_sample_rate(void) {
 }
 
 void ac97_init(void) {
+    LOG_INFO("AC97", "Inicializando controlador de audio");
     ac97_dev.initialized = 0;
 
     pci_init();
 
     pci_device_t* pci = pci_get_device(0x04, 0x01);
     if (!pci) {
-        video_print("[!!] AC97 nao encontrado via PCI\n", 0x0C);
+        LOG_ERROR("AC97", "Dispositivo AC97 nao encontrado via PCI");
         return;
     }
 
@@ -117,11 +118,12 @@ void ac97_init(void) {
     ac97_dev.bits_per_sample = 16;
     ac97_dev.initialized = 1;
 
+    LOG_INFO("AC97", "Controlador AC97 inicializado com sucesso");
     output_stream.status = 0;
     output_stream.buffer = 0;
     output_stream.position = 0;
 
-    register_interrupt_handler(ac97_dev.irq, (isr_handler_t)ac97_handler);
+    idt_register_handler(ac97_dev.irq, (isr_handler_t)ac97_handler);
 }
 
 void ac97_play(const uint8_t* data, uint32_t size, uint32_t sample_rate, uint8_t channels, uint8_t bits) {

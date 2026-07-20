@@ -1,5 +1,5 @@
 [BITS 32]
-[GLOBAL context_switch]
+[GLOBAL process_context_switch]
 [GLOBAL tss_flush]
 
 tss_flush:
@@ -7,7 +7,7 @@ tss_flush:
     ltr ax
     ret
 
-context_switch:
+process_context_switch:
     push ebx
     push esi
     push edi

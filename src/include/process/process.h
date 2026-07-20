@@ -52,7 +52,7 @@ process_t* scheduler_schedule(void);
 void scheduler_init(void);
 void scheduler_tick(void);
 
-extern void context_switch(process_context_t* prev, process_context_t* next);
+extern void process_context_switch(process_context_t* prev, process_context_t* next);
 
 extern process_t processes[MAX_PROCESSES];
 extern uint32_t process_count;

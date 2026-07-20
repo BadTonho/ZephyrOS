@@ -2,18 +2,12 @@
 #include "core/memory.h"
 #include "core/timer.h"
 #include "core/log.h"
+#include "core/string.h"
 
 static thread_t threads[MAX_THREADS];
 static thread_t* current_thread = 0;
 static uint32_t thread_count = 0;
 static uint32_t next_thread_id = 1;
-
-static void memset(void* dst, uint8_t val, uint32_t size) {
-    uint8_t* d = (uint8_t*)dst;
-    for (uint32_t i = 0; i < size; i++) {
-        d[i] = val;
-    }
-}
 
 void thread_init(void) {
     for (int i = 0; i < MAX_THREADS; i++) {
@@ -37,7 +31,7 @@ thread_t* thread_create(const char* name, void (*entry)(void)) {
         return 0;
     }
 
-    memset(thread, 0, sizeof(thread_t));
+    kmemset(thread, 0, sizeof(thread_t));
 
     int i = 0;
     while (name[i] && i < 31) {
@@ -54,7 +48,7 @@ thread_t* thread_create(const char* name, void (*entry)(void)) {
     thread->stack = (uint32_t*)kmalloc(THREAD_STACK_SIZE);
     if (!thread->stack) {
         LOG_ERROR("THRD", "Falha ao alocar stack da thread");
-        memset(thread, 0, sizeof(thread_t));
+        kmemset(thread, 0, sizeof(thread_t));
         thread->state = THREAD_UNUSED;
         return 0;
     }

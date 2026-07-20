@@ -1,5 +1,6 @@
 #include "drivers/tss.h"
 #include "core/log.h"
+#include "core/string.h"
 
 static tss_entry_t tss;
 static uint64_t gdt[6];
@@ -10,13 +11,6 @@ typedef struct {
 } __attribute__((packed)) gdt_ptr_t;
 
 extern void tss_flush(void);
-
-static void memset(void* dst, uint8_t val, uint32_t size) {
-    uint8_t* d = (uint8_t*)dst;
-    for (uint32_t i = 0; i < size; i++) {
-        d[i] = val;
-    }
-}
 
 static void tss_load_gdt(uint32_t base, uint32_t limit) {
     gdt_ptr_t pointer;
@@ -54,7 +48,7 @@ void tss_init(void) {
     uint32_t base = (uint32_t)&tss;
     uint32_t limit = sizeof(tss_entry_t) - 1;
 
-    memset(&tss, 0, sizeof(tss_entry_t));
+    kmemset(&tss, 0, sizeof(tss_entry_t));
 
     tss.ss0 = 0x10;
     tss.esp0 = 0x90000;

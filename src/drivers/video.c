@@ -1,6 +1,7 @@
 #include "core/video.h"
 #include "drivers/vesa.h"
 #include "drivers/font.h"
+#include "core/log.h"
 
 static int cursor_x = 0;
 static int cursor_y = 0;
@@ -120,6 +121,7 @@ static void scroll(void) {
 }
 
 void video_init(void) {
+    LOG_INFO("VIDEO", "Inicializando video");
     vesa_mode_t* mode = vesa_get_mode();
     use_framebuffer = (mode && mode->initialized) ? 1 : 0;
 
@@ -131,6 +133,7 @@ void video_init(void) {
     video_clear();
     current_color = 0x07;
     update_cursor();
+    LOG_INFO("VIDEO", "Video inicializado com sucesso");
 }
 
 void video_clear(void) {

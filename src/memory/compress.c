@@ -2,29 +2,15 @@
 #include "core/memory.h"
 #include "core/video.h"
 #include "core/errors.h"
+#include "core/string.h"
 
 static compress_stats_t stats;
 static uint8_t enabled = 0;
 static uint8_t compress_ring[COMPRESS_LZSS_N];
 static uint8_t decompress_ring[COMPRESS_LZSS_N];
 
-static void memset(void* dst, uint8_t val, uint32_t size) {
-    uint8_t* d = (uint8_t*)dst;
-    for (uint32_t i = 0; i < size; i++) {
-        d[i] = val;
-    }
-}
-
-static void memcpy(void* dst, const void* src, uint32_t size) {
-    uint8_t* d = (uint8_t*)dst;
-    const uint8_t* s = (const uint8_t*)src;
-    for (uint32_t i = 0; i < size; i++) {
-        d[i] = s[i];
-    }
-}
-
 void compress_init(void) {
-    memset(&stats, 0, sizeof(compress_stats_t));
+    kmemset(&stats, 0, sizeof(compress_stats_t));
     stats.enabled = 0;
 }
 
@@ -64,7 +50,7 @@ int compress_data(const uint8_t* src, uint32_t src_size, uint8_t* dst,
     if (di >= dst_capacity) return ERR_OVERFLOW;
     uint32_t flag_offset = di++;
 
-    memset(compress_ring, 0x20, COMPRESS_LZSS_N);
+    kmemset(compress_ring, 0x20, COMPRESS_LZSS_N);
 
     uint32_t r = COMPRESS_LZSS_N - COMPRESS_LZSS_F;
 
@@ -142,7 +128,7 @@ int decompress_data(const uint8_t* src, uint32_t src_size, uint8_t* dst,
     uint32_t si = 0;
     uint32_t di = 0;
 
-    memset(decompress_ring, 0x20, COMPRESS_LZSS_N);
+    kmemset(decompress_ring, 0x20, COMPRESS_LZSS_N);
 
     uint32_t r = COMPRESS_LZSS_N - COMPRESS_LZSS_F;
 

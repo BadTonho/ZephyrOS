@@ -2,21 +2,7 @@
 #include "core/memory.h"
 #include "core/video.h"
 #include "drivers/ac97.h"
-
-static void memset(void* dst, uint8_t val, uint32_t size) {
-    uint8_t* d = (uint8_t*)dst;
-    for (uint32_t i = 0; i < size; i++) {
-        d[i] = val;
-    }
-}
-
-static void memcpy(void* dst, const void* src, uint32_t size) {
-    uint8_t* d = (uint8_t*)dst;
-    const uint8_t* s = (const uint8_t*)src;
-    for (uint32_t i = 0; i < size; i++) {
-        d[i] = s[i];
-    }
-}
+#include "core/string.h"
 
 static int memcmp(const void* a, const void* b, uint32_t n) {
     const uint8_t* pa = (const uint8_t*)a;
@@ -41,7 +27,7 @@ void wav_init(void) {
 int wav_load(const uint8_t* raw_data, uint32_t size, wav_file_t* out) {
     if (!raw_data || !out || size < 44) return -1;
 
-    memset(out, 0, sizeof(wav_file_t));
+    kmemset(out, 0, sizeof(wav_file_t));
 
     if (memcmp(raw_data, "RIFF", 4) != 0) {
         return -1;
@@ -73,7 +59,7 @@ int wav_load(const uint8_t* raw_data, uint32_t size, wav_file_t* out) {
             out->data = (uint8_t*)kmalloc(chunk_size);
             if (!out->data) return -1;
 
-            memcpy(out->data, raw_data + offset + 8, chunk_size);
+            kmemcpy(out->data, raw_data + offset + 8, chunk_size);
         }
 
         offset += 8 + chunk_size;

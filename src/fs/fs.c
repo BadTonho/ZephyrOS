@@ -4,14 +4,7 @@
 #include "core/video.h"
 #include "core/log.h"
 #include "core/errors.h"
-
-static void memcpy(void* dst, const void* src, uint32_t size) {
-    uint8_t* d = (uint8_t*)dst;
-    const uint8_t* s = (const uint8_t*)src;
-    for (uint32_t i = 0; i < size; i++) {
-        d[i] = s[i];
-    }
-}
+#include "core/string.h"
 
 static uint8_t current_fs_type = FS_TYPE_NONE;
 
@@ -44,7 +37,7 @@ int fs_read_file(const char* filename, uint8_t* buffer, uint32_t max_size) {
     } else if (current_fs_type == FS_TYPE_FAT32) {
         return fat32_read_file(filename, buffer, max_size);
     }
-    return -1;
+    return ERR_NOT_FOUND;
 }
 
 int fs_write_file(const char* filename, const uint8_t* data, uint32_t size) {
@@ -53,7 +46,7 @@ int fs_write_file(const char* filename, const uint8_t* data, uint32_t size) {
     } else if (current_fs_type == FS_TYPE_FAT32) {
         return fat32_write_file(filename, data, size);
     }
-    return -1;
+    return ERR_NOT_FOUND;
 }
 
 int fs_delete_file(const char* filename) {
@@ -62,7 +55,7 @@ int fs_delete_file(const char* filename) {
     } else if (current_fs_type == FS_TYPE_FAT32) {
         return fat32_delete_file(filename);
     }
-    return -1;
+    return ERR_NOT_FOUND;
 }
 
 int fs_list_dir(void) {
@@ -71,7 +64,7 @@ int fs_list_dir(void) {
     } else if (current_fs_type == FS_TYPE_FAT32) {
         return fat32_list_dir();
     }
-    return -1;
+    return ERR_NOT_FOUND;
 }
 
 int fs_get_file_count(void) {
@@ -89,11 +82,11 @@ int fs_get_file_info(int index, char* name_out, uint32_t* size_out, uint8_t* att
     } else if (current_fs_type == FS_TYPE_FAT32) {
         return fat32_get_file_info(index, name_out, size_out, attr_out);
     }
-    return -1;
+    return ERR_NOT_FOUND;
 }
 
 int fs_get_info(fs_info_t* info) {
-    if (!info) return -1;
+    if (!info) return ERR_NULL;
 
     info->type = current_fs_type;
 
@@ -105,7 +98,7 @@ int fs_get_info(fs_info_t* info) {
         info->free_sectors = 0;
         info->total_clusters = 0;
         info->free_clusters = 0;
-        memcpy(info->label, fs->bpb.volume_label, 11);
+        kmemcpy(info->label, fs->bpb.volume_label, 11);
         info->label[11] = '\0';
     } else if (current_fs_type == FS_TYPE_FAT32) {
         fat32_fs_t* fs = fat32_get_fs();
@@ -115,13 +108,13 @@ int fs_get_info(fs_info_t* info) {
         info->free_sectors = 0;
         info->total_clusters = fs->bpb.sectors_per_fat * 512 / 4;
         info->free_clusters = 0;
-        memcpy(info->label, fs->bpb.volume_label, 11);
+        kmemcpy(info->label, fs->bpb.volume_label, 11);
         info->label[11] = '\0';
     } else {
-        return -1;
+        return ERR_NOT_FOUND;
     }
 
-    return 0;
+    return OK;
 }
 
 uint8_t fs_get_type(void) {
@@ -149,7 +142,7 @@ int fs_read_file_at(const char* path, uint8_t* buffer, uint32_t max_size) {
     } else if (current_fs_type == FS_TYPE_FAT32) {
         return fat32_read_file_at(path, buffer, max_size);
     }
-    return -1;
+    return ERR_NOT_FOUND;
 }
 
 int fs_get_file_count_at(const char* dir_path) {
@@ -171,7 +164,7 @@ int fs_get_file_info_at(const char* dir_path, int index, char* name_out, uint32_
     } else if (current_fs_type == FS_TYPE_FAT32) {
         return fat32_get_file_info_at(cluster, index, name_out, size_out, attr_out);
     }
-    return -1;
+    return ERR_NOT_FOUND;
 }
 
 int fs_create_dir_entry(const char* dir_path, const char* name, uint8_t attributes) {
@@ -182,7 +175,7 @@ int fs_create_dir_entry(const char* dir_path, const char* name, uint8_t attribut
     } else if (current_fs_type == FS_TYPE_FAT32) {
         return fat32_create_dir_entry(cluster, name, attributes);
     }
-    return -1;
+    return ERR_NOT_FOUND;
 }
 
 int fs_write_file_in_dir(const char* dir_path, const char* filename, const uint8_t* data, uint32_t size) {
@@ -193,7 +186,7 @@ int fs_write_file_in_dir(const char* dir_path, const char* filename, const uint8
     } else if (current_fs_type == FS_TYPE_FAT32) {
         return fat32_write_file_in_dir(cluster, filename, data, size);
     }
-    return -1;
+    return ERR_NOT_FOUND;
 }
 
 int fs_delete_file_in_dir(const char* dir_path, const char* filename) {
@@ -204,5 +197,5 @@ int fs_delete_file_in_dir(const char* dir_path, const char* filename) {
     } else if (current_fs_type == FS_TYPE_FAT32) {
         return fat32_delete_file_in_dir(cluster, filename);
     }
-    return -1;
+    return ERR_NOT_FOUND;
 }

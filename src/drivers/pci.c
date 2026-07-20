@@ -1,5 +1,6 @@
 #include "drivers/pci.h"
 #include "core/video.h"
+#include "core/log.h"
 
 static pci_device_t devices[32];
 static uint8_t device_count = 0;
@@ -89,6 +90,7 @@ static void pci_scan_device(uint8_t bus, uint8_t device) {
 }
 
 void pci_init(void) {
+    LOG_INFO("PCI", "Inicializando varredura PCI");
     device_count = 0;
 
     for (uint16_t bus = 0; bus < 256; bus++) {
@@ -112,6 +114,7 @@ void pci_init(void) {
             }
         }
     }
+    LOG_INFO("PCI", "Varredura PCI concluida");
 }
 
 pci_device_t* pci_get_device(uint8_t class, uint8_t subclass) {

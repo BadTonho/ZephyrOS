@@ -5,6 +5,7 @@
 #include "core/timer.h"
 #include "core/log.h"
 #include "core/errors.h"
+#include "core/string.h"
 
 process_t processes[MAX_PROCESSES];
 static process_t* current_process = 0;
@@ -18,22 +19,6 @@ void process_init(void) {
         processes[i].state = PROCESS_STATE_UNUSED;
     }
     scheduler_init();
-}
-
-static void memset(void* dst, uint8_t val, uint32_t size) {
-    uint8_t* d = (uint8_t*)dst;
-    for (uint32_t i = 0; i < size; i++) {
-        d[i] = val;
-    }
-}
-
-static void* memcpy(void* dst, const void* src, uint32_t size) {
-    uint8_t* d = (uint8_t*)dst;
-    const uint8_t* s = (const uint8_t*)src;
-    for (uint32_t i = 0; i < size; i++) {
-        d[i] = s[i];
-    }
-    return dst;
 }
 
 process_t* process_create(const char* name, void (*entry_point)()) {
@@ -51,7 +36,7 @@ process_t* process_create(const char* name, void (*entry_point)()) {
         return 0;
     }
 
-    memset(proc, 0, sizeof(process_t));
+    kmemset(proc, 0, sizeof(process_t));
 
     int i = 0;
     while (name[i] && i < PROCESS_NAME_LENGTH - 1) {
@@ -77,7 +62,7 @@ process_t* process_create(const char* name, void (*entry_point)()) {
     if (!proc->page_directory) {
         LOG_ERROR("PROC", "Falha ao criar diretorio do processo");
         kfree((void*)proc->kernel_stack);
-        memset(proc, 0, sizeof(process_t));
+        kmemset(proc, 0, sizeof(process_t));
         proc->state = PROCESS_STATE_UNUSED;
         return 0;
     }
@@ -212,7 +197,7 @@ void process_yield(void) {
             prev->state = PROCESS_STATE_READY;
         }
 
-        context_switch(&prev->context, &next->context);
+        process_context_switch(&prev->context, &next->context);
     }
 }
 

@@ -8,18 +8,12 @@
 #include "ui/desktop.h"
 #include "core/errors.h"
 #include "core/log.h"
+#include "core/string.h"
 
 static editor_t editor;
 static uint8_t shift_pressed = 0;
 static uint8_t ctrl_pressed = 0;
 static keyboard_callback_t editor_prev_callback = 0;
-
-static void memset(void* dst, uint8_t val, uint32_t size) {
-    uint8_t* d = (uint8_t*)dst;
-    for (uint32_t i = 0; i < size; i++) {
-        d[i] = val;
-    }
-}
 
 static void str_copy(char* dst, const char* src, uint32_t max) {
     uint32_t i = 0;
@@ -321,7 +315,7 @@ static void editor_do_word_wrap(uint32_t line_idx) {
 }
 
 void editor_init(void) {
-    memset(&editor, 0, sizeof(editor_t));
+    kmemset(&editor, 0, sizeof(editor_t));
     editor.running = 0;
     editor.view_width = SCREEN_COLS;
     editor.view_height = SCREEN_ROWS - 1;

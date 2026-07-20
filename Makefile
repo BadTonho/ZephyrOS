@@ -32,6 +32,9 @@ PANIC_OBJ = build/panic.o
 LOG_C = src/core/log.c
 LOG_OBJ = build/log.o
 
+STRING_C = src/core/string.c
+STRING_OBJ = build/string.o
+
 SWITCH_ASM = src/kernel/switch.asm
 SWITCH_OBJ = build/switch.o
 
@@ -151,7 +154,7 @@ KERNEL_BIN = build/kernel.bin
 OS_IMG = build/zephyros.img
 
 # Todas as variáveis de objetos
-OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(SWITCH_OBJ) \
+OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(STRING_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(AC97_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(COMPRESS_OBJ) \
@@ -181,6 +184,10 @@ $(PANIC_OBJ): $(PANIC_C)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(LOG_OBJ): $(LOG_C)
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(STRING_OBJ): $(STRING_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

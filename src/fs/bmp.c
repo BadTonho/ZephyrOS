@@ -3,21 +3,7 @@
 #include "core/video.h"
 #include "core/errors.h"
 #include "core/log.h"
-
-static void memset(void* dst, uint8_t val, uint32_t size) {
-    uint8_t* d = (uint8_t*)dst;
-    for (uint32_t i = 0; i < size; i++) {
-        d[i] = val;
-    }
-}
-
-static void memcpy(void* dst, const void* src, uint32_t size) {
-    uint8_t* d = (uint8_t*)dst;
-    const uint8_t* s = (const uint8_t*)src;
-    for (uint32_t i = 0; i < size; i++) {
-        d[i] = s[i];
-    }
-}
+#include "core/string.h"
 
 static uint16_t read_u16(const uint8_t* p) {
     return p[0] | (p[1] << 8);
@@ -38,7 +24,7 @@ int bmp_load(const uint8_t* raw_data, uint32_t size, bmp_image_t* out) {
     if (!raw_data || !out) return ERR_NULL;
     if (size < 54) return ERR_INVALID;
 
-    memset(out, 0, sizeof(bmp_image_t));
+    kmemset(out, 0, sizeof(bmp_image_t));
 
     if (raw_data[0] != 'B' || raw_data[1] != 'M') {
         LOG_ERROR("BMP", "Assinatura BMP invalida");
@@ -87,7 +73,7 @@ int bmp_load(const uint8_t* raw_data, uint32_t size, bmp_image_t* out) {
         if (54 + color_table_size > size) return ERR_INVALID;
         out->color_table = (bmp_color_table_t*)kmalloc(color_table_size);
         if (!out->color_table) return ERR_MEM;
-        memcpy(out->color_table, raw_data + 54, color_table_size);
+        kmemcpy(out->color_table, raw_data + 54, color_table_size);
     }
 
     uint32_t data_offset = out->file_header.data_offset;
@@ -116,7 +102,7 @@ int bmp_load(const uint8_t* raw_data, uint32_t size, bmp_image_t* out) {
         return ERR_MEM;
     }
 
-    memcpy(out->pixel_data, raw_data + data_offset, pixel_data_size);
+    kmemcpy(out->pixel_data, raw_data + data_offset, pixel_data_size);
     out->pixel_data_size = pixel_data_size;
 
     out->initialized = 1;

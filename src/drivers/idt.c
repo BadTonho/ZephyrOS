@@ -1,6 +1,7 @@
 #include "drivers/idt.h"
 #include "core/video.h"
 #include "core/panic.h"
+#include "core/log.h"
 
 idt_entry_t idt[256];
 idt_ptr_t idt_ptr;
@@ -108,6 +109,7 @@ static void pic_remap(void) {
 }
 
 void idt_init(void) {
+    LOG_INFO("IDT", "Inicializando IDT");
     idt_ptr.limit = sizeof(idt_entry_t) * 256 - 1;
     idt_ptr.base = (uint32_t)&idt;
 
@@ -170,9 +172,14 @@ void idt_init(void) {
 
     asm volatile("lidt %0" : : "m"(idt_ptr));
     asm volatile("sti");
+    LOG_INFO("IDT", "IDT inicializada com sucesso");
 }
 
-void register_interrupt_handler(uint8_t n, isr_handler_t handler) {
+void idt_register_handler(uint8_t n, isr_handler_t handler) {
+    if (!handler) {
+        LOG_ERROR("IDT", "Handler nulo para interrupcao");
+        return;
+    }
     interrupt_handlers[n] = handler;
 }
 

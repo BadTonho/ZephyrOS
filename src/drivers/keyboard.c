@@ -29,7 +29,7 @@ static const char scancode_table[128] = {
     0, 0, 0, 0, 0, 0, 0, 0
 };
 
-char scancode_to_ascii(uint8_t scancode) {
+char keyboard_scancode_to_ascii(uint8_t scancode) {
     if (scancode < 128) {
         return scancode_table[scancode];
     }
@@ -37,10 +37,12 @@ char scancode_to_ascii(uint8_t scancode) {
 }
 
 void keyboard_init(void) {
+    LOG_INFO("KBD", "Inicializando teclado");
     queue_head = 0;
     queue_tail = 0;
     dropped_events = 0;
-    register_interrupt_handler(33, keyboard_handler);
+    idt_register_handler(33, keyboard_handler);
+    LOG_INFO("KBD", "Teclado inicializado com sucesso");
 }
 
 void keyboard_handler(registers_t* regs) {

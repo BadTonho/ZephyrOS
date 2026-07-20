@@ -2,15 +2,9 @@
 #include "core/video.h"
 #include "core/panic.h"
 #include "core/log.h"
+#include "core/string.h"
 
 static memory_info_t mem_info;
-
-static void memset(void* dst, uint8_t val, uint32_t size) {
-    uint8_t* d = (uint8_t*)dst;
-    for (uint32_t i = 0; i < size; i++) {
-        d[i] = val;
-    }
-}
 
 static uint32_t align_up(uint32_t value, uint32_t alignment) {
     return (value + alignment - 1) & ~(alignment - 1);
@@ -74,7 +68,7 @@ void memory_init(uint32_t mmap_addr) {
     mem_info.bitmap_size = align_up((mem_info.total_pages + 7) / 8, PAGE_SIZE);
 
     mem_info.bitmap = (uint8_t*)KERNEL_END;
-    memset(mem_info.bitmap, 0xFF, mem_info.bitmap_size);
+    kmemset(mem_info.bitmap, 0xFF, mem_info.bitmap_size);
 
     for (uint32_t i = 0; i < mmap_count; i++) {
         mmap_entry_t* entry = &mem_info.mmap[i];

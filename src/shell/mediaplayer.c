@@ -8,6 +8,8 @@
 #include "core/memory.h"
 #include "core/timer.h"
 #include "drivers/font.h"
+#include "core/string.h"
+#include "core/errors.h"
 
 static mp_status_t status;
 static wav_file_t current_wav;
@@ -17,13 +19,6 @@ static uint32_t wav_size = 0;
 static uint8_t* bmp_data = 0;
 static uint32_t bmp_size = 0;
 static uint32_t last_update_tick = 0;
-
-static void memset(void* dst, uint8_t val, uint32_t size) {
-    uint8_t* d = (uint8_t*)dst;
-    for (uint32_t i = 0; i < size; i++) {
-        d[i] = val;
-    }
-}
 
 static void str_copy(char* dst, const char* src, uint32_t max) {
     uint32_t i = 0;
@@ -64,7 +59,7 @@ static uint8_t* load_file(const char* filename, uint32_t* out_size) {
 }
 
 void mp_init(void) {
-    memset(&status, 0, sizeof(mp_status_t));
+    kmemset(&status, 0, sizeof(mp_status_t));
     status.state = MP_STATE_IDLE;
     last_update_tick = 0;
 }
@@ -74,11 +69,11 @@ int mp_play_audio(const char* filename) {
     mp_cleanup();
 
     wav_data = load_file(filename, &wav_size);
-    if (!wav_data) return -1;
+    if (!wav_data) return ERR_DISK;
 
     if (wav_load(wav_data, wav_size, &current_wav) != 0) {
         mp_cleanup();
-        return -1;
+        return ERR_DISK;
     }
 
     str_copy(status.filename, filename, 64);
@@ -99,11 +94,11 @@ int mp_play_image(const char* filename) {
     mp_cleanup();
 
     bmp_data = load_file(filename, &bmp_size);
-    if (!bmp_data) return -1;
+    if (!bmp_data) return ERR_DISK;
 
     if (bmp_load(bmp_data, bmp_size, &current_bmp) != 0) {
         mp_cleanup();
-        return -1;
+        return ERR_DISK;
     }
 
     str_copy(status.filename, filename, 64);
@@ -176,7 +171,7 @@ int mp_play_media(const char* audio_file, const char* image_file) {
 
     if (!status.has_audio && !status.has_image) {
         mp_cleanup();
-        return -1;
+        return ERR_NOT_FOUND;
     }
 
     char name[64] = "";

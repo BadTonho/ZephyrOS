@@ -4,16 +4,9 @@
 #include "core/panic.h"
 #include "core/log.h"
 #include "drivers/vesa.h"
+#include "core/string.h"
 
 static page_directory_t* current_directory = 0;
-
-static void* memset(void* dst, uint8_t val, uint32_t size) {
-    uint8_t* d = (uint8_t*)dst;
-    for (uint32_t i = 0; i < size; i++) {
-        d[i] = val;
-    }
-    return dst;
-}
 
 page_directory_t* paging_create_directory(void) {
     page_directory_t* dir = (page_directory_t*)pmm_alloc_page();
@@ -21,7 +14,7 @@ page_directory_t* paging_create_directory(void) {
         LOG_ERROR("MEM", "Falha ao alocar diretorio de paginas");
         return 0;
     }
-    memset(dir, 0, sizeof(page_directory_t));
+    kmemset(dir, 0, sizeof(page_directory_t));
     return dir;
 }
 
@@ -47,7 +40,7 @@ page_entry_t* paging_get_page(uint32_t virtual_addr, int create) {
         LOG_ERROR("MEM", "Falha ao alocar tabela de paginas");
         return 0;
     }
-    memset(table, 0, sizeof(page_table_t));
+    kmemset(table, 0, sizeof(page_table_t));
 
     current_directory->entries[table_idx] = (uint32_t)table | 0x03;
 

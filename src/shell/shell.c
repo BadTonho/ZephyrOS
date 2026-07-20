@@ -16,30 +16,15 @@
 #include "apps/mediaplayer.h"
 #include "apps/editor.h"
 #include "ui/filemanager.h"
+#include "core/string.h"
 
 static char input_buffer[SHELL_BUFFER_SIZE];
 static int input_pos = 0;
-
-static void memset(void* dst, uint8_t val, uint32_t size) {
-    uint8_t* d = (uint8_t*)dst;
-    for (uint32_t i = 0; i < size; i++) {
-        d[i] = val;
-    }
-}
 
 static int strlen(const char* str) {
     int len = 0;
     while (str[len]) len++;
     return len;
-}
-
-static int strcmp(const char* a, const char* b) {
-    while (*a && *b) {
-        if (*a != *b) return *a - *b;
-        a++;
-        b++;
-    }
-    return *a - *b;
 }
 
 static void str_upper(char* str) {
@@ -438,48 +423,48 @@ int shell_process_command(const char* input) {
 
     while (*input == ' ') input++;
 
-    if (strcmp(cmd, "help") == 0) {
+    if (kstrcmp(cmd, "help") == 0) {
         cmd_help();
-    } else if (strcmp(cmd, "clear") == 0) {
+    } else if (kstrcmp(cmd, "clear") == 0) {
         cmd_clear();
-    } else if (strcmp(cmd, "ls") == 0) {
+    } else if (kstrcmp(cmd, "ls") == 0) {
         cmd_ls();
-    } else if (strcmp(cmd, "cat") == 0) {
+    } else if (kstrcmp(cmd, "cat") == 0) {
         cmd_cat(input);
-    } else if (strcmp(cmd, "echo") == 0) {
+    } else if (kstrcmp(cmd, "echo") == 0) {
         cmd_echo(input);
-    } else if (strcmp(cmd, "mem") == 0) {
+    } else if (kstrcmp(cmd, "mem") == 0) {
         cmd_mem();
-    } else if (strcmp(cmd, "procs") == 0) {
+    } else if (kstrcmp(cmd, "procs") == 0) {
         cmd_procs();
-    } else if (strcmp(cmd, "threads") == 0) {
+    } else if (kstrcmp(cmd, "threads") == 0) {
         cmd_threads();
-    } else if (strcmp(cmd, "uptime") == 0) {
+    } else if (kstrcmp(cmd, "uptime") == 0) {
         cmd_uptime();
-    } else if (strcmp(cmd, "beep") == 0) {
+    } else if (kstrcmp(cmd, "beep") == 0) {
         cmd_beep(input);
-    } else if (strcmp(cmd, "melody") == 0) {
+    } else if (kstrcmp(cmd, "melody") == 0) {
         cmd_melody();
-    } else if (strcmp(cmd, "desktop") == 0) {
+    } else if (kstrcmp(cmd, "desktop") == 0) {
         if (!desktop_is_active()) {
             desktop_set_active(1);
             desktop_draw();
         }
-    } else if (strcmp(cmd, "explorer") == 0) {
+    } else if (kstrcmp(cmd, "explorer") == 0) {
         fm_open();
-    } else if (strcmp(cmd, "reboot") == 0) {
+    } else if (kstrcmp(cmd, "reboot") == 0) {
         cmd_reboot();
-    } else if (strcmp(cmd, "shutdown") == 0) {
+    } else if (kstrcmp(cmd, "shutdown") == 0) {
         cmd_shutdown();
-    } else if (strcmp(cmd, "taskmgr") == 0) {
+    } else if (kstrcmp(cmd, "taskmgr") == 0) {
         taskmgr_open();
-    } else if (strcmp(cmd, "taskcfg") == 0) {
+    } else if (kstrcmp(cmd, "taskcfg") == 0) {
         taskbar_draw_config_menu();
-    } else if (strcmp(cmd, "settings") == 0) {
+    } else if (kstrcmp(cmd, "settings") == 0) {
         settings_open();
-    } else if (strcmp(cmd, "wm") == 0) {
+    } else if (kstrcmp(cmd, "wm") == 0) {
         wm_set_active(1);
-    } else if (strcmp(cmd, "play") == 0) {
+    } else if (kstrcmp(cmd, "play") == 0) {
         if (!*input) {
             video_print("Uso: play <arquivo.wav>\n", 0x0C);
         } else {
@@ -493,7 +478,7 @@ int shell_process_command(const char* input) {
             video_print("\n", 0x0A);
             mp_play_audio(name);
         }
-    } else if (strcmp(cmd, "view") == 0) {
+    } else if (kstrcmp(cmd, "view") == 0) {
         if (!*input) {
             video_print("Uso: view <arquivo.bmp>\n", 0x0C);
         } else {
@@ -504,10 +489,10 @@ int shell_process_command(const char* input) {
             str_upper(name);
             mp_play_image(name);
         }
-    } else if (strcmp(cmd, "stop") == 0) {
+    } else if (kstrcmp(cmd, "stop") == 0) {
         mp_stop();
         video_print("Player parado.\n", 0x0A);
-    } else if (strcmp(cmd, "compress") == 0) {
+    } else if (kstrcmp(cmd, "compress") == 0) {
         if (compress_is_enabled()) {
             compress_disable();
             video_print("Compressao de RAM DESATIVADA\n", 0x0C);
@@ -515,9 +500,9 @@ int shell_process_command(const char* input) {
             compress_enable();
             video_print("Compressao de RAM ATIVADA\n", 0x0A);
         }
-    } else if (strcmp(cmd, "stats") == 0) {
+    } else if (kstrcmp(cmd, "stats") == 0) {
         compress_print_stats();
-    } else if (strcmp(cmd, "edit") == 0) {
+    } else if (kstrcmp(cmd, "edit") == 0) {
         if (*input) {
             char name[13];
             int n = 0;

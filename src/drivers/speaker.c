@@ -1,5 +1,6 @@
 #include "drivers/speaker.h"
 #include "core/timer.h"
+#include "core/log.h"
 
 static uint8_t inb(uint16_t port) {
     uint8_t result;
@@ -12,7 +13,9 @@ static void outb(uint16_t port, uint8_t val) {
 }
 
 void speaker_init(void) {
+    LOG_INFO("SPEAKER", "Inicializando speaker");
     speaker_off();
+    LOG_INFO("SPEAKER", "Speaker inicializado com sucesso");
 }
 
 void speaker_beep(uint32_t frequency, uint32_t duration_ms) {
