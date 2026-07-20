@@ -339,8 +339,10 @@ void shell_handle_key(uint8_t scancode) {
         } else if (tb_result == 6) {
             cmd_shutdown();
         } else if (tb_result == 7) {
-            desktop_set_active(1);
-            desktop_draw();
+            if (!desktop_is_active()) {
+                desktop_set_active(1);
+                desktop_draw();
+            }
         } else if (tb_result == 8) {
             settings_open();
         }
@@ -459,8 +461,10 @@ int shell_process_command(const char* input) {
     } else if (strcmp(cmd, "melody") == 0) {
         cmd_melody();
     } else if (strcmp(cmd, "desktop") == 0) {
-        desktop_set_active(1);
-        desktop_draw();
+        if (!desktop_is_active()) {
+            desktop_set_active(1);
+            desktop_draw();
+        }
     } else if (strcmp(cmd, "explorer") == 0) {
         fm_open();
     } else if (strcmp(cmd, "reboot") == 0) {
