@@ -113,6 +113,7 @@ O heap permite alocar blocos de memória de tamanho arbitrário.
 typedef struct heap_block {
     uint32_t size;           // Tamanho do bloco (sem header)
     int free;                // 1=livre, 0=ocupado
+    struct heap_block* prev; // Bloco anterior
     struct heap_block* next; // Próximo bloco
 } heap_block_t;
 ```

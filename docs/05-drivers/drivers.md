@@ -200,6 +200,11 @@ Comunicação com disco rígido via modo **PIO** (Programmed I/O).
 | WRITE | 0x30 | Escrever setores |
 | IDENTIFY | 0xEC | Identificar disco |
 
+### Operação Assíncrona (IRQ 14)
+
+A leitura e gravação de disco são implementadas de maneira assíncrona usando o **IRQ 14** e `thread_block()`.
+Quando a thread pede para ler do disco, ela cede o processador, e quando o disco finaliza a operação e envia a interrupção, o manipulador do IRQ 14 realiza `thread_unblock()` permitindo que a thread volte a processar sem gastar ciclos de CPU à toa.
+
 ---
 
 ## TSS (`tss.c`)
