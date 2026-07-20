@@ -241,6 +241,12 @@ void video_put_char_at(char c, uint8_t color, int x, int y) {
     
     spinlock_acquire(&video_lock);
     int idx = y * SCREEN_COLS + x;
+    
+    if (text_buffer[idx] == c && color_buffer[idx] == color) {
+        spinlock_release(&video_lock);
+        return;
+    }
+    
     text_buffer[idx] = c;
     color_buffer[idx] = color;
 
