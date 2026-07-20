@@ -17,6 +17,7 @@ static int input_mode = 0;
 static int rename_mode = 0;
 static int confirm_delete = 0;
 static int create_dir_mode = 0;
+static int create_file_mode = 0;
 static char old_name[FM_NAME_LEN];
 
 
@@ -593,10 +594,11 @@ void fm_handle_key(uint8_t scancode) {
 
     if (scancode & 0x80) return;
 
+    // --- Modo de endereco (Ctrl+L) ---
     if (state.address_mode) {
         char c = scancode_table[scancode];
 
-        if (scancode == 0x0E) {
+        if (scancode == 0x0E) { // Backspace
             if (state.address_pos > 0) {
                 state.address_pos--;
                 state.address_buffer[state.address_pos] = '\0';
@@ -605,25 +607,62 @@ void fm_handle_key(uint8_t scancode) {
             }
             return;
         }
+        if (scancode == 0x1C) { // Enter -> navegar para o path digitado
+            state.address_buffer[state.address_pos] = '\0';
+            state.address_mode = 0;
+            if (state.address_pos > 0) {
+                fm_navigate_to(state.address_buffer);
+            }
+            fm_draw_all();
+            return;
+        }
+        if (scancode == 0x01) { // Esc -> cancelar
+            state.address_mode = 0;
+            fm_draw_all();
+            return;
+        }
+        if (c && state.address_pos < FM_MAX_PATH - 1) {
+            state.address_buffer[state.address_pos++] = c;
+            state.address_buffer[state.address_pos] = '\0';
+            int cx = 3 + state.address_pos - 1;
+            video_put_char_at(c, FM_ADDRESS_INPUT_COLOR, cx, 2);
+        }
+        return;
+    }
 
-        
-
+    // --- Modo de input (criar pasta, criar arquivo, renomear, confirmar delete) ---
     if (input_mode) {
         char c = scancode_table[scancode];
 
-        if (scancode == 0x0E) {
-            if (input_pos > 0) {
-                input_pos--;
-                input_buffer[input_pos] = '\0';
-                int cx = 12 + input_pos;
-                video_put_char_at(' ', 0x17, cx, 11);
-            }
+        if (scancode == 0x01) { // Esc -> cancelar
+            input_mode = 0;
+            rename_mode = 0;
+            confirm_delete = 0;
+            create_dir_mode = 0;
+            create_file_mode = 0;
+            fm_draw_all();
             return;
         }
 
-        
+        if (scancode == 0x1C) { // Enter -> confirmar
+            input_buffer[input_pos] = '\0';
 
-    if (rename_mode) {
+            if (confirm_delete) {
+                // S ou s = confirmar exclusao
+                if (input_buffer[0] == 'S' || input_buffer[0] == 's') {
+                    if (state.selected >= 0 && state.selected < state.file_count) {
+                        fs_delete_file_in_dir(state.current_path, state.files[state.selected].name);
+                        if (state.selected > 0) state.selected--;
+                        fm_refresh_files();
+                    }
+                }
+                confirm_delete = 0;
+                input_mode = 0;
+                fm_draw_all();
+                return;
+            }
+
+            if (rename_mode) {
                 if (input_pos > 0 && state.selected >= 0 && state.selected < state.file_count) {
                     uint8_t* content = 0;
                     uint32_t size = 0;
@@ -634,7 +673,7 @@ void fm_handle_key(uint8_t scancode) {
                             char file_path[FM_MAX_PATH];
                             if (fm_join_path(file_path, state.current_path, old_name) == OK) {
                                 int bytes = fs_read_file_at(file_path, content, state.files[state.selected].size);
-                                if (bytes > 0) size = bytes;
+                                if (bytes > 0) size = (uint32_t)bytes;
                             }
                             if (size == 0) {
                                 kfree(content);
@@ -648,7 +687,6 @@ void fm_handle_key(uint8_t scancode) {
                     if (content && size > 0) {
                         fs_write_file_in_dir(state.current_path, input_buffer, content, size);
                         kfree(content);
-                        content = 0;
                     } else {
                         uint8_t empty[1] = {0};
                         fs_write_file_in_dir(state.current_path, input_buffer, empty, 0);
@@ -662,10 +700,27 @@ void fm_handle_key(uint8_t scancode) {
                 return;
             }
 
-            if (input_pos > 0) {
-                uint8_t empty_data[1] = {0};
-                fs_write_file_in_dir(state.current_path, input_buffer, empty_data, 0);
-                fm_refresh_files();
+            if (create_dir_mode) {
+                if (input_pos > 0) {
+                    fs_create_dir_entry(state.current_path, input_buffer, 0x10);
+                    fm_refresh_files();
+                }
+                create_dir_mode = 0;
+                input_mode = 0;
+                fm_draw_all();
+                return;
+            }
+
+            if (create_file_mode) {
+                if (input_pos > 0) {
+                    uint8_t empty_data[1] = {0};
+                    fs_write_file_in_dir(state.current_path, input_buffer, empty_data, 0);
+                    fm_refresh_files();
+                }
+                create_file_mode = 0;
+                input_mode = 0;
+                fm_draw_all();
+                return;
             }
 
             input_mode = 0;
@@ -673,11 +728,14 @@ void fm_handle_key(uint8_t scancode) {
             return;
         }
 
-        if (scancode == 0x01) {
-            input_mode = 0;
-            rename_mode = 0;
-            confirm_delete = 0;
-            fm_draw_all();
+        if (scancode == 0x0E) { // Backspace
+            if (input_pos > 0) {
+                input_pos--;
+                input_buffer[input_pos] = '\0';
+                int cx = 12 + input_pos;
+                if (rename_mode) cx = 27 + input_pos;
+                video_put_char_at(' ', 0x17, cx, 11);
+            }
             return;
         }
 
@@ -685,31 +743,32 @@ void fm_handle_key(uint8_t scancode) {
             input_buffer[input_pos++] = c;
             input_buffer[input_pos] = '\0';
             int cx = 12 + input_pos - 1;
+            if (rename_mode) cx = 27 + input_pos - 1;
             video_put_char_at(c, 0x17, cx, 11);
         }
         return;
     }
 
+    // --- Teclas de navegacao / atalhos gerais ---
     if (alt_pressed) {
-        if (scancode == 0x4B) {
+        if (scancode == 0x4B) { // Alt+Esquerda = Voltar
             alt_pressed = 0;
             fm_go_back();
             return;
         }
-        if (scancode == 0x4D) {
+        if (scancode == 0x4D) { // Alt+Direita = Avancar
             alt_pressed = 0;
             fm_go_forward();
             return;
         }
     }
 
-
     if (scancode == 0x0F) { // TAB
         state.focus_pane = 1 - state.focus_pane;
         fm_draw_all();
         return;
     }
-    
+
     if (scancode == 0x48) { // UP
         if (state.focus_pane == 0) {
             if (state.side_selected > 0) state.side_selected--;
@@ -724,7 +783,7 @@ void fm_handle_key(uint8_t scancode) {
         fm_draw_all();
         return;
     }
-    
+
     if (scancode == 0x50) { // DOWN
         if (state.focus_pane == 0) {
             if (state.side_selected < side_pane_count - 1) state.side_selected++;
@@ -739,7 +798,7 @@ void fm_handle_key(uint8_t scancode) {
         fm_draw_all();
         return;
     }
-    
+
     if (scancode == 0x1C) { // ENTER
         if (state.focus_pane == 0) {
             fm_navigate_to(side_pane_paths[state.side_selected]);
@@ -756,115 +815,70 @@ void fm_handle_key(uint8_t scancode) {
                 fm_draw_all();
             }
         } else {
-            // F3 behavior as default for opening file for now
             video_clear();
             fm_draw_view_file();
-            input_mode = 2; // view mode
+            input_mode = 2;
         }
         return;
     }
 
-    // F6 = Nova Pasta
-    if (scancode == 0x40) { 
-        create_dir_mode = 1;
-        input_pos = 0;
-        input_buffer[0] = '\0';
-        fm_draw_all();
-        return;
-    }
-    
-    // F9 (Copiar) F10 (Recortar) F11 (Colar) F12 (Lixeira) -- Atualmente nao lemos modificadores Ctrl
-    if (scancode == 0x43) { // F9 = Copiar
-        if (state.file_count > 0 && !state.files[state.selected].is_dir) {
-            state.clipboard_op = 1;
-            str_copy(state.clipboard_dir, state.current_path);
-            str_copy(state.clipboard_name, state.files[state.selected].name);
-            state.clipboard_size = state.files[state.selected].size;
-            fm_join_path(state.clipboard_path, state.current_path, state.files[state.selected].name);
-        }
-        return;
-    }
-    if (scancode == 0x44) { // F10 = Recortar
-        if (state.file_count > 0 && !state.files[state.selected].is_dir) {
-            state.clipboard_op = 2;
-            str_copy(state.clipboard_dir, state.current_path);
-            str_copy(state.clipboard_name, state.files[state.selected].name);
-            state.clipboard_size = state.files[state.selected].size;
-            fm_join_path(state.clipboard_path, state.current_path, state.files[state.selected].name);
-        }
-        return;
-    }
-    if (scancode == 0x57) { // F11 = Colar
-        if (state.clipboard_op > 0 && state.clipboard_size > 0) {
-            uint8_t* buf = kmalloc(state.clipboard_size + 1);
-            if (buf) {
-                if (fs_read_file_at(state.clipboard_dir, buf, state.clipboard_size) >= 0) {
-                    fs_write_file_in_dir(state.current_path, state.clipboard_name, buf, state.clipboard_size);
-                    if (state.clipboard_op == 2) { // Cut
-                        fs_delete_file_in_dir(state.clipboard_dir, state.clipboard_name);
-                        state.clipboard_op = 0; // consumed
-                    }
-                }
-                kfree(buf);
-                fm_refresh_files();
-                fm_draw_all();
-            }
-        }
-        return;
-    }
-    if (scancode == 0x53) { // DELETE = Mover para Lixeira
-        if (state.file_count > 0 && !state.files[state.selected].is_dir) {
-            char trash_path[] = "/.trash";
-            fs_create_dir_entry("", ".trash", 0x10); // Ensure trash exists
-            uint32_t size = state.files[state.selected].size;
-            uint8_t* buf = kmalloc(size + 1);
-            if (buf) {
-                if (fs_read_file_at(state.current_path, buf, size) >= 0) {
-                    fs_write_file_in_dir(trash_path, state.files[state.selected].name, buf, size);
-                    fs_delete_file_in_dir(state.current_path, state.files[state.selected].name);
-                }
-                kfree(buf);
-                fm_refresh_files();
-                fm_draw_all();
-            }
-        }
+    if (scancode == 0x0E) { // Backspace = subir nivel
+        fm_go_up();
         return;
     }
 
-    if (scancode == 0x01) {
-        fm_close();
-        return;
-    }
-
-    if (scancode == 0x26) {
-        state.address_mode = 1;
-        state.address_pos = 0;
-        state.address_buffer[0] = '\0';
-        fm_draw_address_bar();
-        return;
-    }
-
-    if (scancode == 0x3B) {
+    if (scancode == 0x3B) { // F1 = Ajuda
         fm_draw_help();
         return;
     }
 
-    if (scancode == 0x3D) {
+    if (scancode == 0x3D) { // F3 = Ver arquivo
         fm_draw_view_file();
         return;
     }
 
-    if (scancode == 0x3E) {
+    if (scancode == 0x3E) { // F4 = Atualizar... alias para F5
         fm_refresh_files();
         fm_draw_all();
         return;
     }
 
+    if (scancode == 0x3F) { // F5 = Atualizar
+        fm_refresh_files();
+        fm_draw_all();
+        return;
+    }
 
-    if (scancode == 0x42) {
+    if (scancode == 0x40) { // F6 = Nova Pasta
+        create_dir_mode = 1;
+        create_file_mode = 0;
+        rename_mode = 0;
+        confirm_delete = 0;
+        input_mode = 1;
+        input_pos = 0;
+        input_buffer[0] = '\0';
+        fm_draw_all();
+        fm_draw_create_dir();
+        return;
+    }
+
+    if (scancode == 0x41) { // F7 = Novo Arquivo
+        create_file_mode = 1;
+        create_dir_mode = 0;
+        rename_mode = 0;
+        confirm_delete = 0;
+        input_mode = 1;
+        input_pos = 0;
+        input_buffer[0] = '\0';
+        fm_draw_all();
+        fm_draw_create_file();
+        return;
+    }
+
+    if (scancode == 0x42) { // F8 = Excluir (confirmar)
         if (state.selected >= 0 && state.selected < state.file_count) {
-            input_mode = 1;
             confirm_delete = 1;
+            input_mode = 1;
             input_pos = 0;
             input_buffer[0] = '\0';
             fm_draw_confirm_delete();
@@ -872,10 +886,13 @@ void fm_handle_key(uint8_t scancode) {
         return;
     }
 
-    if (scancode == 0x3C) {
+    if (scancode == 0x3C) { // F2 = Renomear
         if (state.selected >= 0 && state.selected < state.file_count) {
             input_mode = 1;
             rename_mode = 1;
+            create_dir_mode = 0;
+            create_file_mode = 0;
+            confirm_delete = 0;
             input_pos = 0;
             input_buffer[0] = '\0';
 
@@ -896,20 +913,82 @@ void fm_handle_key(uint8_t scancode) {
         return;
     }
 
-    
+    if (scancode == 0x43) { // F9 = Copiar
+        if (state.file_count > 0 && !state.files[state.selected].is_dir) {
+            state.clipboard_op = 1;
+            str_copy(state.clipboard_dir, state.current_path);
+            str_copy(state.clipboard_name, state.files[state.selected].name);
+            state.clipboard_size = state.files[state.selected].size;
+            fm_join_path(state.clipboard_path, state.current_path, state.files[state.selected].name);
+        }
+        return;
+    }
 
-    if (scancode == 0x0E) {
-        fm_go_up();
+    if (scancode == 0x44) { // F10 = Recortar
+        if (state.file_count > 0 && !state.files[state.selected].is_dir) {
+            state.clipboard_op = 2;
+            str_copy(state.clipboard_dir, state.current_path);
+            str_copy(state.clipboard_name, state.files[state.selected].name);
+            state.clipboard_size = state.files[state.selected].size;
+            fm_join_path(state.clipboard_path, state.current_path, state.files[state.selected].name);
+        }
+        return;
+    }
+
+    if (scancode == 0x57) { // F11 = Colar
+        if (state.clipboard_op > 0 && state.clipboard_size > 0) {
+            uint8_t* buf = kmalloc(state.clipboard_size + 1);
+            if (buf) {
+                if (fs_read_file_at(state.clipboard_dir, buf, state.clipboard_size) >= 0) {
+                    fs_write_file_in_dir(state.current_path, state.clipboard_name, buf, state.clipboard_size);
+                    if (state.clipboard_op == 2) {
+                        fs_delete_file_in_dir(state.clipboard_dir, state.clipboard_name);
+                        state.clipboard_op = 0;
+                    }
+                }
+                kfree(buf);
+                fm_refresh_files();
+                fm_draw_all();
+            }
+        }
+        return;
+    }
+
+    if (scancode == 0x53) { // DELETE = Mover para Lixeira
+        if (state.file_count > 0 && !state.files[state.selected].is_dir) {
+            char trash_path[] = "/.trash";
+            fs_create_dir_entry("", ".trash", 0x10);
+            uint32_t size = state.files[state.selected].size;
+            uint8_t* buf = kmalloc(size + 1);
+            if (buf) {
+                if (fs_read_file_at(state.current_path, buf, size) >= 0) {
+                    fs_write_file_in_dir(trash_path, state.files[state.selected].name, buf, size);
+                    fs_delete_file_in_dir(state.current_path, state.files[state.selected].name);
+                }
+                kfree(buf);
+                fm_refresh_files();
+                fm_draw_all();
+            }
+        }
+        return;
+    }
+
+    if (scancode == 0x26) { // L = Modo endereco (Ctrl+L era so uma ideia)
+        state.address_mode = 1;
+        state.address_pos = 0;
+        state.address_buffer[0] = '\0';
+        fm_draw_address_bar();
+        return;
+    }
+
+    if (scancode == 0x01) { // Esc = Fechar
+        fm_close();
         return;
     }
 
     if (state.file_count == 0) return;
 
-    
-
-    
-
-    if (scancode == 0x49) {
+    if (scancode == 0x49) { // Page Up
         state.selected -= 17;
         if (state.selected < 0) state.selected = 0;
         if (state.selected < state.scroll_offset) {
@@ -920,7 +999,7 @@ void fm_handle_key(uint8_t scancode) {
         return;
     }
 
-    if (scancode == 0x51) {
+    if (scancode == 0x51) { // Page Down
         state.selected += 17;
         if (state.selected >= state.file_count) {
             state.selected = state.file_count - 1;
@@ -933,7 +1012,7 @@ void fm_handle_key(uint8_t scancode) {
         return;
     }
 
-    if (scancode == 0x47) {
+    if (scancode == 0x47) { // Home
         state.selected = 0;
         state.scroll_offset = 0;
         fm_draw_file_list();
@@ -941,7 +1020,7 @@ void fm_handle_key(uint8_t scancode) {
         return;
     }
 
-    if (scancode == 0x4F) {
+    if (scancode == 0x4F) { // End
         state.selected = state.file_count - 1;
         if (state.selected >= 17) {
             state.scroll_offset = state.selected - 16;
@@ -951,6 +1030,7 @@ void fm_handle_key(uint8_t scancode) {
         return;
     }
 }
+
 
 void fm_run(void) {
     fm_open();
