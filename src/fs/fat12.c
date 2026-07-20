@@ -519,6 +519,9 @@ static fat12_dir_entry_t* fat12_read_dir_cluster(uint16_t cluster, fat12_dir_ent
         for (uint32_t i = 0; i < entries_per_cluster && entry_idx < max_entries; i++) {
             fat12_dir_entry_t* entry = (fat12_dir_entry_t*)(cluster_buf + i * 32);
             if (entry->name[0] == 0x00) {
+                if (entry_idx < max_entries) {
+                    kmemset(&entries[entry_idx], 0, sizeof(fat12_dir_entry_t));
+                }
                 kfree(cluster_buf);
                 cluster_buf = 0;
                 return entries;
@@ -535,6 +538,9 @@ static fat12_dir_entry_t* fat12_read_dir_cluster(uint16_t cluster, fat12_dir_ent
 
     kfree(cluster_buf);
     cluster_buf = 0;
+    if (entry_idx < max_entries) {
+        kmemset(&entries[entry_idx], 0, sizeof(fat12_dir_entry_t));
+    }
     return entries;
 }
 
