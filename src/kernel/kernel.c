@@ -29,26 +29,103 @@
 #include "apps/guitest.h"
 
 static int kernel_service_fallback = 0;
+static uint32_t kernel_shell_pid = 0;
+static volatile uint32_t kernel_pending_shell_request = 0;
+
+static int kernel_send_shell_request(uint32_t request) {
+    ipc_msg_t msg;
+    uint32_t target_pid = kernel_shell_pid;
+
+    if (!target_pid) target_pid = process_get_focus();
+    if (!target_pid || target_pid >= MAX_PROCESSES) return 0;
+
+    msg.type = IPC_MSG_APP_REQUEST;
+    msg.data1 = request;
+    msg.data2 = 0;
+    return ipc_send(target_pid, &msg);
+}
 
 static void kernel_request_shell_app(ipc_app_request_t request) {
-    ipc_msg_t msg;
-
     if (!recovery_is_enabled(RECOVERY_COMPONENT_SHELL)) {
         LOG_WARN("KERNEL", "Shell indisponivel; solicitacao de aplicativo ignorada");
         return;
     }
 
-    msg.type = IPC_MSG_APP_REQUEST;
-    msg.data1 = request;
-    msg.data2 = 0;
-
-    if (!ipc_send(process_get_focus(), &msg)) {
-        LOG_WARN("KERNEL", "Nao foi possivel enviar solicitacao ao Shell");
+    if (!request) {
+        LOG_ERROR("KERNEL", "Solicitacao de aplicativo invalida");
+        return;
     }
+
+    /* Mantem somente a intencao mais recente para evitar abrir dois apps. */
+    kernel_pending_shell_request = request;
+    if (kernel_send_shell_request(request)) {
+        kernel_pending_shell_request = 0;
+        return;
+    }
+
+    LOG_WARN("KERNEL", "Solicitacao ao Shell pendente para nova tentativa");
+}
+
+static void kernel_retry_shell_request(void) {
+    uint32_t request = kernel_pending_shell_request;
+
+    if (!request || !recovery_is_enabled(RECOVERY_COMPONENT_SHELL)) return;
+    if (kernel_send_shell_request(request)) {
+        kernel_pending_shell_request = 0;
+    }
+}
+
+static int kernel_handle_taskbar_mouse(mouse_event_t* evt) {
+    int tb_result;
+
+    if (!evt || evt->event != MOUSE_EVENT_PRESS ||
+        !(evt->changed & MOUSE_BTN_LEFT)) return 0;
+
+    tb_result = taskbar_handle_click(evt->x, evt->y);
+    if (!tb_result) return 0;
+
+    if (taskmgr_is_gui_open() && tb_result >= 2 && tb_result <= 8) {
+        if (tb_result == 4) {
+            taskmgr_gui_restore();
+            return 1;
+        }
+        taskmgr_close();
+    } else if (taskmgr_is_open() && tb_result >= 2 && tb_result <= 8) {
+        if (tb_result == 4) {
+            taskmgr_refresh();
+            return 1;
+        }
+        taskmgr_close();
+    }
+
+    if (settings_is_open() && tb_result >= 2 && tb_result <= 8) {
+        settings_close();
+    }
+
+    switch (tb_result) {
+        case 2: kernel_request_shell_app(IPC_APP_OPEN_SHELL); break;
+        case 3: kernel_request_shell_app(IPC_APP_OPEN_EXPLORER); break;
+        case 4: kernel_request_shell_app(IPC_APP_OPEN_TASKMANAGER_GUI); break;
+        case 5:
+            asm volatile("outb %0, %1" : : "a"((uint8_t)0xFE),
+                         "Nd"((uint16_t)0x64));
+            break;
+        case 6:
+            asm volatile("outw %0, %1" : : "a"((uint16_t)0x2000),
+                         "Nd"((uint16_t)0xB004));
+            break;
+        case 7: kernel_request_shell_app(IPC_APP_OPEN_DESKTOP); break;
+        case 8: kernel_request_shell_app(IPC_APP_OPEN_SETTINGS); break;
+        default: break;
+    }
+
+    return 1;
 }
 
 /* Handler global de eventos do mouse, despacha para a UI ativa */
 static void global_mouse_handler(mouse_event_t* evt) {
+    if (kernel_handle_taskbar_mouse(evt)) return;
+
     if (guitest_is_active()) {
         guitest_handle_mouse(evt);
         return;
@@ -63,48 +140,6 @@ static void global_mouse_handler(mouse_event_t* evt) {
     /* O restante do sistema legado so processa clique esquerdo (press). */
     if (evt->event != MOUSE_EVENT_PRESS) return;
     if (!(evt->changed & MOUSE_BTN_LEFT)) return;
-
-    /* Tenta taskbar primeiro */
-    int tb_result = taskbar_handle_click(evt->x, evt->y);
-    if (tb_result) {
-        if (taskmgr_is_gui_open() && tb_result >= 2 && tb_result <= 8) {
-            /* O menu Inicio tem prioridade sobre a janela atual. */
-            if (tb_result == 4) {
-                taskmgr_gui_restore();
-                return;
-            }
-            taskmgr_close();
-        } else if (taskmgr_is_open() && tb_result >= 2 && tb_result <= 8) {
-            if (tb_result == 4) {
-                taskmgr_refresh();
-                return;
-            }
-            taskmgr_close();
-        }
-        if (settings_is_open() && tb_result >= 2 && tb_result <= 8) {
-            settings_close();
-        }
-
-        if (tb_result == 2) {
-            kernel_request_shell_app(IPC_APP_OPEN_SHELL);
-        } else if (tb_result == 3) {
-            kernel_request_shell_app(IPC_APP_OPEN_EXPLORER);
-        } else if (tb_result == 4) {
-            kernel_request_shell_app(IPC_APP_OPEN_TASKMANAGER_GUI);
-        } else if (tb_result == 5) {
-            // Reiniciar - para contornar a falta de acesso a cmd_reboot aqui
-            // enviaremos um scan_code falso pro shell tratar? Nao, reset via port.
-            asm volatile("outb %0, %1" : : "a"((uint8_t)0xFE), "Nd"((uint16_t)0x64));
-        } else if (tb_result == 6) {
-            // Desligar - QEMU/Bochs poweroff via ACPI/APM
-            asm volatile("outw %0, %1" : : "a"((uint16_t)0x2000), "Nd"((uint16_t)0xB004));
-        } else if (tb_result == 7) {
-            kernel_request_shell_app(IPC_APP_OPEN_DESKTOP);
-        } else if (tb_result == 8) {
-            kernel_request_shell_app(IPC_APP_OPEN_SETTINGS);
-        }
-        return;
-    }
 
     if (taskmgr_is_gui_open()) {
         taskmgr_gui_handle_mouse(evt);
@@ -145,6 +180,7 @@ void system_process_main(void) {
     while (1) {
         keyboard_process_events();
         mouse_process_events();
+        kernel_retry_shell_request();
         taskbar_update_clock();
         wm_update_cpu_stats();
         process_yield();
@@ -450,6 +486,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     process_t* shell_process = process_create("Shell", shell_process_main);
     if (shell_process) {
+        kernel_shell_pid = shell_process->pid;
         recovery_mark_ready(RECOVERY_COMPONENT_SHELL);
     } else {
         recovery_mark_disabled(RECOVERY_COMPONENT_SHELL, ERR_MEM,
@@ -468,6 +505,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         if (kernel_service_fallback) {
             keyboard_process_events();
             mouse_process_events();
+            kernel_retry_shell_request();
             taskbar_update_clock();
             wm_update_cpu_stats();
         }
