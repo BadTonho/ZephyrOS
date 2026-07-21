@@ -430,3 +430,11 @@ Sempre que criar ou implementar uma nova funcionalidade, módulo ou driver no pr
 ## Regra #14: Execução de Build
 
 O agente de IA **NUNCA** deve executar comandos de build via terminal (`make`, `make clean`, `make run`, etc). O usuário será o único responsável por rodar o build e testar o sistema no emulador. Apenas instrua o usuário a executar o build quando o código estiver pronto.
+
+---
+
+## Regra #15: Dual Interface (Classic / Modern)
+
+O sistema operacional DEVE manter retrocompatibilidade visual. A interface gráfica baseada em texto original (TUI em `video.c`) deve ser preservada como um "Modo Clássico" (Fallback) para hardwares limitados ou escolha do usuário. O desenvolvimento da "GUI Moderna" (`gui.c`, `gui.h`) deve coexistir, e novos aplicativos/interfaces devem planejar suportar ambos os modos de renderização.
+
+
