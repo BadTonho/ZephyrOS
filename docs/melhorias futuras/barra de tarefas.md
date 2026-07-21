@@ -22,7 +22,7 @@
 - ⬜ Suspender.
 - ✅ Reiniciar o computador. *(taskbar.c:442 — case 5 retorna Reiniciar)*
 - ✅ Desligar o computador. *(taskbar.c:443 — case 6 retorna Desligar)*
-- ✅ Menu pode ser aberto pela tecla Alt. *(taskbar.c:457-462)*
+- ✅ Menu pode ser aberto pela tecla Alt e Win. *(taskbar.c:577-582)*
 
 ### 2. Fixar aplicativos
 - ⬜ Fixar um aplicativo.
@@ -37,7 +37,7 @@
 - ✅ Abrir o aplicativo. *(taskbar.c:234-251 — taskbar_add_app registra e ativa)*
 - ⬜ Restaurar uma janela minimizada.
 - ⬜ Colocar uma janela em primeiro plano.
-- ✅ Alternar entre programas. *(taskbar.c:137-156 — botões clicáveis por teclado)*
+- ✅ Alternar entre programas. *(taskbar.c:615-671 — botões clicáveis por teclado e mouse)*
 - ⬜ Alternar entre várias janelas do mesmo programa.
 - ✅ Identificar qual aplicativo está aberto. *(cor 0x1F = ativo, 0x07 = inativo)*
 - ✅ Identificar qual janela está ativa. *(taskbar.c:144 — cor diferente para active)*
@@ -327,7 +327,7 @@
 - ⬜ Usar controles maiores no modo tablet.
 
 ### 28. Principais atalhos da barra de tarefas
-- ✅ Alt: abrir Menu Iniciar. *(taskbar.c:457-462)*
+- ✅ Alt / Win: abrir Menu Iniciar. *(taskbar.c:577-582)*
 - ✅ F1: abrir configurações da taskbar. *(taskbar.c:450-455)*
 - ✅ Setas ↑↓: navegar no menu. *(taskbar.c:417-426)*
 - ✅ Enter: selecionar item. *(taskbar.c:431)*
