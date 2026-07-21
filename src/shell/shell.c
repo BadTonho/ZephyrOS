@@ -17,6 +17,7 @@
 #include "apps/editor.h"
 #include "ui/filemanager.h"
 #include "core/string.h"
+#include "drivers/mouse.h"
 
 static char input_buffer[SHELL_BUFFER_SIZE];
 static int input_pos = 0;
@@ -80,6 +81,7 @@ static void cmd_help(void) {
     video_print("  taskcfg  - Configura a barra de tarefas\n", 0x07);
     video_print("  compress - Liga/desliga compressao de RAM\n", 0x07);
     video_print("  stats    - Mostra estatisticas de compressao\n", 0x07);
+    video_print("  mouse    - Mostra status do mouse PS/2\n", 0x07);
     video_print("  play     - Toca arquivo WAV\n", 0x07);
     video_print("  view     - Exibe imagem BMP\n", 0x07);
     video_print("  stop     - Para player de midia\n", 0x07);
@@ -534,6 +536,15 @@ int shell_process_command(const char* input) {
         } else {
             editor_run();
         }
+    } else if (kstrcmp(cmd, "mouse") == 0) {
+        video_print("Mouse PS/2:\n", 0x0B);
+        video_print("  X: ", 0x07);
+        print_num(mouse_get_x());
+        video_print("\n  Y: ", 0x07);
+        print_num(mouse_get_y());
+        video_print("\n  Botoes: ", 0x07);
+        print_num(mouse_get_buttons());
+        video_print("\n", 0x07);
     } else {
         video_print("Comando nao encontrado: ", 0x0C);
         video_print(cmd, 0x0C);

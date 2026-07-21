@@ -418,3 +418,15 @@ Antes de commitar:
 8. [ ] Makefile atualizado (se novo .c)?
 9. [ ] `make clean && make` passou?
 10. [ ] Não quebrei nenhuma função existente?
+
+---
+
+## Regra #13: Comandos Shell para Novas Funcionalidades
+
+Sempre que criar ou implementar uma nova funcionalidade, módulo ou driver no projeto, você DEVE criar um comando correspondente no shell (`src/shell/shell.c`) para testar, inspecionar ou executar essa funcionalidade, mantendo o projeto organizado e rastreável.
+
+---
+
+## Regra #14: Execução de Build
+
+O agente de IA **NUNCA** deve executar comandos de build via terminal (`make`, `make clean`, `make run`, etc). O usuário será o único responsável por rodar o build e testar o sistema no emulador. Apenas instrua o usuário a executar o build quando o código estiver pronto.
