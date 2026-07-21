@@ -37,6 +37,7 @@ void shell_handle_app_request(uint32_t request) {
             break;
         case IPC_APP_OPEN_EXPLORER:
             if (recovery_is_enabled(RECOVERY_COMPONENT_FILEMANAGER)) {
+                desktop_set_active(0);
                 fm_run();
             } else {
                 video_print("Erro: File Manager indisponivel.\n", 0x0C);
@@ -44,6 +45,7 @@ void shell_handle_app_request(uint32_t request) {
             break;
         case IPC_APP_OPEN_TASKMANAGER:
             if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
+                desktop_set_active(0);
                 taskmgr_run();
             } else {
                 video_print("Erro: Task Manager indisponivel.\n", 0x0C);
@@ -57,6 +59,7 @@ void shell_handle_app_request(uint32_t request) {
             break;
         case IPC_APP_OPEN_SETTINGS:
             if (recovery_is_enabled(RECOVERY_COMPONENT_SETTINGS)) {
+                desktop_set_active(0);
                 settings_open();
             } else {
                 video_print("Erro: Configuracoes indisponiveis.\n", 0x0C);
@@ -473,39 +476,19 @@ void shell_handle_key(uint8_t scancode) {
     int tb_result = taskbar_handle_key(scancode);
     if (tb_result) {
         if (tb_result == 2) {
-            desktop_set_active(0);
-            video_clear();
-            shell_print_prompt();
-            taskbar_draw();
+            shell_handle_app_request(IPC_APP_OPEN_SHELL);
         } else if (tb_result == 3) {
-            if (recovery_is_enabled(RECOVERY_COMPONENT_FILEMANAGER)) {
-                fm_run();
-            } else {
-                video_print("Erro: File Manager indisponivel.\n", 0x0C);
-            }
+            shell_handle_app_request(IPC_APP_OPEN_EXPLORER);
         } else if (tb_result == 4) {
-            if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
-                taskmgr_run();
-            } else {
-                video_print("Erro: Task Manager indisponivel.\n", 0x0C);
-            }
+            shell_handle_app_request(IPC_APP_OPEN_TASKMANAGER);
         } else if (tb_result == 5) {
             cmd_reboot();
         } else if (tb_result == 6) {
             cmd_shutdown();
         } else if (tb_result == 7) {
-            video_clear();
-            if (!desktop_is_active()) {
-                desktop_set_active(1);
-            }
-            desktop_draw();
-            taskbar_draw();
+            shell_handle_app_request(IPC_APP_OPEN_DESKTOP);
         } else if (tb_result == 8) {
-            if (recovery_is_enabled(RECOVERY_COMPONENT_SETTINGS)) {
-                settings_open();
-            } else {
-                video_print("Erro: Configuracoes indisponiveis.\n", 0x0C);
-            }
+            shell_handle_app_request(IPC_APP_OPEN_SETTINGS);
         } else if (tb_result == 9) {
             shell_redraw_after_overlay_close();
         }
@@ -531,17 +514,11 @@ void shell_handle_key(uint8_t scancode) {
             return;
         }
         if (result == 2) {
-            if (recovery_is_enabled(RECOVERY_COMPONENT_FILEMANAGER)) {
-                desktop_set_active(0);
-                fm_run();
-            }
+            shell_handle_app_request(IPC_APP_OPEN_EXPLORER);
             return;
         }
         if (result == 3) {
-            if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
-                desktop_set_active(0);
-                taskmgr_run();
-            }
+            shell_handle_app_request(IPC_APP_OPEN_TASKMANAGER);
             return;
         }
         return;

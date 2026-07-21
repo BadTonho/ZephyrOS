@@ -73,13 +73,9 @@ static void global_mouse_handler(mouse_event_t* evt) {
         if (tb_result == 2) {
             kernel_request_shell_app(IPC_APP_OPEN_SHELL);
         } else if (tb_result == 3) {
-            if (recovery_is_enabled(RECOVERY_COMPONENT_FILEMANAGER)) {
-                kernel_request_shell_app(IPC_APP_OPEN_EXPLORER);
-            }
+            kernel_request_shell_app(IPC_APP_OPEN_EXPLORER);
         } else if (tb_result == 4) {
-            if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
-                kernel_request_shell_app(IPC_APP_OPEN_TASKMANAGER);
-            }
+            kernel_request_shell_app(IPC_APP_OPEN_TASKMANAGER);
         } else if (tb_result == 5) {
             // Reiniciar - para contornar a falta de acesso a cmd_reboot aqui
             // enviaremos um scan_code falso pro shell tratar? Nao, reset via port.
@@ -90,9 +86,7 @@ static void global_mouse_handler(mouse_event_t* evt) {
         } else if (tb_result == 7) {
             kernel_request_shell_app(IPC_APP_OPEN_DESKTOP);
         } else if (tb_result == 8) {
-            if (recovery_is_enabled(RECOVERY_COMPONENT_SETTINGS)) {
-                kernel_request_shell_app(IPC_APP_OPEN_SETTINGS);
-            }
+            kernel_request_shell_app(IPC_APP_OPEN_SETTINGS);
         }
         return;
     }
@@ -110,13 +104,9 @@ static void global_mouse_handler(mouse_event_t* evt) {
         if (result == DESKTOP_APP_SHELL) {
             kernel_request_shell_app(IPC_APP_OPEN_SHELL);
         } else if (result == DESKTOP_APP_EXPLORER) {
-            if (recovery_is_enabled(RECOVERY_COMPONENT_FILEMANAGER)) {
-                kernel_request_shell_app(IPC_APP_OPEN_EXPLORER);
-            }
+            kernel_request_shell_app(IPC_APP_OPEN_EXPLORER);
         } else if (result == DESKTOP_APP_TASKMGR) {
-            if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
-                kernel_request_shell_app(IPC_APP_OPEN_TASKMANAGER);
-            }
+            kernel_request_shell_app(IPC_APP_OPEN_TASKMANAGER);
         }
     }
 
