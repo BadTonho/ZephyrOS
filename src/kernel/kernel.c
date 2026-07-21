@@ -4,6 +4,7 @@
 #include "core/log.h"
 #include "drivers/idt.h"
 #include "core/keyboard.h"
+#include "drivers/mouse.h"
 #include "core/timer.h"
 #include "core/memory.h"
 #include "memory/paging.h"
@@ -26,6 +27,7 @@
 void system_process_main(void) {
     while (1) {
         keyboard_process_events();
+        mouse_process_events();
         taskbar_update_clock();
         wm_update_cpu_stats();
         process_yield(); // Nao trava a CPU
@@ -120,6 +122,10 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     video_print("[..] Iniciando teclado...\n", 0x08);
     keyboard_init();
     video_print("[OK] Driver de teclado PS/2\n", 0x07);
+
+    video_print("[..] Iniciando mouse...\n", 0x08);
+    mouse_init();
+    video_print("[OK] Driver de mouse PS/2\n", 0x07);
 
     video_print("[..] Iniciando timer...\n", 0x08);
     timer_init(50);

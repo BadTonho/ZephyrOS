@@ -60,6 +60,9 @@ IRQ_OBJ = build/irq.o
 KEYBOARD_C = src/drivers/keyboard.c
 KEYBOARD_OBJ = build/keyboard.o
 
+MOUSE_C = src/drivers/mouse.c
+MOUSE_OBJ = build/mouse.o
+
 TIMER_C = src/drivers/timer.c
 TIMER_OBJ = build/timer.o
 
@@ -159,7 +162,7 @@ OS_IMG = build/zephyros.img
 # Todas as variáveis de objetos
 OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(STRING_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
-       $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(AC97_OBJ) \
+       $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(AC97_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(COMPRESS_OBJ) \
        $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(WM_OBJ) $(ICONS_OBJ)
 
@@ -223,6 +226,10 @@ $(IRQ_OBJ): $(IRQ_ASM)
 	$(NASM) -f elf32 $< -o $@
 
 $(KEYBOARD_OBJ): $(KEYBOARD_C)
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(MOUSE_OBJ): $(MOUSE_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
