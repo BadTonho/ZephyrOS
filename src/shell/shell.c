@@ -358,10 +358,12 @@ void shell_handle_key(uint8_t scancode) {
         } else if (tb_result == 6) {
             cmd_shutdown();
         } else if (tb_result == 7) {
+            video_clear();
             if (!desktop_is_active()) {
                 desktop_set_active(1);
             }
             desktop_draw();
+            taskbar_draw();
         } else if (tb_result == 8) {
             settings_open();
         } else if (tb_result == 9) {

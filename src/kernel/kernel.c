@@ -58,10 +58,12 @@ static void global_mouse_handler(mouse_event_t* evt) {
             // Desligar - QEMU/Bochs poweroff via ACPI/APM
             asm volatile("outw %0, %1" : : "a"((uint16_t)0x2000), "Nd"((uint16_t)0xB004));
         } else if (tb_result == 7) {
+            video_clear();
             if (!desktop_is_active()) {
                 desktop_set_active(1);
             }
             desktop_draw();
+            taskbar_draw();
         } else if (tb_result == 8) {
             settings_open();
         }
