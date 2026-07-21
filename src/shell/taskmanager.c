@@ -12,8 +12,12 @@
 #include "ui/filemanager.h"
 #include "ui/settings.h"
 #include "drivers/ata.h"
+#include "drivers/vesa.h"
+#include "drivers/font.h"
 #include "core/log.h"
 #include "core/recovery.h"
+#include "core/errors.h"
+#include "ui/gui.h"
 
 #define TSKMGR_WIDTH  78
 #define TSKMGR_HEIGHT 23
@@ -32,6 +36,19 @@
 #define COLOR_BAR_CRIT 0x0C
 #define COLOR_DEAD     0x0C
 
+#define TSKMGR_GUI_TASKBAR_HEIGHT 24
+#define TSKMGR_GUI_MIN_WIDTH 600
+#define TSKMGR_GUI_MIN_HEIGHT 420
+#define TSKMGR_GUI_DEFAULT_WIDTH 760
+#define TSKMGR_GUI_DEFAULT_HEIGHT 520
+#define TSKMGR_GUI_TITLE_HEIGHT 22
+#define TSKMGR_GUI_CONTROL_SIZE 16
+#define TSKMGR_GUI_MARGIN 12
+#define TSKMGR_GUI_TAB_HEIGHT 24
+#define TSKMGR_GUI_ROW_HEIGHT 24
+#define TSKMGR_GUI_MAX_VISIBLE_ROWS 14
+#define TSKMGR_GUI_PROCESS_COLUMNS 5
+
 static int is_open = 0;
 static int selected_tab = 0;
 static int selected_row = 0;
@@ -44,18 +61,54 @@ static uint32_t last_cpu_ticks = 0;
 static uint32_t last_proc_ticks[64] = {0};
 static uint32_t cpu_usage[64] = {0};
 
+static int gui_open = 0;
+static int gui_minimized = 0;
+static int gui_maximized = 0;
+static int gui_drag_active = 0;
+static int gui_drag_offset_x = 0;
+static int gui_drag_offset_y = 0;
+static int gui_x = 40;
+static int gui_y = 36;
+static int gui_width = TSKMGR_GUI_DEFAULT_WIDTH;
+static int gui_height = TSKMGR_GUI_DEFAULT_HEIGHT;
+static int gui_restore_x = 40;
+static int gui_restore_y = 36;
+static int gui_restore_width = TSKMGR_GUI_DEFAULT_WIDTH;
+static int gui_restore_height = TSKMGR_GUI_DEFAULT_HEIGHT;
+static uint32_t gui_last_tick = 0;
+
 extern process_t processes[];
 extern uint32_t process_count;
 
+static void taskmgr_gui_draw(void);
+static void taskmgr_gui_draw_tabs(void);
+static void taskmgr_gui_draw_processes(void);
+static void taskmgr_gui_draw_memory(void);
+static void taskmgr_gui_draw_threads(void);
+static void taskmgr_gui_draw_properties(void);
+static void taskmgr_update_cpu_metrics(void);
+static int taskmgr_get_work_bottom(void);
+static int taskmgr_get_work_top(void);
+static void taskmgr_clamp_window(void);
+
 void taskmgr_init(void) {
     is_open = 0;
+    gui_open = 0;
+    gui_minimized = 0;
+    gui_maximized = 0;
+    gui_drag_active = 0;
     selected_tab = 0;
     selected_row = 0;
     scroll_offset = 0;
     show_properties = 0;
+    gui_last_tick = 0;
 }
 
 void taskmgr_open(void) {
+    if (gui_open) {
+        taskmgr_close();
+    }
+
     if (!recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
         LOG_WARN("TSKMGR", "Task Manager indisponivel; abertura ignorada");
         is_open = 0;
@@ -73,8 +126,17 @@ void taskmgr_open(void) {
 }
 
 void taskmgr_close(void) {
+    int was_open = is_open || gui_open;
+
     is_open = 0;
+    gui_open = 0;
+    gui_minimized = 0;
+    gui_maximized = 0;
+    gui_drag_active = 0;
+    show_properties = 0;
     taskbar_remove_app(TB_APP_TASKMGR);
+    if (!was_open) return;
+
     desktop_set_active(1);
     desktop_draw();
     taskbar_draw();

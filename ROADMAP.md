@@ -290,6 +290,7 @@ Sistema operacional em C + Assembly (x86), do zero.
 O projeto conta com uma extensa lista de melhorias e novos módulos planejados, documentados na pasta `docs/melhorias futuras/`. O backlog está organizado nas seguintes categorias:
 
 ### Kernel e Sistema
+- **Resiliência do Sistema** (`resiliencia do sistema.md`)
 - **Multitarefa Preemptiva Avançada** (`multitarefa preemptiva.md`)
 - **Gerenciador de Energia** (`gerenciador de energia.md`)
 - **Gerenciador de Dispositivos** (`gerenciador de dispositivos.md`)
@@ -301,6 +302,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 - **Barra de Tarefas Avançada** (`barra de tarefas.md`)
 - **Gerenciador de Janelas (WM)** (`gerenciador de janelas.md`)
 - **Gerenciador de Arquivos** (`gerenciador de arquivos.md`)
+- **Explorer Moderno** (`explorer moderno.md`)
 - **Painel de Configurações** (`configurações.md`)
 - **Gerenciador de Processos** (`gerenciador de processos.md`)
 
