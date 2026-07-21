@@ -41,6 +41,15 @@ static void global_mouse_handler(mouse_event_t* evt) {
     /* Tenta taskbar primeiro */
     int tb_result = taskbar_handle_click(evt->x, evt->y);
     if (tb_result) {
+        if (taskmgr_is_open() && tb_result >= 2 && tb_result <= 8) {
+            /* O menu Inicio tem prioridade sobre a janela atual. */
+            if (tb_result == 4) {
+                taskmgr_refresh();
+                return;
+            }
+            taskmgr_close();
+        }
+
         if (tb_result == 2) {
             desktop_set_active(0);
             video_clear();

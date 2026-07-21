@@ -6,8 +6,11 @@
 #include "process/process.h"
 #include "process/thread.h"
 #include "core/panic.h"
+#include "apps/shell.h"
 #include "ui/taskbar.h"
 #include "ui/desktop.h"
+#include "ui/filemanager.h"
+#include "ui/settings.h"
 #include "drivers/ata.h"
 #include "core/log.h"
 
@@ -468,14 +471,68 @@ void taskmgr_refresh(void) {
     print_at(TSKMGR_START_X + 4, TSKMGR_START_Y + TSKMGR_HEIGHT - 1, "Navegar: Tab + Setas  |  Fechar: ESC", COLOR_BORDER);
 }
 
+static void taskmgr_redraw_after_menu_close(void) {
+    video_clear();
+    taskmgr_refresh();
+    taskbar_draw();
+}
+
+static void taskmgr_handle_taskbar_action(int result) {
+    switch (result) {
+        case 2:
+            taskmgr_close();
+            desktop_set_active(0);
+            video_clear();
+            shell_print_prompt();
+            taskbar_draw();
+            break;
+        case 3:
+            taskmgr_close();
+            fm_run();
+            break;
+        case 4:
+            taskmgr_redraw_after_menu_close();
+            break;
+        case 5:
+            taskmgr_close();
+            asm volatile("cli");
+            asm volatile("outb %0, %1" : : "a"((uint8_t)0xFE), "Nd"((uint16_t)0x64));
+            for (;;) asm volatile("hlt");
+            break;
+        case 6:
+            taskmgr_close();
+            asm volatile("cli");
+            for (;;) asm volatile("hlt");
+            break;
+        case 7:
+            taskmgr_close();
+            video_clear();
+            desktop_set_active(1);
+            desktop_draw();
+            taskbar_draw();
+            break;
+        case 8:
+            taskmgr_close();
+            settings_open();
+            break;
+        case 9:
+            taskmgr_redraw_after_menu_close();
+            break;
+    }
+}
+
 void taskmgr_handle_key(uint8_t scancode) {
     if (!is_open) return;
 
-    if (taskbar_handle_config_key(scancode)) {
+    int config_result = taskbar_handle_config_key(scancode);
+    if (config_result) {
+        if (config_result == 9) taskmgr_redraw_after_menu_close();
         return;
     }
 
-    if (taskbar_handle_key(scancode)) {
+    int taskbar_result = taskbar_handle_key(scancode);
+    if (taskbar_result) {
+        taskmgr_handle_taskbar_action(taskbar_result);
         return;
     }
 
