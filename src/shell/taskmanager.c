@@ -1134,7 +1134,7 @@ static void taskmgr_gui_draw_tabs(void) {
 
 static void taskmgr_gui_draw_process_details(process_t* process, int x, int y,
                                              int width, int height) {
-    char name[13];
+    char name[19];
 
     gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)width, (uint32_t)height,
                    GUI_COLOR_BG, 0);
@@ -1150,15 +1150,15 @@ static void taskmgr_gui_draw_process_details(process_t* process, int x, int y,
     if (height < 130) {
         gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 32), "PID:", GUI_COLOR_TEXT);
         taskmgr_gui_draw_num(x + 48, y + 32, process->pid, GUI_COLOR_TEXT);
-        gui_draw_text((uint32_t)(x + 112), (uint32_t)(y + 32), "CPU:", GUI_COLOR_TEXT);
-        taskmgr_gui_draw_num(x + 152, y + 32, cpu_usage[process - processes], GUI_COLOR_TEXT);
-        gui_draw_text((uint32_t)(x + 176), (uint32_t)(y + 32), "%", GUI_COLOR_TEXT);
+        gui_draw_text((uint32_t)(x + 128), (uint32_t)(y + 32), "CPU:", GUI_COLOR_TEXT);
+        taskmgr_gui_draw_num(x + 168, y + 32, cpu_usage[process - processes], GUI_COLOR_TEXT);
+        gui_draw_text((uint32_t)(x + 192), (uint32_t)(y + 32), "%", GUI_COLOR_TEXT);
         gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 56), "Nome:", GUI_COLOR_TEXT);
         gui_draw_text((uint32_t)(x + 48), (uint32_t)(y + 56), name, GUI_COLOR_TEXT);
         gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 80), "Estado:", GUI_COLOR_TEXT);
         gui_draw_text((uint32_t)(x + 66), (uint32_t)(y + 80),
                       taskmgr_process_state_name(process->state), GUI_COLOR_TEXT);
-        gui_draw_text((uint32_t)(x + 112), (uint32_t)(y + 80), "Espera:", GUI_COLOR_TEXT);
+        gui_draw_text((uint32_t)(x + 128), (uint32_t)(y + 80), "Wait:", GUI_COLOR_TEXT);
         taskmgr_gui_draw_num(x + 176, y + 80, process->wait_ticks, GUI_COLOR_TEXT);
         return;
     }
@@ -1176,28 +1176,31 @@ static void taskmgr_gui_draw_process_details(process_t* process, int x, int y,
     gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 82), "Estado:", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 66), (uint32_t)(y + 82),
                   taskmgr_process_state_name(process->state), GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 128), (uint32_t)(y + 82), "Espera:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 168, y + 82, process->wait_ticks, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 106), "Tempo:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 60, y + 106,
+    gui_draw_text((uint32_t)(x + 128), (uint32_t)(y + 82), "Wait:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 176, y + 82, process->wait_ticks, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 106), "Tipo:", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 50), (uint32_t)(y + 106),
+                  taskmgr_process_type(process), GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 128), (uint32_t)(y + 106), "Tempo:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 184, y + 106,
                          process->total_ticks / TSKMGR_TICKS_PER_SECOND,
                          GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 84), (uint32_t)(y + 106), "s", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 128), (uint32_t)(y + 106), "Ticks:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 168, y + 106, process->total_ticks, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 130), "EIP:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_hex(x + 48, y + 130, process->context.eip, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 128), (uint32_t)(y + 130), "ESP:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_hex(x + 168, y + 130, process->context.esp, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 154), "CR3:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_hex(x + 48, y + 154, process->context.cr3, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 128), (uint32_t)(y + 154), "Stk:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_hex(x + 168, y + 154, process->kernel_stack_top, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 178), "Page dir:", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 72), (uint32_t)(y + 178),
+    gui_draw_text((uint32_t)(x + 208), (uint32_t)(y + 106), "s", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 130), "Ticks:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 56, y + 130, process->total_ticks, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 128), (uint32_t)(y + 130), "Prox:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 176, y + 130, process->next_pid, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 154), "EIP:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_hex(x + 50, y + 154, process->context.eip, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 178), "ESP:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_hex(x + 50, y + 178, process->context.esp, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 202), "CR3:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_hex(x + 50, y + 202, process->context.cr3, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 226), "Stk:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_hex(x + 50, y + 226, process->kernel_stack_top, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 250), "Page dir:", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 82), (uint32_t)(y + 250),
                   process->page_directory ? "OK" : "N/D", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 128), (uint32_t)(y + 178), "Prox PID:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 192, y + 178, process->next_pid, GUI_COLOR_TEXT);
 }
 
 static void taskmgr_gui_draw_processes(void) {
@@ -1228,20 +1231,20 @@ static void taskmgr_gui_draw_processes(void) {
     gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)width,
                    (uint32_t)panel_height, GUI_COLOR_BG, 0);
     gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 8), "Processos:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 82, y + 8, (uint32_t)count, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 122), (uint32_t)(y + 8), "Prontos:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 186, y + 8, ready, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 232), (uint32_t)(y + 8), "Rodando:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 302, y + 8, running, GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 94, y + 8, (uint32_t)count, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 140), (uint32_t)(y + 8), "Prontos:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 212, y + 8, ready, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 250), (uint32_t)(y + 8), "Rodando:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 322, y + 8, running, GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 350), (uint32_t)(y + 8), "CPU soma:", GUI_COLOR_TEXT);
     taskmgr_gui_draw_num(x + 430, y + 8, cpu_sum, GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 454), (uint32_t)(y + 8), "%", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 24), "Bloq:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 50, y + 24, blocked, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 96), (uint32_t)(y + 24), "Zombie:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 158, y + 24, zombie, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 204), (uint32_t)(y + 24), "Threads:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 270, y + 24, thread_get_count(), GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 58, y + 24, blocked, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 110), (uint32_t)(y + 24), "Zombie:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 174, y + 24, zombie, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 230), (uint32_t)(y + 24), "Threads:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 302, y + 24, thread_get_count(), GUI_COLOR_TEXT);
 
     if (taskmgr_gui_has_side_details()) {
         list_width = width - TSKMGR_GUI_DETAIL_WIDTH - 8;
@@ -1251,10 +1254,10 @@ static void taskmgr_gui_draw_processes(void) {
                    (uint32_t)list_height, GUI_COLOR_BG, 0);
     gui_draw_text((uint32_t)(x + 10), (uint32_t)(list_y + 8), "PID", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 56), (uint32_t)(list_y + 8), "Nome", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 184), (uint32_t)(list_y + 8), "Estado", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 276), (uint32_t)(list_y + 8), "CPU", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 330), (uint32_t)(list_y + 8), "Tipo", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 380), (uint32_t)(list_y + 8), "Tempo", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 170), (uint32_t)(list_y + 8), "Estado", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 260), (uint32_t)(list_y + 8), "CPU", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 310), (uint32_t)(list_y + 8), "Tipo", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 370), (uint32_t)(list_y + 8), "Tempo", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 440), (uint32_t)(list_y + 8), "Wait", GUI_COLOR_TEXT);
     vesa_draw_hline((uint32_t)(x + 6), (uint32_t)(list_y + 30),
                     (uint32_t)(list_width - 12), taskmgr_gui_color(GUI_COLOR_BORDER_D));
@@ -1265,7 +1268,8 @@ static void taskmgr_gui_draw_processes(void) {
         process_t* process = &processes[indexes[absolute_row]];
         int row_y = list_y + 36 + row * TSKMGR_GUI_ROW_HEIGHT;
         uint32_t text_color = absolute_row == selected_row ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
-        char name[18];
+        uint32_t seconds = process->total_ticks / TSKMGR_TICKS_PER_SECOND;
+        char name[14];
         uint32_t state_color = absolute_row == selected_row ? GUI_COLOR_TEXT_W :
                                taskmgr_gui_state_color(process->state);
 
@@ -1280,15 +1284,15 @@ static void taskmgr_gui_draw_processes(void) {
         taskmgr_gui_copy_text(name, sizeof(name), process->name);
         taskmgr_gui_draw_num(x + 10, row_y + 4, process->pid, text_color);
         gui_draw_text((uint32_t)(x + 56), (uint32_t)(row_y + 4), name, text_color);
-        gui_draw_text((uint32_t)(x + 184), (uint32_t)(row_y + 4),
+        gui_draw_text((uint32_t)(x + 170), (uint32_t)(row_y + 4),
                       taskmgr_process_state_name(process->state), state_color);
-        taskmgr_gui_draw_num(x + 276, row_y + 4, cpu_usage[indexes[absolute_row]], text_color);
-        gui_draw_text((uint32_t)(x + 300), (uint32_t)(row_y + 4), "%", text_color);
-        gui_draw_text((uint32_t)(x + 330), (uint32_t)(row_y + 4),
+        taskmgr_gui_draw_num(x + 260, row_y + 4, cpu_usage[indexes[absolute_row]], text_color);
+        gui_draw_text((uint32_t)(x + 284), (uint32_t)(row_y + 4), "%", text_color);
+        gui_draw_text((uint32_t)(x + 310), (uint32_t)(row_y + 4),
                       taskmgr_process_type(process), text_color);
-        taskmgr_gui_draw_num(x + 380, row_y + 4,
-                             process->total_ticks / TSKMGR_TICKS_PER_SECOND, text_color);
-        gui_draw_text((uint32_t)(x + 404), (uint32_t)(row_y + 4), "s", text_color);
+        taskmgr_gui_draw_num(x + 370, row_y + 4, seconds, text_color);
+        gui_draw_text((uint32_t)(x + 370 + num_digits(seconds) * 8),
+                      (uint32_t)(row_y + 4), "s", text_color);
         taskmgr_gui_draw_num(x + 440, row_y + 4, process->wait_ticks, text_color);
     }
 
