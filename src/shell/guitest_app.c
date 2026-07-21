@@ -68,16 +68,17 @@ void guitest_handle_mouse(mouse_event_t* event) {
     int fechar_x = 200 + 400 - 14 - 4;
     int fechar_y = 150 + 5;
     
-    // Clique esquerdo
-    if (event->left_btn) {
+    // Clique esquerdo pressionado
+    if (event->event == MOUSE_EVENT_PRESS && (event->changed & MOUSE_BTN_LEFT)) {
         if (is_inside(event->x, event->y, BTN_X, BTN_Y, BTN_W, BTN_H)) {
             if (!btn_pressed) {
                 btn_pressed = 1;
                 guitest_draw(); // Redesenha com botão afundado
             }
         }
-    } else {
-        // Soltou o botão esquerdo
+    } 
+    // Soltou o botão esquerdo
+    else if (event->event == MOUSE_EVENT_RELEASE && (event->changed & MOUSE_BTN_LEFT)) {
         if (btn_pressed) {
             btn_pressed = 0;
             guitest_draw(); // Redesenha com botão levantado
