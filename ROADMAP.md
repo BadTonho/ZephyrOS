@@ -240,6 +240,16 @@ Sistema operacional em C + Assembly (x86), do zero.
 - [x] Integração com taskbar
 - [x] Comando `explorer` no shell
 
+## Fase 10 - GUI Moderna (Planejado)
+> Arquivos a serem modificados: `src/core/video.c`, `src/desktop/desktop.c`, `src/taskbar/taskbar.c`, `src/wm/wm.c`, `src/drivers/font.c`
+
+- [ ] **Primitive Graphics 2D**: Funções de desenho de retângulos arredondados, gradientes e sombras.
+- [ ] **Renderização de Textos Livres**: Substituir `video_put_char_at` por texto gráfico (desenho pixel a pixel) que possa ser renderizado em qualquer X/Y, não apenas na grade (col/row).
+- [ ] **Desktop Gráfico**: Mudar os ícones do Desktop para carregar imagens reais em `.bmp` do disco, removendo a caixa TUI de texto.
+- [ ] **Barra de Tarefas (Taskbar) Moderna**: Desenhar o botão Iniciar e botões dos apps usando primitive graphics (cores preenchidas e texto solto) e um menu em popup flutuante.
+- [ ] **Window Manager Gráfico**: Mudar as molduras (bordas e titlebars) das janelas do modo texto para primitivas visuais em VESA. Botões de "Fechar/Minimizar/Maximizar" gráficos.
+- [ ] **Integração Plena de Mouse**: Usar o `mouse_event_t` para lidar com cliques reais nos botões gráficos, double-clicks em ícones e arrastar (Drag & Drop) de janelas pelo mouse, não mais pelo teclado.
+
 ---
 
 ## Tecnologias
