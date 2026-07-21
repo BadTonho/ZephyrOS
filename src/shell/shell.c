@@ -347,6 +347,11 @@ void shell_handle_key(uint8_t scancode) {
         } else if (tb_result == 9) {
             if (desktop_is_active()) desktop_draw();
             else if (wm_is_active()) wm_draw_all();
+            else if (guitest_is_active()) {
+                video_clear();
+                taskbar_draw();
+                guitest_draw();
+            }
             else {
                 video_clear();
                 shell_print_prompt();

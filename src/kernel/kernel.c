@@ -50,6 +50,13 @@ static void global_mouse_handler(mouse_event_t* evt) {
             fm_run();
         } else if (tb_result == 4) {
             taskmgr_run();
+        } else if (tb_result == 5) {
+            // Reiniciar - para contornar a falta de acesso a cmd_reboot aqui
+            // enviaremos um scan_code falso pro shell tratar? Nao, reset via port.
+            asm volatile("outb %0, %1" : : "a"((uint8_t)0xFE), "Nd"((uint16_t)0x64));
+        } else if (tb_result == 6) {
+            // Desligar - QEMU/Bochs poweroff via ACPI/APM
+            asm volatile("outw %0, %1" : : "a"((uint16_t)0x2000), "Nd"((uint16_t)0xB004));
         } else if (tb_result == 7) {
             if (!desktop_is_active()) {
                 desktop_set_active(1);
