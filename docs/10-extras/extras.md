@@ -153,3 +153,68 @@ void syscall_handler(registers_t* regs) {
     }
 }
 ```
+
+---
+
+## Mouse PS/2
+
+### O que é?
+
+O driver de mouse permite rastrear movimentos e cliques do mouse PS/2.
+
+### Arquivo
+
+```
+src/drivers/mouse.c
+```
+
+### Inicialização
+
+```c
+mouse_init();
+```
+
+Habilita o mouse auxiliar no controlador PS/2 e configura a resolução.
+
+### Como Funciona
+
+1. Mouse gera IRQ12 a cada movimento/clique
+2. `mouse_handler()` lê 3 bytes do buffer (movX, movY, botões)
+3. Eventos são armazenados em um ring buffer
+4. `mouse_process_events()` processa a fila e chama o callback registrado
+
+### API
+
+```c
+void            mouse_init(void);
+void            mouse_process_events(void);
+mouse_callback_t mouse_set_callback(mouse_callback_t cb);
+int             mouse_get_x(void);
+int             mouse_get_y(void);
+uint8_t         mouse_get_buttons(void);
+```
+
+### Botões
+
+| Bit | Botão |
+|-----|-------|
+| 0 | Esquerdo |
+| 1 | Direito |
+| 2 | Meio |
+
+### Cursor
+
+O cursor é desenhado diretamente no framebuffer VESA usando primitivas de pixel. A posição anterior é salva e restaurada a cada movimento.
+
+### Comando Shell
+
+```bash
+mouse    # Mostra: X=100 Y=200 Buttons=0x01
+```
+
+### Limitações
+
+- Velocidade fixa (MOUSE_SPEED = 3 pixels por evento)
+- Sem suporte a scroll wheel
+- Sem suporte a drivers USB (apenas PS/2)
+- Cursor de 12x16 pixels

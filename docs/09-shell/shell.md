@@ -8,7 +8,7 @@ O shell é a interface que permite ao usuário interagir com o sistema operacion
 
 ```
 src/shell/
-│   ├── shell.c          → Shell interativo com 25 comandos
+│   ├── shell.c          → Shell interativo com 27 comandos
 │   ├── editor.c         → Editor de texto com syntax highlight
 │   ├── mediaplayer.c    → Media player (WAV)
 │   └── taskmanager.c    → Gerenciador de tarefas
@@ -137,6 +137,8 @@ Comandos disponiveis:
   view      - Exibe imagem BMP
   stop      - Para player de midia
   edit      - Editor de texto (edit ARQUIVO.TXT)
+  mouse     - Mostra status do mouse PS/2
+  guitest   - Testa primitivas GUI 2D
   reboot    - Reinicia o sistema
   shutdown  - Desliga o sistema
 ```
@@ -233,6 +235,21 @@ Reinicia o computador.
 
 ### `shutdown`
 Desliga o computador (para o CPU).
+
+### `mouse`
+Mostra o status atual do mouse PS/2 (posição X/Y e botões pressionados).
+
+```
+zephyr> mouse
+X=100 Y=200 Buttons=0x01
+```
+
+### `guitest`
+Testa as primitivas gráficas 2D do módulo GUI (janela, botões, texto).
+
+```
+zephyr> guitest
+```
 
 ### `explorer`
 Abre o gerenciador de arquivos estilo ZephyrOS Explorer (TUI).

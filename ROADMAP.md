@@ -75,7 +75,7 @@ Sistema operacional em C + Assembly (x86), do zero.
 - [x] Terminal interativo com input via teclado
 - [x] Parser de comandos (split comando + argumentos)
 - [x] Prompt `zephyr>` colorido
-- [x] 25 comandos disponíveis
+- [x] 27 comandos disponíveis
 
 ### Comandos
 
@@ -104,6 +104,8 @@ Sistema operacional em C + Assembly (x86), do zero.
 | `view` | Exibe imagem BMP |
 | `stop` | Para player de mídia |
 | `edit` | Editor de texto (edit ARQUIVO.TXT) |
+| `mouse` | Mostra status do mouse PS/2 |
+| `guitest` | Testa primitivas GUI 2D |
 | `reboot` | Reinicia o sistema |
 | `shutdown` | Desliga o sistema |
 
@@ -239,6 +241,32 @@ Sistema operacional em C + Assembly (x86), do zero.
 - [x] F2: Renomear, F3: Visualizar, F5: Refresh, F7: Novo, F8: Excluir
 - [x] Integração com taskbar
 - [x] Comando `explorer` no shell
+
+### Mouse Driver (`src/drivers/mouse.c`)
+- [x] Driver PS/2 mouse via IRQ12
+- [x] Inicialização do controlador (comandos 0xA8, 0xD3, 0xF4)
+- [x] Ring buffer de eventos (fila de 128 eventos)
+- [x] API de callback para apps
+- [x] Renderização de cursor (salvar/desenhar/restaurar pixels)
+- [x] Comando `mouse` no shell (status X, Y, botões)
+
+### IPC (`src/process/ipc.c`)
+- [x] Sistema de mensagens entre processos (send/receive)
+- [x] Foco de janela (process_set_focus / process_get_focus)
+- [x] Integração com mouse e window manager
+
+### GUI Moderna (`src/gui/gui.c`)
+- [x] Primitivas gráficas 2D (pixel-level)
+- [x] gui_draw_text() - texto renderizado pixel a pixel
+- [x] gui_draw_button() - botão com estado pressed
+- [x] gui_draw_window_frame() - moldura de janela gráfica
+- [x] Comando `guitest` no shell
+
+### Core Enhancements
+- [x] Sistema de logging com 4 níveis e buffer (`src/core/log.c`)
+- [x] Utilitários de string (`src/core/string.c` - kmemset, kmemcpy, kstrcmp, kstrlen)
+- [x] Códigos de erro padronizados (`src/include/core/errors.h`)
+- [x] Spinlock para sincronização (`src/include/core/spinlock.h`)
 
 ## Fase 10 - GUI Moderna (Planejado)
 > Arquivos a serem modificados: `src/core/video.c`, `src/desktop/desktop.c`, `src/taskbar/taskbar.c`, `src/wm/wm.c`, `src/drivers/font.c`

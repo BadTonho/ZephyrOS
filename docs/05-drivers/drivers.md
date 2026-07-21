@@ -15,6 +15,7 @@ src/drivers/
 ├── irq.asm          → Handlers de interrupção de hardware
 ├── isr.asm          → Handlers de exceção do CPU
 ├── keyboard.c       → Driver de teclado PS/2
+├── mouse.c          → Driver de mouse PS/2
 ├── pci.c            → Enumeração do barramento PCI
 ├── speaker.c        → PC Speaker (som)
 ├── timer.c          → Timer (PIT)
@@ -125,6 +126,69 @@ O shell registra uma callback para receber teclas:
 ```c
 keyboard_set_callback(shell_handle_key);
 ```
+
+---
+
+## Mouse Driver (`mouse.c`)
+
+Driver de mouse PS/2 que captura movimentos e cliques via IRQ12.
+
+### Inicialização
+
+```c
+mouse_init();
+```
+
+Configura o controlador PS/2 para habilitar o mouse auxiliar (comandos 0xA8, 0xD3, 0xF4).
+
+### Fluxo de Dados
+
+```
+Mouse move/clica → IRQ12 → mouse_handler() → ring buffer → process_events() → callback
+```
+
+### API
+
+```c
+void           mouse_init(void);
+void           mouse_process_events(void);
+mouse_callback_t mouse_set_callback(mouse_callback_t cb);
+int            mouse_get_x(void);
+int            mouse_get_y(void);
+uint8_t        mouse_get_buttons(void);
+```
+
+### Callback
+
+```c
+void my_handler(int x, int y, uint8_t buttons) {
+    if (buttons & MOUSE_LEFT) { /* clique esquerdo */ }
+    if (buttons & MOUSE_RIGHT) { /* clique direito */ }
+}
+
+mouse_set_callback(my_handler);
+```
+
+### Cursor
+
+O cursor é renderizado pixel a pixel no framebuffer VESA. A posição é salva antes de desenhar e restaurada ao mover:
+
+```c
+static void erase_cursor(void);  // Restaura pixels originais
+static void draw_cursor(void);   // Desenha cursor e salva backup
+```
+
+### Comando Shell
+
+```bash
+mouse          # Mostra X, Y e estado dos botões
+```
+
+### Limitações
+
+- Movimento relativo apenas (sem posição absoluta)
+- Velocidade fixa (MOUSE_SPEED = 3)
+- Cursor de 12x16 pixels
 
 ---
 

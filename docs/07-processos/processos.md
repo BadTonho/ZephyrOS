@@ -237,3 +237,44 @@ Quando uma interrupção ocorre em ring 3, o CPU automaticamente:
 2. Troca para o kernel stack
 3. Empilha SS, ESP, EFLAGS, CS, EIP
 4. Executa o handler da interrupção
+
+---
+
+## IPC (Comunicação entre Processos)
+
+### O que é?
+
+IPC permite que processos se comunicuem trocando mensagens e compartilhando estado de foco.
+
+### Arquivo
+
+```
+src/process/ipc.c
+```
+
+### API
+
+```c
+void     ipc_init(void);
+int      ipc_send(uint32_t pid, ipc_msg_t* msg);
+int      ipc_receive(ipc_msg_t* msg);
+void     process_set_focus(uint32_t pid);
+uint32_t process_get_focus(void);
+```
+
+### Foco de Janela
+
+O sistema de foco rastreia qual processo está em primeiro plano:
+
+```c
+process_set_focus(target_pid);     // Dá foco ao processo
+uint32_t current = process_get_focus();  // Retorna PID com foco
+```
+
+O mouse e o window manager usam o foco para direcionar eventos ao processo correto.
+
+### Integração
+
+- **Mouse**: envia eventos de clique/movimento ao processo com foco
+- **Window Manager**: atualiza foco ao criar/destruir janelas
+- **Keyboard**: envia teclas ao processo com foco (via callback)

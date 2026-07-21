@@ -16,10 +16,13 @@ O ZephyrOS é um sistema operacional funcional, construído desde o bootloader a
 - Gerencia memória (alocação dinâmica, compressão LZSS)
 - Roda processos e threads concorrentemente
 - Lê e escreve arquivos em disco (FAT12, FAT32 com subdiretórios)
-- Suporta imagens BMP e áudio WAV
-- Tem um shell com 25 comandos
+- Suporta imagens BMP (1/4/8/24 bpp) e áudio WAV
+- Tem um shell com 27 comandos
 - Ambiente desktop com janelas, ícones e barra de tarefas
 - Editor de texto com syntax highlight
+- Driver de mouse PS/2 com cursor gráfico
+- Sistema de IPC (comunicação entre processos)
+- Primitivas GUI 2D (gui.c)
 - Media player e gerenciador de tarefas
 
 ## Por que existe?

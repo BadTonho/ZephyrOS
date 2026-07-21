@@ -66,6 +66,10 @@ void driver_init(void) {
 | `PROC` | `process.c` | `LOG_WARN("PROC", "Limite de processos atingido")` |
 | `FS` | `fs.c` | `LOG_INFO("FS", "Sistema de arquivos unificado ativo")` |
 | `DESKTOP` | `desktop.c` | `LOG_ERROR("DESKTOP", "Tipo de icone invalido")` |
+| `MOUSE` | `mouse.c` | `LOG_INFO("MOUSE", "Mouse PS/2 inicializado")` |
+| `IPC` | `ipc.c` | `LOG_INFO("IPC", "Sistema de IPC inicializado")` |
+| `GUI` | `gui.c` | `LOG_INFO("GUI", "Primitivas GUI inicializadas")` |
+| `STRING` | `string.c` | `LOG_DEBUG("STRING", "kmemcpy: 256 bytes copiados")` |
 
 ### Integração com panic
 

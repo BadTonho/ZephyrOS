@@ -44,7 +44,7 @@ LOG_WARN("MODULO", "Memoria baixa, continuando...");
 LOG_DEBUG("MODULO", "Variavel x = 5");
 ```
 
-Módulos: `BOOT`, `LOG`, `IDT`, `KBD`, `TIMER`, `MEM`, `ATA`, `VESA`, `FAT12`, `FAT32`, `AC97`, `PCI`, `THRD`, `SHELL`, `WM`, `PROC`, `FS`, `DESKTOP`
+Módulos: `BOOT`, `LOG`, `IDT`, `KBD`, `TIMER`, `MEM`, `ATA`, `VESA`, `FAT12`, `FAT32`, `AC97`, `PCI`, `THRD`, `SHELL`, `WM`, `PROC`, `FS`, `DESKTOP`, `MOUSE`, `IPC`, `GUI`, `STRING`
 
 ---
 
@@ -122,8 +122,8 @@ Novos arquivos DEVEM seguir esta estrutura:
 src/
 ├── boot/           → Bootloader (ASM)
 ├── kernel/         → Kernel core (entry, panic, switch)
-├── core/           → Serviços centrais (log)
-├── drivers/        → Drivers de hardware (video, vesa, font, idt, isr, irq, keyboard, timer, tss, ata, speaker, pci, ac97)
+├── core/           → Serviços centrais (log, string)
+├── drivers/        → Drivers de hardware (video, vesa, font, idt, isr, irq, keyboard, mouse, timer, tss, ata, speaker, pci, ac97)
 ├── memory/         → Gerenciamento de memória (memory, paging, compress)
 ├── fs/             → Sistema de arquivos (fat12, fat32, fs, wav, bmp)
 ├── process/        → Gerenciador de processos
@@ -135,14 +135,15 @@ src/
 ├── settings/       → Settings
 ├── wm/             → Window Manager
 ├── icons/          → Sistema de ícones
+├── gui/            → Primitivas gráficas 2D (gui.c)
 └── include/        → Headers organizados por módulo
-    ├── core/       → video.h, panic.h, log.h, keyboard.h, timer.h, memory.h
-    ├── drivers/    → idt.h, ata.h, ac97.h, pci.h, vesa.h, speaker.h, font.h, tss.h
+    ├── core/       → video.h, panic.h, log.h, keyboard.h, timer.h, memory.h, errors.h, spinlock.h, string.h
+    ├── drivers/    → idt.h, ata.h, ac97.h, pci.h, vesa.h, speaker.h, font.h, tss.h, mouse.h
     ├── fs/         → fat12.h, fat32.h, fs.h, wav.h, bmp.h
     ├── memory/     → paging.h, compress.h
     ├── process/    → process.h, thread.h
     ├── apps/       → shell.h, editor.h, mediaplayer.h, taskmanager.h
-    └── ui/         → taskbar.h, desktop.h, settings.h, wm.h, filemanager.h, icons.h
+    └── ui/         → taskbar.h, desktop.h, settings.h, wm.h, filemanager.h, icons.h, gui.h
 ```
 
 ### Regras

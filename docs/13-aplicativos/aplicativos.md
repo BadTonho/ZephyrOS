@@ -350,3 +350,29 @@ void fm_view_file(void);         // Visualiza conteúdo (F3)
 // Usuário digita novo nome + Enter
 // Esc cancela
 ```
+
+---
+
+## GUI Test (`guitest`)
+
+### O que é?
+
+Comando que testa as primitivas gráficas 2D do módulo GUI.
+
+### Comando
+
+```bash
+guitest
+```
+
+### O que testa
+
+- `gui_draw_window_frame()` - moldura de janela com título
+- `gui_draw_button()` - botão com estado pressed/released
+- `gui_draw_text()` - texto renderizado pixel a pixel
+
+### Arquivo
+
+```
+src/gui/gui.c
+```

@@ -10,21 +10,20 @@ O sistema operacional ZephyrOS possui todos os elementos para uma interface grá
 
 | Etapa | Componente | Status |
 |---|---|---|
-| 1 | **Primitivas 2D (`vesa.c` / `video.c`)**: Adicionar `vesa_draw_rect_filled`, `vesa_draw_circle`, sombras e gradientes. | Planejado |
-| 2 | **Texto Gráfico (`font.c`)**: Permitir `video_print_pixel(x, y, string, color)`, livrando-se da grade de caracteres fixos. | Planejado |
-| 3 | **Mouse Interativo (`wm.c` / `desktop.c`)**: Transformar coordenadas e implementar Drag and Drop (arrastar janelas). | Planejado |
-| 4 | **Desktop Real (`desktop.c`)**: Substituir as caixas de texto de ícones por renderização de imagens BMP. | Planejado |
-| 5 | **Taskbar Moderna (`taskbar.c`)**: Desenho com gradientes e botões planos. | Planejado |
-| 6 | **Windows Decorator (`wm.c`)**: Janelas com titlebar desenhadas via pixel art ou preenchimento de cores. | Planejado |
+| 1 | **Primitivas 2D (`gui.c`)**: `gui_draw_button`, `gui_draw_window_frame`, `gui_draw_text` implementados. | ✅ Concluído |
+| 2 | **Mouse Interativo (`wm.c` / `desktop.c`)**: Transformar coordenadas e implementar Drag and Drop (arrastar janelas). | Planejado |
+| 3 | **Desktop Real (`desktop.c`)**: Substituir as caixas de texto de ícones por renderização de imagens BMP. | Planejado |
+| 4 | **Taskbar Moderna (`taskbar.c`)**: Desenho com gradientes e botões planos. | Planejado |
+| 5 | **Windows Decorator (`wm.c`)**: Janelas com titlebar desenhadas via pixel art ou preenchimento de cores. | Planejado |
 
 ## Detalhes das Fases
 
-### Fase 1: Motor Gráfico Básico
-Atualmente a interface está amarrada aos métodos `video_put_char_at` da VGA text mode (que usa posições fixas de coluna e linha `col = px/8, row = py/16`).
-O foco inicial é parar de chamar `video_put_char` para a UI, construindo funções como:
-- `gui_draw_button(x, y, w, h, text, color)`
-- `gui_draw_window_frame(x, y, w, h, title)`
-- Modificação das fontes para aceitar coordenadas exatas de pixel `(x, y)`.
+### Fase 1: Motor Gráfico Básico ✅
+Implementado em `src/gui/gui.c` com as seguintes primitivas:
+- `gui_draw_text(x, y, text, color)` - Renderiza texto pixel a pixel via fonte bitmap
+- `gui_draw_button(x, y, w, h, text, pressed)` - Botão com estado pressed/released
+- `gui_draw_window_frame(x, y, w, h, title, active)` - Moldura de janela com barra de título
+- Comando `guitest` no shell para testar as primitivas
 
 ### Fase 2: Input Universal (Mouse)
 Atualmente o Window Manager e as interfaces utilizam muito o teclado (`wm_handle_key`). Precisamos interligar o `mouse_event_t` ao:

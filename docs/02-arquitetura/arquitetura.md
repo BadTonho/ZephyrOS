@@ -13,6 +13,8 @@ O ZephyrOS é organizado em camadas, cada uma responsável por uma parte especí
 │     (desktop, wm, taskbar,          │
 │      settings, filemanager, icons)  │
 ├─────────────────────────────────────┤
+│     GUI Primitives (gui.c)          │  ← Primitivas 2D pixel-level
+├─────────────────────────────────────┤
 │         Sistema de Arquivos         │  ← FAT12, FAT32, BMP, WAV
 ├─────────────────────────────────────┤
 │        Processos / Threads          │  ← Scheduler, context switch
@@ -67,6 +69,8 @@ taskbar_init()      → Barra de tarefas desenhada
 desktop_init()      → Desktop com ícones
 settings_init()     → Configurações carregadas
 wm_init()           → Window Manager ativo
+mouse_init()        → Mouse PS/2 configurado
+ipc_init()          → Sistema de IPC ativo
 shell_init()        → Shell aguardando input
 ```
 
@@ -89,6 +93,7 @@ src/
 ├── settings/       → Configurações do sistema
 ├── wm/             → Window Manager
 ├── icons/          → Sistema de ícones
+├── gui/            → Primitivas gráficas 2D (gui.c)
 └── include/        → Headers organizados por módulo
 ```
 
