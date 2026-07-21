@@ -165,13 +165,17 @@ static void taskbar_draw_gui(void) {
 }
 
 void taskbar_draw(void) {
-    vesa_frame_begin();
     vesa_mode_t* mode = vesa_get_mode();
     if (mode && mode->initialized && vesa_has_backbuffer()) {
+        int tb_y = mode->height - TASKBAR_HEIGHT;
+        if (config.position == TB_POS_TOP) tb_y = 0;
+        vesa_frame_begin_region(0, tb_y, mode->width, TASKBAR_HEIGHT);
         taskbar_draw_gui();
         vesa_frame_end();
         return;
     }
+
+    vesa_frame_begin();
 
     int row = get_row();
     int col = get_col();
@@ -275,15 +279,17 @@ void taskbar_update_clock(void) {
 
     vesa_mode_t* mode = vesa_get_mode();
     if (mode && mode->initialized && vesa_has_backbuffer()) {
-        vesa_frame_begin();
-        mouse_invalidate_cursor();
         int tb_y = mode->height - TASKBAR_HEIGHT;
-        if (config.position == TB_POS_TOP) tb_y = 0;
-        
-        vesa_color_t bg; bg.raw = GUI_COLOR_BG;
-        int clock_w = 40; // width for "HH:MM"
+        int clock_w = 40;
         int clock_x = mode->width - clock_w - 10;
-        int clock_y = tb_y + 4;
+        int clock_y;
+        if (config.position == TB_POS_TOP) tb_y = 0;
+        clock_y = tb_y + 4;
+        vesa_frame_begin_region((uint32_t)clock_x, (uint32_t)clock_y,
+                                (uint32_t)clock_w, 16);
+        mouse_invalidate_cursor();
+
+        vesa_color_t bg; bg.raw = GUI_COLOR_BG;
         
         vesa_fill_rect(clock_x, clock_y, clock_w, 16, bg); // limpa o fundo antigo
         gui_draw_text(clock_x, clock_y, time_str, GUI_COLOR_TEXT);
@@ -385,9 +391,6 @@ static void taskbar_draw_menu_gui(void) {
     vesa_mode_t* mode = vesa_get_mode();
     if (!mode || !mode->initialized || !vesa_has_backbuffer()) return;
 
-    vesa_frame_begin();
-    mouse_invalidate_cursor();
-
     int tb_y = mode->height - TASKBAR_HEIGHT;
     if (config.position == TB_POS_TOP) tb_y = 0;
 
@@ -397,6 +400,10 @@ static void taskbar_draw_menu_gui(void) {
     int menu_x = 2;
     int menu_y = tb_y - menu_h;
     if (config.position == TB_POS_TOP) menu_y = TASKBAR_HEIGHT;
+
+    vesa_frame_begin_region((uint32_t)menu_x, (uint32_t)menu_y,
+                            (uint32_t)menu_w, (uint32_t)menu_h);
+    mouse_invalidate_cursor();
     
     vesa_color_t bg; bg.raw = GUI_COLOR_BG;
     vesa_color_t light; light.raw = GUI_COLOR_BORDER_L;

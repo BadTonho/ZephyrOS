@@ -67,6 +67,10 @@ void vesa_draw_bitmap(int x, int y, const uint8_t* bitmap, uint32_t w, uint32_t 
 void vesa_flip(void);
 void vesa_flip_region(uint32_t x, uint32_t y, uint32_t w, uint32_t h);
 void vesa_frame_begin(void);
+void vesa_frame_begin_region(uint32_t x, uint32_t y,
+                             uint32_t width, uint32_t height);
+void vesa_frame_mark_region(uint32_t x, uint32_t y,
+                            uint32_t width, uint32_t height);
 void vesa_frame_end(void);
 int vesa_init_backbuffer(void);
 void vesa_disable(void);

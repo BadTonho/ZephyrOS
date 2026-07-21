@@ -8,6 +8,51 @@
 static vesa_mode_t current_mode;
 static uint8_t* backbuffer = NULL;
 static uint32_t frame_depth = 0;
+static uint8_t frame_dirty = 0;
+static uint32_t dirty_x;
+static uint32_t dirty_y;
+static uint32_t dirty_width;
+static uint32_t dirty_height;
+
+static void vesa_accumulate_region(uint32_t x, uint32_t y,
+                                   uint32_t width, uint32_t height) {
+    uint32_t left;
+    uint32_t top;
+    uint32_t right;
+    uint32_t bottom;
+    uint32_t old_right;
+    uint32_t old_bottom;
+
+    if (!current_mode.initialized || !width || !height ||
+        x >= current_mode.width || y >= current_mode.height) {
+        return;
+    }
+
+    if (width > current_mode.width - x) width = current_mode.width - x;
+    if (height > current_mode.height - y) height = current_mode.height - y;
+
+    right = x + width;
+    bottom = y + height;
+    if (!frame_dirty) {
+        dirty_x = x;
+        dirty_y = y;
+        dirty_width = width;
+        dirty_height = height;
+        frame_dirty = 1;
+        return;
+    }
+
+    left = x < dirty_x ? x : dirty_x;
+    top = y < dirty_y ? y : dirty_y;
+    old_right = dirty_x + dirty_width;
+    old_bottom = dirty_y + dirty_height;
+    if (right < old_right) right = old_right;
+    if (bottom < old_bottom) bottom = old_bottom;
+    dirty_x = left;
+    dirty_y = top;
+    dirty_width = right - left;
+    dirty_height = bottom - top;
+}
 
 static void* memset_simple(void* dst, uint8_t val, uint32_t size) {
     uint8_t* d = (uint8_t*)dst;
@@ -20,6 +65,7 @@ static void* memset_simple(void* dst, uint8_t val, uint32_t size) {
 void vesa_init(uint32_t boot_info_addr) {
     LOG_INFO("VESA", "Inicializando suporte VESA");
     frame_depth = 0;
+    frame_dirty = 0;
     if (backbuffer) {
         kfree(backbuffer);
         backbuffer = NULL;
@@ -114,7 +160,16 @@ static void vesa_copy_region(uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
              y * current_mode.pitch + x * bytes_per_pixel;
 
     for (uint32_t row = 0; row < h; row++) {
-        kmemcpy(target, source, row_bytes);
+        if (current_mode.bpp == VESA_BPP_32) {
+            uint32_t* source32 = (uint32_t*)source;
+            uint32_t* target32 = (uint32_t*)target;
+            uint32_t pixels = row_bytes / sizeof(uint32_t);
+            for (uint32_t col = 0; col < pixels; col++) {
+                target32[col] = source32[col];
+            }
+        } else {
+            kmemcpy(target, source, row_bytes);
+        }
         source += current_mode.pitch;
         target += current_mode.pitch;
     }
@@ -131,7 +186,20 @@ void vesa_flip_region(uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
 }
 
 void vesa_frame_begin(void) {
+    vesa_frame_begin_region(0, 0, current_mode.width, current_mode.height);
+}
+
+void vesa_frame_begin_region(uint32_t x, uint32_t y,
+                             uint32_t width, uint32_t height) {
+    if (frame_depth == 0) frame_dirty = 0;
     frame_depth++;
+    vesa_accumulate_region(x, y, width, height);
+}
+
+void vesa_frame_mark_region(uint32_t x, uint32_t y,
+                            uint32_t width, uint32_t height) {
+    if (frame_depth == 0) return;
+    vesa_accumulate_region(x, y, width, height);
 }
 
 void vesa_frame_end(void) {
@@ -141,8 +209,9 @@ void vesa_frame_end(void) {
     }
 
     frame_depth--;
-    if (frame_depth == 0) {
-        vesa_copy_region(0, 0, current_mode.width, current_mode.height);
+    if (frame_depth == 0 && frame_dirty) {
+        vesa_copy_region(dirty_x, dirty_y, dirty_width, dirty_height);
+        frame_dirty = 0;
     }
 }
 

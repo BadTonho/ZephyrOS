@@ -99,6 +99,10 @@ static void erase_cursor(void) {
 }
 
 void mouse_invalidate_cursor(void) {
+    if (cursor_drawn) {
+        vesa_frame_mark_region((uint32_t)prev_x, (uint32_t)prev_y,
+                               CURSOR_W, CURSOR_H);
+    }
     erase_cursor();
 }
 

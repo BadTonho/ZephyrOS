@@ -38,6 +38,8 @@
 #define COLOR_SELECTION 0x1F
 
 #define TSKMGR_TICKS_PER_SECOND 50U
+#define TSKMGR_UI_FRAME_TICKS 1U
+#define TSKMGR_METRICS_TICKS 5U
 #define TSKMGR_CLASSIC_PROCESS_ROWS 13
 #define TSKMGR_CLASSIC_THREAD_ROWS 11
 
@@ -74,6 +76,8 @@ static int gui_maximized = 0;
 static int gui_drag_active = 0;
 static int gui_drag_offset_x = 0;
 static int gui_drag_offset_y = 0;
+static int gui_drag_previous_x = 40;
+static int gui_drag_previous_y = 36;
 static int gui_x = 40;
 static int gui_y = 36;
 static int gui_width = TSKMGR_GUI_DEFAULT_WIDTH;
@@ -83,11 +87,15 @@ static int gui_restore_y = 36;
 static int gui_restore_width = TSKMGR_GUI_DEFAULT_WIDTH;
 static int gui_restore_height = TSKMGR_GUI_DEFAULT_HEIGHT;
 static uint32_t gui_last_tick = 0;
+static uint32_t gui_last_metrics_tick = 0;
+static int gui_redraw_pending = 0;
 
 extern process_t processes[];
 extern uint32_t process_count;
 
 static void taskmgr_gui_draw(void);
+static void taskmgr_gui_draw_window(void);
+static void taskmgr_gui_draw_drag_region(void);
 static void taskmgr_gui_draw_tabs(void);
 static void taskmgr_gui_draw_processes(void);
 static void taskmgr_gui_draw_memory(void);
@@ -122,11 +130,15 @@ void taskmgr_init(void) {
     gui_minimized = 0;
     gui_maximized = 0;
     gui_drag_active = 0;
+    gui_drag_previous_x = gui_x;
+    gui_drag_previous_y = gui_y;
     selected_tab = 0;
     selected_row = 0;
     scroll_offset = 0;
     show_properties = 0;
     gui_last_tick = 0;
+    gui_last_metrics_tick = 0;
+    gui_redraw_pending = 0;
 }
 
 void taskmgr_open(void) {
@@ -1523,26 +1535,7 @@ static void taskmgr_gui_draw_properties(void) {
                   "Enter ou Esc fecha esta janela", GUI_COLOR_TEXT);
 }
 
-static void taskmgr_gui_draw(void) {
-    vesa_mode_t* mode = vesa_get_mode();
-
-    if (!gui_open || !mode || !mode->initialized || !vesa_has_backbuffer()) return;
-    taskmgr_clamp_window();
-    mouse_invalidate_cursor();
-    vesa_frame_begin();
-
-    if (gui_minimized) {
-        desktop_draw();
-        taskbar_draw();
-        vesa_frame_end();
-        return;
-    }
-
-    {
-        vesa_color_t background;
-        background.raw = GUI_COLOR_BG;
-        vesa_clear(background);
-    }
+static void taskmgr_gui_draw_window(void) {
     gui_draw_window_frame((uint32_t)gui_x, (uint32_t)gui_y,
                           (uint32_t)gui_width, (uint32_t)gui_height,
                           "ZephyrOS Task Manager", 1);
@@ -1564,10 +1557,66 @@ static void taskmgr_gui_draw(void) {
                   "Tab  Setas  S:ord  Enter:det  Del:mata", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(gui_x + gui_width - 238),
                   (uint32_t)(gui_y + gui_height - 48),
-                  "Atualizacao: 1s | ZephyrOS", GUI_COLOR_TEXT);
+                  "Atualizacao: 100ms | ZephyrOS", GUI_COLOR_TEXT);
     if (show_properties) taskmgr_gui_draw_properties();
+}
+
+static void taskmgr_gui_draw(void) {
+    vesa_mode_t* mode = vesa_get_mode();
+
+    if (!gui_open || !mode || !mode->initialized || !vesa_has_backbuffer()) return;
+    taskmgr_clamp_window();
+    mouse_invalidate_cursor();
+    vesa_frame_begin();
+
+    if (gui_minimized) {
+        desktop_draw();
+        taskbar_draw();
+        vesa_frame_end();
+        return;
+    }
+
+    {
+        vesa_color_t background;
+        background.raw = GUI_COLOR_BG;
+        vesa_clear(background);
+    }
+    taskmgr_gui_draw_window();
     taskbar_draw();
     vesa_frame_end();
+}
+
+static void taskmgr_gui_draw_drag_region(void) {
+    vesa_mode_t* mode = vesa_get_mode();
+    int left;
+    int top;
+    int right;
+    int bottom;
+    vesa_color_t background;
+
+    if (!gui_open || gui_minimized || !gui_redraw_pending ||
+        !mode || !mode->initialized || !vesa_has_backbuffer()) return;
+
+    left = gui_drag_previous_x < gui_x ? gui_drag_previous_x : gui_x;
+    top = gui_drag_previous_y < gui_y ? gui_drag_previous_y : gui_y;
+    right = gui_drag_previous_x + gui_width;
+    if (gui_x + gui_width > right) right = gui_x + gui_width;
+    bottom = gui_drag_previous_y + gui_height;
+    if (gui_y + gui_height > bottom) bottom = gui_y + gui_height;
+
+    vesa_frame_begin_region((uint32_t)left, (uint32_t)top,
+                            (uint32_t)(right - left),
+                            (uint32_t)(bottom - top));
+    mouse_invalidate_cursor();
+    background.raw = GUI_COLOR_BG;
+    vesa_fill_rect((uint32_t)left, (uint32_t)top,
+                   (uint32_t)(right - left),
+                   (uint32_t)(bottom - top), background);
+    taskmgr_gui_draw_window();
+    vesa_frame_end();
+    gui_drag_previous_x = gui_x;
+    gui_drag_previous_y = gui_y;
+    gui_redraw_pending = 0;
 }
 
 int taskmgr_open_gui(void) {
@@ -1597,6 +1646,9 @@ int taskmgr_open_gui(void) {
     gui_minimized = 0;
     gui_maximized = 0;
     gui_drag_active = 0;
+    gui_drag_previous_x = gui_x;
+    gui_drag_previous_y = gui_y;
+    gui_redraw_pending = 0;
     selected_tab = 0;
     selected_row = 0;
     scroll_offset = 0;
@@ -1612,10 +1664,13 @@ int taskmgr_open_gui(void) {
     gui_restore_width = gui_width;
     gui_restore_height = gui_height;
     taskmgr_clamp_window();
+    gui_drag_previous_x = gui_x;
+    gui_drag_previous_y = gui_y;
     desktop_set_active(0);
     taskbar_add_app(TB_APP_TASKMGR, "TaskMgr");
     taskmgr_update_cpu_metrics();
     gui_last_tick = timer_get_ticks();
+    gui_last_metrics_tick = gui_last_tick;
     taskmgr_gui_draw();
     LOG_INFO("TSKMGR", "Task Manager grafico aberto");
     return OK;
@@ -1640,19 +1695,35 @@ static void taskmgr_gui_minimize(void) {
     if (!gui_open) return;
     gui_minimized = 1;
     gui_drag_active = 0;
+    gui_redraw_pending = 0;
     desktop_draw();
     taskbar_draw();
 }
 
 void taskmgr_gui_update(void) {
     uint32_t now;
+    int redraw = 0;
 
     if (!gui_open || gui_minimized) return;
     now = timer_get_ticks();
-    if (now - gui_last_tick < 50) return;
+    if (now - gui_last_tick < TSKMGR_UI_FRAME_TICKS) return;
     gui_last_tick = now;
-    taskmgr_update_cpu_metrics();
-    taskmgr_gui_draw();
+
+    if (now - gui_last_metrics_tick >= TSKMGR_METRICS_TICKS) {
+        gui_last_metrics_tick = now;
+        taskmgr_update_cpu_metrics();
+        redraw = 1;
+    }
+    if (gui_redraw_pending && !redraw) {
+        taskmgr_gui_draw_drag_region();
+        return;
+    }
+    if (redraw) {
+        gui_redraw_pending = 0;
+        gui_drag_previous_x = gui_x;
+        gui_drag_previous_y = gui_y;
+        taskmgr_gui_draw();
+    }
 }
 
 static void taskmgr_gui_handle_taskbar_action(int result) {
@@ -1785,7 +1856,7 @@ int taskmgr_gui_handle_mouse(mouse_event_t* event) {
         gui_x = event->x - gui_drag_offset_x;
         gui_y = event->y - gui_drag_offset_y;
         taskmgr_clamp_window();
-        taskmgr_gui_draw();
+        gui_redraw_pending = 1;
         return 1;
     }
     if (event->event == MOUSE_EVENT_RELEASE) {
@@ -1834,6 +1905,8 @@ int taskmgr_gui_handle_mouse(mouse_event_t* event) {
         gui_drag_active = 1;
         gui_drag_offset_x = event->x - gui_x;
         gui_drag_offset_y = event->y - gui_y;
+        gui_drag_previous_x = gui_x;
+        gui_drag_previous_y = gui_y;
         return 1;
     }
 
@@ -1896,7 +1969,7 @@ void taskmgr_run(void) {
             }
         } else {
             uint32_t current_tick = timer_get_ticks();
-            if (current_tick - last_tick >= 50) { // 1 second if 50Hz
+            if (current_tick - last_tick >= TSKMGR_METRICS_TICKS) {
                 taskmgr_refresh();
                 last_tick = current_tick;
             }

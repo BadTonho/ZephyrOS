@@ -275,23 +275,42 @@ void desktop_draw(void) {
 }
 
 void desktop_draw_icons(void) {
-    vesa_frame_begin();
-
     if (desktop_mode == DESKTOP_MODE_MODERN) {
         vesa_mode_t* mode = vesa_get_mode();
         if (!mode || !mode->initialized) {
             LOG_ERROR("DESKTOP", "Nao foi possivel desenhar icones modernos");
-            vesa_frame_end();
             return;
         }
 
-        mouse_invalidate_cursor();
+        int left = (int)mode->width;
+        int top = (int)mode->height;
+        int right = 0;
+        int bottom = 0;
+
         desktop_layout_modern();
+        if (icon_count == 0) return;
+        for (int i = 0; i < icon_count; i++) {
+            desktop_icon_t* icon = &desktop_icons[i];
+            if (icon->modern_x < left) left = icon->modern_x;
+            if (icon->modern_y < top) top = icon->modern_y;
+            if (icon->modern_x + icon->modern_width > right) {
+                right = icon->modern_x + icon->modern_width;
+            }
+            if (icon->modern_y + icon->modern_height > bottom) {
+                bottom = icon->modern_y + icon->modern_height;
+            }
+        }
+
+        vesa_frame_begin_region((uint32_t)left, (uint32_t)top,
+                                (uint32_t)(right - left),
+                                (uint32_t)(bottom - top));
+        mouse_invalidate_cursor();
         desktop_draw_icons_modern();
         vesa_frame_end();
         return;
     }
 
+    vesa_frame_begin();
     desktop_draw_icons_classic();
     vesa_frame_end();
 }
