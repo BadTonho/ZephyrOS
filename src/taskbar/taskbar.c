@@ -5,6 +5,7 @@
 #include "ui/settings.h"
 #include "drivers/vesa.h"
 #include "drivers/font.h"
+#include "drivers/mouse.h"
 #include "ui/gui.h"
 
 static tb_button_t buttons[TASKBAR_BUTTON_MAX];
@@ -128,6 +129,8 @@ static void taskbar_draw_gui(void) {
     vesa_mode_t* mode = vesa_get_mode();
     if (!mode || !mode->initialized) return;
 
+    mouse_invalidate_cursor();
+
     int tb_y = mode->height - TASKBAR_HEIGHT;
     if (config.position == TB_POS_TOP) tb_y = 0;
     
@@ -165,6 +168,7 @@ void taskbar_draw(void) {
     vesa_mode_t* mode = vesa_get_mode();
     if (mode && mode->initialized) {
         taskbar_draw_gui();
+        vesa_flip();
         return;
     }
 
@@ -268,6 +272,7 @@ void taskbar_update_clock(void) {
 
     vesa_mode_t* mode = vesa_get_mode();
     if (mode && mode->initialized) {
+        mouse_invalidate_cursor();
         int tb_y = mode->height - TASKBAR_HEIGHT;
         if (config.position == TB_POS_TOP) tb_y = 0;
         
@@ -278,6 +283,7 @@ void taskbar_update_clock(void) {
         
         vesa_fill_rect(clock_x, clock_y, clock_w, 16, bg); // limpa o fundo antigo
         gui_draw_text(clock_x, clock_y, time_str, GUI_COLOR_TEXT);
+        vesa_flip();
         return;
     }
 
@@ -375,6 +381,8 @@ static void taskbar_draw_menu_gui(void) {
     vesa_mode_t* mode = vesa_get_mode();
     if (!mode || !mode->initialized) return;
 
+    mouse_invalidate_cursor();
+
     int tb_y = mode->height - TASKBAR_HEIGHT;
     if (config.position == TB_POS_TOP) tb_y = 0;
 
@@ -406,6 +414,8 @@ static void taskbar_draw_menu_gui(void) {
             gui_draw_text(menu_x + 10, item_y, menu_items[i], GUI_COLOR_TEXT);
         }
     }
+
+    vesa_flip();
 }
 
 static void taskbar_close_menu(void) {

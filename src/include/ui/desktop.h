@@ -2,6 +2,7 @@
 #define DESKTOP_H
 
 #include "types.h"
+#include "drivers/mouse.h"
 
 #define DESKTOP_MAX_ICONS 16
 #define DESKTOP_ICON_WIDTH 10
@@ -25,11 +26,20 @@ typedef enum {
     DESKTOP_APP_FILE
 } desktop_app_type_t;
 
+typedef enum {
+    DESKTOP_MODE_CLASSIC = 0,
+    DESKTOP_MODE_MODERN
+} desktop_mode_t;
+
 typedef struct {
     const char* name;
     desktop_app_type_t type;
     int x;
     int y;
+    int modern_x;
+    int modern_y;
+    int modern_width;
+    int modern_height;
     int selected;
 } desktop_icon_t;
 
@@ -42,6 +52,9 @@ int  desktop_handle_key(uint8_t scancode);
 int  desktop_get_selected_app(void);
 void desktop_set_active(int active);
 int  desktop_is_active(void);
+int  desktop_set_mode(desktop_mode_t mode);
+desktop_mode_t desktop_get_mode(void);
+int  desktop_handle_mouse(mouse_event_t* event);
 int  desktop_handle_click(int px, int py);
 
 #endif

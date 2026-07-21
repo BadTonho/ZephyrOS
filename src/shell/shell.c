@@ -17,6 +17,7 @@
 #include "apps/editor.h"
 #include "ui/filemanager.h"
 #include "core/string.h"
+#include "core/errors.h"
 #include "drivers/mouse.h"
 #include "ui/gui.h"
 #include "apps/guitest.h"
@@ -89,6 +90,7 @@ static void cmd_help(void) {
     video_print("  help     - Mostra esta mensagem\n", 0x07);
     video_print("  clear    - Limpa a tela\n", 0x07);
     video_print("  desktop  - Abre a area de trabalho\n", 0x07);
+    video_print("  guimode  - Alterna Desktop classic/modern\n", 0x07);
     video_print("  settings - Abre o painel de configuracoes\n", 0x07);
     video_print("  wm       - Abre gerenciador de janelas\n", 0x07);
     video_print("  ls       - Lista arquivos\n", 0x07);
@@ -114,6 +116,45 @@ static void cmd_help(void) {
     video_print("  reboot   - Reinicia o sistema\n", 0x07);
     video_print("  shutdown - Desliga o sistema\n", 0x07);
     video_print("  guitest  - Testa primitivas GUI 2D\n", 0x07);
+}
+
+static void cmd_guimode(const char* args) {
+    char mode_name[16];
+    int i = 0;
+    int result;
+
+    if (!args || !*args) {
+        video_print("Modo Desktop: ", 0x0B);
+        video_print(desktop_get_mode() == DESKTOP_MODE_MODERN ?
+                    "modern\n" : "classic\n", 0x07);
+        return;
+    }
+
+    while (args[i] && args[i] != ' ' && i < (int)sizeof(mode_name) - 1) {
+        mode_name[i] = args[i];
+        i++;
+    }
+    mode_name[i] = '\0';
+
+    if (kstrcmp(mode_name, "classic") == 0) {
+        result = desktop_set_mode(DESKTOP_MODE_CLASSIC);
+        if (result == OK) {
+            video_print("Desktop em modo classic.\n", 0x0A);
+        }
+        return;
+    }
+
+    if (kstrcmp(mode_name, "modern") == 0) {
+        result = desktop_set_mode(DESKTOP_MODE_MODERN);
+        if (result == OK) {
+            video_print("Desktop em modo modern.\n", 0x0A);
+        } else if (result == ERR_NOT_FOUND) {
+            video_print("Modo modern requer VESA; classic mantido.\n", 0x0C);
+        }
+        return;
+    }
+
+    video_print("Uso: guimode classic|modern\n", 0x0C);
 }
 
 static void cmd_clear(void) {
@@ -488,6 +529,8 @@ int shell_process_command(const char* input) {
             desktop_set_active(1);
             desktop_draw();
         }
+    } else if (kstrcmp(cmd, "guimode") == 0) {
+        cmd_guimode(input);
     } else if (kstrcmp(cmd, "explorer") == 0) {
         fm_run();
     } else if (kstrcmp(cmd, "reboot") == 0) {

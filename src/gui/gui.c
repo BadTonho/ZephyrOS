@@ -2,6 +2,7 @@
 #include "drivers/vesa.h"
 #include "drivers/font.h"
 #include "core/string.h"
+#include "core/log.h"
 
 void gui_init(void) {
     // Inicializacoes futuras (ex: double buffer, etc)
@@ -39,10 +40,16 @@ void gui_draw_text(uint32_t x, uint32_t y, const char* text, uint32_t color) {
     }
 }
 
-void gui_draw_button(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const char* text, int pressed) {
+void gui_draw_panel(uint32_t x, uint32_t y, uint32_t w, uint32_t h,
+                    uint32_t background, int pressed) {
+    if (w < 4 || h < 4) {
+        LOG_ERROR("GUI", "Dimensoes invalidas para painel");
+        return;
+    }
+
     vesa_color_t bg_color, light_border, dark_border;
-    bg_color.raw = GUI_COLOR_BG;
-    
+    bg_color.raw = background;
+
     if (pressed) {
         light_border.raw = GUI_COLOR_BORDER_D;
         dark_border.raw = GUI_COLOR_BORDER_L;
@@ -51,21 +58,21 @@ void gui_draw_button(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const char*
         dark_border.raw = GUI_COLOR_BORDER_D;
     }
 
-    // Fill background
     vesa_fill_rect(x, y, w, h, bg_color);
 
-    // Draw borders (3D effect)
-    // Top and Left -> light (if not pressed)
     vesa_draw_hline(x, y, w, light_border);
-    vesa_draw_hline(x, y+1, w-1, light_border);
+    vesa_draw_hline(x, y + 1, w - 1, light_border);
     vesa_draw_vline(x, y, h, light_border);
-    vesa_draw_vline(x+1, y, h-1, light_border);
+    vesa_draw_vline(x + 1, y, h - 1, light_border);
 
-    // Bottom and Right -> dark (if not pressed)
-    vesa_draw_hline(x, y+h-1, w, dark_border);
-    vesa_draw_hline(x+1, y+h-2, w-2, dark_border);
-    vesa_draw_vline(x+w-1, y, h, dark_border);
-    vesa_draw_vline(x+w-2, y+1, h-2, dark_border);
+    vesa_draw_hline(x, y + h - 1, w, dark_border);
+    vesa_draw_hline(x + 1, y + h - 2, w - 2, dark_border);
+    vesa_draw_vline(x + w - 1, y, h, dark_border);
+    vesa_draw_vline(x + w - 2, y + 1, h - 2, dark_border);
+}
+
+void gui_draw_button(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const char* text, int pressed) {
+    gui_draw_panel(x, y, w, h, GUI_COLOR_BG, pressed);
 
     // Center text
     if (text) {

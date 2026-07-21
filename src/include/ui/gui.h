@@ -16,6 +16,10 @@ void gui_init(void);
 // Primitive text rendering (pixel accurate)
 void gui_draw_text(uint32_t x, uint32_t y, const char* text, uint32_t color);
 
+/* Painel 3D reutilizavel por componentes da interface grafica. */
+void gui_draw_panel(uint32_t x, uint32_t y, uint32_t w, uint32_t h,
+                    uint32_t background, int pressed);
+
 // Button drawing
 void gui_draw_button(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const char* text, int pressed);
 

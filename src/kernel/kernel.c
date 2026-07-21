@@ -81,7 +81,14 @@ static void global_mouse_handler(mouse_event_t* evt) {
 
     /* Tenta desktop */
     if (desktop_is_active()) {
-        int result = desktop_handle_click(evt->x, evt->y);
+        int result;
+
+        if (desktop_get_mode() == DESKTOP_MODE_MODERN) {
+            result = desktop_handle_mouse(evt);
+        } else {
+            result = desktop_handle_click(evt->x, evt->y);
+        }
+
         if (result == DESKTOP_APP_SHELL) {
             desktop_set_active(0);
             video_clear();

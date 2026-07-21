@@ -268,9 +268,12 @@ Sistema operacional em C + Assembly (x86), do zero.
 - [x] Códigos de erro padronizados (`src/include/core/errors.h`)
 - [x] Spinlock para sincronização (`src/include/core/spinlock.h`)
 
-## Fase 10 - GUI Moderna (Planejado)
+## Fase 10 - GUI Moderna (Em andamento)
 > Arquivos a serem modificados: `src/core/video.c`, `src/desktop/desktop.c`, `src/taskbar/taskbar.c`, `src/wm/wm.c`, `src/drivers/font.c`
 
+- [x] **Desktop gráfico compatível**: Cards 3D, seleção azul, layout responsivo e fallback TUI.
+- [x] **Modo explícito de interface**: Comando `guimode classic|modern`.
+- [x] **Interação gráfica do Desktop**: Clique para selecionar e duplo clique para abrir aplicativos.
 - [ ] **Primitive Graphics 2D**: Funções de desenho de retângulos arredondados, gradientes e sombras.
 - [ ] **Renderização de Textos Livres**: Substituir `video_put_char_at` por texto gráfico (desenho pixel a pixel) que possa ser renderizado em qualquer X/Y, não apenas na grade (col/row).
 - [ ] **Desktop Gráfico**: Mudar os ícones do Desktop para carregar imagens reais em `.bmp` do disco, removendo a caixa TUI de texto.

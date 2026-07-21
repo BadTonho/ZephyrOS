@@ -32,6 +32,7 @@ typedef void (*mouse_callback_t)(mouse_event_t*);
 
 void mouse_init(void);
 void mouse_process_events(void);
+void mouse_invalidate_cursor(void);
 mouse_callback_t mouse_set_callback(mouse_callback_t cb);
 int mouse_get_x(void);
 int mouse_get_y(void);

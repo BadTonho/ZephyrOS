@@ -80,7 +80,10 @@ static uint8_t mouse_read(void) {
 static void erase_cursor(void) {
     if (!cursor_drawn) return;
     vesa_mode_t* mode = vesa_get_mode();
-    if (!mode || !mode->initialized) return;
+    if (!mode || !mode->initialized) {
+        cursor_drawn = 0;
+        return;
+    }
 
     for (int i = 0; i < CURSOR_H; i++) {
         for (int j = 0; j < CURSOR_W; j++) {
@@ -92,6 +95,10 @@ static void erase_cursor(void) {
         }
     }
     cursor_drawn = 0;
+}
+
+void mouse_invalidate_cursor(void) {
+    erase_cursor();
 }
 
 static void draw_cursor(void) {
@@ -225,6 +232,7 @@ void mouse_process_events(void) {
     if (queue_head == queue_tail) {
         if (!cursor_drawn && cursor_visible) {
             draw_cursor();
+            vesa_flip();
         }
         return;
     }
