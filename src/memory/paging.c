@@ -155,9 +155,9 @@ int paging_init(void) {
         int framebuffer_result = paging_map_framebuffer(mode);
         if (framebuffer_result != OK) {
             LOG_WARN("MEM", "Framebuffer nao mapeado; ativando fallback VGA");
-            recovery_mark_degraded(RECOVERY_COMPONENT_VESA, framebuffer_result,
-                                   "Framebuffer indisponivel; fallback VGA ativo");
             vesa_disable();
+            recovery_mark_disabled(RECOVERY_COMPONENT_VESA, framebuffer_result,
+                                   "Framebuffer indisponivel; fallback VGA ativo");
             video_disable_framebuffer();
         } else {
             LOG_INFO("MEM", "Framebuffer mapeado na pagina");

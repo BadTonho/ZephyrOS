@@ -11,6 +11,8 @@
 #include "drivers/font.h"
 #include "core/string.h"
 #include "core/errors.h"
+#include "core/log.h"
+#include "core/recovery.h"
 
 static mp_status_t status;
 static wav_file_t current_wav;
@@ -67,14 +69,30 @@ void mp_init(void) {
 }
 
 int mp_play_audio(const char* filename) {
+    if (!filename || !*filename) {
+        LOG_ERROR("MP", "Arquivo de audio invalido");
+        return ERR_NULL;
+    }
+    if (!recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM) ||
+        !recovery_is_available(RECOVERY_COMPONENT_AC97)) {
+        LOG_WARN("MP", "Audio indisponivel por falta de filesystem ou AC97");
+        return ERR_UNAVAILABLE;
+    }
+
     mp_stop();
     mp_cleanup();
 
     wav_data = load_file(filename, &wav_size);
-    if (!wav_data) return ERR_DISK;
+    if (!wav_data) {
+        recovery_mark_degraded(RECOVERY_COMPONENT_MEDIAPLAYER, ERR_DISK,
+                               "Falha ao carregar audio");
+        return ERR_DISK;
+    }
 
     if (wav_load(wav_data, wav_size, &current_wav) != 0) {
         mp_cleanup();
+        recovery_mark_degraded(RECOVERY_COMPONENT_MEDIAPLAYER, ERR_INVALID,
+                               "Formato WAV invalido");
         return ERR_DISK;
     }
 
@@ -92,14 +110,30 @@ int mp_play_audio(const char* filename) {
 }
 
 int mp_play_image(const char* filename) {
+    if (!filename || !*filename) {
+        LOG_ERROR("MP", "Arquivo de imagem invalido");
+        return ERR_NULL;
+    }
+    if (!recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM) ||
+        !recovery_is_enabled(RECOVERY_COMPONENT_VESA)) {
+        LOG_WARN("MP", "Imagem indisponivel por falta de filesystem ou VESA");
+        return ERR_UNAVAILABLE;
+    }
+
     mp_stop();
     mp_cleanup();
 
     bmp_data = load_file(filename, &bmp_size);
-    if (!bmp_data) return ERR_DISK;
+    if (!bmp_data) {
+        recovery_mark_degraded(RECOVERY_COMPONENT_MEDIAPLAYER, ERR_DISK,
+                               "Falha ao carregar imagem");
+        return ERR_DISK;
+    }
 
     if (bmp_load(bmp_data, bmp_size, &current_bmp) != 0) {
         mp_cleanup();
+        recovery_mark_degraded(RECOVERY_COMPONENT_MEDIAPLAYER, ERR_INVALID,
+                               "Formato BMP invalido");
         return ERR_DISK;
     }
 
@@ -142,36 +176,70 @@ int mp_play_image(const char* filename) {
 }
 
 int mp_play_media(const char* audio_file, const char* image_file) {
+    if (!audio_file && !image_file) {
+        LOG_ERROR("MP", "Nenhum arquivo de midia informado");
+        return ERR_NULL;
+    }
+    if (!recovery_is_enabled(RECOVERY_COMPONENT_MEDIAPLAYER)) {
+        LOG_WARN("MP", "Media Player desabilitado pelo recovery");
+        return ERR_UNAVAILABLE;
+    }
+    if (!recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM)) {
+        LOG_WARN("MP", "Media Player sem filesystem");
+        return ERR_UNAVAILABLE;
+    }
+    if (audio_file && !recovery_is_available(RECOVERY_COMPONENT_AC97)) {
+        LOG_WARN("MP", "Audio solicitado sem AC97 disponivel");
+        return ERR_UNAVAILABLE;
+    }
+    if (image_file && !recovery_is_enabled(RECOVERY_COMPONENT_VESA)) {
+        LOG_WARN("MP", "Imagem solicitada sem VESA disponivel");
+        return ERR_UNAVAILABLE;
+    }
+
     mp_stop();
     mp_cleanup();
 
     if (audio_file) {
         wav_data = load_file(audio_file, &wav_size);
-        if (wav_data) {
-            if (wav_load(wav_data, wav_size, &current_wav) == 0) {
-                status.has_audio = 1;
-                status.duration_ms = wav_get_duration_ms(&current_wav);
-            }
+        if (!wav_data) {
+            LOG_ERROR("MP", "Falha ao carregar audio solicitado");
+            recovery_mark_degraded(RECOVERY_COMPONENT_MEDIAPLAYER, ERR_DISK,
+                                   "Falha ao carregar audio solicitado");
+        } else if (wav_load(wav_data, wav_size, &current_wav) == 0) {
+            status.has_audio = 1;
+            status.duration_ms = wav_get_duration_ms(&current_wav);
+        } else {
+            LOG_ERROR("MP", "Formato WAV invalido no modo combinado");
+            recovery_mark_degraded(RECOVERY_COMPONENT_MEDIAPLAYER, ERR_INVALID,
+                                   "Formato WAV invalido no modo combinado");
         }
     }
 
     if (image_file) {
         bmp_data = load_file(image_file, &bmp_size);
-        if (bmp_data) {
-            if (bmp_load(bmp_data, bmp_size, &current_bmp) == 0) {
-                status.has_image = 1;
+        if (!bmp_data) {
+            LOG_ERROR("MP", "Falha ao carregar imagem solicitada");
+            recovery_mark_degraded(RECOVERY_COMPONENT_MEDIAPLAYER, ERR_DISK,
+                                   "Falha ao carregar imagem solicitada");
+        } else if (bmp_load(bmp_data, bmp_size, &current_bmp) == 0) {
+            status.has_image = 1;
 
-                vesa_mode_t* mode = vesa_get_mode();
-                if (mode && mode->initialized) {
-                    int x = (mode->width - current_bmp.width) / 2;
-                    int y = (mode->height - current_bmp.height) / 2;
-                    bmp_draw(&current_bmp, x, y);
-                }
+            vesa_mode_t* mode = vesa_get_mode();
+            if (mode && mode->initialized) {
+                int x = (mode->width - current_bmp.width) / 2;
+                int y = (mode->height - current_bmp.height) / 2;
+                bmp_draw(&current_bmp, x, y);
             }
+        } else {
+            LOG_ERROR("MP", "Formato BMP invalido no modo combinado");
+            recovery_mark_degraded(RECOVERY_COMPONENT_MEDIAPLAYER, ERR_INVALID,
+                                   "Formato BMP invalido no modo combinado");
         }
     }
 
     if (!status.has_audio && !status.has_image) {
+        LOG_WARN("MP", "Nenhum arquivo de midia pode ser reproduzido");
         mp_cleanup();
         return ERR_NOT_FOUND;
     }

@@ -26,6 +26,12 @@
 - Estados `READY`, `DEGRADED`, `DISABLED` e `UNKNOWN`.
 - Códigos de retorno em paging, VESA e registro de handlers da IDT.
 - Falhas de disco, filesystem, AC97 e processos não interrompem o boot.
+- Entradas protegidas para Task Manager, File Manager, Settings, Media Player,
+  Editor, GUI Test e Window Manager.
+- Dependências ausentes bloqueiam somente o aplicativo afetado e aparecem no
+  comando `health`.
+- Falhas recuperáveis de leitura, alocação e criação de janelas marcam o
+  componente como `DEGRADED` sem derrubar o kernel.
 
 ### Fase 2 — Isolamento de processos
 

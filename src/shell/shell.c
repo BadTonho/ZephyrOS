@@ -436,9 +436,17 @@ void shell_handle_key(uint8_t scancode) {
             shell_print_prompt();
             taskbar_draw();
         } else if (tb_result == 3) {
-            fm_run();
+            if (recovery_is_enabled(RECOVERY_COMPONENT_FILEMANAGER)) {
+                fm_run();
+            } else {
+                video_print("Erro: File Manager indisponivel.\n", 0x0C);
+            }
         } else if (tb_result == 4) {
-            taskmgr_run();
+            if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
+                taskmgr_run();
+            } else {
+                video_print("Erro: Task Manager indisponivel.\n", 0x0C);
+            }
         } else if (tb_result == 5) {
             cmd_reboot();
         } else if (tb_result == 6) {
@@ -451,7 +459,11 @@ void shell_handle_key(uint8_t scancode) {
             desktop_draw();
             taskbar_draw();
         } else if (tb_result == 8) {
-            settings_open();
+            if (recovery_is_enabled(RECOVERY_COMPONENT_SETTINGS)) {
+                settings_open();
+            } else {
+                video_print("Erro: Configuracoes indisponiveis.\n", 0x0C);
+            }
         } else if (tb_result == 9) {
             shell_redraw_after_overlay_close();
         }
@@ -477,13 +489,17 @@ void shell_handle_key(uint8_t scancode) {
             return;
         }
         if (result == 2) {
-            desktop_set_active(0);
-            fm_run();
+            if (recovery_is_enabled(RECOVERY_COMPONENT_FILEMANAGER)) {
+                desktop_set_active(0);
+                fm_run();
+            }
             return;
         }
         if (result == 3) {
-            desktop_set_active(0);
-            taskmgr_run();
+            if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
+                desktop_set_active(0);
+                taskmgr_run();
+            }
             return;
         }
         return;
@@ -579,8 +595,8 @@ int shell_process_command(const char* input) {
     } else if (kstrcmp(cmd, "guimode") == 0) {
         cmd_guimode(input);
     } else if (kstrcmp(cmd, "explorer") == 0) {
-        if (!recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM)) {
-            video_print("Erro: Explorer indisponivel sem filesystem.\n", 0x0C);
+        if (!recovery_is_enabled(RECOVERY_COMPONENT_FILEMANAGER)) {
+            video_print("Erro: Explorer indisponivel.\n", 0x0C);
         } else {
             fm_run();
         }
@@ -589,17 +605,34 @@ int shell_process_command(const char* input) {
     } else if (kstrcmp(cmd, "shutdown") == 0) {
         cmd_shutdown();
     } else if (kstrcmp(cmd, "guitest") == 0) {
-        guitest_open();
+        if (recovery_is_enabled(RECOVERY_COMPONENT_GUITEST)) {
+            guitest_open();
+        } else {
+            video_print("Erro: GUI Test indisponivel.\n", 0x0C);
+        }
     } else if (kstrcmp(cmd, "taskmgr") == 0) {
-        taskmgr_run();
+        if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
+            taskmgr_run();
+        } else {
+            video_print("Erro: Task Manager indisponivel.\n", 0x0C);
+        }
     } else if (kstrcmp(cmd, "taskcfg") == 0) {
         taskbar_draw_config_menu();
     } else if (kstrcmp(cmd, "settings") == 0) {
-        settings_open();
+        if (recovery_is_enabled(RECOVERY_COMPONENT_SETTINGS)) {
+            settings_open();
+        } else {
+            video_print("Erro: Configuracoes indisponiveis.\n", 0x0C);
+        }
     } else if (kstrcmp(cmd, "wm") == 0) {
-        wm_set_active(1);
+        if (recovery_is_enabled(RECOVERY_COMPONENT_WM)) {
+            wm_set_active(1);
+        } else {
+            video_print("Erro: Window Manager indisponivel.\n", 0x0C);
+        }
     } else if (kstrcmp(cmd, "play") == 0) {
         if (!recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM) ||
+            !recovery_is_enabled(RECOVERY_COMPONENT_MEDIAPLAYER) ||
             !recovery_is_available(RECOVERY_COMPONENT_AC97)) {
             video_print("Erro: audio ou filesystem indisponivel.\n", 0x0C);
         } else if (!*input) {
@@ -613,11 +646,15 @@ int shell_process_command(const char* input) {
             video_print("Tocando: ", 0x0A);
             video_print(name, 0x0A);
             video_print("\n", 0x0A);
-            mp_play_audio(name);
+            int play_result = mp_play_audio(name);
+            if (play_result != OK) {
+                video_print("Erro: nao foi possivel reproduzir o audio.\n", 0x0C);
+            }
         }
     } else if (kstrcmp(cmd, "view") == 0) {
         if (!recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM) ||
-            !recovery_is_available(RECOVERY_COMPONENT_VESA)) {
+            !recovery_is_enabled(RECOVERY_COMPONENT_MEDIAPLAYER) ||
+            !recovery_is_enabled(RECOVERY_COMPONENT_VESA)) {
             video_print("Erro: imagem ou filesystem indisponivel.\n", 0x0C);
         } else if (!*input) {
             video_print("Uso: view <arquivo.bmp>\n", 0x0C);
@@ -627,7 +664,10 @@ int shell_process_command(const char* input) {
             while (input[n] && n < 12) { name[n] = input[n]; n++; }
             name[n] = '\0';
             str_upper(name);
-            mp_play_image(name);
+            int view_result = mp_play_image(name);
+            if (view_result != OK) {
+                video_print("Erro: nao foi possivel exibir a imagem.\n", 0x0C);
+            }
         }
     } else if (kstrcmp(cmd, "stop") == 0) {
         mp_stop();
@@ -643,7 +683,9 @@ int shell_process_command(const char* input) {
     } else if (kstrcmp(cmd, "stats") == 0) {
         compress_print_stats();
     } else if (kstrcmp(cmd, "edit") == 0) {
-        if (*input) {
+        if (!recovery_is_enabled(RECOVERY_COMPONENT_EDITOR)) {
+            video_print("Erro: Editor indisponivel.\n", 0x0C);
+        } else if (*input) {
             char name[13];
             int n = 0;
             while (input[n] && n < 12) { name[n] = input[n]; n++; }

@@ -9,6 +9,7 @@
 #include "ui/icons.h"
 #include "core/errors.h"
 #include "core/log.h"
+#include "core/recovery.h"
 
 static fm_state_t state;
 static char input_buffer[32];
@@ -548,6 +549,12 @@ void fm_init(void) {
 
 
 void fm_open(void) {
+    if (!recovery_is_enabled(RECOVERY_COMPONENT_FILEMANAGER)) {
+        LOG_WARN("FM", "File Manager indisponivel; abertura ignorada");
+        state.running = 0;
+        return;
+    }
+
     fm_init();
     taskbar_add_app(TB_APP_EXPLORER, "Explorer");
     fm_draw_all();

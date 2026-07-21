@@ -4,6 +4,7 @@
 #include "core/video.h"
 #include "drivers/speaker.h"
 #include "ui/taskbar.h"
+#include "core/recovery.h"
 
 static int guitest_active = 0;
 static int btn_pressed = 0;
@@ -15,6 +16,12 @@ static int btn_pressed = 0;
 #define BTN_H 30
 
 void guitest_open(void) {
+    if (!recovery_is_enabled(RECOVERY_COMPONENT_GUITEST) ||
+        !recovery_is_enabled(RECOVERY_COMPONENT_VESA)) {
+        LOG_WARN("GUITEST", "GUI Test requer VESA; abertura ignorada");
+        return;
+    }
+
     if (guitest_active) return;
     guitest_active = 1;
     btn_pressed = 0;
@@ -44,6 +51,12 @@ int guitest_is_active(void) {
 
 void guitest_draw(void) {
     if (!guitest_active) return;
+    if (!recovery_is_enabled(RECOVERY_COMPONENT_GUITEST) ||
+        !recovery_is_enabled(RECOVERY_COMPONENT_VESA)) {
+        LOG_WARN("GUITEST", "GUI Test perdeu suporte VESA; encerrando");
+        guitest_active = 0;
+        return;
+    }
 
     gui_draw_window_frame(200, 150, 400, 300, "Meu Primeiro App GUI (C)", 1);
     
@@ -61,6 +74,10 @@ static int is_inside(int px, int py, int x, int y, int w, int h) {
 
 void guitest_handle_mouse(mouse_event_t* event) {
     if (!guitest_active) return;
+    if (!event) {
+        LOG_ERROR("GUITEST", "Evento de mouse nulo");
+        return;
+    }
 
     // Colisão do botão de fechar (X)
     // Coordenadas aproximadas baseadas no gui_draw_window_frame

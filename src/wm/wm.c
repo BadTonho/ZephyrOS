@@ -3,6 +3,9 @@
 #include "core/keyboard.h"
 #include "core/timer.h"
 #include "ui/icons.h"
+#include "core/errors.h"
+#include "core/log.h"
+#include "core/recovery.h"
 
 static wm_manager_t wm;
 static int wm_active = 0;
@@ -262,7 +265,28 @@ void wm_draw_all(void) {
 
 int wm_create_window(const char* title, int x, int y, int w, int h,
                       wm_app_type_t app_type, wm_key_handler_t on_key, wm_redraw_handler_t on_redraw) {
-    if (wm.window_count >= WM_MAX_WINDOWS) return -1;
+    if (!recovery_is_enabled(RECOVERY_COMPONENT_WM)) {
+        LOG_ERROR("WM", "Window Manager indisponivel");
+        return ERR_STATE;
+    }
+    if (!title) {
+        LOG_ERROR("WM", "Titulo de janela nulo");
+        recovery_mark_degraded(RECOVERY_COMPONENT_WM, ERR_NULL,
+                               "Tentativa de criar janela sem titulo");
+        return ERR_NULL;
+    }
+    if (w < WM_MIN_WIDTH || h < WM_MIN_HEIGHT) {
+        LOG_ERROR("WM", "Dimensoes de janela invalidas");
+        recovery_mark_degraded(RECOVERY_COMPONENT_WM, ERR_INVALID,
+                               "Tentativa de criar janela com dimensoes invalidas");
+        return ERR_INVALID;
+    }
+    if (wm.window_count >= WM_MAX_WINDOWS) {
+        LOG_WARN("WM", "Limite de janelas atingido");
+        recovery_mark_degraded(RECOVERY_COMPONENT_WM, ERR_OVERFLOW,
+                               "Limite de janelas atingido");
+        return ERR_OVERFLOW;
+    }
 
     int id = wm.window_count;
     wm_window_t* win = &wm.windows[id];

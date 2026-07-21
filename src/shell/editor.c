@@ -10,6 +10,7 @@
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/string.h"
+#include "core/recovery.h"
 
 static editor_t editor;
 static uint8_t shift_pressed = 0;
@@ -354,6 +355,11 @@ void editor_new(void) {
 }
 
 int editor_open(const char* filename) {
+    if (!recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM)) {
+        LOG_WARN("EDITOR", "Abertura de arquivo ignorada sem filesystem");
+        return ERR_UNAVAILABLE;
+    }
+
     if (!filename) {
         LOG_ERROR("EDITOR", "Nome de arquivo nulo");
         return ERR_NULL;
@@ -376,12 +382,16 @@ int editor_open(const char* filename) {
     uint8_t* buffer = (uint8_t*)kmalloc(131072);
     if (!buffer) {
         LOG_ERROR("EDITOR", "Falha ao alocar buffer do arquivo");
+        recovery_mark_degraded(RECOVERY_COMPONENT_EDITOR, ERR_MEM,
+                               "Editor sem memoria para abrir arquivo");
         return ERR_MEM;
     }
 
     int bytes = fs_read_file(filename, buffer, 131071);
     if (bytes < 0) {
         LOG_ERROR("EDITOR", "Falha ao ler arquivo");
+        recovery_mark_degraded(RECOVERY_COMPONENT_EDITOR, ERR_DISK,
+                               "Editor nao conseguiu ler arquivo");
         kfree(buffer);
         buffer = 0;
         return ERR_DISK;
@@ -391,6 +401,8 @@ int editor_open(const char* filename) {
     editor.lines[0] = alloc_line();
     if (!editor.lines[0]) {
         LOG_ERROR("EDITOR", "Falha ao alocar linha inicial");
+        recovery_mark_degraded(RECOVERY_COMPONENT_EDITOR, ERR_MEM,
+                               "Editor sem memoria para criar linha");
         kfree(buffer);
         buffer = 0;
         editor.line_count = 0;
@@ -482,6 +494,12 @@ void editor_close(void) {
 }
 
 static void editor_save(void) {
+    if (!recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM)) {
+        LOG_WARN("EDITOR", "Salvamento ignorado sem filesystem");
+        video_print("Erro: filesystem indisponivel para salvar.\n", 0x0C);
+        return;
+    }
+
     uint32_t total_size = 0;
     for (uint32_t i = 0; i < editor.line_count; i++) {
         if (editor.lines[i]) total_size += str_len(editor.lines[i]);
@@ -493,6 +511,9 @@ static void editor_save(void) {
 
     uint8_t* buffer = (uint8_t*)kmalloc(total_size + 1);
     if (!buffer) {
+        LOG_ERROR("EDITOR", "Falha ao alocar buffer para salvar arquivo");
+        recovery_mark_degraded(RECOVERY_COMPONENT_EDITOR, ERR_MEM,
+                               "Editor sem memoria para salvar arquivo");
         video_print("Erro: sem memoria para salvar!\n", 0x0C);
         return;
     }
@@ -524,6 +545,11 @@ static void editor_save(void) {
     if (result >= 0) {
         editor.modified = 0;
         editor.total_bytes = pos;
+    } else {
+        LOG_ERROR("EDITOR", "Falha ao gravar arquivo");
+        recovery_mark_degraded(RECOVERY_COMPONENT_EDITOR, ERR_DISK,
+                               "Editor nao conseguiu salvar arquivo");
+        video_print("Erro: nao foi possivel salvar o arquivo.\n", 0x0C);
     }
 }
 
@@ -936,6 +962,11 @@ void editor_handle_key(uint8_t scancode) {
 }
 
 void editor_run(void) {
+    if (!recovery_is_enabled(RECOVERY_COMPONENT_EDITOR)) {
+        LOG_WARN("EDITOR", "Editor indisponivel; abertura ignorada");
+        return;
+    }
+
     editor_init();
     editor_new();
     if (editor.line_count == 0) {
@@ -958,6 +989,11 @@ void editor_run(void) {
 }
 
 void editor_run_file(const char* filename) {
+    if (!recovery_is_enabled(RECOVERY_COMPONENT_EDITOR)) {
+        LOG_WARN("EDITOR", "Editor indisponivel; abertura ignorada");
+        return;
+    }
+
     editor_init();
     if (editor_open(filename) != OK) {
         video_print("Erro: nao foi possivel abrir o arquivo.\n", 0x0C);

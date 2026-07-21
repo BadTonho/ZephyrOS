@@ -11,6 +11,7 @@
 #include "ui/wm.h"
 #include "ui/icons.h"
 #include "core/log.h"
+#include "core/recovery.h"
 
 #ifndef NULL
 #define NULL ((void*)0)
@@ -160,6 +161,12 @@ void settings_init(void) {
 }
 
 void settings_open(void) {
+    if (!recovery_is_enabled(RECOVERY_COMPONENT_SETTINGS)) {
+        LOG_WARN("SETTINGS", "Configuracoes indisponiveis; abertura ignorada");
+        settings_active = 0;
+        return;
+    }
+
     settings_active = 1;
     icon_editor_active = 0;
     icon_editor_entries = 0;

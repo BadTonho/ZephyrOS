@@ -60,9 +60,13 @@ static void global_mouse_handler(mouse_event_t* evt) {
             shell_print_prompt();
             taskbar_draw();
         } else if (tb_result == 3) {
-            fm_run();
+            if (recovery_is_enabled(RECOVERY_COMPONENT_FILEMANAGER)) {
+                fm_run();
+            }
         } else if (tb_result == 4) {
-            taskmgr_run();
+            if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
+                taskmgr_run();
+            }
         } else if (tb_result == 5) {
             // Reiniciar - para contornar a falta de acesso a cmd_reboot aqui
             // enviaremos um scan_code falso pro shell tratar? Nao, reset via port.
@@ -78,7 +82,9 @@ static void global_mouse_handler(mouse_event_t* evt) {
             desktop_draw();
             taskbar_draw();
         } else if (tb_result == 8) {
-            settings_open();
+            if (recovery_is_enabled(RECOVERY_COMPONENT_SETTINGS)) {
+                settings_open();
+            }
         }
         return;
     }
@@ -98,11 +104,15 @@ static void global_mouse_handler(mouse_event_t* evt) {
             video_clear();
             taskbar_draw();
         } else if (result == DESKTOP_APP_EXPLORER) {
-            desktop_set_active(0);
-            fm_run();
+            if (recovery_is_enabled(RECOVERY_COMPONENT_FILEMANAGER)) {
+                desktop_set_active(0);
+                fm_run();
+            }
         } else if (result == DESKTOP_APP_TASKMGR) {
-            desktop_set_active(0);
-            taskmgr_run();
+            if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
+                desktop_set_active(0);
+                taskmgr_run();
+            }
         }
     }
 
@@ -356,12 +366,49 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Iniciando configuracoes...\n", 0x08);
     settings_init();
+    recovery_mark_ready(RECOVERY_COMPONENT_SETTINGS);
     video_print("[OK] Configuracoes prontas\n", 0x07);
 
     video_print("[..] Iniciando gerenciador de janelas...\n", 0x08);
     wm_init();
     recovery_mark_ready(RECOVERY_COMPONENT_WM);
     video_print("[OK] Gerenciador de janelas pronto\n", 0x07);
+
+    recovery_mark_ready(RECOVERY_COMPONENT_TASKMANAGER);
+    if (recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM)) {
+        recovery_mark_ready(RECOVERY_COMPONENT_FILEMANAGER);
+        recovery_mark_ready(RECOVERY_COMPONENT_EDITOR);
+    } else {
+        recovery_mark_disabled(RECOVERY_COMPONENT_FILEMANAGER, ERR_UNAVAILABLE,
+                               "File Manager requer filesystem");
+        recovery_mark_degraded(RECOVERY_COMPONENT_EDITOR, ERR_UNAVAILABLE,
+                               "Editor sem filesystem; salvar arquivos indisponivel");
+    }
+
+    if (!recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM)) {
+        recovery_mark_disabled(RECOVERY_COMPONENT_MEDIAPLAYER, ERR_UNAVAILABLE,
+                               "Media Player requer filesystem");
+    } else if (recovery_is_available(RECOVERY_COMPONENT_AC97) ||
+               recovery_is_enabled(RECOVERY_COMPONENT_VESA)) {
+        if (recovery_is_available(RECOVERY_COMPONENT_AC97) &&
+            recovery_is_enabled(RECOVERY_COMPONENT_VESA)) {
+            recovery_mark_ready(RECOVERY_COMPONENT_MEDIAPLAYER);
+        } else {
+            recovery_mark_degraded(RECOVERY_COMPONENT_MEDIAPLAYER,
+                                   ERR_UNAVAILABLE,
+                                   "Media Player parcialmente disponivel");
+        }
+    } else {
+        recovery_mark_disabled(RECOVERY_COMPONENT_MEDIAPLAYER, ERR_UNAVAILABLE,
+                               "Media Player sem audio e video disponiveis");
+    }
+
+    if (recovery_is_enabled(RECOVERY_COMPONENT_VESA)) {
+        recovery_mark_ready(RECOVERY_COMPONENT_GUITEST);
+    } else {
+        recovery_mark_disabled(RECOVERY_COMPONENT_GUITEST, ERR_UNAVAILABLE,
+                               "GUI Test requer VESA");
+    }
 
     video_set_color(VGA_COLOR_YELLOW, VGA_COLOR_BLACK);
     video_print("\nZephyrOS pronto! Digite 'help' para comandos.\n", 0x0E);

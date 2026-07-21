@@ -14,7 +14,13 @@ static const char* component_names[RECOVERY_COMPONENT_COUNT] = {
     "Shell",
     "Desktop",
     "Taskbar",
-    "Window Manager"
+    "Window Manager",
+    "Task Manager",
+    "File Manager",
+    "Settings",
+    "Media Player",
+    "Editor",
+    "GUI Test"
 };
 
 static int recovery_valid_component(recovery_component_id_t component) {
@@ -99,6 +105,21 @@ int recovery_is_available(recovery_component_id_t component) {
     }
 
     return components[component].state == RECOVERY_STATE_READY;
+}
+
+int recovery_is_enabled(recovery_component_id_t component) {
+    if (!recovery_initialized) {
+        LOG_ERROR("RECOVERY", "Consulta de disponibilidade antes da inicializacao");
+        return 0;
+    }
+
+    if (!recovery_valid_component(component)) {
+        LOG_ERROR("RECOVERY", "ID de componente invalido em disponibilidade");
+        return 0;
+    }
+
+    return components[component].state == RECOVERY_STATE_READY ||
+           components[component].state == RECOVERY_STATE_DEGRADED;
 }
 
 const recovery_component_t* recovery_get(recovery_component_id_t component) {

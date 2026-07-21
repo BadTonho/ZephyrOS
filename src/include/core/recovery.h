@@ -22,6 +22,12 @@ typedef enum {
     RECOVERY_COMPONENT_DESKTOP,
     RECOVERY_COMPONENT_TASKBAR,
     RECOVERY_COMPONENT_WM,
+    RECOVERY_COMPONENT_TASKMANAGER,
+    RECOVERY_COMPONENT_FILEMANAGER,
+    RECOVERY_COMPONENT_SETTINGS,
+    RECOVERY_COMPONENT_MEDIAPLAYER,
+    RECOVERY_COMPONENT_EDITOR,
+    RECOVERY_COMPONENT_GUITEST,
     RECOVERY_COMPONENT_COUNT
 } recovery_component_id_t;
 
@@ -40,6 +46,7 @@ int recovery_mark_degraded(recovery_component_id_t component,
 int recovery_mark_disabled(recovery_component_id_t component,
                            int error_code, const char* message);
 int recovery_is_available(recovery_component_id_t component);
+int recovery_is_enabled(recovery_component_id_t component);
 const recovery_component_t* recovery_get(recovery_component_id_t component);
 uint32_t recovery_get_count(void);
 const char* recovery_state_name(recovery_state_t state);

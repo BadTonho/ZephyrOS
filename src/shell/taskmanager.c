@@ -13,6 +13,7 @@
 #include "ui/settings.h"
 #include "drivers/ata.h"
 #include "core/log.h"
+#include "core/recovery.h"
 
 #define TSKMGR_WIDTH  78
 #define TSKMGR_HEIGHT 23
@@ -55,6 +56,12 @@ void taskmgr_init(void) {
 }
 
 void taskmgr_open(void) {
+    if (!recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
+        LOG_WARN("TSKMGR", "Task Manager indisponivel; abertura ignorada");
+        is_open = 0;
+        return;
+    }
+
     is_open = 1;
     selected_tab = 0;
     selected_row = 0;
