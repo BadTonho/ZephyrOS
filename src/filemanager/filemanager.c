@@ -687,6 +687,7 @@ void fm_handle_key(uint8_t scancode) {
                     if (content && size > 0) {
                         fs_write_file_in_dir(state.current_path, input_buffer, content, size);
                         kfree(content);
+                        content = 0;
                     } else {
                         uint8_t empty[1] = {0};
                         fs_write_file_in_dir(state.current_path, input_buffer, empty, 0);
@@ -951,6 +952,7 @@ void fm_handle_key(uint8_t scancode) {
                     }
                 }
                 kfree(buf);
+                buf = 0;
                 fm_refresh_files();
                 fm_draw_all();
             }
@@ -970,6 +972,7 @@ void fm_handle_key(uint8_t scancode) {
                     fs_delete_file_in_dir(state.current_path, state.files[state.selected].name);
                 }
                 kfree(buf);
+                buf = 0;
                 fm_refresh_files();
                 fm_draw_all();
             }

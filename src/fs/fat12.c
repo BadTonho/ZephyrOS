@@ -1187,6 +1187,7 @@ int fat12_create_dir_entry(uint16_t dir_cluster, const char* name, uint8_t attri
             ata_write_sectors(data_lba + s, 1, zero_buf_1 + s * fs.bpb.bytes_per_sector);
         }
         kfree(zero_buf_1);
+        zero_buf_1 = 0;
     }
 
     if (dir_cluster == 0) {

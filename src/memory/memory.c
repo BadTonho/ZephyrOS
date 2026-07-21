@@ -170,6 +170,9 @@ void pmm_free_pages(void* addr, uint32_t count) {
 
 #define HEAP_MAGIC         0x48454150
 #define HEAP_MAGIC_ALIGNED 0x414C4947
+#define HEAP_MAGIC_FREED   0x46524545
+#define HEAP_MIN_SPLIT     16
+#define HEAP_END           (HEAP_START + HEAP_SIZE)
 
 typedef struct heap_block {
     uint32_t magic;
@@ -177,30 +180,75 @@ typedef struct heap_block {
     int free;
     struct heap_block* next;
     struct heap_block* prev;
+    void* user_ptr;
 } heap_block_t;
+
+typedef struct heap_aligned_header {
+    uint32_t magic;
+    heap_block_t* block;
+} heap_aligned_header_t;
 
 static heap_block_t* heap_base = 0;
 
+static int heap_range_contains(uint32_t address, uint32_t size) {
+    if (address < HEAP_START || address > HEAP_END) return 0;
+    return size <= HEAP_END - address;
+}
+
+static void heap_initialize(void) {
+    if (heap_base) return;
+
+    heap_base = (heap_block_t*)HEAP_START;
+    heap_base->magic = HEAP_MAGIC;
+    heap_base->size = HEAP_SIZE - sizeof(heap_block_t);
+    heap_base->free = 1;
+    heap_base->next = 0;
+    heap_base->prev = 0;
+    heap_base->user_ptr = 0;
+}
+
+static int heap_block_matches(heap_block_t* block, void* user_ptr) {
+    uint32_t block_address;
+    uint32_t payload_address;
+    uint32_t user_address;
+
+    if (!block || !user_ptr) return 0;
+
+    block_address = (uint32_t)block;
+    if (!heap_range_contains(block_address, sizeof(heap_block_t))) return 0;
+    if (block->magic != HEAP_MAGIC || block->user_ptr != user_ptr) return 0;
+
+    payload_address = block_address + sizeof(heap_block_t);
+    if (!heap_range_contains(payload_address, block->size)) return 0;
+
+    user_address = (uint32_t)user_ptr;
+    return user_address >= payload_address &&
+           user_address < payload_address + block->size;
+}
+
 static void* kmalloc_internal(uint32_t size) {
-    if (!heap_base) {
-        heap_base = (heap_block_t*)HEAP_START;
-        heap_base->magic = HEAP_MAGIC;
-        heap_base->size = HEAP_SIZE - sizeof(heap_block_t);
-        heap_base->free = 1;
-        heap_base->next = 0;
-        heap_base->prev = 0;
+    if (size == 0 || size > HEAP_SIZE - sizeof(heap_block_t)) {
+        LOG_ERROR("MEM", "Tamanho de alocacao invalido");
+        return 0;
     }
+
+    heap_initialize();
 
     heap_block_t* curr = heap_base;
     while (curr) {
+        if (curr->magic != HEAP_MAGIC) {
+            LOG_ERROR("MEM", "Lista do heap corrompida durante alocacao");
+            return 0;
+        }
         if (curr->free && curr->size >= size) {
-            if (curr->size > size + sizeof(heap_block_t) + 16) {
+            if (curr->size - size >= sizeof(heap_block_t) + HEAP_MIN_SPLIT) {
                 heap_block_t* new_block = (heap_block_t*)((uint8_t*)curr + sizeof(heap_block_t) + size);
                 new_block->magic = HEAP_MAGIC;
                 new_block->size = curr->size - size - sizeof(heap_block_t);
                 new_block->free = 1;
                 new_block->next = curr->next;
                 new_block->prev = curr;
+                new_block->user_ptr = 0;
                 if (new_block->next) {
                     new_block->next->prev = new_block;
                 }
@@ -208,11 +256,13 @@ static void* kmalloc_internal(uint32_t size) {
                 curr->size = size;
             }
             curr->free = 0;
+            curr->user_ptr = (uint8_t*)curr + sizeof(heap_block_t);
             return (void*)((uint8_t*)curr + sizeof(heap_block_t));
         }
         curr = curr->next;
     }
 
+    LOG_ERROR("MEM", "Heap sem bloco livre suficiente");
     return 0;
 }
 
@@ -221,51 +271,117 @@ void* kmalloc(uint32_t size) {
 }
 
 void* kmalloc_aligned(uint32_t size) {
-    uint32_t total_size = size + PAGE_SIZE + sizeof(heap_block_t);
-    void* ptr = kmalloc_internal(total_size);
-    if (!ptr) return 0;
+    uint32_t max_size = HEAP_SIZE - sizeof(heap_block_t) -
+                        PAGE_SIZE - sizeof(heap_aligned_header_t);
+    uint32_t total_size;
+    uint32_t raw_address;
+    uint32_t aligned_address;
+    void* raw_ptr;
+    heap_block_t* block;
+    heap_aligned_header_t* header;
 
-    uint32_t addr = (uint32_t)ptr;
-    uint32_t aligned = align_up(addr, PAGE_SIZE);
-
-    if (aligned != addr) {
-        heap_block_t* dummy = (heap_block_t*)(aligned - sizeof(heap_block_t));
-        dummy->magic = HEAP_MAGIC_ALIGNED;
-        dummy->next = (heap_block_t*)((uint8_t*)ptr - sizeof(heap_block_t));
+    if (size == 0 || size > max_size) {
+        LOG_ERROR("MEM", "Tamanho de alocacao alinhada invalido");
+        return 0;
     }
 
-    return (void*)aligned;
+    total_size = size + PAGE_SIZE + sizeof(heap_aligned_header_t);
+    raw_ptr = kmalloc_internal(total_size);
+    if (!raw_ptr) {
+        LOG_ERROR("MEM", "Falha ao alocar bloco alinhado");
+        return 0;
+    }
+
+    raw_address = (uint32_t)raw_ptr;
+    aligned_address = align_up(raw_address + sizeof(heap_aligned_header_t), PAGE_SIZE);
+    if (!aligned_address || !heap_range_contains(aligned_address, size)) {
+        kfree(raw_ptr);
+        raw_ptr = 0;
+        LOG_ERROR("MEM", "Endereco alinhado fora dos limites do heap");
+        return 0;
+    }
+
+    block = (heap_block_t*)(raw_address - sizeof(heap_block_t));
+    header = (heap_aligned_header_t*)(aligned_address - sizeof(heap_aligned_header_t));
+    header->magic = HEAP_MAGIC_ALIGNED;
+    header->block = block;
+    block->user_ptr = (void*)aligned_address;
+
+    return (void*)aligned_address;
+}
+
+static heap_block_t* heap_block_from_pointer(void* ptr) {
+    uint32_t address;
+    heap_aligned_header_t* aligned_header;
+    heap_block_t* block;
+
+    if (!ptr) return 0;
+
+    address = (uint32_t)ptr;
+    if (!heap_range_contains(address, 1)) return 0;
+
+    if ((address & (PAGE_SIZE - 1)) == 0 &&
+        address >= HEAP_START + sizeof(heap_aligned_header_t)) {
+        aligned_header = (heap_aligned_header_t*)(address - sizeof(heap_aligned_header_t));
+        if (aligned_header->magic == HEAP_MAGIC_ALIGNED &&
+            heap_block_matches(aligned_header->block, ptr)) {
+            return aligned_header->block;
+        }
+    }
+
+    if (address < HEAP_START + sizeof(heap_block_t)) return 0;
+    block = (heap_block_t*)(address - sizeof(heap_block_t));
+    if (heap_block_matches(block, ptr)) return block;
+    return 0;
+}
+
+static void heap_merge_next(heap_block_t* block) {
+    heap_block_t* next;
+
+    if (!block) return;
+    next = block->next;
+    if (!next || !next->free) return;
+    if (next->magic != HEAP_MAGIC) {
+        LOG_ERROR("MEM", "Lista do heap corrompida ao unir blocos");
+        return;
+    }
+
+    block->size += sizeof(heap_block_t) + next->size;
+    block->next = next->next;
+    if (block->next) block->next->prev = block;
+
+    next->magic = HEAP_MAGIC_FREED;
+    next->size = 0;
+    next->free = 1;
+    next->next = 0;
+    next->prev = 0;
+    next->user_ptr = 0;
 }
 
 void kfree(void* ptr) {
-    if (!ptr) return;
-    heap_block_t* block = (heap_block_t*)((uint8_t*)ptr - sizeof(heap_block_t));
-    
-    if (block->magic == HEAP_MAGIC_ALIGNED) {
-        block = block->next;
-    }
+    heap_block_t* block;
+    heap_block_t* prev;
 
-    if (block->magic != HEAP_MAGIC) {
-        LOG_ERROR("MEM", "kfree em ponteiro invalido (magic errado)");
+    if (!ptr) return;
+
+    block = heap_block_from_pointer(ptr);
+    if (!block) {
+        LOG_ERROR("MEM", "kfree em ponteiro invalido");
+        return;
+    }
+    if (block->free) {
+        LOG_ERROR("MEM", "Tentativa de liberar bloco ja liberado");
         return;
     }
 
     block->free = 1;
+    block->user_ptr = 0;
 
-    if (block->next && block->next->free) {
-        block->size += sizeof(heap_block_t) + block->next->size;
-        block->next = block->next->next;
-        if (block->next) {
-            block->next->prev = block;
-        }
-    }
-
-    if (block->prev && block->prev->free) {
-        block->prev->size += sizeof(heap_block_t) + block->size;
-        block->prev->next = block->next;
-        if (block->next) {
-            block->next->prev = block->prev;
-        }
+    /* Os vizinhos fisicos ficam registrados no proprio cabecalho. */
+    heap_merge_next(block);
+    prev = block->prev;
+    if (prev && prev->magic == HEAP_MAGIC && prev->free) {
+        heap_merge_next(prev);
     }
 }
 
