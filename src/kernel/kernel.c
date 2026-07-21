@@ -22,6 +22,7 @@
 #include "drivers/ac97.h"
 #include "ui/taskbar.h"
 #include "ui/desktop.h"
+#include "ui/settings.h"
 #include "ui/wm.h"
 #include "ui/icons.h"
 #include "apps/taskmanager.h"
