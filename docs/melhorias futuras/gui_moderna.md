@@ -2,6 +2,10 @@
 
 O sistema operacional ZephyrOS possui todos os elementos para uma interface gráfica (VESA, Mouse PS/2, Decoder de imagens BMP). O objetivo desta fase é abandonar a renderização atual baseada em texto (TUI) e substituí-la por primitivas gráficas 2D modernas.
 
+### Decisão Arquitetural: Linguagem
+- **Etapa Atual (C Puro):** A GUI será construída inteiramente em C para garantir máxima performance, fácil integração com o Kernel atual e evitar complexidades de *runtime* (como inicialização global de objetos e runtime errors). Usaremos uma abordagem *C Object-Oriented* (ex: `ui_create_window()`, `ui_button_draw()`) para manter a organização.
+- **Etapa Futura (C++):** Quando a arquitetura do SO amadurecer (com chamadas de sistema, User-Space/Ring 3 e uma biblioteca padrão C - `libc`), planejaremos a migração do código da UI para C++ visando aproveitar Orientação a Objetos nativa e frameworks robustos.
+
 ## Resumo de Progresso
 
 | Etapa | Componente | Status |
