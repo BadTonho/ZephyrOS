@@ -205,6 +205,8 @@ static void desktop_draw_modern(void) {
     }
 
     mouse_invalidate_cursor();
+    /* Limpa tambem o estado TUI para que logs antigos nao retornem ao frame. */
+    video_clear();
     background.raw = desktop_modern_background();
     vesa_clear(background);
     desktop_layout_modern();

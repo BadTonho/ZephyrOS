@@ -104,6 +104,18 @@ void memory_init(uint32_t mmap_addr) {
         mem_info.bitmap[p / 8] |= (1 << (p % 8));
     }
 
+    /* O heap e o backbuffer vivem nessa faixa e nao podem ser reutilizados pelo PMM. */
+    uint32_t heap_start_page = HEAP_START / PAGE_SIZE;
+    uint32_t heap_end_page = (HEAP_START + HEAP_SIZE + PAGE_SIZE - 1) / PAGE_SIZE;
+    if (heap_start_page < mem_info.total_pages) {
+        if (heap_end_page > mem_info.total_pages) {
+            heap_end_page = mem_info.total_pages;
+        }
+        for (uint32_t p = heap_start_page; p < heap_end_page; p++) {
+            mem_info.bitmap[p / 8] |= (1 << (p % 8));
+        }
+    }
+
     mem_info.used_memory = 0;
     for (uint32_t p = 0; p < mem_info.total_pages; p++) {
         if (mem_info.bitmap[p / 8] & (1 << (p % 8))) {

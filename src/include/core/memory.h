@@ -9,7 +9,8 @@
 #define BOOT_TRANSITION_START 0x4000
 #define BOOT_TRANSITION_END KERNEL_START
 #define HEAP_START 0x100000
-#define HEAP_SIZE 0x100000
+/* O framebuffer 1024x768x32 exige cerca de 3 MiB para o backbuffer. */
+#define HEAP_SIZE 0x400000
 #define MAX_PHYSICAL_ADDRESS 0xFFFFFFFFULL
 
 #define MMAP_ENTRY_SIZE 24
