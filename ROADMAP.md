@@ -290,6 +290,8 @@ Sistema operacional em C + Assembly (x86), do zero.
 O projeto conta com uma extensa lista de melhorias e novos módulos planejados, documentados na pasta `docs/melhorias futuras/`. O backlog está organizado nas seguintes categorias:
 
 ### Kernel e Sistema
+- **Fundacao do Kernel** (`fundacao do kernel.md`) - etapa prioritaria para organizar as bases antes das otimizacoes
+- **Atualizacao e Otimizacao do Kernel** (`atualizacao do kernel.md`) - etapa posterior, guiada por metricas
 - **Resiliência do Sistema** (`resiliencia do sistema.md`)
 - **Multitarefa Preemptiva Avançada** (`multitarefa preemptiva.md`)
 - **Gerenciador de Energia** (`gerenciador de energia.md`)
