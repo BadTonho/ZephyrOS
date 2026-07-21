@@ -123,7 +123,7 @@ static int fat32_find_in_dir(uint32_t dir_cluster, const char* filename,
                 cluster_buf = 0;
                 return ERR_NOT_FOUND;
             }
-            if (entry->name[0] == 0xE5) continue;
+            if ((uint8_t)entry->name[0] == 0xE5) continue;
             if (entry->attributes == 0x0F) continue;
 
             if (strncmp(entry->name, filename, 11) == 0) {
@@ -140,14 +140,6 @@ static int fat32_find_in_dir(uint32_t dir_cluster, const char* filename,
     kfree(cluster_buf);
     cluster_buf = 0;
     return ERR_TIMEOUT;
-}
-
-static uint32_t fat32_get_dir_cluster(const char* path) {
-    if (!path || path[0] == '\0') {
-        return fs.root_cluster;
-    }
-
-    return fs.root_cluster;
 }
 
 int fat32_init(void) {
@@ -373,7 +365,7 @@ int fat32_delete_file(const char* filename) {
                 cluster_buf = 0;
                 return -1;
             }
-            if (entry->name[0] == 0xE5) continue;
+            if ((uint8_t)entry->name[0] == 0xE5) continue;
             if (entry->attributes == 0x0F) continue;
 
             if (strncmp(entry->name, filename, 11) == 0) {
@@ -436,7 +428,7 @@ int fat32_list_dir(void) {
                 cluster_buf = 0;
                 return count;
             }
-            if (entry->name[0] == 0xE5) continue;
+            if ((uint8_t)entry->name[0] == 0xE5) continue;
             if (entry->attributes == 0x0F) continue;
 
             char name[13];
@@ -521,7 +513,7 @@ int fat32_get_file_count(void) {
                 cluster_buf = 0;
                 return count;
             }
-            if (entry->name[0] == 0xE5) continue;
+            if ((uint8_t)entry->name[0] == 0xE5) continue;
             if (entry->attributes == 0x0F) continue;
 
             count++;
@@ -563,7 +555,7 @@ int fat32_get_file_info(int index, char* name_out, uint32_t* size_out, uint8_t* 
                 cluster_buf = 0;
                 return -1;
             }
-            if (entry->name[0] == 0xE5) continue;
+            if ((uint8_t)entry->name[0] == 0xE5) continue;
             if (entry->attributes == 0x0F) continue;
 
             if (count == index) {
@@ -713,7 +705,7 @@ int fat32_get_file_count_at(uint32_t dir_cluster) {
                 cluster_buf = 0;
                 return count;
             }
-            if (entry->name[0] == 0xE5) continue;
+            if ((uint8_t)entry->name[0] == 0xE5) continue;
             if (entry->attributes == 0x0F) continue;
             count++;
         }
@@ -752,7 +744,7 @@ int fat32_get_file_info_at(uint32_t dir_cluster, int index, char* name_out, uint
                 cluster_buf = 0;
                 return -1;
             }
-            if (entry->name[0] == 0xE5) continue;
+            if ((uint8_t)entry->name[0] == 0xE5) continue;
             if (entry->attributes == 0x0F) continue;
 
             if (count == index) {
@@ -881,7 +873,8 @@ int fat32_create_dir_entry(uint32_t dir_cluster, const char* name, uint8_t attri
         uint32_t entries_per_cluster = cluster_size / 32;
         for (uint32_t i = 0; i < entries_per_cluster; i++) {
             fat32_dir_entry_t* entry = (fat32_dir_entry_t*)(cluster_buf + i * 32);
-            if (entry->name[0] == 0x00 || entry->name[0] == 0xE5) {
+            if (entry->name[0] == 0x00 ||
+                (uint8_t)entry->name[0] == 0xE5) {
                 kmemset(entry, 0, sizeof(fat32_dir_entry_t));
                 kmemcpy(entry->name, fat_name, 8);
                 kmemcpy(entry->ext, fat_ext, 3);
@@ -972,7 +965,8 @@ int fat32_write_file_in_dir(uint32_t dir_cluster, const char* filename, const ui
             uint32_t entries_per_cluster = cluster_size / 32;
             for (uint32_t i = 0; i < entries_per_cluster; i++) {
                 fat32_dir_entry_t* entry = (fat32_dir_entry_t*)(cluster_buf + i * 32);
-                if (entry->name[0] == 0x00 || entry->name[0] == 0xE5) {
+                if (entry->name[0] == 0x00 ||
+                    (uint8_t)entry->name[0] == 0xE5) {
                     kmemset(entry, 0, sizeof(fat32_dir_entry_t));
                     kmemcpy(entry->name, fat_name, 8);
                     kmemcpy(entry->ext, fat_ext, 3);
@@ -1099,7 +1093,7 @@ int fat32_delete_file_in_dir(uint32_t dir_cluster, const char* filename) {
                 cluster_buf = 0;
                 return -1;
             }
-            if (entry->name[0] == 0xE5) continue;
+            if ((uint8_t)entry->name[0] == 0xE5) continue;
             if (entry->attributes == 0x0F) continue;
 
             if (strncmp(entry->name, fat12_name, 11) == 0) {

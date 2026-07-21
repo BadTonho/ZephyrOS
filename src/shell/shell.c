@@ -18,6 +18,7 @@
 #include "ui/filemanager.h"
 #include "core/string.h"
 #include "core/errors.h"
+#include "core/log.h"
 #include "drivers/mouse.h"
 #include "ui/gui.h"
 #include "apps/guitest.h"
