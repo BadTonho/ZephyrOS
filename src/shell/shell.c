@@ -19,6 +19,7 @@
 #include "core/string.h"
 #include "drivers/mouse.h"
 #include "ui/gui.h"
+#include "apps/guitest.h"
 
 static char input_buffer[SHELL_BUFFER_SIZE];
 static int input_pos = 0;
@@ -478,11 +479,7 @@ int shell_process_command(const char* input) {
     } else if (kstrcmp(cmd, "shutdown") == 0) {
         cmd_shutdown();
     } else if (kstrcmp(cmd, "guitest") == 0) {
-        gui_draw_window_frame(200, 150, 400, 300, "Meu Primeiro App GUI (C)", 1);
-        gui_draw_button(250, 200, 120, 30, "Aperte-me", 0);
-        gui_draw_button(400, 200, 120, 30, "Pressionado", 1);
-        gui_draw_text(250, 260, "Isso eh texto renderizado pixel a pixel!", GUI_COLOR_TEXT);
-        gui_draw_text(250, 280, "Nao ha limite de colunas/linhas aqui.", GUI_COLOR_TEXT);
+        guitest_open();
     } else if (kstrcmp(cmd, "taskmgr") == 0) {
         taskmgr_run();
     } else if (kstrcmp(cmd, "taskcfg") == 0) {

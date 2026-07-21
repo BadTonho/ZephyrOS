@@ -131,6 +131,10 @@ MEDIAPLAYER_OBJ = build/mediaplayer.o
 EDITOR_C = src/shell/editor.c
 EDITOR_OBJ = build/editor.o
 
+GUITEST_C = src/shell/guitest_app.c
+GUITEST_OBJ = build/guitest_app.o
+
+
 # Arquivos - File Manager
 FILEMANAGER_C = src/filemanager/filemanager.c
 FILEMANAGER_OBJ = build/filemanager.o
@@ -169,7 +173,7 @@ OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(STRING_OBJ) $(SWITCH
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(AC97_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(COMPRESS_OBJ) \
-       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ)
+       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ)
 
 # Targets
 all: $(OS_IMG)
@@ -321,6 +325,11 @@ $(MEDIAPLAYER_OBJ): $(MEDIAPLAYER_C)
 $(EDITOR_OBJ): $(EDITOR_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(GUITEST_OBJ): $(GUITEST_C)
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
 
 $(FILEMANAGER_OBJ): $(FILEMANAGER_C)
 	@if not exist build mkdir build

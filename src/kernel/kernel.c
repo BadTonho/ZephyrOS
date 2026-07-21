@@ -25,10 +25,16 @@
 #include "ui/icons.h"
 #include "ui/filemanager.h"
 #include "apps/taskmanager.h"
+#include "apps/guitest.h"
 
 /* Handler global de eventos do mouse, despacha para a UI ativa */
 static void global_mouse_handler(mouse_event_t* evt) {
-    /* So processa clique esquerdo (press) */
+    if (guitest_is_active()) {
+        guitest_handle_mouse(evt);
+        return;
+    }
+
+    /* O restante do sistema legado so processa clique esquerdo (press) */
     if (evt->event != MOUSE_EVENT_PRESS) return;
     if (!(evt->changed & MOUSE_BTN_LEFT)) return;
 
