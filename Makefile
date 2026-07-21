@@ -171,6 +171,12 @@ GUI_OBJ = build/gui.o
 KERNEL_BIN = build/kernel.bin
 OS_IMG = build/zephyros.img
 
+# A imagem de boot reserva os primeiros setores para o stage2 e o kernel.
+# O volume FAT12 fica depois dessa area para que o Explorer nunca sobrescreva
+# o codigo usado no proximo boot.
+FAT12_DISK_BYTES = 1474560
+FAT12_RESERVED_SECTORS = 1024
+
 # Todas as variáveis de objetos
 OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(RECOVERY_OBJ) $(STRING_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
@@ -372,6 +378,7 @@ $(KERNEL_BIN): $(OBJS) src/linker.ld
 
 $(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(KERNEL_BIN)
 	cmd /c "copy /b build\boot.bin+build\stage2.bin+build\kernel.bin build\zephyros.img"
+	powershell -NoProfile -Command "$$path = 'build\zephyros.img'; $$reserved = $(FAT12_RESERVED_SECTORS); $$bytes = [System.IO.File]::ReadAllBytes($$path); $$bytes[14] = ($$reserved -band 0xFF); $$bytes[15] = (($$reserved -shr 8) -band 0xFF); [System.IO.File]::WriteAllBytes($$path, $$bytes); $$stream = [System.IO.File]::Open($$path, [System.IO.FileMode]::Open); $$stream.SetLength($(FAT12_DISK_BYTES)); $$stream.Close()"
 
 run: $(OS_IMG)
 	$(QEMU) -drive format=raw,file=$(OS_IMG)

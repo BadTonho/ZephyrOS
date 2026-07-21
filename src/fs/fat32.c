@@ -154,6 +154,17 @@ int fat32_init(void) {
 
     uint32_t total_sectors = fs.bpb.total_sectors_large;
     if (total_sectors == 0) total_sectors = fs.bpb.total_sectors_small;
+    ata_device_t* device = ata_get_device();
+    if (!device) {
+        LOG_ERROR("FAT32", "Nenhum dispositivo ATA para validar o volume");
+        fat32_release();
+        return ERR_NOT_FOUND;
+    }
+    if (device->sectors != 0 && total_sectors > device->sectors) {
+        LOG_WARN("FAT32", "Volume FAT32 excede o tamanho real do disco");
+        fat32_release();
+        return ERR_DISK;
+    }
     if (fs.bpb.bytes_per_sector != 512 || fs.bpb.sectors_per_cluster == 0 ||
         fs.bpb.sectors_per_cluster > 128 ||
         (fs.bpb.sectors_per_cluster & (fs.bpb.sectors_per_cluster - 1)) != 0 ||

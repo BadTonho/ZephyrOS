@@ -17,7 +17,18 @@ static void fat12_release(void) {
 
 static int fat12_validate_bpb(void) {
     uint32_t total_sectors = fs.bpb.total_sectors;
+    ata_device_t* device = ata_get_device();
     if (total_sectors == 0) total_sectors = fs.bpb.large_sector_count;
+
+    if (!device) {
+        LOG_ERROR("FAT12", "Nenhum dispositivo ATA para validar o volume");
+        return ERR_NOT_FOUND;
+    }
+
+    if (device->sectors != 0 && total_sectors > device->sectors) {
+        LOG_WARN("FAT12", "Volume FAT12 excede o tamanho real do disco");
+        return ERR_DISK;
+    }
 
     if (fs.bpb.bytes_per_sector != 512 || fs.bpb.sectors_per_cluster == 0 ||
         fs.bpb.sectors_per_cluster > 128 ||

@@ -340,7 +340,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Montando sistema de arquivos...\n", 0x08);
     int fs_result = fs_init();
-    if (fs_result == OK && fs_get_type() != 0) {
+    if (fs_result == OK && fs_get_type() != FS_TYPE_NONE) {
         recovery_mark_ready(RECOVERY_COMPONENT_FILESYSTEM);
         video_print("[OK] Sistema de arquivos montado\n", 0x07);
     } else {
