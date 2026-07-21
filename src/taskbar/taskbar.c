@@ -529,7 +529,7 @@ int taskbar_handle_key(uint8_t scancode) {
     }
 
     if (menu_open) {
-        if (scancode == 0x01) {
+        if (scancode == 0x01 || scancode == 0x5B || scancode == 0x5C) {
             taskbar_close_menu();
             return 9;
         }
