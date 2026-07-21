@@ -252,6 +252,36 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
+## Backlog e Melhorias Futuras
+
+O projeto conta com uma extensa lista de melhorias e novos módulos planejados, documentados na pasta `docs/melhorias futuras/`. O backlog está organizado nas seguintes categorias:
+
+### Kernel e Sistema
+- **Multitarefa Preemptiva Avançada** (`multitarefa preemptiva.md`)
+- **Gerenciador de Energia** (`gerenciador de energia.md`)
+- **Gerenciador de Dispositivos** (`gerenciador de dispositivos.md`)
+- **Gerenciador de Rede / Conexão** (`gerenciador de rede.md`, `gerenciador de conexao.md`)
+- **Atualizações do Sistema** (`atualizações.md`)
+
+### Melhorias na Interface Atual (UI/UX)
+- **Barra de Tarefas Avançada** (`barra de tarefas.md`)
+- **Gerenciador de Janelas (WM)** (`gerenciador de janelas.md`)
+- **Gerenciador de Arquivos** (`gerenciador de arquivos.md`)
+- **Painel de Configurações** (`configurações.md`)
+- **Gerenciador de Processos** (`gerenciador de processos.md`)
+
+### Novos Módulos e Aplicativos (App Store / Opcionais)
+- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`)
+- **Gerenciador de Mídia** (`gerenciador de midia.md`)
+- **Gerenciador de Jogos** (`gerenciador de jogos.md`)
+- **Anti-Virus** (`anti virus.md`)
+- **PCSista** (`pcsista.md`)
+- **Ferramentas para Programadores** (`programadores.md`)
+
+*(Nota: O suporte inicial ao Mouse documentado em `mouse.md` já foi concluído e integrado ao sistema)*
+
+---
+
 ## Tecnologias
 
 | Item | Tecnologia |
