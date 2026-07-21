@@ -290,6 +290,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 - **Gerenciador de Dispositivos** (`gerenciador de dispositivos.md`)
 - **Gerenciador de Rede / Conexão** (`gerenciador de rede.md`, `gerenciador de conexao.md`)
 - **Atualizações do Sistema** (`atualizações.md`)
+- **Formatação Inteligente** (`formatacao inteligente.md`)
 
 ### Melhorias na Interface Atual (UI/UX)
 - **Barra de Tarefas Avançada** (`barra de tarefas.md`)
