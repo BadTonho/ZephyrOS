@@ -48,3 +48,4 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [11 - Referências](11-referencias/referencias.md) | Links e glossário |
 | [12 - Desktop e Interface](12-desktop/desktop.md) | Desktop, Window Manager, Taskbar, Settings, Icons |
 | [13 - Aplicativos](13-aplicativos/aplicativos.md) | Editor, Media Player, File Manager, Task Manager |
+| [Resiliência e fallback seguro](melhorias%20futuras/resiliencia%20do%20sistema.md) | Estados de componentes, códigos de erro e fallbacks |

@@ -1,8 +1,9 @@
 #include "memory/paging.h"
 #include "core/memory.h"
 #include "core/video.h"
-#include "core/panic.h"
 #include "core/log.h"
+#include "core/errors.h"
+#include "core/recovery.h"
 #include "drivers/vesa.h"
 #include "core/string.h"
 
@@ -47,20 +48,60 @@ page_entry_t* paging_get_page(uint32_t virtual_addr, int create) {
     return &table->entries[page_idx];
 }
 
-void paging_map_page(uint32_t virtual, uint32_t physical, uint32_t flags) {
+int paging_map_page(uint32_t virtual, uint32_t physical, uint32_t flags) {
     page_entry_t* page = paging_get_page(virtual, 1);
     if (!page) {
-        panic("Falha ao mapear pagina!");
-        return;
+        LOG_ERROR("MEM", "Falha ao obter pagina para mapeamento");
+        return ERR_MEM;
     }
     page->frame = physical / PAGE_SIZE;
     page->present = 1;
     page->rw = (flags & 0x2) ? 1 : 0;
     page->user = (flags & 0x4) ? 1 : 0;
+    return OK;
 }
 
 static void paging_invalidate(uint32_t virtual_addr) {
     asm volatile("invlpg (%0)" : : "r"(virtual_addr) : "memory");
+}
+
+static int paging_map_framebuffer(vesa_mode_t* mode) {
+    uint32_t fb_phys;
+    uint32_t fb_size;
+    uint32_t fb_end;
+
+    if (!mode || !mode->initialized) return ERR_NOT_FOUND;
+    if (mode->height != 0 &&
+        mode->pitch > 0xFFFFFFFFU / mode->height) {
+        LOG_ERROR("MEM", "Tamanho do framebuffer excede o limite");
+        return ERR_OVERFLOW;
+    }
+
+    fb_phys = (uint32_t)mode->framebuffer;
+    fb_size = mode->pitch * mode->height;
+    if (fb_size == 0 || fb_phys > 0xFFFFFFFFU - fb_size) {
+        LOG_ERROR("MEM", "Intervalo do framebuffer invalido");
+        return ERR_OVERFLOW;
+    }
+
+    fb_end = fb_phys + fb_size;
+    for (uint32_t i = fb_phys; i < fb_end;) {
+        if (paging_map_page(i, i, 0x03) != OK) {
+            LOG_ERROR("MEM", "Falha ao mapear pagina do framebuffer");
+            return ERR_MEM;
+        }
+
+        if (fb_end - i <= PAGE_SIZE) break;
+        i += PAGE_SIZE;
+    }
+
+    return OK;
+}
+
+static int paging_abort_init(page_directory_t* dir, int error_code) {
+    current_directory = 0;
+    paging_free_directory(dir);
+    return error_code;
 }
 
 void paging_switch_directory(page_directory_t* dir) {
@@ -78,41 +119,53 @@ void paging_switch_directory(page_directory_t* dir) {
     asm volatile("mov %0, %%cr0" : : "r"(cr0));
 }
 
-void paging_init(void) {
+int paging_init(void) {
     page_directory_t* dir = paging_create_directory();
     if (!dir) {
-        panic_memory("Falha ao criar diretorio de paginas!",
-                     memory_get_mmap_entries(), memory_get_total(),
-                     memory_get_free(), memory_get_free_pages());
-        return;
+        LOG_ERROR("MEM", "Falha ao criar diretorio de paginas");
+        return ERR_MEM;
     }
 
     current_directory = dir;
 
     /* A GDT do stage2 continua ativa ate o tss_init instalar a GDT do kernel. */
     for (uint32_t i = BOOT_TRANSITION_START; i < BOOT_TRANSITION_END; i += PAGE_SIZE) {
-        paging_map_page(i, i, 0x03);
+        if (paging_map_page(i, i, 0x03) != OK) {
+            LOG_ERROR("MEM", "Falha ao mapear transicao do boot");
+            return paging_abort_init(dir, ERR_MEM);
+        }
     }
 
     for (uint32_t i = KERNEL_START; i < HEAP_START + HEAP_SIZE; i += PAGE_SIZE) {
-        paging_map_page(i, i, 0x03);
+        if (paging_map_page(i, i, 0x03) != OK) {
+            LOG_ERROR("MEM", "Falha ao mapear kernel e heap");
+            return paging_abort_init(dir, ERR_MEM);
+        }
     }
 
     for (uint32_t i = 0xB8000; i < 0xC0000; i += PAGE_SIZE) {
-        paging_map_page(i, i, 0x03);
+        if (paging_map_page(i, i, 0x03) != OK) {
+            LOG_ERROR("MEM", "Falha ao mapear memoria VGA");
+            return paging_abort_init(dir, ERR_MEM);
+        }
     }
 
     vesa_mode_t* mode = vesa_get_mode();
     if (mode && mode->initialized) {
-        uint32_t fb_phys = (uint32_t)mode->framebuffer;
-        uint32_t fb_size = mode->pitch * mode->height;
-        for (uint32_t i = fb_phys; i < fb_phys + fb_size; i += PAGE_SIZE) {
-            paging_map_page(i, i, 0x03);
+        int framebuffer_result = paging_map_framebuffer(mode);
+        if (framebuffer_result != OK) {
+            LOG_WARN("MEM", "Framebuffer nao mapeado; ativando fallback VGA");
+            recovery_mark_degraded(RECOVERY_COMPONENT_VESA, framebuffer_result,
+                                   "Framebuffer indisponivel; fallback VGA ativo");
+            vesa_disable();
+            video_disable_framebuffer();
+        } else {
+            LOG_INFO("MEM", "Framebuffer mapeado na pagina");
         }
-        LOG_INFO("MEM", "Framebuffer mapeado na pagina");
     }
 
     paging_switch_directory(dir);
+    return OK;
 }
 
 void paging_free_directory(page_directory_t* dir) {

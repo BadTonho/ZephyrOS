@@ -1,6 +1,7 @@
 #include "core/timer.h"
 #include "drivers/idt.h"
 #include "core/log.h"
+#include "core/errors.h"
 #include "process/process.h"
 
 static uint32_t ticks = 0;
@@ -11,7 +12,10 @@ static void outb(uint16_t port, uint8_t val) {
 
 void timer_init(uint32_t freq) {
     LOG_INFO("TIMER", "Inicializando timer");
-    idt_register_handler(32, timer_handler);
+    if (idt_register_handler(32, timer_handler) != OK) {
+        LOG_ERROR("TIMER", "Falha ao registrar IRQ do timer");
+        return;
+    }
 
     uint32_t divisor = 1193180 / freq;
     outb(0x43, 0x36);

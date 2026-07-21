@@ -1,6 +1,7 @@
 #include "core/keyboard.h"
 #include "drivers/idt.h"
 #include "core/log.h"
+#include "core/errors.h"
 #include "process/process.h"
 
 
@@ -41,7 +42,10 @@ void keyboard_init(void) {
     queue_head = 0;
     queue_tail = 0;
     dropped_events = 0;
-    idt_register_handler(33, keyboard_handler);
+    if (idt_register_handler(33, keyboard_handler) != OK) {
+        LOG_ERROR("KBD", "Falha ao registrar IRQ do teclado");
+        return;
+    }
     LOG_INFO("KBD", "Teclado inicializado com sucesso");
 }
 

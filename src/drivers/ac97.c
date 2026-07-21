@@ -4,6 +4,7 @@
 #include "drivers/idt.h"
 #include "core/video.h"
 #include "core/log.h"
+#include "core/errors.h"
 
 static ac97_device_t ac97_dev;
 static ac97_stream_t output_stream;
@@ -118,12 +119,17 @@ void ac97_init(void) {
     ac97_dev.bits_per_sample = 16;
     ac97_dev.initialized = 1;
 
-    LOG_INFO("AC97", "Controlador AC97 inicializado com sucesso");
     output_stream.status = 0;
     output_stream.buffer = 0;
     output_stream.position = 0;
 
-    idt_register_handler(ac97_dev.irq, (isr_handler_t)ac97_handler);
+    if (idt_register_handler(ac97_dev.irq, (isr_handler_t)ac97_handler) != OK) {
+        LOG_ERROR("AC97", "Falha ao registrar IRQ de audio");
+        ac97_dev.initialized = 0;
+        return;
+    }
+
+    LOG_INFO("AC97", "Controlador AC97 inicializado com sucesso");
 }
 
 void ac97_play(const uint8_t* data, uint32_t size, uint32_t sample_rate, uint8_t channels, uint8_t bits) {

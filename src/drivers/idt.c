@@ -2,6 +2,7 @@
 #include "core/video.h"
 #include "core/panic.h"
 #include "core/log.h"
+#include "core/errors.h"
 
 idt_entry_t idt[256];
 idt_ptr_t idt_ptr;
@@ -175,12 +176,13 @@ void idt_init(void) {
     LOG_INFO("IDT", "IDT inicializada com sucesso");
 }
 
-void idt_register_handler(uint8_t n, isr_handler_t handler) {
+int idt_register_handler(uint8_t n, isr_handler_t handler) {
     if (!handler) {
         LOG_ERROR("IDT", "Handler nulo para interrupcao");
-        return;
+        return ERR_NULL;
     }
     interrupt_handlers[n] = handler;
+    return OK;
 }
 
 static const char* exception_messages[] = {
@@ -211,9 +213,20 @@ static const char* exception_messages[] = {
 };
 
 void isr_handler(registers_t* regs) {
+    if (!regs) {
+        LOG_ERROR("IDT", "Registro de excecao nulo");
+        panic_halt();
+        return;
+    }
+
     if (interrupt_handlers[regs->int_no]) {
         interrupt_handlers[regs->int_no](regs);
     } else {
+        if (regs->int_no < 32) {
+            LOG_ERROR("IDT", exception_messages[regs->int_no]);
+        } else {
+            LOG_ERROR("IDT", "Excecao sem handler registrada");
+        }
         video_clear();
         video_set_color(VGA_COLOR_WHITE, VGA_COLOR_RED);
         video_print("========================================\n", 0x4F);

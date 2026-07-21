@@ -30,6 +30,7 @@
 #define VGA_COLOR_WHITE 15
 
 void video_init(void);
+void video_disable_framebuffer(void);
 void video_clear(void);
 void video_put_char(char c, uint8_t color);
 void video_print(const char* str, uint8_t color);

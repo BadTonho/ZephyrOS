@@ -139,6 +139,11 @@ void video_init(void) {
     LOG_INFO("VIDEO", "Video inicializado com sucesso");
 }
 
+void video_disable_framebuffer(void) {
+    use_framebuffer = 0;
+    update_cursor();
+}
+
 void video_clear(void) {
     spinlock_acquire(&video_lock);
     for (int i = 0; i < SCREEN_COLS * SCREEN_ROWS; i++) {

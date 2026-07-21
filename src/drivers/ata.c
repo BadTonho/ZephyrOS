@@ -172,7 +172,10 @@ static void outw(uint16_t port, uint16_t val) {
 void ata_init(void) {
     LOG_INFO("ATA", "Inicializando controlador ATA");
 
-    idt_register_handler(46, (isr_handler_t)ata_irq_handler);
+    if (idt_register_handler(46, (isr_handler_t)ata_irq_handler) != OK) {
+        LOG_ERROR("ATA", "Falha ao registrar IRQ do controlador");
+        return;
+    }
 
     for (int i = 0; i < 2; i++) {
         devices[i].present = 0;

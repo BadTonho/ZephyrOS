@@ -2,6 +2,7 @@
 #include "drivers/font.h"
 #include "core/log.h"
 #include "core/memory.h"
+#include "core/errors.h"
 #include "core/string.h"
 
 static vesa_mode_t current_mode;
@@ -17,6 +18,10 @@ static void* memset_simple(void* dst, uint8_t val, uint32_t size) {
 
 void vesa_init(uint32_t boot_info_addr) {
     LOG_INFO("VESA", "Inicializando suporte VESA");
+    if (backbuffer) {
+        kfree(backbuffer);
+        backbuffer = NULL;
+    }
     memset_simple(&current_mode, 0, sizeof(vesa_mode_t));
 
     if (!boot_info_addr) {
@@ -47,15 +52,45 @@ void vesa_init(uint32_t boot_info_addr) {
     LOG_INFO("VESA", "Framebuffer detectado");
 }
 
-void vesa_init_backbuffer(void) {
-    if (!current_mode.initialized) return;
+int vesa_init_backbuffer(void) {
+    if (!current_mode.initialized) {
+        LOG_WARN("VESA", "Backbuffer solicitado sem modo VESA");
+        return ERR_NOT_FOUND;
+    }
+
+    if (current_mode.height != 0 &&
+        current_mode.pitch > 0xFFFFFFFFU / current_mode.height) {
+        LOG_ERROR("VESA", "Tamanho do backbuffer excede o limite");
+        return ERR_OVERFLOW;
+    }
+
+    if (backbuffer) {
+        kfree(backbuffer);
+        backbuffer = NULL;
+    }
+
     uint32_t size = current_mode.height * current_mode.pitch;
     backbuffer = (uint8_t*)kmalloc(size);
     if (backbuffer) {
         LOG_INFO("VESA", "Backbuffer alocado com sucesso");
-    } else {
-        LOG_WARN("VESA", "Falha ao alocar backbuffer");
+        return OK;
     }
+
+    LOG_ERROR("VESA", "Falha ao alocar backbuffer");
+    return ERR_MEM;
+}
+
+void vesa_disable(void) {
+    if (backbuffer) {
+        kfree(backbuffer);
+        backbuffer = NULL;
+    }
+    current_mode.initialized = 0;
+    LOG_WARN("VESA", "VESA desabilitado; usando fallback VGA");
+}
+
+int vesa_has_backbuffer(void) {
+    return backbuffer != NULL;
 }
 
 void vesa_flip(void) {

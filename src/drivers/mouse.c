@@ -3,6 +3,7 @@
 #include "core/log.h"
 #include "core/video.h"
 #include "drivers/vesa.h"
+#include "core/errors.h"
 
 /* Multiplicador de velocidade para telas de alta resolucao */
 #define MOUSE_SPEED 3
@@ -206,7 +207,10 @@ void mouse_init(void) {
     mouse_read();
 
     /* Registra handler na IRQ12 (INT 44) */
-    idt_register_handler(44, (isr_handler_t)mouse_handler);
+    if (idt_register_handler(44, (isr_handler_t)mouse_handler) != OK) {
+        LOG_ERROR("MOUSE", "Falha ao registrar IRQ do mouse");
+        return;
+    }
 
     /* Posiciona cursor no centro da tela */
     vesa_mode_t* mode = vesa_get_mode();

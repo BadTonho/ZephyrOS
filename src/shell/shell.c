@@ -21,6 +21,7 @@
 #include "drivers/mouse.h"
 #include "ui/gui.h"
 #include "apps/guitest.h"
+#include "core/recovery.h"
 
 static char input_buffer[SHELL_BUFFER_SIZE];
 static int input_pos = 0;
@@ -108,6 +109,7 @@ static void cmd_help(void) {
     video_print("  compress - Liga/desliga compressao de RAM\n", 0x07);
     video_print("  stats    - Mostra estatisticas de compressao\n", 0x07);
     video_print("  mouse    - Mostra status do mouse PS/2\n", 0x07);
+    video_print("  health   - Mostra estado dos componentes\n", 0x07);
     video_print("  play     - Toca arquivo WAV\n", 0x07);
     video_print("  view     - Exibe imagem BMP\n", 0x07);
     video_print("  stop     - Para player de midia\n", 0x07);
@@ -116,6 +118,33 @@ static void cmd_help(void) {
     video_print("  reboot   - Reinicia o sistema\n", 0x07);
     video_print("  shutdown - Desliga o sistema\n", 0x07);
     video_print("  guitest  - Testa primitivas GUI 2D\n", 0x07);
+}
+
+static void cmd_health_print_component(recovery_component_id_t component) {
+    const recovery_component_t* entry = recovery_get(component);
+
+    if (!entry) return;
+
+    video_print("  ", 0x07);
+    video_print(entry->name, 0x0B);
+    video_print(": ", 0x07);
+    video_print(recovery_state_name(entry->state), 0x0F);
+    video_print("  falhas=", 0x08);
+    print_num(entry->failures);
+    video_print("  erro=", 0x08);
+    print_num((uint32_t)entry->last_error);
+    video_print("\n", 0x07);
+    video_print("    motivo: ", 0x08);
+    video_print(entry->last_message, 0x07);
+    video_print("\n", 0x07);
+}
+
+static void cmd_health(void) {
+    video_print("Estado dos componentes:\n", 0x0B);
+
+    for (uint32_t i = 0; i < recovery_get_count(); i++) {
+        cmd_health_print_component((recovery_component_id_t)i);
+    }
 }
 
 static void cmd_guimode(const char* args) {
@@ -145,6 +174,12 @@ static void cmd_guimode(const char* args) {
     }
 
     if (kstrcmp(mode_name, "modern") == 0) {
+        if (!recovery_is_available(RECOVERY_COMPONENT_VESA) ||
+            !recovery_is_available(RECOVERY_COMPONENT_BACKBUFFER)) {
+            video_print("Modo modern indisponivel; classic mantido.\n", 0x0C);
+            return;
+        }
+
         result = desktop_set_mode(DESKTOP_MODE_MODERN);
         if (result == OK) {
             video_print("Desktop em modo modern.\n", 0x0A);
@@ -163,6 +198,11 @@ static void cmd_clear(void) {
 }
 
 static void cmd_ls(void) {
+    if (!recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM)) {
+        video_print("Erro: filesystem indisponivel.\n", 0x0C);
+        return;
+    }
+
     video_print("Arquivos no disco:\n", 0x0B);
     int count = fs_list_dir();
     if (count == 0) {
@@ -171,6 +211,11 @@ static void cmd_ls(void) {
 }
 
 static void cmd_cat(const char* filename) {
+    if (!recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM)) {
+        video_print("Erro: filesystem indisponivel.\n", 0x0C);
+        return;
+    }
+
     if (!filename || !*filename) {
         video_print("Uso: cat <arquivo>\n", 0x0C);
         return;
@@ -520,6 +565,8 @@ int shell_process_command(const char* input) {
         cmd_threads();
     } else if (kstrcmp(cmd, "uptime") == 0) {
         cmd_uptime();
+    } else if (kstrcmp(cmd, "health") == 0) {
+        cmd_health();
     } else if (kstrcmp(cmd, "beep") == 0) {
         cmd_beep(input);
     } else if (kstrcmp(cmd, "melody") == 0) {
@@ -532,7 +579,11 @@ int shell_process_command(const char* input) {
     } else if (kstrcmp(cmd, "guimode") == 0) {
         cmd_guimode(input);
     } else if (kstrcmp(cmd, "explorer") == 0) {
-        fm_run();
+        if (!recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM)) {
+            video_print("Erro: Explorer indisponivel sem filesystem.\n", 0x0C);
+        } else {
+            fm_run();
+        }
     } else if (kstrcmp(cmd, "reboot") == 0) {
         cmd_reboot();
     } else if (kstrcmp(cmd, "shutdown") == 0) {
@@ -548,7 +599,10 @@ int shell_process_command(const char* input) {
     } else if (kstrcmp(cmd, "wm") == 0) {
         wm_set_active(1);
     } else if (kstrcmp(cmd, "play") == 0) {
-        if (!*input) {
+        if (!recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM) ||
+            !recovery_is_available(RECOVERY_COMPONENT_AC97)) {
+            video_print("Erro: audio ou filesystem indisponivel.\n", 0x0C);
+        } else if (!*input) {
             video_print("Uso: play <arquivo.wav>\n", 0x0C);
         } else {
             char name[13];
@@ -562,7 +616,10 @@ int shell_process_command(const char* input) {
             mp_play_audio(name);
         }
     } else if (kstrcmp(cmd, "view") == 0) {
-        if (!*input) {
+        if (!recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM) ||
+            !recovery_is_available(RECOVERY_COMPONENT_VESA)) {
+            video_print("Erro: imagem ou filesystem indisponivel.\n", 0x0C);
+        } else if (!*input) {
             video_print("Uso: view <arquivo.bmp>\n", 0x0C);
         } else {
             char name[13];

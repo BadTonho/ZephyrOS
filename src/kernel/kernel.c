@@ -2,6 +2,8 @@
 #include "core/video.h"
 #include "core/panic.h"
 #include "core/log.h"
+#include "core/errors.h"
+#include "core/recovery.h"
 #include "drivers/idt.h"
 #include "core/keyboard.h"
 #include "drivers/mouse.h"
@@ -26,6 +28,8 @@
 #include "ui/filemanager.h"
 #include "apps/taskmanager.h"
 #include "apps/guitest.h"
+
+static int kernel_service_fallback = 0;
 
 /* Handler global de eventos do mouse, despacha para a UI ativa */
 static void global_mouse_handler(mouse_event_t* evt) {
@@ -146,9 +150,11 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     font_init();
     video_init();
     log_init();
+    recovery_init();
 
     vesa_mode_t* vmode = vesa_get_mode();
     if (vmode && vmode->initialized) {
+        recovery_mark_ready(RECOVERY_COMPONENT_VESA);
         video_print("[OK] VESA framebuffer ativo\n", 0x0A);
         video_print("[OK] Modo: ", 0x07);
         char res_buf[16];
@@ -183,6 +189,8 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         }
         video_print(" bpp\n", 0x07);
     } else {
+        recovery_mark_degraded(RECOVERY_COMPONENT_VESA, ERR_NOT_FOUND,
+                               "VESA indisponivel; fallback VGA ativo");
         video_print("[!!] VESA nao encontrado, usando VGA fallback\n", 0x0C);
     }
 
@@ -252,14 +260,32 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     video_print(" MB livres\n", 0x07);
 
     video_print("[..] Configurando paginacao...\n", 0x08);
-    paging_init();
+    if (paging_init() != OK) {
+        panic_memory("Falha ao configurar paginacao!",
+                     memory_get_mmap_entries(), memory_get_total(),
+                     memory_get_free(), memory_get_free_pages());
+        return;
+    }
     video_print("[OK] Paging ativo\n", 0x07);
-    vesa_init_backbuffer();
+
+    int backbuffer_result = vesa_init_backbuffer();
+    if (backbuffer_result == OK) {
+        recovery_mark_ready(RECOVERY_COMPONENT_BACKBUFFER);
+    } else {
+        recovery_mark_disabled(RECOVERY_COMPONENT_BACKBUFFER,
+                               backbuffer_result,
+                               "Backbuffer indisponivel; Desktop classic ativo");
+        if (recovery_is_available(RECOVERY_COMPONENT_VESA)) {
+            recovery_mark_degraded(RECOVERY_COMPONENT_VESA, backbuffer_result,
+                                   "VESA degradado sem backbuffer");
+        }
+    }
 
     video_print("[..] Iniciando processos...\n", 0x08);
     tss_init();
     process_init();
     process_bootstrap_idle();
+    ipc_init();
     video_print("[OK] TSS configurado\n", 0x07);
 
     video_print("[..] Iniciando threads...\n", 0x08);
@@ -270,18 +296,25 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     ata_init();
     ata_device_t* dev = ata_get_device();
     if (dev) {
+        recovery_mark_ready(RECOVERY_COMPONENT_ATA);
         video_print("[OK] Disco: ", 0x07);
         video_print(dev->model, 0x07);
         video_print("\n", 0x07);
     } else {
+        recovery_mark_disabled(RECOVERY_COMPONENT_ATA, ERR_NOT_FOUND,
+                               "Nenhum dispositivo ATA disponivel");
         video_print("[!!] Nenhum disco encontrado\n", 0x0C);
     }
 
     video_print("[..] Montando sistema de arquivos...\n", 0x08);
-    fs_init();
-    if (fs_get_type() != 0) {
+    int fs_result = fs_init();
+    if (fs_result == OK && fs_get_type() != 0) {
+        recovery_mark_ready(RECOVERY_COMPONENT_FILESYSTEM);
         video_print("[OK] Sistema de arquivos montado\n", 0x07);
     } else {
+        recovery_mark_disabled(RECOVERY_COMPONENT_FILESYSTEM,
+                               fs_result,
+                               "Sistema de arquivos indisponivel");
         video_print("[!!] Nenhum sistema de arquivos encontrado\n", 0x0C);
     }
 
@@ -293,8 +326,11 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     ac97_init();
     ac97_device_t* ac97 = ac97_get_device();
     if (ac97 && ac97->initialized) {
+        recovery_mark_ready(RECOVERY_COMPONENT_AC97);
         video_print("[OK] AC97 pronto\n", 0x07);
     } else {
+        recovery_mark_disabled(RECOVERY_COMPONENT_AC97, ERR_NOT_FOUND,
+                               "Audio AC97 indisponivel");
         video_print("[!!] AC97 nao encontrado\n", 0x0C);
     }
 
@@ -307,10 +343,15 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Iniciando taskbar...\n", 0x08);
     taskbar_init();
+    recovery_mark_ready(RECOVERY_COMPONENT_TASKBAR);
     video_print("[OK] Taskbar pronta\n", 0x07);
 
     video_print("[..] Iniciando desktop...\n", 0x08);
     desktop_init();
+    if (!recovery_is_available(RECOVERY_COMPONENT_BACKBUFFER)) {
+        desktop_set_mode(DESKTOP_MODE_CLASSIC);
+    }
+    recovery_mark_ready(RECOVERY_COMPONENT_DESKTOP);
     video_print("[OK] Desktop pronto\n", 0x07);
 
     video_print("[..] Iniciando configuracoes...\n", 0x08);
@@ -319,6 +360,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Iniciando gerenciador de janelas...\n", 0x08);
     wm_init();
+    recovery_mark_ready(RECOVERY_COMPONENT_WM);
     video_print("[OK] Gerenciador de janelas pronto\n", 0x07);
 
     video_set_color(VGA_COLOR_YELLOW, VGA_COLOR_BLACK);
@@ -328,11 +370,38 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     taskbar_draw();
 
-    process_create("Zephyr System", system_process_main);
-    process_create("Shell", shell_process_main);
-    process_create("Desktop", desktop_process_main);
+    process_t* system_process = process_create("Zephyr System", system_process_main);
+    if (system_process) {
+        recovery_mark_ready(RECOVERY_COMPONENT_SYSTEM_PROCESS);
+    } else {
+        kernel_service_fallback = 1;
+        recovery_mark_degraded(RECOVERY_COMPONENT_SYSTEM_PROCESS, ERR_MEM,
+                               "Processo System falhou; servicos no loop do kernel");
+    }
+
+    process_t* shell_process = process_create("Shell", shell_process_main);
+    if (shell_process) {
+        recovery_mark_ready(RECOVERY_COMPONENT_SHELL);
+    } else {
+        recovery_mark_disabled(RECOVERY_COMPONENT_SHELL, ERR_MEM,
+                                "Processo Shell indisponivel");
+    }
+
+    process_t* desktop_process = process_create("Desktop", desktop_process_main);
+    if (desktop_process) {
+        recovery_mark_ready(RECOVERY_COMPONENT_DESKTOP);
+    } else {
+        recovery_mark_disabled(RECOVERY_COMPONENT_DESKTOP, ERR_MEM,
+                               "Processo Desktop indisponivel");
+    }
 
     while (1) {
+        if (kernel_service_fallback) {
+            keyboard_process_events();
+            mouse_process_events();
+            taskbar_update_clock();
+            wm_update_cpu_stats();
+        }
         process_yield();
         asm volatile("hlt");
     }
