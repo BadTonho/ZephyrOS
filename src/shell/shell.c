@@ -28,6 +28,10 @@ static char input_buffer[SHELL_BUFFER_SIZE];
 static int input_pos = 0;
 
 void shell_handle_app_request(uint32_t request) {
+    if (taskmgr_is_gui_open() && request != IPC_APP_OPEN_TASKMANAGER_GUI) {
+        taskmgr_close();
+    }
+
     switch ((ipc_app_request_t)request) {
         case IPC_APP_OPEN_SHELL:
             desktop_set_active(0);
@@ -49,6 +53,17 @@ void shell_handle_app_request(uint32_t request) {
                 taskmgr_run();
             } else {
                 video_print("Erro: Task Manager indisponivel.\n", 0x0C);
+            }
+            break;
+        case IPC_APP_OPEN_TASKMANAGER_GUI:
+            if (!recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
+                video_print("Erro: Task Manager indisponivel.\n", 0x0C);
+                break;
+            }
+            desktop_set_active(0);
+            if (taskmgr_open_gui() != OK) {
+                LOG_WARN("SHELL", "GUI do Task Manager indisponivel; usando TUI");
+                taskmgr_run();
             }
             break;
         case IPC_APP_OPEN_DESKTOP:
@@ -480,7 +495,7 @@ void shell_handle_key(uint8_t scancode) {
         } else if (tb_result == 3) {
             shell_handle_app_request(IPC_APP_OPEN_EXPLORER);
         } else if (tb_result == 4) {
-            shell_handle_app_request(IPC_APP_OPEN_TASKMANAGER);
+            shell_handle_app_request(IPC_APP_OPEN_TASKMANAGER_GUI);
         } else if (tb_result == 5) {
             cmd_reboot();
         } else if (tb_result == 6) {
@@ -492,6 +507,11 @@ void shell_handle_key(uint8_t scancode) {
         } else if (tb_result == 9) {
             shell_redraw_after_overlay_close();
         }
+        return;
+    }
+
+    if (taskmgr_is_gui_open()) {
+        taskmgr_gui_handle_key(scancode);
         return;
     }
 
@@ -518,7 +538,7 @@ void shell_handle_key(uint8_t scancode) {
             return;
         }
         if (result == 3) {
-            shell_handle_app_request(IPC_APP_OPEN_TASKMANAGER);
+            shell_handle_app_request(IPC_APP_OPEN_TASKMANAGER_GUI);
             return;
         }
         return;

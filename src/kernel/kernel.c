@@ -54,15 +54,27 @@ static void global_mouse_handler(mouse_event_t* evt) {
         return;
     }
 
-    /* O restante do sistema legado so processa clique esquerdo (press) */
+    /* Arraste e soltura pertencem a janela grafica antes do Desktop. */
+    if (taskmgr_is_gui_open() && evt->event != MOUSE_EVENT_PRESS) {
+        taskmgr_gui_handle_mouse(evt);
+        return;
+    }
+
+    /* O restante do sistema legado so processa clique esquerdo (press). */
     if (evt->event != MOUSE_EVENT_PRESS) return;
     if (!(evt->changed & MOUSE_BTN_LEFT)) return;
 
     /* Tenta taskbar primeiro */
     int tb_result = taskbar_handle_click(evt->x, evt->y);
     if (tb_result) {
-        if (taskmgr_is_open() && tb_result >= 2 && tb_result <= 8) {
+        if (taskmgr_is_gui_open() && tb_result >= 2 && tb_result <= 8) {
             /* O menu Inicio tem prioridade sobre a janela atual. */
+            if (tb_result == 4) {
+                taskmgr_gui_restore();
+                return;
+            }
+            taskmgr_close();
+        } else if (taskmgr_is_open() && tb_result >= 2 && tb_result <= 8) {
             if (tb_result == 4) {
                 taskmgr_refresh();
                 return;
@@ -75,7 +87,7 @@ static void global_mouse_handler(mouse_event_t* evt) {
         } else if (tb_result == 3) {
             kernel_request_shell_app(IPC_APP_OPEN_EXPLORER);
         } else if (tb_result == 4) {
-            kernel_request_shell_app(IPC_APP_OPEN_TASKMANAGER);
+            kernel_request_shell_app(IPC_APP_OPEN_TASKMANAGER_GUI);
         } else if (tb_result == 5) {
             // Reiniciar - para contornar a falta de acesso a cmd_reboot aqui
             // enviaremos um scan_code falso pro shell tratar? Nao, reset via port.
@@ -88,6 +100,11 @@ static void global_mouse_handler(mouse_event_t* evt) {
         } else if (tb_result == 8) {
             kernel_request_shell_app(IPC_APP_OPEN_SETTINGS);
         }
+        return;
+    }
+
+    if (taskmgr_is_gui_open()) {
+        taskmgr_gui_handle_mouse(evt);
         return;
     }
 
@@ -106,7 +123,7 @@ static void global_mouse_handler(mouse_event_t* evt) {
         } else if (result == DESKTOP_APP_EXPLORER) {
             kernel_request_shell_app(IPC_APP_OPEN_EXPLORER);
         } else if (result == DESKTOP_APP_TASKMGR) {
-            kernel_request_shell_app(IPC_APP_OPEN_TASKMANAGER);
+            kernel_request_shell_app(IPC_APP_OPEN_TASKMANAGER_GUI);
         }
     }
 
@@ -140,6 +157,7 @@ void shell_process_main(void) {
         } else {
             process_yield();
         }
+        taskmgr_gui_update();
     }
 }
 

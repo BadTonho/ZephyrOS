@@ -1244,7 +1244,7 @@ void fm_handle_key(uint8_t scancode) {
             shell_handle_app_request(IPC_APP_OPEN_EXPLORER);
         } else if (taskbar_result == 4) {
             fm_close();
-            shell_handle_app_request(IPC_APP_OPEN_TASKMANAGER);
+            shell_handle_app_request(IPC_APP_OPEN_TASKMANAGER_GUI);
         } else if (taskbar_result == 7) {
             fm_close();
             shell_handle_app_request(IPC_APP_OPEN_DESKTOP);

@@ -127,7 +127,7 @@ static void taskbar_draw_menu_gui(void);
 
 static void taskbar_draw_gui(void) {
     vesa_mode_t* mode = vesa_get_mode();
-    if (!mode || !mode->initialized) return;
+    if (!mode || !mode->initialized || !vesa_has_backbuffer()) return;
 
     mouse_invalidate_cursor();
 
@@ -167,7 +167,7 @@ static void taskbar_draw_gui(void) {
 void taskbar_draw(void) {
     vesa_frame_begin();
     vesa_mode_t* mode = vesa_get_mode();
-    if (mode && mode->initialized) {
+    if (mode && mode->initialized && vesa_has_backbuffer()) {
         taskbar_draw_gui();
         vesa_frame_end();
         return;
@@ -274,7 +274,7 @@ void taskbar_update_clock(void) {
     time_str[5] = '\0';
 
     vesa_mode_t* mode = vesa_get_mode();
-    if (mode && mode->initialized) {
+    if (mode && mode->initialized && vesa_has_backbuffer()) {
         vesa_frame_begin();
         mouse_invalidate_cursor();
         int tb_y = mode->height - TASKBAR_HEIGHT;
@@ -357,7 +357,7 @@ static void taskbar_draw_menu(void) {
     }
 
     vesa_mode_t* mode = vesa_get_mode();
-    if (mode && mode->initialized) {
+    if (mode && mode->initialized && vesa_has_backbuffer()) {
         taskbar_draw_menu_gui();
         return;
     }
@@ -383,7 +383,7 @@ static void taskbar_draw_menu_gui(void) {
     if (!menu_open) return;
     
     vesa_mode_t* mode = vesa_get_mode();
-    if (!mode || !mode->initialized) return;
+    if (!mode || !mode->initialized || !vesa_has_backbuffer()) return;
 
     vesa_frame_begin();
     mouse_invalidate_cursor();
@@ -685,6 +685,20 @@ static int taskbar_handle_click_gui(int px, int py) {
             taskbar_draw_menu();
             return 1;
         }
+
+        start_x += 64;
+        for (int i = 0; i < button_count; i++) {
+            if (px >= start_x && px < start_x + 90) {
+                switch (buttons[i].type) {
+                    case TB_APP_SHELL: return 2;
+                    case TB_APP_EXPLORER: return 3;
+                    case TB_APP_TASKMGR: return 4;
+                    case TB_APP_DESKTOP: return 7;
+                    default: return 1;
+                }
+            }
+            start_x += 94;
+        }
         return 1; // Clicou na taskbar, interceptado
     }
     return 0;
@@ -692,7 +706,7 @@ static int taskbar_handle_click_gui(int px, int py) {
 
 int taskbar_handle_click(int px, int py) {
     vesa_mode_t* mode = vesa_get_mode();
-    if (mode && mode->initialized) {
+    if (mode && mode->initialized && vesa_has_backbuffer()) {
         return taskbar_handle_click_gui(px, py);
     }
 
