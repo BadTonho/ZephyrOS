@@ -81,6 +81,9 @@ static void global_mouse_handler(mouse_event_t* evt) {
             }
             taskmgr_close();
         }
+        if (settings_is_open() && tb_result >= 2 && tb_result <= 8) {
+            settings_close();
+        }
 
         if (tb_result == 2) {
             kernel_request_shell_app(IPC_APP_OPEN_SHELL);
@@ -105,6 +108,11 @@ static void global_mouse_handler(mouse_event_t* evt) {
 
     if (taskmgr_is_gui_open()) {
         taskmgr_gui_handle_mouse(evt);
+        return;
+    }
+
+    if (settings_is_open()) {
+        settings_handle_mouse(evt);
         return;
     }
 

@@ -48,6 +48,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [11 - Referências](11-referencias/referencias.md) | Links e glossário |
 | [12 - Desktop e Interface](12-desktop/desktop.md) | Desktop, Window Manager, Taskbar, Settings, Icons |
 | [13 - Aplicativos](13-aplicativos/aplicativos.md) | Editor, Media Player, File Manager, Task Manager |
+| [Configuracoes](melhorias%20futuras/configura%C3%A7%C3%B5es.md) | Painel de configuracoes e interface grafica com fallback TUI |
 | [Resiliência e fallback seguro](melhorias%20futuras/resiliencia%20do%20sistema.md) | Estados de componentes, códigos de erro e fallbacks |
 | [Explorer moderno](melhorias%20futuras/explorer%20moderno.md) | Interface gráfica do File Manager com fallback TUI |
 | [Task Manager moderno](melhorias%20futuras/task%20manager%20moderno.md) | Janela grafica com TUI de diagnostico preservada |

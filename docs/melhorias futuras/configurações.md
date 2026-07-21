@@ -477,3 +477,15 @@
 - **Sem pesquisa**: Não é possível pesquisar por configurações.
 - **Sem `ms-settings:`**: Não há protocolo de URL para abrir páginas específicas.
 - **Sem ferramentas clássicas**: Painel de Controle, Gerenciador de Dispositivos, etc. não existem.
+
+---
+
+## Fase 6 - Interface grafica com fallback TUI
+
+- [x] Adicionar `SETTINGS_MODE_CLASSIC` e `SETTINGS_MODE_MODERN`.
+- [x] Selecionar o modo pelo `guimode` global e pela disponibilidade de VESA/backbuffer.
+- [x] Modernizar categorias, opcoes, toggles, listas e acoes com as primitivas GUI existentes.
+- [x] Modernizar editor de icones, informacoes do sistema, memoria, processos, versao e creditos.
+- [x] Adicionar selecao e ativacao por mouse sem remover os atalhos de teclado.
+- [x] Preservar a TUI como fallback automatico.
+- [ ] Adicionar arraste da janela de Configuracoes em uma etapa futura.

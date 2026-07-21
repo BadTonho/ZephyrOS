@@ -31,6 +31,9 @@ void shell_handle_app_request(uint32_t request) {
     if (taskmgr_is_gui_open() && request != IPC_APP_OPEN_TASKMANAGER_GUI) {
         taskmgr_close();
     }
+    if (settings_is_open() && request != IPC_APP_OPEN_SETTINGS) {
+        settings_close();
+    }
 
     switch ((ipc_app_request_t)request) {
         case IPC_APP_OPEN_SHELL:
