@@ -491,3 +491,55 @@ void taskbar_set_custom_position(int x, int y) {
 tb_config_t* taskbar_get_config(void) {
     return &config;
 }
+
+int taskbar_handle_click(int px, int py) {
+    /* Converte pixel para coordenadas de texto (fonte 8x16) */
+    int col = px / 8;
+    int row = py / 16;
+    int tb_row = get_row();
+
+    int is_horizontal = (config.position == TB_POS_BOTTOM ||
+                         config.position == TB_POS_TOP ||
+                         config.position == TB_POS_CUSTOM);
+
+    if (!is_horizontal) return 0;
+    if (row != tb_row) return 0;
+
+    /* Botao Inicio esta nas colunas 1..8 */
+    if (col >= 1 && col <= 8) {
+        if (menu_open) {
+            menu_open = 0;
+            menu_selection = 0;
+            taskbar_draw();
+            return 9;
+        }
+        menu_open = 1;
+        menu_selection = 0;
+        taskbar_draw_menu();
+        return 1;
+    }
+
+    /* Se o menu esta aberto, verifica clique em item do menu */
+    if (menu_open) {
+        int menu_x = 1;
+        int menu_y = 18;
+        if (col >= menu_x && col < menu_x + 16 &&
+            row >= menu_y + 1 && row < menu_y + 1 + MENU_ITEM_COUNT) {
+            int selected = row - menu_y - 1;
+            menu_open = 0;
+            menu_selection = 0;
+            taskbar_draw();
+            switch (selected) {
+                case 0: return 7;  /* Desktop */
+                case 1: return 2;  /* Shell */
+                case 2: return 3;  /* Explorer */
+                case 3: return 4;  /* TaskMgr */
+                case 4: return 8;  /* Configuracoes */
+                case 5: return 5;  /* Reiniciar */
+                case 6: return 6;  /* Desligar */
+            }
+        }
+    }
+
+    return 0;
+}

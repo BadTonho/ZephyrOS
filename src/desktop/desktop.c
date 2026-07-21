@@ -170,3 +170,27 @@ void desktop_set_active(int active) {
 int desktop_is_active(void) {
     return desktop_active;
 }
+
+int desktop_handle_click(int px, int py) {
+    if (!desktop_active) return 0;
+
+    /* Converte coordenadas de pixel para coordenadas de texto (fonte 8x16) */
+    int col = px / 8;
+    int row = py / 16;
+
+    /* Verifica se clicou em algum icone */
+    for (int i = 0; i < icon_count; i++) {
+        int ix = desktop_icons[i].x;
+        int iy = desktop_icons[i].y;
+
+        /* Area do icone: (ix, iy) ate (ix + ICON_WIDTH, iy + 5) incluindo nome */
+        if (col >= ix && col < ix + DESKTOP_ICON_WIDTH &&
+            row >= iy && row < iy + 5) {
+            selected_icon = i;
+            desktop_update_selection();
+            return desktop_icons[i].type;
+        }
+    }
+
+    return 0;
+}

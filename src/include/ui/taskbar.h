@@ -60,5 +60,6 @@ void taskbar_set_custom_position(int x, int y);
 tb_config_t* taskbar_get_config(void);
 void taskbar_draw_config_menu(void);
 int  taskbar_handle_config_key(uint8_t scancode);
+int  taskbar_handle_click(int px, int py);
 
 #endif

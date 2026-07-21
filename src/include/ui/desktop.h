@@ -42,5 +42,6 @@ int  desktop_handle_key(uint8_t scancode);
 int  desktop_get_selected_app(void);
 void desktop_set_active(int active);
 int  desktop_is_active(void);
+int  desktop_handle_click(int px, int py);
 
 #endif

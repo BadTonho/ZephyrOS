@@ -23,6 +23,54 @@
 #include "ui/settings.h"
 #include "ui/wm.h"
 #include "ui/icons.h"
+#include "ui/filemanager.h"
+#include "apps/taskmanager.h"
+
+/* Handler global de eventos do mouse, despacha para a UI ativa */
+static void global_mouse_handler(mouse_event_t* evt) {
+    /* So processa clique esquerdo (press) */
+    if (evt->event != MOUSE_EVENT_PRESS) return;
+    if (!(evt->changed & MOUSE_BTN_LEFT)) return;
+
+    /* Tenta taskbar primeiro */
+    int tb_result = taskbar_handle_click(evt->x, evt->y);
+    if (tb_result) {
+        if (tb_result == 2) {
+            desktop_set_active(0);
+            video_clear();
+            shell_print_prompt();
+            taskbar_draw();
+        } else if (tb_result == 3) {
+            fm_run();
+        } else if (tb_result == 4) {
+            taskmgr_run();
+        } else if (tb_result == 7) {
+            if (!desktop_is_active()) {
+                desktop_set_active(1);
+            }
+            desktop_draw();
+        } else if (tb_result == 8) {
+            settings_open();
+        }
+        return;
+    }
+
+    /* Tenta desktop */
+    if (desktop_is_active()) {
+        int result = desktop_handle_click(evt->x, evt->y);
+        if (result == DESKTOP_APP_SHELL) {
+            desktop_set_active(0);
+            video_clear();
+            taskbar_draw();
+        } else if (result == DESKTOP_APP_EXPLORER) {
+            desktop_set_active(0);
+            fm_run();
+        } else if (result == DESKTOP_APP_TASKMGR) {
+            desktop_set_active(0);
+            taskmgr_run();
+        }
+    }
+}
 
 void system_process_main(void) {
     while (1) {
@@ -30,7 +78,7 @@ void system_process_main(void) {
         mouse_process_events();
         taskbar_update_clock();
         wm_update_cpu_stats();
-        process_yield(); // Nao trava a CPU
+        process_yield();
     }
 }
 
@@ -125,6 +173,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Iniciando mouse...\n", 0x08);
     mouse_init();
+    mouse_set_callback(global_mouse_handler);
     video_print("[OK] Driver de mouse PS/2\n", 0x07);
 
     video_print("[..] Iniciando timer...\n", 0x08);

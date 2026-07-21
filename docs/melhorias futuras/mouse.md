@@ -7,13 +7,16 @@
 | IRQ12 assembly stub (irq.asm) | Pronto |
 | IDT gate para INT 44 (idt.c) | Pronto |
 | PIC routing (slave PIC) | Pronto |
-| Registro do handler (IRQ12) | Falta |
-| Driver PS/2 mouse | Falta |
-| Fila de eventos | Falta |
-| Callback API | Falta |
-| Renderizacao do cursor | Falta |
-| Makefile | Falta |
-| Integracao no main loop | Falta |
+| Registro do handler (IRQ12) | Pronto |
+| Driver PS/2 mouse | Pronto |
+| Fila de eventos | Pronto |
+| Callback API | Pronto |
+| Renderizacao do cursor | Pronto |
+| Makefile | Pronto |
+| Integracao no main loop | Pronto |
+| Clique no Desktop | Pronto |
+| Clique na Taskbar | Pronto |
+| Comando shell `mouse` | Pronto |
 
 ---
 
