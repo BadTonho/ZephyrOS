@@ -4,6 +4,7 @@
 #include "core/timer.h"
 #include "ui/settings.h"
 #include "drivers/vesa.h"
+#include "drivers/font.h"
 #include "ui/gui.h"
 
 static tb_button_t buttons[TASKBAR_BUTTON_MAX];
