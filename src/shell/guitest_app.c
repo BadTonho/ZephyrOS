@@ -65,8 +65,8 @@ void guitest_handle_mouse(mouse_event_t* event) {
     // Colisão do botão de fechar (X)
     // Coordenadas aproximadas baseadas no gui_draw_window_frame
     // x + w - btn_size - 4, y + 5
-    int fechar_x = 200 + 400 - 14 - 4;
-    int fechar_y = 150 + 5;
+    int fechar_x = 200 + 400 - 16 - 4;
+    int fechar_y = 150 + 3;
     
     // Clique esquerdo pressionado
     if (event->event == MOUSE_EVENT_PRESS && (event->changed & MOUSE_BTN_LEFT)) {
@@ -88,7 +88,7 @@ void guitest_handle_mouse(mouse_event_t* event) {
         }
         
         // Verifica se soltou em cima do fechar
-        if (is_inside(event->x, event->y, fechar_x, fechar_y, 14, 14)) {
+        if (is_inside(event->x, event->y, fechar_x, fechar_y, 16, 16)) {
             guitest_close();
         }
     }

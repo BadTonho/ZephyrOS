@@ -73,8 +73,8 @@ void gui_draw_button(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const char*
         uint32_t text_w = text_len * FONT_WIDTH;
         uint32_t text_h = FONT_HEIGHT;
         
-        uint32_t text_x = x + (w - text_w) / 2;
-        uint32_t text_y = y + (h - text_h) / 2;
+        int32_t text_x = x + ((int32_t)w - (int32_t)text_w) / 2;
+        int32_t text_y = y + ((int32_t)h - (int32_t)text_h) / 2;
         
         if (pressed) {
             text_x++;
@@ -116,6 +116,6 @@ void gui_draw_window_frame(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const
     }
 
     // Draw close button
-    uint32_t btn_size = 14;
-    gui_draw_button(x + w - btn_size - 4, y + 5, btn_size, btn_size, "X", 0);
+    uint32_t btn_size = 16;
+    gui_draw_button(x + w - btn_size - 4, y + 3, btn_size, btn_size, "X", 0);
 }
