@@ -365,7 +365,7 @@
 
 | Atalho | Ação | Status |
 |---|---|---|
-| `Alt` | Abrir Menu Iniciar | ✅ |
+| `Alt` / `Win` | Abrir Menu Iniciar | ✅ |
 | `F1` | Abrir config da taskbar | ✅ |
 | `Setas ↑↓` | Navegar nos menus | ✅ |
 | `Enter` | Selecionar item | ✅ |
@@ -375,10 +375,8 @@
 
 ## Limitações Técnicas Conhecidas
 
-- **VGA Text Mode 80x25**: Sem suporte a miniaturas, widgets, notificações gráficas ou ícones sobrepostos.
-- **Sem mouse**: Sem clique direito, sem arrasto, sem Jump Lists, sem menus de contexto.
+- **VGA Text Mode 80x25**: Suporte limitado para TUI, porém agora existe fallback e integração nativa com VESA (GUI 2D) com mouse funcional.
 - **Máximo 8 botões**: `TASKBAR_BUTTON_MAX = 8` definido em `taskbar.h`.
-- **5 tipos de app**: Apenas Shell, Explorer, TaskMgr, Desktop e None — sem suporte a apps dinâmicos.
 - **Relógio sem segundos/data**: Apenas HH:MM baseado em ticks do timer.
 - **Ocultação automática**: Opção existe mas não tem lógica funcional.
 - **Sem multi-monitor**: Apenas um display VGA/VESA.

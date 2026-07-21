@@ -163,10 +163,9 @@ Posicao do cursor em coordenadas de tela:
 
 ## Limitacoes
 
-- PS/2 mouse suporta apenas movimentacao relativa (nao absoluta como USB
-- Velocidade do cursor depende da sensibilidade configurada no driver
-- Cursor nao pode ser desenhado sobre regioes que sao redesenhadas constantemente
-  (ex: relogio da taskbar) sem flickering
+- PS/2 mouse suporta apenas movimentacao relativa (nao absoluta como USB).
+- Velocidade do cursor depende da sensibilidade configurada no driver.
+- *(Resolvido)* O *flickering* (cintilação) ao sobrepor áreas dinâmicas foi resolvido pela implementação de renderização com Double Buffering no VESA.
 
 ---
 

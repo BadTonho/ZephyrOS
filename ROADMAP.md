@@ -274,12 +274,14 @@ Sistema operacional em C + Assembly (x86), do zero.
 - [x] **Desktop gráfico compatível**: Cards 3D, seleção azul, layout responsivo e fallback TUI.
 - [x] **Modo explícito de interface**: Comando `guimode classic|modern`.
 - [x] **Interação gráfica do Desktop**: Clique para selecionar e duplo clique para abrir aplicativos.
-- [ ] **Primitive Graphics 2D**: Funções de desenho de retângulos arredondados, gradientes e sombras.
-- [ ] **Renderização de Textos Livres**: Substituir `video_put_char_at` por texto gráfico (desenho pixel a pixel) que possa ser renderizado em qualquer X/Y, não apenas na grade (col/row).
-- [ ] **Desktop Gráfico**: Mudar os ícones do Desktop para carregar imagens reais em `.bmp` do disco, removendo a caixa TUI de texto.
-- [ ] **Barra de Tarefas (Taskbar) Moderna**: Desenhar o botão Iniciar e botões dos apps usando primitive graphics (cores preenchidas e texto solto) e um menu em popup flutuante.
+- [x] **Renderização de Textos Livres**: Substituir `video_put_char_at` por texto gráfico (desenho pixel a pixel) que possa ser renderizado em qualquer X/Y, não apenas na grade (col/row) - `gui_draw_text`.
+- [x] **Barra de Tarefas (Taskbar) Moderna**: Desenhar o botão Iniciar e botões dos apps usando primitive graphics (cores preenchidas e texto solto) e um menu em popup flutuante.
+- [x] **Double Buffering (Backbuffer)**: Renderização no VRAM em dois estágios para prevenir *flickering* (cintilação) durante o redesenho (Vesa Flip).
+- [x] **Suporte Avançado de Input**: Integração plena de Key Release (scancode & 0x80) e roteamento de Mouse para cliques GUI (Taskbar e Window Manager).
+- [ ] **Primitive Graphics 2D**: Funções avançadas de desenho de retângulos arredondados, gradientes e sombras.
+- [ ] **Desktop Gráfico Imagens**: Mudar os ícones do Desktop para carregar imagens reais em `.bmp` do disco.
 - [ ] **Window Manager Gráfico**: Mudar as molduras (bordas e titlebars) das janelas do modo texto para primitivas visuais em VESA. Botões de "Fechar/Minimizar/Maximizar" gráficos.
-- [ ] **Integração Plena de Mouse**: Usar o `mouse_event_t` para lidar com cliques reais nos botões gráficos, double-clicks em ícones e arrastar (Drag & Drop) de janelas pelo mouse, não mais pelo teclado.
+- [ ] **Integração Plena de Mouse**: Implementar arrastar (Drag & Drop) de janelas pelo mouse.
 
 ---
 

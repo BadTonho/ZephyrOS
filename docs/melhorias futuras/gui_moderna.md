@@ -15,8 +15,9 @@ O sistema operacional ZephyrOS possui todos os elementos para uma interface grá
 | 3 | **Mouse no Desktop (`desktop.c`)**: Seleção por clique e abertura por duplo clique. | ✅ Concluído |
 | 4 | **Mouse Interativo (`wm.c`)**: Hover, foco e Drag and Drop de janelas. | Planejado |
 | 5 | **Desktop com BMP (`desktop.c`)**: Substituir símbolos por imagens carregadas do disco. | Planejado |
-| 6 | **Taskbar Moderna (`taskbar.c`)**: Evoluir o visual atual com novos estilos. | Planejado |
+| 6 | **Taskbar Moderna (`taskbar.c`)**: Novo Menu Iniciar desenhado via GUI (Popup flutuante gráfico). | ✅ Concluído |
 | 7 | **Windows Decorator (`wm.c`)**: Janelas com titlebar desenhadas via primitivas gráficas. | Planejado |
+| 8 | **Double Buffering (`vesa.c`)**: Renderização suave e sem cintilação via backbuffer na RAM. | ✅ Concluído |
 
 ## Detalhes das Fases
 
@@ -42,18 +43,23 @@ O Desktop moderno agora recebe eventos gráficos do mouse:
 - Duplo clique em até 500 ms abre o aplicativo
 - O cursor é invalidado antes de redesenhos completos para evitar artefatos no backbuffer
 
-### Fase 4: Input Universal (Mouse)
+### Fase 4: Barra de Tarefas Moderna (GUI) ✅
+- Menu Iniciar reescrito para utilizar primitivas 2D quando no modo gráfico (`taskbar_draw_menu_gui`).
+- Substituição da caixa de texto (TUI) por um "popup flutuante" moderno e botões visualmente preenchidos.
+- Suporte a cliques via mouse mapeados para fechar ou abrir aplicativos diretamente das opções gráficas.
+
+### Fase 5: Input Universal (Mouse)
 Atualmente o Window Manager e as interfaces utilizam muito o teclado (`wm_handle_key`). Precisamos interligar o `mouse_event_t` ao:
 - **Hover**: Saber quando o ponteiro do mouse está sobre um botão para iluminá-lo.
 - **Click (Press)**: Saber onde ocorreu o clique e focar na janela.
 - **Drag (Move + Press)**: Atualizar X,Y das janelas enquanto o mouse é movido com o botão pressionado na Titlebar.
 
-### Fase 5: Substituição Visual
+### Fase 6: Substituição Visual
 Nesta etapa, apagaremos os arquivos antigos (ou os reformularemos) para tirar as dependências de TUI. 
 O *Desktop* usará os arquivos `shell.bmp`, `folder.bmp` do disco para renderizar os ícones de forma bonita, utilizando transparência se possível (Alpha blending no BMP).
 
 ## Limitações Atuais e Atenções
-1. **Performance VESA:** A renderização VESA por software é lenta. Atualizar a tela inteira com milhares de pixels a cada frame causa *flickering* (cintilação) e lag no mouse. **Solução:** Utilizar *Double Buffering* na renderização gráfica. Desenha tudo num buffer em RAM, depois copia para a memória de vídeo (LFB) de uma só vez.
+1. **Performance VESA Resolvida (Double Buffering):** O problema de *flickering* (cintilação) foi resolvido através da implementação de um backbuffer em memória RAM (`vesa_init_backbuffer`). Agora, a tela é copiada de uma só vez para a VRAM (`vesa_flip`).
 2. **Clipping:** Ao sobrepor janelas, precisamos implementar `clipping` ou redesenho com "sujeira" (dirty rectangles) para não sobrecarregar a CPU renderizando o que está escondido.
 
 ## Referências
