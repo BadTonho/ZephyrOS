@@ -25,6 +25,9 @@ void guitest_open(void) {
     if (guitest_active) return;
     guitest_active = 1;
     btn_pressed = 0;
+
+    vesa_frame_begin();
+    mouse_invalidate_cursor();
     
     // O fundo inteiro precisa ser limpo para modo gráfico
     // O modo atual ainda não tem double buffer, então limpamos com o video padrão para não quebrar.
@@ -32,15 +35,20 @@ void guitest_open(void) {
     taskbar_draw();
 
     guitest_draw();
+    vesa_frame_end();
     LOG_INFO("GUITEST", "App aberto");
 }
 
 void guitest_close(void) {
     if (!guitest_active) return;
     guitest_active = 0;
+
+    vesa_frame_begin();
+    mouse_invalidate_cursor();
     
     video_clear();
     taskbar_draw();
+    vesa_frame_end();
     
     LOG_INFO("GUITEST", "App fechado");
 }

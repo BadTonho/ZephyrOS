@@ -256,10 +256,13 @@ void desktop_init(void) {
 }
 
 void desktop_draw(void) {
+    vesa_frame_begin();
+
     if (desktop_mode == DESKTOP_MODE_MODERN) {
         vesa_mode_t* mode = vesa_get_mode();
         if (mode && mode->initialized) {
             desktop_draw_modern();
+            vesa_frame_end();
             return;
         }
 
@@ -268,27 +271,29 @@ void desktop_draw(void) {
     }
 
     desktop_draw_classic();
+    vesa_frame_end();
 }
 
 void desktop_draw_icons(void) {
+    vesa_frame_begin();
+
     if (desktop_mode == DESKTOP_MODE_MODERN) {
         vesa_mode_t* mode = vesa_get_mode();
         if (!mode || !mode->initialized) {
             LOG_ERROR("DESKTOP", "Nao foi possivel desenhar icones modernos");
+            vesa_frame_end();
             return;
         }
 
         mouse_invalidate_cursor();
         desktop_layout_modern();
         desktop_draw_icons_modern();
-        vesa_flip();
+        vesa_frame_end();
         return;
     }
 
     desktop_draw_icons_classic();
-
-    vesa_mode_t* mode = vesa_get_mode();
-    if (mode && mode->initialized) vesa_flip();
+    vesa_frame_end();
 }
 
 void desktop_add_icon(const char* name, desktop_app_type_t type) {

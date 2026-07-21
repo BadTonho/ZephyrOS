@@ -145,6 +145,34 @@ static void draw_cursor(void) {
     prev_y = cursor_y;
 }
 
+static void mouse_present_cursor(int old_x, int old_y, int had_old_cursor) {
+    vesa_mode_t* mode = vesa_get_mode();
+    int left = cursor_x;
+    int top = cursor_y;
+    int right = cursor_x + CURSOR_W;
+    int bottom = cursor_y + CURSOR_H;
+
+    if (!mode || !mode->initialized) return;
+
+    if (had_old_cursor) {
+        if (old_x < left) left = old_x;
+        if (old_y < top) top = old_y;
+        if (old_x + CURSOR_W > right) right = old_x + CURSOR_W;
+        if (old_y + CURSOR_H > bottom) bottom = old_y + CURSOR_H;
+    }
+
+    if (left < 0) left = 0;
+    if (top < 0) top = 0;
+    if (right > (int)mode->width) right = mode->width;
+    if (bottom > (int)mode->height) bottom = mode->height;
+
+    if (right > left && bottom > top) {
+        vesa_flip_region((uint32_t)left, (uint32_t)top,
+                         (uint32_t)(right - left),
+                         (uint32_t)(bottom - top));
+    }
+}
+
 /* ========== Handler de interrupcao (IRQ12) ========== */
 
 static void mouse_handler(registers_t* regs) {
@@ -236,12 +264,15 @@ void mouse_process_events(void) {
     if (queue_head == queue_tail) {
         if (!cursor_drawn && cursor_visible) {
             draw_cursor();
-            vesa_flip();
+            mouse_present_cursor(cursor_x, cursor_y, 0);
         }
         return;
     }
 
     /* Apaga o cursor UMA VEZ antes de processar todos os eventos */
+    int old_x = prev_x;
+    int old_y = prev_y;
+    int had_old_cursor = cursor_drawn;
     erase_cursor();
 
     /* Acumula todos os movimentos e pega o ultimo estado de botoes */
@@ -273,6 +304,8 @@ void mouse_process_events(void) {
     current_buttons = last_buttons;
     uint8_t changed = prev_buttons ^ current_buttons;
 
+    if (changed) vesa_frame_begin();
+
     /* Despacha evento ao callback registrado */
     if (current_callback) {
         mouse_event_t evt;
@@ -297,7 +330,11 @@ void mouse_process_events(void) {
 
     /* Redesenha o cursor UMA VEZ na posicao final */
     draw_cursor();
-    vesa_flip();
+    if (changed) {
+        vesa_frame_end();
+    } else {
+        mouse_present_cursor(old_x, old_y, had_old_cursor);
+    }
 }
 
 mouse_callback_t mouse_set_callback(mouse_callback_t cb) {

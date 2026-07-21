@@ -7,6 +7,7 @@
 
 static vesa_mode_t current_mode;
 static uint8_t* backbuffer = NULL;
+static uint32_t frame_depth = 0;
 
 static void* memset_simple(void* dst, uint8_t val, uint32_t size) {
     uint8_t* d = (uint8_t*)dst;
@@ -18,6 +19,7 @@ static void* memset_simple(void* dst, uint8_t val, uint32_t size) {
 
 void vesa_init(uint32_t boot_info_addr) {
     LOG_INFO("VESA", "Inicializando suporte VESA");
+    frame_depth = 0;
     if (backbuffer) {
         kfree(backbuffer);
         backbuffer = NULL;
@@ -93,10 +95,55 @@ int vesa_has_backbuffer(void) {
     return backbuffer != NULL;
 }
 
+static void vesa_copy_region(uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
+    uint32_t bytes_per_pixel;
+    uint32_t row_bytes;
+    uint8_t* source;
+    uint8_t* target;
+
+    if (!current_mode.initialized || !backbuffer || !w || !h) return;
+    if (x >= current_mode.width || y >= current_mode.height) return;
+
+    if (w > current_mode.width - x) w = current_mode.width - x;
+    if (h > current_mode.height - y) h = current_mode.height - y;
+
+    bytes_per_pixel = current_mode.bpp == VESA_BPP_24 ? 3 : 4;
+    row_bytes = w * bytes_per_pixel;
+    source = backbuffer + y * current_mode.pitch + x * bytes_per_pixel;
+    target = (uint8_t*)current_mode.framebuffer +
+             y * current_mode.pitch + x * bytes_per_pixel;
+
+    for (uint32_t row = 0; row < h; row++) {
+        kmemcpy(target, source, row_bytes);
+        source += current_mode.pitch;
+        target += current_mode.pitch;
+    }
+}
+
 void vesa_flip(void) {
-    if (!current_mode.initialized || !backbuffer) return;
-    uint32_t size = current_mode.height * current_mode.pitch;
-    kmemcpy((void*)current_mode.framebuffer, backbuffer, size);
+    if (frame_depth > 0) return;
+    vesa_copy_region(0, 0, current_mode.width, current_mode.height);
+}
+
+void vesa_flip_region(uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
+    if (frame_depth > 0) return;
+    vesa_copy_region(x, y, w, h);
+}
+
+void vesa_frame_begin(void) {
+    frame_depth++;
+}
+
+void vesa_frame_end(void) {
+    if (frame_depth == 0) {
+        LOG_ERROR("VESA", "Finalizacao de frame sem inicio correspondente");
+        return;
+    }
+
+    frame_depth--;
+    if (frame_depth == 0) {
+        vesa_copy_region(0, 0, current_mode.width, current_mode.height);
+    }
 }
 
 void vesa_set_mode(uint32_t width, uint32_t height, uint32_t bpp) {
@@ -167,11 +214,34 @@ void vesa_clear(vesa_color_t color) {
 }
 
 void vesa_fill_rect(uint32_t x, uint32_t y, uint32_t w, uint32_t h, vesa_color_t color) {
-    if (!current_mode.initialized) return;
+    uint8_t* target;
 
-    for (uint32_t row = y; row < y + h && row < current_mode.height; row++) {
-        for (uint32_t col = x; col < x + w && col < current_mode.width; col++) {
-            vesa_put_pixel(col, row, color);
+    if (!current_mode.initialized || !w || !h) return;
+    if (x >= current_mode.width || y >= current_mode.height) return;
+
+    if (w > current_mode.width - x) w = current_mode.width - x;
+    if (h > current_mode.height - y) h = current_mode.height - y;
+
+    target = backbuffer ? backbuffer : (uint8_t*)current_mode.framebuffer;
+
+    if (current_mode.bpp == VESA_BPP_24) {
+        for (uint32_t row = 0; row < h; row++) {
+            uint8_t* pixel = target + (y + row) * current_mode.pitch + x * 3;
+            for (uint32_t col = 0; col < w; col++) {
+                pixel[0] = color.channels.blue;
+                pixel[1] = color.channels.green;
+                pixel[2] = color.channels.red;
+                pixel += 3;
+            }
+        }
+        return;
+    }
+
+    for (uint32_t row = 0; row < h; row++) {
+        uint32_t* pixels = (uint32_t*)(target +
+                         (y + row) * current_mode.pitch + x * 4);
+        for (uint32_t col = 0; col < w; col++) {
+            pixels[col] = color.raw;
         }
     }
 }

@@ -165,10 +165,11 @@ static void taskbar_draw_gui(void) {
 }
 
 void taskbar_draw(void) {
+    vesa_frame_begin();
     vesa_mode_t* mode = vesa_get_mode();
     if (mode && mode->initialized) {
         taskbar_draw_gui();
-        vesa_flip();
+        vesa_frame_end();
         return;
     }
 
@@ -243,6 +244,8 @@ void taskbar_draw(void) {
 
         taskbar_update_clock();
     }
+
+    vesa_frame_end();
 }
 
 void taskbar_update_clock(void) {
@@ -272,6 +275,7 @@ void taskbar_update_clock(void) {
 
     vesa_mode_t* mode = vesa_get_mode();
     if (mode && mode->initialized) {
+        vesa_frame_begin();
         mouse_invalidate_cursor();
         int tb_y = mode->height - TASKBAR_HEIGHT;
         if (config.position == TB_POS_TOP) tb_y = 0;
@@ -283,7 +287,7 @@ void taskbar_update_clock(void) {
         
         vesa_fill_rect(clock_x, clock_y, clock_w, 16, bg); // limpa o fundo antigo
         gui_draw_text(clock_x, clock_y, time_str, GUI_COLOR_TEXT);
-        vesa_flip();
+        vesa_frame_end();
         return;
     }
 
@@ -381,6 +385,7 @@ static void taskbar_draw_menu_gui(void) {
     vesa_mode_t* mode = vesa_get_mode();
     if (!mode || !mode->initialized) return;
 
+    vesa_frame_begin();
     mouse_invalidate_cursor();
 
     int tb_y = mode->height - TASKBAR_HEIGHT;
@@ -415,7 +420,7 @@ static void taskbar_draw_menu_gui(void) {
         }
     }
 
-    vesa_flip();
+    vesa_frame_end();
 }
 
 static void taskbar_close_menu(void) {
@@ -425,6 +430,9 @@ static void taskbar_close_menu(void) {
 }
 
 void taskbar_draw_config_menu(void) {
+    vesa_frame_begin();
+    mouse_invalidate_cursor();
+
     if (!config_menu_open) {
         config_menu_open = 1;
         config_selection = 0;
@@ -461,6 +469,8 @@ void taskbar_draw_config_menu(void) {
 
     video_draw_hline(menu_x + 1, menu_y + menu_h - 2, menu_w - 2, 0xC4, 0x01);
     video_print_at(menu_x + 2, menu_y + menu_h - 1, "Esc: Fechar | Enter: Alterar", 0x08);
+
+    vesa_frame_end();
 }
 
 static void taskbar_close_config_menu(void) {
