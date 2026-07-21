@@ -381,6 +381,8 @@
 
 ## Fase 7: Integração com GitHub
 
+> **Nota:** Para a implementação completa desta fase, consulte a seção "Estratégia Recomendada: Rede + Atualização Automática" no final deste documento. O caminho mais eficiente é: RTL8139 → TCP/IP → HTTP → GitHub API → Auto-update.
+
 ### 7.1 Estrutura no GitHub
 
 - [ ] Criar repositório no GitHub para releases
@@ -432,6 +434,146 @@
 
 ---
 
+## Estratégia Recomendada: Rede + Atualização Automática
+
+> **Objetivo:** O sistema operacional baixa atualizações automaticamente do GitHub quando estiver conectado à rede.
+
+### Por que RTL8139?
+
+| NIC | Complexidade | Emuladores | Drivers Linux | Escolha |
+|-----|-------------|------------|---------------|---------|
+| **RTL8139** | Baixa | QEMU ✅ VirtualBox ✅ Bochs ✅ | Sim | **Recomendada** |
+| NE2000 | Baixa | QEMU ✅ VirtualBox ❌ | Sim | Alternativa |
+| E1000 | Média | QEMU ✅ VirtualBox ✅ | Sim | Mais poderosa |
+| PCNet | Média | QEMU ✅ VirtualBox ❌ | Sim | Legado |
+
+**RTL8139 é a melhor opção** porque é o NIC mais emulado, mais simples de implementar (PIO, sem DMA), e funciona em todos os emuladores principais.
+
+### Caminho de Implementação (Ordem Recomendada)
+
+```
+Passo 1: Driver RTL8139
+    ↓
+Passo 2: Ethernet + ARP
+    ↓
+Passo 3: IPv4 + ICMP (ping)
+    ↓
+Passo 4: UDP + DHCP (IP automático)
+    ↓
+Passo 5: DNS (resolução de nomes)
+    ↓
+Passo 6: TCP (conexões confiáveis)
+    ↓
+Passo 7: HTTP client (GET/POST)
+    ↓
+Passo 8: Cliente GitHub API
+    ↓
+Passo 9: Auto-update funcionando
+```
+
+### Detalhamento por Passo
+
+#### Passo 1 — Driver RTL8139 (`src/net/rtl8139.c`)
+- Detectar NIC via PCI class 0x02
+- Ler BAR0 (I/O base) e BAR1 (memória)
+- Soft reset, ler MAC address
+- Alocar RX buffer (256KB) + 4 TX buffers (2KB cada)
+- Registrar IRQ handler
+- Enviar/receber pacotes raw
+- **Resultado:** Placa de detectada e funcional no QEMU
+
+#### Passo 2 — Ethernet + ARP (`src/net/ethernet.c`, `src/net/arp.c`)
+- Montar/consumir frames Ethernet (dst_mac, src_mac, ether_type)
+- ARP request/reply para resolver IP → MAC
+- Cache ARP (30s timeout)
+- **Resultado:** `ping 192.168.1.1` funciona no QEMU (bridge mode)
+
+#### Passo 3 — IPv4 + ICMP (`src/net/ipv4.c`, `src/net/icmp.c`)
+- Montar cabeçalho IPv4 (version, TTL, protocol, checksum)
+- ICMP Echo Request/Reply (ping)
+- **Resultado:** `ping 8.8.8.8` funciona (via gateway do QEMU)
+
+#### Passo 4 — UDP + DHCP (`src/net/udp.c`, `src/net/dhcp.c`)
+- UDP sockets simples (bind, send, receive)
+- DHCP client: Discover → Offer → Request → Ack
+- Configuração automática de IP/mask/gateway/DNS
+- **Resultado:** IP atribuído automaticamente pelo QEMU/router
+
+#### Passo 5 — DNS (`src/net/dns.c`)
+- Query A record via UDP port 53
+- Cache DNS com TTL
+- **Resultado:** `ping google.com` funciona
+
+#### Passo 6 — TCP (`src/net/tcp.c`)
+- Handshake (SYN → SYN-ACK → ACK)
+- Envio/recepção com sequenciamento
+- Retransmissão (timeout 3s, máx 3 tentativas)
+- Controle de fluxo (janela)
+- **Resultado:** Conexões TCP confiáveis
+
+#### Passo 7 — HTTP Client (`src/net/http.c`)
+- GET request via TCP port 80
+- Parse de response (status code, headers, body)
+- Download de arquivos
+- **Resultado:** `wget http://example.com/file.txt` funciona
+
+#### Passo 8 — Cliente GitHub API (`src/net/github.c`)
+- GET `https://api.github.com/repos/{owner}/{repo}/releases/latest`
+- Parse JSON simples (versão, URL do pacote, checksum)
+- Comparar versão local vs remota
+- **Resultado:** Sistema detecta novas versões
+
+#### Passo 9 — Auto-Update (`src/updater/updater.c`)
+- Baixar pacote `.zephyros` do GitHub release via HTTP
+- Validar checksum
+- Extrair e aplicar arquivos
+- Reboot automático se necessário
+- **Resultado:** `update fetch` baixa e instala atualização
+
+### Ordem de Prioridade para o Usuário
+
+| Prioridade | O que fazer | Depende de | Esforço |
+|------------|-------------|------------|---------|
+| **1** | Driver RTL8139 | PCI (✅ pronto) | Médio |
+| **2** | TCP/IP básico | RTL8139 | Alto |
+| **3** | HTTP client | TCP | Médio |
+| **4** | Auto-update | HTTP + GitHub API | Médio |
+| 5 | ISO bootável | Independente | Baixo |
+| 6 | Firewall/SSH | TCP/IP | Alto |
+
+### Memória Estimada
+
+| Componente | RAM |
+|------------|-----|
+| RTL8139 RX buffer | 256 KB |
+| RTL8139 TX buffers (4×2KB) | 8 KB |
+| 16 TCP sockets × 8KB | 128 KB |
+| 16 UDP sockets × 4KB | 64 KB |
+| ARP cache (32 entradas) | 1 KB |
+| DNS cache (16 entradas) | 2 KB |
+| HTTP buffers | 16 KB |
+| **Total estimado** | **~475 KB** |
+
+> O sistema atual tem ~4MB+ de RAM disponível (detectado via E820). 475KB é viável.
+
+### Compatibilidade com Emuladores
+
+| Emulador | NIC padrão | Flag para ativar |
+|----------|-----------|-----------------|
+| QEMU | RTL8139 | `-device rtl8139,netdev=net0 -netdev user,id=net0` |
+| VirtualBox | RTL8139 | Placa de rede: RTL8139 |
+| Bochs | NE2000/RTL8139 | Placa NE2000 (IRQ 10, IO 0x300) |
+
+### Limitações Conhecidas
+
+- Sem SSL/TLS — HTTP plaintext apenas (sem HTTPS)
+- Sem WiFi — apenas Ethernet (via cabo ou emulador)
+- Sem IPv6 — apenas IPv4
+- Sem DMA — PIO only (~10 Mbps real vs 100 Mbps teórico)
+- Sem compressão TCP — dados brutos
+
+---
+
 ## Limitações Técnicas
 
 | Limite | Valor | Descrição |
@@ -441,41 +583,46 @@
 | Máximo de arquivos/pacote | 32 | Limitado por memória |
 | Máximo de backups | 3 | Auto-delete do mais antigo |
 | Checksum | CRC32/Adler32 | Sem criptografia forte |
-| Download | Manual | Sem rede (future: RTL8139 + TCP/IP) |
+| Download | **Automático (com rede)** | Requer RTL8139 + TCP/IP |
 | Versão mínima | 0.1.0 | Primeira versão release |
 | Rollback | Último backup | Sem versionamento completo |
 | Formato de pacote | .zephyros | Proprietário (não compatível com outros SOs) |
 | Instalação | Disco inteiro | Sem particionamento avançado |
 | Boot | BIOS only | Sem suporte UEFI |
-| Rede | Nenhum | Sem driver de NIC, sem TCP/IP |
-| GitHub API | Nenhum | Sem cliente HTTP |
+| Rede | RTL8139 | Fast Ethernet 100 Mbps (PIO) |
+| GitHub API | HTTP client | Sem autenticação, sem HTTPS |
 | Criptografia | Nenhum | Sem assinatura digital de pacotes |
 
 ---
 
 ## Notas de Implementação
 
-1. **Sem rede** — O ZephyrOS não possui stack de rede. O download de atualizações deve ser manual (usuário baixa no PC e copia para pendrive). Para download automático, seria necessário implementar driver de NIC + TCP/IP.
+1. **Estratégia de rede** — A seção "Estratégia Recomendada" acima detalha o melhor caminho para implementar rede + auto-update. O ponto de entrada é o driver RTL8139, que depende apenas do PCI (já implementado).
 
-2. **ISO vs Image** — O Makefile atual gera uma raw disk image (`zephyros.img`), não uma ISO. Para criar ISO, seria necessário usar `mkisofs` ou `genisoimage` com El Torito boot.
+2. **Sem rede (atualmente)** — O ZephyrOS não possui stack de rede. O download de atualizações deve ser manual (usuário baixa no PC e copia para pendrive). Para download automático, siga a estratégia acima.
 
-3. **Formato proprietário** — O pacote `.zephyros` é um formato proprietário simples (header + file entries + data). Não usa formats existentes como .deb, .rpm, ou .appx.
+3. **ISO vs Image** — O Makefile atual gera uma raw disk image (`zephyros.img`), não uma ISO. Para criar ISO, seria necessário usar `mkisofs` ou `genisoimage` com El Torito boot.
 
-4. **Backup limitado** — O sistema mantém apenas 3 backups para economizar espaço em disco (FAT12 tem limite de 224 arquivos no root).
+4. **Formato proprietário** — O pacote `.zephyros` é um formato proprietário simples (header + file entries + data). Não usa formats existentes como .deb, .rpm, ou .appx.
 
-5. **Sem criptografia** — Pacotes não são assinados digitalmente. Qualquer pessoa pode criar um pacote. Isso é aceitável para uso interno.
+5. **Backup limitado** — O sistema mantém apenas 3 backups para economizar espaço em disco (FAT12 tem limite de 224 arquivos no root).
 
-6. **Persistência** — Configurações de atualização são salvas em arquivo (`/update-config.txt`). Se o filesystem não suportar escrita, configurações ficam em memória.
+6. **Sem criptografia** — Pacotes não são assinados digitalmente. Qualquer pessoa pode criar um pacote. Isso é aceitável para uso interno.
 
-7. **Integração existente** — O filesystem já suporta operações completas (read/write/delete/list/create_dir). O updater precisa apenas usar essas APIs.
+7. **Persistência** — Configurações de atualização são salvas em arquivo (`/update-config.txt`). Se o filesystem não suportar escrita, configurações ficam em memória.
 
-8. **Rollback** — O rollback restaura arquivos do backup mais recente. Não é versionamento completo (não permite voltar para qualquer versão, apenas a anterior).
+8. **Integração existente** — O filesystem já suporta operações completas (read/write/delete/list/create_dir). O updater precisa apenas usar essas APIs.
+
+9. **Rollback** — O rollback restaura arquivos do backup mais recente. Não é versionamento completo (não permite voltar para qualquer versão, apenas a anterior).
+
+10. **Ordem de desenvolvimento** — Para ter o sistema funcionando em PC real com auto-update, a ordem recomendada é: (1) RTL8139 driver, (2) TCP/IP stack, (3) HTTP client, (4) GitHub API client, (5) updater. Cada passo é testável independentemente no QEMU.
 
 ---
 
 ## Referências
 
 - `src/drivers/ata.c` — ATA PIO disk driver (196 linhas)
+- `src/drivers/pci.c` — PCI bus enumeration (147 linhas)
 - `src/fs/fat12.c` — FAT12 filesystem (1145 linhas)
 - `src/fs/fat32.c` — FAT32 filesystem (976 linhas)
 - `src/fs/fs.c` — Unified FS API (194 linhas)
@@ -486,3 +633,12 @@
 - `src/settings/settings.c` — Settings panel (549 linhas)
 - `Makefile` — Build system (318 linhas)
 - `src/boot/boot.asm` — Bootloader (187 linhas)
+- `docs/melhorias futuras/gerenciador de rede.md` — Roadmap completo de rede (784 linhas)
+- RTL8139 Datasheet — Documentação do chip
+- RFC 791 — IPv4
+- RFC 792 — ICMP
+- RFC 768 — UDP
+- RFC 793 — TCP
+- RFC 2131 — DHCP
+- RFC 1035 — DNS
+- GitHub API — REST API para releases
