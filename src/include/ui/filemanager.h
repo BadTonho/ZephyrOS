@@ -18,6 +18,11 @@
 #define FM_ADDRESS_COLOR 0x07
 #define FM_ADDRESS_INPUT_COLOR 0x1F
 
+typedef enum {
+    FM_MODE_CLASSIC = 0,
+    FM_MODE_MODERN
+} fm_mode_t;
+
 typedef struct {
     char name[FM_NAME_LEN];
     uint32_t size;
@@ -48,6 +53,7 @@ typedef struct {
     uint32_t clipboard_size;
     int clipboard_op;
     int create_dir_mode;
+    fm_mode_t mode;
 } fm_state_t;
 
 
@@ -57,6 +63,7 @@ void fm_close(void);
 void fm_run(void);
 void fm_draw(void);
 int fm_is_running(void);
+fm_mode_t fm_get_mode(void);
 void fm_handle_key(uint8_t scancode);
 
 #endif
