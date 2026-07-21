@@ -22,3 +22,9 @@ int kstrcmp(const char* a, const char* b) {
     }
     return (unsigned char)*a - (unsigned char)*b;
 }
+
+uint32_t kstrlen(const char* str) {
+    uint32_t len = 0;
+    while (str[len]) len++;
+    return len;
+}

@@ -18,15 +18,12 @@
 #include "ui/filemanager.h"
 #include "core/string.h"
 #include "drivers/mouse.h"
+#include "ui/gui.h"
 
 static char input_buffer[SHELL_BUFFER_SIZE];
 static int input_pos = 0;
 
-static int strlen(const char* str) {
-    int len = 0;
-    while (str[len]) len++;
-    return len;
-}
+
 
 static void str_upper(char* str) {
     while (*str) {
@@ -89,6 +86,7 @@ static void cmd_help(void) {
     video_print("             edit (novo) | edit arquivo.txt\n", 0x08);
     video_print("  reboot   - Reinicia o sistema\n", 0x07);
     video_print("  shutdown - Desliga o sistema\n", 0x07);
+    video_print("  gui_test - Testa primitivas GUI 2D\n", 0x07);
 }
 
 static void cmd_clear(void) {
@@ -479,6 +477,12 @@ int shell_process_command(const char* input) {
         cmd_reboot();
     } else if (kstrcmp(cmd, "shutdown") == 0) {
         cmd_shutdown();
+    } else if (kstrcmp(cmd, "gui_test") == 0) {
+        gui_draw_window_frame(200, 150, 400, 300, "Meu Primeiro App GUI (C)", 1);
+        gui_draw_button(250, 200, 120, 30, "Aperte-me", 0);
+        gui_draw_button(400, 200, 120, 30, "Pressionado", 1);
+        gui_draw_text(250, 260, "Isso eh texto renderizado pixel a pixel!", GUI_COLOR_TEXT);
+        gui_draw_text(250, 280, "Nao ha limite de colunas/linhas aqui.", GUI_COLOR_TEXT);
     } else if (kstrcmp(cmd, "taskmgr") == 0) {
         taskmgr_run();
     } else if (kstrcmp(cmd, "taskcfg") == 0) {
