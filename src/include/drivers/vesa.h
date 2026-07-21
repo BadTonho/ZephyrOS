@@ -64,6 +64,8 @@ void vesa_draw_char(int x, int y, char c, vesa_color_t color, uint32_t scale);
 void vesa_draw_string(int x, int y, const char* str, vesa_color_t color, uint32_t scale);
 void vesa_draw_bitmap(int x, int y, const uint8_t* bitmap, uint32_t w, uint32_t h, vesa_color_t color);
 
+void vesa_flip(void);
+void vesa_init_backbuffer(void);
 vesa_mode_t* vesa_get_mode(void);
 uint32_t vesa_rgb(uint8_t r, uint8_t g, uint8_t b);
 uint32_t vesa_rgba(uint8_t r, uint8_t g, uint8_t b, uint8_t a);

@@ -486,3 +486,33 @@ void wm_update_cpu_stats(void) {
         }
     }
 }
+
+int wm_handle_click(int px, int py) {
+    if (!wm_active) return 0;
+    int col = px / 8;
+    int row = py / 16;
+
+    int highest_z = -1;
+    int win_idx = -1;
+
+    for (int i = 0; i < wm.window_count; i++) {
+        if (!wm.windows[i].visible || wm.windows[i].state == WM_STATE_MINIMIZED) continue;
+        int wx = wm.windows[i].x;
+        int wy = wm.windows[i].y;
+        int ww = wm.windows[i].width;
+        int wh = wm.windows[i].height;
+
+        if (col >= wx && col < wx + ww && row >= wy && row < wy + wh) {
+            if (wm.windows[i].z_order > highest_z) {
+                highest_z = wm.windows[i].z_order;
+                win_idx = i;
+            }
+        }
+    }
+
+    if (win_idx >= 0) {
+        wm_focus_window(win_idx);
+        return 1;
+    }
+    return 0;
+}

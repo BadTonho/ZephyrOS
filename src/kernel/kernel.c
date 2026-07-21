@@ -83,6 +83,11 @@ static void global_mouse_handler(mouse_event_t* evt) {
             taskmgr_run();
         }
     }
+
+    /* Tenta window manager */
+    if (wm_is_active()) {
+        wm_handle_click(evt->x, evt->y);
+    }
 }
 
 void system_process_main(void) {
@@ -231,6 +236,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     video_print("[..] Configurando paginacao...\n", 0x08);
     paging_init();
     video_print("[OK] Paging ativo\n", 0x07);
+    vesa_init_backbuffer();
 
     video_print("[..] Iniciando processos...\n", 0x08);
     tss_init();

@@ -285,6 +285,7 @@ void mouse_process_events(void) {
 
     /* Redesenha o cursor UMA VEZ na posicao final */
     draw_cursor();
+    vesa_flip();
 }
 
 mouse_callback_t mouse_set_callback(mouse_callback_t cb) {

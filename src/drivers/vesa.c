@@ -1,8 +1,11 @@
 #include "drivers/vesa.h"
 #include "drivers/font.h"
 #include "core/log.h"
+#include "core/memory.h"
+#include "core/string.h"
 
 static vesa_mode_t current_mode;
+static uint8_t* backbuffer = NULL;
 
 static void* memset_simple(void* dst, uint8_t val, uint32_t size) {
     uint8_t* d = (uint8_t*)dst;
@@ -44,6 +47,23 @@ void vesa_init(uint32_t boot_info_addr) {
     LOG_INFO("VESA", "Framebuffer detectado");
 }
 
+void vesa_init_backbuffer(void) {
+    if (!current_mode.initialized) return;
+    uint32_t size = current_mode.height * current_mode.pitch;
+    backbuffer = (uint8_t*)kmalloc(size);
+    if (backbuffer) {
+        LOG_INFO("VESA", "Backbuffer alocado com sucesso");
+    } else {
+        LOG_WARN("VESA", "Falha ao alocar backbuffer");
+    }
+}
+
+void vesa_flip(void) {
+    if (!current_mode.initialized || !backbuffer) return;
+    uint32_t size = current_mode.height * current_mode.pitch;
+    kmemcpy((void*)current_mode.framebuffer, backbuffer, size);
+}
+
 void vesa_set_mode(uint32_t width, uint32_t height, uint32_t bpp) {
     (void)width;
     (void)height;
@@ -55,7 +75,8 @@ void vesa_put_pixel(uint32_t x, uint32_t y, vesa_color_t color) {
     if (!current_mode.initialized) return;
     if (x >= current_mode.width || y >= current_mode.height) return;
 
-    uint8_t* row = (uint8_t*)current_mode.framebuffer + y * current_mode.pitch;
+    uint8_t* target = backbuffer ? backbuffer : (uint8_t*)current_mode.framebuffer;
+    uint8_t* row = target + y * current_mode.pitch;
     if (current_mode.bpp == 24) {
         uint8_t* pixel = row + x * 3;
         pixel[0] = color.channels.blue;
@@ -73,7 +94,8 @@ vesa_color_t vesa_get_pixel(uint32_t x, uint32_t y) {
     if (!current_mode.initialized) return c;
     if (x >= current_mode.width || y >= current_mode.height) return c;
 
-    uint8_t* row = (uint8_t*)current_mode.framebuffer + y * current_mode.pitch;
+    uint8_t* target = backbuffer ? backbuffer : (uint8_t*)current_mode.framebuffer;
+    uint8_t* row = target + y * current_mode.pitch;
     if (current_mode.bpp == 24) {
         uint8_t* pixel = row + x * 3;
         c.channels.blue = pixel[0];
@@ -90,8 +112,9 @@ vesa_color_t vesa_get_pixel(uint32_t x, uint32_t y) {
 void vesa_clear(vesa_color_t color) {
     if (!current_mode.initialized) return;
 
+    uint8_t* target = backbuffer ? backbuffer : (uint8_t*)current_mode.framebuffer;
     for (uint32_t y = 0; y < current_mode.height; y++) {
-        uint8_t* row = (uint8_t*)current_mode.framebuffer + y * current_mode.pitch;
+        uint8_t* row = target + y * current_mode.pitch;
         if (current_mode.bpp == 24) {
             for (uint32_t x = 0; x < current_mode.width; x++) {
                 uint8_t* pixel = row + x * 3;

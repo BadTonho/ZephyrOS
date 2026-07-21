@@ -195,7 +195,7 @@ static uint8_t get_format_color(const char* line, uint32_t pos) {
     uint8_t in_italic = 0;
 
     for (uint32_t i = 0; i <= pos; i++) {
-        if (line[i] == '*' && i + 1 < str_len(line) && line[i + 1] == '*') {
+        if (line[i] == '*' && i + 1 < (uint32_t)str_len(line) && line[i + 1] == '*') {
             in_bold = !in_bold;
             i++;
         } else if (line[i] == '*' && !in_bold) {
@@ -234,7 +234,7 @@ static uint8_t get_syntax_color(const char* line, uint32_t pos, uint8_t syntax) 
     if ((c == '"' || c == '\'') && syntax != EDITOR_SYNTAX_ASM) return 0x0A;
 
     if (syntax == EDITOR_SYNTAX_C) {
-        if (c == '/' && pos + 1 < str_len(line)) {
+        if (c == '/' && pos + 1 < (uint32_t)str_len(line)) {
             if (line[pos + 1] == '/' || line[pos + 1] == '*') return 0x08;
         }
     }
@@ -251,7 +251,7 @@ static uint8_t get_syntax_color(const char* line, uint32_t pos, uint8_t syntax) 
                (line[start-1] >= 'A' && line[start-1] <= 'Z') ||
                (line[start-1] >= '0' && line[start-1] <= '9') ||
                line[start-1] == '_')) start--;
-        while (pos < str_len(line) && w < 63 &&
+        while (pos < (uint32_t)str_len(line) && w < 63 &&
                ((line[pos] >= 'a' && line[pos] <= 'z') ||
                 (line[pos] >= 'A' && line[pos] <= 'Z') ||
                 (line[pos] >= '0' && line[pos] <= '9') ||
@@ -528,7 +528,6 @@ static void editor_save(void) {
 }
 
 static void editor_draw_button(int x, int y, const char* label, uint8_t active) {
-    uint8_t bg = active ? 0x0A : 0x08;
     uint8_t fg = active ? 0x00 : 0x07;
 
     video_put_char_at('[', fg, x, y);

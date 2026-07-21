@@ -49,9 +49,8 @@ void keyboard_handler(registers_t* regs) {
     (void)regs;
     uint8_t scancode = inb(0x60);
 
-    if (scancode & 0x80) {
-        return;
-    }
+    // Nao descarta scancode & 0x80 para permitir a detecao de Key Release 
+    // e prefixos estendidos (0xE0). Os apps tratam press/release conforme necessario.
 
     uint8_t next_head = (uint8_t)((queue_head + 1) % KEYBOARD_QUEUE_SIZE);
     if (next_head == queue_tail) {

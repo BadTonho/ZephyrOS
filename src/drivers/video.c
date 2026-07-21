@@ -155,6 +155,7 @@ void video_clear(void) {
             vesa_color_t c;
             c.raw = bg;
             vesa_clear(c);
+            vesa_flip();
         }
     } else {
         uint16_t* vm = (uint16_t*)VIDEO_MEMORY;

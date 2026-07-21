@@ -1192,7 +1192,7 @@ int fat12_create_dir_entry(uint16_t dir_cluster, const char* name, uint8_t attri
 
     if (dir_cluster == 0) {
         for (uint32_t idx = 0; idx < fs.bpb.root_entries; idx++) {
-            if (fs.root_dir[idx].name[0] == 0x00 || fs.root_dir[idx].name[0] == 0xE5) {
+            if (fs.root_dir[idx].name[0] == 0x00 || (uint8_t)fs.root_dir[idx].name[0] == 0xE5) {
                 kmemset(&fs.root_dir[idx], 0, sizeof(fat12_dir_entry_t));
                 kmemcpy(fs.root_dir[idx].name, fat12_name, 11);
                 fs.root_dir[idx].attributes = attributes;
