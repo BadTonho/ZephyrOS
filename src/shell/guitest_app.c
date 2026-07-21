@@ -83,7 +83,7 @@ void guitest_handle_mouse(mouse_event_t* event) {
             guitest_draw(); // Redesenha com botão levantado
             
             // Ação do botão:
-            speaker_play(1000, 50); // Toca um beep
+            speaker_beep(1000, 50); // Toca um beep
         }
         
         // Verifica se soltou em cima do fechar
