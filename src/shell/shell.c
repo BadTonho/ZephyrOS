@@ -24,6 +24,32 @@
 static char input_buffer[SHELL_BUFFER_SIZE];
 static int input_pos = 0;
 
+static void shell_redraw_after_overlay_close(void) {
+    /* O menu grafico nao atualiza o buffer de texto; limpe-o antes de redesenhar. */
+    video_clear();
+
+    if (desktop_is_active()) {
+        desktop_draw();
+        taskbar_draw();
+        return;
+    }
+
+    if (wm_is_active()) {
+        wm_draw_all();
+        taskbar_draw();
+        return;
+    }
+
+    if (guitest_is_active()) {
+        taskbar_draw();
+        guitest_draw();
+        return;
+    }
+
+    shell_print_prompt();
+    taskbar_draw();
+}
+
 
 
 static void str_upper(char* str) {
@@ -311,13 +337,7 @@ void shell_handle_key(uint8_t scancode) {
     int config_result = taskbar_handle_config_key(scancode);
     if (config_result) {
         if (config_result == 9) {
-            if (desktop_is_active()) desktop_draw();
-            else if (wm_is_active()) wm_draw_all();
-            else {
-                video_clear();
-                shell_print_prompt();
-                taskbar_draw();
-            }
+            shell_redraw_after_overlay_close();
         }
         return;
     }
@@ -345,18 +365,7 @@ void shell_handle_key(uint8_t scancode) {
         } else if (tb_result == 8) {
             settings_open();
         } else if (tb_result == 9) {
-            if (desktop_is_active()) desktop_draw();
-            else if (wm_is_active()) wm_draw_all();
-            else if (guitest_is_active()) {
-                video_clear();
-                taskbar_draw();
-                guitest_draw();
-            }
-            else {
-                video_clear();
-                shell_print_prompt();
-                taskbar_draw();
-            }
+            shell_redraw_after_overlay_close();
         }
         return;
     }
