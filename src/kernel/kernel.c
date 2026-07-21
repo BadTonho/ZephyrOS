@@ -22,14 +22,29 @@
 #include "drivers/ac97.h"
 #include "ui/taskbar.h"
 #include "ui/desktop.h"
-#include "ui/settings.h"
 #include "ui/wm.h"
 #include "ui/icons.h"
-#include "ui/filemanager.h"
 #include "apps/taskmanager.h"
 #include "apps/guitest.h"
 
 static int kernel_service_fallback = 0;
+
+static void kernel_request_shell_app(ipc_app_request_t request) {
+    ipc_msg_t msg;
+
+    if (!recovery_is_enabled(RECOVERY_COMPONENT_SHELL)) {
+        LOG_WARN("KERNEL", "Shell indisponivel; solicitacao de aplicativo ignorada");
+        return;
+    }
+
+    msg.type = IPC_MSG_APP_REQUEST;
+    msg.data1 = request;
+    msg.data2 = 0;
+
+    if (!ipc_send(process_get_focus(), &msg)) {
+        LOG_WARN("KERNEL", "Nao foi possivel enviar solicitacao ao Shell");
+    }
+}
 
 /* Handler global de eventos do mouse, despacha para a UI ativa */
 static void global_mouse_handler(mouse_event_t* evt) {
@@ -55,17 +70,14 @@ static void global_mouse_handler(mouse_event_t* evt) {
         }
 
         if (tb_result == 2) {
-            desktop_set_active(0);
-            video_clear();
-            shell_print_prompt();
-            taskbar_draw();
+            kernel_request_shell_app(IPC_APP_OPEN_SHELL);
         } else if (tb_result == 3) {
             if (recovery_is_enabled(RECOVERY_COMPONENT_FILEMANAGER)) {
-                fm_run();
+                kernel_request_shell_app(IPC_APP_OPEN_EXPLORER);
             }
         } else if (tb_result == 4) {
             if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
-                taskmgr_run();
+                kernel_request_shell_app(IPC_APP_OPEN_TASKMANAGER);
             }
         } else if (tb_result == 5) {
             // Reiniciar - para contornar a falta de acesso a cmd_reboot aqui
@@ -75,15 +87,10 @@ static void global_mouse_handler(mouse_event_t* evt) {
             // Desligar - QEMU/Bochs poweroff via ACPI/APM
             asm volatile("outw %0, %1" : : "a"((uint16_t)0x2000), "Nd"((uint16_t)0xB004));
         } else if (tb_result == 7) {
-            video_clear();
-            if (!desktop_is_active()) {
-                desktop_set_active(1);
-            }
-            desktop_draw();
-            taskbar_draw();
+            kernel_request_shell_app(IPC_APP_OPEN_DESKTOP);
         } else if (tb_result == 8) {
             if (recovery_is_enabled(RECOVERY_COMPONENT_SETTINGS)) {
-                settings_open();
+                kernel_request_shell_app(IPC_APP_OPEN_SETTINGS);
             }
         }
         return;
@@ -100,18 +107,14 @@ static void global_mouse_handler(mouse_event_t* evt) {
         }
 
         if (result == DESKTOP_APP_SHELL) {
-            desktop_set_active(0);
-            video_clear();
-            taskbar_draw();
+            kernel_request_shell_app(IPC_APP_OPEN_SHELL);
         } else if (result == DESKTOP_APP_EXPLORER) {
             if (recovery_is_enabled(RECOVERY_COMPONENT_FILEMANAGER)) {
-                desktop_set_active(0);
-                fm_run();
+                kernel_request_shell_app(IPC_APP_OPEN_EXPLORER);
             }
         } else if (result == DESKTOP_APP_TASKMGR) {
             if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
-                desktop_set_active(0);
-                taskmgr_run();
+                kernel_request_shell_app(IPC_APP_OPEN_TASKMANAGER);
             }
         }
     }
@@ -140,6 +143,8 @@ void shell_process_main(void) {
         if (ipc_receive(&msg)) {
             if (msg.type == IPC_MSG_KEYBOARD) {
                 shell_handle_key((uint8_t)msg.data1);
+            } else if (msg.type == IPC_MSG_APP_REQUEST) {
+                shell_handle_app_request(msg.data1);
             }
         } else {
             process_yield();

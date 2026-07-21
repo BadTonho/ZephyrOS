@@ -12,8 +12,17 @@
 
 typedef enum {
     IPC_MSG_NONE = 0,
-    IPC_MSG_KEYBOARD
+    IPC_MSG_KEYBOARD,
+    IPC_MSG_APP_REQUEST
 } ipc_msg_type_t;
+
+typedef enum {
+    IPC_APP_OPEN_SHELL = 1,
+    IPC_APP_OPEN_EXPLORER,
+    IPC_APP_OPEN_TASKMANAGER,
+    IPC_APP_OPEN_DESKTOP,
+    IPC_APP_OPEN_SETTINGS
+} ipc_app_request_t;
 
 typedef struct {
     ipc_msg_type_t type;

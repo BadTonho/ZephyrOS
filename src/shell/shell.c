@@ -26,6 +26,47 @@
 static char input_buffer[SHELL_BUFFER_SIZE];
 static int input_pos = 0;
 
+void shell_handle_app_request(uint32_t request) {
+    switch ((ipc_app_request_t)request) {
+        case IPC_APP_OPEN_SHELL:
+            desktop_set_active(0);
+            video_clear();
+            shell_print_prompt();
+            taskbar_draw();
+            break;
+        case IPC_APP_OPEN_EXPLORER:
+            if (recovery_is_enabled(RECOVERY_COMPONENT_FILEMANAGER)) {
+                fm_run();
+            } else {
+                video_print("Erro: File Manager indisponivel.\n", 0x0C);
+            }
+            break;
+        case IPC_APP_OPEN_TASKMANAGER:
+            if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
+                taskmgr_run();
+            } else {
+                video_print("Erro: Task Manager indisponivel.\n", 0x0C);
+            }
+            break;
+        case IPC_APP_OPEN_DESKTOP:
+            video_clear();
+            desktop_set_active(1);
+            desktop_draw();
+            taskbar_draw();
+            break;
+        case IPC_APP_OPEN_SETTINGS:
+            if (recovery_is_enabled(RECOVERY_COMPONENT_SETTINGS)) {
+                settings_open();
+            } else {
+                video_print("Erro: Configuracoes indisponiveis.\n", 0x0C);
+            }
+            break;
+        default:
+            LOG_ERROR("SHELL", "Solicitacao de aplicativo invalida");
+            break;
+    }
+}
+
 static void shell_redraw_after_overlay_close(void) {
     /* O menu grafico nao atualiza o buffer de texto; limpe-o antes de redesenhar. */
     video_clear();

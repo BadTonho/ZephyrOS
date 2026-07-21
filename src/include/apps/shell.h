@@ -9,6 +9,7 @@
 
 void shell_init(void);
 void shell_handle_key(uint8_t scancode);
+void shell_handle_app_request(uint32_t request);
 void shell_print_prompt(void);
 int  shell_process_command(const char* input);
 

@@ -32,6 +32,8 @@
   comando `health`.
 - Falhas recuperáveis de leitura, alocação e criação de janelas marcam o
   componente como `DEGRADED` sem derrubar o kernel.
+- Cliques do mouse geram solicitações IPC; o processo System não executa
+  diretamente os loops bloqueantes dos aplicativos.
 
 ### Fase 2 — Isolamento de processos
 
