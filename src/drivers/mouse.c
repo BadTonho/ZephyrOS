@@ -279,10 +279,14 @@ void mouse_process_events(void) {
     int had_old_cursor = cursor_drawn;
     erase_cursor();
 
-    /* Acumula todos os movimentos e pega o ultimo estado de botoes */
+    /*
+     * Acumula movimentos consecutivos, mas para no primeiro evento de
+     * botao. Assim um clique rapido nao desaparece quando press e release
+     * chegam na mesma fila entre dois ciclos do sistema.
+     */
     int32_t total_dx = 0;
     int32_t total_dy = 0;
-    uint8_t last_buttons = current_buttons;
+    uint8_t next_buttons = current_buttons;
 
     while (queue_head != queue_tail) {
         mouse_packet_t pkt = event_queue[queue_head];
@@ -290,7 +294,10 @@ void mouse_process_events(void) {
 
         total_dx += pkt.dx;
         total_dy += pkt.dy;
-        last_buttons = pkt.buttons;
+        if (pkt.buttons != current_buttons) {
+            next_buttons = pkt.buttons;
+            break;
+        }
     }
 
     /* Aplica multiplicador de velocidade */
@@ -305,7 +312,7 @@ void mouse_process_events(void) {
 
     /* Detecta press/release comparando com estado anterior */
     prev_buttons = current_buttons;
-    current_buttons = last_buttons;
+    current_buttons = next_buttons;
     uint8_t changed = prev_buttons ^ current_buttons;
 
     if (changed) vesa_frame_begin();
