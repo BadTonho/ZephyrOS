@@ -117,6 +117,27 @@ static void ata_soft_reset(uint16_t ctrl) {
     for (int i = 0; i < 4; i++) inb(ctrl);
 }
 
+static int ata_prepare_transfer(const ata_device_t* dev, uint32_t lba) {
+    uint16_t io;
+
+    if (!dev) {
+        LOG_ERROR("ATA", "Dispositivo nulo ao preparar transferencia");
+        return ERR_NULL;
+    }
+
+    io = dev->base_port;
+
+    /* A sonda de um slave ausente pode deixar seu status de erro no canal.
+       Selecione o disco real antes de consultar DRDY. */
+    outb(dev->ctrl_port, 0x02);
+    ata_delay(io);
+    outb(io + ATA_REG_DRIVE,
+         0xE0 | (dev->slave << 4) | ((lba >> 24) & 0x0F));
+    ata_delay(io);
+
+    return ata_wait_ready(io);
+}
+
 static int ata_detect(uint16_t io, uint16_t ctrl, uint8_t slave, ata_device_t* dev) {
     dev->base_port = io;
     dev->ctrl_port = ctrl;
@@ -222,28 +243,26 @@ int ata_read_sectors(uint32_t lba, uint8_t count, uint8_t* buffer) {
         LOG_ERROR("ATA", "Buffer ou quantidade de setores invalida");
         return ERR_NULL;
     }
+    if (dev->sectors != 0 &&
+        (lba >= dev->sectors || count > dev->sectors - lba)) {
+        LOG_ERROR("ATA", "Leitura fora dos limites do disco");
+        return ERR_DISK;
+    }
 
     ata_read_ops++;
     uint16_t io = dev->base_port;
 
     for (int attempt = 0; attempt < ATA_READ_RETRIES; attempt++) {
-        if (ata_wait_ready(io) != 0) {
+        if (ata_prepare_transfer(dev, lba) != OK) {
             LOG_WARN("ATA", "Disco nao ficou pronto para leitura");
             ata_soft_reset(dev->ctrl_port);
             continue;
         }
 
-        outb(dev->ctrl_port, 0x02);
-        ata_delay(io);
-
-        ata_select_drive(io, dev->slave);
-        ata_delay(io);
-
         outb(io + ATA_REG_SECCOUNT, count);
         outb(io + ATA_REG_LBA_LOW, lba & 0xFF);
         outb(io + ATA_REG_LBA_MID, (lba >> 8) & 0xFF);
         outb(io + ATA_REG_LBA_HIGH, (lba >> 16) & 0xFF);
-        outb(io + ATA_REG_DRIVE, 0xE0 | (dev->slave << 4) | ((lba >> 24) & 0x0F));
         outb(io + ATA_REG_COMMAND, ATA_CMD_READ);
 
         int failed = 0;
@@ -284,23 +303,24 @@ int ata_write_sectors(uint32_t lba, uint8_t count, const uint8_t* buffer) {
         LOG_ERROR("ATA", "Buffer ou quantidade de setores invalida");
         return ERR_NULL;
     }
+    if (dev->sectors != 0 &&
+        (lba >= dev->sectors || count > dev->sectors - lba)) {
+        LOG_ERROR("ATA", "Escrita fora dos limites do disco");
+        return ERR_DISK;
+    }
 
     ata_write_ops++;
     uint16_t io = dev->base_port;
 
-    if (ata_wait_ready(io) != 0) return ERR_DISK;
-
-    outb(dev->ctrl_port, 0x02);
-    ata_delay(io);
-
-    ata_select_drive(io, dev->slave);
-    ata_delay(io);
+    if (ata_prepare_transfer(dev, lba) != OK) {
+        LOG_ERROR("ATA", "Disco nao ficou pronto para escrita");
+        return ERR_DISK;
+    }
 
     outb(io + ATA_REG_SECCOUNT, count);
     outb(io + ATA_REG_LBA_LOW, lba & 0xFF);
     outb(io + ATA_REG_LBA_MID, (lba >> 8) & 0xFF);
     outb(io + ATA_REG_LBA_HIGH, (lba >> 16) & 0xFF);
-    outb(io + ATA_REG_DRIVE, 0xE0 | (dev->slave << 4) | ((lba >> 24) & 0x0F));
     outb(io + ATA_REG_COMMAND, ATA_CMD_WRITE);
 
     for (uint8_t s = 0; s < count; s++) {
