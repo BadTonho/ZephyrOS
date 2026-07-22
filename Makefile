@@ -3,10 +3,14 @@
 SHELL = cmd.exe
 
 # Ferramentas
-NASM = "C:\Users\Admin\AppData\Local\bin\NASM\nasm.exe"
-GCC = D:\code\i686-elf-tools-windows\bin\i686-elf-gcc.exe
-LD = D:\code\i686-elf-tools-windows\bin\i686-elf-ld.exe
-QEMU = "C:\Program Files\QEMU\qemu-system-i386.exe"
+# Os caminhos locais podem ficar em Makefile.local, que nao e versionado.
+# Sem esse arquivo, as ferramentas sao procuradas no PATH do sistema.
+-include Makefile.local
+
+NASM ?= nasm
+GCC ?= i686-elf-gcc
+LD ?= i686-elf-ld
+QEMU ?= qemu-system-i386
 
 # Flags
 CFLAGS = -m32 -O2 -fno-strict-aliasing -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -I src/include -I src/include/core -I src/include/drivers -I src/include/fs -I src/include/memory -I src/include/process -I src/include/apps -I src/include/ui

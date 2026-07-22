@@ -13,3 +13,4 @@ build/
 Thumbs.db
 Desktop.ini
 .mailmap
+Makefile.local
