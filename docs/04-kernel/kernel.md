@@ -37,7 +37,7 @@ A função `kernel_main()` é o ponto de entrada em C. Ela:
 5. Detecta memória
 6. Configura paging
 7. Cria processos
-8. Monta FAT12
+8. Monta FAT12/FAT32
 9. Inicia o shell
 
 ### Ordem de Inicialização
@@ -46,7 +46,7 @@ A função `kernel_main()` é o ponto de entrada em C. Ela:
 void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     vesa_init(vesa_info_addr);     // Modo gráfico VESA
     font_init();                   // Fonte bitmap 8x16
-    video_init();                  // VGA 80x25
+    video_init();                  // VGA 80x25 / VESA Backbuffer
     log_init();                    // Sistema de logging
     idt_init();                    // Interrupções
     keyboard_init();               // PS/2
@@ -65,6 +65,8 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     desktop_init();                // Desktop
     settings_init();               // Configurações
     wm_init();                     // Window Manager
+    mouse_init();                  // Mouse PS/2
+    ipc_init();                    // Sistema IPC
     shell_init();                  // Shell interativo
 }
 ```

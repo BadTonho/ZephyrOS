@@ -35,6 +35,8 @@ Comandos disponiveis:
   edit      - Editor de texto (edit ARQUIVO.TXT)
   mouse     - Mostra status do mouse PS/2
   guitest   - Testa primitivas GUI 2D
+  guimode   - Altera entre gui classica (TUI) e moderna
+  health    - Exibe metricas e estado de recovery do kernel
   reboot    - Reinicia o sistema
   shutdown  - Desliga o sistema
 ```
@@ -145,6 +147,20 @@ Testa as primitivas gráficas 2D do módulo GUI (janela, botões, texto).
 
 ```
 zephyr> guitest
+```
+
+## `guimode classic|modern`
+Altera o modo de interface do sistema (Classic TUI ou GUI Moderna) dinamicamente, demonstrando o fallback visual sem afetar a arquitetura interna do kernel.
+
+```
+zephyr> guimode modern
+```
+
+## `health`
+Exibe métricas detalhadas do kernel, estado do recovery, paginação, processos e saúde estrutural da arquitetura.
+
+```
+zephyr> health
 ```
 
 ## `explorer`

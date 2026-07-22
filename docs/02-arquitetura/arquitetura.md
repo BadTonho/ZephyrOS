@@ -13,18 +13,18 @@ O ZephyrOS é organizado em camadas, cada uma responsável por uma parte especí
 │     (desktop, wm, taskbar,          │
 │      settings, filemanager, icons)  │
 ├─────────────────────────────────────┤
-│     GUI Primitives (gui.c)          │  ← Primitivas 2D pixel-level
+│     GUI Primitives (gui.c)          │  ← Primitivas 2D (Modo Moderno)
 ├─────────────────────────────────────┤
 │         Sistema de Arquivos         │  ← FAT12, FAT32, BMP, WAV
 ├─────────────────────────────────────┤
-│        Processos / Threads          │  ← Scheduler, context switch
+│      Processos / Threads / IPC      │  ← Scheduler, mensagens, foco
 ├─────────────────────────────────────┤
 │           Gerenciamento             │  ← Memória, paging, heap
 │              de Memória             │
 │           + Compressão LZSS         │
 ├─────────────────────────────────────┤
 │           Drivers de Hardware       │  ← Teclado, timer, vídeo, disco
-│    (ATA, AC97, PCI, VESA, font)    │
+│ (ATA, AC97, PCI, VESA, font, mouse) │
 ├─────────────────────────────────────┤
 │           IDT / IRQ / ISR           │  ← Interrupções e exceções
 ├─────────────────────────────────────┤
@@ -81,10 +81,10 @@ src/
 ├── boot/           → Bootloader (Assembly puro)
 ├── kernel/         → Código central do SO (entry, panic, switch)
 ├── core/           → Serviços centrais (log)
-├── drivers/        → Drivers de hardware (video, vesa, font, idt, isr, irq, keyboard, timer, tss, ata, speaker, pci, ac97)
+├── drivers/        → Drivers de hardware (video, vesa, font, idt, isr, irq, keyboard, timer, tss, ata, speaker, pci, ac97, mouse)
 ├── memory/         → Gerenciamento de memória (memory, paging, compress)
 ├── fs/             → Sistema de arquivos (fat12, fat32, fs, wav, bmp)
-├── process/        → Gerenciador de processos
+├── process/        → Gerenciador de processos e IPC
 ├── thread/         → Gerenciador de threads
 ├── shell/          → Apps do shell (editor, mediaplayer, taskmanager)
 ├── filemanager/    → File Manager

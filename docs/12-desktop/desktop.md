@@ -1,16 +1,27 @@
 # 12 - Desktop e Interface
 
-Ambiente desktop do ZephyrOS com gerenciador de janelas, barra de tarefas, configurações e ícones.
+Ambiente visual do ZephyrOS suportando uma arquitetura **Dual Interface**: Classic TUI (Text User Interface) e GUI Moderna (Graphical User Interface baseada em VESA e primitivas 2D).
 
 ## Arquivos
 
 ```
-src/desktop/desktop.c    → Ambiente desktop com ícones
-src/wm/wm.c              → Gerenciador de janelas
-src/taskbar/taskbar.c    → Barra de tarefas com menu Iniciar
+src/desktop/desktop.c    → Ambiente desktop com ícones (TUI e GUI)
+src/wm/wm.c              → Gerenciador de janelas (Dual interface frames)
+src/taskbar/taskbar.c    → Barra de tarefas e menu Iniciar (Dual interface)
 src/settings/settings.c  → Sistema de configurações
 src/icons/icons.c        → Registro de ícones customizáveis
+src/gui/gui.c            → Primitivas gráficas 2D para a GUI Moderna
 ```
+
+---
+
+## Dual Interface (Classic TUI vs GUI Moderna)
+
+O sistema operacional implementa uma estratégia de retrocompatibilidade visual (regra `#15` do `AGENTS.md`). Isso significa que a interface moderna não substitui o modo clássico, mas coexiste como uma camada renderizável alternável. 
+
+- **Classic TUI**: Usa `video.c` (memória VGA) ou desenho alinhado em grid para exibir a interface de maneira retro e otimizada.
+- **GUI Moderna**: Usa `gui.c` para desenhar janelas arredondadas, botões com preenchimento colorido, texto flutuante fora do grid e ícones avançados baseados em arquivos `.bmp`.
+- **Alternância Dinâmica**: O comando `guimode classic|modern` permite alterar a engine visual em tempo de execução sem desligar os aplicativos rodando.
 
 ---
 
@@ -24,9 +35,13 @@ desktop_init();
 
 Cria 3 ícones padrão: Shell, Explorer e TaskMgr.
 
-### Layout
+### Renderização (Desktop Gráfico)
 
-Os ícones são organizados em grade (5 colunas):
+No modo `GUI Moderna`, o desktop desenha um fundo e ícones dinâmicos renderizados na tela (ou imagens `.bmp`), permitindo:
+- Seleção visual moderna (fundo azul em vez de caractere invertido).
+- Posicionamento fluido e Drag & Drop.
+
+No modo Clássico, os ícones são organizados em grade (5 colunas) e mostrados na VGA Text Mode/Grid:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -42,38 +57,53 @@ Os ícones são organizados em grade (5 colunas):
 └─────────────────────────────────────────────────────────────┘
 ```
 
-### API
+### API Principal
 
 ```c
 void desktop_init(void);
-void desktop_draw(void);
-void desktop_draw_icons(void);
-void desktop_add_icon(name, type);         // Adiciona ícone à grade
+void desktop_draw(void);                   // Direciona para TUI ou GUI dependendo do modo
+void desktop_add_icon(name, type);         // Adiciona ícone
 void desktop_update_selection(void);
 int  desktop_handle_key(scancode);         // Processa teclas
 int  desktop_get_selected_app(void);       // Retorna app selecionado
 void desktop_set_active(active);
 ```
 
-### Navegação
+### Navegação (Mouse e Teclado)
 
-| Tecla | Ação |
+| Input | Ação |
 |-------|------|
 | Setas | Navega entre ícones |
-| Enter | Abre aplicativo selecionado |
+| Enter / Duplo Clique | Abre aplicativo selecionado |
+| Clique Único | Seleciona o ícone |
 | Esc | Sai do desktop |
+
+---
+
+## Primitivas Gráficas 2D (`gui.c`)
+
+Motor gráfico da GUI Moderna, permitindo renderização independente da grade TUI clássica.
+
+### Funções Base
+
+```c
+void gui_draw_text(int x, int y, const char* text, uint32_t color);
+void gui_draw_button(int x, int y, int w, int h, const char* label, int pressed);
+void gui_draw_window_frame(int x, int y, int w, int h, const char* title, int active);
+```
+
+Estas funções cuidam do double buffering (backbuffer) via renderização pixel a pixel usando as extensões de fonte (`font.c`) e formas geométricas (`vesa.c`).
 
 ---
 
 ## Window Manager (`wm.c`)
 
-### Inicialização
+Gerenciador de janelas multi-interface. 
 
-```c
-wm_init();
-```
+### Renderização Dual
 
-Configuração padrão: botões à direita, ordem Fechar-Minimizar-Maximizar, título visível.
+- **Modo TUI**: Janelas são formadas por bordas de caracteres ASCII estendidos (`│`, `─`, `┌`).
+- **Modo GUI**: Janelas recebem bordas sombreadas, cantos vivos ou arredondados, e barras de título coloridas via `gui_draw_window_frame()`.
 
 ### Estrutura de Janela
 
@@ -93,7 +123,7 @@ typedef struct {
 } wm_window_t;
 ```
 
-### Gerenciamento
+### Gerenciamento Base
 
 ```c
 int  wm_create_window(title, x, y, w, h, type, on_key, on_redraw);
@@ -101,70 +131,27 @@ void wm_destroy_window(id);
 void wm_focus_window(id);
 void wm_focus_next(void);
 void wm_focus_prev(void);
-void wm_minimize_window(id);
-void wm_maximize_window(id);
-void wm_restore_window(id);
 void wm_move_window(id, x, y);
 void wm_resize_window(id, w, h);
 ```
 
-### Barra de Título
+### Integração com o Mouse (Drag & Drop)
 
-A barra de título desenha:
-
-1. Botões (fechar `x`, minimizar `_`, maximizar `↑`)
-2. Título da janela (alinhado conforme posição dos botões)
-
-### Configurações
-
-```c
-typedef struct {
-    wm_btn_position_t btn_position;  // LEFT ou RIGHT
-    wm_btn_order_t btn_order;        // Ordem dos 3 botões (6 variações)
-    int show_title_text;             // Mostrar/esconder título
-    int title_bar_height;
-    int border_style;                // 0=simples, 1=dupla
-} wm_config_t;
-```
-
-### Redesenho
-
-```c
-void wm_draw_desktop(void);   // Fundo xadrez
-void wm_draw_all(void);       // Redesenha desktop + todas janelas
-```
-
-### Atalhos
-
-| Tecla | Ação |
-|-------|------|
-| Tab | Foco próxima janela |
-| Esc | Fechar janela focada |
-| F5 | Minimizar janela |
-| F6 | Maximizar/Restaurar |
+No modo Moderno, o `wm.c` permite que o mouse selecione janelas pelo Z-order (trazendo-as para frente) e clique e arraste na titlebar para mover a janela.
 
 ---
 
 ## Taskbar (`taskbar.c`)
 
-### Inicialização
+A barra de tarefas compartilha o conceito de multi-interface, renderizando-se visualmente de acordo com a configuração ativa (`classic` ou `modern`).
 
-```c
-taskbar_init();
-```
+### Modo GUI Moderna
 
-Posição padrão: inferior. Adiciona botão "Shell".
-
-### Botões
-
-```c
-void taskbar_add_app(type, name);     // Adiciona botão de app
-void taskbar_remove_app(type);        // Remove botão de app
-```
+- Desenha o botão iniciar preenchido.
+- Os botões dos aplicativos ativos são desenhados usando `gui_draw_button()`.
+- O Menu iniciar torna-se um menu pop-up flutuante, em vez de sobrepor texto.
 
 ### Menu Iniciar
-
-Aberto com Alt (scancode 0x38):
 
 ```
 ┌─────────────────┐
@@ -178,32 +165,7 @@ Aberto com Alt (scancode 0x38):
 └─────────────────┘
 ```
 
-### Menu de Configuração
-
-Aberto com F1 (scancode 0x3B):
-
-```
-┌────────────────────────────────────────┐
-│         Configuracoes da Taskbar        │
-├────────────────────────────────────────┤
-│ Posicao: Baixo                         │
-│ Tamanho: Medio                         │
-│ Fixado:  Sim                           │
-│ Mover p/ Topo                          │
-│ Mover p/ Baixo                         │
-│ Mover p/ Esquerda                      │
-│ Mover p/ Direita                       │
-│ Posicao Custom...                      │
-├────────────────────────────────────────┤
-│ Esc: Fechar | Enter: Alterar           │
-└────────────────────────────────────────┘
-```
-
-### Relógio
-
-Exibe tempo decorrido desde o boot (HH:MM) no canto direito da barra. Atualizado a cada segundo (50 ticks).
-
-### Configuração
+### Configuração Dinâmica
 
 ```c
 typedef struct {
@@ -215,99 +177,43 @@ typedef struct {
 } tb_config_t;
 ```
 
-### Posições
-
-| Constante | Descrição |
-|-----------|-----------|
-| TB_POS_BOTTOM | Barra horizontal no rodapé |
-| TB_POS_TOP | Barra horizontal no topo |
-| TB_POS_LEFT | Barra vertical à esquerda |
-| TB_POS_RIGHT | Barra vertical à direita |
-| TB_POS_CUSTOM | Posição livre (x, y customizáveis) |
-
 ---
 
 ## Settings (`settings.c`)
 
-### Inicialização
-
-```c
-settings_init();
-```
+Sistema de configuração geral.
 
 ### Categorias
 
 | Categoria | Opções |
 |-----------|--------|
-| Tela | Tema (Clássico/Escuro/Azul), Resolução, Grade |
-| Barra de Tarefas | Posição, Tamanho ícone, Fixada, Relógio, Auto-ocultar |
+| Tela | Tema (Clássico/Moderna), Resolução |
+| Barra de Tarefas | Posição, Tamanho ícone, Fixada, Relógio |
 | Janelas | Botões lado, Ordem botões, Título, Borda |
 | Ícones | Editor visual (Desktop, WM, Arquivos) |
 | Sistema | Nome PC, Info memória, Processos, Reiniciar |
-| Som | Volume (Mudo~Máximo), Beep iniciar, Som teclado |
+| Som | Volume, Beep iniciar, Som teclado |
 | Sobre | Versão, Créditos |
-
-### Navegação
-
-| Tecla | Ação |
-|-------|------|
-| Tab | Alterna categoria |
-| Up/Down | Navega opções |
-| Enter | Altera/Aciona opção |
-| Left/Right | Altera valor (listas) |
-| Esc | Fecha configurações |
-
-### Aplicação em Tempo Real
-
-Alterações em opções de Taskbar e Janelas são aplicadas imediatamente:
-
-```c
-apply_taskbar_settings();  // Seta posição, tamanho, fixação
-apply_wm_settings();       // Seta botões, título, borda
-```
 
 ---
 
 ## Icons (`icons.c`)
 
-### Registro
+Permite a customização dinâmica de ícones (tanto de caracteres TUI quanto de fallback de cor).
 
 ```c
 typedef struct {
-    icon_entry_t desktop[ICON_DESKTOP_COUNT];  // 3 ícones
-    icon_entry_t wm[ICON_WM_COUNT];           // 3 ícones
-    icon_entry_t fm[ICON_FM_COUNT];           // 2 ícones
-    icon_entry_t tb[ICON_TB_COUNT];           // 1 ícone
+    icon_entry_t desktop[ICON_DESKTOP_COUNT];
+    icon_entry_t wm[ICON_WM_COUNT];
+    icon_entry_t fm[ICON_FM_COUNT];
+    icon_entry_t tb[ICON_TB_COUNT];
 } icon_registry_t;
 ```
-
-### Ícones Padrão
-
-| Categoria | ID | Char | Cor | Cor Sel |
-|-----------|-----|------|-----|---------|
-| Desktop | Shell | 'S' | 0x0F | 0x17 |
-| Desktop | Explorer | 'E' | 0x0F | 0x17 |
-| Desktop | TaskMgr | 'T' | 0x0F | 0x17 |
-| WM | Close | 'x' | 0x4F | 0x4F |
-| WM | Minimize | '_' | 0x1F | 0x08 |
-| WM | Maximize | '↑' | 0x1F | 0x08 |
-| FM | Folder | '[' | 0x0B | 0x70 |
-| FM | File | '-' | 0x08 | 0x70 |
-| TB | Start | '>' | 0x0F | 0x1F |
 
 ### API
 
 ```c
-icon_registry_t* icons_get_registry(void);       // Registro completo
-icon_entry_t* icons_get_desktop(id);             // Ícone desktop
-icon_entry_t* icons_get_wm(id);                  // Ícone janela
-icon_entry_t* icons_get_fm(id);                  // Ícone file manager
-icon_entry_t* icons_get_tb(id);                  // Ícone taskbar
-
-void icons_set_desktop(id, ch, color, color_sel);
-void icons_set_wm(id, ch, color, color_sel);
-void icons_set_fm(id, ch, color, color_sel);
-void icons_set_tb(id, ch, color, color_sel);
-
-void icons_reset_defaults(void);                 // Restaura padrão
+icon_registry_t* icons_get_registry(void);
+icon_entry_t* icons_get_desktop(id);
+void icons_reset_defaults(void);
 ```
