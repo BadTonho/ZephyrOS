@@ -117,7 +117,7 @@ process_t* process_create(const char* name, void (*entry_point)()) {
         proc->state = PROCESS_STATE_UNUSED;
         return 0;
     }
-    proc->state = PROCESS_STATE_READY;
+    /* O processo permanece invisivel ao scheduler ate o contexto estar pronto. */
     proc->total_ticks = 0;
     proc->wait_ticks = 0;
 
@@ -206,6 +206,7 @@ process_t* process_create(const char* name, void (*entry_point)()) {
     proc->context.ss = 0x10;
     proc->context.cr3 = (uint32_t)proc->page_directory;
 
+    proc->state = PROCESS_STATE_READY;
     process_count++;
     LOG_INFO("PROC", "Processo criado com sucesso");
     return proc;

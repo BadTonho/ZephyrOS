@@ -195,6 +195,8 @@ O shell inicia automaticamente após a inicialização do sistema.
 | `reboot` | Reinicia o sistema | `reboot` |
 | `shutdown` | Desliga o sistema | `shutdown` |
 
+> **Nota:** Para a lista completa de atalhos de teclado e comandos detalhados do sistema, consulte: [Atalhos e Comandos](docs/atalhos_e_comandos.md).
+
 ---
 
 ## Arquitetura
