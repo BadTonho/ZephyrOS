@@ -35,14 +35,24 @@ static volatile uint32_t kernel_pending_shell_request = 0;
 static int kernel_send_shell_request(uint32_t request) {
     ipc_msg_t msg;
     uint32_t target_pid = kernel_shell_pid;
+    process_t* target;
 
     if (!target_pid) target_pid = process_get_focus();
-    if (!target_pid || target_pid >= MAX_PROCESSES) return 0;
+    if (!target_pid) {
+        LOG_WARN("KERNEL", "Nenhum processo Shell definido para IPC");
+        return 0;
+    }
+
+    target = process_get_by_pid(target_pid);
+    if (!target) {
+        LOG_WARN("KERNEL", "PID do Shell nao encontrado");
+        return 0;
+    }
 
     msg.type = IPC_MSG_APP_REQUEST;
     msg.data1 = request;
     msg.data2 = 0;
-    return ipc_send(target_pid, &msg);
+    return ipc_send(target->pid, &msg);
 }
 
 static void kernel_request_shell_app(ipc_app_request_t request) {
@@ -51,7 +61,8 @@ static void kernel_request_shell_app(ipc_app_request_t request) {
         return;
     }
 
-    if (!request) {
+    if (request < IPC_APP_OPEN_SHELL ||
+        request > IPC_APP_OPEN_TASKMANAGER_GUI) {
         LOG_ERROR("KERNEL", "Solicitacao de aplicativo invalida");
         return;
     }

@@ -16,6 +16,7 @@
 #include "apps/mediaplayer.h"
 #include "apps/editor.h"
 #include "ui/filemanager.h"
+#include "memory/paging.h"
 #include "core/string.h"
 #include "core/errors.h"
 #include "core/log.h"
@@ -202,12 +203,83 @@ static void cmd_health_print_component(recovery_component_id_t component) {
     video_print("\n", 0x07);
 }
 
+static const char* shell_process_state_name(process_state_t state) {
+    switch (state) {
+        case PROCESS_STATE_READY: return "READY";
+        case PROCESS_STATE_RUNNING: return "RUNNING";
+        case PROCESS_STATE_BLOCKED: return "BLOCKED";
+        case PROCESS_STATE_ZOMBIE: return "ZOMBIE";
+        default: return "UNUSED";
+    }
+}
+
+static void cmd_health_print_kernel(void) {
+    process_t* current = process_get_current();
+    ipc_stats_t ipc;
+
+    ipc_get_stats(&ipc);
+    video_print("\nEstado do kernel:\n", 0x0B);
+    video_print("  Processo atual: PID ", 0x07);
+    print_num(process_get_current_pid());
+    video_print("  estado=", 0x08);
+    video_print(current ? shell_process_state_name(current->state) : "N/D", 0x07);
+    video_print("\n", 0x07);
+
+    video_print("  Processos: total=", 0x07);
+    print_num(process_get_count());
+    video_print(" READY=", 0x08);
+    print_num(process_get_state_count(PROCESS_STATE_READY));
+    video_print(" RUNNING=", 0x08);
+    print_num(process_get_state_count(PROCESS_STATE_RUNNING));
+    video_print(" BLOCKED=", 0x08);
+    print_num(process_get_state_count(PROCESS_STATE_BLOCKED));
+    video_print(" ZOMBIE=", 0x08);
+    print_num(process_get_state_count(PROCESS_STATE_ZOMBIE));
+    video_print("\n", 0x07);
+
+    video_print("  Threads: ", 0x07);
+    print_num(thread_get_count());
+    video_print("  ticks=", 0x08);
+    print_num(timer_get_ticks());
+    video_print("\n", 0x07);
+
+    video_print("  IPC: foco=", 0x07);
+    print_num(process_get_focus());
+    video_print(" enviados=", 0x08);
+    print_num(ipc.sent);
+    video_print(" recebidos=", 0x08);
+    print_num(ipc.received);
+    video_print(" falhas=", 0x08);
+    print_num(ipc.failed);
+    video_print(" filas_cheias=", 0x08);
+    print_num(ipc.queue_full);
+    video_print("\n", 0x07);
+
+    video_print("  Paging: ", 0x07);
+    video_print(paging_is_ready() ? "READY" : "DISABLED", 0x0F);
+    video_print("\n", 0x07);
+    video_print("  Memoria KB: total=", 0x07);
+    print_num(memory_get_total() / 1024);
+    video_print(" usada=", 0x08);
+    print_num(memory_get_used() / 1024);
+    video_print(" livre=", 0x08);
+    print_num(memory_get_free() / 1024);
+    video_print(" paginas_livres=", 0x08);
+    print_num(memory_get_free_pages());
+    video_print("\n", 0x07);
+    video_print("  Paginas: total=", 0x07);
+    print_num(memory_get_total_pages());
+    video_print("\n", 0x07);
+}
+
 static void cmd_health(void) {
     video_print("Estado dos componentes:\n", 0x0B);
 
     for (uint32_t i = 0; i < recovery_get_count(); i++) {
         cmd_health_print_component((recovery_component_id_t)i);
     }
+
+    cmd_health_print_kernel();
 }
 
 static void cmd_guimode(const char* args) {

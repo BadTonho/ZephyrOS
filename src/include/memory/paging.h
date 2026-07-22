@@ -22,6 +22,7 @@ typedef struct {
 } __attribute__((aligned(4096))) page_directory_t;
 
 int paging_init(void);
+int paging_is_ready(void);
 void paging_switch_directory(page_directory_t* dir);
 page_entry_t* paging_get_page(uint32_t virtual_addr, int create);
 int paging_map_page(uint32_t virtual, uint32_t physical, uint32_t flags);

@@ -133,3 +133,22 @@ typedef struct {
     uint32_t useresp, ss;
 } registers_t;
 ```
+
+## Fundacao e invariantes de estabilidade
+
+A etapa de fundacao preserva o scheduler round-robin e adiciona contratos
+defensivos nas APIs centrais:
+
+- `process_init()` limpa os registros e reinicia o PID e o indice do scheduler;
+- o PID 0 e o processo Idle nao podem ser destruidos;
+- `process_get_by_pid()` procura pelo PID real, sem usar PID como indice;
+- quando nao ha processo `READY`, o scheduler retorna ao Idle;
+- `ipc_send()` valida mensagem, destino e capacidade da fila, e acorda um
+  processo bloqueado quando entrega uma mensagem valida;
+- `paging_map_page()` valida alinhamento, flags e a existencia do diretorio;
+- `paging_is_ready()` permite que interfaces diagnostiquem o estado do paging;
+- `health` exibe processos, threads, ticks, IPC, paging, memoria e recovery.
+
+Falhas recuperaveis retornam erro e desabilitam somente o componente afetado.
+Excecoes fatais e corrupcao estrutural continuam encaminhadas para `panic`.
+O `boot.asm` e a politica de escalonamento nao fazem parte desta etapa.

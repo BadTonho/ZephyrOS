@@ -81,7 +81,9 @@ void keyboard_process_events(void) {
         msg.type = IPC_MSG_KEYBOARD;
         msg.data1 = scancode;
         msg.data2 = 0;
-        ipc_send(focus, &msg);
+        if (!ipc_send(focus, &msg)) {
+            LOG_WARN("KBD", "Falha ao encaminhar evento para o foco");
+        }
     }
 }
 

@@ -31,6 +31,13 @@ typedef struct {
     uint32_t data2;
 } ipc_msg_t;
 
+typedef struct {
+    uint32_t sent;
+    uint32_t received;
+    uint32_t failed;
+    uint32_t queue_full;
+} ipc_stats_t;
+
 typedef enum {
     PROCESS_STATE_UNUSED = 0,
     PROCESS_STATE_READY,
@@ -70,6 +77,9 @@ process_t* process_create(const char* name, void (*entry_point)());
 void process_destroy(process_t* proc);
 process_t* process_get_current(void);
 uint32_t process_get_count(void);
+process_t* process_get_by_pid(uint32_t pid);
+uint32_t process_get_current_pid(void);
+uint32_t process_get_state_count(process_state_t state);
 
 void process_yield(void);
 void process_block(uint32_t ticks);
@@ -83,6 +93,7 @@ void scheduler_tick(void);
 
 int ipc_send(uint32_t pid, ipc_msg_t* msg);
 int ipc_receive(ipc_msg_t* msg);
+void ipc_get_stats(ipc_stats_t* stats);
 void process_set_focus(uint32_t pid);
 uint32_t process_get_focus(void);
 

@@ -2,7 +2,7 @@
 
 ## Resumo de Progresso
 
-Status: planejado.
+Status: em andamento.
 
 Esta etapa organiza as bases internas do ZephyrOS antes de buscar otimizacoes
 de baixo nivel. A meta e tornar o kernel previsivel, modular e facil de
@@ -20,6 +20,27 @@ Para o ZephyrOS, o melhor caminho e primeiro organizar as bases do kernel:
 
 Essa fundacao deve facilitar a construcao de drivers, aplicativos, interfaces
 e futuras camadas de compatibilidade.
+
+## Implementacao da Etapa 5
+
+Implementado nesta etapa:
+
+- [x] reinicializacao dos controles do scheduler e do registro de processos;
+- [x] busca segura por PID, validacao de estados e protecao do Idle;
+- [x] fallback para o Idle quando nao houver processo pronto;
+- [x] validacao de mensagens IPC, filas, foco e desbloqueio por mensagem;
+- [x] contadores de envio, recebimento, falha e fila cheia no IPC;
+- [x] validacao de alinhamento, flags e diretorio ativo no paging;
+- [x] consulta `paging_is_ready()` para diagnostico;
+- [x] ampliacao do comando `health` com estado do kernel e recovery;
+- [x] registro dos contratos de estabilidade nesta documentacao.
+
+Pendente para a validacao no ambiente do usuario:
+
+- [ ] executar `make clean && make`;
+- [ ] executar `make run` e testar `health`, `desktop`, `explorer`, `taskmgr`
+      e `settings`;
+- [ ] validar os caminhos de fallback sem VESA, disco e audio.
 
 ## Fases
 

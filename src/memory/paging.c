@@ -8,6 +8,7 @@
 #include "core/string.h"
 
 page_directory_t* current_directory = 0;
+static int paging_initialized = 0;
 
 page_directory_t* paging_create_directory(void) {
     page_directory_t* dir = (page_directory_t*)pmm_alloc_page();
@@ -20,6 +21,10 @@ page_directory_t* paging_create_directory(void) {
 }
 
 page_entry_t* paging_get_page(uint32_t virtual_addr, int create) {
+    if (create != 0 && create != 1) {
+        LOG_ERROR("MEM", "Parametro create invalido no paging");
+        return 0;
+    }
     if (!current_directory) {
         LOG_ERROR("MEM", "Diretorio de paginas atual inexistente");
         return 0;
@@ -49,6 +54,19 @@ page_entry_t* paging_get_page(uint32_t virtual_addr, int create) {
 }
 
 int paging_map_page(uint32_t virtual, uint32_t physical, uint32_t flags) {
+    if (!current_directory) {
+        LOG_ERROR("MEM", "Mapeamento sem diretorio de paginas ativo");
+        return ERR_STATE;
+    }
+    if ((virtual % PAGE_SIZE) != 0 || (physical % PAGE_SIZE) != 0) {
+        LOG_ERROR("MEM", "Endereco desalinhado no mapeamento de pagina");
+        return ERR_INVALID;
+    }
+    if ((flags & ~0x07U) != 0) {
+        LOG_ERROR("MEM", "Flags invalidas no mapeamento de pagina");
+        return ERR_INVALID;
+    }
+
     page_entry_t* page = paging_get_page(virtual, 1);
     if (!page) {
         LOG_ERROR("MEM", "Falha ao obter pagina para mapeamento");
@@ -100,6 +118,7 @@ static int paging_map_framebuffer(vesa_mode_t* mode) {
 
 static int paging_abort_init(page_directory_t* dir, int error_code) {
     current_directory = 0;
+    paging_initialized = 0;
     paging_free_directory(dir);
     return error_code;
 }
@@ -117,9 +136,16 @@ void paging_switch_directory(page_directory_t* dir) {
     asm volatile("mov %%cr0, %0" : "=r"(cr0));
     cr0 |= 0x80000000;
     asm volatile("mov %0, %%cr0" : : "r"(cr0));
+    paging_initialized = 1;
 }
 
 int paging_init(void) {
+    if (paging_initialized && current_directory) {
+        LOG_WARN("MEM", "Paging ja estava inicializado");
+        return OK;
+    }
+
+    LOG_INFO("MEM", "Inicializando paging");
     page_directory_t* dir = paging_create_directory();
     if (!dir) {
         LOG_ERROR("MEM", "Falha ao criar diretorio de paginas");
@@ -165,11 +191,23 @@ int paging_init(void) {
     }
 
     paging_switch_directory(dir);
+    LOG_INFO("MEM", "Paging inicializado com sucesso");
     return OK;
 }
 
+int paging_is_ready(void) {
+    return paging_initialized && current_directory != 0;
+}
+
 void paging_free_directory(page_directory_t* dir) {
-    if (!dir) return;
+    if (!dir) {
+        LOG_WARN("MEM", "Diretorio nulo ignorado ao liberar paging");
+        return;
+    }
+    if (dir == current_directory) {
+        LOG_ERROR("MEM", "Tentativa de liberar diretorio de paginas ativo");
+        return;
+    }
 
     for (int i = 0; i < 1024; i++) {
         if (dir->entries[i] & 0x01) {
@@ -177,4 +215,5 @@ void paging_free_directory(page_directory_t* dir) {
         }
     }
     pmm_free_page(dir);
+    LOG_DEBUG("MEM", "Diretorio de paginas liberado");
 }

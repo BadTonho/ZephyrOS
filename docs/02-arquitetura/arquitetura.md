@@ -106,3 +106,21 @@ src/
 - **Assembly**: Sintaxe NASM, Intel syntax
 - **Logging**: `LOG_INFO`, `LOG_ERROR`, `LOG_WARN`, `LOG_DEBUG` via `core/log.h`
 - **Erros**: Retornam códigos (`OK`, `ERR_NULL`, `ERR_MEM`, `ERR_DISK`, `ERR_NOT_FOUND`)
+
+## Contratos de estabilidade do kernel
+
+As dependencias centrais seguem o fluxo `kernel -> processos -> IPC -> apps`.
+O diagnostico consulta os modulos sem alterar a politica de escalonamento:
+
+- o scheduler depende do registro de processos e sempre conserva o Idle como
+  caminho de continuidade;
+- o IPC resolve destinos por PID e nao depende da posicao do processo no vetor;
+- o paging fornece `paging_map_page()` e `paging_is_ready()` para os modulos
+  que precisam mapear ou diagnosticar memoria;
+- o Shell agrega o estado de recovery e as metricas do kernel no comando
+  `health`;
+- Desktop, Explorer, Settings e Task Manager continuam usando suas interfaces
+  classica e moderna, apenas consumindo os contratos estabilizados.
+
+Essa separacao permite evoluir memoria, processos e diagnostico em etapas sem
+acoplar a fundacao do kernel ao visual das aplicacoes.
