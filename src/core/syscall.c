@@ -41,6 +41,24 @@ static int syscall_dispatch(registers_t* regs) {
             return app_api_get_uptime((app_uptime_info_t*)regs->ebx);
         case APP_SYSCALL_MEMORY_INFO:
             return app_api_get_memory_info((app_memory_info_t*)regs->ebx);
+        case APP_SYSCALL_FILE_OPEN:
+            return app_api_file_open((const char*)regs->ebx, regs->ecx,
+                                     (app_handle_t*)regs->edx);
+        case APP_SYSCALL_FILE_READ:
+            return app_api_file_read((app_handle_t)regs->ebx,
+                                     (uint8_t*)regs->ecx, regs->edx,
+                                     (uint32_t*)regs->esi);
+        case APP_SYSCALL_FILE_WRITE:
+            return app_api_file_write((app_handle_t)regs->ebx,
+                                      (const uint8_t*)regs->ecx, regs->edx,
+                                      (uint32_t*)regs->esi);
+        case APP_SYSCALL_FILE_CLOSE:
+            return app_api_file_close((app_handle_t)regs->ebx);
+        case APP_SYSCALL_MESSAGE_SEND:
+            return app_api_message_send(regs->ebx,
+                                         (const app_message_t*)regs->ecx);
+        case APP_SYSCALL_MESSAGE_RECEIVE:
+            return app_api_message_receive((app_message_t*)regs->ebx);
         default:
             LOG_WARN("SYSCALL", "Numero de syscall desconhecido");
             return ERR_INVALID;

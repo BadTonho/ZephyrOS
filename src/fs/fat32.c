@@ -777,70 +777,124 @@ int fat32_get_file_info_at(uint32_t dir_cluster, int index, char* name_out, uint
     return -1;
 }
 
-int fat32_read_file_at(const char* path, uint8_t* buffer, uint32_t max_size) {
-    if (!fs.initialized || !path) return -1;
-
+static int fat32_find_path_entry(const char* path, fat32_dir_entry_t* entry) {
     char dir_path[256];
     char filename[13];
+    char fat_name[8];
+    char fat_ext[3];
+    char fat12_name[11];
     int last_slash = -1;
+    int length = 0;
+    int filename_length = 0;
+    uint32_t dir_cluster;
 
-    int len = 0;
-    for (; path[len]; len++) {
-        dir_path[len] = path[len];
-        if (path[len] == '/') last_slash = len;
+    if (!fs.initialized || !path || !entry) return ERR_NULL;
+
+    for (; path[length]; length++) {
+        if (length >= (int)sizeof(dir_path) - 1) return ERR_OVERFLOW;
+        dir_path[length] = path[length];
+        if (path[length] == '/') last_slash = length;
     }
-    dir_path[len] = '\0';
+    dir_path[length] = '\0';
 
     if (last_slash < 0) {
-        return fat32_read_file(path, buffer, max_size);
+        fat32_str_to_name(path, fat_name, fat_ext);
+        kmemcpy(fat12_name, fat_name, 8);
+        kmemcpy(fat12_name + 8, fat_ext, 3);
+        return fat32_find_in_dir(fs.root_cluster, fat12_name, entry);
     }
 
-    int fi = 0;
     for (int i = last_slash + 1; path[i]; i++) {
-        filename[fi++] = path[i];
+        if (filename_length >= (int)sizeof(filename) - 1) return ERR_OVERFLOW;
+        filename[filename_length++] = path[i];
     }
-    filename[fi] = '\0';
+    filename[filename_length] = '\0';
+    if (filename_length == 0) return ERR_INVALID;
+
     dir_path[last_slash] = '\0';
+    if (dir_path[0] == '\0') {
+        dir_cluster = fs.root_cluster;
+    } else {
+        dir_cluster = fat32_resolve_path(dir_path);
+        if (dir_cluster == 0) return ERR_NOT_FOUND;
+    }
 
-    uint32_t dir_cluster = fat32_resolve_path(dir_path);
-
-    char fat_name[8], fat_ext[3];
     fat32_str_to_name(filename, fat_name, fat_ext);
-    char fat12_name[11];
     kmemcpy(fat12_name, fat_name, 8);
     kmemcpy(fat12_name + 8, fat_ext, 3);
+    return fat32_find_in_dir(dir_cluster, fat12_name, entry);
+}
 
-    fat32_dir_entry_t entry;
-    if (fat32_find_in_dir(dir_cluster, fat12_name, &entry) != OK) return -1;
-
-    uint32_t first_cluster = ((uint32_t)entry.cluster_high << 16) | entry.cluster_low;
-    uint32_t file_size = entry.file_size;
+static int fat32_read_entry_range(fat32_dir_entry_t* entry, uint32_t offset,
+                                  uint8_t* buffer, uint32_t max_size) {
     uint32_t bytes_read = 0;
-    uint32_t cluster = first_cluster;
+    uint32_t wanted;
+    uint32_t skip_bytes;
+    uint32_t cluster;
+    uint32_t cluster_size = fs.bpb.sectors_per_cluster * 512;
     uint32_t chain_steps = 0;
 
-    while (cluster >= 2 && cluster < FAT32_CLUSTER_RESERVED && bytes_read < max_size &&
+    if (!entry || (entry->attributes & 0x10)) return -1;
+    if (cluster_size == 0) return -1;
+    if (offset >= entry->file_size || max_size == 0) return 0;
+    if (!buffer) return -1;
+
+    wanted = entry->file_size - offset;
+    if (wanted > max_size) wanted = max_size;
+    cluster = ((uint32_t)entry->cluster_high << 16) | entry->cluster_low;
+    skip_bytes = offset;
+
+    while (skip_bytes >= cluster_size && cluster >= 2 &&
+           cluster < FAT32_CLUSTER_RESERVED &&
            chain_steps++ < FAT32_CHAIN_LIMIT) {
+        skip_bytes -= cluster_size;
+        cluster = fat32_get_cluster(cluster);
+    }
+
+    while (cluster >= 2 && cluster < FAT32_CLUSTER_RESERVED &&
+           bytes_read < wanted && chain_steps++ < FAT32_CHAIN_LIMIT) {
         uint32_t lba = cluster_to_lba(cluster);
 
-        for (uint32_t s = 0; s < fs.bpb.sectors_per_cluster && bytes_read < max_size; s++) {
+        for (uint32_t sector_index = 0;
+             sector_index < fs.bpb.sectors_per_cluster && bytes_read < wanted;
+             sector_index++) {
             uint8_t sector[512];
-            if (ata_read_sectors(lba + s, 1, sector) != 0) {
+            uint32_t sector_skip = 0;
+            uint32_t to_copy;
+
+            if (ata_read_sectors(lba + sector_index, 1, sector) != 0) {
                 return -1;
             }
+            if (skip_bytes >= 512) {
+                skip_bytes -= 512;
+                continue;
+            }
 
-            uint32_t to_copy = 512;
-            if (bytes_read + to_copy > file_size) to_copy = file_size - bytes_read;
-            if (bytes_read + to_copy > max_size) to_copy = max_size - bytes_read;
-
-            kmemcpy(buffer + bytes_read, sector, to_copy);
+            sector_skip = skip_bytes;
+            skip_bytes = 0;
+            to_copy = 512 - sector_skip;
+            if (to_copy > wanted - bytes_read) to_copy = wanted - bytes_read;
+            kmemcpy(buffer + bytes_read, sector + sector_skip, to_copy);
             bytes_read += to_copy;
         }
 
         cluster = fat32_get_cluster(cluster);
     }
 
-    return bytes_read;
+    return (int)bytes_read;
+}
+
+int fat32_read_file_range_at(const char* path, uint32_t offset,
+                             uint8_t* buffer, uint32_t max_size) {
+    fat32_dir_entry_t entry;
+    int result = fat32_find_path_entry(path, &entry);
+
+    if (result != OK) return -1;
+    return fat32_read_entry_range(&entry, offset, buffer, max_size);
+}
+
+int fat32_read_file_at(const char* path, uint8_t* buffer, uint32_t max_size) {
+    return fat32_read_file_range_at(path, 0, buffer, max_size);
 }
 
 int fat32_create_dir_entry(uint32_t dir_cluster, const char* name, uint8_t attributes) {

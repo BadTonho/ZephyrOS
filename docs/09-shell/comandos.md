@@ -172,6 +172,13 @@ uptime, memória e validação de argumentos.
 zephyr> appcheck
 ```
 
+Na Fase 3, o `appcheck` tambem valida handles de arquivo, leitura
+sequencial, handles invalidos, envio/recebimento IPC, PID inexistente e
+tipos de mensagem invalidos. A ponte continua restrita ao ring 0.
+
+As chamadas de arquivo usam handles opacos e leitura sequencial. As chamadas
+de IPC validam o PID, o estado do processo, o tipo da mensagem e a fila.
+
 O comando usa a ponte interna do dispatcher e testa números inválidos,
 argumentos nulos e `process_exit`. O vetor `int 0x80` está registrado apenas
 para ring 0 até a implementação de processos em modo usuário.

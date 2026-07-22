@@ -147,6 +147,99 @@ int fs_read_file_at(const char* path, uint8_t* buffer, uint32_t max_size) {
     return ERR_NOT_FOUND;
 }
 
+int fs_read_file_range_at(const char* path, uint32_t offset,
+                          uint8_t* buffer, uint32_t max_size,
+                          uint32_t* bytes_read) {
+    int result;
+
+    if (!path || !bytes_read) {
+        LOG_ERROR("FS", "Argumento nulo na leitura por faixa");
+        return ERR_NULL;
+    }
+    if (max_size > 0 && !buffer) {
+        LOG_ERROR("FS", "Buffer nulo na leitura por faixa");
+        return ERR_NULL;
+    }
+    *bytes_read = 0;
+
+    if (current_fs_type == FS_TYPE_FAT12) {
+        result = fat12_read_file_range_at(path, offset, buffer, max_size);
+    } else if (current_fs_type == FS_TYPE_FAT32) {
+        result = fat32_read_file_range_at(path, offset, buffer, max_size);
+    } else {
+        LOG_WARN("FS", "Leitura por faixa sem filesystem montado");
+        return ERR_UNAVAILABLE;
+    }
+
+    if (result < 0) {
+        LOG_WARN("FS", "Arquivo nao encontrado ou leitura por faixa falhou");
+        return ERR_NOT_FOUND;
+    }
+
+    *bytes_read = (uint32_t)result;
+    return OK;
+}
+
+int fs_write_file_at(const char* path, const uint8_t* data, uint32_t size) {
+    char dir_path[FS_MAX_PATH];
+    char filename[FS_MAX_PATH];
+    uint32_t length;
+    int last_slash = -1;
+    int result;
+
+    if (!path) {
+        LOG_ERROR("FS", "Caminho nulo na escrita por caminho");
+        return ERR_NULL;
+    }
+    if (size > 0 && !data) {
+        LOG_ERROR("FS", "Dados nulos na escrita por caminho");
+        return ERR_NULL;
+    }
+    if (current_fs_type == FS_TYPE_NONE) {
+        LOG_WARN("FS", "Escrita por caminho sem filesystem montado");
+        return ERR_UNAVAILABLE;
+    }
+
+    length = kstrlen(path);
+    if (length == 0) {
+        LOG_ERROR("FS", "Caminho vazio na escrita por caminho");
+        return ERR_INVALID;
+    }
+    if (length >= FS_MAX_PATH) {
+        LOG_ERROR("FS", "Caminho excede o limite na escrita por caminho");
+        return ERR_OVERFLOW;
+    }
+
+    for (uint32_t i = 0; i < length; i++) {
+        if (path[i] == '/') last_slash = (int)i;
+    }
+
+    if (last_slash < 0) {
+        result = fs_write_file_in_dir("", path, data, size);
+    } else {
+        uint32_t dir_length = (uint32_t)last_slash;
+        uint32_t filename_length = length - (uint32_t)last_slash - 1;
+
+        if (filename_length == 0 || dir_length >= FS_MAX_PATH ||
+            filename_length >= FS_MAX_PATH) {
+            LOG_ERROR("FS", "Caminho invalido na escrita por caminho");
+            return ERR_INVALID;
+        }
+
+        kmemcpy(dir_path, path, dir_length);
+        dir_path[dir_length] = '\0';
+        kmemcpy(filename, path + last_slash + 1, filename_length);
+        filename[filename_length] = '\0';
+        result = fs_write_file_in_dir(dir_path, filename, data, size);
+    }
+
+    if (result < 0) {
+        LOG_WARN("FS", "Escrita por caminho falhou");
+        return ERR_DISK;
+    }
+    return result;
+}
+
 int fs_get_file_count_at(const char* dir_path) {
     uint32_t cluster = fs_resolve_dir_cluster(dir_path);
     if (cluster == 0xFFFFFFFF) return 0;

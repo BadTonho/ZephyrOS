@@ -39,6 +39,10 @@ int      fs_get_info(fs_info_t* info);
 uint8_t  fs_get_type(void);
 
 int      fs_read_file_at(const char* path, uint8_t* buffer, uint32_t max_size);
+int      fs_read_file_range_at(const char* path, uint32_t offset,
+                               uint8_t* buffer, uint32_t max_size,
+                               uint32_t* bytes_read);
+int      fs_write_file_at(const char* path, const uint8_t* data, uint32_t size);
 int      fs_get_file_count_at(const char* dir_path);
 int      fs_get_file_info_at(const char* dir_path, int index, char* name_out, uint32_t* size_out, uint8_t* attr_out);
 int      fs_create_dir_entry(const char* dir_path, const char* name, uint8_t attributes);

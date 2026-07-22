@@ -6,6 +6,7 @@
 static spinlock_t ipc_lock;
 static uint32_t focused_pid = 0;
 static ipc_stats_t ipc_stats;
+static int ipc_ready = 0;
 
 void ipc_init(void) {
     spinlock_init(&ipc_lock);
@@ -14,7 +15,12 @@ void ipc_init(void) {
     ipc_stats.received = 0;
     ipc_stats.failed = 0;
     ipc_stats.queue_full = 0;
+    ipc_ready = 1;
     LOG_INFO("IPC", "Inter-Process Communication inicializado");
+}
+
+int ipc_is_ready(void) {
+    return ipc_ready;
 }
 
 int ipc_send(uint32_t pid, ipc_msg_t* msg) {
@@ -22,6 +28,10 @@ int ipc_send(uint32_t pid, ipc_msg_t* msg) {
     uint32_t next_head;
     int wake_target = 0;
 
+    if (!ipc_ready) {
+        LOG_ERROR("IPC", "Envio antes da inicializacao");
+        return 0;
+    }
     if (!msg) {
         ipc_stats.failed++;
         LOG_ERROR("IPC", "Mensagem nula rejeitada");
@@ -68,6 +78,10 @@ int ipc_send(uint32_t pid, ipc_msg_t* msg) {
 int ipc_receive(ipc_msg_t* msg) {
     process_t* current = process_get_current();
 
+    if (!ipc_ready) {
+        LOG_ERROR("IPC", "Recebimento antes da inicializacao");
+        return 0;
+    }
     if (!msg) {
         ipc_stats.failed++;
         LOG_ERROR("IPC", "Buffer de recebimento nulo");

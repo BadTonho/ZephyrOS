@@ -134,6 +134,12 @@ int 0x80        ; Chama o dispatcher
 | 0 | process_exit | Reservada até o modo usuário |
 | 1 | console_write | Escreve texto validado |
 | 2 | uptime | Retorna ticks e segundos |
+| 4 | file_open | Abre arquivo e retorna handle opaco |
+| 5 | file_read | Leitura sequencial por offset |
+| 6 | file_write | Substitui o arquivo inteiro |
+| 7 | file_close | Libera handle de arquivo |
+| 8 | message_send | Envia mensagem para PID validado |
+| 9 | message_receive | Recebe mensagem sem bloqueio |
 | 3 | memory_info | Retorna métricas de memória |
 
 ### Handlers

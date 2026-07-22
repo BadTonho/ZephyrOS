@@ -184,7 +184,7 @@ static void cmd_help(void) {
     video_print("  stats    - Mostra estatisticas de compressao\n", 0x07);
     video_print("  mouse    - Mostra status do mouse PS/2\n", 0x07);
     video_print("  health   - Mostra estado dos componentes\n", 0x07);
-    video_print("  appcheck - Testa a API de aplicativos\n", 0x07);
+    video_print("  appcheck - Testa API, arquivos e IPC\n", 0x07);
     video_print("  play     - Toca arquivo WAV\n", 0x07);
     video_print("  view     - Exibe imagem BMP\n", 0x07);
     video_print("  stop     - Para player de midia\n", 0x07);
@@ -276,6 +276,14 @@ static void cmd_health_print_kernel(void) {
     video_print("  Syscalls: ", 0x07);
     video_print(syscall_is_ready() ? "READY" : "DISABLED", 0x0F);
     video_print("\n", 0x07);
+    video_print("  File API: ", 0x07);
+    video_print((app_api_file_is_ready() &&
+                 recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM)) ?
+                "READY" : "DISABLED", 0x0F);
+    video_print("\n", 0x07);
+    video_print("  IPC API: ", 0x07);
+    video_print(app_api_ipc_is_ready() ? "READY" : "DISABLED", 0x0F);
+    video_print("\n", 0x07);
     video_print("  Memoria KB: total=", 0x07);
     print_num(memory_get_total() / 1024);
     video_print(" usada=", 0x08);
@@ -308,6 +316,124 @@ static void cmd_appcheck_print_result(const char* label, int result) {
     video_print(" retorno=", 0x08);
     print_num((uint32_t)result);
     video_print(result == OK ? " OK\n" : " ERRO\n", result == OK ? 0x0A : 0x0C);
+}
+
+static void cmd_appcheck_files(void) {
+    char file_name[FS_MAX_FILENAME];
+    uint8_t buffer[64];
+    uint32_t file_size = 0;
+    uint32_t bytes_read = 0;
+    uint32_t second_read = 0;
+    uint32_t written = 0;
+    uint8_t attributes = 0;
+    app_handle_t handle = APP_HANDLE_INVALID;
+    int result = ERR_NOT_FOUND;
+    int count = fs_get_file_count();
+    int selected = -1;
+
+    if (fs_get_type() == FS_TYPE_NONE) {
+        cmd_appcheck_print_result("file_service_indisponivel", ERR_UNAVAILABLE);
+        return;
+    }
+
+    for (int i = 0; i < count; i++) {
+        if (fs_get_file_info(i, file_name, &file_size, &attributes) == OK &&
+            !(attributes & 0x10)) {
+            selected = i;
+            break;
+        }
+    }
+
+    if (selected >= 0) {
+        fs_get_file_info(selected, file_name, &file_size, &attributes);
+        result = syscall_invoke_kernel(APP_SYSCALL_FILE_OPEN,
+                                        (uint32_t)file_name,
+                                        APP_FILE_MODE_READ,
+                                        (uint32_t)&handle, 0, 0);
+        cmd_appcheck_print_result("file_open", result);
+        if (result == OK) {
+            result = syscall_invoke_kernel(APP_SYSCALL_FILE_READ,
+                                            handle, (uint32_t)buffer,
+                                            sizeof(buffer),
+                                            (uint32_t)&bytes_read, 0);
+            cmd_appcheck_print_result("file_read", result);
+            if (result == OK) {
+                video_print("    bytes=", 0x08);
+                print_num(bytes_read);
+                video_print("\n", 0x07);
+            }
+
+            result = syscall_invoke_kernel(APP_SYSCALL_FILE_READ,
+                                            handle, (uint32_t)buffer,
+                                            sizeof(buffer),
+                                            (uint32_t)&second_read, 0);
+            cmd_appcheck_print_result("file_read_sequencial", result);
+            result = syscall_invoke_kernel(APP_SYSCALL_FILE_CLOSE,
+                                            handle, 0, 0, 0, 0);
+            cmd_appcheck_print_result("file_close", result);
+            result = syscall_invoke_kernel(APP_SYSCALL_FILE_CLOSE,
+                                            handle, 0, 0, 0, 0);
+            cmd_appcheck_print_result("file_close_expirado", result);
+        }
+    } else {
+        cmd_appcheck_print_result("file_open_sem_arquivo", ERR_NOT_FOUND);
+    }
+
+    result = syscall_invoke_kernel(APP_SYSCALL_FILE_OPEN,
+                                    (uint32_t)"ZZZZZZZ9.NOF",
+                                    APP_FILE_MODE_READ,
+                                    (uint32_t)&handle, 0, 0);
+    cmd_appcheck_print_result("file_open_inexistente", result);
+
+    result = syscall_invoke_kernel(APP_SYSCALL_FILE_READ,
+                                    APP_HANDLE_INVALID, (uint32_t)buffer,
+                                    APP_API_MAX_FILE_IO_SIZE + 1,
+                                    (uint32_t)&bytes_read, 0);
+    cmd_appcheck_print_result("file_read_grande", result);
+
+    result = syscall_invoke_kernel(APP_SYSCALL_FILE_READ,
+                                    APP_HANDLE_INVALID, 0, 1,
+                                    (uint32_t)&bytes_read, 0);
+    cmd_appcheck_print_result("file_read_handle_invalido", result);
+
+    result = syscall_invoke_kernel(APP_SYSCALL_FILE_WRITE,
+                                    APP_HANDLE_INVALID, 0, 1,
+                                    (uint32_t)&written, 0);
+    cmd_appcheck_print_result("file_write_nulo", result);
+}
+
+static void cmd_appcheck_ipc(void) {
+    app_message_t message;
+    app_message_t received;
+    uint32_t current_pid = process_get_current_pid();
+    int result;
+
+    message.type = APP_MESSAGE_KEYBOARD;
+    message.data1 = 0x41;
+    message.data2 = 0;
+    result = syscall_invoke_kernel(APP_SYSCALL_MESSAGE_SEND,
+                                    current_pid, (uint32_t)&message,
+                                    0, 0, 0);
+    cmd_appcheck_print_result("message_send", result);
+
+    result = syscall_invoke_kernel(APP_SYSCALL_MESSAGE_RECEIVE,
+                                    (uint32_t)&received, 0, 0, 0, 0);
+    cmd_appcheck_print_result("message_receive", result);
+
+    result = syscall_invoke_kernel(APP_SYSCALL_MESSAGE_SEND,
+                                    0xFFFFFFFFU, (uint32_t)&message,
+                                    0, 0, 0);
+    cmd_appcheck_print_result("message_pid_invalido", result);
+
+    result = syscall_invoke_kernel(APP_SYSCALL_MESSAGE_SEND,
+                                    current_pid, 0, 0, 0, 0);
+    cmd_appcheck_print_result("message_nula", result);
+
+    message.type = 0;
+    result = syscall_invoke_kernel(APP_SYSCALL_MESSAGE_SEND,
+                                    current_pid, (uint32_t)&message,
+                                    0, 0, 0);
+    cmd_appcheck_print_result("message_tipo_invalido", result);
 }
 
 static void cmd_appcheck(void) {
@@ -374,6 +500,8 @@ static void cmd_appcheck(void) {
     result = syscall_invoke_kernel(APP_SYSCALL_PROCESS_EXIT,
                                     0, 0, 0, 0, 0);
     cmd_appcheck_print_result("process_exit", result);
+    cmd_appcheck_files();
+    cmd_appcheck_ipc();
     video_end_update();
 }
 

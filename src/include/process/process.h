@@ -85,6 +85,7 @@ void process_yield(void);
 void process_block(uint32_t ticks);
 void process_unblock(process_t* proc);
 void ipc_init(void);
+int ipc_is_ready(void);
 
 process_t* scheduler_schedule(void);
 void scheduler_init(void);

@@ -747,94 +747,137 @@ int fat12_get_file_info_at(uint16_t dir_cluster, int index, char* name_out, uint
     return -1;
 }
 
-int fat12_read_file_at(const char* path, uint8_t* buffer, uint32_t max_size) {
-    if (!fs.initialized || !path) return -1;
-
+static fat12_dir_entry_t* fat12_find_path_entry(const char* path) {
     char dir_path[256];
     char filename[13];
+    char fat12_name[11];
     int last_slash = -1;
+    int length = 0;
+    int filename_length;
+    int i;
+    int j;
+    uint16_t dir_cluster;
 
-    int len = 0;
-    for (; path[len]; len++) {
-        dir_path[len] = path[len];
-        if (path[len] == '/') last_slash = len;
-    }
-    dir_path[len] = '\0';
+    if (!fs.initialized || !path) return 0;
 
-    if (last_slash < 0) {
-        return fat12_read_file(path, buffer, max_size);
+    for (; path[length]; length++) {
+        if (length >= (int)sizeof(dir_path) - 1) return 0;
+        dir_path[length] = path[length];
+        if (path[length] == '/') last_slash = length;
     }
+    dir_path[length] = '\0';
 
-    int fi = 0;
-    for (int i = last_slash + 1; path[i]; i++) {
-        filename[fi++] = path[i];
+    if (last_slash < 0) return fat12_find_entry(path);
+
+    filename_length = 0;
+    for (i = last_slash + 1; path[i]; i++) {
+        if (filename_length >= (int)sizeof(filename) - 1) return 0;
+        filename[filename_length++] = path[i];
     }
-    filename[fi] = '\0';
+    filename[filename_length] = '\0';
+    if (filename_length == 0) return 0;
 
     dir_path[last_slash] = '\0';
+    if (dir_path[0] == '\0') {
+        return fat12_find_entry(filename);
+    }
 
-    uint16_t dir_cluster = fat12_resolve_path(dir_path);
-    if (dir_path[0] == '\0') dir_cluster = 0;
+    dir_cluster = fat12_resolve_path(dir_path);
+    if (dir_cluster == 0xFFFF) return 0;
 
-    char fat12_name[11];
-    int i, j;
     for (i = 0; i < 8; i++) fat12_name[i] = ' ';
     for (i = 8; i < 11; i++) fat12_name[i] = ' ';
-    i = 0; j = 0;
+    i = 0;
+    j = 0;
     while (filename[i] && filename[i] != '.' && j < 8) {
-        char c = filename[i];
+        char c = filename[i++];
         if (c >= 'a' && c <= 'z') c -= 32;
         fat12_name[j++] = c;
-        i++;
     }
     if (filename[i] == '.') {
-        i++; j = 0;
+        i++;
+        j = 0;
         while (filename[i] && j < 3) {
-            char c = filename[i];
+            char c = filename[i++];
             if (c >= 'a' && c <= 'z') c -= 32;
             fat12_name[8 + j++] = c;
-            i++;
         }
     }
 
-    fat12_dir_entry_t* entry = fat12_find_in_dir(dir_cluster, fat12_name);
-    if (!entry) return -1;
+    return fat12_find_in_dir(dir_cluster, fat12_name);
+}
 
+static int fat12_read_entry_range(fat12_dir_entry_t* entry, uint32_t offset,
+                                  uint8_t* buffer, uint32_t max_size) {
+    uint32_t bytes_per_sector = fs.bpb.bytes_per_sector;
+    uint32_t cluster_size;
+    uint32_t wanted;
     uint32_t bytes_read = 0;
-    uint16_t cluster = entry->cluster_low;
-    uint32_t file_size = entry->file_size;
+    uint32_t skip_bytes;
+    uint16_t cluster;
     uint32_t chain_steps = 0;
 
-    while (cluster < 0xFF8 && cluster != 0 && bytes_read < max_size &&
-           chain_steps++ < FAT12_CHAIN_LIMIT) {
-        uint32_t data_lba = fs.data_start + (cluster - 2) * fs.bpb.sectors_per_cluster;
+    if (!entry || (entry->attributes & 0x10)) return -1;
+    if (bytes_per_sector == 0 || bytes_per_sector > 512) return -1;
+    if (offset >= entry->file_size || max_size == 0) return 0;
+    if (!buffer) return -1;
 
-        for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {
+    wanted = entry->file_size - offset;
+    if (wanted > max_size) wanted = max_size;
+    cluster_size = fs.bpb.sectors_per_cluster * bytes_per_sector;
+    if (cluster_size == 0) return -1;
+
+    cluster = entry->cluster_low;
+    skip_bytes = offset;
+    while (skip_bytes >= cluster_size && cluster >= 2 &&
+           cluster < FAT12_CLUSTER_RESERVED &&
+           chain_steps++ < FAT12_CHAIN_LIMIT) {
+        skip_bytes -= cluster_size;
+        cluster = fat12_get_cluster(cluster);
+    }
+
+    while (cluster >= 2 && cluster < FAT12_CLUSTER_RESERVED &&
+           bytes_read < wanted && chain_steps++ < FAT12_CHAIN_LIMIT) {
+        uint32_t data_lba = fs.data_start +
+            (cluster - 2) * fs.bpb.sectors_per_cluster;
+
+        for (uint32_t sector_index = 0;
+             sector_index < fs.bpb.sectors_per_cluster && bytes_read < wanted;
+             sector_index++) {
             uint8_t sector[512];
-            if (ata_read_sectors(data_lba + s, 1, sector) != 0) {
+            uint32_t sector_skip = 0;
+            uint32_t to_copy;
+
+            if (ata_read_sectors(data_lba + sector_index, 1, sector) != 0) {
                 return -1;
             }
-
-            uint32_t to_copy = fs.bpb.bytes_per_sector;
-            if (bytes_read + to_copy > file_size) {
-                to_copy = file_size - bytes_read;
-            }
-            if (bytes_read + to_copy > max_size) {
-                to_copy = max_size - bytes_read;
+            if (skip_bytes >= bytes_per_sector) {
+                skip_bytes -= bytes_per_sector;
+                continue;
             }
 
-            kmemcpy(buffer + bytes_read, sector, to_copy);
+            sector_skip = skip_bytes;
+            skip_bytes = 0;
+            to_copy = bytes_per_sector - sector_skip;
+            if (to_copy > wanted - bytes_read) to_copy = wanted - bytes_read;
+            kmemcpy(buffer + bytes_read, sector + sector_skip, to_copy);
             bytes_read += to_copy;
-
-            if (bytes_read >= file_size || bytes_read >= max_size) {
-                break;
-            }
         }
 
         cluster = fat12_get_cluster(cluster);
     }
 
-    return bytes_read;
+    return (int)bytes_read;
+}
+
+int fat12_read_file_range_at(const char* path, uint32_t offset,
+                             uint8_t* buffer, uint32_t max_size) {
+    fat12_dir_entry_t* entry = fat12_find_path_entry(path);
+    return fat12_read_entry_range(entry, offset, buffer, max_size);
+}
+
+int fat12_read_file_at(const char* path, uint8_t* buffer, uint32_t max_size) {
+    return fat12_read_file_range_at(path, 0, buffer, max_size);
 }
 
 int fat12_write_file_in_dir(uint16_t dir_cluster, const char* filename, const uint8_t* data, uint32_t size) {

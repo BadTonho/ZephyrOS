@@ -2,7 +2,7 @@
 
 ## Resumo de Progresso
 
-Status: Fases 1 e 2 implementadas; processo em modo usuario planejado para a Fase 4.
+Status: Fases 1, 2 e 3 implementadas; processo em modo usuario planejado para a Fase 4.
 
 Esta etapa preparara o ZephyrOS para executar aplicativos independentes do
 kernel. O objetivo nao e apenas criar mais comandos, mas definir uma fronteira
@@ -54,10 +54,18 @@ Os numeros atuais sao:
 | `1` | `console_write` | `EBX`: texto; `ECX`: tamanho |
 | `2` | `uptime` | `EBX`: `app_uptime_info_t*` |
 | `3` | `memory_info` | `EBX`: `app_memory_info_t*` |
+| `4` | `file_open` | `EBX`: caminho; `ECX`: modo; `EDX`: handle de saida |
+| `5` | `file_read` | `EBX`: handle; `ECX`: buffer; `EDX`: tamanho; `ESI`: bytes |
+| `6` | `file_write` | `EBX`: handle; `ECX`: buffer; `EDX`: tamanho; `ESI`: bytes |
+| `7` | `file_close` | `EBX`: handle |
+| `8` | `message_send` | `EBX`: PID; `ECX`: `app_message_t*` |
+| `9` | `message_receive` | `EBX`: `app_message_t*` |
 
 O vetor `int 0x80` esta registrado na IDT com gate `0x8E` (DPL 0). A ponte
 `syscall_invoke_kernel()` e usada pelo `appcheck` para exercitar o mesmo
-dispatcher sem depender de ring 3.
+dispatcher sem depender de ring 3. As syscalls de arquivo e IPC tambem
+permanecem disponiveis somente nessa ponte interna enquanto nao existir modo
+usuario.
 
 Como ainda nao existe processo em modo usuario, `process_exit` retorna
 `ERR_UNAVAILABLE` e nao altera o estado de nenhum processo. O gate somente
@@ -65,9 +73,9 @@ podera receber chamadas de ring 3 depois da etapa de isolamento de memoria.
 
 ## Contrato inicial da API
 
-Os nomes abaixo formam a proposta inicial. Nesta primeira fase, somente a
-fachada interna `app_api_*` foi implementada. Os numeros, registradores e a
-entrada `int 0x80` serao definidos durante a Fase 2, junto ao dispatcher.
+Os nomes abaixo formam o contrato atual. A fachada interna `app_api_*` e o
+dispatcher ja validam as operacoes de sistema, enquanto os aplicativos ainda
+executam em ring 0.
 
 | Grupo | Operacao inicial | Finalidade |
 |---|---|---|
@@ -96,6 +104,15 @@ de `src/include/core/app_api.h` e `src/core/app_api.c`:
 - `app_api_get_uptime()` retorna ticks e segundos desde o boot;
 - `app_api_get_memory_info()` retorna memoria e paginas disponiveis;
 - `app_handle_t` e um handle opaco de 32 bits, com zero reservado como invalido.
+
+### Servicos implementados na Fase 3
+
+- handles de arquivo em tabela fixa, com geracao e ownership por PID;
+- leitura sequencial por offset, com limite de 4096 bytes por chamada;
+- escrita integral por caminho, sem append ou escrita parcial nesta fase;
+- mensagens IPC por PID usando os tipos internos de teclado e solicitacao;
+- `message_receive` nao bloqueante, retornando `ERR_NOT_FOUND` sem mensagens;
+- adaptacao unificada para FAT12 e FAT32, sem expor estruturas FAT.
 
 Essa fachada ainda roda dentro do kernel. Portanto, a validacao de ponteiros
 da Fase 1 cobre nulos, tamanho e conteudo, mas nao substitui o isolamento de
@@ -148,10 +165,11 @@ de validacao nao interrompe o Shell.
 
 ### Fase 3 - Servicos de arquivo e IPC
 
-- criar handles de arquivo;
-- expor leitura e escrita atraves do FS unificado;
-- impedir acesso direto as estruturas FAT;
-- reutilizar as validacoes existentes de IPC e recovery.
+- [x] criar handles de arquivo com geracao e ownership por PID;
+- [x] expor leitura sequencial e escrita integral atraves do FS unificado;
+- [x] impedir acesso direto as estruturas FAT;
+- [x] reutilizar as validacoes existentes de IPC e recovery;
+- [x] testar as chamadas pelo dispatcher usando `appcheck`;
 
 ### Fase 4 - Processo em modo usuario
 
