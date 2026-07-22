@@ -4,6 +4,18 @@ Sistema operacional do zero em C + Assembly (x86), com o objetivo de ser um OS r
 
 ---
 
+## Status do projeto
+
+O ZephyrOS e um sistema operacional experimental em desenvolvimento ativo. Ele e executado
+principalmente no QEMU e mantem duas interfaces: modo classico em VGA text mode e modo
+moderno com VESA quando o hardware ou emulador oferece suporte.
+
+O projeto ainda nao deve ser considerado pronto para uso em hardware real. Consulte o
+[`ROADMAP.md`](ROADMAP.md) e a documentacao em [`docs/`](docs/) para acompanhar as etapas
+concluidas, limitacoes conhecidas e proximos objetivos.
+
+---
+
 ## Funcionalidades
 
 | Módulo | Status | Descrição |
@@ -148,6 +160,27 @@ sudo apt install nasm gcc make qemu-system-x86
 # Siga: https://wiki.osdev.org/GCC_Cross-Compiler
 ```
 
+### Configuracao das ferramentas
+
+O `Makefile` procura `nasm`, `i686-elf-gcc`, `i686-elf-ld` e `qemu-system-i386` no `PATH`.
+Tambem e possivel definir caminhos especificos em um arquivo local chamado `Makefile.local`.
+Esse arquivo e ignorado pelo Git e nao deve ser enviado ao repositorio.
+
+Exemplo de `Makefile.local`:
+
+```makefile
+NASM = nasm
+GCC = i686-elf-gcc
+LD = i686-elf-ld
+QEMU = qemu-system-i386
+```
+
+Ou, em uma execucao isolada:
+
+```powershell
+make NASM=nasm GCC=i686-elf-gcc LD=i686-elf-ld QEMU=qemu-system-i386
+```
+
 ---
 
 ## Como Compilar e Rodar
@@ -187,11 +220,15 @@ O shell inicia automaticamente após a inicialização do sistema.
 | `melody` | Toca uma escala musical | `melody` |
 | `explorer` | Abre gerenciador de arquivos | `explorer` |
 | `desktop` | Abre ambiente desktop | `desktop` |
-| `taskman` | Abre gerenciador de tarefas | `taskman` |
+| `taskmgr` | Abre gerenciador de tarefas | `taskmgr` |
 | `edit` | Editor de texto | `edit ARQUIVO.TXT` |
 | `play` | Toca arquivo WAV | `play MUSICA.WAV` |
 | `compress` | Gerencia compressão de RAM | `compress on/off/status` |
 | `settings` | Abre configurações | `settings` |
+| `health` | Mostra o estado dos componentes e do kernel | `health` |
+| `appcheck` | Testa a API de aplicativos, arquivos e IPC | `appcheck` |
+| `usertest` | Executa o processo de teste em modo usuário | `usertest` |
+| `guimode` | Alterna entre `classic` e `modern` | `guimode modern` |
 | `reboot` | Reinicia o sistema | `reboot` |
 | `shutdown` | Desliga o sistema | `shutdown` |
 
@@ -371,4 +408,4 @@ Verifique se o cross-compiler está correto. Use `i686-elf-gcc` em vez de `gcc` 
 
 ## Licença
 
-Livre para uso e modificação.
+Este projeto é distribuído sob a [Licença MIT](LICENSE).
