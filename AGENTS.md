@@ -399,7 +399,8 @@ OBJS = ... $(NOVO_OBJ)
 ## Regra #12: Não Quebrar o Build
 
 - [ ] NUNCA commitar código que não compila
-- [ ] SEMPRE testar `make clean && make` antes de commitar
+- [ ] Para alterações de código, SEMPRE orientar o usuário a testar `make clean && make` antes de commitar
+- [ ] Warnings novos devem ser revisados; warnings existentes devem ser documentados quando não puderem ser corrigidos na etapa atual
 - [ ] Se adicionar header, verificar se não quebra outros arquivos
 - [ ] Se modificar struct, verificar todas as funções que usam ela
 - [ ] NUNCA mudar assinatura de função sem atualizar todos os chamadores
@@ -409,7 +410,7 @@ OBJS = ... $(NOVO_OBJ)
 ## Checklist Geral
 
 Antes de commitar:
-1. [ ] Código compilou sem warnings?
+1. [ ] Se houve alteração de código, o usuário validou o build e os warnings novos foram revisados?
 2. [ ] Toda função de erro tem `LOG_ERROR`?
 3. [ ] Toda init tem `LOG_INFO`?
 4. [ ] Sem magic numbers?
@@ -417,14 +418,18 @@ Antes de commitar:
 6. [ ] Arquivo no diretório correto?
 7. [ ] Header com include guard?
 8. [ ] Makefile atualizado (se novo .c)?
-9. [ ] `make clean && make` passou?
+9. [ ] O build foi solicitado ao usuário quando a alteração exigia validação de compilação?
 10. [ ] Não quebrei nenhuma função existente?
+11. [ ] Revisei o diff staged e confirmei que ele contém apenas a alteração pretendida?
+12. [ ] Confirmei que não há senhas, tokens, chaves privadas ou credenciais?
+13. [ ] Confirmei que não há caminhos pessoais, configurações locais ou arquivos de backup?
+14. [ ] Confirmei que `.mailmap`, `Makefile.local`, `build/` e artefatos locais não estão staged?
 
 ---
 
 ## Regra #13: Comandos Shell para Novas Funcionalidades
 
-Sempre que criar ou implementar uma nova funcionalidade, módulo ou driver no projeto, você DEVE criar um comando correspondente no shell (`src/shell/shell.c`) para testar, inspecionar ou executar essa funcionalidade, mantendo o projeto organizado e rastreável.
+Sempre que criar ou implementar uma funcionalidade executável, módulo ou driver no projeto, você DEVE criar um comando correspondente no shell (`src/shell/shell.c`) para testar, inspecionar ou executar essa funcionalidade, mantendo o projeto organizado e rastreável. Alterações somente de documentação, refatorações internas, configuração de build ou correções que não criem uma capacidade executável não exigem um comando novo.
 
 ---
 
@@ -438,4 +443,28 @@ O agente de IA **NUNCA** deve executar comandos de build via terminal (`make`, `
 
 O sistema operacional DEVE manter retrocompatibilidade visual. A interface gráfica baseada em texto original (TUI em `video.c`) deve ser preservada como um "Modo Clássico" (Fallback) para hardwares limitados ou escolha do usuário. O desenvolvimento da "GUI Moderna" (`gui.c`, `gui.h`) deve coexistir, e novos aplicativos/interfaces devem planejar suportar ambos os modos de renderização.
 
+---
 
+## Regra #16: Verificação de informações antes do commit
+
+Antes de sugerir, criar ou executar qualquer commit, o agente DEVE revisar somente os arquivos
+que estão modificados, novos ou staged no Source Control e verificar se não existem informações
+sensíveis ou locais, incluindo:
+
+- senhas, tokens, chaves privadas, credenciais, cookies ou arquivos de ambiente;
+- e-mails pessoais, nomes de usuário, caminhos locais e dados identificáveis;
+- `Makefile.local`, `.mailmap`, backups, dumps, imagens de disco e artefatos de build;
+- alterações não relacionadas ao objetivo atual ou arquivos pertencentes ao usuário.
+
+A verificação deve usar `git status --short` e os diffs dos arquivos alterados como fonte de
+verdade. Para os arquivos que irão no próximo commit, a revisão principal deve ser feita com
+`git diff --cached` e `git diff --cached --check`. Arquivos modificados mas ainda não staged
+podem ser revisados para preparar o commit, mas não devem ser tratados como já autorizados.
+
+Arquivos que não aparecem no Source Control não precisam ser verificados novamente. A busca
+por segredos também deve ser limitada aos arquivos alterados ou staged, evitando reexaminar o
+repositório inteiro sem necessidade. O histórico só deve ser revisado quando a tarefa envolver
+limpeza ou reescrita de histórico, remoção de informações pessoais ou alteração de tags.
+
+Se houver dúvida sobre qualquer arquivo modificado ou staged, o agente DEVE parar e informar
+o usuário antes do commit.
