@@ -2,7 +2,7 @@
 
 ## Resumo de Progresso
 
-Status: Fase 1 implementada; dispatcher de syscalls planejado para a Fase 2.
+Status: Fases 1 e 2 implementadas; processo em modo usuario planejado para a Fase 4.
 
 Esta etapa preparara o ZephyrOS para executar aplicativos independentes do
 kernel. O objetivo nao e apenas criar mais comandos, mas definir uma fronteira
@@ -33,6 +33,35 @@ Os aplicativos nao deverao acessar diretamente:
 - framebuffer e controladores de video;
 - estruturas internas do FAT;
 - filas privadas de outros processos.
+
+## ABI inicial de syscalls
+
+As syscalls usam a convencao de registradores abaixo:
+
+| Registrador | Funcao |
+|---|---|
+| `EAX` | Numero da syscall na entrada e codigo de retorno na saida |
+| `EBX` | Primeiro argumento |
+| `ECX` | Segundo argumento |
+| `EDX` | Terceiro argumento |
+| `ESI`, `EDI`, `EBP` | Argumentos reservados |
+
+Os numeros atuais sao:
+
+| Numero | Nome | Argumentos |
+|---|---|---|
+| `0` | `process_exit` | `EBX`: codigo de saida |
+| `1` | `console_write` | `EBX`: texto; `ECX`: tamanho |
+| `2` | `uptime` | `EBX`: `app_uptime_info_t*` |
+| `3` | `memory_info` | `EBX`: `app_memory_info_t*` |
+
+O vetor `int 0x80` esta registrado na IDT com gate `0x8E` (DPL 0). A ponte
+`syscall_invoke_kernel()` e usada pelo `appcheck` para exercitar o mesmo
+dispatcher sem depender de ring 3.
+
+Como ainda nao existe processo em modo usuario, `process_exit` retorna
+`ERR_UNAVAILABLE` e nao altera o estado de nenhum processo. O gate somente
+podera receber chamadas de ring 3 depois da etapa de isolamento de memoria.
 
 ## Contrato inicial da API
 
@@ -94,9 +123,10 @@ de um aplicativo completo:
 appcheck
 ```
 
-O comando testa `console_write`, `uptime` e `memory_info`, alem de argumentos
-nulos, texto vazio e texto acima do limite. Cada chamada exibe seu codigo de
-retorno e uma falha de validacao nao interrompe o Shell.
+O comando testa o dispatcher para `console_write`, `uptime` e `memory_info`,
+alem de numero desconhecido, argumentos nulos, texto vazio, texto acima do
+limite e `process_exit`. Cada chamada exibe seu codigo de retorno e uma falha
+de validacao nao interrompe o Shell.
 
 ## Fases
 
@@ -108,13 +138,13 @@ retorno e uma falha de validacao nao interrompe o Shell.
 - [x] manter wrappers compativeis para os aplicativos nativos atuais;
 - [x] adicionar `appcheck` e o estado da API ao `health`.
 
-### Fase 2 - Dispatcher de syscalls
+### Fase 2 - Dispatcher de syscalls - concluida
 
-- criar a entrada controlada de syscall;
-- validar numero, argumentos e processo chamador;
-- registrar chamadas invalidas sem travar o kernel;
-- implementar primeiro `console_write`, `uptime`, `memory_info` e
-  `process_exit`.
+- [x] criar a entrada controlada de syscall;
+- [x] validar numero, argumentos e processo chamador;
+- [x] registrar chamadas invalidas sem travar o kernel;
+- [x] implementar `console_write`, `uptime`, `memory_info` e a reserva segura
+  de `process_exit` ate o modo usuario.
 
 ### Fase 3 - Servicos de arquivo e IPC
 

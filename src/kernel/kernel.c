@@ -5,6 +5,7 @@
 #include "core/errors.h"
 #include "core/recovery.h"
 #include "core/app_api.h"
+#include "core/syscall.h"
 #include "drivers/idt.h"
 #include "core/keyboard.h"
 #include "drivers/mouse.h"
@@ -341,6 +342,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     if (app_api_init() != OK) {
         LOG_ERROR("KERNEL", "Falha ao inicializar API de aplicativos");
+    }
+    if (syscall_init() != OK) {
+        LOG_ERROR("KERNEL", "Falha ao inicializar dispatcher de syscalls");
     }
 
     video_print("[..] Configurando paginacao...\n", 0x08);

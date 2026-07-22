@@ -25,6 +25,7 @@
 #include "apps/guitest.h"
 #include "core/recovery.h"
 #include "core/app_api.h"
+#include "core/syscall.h"
 
 static char input_buffer[SHELL_BUFFER_SIZE];
 static char appcheck_oversized_text[APP_API_MAX_TEXT_SIZE + 1];
@@ -272,6 +273,9 @@ static void cmd_health_print_kernel(void) {
     video_print("  App API: ", 0x07);
     video_print(app_api_is_ready() ? "READY" : "DISABLED", 0x0F);
     video_print("\n", 0x07);
+    video_print("  Syscalls: ", 0x07);
+    video_print(syscall_is_ready() ? "READY" : "DISABLED", 0x0F);
+    video_print("\n", 0x07);
     video_print("  Memoria KB: total=", 0x07);
     print_num(memory_get_total() / 1024);
     video_print(" usada=", 0x08);
@@ -327,10 +331,13 @@ static void cmd_appcheck(void) {
         video_print("\n", 0x07);
     }
 
-    result = app_api_console_write(message, kstrlen(message));
+    result = syscall_invoke_kernel(APP_SYSCALL_CONSOLE_WRITE,
+                                    (uint32_t)message,
+                                    kstrlen(message), 0, 0, 0);
     cmd_appcheck_print_result("console_write", result);
 
-    result = app_api_get_uptime(&uptime);
+    result = syscall_invoke_kernel(APP_SYSCALL_UPTIME,
+                                    (uint32_t)&uptime, 0, 0, 0, 0);
     cmd_appcheck_print_result("get_uptime", result);
     if (result == OK) {
         video_print("    ticks=", 0x08);
@@ -340,7 +347,8 @@ static void cmd_appcheck(void) {
         video_print("\n", 0x07);
     }
 
-    result = app_api_get_memory_info(&memory);
+    result = syscall_invoke_kernel(APP_SYSCALL_MEMORY_INFO,
+                                    (uint32_t)&memory, 0, 0, 0, 0);
     cmd_appcheck_print_result("get_memory_info", result);
     if (result == OK) {
         video_print("    total_kb=", 0x08);
@@ -352,13 +360,20 @@ static void cmd_appcheck(void) {
         video_print("\n", 0x07);
     }
 
-    result = app_api_get_version(NULL);
-    cmd_appcheck_print_result("get_version nulo", result);
-    result = app_api_console_write("", 0);
+    result = syscall_invoke_kernel(APP_SYSCALL_INVALID, 0, 0, 0, 0, 0);
+    cmd_appcheck_print_result("numero invalido", result);
+    result = syscall_invoke_kernel(APP_SYSCALL_UPTIME, 0, 0, 0, 0, 0);
+    cmd_appcheck_print_result("uptime nulo", result);
+    result = syscall_invoke_kernel(APP_SYSCALL_CONSOLE_WRITE,
+                                    (uint32_t)"", 0, 0, 0, 0);
     cmd_appcheck_print_result("console_write vazio", result);
-    result = app_api_console_write(appcheck_oversized_text,
-                                   sizeof(appcheck_oversized_text));
+    result = syscall_invoke_kernel(APP_SYSCALL_CONSOLE_WRITE,
+                                    (uint32_t)appcheck_oversized_text,
+                                    sizeof(appcheck_oversized_text), 0, 0, 0);
     cmd_appcheck_print_result("console_write grande", result);
+    result = syscall_invoke_kernel(APP_SYSCALL_PROCESS_EXIT,
+                                    0, 0, 0, 0, 0);
+    cmd_appcheck_print_result("process_exit", result);
     video_end_update();
 }
 

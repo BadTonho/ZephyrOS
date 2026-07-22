@@ -172,8 +172,9 @@ uptime, memória e validação de argumentos.
 zephyr> appcheck
 ```
 
-O comando não usa `int 0x80` nesta fase. O dispatcher e a API para processos
-em modo usuário serão adicionados na próxima etapa.
+O comando usa a ponte interna do dispatcher e testa números inválidos,
+argumentos nulos e `process_exit`. O vetor `int 0x80` está registrado apenas
+para ring 0 até a implementação de processos em modo usuário.
 
 ## `explorer`
 Abre o gerenciador de arquivos estilo ZephyrOS Explorer (TUI).

@@ -4,6 +4,8 @@
 #include "core/log.h"
 #include "core/errors.h"
 
+#define SYSCALL_VECTOR 0x80
+
 idt_entry_t idt[256];
 idt_ptr_t idt_ptr;
 isr_handler_t interrupt_handlers[256];
@@ -40,6 +42,7 @@ extern void isr28(void);
 extern void isr29(void);
 extern void isr30(void);
 extern void isr31(void);
+extern void isr128(void);
 
 extern void irq0(void);
 extern void irq1(void);
@@ -151,6 +154,7 @@ void idt_init(void) {
     idt_set_gate(29, (uint32_t)isr29, 0x08, 0x8E);
     idt_set_gate(30, (uint32_t)isr30, 0x08, 0x8E);
     idt_set_gate(31, (uint32_t)isr31, 0x08, 0x8E);
+    idt_set_gate(SYSCALL_VECTOR, (uint32_t)isr128, 0x08, 0x8E);
 
     pic_remap();
 

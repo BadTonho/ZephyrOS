@@ -6,3 +6,5 @@ Não existe captura automática de falhas de qualquer função C; novas operaç�
 Não haverá reinício automático de componentes nesta primeira etapa.
 
 escopo completo da fase, eu escolhi apenas o inicio pra ir fazendo devagar
+
+pedir pra salvar as coisas que eu cliquei pra fazer parcialmente

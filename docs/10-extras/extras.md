@@ -116,43 +116,37 @@ Syscalls são a forma como processos de usuário pedem serviços ao kernel.
 
 ### Implementação Atual
 
-O ZephyrOS tem uma implementação básica via interrupções:
+O ZephyrOS possui um dispatcher inicial no vetor `int 0x80`. Ele permanece
+com DPL 0 porque os processos ainda executam em ring 0:
 
 ```nasm
 ; Exemplo de syscall
-mov eax, 1      ; Número da syscall (write)
-mov ebx, 1      ; File descriptor (stdout)
-mov ecx, msg    ; Ponteiro para mensagem
-mov edx, len    ; Tamanho
-int 0x80        ; Chama o kernel
+mov eax, 1      ; APP_SYSCALL_CONSOLE_WRITE
+mov ebx, msg    ; Ponteiro para texto validado
+mov ecx, len    ; Tamanho do texto
+int 0x80        ; Chama o dispatcher
 ```
 
 ### Tipos de Syscalls
 
 | Número | Nome | Função |
 |--------|------|--------|
-| 0 | exit | Encerra processo |
-| 1 | write | Escreve na tela |
-| 2 | read | Lê do teclado |
-| 3 | fork | Cria processo filho |
-| 4 | exec | Executa programa |
-| 5 | wait | Espera processo filho |
-| 6 | open | Abre arquivo |
-| 7 | close | Fecha arquivo |
-| 8 | malloc | Aloca memória |
-| 9 | free | Libera memória |
+| 0 | process_exit | Reservada até o modo usuário |
+| 1 | console_write | Escreve texto validado |
+| 2 | uptime | Retorna ticks e segundos |
+| 3 | memory_info | Retorna métricas de memória |
 
 ### Handlers
 
 ```c
 void syscall_handler(registers_t* regs) {
-    switch (regs->eax) {
-        case 0: sys_exit(); break;
-        case 1: sys_write(regs->ebx, regs->ecx, regs->edx); break;
-        // ...
-    }
+    /* O retorno é colocado em EAX. Chamadas inválidas retornam erro. */
 }
 ```
+
+O comando `appcheck` usa `syscall_invoke_kernel()` para testar o mesmo
+dispatcher sem precisar de um aplicativo ring 3. Chamadas inválidas são
+registradas e retornam códigos de `errors.h`, sem `panic()`.
 
 ---
 
