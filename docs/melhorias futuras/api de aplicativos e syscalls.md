@@ -2,7 +2,7 @@
 
 ## Resumo de Progresso
 
-Status: Fases 1, 2 e 3 validadas; Fase 4 implementada e aguardando validacao no QEMU; carregador planejado para a Fase 5.
+Status: Fases 1, 2 e 3 validadas; Fase 4 implementada e aguardando validacao no QEMU; Fase 5 implementada e aguardando validacao no QEMU.
 
 Esta etapa preparara o ZephyrOS para executar aplicativos independentes do
 kernel. O objetivo nao e apenas criar mais comandos, mas definir uma fronteira
@@ -187,16 +187,20 @@ de validacao nao interrompe o Shell.
 - [x] encerrar somente o processo de usuario em `process_exit` ou excecao;
 - [ ] validar `usertest`, `usertest fault` e os fluxos nativos no QEMU.
 
-### Fase 5 - Carregador de aplicativos
+### Fase 5 - Carregador de aplicativos - implementada, validacao pendente
 
-- definir um formato inicial de programa;
-- validar cabecalho, tamanho e pontos de entrada;
-- carregar o programa em memoria isolada;
-- iniciar, acompanhar e finalizar o processo;
-- registrar falhas de carregamento no recovery.
+- [x] definir o formato flat i386 interno `ZAPP`;
+- [x] validar magic, versao, arquitetura, offsets, tamanhos e entry point;
+- [x] carregar codigo, dados e stack em memoria ring 3 isolada;
+- [x] iniciar o processo de forma assincrona pelo comando `app run`;
+- [x] recolher processos ring 3 encerrados sem acumular zumbis;
+- [x] registrar o componente App Loader no recovery e no `health`;
+- [ ] validar `appcheck`, `app run`, falhas de formato e limpeza no QEMU.
 
-Depois da validacao da Fase 4, esta sera a proxima etapa. Ela definira um formato de imagem, validara o ponto
-de entrada e carregara programas sem alterar ainda os aplicativos nativos.
+No FAT12, o arquivo usa a extensao 8.3 `.ZAP`, por exemplo `DEMO.ZAP`.
+O cabecalho `ZAPP` contem codigo flat i386, dados opcionais, entry point e
+flags reservadas. A primeira implementacao limita codigo e dados a uma pagina
+cada e nao inclui ELF, manifesto, checksum, relocacao ou bibliotecas dinamicas.
 
 ### Fase 6 - Migracao gradual
 
@@ -228,12 +232,13 @@ de entrada e carregara programas sem alterar ainda os aplicativos nativos.
 
 ## Limites
 
-- o carregador e o formato de aplicativos ainda nao existem;
-- os aplicativos nativos continuam em ring 0;
-- o isolamento de memoria cobre o processo de teste, nao uma politica de
-  permissoes completa para pacotes;
-- nao sera escolhido um formato ELF ou `.zephyrosapp` antes da API basica;
-- a etapa nao altera `src/boot/boot.asm` inicialmente;
+- os aplicativos nativos continuam em ring 0 e nao foram migrados;
+- o isolamento atual cobre uma imagem flat pequena, nao uma politica completa
+  de permissoes para pacotes;
+- nao ha ELF, manifesto, checksum, relocacao, loader dinamico ou empacotador;
+- a extensao `.zephyrosapp` completa fica para a Fase 7; `.ZAP` e o formato
+  curto usado pelo FAT12 nesta fase;
+- a etapa nao altera `src/boot/boot.asm`;
 - nao sera criado um novo Window Manager nesta etapa;
 - compatibilidade com aplicativos de outros sistemas depende de bibliotecas,
   drivers e APIs adicionais no futuro.

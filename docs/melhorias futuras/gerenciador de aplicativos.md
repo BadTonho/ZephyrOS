@@ -15,6 +15,13 @@
 
 **Progresso geral: 0%** (0/254 itens completos)
 
+> **Nota sobre o estado atual:** o loader minimo da Fase 5 ja esta separado
+> deste roadmap da App Store. O sistema agora aceita imagens flat i386 com
+> cabecalho `ZAPP` e extensao curta `.ZAP` no FAT12, executadas em ring 3 por
+> `app run <arquivo.ZAP>`. O `appcheck` cria uma imagem temporaria para
+> diagnostico. Manifesto, instalacao, loja, pacotes `.zephyrosapp` completos,
+> atualizacoes e SDK continuam planejados nas fases abaixo.
+
 ---
 
 ## Atalhos de Teclado

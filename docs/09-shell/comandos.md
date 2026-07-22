@@ -37,7 +37,8 @@ Comandos disponiveis:
   guitest   - Testa primitivas GUI 2D
   guimode   - Altera entre gui classica (TUI) e moderna
   health    - Exibe metricas e estado de recovery do kernel
-  appcheck  - Testa a API de aplicativos
+  appcheck  - Testa API, arquivos, IPC e carregador ZAPP
+  app run <arquivo.ZAP> - Executa aplicativo ring 3 de forma assincrona
   usertest  - Executa teste isolado em ring 3
   reboot    - Reinicia o sistema
   shutdown  - Desliga o sistema
@@ -199,6 +200,23 @@ de IPC validam o PID, o estado do processo, o tipo da mensagem e a fila.
 O comando usa a ponte interna do dispatcher e testa números inválidos,
 argumentos nulos e `process_exit`. O vetor `int 0x80` também está disponível
 para o processo de teste ring 3 depois da inicialização segura do kernel.
+
+Na Fase 5, o `appcheck` tambem cria temporariamente `DEMO.ZAP`, valida o
+cabecalho `ZAPP`, executa o processo ring 3 e remove o arquivo. Tambem testa
+entry point, flags, tamanho de codigo e cabecalho invalidos. O arquivo de
+demonstracao nao permanece no disco.
+
+## `app run <arquivo.ZAP>`
+
+Executa uma imagem flat i386 em ring 3 sem bloquear o Shell.
+
+```text
+zephyr> app run DEMO.ZAP
+```
+
+O formato possui uma pagina maxima de codigo, uma pagina maxima de dados e
+uma pagina de stack. Arquivos invalidos, inexistentes ou maiores que o limite
+retornam erro controlado e nao causam `panic`.
 
 ## `usertest`
 Cria um processo mínimo em ring 3, com diretório de páginas e stack de kernel

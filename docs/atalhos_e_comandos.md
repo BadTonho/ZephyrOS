@@ -36,7 +36,8 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `mouse` | - | Exibe debug em tempo real (X, Y, cliques) do Mouse PS/2. |
 | `guitest` | - | Roda um teste nativo das primitivas gráficas GUI 2D. |
 | `health` | - | Lista o estado dos componentes e mostra dependências indisponíveis. |
-| `appcheck` | - | Testa a fachada segura da API de aplicativos. |
+| `appcheck` | - | Testa API, arquivos, IPC e carregador ZAPP. |
+| `app` | `run <arquivo.ZAP>` | Executa uma imagem flat i386 em ring 3 de forma assincrona. |
 | `usertest` | `fault` opcional | Executa e valida o primeiro processo isolado em ring 3. |
 | `guimode` | `classic/modern` | Alterna globalmente entre interface TUI (modo texto) e VESA (gráfica). |
 | `reboot` | - | Reinicia imediatamente o sistema operacional. |

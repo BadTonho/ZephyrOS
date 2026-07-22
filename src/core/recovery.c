@@ -20,7 +20,8 @@ static const char* component_names[RECOVERY_COMPONENT_COUNT] = {
     "Settings",
     "Media Player",
     "Editor",
-    "GUI Test"
+    "GUI Test",
+    "App Loader"
 };
 
 static int recovery_valid_component(recovery_component_id_t component) {

@@ -83,8 +83,14 @@ typedef struct {
 void process_init(void);
 void process_bootstrap_idle(void);
 process_t* process_create(const char* name, void (*entry_point)());
+int process_create_user_image(const char* name, const uint8_t* code,
+                              uint32_t code_size, const uint8_t* data,
+                              uint32_t data_size, uint32_t entry_offset,
+                              uint32_t stack_size, int diagnostic_test,
+                              uint32_t* pid_out);
 int process_create_user_test(int trigger_fault, uint32_t* pid_out);
 void process_destroy(process_t* proc);
+int process_reap_finished_user(void);
 process_t* process_get_current(void);
 uint32_t process_get_count(void);
 process_t* process_get_by_pid(uint32_t pid);

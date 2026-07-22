@@ -1,0 +1,192 @@
+#include "core/app_loader.h"
+#include "core/errors.h"
+#include "core/log.h"
+#include "core/memory.h"
+#include "core/string.h"
+#include "core/syscall.h"
+#include "fs/fs.h"
+#include "memory/paging.h"
+#include "process/process.h"
+
+static int app_loader_ready;
+
+static int app_loader_magic_is_valid(const char* magic) {
+    return magic[0] == 'Z' && magic[1] == 'A' &&
+           magic[2] == 'P' && magic[3] == 'P';
+}
+
+static int app_loader_has_zap_extension(const char* path) {
+    uint32_t length;
+
+    if (!path) return 0;
+    length = kstrlen(path);
+    if (length < 4) return 0;
+
+    return (path[length - 4] == '.' &&
+            (path[length - 3] == 'Z' || path[length - 3] == 'z') &&
+            (path[length - 2] == 'A' || path[length - 2] == 'a') &&
+            (path[length - 1] == 'P' || path[length - 1] == 'p'));
+}
+
+static int app_loader_validate_layout(const app_image_header_t* header,
+                                      uint32_t size) {
+    uint32_t data_end;
+
+    if (header->header_size != APP_IMAGE_HEADER_SIZE ||
+        header->code_offset != APP_IMAGE_HEADER_SIZE) {
+        LOG_ERROR("APP_LOADER", "Cabecalho ZAPP com offsets invalidos");
+        return ERR_INVALID;
+    }
+    if (header->code_size == 0 ||
+        header->code_size > APP_IMAGE_MAX_CODE_SIZE) {
+        LOG_WARN("APP_LOADER", "Tamanho de codigo ZAPP fora do limite");
+        return header->code_size > APP_IMAGE_MAX_CODE_SIZE ?
+               ERR_OVERFLOW : ERR_INVALID;
+    }
+    if (header->data_size > APP_IMAGE_MAX_DATA_SIZE) {
+        LOG_WARN("APP_LOADER", "Tamanho de dados ZAPP fora do limite");
+        return ERR_OVERFLOW;
+    }
+    if (header->stack_size != APP_IMAGE_STACK_SIZE ||
+        header->flags != APP_IMAGE_FLAGS_NONE) {
+        LOG_ERROR("APP_LOADER", "Recursos ZAPP nao suportados");
+        return ERR_INVALID;
+    }
+    if (header->entry_offset >= header->code_size) {
+        LOG_ERROR("APP_LOADER", "Ponto de entrada ZAPP fora do codigo");
+        return ERR_INVALID;
+    }
+    if (header->code_offset > 0xFFFFFFFFU - header->code_size) {
+        LOG_ERROR("APP_LOADER", "Offset de codigo ZAPP excede o limite");
+        return ERR_OVERFLOW;
+    }
+    if (header->data_offset != header->code_offset + header->code_size) {
+        LOG_ERROR("APP_LOADER", "Offset de dados ZAPP invalido");
+        return ERR_INVALID;
+    }
+    if (header->data_offset > 0xFFFFFFFFU - header->data_size) {
+        LOG_ERROR("APP_LOADER", "Offset de dados ZAPP excede o limite");
+        return ERR_OVERFLOW;
+    }
+
+    data_end = header->data_offset + header->data_size;
+    if (data_end != size) {
+        LOG_ERROR("APP_LOADER", "Tamanho do arquivo ZAPP nao corresponde ao cabecalho");
+        return data_end > size ? ERR_INVALID : ERR_OVERFLOW;
+    }
+    return OK;
+}
+
+int app_loader_validate_image(const uint8_t* image, uint32_t size,
+                              app_image_header_t* header) {
+    if (!image || !header) {
+        LOG_ERROR("APP_LOADER", "Imagem ou destino de cabecalho nulo");
+        return ERR_NULL;
+    }
+    if (size < APP_IMAGE_HEADER_SIZE) {
+        LOG_WARN("APP_LOADER", "Imagem ZAPP menor que o cabecalho");
+        return ERR_INVALID;
+    }
+    if (size > APP_IMAGE_MAX_FILE_SIZE) {
+        LOG_WARN("APP_LOADER", "Imagem ZAPP excede o limite de arquivo");
+        return ERR_OVERFLOW;
+    }
+
+    kmemcpy(header, image, APP_IMAGE_HEADER_SIZE);
+    if (!app_loader_magic_is_valid(header->magic) ||
+        header->version != APP_IMAGE_VERSION ||
+        header->architecture != APP_IMAGE_ARCH_I386) {
+        LOG_ERROR("APP_LOADER", "Magic, versao ou arquitetura ZAPP invalidos");
+        return ERR_INVALID;
+    }
+
+    return app_loader_validate_layout(header, size);
+}
+
+int app_loader_init(void) {
+    LOG_INFO("APP_LOADER", "Inicializando carregador de aplicativos");
+    app_loader_ready = 0;
+
+    if (!paging_is_ready() || !syscall_user_mode_is_enabled() ||
+        fs_get_type() == FS_TYPE_NONE) {
+        LOG_WARN("APP_LOADER", "Dependencias ausentes para carregador ZAPP");
+        return ERR_UNAVAILABLE;
+    }
+
+    app_loader_ready = 1;
+    LOG_INFO("APP_LOADER", "Carregador de aplicativos inicializado");
+    return OK;
+}
+
+int app_loader_is_ready(void) {
+    return app_loader_ready;
+}
+
+int app_loader_run_file(const char* path, uint32_t* pid_out) {
+    uint8_t* image;
+    app_image_header_t header;
+    uint32_t read_size;
+    int file_size;
+    int result;
+
+    if (!app_loader_ready) {
+        LOG_WARN("APP_LOADER", "Tentativa de executar ZAPP indisponivel");
+        return ERR_UNAVAILABLE;
+    }
+    if (!path) {
+        LOG_ERROR("APP_LOADER", "Caminho ZAPP nulo");
+        return ERR_NULL;
+    }
+    if (kstrlen(path) == 0) {
+        LOG_ERROR("APP_LOADER", "Caminho ZAPP vazio");
+        return ERR_INVALID;
+    }
+    if (kstrlen(path) >= FS_MAX_PATH) {
+        LOG_ERROR("APP_LOADER", "Caminho ZAPP excede o limite");
+        return ERR_OVERFLOW;
+    }
+    if (!app_loader_has_zap_extension(path)) {
+        LOG_ERROR("APP_LOADER", "Arquivo nao possui extensao .ZAP");
+        return ERR_INVALID;
+    }
+
+    image = (uint8_t*)kmalloc(APP_IMAGE_MAX_FILE_SIZE + 1U);
+    if (!image) {
+        LOG_ERROR("APP_LOADER", "Falha ao alocar buffer da imagem ZAPP");
+        return ERR_MEM;
+    }
+
+    file_size = fs_read_file(path, image, APP_IMAGE_MAX_FILE_SIZE + 1U);
+    if (file_size < 0) {
+        kfree(image);
+        LOG_WARN("APP_LOADER", "Falha ao ler arquivo ZAPP");
+        return fs_get_type() == FS_TYPE_NONE ? ERR_UNAVAILABLE : ERR_NOT_FOUND;
+    }
+    read_size = (uint32_t)file_size;
+    if (read_size > APP_IMAGE_MAX_FILE_SIZE) {
+        kfree(image);
+        LOG_WARN("APP_LOADER", "Arquivo ZAPP excede o tamanho suportado");
+        return ERR_OVERFLOW;
+    }
+
+    result = app_loader_validate_image(image, read_size, &header);
+    if (result == OK) {
+        result = process_create_user_image(
+            path, image + header.code_offset, header.code_size,
+            image + header.data_offset, header.data_size,
+            header.entry_offset, header.stack_size, 0, pid_out);
+    }
+
+    kfree(image);
+    if (result != OK) {
+        LOG_WARN("APP_LOADER", "Falha controlada ao criar processo ZAPP");
+        return result;
+    }
+
+    LOG_INFO("APP_LOADER", "Processo ZAPP criado de forma assincrona");
+    return OK;
+}
+
+int app_loader_reap_finished(void) {
+    return process_reap_finished_user();
+}

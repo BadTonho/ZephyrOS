@@ -5,6 +5,7 @@
 #include "core/errors.h"
 #include "core/recovery.h"
 #include "core/app_api.h"
+#include "core/app_loader.h"
 #include "core/syscall.h"
 #include "drivers/idt.h"
 #include "core/keyboard.h"
@@ -215,6 +216,7 @@ void shell_process_main(void) {
             process_yield();
         }
         shell_report_user_test_result();
+        app_loader_reap_finished();
         taskmgr_gui_update();
     }
 }
@@ -524,6 +526,14 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     if (syscall_enable_user_mode() != OK) {
         LOG_WARN("KERNEL", "Modo usuario indisponivel; mantendo processos ring 0");
+    }
+
+    if (app_loader_init() == OK) {
+        recovery_mark_ready(RECOVERY_COMPONENT_APP_LOADER);
+    } else {
+        recovery_mark_disabled(RECOVERY_COMPONENT_APP_LOADER,
+                               ERR_UNAVAILABLE,
+                               "Carregador ZAPP indisponivel");
     }
 
     while (1) {

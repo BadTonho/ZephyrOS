@@ -340,14 +340,40 @@ static int process_mark_current_user_zombie(uint32_t exit_code,
     return OK;
 }
 
+int process_reap_finished_user(void) {
+    if (!current_process) {
+        LOG_ERROR("PROC", "Reaper de usuario executado sem processo atual");
+        return ERR_STATE;
+    }
+
+    for (int i = 0; i < MAX_PROCESSES; i++) {
+        process_t* proc = &processes[i];
+
+        if (!proc->context.user_mode ||
+            proc->state != PROCESS_STATE_ZOMBIE) continue;
+        if (proc->user_test && user_test_result_pending) {
+            continue;
+        }
+
+        process_destroy(proc);
+    }
+    return OK;
+}
+
 static int process_user_reap_previous_test(void) {
+    int result = process_reap_finished_user();
+
+    if (result != OK) return result;
+
     for (int i = 0; i < MAX_PROCESSES; i++) {
         if (!processes[i].user_test ||
             processes[i].state == PROCESS_STATE_UNUSED) continue;
-        if (processes[i].state == PROCESS_STATE_ZOMBIE) {
-            process_destroy(&processes[i]);
-        } else {
+        if (processes[i].state != PROCESS_STATE_ZOMBIE) {
             LOG_WARN("PROC", "Teste ring 3 ja esta em execucao");
+            return ERR_STATE;
+        }
+        if (user_test_result_pending) {
+            LOG_WARN("PROC", "Resultado do teste ring 3 ainda nao foi reportado");
             return ERR_STATE;
         }
     }
@@ -397,11 +423,18 @@ static int process_user_map_image(page_directory_t* dir) {
     return OK;
 }
 
-static void process_user_load_image(page_directory_t* dir,
-                                    page_directory_t* kernel_dir,
-                                    int trigger_fault) {
-    uint8_t code[128];
-    uint32_t code_size = process_user_build_code(code, trigger_fault);
+static int process_user_load_image(page_directory_t* dir,
+                                   page_directory_t* kernel_dir,
+                                   const uint8_t* code,
+                                   uint32_t code_size,
+                                   const uint8_t* data,
+                                   uint32_t data_size) {
+    if (!dir || !kernel_dir || !code || code_size == 0 ||
+        code_size > PAGE_SIZE || data_size > PAGE_SIZE ||
+        (data_size > 0 && !data)) {
+        LOG_ERROR("PROC", "Imagem ring 3 invalida para carregamento");
+        return ERR_INVALID;
+    }
 
     asm volatile("cli");
     paging_switch_directory(dir);
@@ -409,36 +442,47 @@ static void process_user_load_image(page_directory_t* dir,
     kmemset((void*)USER_DATA_BASE, 0, PAGE_SIZE);
     kmemset((void*)USER_STACK_BASE, 0, PAGE_SIZE);
     kmemcpy((void*)USER_CODE_BASE, code, code_size);
-    kmemcpy((void*)USER_DATA_BASE, user_test_message,
-            kstrlen(user_test_message));
+    if (data_size > 0) {
+        kmemcpy((void*)USER_DATA_BASE, data, data_size);
+    }
     paging_switch_directory(kernel_dir);
     asm volatile("sti");
+    return OK;
 }
 
 static int process_user_initialize(process_t* proc, page_directory_t* dir,
-                                   uint32_t kernel_stack) {
+                                   uint32_t kernel_stack, const char* name,
+                                   uint32_t entry_offset, int diagnostic_test) {
     uint32_t stack_ptr;
+    uint32_t entry_point;
+    int i = 0;
 
-    if (!proc || !dir || !kernel_stack) {
+    if (!proc || !dir || !kernel_stack || !name ||
+        entry_offset >= PAGE_SIZE) {
         LOG_ERROR("PROC", "Parametros invalidos para processo ring 3");
         return ERR_NULL;
     }
     kmemset(proc, 0, sizeof(process_t));
     proc->pid = process_allocate_pid();
     if (!proc->pid) {
-        LOG_ERROR("PROC", "Falha ao reservar PID do teste ring 3");
+        LOG_ERROR("PROC", "Falha ao reservar PID do processo ring 3");
         return ERR_MEM;
     }
-    kmemcpy(proc->name, "UserTest", 9);
+    while (name[i] && i < PROCESS_NAME_LENGTH - 1) {
+        proc->name[i] = name[i];
+        i++;
+    }
+    proc->name[i] = '\0';
     proc->page_directory = dir;
     proc->kernel_stack = kernel_stack;
     proc->kernel_stack_top = kernel_stack + KERNEL_STACK_SIZE;
+    entry_point = USER_CODE_BASE + entry_offset;
     stack_ptr = proc->kernel_stack_top;
     stack_ptr -= 4; *(uint32_t*)stack_ptr = USER_DATA_SELECTOR;
     stack_ptr -= 4; *(uint32_t*)stack_ptr = USER_STACK_TOP;
     stack_ptr -= 4; *(uint32_t*)stack_ptr = PROCESS_DEFAULT_EFLAGS;
     stack_ptr -= 4; *(uint32_t*)stack_ptr = USER_CODE_SELECTOR;
-    stack_ptr -= 4; *(uint32_t*)stack_ptr = USER_CODE_BASE;
+    stack_ptr -= 4; *(uint32_t*)stack_ptr = entry_point;
     proc->context.esp = stack_ptr;
     proc->context.eip = (uint32_t)process_user_enter;
     proc->context.eflags = PROCESS_DEFAULT_EFLAGS;
@@ -449,15 +493,19 @@ static int process_user_initialize(process_t* proc, page_directory_t* dir,
     proc->context.fs = USER_DATA_SELECTOR;
     proc->context.gs = USER_DATA_SELECTOR;
     proc->context.cr3 = (uint32_t)dir;
-    proc->context.user_entry = USER_CODE_BASE;
+    proc->context.user_entry = entry_point;
     proc->context.user_mode = 1;
-    proc->user_test = 1;
+    proc->user_test = diagnostic_test ? 1U : 0U;
     proc->state = PROCESS_STATE_READY;
     process_count++;
     return OK;
 }
 
-int process_create_user_test(int trigger_fault, uint32_t* pid_out) {
+int process_create_user_image(const char* name, const uint8_t* code,
+                              uint32_t code_size, const uint8_t* data,
+                              uint32_t data_size, uint32_t entry_offset,
+                              uint32_t stack_size, int diagnostic_test,
+                              uint32_t* pid_out) {
     process_t* proc = 0;
     page_directory_t* dir;
     page_directory_t* kernel_dir;
@@ -466,11 +514,19 @@ int process_create_user_test(int trigger_fault, uint32_t* pid_out) {
 
     if (!paging_is_ready() || !tss_is_ready() ||
         !syscall_user_mode_is_enabled()) {
-        LOG_WARN("PROC", "Modo usuario indisponivel para teste");
+        LOG_WARN("PROC", "Modo usuario indisponivel para processo");
         return ERR_UNAVAILABLE;
     }
-    result = process_user_reap_previous_test();
-    if (result != OK) return result;
+    if (!name || !code || code_size == 0 || code_size > PAGE_SIZE ||
+        data_size > PAGE_SIZE || (data_size > 0 && !data) ||
+        entry_offset >= code_size || stack_size != PAGE_SIZE) {
+        LOG_ERROR("PROC", "Parametros invalidos para imagem ring 3");
+        return ERR_INVALID;
+    }
+    if (diagnostic_test) {
+        result = process_user_reap_previous_test();
+        if (result != OK) return result;
+    }
 
     for (int i = 0; i < MAX_PROCESSES; i++) {
         if (processes[i].state == PROCESS_STATE_UNUSED) {
@@ -479,7 +535,7 @@ int process_create_user_test(int trigger_fault, uint32_t* pid_out) {
         }
     }
     if (!proc) {
-        LOG_ERROR("PROC", "Limite de processos atingido para teste ring 3");
+        LOG_ERROR("PROC", "Limite de processos ring 3 atingido");
         return ERR_MEM;
     }
 
@@ -501,16 +557,33 @@ int process_create_user_test(int trigger_fault, uint32_t* pid_out) {
         kfree((void*)kernel_stack);
         return result;
     }
-    process_user_load_image(dir, kernel_dir, trigger_fault);
-    result = process_user_initialize(proc, dir, kernel_stack);
+    result = process_user_load_image(dir, kernel_dir, code, code_size,
+                                     data, data_size);
+    if (result != OK) {
+        paging_free_user_directory(dir);
+        kfree((void*)kernel_stack);
+        return result;
+    }
+    result = process_user_initialize(proc, dir, kernel_stack, name,
+                                     entry_offset, diagnostic_test);
     if (result != OK) {
         paging_free_user_directory(dir);
         kfree((void*)kernel_stack);
         return result;
     }
     if (pid_out) *pid_out = proc->pid;
-    LOG_INFO("PROC", "Processo de teste ring 3 criado");
+    LOG_INFO("PROC", "Processo ring 3 criado a partir de imagem");
     return OK;
+}
+
+int process_create_user_test(int trigger_fault, uint32_t* pid_out) {
+    uint8_t code[128];
+    uint32_t code_size = process_user_build_code(code, trigger_fault);
+
+    return process_create_user_image("UserTest", code, code_size,
+                                     user_test_message,
+                                     kstrlen(user_test_message), 0,
+                                     PAGE_SIZE, 1, pid_out);
 }
 
 uint32_t process_get_user_count(void) {

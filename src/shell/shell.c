@@ -25,11 +25,13 @@
 #include "apps/guitest.h"
 #include "core/recovery.h"
 #include "core/app_api.h"
+#include "core/app_loader.h"
 #include "core/syscall.h"
 #include "drivers/idt.h"
 
 static char input_buffer[SHELL_BUFFER_SIZE];
 static char appcheck_oversized_text[APP_API_MAX_TEXT_SIZE + 1];
+static uint8_t appcheck_demo_image[APP_IMAGE_MAX_FILE_SIZE];
 static int input_pos = 0;
 static int shell_waiting_user_test = 0;
 static uint8_t shell_extended_scancode = 0;
@@ -44,6 +46,72 @@ static uint8_t shell_extended_scancode = 0;
 #define SHELL_SCROLL_PAGE_LINES 20
 
 static void print_num(uint32_t num);
+
+#define APP_CHECK_DEMO_PATH "DEMO.ZAP"
+#define APP_CHECK_DEMO_DATA_SIZE 192U
+
+static void shell_demo_patch_u32(uint8_t* code, uint32_t offset,
+                                 uint32_t value) {
+    code[offset + 0] = (uint8_t)(value & 0xFFU);
+    code[offset + 1] = (uint8_t)((value >> 8) & 0xFFU);
+    code[offset + 2] = (uint8_t)((value >> 16) & 0xFFU);
+    code[offset + 3] = (uint8_t)((value >> 24) & 0xFFU);
+}
+
+static void shell_demo_emit_mov(uint8_t* code, uint32_t* offset,
+                                uint8_t reg, uint32_t value) {
+    code[(*offset)++] = (uint8_t)(0xB8U + reg);
+    shell_demo_patch_u32(code, *offset, value);
+    *offset += 4;
+}
+
+static uint32_t shell_build_demo_image(void) {
+    app_image_header_t header;
+    uint8_t* code = appcheck_demo_image + APP_IMAGE_HEADER_SIZE;
+    uint8_t* data;
+    const char* message = "Zephyr ZAPP demo\n";
+    uint32_t offset = 0;
+
+    kmemset(appcheck_demo_image, 0, sizeof(appcheck_demo_image));
+    shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_CONSOLE_WRITE);
+    shell_demo_emit_mov(code, &offset, 3, USER_DATA_BASE);
+    shell_demo_emit_mov(code, &offset, 1, kstrlen(message));
+    code[offset++] = 0xCD;
+    code[offset++] = 0x80;
+
+    shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_UPTIME);
+    shell_demo_emit_mov(code, &offset, 3, USER_DATA_BASE + 64U);
+    code[offset++] = 0xCD;
+    code[offset++] = 0x80;
+
+    shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_MEMORY_INFO);
+    shell_demo_emit_mov(code, &offset, 3, USER_DATA_BASE + 128U);
+    code[offset++] = 0xCD;
+    code[offset++] = 0x80;
+
+    shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_PROCESS_EXIT);
+    code[offset++] = 0x31;
+    code[offset++] = 0xDB;
+    code[offset++] = 0xCD;
+    code[offset++] = 0x80;
+    code[offset++] = 0xF4;
+
+    data = appcheck_demo_image + APP_IMAGE_HEADER_SIZE + offset;
+    kmemcpy(data, message, kstrlen(message));
+    kmemcpy(header.magic, "ZAPP", 4);
+    header.version = APP_IMAGE_VERSION;
+    header.architecture = APP_IMAGE_ARCH_I386;
+    header.header_size = APP_IMAGE_HEADER_SIZE;
+    header.code_offset = APP_IMAGE_HEADER_SIZE;
+    header.code_size = offset;
+    header.data_offset = APP_IMAGE_HEADER_SIZE + offset;
+    header.data_size = APP_CHECK_DEMO_DATA_SIZE;
+    header.entry_offset = 0;
+    header.stack_size = APP_IMAGE_STACK_SIZE;
+    header.flags = APP_IMAGE_FLAGS_NONE;
+    kmemcpy(appcheck_demo_image, &header, APP_IMAGE_HEADER_SIZE);
+    return header.data_offset + header.data_size;
+}
 
 static void shell_reset_input(void) {
     input_pos = 0;
@@ -79,6 +147,7 @@ void shell_report_user_test_result(void) {
     shell_waiting_user_test = 0;
     shell_reset_input();
     shell_print_prompt();
+    process_reap_finished_user();
 }
 
 void shell_handle_app_request(uint32_t request) {
@@ -232,7 +301,8 @@ static void cmd_help(void) {
     video_print("  stats    - Mostra estatisticas de compressao\n", 0x07);
     video_print("  mouse    - Mostra status do mouse PS/2\n", 0x07);
     video_print("  health   - Mostra estado dos componentes (use PgUp/PgDn)\n", 0x07);
-    video_print("  appcheck - Testa API, arquivos e IPC\n", 0x07);
+    video_print("  appcheck - Testa API, arquivos, IPC e loader\n", 0x07);
+    video_print("  app run <arquivo.ZAP> - Executa aplicativo ring 3\n", 0x07);
     video_print("  usertest - Executa teste isolado em ring 3\n", 0x07);
     video_print("             usertest fault | falha controlada\n", 0x08);
     video_print("  play     - Toca arquivo WAV\n", 0x07);
@@ -523,6 +593,66 @@ static void cmd_appcheck_ipc(void) {
     cmd_appcheck_print_result("message_tipo_invalido", result);
 }
 
+static void cmd_appcheck_loader(void) {
+    app_image_header_t header;
+    uint32_t image_size;
+    uint32_t pid = 0;
+    int result;
+
+    image_size = shell_build_demo_image();
+    result = app_loader_validate_image(appcheck_demo_image, image_size,
+                                       &header);
+    cmd_appcheck_print_result("loader_validacao", result);
+
+    header.entry_offset = header.code_size;
+    kmemcpy(appcheck_demo_image, &header, APP_IMAGE_HEADER_SIZE);
+    result = app_loader_validate_image(appcheck_demo_image, image_size,
+                                       &header);
+    cmd_appcheck_print_result("loader_entry_invalida", result);
+
+    shell_build_demo_image();
+    kmemcpy(&header, appcheck_demo_image, APP_IMAGE_HEADER_SIZE);
+    header.flags = 1U;
+    kmemcpy(appcheck_demo_image, &header, APP_IMAGE_HEADER_SIZE);
+    result = app_loader_validate_image(appcheck_demo_image, image_size,
+                                       &header);
+    cmd_appcheck_print_result("loader_flags_invalidas", result);
+
+    shell_build_demo_image();
+    kmemcpy(&header, appcheck_demo_image, APP_IMAGE_HEADER_SIZE);
+    header.code_size = APP_IMAGE_MAX_CODE_SIZE + 1U;
+    kmemcpy(appcheck_demo_image, &header, APP_IMAGE_HEADER_SIZE);
+    result = app_loader_validate_image(appcheck_demo_image, image_size,
+                                       &header);
+    cmd_appcheck_print_result("loader_codigo_grande", result);
+
+    shell_build_demo_image();
+    result = app_loader_validate_image(appcheck_demo_image,
+                                       APP_IMAGE_HEADER_SIZE - 1U,
+                                       &header);
+    cmd_appcheck_print_result("loader_cabecalho_curto", result);
+
+    if (!app_loader_is_ready()) {
+        cmd_appcheck_print_result("loader_indisponivel", ERR_UNAVAILABLE);
+        return;
+    }
+
+    result = fs_write_file_at(APP_CHECK_DEMO_PATH,
+                              appcheck_demo_image, image_size);
+    cmd_appcheck_print_result("loader_demo_gravacao", result);
+    if (result == OK) {
+        result = app_loader_run_file(APP_CHECK_DEMO_PATH, &pid);
+        cmd_appcheck_print_result("loader_demo_execucao", result);
+        if (result == OK) {
+            video_print("    pid=", 0x08);
+            print_num(pid);
+            video_print(" assincrono\n", 0x07);
+        }
+        result = fs_delete_file(APP_CHECK_DEMO_PATH);
+        cmd_appcheck_print_result("loader_demo_remocao", result);
+    }
+}
+
 static void cmd_appcheck(void) {
     app_api_version_t version;
     app_uptime_info_t uptime;
@@ -589,7 +719,54 @@ static void cmd_appcheck(void) {
     cmd_appcheck_print_result("process_exit", result);
     cmd_appcheck_files();
     cmd_appcheck_ipc();
+    cmd_appcheck_loader();
     video_end_update();
+}
+
+static void cmd_app(const char* args) {
+    char subcommand[8];
+    char path[FS_MAX_PATH];
+    uint32_t sub_length = 0;
+    uint32_t path_length = 0;
+    uint32_t pid = 0;
+    int result;
+
+    if (!args) {
+        video_print("Uso: app run <arquivo.ZAP>\n", 0x0E);
+        return;
+    }
+    while (args[sub_length] && args[sub_length] != ' ' &&
+           args[sub_length] != '\t' && sub_length < sizeof(subcommand) - 1) {
+        subcommand[sub_length] = args[sub_length];
+        sub_length++;
+    }
+    subcommand[sub_length] = '\0';
+    while (args[sub_length] == ' ' || args[sub_length] == '\t') sub_length++;
+
+    if (kstrcmp(subcommand, "run") != 0) {
+        video_print("Uso: app run <arquivo.ZAP>\n", 0x0E);
+        return;
+    }
+    while (args[sub_length] && args[sub_length] != ' ' &&
+           args[sub_length] != '\t' && path_length < FS_MAX_PATH - 1) {
+        path[path_length++] = args[sub_length++];
+    }
+    path[path_length] = '\0';
+    if (path_length == 0) {
+        video_print("Uso: app run <arquivo.ZAP>\n", 0x0E);
+        return;
+    }
+
+    result = app_loader_run_file(path, &pid);
+    if (result != OK) {
+        video_print("Erro: nao foi possivel executar o aplicativo (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+    video_print("Aplicativo iniciado de forma assincrona, PID ", 0x0A);
+    print_num(pid);
+    video_print(".\n", 0x0A);
 }
 
 static void cmd_usertest(const char* args) {
@@ -1099,6 +1276,8 @@ int shell_process_command(const char* input) {
         cmd_health();
     } else if (kstrcmp(cmd, "appcheck") == 0) {
         cmd_appcheck();
+    } else if (kstrcmp(cmd, "app") == 0) {
+        cmd_app(input);
     } else if (kstrcmp(cmd, "usertest") == 0) {
         cmd_usertest(input);
     } else if (kstrcmp(cmd, "beep") == 0) {
