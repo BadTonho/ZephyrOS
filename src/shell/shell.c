@@ -542,6 +542,15 @@ void shell_print_prompt(void) {
     video_print(SHELL_PROMPT, 0x0A);
 }
 
+static int shell_should_show_prompt(void) {
+    /* Apps que retornam ao Desktop ja redesenham a cena antes de voltar. */
+    if (desktop_is_active()) return 0;
+    if (fm_is_running()) return 0;
+    if (taskmgr_is_open() || taskmgr_is_gui_open()) return 0;
+    if (settings_is_open() || wm_is_active() || guitest_is_active()) return 0;
+    return 1;
+}
+
 static void process_input(void) {
     video_print("\n", 0x07);
 
@@ -555,7 +564,9 @@ static void process_input(void) {
 
     input_pos = 0;
     input_buffer[0] = '\0';
-    shell_print_prompt();
+    if (shell_should_show_prompt()) {
+        shell_print_prompt();
+    }
 }
 
 void shell_handle_key(uint8_t scancode) {
