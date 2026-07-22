@@ -9,6 +9,7 @@ static int cursor_x = 0;
 static int cursor_y = 0;
 static uint8_t current_color = 0x07;
 static uint8_t use_framebuffer = 0;
+static uint32_t video_update_depth = 0;
 
 static char text_buffer[SCREEN_COLS * SCREEN_ROWS];
 static uint8_t color_buffer[SCREEN_COLS * SCREEN_ROWS];
@@ -44,6 +45,20 @@ static uint32_t vga_bg_to_rgb(uint8_t vga_color) {
     return vga_palette[bg];
 }
 
+static int video_can_batch_updates(void) {
+    vesa_mode_t* mode = vesa_get_mode();
+
+    return use_framebuffer && mode && mode->initialized &&
+           vesa_has_backbuffer();
+}
+
+static void video_present_region(int x, int y, int width, int height) {
+    if (!use_framebuffer || width <= 0 || height <= 0) return;
+
+    vesa_flip_region((uint32_t)x, (uint32_t)y,
+                     (uint32_t)width, (uint32_t)height);
+}
+
 static void render_char_at(int x, int y, char c, uint8_t color) {
     if (!use_framebuffer) return;
 
@@ -52,6 +67,9 @@ static void render_char_at(int x, int y, char c, uint8_t color) {
 
     int pixel_x = x * FONT_WIDTH;
     int pixel_y = y * FONT_HEIGHT;
+
+    vesa_frame_mark_region((uint32_t)pixel_x, (uint32_t)pixel_y,
+                           FONT_WIDTH, FONT_HEIGHT);
 
     uint32_t bg = vga_bg_to_rgb(color);
     vesa_color_t bg_color;
@@ -100,7 +118,7 @@ static void update_cursor(void) {
     asm volatile("outb %0, %1" : : "a"((uint8_t)((pos >> 8) & 0xFF)), "Nd"((uint16_t)0x3D5));
 }
 
-static void scroll(void) {
+static int scroll(void) {
     if (cursor_y >= SCREEN_ROWS - 1) {
         for (int i = 0; i < (SCREEN_ROWS - 2) * SCREEN_COLS; i++) {
             text_buffer[i] = text_buffer[i + SCREEN_COLS];
@@ -119,12 +137,16 @@ static void scroll(void) {
                 }
             }
         }
+        return 1;
     }
+
+    return 0;
 }
 
 void video_init(void) {
     LOG_INFO("VIDEO", "Inicializando video");
     spinlock_init(&video_lock);
+    video_update_depth = 0;
     vesa_mode_t* mode = vesa_get_mode();
     use_framebuffer = (mode && mode->initialized) ? 1 : 0;
 
@@ -141,6 +163,7 @@ void video_init(void) {
 
 void video_disable_framebuffer(void) {
     use_framebuffer = 0;
+    video_update_depth = 0;
     update_cursor();
 }
 
@@ -160,6 +183,7 @@ void video_clear(void) {
             vesa_color_t c;
             c.raw = bg;
             vesa_clear(c);
+            vesa_frame_mark_region(0, 0, mode->width, mode->height);
             vesa_flip();
         }
     } else {
@@ -174,7 +198,27 @@ void video_clear(void) {
     spinlock_release(&video_lock);
 }
 
+void video_begin_update(void) {
+    if (!video_can_batch_updates()) return;
+
+    vesa_frame_begin_region((uint32_t)(cursor_x * FONT_WIDTH),
+                            (uint32_t)(cursor_y * FONT_HEIGHT),
+                            FONT_WIDTH, FONT_HEIGHT);
+    video_update_depth++;
+}
+
+void video_end_update(void) {
+    if (video_update_depth == 0) return;
+
+    video_update_depth--;
+    vesa_frame_end();
+}
+
 void video_put_char(char c, uint8_t color) {
+    int dirty_x = -1;
+    int dirty_y = -1;
+    int did_scroll;
+
     spinlock_acquire(&video_lock);
     if (c == '\n') {
         cursor_x = 0;
@@ -189,6 +233,8 @@ void video_put_char(char c, uint8_t color) {
             text_buffer[cursor_y * SCREEN_COLS + cursor_x] = ' ';
             color_buffer[cursor_y * SCREEN_COLS + cursor_x] = color;
             render_cell(cursor_x, cursor_y);
+            dirty_x = cursor_x;
+            dirty_y = cursor_y;
         }
     } else {
         if (cursor_x < SCREEN_COLS && cursor_y < SCREEN_ROWS) {
@@ -196,6 +242,8 @@ void video_put_char(char c, uint8_t color) {
             text_buffer[idx] = c;
             color_buffer[idx] = color;
             render_cell(cursor_x, cursor_y);
+            dirty_x = cursor_x;
+            dirty_y = cursor_y;
             cursor_x++;
             if (cursor_x >= SCREEN_COLS) {
                 cursor_x = 0;
@@ -203,15 +251,30 @@ void video_put_char(char c, uint8_t color) {
             }
         }
     }
-    scroll();
+    did_scroll = scroll();
     update_cursor();
     spinlock_release(&video_lock);
+
+    if (did_scroll) {
+        video_present_region(0, 0, SCREEN_COLS * FONT_WIDTH,
+                             SCREEN_ROWS * FONT_HEIGHT);
+    } else if (dirty_x >= 0) {
+        video_present_region(dirty_x * FONT_WIDTH, dirty_y * FONT_HEIGHT,
+                             FONT_WIDTH, FONT_HEIGHT);
+    }
 }
 
 void video_print(const char* str, uint8_t color) {
+    if (!str) {
+        LOG_ERROR("VIDEO", "Tentativa de imprimir texto nulo");
+        return;
+    }
+
+    video_begin_update();
     for (int i = 0; str[i] != '\0'; i++) {
         video_put_char(str[i], color);
     }
+    video_end_update();
 }
 
 void video_set_color(uint8_t fg, uint8_t bg) {
@@ -265,9 +328,18 @@ void video_put_char_at(char c, uint8_t color, int x, int y) {
         }
     }
     spinlock_release(&video_lock);
+
+    video_present_region(x * FONT_WIDTH, y * FONT_HEIGHT,
+                         FONT_WIDTH, FONT_HEIGHT);
 }
 
 void video_print_at(int x, int y, const char* str, uint8_t color) {
+    if (!str) {
+        LOG_ERROR("VIDEO", "Tentativa de imprimir texto nulo em posicao fixa");
+        return;
+    }
+
+    video_begin_update();
     int cx = x;
     for (int i = 0; str[i] != '\0'; i++) {
         if (str[i] == '\n') {
@@ -284,29 +356,37 @@ void video_print_at(int x, int y, const char* str, uint8_t color) {
             if (y >= SCREEN_ROWS) break;
         }
     }
+    video_end_update();
 }
 
 void video_fill_rect(int x, int y, int w, int h, char c, uint8_t color) {
+    video_begin_update();
     for (int row = 0; row < h; row++) {
         for (int col = 0; col < w; col++) {
             video_put_char_at(c, color, x + col, y + row);
         }
     }
+    video_end_update();
 }
 
 void video_draw_hline(int x, int y, int w, char c, uint8_t color) {
+    video_begin_update();
     for (int i = 0; i < w; i++) {
         video_put_char_at(c, color, x + i, y);
     }
+    video_end_update();
 }
 
 void video_draw_vline(int x, int y, int h, char c, uint8_t color) {
+    video_begin_update();
     for (int i = 0; i < h; i++) {
         video_put_char_at(c, color, x, y + i);
     }
+    video_end_update();
 }
 
 void video_draw_box(int x, int y, int w, int h, uint8_t color) {
+    video_begin_update();
     for (int i = 0; i < w; i++) {
         video_put_char_at(0xCD, color, x + i, y);
         video_put_char_at(0xCD, color, x + i, y + h - 1);
@@ -319,4 +399,5 @@ void video_draw_box(int x, int y, int w, int h, uint8_t color) {
     video_put_char_at(0xBB, color, x + w - 1, y);
     video_put_char_at(0xC8, color, x, y + h - 1);
     video_put_char_at(0xBC, color, x + w - 1, y + h - 1);
+    video_end_update();
 }

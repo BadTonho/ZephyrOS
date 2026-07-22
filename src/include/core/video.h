@@ -34,6 +34,8 @@ void video_disable_framebuffer(void);
 void video_clear(void);
 void video_put_char(char c, uint8_t color);
 void video_print(const char* str, uint8_t color);
+void video_begin_update(void);
+void video_end_update(void);
 void video_set_color(uint8_t fg, uint8_t bg);
 void video_newline(void);
 void video_backspace(void);

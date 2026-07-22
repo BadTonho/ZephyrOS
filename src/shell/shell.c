@@ -151,6 +151,7 @@ static uint32_t parse_number(const char* str) {
 }
 
 static void cmd_help(void) {
+    video_begin_update();
     video_print("Comandos disponiveis:\n", 0x0B);
     video_print("  help     - Mostra esta mensagem\n", 0x07);
     video_print("  clear    - Limpa a tela\n", 0x07);
@@ -182,6 +183,7 @@ static void cmd_help(void) {
     video_print("  reboot   - Reinicia o sistema\n", 0x07);
     video_print("  shutdown - Desliga o sistema\n", 0x07);
     video_print("  guitest  - Testa primitivas GUI 2D\n", 0x07);
+    video_end_update();
 }
 
 static void cmd_health_print_component(recovery_component_id_t component) {
@@ -273,6 +275,7 @@ static void cmd_health_print_kernel(void) {
 }
 
 static void cmd_health(void) {
+    video_begin_update();
     video_print("Estado dos componentes:\n", 0x0B);
 
     for (uint32_t i = 0; i < recovery_get_count(); i++) {
@@ -280,6 +283,7 @@ static void cmd_health(void) {
     }
 
     cmd_health_print_kernel();
+    video_end_update();
 }
 
 static void cmd_guimode(const char* args) {
