@@ -28,6 +28,11 @@
 static char input_buffer[SHELL_BUFFER_SIZE];
 static int input_pos = 0;
 
+static void shell_reset_input(void) {
+    input_pos = 0;
+    kmemset(input_buffer, 0, sizeof(input_buffer));
+}
+
 void shell_handle_app_request(uint32_t request) {
     if (taskmgr_is_gui_open() && request != IPC_APP_OPEN_TASKMANAGER_GUI) {
         taskmgr_close();
@@ -39,6 +44,7 @@ void shell_handle_app_request(uint32_t request) {
     switch ((ipc_app_request_t)request) {
         case IPC_APP_OPEN_SHELL:
             desktop_set_active(0);
+            shell_reset_input();
             video_clear();
             shell_print_prompt();
             taskbar_draw();
@@ -532,9 +538,7 @@ static void cmd_shutdown(void) {
 }
 
 void shell_init(void) {
-    input_pos = 0;
-    input_buffer[0] = '\0';
-    
+    shell_reset_input();
     shell_print_prompt();
 }
 
@@ -562,8 +566,7 @@ static void process_input(void) {
     input_buffer[input_pos] = '\0';
     shell_process_command(input_buffer);
 
-    input_pos = 0;
-    input_buffer[0] = '\0';
+    shell_reset_input();
     if (shell_should_show_prompt()) {
         shell_print_prompt();
     }
@@ -669,7 +672,9 @@ void shell_handle_key(uint8_t scancode) {
         return;
     }
 
-    if (c && input_pos < SHELL_BUFFER_SIZE - 1) {
+    /* Teclas de controle podem chegar antes do primeiro caractere visivel
+       quando o QEMU entrega o foco. Elas nao devem contaminar o comando. */
+    if (c >= ' ' && c <= '~' && input_pos < SHELL_BUFFER_SIZE - 1) {
         input_buffer[input_pos++] = c;
         input_buffer[input_pos] = '\0';
         video_put_char(c, 0x07);
@@ -679,18 +684,30 @@ void shell_handle_key(uint8_t scancode) {
 }
 
 int shell_process_command(const char* input) {
-    while (*input == ' ') input++;
+    static char cmd[32];
+    int i = 0;
+
+    if (!input) {
+        LOG_ERROR("SHELL", "Comando nulo recebido");
+        return ERR_NULL;
+    }
+
+    while (*input == ' ' || *input == '\t' || *input == '\r' ||
+           *input == '\n' || *input == 27) {
+        input++;
+    }
 
     if (!*input) return 0;
 
-    char cmd[32];
-    int i = 0;
-    while (*input && *input != ' ' && i < 31) {
-        cmd[i++] = *input++;
+    while (*input && *input != ' ' && *input != '\t' && i < 31) {
+        if ((uint8_t)*input >= ' ' && (uint8_t)*input <= '~') {
+            cmd[i++] = *input;
+        }
+        input++;
     }
     cmd[i] = '\0';
 
-    while (*input == ' ') input++;
+    while (*input == ' ' || *input == '\t') input++;
 
     if (kstrcmp(cmd, "help") == 0) {
         cmd_help();
