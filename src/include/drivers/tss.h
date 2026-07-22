@@ -3,6 +3,12 @@
 
 #include "types.h"
 
+#define KERNEL_CODE_SELECTOR 0x08
+#define KERNEL_DATA_SELECTOR 0x10
+#define USER_CODE_SELECTOR   0x1B
+#define USER_DATA_SELECTOR   0x23
+#define TSS_SELECTOR          0x28
+
 typedef struct {
     uint32_t prev_tss;
     uint32_t esp0;
@@ -35,5 +41,6 @@ typedef struct {
 
 void tss_init(void);
 void tss_set_kernel_stack(uint32_t stack);
+int tss_is_ready(void);
 
 #endif

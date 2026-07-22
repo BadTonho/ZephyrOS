@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "memory/paging.h"
+#include "drivers/idt.h"
 
 #define MAX_PROCESSES 64
 #define KERNEL_STACK_SIZE 4096
@@ -52,6 +53,8 @@ typedef struct {
     uint32_t eip, eflags;
     uint32_t cs, ss, ds, es, fs, gs;
     uint32_t cr3;
+    uint32_t user_entry;
+    uint32_t user_mode;
 } __attribute__((packed)) process_context_t;
 
 typedef struct {
@@ -66,6 +69,12 @@ typedef struct {
     uint32_t wait_ticks;
     uint32_t total_ticks;
     uint32_t next_pid;
+    uint32_t exit_code;
+    uint32_t fault_vector;
+    uint32_t fault_error;
+    uint32_t fault_address;
+    uint32_t faulted;
+    uint32_t user_test;
     ipc_msg_t msg_queue[IPC_MSG_QUEUE_SIZE];
     uint32_t msg_head;
     uint32_t msg_tail;
@@ -74,12 +83,19 @@ typedef struct {
 void process_init(void);
 void process_bootstrap_idle(void);
 process_t* process_create(const char* name, void (*entry_point)());
+int process_create_user_test(int trigger_fault, uint32_t* pid_out);
 void process_destroy(process_t* proc);
 process_t* process_get_current(void);
 uint32_t process_get_count(void);
 process_t* process_get_by_pid(uint32_t pid);
 uint32_t process_get_current_pid(void);
 uint32_t process_get_state_count(process_state_t state);
+uint32_t process_get_user_count(void);
+int process_get_last_user_fault(uint32_t* pid, uint32_t* vector,
+                                uint32_t* error, uint32_t* address);
+int process_is_user(const process_t* proc);
+int process_exit_current(uint32_t exit_code);
+int process_handle_user_exception(registers_t* regs);
 
 void process_yield(void);
 void process_block(uint32_t ticks);
@@ -99,6 +115,7 @@ void process_set_focus(uint32_t pid);
 uint32_t process_get_focus(void);
 
 extern void process_context_switch(process_context_t* prev, process_context_t* next);
+extern void process_user_enter(void);
 
 extern process_t processes[MAX_PROCESSES];
 extern uint32_t process_count;

@@ -97,6 +97,7 @@ Sistema operacional em C + Assembly (x86), do zero.
 | `melody` | Toca escala musical |
 | `explorer` | Abre gerenciador de arquivos |
 | `taskmgr` | Abre gerenciador de tarefas |
+| `usertest` | Testa processo isolado em ring 3 |
 | `taskcfg` | Configura a barra de tarefas |
 | `compress` | Liga/desliga compressão de RAM |
 | `stats` | Mostra estatísticas de compressão |
@@ -292,7 +293,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 ### Kernel e Sistema
 - **Fundacao do Kernel** (`fundacao do kernel.md`) - etapa prioritaria para organizar as bases antes das otimizacoes
 - **Atualizacao e Otimizacao do Kernel** (`atualizacao do kernel.md`) - etapa posterior, guiada por metricas
-- **API de Aplicativos e Syscalls** (`api de aplicativos e syscalls.md`) - Fases 1, 2 e 3 concluidas; modo usuario planejado
+- **API de Aplicativos e Syscalls** (`api de aplicativos e syscalls.md`) - Fases 1 a 3 validadas; Fase 4 pronta para validacao; carregador planejado
 - **Resiliência do Sistema** (`resiliencia do sistema.md`)
 - **Multitarefa Preemptiva Avançada** (`multitarefa preemptiva.md`)
 - **Gerenciador de Energia** (`gerenciador de energia.md`)

@@ -521,6 +521,10 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
                                "Processo Desktop indisponivel");
     }
 
+    if (syscall_enable_user_mode() != OK) {
+        LOG_WARN("KERNEL", "Modo usuario indisponivel; mantendo processos ring 0");
+    }
+
     while (1) {
         if (kernel_service_fallback) {
             keyboard_process_events();

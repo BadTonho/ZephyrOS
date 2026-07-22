@@ -209,7 +209,7 @@ Quando o scheduler muda de processo/thread, ele:
 
 1. **Salva** o contexto atual (registradores → memória)
 2. **Restaura** o próximo contexto (memória → registradores)
-3. **Retorna** via `iret`
+3. **Retorna** ao contexto salvo; processos novos ring 3 entram via `iret`
 
 ### Fluxo
 
@@ -218,7 +218,7 @@ Timer IRQ → scheduler_tick() → scheduler_schedule()
     → context_switch(&prev->context, &next->context)
         → Salva EAX, EBX, ECX, EDX, ESI, EDI, EBP, ESP
         → Restaura registradores do próximo
-        → iret
+        → troca CR3 e retorna ao contexto salvo
 ```
 
 ---
@@ -237,6 +237,36 @@ Quando uma interrupção ocorre em ring 3, o CPU automaticamente:
 2. Troca para o kernel stack
 3. Empilha SS, ESP, EFLAGS, CS, EIP
 4. Executa o handler da interrupção
+
+## Primeiro processo em modo usuario
+
+A Fase 4 adiciona um processo de teste isolado sem migrar os aplicativos
+nativos. Os segmentos de usuario sao `0x1B` para codigo e `0x23` para dados.
+O processo usa:
+
+```text
+Codigo: 0x00800000
+Dados:  0x00801000
+Stack:  0x00C00000
+```
+
+O diretorio de paginas compartilha somente os mapeamentos supervisor do
+kernel. O processo entra por uma trampoline com `iret`, usa `int 0x80` para
+as syscalls e recebe uma kernel stack propria pelo TSS.
+
+Os comandos de validacao sao:
+
+```text
+usertest
+usertest fault
+```
+
+`usertest fault` provoca uma page fault controlada. Excecoes originadas no
+processo de usuario registram o erro e marcam somente ele como `ZOMBIE`.
+Excecoes originadas no kernel continuam exibindo `KERNEL PANIC`.
+
+Shell, Desktop, Explorer, Settings e Task Manager permanecem em ring 0 ate a
+validacao do carregador e da biblioteca de usuario.
 
 ---
 

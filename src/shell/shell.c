@@ -26,6 +26,7 @@
 #include "core/recovery.h"
 #include "core/app_api.h"
 #include "core/syscall.h"
+#include "drivers/idt.h"
 
 static char input_buffer[SHELL_BUFFER_SIZE];
 static char appcheck_oversized_text[APP_API_MAX_TEXT_SIZE + 1];
@@ -185,6 +186,8 @@ static void cmd_help(void) {
     video_print("  mouse    - Mostra status do mouse PS/2\n", 0x07);
     video_print("  health   - Mostra estado dos componentes\n", 0x07);
     video_print("  appcheck - Testa API, arquivos e IPC\n", 0x07);
+    video_print("  usertest - Executa teste isolado em ring 3\n", 0x07);
+    video_print("             usertest fault | falha controlada\n", 0x08);
     video_print("  play     - Toca arquivo WAV\n", 0x07);
     video_print("  view     - Exibe imagem BMP\n", 0x07);
     video_print("  stop     - Para player de midia\n", 0x07);
@@ -276,6 +279,43 @@ static void cmd_health_print_kernel(void) {
     video_print("  Syscalls: ", 0x07);
     video_print(syscall_is_ready() ? "READY" : "DISABLED", 0x0F);
     video_print("\n", 0x07);
+    video_print("  Modo usuario: ", 0x07);
+    video_print(syscall_user_mode_is_enabled() ? "READY" : "DISABLED", 0x0F);
+    video_print("  gate=", 0x08);
+    video_print(idt_is_user_syscall_enabled() ? "DPL3" : "DPL0", 0x0F);
+    video_print("  processos=", 0x08);
+    print_num(process_get_user_count());
+    video_print("\n", 0x07);
+    video_print("  UserTest: ", 0x07);
+    int user_test_found = 0;
+    for (int user_index = 0; user_index < MAX_PROCESSES; user_index++) {
+        if (processes[user_index].user_test &&
+            processes[user_index].state != PROCESS_STATE_UNUSED) {
+            print_num(processes[user_index].pid);
+            video_print(" ", 0x08);
+            video_print(shell_process_state_name(processes[user_index].state), 0x0F);
+            user_test_found = 1;
+            break;
+        }
+    }
+    if (!user_test_found) video_print("N/D", 0x08);
+    video_print("\n", 0x07);
+    uint32_t fault_pid;
+    uint32_t fault_vector;
+    uint32_t fault_error;
+    uint32_t fault_address;
+    if (process_get_last_user_fault(&fault_pid, &fault_vector,
+                                    &fault_error, &fault_address) == OK) {
+        video_print("  Ultima falha user: PID=", 0x07);
+        print_num(fault_pid);
+        video_print(" vetor=", 0x08);
+        print_num(fault_vector);
+        video_print(" erro=", 0x08);
+        print_num(fault_error);
+        video_print(" endereco=", 0x08);
+        print_num(fault_address);
+        video_print("\n", 0x07);
+    }
     video_print("  File API: ", 0x07);
     video_print((app_api_file_is_ready() &&
                  recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM)) ?
@@ -503,6 +543,23 @@ static void cmd_appcheck(void) {
     cmd_appcheck_files();
     cmd_appcheck_ipc();
     video_end_update();
+}
+
+static void cmd_usertest(const char* args) {
+    uint32_t pid = 0;
+    int trigger_fault = args && kstrcmp(args, "fault") == 0;
+    int result = process_create_user_test(trigger_fault, &pid);
+
+    if (result != OK) {
+        video_print("Erro: nao foi possivel criar o teste ring 3 (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+    video_print(trigger_fault ? "UserTest fault criado, PID " :
+                               "UserTest criado, PID ", 0x0A);
+    print_num(pid);
+    video_print(".\n", 0x0A);
 }
 
 static void cmd_guimode(const char* args) {
@@ -944,6 +1001,8 @@ int shell_process_command(const char* input) {
         cmd_health();
     } else if (kstrcmp(cmd, "appcheck") == 0) {
         cmd_appcheck();
+    } else if (kstrcmp(cmd, "usertest") == 0) {
+        cmd_usertest(input);
     } else if (kstrcmp(cmd, "beep") == 0) {
         cmd_beep(input);
     } else if (kstrcmp(cmd, "melody") == 0) {

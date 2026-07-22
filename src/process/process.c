@@ -6,14 +6,29 @@
 #include "core/log.h"
 #include "core/errors.h"
 #include "core/string.h"
+#include "core/syscall.h"
+#include "drivers/tss.h"
+
+#define PROCESS_DEFAULT_EFLAGS 0x202U
 
 process_t processes[MAX_PROCESSES];
 static process_t* current_process = 0;
+static uint8_t idle_stack[KERNEL_STACK_SIZE] __attribute__((aligned(16)));
 uint32_t process_count = 0;
 static uint32_t next_pid = 1;
 static int last_scheduled_idx = -1;
+static int last_user_fault_valid = 0;
+static uint32_t last_user_fault_pid = 0;
+static uint32_t last_user_fault_vector = 0;
+static uint32_t last_user_fault_error = 0;
+static uint32_t last_user_fault_address = 0;
 
-extern page_directory_t* current_directory;
+static void process_idle_main(void) {
+    while (1) {
+        asm volatile("hlt");
+        process_yield();
+    }
+}
 
 static uint32_t process_allocate_pid(void) {
     uint32_t candidate;
@@ -44,6 +59,11 @@ void process_init(void) {
     process_count = 0;
     next_pid = 1;
     last_scheduled_idx = -1;
+    last_user_fault_valid = 0;
+    last_user_fault_pid = 0;
+    last_user_fault_vector = 0;
+    last_user_fault_error = 0;
+    last_user_fault_address = 0;
     for (int i = 0; i < MAX_PROCESSES; i++) {
         kmemset(&processes[i], 0, sizeof(process_t));
         processes[i].state = PROCESS_STATE_UNUSED;
@@ -69,8 +89,21 @@ void process_bootstrap_idle(void) {
     proc->total_ticks = 0;
     proc->wait_ticks = 0;
     
-    proc->kernel_stack = 0; // Utiliza a stack inicial do boot
-    proc->page_directory = current_directory;
+    /* O Idle precisa de uma stack de retorno valida quando o scheduler
+       precisar voltar a ele depois de trocar para outro processo. */
+    proc->kernel_stack = (uint32_t)idle_stack;
+    proc->kernel_stack_top = proc->kernel_stack + KERNEL_STACK_SIZE;
+    proc->page_directory = paging_get_current_directory();
+    proc->context.esp = proc->kernel_stack_top;
+    proc->context.eip = (uint32_t)process_idle_main;
+    proc->context.eflags = PROCESS_DEFAULT_EFLAGS;
+    proc->context.cs = KERNEL_CODE_SELECTOR;
+    proc->context.ss = KERNEL_DATA_SELECTOR;
+    proc->context.ds = KERNEL_DATA_SELECTOR;
+    proc->context.es = KERNEL_DATA_SELECTOR;
+    proc->context.fs = KERNEL_DATA_SELECTOR;
+    proc->context.gs = KERNEL_DATA_SELECTOR;
+    proc->context.cr3 = (uint32_t)proc->page_directory;
     
     current_process = proc;
     process_count = 1;
@@ -84,7 +117,7 @@ process_t* process_create(const char* name, void (*entry_point)()) {
         LOG_ERROR("PROC", "Parametros invalidos ao criar processo");
         return 0;
     }
-    if (!current_directory) {
+    if (!paging_get_current_directory()) {
         LOG_ERROR("PROC", "Paging indisponivel ao criar processo");
         return 0;
     }
@@ -129,39 +162,14 @@ process_t* process_create(const char* name, void (*entry_point)()) {
     }
     proc->kernel_stack_top = proc->kernel_stack + KERNEL_STACK_SIZE;
 
-    proc->page_directory = paging_create_directory();
-    if (!proc->page_directory) {
-        LOG_ERROR("PROC", "Falha ao criar diretorio do processo");
-        kfree((void*)proc->kernel_stack);
-        proc->kernel_stack = 0;
-        kmemset(proc, 0, sizeof(process_t));
-        proc->state = PROCESS_STATE_UNUSED;
-        return 0;
-    }
-
-    for (uint32_t addr = 0xB8000; addr < 0xC0000; addr += 0x1000) {
-        page_entry_t* page = paging_get_page(addr, 1);
-        if (!page) {
-            LOG_ERROR("PROC", "Falha ao mapear VGA para o processo");
-            paging_free_directory(proc->page_directory);
-            proc->page_directory = 0;
-            kfree((void*)proc->kernel_stack);
-            proc->kernel_stack = 0;
-            kmemset(proc, 0, sizeof(process_t));
-            proc->state = PROCESS_STATE_UNUSED;
-            return 0;
-        }
-        page->frame = addr / 0x1000;
-        page->present = 1;
-        page->rw = 1;
-        page->user = 0;
-    }
+    /* Os aplicativos nativos continuam compartilhando o espaco do kernel. */
+    proc->page_directory = paging_get_current_directory();
 
     uint32_t stack = proc->kernel_stack_top;
     uint32_t* stack_ptr = (uint32_t*)stack;
 
     stack_ptr--;
-    *stack_ptr = 0x202;
+    *stack_ptr = PROCESS_DEFAULT_EFLAGS;
     stack_ptr--;
     *stack_ptr = 0x08;
     stack_ptr--;
@@ -197,7 +205,7 @@ process_t* process_create(const char* name, void (*entry_point)()) {
 
     proc->context.esp = (uint32_t)stack_ptr;
     proc->context.eip = (uint32_t)entry_point;
-    proc->context.eflags = 0x202;
+    proc->context.eflags = PROCESS_DEFAULT_EFLAGS;
     proc->context.cs = 0x08;
     proc->context.ds = 0x10;
     proc->context.es = 0x10;
@@ -205,6 +213,9 @@ process_t* process_create(const char* name, void (*entry_point)()) {
     proc->context.gs = 0x10;
     proc->context.ss = 0x10;
     proc->context.cr3 = (uint32_t)proc->page_directory;
+    proc->context.user_entry = 0;
+    proc->context.user_mode = 0;
+    proc->user_test = 0;
 
     proc->state = PROCESS_STATE_READY;
     process_count++;
@@ -225,6 +236,309 @@ static int process_pointer_valid(const process_t* proc) {
            ((address - start) % sizeof(process_t)) == 0;
 }
 
+static const char user_test_message[] = "Zephyr ring3 OK\n";
+
+static void process_user_patch_u32(uint8_t* code, uint32_t offset,
+                                   uint32_t value) {
+    code[offset + 0] = (uint8_t)(value & 0xFF);
+    code[offset + 1] = (uint8_t)((value >> 8) & 0xFF);
+    code[offset + 2] = (uint8_t)((value >> 16) & 0xFF);
+    code[offset + 3] = (uint8_t)((value >> 24) & 0xFF);
+}
+
+static void process_user_emit_mov(uint8_t* code, uint32_t* offset,
+                                  uint8_t reg, uint32_t value) {
+    code[(*offset)++] = (uint8_t)(0xB8 + reg);
+    process_user_patch_u32(code, *offset, value);
+    *offset += 4;
+}
+
+static uint32_t process_user_build_code(uint8_t* code, int trigger_fault) {
+    uint32_t offset = 0;
+
+    if (trigger_fault) {
+        code[offset++] = 0xA1;
+        process_user_patch_u32(code, offset, 0);
+        offset += 4;
+        code[offset++] = 0xEB;
+        code[offset++] = 0xFE;
+        return offset;
+    }
+
+    process_user_emit_mov(code, &offset, 0, 1);
+    process_user_emit_mov(code, &offset, 3, USER_DATA_BASE);
+    process_user_emit_mov(code, &offset, 1, kstrlen(user_test_message));
+    code[offset++] = 0xCD;
+    code[offset++] = 0x80;
+
+    process_user_emit_mov(code, &offset, 0, 2);
+    process_user_emit_mov(code, &offset, 3, USER_DATA_BASE + 64);
+    code[offset++] = 0xCD;
+    code[offset++] = 0x80;
+
+    process_user_emit_mov(code, &offset, 0, 3);
+    process_user_emit_mov(code, &offset, 3, USER_DATA_BASE + 128);
+    code[offset++] = 0xCD;
+    code[offset++] = 0x80;
+
+    process_user_emit_mov(code, &offset, 0, 0);
+    code[offset++] = 0x31;
+    code[offset++] = 0xDB;
+    code[offset++] = 0xCD;
+    code[offset++] = 0x80;
+    /* Se a syscall nao encerrar o processo, HLT provoca uma excecao
+       controlada em ring 3 em vez de consumir CPU indefinidamente. */
+    code[offset++] = 0xF4;
+    return offset;
+}
+
+static void process_switch_after_termination(void) {
+    process_t* previous = current_process;
+    process_t* next = scheduler_schedule();
+
+    if (!next || next == previous) {
+        next = &processes[0];
+    }
+    if (next == previous) {
+        LOG_ERROR("PROC", "Nao foi possivel sair de processo encerrado");
+        return;
+    }
+
+    current_process = next;
+    next->state = PROCESS_STATE_RUNNING;
+    if (next->kernel_stack_top) tss_set_kernel_stack(next->kernel_stack_top);
+    if (next->page_directory &&
+        next->page_directory != paging_get_current_directory()) {
+        paging_switch_directory(next->page_directory);
+    }
+    process_context_switch(&previous->context, &next->context);
+}
+
+static int process_user_reap_previous_test(void) {
+    for (int i = 0; i < MAX_PROCESSES; i++) {
+        if (!processes[i].user_test ||
+            processes[i].state == PROCESS_STATE_UNUSED) continue;
+        if (processes[i].state == PROCESS_STATE_ZOMBIE) {
+            process_destroy(&processes[i]);
+        } else {
+            LOG_WARN("PROC", "Teste ring 3 ja esta em execucao");
+            return ERR_STATE;
+        }
+    }
+    return OK;
+}
+
+static int process_user_map_image(page_directory_t* dir) {
+    uint32_t code_phys;
+    uint32_t data_phys;
+    uint32_t stack_phys;
+    int code_mapped = 0;
+    int data_mapped = 0;
+    int stack_mapped = 0;
+
+    if (!dir) {
+        LOG_ERROR("PROC", "Diretorio nulo para imagem ring 3");
+        return ERR_NULL;
+    }
+    code_phys = (uint32_t)pmm_alloc_page();
+    data_phys = (uint32_t)pmm_alloc_page();
+    stack_phys = (uint32_t)pmm_alloc_page();
+    if (!code_phys || !data_phys || !stack_phys) {
+        if (code_phys) pmm_free_page((void*)code_phys);
+        if (data_phys) pmm_free_page((void*)data_phys);
+        if (stack_phys) pmm_free_page((void*)stack_phys);
+        LOG_ERROR("PROC", "Memoria insuficiente para paginas ring 3");
+        return ERR_MEM;
+    }
+
+    code_mapped = paging_map_page_in_directory(
+        dir, USER_CODE_BASE, code_phys,
+        PAGING_FLAG_PRESENT | PAGING_FLAG_USER) == OK;
+    data_mapped = paging_map_page_in_directory(
+        dir, USER_DATA_BASE, data_phys,
+        PAGING_FLAG_PRESENT | PAGING_FLAG_WRITE | PAGING_FLAG_USER) == OK;
+    stack_mapped = paging_map_page_in_directory(
+        dir, USER_STACK_BASE, stack_phys,
+        PAGING_FLAG_PRESENT | PAGING_FLAG_WRITE | PAGING_FLAG_USER) == OK;
+
+    if (!code_mapped || !data_mapped || !stack_mapped) {
+        if (!code_mapped) pmm_free_page((void*)code_phys);
+        if (!data_mapped) pmm_free_page((void*)data_phys);
+        if (!stack_mapped) pmm_free_page((void*)stack_phys);
+        LOG_ERROR("PROC", "Falha ao mapear imagem do teste ring 3");
+        return ERR_MEM;
+    }
+    return OK;
+}
+
+static void process_user_load_image(page_directory_t* dir,
+                                    page_directory_t* kernel_dir,
+                                    int trigger_fault) {
+    uint8_t code[128];
+    uint32_t code_size = process_user_build_code(code, trigger_fault);
+
+    asm volatile("cli");
+    paging_switch_directory(dir);
+    kmemset((void*)USER_CODE_BASE, 0, PAGE_SIZE);
+    kmemset((void*)USER_DATA_BASE, 0, PAGE_SIZE);
+    kmemset((void*)USER_STACK_BASE, 0, PAGE_SIZE);
+    kmemcpy((void*)USER_CODE_BASE, code, code_size);
+    kmemcpy((void*)USER_DATA_BASE, user_test_message,
+            kstrlen(user_test_message));
+    paging_switch_directory(kernel_dir);
+    asm volatile("sti");
+}
+
+static int process_user_initialize(process_t* proc, page_directory_t* dir,
+                                   uint32_t kernel_stack) {
+    uint32_t stack_ptr;
+
+    if (!proc || !dir || !kernel_stack) {
+        LOG_ERROR("PROC", "Parametros invalidos para processo ring 3");
+        return ERR_NULL;
+    }
+    kmemset(proc, 0, sizeof(process_t));
+    proc->pid = process_allocate_pid();
+    if (!proc->pid) {
+        LOG_ERROR("PROC", "Falha ao reservar PID do teste ring 3");
+        return ERR_MEM;
+    }
+    kmemcpy(proc->name, "UserTest", 9);
+    proc->page_directory = dir;
+    proc->kernel_stack = kernel_stack;
+    proc->kernel_stack_top = kernel_stack + KERNEL_STACK_SIZE;
+    stack_ptr = proc->kernel_stack_top;
+    stack_ptr -= 4; *(uint32_t*)stack_ptr = USER_DATA_SELECTOR;
+    stack_ptr -= 4; *(uint32_t*)stack_ptr = USER_STACK_TOP;
+    stack_ptr -= 4; *(uint32_t*)stack_ptr = PROCESS_DEFAULT_EFLAGS;
+    stack_ptr -= 4; *(uint32_t*)stack_ptr = USER_CODE_SELECTOR;
+    stack_ptr -= 4; *(uint32_t*)stack_ptr = USER_CODE_BASE;
+    proc->context.esp = stack_ptr;
+    proc->context.eip = (uint32_t)process_user_enter;
+    proc->context.eflags = PROCESS_DEFAULT_EFLAGS;
+    proc->context.cs = USER_CODE_SELECTOR;
+    proc->context.ss = USER_DATA_SELECTOR;
+    proc->context.ds = USER_DATA_SELECTOR;
+    proc->context.es = USER_DATA_SELECTOR;
+    proc->context.fs = USER_DATA_SELECTOR;
+    proc->context.gs = USER_DATA_SELECTOR;
+    proc->context.cr3 = (uint32_t)dir;
+    proc->context.user_entry = USER_CODE_BASE;
+    proc->context.user_mode = 1;
+    proc->user_test = 1;
+    proc->state = PROCESS_STATE_READY;
+    process_count++;
+    return OK;
+}
+
+int process_create_user_test(int trigger_fault, uint32_t* pid_out) {
+    process_t* proc = 0;
+    page_directory_t* dir;
+    page_directory_t* kernel_dir;
+    uint32_t kernel_stack;
+    int result;
+
+    if (!paging_is_ready() || !tss_is_ready() ||
+        !syscall_user_mode_is_enabled()) {
+        LOG_WARN("PROC", "Modo usuario indisponivel para teste");
+        return ERR_UNAVAILABLE;
+    }
+    result = process_user_reap_previous_test();
+    if (result != OK) return result;
+
+    for (int i = 0; i < MAX_PROCESSES; i++) {
+        if (processes[i].state == PROCESS_STATE_UNUSED) {
+            proc = &processes[i];
+            break;
+        }
+    }
+    if (!proc) {
+        LOG_ERROR("PROC", "Limite de processos atingido para teste ring 3");
+        return ERR_MEM;
+    }
+
+    kernel_dir = paging_get_current_directory();
+    kernel_stack = (uint32_t)kmalloc(KERNEL_STACK_SIZE);
+    if (!kernel_stack) {
+        LOG_ERROR("PROC", "Falha ao alocar stack do teste ring 3");
+        return ERR_MEM;
+    }
+    dir = paging_create_user_directory();
+    if (!dir) {
+        kfree((void*)kernel_stack);
+        LOG_ERROR("PROC", "Falha ao criar espaco do teste ring 3");
+        return ERR_MEM;
+    }
+    result = process_user_map_image(dir);
+    if (result != OK) {
+        paging_free_user_directory(dir);
+        kfree((void*)kernel_stack);
+        return result;
+    }
+    process_user_load_image(dir, kernel_dir, trigger_fault);
+    result = process_user_initialize(proc, dir, kernel_stack);
+    if (result != OK) {
+        paging_free_user_directory(dir);
+        kfree((void*)kernel_stack);
+        return result;
+    }
+    if (pid_out) *pid_out = proc->pid;
+    LOG_INFO("PROC", "Processo de teste ring 3 criado");
+    return OK;
+}
+
+uint32_t process_get_user_count(void) {
+    uint32_t count = 0;
+    for (int i = 0; i < MAX_PROCESSES; i++) {
+        if (processes[i].state != PROCESS_STATE_UNUSED &&
+            processes[i].context.user_mode) count++;
+    }
+    return count;
+}
+
+int process_is_user(const process_t* proc) {
+    return process_pointer_valid(proc) && proc->context.user_mode;
+}
+
+int process_exit_current(uint32_t exit_code) {
+    if (!current_process || !process_is_user(current_process)) {
+        LOG_WARN("PROC", "process_exit recusado para processo ring 0");
+        return ERR_UNAVAILABLE;
+    }
+    current_process->exit_code = exit_code;
+    current_process->state = PROCESS_STATE_ZOMBIE;
+    LOG_INFO("PROC", "Processo ring 3 encerrado por syscall");
+    process_switch_after_termination();
+    return OK;
+}
+
+int process_handle_user_exception(registers_t* regs) {
+    uint32_t fault_address = 0;
+
+    if (!regs || !current_process || !process_is_user(current_process) ||
+        ((regs->cs & 0x03U) != 0x03U)) {
+        return ERR_STATE;
+    }
+    if (regs->int_no == 14) {
+        asm volatile("mov %%cr2, %0" : "=r"(fault_address));
+    } else {
+        fault_address = regs->eip;
+    }
+    current_process->fault_vector = regs->int_no;
+    current_process->fault_error = regs->err_code;
+    current_process->fault_address = fault_address;
+    current_process->faulted = 1;
+    last_user_fault_valid = 1;
+    last_user_fault_pid = current_process->pid;
+    last_user_fault_vector = regs->int_no;
+    last_user_fault_error = regs->err_code;
+    last_user_fault_address = fault_address;
+    current_process->state = PROCESS_STATE_ZOMBIE;
+    LOG_WARN("PROC", "Excecao de usuario isolada; processo encerrado");
+    process_switch_after_termination();
+    return OK;
+}
+
 void process_destroy(process_t* proc) {
     if (!process_pointer_valid(proc)) {
         LOG_ERROR("PROC", "Ponteiro invalido ao destruir processo");
@@ -243,7 +557,9 @@ void process_destroy(process_t* proc) {
         LOG_WARN("PROC", "Destruicao do processo atual ou Idle bloqueada");
         return;
     }
-    if (proc->page_directory && proc->page_directory == current_directory) {
+    if (proc->page_directory &&
+        proc->page_directory == paging_get_current_directory() &&
+        proc->context.user_mode) {
         LOG_WARN("PROC", "Diretorio ativo impede destruicao do processo");
         return;
     }
@@ -256,8 +572,8 @@ void process_destroy(process_t* proc) {
         kfree((void*)proc->kernel_stack);
         proc->kernel_stack = 0;
     }
-    if (proc->page_directory) {
-        paging_free_directory(proc->page_directory);
+    if (proc->page_directory && proc->context.user_mode) {
+        paging_free_user_directory(proc->page_directory);
     }
     if (process_count > 0) process_count--;
     kmemset(proc, 0, sizeof(process_t));
@@ -271,6 +587,21 @@ process_t* process_get_current(void) {
 
 uint32_t process_get_count(void) {
     return process_count;
+}
+
+int process_get_last_user_fault(uint32_t* pid, uint32_t* vector,
+                                uint32_t* error, uint32_t* address) {
+    if (!pid || !vector || !error || !address) {
+        LOG_ERROR("PROC", "Destino nulo ao consultar ultima falha de usuario");
+        return ERR_NULL;
+    }
+    if (!last_user_fault_valid) return ERR_NOT_FOUND;
+
+    *pid = last_user_fault_pid;
+    *vector = last_user_fault_vector;
+    *error = last_user_fault_error;
+    *address = last_user_fault_address;
+    return OK;
 }
 
 process_t* process_get_by_pid(uint32_t pid) {
@@ -352,6 +683,13 @@ void process_yield(void) {
             prev->state = PROCESS_STATE_READY;
         }
 
+        if (next->kernel_stack_top) {
+            tss_set_kernel_stack(next->kernel_stack_top);
+        }
+        if (next->page_directory &&
+            next->page_directory != paging_get_current_directory()) {
+            paging_switch_directory(next->page_directory);
+        }
         process_context_switch(&prev->context, &next->context);
     }
 }

@@ -20,6 +20,8 @@
 
 int syscall_init(void);
 int syscall_is_ready(void);
+int syscall_enable_user_mode(void);
+int syscall_user_mode_is_enabled(void);
 void syscall_handler(registers_t* regs);
 int syscall_invoke_kernel(uint32_t number,
                           uint32_t arg1,

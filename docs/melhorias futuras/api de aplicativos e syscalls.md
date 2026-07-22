@@ -2,7 +2,7 @@
 
 ## Resumo de Progresso
 
-Status: Fases 1, 2 e 3 implementadas; processo em modo usuario planejado para a Fase 4.
+Status: Fases 1, 2 e 3 validadas; Fase 4 implementada e aguardando validacao no QEMU; carregador planejado para a Fase 5.
 
 Esta etapa preparara o ZephyrOS para executar aplicativos independentes do
 kernel. O objetivo nao e apenas criar mais comandos, mas definir uma fronteira
@@ -61,15 +61,14 @@ Os numeros atuais sao:
 | `8` | `message_send` | `EBX`: PID; `ECX`: `app_message_t*` |
 | `9` | `message_receive` | `EBX`: `app_message_t*` |
 
-O vetor `int 0x80` esta registrado na IDT com gate `0x8E` (DPL 0). A ponte
-`syscall_invoke_kernel()` e usada pelo `appcheck` para exercitar o mesmo
-dispatcher sem depender de ring 3. As syscalls de arquivo e IPC tambem
-permanecem disponiveis somente nessa ponte interna enquanto nao existir modo
-usuario.
+O vetor `int 0x80` inicia com gate `0x8E` (DPL 0) e passa para `0xEE` (DPL 3)
+depois que paging, TSS, Idle e os processos essenciais estao prontos. A ponte
+`syscall_invoke_kernel()` continua sendo usada pelo `appcheck` para exercitar
+o mesmo dispatcher sem depender de ring 3.
 
-Como ainda nao existe processo em modo usuario, `process_exit` retorna
-`ERR_UNAVAILABLE` e nao altera o estado de nenhum processo. O gate somente
-podera receber chamadas de ring 3 depois da etapa de isolamento de memoria.
+O primeiro processo de teste usa a faixa de codigo `0x00800000`, dados em
+`0x00801000` e stack em `0x00C00000`. Mapeamentos do kernel permanecem
+supervisor e nao podem ser acessados pelo processo ring 3.
 
 ## Contrato inicial da API
 
@@ -114,9 +113,9 @@ de `src/include/core/app_api.h` e `src/core/app_api.c`:
 - `message_receive` nao bloqueante, retornando `ERR_NOT_FOUND` sem mensagens;
 - adaptacao unificada para FAT12 e FAT32, sem expor estruturas FAT.
 
-Essa fachada ainda roda dentro do kernel. Portanto, a validacao de ponteiros
-da Fase 1 cobre nulos, tamanho e conteudo, mas nao substitui o isolamento de
-memoria que sera adicionado ao modo usuario.
+Os aplicativos nativos ainda rodam dentro do kernel. O dispatcher ring 3,
+entretanto, copia argumentos para buffers do kernel e valida cada faixa de
+memoria antes de chamar os servicos internos.
 
 ## Regras de seguranca
 
@@ -171,13 +170,16 @@ de validacao nao interrompe o Shell.
 - [x] reutilizar as validacoes existentes de IPC e recovery;
 - [x] testar as chamadas pelo dispatcher usando `appcheck`;
 
-### Fase 4 - Processo em modo usuario
+### Fase 4 - Processo em modo usuario - implementada, validacao pendente
 
-- preparar segmentos e stack de usuario;
-- validar diretorios de pagina por processo;
-- restringir acesso a memoria do kernel;
-- retornar ao kernel somente pela entrada de syscall;
-- manter o processo Idle e os servicos essenciais protegidos.
+- [x] adicionar segmentos de codigo e dados DPL 3 ao GDT;
+- [x] criar diretorios de pagina com mapeamentos de kernel supervisor;
+- [x] validar e copiar ponteiros entre ring 3 e kernel;
+- [x] trocar `CR3` e preservar contexto durante preempcao;
+- [x] habilitar `int 0x80` com gate DPL 3;
+- [x] implementar `usertest` e `usertest fault`;
+- [x] encerrar somente o processo de usuario em `process_exit` ou excecao;
+- [ ] validar `usertest`, `usertest fault` e os fluxos nativos no QEMU.
 
 ### Fase 5 - Carregador de aplicativos
 
@@ -186,6 +188,9 @@ de validacao nao interrompe o Shell.
 - carregar o programa em memoria isolada;
 - iniciar, acompanhar e finalizar o processo;
 - registrar falhas de carregamento no recovery.
+
+Depois da validacao da Fase 4, esta sera a proxima etapa. Ela definira um formato de imagem, validara o ponto
+de entrada e carregara programas sem alterar ainda os aplicativos nativos.
 
 ### Fase 6 - Migracao gradual
 
@@ -206,18 +211,21 @@ de validacao nao interrompe o Shell.
 
 - um aplicativo de teste consegue usar as quatro syscalls iniciais;
 - argumentos nulos, tamanhos invalidos e handles inexistentes retornam erro;
-- uma falha no aplicativo nao altera o estado do kernel;
+- uma falha no processo `usertest` nao altera o estado do kernel;
 - o Shell continua funcionando depois de encerrar um aplicativo;
 - Explorer, Task Manager, Settings e Desktop continuam disponiveis;
 - os modos classic e modern permanecem compativeis;
 - o comando `health` mostra falhas da camada de aplicativos;
-- o fallback nativo continua disponivel caso o carregador falhe;
+- `usertest fault` encerra somente o processo ring 3;
+- o fallback nativo continua disponivel durante o carregador;
 - o build e a validacao no QEMU passam antes de cada nova fase.
 
 ## Limites
 
-- Nenhuma syscall sera implementada nesta documentacao;
-- o isolamento completo de processos ainda nao existe;
+- o carregador e o formato de aplicativos ainda nao existem;
+- os aplicativos nativos continuam em ring 0;
+- o isolamento de memoria cobre o processo de teste, nao uma politica de
+  permissoes completa para pacotes;
 - nao sera escolhido um formato ELF ou `.zephyrosapp` antes da API basica;
 - a etapa nao altera `src/boot/boot.asm` inicialmente;
 - nao sera criado um novo Window Manager nesta etapa;

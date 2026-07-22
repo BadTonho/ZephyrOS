@@ -38,6 +38,7 @@ Comandos disponiveis:
   guimode   - Altera entre gui classica (TUI) e moderna
   health    - Exibe metricas e estado de recovery do kernel
   appcheck  - Testa a API de aplicativos
+  usertest  - Executa teste isolado em ring 3
   reboot    - Reinicia o sistema
   shutdown  - Desliga o sistema
 ```
@@ -180,8 +181,22 @@ As chamadas de arquivo usam handles opacos e leitura sequencial. As chamadas
 de IPC validam o PID, o estado do processo, o tipo da mensagem e a fila.
 
 O comando usa a ponte interna do dispatcher e testa números inválidos,
-argumentos nulos e `process_exit`. O vetor `int 0x80` está registrado apenas
-para ring 0 até a implementação de processos em modo usuário.
+argumentos nulos e `process_exit`. O vetor `int 0x80` também está disponível
+para o processo de teste ring 3 depois da inicialização segura do kernel.
+
+## `usertest`
+Cria um processo mínimo em ring 3, com diretório de páginas e stack de kernel
+próprios. O teste chama `console_write`, `uptime`, `memory_info` e
+`process_exit` através de `int 0x80`.
+
+```text
+zephyr> usertest
+zephyr> usertest fault
+```
+
+`usertest fault` acessa uma página inválida para confirmar que uma exceção de
+usuário encerra somente o processo de teste. O estado do processo e do gate
+de syscall aparece no comando `health`.
 
 ## `explorer`
 Abre o gerenciador de arquivos estilo ZephyrOS Explorer (TUI).

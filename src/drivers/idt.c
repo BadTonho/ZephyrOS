@@ -3,12 +3,26 @@
 #include "core/panic.h"
 #include "core/log.h"
 #include "core/errors.h"
+#include "drivers/tss.h"
+#include "process/process.h"
 
 #define SYSCALL_VECTOR 0x80
 
 idt_entry_t idt[256];
 idt_ptr_t idt_ptr;
 isr_handler_t interrupt_handlers[256];
+static int idt_ready = 0;
+static int user_syscall_enabled = 0;
+
+static void idt_user_exception_handler(registers_t* regs) {
+    if (regs && ((regs->cs & 0x03U) == 0x03U) &&
+        process_handle_user_exception(regs) == OK) {
+        return;
+    }
+
+    LOG_ERROR("IDT", "Excecao fatal originada no kernel");
+    panic("Excecao fatal em modo kernel");
+}
 
 extern void isr0(void);
 extern void isr1(void);
@@ -114,6 +128,8 @@ static void pic_remap(void) {
 
 void idt_init(void) {
     LOG_INFO("IDT", "Inicializando IDT");
+    idt_ready = 0;
+    user_syscall_enabled = 0;
     idt_ptr.limit = sizeof(idt_entry_t) * 256 - 1;
     idt_ptr.base = (uint32_t)&idt;
 
@@ -175,7 +191,15 @@ void idt_init(void) {
     idt_set_gate(46, (uint32_t)irq14, 0x08, 0x8E);
     idt_set_gate(47, (uint32_t)irq15, 0x08, 0x8E);
 
+    idt_register_handler(6, idt_user_exception_handler);
+    idt_register_handler(10, idt_user_exception_handler);
+    idt_register_handler(11, idt_user_exception_handler);
+    idt_register_handler(12, idt_user_exception_handler);
+    idt_register_handler(13, idt_user_exception_handler);
+    idt_register_handler(14, idt_user_exception_handler);
+
     asm volatile("lidt %0" : : "m"(idt_ptr));
+    idt_ready = 1;
     asm volatile("sti");
     LOG_INFO("IDT", "IDT inicializada com sucesso");
 }
@@ -187,6 +211,27 @@ int idt_register_handler(uint8_t n, isr_handler_t handler) {
     }
     interrupt_handlers[n] = handler;
     return OK;
+}
+
+int idt_enable_user_syscall(void) {
+    if (!idt_ready) {
+        LOG_ERROR("IDT", "IDT nao esta pronta para habilitar syscalls de usuario");
+        return ERR_STATE;
+    }
+    if (!tss_is_ready()) {
+        LOG_ERROR("IDT", "TSS nao esta pronta para habilitar syscalls de usuario");
+        return ERR_STATE;
+    }
+
+    idt_set_gate(SYSCALL_VECTOR, (uint32_t)isr128,
+                 KERNEL_CODE_SELECTOR, 0xEE);
+    user_syscall_enabled = 1;
+    LOG_INFO("IDT", "Syscall int 0x80 habilitada para ring 3");
+    return OK;
+}
+
+int idt_is_user_syscall_enabled(void) {
+    return user_syscall_enabled;
 }
 
 static const char* exception_messages[] = {

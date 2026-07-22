@@ -39,6 +39,8 @@ A função `kernel_main()` é o ponto de entrada em C. Ela:
 7. Cria processos
 8. Monta FAT12/FAT32
 9. Inicia o shell
+10. Habilita o gate DPL3 somente depois do TSS, paging, Idle e processos
+    essenciais estarem prontos
 
 ### Ordem de Inicialização
 
@@ -118,8 +120,25 @@ context_switch:
     pop es
     pop ds
     popa
-    iret                  ; Retorna da interrupção
+    mov cr3, [next_cr3]   ; Troca o espaço de endereços
+    ret                    ; Retorna ao contexto salvo
 ```
+
+## Isolamento ring 3
+
+O kernel possui segmentos de usuario em `0x1B` (codigo) e `0x23` (dados).
+O processo de teste usa codigo em `0x00800000`, dados em `0x00801000` e stack
+em `0x00C00000`. Seu diretorio compartilha as tabelas supervisor do kernel,
+mas as paginas do kernel permanecem com o bit `user` desativado.
+
+O dispatcher de `int 0x80` valida `CS`, `SS`, o processo atual e todas as
+faixas de memoria antes de copiar dados para as APIs internas. O comando
+`usertest` exercita `console_write`, `uptime`, `memory_info` e `process_exit`.
+`usertest fault` valida o encerramento controlado de uma page fault de usuario.
+
+Excecoes de ring 3 encerram somente o processo afetado. Excecoes de ring 0,
+falhas estruturais de paging e corrupcao do kernel continuam encaminhadas ao
+`panic`.
 
 ## Struct `registers_t`
 

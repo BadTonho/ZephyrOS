@@ -4,6 +4,7 @@
 
 static tss_entry_t tss;
 static uint64_t gdt[6];
+static int tss_ready = 0;
 
 typedef struct {
     uint16_t limit;
@@ -19,8 +20,8 @@ static void tss_load_gdt(uint32_t base, uint32_t limit) {
     gdt[0] = 0;
     gdt[1] = 0x00CF9A000000FFFFULL;
     gdt[2] = 0x00CF92000000FFFFULL;
-    gdt[3] = 0;
-    gdt[4] = 0;
+    gdt[3] = 0x00CFFA000000FFFFULL;
+    gdt[4] = 0x00CFF2000000FFFFULL;
 
     tss_descriptor |= (uint64_t)(limit & 0xFFFF);
     tss_descriptor |= (uint64_t)(base & 0xFFFFFF) << 16;
@@ -44,6 +45,7 @@ static void tss_load_gdt(uint32_t base, uint32_t limit) {
 
 void tss_init(void) {
     LOG_INFO("THRD", "Inicializando TSS");
+    tss_ready = 0;
 
     uint32_t base = (uint32_t)&tss;
     uint32_t limit = sizeof(tss_entry_t) - 1;
@@ -62,9 +64,18 @@ void tss_init(void) {
 
     tss_load_gdt(base, limit);
     tss_flush();
+    tss_ready = 1;
     LOG_INFO("THRD", "TSS inicializada");
 }
 
 void tss_set_kernel_stack(uint32_t stack) {
+    if (!tss_ready || stack == 0) {
+        LOG_WARN("THRD", "Stack de kernel invalida para TSS");
+        return;
+    }
     tss.esp0 = stack;
+}
+
+int tss_is_ready(void) {
+    return tss_ready;
 }
