@@ -15,4 +15,23 @@ Desktop.ini
 .mailmap
 Makefile.local
 lembrar.md
-lembrar.md
+
+# Logs e arquivos temporarios locais
+*.log
+*.tmp
+*.bak
+*.orig
+*.rej
+*.dmp
+*.stackdump
+
+# Artefatos de build adicionais
+*.iso
+*.map
+
+# Cache de ferramentas Python
+__pycache__/
+*.pyc
+
+# Arquivos de sistema multiplataforma
+.DS_Store
