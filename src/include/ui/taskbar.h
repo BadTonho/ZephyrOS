@@ -47,6 +47,7 @@ typedef struct {
 
 void taskbar_init(void);
 void taskbar_draw(void);
+void taskbar_redraw_menu(void);
 void taskbar_update_clock(void);
 void taskbar_add_app(tb_app_type_t type, const char* name);
 void taskbar_remove_app(tb_app_type_t type);

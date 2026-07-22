@@ -171,6 +171,7 @@ void taskbar_draw(void) {
         if (config.position == TB_POS_TOP) tb_y = 0;
         vesa_frame_begin_region(0, tb_y, mode->width, TASKBAR_HEIGHT);
         taskbar_draw_gui();
+        taskbar_redraw_menu();
         vesa_frame_end();
         return;
     }
@@ -249,6 +250,7 @@ void taskbar_draw(void) {
         taskbar_update_clock();
     }
 
+    taskbar_redraw_menu();
     vesa_frame_end();
 }
 
@@ -383,6 +385,10 @@ static void taskbar_draw_menu(void) {
 
         video_print_at(menu_x + 2, menu_y + 1 + i, menu_items[i], color);
     }
+}
+
+void taskbar_redraw_menu(void) {
+    if (menu_open) taskbar_draw_menu();
 }
 
 static void taskbar_draw_menu_gui(void) {
