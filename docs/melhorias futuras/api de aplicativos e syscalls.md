@@ -70,6 +70,12 @@ O primeiro processo de teste usa a faixa de codigo `0x00800000`, dados em
 `0x00801000` e stack em `0x00C00000`. Mapeamentos do kernel permanecem
 supervisor e nao podem ser acessados pelo processo ring 3.
 
+Quando um processo ring 3 termina por `process_exit` ou por uma excecao
+isolada, o handler apenas o marca como `ZOMBIE`. O retorno da interrupcao e
+redirecionado para uma trampoline de kernel, que troca de contexto fora da
+pilha do ISR. Isso impede que um frame de usuario encerrado seja reutilizado
+e preserva a execucao do Shell.
+
 ## Contrato inicial da API
 
 Os nomes abaixo formam o contrato atual. A fachada interna `app_api_*` e o

@@ -31,6 +31,7 @@
 static char input_buffer[SHELL_BUFFER_SIZE];
 static char appcheck_oversized_text[APP_API_MAX_TEXT_SIZE + 1];
 static int input_pos = 0;
+static int shell_waiting_user_test = 0;
 static uint8_t shell_extended_scancode = 0;
 
 #define SHELL_SCANCODE_EXTENDED 0xE0
@@ -41,6 +42,8 @@ static uint8_t shell_extended_scancode = 0;
 #define SHELL_SCANCODE_HOME     0x47
 #define SHELL_SCANCODE_END      0x4F
 #define SHELL_SCROLL_PAGE_LINES 20
+
+static void print_num(uint32_t num);
 
 static void shell_reset_input(void) {
     input_pos = 0;
@@ -58,6 +61,24 @@ static void shell_return_to_terminal_tail(void) {
 
 static void shell_suspend_terminal(void) {
     if (video_terminal_is_active()) video_terminal_suspend();
+}
+
+void shell_report_user_test_result(void) {
+    uint32_t pid;
+    uint32_t faulted;
+
+    if (!video_terminal_is_active()) return;
+    if (process_take_user_test_result(&pid, &faulted) != OK) return;
+
+    video_print("\n[", 0x08);
+    video_print(faulted ? "WARN" : "INFO", faulted ? 0x0E : 0x0A);
+    video_print("] UserTest PID ", 0x08);
+    print_num(pid);
+    video_print(faulted ? " encerrado apos falha isolada.\n" :
+                         " encerrado com sucesso.\n", 0x07);
+    shell_waiting_user_test = 0;
+    shell_reset_input();
+    shell_print_prompt();
 }
 
 void shell_handle_app_request(uint32_t request) {
@@ -586,6 +607,7 @@ static void cmd_usertest(const char* args) {
                                "UserTest criado, PID ", 0x0A);
     print_num(pid);
     video_print(".\n", 0x0A);
+    shell_waiting_user_test = 1;
 }
 
 static void cmd_guimode(const char* args) {
@@ -850,6 +872,7 @@ static int shell_should_show_prompt(void) {
     if (fm_is_running()) return 0;
     if (taskmgr_is_open() || taskmgr_is_gui_open()) return 0;
     if (settings_is_open() || wm_is_active() || guitest_is_active()) return 0;
+    if (shell_waiting_user_test) return 0;
     return 1;
 }
 
@@ -964,6 +987,8 @@ void shell_handle_key(uint8_t scancode) {
         taskmgr_handle_key(scancode);
         return;
     }
+
+    if (shell_waiting_user_test) return;
 
     shell_resume_terminal();
 

@@ -376,6 +376,7 @@ int syscall_user_mode_is_enabled(void) {
 
 void syscall_handler(registers_t* regs) {
     int result;
+    uint32_t number;
 
     if (!regs) {
         LOG_ERROR("SYSCALL", "Registradores nulos no handler");
@@ -392,7 +393,15 @@ void syscall_handler(registers_t* regs) {
         return;
     }
 
+    number = regs->eax;
     result = syscall_dispatch(regs);
+    if (number == APP_SYSCALL_PROCESS_EXIT && result == OK &&
+        syscall_is_user_caller(regs)) {
+        result = process_prepare_user_termination(regs);
+        if (result != OK) {
+            LOG_ERROR("SYSCALL", "Falha ao preparar encerramento seguro de usuario");
+        }
+    }
     regs->eax = (uint32_t)result;
 }
 

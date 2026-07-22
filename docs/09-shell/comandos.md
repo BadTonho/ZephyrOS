@@ -214,6 +214,10 @@ zephyr> usertest fault
 usuário encerra somente o processo de teste. O estado do processo e do gate
 de syscall aparece no comando `health`.
 
+Ao terminar normalmente ou por falha isolada, o Shell imprime o resultado do
+teste e apresenta um novo prompt, para que o proximo comando nunca fique
+misturado ao aviso assincrono do processo.
+
 ## `explorer`
 Abre o gerenciador de arquivos estilo ZephyrOS Explorer (TUI).
 

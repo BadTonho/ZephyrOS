@@ -96,6 +96,9 @@ int process_get_last_user_fault(uint32_t* pid, uint32_t* vector,
 int process_is_user(const process_t* proc);
 int process_exit_current(uint32_t exit_code);
 int process_handle_user_exception(registers_t* regs);
+int process_prepare_user_termination(registers_t* regs);
+void process_finish_user_termination(void);
+int process_take_user_test_result(uint32_t* pid, uint32_t* faulted);
 
 void process_yield(void);
 void process_block(uint32_t ticks);
@@ -116,6 +119,7 @@ uint32_t process_get_focus(void);
 
 extern void process_context_switch(process_context_t* prev, process_context_t* next);
 extern void process_user_enter(void);
+extern void process_user_termination_enter(void);
 
 extern process_t processes[MAX_PROCESSES];
 extern uint32_t process_count;

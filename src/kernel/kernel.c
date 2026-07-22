@@ -214,6 +214,7 @@ void shell_process_main(void) {
         } else {
             process_yield();
         }
+        shell_report_user_test_result();
         taskmgr_gui_update();
     }
 }

@@ -22,6 +22,9 @@ static uint32_t last_user_fault_pid = 0;
 static uint32_t last_user_fault_vector = 0;
 static uint32_t last_user_fault_error = 0;
 static uint32_t last_user_fault_address = 0;
+static int user_test_result_pending = 0;
+static uint32_t user_test_result_pid = 0;
+static uint32_t user_test_result_faulted = 0;
 
 static void process_idle_main(void) {
     while (1) {
@@ -64,6 +67,9 @@ void process_init(void) {
     last_user_fault_vector = 0;
     last_user_fault_error = 0;
     last_user_fault_address = 0;
+    user_test_result_pending = 0;
+    user_test_result_pid = 0;
+    user_test_result_faulted = 0;
     for (int i = 0; i < MAX_PROCESSES; i++) {
         kmemset(&processes[i], 0, sizeof(process_t));
         processes[i].state = PROCESS_STATE_UNUSED;
@@ -314,6 +320,26 @@ static void process_switch_after_termination(void) {
     process_context_switch(&previous->context, &next->context);
 }
 
+static int process_mark_current_user_zombie(uint32_t exit_code,
+                                             int faulted) {
+    if (!current_process || !process_is_user(current_process)) {
+        LOG_WARN("PROC", "Encerramento recusado para processo ring 0");
+        return ERR_UNAVAILABLE;
+    }
+    if (current_process->state != PROCESS_STATE_RUNNING &&
+        current_process->state != PROCESS_STATE_READY) {
+        LOG_WARN("PROC", "Estado invalido ao encerrar processo ring 3");
+        return ERR_STATE;
+    }
+
+    current_process->exit_code = exit_code;
+    current_process->state = PROCESS_STATE_ZOMBIE;
+    user_test_result_pending = current_process->user_test;
+    user_test_result_pid = current_process->pid;
+    user_test_result_faulted = faulted ? 1U : 0U;
+    return OK;
+}
+
 static int process_user_reap_previous_test(void) {
     for (int i = 0; i < MAX_PROCESSES; i++) {
         if (!processes[i].user_test ||
@@ -501,14 +527,10 @@ int process_is_user(const process_t* proc) {
 }
 
 int process_exit_current(uint32_t exit_code) {
-    if (!current_process || !process_is_user(current_process)) {
-        LOG_WARN("PROC", "process_exit recusado para processo ring 0");
-        return ERR_UNAVAILABLE;
-    }
-    current_process->exit_code = exit_code;
-    current_process->state = PROCESS_STATE_ZOMBIE;
+    int result = process_mark_current_user_zombie(exit_code, 0);
+
+    if (result != OK) return result;
     LOG_INFO("PROC", "Processo ring 3 encerrado por syscall");
-    process_switch_after_termination();
     return OK;
 }
 
@@ -533,9 +555,58 @@ int process_handle_user_exception(registers_t* regs) {
     last_user_fault_vector = regs->int_no;
     last_user_fault_error = regs->err_code;
     last_user_fault_address = fault_address;
-    current_process->state = PROCESS_STATE_ZOMBIE;
+    if (process_mark_current_user_zombie(ERR_STATE, 1) != OK) {
+        LOG_ERROR("PROC", "Falha ao encerrar processo apos excecao de usuario");
+        return ERR_STATE;
+    }
     LOG_WARN("PROC", "Excecao de usuario isolada; processo encerrado");
+    return OK;
+}
+
+int process_prepare_user_termination(registers_t* regs) {
+    if (!regs) {
+        LOG_ERROR("PROC", "Registradores nulos ao preparar retorno de usuario");
+        return ERR_NULL;
+    }
+    if (!current_process || !process_is_user(current_process) ||
+        current_process->state != PROCESS_STATE_ZOMBIE ||
+        (regs->cs & 0x03U) != 0x03U) {
+        LOG_ERROR("PROC", "Retorno de usuario invalido para processo encerrado");
+        return ERR_STATE;
+    }
+
+    /* O IRET sai da pilha da interrupcao antes de trocar de contexto.
+       Assim, nunca reutilizamos um frame de ring 3 ja encerrado. */
+    regs->eip = (uint32_t)process_user_termination_enter;
+    regs->cs = KERNEL_CODE_SELECTOR;
+    /* Nenhuma IRQ deve interromper a pequena janela entre o IRET e a
+       troca de contexto. O contexto seguinte restaura seus proprios flags. */
+    regs->eflags &= ~0x200U;
+    return OK;
+}
+
+void process_finish_user_termination(void) {
+    if (!current_process || !process_is_user(current_process) ||
+        current_process->state != PROCESS_STATE_ZOMBIE) {
+        LOG_ERROR("PROC", "Trampoline de encerramento sem processo ring 3 zombie");
+        while (1) asm volatile("hlt");
+    }
+
     process_switch_after_termination();
+    LOG_ERROR("PROC", "Troca de contexto retornou apos encerrar usuario");
+    while (1) asm volatile("hlt");
+}
+
+int process_take_user_test_result(uint32_t* pid, uint32_t* faulted) {
+    if (!pid || !faulted) {
+        LOG_ERROR("PROC", "Destino nulo ao consultar resultado do UserTest");
+        return ERR_NULL;
+    }
+    if (!user_test_result_pending) return ERR_NOT_FOUND;
+
+    *pid = user_test_result_pid;
+    *faulted = user_test_result_faulted;
+    user_test_result_pending = 0;
     return OK;
 }
 

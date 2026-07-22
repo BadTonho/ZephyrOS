@@ -1,7 +1,10 @@
 [BITS 32]
 [GLOBAL process_context_switch]
 [GLOBAL process_user_enter]
+[GLOBAL process_user_termination_enter]
 [GLOBAL tss_flush]
+
+[EXTERN process_finish_user_termination]
 
 tss_flush:
     mov ax, 0x28
@@ -16,6 +19,21 @@ process_user_enter:
     mov fs, ax
     mov gs, ax
     iret
+
+process_user_termination_enter:
+    ; O IRET saiu do frame de ring 3 antes de chegarmos aqui. Recarregar
+    ; segmentos de kernel evita que a troca use seletores de usuario.
+    mov ax, 0x10
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    call process_finish_user_termination
+
+.termination_halt:
+    cli
+    hlt
+    jmp .termination_halt
 
 process_context_switch:
     ; [esp + 4] = prev
