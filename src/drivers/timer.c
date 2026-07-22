@@ -33,8 +33,8 @@ void timer_handler(registers_t* regs) {
     // precisamos confirmar a interrupção no PIC antes de trocar de contexto.
     outb(0x20, 0x20);
 
-    // Troca de contexto a cada 1 tick (20ms considerando 50Hz)
-    process_yield();
+    // O scheduler so pode iniciar depois que o processo Idle estiver registrado.
+    if (process_get_current()) process_yield();
 }
 
 uint32_t timer_get_ticks(void) {

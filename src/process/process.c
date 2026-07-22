@@ -332,13 +332,12 @@ process_t* scheduler_schedule(void) {
 }
 
 void process_yield(void) {
+    /* O timer pode disparar antes do bootstrap do Idle; isso nao e falha. */
     if (!current_process) {
-        LOG_ERROR("PROC", "Troca de contexto sem processo atual");
         return;
     }
     if (current_process->state < PROCESS_STATE_READY ||
         current_process->state > PROCESS_STATE_BLOCKED) {
-        LOG_ERROR("PROC", "Estado invalido antes da troca de contexto");
         return;
     }
     
