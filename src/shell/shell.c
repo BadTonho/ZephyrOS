@@ -31,10 +31,33 @@
 static char input_buffer[SHELL_BUFFER_SIZE];
 static char appcheck_oversized_text[APP_API_MAX_TEXT_SIZE + 1];
 static int input_pos = 0;
+static uint8_t shell_extended_scancode = 0;
+
+#define SHELL_SCANCODE_EXTENDED 0xE0
+#define SHELL_SCANCODE_UP       0x48
+#define SHELL_SCANCODE_DOWN     0x50
+#define SHELL_SCANCODE_PAGE_UP  0x49
+#define SHELL_SCANCODE_PAGE_DOWN 0x51
+#define SHELL_SCANCODE_HOME     0x47
+#define SHELL_SCANCODE_END      0x4F
+#define SHELL_SCROLL_PAGE_LINES 20
 
 static void shell_reset_input(void) {
     input_pos = 0;
     kmemset(input_buffer, 0, sizeof(input_buffer));
+}
+
+static void shell_resume_terminal(void) {
+    if (!video_terminal_is_active()) video_terminal_begin();
+}
+
+static void shell_return_to_terminal_tail(void) {
+    shell_resume_terminal();
+    if (video_terminal_is_scrolled()) video_terminal_scroll_end();
+}
+
+static void shell_suspend_terminal(void) {
+    if (video_terminal_is_active()) video_terminal_suspend();
 }
 
 void shell_handle_app_request(uint32_t request) {
@@ -49,12 +72,13 @@ void shell_handle_app_request(uint32_t request) {
         case IPC_APP_OPEN_SHELL:
             desktop_set_active(0);
             shell_reset_input();
-            video_clear();
+            video_terminal_begin();
             shell_print_prompt();
             taskbar_draw();
             break;
         case IPC_APP_OPEN_EXPLORER:
             if (recovery_is_enabled(RECOVERY_COMPONENT_FILEMANAGER)) {
+                shell_suspend_terminal();
                 desktop_set_active(0);
                 fm_run();
             } else {
@@ -63,6 +87,7 @@ void shell_handle_app_request(uint32_t request) {
             break;
         case IPC_APP_OPEN_TASKMANAGER:
             if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
+                shell_suspend_terminal();
                 desktop_set_active(0);
                 taskmgr_run();
             } else {
@@ -74,6 +99,7 @@ void shell_handle_app_request(uint32_t request) {
                 video_print("Erro: Task Manager indisponivel.\n", 0x0C);
                 break;
             }
+            shell_suspend_terminal();
             desktop_set_active(0);
             if (taskmgr_open_gui() != OK) {
                 LOG_WARN("SHELL", "GUI do Task Manager indisponivel; usando TUI");
@@ -81,6 +107,7 @@ void shell_handle_app_request(uint32_t request) {
             }
             break;
         case IPC_APP_OPEN_DESKTOP:
+            shell_suspend_terminal();
             video_clear();
             desktop_set_active(1);
             desktop_draw();
@@ -88,6 +115,7 @@ void shell_handle_app_request(uint32_t request) {
             break;
         case IPC_APP_OPEN_SETTINGS:
             if (recovery_is_enabled(RECOVERY_COMPONENT_SETTINGS)) {
+                shell_suspend_terminal();
                 desktop_set_active(0);
                 settings_open();
             } else {
@@ -101,9 +129,6 @@ void shell_handle_app_request(uint32_t request) {
 }
 
 static void shell_redraw_after_overlay_close(void) {
-    /* O menu grafico nao atualiza o buffer de texto; limpe-o antes de redesenhar. */
-    video_clear();
-
     if (desktop_is_active()) {
         desktop_draw();
         taskbar_draw();
@@ -122,7 +147,8 @@ static void shell_redraw_after_overlay_close(void) {
         return;
     }
 
-    shell_print_prompt();
+    /* Menus desenham por coordenadas e nao pertencem ao historico textual. */
+    video_terminal_begin();
     taskbar_draw();
 }
 
@@ -164,7 +190,7 @@ static void cmd_help(void) {
     video_begin_update();
     video_print("Comandos disponiveis:\n", 0x0B);
     video_print("  help     - Mostra esta mensagem\n", 0x07);
-    video_print("  clear    - Limpa a tela\n", 0x07);
+    video_print("  clear    - Limpa tela e historico do terminal\n", 0x07);
     video_print("  desktop  - Abre a area de trabalho\n", 0x07);
     video_print("  guimode  - Alterna Desktop classic/modern\n", 0x07);
     video_print("  settings - Abre o painel de configuracoes\n", 0x07);
@@ -184,7 +210,7 @@ static void cmd_help(void) {
     video_print("  compress - Liga/desliga compressao de RAM\n", 0x07);
     video_print("  stats    - Mostra estatisticas de compressao\n", 0x07);
     video_print("  mouse    - Mostra status do mouse PS/2\n", 0x07);
-    video_print("  health   - Mostra estado dos componentes\n", 0x07);
+    video_print("  health   - Mostra estado dos componentes (use PgUp/PgDn)\n", 0x07);
     video_print("  appcheck - Testa API, arquivos e IPC\n", 0x07);
     video_print("  usertest - Executa teste isolado em ring 3\n", 0x07);
     video_print("             usertest fault | falha controlada\n", 0x08);
@@ -608,7 +634,7 @@ static void cmd_guimode(const char* args) {
 }
 
 static void cmd_clear(void) {
-    video_clear();
+    video_terminal_clear();
     taskbar_draw();
 }
 
@@ -809,10 +835,12 @@ static void cmd_shutdown(void) {
 
 void shell_init(void) {
     shell_reset_input();
+    video_terminal_begin();
     shell_print_prompt();
 }
 
 void shell_print_prompt(void) {
+    shell_resume_terminal();
     video_print(SHELL_PROMPT, 0x0A);
 }
 
@@ -842,9 +870,31 @@ static void process_input(void) {
     }
 }
 
+static int shell_handle_terminal_scroll_key(uint8_t scancode) {
+    switch (scancode) {
+        case SHELL_SCANCODE_UP:
+            return video_terminal_scroll(1);
+        case SHELL_SCANCODE_DOWN:
+            return video_terminal_scroll(-1);
+        case SHELL_SCANCODE_PAGE_UP:
+            return video_terminal_scroll(SHELL_SCROLL_PAGE_LINES);
+        case SHELL_SCANCODE_PAGE_DOWN:
+            return video_terminal_scroll(-SHELL_SCROLL_PAGE_LINES);
+        case SHELL_SCANCODE_HOME:
+            video_terminal_scroll_home();
+            return 1;
+        case SHELL_SCANCODE_END:
+            video_terminal_scroll_end();
+            return 1;
+        default:
+            return 0;
+    }
+}
+
 void shell_handle_key(uint8_t scancode) {
     int config_result = taskbar_handle_config_key(scancode);
     if (config_result) {
+        shell_extended_scancode = 0;
         if (config_result == 9) {
             shell_redraw_after_overlay_close();
         }
@@ -853,6 +903,7 @@ void shell_handle_key(uint8_t scancode) {
 
     int tb_result = taskbar_handle_key(scancode);
     if (tb_result) {
+        shell_extended_scancode = 0;
         if (tb_result == 2) {
             shell_handle_app_request(IPC_APP_OPEN_SHELL);
         } else if (tb_result == 3) {
@@ -892,7 +943,9 @@ void shell_handle_key(uint8_t scancode) {
         int result = desktop_handle_key(scancode);
         if (result == -1) {
             desktop_set_active(0);
-            video_clear();
+            shell_reset_input();
+            video_terminal_begin();
+            shell_print_prompt();
             taskbar_draw();
             return;
         }
@@ -912,6 +965,23 @@ void shell_handle_key(uint8_t scancode) {
         return;
     }
 
+    shell_resume_terminal();
+
+    if (scancode == SHELL_SCANCODE_EXTENDED) {
+        shell_extended_scancode = 1;
+        return;
+    }
+
+    if (scancode & 0x80) {
+        shell_extended_scancode = 0;
+        return;
+    }
+
+    if (shell_extended_scancode) {
+        shell_extended_scancode = 0;
+        if (shell_handle_terminal_scroll_key(scancode)) return;
+    }
+
     static const char scancode_table[128] = {
         0,  27, '1','2','3','4','5','6','7','8','9','0','-','=','\b',
         '\t','q','w','e','r','t','y','u','i','o','p','[',']','\n',
@@ -924,11 +994,10 @@ void shell_handle_key(uint8_t scancode) {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    if (scancode & 0x80) return;
-
     char c = scancode_table[scancode];
 
     if (scancode == 0x0E) {
+        shell_return_to_terminal_tail();
         if (input_pos > 0) {
             input_pos--;
             input_buffer[input_pos] = '\0';
@@ -938,6 +1007,7 @@ void shell_handle_key(uint8_t scancode) {
     }
 
     if (scancode == 0x1C) {
+        shell_return_to_terminal_tail();
         process_input();
         return;
     }
@@ -945,6 +1015,7 @@ void shell_handle_key(uint8_t scancode) {
     /* Teclas de controle podem chegar antes do primeiro caractere visivel
        quando o QEMU entrega o foco. Elas nao devem contaminar o comando. */
     if (c >= ' ' && c <= '~' && input_pos < SHELL_BUFFER_SIZE - 1) {
+        shell_return_to_terminal_tail();
         input_buffer[input_pos++] = c;
         input_buffer[input_pos] = '\0';
         video_put_char(c, 0x07);
@@ -961,6 +1032,8 @@ int shell_process_command(const char* input) {
         LOG_ERROR("SHELL", "Comando nulo recebido");
         return ERR_NULL;
     }
+
+    shell_resume_terminal();
 
     while (*input == ' ' || *input == '\t' || *input == '\r' ||
            *input == '\n' || *input == 27) {
@@ -1009,6 +1082,7 @@ int shell_process_command(const char* input) {
         cmd_melody();
     } else if (kstrcmp(cmd, "desktop") == 0) {
         if (!desktop_is_active()) {
+            shell_suspend_terminal();
             desktop_set_active(1);
             desktop_draw();
         }
@@ -1018,6 +1092,7 @@ int shell_process_command(const char* input) {
         if (!recovery_is_enabled(RECOVERY_COMPONENT_FILEMANAGER)) {
             video_print("Erro: Explorer indisponivel.\n", 0x0C);
         } else {
+            shell_suspend_terminal();
             fm_run();
         }
     } else if (kstrcmp(cmd, "reboot") == 0) {
@@ -1026,12 +1101,14 @@ int shell_process_command(const char* input) {
         cmd_shutdown();
     } else if (kstrcmp(cmd, "guitest") == 0) {
         if (recovery_is_enabled(RECOVERY_COMPONENT_GUITEST)) {
+            shell_suspend_terminal();
             guitest_open();
         } else {
             video_print("Erro: GUI Test indisponivel.\n", 0x0C);
         }
     } else if (kstrcmp(cmd, "taskmgr") == 0) {
         if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
+            shell_suspend_terminal();
             taskmgr_run();
         } else {
             video_print("Erro: Task Manager indisponivel.\n", 0x0C);
@@ -1040,12 +1117,14 @@ int shell_process_command(const char* input) {
         taskbar_draw_config_menu();
     } else if (kstrcmp(cmd, "settings") == 0) {
         if (recovery_is_enabled(RECOVERY_COMPONENT_SETTINGS)) {
+            shell_suspend_terminal();
             settings_open();
         } else {
             video_print("Erro: Configuracoes indisponiveis.\n", 0x0C);
         }
     } else if (kstrcmp(cmd, "wm") == 0) {
         if (recovery_is_enabled(RECOVERY_COMPONENT_WM)) {
+            shell_suspend_terminal();
             wm_set_active(1);
         } else {
             video_print("Erro: Window Manager indisponivel.\n", 0x0C);
@@ -1084,6 +1163,7 @@ int shell_process_command(const char* input) {
             while (input[n] && n < 12) { name[n] = input[n]; n++; }
             name[n] = '\0';
             str_upper(name);
+            shell_suspend_terminal();
             int view_result = mp_play_image(name);
             if (view_result != OK) {
                 video_print("Erro: nao foi possivel exibir a imagem.\n", 0x0C);
@@ -1111,8 +1191,10 @@ int shell_process_command(const char* input) {
             while (input[n] && n < 12) { name[n] = input[n]; n++; }
             name[n] = '\0';
             str_upper(name);
+            shell_suspend_terminal();
             editor_run_file(name);
         } else {
+            shell_suspend_terminal();
             editor_run();
         }
     } else if (kstrcmp(cmd, "mouse") == 0) {

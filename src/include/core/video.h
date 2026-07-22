@@ -7,6 +7,7 @@
 
 #define VGA_WIDTH  100
 #define VGA_HEIGHT 37
+#define VIDEO_SCROLLBACK_LINES 200
 
 /* O modo VESA 0x118 usado pelo stage2 tem 1024x768 pixels. */
 #define SCREEN_COLS 128
@@ -49,5 +50,15 @@ void video_fill_rect(int x, int y, int w, int h, char c, uint8_t color);
 void video_draw_hline(int x, int y, int w, char c, uint8_t color);
 void video_draw_vline(int x, int y, int h, char c, uint8_t color);
 void video_draw_box(int x, int y, int w, int h, uint8_t color);
+
+/* Historico do terminal do Shell. Valores positivos rolam para linhas antigas. */
+void video_terminal_begin(void);
+void video_terminal_suspend(void);
+int  video_terminal_is_active(void);
+void video_terminal_clear(void);
+int  video_terminal_scroll(int lines);
+void video_terminal_scroll_home(void);
+void video_terminal_scroll_end(void);
+int  video_terminal_is_scrolled(void);
 
 #endif

@@ -11,7 +11,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | Comando | Parâmetros | Descrição |
 |---------|------------|-----------|
 | `help` | - | Lista todos os comandos disponíveis. |
-| `clear` | - | Limpa a tela do terminal. |
+| `clear` | - | Limpa a tela e o historico do terminal. |
 | `desktop` | - | Abre a Área de Trabalho (Desktop). |
 | `settings`| - | Abre o Painel de Configurações (Settings). |
 | `wm` | - | Abre o Gerenciador de Janelas (Window Manager). |
@@ -41,6 +41,14 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `guimode` | `classic/modern` | Alterna globalmente entre interface TUI (modo texto) e VESA (gráfica). |
 | `reboot` | - | Reinicia imediatamente o sistema operacional. |
 | `shutdown`| - | Desliga o computador de forma segura. |
+
+## Scroll do Shell
+
+- **Seta para Cima / Seta para Baixo**: rola uma linha no historico do terminal.
+- **Page Up / Page Down**: rola uma pagina no historico do terminal.
+- **Home / End**: vai ao inicio ou ao fim do historico.
+- **Digitacao, Backspace ou Enter**: retorna ao fim para manter o prompt visivel.
+- **`clear`**: apaga as 200 linhas mantidas no historico atual.
 
 ---
 

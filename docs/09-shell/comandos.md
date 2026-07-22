@@ -11,7 +11,7 @@ Mostra a lista de todos os comandos.
 zephyr> help
 Comandos disponiveis:
   help      - Mostra esta mensagem
-  clear     - Limpa a tela
+  clear     - Limpa tela e historico do terminal
   desktop   - Abre a area de trabalho
   settings  - Abre o painel de configuracoes
   wm        - Abre gerenciador de janelas
@@ -44,7 +44,20 @@ Comandos disponiveis:
 ```
 
 ## `clear`
-Limpa a tela e volta ao topo.
+Limpa a tela e apaga todo o historico do terminal atual.
+
+## Historico rolavel do Shell
+
+O Shell preserva as ultimas 200 linhas de saida textual. A rolagem funciona
+somente quando nenhuma aplicacao esta com foco:
+
+- `Seta para cima` / `Seta para baixo`: navega uma linha;
+- `Page Up` / `Page Down`: navega uma pagina;
+- `Home` / `End`: vai ao inicio ou ao fim do historico.
+
+Ao digitar, apagar ou enviar um comando, o Shell volta automaticamente ao fim
+do historico para manter o prompt visivel. O comando `clear` remove tambem as
+linhas armazenadas.
 
 ## `ls`
 Lista todos os arquivos no disco FAT12.
@@ -160,6 +173,9 @@ zephyr> guimode modern
 
 ## `health`
 Exibe métricas detalhadas do kernel, estado do recovery, paginação, processos e saúde estrutural da arquitetura.
+
+Use `Page Up`, `Page Down`, `Home` e `End` para consultar toda a saida quando
+o relatorio ocupar mais de uma tela.
 
 ```
 zephyr> health
