@@ -12,3 +12,4 @@ build/
 # OS
 Thumbs.db
 Desktop.ini
+.mailmap
