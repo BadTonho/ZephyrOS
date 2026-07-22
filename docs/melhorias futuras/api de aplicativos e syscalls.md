@@ -2,7 +2,7 @@
 
 ## Resumo de Progresso
 
-Status: planejado para a proxima etapa de arquitetura.
+Status: Fase 1 implementada; dispatcher de syscalls planejado para a Fase 2.
 
 Esta etapa preparara o ZephyrOS para executar aplicativos independentes do
 kernel. O objetivo nao e apenas criar mais comandos, mas definir uma fronteira
@@ -36,8 +36,9 @@ Os aplicativos nao deverao acessar diretamente:
 
 ## Contrato inicial da API
 
-Os nomes abaixo sao a proposta inicial. Os numeros definitivos das syscalls
-serao definidos durante a implementacao e documentados junto ao dispatcher.
+Os nomes abaixo formam a proposta inicial. Nesta primeira fase, somente a
+fachada interna `app_api_*` foi implementada. Os numeros, registradores e a
+entrada `int 0x80` serao definidos durante a Fase 2, junto ao dispatcher.
 
 | Grupo | Operacao inicial | Finalidade |
 |---|---|---|
@@ -56,6 +57,21 @@ As funcoes deverao retornar `OK` ou um codigo de `errors.h`. Ponteiros de
 aplicativos nunca serao usados diretamente sem validacao de endereco, tamanho
 e permissao.
 
+### Fachada disponivel na Fase 1
+
+O contrato inicial esta disponivel para os modulos nativos do kernel por meio
+de `src/include/core/app_api.h` e `src/core/app_api.c`:
+
+- `app_api_get_version()` retorna a versao `0.1`;
+- `app_api_console_write()` aceita texto ASCII validado de ate 1024 bytes;
+- `app_api_get_uptime()` retorna ticks e segundos desde o boot;
+- `app_api_get_memory_info()` retorna memoria e paginas disponiveis;
+- `app_handle_t` e um handle opaco de 32 bits, com zero reservado como invalido.
+
+Essa fachada ainda roda dentro do kernel. Portanto, a validacao de ponteiros
+da Fase 1 cobre nulos, tamanho e conteudo, mas nao substitui o isolamento de
+memoria que sera adicionado ao modo usuario.
+
 ## Regras de seguranca
 
 - Handles serao usados para arquivos, janelas e recursos do sistema;
@@ -71,25 +87,26 @@ e permissao.
 
 ## Atalhos e comandos de teste
 
-Durante a implementacao, o Shell devera receber um comando de diagnostico
-para testar a camada sem depender de um aplicativo completo. O nome planejado
-e:
+O Shell recebeu um comando de diagnostico para testar a camada sem depender
+de um aplicativo completo:
 
 ```text
 appcheck
 ```
 
-O comando devera testar somente chamadas seguras, como `console_write`,
-`uptime` e `memory_info`, e exibir o codigo retornado por cada uma.
+O comando testa `console_write`, `uptime` e `memory_info`, alem de argumentos
+nulos, texto vazio e texto acima do limite. Cada chamada exibe seu codigo de
+retorno e uma falha de validacao nao interrompe o Shell.
 
 ## Fases
 
-### Fase 1 - Contrato e tipos comuns
+### Fase 1 - Contrato e tipos comuns - concluida
 
-- definir tipos de retorno, handles e versao da API;
-- documentar limites de buffers e regras de ownership;
-- separar interfaces publicas de estruturas internas;
-- manter wrappers compativeis para os aplicativos nativos atuais.
+- [x] definir tipos de retorno, handles e versao da API;
+- [x] documentar limites de buffers e regras de ownership;
+- [x] separar interfaces publicas de estruturas internas;
+- [x] manter wrappers compativeis para os aplicativos nativos atuais;
+- [x] adicionar `appcheck` e o estado da API ao `health`.
 
 ### Fase 2 - Dispatcher de syscalls
 

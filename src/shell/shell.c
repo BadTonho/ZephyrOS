@@ -24,8 +24,10 @@
 #include "ui/gui.h"
 #include "apps/guitest.h"
 #include "core/recovery.h"
+#include "core/app_api.h"
 
 static char input_buffer[SHELL_BUFFER_SIZE];
+static char appcheck_oversized_text[APP_API_MAX_TEXT_SIZE + 1];
 static int input_pos = 0;
 
 static void shell_reset_input(void) {
@@ -181,6 +183,7 @@ static void cmd_help(void) {
     video_print("  stats    - Mostra estatisticas de compressao\n", 0x07);
     video_print("  mouse    - Mostra status do mouse PS/2\n", 0x07);
     video_print("  health   - Mostra estado dos componentes\n", 0x07);
+    video_print("  appcheck - Testa a API de aplicativos\n", 0x07);
     video_print("  play     - Toca arquivo WAV\n", 0x07);
     video_print("  view     - Exibe imagem BMP\n", 0x07);
     video_print("  stop     - Para player de midia\n", 0x07);
@@ -266,6 +269,9 @@ static void cmd_health_print_kernel(void) {
     video_print("  Paging: ", 0x07);
     video_print(paging_is_ready() ? "READY" : "DISABLED", 0x0F);
     video_print("\n", 0x07);
+    video_print("  App API: ", 0x07);
+    video_print(app_api_is_ready() ? "READY" : "DISABLED", 0x0F);
+    video_print("\n", 0x07);
     video_print("  Memoria KB: total=", 0x07);
     print_num(memory_get_total() / 1024);
     video_print(" usada=", 0x08);
@@ -289,6 +295,70 @@ static void cmd_health(void) {
     }
 
     cmd_health_print_kernel();
+    video_end_update();
+}
+
+static void cmd_appcheck_print_result(const char* label, int result) {
+    video_print("  ", 0x07);
+    video_print(label, 0x07);
+    video_print(" retorno=", 0x08);
+    print_num((uint32_t)result);
+    video_print(result == OK ? " OK\n" : " ERRO\n", result == OK ? 0x0A : 0x0C);
+}
+
+static void cmd_appcheck(void) {
+    app_api_version_t version;
+    app_uptime_info_t uptime;
+    app_memory_info_t memory;
+    const char* message = "appcheck: console_write OK\n";
+    int result;
+
+    kmemset(appcheck_oversized_text, 'A', sizeof(appcheck_oversized_text));
+    video_begin_update();
+    video_print("Teste da API de aplicativos:\n", 0x0B);
+
+    result = app_api_get_version(&version);
+    cmd_appcheck_print_result("get_version", result);
+    if (result == OK) {
+        video_print("    versao=", 0x08);
+        print_num(version.major);
+        video_print(".", 0x08);
+        print_num(version.minor);
+        video_print("\n", 0x07);
+    }
+
+    result = app_api_console_write(message, kstrlen(message));
+    cmd_appcheck_print_result("console_write", result);
+
+    result = app_api_get_uptime(&uptime);
+    cmd_appcheck_print_result("get_uptime", result);
+    if (result == OK) {
+        video_print("    ticks=", 0x08);
+        print_num(uptime.ticks);
+        video_print(" segundos=", 0x08);
+        print_num(uptime.seconds);
+        video_print("\n", 0x07);
+    }
+
+    result = app_api_get_memory_info(&memory);
+    cmd_appcheck_print_result("get_memory_info", result);
+    if (result == OK) {
+        video_print("    total_kb=", 0x08);
+        print_num(memory.total_bytes / 1024);
+        video_print(" livre_kb=", 0x08);
+        print_num(memory.free_bytes / 1024);
+        video_print(" paginas_livres=", 0x08);
+        print_num(memory.free_pages);
+        video_print("\n", 0x07);
+    }
+
+    result = app_api_get_version(NULL);
+    cmd_appcheck_print_result("get_version nulo", result);
+    result = app_api_console_write("", 0);
+    cmd_appcheck_print_result("console_write vazio", result);
+    result = app_api_console_write(appcheck_oversized_text,
+                                   sizeof(appcheck_oversized_text));
+    cmd_appcheck_print_result("console_write grande", result);
     video_end_update();
 }
 
@@ -729,6 +799,8 @@ int shell_process_command(const char* input) {
         cmd_uptime();
     } else if (kstrcmp(cmd, "health") == 0) {
         cmd_health();
+    } else if (kstrcmp(cmd, "appcheck") == 0) {
+        cmd_appcheck();
     } else if (kstrcmp(cmd, "beep") == 0) {
         cmd_beep(input);
     } else if (kstrcmp(cmd, "melody") == 0) {

@@ -38,6 +38,9 @@ RECOVERY_OBJ = build/recovery.o
 STRING_C = src/core/string.c
 STRING_OBJ = build/string.o
 
+APP_API_C = src/core/app_api.c
+APP_API_OBJ = build/app_api.o
+
 SWITCH_ASM = src/kernel/switch.asm
 SWITCH_OBJ = build/switch.o
 
@@ -178,7 +181,7 @@ FAT12_DISK_BYTES = 1474560
 FAT12_RESERVED_SECTORS = 1024
 
 # Todas as variáveis de objetos
-OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(RECOVERY_OBJ) $(STRING_OBJ) $(SWITCH_OBJ) \
+OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(RECOVERY_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(AC97_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(COMPRESS_OBJ) \
@@ -216,6 +219,10 @@ $(RECOVERY_OBJ): $(RECOVERY_C)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(STRING_OBJ): $(STRING_C)
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(APP_API_OBJ): $(APP_API_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

@@ -4,6 +4,7 @@
 #include "core/log.h"
 #include "core/errors.h"
 #include "core/recovery.h"
+#include "core/app_api.h"
 #include "drivers/idt.h"
 #include "core/keyboard.h"
 #include "drivers/mouse.h"
@@ -337,6 +338,10 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     buf[i] = '\0';
     video_print(buf, 0x07);
     video_print(" MB livres\n", 0x07);
+
+    if (app_api_init() != OK) {
+        LOG_ERROR("KERNEL", "Falha ao inicializar API de aplicativos");
+    }
 
     video_print("[..] Configurando paginacao...\n", 0x08);
     if (paging_init() != OK) {

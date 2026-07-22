@@ -37,6 +37,7 @@ Comandos disponiveis:
   guitest   - Testa primitivas GUI 2D
   guimode   - Altera entre gui classica (TUI) e moderna
   health    - Exibe metricas e estado de recovery do kernel
+  appcheck  - Testa a API de aplicativos
   reboot    - Reinicia o sistema
   shutdown  - Desliga o sistema
 ```
@@ -162,6 +163,17 @@ Exibe métricas detalhadas do kernel, estado do recovery, paginação, processos
 ```
 zephyr> health
 ```
+
+## `appcheck`
+Testa a fachada segura da API de aplicativos, incluindo versão, console,
+uptime, memória e validação de argumentos.
+
+```
+zephyr> appcheck
+```
+
+O comando não usa `int 0x80` nesta fase. O dispatcher e a API para processos
+em modo usuário serão adicionados na próxima etapa.
 
 ## `explorer`
 Abre o gerenciador de arquivos estilo ZephyrOS Explorer (TUI).
