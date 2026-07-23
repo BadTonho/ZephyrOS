@@ -172,9 +172,11 @@ void shell_handle_app_request(uint32_t request) {
     switch ((ipc_app_request_t)request) {
         case IPC_APP_OPEN_SHELL:
             desktop_set_active(0);
-            shell_reset_input();
-            video_terminal_begin();
-            shell_print_prompt();
+            if (!video_terminal_is_active()) {
+                shell_reset_input();
+                video_terminal_begin();
+                shell_print_prompt();
+            }
             taskbar_draw();
             break;
         case IPC_APP_OPEN_EXPLORER:
