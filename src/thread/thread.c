@@ -2,6 +2,7 @@
 #include "core/memory.h"
 #include "core/log.h"
 #include "core/errors.h"
+#include "core/string.h"
 
 #define THREAD_TEST_ITERATIONS 3U
 #define THREAD_TEST_TRACE_SIZE (THREAD_TEST_ITERATIONS * 2U)
