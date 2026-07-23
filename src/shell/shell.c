@@ -140,7 +140,7 @@ static void shell_return_to_terminal_tail(void) {
 }
 
 static void shell_suspend_terminal(void) {
-    shell_prompt_visible = 0;
+    /* O prompt continua no historico enquanto outro app cobre o terminal. */
     if (video_terminal_is_active()) video_terminal_suspend();
 }
 
