@@ -78,7 +78,10 @@ static int ata_wait_write_complete(uint16_t port) {
         if (status == 0 || status == 0xFF || (status & ATA_SR_ERR)) {
             return ERR_DISK;
         }
-        if (!(status & ATA_SR_BSY) && !(status & ATA_SR_DRQ)) {
+        /* Depois da ultima palavra PIO, alguns controladores mantem DRQ
+           visivel ate o proximo comando. BSY limpo sem erro confirma que
+           o dispositivo concluiu a operacao, sem depender desse detalhe. */
+        if (!(status & ATA_SR_BSY)) {
             return OK;
         }
     }

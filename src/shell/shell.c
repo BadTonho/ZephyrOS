@@ -715,7 +715,6 @@ static void cmd_appcheck(void) {
     int result;
 
     kmemset(appcheck_oversized_text, 'A', sizeof(appcheck_oversized_text));
-    video_begin_update();
     video_print("Teste da API de aplicativos:\n", 0x0B);
 
     result = app_api_get_version(&version);
@@ -774,7 +773,6 @@ static void cmd_appcheck(void) {
     cmd_appcheck_files();
     cmd_appcheck_ipc();
     cmd_appcheck_loader();
-    video_end_update();
 }
 
 static void cmd_app(const char* args) {
