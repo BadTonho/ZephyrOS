@@ -222,8 +222,7 @@ void shell_process_main(void) {
 }
 
 void desktop_process_main(void) {
-    desktop_set_active(1);
-    desktop_draw();
+    /* O Shell e a sessao inicial; o Desktop abre por comando ou taskbar. */
     while (1) {
         process_yield();
     }
