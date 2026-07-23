@@ -1059,8 +1059,6 @@ static void cmd_shutdown(void) {
 void shell_init(void) {
     shell_reset_input();
     shell_prompt_visible = 0;
-    video_terminal_begin();
-    shell_print_prompt();
 }
 
 void shell_print_prompt(void) {

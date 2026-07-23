@@ -34,13 +34,6 @@
 static int kernel_service_fallback = 0;
 static uint32_t kernel_shell_pid = 0;
 static volatile uint32_t kernel_pending_shell_request = 0;
-static volatile uint8_t kernel_boot_ready = 0;
-
-static void kernel_wait_for_boot_ready(void) {
-    while (!kernel_boot_ready) {
-        process_yield();
-    }
-}
 
 static int kernel_send_shell_request(uint32_t request) {
     ipc_msg_t msg;
@@ -198,8 +191,6 @@ static void global_mouse_handler(mouse_event_t* evt) {
 }
 
 void system_process_main(void) {
-    kernel_wait_for_boot_ready();
-
     while (1) {
         keyboard_process_events();
         mouse_process_events();
@@ -211,7 +202,6 @@ void system_process_main(void) {
 }
 
 void shell_process_main(void) {
-    kernel_wait_for_boot_ready();
     shell_init();
     process_set_focus(process_get_current()->pid);
     ipc_msg_t msg;
@@ -232,7 +222,6 @@ void shell_process_main(void) {
 }
 
 void desktop_process_main(void) {
-    kernel_wait_for_boot_ready();
     desktop_set_active(1);
     desktop_draw();
     while (1) {
@@ -547,8 +536,10 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
                                "Carregador ZAPP indisponivel");
     }
 
-    /* Libera processos nativos somente quando todos os servicos estiverem prontos. */
-    kernel_boot_ready = 1;
+    /* O Shell so desenha sua sessao apos a conclusao de todo o boot. */
+    if (shell_process) {
+        kernel_request_shell_app(IPC_APP_OPEN_SHELL);
+    }
 
     while (1) {
         if (kernel_service_fallback) {
