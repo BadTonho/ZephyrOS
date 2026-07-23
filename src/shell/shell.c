@@ -49,6 +49,7 @@ static void print_num(uint32_t num);
 
 #define APP_CHECK_DEMO_PATH "DEMO.ZAP"
 #define APP_CHECK_DEMO_DATA_SIZE 192U
+#define APP_CHECK_DEMO_MAX_CLEANUP 4U
 
 static void shell_demo_patch_u32(uint8_t* code, uint32_t offset,
                                  uint32_t value) {
@@ -63,6 +64,16 @@ static void shell_demo_emit_mov(uint8_t* code, uint32_t* offset,
     code[(*offset)++] = (uint8_t)(0xB8U + reg);
     shell_demo_patch_u32(code, *offset, value);
     *offset += 4;
+}
+
+static void shell_remove_demo_image(void) {
+    uint32_t attempts = 0;
+
+    /* A FAT12 legada pode manter uma entrada de uma validacao interrompida. */
+    while (attempts < APP_CHECK_DEMO_MAX_CLEANUP &&
+           fs_delete_file(APP_CHECK_DEMO_PATH) == OK) {
+        attempts++;
+    }
 }
 
 static uint32_t shell_build_demo_image(void) {
@@ -637,6 +648,8 @@ static void cmd_appcheck_loader(void) {
         return;
     }
 
+    shell_remove_demo_image();
+
     result = fs_write_file_at(APP_CHECK_DEMO_PATH,
                               appcheck_demo_image, image_size);
     cmd_appcheck_print_result("loader_demo_gravacao", result);
@@ -648,7 +661,14 @@ static void cmd_appcheck_loader(void) {
             print_num(pid);
             video_print(" assincrono\n", 0x07);
         }
-        result = fs_delete_file(APP_CHECK_DEMO_PATH);
+        shell_remove_demo_image();
+        result = fs_read_file(APP_CHECK_DEMO_PATH, appcheck_demo_image, 1);
+        if (result >= 0 && result != ERR_NOT_FOUND) {
+            LOG_ERROR("SHELL", "Arquivo temporario ZAPP permaneceu apos limpeza");
+            result = ERR_STATE;
+        } else {
+            result = OK;
+        }
         cmd_appcheck_print_result("loader_demo_remocao", result);
     }
 }

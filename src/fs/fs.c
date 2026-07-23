@@ -237,7 +237,9 @@ int fs_write_file_at(const char* path, const uint8_t* data, uint32_t size) {
         LOG_WARN("FS", "Escrita por caminho falhou");
         return ERR_DISK;
     }
-    return result;
+
+    /* Drivers FAT retornam bytes gravados; esta camada publica errors.h. */
+    return OK;
 }
 
 int fs_get_file_count_at(const char* dir_path) {
