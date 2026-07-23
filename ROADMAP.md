@@ -4,10 +4,11 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
-## Progresso Geral: 9/9 fases concluídas + Pós-Fase
+## Progresso Geral: base do sistema concluída; plataforma de aplicativos em validação
 
 ```
-[████████████████████████████████████████████] 100%
+Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
+Plataforma de aplicativos:   [█████████████████████████████░░░░░░░░░░░░░] Fase 6B em validação
 ```
 
 ---
@@ -293,6 +294,52 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
+## Plataforma de Aplicativos — evolução em fases
+
+> Documentação principal: `docs/melhorias futuras/api de aplicativos e syscalls.md`
+
+### Fases 1–5 — base isolada ✅
+
+- [x] Contrato da App API e diagnóstico com `appcheck`.
+- [x] Dispatcher de syscalls `int 0x80` com validação de argumentos.
+- [x] Serviços controlados de arquivos e IPC.
+- [x] Primeiro processo em ring 3, com encerramento e falhas isoladas.
+- [x] Carregador assíncrono de imagens `.ZAP`/`ZAPP`.
+
+### Fase 6A — foco e teclado para `.ZAP` ✅
+
+- [x] Um aplicativo externo em primeiro plano por vez.
+- [x] Teclado entregue por IPC ao aplicativo focado.
+- [x] `F12` cancela somente o aplicativo externo em foco.
+- [x] Foco, handles e prompt do Shell são restaurados ao encerrar.
+
+### Fase 6B — argumentos e primeira migração nativa ⏳
+
+- [x] App API `0.3` e ABI de lançamento em página própria.
+- [x] `app run <arquivo.ZAP> [arg1 arg2 ...]`, com até 8 argumentos e 511 caracteres.
+- [x] Imagens `.ZAP` antigas continuam recebendo uma estrutura de lançamento vazia válida.
+- [x] Imagem ZAPP interna para `echo`, executada em ring 3.
+- [x] Fallback nativo de `echo` quando loader, paging, modo usuário ou filesystem não estiverem disponíveis.
+- [x] Comando `app argtest <texto>` para validação visual.
+- [ ] Validar no QEMU: `echo`, `app argtest`, `app inputtest`, `appcheck`, `health` e interfaces existentes.
+
+### Próxima: Fase 6C — migração gradual de ferramentas nativas
+
+- [ ] Selecionar comandos CLI que dependam somente dos serviços já expostos pela App API.
+- [ ] Migrar um comando por vez, mantendo sempre o fallback nativo.
+- [ ] Ampliar `appcheck` e `health` para cada migração.
+- [ ] Não migrar Explorer, Settings, Task Manager ou Desktop antes de uma API gráfica segura.
+
+### Etapas posteriores da plataforma
+
+- [ ] Empacotador no host e formato completo `.zephyrosapp`.
+- [ ] Manifesto, versão e verificação de integridade dos pacotes.
+- [ ] Argumentos mais completos, incluindo aspas e escapes.
+- [ ] Serviços adicionais da App API conforme a necessidade dos aplicativos migrados.
+- [ ] Avaliar permissões e isolamento adicional somente após métricas e testes de estabilidade.
+
+---
+
 ## Backlog e Melhorias Futuras
 
 O projeto conta com uma extensa lista de melhorias e novos módulos planejados, documentados na pasta `docs/melhorias futuras/`. O backlog está organizado nas seguintes categorias:
@@ -300,7 +347,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 ### Kernel e Sistema
 - **Fundacao do Kernel** (`fundacao do kernel.md`) - etapa prioritaria para organizar as bases antes das otimizacoes
 - **Atualizacao e Otimizacao do Kernel** (`atualizacao do kernel.md`) - etapa posterior, guiada por metricas
-- **API de Aplicativos e Syscalls** (`api de aplicativos e syscalls.md`) - Fases 1 a 6A validadas; Fase 6B implementada e aguardando validacao antes da migracao gradual de ferramentas nativas
+- **API de Aplicativos e Syscalls** (`api de aplicativos e syscalls.md`) - Fases 1 a 6A validadas; Fase 6B implementada e aguardando validação antes da Fase 6C
 - **Resiliência do Sistema** (`resiliencia do sistema.md`)
 - **Multitarefa Preemptiva Avançada** (`multitarefa preemptiva.md`)
 - **Gerenciador de Energia** (`gerenciador de energia.md`)
