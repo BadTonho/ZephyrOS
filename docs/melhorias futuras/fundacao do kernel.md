@@ -25,6 +25,12 @@ e futuras camadas de compatibilidade.
 
 Implementado nesta etapa:
 
+- [x] alinhamento de 8 bytes para blocos do heap dinamico;
+- [x] confirmacao controlada da conclusao de escritas ATA PIO;
+- [x] troca cooperativa real de contexto de threads, com stacks dedicadas;
+- [x] round-robin de threads com indice persistente e auto teste `threadtest`;
+- [x] pool fixo de PIDs opacos, sem busca dupla na criacao de processos;
+- [x] desenho de texto VESA diretamente no backbuffer por glyph;
 - [x] reinicializacao dos controles do scheduler e do registro de processos;
 - [x] busca segura por PID, validacao de estados e protecao do Idle;
 - [x] fallback para o Idle quando nao houver processo pronto;
@@ -92,6 +98,8 @@ Pendente para a validacao no ambiente do usuario:
 - Nao implementar isolamento completo de processos.
 - Nao trocar o scheduler apenas por preferencia de design.
 - Nao introduzir otimizacoes que dificultem diagnostico ou manutencao.
+- O scheduler de threads permanece cooperativo; a preempcao continua sob o
+  scheduler de processos existente.
 
 ## Resultado esperado
 

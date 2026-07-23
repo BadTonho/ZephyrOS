@@ -183,6 +183,7 @@ void pmm_free_pages(void* addr, uint32_t count) {
 #define HEAP_MAGIC         0x48454150
 #define HEAP_MAGIC_ALIGNED 0x414C4947
 #define HEAP_MAGIC_FREED   0x46524545
+#define HEAP_ALIGNMENT     8U
 #define HEAP_MIN_SPLIT     16
 #define HEAP_END           (HEAP_START + HEAP_SIZE)
 
@@ -201,6 +202,13 @@ typedef struct heap_aligned_header {
 } heap_aligned_header_t;
 
 static heap_block_t* heap_base = 0;
+
+static uint32_t heap_align_size(uint32_t size) {
+    uint32_t padding = HEAP_ALIGNMENT - 1U;
+
+    if (size > 0xFFFFFFFFU - padding) return 0;
+    return (size + padding) & ~padding;
+}
 
 static int heap_range_contains(uint32_t address, uint32_t size) {
     if (address < HEAP_START || address > HEAP_END) return 0;
@@ -239,8 +247,16 @@ static int heap_block_matches(heap_block_t* block, void* user_ptr) {
 }
 
 static void* kmalloc_internal(uint32_t size) {
+    uint32_t aligned_size;
+
     if (size == 0 || size > HEAP_SIZE - sizeof(heap_block_t)) {
         LOG_ERROR("MEM", "Tamanho de alocacao invalido");
+        return 0;
+    }
+
+    aligned_size = heap_align_size(size);
+    if (aligned_size == 0 || aligned_size > HEAP_SIZE - sizeof(heap_block_t)) {
+        LOG_ERROR("MEM", "Alinhamento de alocacao invalido");
         return 0;
     }
 
@@ -252,11 +268,12 @@ static void* kmalloc_internal(uint32_t size) {
             LOG_ERROR("MEM", "Lista do heap corrompida durante alocacao");
             return 0;
         }
-        if (curr->free && curr->size >= size) {
-            if (curr->size - size >= sizeof(heap_block_t) + HEAP_MIN_SPLIT) {
-                heap_block_t* new_block = (heap_block_t*)((uint8_t*)curr + sizeof(heap_block_t) + size);
+        if (curr->free && curr->size >= aligned_size) {
+            if (curr->size - aligned_size >= sizeof(heap_block_t) + HEAP_MIN_SPLIT) {
+                heap_block_t* new_block = (heap_block_t*)((uint8_t*)curr +
+                    sizeof(heap_block_t) + aligned_size);
                 new_block->magic = HEAP_MAGIC;
-                new_block->size = curr->size - size - sizeof(heap_block_t);
+                new_block->size = curr->size - aligned_size - sizeof(heap_block_t);
                 new_block->free = 1;
                 new_block->next = curr->next;
                 new_block->prev = curr;
@@ -265,7 +282,7 @@ static void* kmalloc_internal(uint32_t size) {
                     new_block->next->prev = new_block;
                 }
                 curr->next = new_block;
-                curr->size = size;
+                curr->size = aligned_size;
             }
             curr->free = 0;
             curr->user_ptr = (uint8_t*)curr + sizeof(heap_block_t);

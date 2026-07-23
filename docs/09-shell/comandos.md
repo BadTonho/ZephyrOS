@@ -21,6 +21,7 @@ Comandos disponiveis:
   mem       - Mostra informacoes de memoria
   procs     - Mostra processos ativos
   threads   - Mostra threads ativas
+  threadtest - Valida troca cooperativa de threads
   uptime    - Mostra tempo ligado
   beep      - Toca um beep (freq duracao_ms)
   melody    - Toca uma melodia
@@ -117,6 +118,16 @@ Threads ativas:
   TID 1  main  RUNNING
   TID 2  timer  BLOCKED
 Total: 2 threads
+```
+
+## `threadtest`
+Cria duas threads temporarias, alterna entre elas cooperativamente e confirma
+que os registradores e as stacks foram trocados na ordem esperada. O teste
+limpa as threads antes de retornar ao Shell.
+
+```
+zephyr> threadtest
+Teste de threads: OK
 ```
 
 ## `uptime`

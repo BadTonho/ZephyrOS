@@ -51,6 +51,8 @@ typedef struct {
 void vesa_init(uint32_t boot_info_addr);
 void vesa_set_mode(uint32_t width, uint32_t height, uint32_t bpp);
 void vesa_put_pixel(uint32_t x, uint32_t y, vesa_color_t color);
+void vesa_draw_glyph8x16(uint32_t x, uint32_t y, const uint8_t* glyph,
+                          vesa_color_t color);
 vesa_color_t vesa_get_pixel(uint32_t x, uint32_t y);
 void vesa_clear(vesa_color_t color);
 void vesa_fill_rect(uint32_t x, uint32_t y, uint32_t w, uint32_t h, vesa_color_t color);

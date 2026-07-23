@@ -5,6 +5,7 @@
 
 #define MAX_THREADS 32
 #define THREAD_STACK_SIZE 4096
+#define THREAD_NAME_LENGTH 32
 
 typedef enum {
     THREAD_UNUSED = 0,
@@ -15,7 +16,7 @@ typedef enum {
 
 typedef struct {
     uint32_t id;
-    char name[32];
+    char name[THREAD_NAME_LENGTH];
     thread_state_t state;
     uint32_t* stack;
     uint32_t esp;
@@ -36,5 +37,7 @@ thread_t* thread_get_by_id(uint32_t id);
 uint32_t thread_get_count(void);
 void thread_scheduler_tick(void);
 thread_t* thread_schedule_next(void);
+int thread_run_self_test(void);
+extern void thread_context_switch(uint32_t* previous_esp, uint32_t next_esp);
 
 #endif

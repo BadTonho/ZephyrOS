@@ -1,5 +1,6 @@
 [BITS 32]
 [GLOBAL process_context_switch]
+[GLOBAL thread_context_switch]
 [GLOBAL process_user_enter]
 [GLOBAL process_user_termination_enter]
 [GLOBAL tss_flush]
@@ -91,4 +92,15 @@ process_context_switch:
     mov edi, [edx + 20]
     mov ebp, [edx + 24]
     mov edx, [edx + 12]
+    ret
+
+thread_context_switch:
+    ; [esp + 4] = endereco para salvar ESP anterior
+    ; [esp + 8] = ESP da proxima thread
+    ; A troca e cooperativa: a thread chama yield em um ponto seguro.
+    pushad
+    mov edx, [esp + 36]
+    mov [edx], esp
+    mov esp, [esp + 40]
+    popad
     ret

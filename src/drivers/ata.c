@@ -2,13 +2,10 @@
 #include "core/video.h"
 #include "core/log.h"
 #include "core/errors.h"
-#include "process/thread.h"
 #include "drivers/idt.h"
 
 static ata_device_t devices[2];
 static int driver_initialized = 0;
-static thread_t* ata_waiting_thread = 0;
-
 static uint32_t ata_read_ops = 0;
 static uint32_t ata_write_ops = 0;
 
@@ -17,10 +14,6 @@ static uint8_t inb(uint16_t port);
 static void ata_irq_handler(registers_t* regs) {
     (void)regs;
     inb(ATA_PRIMARY_IO + ATA_REG_STATUS);
-    if (ata_waiting_thread) {
-        thread_unblock(ata_waiting_thread);
-        ata_waiting_thread = 0;
-    }
 }
 
 #define ATA_READ_RETRIES 3
@@ -73,17 +66,24 @@ static int ata_wait_drq(uint16_t port) {
     return ERR_TIMEOUT;
 }
 
-static int ata_wait_irq(uint16_t port) {
-    if (thread_get_current()) {
-        ata_waiting_thread = thread_get_current();
-        thread_block_indefinite();
-        uint8_t status = inb(port + ATA_REG_STATUS);
-        if (status == 0 || status == 0xFF || (status & ATA_SR_ERR)) return ERR_DISK;
-        if (status & ATA_SR_DRQ) return OK;
-        return ERR_DISK;
-    } else {
-        return ata_wait_drq(port);
+static int ata_wait_data_ready(uint16_t port) {
+    return ata_wait_drq(port);
+}
+
+static int ata_wait_write_complete(uint16_t port) {
+    uint8_t status;
+
+    for (uint32_t i = 0; i < ATA_WAIT_LIMIT; i++) {
+        status = inb(port + ATA_REG_STATUS);
+        if (status == 0 || status == 0xFF || (status & ATA_SR_ERR)) {
+            return ERR_DISK;
+        }
+        if (!(status & ATA_SR_BSY) && !(status & ATA_SR_DRQ)) {
+            return OK;
+        }
     }
+
+    return ERR_TIMEOUT;
 }
 
 static int ata_wait_identify(uint16_t port) {
@@ -267,7 +267,7 @@ int ata_read_sectors(uint32_t lba, uint8_t count, uint8_t* buffer) {
 
         int failed = 0;
         for (uint8_t s = 0; s < count; s++) {
-            if (ata_wait_irq(io) != 0) {
+            if (ata_wait_data_ready(io) != OK) {
                 failed = 1;
                 break;
             }
@@ -324,7 +324,10 @@ int ata_write_sectors(uint32_t lba, uint8_t count, const uint8_t* buffer) {
     outb(io + ATA_REG_COMMAND, ATA_CMD_WRITE);
 
     for (uint8_t s = 0; s < count; s++) {
-        if (ata_wait_irq(io) != 0) return ERR_DISK;
+        if (ata_wait_data_ready(io) != OK) {
+            LOG_ERROR("ATA", "Disco nao ficou pronto para receber dados");
+            return ERR_DISK;
+        }
 
         for (int i = 0; i < 256; i++) {
             uint16_t data = buffer[s * 512 + i * 2] | (buffer[s * 512 + i * 2 + 1] << 8);
@@ -336,5 +339,10 @@ int ata_write_sectors(uint32_t lba, uint8_t count, const uint8_t* buffer) {
         }
     }
 
-    return 0;
+    if (ata_wait_write_complete(io) != OK) {
+        LOG_ERROR("ATA", "Escrita ATA nao confirmou conclusao");
+        return ERR_DISK;
+    }
+
+    return OK;
 }

@@ -10,12 +10,14 @@
 #include "drivers/tss.h"
 
 #define PROCESS_DEFAULT_EFLAGS 0x202U
+#define PROCESS_PID_POOL_SIZE (MAX_PROCESSES - 1U)
 
 process_t processes[MAX_PROCESSES];
 static process_t* current_process = 0;
 static uint8_t idle_stack[KERNEL_STACK_SIZE] __attribute__((aligned(16)));
 uint32_t process_count = 0;
-static uint32_t next_pid = 1;
+static uint32_t free_pids[PROCESS_PID_POOL_SIZE];
+static uint32_t free_pid_count = 0;
 static int last_scheduled_idx = -1;
 static int last_user_fault_valid = 0;
 static uint32_t last_user_fault_pid = 0;
@@ -34,33 +36,53 @@ static void process_idle_main(void) {
 }
 
 static uint32_t process_allocate_pid(void) {
-    uint32_t candidate;
-
-    for (uint32_t attempt = 0; attempt < MAX_PROCESSES; attempt++) {
-        candidate = next_pid;
-        if (candidate == 0) candidate = 1;
-        next_pid = candidate + 1;
-        if (next_pid == 0) next_pid = 1;
-
-        int in_use = 0;
-        for (int i = 0; i < MAX_PROCESSES; i++) {
-            if (processes[i].state != PROCESS_STATE_UNUSED &&
-                processes[i].pid == candidate) {
-                in_use = 1;
-                break;
-            }
-        }
-        if (!in_use) return candidate;
+    if (free_pid_count == 0) {
+        LOG_ERROR("PROC", "Pool de PIDs esgotado");
+        return 0;
     }
 
-    LOG_ERROR("PROC", "Nao foi possivel reservar um PID unico");
-    return 0;
+    return free_pids[--free_pid_count];
+}
+
+static void process_release_pid(uint32_t pid) {
+    if (pid == 0 || free_pid_count >= PROCESS_PID_POOL_SIZE) {
+        LOG_ERROR("PROC", "PID invalido ao retornar para o pool");
+        return;
+    }
+
+    for (uint32_t i = 0; i < free_pid_count; i++) {
+        if (free_pids[i] == pid) {
+            LOG_ERROR("PROC", "PID duplicado no pool de processos");
+            return;
+        }
+    }
+
+    free_pids[free_pid_count++] = pid;
+}
+
+static void process_initialize_pid_pool(void) {
+    free_pid_count = PROCESS_PID_POOL_SIZE;
+    for (uint32_t i = 0; i < PROCESS_PID_POOL_SIZE; i++) {
+        free_pids[i] = PROCESS_PID_POOL_SIZE - i;
+    }
+}
+
+static void process_discard_new_process(process_t* proc) {
+    if (!proc) return;
+
+    if (proc->pid != 0) process_release_pid(proc->pid);
+    if (proc->kernel_stack) {
+        kfree((void*)proc->kernel_stack);
+        proc->kernel_stack = 0;
+    }
+    kmemset(proc, 0, sizeof(process_t));
+    proc->state = PROCESS_STATE_UNUSED;
 }
 
 void process_init(void) {
     current_process = 0;
     process_count = 0;
-    next_pid = 1;
+    process_initialize_pid_pool();
     last_scheduled_idx = -1;
     last_user_fault_valid = 0;
     last_user_fault_pid = 0;
@@ -78,6 +100,7 @@ void process_init(void) {
     LOG_INFO("PROC", "Gerenciador de processos inicializado");
 }
 
+/* A funcao permanece separada do bootstrap para o Idle nao consumir PID. */
 void process_bootstrap_idle(void) {
     process_t* proc = &processes[0];
     kmemset(proc, 0, sizeof(process_t));
@@ -163,7 +186,7 @@ process_t* process_create(const char* name, void (*entry_point)()) {
     proc->kernel_stack = (uint32_t)kmalloc(KERNEL_STACK_SIZE);
     if (!proc->kernel_stack) {
         LOG_ERROR("PROC", "Falha ao alocar stack do processo");
-        proc->state = PROCESS_STATE_UNUSED;
+        process_discard_new_process(proc);
         return 0;
     }
     proc->kernel_stack_top = proc->kernel_stack + KERNEL_STACK_SIZE;
@@ -684,6 +707,8 @@ int process_take_user_test_result(uint32_t* pid, uint32_t* faulted) {
 }
 
 void process_destroy(process_t* proc) {
+    uint32_t pid;
+
     if (!process_pointer_valid(proc)) {
         LOG_ERROR("PROC", "Ponteiro invalido ao destruir processo");
         return;
@@ -711,6 +736,7 @@ void process_destroy(process_t* proc) {
     if (process_get_focus() == proc->pid) {
         process_set_focus(0);
     }
+    pid = proc->pid;
     proc->state = PROCESS_STATE_UNUSED;
     if (proc->kernel_stack) {
         kfree((void*)proc->kernel_stack);
@@ -722,6 +748,7 @@ void process_destroy(process_t* proc) {
     if (process_count > 0) process_count--;
     kmemset(proc, 0, sizeof(process_t));
     proc->state = PROCESS_STATE_UNUSED;
+    process_release_pid(pid);
     LOG_INFO("PROC", "Processo destruido");
 }
 

@@ -21,6 +21,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `mem` | - | Exibe o uso da memória RAM (total, livre, usada). |
 | `procs` | - | Lista os processos ativos no sistema. |
 | `threads` | - | Lista as threads ativas do sistema. |
+| `threadtest` | - | Valida a troca cooperativa de contexto entre duas threads temporarias. |
 | `uptime` | - | Exibe o tempo que o sistema está ligado. |
 | `beep` | `[freq] [dur]` | Emite um som de aviso ou reproduz uma frequência. |
 | `melody` | - | Toca uma escala musical no PC Speaker. |

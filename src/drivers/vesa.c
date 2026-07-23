@@ -239,6 +239,46 @@ void vesa_put_pixel(uint32_t x, uint32_t y, vesa_color_t color) {
     ((uint32_t*)row)[x] = color.raw;
 }
 
+void vesa_draw_glyph8x16(uint32_t x, uint32_t y, const uint8_t* glyph,
+                          vesa_color_t color) {
+    uint8_t* target;
+    uint32_t visible_width;
+    uint32_t visible_height;
+
+    if (!glyph || !current_mode.initialized ||
+        x >= current_mode.width || y >= current_mode.height) {
+        return;
+    }
+
+    visible_width = current_mode.width - x;
+    if (visible_width > FONT_WIDTH) visible_width = FONT_WIDTH;
+    visible_height = current_mode.height - y;
+    if (visible_height > FONT_HEIGHT) visible_height = FONT_HEIGHT;
+    target = backbuffer ? backbuffer : (uint8_t*)current_mode.framebuffer;
+
+    for (uint32_t row = 0; row < visible_height; row++) {
+        uint8_t bits = glyph[row];
+
+        if (current_mode.bpp == VESA_BPP_24) {
+            uint8_t* pixels = target + (y + row) * current_mode.pitch + x * 3U;
+            for (uint32_t col = 0; col < visible_width; col++) {
+                if (bits & (0x80U >> col)) {
+                    uint8_t* pixel = pixels + col * 3U;
+                    pixel[0] = color.channels.blue;
+                    pixel[1] = color.channels.green;
+                    pixel[2] = color.channels.red;
+                }
+            }
+        } else {
+            uint32_t* pixels = (uint32_t*)(target +
+                (y + row) * current_mode.pitch + x * 4U);
+            for (uint32_t col = 0; col < visible_width; col++) {
+                if (bits & (0x80U >> col)) pixels[col] = color.raw;
+            }
+        }
+    }
+}
+
 vesa_color_t vesa_get_pixel(uint32_t x, uint32_t y) {
     vesa_color_t c;
     c.raw = 0;

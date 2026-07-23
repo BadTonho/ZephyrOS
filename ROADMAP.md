@@ -92,6 +92,7 @@ Sistema operacional em C + Assembly (x86), do zero.
 | `mem` | Mostra memória total/livre/usada |
 | `procs` | Lista processos ativos |
 | `threads` | Lista threads ativas |
+| `threadtest` | Valida troca cooperativa de threads |
 | `uptime` | Tempo desde boot |
 | `beep` | Toca beep (freq duracao) |
 | `melody` | Toca escala musical |
@@ -119,8 +120,8 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 - [x] PC Speaker - beep com frequência/duração customizável
 - [x] Reprodução de melodias (array de frequências)
-- [x] Multi-threading básico (create, block, yield)
-- [x] Thread scheduler (round-robin)
+- [x] Multi-threading cooperativo (create, block, yield e troca de contexto)
+- [x] Thread scheduler round-robin com `threadtest`
 
 ## Fase 9 - File Manager ✅
 > Arquivos: `src/filemanager/filemanager.c`, `src/include/filemanager.h`

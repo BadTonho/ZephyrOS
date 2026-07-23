@@ -27,15 +27,7 @@ void gui_draw_text(uint32_t x, uint32_t y, const char* text, uint32_t color) {
         }
 
         const uint8_t* glyph = font_get_glyph(c);
-        if (glyph) {
-            for (uint32_t row = 0; row < FONT_HEIGHT; row++) {
-                for (uint32_t col = 0; col < FONT_WIDTH; col++) {
-                    if (glyph[row] & (0x80 >> col)) {
-                        vesa_put_pixel(curr_x + col, curr_y + row, fg);
-                    }
-                }
-            }
-        }
+        if (glyph) vesa_draw_glyph8x16(curr_x, curr_y, glyph, fg);
         curr_x += FONT_WIDTH;
     }
 }

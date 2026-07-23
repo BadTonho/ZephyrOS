@@ -3,6 +3,7 @@
 #include "core/log.h"
 #include "core/errors.h"
 #include "process/process.h"
+#include "process/thread.h"
 
 static uint32_t ticks = 0;
 
@@ -28,6 +29,7 @@ void timer_handler(registers_t* regs) {
     (void)regs;
     ticks++;
     scheduler_tick();
+    thread_scheduler_tick();
     
     // Como process_yield não retorna no caso de uma preempção,
     // precisamos confirmar a interrupção no PIC antes de trocar de contexto.

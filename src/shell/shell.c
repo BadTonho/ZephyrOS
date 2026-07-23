@@ -335,6 +335,7 @@ static void cmd_help(void) {
     video_print("  mem      - Mostra informacoes de memoria\n", 0x07);
     video_print("  procs    - Mostra processos ativos\n", 0x07);
     video_print("  threads  - Mostra threads ativas\n", 0x07);
+    video_print("  threadtest - Valida troca cooperativa de threads\n", 0x07);
     video_print("  uptime   - Mostra tempo ligado\n", 0x07);
     video_print("  beep     - Toca um beep (freq duracao_ms)\n", 0x07);
     video_print("  melody   - Toca uma melodia\n", 0x07);
@@ -1090,6 +1091,13 @@ void shell_init(void) {
     shell_prompt_visible = 0;
 }
 
+static void cmd_threadtest(void) {
+    int result = thread_run_self_test();
+
+    video_print("Teste de threads: ", 0x0B);
+    video_print(result == OK ? "OK\n" : "ERRO\n", result == OK ? 0x0A : 0x0C);
+}
+
 void shell_print_prompt(void) {
     shell_resume_terminal();
     if (shell_prompt_visible) return;
@@ -1325,6 +1333,8 @@ int shell_process_command(const char* input) {
         cmd_procs();
     } else if (kstrcmp(cmd, "threads") == 0) {
         cmd_threads();
+    } else if (kstrcmp(cmd, "threadtest") == 0) {
+        cmd_threadtest();
     } else if (kstrcmp(cmd, "uptime") == 0) {
         cmd_uptime();
     } else if (kstrcmp(cmd, "health") == 0) {
