@@ -15,6 +15,7 @@ Desktop.ini
 .mailmap
 Makefile.local
 /problemas
+lembrar.md
 
 # Logs e arquivos temporarios locais
 *.log
