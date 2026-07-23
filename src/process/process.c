@@ -452,6 +452,8 @@ static int process_user_load_image(page_directory_t* dir,
                                    uint32_t code_size,
                                    const uint8_t* data,
                                    uint32_t data_size) {
+    int result = OK;
+
     if (!dir || !kernel_dir || !code || code_size == 0 ||
         code_size > PAGE_SIZE || data_size > PAGE_SIZE ||
         (data_size > 0 && !data)) {
@@ -468,9 +470,19 @@ static int process_user_load_image(page_directory_t* dir,
     if (data_size > 0) {
         kmemcpy((void*)USER_DATA_BASE, data, data_size);
     }
+
+    /* A imagem pode ter vindo de uma fonte externa. Antes de torna-la
+       escalonavel, confirma que a pagina de codigo recebeu todos os bytes. */
+    for (uint32_t i = 0; i < code_size; i++) {
+        if (((uint8_t*)USER_CODE_BASE)[i] != code[i]) {
+            LOG_ERROR("PROC", "Falha ao verificar copia da imagem ring 3");
+            result = ERR_STATE;
+            break;
+        }
+    }
     paging_switch_directory(kernel_dir);
     asm volatile("sti");
-    return OK;
+    return result;
 }
 
 static int process_user_initialize(process_t* proc, page_directory_t* dir,

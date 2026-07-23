@@ -32,6 +32,7 @@
 static char input_buffer[SHELL_BUFFER_SIZE];
 static char appcheck_oversized_text[APP_API_MAX_TEXT_SIZE + 1];
 static uint8_t appcheck_demo_image[APP_IMAGE_MAX_FILE_SIZE];
+static uint8_t appcheck_demo_verify[APP_IMAGE_MAX_FILE_SIZE];
 static int input_pos = 0;
 static int shell_waiting_user_test = 0;
 static uint8_t shell_extended_scancode = 0;
@@ -74,6 +75,36 @@ static void shell_remove_demo_image(void) {
            fs_delete_file(APP_CHECK_DEMO_PATH) == OK) {
         attempts++;
     }
+}
+
+/* O demo e conhecido pelo Shell. Conferir o round-trip evita executar
+   codigo diferente do que acabou de ser gravado no FAT. */
+static int shell_verify_demo_image(uint32_t expected_size) {
+    int read_size;
+
+    if (expected_size == 0 || expected_size > sizeof(appcheck_demo_image)) {
+        LOG_ERROR("SHELL", "Tamanho invalido na verificacao do ZAPP demo");
+        return ERR_INVALID;
+    }
+
+    read_size = fs_read_file(APP_CHECK_DEMO_PATH, appcheck_demo_verify,
+                             sizeof(appcheck_demo_verify));
+    if (read_size < 0) {
+        LOG_ERROR("SHELL", "Falha ao reler ZAPP demo apos gravacao");
+        return ERR_DISK;
+    }
+    if ((uint32_t)read_size != expected_size) {
+        LOG_ERROR("SHELL", "Tamanho do ZAPP demo divergiu apos gravacao");
+        return ERR_STATE;
+    }
+
+    for (uint32_t i = 0; i < expected_size; i++) {
+        if (appcheck_demo_verify[i] != appcheck_demo_image[i]) {
+            LOG_ERROR("SHELL", "Conteudo do ZAPP demo divergiu apos gravacao");
+            return ERR_STATE;
+        }
+    }
+    return OK;
 }
 
 static uint32_t shell_build_demo_image(void) {
@@ -669,12 +700,16 @@ static void cmd_appcheck_loader(void) {
                               appcheck_demo_image, image_size);
     cmd_appcheck_print_result("loader_demo_gravacao", result);
     if (result == OK) {
-        result = app_loader_run_file(APP_CHECK_DEMO_PATH, &pid);
-        cmd_appcheck_print_result("loader_demo_execucao", result);
+        result = shell_verify_demo_image(image_size);
+        cmd_appcheck_print_result("loader_demo_integridade", result);
         if (result == OK) {
-            video_print("    pid=", 0x08);
-            print_num(pid);
-            video_print(" assincrono\n", 0x07);
+            result = app_loader_run_file(APP_CHECK_DEMO_PATH, &pid);
+            cmd_appcheck_print_result("loader_demo_execucao", result);
+            if (result == OK) {
+                video_print("    pid=", 0x08);
+                print_num(pid);
+                video_print(" assincrono\n", 0x07);
+            }
         }
         shell_remove_demo_image();
         result = fs_read_file(APP_CHECK_DEMO_PATH, appcheck_demo_image, 1);
