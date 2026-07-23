@@ -75,7 +75,7 @@ Sistema operacional em C + Assembly (x86), do zero.
 - [x] Terminal interativo com input via teclado
 - [x] Parser de comandos (split comando + argumentos)
 - [x] Prompt `zephyr>` colorido
-- [x] 27 comandos disponíveis
+- [x] 32 comandos disponíveis
 
 ### Comandos
 
@@ -107,6 +107,10 @@ Sistema operacional em C + Assembly (x86), do zero.
 | `edit` | Editor de texto (edit ARQUIVO.TXT) |
 | `mouse` | Mostra status do mouse PS/2 |
 | `guitest` | Testa primitivas GUI 2D |
+| `guimode` | Altera entre gui classica e moderna |
+| `health` | Exibe metricas e estado de recovery |
+| `appcheck` | Testa API, arquivos, IPC e carregador |
+| `app run <arq>` | Executa aplicativo ring 3 |
 | `reboot` | Reinicia o sistema |
 | `shutdown` | Desliga o sistema |
 
