@@ -25,6 +25,7 @@
 #include "apps/guitest.h"
 #include "core/recovery.h"
 #include "core/app_api.h"
+#include "core/app_builtin.h"
 #include "core/app_loader.h"
 #include "core/syscall.h"
 #include "drivers/idt.h"
@@ -38,6 +39,8 @@ static int shell_waiting_user_test = 0;
 static uint8_t shell_extended_scancode = 0;
 static uint8_t shell_prompt_visible = 0;
 static uint32_t shell_appcheck_loader_pid = 0;
+static uint32_t shell_echo_loader_pid = 0;
+static char appcheck_oversized_args[APP_LAUNCH_MAX_TEXT + 1U];
 
 #define SHELL_SCANCODE_EXTENDED 0xE0
 #define SHELL_SCANCODE_UP       0x48
@@ -262,11 +265,14 @@ void shell_report_user_test_result(void) {
 void shell_report_app_loader_result(void) {
     app_loader_result_t result;
     int appcheck_result;
+    int echo_result;
     process_t* current;
 
     /* Mantem o resultado no loader enquanto uma UI nativa cobre o terminal. */
     if (!video_terminal_is_active()) return;
     if (app_loader_take_finished_result(&result) != OK) return;
+
+    echo_result = shell_echo_loader_pid == result.pid;
 
     if (shell_appcheck_loader_pid == result.pid) {
         cmd_appcheck_print_result("loader_foco_aquisicao",
@@ -278,6 +284,21 @@ void shell_report_app_loader_result(void) {
                           OK : ERR_STATE;
         cmd_appcheck_print_result("loader_foco_retorno", appcheck_result);
         shell_appcheck_loader_pid = 0;
+    }
+
+    if (echo_result) {
+        shell_echo_loader_pid = 0;
+        if (result.start_failed || result.faulted || result.cancelled ||
+            result.exit_code != OK) {
+            video_print("\n[", 0x08);
+            video_print("ERRO", 0x0C);
+            video_print("] echo ring 3 nao concluiu (codigo ", 0x07);
+            print_num(result.exit_code);
+            video_print(").\n", 0x07);
+        }
+        shell_reset_input();
+        if (shell_should_show_prompt()) shell_print_prompt();
+        return;
     }
 
     video_print("\n[", 0x08);
@@ -495,8 +516,9 @@ static void cmd_help(void) {
     video_print("  mouse    - Mostra status do mouse PS/2\n", 0x07);
     video_print("  health   - Mostra estado dos componentes (use PgUp/PgDn)\n", 0x07);
     video_print("  appcheck - Testa API, arquivos, IPC e loader\n", 0x07);
-    video_print("  app run <arquivo.ZAP> - Executa aplicativo ring 3\n", 0x07);
+    video_print("  app run <arquivo.ZAP> [args] - Executa aplicativo ring 3\n", 0x07);
     video_print("  app inputtest - Testa teclado de aplicativo ring 3\n", 0x07);
+    video_print("  app argtest <texto> - Testa argumentos em aplicativo ring 3\n", 0x07);
     video_print("  usertest - Executa teste isolado em ring 3\n", 0x07);
     video_print("             usertest fault | falha controlada\n", 0x08);
     video_print("  play     - Toca arquivo WAV\n", 0x07);
@@ -542,6 +564,7 @@ static const char* shell_process_state_name(process_state_t state) {
 static void cmd_health_print_kernel(void) {
     process_t* current = process_get_current();
     ipc_stats_t ipc;
+    app_api_version_t app_version;
 
     ipc_get_stats(&ipc);
     video_print("\nEstado do kernel:\n", 0x0B);
@@ -586,6 +609,12 @@ static void cmd_health_print_kernel(void) {
     video_print("\n", 0x07);
     video_print("  App API: ", 0x07);
     video_print(app_api_is_ready() ? "READY" : "DISABLED", 0x0F);
+    if (app_api_is_ready() && app_api_get_version(&app_version) == OK) {
+        video_print(" v", 0x08);
+        print_num(app_version.major);
+        video_print(".", 0x08);
+        print_num(app_version.minor);
+    }
     video_print("\n", 0x07);
     video_print("  Syscalls: ", 0x07);
     video_print(syscall_is_ready() ? "READY" : "DISABLED", 0x0F);
@@ -795,8 +824,37 @@ static void cmd_appcheck_ipc(void) {
     cmd_appcheck_print_result("message_tipo_invalido", result);
 }
 
+static void cmd_appcheck_launch(void) {
+    static const char valid_args[] = "alpha beta";
+    static const char too_many_args[] = "1 2 3 4 5 6 7 8 9";
+    app_launch_info_t launch;
+    int result;
+
+    result = app_loader_build_launch_info(valid_args, &launch);
+    if (result == OK &&
+        (launch.argc != 2U || launch.raw_length != kstrlen(valid_args) ||
+         launch.args[0].offset != 0U || launch.args[0].length == 0U ||
+         launch.args[1].offset <= launch.args[0].offset)) {
+        result = ERR_STATE;
+    }
+    cmd_appcheck_print_result("loader_argumentos_validos", result);
+
+    result = app_loader_build_launch_info("", &launch);
+    if (result == OK && (launch.argc != 0U || launch.raw_length != 0U)) {
+        result = ERR_STATE;
+    }
+    cmd_appcheck_print_result("loader_argumentos_vazios", result);
+
+    result = app_loader_build_launch_info(too_many_args, &launch);
+    cmd_appcheck_print_result("loader_argumentos_excesso", result);
+
+    result = app_loader_build_launch_info(appcheck_oversized_args, &launch);
+    cmd_appcheck_print_result("loader_argumentos_grandes", result);
+}
+
 static void cmd_appcheck_loader(void) {
     app_image_header_t header;
+    app_launch_info_t launch;
     uint32_t image_size;
     uint32_t pid = 0;
     int result;
@@ -848,7 +906,12 @@ static void cmd_appcheck_loader(void) {
         result = shell_verify_image(APP_CHECK_DEMO_PATH, image_size);
         cmd_appcheck_print_result("loader_demo_integridade", result);
         if (result == OK) {
-            result = app_loader_run_file(APP_CHECK_DEMO_PATH, &pid);
+            result = app_loader_build_launch_info("appcheck alpha beta", &launch);
+            cmd_appcheck_print_result("loader_argumentos_execucao", result);
+        }
+        if (result == OK) {
+            result = app_loader_run_file_with_launch(APP_CHECK_DEMO_PATH,
+                                                     &launch, &pid);
             cmd_appcheck_print_result("loader_demo_execucao", result);
             if (result == OK) {
                 shell_appcheck_loader_pid = pid;
@@ -877,6 +940,8 @@ static void cmd_appcheck(void) {
     int result;
 
     kmemset(appcheck_oversized_text, 'A', sizeof(appcheck_oversized_text));
+    kmemset(appcheck_oversized_args, 'A', APP_LAUNCH_MAX_TEXT);
+    appcheck_oversized_args[APP_LAUNCH_MAX_TEXT] = '\0';
     video_print("Teste da API de aplicativos:\n", 0x0B);
 
     result = app_api_get_version(&version);
@@ -934,6 +999,7 @@ static void cmd_appcheck(void) {
     cmd_appcheck_print_result("process_exit", result);
     cmd_appcheck_files();
     cmd_appcheck_ipc();
+    cmd_appcheck_launch();
     cmd_appcheck_loader();
 }
 
@@ -976,16 +1042,48 @@ static void cmd_app_inputtest(void) {
     video_print(". Aguarde o foco do aplicativo.\n", 0x0A);
 }
 
+static void cmd_app_argtest(const char* text) {
+    app_launch_info_t launch;
+    uint32_t pid = 0;
+    int result;
+
+    if (!text || !*text) {
+        video_print("Uso: app argtest <texto>\n", 0x0E);
+        return;
+    }
+
+    result = app_loader_build_launch_info(text, &launch);
+    if (result != OK) {
+        video_print("Erro: argumentos invalidos (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+
+    result = app_builtin_run_argtest(&launch, &pid);
+    if (result != OK) {
+        video_print("Erro: teste de argumentos indisponivel (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+
+    video_print("Teste de argumentos iniciado, PID ", 0x0A);
+    print_num(pid);
+    video_print(".\n", 0x0A);
+}
+
 static void cmd_app(const char* args) {
     char subcommand[16];
     char path[FS_MAX_PATH];
+    app_launch_info_t launch;
     uint32_t sub_length = 0;
     uint32_t path_length = 0;
     uint32_t pid = 0;
     int result;
 
     if (!args) {
-        video_print("Uso: app run <arquivo.ZAP> | app inputtest\n", 0x0E);
+        video_print("Uso: app run <arquivo.ZAP> [args] | app inputtest | app argtest <texto>\n", 0x0E);
         return;
     }
     while (args[sub_length] && args[sub_length] != ' ' &&
@@ -1005,8 +1103,13 @@ static void cmd_app(const char* args) {
         return;
     }
 
+    if (kstrcmp(subcommand, "argtest") == 0) {
+        cmd_app_argtest(args + sub_length);
+        return;
+    }
+
     if (kstrcmp(subcommand, "run") != 0) {
-        video_print("Uso: app run <arquivo.ZAP> | app inputtest\n", 0x0E);
+        video_print("Uso: app run <arquivo.ZAP> [args] | app inputtest | app argtest <texto>\n", 0x0E);
         return;
     }
     while (args[sub_length] && args[sub_length] != ' ' &&
@@ -1015,16 +1118,19 @@ static void cmd_app(const char* args) {
     }
     path[path_length] = '\0';
     if (path_length == 0) {
-        video_print("Uso: app run <arquivo.ZAP>\n", 0x0E);
+        video_print("Uso: app run <arquivo.ZAP> [args]\n", 0x0E);
         return;
     }
     while (args[sub_length] == ' ' || args[sub_length] == '\t') sub_length++;
-    if (args[sub_length] != '\0') {
-        video_print("Erro: argumentos ainda nao sao suportados.\n", 0x0E);
+    result = app_loader_build_launch_info(args + sub_length, &launch);
+    if (result != OK) {
+        video_print("Erro: argumentos invalidos (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
         return;
     }
 
-    result = app_loader_run_file(path, &pid);
+    result = app_loader_run_file_with_launch(path, &launch, &pid);
     if (result != OK) {
         video_print("Erro: nao foi possivel executar o aplicativo (codigo ", 0x0C);
         print_num((uint32_t)result);
@@ -1167,11 +1273,40 @@ static void cmd_cat(const char* filename) {
     buffer = 0;
 }
 
-static void cmd_echo(const char* text) {
+static void cmd_echo_native(const char* text) {
     if (text && *text) {
         video_print(text, 0x07);
     }
     video_print("\n", 0x07);
+}
+
+static void cmd_echo(const char* text) {
+    app_launch_info_t launch;
+    uint32_t pid = 0;
+    int result;
+
+    if (!text) text = "";
+    result = app_loader_build_launch_info(text, &launch);
+    if (result != OK) {
+        LOG_WARN("SHELL", "Argumentos do echo rejeitados; usando fallback nativo");
+        cmd_echo_native(text);
+        return;
+    }
+
+    result = app_builtin_run_echo(&launch, &pid);
+    if (result == OK) {
+        shell_echo_loader_pid = pid;
+        return;
+    }
+    if (result == ERR_UNAVAILABLE) {
+        LOG_WARN("SHELL", "Echo ring 3 indisponivel; usando fallback nativo");
+        cmd_echo_native(text);
+        return;
+    }
+
+    video_print("Erro: echo ring 3 nao iniciou (codigo ", 0x0C);
+    print_num((uint32_t)result);
+    video_print(").\n", 0x0C);
 }
 
 static void cmd_mem(void) {

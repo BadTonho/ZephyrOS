@@ -4,11 +4,16 @@
 #include "types.h"
 
 #define APP_API_VERSION_MAJOR 0
-#define APP_API_VERSION_MINOR 2
+#define APP_API_VERSION_MINOR 3
 #define APP_API_MAX_TEXT_SIZE 1024
 #define APP_API_MAX_FILE_IO_SIZE 4096
 #define APP_API_TICKS_PER_SECOND 50
 #define APP_HANDLE_INVALID 0
+
+#define APP_LAUNCH_ABI_VERSION 1U
+#define APP_LAUNCH_MAX_ARGS    8U
+#define APP_LAUNCH_MAX_TEXT    512U
+#define APP_LAUNCH_MAX_RAW_LENGTH (APP_LAUNCH_MAX_TEXT - 1U)
 
 #define APP_FILE_MODE_READ       1
 #define APP_FILE_MODE_WRITE      2
@@ -42,6 +47,25 @@ typedef struct {
     uint32_t data1;
     uint32_t data2;
 } app_message_t;
+
+typedef struct __attribute__((packed)) {
+    uint32_t offset;
+    uint32_t length;
+} app_launch_arg_t;
+
+/* Offsets, nunca ponteiros do kernel, mantem a ABI independente do loader. */
+typedef struct __attribute__((packed)) {
+    uint32_t abi_version;
+    uint32_t argc;
+    uint32_t raw_length;
+    app_launch_arg_t args[APP_LAUNCH_MAX_ARGS];
+    char raw_args[APP_LAUNCH_MAX_TEXT];
+} app_launch_info_t;
+
+#define APP_LAUNCH_RAW_LENGTH_OFFSET ((uint32_t)(sizeof(uint32_t) * 2U))
+#define APP_LAUNCH_RAW_ARGS_OFFSET \
+    ((uint32_t)(sizeof(uint32_t) * 3U + \
+    sizeof(app_launch_arg_t) * APP_LAUNCH_MAX_ARGS))
 
 int app_api_init(void);
 int app_api_is_ready(void);

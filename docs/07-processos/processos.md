@@ -247,12 +247,18 @@ O processo usa:
 ```text
 Codigo: 0x00800000
 Dados:  0x00801000
+Lancamento: 0x00802000
 Stack:  0x00C00000
 ```
 
 O diretorio de paginas compartilha somente os mapeamentos supervisor do
 kernel. O processo entra por uma trampoline com `iret`, usa `int 0x80` para
 as syscalls e recebe uma kernel stack propria pelo TSS.
+
+O contexto de lancamento e uma pagina independente com `app_launch_info_t`.
+Ela armazena argumentos como offsets e tamanhos relativos ao texto bruto, sem
+expor ponteiros internos do kernel. Essa separacao preserva a compatibilidade
+das imagens que ja usam a pagina de dados em `0x00801000`.
 
 Os comandos de validacao sao:
 

@@ -21,6 +21,123 @@ static int app_loader_is_busy(void) {
            app_loader_result_pending;
 }
 
+static int app_loader_is_launch_space(char value) {
+    return value == ' ' || value == '\t';
+}
+
+static int app_loader_validate_launch_info(const app_launch_info_t* launch) {
+    uint32_t position = 0;
+
+    if (!launch || launch->abi_version != APP_LAUNCH_ABI_VERSION ||
+        launch->argc > APP_LAUNCH_MAX_ARGS ||
+        launch->raw_length > APP_LAUNCH_MAX_RAW_LENGTH ||
+        launch->raw_args[launch->raw_length] != '\0') {
+        LOG_ERROR("APP_LOADER", "Informacoes de lancamento invalidas");
+        return ERR_INVALID;
+    }
+
+    for (uint32_t i = 0; i < launch->raw_length; i++) {
+        char value = launch->raw_args[i];
+        if (!app_loader_is_launch_space(value) &&
+            ((uint8_t)value < 0x20U || (uint8_t)value > 0x7EU)) {
+            LOG_ERROR("APP_LOADER", "Argumento contem caractere invalido");
+            return ERR_INVALID;
+        }
+    }
+
+    for (uint32_t i = 0; i < launch->argc; i++) {
+        while (position < launch->raw_length &&
+               app_loader_is_launch_space(launch->raw_args[position])) {
+            position++;
+        }
+        if (launch->args[i].length == 0 ||
+            launch->args[i].offset != position ||
+            launch->args[i].offset > launch->raw_length ||
+            launch->args[i].length >
+                launch->raw_length - launch->args[i].offset) {
+            LOG_ERROR("APP_LOADER", "Tabela de argumentos inconsistente");
+            return ERR_INVALID;
+        }
+        for (uint32_t j = 0; j < launch->args[i].length; j++) {
+            if (app_loader_is_launch_space(
+                    launch->raw_args[position + j])) {
+                LOG_ERROR("APP_LOADER", "Argumento contem espaco interno");
+                return ERR_INVALID;
+            }
+        }
+        position += launch->args[i].length;
+    }
+
+    while (position < launch->raw_length &&
+           app_loader_is_launch_space(launch->raw_args[position])) {
+        position++;
+    }
+    if (position != launch->raw_length) {
+        LOG_ERROR("APP_LOADER", "Argumentos nao foram completamente mapeados");
+        return ERR_INVALID;
+    }
+    return OK;
+}
+
+static int app_loader_prepare_launch(const app_launch_info_t* source,
+                                     app_launch_info_t* destination) {
+    if (!destination) {
+        LOG_ERROR("APP_LOADER", "Destino nulo para argumentos ZAPP");
+        return ERR_NULL;
+    }
+
+    kmemset(destination, 0, sizeof(*destination));
+    destination->abi_version = APP_LAUNCH_ABI_VERSION;
+    if (source) kmemcpy(destination, source, sizeof(*destination));
+    return app_loader_validate_launch_info(destination);
+}
+
+int app_loader_build_launch_info(const char* text, app_launch_info_t* launch) {
+    uint32_t length;
+    uint32_t position = 0;
+
+    if (!text || !launch) {
+        LOG_ERROR("APP_LOADER", "Texto ou destino nulo para argumentos");
+        return ERR_NULL;
+    }
+
+    length = kstrlen(text);
+    if (length > APP_LAUNCH_MAX_RAW_LENGTH) {
+        LOG_WARN("APP_LOADER", "Texto de argumentos excede o limite");
+        return ERR_OVERFLOW;
+    }
+
+    kmemset(launch, 0, sizeof(*launch));
+    launch->abi_version = APP_LAUNCH_ABI_VERSION;
+    launch->raw_length = length;
+    kmemcpy(launch->raw_args, text, length);
+
+    while (position < length) {
+        while (position < length && app_loader_is_launch_space(text[position])) {
+            position++;
+        }
+        if (position == length) break;
+        if (launch->argc >= APP_LAUNCH_MAX_ARGS) {
+            LOG_WARN("APP_LOADER", "Quantidade de argumentos excede o limite");
+            return ERR_OVERFLOW;
+        }
+        launch->args[launch->argc].offset = position;
+        while (position < length && !app_loader_is_launch_space(text[position])) {
+            if ((uint8_t)text[position] < 0x20U ||
+                (uint8_t)text[position] > 0x7EU) {
+                LOG_ERROR("APP_LOADER", "Argumento contem caractere invalido");
+                return ERR_INVALID;
+            }
+            position++;
+        }
+        launch->args[launch->argc].length =
+            position - launch->args[launch->argc].offset;
+        launch->argc++;
+    }
+
+    return app_loader_validate_launch_info(launch);
+}
+
 static void app_loader_store_result(uint32_t pid, uint32_t exit_code,
                                     uint32_t faulted, uint32_t cancelled,
                                     uint32_t start_failed,
@@ -236,11 +353,57 @@ uint32_t app_loader_get_foreground_pid(void) {
     return app_loader_pending_pid;
 }
 
-int app_loader_run_file(const char* path, uint32_t* pid_out) {
-    uint8_t* image;
+int app_loader_run_image(const char* name, const uint8_t* image,
+                         uint32_t size, const app_launch_info_t* launch,
+                         uint32_t* pid_out) {
     app_image_header_t header;
-    uint32_t read_size;
+    app_launch_info_t prepared_launch;
     uint32_t created_pid = 0;
+    int result;
+
+    if (!app_loader_ready) {
+        LOG_WARN("APP_LOADER", "Tentativa de executar imagem indisponivel");
+        return ERR_UNAVAILABLE;
+    }
+    if (app_loader_is_busy()) {
+        LOG_WARN("APP_LOADER", "Aplicativo ZAPP anterior ainda esta ativo");
+        return ERR_STATE;
+    }
+    if (!name || !image) {
+        LOG_ERROR("APP_LOADER", "Nome ou imagem ZAPP nulo");
+        return ERR_NULL;
+    }
+    if (kstrlen(name) == 0) {
+        LOG_ERROR("APP_LOADER", "Nome ZAPP vazio");
+        return ERR_INVALID;
+    }
+
+    result = app_loader_prepare_launch(launch, &prepared_launch);
+    if (result != OK) return result;
+    result = app_loader_validate_image(image, size, &header);
+    if (result != OK) return result;
+
+    result = process_create_user_image_suspended_with_launch(
+        name, image + header.code_offset, header.code_size,
+        image + header.data_offset, header.data_size, header.entry_offset,
+        header.stack_size, &prepared_launch, &created_pid);
+    if (result != OK) {
+        LOG_WARN("APP_LOADER", "Falha controlada ao criar processo ZAPP");
+        return result;
+    }
+
+    app_loader_pending_pid = created_pid;
+    if (pid_out) *pid_out = created_pid;
+    LOG_INFO("APP_LOADER", "Processo ZAPP preparado para execucao assincrona");
+    return OK;
+}
+
+int app_loader_run_file_with_launch(const char* path,
+                                    const app_launch_info_t* launch,
+                                    uint32_t* pid_out) {
+    uint8_t* image;
+    app_launch_info_t prepared_launch;
+    uint32_t read_size;
     int file_size;
     int result;
 
@@ -268,6 +431,8 @@ int app_loader_run_file(const char* path, uint32_t* pid_out) {
         LOG_ERROR("APP_LOADER", "Arquivo nao possui extensao .ZAP");
         return ERR_INVALID;
     }
+    result = app_loader_prepare_launch(launch, &prepared_launch);
+    if (result != OK) return result;
 
     image = (uint8_t*)kmalloc(APP_IMAGE_MAX_FILE_SIZE + 1U);
     if (!image) {
@@ -288,26 +453,16 @@ int app_loader_run_file(const char* path, uint32_t* pid_out) {
         return ERR_OVERFLOW;
     }
 
-    result = app_loader_validate_image(image, read_size, &header);
-    if (result == OK) {
-        result = process_create_user_image_suspended(
-            path, image + header.code_offset, header.code_size,
-            image + header.data_offset, header.data_size,
-            header.entry_offset, header.stack_size, &created_pid);
-    }
+    result = app_loader_run_image(path, image, read_size, &prepared_launch,
+                                  pid_out);
 
     kfree(image);
     image = 0;
-    if (result != OK) {
-        LOG_WARN("APP_LOADER", "Falha controlada ao criar processo ZAPP");
-        return result;
-    }
+    return result;
+}
 
-    app_loader_pending_pid = created_pid;
-    if (pid_out) *pid_out = created_pid;
-
-    LOG_INFO("APP_LOADER", "Processo ZAPP preparado para execucao assincrona");
-    return OK;
+int app_loader_run_file(const char* path, uint32_t* pid_out) {
+    return app_loader_run_file_with_launch(path, 0, pid_out);
 }
 
 int app_loader_reap_finished(void) {

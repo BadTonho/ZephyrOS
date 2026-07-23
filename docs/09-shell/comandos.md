@@ -39,8 +39,9 @@ Comandos disponiveis:
   guimode   - Altera entre gui classica (TUI) e moderna
   health    - Exibe metricas e estado de recovery do kernel
   appcheck  - Testa API, arquivos, IPC e carregador ZAPP
-  app run <arquivo.ZAP> - Executa aplicativo ring 3 de forma assincrona
+  app run <arquivo.ZAP> [args] - Executa aplicativo ring 3 de forma assincrona
   app inputtest - Testa entrada de teclado em aplicativo ring 3
+  app argtest <texto> - Testa argumentos em aplicativo ring 3
   usertest  - Executa teste isolado em ring 3
   reboot    - Reinicia o sistema
   shutdown  - Desliga o sistema
@@ -218,12 +219,12 @@ cabecalho `ZAPP`, executa o processo ring 3 e remove o arquivo. Tambem testa
 entry point, flags, tamanho de codigo e cabecalho invalidos. O arquivo de
 demonstracao nao permanece no disco.
 
-## `app run <arquivo.ZAP>`
+## `app run <arquivo.ZAP> [arg1 arg2 ...]`
 
 Executa uma imagem flat i386 em ring 3 sem bloquear o Shell.
 
 ```text
-zephyr> app run DEMO.ZAP
+zephyr> app run DEMO.ZAP alpha beta
 ```
 
 O formato possui uma pagina maxima de codigo, uma pagina maxima de dados e
@@ -233,7 +234,26 @@ retornam erro controlado e nao causam `panic`.
 O aplicativo recebe foco automaticamente e pode obter scancodes PS/2 brutos
 com `message_receive` e `APP_MESSAGE_KEYBOARD`. `Esc` continua disponivel para
 o aplicativo. `F12` encerra somente o `.ZAP` externo em foco e devolve o
-controle ao Shell. Argumentos apos o nome do arquivo ainda nao sao suportados.
+controle ao Shell. Argumentos sao separados por espacos ou tabs; aspas e
+escapes ainda nao possuem significado especial.
+
+## `app argtest <texto>`
+
+Executa uma imagem interna ring 3 que exibe o texto recebido pela pagina de
+lancamento. Serve para validar a passagem de argumentos sem criar arquivo no
+filesystem.
+
+```text
+zephyr> app argtest alpha beta
+Argumentos ZAPP: alpha beta
+```
+
+## `echo <texto>`
+
+`echo` e a primeira funcao nativa migrada. Quando Loader, filesystem, paging
+e modo usuario estao disponiveis, ele roda como imagem ZAPP ring 3 e retorna
+ao Shell de forma assincrona. Se essas dependencias estiverem indisponiveis,
+o comportamento nativo anterior imprime o mesmo texto como fallback.
 
 ## `app inputtest`
 

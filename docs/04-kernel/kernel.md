@@ -127,8 +127,8 @@ context_switch:
 ## Isolamento ring 3
 
 O kernel possui segmentos de usuario em `0x1B` (codigo) e `0x23` (dados).
-O processo de teste usa codigo em `0x00800000`, dados em `0x00801000` e stack
-em `0x00C00000`. Seu diretorio compartilha as tabelas supervisor do kernel,
+O processo de teste usa codigo em `0x00800000`, dados em `0x00801000`, pagina
+de lancamento em `0x00802000` e stack em `0x00C00000`. Seu diretorio compartilha as tabelas supervisor do kernel,
 mas as paginas do kernel permanecem com o bit `user` desativado.
 
 O dispatcher de `int 0x80` valida `CS`, `SS`, o processo atual e todas as

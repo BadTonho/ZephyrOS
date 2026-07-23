@@ -17,7 +17,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `wm` | - | Abre o Gerenciador de Janelas (Window Manager). |
 | `ls` | - | Lista os arquivos e pastas do disco atual. |
 | `cat` | `<arquivo>` | Exibe o conteúdo de um arquivo de texto. |
-| `echo` | `<texto>` | Imprime um texto diretamente no terminal. |
+| `echo` | `<texto>` | Imprime texto por ZAPP ring 3, com fallback nativo seguro. |
 | `mem` | - | Exibe o uso da memória RAM (total, livre, usada). |
 | `procs` | - | Lista os processos ativos no sistema. |
 | `threads` | - | Lista as threads ativas do sistema. |
@@ -38,8 +38,9 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `guitest` | - | Roda um teste nativo das primitivas gráficas GUI 2D. |
 | `health` | - | Lista o estado dos componentes e mostra dependências indisponíveis. |
 | `appcheck` | - | Testa API, arquivos, IPC e carregador ZAPP. |
-| `app` | `run <arquivo.ZAP>` | Executa uma imagem flat i386 em ring 3, em primeiro plano. |
+| `app` | `run <arquivo.ZAP> [args]` | Executa uma imagem flat i386 em ring 3, em primeiro plano. |
 | `app` | `inputtest` | Cria e executa um teste temporario de teclado para `.ZAP`. |
+| `app` | `argtest <texto>` | Exibe argumentos recebidos por uma imagem ZAPP interna. |
 | `usertest` | `fault` opcional | Executa e valida o primeiro processo isolado em ring 3. |
 | `guimode` | `classic/modern` | Alterna globalmente entre interface TUI (modo texto) e VESA (gráfica). |
 | `reboot` | - | Reinicia imediatamente o sistema operacional. |

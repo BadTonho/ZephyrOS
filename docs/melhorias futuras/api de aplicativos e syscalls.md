@@ -2,7 +2,8 @@
 
 ## Resumo de Progresso
 
-Status: Fases 1 a 6A validadas no QEMU; Fase 6B e a proxima etapa.
+Status: Fases 1 a 6B implementadas; a validacao da Fase 6B deve confirmar
+argumentos, `echo` ring 3 e fallback nativo no QEMU.
 
 Esta etapa preparara o ZephyrOS para executar aplicativos independentes do
 kernel. O objetivo nao e apenas criar mais comandos, mas definir uma fronteira
@@ -67,8 +68,9 @@ depois que paging, TSS, Idle e os processos essenciais estao prontos. A ponte
 o mesmo dispatcher sem depender de ring 3.
 
 O primeiro processo de teste usa a faixa de codigo `0x00800000`, dados em
-`0x00801000` e stack em `0x00C00000`. Mapeamentos do kernel permanecem
-supervisor e nao podem ser acessados pelo processo ring 3.
+`0x00801000`, contexto de lancamento em `0x00802000` e stack em
+`0x00C00000`. Mapeamentos do kernel permanecem supervisor e nao podem ser
+acessados pelo processo ring 3.
 
 Quando um processo ring 3 termina por `process_exit` ou por uma excecao
 isolada, o handler apenas o marca como `ZOMBIE`. O retorno da interrupcao e
@@ -104,7 +106,7 @@ e permissao.
 O contrato inicial esta disponivel para os modulos nativos do kernel por meio
 de `src/include/core/app_api.h` e `src/core/app_api.c`:
 
-- `app_api_get_version()` retorna a versao publica `0.2`;
+- `app_api_get_version()` retorna a versao publica `0.3`;
 - `app_api_console_write()` aceita texto ASCII validado de ate 1024 bytes;
 - `app_api_get_uptime()` retorna ticks e segundos desde o boot;
 - `app_api_get_memory_info()` retorna memoria e paginas disponiveis;
@@ -219,13 +221,33 @@ imagem temporaria e que, ao receber o resultado final, o foco ja voltou para
 o processo Shell. O resultado fica pendente enquanto uma interface nativa
 estiver cobrindo o terminal, evitando perder a notificacao de encerramento.
 
-### Fase 6B - Argumentos e primeira migracao nativa
+### Fase 6B - Argumentos e primeira migracao nativa - implementada, aguarda validacao QEMU
 
-- definir uma ABI de argumentos de inicializacao para `app run`;
-- migrar primeiro uma ferramenta simples, mantendo a implementacao nativa;
-- migrar o Editor somente depois da validacao do ciclo de entrada;
-- migrar o Explorer depois que a API de arquivos evoluir;
-- migrar interfaces graficas apenas quando a API de janelas estiver estavel.
+- [x] definir `app_launch_info_t` com ABI `1`, ate 8 argumentos e texto bruto
+  de ate 511 caracteres;
+- [x] mapear uma pagina de lancamento separada em `0x00802000`, sem alterar
+  as paginas existentes de codigo, dados ou stack;
+- [x] permitir `app run <arquivo.ZAP> [arg1 arg2 ...]` com separacao por
+  espacos ou tabs, sem aspas e sem escapes;
+- [x] criar `app_loader_run_image()` para imagens ZAPP internas, mantendo
+  `app_loader_run_file()` para arquivos do filesystem;
+- [x] migrar `echo` para uma imagem ring 3 interna com fallback nativo quando
+  o carregador estiver indisponivel;
+- [x] adicionar `app argtest <texto>` e testes de argumentos ao `appcheck`.
+
+O contexto de lancamento nao contem ponteiros do kernel. `raw_args` conserva
+o texto original e cada entrada usa `offset` e `length` relativos a esse
+buffer. Aplicativos ZAPP anteriores continuam recebendo uma estrutura vazia
+valida. O primeiro argumento do usuario fica no indice zero; nao existe
+`argv[0]` nesta ABI inicial.
+
+### Fase 6C - Migracao gradual de ferramentas nativas
+
+- selecionar ferramentas CLI que usem somente servicos ja expostos;
+- manter fallback nativo durante cada migracao;
+- evoluir argumentos somente quando houver necessidade comprovada;
+- manter Editor, Explorer e interfaces graficas fora dessa fase ate existirem
+  APIs de arquivos e janelas suficientes.
 
 ### Fase 7 - Pacotes e ecossistema
 
@@ -257,8 +279,8 @@ estiver cobrindo o terminal, evitando perder a notificacao de encerramento.
 - nao ha ELF, manifesto, checksum, relocacao, loader dinamico ou empacotador;
 - a extensao `.zephyrosapp` completa fica para a Fase 7; `.ZAP` e o formato
   curto usado pelo FAT12 nesta fase;
-- a Fase 6A nao aceita argumentos, mouse, janelas ou aplicativos nativos em
-  ring 3;
+- a Fase 6B aceita argumentos simples, mas ainda nao aceita aspas, escapes,
+  mouse, janelas ou aplicativos nativos complexos em ring 3;
 - a etapa nao altera `src/boot/boot.asm`;
 - nao sera criado um novo Window Manager nesta etapa;
 - compatibilidade com aplicativos de outros sistemas depende de bibliotecas,

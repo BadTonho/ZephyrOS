@@ -2,6 +2,7 @@
 #define APP_LOADER_H
 
 #include "types.h"
+#include "core/app_api.h"
 
 #define APP_IMAGE_VERSION              1U
 #define APP_IMAGE_ARCH_I386            1U
@@ -42,6 +43,13 @@ int app_loader_is_ready(void);
 int app_loader_validate_image(const uint8_t* image, uint32_t size,
                               app_image_header_t* header);
 int app_loader_run_file(const char* path, uint32_t* pid_out);
+int app_loader_run_file_with_launch(const char* path,
+                                    const app_launch_info_t* launch,
+                                    uint32_t* pid_out);
+int app_loader_run_image(const char* name, const uint8_t* image,
+                         uint32_t size, const app_launch_info_t* launch,
+                         uint32_t* pid_out);
+int app_loader_build_launch_info(const char* text, app_launch_info_t* launch);
 int app_loader_reap_finished(void);
 int app_loader_is_foreground_active(void);
 uint32_t app_loader_get_foreground_pid(void);
