@@ -26,7 +26,8 @@ void timer_init(uint32_t freq) {
 }
 
 void timer_handler(registers_t* regs) {
-    (void)regs;
+    int interrupted_user = regs && ((regs->cs & 0x03U) == 0x03U);
+
     ticks++;
     scheduler_tick();
     thread_scheduler_tick();
@@ -36,7 +37,12 @@ void timer_handler(registers_t* regs) {
     outb(0x20, 0x20);
 
     // O scheduler so pode iniciar depois que o processo Idle estiver registrado.
-    if (process_get_current()) process_yield();
+    /* Os modulos ring 0 ainda compartilham estruturas nao reentrantes.
+       Eles cedem a CPU somente em process_yield() explicitos. Processos
+       ring 3 continuam preemptivos e podem ser interrompidos pelo timer. */
+    if (process_get_current() && interrupted_user) {
+        process_yield();
+    }
 }
 
 uint32_t timer_get_ticks(void) {
