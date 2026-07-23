@@ -299,7 +299,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 ### Kernel e Sistema
 - **Fundacao do Kernel** (`fundacao do kernel.md`) - etapa prioritaria para organizar as bases antes das otimizacoes
 - **Atualizacao e Otimizacao do Kernel** (`atualizacao do kernel.md`) - etapa posterior, guiada por metricas
-- **API de Aplicativos e Syscalls** (`api de aplicativos e syscalls.md`) - Fases 1 a 5 validadas; Fase 6A de entrada e foco aguarda validacao no QEMU
+- **API de Aplicativos e Syscalls** (`api de aplicativos e syscalls.md`) - Fases 1 a 6A validadas; Fase 6B de argumentos e primeira migracao nativa e a proxima etapa
 - **Resiliência do Sistema** (`resiliencia do sistema.md`)
 - **Multitarefa Preemptiva Avançada** (`multitarefa preemptiva.md`)
 - **Gerenciador de Energia** (`gerenciador de energia.md`)

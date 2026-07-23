@@ -2,7 +2,7 @@
 
 ## Resumo de Progresso
 
-Status: Fases 1 a 5 validadas; Fase 6A implementada e aguardando validacao no QEMU.
+Status: Fases 1 a 6A validadas no QEMU; Fase 6B e a proxima etapa.
 
 Esta etapa preparara o ZephyrOS para executar aplicativos independentes do
 kernel. O objetivo nao e apenas criar mais comandos, mas definir uma fronteira
@@ -202,7 +202,7 @@ O cabecalho `ZAPP` contem codigo flat i386, dados opcionais, entry point e
 flags reservadas. A primeira implementacao limita codigo e dados a uma pagina
 cada e nao inclui ELF, manifesto, checksum, relocacao ou bibliotecas dinamicas.
 
-### Fase 6A - Entrada e foco seguros - implementada, validacao pendente
+### Fase 6A - Entrada e foco seguros - validada
 
 - [x] executar um `.ZAP` em primeiro plano pelo `app run`;
 - [x] entregar scancodes PS/2 brutos por `message_receive` e
