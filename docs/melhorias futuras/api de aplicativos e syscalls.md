@@ -2,8 +2,8 @@
 
 ## Resumo de Progresso
 
-Status: Fases 1 a 6B implementadas; a validacao da Fase 6B deve confirmar
-argumentos, `echo` ring 3 e fallback nativo no QEMU.
+Status: Fases 1 a 6B validadas no QEMU. A proxima etapa e a Fase 6C,
+de migracao gradual de ferramentas nativas com fallback seguro.
 
 Esta etapa preparara o ZephyrOS para executar aplicativos independentes do
 kernel. O objetivo nao e apenas criar mais comandos, mas definir uma fronteira
@@ -221,7 +221,7 @@ imagem temporaria e que, ao receber o resultado final, o foco ja voltou para
 o processo Shell. O resultado fica pendente enquanto uma interface nativa
 estiver cobrindo o terminal, evitando perder a notificacao de encerramento.
 
-### Fase 6B - Argumentos e primeira migracao nativa - implementada, aguarda validacao QEMU
+### Fase 6B - Argumentos e primeira migracao nativa - validada
 
 - [x] definir `app_launch_info_t` com ABI `1`, ate 8 argumentos e texto bruto
   de ate 511 caracteres;
@@ -234,6 +234,8 @@ estiver cobrindo o terminal, evitando perder a notificacao de encerramento.
 - [x] migrar `echo` para uma imagem ring 3 interna com fallback nativo quando
   o carregador estiver indisponivel;
 - [x] adicionar `app argtest <texto>` e testes de argumentos ao `appcheck`.
+- [x] validar `echo`, `app argtest`, encerramento normal e por `F12` de
+  `app inputtest`, `appcheck`, `health`, `usertest` e os fluxos nativos no QEMU.
 
 O contexto de lancamento nao contem ponteiros do kernel. `raw_args` conserva
 o texto original e cada entrada usa `offset` e `length` relativos a esse

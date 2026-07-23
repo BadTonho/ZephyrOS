@@ -19,7 +19,7 @@
 > deste roadmap da App Store. O sistema agora aceita imagens flat i386 com
 > cabecalho `ZAPP` e extensao curta `.ZAP` no FAT12, executadas em ring 3 por
 > `app run <arquivo.ZAP> [args]`. A Fase 6A tambem entrega foco automatico,
-> teclado por IPC e cancelamento seguro por `F12`; a Fase 6B adiciona a ABI
+> teclado por IPC e cancelamento seguro por `F12`; a Fase 6B validada adicionou a ABI
 > de argumentos, `app argtest` e migra `echo` para ZAPP com fallback nativo.
 > `app inputtest` cria uma imagem temporaria para diagnostico. Manifesto, instalacao, loja, pacotes
 > `.zephyrosapp` completos,
