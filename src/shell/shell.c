@@ -49,7 +49,6 @@ static uint8_t shell_prompt_visible = 0;
 static void print_num(uint32_t num);
 
 #define APP_CHECK_DEMO_PATH "DEMO.ZAP"
-#define APP_CHECK_DEMO_DATA_SIZE 192U
 #define APP_CHECK_DEMO_MAX_CLEANUP 4U
 
 static void shell_demo_patch_u32(uint8_t* code, uint32_t offset,
@@ -80,27 +79,11 @@ static void shell_remove_demo_image(void) {
 static uint32_t shell_build_demo_image(void) {
     app_image_header_t header;
     uint8_t* code = appcheck_demo_image + APP_IMAGE_HEADER_SIZE;
-    uint8_t* data;
-    const char* message = "Zephyr ZAPP demo\n";
     uint32_t offset = 0;
 
     kmemset(appcheck_demo_image, 0, sizeof(appcheck_demo_image));
-    shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_CONSOLE_WRITE);
-    shell_demo_emit_mov(code, &offset, 3, USER_DATA_BASE);
-    shell_demo_emit_mov(code, &offset, 1, kstrlen(message));
-    code[offset++] = 0xCD;
-    code[offset++] = 0x80;
-
-    shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_UPTIME);
-    shell_demo_emit_mov(code, &offset, 3, USER_DATA_BASE + 64U);
-    code[offset++] = 0xCD;
-    code[offset++] = 0x80;
-
-    shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_MEMORY_INFO);
-    shell_demo_emit_mov(code, &offset, 3, USER_DATA_BASE + 128U);
-    code[offset++] = 0xCD;
-    code[offset++] = 0x80;
-
+    /* O demonstrativo exercita o caminho completo do carregador sem
+       depender de I/O adicional durante o diagnostico do Shell. */
     shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_PROCESS_EXIT);
     code[offset++] = 0x31;
     code[offset++] = 0xDB;
@@ -108,8 +91,6 @@ static uint32_t shell_build_demo_image(void) {
     code[offset++] = 0x80;
     code[offset++] = 0xF4;
 
-    data = appcheck_demo_image + APP_IMAGE_HEADER_SIZE + offset;
-    kmemcpy(data, message, kstrlen(message));
     kmemcpy(header.magic, "ZAPP", 4);
     header.version = APP_IMAGE_VERSION;
     header.architecture = APP_IMAGE_ARCH_I386;
@@ -117,12 +98,12 @@ static uint32_t shell_build_demo_image(void) {
     header.code_offset = APP_IMAGE_HEADER_SIZE;
     header.code_size = offset;
     header.data_offset = APP_IMAGE_HEADER_SIZE + offset;
-    header.data_size = APP_CHECK_DEMO_DATA_SIZE;
+    header.data_size = 0;
     header.entry_offset = 0;
     header.stack_size = APP_IMAGE_STACK_SIZE;
     header.flags = APP_IMAGE_FLAGS_NONE;
     kmemcpy(appcheck_demo_image, &header, APP_IMAGE_HEADER_SIZE);
-    return header.data_offset + header.data_size;
+    return header.data_offset;
 }
 
 static void shell_reset_input(void) {
