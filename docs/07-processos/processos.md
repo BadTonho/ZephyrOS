@@ -314,6 +314,11 @@ Para aplicativos externos em ring 3, `process_cancel_focused_user()` marca
 somente o processo em foco como `ZOMBIE`. O teclado usa esse caminho para
 `F12`; a tecla `Esc` continua sendo enviada normalmente ao aplicativo.
 
+O encaminhador de teclado usa lotes pequenos por ciclo do processo System.
+Isso preserva a ordem dos scancodes, mas permite que o processo em foco
+consuma mensagens entre os lotes e evita saturar a fila IPC apos saidas longas
+do Shell.
+
 O mouse e o window manager usam o foco para direcionar eventos ao processo correto.
 
 ### Integração

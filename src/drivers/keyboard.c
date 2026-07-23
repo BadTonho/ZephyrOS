@@ -6,6 +6,7 @@
 
 
 #define KEYBOARD_QUEUE_SIZE 64
+#define KEYBOARD_DISPATCH_BUDGET 8U
 #define KEYBOARD_SCANCODE_F12 0x58U
 
 static volatile uint8_t event_queue[KEYBOARD_QUEUE_SIZE];
@@ -72,6 +73,8 @@ void keyboard_handler(registers_t* regs) {
 }
 
 void keyboard_process_events(void) {
+    uint32_t dispatched = 0;
+
     if (dropped_events > 0) {
         dropped_events = 0;
         if (!drop_warning_active) {
@@ -82,7 +85,11 @@ void keyboard_process_events(void) {
         drop_warning_active = 0;
     }
 
-    while (queue_tail != queue_head) {
+    /* Limita o lote para que o consumidor do foco execute entre os envios.
+       Sem esse controle, uma saida longa do Shell permite que a IRQ encha a
+       fila fisica e o processo System sature a fila IPC em uma unica vez. */
+    while (queue_tail != queue_head &&
+           dispatched < KEYBOARD_DISPATCH_BUDGET) {
         uint8_t scancode = event_queue[queue_tail];
         uint32_t focus = process_get_focus();
         process_t* target = process_get_by_pid(focus);
@@ -93,6 +100,7 @@ void keyboard_process_events(void) {
 
             if (result == OK) {
                 queue_tail = (uint8_t)((queue_tail + 1) % KEYBOARD_QUEUE_SIZE);
+                dispatched++;
                 forward_warning_active = 0;
                 LOG_INFO("KBD", "F12 cancelou aplicativo ring 3 em foco");
                 continue;
@@ -121,6 +129,7 @@ void keyboard_process_events(void) {
 
         if (ipc_send(focus, &msg)) {
             queue_tail = (uint8_t)((queue_tail + 1) % KEYBOARD_QUEUE_SIZE);
+            dispatched++;
             forward_warning_active = 0;
             continue;
         }
@@ -139,6 +148,7 @@ void keyboard_process_events(void) {
 
         /* Um foco invalido nao pode bloquear a fila de hardware inteira. */
         queue_tail = (uint8_t)((queue_tail + 1) % KEYBOARD_QUEUE_SIZE);
+        dispatched++;
         if (!forward_warning_active) {
             LOG_WARN("KBD", "Evento descartado: processo em foco indisponivel");
         }
