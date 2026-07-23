@@ -498,6 +498,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     taskbar_draw();
 
+    /* Evita que o Shell execute e capture logs antes do boot terminar. */
+    asm volatile("cli");
+
     process_t* system_process = process_create("Zephyr System", system_process_main);
     if (system_process) {
         recovery_mark_ready(RECOVERY_COMPONENT_SYSTEM_PROCESS);
@@ -535,6 +538,8 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
                                ERR_UNAVAILABLE,
                                "Carregador ZAPP indisponivel");
     }
+
+    asm volatile("sti");
 
     while (1) {
         if (kernel_service_fallback) {

@@ -35,6 +35,7 @@ static uint8_t appcheck_demo_image[APP_IMAGE_MAX_FILE_SIZE];
 static int input_pos = 0;
 static int shell_waiting_user_test = 0;
 static uint8_t shell_extended_scancode = 0;
+static uint8_t shell_prompt_visible = 0;
 
 #define SHELL_SCANCODE_EXTENDED 0xE0
 #define SHELL_SCANCODE_UP       0x48
@@ -139,6 +140,7 @@ static void shell_return_to_terminal_tail(void) {
 }
 
 static void shell_suspend_terminal(void) {
+    shell_prompt_visible = 0;
     if (video_terminal_is_active()) video_terminal_suspend();
 }
 
@@ -1056,13 +1058,16 @@ static void cmd_shutdown(void) {
 
 void shell_init(void) {
     shell_reset_input();
+    shell_prompt_visible = 0;
     video_terminal_begin();
     shell_print_prompt();
 }
 
 void shell_print_prompt(void) {
     shell_resume_terminal();
+    if (shell_prompt_visible) return;
     video_print(SHELL_PROMPT, 0x0A);
+    shell_prompt_visible = 1;
 }
 
 static int shell_should_show_prompt(void) {
@@ -1076,6 +1081,7 @@ static int shell_should_show_prompt(void) {
 }
 
 static void process_input(void) {
+    shell_prompt_visible = 0;
     video_print("\n", 0x07);
 
     if (input_pos == 0) {
