@@ -163,6 +163,35 @@ void shell_report_user_test_result(void) {
     process_reap_finished_user();
 }
 
+static int shell_prepare_filemanager(void) {
+    int result;
+
+    if (fs_get_type() != FS_TYPE_NONE) {
+        if (!recovery_is_enabled(RECOVERY_COMPONENT_FILEMANAGER)) {
+            LOG_WARN("SHELL", "Recuperando File Manager apos filesystem disponivel");
+            recovery_mark_ready(RECOVERY_COMPONENT_FILESYSTEM);
+            recovery_mark_ready(RECOVERY_COMPONENT_FILEMANAGER);
+        }
+        return OK;
+    }
+
+    LOG_WARN("SHELL", "Filesystem indisponivel; tentando remontar para o Explorer");
+    result = fs_init();
+    if (result == OK && fs_get_type() != FS_TYPE_NONE) {
+        recovery_mark_ready(RECOVERY_COMPONENT_FILESYSTEM);
+        recovery_mark_ready(RECOVERY_COMPONENT_FILEMANAGER);
+        LOG_INFO("SHELL", "Filesystem remontado para o Explorer");
+        return OK;
+    }
+
+    recovery_mark_disabled(RECOVERY_COMPONENT_FILESYSTEM, result,
+                           "Sistema de arquivos indisponivel");
+    recovery_mark_disabled(RECOVERY_COMPONENT_FILEMANAGER, result,
+                           "File Manager requer filesystem");
+    LOG_ERROR("SHELL", "Nao foi possivel preparar filesystem para o Explorer");
+    return result == OK ? ERR_UNAVAILABLE : result;
+}
+
 void shell_handle_app_request(uint32_t request) {
     if (taskmgr_is_gui_open() && request != IPC_APP_OPEN_TASKMANAGER_GUI) {
         taskmgr_close();
@@ -182,7 +211,7 @@ void shell_handle_app_request(uint32_t request) {
             taskbar_draw();
             break;
         case IPC_APP_OPEN_EXPLORER:
-            if (recovery_is_enabled(RECOVERY_COMPONENT_FILEMANAGER)) {
+            if (shell_prepare_filemanager() == OK) {
                 shell_suspend_terminal();
                 desktop_set_active(0);
                 fm_run();
@@ -1319,7 +1348,7 @@ int shell_process_command(const char* input) {
     } else if (kstrcmp(cmd, "guimode") == 0) {
         cmd_guimode(input);
     } else if (kstrcmp(cmd, "explorer") == 0) {
-        if (!recovery_is_enabled(RECOVERY_COMPONENT_FILEMANAGER)) {
+        if (shell_prepare_filemanager() != OK) {
             video_print("Erro: Explorer indisponivel.\n", 0x0C);
         } else {
             shell_suspend_terminal();
