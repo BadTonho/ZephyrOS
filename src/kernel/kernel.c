@@ -203,7 +203,6 @@ void system_process_main(void) {
 
 void shell_process_main(void) {
     shell_init();
-    process_set_focus(process_get_current()->pid);
     ipc_msg_t msg;
     while (1) {
         if (ipc_receive(&msg)) {
@@ -222,7 +221,7 @@ void shell_process_main(void) {
 }
 
 void desktop_process_main(void) {
-    /* O Shell e a sessao inicial; o Desktop abre por comando ou taskbar. */
+    /* A cena inicial e desenhada pelo kernel apos o boot completo. */
     while (1) {
         process_yield();
     }
@@ -509,6 +508,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     process_t* shell_process = process_create("Shell", shell_process_main);
     if (shell_process) {
         kernel_shell_pid = shell_process->pid;
+        process_set_focus(shell_process->pid);
         recovery_mark_ready(RECOVERY_COMPONENT_SHELL);
     } else {
         recovery_mark_disabled(RECOVERY_COMPONENT_SHELL, ERR_MEM,
@@ -535,10 +535,10 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
                                "Carregador ZAPP indisponivel");
     }
 
-    /* O Shell so desenha sua sessao apos a conclusao de todo o boot. */
-    if (shell_process) {
-        kernel_request_shell_app(IPC_APP_OPEN_SHELL);
-    }
+    /* Desktop e a cena padrao; o Shell abre somente por solicitacao. */
+    desktop_set_active(1);
+    desktop_draw();
+    taskbar_draw();
 
     while (1) {
         if (kernel_service_fallback) {
