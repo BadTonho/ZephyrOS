@@ -112,6 +112,7 @@ Sistema operacional em C + Assembly (x86), do zero.
 | `health` | Exibe metricas e estado de recovery |
 | `appcheck` | Testa API, arquivos, IPC e carregador |
 | `app run <arq>` | Executa aplicativo ring 3 |
+| `app inputtest` | Testa teclado e foco de aplicativo ring 3 |
 | `reboot` | Reinicia o sistema |
 | `shutdown` | Desliga o sistema |
 
@@ -298,7 +299,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 ### Kernel e Sistema
 - **Fundacao do Kernel** (`fundacao do kernel.md`) - etapa prioritaria para organizar as bases antes das otimizacoes
 - **Atualizacao e Otimizacao do Kernel** (`atualizacao do kernel.md`) - etapa posterior, guiada por metricas
-- **API de Aplicativos e Syscalls** (`api de aplicativos e syscalls.md`) - Fases 1 a 3 validadas; Fases 4 e 5 implementadas e aguardando validacao no QEMU
+- **API de Aplicativos e Syscalls** (`api de aplicativos e syscalls.md`) - Fases 1 a 5 validadas; Fase 6A de entrada e foco aguarda validacao no QEMU
 - **Resiliência do Sistema** (`resiliencia do sistema.md`)
 - **Multitarefa Preemptiva Avançada** (`multitarefa preemptiva.md`)
 - **Gerenciador de Energia** (`gerenciador de energia.md`)

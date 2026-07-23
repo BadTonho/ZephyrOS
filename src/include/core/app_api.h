@@ -4,7 +4,7 @@
 #include "types.h"
 
 #define APP_API_VERSION_MAJOR 0
-#define APP_API_VERSION_MINOR 1
+#define APP_API_VERSION_MINOR 2
 #define APP_API_MAX_TEXT_SIZE 1024
 #define APP_API_MAX_FILE_IO_SIZE 4096
 #define APP_API_TICKS_PER_SECOND 50
@@ -14,7 +14,7 @@
 #define APP_FILE_MODE_WRITE      2
 #define APP_FILE_MODE_READ_WRITE 3
 
-#define APP_MESSAGE_KEYBOARD    1
+#define APP_MESSAGE_KEYBOARD    1 /* data1 contem scancode PS/2 bruto */
 #define APP_MESSAGE_APP_REQUEST 2
 
 typedef uint32_t app_handle_t;

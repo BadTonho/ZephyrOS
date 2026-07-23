@@ -8,6 +8,7 @@
 #define MAX_PROCESSES 64
 #define KERNEL_STACK_SIZE 4096
 #define PROCESS_NAME_LENGTH 32
+#define PROCESS_EXIT_CANCELLED 0x0000F120U
 
 #define IPC_MSG_QUEUE_SIZE 32
 
@@ -129,7 +130,11 @@ void scheduler_tick(void);
 int ipc_send(uint32_t pid, ipc_msg_t* msg);
 int ipc_receive(ipc_msg_t* msg);
 void ipc_get_stats(ipc_stats_t* stats);
-void process_set_focus(uint32_t pid);
+int process_set_focus(uint32_t pid);
+int process_set_focus_fallback(uint32_t pid);
+int process_restore_focus(void);
+int process_cancel_user(uint32_t pid, uint32_t exit_code);
+int process_cancel_focused_user(uint32_t exit_code);
 uint32_t process_get_focus(void);
 
 extern void process_context_switch(process_context_t* prev, process_context_t* next);

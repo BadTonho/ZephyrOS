@@ -223,7 +223,7 @@ int app_api_message_receive(app_message_t* message) {
         return ERR_STATE;
     }
     if (!ipc_receive(&ipc_message)) {
-        LOG_DEBUG("APP_API", "Nenhuma mensagem IPC disponivel");
+        /* Fila vazia e o resultado normal da consulta nao bloqueante. */
         return ERR_NOT_FOUND;
     }
 

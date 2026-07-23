@@ -6,6 +6,7 @@
 
 
 #define KEYBOARD_QUEUE_SIZE 64
+#define KEYBOARD_SCANCODE_F12 0x58U
 
 static volatile uint8_t event_queue[KEYBOARD_QUEUE_SIZE];
 static volatile uint8_t queue_head;
@@ -86,6 +87,20 @@ void keyboard_process_events(void) {
         uint32_t focus = process_get_focus();
         process_t* target = process_get_by_pid(focus);
         ipc_msg_t msg;
+
+        if (scancode == KEYBOARD_SCANCODE_F12) {
+            int result = process_cancel_focused_user(PROCESS_EXIT_CANCELLED);
+
+            if (result == OK) {
+                queue_tail = (uint8_t)((queue_tail + 1) % KEYBOARD_QUEUE_SIZE);
+                forward_warning_active = 0;
+                LOG_INFO("KBD", "F12 cancelou aplicativo ring 3 em foco");
+                continue;
+            }
+            if (result != ERR_UNAVAILABLE && result != ERR_NOT_FOUND) {
+                LOG_WARN("KBD", "F12 nao conseguiu cancelar aplicativo em foco");
+            }
+        }
 
         msg.type = IPC_MSG_KEYBOARD;
         msg.data1 = scancode;

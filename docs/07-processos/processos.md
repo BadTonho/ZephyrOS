@@ -288,7 +288,10 @@ src/process/ipc.c
 void     ipc_init(void);
 int      ipc_send(uint32_t pid, ipc_msg_t* msg);
 int      ipc_receive(ipc_msg_t* msg);
-void     process_set_focus(uint32_t pid);
+int      process_set_focus(uint32_t pid);
+int      process_set_focus_fallback(uint32_t pid);
+int      process_restore_focus(void);
+int      process_cancel_focused_user(uint32_t exit_code);
 uint32_t process_get_focus(void);
 ```
 
@@ -297,9 +300,19 @@ uint32_t process_get_focus(void);
 O sistema de foco rastreia qual processo está em primeiro plano:
 
 ```c
-process_set_focus(target_pid);     // Dá foco ao processo
+if (process_set_focus(target_pid) != OK) {
+    /* processo inexistente ou em estado inativo */
+}
 uint32_t current = process_get_focus();  // Retorna PID com foco
 ```
+
+O Shell e configurado como fallback durante o boot. Quando um processo ring 3
+em primeiro plano encerra, falha ou e cancelado, `process_restore_focus()`
+devolve o teclado ao Shell sem depender do PID zero.
+
+Para aplicativos externos em ring 3, `process_cancel_focused_user()` marca
+somente o processo em foco como `ZOMBIE`. O teclado usa esse caminho para
+`F12`; a tecla `Esc` continua sendo enviada normalmente ao aplicativo.
 
 O mouse e o window manager usam o foco para direcionar eventos ao processo correto.
 

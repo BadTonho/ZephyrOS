@@ -1,16 +1,19 @@
 #include "process/process.h"
+#include "core/errors.h"
 #include "core/spinlock.h"
 #include "core/log.h"
 #include "core/string.h"
 
 static spinlock_t ipc_lock;
 static uint32_t focused_pid = 0;
+static uint32_t focus_fallback_pid = 0;
 static ipc_stats_t ipc_stats;
 static int ipc_ready = 0;
 
 void ipc_init(void) {
     spinlock_init(&ipc_lock);
     focused_pid = 0;
+    focus_fallback_pid = 0;
     ipc_stats.sent = 0;
     ipc_stats.received = 0;
     ipc_stats.failed = 0;
@@ -119,18 +122,62 @@ void ipc_get_stats(ipc_stats_t* stats) {
     spinlock_release(&ipc_lock);
 }
 
-void process_set_focus(uint32_t pid) {
+static int process_focus_target_is_valid(process_t* target) {
+    return target && (target->state == PROCESS_STATE_READY ||
+                      target->state == PROCESS_STATE_RUNNING ||
+                      target->state == PROCESS_STATE_BLOCKED);
+}
+
+int process_set_focus(uint32_t pid) {
     process_t* target = process_get_by_pid(pid);
 
-    if (!target || (target->state != PROCESS_STATE_READY &&
-                    target->state != PROCESS_STATE_RUNNING &&
-                    target->state != PROCESS_STATE_BLOCKED)) {
+    if (!ipc_ready) {
+        LOG_ERROR("IPC", "Foco alterado antes da inicializacao IPC");
+        return ERR_STATE;
+    }
+    if (!process_focus_target_is_valid(target)) {
         LOG_WARN("IPC", "Foco rejeitado para PID inexistente ou inativo");
-        return;
+        return ERR_NOT_FOUND;
     }
 
     focused_pid = target->pid;
     LOG_INFO("IPC", "Foco alterado");
+    return OK;
+}
+
+int process_set_focus_fallback(uint32_t pid) {
+    process_t* target = process_get_by_pid(pid);
+
+    if (!ipc_ready) {
+        LOG_ERROR("IPC", "Fallback de foco definido antes da inicializacao");
+        return ERR_STATE;
+    }
+    if (!process_focus_target_is_valid(target)) {
+        LOG_ERROR("IPC", "Fallback de foco invalido");
+        return ERR_NOT_FOUND;
+    }
+
+    focus_fallback_pid = target->pid;
+    LOG_INFO("IPC", "Fallback de foco definido");
+    return OK;
+}
+
+int process_restore_focus(void) {
+    process_t* target = process_get_by_pid(focus_fallback_pid);
+
+    if (!ipc_ready) {
+        LOG_ERROR("IPC", "Restauracao de foco antes da inicializacao");
+        return ERR_STATE;
+    }
+    if (!process_focus_target_is_valid(target)) {
+        focused_pid = 0;
+        LOG_WARN("IPC", "Fallback de foco indisponivel; foco limpo");
+        return ERR_NOT_FOUND;
+    }
+
+    focused_pid = target->pid;
+    LOG_INFO("IPC", "Foco restaurado para fallback");
+    return OK;
 }
 
 uint32_t process_get_focus(void) {

@@ -10,6 +10,15 @@
 #define APP_IMAGE_STACK_SIZE           4096U
 #define APP_IMAGE_FLAGS_NONE           0U
 
+typedef struct {
+    uint32_t pid;
+    uint32_t exit_code;
+    uint32_t faulted;
+    uint32_t cancelled;
+    uint32_t start_failed;
+    uint32_t focus_acquired;
+} app_loader_result_t;
+
 typedef struct __attribute__((packed)) {
     char magic[4];
     uint32_t version;
@@ -34,5 +43,9 @@ int app_loader_validate_image(const uint8_t* image, uint32_t size,
                               app_image_header_t* header);
 int app_loader_run_file(const char* path, uint32_t* pid_out);
 int app_loader_reap_finished(void);
+int app_loader_is_foreground_active(void);
+uint32_t app_loader_get_foreground_pid(void);
+int app_loader_cancel_foreground(uint32_t exit_code);
+int app_loader_take_finished_result(app_loader_result_t* result);
 
 #endif

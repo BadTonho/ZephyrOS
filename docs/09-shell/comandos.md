@@ -40,6 +40,7 @@ Comandos disponiveis:
   health    - Exibe metricas e estado de recovery do kernel
   appcheck  - Testa API, arquivos, IPC e carregador ZAPP
   app run <arquivo.ZAP> - Executa aplicativo ring 3 de forma assincrona
+  app inputtest - Testa entrada de teclado em aplicativo ring 3
   usertest  - Executa teste isolado em ring 3
   reboot    - Reinicia o sistema
   shutdown  - Desliga o sistema
@@ -228,6 +229,18 @@ zephyr> app run DEMO.ZAP
 O formato possui uma pagina maxima de codigo, uma pagina maxima de dados e
 uma pagina de stack. Arquivos invalidos, inexistentes ou maiores que o limite
 retornam erro controlado e nao causam `panic`.
+
+O aplicativo recebe foco automaticamente e pode obter scancodes PS/2 brutos
+com `message_receive` e `APP_MESSAGE_KEYBOARD`. `Esc` continua disponivel para
+o aplicativo. `F12` encerra somente o `.ZAP` externo em foco e devolve o
+controle ao Shell. Argumentos apos o nome do arquivo ainda nao sao suportados.
+
+## `app inputtest`
+
+Cria temporariamente um `.ZAP` de diagnostico, entrega o foco a ele e remove
+o arquivo logo apos o carregamento. Pressione qualquer tecla para exercitar a
+fila e `Enter` para encerrar normalmente; `F12` cancela com retorno seguro ao
+Shell.
 
 ## `usertest`
 Cria um processo mínimo em ring 3, com diretório de páginas e stack de kernel

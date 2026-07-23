@@ -38,7 +38,8 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `guitest` | - | Roda um teste nativo das primitivas gráficas GUI 2D. |
 | `health` | - | Lista o estado dos componentes e mostra dependências indisponíveis. |
 | `appcheck` | - | Testa API, arquivos, IPC e carregador ZAPP. |
-| `app` | `run <arquivo.ZAP>` | Executa uma imagem flat i386 em ring 3 de forma assincrona. |
+| `app` | `run <arquivo.ZAP>` | Executa uma imagem flat i386 em ring 3, em primeiro plano. |
+| `app` | `inputtest` | Cria e executa um teste temporario de teclado para `.ZAP`. |
 | `usertest` | `fault` opcional | Executa e valida o primeiro processo isolado em ring 3. |
 | `guimode` | `classic/modern` | Alterna globalmente entre interface TUI (modo texto) e VESA (gráfica). |
 | `reboot` | - | Reinicia imediatamente o sistema operacional. |
@@ -63,6 +64,13 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 - **`Enter`**: Abre o aplicativo ou configuração selecionada.
 - **`Esc`**: Fecha qualquer menu que esteja aberto.
 - **`Clique Esquerdo`**: Seleciona apps do menu ou alterna a janela ativa na barra inferior.
+
+### 2.1.1. Aplicativos `.ZAP` em primeiro plano
+- **Scancodes PS/2**: sao entregues ao aplicativo por `APP_MESSAGE_KEYBOARD`.
+- **Esc**: pertence ao aplicativo em primeiro plano.
+- **F12**: cancela somente o `.ZAP` externo em foco e restaura o Shell.
+- **Menu Iniciar e taskbar**: ao abrir uma interface nativa, cancelam primeiro
+  o `.ZAP` externo para preservar a prioridade da interface do sistema.
 
 ### 2.2. Window Manager (Gerenciador de Janelas)
 - **`Tab`**: Alterna o foco para a próxima janela aberta.

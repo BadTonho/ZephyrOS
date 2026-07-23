@@ -343,24 +343,40 @@ static void process_switch_after_termination(void) {
     process_context_switch(&previous->context, &next->context);
 }
 
-static int process_mark_current_user_zombie(uint32_t exit_code,
-                                             int faulted) {
-    if (!current_process || !process_is_user(current_process)) {
+static int process_mark_user_zombie(process_t* proc, uint32_t exit_code,
+                                    int faulted) {
+    int focus_result;
+
+    if (!proc || !process_is_user(proc)) {
         LOG_WARN("PROC", "Encerramento recusado para processo ring 0");
         return ERR_UNAVAILABLE;
     }
-    if (current_process->state != PROCESS_STATE_RUNNING &&
-        current_process->state != PROCESS_STATE_READY) {
+    if (proc->state != PROCESS_STATE_RUNNING &&
+        proc->state != PROCESS_STATE_READY &&
+        proc->state != PROCESS_STATE_BLOCKED) {
         LOG_WARN("PROC", "Estado invalido ao encerrar processo ring 3");
         return ERR_STATE;
     }
 
-    current_process->exit_code = exit_code;
-    current_process->state = PROCESS_STATE_ZOMBIE;
-    user_test_result_pending = current_process->user_test;
-    user_test_result_pid = current_process->pid;
-    user_test_result_faulted = faulted ? 1U : 0U;
+    proc->exit_code = exit_code;
+    proc->state = PROCESS_STATE_ZOMBIE;
+    if (proc->user_test) {
+        user_test_result_pending = 1;
+        user_test_result_pid = proc->pid;
+        user_test_result_faulted = faulted ? 1U : 0U;
+    }
+    if (process_get_focus() == proc->pid) {
+        focus_result = process_restore_focus();
+        if (focus_result != OK) {
+            LOG_WARN("PROC", "Falha ao restaurar foco apos encerrar usuario");
+        }
+    }
     return OK;
+}
+
+static int process_mark_current_user_zombie(uint32_t exit_code,
+                                             int faulted) {
+    return process_mark_user_zombie(current_process, exit_code, faulted);
 }
 
 int process_reap_finished_user(void) {
@@ -689,6 +705,28 @@ int process_exit_current(uint32_t exit_code) {
     return OK;
 }
 
+int process_cancel_user(uint32_t pid, uint32_t exit_code) {
+    process_t* proc = process_get_by_pid(pid);
+    int result;
+
+    if (!proc) return ERR_NOT_FOUND;
+    if (!process_is_user(proc) || proc->user_test) return ERR_UNAVAILABLE;
+    if (proc == current_process) {
+        LOG_WARN("PROC", "Cancelamento do processo atual requer trampoline");
+        return ERR_STATE;
+    }
+
+    result = process_mark_user_zombie(proc, exit_code, 0);
+    if (result != OK) return result;
+
+    LOG_INFO("PROC", "Processo ring 3 cancelado");
+    return OK;
+}
+
+int process_cancel_focused_user(uint32_t exit_code) {
+    return process_cancel_user(process_get_focus(), exit_code);
+}
+
 int process_handle_user_exception(registers_t* regs) {
     uint32_t fault_address = 0;
 
@@ -792,8 +830,9 @@ void process_destroy(process_t* proc) {
         return;
     }
 
-    if (process_get_focus() == proc->pid) {
-        process_set_focus(0);
+    if (process_get_focus() == proc->pid &&
+        process_restore_focus() != OK) {
+        LOG_WARN("PROC", "Processo destruido sem fallback de foco valido");
     }
     pid = proc->pid;
     proc->state = PROCESS_STATE_UNUSED;

@@ -271,3 +271,28 @@ int app_files_close(app_handle_t handle) {
     kmemset(entry, 0, sizeof(app_file_entry_t));
     return OK;
 }
+
+int app_files_close_owner(uint32_t pid) {
+    uint32_t closed = 0;
+
+    if (!app_files_ready) {
+        LOG_ERROR("APP_FILES", "Limpeza de handles antes da inicializacao");
+        return ERR_STATE;
+    }
+    if (pid == 0) {
+        LOG_ERROR("APP_FILES", "PID invalido para limpeza de handles");
+        return ERR_INVALID;
+    }
+
+    for (uint32_t i = 0; i < APP_FILE_HANDLE_COUNT; i++) {
+        if (app_file_entries[i].used && app_file_entries[i].owner_pid == pid) {
+            kmemset(&app_file_entries[i], 0, sizeof(app_file_entry_t));
+            closed++;
+        }
+    }
+
+    if (closed > 0) {
+        LOG_INFO("APP_FILES", "Handles do processo encerrado foram liberados");
+    }
+    return OK;
+}

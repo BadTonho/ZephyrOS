@@ -58,6 +58,18 @@ static int kernel_send_shell_request(uint32_t request) {
     return ipc_send(target->pid, &msg);
 }
 
+static int kernel_cancel_foreground_app(void) {
+    int result;
+
+    if (app_loader_get_foreground_pid() == 0) return 1;
+
+    result = app_loader_cancel_foreground(PROCESS_EXIT_CANCELLED);
+    if (result == OK) return 1;
+
+    LOG_WARN("KERNEL", "Nao foi possivel encerrar app antes de abrir interface");
+    return 0;
+}
+
 static void kernel_request_shell_app(ipc_app_request_t request) {
     if (!recovery_is_enabled(RECOVERY_COMPONENT_SHELL)) {
         LOG_WARN("KERNEL", "Shell indisponivel; solicitacao de aplicativo ignorada");
@@ -69,6 +81,7 @@ static void kernel_request_shell_app(ipc_app_request_t request) {
         LOG_ERROR("KERNEL", "Solicitacao de aplicativo invalida");
         return;
     }
+    if (!kernel_cancel_foreground_app()) return;
 
     /* Mantem somente a intencao mais recente para evitar abrir dois apps. */
     kernel_pending_shell_request = request;
@@ -214,8 +227,9 @@ void shell_process_main(void) {
         } else {
             process_yield();
         }
-        shell_report_user_test_result();
         app_loader_reap_finished();
+        shell_report_user_test_result();
+        shell_report_app_loader_result();
         taskmgr_gui_update();
     }
 }
@@ -508,8 +522,13 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     process_t* shell_process = process_create("Shell", shell_process_main);
     if (shell_process) {
         kernel_shell_pid = shell_process->pid;
-        process_set_focus(shell_process->pid);
-        recovery_mark_ready(RECOVERY_COMPONENT_SHELL);
+        if (process_set_focus_fallback(shell_process->pid) != OK ||
+            process_set_focus(shell_process->pid) != OK) {
+            recovery_mark_degraded(RECOVERY_COMPONENT_SHELL, ERR_STATE,
+                                   "Shell criado sem foco seguro");
+        } else {
+            recovery_mark_ready(RECOVERY_COMPONENT_SHELL);
+        }
     } else {
         recovery_mark_disabled(RECOVERY_COMPONENT_SHELL, ERR_MEM,
                                 "Processo Shell indisponivel");

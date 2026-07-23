@@ -37,6 +37,7 @@ static int input_pos = 0;
 static int shell_waiting_user_test = 0;
 static uint8_t shell_extended_scancode = 0;
 static uint8_t shell_prompt_visible = 0;
+static uint32_t shell_appcheck_loader_pid = 0;
 
 #define SHELL_SCANCODE_EXTENDED 0xE0
 #define SHELL_SCANCODE_UP       0x48
@@ -51,6 +52,15 @@ static void print_num(uint32_t num);
 
 #define APP_CHECK_DEMO_PATH "DEMO.ZAP"
 #define APP_CHECK_DEMO_MAX_CLEANUP 4U
+#define APP_INPUT_TEST_PATH "INPUT.ZAP"
+#define APP_INPUT_EVENT_OFFSET 128U
+#define APP_INPUT_EVENT_DATA1_OFFSET (APP_INPUT_EVENT_OFFSET + 4U)
+
+static const char app_input_test_message[] =
+    "Entrada ZAPP ativa: Enter encerra; F12 cancela.\n";
+
+static void cmd_appcheck_print_result(const char* label, int result);
+static int shell_should_show_prompt(void);
 
 static void shell_demo_patch_u32(uint8_t* code, uint32_t offset,
                                  uint32_t value) {
@@ -67,27 +77,45 @@ static void shell_demo_emit_mov(uint8_t* code, uint32_t* offset,
     *offset += 4;
 }
 
-static void shell_remove_demo_image(void) {
+static int shell_demo_emit_jne(uint8_t* code, uint32_t* offset,
+                               uint32_t target) {
+    int32_t relative = (int32_t)target - (int32_t)(*offset + 2U);
+
+    if (relative < -128 || relative > 127) {
+        LOG_ERROR("SHELL", "Desvio do aplicativo de entrada excede limite");
+        return ERR_OVERFLOW;
+    }
+    code[(*offset)++] = 0x75;
+    code[(*offset)++] = (uint8_t)relative;
+    return OK;
+}
+
+static void shell_remove_image(const char* path) {
     uint32_t attempts = 0;
 
+    if (!path) {
+        LOG_ERROR("SHELL", "Caminho nulo ao remover imagem temporaria");
+        return;
+    }
     /* A FAT12 legada pode manter uma entrada de uma validacao interrompida. */
     while (attempts < APP_CHECK_DEMO_MAX_CLEANUP &&
-           fs_delete_file(APP_CHECK_DEMO_PATH) == OK) {
+           fs_delete_file(path) == OK) {
         attempts++;
     }
 }
 
 /* O demo e conhecido pelo Shell. Conferir o round-trip evita executar
    codigo diferente do que acabou de ser gravado no FAT. */
-static int shell_verify_demo_image(uint32_t expected_size) {
+static int shell_verify_image(const char* path, uint32_t expected_size) {
     int read_size;
 
-    if (expected_size == 0 || expected_size > sizeof(appcheck_demo_image)) {
+    if (!path || expected_size == 0 ||
+        expected_size > sizeof(appcheck_demo_image)) {
         LOG_ERROR("SHELL", "Tamanho invalido na verificacao do ZAPP demo");
         return ERR_INVALID;
     }
 
-    read_size = fs_read_file(APP_CHECK_DEMO_PATH, appcheck_demo_verify,
+    read_size = fs_read_file(path, appcheck_demo_verify,
                              sizeof(appcheck_demo_verify));
     if (read_size < 0) {
         LOG_ERROR("SHELL", "Falha ao reler ZAPP demo apos gravacao");
@@ -137,6 +165,62 @@ static uint32_t shell_build_demo_image(void) {
     return header.data_offset;
 }
 
+static uint32_t shell_build_input_test_image(void) {
+    app_image_header_t header;
+    uint8_t* code = appcheck_demo_image + APP_IMAGE_HEADER_SIZE;
+    uint32_t loop_offset;
+    uint32_t offset = 0;
+    uint32_t data_size = APP_INPUT_EVENT_OFFSET + sizeof(app_message_t);
+
+    kmemset(appcheck_demo_image, 0, sizeof(appcheck_demo_image));
+    shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_CONSOLE_WRITE);
+    shell_demo_emit_mov(code, &offset, 3, USER_DATA_BASE);
+    shell_demo_emit_mov(code, &offset, 1, kstrlen(app_input_test_message));
+    code[offset++] = 0xCD;
+    code[offset++] = 0x80;
+
+    loop_offset = offset;
+    shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_MESSAGE_RECEIVE);
+    shell_demo_emit_mov(code, &offset, 3, USER_DATA_BASE + APP_INPUT_EVENT_OFFSET);
+    code[offset++] = 0xCD;
+    code[offset++] = 0x80;
+    code[offset++] = 0x85;
+    code[offset++] = 0xC0;
+    if (shell_demo_emit_jne(code, &offset, loop_offset) != OK) return 0;
+
+    code[offset++] = 0xA1;
+    shell_demo_patch_u32(code, offset,
+                         USER_DATA_BASE + APP_INPUT_EVENT_DATA1_OFFSET);
+    offset += 4;
+    code[offset++] = 0x3D;
+    shell_demo_patch_u32(code, offset, 0x1CU);
+    offset += 4;
+    if (shell_demo_emit_jne(code, &offset, loop_offset) != OK) return 0;
+
+    shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_PROCESS_EXIT);
+    code[offset++] = 0x31;
+    code[offset++] = 0xDB;
+    code[offset++] = 0xCD;
+    code[offset++] = 0x80;
+    code[offset++] = 0xF4;
+
+    kmemcpy(header.magic, "ZAPP", 4);
+    header.version = APP_IMAGE_VERSION;
+    header.architecture = APP_IMAGE_ARCH_I386;
+    header.header_size = APP_IMAGE_HEADER_SIZE;
+    header.code_offset = APP_IMAGE_HEADER_SIZE;
+    header.code_size = offset;
+    header.data_offset = APP_IMAGE_HEADER_SIZE + offset;
+    header.data_size = data_size;
+    header.entry_offset = 0;
+    header.stack_size = APP_IMAGE_STACK_SIZE;
+    header.flags = APP_IMAGE_FLAGS_NONE;
+    kmemcpy(appcheck_demo_image + header.data_offset, app_input_test_message,
+            kstrlen(app_input_test_message));
+    kmemcpy(appcheck_demo_image, &header, APP_IMAGE_HEADER_SIZE);
+    return header.data_offset + header.data_size;
+}
+
 static void shell_reset_input(void) {
     input_pos = 0;
     kmemset(input_buffer, 0, sizeof(input_buffer));
@@ -173,6 +257,58 @@ void shell_report_user_test_result(void) {
     shell_reset_input();
     shell_print_prompt();
     process_reap_finished_user();
+}
+
+void shell_report_app_loader_result(void) {
+    app_loader_result_t result;
+    int appcheck_result;
+    process_t* current;
+
+    /* Mantem o resultado no loader enquanto uma UI nativa cobre o terminal. */
+    if (!video_terminal_is_active()) return;
+    if (app_loader_take_finished_result(&result) != OK) return;
+
+    if (shell_appcheck_loader_pid == result.pid) {
+        cmd_appcheck_print_result("loader_foco_aquisicao",
+                                  result.focus_acquired ? OK : ERR_STATE);
+        current = process_get_current();
+        appcheck_result = (!result.faulted && !result.cancelled &&
+                           !result.start_failed && result.exit_code == OK &&
+                           current && process_get_focus() == current->pid) ?
+                          OK : ERR_STATE;
+        cmd_appcheck_print_result("loader_foco_retorno", appcheck_result);
+        shell_appcheck_loader_pid = 0;
+    }
+
+    video_print("\n[", 0x08);
+    if (result.start_failed) {
+        video_print("ERRO", 0x0C);
+        video_print("] Aplicativo ZAPP PID ", 0x07);
+        print_num(result.pid);
+        video_print(" nao iniciou (codigo ", 0x07);
+        print_num(result.exit_code);
+        video_print(").\n", 0x07);
+    } else if (result.faulted) {
+        video_print("WARN", 0x0E);
+        video_print("] Aplicativo ZAPP PID ", 0x07);
+        print_num(result.pid);
+        video_print(" encerrou apos falha isolada.\n", 0x07);
+    } else if (result.cancelled) {
+        video_print("INFO", 0x0A);
+        video_print("] Aplicativo ZAPP PID ", 0x07);
+        print_num(result.pid);
+        video_print(" cancelado; foco devolvido ao Shell.\n", 0x07);
+    } else {
+        video_print("INFO", 0x0A);
+        video_print("] Aplicativo ZAPP PID ", 0x07);
+        print_num(result.pid);
+        video_print(" encerrou com codigo ", 0x07);
+        print_num(result.exit_code);
+        video_print(".\n", 0x07);
+    }
+
+    shell_reset_input();
+    if (shell_should_show_prompt()) shell_print_prompt();
 }
 
 static int shell_prepare_filemanager(void) {
@@ -360,6 +496,7 @@ static void cmd_help(void) {
     video_print("  health   - Mostra estado dos componentes (use PgUp/PgDn)\n", 0x07);
     video_print("  appcheck - Testa API, arquivos, IPC e loader\n", 0x07);
     video_print("  app run <arquivo.ZAP> - Executa aplicativo ring 3\n", 0x07);
+    video_print("  app inputtest - Testa teclado de aplicativo ring 3\n", 0x07);
     video_print("  usertest - Executa teste isolado em ring 3\n", 0x07);
     video_print("             usertest fault | falha controlada\n", 0x08);
     video_print("  play     - Toca arquivo WAV\n", 0x07);
@@ -473,6 +610,14 @@ static void cmd_health_print_kernel(void) {
         }
     }
     if (!user_test_found) video_print("N/D", 0x08);
+    video_print("\n", 0x07);
+    video_print("  App ZAPP em foco: ", 0x07);
+    if (app_loader_get_foreground_pid() != 0) {
+        video_print("PID ", 0x08);
+        print_num(app_loader_get_foreground_pid());
+    } else {
+        video_print("N/D", 0x08);
+    }
     video_print("\n", 0x07);
     uint32_t fault_pid;
     uint32_t fault_vector;
@@ -694,24 +839,25 @@ static void cmd_appcheck_loader(void) {
         return;
     }
 
-    shell_remove_demo_image();
+    shell_remove_image(APP_CHECK_DEMO_PATH);
 
     result = fs_write_file_at(APP_CHECK_DEMO_PATH,
                               appcheck_demo_image, image_size);
     cmd_appcheck_print_result("loader_demo_gravacao", result);
     if (result == OK) {
-        result = shell_verify_demo_image(image_size);
+        result = shell_verify_image(APP_CHECK_DEMO_PATH, image_size);
         cmd_appcheck_print_result("loader_demo_integridade", result);
         if (result == OK) {
             result = app_loader_run_file(APP_CHECK_DEMO_PATH, &pid);
             cmd_appcheck_print_result("loader_demo_execucao", result);
             if (result == OK) {
+                shell_appcheck_loader_pid = pid;
                 video_print("    pid=", 0x08);
                 print_num(pid);
                 video_print(" assincrono\n", 0x07);
             }
         }
-        shell_remove_demo_image();
+        shell_remove_image(APP_CHECK_DEMO_PATH);
         result = fs_read_file(APP_CHECK_DEMO_PATH, appcheck_demo_image, 1);
         if (result >= 0 && result != ERR_NOT_FOUND) {
             LOG_ERROR("SHELL", "Arquivo temporario ZAPP permaneceu apos limpeza");
@@ -791,8 +937,47 @@ static void cmd_appcheck(void) {
     cmd_appcheck_loader();
 }
 
+static void cmd_app_inputtest(void) {
+    uint32_t image_size;
+    uint32_t pid = 0;
+    int result;
+
+    if (!app_loader_is_ready()) {
+        video_print("Erro: carregador de aplicativos indisponivel.\n", 0x0C);
+        return;
+    }
+
+    image_size = shell_build_input_test_image();
+    if (image_size == 0) {
+        video_print("Erro: nao foi possivel montar o teste de entrada.\n", 0x0C);
+        return;
+    }
+
+    shell_remove_image(APP_INPUT_TEST_PATH);
+    result = fs_write_file_at(APP_INPUT_TEST_PATH, appcheck_demo_image,
+                              image_size);
+    if (result == OK) {
+        result = shell_verify_image(APP_INPUT_TEST_PATH, image_size);
+    }
+    if (result == OK) {
+        result = app_loader_run_file(APP_INPUT_TEST_PATH, &pid);
+    }
+    shell_remove_image(APP_INPUT_TEST_PATH);
+
+    if (result != OK) {
+        video_print("Erro: teste de entrada indisponivel (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+
+    video_print("Teste de entrada iniciado, PID ", 0x0A);
+    print_num(pid);
+    video_print(". Aguarde o foco do aplicativo.\n", 0x0A);
+}
+
 static void cmd_app(const char* args) {
-    char subcommand[8];
+    char subcommand[16];
     char path[FS_MAX_PATH];
     uint32_t sub_length = 0;
     uint32_t path_length = 0;
@@ -800,7 +985,7 @@ static void cmd_app(const char* args) {
     int result;
 
     if (!args) {
-        video_print("Uso: app run <arquivo.ZAP>\n", 0x0E);
+        video_print("Uso: app run <arquivo.ZAP> | app inputtest\n", 0x0E);
         return;
     }
     while (args[sub_length] && args[sub_length] != ' ' &&
@@ -811,8 +996,17 @@ static void cmd_app(const char* args) {
     subcommand[sub_length] = '\0';
     while (args[sub_length] == ' ' || args[sub_length] == '\t') sub_length++;
 
+    if (kstrcmp(subcommand, "inputtest") == 0) {
+        if (args[sub_length] != '\0') {
+            video_print("Uso: app inputtest\n", 0x0E);
+            return;
+        }
+        cmd_app_inputtest();
+        return;
+    }
+
     if (kstrcmp(subcommand, "run") != 0) {
-        video_print("Uso: app run <arquivo.ZAP>\n", 0x0E);
+        video_print("Uso: app run <arquivo.ZAP> | app inputtest\n", 0x0E);
         return;
     }
     while (args[sub_length] && args[sub_length] != ' ' &&
@@ -822,6 +1016,11 @@ static void cmd_app(const char* args) {
     path[path_length] = '\0';
     if (path_length == 0) {
         video_print("Uso: app run <arquivo.ZAP>\n", 0x0E);
+        return;
+    }
+    while (args[sub_length] == ' ' || args[sub_length] == '\t') sub_length++;
+    if (args[sub_length] != '\0') {
+        video_print("Erro: argumentos ainda nao sao suportados.\n", 0x0E);
         return;
     }
 
@@ -1126,6 +1325,7 @@ static int shell_should_show_prompt(void) {
     if (taskmgr_is_open() || taskmgr_is_gui_open()) return 0;
     if (settings_is_open() || wm_is_active() || guitest_is_active()) return 0;
     if (shell_waiting_user_test) return 0;
+    if (app_loader_is_foreground_active()) return 0;
     return 1;
 }
 

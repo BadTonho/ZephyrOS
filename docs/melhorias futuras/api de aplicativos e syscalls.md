@@ -2,7 +2,7 @@
 
 ## Resumo de Progresso
 
-Status: Fases 1, 2 e 3 validadas; Fase 4 implementada e aguardando validacao no QEMU; Fase 5 implementada e aguardando validacao no QEMU.
+Status: Fases 1 a 5 validadas; Fase 6A implementada e aguardando validacao no QEMU.
 
 Esta etapa preparara o ZephyrOS para executar aplicativos independentes do
 kernel. O objetivo nao e apenas criar mais comandos, mas definir uma fronteira
@@ -104,7 +104,7 @@ e permissao.
 O contrato inicial esta disponivel para os modulos nativos do kernel por meio
 de `src/include/core/app_api.h` e `src/core/app_api.c`:
 
-- `app_api_get_version()` retorna a versao `0.1`;
+- `app_api_get_version()` retorna a versao publica `0.2`;
 - `app_api_console_write()` aceita texto ASCII validado de ate 1024 bytes;
 - `app_api_get_uptime()` retorna ticks e segundos desde o boot;
 - `app_api_get_memory_info()` retorna memoria e paginas disponiveis;
@@ -176,7 +176,7 @@ de validacao nao interrompe o Shell.
 - [x] reutilizar as validacoes existentes de IPC e recovery;
 - [x] testar as chamadas pelo dispatcher usando `appcheck`;
 
-### Fase 4 - Processo em modo usuario - implementada, validacao pendente
+### Fase 4 - Processo em modo usuario - validada
 
 - [x] adicionar segmentos de codigo e dados DPL 3 ao GDT;
 - [x] criar diretorios de pagina com mapeamentos de kernel supervisor;
@@ -185,9 +185,9 @@ de validacao nao interrompe o Shell.
 - [x] habilitar `int 0x80` com gate DPL 3;
 - [x] implementar `usertest` e `usertest fault`;
 - [x] encerrar somente o processo de usuario em `process_exit` ou excecao;
-- [ ] validar `usertest`, `usertest fault` e os fluxos nativos no QEMU.
+- [x] validar `usertest`, `usertest fault` e os fluxos nativos no QEMU.
 
-### Fase 5 - Carregador de aplicativos - implementada, validacao pendente
+### Fase 5 - Carregador de aplicativos - validada
 
 - [x] definir o formato flat i386 interno `ZAPP`;
 - [x] validar magic, versao, arquitetura, offsets, tamanhos e entry point;
@@ -195,20 +195,37 @@ de validacao nao interrompe o Shell.
 - [x] iniciar o processo de forma assincrona pelo comando `app run`;
 - [x] recolher processos ring 3 encerrados sem acumular zumbis;
 - [x] registrar o componente App Loader no recovery e no `health`;
-- [ ] validar `appcheck`, `app run`, falhas de formato e limpeza no QEMU.
+- [x] validar `appcheck`, `app run`, falhas de formato e limpeza no QEMU.
 
 No FAT12, o arquivo usa a extensao 8.3 `.ZAP`, por exemplo `DEMO.ZAP`.
 O cabecalho `ZAPP` contem codigo flat i386, dados opcionais, entry point e
 flags reservadas. A primeira implementacao limita codigo e dados a uma pagina
 cada e nao inclui ELF, manifesto, checksum, relocacao ou bibliotecas dinamicas.
 
-### Fase 6 - Migracao gradual
+### Fase 6A - Entrada e foco seguros - implementada, validacao pendente
 
-- criar um aplicativo de teste minimo;
-- migrar primeiro o Editor ou uma ferramenta simples;
-- migrar o Explorer para usar handles e syscalls de arquivo;
-- migrar aplicativos graficos depois que a API de janelas estiver estavel;
-- preservar os modulos nativos como fallback durante toda a transicao.
+- [x] executar um `.ZAP` em primeiro plano pelo `app run`;
+- [x] entregar scancodes PS/2 brutos por `message_receive` e
+  `APP_MESSAGE_KEYBOARD`;
+- [x] restaurar automaticamente o foco do Shell quando o app encerra,
+  falha ou e cancelado;
+- [x] reservar `F12` como cancelamento global apenas para o `.ZAP` externo
+  em foco;
+- [x] liberar handles de arquivo pertencentes ao PID encerrado;
+- [x] adicionar `app inputtest` e o diagnostico de foco no `health`.
+
+O `appcheck` tambem confirma que o loader adquiriu o foco ao iniciar sua
+imagem temporaria e que, ao receber o resultado final, o foco ja voltou para
+o processo Shell. O resultado fica pendente enquanto uma interface nativa
+estiver cobrindo o terminal, evitando perder a notificacao de encerramento.
+
+### Fase 6B - Argumentos e primeira migracao nativa
+
+- definir uma ABI de argumentos de inicializacao para `app run`;
+- migrar primeiro uma ferramenta simples, mantendo a implementacao nativa;
+- migrar o Editor somente depois da validacao do ciclo de entrada;
+- migrar o Explorer depois que a API de arquivos evoluir;
+- migrar interfaces graficas apenas quando a API de janelas estiver estavel.
 
 ### Fase 7 - Pacotes e ecossistema
 
@@ -228,6 +245,8 @@ cada e nao inclui ELF, manifesto, checksum, relocacao ou bibliotecas dinamicas.
 - o comando `health` mostra falhas da camada de aplicativos;
 - `usertest fault` encerra somente o processo ring 3;
 - o fallback nativo continua disponivel durante o carregador;
+- `app inputtest` recebe teclado, encerra com `Enter` e pode ser cancelado
+  por `F12` sem duplicar o prompt;
 - o build e a validacao no QEMU passam antes de cada nova fase.
 
 ## Limites
@@ -238,6 +257,8 @@ cada e nao inclui ELF, manifesto, checksum, relocacao ou bibliotecas dinamicas.
 - nao ha ELF, manifesto, checksum, relocacao, loader dinamico ou empacotador;
 - a extensao `.zephyrosapp` completa fica para a Fase 7; `.ZAP` e o formato
   curto usado pelo FAT12 nesta fase;
+- a Fase 6A nao aceita argumentos, mouse, janelas ou aplicativos nativos em
+  ring 3;
 - a etapa nao altera `src/boot/boot.asm`;
 - nao sera criado um novo Window Manager nesta etapa;
 - compatibilidade com aplicativos de outros sistemas depende de bibliotecas,
