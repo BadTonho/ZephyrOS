@@ -88,7 +88,16 @@ int process_create_user_image(const char* name, const uint8_t* code,
                               uint32_t data_size, uint32_t entry_offset,
                               uint32_t stack_size, int diagnostic_test,
                               uint32_t* pid_out);
+int process_create_user_image_suspended(const char* name,
+                                        const uint8_t* code,
+                                        uint32_t code_size,
+                                        const uint8_t* data,
+                                        uint32_t data_size,
+                                        uint32_t entry_offset,
+                                        uint32_t stack_size,
+                                        uint32_t* pid_out);
 int process_create_user_test(int trigger_fault, uint32_t* pid_out);
+int process_start_user(uint32_t pid);
 void process_destroy(process_t* proc);
 int process_reap_finished_user(void);
 process_t* process_get_current(void);

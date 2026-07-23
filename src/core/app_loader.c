@@ -9,6 +9,7 @@
 #include "process/process.h"
 
 static int app_loader_ready;
+static uint32_t app_loader_pending_pid;
 
 static int app_loader_magic_is_valid(const char* magic) {
     return magic[0] == 'Z' && magic[1] == 'A' &&
@@ -106,6 +107,7 @@ int app_loader_validate_image(const uint8_t* image, uint32_t size,
 int app_loader_init(void) {
     LOG_INFO("APP_LOADER", "Inicializando carregador de aplicativos");
     app_loader_ready = 0;
+    app_loader_pending_pid = 0;
 
     if (!paging_is_ready() || !syscall_user_mode_is_enabled() ||
         fs_get_type() == FS_TYPE_NONE) {
@@ -126,12 +128,17 @@ int app_loader_run_file(const char* path, uint32_t* pid_out) {
     uint8_t* image;
     app_image_header_t header;
     uint32_t read_size;
+    uint32_t created_pid = 0;
     int file_size;
     int result;
 
     if (!app_loader_ready) {
         LOG_WARN("APP_LOADER", "Tentativa de executar ZAPP indisponivel");
         return ERR_UNAVAILABLE;
+    }
+    if (app_loader_pending_pid != 0) {
+        LOG_WARN("APP_LOADER", "Aplicativo ZAPP anterior ainda aguarda inicio");
+        return ERR_STATE;
     }
     if (!path) {
         LOG_ERROR("APP_LOADER", "Caminho ZAPP nulo");
@@ -171,22 +178,41 @@ int app_loader_run_file(const char* path, uint32_t* pid_out) {
 
     result = app_loader_validate_image(image, read_size, &header);
     if (result == OK) {
-        result = process_create_user_image(
+        result = process_create_user_image_suspended(
             path, image + header.code_offset, header.code_size,
             image + header.data_offset, header.data_size,
-            header.entry_offset, header.stack_size, 0, pid_out);
+            header.entry_offset, header.stack_size, &created_pid);
     }
 
     kfree(image);
+    image = 0;
     if (result != OK) {
         LOG_WARN("APP_LOADER", "Falha controlada ao criar processo ZAPP");
         return result;
     }
 
-    LOG_INFO("APP_LOADER", "Processo ZAPP criado de forma assincrona");
+    app_loader_pending_pid = created_pid;
+    if (pid_out) *pid_out = created_pid;
+
+    LOG_INFO("APP_LOADER", "Processo ZAPP preparado para execucao assincrona");
     return OK;
 }
 
 int app_loader_reap_finished(void) {
+    int result;
+
+    if (app_loader_pending_pid != 0) {
+        uint32_t pid = app_loader_pending_pid;
+
+        app_loader_pending_pid = 0;
+        result = process_start_user(pid);
+        if (result != OK) {
+            process_destroy(process_get_by_pid(pid));
+            LOG_ERROR("APP_LOADER", "Falha ao iniciar processo ZAPP pendente");
+            return result;
+        }
+        LOG_INFO("APP_LOADER", "Processo ZAPP liberado apos retorno ao Shell");
+    }
+
     return process_reap_finished_user();
 }

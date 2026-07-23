@@ -475,7 +475,8 @@ static int process_user_load_image(page_directory_t* dir,
 
 static int process_user_initialize(process_t* proc, page_directory_t* dir,
                                    uint32_t kernel_stack, const char* name,
-                                   uint32_t entry_offset, int diagnostic_test) {
+                                   uint32_t entry_offset, int diagnostic_test,
+                                   int start_suspended) {
     uint32_t stack_ptr;
     uint32_t entry_point;
     int i = 0;
@@ -519,16 +520,21 @@ static int process_user_initialize(process_t* proc, page_directory_t* dir,
     proc->context.user_entry = entry_point;
     proc->context.user_mode = 1;
     proc->user_test = diagnostic_test ? 1U : 0U;
-    proc->state = PROCESS_STATE_READY;
+    proc->state = start_suspended ? PROCESS_STATE_BLOCKED : PROCESS_STATE_READY;
     process_count++;
     return OK;
 }
 
-int process_create_user_image(const char* name, const uint8_t* code,
-                              uint32_t code_size, const uint8_t* data,
-                              uint32_t data_size, uint32_t entry_offset,
-                              uint32_t stack_size, int diagnostic_test,
-                              uint32_t* pid_out) {
+static int process_create_user_image_internal(const char* name,
+                                              const uint8_t* code,
+                                              uint32_t code_size,
+                                              const uint8_t* data,
+                                              uint32_t data_size,
+                                              uint32_t entry_offset,
+                                              uint32_t stack_size,
+                                              int diagnostic_test,
+                                              int start_suspended,
+                                              uint32_t* pid_out) {
     process_t* proc = 0;
     page_directory_t* dir;
     page_directory_t* kernel_dir;
@@ -588,7 +594,8 @@ int process_create_user_image(const char* name, const uint8_t* code,
         return result;
     }
     result = process_user_initialize(proc, dir, kernel_stack, name,
-                                     entry_offset, diagnostic_test);
+                                     entry_offset, diagnostic_test,
+                                     start_suspended);
     if (result != OK) {
         paging_free_user_directory(dir);
         kfree((void*)kernel_stack);
@@ -597,6 +604,29 @@ int process_create_user_image(const char* name, const uint8_t* code,
     if (pid_out) *pid_out = proc->pid;
     LOG_INFO("PROC", "Processo ring 3 criado a partir de imagem");
     return OK;
+}
+
+int process_create_user_image(const char* name, const uint8_t* code,
+                              uint32_t code_size, const uint8_t* data,
+                              uint32_t data_size, uint32_t entry_offset,
+                              uint32_t stack_size, int diagnostic_test,
+                              uint32_t* pid_out) {
+    return process_create_user_image_internal(
+        name, code, code_size, data, data_size, entry_offset, stack_size,
+        diagnostic_test, 0, pid_out);
+}
+
+int process_create_user_image_suspended(const char* name,
+                                        const uint8_t* code,
+                                        uint32_t code_size,
+                                        const uint8_t* data,
+                                        uint32_t data_size,
+                                        uint32_t entry_offset,
+                                        uint32_t stack_size,
+                                        uint32_t* pid_out) {
+    return process_create_user_image_internal(
+        name, code, code_size, data, data_size, entry_offset, stack_size,
+        0, 1, pid_out);
 }
 
 int process_create_user_test(int trigger_fault, uint32_t* pid_out) {
@@ -616,6 +646,23 @@ uint32_t process_get_user_count(void) {
             processes[i].context.user_mode) count++;
     }
     return count;
+}
+
+int process_start_user(uint32_t pid) {
+    process_t* proc = process_get_by_pid(pid);
+
+    if (!proc || !process_is_user(proc)) {
+        LOG_ERROR("PROC", "PID invalido ao iniciar processo ring 3");
+        return ERR_NOT_FOUND;
+    }
+    if (proc->state != PROCESS_STATE_BLOCKED) {
+        LOG_WARN("PROC", "Processo ring 3 nao estava suspenso");
+        return ERR_STATE;
+    }
+
+    proc->state = PROCESS_STATE_READY;
+    LOG_INFO("PROC", "Processo ring 3 liberado para execucao");
+    return OK;
 }
 
 int process_is_user(const process_t* proc) {
