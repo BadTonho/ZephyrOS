@@ -166,6 +166,24 @@ static uint16_t fat12_get_cluster(uint16_t cluster) {
     return value;
 }
 
+uint32_t fat12_get_free_clusters(void) {
+    uint32_t total_sectors;
+    uint32_t total_clusters;
+    uint32_t free_clusters = 0;
+
+    if (!fs.initialized) return 0;
+    total_sectors = fs.bpb.total_sectors ? fs.bpb.total_sectors :
+                    fs.bpb.large_sector_count;
+    total_clusters = (total_sectors - fs.data_start) /
+                     fs.bpb.sectors_per_cluster;
+    for (uint32_t cluster = 2; cluster < total_clusters + 2U; cluster++) {
+        if (fat12_get_cluster((uint16_t)cluster) == FAT12_CLUSTER_FREE) {
+            free_clusters++;
+        }
+    }
+    return free_clusters;
+}
+
 static void fat12_set_cluster(uint16_t cluster, uint16_t value) {
     uint32_t offset = cluster + (cluster / 2);
     uint16_t* fat = fs.fat;

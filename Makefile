@@ -54,6 +54,9 @@ APP_LOADER_OBJ = build/app_loader.o
 APP_BUILTIN_C = src/core/app_builtin.c
 APP_BUILTIN_OBJ = build/app_builtin.o
 
+APP_PACKAGE_C = src/core/app_package.c
+APP_PACKAGE_OBJ = build/app_package.o
+
 SYSCALL_C = src/core/syscall.c
 SYSCALL_OBJ = build/syscall.o
 
@@ -201,7 +204,7 @@ OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(RECOVERY_OBJ) $(STRI
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(AC97_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(COMPRESS_OBJ) \
-       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ)
+       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ)
 
 # Targets
 all: $(OS_IMG)
@@ -251,6 +254,10 @@ $(APP_LOADER_OBJ): $(APP_LOADER_C)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(APP_BUILTIN_OBJ): $(APP_BUILTIN_C)
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(APP_PACKAGE_OBJ): $(APP_PACKAGE_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -431,7 +438,13 @@ q3check:
 q3check-test:
 	python tools\q3check.py --self-test
 
+package-test:
+	python tools\packager.py selftest
+
+package-demo: $(OS_IMG)
+	python tools\packager.py demo --output build\DEMO.zephyrosapp --image $(OS_IMG)
+
 clean:
 	rmdir /s /q build
 
-.PHONY: all run debug q3check q3check-test clean
+.PHONY: all run debug q3check q3check-test package-test package-demo clean

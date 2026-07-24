@@ -15,6 +15,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/core/app_builtin.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/app_files.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/app_loader.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
+| `src/include/core/app_package.h` | `docs/13-aplicativos/pacotes.md` |
 | `src/include/core/errors.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/keyboard.h` | `docs/05-drivers/drivers.md` |
 | `src/include/core/log.h` | `docs/04-kernel/kernel.md` |

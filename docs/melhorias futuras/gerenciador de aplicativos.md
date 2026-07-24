@@ -21,9 +21,11 @@
 > `app run <arquivo.ZAP> [args]`. A Fase 6A tambem entrega foco automatico,
 > teclado por IPC e cancelamento seguro por `F12`; a Fase 6B validada adicionou a ABI
 > de argumentos, `app argtest` e migra `echo` para ZAPP com fallback nativo.
-> `app inputtest` cria uma imagem temporaria para diagnostico. Manifesto, instalacao, loja, pacotes
-> `.zephyrosapp` completos,
-> atualizacoes e SDK continuam planejados nas fases abaixo.
+> `app inputtest` cria uma imagem temporaria para diagnostico. A Fase 7 da
+> plataforma agora entrega a fundacao local `ZPKG` v1: um `.zephyrosapp` com
+> uma imagem ZAPP, manifesto e CRC32 pode ser injetado como `ID.ZPK`,
+> instalado por `pkg` e executado pelo loader. Loja, GUI, atualizacoes,
+> assinatura, permissoes e SDK continuam planejados nas fases abaixo.
 
 ---
 
@@ -172,7 +174,13 @@ Estes aplicativos são distribuídos através da Loja de Aplicativos. Apenas a i
 
 ---
 
-## Fase 2: Formato de Pacote e Instalador ⬜
+## Fase 2: Formato de Pacote e Instalador (backlog ampliado)
+
+> A especificacao historica desta secao foi substituida para o escopo minimo
+> ja entregue pelo contrato `ZPKG` v1 em
+> [`docs/13-aplicativos/pacotes.md`](../13-aplicativos/pacotes.md). Os itens
+> abaixo representam a expansao futura (multiplos arquivos, loja, metadados
+> extensos, backup e atualizacao), nao o formato local atual.
 
 ### 2.1 Formato de Pacote (.zephyrosapp)
 

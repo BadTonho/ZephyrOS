@@ -40,6 +40,8 @@ Comandos disponiveis:
   health    - Exibe metricas e estado de recovery do kernel
   q2check   - Executa diagnostico compacto da Q2
   appcheck  - Testa API, arquivos, IPC e carregador ZAPP
+  pkg       - Gerencia pacotes .ZPK locais
+  pkgcheck  - Testa validacoes de pacote sem gravar
   app run <arquivo.ZAP> [args] - Executa aplicativo ring 3 de forma assincrona
   app inputtest - Testa entrada de teclado em aplicativo ring 3
   app outputtest [fail] - Testa saida ZAPP em blocos e codigos de saida
@@ -256,6 +258,37 @@ zephyr> q2check
 O comando recusa a execução enquanto houver processo ring 3 ou zumbi pendente.
 Ele não substitui o `appcheck` completo nem a validação manual de `F12` com
 `app inputtest`.
+
+## `pkg list|info|verify|install|remove`
+
+Os comandos `pkg` administram o primeiro formato local de distribuicao. O
+artefato do host e `.zephyrosapp`; quando injetado na imagem FAT12 ele recebe
+o alias `ID.ZPK`, com bytes identicos.
+
+```text
+pkg list
+pkg info DEMO.ZPK
+pkg verify DEMO.ZPK
+pkg install DEMO.ZPK
+app run APPS/DEMO/APP.ZAP
+pkg remove DEMO
+```
+
+`pkg info <ID>` consulta um pacote instalado; `pkg info <arquivo.ZPK>` valida
+o fonte e mostra o manifesto. `pkg verify` nao grava. `pkg install` valida
+header, manifesto, CRC32 e ZAPP antes de criar `APPS/<ID>/APP.ZAP` e
+`META.DAT`; ele recusa ID instalado, dependencia ausente, app em foco e falta
+de espaco. `pkg remove` recusa a remocao quando outro pacote instalado depende
+do ID e preserva o arquivo fonte `ID.ZPK` no diretorio raiz.
+
+O contrato completo, limites e fluxo host para FAT12 estao em
+[`pacotes.md`](../13-aplicativos/pacotes.md).
+
+## `pkgcheck`
+
+Executa tres pre-validacoes compactas sem escrever no disco: pacote invalido,
+dependencia ausente e espaco insuficiente. Ele nao substitui `appcheck` e nao
+instala nem remove pacotes.
 
 ## `app run <arquivo.ZAP> [arg1 arg2 ...]`
 

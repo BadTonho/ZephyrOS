@@ -46,6 +46,18 @@ static uint32_t fat32_get_cluster(uint32_t cluster) {
     return value & 0x0FFFFFFF;
 }
 
+uint32_t fat32_get_free_clusters(void) {
+    uint32_t free_clusters = 0;
+
+    if (!fs.initialized) return 0;
+    for (uint32_t cluster = 2; cluster < fs.total_clusters + 2U; cluster++) {
+        if (fat32_get_cluster(cluster) == FAT32_CLUSTER_FREE) {
+            free_clusters++;
+        }
+    }
+    return free_clusters;
+}
+
 static void fat32_set_cluster(uint32_t cluster, uint32_t value) {
     uint32_t offset = cluster * 4;
     uint32_t sector = offset / 512;

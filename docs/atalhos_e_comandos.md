@@ -39,6 +39,12 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `health` | - | Lista o estado dos componentes e mostra dependências indisponíveis. |
 | `q2check` | - | Executa o diagnóstico compacto da Q2 com duas falhas isoladas. |
 | `appcheck` | - | Testa API, arquivos, IPC e carregador ZAPP. |
+| `pkg` | `list` | Lista os pacotes locais instalados. |
+| `pkg` | `info <ID|arquivo.ZPK>` | Mostra metadados instalados ou do pacote fonte validado. |
+| `pkg` | `verify <arquivo.ZPK>` | Valida formato, manifesto, CRC32 e ZAPP sem gravar. |
+| `pkg` | `install <arquivo.ZPK>` | Instala um pacote local em `APPS/<ID>/`. |
+| `pkg` | `remove <ID>` | Remove pacote sem apagar o arquivo fonte `.ZPK`. |
+| `pkgcheck` | - | Executa as pre-validacoes compactas do servico de pacotes. |
 | `app` | `run <arquivo.ZAP> [args]` | Executa uma imagem flat i386 em ring 3, em primeiro plano. |
 | `app` | `inputtest` | Cria e executa um teste temporario de teclado para `.ZAP`. |
 | `app` | `outputtest [fail]` | Emite 1152 bytes em blocos ZAPP e testa saida com codigo 0 ou 1. |

@@ -4,6 +4,11 @@
 
 O ZephyrOS usa um sistema de arquivos com interface unificada que suporta **FAT12** e **FAT32**, além de formatos de arquivo como **BMP** e **WAV**.
 
+As funcoes `fat12_get_free_clusters()` e `fat32_get_free_clusters()` contam
+os clusters livres do volume montado. A camada unificada propaga esse dado em
+`fs_get_info()` como `free_clusters` e `free_sectors`, permitindo que servicos
+internos facam pre-validacao de espaco antes de iniciar uma escrita composta.
+
 ## Arquivos
 
 ```

@@ -47,13 +47,21 @@ contrato publico.
   argumento invalido, `appcheck`, foco por `Enter` e `F12`, falha isolada,
   `health`, migracoes e ausencia de processos de usuario residuais.
 
-## Fase 7 - Pacotes e distribuicao
+## Fase 7 - Pacotes e distribuicao (em validacao)
 
-- [ ] Criar empacotador no host; ele nao deve rodar dentro do kernel.
-- [ ] Definir `.zephyrosapp` com manifesto, versao, arquitetura e integridade.
-- [ ] Validar instalacao, remocao e leitura de pacote sem expor estruturas FAT.
-- [ ] Adicionar diagnostico para pacote invalido, dependencia ausente e espaco
-  insuficiente.
+- [x] Criar empacotador Python no host com `build`, `verify`, `inject`,
+  `demo` e `selftest`; ele nao roda dentro do kernel.
+- [x] Definir `.zephyrosapp` como container `ZPKG` v1 com manifesto ASCII,
+  versao, arquitetura i386, payload ZAPP e CRC32; `ID.ZPK` e apenas seu alias
+  FAT12 8.3.
+- [x] Adicionar servico `PKG`, instalacao em `APPS/<ID>/`, listagem,
+  verificacao, remocao protegida por dependencias e leitura ZAPP por caminho,
+  sem expor estruturas FAT ao Shell.
+- [x] Adicionar `pkgcheck` para pacote invalido, dependencia ausente e
+  pre-validacao de espaco insuficiente, sem gravar no disco.
+- [ ] Validar no host `make q3check`, `make package-test`, build limpo e
+  `make package-demo`; validar no QEMU fluxo do demo, `pkgcheck`,
+  diagnosticos existentes, F12, interfaces e ausencia de processos residuais.
 
 ## Fora desta frente por enquanto
 

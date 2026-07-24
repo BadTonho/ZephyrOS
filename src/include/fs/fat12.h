@@ -64,6 +64,7 @@ int  fat12_write_file(const char* filename, const uint8_t* data, uint32_t size);
 int  fat12_delete_file(const char* filename);
 int  fat12_list_dir(void);
 fat12_fs_t* fat12_get_fs(void);
+uint32_t fat12_get_free_clusters(void);
 
 int  fat12_get_file_count(void);
 int  fat12_get_file_info(int index, char* name_out, uint32_t* size_out, uint8_t* attr_out);

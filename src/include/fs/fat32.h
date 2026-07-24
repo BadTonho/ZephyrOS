@@ -77,6 +77,7 @@ int  fat32_list_dir(void);
 int  fat32_get_file_count(void);
 int  fat32_get_file_info(int index, char* name_out, uint32_t* size_out, uint8_t* attr_out);
 fat32_fs_t* fat32_get_fs(void);
+uint32_t fat32_get_free_clusters(void);
 
 int  fat32_read_file_at(const char* path, uint8_t* buffer, uint32_t max_size);
 int  fat32_read_file_range_at(const char* path, uint32_t offset,

@@ -4,11 +4,11 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
-## Progresso Geral: base do sistema concluída; Fase 6C da plataforma de aplicativos validada
+## Progresso Geral: base do sistema concluída; Fase 7 de pacotes implementada e em validacao
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
-Plataforma de aplicativos:   [██████████████████████████████████░░░░░░░░] Fase 6C validada
+Plataforma de aplicativos:   [████████████████████████████████████░░░░░░] Fase 7 em validacao
 ```
 
 ---
@@ -343,10 +343,19 @@ Plataforma de aplicativos:   [████████████████�
   `appcheck`, `app inputtest` por `Enter` e `F12`, `usertest fault`, `health`,
   `echo`, `uptime`, `mem` e ausência de ZAPPs ou zumbis residuais.
 
+### Fase 7 - Pacotes locais e distribuicao (em validacao)
+
+- [x] Empacotador host para criar, verificar e injetar `.zephyrosapp` como
+  alias FAT12 `ID.ZPK`.
+- [x] Container `ZPKG` v1 com manifesto, versao, arquitetura i386, CRC32 e
+  uma imagem ZAPP validada antes da escrita.
+- [x] Servico interno `PKG`, comandos `pkg`, `pkgcheck` e instalacao em
+  `APPS/<ID>/APP.ZAP` mais `META.DAT`.
+- [ ] Validar no host e QEMU o pacote demo, a remocao, o caminho instalado,
+  F12, diagnosticos e ausencia de processos residuais.
+
 ### Etapas posteriores da plataforma
 
-- [ ] Empacotador no host e formato completo `.zephyrosapp`.
-- [ ] Manifesto, versão e verificação de integridade dos pacotes.
 - [ ] Argumentos mais completos, incluindo aspas e escapes.
 - [ ] Serviços adicionais da App API conforme a necessidade dos aplicativos migrados.
 - [ ] Avaliar permissões e isolamento adicional somente após métricas e testes de estabilidade.
@@ -362,7 +371,7 @@ kernel, interface e novos serviços:
 | Ordem | Documento | Objetivo |
 |-------|-----------|----------|
 | 1 | [`docs/roadmaps/01-estabilizacao-e-qualidade.md`](docs/roadmaps/01-estabilizacao-e-qualidade.md) | Regressão, diagnóstico e fallbacks antes de novas migrações. |
-| 2 | [`docs/roadmaps/02-plataforma-de-aplicativos.md`](docs/roadmaps/02-plataforma-de-aplicativos.md) | Fase 6C, ciclo de vida do console e pacotes futuros. |
+| 2 | [`docs/roadmaps/02-plataforma-de-aplicativos.md`](docs/roadmaps/02-plataforma-de-aplicativos.md) | Fase 7, pacotes locais, ZAPP e distribuicao. |
 | 3 | [`docs/roadmaps/03-kernel-e-desempenho.md`](docs/roadmaps/03-kernel-e-desempenho.md) | Métricas, scheduler, memória e otimização baseada em evidências. |
 | 4 | [`docs/roadmaps/04-interface-e-experiencia.md`](docs/roadmaps/04-interface-e-experiencia.md) | Taskbar, Window Manager, ícones e interação gráfica. |
 | 5 | [`docs/roadmaps/05-sistema-e-ecossistema.md`](docs/roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e ecossistema. |
@@ -381,7 +390,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 ### Kernel e Sistema
 - **Fundacao do Kernel** (`fundacao do kernel.md`) - etapa prioritaria para organizar as bases antes das otimizacoes
 - **Atualizacao e Otimizacao do Kernel** (`atualizacao do kernel.md`) - etapa posterior, guiada por metricas
-- **API de Aplicativos e Syscalls** (`api de aplicativos e syscalls.md`) - Fases 1 a 6B validadas; Fase 6C é a próxima etapa
+- **API de Aplicativos e Syscalls** (`api de aplicativos e syscalls.md`) - Fases 1 a 6D validadas; Fase 7 de pacotes locais esta em validacao
 - **Resiliência do Sistema** (`resiliencia do sistema.md`)
 - **Multitarefa Preemptiva Avançada** (`multitarefa preemptiva.md`)
 - **Gerenciador de Energia** (`gerenciador de energia.md`)

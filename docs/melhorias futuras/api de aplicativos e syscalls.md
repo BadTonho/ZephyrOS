@@ -289,12 +289,26 @@ suficientes.
 - [x] validar no QEMU sucesso, codigo `1`, argumento invalido, prompt unico,
   `F12`, `appcheck`, `health` e ausencia de zumbis.
 
-### Fase 7 - Pacotes e ecossistema
+### Fase 7 - Pacotes locais e distribuicao (em validacao)
 
-- definir o formato `.zephyrosapp`;
-- incluir manifesto, versao, permissoes e ponto de entrada;
-- criar instalacao, remocao e validacao de pacotes;
-- preparar bibliotecas de usuario para aplicativos produtivos e jogos.
+- [x] definir o container `ZPKG` v1 de 32 bytes, com manifesto ASCII,
+  arquitetura i386, payload ZAPP e CRC32 de conteudo;
+- [x] manter a App API `0.3` e as syscalls `0-9`, sem expor FAT ou criar uma
+  syscall para pacotes;
+- [x] adicionar o empacotador host `tools/packager.py`, os alvos opcionais
+  `make package-test` e `make package-demo`, e o alias FAT12 `ID.ZPK`;
+- [x] instalar um unico ZAPP em `APPS/<ID>/APP.ZAP` com `META.DAT` como
+  registro persistente, validar dependencias ja instaladas e permitir
+  remocao somente sem dependentes;
+- [x] permitir `app run APPS/<ID>/APP.ZAP` e expor `pkg` e `pkgcheck` no
+  Shell;
+- [ ] validar no QEMU o fluxo demo, remocao, diagnosticos, foco, F12 e as
+  duas interfaces antes de marcar a fase concluida.
+
+O escopo deliberadamente nao inclui permissao, assinatura, atualizacao,
+rollback, multiplos arquivos, GUI/App Store, resolucao automatica de
+dependencias ou biblioteca de usuario. O contrato detalhado esta em
+`docs/13-aplicativos/pacotes.md`.
 
 ## Criterios de aceitacao
 
@@ -316,9 +330,9 @@ suficientes.
 - os aplicativos nativos continuam em ring 0 e nao foram migrados;
 - o isolamento atual cobre uma imagem flat pequena, nao uma politica completa
   de permissoes para pacotes;
-- nao ha ELF, manifesto, checksum, relocacao, loader dinamico ou empacotador;
-- a extensao `.zephyrosapp` completa fica para a Fase 7; `.ZAP` e o formato
-  curto usado pelo FAT12 nesta fase;
+- nao ha ELF, relocacao, loader dinamico, assinatura ou permissao de pacote;
+- `.zephyrosapp` e o artefato no host; `ID.ZPK` e o alias FAT12 para o mesmo
+  conteudo; `.ZAP` continua sendo a imagem executavel instalada;
 - a Fase 6B aceita argumentos simples, mas ainda nao aceita aspas, escapes,
   mouse, janelas ou aplicativos nativos complexos em ring 3;
 - a etapa nao altera `src/boot/boot.asm`;

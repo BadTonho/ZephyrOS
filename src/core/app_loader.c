@@ -440,7 +440,7 @@ int app_loader_run_file_with_launch(const char* path,
         return ERR_MEM;
     }
 
-    file_size = fs_read_file(path, image, APP_IMAGE_MAX_FILE_SIZE + 1U);
+    file_size = fs_read_file_at(path, image, APP_IMAGE_MAX_FILE_SIZE + 1U);
     if (file_size < 0) {
         kfree(image);
         LOG_WARN("APP_LOADER", "Falha ao ler arquivo ZAPP");

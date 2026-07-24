@@ -27,6 +27,7 @@
 #include "core/app_api.h"
 #include "core/app_builtin.h"
 #include "core/app_loader.h"
+#include "core/app_package.h"
 #include "core/syscall.h"
 #include "drivers/idt.h"
 
@@ -797,6 +798,9 @@ static void cmd_help(void) {
     video_print("  health   - Mostra estado dos componentes (use PgUp/PgDn)\n", 0x07);
     video_print("  q2check  - Executa diagnostico compacto da Q2\n", 0x07);
     video_print("  appcheck - Testa API, arquivos, IPC e loader\n", 0x07);
+    video_print("  pkg      - Gerencia pacotes .ZPK locais\n", 0x07);
+    video_print("             pkg list | info | verify | install | remove\n", 0x08);
+    video_print("  pkgcheck - Testa validacoes de pacote sem gravar\n", 0x07);
     video_print("  app run <arquivo.ZAP> [args] - Executa aplicativo ring 3\n", 0x07);
     video_print("  app inputtest - Testa teclado de aplicativo ring 3\n", 0x07);
     video_print("  app outputtest [fail] - Testa saida ZAPP em blocos\n", 0x07);
@@ -970,6 +974,10 @@ static void cmd_health_print_kernel(void) {
     video_print("\n", 0x07);
     cmd_health_print_migrated_builtin(SHELL_BUILTIN_APP_UPTIME);
     cmd_health_print_migrated_builtin(SHELL_BUILTIN_APP_MEM);
+    video_print("  Pacotes: ", 0x07);
+    video_print(app_package_is_ready() ? "READY" : "DISABLED",
+                app_package_is_ready() ? 0x0A : 0x0E);
+    video_print("\n", 0x07);
     cmd_health_print_user_fault();
     video_print("  File API: ", 0x07);
     video_print((app_api_file_is_ready() &&
@@ -1462,6 +1470,193 @@ static void cmd_app_outputtest(const char* args) {
     video_print("Teste de saida iniciado, PID ", 0x0A);
     print_num(pid);
     video_print(".\n", 0x0A);
+}
+
+static void cmd_pkg_take_token(const char** cursor, char* output,
+                               uint32_t output_size) {
+    uint32_t length = 0;
+
+    while (**cursor == ' ' || **cursor == '\t') (*cursor)++;
+    while (**cursor && **cursor != ' ' && **cursor != '\t') {
+        if (length + 1U < output_size) output[length++] = **cursor;
+        (*cursor)++;
+    }
+    output[length] = '\0';
+}
+
+static int cmd_pkg_is_file_name(const char* value) {
+    uint32_t length = kstrlen(value);
+
+    if (length < 5U) return 0;
+    return value[length - 4U] == '.' &&
+           (value[length - 3U] == 'Z' || value[length - 3U] == 'z') &&
+           (value[length - 2U] == 'P' || value[length - 2U] == 'p') &&
+           (value[length - 1U] == 'K' || value[length - 1U] == 'k');
+}
+
+static void cmd_pkg_print_info(const app_package_info_t* info) {
+    if (!info) return;
+
+    video_print("Pacote ", 0x0B);
+    video_print(info->id, 0x0A);
+    video_print("\n  Nome: ", 0x07);
+    video_print(info->name, 0x07);
+    video_print("\n  Versao: ", 0x07);
+    video_print(info->version, 0x07);
+    video_print("\n  API: 0.3\n  Dependencias: ", 0x07);
+    if (info->dependency_count == 0) {
+        video_print("nenhuma\n", 0x08);
+        return;
+    }
+    for (uint32_t index = 0; index < info->dependency_count; index++) {
+        if (index) video_print(", ", 0x07);
+        video_print(info->dependencies[index], 0x07);
+    }
+    video_print("\n", 0x07);
+}
+
+static void cmd_pkg_print_usage(void) {
+    video_print("Uso: pkg list | pkg info <ID|arquivo.ZPK> | ", 0x0E);
+    video_print("pkg verify <arquivo.ZPK>\n", 0x0E);
+    video_print("     pkg install <arquivo.ZPK> | pkg remove <ID>\n", 0x0E);
+}
+
+static void cmd_pkg_list(void) {
+    int count = app_package_get_installed_count();
+
+    video_print("Pacotes instalados:\n", 0x0B);
+    if (count == 0) {
+        video_print("  (nenhum)\n", 0x08);
+        return;
+    }
+    for (int index = 0; index < count; index++) {
+        app_package_info_t info;
+        if (app_package_get_installed_info(index, &info) != OK) continue;
+        video_print("  ", 0x07);
+        video_print(info.id, 0x0A);
+        video_print(" ", 0x07);
+        video_print(info.version, 0x08);
+        video_print(" - ", 0x07);
+        video_print(info.name, 0x07);
+        video_print("\n", 0x07);
+    }
+}
+
+static void cmd_pkg_info(const char* value) {
+    app_package_info_t info;
+    int result;
+
+    result = cmd_pkg_is_file_name(value) ?
+             app_package_verify_file(value, &info) :
+             app_package_get_installed_info_by_id(value, &info);
+    if (result != OK) {
+        video_print("Erro: pacote nao encontrado ou invalido (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+    cmd_pkg_print_info(&info);
+}
+
+static void cmd_pkg_verify(const char* value) {
+    app_package_info_t info;
+    int result = app_package_verify_file(value, &info);
+
+    if (result != OK) {
+        video_print("Erro: verificacao de pacote falhou (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+    video_print("Pacote valido.\n", 0x0A);
+    cmd_pkg_print_info(&info);
+}
+
+static void cmd_pkg_install(const char* value) {
+    app_package_info_t info;
+    int result = app_package_install_file(value, &info);
+
+    if (result != OK) {
+        video_print("Erro: instalacao de pacote falhou (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+    video_print("Pacote instalado: ", 0x0A);
+    video_print(info.id, 0x0A);
+    video_print(".\n", 0x0A);
+}
+
+static void cmd_pkg_remove(const char* value) {
+    int result = app_package_remove(value);
+
+    if (result != OK) {
+        video_print("Erro: remocao de pacote falhou (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+    video_print("Pacote removido: ", 0x0A);
+    video_print(value, 0x0A);
+    video_print(".\n", 0x0A);
+}
+
+static void cmd_pkg(const char* args) {
+    char operation[16];
+    char value[FS_MAX_PATH];
+    char extra[2];
+    const char* cursor = args;
+
+    if (!args) {
+        cmd_pkg_print_usage();
+        return;
+    }
+    cmd_pkg_take_token(&cursor, operation, sizeof(operation));
+    cmd_pkg_take_token(&cursor, value, sizeof(value));
+    cmd_pkg_take_token(&cursor, extra, sizeof(extra));
+    if (kstrcmp(operation, "list") == 0 && value[0] == '\0' &&
+        extra[0] == '\0') {
+        cmd_pkg_list();
+    } else if (kstrcmp(operation, "info") == 0 && value[0] &&
+               extra[0] == '\0') {
+        cmd_pkg_info(value);
+    } else if (kstrcmp(operation, "verify") == 0 && value[0] &&
+               extra[0] == '\0') {
+        cmd_pkg_verify(value);
+    } else if (kstrcmp(operation, "install") == 0 && value[0] &&
+               extra[0] == '\0') {
+        cmd_pkg_install(value);
+    } else if (kstrcmp(operation, "remove") == 0 && value[0] &&
+               extra[0] == '\0') {
+        cmd_pkg_remove(value);
+    } else {
+        LOG_WARN("SHELL", "Uso invalido do comando pkg");
+        cmd_pkg_print_usage();
+    }
+}
+
+static void cmd_pkgcheck(void) {
+    app_package_diagnostic_t diagnostic;
+    int result;
+    int passed;
+
+    kmemset(&diagnostic, 0, sizeof(diagnostic));
+    result = app_package_run_diagnostics(&diagnostic);
+    passed = result == OK && diagnostic.invalid_package &&
+             diagnostic.missing_dependency && diagnostic.insufficient_space;
+
+    video_print("PkgCheck:\n", 0x0B);
+    video_print("  pacote_invalido ", 0x07);
+    video_print(diagnostic.invalid_package ? "OK\n" : "ERRO\n",
+                diagnostic.invalid_package ? 0x0A : 0x0C);
+    video_print("  dependencia_ausente ", 0x07);
+    video_print(diagnostic.missing_dependency ? "OK\n" : "ERRO\n",
+                diagnostic.missing_dependency ? 0x0A : 0x0C);
+    video_print("  espaco_insuficiente ", 0x07);
+    video_print(diagnostic.insufficient_space ? "OK\n" : "ERRO\n",
+                diagnostic.insufficient_space ? 0x0A : 0x0C);
+    video_print("  resultado ", 0x07);
+    video_print(passed ? "OK\n" : "ERRO\n", passed ? 0x0A : 0x0C);
 }
 
 static void cmd_app(const char* args) {
@@ -2131,6 +2326,10 @@ int shell_process_command(const char* input) {
         cmd_q2check();
     } else if (kstrcmp(cmd, "appcheck") == 0) {
         cmd_appcheck();
+    } else if (kstrcmp(cmd, "pkg") == 0) {
+        cmd_pkg(input);
+    } else if (kstrcmp(cmd, "pkgcheck") == 0) {
+        cmd_pkgcheck();
     } else if (kstrcmp(cmd, "app") == 0) {
         cmd_app(input);
     } else if (kstrcmp(cmd, "usertest") == 0) {

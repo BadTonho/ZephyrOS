@@ -95,9 +95,11 @@ int fs_get_info(fs_info_t* info) {
         info->bytes_per_sector = fs->bpb.bytes_per_sector;
         info->sectors_per_cluster = fs->bpb.sectors_per_cluster;
         info->total_sectors = fs->bpb.total_sectors;
-        info->free_sectors = 0;
-        info->total_clusters = 0;
-        info->free_clusters = 0;
+        if (info->total_sectors == 0) info->total_sectors = fs->bpb.large_sector_count;
+        info->total_clusters = (info->total_sectors - fs->data_start) /
+                               info->sectors_per_cluster;
+        info->free_clusters = fat12_get_free_clusters();
+        info->free_sectors = info->free_clusters * info->sectors_per_cluster;
         kmemcpy(info->label, fs->bpb.volume_label, 11);
         info->label[11] = '\0';
     } else if (current_fs_type == FS_TYPE_FAT32) {
@@ -105,9 +107,9 @@ int fs_get_info(fs_info_t* info) {
         info->bytes_per_sector = fs->bpb.bytes_per_sector;
         info->sectors_per_cluster = fs->bpb.sectors_per_cluster;
         info->total_sectors = fs->bpb.total_sectors_large;
-        info->free_sectors = 0;
-        info->total_clusters = fs->bpb.sectors_per_fat * 512 / 4;
-        info->free_clusters = 0;
+        info->total_clusters = fs->total_clusters;
+        info->free_clusters = fat32_get_free_clusters();
+        info->free_sectors = info->free_clusters * info->sectors_per_cluster;
         kmemcpy(info->label, fs->bpb.volume_label, 11);
         info->label[11] = '\0';
     } else {
