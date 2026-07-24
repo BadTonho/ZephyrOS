@@ -101,6 +101,21 @@ void* pmm_alloc_pages(uint32_t count) {
 }
 ```
 
+### Guardas e estatisticas K3
+
+O PMM mantem um segundo bitmap interno de propriedade. Uma pagina so pode ser
+liberada por `pmm_free_page()` ou `pmm_free_pages()` quando foi previamente
+entregue pelo proprio PMM. Ponteiros nulos, desalinhados, fora da RAM, reservas
+do kernel, intervalos invalidos e double-free sao recusados, registrados e nao
+alteram o bitmap principal. A busca de intervalos contiguos tambem rejeita
+contagem zero ou maior que a RAM e inclui o ultimo intervalo possivel.
+
+`memory_pmm_stats_t` informa paginas atualmente entregues, falhas de alocacao
+e liberacoes recusadas. O bitmap adicional e reservado durante `memory_init()`
+e nunca volta a ser memoria livre. Os dois bitmaps ocupam a faixa segura entre
+o fim do kernel e a stack inicial do sistema; inicializacao fora desse limite
+falha de forma controlada em vez de sobrepor memoria critica.
+
 ---
 
 ## Heap (kmalloc/kfree)
@@ -182,6 +197,16 @@ void kfree(void* ptr) {
     }
 }
 ```
+
+### Diagnostico K3 do heap
+
+O heap continua first-fit com coalescencia. `memory_heap_stats_t` inclui
+blocos livres/ocupados, maior bloco livre, falhas e rejeicoes de `kfree`.
+Fragmentacao externa e `(livre_total - maior_bloco_livre) / livre_total`; sem
+espaco livre, o resultado e `0`. A leitura das estatisticas e limitada por
+faixa e por encadeamento fisico esperado: metadata ou links invalidos deixam
+o estado de integridade invalido e retornam controle ao chamador sem percorrer
+um ciclo corrompido.
 
 ---
 
@@ -280,6 +305,12 @@ A página de lançamento contém `app_launch_info_t` da App API `0.3`, com até
 oito argumentos representados por offsets e comprimentos relativos ao texto
 bruto. Ela evita expor ponteiros do kernel e preserva a página de dados das
 imagens ZAPP antigas.
+
+Diretorios de usuario sao registrados quando criados. Somente um diretorio
+registrado pode ser liberado pelo liberador de usuario; diretorio ativo, do
+kernel ou desconhecido e recusado. O liberador generico tambem recusa um
+diretorio registrado. `paging_user_stats_t` informa diretorios e paginas
+ativos, criados, liberados e rejeicoes; os deltas aparecem em `kmetrics`.
 
 ---
 

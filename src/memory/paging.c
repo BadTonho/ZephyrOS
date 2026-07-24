@@ -11,6 +11,53 @@ page_directory_t* current_directory = 0;
 static page_directory_t* kernel_directory = 0;
 static int paging_initialized = 0;
 
+#define PAGING_MAX_USER_DIRECTORIES 64U
+
+static page_directory_t* user_directories[PAGING_MAX_USER_DIRECTORIES];
+static paging_user_stats_t user_paging_stats;
+
+static int paging_user_directory_index(page_directory_t* dir) {
+    if (!dir) return -1;
+
+    for (uint32_t i = 0; i < PAGING_MAX_USER_DIRECTORIES; i++) {
+        if (user_directories[i] == dir) return (int)i;
+    }
+    return -1;
+}
+
+static int paging_is_registered_user_directory(page_directory_t* dir) {
+    return paging_user_directory_index(dir) >= 0;
+}
+
+static int paging_register_user_directory(page_directory_t* dir) {
+    if (!dir) {
+        LOG_ERROR("MEM", "Diretorio nulo ao registrar espaco de usuario");
+        return 0;
+    }
+    for (uint32_t i = 0; i < PAGING_MAX_USER_DIRECTORIES; i++) {
+        if (!user_directories[i]) {
+            user_directories[i] = dir;
+            user_paging_stats.active_directories++;
+            user_paging_stats.directories_created++;
+            return 1;
+        }
+    }
+    LOG_ERROR("MEM", "Limite de diretorios de usuario atingido");
+    return 0;
+}
+
+static void paging_unregister_user_directory(uint32_t index) {
+    if (index >= PAGING_MAX_USER_DIRECTORIES || !user_directories[index]) {
+        LOG_ERROR("MEM", "Registro de diretorio de usuario invalido");
+        return;
+    }
+    user_directories[index] = 0;
+    if (user_paging_stats.active_directories > 0) {
+        user_paging_stats.active_directories--;
+    }
+    user_paging_stats.directories_released++;
+}
+
 page_directory_t* paging_create_directory(void) {
     page_directory_t* dir = (page_directory_t*)pmm_alloc_page();
     if (!dir) {
@@ -72,6 +119,7 @@ int paging_map_page_in_directory(page_directory_t* dir,
                                  uint32_t virtual,
                                  uint32_t physical,
                                  uint32_t flags) {
+    int user_directory;
     if (!dir) {
         LOG_ERROR("MEM", "Mapeamento com diretorio nulo");
         return ERR_NULL;
@@ -90,6 +138,12 @@ int paging_map_page_in_directory(page_directory_t* dir,
         return ERR_INVALID;
     }
 
+    user_directory = paging_is_registered_user_directory(dir);
+    if ((flags & PAGING_FLAG_USER) && user_directory < 0) {
+        LOG_ERROR("MEM", "Pagina de usuario sem diretorio registrado");
+        return ERR_STATE;
+    }
+
     uint32_t table_idx = virtual / (PAGE_SIZE * 1024);
     uint32_t directory_entry = dir->entries[table_idx];
     if ((flags & PAGING_FLAG_USER) && directory_entry &&
@@ -104,6 +158,11 @@ int paging_map_page_in_directory(page_directory_t* dir,
         return ERR_MEM;
     }
 
+    if ((flags & PAGING_FLAG_USER) && page->present) {
+        LOG_ERROR("MEM", "Remapeamento de pagina de usuario recusado");
+        return ERR_STATE;
+    }
+
     if (!(directory_entry & PAGING_FLAG_PRESENT) &&
         (flags & PAGING_FLAG_USER)) {
         dir->entries[table_idx] |= PAGING_FLAG_USER;
@@ -112,6 +171,7 @@ int paging_map_page_in_directory(page_directory_t* dir,
     page->present = 1;
     page->rw = (flags & PAGING_FLAG_WRITE) ? 1 : 0;
     page->user = (flags & PAGING_FLAG_USER) ? 1 : 0;
+    if (flags & PAGING_FLAG_USER) user_paging_stats.active_pages++;
     return OK;
 }
 
@@ -192,6 +252,9 @@ int paging_init(void) {
     }
 
     LOG_INFO("MEM", "Inicializando paging");
+    kmemset(user_directories, 0, sizeof(user_directories));
+    kmemset(&user_paging_stats, 0, sizeof(user_paging_stats));
+    user_paging_stats.initialized = 1;
     page_directory_t* dir = paging_create_directory();
     if (!dir) {
         LOG_ERROR("MEM", "Falha ao criar diretorio de paginas");
@@ -261,16 +324,36 @@ page_directory_t* paging_create_user_directory(void) {
     for (uint32_t i = 0; i < 1024; i++) {
         dir->entries[i] = kernel_directory->entries[i] & ~PAGING_FLAG_USER;
     }
+    if (!paging_register_user_directory(dir)) {
+        pmm_free_page(dir);
+        return 0;
+    }
     return dir;
 }
 
 void paging_free_user_directory(page_directory_t* dir) {
+    int directory_index;
+    uint32_t released_pages = 0;
+
     if (!dir) {
-        LOG_WARN("MEM", "Diretorio de usuario nulo ignorado");
+        LOG_ERROR("MEM", "Diretorio de usuario nulo recusado");
+        user_paging_stats.rejected_releases++;
         return;
     }
     if (dir == current_directory) {
         LOG_ERROR("MEM", "Tentativa de liberar diretorio de usuario ativo");
+        user_paging_stats.rejected_releases++;
+        return;
+    }
+    if (dir == kernel_directory) {
+        LOG_ERROR("MEM", "Tentativa de liberar diretorio do kernel");
+        user_paging_stats.rejected_releases++;
+        return;
+    }
+    directory_index = paging_user_directory_index(dir);
+    if (directory_index < 0) {
+        LOG_ERROR("MEM", "Diretorio de usuario desconhecido recusado");
+        user_paging_stats.rejected_releases++;
         return;
     }
 
@@ -286,12 +369,28 @@ void paging_free_user_directory(page_directory_t* dir) {
         for (uint32_t j = 0; j < 1024; j++) {
             if (table->entries[j].present && table->entries[j].user) {
                 pmm_free_page((void*)(table->entries[j].frame * PAGE_SIZE));
+                released_pages++;
             }
         }
         pmm_free_page((void*)(entry & 0xFFFFF000U));
     }
     pmm_free_page(dir);
+    if (released_pages > user_paging_stats.active_pages) {
+        LOG_ERROR("MEM", "Contagem de paginas de usuario inconsistente");
+        user_paging_stats.active_pages = 0;
+    } else {
+        user_paging_stats.active_pages -= released_pages;
+    }
+    paging_unregister_user_directory((uint32_t)directory_index);
     LOG_DEBUG("MEM", "Diretorio de usuario liberado");
+}
+
+void paging_get_user_stats(paging_user_stats_t* stats) {
+    if (!stats) {
+        LOG_ERROR("MEM", "Destino nulo ao consultar diretorios de usuario");
+        return;
+    }
+    *stats = user_paging_stats;
 }
 
 int paging_validate_user_range(uint32_t address, uint32_t size, int write) {
@@ -360,6 +459,11 @@ void paging_free_directory(page_directory_t* dir) {
     }
     if (dir == current_directory) {
         LOG_ERROR("MEM", "Tentativa de liberar diretorio de paginas ativo");
+        return;
+    }
+    if (paging_is_registered_user_directory(dir)) {
+        LOG_ERROR("MEM", "Liberador generico recusou diretorio de usuario");
+        user_paging_stats.rejected_releases++;
         return;
     }
 

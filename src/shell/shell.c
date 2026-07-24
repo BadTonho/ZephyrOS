@@ -65,6 +65,9 @@ typedef struct {
     ipc_stats_t ipc;
     scheduler_stats_t scheduler;
     vesa_metrics_t vesa;
+    memory_heap_stats_t heap;
+    memory_pmm_stats_t pmm;
+    paging_user_stats_t paging_user;
 } shell_kmetrics_snapshot_t;
 
 typedef struct {
@@ -115,6 +118,9 @@ static void print_num(uint32_t num);
 #define SHELL_Q2CHECK_SECOND_FAULT_INDEX 1U
 #define SHELL_Q2CHECK_EXPECTED_FAULT_VECTOR 14U
 #define SHELL_Q2CHECK_EXPECTED_FAULT_ERROR 4U
+#define SHELL_MEMCHECK_BLOCK_A 96U
+#define SHELL_MEMCHECK_BLOCK_B 160U
+#define SHELL_MEMCHECK_BLOCK_C 224U
 
 static const char app_input_test_message[] =
     "Entrada ZAPP ativa: Enter encerra; F12 cancela.\n";
@@ -814,6 +820,7 @@ static void cmd_help(void) {
     video_print("  mouse    - Mostra status do mouse PS/2\n", 0x07);
     video_print("  health   - Mostra estado dos componentes (use PgUp/PgDn)\n", 0x07);
     video_print("  kmetrics - Mostra linha-base de metricas do kernel\n", 0x07);
+    video_print("  memcheck - Valida heap, PMM e diretorios de usuario\n", 0x07);
     video_print("  schedcheck - Valida invariantes do scheduler\n", 0x07);
     video_print("  q2check  - Executa diagnostico compacto da Q2\n", 0x07);
     video_print("  appcheck - Testa API, arquivos, IPC e loader\n", 0x07);
@@ -908,8 +915,14 @@ static void cmd_health_print_kernel(void) {
     process_t* current = process_get_current();
     ipc_stats_t ipc;
     app_api_version_t app_version;
+    memory_heap_stats_t heap;
+    memory_pmm_stats_t pmm;
+    paging_user_stats_t paging_user;
 
     ipc_get_stats(&ipc);
+    memory_get_heap_stats(&heap);
+    memory_get_pmm_stats(&pmm);
+    paging_get_user_stats(&paging_user);
     video_print("\nEstado do kernel:\n", 0x0B);
     video_print("  Processo atual: PID ", 0x07);
     print_num(process_get_current_pid());
@@ -1018,6 +1031,40 @@ static void cmd_health_print_kernel(void) {
     video_print("  Paginas: total=", 0x07);
     print_num(memory_get_total_pages());
     video_print("\n", 0x07);
+    video_print("  PMM: paginas_proprias=", 0x07);
+    print_num(pmm.owned_pages);
+    video_print(" falhas=", 0x08);
+    print_num(pmm.allocation_failures);
+    video_print(" rejeicoes=", 0x08);
+    print_num(pmm.invalid_frees);
+    video_print("\n", 0x07);
+    video_print("  Heap: ", 0x07);
+    if (!heap.initialized || !heap.valid) {
+        video_print("N/D\n", 0x08);
+    } else {
+        video_print("blocos_livres=", 0x07);
+        print_num(heap.free_blocks);
+        video_print(" maior_livre=", 0x08);
+        print_num(heap.largest_free_block / 1024U);
+        video_print(" KB fragmentacao=", 0x08);
+        print_num(heap.fragmentation_percent);
+        video_print("% falhas=", 0x08);
+        print_num(heap.allocation_failures);
+        video_print(" invalidos=", 0x08);
+        print_num(heap.invalid_frees + heap.double_frees);
+        video_print("\n", 0x07);
+    }
+    video_print("  Paging user: diretorios=", 0x07);
+    print_num(paging_user.active_directories);
+    video_print(" paginas=", 0x08);
+    print_num(paging_user.active_pages);
+    video_print(" criados=", 0x08);
+    print_num(paging_user.directories_created);
+    video_print(" liberados=", 0x08);
+    print_num(paging_user.directories_released);
+    video_print(" rejeicoes=", 0x08);
+    print_num(paging_user.rejected_releases);
+    video_print("\n", 0x07);
 }
 
 static void cmd_health(void) {
@@ -1048,6 +1095,9 @@ static void shell_kmetrics_take_snapshot(shell_kmetrics_snapshot_t* snapshot) {
     ipc_get_stats(&snapshot->ipc);
     scheduler_get_stats(&snapshot->scheduler);
     vesa_get_metrics(&snapshot->vesa);
+    memory_get_heap_stats(&snapshot->heap);
+    memory_get_pmm_stats(&snapshot->pmm);
+    paging_get_user_stats(&snapshot->paging_user);
 }
 
 static void cmd_kmetrics_print_scheduler(
@@ -1106,29 +1156,71 @@ static void cmd_kmetrics_print_queues(
     video_print("\n", 0x07);
 }
 
-static void cmd_kmetrics_print_memory(void) {
-    memory_heap_stats_t heap;
+static void cmd_kmetrics_print_memory(
+    const shell_kmetrics_snapshot_t* current,
+    const shell_kmetrics_snapshot_t* baseline) {
+    const memory_heap_stats_t* heap = &current->heap;
+    const memory_pmm_stats_t* pmm = &current->pmm;
+    const paging_user_stats_t* paging_user = &current->paging_user;
 
-    memory_get_heap_stats(&heap);
     video_print("  Memoria PMM: usada=", 0x07);
     print_num(memory_get_used() / 1024U);
     video_print(" KB livre=", 0x08);
     print_num(memory_get_free() / 1024U);
     video_print(" KB paginas_livres=", 0x08);
     print_num(memory_get_free_pages());
+    video_print(" proprias=", 0x08);
+    print_num(pmm->owned_pages);
+    video_print(" falhas=", 0x08);
+    print_num(shell_kmetrics_delta(pmm->allocation_failures,
+                                   baseline->pmm.allocation_failures));
+    video_print(" rejeicoes=", 0x08);
+    print_num(shell_kmetrics_delta(pmm->invalid_frees,
+                                   baseline->pmm.invalid_frees));
     video_print("\n", 0x07);
     video_print("  Heap: ", 0x07);
-    if (!heap.initialized) {
+    if (!heap->initialized || !heap->valid) {
         video_print("N/D\n", 0x08);
-        return;
+    } else {
+        video_print("usado=", 0x07);
+        print_num(heap->used_bytes / 1024U);
+        video_print(" KB livre=", 0x08);
+        print_num(heap->free_bytes / 1024U);
+        video_print(" KB total=", 0x08);
+        print_num(heap->total_bytes / 1024U);
+        video_print(" KB blocos=", 0x08);
+        print_num(heap->allocated_blocks);
+        video_print("/", 0x08);
+        print_num(heap->free_blocks);
+        video_print(" maior_livre=", 0x08);
+        print_num(heap->largest_free_block / 1024U);
+        video_print(" KB frag=", 0x08);
+        print_num(heap->fragmentation_percent);
+        video_print("% falhas=", 0x08);
+        print_num(shell_kmetrics_delta(heap->allocation_failures,
+                                       baseline->heap.allocation_failures));
+        video_print(" invalidos=", 0x08);
+        print_num(shell_kmetrics_delta(heap->invalid_frees,
+                                       baseline->heap.invalid_frees));
+        video_print(" duplicados=", 0x08);
+        print_num(shell_kmetrics_delta(heap->double_frees,
+                                       baseline->heap.double_frees));
+        video_print("\n", 0x07);
     }
-    video_print("usado=", 0x07);
-    print_num(heap.used_bytes / 1024U);
-    video_print(" KB livre=", 0x08);
-    print_num(heap.free_bytes / 1024U);
-    video_print(" KB total=", 0x08);
-    print_num(heap.total_bytes / 1024U);
-    video_print(" KB\n", 0x07);
+    video_print("  Paging user: dirs=", 0x07);
+    print_num(paging_user->active_directories);
+    video_print(" paginas=", 0x08);
+    print_num(paging_user->active_pages);
+    video_print(" criados=", 0x08);
+    print_num(shell_kmetrics_delta(paging_user->directories_created,
+                                   baseline->paging_user.directories_created));
+    video_print(" liberados=", 0x08);
+    print_num(shell_kmetrics_delta(paging_user->directories_released,
+                                   baseline->paging_user.directories_released));
+    video_print(" rejeicoes=", 0x08);
+    print_num(shell_kmetrics_delta(paging_user->rejected_releases,
+                                   baseline->paging_user.rejected_releases));
+    video_print("\n", 0x07);
 }
 
 static void cmd_kmetrics_print_vesa(
@@ -1202,8 +1294,94 @@ static void cmd_kmetrics(const char* args) {
     video_print("  CPU estimada: TCK% do Task Manager\n", 0x08);
     cmd_kmetrics_print_scheduler(&current, baseline);
     cmd_kmetrics_print_queues(&current, baseline);
-    cmd_kmetrics_print_memory();
+    cmd_kmetrics_print_memory(&current, baseline);
     cmd_kmetrics_print_vesa(&current, baseline);
+    video_end_update();
+}
+
+static int shell_memcheck_same_layout(const memory_heap_stats_t* before,
+                                      const memory_heap_stats_t* after) {
+    if (!before || !after) return 0;
+    return before->total_bytes == after->total_bytes &&
+           before->used_bytes == after->used_bytes &&
+           before->free_bytes == after->free_bytes &&
+           before->allocated_blocks == after->allocated_blocks &&
+           before->free_blocks == after->free_blocks &&
+           before->largest_free_block == after->largest_free_block &&
+           before->fragmentation_percent == after->fragmentation_percent;
+}
+
+static void cmd_memcheck_print_result(const char* label, int passed) {
+    video_print("  ", 0x07);
+    video_print(label, 0x07);
+    video_print(passed ? " OK\n" : " ERRO\n", passed ? 0x0A : 0x0C);
+}
+
+static void cmd_memcheck(const char* args) {
+    memory_heap_stats_t heap_before;
+    memory_heap_stats_t heap_after;
+    memory_pmm_stats_t pmm_before;
+    memory_pmm_stats_t pmm_after;
+    paging_user_stats_t paging_before;
+    paging_user_stats_t paging_after;
+    void* block_a = 0;
+    void* block_b = 0;
+    void* block_c = 0;
+    int heap_ok;
+    int coalescence_ok;
+    int pmm_ok;
+    int directories_ok;
+
+    if (*args) {
+        video_print("Uso: memcheck\n", 0x0C);
+        return;
+    }
+    if (process_get_user_count() != 0 ||
+        process_get_state_count(PROCESS_STATE_ZOMBIE) != 0 ||
+        app_loader_is_foreground_active()) {
+        LOG_WARN("SHELL", "MemCheck recusado com processo ring 3 pendente");
+        video_print("MemCheck indisponivel: processo ring 3 ou zumbi pendente.\n",
+                    0x0C);
+        return;
+    }
+
+    memory_get_heap_stats(&heap_before);
+    memory_get_pmm_stats(&pmm_before);
+    paging_get_user_stats(&paging_before);
+
+    block_a = kmalloc(SHELL_MEMCHECK_BLOCK_A);
+    block_b = kmalloc(SHELL_MEMCHECK_BLOCK_B);
+    block_c = kmalloc(SHELL_MEMCHECK_BLOCK_C);
+    if (block_b) kfree(block_b);
+    if (block_a) kfree(block_a);
+    if (block_c) kfree(block_c);
+
+    memory_get_heap_stats(&heap_after);
+    memory_get_pmm_stats(&pmm_after);
+    paging_get_user_stats(&paging_after);
+
+    heap_ok = heap_before.initialized && heap_before.valid &&
+              heap_after.initialized && heap_after.valid;
+    coalescence_ok = block_a && block_b && block_c &&
+                      heap_ok &&
+                      shell_memcheck_same_layout(&heap_before, &heap_after);
+    pmm_ok = pmm_before.initialized && pmm_after.initialized &&
+             pmm_before.owned_pages == pmm_after.owned_pages &&
+             pmm_before.allocation_failures == pmm_after.allocation_failures &&
+             pmm_before.invalid_frees == pmm_after.invalid_frees;
+    directories_ok = paging_before.active_directories == 0 &&
+                     paging_before.active_pages == 0 &&
+                     paging_after.active_directories == 0 &&
+                     paging_after.active_pages == 0;
+
+    video_begin_update();
+    video_print("MemCheck:\n", 0x0B);
+    cmd_memcheck_print_result("heap_integridade", heap_ok);
+    cmd_memcheck_print_result("coalescencia", coalescence_ok);
+    cmd_memcheck_print_result("pmm_guardas", pmm_ok);
+    cmd_memcheck_print_result("diretorios_user", directories_ok);
+    cmd_memcheck_print_result("resultado", heap_ok && coalescence_ok &&
+                              pmm_ok && directories_ok);
     video_end_update();
 }
 
@@ -2564,6 +2742,8 @@ int shell_process_command(const char* input) {
         cmd_health();
     } else if (kstrcmp(cmd, "kmetrics") == 0) {
         cmd_kmetrics(input);
+    } else if (kstrcmp(cmd, "memcheck") == 0) {
+        cmd_memcheck(input);
     } else if (kstrcmp(cmd, "schedcheck") == 0) {
         cmd_schedcheck(input);
     } else if (kstrcmp(cmd, "q2check") == 0) {

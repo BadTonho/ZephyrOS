@@ -24,7 +24,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   3 e interfaces classica/moderna. CPU real foi adiada; `TCK%` identifica
   somente a estimativa baseada em ticks. K2 foi validada no QEMU com
   `schedcheck`, preempcao de ring 3, testes de regressao e interfaces
-  classica/moderna; permanece o round-robin de 1 tick para ring 3.
+  classica/moderna; permanece o round-robin de 1 tick para ring 3. K3 esta em
+  validacao: adiciona estatisticas e guardas de heap/PMM, registro seguro de
+  diretorios de usuario e o diagnostico compacto `memcheck`.
 - Interface: Desktop, Explorer, Task Manager e Settings possuem modo moderno
   e fallback classico; a taskbar e o Window Manager grafico ainda sao etapas
   futuras.

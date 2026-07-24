@@ -39,6 +39,7 @@ Comandos disponiveis:
   guimode   - Altera entre gui classica (TUI) e moderna
   health    - Exibe metricas e estado de recovery do kernel
   kmetrics  - Mostra linha-base manual de metricas do kernel
+  memcheck  - Valida heap, PMM e diretorios de usuario
   schedcheck - Valida invariantes do scheduler
   q2check   - Executa diagnostico compacto da Q2
   appcheck  - Testa API, arquivos, IPC e carregador ZAPP
@@ -211,14 +212,33 @@ Sem argumento, a saida cobre o boot ou a janela iniciada pelo ultimo reset;
 contadores de `health`, IPC, teclado ou processos.
 
 O relatorio mostra ticks do PIT, trocas de contexto, yields cooperativos,
-preempcoes de ring 3, fallbacks para o Idle, filas, memoria e copias VESA. O
-quantum de usuario permanece 1 tick. `TCK%` e uma estimativa baseada em
+preempcoes de ring 3, fallbacks para o Idle, filas, memoria e copias VESA. A
+secao de memoria inclui fragmentacao e blocos do heap, rejeicoes do PMM e
+diretorios/paginas de usuario; contadores de criacao e liberacao de diretorios
+sao deltas desde o ultimo reset. O quantum de usuario permanece 1 tick. `TCK%` e uma estimativa baseada em
 ticks; CPU real aparece como `N/D` ate uma futura etapa de calibracao por
 RDTSC/PMU.
 
 ```text
 zephyr> kmetrics reset
 zephyr> kmetrics
+```
+
+## `memcheck`
+
+Executa um diagnostico compacto e sincrono do heap do kernel, dos guardas do
+PMM e da ausencia de diretorios de usuario residuais. Ele recusa iniciar se
+houver ZAPP ou zumbi pendente. No teste normal, aloca tres blocos pequenos e
+os libera em ordem que exige coalescencia; a capacidade, quantidade de blocos
+e maior bloco livre devem voltar exatamente a linha-base.
+
+A saida contem somente `OK`/`ERRO` para `heap_integridade`, `coalescencia`,
+`pmm_guardas`, `diretorios_user` e `resultado`. Argumentos adicionais sao
+recusados com `Uso: memcheck`. O comando nao mede memoria por processo nem
+altera a saida global de `mem` ou da App API.
+
+```text
+zephyr> memcheck
 ```
 
 ## `schedcheck`

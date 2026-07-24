@@ -42,10 +42,14 @@ politica propria; esta etapa nao altera quantum, prioridade, heap ou paging.
   `app inputtest`/`F12`, testes ring 3, `threadtest`, `appcheck`, `health`,
   ausencia de processos residuais e interfaces classica/moderna.
 
-## Etapa K3 - Memoria e paging
+## Etapa K3 - Memoria e paging (em validacao)
 
-- [ ] Medir fragmentacao e falhas de alocacao antes de alterar o heap.
-- [ ] Reforcar limites, liberacao e diagnostico de diretorios de usuario.
+- [x] Medir fragmentacao, blocos e falhas do heap sem alterar o first-fit nem
+  a coalescencia; `memcheck` confirma integridade e restauracao da linha-base.
+- [x] Reforcar limites e propriedade do PMM, e registrar/liberar somente
+  diretorios de usuario conhecidos.
+- [ ] Validar no QEMU `memcheck`, ring 3, F12, regressao e interfaces classic/
+  modern; desempenho permanece `N/D`.
 - [ ] Avaliar memoria por processo somente depois de uma fonte confiavel de
   contagem por alocacao.
 

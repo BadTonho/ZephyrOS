@@ -40,8 +40,23 @@ typedef struct {
     uint32_t total_bytes;
     uint32_t used_bytes;
     uint32_t free_bytes;
+    uint32_t allocated_blocks;
+    uint32_t free_blocks;
+    uint32_t largest_free_block;
+    uint32_t fragmentation_percent;
+    uint32_t allocation_failures;
+    uint32_t invalid_frees;
+    uint32_t double_frees;
     uint8_t initialized;
+    uint8_t valid;
 } memory_heap_stats_t;
+
+typedef struct {
+    uint32_t owned_pages;
+    uint32_t allocation_failures;
+    uint32_t invalid_frees;
+    uint8_t initialized;
+} memory_pmm_stats_t;
 
 void memory_init(uint32_t mmap_addr);
 void* pmm_alloc_page(void);
@@ -60,5 +75,6 @@ uint32_t memory_get_total_pages(void);
 uint32_t memory_get_free_pages(void);
 uint32_t memory_get_mmap_entries(void);
 void memory_get_heap_stats(memory_heap_stats_t* stats);
+void memory_get_pmm_stats(memory_pmm_stats_t* stats);
 
 #endif

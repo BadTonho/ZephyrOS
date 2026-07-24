@@ -65,7 +65,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [Atalhos e Comandos do Sistema](atalhos_e_comandos.md) | Lista completa de atalhos de teclado e comandos do shell |
 | [Estado da Documentação](estado_da_documentacao.md) | Fonte de verdade, escopo da auditoria e como interpretar os roadmaps |
 | [Contratos publicos](qualidade/contratos-publicos.md) | Mapa de headers publicos e documentos tecnicos canonicos |
-| [Metricas de otimizacao](qualidade/metricas.md) | Linha-base K1 e registro reproduzivel de comparacoes antes/depois |
+| [Metricas de otimizacao](qualidade/metricas.md) | Linhas-base K1 e validacoes K2/K3 com registro reproduzivel |
 | [Roadmaps por Etapa](roadmaps/README.md) | Ordem executável das próximas frentes do projeto |
 | [01 - Estabilização e Qualidade](roadmaps/01-estabilizacao-e-qualidade.md) | Regressão, diagnósticos e fallbacks |
 | [02 - Plataforma de Aplicativos](roadmaps/02-plataforma-de-aplicativos.md) | Migração gradual, ZAPP e pacotes |

@@ -4,7 +4,7 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
-## Progresso Geral: base do sistema concluída; Fase 7, K1 e K2 validadas
+## Progresso Geral: base do sistema concluída; Fase 7, K1 e K2 validadas; K3 em validacao
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
@@ -112,6 +112,7 @@ Plataforma de aplicativos:   [████████████████�
 | `guimode` | Altera entre gui classica e moderna |
 | `health` | Exibe metricas e estado de recovery |
 | `kmetrics [reset]` | Coleta linha-base de PIT, filas, memoria e VESA |
+| `memcheck` | Valida heap, PMM, coalescencia e limpeza de diretorios ring 3 |
 | `schedcheck` | Valida invariantes do scheduler sem alterar processos |
 | `q2check` | Executa diagnostico compacto da etapa Q2 |
 | `appcheck` | Testa API, arquivos, IPC e carregador |

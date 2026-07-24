@@ -199,9 +199,18 @@ defensivos nas APIs centrais:
 - `paging_is_ready()` permite que interfaces diagnostiquem o estado do paging;
 - `health` exibe processos, threads, ticks, IPC, paging, memoria e recovery.
 
-Para a linha-base K1, `memory_get_heap_stats()` expoe apenas capacidade, uso e
-espaco livre do heap. Fragmentacao, falhas de alocacao e memoria por processo
-continuam fora desta consulta e pertencem a K3.
+Desde a K3, `memory_get_heap_stats()` expoe capacidade, uso, blocos livres e
+ocupados, maior bloco livre, fragmentacao externa, falhas de alocacao e
+rejeicoes de `kfree`. A inspecao valida limites, encadeamento e metadados
+antes de percorrer o heap; corrupcao produz diagnostico controlado, sem seguir
+um ciclo invalido. `memory_get_pmm_stats()` separa paginas entregues pelo PMM,
+falhas de alocacao e liberacoes rejeitadas. Memoria por processo continua fora
+do contrato ate haver atribuicao confiavel para todas as alocacoes.
+
+`health` preserva todos os blocos existentes e acrescenta fragmentacao,
+rejeicoes do PMM e diretorios/paginas de usuario ativos. Esses campos sao
+diagnosticos internos; `mem` e a App API continuam mostrando apenas memoria
+global.
 
 Falhas recuperaveis retornam erro e desabilitam somente o componente afetado.
 Excecoes fatais e corrupcao estrutural continuam encaminhadas para `panic`.

@@ -57,3 +57,8 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 O contrato de `src/include/process/process.h` inclui, desde a K2, os
 contadores de motivo do scheduler, o quantum fixo de usuario e a validacao de
 invariantes descritos em `docs/07-processos/processos.md`.
+
+Os contratos de `src/include/core/memory.h` e `src/include/memory/paging.h`
+incluem, desde a K3, estatisticas seguras do heap/PMM e do ciclo de vida de
+diretorios de usuario. Seus detalhes tecnicos permanecem em
+`docs/04-kernel/kernel.md` e `docs/06-memoria/memoria.md`, respectivamente.

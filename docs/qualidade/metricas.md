@@ -55,3 +55,17 @@ ring 3 e fallbacks do Idle apenas para confirmar o contrato do scheduler.
 | K2-B preempcao | `kmetrics reset`; `app inputtest`; aguardar; `F12`; `kmetrics`; `schedcheck`. | Concluido: preempcoes de usuario positivas; foco, prompt e invariantes restaurados. |
 | K2-C regressao | `app outputtest`, `q2check`, `usertest fault`, `threadtest`, `appcheck`, `health` e `procs`. | Concluido: sem panic ou processo residual; erros deliberados de `appcheck` permaneceram controlados. |
 | K2-D interfaces | Nos modos classic e modern: abrir/fechar Desktop, Explorer, Settings e Task Manager; `schedcheck`; `kmetrics`. | Concluido: Shell e interfaces operacionais nos dois modos; invariantes aprovados. |
+
+## Validacao K3 (integridade, nao otimizacao)
+
+K3 preserva o heap first-fit com coalescencia e o paging existente. Nao ha
+meta de desempenho: a conclusao depende de integridade, restauracao do heap e
+limpeza de diretorios de usuario. Fragmentacao e um diagnostico observavel,
+nao um alvo numerico nesta etapa.
+
+| Cenario | Passos QEMU | Registro K3 |
+|---|---|---|
+| K3-A diagnostico | `memcheck`; `memcheck invalido`; `kmetrics`; `health`; `procs`. | Pendente de validacao no QEMU: cinco linhas compactas em `OK`, uso invalido controlado e nenhum processo criado. |
+| K3-B ring 3 | `kmetrics reset`; `app inputtest`; `F12`; `kmetrics`; `memcheck`. | Pendente: diretorios e paginas de usuario ativos retornam a zero apos coleta. |
+| K3-C regressao | `app outputtest`; `q2check`; `usertest fault`; `appcheck`; `threadtest`; `memcheck`. | Pendente: sem panic, ZAPP ou zumbi residual; falhas deliberadas continuam controladas. |
+| K3-D interfaces | Nos modos classic e modern, abrir/fechar Desktop, Explorer, Settings e Task Manager; `memcheck`; `kmetrics`; `schedcheck`. | Pendente: interfaces e diagnosticos preservados nos dois modos. |
