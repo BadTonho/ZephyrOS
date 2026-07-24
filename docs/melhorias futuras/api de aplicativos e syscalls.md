@@ -2,8 +2,8 @@
 
 ## Resumo de Progresso
 
-Status: Fases 1 a 6C validadas no QEMU. A Fase 6D de contrato de console e
-ciclo de vida esta implementada e aguarda validacao no QEMU.
+Status: Fases 1 a 6D validadas no QEMU. A App API permanece na versao `0.3`,
+com as syscalls `0-9`.
 
 Esta etapa preparara o ZephyrOS para executar aplicativos independentes do
 kernel. O objetivo nao e apenas criar mais comandos, mas definir uma fronteira
@@ -279,14 +279,14 @@ Argumentos permanecem inalterados nesta fase. Editor, Explorer e interfaces
 graficas continuam fora da migracao ate existirem APIs de arquivos e janelas
 suficientes.
 
-### Fase 6D - Contrato de console e ciclo de vida - em validacao
+### Fase 6D - Contrato de console e ciclo de vida ✅
 
-- [ ] publicar o contrato de blocos sincronos de no maximo 1024 bytes, sem
+- [x] publicar o contrato de blocos sincronos de no maximo 1024 bytes, sem
   fila ou quota total;
-- [ ] reservar `APP_EXIT_CANCELLED` ao runtime e distinguir codigo normal
+- [x] reservar `APP_EXIT_CANCELLED` ao runtime e distinguir codigo normal
   nao-zero de falha isolada e cancelamento;
-- [ ] adicionar `app outputtest [fail]` com nove blocos de 128 bytes;
-- [ ] validar no QEMU sucesso, codigo `1`, argumento invalido, prompt unico,
+- [x] adicionar `app outputtest [fail]` com nove blocos de 128 bytes;
+- [x] validar no QEMU sucesso, codigo `1`, argumento invalido, prompt unico,
   `F12`, `appcheck`, `health` e ausencia de zumbis.
 
 ### Fase 7 - Pacotes e ecossistema
