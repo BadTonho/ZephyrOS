@@ -16,18 +16,22 @@ transforma falhas observadas em testes repetiveis.
 
 ## Etapa Q1 - Matriz de regressao
 
-- [ ] Definir uma lista curta de boot, Shell, Desktop, Explorer, Settings e
+- [x] Definir uma lista curta de boot, Shell, Desktop, Explorer, Settings e
   Task Manager para ser repetida apos cada etapa relevante.
-- [ ] Registrar em documentacao quais falhas sao esperadas em `appcheck` e
+- [x] Registrar em documentacao quais falhas sao esperadas em `appcheck` e
   quais sintomas representam regressao real.
-- [ ] Verificar retorno de foco e existencia de somente um prompt apos apps
+- [x] Verificar retorno de foco e existencia de somente um prompt apos apps
   assincronas, dialogos e interfaces nativas.
-- [ ] Testar explicitamente cenarios sem VESA, filesystem ou AC97 quando uma
+- [x] Testar explicitamente cenarios sem VESA, filesystem ou AC97 quando uma
   mudanca tocar essas dependencias.
 
-Os itens acima so podem ser marcados depois de a matriz completa ser executada
-no QEMU. Esta etapa define o protocolo; ela nao cria um novo comando, uma
-variante de build ou uma simulacao de falha.
+Validacao registrada no QEMU apos a Fase 6C: `health`, `threadtest`,
+`appcheck`, `echo`, `uptime`, `mem`, `usertest`, `usertest fault` e
+`app inputtest` com encerramento normal e por `F12` funcionaram; as interfaces
+classica e moderna tambem foram abertas e fechadas sem regressao observada.
+Esta etapa define o protocolo; ela nao cria um novo comando, uma variante de
+build ou uma simulacao de falha. Os cenarios sem VESA, filesystem ou AC97
+permanecem obrigatorios sempre que uma mudanca futura tocar essas dependencias.
 
 ### Matriz de regressao manual
 

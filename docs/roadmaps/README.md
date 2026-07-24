@@ -11,6 +11,8 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
 - Plataforma de aplicativos: Fases 1 a 6C validadas, incluindo processos ring
   3, syscalls, loader ZAPP, foco, teclado, argumentos simples e as migracoes
   internas de `echo`, `uptime` e `mem`.
+- Estabilizacao e qualidade: Q1 validado no QEMU, com matriz de regressao,
+  retorno de foco, prompt unico e referencia para os resultados do `appcheck`.
 - Interface: Desktop, Explorer, Task Manager e Settings possuem modo moderno
   e fallback classico; a taskbar e o Window Manager grafico ainda sao etapas
   futuras.
