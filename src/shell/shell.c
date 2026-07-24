@@ -30,11 +30,32 @@
 #include "core/syscall.h"
 #include "drivers/idt.h"
 
+#define SHELL_Q2CHECK_FAULT_RUNS 2U
+
 typedef enum {
     SHELL_BUILTIN_APP_NONE,
     SHELL_BUILTIN_APP_UPTIME,
     SHELL_BUILTIN_APP_MEM
 } shell_builtin_app_t;
+
+typedef enum {
+    SHELL_Q2CHECK_IDLE = 0,
+    SHELL_Q2CHECK_FIRST_FAULT,
+    SHELL_Q2CHECK_SECOND_FAULT
+} shell_q2check_state_t;
+
+typedef struct {
+    uint32_t initial_focus;
+    uint32_t initial_user_count;
+    uint32_t initial_zombie_count;
+    uint32_t initial_fault_count;
+    uint32_t expected_pid;
+    int logger_result;
+    int fault_result[SHELL_Q2CHECK_FAULT_RUNS];
+    int summary_result;
+    int cleanup_result;
+    shell_q2check_state_t state;
+} shell_q2check_t;
 
 static char input_buffer[SHELL_BUFFER_SIZE];
 static char appcheck_oversized_text[APP_API_MAX_TEXT_SIZE + 1];
@@ -53,6 +74,7 @@ static uint32_t shell_appcheck_zombie_count = 0;
 static shell_builtin_app_t shell_builtin_loader_app = SHELL_BUILTIN_APP_NONE;
 static shell_builtin_app_t shell_appcheck_migration_app = SHELL_BUILTIN_APP_NONE;
 static char appcheck_oversized_args[APP_LAUNCH_MAX_TEXT + 1U];
+static shell_q2check_t shell_q2check;
 
 #define SHELL_SCANCODE_EXTENDED 0xE0
 #define SHELL_SCANCODE_UP       0x48
@@ -71,6 +93,10 @@ static void print_num(uint32_t num);
 #define APP_INPUT_EVENT_OFFSET 128U
 #define APP_INPUT_EVENT_DATA1_OFFSET (APP_INPUT_EVENT_OFFSET + 4U)
 #define SHELL_APP_OUTPUTTEST_FAILURE_CODE 1U
+#define SHELL_Q2CHECK_FIRST_FAULT_INDEX 0U
+#define SHELL_Q2CHECK_SECOND_FAULT_INDEX 1U
+#define SHELL_Q2CHECK_EXPECTED_FAULT_VECTOR 14U
+#define SHELL_Q2CHECK_EXPECTED_FAULT_ERROR 4U
 
 static const char app_input_test_message[] =
     "Entrada ZAPP ativa: Enter encerra; F12 cancela.\n";
@@ -264,12 +290,137 @@ static void shell_suspend_terminal(void) {
     if (video_terminal_is_active()) video_terminal_suspend();
 }
 
+static void shell_q2check_print_result(const char* label, int result) {
+    video_print("  ", 0x07);
+    video_print(label, 0x07);
+    video_print(result == OK ? " OK\n" : " ERRO\n",
+                result == OK ? 0x0A : 0x0C);
+}
+
+static void shell_q2check_reset(void) {
+    kmemset(&shell_q2check, 0, sizeof(shell_q2check));
+    shell_q2check.logger_result = ERR_STATE;
+    shell_q2check.fault_result[SHELL_Q2CHECK_FIRST_FAULT_INDEX] = ERR_STATE;
+    shell_q2check.fault_result[SHELL_Q2CHECK_SECOND_FAULT_INDEX] = ERR_STATE;
+    shell_q2check.summary_result = ERR_STATE;
+    shell_q2check.cleanup_result = ERR_STATE;
+    shell_q2check.state = SHELL_Q2CHECK_IDLE;
+}
+
+static int shell_q2check_validate_fault(uint32_t pid, uint32_t faulted,
+                                        uint32_t fault_index) {
+    process_user_fault_summary_t summary;
+    uint32_t expected_count = shell_q2check.initial_fault_count +
+                              fault_index + 1U;
+    int result = OK;
+
+    if (!faulted || pid != shell_q2check.expected_pid ||
+        process_get_user_fault_count() != expected_count) {
+        LOG_ERROR("SHELL", "Q2check recebeu falha isolada inesperada");
+        result = ERR_STATE;
+    }
+    if (process_get_last_user_fault(&summary) != OK ||
+        summary.pid != pid ||
+        summary.vector != SHELL_Q2CHECK_EXPECTED_FAULT_VECTOR ||
+        summary.error != SHELL_Q2CHECK_EXPECTED_FAULT_ERROR) {
+        LOG_ERROR("SHELL", "Q2check detectou resumo de falha inseguro ou invalido");
+        shell_q2check.summary_result = ERR_STATE;
+    }
+    return result;
+}
+
+static int shell_q2check_validate_cleanup(void) {
+    if (process_get_focus() != shell_q2check.initial_focus ||
+        process_get_user_count() != shell_q2check.initial_user_count ||
+        process_get_state_count(PROCESS_STATE_ZOMBIE) !=
+            shell_q2check.initial_zombie_count) {
+        LOG_ERROR("SHELL", "Q2check detectou processo ou foco residual");
+        return ERR_STATE;
+    }
+    return OK;
+}
+
+static int shell_q2check_start_fault(uint32_t fault_index) {
+    uint32_t pid = 0;
+    int result;
+
+    if (fault_index >= SHELL_Q2CHECK_FAULT_RUNS) {
+        LOG_ERROR("SHELL", "Indice invalido no Q2check");
+        return ERR_INVALID;
+    }
+    result = process_create_user_test(1, &pid);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Q2check nao iniciou falha isolada");
+        return result;
+    }
+    shell_q2check.expected_pid = pid;
+    shell_q2check.state = fault_index == SHELL_Q2CHECK_FIRST_FAULT_INDEX ?
+                          SHELL_Q2CHECK_FIRST_FAULT :
+                          SHELL_Q2CHECK_SECOND_FAULT;
+    return OK;
+}
+
+static void shell_q2check_finish(void) {
+    int result = shell_q2check.logger_result;
+
+    if (shell_q2check.fault_result[SHELL_Q2CHECK_FIRST_FAULT_INDEX] != OK ||
+        shell_q2check.fault_result[SHELL_Q2CHECK_SECOND_FAULT_INDEX] != OK ||
+        shell_q2check.summary_result != OK ||
+        shell_q2check.cleanup_result != OK) {
+        result = ERR_STATE;
+    }
+    video_print("\nQ2Check:\n", 0x0B);
+    shell_q2check_print_result("logger_padrao", shell_q2check.logger_result);
+    shell_q2check_print_result("falha_1",
+                               shell_q2check.fault_result[
+                                   SHELL_Q2CHECK_FIRST_FAULT_INDEX]);
+    shell_q2check_print_result("falha_2",
+                               shell_q2check.fault_result[
+                                   SHELL_Q2CHECK_SECOND_FAULT_INDEX]);
+    shell_q2check_print_result("resumo_seguro", shell_q2check.summary_result);
+    shell_q2check_print_result("limpeza", shell_q2check.cleanup_result);
+    shell_q2check_print_result("resultado", result);
+    shell_q2check.state = SHELL_Q2CHECK_IDLE;
+    shell_waiting_user_test = 0;
+    shell_reset_input();
+    shell_print_prompt();
+}
+
+static void shell_q2check_handle_user_test_result(uint32_t pid,
+                                                   uint32_t faulted) {
+    uint32_t fault_index = shell_q2check.state == SHELL_Q2CHECK_FIRST_FAULT ?
+                           SHELL_Q2CHECK_FIRST_FAULT_INDEX :
+                           SHELL_Q2CHECK_SECOND_FAULT_INDEX;
+    int result;
+
+    shell_q2check.fault_result[fault_index] =
+        shell_q2check_validate_fault(pid, faulted, fault_index);
+    result = process_reap_finished_user();
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Q2check nao recolheu UserTest encerrado");
+        shell_q2check.cleanup_result = result;
+    } else if (shell_q2check_validate_cleanup() != OK) {
+        shell_q2check.cleanup_result = ERR_STATE;
+    }
+    if (fault_index == SHELL_Q2CHECK_FIRST_FAULT_INDEX) {
+        result = shell_q2check_start_fault(SHELL_Q2CHECK_SECOND_FAULT_INDEX);
+        if (result == OK) return;
+        shell_q2check.fault_result[SHELL_Q2CHECK_SECOND_FAULT_INDEX] = result;
+    }
+    shell_q2check_finish();
+}
+
 void shell_report_user_test_result(void) {
     uint32_t pid;
     uint32_t faulted;
 
     if (!video_terminal_is_active()) return;
     if (process_take_user_test_result(&pid, &faulted) != OK) return;
+
+    if (shell_q2check.state != SHELL_Q2CHECK_IDLE) {
+        shell_q2check_handle_user_test_result(pid, faulted);
+        return;
+    }
 
     video_print("\n[", 0x08);
     video_print(faulted ? "WARN" : "INFO", faulted ? 0x0E : 0x0A);
@@ -644,6 +795,7 @@ static void cmd_help(void) {
     video_print("  stats    - Mostra estatisticas de compressao\n", 0x07);
     video_print("  mouse    - Mostra status do mouse PS/2\n", 0x07);
     video_print("  health   - Mostra estado dos componentes (use PgUp/PgDn)\n", 0x07);
+    video_print("  q2check  - Executa diagnostico compacto da Q2\n", 0x07);
     video_print("  appcheck - Testa API, arquivos, IPC e loader\n", 0x07);
     video_print("  app run <arquivo.ZAP> [args] - Executa aplicativo ring 3\n", 0x07);
     video_print("  app inputtest - Testa teclado de aplicativo ring 3\n", 0x07);
@@ -1178,6 +1330,40 @@ static void cmd_appcheck(void) {
     cmd_appcheck_ipc();
     cmd_appcheck_launch();
     cmd_appcheck_loader();
+}
+
+static void cmd_q2check(void) {
+    int result;
+
+    if (shell_q2check.state != SHELL_Q2CHECK_IDLE ||
+        shell_waiting_user_test || app_loader_is_foreground_active() ||
+        process_get_user_count() != 0 ||
+        process_get_state_count(PROCESS_STATE_ZOMBIE) != 0) {
+        LOG_WARN("SHELL", "Q2check recusado com processo ring 3 pendente");
+        video_print("Q2Check indisponivel: aguarde processos ring 3 terminarem.\n",
+                    0x0E);
+        return;
+    }
+
+    shell_q2check_reset();
+    shell_q2check.initial_focus = process_get_focus();
+    shell_q2check.initial_user_count = process_get_user_count();
+    shell_q2check.initial_zombie_count =
+        process_get_state_count(PROCESS_STATE_ZOMBIE);
+    shell_q2check.initial_fault_count = process_get_user_fault_count();
+    shell_q2check.logger_result = log_get_level() == LOG_LEVEL_INFO ?
+                                  OK : ERR_STATE;
+    if (shell_q2check.logger_result != OK) {
+        LOG_WARN("SHELL", "Q2check encontrou nivel de log inesperado");
+    }
+    shell_q2check.summary_result = OK;
+    shell_q2check.cleanup_result = OK;
+    shell_waiting_user_test = 1;
+    result = shell_q2check_start_fault(SHELL_Q2CHECK_FIRST_FAULT_INDEX);
+    if (result == OK) return;
+
+    shell_q2check.fault_result[SHELL_Q2CHECK_FIRST_FAULT_INDEX] = result;
+    shell_q2check_finish();
 }
 
 static void cmd_app_inputtest(void) {
@@ -1941,6 +2127,8 @@ int shell_process_command(const char* input) {
         cmd_uptime();
     } else if (kstrcmp(cmd, "health") == 0) {
         cmd_health();
+    } else if (kstrcmp(cmd, "q2check") == 0) {
+        cmd_q2check();
     } else if (kstrcmp(cmd, "appcheck") == 0) {
         cmd_appcheck();
     } else if (kstrcmp(cmd, "app") == 0) {

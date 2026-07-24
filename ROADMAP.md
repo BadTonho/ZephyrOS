@@ -111,6 +111,7 @@ Plataforma de aplicativos:   [████████████████�
 | `guitest` | Testa primitivas GUI 2D |
 | `guimode` | Altera entre gui classica e moderna |
 | `health` | Exibe metricas e estado de recovery |
+| `q2check` | Executa diagnostico compacto da etapa Q2 |
 | `appcheck` | Testa API, arquivos, IPC e carregador |
 | `app run <arq> [args]` | Executa aplicativo ring 3 com argumentos simples |
 | `app inputtest` | Testa teclado e foco de aplicativo ring 3 |

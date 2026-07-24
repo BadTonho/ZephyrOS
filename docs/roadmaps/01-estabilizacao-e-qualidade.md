@@ -109,8 +109,11 @@ comando ou variante de build apenas para este teste.
   nao exponham ponteiros ou estado interno sensivel.
 - [x] Adicionar contadores apenas quando eles responderem uma pergunta de
   diagnostico concreta.
+- [x] Adicionar `q2check` para resumir automaticamente duas falhas isoladas,
+  logger, resumo seguro e limpeza, sem substituir `appcheck` ou `F12`.
 - [ ] Validar no QEMU `health` antes e depois de duas falhas isoladas,
-  navegacao do scrollback, comandos ZAPP, `appcheck` e ausencia de zumbis.
+  navegacao do scrollback, `q2check`, comandos ZAPP, `appcheck` e ausencia de
+  zumbis.
 
 ## Etapa Q3 - Disciplina de mudanca
 

@@ -38,6 +38,7 @@ Comandos disponiveis:
   guitest   - Testa primitivas GUI 2D
   guimode   - Altera entre gui classica (TUI) e moderna
   health    - Exibe metricas e estado de recovery do kernel
+  q2check   - Executa diagnostico compacto da Q2
   appcheck  - Testa API, arquivos, IPC e carregador ZAPP
   app run <arquivo.ZAP> [args] - Executa aplicativo ring 3 de forma assincrona
   app inputtest - Testa entrada de teclado em aplicativo ring 3
@@ -241,6 +242,20 @@ matriz completa esta em `docs/roadmaps/01-estabilizacao-e-qualidade.md`.
 
 `file_service_indisponivel` e `loader_indisponivel` sao esperados apenas
 quando o componente correspondente aparecer indisponivel no `health`.
+
+## `q2check`
+Executa automaticamente duas falhas isoladas de `UserTest` e apresenta um
+resumo compacto da configuração de log, contador, resumo seguro e limpeza de
+processos. Ele aguarda a conclusão assíncrona, bloqueia a entrada até o fim e
+devolve um único prompt. Os dois avisos reais de exceção permanecem visíveis.
+
+```text
+zephyr> q2check
+```
+
+O comando recusa a execução enquanto houver processo ring 3 ou zumbi pendente.
+Ele não substitui o `appcheck` completo nem a validação manual de `F12` com
+`app inputtest`.
 
 ## `app run <arquivo.ZAP> [arg1 arg2 ...]`
 

@@ -37,6 +37,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `mouse` | - | Exibe debug em tempo real (X, Y, cliques) do Mouse PS/2. |
 | `guitest` | - | Roda um teste nativo das primitivas gráficas GUI 2D. |
 | `health` | - | Lista o estado dos componentes e mostra dependências indisponíveis. |
+| `q2check` | - | Executa o diagnóstico compacto da Q2 com duas falhas isoladas. |
 | `appcheck` | - | Testa API, arquivos, IPC e carregador ZAPP. |
 | `app` | `run <arquivo.ZAP> [args]` | Executa uma imagem flat i386 em ring 3, em primeiro plano. |
 | `app` | `inputtest` | Cria e executa um teste temporario de teclado para `.ZAP`. |
