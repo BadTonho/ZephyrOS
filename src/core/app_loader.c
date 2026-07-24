@@ -211,7 +211,7 @@ static int app_loader_reap_active(void) {
 
     exit_code = proc->exit_code;
     faulted = proc->faulted ? 1U : 0U;
-    cancelled = exit_code == PROCESS_EXIT_CANCELLED ? 1U : 0U;
+    cancelled = exit_code == APP_EXIT_CANCELLED ? 1U : 0U;
     app_loader_release_process_resources(pid);
     process_destroy(proc);
     if (process_get_by_pid(pid)) {
@@ -497,7 +497,7 @@ int app_loader_cancel_foreground(uint32_t exit_code) {
         app_loader_release_process_resources(pid);
         if (proc) process_destroy(proc);
         app_loader_store_result(pid, exit_code, 0,
-                                exit_code == PROCESS_EXIT_CANCELLED, 0, 0);
+                                exit_code == APP_EXIT_CANCELLED, 0, 0);
     }
     LOG_INFO("APP_LOADER", "Aplicativo em primeiro plano cancelado");
     return OK;

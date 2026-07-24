@@ -2,8 +2,8 @@
 
 ## Resumo de Progresso
 
-Status: Fases 1 a 6C validadas no QEMU. A proxima etapa e a Fase 6D,
-de contrato de console e ciclo de vida para aplicativos externos.
+Status: Fases 1 a 6C validadas no QEMU. A Fase 6D de contrato de console e
+ciclo de vida esta implementada e aguarda validacao no QEMU.
 
 Esta etapa preparara o ZephyrOS para executar aplicativos independentes do
 kernel. O objetivo nao e apenas criar mais comandos, mas definir uma fronteira
@@ -111,6 +111,26 @@ de `src/include/core/app_api.h` e `src/core/app_api.c`:
 - `app_api_get_uptime()` retorna ticks e segundos desde o boot;
 - `app_api_get_memory_info()` retorna memoria e paginas disponiveis;
 - `app_handle_t` e um handle opaco de 32 bits, com zero reservado como invalido.
+
+### Contrato de console e ciclo de vida da Fase 6D
+
+`console_write` permanece sincrona: cada chamada aceita de 1 a 1024 bytes
+ASCII e so retorna depois de encaminhar o texto ao terminal. Um aplicativo
+pode emitir blocos consecutivos em ordem, sem fila, quota total ou garantia de
+atomicidade entre chamadas; ele deve incluir as proprias quebras de linha e
+encerrar ao primeiro retorno de erro. O scrollback continua limitado a 200
+linhas e `F12` e a recuperacao para saida excessiva.
+
+`APP_EXIT_SUCCESS` vale `0`. Um `process_exit` normal com codigo nao-zero e
+erro definido pelo aplicativo, preservado no resultado do loader. O valor
+`APP_EXIT_CANCELLED` (`0xF120`) e reservado ao runtime para cancelamentos
+controlados e uma chamada direta do aplicativo e rejeitada com `ERR_INVALID`.
+Falha de inicializacao, falha isolada e cancelamento continuam identificados
+pelos campos proprios do resultado, e nao apenas pelo codigo de saida.
+
+Historico de comandos e entrada de linha para ZAPP permanecem fora da App API
+ate que um aplicativo migrado apresente um caso de uso concreto. A versao
+publica continua `0.3` e nao ha syscall nova nesta fase.
 
 ### Servicos implementados na Fase 3
 
@@ -258,6 +278,16 @@ valida. O primeiro argumento do usuario fica no indice zero; nao existe
 Argumentos permanecem inalterados nesta fase. Editor, Explorer e interfaces
 graficas continuam fora da migracao ate existirem APIs de arquivos e janelas
 suficientes.
+
+### Fase 6D - Contrato de console e ciclo de vida - em validacao
+
+- [ ] publicar o contrato de blocos sincronos de no maximo 1024 bytes, sem
+  fila ou quota total;
+- [ ] reservar `APP_EXIT_CANCELLED` ao runtime e distinguir codigo normal
+  nao-zero de falha isolada e cancelamento;
+- [ ] adicionar `app outputtest [fail]` com nove blocos de 128 bytes;
+- [ ] validar no QEMU sucesso, codigo `1`, argumento invalido, prompt unico,
+  `F12`, `appcheck`, `health` e ausencia de zumbis.
 
 ### Fase 7 - Pacotes e ecossistema
 

@@ -749,7 +749,14 @@ int process_is_user(const process_t* proc) {
 }
 
 int process_exit_current(uint32_t exit_code) {
-    int result = process_mark_current_user_zombie(exit_code, 0);
+    int result;
+
+    if (exit_code == APP_EXIT_CANCELLED) {
+        LOG_ERROR("PROC", "Aplicativo tentou usar codigo de cancelamento reservado");
+        return ERR_INVALID;
+    }
+
+    result = process_mark_current_user_zombie(exit_code, 0);
 
     if (result != OK) return result;
     LOG_INFO("PROC", "Processo ring 3 encerrado por syscall");

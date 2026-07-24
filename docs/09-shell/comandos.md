@@ -41,6 +41,7 @@ Comandos disponiveis:
   appcheck  - Testa API, arquivos, IPC e carregador ZAPP
   app run <arquivo.ZAP> [args] - Executa aplicativo ring 3 de forma assincrona
   app inputtest - Testa entrada de teclado em aplicativo ring 3
+  app outputtest [fail] - Testa saida ZAPP em blocos e codigos de saida
   app argtest <texto> - Testa argumentos em aplicativo ring 3
   usertest  - Executa teste isolado em ring 3
   reboot    - Reinicia o sistema
@@ -255,6 +256,18 @@ o aplicativo. `F12` encerra somente o `.ZAP` externo em foco e devolve o
 controle ao Shell. Argumentos sao separados por espacos ou tabs; aspas e
 escapes ainda nao possuem significado especial.
 
+Cada chamada `console_write` aceita de 1 a 1024 bytes ASCII e conclui de forma
+sincrona. Um ZAPP pode enviar blocos consecutivos em ordem, mas deve tratar o
+primeiro erro como final e incluir suas proprias quebras de linha. Nao ha fila,
+quota total, historico de comandos ou entrada de linha para aplicativos nesta
+fase; o scrollback do Shell continua limitado a 200 linhas e `F12` cancela o
+aplicativo em foco.
+
+O ciclo de vida diferencia falha ao iniciar (`ERRO`), falha isolada (`WARN`),
+cancelamento por `F12` (`INFO`), termino com codigo `0` (`INFO`) e termino
+normal com codigo nao-zero (`ERRO`). O codigo `0xF120` e reservado ao runtime
+e nao pode ser usado diretamente por `process_exit` em um aplicativo.
+
 ## `app argtest <texto>`
 
 Executa uma imagem interna ring 3 que exibe o texto recebido pela pagina de
@@ -279,6 +292,23 @@ Cria temporariamente um `.ZAP` de diagnostico, entrega o foco a ele e remove
 o arquivo logo apos o carregamento. Pressione qualquer tecla para exercitar a
 fila e `Enter` para encerrar normalmente; `F12` cancela com retorno seguro ao
 Shell.
+
+## `app outputtest [fail]`
+
+Executa uma imagem ZAPP interna que escreve nove blocos ASCII de 128 bytes,
+totalizando 1152 bytes. Sem argumento, ela encerra com codigo `0`; com `fail`,
+encerra normalmente com codigo `1` depois de emitir a mesma saida.
+
+```text
+zephyr> app outputtest
+zephyr> app outputtest fail
+```
+
+O primeiro caso deve terminar com uma unica mensagem `INFO` e um prompt. O
+segundo deve terminar com uma unica mensagem `ERRO` contendo o codigo `1`, sem
+ser tratado como falha isolada ou cancelamento. Outros argumentos exibem o uso
+do comando; se o loader estiver indisponivel, o Shell informa o erro controlado
+e nao tenta fallback nativo.
 
 ## `usertest`
 Cria um processo mínimo em ring 3, com diretório de páginas e stack de kernel

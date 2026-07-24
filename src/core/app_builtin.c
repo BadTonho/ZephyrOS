@@ -9,6 +9,7 @@
 #define APP_BUILTIN_MAX_CODE_SIZE    1024U
 #define APP_BUILTIN_DATA_SIZE        128U
 #define APP_BUILTIN_OUTPUT_OFFSET    32U
+#define APP_BUILTIN_OUTPUTTEST_CHUNK_COUNT 9U
 
 #define APP_BUILTIN_UPTIME_INFO_OFFSET    0U
 #define APP_BUILTIN_UPTIME_SECONDS_OFFSET 4U
@@ -70,6 +71,7 @@
 
 static uint8_t app_builtin_image[APP_IMAGE_MAX_FILE_SIZE];
 static const char app_builtin_argtest_data[] = "Argumentos ZAPP: \n";
+static const char app_builtin_outputtest_prefix[] = "Q6D outputtest: ";
 
 #define APP_BUILTIN_ARGTEST_PREFIX_LENGTH \
     ((uint32_t)(sizeof(app_builtin_argtest_data) - 2U))
@@ -385,6 +387,41 @@ static int app_builtin_emit_console_and_exit(uint8_t* code, uint32_t* offset) {
     return app_builtin_emit_exit_from_eax(code, offset);
 }
 
+static int app_builtin_emit_console_write(uint8_t* code, uint32_t* offset,
+                                          uint32_t address, uint32_t size) {
+    int result;
+
+    if (size == 0 || size > APP_API_MAX_TEXT_SIZE) {
+        LOG_ERROR("APP_BUILTIN", "Tamanho invalido no console ZAPP interno");
+        return ERR_INVALID;
+    }
+    result = app_builtin_emit_mov(code, offset, APP_BUILTIN_REG_EBX, address);
+    if (result != OK) return result;
+    result = app_builtin_emit_mov(code, offset, APP_BUILTIN_REG_ECX, size);
+    if (result != OK) return result;
+    result = app_builtin_emit_mov(code, offset, APP_BUILTIN_REG_EAX,
+                                  APP_SYSCALL_CONSOLE_WRITE);
+    if (result != OK) return result;
+    result = app_builtin_emit_int80(code, offset);
+    if (result != OK) return result;
+    return app_builtin_emit_exit_on_error(code, offset);
+}
+
+static int app_builtin_emit_exit_code(uint8_t* code, uint32_t* offset,
+                                      uint32_t exit_code) {
+    int result = app_builtin_emit_mov(code, offset, APP_BUILTIN_REG_EBX,
+                                      exit_code);
+
+    if (result != OK) return result;
+    result = app_builtin_emit_mov(code, offset, APP_BUILTIN_REG_EAX,
+                                  APP_SYSCALL_PROCESS_EXIT);
+    if (result != OK) return result;
+    result = app_builtin_emit_int80(code, offset);
+    if (result != OK) return result;
+    return app_builtin_emit_data(code, offset,
+                                 (const uint8_t[]){APP_BUILTIN_OPCODE_HLT}, 1U);
+}
+
 static int app_builtin_finalize_image(const uint8_t* code,
                                       uint32_t code_size, uint32_t entry_offset,
                                       const char* data, uint32_t data_size,
@@ -646,6 +683,51 @@ static int app_builtin_build_mem(uint32_t* image_size) {
         (const char*)data, sizeof(data), image_size);
 }
 
+static int app_builtin_prepare_outputtest_chunk(uint8_t* data) {
+    uint32_t prefix_size = sizeof(app_builtin_outputtest_prefix) - 1U;
+
+    if (!data) {
+        LOG_ERROR("APP_BUILTIN", "Buffer nulo no teste de saida ZAPP");
+        return ERR_NULL;
+    }
+    if (prefix_size >= APP_BUILTIN_DATA_SIZE) {
+        LOG_ERROR("APP_BUILTIN", "Prefixo do teste de saida excede o buffer");
+        return ERR_OVERFLOW;
+    }
+
+    kmemset(data, '.', APP_BUILTIN_DATA_SIZE);
+    kmemcpy(data, app_builtin_outputtest_prefix, prefix_size);
+    data[APP_BUILTIN_DATA_SIZE - 1U] = '\n';
+    return OK;
+}
+
+static int app_builtin_build_outputtest(uint32_t exit_code,
+                                        uint32_t* image_size) {
+    uint8_t code[APP_BUILTIN_MAX_CODE_SIZE];
+    uint8_t data[APP_BUILTIN_DATA_SIZE];
+    uint32_t code_size = 0;
+    int result;
+
+    if (!image_size) {
+        LOG_ERROR("APP_BUILTIN", "Destino nulo no teste de saida ZAPP");
+        return ERR_NULL;
+    }
+    result = app_builtin_prepare_outputtest_chunk(data);
+    if (result != OK) return result;
+
+    for (uint32_t i = 0; i < APP_BUILTIN_OUTPUTTEST_CHUNK_COUNT; i++) {
+        result = app_builtin_emit_console_write(code, &code_size,
+                                                USER_DATA_BASE,
+                                                APP_BUILTIN_DATA_SIZE);
+        if (result != OK) return result;
+    }
+
+    result = app_builtin_emit_exit_code(code, &code_size, exit_code);
+    if (result != OK) return result;
+    return app_builtin_finalize_image(code, code_size, 0U, (const char*)data,
+                                      sizeof(data), image_size);
+}
+
 int app_builtin_run_echo(const app_launch_info_t* launch, uint32_t* pid_out) {
     uint32_t image_size;
     int result = app_builtin_build_echo(&image_size);
@@ -690,5 +772,27 @@ int app_builtin_run_mem(uint32_t* pid_out) {
     result = app_loader_run_image("Mem", app_builtin_image, image_size,
                                   0, pid_out);
     if (result != OK) LOG_WARN("APP_BUILTIN", "ZAPP de memoria indisponivel");
+    return result;
+}
+
+int app_builtin_run_outputtest(uint32_t exit_code, uint32_t* pid_out) {
+    uint32_t image_size;
+    int result;
+
+    if (exit_code == APP_EXIT_CANCELLED) {
+        LOG_ERROR("APP_BUILTIN", "Teste de saida recebeu codigo reservado");
+        return ERR_INVALID;
+    }
+    result = app_builtin_build_outputtest(exit_code, &image_size);
+    if (result != OK) {
+        LOG_ERROR("APP_BUILTIN", "Falha ao montar ZAPP de teste de saida");
+        return result;
+    }
+
+    result = app_loader_run_image("OutputTest", app_builtin_image, image_size,
+                                  0, pid_out);
+    if (result != OK) {
+        LOG_ERROR("APP_BUILTIN", "Falha ao iniciar ZAPP de teste de saida");
+    }
     return result;
 }

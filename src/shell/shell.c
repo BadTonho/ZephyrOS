@@ -70,6 +70,7 @@ static void print_num(uint32_t num);
 #define APP_INPUT_TEST_PATH "INPUT.ZAP"
 #define APP_INPUT_EVENT_OFFSET 128U
 #define APP_INPUT_EVENT_DATA1_OFFSET (APP_INPUT_EVENT_OFFSET + 4U)
+#define SHELL_APP_OUTPUTTEST_FAILURE_CODE 1U
 
 static const char app_input_test_message[] =
     "Entrada ZAPP ativa: Enter encerra; F12 cancela.\n";
@@ -441,6 +442,13 @@ void shell_report_app_loader_result(void) {
         video_print("] Aplicativo ZAPP PID ", 0x07);
         print_num(result.pid);
         video_print(" cancelado; foco devolvido ao Shell.\n", 0x07);
+    } else if (result.exit_code != APP_EXIT_SUCCESS) {
+        video_print("ERRO", 0x0C);
+        video_print("] Aplicativo ZAPP PID ", 0x07);
+        print_num(result.pid);
+        video_print(" encerrou com codigo ", 0x07);
+        print_num(result.exit_code);
+        video_print(".\n", 0x07);
     } else {
         video_print("INFO", 0x0A);
         video_print("] Aplicativo ZAPP PID ", 0x07);
@@ -639,6 +647,7 @@ static void cmd_help(void) {
     video_print("  appcheck - Testa API, arquivos, IPC e loader\n", 0x07);
     video_print("  app run <arquivo.ZAP> [args] - Executa aplicativo ring 3\n", 0x07);
     video_print("  app inputtest - Testa teclado de aplicativo ring 3\n", 0x07);
+    video_print("  app outputtest [fail] - Testa saida ZAPP em blocos\n", 0x07);
     video_print("  app argtest <texto> - Testa argumentos em aplicativo ring 3\n", 0x07);
     video_print("  usertest - Executa teste isolado em ring 3\n", 0x07);
     video_print("             usertest fault | falha controlada\n", 0x08);
@@ -1234,6 +1243,34 @@ static void cmd_app_argtest(const char* text) {
     video_print(".\n", 0x0A);
 }
 
+static void cmd_app_outputtest(const char* args) {
+    uint32_t exit_code = APP_EXIT_SUCCESS;
+    uint32_t pid = 0;
+    int result;
+
+    if (args && *args) {
+        if (kstrcmp(args, "fail") != 0) {
+            LOG_ERROR("SHELL", "Argumento invalido no teste de saida ZAPP");
+            video_print("Uso: app outputtest [fail]\n", 0x0E);
+            return;
+        }
+        exit_code = SHELL_APP_OUTPUTTEST_FAILURE_CODE;
+    }
+
+    result = app_builtin_run_outputtest(exit_code, &pid);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Falha ao iniciar teste de saida ZAPP");
+        video_print("Erro: teste de saida indisponivel (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+
+    video_print("Teste de saida iniciado, PID ", 0x0A);
+    print_num(pid);
+    video_print(".\n", 0x0A);
+}
+
 static void cmd_app(const char* args) {
     char subcommand[16];
     char path[FS_MAX_PATH];
@@ -1244,7 +1281,7 @@ static void cmd_app(const char* args) {
     int result;
 
     if (!args) {
-        video_print("Uso: app run <arquivo.ZAP> [args] | app inputtest | app argtest <texto>\n", 0x0E);
+        video_print("Uso: app run <arquivo.ZAP> [args] | app inputtest | app outputtest [fail] | app argtest <texto>\n", 0x0E);
         return;
     }
     while (args[sub_length] && args[sub_length] != ' ' &&
@@ -1264,13 +1301,18 @@ static void cmd_app(const char* args) {
         return;
     }
 
+    if (kstrcmp(subcommand, "outputtest") == 0) {
+        cmd_app_outputtest(args + sub_length);
+        return;
+    }
+
     if (kstrcmp(subcommand, "argtest") == 0) {
         cmd_app_argtest(args + sub_length);
         return;
     }
 
     if (kstrcmp(subcommand, "run") != 0) {
-        video_print("Uso: app run <arquivo.ZAP> [args] | app inputtest | app argtest <texto>\n", 0x0E);
+        video_print("Uso: app run <arquivo.ZAP> [args] | app inputtest | app outputtest [fail] | app argtest <texto>\n", 0x0E);
         return;
     }
     while (args[sub_length] && args[sub_length] != ' ' &&

@@ -40,6 +40,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `appcheck` | - | Testa API, arquivos, IPC e carregador ZAPP. |
 | `app` | `run <arquivo.ZAP> [args]` | Executa uma imagem flat i386 em ring 3, em primeiro plano. |
 | `app` | `inputtest` | Cria e executa um teste temporario de teclado para `.ZAP`. |
+| `app` | `outputtest [fail]` | Emite 1152 bytes em blocos ZAPP e testa saida com codigo 0 ou 1. |
 | `app` | `argtest <texto>` | Exibe argumentos recebidos por uma imagem ZAPP interna. |
 | `usertest` | `fault` opcional | Executa e valida o primeiro processo isolado em ring 3. |
 | `guimode` | `classic/modern` | Alterna globalmente entre interface TUI (modo texto) e VESA (gráfica). |

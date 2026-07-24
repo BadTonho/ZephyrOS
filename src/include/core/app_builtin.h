@@ -9,5 +9,6 @@ int app_builtin_run_argtest(const app_launch_info_t* launch,
                             uint32_t* pid_out);
 int app_builtin_run_uptime(uint32_t* pid_out);
 int app_builtin_run_mem(uint32_t* pid_out);
+int app_builtin_run_outputtest(uint32_t exit_code, uint32_t* pid_out);
 
 #endif

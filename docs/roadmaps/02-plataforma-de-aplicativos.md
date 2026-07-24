@@ -31,15 +31,16 @@ contrato publico.
 - [x] Validar no QEMU os dois comandos, `appcheck`, `health`, `echo`,
   `usertest`, falha isolada e cancelamento por `F12`.
 
-## Fase 6D - Contrato de console e ciclo de vida
+## Fase 6D - Contrato de console e ciclo de vida (em validacao)
 
-- [ ] Definir como aplicativos poderao produzir saidas maiores sem saturar
-  filas ou poluir a interface do Shell.
-- [ ] Avaliar historico de comandos e entrada de linha somente se houver caso
-  de uso concreto.
-- [ ] Definir convencao estavel para codigo de saida e mensagens finais de
-  aplicativos externos.
-- [ ] Nao adicionar syscalls sem uma necessidade comprovada por app migrado.
+- [ ] Formalizar `console_write` como escrita sincrona de 1 a 1024 bytes;
+  blocos consecutivos sao permitidos, nao usam filas nem possuem quota total.
+- [ ] Adicionar `app outputtest [fail]`, que emite nove blocos ASCII de 128
+  bytes e encerra com codigo `0` ou `1`.
+- [ ] Reservar `0xF120` ao runtime e tratar termino normal com codigo nao-zero
+  como `ERRO`, sem confundir com falha isolada ou cancelamento por `F12`.
+- [ ] Manter historico de comandos e entrada de linha fora da App API ate
+  existir caso de uso concreto; nao adicionar syscall nesta fase.
 
 ## Fase 7 - Pacotes e distribuicao
 

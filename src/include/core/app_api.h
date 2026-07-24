@@ -9,6 +9,9 @@
 #define APP_API_MAX_FILE_IO_SIZE 4096
 #define APP_API_TICKS_PER_SECOND 50
 #define APP_HANDLE_INVALID 0
+#define APP_EXIT_SUCCESS 0U
+/* Reservado ao runtime para cancelamentos controlados, como F12. */
+#define APP_EXIT_CANCELLED 0x0000F120U
 
 #define APP_LAUNCH_ABI_VERSION 1U
 #define APP_LAUNCH_MAX_ARGS    8U
@@ -70,6 +73,7 @@ typedef struct __attribute__((packed)) {
 int app_api_init(void);
 int app_api_is_ready(void);
 int app_api_get_version(app_api_version_t* version);
+/* Escrita sincrona; blocos consecutivos nao formam uma operacao atomica. */
 int app_api_console_write(const char* text, uint32_t size);
 int app_api_get_uptime(app_uptime_info_t* info);
 int app_api_get_memory_info(app_memory_info_t* info);
