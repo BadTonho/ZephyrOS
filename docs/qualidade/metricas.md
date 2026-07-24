@@ -65,7 +65,7 @@ nao um alvo numerico nesta etapa.
 
 | Cenario | Passos QEMU | Registro K3 |
 |---|---|---|
-| K3-A diagnostico | `memcheck`; `memcheck invalido`; `kmetrics`; `health`; `procs`. | Pendente de validacao no QEMU: cinco linhas compactas em `OK`, uso invalido controlado e nenhum processo criado. |
-| K3-B ring 3 | `kmetrics reset`; `app inputtest`; `F12`; `kmetrics`; `memcheck`. | Pendente: diretorios e paginas de usuario ativos retornam a zero apos coleta. |
-| K3-C regressao | `app outputtest`; `q2check`; `usertest fault`; `appcheck`; `threadtest`; `memcheck`. | Pendente: sem panic, ZAPP ou zumbi residual; falhas deliberadas continuam controladas. |
-| K3-D interfaces | Nos modos classic e modern, abrir/fechar Desktop, Explorer, Settings e Task Manager; `memcheck`; `kmetrics`; `schedcheck`. | Pendente: interfaces e diagnosticos preservados nos dois modos. |
+| K3-A diagnostico | `memcheck`; `memcheck invalido`; `kmetrics`; `health`; `procs`. | Concluido: cinco linhas compactas em `OK`, uso invalido controlado e nenhum processo criado. |
+| K3-B ring 3 | `kmetrics reset`; `app inputtest`; `F12`; `kmetrics`; `memcheck`. | Concluido: diretorios e paginas de usuario retornaram a zero apos coleta. |
+| K3-C regressao | `app outputtest`; `q2check`; `usertest fault`; `appcheck`; `threadtest`; `memcheck`. | Concluido: sem panic, ZAPP ou zumbi residual; falhas deliberadas permaneceram controladas. |
+| K3-D interfaces | Nos modos classic e modern, abrir/fechar Desktop, Explorer, Settings e Task Manager; `memcheck`; `kmetrics`; `schedcheck`. | Concluido: interfaces e diagnosticos preservados nos dois modos. |
