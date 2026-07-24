@@ -425,7 +425,13 @@ run: $(OS_IMG)
 debug: $(OS_IMG)
 	$(QEMU) -drive format=raw,file=$(OS_IMG) -s -S &
 
+q3check:
+	python tools\q3check.py
+
+q3check-test:
+	python tools\q3check.py --self-test
+
 clean:
 	rmdir /s /q build
 
-.PHONY: all run debug clean
+.PHONY: all run debug q3check q3check-test clean

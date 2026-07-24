@@ -221,7 +221,33 @@ int ata_read_sector(uint32_t lba, uint8_t* buffer) {
 
 ---
 
-## 8. Git
+## 8. Gate de mudanca (Q3)
+
+Antes de compilar ou testar uma alteracao de codigo, execute:
+
+```bash
+make q3check
+```
+
+O gate analisa somente o diff atual. Ele rejeita alteracoes no bootloader,
+whitespace invalido, novas funcoes C que retornam `ERR_*` sem `LOG_ERROR` ou
+`LOG_WARN`, e alteracoes em headers publicos sem atualizacao do documento
+tecnico canonico definido no [catalogo de contratos](qualidade/contratos-publicos.md).
+Ele tambem valida que cada evidencia registrada em
+[metricas de otimizacao](qualidade/metricas.md) contenha todos os campos do
+modelo.
+
+Uma mudanca de desempenho deve registrar comparacao reproduzivel de antes e
+depois em [metricas de otimizacao](qualidade/metricas.md). Se a mudanca nao
+for uma otimizacao, a revisao registra `N/D`; nao crie uma metrica artificial.
+
+O comando nao compila, nao altera o sistema e nao substitui `make clean &&
+make` nem a validacao no QEMU. Para verificar o proprio gate sem tocar no
+repositorio, execute `make q3check-test`.
+
+---
+
+## 9. Git
 
 - [ ] Commits DEVE ter mensagens claras e descritivas
 - [ ] Formato: `tipo(escopo): descrição`

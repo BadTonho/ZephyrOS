@@ -137,10 +137,16 @@ QEMU = /custom/path/qemu-system-i386
 
 ### Pre-commit Verification
 Before committing code or submitting a PR:
-1. Run `make clean && make` to ensure a clean build with zero compilation errors.
-2. Test the build in QEMU with `make run`.
-3. Verify that new warnings are addressed or documented.
-4. Ensure no local secrets, personal paths, or build artifacts (`build/`, `Makefile.local`) are included in your commit.
+1. Run `make q3check` after changing code; it validates the current diff without compiling.
+2. Run `make clean && make` to ensure a clean build with zero compilation errors.
+3. Test the build in QEMU with `make run`.
+4. Verify that new warnings are addressed or documented.
+5. Ensure no local secrets, personal paths, or build artifacts (`build/`, `Makefile.local`) are included in your commit.
+
+When a public header changes, update its canonical document listed in
+[`docs/qualidade/contratos-publicos.md`](docs/qualidade/contratos-publicos.md)
+in the same change. Performance work also requires a before/after record in
+[`docs/qualidade/metricas.md`](docs/qualidade/metricas.md).
 
 ---
 

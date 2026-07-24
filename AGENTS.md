@@ -10,6 +10,9 @@ Leia este arquivo no início de toda sessão. Siga estas regras SEMPRE.
 # Build completo
 make clean && make
 
+# Gate de qualidade Q3 (antes de build/testes apos mudar codigo)
+make q3check
+
 # Run no QEMU
 make run
 ```
@@ -400,6 +403,7 @@ OBJS = ... $(NOVO_OBJ)
 
 - [ ] NUNCA commitar código que não compila
 - [ ] Para alterações de código, SEMPRE orientar o usuário a testar `make clean && make` antes de commitar
+- [ ] Antes de build/testes após mudar código, `make q3check` passou sem erros?
 - [ ] Warnings novos devem ser revisados; warnings existentes devem ser documentados quando não puderem ser corrigidos na etapa atual
 - [ ] Se adicionar header, verificar se não quebra outros arquivos
 - [ ] Se modificar struct, verificar todas as funções que usam ela
@@ -424,6 +428,8 @@ Antes de commitar:
 12. [ ] Confirmei que não há senhas, tokens, chaves privadas ou credenciais?
 13. [ ] Confirmei que não há caminhos pessoais, configurações locais ou arquivos de backup?
 14. [ ] Confirmei que `.mailmap`, `Makefile.local`, `build/` e artefatos locais não estão staged?
+15. [ ] Se um header público mudou, atualizei seu documento canônico listado em `docs/qualidade/contratos-publicos.md`?
+16. [ ] Se a mudança é uma otimização, registrei a comparação antes/depois em `docs/qualidade/metricas.md`?
 
 ---
 

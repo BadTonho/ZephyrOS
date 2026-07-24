@@ -15,7 +15,8 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
 - Estabilizacao e qualidade: Q1 e Q2 validados no QEMU, com matriz de
   regressao, retorno de foco, prompt unico, referencia para os resultados do
   `appcheck`, politica de logs, resumo seguro de falhas isoladas e o atalho
-  compacto `q2check`.
+  compacto `q2check`; Q3 implementado e aguardando validacao do gate
+  `make q3check`, build e matriz de regressao.
 - Interface: Desktop, Explorer, Task Manager e Settings possuem modo moderno
   e fallback classico; a taskbar e o Window Manager grafico ainda sao etapas
   futuras.
