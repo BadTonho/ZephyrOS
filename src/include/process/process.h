@@ -12,6 +12,7 @@
 #define PROCESS_EXIT_CANCELLED APP_EXIT_CANCELLED
 
 #define IPC_MSG_QUEUE_SIZE 32
+#define SCHEDULER_USER_QUANTUM_TICKS 1U
 
 typedef enum {
     IPC_MSG_NONE = 0,
@@ -43,7 +44,18 @@ typedef struct {
 
 typedef struct {
     uint32_t context_switches;
+    uint32_t cooperative_yields;
+    uint32_t user_preemptions;
+    uint32_t idle_fallbacks;
+    uint32_t user_quantum_ticks;
 } scheduler_stats_t;
+
+typedef struct {
+    uint32_t current_valid;
+    uint32_t idle_valid;
+    uint32_t pid_table_valid;
+    uint32_t state_table_valid;
+} scheduler_validation_t;
 
 typedef enum {
     PROCESS_STATE_UNUSED = 0,
@@ -141,7 +153,9 @@ int ipc_is_ready(void);
 process_t* scheduler_schedule(void);
 void scheduler_init(void);
 void scheduler_tick(void);
+void scheduler_preempt_user(void);
 void scheduler_get_stats(scheduler_stats_t* stats);
+int scheduler_validate_invariants(scheduler_validation_t* validation);
 
 
 int ipc_send(uint32_t pid, ipc_msg_t* msg);

@@ -38,6 +38,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `guitest` | - | Roda um teste nativo das primitivas gráficas GUI 2D. |
 | `health` | - | Lista o estado dos componentes e mostra dependências indisponíveis. |
 | `kmetrics` | `[reset]` | Mostra ou inicia a janela manual de métricas K1. |
+| `schedcheck` | - | Valida os invariantes atuais do scheduler sem alterar processos. |
 | `q2check` | - | Executa o diagnóstico compacto da Q2 com duas falhas isoladas. |
 | `appcheck` | - | Testa API, arquivos, IPC e carregador ZAPP. |
 | `pkg` | `list` | Lista os pacotes locais instalados. |

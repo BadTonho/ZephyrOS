@@ -814,6 +814,7 @@ static void cmd_help(void) {
     video_print("  mouse    - Mostra status do mouse PS/2\n", 0x07);
     video_print("  health   - Mostra estado dos componentes (use PgUp/PgDn)\n", 0x07);
     video_print("  kmetrics - Mostra linha-base de metricas do kernel\n", 0x07);
+    video_print("  schedcheck - Valida invariantes do scheduler\n", 0x07);
     video_print("  q2check  - Executa diagnostico compacto da Q2\n", 0x07);
     video_print("  appcheck - Testa API, arquivos, IPC e loader\n", 0x07);
     video_print("  pkg      - Gerencia pacotes .ZPK locais\n", 0x07);
@@ -1064,6 +1065,18 @@ static void cmd_kmetrics_print_scheduler(
     video_print(" ZOMBIE=", 0x08);
     print_num(process_get_state_count(PROCESS_STATE_ZOMBIE));
     video_print("\n", 0x07);
+    video_print("             cooperativos=", 0x08);
+    print_num(shell_kmetrics_delta(current->scheduler.cooperative_yields,
+                                   baseline->scheduler.cooperative_yields));
+    video_print(" preempcoes_user=", 0x08);
+    print_num(shell_kmetrics_delta(current->scheduler.user_preemptions,
+                                   baseline->scheduler.user_preemptions));
+    video_print(" idle_fallbacks=", 0x08);
+    print_num(shell_kmetrics_delta(current->scheduler.idle_fallbacks,
+                                   baseline->scheduler.idle_fallbacks));
+    video_print(" quantum_user=", 0x08);
+    print_num(current->scheduler.user_quantum_ticks);
+    video_print(" tick\n", 0x07);
 }
 
 static void cmd_kmetrics_print_queues(
@@ -1191,6 +1204,32 @@ static void cmd_kmetrics(const char* args) {
     cmd_kmetrics_print_queues(&current, baseline);
     cmd_kmetrics_print_memory();
     cmd_kmetrics_print_vesa(&current, baseline);
+    video_end_update();
+}
+
+static void cmd_schedcheck_print_result(const char* label, int passed) {
+    video_print("  ", 0x07);
+    video_print(label, 0x07);
+    video_print(passed ? " OK\n" : " ERRO\n", passed ? 0x0A : 0x0C);
+}
+
+static void cmd_schedcheck(const char* args) {
+    scheduler_validation_t validation;
+    int result;
+
+    if (*args) {
+        video_print("Uso: schedcheck\n", 0x0C);
+        return;
+    }
+
+    result = scheduler_validate_invariants(&validation);
+    video_begin_update();
+    video_print("SchedCheck:\n", 0x0B);
+    cmd_schedcheck_print_result("estado_atual", validation.current_valid);
+    cmd_schedcheck_print_result("idle", validation.idle_valid);
+    cmd_schedcheck_print_result("tabela_pid", validation.pid_table_valid);
+    cmd_schedcheck_print_result("estados", validation.state_table_valid);
+    cmd_schedcheck_print_result("resultado", result == OK);
     video_end_update();
 }
 
@@ -2525,6 +2564,8 @@ int shell_process_command(const char* input) {
         cmd_health();
     } else if (kstrcmp(cmd, "kmetrics") == 0) {
         cmd_kmetrics(input);
+    } else if (kstrcmp(cmd, "schedcheck") == 0) {
+        cmd_schedcheck(input);
     } else if (kstrcmp(cmd, "q2check") == 0) {
         cmd_q2check();
     } else if (kstrcmp(cmd, "appcheck") == 0) {

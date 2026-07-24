@@ -43,7 +43,7 @@ void timer_handler(registers_t* regs) {
        Eles cedem a CPU somente em process_yield() explicitos. Processos
        ring 3 continuam preemptivos e podem ser interrompidos pelo timer. */
     if (process_get_current() && interrupted_user) {
-        process_yield();
+        scheduler_preempt_user();
     }
 }
 

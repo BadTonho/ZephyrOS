@@ -22,7 +22,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
 - Kernel e desempenho: K1 foi validada no QEMU com `kmetrics`, linha-base
   manual de PIT, scheduler, filas, memoria e VESA nos cenarios de Shell, ring
   3 e interfaces classica/moderna. CPU real foi adiada; `TCK%` identifica
-  somente a estimativa baseada em ticks.
+  somente a estimativa baseada em ticks. K2 esta implementada e aguarda
+  validacao no QEMU com `schedcheck`, motivos de escalonamento e o mesmo
+  round-robin de 1 tick para ring 3.
 - Interface: Desktop, Explorer, Task Manager e Settings possuem modo moderno
   e fallback classico; a taskbar e o Window Manager grafico ainda sao etapas
   futuras.

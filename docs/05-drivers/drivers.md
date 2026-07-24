@@ -212,11 +212,12 @@ timer_init(50);  // 50 Hz = 20ms por tick
 1. Configura o canal 0 do PIT para gerar IRQ0
 2. A cada tick, `timer_handler()` é chamado
 3. Incrementa contador de ticks
-4. O scheduler usa ticks para preemptar processos
+4. O scheduler atualiza bloqueios temporizados e preempta somente processos
+   interrompidos em ring 3
 
-`timer_get_frequency()` expoe a frequencia configurada para diagnosticos. Os
-ticks do PIT tem resolucao de 20 ms na configuracao atual e nao representam
-tempo de CPU real.
+`timer_get_frequency()` expoe a frequencia configurada para diagnosticos. A
+50 Hz, o quantum de ring 3 e 1 tick (20 ms); processos nativos de ring 0
+cedem cooperativamente. Os ticks do PIT nao representam tempo de CPU real.
 
 ---
 

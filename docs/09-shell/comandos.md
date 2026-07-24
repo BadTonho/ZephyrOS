@@ -39,6 +39,7 @@ Comandos disponiveis:
   guimode   - Altera entre gui classica (TUI) e moderna
   health    - Exibe metricas e estado de recovery do kernel
   kmetrics  - Mostra linha-base manual de metricas do kernel
+  schedcheck - Valida invariantes do scheduler
   q2check   - Executa diagnostico compacto da Q2
   appcheck  - Testa API, arquivos, IPC e carregador ZAPP
   pkg       - Gerencia pacotes .ZPK locais
@@ -209,14 +210,29 @@ Sem argumento, a saida cobre o boot ou a janela iniciada pelo ultimo reset;
 `kmetrics reset` captura o ponto inicial somente no Shell, sem zerar os
 contadores de `health`, IPC, teclado ou processos.
 
-O relatorio mostra ticks do PIT, trocas de contexto, filas, memoria e copias
-VESA. `TCK%` e uma estimativa baseada em ticks; CPU real aparece como `N/D`
-ate uma futura etapa de calibracao por RDTSC/PMU.
+O relatorio mostra ticks do PIT, trocas de contexto, yields cooperativos,
+preempcoes de ring 3, fallbacks para o Idle, filas, memoria e copias VESA. O
+quantum de usuario permanece 1 tick. `TCK%` e uma estimativa baseada em
+ticks; CPU real aparece como `N/D` ate uma futura etapa de calibracao por
+RDTSC/PMU.
 
 ```text
 zephyr> kmetrics reset
 zephyr> kmetrics
 ```
+
+## `schedcheck`
+
+Valida, sem alterar processos, o processo atual, o Idle, a tabela de PIDs e
+os estados do scheduler. A saida e curta; `ERRO` indica uma inconsistencia
+interna registrada tambem no log. O comando nao cria processos, nao altera o
+foco e nao substitui os testes de ring 3 ou `threadtest`.
+
+```text
+zephyr> schedcheck
+```
+
+Argumentos adicionais sao recusados com `Uso: schedcheck`.
 
 ## `appcheck`
 Testa a fachada segura da API de aplicativos, incluindo versão, console,

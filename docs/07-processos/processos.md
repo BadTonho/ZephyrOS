@@ -107,31 +107,29 @@ Quando um processo é criado, sua pilha é preparada assim:
 
 ## Scheduler
 
-### Round-Robin Preemptivo
+### Round-Robin com Idle de fallback
 
-O scheduler escolhe o próximo processo para rodar:
+O scheduler percorre os PIDs normais em ordem circular e escolhe o primeiro
+processo `READY` depois do ultimo selecionado. O PID 0 (`System Idle`) fica
+fora dessa rotacao: ele so e escolhido quando nao ha nenhum processo normal
+pronto. Assim, o Idle preserva a continuidade do kernel sem disputar uma
+fatia com trabalho real.
+
+### Preempção e yield
+
+O PIT executa `scheduler_tick()` a 50 Hz para atualizar bloqueios temporizados
+e ticks do processo atual. Se a interrupcao ocorreu em ring 3, chama
+`scheduler_preempt_user()` e aplica o quantum fixo de 1 tick (20 ms). Codigo
+nativo em ring 0 nao e preemptado pelo timer porque compartilha estruturas nao
+reentrantes; ele cede explicitamente com `process_yield()`.
 
 ```c
-process_t* scheduler_schedule(void) {
-    process_t* best = 0;
-    uint32_t min_ticks = 0xFFFFFFFF;
-
-    // Escolhe o processo com menos ticks
-    for (int i = 0; i < MAX_PROCESSES; i++) {
-        if (processes[i].state == PROCESS_STATE_READY) {
-            if (processes[i].total_ticks < min_ticks) {
-                min_ticks = processes[i].total_ticks;
-                best = &processes[i];
-            }
-        }
-    }
-    return best;
+if (interrupted_user) {
+    scheduler_preempt_user();
 }
 ```
 
-### Preempção
-
-A cada tick do timer (50 Hz), o scheduler é chamado:
+O desbloqueio temporizado continua no tick:
 
 ```c
 void scheduler_tick(void) {
@@ -150,18 +148,11 @@ void scheduler_tick(void) {
 }
 ```
 
-### Yield
-
-Um processo pode ceder voluntariamente o CPU:
-
-```c
-void process_yield(void) {
-    process_t* next = scheduler_schedule();
-    if (next && next != current_process) {
-        context_switch(&current_process->context, &next->context);
-    }
-}
-```
+`process_yield()` continua sendo a cessao cooperativa usada por processos
+nativos, pelo Idle e pelos caminhos de bloqueio. Prioridades, quantum maior e
+mudancas na relacao processo/thread foram avaliados na K2 e adiados: a linha
+base K1 nao mostrou requisito funcional ou gargalo que justificasse alterar a
+politica simples atual.
 
 ---
 
@@ -214,17 +205,29 @@ Quando o scheduler muda de processo/thread, ele:
 ### Fluxo
 
 ```
-Timer IRQ → scheduler_tick() → scheduler_schedule()
-    → context_switch(&prev->context, &next->context)
-        → Salva EAX, EBX, ECX, EDX, ESI, EDI, EBP, ESP
-        → Restaura registradores do próximo
-        → troca CR3 e retorna ao contexto salvo
+Timer IRQ → scheduler_tick()
+    → se interrompeu ring 3: scheduler_preempt_user()
+        → scheduler_schedule() → context_switch(&prev->context, &next->context)
+            → Salva EAX, EBX, ECX, EDX, ESI, EDI, EBP, ESP
+            → Restaura registradores do próximo
+            → troca CR3 e retorna ao contexto salvo
 ```
 
-## Metricas K1
+## Metricas e invariantes K1/K2
 
-`scheduler_get_stats()` informa somente trocas reais de contexto entre
-processos. `ipc_get_pending_count()` soma mensagens ainda pendentes, enquanto
+`scheduler_get_stats()` informa contadores acumulados de trocas reais de
+contexto, yields cooperativos, preempcoes de ring 3 e fallbacks para o Idle,
+alem do quantum atual de usuario (1 tick). `kmetrics` mostra os deltas desses
+contadores na janela desde o boot ou o ultimo reset.
+
+`scheduler_validate_invariants()` apenas consulta a tabela de processos. Ele
+valida processo atual, Idle, unicidade e contagem dos PIDs, e estados de
+bloqueio/zumbi; um processo ring 3 suspenso pelo loader pode permanecer
+`BLOCKED` com espera zero. A funcao retorna `OK`, `ERR_NULL` ou `ERR_STATE` e
+nunca tenta reparar uma inconsistencia. O comando Shell `schedcheck` apresenta
+esse resultado de forma compacta.
+
+`ipc_get_pending_count()` soma mensagens ainda pendentes, enquanto
 `ipc_get_stats()` mantem os contadores acumulados de envio, recebimento,
 falhas e fila cheia. Essas metricas descrevem atividade do scheduler e das
 filas; nao medem uso real de CPU.

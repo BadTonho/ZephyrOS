@@ -53,3 +53,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/ui/settings.h` | `docs/12-desktop/desktop.md` |
 | `src/include/ui/taskbar.h` | `docs/12-desktop/desktop.md` |
 | `src/include/ui/wm.h` | `docs/12-desktop/desktop.md` |
+
+O contrato de `src/include/process/process.h` inclui, desde a K2, os
+contadores de motivo do scheduler, o quantum fixo de usuario e a validacao de
+invariantes descritos em `docs/07-processos/processos.md`.

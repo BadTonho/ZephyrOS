@@ -20,6 +20,9 @@ static uint32_t free_pids[PROCESS_PID_POOL_SIZE];
 static uint32_t free_pid_count = 0;
 static int last_scheduled_idx = -1;
 static uint32_t scheduler_context_switches = 0;
+static uint32_t scheduler_cooperative_yields = 0;
+static uint32_t scheduler_user_preemptions = 0;
+static uint32_t scheduler_idle_fallbacks = 0;
 static int last_user_fault_valid = 0;
 static process_user_fault_summary_t last_user_fault;
 static uint32_t user_fault_count = 0;
@@ -966,61 +969,84 @@ uint32_t process_get_state_count(process_state_t state) {
     return count;
 }
 
-process_t* scheduler_schedule(void) {
-    process_t* best = 0;
+static process_t* scheduler_find_next_ready(void) {
+    int start_idx = last_scheduled_idx;
 
-    for (int i = 1; i <= MAX_PROCESSES; i++) {
-        int idx = (last_scheduled_idx + i) % MAX_PROCESSES;
+    if (start_idx < 1 || start_idx >= MAX_PROCESSES) {
+        start_idx = MAX_PROCESSES - 1;
+    }
+
+    for (int step = 1; step < MAX_PROCESSES; step++) {
+        int idx = 1 + ((start_idx - 1 + step) % (MAX_PROCESSES - 1));
         if (processes[idx].state == PROCESS_STATE_READY) {
-            best = &processes[idx];
             last_scheduled_idx = idx;
-            break;
+            return &processes[idx];
         }
     }
 
-    if (!best && processes[0].state != PROCESS_STATE_UNUSED &&
-        processes[0].state != PROCESS_STATE_ZOMBIE) {
-        if (processes[0].state != PROCESS_STATE_RUNNING) {
-            processes[0].state = PROCESS_STATE_READY;
-        }
-        return &processes[0];
+    return 0;
+}
+
+process_t* scheduler_schedule(void) {
+    process_t* next = scheduler_find_next_ready();
+    process_t* idle = &processes[0];
+
+    if (next) return next;
+    if (idle->state == PROCESS_STATE_READY ||
+        idle->state == PROCESS_STATE_RUNNING) {
+        scheduler_idle_fallbacks++;
+        return idle;
     }
 
-    if (!best) LOG_WARN("PROC", "Nenhum processo pronto para escalonar");
-    return best;
+    LOG_ERROR("PROC", "Idle indisponivel para fallback do scheduler");
+    return 0;
+}
+
+static void scheduler_yield_internal(void) {
+    process_t* next = scheduler_schedule();
+
+    if (!next || next == current_process) return;
+
+    process_t* prev = current_process;
+    current_process = next;
+    current_process->state = PROCESS_STATE_RUNNING;
+
+    if (prev->state == PROCESS_STATE_RUNNING) {
+        prev->state = PROCESS_STATE_READY;
+    }
+
+    if (next->kernel_stack_top) {
+        tss_set_kernel_stack(next->kernel_stack_top);
+    }
+    if (next->page_directory &&
+        next->page_directory != paging_get_current_directory()) {
+        paging_switch_directory(next->page_directory);
+    }
+    scheduler_context_switches++;
+    process_context_switch(&prev->context, &next->context);
 }
 
 void process_yield(void) {
     /* O timer pode disparar antes do bootstrap do Idle; isso nao e falha. */
-    if (!current_process) {
-        return;
-    }
+    if (!current_process) return;
     if (current_process->state < PROCESS_STATE_READY ||
         current_process->state > PROCESS_STATE_BLOCKED) {
         return;
     }
-    
-    process_t* next = scheduler_schedule();
-    if (!next) return;
-    if (next != current_process) {
-        process_t* prev = current_process;
-        current_process = next;
-        current_process->state = PROCESS_STATE_RUNNING;
 
-        if (prev && prev->state == PROCESS_STATE_RUNNING) {
-            prev->state = PROCESS_STATE_READY;
-        }
+    scheduler_cooperative_yields++;
+    scheduler_yield_internal();
+}
 
-        if (next->kernel_stack_top) {
-            tss_set_kernel_stack(next->kernel_stack_top);
-        }
-        if (next->page_directory &&
-            next->page_directory != paging_get_current_directory()) {
-            paging_switch_directory(next->page_directory);
-        }
-        scheduler_context_switches++;
-        process_context_switch(&prev->context, &next->context);
+void scheduler_preempt_user(void) {
+    if (!current_process || !process_is_user(current_process) ||
+        current_process->state != PROCESS_STATE_RUNNING) {
+        LOG_WARN("PROC", "Preempcao de usuario fora de estado executavel");
+        return;
     }
+
+    scheduler_user_preemptions++;
+    scheduler_yield_internal();
 }
 
 void process_block(uint32_t ticks) {
@@ -1063,6 +1089,10 @@ void process_unblock(process_t* proc) {
 void scheduler_init(void) {
     process_count = 0;
     last_scheduled_idx = -1;
+    scheduler_context_switches = 0;
+    scheduler_cooperative_yields = 0;
+    scheduler_user_preemptions = 0;
+    scheduler_idle_fallbacks = 0;
     LOG_INFO("PROC", "Scheduler round-robin inicializado");
 }
 
@@ -1090,4 +1120,84 @@ void scheduler_get_stats(scheduler_stats_t* stats) {
     }
 
     stats->context_switches = scheduler_context_switches;
+    stats->cooperative_yields = scheduler_cooperative_yields;
+    stats->user_preemptions = scheduler_user_preemptions;
+    stats->idle_fallbacks = scheduler_idle_fallbacks;
+    stats->user_quantum_ticks = SCHEDULER_USER_QUANTUM_TICKS;
+}
+
+static uint32_t scheduler_validate_pid_table(void) {
+    uint32_t active_count = 0;
+    uint32_t valid = 1;
+
+    for (int i = 0; i < MAX_PROCESSES; i++) {
+        process_t* proc = &processes[i];
+
+        if (proc->state == PROCESS_STATE_UNUSED) {
+            if (proc->pid != 0) valid = 0;
+            continue;
+        }
+
+        active_count++;
+        if ((i == 0 && proc->pid != 0) || (i != 0 && proc->pid == 0)) {
+            valid = 0;
+        }
+        for (int previous = 0; previous < i; previous++) {
+            if (processes[previous].state != PROCESS_STATE_UNUSED &&
+                processes[previous].pid == proc->pid) {
+                valid = 0;
+            }
+        }
+    }
+
+    return valid && active_count == process_count;
+}
+
+static uint32_t scheduler_validate_states(void) {
+    uint32_t valid = 1;
+
+    for (int i = 0; i < MAX_PROCESSES; i++) {
+        process_t* proc = &processes[i];
+
+        if (proc->state > PROCESS_STATE_ZOMBIE) valid = 0;
+        if (proc->state == PROCESS_STATE_BLOCKED && proc->wait_ticks == 0 &&
+            !proc->context.user_mode) {
+            valid = 0;
+        }
+        if (proc->state == PROCESS_STATE_ZOMBIE && proc == current_process) {
+            valid = 0;
+        }
+    }
+
+    return valid;
+}
+
+int scheduler_validate_invariants(scheduler_validation_t* validation) {
+    process_t* idle = &processes[0];
+
+    if (!validation) {
+        LOG_ERROR("PROC", "Destino nulo ao validar scheduler");
+        return ERR_NULL;
+    }
+
+    kmemset(validation, 0, sizeof(scheduler_validation_t));
+    validation->current_valid = process_pointer_valid(current_process) &&
+                                current_process->state == PROCESS_STATE_RUNNING &&
+                                process_get_state_count(PROCESS_STATE_RUNNING) == 1;
+    validation->idle_valid = idle->pid == 0 && !idle->context.user_mode &&
+                             (idle->state == PROCESS_STATE_READY ||
+                              idle->state == PROCESS_STATE_RUNNING);
+    validation->pid_table_valid = scheduler_validate_pid_table();
+    validation->state_table_valid = scheduler_validate_states();
+
+    if (!validation->current_valid) LOG_ERROR("PROC", "Invariante do processo atual violada");
+    if (!validation->idle_valid) LOG_ERROR("PROC", "Invariante do Idle violada");
+    if (!validation->pid_table_valid) LOG_ERROR("PROC", "Invariante da tabela de PIDs violada");
+    if (!validation->state_table_valid) LOG_ERROR("PROC", "Invariante dos estados violada");
+    if (!validation->current_valid || !validation->idle_valid ||
+        !validation->pid_table_valid || !validation->state_table_valid) {
+        return ERR_STATE;
+    }
+
+    return OK;
 }
