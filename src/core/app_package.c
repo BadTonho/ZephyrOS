@@ -439,7 +439,6 @@ static int app_package_read_metadata(const char* id, app_package_info_t* info) {
          kstrlen(APP_PACKAGE_METADATA_NAME)] = '\0';
     size = fs_read_file_at(path, manifest, APP_PACKAGE_MAX_MANIFEST_SIZE);
     if (size <= 0) {
-        LOG_WARN("PKG", "Metadata de pacote nao encontrada");
         return ERR_NOT_FOUND;
     }
     return app_package_parse_manifest(manifest, (uint32_t)size, info);
