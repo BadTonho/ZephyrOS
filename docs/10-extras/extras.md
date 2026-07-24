@@ -116,8 +116,10 @@ Syscalls são a forma como processos de usuário pedem serviços ao kernel.
 
 ### Implementação Atual
 
-O ZephyrOS possui um dispatcher inicial no vetor `int 0x80`. Ele permanece
-com DPL 0 porque os processos ainda executam em ring 0:
+O ZephyrOS possui um dispatcher no vetor `int 0x80`. Após a inicialização
+segura de paging, TSS, Idle e processos essenciais, o gate é elevado a DPL 3
+para processos de usuário. Chamadas ring 3 passam por validação de processo,
+faixa de memória, tamanho e permissão antes de alcançar os serviços internos:
 
 ```nasm
 ; Exemplo de syscall
@@ -134,13 +136,13 @@ int 0x80        ; Chama o dispatcher
 | 0 | process_exit | Reservada até o modo usuário |
 | 1 | console_write | Escreve texto validado |
 | 2 | uptime | Retorna ticks e segundos |
+| 3 | memory_info | Retorna métricas de memória |
 | 4 | file_open | Abre arquivo e retorna handle opaco |
 | 5 | file_read | Leitura sequencial por offset |
 | 6 | file_write | Substitui o arquivo inteiro |
 | 7 | file_close | Libera handle de arquivo |
 | 8 | message_send | Envia mensagem para PID validado |
 | 9 | message_receive | Recebe mensagem sem bloqueio |
-| 3 | memory_info | Retorna métricas de memória |
 
 ### Handlers
 
@@ -151,8 +153,13 @@ void syscall_handler(registers_t* regs) {
 ```
 
 O comando `appcheck` usa `syscall_invoke_kernel()` para testar o mesmo
-dispatcher sem precisar de um aplicativo ring 3. Chamadas inválidas são
+dispatcher sem precisar de um aplicativo ring 3. Ele também valida arquivos,
+IPC, loader ZAPP e argumentos da App API `0.3`. Chamadas inválidas são
 registradas e retornam códigos de `errors.h`, sem `panic()`.
+
+Aplicativos externos usam o formato flat `ZAPP` dentro de arquivos `.ZAP` e
+executam em ring 3. O `usertest` valida a fronteira de privilégio, enquanto
+`app inputtest` valida foco e teclado por IPC.
 
 ---
 

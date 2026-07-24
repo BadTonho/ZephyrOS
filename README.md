@@ -43,12 +43,13 @@ concluidas, limitacoes conhecidas e proximos objetivos.
 | PCI | ✅ | Enumeração do barramento PCI |
 | AC97 | ✅ | Driver de áudio AC97 (play, stop, volume) |
 | PC Speaker | ✅ | Beep, melodias |
-| Shell | ✅ | 14+ comandos interativos |
+| Shell | ✅ | Terminal com scrollback, diagnósticos e comandos nativos/ring 3 |
+| App API | ✅ | API 0.3, syscalls `int 0x80`, IPC, arquivos e loader ZAPP |
 | Editor | ✅ | Editor de texto com syntax highlight, word wrap |
 | Media Player | ✅ | Player de áudio WAV com visualização |
 | Task Manager | ✅ | Monitor de processos/threads/CPU/memória |
-| File Manager | ✅ | Explorer TUI (navegar, criar, renomear, excluir) |
-| Desktop | ✅ | Ambiente desktop com ícones e menu Iniciar |
+| File Manager | ✅ | Explorer clássico e moderno (navegar, criar, renomear, excluir) |
+| Desktop | ✅ | Ambiente desktop moderno com fallback clássico, ícones e menu Iniciar |
 | Window Manager | ✅ | Gerenciador de janelas (mover, redimensionar, minimizar) |
 | Taskbar | ✅ | Barra de tarefas configurável (posição, tamanho, relógio) |
 | Settings | ✅ | Sistema de configurações (tela, taskbar, janelas, ícones, som) |
@@ -63,11 +64,13 @@ Sistema/
 ├── Makefile                 # Sistema de build
 ├── ROADMAP.md               # Roadmap de desenvolvimento
 ├── build/                   # Arquivos de saída
-├── docs/                    # Documentação (11 capítulos)
+├── docs/                    # Documentação (13 capítulos + roadmaps)
 └── src/
     ├── linker.ld            # Linker script
-    ├── boot/                # Bootloader (Assembly 16-bit)
-    │   └── boot.asm
+    ├── boot/                # Bootloader e segundo estágio (Assembly)
+    │   ├── boot.asm
+    │   └── stage2.asm
+    ├── core/                # Serviços centrais, App API, syscalls e loader
     ├── kernel/              # Kernel core
     │   ├── entry.asm        # Entry point Assembly
     │   ├── kernel.c         # Kernel principal (inicializa 20+ subsistemas)
@@ -97,17 +100,18 @@ Sistema/
     │   ├── fs.c             # Interface unificada FAT12/FAT32
     │   ├── bmp.c            # Leitura de imagens BMP
     │   └── wav.c            # Leitura de áudio WAV
-    ├── process/             # Processos
-    │   └── process.c        # Process manager + scheduler
+    ├── process/             # Processos e IPC
+    │   ├── process.c        # Process manager + scheduler
+    │   └── ipc.c            # Filas, foco e mensagens entre processos
     ├── thread/              # Threads
     │   └── thread.c         # Thread scheduler
     ├── shell/               # Terminal e aplicativos
-    │   ├── shell.c          # Shell interativo (14+ comandos)
+    │   ├── shell.c          # Shell interativo, diagnosticos e apps ZAPP
     │   ├── editor.c         # Editor de texto com syntax highlight
     │   ├── mediaplayer.c    # Media player (WAV)
     │   └── taskmanager.c    # Gerenciador de tarefas
     ├── filemanager/         # Gerenciador de arquivos
-    │   └── filemanager.c    # Explorer TUI estilo Windows
+    │   └── filemanager.c    # Explorer clássico/moderno
     ├── desktop/             # Ambiente desktop
     │   └── desktop.c        # Desktop com ícones
     ├── wm/                  # Gerenciador de janelas
@@ -118,7 +122,7 @@ Sistema/
     │   └── settings.c       # Configurações (tela, taskbar, janelas, som)
     ├── icons/               # Sistema de ícones
     │   └── icons.c          # Ícones customizáveis
-    └── include/             # Headers (33 arquivos)
+    └── include/             # Headers organizados por módulo
         ├── types.h, video.h, keyboard.h, idt.h, timer.h,
         ├── memory.h, paging.h, ata.h, fat12.h, fat32.h,
         ├── process.h, thread.h, shell.h, speaker.h, tss.h,
@@ -129,6 +133,15 @@ Sistema/
 ```
 
 ---
+
+## Serviços centrais atuais
+
+Além dos diretórios mostrados no mapa resumido, `src/core/` concentra
+`log`, `string`, `recovery`, `app_api`, `app_files`, `syscall`, `app_loader`
+e imagens internas de aplicativos. `src/process/` contém tanto o scheduler
+quanto `ipc.c`, responsável por filas e foco. Consulte
+[Arquitetura](docs/02-arquitetura/arquitetura.md) para o mapa de dependências
+atualizado.
 
 ## Requisitos
 
@@ -203,15 +216,17 @@ make clean
 
 ## Comandos do Shell
 
-O shell inicia automaticamente após a inicialização do sistema.
+O serviço do Shell é inicializado durante o boot. No fluxo gráfico padrão, o
+Desktop é exibido primeiro e o terminal é aberto pelo item **Shell** da
+taskbar/Menu Iniciar ou pelo ícone do Desktop.
 
 | Comando | Descrição | Exemplo |
 |---------|-----------|---------|
 | `help` | Lista todos os comandos | `help` |
-| `clear` | Limpa a tela | `clear` |
+| `clear` | Limpa a tela e o histórico do terminal | `clear` |
 | `ls` | Lista arquivos no disco | `ls` |
 | `cat` | Exibe conteúdo de arquivo | `cat ARQUIVO.TXT` |
-| `echo` | Imprime texto na tela | `echo Ola Mundo` |
+| `echo` | Executa a primeira app ZAPP interna, com fallback nativo | `echo Ola Mundo` |
 | `mem` | Mostra info de memória | `mem` |
 | `procs` | Lista processos ativos | `procs` |
 | `threads` | Lista threads ativas | `threads` |
@@ -226,7 +241,10 @@ O shell inicia automaticamente após a inicialização do sistema.
 | `compress` | Gerencia compressão de RAM | `compress on/off/status` |
 | `settings` | Abre configurações | `settings` |
 | `health` | Mostra o estado dos componentes e do kernel | `health` |
-| `appcheck` | Testa a API de aplicativos, arquivos e IPC | `appcheck` |
+| `appcheck` | Testa App API, syscalls, arquivos, IPC, loader e argumentos | `appcheck` |
+| `app run` | Executa `.ZAP` ring 3 com argumentos simples | `app run DEMO.ZAP alpha beta` |
+| `app inputtest` | Testa foco e teclado de app ring 3 | `app inputtest` |
+| `app argtest` | Testa argumentos entregues a uma app ring 3 | `app argtest alpha beta` |
 | `usertest` | Executa o processo de teste em modo usuário | `usertest` |
 | `guimode` | Alterna entre `classic` e `modern` | `guimode modern` |
 | `reboot` | Reinicia o sistema | `reboot` |
@@ -282,6 +300,16 @@ O shell inicia automaticamente após a inicialização do sistema.
 - **Estados**: UNUSED, READY, RUNNING, BLOCKED, ZOMBIE
 - **Scheduler**: Round-robin preemptivo (via timer IRQ0)
 - **Context switch**: Salva/restaura todos os registradores em Assembly
+- **Modo usuário**: processos ZAPP executam em ring 3 com diretório de páginas isolado
+
+### Plataforma de aplicativos
+
+- App API pública `0.3`, sem expor endereços internos do kernel.
+- Syscalls `0–9` no vetor `int 0x80`, com validação de ponteiros e tamanhos.
+- Imagens flat i386 `ZAPP` carregadas de arquivos `.ZAP` ou de imagens internas.
+- Argumentos simples em página de lançamento dedicada; até 8 argumentos e 511 caracteres.
+- Foco de teclado exclusivo para a app externa; `F12` cancela somente a app em foco.
+- `echo` é a primeira migração nativa e mantém fallback se o loader estiver indisponível.
 
 ---
 

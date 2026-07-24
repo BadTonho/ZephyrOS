@@ -1,5 +1,10 @@
 # Roadmap — Gerenciador de Arquivos
 
+> **Estado de referencia:** o Explorer atual ja possui modo classico e modo
+> moderno, mantendo operacoes FAT e navegacao por teclado. Este arquivo cobre
+> o backlog de arquivos, rede e manutencao; o estado da interface entregue esta
+> em `docs/13-aplicativos/aplicativos.md` e `explorer moderno.md`.
+
 > Visão geral do desenvolvimento dividida em **5 fases**, do básico ao avançado.
 > `✅` = Implementado | `🟡` = Parcial | `⬜` = Não implementado
 

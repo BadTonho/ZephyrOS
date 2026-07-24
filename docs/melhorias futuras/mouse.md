@@ -1,5 +1,10 @@
 # Roadmap: Mouse
 
+> **Estado de referencia:** o driver PS/2, cursor grafico e roteamento global
+> de eventos ja existem. Este arquivo preserva o backlog de evolucao do mouse;
+> o comportamento atual de foco, Menu Iniciar e apps ZAPP e documentado em
+> `docs/atalhos_e_comandos.md` e nos roadmaps por etapa.
+
 ## Resumo de Progresso
 
 | Componente | Status |

@@ -1,5 +1,9 @@
 # 09 - Shell
 
+> Estado atual: o Shell possui histórico rolável, `clear`, diagnósticos de
+> kernel e suporte inicial a aplicativos ZAPP em ring 3. A lista exata de
+> comandos fica em [comandos.md](comandos.md).
+
 ## Visão Geral
 
 O shell é a interface que permite ao usuário interagir com o sistema operacional através de comandos digitados no teclado.
@@ -8,7 +12,7 @@ O shell é a interface que permite ao usuário interagir com o sistema operacion
 
 ```
 src/shell/
-│   ├── shell.c          → Shell interativo com 27 comandos
+│   ├── shell.c          → Shell interativo, scrollback e comandos nativos/ZAPP
 │   ├── editor.c         → Editor de texto com syntax highlight
 │   ├── mediaplayer.c    → Media player (WAV)
 │   └── taskmanager.c    → Gerenciador de tarefas
@@ -39,6 +43,13 @@ static int input_pos = 0;
 ```
 
 O buffer armazena até 255 caracteres + null terminator.
+
+### Scrollback
+
+O terminal mantém um histórico circular fixo de 200 linhas, sem `kmalloc`.
+`Seta para Cima/Abaixo`, `Page Up/Page Down`, `Home` e `End` navegam pelo
+histórico. Ao digitar, apagar ou confirmar um comando, o Shell retorna ao fim
+para preservar o prompt. `clear` remove a tela e o histórico.
 
 ### Prompt
 
@@ -148,14 +159,13 @@ Duração: 00:30
 
 ### Task Manager (`taskmanager.c`)
 
-Gerenciador de tarefas com 4 guias:
+O comando `taskmgr` mantém a TUI de diagnóstico. Desktop e taskbar, no modo
+moderno, abrem uma janela gráfica própria. As duas interfaces usam três abas:
+**Processos**, **Memória** e **Threads**; CPU, espera, tempo, páginas e dados
+ATA aparecem nas tabelas e painéis de detalhes conforme houver espaço.
 
-**Processos**: lista PID, nome, estado (RUNNING/READY/BLOCKED/ZOMBIE)
-**CPU**: uso de CPU por processo (barra gráfica)
-**Memória**: total, livre, usada (barra gráfica com alertas >80% e >90%)
-**Threads**: lista TID, nome, estado
-
-Atalhos: Tab=alterna guia, Up/Down=navega, Esc=sair.
+Atalhos: Tab=alterna aba, Setas=navega, S=ordena, Enter=propriedades,
+Delete=encerra processo compatível e Esc=sai.
 
 ### File Manager (`filemanager.c`)
 

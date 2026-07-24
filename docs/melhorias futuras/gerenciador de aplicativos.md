@@ -53,7 +53,7 @@ Estes aplicativos fazem parte do sistema e não precisam ser instalados:
 
 | Aplicativo | Arquivo | Descrição |
 |-----------|---------|-----------|
-| Shell | `src/shell/shell.c` | Terminal interativo com 27 comandos |
+| Shell | `src/shell/shell.c` | Terminal com scrollback, diagnósticos e comandos nativos/ZAPP |
 | Editor | `src/shell/editor.c` | Editor de texto com syntax highlight |
 | Media Player | `src/shell/mediaplayer.c` | Reprodutor de áudio WAV e visualizador BMP |
 | Task Manager | `src/shell/taskmanager.c` | Monitor de processos, memória e threads |

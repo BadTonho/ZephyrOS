@@ -17,13 +17,14 @@ O ZephyrOS é um sistema operacional funcional, construído desde o bootloader a
 - Roda processos e threads concorrentemente
 - Lê e escreve arquivos em disco (FAT12, FAT32 com subdiretórios)
 - Suporta imagens BMP (1/4/8/24 bpp) e áudio WAV
-- Tem um shell com 27 comandos
+- Tem um Shell com scrollback, comandos de diagnóstico e suporte inicial a apps ring 3
 - Ambiente desktop com janelas, ícones e barra de tarefas
 - Editor de texto com syntax highlight
 - Driver de mouse PS/2 com cursor gráfico
 - Sistema de IPC (comunicação entre processos)
 - Primitivas GUI 2D (gui.c)
 - Media player e gerenciador de tarefas
+- App API 0.3, syscalls, loader ZAPP, IPC e argumentos simples
 
 ## Por que existe?
 
@@ -61,3 +62,10 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [GUI Moderna](melhorias%20futuras/gui_moderna.md) | Transição para primitivas gráficas 2D e VESA |
 | [Formatação Inteligente](melhorias%20futuras/formatacao%20inteligente.md) | Sistema de reset e reinstalação preservando arquivos |
 | [Atalhos e Comandos do Sistema](atalhos_e_comandos.md) | Lista completa de atalhos de teclado e comandos do shell |
+| [Estado da Documentação](estado_da_documentacao.md) | Fonte de verdade, escopo da auditoria e como interpretar os roadmaps |
+| [Roadmaps por Etapa](roadmaps/README.md) | Ordem executável das próximas frentes do projeto |
+| [01 - Estabilização e Qualidade](roadmaps/01-estabilizacao-e-qualidade.md) | Regressão, diagnósticos e fallbacks |
+| [02 - Plataforma de Aplicativos](roadmaps/02-plataforma-de-aplicativos.md) | Migração gradual, ZAPP e pacotes |
+| [03 - Kernel e Desempenho](roadmaps/03-kernel-e-desempenho.md) | Métricas, scheduler, memória e otimização segura |
+| [04 - Interface e Experiência](roadmaps/04-interface-e-experiencia.md) | GUI moderna, taskbar, WM e interação |
+| [05 - Sistema e Ecossistema](roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e apps |

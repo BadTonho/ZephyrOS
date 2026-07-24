@@ -2,12 +2,15 @@
 
 ## O que é o Bootloader?
 
-O bootloader é o primeiro código que roda quando o computador liga. Ele tem apenas **512 bytes** e fica no setor de boot do disco.
+O bootloader de primeiro estágio é o primeiro código que roda quando o computador liga.
+Ele tem exatamente **512 bytes**, fica no setor de boot do disco e carrega o
+segundo estágio antes de qualquer trabalho maior.
 
 ## Arquivo
 
 ```
-src/boot/boot.asm
+src/boot/boot.asm    # estágio 1: BPB, geometria e carga do stage2
+src/boot/stage2.asm  # estágio 2: E820, VESA, kernel, GDT e Protected Mode
 ```
 
 ## Como Funciona
@@ -27,7 +30,13 @@ start:
 
 O CPU começa em **Real Mode** (16-bit), endereçando apenas 1 MB de RAM.
 
-### Etapa 2: Detecção de Memória (E820)
+### Etapa 2: Carregar o segundo estágio
+
+O estágio 1 consulta a geometria do disco pela BIOS, lê `stage2.asm` a partir
+do setor seguinte ao boot e transfere o controle para `0x5000`. Ele mantém o
+BPB FAT12 e continua limitado a 512 bytes.
+
+### Etapa 3: Detecção de memória e vídeo (stage2)
 
 ```nasm
 detect_memory:
@@ -36,12 +45,16 @@ detect_memory:
     int 0x15               ; Chama BIOS
 ```
 
+O estágio 2 coleta o mapa E820 e tenta configurar VESA antes de carregar o
+kernel. Se VESA falhar, o kernel recebe essa informação e mantém o fallback
+clássico.
+
 O BIOS retorna uma tabela com as regiões de memória disponíveis:
 - Endereço base
 - Tamanho
 - Tipo (livre, reservada, ACPI, etc.)
 
-### Etapa 3: Carregar Kernel do Disco
+### Etapa 4: Carregar Kernel do Disco
 
 ```nasm
 disk_load:
@@ -51,10 +64,11 @@ disk_load:
     int 0x13               ; Chama BIOS
 ```
 
-Lê o kernel setor a setor e copia para `0x10000` na memória. A quantidade de
-setores é calculada durante o build, evitando truncar o kernel quando ele cresce.
+O estágio 2 lê o kernel setor a setor e copia para `0x10000` na memória. A
+quantidade de setores é calculada durante o build, evitando truncar o kernel
+quando ele cresce.
 
-### Etapa 4: Configurar GDT
+### Etapa 5: Configurar GDT
 
 ```nasm
 gdt_start:
@@ -72,7 +86,7 @@ gdt_data:                  ; Data segment
 
 A GDT define os segmentos de memória para o Protected Mode.
 
-### Etapa 5: Switch para Protected Mode
+### Etapa 6: Switch para Protected Mode
 
 ```nasm
     mov eax, cr0
@@ -82,7 +96,7 @@ A GDT define os segmentos de memória para o Protected Mode.
     jmp 0x08:protected_mode  ; Jump para código 32-bit
 ```
 
-### Etapa 6: Entry Point do Kernel
+### Etapa 7: Entry Point do Kernel
 
 ```nasm
 [BITS 32]
@@ -99,10 +113,13 @@ protected_mode:
 ## Layout da Memória
 
 ```
-0x7C00   → Boot sector (512 bytes)
-0x8000   → Mapa de memória E820
+0x7C00   → Boot sector (estágio 1, 512 bytes)
+0x5000   → Segundo estágio do bootloader
+0x3000   → Mapa de memória E820 e contador
+0x2000   → Informações do modo VESA
 0x10000  → Kernel carregado do disco
-0x90000  → Kernel stack
+0x1F00   → Stack temporária do stage2
+0x90000  → Stack inicial do kernel
 ```
 
 ## BPB (BIOS Parameter Block)

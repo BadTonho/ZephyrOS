@@ -36,6 +36,7 @@ A **IDT** (Interrupt Descriptor Table) é uma tabela que o CPU consulta quando o
 |-------|------|-----------|
 | 0-31 | ISR | Exceções do CPU (div by zero, page fault, etc.) |
 | 32-47 | IRQ | Interrupções de hardware (teclado, timer, disco) |
+| 128 | Syscall | `int 0x80` para a App API |
 
 ### Remapeamento PIC
 
@@ -78,6 +79,10 @@ register_interrupt_handler(33, keyboard_handler);
 ```
 CPU detecta exceção → ISR salva registradores → isr_handler() em C
 ```
+
+Exceções vindas de ring 3 registram o vetor, código e PID, encerram somente o
+processo de usuário e devolvem a execução ao scheduler. Exceções de ring 0
+continuam seguindo para `KERNEL PANIC`.
 
 ---
 

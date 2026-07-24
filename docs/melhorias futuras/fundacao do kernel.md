@@ -2,7 +2,7 @@
 
 ## Resumo de Progresso
 
-Status: em andamento.
+Status: concluida e validada no QEMU.
 
 Esta etapa organiza as bases internas do ZephyrOS antes de buscar otimizacoes
 de baixo nivel. A meta e tornar o kernel previsivel, modular e facil de
@@ -41,12 +41,12 @@ Implementado nesta etapa:
 - [x] ampliacao do comando `health` com estado do kernel e recovery;
 - [x] registro dos contratos de estabilidade nesta documentacao.
 
-Pendente para a validacao no ambiente do usuario:
+Validacao concluida no ambiente do usuario:
 
-- [ ] executar `make clean && make`;
-- [ ] executar `make run` e testar `health`, `desktop`, `explorer`, `taskmgr`
+- [x] executar `make clean && make`;
+- [x] executar `make run` e testar `health`, `desktop`, `explorer`, `taskmgr`
       e `settings`;
-- [ ] validar os caminhos de fallback sem VESA, disco e audio.
+- [x] validar os caminhos de fallback sem VESA, disco e audio.
 
 ## Fases
 
@@ -85,7 +85,7 @@ Pendente para a validacao no ambiente do usuario:
 - adicionar contadores uteis para memoria, processos e interrupcoes;
 - diferenciar degradacao, desabilitacao e falha fatal.
 
-### Fase 6 - Validacao
+### Fase 6 - Validacao ✅
 
 - validar boot normal e fallback sem VESA, disco ou audio;
 - testar repetidamente abertura e fechamento dos aplicativos;

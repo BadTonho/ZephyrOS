@@ -328,6 +328,22 @@ typedef struct {
 
 ---
 
+## Arquivos para aplicativos (`app_files.c`)
+
+A App API não expõe estruturas FAT nem ponteiros internos. Aplicativos usam
+handles opacos vinculados ao PID que abriu o arquivo. Cada chamada valida
+filesystem disponível, caminho, modo, proprietário, tamanho e buffer.
+
+- Leitura: sequencial, até 4096 bytes por chamada; EOF retorna `OK` com zero
+  bytes lidos.
+- Escrita: substitui o conteúdo inteiro do arquivo nesta primeira versão.
+- Fechamento: invalida o handle; handles de apps encerradas são liberados.
+- Falhas: retornam códigos de `errors.h`, sem `panic()`.
+
+Esses serviços também são exercitados pelo `appcheck`.
+
+---
+
 ## BMP (`bmp.c`)
 
 Leitura e renderização de imagens **BMP** (Bitmap).

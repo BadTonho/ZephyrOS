@@ -231,6 +231,22 @@ int ata_read_sector(uint32_t lba, uint8_t* buffer) {
   - `fix(fat12): corrige erro na alocacao de clusters`
   - `docs: adiciona regras do projeto`
 
+### Segurança antes do commit
+
+Antes de preparar um commit, revisar somente o que aparece no Source Control:
+
+- executar `git status --short` para identificar arquivos modificados, novos e staged;
+- revisar principalmente `git diff --cached` e `git diff --cached --check`;
+- verificar os arquivos que entrarão no commit contra senhas, tokens, chaves,
+  credenciais, e-mails pessoais, caminhos locais, backups, dumps e artefatos de build;
+- nunca incluir `.mailmap`, `Makefile.local`, `build/`, imagens de disco ou arquivos
+  locais sem uma decisão explícita;
+- não reexaminar arquivos que não foram alterados, salvo limpeza de histórico ou
+  investigação de informação exposta anteriormente.
+
+Na dúvida sobre um arquivo staged, interromper a preparação do commit e pedir
+confirmação antes de prosseguir.
+
 ---
 
 ## Checklist de Revisão

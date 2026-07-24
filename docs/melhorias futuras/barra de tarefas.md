@@ -1,5 +1,10 @@
 # Roadmap — Barra de Tarefas
 
+> **Estado de referencia:** a taskbar atual, o relogio, o Menu Iniciar e a
+> prioridade de clique estao implementados. O redesenho visual da taskbar segue
+> pendente; este arquivo e backlog de produto, enquanto o estado consolidado
+> fica em `ROADMAP.md` e `docs/roadmaps/04-interface-e-experiencia.md`.
+
 > Visão geral do desenvolvimento dividida em **5 fases**.
 > `✅` = Implementado | `🟡` = Parcial | `⬜` = Não implementado
 

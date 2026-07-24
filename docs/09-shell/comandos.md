@@ -81,13 +81,11 @@ zephyr> cat ARQUIVO.TXT
 Olá, este é o conteúdo do arquivo!
 ```
 
-## `echo <texto>`
-Imprime texto na tela.
+## Saída de texto
 
-```
-zephyr> echo Ola Mundo
-Ola Mundo
-```
+O comportamento atual de `echo` é descrito na seção específica mais adiante:
+ele tenta executar uma imagem ZAPP em ring 3 e usa a implementação nativa
+somente como fallback seguro.
 
 ## `mem`
 Mostra informações de memória.
@@ -214,10 +212,14 @@ O comando usa a ponte interna do dispatcher e testa números inválidos,
 argumentos nulos e `process_exit`. O vetor `int 0x80` também está disponível
 para o processo de teste ring 3 depois da inicialização segura do kernel.
 
-Na Fase 5, o `appcheck` tambem cria temporariamente `DEMO.ZAP`, valida o
-cabecalho `ZAPP`, executa o processo ring 3 e remove o arquivo. Tambem testa
+Na Fase 5, o `appcheck` também cria temporariamente `DEMO.ZAP`, valida o
+cabecalho `ZAPP`, executa o processo ring 3 e remove o arquivo. Também testa
 entry point, flags, tamanho de codigo e cabecalho invalidos. O arquivo de
 demonstracao nao permanece no disco.
+
+Na Fase 6B, também confirma a ABI de lançamento `0.3`: argumentos válidos,
+ausência de argumentos, quantidade excessiva, texto grande, foco, execução e
+reaproveitamento seguro do processo externo.
 
 ## `app run <arquivo.ZAP> [arg1 arg2 ...]`
 
@@ -281,7 +283,8 @@ teste e apresenta um novo prompt, para que o proximo comando nunca fique
 misturado ao aviso assincrono do processo.
 
 ## `explorer`
-Abre o gerenciador de arquivos estilo ZephyrOS Explorer (TUI).
+Abre o gerenciador de arquivos ZephyrOS Explorer. Em `guimode modern`, usa a
+janela gráfica; em `guimode classic` ou sem VESA/backbuffer, mantém a TUI.
 
 ```
 zephyr> explorer
@@ -296,14 +299,17 @@ Ativa o ambiente desktop com ícones e menu Iniciar.
 zephyr> desktop
 ```
 
-## `taskman`
-Abre o gerenciador de tarefas com monitoramento de processos, threads, CPU e memória.
+## `taskmgr`
+Abre a TUI de diagnóstico do gerenciador de tarefas, com processos, memória e
+threads. Pela taskbar ou Desktop em modo moderno, o mesmo componente abre sua
+janela gráfica própria.
 
 ```
-zephyr> taskman
+zephyr> taskmgr
 ```
 
-Guias: Processos, CPU, Memória e Threads.
+Abas: Processos, Memória e Threads. Use `Tab`, Setas, `S`, `Enter`, `Delete`,
+`F`, `R` e `Esc` conforme a interface ativa.
 
 ## `edit <arquivo>`
 Editor de texto com syntax highlighting e word wrap.

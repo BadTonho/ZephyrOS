@@ -20,7 +20,7 @@ src/gui/gui.c            → Primitivas gráficas 2D para a GUI Moderna
 O sistema operacional implementa uma estratégia de retrocompatibilidade visual (regra `#15` do `AGENTS.md`). Isso significa que a interface moderna não substitui o modo clássico, mas coexiste como uma camada renderizável alternável. 
 
 - **Classic TUI**: Usa `video.c` (memória VGA) ou desenho alinhado em grid para exibir a interface de maneira retro e otimizada.
-- **GUI Moderna**: Usa `gui.c` para desenhar janelas arredondadas, botões com preenchimento colorido, texto flutuante fora do grid e ícones avançados baseados em arquivos `.bmp`.
+- **GUI Moderna**: Usa `gui.c` para desenhar painéis cinza, bordas 3D, barra de título azul, seleção azul e texto fora do grid com a fonte bitmap existente.
 - **Alternância Dinâmica**: O comando `guimode classic|modern` permite alterar a engine visual em tempo de execução sem desligar os aplicativos rodando.
 
 ---
@@ -37,9 +37,14 @@ Cria 3 ícones padrão: Shell, Explorer e TaskMgr.
 
 ### Renderização (Desktop Gráfico)
 
-No modo `GUI Moderna`, o desktop desenha um fundo e ícones dinâmicos renderizados na tela (ou imagens `.bmp`), permitindo:
-- Seleção visual moderna (fundo azul em vez de caractere invertido).
-- Posicionamento fluido e Drag & Drop.
+No modo `GUI Moderna`, o desktop desenha fundo, cards de ícone e símbolos por
+primitivas, permitindo:
+- Seleção visual azul em vez de caractere invertido.
+- Grade responsiva alinhada à esquerda, calculada conforme a resolução VESA.
+- Clique simples para seleção e duplo clique para abrir.
+
+Ícones BMP e arrastar ícones continuam planejados; não fazem parte do modo
+moderno atual.
 
 No modo Clássico, os ícones são organizados em grade (5 colunas) e mostrados na VGA Text Mode/Grid:
 
@@ -92,18 +97,22 @@ void gui_draw_button(int x, int y, int w, int h, const char* label, int pressed)
 void gui_draw_window_frame(int x, int y, int w, int h, const char* title, int active);
 ```
 
-Estas funções cuidam do double buffering (backbuffer) via renderização pixel a pixel usando as extensões de fonte (`font.c`) e formas geométricas (`vesa.c`).
+As cenas modernas usam backbuffer e um único ciclo de frame. As primitivas não
+implementam gradientes, transparência ou cantos arredondados nesta etapa.
 
 ---
 
 ## Window Manager (`wm.c`)
 
-Gerenciador de janelas multi-interface. 
+O Window Manager geral continua textual. O Task Manager gráfico possui uma
+janela própria e usa `gui_draw_window_frame()`, mas ainda não está integrado a
+um Window Manager gráfico genérico.
 
-### Renderização Dual
+### Estado de renderização
 
-- **Modo TUI**: Janelas são formadas por bordas de caracteres ASCII estendidos (`│`, `─`, `┌`).
-- **Modo GUI**: Janelas recebem bordas sombreadas, cantos vivos ou arredondados, e barras de título coloridas via `gui_draw_window_frame()`.
+- **Modo TUI**: janelas do WM usam bordas de caracteres.
+- **Modo moderno**: Desktop, Explorer, Settings e Task Manager têm caminhos
+  gráficos próprios; a migração do WM continua planejada.
 
 ### Estrutura de Janela
 
@@ -135,21 +144,26 @@ void wm_move_window(id, x, y);
 void wm_resize_window(id, w, h);
 ```
 
-### Integração com o Mouse (Drag & Drop)
+### Integração com o Mouse
 
-No modo Moderno, o `wm.c` permite que o mouse selecione janelas pelo Z-order (trazendo-as para frente) e clique e arraste na titlebar para mover a janela.
+Taskbar e Menu Iniciar têm prioridade de clique. A janela gráfica do Task
+Manager suporta foco, minimizar, maximizar e arraste pela barra de título.
+Arraste genérico de janelas no WM e drag-and-drop de ícones permanecem fora do
+escopo atual.
 
 ---
 
 ## Taskbar (`taskbar.c`)
 
-A barra de tarefas compartilha o conceito de multi-interface, renderizando-se visualmente de acordo com a configuração ativa (`classic` ou `modern`).
+A taskbar preserva a identidade visual existente e funciona nos dois modos de
+interface. Ela desenha menu, botões e relógio e mantém prioridade sobre as
+interfaces abertas.
 
-### Modo GUI Moderna
+### Próxima evolução visual
 
-- Desenha o botão iniciar preenchido.
-- Os botões dos aplicativos ativos são desenhados usando `gui_draw_button()`.
-- O Menu iniciar torna-se um menu pop-up flutuante, em vez de sobrepor texto.
+O redesenho completo da taskbar como componente gráfico independente ainda é
+uma etapa futura. Até lá, a compatibilidade visual e de interação tem
+prioridade sobre uma troca de tema.
 
 ### Menu Iniciar
 

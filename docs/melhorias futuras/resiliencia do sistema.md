@@ -7,8 +7,8 @@
 - [x] Adicionar fallback de VESA para VGA/classic.
 - [x] Verificar falhas na criação dos processos principais.
 - [x] Adicionar comando shell `health`.
-- [ ] Isolar processos em modo usuário.
-- [ ] Recuperar page faults de aplicações sem reiniciar o kernel.
+- [x] Isolar processos em modo usuário.
+- [x] Recuperar page faults de aplicações ring 3 sem reiniciar o kernel.
 
 ## Atalhos
 
@@ -35,11 +35,13 @@
 - Cliques do mouse geram solicitações IPC; o processo System não executa
   diretamente os loops bloqueantes dos aplicativos.
 
-### Fase 2 — Isolamento de processos
+### Fase 2 — Isolamento de processos ✅
 
-- Executar aplicações fora do contexto privilegiado.
-- Encerrar apenas o processo que causar uma exceção recuperável.
-- Preservar o kernel e os demais processos ativos.
+- Aplicações ZAPP executam fora do contexto privilegiado, em ring 3.
+- Page fault, general protection fault, invalid opcode e falhas de segmento
+  originadas em ring 3 encerram apenas o processo afetado.
+- O resultado da falha é preservado para `health`; Shell, kernel e demais
+  processos continuam ativos.
 
 ## Limitações
 

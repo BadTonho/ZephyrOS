@@ -1,5 +1,10 @@
 # Roadmap — Gerenciador de Janelas
 
+> **Estado de referencia:** o Window Manager generico permanece textual. A
+> janela grafica propria do Task Manager nao transforma este WM em grafico.
+> Este arquivo descreve a evolucao planejada; consulte o capitulo de Desktop
+> para o comportamento ja disponivel.
+
 > Visão geral do desenvolvimento dividida em **5 fases**.
 > `✅` = Implementado | `🟡` = Parcial | `⬜` = Não implementado
 

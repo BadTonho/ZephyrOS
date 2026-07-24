@@ -263,6 +263,26 @@ void paging_switch_directory(page_directory_t* dir) {
 
 ---
 
+## Espaço de usuário
+
+Processos ZAPP em ring 3 recebem um diretório de páginas isolado. O kernel,
+heap, VGA e framebuffer permanecem supervisor (`user = 0`). A primeira faixa
+de usuário é fixa e usada apenas pelo carregador:
+
+```text
+0x00800000  código, uma página, somente leitura em ring 3
+0x00801000  dados, uma página gravável
+0x00802000  informações de lançamento e argumentos, uma página gravável
+0x00C00000  stack de usuário, uma página gravável
+```
+
+A página de lançamento contém `app_launch_info_t` da App API `0.3`, com até
+oito argumentos representados por offsets e comprimentos relativos ao texto
+bruto. Ela evita expor ponteiros do kernel e preserva a página de dados das
+imagens ZAPP antigas.
+
+---
+
 ## Compressão LZSS (`compress.c`)
 
 Algoritmo de compressão LZSS (Lempel-Ziv-Storer-Szymanski) para compactar dados na memória RAM.

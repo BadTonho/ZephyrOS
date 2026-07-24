@@ -1,5 +1,10 @@
 # Roadmap — Configurações
 
+> **Estado de referencia:** Settings possui modos classico e moderno com
+> fallback controlado. As listas abaixo preservam o backlog de configuracoes;
+> detalhes do comportamento atual ficam no capitulo de Desktop e no roadmap de
+> interface por etapa.
+
 > Visão geral do desenvolvimento dividida em **5 fases**.
 > `✅` = Implementado | `🟡` = Parcial | `⬜` = Não implementado
 

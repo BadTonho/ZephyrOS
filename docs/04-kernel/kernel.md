@@ -46,30 +46,46 @@ A função `kernel_main()` é o ponto de entrada em C. Ela:
 
 ```c
 void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
-    vesa_init(vesa_info_addr);     // Modo gráfico VESA
-    font_init();                   // Fonte bitmap 8x16
-    video_init();                  // VGA 80x25 / VESA Backbuffer
-    log_init();                    // Sistema de logging
-    idt_init();                    // Interrupções
-    keyboard_init();               // PS/2
-    timer_init(50);                // PIT 50 Hz
-    memory_init(mmap_addr);        // E820 + heap
-    paging_init();                 // Page tables
-    tss_init();                    // Kernel stack
-    process_init();                // Processos
-    thread_init();                 // Threads
-    ata_init();                    // Disco
-    fs_init();                     // FAT12/FAT32
-    speaker_init();                // PC Speaker
-    ac97_init();                   // Driver de áudio
-    icons_init();                  // Ícones
-    taskbar_init();                // Barra de tarefas
-    desktop_init();                // Desktop
-    settings_init();               // Configurações
-    wm_init();                     // Window Manager
-    mouse_init();                  // Mouse PS/2
-    ipc_init();                    // Sistema IPC
-    shell_init();                  // Shell interativo
+    /* Video, logs, IDT, teclado, mouse e timer. */
+    vesa_init(vesa_info_addr);
+    video_init();
+    log_init();
+    recovery_init();
+    idt_init();
+    keyboard_init();
+    mouse_init();
+    timer_init(50);
+
+    /* Memoria e contratos basicos. */
+    memory_init(mmap_addr);
+    app_api_init();
+    syscall_init();                 // inicia com gate DPL 0
+    paging_init();
+    vesa_init_backbuffer();
+    tss_init();
+    process_init();
+    process_bootstrap_idle();
+    ipc_init();
+    thread_init();
+
+    /* Dispositivos, filesystem e interfaces nativas. */
+    ata_init();
+    fs_init();
+    speaker_init();
+    ac97_init();
+    icons_init();
+    taskbar_init();
+    desktop_init();
+    settings_init();
+    wm_init();
+
+    /* Servicos em segundo plano, Shell e cena inicial. */
+    process_create("Zephyr System", system_process_main);
+    process_create("Shell", shell_process_main);
+    process_create("Desktop", desktop_process_main);
+    syscall_enable_user_mode();     // eleva int 0x80 para DPL 3
+    app_loader_init();
+    desktop_draw();                 // Shell nao e a tela padrao
 }
 ```
 
@@ -89,7 +105,7 @@ Isso:
 
 ### Quando usar
 
-- Exceção não tratada (div by zero, page fault)
+- Exceção originada no kernel (div by zero, page fault, GPF e similares)
 - Falha em alocação de memória
 - Driver não encontrado
 - Erro crítico no sistema
@@ -139,6 +155,19 @@ faixas de memoria antes de copiar dados para as APIs internas. O comando
 Excecoes de ring 3 encerram somente o processo afetado. Excecoes de ring 0,
 falhas estruturais de paging e corrupcao do kernel continuam encaminhadas ao
 `panic`.
+
+## Serviços de aplicativos
+
+Depois de memória, paging, TSS e processos essenciais, o kernel inicializa a
+App API e o dispatcher `int 0x80`. O gate começa restrito a DPL 0 e é elevado
+para DPL 3 somente quando a fronteira de modo usuário está pronta. A plataforma
+atual inclui arquivos, IPC, imagens `.ZAP`/`ZAPP`, foco de aplicativo externo
+e uma página de lançamento com argumentos. O Shell continua nativo; `echo` é a
+primeira migração ring 3 e mantém fallback nativo.
+
+Consulte [API de Aplicativos e Syscalls](../melhorias%20futuras/api%20de%20aplicativos%20e%20syscalls.md)
+para a ABI estável e [Roadmaps por Etapa](../roadmaps/README.md) para a ordem
+das próximas migrações.
 
 ## Struct `registers_t`
 

@@ -37,13 +37,14 @@ O ZephyrOS é organizado em camadas, cada uma responsável por uma parte especí
 ## Fluxo de Execução
 
 ```
-BIOS → Boot.asm → Protected Mode → kernel_main() → Shell
+BIOS → bootloader → Protected Mode → kernel_main() → Desktop/Shell
 ```
 
 1. **BIOS** carrega o boot sector (512 bytes) em `0x7C00`
 2. **Bootloader** detecta memória, carrega kernel, muda para 32-bit
 3. **Kernel** inicializa todos os subsistemas em ordem
-4. **Shell** aguarda input do usuário
+4. **Desktop** é a cena padrão; o processo Shell permanece pronto para ser
+   aberto pelo Menu Iniciar, taskbar ou ícone do Desktop.
 
 ## Ordem de Inicialização
 
@@ -56,9 +57,13 @@ idt_init()          → Interrupções funcionando
 keyboard_init()     → Teclado respondendo
 timer_init(50)      → Timer a 50 Hz
 memory_init()       → Memória detectada e alocável
+app_api_init()      → Contrato público de aplicativos pronto
+syscall_init()      → Dispatcher int 0x80 registrado inicialmente em DPL 0
 paging_init()       → Paginação ativa
 tss_init()          → Kernel stack configurado
 process_init()      → Gerenciador de processos pronto
+process_bootstrap_idle() → Processo Idle disponível como fallback
+ipc_init()          → Filas de mensagens e foco prontos
 thread_init()       → Gerenciador de threads pronto
 ata_init()          → Disco detectado
 fs_init()           → Sistema de arquivos montado (FAT12/FAT32)
@@ -71,7 +76,10 @@ settings_init()     → Configurações carregadas
 wm_init()           → Window Manager ativo
 mouse_init()        → Mouse PS/2 configurado
 ipc_init()          → Sistema de IPC ativo
-shell_init()        → Shell aguardando input
+process_set_focus_fallback() → Shell configurado como foco seguro
+syscall_enable_user_mode() → Gate int 0x80 elevado a DPL 3
+app_loader_init()   → Loader ZAPP habilitado quando dependências existem
+desktop_draw()      → Cena padrão desenhada; Shell abre por solicitação
 ```
 
 ## Estrutura de Arquivos

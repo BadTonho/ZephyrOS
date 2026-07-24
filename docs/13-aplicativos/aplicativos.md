@@ -1,6 +1,9 @@
 # 13 - Aplicativos
 
-Aplicativos do ZephyrOS: Editor, Media Player, File Manager e Task Manager.
+Aplicativos nativos do ZephyrOS: Editor, Media Player, File Manager e Task
+Manager. Explorer, Task Manager e Settings também possuem caminhos gráficos
+modernos com fallback TUI; aplicativos ZAPP externos executam em ring 3 pela
+App API.
 
 ## Arquivos
 
@@ -195,14 +198,17 @@ int  mp_handle_key(scancode);     // Processa tecla
 
 Gerenciador de tarefas com monitoramento de processos, CPU, memória e threads.
 
-### Guias
+### Abas e interfaces
 
-| Guia | Conteúdo |
-|------|----------|
-| 0 | Processos: PID, Nome, Estado |
-| 1 | CPU: Uso por processo (barra: verde <50%, amarelo <80%, vermelho >80%) |
-| 2 | Memória: Total, Livre, Usada (barra: verde <60%, amarelo <80%, vermelho >80%) |
-| 3 | Threads: TID, Nome, Estado |
+| Aba | Conteúdo |
+|-----|----------|
+| Processos | PID, nome, estado, CPU, tipo, tempo, espera e painel de detalhes |
+| Memória | Total, usada, livre, páginas, percentual e informações ATA quando disponíveis |
+| Threads | Estado, espera, EIP, ESP e stack sem desreferenciar endereços |
+
+O comando `taskmgr` abre deliberadamente a TUI para diagnóstico. O Desktop e
+a taskbar, no modo moderno, abrem uma janela gráfica própria com as mesmas
+fontes de dados, botões de janela e arraste pela barra de título.
 
 ### Layout
 
@@ -257,7 +263,9 @@ int  taskmgr_handle_key(scancode);
 
 ### Visão Geral
 
-Gerenciador de arquivos estilo ZephyrOS Explorer com interface TUI.
+Gerenciador de arquivos ZephyrOS Explorer com modo clássico TUI e modo
+moderno selecionado por `guimode`. Sem VESA ou backbuffer, o fallback TUI é
+automático.
 
 ### Estrutura
 

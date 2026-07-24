@@ -271,8 +271,10 @@ usertest fault
 processo de usuario registram o erro e marcam somente ele como `ZOMBIE`.
 Excecoes originadas no kernel continuam exibindo `KERNEL PANIC`.
 
-Shell, Desktop, Explorer, Settings e Task Manager permanecem em ring 0 ate a
-validacao do carregador e da biblioteca de usuario.
+Shell, Desktop, Explorer, Settings e Task Manager permanecem em ring 0. O
+`echo` é a primeira ferramenta nativa migrada para uma imagem ZAPP em ring 3,
+com fallback nativo. A Fase 6C fará novas migrações de comandos CLI simples,
+uma por vez, sem antecipar a migração de interfaces gráficas.
 
 ---
 
