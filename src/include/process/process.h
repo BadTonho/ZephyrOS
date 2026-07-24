@@ -82,6 +82,12 @@ typedef struct {
     uint32_t msg_tail;
 } process_t;
 
+typedef struct {
+    uint32_t pid;
+    uint32_t vector;
+    uint32_t error;
+} process_user_fault_summary_t;
+
 void process_init(void);
 void process_bootstrap_idle(void);
 process_t* process_create(const char* name, void (*entry_point)());
@@ -113,8 +119,8 @@ process_t* process_get_by_pid(uint32_t pid);
 uint32_t process_get_current_pid(void);
 uint32_t process_get_state_count(process_state_t state);
 uint32_t process_get_user_count(void);
-int process_get_last_user_fault(uint32_t* pid, uint32_t* vector,
-                                uint32_t* error, uint32_t* address);
+uint32_t process_get_user_fault_count(void);
+int process_get_last_user_fault(process_user_fault_summary_t* summary);
 int process_is_user(const process_t* proc);
 int process_exit_current(uint32_t exit_code);
 int process_handle_user_exception(registers_t* regs);

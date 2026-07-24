@@ -184,7 +184,7 @@ static int app_loader_start_pending(void) {
     /* process_set_focus() acabou de validar e registrar o PID. Nao lemos o
        foco novamente porque o aplicativo pode encerrar entre as duas linhas. */
     app_loader_focus_acquired = 1U;
-    LOG_INFO("APP_LOADER", "Processo ZAPP liberado e recebeu foco");
+    LOG_DEBUG("APP_LOADER", "Processo ZAPP liberado e recebeu foco");
     return OK;
 }
 
@@ -223,7 +223,7 @@ static int app_loader_reap_active(void) {
     app_loader_store_result(pid, exit_code, faulted, cancelled, 0,
                             app_loader_focus_acquired);
     app_loader_focus_acquired = 0;
-    LOG_INFO("APP_LOADER", "Processo ZAPP encerrado foi recolhido");
+    LOG_DEBUG("APP_LOADER", "Processo ZAPP encerrado foi recolhido");
     return OK;
 }
 
@@ -394,7 +394,7 @@ int app_loader_run_image(const char* name, const uint8_t* image,
 
     app_loader_pending_pid = created_pid;
     if (pid_out) *pid_out = created_pid;
-    LOG_INFO("APP_LOADER", "Processo ZAPP preparado para execucao assincrona");
+    LOG_DEBUG("APP_LOADER", "Processo ZAPP preparado para execucao assincrona");
     return OK;
 }
 
@@ -499,7 +499,7 @@ int app_loader_cancel_foreground(uint32_t exit_code) {
         app_loader_store_result(pid, exit_code, 0,
                                 exit_code == APP_EXIT_CANCELLED, 0, 0);
     }
-    LOG_INFO("APP_LOADER", "Aplicativo em primeiro plano cancelado");
+    LOG_DEBUG("APP_LOADER", "Aplicativo em primeiro plano cancelado");
     return OK;
 }
 

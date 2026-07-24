@@ -185,10 +185,14 @@ zephyr> guimode modern
 ```
 
 ## `health`
-Exibe métricas detalhadas do kernel, estado do recovery, paginação, processos e saúde estrutural da arquitetura.
+Exibe métricas detalhadas do kernel, estado do recovery, paginação, processos e saúde estrutural da arquitetura. Também mostra o total de falhas isoladas de aplicativos desde o boot e, quando houver uma, somente PID, vetor e código de erro da última ocorrência; endereços de memória não são exibidos.
 
 Use `Page Up`, `Page Down`, `Home` e `End` para consultar toda a saida quando
 o relatorio ocupar mais de uma tela.
+
+No uso normal, os eventos bem-sucedidos repetitivos de criação, foco e coleta
+de processos ring 3 ficam no nível `DEBUG`; inicializações, `WARN` e `ERRO`
+continuam visíveis.
 
 ```
 zephyr> health

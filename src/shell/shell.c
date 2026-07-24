@@ -707,6 +707,28 @@ static void cmd_health_print_migrated_builtin(shell_builtin_app_t app) {
     video_print("\n", 0x07);
 }
 
+static void cmd_health_print_user_fault(void) {
+    process_user_fault_summary_t fault;
+    uint32_t fault_count = process_get_user_fault_count();
+
+    video_print("  Falhas isoladas user: total=", 0x07);
+    print_num(fault_count);
+    video_print(" ultima=", 0x08);
+    if (process_get_last_user_fault(&fault) != OK) {
+        video_print("N/D", 0x08);
+        video_print("\n", 0x07);
+        return;
+    }
+
+    video_print("PID=", 0x08);
+    print_num(fault.pid);
+    video_print(" vetor=", 0x08);
+    print_num(fault.vector);
+    video_print(" erro=", 0x08);
+    print_num(fault.error);
+    video_print("\n", 0x07);
+}
+
 static void cmd_health_print_kernel(void) {
     process_t* current = process_get_current();
     ipc_stats_t ipc;
@@ -796,22 +818,7 @@ static void cmd_health_print_kernel(void) {
     video_print("\n", 0x07);
     cmd_health_print_migrated_builtin(SHELL_BUILTIN_APP_UPTIME);
     cmd_health_print_migrated_builtin(SHELL_BUILTIN_APP_MEM);
-    uint32_t fault_pid;
-    uint32_t fault_vector;
-    uint32_t fault_error;
-    uint32_t fault_address;
-    if (process_get_last_user_fault(&fault_pid, &fault_vector,
-                                    &fault_error, &fault_address) == OK) {
-        video_print("  Ultima falha user: PID=", 0x07);
-        print_num(fault_pid);
-        video_print(" vetor=", 0x08);
-        print_num(fault_vector);
-        video_print(" erro=", 0x08);
-        print_num(fault_error);
-        video_print(" endereco=", 0x08);
-        print_num(fault_address);
-        video_print("\n", 0x07);
-    }
+    cmd_health_print_user_fault();
     video_print("  File API: ", 0x07);
     video_print((app_api_file_is_ready() &&
                  recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM)) ?

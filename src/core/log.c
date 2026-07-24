@@ -4,7 +4,7 @@
 #define LOG_BUFFER_SIZE 4096
 #define LOG_MAX_MSG 256
 
-static log_level_t current_level = LOG_LEVEL_DEBUG;
+static log_level_t current_level = LOG_LEVEL_INFO;
 static char log_buffer[LOG_BUFFER_SIZE];
 static int log_buffer_pos = 0;
 static int log_buffer_count = 0;

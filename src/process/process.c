@@ -20,10 +20,8 @@ static uint32_t free_pids[PROCESS_PID_POOL_SIZE];
 static uint32_t free_pid_count = 0;
 static int last_scheduled_idx = -1;
 static int last_user_fault_valid = 0;
-static uint32_t last_user_fault_pid = 0;
-static uint32_t last_user_fault_vector = 0;
-static uint32_t last_user_fault_error = 0;
-static uint32_t last_user_fault_address = 0;
+static process_user_fault_summary_t last_user_fault;
+static uint32_t user_fault_count = 0;
 static int user_test_result_pending = 0;
 static uint32_t user_test_result_pid = 0;
 static uint32_t user_test_result_faulted = 0;
@@ -85,10 +83,8 @@ void process_init(void) {
     process_initialize_pid_pool();
     last_scheduled_idx = -1;
     last_user_fault_valid = 0;
-    last_user_fault_pid = 0;
-    last_user_fault_vector = 0;
-    last_user_fault_error = 0;
-    last_user_fault_address = 0;
+    kmemset(&last_user_fault, 0, sizeof(last_user_fault));
+    user_fault_count = 0;
     user_test_result_pending = 0;
     user_test_result_pid = 0;
     user_test_result_faulted = 0;
@@ -671,7 +667,7 @@ static int process_create_user_image_internal(const char* name,
         return result;
     }
     if (pid_out) *pid_out = proc->pid;
-    LOG_INFO("PROC", "Processo ring 3 criado a partir de imagem");
+    LOG_DEBUG("PROC", "Processo ring 3 criado a partir de imagem");
     return OK;
 }
 
@@ -740,7 +736,7 @@ int process_start_user(uint32_t pid) {
     }
 
     proc->state = PROCESS_STATE_READY;
-    LOG_INFO("PROC", "Processo ring 3 liberado para execucao");
+    LOG_DEBUG("PROC", "Processo ring 3 liberado para execucao");
     return OK;
 }
 
@@ -759,7 +755,7 @@ int process_exit_current(uint32_t exit_code) {
     result = process_mark_current_user_zombie(exit_code, 0);
 
     if (result != OK) return result;
-    LOG_INFO("PROC", "Processo ring 3 encerrado por syscall");
+    LOG_DEBUG("PROC", "Processo ring 3 encerrado por syscall");
     return OK;
 }
 
@@ -777,7 +773,7 @@ int process_cancel_user(uint32_t pid, uint32_t exit_code) {
     result = process_mark_user_zombie(proc, exit_code, 0);
     if (result != OK) return result;
 
-    LOG_INFO("PROC", "Processo ring 3 cancelado");
+    LOG_DEBUG("PROC", "Processo ring 3 cancelado");
     return OK;
 }
 
@@ -787,6 +783,7 @@ int process_cancel_focused_user(uint32_t exit_code) {
 
 int process_handle_user_exception(registers_t* regs) {
     uint32_t fault_address = 0;
+    int result;
 
     if (!regs || !current_process || !process_is_user(current_process) ||
         ((regs->cs & 0x03U) != 0x03U)) {
@@ -801,15 +798,16 @@ int process_handle_user_exception(registers_t* regs) {
     current_process->fault_error = regs->err_code;
     current_process->fault_address = fault_address;
     current_process->faulted = 1;
-    last_user_fault_valid = 1;
-    last_user_fault_pid = current_process->pid;
-    last_user_fault_vector = regs->int_no;
-    last_user_fault_error = regs->err_code;
-    last_user_fault_address = fault_address;
-    if (process_mark_current_user_zombie(ERR_STATE, 1) != OK) {
+    result = process_mark_current_user_zombie(ERR_STATE, 1);
+    if (result != OK) {
         LOG_ERROR("PROC", "Falha ao encerrar processo apos excecao de usuario");
         return ERR_STATE;
     }
+    last_user_fault_valid = 1;
+    last_user_fault.pid = current_process->pid;
+    last_user_fault.vector = regs->int_no;
+    last_user_fault.error = regs->err_code;
+    user_fault_count++;
     LOG_WARN("PROC", "Excecao de usuario isolada; processo encerrado");
     return OK;
 }
@@ -905,7 +903,7 @@ void process_destroy(process_t* proc) {
     kmemset(proc, 0, sizeof(process_t));
     proc->state = PROCESS_STATE_UNUSED;
     process_release_pid(pid);
-    LOG_INFO("PROC", "Processo destruido");
+    LOG_DEBUG("PROC", "Processo destruido");
 }
 
 process_t* process_get_current(void) {
@@ -916,18 +914,18 @@ uint32_t process_get_count(void) {
     return process_count;
 }
 
-int process_get_last_user_fault(uint32_t* pid, uint32_t* vector,
-                                uint32_t* error, uint32_t* address) {
-    if (!pid || !vector || !error || !address) {
+uint32_t process_get_user_fault_count(void) {
+    return user_fault_count;
+}
+
+int process_get_last_user_fault(process_user_fault_summary_t* summary) {
+    if (!summary) {
         LOG_ERROR("PROC", "Destino nulo ao consultar ultima falha de usuario");
         return ERR_NULL;
     }
     if (!last_user_fault_valid) return ERR_NOT_FOUND;
 
-    *pid = last_user_fault_pid;
-    *vector = last_user_fault_vector;
-    *error = last_user_fault_error;
-    *address = last_user_fault_address;
+    *summary = last_user_fault;
     return OK;
 }
 

@@ -99,16 +99,18 @@ comando ou variante de build apenas para este teste.
 | Filesystem | `health` informa o estado; operacoes dependentes de arquivos e loader retornam indisponibilidade controlada; Shell e diagnosticos continuam acessiveis. |
 | AC97 | `health` informa o estado; a tentativa de fluxo de audio retorna indisponibilidade controlada; Shell permanece operacional. |
 
-## Etapa Q2 - Diagnostico utilizavel
+## Etapa Q2 - Diagnostico utilizavel (em validacao)
 
-- [ ] Manter `health` completo e navegavel, sem esconder dados para caber em
+- [x] Manter `health` completo e navegavel, sem esconder dados para caber em
   uma tela.
-- [ ] Revisar logs de sucesso excessivos em comandos comuns, sem remover logs
+- [x] Revisar logs de sucesso excessivos em comandos comuns, sem remover logs
   de erro ou diagnosticos necessarios.
-- [ ] Guardar a ultima falha isolada de aplicativo e exibir apenas dados que
+- [x] Guardar a ultima falha isolada de aplicativo e exibir apenas dados que
   nao exponham ponteiros ou estado interno sensivel.
-- [ ] Adicionar contadores apenas quando eles responderem uma pergunta de
+- [x] Adicionar contadores apenas quando eles responderem uma pergunta de
   diagnostico concreta.
+- [ ] Validar no QEMU `health` antes e depois de duas falhas isoladas,
+  navegacao do scrollback, comandos ZAPP, `appcheck` e ausencia de zumbis.
 
 ## Etapa Q3 - Disciplina de mudanca
 

@@ -141,7 +141,7 @@ int process_set_focus(uint32_t pid) {
     }
 
     focused_pid = target->pid;
-    LOG_INFO("IPC", "Foco alterado");
+    LOG_DEBUG("IPC", "Foco alterado");
     return OK;
 }
 
@@ -158,7 +158,7 @@ int process_set_focus_fallback(uint32_t pid) {
     }
 
     focus_fallback_pid = target->pid;
-    LOG_INFO("IPC", "Fallback de foco definido");
+    LOG_DEBUG("IPC", "Fallback de foco definido");
     return OK;
 }
 
@@ -176,7 +176,7 @@ int process_restore_focus(void) {
     }
 
     focused_pid = target->pid;
-    LOG_INFO("IPC", "Foco restaurado para fallback");
+    LOG_DEBUG("IPC", "Foco restaurado para fallback");
     return OK;
 }
 
