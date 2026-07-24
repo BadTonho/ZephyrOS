@@ -35,6 +35,8 @@ static const char scancode_table[128] = {
 };
 
 char keyboard_scancode_to_ascii(uint8_t scancode) {
+    /* Tecla extra de teclados ABNT2, usada como barra no layout brasileiro. */
+    if (scancode == 0x56U) return '/';
     if (scancode < 128) {
         return scancode_table[scancode];
     }

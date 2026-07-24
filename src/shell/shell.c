@@ -2258,7 +2258,8 @@ void shell_handle_key(uint8_t scancode) {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    char c = scancode_table[scancode];
+    /* A tecla extra ABNT2 tambem precisa funcionar no parser local do Shell. */
+    char c = scancode == 0x56U ? '/' : scancode_table[scancode];
 
     if (scancode == 0x0E) {
         shell_return_to_terminal_tail();
