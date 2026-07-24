@@ -116,21 +116,19 @@ comando ou variante de build apenas para este teste.
   por `F12`, comandos ZAPP, `appcheck` e ausencia de processos de usuario ou
   zumbis residuais.
 
-## Etapa Q3 - Disciplina de mudanca (em validacao)
+## Etapa Q3 - Disciplina de mudanca
 
-- [ ] Toda nova funcao que pode falhar retorna codigo controlado e registra o
+- [x] Toda nova funcao que pode falhar retorna codigo controlado e registra o
   erro no modulo correto.
-- [ ] Alteracoes de estruturas publicas atualizam todos os chamadores e os
+- [x] Alteracoes de estruturas publicas atualizam todos os chamadores e os
   documentos tecnicos correspondentes.
-- [ ] Nenhuma otimização e aceita sem comparacao observavel ou metrica.
-- [ ] Alteracoes no bootloader permanecem fora desta frente e exigem decisao
+- [x] Nenhuma otimização e aceita sem comparacao observavel ou metrica.
+- [x] Alteracoes no bootloader permanecem fora desta frente e exigem decisao
   explicita do mantenedor.
 
-Implementado: `make q3check` revisa o diff atual sem compilar; o catalogo de
-contratos associa todos os headers publicos ao seu documento tecnico e o
-registro de metricas estabelece a comparacao obrigatoria para otimizacoes. A
-conclusao desta etapa depende da validacao controlada do gate, build e matriz
-Q1 no QEMU.
+Validado: `make q3check` e seus oito auto-testes concluiram em `OK`; o usuario
+executou `make clean && make` e confirmou no QEMU `health`, `q2check`,
+`appcheck` e os modos `guimode classic` e `guimode modern`, sem regressao.
 
 ## Criterio de saida
 
