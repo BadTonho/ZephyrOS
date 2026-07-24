@@ -331,7 +331,6 @@ static int app_package_find_entry(const char* directory, const char* name,
             return OK;
         }
     }
-    LOG_WARN("PKG", "Entrada de pacote nao encontrada");
     return ERR_NOT_FOUND;
 }
 

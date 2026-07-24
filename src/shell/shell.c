@@ -1494,6 +1494,16 @@ static int cmd_pkg_is_file_name(const char* value) {
            (value[length - 1U] == 'K' || value[length - 1U] == 'k');
 }
 
+static void cmd_pkg_uppercase_id(char* value) {
+    if (!value) return;
+
+    for (uint32_t index = 0; value[index]; index++) {
+        if (value[index] >= 'a' && value[index] <= 'z') {
+            value[index] -= 'a' - 'A';
+        }
+    }
+}
+
 static void cmd_pkg_print_info(const app_package_info_t* info) {
     if (!info) return;
 
@@ -1542,13 +1552,16 @@ static void cmd_pkg_list(void) {
     }
 }
 
-static void cmd_pkg_info(const char* value) {
+static void cmd_pkg_info(char* value) {
     app_package_info_t info;
     int result;
 
-    result = cmd_pkg_is_file_name(value) ?
-             app_package_verify_file(value, &info) :
-             app_package_get_installed_info_by_id(value, &info);
+    if (cmd_pkg_is_file_name(value)) {
+        result = app_package_verify_file(value, &info);
+    } else {
+        cmd_pkg_uppercase_id(value);
+        result = app_package_get_installed_info_by_id(value, &info);
+    }
     if (result != OK) {
         video_print("Erro: pacote nao encontrado ou invalido (codigo ", 0x0C);
         print_num((uint32_t)result);
@@ -1587,8 +1600,11 @@ static void cmd_pkg_install(const char* value) {
     video_print(".\n", 0x0A);
 }
 
-static void cmd_pkg_remove(const char* value) {
-    int result = app_package_remove(value);
+static void cmd_pkg_remove(char* value) {
+    int result;
+
+    cmd_pkg_uppercase_id(value);
+    result = app_package_remove(value);
 
     if (result != OK) {
         video_print("Erro: remocao de pacote falhou (codigo ", 0x0C);
