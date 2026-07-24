@@ -19,9 +19,10 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   `appcheck`, politica de logs, resumo seguro de falhas isoladas e o atalho
   compacto `q2check`; Q3 validado com o gate `make q3check`, seus auto-testes,
   build e smoke test da matriz de regressao no QEMU.
-- Kernel e desempenho: K1 esta implementada e em validacao com `kmetrics`,
-  linha-base manual de PIT, scheduler, filas, memoria e VESA. CPU real foi
-  adiada; `TCK%` identifica somente a estimativa baseada em ticks.
+- Kernel e desempenho: K1 foi validada no QEMU com `kmetrics`, linha-base
+  manual de PIT, scheduler, filas, memoria e VESA nos cenarios de Shell, ring
+  3 e interfaces classica/moderna. CPU real foi adiada; `TCK%` identifica
+  somente a estimativa baseada em ticks.
 - Interface: Desktop, Explorer, Task Manager e Settings possuem modo moderno
   e fallback classico; a taskbar e o Window Manager grafico ainda sao etapas
   futuras.
