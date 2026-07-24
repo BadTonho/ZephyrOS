@@ -47,7 +47,7 @@ contrato publico.
   argumento invalido, `appcheck`, foco por `Enter` e `F12`, falha isolada,
   `health`, migracoes e ausencia de processos de usuario residuais.
 
-## Fase 7 - Pacotes e distribuicao (em validacao)
+## Fase 7 - Pacotes e distribuicao ✅
 
 - [x] Criar empacotador Python no host com `build`, `verify`, `inject`,
   `demo` e `selftest`; ele nao roda dentro do kernel.
@@ -59,8 +59,8 @@ contrato publico.
   sem expor estruturas FAT ao Shell.
 - [x] Adicionar `pkgcheck` para pacote invalido, dependencia ausente e
   pre-validacao de espaco insuficiente, sem gravar no disco.
-- [ ] Validar no host `make q3check`, `make package-test`, build limpo e
-  `make package-demo`; validar no QEMU fluxo do demo, `pkgcheck`,
+- [x] Validado no host `make q3check`, `make package-test`, build limpo e
+  `make package-demo`; validado no QEMU fluxo do demo, `pkgcheck`,
   diagnosticos existentes, F12, interfaces e ausencia de processos residuais.
 
 ## Fora desta frente por enquanto

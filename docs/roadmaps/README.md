@@ -8,12 +8,12 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
 
 - Base original (boot, memoria, processos, filesystem, Shell e desktop):
   validada no QEMU.
-- Plataforma de aplicativos: Fases 1 a 6D validadas, incluindo processos ring
+- Plataforma de aplicativos: Fases 1 a 7 validadas, incluindo processos ring
   3, syscalls, loader ZAPP, foco, teclado, argumentos simples, as migracoes
   internas de `echo`, `uptime` e `mem`, e o contrato de console e ciclo de
-  vida validado por `app outputtest [fail]`. A Fase 7 esta implementada e em
-  validacao, com `ZPKG` v1, empacotador host, alias FAT12 `.ZPK`, servico
-  `PKG` e comandos `pkg`; sua conclusao depende da rodada host e QEMU.
+  vida validado por `app outputtest [fail]`. A Fase 7 validou `ZPKG` v1,
+  empacotador host, alias FAT12 `.ZPK`, servico `PKG` e comandos `pkg` no
+  fluxo completo de instalacao, execucao e remocao.
 - Estabilizacao e qualidade: Q1 e Q2 validados no QEMU, com matriz de
   regressao, retorno de foco, prompt unico, referencia para os resultados do
   `appcheck`, politica de logs, resumo seguro de falhas isoladas e o atalho

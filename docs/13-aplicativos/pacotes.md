@@ -147,3 +147,11 @@ Em seguida confirme `appcheck`, `q2check`, `procs`, o cancelamento `F12` e os
 modos `guimode classic` e `guimode modern`. Ao fim, `DEMO.ZPK` deve continuar
 no diretorio raiz, enquanto `pkg list` volta a ficar vazio e nao ha processo
 ring 3 ou zumbi residual.
+
+## Validacao registrada
+
+A Fase 7 foi validada no host com `q3check`, `package-test`, build limpo e
+`package-demo`; no QEMU foram confirmados `health`, verificacao, instalacao,
+execucao por caminho, remocao, `pkgcheck`, `appcheck`, `q2check`, `F12`,
+`procs` e os modos classico e moderno. Nenhum ZAPP ou zumbi permaneceu apos os
+fluxos cobertos.

@@ -4,11 +4,11 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
-## Progresso Geral: base do sistema concluída; Fase 7 de pacotes implementada e em validacao
+## Progresso Geral: base do sistema concluída; Fase 7 de pacotes validada
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
-Plataforma de aplicativos:   [████████████████████████████████████░░░░░░] Fase 7 em validacao
+Plataforma de aplicativos:   [██████████████████████████████████████████] Fase 7 validada
 ```
 
 ---
@@ -343,7 +343,7 @@ Plataforma de aplicativos:   [████████████████�
   `appcheck`, `app inputtest` por `Enter` e `F12`, `usertest fault`, `health`,
   `echo`, `uptime`, `mem` e ausência de ZAPPs ou zumbis residuais.
 
-### Fase 7 - Pacotes locais e distribuicao (em validacao)
+### Fase 7 - Pacotes locais e distribuicao ✅
 
 - [x] Empacotador host para criar, verificar e injetar `.zephyrosapp` como
   alias FAT12 `ID.ZPK`.
@@ -351,8 +351,8 @@ Plataforma de aplicativos:   [████████████████�
   uma imagem ZAPP validada antes da escrita.
 - [x] Servico interno `PKG`, comandos `pkg`, `pkgcheck` e instalacao em
   `APPS/<ID>/APP.ZAP` mais `META.DAT`.
-- [ ] Validar no host e QEMU o pacote demo, a remocao, o caminho instalado,
-  F12, diagnosticos e ausencia de processos residuais.
+- [x] Validado no host e QEMU: pacote demo, remocao, caminho instalado, F12,
+  diagnosticos, interfaces classica/moderna e ausencia de processos residuais.
 
 ### Etapas posteriores da plataforma
 
@@ -390,7 +390,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 ### Kernel e Sistema
 - **Fundacao do Kernel** (`fundacao do kernel.md`) - etapa prioritaria para organizar as bases antes das otimizacoes
 - **Atualizacao e Otimizacao do Kernel** (`atualizacao do kernel.md`) - etapa posterior, guiada por metricas
-- **API de Aplicativos e Syscalls** (`api de aplicativos e syscalls.md`) - Fases 1 a 6D validadas; Fase 7 de pacotes locais esta em validacao
+- **API de Aplicativos e Syscalls** (`api de aplicativos e syscalls.md`) - Fases 1 a 7 validadas; pacotes locais `ZPKG` v1 disponiveis
 - **Resiliência do Sistema** (`resiliencia do sistema.md`)
 - **Multitarefa Preemptiva Avançada** (`multitarefa preemptiva.md`)
 - **Gerenciador de Energia** (`gerenciador de energia.md`)

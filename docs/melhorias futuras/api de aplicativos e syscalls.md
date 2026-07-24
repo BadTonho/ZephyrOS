@@ -289,7 +289,7 @@ suficientes.
 - [x] validar no QEMU sucesso, codigo `1`, argumento invalido, prompt unico,
   `F12`, `appcheck`, `health` e ausencia de zumbis.
 
-### Fase 7 - Pacotes locais e distribuicao (em validacao)
+### Fase 7 - Pacotes locais e distribuicao ✅
 
 - [x] definir o container `ZPKG` v1 de 32 bytes, com manifesto ASCII,
   arquitetura i386, payload ZAPP e CRC32 de conteudo;
@@ -302,8 +302,8 @@ suficientes.
   remocao somente sem dependentes;
 - [x] permitir `app run APPS/<ID>/APP.ZAP` e expor `pkg` e `pkgcheck` no
   Shell;
-- [ ] validar no QEMU o fluxo demo, remocao, diagnosticos, foco, F12 e as
-  duas interfaces antes de marcar a fase concluida.
+- [x] validado no host e no QEMU: fluxo demo, remocao, diagnosticos, foco,
+  F12, interfaces classica/moderna e ausencia de processos residuais.
 
 O escopo deliberadamente nao inclui permissao, assinatura, atualizacao,
 rollback, multiplos arquivos, GUI/App Store, resolucao automatica de
