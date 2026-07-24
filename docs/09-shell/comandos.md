@@ -221,6 +221,22 @@ Na Fase 6B, também confirma a ABI de lançamento `0.3`: argumentos válidos,
 ausência de argumentos, quantidade excessiva, texto grande, foco, execução e
 reaproveitamento seguro do processo externo.
 
+Na Fase 6C, a sequencia assincrona tambem valida as migracoes ZAPP internas
+de `uptime` e `mem`, incluindo rejeicao de lancamento concorrente, retorno de
+foco e ausencia de processos de usuario ou zumbis residuais.
+
+O `appcheck` mistura operacoes validas com entradas deliberadamente invalidas.
+Assim, `ERRO` nas chamadas de syscall, ponteiro, buffer, handle, arquivo, PID,
+mensagem, argumento ou imagem ZAPP invalida e esperado se o retorno for
+controlado e a suite continuar. `memory_info nulo` e os dois testes de
+migracao concorrente usam comparacao de codigo esperado e devem aparecer como
+`OK`. Erro em caminho valido, divergencia dessas comparacoes, falha de foco ou
+limpeza, `KERNEL PANIC` ou prompt ausente/duplicado representa regressao; a
+matriz completa esta em `docs/roadmaps/01-estabilizacao-e-qualidade.md`.
+
+`file_service_indisponivel` e `loader_indisponivel` sao esperados apenas
+quando o componente correspondente aparecer indisponivel no `health`.
+
 ## `app run <arquivo.ZAP> [arg1 arg2 ...]`
 
 Executa uma imagem flat i386 em ring 3 sem bloquear o Shell.

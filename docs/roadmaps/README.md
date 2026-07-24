@@ -8,8 +8,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
 
 - Base original (boot, memoria, processos, filesystem, Shell e desktop):
   validada no QEMU.
-- Plataforma de aplicativos: Fases 1 a 6B validadas, incluindo processos ring
-  3, syscalls, loader ZAPP, foco, teclado e argumentos simples.
+- Plataforma de aplicativos: Fases 1 a 6C validadas, incluindo processos ring
+  3, syscalls, loader ZAPP, foco, teclado, argumentos simples e as migracoes
+  internas de `echo`, `uptime` e `mem`.
 - Interface: Desktop, Explorer, Task Manager e Settings possuem modo moderno
   e fallback classico; a taskbar e o Window Manager grafico ainda sao etapas
   futuras.
