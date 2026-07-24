@@ -2,8 +2,8 @@
 
 ## Resumo de Progresso
 
-Status: Fases 1 a 6B validadas no QEMU. A proxima etapa e a Fase 6C,
-de migracao gradual de ferramentas nativas com fallback seguro.
+Status: Fases 1 a 6C validadas no QEMU. A proxima etapa e a Fase 6D,
+de contrato de console e ciclo de vida para aplicativos externos.
 
 Esta etapa preparara o ZephyrOS para executar aplicativos independentes do
 kernel. O objetivo nao e apenas criar mais comandos, mas definir uma fronteira
@@ -243,13 +243,21 @@ buffer. Aplicativos ZAPP anteriores continuam recebendo uma estrutura vazia
 valida. O primeiro argumento do usuario fica no indice zero; nao existe
 `argv[0]` nesta ABI inicial.
 
-### Fase 6C - Migracao gradual de ferramentas nativas
+### Fase 6C - Migracao gradual de ferramentas nativas - validada
 
-- selecionar ferramentas CLI que usem somente servicos ja expostos;
-- manter fallback nativo durante cada migracao;
-- evoluir argumentos somente quando houver necessidade comprovada;
-- manter Editor, Explorer e interfaces graficas fora dessa fase ate existirem
-  APIs de arquivos e janelas suficientes.
+- [x] migrar `uptime` e `mem` para imagens ZAPP internas em ring 3 usando
+  somente `uptime`, `memory_info`, `console_write` e `process_exit`;
+- [x] manter a saida textual nativa, retorno de foco e um unico prompt;
+- [x] preservar fallback nativo quando o carregador estiver indisponivel;
+- [x] ampliar `health` com o estado individual das duas migracoes;
+- [x] ampliar `appcheck` com rejeicao de lancamento concorrente, destino nulo
+  de `memory_info`, execucao, retorno de foco e verificacao de zumbis;
+- [x] validar no QEMU `uptime`, `mem`, `appcheck`, `health`, `echo`,
+  `usertest`, falha isolada e cancelamento por `F12`.
+
+Argumentos permanecem inalterados nesta fase. Editor, Explorer e interfaces
+graficas continuam fora da migracao ate existirem APIs de arquivos e janelas
+suficientes.
 
 ### Fase 7 - Pacotes e ecossistema
 

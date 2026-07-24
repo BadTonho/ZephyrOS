@@ -15,18 +15,21 @@ contrato publico.
 - [x] Loader de imagens flat i386 `ZAPP` com extensao `.ZAP` no FAT12.
 - [x] Foco exclusivo, cancelamento com `F12` e retorno seguro ao Shell.
 - [x] Argumentos simples e primeira migracao: `echo` em ring 3 com fallback.
+- [x] Migracoes adicionais: `uptime` e `mem` em ring 3 com fallback nativo.
 
-## Fase 6C - Migracao gradual de comandos CLI
+## Fase 6C - Migracao gradual de comandos CLI ✅
 
-- [ ] Escolher somente comandos cujo servico ja exista na App API.
-- [ ] Priorizar `uptime` e `mem`, pois dependem apenas de consultas ja
-  expostas e produzem texto.
-- [ ] Migrar um comando por vez para uma imagem interna ZAPP.
-- [ ] Preservar a versao nativa como fallback quando a plataforma estiver
+- [x] Selecionar somente comandos cujo servico ja exista na App API.
+- [x] Migrar `uptime` e `mem`, pois dependem apenas de consultas ja expostas
+  e produzem texto.
+- [x] Executar cada comando em uma imagem interna ZAPP.
+- [x] Preservar a versao nativa como fallback quando a plataforma estiver
   indisponivel.
-- [ ] Garantir saida unica, foco devolvido e ausencia de zumbis em cada
+- [x] Garantir saida unica, foco devolvido e ausencia de zumbis em cada
   comando migrado.
-- [ ] Expandir `appcheck` com cenarios positivos e negativos de cada migracao.
+- [x] Expandir `appcheck` com cenarios positivos e negativos de cada migracao.
+- [x] Validar no QEMU os dois comandos, `appcheck`, `health`, `echo`,
+  `usertest`, falha isolada e cancelamento por `F12`.
 
 ## Fase 6D - Contrato de console e ciclo de vida
 
@@ -52,7 +55,7 @@ contrato publico.
 - Criar API grafica, mouse para aplicativos externos ou janelas de apps.
 - ELF, relocacao, bibliotecas dinamicas, permissoes complexas ou rede.
 
-## Criterio de saida da Fase 6C
+## Criterio de saida da Fase 6C ✅
 
 Pelo menos duas ferramentas CLI simples executam em ring 3, mantem fallback
 nativo, nao repetem output ou prompt e continuam seguras quando loader,
