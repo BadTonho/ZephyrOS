@@ -30,6 +30,12 @@
 #include "core/syscall.h"
 #include "drivers/idt.h"
 
+typedef enum {
+    SHELL_BUILTIN_APP_NONE,
+    SHELL_BUILTIN_APP_UPTIME,
+    SHELL_BUILTIN_APP_MEM
+} shell_builtin_app_t;
+
 static char input_buffer[SHELL_BUFFER_SIZE];
 static char appcheck_oversized_text[APP_API_MAX_TEXT_SIZE + 1];
 static uint8_t appcheck_demo_image[APP_IMAGE_MAX_FILE_SIZE];
@@ -40,6 +46,12 @@ static uint8_t shell_extended_scancode = 0;
 static uint8_t shell_prompt_visible = 0;
 static uint32_t shell_appcheck_loader_pid = 0;
 static uint32_t shell_echo_loader_pid = 0;
+static uint32_t shell_builtin_loader_pid = 0;
+static uint32_t shell_appcheck_migration_pid = 0;
+static uint32_t shell_appcheck_user_count = 0;
+static uint32_t shell_appcheck_zombie_count = 0;
+static shell_builtin_app_t shell_builtin_loader_app = SHELL_BUILTIN_APP_NONE;
+static shell_builtin_app_t shell_appcheck_migration_app = SHELL_BUILTIN_APP_NONE;
 static char appcheck_oversized_args[APP_LAUNCH_MAX_TEXT + 1U];
 
 #define SHELL_SCANCODE_EXTENDED 0xE0
@@ -63,7 +75,15 @@ static const char app_input_test_message[] =
     "Entrada ZAPP ativa: Enter encerra; F12 cancela.\n";
 
 static void cmd_appcheck_print_result(const char* label, int result);
+static void cmd_appcheck_print_expected_result(const char* label, int actual,
+                                               int expected);
 static int shell_should_show_prompt(void);
+
+static const char* shell_builtin_app_name(shell_builtin_app_t app) {
+    if (app == SHELL_BUILTIN_APP_UPTIME) return "uptime";
+    if (app == SHELL_BUILTIN_APP_MEM) return "mem";
+    return "desconhecido";
+}
 
 static void shell_demo_patch_u32(uint8_t* code, uint32_t offset,
                                  uint32_t value) {
@@ -262,10 +282,93 @@ void shell_report_user_test_result(void) {
     process_reap_finished_user();
 }
 
+static void shell_finish_app_command(void) {
+    shell_reset_input();
+    if (shell_should_show_prompt()) shell_print_prompt();
+}
+
+static int shell_appcheck_migration_is_valid(const app_loader_result_t* result) {
+    process_t* current = process_get_current();
+
+    if (!result || result->start_failed || result->faulted ||
+        result->cancelled || result->exit_code != OK ||
+        !result->focus_acquired || !current ||
+        process_get_focus() != current->pid ||
+        process_get_user_count() != shell_appcheck_user_count ||
+        process_get_state_count(PROCESS_STATE_ZOMBIE) !=
+            shell_appcheck_zombie_count) {
+        LOG_ERROR("SHELL", "Migracao ZAPP falhou na validacao de ciclo de vida");
+        return ERR_STATE;
+    }
+    return OK;
+}
+
+static int shell_appcheck_start_migration(shell_builtin_app_t app) {
+    uint32_t pid = 0;
+    int result;
+
+    shell_appcheck_user_count = process_get_user_count();
+    shell_appcheck_zombie_count = process_get_state_count(PROCESS_STATE_ZOMBIE);
+    if (app == SHELL_BUILTIN_APP_UPTIME) {
+        result = app_builtin_run_uptime(&pid);
+        cmd_appcheck_print_result("migracao_uptime_inicio", result);
+    } else if (app == SHELL_BUILTIN_APP_MEM) {
+        result = app_builtin_run_mem(&pid);
+        cmd_appcheck_print_result("migracao_mem_inicio", result);
+    } else {
+        LOG_ERROR("SHELL", "Migracao appcheck sem aplicativo definido");
+        return ERR_INVALID;
+    }
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Falha ao iniciar migracao ZAPP no appcheck");
+        return result;
+    }
+
+    shell_appcheck_migration_app = app;
+    shell_appcheck_migration_pid = pid;
+    return OK;
+}
+
+static void shell_appcheck_finish_migration(const app_loader_result_t* result) {
+    shell_builtin_app_t completed_app = shell_appcheck_migration_app;
+    int validation = shell_appcheck_migration_is_valid(result);
+
+    cmd_appcheck_print_result(
+        completed_app == SHELL_BUILTIN_APP_UPTIME ?
+            "migracao_uptime_conclusao" : "migracao_mem_conclusao",
+        validation);
+    shell_appcheck_migration_app = SHELL_BUILTIN_APP_NONE;
+    shell_appcheck_migration_pid = 0;
+
+    if (completed_app == SHELL_BUILTIN_APP_UPTIME &&
+        shell_appcheck_start_migration(SHELL_BUILTIN_APP_MEM) == OK) {
+        return;
+    }
+    shell_finish_app_command();
+}
+
+static void shell_report_builtin_failure(shell_builtin_app_t app,
+                                         const app_loader_result_t* result) {
+    if (!result || (!result->start_failed && !result->faulted &&
+                    !result->cancelled && result->exit_code == OK)) {
+        return;
+    }
+
+    video_print("\n[", 0x08);
+    video_print("ERRO", 0x0C);
+    video_print("] ", 0x07);
+    video_print(shell_builtin_app_name(app), 0x07);
+    video_print(" ring 3 nao concluiu (codigo ", 0x07);
+    print_num(result->exit_code);
+    video_print(").\n", 0x07);
+}
+
 void shell_report_app_loader_result(void) {
     app_loader_result_t result;
     int appcheck_result;
     int echo_result;
+    int builtin_result;
+    int migration_result;
     process_t* current;
 
     /* Mantem o resultado no loader enquanto uma UI nativa cobre o terminal. */
@@ -273,6 +376,8 @@ void shell_report_app_loader_result(void) {
     if (app_loader_take_finished_result(&result) != OK) return;
 
     echo_result = shell_echo_loader_pid == result.pid;
+    builtin_result = shell_builtin_loader_pid == result.pid;
+    migration_result = shell_appcheck_migration_pid == result.pid;
 
     if (shell_appcheck_loader_pid == result.pid) {
         cmd_appcheck_print_result("loader_foco_aquisicao",
@@ -284,6 +389,16 @@ void shell_report_app_loader_result(void) {
                           OK : ERR_STATE;
         cmd_appcheck_print_result("loader_foco_retorno", appcheck_result);
         shell_appcheck_loader_pid = 0;
+        if (shell_appcheck_start_migration(SHELL_BUILTIN_APP_UPTIME) == OK) {
+            return;
+        }
+        shell_finish_app_command();
+        return;
+    }
+
+    if (migration_result) {
+        shell_appcheck_finish_migration(&result);
+        return;
     }
 
     if (echo_result) {
@@ -296,8 +411,15 @@ void shell_report_app_loader_result(void) {
             print_num(result.exit_code);
             video_print(").\n", 0x07);
         }
-        shell_reset_input();
-        if (shell_should_show_prompt()) shell_print_prompt();
+        shell_finish_app_command();
+        return;
+    }
+
+    if (builtin_result) {
+        shell_report_builtin_failure(shell_builtin_loader_app, &result);
+        shell_builtin_loader_pid = 0;
+        shell_builtin_loader_app = SHELL_BUILTIN_APP_NONE;
+        shell_finish_app_command();
         return;
     }
 
@@ -328,8 +450,7 @@ void shell_report_app_loader_result(void) {
         video_print(".\n", 0x07);
     }
 
-    shell_reset_input();
-    if (shell_should_show_prompt()) shell_print_prompt();
+    shell_finish_app_command();
 }
 
 static int shell_prepare_filemanager(void) {
@@ -561,6 +682,22 @@ static const char* shell_process_state_name(process_state_t state) {
     }
 }
 
+static int shell_migrated_builtin_is_ready(void) {
+    return app_loader_is_ready() && app_api_is_ready() &&
+           syscall_is_ready() && syscall_user_mode_is_enabled() &&
+           paging_is_ready() && idt_is_user_syscall_enabled();
+}
+
+static void cmd_health_print_migrated_builtin(shell_builtin_app_t app) {
+    int ready = shell_migrated_builtin_is_ready();
+
+    video_print("  ZAPP ", 0x07);
+    video_print(shell_builtin_app_name(app), 0x0B);
+    video_print(": ", 0x07);
+    video_print(ready ? "READY" : "NATIVE FALLBACK", ready ? 0x0A : 0x0E);
+    video_print("\n", 0x07);
+}
+
 static void cmd_health_print_kernel(void) {
     process_t* current = process_get_current();
     ipc_stats_t ipc;
@@ -648,6 +785,8 @@ static void cmd_health_print_kernel(void) {
         video_print("N/D", 0x08);
     }
     video_print("\n", 0x07);
+    cmd_health_print_migrated_builtin(SHELL_BUILTIN_APP_UPTIME);
+    cmd_health_print_migrated_builtin(SHELL_BUILTIN_APP_MEM);
     uint32_t fault_pid;
     uint32_t fault_vector;
     uint32_t fault_error;
@@ -704,6 +843,19 @@ static void cmd_appcheck_print_result(const char* label, int result) {
     video_print(" retorno=", 0x08);
     print_num((uint32_t)result);
     video_print(result == OK ? " OK\n" : " ERRO\n", result == OK ? 0x0A : 0x0C);
+}
+
+static void cmd_appcheck_print_expected_result(const char* label, int actual,
+                                               int expected) {
+    int passed = actual == expected;
+
+    video_print("  ", 0x07);
+    video_print(label, 0x07);
+    video_print(" retorno=", 0x08);
+    print_num((uint32_t)actual);
+    video_print(" esperado=", 0x08);
+    print_num((uint32_t)expected);
+    video_print(passed ? " OK\n" : " ERRO\n", passed ? 0x0A : 0x0C);
 }
 
 static void cmd_appcheck_files(void) {
@@ -857,6 +1009,7 @@ static void cmd_appcheck_loader(void) {
     app_launch_info_t launch;
     uint32_t image_size;
     uint32_t pid = 0;
+    uint32_t migrated_pid = 0;
     int result;
 
     image_size = shell_build_demo_image();
@@ -918,6 +1071,12 @@ static void cmd_appcheck_loader(void) {
                 video_print("    pid=", 0x08);
                 print_num(pid);
                 video_print(" assincrono\n", 0x07);
+                result = app_builtin_run_uptime(&migrated_pid);
+                cmd_appcheck_print_expected_result(
+                    "migracao_uptime_concorrente", result, ERR_STATE);
+                result = app_builtin_run_mem(&migrated_pid);
+                cmd_appcheck_print_expected_result(
+                    "migracao_mem_concorrente", result, ERR_STATE);
             }
         }
         shell_remove_image(APP_CHECK_DEMO_PATH);
@@ -987,6 +1146,8 @@ static void cmd_appcheck(void) {
     cmd_appcheck_print_result("numero invalido", result);
     result = syscall_invoke_kernel(APP_SYSCALL_UPTIME, 0, 0, 0, 0, 0);
     cmd_appcheck_print_result("uptime nulo", result);
+    result = syscall_invoke_kernel(APP_SYSCALL_MEMORY_INFO, 0, 0, 0, 0, 0);
+    cmd_appcheck_print_expected_result("memory_info nulo", result, ERR_NULL);
     result = syscall_invoke_kernel(APP_SYSCALL_CONSOLE_WRITE,
                                     (uint32_t)"", 0, 0, 0, 0);
     cmd_appcheck_print_result("console_write vazio", result);
@@ -1309,7 +1470,7 @@ static void cmd_echo(const char* text) {
     video_print(").\n", 0x0C);
 }
 
-static void cmd_mem(void) {
+static void cmd_mem_native(void) {
     video_print("Memoria:\n", 0x0B);
     video_print("  Total: ", 0x07);
     print_num(memory_get_total() / 1024);
@@ -1373,7 +1534,7 @@ static void cmd_threads(void) {
     video_print(" threads\n", 0x07);
 }
 
-static void cmd_uptime(void) {
+static void cmd_uptime_native(void) {
     uint32_t ticks = timer_get_ticks();
     uint32_t seconds = ticks / 50;
     uint32_t minutes = seconds / 60;
@@ -1386,6 +1547,49 @@ static void cmd_uptime(void) {
     video_print("m ", 0x07);
     print_num(seconds % 60);
     video_print("s\n", 0x07);
+}
+
+static void cmd_run_migrated_builtin(shell_builtin_app_t app) {
+    uint32_t pid = 0;
+    int result;
+
+    if (app == SHELL_BUILTIN_APP_UPTIME) {
+        result = app_builtin_run_uptime(&pid);
+    } else if (app == SHELL_BUILTIN_APP_MEM) {
+        result = app_builtin_run_mem(&pid);
+    } else {
+        LOG_ERROR("SHELL", "Comando migrado sem aplicativo definido");
+        return;
+    }
+    if (result == OK) {
+        shell_builtin_loader_pid = pid;
+        shell_builtin_loader_app = app;
+        return;
+    }
+    if (result == ERR_UNAVAILABLE) {
+        LOG_WARN("SHELL", "Aplicativo ring 3 indisponivel; usando fallback nativo");
+        if (app == SHELL_BUILTIN_APP_UPTIME) {
+            cmd_uptime_native();
+        } else {
+            cmd_mem_native();
+        }
+        return;
+    }
+
+    LOG_ERROR("SHELL", "Aplicativo ring 3 nao iniciou");
+    video_print("Erro: ", 0x0C);
+    video_print(shell_builtin_app_name(app), 0x0C);
+    video_print(" ring 3 nao iniciou (codigo ", 0x0C);
+    print_num((uint32_t)result);
+    video_print(").\n", 0x0C);
+}
+
+static void cmd_mem(void) {
+    cmd_run_migrated_builtin(SHELL_BUILTIN_APP_MEM);
+}
+
+static void cmd_uptime(void) {
+    cmd_run_migrated_builtin(SHELL_BUILTIN_APP_UPTIME);
 }
 
 static void cmd_beep(const char* args) {
