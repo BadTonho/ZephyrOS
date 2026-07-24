@@ -138,6 +138,11 @@ uint16_t fat12_get_cluster(uint16_t cluster) {
 
 ### Entrada de Diretório
 
+As entradas FAT12 usam os 32 bytes padrao, incluindo o campo de hora de
+criacao de 16 bits entre o indicador de decimos e a data. Isso mantem os
+offsets `cluster_low` em 26 e `file_size` em 28, compativeis com ferramentas
+host que gravam arquivos na imagem.
+
 Cada arquivo tem uma entrada de 32 bytes:
 
 ```c
