@@ -1,128 +1,126 @@
 # ZephyrOS
 
-Sistema operacional do zero em C + Assembly (x86), com o objetivo de ser um OS real e funcional.
+[ 🇺🇸 **English** | 🇧🇷 [Português](README.pt-BR.md) ]
+
+Operating system built from scratch in C + x86 Assembly, aiming to be a real, functional, and modular OS.
 
 ---
 
-## Status do projeto
+## Project Status
 
-O ZephyrOS e um sistema operacional experimental em desenvolvimento ativo. Ele e executado
-principalmente no QEMU e mantem duas interfaces: modo classico em VGA text mode e modo
-moderno com VESA quando o hardware ou emulador oferece suporte.
+ZephyrOS is an experimental operating system under active development. It runs primarily on **QEMU** and maintains dual user interfaces: a **Classic Mode** utilizing VGA text mode and a **Modern Mode** leveraging VESA VBE graphic resolutions when hardware or emulators support it.
 
-O projeto ainda nao deve ser considerado pronto para uso em hardware real. Consulte o
-[`ROADMAP.md`](ROADMAP.md) e a documentacao em [`docs/`](docs/) para acompanhar as etapas
-concluidas, limitacoes conhecidas e proximos objetivos.
+The project is currently intended for educational and experimental purposes and is not yet ready for production on real hardware. Refer to [`ROADMAP.md`](ROADMAP.md) and [`docs/`](docs/) for progress logs, known limitations, and upcoming milestones.
 
 ---
 
-## Funcionalidades
+## Features & Modules
 
-| Módulo | Status | Descrição |
-|--------|--------|-----------|
-| Bootloader | ✅ | Assembly 16-bit → Protected Mode 32-bit |
-| Kernel | ✅ | Entry point, panic handler, context switch |
-| VGA Video | ✅ | Text mode 80x25, cores, cursor |
-| VESA | ✅ | Modo gráfico, múltiplas resoluções (640x480 a 1920x1200) |
-| Font | ✅ | Fonte bitmap 8x16 para renderização gráfica |
-| Teclado | ✅ | Driver PS/2, scancode → ASCII |
-| Timer | ✅ | PIT 50 Hz, ticks |
-| IDT/IRQ/ISR | ✅ | 32 exceções + 16 IRQs mapeadas |
-| Memória | ✅ | Detecção E820, bitmap allocator, heap |
-| Paging | ✅ | Page directory/table, mapeamento virtual |
-| Compress (RAM) | ✅ | Compressão LZSS para dados em memória |
-| TSS | ✅ | Kernel stack ring 0 |
-| Processos | ✅ | PID, estados, scheduler round-robin |
-| Threads | ✅ | Create, block, yield, round-robin |
-| ATA Driver | ✅ | Leitura/escrita de setores (PIO) |
-| FAT12 | ✅ | Ler/escrever/deletar arquivos, listar diretório |
-| FAT32 | ✅ | Suporte a discos maiores (BPB, clusters de 32 bits) |
-| FS Unificado | ✅ | Interface única sobre FAT12/FAT32 |
-| BMP | ✅ | Leitura e renderização de imagens BMP (1/4/8/24 bpp) |
-| WAV | ✅ | Leitura e reprodução de áudio WAV |
-| PCI | ✅ | Enumeração do barramento PCI |
-| AC97 | ✅ | Driver de áudio AC97 (play, stop, volume) |
-| PC Speaker | ✅ | Beep, melodias |
-| Shell | ✅ | Terminal com scrollback, diagnósticos e comandos nativos/ring 3 |
-| App API | ✅ | API 0.3, syscalls `int 0x80`, IPC, arquivos e loader ZAPP |
-| Editor | ✅ | Editor de texto com syntax highlight, word wrap |
-| Media Player | ✅ | Player de áudio WAV com visualização |
-| Task Manager | ✅ | Monitor de processos/threads/CPU/memória |
-| File Manager | ✅ | Explorer clássico e moderno (navegar, criar, renomear, excluir) |
-| Desktop | ✅ | Ambiente desktop moderno com fallback clássico, ícones e menu Iniciar |
-| Window Manager | ✅ | Gerenciador de janelas (mover, redimensionar, minimizar) |
-| Taskbar | ✅ | Barra de tarefas configurável (posição, tamanho, relógio) |
-| Settings | ✅ | Sistema de configurações (tela, taskbar, janelas, ícones, som) |
-| Icons | ✅ | Sistema de ícones customizáveis (desktop, janelas, arquivos) |
+| Module | Status | Description |
+|--------|--------|-------------|
+| Bootloader | ✅ | 16-bit Real Mode Assembly → 32-bit Protected Mode |
+| Kernel | ✅ | Entry point, panic handler, register context switching |
+| VGA Video | ✅ | 80x25 Text mode, custom colors, cursor management |
+| VESA VBE | ✅ | Graphic mode, multiple resolutions (640x480 up to 1920x1200, 32bpp) |
+| Font | ✅ | 8x16 Bitmap font engine for graphical text rendering |
+| Keyboard | ✅ | PS/2 driver, scancode-to-ASCII translation, callback registration |
+| Timer | ✅ | Programmable Interval Timer (PIT) at 50 Hz, system ticks |
+| IDT / IRQ / ISR | ✅ | 32 CPU exceptions + 16 mapped PIC IRQs |
+| Memory | ✅ | E820 map detection, page-level bitmap allocator, dynamic kernel heap |
+| Paging | ✅ | Page Directory / Page Tables, virtual memory mapping |
+| RAM Compression | ✅ | LZSS compression engine for in-memory data structures |
+| TSS | ✅ | Task State Segment for Ring 0 kernel stack switching |
+| Processes | ✅ | PID lifecycle, states, preemptive round-robin scheduler |
+| Threads | ✅ | Kernel threads (Create, block, yield, round-robin) |
+| ATA Driver | ✅ | PIO mode sector read/write operations for IDE drives |
+| FAT12 | ✅ | File read/write/delete, root directory listing |
+| FAT32 | ✅ | Large disk support (BPB parsing, 32-bit cluster chains) |
+| Unified VFS | ✅ | Abstract file system layer over FAT12 and FAT32 |
+| BMP Engine | ✅ | Parse and render BMP images (1, 4, 8, and 24 bpp, color palettes) |
+| WAV Audio | ✅ | Parse and stream WAV audio files |
+| PCI Bus | ✅ | PCI bus enumeration, BAR configuration, vendor/device scanning |
+| AC97 Driver | ✅ | AC97 audio controller driver (Play, Stop, Volume control via DMA) |
+| PC Speaker | ✅ | Frequency tones, beeps, and square-wave melodies |
+| Shell | ✅ | Interactive terminal, scrollback history, diagnostics, Ring 3 executable launcher |
+| App API | ✅ | Public API 0.3, `int 0x80` syscalls, IPC, files, and ZAPP loader |
+| Text Editor | ✅ | Built-in editor with syntax highlighting and word wrap |
+| Media Player | ✅ | WAV audio player with visual playback indicators |
+| Task Manager | ✅ | Real-time monitoring of processes, threads, CPU, and memory |
+| File Manager | ✅ | Graphical and classic explorer (navigate, create, rename, delete) |
+| Desktop Environment | ✅ | Desktop GUI with customizable icons, start menu, and classic fallback |
+| Window Manager | ✅ | Overlapping windows (focus, z-order, titlebars, resize, minimize, move) |
+| Taskbar | ✅ | Taskbar with application buttons, digital clock, and Start Menu |
+| Settings | ✅ | System configuration suite (display, taskbar, window rules, icons, sound) |
+| Icon Registry | ✅ | Customizable icon management (desktop, windows, file extensions) |
 
 ---
 
-## Estrutura do Projeto
+## Project Structure
 
 ```
 Sistema/
-├── Makefile                 # Sistema de build
-├── ROADMAP.md               # Roadmap de desenvolvimento
-├── build/                   # Arquivos de saída
-├── docs/                    # Documentação (13 capítulos + roadmaps)
+├── Makefile                 # Master Build System
+├── ROADMAP.md               # Development roadmap
+├── build/                   # Compiled binaries and disk image outputs
+├── docs/                    # Architectural & module documentation (13 chapters)
 └── src/
-    ├── linker.ld            # Linker script
-    ├── boot/                # Bootloader e segundo estágio (Assembly)
+    ├── linker.ld            # ELF 32-bit Linker script
+    ├── boot/                # Bootloader and Stage 2 loader (Assembly)
     │   ├── boot.asm
     │   └── stage2.asm
-    ├── core/                # Serviços centrais, App API, syscalls e loader
-    ├── kernel/              # Kernel core
-    │   ├── entry.asm        # Entry point Assembly
-    │   ├── kernel.c         # Kernel principal (inicializa 20+ subsistemas)
-    │   ├── panic.c          # Kernel panic
-    │   └── switch.asm       # Context switch
-    ├── drivers/             # Drivers de hardware (13 arquivos)
-    │   ├── ata.c            # Driver ATA PIO (disco)
-    │   ├── idt.c            # IDT + remapeamento PIC
-    │   ├── irq.asm          # IRQ handlers
-    │   ├── isr.asm          # ISR handlers (exceções)
-    │   ├── keyboard.c       # Driver teclado PS/2
-    │   ├── speaker.c        # PC Speaker (som)
-    │   ├── timer.c          # Timer PIT
-    │   ├── tss.c            # Task State Segment
-    │   ├── video.c          # VGA Text Mode
-    │   ├── vesa.c           # VESA BIOS Extensions (modo gráfico)
-    │   ├── font.c           # Fonte bitmap 8x16
-    │   ├── pci.c            # Enumeração PCI
-    │   └── ac97.c           # Driver de áudio AC97
-    ├── memory/              # Gerenciamento de memória
-    │   ├── memory.c         # Bitmap allocator + heap
-    │   ├── paging.c         # Page tables
-    │   └── compress.c       # Compressão LZSS
-    ├── fs/                  # Sistema de arquivos
-    │   ├── fat12.c          # FAT12
-    │   ├── fat32.c          # FAT32
-    │   ├── fs.c             # Interface unificada FAT12/FAT32
-    │   ├── bmp.c            # Leitura de imagens BMP
-    │   └── wav.c            # Leitura de áudio WAV
-    ├── process/             # Processos e IPC
-    │   ├── process.c        # Process manager + scheduler
-    │   └── ipc.c            # Filas, foco e mensagens entre processos
-    ├── thread/              # Threads
+    ├── core/                # Core kernel services, App API, syscalls, and ZAPP loader
+    ├── kernel/              # Core kernel entry, initialization, and context switch
+    │   ├── entry.asm        # Assembly entry point
+    │   ├── kernel.c         # Main kernel logic (initializes 20+ subsystems)
+    │   ├── panic.c          # Kernel panic handling
+    │   └── switch.asm       # Register context switching
+    ├── drivers/             # Hardware device drivers
+    │   ├── ata.c            # ATA PIO disk driver
+    │   ├── idt.c            # IDT configuration & PIC remapping
+    │   ├── irq.asm          # Hardware interrupt request handlers
+    │   ├── isr.asm          # Software interrupt exception handlers
+    │   ├── keyboard.c       # PS/2 keyboard driver
+    │   ├── speaker.c        # PC Speaker sound driver
+    │   ├── timer.c          # PIT timer driver
+    │   ├── tss.c            # Task State Segment driver
+    │   ├── video.c          # VGA 80x25 text mode driver
+    │   ├── vesa.c           # VESA VBE graphics driver
+    │   ├── font.c           # Bitmap font engine
+    │   ├── pci.c            # PCI bus enumerator
+    │   └── ac97.c           # AC97 audio driver
+    ├── memory/              # Memory management subsystem
+    │   ├── memory.c         # Bitmap physical allocator & kernel heap
+    │   ├── paging.c         # Virtual paging directory and table management
+    │   └── compress.c       # LZSS memory compression engine
+    ├── fs/                  # File system subsystem
+    │   ├── fat12.c          # FAT12 driver
+    │   ├── fat32.c          # FAT32 driver
+    │   ├── fs.c             # Unified VFS interface
+    │   ├── bmp.c            # BMP image decoder
+    │   └── wav.c            # WAV audio decoder
+    ├── process/             # Process management & IPC
+    │   ├── process.c        # Process control block manager & scheduler
+    │   └── ipc.c            # Message queues, window focus, and IPC handling
+    ├── thread/              # Threading subsystem
     │   └── thread.c         # Thread scheduler
-    ├── shell/               # Terminal e aplicativos
-    │   ├── shell.c          # Shell interativo, diagnosticos e apps ZAPP
-    │   ├── editor.c         # Editor de texto com syntax highlight
-    │   ├── mediaplayer.c    # Media player (WAV)
-    │   └── taskmanager.c    # Gerenciador de tarefas
-    ├── filemanager/         # Gerenciador de arquivos
-    │   └── filemanager.c    # Explorer clássico/moderno
-    ├── desktop/             # Ambiente desktop
-    │   └── desktop.c        # Desktop com ícones
-    ├── wm/                  # Gerenciador de janelas
-    │   └── wm.c             # Window manager (título, botões, borda)
-    ├── taskbar/             # Barra de tarefas
-    │   └── taskbar.c        # Taskbar com menu Iniciar e relógio
-    ├── settings/            # Sistema de configurações
-    │   └── settings.c       # Configurações (tela, taskbar, janelas, som)
-    ├── icons/               # Sistema de ícones
-    │   └── icons.c          # Ícones customizáveis
-    └── include/             # Headers organizados por módulo
+    ├── shell/               # Interactive terminal & shell applications
+    │   ├── shell.c          # Interactive shell CLI & ZAPP launcher
+    │   ├── editor.c         # Text editor application
+    │   ├── mediaplayer.c    # Audio media player application
+    │   └── taskmanager.c    # Process & thread task manager application
+    ├── filemanager/         # File manager application
+    │   └── filemanager.c    # Dual classic/modern file explorer
+    ├── desktop/             # Graphical Desktop environment
+    │   └── desktop.c        # Desktop renderer & icon layout
+    ├── wm/                  # Window Manager
+    │   └── wm.c             # Window manager (decorations, z-order, events)
+    ├── taskbar/             # Desktop Taskbar
+    │   └── taskbar.c        # Taskbar, clock, and Start Menu implementation
+    ├── settings/            # System Settings application
+    │   └── settings.c       # Settings GUI (display, taskbar, windows, audio)
+    ├── icons/               # Icon management system
+    │   └── icons.c          # Icon registry and drawing helpers
+    └── include/             # Header files organized by module
         ├── types.h, video.h, keyboard.h, idt.h, timer.h,
         ├── memory.h, paging.h, ata.h, fat12.h, fat32.h,
         ├── process.h, thread.h, shell.h, speaker.h, tss.h,
@@ -134,61 +132,59 @@ Sistema/
 
 ---
 
-## Serviços centrais atuais
+## Kernel Core Services
 
-Além dos diretórios mostrados no mapa resumido, `src/core/` concentra
-`log`, `string`, `recovery`, `app_api`, `app_files`, `syscall`, `app_loader`
-e imagens internas de aplicativos. `src/process/` contém tanto o scheduler
-quanto `ipc.c`, responsável por filas e foco. Consulte
-[Arquitetura](docs/02-arquitetura/arquitetura.md) para o mapa de dependências
-atualizado.
+In addition to the directory layout shown above, `src/core/` houses logging (`log.c`), string operations (`string.c`), crash recovery (`recovery.c`), application public API (`app_api.c`), file wrappers (`app_files.c`), system call dispatchers (`syscall.c`), executable application loaders (`app_loader.c`), and embedded application assets. `src/process/` manages the process control tables, scheduling queues, and inter-process communication in `ipc.c`. Consult the [Architecture Documentation](docs/02-arquitetura/arquitetura.md) for full system call details.
 
-## Requisitos
+---
 
-- **NASM** - Assembler (monta Assembly para binário/ELF)
-- **GCC cross-compiler i686-elf** - Compilador C 32-bit freestanding
-- **GNU ld** - Linker ELF 32-bit
-- **QEMU** ou **Bochs** - Emulador para testar
+## Building & Toolchain Setup
 
-### Instalação no Windows
+### Prerequisites
+
+- **NASM** - Netwide Assembler (assembles 16-bit/32-bit x86 Assembly)
+- **GCC i686-elf Cross-Compiler** - Freestanding 32-bit C cross-compiler
+- **GNU ld** - 32-bit ELF Linker
+- **QEMU** or **Bochs** - x86 Emulator for running and debugging
+
+### Windows Setup
 
 ```powershell
-# NASM
+# Install NASM
 winget install nasm
 
-# QEMU
+# Install QEMU
 winget install qemu
 
-# GCC cross-compiler (via WSL ou MinGW)
-# Ou usar: i686-elf-gcc de https://github.com/lordmilko/i686-elf-gcc
+# GCC cross-compiler i686-elf (via WSL, MinGW, or prebuilt toolchain)
+# Recommended toolchain: https://github.com/lordmilko/i686-elf-gcc
 ```
 
-### Instalação no Linux
+### Linux Setup (Ubuntu / Debian)
 
 ```bash
-# Ubuntu/Debian
-sudo apt install nasm gcc make qemu-system-x86
+# Core dependencies
+sudo apt update && sudo apt install nasm gcc make qemu-system-x86
 
-# Para cross-compiler i686-elf (recomendado)
-# Siga: https://wiki.osdev.org/GCC_Cross-Compiler
+# To build an i686-elf cross-compiler:
+# Follow: https://wiki.osdev.org/GCC_Cross-Compiler
 ```
 
-### Configuracao das ferramentas
+### Local Toolchain Configuration
 
-O `Makefile` procura `nasm`, `i686-elf-gcc`, `i686-elf-ld` e `qemu-system-i386` no `PATH`.
-Tambem e possivel definir caminhos especificos em um arquivo local chamado `Makefile.local`.
-Esse arquivo e ignorado pelo Git e nao deve ser enviado ao repositorio.
+The `Makefile` searches for `nasm`, `i686-elf-gcc`, `i686-elf-ld`, and `qemu-system-i386` in your system `PATH`.
+Custom toolchain locations can be specified in an untracked local overrides file named `Makefile.local`.
 
-Exemplo de `Makefile.local`:
+Example `Makefile.local`:
 
 ```makefile
-NASM = nasm
-GCC = i686-elf-gcc
-LD = i686-elf-ld
-QEMU = qemu-system-i386
+NASM = C:\Tools\NASM\nasm.exe
+GCC  = D:\Toolchains\i686-elf-gcc\bin\i686-elf-gcc.exe
+LD   = D:\Toolchains\i686-elf-gcc\bin\i686-elf-ld.exe
+QEMU = C:\Program Files\QEMU\qemu-system-i386.exe
 ```
 
-Ou, em uma execucao isolada:
+Or pass toolchain paths directly on the command line:
 
 ```powershell
 make NASM=nasm GCC=i686-elf-gcc LD=i686-elf-ld QEMU=qemu-system-i386
@@ -196,244 +192,128 @@ make NASM=nasm GCC=i686-elf-gcc LD=i686-elf-ld QEMU=qemu-system-i386
 
 ---
 
-## Como Compilar e Rodar
+## Build & Run Targets
 
 ```bash
-# Compilar tudo
+# Build the complete OS image (build/zephyros.img)
 make
 
-# Compilar e rodar no QEMU
+# Build and launch inside QEMU emulator
 make run
 
-# Compilar com debug (GDB)
+# Build with GDB debugging enabled
 make debug
 
-# Limpar arquivos build
+# Clean build artifacts
 make clean
 ```
 
 ---
 
-## Comandos do Shell
+## Shell Commands
 
-O serviço do Shell é inicializado durante o boot. No fluxo gráfico padrão, o
-Desktop é exibido primeiro e o terminal é aberto pelo item **Shell** da
-taskbar/Menu Iniciar ou pelo ícone do Desktop.
+The interactive Shell initializes automatically during kernel startup. In the default GUI boot flow, the graphical Desktop loads first and the shell terminal can be launched via the **Shell** item on the Start Menu or Desktop icon.
 
-| Comando | Descrição | Exemplo |
-|---------|-----------|---------|
-| `help` | Lista todos os comandos | `help` |
-| `clear` | Limpa a tela e o histórico do terminal | `clear` |
-| `ls` | Lista arquivos no disco | `ls` |
-| `cat` | Exibe conteúdo de arquivo | `cat ARQUIVO.TXT` |
-| `echo` | Executa a primeira app ZAPP interna, com fallback nativo | `echo Ola Mundo` |
-| `mem` | Mostra info de memória | `mem` |
-| `procs` | Lista processos ativos | `procs` |
-| `threads` | Lista threads ativas | `threads` |
-| `uptime` | Tempo desde boot | `uptime` |
-| `beep` | Toca um beep | `beep` ou `beep 440 500` |
-| `melody` | Toca uma escala musical | `melody` |
-| `explorer` | Abre gerenciador de arquivos | `explorer` |
-| `desktop` | Abre ambiente desktop | `desktop` |
-| `taskmgr` | Abre gerenciador de tarefas | `taskmgr` |
-| `edit` | Editor de texto | `edit ARQUIVO.TXT` |
-| `play` | Toca arquivo WAV | `play MUSICA.WAV` |
-| `compress` | Gerencia compressão de RAM | `compress on/off/status` |
-| `settings` | Abre configurações | `settings` |
-| `health` | Mostra o estado dos componentes e do kernel | `health` |
-| `appcheck` | Testa App API, syscalls, arquivos, IPC, loader e argumentos | `appcheck` |
-| `app run` | Executa `.ZAP` ring 3 com argumentos simples | `app run DEMO.ZAP alpha beta` |
-| `app inputtest` | Testa foco e teclado de app ring 3 | `app inputtest` |
-| `app argtest` | Testa argumentos entregues a uma app ring 3 | `app argtest alpha beta` |
-| `usertest` | Executa o processo de teste em modo usuário | `usertest` |
-| `guimode` | Alterna entre `classic` e `modern` | `guimode modern` |
-| `reboot` | Reinicia o sistema | `reboot` |
-| `shutdown` | Desliga o sistema | `shutdown` |
+| Command | Description | Example |
+|---------|-------------|---------|
+| `help` | Display list of all shell commands | `help` |
+| `clear` | Clear terminal screen and scrollback buffer | `clear` |
+| `ls` | List files and directories on disk | `ls` |
+| `cat` | Display text file contents | `cat FILE.TXT` |
+| `echo` | Execute ZAPP binary with native fallback | `echo Hello World` |
+| `mem` | Display physical memory allocation stats | `mem` |
+| `procs` | List active processes and PIDs | `procs` |
+| `threads` | List active kernel threads | `threads` |
+| `uptime` | System uptime since boot | `uptime` |
+| `beep` | Trigger PC Speaker frequency tone | `beep` or `beep 440 500` |
+| `melody` | Play musical scale sequence via PC Speaker | `melody` |
+| `explorer` | Launch File Manager application | `explorer` |
+| `desktop` | Launch graphical Desktop environment | `desktop` |
+| `taskmgr` | Launch Task Manager application | `taskmgr` |
+| `edit` | Launch built-in Text Editor | `edit FILE.TXT` |
+| `play` | Stream WAV audio file via AC97 / PC Speaker | `play MUSIC.WAV` |
+| `compress` | Toggle LZSS memory compression | `compress on/off/status` |
+| `settings` | Open Settings configuration utility | `settings` |
+| `health` | Report overall kernel subsystem health status | `health` |
+| `appcheck` | Validate App API, syscalls, VFS, IPC, and loader | `appcheck` |
+| `app run` | Launch a Ring 3 `.ZAP` executable with arguments | `app run DEMO.ZAP alpha beta` |
+| `app inputtest` | Test focus and input handling of Ring 3 app | `app inputtest` |
+| `app argtest` | Test argument passing to Ring 3 application | `app argtest alpha beta` |
+| `usertest` | Execute user-mode test process | `usertest` |
+| `guimode` | Switch between `classic` (text) and `modern` (VESA) | `guimode modern` |
+| `reboot` | Perform CPU hardware reset | `reboot` |
+| `shutdown` | Shutdown system via ACPI / QEMU exit | `shutdown` |
 
-> **Nota:** Para a lista completa de atalhos de teclado e comandos detalhados do sistema, consulte: [Atalhos e Comandos](docs/atalhos_e_comandos.md).
+> **Note:** For full command documentation and keyboard shortcuts, see [Shortcuts and Commands](docs/atalhos_e_comandos.md).
 
 ---
 
-## Arquitetura
+## System Architecture Overview
 
-### Boot (16-bit → 32-bit)
+### Boot Flow (16-bit → 32-bit)
 
-1. BIOS carrega `boot.asm` em `0x7C00`
-2. Detecta memória via BIOS int 0x15 (E820)
-3. Carrega kernel de 30 setores para `0x1000`
-4. Configura GDT (Global Descriptor Table)
-5. Switch para Protected Mode (32-bit)
-6. Passa mapa de memória em ESI para o kernel
+1. BIOS loads `boot.asm` sector to physical address `0x7C00`.
+2. Queries system RAM layout using BIOS Interrupt 0x15 (E820 map).
+3. Reads 30 kernel sectors from disk into `0x1000`.
+4. Configures Global Descriptor Table (GDT) flat memory model.
+5. Switches CPU control register CR0 to enter 32-bit Protected Mode.
+6. Transfers E820 memory map address in `ESI` register to kernel entry.
 
-### Kernel
+### Kernel Initialization
 
-1. Inicializa vídeo VGA text mode
-2. Configura IDT (Interrupt Descriptor Table)
-3. Remapeia PIC master/slave
-4. Inicializa drivers (teclado, timer)
-5. Detecta memória e cria bitmap allocator
-6. Configura paging (page tables)
-7. Inicializa TSS (Task State Segment)
-8. Cria processos e threads
-9. Detecta disco e monta FAT12/FAT32 (fs unificado)
-10. Inicializa PC Speaker
-11. Inicializa VESA (modo gráfico) e fontes
-12. Inicializa AC97 (áudio)
-13. Inicializa ícones, taskbar, desktop, configurações, window manager
-14. Inicia shell interativo com desktop
+1. Initializes VGA text mode buffer.
+2. Constructs Interrupt Descriptor Table (IDT) for 256 gates.
+3. Remaps Programmable Interrupt Controller (PIC Master `0x20` → 32, Slave `0xA0` → 40).
+4. Registers PS/2 Keyboard and PIT Timer IRQ handlers.
+5. Parses E820 memory map and initializes physical page bitmap allocator.
+6. Sets up initial virtual paging structures (Page Directory / Page Tables).
+7. Initializes Task State Segment (TSS) for Ring 0 kernel stack management.
+8. Spawns system processes and background threads.
+9. Mounts ATA storage drives and initializes unified FAT12/FAT32 file system.
+10. Initializes PC Speaker sound driver.
+11. Enumerates VESA VBE graphic modes and initializes font renderer.
+12. Scans PCI bus and attaches AC97 audio controller driver.
+13. Loads Desktop icon registry, taskbar, window manager, and settings.
+14. Spawns interactive Shell and Desktop graphical environment.
 
-### Memória
+### Physical Memory Layout
 
 ```
-0x00000 - 0x7C00   Bootloader (reusado após boot)
-0x7C00  - 0x8000   Boot sector
-0x8000  - 0x10000  Mapa de memória (E820)
-0x1000  - 0x20000  Kernel em disco
-0x20000 - 0x120000 Heap (1 MB)
-0x90000 - 0x9FFFF  Kernel stack
-0xB8000 - 0xBFFFF  VGA video memory
+0x00000 - 0x7C00   Real mode BIOS workspace (reused post-boot)
+0x7C00  - 0x8000   Boot sector location
+0x8000  - 0x10000  E820 Memory map buffer
+0x1000  - 0x20000  Kernel image binary
+0x20000 - 0x120000 Kernel dynamic heap space (1 MB)
+0x90000 - 0x9FFFF  Kernel execution stack
+0xB8000 - 0xBFFFF  VGA text video memory buffer
 ```
 
-### Processos
+### Process Management
 
-- **PID 1-64** - Processos do sistema
-- **Estados**: UNUSED, READY, RUNNING, BLOCKED, ZOMBIE
-- **Scheduler**: Round-robin preemptivo (via timer IRQ0)
-- **Context switch**: Salva/restaura todos os registradores em Assembly
-- **Modo usuário**: processos ZAPP executam em ring 3 com diretório de páginas isolado
-
-### Plataforma de aplicativos
-
-- App API pública `0.3`, sem expor endereços internos do kernel.
-- Syscalls `0–9` no vetor `int 0x80`, com validação de ponteiros e tamanhos.
-- Imagens flat i386 `ZAPP` carregadas de arquivos `.ZAP` ou de imagens internas.
-- Argumentos simples em página de lançamento dedicada; até 8 argumentos e 511 caracteres.
-- Foco de teclado exclusivo para a app externa; `F12` cancela somente a app em foco.
-- `echo` é a primeira migração nativa e mantém fallback se o loader estiver indisponível.
+- **PIDs 1-64**: Reserved for system kernel tasks and desktop processes.
+- **States**: `UNUSED`, `READY`, `RUNNING`, `BLOCKED`, `ZOMBIE`.
+- **Scheduler**: Preemptive round-robin algorithm driven by IRQ0 timer tick interrupts.
+- **Context Switch**: Assembly routine (`switch.asm`) saves and restores general-purpose registers and flags.
+- **User Mode**: Isolated Ring 3 process execution for ZAPP applications with isolated page directories.
 
 ---
 
-## Módulos Detalhados
+## Contributing
 
-### Bootloader (`src/boot/boot.asm`)
-- BPB (BIOS Parameter Block) para FAT12
-- Detecção de memória E820
-- Load do kernel via BIOS int 0x13
-- Switch para Protected Mode
-
-### IDT (`src/drivers/idt.c`)
-- 32 ISRs para exceções do CPU (div by zero, page fault, etc.)
-- 16 IRQs mapeadas para IDT 32-47
-- Remapeamento PIC master (0x20) → 32, slave (0xA0) → 40
-
-### VESA (`src/drivers/vesa.c`)
-- Modo gráfico via VESA BIOS Extensions (VBE)
-- Enumeração automática de modos (640x480 a 1920x1200, 32bpp)
-- Primitivas: pixel, retângulo, linha, círculo, bitmap, texto com fonte
-
-### PCI (`src/drivers/pci.c`)
-- Enumeração do barramento PCI (256 buses × 32 devices × 8 functions)
-- Leitura/escrita de configuração (BARs, IRQ, classe)
-- Busca por vendor/device ID e classe/subclasse
-- Bus Mastering enable
-
-### AC97 (`src/drivers/ac97.c`)
-- Driver de áudio via controladora AC97 encontrada no PCI
-- Reset, power management, configuração de sample rate (44100 Hz)
-- Play/Stop com buffer DMA, controle de volume (0-31)
-- Handler de interrupção
-
-### Memória (`src/memory/memory.c`)
-- Bitmap allocator: 1 bit por página (4KB)
-- Heap: first-fit com coalescência de blocos livres
-- `kmalloc()`, `kfree()`, `kmalloc_aligned()`
-
-### Compress (`src/memory/compress.c`)
-- Compressão LZSS com dicionário deslizante
-- `compress_data()` / `decompress_data()`
-- Estatísticas de compressão (taxa, espaço economizado)
-- Ativável/desativável via shell
-
-### FAT12 (`src/fs/fat12.c`)
-- Leitura do BPB (BIOS Parameter Block)
-- Interpretação da FAT (File Allocation Table)
-- Leitura/escrita de arquivos por cluster chain
-- Listagem de diretório raiz
-
-### FAT32 (`src/fs/fat32.c`)
-- Suporte a discos com BPB FAT32 (sectors_per_fat > 0)
-- Cluster chain de 32 bits (0x0FFFFFFF = EOF)
-- Leitura/escrita/exclusão de arquivos
-- Listagem de diretório com suporte a cluster chain
-
-### FS Unificado (`src/fs/fs.c`)
-- Interface única: `fs_read_file()`, `fs_write_file()`, `fs_delete_file()`, `fs_list_dir()`
-- Detecta automaticamente FAT12 ou FAT32
-- `fs_get_info()` retorna informações do sistema de arquivos ativo
-
-### BMP (`src/fs/bmp.c`)
-- Leitura de imagens BMP (1, 4, 8, 24 bpp)
-- Renderização (`bmp_draw`) e redimensionamento (`bmp_draw_scaled`)
-- Suporte a paleta de cores (bpp <= 8)
-
-### WAV (`src/fs/wav.c`)
-- Parse de arquivos WAV (RIFF/WAVE)
-- Suporte a múltiplos formatos (sample rate, bits, canais)
-- Reprodução via AC97 (`wav_play`)
-- Cálculo de duração
-
-### Desktop (`src/desktop/desktop.c`)
-- Ambiente desktop com ícones (Shell, Explorer, TaskMgr)
-- Navegação por setas e Enter para abrir apps
-- Integração com taskbar
-
-### Window Manager (`src/wm/wm.c`)
-- Múltiplas janelas com foco, Z-order, título e botões
-- Botões de fechar/minimizar/maximizar (posição e ordem configuráveis)
-- Redimensionamento e movimentação
-- Atalhos: F1=foco próximo, Esc=fechar, F5=minimizar, F6=max/min
-
-### Taskbar (`src/taskbar/taskbar.c`)
-- Barra de tarefas com botões de aplicativos e relógio (HH:MM)
-- Menu Iniciar: Desktop, Shell, Explorer, TaskMgr, Config, Reiniciar, Desligar
-- Menu de configuração (F1): posição, tamanho, fixar
-- Posições: baixo, cima, esquerda, direita, custom
-
-### Settings (`src/settings/settings.c`)
-- Sistema completo de configurações com categorias: Tela, Taskbar, Janelas, Ícones, Sistema, Som, Sobre
-- Editor visual de ícones (caractere, cor, cor de seleção)
-- Aplicação em tempo real das configurações (taskbar, WM)
-
-### Icons (`src/icons/icons.c`)
-- Registry com 4 categorias: desktop, WM, file manager, taskbar
-- Funções get/set para cada ícone
-- `icons_reset_defaults()` restaura valores padrão
+Contributions are welcome! Please read [`CONTRIBUTING.md`](CONTRIBUTING.md) before submitting pull requests or opening issues.
 
 ---
 
-## Troubleshooting
-
-### "Nenhum disco encontrado"
-O QEMU precisa de uma imagem de disco. O Makefile já gera `build/zephyros.img`.
-
-### "FAT12 não encontrado"
-A imagem precisa ter partição FAT12. Para testar, crie uma imagem FAT12 separada ou use um floppy virtual.
-
-### Kernel não inicia
-Verifique se o cross-compiler está correto. Use `i686-elf-gcc` em vez de `gcc` padrão.
-
----
-
-## Referências
+## References & Resources
 
 - [OSDev Wiki](https://wiki.osdev.org)
-- [Writing a Simple OS from Scratch](https://www.cs.bham.ac.uk/~exr/lectures/opsys/10_11/lectures/os-dev.pdf)
-- [James Molloy's Kernel Tutorial](http://www.jamesmolloy.co.uk/tutorial_html/)
-- [OSDev Wiki - FAT12](https://wiki.osdev.org/FAT12)
-- [OSDev Wiki - ATA PIO](https://wiki.osdev.org/ATA PIO_Mode)
+- [Writing a Simple OS from Scratch (University of Birmingham)](https://www.cs.bham.ac.uk/~exr/lectures/opsys/10_11/lectures/os-dev.pdf)
+- [James Molloy's Kernel Development Tutorial](http://www.jamesmolloy.co.uk/tutorial_html/)
+- [OSDev Wiki - FAT12 File System](https://wiki.osdev.org/FAT12)
+- [OSDev Wiki - ATA PIO Mode](https://wiki.osdev.org/ATA_PIO_Mode)
 
 ---
 
-## Licença
+## License
 
-Este projeto é distribuído sob a [Licença MIT](LICENSE).
+This project is open-source and licensed under the [MIT License](LICENSE).
