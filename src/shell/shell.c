@@ -78,6 +78,8 @@ static char appcheck_oversized_args[APP_LAUNCH_MAX_TEXT + 1U];
 static shell_q2check_t shell_q2check;
 
 #define SHELL_SCANCODE_EXTENDED 0xE0
+#define SHELL_SCANCODE_ISO_SLASH 0x56U
+#define SHELL_SCANCODE_ABNT2_SLASH 0x73U
 #define SHELL_SCANCODE_UP       0x48
 #define SHELL_SCANCODE_DOWN     0x50
 #define SHELL_SCANCODE_PAGE_UP  0x49
@@ -2258,8 +2260,10 @@ void shell_handle_key(uint8_t scancode) {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
-    /* A tecla extra ABNT2 tambem precisa funcionar no parser local do Shell. */
-    char c = scancode == 0x56U ? '/' : scancode_table[scancode];
+    /* QEMU pode encaminhar a barra ABNT2 por dois scancodes fisicos. */
+    char c = (scancode == SHELL_SCANCODE_ISO_SLASH ||
+              scancode == SHELL_SCANCODE_ABNT2_SLASH) ? '/' :
+             scancode_table[scancode];
 
     if (scancode == 0x0E) {
         shell_return_to_terminal_tail();

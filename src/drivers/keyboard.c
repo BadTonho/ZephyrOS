@@ -8,6 +8,8 @@
 #define KEYBOARD_QUEUE_SIZE 64
 #define KEYBOARD_DISPATCH_BUDGET 8U
 #define KEYBOARD_SCANCODE_F12 0x58U
+#define KEYBOARD_SCANCODE_ISO_SLASH 0x56U
+#define KEYBOARD_SCANCODE_ABNT2_SLASH 0x73U
 
 static volatile uint8_t event_queue[KEYBOARD_QUEUE_SIZE];
 static volatile uint8_t queue_head;
@@ -35,8 +37,9 @@ static const char scancode_table[128] = {
 };
 
 char keyboard_scancode_to_ascii(uint8_t scancode) {
-    /* Tecla extra de teclados ABNT2, usada como barra no layout brasileiro. */
-    if (scancode == 0x56U) return '/';
+    /* Hosts podem entregar a barra ABNT2 como a tecla ISO extra ou ABNT2. */
+    if (scancode == KEYBOARD_SCANCODE_ISO_SLASH ||
+        scancode == KEYBOARD_SCANCODE_ABNT2_SLASH) return '/';
     if (scancode < 128) {
         return scancode_table[scancode];
     }
