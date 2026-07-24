@@ -1,0 +1,1 @@
+criar uma verificação de arquivos do sistema caso tem algo errado, o proprio sistema consegue corrigir
