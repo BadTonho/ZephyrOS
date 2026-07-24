@@ -49,9 +49,9 @@ K2 nao reivindica ganho de desempenho; o registro de otimizacao permanece
 `N/D`. A validacao usa os novos deltas de yields cooperativos, preempcoes de
 ring 3 e fallbacks do Idle apenas para confirmar o contrato do scheduler.
 
-| Cenario | Passos QEMU | Resultado esperado |
+| Cenario | Passos QEMU | Registro K2 |
 |---|---|---|
-| K2-A invariantes | `schedcheck`; `kmetrics`. | Todas as linhas de `schedcheck` em `OK`; quantum de usuario igual a 1 tick. |
-| K2-B preempcao | `kmetrics reset`; `app inputtest`; aguardar; `F12`; `kmetrics`; `schedcheck`. | Delta positivo de preempcoes de usuario e trocas; foco e prompt restaurados. |
-| K2-C regressao | `app outputtest`, `q2check`, `usertest fault`, `threadtest`, `appcheck`, `health` e `procs`. | Sem panic, sem ZAPP/zumbi residual e com `schedcheck` aprovado ao final. |
-| K2-D interfaces | Nos modos classic e modern: abrir/fechar Desktop, Explorer, Settings e Task Manager; `schedcheck`; `kmetrics`. | Shell e interfaces operacionais; invariantes continuam aprovados. |
+| K2-A invariantes | `schedcheck`; `kmetrics`. | Concluido: todas as linhas em `OK`; quantum de usuario confirmado em 1 tick. |
+| K2-B preempcao | `kmetrics reset`; `app inputtest`; aguardar; `F12`; `kmetrics`; `schedcheck`. | Concluido: preempcoes de usuario positivas; foco, prompt e invariantes restaurados. |
+| K2-C regressao | `app outputtest`, `q2check`, `usertest fault`, `threadtest`, `appcheck`, `health` e `procs`. | Concluido: sem panic ou processo residual; erros deliberados de `appcheck` permaneceram controlados. |
+| K2-D interfaces | Nos modos classic e modern: abrir/fechar Desktop, Explorer, Settings e Task Manager; `schedcheck`; `kmetrics`. | Concluido: Shell e interfaces operacionais nos dois modos; invariantes aprovados. |

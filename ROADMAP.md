@@ -4,7 +4,7 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
-## Progresso Geral: base do sistema concluída; Fase 7 e K1 validadas, K2 em validação
+## Progresso Geral: base do sistema concluída; Fase 7, K1 e K2 validadas
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%

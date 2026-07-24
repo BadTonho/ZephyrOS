@@ -27,7 +27,7 @@ contratos de processos, memoria, IPC e diagnostico ja validados.
 CPU real por RDTSC/PMU fica adiada ate existir calibracao confiavel e uma
 politica propria; esta etapa nao altera quantum, prioridade, heap ou paging.
 
-## Etapa K2 - Scheduler e processos (em validacao)
+## Etapa K2 - Scheduler e processos (validada no QEMU)
 
 - [x] Revisar invariantes e pontos de troca de contexto: round-robin entre
   processos normais, Idle somente como fallback, preempcao de ring 3 e yields
@@ -38,7 +38,9 @@ politica propria; esta etapa nao altera quantum, prioridade, heap ou paging.
   de execucao que justifique uma evolucao.
 - [x] Manter encerramento de ring 3 isolado e processos essenciais protegidos;
   `schedcheck` consulta os invariantes sem criar processos.
-- [ ] Validar build, diagnosticos e matriz QEMU antes de concluir a etapa.
+- [x] Validar build, diagnosticos e matriz QEMU: `schedcheck`, preempcao por
+  `app inputtest`/`F12`, testes ring 3, `threadtest`, `appcheck`, `health`,
+  ausencia de processos residuais e interfaces classica/moderna.
 
 ## Etapa K3 - Memoria e paging
 
