@@ -12,10 +12,10 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   3, syscalls, loader ZAPP, foco, teclado, argumentos simples, as migracoes
   internas de `echo`, `uptime` e `mem`, e o contrato de console e ciclo de
   vida validado por `app outputtest [fail]`.
-- Estabilizacao e qualidade: Q1 validado no QEMU, com matriz de regressao,
-  retorno de foco, prompt unico e referencia para os resultados do `appcheck`;
-  Q2 implementado e aguardando validacao do diagnostico de falhas isoladas e
-  do atalho compacto `q2check`.
+- Estabilizacao e qualidade: Q1 e Q2 validados no QEMU, com matriz de
+  regressao, retorno de foco, prompt unico, referencia para os resultados do
+  `appcheck`, politica de logs, resumo seguro de falhas isoladas e o atalho
+  compacto `q2check`.
 - Interface: Desktop, Explorer, Task Manager e Settings possuem modo moderno
   e fallback classico; a taskbar e o Window Manager grafico ainda sao etapas
   futuras.
