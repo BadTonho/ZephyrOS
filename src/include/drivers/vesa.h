@@ -40,6 +40,16 @@ typedef union {
 } vesa_color_t;
 
 typedef struct {
+    uint32_t presentations;
+    uint32_t full_presentations;
+    uint32_t partial_presentations;
+    uint32_t bytes_copied;
+    uint32_t last_copy_bytes;
+    uint32_t last_copy_ticks;
+    uint32_t max_copy_ticks;
+} vesa_metrics_t;
+
+typedef struct {
     uint32_t framebuffer_addr;
     uint16_t pitch;
     uint16_t width;
@@ -78,6 +88,7 @@ int vesa_init_backbuffer(void);
 void vesa_disable(void);
 int vesa_has_backbuffer(void);
 vesa_mode_t* vesa_get_mode(void);
+void vesa_get_metrics(vesa_metrics_t* metrics);
 uint32_t vesa_rgb(uint8_t r, uint8_t g, uint8_t b);
 uint32_t vesa_rgba(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 

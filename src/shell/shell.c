@@ -30,6 +30,7 @@
 #include "core/app_package.h"
 #include "core/syscall.h"
 #include "drivers/idt.h"
+#include "drivers/vesa.h"
 
 #define SHELL_Q2CHECK_FAULT_RUNS 2U
 
@@ -58,6 +59,19 @@ typedef struct {
     shell_q2check_state_t state;
 } shell_q2check_t;
 
+typedef struct {
+    uint32_t ticks;
+    keyboard_metrics_t keyboard;
+    ipc_stats_t ipc;
+    scheduler_stats_t scheduler;
+    vesa_metrics_t vesa;
+} shell_kmetrics_snapshot_t;
+
+typedef struct {
+    shell_kmetrics_snapshot_t snapshot;
+    uint8_t valid;
+} shell_kmetrics_baseline_t;
+
 static char input_buffer[SHELL_BUFFER_SIZE];
 static char appcheck_oversized_text[APP_API_MAX_TEXT_SIZE + 1];
 static uint8_t appcheck_demo_image[APP_IMAGE_MAX_FILE_SIZE];
@@ -76,6 +90,7 @@ static shell_builtin_app_t shell_builtin_loader_app = SHELL_BUILTIN_APP_NONE;
 static shell_builtin_app_t shell_appcheck_migration_app = SHELL_BUILTIN_APP_NONE;
 static char appcheck_oversized_args[APP_LAUNCH_MAX_TEXT + 1U];
 static shell_q2check_t shell_q2check;
+static shell_kmetrics_baseline_t shell_kmetrics_baseline;
 
 #define SHELL_SCANCODE_EXTENDED 0xE0
 #define SHELL_SCANCODE_ISO_SLASH 0x56U
@@ -798,6 +813,7 @@ static void cmd_help(void) {
     video_print("  stats    - Mostra estatisticas de compressao\n", 0x07);
     video_print("  mouse    - Mostra status do mouse PS/2\n", 0x07);
     video_print("  health   - Mostra estado dos componentes (use PgUp/PgDn)\n", 0x07);
+    video_print("  kmetrics - Mostra linha-base de metricas do kernel\n", 0x07);
     video_print("  q2check  - Executa diagnostico compacto da Q2\n", 0x07);
     video_print("  appcheck - Testa API, arquivos, IPC e loader\n", 0x07);
     video_print("  pkg      - Gerencia pacotes .ZPK locais\n", 0x07);
@@ -1012,6 +1028,169 @@ static void cmd_health(void) {
     }
 
     cmd_health_print_kernel();
+    video_end_update();
+}
+
+static uint32_t shell_kmetrics_delta(uint32_t current, uint32_t baseline) {
+    return current - baseline;
+}
+
+static void shell_kmetrics_take_snapshot(shell_kmetrics_snapshot_t* snapshot) {
+    if (!snapshot) {
+        LOG_ERROR("SHELL", "Destino nulo ao capturar metricas K1");
+        return;
+    }
+
+    kmemset(snapshot, 0, sizeof(shell_kmetrics_snapshot_t));
+    snapshot->ticks = timer_get_ticks();
+    keyboard_get_metrics(&snapshot->keyboard);
+    ipc_get_stats(&snapshot->ipc);
+    scheduler_get_stats(&snapshot->scheduler);
+    vesa_get_metrics(&snapshot->vesa);
+}
+
+static void cmd_kmetrics_print_scheduler(
+    const shell_kmetrics_snapshot_t* current,
+    const shell_kmetrics_snapshot_t* baseline) {
+    video_print("  Scheduler: trocas=", 0x07);
+    print_num(shell_kmetrics_delta(current->scheduler.context_switches,
+                                   baseline->scheduler.context_switches));
+    video_print(" READY=", 0x08);
+    print_num(process_get_state_count(PROCESS_STATE_READY));
+    video_print(" RUNNING=", 0x08);
+    print_num(process_get_state_count(PROCESS_STATE_RUNNING));
+    video_print(" BLOCKED=", 0x08);
+    print_num(process_get_state_count(PROCESS_STATE_BLOCKED));
+    video_print(" ZOMBIE=", 0x08);
+    print_num(process_get_state_count(PROCESS_STATE_ZOMBIE));
+    video_print("\n", 0x07);
+}
+
+static void cmd_kmetrics_print_queues(
+    const shell_kmetrics_snapshot_t* current,
+    const shell_kmetrics_snapshot_t* baseline) {
+    video_print("  Filas: teclado=", 0x07);
+    print_num(current->keyboard.queued);
+    video_print("/", 0x08);
+    print_num(current->keyboard.capacity);
+    video_print(" descartes=", 0x08);
+    print_num(shell_kmetrics_delta(current->keyboard.dropped,
+                                   baseline->keyboard.dropped));
+    video_print("\n", 0x07);
+    video_print("         IPC pendentes=", 0x07);
+    print_num(ipc_get_pending_count());
+    video_print(" capacidade_por_processo=", 0x08);
+    print_num(IPC_MSG_QUEUE_SIZE - 1U);
+    video_print(" enviados=", 0x08);
+    print_num(shell_kmetrics_delta(current->ipc.sent, baseline->ipc.sent));
+    video_print(" recebidos=", 0x08);
+    print_num(shell_kmetrics_delta(current->ipc.received, baseline->ipc.received));
+    video_print(" falhas=", 0x08);
+    print_num(shell_kmetrics_delta(current->ipc.failed, baseline->ipc.failed));
+    video_print(" cheias=", 0x08);
+    print_num(shell_kmetrics_delta(current->ipc.queue_full,
+                                   baseline->ipc.queue_full));
+    video_print("\n", 0x07);
+}
+
+static void cmd_kmetrics_print_memory(void) {
+    memory_heap_stats_t heap;
+
+    memory_get_heap_stats(&heap);
+    video_print("  Memoria PMM: usada=", 0x07);
+    print_num(memory_get_used() / 1024U);
+    video_print(" KB livre=", 0x08);
+    print_num(memory_get_free() / 1024U);
+    video_print(" KB paginas_livres=", 0x08);
+    print_num(memory_get_free_pages());
+    video_print("\n", 0x07);
+    video_print("  Heap: ", 0x07);
+    if (!heap.initialized) {
+        video_print("N/D\n", 0x08);
+        return;
+    }
+    video_print("usado=", 0x07);
+    print_num(heap.used_bytes / 1024U);
+    video_print(" KB livre=", 0x08);
+    print_num(heap.free_bytes / 1024U);
+    video_print(" KB total=", 0x08);
+    print_num(heap.total_bytes / 1024U);
+    video_print(" KB\n", 0x07);
+}
+
+static void cmd_kmetrics_print_vesa(
+    const shell_kmetrics_snapshot_t* current,
+    const shell_kmetrics_snapshot_t* baseline) {
+    vesa_mode_t* mode = vesa_get_mode();
+    uint32_t presentations;
+
+    video_print("  VESA: ", 0x07);
+    if (!mode || !mode->initialized || !vesa_has_backbuffer()) {
+        video_print("N/D\n", 0x08);
+        return;
+    }
+    presentations = shell_kmetrics_delta(current->vesa.presentations,
+                                         baseline->vesa.presentations);
+    video_print("apresentacoes=", 0x07);
+    print_num(presentations);
+    video_print(" completas=", 0x08);
+    print_num(shell_kmetrics_delta(current->vesa.full_presentations,
+                                   baseline->vesa.full_presentations));
+    video_print(" parciais=", 0x08);
+    print_num(shell_kmetrics_delta(current->vesa.partial_presentations,
+                                   baseline->vesa.partial_presentations));
+    video_print(" bytes=", 0x08);
+    print_num(shell_kmetrics_delta(current->vesa.bytes_copied,
+                                   baseline->vesa.bytes_copied));
+    video_print("\n    ultima=", 0x08);
+    if (presentations == 0) {
+        video_print("N/D", 0x08);
+    } else {
+        print_num(current->vesa.last_copy_bytes);
+        video_print(" bytes/", 0x08);
+        print_num(current->vesa.last_copy_ticks);
+        video_print(" ticks", 0x08);
+    }
+    video_print(" max_boot=", 0x08);
+    print_num(current->vesa.max_copy_ticks);
+    video_print("\n", 0x07);
+}
+
+static void cmd_kmetrics(const char* args) {
+    shell_kmetrics_snapshot_t current;
+    shell_kmetrics_snapshot_t empty;
+    const shell_kmetrics_snapshot_t* baseline;
+
+    if (*args) {
+        if (kstrcmp(args, "reset") != 0) {
+            video_print("Uso: kmetrics [reset]\n", 0x0C);
+            return;
+        }
+        shell_kmetrics_take_snapshot(&shell_kmetrics_baseline.snapshot);
+        shell_kmetrics_baseline.valid = 1;
+        video_print("Linha-base K1 capturada.\n", 0x0A);
+        return;
+    }
+
+    shell_kmetrics_take_snapshot(&current);
+    kmemset(&empty, 0, sizeof(shell_kmetrics_snapshot_t));
+    baseline = shell_kmetrics_baseline.valid ?
+               &shell_kmetrics_baseline.snapshot : &empty;
+    video_begin_update();
+    video_print(shell_kmetrics_baseline.valid ?
+                "Metricas K1 (desde reset):\n" :
+                "Metricas K1 (desde boot):\n", 0x0B);
+    video_print("  PIT: ticks=", 0x07);
+    print_num(shell_kmetrics_delta(current.ticks, baseline->ticks));
+    video_print(" frequencia=", 0x08);
+    print_num(timer_get_frequency());
+    video_print(" Hz\n", 0x07);
+    video_print("  CPU real: N/D (RDTSC/PMU adiado)\n", 0x07);
+    video_print("  CPU estimada: TCK% do Task Manager\n", 0x08);
+    cmd_kmetrics_print_scheduler(&current, baseline);
+    cmd_kmetrics_print_queues(&current, baseline);
+    cmd_kmetrics_print_memory();
+    cmd_kmetrics_print_vesa(&current, baseline);
     video_end_update();
 }
 
@@ -2089,6 +2268,7 @@ static void cmd_shutdown(void) {
 void shell_init(void) {
     shell_reset_input();
     shell_prompt_visible = 0;
+    kmemset(&shell_kmetrics_baseline, 0, sizeof(shell_kmetrics_baseline));
 }
 
 static void cmd_threadtest(void) {
@@ -2343,6 +2523,8 @@ int shell_process_command(const char* input) {
         cmd_uptime();
     } else if (kstrcmp(cmd, "health") == 0) {
         cmd_health();
+    } else if (kstrcmp(cmd, "kmetrics") == 0) {
+        cmd_kmetrics(input);
     } else if (kstrcmp(cmd, "q2check") == 0) {
         cmd_q2check();
     } else if (kstrcmp(cmd, "appcheck") == 0) {

@@ -202,7 +202,7 @@ Gerenciador de tarefas com monitoramento de processos, CPU, memória e threads.
 
 | Aba | Conteúdo |
 |-----|----------|
-| Processos | PID, nome, estado, CPU, tipo, tempo, espera e painel de detalhes |
+| Processos | PID, nome, estado, TCK%, tipo, tempo, espera e painel de detalhes |
 | Memória | Total, usada, livre, páginas, percentual e informações ATA quando disponíveis |
 | Threads | Estado, espera, EIP, ESP e stack sem desreferenciar endereços |
 
@@ -231,13 +231,17 @@ fontes de dados, botões de janela e arraste pela barra de título.
 ### Cálculo de CPU
 
 ```c
-static uint32_t last_cpu_ticks = 0;
-static uint32_t last_proc_ticks[64] = {0};
-static uint32_t cpu_usage[64] = {0};
+static uint32_t last_tick_sample = 0;
+static uint32_t last_process_ticks[64] = {0};
+static uint32_t tick_usage[64] = {0};
 
 // A cada refresh, calcula delta de ticks por processo
 // e divide pelo total de ticks decorridos
 ```
+
+O rotulo `TCK%` deixa explicito que este valor e uma estimativa da participacao
+nos ticks do PIT, nao uma medicao de uso real de CPU. RDTSC/PMU permanecem
+adiados ate existir calibracao confiavel.
 
 ### API
 

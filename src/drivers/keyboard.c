@@ -15,6 +15,7 @@ static volatile uint8_t event_queue[KEYBOARD_QUEUE_SIZE];
 static volatile uint8_t queue_head;
 static volatile uint8_t queue_tail;
 static volatile uint32_t dropped_events;
+static volatile uint32_t dropped_total;
 static uint8_t drop_warning_active;
 static uint8_t forward_warning_active;
 
@@ -51,6 +52,7 @@ void keyboard_init(void) {
     queue_head = 0;
     queue_tail = 0;
     dropped_events = 0;
+    dropped_total = 0;
     drop_warning_active = 0;
     forward_warning_active = 0;
     if (idt_register_handler(33, keyboard_handler) != OK) {
@@ -70,6 +72,7 @@ void keyboard_handler(registers_t* regs) {
     uint8_t next_head = (uint8_t)((queue_head + 1) % KEYBOARD_QUEUE_SIZE);
     if (next_head == queue_tail) {
         dropped_events++;
+        dropped_total++;
         return;
     }
 
@@ -159,6 +162,23 @@ void keyboard_process_events(void) {
         }
         forward_warning_active = 1;
     }
+}
+
+void keyboard_get_metrics(keyboard_metrics_t* metrics) {
+    uint8_t head;
+    uint8_t tail;
+
+    if (!metrics) {
+        LOG_ERROR("KBD", "Destino nulo ao consultar metricas");
+        return;
+    }
+
+    head = queue_head;
+    tail = queue_tail;
+    metrics->queued = head >= tail ? (uint32_t)(head - tail) :
+                      KEYBOARD_QUEUE_SIZE - tail + head;
+    metrics->capacity = KEYBOARD_QUEUE_SIZE - 1U;
+    metrics->dropped = dropped_total;
 }
 
 

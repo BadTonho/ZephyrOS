@@ -4,7 +4,7 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
-## Progresso Geral: base do sistema concluída; Fase 7 de pacotes validada
+## Progresso Geral: base do sistema concluída; Fase 7 validada e K1 em validação
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
@@ -111,6 +111,7 @@ Plataforma de aplicativos:   [████████████████�
 | `guitest` | Testa primitivas GUI 2D |
 | `guimode` | Altera entre gui classica e moderna |
 | `health` | Exibe metricas e estado de recovery |
+| `kmetrics [reset]` | Coleta linha-base de PIT, filas, memoria e VESA |
 | `q2check` | Executa diagnostico compacto da etapa Q2 |
 | `appcheck` | Testa API, arquivos, IPC e carregador |
 | `app run <arq> [args]` | Executa aplicativo ring 3 com argumentos simples |
@@ -204,7 +205,7 @@ Plataforma de aplicativos:   [████████████████�
 - [x] Botões: fechar, minimizar, maximizar (posição e ordem configuráveis)
 - [x] Barra de título com texto
 - [x] Redimensionamento e movimentação
-- [x] Estatísticas de CPU por janela
+- [x] Estatísticas de ticks por janela
 
 ### Taskbar (`src/taskbar/taskbar.c`)
 - [x] Botões de aplicativos com indicador ativo/inativo
@@ -241,7 +242,7 @@ Plataforma de aplicativos:   [████████████████�
 
 ### Task Manager (`src/shell/taskmanager.c`)
 - [x] TUI de diagnóstico e janela gráfica própria, com abas Processos, Memória e Threads
-- [x] Métricas de CPU, memória, espera, ATA e detalhes do processo selecionado
+- [x] Métricas de ticks, memória, espera, ATA e detalhes do processo selecionado
 - [x] Atualização periódica, seleção, ordenação e ações pelo teclado
 - [x] Comando `taskmgr` no shell; taskbar e Desktop usam a janela gráfica no modo moderno
 

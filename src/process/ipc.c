@@ -122,6 +122,30 @@ void ipc_get_stats(ipc_stats_t* stats) {
     spinlock_release(&ipc_lock);
 }
 
+uint32_t ipc_get_pending_count(void) {
+    uint32_t pending = 0;
+
+    if (!ipc_ready) {
+        LOG_WARN("IPC", "Consulta de fila antes da inicializacao");
+        return 0;
+    }
+
+    spinlock_acquire(&ipc_lock);
+    for (uint32_t i = 0; i < MAX_PROCESSES; i++) {
+        process_t* process = &processes[i];
+
+        if (process->state == PROCESS_STATE_UNUSED) continue;
+        if (process->msg_head >= process->msg_tail) {
+            pending += process->msg_head - process->msg_tail;
+        } else {
+            pending += IPC_MSG_QUEUE_SIZE - process->msg_tail +
+                       process->msg_head;
+        }
+    }
+    spinlock_release(&ipc_lock);
+    return pending;
+}
+
 static int process_focus_target_is_valid(process_t* target) {
     return target && (target->state == PROCESS_STATE_READY ||
                       target->state == PROCESS_STATE_RUNNING ||

@@ -41,6 +41,10 @@ typedef struct {
     uint32_t queue_full;
 } ipc_stats_t;
 
+typedef struct {
+    uint32_t context_switches;
+} scheduler_stats_t;
+
 typedef enum {
     PROCESS_STATE_UNUSED = 0,
     PROCESS_STATE_READY,
@@ -137,11 +141,13 @@ int ipc_is_ready(void);
 process_t* scheduler_schedule(void);
 void scheduler_init(void);
 void scheduler_tick(void);
+void scheduler_get_stats(scheduler_stats_t* stats);
 
 
 int ipc_send(uint32_t pid, ipc_msg_t* msg);
 int ipc_receive(ipc_msg_t* msg);
 void ipc_get_stats(ipc_stats_t* stats);
+uint32_t ipc_get_pending_count(void);
 int process_set_focus(uint32_t pid);
 int process_set_focus_fallback(uint32_t pid);
 int process_restore_focus(void);

@@ -7,5 +7,6 @@
 void timer_init(uint32_t freq);
 void timer_handler(registers_t* regs);
 uint32_t timer_get_ticks(void);
+uint32_t timer_get_frequency(void);
 
 #endif

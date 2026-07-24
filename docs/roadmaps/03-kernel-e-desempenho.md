@@ -14,13 +14,17 @@ contratos de processos, memoria, IPC e diagnostico ja validados.
 - `health` como diagnostico basico de processos, IPC, paging e memoria.
 - `boot.asm` fora de escopo salvo autorizacao explicita.
 
-## Etapa K1 - Medicao antes da otimizacao
+## Etapa K1 - Medicao antes da otimizacao (em validacao)
 
-- [ ] Definir metricas de tempo de frame, tamanho de filas, uso de memoria e
-  custo de atualizacao de interfaces.
-- [ ] Separar metricas reais de CPU de estimativas baseadas em ticks.
+- [x] Definir `kmetrics [reset]` com tempo de apresentacao, tamanho de filas,
+  uso de memoria e custo de atualizacao de interfaces.
+- [x] Separar CPU real de estimativas por ticks: Task Manager usa `TCK%` e
+  CPU real permanece `N/D`.
 - [ ] Registrar cenarios reproduziveis no QEMU antes de mudar scheduler ou
   alocador.
+
+CPU real por RDTSC/PMU fica adiada ate existir calibracao confiavel e uma
+politica propria; esta etapa nao altera quantum, prioridade, heap ou paging.
 
 ## Etapa K2 - Scheduler e processos
 

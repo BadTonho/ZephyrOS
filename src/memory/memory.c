@@ -420,3 +420,30 @@ uint32_t memory_get_used(void) { return mem_info.used_memory; }
 uint32_t memory_get_total_pages(void) { return mem_info.total_pages; }
 uint32_t memory_get_free_pages(void) { return mem_info.free_pages; }
 uint32_t memory_get_mmap_entries(void) { return mem_info.mmap_entries; }
+
+void memory_get_heap_stats(memory_heap_stats_t* stats) {
+    heap_block_t* block;
+
+    if (!stats) {
+        LOG_ERROR("MEM", "Destino nulo ao consultar estatisticas do heap");
+        return;
+    }
+
+    kmemset(stats, 0, sizeof(memory_heap_stats_t));
+    if (!heap_base) return;
+
+    stats->initialized = 1;
+    for (block = heap_base; block; block = block->next) {
+        if (block->magic != HEAP_MAGIC) {
+            kmemset(stats, 0, sizeof(memory_heap_stats_t));
+            LOG_ERROR("MEM", "Lista do heap corrompida ao medir uso");
+            return;
+        }
+        stats->total_bytes += block->size;
+        if (block->free) {
+            stats->free_bytes += block->size;
+        } else {
+            stats->used_bytes += block->size;
+        }
+    }
+}

@@ -4,6 +4,9 @@
 #include "core/memory.h"
 #include "core/errors.h"
 #include "core/string.h"
+#include "core/timer.h"
+
+#define VESA_METRICS_MAX_VALUE 0xFFFFFFFFU
 
 static vesa_mode_t current_mode;
 static uint8_t* backbuffer = NULL;
@@ -13,6 +16,35 @@ static uint32_t dirty_x;
 static uint32_t dirty_y;
 static uint32_t dirty_width;
 static uint32_t dirty_height;
+static vesa_metrics_t vesa_metrics;
+
+static void vesa_metrics_add(uint32_t* value, uint32_t amount) {
+    if (*value > VESA_METRICS_MAX_VALUE - amount) {
+        *value = VESA_METRICS_MAX_VALUE;
+    } else {
+        *value += amount;
+    }
+}
+
+static void vesa_metrics_record_copy(uint32_t x, uint32_t y,
+                                     uint32_t width, uint32_t height,
+                                     uint32_t bytes, uint32_t start_ticks) {
+    uint32_t elapsed = timer_get_ticks() - start_ticks;
+
+    vesa_metrics_add(&vesa_metrics.presentations, 1U);
+    if (x == 0 && y == 0 && width == current_mode.width &&
+        height == current_mode.height) {
+        vesa_metrics_add(&vesa_metrics.full_presentations, 1U);
+    } else {
+        vesa_metrics_add(&vesa_metrics.partial_presentations, 1U);
+    }
+    vesa_metrics_add(&vesa_metrics.bytes_copied, bytes);
+    vesa_metrics.last_copy_bytes = bytes;
+    vesa_metrics.last_copy_ticks = elapsed;
+    if (elapsed > vesa_metrics.max_copy_ticks) {
+        vesa_metrics.max_copy_ticks = elapsed;
+    }
+}
 
 static void vesa_accumulate_region(uint32_t x, uint32_t y,
                                    uint32_t width, uint32_t height) {
@@ -66,6 +98,7 @@ void vesa_init(uint32_t boot_info_addr) {
     LOG_INFO("VESA", "Inicializando suporte VESA");
     frame_depth = 0;
     frame_dirty = 0;
+    memset_simple(&vesa_metrics, 0, sizeof(vesa_metrics_t));
     if (backbuffer) {
         kfree(backbuffer);
         backbuffer = NULL;
@@ -144,6 +177,8 @@ int vesa_has_backbuffer(void) {
 static void vesa_copy_region(uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
     uint32_t bytes_per_pixel;
     uint32_t row_bytes;
+    uint32_t copy_bytes;
+    uint32_t start_ticks;
     uint8_t* source;
     uint8_t* target;
 
@@ -155,9 +190,11 @@ static void vesa_copy_region(uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
 
     bytes_per_pixel = current_mode.bpp == VESA_BPP_24 ? 3 : 4;
     row_bytes = w * bytes_per_pixel;
+    copy_bytes = row_bytes * h;
     source = backbuffer + y * current_mode.pitch + x * bytes_per_pixel;
     target = (uint8_t*)current_mode.framebuffer +
              y * current_mode.pitch + x * bytes_per_pixel;
+    start_ticks = timer_get_ticks();
 
     for (uint32_t row = 0; row < h; row++) {
         if (current_mode.bpp == VESA_BPP_32) {
@@ -173,6 +210,7 @@ static void vesa_copy_region(uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
         source += current_mode.pitch;
         target += current_mode.pitch;
     }
+    vesa_metrics_record_copy(x, y, w, h, copy_bytes, start_ticks);
 }
 
 void vesa_flip(void) {
@@ -473,6 +511,15 @@ void vesa_draw_string(int x, int y, const char* str, vesa_color_t color, uint32_
 
 vesa_mode_t* vesa_get_mode(void) {
     return &current_mode;
+}
+
+void vesa_get_metrics(vesa_metrics_t* metrics) {
+    if (!metrics) {
+        LOG_ERROR("VESA", "Destino nulo ao consultar metricas");
+        return;
+    }
+
+    *metrics = vesa_metrics;
 }
 
 uint32_t vesa_rgb(uint8_t r, uint8_t g, uint8_t b) {

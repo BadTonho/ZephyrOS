@@ -221,6 +221,14 @@ Timer IRQ → scheduler_tick() → scheduler_schedule()
         → troca CR3 e retorna ao contexto salvo
 ```
 
+## Metricas K1
+
+`scheduler_get_stats()` informa somente trocas reais de contexto entre
+processos. `ipc_get_pending_count()` soma mensagens ainda pendentes, enquanto
+`ipc_get_stats()` mantem os contadores acumulados de envio, recebimento,
+falhas e fila cheia. Essas metricas descrevem atividade do scheduler e das
+filas; nao medem uso real de CPU.
+
 ---
 
 ## TSS (Task State Segment)

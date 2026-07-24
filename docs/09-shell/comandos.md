@@ -38,6 +38,7 @@ Comandos disponiveis:
   guitest   - Testa primitivas GUI 2D
   guimode   - Altera entre gui classica (TUI) e moderna
   health    - Exibe metricas e estado de recovery do kernel
+  kmetrics  - Mostra linha-base manual de metricas do kernel
   q2check   - Executa diagnostico compacto da Q2
   appcheck  - Testa API, arquivos, IPC e carregador ZAPP
   pkg       - Gerencia pacotes .ZPK locais
@@ -199,6 +200,22 @@ continuam visíveis.
 
 ```
 zephyr> health
+```
+
+## `kmetrics [reset]`
+
+Mostra uma linha-base de metricas do kernel para comparacoes manuais no QEMU.
+Sem argumento, a saida cobre o boot ou a janela iniciada pelo ultimo reset;
+`kmetrics reset` captura o ponto inicial somente no Shell, sem zerar os
+contadores de `health`, IPC, teclado ou processos.
+
+O relatorio mostra ticks do PIT, trocas de contexto, filas, memoria e copias
+VESA. `TCK%` e uma estimativa baseada em ticks; CPU real aparece como `N/D`
+ate uma futura etapa de calibracao por RDTSC/PMU.
+
+```text
+zephyr> kmetrics reset
+zephyr> kmetrics
 ```
 
 ## `appcheck`

@@ -199,6 +199,10 @@ defensivos nas APIs centrais:
 - `paging_is_ready()` permite que interfaces diagnostiquem o estado do paging;
 - `health` exibe processos, threads, ticks, IPC, paging, memoria e recovery.
 
+Para a linha-base K1, `memory_get_heap_stats()` expoe apenas capacidade, uso e
+espaco livre do heap. Fragmentacao, falhas de alocacao e memoria por processo
+continuam fora desta consulta e pertencem a K3.
+
 Falhas recuperaveis retornam erro e desabilitam somente o componente afetado.
 Excecoes fatais e corrupcao estrutural continuam encaminhadas para `panic`.
 O `boot.asm` e a politica de escalonamento nao fazem parte desta etapa.

@@ -214,6 +214,10 @@ timer_init(50);  // 50 Hz = 20ms por tick
 3. Incrementa contador de ticks
 4. O scheduler usa ticks para preemptar processos
 
+`timer_get_frequency()` expoe a frequencia configurada para diagnosticos. Os
+ticks do PIT tem resolucao de 20 ms na configuracao atual e nao representam
+tempo de CPU real.
+
 ---
 
 ## VGA Video (`video.c`)
@@ -352,6 +356,14 @@ vesa_mode_t* mode = vesa_get_mode();
 // mode->framebuffer → ponteiro para memória de vídeo
 // mode->width, mode->height, mode->pitch, mode->bpp
 ```
+
+### Metricas K1
+
+`keyboard_get_metrics()` informa ocupacao, capacidade util e descartes
+acumulados da fila PS/2. `vesa_get_metrics()` informa apresentacoes efetivas,
+copias completas/parciais, bytes copiados e duracoes em ticks. A duracao de
+uma copia pode ser `0` quando termina entre dois ticks do PIT; isso significa
+que ficou abaixo da resolucao, nao que nao teve custo.
 
 ---
 

@@ -19,6 +19,7 @@ uint32_t process_count = 0;
 static uint32_t free_pids[PROCESS_PID_POOL_SIZE];
 static uint32_t free_pid_count = 0;
 static int last_scheduled_idx = -1;
+static uint32_t scheduler_context_switches = 0;
 static int last_user_fault_valid = 0;
 static process_user_fault_summary_t last_user_fault;
 static uint32_t user_fault_count = 0;
@@ -82,6 +83,7 @@ void process_init(void) {
     process_count = 0;
     process_initialize_pid_pool();
     last_scheduled_idx = -1;
+    scheduler_context_switches = 0;
     last_user_fault_valid = 0;
     kmemset(&last_user_fault, 0, sizeof(last_user_fault));
     user_fault_count = 0;
@@ -336,6 +338,7 @@ static void process_switch_after_termination(void) {
         next->page_directory != paging_get_current_directory()) {
         paging_switch_directory(next->page_directory);
     }
+    scheduler_context_switches++;
     process_context_switch(&previous->context, &next->context);
 }
 
@@ -1015,6 +1018,7 @@ void process_yield(void) {
             next->page_directory != paging_get_current_directory()) {
             paging_switch_directory(next->page_directory);
         }
+        scheduler_context_switches++;
         process_context_switch(&prev->context, &next->context);
     }
 }
@@ -1077,4 +1081,13 @@ void scheduler_tick(void) {
     }
 
     current_process->total_ticks++;
+}
+
+void scheduler_get_stats(scheduler_stats_t* stats) {
+    if (!stats) {
+        LOG_ERROR("PROC", "Destino nulo ao consultar metricas do scheduler");
+        return;
+    }
+
+    stats->context_switches = scheduler_context_switches;
 }
