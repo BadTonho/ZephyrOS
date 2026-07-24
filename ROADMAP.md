@@ -115,6 +115,7 @@ Plataforma de aplicativos:   [████████████████�
 | `memcheck` | Valida heap, PMM, coalescencia e limpeza de diretorios ring 3 |
 | `schedcheck` | Valida invariantes do scheduler sem alterar processos |
 | `q2check` | Executa diagnostico compacto da etapa Q2 |
+| `regcheck` | Executa regressao compacta e valida cancelamento real por F12 |
 | `appcheck` | Testa API, arquivos, IPC e carregador |
 | `app run <arq> [args]` | Executa aplicativo ring 3 com argumentos simples |
 | `app inputtest` | Testa teclado e foco de aplicativo ring 3 |
@@ -356,6 +357,13 @@ Plataforma de aplicativos:   [████████████████�
   `APPS/<ID>/APP.ZAP` mais `META.DAT`.
 - [x] Validado no host e QEMU: pacote demo, remocao, caminho instalado, F12,
   diagnosticos, interfaces classica/moderna e ausencia de processos residuais.
+
+### Q4 - Regressao compacta (pendente de validacao)
+
+- [ ] `regcheck` concentra servicos, scheduler, memoria, pacotes, threads e
+  dois ciclos ZAPP silenciosos, incluindo cancelamento real por `F12`.
+- [ ] A validacao no QEMU deve confirmar somente o resumo final, um prompt e
+  ausencia de processos, zumbis e diretorios de usuario residuais.
 
 ### Etapas posteriores da plataforma
 

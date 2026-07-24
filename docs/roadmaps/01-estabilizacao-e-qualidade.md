@@ -130,6 +130,23 @@ Validado: `make q3check` e seus oito auto-testes concluiram em `OK`; o usuario
 executou `make clean && make` e confirmou no QEMU `health`, `q2check`,
 `appcheck` e os modos `guimode classic` e `guimode modern`, sem regressao.
 
+## Etapa Q4 - Regressao compacta
+
+- [ ] Adicionar `regcheck` para concentrar verificacoes seguras de servicos,
+  scheduler, memoria, pacotes, threads e ciclo de vida ZAPP sem listar os
+  sucessos intermediarios.
+- [ ] Validar um encerramento ZAPP silencioso e um cancelamento real por
+  `F12`, com foco, processos, zumbis e diretorios de usuario restaurados.
+- [ ] Manter em `DEBUG` os logs repetitivos de sucesso do auto-teste de
+  threads e do cancelamento ring 3 por `F12`; avisos e erros continuam visiveis.
+- [ ] Preservar `appcheck`, `q2check`, `app outputtest [fail]`,
+  `app inputtest` por `Enter` e a matriz de interfaces como verificacoes
+  detalhadas separadas.
+
+Enquanto esta etapa nao for validada no QEMU, `regcheck` e somente um atalho
+novo em desenvolvimento. A aprovacao exige `RegCheck: OK`, exatamente um
+prompt e ausencia de processos residuais em `procs`.
+
 ## Criterio de saida
 
 Uma etapa funcional so avanca quando o boot e os comandos de diagnostico

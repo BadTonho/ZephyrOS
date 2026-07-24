@@ -15,6 +15,7 @@ static uint32_t scheduler_esp = 0;
 static int scheduler_active = 0;
 static int last_scheduled_idx = -1;
 static int thread_initialized = 0;
+static int thread_self_test_active = 0;
 static uint32_t thread_test_a_runs = 0;
 static uint32_t thread_test_b_runs = 0;
 static uint32_t thread_test_trace_pos = 0;
@@ -110,6 +111,7 @@ void thread_init(void) {
     scheduler_esp = 0;
     scheduler_active = 0;
     last_scheduled_idx = -1;
+    thread_self_test_active = 0;
     thread_initialized = 1;
     LOG_INFO("THRD", "Scheduler cooperativo inicializado com sucesso");
 }
@@ -169,7 +171,11 @@ thread_t* thread_create(const char* name, void (*entry)(void)) {
 
     thread->eip = (uint32_t)entry;
     thread_count++;
-    LOG_INFO("THRD", "Thread criada com sucesso");
+    if (thread_self_test_active) {
+        LOG_DEBUG("THRD", "Thread de auto teste criada");
+    } else {
+        LOG_INFO("THRD", "Thread criada com sucesso");
+    }
     return thread;
 }
 
@@ -256,12 +262,14 @@ int thread_run_self_test(void) {
     thread_test_a_runs = 0;
     thread_test_b_runs = 0;
     thread_test_trace_pos = 0;
+    thread_self_test_active = 1;
     kmemset(thread_test_trace, 0, sizeof(thread_test_trace));
     thread_a = thread_create("ThreadTestA", thread_test_worker_a);
     thread_b = thread_create("ThreadTestB", thread_test_worker_b);
     if (!thread_a || !thread_b) {
         if (thread_a) thread_destroy(thread_a);
         if (thread_b) thread_destroy(thread_b);
+        thread_self_test_active = 0;
         LOG_ERROR("THRD", "Auto teste nao criou as threads necessarias");
         return ERR_MEM;
     }
@@ -281,12 +289,13 @@ int thread_run_self_test(void) {
 
     thread_destroy(thread_a);
     thread_destroy(thread_b);
+    thread_self_test_active = 0;
     if (result != OK) {
         LOG_ERROR("THRD", "Auto teste detectou troca de contexto invalida");
         return result;
     }
 
-    LOG_INFO("THRD", "Auto teste cooperativo concluido com sucesso");
+    LOG_DEBUG("THRD", "Auto teste cooperativo concluido com sucesso");
     return OK;
 }
 

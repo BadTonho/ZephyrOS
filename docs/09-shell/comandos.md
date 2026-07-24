@@ -42,6 +42,7 @@ Comandos disponiveis:
   memcheck  - Valida heap, PMM e diretorios de usuario
   schedcheck - Valida invariantes do scheduler
   q2check   - Executa diagnostico compacto da Q2
+  regcheck  - Executa regressao compacta com F12
   appcheck  - Testa API, arquivos, IPC e carregador ZAPP
   pkg       - Gerencia pacotes .ZPK locais
   pkgcheck  - Testa validacoes de pacote sem gravar
@@ -311,6 +312,33 @@ zephyr> q2check
 O comando recusa a execução enquanto houver processo ring 3 ou zumbi pendente.
 Ele não substitui o `appcheck` completo nem a validação manual de `F12` com
 `app inputtest`.
+
+## `regcheck`
+
+Executa uma regressao curta para o ciclo habitual de desenvolvimento. Sem
+mostrar aprovacoes por etapa, ele verifica servicos obrigatorios, scheduler,
+heap/PMM/paging, pre-validacoes de pacote, troca cooperativa de threads e um
+ciclo ZAPP silencioso de sucesso. Em seguida inicia outro ZAPP silencioso e
+mostra a instrucao para pressionar `F12`; o cancelamento e feito pelo runtime
+real, nao por simulacao.
+
+```text
+zephyr> regcheck
+RegCheck: pressione F12 para validar cancelamento.
+RegCheck: OK
+zephyr>
+```
+
+Em falha, a saida enumera somente as etapas inesperadas com seu codigo:
+`servicos_base`, `scheduler`, `memoria`, `pacotes`, `threads`,
+`loader_ring3`, `cancelamento_f12` ou `limpeza_final`. O comando recusa a
+execucao se houver outro diagnostico, ZAPP, UserTest ou zumbi pendente;
+argumentos extras usam `Uso: regcheck`. Ele nao grava no FAT, nao cria pacote
+temporario nem altera o contador de falhas isoladas.
+
+`regcheck` e um atalho, nao uma substituicao para `appcheck`, `q2check`,
+`usertest fault`, `app outputtest [fail]`, `app inputtest` encerrado por
+`Enter` ou a validacao manual das interfaces classic e modern.
 
 ## `pkg list|info|verify|install|remove`
 

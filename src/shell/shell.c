@@ -46,6 +46,12 @@ typedef enum {
     SHELL_Q2CHECK_SECOND_FAULT
 } shell_q2check_state_t;
 
+typedef enum {
+    SHELL_REGCHECK_IDLE = 0,
+    SHELL_REGCHECK_WAIT_DEMO,
+    SHELL_REGCHECK_WAIT_F12
+} shell_regcheck_state_t;
+
 typedef struct {
     uint32_t initial_focus;
     uint32_t initial_user_count;
@@ -58,6 +64,33 @@ typedef struct {
     int cleanup_result;
     shell_q2check_state_t state;
 } shell_q2check_t;
+
+typedef struct {
+    int heap_integrity;
+    int coalescence;
+    int pmm_guards;
+    int user_directories;
+} shell_memcheck_result_t;
+
+typedef struct {
+    uint32_t initial_focus;
+    uint32_t initial_user_count;
+    uint32_t initial_zombie_count;
+    uint32_t initial_user_directories;
+    uint32_t initial_user_pages;
+    uint32_t expected_pid;
+    int services_result;
+    int scheduler_result;
+    int memory_result;
+    int package_result;
+    int thread_result;
+    int loader_result;
+    int cancellation_result;
+    int cleanup_result;
+    uint8_t loader_started;
+    uint8_t cancellation_started;
+    shell_regcheck_state_t state;
+} shell_regcheck_t;
 
 typedef struct {
     uint32_t ticks;
@@ -93,6 +126,7 @@ static shell_builtin_app_t shell_builtin_loader_app = SHELL_BUILTIN_APP_NONE;
 static shell_builtin_app_t shell_appcheck_migration_app = SHELL_BUILTIN_APP_NONE;
 static char appcheck_oversized_args[APP_LAUNCH_MAX_TEXT + 1U];
 static shell_q2check_t shell_q2check;
+static shell_regcheck_t shell_regcheck;
 static shell_kmetrics_baseline_t shell_kmetrics_baseline;
 
 #define SHELL_SCANCODE_EXTENDED 0xE0
@@ -129,6 +163,7 @@ static void cmd_appcheck_print_result(const char* label, int result);
 static void cmd_appcheck_print_expected_result(const char* label, int actual,
                                                int expected);
 static int shell_should_show_prompt(void);
+static int shell_run_memcheck(shell_memcheck_result_t* result_out);
 
 static const char* shell_builtin_app_name(shell_builtin_app_t app) {
     if (app == SHELL_BUILTIN_APP_UPTIME) return "uptime";
@@ -295,6 +330,58 @@ static uint32_t shell_build_input_test_image(void) {
     return header.data_offset + header.data_size;
 }
 
+/* O ZAPP do RegCheck recebe eventos normalmente, mas F12 e tratado pelo
+   runtime antes de chegar a fila do aplicativo. Se isso falhar, o proprio
+   ZAPP encerra e o coletor registra a divergencia sem deixar o teste preso. */
+static uint32_t shell_build_regcheck_input_image(void) {
+    app_image_header_t header;
+    uint8_t* code = appcheck_demo_image + APP_IMAGE_HEADER_SIZE;
+    uint32_t loop_offset;
+    uint32_t offset = 0;
+    uint32_t data_size = APP_INPUT_EVENT_OFFSET + sizeof(app_message_t);
+
+    kmemset(appcheck_demo_image, 0, sizeof(appcheck_demo_image));
+    loop_offset = offset;
+    shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_MESSAGE_RECEIVE);
+    shell_demo_emit_mov(code, &offset, 3,
+                        USER_DATA_BASE + APP_INPUT_EVENT_OFFSET);
+    code[offset++] = 0xCD;
+    code[offset++] = 0x80;
+    code[offset++] = 0x85;
+    code[offset++] = 0xC0;
+    if (shell_demo_emit_jne(code, &offset, loop_offset) != OK) return 0;
+
+    code[offset++] = 0xA1;
+    shell_demo_patch_u32(code, offset,
+                         USER_DATA_BASE + APP_INPUT_EVENT_DATA1_OFFSET);
+    offset += 4;
+    code[offset++] = 0x3D;
+    shell_demo_patch_u32(code, offset, 0x58U);
+    offset += 4;
+    if (shell_demo_emit_jne(code, &offset, loop_offset) != OK) return 0;
+
+    shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_PROCESS_EXIT);
+    code[offset++] = 0x31;
+    code[offset++] = 0xDB;
+    code[offset++] = 0xCD;
+    code[offset++] = 0x80;
+    code[offset++] = 0xF4;
+
+    kmemcpy(header.magic, "ZAPP", 4);
+    header.version = APP_IMAGE_VERSION;
+    header.architecture = APP_IMAGE_ARCH_I386;
+    header.header_size = APP_IMAGE_HEADER_SIZE;
+    header.code_offset = APP_IMAGE_HEADER_SIZE;
+    header.code_size = offset;
+    header.data_offset = APP_IMAGE_HEADER_SIZE + offset;
+    header.data_size = data_size;
+    header.entry_offset = 0;
+    header.stack_size = APP_IMAGE_STACK_SIZE;
+    header.flags = APP_IMAGE_FLAGS_NONE;
+    kmemcpy(appcheck_demo_image, &header, APP_IMAGE_HEADER_SIZE);
+    return header.data_offset + header.data_size;
+}
+
 static void shell_reset_input(void) {
     input_pos = 0;
     kmemset(input_buffer, 0, sizeof(input_buffer));
@@ -434,6 +521,242 @@ static void shell_q2check_handle_user_test_result(uint32_t pid,
     shell_q2check_finish();
 }
 
+static void shell_regcheck_reset(void) {
+    kmemset(&shell_regcheck, 0, sizeof(shell_regcheck));
+    shell_regcheck.services_result = ERR_STATE;
+    shell_regcheck.scheduler_result = ERR_STATE;
+    shell_regcheck.memory_result = ERR_STATE;
+    shell_regcheck.package_result = ERR_STATE;
+    shell_regcheck.thread_result = ERR_STATE;
+    shell_regcheck.loader_result = ERR_STATE;
+    shell_regcheck.cancellation_result = ERR_STATE;
+    shell_regcheck.cleanup_result = ERR_STATE;
+    shell_regcheck.state = SHELL_REGCHECK_IDLE;
+}
+
+static int shell_regcheck_validate_services(void) {
+    app_api_version_t version;
+    app_uptime_info_t uptime;
+    app_memory_info_t memory;
+
+    if (log_get_level() != LOG_LEVEL_INFO || !app_api_is_ready() ||
+        !app_api_file_is_ready() || !app_api_ipc_is_ready() ||
+        !syscall_is_ready() || !syscall_user_mode_is_enabled() ||
+        !idt_is_user_syscall_enabled() || !paging_is_ready() ||
+        !app_loader_is_ready() || !app_package_is_ready()) {
+        LOG_ERROR("SHELL", "RegCheck encontrou servico obrigatorio indisponivel");
+        return ERR_STATE;
+    }
+    if (app_api_get_version(&version) != OK ||
+        version.major != APP_API_VERSION_MAJOR ||
+        version.minor != APP_API_VERSION_MINOR ||
+        app_api_get_uptime(&uptime) != OK ||
+        app_api_get_memory_info(&memory) != OK) {
+        LOG_ERROR("SHELL", "RegCheck encontrou contrato base da App API invalido");
+        return ERR_STATE;
+    }
+    return OK;
+}
+
+static int shell_regcheck_validate_scheduler(void) {
+    scheduler_validation_t validation;
+    int result = scheduler_validate_invariants(&validation);
+
+    if (result != OK || !validation.current_valid || !validation.idle_valid ||
+        !validation.pid_table_valid || !validation.state_table_valid) {
+        LOG_ERROR("SHELL", "RegCheck detectou invariante do scheduler invalido");
+        return result == OK ? ERR_STATE : result;
+    }
+    return OK;
+}
+
+static int shell_regcheck_validate_packages(void) {
+    app_package_diagnostic_t diagnostic;
+    int result;
+
+    kmemset(&diagnostic, 0, sizeof(diagnostic));
+    result = app_package_run_diagnostics(&diagnostic);
+    if (result != OK || !diagnostic.invalid_package ||
+        !diagnostic.missing_dependency || !diagnostic.insufficient_space) {
+        LOG_ERROR("SHELL", "RegCheck detectou validacao de pacote invalida");
+        return result == OK ? ERR_STATE : result;
+    }
+    return OK;
+}
+
+static int shell_regcheck_validate_cleanup(void) {
+    paging_user_stats_t paging;
+
+    paging_get_user_stats(&paging);
+    if (process_get_focus() != shell_regcheck.initial_focus ||
+        process_get_user_count() != shell_regcheck.initial_user_count ||
+        process_get_state_count(PROCESS_STATE_ZOMBIE) !=
+            shell_regcheck.initial_zombie_count ||
+        paging.active_directories != shell_regcheck.initial_user_directories ||
+        paging.active_pages != shell_regcheck.initial_user_pages ||
+        paging.active_directories != 0 || paging.active_pages != 0 ||
+        app_loader_is_foreground_active()) {
+        LOG_ERROR("SHELL", "RegCheck detectou foco ou recursos ring 3 residuais");
+        return ERR_STATE;
+    }
+    return OK;
+}
+
+static int shell_regcheck_start_image(shell_regcheck_state_t state) {
+    const char* name;
+    uint32_t image_size;
+    uint32_t pid = 0;
+    int result;
+
+    if (state == SHELL_REGCHECK_WAIT_DEMO) {
+        name = "REGDEMO.ZAP";
+        image_size = shell_build_demo_image();
+    } else if (state == SHELL_REGCHECK_WAIT_F12) {
+        name = "REGF12.ZAP";
+        image_size = shell_build_regcheck_input_image();
+    } else {
+        LOG_ERROR("SHELL", "RegCheck recebeu etapa ZAPP invalida");
+        return ERR_INVALID;
+    }
+    if (image_size == 0) {
+        LOG_ERROR("SHELL", "RegCheck nao montou imagem ZAPP interna");
+        return ERR_STATE;
+    }
+
+    result = app_loader_run_image(name, appcheck_demo_image, image_size, 0, &pid);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "RegCheck nao iniciou imagem ZAPP interna");
+        return result;
+    }
+    shell_regcheck.expected_pid = pid;
+    shell_regcheck.state = state;
+    return OK;
+}
+
+static int shell_regcheck_validate_loader_result(
+    const app_loader_result_t* result, int expect_cancelled) {
+    int expected_exit = expect_cancelled ? APP_EXIT_CANCELLED : APP_EXIT_SUCCESS;
+
+    if (!result || result->pid != shell_regcheck.expected_pid ||
+        result->start_failed || result->faulted || !result->focus_acquired ||
+        result->exit_code != (uint32_t)expected_exit ||
+        (expect_cancelled && !result->cancelled) ||
+        (!expect_cancelled && result->cancelled)) {
+        LOG_ERROR("SHELL", "RegCheck recebeu resultado ZAPP inesperado");
+        return ERR_STATE;
+    }
+    return shell_regcheck_validate_cleanup();
+}
+
+static int shell_regcheck_has_failures(void) {
+    if (shell_regcheck.services_result != OK ||
+        shell_regcheck.scheduler_result != OK ||
+        shell_regcheck.memory_result != OK ||
+        shell_regcheck.package_result != OK ||
+        shell_regcheck.thread_result != OK ||
+        shell_regcheck.cleanup_result != OK) {
+        return 1;
+    }
+    if (shell_regcheck.loader_started && shell_regcheck.loader_result != OK) {
+        return 1;
+    }
+    return shell_regcheck.cancellation_started &&
+           shell_regcheck.cancellation_result != OK;
+}
+
+static void shell_regcheck_print_failure(const char* label, int result) {
+    if (result == OK) return;
+    video_print("  ", 0x07);
+    video_print(label, 0x0C);
+    video_print(" codigo=", 0x07);
+    print_num((uint32_t)result);
+    video_print("\n", 0x07);
+}
+
+static void shell_regcheck_finish(void) {
+    int failed = shell_regcheck_has_failures();
+
+    video_print("\nRegCheck: ", 0x0B);
+    if (!failed) {
+        video_print("OK\n", 0x0A);
+    } else {
+        video_print("ERRO\n", 0x0C);
+        shell_regcheck_print_failure("servicos_base",
+                                     shell_regcheck.services_result);
+        shell_regcheck_print_failure("scheduler", shell_regcheck.scheduler_result);
+        shell_regcheck_print_failure("memoria", shell_regcheck.memory_result);
+        shell_regcheck_print_failure("pacotes", shell_regcheck.package_result);
+        shell_regcheck_print_failure("threads", shell_regcheck.thread_result);
+        if (shell_regcheck.loader_started) {
+            shell_regcheck_print_failure("loader_ring3",
+                                         shell_regcheck.loader_result);
+        }
+        if (shell_regcheck.cancellation_started) {
+            shell_regcheck_print_failure("cancelamento_f12",
+                                         shell_regcheck.cancellation_result);
+        }
+        shell_regcheck_print_failure("limpeza_final",
+                                     shell_regcheck.cleanup_result);
+        video_print("  resultado ERRO\n", 0x0C);
+    }
+    shell_regcheck_reset();
+    shell_reset_input();
+    shell_print_prompt();
+}
+
+static void shell_regcheck_finish_after_ring3(void) {
+    shell_memcheck_result_t memory;
+    int result;
+
+    result = shell_regcheck_validate_scheduler();
+    if (shell_regcheck.scheduler_result == OK && result != OK) {
+        shell_regcheck.scheduler_result = result;
+    }
+    result = shell_run_memcheck(&memory);
+    if (shell_regcheck.memory_result == OK && result != OK) {
+        shell_regcheck.memory_result = result;
+    }
+    shell_regcheck.cleanup_result = shell_regcheck_validate_cleanup();
+    shell_regcheck_finish();
+}
+
+static void shell_regcheck_handle_loader_result(const app_loader_result_t* result) {
+    int launch_result;
+
+    if (shell_regcheck.state == SHELL_REGCHECK_WAIT_DEMO) {
+        shell_regcheck.loader_result =
+            shell_regcheck_validate_loader_result(result, 0);
+        if (shell_regcheck.loader_result != OK) {
+            shell_regcheck.cleanup_result = shell_regcheck_validate_cleanup();
+            shell_regcheck_finish();
+            return;
+        }
+
+        shell_regcheck.cancellation_started = 1;
+        launch_result = shell_regcheck_start_image(SHELL_REGCHECK_WAIT_F12);
+        if (launch_result == OK) {
+            video_print("RegCheck: pressione F12 para validar cancelamento.\n",
+                        0x0B);
+            return;
+        }
+        shell_regcheck.cancellation_result = launch_result;
+        shell_regcheck.cleanup_result = shell_regcheck_validate_cleanup();
+        shell_regcheck_finish();
+        return;
+    }
+
+    if (shell_regcheck.state == SHELL_REGCHECK_WAIT_F12) {
+        shell_regcheck.cancellation_result =
+            shell_regcheck_validate_loader_result(result, 1);
+        shell_regcheck_finish_after_ring3();
+        return;
+    }
+
+    LOG_ERROR("SHELL", "RegCheck recebeu resultado do loader fora de etapa");
+    shell_regcheck.cleanup_result = ERR_STATE;
+    shell_regcheck_finish();
+}
+
 void shell_report_user_test_result(void) {
     uint32_t pid;
     uint32_t faulted;
@@ -550,6 +873,11 @@ void shell_report_app_loader_result(void) {
     /* Mantem o resultado no loader enquanto uma UI nativa cobre o terminal. */
     if (!video_terminal_is_active()) return;
     if (app_loader_take_finished_result(&result) != OK) return;
+
+    if (shell_regcheck.state != SHELL_REGCHECK_IDLE) {
+        shell_regcheck_handle_loader_result(&result);
+        return;
+    }
 
     echo_result = shell_echo_loader_pid == result.pid;
     builtin_result = shell_builtin_loader_pid == result.pid;
@@ -823,6 +1151,7 @@ static void cmd_help(void) {
     video_print("  memcheck - Valida heap, PMM e diretorios de usuario\n", 0x07);
     video_print("  schedcheck - Valida invariantes do scheduler\n", 0x07);
     video_print("  q2check  - Executa diagnostico compacto da Q2\n", 0x07);
+    video_print("  regcheck - Executa regressao compacta com F12\n", 0x07);
     video_print("  appcheck - Testa API, arquivos, IPC e loader\n", 0x07);
     video_print("  pkg      - Gerencia pacotes .ZPK locais\n", 0x07);
     video_print("             pkg list | info | verify | install | remove\n", 0x08);
@@ -1317,7 +1646,7 @@ static void cmd_memcheck_print_result(const char* label, int passed) {
     video_print(passed ? " OK\n" : " ERRO\n", passed ? 0x0A : 0x0C);
 }
 
-static void cmd_memcheck(const char* args) {
+static int shell_run_memcheck(shell_memcheck_result_t* result_out) {
     memory_heap_stats_t heap_before;
     memory_heap_stats_t heap_after;
     memory_pmm_stats_t pmm_before;
@@ -1327,22 +1656,10 @@ static void cmd_memcheck(const char* args) {
     void* block_a = 0;
     void* block_b = 0;
     void* block_c = 0;
-    int heap_ok;
-    int coalescence_ok;
-    int pmm_ok;
-    int directories_ok;
 
-    if (*args) {
-        video_print("Uso: memcheck\n", 0x0C);
-        return;
-    }
-    if (process_get_user_count() != 0 ||
-        process_get_state_count(PROCESS_STATE_ZOMBIE) != 0 ||
-        app_loader_is_foreground_active()) {
-        LOG_WARN("SHELL", "MemCheck recusado com processo ring 3 pendente");
-        video_print("MemCheck indisponivel: processo ring 3 ou zumbi pendente.\n",
-                    0x0C);
-        return;
+    if (!result_out) {
+        LOG_ERROR("SHELL", "Destino nulo para resultado do MemCheck");
+        return ERR_NULL;
     }
 
     memory_get_heap_stats(&heap_before);
@@ -1360,28 +1677,56 @@ static void cmd_memcheck(const char* args) {
     memory_get_pmm_stats(&pmm_after);
     paging_get_user_stats(&paging_after);
 
-    heap_ok = heap_before.initialized && heap_before.valid &&
-              heap_after.initialized && heap_after.valid;
-    coalescence_ok = block_a && block_b && block_c &&
-                      heap_ok &&
-                      shell_memcheck_same_layout(&heap_before, &heap_after);
-    pmm_ok = pmm_before.initialized && pmm_after.initialized &&
-             pmm_before.owned_pages == pmm_after.owned_pages &&
-             pmm_before.allocation_failures == pmm_after.allocation_failures &&
-             pmm_before.invalid_frees == pmm_after.invalid_frees;
-    directories_ok = paging_before.active_directories == 0 &&
-                     paging_before.active_pages == 0 &&
-                     paging_after.active_directories == 0 &&
-                     paging_after.active_pages == 0;
+    result_out->heap_integrity = heap_before.initialized && heap_before.valid &&
+                                 heap_after.initialized && heap_after.valid;
+    result_out->coalescence = block_a && block_b && block_c &&
+                              result_out->heap_integrity &&
+                              shell_memcheck_same_layout(&heap_before, &heap_after);
+    result_out->pmm_guards = pmm_before.initialized && pmm_after.initialized &&
+                             pmm_before.owned_pages == pmm_after.owned_pages &&
+                             pmm_before.allocation_failures ==
+                                 pmm_after.allocation_failures &&
+                             pmm_before.invalid_frees == pmm_after.invalid_frees;
+    result_out->user_directories = paging_before.active_directories == 0 &&
+                                   paging_before.active_pages == 0 &&
+                                   paging_after.active_directories == 0 &&
+                                   paging_after.active_pages == 0;
+
+    if (!result_out->heap_integrity || !result_out->coalescence ||
+        !result_out->pmm_guards || !result_out->user_directories) {
+        LOG_ERROR("SHELL", "MemCheck detectou falha de integridade");
+        return ERR_STATE;
+    }
+    return OK;
+}
+
+static void cmd_memcheck(const char* args) {
+    shell_memcheck_result_t result;
+    int run_result;
+
+    if (*args) {
+        video_print("Uso: memcheck\n", 0x0C);
+        return;
+    }
+    if (process_get_user_count() != 0 ||
+        process_get_state_count(PROCESS_STATE_ZOMBIE) != 0 ||
+        app_loader_is_foreground_active()) {
+        LOG_WARN("SHELL", "MemCheck recusado com processo ring 3 pendente");
+        video_print("MemCheck indisponivel: processo ring 3 ou zumbi pendente.\n",
+                    0x0C);
+        return;
+    }
+
+    kmemset(&result, 0, sizeof(result));
+    run_result = shell_run_memcheck(&result);
 
     video_begin_update();
     video_print("MemCheck:\n", 0x0B);
-    cmd_memcheck_print_result("heap_integridade", heap_ok);
-    cmd_memcheck_print_result("coalescencia", coalescence_ok);
-    cmd_memcheck_print_result("pmm_guardas", pmm_ok);
-    cmd_memcheck_print_result("diretorios_user", directories_ok);
-    cmd_memcheck_print_result("resultado", heap_ok && coalescence_ok &&
-                              pmm_ok && directories_ok);
+    cmd_memcheck_print_result("heap_integridade", result.heap_integrity);
+    cmd_memcheck_print_result("coalescencia", result.coalescence);
+    cmd_memcheck_print_result("pmm_guardas", result.pmm_guards);
+    cmd_memcheck_print_result("diretorios_user", result.user_directories);
+    cmd_memcheck_print_result("resultado", run_result == OK);
     video_end_update();
 }
 
@@ -1770,6 +2115,56 @@ static void cmd_q2check(void) {
 
     shell_q2check.fault_result[SHELL_Q2CHECK_FIRST_FAULT_INDEX] = result;
     shell_q2check_finish();
+}
+
+static void cmd_regcheck(const char* args) {
+    paging_user_stats_t paging;
+    shell_memcheck_result_t memory;
+    int result;
+
+    if (*args) {
+        video_print("Uso: regcheck\n", 0x0C);
+        return;
+    }
+    if (shell_regcheck.state != SHELL_REGCHECK_IDLE ||
+        shell_q2check.state != SHELL_Q2CHECK_IDLE || shell_waiting_user_test ||
+        app_loader_is_foreground_active() || process_get_user_count() != 0 ||
+        process_get_state_count(PROCESS_STATE_ZOMBIE) != 0) {
+        LOG_WARN("SHELL", "RegCheck recusado com diagnostico ou ring 3 pendente");
+        video_print("RegCheck indisponivel: aguarde diagnosticos e processos terminarem.\n",
+                    0x0C);
+        return;
+    }
+
+    shell_regcheck_reset();
+    shell_regcheck.initial_focus = process_get_focus();
+    shell_regcheck.initial_user_count = process_get_user_count();
+    shell_regcheck.initial_zombie_count =
+        process_get_state_count(PROCESS_STATE_ZOMBIE);
+    paging_get_user_stats(&paging);
+    shell_regcheck.initial_user_directories = paging.active_directories;
+    shell_regcheck.initial_user_pages = paging.active_pages;
+
+    shell_regcheck.services_result = shell_regcheck_validate_services();
+    shell_regcheck.scheduler_result = shell_regcheck_validate_scheduler();
+    kmemset(&memory, 0, sizeof(memory));
+    shell_regcheck.memory_result = shell_run_memcheck(&memory);
+    shell_regcheck.package_result = shell_regcheck_validate_packages();
+    shell_regcheck.thread_result = thread_run_self_test();
+    shell_regcheck.cleanup_result = shell_regcheck_validate_cleanup();
+
+    if (shell_regcheck_has_failures()) {
+        shell_regcheck_finish();
+        return;
+    }
+
+    shell_regcheck.loader_started = 1;
+    result = shell_regcheck_start_image(SHELL_REGCHECK_WAIT_DEMO);
+    if (result == OK) return;
+
+    shell_regcheck.loader_result = result;
+    shell_regcheck.cleanup_result = shell_regcheck_validate_cleanup();
+    shell_regcheck_finish();
 }
 
 static void cmd_app_inputtest(void) {
@@ -2748,6 +3143,8 @@ int shell_process_command(const char* input) {
         cmd_schedcheck(input);
     } else if (kstrcmp(cmd, "q2check") == 0) {
         cmd_q2check();
+    } else if (kstrcmp(cmd, "regcheck") == 0) {
+        cmd_regcheck(input);
     } else if (kstrcmp(cmd, "appcheck") == 0) {
         cmd_appcheck();
     } else if (kstrcmp(cmd, "pkg") == 0) {

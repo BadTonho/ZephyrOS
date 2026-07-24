@@ -18,7 +18,8 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   regressao, retorno de foco, prompt unico, referencia para os resultados do
   `appcheck`, politica de logs, resumo seguro de falhas isoladas e o atalho
   compacto `q2check`; Q3 validado com o gate `make q3check`, seus auto-testes,
-  build e smoke test da matriz de regressao no QEMU.
+  build e smoke test da matriz de regressao no QEMU. Q4 introduz `regcheck`
+  como atalho pendente de validacao, sem substituir a matriz detalhada.
 - Kernel e desempenho: K1 foi validada no QEMU com `kmetrics`, linha-base
   manual de PIT, scheduler, filas, memoria e VESA nos cenarios de Shell, ring
   3 e interfaces classica/moderna. CPU real foi adiada; `TCK%` identifica

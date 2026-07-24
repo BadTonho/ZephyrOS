@@ -110,7 +110,7 @@ void keyboard_process_events(void) {
                 queue_tail = (uint8_t)((queue_tail + 1) % KEYBOARD_QUEUE_SIZE);
                 dispatched++;
                 forward_warning_active = 0;
-                LOG_INFO("KBD", "F12 cancelou aplicativo ring 3 em foco");
+                LOG_DEBUG("KBD", "F12 cancelou aplicativo ring 3 em foco");
                 continue;
             }
             if (result != ERR_UNAVAILABLE && result != ERR_NOT_FOUND) {

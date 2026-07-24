@@ -41,6 +41,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `memcheck` | - | Valida heap, coalescencia, PMM e diretorios ring 3 residuais. |
 | `schedcheck` | - | Valida os invariantes atuais do scheduler sem alterar processos. |
 | `q2check` | - | Executa o diagnóstico compacto da Q2 com duas falhas isoladas. |
+| `regcheck` | - | Executa regressao compacta e pausa para um cancelamento real por `F12`. |
 | `appcheck` | - | Testa API, arquivos, IPC e carregador ZAPP. |
 | `pkg` | `list` | Lista os pacotes locais instalados. |
 | `pkg` | `info <ID|arquivo.ZPK>` | Mostra metadados instalados ou do pacote fonte validado. |
