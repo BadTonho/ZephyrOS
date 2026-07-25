@@ -183,6 +183,11 @@ static void erase_cursor(void);  // Restaura pixels originais
 static void draw_cursor(void);   // Desenha cursor e salva backup
 ```
 
+Na apresentacao, o driver compara a area que uniria o cursor antigo ao novo
+com a soma das duas areas individuais. Movimentos curtos usam uma unica copia;
+movimentos distantes copiam as duas regioes minimas. Isso evita transferir uma
+faixa grande do framebuffer sem alterar a fila, os callbacks ou os cliques.
+
 ### Comando Shell
 
 ```bash
@@ -358,13 +363,16 @@ vesa_mode_t* mode = vesa_get_mode();
 // mode->width, mode->height, mode->pitch, mode->bpp
 ```
 
-### Metricas K1
+### Metricas K1 e K4
 
 `keyboard_get_metrics()` informa ocupacao, capacidade util e descartes
 acumulados da fila PS/2. `vesa_get_metrics()` informa apresentacoes efetivas,
-copias completas/parciais, bytes copiados e duracoes em ticks. A duracao de
-uma copia pode ser `0` quando termina entre dois ticks do PIT; isso significa
-que ficou abaixo da resolucao, nao que nao teve custo.
+copias completas/parciais, bytes copiados e duracoes em ticks. `kmetrics`
+tambem calcula `media_bytes` por apresentacao na janela atual; essa media pode
+cair mesmo que a quantidade de apresentacoes aumente, pois o cursor distante
+pode exigir duas copias pequenas em vez de uma faixa grande. A duracao de uma
+copia pode ser `0` quando termina entre dois ticks do PIT; isso significa que
+ficou abaixo da resolucao, nao que nao teve custo.
 
 ---
 

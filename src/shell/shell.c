@@ -1557,6 +1557,7 @@ static void cmd_kmetrics_print_vesa(
     const shell_kmetrics_snapshot_t* baseline) {
     vesa_mode_t* mode = vesa_get_mode();
     uint32_t presentations;
+    uint32_t copied_bytes;
 
     video_print("  VESA: ", 0x07);
     if (!mode || !mode->initialized || !vesa_has_backbuffer()) {
@@ -1565,6 +1566,8 @@ static void cmd_kmetrics_print_vesa(
     }
     presentations = shell_kmetrics_delta(current->vesa.presentations,
                                          baseline->vesa.presentations);
+    copied_bytes = shell_kmetrics_delta(current->vesa.bytes_copied,
+                                        baseline->vesa.bytes_copied);
     video_print("apresentacoes=", 0x07);
     print_num(presentations);
     video_print(" completas=", 0x08);
@@ -1574,8 +1577,13 @@ static void cmd_kmetrics_print_vesa(
     print_num(shell_kmetrics_delta(current->vesa.partial_presentations,
                                    baseline->vesa.partial_presentations));
     video_print(" bytes=", 0x08);
-    print_num(shell_kmetrics_delta(current->vesa.bytes_copied,
-                                   baseline->vesa.bytes_copied));
+    print_num(copied_bytes);
+    video_print(" media_bytes=", 0x08);
+    if (presentations == 0) {
+        video_print("N/D", 0x08);
+    } else {
+        print_num(copied_bytes / presentations);
+    }
     video_print("\n    ultima=", 0x08);
     if (presentations == 0) {
         video_print("N/D", 0x08);

@@ -20,6 +20,24 @@ mudanca; nao crie uma entrada artificial.
 
 Nenhuma otimizacao registrada ate o momento.
 
+## Comparacao K4 - cursor VESA por regioes minimas
+
+Esta comparacao permanece pendente da validacao manual no QEMU. No mesmo modo
+VESA, resolucao e janela do QEMU, executar `kmetrics reset`; abrir o Desktop
+moderno; mover o cursor dez vezes entre cantos opostos sem clicar; fechar a
+interface; e executar `kmetrics`. Registrar `bytes`, apresentacoes parciais,
+`media_bytes` e `max_boot` antes e depois.
+
+- Cenario QEMU: pendente de coleta pelo usuario.
+- Metrica observavel: bytes VESA, apresentacoes parciais, `media_bytes` e
+  duracao maxima em ticks.
+- Antes: pendente.
+- Depois: pendente.
+- Conclusao: pendente; a quantidade de apresentacoes pode aumentar quando duas
+  regioes pequenas substituem uma unica faixa grande.
+- Impacto: sem mudanca de scheduler, heap, paging, App API, syscall ou
+  bootloader; aprovar somente sem artefato visual e com bytes reduzidos.
+
 ## Linha-base K1
 
 Esta secao registra observacoes antes de qualquer otimizacao de scheduler,

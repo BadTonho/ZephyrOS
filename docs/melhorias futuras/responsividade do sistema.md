@@ -24,6 +24,8 @@ modos `classic` e `modern`.
   `vesa_frame_end()`.
 - Frames localizados usam `vesa_frame_begin_region()` e fazem uma unica copia.
 - A area antiga do cursor e incluida antes de qualquer redesenho parcial.
+- Ao mover o cursor, a apresentacao escolhe a uniao das posicoes ou duas
+  regioes minimas conforme o menor volume de bytes a copiar.
 - O caminho classico continua usando VGA sem depender do backbuffer.
 
 ### Fase 2 - Atualizacao responsiva

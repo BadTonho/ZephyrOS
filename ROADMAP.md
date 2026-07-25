@@ -111,7 +111,7 @@ Plataforma de aplicativos:   [████████████████�
 | `guitest` | Testa primitivas GUI 2D |
 | `guimode` | Altera entre gui classica e moderna |
 | `health` | Exibe metricas e estado de recovery |
-| `kmetrics [reset]` | Coleta linha-base de PIT, filas, memoria e VESA |
+| `kmetrics [reset]` | Coleta linha-base de PIT, filas, memoria e VESA, incluindo media de bytes por apresentacao |
 | `memcheck` | Valida heap, PMM, coalescencia e limpeza de diretorios ring 3 |
 | `schedcheck` | Valida invariantes do scheduler sem alterar processos |
 | `q2check` | Executa diagnostico compacto da etapa Q2 |

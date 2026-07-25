@@ -34,6 +34,12 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   e fallback classico; a taskbar e o Window Manager grafico ainda sao etapas
   futuras.
 
+## K4 em validacao
+
+A K4 compara a copia VESA do cursor por regioes minimas, sem abrir mudancas
+de scheduler, memoria, App API ou bootloader. O resultado so sera promovido a
+validado depois da comparacao antes/depois e da matriz QEMU.
+
 ## Ordem sugerida
 
 1. [01 - Estabilizacao e qualidade](01-estabilizacao-e-qualidade.md)

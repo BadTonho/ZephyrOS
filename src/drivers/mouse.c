@@ -15,6 +15,13 @@
 /* Tamanho da fila circular de pacotes brutos */
 #define MOUSE_QUEUE_SIZE 128
 
+typedef struct {
+    uint32_t x;
+    uint32_t y;
+    uint32_t width;
+    uint32_t height;
+} mouse_damage_region_t;
+
 static mouse_packet_t event_queue[MOUSE_QUEUE_SIZE];
 static volatile int queue_head = 0;
 static volatile int queue_tail = 0;
@@ -149,32 +156,89 @@ static void draw_cursor(void) {
     prev_y = cursor_y;
 }
 
-static void mouse_present_cursor(int old_x, int old_y, int had_old_cursor) {
-    vesa_mode_t* mode = vesa_get_mode();
-    int left = cursor_x;
-    int top = cursor_y;
-    int right = cursor_x + CURSOR_W;
-    int bottom = cursor_y + CURSOR_H;
+static int mouse_make_damage_region(const vesa_mode_t* mode, int x, int y,
+                                    mouse_damage_region_t* region) {
+    int left = x;
+    int top = y;
+    int right = x + CURSOR_W;
+    int bottom = y + CURSOR_H;
 
-    if (!mode || !mode->initialized) return;
-
-    if (had_old_cursor) {
-        if (old_x < left) left = old_x;
-        if (old_y < top) top = old_y;
-        if (old_x + CURSOR_W > right) right = old_x + CURSOR_W;
-        if (old_y + CURSOR_H > bottom) bottom = old_y + CURSOR_H;
-    }
-
+    if (!mode || !mode->initialized || !region) return 0;
     if (left < 0) left = 0;
     if (top < 0) top = 0;
     if (right > (int)mode->width) right = mode->width;
     if (bottom > (int)mode->height) bottom = mode->height;
+    if (right <= left || bottom <= top) return 0;
 
-    if (right > left && bottom > top) {
-        vesa_flip_region((uint32_t)left, (uint32_t)top,
-                         (uint32_t)(right - left),
-                         (uint32_t)(bottom - top));
+    region->x = (uint32_t)left;
+    region->y = (uint32_t)top;
+    region->width = (uint32_t)(right - left);
+    region->height = (uint32_t)(bottom - top);
+    return 1;
+}
+
+static uint32_t mouse_damage_region_area(const mouse_damage_region_t* region) {
+    return region->width * region->height;
+}
+
+static mouse_damage_region_t mouse_damage_region_union(
+    const mouse_damage_region_t* first, const mouse_damage_region_t* second) {
+    mouse_damage_region_t combined;
+    uint32_t left = first->x < second->x ? first->x : second->x;
+    uint32_t top = first->y < second->y ? first->y : second->y;
+    uint32_t first_right = first->x + first->width;
+    uint32_t second_right = second->x + second->width;
+    uint32_t first_bottom = first->y + first->height;
+    uint32_t second_bottom = second->y + second->height;
+    uint32_t right = first_right > second_right ? first_right : second_right;
+    uint32_t bottom = first_bottom > second_bottom ? first_bottom : second_bottom;
+
+    combined.x = left;
+    combined.y = top;
+    combined.width = right - left;
+    combined.height = bottom - top;
+    return combined;
+}
+
+static void mouse_present_damage_region(const mouse_damage_region_t* region) {
+    vesa_flip_region(region->x, region->y, region->width, region->height);
+}
+
+static void mouse_present_cursor(int old_x, int old_y, int had_old_cursor) {
+    vesa_mode_t* mode = vesa_get_mode();
+    mouse_damage_region_t old_region;
+    mouse_damage_region_t new_region;
+    mouse_damage_region_t combined_region;
+    int has_old_region;
+    int has_new_region;
+
+    if (!mode || !mode->initialized) return;
+
+    has_old_region = had_old_cursor &&
+        mouse_make_damage_region(mode, old_x, old_y, &old_region);
+    has_new_region = cursor_drawn &&
+        mouse_make_damage_region(mode, cursor_x, cursor_y, &new_region);
+
+    if (!has_old_region && !has_new_region) return;
+    if (!has_old_region) {
+        mouse_present_damage_region(&new_region);
+        return;
     }
+    if (!has_new_region) {
+        mouse_present_damage_region(&old_region);
+        return;
+    }
+
+    combined_region = mouse_damage_region_union(&old_region, &new_region);
+    if (mouse_damage_region_area(&combined_region) <=
+        mouse_damage_region_area(&old_region) +
+        mouse_damage_region_area(&new_region)) {
+        mouse_present_damage_region(&combined_region);
+        return;
+    }
+
+    mouse_present_damage_region(&old_region);
+    mouse_present_damage_region(&new_region);
 }
 
 /* ========== Handler de interrupcao (IRQ12) ========== */

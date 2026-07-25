@@ -213,10 +213,12 @@ Sem argumento, a saida cobre o boot ou a janela iniciada pelo ultimo reset;
 contadores de `health`, IPC, teclado ou processos.
 
 O relatorio mostra ticks do PIT, trocas de contexto, yields cooperativos,
-preempcoes de ring 3, fallbacks para o Idle, filas, memoria e copias VESA. A
-secao de memoria inclui fragmentacao e blocos do heap, rejeicoes do PMM e
-diretorios/paginas de usuario; contadores de criacao e liberacao de diretorios
-sao deltas desde o ultimo reset. O quantum de usuario permanece 1 tick. `TCK%` e uma estimativa baseada em
+preempcoes de ring 3, fallbacks para o Idle, filas, memoria e copias VESA. Na
+linha VESA, `media_bytes` e a media inteira de bytes por apresentacao da janela;
+`bytes` continua sendo a medida principal para comparacoes. A secao de memoria
+inclui fragmentacao e blocos do heap, rejeicoes do PMM e diretorios/paginas de
+usuario; contadores de criacao e liberacao de diretorios sao deltas desde o
+ultimo reset. O quantum de usuario permanece 1 tick. `TCK%` e uma estimativa baseada em
 ticks; CPU real aparece como `N/D` ate uma futura etapa de calibracao por
 RDTSC/PMU.
 
