@@ -358,12 +358,13 @@ Plataforma de aplicativos:   [████████████████�
 - [x] Validado no host e QEMU: pacote demo, remocao, caminho instalado, F12,
   diagnosticos, interfaces classica/moderna e ausencia de processos residuais.
 
-### Q4 - Regressao compacta (pendente de validacao)
+### Q4 - Regressao compacta ✅
 
-- [ ] `regcheck` concentra servicos, scheduler, memoria, pacotes, threads e
+- [x] `regcheck` concentra servicos, scheduler, memoria, pacotes, threads e
   dois ciclos ZAPP silenciosos, incluindo cancelamento real por `F12`.
-- [ ] A validacao no QEMU deve confirmar somente o resumo final, um prompt e
-  ausencia de processos, zumbis e diretorios de usuario residuais.
+- [x] Validado no host com `make q3check` e build limpo; no QEMU confirmou
+  `RegCheck: OK`, uso invalido controlado, um prompt e ausencia de processos,
+  zumbis e diretorios de usuario residuais.
 
 ### Etapas posteriores da plataforma
 
