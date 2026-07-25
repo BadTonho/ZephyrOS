@@ -26,11 +26,11 @@ visual atual.
 
 ## Etapa UI2 - Taskbar e Window Manager grafico
 
-- [ ] Modernizar a taskbar sem mudar sua semantica de botoes, relogio e Menu
+- [x] Modernizar a taskbar sem mudar sua semantica de botoes, relogio e Menu
   Iniciar.
-- [ ] Integrar o Window Manager textual a uma camada grafica somente apos
+- [x] Integrar o Window Manager textual a uma camada grafica somente apos
   definir propriedade, foco e ordem de desenho das janelas.
-- [ ] Manter Task Manager, Explorer e Settings funcionais durante a transicao.
+- [x] Manter Task Manager, Explorer e Settings funcionais durante a transicao.
 
 ## Etapa UI3 - Interacao direta
 
