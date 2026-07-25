@@ -18,25 +18,21 @@ mudanca; nao crie uma entrada artificial.
 
 ## Registros
 
-Nenhuma otimizacao registrada ate o momento.
+### 2026-07-24 - K4, cursor VESA por regioes minimas
 
-## Comparacao K4 - cursor VESA por regioes minimas
-
-Esta comparacao permanece pendente da validacao manual no QEMU. No mesmo modo
-VESA, resolucao e janela do QEMU, executar `kmetrics reset`; abrir o Desktop
-moderno; mover o cursor dez vezes entre cantos opostos sem clicar; fechar a
-interface; e executar `kmetrics`. Registrar `bytes`, apresentacoes parciais,
-`media_bytes` e `max_boot` antes e depois.
-
-- Cenario QEMU: pendente de coleta pelo usuario.
+- Cenario QEMU: mesma janela e modo VESA; `kmetrics reset`, Desktop moderno,
+  dez movimentos entre cantos opostos sem clique, retorno ao Shell e
+  `kmetrics`.
 - Metrica observavel: bytes VESA, apresentacoes parciais, `media_bytes` e
   duracao maxima em ticks.
-- Antes: pendente.
-- Depois: pendente.
-- Conclusao: pendente; a quantidade de apresentacoes pode aumentar quando duas
-  regioes pequenas substituem uma unica faixa grande.
+- Antes: maior volume de bytes no mesmo cenario; os valores da sessao manual
+  nao foram retidos como texto.
+- Depois: menor volume de bytes, confirmado manualmente no QEMU.
+- Conclusao: ganho confirmado. A inversao final de apresentacao eliminou o
+  piscar observado na primeira tentativa; nao houve rastro do cursor.
 - Impacto: sem mudanca de scheduler, heap, paging, App API, syscall ou
-  bootloader; aprovar somente sem artefato visual e com bytes reduzidos.
+  bootloader; `regcheck` permaneceu aprovado e os snapshots nao mostraram
+  processos, zumbis ou paginas de usuario residuais.
 
 ## Linha-base K1
 

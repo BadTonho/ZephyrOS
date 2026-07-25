@@ -29,16 +29,19 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   classica/moderna; permanece o round-robin de 1 tick para ring 3. K3 foi
   validada no QEMU com estatisticas e guardas de heap/PMM, registro seguro de
   diretorios de usuario e o diagnostico compacto `memcheck`, inclusive apos
-  ciclos ring 3 e nas interfaces classica/moderna.
+  ciclos ring 3 e nas interfaces classica/moderna. K4 foi validada no QEMU:
+  a copia VESA do cursor por regioes minimas reduziu bytes no cenario manual,
+  preservando foco, Shell e ausencia de artefatos visuais.
 - Interface: Desktop, Explorer, Task Manager e Settings possuem modo moderno
   e fallback classico; a taskbar e o Window Manager grafico ainda sao etapas
   futuras.
 
-## K4 em validacao
+## K4 validada
 
 A K4 compara a copia VESA do cursor por regioes minimas, sem abrir mudancas
-de scheduler, memoria, App API ou bootloader. O resultado so sera promovido a
-validado depois da comparacao antes/depois e da matriz QEMU.
+de scheduler, memoria, App API ou bootloader. A comparacao antes/depois no
+QEMU confirmou reducao de bytes e ausencia de rastro ou piscada apos a
+correcao da ordem de apresentacao.
 
 ## Ordem sugerida
 

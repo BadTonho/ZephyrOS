@@ -55,15 +55,19 @@ politica propria; esta etapa nao altera quantum, prioridade, heap ou paging.
 
 ## Etapa K4 - Otimizacao dirigida por evidencia
 
-- [ ] Otimizar a apresentacao VESA do cursor: escolher entre a uniao das
+- [x] Otimizar a apresentacao VESA do cursor: escolher entre a uniao das
   posicoes antiga/nova ou duas regioes minimas pelo menor volume de bytes,
   sem mudar fila, callbacks ou politica de scheduler.
-- [ ] Expor `media_bytes` em `kmetrics` e comparar a janela manual do cursor
+- [x] Expor `media_bytes` em `kmetrics` e comparar a janela manual do cursor
   no mesmo QEMU antes/depois; a reducao de bytes, e nao a quantidade bruta de
   apresentacoes, e a medida primaria.
-- [ ] Validar ausencia de rastro ou piscada do cursor e manter Shell, ring 3,
+- [x] Validar ausencia de rastro ou piscada do cursor e manter Shell, ring 3,
   diagnosticos e interfaces classica/moderna; documentar empate ou regressao
   se nao houver ganho perceptivel.
+
+Validado no QEMU: a comparacao manual confirmou menos bytes VESA no mesmo
+cenario; a apresentacao do cursor novo antes da regiao antiga eliminou o
+piscar sem deixar rastro. `regcheck` e `kmetrics` permaneceram operacionais.
 
 ## Criterio de saida
 
