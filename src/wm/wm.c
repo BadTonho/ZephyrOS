@@ -26,6 +26,11 @@ static int wm_active = 0;
 #define WM_GUI_TITLE_HEIGHT 24
 #define WM_GUI_CONTROL_SIZE 16
 #define WM_GUI_CONTROL_GAP 2
+#define WM_GUI_RESIZE_ZONE 8
+#define WM_GUI_RESIZE_LEFT 0x01
+#define WM_GUI_RESIZE_RIGHT 0x02
+#define WM_GUI_RESIZE_TOP 0x04
+#define WM_GUI_RESIZE_BOTTOM 0x08
 
 typedef enum {
     WM_GUI_CONTROL_CLOSE = 0,
@@ -54,6 +59,16 @@ static wm_gui_window_t wm_gui_windows[WM_GUI_WINDOW_COUNT];
 static int wm_gui_window_count = 0;
 static int wm_gui_focused = -1;
 static int wm_gui_z_counter = 0;
+static int wm_gui_drag_active = 0;
+static int wm_gui_resize_active = 0;
+static int wm_gui_capture_index = -1;
+static int wm_gui_capture_x = 0;
+static int wm_gui_capture_y = 0;
+static int wm_gui_capture_width = 0;
+static int wm_gui_capture_height = 0;
+static int wm_gui_drag_offset_x = 0;
+static int wm_gui_drag_offset_y = 0;
+static int wm_gui_resize_edges = 0;
 
 static int wm_gui_enabled(void);
 static int wm_gui_get_work_area(tb_rect_t* work_area);
@@ -65,6 +80,7 @@ static void wm_gui_focus_next(void);
 static void wm_gui_minimize(int index);
 static void wm_gui_maximize_or_restore(int index);
 static void wm_gui_close(int index);
+static void wm_gui_clear_interaction(void);
 static int wm_gui_handle_mouse(mouse_event_t* event);
 
 static int wm_gui_enabled(void) {
@@ -125,6 +141,7 @@ static void wm_gui_reset(void) {
     int width;
     int height;
 
+    wm_gui_clear_interaction();
     if (!wm_gui_get_work_area(&work_area)) {
         LOG_ERROR("WM", "Area de trabalho grafica indisponivel");
         return;
@@ -208,6 +225,26 @@ static int wm_gui_point_in_window(const wm_gui_window_t* window, int x, int y) {
            y >= window->y && y < window->y + window->height;
 }
 
+static int wm_gui_resize_edges_at(const wm_gui_window_t* window, int x, int y) {
+    int edges = 0;
+
+    if (x < window->x + WM_GUI_RESIZE_ZONE) edges |= WM_GUI_RESIZE_LEFT;
+    if (x >= window->x + window->width - WM_GUI_RESIZE_ZONE) {
+        edges |= WM_GUI_RESIZE_RIGHT;
+    }
+    if (y < window->y + WM_GUI_RESIZE_ZONE) edges |= WM_GUI_RESIZE_TOP;
+    if (y >= window->y + window->height - WM_GUI_RESIZE_ZONE) {
+        edges |= WM_GUI_RESIZE_BOTTOM;
+    }
+    return edges;
+}
+
+static int wm_gui_point_in_title_bar(const wm_gui_window_t* window, int x, int y) {
+    return x >= window->x && x < window->x + window->width &&
+           y >= window->y + 2 &&
+           y < window->y + 2 + WM_GUI_TITLE_HEIGHT;
+}
+
 static void wm_gui_draw_window(const wm_gui_window_t* window) {
     vesa_color_t title_color = wm_gui_color(window->focused ?
                                                GUI_COLOR_TITLE_BG : 0x00606060);
@@ -261,6 +298,7 @@ static void wm_gui_draw_all(void) {
 
 static void wm_gui_minimize(int index) {
     if (index < 0 || index >= wm_gui_window_count || !wm_gui_windows[index].visible) return;
+    wm_gui_clear_interaction();
     wm_gui_windows[index].state = WM_STATE_MINIMIZED;
     wm_gui_windows[index].visible = 0;
     wm_gui_windows[index].focused = 0;
@@ -273,6 +311,7 @@ static void wm_gui_maximize_or_restore(int index) {
     tb_rect_t work_area;
     wm_gui_window_t* window;
 
+    wm_gui_clear_interaction();
     if (index < 0 || index >= wm_gui_window_count ||
         !wm_gui_get_work_area(&work_area)) return;
     window = &wm_gui_windows[index];
@@ -298,6 +337,7 @@ static void wm_gui_maximize_or_restore(int index) {
 
 static void wm_gui_close(int index) {
     if (index < 0 || index >= wm_gui_window_count) return;
+    wm_gui_clear_interaction();
     wm_gui_windows[index].visible = 0;
     wm_gui_windows[index].focused = 0;
     taskbar_remove_window(wm_gui_windows[index].id);
@@ -306,12 +346,135 @@ static void wm_gui_close(int index) {
     wm_gui_sync_taskbar();
 }
 
+static void wm_gui_clear_interaction(void) {
+    wm_gui_drag_active = 0;
+    wm_gui_resize_active = 0;
+    wm_gui_capture_index = -1;
+    wm_gui_resize_edges = 0;
+}
+
+static void wm_gui_begin_drag(int index, const mouse_event_t* event) {
+    wm_gui_window_t* window = &wm_gui_windows[index];
+
+    wm_gui_clear_interaction();
+    wm_gui_drag_active = 1;
+    wm_gui_capture_index = index;
+    wm_gui_capture_x = window->x;
+    wm_gui_capture_y = window->y;
+    wm_gui_capture_width = window->width;
+    wm_gui_capture_height = window->height;
+    wm_gui_drag_offset_x = event->x - window->x;
+    wm_gui_drag_offset_y = event->y - window->y;
+}
+
+static void wm_gui_begin_resize(int index, int edges) {
+    wm_gui_window_t* window = &wm_gui_windows[index];
+
+    wm_gui_clear_interaction();
+    wm_gui_resize_active = 1;
+    wm_gui_capture_index = index;
+    wm_gui_capture_x = window->x;
+    wm_gui_capture_y = window->y;
+    wm_gui_capture_width = window->width;
+    wm_gui_capture_height = window->height;
+    wm_gui_resize_edges = edges;
+}
+
+static void wm_gui_update_drag(wm_gui_window_t* window,
+                               const mouse_event_t* event) {
+    tb_rect_t work_area;
+    int max_x;
+    int max_y;
+    int x;
+    int y;
+
+    if (!wm_gui_get_work_area(&work_area)) return;
+    x = event->x - wm_gui_drag_offset_x;
+    y = event->y - wm_gui_drag_offset_y;
+    max_x = work_area.x + work_area.width - window->width;
+    max_y = work_area.y + work_area.height - window->height;
+    if (max_x < work_area.x) max_x = work_area.x;
+    if (max_y < work_area.y) max_y = work_area.y;
+    if (x < work_area.x) x = work_area.x;
+    if (x > max_x) x = max_x;
+    if (y < work_area.y) y = work_area.y;
+    if (y > max_y) y = max_y;
+    window->x = x;
+    window->y = y;
+}
+
+static void wm_gui_update_resize(wm_gui_window_t* window,
+                                 const mouse_event_t* event) {
+    tb_rect_t work_area;
+    int left = wm_gui_capture_x;
+    int top = wm_gui_capture_y;
+    int right = wm_gui_capture_x + wm_gui_capture_width;
+    int bottom = wm_gui_capture_y + wm_gui_capture_height;
+    int work_right;
+    int work_bottom;
+
+    if (!wm_gui_get_work_area(&work_area)) return;
+    work_right = work_area.x + work_area.width;
+    work_bottom = work_area.y + work_area.height;
+    if (wm_gui_resize_edges & WM_GUI_RESIZE_LEFT) {
+        left = event->x;
+        if (left < work_area.x) left = work_area.x;
+        if (left > right - WM_GUI_MIN_WIDTH) left = right - WM_GUI_MIN_WIDTH;
+    }
+    if (wm_gui_resize_edges & WM_GUI_RESIZE_RIGHT) {
+        right = event->x;
+        if (right > work_right) right = work_right;
+        if (right < left + WM_GUI_MIN_WIDTH) right = left + WM_GUI_MIN_WIDTH;
+    }
+    if (wm_gui_resize_edges & WM_GUI_RESIZE_TOP) {
+        top = event->y;
+        if (top < work_area.y) top = work_area.y;
+        if (top > bottom - WM_GUI_MIN_HEIGHT) top = bottom - WM_GUI_MIN_HEIGHT;
+    }
+    if (wm_gui_resize_edges & WM_GUI_RESIZE_BOTTOM) {
+        bottom = event->y;
+        if (bottom > work_bottom) bottom = work_bottom;
+        if (bottom < top + WM_GUI_MIN_HEIGHT) bottom = top + WM_GUI_MIN_HEIGHT;
+    }
+    window->x = left;
+    window->y = top;
+    window->width = right - left;
+    window->height = bottom - top;
+}
+
+static int wm_gui_update_interaction(const mouse_event_t* event) {
+    wm_gui_window_t* window;
+
+    if (wm_gui_capture_index < 0 ||
+        wm_gui_capture_index >= wm_gui_window_count) return 0;
+    window = &wm_gui_windows[wm_gui_capture_index];
+    if (!window->visible || window->state == WM_STATE_MAXIMIZED) {
+        wm_gui_clear_interaction();
+        return 1;
+    }
+    if (wm_gui_drag_active) wm_gui_update_drag(window, event);
+    if (wm_gui_resize_active) wm_gui_update_resize(window, event);
+    wm_gui_draw_all();
+    return 1;
+}
+
 static int wm_gui_handle_mouse(mouse_event_t* event) {
     int selected = -1;
     int highest_z = -1;
 
-    if (!event || event->event != MOUSE_EVENT_PRESS ||
-        !(event->changed & MOUSE_BTN_LEFT)) return 0;
+    if (!event) return 0;
+    if (event->event == MOUSE_EVENT_RELEASE) {
+        int was_captured = wm_gui_capture_index >= 0;
+
+        wm_gui_clear_interaction();
+        return was_captured;
+    }
+    if (event->event == MOUSE_EVENT_MOVE) return wm_gui_update_interaction(event);
+    if (event->event != MOUSE_EVENT_PRESS || !(event->changed & MOUSE_BTN_LEFT)) {
+        return 0;
+    }
+
+    wm_gui_clear_interaction();
     for (int i = 0; i < wm_gui_window_count; i++) {
         if (wm_gui_windows[i].visible &&
             wm_gui_point_in_window(&wm_gui_windows[i], event->x, event->y) &&
@@ -328,10 +491,28 @@ static int wm_gui_handle_mouse(mouse_event_t* event) {
         if (event->x >= rect.x && event->x < rect.x + rect.width &&
             event->y >= rect.y && event->y < rect.y + rect.height) {
             wm_gui_control_t control = wm_gui_control_at(i);
+
             if (control == WM_GUI_CONTROL_CLOSE) wm_gui_close(selected);
             if (control == WM_GUI_CONTROL_MINIMIZE) wm_gui_minimize(selected);
             if (control == WM_GUI_CONTROL_MAXIMIZE) wm_gui_maximize_or_restore(selected);
-            break;
+            wm_gui_draw_all();
+            return 1;
+        }
+    }
+    if (wm_gui_windows[selected].state != WM_STATE_MAXIMIZED) {
+        int edges = wm_gui_resize_edges_at(&wm_gui_windows[selected],
+                                           event->x, event->y);
+
+        if (edges) {
+            wm_gui_begin_resize(selected, edges);
+            wm_gui_draw_all();
+            return 1;
+        }
+        if (wm_gui_point_in_title_bar(&wm_gui_windows[selected],
+                                      event->x, event->y)) {
+            wm_gui_begin_drag(selected, event);
+            wm_gui_draw_all();
+            return 1;
         }
     }
     wm_gui_draw_all();
@@ -360,6 +541,7 @@ void wm_init(void) {
     wm_gui_window_count = 0;
     wm_gui_focused = -1;
     wm_gui_z_counter = 0;
+    wm_gui_clear_interaction();
 }
 
 wm_config_t* wm_get_config(void) {
@@ -838,6 +1020,7 @@ int wm_is_active(void) {
 
 void wm_set_active(int active) {
     if (!active) {
+        wm_gui_clear_interaction();
         for (int i = 0; i < wm_gui_window_count; i++) {
             taskbar_remove_window(wm_gui_windows[i].id);
         }
