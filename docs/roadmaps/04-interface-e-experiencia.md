@@ -17,11 +17,11 @@ visual atual.
 
 ## Etapa UI1 - Consolidacao visual
 
-- [ ] Corrigir apenas inconsistencias visuais ou de entrada observadas nos
+- [x] Corrigir apenas inconsistencias visuais ou de entrada observadas nos
   fluxos atuais antes de criar novos componentes.
-- [ ] Garantir que taskbar e Menu Iniciar mantenham prioridade sobre janelas e
+- [x] Garantir que taskbar e Menu Iniciar mantenham prioridade sobre janelas e
   aplicativos externos.
-- [ ] Preservar uma unica atualizacao de frame por cena e evitar rastros de
+- [x] Preservar uma unica atualizacao de frame por cena e evitar rastros de
   cursor.
 
 ## Etapa UI2 - Taskbar e Window Manager grafico

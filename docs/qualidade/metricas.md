@@ -18,6 +18,24 @@ mudanca; nao crie uma entrada artificial.
 
 ## Registros
 
+### 2026-07-25 - UI1, tamanho da imagem do kernel
+
+- Cenario QEMU: compilar com `make clean && make`; iniciar com `make run`;
+  em `guimode modern` abrir Desktop, Explorer, Settings, Task Manager e
+  `guitest`, testar Menu Iniciar e alternar a taskbar entre baixo e cima;
+  repetir os fluxos essenciais em `guimode classic`.
+- Metrica observavel: soma decimal de `text + data + bss` dos objetos em
+  `build/*.o`, medida com `i686-elf-size`.
+- Antes: 457488 bytes; o linker interrompeu a imagem com
+  `kernel exceeds reserved memory`.
+- Depois: 441926 bytes, reducao de 15562 bytes (3,4%); o build e a validacao
+  manual no QEMU foram concluídos.
+- Conclusao: ganho de espaco suficiente para a imagem caber na regiao atual
+  do kernel.
+- Impacto: `-Os` foi limitado a Task Manager, guitest, Explorer, taskbar,
+  Desktop e Settings; o restante permanece em `-O2`. Bootloader e mapa de
+  memoria nao foram alterados.
+
 ### 2026-07-24 - K4, cursor VESA por regioes minimas
 
 - Cenario QEMU: mesma janela e modo VESA; `kmetrics reset`, Desktop moderno,
