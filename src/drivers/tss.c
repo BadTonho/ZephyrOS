@@ -1,5 +1,6 @@
 #include "drivers/tss.h"
 #include "core/log.h"
+#include "core/memory.h"
 #include "core/string.h"
 
 static tss_entry_t tss;
@@ -53,7 +54,7 @@ void tss_init(void) {
     kmemset(&tss, 0, sizeof(tss_entry_t));
 
     tss.ss0 = 0x10;
-    tss.esp0 = 0x90000;
+    tss.esp0 = KERNEL_STACK_TOP;
     tss.cs = 0x08;
     tss.ds = 0x10;
     tss.es = 0x10;

@@ -113,8 +113,9 @@ contagem zero ou maior que a RAM e inclui o ultimo intervalo possivel.
 `memory_pmm_stats_t` informa paginas atualmente entregues, falhas de alocacao
 e liberacoes recusadas. O bitmap adicional e reservado durante `memory_init()`
 e nunca volta a ser memoria livre. Os dois bitmaps ocupam a faixa segura entre
-o fim do kernel e a stack inicial do sistema; inicializacao fora desse limite
-falha de forma controlada em vez de sobrepor memoria critica.
+o fim do kernel e a stack inicial do sistema. As paginas da stack tambem sao
+reservadas no PMM; a inicializacao valida a cobertura E820 de toda a memoria
+baixa reservada e falha de forma controlada em vez de sobrepor memoria critica.
 
 ---
 
@@ -276,14 +277,16 @@ void paging_switch_directory(page_directory_t* dir) {
 ## Mapa de Memória Final
 
 ```
-0x00000 - 0x7C00   Bootloader (reusado)
-0x7C00  - 0x8000   Boot sector
-0x8000  - 0x10000  Mapa E820
-0x10000 - 0x80000  Kernel e BSS
-0x80000 - 0x81000  Bitmap PMM (tamanho varia com a RAM)
-0x90000 - 0xA0000  Kernel stack
+0x00000 - 0x2000   Bootloader e buffers reutilizados
+0x2000  - 0x3000   Informacoes VESA
+0x3000  - 0x5000   Mapa E820 e contador
+0x5000  - 0x10000  Segundo estagio do bootloader
+0x10000 - 0x88000  Kernel e BSS (480 KiB)
+0x88000 - 0x98000  Bitmaps PMM (tamanho varia com a RAM)
+0x98000 - 0x9F000  Kernel stack (28 KiB)
+0x9F000 - 0xA0000  Margem reservada para BIOS/EBDA
+0xA0000 - 0xC0000  Memoria de video VGA
 0x100000 - 0x200000 Heap (1 MB)
-0xB8000 - 0xBFFFF  VGA memory
 ```
 
 ---

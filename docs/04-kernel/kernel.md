@@ -212,6 +212,11 @@ rejeicoes do PMM e diretorios/paginas de usuario ativos. Esses campos sao
 diagnosticos internos; `mem` e a App API continuam mostrando apenas memoria
 global.
 
+O contrato de `memory.h` fixa a memoria baixa em tres faixas contiguas:
+kernel e BSS ate `0x88000`, bitmaps do PMM ate `0x98000` e stack protegida ate
+`0x9F000`. O PMM reserva ambas as ultimas faixas e recusa a inicializacao se o
+mapa E820 nao cobrir a regiao inteira.
+
 Falhas recuperaveis retornam erro e desabilitam somente o componente afetado.
 Excecoes fatais e corrupcao estrutural continuam encaminhadas para `panic`.
 O `boot.asm` e a politica de escalonamento nao fazem parte desta etapa.

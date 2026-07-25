@@ -14,10 +14,30 @@ static uint32_t heap_allocation_failures = 0;
 static uint32_t heap_invalid_frees = 0;
 static uint32_t heap_double_frees = 0;
 
-#define PMM_BITMAP_STORAGE_END 0x90000U
+#define PMM_BITMAP_STORAGE_END KERNEL_STACK_START
+
+#if KERNEL_END >= PMM_BITMAP_STORAGE_END || \
+    PMM_BITMAP_STORAGE_END >= KERNEL_STACK_TOP
+#error "Mapa de memoria baixa invalido"
+#endif
 
 static uint32_t align_up(uint32_t value, uint32_t alignment) {
     return (value + alignment - 1) & ~(alignment - 1);
+}
+
+static int memory_range_is_usable(uint32_t start, uint32_t end,
+                                  uint32_t mmap_count) {
+    for (uint32_t i = 0; i < mmap_count; i++) {
+        mmap_entry_t* entry = &mem_info.mmap[i];
+        uint64_t base = ((uint64_t)entry->base_high << 32) | entry->base_low;
+        uint64_t range_end = base +
+            (((uint64_t)entry->length_high << 32) | entry->length_low);
+
+        if (entry->type == 1 && base <= start && range_end >= end) {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 void memory_init(uint32_t mmap_addr) {
@@ -36,6 +56,13 @@ void memory_init(uint32_t mmap_addr) {
     if (mmap_count == 0) {
         LOG_ERROR("MEM", "Mapa E820 sem entradas");
         panic_memory("Mapa E820 vazio", mmap_count, 0, 0, 0);
+        return;
+    }
+
+    if (!memory_range_is_usable(KERNEL_START, KERNEL_STACK_TOP, mmap_count)) {
+        LOG_ERROR("MEM", "Mapa E820 nao cobre memoria baixa reservada");
+        panic_memory("Memoria baixa reservada indisponivel", mmap_count,
+                     0, 0, 0);
         return;
     }
 
@@ -129,6 +156,12 @@ void memory_init(uint32_t mmap_addr) {
                           pmm_owner_bitmap_size;
     uint32_t bitmap_pages = (bitmap_end + PAGE_SIZE - 1) / PAGE_SIZE;
     for (uint32_t p = 0; p < bitmap_pages; p++) {
+        mem_info.bitmap[p / 8] |= (1 << (p % 8));
+    }
+
+    uint32_t stack_start_page = KERNEL_STACK_START / PAGE_SIZE;
+    uint32_t stack_end_page = KERNEL_STACK_TOP / PAGE_SIZE;
+    for (uint32_t p = stack_start_page; p < stack_end_page; p++) {
         mem_info.bitmap[p / 8] |= (1 << (p % 8));
     }
 

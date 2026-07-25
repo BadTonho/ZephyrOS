@@ -2,7 +2,8 @@
 [ORG 0x5000]
 
 KERNEL_OFFSET    equ 0x10000
-KERNEL_LIMIT     equ 0x80000
+KERNEL_LIMIT     equ 0x88000
+KERNEL_STACK_TOP equ 0x9F000
 STAGE2_LOAD      equ 0x5000
 STAGE2_INFO      equ 0x4FFE
 STAGE2_STACK     equ 0x1F00
@@ -213,7 +214,7 @@ protected_mode:
     mov fs, ax
     mov gs, ax
     mov ss, ax
-    mov esp, 0x90000
+    mov esp, KERNEL_STACK_TOP
     mov esi, MEMORY_MAP
     mov edi, VESA_INFO
     call KERNEL_OFFSET

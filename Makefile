@@ -14,7 +14,6 @@ QEMU ?= qemu-system-i386
 
 # Flags
 CFLAGS = -m32 -O2 -fno-strict-aliasing -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -I src/include -I src/include/core -I src/include/drivers -I src/include/fs -I src/include/memory -I src/include/process -I src/include/apps -I src/include/ui
-UI_CFLAGS = $(CFLAGS) -Os
 LDFLAGS = -m elf_i386 -T src/linker.ld
 NASMFLAGS = -f bin
 
@@ -376,7 +375,7 @@ $(SHELL_OBJ): $(SHELL_C)
 
 $(TASKMGR_OBJ): $(TASKMGR_C)
 	@if not exist build mkdir build
-	$(GCC) $(UI_CFLAGS) -c $< -o $@
+	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(MEDIAPLAYER_OBJ): $(MEDIAPLAYER_C)
 	@if not exist build mkdir build
@@ -388,24 +387,24 @@ $(EDITOR_OBJ): $(EDITOR_C)
 
 $(GUITEST_OBJ): $(GUITEST_C)
 	@if not exist build mkdir build
-	$(GCC) $(UI_CFLAGS) -c $< -o $@
+	$(GCC) $(CFLAGS) -c $< -o $@
 
 
 $(FILEMANAGER_OBJ): $(FILEMANAGER_C)
 	@if not exist build mkdir build
-	$(GCC) $(UI_CFLAGS) -c $< -o $@
+	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(TASKBAR_OBJ): $(TASKBAR_C)
 	@if not exist build mkdir build
-	$(GCC) $(UI_CFLAGS) -c $< -o $@
+	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(DESKTOP_OBJ): $(DESKTOP_C)
 	@if not exist build mkdir build
-	$(GCC) $(UI_CFLAGS) -c $< -o $@
+	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SETTINGS_OBJ): $(SETTINGS_C)
 	@if not exist build mkdir build
-	$(GCC) $(UI_CFLAGS) -c $< -o $@
+	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(WM_OBJ): $(WM_C)
 	@if not exist build mkdir build

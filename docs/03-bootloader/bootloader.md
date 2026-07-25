@@ -104,9 +104,9 @@ protected_mode:
     mov ax, 0x10           ; Segmento de dados
     mov ds, ax
     mov ss, ax
-    mov esp, 0x90000       ; Kernel stack
+    mov esp, 0x9F000       ; Kernel stack
 
-    mov esi, 0x8000        ; Passa mapa de memória
+    mov esi, 0x3000        ; Passa mapa de memória
     call 0x10000           ; Chama kernel_main()
 ```
 
@@ -117,9 +117,11 @@ protected_mode:
 0x5000   → Segundo estágio do bootloader
 0x3000   → Mapa de memória E820 e contador
 0x2000   → Informações do modo VESA
-0x10000  → Kernel carregado do disco
+0x10000–0x88000  → Kernel carregado do disco e BSS (480 KiB)
+0x88000–0x98000  → Bitmaps do PMM
+0x98000–0x9F000  → Stack inicial do kernel
+0x9F000–0xA0000  → Margem reservada para BIOS/EBDA
 0x1F00   → Stack temporária do stage2
-0x90000  → Stack inicial do kernel
 ```
 
 ## BPB (BIOS Parameter Block)

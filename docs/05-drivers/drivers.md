@@ -294,7 +294,7 @@ O **TSS** (Task State Segment) guarda o kernel stack para quando o CPU muda de r
 
 ```c
 tss.ss0 = 0x10;    // Kernel data segment
-tss.esp0 = 0x90000; // Topo do kernel stack
+tss.esp0 = 0x9F000; // Topo do kernel stack
 ```
 
 ---
