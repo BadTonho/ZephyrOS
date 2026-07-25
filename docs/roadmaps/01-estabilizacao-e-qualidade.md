@@ -132,9 +132,9 @@ executou `make clean && make` e confirmou no QEMU `health`, `q2check`,
 
 ## Etapa Q4 - Regressao compacta (validada no QEMU)
 
-- [x] Adicionar `regcheck` para concentrar verificacoes seguras de servicos,
-  scheduler, memoria, pacotes, threads e ciclo de vida ZAPP sem listar os
-  sucessos intermediarios.
+- [x] Adicionar `regcheck` para concentrar verificacoes seguras de health,
+  processos, servicos, scheduler, memoria, pacotes, threads e ciclo de vida
+  ZAPP sem listar os sucessos intermediarios.
 - [x] Validar um encerramento ZAPP silencioso e um cancelamento real por
   `F12`, com foco, processos, zumbis e diretorios de usuario restaurados.
 - [x] Manter em `DEBUG` os logs repetitivos de sucesso do auto-teste de

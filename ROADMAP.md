@@ -115,7 +115,7 @@ Plataforma de aplicativos:   [████████████████�
 | `memcheck` | Valida heap, PMM, coalescencia e limpeza de diretorios ring 3 |
 | `schedcheck` | Valida invariantes do scheduler sem alterar processos |
 | `q2check` | Executa diagnostico compacto da etapa Q2 |
-| `regcheck` | Executa regressao compacta e valida cancelamento real por F12 |
+| `regcheck` | Valida health, processos, scheduler, memoria e cancelamento real por F12 |
 | `appcheck` | Testa API, arquivos, IPC e carregador |
 | `app run <arq> [args]` | Executa aplicativo ring 3 com argumentos simples |
 | `app inputtest` | Testa teclado e foco de aplicativo ring 3 |
@@ -360,8 +360,9 @@ Plataforma de aplicativos:   [████████████████�
 
 ### Q4 - Regressao compacta ✅
 
-- [x] `regcheck` concentra servicos, scheduler, memoria, pacotes, threads e
-  dois ciclos ZAPP silenciosos, incluindo cancelamento real por `F12`.
+- [x] `regcheck` concentra health, processos, servicos, scheduler, memoria,
+  pacotes, threads e dois ciclos ZAPP silenciosos, incluindo cancelamento real
+  por `F12`.
 - [x] Validado no host com `make q3check` e build limpo; no QEMU confirmou
   `RegCheck: OK`, uso invalido controlado, um prompt e ausencia de processos,
   zumbis e diretorios de usuario residuais.

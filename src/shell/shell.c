@@ -74,16 +74,19 @@ typedef struct {
 
 typedef struct {
     uint32_t initial_focus;
+    uint32_t initial_process_count;
     uint32_t initial_user_count;
     uint32_t initial_zombie_count;
     uint32_t initial_user_directories;
     uint32_t initial_user_pages;
     uint32_t expected_pid;
+    int health_result;
     int services_result;
     int scheduler_result;
     int memory_result;
     int package_result;
     int thread_result;
+    int processes_result;
     int loader_result;
     int cancellation_result;
     int cleanup_result;
@@ -523,15 +526,51 @@ static void shell_q2check_handle_user_test_result(uint32_t pid,
 
 static void shell_regcheck_reset(void) {
     kmemset(&shell_regcheck, 0, sizeof(shell_regcheck));
+    shell_regcheck.health_result = ERR_STATE;
     shell_regcheck.services_result = ERR_STATE;
     shell_regcheck.scheduler_result = ERR_STATE;
     shell_regcheck.memory_result = ERR_STATE;
     shell_regcheck.package_result = ERR_STATE;
     shell_regcheck.thread_result = ERR_STATE;
+    shell_regcheck.processes_result = ERR_STATE;
     shell_regcheck.loader_result = ERR_STATE;
     shell_regcheck.cancellation_result = ERR_STATE;
     shell_regcheck.cleanup_result = ERR_STATE;
     shell_regcheck.state = SHELL_REGCHECK_IDLE;
+}
+
+static int shell_regcheck_validate_health(void) {
+    uint32_t component_count = recovery_get_count();
+
+    if (component_count != RECOVERY_COMPONENT_COUNT) {
+        LOG_ERROR("SHELL", "RegCheck detectou tabela health indisponivel");
+        return ERR_STATE;
+    }
+
+    for (uint32_t i = 0; i < component_count; i++) {
+        recovery_component_id_t id = (recovery_component_id_t)i;
+        const recovery_component_t* component = recovery_get(id);
+        int available = recovery_is_available(id);
+        int enabled = recovery_is_enabled(id);
+
+        if (!component || component->state == RECOVERY_STATE_UNKNOWN) {
+            LOG_ERROR("SHELL", "RegCheck detectou componente health desconhecido");
+            return ERR_STATE;
+        }
+        if (component->state == RECOVERY_STATE_READY && available && enabled) {
+            continue;
+        }
+        if (component->state == RECOVERY_STATE_DEGRADED && !available && enabled) {
+            continue;
+        }
+        if (component->state == RECOVERY_STATE_DISABLED && !available && !enabled) {
+            continue;
+        }
+
+        LOG_ERROR("SHELL", "RegCheck detectou estado health inconsistente");
+        return ERR_STATE;
+    }
+    return OK;
 }
 
 static int shell_regcheck_validate_services(void) {
@@ -580,6 +619,17 @@ static int shell_regcheck_validate_packages(void) {
         !diagnostic.missing_dependency || !diagnostic.insufficient_space) {
         LOG_ERROR("SHELL", "RegCheck detectou validacao de pacote invalida");
         return result == OK ? ERR_STATE : result;
+    }
+    return OK;
+}
+
+static int shell_regcheck_validate_processes(void) {
+    if (process_get_count() != shell_regcheck.initial_process_count ||
+        process_get_user_count() != shell_regcheck.initial_user_count ||
+        process_get_state_count(PROCESS_STATE_ZOMBIE) !=
+            shell_regcheck.initial_zombie_count) {
+        LOG_ERROR("SHELL", "RegCheck detectou processos residuais");
+        return ERR_STATE;
     }
     return OK;
 }
@@ -649,11 +699,13 @@ static int shell_regcheck_validate_loader_result(
 }
 
 static int shell_regcheck_has_failures(void) {
-    if (shell_regcheck.services_result != OK ||
+    if (shell_regcheck.health_result != OK ||
+        shell_regcheck.services_result != OK ||
         shell_regcheck.scheduler_result != OK ||
         shell_regcheck.memory_result != OK ||
         shell_regcheck.package_result != OK ||
         shell_regcheck.thread_result != OK ||
+        shell_regcheck.processes_result != OK ||
         shell_regcheck.cleanup_result != OK) {
         return 1;
     }
@@ -681,12 +733,15 @@ static void shell_regcheck_finish(void) {
         video_print("OK\n", 0x0A);
     } else {
         video_print("ERRO\n", 0x0C);
+        shell_regcheck_print_failure("health", shell_regcheck.health_result);
         shell_regcheck_print_failure("servicos_base",
                                      shell_regcheck.services_result);
         shell_regcheck_print_failure("scheduler", shell_regcheck.scheduler_result);
         shell_regcheck_print_failure("memoria", shell_regcheck.memory_result);
         shell_regcheck_print_failure("pacotes", shell_regcheck.package_result);
         shell_regcheck_print_failure("threads", shell_regcheck.thread_result);
+        shell_regcheck_print_failure("processos",
+                                     shell_regcheck.processes_result);
         if (shell_regcheck.loader_started) {
             shell_regcheck_print_failure("loader_ring3",
                                          shell_regcheck.loader_result);
@@ -716,6 +771,7 @@ static void shell_regcheck_finish_after_ring3(void) {
     if (shell_regcheck.memory_result == OK && result != OK) {
         shell_regcheck.memory_result = result;
     }
+    shell_regcheck.processes_result = shell_regcheck_validate_processes();
     shell_regcheck.cleanup_result = shell_regcheck_validate_cleanup();
     shell_regcheck_finish();
 }
@@ -727,6 +783,7 @@ static void shell_regcheck_handle_loader_result(const app_loader_result_t* resul
         shell_regcheck.loader_result =
             shell_regcheck_validate_loader_result(result, 0);
         if (shell_regcheck.loader_result != OK) {
+            shell_regcheck.processes_result = shell_regcheck_validate_processes();
             shell_regcheck.cleanup_result = shell_regcheck_validate_cleanup();
             shell_regcheck_finish();
             return;
@@ -2146,6 +2203,7 @@ static void cmd_regcheck(const char* args) {
 
     shell_regcheck_reset();
     shell_regcheck.initial_focus = process_get_focus();
+    shell_regcheck.initial_process_count = process_get_count();
     shell_regcheck.initial_user_count = process_get_user_count();
     shell_regcheck.initial_zombie_count =
         process_get_state_count(PROCESS_STATE_ZOMBIE);
@@ -2153,12 +2211,14 @@ static void cmd_regcheck(const char* args) {
     shell_regcheck.initial_user_directories = paging.active_directories;
     shell_regcheck.initial_user_pages = paging.active_pages;
 
+    shell_regcheck.health_result = shell_regcheck_validate_health();
     shell_regcheck.services_result = shell_regcheck_validate_services();
     shell_regcheck.scheduler_result = shell_regcheck_validate_scheduler();
     kmemset(&memory, 0, sizeof(memory));
     shell_regcheck.memory_result = shell_run_memcheck(&memory);
     shell_regcheck.package_result = shell_regcheck_validate_packages();
     shell_regcheck.thread_result = thread_run_self_test();
+    shell_regcheck.processes_result = shell_regcheck_validate_processes();
     shell_regcheck.cleanup_result = shell_regcheck_validate_cleanup();
 
     if (shell_regcheck_has_failures()) {
@@ -2171,6 +2231,7 @@ static void cmd_regcheck(const char* args) {
     if (result == OK) return;
 
     shell_regcheck.loader_result = result;
+    shell_regcheck.processes_result = shell_regcheck_validate_processes();
     shell_regcheck.cleanup_result = shell_regcheck_validate_cleanup();
     shell_regcheck_finish();
 }
