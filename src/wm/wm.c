@@ -338,18 +338,6 @@ static int wm_gui_handle_mouse(mouse_event_t* event) {
     return 1;
 }
 
-static void int_to_str(uint32_t num, char* buf) {
-    int i = 0;
-    if (num == 0) { buf[i++] = '0'; }
-    else {
-        char tmp[16];
-        int j = 0;
-        while (num > 0) { tmp[j++] = '0' + (num % 10); num /= 10; }
-        while (j > 0) { buf[i++] = tmp[--j]; }
-    }
-    buf[i] = '\0';
-}
-
 static int str_len(const char* s) {
     int len = 0;
     while (s[len]) len++;
@@ -888,8 +876,6 @@ int wm_handle_click(int px, int py) {
         event.event = MOUSE_EVENT_PRESS;
         event.changed = MOUSE_BTN_LEFT;
         event.buttons = MOUSE_BTN_LEFT;
-        event.dx = 0;
-        event.dy = 0;
         return wm_gui_handle_mouse(&event);
     }
     int col = px / 8;
