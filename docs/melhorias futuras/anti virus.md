@@ -285,8 +285,10 @@
   - [ ] Comparar com baseline
   - [ ] Retornar CLEAN se igual, TAMPERED se diferente
 - [ ] Criar função `integrity_verify_all()` para verificar todos
+- [ ] Criar função `integrity_repair(path)` para auto-reparo automático de arquivos corrompidos a partir do backup limpo
+- [ ] Criar função `integrity_repair_all()` para restaurar todos os arquivos corrompidos detectados
 - [ ] Criar função `integrity_update(path)` para atualizar baseline
-- [ ] Criar comando shell `integrity check`, `integrity update`, `integrity status`
+- [ ] Criar comando shell `integrity check`, `integrity repair`, `integrity update`, `integrity status` (ou `sfc check` / `sfc repair`)
 
 ### 4.2 Proteção de Arquivos Críticos
 

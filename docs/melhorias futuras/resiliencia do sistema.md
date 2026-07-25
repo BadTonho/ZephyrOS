@@ -8,13 +8,14 @@
 - [x] Verificar falhas na criação dos processos principais.
 - [x] Adicionar comando shell `health`.
 - [x] Isolar processos em modo usuário.
-- [x] Recuperar page faults de aplicações ring 3 sem reiniciar o kernel.
+- [ ] Autocorreção e reparo automático de arquivos de sistema corrompidos (SFC / Self-healing).
 
 ## Atalhos
 
 | Comando | Ação |
 |---------|------|
 | `health` | Lista estado, falhas e último código dos componentes |
+| `health --repair` | Executa diagnóstico e auto-reparo de componentes/arquivos degradados |
 | `guimode classic` | Usa a interface clássica |
 | `guimode modern` | Usa a interface moderna quando VESA e backbuffer estão disponíveis |
 
@@ -43,11 +44,18 @@
 - O resultado da falha é preservado para `health`; Shell, kernel e demais
   processos continuam ativos.
 
+### Fase 3 — Autocorreção e Reparo de Arquivos do Sistema ⬜
+
+- Mapeamento e monitoramento da integridade de binários e configurações críticas.
+- Quando um componente entra no estado `DEGRADED` devido a corrupção de arquivo ou leitura incorreta, o subsistema de recovery solicita auto-reparo.
+- Restauração automática de binários corrompidos a partir do diretório de cópias limpas (`/system/recovery/`).
+- Suporte ao parâmetro `health --repair` ou integração com comando `sfc repair`.
+
 ## Limitações
 
 - Exceções fatais do kernel continuam exibindo `KERNEL PANIC`.
 - Funções C não são capturadas automaticamente; cada operação precisa retornar e verificar um código.
-- Não há reinício automático de componentes nesta etapa.
+- Se o diretório de recovery estiver indisponível ou corrompido, o auto-reparo falha com alerta.
 
 ## Referências
 
@@ -56,3 +64,5 @@
 - `src/kernel/kernel.c`
 - `src/drivers/idt.c`
 - `src/memory/paging.c`
+- `docs/melhorias futuras/verificação de sistema.md`
+

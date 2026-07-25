@@ -62,6 +62,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [Gerenciador de Aplicativos](melhorias%20futuras/gerenciador%20de%20aplicativos.md) | Loader ZAPP, aplicativos nativos e roadmap da App Store |
 | [GUI Moderna](melhorias%20futuras/gui_moderna.md) | Transição para primitivas gráficas 2D e VESA |
 | [Formatação Inteligente](melhorias%20futuras/formatacao%20inteligente.md) | Sistema de reset e reinstalação preservando arquivos |
+| [Verificação e Auto-reparo do Sistema](melhorias%20futuras/verifica%C3%A7%C3%A3o%20de%20sistema.md) | Diagnóstico de integridade e autocorreção de arquivos (SFC) |
 | [Atalhos e Comandos do Sistema](atalhos_e_comandos.md) | Lista completa de atalhos de teclado e comandos do shell |
 | [Estado da Documentação](estado_da_documentacao.md) | Fonte de verdade, escopo da auditoria e como interpretar os roadmaps |
 | [Contratos publicos](qualidade/contratos-publicos.md) | Mapa de headers publicos e documentos tecnicos canonicos |
