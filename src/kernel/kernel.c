@@ -28,6 +28,7 @@
 #include "ui/desktop.h"
 #include "ui/settings.h"
 #include "ui/wm.h"
+#include "ui/filemanager.h"
 #include "ui/icons.h"
 #include "apps/taskmanager.h"
 #include "apps/guitest.h"
@@ -94,6 +95,32 @@ static void kernel_request_shell_app(ipc_app_request_t request) {
     LOG_WARN("KERNEL", "Solicitacao ao Shell pendente para nova tentativa");
 }
 
+static void kernel_redraw_after_menu_close(void) {
+    if (wm_is_active()) {
+        wm_draw_all();
+        return;
+    }
+    if (guitest_is_active()) {
+        guitest_draw();
+        return;
+    }
+    if (taskmgr_is_gui_open()) {
+        if (taskmgr_is_gui_minimized()) desktop_draw();
+        else taskmgr_gui_restore();
+        return;
+    }
+    if (settings_is_open()) {
+        settings_draw();
+        return;
+    }
+    if (fm_is_running()) {
+        fm_draw();
+        return;
+    }
+    if (desktop_is_active()) desktop_draw();
+    else taskbar_draw();
+}
+
 static void kernel_retry_shell_request(void) {
     uint32_t request = kernel_pending_shell_request;
 
@@ -105,12 +132,19 @@ static void kernel_retry_shell_request(void) {
 
 static int kernel_handle_taskbar_mouse(mouse_event_t* evt) {
     int tb_result;
+    int menu_was_open;
 
     if (!evt || evt->event != MOUSE_EVENT_PRESS ||
         !(evt->changed & MOUSE_BTN_LEFT)) return 0;
 
+    menu_was_open = taskbar_is_menu_open();
     tb_result = taskbar_handle_click(evt->x, evt->y);
     if (!tb_result) return 0;
+
+    if (menu_was_open && (tb_result == 1 || tb_result == 9)) {
+        kernel_redraw_after_menu_close();
+        return 1;
+    }
 
     if (taskmgr_is_gui_open() && tb_result >= 2 && tb_result <= 8) {
         if (tb_result == 4) {
@@ -129,6 +163,9 @@ static int kernel_handle_taskbar_mouse(mouse_event_t* evt) {
     if (settings_is_open() && tb_result >= 2 && tb_result <= 8) {
         settings_close();
     }
+    if (wm_is_active() && tb_result >= 2 && tb_result <= 8) {
+        wm_set_active(0);
+    }
 
     switch (tb_result) {
         case 2: kernel_request_shell_app(IPC_APP_OPEN_SHELL); break;
@@ -144,6 +181,11 @@ static int kernel_handle_taskbar_mouse(mouse_event_t* evt) {
             break;
         case 7: kernel_request_shell_app(IPC_APP_OPEN_DESKTOP); break;
         case 8: kernel_request_shell_app(IPC_APP_OPEN_SETTINGS); break;
+        case TB_ACTION_WINDOW: {
+            int window_id = taskbar_take_window_request();
+            if (window_id >= 0 && wm_is_active()) wm_toggle_window(window_id);
+            break;
+        }
         default: break;
     }
 
@@ -153,6 +195,11 @@ static int kernel_handle_taskbar_mouse(mouse_event_t* evt) {
 /* Handler global de eventos do mouse, despacha para a UI ativa */
 static void global_mouse_handler(mouse_event_t* evt) {
     if (kernel_handle_taskbar_mouse(evt)) return;
+
+    if (wm_is_active()) {
+        wm_handle_mouse(evt);
+        return;
+    }
 
     if (guitest_is_active()) {
         guitest_handle_mouse(evt);
@@ -198,10 +245,6 @@ static void global_mouse_handler(mouse_event_t* evt) {
         }
     }
 
-    /* Tenta window manager */
-    if (wm_is_active()) {
-        wm_handle_click(evt->x, evt->y);
-    }
 }
 
 void system_process_main(void) {

@@ -6,9 +6,337 @@
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/recovery.h"
+#include "drivers/font.h"
+#include "drivers/mouse.h"
+#include "drivers/vesa.h"
+#include "ui/desktop.h"
+#include "ui/gui.h"
+#include "ui/taskbar.h"
 
 static wm_manager_t wm;
 static int wm_active = 0;
+
+#define WM_GUI_WINDOW_COUNT 2
+#define WM_GUI_ID_BASE 100
+#define WM_GUI_MARGIN 24
+#define WM_GUI_MIN_WIDTH 180
+#define WM_GUI_MIN_HEIGHT 128
+#define WM_GUI_DEFAULT_WIDTH 360
+#define WM_GUI_DEFAULT_HEIGHT 240
+#define WM_GUI_TITLE_HEIGHT 24
+#define WM_GUI_CONTROL_SIZE 16
+#define WM_GUI_CONTROL_GAP 2
+
+typedef enum {
+    WM_GUI_CONTROL_CLOSE = 0,
+    WM_GUI_CONTROL_MINIMIZE,
+    WM_GUI_CONTROL_MAXIMIZE
+} wm_gui_control_t;
+
+typedef struct {
+    int id;
+    const char* title;
+    int x;
+    int y;
+    int width;
+    int height;
+    int restore_x;
+    int restore_y;
+    int restore_width;
+    int restore_height;
+    wm_window_state_t state;
+    int visible;
+    int focused;
+    int z_order;
+} wm_gui_window_t;
+
+static wm_gui_window_t wm_gui_windows[WM_GUI_WINDOW_COUNT];
+static int wm_gui_window_count = 0;
+static int wm_gui_focused = -1;
+static int wm_gui_z_counter = 0;
+
+static int wm_gui_enabled(void);
+static int wm_gui_get_work_area(tb_rect_t* work_area);
+static void wm_gui_reset(void);
+static void wm_gui_draw_all(void);
+static void wm_gui_sync_taskbar(void);
+static void wm_gui_focus(int index);
+static void wm_gui_focus_next(void);
+static void wm_gui_minimize(int index);
+static void wm_gui_maximize_or_restore(int index);
+static void wm_gui_close(int index);
+static int wm_gui_handle_mouse(mouse_event_t* event);
+
+static int wm_gui_enabled(void) {
+    vesa_mode_t* mode = vesa_get_mode();
+
+    return desktop_get_mode() == DESKTOP_MODE_MODERN && mode &&
+           mode->initialized && vesa_has_backbuffer();
+}
+
+static int wm_gui_get_work_area(tb_rect_t* work_area) {
+    vesa_mode_t* mode = vesa_get_mode();
+
+    if (!work_area || !mode || !mode->initialized) return 0;
+    work_area->x = 0;
+    work_area->y = 0;
+    work_area->width = mode->width;
+    work_area->height = mode->height;
+    taskbar_get_work_area(work_area);
+    return work_area->width > 0 && work_area->height > 0;
+}
+
+static void wm_gui_sync_taskbar(void) {
+    for (int i = 0; i < wm_gui_window_count; i++) {
+        taskbar_set_window_active(wm_gui_windows[i].id,
+                                  wm_gui_windows[i].visible &&
+                                  wm_gui_windows[i].focused);
+    }
+}
+
+static void wm_gui_focus(int index) {
+    if (index < 0 || index >= wm_gui_window_count ||
+        !wm_gui_windows[index].visible) return;
+
+    for (int i = 0; i < wm_gui_window_count; i++) {
+        wm_gui_windows[i].focused = 0;
+    }
+    wm_gui_windows[index].focused = 1;
+    wm_gui_windows[index].z_order = wm_gui_z_counter++;
+    wm_gui_focused = index;
+    wm_gui_sync_taskbar();
+}
+
+static void wm_gui_focus_next(void) {
+    int start = wm_gui_focused;
+
+    if (wm_gui_window_count == 0) return;
+    for (int offset = 1; offset <= wm_gui_window_count; offset++) {
+        int index = (start + offset + wm_gui_window_count) % wm_gui_window_count;
+        if (wm_gui_windows[index].visible) {
+            wm_gui_focus(index);
+            return;
+        }
+    }
+}
+
+static void wm_gui_reset(void) {
+    tb_rect_t work_area;
+    int width;
+    int height;
+
+    if (!wm_gui_get_work_area(&work_area)) {
+        LOG_ERROR("WM", "Area de trabalho grafica indisponivel");
+        return;
+    }
+
+    for (int i = 0; i < WM_GUI_WINDOW_COUNT; i++) {
+        taskbar_remove_window(WM_GUI_ID_BASE + i);
+    }
+    width = work_area.width < WM_GUI_DEFAULT_WIDTH + WM_GUI_MARGIN * 2 ?
+            work_area.width - WM_GUI_MARGIN * 2 : WM_GUI_DEFAULT_WIDTH;
+    height = work_area.height < WM_GUI_DEFAULT_HEIGHT + WM_GUI_MARGIN * 2 ?
+             work_area.height - WM_GUI_MARGIN * 2 : WM_GUI_DEFAULT_HEIGHT;
+    if (width < WM_GUI_MIN_WIDTH) width = WM_GUI_MIN_WIDTH;
+    if (height < WM_GUI_MIN_HEIGHT) height = WM_GUI_MIN_HEIGHT;
+    if (width > work_area.width) width = work_area.width;
+    if (height > work_area.height) height = work_area.height;
+
+    wm_gui_window_count = WM_GUI_WINDOW_COUNT;
+    wm_gui_focused = -1;
+    wm_gui_z_counter = 0;
+    for (int i = 0; i < wm_gui_window_count; i++) {
+        wm_gui_window_t* window = &wm_gui_windows[i];
+        window->id = WM_GUI_ID_BASE + i;
+        window->title = i == 0 ? "Janela de demonstracao" : "Monitor de janelas";
+        window->x = i == 0 ? work_area.x + WM_GUI_MARGIN :
+                    work_area.x + work_area.width - width - WM_GUI_MARGIN;
+        window->y = i == 0 ? work_area.y + WM_GUI_MARGIN :
+                    work_area.y + work_area.height - height - WM_GUI_MARGIN;
+        if (window->x < work_area.x) window->x = work_area.x;
+        if (window->y < work_area.y) window->y = work_area.y;
+        window->width = width;
+        window->height = height;
+        window->restore_x = window->x;
+        window->restore_y = window->y;
+        window->restore_width = width;
+        window->restore_height = height;
+        window->state = WM_STATE_NORMAL;
+        window->visible = 1;
+        window->focused = 0;
+        window->z_order = wm_gui_z_counter++;
+        taskbar_add_window(window->id, i == 0 ? "Demo" : "Monitor");
+    }
+    wm_gui_focus(wm_gui_window_count - 1);
+}
+
+static vesa_color_t wm_gui_color(uint32_t raw) {
+    vesa_color_t color;
+    color.raw = raw;
+    return color;
+}
+
+static wm_gui_control_t wm_gui_control_at(int slot) {
+    static const wm_gui_control_t orders[6][3] = {
+        {WM_GUI_CONTROL_CLOSE, WM_GUI_CONTROL_MINIMIZE, WM_GUI_CONTROL_MAXIMIZE},
+        {WM_GUI_CONTROL_CLOSE, WM_GUI_CONTROL_MAXIMIZE, WM_GUI_CONTROL_MINIMIZE},
+        {WM_GUI_CONTROL_MINIMIZE, WM_GUI_CONTROL_MAXIMIZE, WM_GUI_CONTROL_CLOSE},
+        {WM_GUI_CONTROL_MAXIMIZE, WM_GUI_CONTROL_MINIMIZE, WM_GUI_CONTROL_CLOSE},
+        {WM_GUI_CONTROL_MINIMIZE, WM_GUI_CONTROL_CLOSE, WM_GUI_CONTROL_MAXIMIZE},
+        {WM_GUI_CONTROL_MAXIMIZE, WM_GUI_CONTROL_CLOSE, WM_GUI_CONTROL_MINIMIZE}
+    };
+
+    return orders[wm.config.btn_order][slot];
+}
+
+static void wm_gui_control_rect(const wm_gui_window_t* window, int slot,
+                                tb_rect_t* rect) {
+    int offset = slot * (WM_GUI_CONTROL_SIZE + WM_GUI_CONTROL_GAP);
+
+    rect->y = window->y + 4;
+    rect->width = WM_GUI_CONTROL_SIZE;
+    rect->height = WM_GUI_CONTROL_SIZE;
+    if (wm.config.btn_position == WM_BTNS_LEFT) {
+        rect->x = window->x + 6 + offset;
+    } else {
+        rect->x = window->x + window->width - 6 - WM_GUI_CONTROL_SIZE - offset;
+    }
+}
+
+static int wm_gui_point_in_window(const wm_gui_window_t* window, int x, int y) {
+    return x >= window->x && x < window->x + window->width &&
+           y >= window->y && y < window->y + window->height;
+}
+
+static void wm_gui_draw_window(const wm_gui_window_t* window) {
+    vesa_color_t title_color = wm_gui_color(window->focused ?
+                                               GUI_COLOR_TITLE_BG : 0x00606060);
+    int title_x;
+
+    gui_draw_panel((uint32_t)window->x, (uint32_t)window->y,
+                   (uint32_t)window->width, (uint32_t)window->height,
+                   GUI_COLOR_BG, wm.config.border_style != 0);
+    vesa_fill_rect((uint32_t)(window->x + 2), (uint32_t)(window->y + 2),
+                   (uint32_t)(window->width - 4), WM_GUI_TITLE_HEIGHT,
+                   title_color);
+    title_x = window->x + (wm.config.btn_position == WM_BTNS_LEFT ? 64 : 10);
+    if (wm.config.show_title_text) {
+        gui_draw_text((uint32_t)title_x, (uint32_t)(window->y + 6),
+                      window->title, GUI_COLOR_TEXT_W);
+    }
+    for (int i = 0; i < 3; i++) {
+        tb_rect_t rect;
+        wm_gui_control_t control = wm_gui_control_at(i);
+        const char* label = control == WM_GUI_CONTROL_CLOSE ? "X" :
+                            control == WM_GUI_CONTROL_MINIMIZE ? "_" :
+                            window->state == WM_STATE_MAXIMIZED ? "R" : "M";
+        wm_gui_control_rect(window, i, &rect);
+        gui_draw_button((uint32_t)rect.x, (uint32_t)rect.y,
+                        (uint32_t)rect.width, (uint32_t)rect.height, label, 0);
+    }
+    gui_draw_text((uint32_t)(window->x + 16),
+                  (uint32_t)(window->y + WM_GUI_TITLE_HEIGHT + 20),
+                  "Janela hospedada pelo Window Manager grafico.", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(window->x + 16),
+                  (uint32_t)(window->y + WM_GUI_TITLE_HEIGHT + 44),
+                  "Use os controles ou os botoes da taskbar.", GUI_COLOR_TEXT);
+}
+
+static void wm_gui_draw_all(void) {
+    vesa_color_t background = wm_gui_color(vesa_rgb(0, 64, 96));
+
+    vesa_frame_begin();
+    mouse_invalidate_cursor();
+    vesa_clear(background);
+    for (int z = 0; z < wm_gui_z_counter; z++) {
+        for (int i = 0; i < wm_gui_window_count; i++) {
+            if (wm_gui_windows[i].visible && wm_gui_windows[i].z_order == z) {
+                wm_gui_draw_window(&wm_gui_windows[i]);
+            }
+        }
+    }
+    taskbar_draw();
+    vesa_frame_end();
+}
+
+static void wm_gui_minimize(int index) {
+    if (index < 0 || index >= wm_gui_window_count || !wm_gui_windows[index].visible) return;
+    wm_gui_windows[index].state = WM_STATE_MINIMIZED;
+    wm_gui_windows[index].visible = 0;
+    wm_gui_windows[index].focused = 0;
+    if (wm_gui_focused == index) wm_gui_focused = -1;
+    wm_gui_focus_next();
+    wm_gui_sync_taskbar();
+}
+
+static void wm_gui_maximize_or_restore(int index) {
+    tb_rect_t work_area;
+    wm_gui_window_t* window;
+
+    if (index < 0 || index >= wm_gui_window_count ||
+        !wm_gui_get_work_area(&work_area)) return;
+    window = &wm_gui_windows[index];
+    if (window->state == WM_STATE_MAXIMIZED) {
+        window->x = window->restore_x;
+        window->y = window->restore_y;
+        window->width = window->restore_width;
+        window->height = window->restore_height;
+        window->state = WM_STATE_NORMAL;
+    } else {
+        window->restore_x = window->x;
+        window->restore_y = window->y;
+        window->restore_width = window->width;
+        window->restore_height = window->height;
+        window->x = work_area.x;
+        window->y = work_area.y;
+        window->width = work_area.width;
+        window->height = work_area.height;
+        window->state = WM_STATE_MAXIMIZED;
+    }
+    wm_gui_focus(index);
+}
+
+static void wm_gui_close(int index) {
+    if (index < 0 || index >= wm_gui_window_count) return;
+    wm_gui_windows[index].visible = 0;
+    wm_gui_windows[index].focused = 0;
+    taskbar_remove_window(wm_gui_windows[index].id);
+    if (wm_gui_focused == index) wm_gui_focused = -1;
+    wm_gui_focus_next();
+    wm_gui_sync_taskbar();
+}
+
+static int wm_gui_handle_mouse(mouse_event_t* event) {
+    int selected = -1;
+    int highest_z = -1;
+
+    if (!event || event->event != MOUSE_EVENT_PRESS ||
+        !(event->changed & MOUSE_BTN_LEFT)) return 0;
+    for (int i = 0; i < wm_gui_window_count; i++) {
+        if (wm_gui_windows[i].visible &&
+            wm_gui_point_in_window(&wm_gui_windows[i], event->x, event->y) &&
+            wm_gui_windows[i].z_order > highest_z) {
+            selected = i;
+            highest_z = wm_gui_windows[i].z_order;
+        }
+    }
+    if (selected < 0) return 0;
+    wm_gui_focus(selected);
+    for (int i = 0; i < 3; i++) {
+        tb_rect_t rect;
+        wm_gui_control_rect(&wm_gui_windows[selected], i, &rect);
+        if (event->x >= rect.x && event->x < rect.x + rect.width &&
+            event->y >= rect.y && event->y < rect.y + rect.height) {
+            wm_gui_control_t control = wm_gui_control_at(i);
+            if (control == WM_GUI_CONTROL_CLOSE) wm_gui_close(selected);
+            if (control == WM_GUI_CONTROL_MINIMIZE) wm_gui_minimize(selected);
+            if (control == WM_GUI_CONTROL_MAXIMIZE) wm_gui_maximize_or_restore(selected);
+            break;
+        }
+    }
+    wm_gui_draw_all();
+    return 1;
+}
 
 static void int_to_str(uint32_t num, char* buf) {
     int i = 0;
@@ -41,6 +369,9 @@ void wm_init(void) {
     wm.config.show_title_text = 1;
     wm.config.title_bar_height = 1;
     wm.config.border_style = 0;
+    wm_gui_window_count = 0;
+    wm_gui_focused = -1;
+    wm_gui_z_counter = 0;
 }
 
 wm_config_t* wm_get_config(void) {
@@ -49,22 +380,22 @@ wm_config_t* wm_get_config(void) {
 
 void wm_set_btn_position(wm_btn_position_t pos) {
     wm.config.btn_position = pos;
-    wm_draw_all();
+    if (wm_active) wm_draw_all();
 }
 
 void wm_set_btn_order(wm_btn_order_t order) {
     wm.config.btn_order = order;
-    wm_draw_all();
+    if (wm_active) wm_draw_all();
 }
 
 void wm_set_show_title(int show) {
     wm.config.show_title_text = show;
-    wm_draw_all();
+    if (wm_active) wm_draw_all();
 }
 
 void wm_set_border_style(int style) {
     wm.config.border_style = style;
-    wm_draw_all();
+    if (wm_active) wm_draw_all();
 }
 
 void wm_draw_desktop(void) {
@@ -252,6 +583,12 @@ void wm_draw_window(int id) {
 }
 
 void wm_draw_all(void) {
+    if (!wm_active) return;
+    if (wm_gui_enabled()) {
+        wm_gui_draw_all();
+        return;
+    }
+
     wm_draw_desktop();
 
     for (int z = wm.z_counter - 1; z >= 0; z--) {
@@ -261,6 +598,7 @@ void wm_draw_all(void) {
             }
         }
     }
+    taskbar_draw();
 }
 
 int wm_create_window(const char* title, int x, int y, int w, int h,
@@ -450,26 +788,43 @@ void wm_resize_window(int id, int w, int h) {
     wm_draw_all();
 }
 
-void wm_handle_key(uint8_t scancode) {
-    if (!wm_active) return;
+int wm_handle_key(uint8_t scancode) {
+    if (!wm_active || (scancode & 0x80)) return WM_RESULT_NONE;
 
-    if (scancode & 0x80) return;
+    if (wm_gui_enabled()) {
+        if (scancode == 0x01) return WM_RESULT_EXIT;
+        if (scancode == 0x0F) {
+            wm_gui_focus_next();
+            wm_gui_draw_all();
+            return WM_RESULT_NONE;
+        }
+        if (scancode == 0x3B && wm_gui_focused >= 0) {
+            wm_gui_minimize(wm_gui_focused);
+            wm_gui_draw_all();
+            return WM_RESULT_NONE;
+        }
+        if (scancode == 0x3C && wm_gui_focused >= 0) {
+            wm_gui_maximize_or_restore(wm_gui_focused);
+            wm_gui_draw_all();
+        }
+        return WM_RESULT_NONE;
+    }
 
     if (scancode == 0x0F) {
         wm_focus_next();
-        return;
+        return WM_RESULT_NONE;
     }
 
     if (scancode == 0x01) {
         wm_close_focused();
-        return;
+        return WM_RESULT_NONE;
     }
 
     if (scancode == 0x3B) {
         if (wm.focused_id >= 0) {
             wm_minimize_window(wm.focused_id);
         }
-        return;
+        return WM_RESULT_NONE;
     }
 
     if (scancode == 0x3C) {
@@ -480,12 +835,13 @@ void wm_handle_key(uint8_t scancode) {
                 wm_maximize_window(wm.focused_id);
             }
         }
-        return;
+        return WM_RESULT_NONE;
     }
 
     if (wm.focused_id >= 0 && wm.windows[wm.focused_id].on_key) {
         wm.windows[wm.focused_id].on_key(scancode);
     }
+    return WM_RESULT_NONE;
 }
 
 int wm_is_active(void) {
@@ -493,9 +849,21 @@ int wm_is_active(void) {
 }
 
 void wm_set_active(int active) {
+    if (!active) {
+        for (int i = 0; i < wm_gui_window_count; i++) {
+            taskbar_remove_window(wm_gui_windows[i].id);
+        }
+        wm_gui_window_count = 0;
+        wm_gui_focused = -1;
+    }
     wm_active = active;
     if (active) {
-        wm_draw_all();
+        if (wm_gui_enabled()) {
+            wm_gui_reset();
+            wm_gui_draw_all();
+        } else {
+            wm_draw_all();
+        }
     }
 }
 
@@ -513,6 +881,17 @@ void wm_update_cpu_stats(void) {
 
 int wm_handle_click(int px, int py) {
     if (!wm_active) return 0;
+    if (wm_gui_enabled()) {
+        mouse_event_t event;
+        event.x = px;
+        event.y = py;
+        event.event = MOUSE_EVENT_PRESS;
+        event.changed = MOUSE_BTN_LEFT;
+        event.buttons = MOUSE_BTN_LEFT;
+        event.dx = 0;
+        event.dy = 0;
+        return wm_gui_handle_mouse(&event);
+    }
     int col = px / 8;
     int row = py / 16;
 
@@ -539,4 +918,30 @@ int wm_handle_click(int px, int py) {
         return 1;
     }
     return 0;
+}
+
+int wm_handle_mouse(mouse_event_t* event) {
+    if (!event || !wm_active) return 0;
+    if (wm_gui_enabled()) return wm_gui_handle_mouse(event);
+    if (event->event != MOUSE_EVENT_PRESS ||
+        !(event->changed & MOUSE_BTN_LEFT)) return 0;
+    return wm_handle_click(event->x, event->y);
+}
+
+void wm_toggle_window(int id) {
+    int index = id - WM_GUI_ID_BASE;
+
+    if (!wm_active || !wm_gui_enabled() || index < 0 ||
+        index >= wm_gui_window_count) return;
+    if (!wm_gui_windows[index].visible &&
+        wm_gui_windows[index].state == WM_STATE_MINIMIZED) {
+        wm_gui_windows[index].visible = 1;
+        wm_gui_windows[index].state = WM_STATE_NORMAL;
+        wm_gui_focus(index);
+    } else if (wm_gui_windows[index].focused) {
+        wm_gui_minimize(index);
+    } else {
+        wm_gui_focus(index);
+    }
+    wm_gui_draw_all();
 }

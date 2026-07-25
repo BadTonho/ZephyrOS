@@ -1127,7 +1127,6 @@ static void shell_redraw_after_overlay_close(void) {
 
     if (wm_is_active()) {
         wm_draw_all();
-        taskbar_draw();
         return;
     }
 
@@ -3057,7 +3056,13 @@ void shell_handle_key(uint8_t scancode) {
     }
 
     if (wm_is_active()) {
-        wm_handle_key(scancode);
+        if (wm_handle_key(scancode) == WM_RESULT_EXIT) {
+            wm_set_active(0);
+            shell_reset_input();
+            video_terminal_begin();
+            shell_print_prompt();
+            taskbar_draw();
+        }
         return;
     }
 
@@ -3270,6 +3275,7 @@ int shell_process_command(const char* input) {
     } else if (kstrcmp(cmd, "wm") == 0) {
         if (recovery_is_enabled(RECOVERY_COMPONENT_WM)) {
             shell_suspend_terminal();
+            desktop_set_active(0);
             wm_set_active(1);
         } else {
             video_print("Erro: Window Manager indisponivel.\n", 0x0C);

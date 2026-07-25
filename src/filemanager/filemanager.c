@@ -18,7 +18,6 @@
 
 #define FM_CLASSIC_VISIBLE_ROWS 17
 #define FM_MODERN_MARGIN 24
-#define FM_MODERN_TASKBAR_HEIGHT 24
 #define FM_MODERN_MIN_WIDTH 560
 #define FM_MODERN_MIN_HEIGHT 300
 #define FM_MODERN_SIDE_WIDTH 184
@@ -224,30 +223,20 @@ static void fm_go_forward(void) {
 
 static int fm_modern_get_layout(int* x, int* y, int* width, int* height) {
     vesa_mode_t* mode = vesa_get_mode();
-    tb_config_t* taskbar_config = taskbar_get_config();
+    tb_rect_t work_area;
 
     if (!x || !y || !width || !height) return 0;
     if (!mode || !mode->initialized || !vesa_has_backbuffer()) return 0;
 
-    *x = FM_MODERN_MARGIN;
-    *y = FM_MODERN_MARGIN;
-    *width = (int)mode->width - (FM_MODERN_MARGIN * 2);
-    *height = (int)mode->height - (FM_MODERN_MARGIN * 2);
-
-    if (taskbar_config) {
-        if (taskbar_config->position == TB_POS_TOP) {
-            *y += FM_MODERN_TASKBAR_HEIGHT;
-            *height -= FM_MODERN_TASKBAR_HEIGHT;
-        } else if (taskbar_config->position == TB_POS_BOTTOM ||
-                   taskbar_config->position == TB_POS_CUSTOM) {
-            *height -= FM_MODERN_TASKBAR_HEIGHT;
-        } else if (taskbar_config->position == TB_POS_LEFT) {
-            *x += FM_MODERN_TASKBAR_HEIGHT;
-            *width -= FM_MODERN_TASKBAR_HEIGHT;
-        } else if (taskbar_config->position == TB_POS_RIGHT) {
-            *width -= FM_MODERN_TASKBAR_HEIGHT;
-        }
-    }
+    work_area.x = 0;
+    work_area.y = 0;
+    work_area.width = mode->width;
+    work_area.height = mode->height;
+    taskbar_get_work_area(&work_area);
+    *x = work_area.x + FM_MODERN_MARGIN;
+    *y = work_area.y + FM_MODERN_MARGIN;
+    *width = work_area.width - (FM_MODERN_MARGIN * 2);
+    *height = work_area.height - (FM_MODERN_MARGIN * 2);
 
     return *width >= FM_MODERN_MIN_WIDTH &&
            *height >= FM_MODERN_MIN_HEIGHT;

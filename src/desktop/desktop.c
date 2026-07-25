@@ -16,8 +16,6 @@
 #define DESKTOP_MODERN_CARD_HEIGHT 96
 #define DESKTOP_MODERN_GAP_X 16
 #define DESKTOP_MODERN_GAP_Y 16
-#define DESKTOP_MODERN_TASKBAR_HEIGHT 24
-#define DESKTOP_MODERN_TASKBAR_GAP 8
 #define DESKTOP_MODERN_MAX_COLUMNS 5
 #define DESKTOP_MODERN_SYMBOL_SCALE 2
 #define DESKTOP_DOUBLE_CLICK_TICKS 25
@@ -58,13 +56,13 @@ static uint32_t desktop_modern_background(void) {
     return vesa_rgb(0, 64, 96);
 }
 
-static int desktop_modern_get_columns(const vesa_mode_t* mode) {
+static int desktop_modern_get_columns(const tb_rect_t* work_area) {
     int available_width;
     int columns;
 
-    if (!mode || !mode->initialized) return 1;
+    if (!work_area) return 1;
 
-    available_width = (int)mode->width - (DESKTOP_MODERN_MARGIN * 2);
+    available_width = work_area->width - (DESKTOP_MODERN_MARGIN * 2);
     columns = (available_width + DESKTOP_MODERN_GAP_X) /
               (DESKTOP_MODERN_CARD_WIDTH + DESKTOP_MODERN_GAP_X);
 
@@ -79,25 +77,29 @@ static int desktop_modern_get_columns(const vesa_mode_t* mode) {
 
 static void desktop_layout_modern(void) {
     vesa_mode_t* mode = vesa_get_mode();
-    tb_config_t* taskbar_config = taskbar_get_config();
-    int start_y = DESKTOP_MODERN_TOP_MARGIN;
+    tb_rect_t work_area;
+    int start_x;
+    int start_y;
 
     if (!mode || !mode->initialized) {
         LOG_ERROR("DESKTOP", "Modo VESA indisponivel para layout moderno");
         return;
     }
 
-    modern_columns = desktop_modern_get_columns(mode);
-
-    if (taskbar_config && taskbar_config->position == TB_POS_TOP) {
-        start_y += DESKTOP_MODERN_TASKBAR_HEIGHT + DESKTOP_MODERN_TASKBAR_GAP;
-    }
+    work_area.x = 0;
+    work_area.y = 0;
+    work_area.width = mode->width;
+    work_area.height = mode->height;
+    taskbar_get_work_area(&work_area);
+    modern_columns = desktop_modern_get_columns(&work_area);
+    start_x = work_area.x + DESKTOP_MODERN_MARGIN;
+    start_y = work_area.y + DESKTOP_MODERN_TOP_MARGIN;
 
     for (int i = 0; i < icon_count; i++) {
         int col = i % modern_columns;
         int row = i / modern_columns;
 
-        desktop_icons[i].modern_x = DESKTOP_MODERN_MARGIN +
+        desktop_icons[i].modern_x = start_x +
             col * (DESKTOP_MODERN_CARD_WIDTH + DESKTOP_MODERN_GAP_X);
         desktop_icons[i].modern_y = start_y +
             row * (DESKTOP_MODERN_CARD_HEIGHT + DESKTOP_MODERN_GAP_Y);
@@ -430,15 +432,6 @@ int desktop_set_mode(desktop_mode_t mode) {
     }
 
     desktop_mode = mode;
-    if (mode == DESKTOP_MODE_MODERN) {
-        tb_config_t* taskbar_config = taskbar_get_config();
-
-        if (taskbar_config && taskbar_config->position > TB_POS_TOP) {
-            taskbar_set_position(TB_POS_BOTTOM);
-            LOG_WARN("DESKTOP",
-                     "Posicao lateral da taskbar redefinida para baixo no modo moderno");
-        }
-    }
     if (selected_icon < 0) selected_icon = 0;
     last_click_icon = -1;
     last_click_ticks = 0;

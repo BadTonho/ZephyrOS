@@ -43,7 +43,6 @@
 #define TSKMGR_CLASSIC_PROCESS_ROWS 13
 #define TSKMGR_CLASSIC_THREAD_ROWS 11
 
-#define TSKMGR_GUI_TASKBAR_HEIGHT 24
 #define TSKMGR_GUI_MIN_WIDTH 600
 #define TSKMGR_GUI_MIN_HEIGHT 420
 #define TSKMGR_GUI_DEFAULT_WIDTH 760
@@ -103,8 +102,7 @@ static void taskmgr_gui_draw_threads(void);
 static void taskmgr_gui_draw_properties(void);
 static void taskmgr_gui_copy_text(char* destination, int size, const char* source);
 static void taskmgr_update_cpu_metrics(void);
-static int taskmgr_get_work_bottom(void);
-static int taskmgr_get_work_top(void);
+static int taskmgr_get_work_area(tb_rect_t* work_area);
 static void taskmgr_clamp_window(void);
 
 static const char* taskmgr_process_type(const process_t* process);
@@ -978,36 +976,33 @@ static void taskmgr_gui_copy_text(char* destination, int size, const char* sourc
     destination[i] = '\0';
 }
 
-static int taskmgr_get_work_top(void) {
-    tb_config_t* config = taskbar_get_config();
-    if (config && config->position == TB_POS_TOP) return TSKMGR_GUI_TASKBAR_HEIGHT;
-    return 0;
-}
-
-static int taskmgr_get_work_bottom(void) {
+static int taskmgr_get_work_area(tb_rect_t* work_area) {
     vesa_mode_t* mode = vesa_get_mode();
-    if (!mode) return 0;
-    if (taskbar_get_config()->position == TB_POS_TOP) return (int)mode->height;
-    if (mode->height <= TSKMGR_GUI_TASKBAR_HEIGHT) return 0;
-    return (int)mode->height - TSKMGR_GUI_TASKBAR_HEIGHT;
+    if (!work_area || !mode || !mode->initialized) return 0;
+    work_area->x = 0;
+    work_area->y = 0;
+    work_area->width = mode->width;
+    work_area->height = mode->height;
+    taskbar_get_work_area(work_area);
+    return work_area->width > 0 && work_area->height > 0;
 }
 
 static void taskmgr_clamp_window(void) {
-    vesa_mode_t* mode = vesa_get_mode();
-    int top = taskmgr_get_work_top();
-    int bottom = taskmgr_get_work_bottom();
+    tb_rect_t work_area;
 
-    if (!mode) return;
-    if (gui_width > (int)mode->width) gui_width = (int)mode->width;
-    if (gui_height > bottom - top) gui_height = bottom - top;
+    if (!taskmgr_get_work_area(&work_area)) return;
+    if (gui_width > work_area.width) gui_width = work_area.width;
+    if (gui_height > work_area.height) gui_height = work_area.height;
     if (gui_width < 1 || gui_height < 1) return;
 
-    if (gui_x < 0) gui_x = 0;
-    if (gui_y < top) gui_y = top;
-    if (gui_x + gui_width > (int)mode->width) {
-        gui_x = (int)mode->width - gui_width;
+    if (gui_x < work_area.x) gui_x = work_area.x;
+    if (gui_y < work_area.y) gui_y = work_area.y;
+    if (gui_x + gui_width > work_area.x + work_area.width) {
+        gui_x = work_area.x + work_area.width - gui_width;
     }
-    if (gui_y + gui_height > bottom) gui_y = bottom - gui_height;
+    if (gui_y + gui_height > work_area.y + work_area.height) {
+        gui_y = work_area.y + work_area.height - gui_height;
+    }
 }
 
 static int taskmgr_gui_visible_rows(void) {
@@ -1618,6 +1613,7 @@ static void taskmgr_gui_draw_drag_region(void) {
 
 int taskmgr_open_gui(void) {
     vesa_mode_t* mode = vesa_get_mode();
+    tb_rect_t work_area;
 
     if (!recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
         LOG_WARN("TSKMGR", "GUI bloqueada pelo recovery");
@@ -1637,6 +1633,12 @@ int taskmgr_open_gui(void) {
         LOG_WARN("TSKMGR", "Resolucao insuficiente para a janela grafica");
         return ERR_OVERFLOW;
     }
+    if (!taskmgr_get_work_area(&work_area) ||
+        work_area.width < TSKMGR_GUI_MIN_WIDTH ||
+        work_area.height < TSKMGR_GUI_MIN_HEIGHT) {
+        LOG_WARN("TSKMGR", "Area de trabalho insuficiente para a janela grafica");
+        return ERR_OVERFLOW;
+    }
     if (is_open) taskmgr_close();
 
     gui_open = 1;
@@ -1650,12 +1652,12 @@ int taskmgr_open_gui(void) {
     selected_row = 0;
     scroll_offset = 0;
     show_properties = 0;
-    gui_width = mode->width < TSKMGR_GUI_DEFAULT_WIDTH ?
-                (int)mode->width - 24 : TSKMGR_GUI_DEFAULT_WIDTH;
-    gui_height = mode->height < TSKMGR_GUI_DEFAULT_HEIGHT ?
-                 (int)mode->height - 48 : TSKMGR_GUI_DEFAULT_HEIGHT;
-    gui_x = ((int)mode->width - gui_width) / 2;
-    gui_y = taskmgr_get_work_top() + 12;
+    gui_width = work_area.width < TSKMGR_GUI_DEFAULT_WIDTH ?
+                work_area.width - 24 : TSKMGR_GUI_DEFAULT_WIDTH;
+    gui_height = work_area.height < TSKMGR_GUI_DEFAULT_HEIGHT ?
+                 work_area.height - 24 : TSKMGR_GUI_DEFAULT_HEIGHT;
+    gui_x = work_area.x + (work_area.width - gui_width) / 2;
+    gui_y = work_area.y + 12;
     gui_restore_x = gui_x;
     gui_restore_y = gui_y;
     gui_restore_width = gui_width;
@@ -1879,15 +1881,17 @@ int taskmgr_gui_handle_mouse(mouse_event_t* event) {
             gui_width = gui_restore_width;
             gui_height = gui_restore_height;
         } else {
+            tb_rect_t work_area;
             gui_maximized = 1;
             gui_restore_x = gui_x;
             gui_restore_y = gui_y;
             gui_restore_width = gui_width;
             gui_restore_height = gui_height;
-            gui_x = 0;
-            gui_y = taskmgr_get_work_top();
-            gui_width = (int)vesa_get_mode()->width;
-            gui_height = taskmgr_get_work_bottom() - gui_y;
+            if (!taskmgr_get_work_area(&work_area)) return 1;
+            gui_x = work_area.x;
+            gui_y = work_area.y;
+            gui_width = work_area.width;
+            gui_height = work_area.height;
         }
         taskmgr_gui_draw();
         return 1;

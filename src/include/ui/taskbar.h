@@ -6,6 +6,7 @@
 
 #define TASKBAR_BUTTON_MAX 8
 #define TASKBAR_DEFAULT_ROW (SCREEN_ROWS - 1)
+#define TB_ACTION_WINDOW 10
 
 typedef enum {
     TB_POS_BOTTOM = 0,
@@ -26,14 +27,23 @@ typedef enum {
     TB_APP_SHELL,
     TB_APP_EXPLORER,
     TB_APP_TASKMGR,
-    TB_APP_DESKTOP
+    TB_APP_DESKTOP,
+    TB_APP_WINDOW
 } tb_app_type_t;
 
 typedef struct {
     const char* name;
     tb_app_type_t type;
     int active;
+    int window_id;
 } tb_button_t;
+
+typedef struct {
+    int x;
+    int y;
+    int width;
+    int height;
+} tb_rect_t;
 
 typedef struct {
     tb_position_t position;
@@ -51,6 +61,10 @@ void taskbar_redraw_menu(void);
 void taskbar_update_clock(void);
 void taskbar_add_app(tb_app_type_t type, const char* name);
 void taskbar_remove_app(tb_app_type_t type);
+void taskbar_add_window(int window_id, const char* name);
+void taskbar_remove_window(int window_id);
+void taskbar_set_window_active(int window_id, int active);
+int  taskbar_take_window_request(void);
 int  taskbar_handle_key(uint8_t scancode);
 int  taskbar_is_menu_open(void);
 
@@ -59,6 +73,8 @@ void taskbar_set_icon_size(tb_icon_size_t size);
 void taskbar_set_pinned(int pinned);
 void taskbar_set_custom_position(int x, int y);
 tb_config_t* taskbar_get_config(void);
+int  taskbar_get_bounds(tb_rect_t* bounds);
+int  taskbar_get_work_area(tb_rect_t* area);
 void taskbar_draw_config_menu(void);
 int  taskbar_handle_config_key(uint8_t scancode);
 int  taskbar_handle_click(int px, int py);

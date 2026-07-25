@@ -2,12 +2,15 @@
 #define WM_H
 
 #include "types.h"
+#include "drivers/mouse.h"
 
 #define WM_MAX_WINDOWS 16
 #define WM_TITLE_HEIGHT 1
 #define WM_BORDER_SIZE 1
 #define WM_MIN_WIDTH 10
 #define WM_MIN_HEIGHT 5
+#define WM_RESULT_NONE 0
+#define WM_RESULT_EXIT 1
 
 typedef enum {
     WM_STATE_NORMAL = 0,
@@ -106,8 +109,10 @@ void wm_restore_window(int id);
 void wm_move_window(int id, int x, int y);
 void wm_resize_window(int id, int w, int h);
 
-void wm_handle_key(uint8_t scancode);
+int  wm_handle_key(uint8_t scancode);
 int  wm_handle_click(int px, int py);
+int  wm_handle_mouse(mouse_event_t* event);
+void wm_toggle_window(int id);
 int  wm_is_active(void);
 void wm_set_active(int active);
 

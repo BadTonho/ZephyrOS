@@ -104,15 +104,18 @@ implementam gradientes, transparência ou cantos arredondados nesta etapa.
 
 ## Window Manager (`wm.c`)
 
-O Window Manager geral continua textual. O Task Manager gráfico possui uma
-janela própria e usa `gui_draw_window_frame()`, mas ainda não está integrado a
-um Window Manager gráfico genérico.
+O comando `wm` preserva o gerenciador textual no modo Clássico. No modo
+Moderno, ele abre um workspace VESA com duas janelas demonstrativas internas;
+Explorer, Settings e Task Manager continuam em suas cenas independentes.
 
 ### Estado de renderização
 
-- **Modo TUI**: janelas do WM usam bordas de caracteres.
-- **Modo moderno**: Desktop, Explorer, Settings e Task Manager têm caminhos
-  gráficos próprios; a migração do WM continua planejada.
+- **Modo TUI**: janelas do WM usam bordas de caracteres e as APIs legadas.
+- **Modo moderno**: as janelas demonstrativas são compostas do menor para o
+  maior Z-order e a taskbar é desenhada por último no mesmo ciclo VESA.
+- **Entrada**: o corpo focaliza uma janela; os controles da barra de título
+  fecham, minimizam ou maximizam/restauram. `Esc` encerra apenas o workspace
+  gráfico e devolve o terminal ao Shell.
 
 ### Estrutura de Janela
 
@@ -142,14 +145,18 @@ void wm_focus_next(void);
 void wm_focus_prev(void);
 void wm_move_window(id, x, y);
 void wm_resize_window(id, w, h);
+int  wm_handle_key(scancode);             // WM_RESULT_NONE ou WM_RESULT_EXIT
+int  wm_handle_mouse(event);
+void wm_toggle_window(id);
 ```
 
 ### Integração com o Mouse
 
-Taskbar e Menu Iniciar têm prioridade de clique. A janela gráfica do Task
-Manager suporta foco, minimizar, maximizar e arraste pela barra de título.
-Arraste genérico de janelas no WM e drag-and-drop de ícones permanecem fora do
-escopo atual.
+O kernel entrega cliques primeiro à taskbar. Botões de janela da taskbar pedem
+`wm_toggle_window(id)`: uma janela minimizada é restaurada, uma janela visível
+sem foco é focalizada e a janela focalizada é minimizada. Com o WM ativo, seus
+eventos consomem o mouse antes de Desktop e aplicativos. Arraste e
+redimensionamento genéricos permanecem para a UI3.
 
 ---
 
@@ -161,16 +168,17 @@ interfaces abertas. Cada compositor de cena desenha a taskbar por ultimo; as
 funcoes que alteram seus botoes ou configuracao apenas atualizam estado e nao
 apresentam um frame por conta propria.
 
-No modo moderno, a taskbar suporta somente as posicoes **Baixo** e **Cima**.
-As posicoes esquerda, direita e customizada continuam disponiveis no modo
-classico e ficam reservadas para a UI2. Ao alternar para o modo moderno com
-uma dessas posicoes ativa, a configuracao volta para Baixo.
+No modo moderno, a taskbar usa limites em pixels e suporta as cinco posições:
+Baixo e Cima usam 24 px de altura; Esquerda e Direita usam 96 px de largura;
+Custom usa 320×24 px em `custom_x * 8`/`custom_y * 16`, sempre limitada à
+tela. Barras acopladas reduzem a área de trabalho; a barra customizada fica
+sobreposta e recebe pintura e clique antes do conteúdo abaixo.
 
-### Próxima evolução visual
-
-O redesenho completo da taskbar como componente gráfico independente ainda é
-uma etapa futura. Até lá, a compatibilidade visual e de interação tem
-prioridade sobre uma troca de tema.
+`tb_rect_t`, `taskbar_get_bounds()` e `taskbar_get_work_area()` formam o
+contrato de geometria moderna. `taskbar_add_window()`,
+`taskbar_remove_window()`, `taskbar_set_window_active()` e
+`taskbar_take_window_request()` integram botões de janelas ao WM sem redesenho
+implícito.
 
 ### Menu Iniciar
 
@@ -206,6 +214,10 @@ typedef struct {
 ## Settings (`settings.c`)
 
 Sistema de configuração geral.
+
+No modo Moderno, a opção de posição da taskbar também expõe Baixo, Cima,
+Esquerda, Direita e Custom. Ao mudar uma posição acoplada, o painel recalcula
+seu layout a partir de `taskbar_get_work_area()`.
 
 ### Categorias
 

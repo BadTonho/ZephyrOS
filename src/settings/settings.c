@@ -25,7 +25,6 @@
 #define SETTINGS_MODERN_MIN_HEIGHT 400
 #define SETTINGS_MODERN_DEFAULT_WIDTH 720
 #define SETTINGS_MODERN_DEFAULT_HEIGHT 520
-#define SETTINGS_MODERN_TASKBAR_HEIGHT 24
 #define SETTINGS_MODERN_MARGIN 12
 #define SETTINGS_MODERN_SIDE_WIDTH 184
 #define SETTINGS_MODERN_TITLE_HEIGHT 22
@@ -66,7 +65,6 @@ static settings_page_t categories[SETTINGS_CAT_COUNT];
 static const char* display_theme_values[] = {"Classico", "Escuro", "Azul"};
 static const char* display_resolution_values[] = {"80x25", "80x50", "Auto"};
 static const char* taskbar_position_values[] = {"Baixo", "Cima", "Esquerda", "Direita", "Custom"};
-static const char* taskbar_position_values_modern[] = {"Baixo", "Cima"};
 static const char* taskbar_size_values[] = {"Pequeno", "Medio", "Grande"};
 static const char* windows_button_side_values[] = {"Direita", "Esquerda"};
 static const char* windows_button_order_values[] = {
@@ -197,47 +195,36 @@ static void init_categories(void) {
 
 static int settings_modern_layout(void) {
     vesa_mode_t* mode = vesa_get_mode();
-    int work_top = 0;
-    int work_bottom;
-    tb_config_t* taskbar_config;
+    tb_rect_t work_area;
 
     if (!mode || !mode->initialized || !vesa_has_backbuffer()) return 0;
     if (mode->width < SETTINGS_MODERN_MIN_WIDTH ||
         mode->height < SETTINGS_MODERN_MIN_HEIGHT) return 0;
 
-    taskbar_config = taskbar_get_config();
-    work_bottom = (int)mode->height - SETTINGS_MODERN_TASKBAR_HEIGHT;
-    if (taskbar_config && taskbar_config->position == TB_POS_TOP) {
-        work_top = SETTINGS_MODERN_TASKBAR_HEIGHT;
-        work_bottom = (int)mode->height;
-    }
+    work_area.x = 0;
+    work_area.y = 0;
+    work_area.width = mode->width;
+    work_area.height = mode->height;
+    taskbar_get_work_area(&work_area);
 
-    settings_gui_width = mode->width < SETTINGS_MODERN_DEFAULT_WIDTH ?
-                         (int)mode->width - 24 : SETTINGS_MODERN_DEFAULT_WIDTH;
-    settings_gui_height = mode->height < SETTINGS_MODERN_DEFAULT_HEIGHT ?
-                          work_bottom - work_top - 24 : SETTINGS_MODERN_DEFAULT_HEIGHT;
+    settings_gui_width = work_area.width < SETTINGS_MODERN_DEFAULT_WIDTH ?
+                         work_area.width - 24 : SETTINGS_MODERN_DEFAULT_WIDTH;
+    settings_gui_height = work_area.height < SETTINGS_MODERN_DEFAULT_HEIGHT ?
+                          work_area.height - 24 : SETTINGS_MODERN_DEFAULT_HEIGHT;
     if (settings_gui_width < SETTINGS_MODERN_MIN_WIDTH ||
         settings_gui_height < SETTINGS_MODERN_MIN_HEIGHT) return 0;
 
-    settings_gui_x = ((int)mode->width - settings_gui_width) / 2;
-    settings_gui_y = work_top + ((work_bottom - work_top) - settings_gui_height) / 2;
-    return settings_gui_y >= work_top &&
-           settings_gui_y + settings_gui_height <= work_bottom;
+    settings_gui_x = work_area.x + (work_area.width - settings_gui_width) / 2;
+    settings_gui_y = work_area.y + (work_area.height - settings_gui_height) / 2;
+    return settings_gui_x >= work_area.x && settings_gui_y >= work_area.y &&
+           settings_gui_x + settings_gui_width <= work_area.x + work_area.width &&
+           settings_gui_y + settings_gui_height <= work_area.y + work_area.height;
 }
 
 static void settings_update_taskbar_position_options(void) {
     settings_option_t* position =
         &categories[SETTINGS_CAT_TASKBAR].options[0];
     tb_config_t* taskbar_config = taskbar_get_config();
-
-    if (settings_mode == SETTINGS_MODE_MODERN) {
-        position->list_values = taskbar_position_values_modern;
-        position->list_count = 2;
-        position->max_value = 1;
-        position->value = taskbar_config &&
-                          taskbar_config->position == TB_POS_TOP ? 1 : 0;
-        return;
-    }
 
     position->list_values = taskbar_position_values;
     position->list_count = 5;
@@ -359,6 +346,10 @@ void settings_draw(void) {
         LOG_WARN("SETTINGS", "Backbuffer indisponivel; retornando para TUI");
         settings_mode = SETTINGS_MODE_CLASSIC;
     }
+    if (settings_mode == SETTINGS_MODE_MODERN && !settings_modern_layout()) {
+        LOG_WARN("SETTINGS", "Area de trabalho insuficiente; retornando para TUI");
+        settings_mode = SETTINGS_MODE_CLASSIC;
+    }
     if (settings_mode == SETTINGS_MODE_MODERN) {
         settings_modern_draw();
         return;
@@ -377,7 +368,6 @@ static void apply_taskbar_settings(void) {
 
 static void apply_wm_settings(void) {
     settings_page_t* wm = &categories[SETTINGS_CAT_WINDOWS];
-    wm_config_t* cfg = wm_get_config();
 
     wm_set_btn_position((wm_btn_position_t)wm->options[0].value);
     wm_set_btn_order((wm_btn_order_t)wm->options[1].value);
