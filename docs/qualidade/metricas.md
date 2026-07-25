@@ -18,23 +18,22 @@ mudanca; nao crie uma entrada artificial.
 
 ## Registros
 
-### 2026-07-25 - UI1, tamanho da imagem do kernel
+### 2026-07-25 - K5, capacidade da imagem do kernel
 
 - Cenario QEMU: compilar com `make clean && make`; iniciar com `make run`;
-  em `guimode modern` abrir Desktop, Explorer, Settings, Task Manager e
-  `guitest`, testar Menu Iniciar e alternar a taskbar entre baixo e cima;
-  repetir os fluxos essenciais em `guimode classic`.
+  executar `memcheck`, `health`, `schedcheck`, `app inputtest`, cancelar com
+  `F12` e repetir `memcheck` e `schedcheck`.
 - Metrica observavel: soma decimal de `text + data + bss` dos objetos em
-  `build/*.o`, medida com `i686-elf-size`.
-- Antes: 457488 bytes; o linker interrompeu a imagem com
-  `kernel exceeds reserved memory`.
-- Depois: 441926 bytes, reducao de 15562 bytes (3,4%); o build e a validacao
-  manual no QEMU foram concluídos.
-- Conclusao: ganho de espaco suficiente para a imagem caber na regiao atual
-  do kernel.
-- Impacto: `-Os` foi limitado a Task Manager, guitest, Explorer, taskbar,
-  Desktop e Settings; o restante permanece em `-O2`. Bootloader e mapa de
-  memoria nao foram alterados.
+  `build/*.o`, medida com `i686-elf-size`, e capacidade reservada pelo linker.
+- Antes: 457488 bytes para 458752 bytes reservados; o linker interrompeu a
+  imagem com `kernel exceeds reserved memory`.
+- Depois: 457700 bytes para 491520 bytes reservados, com margem de 33820
+  bytes; build e validacao manual no QEMU concluidos.
+- Conclusao: a expansao de 32 KiB removeu o limite estrutural sem manter a
+  excecao temporaria de `-Os` nos modulos de interface.
+- Impacto: stage2, linker, PMM e TSS usam o mesmo mapa baixo; a stack e
+  reservada no PMM e o E820 e validado antes da inicializacao. `boot.asm` nao
+  foi alterado.
 
 ### 2026-07-24 - K4, cursor VESA por regioes minimas
 
