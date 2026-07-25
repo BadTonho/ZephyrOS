@@ -237,8 +237,9 @@ static void mouse_present_cursor(int old_x, int old_y, int had_old_cursor) {
         return;
     }
 
-    mouse_present_damage_region(&old_region);
+    /* Mantem o cursor visivel enquanto a regiao antiga e restaurada. */
     mouse_present_damage_region(&new_region);
+    mouse_present_damage_region(&old_region);
 }
 
 /* ========== Handler de interrupcao (IRQ12) ========== */
