@@ -32,8 +32,6 @@ void guitest_open(void) {
     // O fundo inteiro precisa ser limpo para modo gráfico
     // O modo atual ainda não tem double buffer, então limpamos com o video padrão para não quebrar.
     video_clear(); 
-    taskbar_draw();
-
     guitest_draw();
     vesa_frame_end();
     LOG_INFO("GUITEST", "App aberto");
@@ -66,6 +64,9 @@ void guitest_draw(void) {
         return;
     }
 
+    vesa_frame_begin();
+    mouse_invalidate_cursor();
+
     gui_draw_window_frame(200, 150, 400, 300, "Meu Primeiro App GUI (C)", 1);
     
     // Desenha nosso botão interativo
@@ -74,6 +75,8 @@ void guitest_draw(void) {
     // Texto fixo
     gui_draw_text(250, 260, "Clique no botao acima!", GUI_COLOR_TEXT);
     gui_draw_text(250, 280, "Clique no [X] para fechar.", GUI_COLOR_TEXT);
+    taskbar_draw();
+    vesa_frame_end();
 }
 
 static int is_inside(int px, int py, int x, int y, int w, int h) {

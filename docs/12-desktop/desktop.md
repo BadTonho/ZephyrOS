@@ -157,7 +157,14 @@ escopo atual.
 
 A taskbar preserva a identidade visual existente e funciona nos dois modos de
 interface. Ela desenha menu, botões e relógio e mantém prioridade sobre as
-interfaces abertas.
+interfaces abertas. Cada compositor de cena desenha a taskbar por ultimo; as
+funcoes que alteram seus botoes ou configuracao apenas atualizam estado e nao
+apresentam um frame por conta propria.
+
+No modo moderno, a taskbar suporta somente as posicoes **Baixo** e **Cima**.
+As posicoes esquerda, direita e customizada continuam disponiveis no modo
+classico e ficam reservadas para a UI2. Ao alternar para o modo moderno com
+uma dessas posicoes ativa, a configuracao volta para Baixo.
 
 ### Próxima evolução visual
 
@@ -166,6 +173,9 @@ uma etapa futura. Até lá, a compatibilidade visual e de interação tem
 prioridade sobre uma troca de tema.
 
 ### Menu Iniciar
+
+Enquanto estiver aberto, um clique fora do Menu Iniciar apenas o fecha; o
+evento e consumido e nao pode acionar a interface que esteja abaixo dele.
 
 ```
 ┌─────────────────┐

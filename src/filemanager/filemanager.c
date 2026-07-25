@@ -985,6 +985,7 @@ static void fm_draw_help(void) {
 
     video_draw_hline(11, 20, 58, 0xC4, 0x07);
     video_print_at(22, 21, "Pressione Esc para voltar...", 0x08);
+    taskbar_draw();
 }
 
 
@@ -1045,18 +1046,23 @@ static void fm_draw_view_file(void) {
     video_fill_rect(0, 0, SCREEN_COLS, 1, ' ', 0x1F);
     video_print_at((SCREEN_COLS - 22) / 2, 0, " Visualizando Arquivo ", 0x1F);
 
-    if (state.selected < 0 || state.selected >= state.file_count) return;
+    if (state.selected < 0 || state.selected >= state.file_count) {
+        taskbar_draw();
+        return;
+    }
 
     fm_file_entry_t* f = &state.files[state.selected];
     if (f->is_dir) {
         video_print_at(2, 2, "Nao e possivel visualizar pastas.", 0x0C);
         video_print_at(2, 4, "Pressione Esc para voltar.", 0x08);
+        taskbar_draw();
         return;
     }
 
     uint8_t* buffer = (uint8_t*)kmalloc(4096);
     if (!buffer) {
         video_print_at(2, 2, "Erro: sem memoria!", 0x0C);
+        taskbar_draw();
         return;
     }
 
@@ -1065,6 +1071,7 @@ static void fm_draw_view_file(void) {
         video_print_at(2, 2, "Erro: caminho muito longo.", 0x0C);
         kfree(buffer);
         buffer = 0;
+        taskbar_draw();
         return;
     }
 
@@ -1075,6 +1082,7 @@ static void fm_draw_view_file(void) {
         video_print_at(2, 4, "Pressione Esc para voltar.", 0x08);
         kfree(buffer);
         buffer = 0;
+        taskbar_draw();
         return;
     }
 
@@ -1083,6 +1091,7 @@ static void fm_draw_view_file(void) {
         video_print_at(2, 4, "Pressione Esc para voltar.", 0x08);
         kfree(buffer);
         buffer = 0;
+        taskbar_draw();
         return;
     }
 
@@ -1113,6 +1122,7 @@ static void fm_draw_view_file(void) {
 
     kfree(buffer);
     buffer = 0;
+    taskbar_draw();
 }
 
 static void fm_draw_classic_all(void) {
@@ -1125,6 +1135,7 @@ static void fm_draw_classic_all(void) {
     fm_draw_separator_bottom();
     fm_draw_status_bar();
     fm_draw_file_list();
+    taskbar_draw();
 }
 
 static void fm_draw_all(void) {
@@ -1205,7 +1216,6 @@ void fm_close(void) {
     taskbar_remove_app(TB_APP_EXPLORER);
     desktop_set_active(1);
     desktop_draw();
-    taskbar_draw();
 }
 
 int fm_is_running(void) {

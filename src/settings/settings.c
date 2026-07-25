@@ -66,6 +66,7 @@ static settings_page_t categories[SETTINGS_CAT_COUNT];
 static const char* display_theme_values[] = {"Classico", "Escuro", "Azul"};
 static const char* display_resolution_values[] = {"80x25", "80x50", "Auto"};
 static const char* taskbar_position_values[] = {"Baixo", "Cima", "Esquerda", "Direita", "Custom"};
+static const char* taskbar_position_values_modern[] = {"Baixo", "Cima"};
 static const char* taskbar_size_values[] = {"Pequeno", "Medio", "Grande"};
 static const char* windows_button_side_values[] = {"Direita", "Esquerda"};
 static const char* windows_button_order_values[] = {
@@ -82,6 +83,7 @@ static void settings_modern_draw(void);
 static void settings_apply_category(void);
 static void settings_execute_selected_action(void);
 static void settings_clear_overlay(void);
+static void settings_update_taskbar_position_options(void);
 
 static void init_categories(void) {
     for (int i = 0; i < SETTINGS_CAT_COUNT; i++) {
@@ -223,15 +225,40 @@ static int settings_modern_layout(void) {
            settings_gui_y + settings_gui_height <= work_bottom;
 }
 
-static void settings_select_mode(void) {
-    settings_mode = SETTINGS_MODE_CLASSIC;
-    if (desktop_get_mode() != DESKTOP_MODE_MODERN) return;
+static void settings_update_taskbar_position_options(void) {
+    settings_option_t* position =
+        &categories[SETTINGS_CAT_TASKBAR].options[0];
+    tb_config_t* taskbar_config = taskbar_get_config();
 
-    if (settings_modern_layout()) {
-        settings_mode = SETTINGS_MODE_MODERN;
+    if (settings_mode == SETTINGS_MODE_MODERN) {
+        position->list_values = taskbar_position_values_modern;
+        position->list_count = 2;
+        position->max_value = 1;
+        position->value = taskbar_config &&
+                          taskbar_config->position == TB_POS_TOP ? 1 : 0;
         return;
     }
 
+    position->list_values = taskbar_position_values;
+    position->list_count = 5;
+    position->max_value = 4;
+    position->value = taskbar_config ? taskbar_config->position : TB_POS_BOTTOM;
+}
+
+static void settings_select_mode(void) {
+    settings_mode = SETTINGS_MODE_CLASSIC;
+    if (desktop_get_mode() != DESKTOP_MODE_MODERN) {
+        settings_update_taskbar_position_options();
+        return;
+    }
+
+    if (settings_modern_layout()) {
+        settings_mode = SETTINGS_MODE_MODERN;
+        settings_update_taskbar_position_options();
+        return;
+    }
+
+    settings_update_taskbar_position_options();
     LOG_WARN("SETTINGS", "Visual moderno indisponivel; usando TUI");
 }
 
@@ -270,7 +297,6 @@ void settings_close(void) {
     settings_clear_overlay();
     desktop_set_active(1);
     desktop_draw();
-    taskbar_draw();
 }
 
 static void settings_draw_classic(void) {
@@ -338,6 +364,7 @@ void settings_draw(void) {
         return;
     }
     settings_draw_classic();
+    taskbar_draw();
 }
 
 static void apply_taskbar_settings(void) {

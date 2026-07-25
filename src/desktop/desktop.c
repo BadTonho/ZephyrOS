@@ -271,6 +271,7 @@ void desktop_draw(void) {
     }
 
     desktop_draw_classic();
+    taskbar_draw();
     vesa_frame_end();
 }
 
@@ -429,6 +430,15 @@ int desktop_set_mode(desktop_mode_t mode) {
     }
 
     desktop_mode = mode;
+    if (mode == DESKTOP_MODE_MODERN) {
+        tb_config_t* taskbar_config = taskbar_get_config();
+
+        if (taskbar_config && taskbar_config->position > TB_POS_TOP) {
+            taskbar_set_position(TB_POS_BOTTOM);
+            LOG_WARN("DESKTOP",
+                     "Posicao lateral da taskbar redefinida para baixo no modo moderno");
+        }
+    }
     if (selected_icon < 0) selected_icon = 0;
     last_click_icon = -1;
     last_click_ticks = 0;

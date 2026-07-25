@@ -176,7 +176,6 @@ void taskmgr_close(void) {
 
     desktop_set_active(1);
     desktop_draw();
-    taskbar_draw();
 }
 
 static void draw_hline(int x, int y, int w, uint8_t color) {
@@ -747,12 +746,12 @@ void taskmgr_refresh(void) {
     video_put_char_at(0x18, COLOR_BORDER, TSKMGR_START_X + 2, TSKMGR_START_Y + TSKMGR_HEIGHT - 1);
     video_put_char_at(0x19, COLOR_BORDER, TSKMGR_START_X + TSKMGR_WIDTH - 3, TSKMGR_START_Y + TSKMGR_HEIGHT - 1);
     print_at(TSKMGR_START_X + 4, TSKMGR_START_Y + TSKMGR_HEIGHT - 1, "Navegar: Tab + Setas  |  Fechar: ESC", COLOR_BORDER);
+    taskbar_draw();
 }
 
 static void taskmgr_redraw_after_menu_close(void) {
     video_clear();
     taskmgr_refresh();
-    taskbar_draw();
 }
 
 static void taskmgr_handle_taskbar_action(int result) {
@@ -787,7 +786,6 @@ static void taskmgr_handle_taskbar_action(int result) {
             video_clear();
             desktop_set_active(1);
             desktop_draw();
-            taskbar_draw();
             break;
         case 8:
             taskmgr_close();
@@ -1571,7 +1569,6 @@ static void taskmgr_gui_draw(void) {
 
     if (gui_minimized) {
         desktop_draw();
-        taskbar_draw();
         vesa_frame_end();
         return;
     }
@@ -1697,7 +1694,6 @@ static void taskmgr_gui_minimize(void) {
     gui_drag_active = 0;
     gui_redraw_pending = 0;
     desktop_draw();
-    taskbar_draw();
 }
 
 void taskmgr_gui_update(void) {

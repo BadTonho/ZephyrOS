@@ -560,7 +560,6 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     /* Desktop e a cena padrao; o Shell abre somente por solicitacao. */
     desktop_set_active(1);
     desktop_draw();
-    taskbar_draw();
 
     while (1) {
         if (kernel_service_fallback) {

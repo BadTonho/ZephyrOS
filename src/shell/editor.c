@@ -490,7 +490,6 @@ void editor_close(void) {
     editor.running = 0;
     desktop_set_active(1);
     desktop_draw();
-    taskbar_draw();
 }
 
 static void editor_save(void) {

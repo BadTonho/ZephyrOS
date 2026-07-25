@@ -1103,7 +1103,6 @@ void shell_handle_app_request(uint32_t request) {
             video_clear();
             desktop_set_active(1);
             desktop_draw();
-            taskbar_draw();
             break;
         case IPC_APP_OPEN_SETTINGS:
             if (recovery_is_enabled(RECOVERY_COMPONENT_SETTINGS)) {
@@ -1123,7 +1122,6 @@ void shell_handle_app_request(uint32_t request) {
 static void shell_redraw_after_overlay_close(void) {
     if (desktop_is_active()) {
         desktop_draw();
-        taskbar_draw();
         return;
     }
 
@@ -1134,7 +1132,6 @@ static void shell_redraw_after_overlay_close(void) {
     }
 
     if (guitest_is_active()) {
-        taskbar_draw();
         guitest_draw();
         return;
     }
