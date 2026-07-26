@@ -466,7 +466,6 @@ static int shell_open_hosted(void) {
         LOG_WARN("SHELL", "Shell hospedado requer modo Moderno");
         return ERR_UNAVAILABLE;
     }
-    desktop_set_active(0);
     wm_set_active(1);
     if (shell_hosted_visible) return wm_register_hosted_app(&shell_hosted_app);
 
@@ -477,6 +476,7 @@ static int shell_open_hosted(void) {
         shell_hosted_visible = 0;
         video_terminal_set_hosted(0);
         wm_set_active(0);
+        desktop_set_active(0);
         LOG_WARN("SHELL", "Workspace nao comporta o Shell hospedado");
         return result;
     }
@@ -1170,7 +1170,9 @@ void shell_handle_app_request(uint32_t request) {
         case IPC_APP_OPEN_EXPLORER:
             if (shell_prepare_filemanager() == OK) {
                 shell_suspend_terminal_for_scene();
-                desktop_set_active(0);
+                if (desktop_get_mode() != DESKTOP_MODE_MODERN) {
+                    desktop_set_active(0);
+                }
                 fm_run();
             } else {
                 video_print("Erro: File Manager indisponivel.\n", 0x0C);
@@ -1179,9 +1181,12 @@ void shell_handle_app_request(uint32_t request) {
         case IPC_APP_OPEN_TASKMANAGER:
             if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
                 shell_suspend_terminal_for_scene();
-                desktop_set_active(0);
+                if (desktop_get_mode() != DESKTOP_MODE_MODERN) {
+                    desktop_set_active(0);
+                }
                 if (desktop_get_mode() == DESKTOP_MODE_MODERN &&
                     taskmgr_open_gui() != OK) {
+                    desktop_set_active(0);
                     wm_set_active(0);
                     shell_suspend_terminal();
                     LOG_WARN("SHELL", "GUI do Task Manager indisponivel; usando TUI");
@@ -1199,8 +1204,11 @@ void shell_handle_app_request(uint32_t request) {
                 break;
             }
             shell_suspend_terminal_for_scene();
-            desktop_set_active(0);
+            if (desktop_get_mode() != DESKTOP_MODE_MODERN) {
+                desktop_set_active(0);
+            }
             if (taskmgr_open_gui() != OK) {
+                desktop_set_active(0);
                 wm_set_active(0);
                 shell_suspend_terminal();
                 LOG_WARN("SHELL", "GUI do Task Manager indisponivel; usando TUI");
@@ -1217,7 +1225,9 @@ void shell_handle_app_request(uint32_t request) {
         case IPC_APP_OPEN_SETTINGS:
             if (recovery_is_enabled(RECOVERY_COMPONENT_SETTINGS)) {
                 shell_suspend_terminal_for_scene();
-                desktop_set_active(0);
+                if (desktop_get_mode() != DESKTOP_MODE_MODERN) {
+                    desktop_set_active(0);
+                }
                 settings_open();
             } else {
                 video_print("Erro: Configuracoes indisponiveis.\n", 0x0C);

@@ -71,6 +71,7 @@ No modo Clássico, os ícones são organizados em grade (5 colunas) e mostrados 
 ```c
 void desktop_init(void);
 void desktop_draw(void);                   // Direciona para TUI ou GUI dependendo do modo
+void desktop_draw_workspace(void);         // Compõe fundo e ícones no frame VESA atual
 void desktop_add_icon(name, type);         // Adiciona ícone
 void desktop_update_selection(void);
 int  desktop_handle_key(scancode);         // Processa teclas
@@ -118,7 +119,9 @@ criam ou focalizam uma única janela de cada tipo.
 
 - **Modo TUI**: janelas do WM usam bordas de caracteres e as APIs legadas.
 - **Modo moderno**: janelas hospedadas são compostas do menor para o maior
-  Z-order e a taskbar é desenhada por último no mesmo ciclo VESA.
+  Z-order e a taskbar é desenhada por último no mesmo ciclo VESA. Quando uma
+  janela é aberta a partir do Desktop, os ícones continuam como fundo da
+  composição; ao fechar a última janela, o controle retorna ao Desktop.
 - **Entrada**: o corpo focaliza uma janela; os controles da barra de título
   fecham, minimizam ou maximizam/restauram. Teclado e mouse do conteúdo são
   encaminhados ao aplicativo focalizado; `Esc`, `Tab`, `F1` e `F2` não são

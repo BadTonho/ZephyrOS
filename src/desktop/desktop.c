@@ -320,22 +320,28 @@ static void desktop_draw_classic(void) {
     if (mode && mode->initialized) vesa_flip();
 }
 
-static void desktop_draw_modern(void) {
+static int desktop_draw_modern_workspace(void) {
     vesa_mode_t* mode = vesa_get_mode();
     vesa_color_t background;
 
     if (!mode || !mode->initialized) {
         LOG_ERROR("DESKTOP", "VESA indisponivel para Desktop moderno");
-        return;
+        return 0;
     }
 
-    mouse_invalidate_cursor();
-    /* Limpa tambem o estado TUI para que logs antigos nao retornem ao frame. */
-    video_clear();
     background.raw = desktop_modern_background();
     vesa_clear(background);
     desktop_layout_modern();
     desktop_draw_icons_modern();
+
+    return 1;
+}
+
+static void desktop_draw_modern(void) {
+    mouse_invalidate_cursor();
+    /* Limpa tambem o estado TUI para que logs antigos nao retornem ao frame. */
+    video_clear();
+    if (!desktop_draw_modern_workspace()) return;
 
     /* A taskbar faz parte da mesma cena e usa o mesmo backbuffer. */
     taskbar_draw();
@@ -488,6 +494,11 @@ void desktop_draw(void) {
     desktop_draw_classic();
     taskbar_draw();
     vesa_frame_end();
+}
+
+void desktop_draw_workspace(void) {
+    if (desktop_mode != DESKTOP_MODE_MODERN) return;
+    (void)desktop_draw_modern_workspace();
 }
 
 void desktop_draw_icons(void) {

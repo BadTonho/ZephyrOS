@@ -301,7 +301,6 @@ void settings_open(void) {
     editing_option = 0;
     settings_dialog = SETTINGS_DIALOG_NONE;
     if (desktop_get_mode() == DESKTOP_MODE_MODERN) {
-        desktop_set_active(0);
         wm_set_active(1);
         settings_hosted = 1;
         settings_mode = SETTINGS_MODE_MODERN;
@@ -310,6 +309,7 @@ void settings_open(void) {
         settings_hosted = 0;
         settings_mode = SETTINGS_MODE_CLASSIC;
         wm_set_active(0);
+        desktop_set_active(0);
         LOG_WARN("SETTINGS", "Workspace indisponivel; usando Settings classico");
     } else {
         settings_select_mode();

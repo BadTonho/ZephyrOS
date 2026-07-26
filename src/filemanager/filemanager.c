@@ -1264,7 +1264,6 @@ void fm_open(void) {
 
     fm_init();
     if (desktop_get_mode() == DESKTOP_MODE_MODERN) {
-        desktop_set_active(0);
         wm_set_active(1);
         fm_hosted = 1;
         state.mode = FM_MODE_MODERN;
@@ -1272,6 +1271,7 @@ void fm_open(void) {
         fm_hosted = 0;
         state.mode = FM_MODE_CLASSIC;
         wm_set_active(0);
+        desktop_set_active(0);
         LOG_WARN("FM", "Workspace indisponivel; usando Explorer classico");
     }
     taskbar_add_app(TB_APP_EXPLORER, "Explorer");

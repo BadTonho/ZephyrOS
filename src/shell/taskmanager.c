@@ -1700,7 +1700,6 @@ int taskmgr_open_gui(void) {
     selected_row = 0;
     scroll_offset = 0;
     show_properties = 0;
-    desktop_set_active(0);
     taskmgr_update_cpu_metrics();
     gui_last_tick = timer_get_ticks();
     gui_last_metrics_tick = gui_last_tick;

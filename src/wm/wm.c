@@ -86,6 +86,8 @@ static void wm_gui_close(int index, int notify_app);
 static void wm_gui_clear_interaction(void);
 static int wm_gui_handle_mouse(mouse_event_t* event);
 static int wm_gui_find_app(wm_app_type_t app_type);
+static int wm_gui_has_live_windows(void);
+static int wm_gui_return_to_desktop_if_empty(void);
 static int wm_gui_window_min_width(const wm_gui_window_t* window);
 static int wm_gui_window_min_height(const wm_gui_window_t* window);
 static void wm_gui_constrain_window(wm_gui_window_t* window);
@@ -115,6 +117,27 @@ static int wm_gui_find_app(wm_app_type_t app_type) {
             wm_gui_windows[i].app->app_type == app_type) return i;
     }
     return -1;
+}
+
+static int wm_gui_has_live_windows(void) {
+    for (int i = 0; i < wm_gui_window_count; i++) {
+        if (wm_gui_windows[i].visible ||
+            wm_gui_windows[i].state == WM_STATE_MINIMIZED) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+static int wm_gui_return_to_desktop_if_empty(void) {
+    if (!wm_active || !desktop_is_active() || wm_gui_has_live_windows()) {
+        return 0;
+    }
+
+    wm_active = 0;
+    wm_gui_reset();
+    desktop_draw();
+    return 1;
 }
 
 static int wm_gui_window_min_width(const wm_gui_window_t* window) {
@@ -307,7 +330,8 @@ static void wm_gui_draw_all(void) {
 
     vesa_frame_begin();
     mouse_invalidate_cursor();
-    vesa_clear(background);
+    if (desktop_is_active()) desktop_draw_workspace();
+    else vesa_clear(background);
     for (int z = 0; z < wm_gui_z_counter; z++) {
         for (int i = 0; i < wm_gui_window_count; i++) {
             if (wm_gui_windows[i].visible && wm_gui_windows[i].z_order == z) {
@@ -531,6 +555,10 @@ static int wm_gui_handle_mouse(mouse_event_t* event) {
             if (control == WM_GUI_CONTROL_CLOSE) wm_gui_close(selected, 1);
             if (control == WM_GUI_CONTROL_MINIMIZE) wm_gui_minimize(selected);
             if (control == WM_GUI_CONTROL_MAXIMIZE) wm_gui_maximize_or_restore(selected);
+            if (control == WM_GUI_CONTROL_CLOSE &&
+                wm_gui_return_to_desktop_if_empty()) {
+                return 1;
+            }
             wm_gui_draw_all();
             return 1;
         }
@@ -708,6 +736,7 @@ int wm_close_hosted_app(wm_app_type_t app_type) {
     if (wm_gui_dispatching_input) {
         return OK;
     }
+    if (wm_gui_return_to_desktop_if_empty()) return OK;
     wm_gui_draw_all();
     return OK;
 }

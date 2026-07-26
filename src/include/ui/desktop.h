@@ -45,6 +45,7 @@ typedef struct {
 
 void desktop_init(void);
 void desktop_draw(void);
+void desktop_draw_workspace(void);
 void desktop_draw_icons(void);
 void desktop_add_icon(const char* name, desktop_app_type_t type);
 void desktop_update_selection(void);
