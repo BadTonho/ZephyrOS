@@ -34,8 +34,12 @@ visual atual.
 
 ## Etapa UI3 - Interacao direta
 
-- [ ] Avaliar arraste de icones e janelas depois de existir hit-testing e
-  invalidacao de regioes confiaveis.
+- [x] Implementar arraste e redimensionamento ao vivo nas duas janelas
+  demonstrativas do Window Manager no modo Moderno.
+- [x] Limitar movimento e dimensoes a area de trabalho da taskbar, preservar
+  foco, Z-order, controles de titulo e a composicao com cursor invalidado.
+- [ ] Avaliar arraste de icones depois de existir hit-testing e invalidacao de
+  regioes confiaveis.
 - [ ] Considerar icones BMP apenas com cache, fallback desenhado e tratamento
   de filesystem indisponivel.
 - [ ] Roda do mouse e melhorias de acessibilidade ficam apos a entrada basica

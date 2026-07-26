@@ -155,8 +155,17 @@ void wm_toggle_window(id);
 O kernel entrega cliques primeiro à taskbar. Botões de janela da taskbar pedem
 `wm_toggle_window(id)`: uma janela minimizada é restaurada, uma janela visível
 sem foco é focalizada e a janela focalizada é minimizada. Com o WM ativo, seus
-eventos consomem o mouse antes de Desktop e aplicativos. Arraste e
-redimensionamento genéricos permanecem para a UI3.
+eventos consomem o mouse antes de Desktop e aplicativos.
+
+No modo Moderno, somente as duas janelas demonstrativas do `wm` aceitam
+interação direta: os controles da barra de título têm prioridade, a área livre
+da barra inicia arraste e uma faixa de 8 px nas bordas e cantos inicia
+redimensionamento. A captura termina em `RELEASE`; janelas maximizadas devem
+ser restauradas antes de mover ou redimensionar. O tamanho mínimo é 180×128 px
+e a geometria fica limitada à área de trabalho da taskbar. Cada movimento
+recompõe o workspace no backbuffer, desenha a taskbar por último e invalida o
+cursor antes da pintura. Arraste de ícones e migração de aplicativos reais para
+janelas hospedadas permanecem fora deste escopo.
 
 ---
 
