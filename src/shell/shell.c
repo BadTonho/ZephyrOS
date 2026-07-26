@@ -481,7 +481,6 @@ static int shell_open_hosted(void) {
         return result;
     }
     shell_print_prompt();
-    LOG_INFO("SHELL", "Shell hospedado aberto");
     return OK;
 }
 
