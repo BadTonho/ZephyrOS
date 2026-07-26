@@ -222,6 +222,20 @@ static void global_mouse_handler(mouse_event_t* evt) {
         return;
     }
 
+    /* O Desktop moderno precisa do gesto completo para arrastar icones. */
+    if (desktop_is_active() && desktop_get_mode() == DESKTOP_MODE_MODERN) {
+        int result = desktop_handle_mouse(evt);
+
+        if (result == DESKTOP_APP_SHELL) {
+            kernel_request_shell_app(IPC_APP_OPEN_SHELL);
+        } else if (result == DESKTOP_APP_EXPLORER) {
+            kernel_request_shell_app(IPC_APP_OPEN_EXPLORER);
+        } else if (result == DESKTOP_APP_TASKMGR) {
+            kernel_request_shell_app(IPC_APP_OPEN_TASKMANAGER_GUI);
+        }
+        return;
+    }
+
     /* O restante do sistema legado so processa clique esquerdo (press). */
     if (evt->event != MOUSE_EVENT_PRESS) return;
     if (!(evt->changed & MOUSE_BTN_LEFT)) return;
@@ -240,11 +254,7 @@ static void global_mouse_handler(mouse_event_t* evt) {
     if (desktop_is_active()) {
         int result;
 
-        if (desktop_get_mode() == DESKTOP_MODE_MODERN) {
-            result = desktop_handle_mouse(evt);
-        } else {
-            result = desktop_handle_click(evt->x, evt->y);
-        }
+        result = desktop_handle_click(evt->x, evt->y);
 
         if (result == DESKTOP_APP_SHELL) {
             kernel_request_shell_app(IPC_APP_OPEN_SHELL);

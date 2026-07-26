@@ -783,6 +783,9 @@ int taskbar_handle_config_key(uint8_t scancode) {
                 taskbar_set_custom_position(20, 12);
                 break;
         }
+        if (desktop_is_active() && desktop_get_mode() == DESKTOP_MODE_MODERN) {
+            desktop_draw();
+        }
         taskbar_draw_config_menu();
         return 1;
     }

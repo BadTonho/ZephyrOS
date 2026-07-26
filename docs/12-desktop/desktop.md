@@ -40,11 +40,15 @@ Cria 3 ícones padrão: Shell, Explorer e TaskMgr.
 No modo `GUI Moderna`, o desktop desenha fundo, cards de ícone e símbolos por
 primitivas, permitindo:
 - Seleção visual azul em vez de caractere invertido.
-- Grade responsiva alinhada à esquerda, calculada conforme a resolução VESA.
-- Clique simples para seleção e duplo clique para abrir.
+- Grade responsiva de cartões 112×96 px com slots em memória, calculada
+  conforme a resolução VESA e a área útil da taskbar.
+- Clique simples para seleção, duplo clique para abrir e arraste com encaixe
+  no próximo slot livre.
+- Barras acopladas reduzem a grade; a taskbar personalizada também reserva
+  seus slots para que nenhum cartão fique sob ela.
 
-Ícones BMP e arrastar ícones continuam planejados; não fazem parte do modo
-moderno atual.
+As posições duram somente até reiniciar. Ícones BMP, roda do mouse, seleção
+múltipla e persistência em disco continuam fora do modo moderno atual.
 
 No modo Clássico, os ícones são organizados em grade (5 colunas) e mostrados na VGA Text Mode/Grid:
 
@@ -81,6 +85,7 @@ void desktop_set_active(active);
 | Setas | Navega entre ícones |
 | Enter / Duplo Clique | Abre aplicativo selecionado |
 | Clique Único | Seleciona o ícone |
+| Arrastar (Moderno) | Move para o slot livre mais próximo |
 | Esc | Sai do desktop |
 
 ---

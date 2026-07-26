@@ -19,15 +19,32 @@
 #define DESKTOP_MODERN_MAX_COLUMNS 5
 #define DESKTOP_MODERN_SYMBOL_SCALE 2
 #define DESKTOP_DOUBLE_CLICK_TICKS 25
+#define DESKTOP_DRAG_THRESHOLD 4
+#define DESKTOP_MODERN_MAX_SLOTS (DESKTOP_MAX_ICONS * 2)
+
+typedef struct {
+    int x;
+    int y;
+    int grid_index;
+    int available;
+} desktop_modern_slot_t;
 
 static desktop_icon_t desktop_icons[DESKTOP_MAX_ICONS];
+static desktop_modern_slot_t desktop_slots[DESKTOP_MODERN_MAX_SLOTS];
+static int desktop_icon_slots[DESKTOP_MAX_ICONS];
 static int icon_count = 0;
 static int selected_icon = 0;
 static int desktop_active = 0;
 static desktop_mode_t desktop_mode = DESKTOP_MODE_CLASSIC;
 static int modern_columns = 1;
+static int modern_slot_count = 0;
 static int last_click_icon = -1;
 static uint32_t last_click_ticks = 0;
+static int desktop_drag_icon = -1;
+static int desktop_drag_start_x = 0;
+static int desktop_drag_start_y = 0;
+static int desktop_drag_active = 0;
+static int desktop_drag_preview_slot = -1;
 
 static icon_entry_t* desktop_get_icon_entry(desktop_app_type_t type) {
     switch (type) {
@@ -70,16 +87,130 @@ static int desktop_modern_get_columns(const tb_rect_t* work_area) {
     if (columns > DESKTOP_MODERN_MAX_COLUMNS) {
         columns = DESKTOP_MODERN_MAX_COLUMNS;
     }
-    if (icon_count > 0 && columns > icon_count) columns = icon_count;
 
     return columns;
+}
+
+static int desktop_rects_intersect(int ax, int ay, int aw, int ah,
+                                   const tb_rect_t* b) {
+    if (!b) return 0;
+    return ax < b->x + b->width && ax + aw > b->x &&
+           ay < b->y + b->height && ay + ah > b->y;
+}
+
+static int desktop_build_modern_slots(const tb_rect_t* work_area) {
+    tb_config_t* taskbar_config = taskbar_get_config();
+    tb_rect_t reserved_area;
+    int has_reserved_area = 0;
+    int start_x;
+    int start_y;
+    int limit_x;
+    int limit_y;
+    int row = 0;
+    int available_slots = 0;
+
+    if (!work_area) {
+        LOG_ERROR("DESKTOP", "Area de trabalho nula para icones modernos");
+        return ERR_NULL;
+    }
+    if (taskbar_config && taskbar_config->position == TB_POS_CUSTOM &&
+        taskbar_get_bounds(&reserved_area)) {
+        has_reserved_area = 1;
+    }
+
+    start_x = work_area->x + DESKTOP_MODERN_MARGIN;
+    start_y = work_area->y + DESKTOP_MODERN_TOP_MARGIN;
+    limit_x = work_area->x + work_area->width - DESKTOP_MODERN_MARGIN;
+    limit_y = work_area->y + work_area->height - DESKTOP_MODERN_MARGIN;
+    modern_slot_count = 0;
+
+    for (int y = start_y;
+         y + DESKTOP_MODERN_CARD_HEIGHT <= limit_y &&
+         modern_slot_count < DESKTOP_MODERN_MAX_SLOTS;
+         y += DESKTOP_MODERN_CARD_HEIGHT + DESKTOP_MODERN_GAP_Y, row++) {
+        for (int col = 0; col < modern_columns &&
+             modern_slot_count < DESKTOP_MODERN_MAX_SLOTS; col++) {
+            int x = start_x + col *
+                    (DESKTOP_MODERN_CARD_WIDTH + DESKTOP_MODERN_GAP_X);
+
+            if (x + DESKTOP_MODERN_CARD_WIDTH > limit_x) continue;
+            desktop_slots[modern_slot_count].x = x;
+            desktop_slots[modern_slot_count].y = y;
+            desktop_slots[modern_slot_count].grid_index =
+                row * modern_columns + col;
+            desktop_slots[modern_slot_count].available =
+                !has_reserved_area || !desktop_rects_intersect(
+                    x, y, DESKTOP_MODERN_CARD_WIDTH,
+                    DESKTOP_MODERN_CARD_HEIGHT, &reserved_area);
+            if (desktop_slots[modern_slot_count].available) available_slots++;
+            modern_slot_count++;
+        }
+    }
+
+    if (available_slots < icon_count) {
+        LOG_ERROR("DESKTOP", "Area insuficiente para os icones modernos");
+        return ERR_OVERFLOW;
+    }
+    return OK;
+}
+
+static int desktop_find_slot_by_grid(int grid_index) {
+    for (int i = 0; i < modern_slot_count; i++) {
+        if (desktop_slots[i].grid_index == grid_index) return i;
+    }
+    return -1;
+}
+
+static int desktop_find_free_slot(const uint8_t* used, int start_slot) {
+    if (!used || modern_slot_count <= 0) return -1;
+    if (start_slot < 0 || start_slot >= modern_slot_count) start_slot = 0;
+
+    for (int offset = 0; offset < modern_slot_count; offset++) {
+        int slot = (start_slot + offset) % modern_slot_count;
+
+        if (desktop_slots[slot].available && !used[slot]) return slot;
+    }
+    return -1;
+}
+
+static void desktop_assign_modern_slots(void) {
+    uint8_t used[DESKTOP_MODERN_MAX_SLOTS] = {0};
+
+    for (int i = 0; i < icon_count; i++) {
+        int slot = desktop_find_slot_by_grid(desktop_icon_slots[i]);
+
+        if (slot < 0 || !desktop_slots[slot].available || used[slot]) {
+            slot = desktop_find_free_slot(used, i);
+            if (slot < 0) {
+                LOG_ERROR("DESKTOP", "Nenhum slot livre para icone moderno");
+                return;
+            }
+            desktop_icon_slots[i] = desktop_slots[slot].grid_index;
+        }
+
+        used[slot] = 1;
+        desktop_icons[i].modern_x = desktop_slots[slot].x;
+        desktop_icons[i].modern_y = desktop_slots[slot].y;
+        desktop_icons[i].modern_width = DESKTOP_MODERN_CARD_WIDTH;
+        desktop_icons[i].modern_height = DESKTOP_MODERN_CARD_HEIGHT;
+    }
+}
+
+static void desktop_apply_drag_preview(void) {
+    desktop_icon_t* icon;
+
+    if (!desktop_drag_active || desktop_drag_icon < 0 ||
+        desktop_drag_icon >= icon_count || desktop_drag_preview_slot < 0 ||
+        desktop_drag_preview_slot >= modern_slot_count) return;
+
+    icon = &desktop_icons[desktop_drag_icon];
+    icon->modern_x = desktop_slots[desktop_drag_preview_slot].x;
+    icon->modern_y = desktop_slots[desktop_drag_preview_slot].y;
 }
 
 static void desktop_layout_modern(void) {
     vesa_mode_t* mode = vesa_get_mode();
     tb_rect_t work_area;
-    int start_x;
-    int start_y;
 
     if (!mode || !mode->initialized) {
         LOG_ERROR("DESKTOP", "Modo VESA indisponivel para layout moderno");
@@ -90,22 +221,14 @@ static void desktop_layout_modern(void) {
     work_area.y = 0;
     work_area.width = mode->width;
     work_area.height = mode->height;
-    taskbar_get_work_area(&work_area);
-    modern_columns = desktop_modern_get_columns(&work_area);
-    start_x = work_area.x + DESKTOP_MODERN_MARGIN;
-    start_y = work_area.y + DESKTOP_MODERN_TOP_MARGIN;
-
-    for (int i = 0; i < icon_count; i++) {
-        int col = i % modern_columns;
-        int row = i / modern_columns;
-
-        desktop_icons[i].modern_x = start_x +
-            col * (DESKTOP_MODERN_CARD_WIDTH + DESKTOP_MODERN_GAP_X);
-        desktop_icons[i].modern_y = start_y +
-            row * (DESKTOP_MODERN_CARD_HEIGHT + DESKTOP_MODERN_GAP_Y);
-        desktop_icons[i].modern_width = DESKTOP_MODERN_CARD_WIDTH;
-        desktop_icons[i].modern_height = DESKTOP_MODERN_CARD_HEIGHT;
+    if (!taskbar_get_work_area(&work_area)) {
+        LOG_ERROR("DESKTOP", "Area de trabalho da taskbar indisponivel");
+        return;
     }
+    modern_columns = desktop_modern_get_columns(&work_area);
+    if (desktop_build_modern_slots(&work_area) != OK) return;
+    desktop_assign_modern_slots();
+    desktop_apply_drag_preview();
 }
 
 static void draw_single_icon_classic(desktop_icon_t* icon) {
@@ -233,6 +356,92 @@ static int desktop_find_modern_icon(int px, int py) {
     return -1;
 }
 
+static void desktop_reset_drag(void) {
+    desktop_drag_icon = -1;
+    desktop_drag_start_x = 0;
+    desktop_drag_start_y = 0;
+    desktop_drag_active = 0;
+    desktop_drag_preview_slot = -1;
+}
+
+static int desktop_drag_threshold_reached(const mouse_event_t* event) {
+    int delta_x;
+    int delta_y;
+
+    if (!event) return 0;
+    delta_x = event->x - desktop_drag_start_x;
+    delta_y = event->y - desktop_drag_start_y;
+    if (delta_x < 0) delta_x = -delta_x;
+    if (delta_y < 0) delta_y = -delta_y;
+    return delta_x >= DESKTOP_DRAG_THRESHOLD ||
+           delta_y >= DESKTOP_DRAG_THRESHOLD;
+}
+
+static int desktop_slot_is_occupied(int slot_index, int ignored_icon) {
+    if (slot_index < 0 || slot_index >= modern_slot_count) return 1;
+
+    for (int i = 0; i < icon_count; i++) {
+        int icon_slot;
+
+        if (i == ignored_icon) continue;
+        icon_slot = desktop_find_slot_by_grid(desktop_icon_slots[i]);
+        if (icon_slot == slot_index) return 1;
+    }
+    return 0;
+}
+
+static int desktop_find_drop_slot(int preferred_slot, int ignored_icon) {
+    if (preferred_slot < 0 || preferred_slot >= modern_slot_count) return -1;
+
+    for (int offset = 0; offset < modern_slot_count; offset++) {
+        int slot = (preferred_slot + offset) % modern_slot_count;
+
+        if (desktop_slots[slot].available &&
+            !desktop_slot_is_occupied(slot, ignored_icon)) {
+            return slot;
+        }
+    }
+    return -1;
+}
+
+static int desktop_find_nearest_slot(int px, int py) {
+    int nearest_slot = -1;
+    int nearest_distance = 0;
+
+    for (int i = 0; i < modern_slot_count; i++) {
+        int center_x;
+        int center_y;
+        int delta_x;
+        int delta_y;
+        int distance;
+
+        if (!desktop_slots[i].available) continue;
+        center_x = desktop_slots[i].x + DESKTOP_MODERN_CARD_WIDTH / 2;
+        center_y = desktop_slots[i].y + DESKTOP_MODERN_CARD_HEIGHT / 2;
+        delta_x = center_x - px;
+        delta_y = center_y - py;
+        distance = delta_x * delta_x + delta_y * delta_y;
+        if (nearest_slot < 0 || distance < nearest_distance) {
+            nearest_slot = i;
+            nearest_distance = distance;
+        }
+    }
+    return nearest_slot;
+}
+
+static void desktop_update_drag_preview(const mouse_event_t* event) {
+    int nearest_slot;
+    int preview_slot;
+
+    if (!event || desktop_drag_icon < 0) return;
+    nearest_slot = desktop_find_nearest_slot(event->x, event->y);
+    preview_slot = desktop_find_drop_slot(nearest_slot, desktop_drag_icon);
+    if (preview_slot < 0 || preview_slot == desktop_drag_preview_slot) return;
+
+    desktop_drag_preview_slot = preview_slot;
+    desktop_draw();
+}
+
 void desktop_init(void) {
     LOG_INFO("DESKTOP", "Inicializando Desktop");
 
@@ -241,6 +450,10 @@ void desktop_init(void) {
     desktop_active = 0;
     last_click_icon = -1;
     last_click_ticks = 0;
+    desktop_reset_drag();
+    for (int i = 0; i < DESKTOP_MAX_ICONS; i++) {
+        desktop_icon_slots[i] = -1;
+    }
 
     vesa_mode_t* mode = vesa_get_mode();
     desktop_mode = (mode && mode->initialized) ?
@@ -340,6 +553,7 @@ void desktop_add_icon(const char* name, desktop_app_type_t type) {
     desktop_icons[icon_count].modern_width = DESKTOP_MODERN_CARD_WIDTH;
     desktop_icons[icon_count].modern_height = DESKTOP_MODERN_CARD_HEIGHT;
     desktop_icons[icon_count].selected = (icon_count == selected_icon) ? 1 : 0;
+    desktop_icon_slots[icon_count] = icon_count;
 
     icon_count++;
 }
@@ -409,6 +623,7 @@ void desktop_set_active(int active) {
     if (!active) {
         last_click_icon = -1;
         last_click_ticks = 0;
+        desktop_reset_drag();
     }
 }
 
@@ -435,6 +650,7 @@ int desktop_set_mode(desktop_mode_t mode) {
     if (selected_icon < 0) selected_icon = 0;
     last_click_icon = -1;
     last_click_ticks = 0;
+    desktop_reset_drag();
 
     if (desktop_active) {
         desktop_draw();
@@ -452,37 +668,78 @@ desktop_mode_t desktop_get_mode(void) {
 int desktop_handle_mouse(mouse_event_t* event) {
     uint32_t now;
     int hit_index;
+    int dragged_icon;
+    int preview_slot;
 
     if (!event) {
         LOG_ERROR("DESKTOP", "Evento de mouse nulo");
         return 0;
     }
     if (!desktop_active || desktop_mode != DESKTOP_MODE_MODERN) return 0;
-    if (event->event != MOUSE_EVENT_PRESS ||
-        !(event->changed & MOUSE_BTN_LEFT)) return 0;
 
-    hit_index = desktop_find_modern_icon(event->x, event->y);
-    if (hit_index < 0) {
-        selected_icon = -1;
-        last_click_icon = -1;
+    if (event->event == MOUSE_EVENT_PRESS &&
+        (event->changed & MOUSE_BTN_LEFT)) {
+        hit_index = desktop_find_modern_icon(event->x, event->y);
+        if (hit_index < 0) {
+            desktop_reset_drag();
+            selected_icon = -1;
+            last_click_icon = -1;
+            desktop_update_selection();
+            return 0;
+        }
+
+        selected_icon = hit_index;
+        desktop_drag_icon = hit_index;
+        desktop_drag_start_x = event->x;
+        desktop_drag_start_y = event->y;
+        desktop_drag_active = 0;
+        desktop_drag_preview_slot = -1;
         desktop_update_selection();
         return 0;
     }
 
-    now = timer_get_ticks();
-    if (selected_icon == hit_index && last_click_icon == hit_index &&
-        now - last_click_ticks <= DESKTOP_DOUBLE_CLICK_TICKS) {
-        selected_icon = hit_index;
-        last_click_icon = -1;
-        last_click_ticks = 0;
-        desktop_update_selection();
-        return desktop_icons[hit_index].type;
+    if (event->event == MOUSE_EVENT_MOVE && desktop_drag_icon >= 0 &&
+        (event->buttons & MOUSE_BTN_LEFT)) {
+        if (!desktop_drag_active && desktop_drag_threshold_reached(event)) {
+            desktop_drag_active = 1;
+            last_click_icon = -1;
+            last_click_ticks = 0;
+        }
+        if (desktop_drag_active) desktop_update_drag_preview(event);
+        return 0;
     }
 
-    selected_icon = hit_index;
-    last_click_icon = hit_index;
+    if (event->event != MOUSE_EVENT_RELEASE ||
+        !(event->changed & MOUSE_BTN_LEFT) || desktop_drag_icon < 0) {
+        return 0;
+    }
+
+    dragged_icon = desktop_drag_icon;
+    preview_slot = desktop_drag_preview_slot;
+    if (desktop_drag_active) {
+        desktop_reset_drag();
+        if (preview_slot >= 0 && preview_slot < modern_slot_count) {
+            desktop_icon_slots[dragged_icon] =
+                desktop_slots[preview_slot].grid_index;
+        }
+        selected_icon = dragged_icon;
+        last_click_icon = -1;
+        last_click_ticks = 0;
+        desktop_draw();
+        return 0;
+    }
+
+    desktop_reset_drag();
+    now = timer_get_ticks();
+    if (selected_icon == dragged_icon && last_click_icon == dragged_icon &&
+        now - last_click_ticks <= DESKTOP_DOUBLE_CLICK_TICKS) {
+        last_click_icon = -1;
+        last_click_ticks = 0;
+        return desktop_icons[dragged_icon].type;
+    }
+
+    last_click_icon = dragged_icon;
     last_click_ticks = now;
-    desktop_update_selection();
     return 0;
 }
 
