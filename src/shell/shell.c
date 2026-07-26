@@ -31,8 +31,20 @@
 #include "core/syscall.h"
 #include "drivers/idt.h"
 #include "drivers/vesa.h"
+#include "drivers/font.h"
 
 #define SHELL_Q2CHECK_FAULT_RUNS 2U
+#define SHELL_HOSTED_MIN_COLUMNS 80
+#define SHELL_HOSTED_MIN_ROWS 22
+#define SHELL_HOSTED_PADDING 8
+#define SHELL_HOSTED_MIN_CONTENT_WIDTH \
+    (SHELL_HOSTED_MIN_COLUMNS * FONT_WIDTH + SHELL_HOSTED_PADDING * 2)
+#define SHELL_HOSTED_MIN_CONTENT_HEIGHT \
+    ((SHELL_HOSTED_MIN_ROWS + 1) * FONT_HEIGHT + SHELL_HOSTED_PADDING * 2)
+#define SHELL_HOSTED_DEFAULT_CONTENT_WIDTH 880
+#define SHELL_HOSTED_DEFAULT_CONTENT_HEIGHT 560
+#define SHELL_HOSTED_FRAME_WIDTH 4
+#define SHELL_HOSTED_FRAME_HEIGHT 28
 
 typedef enum {
     SHELL_BUILTIN_APP_NONE,
@@ -119,6 +131,7 @@ static int input_pos = 0;
 static int shell_waiting_user_test = 0;
 static uint8_t shell_extended_scancode = 0;
 static uint8_t shell_prompt_visible = 0;
+static uint8_t shell_hosted_visible = 0;
 static uint32_t shell_appcheck_loader_pid = 0;
 static uint32_t shell_echo_loader_pid = 0;
 static uint32_t shell_builtin_loader_pid = 0;
@@ -128,6 +141,23 @@ static uint32_t shell_appcheck_zombie_count = 0;
 static shell_builtin_app_t shell_builtin_loader_app = SHELL_BUILTIN_APP_NONE;
 static shell_builtin_app_t shell_appcheck_migration_app = SHELL_BUILTIN_APP_NONE;
 static char appcheck_oversized_args[APP_LAUNCH_MAX_TEXT + 1U];
+
+static void shell_handle_terminal_key(uint8_t scancode);
+static int shell_open_hosted(void);
+static void shell_hosted_draw(int x, int y, int width, int height);
+static void shell_hosted_key(uint8_t scancode);
+static void shell_hosted_close(void);
+static int shell_is_hosted_visible(void);
+static void shell_suspend_terminal(void);
+
+static const wm_hosted_app_t shell_hosted_app = {
+    WM_APP_SHELL, "ZephyrOS Shell", "Shell",
+    SHELL_HOSTED_MIN_CONTENT_WIDTH + SHELL_HOSTED_FRAME_WIDTH,
+    SHELL_HOSTED_MIN_CONTENT_HEIGHT + SHELL_HOSTED_FRAME_HEIGHT,
+    SHELL_HOSTED_DEFAULT_CONTENT_WIDTH + SHELL_HOSTED_FRAME_WIDTH,
+    SHELL_HOSTED_DEFAULT_CONTENT_HEIGHT + SHELL_HOSTED_FRAME_HEIGHT,
+    shell_hosted_draw, shell_hosted_key, 0, shell_hosted_close
+};
 static shell_q2check_t shell_q2check;
 static shell_regcheck_t shell_regcheck;
 static shell_kmetrics_baseline_t shell_kmetrics_baseline;
@@ -390,13 +420,69 @@ static void shell_reset_input(void) {
     kmemset(input_buffer, 0, sizeof(input_buffer));
 }
 
+static int shell_is_hosted_visible(void) {
+    return shell_hosted_visible && wm_is_active() &&
+           desktop_get_mode() == DESKTOP_MODE_MODERN &&
+           video_terminal_is_hosted();
+}
+
+static void shell_suspend_terminal_for_scene(void) {
+    if (!shell_is_hosted_visible()) shell_suspend_terminal();
+}
+
 static void shell_resume_terminal(void) {
+    if (!wm_is_active() && video_terminal_is_hosted()) {
+        video_terminal_begin();
+        return;
+    }
     if (!video_terminal_is_active()) video_terminal_begin();
 }
 
 static void shell_return_to_terminal_tail(void) {
     shell_resume_terminal();
     if (video_terminal_is_scrolled()) video_terminal_scroll_end();
+}
+
+static void shell_hosted_draw(int x, int y, int width, int height) {
+    if (video_terminal_draw(x, y, width, height) != OK) {
+        LOG_WARN("SHELL", "Falha ao desenhar terminal hospedado");
+    }
+}
+
+static void shell_hosted_key(uint8_t scancode) {
+    shell_handle_terminal_key(scancode);
+    /* O WM recompõe ao fim do despacho da tecla; evita um segundo frame no loop. */
+    (void)video_terminal_take_hosted_dirty();
+}
+
+static void shell_hosted_close(void) {
+    shell_hosted_visible = 0;
+}
+
+static int shell_open_hosted(void) {
+    int result;
+
+    if (desktop_get_mode() != DESKTOP_MODE_MODERN) {
+        LOG_WARN("SHELL", "Shell hospedado requer modo Moderno");
+        return ERR_UNAVAILABLE;
+    }
+    desktop_set_active(0);
+    wm_set_active(1);
+    if (shell_hosted_visible) return wm_register_hosted_app(&shell_hosted_app);
+
+    video_terminal_set_hosted(1);
+    shell_hosted_visible = 1;
+    result = wm_register_hosted_app(&shell_hosted_app);
+    if (result != OK) {
+        shell_hosted_visible = 0;
+        video_terminal_set_hosted(0);
+        wm_set_active(0);
+        LOG_WARN("SHELL", "Workspace nao comporta o Shell hospedado");
+        return result;
+    }
+    shell_print_prompt();
+    LOG_INFO("SHELL", "Shell hospedado aberto");
+    return OK;
 }
 
 static void shell_suspend_terminal(void) {
@@ -1065,6 +1151,14 @@ void shell_handle_app_request(uint32_t request) {
 
     switch ((ipc_app_request_t)request) {
         case IPC_APP_OPEN_SHELL:
+            if (desktop_get_mode() == DESKTOP_MODE_MODERN) {
+                if (shell_open_hosted() == OK) break;
+                shell_reset_input();
+                video_terminal_begin();
+                shell_print_prompt();
+                taskbar_draw();
+                break;
+            }
             if (wm_is_active()) wm_set_active(0);
             desktop_set_active(0);
             if (!video_terminal_is_active()) {
@@ -1076,7 +1170,7 @@ void shell_handle_app_request(uint32_t request) {
             break;
         case IPC_APP_OPEN_EXPLORER:
             if (shell_prepare_filemanager() == OK) {
-                shell_suspend_terminal();
+                shell_suspend_terminal_for_scene();
                 desktop_set_active(0);
                 fm_run();
             } else {
@@ -1085,11 +1179,12 @@ void shell_handle_app_request(uint32_t request) {
             break;
         case IPC_APP_OPEN_TASKMANAGER:
             if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
-                shell_suspend_terminal();
+                shell_suspend_terminal_for_scene();
                 desktop_set_active(0);
                 if (desktop_get_mode() == DESKTOP_MODE_MODERN &&
                     taskmgr_open_gui() != OK) {
                     wm_set_active(0);
+                    shell_suspend_terminal();
                     LOG_WARN("SHELL", "GUI do Task Manager indisponivel; usando TUI");
                     taskmgr_run();
                 } else if (desktop_get_mode() != DESKTOP_MODE_MODERN) {
@@ -1104,10 +1199,11 @@ void shell_handle_app_request(uint32_t request) {
                 video_print("Erro: Task Manager indisponivel.\n", 0x0C);
                 break;
             }
-            shell_suspend_terminal();
+            shell_suspend_terminal_for_scene();
             desktop_set_active(0);
             if (taskmgr_open_gui() != OK) {
                 wm_set_active(0);
+                shell_suspend_terminal();
                 LOG_WARN("SHELL", "GUI do Task Manager indisponivel; usando TUI");
                 taskmgr_run();
             }
@@ -1121,7 +1217,7 @@ void shell_handle_app_request(uint32_t request) {
             break;
         case IPC_APP_OPEN_SETTINGS:
             if (recovery_is_enabled(RECOVERY_COMPONENT_SETTINGS)) {
-                shell_suspend_terminal();
+                shell_suspend_terminal_for_scene();
                 desktop_set_active(0);
                 settings_open();
             } else {
@@ -2661,6 +2757,8 @@ static void cmd_guimode(const char* args) {
     if (kstrcmp(mode_name, "classic") == 0) {
         result = desktop_set_mode(DESKTOP_MODE_CLASSIC);
         if (result == OK) {
+            if (wm_is_active()) wm_set_active(0);
+            shell_resume_terminal();
             video_print("Desktop em modo classic.\n", 0x0A);
         }
         return;
@@ -2687,7 +2785,7 @@ static void cmd_guimode(const char* args) {
 
 static void cmd_clear(void) {
     video_terminal_clear();
-    taskbar_draw();
+    if (!shell_is_hosted_visible()) taskbar_draw();
 }
 
 static void cmd_ls(void) {
@@ -2960,6 +3058,7 @@ static void cmd_shutdown(void) {
 void shell_init(void) {
     shell_reset_input();
     shell_prompt_visible = 0;
+    shell_hosted_visible = 0;
     kmemset(&shell_kmetrics_baseline, 0, sizeof(shell_kmetrics_baseline));
 }
 
@@ -2978,6 +3077,10 @@ void shell_print_prompt(void) {
 }
 
 static int shell_should_show_prompt(void) {
+    if (shell_is_hosted_visible()) {
+        return !shell_waiting_user_test && !app_loader_is_foreground_active();
+    }
+
     /* Apps que retornam ao Desktop ja redesenham a cena antes de voltar. */
     if (desktop_is_active()) return 0;
     if (fm_is_running()) return 0;
@@ -2986,6 +3089,13 @@ static int shell_should_show_prompt(void) {
     if (shell_waiting_user_test) return 0;
     if (app_loader_is_foreground_active()) return 0;
     return 1;
+}
+
+void shell_update_hosted_terminal(void) {
+    if (!shell_is_hosted_visible()) return;
+    if (video_terminal_take_hosted_dirty()) {
+        wm_request_hosted_redraw(WM_APP_SHELL);
+    }
 }
 
 static void process_input(void) {
@@ -3025,6 +3135,71 @@ static int shell_handle_terminal_scroll_key(uint8_t scancode) {
         default:
             return 0;
     }
+}
+
+static void shell_handle_terminal_key(uint8_t scancode) {
+    if (shell_waiting_user_test) return;
+
+    shell_resume_terminal();
+
+    if (scancode == SHELL_SCANCODE_EXTENDED) {
+        shell_extended_scancode = 1;
+        return;
+    }
+
+    if (scancode & 0x80) {
+        shell_extended_scancode = 0;
+        return;
+    }
+
+    if (shell_extended_scancode) {
+        shell_extended_scancode = 0;
+        if (shell_handle_terminal_scroll_key(scancode)) return;
+    }
+
+    static const char scancode_table[128] = {
+        0,  27, '1','2','3','4','5','6','7','8','9','0','-','=','\b',
+        '\t','q','w','e','r','t','y','u','i','o','p','[',']','\n',
+        0,  'a','s','d','f','g','h','j','k','l',';','\'','`',
+        0,  '\\','z','x','c','v','b','n','m',',','.',';',0,
+        '*', 0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0
+    };
+
+    /* QEMU pode encaminhar a barra ABNT2 por dois scancodes fisicos. */
+    char c = (scancode == SHELL_SCANCODE_ISO_SLASH ||
+              scancode == SHELL_SCANCODE_ABNT2_SLASH) ? '/' :
+             scancode_table[scancode];
+
+    if (scancode == 0x0E) {
+        shell_return_to_terminal_tail();
+        if (input_pos > 0) {
+            input_pos--;
+            input_buffer[input_pos] = '\0';
+            video_backspace();
+        }
+        return;
+    }
+
+    if (scancode == 0x1C) {
+        shell_return_to_terminal_tail();
+        process_input();
+        return;
+    }
+
+    /* Teclas de controle podem chegar antes do primeiro caractere visivel
+       quando o QEMU entrega o foco. Elas nao devem contaminar o comando. */
+    if (c >= ' ' && c <= '~' && input_pos < SHELL_BUFFER_SIZE - 1) {
+        shell_return_to_terminal_tail();
+        input_buffer[input_pos++] = c;
+        input_buffer[input_pos] = '\0';
+        video_put_char(c, 0x07);
+    }
+
+    if (!shell_is_hosted_visible()) taskbar_update_clock();
 }
 
 void shell_handle_key(uint8_t scancode) {
@@ -3107,68 +3282,7 @@ void shell_handle_key(uint8_t scancode) {
         return;
     }
 
-    if (shell_waiting_user_test) return;
-
-    shell_resume_terminal();
-
-    if (scancode == SHELL_SCANCODE_EXTENDED) {
-        shell_extended_scancode = 1;
-        return;
-    }
-
-    if (scancode & 0x80) {
-        shell_extended_scancode = 0;
-        return;
-    }
-
-    if (shell_extended_scancode) {
-        shell_extended_scancode = 0;
-        if (shell_handle_terminal_scroll_key(scancode)) return;
-    }
-
-    static const char scancode_table[128] = {
-        0,  27, '1','2','3','4','5','6','7','8','9','0','-','=','\b',
-        '\t','q','w','e','r','t','y','u','i','o','p','[',']','\n',
-        0,  'a','s','d','f','g','h','j','k','l',';','\'','`',
-        0,  '\\','z','x','c','v','b','n','m',',','.',';',0,
-        '*', 0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    /* QEMU pode encaminhar a barra ABNT2 por dois scancodes fisicos. */
-    char c = (scancode == SHELL_SCANCODE_ISO_SLASH ||
-              scancode == SHELL_SCANCODE_ABNT2_SLASH) ? '/' :
-             scancode_table[scancode];
-
-    if (scancode == 0x0E) {
-        shell_return_to_terminal_tail();
-        if (input_pos > 0) {
-            input_pos--;
-            input_buffer[input_pos] = '\0';
-            video_backspace();
-        }
-        return;
-    }
-
-    if (scancode == 0x1C) {
-        shell_return_to_terminal_tail();
-        process_input();
-        return;
-    }
-
-    /* Teclas de controle podem chegar antes do primeiro caractere visivel
-       quando o QEMU entrega o foco. Elas nao devem contaminar o comando. */
-    if (c >= ' ' && c <= '~' && input_pos < SHELL_BUFFER_SIZE - 1) {
-        shell_return_to_terminal_tail();
-        input_buffer[input_pos++] = c;
-        input_buffer[input_pos] = '\0';
-        video_put_char(c, 0x07);
-    }
-
-    taskbar_update_clock();
+    shell_handle_terminal_key(scancode);
 }
 
 int shell_process_command(const char* input) {
@@ -3247,6 +3361,7 @@ int shell_process_command(const char* input) {
         cmd_melody();
     } else if (kstrcmp(cmd, "desktop") == 0) {
         if (!desktop_is_active()) {
+            if (wm_is_active()) wm_set_active(0);
             shell_suspend_terminal();
             desktop_set_active(1);
             desktop_draw();
@@ -3257,7 +3372,7 @@ int shell_process_command(const char* input) {
         if (shell_prepare_filemanager() != OK) {
             video_print("Erro: Explorer indisponivel.\n", 0x0C);
         } else {
-            shell_suspend_terminal();
+            shell_suspend_terminal_for_scene();
             fm_run();
         }
     } else if (kstrcmp(cmd, "reboot") == 0) {
@@ -3266,6 +3381,7 @@ int shell_process_command(const char* input) {
         cmd_shutdown();
     } else if (kstrcmp(cmd, "guitest") == 0) {
         if (recovery_is_enabled(RECOVERY_COMPONENT_GUITEST)) {
+            if (wm_is_active()) wm_set_active(0);
             shell_suspend_terminal();
             guitest_open();
         } else {
@@ -3273,10 +3389,11 @@ int shell_process_command(const char* input) {
         }
     } else if (kstrcmp(cmd, "taskmgr") == 0) {
         if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
-            shell_suspend_terminal();
+            shell_suspend_terminal_for_scene();
             if (desktop_get_mode() == DESKTOP_MODE_MODERN) {
                 if (taskmgr_open_gui() != OK) {
                     wm_set_active(0);
+                    shell_suspend_terminal();
                     LOG_WARN("SHELL", "GUI do Task Manager indisponivel; usando TUI");
                     taskmgr_run();
                 }
@@ -3290,13 +3407,16 @@ int shell_process_command(const char* input) {
         taskbar_draw_config_menu();
     } else if (kstrcmp(cmd, "settings") == 0) {
         if (recovery_is_enabled(RECOVERY_COMPONENT_SETTINGS)) {
-            shell_suspend_terminal();
+            shell_suspend_terminal_for_scene();
             settings_open();
         } else {
             video_print("Erro: Configuracoes indisponiveis.\n", 0x0C);
         }
     } else if (kstrcmp(cmd, "wm") == 0) {
         if (recovery_is_enabled(RECOVERY_COMPONENT_WM)) {
+            if (desktop_get_mode() == DESKTOP_MODE_MODERN && wm_is_active()) {
+                wm_set_active(0);
+            }
             shell_suspend_terminal();
             desktop_set_active(0);
             wm_set_active(1);
@@ -3337,6 +3457,7 @@ int shell_process_command(const char* input) {
             while (input[n] && n < 12) { name[n] = input[n]; n++; }
             name[n] = '\0';
             str_upper(name);
+            if (wm_is_active()) wm_set_active(0);
             shell_suspend_terminal();
             int view_result = mp_play_image(name);
             if (view_result != OK) {
@@ -3365,9 +3486,11 @@ int shell_process_command(const char* input) {
             while (input[n] && n < 12) { name[n] = input[n]; n++; }
             name[n] = '\0';
             str_upper(name);
+            if (wm_is_active()) wm_set_active(0);
             shell_suspend_terminal();
             editor_run_file(name);
         } else {
+            if (wm_is_active()) wm_set_active(0);
             shell_suspend_terminal();
             editor_run();
         }

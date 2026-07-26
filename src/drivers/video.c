@@ -3,12 +3,16 @@
 #include "drivers/vesa.h"
 #include "drivers/font.h"
 #include "drivers/mouse.h"
+#include "core/errors.h"
 #include "core/log.h"
 
 #define TERMINAL_TAB_WIDTH 8
 #define TERMINAL_RESERVED_ROWS 2 /* rodape e margem acima da taskbar */
 #define TERMINAL_FOOTER_COLOR 0x08
 #define TERMINAL_FOOTER_SIZE 96
+#define TERMINAL_HOSTED_PADDING 8
+#define TERMINAL_HOSTED_MIN_COLUMNS 80
+#define TERMINAL_HOSTED_MIN_ROWS 22
 
 spinlock_t video_lock;
 static int cursor_x = 0;
@@ -30,6 +34,13 @@ static uint32_t terminal_current_line = 0;
 static uint32_t terminal_view_offset = 0;
 static int terminal_cursor_x = 0;
 static uint8_t terminal_active = 0;
+static uint8_t terminal_hosted = 0;
+static uint8_t terminal_hosted_dirty = 0;
+static int terminal_hosted_columns = 0;
+static int terminal_hosted_rows = 0;
+static uint32_t terminal_hosted_view_offset = 0;
+
+static void terminal_append_number(char* text, int* pos, uint32_t value);
 
 static const uint32_t vga_palette[16] = {
     0x00000000,
@@ -175,6 +186,154 @@ static uint32_t terminal_view_start_line(void) {
     return terminal_line_count - rows - terminal_view_offset;
 }
 
+static int terminal_line_length_locked(uint32_t logical_line) {
+    uint32_t physical = terminal_physical_line(logical_line);
+    uint32_t start = physical * SCREEN_COLS;
+    int length = SCREEN_COLS;
+
+    while (length > 0 && terminal_text[start + length - 1] == ' ') length--;
+    return length;
+}
+
+static int terminal_hosted_line_segments_locked(uint32_t logical_line,
+                                                int columns) {
+    int length = terminal_line_length_locked(logical_line);
+
+    if (length <= 0) return 1;
+    return (length + columns - 1) / columns;
+}
+
+static uint32_t terminal_hosted_total_rows_locked(int columns) {
+    uint32_t total = 0;
+
+    for (uint32_t line = 0; line < terminal_line_count; line++) {
+        total += (uint32_t)terminal_hosted_line_segments_locked(line, columns);
+    }
+    return total;
+}
+
+static uint32_t terminal_hosted_max_offset_locked(void) {
+    uint32_t total;
+
+    if (terminal_hosted_columns <= 0 || terminal_hosted_rows <= 0) return 0;
+    total = terminal_hosted_total_rows_locked(terminal_hosted_columns);
+    return total > (uint32_t)terminal_hosted_rows ?
+           total - (uint32_t)terminal_hosted_rows : 0;
+}
+
+static void terminal_hosted_draw_cell_locked(int x, int y, char c,
+                                             uint8_t color) {
+    vesa_color_t background;
+    vesa_color_t foreground;
+    const uint8_t* glyph;
+
+    background.raw = vga_bg_to_rgb(color);
+    vesa_fill_rect((uint32_t)x, (uint32_t)y, FONT_WIDTH, FONT_HEIGHT,
+                   background);
+    if (c == ' ' || c == '\0') return;
+    glyph = font_get_glyph(c);
+    if (!glyph) return;
+    foreground.raw = vga_color_to_rgb(color);
+    vesa_draw_glyph8x16((uint32_t)x, (uint32_t)y, glyph, foreground);
+}
+
+static void terminal_hosted_draw_footer_locked(int x, int y, int columns,
+                                               uint32_t offset,
+                                               uint32_t max_offset) {
+    char footer[TERMINAL_FOOTER_SIZE];
+    int pos = 0;
+
+    for (int col = 0; col < columns; col++) {
+        terminal_hosted_draw_cell_locked(x + col * FONT_WIDTH, y, ' ',
+                                        current_color);
+    }
+    if (offset == 0) return;
+    footer[pos++] = 'H'; footer[pos++] = 'i'; footer[pos++] = 's';
+    footer[pos++] = 't'; footer[pos++] = ':'; footer[pos++] = ' ';
+    terminal_append_number(footer, &pos, offset);
+    footer[pos++] = '/';
+    terminal_append_number(footer, &pos, max_offset);
+    footer[pos++] = ' '; footer[pos++] = 'U'; footer[pos++] = 'p';
+    footer[pos++] = '/'; footer[pos++] = 'D'; footer[pos++] = 'n';
+    footer[pos++] = ' '; footer[pos++] = 'P'; footer[pos++] = 'g';
+    footer[pos++] = 'U'; footer[pos++] = 'p'; footer[pos++] = '/';
+    footer[pos++] = 'P'; footer[pos++] = 'g'; footer[pos++] = 'D';
+    footer[pos] = '\0';
+    for (int col = 0; col < pos && col < columns; col++) {
+        terminal_hosted_draw_cell_locked(x + col * FONT_WIDTH, y, footer[col],
+                                        TERMINAL_FOOTER_COLOR);
+    }
+}
+
+static uint32_t terminal_hosted_cursor_row_locked(int columns) {
+    uint32_t row = 0;
+
+    for (uint32_t line = 0; line + 1 < terminal_line_count; line++) {
+        row += (uint32_t)terminal_hosted_line_segments_locked(line, columns);
+    }
+    return row + (uint32_t)(terminal_cursor_x / columns);
+}
+
+static void terminal_hosted_draw_view_locked(int x, int y, int columns,
+                                             int rows) {
+    uint32_t total = terminal_hosted_total_rows_locked(columns);
+    uint32_t max_offset = total > (uint32_t)rows ? total - (uint32_t)rows : 0;
+    uint32_t start;
+    uint32_t visual_row = 0;
+    int draw_row = 0;
+
+    if (terminal_hosted_view_offset > max_offset) {
+        terminal_hosted_view_offset = max_offset;
+    }
+    start = total > (uint32_t)rows + terminal_hosted_view_offset ?
+            total - (uint32_t)rows - terminal_hosted_view_offset : 0;
+    for (uint32_t line = 0; line < terminal_line_count && draw_row < rows; line++) {
+        uint32_t physical = terminal_physical_line(line);
+        uint32_t source = physical * SCREEN_COLS;
+        int length = terminal_line_length_locked(line);
+        int segments = terminal_hosted_line_segments_locked(line, columns);
+
+        for (int segment = 0; segment < segments && draw_row < rows; segment++) {
+            if (visual_row >= start) {
+                for (int col = 0; col < columns; col++) {
+                    int index = segment * columns + col;
+                    char c = index < length ? terminal_text[source + index] : ' ';
+                    uint8_t color = index < length ?
+                                    terminal_color[source + index] : current_color;
+
+                    terminal_hosted_draw_cell_locked(x + col * FONT_WIDTH,
+                                                    y + draw_row * FONT_HEIGHT,
+                                                    c, color);
+                }
+                draw_row++;
+            }
+            visual_row++;
+        }
+    }
+    while (draw_row < rows) {
+        for (int col = 0; col < columns; col++) {
+            terminal_hosted_draw_cell_locked(x + col * FONT_WIDTH,
+                                            y + draw_row * FONT_HEIGHT,
+                                            ' ', current_color);
+        }
+        draw_row++;
+    }
+    terminal_hosted_draw_footer_locked(x, y + rows * FONT_HEIGHT, columns,
+                                       terminal_hosted_view_offset, max_offset);
+    if (terminal_hosted_view_offset == 0) {
+        uint32_t cursor_row = terminal_hosted_cursor_row_locked(columns);
+        uint32_t cursor_col = (uint32_t)(terminal_cursor_x % columns);
+
+        if (cursor_row >= start && cursor_row < start + (uint32_t)rows) {
+            vesa_color_t cursor;
+            cursor.raw = vga_color_to_rgb(VGA_COLOR_LIGHT_GREY);
+            vesa_fill_rect((uint32_t)(x + cursor_col * FONT_WIDTH),
+                           (uint32_t)(y + (cursor_row - start) * FONT_HEIGHT +
+                                      FONT_HEIGHT - 2), FONT_WIDTH, 2, cursor);
+        }
+    }
+}
+
 static void terminal_clear_line_locked(uint32_t line, uint8_t color) {
     uint32_t start = line * SCREEN_COLS;
 
@@ -193,6 +352,7 @@ static void terminal_reset_locked(void) {
     terminal_line_count = 1;
     terminal_current_line = 0;
     terminal_view_offset = 0;
+    terminal_hosted_view_offset = 0;
     terminal_cursor_x = 0;
 }
 
@@ -302,7 +462,8 @@ static int terminal_advance_line_locked(void) {
 }
 
 static void terminal_write_char_locked(char c, uint8_t color, int* dirty_x,
-                                       int* dirty_y, int* redraw_tail) {
+                                       int* dirty_y, int* redraw_tail,
+                                       int render_now) {
     int columns = terminal_columns();
     uint32_t index = terminal_current_line * SCREEN_COLS;
 
@@ -325,7 +486,7 @@ static void terminal_write_char_locked(char c, uint8_t color, int* dirty_x,
             terminal_cursor_x--;
             terminal_text[index + terminal_cursor_x] = ' ';
             terminal_color[index + terminal_cursor_x] = color;
-            if (terminal_view_offset == 0) {
+            if (render_now && terminal_view_offset == 0) {
                 int row = terminal_line_count > (uint32_t)terminal_view_rows() ?
                           terminal_view_rows() - 1 : (int)terminal_line_count - 1;
                 render_output_cell_locked(terminal_cursor_x, row, ' ', color);
@@ -341,7 +502,7 @@ static void terminal_write_char_locked(char c, uint8_t color, int* dirty_x,
     terminal_text[index + terminal_cursor_x] = c;
     terminal_color[index + terminal_cursor_x] = color;
 
-    if (terminal_view_offset == 0) {
+    if (render_now && terminal_view_offset == 0) {
         int row = terminal_line_count > (uint32_t)terminal_view_rows() ?
                   terminal_view_rows() - 1 : (int)terminal_line_count - 1;
         render_output_cell_locked(terminal_cursor_x, row, c, color);
@@ -369,6 +530,10 @@ void video_init(void) {
 
     clear_visual_buffer_locked();
     terminal_reset_locked();
+    terminal_hosted = 0;
+    terminal_hosted_dirty = 0;
+    terminal_hosted_columns = 0;
+    terminal_hosted_rows = 0;
     video_clear();
     current_color = 0x07;
     update_cursor();
@@ -407,7 +572,7 @@ void video_clear(void) {
 }
 
 void video_begin_update(void) {
-    if (!video_can_batch_updates()) return;
+    if (terminal_hosted || !video_can_batch_updates()) return;
 
     vesa_frame_begin_region((uint32_t)(cursor_x * FONT_WIDTH),
                             (uint32_t)(cursor_y * FONT_HEIGHT),
@@ -429,12 +594,15 @@ void video_put_char(char c, uint8_t color) {
 
     spinlock_acquire(&video_lock);
     if (terminal_active) {
-        terminal_write_char_locked(c, color, &dirty_x, &dirty_y, &redraw_tail);
-        if (redraw_tail && terminal_view_offset == 0) {
+        terminal_write_char_locked(c, color, &dirty_x, &dirty_y, &redraw_tail,
+                                   !terminal_hosted);
+        if (terminal_hosted) {
+            terminal_hosted_dirty = 1;
+        } else if (redraw_tail && terminal_view_offset == 0) {
             mouse_invalidate_cursor();
             terminal_render_view_locked();
         }
-        if (terminal_view_offset == 0) {
+        if (!terminal_hosted && terminal_view_offset == 0) {
             int rows = terminal_view_rows();
             cursor_x = terminal_cursor_x;
             cursor_y = terminal_line_count > (uint32_t)rows ? rows - 1 :
@@ -482,6 +650,7 @@ void video_put_char(char c, uint8_t color) {
     update_cursor();
     spinlock_release(&video_lock);
 
+    if (terminal_hosted) return;
     if (redraw_tail) {
         video_present_region(0, 0, terminal_columns() * FONT_WIDTH,
                              terminal_content_rows() * FONT_HEIGHT);
@@ -612,7 +781,9 @@ void video_draw_box(int x, int y, int w, int h, uint8_t color) {
 void video_terminal_begin(void) {
     spinlock_acquire(&video_lock);
     terminal_active = 1;
+    terminal_hosted = 0;
     terminal_view_offset = 0;
+    terminal_hosted_view_offset = 0;
     mouse_invalidate_cursor();
     terminal_render_view_locked();
     update_cursor();
@@ -625,7 +796,9 @@ void video_terminal_begin(void) {
 void video_terminal_suspend(void) {
     spinlock_acquire(&video_lock);
     terminal_active = 0;
+    terminal_hosted = 0;
     terminal_view_offset = 0;
+    terminal_hosted_view_offset = 0;
     spinlock_release(&video_lock);
 }
 
@@ -637,11 +810,16 @@ void video_terminal_clear(void) {
     spinlock_acquire(&video_lock);
     terminal_reset_locked();
     terminal_view_offset = 0;
-    mouse_invalidate_cursor();
-    terminal_render_view_locked();
-    update_cursor();
+    if (terminal_hosted) {
+        terminal_hosted_dirty = 1;
+    } else {
+        mouse_invalidate_cursor();
+        terminal_render_view_locked();
+        update_cursor();
+    }
     spinlock_release(&video_lock);
 
+    if (terminal_hosted) return;
     video_present_region(0, 0, terminal_columns() * FONT_WIDTH,
                          terminal_content_rows() * FONT_HEIGHT);
 }
@@ -651,8 +829,13 @@ int video_terminal_scroll(int lines) {
 
     spinlock_acquire(&video_lock);
     if (terminal_active && lines != 0) {
-        uint32_t max_offset = terminal_max_view_offset();
-        uint32_t next_offset = terminal_view_offset;
+        uint32_t max_offset = terminal_hosted ?
+                              terminal_hosted_max_offset_locked() :
+                              terminal_max_view_offset();
+        uint32_t next_offset = terminal_hosted ? terminal_hosted_view_offset :
+                               terminal_view_offset;
+
+        if (next_offset > max_offset) next_offset = max_offset;
 
         if (lines > 0) {
             uint32_t amount = (uint32_t)lines;
@@ -663,17 +846,23 @@ int video_terminal_scroll(int lines) {
             next_offset = amount > next_offset ? 0 : next_offset - amount;
         }
 
-        if (next_offset != terminal_view_offset) {
+        if (terminal_hosted) {
+            if (next_offset != terminal_hosted_view_offset) {
+                terminal_hosted_view_offset = next_offset;
+                terminal_hosted_dirty = 1;
+                changed = 1;
+            }
+        } else if (next_offset != terminal_view_offset) {
             terminal_view_offset = next_offset;
             mouse_invalidate_cursor();
             terminal_render_view_locked();
             changed = 1;
         }
     }
-    update_cursor();
+    if (!terminal_hosted) update_cursor();
     spinlock_release(&video_lock);
 
-    if (changed) {
+    if (changed && !terminal_hosted) {
         video_present_region(0, 0, terminal_columns() * FONT_WIDTH,
                              terminal_content_rows() * FONT_HEIGHT);
     }
@@ -683,13 +872,19 @@ int video_terminal_scroll(int lines) {
 void video_terminal_scroll_home(void) {
     spinlock_acquire(&video_lock);
     if (terminal_active) {
-        terminal_view_offset = terminal_max_view_offset();
-        mouse_invalidate_cursor();
-        terminal_render_view_locked();
+        if (terminal_hosted) {
+            terminal_hosted_view_offset = terminal_hosted_max_offset_locked();
+            terminal_hosted_dirty = 1;
+        } else {
+            terminal_view_offset = terminal_max_view_offset();
+            mouse_invalidate_cursor();
+            terminal_render_view_locked();
+        }
     }
-    update_cursor();
+    if (!terminal_hosted) update_cursor();
     spinlock_release(&video_lock);
 
+    if (terminal_hosted) return;
     video_present_region(0, 0, terminal_columns() * FONT_WIDTH,
                          terminal_content_rows() * FONT_HEIGHT);
 }
@@ -698,21 +893,97 @@ void video_terminal_scroll_end(void) {
     int changed = 0;
 
     spinlock_acquire(&video_lock);
-    if (terminal_active && terminal_view_offset != 0) {
-        terminal_view_offset = 0;
-        mouse_invalidate_cursor();
-        terminal_render_view_locked();
-        changed = 1;
+    if (terminal_active) {
+        if (terminal_hosted && terminal_hosted_view_offset != 0) {
+            terminal_hosted_view_offset = 0;
+            terminal_hosted_dirty = 1;
+            changed = 1;
+        } else if (!terminal_hosted && terminal_view_offset != 0) {
+            terminal_view_offset = 0;
+            mouse_invalidate_cursor();
+            terminal_render_view_locked();
+            changed = 1;
+        }
     }
-    update_cursor();
+    if (!terminal_hosted) update_cursor();
     spinlock_release(&video_lock);
 
-    if (changed) {
+    if (changed && !terminal_hosted) {
         video_present_region(0, 0, terminal_columns() * FONT_WIDTH,
                              terminal_content_rows() * FONT_HEIGHT);
     }
 }
 
 int video_terminal_is_scrolled(void) {
-    return terminal_view_offset != 0 ? 1 : 0;
+    return terminal_hosted ? terminal_hosted_view_offset != 0 :
+                             terminal_view_offset != 0;
+}
+
+void video_terminal_set_hosted(int hosted) {
+    spinlock_acquire(&video_lock);
+    terminal_hosted = hosted ? 1 : 0;
+    terminal_hosted_view_offset = 0;
+    terminal_hosted_columns = 0;
+    terminal_hosted_rows = 0;
+    if (terminal_hosted) {
+        terminal_active = 1;
+        terminal_view_offset = 0;
+        terminal_hosted_dirty = 1;
+    }
+    spinlock_release(&video_lock);
+}
+
+int video_terminal_is_hosted(void) {
+    return terminal_hosted ? 1 : 0;
+}
+
+int video_terminal_draw(int x, int y, int width, int height) {
+    vesa_mode_t* mode = vesa_get_mode();
+    vesa_color_t background;
+    int columns;
+    int total_rows;
+
+    if (x < 0 || y < 0 || width <= 0 || height <= 0) {
+        LOG_ERROR("VIDEO", "Retangulo invalido para terminal hospedado");
+        return ERR_INVALID;
+    }
+    if (!mode || !mode->initialized || !vesa_has_backbuffer()) {
+        LOG_WARN("VIDEO", "Terminal hospedado sem VESA ou backbuffer");
+        return ERR_UNAVAILABLE;
+    }
+    columns = (width - TERMINAL_HOSTED_PADDING * 2) / FONT_WIDTH;
+    total_rows = (height - TERMINAL_HOSTED_PADDING * 2) / FONT_HEIGHT;
+    if (columns < TERMINAL_HOSTED_MIN_COLUMNS ||
+        total_rows < TERMINAL_HOSTED_MIN_ROWS + 1) {
+        LOG_WARN("VIDEO", "Area insuficiente para terminal hospedado");
+        return ERR_OVERFLOW;
+    }
+
+    spinlock_acquire(&video_lock);
+    if (!terminal_active || !terminal_hosted) {
+        spinlock_release(&video_lock);
+        LOG_WARN("VIDEO", "Terminal hospedado nao esta ativo");
+        return ERR_STATE;
+    }
+    terminal_hosted_columns = columns;
+    terminal_hosted_rows = total_rows - 1;
+    background.raw = vga_bg_to_rgb(current_color);
+    vesa_fill_rect((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                   (uint32_t)height, background);
+    terminal_hosted_draw_view_locked(x + TERMINAL_HOSTED_PADDING,
+                                    y + TERMINAL_HOSTED_PADDING,
+                                    columns, terminal_hosted_rows);
+    terminal_hosted_dirty = 0;
+    spinlock_release(&video_lock);
+    return OK;
+}
+
+int video_terminal_take_hosted_dirty(void) {
+    int dirty;
+
+    spinlock_acquire(&video_lock);
+    dirty = terminal_hosted_dirty ? 1 : 0;
+    terminal_hosted_dirty = 0;
+    spinlock_release(&video_lock);
+    return dirty;
 }

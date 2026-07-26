@@ -51,6 +51,25 @@ O terminal mantém um histórico circular fixo de 200 linhas, sem `kmalloc`.
 histórico. Ao digitar, apagar ou confirmar um comando, o Shell retorna ao fim
 para preservar o prompt. `clear` remove a tela e o histórico.
 
+### Shell hospedado no modo Moderno
+
+No modo Moderno, o item `Shell` do Menu Iniciar abre ou focaliza uma única
+janela hospedada pelo Window Manager. Ela mantém o mesmo buffer de entrada,
+histórico e atalhos de scroll do terminal em tela cheia, mas o texto é
+refluído visualmente quando a janela é redimensionada ou a taskbar muda de
+posição. O mínimo é 80 colunas por 22 linhas de texto, além do rodapé do
+histórico.
+
+O botão X apenas oculta a janela e remove seu botão da taskbar; o Shell e seu
+histórico continuam ativos. Reabrir pelo Menu Iniciar mostra o mesmo terminal.
+Comandos que abrem Explorer, Settings ou Task Manager preservam a janela do
+Shell e transferem o foco para o novo aplicativo. No modo Clássico, o Shell
+permanece em tela cheia.
+
+`shell_update_hosted_terminal()` é chamado pelo loop do processo Shell para
+consumir alterações pendentes do terminal e pedir uma recomposição única ao
+WM quando a janela estiver visível.
+
 ### Prompt
 
 ```

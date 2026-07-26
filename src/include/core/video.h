@@ -61,4 +61,10 @@ void video_terminal_scroll_home(void);
 void video_terminal_scroll_end(void);
 int  video_terminal_is_scrolled(void);
 
+/* Superficie de terminal composta pelo Window Manager no modo Moderno. */
+void video_terminal_set_hosted(int hosted);
+int  video_terminal_is_hosted(void);
+int  video_terminal_draw(int x, int y, int width, int height);
+int  video_terminal_take_hosted_dirty(void);
+
 #endif

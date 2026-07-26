@@ -105,9 +105,9 @@ implementam gradientes, transparência ou cantos arredondados nesta etapa.
 ## Window Manager (`wm.c`)
 
 O comando `wm` preserva o gerenciador textual no modo Clássico. No modo
-Moderno, ele abre um workspace VESA vazio. Explorer, Settings e Task Manager
-são aplicativos hospedados: seus comandos e ações do Menu Iniciar criam ou
-focalizam uma única janela de cada tipo.
+Moderno, ele abre um workspace VESA vazio. Shell, Explorer, Settings e Task
+Manager são aplicativos hospedados: seus comandos e ações do Menu Iniciar
+criam ou focalizam uma única janela de cada tipo.
 
 ### Estado de renderização
 
@@ -189,7 +189,7 @@ O kernel entrega cliques primeiro à taskbar. Botões de janela da taskbar pedem
 sem foco é focalizada e a janela focalizada é minimizada. Com o WM ativo, seus
 eventos consomem o mouse antes de Desktop e aplicativos.
 
-No modo Moderno, Explorer, Settings e Task Manager reutilizam a interação
+No modo Moderno, Shell, Explorer, Settings e Task Manager reutilizam a interação
 direta do WM: os controles da barra de título têm prioridade, a área livre da
 barra inicia arraste e uma faixa de 8 px nas bordas e cantos inicia
 redimensionamento. A captura termina em `RELEASE`; janelas maximizadas devem
@@ -225,8 +225,9 @@ implícito.
 
 Enquanto estiver aberto, um clique fora do Menu Iniciar apenas o fecha; o
 evento e consumido e nao pode acionar a interface que esteja abaixo dele.
-No workspace moderno, `Shell` encerra o workspace e devolve o terminal, e
-`Desktop` encerra o workspace antes de voltar à área de trabalho.
+No workspace moderno, `Shell` abre ou focaliza a janela singleton do terminal;
+o X da janela apenas a oculta e preserva seu histórico. `Desktop` encerra o
+workspace antes de voltar à área de trabalho.
 
 ```
 ┌─────────────────┐

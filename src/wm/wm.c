@@ -32,6 +32,7 @@ static int wm_active = 0;
 #define WM_GUI_RESIZE_RIGHT 0x02
 #define WM_GUI_RESIZE_TOP 0x04
 #define WM_GUI_RESIZE_BOTTOM 0x08
+#define WM_SCANCODE_EXTENDED 0xE0
 
 typedef enum {
     WM_GUI_CONTROL_CLOSE = 0,
@@ -1113,7 +1114,10 @@ void wm_resize_window(int id, int w, int h) {
 }
 
 int wm_handle_key(uint8_t scancode) {
-    if (!wm_active || (scancode & 0x80)) return WM_RESULT_NONE;
+    if (!wm_active ||
+        ((scancode & 0x80) && scancode != WM_SCANCODE_EXTENDED)) {
+        return WM_RESULT_NONE;
+    }
 
     if (wm_gui_enabled()) {
         if (wm_gui_focused >= 0 &&
@@ -1122,10 +1126,12 @@ int wm_handle_key(uint8_t scancode) {
             wm_gui_dispatching_input = 1;
             wm_gui_windows[wm_gui_focused].app->on_key(scancode);
             wm_gui_dispatching_input = 0;
-            wm_gui_draw_all();
+            if (wm_active && wm_gui_enabled()) wm_gui_draw_all();
         }
         return WM_RESULT_NONE;
     }
+
+    if (scancode == WM_SCANCODE_EXTENDED) return WM_RESULT_NONE;
 
     if (scancode == 0x0F) {
         wm_focus_next();

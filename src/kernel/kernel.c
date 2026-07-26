@@ -174,7 +174,6 @@ static int kernel_handle_taskbar_mouse(mouse_event_t* evt) {
 
     switch (tb_result) {
         case 2:
-            if (hosted_workspace) wm_set_active(0);
             kernel_request_shell_app(IPC_APP_OPEN_SHELL);
             break;
         case 3: kernel_request_shell_app(IPC_APP_OPEN_EXPLORER); break;
@@ -286,6 +285,7 @@ void shell_process_main(void) {
         shell_report_user_test_result();
         shell_report_app_loader_result();
         taskmgr_gui_update();
+        shell_update_hosted_terminal();
     }
 }
 
