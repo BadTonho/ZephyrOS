@@ -11,6 +11,7 @@
 #include "ui/desktop.h"
 #include "ui/filemanager.h"
 #include "ui/settings.h"
+#include "ui/wm.h"
 #include "drivers/ata.h"
 #include "drivers/vesa.h"
 #include "drivers/font.h"
@@ -88,6 +89,7 @@ static int gui_restore_height = TSKMGR_GUI_DEFAULT_HEIGHT;
 static uint32_t gui_last_tick = 0;
 static uint32_t gui_last_metrics_tick = 0;
 static int gui_redraw_pending = 0;
+static int taskmgr_hosted = 0;
 
 extern process_t processes[];
 extern uint32_t process_count;
@@ -100,10 +102,22 @@ static void taskmgr_gui_draw_processes(void);
 static void taskmgr_gui_draw_memory(void);
 static void taskmgr_gui_draw_threads(void);
 static void taskmgr_gui_draw_properties(void);
+static void taskmgr_hosted_draw(int x, int y, int width, int height);
+static int taskmgr_hosted_mouse(mouse_event_t* event, int x, int y,
+                                int width, int height);
+static void taskmgr_hosted_close(void);
 static void taskmgr_gui_copy_text(char* destination, int size, const char* source);
 static void taskmgr_update_cpu_metrics(void);
 static int taskmgr_get_work_area(tb_rect_t* work_area);
 static void taskmgr_clamp_window(void);
+
+static const wm_hosted_app_t taskmgr_hosted_app = {
+    WM_APP_TASKMGR, "ZephyrOS Task Manager", "TaskMgr",
+    TSKMGR_GUI_MIN_WIDTH + 4, TSKMGR_GUI_MIN_HEIGHT + 28,
+    TSKMGR_GUI_DEFAULT_WIDTH + 4, TSKMGR_GUI_DEFAULT_HEIGHT + 28,
+    taskmgr_hosted_draw, taskmgr_gui_handle_key, taskmgr_hosted_mouse,
+    taskmgr_hosted_close
+};
 
 static const char* taskmgr_process_type(const process_t* process);
 static const char* taskmgr_process_state_name(process_state_t state);
@@ -137,6 +151,7 @@ void taskmgr_init(void) {
     gui_last_tick = 0;
     gui_last_metrics_tick = 0;
     gui_redraw_pending = 0;
+    taskmgr_hosted = 0;
 }
 
 void taskmgr_open(void) {
@@ -163,6 +178,10 @@ void taskmgr_open(void) {
 void taskmgr_close(void) {
     int was_open = is_open || gui_open;
 
+    if (taskmgr_hosted) {
+        wm_close_hosted_app(WM_APP_TASKMGR);
+        return;
+    }
     is_open = 0;
     gui_open = 0;
     gui_minimized = 0;
@@ -1529,14 +1548,16 @@ static void taskmgr_gui_draw_properties(void) {
 }
 
 static void taskmgr_gui_draw_window(void) {
-    gui_draw_window_frame((uint32_t)gui_x, (uint32_t)gui_y,
-                          (uint32_t)gui_width, (uint32_t)gui_height,
-                          "ZephyrOS Task Manager", 1);
-    gui_draw_button((uint32_t)(gui_x + gui_width - 40), (uint32_t)(gui_y + 3),
-                    TSKMGR_GUI_CONTROL_SIZE, TSKMGR_GUI_CONTROL_SIZE, "_", 0);
-    gui_draw_button((uint32_t)(gui_x + gui_width - 58), (uint32_t)(gui_y + 3),
-                    TSKMGR_GUI_CONTROL_SIZE, TSKMGR_GUI_CONTROL_SIZE,
-                    gui_maximized ? "R" : "M", 0);
+    if (!taskmgr_hosted) {
+        gui_draw_window_frame((uint32_t)gui_x, (uint32_t)gui_y,
+                              (uint32_t)gui_width, (uint32_t)gui_height,
+                              "ZephyrOS Task Manager", 1);
+        gui_draw_button((uint32_t)(gui_x + gui_width - 40), (uint32_t)(gui_y + 3),
+                        TSKMGR_GUI_CONTROL_SIZE, TSKMGR_GUI_CONTROL_SIZE, "_", 0);
+        gui_draw_button((uint32_t)(gui_x + gui_width - 58), (uint32_t)(gui_y + 3),
+                        TSKMGR_GUI_CONTROL_SIZE, TSKMGR_GUI_CONTROL_SIZE,
+                        gui_maximized ? "R" : "M", 0);
+    }
     taskmgr_gui_draw_tabs();
 
     switch (selected_tab) {
@@ -1557,6 +1578,10 @@ static void taskmgr_gui_draw_window(void) {
 static void taskmgr_gui_draw(void) {
     vesa_mode_t* mode = vesa_get_mode();
 
+    if (taskmgr_hosted) {
+        wm_request_hosted_redraw(WM_APP_TASKMGR);
+        return;
+    }
     if (!gui_open || !mode || !mode->initialized || !vesa_has_backbuffer()) return;
     taskmgr_clamp_window();
     mouse_invalidate_cursor();
@@ -1576,6 +1601,34 @@ static void taskmgr_gui_draw(void) {
     taskmgr_gui_draw_window();
     taskbar_draw();
     vesa_frame_end();
+}
+
+static void taskmgr_hosted_draw(int x, int y, int width, int height) {
+    gui_x = x;
+    gui_y = y;
+    gui_width = width;
+    gui_height = height;
+    taskmgr_gui_draw_window();
+}
+
+static int taskmgr_hosted_mouse(mouse_event_t* event, int x, int y,
+                                int width, int height) {
+    gui_x = x;
+    gui_y = y;
+    gui_width = width;
+    gui_height = height;
+    return taskmgr_gui_handle_mouse(event);
+}
+
+static void taskmgr_hosted_close(void) {
+    is_open = 0;
+    gui_open = 0;
+    gui_minimized = 0;
+    gui_maximized = 0;
+    gui_drag_active = 0;
+    gui_redraw_pending = 0;
+    show_properties = 0;
+    taskmgr_hosted = 0;
 }
 
 static void taskmgr_gui_draw_drag_region(void) {
@@ -1613,13 +1666,14 @@ static void taskmgr_gui_draw_drag_region(void) {
 
 int taskmgr_open_gui(void) {
     vesa_mode_t* mode = vesa_get_mode();
-    tb_rect_t work_area;
+    int result;
 
     if (!recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
         LOG_WARN("TSKMGR", "GUI bloqueada pelo recovery");
         return ERR_UNAVAILABLE;
     }
     if (gui_open) {
+        if (taskmgr_hosted) return wm_register_hosted_app(&taskmgr_hosted_app);
         taskmgr_gui_restore();
         return OK;
     }
@@ -1631,12 +1685,6 @@ int taskmgr_open_gui(void) {
     if (mode->width < TSKMGR_GUI_MIN_WIDTH ||
         mode->height < TSKMGR_GUI_MIN_HEIGHT) {
         LOG_WARN("TSKMGR", "Resolucao insuficiente para a janela grafica");
-        return ERR_OVERFLOW;
-    }
-    if (!taskmgr_get_work_area(&work_area) ||
-        work_area.width < TSKMGR_GUI_MIN_WIDTH ||
-        work_area.height < TSKMGR_GUI_MIN_HEIGHT) {
-        LOG_WARN("TSKMGR", "Area de trabalho insuficiente para a janela grafica");
         return ERR_OVERFLOW;
     }
     if (is_open) taskmgr_close();
@@ -1652,25 +1700,18 @@ int taskmgr_open_gui(void) {
     selected_row = 0;
     scroll_offset = 0;
     show_properties = 0;
-    gui_width = work_area.width < TSKMGR_GUI_DEFAULT_WIDTH ?
-                work_area.width - 24 : TSKMGR_GUI_DEFAULT_WIDTH;
-    gui_height = work_area.height < TSKMGR_GUI_DEFAULT_HEIGHT ?
-                 work_area.height - 24 : TSKMGR_GUI_DEFAULT_HEIGHT;
-    gui_x = work_area.x + (work_area.width - gui_width) / 2;
-    gui_y = work_area.y + 12;
-    gui_restore_x = gui_x;
-    gui_restore_y = gui_y;
-    gui_restore_width = gui_width;
-    gui_restore_height = gui_height;
-    taskmgr_clamp_window();
-    gui_drag_previous_x = gui_x;
-    gui_drag_previous_y = gui_y;
     desktop_set_active(0);
-    taskbar_add_app(TB_APP_TASKMGR, "TaskMgr");
     taskmgr_update_cpu_metrics();
     gui_last_tick = timer_get_ticks();
     gui_last_metrics_tick = gui_last_tick;
-    taskmgr_gui_draw();
+    taskmgr_hosted = 1;
+    wm_set_active(1);
+    result = wm_register_hosted_app(&taskmgr_hosted_app);
+    if (result != OK) {
+        taskmgr_hosted_close();
+        LOG_WARN("TSKMGR", "Workspace nao comporta o Task Manager grafico");
+        return result;
+    }
     LOG_INFO("TSKMGR", "Task Manager grafico aberto");
     return OK;
 }
@@ -1685,6 +1726,10 @@ int taskmgr_is_gui_minimized(void) {
 
 void taskmgr_gui_restore(void) {
     if (!gui_open) return;
+    if (taskmgr_hosted) {
+        wm_register_hosted_app(&taskmgr_hosted_app);
+        return;
+    }
     gui_minimized = 0;
     desktop_set_active(0);
     taskmgr_gui_draw();
@@ -1768,15 +1813,17 @@ void taskmgr_gui_handle_key(uint8_t scancode) {
     int process_indexes[MAX_PROCESSES];
 
     if (!gui_open) return;
-    config_result = taskbar_handle_config_key(scancode);
-    if (config_result) {
-        if (config_result == 9) taskmgr_gui_draw();
-        return;
-    }
-    taskbar_result = taskbar_handle_key(scancode);
-    if (taskbar_result) {
-        taskmgr_gui_handle_taskbar_action(taskbar_result);
-        return;
+    if (!taskmgr_hosted) {
+        config_result = taskbar_handle_config_key(scancode);
+        if (config_result) {
+            if (config_result == 9) taskmgr_gui_draw();
+            return;
+        }
+        taskbar_result = taskbar_handle_key(scancode);
+        if (taskbar_result) {
+            taskmgr_gui_handle_taskbar_action(taskbar_result);
+            return;
+        }
     }
     if (show_properties) {
         if (scancode == 0x01 || scancode == 0x1C) {
@@ -1865,49 +1912,51 @@ int taskmgr_gui_handle_mouse(mouse_event_t* event) {
         !(event->changed & MOUSE_BTN_LEFT)) return 1;
     if (!taskmgr_gui_hit(event->x, event->y, gui_x, gui_y, gui_width, gui_height)) return 1;
 
-    close_x = gui_x + gui_width - 20;
-    maximize_x = gui_x + gui_width - 58;
-    minimize_x = gui_x + gui_width - 40;
-    if (taskmgr_gui_hit(event->x, event->y, close_x, gui_y + 3, 16, 16)) {
-        taskmgr_close();
-        return 1;
-    }
-    if (taskmgr_gui_hit(event->x, event->y, maximize_x, gui_y + 3, 16, 16)) {
-        gui_minimized = 0;
-        if (gui_maximized) {
-            gui_maximized = 0;
-            gui_x = gui_restore_x;
-            gui_y = gui_restore_y;
-            gui_width = gui_restore_width;
-            gui_height = gui_restore_height;
-        } else {
-            tb_rect_t work_area;
-            gui_maximized = 1;
-            gui_restore_x = gui_x;
-            gui_restore_y = gui_y;
-            gui_restore_width = gui_width;
-            gui_restore_height = gui_height;
-            if (!taskmgr_get_work_area(&work_area)) return 1;
-            gui_x = work_area.x;
-            gui_y = work_area.y;
-            gui_width = work_area.width;
-            gui_height = work_area.height;
+    if (!taskmgr_hosted) {
+        close_x = gui_x + gui_width - 20;
+        maximize_x = gui_x + gui_width - 58;
+        minimize_x = gui_x + gui_width - 40;
+        if (taskmgr_gui_hit(event->x, event->y, close_x, gui_y + 3, 16, 16)) {
+            taskmgr_close();
+            return 1;
         }
-        taskmgr_gui_draw();
-        return 1;
-    }
-    if (taskmgr_gui_hit(event->x, event->y, minimize_x, gui_y + 3, 16, 16)) {
-        taskmgr_gui_minimize();
-        return 1;
-    }
-    if (taskmgr_gui_hit(event->x, event->y, gui_x + 2, gui_y + 2,
-                        gui_width - 64, TSKMGR_GUI_TITLE_HEIGHT)) {
-        gui_drag_active = 1;
-        gui_drag_offset_x = event->x - gui_x;
-        gui_drag_offset_y = event->y - gui_y;
-        gui_drag_previous_x = gui_x;
-        gui_drag_previous_y = gui_y;
-        return 1;
+        if (taskmgr_gui_hit(event->x, event->y, maximize_x, gui_y + 3, 16, 16)) {
+            gui_minimized = 0;
+            if (gui_maximized) {
+                gui_maximized = 0;
+                gui_x = gui_restore_x;
+                gui_y = gui_restore_y;
+                gui_width = gui_restore_width;
+                gui_height = gui_restore_height;
+            } else {
+                tb_rect_t work_area;
+                gui_maximized = 1;
+                gui_restore_x = gui_x;
+                gui_restore_y = gui_y;
+                gui_restore_width = gui_width;
+                gui_restore_height = gui_height;
+                if (!taskmgr_get_work_area(&work_area)) return 1;
+                gui_x = work_area.x;
+                gui_y = work_area.y;
+                gui_width = work_area.width;
+                gui_height = work_area.height;
+            }
+            taskmgr_gui_draw();
+            return 1;
+        }
+        if (taskmgr_gui_hit(event->x, event->y, minimize_x, gui_y + 3, 16, 16)) {
+            taskmgr_gui_minimize();
+            return 1;
+        }
+        if (taskmgr_gui_hit(event->x, event->y, gui_x + 2, gui_y + 2,
+                            gui_width - 64, TSKMGR_GUI_TITLE_HEIGHT)) {
+            gui_drag_active = 1;
+            gui_drag_offset_x = event->x - gui_x;
+            gui_drag_offset_y = event->y - gui_y;
+            gui_drag_previous_x = gui_x;
+            gui_drag_previous_y = gui_y;
+            return 1;
+        }
     }
 
     if (taskmgr_gui_hit(event->x, event->y, gui_x + TSKMGR_GUI_MARGIN,

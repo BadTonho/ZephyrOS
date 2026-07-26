@@ -42,6 +42,23 @@ typedef enum {
 
 typedef void (*wm_key_handler_t)(uint8_t scancode);
 typedef void (*wm_redraw_handler_t)(int x, int y, int w, int h);
+typedef int (*wm_mouse_handler_t)(mouse_event_t* event, int x, int y,
+                                  int width, int height);
+typedef void (*wm_close_handler_t)(void);
+
+typedef struct {
+    wm_app_type_t app_type;
+    const char* title;
+    const char* taskbar_label;
+    int min_width;
+    int min_height;
+    int default_width;
+    int default_height;
+    wm_redraw_handler_t on_draw;
+    wm_key_handler_t on_key;
+    wm_mouse_handler_t on_mouse;
+    wm_close_handler_t on_close;
+} wm_hosted_app_t;
 
 typedef struct {
     int id;
@@ -115,6 +132,9 @@ int  wm_handle_mouse(mouse_event_t* event);
 void wm_toggle_window(int id);
 int  wm_is_active(void);
 void wm_set_active(int active);
+int  wm_register_hosted_app(const wm_hosted_app_t* app);
+int  wm_close_hosted_app(wm_app_type_t app_type);
+void wm_request_hosted_redraw(wm_app_type_t app_type);
 
 void wm_update_cpu_stats(void);
 

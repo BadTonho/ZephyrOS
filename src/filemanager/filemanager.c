@@ -7,6 +7,7 @@
 #include "core/memory.h"
 #include "ui/taskbar.h"
 #include "ui/desktop.h"
+#include "ui/wm.h"
 #include "ui/icons.h"
 #include "ui/gui.h"
 #include "core/errors.h"
@@ -20,6 +21,8 @@
 #define FM_MODERN_MARGIN 24
 #define FM_MODERN_MIN_WIDTH 560
 #define FM_MODERN_MIN_HEIGHT 300
+#define FM_MODERN_DEFAULT_WIDTH 720
+#define FM_MODERN_DEFAULT_HEIGHT 500
 #define FM_MODERN_SIDE_WIDTH 184
 #define FM_MODERN_TITLE_HEIGHT 26
 #define FM_MODERN_CONTENT_OFFSET 30
@@ -42,8 +45,14 @@ static int rename_mode = 0;
 static int confirm_delete = 0;
 static int create_dir_mode = 0;
 static int create_file_mode = 0;
+static int fm_help_mode = 0;
 static int fm_fallback_logged = 0;
 static char old_name[FM_NAME_LEN];
+static int fm_hosted = 0;
+static int fm_hosted_x = 0;
+static int fm_hosted_y = 0;
+static int fm_hosted_width = 0;
+static int fm_hosted_height = 0;
 
 
 static const char* side_pane_names[] = {
@@ -87,6 +96,15 @@ static void fm_redraw_file_view(void);
 static void fm_modern_draw_input_dialog(void);
 static void fm_modern_draw_help(void);
 static void fm_modern_draw_view_file(void);
+static void fm_hosted_draw(int x, int y, int width, int height);
+static void fm_hosted_close(void);
+
+static const wm_hosted_app_t fm_hosted_app = {
+    WM_APP_EXPLORER, "ZephyrOS Explorer", "Explorer",
+    FM_MODERN_MIN_WIDTH + 4, FM_MODERN_MIN_HEIGHT + 28,
+    FM_MODERN_DEFAULT_WIDTH + 4, FM_MODERN_DEFAULT_HEIGHT + 28,
+    fm_hosted_draw, fm_handle_key, 0, fm_hosted_close
+};
 
 static void int_to_str(uint32_t num, char* buf) {
     int i = 0;
@@ -226,6 +244,14 @@ static int fm_modern_get_layout(int* x, int* y, int* width, int* height) {
     tb_rect_t work_area;
 
     if (!x || !y || !width || !height) return 0;
+    if (fm_hosted) {
+        *x = fm_hosted_x;
+        *y = fm_hosted_y;
+        *width = fm_hosted_width;
+        *height = fm_hosted_height;
+        return *width >= FM_MODERN_MIN_WIDTH &&
+               *height >= FM_MODERN_MIN_HEIGHT;
+    }
     if (!mode || !mode->initialized || !vesa_has_backbuffer()) return 0;
 
     work_area.x = 0;
@@ -721,16 +747,22 @@ static void fm_draw_modern_all(void) {
         return;
     }
 
+    if (fm_help_mode) {
+        fm_modern_draw_help();
+        return;
+    }
     if (input_mode == 2) {
         fm_modern_draw_view_file();
         return;
     }
 
-    mouse_invalidate_cursor();
-    background.raw = GUI_COLOR_BG;
-    vesa_clear(background);
-    gui_draw_window_frame((uint32_t)x, (uint32_t)y, (uint32_t)width,
-                          (uint32_t)height, "ZephyrOS Explorer", 1);
+    if (!fm_hosted) {
+        mouse_invalidate_cursor();
+        background.raw = GUI_COLOR_BG;
+        vesa_clear(background);
+        gui_draw_window_frame((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                              (uint32_t)height, "ZephyrOS Explorer", 1);
+    }
 
     content_x = x + FM_MODERN_INSET;
     content_y = y + FM_MODERN_CONTENT_OFFSET;
@@ -751,7 +783,7 @@ static void fm_draw_modern_all(void) {
                           content_y + content_height + FM_MODERN_PANE_GAP,
                           content_width);
     if (input_mode == 1) fm_modern_draw_input_dialog();
-    taskbar_draw();
+    if (!fm_hosted) taskbar_draw();
 }
 
 static void fm_modern_draw_input_dialog(void) {
@@ -824,19 +856,22 @@ static void fm_modern_draw_help(void) {
     int line_count = sizeof(lines) / sizeof(lines[0]);
 
     if (!fm_modern_get_layout(&x, &y, &width, &height)) return;
-    mouse_invalidate_cursor();
-    vesa_color_t background;
-    background.raw = GUI_COLOR_BG;
-    vesa_clear(background);
-    gui_draw_window_frame((uint32_t)x, (uint32_t)y, (uint32_t)width,
-                          (uint32_t)height, "Ajuda do Explorer", 1);
+    if (!fm_hosted) {
+        vesa_color_t background;
+
+        mouse_invalidate_cursor();
+        background.raw = GUI_COLOR_BG;
+        vesa_clear(background);
+        gui_draw_window_frame((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                              (uint32_t)height, "Ajuda do Explorer", 1);
+    }
     for (int i = 0; i < line_count; i++) {
         gui_draw_text((uint32_t)(x + 24), (uint32_t)(y + 54 + i * 24),
                       lines[i], GUI_COLOR_TEXT);
     }
     gui_draw_text((uint32_t)(x + 24), (uint32_t)(y + height - 34),
                   "Pressione Esc para voltar.", GUI_COLOR_TITLE_BG);
-    taskbar_draw();
+    if (!fm_hosted) taskbar_draw();
 }
 
 static void fm_modern_draw_view_file(void) {
@@ -854,22 +889,25 @@ static void fm_modern_draw_view_file(void) {
     fm_file_entry_t* file;
 
     if (!fm_modern_get_layout(&x, &y, &width, &height)) return;
-    mouse_invalidate_cursor();
-    vesa_color_t background;
-    background.raw = GUI_COLOR_BG;
-    vesa_clear(background);
-    gui_draw_window_frame((uint32_t)x, (uint32_t)y, (uint32_t)width,
-                          (uint32_t)height, "Visualizando arquivo", 1);
+    if (!fm_hosted) {
+        vesa_color_t background;
+
+        mouse_invalidate_cursor();
+        background.raw = GUI_COLOR_BG;
+        vesa_clear(background);
+        gui_draw_window_frame((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                              (uint32_t)height, "Visualizando arquivo", 1);
+    }
 
     if (state.selected < 0 || state.selected >= state.file_count) {
-        taskbar_draw();
+        if (!fm_hosted) taskbar_draw();
         return;
     }
     file = &state.files[state.selected];
     if (file->is_dir) {
         gui_draw_text((uint32_t)(x + 24), (uint32_t)(y + 54),
                       "Nao e possivel visualizar pastas.", GUI_COLOR_TEXT);
-        taskbar_draw();
+        if (!fm_hosted) taskbar_draw();
         return;
     }
 
@@ -878,7 +916,7 @@ static void fm_modern_draw_view_file(void) {
         LOG_ERROR("FM", "Falha ao alocar buffer da visualizacao");
         gui_draw_text((uint32_t)(x + 24), (uint32_t)(y + 54),
                       "Erro: sem memoria!", 0x00C00000);
-        taskbar_draw();
+        if (!fm_hosted) taskbar_draw();
         return;
     }
 
@@ -887,7 +925,7 @@ static void fm_modern_draw_view_file(void) {
                       "Erro: caminho muito longo.", 0x00C00000);
         kfree(buffer);
         buffer = 0;
-        taskbar_draw();
+        if (!fm_hosted) taskbar_draw();
         return;
     }
 
@@ -898,7 +936,7 @@ static void fm_modern_draw_view_file(void) {
                       "Erro ao ler o arquivo.", 0x00C00000);
         kfree(buffer);
         buffer = 0;
-        taskbar_draw();
+        if (!fm_hosted) taskbar_draw();
         return;
     }
     if (bytes == 0) {
@@ -906,7 +944,7 @@ static void fm_modern_draw_view_file(void) {
                       "(arquivo vazio)", GUI_COLOR_TEXT);
         kfree(buffer);
         buffer = 0;
-        taskbar_draw();
+        if (!fm_hosted) taskbar_draw();
         return;
     }
 
@@ -941,14 +979,13 @@ static void fm_modern_draw_view_file(void) {
                   "Pressione Esc para voltar.", GUI_COLOR_TITLE_BG);
     kfree(buffer);
     buffer = 0;
-    taskbar_draw();
+    if (!fm_hosted) taskbar_draw();
 }
 
 static void fm_draw_help(void) {
     if (state.mode == FM_MODE_MODERN) {
-        vesa_frame_begin();
-        fm_modern_draw_help();
-        vesa_frame_end();
+        fm_help_mode = 1;
+        fm_draw_all();
         return;
     }
 
@@ -1025,6 +1062,10 @@ static void fm_draw_confirm_delete(void) {
 static void fm_draw_view_file(void) {
     if (state.mode == FM_MODE_MODERN) {
         input_mode = 2;
+        if (fm_hosted) {
+            fm_draw_all();
+            return;
+        }
         vesa_frame_begin();
         fm_modern_draw_view_file();
         vesa_frame_end();
@@ -1128,6 +1169,10 @@ static void fm_draw_classic_all(void) {
 }
 
 static void fm_draw_all(void) {
+    if (fm_hosted) {
+        wm_request_hosted_redraw(WM_APP_EXPLORER);
+        return;
+    }
     fm_select_mode();
 
     if (state.mode == FM_MODE_MODERN) {
@@ -1142,6 +1187,21 @@ static void fm_draw_all(void) {
 
 void fm_draw(void) {
     fm_draw_all();
+}
+
+static void fm_hosted_draw(int x, int y, int width, int height) {
+    fm_hosted_x = x;
+    fm_hosted_y = y;
+    fm_hosted_width = width;
+    fm_hosted_height = height;
+    fm_draw_modern_all();
+}
+
+static void fm_hosted_close(void) {
+    fm_hosted = 0;
+    state.running = 0;
+    fm_help_mode = 0;
+    input_mode = 0;
 }
 
 static void fm_redraw_file_view(void) {
@@ -1177,6 +1237,7 @@ void fm_init(void) {
     input_mode = 0;
     rename_mode = 0;
     confirm_delete = 0;
+    fm_help_mode = 0;
     state.mode = FM_MODE_CLASSIC;
     state.focus_pane = 1;
     state.side_selected = 0;
@@ -1195,12 +1256,33 @@ void fm_open(void) {
         return;
     }
 
+    if (desktop_get_mode() == DESKTOP_MODE_MODERN && fm_hosted) {
+        wm_set_active(1);
+        wm_register_hosted_app(&fm_hosted_app);
+        return;
+    }
+
     fm_init();
+    if (desktop_get_mode() == DESKTOP_MODE_MODERN) {
+        desktop_set_active(0);
+        wm_set_active(1);
+        fm_hosted = 1;
+        state.mode = FM_MODE_MODERN;
+        if (wm_register_hosted_app(&fm_hosted_app) == OK) return;
+        fm_hosted = 0;
+        state.mode = FM_MODE_CLASSIC;
+        wm_set_active(0);
+        LOG_WARN("FM", "Workspace indisponivel; usando Explorer classico");
+    }
     taskbar_add_app(TB_APP_EXPLORER, "Explorer");
     fm_draw_all();
 }
 
 void fm_close(void) {
+    if (fm_hosted) {
+        wm_close_hosted_app(WM_APP_EXPLORER);
+        return;
+    }
     state.running = 0;
     taskbar_remove_app(TB_APP_EXPLORER);
     desktop_set_active(1);
@@ -1232,9 +1314,10 @@ static int alt_pressed = 0;
 void fm_handle_key(uint8_t scancode) {
     int taskbar_result;
 
-    if (taskbar_handle_config_key(scancode)) return;
-    taskbar_result = taskbar_handle_key(scancode);
-    if (taskbar_result) {
+    taskbar_result = 0;
+    if (!fm_hosted && taskbar_handle_config_key(scancode)) return;
+    if (!fm_hosted) taskbar_result = taskbar_handle_key(scancode);
+    if (!fm_hosted && taskbar_result) {
         if (taskbar_result == 2) {
             fm_close();
             shell_handle_app_request(IPC_APP_OPEN_SHELL);
@@ -1264,6 +1347,21 @@ void fm_handle_key(uint8_t scancode) {
     }
 
     if (scancode & 0x80) return;
+
+    if (fm_help_mode) {
+        if (scancode == 0x01) {
+            fm_help_mode = 0;
+            fm_draw_all();
+        }
+        return;
+    }
+    if (input_mode == 2) {
+        if (scancode == 0x01) {
+            input_mode = 0;
+            fm_draw_all();
+        }
+        return;
+    }
 
     // --- Modo de endereco (Ctrl+L) ---
     if (state.address_mode) {
@@ -1736,6 +1834,7 @@ void fm_handle_key(uint8_t scancode) {
 
 void fm_run(void) {
     fm_open();
+    if (fm_hosted) return;
     ipc_msg_t msg;
     while (state.running) {
         if (ipc_receive(&msg)) {

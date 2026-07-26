@@ -1051,15 +1051,21 @@ static int shell_prepare_filemanager(void) {
 }
 
 void shell_handle_app_request(uint32_t request) {
-    if (taskmgr_is_gui_open() && request != IPC_APP_OPEN_TASKMANAGER_GUI) {
-        taskmgr_close();
-    }
-    if (settings_is_open() && request != IPC_APP_OPEN_SETTINGS) {
-        settings_close();
+    int hosted_workspace = desktop_get_mode() == DESKTOP_MODE_MODERN &&
+                           wm_is_active();
+
+    if (!hosted_workspace) {
+        if (taskmgr_is_gui_open() && request != IPC_APP_OPEN_TASKMANAGER_GUI) {
+            taskmgr_close();
+        }
+        if (settings_is_open() && request != IPC_APP_OPEN_SETTINGS) {
+            settings_close();
+        }
     }
 
     switch ((ipc_app_request_t)request) {
         case IPC_APP_OPEN_SHELL:
+            if (wm_is_active()) wm_set_active(0);
             desktop_set_active(0);
             if (!video_terminal_is_active()) {
                 shell_reset_input();
@@ -1081,7 +1087,14 @@ void shell_handle_app_request(uint32_t request) {
             if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
                 shell_suspend_terminal();
                 desktop_set_active(0);
-                taskmgr_run();
+                if (desktop_get_mode() == DESKTOP_MODE_MODERN &&
+                    taskmgr_open_gui() != OK) {
+                    wm_set_active(0);
+                    LOG_WARN("SHELL", "GUI do Task Manager indisponivel; usando TUI");
+                    taskmgr_run();
+                } else if (desktop_get_mode() != DESKTOP_MODE_MODERN) {
+                    taskmgr_run();
+                }
             } else {
                 video_print("Erro: Task Manager indisponivel.\n", 0x0C);
             }
@@ -1094,11 +1107,13 @@ void shell_handle_app_request(uint32_t request) {
             shell_suspend_terminal();
             desktop_set_active(0);
             if (taskmgr_open_gui() != OK) {
+                wm_set_active(0);
                 LOG_WARN("SHELL", "GUI do Task Manager indisponivel; usando TUI");
                 taskmgr_run();
             }
             break;
         case IPC_APP_OPEN_DESKTOP:
+            if (wm_is_active()) wm_set_active(0);
             shell_suspend_terminal();
             video_clear();
             desktop_set_active(1);
@@ -3045,16 +3060,6 @@ void shell_handle_key(uint8_t scancode) {
         return;
     }
 
-    if (taskmgr_is_gui_open()) {
-        taskmgr_gui_handle_key(scancode);
-        return;
-    }
-
-    if (settings_is_open()) {
-        settings_handle_key(scancode);
-        return;
-    }
-
     if (wm_is_active()) {
         if (wm_handle_key(scancode) == WM_RESULT_EXIT) {
             wm_set_active(0);
@@ -3063,6 +3068,16 @@ void shell_handle_key(uint8_t scancode) {
             shell_print_prompt();
             taskbar_draw();
         }
+        return;
+    }
+
+    if (taskmgr_is_gui_open()) {
+        taskmgr_gui_handle_key(scancode);
+        return;
+    }
+
+    if (settings_is_open()) {
+        settings_handle_key(scancode);
         return;
     }
 
@@ -3259,7 +3274,15 @@ int shell_process_command(const char* input) {
     } else if (kstrcmp(cmd, "taskmgr") == 0) {
         if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
             shell_suspend_terminal();
-            taskmgr_run();
+            if (desktop_get_mode() == DESKTOP_MODE_MODERN) {
+                if (taskmgr_open_gui() != OK) {
+                    wm_set_active(0);
+                    LOG_WARN("SHELL", "GUI do Task Manager indisponivel; usando TUI");
+                    taskmgr_run();
+                }
+            } else {
+                taskmgr_run();
+            }
         } else {
             video_print("Erro: Task Manager indisponivel.\n", 0x0C);
         }

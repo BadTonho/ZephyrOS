@@ -133,6 +133,7 @@ static void kernel_retry_shell_request(void) {
 static int kernel_handle_taskbar_mouse(mouse_event_t* evt) {
     int tb_result;
     int menu_was_open;
+    int hosted_workspace;
 
     if (!evt || evt->event != MOUSE_EVENT_PRESS ||
         !(evt->changed & MOUSE_BTN_LEFT)) return 0;
@@ -146,29 +147,36 @@ static int kernel_handle_taskbar_mouse(mouse_event_t* evt) {
         return 1;
     }
 
-    if (taskmgr_is_gui_open() && tb_result >= 2 && tb_result <= 8) {
-        if (tb_result == 4) {
-            taskmgr_gui_restore();
-            return 1;
+    hosted_workspace = wm_is_active() &&
+                       desktop_get_mode() == DESKTOP_MODE_MODERN;
+    if (!hosted_workspace) {
+        if (taskmgr_is_gui_open() && tb_result >= 2 && tb_result <= 8) {
+            if (tb_result == 4) {
+                taskmgr_gui_restore();
+                return 1;
+            }
+            taskmgr_close();
+        } else if (taskmgr_is_open() && tb_result >= 2 && tb_result <= 8) {
+            if (tb_result == 4) {
+                taskmgr_refresh();
+                return 1;
+            }
+            taskmgr_close();
         }
-        taskmgr_close();
-    } else if (taskmgr_is_open() && tb_result >= 2 && tb_result <= 8) {
-        if (tb_result == 4) {
-            taskmgr_refresh();
-            return 1;
-        }
-        taskmgr_close();
-    }
 
-    if (settings_is_open() && tb_result >= 2 && tb_result <= 8) {
-        settings_close();
-    }
-    if (wm_is_active() && tb_result >= 2 && tb_result <= 8) {
-        wm_set_active(0);
+        if (settings_is_open() && tb_result >= 2 && tb_result <= 8) {
+            settings_close();
+        }
+        if (wm_is_active() && tb_result >= 2 && tb_result <= 8) {
+            wm_set_active(0);
+        }
     }
 
     switch (tb_result) {
-        case 2: kernel_request_shell_app(IPC_APP_OPEN_SHELL); break;
+        case 2:
+            if (hosted_workspace) wm_set_active(0);
+            kernel_request_shell_app(IPC_APP_OPEN_SHELL);
+            break;
         case 3: kernel_request_shell_app(IPC_APP_OPEN_EXPLORER); break;
         case 4: kernel_request_shell_app(IPC_APP_OPEN_TASKMANAGER_GUI); break;
         case 5:
@@ -179,7 +187,10 @@ static int kernel_handle_taskbar_mouse(mouse_event_t* evt) {
             asm volatile("outw %0, %1" : : "a"((uint16_t)0x2000),
                          "Nd"((uint16_t)0xB004));
             break;
-        case 7: kernel_request_shell_app(IPC_APP_OPEN_DESKTOP); break;
+        case 7:
+            if (hosted_workspace) wm_set_active(0);
+            kernel_request_shell_app(IPC_APP_OPEN_DESKTOP);
+            break;
         case 8: kernel_request_shell_app(IPC_APP_OPEN_SETTINGS); break;
         case TB_ACTION_WINDOW: {
             int window_id = taskbar_take_window_request();

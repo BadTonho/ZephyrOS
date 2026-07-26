@@ -59,6 +59,7 @@ static int settings_gui_x = 0;
 static int settings_gui_y = 0;
 static int settings_gui_width = SETTINGS_MODERN_DEFAULT_WIDTH;
 static int settings_gui_height = SETTINGS_MODERN_DEFAULT_HEIGHT;
+static int settings_hosted = 0;
 
 static settings_page_t categories[SETTINGS_CAT_COUNT];
 
@@ -82,6 +83,19 @@ static void settings_apply_category(void);
 static void settings_execute_selected_action(void);
 static void settings_clear_overlay(void);
 static void settings_update_taskbar_position_options(void);
+static void settings_hosted_draw(int x, int y, int width, int height);
+static void settings_hosted_key(uint8_t scancode);
+static int settings_hosted_mouse(mouse_event_t* event, int x, int y,
+                                 int width, int height);
+static void settings_hosted_close(void);
+
+static const wm_hosted_app_t settings_hosted_app = {
+    WM_APP_SETTINGS, "Configuracoes do ZephyrOS", "Settings",
+    SETTINGS_MODERN_MIN_WIDTH + 4, SETTINGS_MODERN_MIN_HEIGHT + 28,
+    SETTINGS_MODERN_DEFAULT_WIDTH + 4, SETTINGS_MODERN_DEFAULT_HEIGHT + 28,
+    settings_hosted_draw, settings_hosted_key, settings_hosted_mouse,
+    settings_hosted_close
+};
 
 static void init_categories(void) {
     for (int i = 0; i < SETTINGS_CAT_COUNT; i++) {
@@ -197,6 +211,10 @@ static int settings_modern_layout(void) {
     vesa_mode_t* mode = vesa_get_mode();
     tb_rect_t work_area;
 
+    if (settings_hosted) {
+        return settings_gui_width >= SETTINGS_MODERN_MIN_WIDTH &&
+               settings_gui_height >= SETTINGS_MODERN_MIN_HEIGHT;
+    }
     if (!mode || !mode->initialized || !vesa_has_backbuffer()) return 0;
     if (mode->width < SETTINGS_MODERN_MIN_WIDTH ||
         mode->height < SETTINGS_MODERN_MIN_HEIGHT) return 0;
@@ -256,6 +274,7 @@ void settings_init(void) {
     editing_option = 0;
     settings_mode = SETTINGS_MODE_CLASSIC;
     settings_dialog = SETTINGS_DIALOG_NONE;
+    settings_hosted = 0;
     init_categories();
 }
 
@@ -263,6 +282,12 @@ void settings_open(void) {
     if (!recovery_is_enabled(RECOVERY_COMPONENT_SETTINGS)) {
         LOG_WARN("SETTINGS", "Configuracoes indisponiveis; abertura ignorada");
         settings_active = 0;
+        return;
+    }
+
+    if (desktop_get_mode() == DESKTOP_MODE_MODERN && settings_hosted) {
+        wm_set_active(1);
+        wm_register_hosted_app(&settings_hosted_app);
         return;
     }
 
@@ -275,11 +300,28 @@ void settings_open(void) {
     selected_option = 0;
     editing_option = 0;
     settings_dialog = SETTINGS_DIALOG_NONE;
-    settings_select_mode();
+    if (desktop_get_mode() == DESKTOP_MODE_MODERN) {
+        desktop_set_active(0);
+        wm_set_active(1);
+        settings_hosted = 1;
+        settings_mode = SETTINGS_MODE_MODERN;
+        settings_update_taskbar_position_options();
+        if (wm_register_hosted_app(&settings_hosted_app) == OK) return;
+        settings_hosted = 0;
+        settings_mode = SETTINGS_MODE_CLASSIC;
+        wm_set_active(0);
+        LOG_WARN("SETTINGS", "Workspace indisponivel; usando Settings classico");
+    } else {
+        settings_select_mode();
+    }
     settings_draw();
 }
 
 void settings_close(void) {
+    if (settings_hosted) {
+        wm_close_hosted_app(WM_APP_SETTINGS);
+        return;
+    }
     settings_active = 0;
     settings_clear_overlay();
     desktop_set_active(1);
@@ -341,6 +383,10 @@ static void settings_draw_classic(void) {
 void settings_draw(void) {
     vesa_mode_t* mode = vesa_get_mode();
 
+    if (settings_hosted) {
+        wm_request_hosted_redraw(WM_APP_SETTINGS);
+        return;
+    }
     if (settings_mode == SETTINGS_MODE_MODERN &&
         (!mode || !mode->initialized || !vesa_has_backbuffer())) {
         LOG_WARN("SETTINGS", "Backbuffer indisponivel; retornando para TUI");
@@ -882,12 +928,15 @@ static void settings_modern_draw(void) {
     if (!settings_active || settings_mode != SETTINGS_MODE_MODERN ||
         !mode || !mode->initialized || !vesa_has_backbuffer()) return;
 
-    mouse_invalidate_cursor();
-    vesa_frame_begin();
-    vesa_clear(settings_gui_color(GUI_COLOR_BG));
-    gui_draw_window_frame((uint32_t)settings_gui_x, (uint32_t)settings_gui_y,
-                          (uint32_t)settings_gui_width, (uint32_t)settings_gui_height,
-                          "Configuracoes do ZephyrOS", 1);
+    if (!settings_hosted) {
+        mouse_invalidate_cursor();
+        vesa_frame_begin();
+        vesa_clear(settings_gui_color(GUI_COLOR_BG));
+        gui_draw_window_frame((uint32_t)settings_gui_x, (uint32_t)settings_gui_y,
+                              (uint32_t)settings_gui_width,
+                              (uint32_t)settings_gui_height,
+                              "Configuracoes do ZephyrOS", 1);
+    }
 
     if (icon_editor_active) {
         settings_gui_draw_icon_editor();
@@ -896,8 +945,37 @@ static void settings_modern_draw(void) {
     } else {
         settings_draw_modern_main();
     }
-    taskbar_draw();
-    vesa_frame_end();
+    if (!settings_hosted) {
+        taskbar_draw();
+        vesa_frame_end();
+    }
+}
+
+static void settings_hosted_draw(int x, int y, int width, int height) {
+    settings_gui_x = x;
+    settings_gui_y = y;
+    settings_gui_width = width;
+    settings_gui_height = height;
+    settings_modern_draw();
+}
+
+static void settings_hosted_key(uint8_t scancode) {
+    settings_handle_key(scancode);
+}
+
+static int settings_hosted_mouse(mouse_event_t* event, int x, int y,
+                                 int width, int height) {
+    settings_gui_x = x;
+    settings_gui_y = y;
+    settings_gui_width = width;
+    settings_gui_height = height;
+    return settings_handle_mouse(event);
+}
+
+static void settings_hosted_close(void) {
+    settings_hosted = 0;
+    settings_active = 0;
+    settings_clear_overlay();
 }
 
 static void settings_execute_selected_action(void) {
@@ -1104,7 +1182,8 @@ int settings_handle_mouse(mouse_event_t* event) {
     if (event->event != MOUSE_EVENT_PRESS ||
         !(event->changed & MOUSE_BTN_LEFT)) return 1;
 
-    if (settings_gui_hit(event->x, event->y, settings_gui_x + settings_gui_width - 20,
+    if (!settings_hosted &&
+        settings_gui_hit(event->x, event->y, settings_gui_x + settings_gui_width - 20,
                          settings_gui_y + 3, 16, 16)) {
         settings_close();
         return 1;

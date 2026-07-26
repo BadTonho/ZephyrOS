@@ -16,16 +16,17 @@
 static wm_manager_t wm;
 static int wm_active = 0;
 
-#define WM_GUI_WINDOW_COUNT 2
+#define WM_GUI_WINDOW_COUNT WM_MAX_WINDOWS
 #define WM_GUI_ID_BASE 100
 #define WM_GUI_MARGIN 24
 #define WM_GUI_MIN_WIDTH 180
 #define WM_GUI_MIN_HEIGHT 128
-#define WM_GUI_DEFAULT_WIDTH 360
-#define WM_GUI_DEFAULT_HEIGHT 240
 #define WM_GUI_TITLE_HEIGHT 24
 #define WM_GUI_CONTROL_SIZE 16
 #define WM_GUI_CONTROL_GAP 2
+#define WM_GUI_FRAME_INSET 2
+#define WM_GUI_CONTENT_TOP (WM_GUI_FRAME_INSET + WM_GUI_TITLE_HEIGHT)
+#define WM_GUI_CONTENT_BOTTOM WM_GUI_FRAME_INSET
 #define WM_GUI_RESIZE_ZONE 8
 #define WM_GUI_RESIZE_LEFT 0x01
 #define WM_GUI_RESIZE_RIGHT 0x02
@@ -40,7 +41,7 @@ typedef enum {
 
 typedef struct {
     int id;
-    const char* title;
+    const wm_hosted_app_t* app;
     int x;
     int y;
     int width;
@@ -69,6 +70,7 @@ static int wm_gui_capture_height = 0;
 static int wm_gui_drag_offset_x = 0;
 static int wm_gui_drag_offset_y = 0;
 static int wm_gui_resize_edges = 0;
+static int wm_gui_dispatching_input = 0;
 
 static int wm_gui_enabled(void);
 static int wm_gui_get_work_area(tb_rect_t* work_area);
@@ -79,9 +81,13 @@ static void wm_gui_focus(int index);
 static void wm_gui_focus_next(void);
 static void wm_gui_minimize(int index);
 static void wm_gui_maximize_or_restore(int index);
-static void wm_gui_close(int index);
+static void wm_gui_close(int index, int notify_app);
 static void wm_gui_clear_interaction(void);
 static int wm_gui_handle_mouse(mouse_event_t* event);
+static int wm_gui_find_app(wm_app_type_t app_type);
+static int wm_gui_window_min_width(const wm_gui_window_t* window);
+static int wm_gui_window_min_height(const wm_gui_window_t* window);
+static void wm_gui_constrain_window(wm_gui_window_t* window);
 
 static int wm_gui_enabled(void) {
     vesa_mode_t* mode = vesa_get_mode();
@@ -100,6 +106,51 @@ static int wm_gui_get_work_area(tb_rect_t* work_area) {
     work_area->height = mode->height;
     taskbar_get_work_area(work_area);
     return work_area->width > 0 && work_area->height > 0;
+}
+
+static int wm_gui_find_app(wm_app_type_t app_type) {
+    for (int i = 0; i < wm_gui_window_count; i++) {
+        if (wm_gui_windows[i].app &&
+            wm_gui_windows[i].app->app_type == app_type) return i;
+    }
+    return -1;
+}
+
+static int wm_gui_window_min_width(const wm_gui_window_t* window) {
+    if (window->app && window->app->min_width > WM_GUI_MIN_WIDTH) {
+        return window->app->min_width;
+    }
+    return WM_GUI_MIN_WIDTH;
+}
+
+static int wm_gui_window_min_height(const wm_gui_window_t* window) {
+    if (window->app && window->app->min_height > WM_GUI_MIN_HEIGHT) {
+        return window->app->min_height;
+    }
+    return WM_GUI_MIN_HEIGHT;
+}
+
+static void wm_gui_constrain_window(wm_gui_window_t* window) {
+    tb_rect_t work_area;
+    int max_x;
+    int max_y;
+
+    if (!window || !wm_gui_get_work_area(&work_area)) return;
+    if (window->state == WM_STATE_MAXIMIZED) {
+        window->x = work_area.x;
+        window->y = work_area.y;
+        window->width = work_area.width;
+        window->height = work_area.height;
+        return;
+    }
+    if (window->width > work_area.width) window->width = work_area.width;
+    if (window->height > work_area.height) window->height = work_area.height;
+    max_x = work_area.x + work_area.width - window->width;
+    max_y = work_area.y + work_area.height - window->height;
+    if (window->x < work_area.x) window->x = work_area.x;
+    if (window->x > max_x) window->x = max_x;
+    if (window->y < work_area.y) window->y = work_area.y;
+    if (window->y > max_y) window->y = max_y;
 }
 
 static void wm_gui_sync_taskbar(void) {
@@ -137,54 +188,17 @@ static void wm_gui_focus_next(void) {
 }
 
 static void wm_gui_reset(void) {
-    tb_rect_t work_area;
-    int width;
-    int height;
-
     wm_gui_clear_interaction();
-    if (!wm_gui_get_work_area(&work_area)) {
-        LOG_ERROR("WM", "Area de trabalho grafica indisponivel");
-        return;
-    }
-
+    wm_gui_dispatching_input = 0;
     for (int i = 0; i < WM_GUI_WINDOW_COUNT; i++) {
-        taskbar_remove_window(WM_GUI_ID_BASE + i);
+        taskbar_remove_window(wm_gui_windows[i].id);
+        wm_gui_windows[i].app = 0;
+        wm_gui_windows[i].visible = 0;
+        wm_gui_windows[i].focused = 0;
     }
-    width = work_area.width < WM_GUI_DEFAULT_WIDTH + WM_GUI_MARGIN * 2 ?
-            work_area.width - WM_GUI_MARGIN * 2 : WM_GUI_DEFAULT_WIDTH;
-    height = work_area.height < WM_GUI_DEFAULT_HEIGHT + WM_GUI_MARGIN * 2 ?
-             work_area.height - WM_GUI_MARGIN * 2 : WM_GUI_DEFAULT_HEIGHT;
-    if (width < WM_GUI_MIN_WIDTH) width = WM_GUI_MIN_WIDTH;
-    if (height < WM_GUI_MIN_HEIGHT) height = WM_GUI_MIN_HEIGHT;
-    if (width > work_area.width) width = work_area.width;
-    if (height > work_area.height) height = work_area.height;
-
-    wm_gui_window_count = WM_GUI_WINDOW_COUNT;
+    wm_gui_window_count = 0;
     wm_gui_focused = -1;
     wm_gui_z_counter = 0;
-    for (int i = 0; i < wm_gui_window_count; i++) {
-        wm_gui_window_t* window = &wm_gui_windows[i];
-        window->id = WM_GUI_ID_BASE + i;
-        window->title = i == 0 ? "Janela de demonstracao" : "Monitor de janelas";
-        window->x = i == 0 ? work_area.x + WM_GUI_MARGIN :
-                    work_area.x + work_area.width - width - WM_GUI_MARGIN;
-        window->y = i == 0 ? work_area.y + WM_GUI_MARGIN :
-                    work_area.y + work_area.height - height - WM_GUI_MARGIN;
-        if (window->x < work_area.x) window->x = work_area.x;
-        if (window->y < work_area.y) window->y = work_area.y;
-        window->width = width;
-        window->height = height;
-        window->restore_x = window->x;
-        window->restore_y = window->y;
-        window->restore_width = width;
-        window->restore_height = height;
-        window->state = WM_STATE_NORMAL;
-        window->visible = 1;
-        window->focused = 0;
-        window->z_order = wm_gui_z_counter++;
-        taskbar_add_window(window->id, i == 0 ? "Demo" : "Monitor");
-    }
-    wm_gui_focus(wm_gui_window_count - 1);
 }
 
 static vesa_color_t wm_gui_color(uint32_t raw) {
@@ -245,6 +259,13 @@ static int wm_gui_point_in_title_bar(const wm_gui_window_t* window, int x, int y
            y < window->y + 2 + WM_GUI_TITLE_HEIGHT;
 }
 
+static int wm_gui_point_in_content(const wm_gui_window_t* window, int x, int y) {
+    return x >= window->x + WM_GUI_FRAME_INSET &&
+           x < window->x + window->width - WM_GUI_FRAME_INSET &&
+           y >= window->y + WM_GUI_CONTENT_TOP &&
+           y < window->y + window->height - WM_GUI_CONTENT_BOTTOM;
+}
+
 static void wm_gui_draw_window(const wm_gui_window_t* window) {
     vesa_color_t title_color = wm_gui_color(window->focused ?
                                                GUI_COLOR_TITLE_BG : 0x00606060);
@@ -259,7 +280,7 @@ static void wm_gui_draw_window(const wm_gui_window_t* window) {
     title_x = window->x + (wm.config.btn_position == WM_BTNS_LEFT ? 64 : 10);
     if (wm.config.show_title_text) {
         gui_draw_text((uint32_t)title_x, (uint32_t)(window->y + 6),
-                      window->title, GUI_COLOR_TEXT_W);
+                      window->app->title, GUI_COLOR_TEXT_W);
     }
     for (int i = 0; i < 3; i++) {
         tb_rect_t rect;
@@ -271,12 +292,13 @@ static void wm_gui_draw_window(const wm_gui_window_t* window) {
         gui_draw_button((uint32_t)rect.x, (uint32_t)rect.y,
                         (uint32_t)rect.width, (uint32_t)rect.height, label, 0);
     }
-    gui_draw_text((uint32_t)(window->x + 16),
-                  (uint32_t)(window->y + WM_GUI_TITLE_HEIGHT + 20),
-                  "Janela hospedada pelo Window Manager grafico.", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(window->x + 16),
-                  (uint32_t)(window->y + WM_GUI_TITLE_HEIGHT + 44),
-                  "Use os controles ou os botoes da taskbar.", GUI_COLOR_TEXT);
+    if (window->app->on_draw) {
+        window->app->on_draw(window->x + WM_GUI_FRAME_INSET,
+                             window->y + WM_GUI_CONTENT_TOP,
+                             window->width - WM_GUI_FRAME_INSET * 2,
+                             window->height - WM_GUI_CONTENT_TOP -
+                             WM_GUI_CONTENT_BOTTOM);
+    }
 }
 
 static void wm_gui_draw_all(void) {
@@ -288,6 +310,7 @@ static void wm_gui_draw_all(void) {
     for (int z = 0; z < wm_gui_z_counter; z++) {
         for (int i = 0; i < wm_gui_window_count; i++) {
             if (wm_gui_windows[i].visible && wm_gui_windows[i].z_order == z) {
+                wm_gui_constrain_window(&wm_gui_windows[i]);
                 wm_gui_draw_window(&wm_gui_windows[i]);
             }
         }
@@ -335,15 +358,19 @@ static void wm_gui_maximize_or_restore(int index) {
     wm_gui_focus(index);
 }
 
-static void wm_gui_close(int index) {
+static void wm_gui_close(int index, int notify_app) {
+    wm_close_handler_t on_close;
+
     if (index < 0 || index >= wm_gui_window_count) return;
     wm_gui_clear_interaction();
+    on_close = wm_gui_windows[index].app ? wm_gui_windows[index].app->on_close : 0;
     wm_gui_windows[index].visible = 0;
     wm_gui_windows[index].focused = 0;
     taskbar_remove_window(wm_gui_windows[index].id);
     if (wm_gui_focused == index) wm_gui_focused = -1;
     wm_gui_focus_next();
     wm_gui_sync_taskbar();
+    if (notify_app && on_close) on_close();
 }
 
 static void wm_gui_clear_interaction(void) {
@@ -419,22 +446,30 @@ static void wm_gui_update_resize(wm_gui_window_t* window,
     if (wm_gui_resize_edges & WM_GUI_RESIZE_LEFT) {
         left = event->x;
         if (left < work_area.x) left = work_area.x;
-        if (left > right - WM_GUI_MIN_WIDTH) left = right - WM_GUI_MIN_WIDTH;
+        if (left > right - wm_gui_window_min_width(window)) {
+            left = right - wm_gui_window_min_width(window);
+        }
     }
     if (wm_gui_resize_edges & WM_GUI_RESIZE_RIGHT) {
         right = event->x;
         if (right > work_right) right = work_right;
-        if (right < left + WM_GUI_MIN_WIDTH) right = left + WM_GUI_MIN_WIDTH;
+        if (right < left + wm_gui_window_min_width(window)) {
+            right = left + wm_gui_window_min_width(window);
+        }
     }
     if (wm_gui_resize_edges & WM_GUI_RESIZE_TOP) {
         top = event->y;
         if (top < work_area.y) top = work_area.y;
-        if (top > bottom - WM_GUI_MIN_HEIGHT) top = bottom - WM_GUI_MIN_HEIGHT;
+        if (top > bottom - wm_gui_window_min_height(window)) {
+            top = bottom - wm_gui_window_min_height(window);
+        }
     }
     if (wm_gui_resize_edges & WM_GUI_RESIZE_BOTTOM) {
         bottom = event->y;
         if (bottom > work_bottom) bottom = work_bottom;
-        if (bottom < top + WM_GUI_MIN_HEIGHT) bottom = top + WM_GUI_MIN_HEIGHT;
+        if (bottom < top + wm_gui_window_min_height(window)) {
+            bottom = top + wm_gui_window_min_height(window);
+        }
     }
     window->x = left;
     window->y = top;
@@ -492,7 +527,7 @@ static int wm_gui_handle_mouse(mouse_event_t* event) {
             event->y >= rect.y && event->y < rect.y + rect.height) {
             wm_gui_control_t control = wm_gui_control_at(i);
 
-            if (control == WM_GUI_CONTROL_CLOSE) wm_gui_close(selected);
+            if (control == WM_GUI_CONTROL_CLOSE) wm_gui_close(selected, 1);
             if (control == WM_GUI_CONTROL_MINIMIZE) wm_gui_minimize(selected);
             if (control == WM_GUI_CONTROL_MAXIMIZE) wm_gui_maximize_or_restore(selected);
             wm_gui_draw_all();
@@ -514,6 +549,17 @@ static int wm_gui_handle_mouse(mouse_event_t* event) {
             wm_gui_draw_all();
             return 1;
         }
+    }
+    if (wm_gui_point_in_content(&wm_gui_windows[selected], event->x, event->y) &&
+        wm_gui_windows[selected].app->on_mouse) {
+        wm_gui_dispatching_input = 1;
+        wm_gui_windows[selected].app->on_mouse(
+            event, wm_gui_windows[selected].x + WM_GUI_FRAME_INSET,
+            wm_gui_windows[selected].y + WM_GUI_CONTENT_TOP,
+            wm_gui_windows[selected].width - WM_GUI_FRAME_INSET * 2,
+            wm_gui_windows[selected].height - WM_GUI_CONTENT_TOP -
+            WM_GUI_CONTENT_BOTTOM);
+        wm_gui_dispatching_input = 0;
     }
     wm_gui_draw_all();
     return 1;
@@ -566,6 +612,114 @@ void wm_set_show_title(int show) {
 void wm_set_border_style(int style) {
     wm.config.border_style = style;
     if (wm_active) wm_draw_all();
+}
+
+static void wm_gui_initialize_window(int index, const wm_hosted_app_t* app,
+                                     const tb_rect_t* work_area) {
+    wm_gui_window_t* window = &wm_gui_windows[index];
+    int offset = index * WM_GUI_MARGIN;
+
+    window->id = WM_GUI_ID_BASE + index;
+    window->app = app;
+    window->width = app->default_width;
+    window->height = app->default_height;
+    if (window->width < wm_gui_window_min_width(window)) {
+        window->width = wm_gui_window_min_width(window);
+    }
+    if (window->height < wm_gui_window_min_height(window)) {
+        window->height = wm_gui_window_min_height(window);
+    }
+    if (window->width > work_area->width) window->width = work_area->width;
+    if (window->height > work_area->height) window->height = work_area->height;
+    window->x = work_area->x + WM_GUI_MARGIN + offset;
+    window->y = work_area->y + WM_GUI_MARGIN + offset;
+    window->restore_x = window->x;
+    window->restore_y = window->y;
+    window->restore_width = window->width;
+    window->restore_height = window->height;
+    window->state = WM_STATE_NORMAL;
+    window->visible = 1;
+    window->focused = 0;
+    window->z_order = wm_gui_z_counter++;
+    wm_gui_constrain_window(window);
+    taskbar_add_window(window->id, app->taskbar_label);
+}
+
+int wm_register_hosted_app(const wm_hosted_app_t* app) {
+    tb_rect_t work_area;
+    int index;
+    int min_width;
+    int min_height;
+
+    if (!app || !app->title || !app->taskbar_label || !app->on_draw ||
+        !app->on_key || !app->on_close) {
+        LOG_ERROR("WM", "Descritor de aplicativo hospedado invalido");
+        return ERR_NULL;
+    }
+    if (app->min_width <= 0 || app->min_height <= 0 ||
+        app->default_width <= 0 || app->default_height <= 0) {
+        LOG_ERROR("WM", "Dimensoes de aplicativo hospedado invalidas");
+        return ERR_INVALID;
+    }
+    if (!wm_active || !wm_gui_enabled()) {
+        LOG_WARN("WM", "Workspace grafico indisponivel para aplicativo");
+        return ERR_STATE;
+    }
+    if (!wm_gui_get_work_area(&work_area)) {
+        LOG_ERROR("WM", "Area de trabalho grafica indisponivel");
+        return ERR_UNAVAILABLE;
+    }
+    min_width = app->min_width > WM_GUI_MIN_WIDTH ?
+                app->min_width : WM_GUI_MIN_WIDTH;
+    min_height = app->min_height > WM_GUI_MIN_HEIGHT ?
+                 app->min_height : WM_GUI_MIN_HEIGHT;
+    if (work_area.width < min_width || work_area.height < min_height) {
+        LOG_WARN("WM", "Area de trabalho insuficiente para aplicativo");
+        return ERR_OVERFLOW;
+    }
+    index = wm_gui_find_app(app->app_type);
+    if (index >= 0 && wm_gui_windows[index].visible) {
+        wm_gui_focus(index);
+        wm_gui_draw_all();
+        return OK;
+    }
+    if (index < 0) {
+        if (wm_gui_window_count >= WM_GUI_WINDOW_COUNT) {
+            LOG_WARN("WM", "Limite de janelas hospedadas atingido");
+            return ERR_OVERFLOW;
+        }
+        index = wm_gui_window_count++;
+    }
+    wm_gui_initialize_window(index, app, &work_area);
+    wm_gui_focus(index);
+    wm_gui_draw_all();
+    return OK;
+}
+
+int wm_close_hosted_app(wm_app_type_t app_type) {
+    int index = wm_gui_find_app(app_type);
+
+    if (index < 0 || !wm_gui_windows[index].visible) {
+        LOG_WARN("WM", "Aplicativo hospedado nao encontrado");
+        return ERR_NOT_FOUND;
+    }
+    wm_gui_close(index, 1);
+    if (wm_gui_dispatching_input) {
+        return OK;
+    }
+    wm_gui_draw_all();
+    return OK;
+}
+
+void wm_request_hosted_redraw(wm_app_type_t app_type) {
+    int index = wm_gui_find_app(app_type);
+
+    if (!wm_active || !wm_gui_enabled() || index < 0 ||
+        !wm_gui_windows[index].visible) return;
+    if (wm_gui_dispatching_input) {
+        return;
+    }
+    wm_gui_draw_all();
 }
 
 void wm_draw_desktop(void) {
@@ -962,19 +1116,12 @@ int wm_handle_key(uint8_t scancode) {
     if (!wm_active || (scancode & 0x80)) return WM_RESULT_NONE;
 
     if (wm_gui_enabled()) {
-        if (scancode == 0x01) return WM_RESULT_EXIT;
-        if (scancode == 0x0F) {
-            wm_gui_focus_next();
-            wm_gui_draw_all();
-            return WM_RESULT_NONE;
-        }
-        if (scancode == 0x3B && wm_gui_focused >= 0) {
-            wm_gui_minimize(wm_gui_focused);
-            wm_gui_draw_all();
-            return WM_RESULT_NONE;
-        }
-        if (scancode == 0x3C && wm_gui_focused >= 0) {
-            wm_gui_maximize_or_restore(wm_gui_focused);
+        if (wm_gui_focused >= 0 &&
+            wm_gui_windows[wm_gui_focused].app &&
+            wm_gui_windows[wm_gui_focused].app->on_key) {
+            wm_gui_dispatching_input = 1;
+            wm_gui_windows[wm_gui_focused].app->on_key(scancode);
+            wm_gui_dispatching_input = 0;
             wm_gui_draw_all();
         }
         return WM_RESULT_NONE;
@@ -1019,13 +1166,16 @@ int wm_is_active(void) {
 }
 
 void wm_set_active(int active) {
-    if (!active) {
+    if (!active && wm_active) {
         wm_gui_clear_interaction();
         for (int i = 0; i < wm_gui_window_count; i++) {
-            taskbar_remove_window(wm_gui_windows[i].id);
+            if (wm_gui_windows[i].app) wm_gui_close(i, 1);
         }
-        wm_gui_window_count = 0;
-        wm_gui_focused = -1;
+        wm_gui_reset();
+    }
+    if (active && wm_active) {
+        wm_draw_all();
+        return;
     }
     wm_active = active;
     if (active) {
@@ -1098,10 +1248,16 @@ int wm_handle_mouse(mouse_event_t* event) {
 }
 
 void wm_toggle_window(int id) {
-    int index = id - WM_GUI_ID_BASE;
+    int index = -1;
 
-    if (!wm_active || !wm_gui_enabled() || index < 0 ||
-        index >= wm_gui_window_count) return;
+    if (!wm_active || !wm_gui_enabled()) return;
+    for (int i = 0; i < wm_gui_window_count; i++) {
+        if (wm_gui_windows[i].id == id) {
+            index = i;
+            break;
+        }
+    }
+    if (index < 0) return;
     if (!wm_gui_windows[index].visible &&
         wm_gui_windows[index].state == WM_STATE_MINIMIZED) {
         wm_gui_windows[index].visible = 1;

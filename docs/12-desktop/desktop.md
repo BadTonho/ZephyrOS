@@ -105,17 +105,19 @@ implementam gradientes, transparência ou cantos arredondados nesta etapa.
 ## Window Manager (`wm.c`)
 
 O comando `wm` preserva o gerenciador textual no modo Clássico. No modo
-Moderno, ele abre um workspace VESA com duas janelas demonstrativas internas;
-Explorer, Settings e Task Manager continuam em suas cenas independentes.
+Moderno, ele abre um workspace VESA vazio. Explorer, Settings e Task Manager
+são aplicativos hospedados: seus comandos e ações do Menu Iniciar criam ou
+focalizam uma única janela de cada tipo.
 
 ### Estado de renderização
 
 - **Modo TUI**: janelas do WM usam bordas de caracteres e as APIs legadas.
-- **Modo moderno**: as janelas demonstrativas são compostas do menor para o
-  maior Z-order e a taskbar é desenhada por último no mesmo ciclo VESA.
+- **Modo moderno**: janelas hospedadas são compostas do menor para o maior
+  Z-order e a taskbar é desenhada por último no mesmo ciclo VESA.
 - **Entrada**: o corpo focaliza uma janela; os controles da barra de título
-  fecham, minimizam ou maximizam/restauram. `Esc` encerra apenas o workspace
-  gráfico e devolve o terminal ao Shell.
+  fecham, minimizam ou maximizam/restauram. Teclado e mouse do conteúdo são
+  encaminhados ao aplicativo focalizado; `Esc`, `Tab`, `F1` e `F2` não são
+  atalhos globais do WM moderno. Em um workspace vazio, `Esc` não produz ação.
 
 ### Estrutura de Janela
 
@@ -150,6 +152,36 @@ int  wm_handle_mouse(event);
 void wm_toggle_window(id);
 ```
 
+### Aplicativos hospedados (modo Moderno)
+
+`wm_window_t` e as APIs TUI permanecem legadas. A hospedagem gráfica usa o
+descritor público abaixo; suas dimensões incluem a moldura do WM e os callbacks
+recebem apenas a área interna de conteúdo.
+
+```c
+typedef struct {
+    wm_app_type_t app_type;
+    const char* title;
+    const char* taskbar_label;
+    int min_width, min_height;
+    int default_width, default_height;
+    wm_redraw_handler_t on_draw;
+    wm_key_handler_t on_key;
+    wm_mouse_handler_t on_mouse;
+    wm_close_handler_t on_close;
+} wm_hosted_app_t;
+
+int  wm_register_hosted_app(const wm_hosted_app_t* app);
+int  wm_close_hosted_app(wm_app_type_t app_type);
+void wm_request_hosted_redraw(wm_app_type_t app_type);
+```
+
+O registro é singleton por `app_type`: registrar uma janela visível apenas a
+restaura/focaliza, sem criar botão duplicado. Fechar uma janela chama `on_close`
+somente para aquele aplicativo; minimizar e restaurar preservam seu estado.
+Se VESA, backbuffer ou a área útil não comportarem o mínimo, o WM registra um
+aviso e o chamador mantém o fluxo TUI correspondente.
+
 ### Integração com o Mouse
 
 O kernel entrega cliques primeiro à taskbar. Botões de janela da taskbar pedem
@@ -157,15 +189,15 @@ O kernel entrega cliques primeiro à taskbar. Botões de janela da taskbar pedem
 sem foco é focalizada e a janela focalizada é minimizada. Com o WM ativo, seus
 eventos consomem o mouse antes de Desktop e aplicativos.
 
-No modo Moderno, somente as duas janelas demonstrativas do `wm` aceitam
-interação direta: os controles da barra de título têm prioridade, a área livre
-da barra inicia arraste e uma faixa de 8 px nas bordas e cantos inicia
+No modo Moderno, Explorer, Settings e Task Manager reutilizam a interação
+direta do WM: os controles da barra de título têm prioridade, a área livre da
+barra inicia arraste e uma faixa de 8 px nas bordas e cantos inicia
 redimensionamento. A captura termina em `RELEASE`; janelas maximizadas devem
-ser restauradas antes de mover ou redimensionar. O tamanho mínimo é 180×128 px
-e a geometria fica limitada à área de trabalho da taskbar. Cada movimento
-recompõe o workspace no backbuffer, desenha a taskbar por último e invalida o
-cursor antes da pintura. Arraste de ícones e migração de aplicativos reais para
-janelas hospedadas permanecem fora deste escopo.
+ser restauradas antes de mover ou redimensionar. Cada aplicativo desenha somente
+seu conteúdo e solicita recomposição ao mudar de estado; o WM recompõe o
+workspace no backbuffer, desenha a taskbar por último e invalida o cursor antes
+da pintura. Arraste de ícones, BMP, roda do mouse e aplicativos externos ainda
+não são hospedados.
 
 ---
 
@@ -193,6 +225,8 @@ implícito.
 
 Enquanto estiver aberto, um clique fora do Menu Iniciar apenas o fecha; o
 evento e consumido e nao pode acionar a interface que esteja abaixo dele.
+No workspace moderno, `Shell` encerra o workspace e devolve o terminal, e
+`Desktop` encerra o workspace antes de voltar à área de trabalho.
 
 ```
 ┌─────────────────┐
