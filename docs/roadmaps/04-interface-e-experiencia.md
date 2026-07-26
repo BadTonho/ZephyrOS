@@ -45,6 +45,17 @@ visual atual.
 - [ ] Roda do mouse e melhorias de acessibilidade ficam apos a entrada basica
   estar estavel.
 
+## Etapa UI4 - Aplicativos hospedados pelo Window Manager
+
+- [x] Migrar Shell, Explorer, Settings e Task Manager para janelas singleton
+  hospedadas pelo WM no modo Moderno, preservando seus fluxos Classicos.
+- [x] Reutilizar foco, Z-order, taskbar, arraste, redimensionamento e controles
+  da moldura para os aplicativos hospedados.
+- [x] Manter o terminal interativo em uma superficie VESA do WM, com historico,
+  scroll, refluxo ao redimensionar e fechamento que apenas oculta a janela.
+- [x] Validar no QEMU os fluxos modernos e classicos, incluindo taskbar nas
+  cinco posicoes, reabertura sem duplicacao e retorno seguro ao Desktop.
+
 ## Fora do escopo atual
 
 - Tema novo, transparencia, gradientes ou redesenho total da identidade.
