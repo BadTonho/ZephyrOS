@@ -67,11 +67,11 @@ visual atual.
 
 ## Etapa UI6 - Icones BMP com cache
 
-- [ ] Carregar BMPs de Shell, Explorer e Task Manager apenas no Desktop
+- [x] Carregar BMPs de Shell, Explorer e Task Manager apenas no Desktop
   Moderno, com chave magenta transparente e cache em memoria.
-- [ ] Injetar os tres assets na imagem FAT12 e manter os simbolos desenhados
+- [x] Injetar os tres assets na imagem FAT12 e manter os simbolos desenhados
   como fallback para filesystem, arquivo, formato ou memoria indisponiveis.
-- [ ] Validar no QEMU os BMPs, o comando `icons`, o fallback e a ausencia de
+- [x] Validar no QEMU os BMPs, o comando `icons`, o fallback e a ausencia de
   regressao no modo Classico antes de concluir a etapa.
 
 ## Fora do escopo atual
