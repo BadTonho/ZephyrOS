@@ -201,9 +201,8 @@ OS_IMG = build/zephyros.img
 
 # A imagem de boot reserva os primeiros setores para o stage2 e o kernel.
 # O volume FAT12 fica depois dessa area para que o Explorer nunca sobrescreva
-# o codigo usado no proximo boot.
+# o codigo usado no proximo boot. A reserva e calculada pelo payload real.
 FAT12_DISK_BYTES = 1474560
-FAT12_RESERVED_SECTORS = 1024
 
 # Todas as variáveis de objetos
 OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(RECOVERY_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
@@ -439,7 +438,7 @@ $(KERNEL_BIN): $(OBJS) src/linker.ld
 $(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(KERNEL_BIN) tools\packager.py \
           assets\icons\SHELL.BMP assets\icons\EXPLORER.BMP assets\icons\TASKMGR.BMP
 	cmd /c "copy /b build\boot.bin+build\stage2.bin+build\kernel.bin build\zephyros.img"
-	powershell -NoProfile -Command "$$path = 'build\zephyros.img'; $$reserved = $(FAT12_RESERVED_SECTORS); $$bytes = [System.IO.File]::ReadAllBytes($$path); $$bytes[14] = ($$reserved -band 0xFF); $$bytes[15] = (($$reserved -shr 8) -band 0xFF); [System.IO.File]::WriteAllBytes($$path, $$bytes); $$stream = [System.IO.File]::Open($$path, [System.IO.FileMode]::Open); $$stream.SetLength($(FAT12_DISK_BYTES)); $$stream.Close()"
+	python tools\packager.py prepare-image --image $(OS_IMG) --disk-bytes $(FAT12_DISK_BYTES)
 	python tools\packager.py inject-file --file assets\icons\SHELL.BMP --image $(OS_IMG) --fat-name SHELL.BMP
 	python tools\packager.py inject-file --file assets\icons\EXPLORER.BMP --image $(OS_IMG) --fat-name EXPLORER.BMP
 	python tools\packager.py inject-file --file assets\icons\TASKMGR.BMP --image $(OS_IMG) --fat-name TASKMGR.BMP

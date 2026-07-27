@@ -3,7 +3,7 @@ OUTPUT_ARCH(i386)
 ENTRY(_start)
 
 SECTIONS {
-    . = 0x10000;
+    . = 0x100000;
     __kernel_start = .;
 
     .text : {
@@ -26,5 +26,5 @@ SECTIONS {
     }
 
     __kernel_end = .;
-    ASSERT(__kernel_end <= 0x88000, "kernel exceeds reserved memory")
+    ASSERT(__kernel_end <= 0x800000, "kernel exceeds high memory reservation")
 }

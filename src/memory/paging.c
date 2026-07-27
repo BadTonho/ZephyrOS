@@ -13,6 +13,14 @@ static int paging_initialized = 0;
 
 #define PAGING_MAX_USER_DIRECTORIES 64U
 
+#if KERNEL_END != USER_SPACE_START || HEAP_START != USER_SPACE_END
+#error "Layout supervisor sobrepoe a janela virtual ZAPP"
+#endif
+
+#if PHYSICAL_IDENTITY_START < USER_SPACE_END
+#error "Mapa fisico supervisor sobrepoe a janela virtual ZAPP"
+#endif
+
 static page_directory_t* user_directories[PAGING_MAX_USER_DIRECTORIES];
 static paging_user_stats_t user_paging_stats;
 
@@ -245,7 +253,26 @@ void paging_switch_directory(page_directory_t* dir) {
     paging_initialized = 1;
 }
 
+static int paging_map_identity_range(uint32_t start, uint32_t end) {
+    if (start >= end || (start % PAGE_SIZE) != 0 ||
+        (end % PAGE_SIZE) != 0) {
+        LOG_ERROR("MEM", "Intervalo de identidade invalido");
+        return ERR_INVALID;
+    }
+
+    for (uint32_t address = start; address < end; address += PAGE_SIZE) {
+        if (paging_map_page(address, address,
+                            PAGING_FLAG_PRESENT | PAGING_FLAG_WRITE) != OK) {
+            LOG_ERROR("MEM", "Falha ao mapear intervalo por identidade");
+            return ERR_MEM;
+        }
+    }
+    return OK;
+}
+
 int paging_init(void) {
+    uint32_t physical_end;
+
     if (paging_initialized && current_directory) {
         LOG_WARN("MEM", "Paging ja estava inicializado");
         return OK;
@@ -265,25 +292,36 @@ int paging_init(void) {
     kernel_directory = dir;
 
     /* A GDT do stage2 continua ativa ate o tss_init instalar a GDT do kernel. */
-    for (uint32_t i = BOOT_TRANSITION_START; i < BOOT_TRANSITION_END; i += PAGE_SIZE) {
-        if (paging_map_page(i, i, 0x03) != OK) {
-            LOG_ERROR("MEM", "Falha ao mapear transicao do boot");
-            return paging_abort_init(dir, ERR_MEM);
-        }
+    if (paging_map_identity_range(BOOT_TRANSITION_START,
+                                  BOOT_TRANSITION_END) != OK) {
+        LOG_ERROR("MEM", "Falha ao mapear transicao do boot");
+        return paging_abort_init(dir, ERR_MEM);
+    }
+    if (paging_map_identity_range(PMM_BITMAP_STORAGE_START,
+                                  KERNEL_STACK_TOP) != OK) {
+        LOG_ERROR("MEM", "Falha ao mapear bitmaps e stack");
+        return paging_abort_init(dir, ERR_MEM);
+    }
+    if (paging_map_identity_range(KERNEL_START, KERNEL_END) != OK) {
+        LOG_ERROR("MEM", "Falha ao mapear kernel");
+        return paging_abort_init(dir, ERR_MEM);
+    }
+    if (paging_map_identity_range(HEAP_START,
+                                  HEAP_START + HEAP_SIZE) != OK) {
+        LOG_ERROR("MEM", "Falha ao mapear heap");
+        return paging_abort_init(dir, ERR_MEM);
     }
 
-    for (uint32_t i = KERNEL_START; i < HEAP_START + HEAP_SIZE; i += PAGE_SIZE) {
-        if (paging_map_page(i, i, 0x03) != OK) {
-            LOG_ERROR("MEM", "Falha ao mapear kernel e heap");
-            return paging_abort_init(dir, ERR_MEM);
-        }
+    physical_end = memory_get_total();
+    if (physical_end <= PHYSICAL_IDENTITY_START ||
+        paging_map_identity_range(PHYSICAL_IDENTITY_START,
+                                  physical_end) != OK) {
+        LOG_ERROR("MEM", "Falha ao mapear RAM fisica");
+        return paging_abort_init(dir, ERR_MEM);
     }
-
-    for (uint32_t i = 0xB8000; i < 0xC0000; i += PAGE_SIZE) {
-        if (paging_map_page(i, i, 0x03) != OK) {
-            LOG_ERROR("MEM", "Falha ao mapear memoria VGA");
-            return paging_abort_init(dir, ERR_MEM);
-        }
+    if (paging_map_identity_range(0xB8000U, 0xC0000U) != OK) {
+        LOG_ERROR("MEM", "Falha ao mapear memoria VGA");
+        return paging_abort_init(dir, ERR_MEM);
     }
 
     vesa_mode_t* mode = vesa_get_mode();

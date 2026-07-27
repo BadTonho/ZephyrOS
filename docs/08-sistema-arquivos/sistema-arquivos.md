@@ -85,11 +85,14 @@ int ata_read_sectors(uint32_t lba, uint8_t count, uint8_t* buffer) {
 
 ```
 Setor 0:          Boot sector (contém BPB)
-Setores 1-1023:   Área reservada para boot, stage2 e kernel
-Setores 1024-1041: Duas FATs (9 setores cada)
-Setores 1042-1055: Root directory (224 entradas)
-Setores 1056-2879: Data area (clusters)
+Setores 1-(R-1):  Stage2 e kernel
+Setores R-(R+17): Duas FATs (9 setores cada)
+Próximos 14:      Root directory (224 entradas)
+Restante:         Data area (clusters)
 ```
+
+`R` é calculado como `ceil((boot + stage2 + kernel) / 512)`. Dessa forma, a
+FAT começa imediatamente após o payload real sem manter uma reserva fixa.
 
 ### BPB (BIOS Parameter Block)
 
@@ -101,7 +104,7 @@ typedef struct {
     char     oem[8];             // Nome do OEM
     uint16_t bytes_per_sector;   // 512
     uint8_t  sectors_per_cluster;// 1
-    uint16_t reserved_sectors;   // 1024
+    uint16_t reserved_sectors;   // calculado pelo payload de boot
     uint8_t  num_fats;           // 2
     uint16_t root_entries;       // 224
     uint16_t total_sectors;      // 2880

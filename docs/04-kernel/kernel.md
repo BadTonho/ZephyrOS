@@ -233,11 +233,17 @@ rejeicoes do PMM e diretorios/paginas de usuario ativos. Esses campos sao
 diagnosticos internos; `mem` e a App API continuam mostrando apenas memoria
 global.
 
-O contrato de `memory.h` fixa a memoria baixa em tres faixas contiguas:
-kernel e BSS ate `0x88000`, bitmaps do PMM ate `0x98000` e stack protegida ate
-`0x9F000`. O PMM reserva ambas as ultimas faixas e recusa a inicializacao se o
-mapa E820 nao cobrir a regiao inteira.
+O contrato de `memory.h` mantém os bitmaps do PMM em `0x88000–0x98000` e a
+stack inicial em `0x98000–0x9F000`, mas posiciona kernel e BSS em
+`0x00100000–0x00800000`. A ABI ZAPP continua em `0x00800000–0x01000000`, o
+heap ocupa `0x01000000–0x01400000` e o PMM entrega páginas mapeadas por
+identidade somente a partir de `0x01400000`.
+
+A inicialização exige 32 MiB de RAM e confirma no E820 que as áreas baixas,
+o kernel e o heap são utilizáveis. Páginas abaixo de `0x01400000` permanecem
+reservadas, impedindo colisões entre boot, kernel, ZAPP e heap.
 
 Falhas recuperaveis retornam erro e desabilitam somente o componente afetado.
 Excecoes fatais e corrupcao estrutural continuam encaminhadas para `panic`.
-O `boot.asm` e a politica de escalonamento nao fazem parte desta etapa.
+O `boot.asm` permanece inalterado e a politica de escalonamento nao faz parte
+desta etapa.

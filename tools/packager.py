@@ -249,6 +249,41 @@ def fat12_geometry(image: bytearray) -> tuple[int, int, int, int, int, int, int]
     return bytes_per_sector, sectors_per_cluster, reserved, fat_count, sectors_per_fat, root_start, clusters
 
 
+def prepare_boot_image(image_path: Path, disk_bytes: int) -> int:
+    """Reserva o payload de boot no BPB e expande a imagem sem truncar dados."""
+    try:
+        payload = bytearray(image_path.read_bytes())
+    except OSError as error:
+        raise PackageError("nao foi possivel ler a imagem de boot") from error
+
+    if len(payload) < 512 or payload[510:512] != b"\x55\xAA":
+        raise PackageError("payload sem boot sector valido")
+    bytes_per_sector = struct.unpack_from("<H", payload, 11)[0]
+    total_sectors = (struct.unpack_from("<H", payload, 19)[0] or
+                     struct.unpack_from("<I", payload, 32)[0])
+    if bytes_per_sector != 512 or disk_bytes <= 0:
+        raise PackageError("tamanho de setor ou disco invalido")
+    if disk_bytes % bytes_per_sector != 0:
+        raise PackageError("tamanho do disco nao esta alinhado a setores")
+    if total_sectors == 0 or total_sectors * bytes_per_sector != disk_bytes:
+        raise PackageError("BPB e tamanho final do disco divergem")
+    if len(payload) > disk_bytes:
+        raise PackageError("boot, stage2 e kernel excedem a imagem FAT12")
+
+    reserved = (len(payload) + bytes_per_sector - 1) // bytes_per_sector
+    if reserved == 0 or reserved > 0xFFFF:
+        raise PackageError("quantidade de setores reservados invalida")
+
+    prepared = payload + bytearray(disk_bytes - len(payload))
+    struct.pack_into("<H", prepared, 14, reserved)
+    fat12_geometry(prepared)
+    try:
+        image_path.write_bytes(prepared)
+    except OSError as error:
+        raise PackageError("nao foi possivel gravar a imagem FAT12") from error
+    return reserved
+
+
 def fat12_get(fat: bytearray, index: int) -> int:
     """Le uma entrada de 12 bits da FAT."""
     offset = index + index // 2
@@ -465,12 +500,41 @@ def create_fixture_image(path: Path) -> None:
     path.write_bytes(image)
 
 
+def create_fixture_boot_payload(path: Path, size: int) -> None:
+    """Gera um payload parcial com BPB valido para testar a reserva dinamica."""
+    if size < 512:
+        raise PackageError("fixture de boot menor que um setor")
+    image = bytearray(size)
+    image[0:3] = b"\xEB\x3C\x90"
+    image[3:11] = b"ZEPHYROS "
+    struct.pack_into("<H", image, 11, 512)
+    image[13] = 1
+    struct.pack_into("<H", image, 14, 1)
+    image[16] = 2
+    struct.pack_into("<H", image, 17, 224)
+    struct.pack_into("<H", image, 19, 2880)
+    image[21] = 0xF0
+    struct.pack_into("<H", image, 22, 9)
+    image[510:512] = b"\x55\xAA"
+    for index in range(512, size):
+        image[index] = index & 0xFF
+    path.write_bytes(image)
+
+
 def run_selftest() -> int:
     """Executa os cenarios host sem modificar arquivos do repositorio."""
     manifest = {"id": "DEMO", "name": "Demo", "version": "1.0.0", "api": "0.3", "entry": "APP.ZAP", "dependencies": ""}
     package = build_package(manifest, build_demo_zapp())
-    checks = {"criar": True, "crc_invalido": False, "injecao": False,
-              "substituicao": False, "arquivo": False}
+    checks = {
+        "criar": True,
+        "crc_invalido": False,
+        "injecao": False,
+        "substituicao": False,
+        "arquivo": False,
+        "reserva_dinamica": False,
+        "bpb_invalido": False,
+        "imagem_excedida": False,
+    }
     try:
         parse_package(package)
         broken = bytearray(package)
@@ -488,6 +552,38 @@ def run_selftest() -> int:
             checks["substituicao"] = read_root_file(image_path, "DEMO.ZPK") == package
             inject_root_file(b"desktop icon", image_path, "ICON.BMP")
             checks["arquivo"] = read_root_file(image_path, "ICON.BMP") == b"desktop icon"
+
+            boot_path = Path(temp_dir) / "boot-payload.img"
+            create_fixture_boot_payload(boot_path, 1300)
+            original = boot_path.read_bytes()
+            reserved = prepare_boot_image(boot_path, 1474560)
+            prepared = boot_path.read_bytes()
+            preserved = (prepared[:14] == original[:14] and
+                         prepared[16:len(original)] == original[16:])
+            checks["reserva_dinamica"] = (
+                reserved == 3 and len(prepared) == 1474560 and preserved and
+                struct.unpack_from("<H", prepared, 14)[0] == 3
+            )
+
+            invalid_path = Path(temp_dir) / "invalid-bpb.img"
+            create_fixture_boot_payload(invalid_path, 512)
+            invalid = bytearray(invalid_path.read_bytes())
+            invalid[510:512] = b"\x00\x00"
+            invalid_path.write_bytes(invalid)
+            try:
+                prepare_boot_image(invalid_path, 1474560)
+            except PackageError:
+                checks["bpb_invalido"] = invalid_path.read_bytes() == invalid
+
+            oversized_path = Path(temp_dir) / "oversized.img"
+            create_fixture_boot_payload(oversized_path, 1474561)
+            oversized_size = oversized_path.stat().st_size
+            try:
+                prepare_boot_image(oversized_path, 1474560)
+            except PackageError:
+                checks["imagem_excedida"] = (
+                    oversized_path.stat().st_size == oversized_size
+                )
     except (OSError, PackageError):
         checks["criar"] = False
     for label, approved in checks.items():
@@ -544,6 +640,13 @@ def command_inject_file(arguments: argparse.Namespace) -> int:
     return 0
 
 
+def command_prepare_image(arguments: argparse.Namespace) -> int:
+    """Finaliza a imagem de boot com reserva FAT12 calculada pelo payload."""
+    reserved = prepare_boot_image(Path(arguments.image), arguments.disk_bytes)
+    print(f"Imagem preparada com {reserved} setores reservados")
+    return 0
+
+
 def command_demo(arguments: argparse.Namespace) -> int:
     """Cria e injeta o demo usado na validacao manual da Fase 7."""
     manifest = {"id": "DEMO", "name": "Demo", "version": "1.0.0", "api": "0.3", "entry": "APP.ZAP", "dependencies": ""}
@@ -580,6 +683,10 @@ def build_parser() -> argparse.ArgumentParser:
     inject_file.add_argument("--fat-name", required=True)
     inject_file.add_argument("--replace", action="store_true")
     inject_file.set_defaults(handler=command_inject_file)
+    prepare_image = commands.add_parser("prepare-image")
+    prepare_image.add_argument("--image", required=True)
+    prepare_image.add_argument("--disk-bytes", required=True, type=int)
+    prepare_image.set_defaults(handler=command_prepare_image)
     demo = commands.add_parser("demo")
     demo.add_argument("--output", required=True)
     demo.add_argument("--image", required=True)

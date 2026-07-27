@@ -137,7 +137,7 @@ typedef struct heap_block {
 ### Mapa do Heap
 
 ```
- HEAP_START (0x100000)
+ HEAP_START (0x01000000)
 ┌──────────────────┐
 │  heap_block_t    │ ← size=4096, free=1
 │  (cabeçalho)     │
@@ -281,13 +281,21 @@ void paging_switch_directory(page_directory_t* dir) {
 0x2000  - 0x3000   Informacoes VESA
 0x3000  - 0x5000   Mapa E820 e contador
 0x5000  - 0x10000  Segundo estagio do bootloader
-0x10000 - 0x88000  Kernel e BSS (480 KiB)
 0x88000 - 0x98000  Bitmaps PMM (tamanho varia com a RAM)
 0x98000 - 0x9F000  Kernel stack (28 KiB)
 0x9F000 - 0xA0000  Margem reservada para BIOS/EBDA
 0xA0000 - 0xC0000  Memoria de video VGA
-0x100000 - 0x200000 Heap (1 MB)
+0x100000 - 0x800000 Kernel e BSS (7 MiB)
+0x800000 - 0x1000000 Janela virtual ZAPP e reserva fisica
+0x1000000 - 0x1400000 Heap (4 MiB)
+0x1400000 em diante RAM fisica livre mapeada por identidade
 ```
+
+O PMM começa considerando todas as páginas ocupadas, libera apenas entradas
+E820 tipo 1 e volta a reservar toda a faixa abaixo de `0x01400000`. Isso
+preserva os endereços virtuais ZAPP existentes e garante que cada página
+física entregue ao kernel também tenha um mapeamento supervisor por
+identidade. O sistema requer no mínimo 32 MiB de RAM.
 
 ---
 

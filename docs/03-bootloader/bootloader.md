@@ -59,14 +59,20 @@ O BIOS retorna uma tabela com as regiões de memória disponíveis:
 ```nasm
 disk_load:
     mov ah, 0x02           ; Função: ler setores
-    ; O Makefile passa a quantidade real de setores em KERNEL_SECTORS
-    mov cl, 0x02           ; Começa no setor 2
-    int 0x13               ; Chama BIOS
+    mov bx, 0x2600         ; Bounce buffer abaixo de 1 MiB
+    int 0x13               ; BIOS grava um setor no buffer
+    ; Unreal mode copia o setor para o destino alto.
 ```
 
-O estágio 2 lê o kernel setor a setor e copia para `0x10000` na memória. A
-quantidade de setores é calculada durante o build, evitando truncar o kernel
-quando ele cresce.
+O estágio 2 verifica o mapa E820, habilita a linha A20 e lê o kernel setor a
+setor para `0x2600`. Após cada leitura, entra temporariamente em protected
+mode para obter um segmento de dados flat, retorna ao real mode e copia o
+setor para a janela iniciada em `0x00100000`. A imagem completa nunca precisa
+caber na memória baixa.
+
+A quantidade de setores continua calculada durante o build. O stage2 recusa
+imagens cujo conteúdo carregável ultrapasse `0x00800000`, enquanto o linker
+aplica o mesmo limite ao kernel, incluindo a BSS.
 
 ### Etapa 5: Configurar GDT
 
@@ -107,7 +113,7 @@ protected_mode:
     mov esp, 0x9F000       ; Kernel stack
 
     mov esi, 0x3000        ; Passa mapa de memória
-    call 0x10000           ; Chama kernel_main()
+    call 0x00100000        ; Chama kernel_main()
 ```
 
 ## Layout da Memória
@@ -117,10 +123,12 @@ protected_mode:
 0x5000   → Segundo estágio do bootloader
 0x3000   → Mapa de memória E820 e contador
 0x2000   → Informações do modo VESA
-0x10000–0x88000  → Kernel carregado do disco e BSS (480 KiB)
 0x88000–0x98000  → Bitmaps do PMM
 0x98000–0x9F000  → Stack inicial do kernel
 0x9F000–0xA0000  → Margem reservada para BIOS/EBDA
+0x100000–0x800000 → Kernel carregado e BSS (7 MiB)
+0x800000–0x1000000 → Janela virtual ZAPP e reserva física
+0x1000000–0x1400000 → Heap do kernel (4 MiB)
 0x1F00   → Stack temporária do stage2
 ```
 
@@ -132,7 +140,11 @@ O bootloader inclui um BPB para compatibilidade com FAT12:
 |-------|-------|-----------|
 | bytes_per_sector | 512 | Tamanho de cada setor |
 | sectors_per_cluster | 1 | Setores por cluster |
-| reserved_sectors | 1 | Setores reservados |
+| reserved_sectors | dinâmico | `ceil((boot + stage2 + kernel) / 512)` |
 | num_fats | 2 | Número de tabelas FAT |
 | root_entries | 224 | Entradas no diretório raiz |
 | total_sectors | 2880 | Total de setores (1.44 MB) |
+
+O valor montado inicialmente no setor de boot é substituído pelo empacotador
+ao finalizar a imagem. A gravação só ocorre depois de validar assinatura,
+geometria FAT12, capacidade e preservação integral do payload.
