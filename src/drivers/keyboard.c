@@ -5,8 +5,8 @@
 #include "process/process.h"
 
 
-#define KEYBOARD_QUEUE_SIZE 64
-#define KEYBOARD_DISPATCH_BUDGET 8U
+#define KEYBOARD_QUEUE_SIZE 256U
+#define KEYBOARD_DISPATCH_BUDGET (IPC_MSG_QUEUE_SIZE / 2U)
 #define KEYBOARD_SCANCODE_F12 0x58U
 #define KEYBOARD_SCANCODE_ISO_SLASH 0x56U
 #define KEYBOARD_SCANCODE_ABNT2_SLASH 0x73U
@@ -101,9 +101,8 @@ void keyboard_process_events(void) {
         drop_warning_active = 0;
     }
 
-    /* Limita o lote para que o consumidor do foco execute entre os envios.
-       Sem esse controle, uma saida longa do Shell permite que a IRQ encha a
-       fila fisica e o processo System sature a fila IPC em uma unica vez. */
+    /* O lote fica abaixo da capacidade IPC para o consumidor executar entre
+       envios. A fila fisica maior absorve rajadas durante saidas longas. */
     while (queue_tail != queue_head &&
            dispatched < KEYBOARD_DISPATCH_BUDGET) {
         uint8_t scancode = event_queue[queue_tail];

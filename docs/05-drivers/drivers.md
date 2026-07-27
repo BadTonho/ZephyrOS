@@ -129,7 +129,9 @@ static const char scancode_table[128] = {
 `keyboard_metrics_t` informa ocupacao atual e capacidade da fila, descartes,
 eventos processados e o maior pico de ocupacao desde o boot. Esses valores
 aparecem em `kmetrics` e permitem separar atraso de entrada de custo de
-renderizacao sem alterar o despacho por IPC.
+renderizacao sem alterar o despacho por IPC. A fila fisica comporta 255
+eventos e o processo System encaminha lotes de ate 16; o Shell tambem consome
+ate 16 eventos por rodada, abaixo da capacidade util de 31 mensagens IPC.
 
 ---
 

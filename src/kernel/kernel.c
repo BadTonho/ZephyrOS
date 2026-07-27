@@ -36,6 +36,8 @@
 #include "apps/taskmanager.h"
 #include "apps/guitest.h"
 
+#define SHELL_KEYBOARD_DISPATCH_BUDGET (IPC_MSG_QUEUE_SIZE / 2U)
+
 static int kernel_service_fallback = 0;
 static uint32_t kernel_shell_pid = 0;
 static volatile uint32_t kernel_pending_shell_request = 0;
@@ -296,13 +298,21 @@ void shell_process_main(void) {
     shell_init();
     ipc_msg_t msg;
     while (1) {
-        if (ipc_receive(&msg)) {
+        uint32_t keyboard_events = 0;
+        int received = 0;
+
+        while (keyboard_events < SHELL_KEYBOARD_DISPATCH_BUDGET &&
+               ipc_receive(&msg)) {
+            received = 1;
             if (msg.type == IPC_MSG_KEYBOARD) {
                 shell_handle_key((uint8_t)msg.data1);
+                keyboard_events++;
             } else if (msg.type == IPC_MSG_APP_REQUEST) {
                 shell_handle_app_request(msg.data1);
+                break;
             }
-        } else {
+        }
+        if (!received) {
             process_yield();
         }
         app_loader_reap_finished();

@@ -31,10 +31,17 @@ mudanca; nao crie uma entrada artificial.
   etapa.
 - Depois: as mesmas paginas e o mesmo contrato identity-mapped sao montados
   diretamente por tabela, sem a pesquisa de diretorios por pagina.
-  `paging_boot_stats_t` torna paginas, tabelas e ticks observaveis; os valores
-  de tempo no QEMU permanecem pendentes da validacao manual do usuario.
-- Conclusao: o custo estrutural redundante foi removido sem migrar o PMM para
-  mapeamento sob demanda; a conclusao temporal depende do teste no QEMU.
+  `paging_boot_stats_t` torna paginas, tabelas e ticks observaveis.
+- Validacao QEMU inicial (128 MiB): `paging boot: paginas=31051 tabelas=31
+  ticks=0`; o tempo ficou abaixo da resolucao de 20 ms do PIT. `memcheck`,
+  `schedcheck` e `regcheck` terminaram em `OK`.
+- A mesma sessao revelou uma regressao independente no caminho de entrada:
+  pico de `63/63` e `180` descartes. A fila fisica passa a comportar 255
+  eventos e o Shell consome ate 16 eventos de teclado por rodada; a fila IPC
+  continua protegida pelo limite de 31 mensagens uteis.
+- Conclusao: o custo estrutural redundante do bootstrap foi removido sem
+  migrar o PMM para mapeamento sob demanda. A validacao manual final deve
+  confirmar pico abaixo de 255 e zero descartes durante a digitacao normal.
 - Impacto: enderecos High Memory, ABI ZAPP, RAM suportada, stage2 e
   `boot.asm` permanecem inalterados. O Shell deixa a atualizacao do relogio
   exclusivamente com o processo System e seu fallback.
