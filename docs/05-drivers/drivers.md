@@ -136,7 +136,8 @@ keyboard_set_callback(shell_handle_key);
 
 ## Mouse Driver (`mouse.c`)
 
-Driver de mouse PS/2 que captura movimentos e cliques via IRQ12.
+Driver de mouse PS/2 que captura movimentos, cliques e, quando o dispositivo
+oferece o protocolo Intellimouse, roda vertical via IRQ12.
 
 ### Inicialização
 
@@ -144,7 +145,10 @@ Driver de mouse PS/2 que captura movimentos e cliques via IRQ12.
 mouse_init();
 ```
 
-Configura o controlador PS/2 para habilitar o mouse auxiliar (comandos 0xA8, 0xD3, 0xF4).
+Configura o controlador PS/2 para habilitar o mouse auxiliar e negocia a
+sequencia de taxas `200, 100, 80` do Intellimouse. Se o dispositivo nao
+confirmar a identificacao `0x03`, o driver mantem o protocolo de tres bytes e
+registra um unico aviso; movimento e cliques continuam operacionais.
 
 ### Fluxo de Dados
 
@@ -161,14 +165,24 @@ mouse_callback_t mouse_set_callback(mouse_callback_t cb);
 int            mouse_get_x(void);
 int            mouse_get_y(void);
 uint8_t        mouse_get_buttons(void);
+int            mouse_has_wheel(void);
 ```
+
+`mouse_has_wheel()` retorna diferente de zero somente depois que a negociacao
+Intellimouse conclui com sucesso. Os pacotes comuns continuam tendo tres bytes;
+os de roda usam quatro bytes e geram `MOUSE_EVENT_WHEEL`.
 
 ### Callback
 
 ```c
-void my_handler(int x, int y, uint8_t buttons) {
-    if (buttons & MOUSE_LEFT) { /* clique esquerdo */ }
-    if (buttons & MOUSE_RIGHT) { /* clique direito */ }
+void my_handler(mouse_event_t* event) {
+    if (event->event == MOUSE_EVENT_PRESS &&
+        (event->changed & MOUSE_BTN_LEFT)) {
+        /* clique esquerdo */
+    }
+    if (event->event == MOUSE_EVENT_WHEEL) {
+        /* event->wheel positivo representa roda para cima */
+    }
 }
 
 mouse_set_callback(my_handler);
@@ -191,7 +205,7 @@ faixa grande do framebuffer sem alterar a fila, os callbacks ou os cliques.
 ### Comando Shell
 
 ```bash
-mouse          # Mostra X, Y e estado dos botões
+mouse          # Mostra X, Y, botoes e disponibilidade da roda
 ```
 
 ### Limitações
@@ -199,6 +213,7 @@ mouse          # Mostra X, Y e estado dos botões
 - Movimento relativo apenas (sem posição absoluta)
 - Velocidade fixa (MOUSE_SPEED = 3)
 - Cursor de 12x16 pixels
+- Roda vertical opcional; botao central e roda horizontal nao sao tratados
 
 ---
 

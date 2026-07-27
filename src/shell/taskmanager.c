@@ -53,6 +53,8 @@
 #define TSKMGR_GUI_MARGIN 12
 #define TSKMGR_GUI_TAB_HEIGHT 24
 #define TSKMGR_GUI_ROW_HEIGHT 24
+#define TSKMGR_GUI_LIST_HEADER_HEIGHT 36
+#define TSKMGR_GUI_THREADS_ROW_OFFSET 70
 #define TSKMGR_GUI_MAX_VISIBLE_ROWS 14
 #define TSKMGR_GUI_DETAIL_WIDTH 250
 #define TSKMGR_GUI_DETAIL_MIN_WIDTH 210
@@ -1884,6 +1886,73 @@ static int taskmgr_gui_hit(int x, int y, int left, int top, int width, int heigh
     return x >= left && x < left + width && y >= top && y < top + height;
 }
 
+static int taskmgr_gui_scroll_selected(int delta) {
+    int indexes[MAX_PROCESSES];
+    int count;
+    int visible_rows;
+    int previous = selected_row;
+
+    if (selected_tab == 0) {
+        count = taskmgr_collect_processes(indexes);
+        visible_rows = taskmgr_gui_process_visible_rows();
+    } else if (selected_tab == 2) {
+        count = (int)thread_get_count();
+        visible_rows = taskmgr_gui_visible_rows();
+    } else {
+        return 0;
+    }
+    if (count <= 0 || delta == 0) return 0;
+
+    while (delta > 0 && selected_row > 0) {
+        selected_row--;
+        delta--;
+    }
+    while (delta < 0 && selected_row < count - 1) {
+        selected_row++;
+        delta++;
+    }
+    if (selected_row == previous) return 0;
+
+    if (selected_row < scroll_offset) {
+        scroll_offset = selected_row;
+    } else if (selected_row >= scroll_offset + visible_rows) {
+        scroll_offset = selected_row - visible_rows + 1;
+    }
+    if (scroll_offset < 0) scroll_offset = 0;
+    if (scroll_offset > count - visible_rows) {
+        scroll_offset = count > visible_rows ? count - visible_rows : 0;
+    }
+    if (selected_tab == 0 && taskmgr_find_process_by_row(selected_row)) {
+        prop_pid = taskmgr_find_process_by_row(selected_row)->pid;
+    }
+    return 1;
+}
+
+static int taskmgr_gui_handle_wheel(mouse_event_t* event) {
+    int process_list_width;
+
+    if (!event || event->wheel == 0 || show_properties) return 0;
+    process_list_width = gui_width - TSKMGR_GUI_MARGIN * 2;
+    if (taskmgr_gui_has_side_details()) {
+        process_list_width -= TSKMGR_GUI_DETAIL_WIDTH + 8;
+    }
+    if (selected_tab == 0 && taskmgr_gui_hit(event->x, event->y,
+            gui_x + TSKMGR_GUI_MARGIN,
+            taskmgr_gui_process_list_y() + TSKMGR_GUI_LIST_HEADER_HEIGHT,
+            process_list_width, taskmgr_gui_process_visible_rows() *
+            TSKMGR_GUI_ROW_HEIGHT)) {
+        return taskmgr_gui_scroll_selected(event->wheel);
+    }
+    if (selected_tab == 2 && taskmgr_gui_hit(event->x, event->y,
+            gui_x + TSKMGR_GUI_MARGIN,
+            gui_y + 68 + TSKMGR_GUI_THREADS_ROW_OFFSET,
+            gui_width - TSKMGR_GUI_MARGIN * 2,
+            taskmgr_gui_visible_rows() * TSKMGR_GUI_ROW_HEIGHT)) {
+        return taskmgr_gui_scroll_selected(event->wheel);
+    }
+    return 0;
+}
+
 int taskmgr_gui_handle_mouse(mouse_event_t* event) {
     int close_x;
     int maximize_x;
@@ -1896,6 +1965,9 @@ int taskmgr_gui_handle_mouse(mouse_event_t* event) {
     }
     if (!gui_open) return 0;
     if (gui_minimized) return 1;
+    if (event->event == MOUSE_EVENT_WHEEL) {
+        return taskmgr_gui_handle_wheel(event);
+    }
     if (event->event == MOUSE_EVENT_MOVE && gui_drag_active) {
         gui_x = event->x - gui_drag_offset_x;
         gui_y = event->y - gui_drag_offset_y;

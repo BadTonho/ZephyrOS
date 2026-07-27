@@ -40,8 +40,8 @@ visual atual.
   foco, Z-order, controles de titulo e a composicao com cursor invalidado.
 - [x] Avaliar arraste de icones depois de existir hit-testing e invalidacao de
   regioes confiaveis.
-- [ ] Roda do mouse e melhorias de acessibilidade ficam apos a entrada basica
-  estar estavel.
+- [x] Separar roda do mouse e acessibilidade para a etapa UI7, apos a entrada
+  basica estar estavel.
 
 ## Etapa UI4 - Aplicativos hospedados pelo Window Manager
 
@@ -73,6 +73,20 @@ visual atual.
   como fallback para filesystem, arquivo, formato ou memoria indisponiveis.
 - [x] Validar no QEMU os BMPs, o comando `icons`, o fallback e a ausencia de
   regressao no modo Classico antes de concluir a etapa.
+
+## Etapa UI7 - Roda PS/2 e acessibilidade de janelas
+
+- [ ] Negociar Intellimouse no driver PS/2, publicar eventos de roda vertical
+  e manter fallback seguro de tres bytes quando o hardware nao oferecer suporte.
+- [ ] Entregar a roda apenas ao conteudo da janela superior sob o cursor, sem
+  alterar foco ou Z-order e preservando a prioridade da taskbar e do Menu
+  Iniciar.
+- [ ] Aplicar scroll ao Shell, Explorer e Task Manager e manter Settings sem
+  acao de roda.
+- [ ] Adicionar `Alt+Tab`, `Alt+Shift+Tab`, `Alt+F4`, `Alt+F9` e `Alt+F10` ao
+  WM Moderno, com contorno azul de foco e sem regressao dos atalhos Classicos.
+- [ ] Validar no QEMU a roda, os atalhos, taskbar nas cinco posicoes e os
+  fluxos essenciais dos modos Moderno e Classico antes de concluir a etapa.
 
 ## Fora do escopo atual
 

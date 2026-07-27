@@ -49,8 +49,8 @@ primitivas, permitindo:
 
 As posições duram somente até reiniciar. Shell, Explorer e Task Manager usam
 BMPs 24 bpp de 32×32 px no modo moderno quando estiverem no cache; os arquivos
-usam magenta como cor transparente. Roda do mouse, seleção múltipla e
-persistência em disco continuam fora do modo moderno atual.
+usam magenta como cor transparente. Seleção múltipla e persistência em disco
+continuam fora do modo moderno atual.
 
 No modo Clássico, os ícones são organizados em grade (5 colunas) e mostrados na VGA Text Mode/Grid:
 
@@ -130,6 +130,17 @@ criam ou focalizam uma única janela de cada tipo.
   fecham, minimizam ou maximizam/restauram. Teclado e mouse do conteúdo são
   encaminhados ao aplicativo focalizado; `Esc`, `Tab`, `F1` e `F2` não são
   atalhos globais do WM moderno. Em um workspace vazio, `Esc` não produz ação.
+  A janela focalizada recebe um contorno azul de 2 px, além da sua barra de
+  título ativa.
+
+### Acessibilidade por teclado
+
+No modo Moderno, `Alt+Tab` avança o foco entre janelas visíveis e
+`Alt+Shift+Tab` retorna. `Alt+F4` fecha a janela focalizada, `Alt+F9` a
+minimiza e `Alt+F10` alterna entre maximizar e restaurar. Esses atalhos não
+alteram a API pública do WM. Teclas sem `Alt`, inclusive `Tab`, `F1` e `F2`,
+continuam sendo encaminhadas diretamente ao aplicativo focalizado. O modo
+Clássico preserva os atalhos do WM textual.
 
 ### Estrutura de Janela
 
@@ -202,7 +213,7 @@ aviso e o chamador mantém o fluxo TUI correspondente.
 
 ### Integração com o Mouse
 
-O kernel entrega cliques primeiro à taskbar. Botões de janela da taskbar pedem
+O kernel entrega cliques e roda primeiro à taskbar e ao Menu Iniciar. Botões de janela da taskbar pedem
 `wm_toggle_window(id)`: uma janela minimizada é restaurada, uma janela visível
 sem foco é focalizada e a janela focalizada é minimizada. Com o WM ativo, seus
 eventos consomem o mouse antes de Desktop e aplicativos.
@@ -214,8 +225,17 @@ redimensionamento. A captura termina em `RELEASE`; janelas maximizadas devem
 ser restauradas antes de mover ou redimensionar. Cada aplicativo desenha somente
 seu conteúdo e solicita recomposição ao mudar de estado; o WM recompõe o
 workspace no backbuffer, desenha a taskbar por último e invalida o cursor antes
-da pintura. Arraste de ícones, BMP, roda do mouse e aplicativos externos ainda
-não são hospedados.
+da pintura.
+
+A roda só é entregue à área de conteúdo da janela visível de maior Z-order sob
+o cursor; ela não focaliza nem altera a ordem das janelas. Barra de título,
+bordas, Desktop vazio, taskbar e Menu Iniciar a consomem ou ignoram antes que
+ela alcance um aplicativo. Shell rola três linhas visuais por notch; Explorer
+move a seleção somente sobre a lista de arquivos; Task Manager faz o mesmo nas
+listas de Processos e Threads. Settings não tem uma área rolável e ignora a
+roda. Arraste de ícones, BMP e aplicativos externos já são componentes
+separados do Desktop moderno; seleção múltipla e roda fora das janelas
+hospedadas continuam fora do escopo.
 
 ---
 

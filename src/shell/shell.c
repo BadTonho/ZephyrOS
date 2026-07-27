@@ -140,6 +140,8 @@ static void shell_handle_terminal_key(uint8_t scancode);
 static int shell_open_hosted(void);
 static void shell_hosted_draw(int x, int y, int width, int height);
 static void shell_hosted_key(uint8_t scancode);
+static int shell_hosted_mouse(mouse_event_t* event, int x, int y,
+                              int width, int height);
 static void shell_hosted_close(void);
 static int shell_is_hosted_visible(void);
 static void shell_suspend_terminal(void);
@@ -149,7 +151,7 @@ static const wm_hosted_app_t shell_hosted_app = {
     WM_HOSTED_MIN_WIDTH, WM_HOSTED_MIN_HEIGHT,
     SHELL_HOSTED_DEFAULT_CONTENT_WIDTH + SHELL_HOSTED_FRAME_WIDTH,
     SHELL_HOSTED_DEFAULT_CONTENT_HEIGHT + SHELL_HOSTED_FRAME_HEIGHT,
-    shell_hosted_draw, shell_hosted_key, 0, shell_hosted_close
+    shell_hosted_draw, shell_hosted_key, shell_hosted_mouse, shell_hosted_close
 };
 static shell_q2check_t shell_q2check;
 static shell_regcheck_t shell_regcheck;
@@ -165,6 +167,7 @@ static shell_kmetrics_baseline_t shell_kmetrics_baseline;
 #define SHELL_SCANCODE_HOME     0x47
 #define SHELL_SCANCODE_END      0x4F
 #define SHELL_SCROLL_PAGE_LINES 20
+#define SHELL_WHEEL_SCROLL_LINES 3
 
 static void print_num(uint32_t num);
 
@@ -446,6 +449,26 @@ static void shell_hosted_key(uint8_t scancode) {
     shell_handle_terminal_key(scancode);
     /* O WM recompõe ao fim do despacho da tecla; evita um segundo frame no loop. */
     (void)video_terminal_take_hosted_dirty();
+}
+
+static int shell_hosted_mouse(mouse_event_t* event, int x, int y,
+                              int width, int height) {
+    (void)x;
+    (void)y;
+    (void)width;
+    (void)height;
+
+    if (!event) {
+        LOG_ERROR("SHELL", "Evento de mouse nulo no terminal hospedado");
+        return 0;
+    }
+    if (event->event != MOUSE_EVENT_WHEEL || event->wheel == 0) return 0;
+    if (!video_terminal_scroll(event->wheel * SHELL_WHEEL_SCROLL_LINES)) {
+        return 0;
+    }
+    /* O WM recompõe o mesmo frame ao terminar este callback. */
+    (void)video_terminal_take_hosted_dirty();
+    return 1;
 }
 
 static void shell_hosted_close(void) {
@@ -3532,6 +3555,12 @@ int shell_process_command(const char* input) {
         print_num(mouse_get_y());
         video_print("\n  Botoes: ", 0x07);
         print_num(mouse_get_buttons());
+        video_print("\n  roda: ", 0x07);
+        if (mouse_has_wheel()) {
+            video_print("DISPONIVEL", 0x0A);
+        } else {
+            video_print("INDISPONIVEL (FALLBACK 3 BYTES)", 0x0E);
+        }
         video_print("\n", 0x07);
     } else {
         video_print("Comando nao encontrado: ", 0x0C);

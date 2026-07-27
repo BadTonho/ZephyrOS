@@ -14,6 +14,22 @@
 
 /* Tamanho da fila circular de pacotes brutos */
 #define MOUSE_QUEUE_SIZE 128
+#define MOUSE_PACKET_STANDARD_SIZE 3
+#define MOUSE_PACKET_WHEEL_SIZE 4
+#define MOUSE_CMD_SET_DEFAULTS 0xF6
+#define MOUSE_CMD_SET_SAMPLE_RATE 0xF3
+#define MOUSE_CMD_ENABLE_REPORTING 0xF4
+#define MOUSE_CMD_GET_DEVICE_ID 0xF2
+#define MOUSE_RESPONSE_ACK 0xFA
+#define MOUSE_ID_INTELLIMOUSE 0x03
+#define MOUSE_SAMPLE_RATE_FAST 200
+#define MOUSE_SAMPLE_RATE_MID 100
+#define MOUSE_SAMPLE_RATE_WHEEL 80
+#define MOUSE_WHEEL_VALUE_MASK 0x0F
+#define MOUSE_WHEEL_SIGN_BIT 0x08
+#define MOUSE_WHEEL_SIGN_EXTEND 0xF0
+#define MOUSE_WHEEL_DELTA_MAX 127
+#define MOUSE_WHEEL_DELTA_MIN -127
 
 typedef struct {
     uint32_t x;
@@ -42,9 +58,12 @@ static int cursor_visible = 1;
 static uint8_t prev_buttons = 0;
 static uint8_t current_buttons = 0;
 
-/* Sincronizacao do protocolo PS/2 de 3 bytes */
+/* Sincronizacao do protocolo PS/2, com fallback para tres bytes. */
 static uint8_t cycle = 0;
-static uint8_t packet[3];
+static uint8_t packet[MOUSE_PACKET_WHEEL_SIZE];
+static uint8_t packet_size = MOUSE_PACKET_STANDARD_SIZE;
+static int wheel_supported = 0;
+static int wheel_fallback_logged = 0;
 
 static uint8_t inb(uint16_t port) {
     uint8_t result;
@@ -81,6 +100,38 @@ static void mouse_write(uint8_t a_write) {
 static uint8_t mouse_read(void) {
     mouse_wait(0);
     return inb(0x60);
+}
+
+static int mouse_write_ack(uint8_t value) {
+    mouse_write(value);
+    return mouse_read() == MOUSE_RESPONSE_ACK;
+}
+
+static int mouse_set_sample_rate(uint8_t rate) {
+    return mouse_write_ack(MOUSE_CMD_SET_SAMPLE_RATE) && mouse_write_ack(rate);
+}
+
+static int mouse_enable_wheel_protocol(void) {
+    uint8_t device_id;
+
+    if (!mouse_set_sample_rate(MOUSE_SAMPLE_RATE_FAST) ||
+        !mouse_set_sample_rate(MOUSE_SAMPLE_RATE_MID) ||
+        !mouse_set_sample_rate(MOUSE_SAMPLE_RATE_WHEEL) ||
+        !mouse_write_ack(MOUSE_CMD_GET_DEVICE_ID)) {
+        return 0;
+    }
+    device_id = mouse_read();
+    if (device_id != MOUSE_ID_INTELLIMOUSE) return 0;
+
+    packet_size = MOUSE_PACKET_WHEEL_SIZE;
+    wheel_supported = 1;
+    return 1;
+}
+
+static int8_t mouse_decode_wheel(uint8_t value) {
+    value &= MOUSE_WHEEL_VALUE_MASK;
+    if (value & MOUSE_WHEEL_SIGN_BIT) value |= MOUSE_WHEEL_SIGN_EXTEND;
+    return (int8_t)value;
 }
 
 /* ========== Renderizacao do cursor ========== */
@@ -251,7 +302,7 @@ static void mouse_handler(registers_t* regs) {
     if (!(status & 0x20)) return;
 
     packet[cycle++] = inb(0x60);
-    if (cycle == 3) {
+    if (cycle == packet_size) {
         cycle = 0;
 
         /* Valida pacote: bits 6-7 devem ser 0, bit 3 deve ser 1 */
@@ -264,6 +315,8 @@ static void mouse_handler(registers_t* regs) {
 
             event_queue[queue_tail].dx = dx;
             event_queue[queue_tail].dy = dy;
+            event_queue[queue_tail].wheel = wheel_supported ?
+                mouse_decode_wheel(packet[3]) : 0;
             event_queue[queue_tail].buttons = packet[0] & 0x07;
             queue_tail = next_tail;
         }
@@ -274,6 +327,9 @@ static void mouse_handler(registers_t* regs) {
 
 void mouse_init(void) {
     LOG_INFO("MOUSE", "Inicializando driver PS/2...");
+    packet_size = MOUSE_PACKET_STANDARD_SIZE;
+    wheel_supported = 0;
+    cycle = 0;
 
     /* Habilita porta auxiliar (mouse) */
     mouse_wait(1);
@@ -290,18 +346,24 @@ void mouse_init(void) {
     outb(0x60, status);
 
     /* Restaura padroes */
-    mouse_write(0xF6);
+    mouse_write(MOUSE_CMD_SET_DEFAULTS);
     mouse_read();
 
-    /* Configura sample rate para 200 amostras/s (mais responsivo) */
-    mouse_write(0xF3);
-    mouse_read();
-    mouse_write(200);
-    mouse_read();
+    if (mouse_enable_wheel_protocol()) {
+        LOG_INFO("MOUSE", "Roda PS/2 habilitada");
+    } else {
+        /* O protocolo basico conserva a taxa de movimento anterior. */
+        (void)mouse_set_sample_rate(MOUSE_SAMPLE_RATE_FAST);
+        if (!wheel_fallback_logged) {
+            wheel_fallback_logged = 1;
+            LOG_WARN("MOUSE", "Roda PS/2 indisponivel; usando protocolo basico");
+        }
+    }
 
     /* Habilita data reporting */
-    mouse_write(0xF4);
-    mouse_read();
+    if (!mouse_write_ack(MOUSE_CMD_ENABLE_REPORTING)) {
+        LOG_WARN("MOUSE", "Nao confirmou habilitacao de dados do mouse");
+    }
 
     /* Registra handler na IRQ12 (INT 44) */
     if (idt_register_handler(44, (isr_handler_t)mouse_handler) != OK) {
@@ -351,6 +413,7 @@ void mouse_process_events(void) {
      */
     int32_t total_dx = 0;
     int32_t total_dy = 0;
+    int32_t total_wheel = 0;
     uint8_t next_buttons = current_buttons;
 
     while (queue_head != queue_tail) {
@@ -359,10 +422,12 @@ void mouse_process_events(void) {
 
         total_dx += pkt.dx;
         total_dy += pkt.dy;
+        total_wheel += pkt.wheel;
         if (pkt.buttons != current_buttons) {
             next_buttons = pkt.buttons;
             break;
         }
+        if (pkt.wheel != 0) break;
     }
 
     /* Aplica multiplicador de velocidade */
@@ -389,6 +454,7 @@ void mouse_process_events(void) {
         evt.y = cursor_y;
         evt.buttons = current_buttons;
         evt.changed = changed;
+        evt.wheel = 0;
 
         if (changed) {
             /* Algum botao mudou de estado */
@@ -397,6 +463,16 @@ void mouse_process_events(void) {
             } else {
                 evt.event = MOUSE_EVENT_RELEASE;
             }
+            current_callback(&evt);
+        } else if (total_wheel != 0) {
+            if (total_wheel > MOUSE_WHEEL_DELTA_MAX) {
+                total_wheel = MOUSE_WHEEL_DELTA_MAX;
+            }
+            if (total_wheel < MOUSE_WHEEL_DELTA_MIN) {
+                total_wheel = MOUSE_WHEEL_DELTA_MIN;
+            }
+            evt.event = MOUSE_EVENT_WHEEL;
+            evt.wheel = (int8_t)total_wheel;
             current_callback(&evt);
         } else if (total_dx != 0 || total_dy != 0) {
             evt.event = MOUSE_EVENT_MOVE;
@@ -424,4 +500,12 @@ int mouse_get_y(void) { return cursor_y; }
 
 uint8_t mouse_get_buttons(void) {
     return current_buttons;
+}
+
+int mouse_has_wheel(void) {
+    if (!driver_initialized) {
+        LOG_WARN("MOUSE", "Consulta de roda antes da inicializacao");
+        return 0;
+    }
+    return wheel_supported;
 }

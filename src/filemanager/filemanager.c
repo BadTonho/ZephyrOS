@@ -106,13 +106,15 @@ static void fm_modern_draw_input_dialog(void);
 static void fm_modern_draw_help(void);
 static void fm_modern_draw_view_file(void);
 static void fm_hosted_draw(int x, int y, int width, int height);
+static int fm_hosted_mouse(mouse_event_t* event, int x, int y,
+                           int width, int height);
 static void fm_hosted_close(void);
 
 static const wm_hosted_app_t fm_hosted_app = {
     WM_APP_EXPLORER, "ZephyrOS Explorer", "Explorer",
     WM_HOSTED_MIN_WIDTH, WM_HOSTED_MIN_HEIGHT,
     FM_MODERN_DEFAULT_WIDTH + 4, FM_MODERN_DEFAULT_HEIGHT + 28,
-    fm_hosted_draw, fm_handle_key, 0, fm_hosted_close
+    fm_hosted_draw, fm_handle_key, fm_hosted_mouse, fm_hosted_close
 };
 
 static void int_to_str(uint32_t num, char* buf) {
@@ -1237,6 +1239,71 @@ static void fm_draw_all(void) {
 
 void fm_draw(void) {
     fm_draw_all();
+}
+
+static int fm_scroll_file_selection(int delta) {
+    int rows;
+    int previous = state.selected;
+
+    if (state.file_count <= 0 || delta == 0) return 0;
+    while (delta > 0 && state.selected > 0) {
+        state.selected--;
+        delta--;
+    }
+    while (delta < 0 && state.selected < state.file_count - 1) {
+        state.selected++;
+        delta++;
+    }
+    if (state.selected == previous) return 0;
+
+    rows = fm_visible_rows();
+    if (state.selected < state.scroll_offset) {
+        state.scroll_offset = state.selected;
+    } else if (state.selected >= state.scroll_offset + rows) {
+        state.scroll_offset = state.selected - rows + 1;
+    }
+    return 1;
+}
+
+static int fm_hosted_mouse(mouse_event_t* event, int x, int y,
+                           int width, int height) {
+    int content_x;
+    int content_y;
+    int content_width;
+    int content_height;
+    int list_x;
+    int list_width;
+    int list_y;
+
+    if (!event) {
+        LOG_ERROR("FM", "Evento de mouse nulo no Explorer hospedado");
+        return 0;
+    }
+    if (event->event != MOUSE_EVENT_WHEEL || event->wheel == 0 ||
+        input_mode != 0 || fm_help_mode) return 0;
+
+    fm_hosted_x = x;
+    fm_hosted_y = y;
+    fm_hosted_width = width;
+    fm_hosted_height = height;
+    if (!fm_modern_get_layout(&content_x, &content_y,
+                              &content_width, &content_height)) return 0;
+
+    list_x = content_x + FM_MODERN_INSET + FM_MODERN_SIDE_WIDTH +
+             FM_MODERN_PANE_GAP;
+    list_width = content_width - (FM_MODERN_INSET * 2) -
+                 FM_MODERN_SIDE_WIDTH - FM_MODERN_PANE_GAP;
+    list_y = content_y + FM_MODERN_CONTENT_OFFSET +
+             FM_MODERN_TOOLBAR_HEIGHT + FM_MODERN_PANE_GAP +
+             FM_MODERN_ADDRESS_HEIGHT + FM_MODERN_PANE_GAP + 4 +
+             FM_MODERN_HEADER_HEIGHT + 4;
+    if (event->x < list_x || event->x >= list_x + list_width ||
+        event->y < list_y ||
+        event->y >= list_y + fm_visible_rows() *
+                    (FM_MODERN_ROW_HEIGHT + FM_MODERN_ROW_GAP)) {
+        return 0;
+    }
+    return fm_scroll_file_selection(event->wheel);
 }
 
 static void fm_hosted_draw(int x, int y, int width, int height) {

@@ -28,11 +28,24 @@ static int wm_active = 0;
 #define WM_GUI_CONTENT_TOP (WM_GUI_FRAME_INSET + WM_GUI_TITLE_HEIGHT)
 #define WM_GUI_CONTENT_BOTTOM WM_GUI_FRAME_INSET
 #define WM_GUI_RESIZE_ZONE 8
+#define WM_GUI_FOCUS_RING_WIDTH 2
 #define WM_GUI_RESIZE_LEFT 0x01
 #define WM_GUI_RESIZE_RIGHT 0x02
 #define WM_GUI_RESIZE_TOP 0x04
 #define WM_GUI_RESIZE_BOTTOM 0x08
+#define WM_GUI_SHIFT_LEFT_MASK 0x01
+#define WM_GUI_SHIFT_RIGHT_MASK 0x02
 #define WM_SCANCODE_EXTENDED 0xE0
+#define WM_SCANCODE_ALT 0x38
+#define WM_SCANCODE_ALT_RELEASE 0xB8
+#define WM_SCANCODE_SHIFT_LEFT 0x2A
+#define WM_SCANCODE_SHIFT_RIGHT 0x36
+#define WM_SCANCODE_SHIFT_LEFT_RELEASE 0xAA
+#define WM_SCANCODE_SHIFT_RIGHT_RELEASE 0xB6
+#define WM_SCANCODE_TAB 0x0F
+#define WM_SCANCODE_F4 0x3E
+#define WM_SCANCODE_F9 0x43
+#define WM_SCANCODE_F10 0x44
 
 typedef enum {
     WM_GUI_CONTROL_CLOSE = 0,
@@ -72,6 +85,9 @@ static int wm_gui_drag_offset_x = 0;
 static int wm_gui_drag_offset_y = 0;
 static int wm_gui_resize_edges = 0;
 static int wm_gui_dispatching_input = 0;
+static uint8_t wm_gui_alt_down = 0;
+static uint8_t wm_gui_shift_mask = 0;
+static uint8_t wm_gui_extended_scancode = 0;
 
 static int wm_gui_enabled(void);
 static int wm_gui_get_work_area(tb_rect_t* work_area);
@@ -80,11 +96,14 @@ static void wm_gui_draw_all(void);
 static void wm_gui_sync_taskbar(void);
 static void wm_gui_focus(int index);
 static void wm_gui_focus_next(void);
+static void wm_gui_focus_prev(void);
 static void wm_gui_minimize(int index);
 static void wm_gui_maximize_or_restore(int index);
 static void wm_gui_close(int index, int notify_app);
 static void wm_gui_clear_interaction(void);
 static int wm_gui_handle_mouse(mouse_event_t* event);
+static int wm_gui_handle_wheel(mouse_event_t* event);
+static int wm_gui_handle_key(uint8_t scancode);
 static int wm_gui_find_app(wm_app_type_t app_type);
 static int wm_gui_has_live_windows(void);
 static int wm_gui_return_to_desktop_if_empty(void);
@@ -211,6 +230,22 @@ static void wm_gui_focus_next(void) {
     }
 }
 
+static void wm_gui_focus_prev(void) {
+    int start = wm_gui_focused;
+
+    if (wm_gui_window_count == 0) return;
+    if (start < 0 || start >= wm_gui_window_count) start = 0;
+    for (int offset = 1; offset <= wm_gui_window_count; offset++) {
+        int index = (start - offset + wm_gui_window_count) %
+                    wm_gui_window_count;
+
+        if (wm_gui_windows[index].visible) {
+            wm_gui_focus(index);
+            return;
+        }
+    }
+}
+
 static void wm_gui_reset(void) {
     wm_gui_clear_interaction();
     wm_gui_dispatching_input = 0;
@@ -223,6 +258,9 @@ static void wm_gui_reset(void) {
     wm_gui_window_count = 0;
     wm_gui_focused = -1;
     wm_gui_z_counter = 0;
+    wm_gui_alt_down = 0;
+    wm_gui_shift_mask = 0;
+    wm_gui_extended_scancode = 0;
 }
 
 static vesa_color_t wm_gui_color(uint32_t raw) {
@@ -293,11 +331,22 @@ static int wm_gui_point_in_content(const wm_gui_window_t* window, int x, int y) 
 static void wm_gui_draw_window(const wm_gui_window_t* window) {
     vesa_color_t title_color = wm_gui_color(window->focused ?
                                                GUI_COLOR_TITLE_BG : 0x00606060);
+    vesa_color_t focus_color = wm_gui_color(GUI_COLOR_TITLE_BG);
     int title_x;
 
     gui_draw_panel((uint32_t)window->x, (uint32_t)window->y,
                    (uint32_t)window->width, (uint32_t)window->height,
                    GUI_COLOR_BG, wm.config.border_style != 0);
+    if (window->focused) {
+        vesa_draw_rect((uint32_t)window->x, (uint32_t)window->y,
+                       (uint32_t)window->width, (uint32_t)window->height,
+                       focus_color);
+        vesa_draw_rect((uint32_t)(window->x + WM_GUI_FOCUS_RING_WIDTH - 1),
+                       (uint32_t)(window->y + WM_GUI_FOCUS_RING_WIDTH - 1),
+                       (uint32_t)(window->width - WM_GUI_FOCUS_RING_WIDTH),
+                       (uint32_t)(window->height - WM_GUI_FOCUS_RING_WIDTH),
+                       focus_color);
+    }
     vesa_fill_rect((uint32_t)(window->x + 2), (uint32_t)(window->y + 2),
                    (uint32_t)(window->width - 4), WM_GUI_TITLE_HEIGHT,
                    title_color);
@@ -524,6 +573,34 @@ static int wm_gui_update_interaction(const mouse_event_t* event) {
     return 1;
 }
 
+static int wm_gui_handle_wheel(mouse_event_t* event) {
+    int selected = -1;
+    int highest_z = -1;
+    int handled;
+
+    if (!event || event->wheel == 0) return 0;
+    for (int i = 0; i < wm_gui_window_count; i++) {
+        if (wm_gui_windows[i].visible &&
+            wm_gui_point_in_content(&wm_gui_windows[i], event->x, event->y) &&
+            wm_gui_windows[i].z_order > highest_z) {
+            selected = i;
+            highest_z = wm_gui_windows[i].z_order;
+        }
+    }
+    if (selected < 0 || !wm_gui_windows[selected].app->on_mouse) return 0;
+
+    wm_gui_dispatching_input = 1;
+    handled = wm_gui_windows[selected].app->on_mouse(
+        event, wm_gui_windows[selected].x + WM_GUI_FRAME_INSET,
+        wm_gui_windows[selected].y + WM_GUI_CONTENT_TOP,
+        wm_gui_windows[selected].width - WM_GUI_FRAME_INSET * 2,
+        wm_gui_windows[selected].height - WM_GUI_CONTENT_TOP -
+        WM_GUI_CONTENT_BOTTOM);
+    wm_gui_dispatching_input = 0;
+    if (handled) wm_gui_draw_all();
+    return 1;
+}
+
 static int wm_gui_handle_mouse(mouse_event_t* event) {
     int selected = -1;
     int highest_z = -1;
@@ -536,6 +613,7 @@ static int wm_gui_handle_mouse(mouse_event_t* event) {
         return was_captured;
     }
     if (event->event == MOUSE_EVENT_MOVE) return wm_gui_update_interaction(event);
+    if (event->event == MOUSE_EVENT_WHEEL) return wm_gui_handle_wheel(event);
     if (event->event != MOUSE_EVENT_PRESS || !(event->changed & MOUSE_BTN_LEFT)) {
         return 0;
     }
@@ -1148,21 +1226,104 @@ void wm_resize_window(int id, int w, int h) {
     wm_draw_all();
 }
 
-int wm_handle_key(uint8_t scancode) {
-    if (!wm_active ||
-        ((scancode & 0x80) && scancode != WM_SCANCODE_EXTENDED)) {
+static void wm_gui_dispatch_key(uint8_t scancode) {
+    if (wm_gui_focused < 0 ||
+        !wm_gui_windows[wm_gui_focused].app ||
+        !wm_gui_windows[wm_gui_focused].app->on_key) return;
+
+    wm_gui_dispatching_input = 1;
+    wm_gui_windows[wm_gui_focused].app->on_key(scancode);
+    wm_gui_dispatching_input = 0;
+}
+
+static void wm_gui_dispatch_key_sequence(int extended, uint8_t scancode) {
+    if (extended) wm_gui_dispatch_key(WM_SCANCODE_EXTENDED);
+    wm_gui_dispatch_key(scancode);
+    if (wm_active && wm_gui_enabled()) wm_gui_draw_all();
+}
+
+static int wm_gui_handle_key(uint8_t scancode) {
+    int extended = wm_gui_extended_scancode;
+
+    if (scancode == WM_SCANCODE_EXTENDED) {
+        wm_gui_extended_scancode = 1;
+        return WM_RESULT_NONE;
+    }
+    wm_gui_extended_scancode = 0;
+    if (scancode == WM_SCANCODE_ALT) {
+        wm_gui_alt_down = 1;
+        return WM_RESULT_NONE;
+    }
+    if (scancode == WM_SCANCODE_ALT_RELEASE) {
+        wm_gui_alt_down = 0;
+        return WM_RESULT_NONE;
+    }
+    if (scancode == WM_SCANCODE_SHIFT_LEFT) {
+        wm_gui_shift_mask |= WM_GUI_SHIFT_LEFT_MASK;
+        wm_gui_dispatch_key(scancode);
+        return WM_RESULT_NONE;
+    }
+    if (scancode == WM_SCANCODE_SHIFT_RIGHT) {
+        wm_gui_shift_mask |= WM_GUI_SHIFT_RIGHT_MASK;
+        wm_gui_dispatch_key(scancode);
+        return WM_RESULT_NONE;
+    }
+    if (scancode == WM_SCANCODE_SHIFT_LEFT_RELEASE) {
+        wm_gui_shift_mask &= (uint8_t)~WM_GUI_SHIFT_LEFT_MASK;
+        wm_gui_dispatch_key(scancode);
+        return WM_RESULT_NONE;
+    }
+    if (scancode == WM_SCANCODE_SHIFT_RIGHT_RELEASE) {
+        wm_gui_shift_mask &= (uint8_t)~WM_GUI_SHIFT_RIGHT_MASK;
+        wm_gui_dispatch_key(scancode);
+        return WM_RESULT_NONE;
+    }
+    if (scancode & 0x80) {
+        uint8_t released = scancode & 0x7F;
+
+        if (wm_gui_alt_down &&
+            (released == WM_SCANCODE_TAB || released == WM_SCANCODE_F4 ||
+             released == WM_SCANCODE_F9 || released == WM_SCANCODE_F10)) {
+            return WM_RESULT_NONE;
+        }
+        wm_gui_dispatch_key_sequence(extended, scancode);
         return WM_RESULT_NONE;
     }
 
-    if (wm_gui_enabled()) {
-        if (wm_gui_focused >= 0 &&
-            wm_gui_windows[wm_gui_focused].app &&
-            wm_gui_windows[wm_gui_focused].app->on_key) {
-            wm_gui_dispatching_input = 1;
-            wm_gui_windows[wm_gui_focused].app->on_key(scancode);
-            wm_gui_dispatching_input = 0;
-            if (wm_active && wm_gui_enabled()) wm_gui_draw_all();
+    if (wm_gui_alt_down) {
+        if (scancode == WM_SCANCODE_TAB) {
+            if (wm_gui_shift_mask) wm_gui_focus_prev();
+            else wm_gui_focus_next();
+            wm_gui_draw_all();
+            return WM_RESULT_NONE;
         }
+        if (scancode == WM_SCANCODE_F4 && wm_gui_focused >= 0) {
+            wm_gui_close(wm_gui_focused, 1);
+            if (!wm_gui_return_to_desktop_if_empty()) wm_gui_draw_all();
+            return WM_RESULT_NONE;
+        }
+        if (scancode == WM_SCANCODE_F9 && wm_gui_focused >= 0) {
+            wm_gui_minimize(wm_gui_focused);
+            wm_gui_draw_all();
+            return WM_RESULT_NONE;
+        }
+        if (scancode == WM_SCANCODE_F10 && wm_gui_focused >= 0) {
+            wm_gui_maximize_or_restore(wm_gui_focused);
+            wm_gui_draw_all();
+            return WM_RESULT_NONE;
+        }
+    }
+
+    wm_gui_dispatch_key_sequence(extended, scancode);
+    return WM_RESULT_NONE;
+}
+
+int wm_handle_key(uint8_t scancode) {
+    if (!wm_active) return WM_RESULT_NONE;
+
+    if (wm_gui_enabled()) return wm_gui_handle_key(scancode);
+
+    if ((scancode & 0x80) && scancode != WM_SCANCODE_EXTENDED) {
         return WM_RESULT_NONE;
     }
 
@@ -1250,6 +1411,7 @@ int wm_handle_click(int px, int py) {
         event.event = MOUSE_EVENT_PRESS;
         event.changed = MOUSE_BTN_LEFT;
         event.buttons = MOUSE_BTN_LEFT;
+        event.wheel = 0;
         return wm_gui_handle_mouse(&event);
     }
     int col = px / 8;

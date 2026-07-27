@@ -1178,6 +1178,7 @@ int settings_handle_mouse(mouse_event_t* event) {
     }
     if (!settings_active) return 0;
     if (settings_mode != SETTINGS_MODE_MODERN) return 1;
+    if (event->event == MOUSE_EVENT_WHEEL) return 0;
     if (event->event != MOUSE_EVENT_PRESS ||
         !(event->changed & MOUSE_BTN_LEFT)) return 1;
 

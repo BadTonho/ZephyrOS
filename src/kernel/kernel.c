@@ -134,8 +134,19 @@ static int kernel_handle_taskbar_mouse(mouse_event_t* evt) {
     int tb_result;
     int menu_was_open;
     int hosted_workspace;
+    tb_rect_t bounds;
 
-    if (!evt || evt->event != MOUSE_EVENT_PRESS ||
+    if (!evt) return 0;
+    if (evt->event == MOUSE_EVENT_WHEEL) {
+        if (taskbar_is_menu_open()) return 1;
+        if (taskbar_get_bounds(&bounds) &&
+            evt->x >= bounds.x && evt->x < bounds.x + bounds.width &&
+            evt->y >= bounds.y && evt->y < bounds.y + bounds.height) {
+            return 1;
+        }
+        return 0;
+    }
+    if (evt->event != MOUSE_EVENT_PRESS ||
         !(evt->changed & MOUSE_BTN_LEFT)) return 0;
 
     menu_was_open = taskbar_is_menu_open();
