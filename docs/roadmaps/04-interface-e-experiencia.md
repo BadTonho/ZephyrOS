@@ -76,16 +76,16 @@ visual atual.
 
 ## Etapa UI7 - Roda PS/2 e acessibilidade de janelas
 
-- [ ] Negociar Intellimouse no driver PS/2, publicar eventos de roda vertical
+- [x] Negociar Intellimouse no driver PS/2, publicar eventos de roda vertical
   e manter fallback seguro de tres bytes quando o hardware nao oferecer suporte.
-- [ ] Entregar a roda apenas ao conteudo da janela superior sob o cursor, sem
+- [x] Entregar a roda apenas ao conteudo da janela superior sob o cursor, sem
   alterar foco ou Z-order e preservando a prioridade da taskbar e do Menu
   Iniciar.
-- [ ] Aplicar scroll ao Shell, Explorer e Task Manager e manter Settings sem
+- [x] Aplicar scroll ao Shell, Explorer e Task Manager e manter Settings sem
   acao de roda.
-- [ ] Adicionar `Alt+Tab`, `Alt+Shift+Tab`, `Alt+F4`, `Alt+F9` e `Alt+F10` ao
+- [x] Adicionar `Alt+Tab`, `Alt+Shift+Tab`, `Alt+F4`, `Alt+F9` e `Alt+F10` ao
   WM Moderno, com contorno azul de foco e sem regressao dos atalhos Classicos.
-- [ ] Validar no QEMU a roda, os atalhos, taskbar nas cinco posicoes e os
+- [x] Validar no QEMU a roda, os atalhos, taskbar nas cinco posicoes e os
   fluxos essenciais dos modos Moderno e Classico antes de concluir a etapa.
 
 ## Fora do escopo atual
