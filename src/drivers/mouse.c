@@ -129,9 +129,13 @@ static int mouse_enable_wheel_protocol(void) {
 }
 
 static int8_t mouse_decode_wheel(uint8_t value) {
+    int8_t delta;
+
     value &= MOUSE_WHEEL_VALUE_MASK;
     if (value & MOUSE_WHEEL_SIGN_BIT) value |= MOUSE_WHEEL_SIGN_EXTEND;
-    return (int8_t)value;
+    delta = (int8_t)value;
+    /* O pacote PS/2 usa o sentido oposto ao scroll visual do ZephyrOS. */
+    return (int8_t)-delta;
 }
 
 /* ========== Renderizacao do cursor ========== */
