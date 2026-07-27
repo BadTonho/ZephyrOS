@@ -456,10 +456,21 @@ Cada byte representa uma linha de 8 pixels (1 bit por pixel).
 ### Enumeração
 
 ```c
-pci_init();
+int pci_result = pci_init();
+if (pci_result != OK && pci_result != ERR_OVERFLOW) {
+    /* O inventario PCI esta indisponivel. */
+    return;
+}
 ```
 
 Escaneia 256 buses × 32 devices × 8 functions.
+
+`pci_init()` registra no maximo `PCI_MAX_DEVICES` (64) funcoes na tabela
+estatica. Ao atingir esse limite, retorna `ERR_OVERFLOW`, preserva as entradas
+ja lidas e permite que o inventario de dispositivos continue de forma parcial.
+Cada funcao PCI e lida uma unica vez. `pci_get_device_count()` e
+`pci_get_device_at()` devolvem copias seguras para consumidores; um novo scan
+somente consulta a configuracao PCI, sem reinicializar ATA, AC97 ou PS/2.
 
 ### Estrutura
 

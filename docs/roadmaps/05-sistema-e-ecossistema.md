@@ -16,6 +16,10 @@ antecipar interfaces ou permissoes que ainda nao existem.
 
 ## Etapa S1 - Servicos de sistema
 
+- [x] S1.1: inventario nativo somente de leitura para dispositivos e comando
+  `power status` com capacidades reais, sem ACPI ou alteracao de hardware.
+- [ ] Validar S1.1 no QEMU com `devices`, `device-info`, `device-scan`,
+  `power status`, `health` e a matriz de regressao.
 - [ ] Gerenciador de dispositivos com inventario e erros controlados.
 - [ ] Gerenciador de energia com estados claros e sem desligar recursos em uso.
 - [ ] Evolucao do filesystem somente quando novos recursos exigirem metadados

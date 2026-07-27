@@ -111,6 +111,10 @@ Plataforma de aplicativos:   [████████████████�
 | `guitest` | Testa primitivas GUI 2D |
 | `guimode` | Altera entre gui classica e moderna |
 | `health` | Exibe metricas e estado de recovery |
+| `devices [-v]` | Lista o inventario nativo de hardware |
+| `device-info <id>` | Mostra detalhes de um dispositivo inventariado |
+| `device-scan` | Refaz somente a varredura PCI e atualiza o inventario |
+| `power status` | Mostra as capacidades reais de energia |
 | `kmetrics [reset]` | Coleta linha-base de PIT, filas, memoria e VESA, incluindo media de bytes por apresentacao |
 | `memcheck` | Valida heap, PMM, coalescencia e limpeza de diretorios ring 3 |
 | `schedcheck` | Valida invariantes do scheduler sem alterar processos |
@@ -374,6 +378,17 @@ Plataforma de aplicativos:   [████████████████�
 - [ ] Avaliar permissões e isolamento adicional somente após métricas e testes de estabilidade.
 
 ---
+
+## S1.1 - Servicos observaveis de sistema (validacao pendente)
+
+- [x] Inventario somente de leitura de PCI, ATA, AC97, PS/2, PIT, VGA, VESA e
+  PC Speaker, acessivel por `devices`, `device-info` e `device-scan`.
+- [x] Diagnostico `power status` com estados reais: S0 e idle HLT/C1 ativos,
+  S1-S4 indisponiveis sem ACPI e S5 explicitamente simulado.
+- [x] Componentes `Devices` e `Power` no `health`, com degradacao controlada
+  para inventario PCI parcial.
+- [ ] O usuario deve validar build limpo e a matriz QEMU antes de marcar S1.1
+  como concluida.
 
 ## Roadmaps por etapa
 

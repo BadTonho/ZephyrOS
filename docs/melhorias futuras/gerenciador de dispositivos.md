@@ -2,6 +2,20 @@
 
 > **Arquitetura:** As funções core (comandos shell: `devices`, `device-info`, `device-scan`) são nativas do sistema. A interface visual (TUI) é um app opcional distribuído pelo [Gerenciador de Aplicativos](gerenciador%20de%20aplicativos.md).
 
+## S1.1 - Inventario nativo seguro
+
+- [x] Servico core somente de leitura com snapshot estatico de PCI, ATA, AC97,
+  PS/2, PIT, VGA, VESA e PC Speaker.
+- [x] Comandos `devices`, `devices -v`, `device-info <id>` e `device-scan`.
+  O scan relê apenas a configuracao PCI; ele nao reinicializa ATA, AC97 ou
+  outro driver, e nao habilita, desabilita ou remove hardware.
+- [x] Limite PCI de 64 entradas, com `ERR_OVERFLOW` e estado degradado quando
+  o inventario for parcial.
+- [ ] Validacao no QEMU e matriz de regressao antes de concluir a S1.1.
+
+A interface TUI, hotplug, drivers dinamicos e operacoes de ativacao permanecem
+fora desta entrega inicial.
+
 ## Resumo de Progresso
 
 | Fase | Total | Feito | Parcial | Restante |

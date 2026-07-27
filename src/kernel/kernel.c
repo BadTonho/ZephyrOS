@@ -3,6 +3,8 @@
 #include "core/panic.h"
 #include "core/log.h"
 #include "core/errors.h"
+#include "core/device_manager.h"
+#include "core/power.h"
 #include "core/recovery.h"
 #include "core/app_api.h"
 #include "core/app_loader.h"
@@ -17,6 +19,7 @@
 #include "process/process.h"
 #include "drivers/tss.h"
 #include "drivers/ata.h"
+#include "drivers/pci.h"
 #include "fs/fs.h"
 #include "apps/shell.h"
 #include "drivers/speaker.h"
@@ -501,6 +504,18 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     speaker_init();
     video_print("[OK] PC Speaker pronto\n", 0x07);
 
+    video_print("[..] Enumerando dispositivos PCI...\n", 0x08);
+    int pci_result = pci_init();
+    if (pci_result == OK) {
+        video_print("[OK] Varredura PCI concluida\n", 0x07);
+    } else if (pci_result == ERR_OVERFLOW) {
+        LOG_WARN("KERNEL", "Inventario PCI parcial; limite atingido");
+        video_print("[!!] Inventario PCI parcial\n", 0x0E);
+    } else {
+        LOG_ERROR("KERNEL", "Falha ao enumerar PCI");
+        video_print("[!!] PCI indisponivel\n", 0x0C);
+    }
+
     video_print("[..] Iniciando AC97...\n", 0x08);
     ac97_init();
     ac97_device_t* ac97 = ac97_get_device();
@@ -511,6 +526,34 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         recovery_mark_disabled(RECOVERY_COMPONENT_AC97, ERR_NOT_FOUND,
                                "Audio AC97 indisponivel");
         video_print("[!!] AC97 nao encontrado\n", 0x0C);
+    }
+
+    video_print("[..] Criando inventario de dispositivos...\n", 0x08);
+    int device_result = device_manager_init();
+    if (device_result == OK) {
+        recovery_mark_ready(RECOVERY_COMPONENT_DEVICES);
+        video_print("[OK] Inventario de dispositivos pronto\n", 0x07);
+    } else if (device_result == ERR_OVERFLOW) {
+        recovery_mark_degraded(RECOVERY_COMPONENT_DEVICES, device_result,
+                               "Inventario PCI parcial");
+        video_print("[!!] Inventario de dispositivos parcial\n", 0x0E);
+    } else {
+        recovery_mark_disabled(RECOVERY_COMPONENT_DEVICES, device_result,
+                               "Inventario de dispositivos indisponivel");
+        LOG_ERROR("KERNEL", "Falha ao criar inventario de dispositivos");
+        video_print("[!!] Inventario de dispositivos indisponivel\n", 0x0C);
+    }
+
+    video_print("[..] Iniciando diagnostico de energia...\n", 0x08);
+    int power_result = power_init();
+    if (power_result == OK) {
+        recovery_mark_ready(RECOVERY_COMPONENT_POWER);
+        video_print("[OK] Diagnostico de energia pronto\n", 0x07);
+    } else {
+        recovery_mark_disabled(RECOVERY_COMPONENT_POWER, power_result,
+                               "Diagnostico de energia indisponivel");
+        LOG_ERROR("KERNEL", "Falha ao iniciar diagnostico de energia");
+        video_print("[!!] Diagnostico de energia indisponivel\n", 0x0C);
     }
 
     video_print("[..] Iniciando shell...\n", 0x08);

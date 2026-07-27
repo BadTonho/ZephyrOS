@@ -38,6 +38,10 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `guitest` | - | Roda um teste nativo das primitivas gráficas GUI 2D. |
 | `health` | - | Lista o estado dos componentes e mostra dependências indisponíveis. |
 | `kmetrics` | `[reset]` | Mostra ou inicia a janela manual de métricas K1. |
+| `devices` | `[-v]` | Lista o inventario nativo de hardware; `-v` inclui localizacao, IRQ e IDs PCI. |
+| `device-info` | `<id>` | Mostra os detalhes de um dispositivo listado por `devices`. |
+| `device-scan` | - | Refaz somente a varredura PCI e atualiza o inventario sem reinicializar drivers. |
+| `power` | `status` | Mostra capacidades reais de energia; nao solicita transicoes ACPI. |
 | `memcheck` | - | Valida heap, coalescencia, PMM e diretorios ring 3 residuais. |
 | `schedcheck` | - | Valida os invariantes atuais do scheduler sem alterar processos. |
 | `q2check` | - | Executa o diagnóstico compacto da Q2 com duas falhas isoladas. |

@@ -26,6 +26,9 @@
 #define PCI_INTERRUPT_LINE 0x3C
 #define PCI_INTERRUPT_PIN  0x3D
 
+/* Limite estatico: evita que uma varredura de configuracao corrompa memoria. */
+#define PCI_MAX_DEVICES 64U
+
 typedef struct {
     uint16_t vendor_id;
     uint16_t device_id;
@@ -46,7 +49,9 @@ typedef struct {
     uint8_t  present;
 } pci_device_t;
 
-void pci_init(void);
+int pci_init(void);
+int pci_get_device_count(uint8_t* out_count);
+int pci_get_device_at(uint8_t index, pci_device_t* out_device);
 uint32_t pci_read(uint8_t bus, uint8_t device, uint8_t function, uint8_t offset);
 void pci_write(uint8_t bus, uint8_t device, uint8_t function, uint8_t offset, uint32_t value);
 pci_device_t* pci_get_device(uint8_t class, uint8_t subclass);

@@ -169,6 +169,22 @@ Consulte [API de Aplicativos e Syscalls](../melhorias%20futuras/api%20de%20aplic
 para a ABI estável e [Roadmaps por Etapa](../roadmaps/README.md) para a ordem
 das próximas migrações.
 
+## Servicos S1.1: dispositivos e energia
+
+O kernel inicializa PCI antes do AC97 e, depois dos drivers, cria dois servicos
+somente de leitura. Ambos falham de forma controlada e aparecem no `health`.
+
+- `device_manager`: mantem um snapshot estatico de PCI, ATA, AC97, PS/2, PIT,
+  VGA, VESA e PC Speaker. Nao reinicializa drivers, nao grava no disco e nao
+  habilita ou desabilita hardware.
+- `power`: informa as capacidades reais do sistema atual. S0 e idle HLT/C1
+  estao disponiveis; S1-S4 exigem ACPI e permanecem indisponiveis. S5 e o
+  comando `shutdown` sao explicitamente simulados e nao desligam a maquina.
+
+Os headers `core/device_manager.h` e `core/power.h` definem as estruturas de
+snapshot e status. Suas consultas retornam codigos de erro quando chamadas
+antes da inicializacao ou com destinos nulos.
+
 ## Struct `registers_t`
 
 Usada para passar contexto entre handlers:

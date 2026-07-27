@@ -35,6 +35,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
 - Interface: Desktop, Explorer, Task Manager e Settings possuem modo moderno
   e fallback classico; a taskbar e o Window Manager grafico ainda sao etapas
   futuras.
+- Sistema e ecossistema: S1.1 implementa inventario de dispositivos somente
+  de leitura e diagnostico de energia sem ACPI; a validacao no QEMU permanece
+  pendente antes de avancar a S1.
 
 ## K4 validada
 

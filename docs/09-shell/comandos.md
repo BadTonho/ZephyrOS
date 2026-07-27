@@ -38,6 +38,10 @@ Comandos disponiveis:
   guitest   - Testa primitivas GUI 2D
   guimode   - Altera entre gui classica (TUI) e moderna
   health    - Exibe metricas e estado de recovery do kernel
+  devices   - Lista o inventario de hardware (`-v` inclui detalhes)
+  device-info <id> - Exibe detalhes de um dispositivo inventariado
+  device-scan - Refaz somente a varredura PCI e atualiza o inventario
+  power status - Exibe as capacidades reais de energia
   kmetrics  - Mostra linha-base manual de metricas do kernel
   memcheck  - Valida heap, PMM e diretorios de usuario
   schedcheck - Valida invariantes do scheduler
@@ -203,6 +207,38 @@ continuam visíveis.
 
 ```
 zephyr> health
+```
+
+## `devices`, `device-info` e `device-scan`
+
+Os comandos de dispositivos sao somente de leitura e nao abrem uma interface
+grafica. Eles nao reinicializam ATA, AC97 ou PS/2 e nao gravam no disco.
+
+```text
+zephyr> devices
+zephyr> devices -v
+zephyr> device-info ata-primary
+zephyr> device-scan
+```
+
+`devices` mostra ID, estado, tipo e nome. `devices -v` acrescenta localizacao,
+IRQ e IDs PCI quando existirem. `device-info <id>` consulta um ID retornado
+pela lista. `device-scan` apenas rele o espaco de configuracao PCI e atualiza
+o snapshot; se o limite de 64 entradas for atingido, o resultado e parcial e
+o Shell permanece utilizavel.
+
+IDs PCI sao exibidos como `pci-BB:DD.F`. Para teclados sem `Shift`,
+`device-info` tambem aceita `pci-BB-DD.F` e letras minusculas.
+
+## `power status`
+
+Mostra somente capacidades que o kernel pode confirmar. Na S1.1, ACPI e os
+estados S1-S4 permanecem indisponiveis; S0 e idle HLT/C1 estao ativos, e S5 e
+`shutdown` aparecem como simulados. O comando nao tenta suspender, hibernar
+ou desligar fisicamente a maquina.
+
+```text
+zephyr> power status
 ```
 
 ## `kmetrics [reset]`

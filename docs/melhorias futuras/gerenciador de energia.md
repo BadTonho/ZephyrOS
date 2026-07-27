@@ -287,6 +287,18 @@
 
 ---
 
+## S1.1 - Diagnostico nativo seguro
+
+- [x] Servico `power` somente de leitura e componente `Power` no `health`.
+- [x] `power status` informa S0, idle HLT/C1, S1-S4 sem ACPI, S5 simulado,
+  desligamento fisico indisponivel e reboot pelo controlador de teclado.
+- [x] Nenhuma transicao de energia foi adicionada; `reboot` e `shutdown`
+  preservam seu comportamento atual.
+- [ ] Validacao no QEMU e matriz de regressao antes de concluir a S1.1.
+
+Suspensao, hibernacao, bateria, ACPI e desligamento fisico continuam fora do
+escopo ate existir suporte de firmware e drivers correspondentes.
+
 ## Resumo de Progresso
 
 | Fase | Total | Feito | Parcial | Restante |

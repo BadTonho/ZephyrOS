@@ -25,12 +25,15 @@
 #include "ui/gui.h"
 #include "apps/guitest.h"
 #include "core/recovery.h"
+#include "core/device_manager.h"
+#include "core/power.h"
 #include "core/app_api.h"
 #include "core/app_builtin.h"
 #include "core/app_loader.h"
 #include "core/app_package.h"
 #include "core/syscall.h"
 #include "drivers/idt.h"
+#include "drivers/pci.h"
 #include "drivers/vesa.h"
 #include "drivers/font.h"
 
@@ -1336,6 +1339,10 @@ static void cmd_help(void) {
     video_print("  stats    - Mostra estatisticas de compressao\n", 0x07);
     video_print("  mouse    - Mostra status do mouse PS/2\n", 0x07);
     video_print("  health   - Mostra estado dos componentes (use PgUp/PgDn)\n", 0x07);
+    video_print("  devices  - Lista inventario de hardware (-v para detalhes)\n", 0x07);
+    video_print("  device-info <id> - Mostra detalhes de um dispositivo\n", 0x07);
+    video_print("  device-scan - Refaz apenas a varredura PCI\n", 0x07);
+    video_print("  power status - Mostra capacidades reais de energia\n", 0x07);
     video_print("  kmetrics - Mostra linha-base de metricas do kernel\n", 0x07);
     video_print("  memcheck - Valida heap, PMM e diretorios de usuario\n", 0x07);
     video_print("  schedcheck - Valida invariantes do scheduler\n", 0x07);
@@ -1621,6 +1628,255 @@ static void cmd_health(void) {
 
     cmd_health_print_kernel();
     video_end_update();
+}
+
+static int shell_args_equal(const char* args, const char* expected) {
+    if (!args || !expected) return 0;
+    while (*args && *expected && *args == *expected) {
+        args++;
+        expected++;
+    }
+    if (*expected) return 0;
+    while (*args == ' ' || *args == '\t') args++;
+    return *args == '\0';
+}
+
+static int shell_read_single_arg(const char* args, char* out, uint32_t size) {
+    uint32_t length = 0;
+
+    if (!args || !out || size == 0) {
+        LOG_ERROR("SHELL", "Destino invalido ao ler argumento");
+        return ERR_NULL;
+    }
+    while (*args == ' ' || *args == '\t') args++;
+    while (*args && *args != ' ' && *args != '\t') {
+        if (length + 1U >= size) {
+            LOG_WARN("SHELL", "Argumento do shell excede limite");
+            return ERR_OVERFLOW;
+        }
+        out[length++] = *args++;
+    }
+    while (*args == ' ' || *args == '\t') args++;
+    if (length == 0 || *args) {
+        LOG_WARN("SHELL", "Argumento unico ausente ou invalido");
+        return ERR_INVALID;
+    }
+    out[length] = '\0';
+    return OK;
+}
+
+static void cmd_print_hex(uint32_t value, uint32_t digits) {
+    static const char hex[] = "0123456789ABCDEF";
+
+    while (digits > 0) {
+        uint32_t shift = (digits - 1U) * 4U;
+        char value_char[2];
+        value_char[0] = hex[(value >> shift) & 0x0FU];
+        value_char[1] = '\0';
+        video_print(value_char, 0x07);
+        digits--;
+    }
+}
+
+static uint8_t cmd_device_status_color(device_status_t status) {
+    if (status == DEVICE_STATUS_READY) return 0x0A;
+    if (status == DEVICE_STATUS_DEGRADED) return 0x0E;
+    if (status == DEVICE_STATUS_DISABLED) return 0x0C;
+    return 0x08;
+}
+
+static void cmd_devices_print_entry(const device_info_t* info, int verbose) {
+    if (!info) return;
+
+    video_print("  ", 0x07);
+    video_print(info->id, 0x0B);
+    video_print("  ", 0x07);
+    video_print(device_manager_status_name(info->status),
+                cmd_device_status_color(info->status));
+    video_print("  ", 0x07);
+    video_print(info->type, 0x07);
+    video_print("  ", 0x07);
+    video_print(info->name, 0x07);
+    video_print("\n", 0x07);
+    if (!verbose) return;
+
+    video_print("    local=", 0x08);
+    video_print(info->location, 0x07);
+    if (info->irq != DEVICE_IRQ_UNKNOWN) {
+        video_print(" irq=", 0x08);
+        print_num(info->irq);
+    }
+    if (info->vendor_id || info->device_id) {
+        video_print(" vendor=0x", 0x08);
+        cmd_print_hex(info->vendor_id, 4U);
+        video_print(" device=0x", 0x08);
+        cmd_print_hex(info->device_id, 4U);
+    }
+    video_print("\n    ", 0x08);
+    video_print(info->detail, 0x07);
+    video_print("\n", 0x07);
+}
+
+static void cmd_devices(const char* args) {
+    uint32_t count = 0;
+    int verbose = 0;
+
+    if (*args) {
+        if (!shell_args_equal(args, "-v")) {
+            LOG_WARN("SHELL", "Uso invalido de devices");
+            video_print("Uso: devices [-v]\n", 0x0C);
+            return;
+        }
+        verbose = 1;
+    }
+    if (device_manager_get_count(&count) != OK) {
+        LOG_ERROR("SHELL", "Inventario de dispositivos indisponivel");
+        video_print("Erro: inventario de dispositivos indisponivel.\n", 0x0C);
+        return;
+    }
+
+    video_print("Dispositivos detectados:\n", 0x0B);
+    for (uint32_t index = 0; index < count; index++) {
+        device_info_t info;
+        if (device_manager_get_info(index, &info) != OK) {
+            LOG_ERROR("SHELL", "Falha ao ler entrada do inventario");
+            video_print("Erro: entrada do inventario indisponivel.\n", 0x0C);
+            return;
+        }
+        cmd_devices_print_entry(&info, verbose);
+    }
+}
+
+static void cmd_device_info(const char* args) {
+    char id[DEVICE_ID_SIZE];
+    device_info_t info;
+    int result = shell_read_single_arg(args, id, sizeof(id));
+
+    if (result != OK) {
+        LOG_WARN("SHELL", "Uso invalido de device-info");
+        video_print("Uso: device-info <id>\n", 0x0C);
+        return;
+    }
+    result = device_manager_find(id, &info);
+    if (result == ERR_NOT_FOUND) {
+        video_print("Erro: dispositivo nao encontrado.\n", 0x0C);
+        return;
+    }
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Falha ao consultar dispositivo");
+        video_print("Erro: inventario de dispositivos indisponivel.\n", 0x0C);
+        return;
+    }
+
+    video_print("Dispositivo:\n", 0x0B);
+    video_print("  ID: ", 0x07);
+    video_print(info.id, 0x0B);
+    video_print("\n  Nome: ", 0x07);
+    video_print(info.name, 0x07);
+    video_print("\n  Tipo: ", 0x07);
+    video_print(info.type, 0x07);
+    video_print("\n  Estado: ", 0x07);
+    video_print(device_manager_status_name(info.status),
+                cmd_device_status_color(info.status));
+    video_print("\n  Local: ", 0x07);
+    video_print(info.location, 0x07);
+    video_print("\n  Detalhe: ", 0x07);
+    video_print(info.detail, 0x07);
+    if (info.irq != DEVICE_IRQ_UNKNOWN) {
+        video_print("\n  IRQ: ", 0x07);
+        print_num(info.irq);
+    }
+    if (info.vendor_id || info.device_id) {
+        video_print("\n  Vendor: 0x", 0x07);
+        cmd_print_hex(info.vendor_id, 4U);
+        video_print("  Device: 0x", 0x07);
+        cmd_print_hex(info.device_id, 4U);
+        video_print("\n  PCI: ", 0x07);
+        cmd_print_hex(info.bus, 2U);
+        video_print(":", 0x07);
+        cmd_print_hex(info.device, 2U);
+        video_print(".", 0x07);
+        print_num(info.function);
+    }
+    if (info.capacity_sectors && kstrcmp(info.id, "ata-primary") == 0) {
+        video_print("\n  Setores: ", 0x07);
+        print_num(info.capacity_sectors);
+    }
+    video_print("\n", 0x07);
+}
+
+static void cmd_device_scan(const char* args) {
+    int pci_result;
+    int refresh_result;
+
+    if (*args) {
+        LOG_WARN("SHELL", "Uso invalido de device-scan");
+        video_print("Uso: device-scan\n", 0x0C);
+        return;
+    }
+    pci_result = pci_init();
+    if (pci_result != OK && pci_result != ERR_OVERFLOW) {
+        recovery_mark_disabled(RECOVERY_COMPONENT_DEVICES, pci_result,
+                               "Varredura PCI falhou");
+        LOG_ERROR("SHELL", "Falha ao refazer varredura PCI");
+        video_print("Erro: varredura PCI indisponivel.\n", 0x0C);
+        return;
+    }
+    refresh_result = device_manager_refresh();
+    if (refresh_result == OK) {
+        recovery_mark_ready(RECOVERY_COMPONENT_DEVICES);
+        video_print("Varredura PCI concluida; inventario atualizado.\n", 0x0A);
+        return;
+    }
+    if (refresh_result == ERR_OVERFLOW) {
+        recovery_mark_degraded(RECOVERY_COMPONENT_DEVICES, refresh_result,
+                               "Inventario PCI parcial");
+        video_print("Varredura PCI parcial; inventario atualizado.\n", 0x0E);
+        return;
+    }
+    recovery_mark_disabled(RECOVERY_COMPONENT_DEVICES, refresh_result,
+                           "Inventario de dispositivos indisponivel");
+    LOG_ERROR("SHELL", "Falha ao atualizar inventario de dispositivos");
+    video_print("Erro: inventario de dispositivos indisponivel.\n", 0x0C);
+}
+
+static void cmd_power(const char* args) {
+    power_status_t status;
+
+    if (!shell_args_equal(args, "status")) {
+        LOG_WARN("SHELL", "Uso invalido de power");
+        video_print("Uso: power status\n", 0x0C);
+        return;
+    }
+    if (power_get_status(&status) != OK) {
+        LOG_ERROR("SHELL", "Diagnostico de energia indisponivel");
+        video_print("Erro: diagnostico de energia indisponivel.\n", 0x0C);
+        return;
+    }
+
+    video_print("Energia:\n", 0x0B);
+    video_print("  ACPI: ", 0x07);
+    video_print(status.acpi_available ? "DISPONIVEL" : "INDISPONIVEL",
+                status.acpi_available ? 0x0A : 0x0E);
+    video_print("\n  S0: ", 0x07);
+    video_print(power_capability_name(status.states[POWER_STATE_S0]), 0x0A);
+    for (uint32_t state = POWER_STATE_S1; state <= POWER_STATE_S5; state++) {
+        video_print("\n  S", 0x07);
+        print_num(state);
+        video_print(": ", 0x07);
+        video_print(power_capability_name(status.states[state]),
+                    status.states[state] == POWER_CAPABILITY_UNAVAILABLE ?
+                    0x0E : 0x0B);
+    }
+    video_print("\n  Idle CPU (HLT/C1): ", 0x07);
+    video_print(power_capability_name(status.cpu_idle), 0x0A);
+    video_print("\n  Desligamento fisico: ", 0x07);
+    video_print(power_capability_name(status.hardware_poweroff), 0x0E);
+    video_print("\n  Reboot (controlador de teclado): ", 0x07);
+    video_print(power_capability_name(status.reboot), 0x0A);
+    video_print("\n  Nota: S5 e o comando shutdown atuais apenas param a CPU; ",
+                0x08);
+    video_print("nao desligam a maquina.\n", 0x08);
 }
 
 static uint32_t shell_kmetrics_delta(uint32_t current, uint32_t baseline) {
@@ -3386,6 +3642,14 @@ int shell_process_command(const char* input) {
         cmd_uptime();
     } else if (kstrcmp(cmd, "health") == 0) {
         cmd_health();
+    } else if (kstrcmp(cmd, "devices") == 0) {
+        cmd_devices(input);
+    } else if (kstrcmp(cmd, "device-info") == 0) {
+        cmd_device_info(input);
+    } else if (kstrcmp(cmd, "device-scan") == 0) {
+        cmd_device_scan(input);
+    } else if (kstrcmp(cmd, "power") == 0) {
+        cmd_power(input);
     } else if (kstrcmp(cmd, "kmetrics") == 0) {
         cmd_kmetrics(input);
     } else if (kstrcmp(cmd, "memcheck") == 0) {

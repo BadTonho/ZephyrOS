@@ -80,8 +80,6 @@ void ac97_init(void) {
     LOG_INFO("AC97", "Inicializando controlador de audio");
     ac97_dev.initialized = 0;
 
-    pci_init();
-
     pci_device_t* pci = pci_get_device(0x04, 0x01);
     if (!pci) {
         LOG_ERROR("AC97", "Dispositivo AC97 nao encontrado via PCI");
