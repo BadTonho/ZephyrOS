@@ -20,11 +20,7 @@
 #define FM_CLASSIC_VISIBLE_ROWS 17
 #define FM_MODERN_MARGIN 24
 #define FM_MODERN_MIN_WIDTH 560
-#define FM_MODERN_MIN_HEIGHT 300
-#define FM_MODERN_DEFAULT_WIDTH 720
-#define FM_MODERN_DEFAULT_HEIGHT 500
 #define FM_MODERN_SIDE_WIDTH 184
-#define FM_MODERN_TITLE_HEIGHT 26
 #define FM_MODERN_CONTENT_OFFSET 30
 #define FM_MODERN_INSET 8
 #define FM_MODERN_PANE_GAP 8
@@ -36,6 +32,23 @@
 #define FM_MODERN_ROW_GAP 2
 #define FM_MODERN_ICON_SCALE 2
 #define FM_MODERN_MAX_TEXT 256
+#define FM_MODERN_SIDE_ITEM_COUNT 8
+#define FM_MODERN_SIDE_HEADER_OFFSET 34
+#define FM_MODERN_SIDE_BOTTOM_PADDING 4
+#define FM_MODERN_CONTENT_FIXED_HEIGHT \
+    (FM_MODERN_CONTENT_OFFSET + FM_MODERN_TOOLBAR_HEIGHT + \
+     FM_MODERN_PANE_GAP + FM_MODERN_ADDRESS_HEIGHT + \
+     FM_MODERN_PANE_GAP + FM_MODERN_STATUS_HEIGHT + \
+     FM_MODERN_PANE_GAP + 8)
+#define FM_MODERN_SIDE_MIN_HEIGHT \
+    (FM_MODERN_SIDE_HEADER_OFFSET + \
+     FM_MODERN_SIDE_ITEM_COUNT * FM_MODERN_ROW_HEIGHT + \
+     (FM_MODERN_SIDE_ITEM_COUNT - 1) * FM_MODERN_ROW_GAP + \
+     FM_MODERN_SIDE_BOTTOM_PADDING)
+#define FM_MODERN_MIN_HEIGHT \
+    (FM_MODERN_CONTENT_FIXED_HEIGHT + FM_MODERN_SIDE_MIN_HEIGHT)
+#define FM_MODERN_DEFAULT_WIDTH 720
+#define FM_MODERN_DEFAULT_HEIGHT 500
 
 static fm_state_t state;
 static char input_buffer[32];
@@ -75,7 +88,7 @@ static const char* side_pane_paths[] = {
     "/Musica",
     "/Videos"
 };
-static const int side_pane_count = 8;
+static const int side_pane_count = FM_MODERN_SIDE_ITEM_COUNT;
 
 static void fm_refresh_files(void);
 static void fm_draw_all(void);
@@ -90,6 +103,7 @@ static void fm_draw_rename_file(void);
 static void fm_draw_confirm_delete(void);
 static void fm_draw_view_file(void);
 static int fm_modern_get_layout(int* x, int* y, int* width, int* height);
+static int fm_modern_get_content_height(int height);
 static int fm_visible_rows(void);
 static void fm_select_mode(void);
 static void fm_redraw_file_view(void);
@@ -298,11 +312,16 @@ static void fm_select_mode(void) {
     }
 }
 
+static int fm_modern_get_content_height(int height) {
+    return height - FM_MODERN_CONTENT_FIXED_HEIGHT;
+}
+
 static int fm_visible_rows(void) {
     int x;
     int y;
     int width;
     int height;
+    int content_height;
     int rows;
 
     if (state.mode != FM_MODE_MODERN ||
@@ -310,9 +329,9 @@ static int fm_visible_rows(void) {
         return FM_CLASSIC_VISIBLE_ROWS;
     }
 
-    height -= FM_MODERN_TITLE_HEIGHT + FM_MODERN_TOOLBAR_HEIGHT +
-              FM_MODERN_ADDRESS_HEIGHT + FM_MODERN_STATUS_HEIGHT + 40;
-    rows = height / (FM_MODERN_ROW_HEIGHT + FM_MODERN_ROW_GAP);
+    content_height = fm_modern_get_content_height(height);
+    rows = (content_height - FM_MODERN_SIDE_HEADER_OFFSET) /
+           (FM_MODERN_ROW_HEIGHT + FM_MODERN_ROW_GAP);
     return rows > 0 ? rows : 1;
 }
 
@@ -600,10 +619,13 @@ static void fm_modern_draw_side(int x, int y, int width, int height) {
                   "Acesso Rapido", GUI_COLOR_TITLE_BG);
 
     for (int i = 0; i < side_pane_count; i++) {
-        int row_y = y + 34 + i * (FM_MODERN_ROW_HEIGHT + FM_MODERN_ROW_GAP);
+        int row_y = y + FM_MODERN_SIDE_HEADER_OFFSET +
+                    i * (FM_MODERN_ROW_HEIGHT + FM_MODERN_ROW_GAP);
         int selected = state.focus_pane == 0 && state.side_selected == i;
         uint32_t background = selected ? GUI_COLOR_TITLE_BG : GUI_COLOR_BG;
         uint32_t foreground = selected ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
+
+        if (row_y + FM_MODERN_ROW_HEIGHT > y + height) break;
 
         gui_draw_panel((uint32_t)(x + 4), (uint32_t)row_y,
                        (uint32_t)(width - 8), FM_MODERN_ROW_HEIGHT,
@@ -771,8 +793,7 @@ static void fm_draw_modern_all(void) {
     content_y += FM_MODERN_TOOLBAR_HEIGHT + FM_MODERN_PANE_GAP;
     fm_modern_draw_address(content_x, content_y, content_width);
     content_y += FM_MODERN_ADDRESS_HEIGHT + FM_MODERN_PANE_GAP;
-    content_height = height - (content_y - y) -
-                     FM_MODERN_STATUS_HEIGHT - FM_MODERN_PANE_GAP - 8;
+    content_height = fm_modern_get_content_height(height);
 
     fm_modern_draw_side(content_x, content_y, FM_MODERN_SIDE_WIDTH,
                         content_height);
