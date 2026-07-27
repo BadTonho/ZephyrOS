@@ -72,7 +72,10 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     ata_init();
     fs_init();
     speaker_init();
+    pci_init();
     ac97_init();
+    device_manager_init();
+    power_init();
     icons_init();
     taskbar_init();
     desktop_init();
@@ -182,8 +185,10 @@ somente de leitura. Ambos falham de forma controlada e aparecem no `health`.
   comando `shutdown` sao explicitamente simulados e nao desligam a maquina.
 
 Os headers `core/device_manager.h` e `core/power.h` definem as estruturas de
-snapshot e status. Suas consultas retornam codigos de erro quando chamadas
-antes da inicializacao ou com destinos nulos.
+snapshot e status. O snapshot de dispositivos guarda somente metadados;
+`device_manager_format_text()` monta as strings de exibicao sob demanda para
+evitar reservar memoria estatica por descricao. Suas consultas retornam
+codigos de erro quando chamadas antes da inicializacao ou com destinos nulos.
 
 ## Struct `registers_t`
 

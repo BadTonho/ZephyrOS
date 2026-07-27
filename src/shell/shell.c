@@ -1685,23 +1685,34 @@ static uint8_t cmd_device_status_color(device_status_t status) {
     return 0x08;
 }
 
-static void cmd_devices_print_entry(const device_info_t* info, int verbose) {
-    if (!info) return;
+static int cmd_devices_print_entry(const device_info_t* info, int verbose) {
+    device_text_t text;
+    int result;
+
+    if (!info) {
+        LOG_ERROR("SHELL", "Entrada nula ao listar dispositivos");
+        return ERR_NULL;
+    }
+    result = device_manager_format_text(info, &text);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Falha ao formatar entrada do inventario");
+        return result;
+    }
 
     video_print("  ", 0x07);
-    video_print(info->id, 0x0B);
+    video_print(text.id, 0x0B);
     video_print("  ", 0x07);
     video_print(device_manager_status_name(info->status),
                 cmd_device_status_color(info->status));
     video_print("  ", 0x07);
-    video_print(info->type, 0x07);
+    video_print(text.type, 0x07);
     video_print("  ", 0x07);
-    video_print(info->name, 0x07);
+    video_print(text.name, 0x07);
     video_print("\n", 0x07);
-    if (!verbose) return;
+    if (!verbose) return OK;
 
     video_print("    local=", 0x08);
-    video_print(info->location, 0x07);
+    video_print(text.location, 0x07);
     if (info->irq != DEVICE_IRQ_UNKNOWN) {
         video_print(" irq=", 0x08);
         print_num(info->irq);
@@ -1713,8 +1724,9 @@ static void cmd_devices_print_entry(const device_info_t* info, int verbose) {
         cmd_print_hex(info->device_id, 4U);
     }
     video_print("\n    ", 0x08);
-    video_print(info->detail, 0x07);
+    video_print(text.detail, 0x07);
     video_print("\n", 0x07);
+    return OK;
 }
 
 static void cmd_devices(const char* args) {
@@ -1743,13 +1755,17 @@ static void cmd_devices(const char* args) {
             video_print("Erro: entrada do inventario indisponivel.\n", 0x0C);
             return;
         }
-        cmd_devices_print_entry(&info, verbose);
+        if (cmd_devices_print_entry(&info, verbose) != OK) {
+            video_print("Erro: entrada do inventario indisponivel.\n", 0x0C);
+            return;
+        }
     }
 }
 
 static void cmd_device_info(const char* args) {
     char id[DEVICE_ID_SIZE];
     device_info_t info;
+    device_text_t text;
     int result = shell_read_single_arg(args, id, sizeof(id));
 
     if (result != OK) {
@@ -1767,21 +1783,27 @@ static void cmd_device_info(const char* args) {
         video_print("Erro: inventario de dispositivos indisponivel.\n", 0x0C);
         return;
     }
+    result = device_manager_format_text(&info, &text);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Falha ao formatar dispositivo solicitado");
+        video_print("Erro: dispositivo indisponivel.\n", 0x0C);
+        return;
+    }
 
     video_print("Dispositivo:\n", 0x0B);
     video_print("  ID: ", 0x07);
-    video_print(info.id, 0x0B);
+    video_print(text.id, 0x0B);
     video_print("\n  Nome: ", 0x07);
-    video_print(info.name, 0x07);
+    video_print(text.name, 0x07);
     video_print("\n  Tipo: ", 0x07);
-    video_print(info.type, 0x07);
+    video_print(text.type, 0x07);
     video_print("\n  Estado: ", 0x07);
     video_print(device_manager_status_name(info.status),
                 cmd_device_status_color(info.status));
     video_print("\n  Local: ", 0x07);
-    video_print(info.location, 0x07);
+    video_print(text.location, 0x07);
     video_print("\n  Detalhe: ", 0x07);
-    video_print(info.detail, 0x07);
+    video_print(text.detail, 0x07);
     if (info.irq != DEVICE_IRQ_UNKNOWN) {
         video_print("\n  IRQ: ", 0x07);
         print_num(info.irq);
@@ -1798,7 +1820,7 @@ static void cmd_device_info(const char* args) {
         video_print(".", 0x07);
         print_num(info.function);
     }
-    if (info.capacity_sectors && kstrcmp(info.id, "ata-primary") == 0) {
+    if (info.capacity_sectors && info.kind == DEVICE_KIND_ATA_PRIMARY) {
         video_print("\n  Setores: ", 0x07);
         print_num(info.capacity_sectors);
     }

@@ -79,9 +79,7 @@ static void device_set_text(char* destination, uint32_t capacity,
     device_append_text(destination, capacity, &offset, source);
 }
 
-static device_info_t* device_add(const char* id, const char* name,
-                                  const char* type, const char* location,
-                                  const char* detail, device_status_t status) {
+static device_info_t* device_add(device_kind_t kind, device_status_t status) {
     device_info_t* entry;
 
     if (device_count >= DEVICE_MANAGER_MAX_DEVICES) {
@@ -90,13 +88,9 @@ static device_info_t* device_add(const char* id, const char* name,
     }
     entry = &device_entries[device_count++];
     kmemset(entry, 0, sizeof(*entry));
-    entry->irq = DEVICE_IRQ_UNKNOWN;
+    entry->kind = kind;
     entry->status = status;
-    device_set_text(entry->id, DEVICE_ID_SIZE, id);
-    device_set_text(entry->name, DEVICE_NAME_SIZE, name);
-    device_set_text(entry->type, DEVICE_TYPE_SIZE, type);
-    device_set_text(entry->location, DEVICE_LOCATION_SIZE, location);
-    device_set_text(entry->detail, DEVICE_DETAIL_SIZE, detail);
+    entry->irq = DEVICE_IRQ_UNKNOWN;
     return entry;
 }
 
@@ -147,52 +141,21 @@ static int device_id_matches(const char* expected, const char* requested) {
 }
 
 static int device_add_pci_entry(const pci_device_t* pci) {
-    char id[DEVICE_ID_SIZE];
-    char location[DEVICE_LOCATION_SIZE];
-    char detail[DEVICE_DETAIL_SIZE];
-    uint32_t offset = 0;
     device_info_t* entry;
 
     if (!pci) {
         LOG_ERROR("DEV", "Dispositivo PCI nulo no inventario");
         return ERR_NULL;
     }
-    id[0] = '\0';
-    device_append_text(id, sizeof(id), &offset, "pci-");
-    device_append_hex(id, sizeof(id), &offset, pci->bus, DEVICE_HEX_DIGITS_BYTE);
-    device_append_char(id, sizeof(id), &offset, ':');
-    device_append_hex(id, sizeof(id), &offset, pci->device, DEVICE_HEX_DIGITS_BYTE);
-    device_append_char(id, sizeof(id), &offset, '.');
-    device_append_decimal(id, sizeof(id), &offset, pci->function);
-
-    offset = 0;
-    location[0] = '\0';
-    device_append_text(location, sizeof(location), &offset, "PCI ");
-    device_append_hex(location, sizeof(location), &offset, pci->bus,
-                      DEVICE_HEX_DIGITS_BYTE);
-    device_append_char(location, sizeof(location), &offset, ':');
-    device_append_hex(location, sizeof(location), &offset, pci->device,
-                      DEVICE_HEX_DIGITS_BYTE);
-    device_append_char(location, sizeof(location), &offset, '.');
-    device_append_decimal(location, sizeof(location), &offset, pci->function);
-
-    offset = 0;
-    detail[0] = '\0';
-    device_append_text(detail, sizeof(detail), &offset, "Vendor 0x");
-    device_append_hex(detail, sizeof(detail), &offset, pci->vendor_id,
-                      DEVICE_HEX_DIGITS_WORD);
-    device_append_text(detail, sizeof(detail), &offset, " Device 0x");
-    device_append_hex(detail, sizeof(detail), &offset, pci->device_id,
-                      DEVICE_HEX_DIGITS_WORD);
-
-    entry = device_add(id, device_pci_class_name(pci->class, pci->subclass),
-                       "PCI", location, detail, DEVICE_STATUS_READY);
+    entry = device_add(DEVICE_KIND_PCI, DEVICE_STATUS_READY);
     if (!entry) {
         LOG_ERROR("DEV", "Falha ao adicionar dispositivo PCI ao inventario");
         return ERR_OVERFLOW;
     }
     entry->vendor_id = pci->vendor_id;
     entry->device_id = pci->device_id;
+    entry->class_code = pci->class;
+    entry->subclass_code = pci->subclass;
     entry->bus = pci->bus;
     entry->device = pci->device;
     entry->function = pci->function;
@@ -227,43 +190,29 @@ static int device_add_pci_entries(void) {
 
 static int device_add_ata(void) {
     ata_device_t* ata = ata_get_device();
-    device_info_t* entry;
+    device_info_t* entry = device_add(DEVICE_KIND_ATA_PRIMARY,
+                                      ata ? DEVICE_STATUS_READY :
+                                            DEVICE_STATUS_DISABLED);
 
-    entry = device_add("ata-primary", ata ? ata->model : "ATA primario",
-                       "Armazenamento", "ATA primario",
-                       ata ? "Disco ATA detectado" : "Nenhum disco ATA detectado",
-                       ata ? DEVICE_STATUS_READY : DEVICE_STATUS_DISABLED);
     if (!entry) {
         LOG_ERROR("DEV", "Falha ao adicionar ATA ao inventario");
         return ERR_OVERFLOW;
     }
-    if (ata) {
-        entry->capacity_sectors = ata->sectors;
-        entry->detail[0] = '\0';
-        device_set_text(entry->detail, DEVICE_DETAIL_SIZE,
-                        ata->slave ? "Canal primario slave" :
-                                     "Canal primario master");
-    }
+    if (ata) entry->capacity_sectors = ata->sectors;
     return OK;
 }
 
 static int device_add_ac97(void) {
     ac97_device_t* ac97 = ac97_get_device();
-    device_info_t* entry;
+    device_info_t* entry = device_add(DEVICE_KIND_AC97,
+                                      ac97 && ac97->initialized ?
+                                      DEVICE_STATUS_READY : DEVICE_STATUS_DISABLED);
 
-    entry = device_add("ac97", "Controlador AC97", "Audio", "PCI audio",
-                       ac97 && ac97->initialized ? "Driver de audio pronto" :
-                                                    "Audio AC97 indisponivel",
-                       ac97 && ac97->initialized ? DEVICE_STATUS_READY :
-                                                   DEVICE_STATUS_DISABLED);
     if (!entry) {
         LOG_ERROR("DEV", "Falha ao adicionar AC97 ao inventario");
         return ERR_OVERFLOW;
     }
-    if (ac97 && ac97->initialized) {
-        entry->irq = ac97->irq;
-        entry->capacity_sectors = ac97->sample_rate;
-    }
+    if (ac97 && ac97->initialized) entry->irq = ac97->irq;
     return OK;
 }
 
@@ -281,46 +230,35 @@ static int device_add_builtin_entries(void) {
         LOG_ERROR("DEV", "Falha ao adicionar AC97 ao inventario");
         return result;
     }
-    entry = device_add("ps2-keyboard", "Teclado PS/2", "Entrada", "PS/2 IRQ1",
-                       "Driver inicializado; presenca nao confirmada",
-                       DEVICE_STATUS_READY);
+    entry = device_add(DEVICE_KIND_PS2_KEYBOARD, DEVICE_STATUS_READY);
     if (!entry) {
         LOG_ERROR("DEV", "Falha ao adicionar teclado ao inventario");
         return ERR_OVERFLOW;
     }
     entry->irq = DEVICE_KEYBOARD_IRQ;
-    entry = device_add("ps2-mouse", "Mouse PS/2", "Entrada", "PS/2 IRQ12",
-                       "Driver inicializado; presenca nao confirmada",
-                       DEVICE_STATUS_READY);
+    entry = device_add(DEVICE_KIND_PS2_MOUSE, DEVICE_STATUS_READY);
     if (!entry) {
         LOG_ERROR("DEV", "Falha ao adicionar mouse ao inventario");
         return ERR_OVERFLOW;
     }
     entry->irq = DEVICE_MOUSE_IRQ;
-    entry = device_add("pit", "Timer PIT", "Sistema", "PIT IRQ0",
-                       "Timer do sistema inicializado", DEVICE_STATUS_READY);
+    entry = device_add(DEVICE_KIND_PIT, DEVICE_STATUS_READY);
     if (!entry) {
         LOG_ERROR("DEV", "Falha ao adicionar PIT ao inventario");
         return ERR_OVERFLOW;
     }
     entry->irq = DEVICE_PIT_IRQ;
     entry->capacity_sectors = timer_get_frequency();
-    entry = device_add("vga-text", "Console VGA", "Video", "Memoria 0xB8000",
-                       "Console de texto inicializado", DEVICE_STATUS_READY);
-    if (!entry) {
+    if (!device_add(DEVICE_KIND_VGA_TEXT, DEVICE_STATUS_READY)) {
         LOG_ERROR("DEV", "Falha ao adicionar VGA ao inventario");
         return ERR_OVERFLOW;
     }
-    entry = device_add("vesa", "Framebuffer VESA", "Video", "VESA BIOS",
-                       "Estado monitorado pelo recovery",
-                       device_status_from_recovery(RECOVERY_COMPONENT_VESA));
-    if (!entry) {
+    if (!device_add(DEVICE_KIND_VESA,
+                    device_status_from_recovery(RECOVERY_COMPONENT_VESA))) {
         LOG_ERROR("DEV", "Falha ao adicionar VESA ao inventario");
         return ERR_OVERFLOW;
     }
-    entry = device_add("pc-speaker", "PC Speaker", "Audio", "Porta 0x61",
-                       "Driver de speaker inicializado", DEVICE_STATUS_READY);
-    if (!entry) {
+    if (!device_add(DEVICE_KIND_PC_SPEAKER, DEVICE_STATUS_READY)) {
         LOG_ERROR("DEV", "Falha ao adicionar PC Speaker ao inventario");
         return ERR_OVERFLOW;
     }
@@ -345,6 +283,123 @@ static int device_manager_build_snapshot(void) {
     return pci_result;
 }
 
+static void device_format_pci_text(const device_info_t* info,
+                                   device_text_t* out_text) {
+    uint32_t offset = 0;
+
+    device_append_text(out_text->id, DEVICE_ID_SIZE, &offset, "pci-");
+    device_append_hex(out_text->id, DEVICE_ID_SIZE, &offset, info->bus,
+                      DEVICE_HEX_DIGITS_BYTE);
+    device_append_char(out_text->id, DEVICE_ID_SIZE, &offset, ':');
+    device_append_hex(out_text->id, DEVICE_ID_SIZE, &offset, info->device,
+                      DEVICE_HEX_DIGITS_BYTE);
+    device_append_char(out_text->id, DEVICE_ID_SIZE, &offset, '.');
+    device_append_decimal(out_text->id, DEVICE_ID_SIZE, &offset, info->function);
+
+    device_set_text(out_text->name, DEVICE_NAME_SIZE,
+                    device_pci_class_name(info->class_code, info->subclass_code));
+    device_set_text(out_text->type, DEVICE_TYPE_SIZE, "PCI");
+    offset = 0;
+    device_append_text(out_text->location, DEVICE_LOCATION_SIZE, &offset, "PCI ");
+    device_append_hex(out_text->location, DEVICE_LOCATION_SIZE, &offset, info->bus,
+                      DEVICE_HEX_DIGITS_BYTE);
+    device_append_char(out_text->location, DEVICE_LOCATION_SIZE, &offset, ':');
+    device_append_hex(out_text->location, DEVICE_LOCATION_SIZE, &offset, info->device,
+                      DEVICE_HEX_DIGITS_BYTE);
+    device_append_char(out_text->location, DEVICE_LOCATION_SIZE, &offset, '.');
+    device_append_decimal(out_text->location, DEVICE_LOCATION_SIZE, &offset,
+                          info->function);
+    offset = 0;
+    device_append_text(out_text->detail, DEVICE_DETAIL_SIZE, &offset, "Vendor 0x");
+    device_append_hex(out_text->detail, DEVICE_DETAIL_SIZE, &offset, info->vendor_id,
+                      DEVICE_HEX_DIGITS_WORD);
+    device_append_text(out_text->detail, DEVICE_DETAIL_SIZE, &offset, " Device 0x");
+    device_append_hex(out_text->detail, DEVICE_DETAIL_SIZE, &offset, info->device_id,
+                      DEVICE_HEX_DIGITS_WORD);
+}
+
+static void device_format_ata_text(const device_info_t* info,
+                                   device_text_t* out_text) {
+    ata_device_t* ata = ata_get_device();
+
+    device_set_text(out_text->id, DEVICE_ID_SIZE, "ata-primary");
+    device_set_text(out_text->name, DEVICE_NAME_SIZE,
+                    ata ? ata->model : "ATA primario");
+    device_set_text(out_text->type, DEVICE_TYPE_SIZE, "Armazenamento");
+    device_set_text(out_text->location, DEVICE_LOCATION_SIZE, "ATA primario");
+    if (info->status == DEVICE_STATUS_READY && ata) {
+        device_set_text(out_text->detail, DEVICE_DETAIL_SIZE,
+                        ata->slave ? "Canal primario slave" :
+                                     "Canal primario master");
+    } else {
+        device_set_text(out_text->detail, DEVICE_DETAIL_SIZE,
+                        "Nenhum disco ATA detectado");
+    }
+}
+
+static int device_format_builtin_text(const device_info_t* info,
+                                      device_text_t* out_text) {
+    if (info->kind == DEVICE_KIND_ATA_PRIMARY) {
+        device_format_ata_text(info, out_text);
+        return OK;
+    }
+    if (info->kind == DEVICE_KIND_AC97) {
+        device_set_text(out_text->id, DEVICE_ID_SIZE, "ac97");
+        device_set_text(out_text->name, DEVICE_NAME_SIZE, "Controlador AC97");
+        device_set_text(out_text->type, DEVICE_TYPE_SIZE, "Audio");
+        device_set_text(out_text->location, DEVICE_LOCATION_SIZE, "PCI audio");
+        device_set_text(out_text->detail, DEVICE_DETAIL_SIZE,
+                        info->status == DEVICE_STATUS_READY ?
+                        "Driver de audio pronto" : "Audio AC97 indisponivel");
+        return OK;
+    }
+    if (info->kind == DEVICE_KIND_PS2_KEYBOARD) {
+        device_set_text(out_text->id, DEVICE_ID_SIZE, "ps2-keyboard");
+        device_set_text(out_text->name, DEVICE_NAME_SIZE, "Teclado PS/2");
+        device_set_text(out_text->type, DEVICE_TYPE_SIZE, "Entrada");
+        device_set_text(out_text->location, DEVICE_LOCATION_SIZE, "PS/2 IRQ1");
+    } else if (info->kind == DEVICE_KIND_PS2_MOUSE) {
+        device_set_text(out_text->id, DEVICE_ID_SIZE, "ps2-mouse");
+        device_set_text(out_text->name, DEVICE_NAME_SIZE, "Mouse PS/2");
+        device_set_text(out_text->type, DEVICE_TYPE_SIZE, "Entrada");
+        device_set_text(out_text->location, DEVICE_LOCATION_SIZE, "PS/2 IRQ12");
+    } else if (info->kind == DEVICE_KIND_PIT) {
+        device_set_text(out_text->id, DEVICE_ID_SIZE, "pit");
+        device_set_text(out_text->name, DEVICE_NAME_SIZE, "Timer PIT");
+        device_set_text(out_text->type, DEVICE_TYPE_SIZE, "Sistema");
+        device_set_text(out_text->location, DEVICE_LOCATION_SIZE, "PIT IRQ0");
+    } else if (info->kind == DEVICE_KIND_VGA_TEXT) {
+        device_set_text(out_text->id, DEVICE_ID_SIZE, "vga-text");
+        device_set_text(out_text->name, DEVICE_NAME_SIZE, "Console VGA");
+        device_set_text(out_text->type, DEVICE_TYPE_SIZE, "Video");
+        device_set_text(out_text->location, DEVICE_LOCATION_SIZE, "Memoria 0xB8000");
+    } else if (info->kind == DEVICE_KIND_VESA) {
+        device_set_text(out_text->id, DEVICE_ID_SIZE, "vesa");
+        device_set_text(out_text->name, DEVICE_NAME_SIZE, "Framebuffer VESA");
+        device_set_text(out_text->type, DEVICE_TYPE_SIZE, "Video");
+        device_set_text(out_text->location, DEVICE_LOCATION_SIZE, "VESA BIOS");
+    } else if (info->kind == DEVICE_KIND_PC_SPEAKER) {
+        device_set_text(out_text->id, DEVICE_ID_SIZE, "pc-speaker");
+        device_set_text(out_text->name, DEVICE_NAME_SIZE, "PC Speaker");
+        device_set_text(out_text->type, DEVICE_TYPE_SIZE, "Audio");
+        device_set_text(out_text->location, DEVICE_LOCATION_SIZE, "Porta 0x61");
+    } else {
+        LOG_ERROR("DEV", "Tipo de dispositivo interno invalido");
+        return ERR_INVALID;
+    }
+    device_set_text(out_text->detail, DEVICE_DETAIL_SIZE,
+                    info->kind == DEVICE_KIND_VESA ?
+                    "Estado monitorado pelo recovery" :
+                    info->kind == DEVICE_KIND_PIT ?
+                    "Timer do sistema inicializado" :
+                    info->kind == DEVICE_KIND_VGA_TEXT ?
+                    "Console de texto inicializado" :
+                    info->kind == DEVICE_KIND_PC_SPEAKER ?
+                    "Driver de speaker inicializado" :
+                    "Driver inicializado; presenca nao confirmada");
+    return OK;
+}
+
 int device_manager_init(void) {
     int result;
 
@@ -358,10 +413,9 @@ int device_manager_init(void) {
     }
     if (result == ERR_OVERFLOW) {
         LOG_WARN("DEV", "Inventario de dispositivos parcial");
-        return result;
     }
     LOG_INFO("DEV", "Inventario de dispositivos inicializado com sucesso");
-    return OK;
+    return result;
 }
 
 int device_manager_refresh(void) {
@@ -414,7 +468,22 @@ int device_manager_get_info(uint32_t index, device_info_t* out_info) {
     return OK;
 }
 
+int device_manager_format_text(const device_info_t* info, device_text_t* out_text) {
+    if (!info || !out_text) {
+        LOG_ERROR("DEV", "Argumento nulo ao formatar dispositivo");
+        return ERR_NULL;
+    }
+    kmemset(out_text, 0, sizeof(*out_text));
+    if (info->kind == DEVICE_KIND_PCI) {
+        device_format_pci_text(info, out_text);
+        return OK;
+    }
+    return device_format_builtin_text(info, out_text);
+}
+
 int device_manager_find(const char* id, device_info_t* out_info) {
+    device_text_t text;
+
     if (!id || !out_info) {
         LOG_ERROR("DEV", "Argumento nulo ao buscar dispositivo");
         return ERR_NULL;
@@ -424,7 +493,13 @@ int device_manager_find(const char* id, device_info_t* out_info) {
         return ERR_STATE;
     }
     for (uint32_t index = 0; index < device_count; index++) {
-        if (device_id_matches(device_entries[index].id, id)) {
+        int result = device_manager_format_text(&device_entries[index], &text);
+
+        if (result != OK) {
+            LOG_ERROR("DEV", "Falha ao formatar dispositivo durante busca");
+            return result;
+        }
+        if (device_id_matches(text.id, id)) {
             *out_info = device_entries[index];
             return OK;
         }
