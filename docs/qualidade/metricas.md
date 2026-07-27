@@ -39,9 +39,13 @@ mudanca; nao crie uma entrada artificial.
   pico de `63/63` e `180` descartes. A fila fisica passa a comportar 255
   eventos e o Shell consome ate 16 eventos de teclado por rodada; a fila IPC
   continua protegida pelo limite de 31 mensagens uteis.
+- Validacao QEMU apos a correcao: em uma janela de 2506 ticks, a fila terminou
+  em `0/255`, com pico `6`, `0` descartes e `48` eventos processados. IPC
+  registrou `48` envios/recebimentos, sem falhas ou fila cheia; `app inputtest`
+  tambem confirmou o cancelamento por `F12` e a devolucao de foco ao Shell.
 - Conclusao: o custo estrutural redundante do bootstrap foi removido sem
-  migrar o PMM para mapeamento sob demanda. A validacao manual final deve
-  confirmar pico abaixo de 255 e zero descartes durante a digitacao normal.
+  migrar o PMM para mapeamento sob demanda, e a digitacao normal nao apresentou
+  backlog nem perda de eventos no cenario validado.
 - Impacto: enderecos High Memory, ABI ZAPP, RAM suportada, stage2 e
   `boot.asm` permanecem inalterados. O Shell deixa a atualizacao do relogio
   exclusivamente com o processo System e seu fallback.
