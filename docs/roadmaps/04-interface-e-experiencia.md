@@ -38,7 +38,7 @@ visual atual.
   demonstrativas do Window Manager no modo Moderno.
 - [x] Limitar movimento e dimensoes a area de trabalho da taskbar, preservar
   foco, Z-order, controles de titulo e a composicao com cursor invalidado.
-- [ ] Avaliar arraste de icones depois de existir hit-testing e invalidacao de
+- [x] Avaliar arraste de icones depois de existir hit-testing e invalidacao de
   regioes confiaveis.
 - [ ] Considerar icones BMP apenas com cache, fallback desenhado e tratamento
   de filesystem indisponivel.
@@ -55,6 +55,17 @@ visual atual.
   scroll, refluxo ao redimensionar e fechamento que apenas oculta a janela.
 - [x] Validar no QEMU os fluxos modernos e classicos, incluindo taskbar nas
   cinco posicoes, reabertura sem duplicacao e retorno seguro ao Desktop.
+
+## Etapa UI5 - Icones interativos do Desktop
+
+- [x] Implementar arraste de icones apenas no Desktop Moderno, com grade de
+  slots em memoria, encaixe no proximo slot livre e sem sobreposicao.
+- [x] Respeitar a area util das taskbars acopladas e reservar a taskbar
+  personalizada para que nenhum icone fique sob ela.
+- [x] Manter os icones como fundo das janelas hospedadas e restaurar o Desktop
+  interativo ao fechar a ultima janela hospedada.
+- [x] Validar no QEMU o arraste, o clique duplo, as cinco posicoes da taskbar
+  e a ausencia de regressao no modo Classico.
 
 ## Fora do escopo atual
 
