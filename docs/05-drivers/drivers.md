@@ -224,9 +224,11 @@ apresentar um frame independente. O consumidor chama
 
 `video_terminal_draw()` recebe o retângulo VESA de conteúdo, preserva a paleta
 VGA, desenha cursor e rodapé de histórico e faz refluxo visual conforme a
-largura. Ela exige VESA, backbuffer e espaço para 80 colunas por 22 linhas de
-texto mais o rodapé; em caso contrário retorna erro e registra `LOG_WARN`.
-No modo Clássico, o terminal continua usando a apresentação textual normal.
+largura e a altura disponíveis. Ela exige VESA, backbuffer e pelo menos uma
+célula de texto mais o rodapé; em caso contrário retorna erro e registra
+`LOG_WARN`. O mínimo estrutural da janela hospedada é aplicado pelo WM, não
+pelo terminal. No modo Clássico, o terminal continua usando a apresentação
+textual normal.
 
 ---
 
@@ -373,6 +375,13 @@ Escaneia todos os modos suportados pela placa de vídeo e seleciona a melhor res
 | `vesa_draw_bitmap(x, y, bitmap, w, h, color)` | Desenha bitmap monocromático |
 | `vesa_draw_char(x, y, c, color, scale)` | Desenha caractere com fonte |
 | `vesa_draw_string(x, y, str, color, scale)` | Desenha texto |
+| `vesa_set_clip_rect(x, y, w, h)` | Limita as primitivas de desenho ao retângulo |
+| `vesa_reset_clip_rect()` | Remove o limite de desenho atual |
+
+O recorte é temporário e vale para todas as primitivas VESA, inclusive texto,
+bitmaps e `vesa_clear()`. O Window Manager o ativa ao chamar o conteúdo de uma
+janela hospedada: conteúdo que ultrapassa a área interna fica invisível e não
+sobrescreve o Desktop, outras janelas ou a taskbar.
 
 ### Cores
 

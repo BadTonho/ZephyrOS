@@ -19,8 +19,8 @@ static int wm_active = 0;
 #define WM_GUI_WINDOW_COUNT WM_MAX_WINDOWS
 #define WM_GUI_ID_BASE 100
 #define WM_GUI_MARGIN 24
-#define WM_GUI_MIN_WIDTH 180
-#define WM_GUI_MIN_HEIGHT 128
+#define WM_GUI_MIN_WIDTH WM_HOSTED_MIN_WIDTH
+#define WM_GUI_MIN_HEIGHT WM_HOSTED_MIN_HEIGHT
 #define WM_GUI_TITLE_HEIGHT 24
 #define WM_GUI_CONTROL_SIZE 16
 #define WM_GUI_CONTROL_GAP 2
@@ -317,11 +317,17 @@ static void wm_gui_draw_window(const wm_gui_window_t* window) {
                         (uint32_t)rect.width, (uint32_t)rect.height, label, 0);
     }
     if (window->app->on_draw) {
+        vesa_set_clip_rect(window->x + WM_GUI_FRAME_INSET,
+                           window->y + WM_GUI_CONTENT_TOP,
+                           window->width - WM_GUI_FRAME_INSET * 2,
+                           window->height - WM_GUI_CONTENT_TOP -
+                           WM_GUI_CONTENT_BOTTOM);
         window->app->on_draw(window->x + WM_GUI_FRAME_INSET,
                              window->y + WM_GUI_CONTENT_TOP,
                              window->width - WM_GUI_FRAME_INSET * 2,
                              window->height - WM_GUI_CONTENT_TOP -
                              WM_GUI_CONTENT_BOTTOM);
+        vesa_reset_clip_rect();
     }
 }
 

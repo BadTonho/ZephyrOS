@@ -121,7 +121,9 @@ criam ou focalizam uma única janela de cada tipo.
 - **Modo moderno**: janelas hospedadas são compostas do menor para o maior
   Z-order e a taskbar é desenhada por último no mesmo ciclo VESA. Quando uma
   janela é aberta a partir do Desktop, os ícones continuam como fundo da
-  composição; ao fechar a última janela, o controle retorna ao Desktop.
+  composição; ao fechar a última janela, o controle retorna ao Desktop. Antes
+  de desenhar cada aplicativo, o WM recorta a pintura para a área interna da
+  moldura; conteúdo sem espaço fica invisível, sem vazar para outras cenas.
 - **Entrada**: o corpo focaliza uma janela; os controles da barra de título
   fecham, minimizam ou maximizam/restauram. Teclado e mouse do conteúdo são
   encaminhados ao aplicativo focalizado; `Esc`, `Tab`, `F1` e `F2` não são
@@ -183,6 +185,12 @@ int  wm_register_hosted_app(const wm_hosted_app_t* app);
 int  wm_close_hosted_app(wm_app_type_t app_type);
 void wm_request_hosted_redraw(wm_app_type_t app_type);
 ```
+
+`WM_HOSTED_MIN_WIDTH` e `WM_HOSTED_MIN_HEIGHT` definem o mínimo estrutural
+comum de 180x128 px para as janelas hospedadas. Os aplicativos não impõem um
+mínimo adicional pela quantidade de controles: ao reduzir uma janela, o WM
+mantém a moldura e o recorte da área interna, enquanto cada conteúdo pode
+ocultar ou interromper elementos que não couberem.
 
 O registro é singleton por `app_type`: registrar uma janela visível apenas a
 restaura/focaliza, sem criar botão duplicado. Fechar uma janela chama `on_close`

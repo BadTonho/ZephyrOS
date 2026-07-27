@@ -91,7 +91,7 @@ static void settings_hosted_close(void);
 
 static const wm_hosted_app_t settings_hosted_app = {
     WM_APP_SETTINGS, "Configuracoes do ZephyrOS", "Settings",
-    SETTINGS_MODERN_MIN_WIDTH + 4, SETTINGS_MODERN_MIN_HEIGHT + 28,
+    WM_HOSTED_MIN_WIDTH, WM_HOSTED_MIN_HEIGHT,
     SETTINGS_MODERN_DEFAULT_WIDTH + 4, SETTINGS_MODERN_DEFAULT_HEIGHT + 28,
     settings_hosted_draw, settings_hosted_key, settings_hosted_mouse,
     settings_hosted_close
@@ -212,8 +212,7 @@ static int settings_modern_layout(void) {
     tb_rect_t work_area;
 
     if (settings_hosted) {
-        return settings_gui_width >= SETTINGS_MODERN_MIN_WIDTH &&
-               settings_gui_height >= SETTINGS_MODERN_MIN_HEIGHT;
+        return settings_gui_width > 0 && settings_gui_height > 0;
     }
     if (!mode || !mode->initialized || !vesa_has_backbuffer()) return 0;
     if (mode->width < SETTINGS_MODERN_MIN_WIDTH ||

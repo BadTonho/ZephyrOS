@@ -4,6 +4,19 @@
 #include "core/string.h"
 #include "core/log.h"
 
+static int gui_clamp_to_screen(uint32_t* x, uint32_t* y,
+                               uint32_t* width, uint32_t* height) {
+    vesa_mode_t* mode = vesa_get_mode();
+
+    if (!x || !y || !width || !height || !mode || !mode->initialized ||
+        !*width || !*height || *x >= mode->width || *y >= mode->height) {
+        return 0;
+    }
+    if (*width > mode->width - *x) *width = mode->width - *x;
+    if (*height > mode->height - *y) *height = mode->height - *y;
+    return *width && *height;
+}
+
 void gui_init(void) {
     // Inicializacoes futuras (ex: double buffer, etc)
 }
@@ -34,6 +47,7 @@ void gui_draw_text(uint32_t x, uint32_t y, const char* text, uint32_t color) {
 
 void gui_draw_panel(uint32_t x, uint32_t y, uint32_t w, uint32_t h,
                     uint32_t background, int pressed) {
+    if (!gui_clamp_to_screen(&x, &y, &w, &h)) return;
     if (w < 4 || h < 4) {
         LOG_ERROR("GUI", "Dimensoes invalidas para painel");
         return;
@@ -64,6 +78,7 @@ void gui_draw_panel(uint32_t x, uint32_t y, uint32_t w, uint32_t h,
 }
 
 void gui_draw_button(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const char* text, int pressed) {
+    if (!gui_clamp_to_screen(&x, &y, &w, &h)) return;
     gui_draw_panel(x, y, w, h, GUI_COLOR_BG, pressed);
 
     // Center text
@@ -86,6 +101,8 @@ void gui_draw_button(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const char*
 
 void gui_draw_window_frame(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const char* title, int active) {
     vesa_color_t bg_color, light_border, dark_border, title_bg;
+
+    if (!gui_clamp_to_screen(&x, &y, &w, &h) || w < 20 || h < 20) return;
     bg_color.raw = GUI_COLOR_BG;
     light_border.raw = GUI_COLOR_BORDER_L;
     dark_border.raw = GUI_COLOR_BORDER_D;

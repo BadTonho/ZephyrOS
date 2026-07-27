@@ -17,6 +17,56 @@ static uint32_t dirty_y;
 static uint32_t dirty_width;
 static uint32_t dirty_height;
 static vesa_metrics_t vesa_metrics;
+static uint8_t clip_enabled = 0;
+static uint32_t clip_x;
+static uint32_t clip_y;
+static uint32_t clip_width;
+static uint32_t clip_height;
+
+static int vesa_point_in_clip(uint32_t x, uint32_t y) {
+    if (!clip_enabled) return 1;
+    return x >= clip_x && y >= clip_y &&
+           x < clip_x + clip_width && y < clip_y + clip_height;
+}
+
+static int vesa_clip_rect(uint32_t* x, uint32_t* y,
+                          uint32_t* width, uint32_t* height) {
+    uint32_t clip_right;
+    uint32_t clip_bottom;
+
+    if (!x || !y || !width || !height || !current_mode.initialized ||
+        !*width || !*height || *x >= current_mode.width ||
+        *y >= current_mode.height) {
+        return 0;
+    }
+    if (*width > current_mode.width - *x) {
+        *width = current_mode.width - *x;
+    }
+    if (*height > current_mode.height - *y) {
+        *height = current_mode.height - *y;
+    }
+    if (!clip_enabled) return 1;
+    if (!clip_width || !clip_height) return 0;
+
+    clip_right = clip_x + clip_width;
+    clip_bottom = clip_y + clip_height;
+    if (*x >= clip_right || *y >= clip_bottom) return 0;
+    if (*x < clip_x) {
+        uint32_t delta = clip_x - *x;
+        if (delta >= *width) return 0;
+        *x = clip_x;
+        *width -= delta;
+    }
+    if (*y < clip_y) {
+        uint32_t delta = clip_y - *y;
+        if (delta >= *height) return 0;
+        *y = clip_y;
+        *height -= delta;
+    }
+    if (*width > clip_right - *x) *width = clip_right - *x;
+    if (*height > clip_bottom - *y) *height = clip_bottom - *y;
+    return *width && *height;
+}
 
 static void vesa_metrics_add(uint32_t* value, uint32_t amount) {
     if (*value > VESA_METRICS_MAX_VALUE - amount) {
@@ -98,6 +148,7 @@ void vesa_init(uint32_t boot_info_addr) {
     LOG_INFO("VESA", "Inicializando suporte VESA");
     frame_depth = 0;
     frame_dirty = 0;
+    vesa_reset_clip_rect();
     memset_simple(&vesa_metrics, 0, sizeof(vesa_metrics_t));
     if (backbuffer) {
         kfree(backbuffer);
@@ -166,6 +217,7 @@ void vesa_disable(void) {
         kfree(backbuffer);
         backbuffer = NULL;
     }
+    vesa_reset_clip_rect();
     current_mode.initialized = 0;
     LOG_WARN("VESA", "VESA desabilitado; usando fallback VGA");
 }
@@ -260,9 +312,38 @@ void vesa_set_mode(uint32_t width, uint32_t height, uint32_t bpp) {
     LOG_WARN("VESA", "Troca de modo desabilitada em runtime");
 }
 
+void vesa_set_clip_rect(uint32_t x, uint32_t y, uint32_t width,
+                        uint32_t height) {
+    clip_enabled = 1;
+    clip_x = 0;
+    clip_y = 0;
+    clip_width = 0;
+    clip_height = 0;
+
+    if (!current_mode.initialized || !width || !height ||
+        x >= current_mode.width || y >= current_mode.height) {
+        return;
+    }
+    if (width > current_mode.width - x) width = current_mode.width - x;
+    if (height > current_mode.height - y) height = current_mode.height - y;
+    clip_x = x;
+    clip_y = y;
+    clip_width = width;
+    clip_height = height;
+}
+
+void vesa_reset_clip_rect(void) {
+    clip_enabled = 0;
+    clip_x = 0;
+    clip_y = 0;
+    clip_width = 0;
+    clip_height = 0;
+}
+
 void vesa_put_pixel(uint32_t x, uint32_t y, vesa_color_t color) {
     if (!current_mode.initialized) return;
     if (x >= current_mode.width || y >= current_mode.height) return;
+    if (!vesa_point_in_clip(x, y)) return;
 
     uint8_t* target = backbuffer ? backbuffer : (uint8_t*)current_mode.framebuffer;
     uint8_t* row = target + y * current_mode.pitch;
@@ -300,7 +381,8 @@ void vesa_draw_glyph8x16(uint32_t x, uint32_t y, const uint8_t* glyph,
         if (current_mode.bpp == VESA_BPP_24) {
             uint8_t* pixels = target + (y + row) * current_mode.pitch + x * 3U;
             for (uint32_t col = 0; col < visible_width; col++) {
-                if (bits & (0x80U >> col)) {
+                if ((bits & (0x80U >> col)) &&
+                    vesa_point_in_clip(x + col, y + row)) {
                     uint8_t* pixel = pixels + col * 3U;
                     pixel[0] = color.channels.blue;
                     pixel[1] = color.channels.green;
@@ -311,7 +393,10 @@ void vesa_draw_glyph8x16(uint32_t x, uint32_t y, const uint8_t* glyph,
             uint32_t* pixels = (uint32_t*)(target +
                 (y + row) * current_mode.pitch + x * 4U);
             for (uint32_t col = 0; col < visible_width; col++) {
-                if (bits & (0x80U >> col)) pixels[col] = color.raw;
+                if ((bits & (0x80U >> col)) &&
+                    vesa_point_in_clip(x + col, y + row)) {
+                    pixels[col] = color.raw;
+                }
             }
         }
     }
@@ -340,6 +425,10 @@ vesa_color_t vesa_get_pixel(uint32_t x, uint32_t y) {
 
 void vesa_clear(vesa_color_t color) {
     if (!current_mode.initialized) return;
+    if (clip_enabled) {
+        vesa_fill_rect(clip_x, clip_y, clip_width, clip_height, color);
+        return;
+    }
 
     uint8_t* target = backbuffer ? backbuffer : (uint8_t*)current_mode.framebuffer;
     for (uint32_t y = 0; y < current_mode.height; y++) {
@@ -363,11 +452,7 @@ void vesa_clear(vesa_color_t color) {
 void vesa_fill_rect(uint32_t x, uint32_t y, uint32_t w, uint32_t h, vesa_color_t color) {
     uint8_t* target;
 
-    if (!current_mode.initialized || !w || !h) return;
-    if (x >= current_mode.width || y >= current_mode.height) return;
-
-    if (w > current_mode.width - x) w = current_mode.width - x;
-    if (h > current_mode.height - y) h = current_mode.height - y;
+    if (!vesa_clip_rect(&x, &y, &w, &h)) return;
 
     target = backbuffer ? backbuffer : (uint8_t*)current_mode.framebuffer;
 
@@ -394,18 +479,20 @@ void vesa_fill_rect(uint32_t x, uint32_t y, uint32_t w, uint32_t h, vesa_color_t
 }
 
 void vesa_draw_hline(uint32_t x, uint32_t y, uint32_t w, vesa_color_t color) {
-    for (uint32_t i = 0; i < w; i++) {
-        vesa_put_pixel(x + i, y, color);
-    }
+    vesa_fill_rect(x, y, w, 1, color);
 }
 
 void vesa_draw_vline(uint32_t x, uint32_t y, uint32_t h, vesa_color_t color) {
-    for (uint32_t i = 0; i < h; i++) {
-        vesa_put_pixel(x, y + i, color);
-    }
+    vesa_fill_rect(x, y, 1, h, color);
 }
 
 void vesa_draw_rect(uint32_t x, uint32_t y, uint32_t w, uint32_t h, vesa_color_t color) {
+    if (!current_mode.initialized || !w || !h || x >= current_mode.width ||
+        y >= current_mode.height) {
+        return;
+    }
+    if (w > current_mode.width - x) w = current_mode.width - x;
+    if (h > current_mode.height - y) h = current_mode.height - y;
     vesa_draw_hline(x, y, w, color);
     vesa_draw_hline(x, y + h - 1, w, color);
     vesa_draw_vline(x, y, h, color);

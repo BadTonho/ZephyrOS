@@ -9,6 +9,8 @@
 #define WM_BORDER_SIZE 1
 #define WM_MIN_WIDTH 10
 #define WM_MIN_HEIGHT 5
+#define WM_HOSTED_MIN_WIDTH 180
+#define WM_HOSTED_MIN_HEIGHT 128
 #define WM_RESULT_NONE 0
 #define WM_RESULT_EXIT 1
 

@@ -75,6 +75,8 @@ void vesa_fill_circle(int cx, int cy, int r, vesa_color_t color);
 void vesa_draw_char(int x, int y, char c, vesa_color_t color, uint32_t scale);
 void vesa_draw_string(int x, int y, const char* str, vesa_color_t color, uint32_t scale);
 void vesa_draw_bitmap(int x, int y, const uint8_t* bitmap, uint32_t w, uint32_t h, vesa_color_t color);
+void vesa_set_clip_rect(uint32_t x, uint32_t y, uint32_t w, uint32_t h);
+void vesa_reset_clip_rect(void);
 
 void vesa_flip(void);
 void vesa_flip_region(uint32_t x, uint32_t y, uint32_t w, uint32_t h);

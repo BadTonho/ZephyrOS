@@ -110,7 +110,7 @@ static void fm_hosted_close(void);
 
 static const wm_hosted_app_t fm_hosted_app = {
     WM_APP_EXPLORER, "ZephyrOS Explorer", "Explorer",
-    FM_MODERN_MIN_WIDTH + 4, FM_MODERN_MIN_HEIGHT + 28,
+    WM_HOSTED_MIN_WIDTH, WM_HOSTED_MIN_HEIGHT,
     FM_MODERN_DEFAULT_WIDTH + 4, FM_MODERN_DEFAULT_HEIGHT + 28,
     fm_hosted_draw, fm_handle_key, 0, fm_hosted_close
 };
@@ -258,8 +258,7 @@ static int fm_modern_get_layout(int* x, int* y, int* width, int* height) {
         *y = fm_hosted_y;
         *width = fm_hosted_width;
         *height = fm_hosted_height;
-        return *width >= FM_MODERN_MIN_WIDTH &&
-               *height >= FM_MODERN_MIN_HEIGHT;
+        return *width > 0 && *height > 0;
     }
     if (!mode || !mode->initialized || !vesa_has_backbuffer()) return 0;
 
@@ -818,7 +817,10 @@ static void fm_draw_modern_all(void) {
     content_y += FM_MODERN_ADDRESS_HEIGHT + FM_MODERN_PANE_GAP;
     content_height = fm_modern_get_content_height(height);
     visible_side_items = fm_side_items_for_height(content_height);
-    if (state.side_selected >= visible_side_items) {
+    if (visible_side_items == 0) {
+        state.side_selected = 0;
+        if (state.focus_pane == 0) state.focus_pane = 1;
+    } else if (state.side_selected >= visible_side_items) {
         state.side_selected = visible_side_items - 1;
     }
 
@@ -1642,8 +1644,18 @@ void fm_handle_key(uint8_t scancode) {
 
     if (scancode == 0x1C) { // ENTER
         if (state.focus_pane == 0) {
-            fm_navigate_to(side_pane_paths[state.side_selected]);
+            int visible_items = fm_visible_side_items();
+
+            if (visible_items <= 0) {
+                state.focus_pane = 1;
+                fm_draw_all();
+                return;
+            }
+            if (state.side_selected >= visible_items) {
+                state.side_selected = visible_items - 1;
+            }
             state.focus_pane = 1;
+            fm_navigate_to(side_pane_paths[state.side_selected]);
             fm_draw_all();
             return;
         }
