@@ -11,8 +11,12 @@ MEMORY_MAP       equ 0x3000
 VESA_INFO        equ 0x2000
 VESA_MODE_INFO   equ 0x2400
 VESA_MODE_SIZE   equ 256
-KERNEL_BUFFER    equ 0x2600
 SECTOR_SIZE      equ 512
+KERNEL_BUFFER    equ 0x00010000
+KERNEL_BUFFER_SEG equ (KERNEL_BUFFER >> 4)
+KERNEL_BUFFER_SECTORS equ 63
+KERNEL_BUFFER_END equ (KERNEL_BUFFER + KERNEL_BUFFER_SECTORS * SECTOR_SIZE)
+LOW_BUFFER_LIMIT equ 0x00080000
 KBC_TIMEOUT      equ 0xFFFF
 KBC_DATA_PORT    equ 0x60
 KBC_STATUS_PORT  equ 0x64
@@ -41,8 +45,12 @@ GDT_DATA16_SEL   equ 0x20
     %error "kernel excede a reserva de memoria alta"
 %endif
 
-%if KERNEL_BUFFER < (VESA_MODE_INFO + VESA_MODE_SIZE) || (KERNEL_BUFFER + SECTOR_SIZE) > MEMORY_MAP
-    %error "bounce buffer do kernel sobrepoe buffers do stage2"
+%if (KERNEL_BUFFER & 0x0F) != 0
+    %error "bounce buffer do kernel deve estar alinhado a segmento"
+%endif
+
+%if (KERNEL_BUFFER_END > LOW_BUFFER_LIMIT) || ((KERNEL_BUFFER & 0xFFFF) + (KERNEL_BUFFER_SECTORS * SECTOR_SIZE)) > 0x10000
+    %error "bounce buffer do kernel excede a janela BIOS segura"
 %endif
 
 stage2_start:
@@ -360,16 +368,34 @@ enable_a20:
     ret
 
 load_kernel:
+    movzx eax, word [remaining]
+    shl eax, 9
+    add eax, [LOAD_DEST]
+    jc load_overflow
+    cmp eax, KERNEL_LIMIT
+    ja load_overflow
+
 .read_loop:
     cmp word [remaining], 0
     je .done
-    cmp dword [LOAD_DEST], KERNEL_LIMIT - SECTOR_SIZE
-    ja load_overflow
 
-    ; Converte LBA para CHS usando a geometria informada pelo BIOS.
+    ; Limita o lote ao fim da trilha, ao buffer e aos setores restantes.
     mov ax, [LBA]
     xor dx, dx
     div word [SPT]
+    mov cx, [SPT]
+    sub cx, dx
+    cmp cx, KERNEL_BUFFER_SECTORS
+    jbe .buffer_limited
+    mov cx, KERNEL_BUFFER_SECTORS
+.buffer_limited:
+    cmp cx, [remaining]
+    jbe .batch_ready
+    mov cx, [remaining]
+.batch_ready:
+    mov [transfer_sectors], cx
+
+    ; Converte LBA para CHS usando a geometria informada pelo BIOS.
     inc dx
     mov bl, dl
     xor dx, dx
@@ -381,16 +407,18 @@ load_kernel:
     shl cl, 6
     or cl, bl
 
-    xor ax, ax
+    mov ax, KERNEL_BUFFER_SEG
     mov es, ax
-    mov bx, KERNEL_BUFFER
-    mov ax, 0x0201
+    xor bx, bx
+    mov ah, 0x02
+    mov al, [transfer_sectors]
     int 0x13
     jc disk_error
 
     call copy_sector_high
-    inc word [LBA]
-    dec word [remaining]
+    mov ax, [transfer_sectors]
+    add [LBA], ax
+    sub [remaining], ax
     jmp .read_loop
 
 .done:
@@ -412,9 +440,12 @@ copy_protected:
     cld
     mov esi, KERNEL_BUFFER
     mov edi, [LOAD_DEST]
-    mov ecx, SECTOR_SIZE / 4
+    movzx ecx, word [transfer_sectors]
+    shl ecx, 7
     rep movsd
-    add dword [LOAD_DEST], SECTOR_SIZE
+    movzx eax, word [transfer_sectors]
+    shl eax, 9
+    add [LOAD_DEST], eax
 
     ; A saida passa por um descritor de codigo 16-bit. Assim, a instrucao
     ; seguinte a limpeza de PE tem tamanho de operando inequivocamente real.
@@ -528,6 +559,7 @@ NUM_HEADS:  dw 0
 LBA:        dw 0
 LOAD_DEST:  dd 0
 remaining:  dw 0
+transfer_sectors: dw 0
 msg_disk:     db "Kernel disk error!", 0
 msg_memory:   db "Kernel high memory unavailable!", 0
 msg_a20:      db "A20 enable error!", 0

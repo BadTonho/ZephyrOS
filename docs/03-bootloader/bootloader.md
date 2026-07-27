@@ -59,15 +59,20 @@ O BIOS retorna uma tabela com as regiões de memória disponíveis:
 
 ```nasm
 disk_load:
+    mov ax, 0x1000
+    mov es, ax             ; Bounce buffer em 0x10000
+    xor bx, bx
     mov ah, 0x02           ; Função: ler setores
-    mov bx, 0x2600         ; Bounce buffer abaixo de 1 MiB
-    int 0x13               ; BIOS grava um setor no buffer
-    ; Protected mode copia o setor para o destino alto.
+    mov al, [lote]         ; Nunca cruza trilha ou limite de 64 KiB
+    int 0x13               ; BIOS grava o lote no buffer
+    ; Protected mode copia o lote para o destino alto.
 ```
 
-O estágio 2 verifica o mapa E820, habilita a linha A20 e lê o kernel setor a
-setor para `0x2600`. Após cada leitura, entra temporariamente em protected
-mode e copia o setor com segmentos flat para a janela iniciada em
+O estágio 2 verifica o mapa E820, habilita a linha A20 e lê o kernel em lotes
+de até 63 setores para `0x10000`. Cada lote termina antes da próxima trilha e
+permanece dentro da mesma janela de 64 KiB exigida pela BIOS. Após cada
+leitura, entra temporariamente em protected mode e copia o lote com segmentos
+flat para a janela iniciada em
 `0x00100000`. A saída passa por um descritor protegido de código 16-bit antes
 de limpar `CR0.PE` e retornar ao real mode para a próxima chamada da BIOS. A
 imagem completa nunca precisa caber na memória baixa.
@@ -125,6 +130,7 @@ protected_mode:
 0x5000   → Segundo estágio do bootloader
 0x3000   → Mapa de memória E820 e contador
 0x2000   → Informações do modo VESA
+0x10000–0x17E00 → Bounce buffer para lotes de até 63 setores
 0x88000–0x98000  → Bitmaps do PMM
 0x98000–0x9F000  → Stack inicial do kernel
 0x9F000–0xA0000  → Margem reservada para BIOS/EBDA
