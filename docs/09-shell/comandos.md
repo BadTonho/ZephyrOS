@@ -249,7 +249,9 @@ Sem argumento, a saida cobre o boot ou a janela iniciada pelo ultimo reset;
 contadores de `health`, IPC, teclado ou processos.
 
 O relatorio mostra ticks do PIT, trocas de contexto, yields cooperativos,
-preempcoes de ring 3, fallbacks para o Idle, filas, memoria e copias VESA. Na
+preempcoes de ring 3, fallbacks para o Idle, filas, memoria e copias VESA. A
+fila de teclado inclui eventos processados e pico desde o boot; `Paging boot`
+mostra paginas identity-mapped, tabelas criadas e ticks de inicializacao. Na
 linha VESA, `media_bytes` e a media inteira de bytes por apresentacao da janela;
 `bytes` continua sendo a medida principal para comparacoes. A secao de memoria
 inclui fragmentacao e blocos do heap, rejeicoes do PMM e diretorios/paginas de

@@ -260,6 +260,16 @@ void paging_map_page(uint32_t virtual, uint32_t physical, uint32_t flags) {
 }
 ```
 
+Durante `paging_init()`, as faixas supervisoras, toda a RAM fisica livre e o
+framebuffer disponivel continuam mapeados por identidade. O bootstrap preenche
+as PTEs diretamente por Page Table, sem executar a validacao de diretorios de
+usuario para cada pagina. O caminho publico `paging_map_page()` permanece
+reservado aos mapeamentos normais e de ring 3.
+
+`paging_boot_stats_t`, consultado por `paging_get_boot_stats()`, registra o
+numero de paginas identity-mapped, Page Tables criadas e ticks consumidos pela
+inicializacao. A consulta e somente diagnostica e aparece em `kmetrics`.
+
 ### Ativação
 
 ```c

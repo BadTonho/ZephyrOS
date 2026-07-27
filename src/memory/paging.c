@@ -6,12 +6,14 @@
 #include "core/recovery.h"
 #include "drivers/vesa.h"
 #include "core/string.h"
+#include "core/timer.h"
 
 page_directory_t* current_directory = 0;
 static page_directory_t* kernel_directory = 0;
 static int paging_initialized = 0;
 
 #define PAGING_MAX_USER_DIRECTORIES 64U
+#define PAGING_TABLE_ENTRIES 1024U
 
 #if KERNEL_END != USER_SPACE_START || HEAP_START != USER_SPACE_END
 #error "Layout supervisor sobrepoe a janela virtual ZAPP"
@@ -23,6 +25,9 @@ static int paging_initialized = 0;
 
 static page_directory_t* user_directories[PAGING_MAX_USER_DIRECTORIES];
 static paging_user_stats_t user_paging_stats;
+static paging_boot_stats_t paging_boot_stats;
+
+static int paging_map_identity_range_fast(uint32_t start, uint32_t end);
 
 static int paging_user_directory_index(page_directory_t* dir) {
     if (!dir) return -1;
@@ -200,6 +205,8 @@ static int paging_map_framebuffer(vesa_mode_t* mode) {
     uint32_t fb_phys;
     uint32_t fb_size;
     uint32_t fb_end;
+    uint32_t map_start;
+    uint32_t map_end;
 
     if (!mode || !mode->initialized) return ERR_NOT_FOUND;
     if (mode->height != 0 &&
@@ -216,17 +223,13 @@ static int paging_map_framebuffer(vesa_mode_t* mode) {
     }
 
     fb_end = fb_phys + fb_size;
-    for (uint32_t i = fb_phys; i < fb_end;) {
-        if (paging_map_page(i, i, 0x03) != OK) {
-            LOG_ERROR("MEM", "Falha ao mapear pagina do framebuffer");
-            return ERR_MEM;
-        }
-
-        if (fb_end - i <= PAGE_SIZE) break;
-        i += PAGE_SIZE;
+    if ((uint64_t)fb_end + PAGE_SIZE - 1U > MAX_PHYSICAL_ADDRESS) {
+        LOG_ERROR("MEM", "Alinhamento do framebuffer excede o limite");
+        return ERR_OVERFLOW;
     }
-
-    return OK;
+    map_start = fb_phys & ~(PAGE_SIZE - 1U);
+    map_end = (fb_end + PAGE_SIZE - 1U) & ~(PAGE_SIZE - 1U);
+    return paging_map_identity_range_fast(map_start, map_end);
 }
 
 static int paging_abort_init(page_directory_t* dir, int error_code) {
@@ -253,18 +256,70 @@ void paging_switch_directory(page_directory_t* dir) {
     paging_initialized = 1;
 }
 
-static int paging_map_identity_range(uint32_t start, uint32_t end) {
+static page_table_t* paging_bootstrap_get_table(uint32_t table_index) {
+    uint32_t entry;
+    page_table_t* table;
+
+    if (!kernel_directory || table_index >= PAGING_TABLE_ENTRIES) {
+        LOG_ERROR("MEM", "Tabela de bootstrap fora do diretorio");
+        return 0;
+    }
+    entry = kernel_directory->entries[table_index];
+    if (entry & PAGING_FLAG_PRESENT) {
+        if (entry & PAGING_FLAG_USER) {
+            LOG_ERROR("MEM", "Tabela de usuario conflita com bootstrap");
+            return 0;
+        }
+        return (page_table_t*)(entry & 0xFFFFF000U);
+    }
+
+    table = (page_table_t*)pmm_alloc_page();
+    if (!table) {
+        LOG_ERROR("MEM", "Falha ao alocar tabela do bootstrap");
+        return 0;
+    }
+    kmemset(table, 0, sizeof(*table));
+    kernel_directory->entries[table_index] =
+        (uint32_t)table | PAGING_FLAG_PRESENT | PAGING_FLAG_WRITE;
+    paging_boot_stats.page_tables_created++;
+    return table;
+}
+
+static int paging_map_identity_range_fast(uint32_t start, uint32_t end) {
+    uint32_t address = start;
+
     if (start >= end || (start % PAGE_SIZE) != 0 ||
         (end % PAGE_SIZE) != 0) {
         LOG_ERROR("MEM", "Intervalo de identidade invalido");
         return ERR_INVALID;
     }
 
-    for (uint32_t address = start; address < end; address += PAGE_SIZE) {
-        if (paging_map_page(address, address,
-                            PAGING_FLAG_PRESENT | PAGING_FLAG_WRITE) != OK) {
-            LOG_ERROR("MEM", "Falha ao mapear intervalo por identidade");
+    while (address < end) {
+        uint32_t table_index = address / (PAGE_SIZE * PAGING_TABLE_ENTRIES);
+        uint32_t entry_index = (address / PAGE_SIZE) % PAGING_TABLE_ENTRIES;
+        uint32_t range_pages = (end - address) / PAGE_SIZE;
+        uint32_t table_pages = PAGING_TABLE_ENTRIES - entry_index;
+        page_table_t* table = paging_bootstrap_get_table(table_index);
+
+        if (!table) {
+            LOG_ERROR("MEM", "Falha ao obter tabela do mapa em blocos");
             return ERR_MEM;
+        }
+        if (table_pages > range_pages) table_pages = range_pages;
+        for (uint32_t page_index = 0; page_index < table_pages; page_index++) {
+            page_entry_t* page = &table->entries[entry_index + page_index];
+            uint32_t frame = address / PAGE_SIZE;
+
+            if (page->present && (page->frame != frame || page->user)) {
+                LOG_ERROR("MEM", "Remapeamento conflitante no bootstrap");
+                return ERR_STATE;
+            }
+            if (!page->present) paging_boot_stats.identity_pages++;
+            page->frame = frame;
+            page->present = 1;
+            page->rw = 1;
+            page->user = 0;
+            address += PAGE_SIZE;
         }
     }
     return OK;
@@ -272,6 +327,7 @@ static int paging_map_identity_range(uint32_t start, uint32_t end) {
 
 int paging_init(void) {
     uint32_t physical_end;
+    uint32_t start_ticks;
 
     if (paging_initialized && current_directory) {
         LOG_WARN("MEM", "Paging ja estava inicializado");
@@ -279,8 +335,10 @@ int paging_init(void) {
     }
 
     LOG_INFO("MEM", "Inicializando paging");
+    start_ticks = timer_get_ticks();
     kmemset(user_directories, 0, sizeof(user_directories));
     kmemset(&user_paging_stats, 0, sizeof(user_paging_stats));
+    kmemset(&paging_boot_stats, 0, sizeof(paging_boot_stats));
     user_paging_stats.initialized = 1;
     page_directory_t* dir = paging_create_directory();
     if (!dir) {
@@ -292,34 +350,34 @@ int paging_init(void) {
     kernel_directory = dir;
 
     /* A GDT do stage2 continua ativa ate o tss_init instalar a GDT do kernel. */
-    if (paging_map_identity_range(BOOT_TRANSITION_START,
-                                  BOOT_TRANSITION_END) != OK) {
+    if (paging_map_identity_range_fast(BOOT_TRANSITION_START,
+                                       BOOT_TRANSITION_END) != OK) {
         LOG_ERROR("MEM", "Falha ao mapear transicao do boot");
         return paging_abort_init(dir, ERR_MEM);
     }
-    if (paging_map_identity_range(PMM_BITMAP_STORAGE_START,
-                                  KERNEL_STACK_TOP) != OK) {
+    if (paging_map_identity_range_fast(PMM_BITMAP_STORAGE_START,
+                                       KERNEL_STACK_TOP) != OK) {
         LOG_ERROR("MEM", "Falha ao mapear bitmaps e stack");
         return paging_abort_init(dir, ERR_MEM);
     }
-    if (paging_map_identity_range(KERNEL_START, KERNEL_END) != OK) {
+    if (paging_map_identity_range_fast(KERNEL_START, KERNEL_END) != OK) {
         LOG_ERROR("MEM", "Falha ao mapear kernel");
         return paging_abort_init(dir, ERR_MEM);
     }
-    if (paging_map_identity_range(HEAP_START,
-                                  HEAP_START + HEAP_SIZE) != OK) {
+    if (paging_map_identity_range_fast(HEAP_START,
+                                       HEAP_START + HEAP_SIZE) != OK) {
         LOG_ERROR("MEM", "Falha ao mapear heap");
         return paging_abort_init(dir, ERR_MEM);
     }
 
     physical_end = memory_get_total();
     if (physical_end <= PHYSICAL_IDENTITY_START ||
-        paging_map_identity_range(PHYSICAL_IDENTITY_START,
-                                  physical_end) != OK) {
+        paging_map_identity_range_fast(PHYSICAL_IDENTITY_START,
+                                       physical_end) != OK) {
         LOG_ERROR("MEM", "Falha ao mapear RAM fisica");
         return paging_abort_init(dir, ERR_MEM);
     }
-    if (paging_map_identity_range(0xB8000U, 0xC0000U) != OK) {
+    if (paging_map_identity_range_fast(0xB8000U, 0xC0000U) != OK) {
         LOG_ERROR("MEM", "Falha ao mapear memoria VGA");
         return paging_abort_init(dir, ERR_MEM);
     }
@@ -339,6 +397,8 @@ int paging_init(void) {
     }
 
     paging_switch_directory(dir);
+    paging_boot_stats.init_ticks = timer_get_ticks() - start_ticks;
+    paging_boot_stats.initialized = 1;
     LOG_INFO("MEM", "Paging inicializado com sucesso");
     return OK;
 }
@@ -429,6 +489,19 @@ void paging_get_user_stats(paging_user_stats_t* stats) {
         return;
     }
     *stats = user_paging_stats;
+}
+
+int paging_get_boot_stats(paging_boot_stats_t* stats) {
+    if (!stats) {
+        LOG_ERROR("MEM", "Destino nulo ao consultar bootstrap do paging");
+        return ERR_NULL;
+    }
+    if (!paging_boot_stats.initialized) {
+        LOG_ERROR("MEM", "Metricas consultadas antes do paging");
+        return ERR_STATE;
+    }
+    *stats = paging_boot_stats;
+    return OK;
 }
 
 int paging_validate_user_range(uint32_t address, uint32_t size, int write) {

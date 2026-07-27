@@ -109,7 +109,7 @@ Lê scancodes da porta `0x60` e converte para ASCII.
 ### Fluxo
 
 ```
-Tecla pressionada → IRQ1 → keyboard_handler() → lê porta 0x60 → callback
+Tecla → IRQ1 → ring buffer → processo System → IPC → processo em foco
 ```
 
 ### Scancode Table
@@ -124,13 +124,12 @@ static const char scancode_table[128] = {
 };
 ```
 
-### Callback
+### Metricas
 
-O shell registra uma callback para receber teclas:
-
-```c
-keyboard_set_callback(shell_handle_key);
-```
+`keyboard_metrics_t` informa ocupacao atual e capacidade da fila, descartes,
+eventos processados e o maior pico de ocupacao desde o boot. Esses valores
+aparecem em `kmetrics` e permitem separar atraso de entrada de custo de
+renderizacao sem alterar o despacho por IPC.
 
 ---
 

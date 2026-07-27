@@ -18,6 +18,27 @@ mudanca; nao crie uma entrada artificial.
 
 ## Registros
 
+### 2026-07-27 - High Memory, bootstrap do paging em blocos
+
+- Cenario QEMU: executar `make clean && make`, iniciar com `make run`, usar
+  `kmetrics`; repetir `kmetrics reset` e digitacao nos modos Classic e Modern.
+- Metrica observavel: paginas identity-mapped, Page Tables e ticks de
+  `paging_init()`, alem de processados, pico e descartes da fila de teclado.
+- Antes: com 128 MiB e framebuffer 1024x768x32, cerca de 31275 paginas do
+  bootstrap percorriam o mapeador generico; cada pagina ainda pesquisava ate
+  64 registros de diretorio de usuario, chegando a aproximadamente 2 milhoes
+  de comparacoes redundantes. Nao havia contador interno de ticks para essa
+  etapa.
+- Depois: as mesmas paginas e o mesmo contrato identity-mapped sao montados
+  diretamente por tabela, sem a pesquisa de diretorios por pagina.
+  `paging_boot_stats_t` torna paginas, tabelas e ticks observaveis; os valores
+  de tempo no QEMU permanecem pendentes da validacao manual do usuario.
+- Conclusao: o custo estrutural redundante foi removido sem migrar o PMM para
+  mapeamento sob demanda; a conclusao temporal depende do teste no QEMU.
+- Impacto: enderecos High Memory, ABI ZAPP, RAM suportada, stage2 e
+  `boot.asm` permanecem inalterados. O Shell deixa a atualizacao do relogio
+  exclusivamente com o processo System e seu fallback.
+
 ### 2026-07-25 - K5, capacidade da imagem do kernel
 
 - Cenario QEMU: compilar com `make clean && make`; iniciar com `make run`;

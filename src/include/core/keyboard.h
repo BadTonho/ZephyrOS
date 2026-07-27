@@ -10,6 +10,8 @@ typedef struct {
     uint32_t queued;
     uint32_t capacity;
     uint32_t dropped;
+    uint32_t processed;
+    uint32_t peak_queued;
 } keyboard_metrics_t;
 
 void keyboard_init(void);

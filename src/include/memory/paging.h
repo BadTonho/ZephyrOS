@@ -25,6 +25,13 @@ typedef struct {
 } paging_user_stats_t;
 
 typedef struct {
+    uint32_t identity_pages;
+    uint32_t page_tables_created;
+    uint32_t init_ticks;
+    uint8_t initialized;
+} paging_boot_stats_t;
+
+typedef struct {
     uint32_t present : 1;
     uint32_t rw : 1;
     uint32_t user : 1;
@@ -61,6 +68,7 @@ page_directory_t* paging_create_user_directory(void);
 void paging_free_directory(page_directory_t* dir);
 void paging_free_user_directory(page_directory_t* dir);
 void paging_get_user_stats(paging_user_stats_t* stats);
+int paging_get_boot_stats(paging_boot_stats_t* stats);
 
 int paging_validate_user_range(uint32_t address, uint32_t size, int write);
 int paging_copy_from_user(void* destination, const void* source,

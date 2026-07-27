@@ -113,6 +113,7 @@ typedef struct {
     memory_heap_stats_t heap;
     memory_pmm_stats_t pmm;
     paging_user_stats_t paging_user;
+    paging_boot_stats_t paging_boot;
 } shell_kmetrics_snapshot_t;
 
 typedef struct {
@@ -1920,6 +1921,9 @@ static void shell_kmetrics_take_snapshot(shell_kmetrics_snapshot_t* snapshot) {
     memory_get_heap_stats(&snapshot->heap);
     memory_get_pmm_stats(&snapshot->pmm);
     paging_get_user_stats(&snapshot->paging_user);
+    if (paging_get_boot_stats(&snapshot->paging_boot) != OK) {
+        LOG_WARN("SHELL", "Metricas de bootstrap do paging indisponiveis");
+    }
 }
 
 static void cmd_kmetrics_print_scheduler(
@@ -1961,6 +1965,11 @@ static void cmd_kmetrics_print_queues(
     video_print(" descartes=", 0x08);
     print_num(shell_kmetrics_delta(current->keyboard.dropped,
                                    baseline->keyboard.dropped));
+    video_print(" processados=", 0x08);
+    print_num(shell_kmetrics_delta(current->keyboard.processed,
+                                   baseline->keyboard.processed));
+    video_print(" pico=", 0x08);
+    print_num(current->keyboard.peak_queued);
     video_print("\n", 0x07);
     video_print("         IPC pendentes=", 0x07);
     print_num(ipc_get_pending_count());
@@ -1984,6 +1993,7 @@ static void cmd_kmetrics_print_memory(
     const memory_heap_stats_t* heap = &current->heap;
     const memory_pmm_stats_t* pmm = &current->pmm;
     const paging_user_stats_t* paging_user = &current->paging_user;
+    const paging_boot_stats_t* paging_boot = &current->paging_boot;
 
     video_print("  Memoria PMM: usada=", 0x07);
     print_num(memory_get_used() / 1024U);
@@ -2000,6 +2010,13 @@ static void cmd_kmetrics_print_memory(
     print_num(shell_kmetrics_delta(pmm->invalid_frees,
                                    baseline->pmm.invalid_frees));
     video_print("\n", 0x07);
+    video_print("  Paging boot: paginas=", 0x07);
+    print_num(paging_boot->identity_pages);
+    video_print(" tabelas=", 0x08);
+    print_num(paging_boot->page_tables_created);
+    video_print(" ticks=", 0x08);
+    print_num(paging_boot->init_ticks);
+    video_print(" modo=blocos\n", 0x08);
     video_print("  Heap: ", 0x07);
     if (!heap->initialized || !heap->valid) {
         video_print("N/D\n", 0x08);
@@ -3528,7 +3545,6 @@ static void shell_handle_terminal_key(uint8_t scancode) {
         video_put_char(c, 0x07);
     }
 
-    if (!shell_is_hosted_visible()) taskbar_update_clock();
 }
 
 void shell_handle_key(uint8_t scancode) {

@@ -16,6 +16,8 @@ static volatile uint8_t queue_head;
 static volatile uint8_t queue_tail;
 static volatile uint32_t dropped_events;
 static volatile uint32_t dropped_total;
+static volatile uint32_t processed_total;
+static volatile uint32_t peak_queued;
 static uint8_t drop_warning_active;
 static uint8_t forward_warning_active;
 
@@ -53,6 +55,8 @@ void keyboard_init(void) {
     queue_tail = 0;
     dropped_events = 0;
     dropped_total = 0;
+    processed_total = 0;
+    peak_queued = 0;
     drop_warning_active = 0;
     forward_warning_active = 0;
     if (idt_register_handler(33, keyboard_handler) != OK) {
@@ -78,6 +82,10 @@ void keyboard_handler(registers_t* regs) {
 
     event_queue[queue_head] = scancode;
     queue_head = next_head;
+    uint32_t queued = queue_head >= queue_tail ?
+                      (uint32_t)(queue_head - queue_tail) :
+                      KEYBOARD_QUEUE_SIZE - queue_tail + queue_head;
+    if (queued > peak_queued) peak_queued = queued;
 }
 
 void keyboard_process_events(void) {
@@ -162,6 +170,7 @@ void keyboard_process_events(void) {
         }
         forward_warning_active = 1;
     }
+    processed_total += dispatched;
 }
 
 void keyboard_get_metrics(keyboard_metrics_t* metrics) {
@@ -179,6 +188,8 @@ void keyboard_get_metrics(keyboard_metrics_t* metrics) {
                       KEYBOARD_QUEUE_SIZE - tail + head;
     metrics->capacity = KEYBOARD_QUEUE_SIZE - 1U;
     metrics->dropped = dropped_total;
+    metrics->processed = processed_total;
+    metrics->peak_queued = peak_queued;
 }
 
 
