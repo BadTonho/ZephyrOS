@@ -20,6 +20,7 @@
 #define FM_CLASSIC_VISIBLE_ROWS 17
 #define FM_MODERN_MARGIN 24
 #define FM_MODERN_MIN_WIDTH 560
+#define FM_MODERN_MIN_HEIGHT 300
 #define FM_MODERN_SIDE_WIDTH 184
 #define FM_MODERN_CONTENT_OFFSET 30
 #define FM_MODERN_INSET 8
@@ -34,19 +35,11 @@
 #define FM_MODERN_MAX_TEXT 256
 #define FM_MODERN_SIDE_ITEM_COUNT 8
 #define FM_MODERN_SIDE_HEADER_OFFSET 34
-#define FM_MODERN_SIDE_BOTTOM_PADDING 4
 #define FM_MODERN_CONTENT_FIXED_HEIGHT \
     (FM_MODERN_CONTENT_OFFSET + FM_MODERN_TOOLBAR_HEIGHT + \
      FM_MODERN_PANE_GAP + FM_MODERN_ADDRESS_HEIGHT + \
      FM_MODERN_PANE_GAP + FM_MODERN_STATUS_HEIGHT + \
      FM_MODERN_PANE_GAP + 8)
-#define FM_MODERN_SIDE_MIN_HEIGHT \
-    (FM_MODERN_SIDE_HEADER_OFFSET + \
-     FM_MODERN_SIDE_ITEM_COUNT * FM_MODERN_ROW_HEIGHT + \
-     (FM_MODERN_SIDE_ITEM_COUNT - 1) * FM_MODERN_ROW_GAP + \
-     FM_MODERN_SIDE_BOTTOM_PADDING)
-#define FM_MODERN_MIN_HEIGHT \
-    (FM_MODERN_CONTENT_FIXED_HEIGHT + FM_MODERN_SIDE_MIN_HEIGHT)
 #define FM_MODERN_DEFAULT_WIDTH 720
 #define FM_MODERN_DEFAULT_HEIGHT 500
 
@@ -104,6 +97,8 @@ static void fm_draw_confirm_delete(void);
 static void fm_draw_view_file(void);
 static int fm_modern_get_layout(int* x, int* y, int* width, int* height);
 static int fm_modern_get_content_height(int height);
+static int fm_side_items_for_height(int height);
+static int fm_visible_side_items(void);
 static int fm_visible_rows(void);
 static void fm_select_mode(void);
 static void fm_redraw_file_view(void);
@@ -314,6 +309,33 @@ static void fm_select_mode(void) {
 
 static int fm_modern_get_content_height(int height) {
     return height - FM_MODERN_CONTENT_FIXED_HEIGHT;
+}
+
+static int fm_side_items_for_height(int height) {
+    int visible = 0;
+
+    for (int i = 0; i < side_pane_count; i++) {
+        int row_bottom = FM_MODERN_SIDE_HEADER_OFFSET +
+                         i * (FM_MODERN_ROW_HEIGHT + FM_MODERN_ROW_GAP) +
+                         FM_MODERN_ROW_HEIGHT;
+
+        if (row_bottom > height) break;
+        visible++;
+    }
+    return visible;
+}
+
+static int fm_visible_side_items(void) {
+    int x;
+    int y;
+    int width;
+    int height;
+
+    if (state.mode != FM_MODE_MODERN ||
+        !fm_modern_get_layout(&x, &y, &width, &height)) {
+        return side_pane_count;
+    }
+    return fm_side_items_for_height(fm_modern_get_content_height(height));
 }
 
 static int fm_visible_rows(void) {
@@ -613,19 +635,19 @@ static void fm_modern_draw_address(int x, int y, int width) {
 }
 
 static void fm_modern_draw_side(int x, int y, int width, int height) {
+    int visible_items = fm_side_items_for_height(height);
+
     gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)width,
                    (uint32_t)height, GUI_COLOR_BG, 0);
     gui_draw_text((uint32_t)(x + FM_MODERN_INSET), (uint32_t)(y + 8),
                   "Acesso Rapido", GUI_COLOR_TITLE_BG);
 
-    for (int i = 0; i < side_pane_count; i++) {
+    for (int i = 0; i < visible_items; i++) {
         int row_y = y + FM_MODERN_SIDE_HEADER_OFFSET +
                     i * (FM_MODERN_ROW_HEIGHT + FM_MODERN_ROW_GAP);
         int selected = state.focus_pane == 0 && state.side_selected == i;
         uint32_t background = selected ? GUI_COLOR_TITLE_BG : GUI_COLOR_BG;
         uint32_t foreground = selected ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
-
-        if (row_y + FM_MODERN_ROW_HEIGHT > y + height) break;
 
         gui_draw_panel((uint32_t)(x + 4), (uint32_t)row_y,
                        (uint32_t)(width - 8), FM_MODERN_ROW_HEIGHT,
@@ -760,6 +782,7 @@ static void fm_draw_modern_all(void) {
     int content_height;
     int list_x;
     int list_width;
+    int visible_side_items;
     vesa_color_t background;
 
     if (!fm_modern_get_layout(&x, &y, &width, &height)) {
@@ -794,6 +817,10 @@ static void fm_draw_modern_all(void) {
     fm_modern_draw_address(content_x, content_y, content_width);
     content_y += FM_MODERN_ADDRESS_HEIGHT + FM_MODERN_PANE_GAP;
     content_height = fm_modern_get_content_height(height);
+    visible_side_items = fm_side_items_for_height(content_height);
+    if (state.side_selected >= visible_side_items) {
+        state.side_selected = visible_side_items - 1;
+    }
 
     fm_modern_draw_side(content_x, content_y, FM_MODERN_SIDE_WIDTH,
                         content_height);
@@ -1598,7 +1625,9 @@ void fm_handle_key(uint8_t scancode) {
 
     if (scancode == 0x50) { // DOWN
         if (state.focus_pane == 0) {
-            if (state.side_selected < side_pane_count - 1) state.side_selected++;
+            if (state.side_selected < fm_visible_side_items() - 1) {
+                state.side_selected++;
+            }
         } else {
             if (state.selected < state.file_count - 1) {
                 state.selected++;
