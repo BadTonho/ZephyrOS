@@ -18,6 +18,7 @@
 #define DESKTOP_MODERN_GAP_Y 16
 #define DESKTOP_MODERN_MAX_COLUMNS 5
 #define DESKTOP_MODERN_SYMBOL_SCALE 2
+#define DESKTOP_MODERN_BMP_SIZE 32
 #define DESKTOP_DOUBLE_CLICK_TICKS 25
 #define DESKTOP_DRAG_THRESHOLD 4
 #define DESKTOP_MODERN_MAX_SLOTS (DESKTOP_MAX_ICONS * 2)
@@ -58,6 +59,20 @@ static icon_entry_t* desktop_get_icon_entry(desktop_app_type_t type) {
             LOG_ERROR("DESKTOP", "Tipo de icone invalido");
             return 0;
     }
+}
+
+static int desktop_draw_modern_bitmap(desktop_app_type_t type, int x, int y) {
+    icon_desktop_id_t id;
+
+    switch (type) {
+        case DESKTOP_APP_SHELL: id = ICON_DESKTOP_SHELL; break;
+        case DESKTOP_APP_EXPLORER: id = ICON_DESKTOP_EXPLORER; break;
+        case DESKTOP_APP_TASKMGR: id = ICON_DESKTOP_TASKMGR; break;
+        default:
+            LOG_ERROR("DESKTOP", "Tipo de bitmap moderno invalido");
+            return ERR_NOT_FOUND;
+    }
+    return icons_draw_desktop_bitmap(id, x, y);
 }
 
 static int desktop_text_length(const char* text) {
@@ -278,6 +293,9 @@ static void draw_single_icon_modern(desktop_icon_t* icon) {
     int symbol_width = FONT_WIDTH * DESKTOP_MODERN_SYMBOL_SCALE;
     int symbol_x = icon->modern_x + (icon->modern_width - symbol_width) / 2;
     int symbol_y = icon->modern_y + 14;
+    int bitmap_x = icon->modern_x +
+                   (icon->modern_width - DESKTOP_MODERN_BMP_SIZE) / 2;
+    int bitmap_y = icon->modern_y + 10;
     int label_width = desktop_text_length(icon->name) * FONT_WIDTH;
     int label_x = icon->modern_x + (icon->modern_width - label_width) / 2;
     int label_y = icon->modern_y + icon->modern_height - FONT_HEIGHT - 10;
@@ -288,8 +306,10 @@ static void draw_single_icon_modern(desktop_icon_t* icon) {
 
     vesa_color_t symbol_color;
     symbol_color.raw = foreground;
-    vesa_draw_char(symbol_x, symbol_y, entry->ch, symbol_color,
-                   DESKTOP_MODERN_SYMBOL_SCALE);
+    if (desktop_draw_modern_bitmap(icon->type, bitmap_x, bitmap_y) != OK) {
+        vesa_draw_char(symbol_x, symbol_y, entry->ch, symbol_color,
+                       DESKTOP_MODERN_SYMBOL_SCALE);
+    }
 
     if (label_x < icon->modern_x + 4) label_x = icon->modern_x + 4;
     gui_draw_text(label_x, label_y, icon->name, foreground);

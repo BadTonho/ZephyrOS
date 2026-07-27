@@ -40,8 +40,6 @@ visual atual.
   foco, Z-order, controles de titulo e a composicao com cursor invalidado.
 - [x] Avaliar arraste de icones depois de existir hit-testing e invalidacao de
   regioes confiaveis.
-- [ ] Considerar icones BMP apenas com cache, fallback desenhado e tratamento
-  de filesystem indisponivel.
 - [ ] Roda do mouse e melhorias de acessibilidade ficam apos a entrada basica
   estar estavel.
 
@@ -66,6 +64,15 @@ visual atual.
   interativo ao fechar a ultima janela hospedada.
 - [x] Validar no QEMU o arraste, o clique duplo, as cinco posicoes da taskbar
   e a ausencia de regressao no modo Classico.
+
+## Etapa UI6 - Icones BMP com cache
+
+- [ ] Carregar BMPs de Shell, Explorer e Task Manager apenas no Desktop
+  Moderno, com chave magenta transparente e cache em memoria.
+- [ ] Injetar os tres assets na imagem FAT12 e manter os simbolos desenhados
+  como fallback para filesystem, arquivo, formato ou memoria indisponiveis.
+- [ ] Validar no QEMU os BMPs, o comando `icons`, o fallback e a ausencia de
+  regressao no modo Classico antes de concluir a etapa.
 
 ## Fora do escopo atual
 

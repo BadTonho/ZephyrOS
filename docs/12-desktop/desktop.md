@@ -47,8 +47,10 @@ primitivas, permitindo:
 - Barras acopladas reduzem a grade; a taskbar personalizada também reserva
   seus slots para que nenhum cartão fique sob ela.
 
-As posições duram somente até reiniciar. Ícones BMP, roda do mouse, seleção
-múltipla e persistência em disco continuam fora do modo moderno atual.
+As posições duram somente até reiniciar. Shell, Explorer e Task Manager usam
+BMPs 24 bpp de 32×32 px no modo moderno quando estiverem no cache; os arquivos
+usam magenta como cor transparente. Roda do mouse, seleção múltipla e
+persistência em disco continuam fora do modo moderno atual.
 
 No modo Clássico, os ícones são organizados em grade (5 colunas) e mostrados na VGA Text Mode/Grid:
 
@@ -295,7 +297,12 @@ seu layout a partir de `taskbar_get_work_area()`.
 
 ## Icons (`icons.c`)
 
-Permite a customização dinâmica de ícones (tanto de caracteres TUI quanto de fallback de cor).
+Permite a customização dinâmica de ícones de caracteres e mantém um cache dos
+BMPs de Shell, Explorer e Task Manager. O build injeta `SHELL.BMP`,
+`EXPLORER.BMP` e `TASKMGR.BMP` no diretório raiz FAT12; eles são carregados uma
+única vez na inicialização. Se VESA, filesystem, arquivo, formato ou memória
+não estiverem disponíveis, o cartão moderno usa o símbolo vetorial existente e
+o modo Clássico continua usando caracteres.
 
 ```c
 typedef struct {
@@ -311,5 +318,10 @@ typedef struct {
 ```c
 icon_registry_t* icons_get_registry(void);
 icon_entry_t* icons_get_desktop(id);
+int icons_get_desktop_bitmap_status(id); // OK para BMP no cache
+int icons_draw_desktop_bitmap(id, x, y); // OK ou código para fallback
 void icons_reset_defaults(void);
 ```
+
+O comando Shell `icons` mostra o estado do filesystem e se cada um dos três
+ícones de Desktop está em modo `BMP` ou `FALLBACK`.

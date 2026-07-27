@@ -188,6 +188,21 @@ void bmp_draw(bmp_image_t* img, int x, int y) {
     }
 }
 
+void bmp_draw_transparent(bmp_image_t* img, int x, int y,
+                          vesa_color_t transparent_color) {
+    if (!img || !img->initialized) return;
+
+    for (uint32_t row = 0; row < img->height; row++) {
+        for (uint32_t col = 0; col < img->width; col++) {
+            vesa_color_t color = bmp_get_pixel(img, col, row);
+
+            if (color.raw != transparent_color.raw) {
+                vesa_put_pixel(x + col, y + row, color);
+            }
+        }
+    }
+}
+
 void bmp_draw_scaled(bmp_image_t* img, int x, int y, uint32_t scale) {
     if (!img || !img->initialized) return;
 

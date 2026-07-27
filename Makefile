@@ -422,9 +422,13 @@ $(GUI_OBJ): $(GUI_C)
 $(KERNEL_BIN): $(OBJS) src/linker.ld
 	$(LD) $(LDFLAGS) $(OBJS) -o $@
 
-$(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(KERNEL_BIN)
+$(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(KERNEL_BIN) tools\packager.py \
+          assets\icons\SHELL.BMP assets\icons\EXPLORER.BMP assets\icons\TASKMGR.BMP
 	cmd /c "copy /b build\boot.bin+build\stage2.bin+build\kernel.bin build\zephyros.img"
 	powershell -NoProfile -Command "$$path = 'build\zephyros.img'; $$reserved = $(FAT12_RESERVED_SECTORS); $$bytes = [System.IO.File]::ReadAllBytes($$path); $$bytes[14] = ($$reserved -band 0xFF); $$bytes[15] = (($$reserved -shr 8) -band 0xFF); [System.IO.File]::WriteAllBytes($$path, $$bytes); $$stream = [System.IO.File]::Open($$path, [System.IO.FileMode]::Open); $$stream.SetLength($(FAT12_DISK_BYTES)); $$stream.Close()"
+	python tools\packager.py inject-file --file assets\icons\SHELL.BMP --image $(OS_IMG) --fat-name SHELL.BMP
+	python tools\packager.py inject-file --file assets\icons\EXPLORER.BMP --image $(OS_IMG) --fat-name EXPLORER.BMP
+	python tools\packager.py inject-file --file assets\icons\TASKMGR.BMP --image $(OS_IMG) --fat-name TASKMGR.BMP
 
 run: $(OS_IMG)
 	$(QEMU) -drive format=raw,file=$(OS_IMG)

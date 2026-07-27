@@ -16,6 +16,7 @@
 #include "apps/mediaplayer.h"
 #include "apps/editor.h"
 #include "ui/filemanager.h"
+#include "ui/icons.h"
 #include "memory/paging.h"
 #include "core/string.h"
 #include "core/errors.h"
@@ -1329,6 +1330,7 @@ static void cmd_help(void) {
     video_print("             usertest fault | falha controlada\n", 0x08);
     video_print("  play     - Toca arquivo WAV\n", 0x07);
     video_print("  view     - Exibe imagem BMP\n", 0x07);
+    video_print("  icons    - Mostra estado dos icones BMP\n", 0x07);
     video_print("  stop     - Para player de midia\n", 0x07);
     video_print("  edit     - Editor de texto\n", 0x07);
     video_print("             edit (novo) | edit arquivo.txt\n", 0x08);
@@ -1336,6 +1338,31 @@ static void cmd_help(void) {
     video_print("  shutdown - Desliga o sistema\n", 0x07);
     video_print("  guitest  - Testa primitivas GUI 2D\n", 0x07);
     video_end_update();
+}
+
+static void cmd_icons_print_status(const char* name, icon_desktop_id_t id) {
+    int status = icons_get_desktop_bitmap_status(id);
+
+    video_print("  ", 0x07);
+    video_print(name, 0x0B);
+    video_print(": ", 0x07);
+    video_print(status == OK ? "BMP" : "FALLBACK", status == OK ? 0x0A : 0x0E);
+    if (status != OK) {
+        video_print(" erro=", 0x08);
+        print_num((uint32_t)status);
+    }
+    video_print("\n", 0x07);
+}
+
+static void cmd_icons(void) {
+    video_print("Icones do Desktop:\n", 0x0B);
+    video_print("  filesystem: ", 0x07);
+    video_print(fs_get_type() == FS_TYPE_NONE ? "INDISPONIVEL" : "DISPONIVEL",
+                fs_get_type() == FS_TYPE_NONE ? 0x0E : 0x0A);
+    video_print("\n", 0x07);
+    cmd_icons_print_status("Shell", ICON_DESKTOP_SHELL);
+    cmd_icons_print_status("Explorer", ICON_DESKTOP_EXPLORER);
+    cmd_icons_print_status("Task Manager", ICON_DESKTOP_TASKMGR);
 }
 
 static void cmd_health_print_component(recovery_component_id_t component) {
@@ -3465,6 +3492,8 @@ int shell_process_command(const char* input) {
                 video_print("Erro: nao foi possivel exibir a imagem.\n", 0x0C);
             }
         }
+    } else if (kstrcmp(cmd, "icons") == 0) {
+        cmd_icons();
     } else if (kstrcmp(cmd, "stop") == 0) {
         mp_stop();
         video_print("Player parado.\n", 0x0A);

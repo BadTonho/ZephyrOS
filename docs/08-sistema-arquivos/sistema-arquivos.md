@@ -84,10 +84,11 @@ int ata_read_sectors(uint32_t lba, uint8_t count, uint8_t* buffer) {
 ### Estrutura do Disco
 
 ```
-Setor 0:        Boot sector (contém BPB)
-Setor 1-9:      FAT (File Allocation Table)
-Setor 10-33:    Root directory (224 entradas)
-Setor 34-2879:  Data area (clusters)
+Setor 0:          Boot sector (contém BPB)
+Setores 1-1023:   Área reservada para boot, stage2 e kernel
+Setores 1024-1041: Duas FATs (9 setores cada)
+Setores 1042-1055: Root directory (224 entradas)
+Setores 1056-2879: Data area (clusters)
 ```
 
 ### BPB (BIOS Parameter Block)
@@ -100,7 +101,7 @@ typedef struct {
     char     oem[8];             // Nome do OEM
     uint16_t bytes_per_sector;   // 512
     uint8_t  sectors_per_cluster;// 1
-    uint16_t reserved_sectors;   // 1
+    uint16_t reserved_sectors;   // 1024
     uint8_t  num_fats;           // 2
     uint16_t root_entries;       // 224
     uint16_t total_sectors;      // 2880
@@ -398,9 +399,14 @@ typedef struct {
 ```c
 int  bmp_load(raw_data, size, &image);      // Carrega BMP da memória
 void bmp_draw(&image, x, y);                 // Renderiza na tela (VESA)
+void bmp_draw_transparent(&image, x, y, key);// Ignora pixels da cor-chave
 void bmp_draw_scaled(&image, x, y, scale);   // Renderiza com escala
 void bmp_free(&image);                       // Libera memória
 ```
+
+`bmp_draw_transparent()` preserva os pixels cuja cor seja igual à chave
+fornecida. O Desktop usa a chave magenta (`#FF00FF`) para os ícones BMP, de
+forma que a seleção do cartão continue visível atrás da imagem.
 
 ### Exemplo
 

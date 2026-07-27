@@ -351,12 +351,11 @@ def release_clusters(fat: bytearray, first_cluster: int, clusters: int) -> None:
         raise PackageError("cadeia FAT12 existente corrompida")
 
 
-def inject_package(package: bytes, image_path: Path, fat_name: str,
-                   replace: bool = False) -> None:
-    """Grava um pacote validado no diretorio raiz de uma imagem FAT12."""
-    info = parse_package(package)
-    if fat_name.upper() != alias_name(info.manifest["id"]):
-        raise PackageError("alias FAT deve corresponder ao ID do pacote")
+def inject_root_file(data: bytes, image_path: Path, fat_name: str,
+                     replace: bool = False) -> None:
+    """Grava um arquivo nao vazio no diretorio raiz de uma imagem FAT12."""
+    if not data:
+        raise PackageError("arquivo vazio nao pode ser injetado")
     try:
         image = bytearray(image_path.read_bytes())
     except OSError as error:
@@ -376,7 +375,7 @@ def inject_package(package: bytes, image_path: Path, fat_name: str,
         for fat in fats:
             release_clusters(fat, old_cluster, clusters)
     cluster_bytes = bps * spc
-    needed = (len(package) + cluster_bytes - 1) // cluster_bytes
+    needed = (len(data) + cluster_bytes - 1) // cluster_bytes
     allocated = allocate_clusters(fats[0], needed, clusters)
     for fat in fats:
         for index, cluster in enumerate(allocated):
@@ -384,7 +383,7 @@ def inject_package(package: bytes, image_path: Path, fat_name: str,
     data_start = root_start + (root_entries * 32 + bps - 1) // bps
     for index, cluster in enumerate(allocated):
         start = (data_start + (cluster - 2) * spc) * bps
-        block = package[index * cluster_bytes:(index + 1) * cluster_bytes]
+        block = data[index * cluster_bytes:(index + 1) * cluster_bytes]
         image[start:start + cluster_bytes] = block.ljust(cluster_bytes, b"\0")
     for index, fat in enumerate(fats):
         start = (reserved + index * spf) * bps
@@ -394,11 +393,20 @@ def inject_package(package: bytes, image_path: Path, fat_name: str,
     image[entry:entry + 11] = name
     image[entry + 11] = FAT12_ATTR_ARCHIVE
     struct.pack_into("<H", image, entry + 26, allocated[0])
-    struct.pack_into("<I", image, entry + 28, len(package))
+    struct.pack_into("<I", image, entry + 28, len(data))
     try:
         image_path.write_bytes(image)
     except OSError as error:
         raise PackageError(f"nao foi possivel gravar imagem {image_path}") from error
+
+
+def inject_package(package: bytes, image_path: Path, fat_name: str,
+                   replace: bool = False) -> None:
+    """Grava um pacote validado no diretorio raiz de uma imagem FAT12."""
+    info = parse_package(package)
+    if fat_name.upper() != alias_name(info.manifest["id"]):
+        raise PackageError("alias FAT deve corresponder ao ID do pacote")
+    inject_root_file(package, image_path, fat_name, replace)
 
 
 def read_root_file(image_path: Path, fat_name: str) -> bytes:
@@ -462,7 +470,7 @@ def run_selftest() -> int:
     manifest = {"id": "DEMO", "name": "Demo", "version": "1.0.0", "api": "0.3", "entry": "APP.ZAP", "dependencies": ""}
     package = build_package(manifest, build_demo_zapp())
     checks = {"criar": True, "crc_invalido": False, "injecao": False,
-              "substituicao": False}
+              "substituicao": False, "arquivo": False}
     try:
         parse_package(package)
         broken = bytearray(package)
@@ -478,6 +486,8 @@ def run_selftest() -> int:
             checks["injecao"] = read_root_file(image_path, "DEMO.ZPK") == package
             inject_package(package, image_path, "DEMO.ZPK", replace=True)
             checks["substituicao"] = read_root_file(image_path, "DEMO.ZPK") == package
+            inject_root_file(b"desktop icon", image_path, "ICON.BMP")
+            checks["arquivo"] = read_root_file(image_path, "ICON.BMP") == b"desktop icon"
     except (OSError, PackageError):
         checks["criar"] = False
     for label, approved in checks.items():
@@ -522,6 +532,18 @@ def command_inject(arguments: argparse.Namespace) -> int:
     return 0
 
 
+def command_inject_file(arguments: argparse.Namespace) -> int:
+    """Injeta um arquivo comum no diretorio raiz da imagem FAT12."""
+    try:
+        data = Path(arguments.file).read_bytes()
+    except OSError as error:
+        raise PackageError("nao foi possivel ler arquivo para injecao") from error
+    inject_root_file(data, Path(arguments.image), arguments.fat_name,
+                     arguments.replace)
+    print(f"Arquivo injetado como {arguments.fat_name.upper()}")
+    return 0
+
+
 def command_demo(arguments: argparse.Namespace) -> int:
     """Cria e injeta o demo usado na validacao manual da Fase 7."""
     manifest = {"id": "DEMO", "name": "Demo", "version": "1.0.0", "api": "0.3", "entry": "APP.ZAP", "dependencies": ""}
@@ -552,6 +574,12 @@ def build_parser() -> argparse.ArgumentParser:
     inject.add_argument("--fat-name")
     inject.add_argument("--replace", action="store_true")
     inject.set_defaults(handler=command_inject)
+    inject_file = commands.add_parser("inject-file")
+    inject_file.add_argument("--file", required=True)
+    inject_file.add_argument("--image", required=True)
+    inject_file.add_argument("--fat-name", required=True)
+    inject_file.add_argument("--replace", action="store_true")
+    inject_file.set_defaults(handler=command_inject_file)
     demo = commands.add_parser("demo")
     demo.add_argument("--output", required=True)
     demo.add_argument("--image", required=True)
