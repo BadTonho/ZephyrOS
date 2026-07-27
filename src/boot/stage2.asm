@@ -54,7 +54,6 @@ stage2_start:
 
     call detect_memory
     call detect_geometry
-    call set_vesa_mode
 
     call validate_kernel_memory
     jc memory_error
@@ -69,6 +68,9 @@ stage2_start:
     mov dword [LOAD_DEST], KERNEL_OFFSET
     mov word [remaining], KERNEL_SECTORS
     call load_kernel
+
+    ; Mantem o modo texto durante o carregamento para tornar erros visiveis.
+    call set_vesa_mode
 
     lgdt [gdt_descriptor]
     mov eax, cr0
@@ -401,7 +403,14 @@ copy_sector_high:
 [BITS 32]
 copy_protected:
     mov ax, 0x10
+    mov ds, ax
     mov es, ax
+    mov esi, KERNEL_BUFFER
+    mov edi, [LOAD_DEST]
+    mov ecx, SECTOR_SIZE / 4
+    rep movsd
+    add dword [LOAD_DEST], SECTOR_SIZE
+
     mov eax, cr0
     and eax, 0xFFFFFFFE
     mov cr0, eax
@@ -411,13 +420,7 @@ copy_protected:
 copy_real:
     xor ax, ax
     mov ds, ax
-    mov esi, KERNEL_BUFFER
-    mov edi, [LOAD_DEST]
-    mov ecx, SECTOR_SIZE / 4
-    a32 rep movsd
-    xor ax, ax
     mov es, ax
-    add dword [LOAD_DEST], SECTOR_SIZE
     ret
 
 print16:

@@ -45,9 +45,10 @@ detect_memory:
     int 0x15               ; Chama BIOS
 ```
 
-O estágio 2 coleta o mapa E820 e tenta configurar VESA antes de carregar o
-kernel. Se VESA falhar, o kernel recebe essa informação e mantém o fallback
-clássico.
+O estágio 2 coleta o mapa E820 antes de carregar o kernel. O modo VESA só é
+configurado depois que a carga termina, mantendo eventuais erros de memória,
+A20 e disco visíveis no modo texto. Se VESA falhar, o kernel recebe essa
+informação e mantém o fallback clássico.
 
 O BIOS retorna uma tabela com as regiões de memória disponíveis:
 - Endereço base
@@ -61,14 +62,14 @@ disk_load:
     mov ah, 0x02           ; Função: ler setores
     mov bx, 0x2600         ; Bounce buffer abaixo de 1 MiB
     int 0x13               ; BIOS grava um setor no buffer
-    ; Unreal mode copia o setor para o destino alto.
+    ; Protected mode copia o setor para o destino alto.
 ```
 
 O estágio 2 verifica o mapa E820, habilita a linha A20 e lê o kernel setor a
 setor para `0x2600`. Após cada leitura, entra temporariamente em protected
-mode para obter um segmento de dados flat, retorna ao real mode e copia o
-setor para a janela iniciada em `0x00100000`. A imagem completa nunca precisa
-caber na memória baixa.
+mode e copia o setor com segmentos flat para a janela iniciada em
+`0x00100000`. Só então retorna ao real mode para a próxima chamada da BIOS. A
+imagem completa nunca precisa caber na memória baixa.
 
 A quantidade de setores continua calculada durante o build. O stage2 recusa
 imagens cujo conteúdo carregável ultrapasse `0x00800000`, enquanto o linker
