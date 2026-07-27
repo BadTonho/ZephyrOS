@@ -68,7 +68,8 @@ disk_load:
 O estágio 2 verifica o mapa E820, habilita a linha A20 e lê o kernel setor a
 setor para `0x2600`. Após cada leitura, entra temporariamente em protected
 mode e copia o setor com segmentos flat para a janela iniciada em
-`0x00100000`. Só então retorna ao real mode para a próxima chamada da BIOS. A
+`0x00100000`. A saída passa por um descritor protegido de código 16-bit antes
+de limpar `CR0.PE` e retornar ao real mode para a próxima chamada da BIOS. A
 imagem completa nunca precisa caber na memória baixa.
 
 A quantidade de setores continua calculada durante o build. O stage2 recusa

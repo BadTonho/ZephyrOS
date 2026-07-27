@@ -24,6 +24,10 @@ KBC_WRITE_OUTPUT equ 0xD1
 A20_ENABLE_BIT   equ 0x02
 E820_ENTRY_SIZE  equ 24
 MAX_E820_ENTRIES equ ((STAGE2_LOAD - MEMORY_MAP) / E820_ENTRY_SIZE)
+GDT_CODE32_SEL   equ 0x08
+GDT_DATA32_SEL   equ 0x10
+GDT_CODE16_SEL   equ 0x18
+GDT_DATA16_SEL   equ 0x20
 
 %ifndef KERNEL_SECTORS
 %define KERNEL_SECTORS ((KERNEL_LIMIT - KERNEL_OFFSET) / SECTOR_SIZE)
@@ -76,7 +80,7 @@ stage2_start:
     mov eax, cr0
     or eax, 0x00000001
     mov cr0, eax
-    jmp 0x08:protected_mode
+    jmp GDT_CODE32_SEL:protected_mode
 
 detect_memory:
     mov di, MEMORY_MAP
@@ -398,29 +402,45 @@ copy_sector_high:
     mov eax, cr0
     or eax, 0x00000001
     mov cr0, eax
-    jmp dword 0x08:copy_protected
+    jmp dword GDT_CODE32_SEL:copy_protected
 
 [BITS 32]
 copy_protected:
-    mov ax, 0x10
+    mov ax, GDT_DATA32_SEL
     mov ds, ax
     mov es, ax
+    cld
     mov esi, KERNEL_BUFFER
     mov edi, [LOAD_DEST]
     mov ecx, SECTOR_SIZE / 4
     rep movsd
     add dword [LOAD_DEST], SECTOR_SIZE
 
+    ; A saida passa por um descritor de codigo 16-bit. Assim, a instrucao
+    ; seguinte a limpeza de PE tem tamanho de operando inequivocamente real.
+    jmp GDT_CODE16_SEL:copy_protected_16
+
+[BITS 16]
+copy_protected_16:
+    mov ax, GDT_DATA16_SEL
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+
     mov eax, cr0
     and eax, 0xFFFFFFFE
     mov cr0, eax
-    jmp word 0x0000:copy_real
+    jmp 0x0000:copy_real
 
-[BITS 16]
 copy_real:
     xor ax, ax
     mov ds, ax
     mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
     ret
 
 print16:
@@ -470,7 +490,7 @@ fatal_error:
 
 [BITS 32]
 protected_mode:
-    mov ax, 0x10
+    mov ax, GDT_DATA32_SEL
     mov ds, ax
     mov es, ax
     mov fs, ax
@@ -490,6 +510,12 @@ gdt_code:
 gdt_data:
     dw 0xFFFF, 0x0000
     db 0x00, 10010010b, 11001111b, 0x00
+gdt_code_16:
+    dw 0xFFFF, 0x0000
+    db 0x00, 10011010b, 00000000b, 0x00
+gdt_data_16:
+    dw 0xFFFF, 0x0000
+    db 0x00, 10010010b, 00000000b, 0x00
 gdt_end:
 gdt_descriptor:
     dw gdt_end - gdt_start - 1
