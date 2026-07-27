@@ -661,7 +661,7 @@ static void execute_about_action(int option) {
         video_print_at(10, 13, "Sistema de Arquivos", 0x0B);
         video_print_at(12, 14, "FAT12 implementation", 0x07);
         video_print_at(10, 16, "Interface", 0x0B);
-        video_print_at(12, 17, "TUI estilo Windows 95", 0x07);
+        video_print_at(12, 17, "Modo Classico (TUI)", 0x07);
     }
     video_print_at(10, 22, "Pressione Esc para voltar", 0x08);
 }
