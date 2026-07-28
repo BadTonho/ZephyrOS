@@ -495,7 +495,7 @@ Plataforma de aplicativos:   [████████████████�
 - [ ] Cobertura complementar: injetar RX externo e frame invalido e repetir a
   regressao visual Classic/Modern; esses cenarios nao bloqueiam a conclusao.
 
-## S2.4 - ARP com cache e resolucao assincrona (implementada; validacao pendente)
+## S2.4 - ARP com cache e resolucao assincrona (concluida e validada)
 
 - [x] Despacho Ethernet por EtherType com quatro handlers e contadores de
   entrega, ausencia de protocolo e erro do callback.
@@ -509,8 +509,12 @@ Plataforma de aplicativos:   [████████████████�
   `regcheck full`.
 - [x] Suite `net check qemu <id> <ip>` agrupa reply, cache hit e timeout sem
   impedir o polling cooperativo do processo de sistema.
-- [ ] Validar Q3, build limpo, QEMU padrao, timeout, peer externo, sintaxe,
-  ausencia de NIC, RTL8139, `device-scan` e Classic/Modern.
+- [x] Validada pelo usuario no QEMU padrao: request/reply, cache hit sem novo
+  TX, tres tentativas, timeout, polling sem erros e invariantes concluiram em
+  `OK`.
+- [ ] Cobertura complementar: peer externo, ausencia de NIC, RTL8139,
+  `device-scan`, sintaxe invalida e regressao visual Classic/Modern; esses
+  cenarios nao bloqueiam a conclusao.
 
 ## Continuacao da S2 - Rede e atualizacoes (planejada)
 

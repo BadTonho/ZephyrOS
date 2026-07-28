@@ -72,7 +72,7 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 - [ ] Cobertura complementar: injetar RX externo e frame invalido e repetir a
   regressao visual Classic/Modern; esses cenarios nao bloqueiam a conclusao.
 
-## S2.4 - ARP com cache e resolucao assincrona (implementada; validacao pendente)
+## S2.4 - ARP com cache e resolucao assincrona (concluida e validada)
 
 - [x] EtherType `0x0806` entregue fora da IRQ por tabela fixa de handlers.
 - [x] Pacotes ARP serializados explicitamente em ordem de rede.
@@ -85,7 +85,11 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 - [x] Perfil ativo `net check qemu <id> <ip>` para validar reply, cache hit e
   timeout em uma unica execucao cooperativa.
 - [x] Invariantes ARP adicionadas ao `regcheck full` sem efeitos colaterais.
-- [ ] Validacao manual completa conforme a matriz da S2.4.
+- [x] Validada pelo usuario no QEMU padrao: reply, cache hit sem novo TX,
+  timeout apos tres tentativas, polling sem erros e invariantes em `OK`.
+- [ ] Cobertura complementar: peer externo, ausencia de NIC, RTL8139,
+  `device-scan`, sintaxe invalida e Classic/Modern; esses cenarios nao
+  bloqueiam a conclusao.
 
 ## Sequencia prevista apos S2.4
 
