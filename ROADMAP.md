@@ -585,8 +585,10 @@ Plataforma de aplicativos:   [████████████████�
 - [x] Entrada Shift e integridade da pilha/heap revalidadas pelo usuario:
   `echo A:B?` funcionou e `regcheck full` permaneceu em `OK` antes e depois
   do GET e da suite agrupada.
-- [ ] Revalidar o GET completo com um endpoint que responda por
-  `Content-Length` ou EOF; `Transfer-Encoding` permanece fora da S2.7.
+- [x] GET individual revalidado com `neverssl.com`: HTTP 302, headers e
+  corpo recebidos, seguido por `regcheck full` em `OK`.
+- [ ] Revalidar a suite agrupada apos adicionar repeticao controlada para
+  timeout de transporte; `Transfer-Encoding` permanece fora da S2.7.
 - [ ] Cobertura complementar: peer controlado, perda/retransmissao, janela
   zero, RST, tabela cheia, ausencia de NIC, RTL8139 e Classic/Modern.
 

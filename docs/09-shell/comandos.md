@@ -422,6 +422,9 @@ do processo Shell. O dominio da suite TCP deve responder com
 `Content-Length` ou fechamento de conexao; se o servidor escolher
 `Transfer-Encoding`, a S2.7 o rejeita de forma controlada. Por isso o exemplo
 usa `neverssl.com` em vez de depender do framing atual de `example.com`.
+Como o servidor e externo, a suite repete a conexao HTTP ate tres vezes
+somente quando ocorre timeout de transporte; erros de protocolo nao sao
+mascarados. O comando `http get` individual continua com uma unica sessao.
 
 O perfil segue o backend documentado em
 [QEMU Networking](https://gitlab.com/qemu-project/qemu/blob/master/docs/system/devices/net.rst);

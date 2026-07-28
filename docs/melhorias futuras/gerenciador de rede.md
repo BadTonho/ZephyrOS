@@ -134,8 +134,10 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 - [x] Revalidar entrada Shift e integridade da pilha/heap apos separar os
   frames das suites: `echo A:B?` funcionou e `regcheck full` permaneceu em
   `OK` antes e depois da rede.
-- [ ] Revalidar o GET individual com um servidor que responda por
-  `Content-Length` ou EOF.
+- [x] GET individual revalidado com `neverssl.com`: HTTP 302, headers e
+  corpo recebidos, seguido por `regcheck full` em `OK`.
+- [ ] Revalidar a suite agrupada apos adicionar repeticao controlada para
+  timeouts de transporte do servidor externo.
 - [ ] Cobertura complementar: perda/retransmissao com peer, RST, janela zero,
   handles obsoletos, tabela cheia, fallbacks e Classic/Modern.
 

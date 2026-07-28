@@ -91,8 +91,10 @@ antecipar interfaces ou permissoes que ainda nao existem.
   socket RX/TX, resposta HTTP, fechamento, polling e invariantes.
 - [x] Entrada Shift e integridade da pilha/heap revalidadas: `echo A:B?`
   funcionou e `regcheck full` permaneceu em `OK` antes e depois da rede.
-- [ ] Revalidar o GET completo com resposta delimitada por `Content-Length`
-  ou EOF; `Transfer-Encoding` continua fora do recorte da S2.7.
+- [x] GET individual revalidado com `neverssl.com`: HTTP 302, headers e
+  corpo recebidos, com `regcheck full` posterior em `OK`.
+- [ ] Revalidar a suite agrupada com a repeticao controlada de conexao para
+  timeout; `Transfer-Encoding` continua fora do recorte da S2.7.
 - [ ] Cobertura complementar da S2.7: peer controlado, perda de segmentos,
   janela zero, RST, ausencia de NIC, RTL8139 e modos Classic/Modern.
 - [ ] S2.8: suporte multi-NIC e RTL8139 sem duplicar a camada de protocolos.

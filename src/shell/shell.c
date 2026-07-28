@@ -69,6 +69,7 @@
 #define SHELL_DNS_WAIT_SECONDS 20U
 #define SHELL_TCP_WAIT_SECONDS 45U
 #define SHELL_HTTP_WAIT_SECONDS 50U
+#define SHELL_HTTP_SUITE_ATTEMPTS 3U
 #define SHELL_HTTP_PREVIEW_SIZE 512U
 #define SHELL_NETWORK_REQUIRED_IPV4_HANDLERS 3U
 #define SHELL_DNS_NAME_SIZE DNS_NAME_BUFFER_SIZE
@@ -5191,6 +5192,31 @@ static void cmd_net_qemu_tcp_wait_close(uint32_t fin_baseline) {
     } while ((uint32_t)(timer_get_ticks() - start_tick) <= wait_ticks);
 }
 
+static int cmd_net_qemu_tcp_run_http(
+    const char* url, http_status_t* out_status) {
+    int result = ERR_TIMEOUT;
+
+    if (!url || !out_status) {
+        LOG_ERROR("SHELL", "Argumento nulo no HTTP da suite TCP");
+        return ERR_NULL;
+    }
+    for (uint32_t attempt = 0;
+         attempt < SHELL_HTTP_SUITE_ATTEMPTS; attempt++) {
+        if (attempt) {
+            video_print("[WRN] Timeout HTTP; repetindo conexao ", 0x0E);
+            print_num(attempt + 1U);
+            video_print("/", 0x0E);
+            print_num(SHELL_HTTP_SUITE_ATTEMPTS);
+            video_print("...\n", 0x0E);
+            result = http_reset();
+            if (result != OK) return result;
+        }
+        result = cmd_http_execute(url, 0U, out_status);
+        if (result != ERR_TIMEOUT) return result;
+    }
+    return result;
+}
+
 static void cmd_net_check_qemu_tcp_print(
     const shell_net_qemu_tcp_check_t* check, uint8_t passed) {
     cmd_net_check_print_case("Lease DHCP QEMU", check->dhcp);
@@ -5257,7 +5283,7 @@ static SHELL_NOINLINE void cmd_net_check_qemu_tcp(const char* args) {
         metrics_valid = 1;
     }
     if (result == OK) {
-        result = cmd_http_execute(url, 0U, &http_after);
+        result = cmd_net_qemu_tcp_run_http(url, &http_after);
         if (result == OK) {
             cmd_net_qemu_tcp_wait_close(tcp_before.fin_tx);
         }

@@ -841,8 +841,11 @@ int http_maintain(void) {
     } else {
         result = http_maintain_receiving();
     }
-    if (result != OK) http_fail(result);
-    return result;
+    if (result != OK) {
+        http_fail(result);
+        /* A falha pertence a sessao; o polling continua operacional. */
+    }
+    return OK;
 }
 
 int http_reset(void) {
