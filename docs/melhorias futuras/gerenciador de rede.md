@@ -116,7 +116,7 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 - [ ] Cobertura complementar: renovacao/liberacao individual, fallbacks,
   peer externo e Classic/Modern.
 
-## S2.7 - TCP cliente, sockets e HTTP GET (implementada)
+## S2.7 - TCP cliente, sockets e HTTP GET (concluida e validada)
 
 - [x] Protocolo TCP IPv4 cliente com 16 conexoes, handles geracionais,
   checksum, handshake, ACK, dados, FIN/RST e descarte fora de ordem.
@@ -136,8 +136,9 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
   `OK` antes e depois da rede.
 - [x] GET individual revalidado com `neverssl.com`: HTTP 302, headers e
   corpo recebidos, seguido por `regcheck full` em `OK`.
-- [ ] Revalidar a suite agrupada apos adicionar repeticao controlada para
-  timeouts de transporte do servidor externo.
+- [x] Suite agrupada revalidada: o primeiro handshake expirou, a tentativa
+  2/3 concluiu HTTP 200 e todos os itens, seguidos por `regcheck full`,
+  permaneceram em `OK`.
 - [x] Fallback sem NIC validado: interface inexistente recusada e
   `regcheck full` em `OK`.
 - [ ] Cobertura complementar: perda/retransmissao com peer, RST, janela zero,

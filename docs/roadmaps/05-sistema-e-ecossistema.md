@@ -84,7 +84,7 @@ antecipar interfaces ou permissoes que ainda nao existem.
   invariantes em `OK` no QEMU padrao.
 - [ ] Cobertura complementar da S2.6: renovacao/liberacao individual,
   ausencia de NIC, RTL8139, peer externo e modos Classic/Modern.
-- [x] S2.7 implementada: TCP cliente com retransmissao, sockets nativos
+- [x] S2.7 concluida e validada: TCP cliente com retransmissao, sockets nativos
   limitados e HTTP GET, incluindo comandos individuais, suite QEMU e
   invariantes puras.
 - [x] Suite S2.7 validada no QEMU padrao com DHCP, DNS, handshake, checksum,
@@ -93,8 +93,8 @@ antecipar interfaces ou permissoes que ainda nao existem.
   funcionou e `regcheck full` permaneceu em `OK` antes e depois da rede.
 - [x] GET individual revalidado com `neverssl.com`: HTTP 302, headers e
   corpo recebidos, com `regcheck full` posterior em `OK`.
-- [ ] Revalidar a suite agrupada com a repeticao controlada de conexao para
-  timeout; `Transfer-Encoding` continua fora do recorte da S2.7.
+- [x] Suite agrupada revalidada: um timeout inicial foi recuperado pela
+  tentativa 2/3, com HTTP 200, todos os itens e `regcheck full` em `OK`.
 - [x] Fallback sem NIC validado com falha controlada da suite e
   `regcheck full` em `OK`.
 - [ ] Cobertura complementar da S2.7: peer controlado, perda de segmentos,

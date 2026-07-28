@@ -49,7 +49,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   sem NIC. S2.2 concluiu e validou o E1000 L2. A S2.3 concluiu fila RX,
   camada Ethernet e diagnostico fora da IRQ, validados com estado ocioso, TX,
   `device-scan` e `regcheck full`; RX externo permanece como cobertura
-  complementar.
+  complementar. S2.4 a S2.7 concluiram ARP, IPv4/ICMP, UDP/DHCP/DNS e
+  TCP/sockets/HTTP; as suites agrupadas e o `regcheck full` foram validados
+  no QEMU com E1000, incluindo recuperacao de timeout HTTP.
 
 ## K4 validada
 

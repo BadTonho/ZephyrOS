@@ -567,7 +567,7 @@ Plataforma de aplicativos:   [████████████████�
   cache, ausencia de NIC, RTL8139, peer externo e regressao visual
   Classic/Modern; esses cenarios nao bloqueiam a conclusao.
 
-## S2.7 - TCP cliente, sockets do kernel e HTTP GET
+## S2.7 - TCP cliente, sockets do kernel e HTTP GET (concluida)
 
 - [x] TCP cliente com 16 conexoes, handles geracionais, handshake, dados,
   FIN/RST, checksum, MSS 536, janela RX e descarte fora de ordem.
@@ -587,8 +587,9 @@ Plataforma de aplicativos:   [████████████████�
   do GET e da suite agrupada.
 - [x] GET individual revalidado com `neverssl.com`: HTTP 302, headers e
   corpo recebidos, seguido por `regcheck full` em `OK`.
-- [ ] Revalidar a suite agrupada apos adicionar repeticao controlada para
-  timeout de transporte; `Transfer-Encoding` permanece fora da S2.7.
+- [x] Suite agrupada revalidada com repeticao controlada: o primeiro
+  handshake expirou, a tentativa 2/3 concluiu HTTP 200 e todos os itens,
+  inclusive o `regcheck full` posterior, ficaram em `OK`.
 - [x] Fallback sem NIC validado: interface inexistente foi recusada sem
   trafego e o `regcheck full` permaneceu em `OK`.
 - [ ] Cobertura complementar: peer controlado, perda/retransmissao, janela
