@@ -27,6 +27,10 @@ typedef struct {
     uint8_t acpi_available;
     uint8_t acpi_power_tables_available;
     uint8_t acpi_partial;
+    uint8_t acpi_pm1_control_available;
+    uint8_t acpi_mode_known;
+    uint8_t acpi_mode_enabled;
+    uint8_t acpi_s5_declared;
 } power_status_t;
 
 int power_init(void);

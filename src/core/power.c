@@ -8,6 +8,7 @@ static int power_initialized = 0;
 
 int power_init(void) {
     acpi_status_t acpi_status;
+    acpi_power_info_t acpi_power_info;
 
     LOG_INFO("POWER", "Inicializando diagnostico de energia");
     power_status.states[POWER_STATE_S0] = POWER_CAPABILITY_AVAILABLE;
@@ -22,6 +23,10 @@ int power_init(void) {
     power_status.acpi_available = 0;
     power_status.acpi_power_tables_available = 0;
     power_status.acpi_partial = 0;
+    power_status.acpi_pm1_control_available = 0;
+    power_status.acpi_mode_known = 0;
+    power_status.acpi_mode_enabled = 0;
+    power_status.acpi_s5_declared = 0;
     if (acpi_get_status(&acpi_status) == OK) {
         power_status.acpi_available = acpi_status.available;
         power_status.acpi_power_tables_available =
@@ -29,6 +34,21 @@ int power_init(void) {
         power_status.acpi_partial = acpi_status.partial;
     } else {
         LOG_WARN("POWER", "Estado ACPI indisponivel para diagnostico");
+    }
+    if (acpi_get_power_info(&acpi_power_info) == OK) {
+        power_status.acpi_pm1_control_available =
+            acpi_power_info.pm1a_readable &&
+            (!acpi_power_info.pm1b_present ||
+             acpi_power_info.pm1b_readable);
+        power_status.acpi_mode_known =
+            acpi_power_info.mode == ACPI_MODE_ENABLED ||
+            acpi_power_info.mode == ACPI_MODE_DISABLED;
+        power_status.acpi_mode_enabled =
+            acpi_power_info.mode == ACPI_MODE_ENABLED;
+        power_status.acpi_s5_declared =
+            acpi_power_info.s5_state == ACPI_S5_DECLARED;
+    } else {
+        LOG_WARN("POWER", "Snapshot de energia ACPI indisponivel");
     }
     power_initialized = 1;
     LOG_INFO("POWER", "Diagnostico de energia inicializado com sucesso");

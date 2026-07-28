@@ -49,7 +49,7 @@
 - ⬜ S0 Low Power Idle (Modern Standby).
 - ⬜ S1/S2/S3 (formas tradicionais de suspensão).
 - ⬜ S4 (hibernação).
-- ✅ S5 (desligamento normal). *(shell.c:287-292 — CLI+HLT simulado)*
+- 🟡 S5 declarado pelo firmware; desligamento continua simulado.
 - ⬜ Ver estados disponíveis via powercfg /a.
 
 ### 6. Modern Standby
@@ -273,7 +273,7 @@
 - ✅ Descoberta e validacao de RSDP/RSDT/XSDT.
 - 🟡 FADT e DSDT validadas; SSDT apenas inventariada, sem interpretar AML.
 - ⬜ Driver ACPI completo.
-- ⬜ Registos PM1a/PM1b.
+- ✅ Registos PM1a/PM1b inventariados e observados somente por leitura.
 - ⬜ GPE (General Purpose Events) handlers.
 - ✅ FACS identificada e validada por assinatura e comprimento.
 - ⬜ ACPI thermal zones.
@@ -314,6 +314,22 @@ ate existir suporte de firmware e drivers correspondentes.
 Suspensao, hibernacao, bateria, AML e desligamento fisico permanecem fora do
 escopo desta entrega.
 
+## S1.3 - Preparacao observavel do S5 (validacao pendente)
+
+- [x] FADT copia SMI_CMD, valores enable/disable, PM1_CNT_LEN,
+  HW_REDUCED_ACPI e os descritores legados/estendidos de PM1a/PM1b.
+- [x] `SCI_EN` e observado somente em portas System I/O compativeis com
+  leitura de 16 bits; MMIO e espacos desconhecidos permanecem metadados.
+- [x] Reconhecedor AML estrito localiza `_S5_` apenas na DSDT e rejeita
+  pacotes malformados, tipos fora de `0-7` e declaracoes ambiguas.
+- [x] `acpi status` e `power status` mostram firmware e implementacao como
+  capacidades separadas.
+- [x] Nenhuma escrita em SMI_CMD/PM1 e nenhuma mudanca em `shutdown`.
+- [ ] Validacao manual pendente no QEMU padrao, sem ACPI, Classic e Modern.
+
+O proximo passo de energia so podera usar esses dados depois da validacao da
+S1.3 e exigira uma fase separada para qualquer transicao fisica.
+
 ## Resumo de Progresso
 
 | Fase | Total | Feito | Parcial | Restante |
@@ -322,8 +338,8 @@ escopo desta entrega.
 | 2 — Economia/Bateria | 47 | 0 | 0 | 47 |
 | 3 — Processador/Dispositivos | 30 | 2 | 0 | 28 |
 | 4 — Temporizadores/Solicitações | 36 | 1 | 0 | 35 |
-| 5 — powercfg/ACPI/Diagnósticos | 30 | 8 | 1 | 21 |
-| **Total** | **183** | **13** | **1** | **169** |
+| 5 — powercfg/ACPI/Diagnósticos | 30 | 8 | 2 | 20 |
+| **Total** | **183** | **13** | **2** | **168** |
 
 ---
 
@@ -336,13 +352,13 @@ escopo desta entrega.
 | Shutdown (simulado) | shell.c:287-292, taskbar.c:442 | CLI+HLT (não desliga realmente) |
 | AC97 power-down | ac97.c:61-66 | Desliga codec de áudio |
 | PIT Timer 50Hz | timer.c:10-17 | Único temporizador |
-| ACPI observavel | acpi.c | Snapshot de RSDP, raiz, FADT, DSDT e FACS |
+| ACPI observavel | acpi.c | Snapshot de tabelas, PM1, modo ACPI e `_S5_` |
 
 ---
 
 ## Limitações Técnicas Conhecidas
 
-- **ACPI diagnostico**: Tabelas sao validadas, mas AML, PM, SCI e GPE nao sao executados.
+- **ACPI diagnostico**: PM1 e `_S5_` sao observados, mas AML generico, SCI, GPE e transicoes nao sao executados.
 - **Sem bateria**: O sistema foi concebido para QEMU (desktop), sem leitura de bateria.
 - **Shutdown simulado**: `CLI+HLT` apenas para a CPU — não desliga a máquina真正的.
 - **Sem USB**: Não existe driver USB, logo não há suspensão seletiva.

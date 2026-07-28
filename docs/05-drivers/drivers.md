@@ -462,7 +462,7 @@ Cada byte representa uma linha de 8 pixels (1 bit por pixel).
 
 ## ACPI (`acpi.c`)
 
-O driver ACPI da S1.2 e somente de leitura. Ele e inicializado depois do mapa
+O driver ACPI das S1.2 e S1.3 e somente de leitura. Ele e inicializado depois do mapa
 E820 e antes do paging, pois as regioes da EBDA e do BIOS ainda estao
 identity-mapped nesse ponto. A busca cobre o primeiro KiB da EBDA e
 `0xE0000-0xFFFFF`, sempre em enderecos alinhados a 16 bytes.
@@ -478,9 +478,29 @@ o driver zera essa referencia e as consultas `acpi_get_status()`,
 metadados. Nenhum ponteiro fisico e dereferenciado depois que o paging entra
 em operacao.
 
-Esta etapa nao interpreta AML, `_S5`, SCI ou GPE e nao acessa registradores PM.
-Uma tabela valida confirma somente a descoberta do firmware, nao a
-disponibilidade de suspensao ou desligamento fisico.
+Na S1.3, `acpi_register_t` normaliza os campos GAS e legados da FADT. O
+snapshot `acpi_power_info_t`, consultado por copia com
+`acpi_get_power_info()`, registra:
+
+- PM1a/PM1b Control, espaco de endereco, largura, offset e tamanho de acesso;
+- `SMI_CMD`, valores ACPI enable/disable, `PM1_CNT_LEN` e
+  `HW_REDUCED_ACPI`;
+- o valor de `SCI_EN` observado e o modo habilitado, desabilitado,
+  inconsistente ou desconhecido;
+- o estado da declaracao `_S5_` e os tipos A/B quando forem inequivocos.
+
+Somente portas System I/O compativeis com leitura de 16 bits sao acessadas.
+Campos MMIO, espacos desconhecidos e enderecos incompativeis permanecem no
+snapshot como metadados e nunca sao mapeados ou dereferenciados.
+
+O reconhecedor AML e limitado a `Name(_S5_, Package(...))`: valida
+`PkgLength`, limites, quantidade de elementos e constantes inteiras. Ausencia,
+malformacao ou mais de uma declaracao valida fecham a capacidade de forma
+segura. SSDTs e AML generico nao sao interpretados.
+
+O driver nao possui `outb`/`outw`, nao escreve em `SMI_CMD` ou PM1 e nao
+implementa SCI, GPE ou transicoes. Uma declaracao S5 valida confirma apenas o
+contrato do firmware; nao torna o desligamento fisico disponivel.
 
 ---
 

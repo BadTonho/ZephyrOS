@@ -114,8 +114,8 @@ Plataforma de aplicativos:   [████████████████�
 | `devices [-v]` | Lista o inventario nativo de hardware |
 | `device-info <id>` | Mostra detalhes de um dispositivo inventariado |
 | `device-scan` | Refaz somente a varredura PCI e atualiza o inventario |
-| `acpi status` | Mostra o snapshot ACPI somente de leitura |
-| `power status` | Mostra as capacidades reais de energia |
+| `acpi status` | Mostra tabelas, PM1, modo ACPI e `_S5_` observados |
+| `power status` | Separa capacidades do firmware das transicoes implementadas |
 | `kmetrics [reset]` | Coleta linha-base de PIT, filas, memoria e VESA, incluindo media de bytes por apresentacao |
 | `memcheck` | Valida heap, PMM, coalescencia e limpeza de diretorios ring 3 |
 | `schedcheck` | Valida invariantes do scheduler sem alterar processos |
@@ -402,6 +402,19 @@ Plataforma de aplicativos:   [████████████████�
   transicoes realmente implementadas.
 - [x] Build limpo e QEMU validados pelo usuario: ACPI completo no cenario
   padrao, fallback sem ACPI, sintaxe invalida e matriz de regressao sem erros.
+
+## S1.3 - Preparacao observavel do S5 (validacao pendente)
+
+- [x] FADT ampliada com snapshot normalizado de PM1a/PM1b, SMI_CMD, valores
+  enable/disable, comprimento PM1 e indicador hardware-reduced.
+- [x] Modo ACPI observado por leitura segura de `SCI_EN`, sem habilitar ACPI
+  nem escrever em registradores de energia.
+- [x] Reconhecedor AML limitado para `_S5_`, com validacao de pacote,
+  constantes, limites, ambiguidade e fallback fechado.
+- [x] `acpi status` e `power status` separam firmware observado de transicoes
+  implementadas; S5 e `shutdown` continuam simulados.
+- [ ] Validacao manual pendente no QEMU padrao, sem ACPI, com diferentes
+  quantidades de RAM e matriz de regressao Classic/Modern.
 
 ## Roadmaps por etapa
 

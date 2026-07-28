@@ -1347,7 +1347,7 @@ static void cmd_help(void) {
     video_print("  devices  - Lista inventario de hardware (-v para detalhes)\n", 0x07);
     video_print("  device-info <id> - Mostra detalhes de um dispositivo\n", 0x07);
     video_print("  device-scan - Refaz apenas a varredura PCI\n", 0x07);
-    video_print("  acpi status - Mostra tabelas ACPI detectadas\n", 0x07);
+    video_print("  acpi status - Mostra tabelas e energia ACPI observadas\n", 0x07);
     video_print("  power status - Mostra capacidades reais de energia\n", 0x07);
     video_print("  kmetrics - Mostra linha-base de metricas do kernel\n", 0x07);
     video_print("  memcheck - Valida heap, PMM e diretorios de usuario\n", 0x07);
@@ -1895,6 +1895,21 @@ static void cmd_power(const char* args) {
         video_print(status.acpi_partial ? "PARCIAL" : "COMPLETO",
                     status.acpi_partial ? 0x0E : 0x0A);
     }
+    video_print("\n  Diagnostico PM1: ", 0x07);
+    video_print(status.acpi_pm1_control_available ?
+                "DISPONIVEL" : "INDISPONIVEL",
+                status.acpi_pm1_control_available ? 0x0A : 0x0E);
+    video_print("\n  Modo ACPI: ", 0x07);
+    if (!status.acpi_mode_known) {
+        video_print("DESCONHECIDO", 0x0E);
+    } else {
+        video_print(status.acpi_mode_enabled ?
+                    "HABILITADO" : "DESABILITADO",
+                    status.acpi_mode_enabled ? 0x0A : 0x0E);
+    }
+    video_print("\n  S5 declarado pelo firmware: ", 0x07);
+    video_print(status.acpi_s5_declared ? "SIM" : "NAO",
+                status.acpi_s5_declared ? 0x0A : 0x0E);
     video_print("\n  Transicoes ACPI: NAO IMPLEMENTADAS", 0x0E);
     video_print("\n  S0: ", 0x07);
     video_print(power_capability_name(status.states[POWER_STATE_S0]), 0x0A);
@@ -1931,8 +1946,112 @@ static void cmd_acpi_print_table(const char* name, uint8_t present,
     video_print("\n", 0x07);
 }
 
+static const char* cmd_acpi_mode_name(acpi_mode_t mode) {
+    if (mode == ACPI_MODE_DISABLED) return "DESABILITADO";
+    if (mode == ACPI_MODE_ENABLED) return "HABILITADO";
+    if (mode == ACPI_MODE_INCONSISTENT) return "INCONSISTENTE";
+    return "DESCONHECIDO";
+}
+
+static const char* cmd_acpi_s5_name(acpi_s5_state_t state) {
+    if (state == ACPI_S5_DECLARED) return "DECLARADO";
+    if (state == ACPI_S5_MALFORMED) return "MALFORMADO";
+    if (state == ACPI_S5_AMBIGUOUS) return "AMBIGUO";
+    return "INDISPONIVEL";
+}
+
+static const char* cmd_acpi_space_name(uint8_t space_id) {
+    if (space_id == ACPI_ADDRESS_SPACE_SYSTEM_MEMORY) return "MEMORIA";
+    if (space_id == ACPI_ADDRESS_SPACE_SYSTEM_IO) return "SYSTEM-IO";
+    return "NAO SUPORTADO";
+}
+
+static void cmd_acpi_print_address(uint64_t address) {
+    uint32_t high = (uint32_t)(address >> 32);
+
+    if (high) cmd_print_hex(high, 8U);
+    cmd_print_hex((uint32_t)address, 8U);
+}
+
+static void cmd_acpi_print_register(const char* name, uint8_t present,
+                                    uint8_t readable,
+                                    const acpi_register_t* reg,
+                                    uint16_t value) {
+    video_print("  ", 0x07);
+    video_print(name, 0x07);
+    video_print(": ", 0x07);
+    if (!present) {
+        video_print("INDISPONIVEL\n", 0x0E);
+        return;
+    }
+    video_print(cmd_acpi_space_name(reg->address_space_id),
+                readable ? 0x0A : 0x0E);
+    video_print(" 0x", 0x07);
+    cmd_acpi_print_address(reg->address);
+    video_print(" bits=", 0x07);
+    print_num(reg->register_bit_width);
+    video_print(" offset=", 0x07);
+    print_num(reg->register_bit_offset);
+    video_print(" acesso=", 0x07);
+    print_num(reg->access_size);
+    if (readable) {
+        video_print(" valor=0x", 0x07);
+        cmd_print_hex(value, 4U);
+    } else {
+        video_print(" leitura=NAO SUPORTADA", 0x0E);
+    }
+    video_print("\n", 0x07);
+}
+
+static void cmd_acpi_print_power(const acpi_power_info_t* info) {
+    video_print("  FADT energia: ", 0x07);
+    video_print(info->fadt_power_fields_present ?
+                "PRESENTE" : "INDISPONIVEL",
+                info->fadt_power_fields_present ? 0x0A : 0x0E);
+    video_print("\n  Hardware-reduced: ", 0x07);
+    video_print(info->hardware_reduced ? "SIM" : "NAO",
+                info->hardware_reduced ? 0x0E : 0x07);
+    video_print("\n  SMI_CMD: ", 0x07);
+    if (info->smi_command_port) {
+        video_print("0x", 0x07);
+        cmd_print_hex(info->smi_command_port, 8U);
+        video_print(" enable=0x", 0x07);
+        cmd_print_hex(info->acpi_enable_value, 2U);
+        video_print(" disable=0x", 0x07);
+        cmd_print_hex(info->acpi_disable_value, 2U);
+    } else {
+        video_print("INDISPONIVEL", 0x0E);
+    }
+    video_print(" PM1_LEN=", 0x07);
+    print_num(info->pm1_control_length);
+    video_print("\n", 0x07);
+    cmd_acpi_print_register("PM1a Control", info->pm1a_present,
+                            info->pm1a_readable, &info->pm1a_control,
+                            info->pm1a_value);
+    cmd_acpi_print_register("PM1b Control", info->pm1b_present,
+                            info->pm1b_readable, &info->pm1b_control,
+                            info->pm1b_value);
+    video_print("  Modo ACPI: ", 0x07);
+    video_print(cmd_acpi_mode_name(info->mode),
+                info->mode == ACPI_MODE_ENABLED ? 0x0A : 0x0E);
+    video_print("\n  _S5_: ", 0x07);
+    video_print(cmd_acpi_s5_name(info->s5_state),
+                info->s5_state == ACPI_S5_DECLARED ? 0x0A : 0x0E);
+    if (info->s5_state == ACPI_S5_DECLARED) {
+        video_print(" tipo_a=", 0x07);
+        print_num(info->s5_type_a);
+        video_print(" tipo_b=", 0x07);
+        print_num(info->s5_type_b);
+    }
+    video_print(" candidatos=", 0x07);
+    print_num(info->s5_candidates);
+    video_print("\n", 0x07);
+}
+
 static void cmd_acpi(const char* args) {
     acpi_status_t status;
+    acpi_power_info_t power_info;
+    int power_info_result;
 
     if (!shell_args_equal(args, "status")) {
         LOG_WARN("SHELL", "Uso invalido de acpi");
@@ -1943,6 +2062,10 @@ static void cmd_acpi(const char* args) {
         LOG_ERROR("SHELL", "Diagnostico ACPI indisponivel");
         video_print("Erro: diagnostico ACPI indisponivel.\n", 0x0C);
         return;
+    }
+    power_info_result = acpi_get_power_info(&power_info);
+    if (power_info_result != OK) {
+        LOG_WARN("SHELL", "Snapshot de energia ACPI indisponivel");
     }
 
     video_print("ACPI:\n  Estado: ", 0x0B);
@@ -1980,7 +2103,14 @@ static void cmd_acpi(const char* args) {
     print_num(status.skipped_tables);
     video_print(" ticks=", 0x07);
     print_num(status.scan_ticks);
-    video_print("\n  AML/SCI/GPE/transicoes: NAO IMPLEMENTADOS\n", 0x0E);
+    video_print("\n", 0x07);
+    if (power_info_result == OK) {
+        cmd_acpi_print_power(&power_info);
+    } else {
+        video_print("  Energia ACPI: INDISPONIVEL\n", 0x0E);
+    }
+    video_print("  AML completo/SCI/GPE/transicoes: NAO IMPLEMENTADOS\n",
+                0x0E);
 }
 
 static uint32_t shell_kmetrics_delta(uint32_t current, uint32_t baseline) {

@@ -41,8 +41,8 @@ Comandos disponiveis:
   devices   - Lista o inventario de hardware (`-v` inclui detalhes)
   device-info <id> - Exibe detalhes de um dispositivo inventariado
   device-scan - Refaz somente a varredura PCI e atualiza o inventario
-  acpi status - Exibe o snapshot ACPI somente de leitura
-  power status - Exibe as capacidades reais de energia
+  acpi status - Exibe tabelas, PM1, modo ACPI e `_S5_`
+  power status - Separa firmware observado de transicoes implementadas
   kmetrics  - Mostra linha-base manual de metricas do kernel
   memcheck  - Valida heap, PMM e diretorios de usuario
   schedcheck - Valida invariantes do scheduler
@@ -234,24 +234,26 @@ IDs PCI sao exibidos como `pci-BB:DD.F`. Para teclados sem `Shift`,
 ## `acpi status`
 
 Mostra o resultado da descoberta ACPI: OEM, revisao, RSDP, tipo e endereco da
-raiz, quantidade de tabelas, FADT, DSDT, FACS, anomalias e ticks gastos. A
-saida diferencia ACPI pronto, degradado e indisponivel. Mesmo quando as
-tabelas sao validas, AML, SCI, GPE e transicoes permanecem nao implementados.
+raiz, quantidade de tabelas, FADT, DSDT, FACS, anomalias e ticks gastos. Na
+S1.3 tambem mostra os descritores PM1a/PM1b, SMI_CMD, modo ACPI observado e a
+declaracao `_S5_`. A saida diferencia ACPI pronto, degradado e indisponivel,
+alem de `_S5_` ausente, malformado ou ambiguo.
 
 ```text
 zephyr> acpi status
 ```
 
 O unico argumento aceito e `status`; qualquer outra sintaxe retorna uso
-controlado e nao consulta nem modifica registradores de energia.
+controlado. O comando usa somente o snapshot do bootstrap e nao consulta nem
+modifica registradores de energia durante sua execucao.
 
 ## `power status`
 
-Mostra somente capacidades que o kernel pode confirmar. Na S1.2, a presenca
-de ACPI e das tabelas FADT/DSDT aparece separada da implementacao de
-transicoes. S1-S4 permanecem indisponiveis; S0 e idle HLT/C1 estao ativos, e
-S5 e `shutdown` aparecem como simulados. O comando nao tenta suspender,
-hibernar ou desligar fisicamente a maquina.
+Mostra somente capacidades que o kernel pode confirmar. A presenca de ACPI,
+FADT/DSDT, PM1, modo atual e declaracao S5 do firmware aparecem separadas da
+implementacao de transicoes. S1-S4 permanecem indisponiveis; S0 e idle HLT/C1
+estao ativos, e S5 e `shutdown` aparecem como simulados. O comando nao tenta
+suspender, hibernar ou desligar fisicamente a maquina.
 
 ```text
 zephyr> power status

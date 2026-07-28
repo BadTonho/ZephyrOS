@@ -65,3 +65,8 @@ Os contratos de `src/include/core/memory.h` e `src/include/memory/paging.h`
 incluem, desde a K3, estatisticas seguras do heap/PMM e do ciclo de vida de
 diretorios de usuario. Seus detalhes tecnicos permanecem em
 `docs/04-kernel/kernel.md` e `docs/06-memoria/memoria.md`, respectivamente.
+
+Desde a S1.3, `src/include/drivers/acpi.h` inclui o snapshot somente de leitura
+dos registros PM1 e da declaracao `_S5_`; `src/include/core/power.h` expoe
+apenas indicadores derivados. Os contratos canonicos permanecem,
+respectivamente, em `docs/05-drivers/drivers.md` e `docs/04-kernel/kernel.md`.

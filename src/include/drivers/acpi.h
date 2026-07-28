@@ -12,6 +12,33 @@ typedef enum {
     ACPI_ROOT_XSDT
 } acpi_root_kind_t;
 
+typedef enum {
+    ACPI_ADDRESS_SPACE_SYSTEM_MEMORY = 0,
+    ACPI_ADDRESS_SPACE_SYSTEM_IO = 1
+} acpi_address_space_t;
+
+typedef enum {
+    ACPI_MODE_UNKNOWN = 0,
+    ACPI_MODE_DISABLED,
+    ACPI_MODE_ENABLED,
+    ACPI_MODE_INCONSISTENT
+} acpi_mode_t;
+
+typedef enum {
+    ACPI_S5_UNAVAILABLE = 0,
+    ACPI_S5_DECLARED,
+    ACPI_S5_MALFORMED,
+    ACPI_S5_AMBIGUOUS
+} acpi_s5_state_t;
+
+typedef struct {
+    uint8_t address_space_id;
+    uint8_t register_bit_width;
+    uint8_t register_bit_offset;
+    uint8_t access_size;
+    uint64_t address;
+} acpi_register_t;
+
 typedef struct {
     char signature[5];
     char oem_id[7];
@@ -43,8 +70,32 @@ typedef struct {
     uint32_t facs_address;
 } acpi_status_t;
 
+typedef struct {
+    uint8_t initialized;
+    uint8_t fadt_power_fields_present;
+    uint8_t hardware_reduced;
+    uint8_t pm1a_present;
+    uint8_t pm1b_present;
+    uint8_t pm1a_readable;
+    uint8_t pm1b_readable;
+    uint8_t pm1_control_length;
+    acpi_register_t pm1a_control;
+    acpi_register_t pm1b_control;
+    uint32_t smi_command_port;
+    uint8_t acpi_enable_value;
+    uint8_t acpi_disable_value;
+    acpi_mode_t mode;
+    uint16_t pm1a_value;
+    uint16_t pm1b_value;
+    acpi_s5_state_t s5_state;
+    uint8_t s5_type_a;
+    uint8_t s5_type_b;
+    uint32_t s5_candidates;
+} acpi_power_info_t;
+
 int acpi_init(const mmap_entry_t* memory_map, uint32_t entry_count);
 int acpi_get_status(acpi_status_t* out_status);
+int acpi_get_power_info(acpi_power_info_t* out_info);
 int acpi_get_table_count(uint32_t* out_count);
 int acpi_get_table_at(uint32_t index, acpi_table_info_t* out_table);
 int acpi_find_table(const char signature[4], uint32_t occurrence,

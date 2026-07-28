@@ -28,6 +28,43 @@
 #define ACPI_FADT_X_DSDT_OFFSET 140U
 #define ACPI_FADT_X_FACS_END 140U
 #define ACPI_FADT_X_DSDT_END 148U
+#define ACPI_FADT_SMI_COMMAND_OFFSET 48U
+#define ACPI_FADT_ACPI_ENABLE_OFFSET 52U
+#define ACPI_FADT_ACPI_DISABLE_OFFSET 53U
+#define ACPI_FADT_PM1A_CONTROL_OFFSET 64U
+#define ACPI_FADT_PM1B_CONTROL_OFFSET 68U
+#define ACPI_FADT_PM1_CONTROL_LENGTH_OFFSET 89U
+#define ACPI_FADT_POWER_FIELDS_END 90U
+#define ACPI_FADT_FLAGS_OFFSET 112U
+#define ACPI_FADT_FLAGS_END 116U
+#define ACPI_FADT_X_PM1A_CONTROL_OFFSET 172U
+#define ACPI_FADT_X_PM1B_CONTROL_OFFSET 184U
+#define ACPI_FADT_X_PM1A_CONTROL_END 184U
+#define ACPI_FADT_X_PM1B_CONTROL_END 196U
+#define ACPI_FADT_HW_REDUCED_FLAG (1U << 20)
+#define ACPI_GAS_ACCESS_UNDEFINED 0U
+#define ACPI_GAS_ACCESS_WORD 2U
+#define ACPI_PM1_CONTROL_MIN_WIDTH 16U
+#define ACPI_PM1_SCI_ENABLE 0x0001U
+#define ACPI_IO_WORD_MAX_PORT 0xFFFEU
+#define ACPI_AML_NAME_OP 0x08U
+#define ACPI_AML_ROOT_PREFIX 0x5CU
+#define ACPI_AML_PACKAGE_OP 0x12U
+#define ACPI_AML_ZERO_OP 0x00U
+#define ACPI_AML_ONE_OP 0x01U
+#define ACPI_AML_ONES_OP 0xFFU
+#define ACPI_AML_BYTE_PREFIX 0x0AU
+#define ACPI_AML_WORD_PREFIX 0x0BU
+#define ACPI_AML_DWORD_PREFIX 0x0CU
+#define ACPI_AML_QWORD_PREFIX 0x0EU
+#define ACPI_AML_PACKAGE_FOLLOW_MASK 0xC0U
+#define ACPI_AML_PACKAGE_FOLLOW_SHIFT 6U
+#define ACPI_AML_PACKAGE_SHORT_MASK 0x3FU
+#define ACPI_AML_PACKAGE_LONG_MASK 0x0FU
+#define ACPI_AML_MAX_PACKAGE_FOLLOW 3U
+#define ACPI_S5_MIN_ELEMENTS 2U
+#define ACPI_S5_MAX_ELEMENTS 4U
+#define ACPI_S5_TYPE_MAX 7U
 
 typedef struct {
     char signature[8];
@@ -50,6 +87,7 @@ typedef struct {
 } __attribute__((packed)) acpi_sdt_header_t;
 
 static acpi_status_t acpi_status;
+static acpi_power_info_t acpi_power_info;
 static acpi_table_info_t acpi_tables[ACPI_MAX_TABLES];
 static const mmap_entry_t* acpi_memory_map = 0;
 static uint32_t acpi_memory_map_count = 0;
@@ -74,6 +112,12 @@ static uint64_t acpi_read_u64(const void* address) {
     const uint8_t* bytes = (const uint8_t*)address;
     return (uint64_t)acpi_read_u32(bytes) |
            ((uint64_t)acpi_read_u32(bytes + 4) << 32);
+}
+
+static inline uint16_t acpi_inw(uint16_t port) {
+    uint16_t value;
+    asm volatile("inw %1, %0" : "=a"(value) : "Nd"(port));
+    return value;
 }
 
 static int acpi_signature_equal(const char* left, const char* right,
@@ -358,6 +402,335 @@ static uint32_t acpi_choose_32bit_address(const uint8_t* fadt,
     return legacy;
 }
 
+static int acpi_gas_valid(const acpi_register_t* reg) {
+    uint16_t bit_end;
+
+    if (!reg->address || !reg->register_bit_width ||
+        reg->access_size > 4U) return 0;
+    bit_end = (uint16_t)reg->register_bit_offset +
+              reg->register_bit_width;
+    return bit_end <= 64U;
+}
+
+static void acpi_read_gas(const uint8_t* bytes, acpi_register_t* out_reg) {
+    out_reg->address_space_id = bytes[0];
+    out_reg->register_bit_width = bytes[1];
+    out_reg->register_bit_offset = bytes[2];
+    out_reg->access_size = bytes[3];
+    out_reg->address = acpi_read_u64(bytes + 4U);
+}
+
+static void acpi_set_legacy_register(uint32_t address,
+                                     acpi_register_t* out_reg) {
+    uint8_t length = acpi_power_info.pm1_control_length;
+
+    out_reg->address_space_id = ACPI_ADDRESS_SPACE_SYSTEM_IO;
+    out_reg->register_bit_width =
+        length <= 8U ? (uint8_t)(length * 8U) : 0U;
+    out_reg->register_bit_offset = 0;
+    out_reg->access_size = ACPI_GAS_ACCESS_UNDEFINED;
+    out_reg->address = address;
+}
+
+static void acpi_select_pm_register(const uint8_t* fadt, uint32_t length,
+                                    uint32_t legacy_offset,
+                                    uint32_t extended_offset,
+                                    uint32_t extended_end,
+                                    acpi_register_t* out_reg,
+                                    uint8_t* out_present) {
+    acpi_register_t extended;
+    uint32_t legacy = 0;
+
+    kmemset(out_reg, 0, sizeof(*out_reg));
+    *out_present = 0;
+    if (length >= extended_end) {
+        acpi_read_gas(fadt + extended_offset, &extended);
+        if (acpi_gas_valid(&extended)) {
+            *out_reg = extended;
+            *out_present = 1;
+            return;
+        }
+        if (extended.address) {
+            acpi_log_anomaly("GAS PM1 invalido; tentando campo legado");
+        }
+    }
+    if (length >= legacy_offset + sizeof(uint32_t)) {
+        legacy = acpi_read_u32(fadt + legacy_offset);
+    }
+    if (!legacy) return;
+    acpi_set_legacy_register(legacy, out_reg);
+    *out_present = 1;
+}
+
+static int acpi_pm_register_readable(const acpi_register_t* reg,
+                                     uint8_t present) {
+    if (!present ||
+        reg->address_space_id != ACPI_ADDRESS_SPACE_SYSTEM_IO ||
+        reg->address > ACPI_IO_WORD_MAX_PORT ||
+        reg->register_bit_offset != 0 ||
+        reg->register_bit_width < ACPI_PM1_CONTROL_MIN_WIDTH) {
+        return 0;
+    }
+    return reg->access_size == ACPI_GAS_ACCESS_UNDEFINED ||
+           reg->access_size == ACPI_GAS_ACCESS_WORD;
+}
+
+static void acpi_observe_pm1_mode(void) {
+    uint8_t pm1a_enabled;
+    uint8_t pm1b_enabled;
+
+    acpi_power_info.mode = ACPI_MODE_UNKNOWN;
+    if (acpi_power_info.hardware_reduced ||
+        !acpi_power_info.pm1a_readable) return;
+    if (acpi_power_info.pm1b_present &&
+        !acpi_power_info.pm1b_readable) return;
+
+    acpi_power_info.pm1a_value =
+        acpi_inw((uint16_t)acpi_power_info.pm1a_control.address);
+    pm1a_enabled =
+        (acpi_power_info.pm1a_value & ACPI_PM1_SCI_ENABLE) != 0;
+    if (!acpi_power_info.pm1b_present) {
+        acpi_power_info.mode = pm1a_enabled ?
+                               ACPI_MODE_ENABLED : ACPI_MODE_DISABLED;
+        return;
+    }
+    acpi_power_info.pm1b_value =
+        acpi_inw((uint16_t)acpi_power_info.pm1b_control.address);
+    pm1b_enabled =
+        (acpi_power_info.pm1b_value & ACPI_PM1_SCI_ENABLE) != 0;
+    if (pm1a_enabled != pm1b_enabled) {
+        acpi_power_info.mode = ACPI_MODE_INCONSISTENT;
+        return;
+    }
+    acpi_power_info.mode = pm1a_enabled ?
+                           ACPI_MODE_ENABLED : ACPI_MODE_DISABLED;
+}
+
+static void acpi_parse_fadt_power(const uint8_t* fadt, uint32_t length) {
+    if (length < ACPI_FADT_POWER_FIELDS_END) return;
+
+    acpi_power_info.fadt_power_fields_present = 1;
+    acpi_power_info.smi_command_port =
+        acpi_read_u32(fadt + ACPI_FADT_SMI_COMMAND_OFFSET);
+    acpi_power_info.acpi_enable_value =
+        fadt[ACPI_FADT_ACPI_ENABLE_OFFSET];
+    acpi_power_info.acpi_disable_value =
+        fadt[ACPI_FADT_ACPI_DISABLE_OFFSET];
+    acpi_power_info.pm1_control_length =
+        fadt[ACPI_FADT_PM1_CONTROL_LENGTH_OFFSET];
+    if (length >= ACPI_FADT_FLAGS_END) {
+        uint32_t flags = acpi_read_u32(fadt + ACPI_FADT_FLAGS_OFFSET);
+        acpi_power_info.hardware_reduced =
+            (flags & ACPI_FADT_HW_REDUCED_FLAG) != 0;
+    }
+
+    acpi_select_pm_register(fadt, length,
+                            ACPI_FADT_PM1A_CONTROL_OFFSET,
+                            ACPI_FADT_X_PM1A_CONTROL_OFFSET,
+                            ACPI_FADT_X_PM1A_CONTROL_END,
+                            &acpi_power_info.pm1a_control,
+                            &acpi_power_info.pm1a_present);
+    acpi_select_pm_register(fadt, length,
+                            ACPI_FADT_PM1B_CONTROL_OFFSET,
+                            ACPI_FADT_X_PM1B_CONTROL_OFFSET,
+                            ACPI_FADT_X_PM1B_CONTROL_END,
+                            &acpi_power_info.pm1b_control,
+                            &acpi_power_info.pm1b_present);
+    acpi_power_info.pm1a_readable =
+        acpi_pm_register_readable(&acpi_power_info.pm1a_control,
+                                  acpi_power_info.pm1a_present);
+    acpi_power_info.pm1b_readable =
+        acpi_pm_register_readable(&acpi_power_info.pm1b_control,
+                                  acpi_power_info.pm1b_present);
+    if (acpi_power_info.hardware_reduced) {
+        acpi_power_info.pm1a_readable = 0;
+        acpi_power_info.pm1b_readable = 0;
+    }
+    acpi_observe_pm1_mode();
+}
+
+static int acpi_aml_package_length(const uint8_t* bytes,
+                                   const uint8_t* end,
+                                   uint32_t* out_length,
+                                   uint32_t* out_encoded_length) {
+    uint32_t following;
+    uint32_t length;
+
+    if (!bytes || !out_length || !out_encoded_length || bytes >= end) {
+        LOG_WARN("ACPI", "PkgLength AML com limites invalidos");
+        return ERR_INVALID;
+    }
+    following = (bytes[0] & ACPI_AML_PACKAGE_FOLLOW_MASK) >>
+                ACPI_AML_PACKAGE_FOLLOW_SHIFT;
+    if (following > ACPI_AML_MAX_PACKAGE_FOLLOW ||
+        (uint32_t)(end - bytes) < following + 1U) {
+        LOG_WARN("ACPI", "PkgLength AML truncado");
+        return ERR_INVALID;
+    }
+    length = following ? bytes[0] & ACPI_AML_PACKAGE_LONG_MASK :
+                         bytes[0] & ACPI_AML_PACKAGE_SHORT_MASK;
+    for (uint32_t i = 0; i < following; i++) {
+        length |= (uint32_t)bytes[i + 1U] << (4U + i * 8U);
+    }
+    if (length < following + 1U) {
+        LOG_WARN("ACPI", "PkgLength AML menor que sua codificacao");
+        return ERR_INVALID;
+    }
+    *out_length = length;
+    *out_encoded_length = following + 1U;
+    return OK;
+}
+
+static int acpi_aml_integer(const uint8_t* bytes, const uint8_t* end,
+                            uint64_t* out_value, uint32_t* out_length) {
+    uint32_t width;
+
+    if (!bytes || !out_value || !out_length || bytes >= end) {
+        LOG_WARN("ACPI", "Inteiro AML com limites invalidos");
+        return ERR_INVALID;
+    }
+    if (bytes[0] == ACPI_AML_ZERO_OP || bytes[0] == ACPI_AML_ONE_OP ||
+        bytes[0] == ACPI_AML_ONES_OP) {
+        *out_value = bytes[0] == ACPI_AML_ZERO_OP ? 0U :
+                     bytes[0] == ACPI_AML_ONE_OP ? 1U :
+                     0xFFFFFFFFFFFFFFFFULL;
+        *out_length = 1U;
+        return OK;
+    }
+    if (bytes[0] == ACPI_AML_BYTE_PREFIX) width = 1U;
+    else if (bytes[0] == ACPI_AML_WORD_PREFIX) width = 2U;
+    else if (bytes[0] == ACPI_AML_DWORD_PREFIX) width = 4U;
+    else if (bytes[0] == ACPI_AML_QWORD_PREFIX) width = 8U;
+    else {
+        LOG_WARN("ACPI", "Tipo inteiro AML nao suportado em _S5_");
+        return ERR_INVALID;
+    }
+    if ((uint32_t)(end - bytes) < width + 1U) {
+        LOG_WARN("ACPI", "Inteiro AML truncado em _S5_");
+        return ERR_INVALID;
+    }
+
+    *out_value = 0;
+    for (uint32_t i = 0; i < width; i++) {
+        *out_value |= (uint64_t)bytes[i + 1U] << (i * 8U);
+    }
+    *out_length = width + 1U;
+    return OK;
+}
+
+static int acpi_parse_s5_package(const uint8_t* package,
+                                 const uint8_t* end,
+                                 uint8_t* out_type_a,
+                                 uint8_t* out_type_b) {
+    uint32_t package_length;
+    uint32_t encoded_length;
+    uint32_t integer_length;
+    uint32_t element_count;
+    const uint8_t* cursor;
+    const uint8_t* package_end;
+    uint64_t type_a;
+    uint64_t type_b;
+    uint64_t ignored_value;
+
+    if (!package || package >= end ||
+        package[0] != ACPI_AML_PACKAGE_OP) {
+        LOG_WARN("ACPI", "_S5_ sem PackageOp valido");
+        return ERR_INVALID;
+    }
+    if (acpi_aml_package_length(package + 1U, end, &package_length,
+                                &encoded_length) != OK ||
+        package_length > (uint32_t)(end - (package + 1U))) {
+        LOG_WARN("ACPI", "Pacote _S5_ excede os limites da DSDT");
+        return ERR_INVALID;
+    }
+    package_end = package + 1U + package_length;
+    cursor = package + 1U + encoded_length;
+    if (cursor >= package_end || cursor[0] < ACPI_S5_MIN_ELEMENTS ||
+        cursor[0] > ACPI_S5_MAX_ELEMENTS) {
+        LOG_WARN("ACPI", "Quantidade de elementos _S5_ invalida");
+        return ERR_INVALID;
+    }
+    element_count = cursor[0];
+    cursor++;
+    if (acpi_aml_integer(cursor, package_end, &type_a,
+                         &integer_length) != OK) {
+        LOG_WARN("ACPI", "Primeiro tipo _S5_ invalido");
+        return ERR_INVALID;
+    }
+    cursor += integer_length;
+    if (acpi_aml_integer(cursor, package_end, &type_b,
+                         &integer_length) != OK) {
+        LOG_WARN("ACPI", "Segundo tipo _S5_ invalido");
+        return ERR_INVALID;
+    }
+    cursor += integer_length;
+    for (uint32_t i = ACPI_S5_MIN_ELEMENTS; i < element_count; i++) {
+        if (acpi_aml_integer(cursor, package_end, &ignored_value,
+                             &integer_length) != OK) {
+            LOG_WARN("ACPI", "Elemento reservado _S5_ invalido");
+            return ERR_INVALID;
+        }
+        cursor += integer_length;
+    }
+    if (cursor != package_end) {
+        LOG_WARN("ACPI", "Pacote _S5_ contem dados residuais");
+        return ERR_INVALID;
+    }
+    if (type_a > ACPI_S5_TYPE_MAX || type_b > ACPI_S5_TYPE_MAX) {
+        LOG_WARN("ACPI", "Tipo _S5_ fora do intervalo seguro");
+        return ERR_INVALID;
+    }
+    *out_type_a = (uint8_t)type_a;
+    *out_type_b = (uint8_t)type_b;
+    return OK;
+}
+
+static void acpi_parse_s5(const acpi_sdt_header_t* dsdt) {
+    const uint8_t* body = (const uint8_t*)dsdt + ACPI_SDT_HEADER_LENGTH;
+    uint32_t length = acpi_read_u32((const uint8_t*)dsdt +
+                                    ACPI_SDT_LENGTH_OFFSET);
+    uint32_t body_length = length - ACPI_SDT_HEADER_LENGTH;
+    uint32_t valid_count = 0;
+
+    for (uint32_t i = 0; i < body_length; i++) {
+        uint32_t cursor;
+        uint8_t type_a;
+        uint8_t type_b;
+
+        if (body[i] != ACPI_AML_NAME_OP) continue;
+        cursor = i + 1U;
+        if (cursor < body_length &&
+            body[cursor] == ACPI_AML_ROOT_PREFIX) cursor++;
+        if (cursor + 4U > body_length ||
+            !acpi_signature_equal((const char*)body + cursor,
+                                  "_S5_", 4U)) continue;
+        acpi_power_info.s5_candidates++;
+        cursor += 4U;
+        if (cursor >= body_length ||
+            acpi_parse_s5_package(body + cursor, body + body_length,
+                                  &type_a, &type_b) != OK) {
+            continue;
+        }
+        if (!valid_count) {
+            acpi_power_info.s5_type_a = type_a;
+            acpi_power_info.s5_type_b = type_b;
+        }
+        valid_count++;
+    }
+
+    if (valid_count > 1U) {
+        acpi_power_info.s5_state = ACPI_S5_AMBIGUOUS;
+        acpi_power_info.s5_type_a = 0;
+        acpi_power_info.s5_type_b = 0;
+        acpi_log_anomaly("Declaracao _S5_ ambigua; transicao bloqueada");
+    } else if (valid_count == 1U) {
+        acpi_power_info.s5_state = ACPI_S5_DECLARED;
+    } else if (acpi_power_info.s5_candidates) {
+        acpi_power_info.s5_state = ACPI_S5_MALFORMED;
+        acpi_log_anomaly("Declaracao _S5_ malformada; transicao bloqueada");
+    }
+}
+
 static void acpi_parse_fadt(uint32_t address,
                             const acpi_sdt_header_t* fadt) {
     const uint8_t* bytes = (const uint8_t*)fadt;
@@ -375,6 +748,7 @@ static void acpi_parse_fadt(uint32_t address,
     }
     acpi_status.fadt_present = 1;
     acpi_status.fadt_address = address;
+    acpi_parse_fadt_power(bytes, length);
     dsdt_address = acpi_choose_32bit_address(bytes, length,
                                              ACPI_FADT_DSDT_OFFSET,
                                              ACPI_FADT_X_DSDT_OFFSET,
@@ -389,6 +763,7 @@ static void acpi_parse_fadt(uint32_t address,
         acpi_status.dsdt_present = 1;
         acpi_status.dsdt_address = dsdt_address;
         acpi_store_table(dsdt_address, dsdt);
+        acpi_parse_s5(dsdt);
     } else {
         acpi_status.malformed_tables++;
         acpi_note_partial(dsdt_address ? ERR_INVALID : ERR_NOT_FOUND);
@@ -415,6 +790,7 @@ static void acpi_parse_fadt(uint32_t address,
 static int acpi_finish_init(uint32_t start_ticks, int result) {
     acpi_status.scan_ticks = timer_get_ticks() - start_ticks;
     acpi_status.initialized = 1;
+    acpi_power_info.initialized = 1;
     acpi_initialized = 1;
     acpi_memory_map = 0;
     acpi_memory_map_count = 0;
@@ -443,6 +819,7 @@ int acpi_init(const mmap_entry_t* memory_map, uint32_t entry_count) {
         return acpi_init_result;
     }
     kmemset(&acpi_status, 0, sizeof(acpi_status));
+    kmemset(&acpi_power_info, 0, sizeof(acpi_power_info));
     kmemset(acpi_tables, 0, sizeof(acpi_tables));
     acpi_anomaly_logs = 0;
     acpi_init_result = OK;
@@ -493,6 +870,19 @@ int acpi_get_status(acpi_status_t* out_status) {
         return ERR_STATE;
     }
     *out_status = acpi_status;
+    return OK;
+}
+
+int acpi_get_power_info(acpi_power_info_t* out_info) {
+    if (!out_info) {
+        LOG_ERROR("ACPI", "Destino nulo ao consultar energia ACPI");
+        return ERR_NULL;
+    }
+    if (!acpi_initialized) {
+        LOG_ERROR("ACPI", "Energia consultada antes da inicializacao");
+        return ERR_STATE;
+    }
+    *out_info = acpi_power_info;
     return OK;
 }
 

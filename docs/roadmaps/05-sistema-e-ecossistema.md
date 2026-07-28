@@ -25,6 +25,10 @@ antecipar interfaces ou permissoes que ainda nao existem.
   FACS, `acpi status` e integracao com `Power`/`health`.
 - [x] S1.2 validada no QEMU padrao e sem ACPI: tabelas completas em zero
   ticks, fallback controlado, sintaxe invalida e matriz de regressao aprovados.
+- [x] S1.3: snapshot somente de leitura de PM1a/PM1b, modo ACPI observado e
+  reconhecedor AML limitado para `_S5_`, sem transicoes ou escritas.
+- [ ] S1.3 pendente de validacao manual no QEMU padrao e sem ACPI, incluindo
+  `health`, comandos diagnosticos e matriz Classic/Modern.
 - [ ] Gerenciador de dispositivos com inventario e erros controlados.
 - [ ] Gerenciador de energia com estados claros e sem desligar recursos em uso.
 - [ ] Evolucao do filesystem somente quando novos recursos exigirem metadados

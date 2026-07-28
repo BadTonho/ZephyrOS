@@ -204,6 +204,23 @@ ha raiz utilizavel. `Power` continua `READY` em todos esses cenarios porque
 seu diagnostico ainda informa S0/HLT e as limitacoes reais. Os campos
 `acpi_power_tables_available` e `acpi_partial` nao habilitam transicoes.
 
+## Servico S1.3: preparacao observavel do S5
+
+O snapshot ACPI agora copia os descritores PM1a/PM1b, observa `SCI_EN` durante
+o bootstrap e reconhece somente a declaracao AML `_S5_` da DSDT. Nenhuma
+dessas informacoes e usada para escrever no hardware. Valores ambiguos,
+malformados, MMIO ou incompativeis permanecem indisponiveis para transicao.
+
+`power_status_t` expoe `acpi_pm1_control_available`,
+`acpi_mode_known`, `acpi_mode_enabled` e `acpi_s5_declared`. Esses campos
+separam a capacidade declarada pelo firmware da capacidade implementada pelo
+kernel: S5 continua `POWER_CAPABILITY_SIMULATED` e `hardware_poweroff`
+continua `POWER_CAPABILITY_UNAVAILABLE`.
+
+As regras do `health` nao mudam. A ausencia de PM1 ou `_S5_` nao degrada uma
+raiz ACPI valida, e o componente `Power` permanece `READY` por ser um servico
+diagnostico com fallback.
+
 ## Struct `registers_t`
 
 Usada para passar contexto entre handlers:
