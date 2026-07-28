@@ -35,8 +35,8 @@
 - [x] `device-scan` atualiza o snapshot de rede sem inicializar hardware.
 - [x] `regcheck full` valida a varredura, o snapshot, IDs e recovery de rede
   junto dos contratos de Devices, ACPI e Power.
-- [ ] Validacao manual pendente com `regcheck full` no QEMU padrao e com
-  `-nic none`.
+- [x] Validacao manual concluida com `regcheck full` no QEMU padrao e com
+  `-nic none`; os dois cenarios retornaram `RegCheck: OK` apos `F12`.
 
 Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo. A
 S2.2 implementara primeiro o E1000 e atualizara os totais ao iniciar o driver.

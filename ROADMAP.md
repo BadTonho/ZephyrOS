@@ -437,7 +437,7 @@ Plataforma de aplicativos:   [████████████████�
 - Cobertura complementar recomendada: repetir o fallback sem ACPI e os
   atalhos de desligamento pelos menus Classic/Modern em VMs separadas.
 
-## S2.1 - Fundacao de rede observavel (implementada; validacao pendente)
+## S2.1 - Fundacao de rede observavel (concluida)
 
 - [x] Snapshot estatico de ate quatro controladores PCI de classe `0x02`,
   somente por copia e sem acessar BARs ou modificar configuracao.
@@ -450,8 +450,9 @@ Plataforma de aplicativos:   [████████████████�
 - [x] `device-scan` atualiza tambem o snapshot de rede sem iniciar driver.
 - [x] `regcheck full` concentra a varredura PCI e os contratos de Devices,
   Network, ACPI e Power, mantendo o cancelamento real por `F12`.
-- [ ] Validacao manual pendente no QEMU padrao e com `-nic none`, incluindo
-  `regcheck full`, comandos, re-scan e matriz de regressao.
+- [x] Validada manualmente com `regcheck full` no QEMU padrao e com
+  `-nic none`; ambos concluiram em `RegCheck: OK` apos o cancelamento por
+  `F12`.
 
 ## Roadmaps por etapa
 

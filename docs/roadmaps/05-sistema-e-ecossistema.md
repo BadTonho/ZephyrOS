@@ -52,8 +52,8 @@ antecipar interfaces ou permissoes que ainda nao existem.
   registrar IRQ ou fingir conectividade.
 - [x] `regcheck full` automatiza a varredura e a consistencia de Devices,
   Network, ACPI e Power, com uma unica validacao manual por `F12`.
-- [ ] S2.1 pendente de validacao manual com `regcheck full` no QEMU padrao e
-  sem NIC.
+- [x] S2.1 validada manualmente com `regcheck full` no QEMU padrao e sem NIC;
+  ambos os cenarios concluiram em `OK` apos `F12`.
 - [ ] S2.2: implementar primeiro o driver E1000 `8086:100E`, preservando os
   contratos e IDs definidos na S2.1.
 - [ ] Planejar atualizacao assinada ou verificada somente apos existir formato
