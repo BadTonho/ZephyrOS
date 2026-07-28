@@ -22,11 +22,13 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/core/dns.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/errors.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/ethernet.h` | `docs/04-kernel/kernel.md` |
+| `src/include/core/http.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/icmp.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/ipv4.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/keyboard.h` | `docs/05-drivers/drivers.md` |
 | `src/include/core/log.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/memory.h` | `docs/04-kernel/kernel.md` |
+| `src/include/core/net_socket.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/network_manager.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/panic.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/power.h` | `docs/04-kernel/kernel.md` |
@@ -34,6 +36,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/core/spinlock.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/string.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/syscall.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
+| `src/include/core/tcp.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/timer.h` | `docs/05-drivers/drivers.md` |
 | `src/include/core/udp.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/video.h` | `docs/05-drivers/drivers.md` |
@@ -104,3 +107,11 @@ eventos consumidos pelo Network Manager. `src/include/core/dns.h` define
 consulta A assincrona, CNAME limitado, cache com TTL e consultas por copia.
 Os contratos de IPv4 e Network Manager tambem incluem broadcast limitado,
 origem da configuracao e coordenacao estatica/DHCP/DNS.
+
+Desde a S2.7, `src/include/core/tcp.h` define conexoes clientes com handles
+geracionais, eventos sincronizados, retransmissao e consultas por copia.
+`src/include/core/net_socket.h` expoe sockets `STREAM` nativos com filas
+limitadas e operacoes nao bloqueantes. `src/include/core/http.h` define uma
+sessao HTTP GET limitada e acesso somente-leitura ao corpo recebido. IPv4 e
+Network Manager passam a expor o protocolo TCP, disponibilidade dos novos
+modulos e contagens ativas.

@@ -80,6 +80,11 @@ typedef struct {
     uint8_t dhcp_bound;
     uint8_t dns_available;
     uint8_t dns_configured;
+    uint8_t tcp_available;
+    uint8_t sockets_available;
+    uint8_t http_available;
+    uint8_t tcp_connection_count;
+    uint8_t socket_count;
     network_ipv4_source_t ipv4_source;
     uint32_t interface_count;
     uint32_t recognized_count;

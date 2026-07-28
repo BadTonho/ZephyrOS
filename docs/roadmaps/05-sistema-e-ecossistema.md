@@ -84,7 +84,13 @@ antecipar interfaces ou permissoes que ainda nao existem.
   invariantes em `OK` no QEMU padrao.
 - [ ] Cobertura complementar da S2.6: renovacao/liberacao individual,
   ausencia de NIC, RTL8139, peer externo e modos Classic/Modern.
-- [ ] S2.7: TCP, sockets e servicos remotos com limites e timeouts.
+- [x] S2.7 implementada, aguardando validacao: TCP cliente com retransmissao,
+  sockets nativos limitados e HTTP GET, incluindo comandos individuais,
+  suite QEMU e invariantes puras.
+- [ ] Validar S2.7 no QEMU padrao com DHCP, DNS, handshake, checksum,
+  socket RX/TX, resposta HTTP, fechamento, polling e invariantes.
+- [ ] Cobertura complementar da S2.7: peer controlado, perda de segmentos,
+  janela zero, RST, ausencia de NIC, RTL8139 e modos Classic/Modern.
 - [ ] S2.8: suporte multi-NIC e RTL8139 sem duplicar a camada de protocolos.
 - [ ] Planejar atualizacao assinada ou verificada somente apos existir formato
   de pacote e politica de integridade.

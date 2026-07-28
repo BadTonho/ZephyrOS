@@ -697,6 +697,7 @@ int ipv4_validate_state(void) {
 
 const char* ipv4_protocol_name(uint8_t protocol) {
     if (protocol == IPV4_PROTOCOL_ICMP) return "ICMP";
+    if (protocol == IPV4_PROTOCOL_TCP) return "TCP";
     if (protocol == IPV4_PROTOCOL_UDP) return "UDP";
     return "DESCONHECIDO";
 }

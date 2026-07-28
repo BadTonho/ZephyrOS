@@ -116,10 +116,27 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 - [ ] Cobertura complementar: renovacao/liberacao individual, fallbacks,
   peer externo e Classic/Modern.
 
-## Sequencia prevista apos S2.6
+## S2.7 - TCP cliente, sockets e HTTP GET (implementada)
 
-1. **S2.7 - TCP e sockets:** conexoes, timeouts e servicos remotos.
-2. **S2.8 - Multiplas NICs:** ampliar a abstracao e adicionar RTL8139 sem
+- [x] Protocolo TCP IPv4 cliente com 16 conexoes, handles geracionais,
+  checksum, handshake, ACK, dados, FIN/RST e descarte fora de ordem.
+- [x] MSS local 536, janela RX 4096, um segmento pendente, RTO adaptativo,
+  regra de Karn, backoff e no maximo tres retransmissoes.
+- [x] API de 16 sockets `STREAM` nativos, filas TX de 2 KiB e RX de 4 KiB,
+  sem syscall ou ABI para aplicacoes.
+- [x] Cliente HTTP GET com uma sessao, DNS/IP literal, headers de 4 KiB,
+  corpo de 16 KiB e framing por `Content-Length` ou EOF.
+- [x] Comandos `net tcp status/connect`, `net socket status/table`,
+  `http get/status` e diagnostico agrupado da S2.7.
+- [x] Vetores puros e invariantes adicionados ao `regcheck full`.
+- [ ] Validacao do usuario no QEMU padrao com
+  `net check qemu tcp net-pci-00-03.0 example.com`.
+- [ ] Cobertura complementar: perda/retransmissao com peer, RST, janela zero,
+  handles obsoletos, tabela cheia, fallbacks e Classic/Modern.
+
+## Sequencia prevista apos S2.7
+
+1. **S2.8 - Multiplas NICs:** ampliar a abstracao e adicionar RTL8139 sem
    prender os protocolos ao E1000.
 
 ---
@@ -372,55 +389,17 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 
 ### 2.6 Protocolo TCP
 
-- [ ] Criar módulo `src/net/tcp.c` e `tcp.h`
-- [ ] Criar struct `tcp_header_t`:
-  ```
-  - src_port      = uint16_t
-  - dst_port      = uint16_t
-  - seq_num       = uint32_t
-  - ack_num       = uint32_t
-  - data_offset   = uint8_t
-  - flags         = uint16_t (SYN, ACK, FIN, RST, PSH, etc.)
-  - window        = uint16_t
-  - checksum      = uint16_t
-  - urgent_ptr    = uint16_t
-  ```
-- [ ] Criar struct `tcp_socket_t`:
-  ```
-  - state         = enum (CLOSED, LISTEN, SYN_SENT, SYN_RECEIVED, ESTABLISHED, etc.)
-  - local_port    = uint16_t
-  - remote_port   = uint16_t
-  - remote_ip     = uint32_t
-  - seq_num       = uint32_t
-  - ack_num       = uint32_t
-  - send_buffer   = uint8_t*
-  - recv_buffer   = uint8_t*
-  - window_size   = uint16_t (default 65535)
-  - mss           = uint16_t (default 536)
-  - callback      = void (*on_receive)(uint8_t*, uint32_t)
-  - callback_conn = void (*on_connect)(void)
-  - callback_close= void (*on_close)(void)
-  ```
-- [ ] Implementar handshake TCP:
-  - [ ] `tcp_connect(socket, dst_ip, dst_port)` — enviar SYN
-  - [ ] Processar SYN-ACK
-  - [ ] Enviar ACK (conexão estabelecida)
-- [ ] Implementar envio TCP:
-  - [ ] `tcp_send(socket, data, length)` — com sequenciamento
-  - [ ] Retransmissão automática (timeout 3 segundos)
-  - [ ] Controle de fluxo (janela deslizante)
-- [ ] Implementar recepção TCP:
-  - [ ] Processar ACK de envio
-  - [ ] Processar dados recebidos
-  - [ ] Enviar ACK automático
-- [ ] Implementar encerramento TCP:
-  - [ ] `tcp_close(socket)` — enviar FIN
-  - [ ] Processar FIN-ACK
-  - [ ] Aguardar FIN do outro lado
-- [ ] Implementar RST (rejeição de conexão)
-- [ ] Criar timeout de conexão (30 segundos)
-- [ ] Criar retransmissão (máximo 3 tentativas)
-- [ ] Integrar com IPv4 layer
+- [x] Criar `src/core/tcp.c` e `src/include/core/tcp.h`.
+- [x] Serializar e validar o cabeçalho/checksum sem structs packed.
+- [x] Implementar abertura ativa SYN/SYN-ACK/ACK.
+- [x] Implementar dados bidirecionais, ACK imediato e sequenciamento.
+- [x] Implementar FIN, RST, fechamento ativo/passivo e `TIME_WAIT`.
+- [x] Implementar MSS 536, janela RX e um segmento não confirmado.
+- [x] Implementar RTO, SRTT/RTTVAR, Karn, backoff e três retransmissões.
+- [x] Integrar com IPv4 e sockets nativos.
+- [ ] Implementar abertura passiva, `LISTEN`, `ACCEPT` e backlog.
+- [ ] Implementar reassembly, SACK, window scaling e controle de congestão
+  completo.
 
 ---
 
@@ -517,7 +496,7 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 
 ### 4.1 Cliente HTTP
 
-- [ ] Criar módulo `src/net/http.c` e `http.h`
+- [x] Criar módulo `src/core/http.c` e `src/include/core/http.h`
 - [ ] Criar struct `http_request_t`:
   ```
   - method[8]     = "GET"
@@ -534,16 +513,16 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
   - body          = uint8_t*
   - body_length   = uint32_t
   ```
-- [ ] Criar função `http_get(url, response)` para GET request
+- [x] Criar início/manutenção/status para uma sessão GET
 - [ ] Criar função `http_post(url, data, response)` para POST request
-- [ ] Parse de URL (protocol, host, port, path)
-- [ ] Conexão TCP com host:porta
-- [ ] Envio de request HTTP/1.1
-- [ ] Receção de response (chunked encoding não suportado)
-- [ ] Parse de headers de response
-- [ ] Download de body para buffer
+- [x] Parse de URL HTTP (protocolo, host, porta e caminho)
+- [x] Conexão TCP com host:porta
+- [x] Envio de request HTTP/1.1
+- [x] Receção por `Content-Length` ou fechamento
+- [x] Parse limitado de status e headers
+- [x] Corpo em buffer fixo de 16 KiB
 - [ ] Criar função `http_download_file(url, filepath)` para download
-- [ ] Criar função `http_free_response(response)` para liberar memória
+- [x] Sem alocação dinâmica; reset reutiliza os buffers fixos
 
 ### 4.2 Cliente FTP (básico)
 

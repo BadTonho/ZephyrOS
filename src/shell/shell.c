@@ -29,8 +29,11 @@
 #include "core/arp.h"
 #include "core/dhcp.h"
 #include "core/dns.h"
+#include "core/http.h"
 #include "core/ipv4.h"
 #include "core/icmp.h"
+#include "core/net_socket.h"
+#include "core/tcp.h"
 #include "core/udp.h"
 #include "core/network_manager.h"
 #include "core/power.h"
@@ -64,6 +67,10 @@
 #define SHELL_PING_WAIT_EXTRA_SECONDS 5U
 #define SHELL_DHCP_WAIT_SECONDS 20U
 #define SHELL_DNS_WAIT_SECONDS 20U
+#define SHELL_TCP_WAIT_SECONDS 45U
+#define SHELL_HTTP_WAIT_SECONDS 50U
+#define SHELL_HTTP_PREVIEW_SIZE 512U
+#define SHELL_NETWORK_REQUIRED_IPV4_HANDLERS 3U
 #define SHELL_DNS_NAME_SIZE DNS_NAME_BUFFER_SIZE
 #define SHELL_MILLISECONDS_PER_SECOND 1000U
 #define SHELL_MAX_TICK_INTERVAL 0xFFFFFFFFU
@@ -161,6 +168,18 @@ typedef struct {
     uint8_t polling;
     uint8_t invariants;
 } shell_net_qemu_dhcp_check_t;
+
+typedef struct {
+    uint8_t dhcp;
+    uint8_t dns;
+    uint8_t tcp;
+    uint8_t checksum;
+    uint8_t sockets;
+    uint8_t http;
+    uint8_t closing;
+    uint8_t polling;
+    uint8_t invariants;
+} shell_net_qemu_tcp_check_t;
 
 typedef struct {
     uint32_t ticks;
@@ -930,7 +949,10 @@ static int shell_regcheck_validate_network_recovery(
                status->icmp_available &&
                status->udp_available &&
                status->dhcp_available &&
-               status->dns_available) {
+               status->dns_available &&
+               status->tcp_available &&
+               status->sockets_available &&
+               status->http_available) {
         expected_state = RECOVERY_STATE_READY;
         expected_error = OK;
     } else if (status->active_count) {
@@ -1051,6 +1073,49 @@ static int shell_regcheck_validate_udp_dhcp_dns(
     return OK;
 }
 
+static int shell_regcheck_validate_tcp_socket_http(
+    const network_manager_status_t* network_status) {
+    tcp_status_t tcp;
+    net_socket_status_t sockets;
+    http_status_t http;
+    ipv4_status_t ipv4;
+    int result;
+
+    if (!network_status) {
+        LOG_ERROR("SHELL", "RegCheck recebeu estado TCP nulo");
+        return ERR_NULL;
+    }
+    result = tcp_get_status(&tcp);
+    if (result != OK || net_socket_get_status(&sockets) != OK ||
+        http_get_status(&http) != OK ||
+        ipv4_get_status(&ipv4) != OK ||
+        tcp_validate_state() != OK ||
+        net_socket_validate_state() != OK ||
+        http_validate_state() != OK ||
+        (network_status->tcp_available && !tcp.initialized) ||
+        (network_status->sockets_available && !sockets.initialized) ||
+        (network_status->http_available && !http.initialized) ||
+        (network_status->tcp_available &&
+         !network_status->ipv4_available) ||
+        (network_status->sockets_available &&
+         !network_status->tcp_available) ||
+        (network_status->http_available &&
+         (!network_status->sockets_available ||
+          !network_status->dns_available)) ||
+        (network_status->tcp_available &&
+         ipv4.handler_count <
+             SHELL_NETWORK_REQUIRED_IPV4_HANDLERS) ||
+        tcp.connection_count > TCP_CONNECTION_CAPACITY ||
+        sockets.active_count > NET_SOCKET_CAPACITY ||
+        network_status->tcp_connection_count !=
+            tcp.connection_count ||
+        network_status->socket_count != sockets.active_count) {
+        LOG_ERROR("SHELL", "RegCheck detectou TCP/sockets/HTTP invalido");
+        return result == OK ? ERR_STATE : result;
+    }
+    return OK;
+}
+
 static int shell_regcheck_validate_network(void) {
     network_manager_status_t status;
     uint32_t count = 0;
@@ -1078,6 +1143,12 @@ static int shell_regcheck_validate_network(void) {
          (!status.active_count || !status.ipv4_available)) ||
         (status.dhcp_available && !status.udp_available) ||
         (status.dns_available && !status.udp_available) ||
+        (status.tcp_available && !status.ipv4_available) ||
+        (status.sockets_available && !status.tcp_available) ||
+        (status.http_available &&
+         (!status.sockets_available || !status.dns_available)) ||
+        status.tcp_connection_count > TCP_CONNECTION_CAPACITY ||
+        status.socket_count > NET_SOCKET_CAPACITY ||
         (status.ipv4_configured &&
          status.ipv4_source == NETWORK_IPV4_SOURCE_NONE) ||
         (!status.ipv4_configured &&
@@ -1089,6 +1160,8 @@ static int shell_regcheck_validate_network(void) {
          status.arp_available && status.ipv4_available &&
          status.icmp_available && status.udp_available &&
          status.dhcp_available && status.dns_available &&
+         status.tcp_available && status.sockets_available &&
+         status.http_available &&
          !status.partial &&
          status.last_error != OK) ||
         (!status.active_count && !status.interface_count &&
@@ -1118,6 +1191,8 @@ static int shell_regcheck_validate_network(void) {
     result = shell_regcheck_validate_ipv4_icmp(&status);
     if (result != OK) return result;
     result = shell_regcheck_validate_udp_dhcp_dns(&status);
+    if (result != OK) return result;
+    result = shell_regcheck_validate_tcp_socket_http(&status);
     if (result != OK) return result;
     return shell_regcheck_validate_network_recovery(&status);
 }
@@ -1993,11 +2068,16 @@ static void cmd_help(void) {
     video_print("  net udp status - Inspeciona datagramas e endpoints\n", 0x07);
     video_print("  net dhcp acquire <id>|status|renew|release\n", 0x07);
     video_print("  net dns config <ip>|status|table|clear\n", 0x07);
+    video_print("  net tcp status|connect <host> <porta>\n", 0x07);
+    video_print("  net socket status|table - Inspeciona sockets nativos\n",
+                0x07);
+    video_print("  http get <url>|status - Cliente HTTP/1.1\n", 0x07);
     video_print("  nslookup <dominio> - Resolve registro DNS A\n", 0x07);
     video_print("  ping <ip-ou-dominio> [1-10] - Executa ICMP Echo\n", 0x07);
     video_print("  net check [id] - Agrupa diagnosticos de rede\n", 0x07);
     video_print("  net check qemu <id> <ip> - Executa suite de rede\n", 0x07);
     video_print("  net check qemu dhcp <id> <dominio> - Suite S2.6\n", 0x07);
+    video_print("  net check qemu tcp <id> <dominio> - Suite S2.7\n", 0x07);
     video_print("  acpi status - Mostra tabelas e energia ACPI observadas\n", 0x07);
     video_print("  power status - Mostra capacidades reais de energia\n", 0x07);
     video_print("  kmetrics - Mostra linha-base de metricas do kernel\n", 0x07);
@@ -2770,6 +2850,20 @@ static void cmd_net_status(void) {
                     "CONFIGURADO" : "DISPONIVEL (NAO CONFIGURADO)",
                     status.dns_configured ? 0x0A : 0x0E);
     }
+    video_print("\n  TCP: ", 0x07);
+    video_print(status.tcp_available ? "DISPONIVEL" : "INDISPONIVEL",
+                status.tcp_available ? 0x0A : 0x0E);
+    video_print("  Conexoes: ", 0x07);
+    print_num(status.tcp_connection_count);
+    video_print("\n  Sockets nativos: ", 0x07);
+    video_print(status.sockets_available ?
+                "DISPONIVEL" : "INDISPONIVEL",
+                status.sockets_available ? 0x0A : 0x0E);
+    video_print("  Ativos: ", 0x07);
+    print_num(status.socket_count);
+    video_print("\n  HTTP: ", 0x07);
+    video_print(status.http_available ? "DISPONIVEL" : "INDISPONIVEL",
+                status.http_available ? 0x0A : 0x0E);
     video_print("\n  Ultimo erro: ", 0x07);
     print_num((uint32_t)status.last_error);
     video_print("\n", 0x07);
@@ -4186,6 +4280,415 @@ static void cmd_ping(const char* args) {
     cmd_ping_print_summary(&status);
 }
 
+static int cmd_net_parse_port(const char* text, uint16_t* out_port) {
+    uint32_t value = 0;
+
+    if (!text || !out_port) {
+        LOG_ERROR("SHELL", "Destino nulo ao interpretar porta TCP");
+        return ERR_NULL;
+    }
+    if (!*text) return ERR_INVALID;
+    while (*text) {
+        if (*text < '0' || *text > '9') return ERR_INVALID;
+        value = value * 10U + (uint32_t)(*text - '0');
+        if (value > 65535U) return ERR_INVALID;
+        text++;
+    }
+    if (!value) return ERR_INVALID;
+    *out_port = (uint16_t)value;
+    return OK;
+}
+
+static void cmd_net_tcp_status(void) {
+    tcp_status_t status;
+
+    if (tcp_get_status(&status) != OK) {
+        LOG_ERROR("SHELL", "Estado TCP indisponivel");
+        video_print("Erro: estado TCP indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("TCP:\n  Estado: ", 0x0B);
+    video_print(status.initialized ? "DISPONIVEL" : "INDISPONIVEL",
+                status.initialized ? 0x0A : 0x0E);
+    video_print("\n  Conexoes: ", 0x07);
+    print_num(status.connection_count);
+    video_print("/", 0x07);
+    print_num(TCP_CONNECTION_CAPACITY);
+    video_print("  Segmentos RX/TX: ", 0x07);
+    print_num(status.segments_rx);
+    video_print("/", 0x07);
+    print_num(status.segments_tx);
+    video_print("\n  Bytes RX/TX: ", 0x07);
+    print_num(status.bytes_rx);
+    video_print("/", 0x07);
+    print_num(status.bytes_tx);
+    video_print("  SYN TX/SYN-ACK RX: ", 0x07);
+    print_num(status.syn_tx);
+    video_print("/", 0x07);
+    print_num(status.syn_ack_rx);
+    video_print("\n  FIN RX/TX: ", 0x07);
+    print_num(status.fin_rx);
+    video_print("/", 0x07);
+    print_num(status.fin_tx);
+    video_print("  RST RX/TX: ", 0x07);
+    print_num(status.resets_rx);
+    video_print("/", 0x07);
+    print_num(status.resets_tx);
+    video_print("\n  Retransmissoes/timeouts: ", 0x07);
+    print_num(status.retransmissions);
+    video_print("/", 0x07);
+    print_num(status.timeouts);
+    video_print("  Invalidos/checksum: ", 0x07);
+    print_num(status.rx_invalid);
+    video_print("/", 0x07);
+    print_num(status.rx_checksum_errors);
+    video_print("\n  Sem conexao/duplicados/fora de ordem: ", 0x07);
+    print_num(status.rx_no_connection);
+    video_print("/", 0x07);
+    print_num(status.rx_duplicates);
+    video_print("/", 0x07);
+    print_num(status.rx_out_of_order);
+    video_print("\n  Ultimo erro: ", 0x07);
+    print_num((uint32_t)status.last_error);
+    video_print("\n", 0x07);
+}
+
+static int cmd_net_wait_socket_connected(
+    net_socket_handle_t handle, net_socket_info_t* out_info) {
+    uint32_t frequency = timer_get_frequency();
+    uint32_t start_tick = timer_get_ticks();
+    uint32_t wait_ticks;
+    net_socket_info_t info;
+    int result;
+
+    if (!out_info) {
+        LOG_ERROR("SHELL", "Destino nulo na espera TCP");
+        return ERR_NULL;
+    }
+    if (!frequency ||
+        frequency > SHELL_MAX_TICK_INTERVAL / SHELL_TCP_WAIT_SECONDS) {
+        LOG_ERROR("SHELL", "Timer invalido na espera TCP");
+        return ERR_STATE;
+    }
+    wait_ticks = frequency * SHELL_TCP_WAIT_SECONDS;
+    do {
+        result = net_socket_get_handle_info(handle, &info);
+        if (result != OK) return result;
+        if (info.state == NET_SOCKET_STATE_CONNECTED) {
+            *out_info = info;
+            return OK;
+        }
+        if (info.state == NET_SOCKET_STATE_ERROR ||
+            info.state == NET_SOCKET_STATE_EOF) {
+            *out_info = info;
+            return info.last_error == OK ? ERR_STATE :
+                                           info.last_error;
+        }
+        process_block(SHELL_NET_CHECK_BLOCK_TICKS);
+    } while ((uint32_t)(timer_get_ticks() - start_tick) <= wait_ticks);
+    LOG_WARN("SHELL", "Guarda de tempo TCP expirou");
+    return ERR_TIMEOUT;
+}
+
+static void cmd_net_tcp_connect(const char* args) {
+    char target[SHELL_DNS_NAME_SIZE];
+    char port_text[6];
+    net_socket_handle_t handle = 0;
+    net_socket_info_t info;
+    uint32_t address = 0;
+    uint16_t port = 0;
+    int result;
+
+    result = shell_read_two_args(args, target, sizeof(target),
+                                 port_text, sizeof(port_text));
+    if (result != OK ||
+        cmd_net_parse_port(port_text, &port) != OK) {
+        LOG_WARN("SHELL", "Uso invalido de net tcp connect");
+        video_print("Uso: net tcp connect <ip-ou-dominio> <porta>\n",
+                    0x0C);
+        return;
+    }
+    result = cmd_ping_resolve_target(target, &address);
+    if (result == OK) {
+        result = net_socket_open(NET_SOCKET_TYPE_STREAM, &handle);
+    }
+    if (result == OK) result = net_socket_connect(handle, address, port);
+    if (result == OK) {
+        video_print("Conectando a ", 0x07);
+        cmd_net_print_ipv4(address);
+        video_print(":", 0x07);
+        print_num(port);
+        video_print("...\n", 0x07);
+        result = cmd_net_wait_socket_connected(handle, &info);
+    }
+    if (result != OK) {
+        if (handle) net_socket_abort(handle);
+        video_print("Erro: conexao TCP falhou (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+    video_print("Conexao TCP estabelecida. Porta local: ", 0x0A);
+    print_num(info.local_port);
+    video_print(".\n", 0x0A);
+    net_socket_abort(handle);
+}
+
+static void cmd_net_tcp(const char* args) {
+    const char* connect_args = shell_match_subcommand(args, "connect");
+
+    if (shell_args_equal(args, "status")) {
+        cmd_net_tcp_status();
+        return;
+    }
+    if (connect_args) {
+        cmd_net_tcp_connect(connect_args);
+        return;
+    }
+    LOG_WARN("SHELL", "Uso invalido de net tcp");
+    video_print("Uso: net tcp status | "
+                "net tcp connect <ip-ou-dominio> <porta>\n", 0x0C);
+}
+
+static void cmd_net_socket_status(void) {
+    net_socket_status_t status;
+
+    if (net_socket_get_status(&status) != OK) {
+        LOG_ERROR("SHELL", "Estado de sockets indisponivel");
+        video_print("Erro: estado de sockets indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("Sockets nativos:\n  Estado: ", 0x0B);
+    video_print(status.initialized ? "DISPONIVEL" : "INDISPONIVEL",
+                status.initialized ? 0x0A : 0x0E);
+    video_print("\n  Ativos: ", 0x07);
+    print_num(status.active_count);
+    video_print("/", 0x07);
+    print_num(NET_SOCKET_CAPACITY);
+    video_print("  Opens/connects/closes/aborts: ", 0x07);
+    print_num(status.opens);
+    video_print("/", 0x07);
+    print_num(status.connects);
+    video_print("/", 0x07);
+    print_num(status.closes);
+    video_print("/", 0x07);
+    print_num(status.aborts);
+    video_print("\n  Bytes fila TX/TCP TX/TCP RX/leitura: ", 0x07);
+    print_num(status.bytes_queued_tx);
+    video_print("/", 0x07);
+    print_num(status.bytes_sent_tcp);
+    video_print("/", 0x07);
+    print_num(status.bytes_received_tcp);
+    video_print("/", 0x07);
+    print_num(status.bytes_read);
+    video_print("  Overflows/stale: ", 0x07);
+    print_num(status.rx_overflows);
+    video_print("/", 0x07);
+    print_num(status.stale_handles);
+    video_print("\n  Ultimo erro: ", 0x07);
+    print_num((uint32_t)status.last_error);
+    video_print("\n", 0x07);
+}
+
+static void cmd_net_socket_table(void) {
+    uint8_t any = 0;
+
+    video_print("Tabela de sockets:\n", 0x0B);
+    for (uint32_t index = 0; index < NET_SOCKET_CAPACITY; index++) {
+        net_socket_info_t info;
+
+        if (net_socket_get_info(index, &info) != OK || !info.used) {
+            continue;
+        }
+        any = 1;
+        video_print("  #", 0x07);
+        print_num(info.handle);
+        video_print(" ", 0x07);
+        video_print(net_socket_state_name(info.state),
+                    info.state == NET_SOCKET_STATE_CONNECTED ? 0x0A :
+                    info.state == NET_SOCKET_STATE_ERROR ? 0x0C : 0x0E);
+        video_print(" ", 0x07);
+        cmd_net_print_ipv4(info.remote_ip);
+        video_print(":", 0x07);
+        print_num(info.remote_port);
+        video_print(" local=", 0x07);
+        print_num(info.local_port);
+        video_print(" tx/rx=", 0x07);
+        print_num(info.tx_queued);
+        video_print("/", 0x07);
+        print_num(info.rx_queued);
+        video_print("\n", 0x07);
+    }
+    if (!any) video_print("  Vazia.\n", 0x08);
+}
+
+static void cmd_net_socket(const char* args) {
+    if (shell_args_equal(args, "status")) {
+        cmd_net_socket_status();
+        return;
+    }
+    if (shell_args_equal(args, "table")) {
+        cmd_net_socket_table();
+        return;
+    }
+    LOG_WARN("SHELL", "Uso invalido de net socket");
+    video_print("Uso: net socket status | net socket table\n", 0x0C);
+}
+
+static int cmd_http_wait(http_status_t* out_status) {
+    uint32_t frequency = timer_get_frequency();
+    uint32_t start_tick = timer_get_ticks();
+    uint32_t wait_ticks;
+    http_status_t status;
+
+    if (!out_status) {
+        LOG_ERROR("SHELL", "Destino nulo na espera HTTP");
+        return ERR_NULL;
+    }
+    if (!frequency ||
+        frequency > SHELL_MAX_TICK_INTERVAL / SHELL_HTTP_WAIT_SECONDS) {
+        LOG_ERROR("SHELL", "Timer invalido na espera HTTP");
+        return ERR_STATE;
+    }
+    wait_ticks = frequency * SHELL_HTTP_WAIT_SECONDS;
+    do {
+        if (http_get_status(&status) != OK) return ERR_STATE;
+        if (status.state == HTTP_STATE_COMPLETE) {
+            *out_status = status;
+            return OK;
+        }
+        if (status.state == HTTP_STATE_FAILED) {
+            *out_status = status;
+            return status.last_error == OK ? ERR_STATE :
+                                             status.last_error;
+        }
+        process_block(SHELL_NET_CHECK_BLOCK_TICKS);
+    } while ((uint32_t)(timer_get_ticks() - start_tick) <= wait_ticks);
+    *out_status = status;
+    LOG_WARN("SHELL", "Guarda de tempo HTTP expirou");
+    return ERR_TIMEOUT;
+}
+
+static void cmd_http_status(void) {
+    http_status_t status;
+
+    if (http_get_status(&status) != OK) {
+        LOG_ERROR("SHELL", "Estado HTTP indisponivel");
+        video_print("Erro: estado HTTP indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("HTTP:\n  Estado: ", 0x0B);
+    video_print(http_state_name(status.state),
+                status.state == HTTP_STATE_COMPLETE ? 0x0A :
+                status.state == HTTP_STATE_FAILED ? 0x0C : 0x0E);
+    video_print("\n  URL: ", 0x07);
+    video_print(status.url[0] ? status.url : "N/D", 0x07);
+    video_print("\n  Destino: ", 0x07);
+    if (status.resolved_ip) cmd_net_print_ipv4(status.resolved_ip);
+    else video_print("N/D", 0x08);
+    video_print(":", 0x07);
+    print_num(status.port);
+    video_print("  Status: ", 0x07);
+    print_num(status.status_code);
+    video_print("\n  Headers/corpo: ", 0x07);
+    print_num(status.headers_length);
+    video_print("/", 0x07);
+    print_num(status.body_length);
+    video_print("  Content-Length: ", 0x07);
+    if (status.has_content_length) print_num(status.content_length);
+    else video_print("N/D (ate EOF)", 0x08);
+    video_print("\n  Requests/respostas: ", 0x07);
+    print_num(status.requests_tx);
+    video_print("/", 0x07);
+    print_num(status.responses_rx);
+    video_print("  Bytes RX: ", 0x07);
+    print_num(status.bytes_rx);
+    video_print("  Parse/overflow/timeout: ", 0x07);
+    print_num(status.parse_errors);
+    video_print("/", 0x07);
+    print_num(status.overflows);
+    video_print("/", 0x07);
+    print_num(status.timeouts);
+    video_print("\n  Ultimo erro: ", 0x07);
+    print_num((uint32_t)status.last_error);
+    video_print("\n", 0x07);
+}
+
+static void cmd_http_print_preview(void) {
+    const uint8_t* body;
+    uint32_t length;
+    char preview[SHELL_HTTP_PREVIEW_SIZE + 1U];
+
+    if (http_get_body(&body, &length) != OK) return;
+    if (length > SHELL_HTTP_PREVIEW_SIZE) {
+        length = SHELL_HTTP_PREVIEW_SIZE;
+    }
+    for (uint32_t index = 0; index < length; index++) {
+        uint8_t value = body[index];
+
+        preview[index] =
+            (value >= 0x20U && value <= 0x7EU) ||
+            value == '\n' || value == '\r' || value == '\t' ?
+            (char)value : '.';
+    }
+    preview[length] = '\0';
+    video_print("Previa do corpo", 0x0B);
+    if (length == SHELL_HTTP_PREVIEW_SIZE) {
+        video_print(" (primeiros 512 bytes)", 0x0B);
+    }
+    video_print(":\n", 0x0B);
+    video_print(length ? preview : "(vazio)", 0x07);
+    video_print("\n", 0x07);
+}
+
+static int cmd_http_execute(const char* url, uint8_t print_result,
+                            http_status_t* out_status) {
+    int result;
+
+    if (!url || !out_status) {
+        LOG_ERROR("SHELL", "Argumento nulo no GET HTTP");
+        return ERR_NULL;
+    }
+    result = http_get_start(url);
+    if (result == OK) result = cmd_http_wait(out_status);
+    if (result == OK && print_result) {
+        video_print("HTTP ", 0x0A);
+        print_num(out_status->status_code);
+        video_print("  headers=", 0x07);
+        print_num(out_status->headers_length);
+        video_print(" corpo=", 0x07);
+        print_num(out_status->body_length);
+        video_print(" bytes\n", 0x07);
+        cmd_http_print_preview();
+    }
+    return result;
+}
+
+static void cmd_http(const char* args) {
+    const char* get_args = shell_match_subcommand(args, "get");
+    char url[HTTP_URL_BUFFER_SIZE];
+    http_status_t status;
+    int result;
+
+    if (shell_args_equal(args, "status")) {
+        cmd_http_status();
+        return;
+    }
+    if (!get_args ||
+        shell_read_single_arg(get_args, url, sizeof(url)) != OK) {
+        LOG_WARN("SHELL", "Uso invalido de http");
+        video_print("Uso: http get <url> | http status\n", 0x0C);
+        return;
+    }
+    video_print("Executando HTTP GET...\n", 0x07);
+    result = cmd_http_execute(url, 1U, &status);
+    if (result != OK) {
+        video_print("Erro: HTTP GET falhou (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+    }
+}
+
 static int cmd_net_find_arp_entry(uint32_t ip_address,
                                   arp_cache_entry_info_t* out_entry,
                                   uint8_t* out_found) {
@@ -4559,6 +5062,220 @@ static void cmd_net_check_qemu_dhcp(const char* args) {
     cmd_net_ipv4_status();
 }
 
+static uint8_t shell_network_id_equal(const char* first,
+                                      const char* second) {
+    if (!first || !second) return 0;
+    while (*first && *second) {
+        char left = *first == ':' ? '-' : *first;
+        char right = *second == ':' ? '-' : *second;
+
+        if (left >= 'a' && left <= 'z') left -= (char)('a' - 'A');
+        if (right >= 'a' && right <= 'z') right -= (char)('a' - 'A');
+        if (left != right) return 0;
+        first++;
+        second++;
+    }
+    return *first == '\0' && *second == '\0';
+}
+
+static int cmd_net_qemu_tcp_prepare_dhcp(
+    const char* id, shell_net_qemu_tcp_check_t* check) {
+    dhcp_status_t status;
+    uint8_t release_sent = 0;
+    int result;
+
+    if (!id || !check) {
+        LOG_ERROR("SHELL", "Argumento nulo na preparacao TCP/DHCP");
+        return ERR_NULL;
+    }
+    if (dhcp_get_status(&status) != OK) return ERR_STATE;
+    if ((status.state == DHCP_STATE_BOUND ||
+         status.state == DHCP_STATE_RENEWING ||
+         status.state == DHCP_STATE_REBINDING) &&
+        (!shell_network_id_equal(status.interface_id, id) ||
+         status.lease.subnet_mask != SHELL_NET_QEMU_SUBNET_MASK ||
+         status.lease.gateway != SHELL_NET_QEMU_REPLY_IPV4 ||
+         !status.lease.dns_server)) {
+        result = network_manager_release_dhcp(&release_sent);
+        if (result != OK) return result;
+        if (dhcp_get_status(&status) != OK) return ERR_STATE;
+    }
+    if (status.state != DHCP_STATE_BOUND &&
+        status.state != DHCP_STATE_RENEWING &&
+        status.state != DHCP_STATE_REBINDING) {
+        if (status.state == DHCP_STATE_SELECTING ||
+            status.state == DHCP_STATE_REQUESTING ||
+            status.state == DHCP_STATE_APPLYING) {
+            result = dhcp_reset();
+            if (result != OK) return result;
+        }
+        result = network_manager_acquire_dhcp(id);
+        if (result == OK) result = cmd_net_dhcp_wait(&status);
+        if (result != OK) return result;
+    }
+    if (dhcp_get_status(&status) != OK) return ERR_STATE;
+    check->dhcp =
+        (status.state == DHCP_STATE_BOUND ||
+         status.state == DHCP_STATE_RENEWING ||
+         status.state == DHCP_STATE_REBINDING) &&
+        status.lease.address != 0U &&
+        status.lease.subnet_mask == SHELL_NET_QEMU_SUBNET_MASK &&
+        status.lease.gateway == SHELL_NET_QEMU_REPLY_IPV4 &&
+        status.lease.dns_server != 0U;
+    return check->dhcp ? OK : ERR_STATE;
+}
+
+static int cmd_net_build_http_url(const char* domain,
+                                  char* url,
+                                  uint32_t capacity) {
+    static const char prefix[] = "http://";
+    uint32_t prefix_length = sizeof(prefix) - 1U;
+    uint32_t domain_length;
+
+    if (!domain || !url || !capacity) {
+        LOG_ERROR("SHELL", "Destino nulo ao montar URL da suite TCP");
+        return ERR_NULL;
+    }
+    domain_length = kstrlen(domain);
+    if (!domain_length ||
+        prefix_length + domain_length + 2U > capacity) {
+        LOG_ERROR("SHELL", "Dominio excede URL da suite TCP");
+        return ERR_OVERFLOW;
+    }
+    kmemcpy(url, prefix, prefix_length);
+    kmemcpy(url + prefix_length, domain, domain_length);
+    url[prefix_length + domain_length] = '/';
+    url[prefix_length + domain_length + 1U] = '\0';
+    return OK;
+}
+
+static void cmd_net_qemu_tcp_wait_close(uint32_t fin_baseline) {
+    uint32_t frequency = timer_get_frequency();
+    uint32_t start_tick = timer_get_ticks();
+    uint32_t wait_ticks;
+
+    if (!frequency ||
+        frequency > SHELL_MAX_TICK_INTERVAL /
+                    SHELL_NET_CHECK_WAIT_SECONDS) return;
+    wait_ticks = frequency * SHELL_NET_CHECK_WAIT_SECONDS;
+    do {
+        tcp_status_t status;
+
+        if (tcp_get_status(&status) == OK &&
+            status.fin_tx > fin_baseline) return;
+        process_block(SHELL_NET_CHECK_BLOCK_TICKS);
+    } while ((uint32_t)(timer_get_ticks() - start_tick) <= wait_ticks);
+}
+
+static void cmd_net_check_qemu_tcp_print(
+    const shell_net_qemu_tcp_check_t* check, uint8_t passed) {
+    cmd_net_check_print_case("Lease DHCP QEMU", check->dhcp);
+    cmd_net_check_print_case("Resolucao DNS A", check->dns);
+    cmd_net_check_print_case("Handshake e dados TCP", check->tcp);
+    cmd_net_check_print_case("Checksum TCP", check->checksum);
+    cmd_net_check_print_case("Socket RX/TX", check->sockets);
+    cmd_net_check_print_case("Resposta HTTP valida", check->http);
+    cmd_net_check_print_case("Fechamento TCP", check->closing);
+    cmd_net_check_print_case("Polling e manutencao", check->polling);
+    cmd_net_check_print_case("Invariantes de rede", check->invariants);
+    video_print("Resultado da suite: ", 0x07);
+    video_print(passed ? "OK\n" : "ERRO\n",
+                passed ? 0x0A : 0x0C);
+}
+
+static void cmd_net_check_qemu_tcp(const char* args) {
+    char id[NETWORK_INTERFACE_ID_SIZE];
+    char domain[SHELL_DNS_NAME_SIZE];
+    char url[HTTP_URL_BUFFER_SIZE];
+    shell_net_qemu_tcp_check_t check;
+    tcp_status_t tcp_before;
+    tcp_status_t tcp_after;
+    net_socket_status_t sockets_before;
+    net_socket_status_t sockets_after;
+    http_status_t http_before;
+    http_status_t http_after;
+    uint32_t address = 0;
+    int result;
+    uint8_t passed;
+
+    if (shell_read_two_args(args, id, sizeof(id),
+                            domain, sizeof(domain)) != OK) {
+        LOG_WARN("SHELL", "Uso invalido da suite TCP QEMU");
+        video_print("Uso: net check qemu tcp <id> <dominio>\n", 0x0C);
+        return;
+    }
+    kmemset(&check, 0, sizeof(check));
+    kmemset(&tcp_before, 0, sizeof(tcp_before));
+    kmemset(&tcp_after, 0, sizeof(tcp_after));
+    kmemset(&sockets_before, 0, sizeof(sockets_before));
+    kmemset(&sockets_after, 0, sizeof(sockets_after));
+    kmemset(&http_before, 0, sizeof(http_before));
+    kmemset(&http_after, 0, sizeof(http_after));
+    video_print("=== Suite de rede - TCP/HTTP QEMU ===\n", 0x0B);
+    video_print("Aguardando DHCP, DNS, TCP e HTTP...\n", 0x07);
+    result = cmd_net_qemu_tcp_prepare_dhcp(id, &check);
+    if (result == OK) {
+        result = cmd_dns_wait(domain, &address);
+        check.dns = result == OK && ipv4_address_is_unicast(address);
+    }
+    if (result == OK) result = cmd_net_build_http_url(
+        domain, url, sizeof(url));
+    if (result == OK) result = http_reset();
+    if (result == OK &&
+        (tcp_get_status(&tcp_before) != OK ||
+         net_socket_get_status(&sockets_before) != OK ||
+         http_get_status(&http_before) != OK)) result = ERR_STATE;
+    if (result == OK) {
+        result = cmd_http_execute(url, 0U, &http_after);
+        cmd_net_qemu_tcp_wait_close(tcp_before.fin_tx);
+    }
+    if (tcp_get_status(&tcp_after) != OK ||
+        net_socket_get_status(&sockets_after) != OK ||
+        http_get_status(&http_after) != OK) {
+        result = ERR_STATE;
+        kmemset(&tcp_after, 0, sizeof(tcp_after));
+        kmemset(&sockets_after, 0, sizeof(sockets_after));
+        kmemset(&http_after, 0, sizeof(http_after));
+    }
+    check.tcp = result == OK &&
+        tcp_after.syn_tx > tcp_before.syn_tx &&
+        tcp_after.syn_ack_rx > tcp_before.syn_ack_rx &&
+        tcp_after.segments_rx > tcp_before.segments_rx &&
+        tcp_after.segments_tx > tcp_before.segments_tx;
+    check.checksum = result == OK &&
+        tcp_after.rx_checksum_errors == tcp_before.rx_checksum_errors;
+    check.sockets = result == OK &&
+        sockets_after.connects > sockets_before.connects &&
+        sockets_after.bytes_sent_tcp > sockets_before.bytes_sent_tcp &&
+        sockets_after.bytes_received_tcp >
+            sockets_before.bytes_received_tcp;
+    check.http = result == OK &&
+        http_after.state == HTTP_STATE_COMPLETE &&
+        http_after.resolved_ip == address &&
+        http_after.status_code >= HTTP_STATUS_MINIMUM &&
+        http_after.status_code <= HTTP_STATUS_MAXIMUM &&
+        http_after.headers_length != 0U &&
+        http_after.requests_tx > http_before.requests_tx &&
+        http_after.responses_rx > http_before.responses_rx;
+    check.closing = result == OK &&
+        tcp_after.fin_tx > tcp_before.fin_tx;
+    check.polling =
+        tcp_after.maintenance_cycles > tcp_before.maintenance_cycles &&
+        sockets_after.maintenance_cycles >
+            sockets_before.maintenance_cycles &&
+        http_after.maintenance_cycles >
+            http_before.maintenance_cycles;
+    check.invariants = shell_regcheck_validate_network() == OK;
+    passed = check.dhcp && check.dns && check.tcp &&
+        check.checksum && check.sockets && check.http &&
+        check.closing && check.polling && check.invariants;
+    cmd_net_check_qemu_tcp_print(&check, passed);
+    cmd_net_tcp_status();
+    cmd_net_socket_status();
+    cmd_net_socket_table();
+    cmd_http_status();
+}
+
 static void cmd_net_check_qemu(const char* args) {
     char id[NETWORK_INTERFACE_ID_SIZE];
     char ip_text[SHELL_IPV4_TEXT_SIZE];
@@ -4574,7 +5291,12 @@ static void cmd_net_check_qemu(const char* args) {
     int icmp_result;
     int result;
     const char* dhcp_args = shell_match_subcommand(args, "dhcp");
+    const char* tcp_args = shell_match_subcommand(args, "tcp");
 
+    if (tcp_args) {
+        cmd_net_check_qemu_tcp(tcp_args);
+        return;
+    }
     if (dhcp_args) {
         cmd_net_check_qemu_dhcp(dhcp_args);
         return;
@@ -4588,7 +5310,8 @@ static void cmd_net_check_qemu(const char* args) {
         local_ip == SHELL_NET_QEMU_TIMEOUT_IPV4) {
         LOG_WARN("SHELL", "Uso invalido de net check qemu");
         video_print("Uso: net check qemu <id> <ip-local> | "
-                    "net check qemu dhcp <id> <dominio>\n", 0x0C);
+                    "net check qemu dhcp <id> <dominio> | "
+                    "net check qemu tcp <id> <dominio>\n", 0x0C);
         return;
     }
     result = network_manager_configure_ipv4(
@@ -4662,7 +5385,8 @@ static void cmd_net_check(const char* args) {
             LOG_WARN("SHELL", "Uso invalido de net check");
             video_print("Uso: net check [id] | "
                         "net check qemu <id> <ip-local> | "
-                        "net check qemu dhcp <id> <dominio>\n", 0x0C);
+                        "net check qemu dhcp <id> <dominio> | "
+                        "net check qemu tcp <id> <dominio>\n", 0x0C);
             return;
         }
         result = network_manager_find(id, &info);
@@ -4710,8 +5434,17 @@ static void cmd_net_check(const char* args) {
     video_print(has_interface ? "\n[9] DNS\n" : "\n[7] DNS\n", 0x0B);
     cmd_net_dns_status();
     cmd_net_dns_table();
-    video_print(has_interface ? "\n[10] Invariantes: " :
-                                "\n[8] Invariantes: ", 0x0B);
+    video_print(has_interface ? "\n[10] TCP\n" : "\n[8] TCP\n", 0x0B);
+    cmd_net_tcp_status();
+    video_print(has_interface ? "\n[11] Sockets\n" :
+                                "\n[9] Sockets\n", 0x0B);
+    cmd_net_socket_status();
+    cmd_net_socket_table();
+    video_print(has_interface ? "\n[12] HTTP\n" :
+                                "\n[10] HTTP\n", 0x0B);
+    cmd_http_status();
+    video_print(has_interface ? "\n[13] Invariantes: " :
+                                "\n[11] Invariantes: ", 0x0B);
     result = shell_regcheck_validate_network();
     video_print(result == OK ? "OK\n" : "ERRO\n",
                 result == OK ? 0x0A : 0x0C);
@@ -4725,6 +5458,8 @@ static void cmd_net(const char* args) {
     const char* ethernet_args;
     const char* info_args;
     const char* ipv4_args;
+    const char* socket_args;
+    const char* tcp_args;
     const char* test_args;
     const char* udp_args;
 
@@ -4761,6 +5496,16 @@ static void cmd_net(const char* args) {
         cmd_net_dns(dns_args);
         return;
     }
+    tcp_args = shell_match_subcommand(args, "tcp");
+    if (tcp_args) {
+        cmd_net_tcp(tcp_args);
+        return;
+    }
+    socket_args = shell_match_subcommand(args, "socket");
+    if (socket_args) {
+        cmd_net_socket(socket_args);
+        return;
+    }
     check_args = shell_match_subcommand(args, "check");
     if (check_args) {
         cmd_net_check(check_args);
@@ -4785,7 +5530,8 @@ static void cmd_net(const char* args) {
     video_print("Uso: net status | net devices | net info <id> | "
                 "net ethernet <id> | net test <id> | net arp ... | "
                 "net ipv4 ... | net udp ... | net dhcp ... | "
-                "net dns ... | net check ...\n", 0x0C);
+                "net dns ... | net tcp ... | net socket ... | "
+                "net check ...\n", 0x0C);
 }
 
 static void cmd_power(const char* args) {
@@ -6857,6 +7603,8 @@ int shell_process_command(const char* input) {
         cmd_ping(input);
     } else if (kstrcmp(cmd, "nslookup") == 0) {
         cmd_nslookup(input);
+    } else if (kstrcmp(cmd, "http") == 0) {
+        cmd_http(input);
     } else if (kstrcmp(cmd, "acpi") == 0) {
         cmd_acpi(input);
     } else if (kstrcmp(cmd, "power") == 0) {

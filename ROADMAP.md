@@ -129,11 +129,15 @@ Plataforma de aplicativos:   [████████████████�
 | `net udp status` | Mostra endpoints, datagramas e checksum |
 | `net dhcp acquire/status/renew/release` | Gerencia configuracao dinamica |
 | `net dns config/status/table/clear` | Configura DNS e inspeciona o cache |
+| `net tcp status/connect` | Inspeciona TCP ou testa uma abertura ativa |
+| `net socket status/table` | Inspeciona sockets nativos e filas |
+| `http get <url>/status` | Executa HTTP GET limitado e mostra a sessao |
 | `nslookup <dominio>` | Resolve registro DNS A cooperativamente |
 | `ping <ip-ou-dominio> [quantidade]` | Executa ICMP Echo cooperativo |
 | `net check [id]` | Agrupa toda a pilha de rede e invariantes |
 | `net check qemu <id> <ip>` | Executa a suite ARP, IPv4 e ICMP no QEMU |
 | `net check qemu dhcp <id> <dominio>` | Executa a suite UDP, DHCP e DNS |
+| `net check qemu tcp <id> <dominio>` | Executa a suite TCP, sockets e HTTP |
 | `acpi status` | Mostra tabelas, PM1, modo ACPI, `_S5_` e prontidao S5 |
 | `power status` | Mostra prontidao S5, desligamento fisico e fallback HLT |
 | `kmetrics [reset]` | Coleta linha-base de PIT, filas, memoria e VESA, incluindo media de bytes por apresentacao |
@@ -563,9 +567,25 @@ Plataforma de aplicativos:   [████████████████�
   cache, ausencia de NIC, RTL8139, peer externo e regressao visual
   Classic/Modern; esses cenarios nao bloqueiam a conclusao.
 
+## S2.7 - TCP cliente, sockets do kernel e HTTP GET
+
+- [x] TCP cliente com 16 conexoes, handles geracionais, handshake, dados,
+  FIN/RST, checksum, MSS 536, janela RX e descarte fora de ordem.
+- [x] RTO adaptativo com SRTT/RTTVAR, Karn, backoff e tres retransmissoes;
+  espera por ARP nao inicia o temporizador TCP.
+- [x] Sockets `STREAM` nativos com 16 entradas, fila TX de 2 KiB e ring RX
+  de 4 KiB, sem ABI de userspace.
+- [x] HTTP GET para `http://`, DNS/IP literal, headers limitados e corpo de
+  16 KiB por `Content-Length` ou EOF.
+- [x] Comandos `net tcp`, `net socket`, `http` e suite agrupada
+  `net check qemu tcp <id> <dominio>`.
+- [x] Invariantes e vetores puros de TCP/HTTP integrados ao `regcheck full`.
+- [ ] Aguardando validacao do usuario com Q3, build limpo e suite QEMU.
+- [ ] Cobertura complementar: peer controlado, perda/retransmissao, janela
+  zero, RST, tabela cheia, ausencia de NIC, RTL8139 e Classic/Modern.
+
 ## Continuacao da S2 - Rede e atualizacoes (planejada)
 
-- [ ] S2.7: TCP, sockets e servicos remotos, com timeouts e limites claros.
 - [ ] S2.8: ampliar a abstracao de NIC e adicionar RTL8139 sem duplicar a
   camada de protocolos.
 

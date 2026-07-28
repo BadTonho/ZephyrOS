@@ -242,7 +242,7 @@ desmontagem, suspensao, hibernacao ou reboot. `power_shutdown()` nunca retorna;
 `acpi_enter_s5()` retorna apenas quando sua pre-validacao impede qualquer
 escrita no hardware.
 
-## Servicos S2.1-S2.6: Ethernet, ARP, IPv4, ICMP, UDP, DHCP e DNS
+## Servicos S2.1-S2.7: Ethernet, ARP, IPv4, ICMP, UDP, DHCP, DNS e TCP
 
 `network_manager` filtra por copia o snapshot PCI e mantem ate quatro
 controladores de classe `0x02`. O servico copia identificadores, localizacao,
@@ -258,7 +258,8 @@ reseta, realoca DMA nem reinicializa o E1000 ou a camada Ethernet.
 O componente `Network` do `health` segue estas regras:
 
 - `READY`: existe pelo menos uma interface com driver ativo e as camadas
-  Ethernet, ARP, IPv4, ICMP, UDP, DHCP e DNS foram inicializadas;
+  Ethernet, ARP, IPv4, ICMP, UDP, DHCP, DNS, TCP, sockets e HTTP foram
+  inicializados;
 - `DEGRADED`: controlador detectado sem driver ou inventario parcial;
 - `DISABLED`: nenhum controlador detectado ou snapshot indisponivel.
 
@@ -379,9 +380,42 @@ DNS. UDP e os callbacks de DHCP/DNS rodam nesse contexto, nunca na IRQ.
 `udp_validate_state()`, `dhcp_validate_state()` e `dns_validate_state()`
 incluem vetores puros de checksum, opcoes, truncamento, compressao e CNAME.
 
-Persistencia, TCP, sockets de usuario, IPv6, mDNS, DNS TCP/EDNS/DNSSEC,
-DHCPDECLINE, loopback, forwarding, erros ICMP, fragmentacao/remontagem,
-multi-NIC e RTL8139 permanecem fora do contrato.
+Na S2.7, `tcp_init()` registra o protocolo IPv4 `6` e mantem ate 16 conexoes
+clientes identificadas por handles geracionais. O TCP implementa abertura
+ativa, sequenciamento, ACK imediato, FIN/RST, MSS local de 536 bytes, janela
+RX de 4096 bytes e um unico segmento nao confirmado por conexao. Segmentos
+duplicados ou fora de ordem sao descartados; opcoes bem formadas sao
+percorridas e a opcao MSS e aplicada.
+
+O RTO inicia em um segundo, usa SRTT/RTTVAR, backoff exponencial, regra de
+Karn e no maximo tres retransmissoes. O temporizador so comeca depois que o
+IPv4 realmente transmitiu o segmento, portanto espera por ARP nao consome o
+prazo TCP. Conexoes inativas e `TIME_WAIT` expiram em 30 segundos. Nao existe
+`LISTEN`, abertura passiva ou remontagem de segmentos fora de ordem.
+
+`net_socket` oferece 16 sockets `STREAM` para kernel, Shell e servicos
+nativos. Cada entrada possui fila TX de 2048 bytes e ring RX de 4096 bytes;
+`send` e `receive` apenas transferem a quantidade que cabe e retornam
+imediatamente. A camada ajusta a janela TCP pelo espaco do ring e drena TX em
+segmentos limitados pelo MSS. A API nao e exposta como syscall de userspace.
+
+O cliente HTTP mantem uma sessao GET. Ele aceita somente
+`http://host[:porta]/caminho`, resolve nomes pelo DNS, envia HTTP/1.1 com
+`Host`, `User-Agent`, `Accept` e `Connection: close`, e armazena ate 4096
+bytes de headers e 16 KiB de corpo. O framing aceito usa `Content-Length` ou
+EOF; `Transfer-Encoding`, chunked, headers conflitantes, mensagens
+malformadas e excesso de corpo falham de forma controlada. HTTPS, redirects,
+POST, compressao e escrita em disco permanecem fora do contrato.
+
+O polling da S2.7 acrescenta manutencao TCP, sockets e HTTP, nessa ordem,
+depois de DNS. Mudanca efetiva de IPv4, lease removido/expirado ou ARP
+incompativel aborta HTTP e sockets antes de remover a configuracao. Boot,
+renovacao DHCP sem mudanca e configuracao identica nao criam trafego nem
+interrompem conexoes.
+
+Persistencia, sockets de usuario, servidor TCP, IPv6, TLS, mDNS, DNS
+TCP/EDNS/DNSSEC, DHCPDECLINE, loopback, forwarding, erros ICMP,
+fragmentacao/remontagem, multi-NIC e RTL8139 permanecem fora do contrato.
 
 Referencias da implementacao: [RFC 791](https://www.rfc-editor.org/rfc/rfc791.html)
 para cabecalho/checksum IPv4, [RFC 792](https://www.rfc-editor.org/rfc/rfc792.html)
@@ -391,6 +425,10 @@ comportamento de host.
 S2.6 segue [RFC 768](https://www.rfc-editor.org/rfc/rfc768.html) para UDP,
 [RFC 2131](https://www.rfc-editor.org/rfc/rfc2131.html) para DHCP e
 [RFC 1035](https://www.rfc-editor.org/rfc/rfc1035.html) para DNS.
+
+S2.7 segue [RFC 9293](https://www.rfc-editor.org/rfc/rfc9293.html) para TCP,
+[RFC 6298](https://www.rfc-editor.org/rfc/rfc6298.html) para RTO e
+[RFC 9112](https://www.rfc-editor.org/rfc/rfc9112.html) para framing HTTP/1.1.
 
 ## Struct `registers_t`
 

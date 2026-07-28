@@ -4,11 +4,14 @@
 #include "core/dns.h"
 #include "core/ethernet.h"
 #include "core/errors.h"
+#include "core/http.h"
 #include "core/icmp.h"
 #include "core/ipv4.h"
 #include "core/log.h"
+#include "core/net_socket.h"
 #include "core/recovery.h"
 #include "core/string.h"
+#include "core/tcp.h"
 #include "core/timer.h"
 #include "core/udp.h"
 #include "drivers/e1000.h"
@@ -158,11 +161,15 @@ static int network_get_protocol_status(
     icmp_status_t* icmp_layer_status,
     udp_status_t* udp_layer_status,
     dhcp_status_t* dhcp_layer_status,
-    dns_status_t* dns_layer_status) {
+    dns_status_t* dns_layer_status,
+    tcp_status_t* tcp_layer_status,
+    net_socket_status_t* socket_layer_status,
+    http_status_t* http_layer_status) {
     if (!ethernet_status || !arp_layer_status ||
         !ipv4_layer_status || !icmp_layer_status ||
         !udp_layer_status || !dhcp_layer_status ||
-        !dns_layer_status) {
+        !dns_layer_status || !tcp_layer_status ||
+        !socket_layer_status || !http_layer_status) {
         LOG_ERROR("NET", "Destino nulo no snapshot de protocolos");
         return ERR_NULL;
     }
@@ -172,7 +179,10 @@ static int network_get_protocol_status(
         icmp_get_status(icmp_layer_status) != OK ||
         udp_get_status(udp_layer_status) != OK ||
         dhcp_get_status(dhcp_layer_status) != OK ||
-        dns_get_status(dns_layer_status) != OK) {
+        dns_get_status(dns_layer_status) != OK ||
+        tcp_get_status(tcp_layer_status) != OK ||
+        net_socket_get_status(socket_layer_status) != OK ||
+        http_get_status(http_layer_status) != OK) {
         LOG_ERROR("NET", "Falha ao consultar protocolos de rede");
         return ERR_STATE;
     }
@@ -186,7 +196,10 @@ static void network_apply_protocol_status(
     const icmp_status_t* icmp_layer_status,
     const udp_status_t* udp_layer_status,
     const dhcp_status_t* dhcp_layer_status,
-    const dns_status_t* dns_layer_status) {
+    const dns_status_t* dns_layer_status,
+    const tcp_status_t* tcp_layer_status,
+    const net_socket_status_t* socket_layer_status,
+    const http_status_t* http_layer_status) {
     if (!network_status.active_count) return;
     network_status.packet_io_available = 1;
     network_status.ethernet_available =
@@ -223,36 +236,33 @@ static void network_apply_protocol_status(
     network_status.dns_configured =
         network_status.dns_available &&
         dns_layer_status->configured ? 1U : 0U;
+    network_status.tcp_available =
+        network_status.ipv4_available &&
+        tcp_layer_status->initialized ? 1U : 0U;
+    network_status.sockets_available =
+        network_status.tcp_available &&
+        socket_layer_status->initialized ? 1U : 0U;
+    network_status.http_available =
+        network_status.sockets_available &&
+        network_status.dns_available &&
+        http_layer_status->initialized ? 1U : 0U;
+    network_status.tcp_connection_count =
+        tcp_layer_status->connection_count;
+    network_status.socket_count = socket_layer_status->active_count;
     network_status.ipv4_source = ipv4_layer_status->configured ?
         network_ipv4_source : NETWORK_IPV4_SOURCE_NONE;
 }
 
-static int network_build_snapshot(void) {
+static int network_collect_interfaces(
+    const e1000_status_t* e1000_status) {
     uint8_t pci_count = 0;
-    e1000_status_t e1000_status;
-    ethernet_status_t ethernet_status;
-    arp_status_t arp_layer_status;
-    ipv4_status_t ipv4_layer_status;
-    icmp_status_t icmp_layer_status;
-    udp_status_t udp_layer_status;
-    dhcp_status_t dhcp_layer_status;
-    dns_status_t dns_layer_status;
     int pci_result;
     int result = OK;
 
-    kmemset(network_interfaces, 0, sizeof(network_interfaces));
-    kmemset(&network_status, 0, sizeof(network_status));
-    network_status.initialized = network_manager_initialized ? 1U : 0U;
-    network_status.last_error = ERR_NOT_FOUND;
-    if (e1000_get_status(&e1000_status) != OK) {
-        LOG_ERROR("NET", "Falha ao consultar estado do E1000");
-        return ERR_STATE;
+    if (!e1000_status) {
+        LOG_ERROR("NET", "Estado E1000 nulo no inventario");
+        return ERR_NULL;
     }
-    if (network_get_protocol_status(
-            &ethernet_status, &arp_layer_status,
-            &ipv4_layer_status, &icmp_layer_status,
-            &udp_layer_status, &dhcp_layer_status,
-            &dns_layer_status) != OK) return ERR_STATE;
     pci_result = pci_get_device_count(&pci_count);
     if (pci_result != OK && pci_result != ERR_OVERFLOW) {
         LOG_ERROR("NET", "Falha ao consultar inventario PCI");
@@ -262,7 +272,6 @@ static int network_build_snapshot(void) {
         network_status.partial = 1;
         result = ERR_OVERFLOW;
     }
-
     for (uint8_t index = 0; index < pci_count; index++) {
         pci_device_t pci;
         int entry_result = pci_get_device_at(index, &pci);
@@ -277,12 +286,11 @@ static int network_build_snapshot(void) {
             network_status.partial = 1;
             network_status.last_error = ERR_OVERFLOW;
             LOG_WARN("NET", "Limite do inventario de rede atingido");
-            result = ERR_OVERFLOW;
-            break;
+            return ERR_OVERFLOW;
         }
         network_copy_interface(
             &network_interfaces[network_status.interface_count], &pci,
-            &e1000_status);
+            e1000_status);
         if (network_interfaces[network_status.interface_count].model !=
             NETWORK_ADAPTER_UNKNOWN) {
             network_status.recognized_count++;
@@ -293,11 +301,47 @@ static int network_build_snapshot(void) {
         }
         network_status.interface_count++;
     }
+    return result;
+}
+
+static int network_build_snapshot(void) {
+    e1000_status_t e1000_status;
+    ethernet_status_t ethernet_status;
+    arp_status_t arp_layer_status;
+    ipv4_status_t ipv4_layer_status;
+    icmp_status_t icmp_layer_status;
+    udp_status_t udp_layer_status;
+    dhcp_status_t dhcp_layer_status;
+    dns_status_t dns_layer_status;
+    tcp_status_t tcp_layer_status;
+    net_socket_status_t socket_layer_status;
+    http_status_t http_layer_status;
+    int result = OK;
+
+    kmemset(network_interfaces, 0, sizeof(network_interfaces));
+    kmemset(&network_status, 0, sizeof(network_status));
+    network_status.initialized = network_manager_initialized ? 1U : 0U;
+    network_status.last_error = ERR_NOT_FOUND;
+    if (e1000_get_status(&e1000_status) != OK) {
+        LOG_ERROR("NET", "Falha ao consultar estado do E1000");
+        return ERR_STATE;
+    }
+    if (network_get_protocol_status(
+            &ethernet_status, &arp_layer_status,
+            &ipv4_layer_status, &icmp_layer_status,
+            &udp_layer_status, &dhcp_layer_status,
+            &dns_layer_status, &tcp_layer_status,
+            &socket_layer_status, &http_layer_status) != OK) {
+        return ERR_STATE;
+    }
+    result = network_collect_interfaces(&e1000_status);
+    if (result != OK && result != ERR_OVERFLOW) return result;
     network_apply_protocol_status(
         &ethernet_status, &arp_layer_status,
         &ipv4_layer_status, &icmp_layer_status,
         &udp_layer_status, &dhcp_layer_status,
-        &dns_layer_status);
+        &dns_layer_status, &tcp_layer_status,
+        &socket_layer_status, &http_layer_status);
     if (network_status.partial) {
         network_status.last_error = ERR_OVERFLOW;
     } else if (network_status.active_count) {
@@ -308,7 +352,10 @@ static int network_build_snapshot(void) {
             network_status.icmp_available &&
             network_status.udp_available &&
             network_status.dhcp_available &&
-            network_status.dns_available ? OK : ERR_STATE;
+            network_status.dns_available &&
+            network_status.tcp_available &&
+            network_status.sockets_available &&
+            network_status.http_available ? OK : ERR_STATE;
     } else if (network_status.interface_count) {
         network_status.last_error = ERR_UNAVAILABLE;
         for (uint32_t index = 0; index < network_status.interface_count;
@@ -513,6 +560,75 @@ static int network_start_dns(void) {
     return OK;
 }
 
+static int network_start_tcp(void) {
+    tcp_status_t status;
+    int result;
+
+    if (!network_status.ipv4_available) return OK;
+    result = tcp_get_status(&status);
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao consultar inicializacao TCP");
+        return result;
+    }
+    if (!status.initialized) {
+        result = tcp_init();
+        if (result != OK || tcp_get_status(&status) != OK ||
+            !status.initialized) {
+            LOG_ERROR("NET", "Falha ao iniciar protocolo TCP");
+            return result != OK ? result : ERR_STATE;
+        }
+    }
+    network_status.tcp_available = 1;
+    network_status.tcp_connection_count = status.connection_count;
+    return OK;
+}
+
+static int network_start_sockets(void) {
+    net_socket_status_t status;
+    int result;
+
+    if (!network_status.tcp_available) return OK;
+    result = net_socket_get_status(&status);
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao consultar sockets nativos");
+        return result;
+    }
+    if (!status.initialized) {
+        result = net_socket_init();
+        if (result != OK || net_socket_get_status(&status) != OK ||
+            !status.initialized) {
+            LOG_ERROR("NET", "Falha ao iniciar sockets nativos");
+            return result != OK ? result : ERR_STATE;
+        }
+    }
+    network_status.sockets_available = 1;
+    network_status.socket_count = status.active_count;
+    return OK;
+}
+
+static int network_start_http(void) {
+    http_status_t status;
+    int result;
+
+    if (!network_status.sockets_available ||
+        !network_status.dns_available) return OK;
+    result = http_get_status(&status);
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao consultar cliente HTTP");
+        return result;
+    }
+    if (!status.initialized) {
+        result = http_init();
+        if (result != OK || http_get_status(&status) != OK ||
+            !status.initialized) {
+            LOG_ERROR("NET", "Falha ao iniciar cliente HTTP");
+            return result != OK ? result : ERR_STATE;
+        }
+    }
+    network_status.http_available = 1;
+    return OK;
+}
+
 static void network_sync_recovery(int result) {
     const recovery_component_t* current =
         recovery_get(RECOVERY_COMPONENT_NETWORK);
@@ -563,6 +679,21 @@ static void network_sync_recovery(int result) {
         state = RECOVERY_STATE_DEGRADED;
         error = network_status.last_error;
         message = "Cliente DNS indisponivel";
+    } else if (network_status.active_count &&
+               !network_status.tcp_available) {
+        state = RECOVERY_STATE_DEGRADED;
+        error = network_status.last_error;
+        message = "Protocolo TCP indisponivel";
+    } else if (network_status.active_count &&
+               !network_status.sockets_available) {
+        state = RECOVERY_STATE_DEGRADED;
+        error = network_status.last_error;
+        message = "Sockets nativos indisponiveis";
+    } else if (network_status.active_count &&
+               !network_status.http_available) {
+        state = RECOVERY_STATE_DEGRADED;
+        error = network_status.last_error;
+        message = "Cliente HTTP indisponivel";
     } else if (network_status.active_count) {
         state = RECOVERY_STATE_READY;
         error = OK;
@@ -631,6 +762,9 @@ int network_manager_init(void) {
     int udp_result;
     int dhcp_result;
     int dns_result;
+    int tcp_result;
+    int socket_result;
+    int http_result;
 
     LOG_INFO("NET", "Inicializando inventario de rede");
     network_ipv4_source = NETWORK_IPV4_SOURCE_NONE;
@@ -689,6 +823,26 @@ int network_manager_init(void) {
         network_status.last_error = dns_result;
         LOG_ERROR("NET", "Inventario ativo sem cliente DNS");
     }
+    tcp_result = network_start_tcp();
+    if (tcp_result != OK) {
+        network_status.tcp_available = 0;
+        network_status.tcp_connection_count = 0;
+        network_status.last_error = tcp_result;
+        LOG_ERROR("NET", "Inventario ativo sem protocolo TCP");
+    }
+    socket_result = network_start_sockets();
+    if (socket_result != OK) {
+        network_status.sockets_available = 0;
+        network_status.socket_count = 0;
+        network_status.last_error = socket_result;
+        LOG_ERROR("NET", "Inventario ativo sem sockets nativos");
+    }
+    http_result = network_start_http();
+    if (http_result != OK) {
+        network_status.http_available = 0;
+        network_status.last_error = http_result;
+        LOG_ERROR("NET", "Inventario ativo sem cliente HTTP");
+    }
     network_sync_recovery(result);
     if (result == ERR_OVERFLOW) {
         LOG_WARN("NET", "Inventario de rede inicializado parcialmente");
@@ -731,6 +885,24 @@ static uint8_t network_dns_reachable(uint32_t local_ip,
     return (server_ip & subnet_mask) == network || gateway;
 }
 
+static uint8_t network_ipv4_parameters_valid(uint32_t local_ip,
+                                             uint32_t subnet_mask,
+                                             uint32_t gateway) {
+    uint32_t network;
+    uint32_t broadcast;
+
+    if (!ipv4_address_is_unicast(local_ip) ||
+        !ipv4_mask_is_valid(subnet_mask)) return 0;
+    network = local_ip & subnet_mask;
+    broadcast = network | ~subnet_mask;
+    if (local_ip == network || local_ip == broadcast) return 0;
+    if (!gateway) return 1;
+    return ipv4_address_is_unicast(gateway) &&
+           (gateway & subnet_mask) == network &&
+           gateway != local_ip && gateway != network &&
+           gateway != broadcast;
+}
+
 static int network_restore_configuration(
     const ipv4_status_t* ipv4_before,
     const arp_status_t* arp_before,
@@ -766,6 +938,28 @@ static int network_restore_configuration(
         return result;
     }
     return icmp_reset();
+}
+
+static int network_reset_remote_clients(void) {
+    int result;
+
+    if (network_status.http_available) {
+        result = http_reset();
+        if (result != OK) {
+            LOG_ERROR("NET", "Falha ao cancelar cliente HTTP");
+            return result;
+        }
+    }
+    if (network_status.sockets_available) {
+        result = net_socket_reset();
+        if (result != OK) {
+            LOG_ERROR("NET", "Falha ao cancelar sockets nativos");
+            return result;
+        }
+    }
+    network_status.tcp_connection_count = 0;
+    network_status.socket_count = 0;
+    return OK;
 }
 
 static uint8_t network_ipv4_changed(
@@ -811,6 +1005,10 @@ static int network_apply_dhcp_lease(const dhcp_lease_t* lease) {
     lease_configuration_changed =
         changed || old_source != NETWORK_IPV4_SOURCE_DHCP ||
         dhcp.lease.dns_server != lease->dns_server;
+    if (lease_configuration_changed) {
+        result = network_reset_remote_clients();
+        if (result != OK) return result;
+    }
     result = ipv4_configure(text.id, info.mac_address, lease->address,
                             lease->subnet_mask, lease->gateway);
     if (result == OK &&
@@ -847,7 +1045,8 @@ static int network_drop_dhcp_configuration(void) {
     int result;
 
     if (network_ipv4_source != NETWORK_IPV4_SOURCE_DHCP) return OK;
-    result = icmp_reset();
+    result = network_reset_remote_clients();
+    if (result == OK) result = icmp_reset();
     if (result == OK) result = dns_unconfigure();
     if (result == OK) result = ipv4_unconfigure();
     if (result == OK) result = arp_unconfigure();
@@ -867,6 +1066,8 @@ static int network_drop_dhcp_configuration(void) {
 static void network_refresh_dynamic_status(void) {
     dhcp_status_t dhcp;
     dns_status_t dns;
+    tcp_status_t tcp;
+    net_socket_status_t sockets;
 
     if (dhcp_get_status(&dhcp) == OK) {
         network_status.dhcp_bound =
@@ -876,6 +1077,12 @@ static void network_refresh_dynamic_status(void) {
     }
     if (dns_get_status(&dns) == OK) {
         network_status.dns_configured = dns.configured;
+    }
+    if (tcp_get_status(&tcp) == OK) {
+        network_status.tcp_connection_count = tcp.connection_count;
+    }
+    if (net_socket_get_status(&sockets) == OK) {
+        network_status.socket_count = sockets.active_count;
     }
     network_status.ipv4_source = network_status.ipv4_configured ?
         network_ipv4_source : NETWORK_IPV4_SOURCE_NONE;
@@ -966,6 +1173,30 @@ int network_manager_poll(uint32_t* out_processed) {
                 network_status.last_error = result;
                 if (maintenance_error == OK) maintenance_error = result;
                 LOG_WARN("NET", "Manutencao DNS falhou sem parar polling");
+            }
+        }
+        if (network_status.tcp_available) {
+            result = tcp_maintain();
+            if (result != OK) {
+                network_status.last_error = result;
+                if (maintenance_error == OK) maintenance_error = result;
+                LOG_WARN("NET", "Manutencao TCP falhou sem parar polling");
+            }
+        }
+        if (network_status.sockets_available) {
+            result = net_socket_maintain();
+            if (result != OK) {
+                network_status.last_error = result;
+                if (maintenance_error == OK) maintenance_error = result;
+                LOG_WARN("NET", "Manutencao de sockets falhou");
+            }
+        }
+        if (network_status.http_available) {
+            result = http_maintain();
+            if (result != OK) {
+                network_status.last_error = result;
+                if (maintenance_error == OK) maintenance_error = result;
+                LOG_WARN("NET", "Manutencao HTTP falhou sem parar polling");
             }
         }
         network_refresh_dynamic_status();
@@ -1198,6 +1429,8 @@ int network_manager_configure_arp(const char* id, uint32_t local_ip) {
     if (ipv4_status.configured &&
         (ipv4_status.local_ip != local_ip ||
          !network_id_matches(ipv4_status.interface_id, text.id))) {
+        result = network_reset_remote_clients();
+        if (result != OK) return result;
         if (network_status.icmp_available) {
             result = icmp_reset();
             if (result != OK) {
@@ -1269,6 +1502,13 @@ int network_manager_configure_ipv4(const char* id, uint32_t local_ip,
         network_id_matches(before.interface_id, text.id) &&
         network_ipv4_source == NETWORK_IPV4_SOURCE_STATIC;
     if (same_static) return OK;
+    if (!network_ipv4_parameters_valid(local_ip, subnet_mask,
+                                       gateway)) {
+        LOG_ERROR("NET", "Parametros IPv4 invalidos");
+        return ERR_INVALID;
+    }
+    result = network_reset_remote_clients();
+    if (result != OK) return result;
     result = ipv4_configure(text.id, info.mac_address, local_ip,
                             subnet_mask, gateway);
     if (result != OK) {
@@ -1387,10 +1627,13 @@ int network_manager_release_dhcp(uint8_t* out_sent) {
 
 int network_manager_configure_dns(uint32_t server_ip) {
     ipv4_status_t ipv4;
+    dns_status_t dns;
+    http_status_t http;
     int result;
 
     if (!network_status.dns_available ||
-        ipv4_get_status(&ipv4) != OK || !ipv4.configured) {
+        ipv4_get_status(&ipv4) != OK || !ipv4.configured ||
+        dns_get_status(&dns) != OK) {
         LOG_ERROR("NET", "Configuracao DNS sem IPv4 ativo");
         return ERR_STATE;
     }
@@ -1398,6 +1641,18 @@ int network_manager_configure_dns(uint32_t server_ip) {
                                ipv4.gateway, server_ip)) {
         LOG_ERROR("NET", "Servidor DNS invalido ou sem rota");
         return ERR_INVALID;
+    }
+    if ((!dns.configured || dns.server_ip != server_ip) &&
+        network_status.http_available &&
+        http_get_status(&http) == OK &&
+        http.state != HTTP_STATE_IDLE &&
+        http.state != HTTP_STATE_COMPLETE &&
+        http.state != HTTP_STATE_FAILED) {
+        result = http_reset();
+        if (result != OK) {
+            LOG_ERROR("NET", "Falha ao cancelar HTTP para trocar DNS");
+            return result;
+        }
     }
     result = dns_configure(server_ip);
     if (result != OK) {

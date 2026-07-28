@@ -54,11 +54,15 @@ Comandos disponiveis:
   net udp status - Inspeciona endpoints e datagramas
   net dhcp acquire <id>|status|renew|release - Gerencia o lease
   net dns config <ip>|status|table|clear - Gerencia DNS
+  net tcp status|connect <host> <porta> - Inspeciona/testa TCP
+  net socket status|table - Inspeciona sockets nativos
+  http get <url>|status - Executa e inspeciona HTTP GET
   nslookup <dominio> - Resolve um registro A
   ping <ip-ou-dominio> [1-10] - Executa ICMP Echo cooperativo
   net check [id] - Agrupa os diagnosticos de rede
   net check qemu <id> <ip> - Executa a suite de rede no QEMU
   net check qemu dhcp <id> <dominio> - Executa a suite S2.6
+  net check qemu tcp <id> <dominio> - Executa a suite S2.7
   acpi status - Exibe tabelas, PM1, modo ACPI e `_S5_`
   power status - Mostra prontidao ACPI S5 e fallback HLT
   kmetrics  - Mostra linha-base manual de metricas do kernel
@@ -281,12 +285,19 @@ zephyr> net udp status
 zephyr> net dhcp acquire net-pci-00-03.0
 zephyr> net dhcp status
 zephyr> net dns status
+zephyr> net tcp status
+zephyr> net tcp connect example.com 80
+zephyr> net socket status
+zephyr> net socket table
 zephyr> nslookup example.com
 zephyr> ping 10.0.2.2
 zephyr> ping example.com 1
+zephyr> http get http://example.com/
+zephyr> http status
 zephyr> net check net-pci-00-03.0
 zephyr> net check qemu net-pci-00-03.0 10.0.2.15
 zephyr> net check qemu dhcp net-pci-00-03.0 example.com
+zephyr> net check qemu tcp net-pci-00-03.0 example.com
 ```
 
 `net status` separa inventario, controladores reconhecidos, drivers ativos,
@@ -351,6 +362,22 @@ consulta e os contadores, `table` lista nome, IPv4, TTL e idade, e `clear`
 limpa somente o cache. `nslookup <dominio>` resolve A/IN, segue CNAMEs
 limitados e aguarda cooperativamente.
 
+`net tcp status` mostra conexoes, segmentos, bytes, SYN/FIN/RST,
+retransmissoes, timeouts, checksum e descartes. `net tcp connect
+<ip-ou-dominio> <porta>` resolve o destino, abre uma conexao ativa,
+aguarda cooperativamente pelo handshake e encerra o teste sem deixar um
+socket reservado.
+
+`net socket status` mostra capacidade, operacoes e bytes das filas nativas.
+`net socket table` lista handle, estado, destino, porta local e ocupacao
+TX/RX. Handles possuem geracao; uma referencia antiga e recusada.
+
+`http get <url>` aceita somente `http://host[:porta]/caminho`, aguarda DNS,
+TCP e resposta sem bloquear o processo de sistema, e mostra status, tamanhos
+e uma previa textual de ate 512 bytes. `http status` inspeciona a sessao.
+Respostas com `Transfer-Encoding`/chunked, framing ambiguo, headers acima de
+4096 bytes ou corpo acima de 16 KiB sao recusadas.
+
 `ping <ip-ou-dominio> [quantidade]` usa quatro tentativas por padrao e aceita
 de uma a dez. Nomes sao resolvidos pelo mesmo cache/cliente DNS antes do ICMP.
 Cada Echo Request carrega 32 bytes deterministicos. A espera por ARP nao
@@ -360,8 +387,8 @@ sistema continue Ethernet, ARP e ICMP. Cada reply ou timeout e impresso antes
 do resumo completo em uma unica chamada.
 
 `net check [id]` reduz a sequencia manual sem remover nenhum comando
-individual. Sem ID, agrupa estado geral, controladores, ARP, IPv4/ICMP, UDP,
-DHCP, DNS e invariantes. Com um ID valido, inclui tambem `net info` e
+ individual. Sem ID, agrupa estado geral, controladores, ARP, IPv4/ICMP, UDP,
+DHCP, DNS, TCP, sockets, HTTP e invariantes. Com um ID valido, inclui tambem `net info` e
 `net ethernet`. O
 comando nao
 configura IP, nao inicia uma resolucao nem cria transmissao de teste; ele
@@ -382,6 +409,12 @@ um lease DHCP anterior, executa uma nova aquisicao, confirma UDP e DORA,
 valida `/24`, gateway `10.0.2.2` e DNS `10.0.2.3`, consulta o dominio
 informado, confirma cache hit sem novo TX e faz um Echo para o gateway. A
 consulta real depende da internet do host; por isso o dominio e explicito.
+
+`net check qemu tcp <id> <dominio>` e a suite agrupada da S2.7. Ela
+obtem ou reutiliza o lease DHCP, resolve o dominio, executa um GET HTTP na
+porta 80 e valida handshake/dados/checksum TCP, filas de socket, resposta
+HTTP, FIN, polling e invariantes em uma chamada. O dominio e obrigatorio e o
+resultado depende de DNS e HTTP externo disponiveis no host.
 
 O perfil segue o backend documentado em
 [QEMU Networking](https://gitlab.com/qemu-project/qemu/blob/master/docs/system/devices/net.rst);

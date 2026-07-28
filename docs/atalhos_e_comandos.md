@@ -48,8 +48,15 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `net` | `arp ...` | Configura, resolve e inspeciona o cache ARP. |
 | `net` | `ipv4 config <id> <ip> <mask> <gw>` | Configura IPv4 estatico somente em RAM. |
 | `net` | `ipv4 status` | Mostra configuracao, rotas, IPv4, ICMP, perdas e RTT. |
+| `net` | `tcp status` | Mostra conexoes, retransmissoes e descartes TCP. |
+| `net` | `tcp connect <host> <porta>` | Testa uma abertura TCP cooperativa. |
+| `net` | `socket status|table` | Inspeciona os sockets nativos e suas filas. |
 | `net` | `check [id]` | Agrupa os diagnosticos de rede sem remover os comandos individuais. |
 | `net` | `check qemu <id> <ip>` | Executa a suite ARP, IPv4 e ICMP do QEMU. |
+| `net` | `check qemu dhcp <id> <dominio>` | Executa a suite UDP, DHCP e DNS. |
+| `net` | `check qemu tcp <id> <dominio>` | Executa a suite TCP, sockets e HTTP. |
+| `http` | `get <url>|status` | Executa HTTP GET limitado ou inspeciona a sessao. |
+| `nslookup` | `<dominio>` | Resolve um registro DNS A cooperativamente. |
 | `ping` | `<ip> [1-10]` | Executa ICMP Echo e entrega eventos e resumo em uma chamada. |
 | `acpi` | `status` | Mostra tabelas, PM1, modo ACPI, `_S5_` e prontidao S5, sem executar transicoes. |
 | `power` | `status` | Mostra ativacao do modo, prontidao S5, desligamento fisico e fallback HLT. |
