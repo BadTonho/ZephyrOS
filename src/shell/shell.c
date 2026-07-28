@@ -74,6 +74,7 @@
 #define SHELL_DNS_NAME_SIZE DNS_NAME_BUFFER_SIZE
 #define SHELL_MILLISECONDS_PER_SECOND 1000U
 #define SHELL_MAX_TICK_INTERVAL 0xFFFFFFFFU
+#define SHELL_NOINLINE __attribute__((noinline))
 
 typedef enum {
     SHELL_BUILTIN_APP_NONE,
@@ -4918,9 +4919,9 @@ static int cmd_net_check_qemu_dhcp_acquire(
 static int cmd_net_check_qemu_dns(
     const char* domain, const dns_status_t* dns_before,
     shell_net_qemu_dhcp_check_t* check) {
-    dns_status_t dns_after;
-    udp_status_t udp_before_hit;
-    udp_status_t udp_after_hit;
+    static dns_status_t dns_after;
+    static udp_status_t udp_before_hit;
+    static udp_status_t udp_after_hit;
     uint32_t address = 0;
     uint32_t cached_address = 0;
     uint8_t resolved = 0;
@@ -4995,15 +4996,17 @@ static void cmd_net_check_qemu_dhcp_print(
                 passed ? 0x0A : 0x0C);
 }
 
-static void cmd_net_check_qemu_dhcp(const char* args) {
-    char id[NETWORK_INTERFACE_ID_SIZE];
-    char domain[SHELL_DNS_NAME_SIZE];
-    udp_status_t udp_before;
-    dhcp_status_t dhcp_before;
-    dhcp_status_t dhcp_after;
-    dns_status_t dns_before;
-    dns_status_t dns_after;
-    shell_net_qemu_dhcp_check_t check;
+static SHELL_NOINLINE void cmd_net_check_qemu_dhcp(const char* args) {
+    /* O compilador nao pode incorporar estes snapshots ao dispatcher:
+       a pilha do processo Shell possui somente 4 KiB. */
+    static char id[NETWORK_INTERFACE_ID_SIZE];
+    static char domain[SHELL_DNS_NAME_SIZE];
+    static udp_status_t udp_before;
+    static dhcp_status_t dhcp_before;
+    static dhcp_status_t dhcp_after;
+    static dns_status_t dns_before;
+    static dns_status_t dns_after;
+    static shell_net_qemu_dhcp_check_t check;
     int acquire_result;
     int dns_result;
     int ping_result;
@@ -5198,7 +5201,7 @@ static void cmd_net_check_qemu_tcp_print(
                 passed ? 0x0A : 0x0C);
 }
 
-static void cmd_net_check_qemu_tcp(const char* args) {
+static SHELL_NOINLINE void cmd_net_check_qemu_tcp(const char* args) {
     /* A suite e serial no Shell. Manter os snapshots em BSS evita somar
        varios status grandes a pilha de 4 KiB durante a espera HTTP. */
     static char id[NETWORK_INTERFACE_ID_SIZE];
@@ -5293,14 +5296,14 @@ static void cmd_net_check_qemu_tcp(const char* args) {
     cmd_http_status();
 }
 
-static void cmd_net_check_qemu_static(const char* args) {
-    char id[NETWORK_INTERFACE_ID_SIZE];
-    char ip_text[SHELL_IPV4_TEXT_SIZE];
-    arp_status_t baseline;
-    arp_status_t final_status;
-    ipv4_status_t ipv4_baseline;
-    icmp_status_t icmp_baseline;
-    shell_net_qemu_check_t check;
+static SHELL_NOINLINE void cmd_net_check_qemu_static(const char* args) {
+    static char id[NETWORK_INTERFACE_ID_SIZE];
+    static char ip_text[SHELL_IPV4_TEXT_SIZE];
+    static arp_status_t baseline;
+    static arp_status_t final_status;
+    static ipv4_status_t ipv4_baseline;
+    static icmp_status_t icmp_baseline;
+    static shell_net_qemu_check_t check;
     uint32_t local_ip = 0;
     uint8_t passed;
     int reply_result;
@@ -5365,7 +5368,7 @@ static void cmd_net_check_qemu_static(const char* args) {
     cmd_net_ipv4_status();
 }
 
-static void cmd_net_check_qemu(const char* args) {
+static SHELL_NOINLINE void cmd_net_check_qemu(const char* args) {
     const char* tcp_args = shell_match_subcommand(args, "tcp");
     const char* dhcp_args;
 

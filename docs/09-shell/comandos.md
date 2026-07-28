@@ -415,7 +415,10 @@ consulta real depende da internet do host; por isso o dominio e explicito.
 obtem ou reutiliza o lease DHCP, resolve o dominio, executa um GET HTTP na
 porta 80 e valida handshake/dados/checksum TCP, filas de socket, resposta
 HTTP, FIN, polling e invariantes em uma chamada. O dominio e obrigatorio e o
-resultado depende de DNS e HTTP externo disponiveis no host.
+resultado depende de DNS e HTTP externo disponiveis no host. As tres suites
+QEMU usam rotinas separadas e snapshots estaticos: isso impede que o
+otimizador some os diagnosticos em um unico frame maior que a pilha de 4 KiB
+do processo Shell.
 
 O perfil segue o backend documentado em
 [QEMU Networking](https://gitlab.com/qemu-project/qemu/blob/master/docs/system/devices/net.rst);
