@@ -2944,6 +2944,12 @@ static void cmd_net_arp_status(void) {
     print_num(status.resolved_entries);
     video_print("/", 0x07);
     print_num(status.failed_entries);
+    video_print("\n  Cache hits: ", 0x07);
+    print_num(status.cache_hits);
+    video_print("  Manutencao ciclos/erros: ", 0x07);
+    print_num(status.maintenance_cycles);
+    video_print("/", 0x07);
+    print_num(status.maintenance_errors);
     video_print("\n  Requests RX/TX: ", 0x07);
     print_num(status.rx_requests);
     video_print("/", 0x07);
@@ -2960,6 +2966,16 @@ static void cmd_net_arp_status(void) {
     print_num(status.timeouts);
     video_print("\n  Ultimo erro: ", 0x07);
     print_num((uint32_t)status.last_error);
+    video_print("\n  Cobertura: reply=", 0x07);
+    video_print(status.tx_requests && status.rx_replies ?
+                "OK" : "NAO TESTADO",
+                status.tx_requests && status.rx_replies ? 0x0A : 0x0E);
+    video_print("  cache-hit=", 0x07);
+    video_print(status.cache_hits ? "OK" : "NAO TESTADO",
+                status.cache_hits ? 0x0A : 0x0E);
+    video_print("  timeout=", 0x07);
+    video_print(status.timeouts ? "OK" : "NAO TESTADO",
+                status.timeouts ? 0x0A : 0x0E);
     video_print("\n", 0x07);
 }
 

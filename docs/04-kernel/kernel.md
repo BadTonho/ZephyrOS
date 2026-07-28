@@ -307,6 +307,11 @@ consultas de status/cache sao somente-leitura; o `regcheck full` nao transmite
 nem altera configuracao. IPv4 em pacotes, mascara, gateway, ICMP, DHCP, DNS,
 sockets, persistencia, multi-NIC e RTL8139 permanecem fora do contrato.
 
+O status ARP contabiliza cache hits e ciclos de manutencao para que os testes
+assincronos sejam observaveis sem inferencia pelos contadores do driver. Erro
+transitorio ao transmitir um retry fica registrado e logado, mas nao desativa
+o polling de rede; tentativas posteriores e o timeout continuam ativos.
+
 ## Struct `registers_t`
 
 Usada para passar contexto entre handlers:

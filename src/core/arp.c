@@ -477,6 +477,7 @@ int arp_resolve(uint32_t ip_address, uint8_t* out_mac,
         kmemcpy(out_mac, arp_cache[index].mac_address,
                 ARP_MAC_ADDRESS_SIZE);
         *out_resolved = 1;
+        arp_status.cache_hits++;
         return OK;
     }
     if (index >= 0 && arp_cache[index].state == ARP_ENTRY_FAILED) {
@@ -534,6 +535,7 @@ int arp_maintain(void) {
         LOG_ERROR("NET", "Timer indisponivel na manutencao ARP");
         return ERR_STATE;
     }
+    arp_status.maintenance_cycles++;
     now = timer_get_ticks();
     retry_ticks = arp_seconds_to_ticks(ARP_RETRY_INTERVAL_SECONDS,
                                        frequency);
@@ -544,6 +546,7 @@ int arp_maintain(void) {
         if (result != OK && first_error == OK) first_error = result;
     }
     if (first_error != OK) {
+        arp_status.maintenance_errors++;
         LOG_ERROR("NET", "Falha durante manutencao ARP");
     }
     return first_error;

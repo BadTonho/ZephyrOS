@@ -299,9 +299,10 @@ padrao, mascara, gateway, DHCP ou persistencia nesta etapa.
 `pendente` depois de enviar o primeiro request. O servico repete em um e dois
 segundos e marca `FAILED` no terceiro segundo, sem bloquear o terminal.
 `net arp status` mostra configuracao, estados do cache, requests/replies,
-invalidos, ignorados e timeouts. `net arp table` lista IP, MAC, estado, idade e
-tentativas; `net arp clear` limpa apenas o cache. Entradas resolvidas e falhas
-expiram apos 30 segundos.
+cache hits, ciclos de manutencao, invalidos, ignorados e timeouts. A linha
+`Cobertura` distingue testes aprovados de cenarios ainda nao executados.
+`net arp table` lista IP, MAC, estado, idade e tentativas; `net arp clear`
+limpa apenas o cache. Entradas resolvidas e falhas expiram apos 30 segundos.
 
 `net check [id]` reduz a sequencia manual sem remover nenhum comando
 individual. Sem ID, agrupa estado geral, controladores, ARP e invariantes. Com

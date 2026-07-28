@@ -23,6 +23,9 @@ typedef struct {
     uint32_t incomplete_entries;
     uint32_t resolved_entries;
     uint32_t failed_entries;
+    uint32_t cache_hits;
+    uint32_t maintenance_cycles;
+    uint32_t maintenance_errors;
     uint32_t tx_requests;
     uint32_t tx_replies;
     uint32_t rx_requests;

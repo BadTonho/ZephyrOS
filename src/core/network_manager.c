@@ -478,8 +478,8 @@ int network_manager_poll(uint32_t* out_processed) {
         result = arp_maintain();
         if (result != OK) {
             network_status.last_error = result;
-            LOG_ERROR("NET", "Falha na manutencao ARP");
-            return result;
+            LOG_WARN("NET", "Manutencao ARP falhou sem parar polling");
+            return OK;
         }
     }
     if (!network_status.partial) network_status.last_error = OK;
