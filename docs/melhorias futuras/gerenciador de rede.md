@@ -80,7 +80,8 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 - [x] Cache de 32 entradas com estados, expiracao, retries e timeout.
 - [x] Aprendizado restrito a request local e reply de resolucao pendente.
 - [x] Reply automatico somente para request valido dirigido ao IP local.
-- [x] Comandos `net arp config/status/resolve/table/clear`.
+- [x] Comandos `net arp config/status/resolve/table/clear` e diagnostico
+  agregado `net check [id]`.
 - [x] Invariantes ARP adicionadas ao `regcheck full` sem efeitos colaterais.
 - [ ] Validacao manual completa conforme a matriz da S2.4.
 

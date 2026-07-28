@@ -64,7 +64,8 @@ antecipar interfaces ou permissoes que ainda nao existem.
   injecao externa de RX e Classic/Modern permanecem como cobertura
   complementar, sem ARP ou IPv4.
 - [x] S2.4: ARP implementado com despacho EtherType, cache de 32 entradas,
-  requests/replies, resolucao assincrona e comandos `net arp`.
+  requests/replies, resolucao assincrona, comandos `net arp` e diagnostico
+  agregado `net check [id]`.
 - [ ] Validar a S2.4 com Q3, build limpo, QEMU, timeout, peer externo,
   fallbacks sem NIC/RTL8139 e Classic/Modern.
 - [ ] S2.5: IPv4, configuracao estatica e ICMP de diagnostico.

@@ -1853,6 +1853,7 @@ static void cmd_help(void) {
     video_print("  net arp config <id> <ip> - Configura ARP em RAM\n", 0x07);
     video_print("  net arp status|table|clear - Inspeciona cache ARP\n", 0x07);
     video_print("  net arp resolve <ip> - Resolve IPv4 para MAC\n", 0x07);
+    video_print("  net check [id] - Agrupa diagnosticos de rede\n", 0x07);
     video_print("  acpi status - Mostra tabelas e energia ACPI observadas\n", 0x07);
     video_print("  power status - Mostra capacidades reais de energia\n", 0x07);
     video_print("  kmetrics - Mostra linha-base de metricas do kernel\n", 0x07);
@@ -3083,8 +3084,71 @@ static void cmd_net_arp(const char* args) {
                 "table | clear\n", 0x0C);
 }
 
+static void cmd_net_check(const char* args) {
+    char id[NETWORK_INTERFACE_ID_SIZE];
+    network_interface_info_t info;
+    network_manager_status_t network_status;
+    arp_status_t arp_status;
+    uint8_t has_interface = 0;
+    int result;
+
+    if (!args) {
+        LOG_ERROR("SHELL", "Argumentos nulos em net check");
+        video_print("Erro: diagnostico agrupado invalido.\n", 0x0C);
+        return;
+    }
+    if (*args) {
+        result = shell_read_single_arg(args, id, sizeof(id));
+        if (result != OK) {
+            LOG_WARN("SHELL", "Uso invalido de net check");
+            video_print("Uso: net check [id]\n", 0x0C);
+            return;
+        }
+        result = network_manager_find(id, &info);
+        if (result != OK) {
+            LOG_WARN("SHELL", "Interface invalida em net check");
+            video_print("Erro: interface de rede nao encontrada.\n", 0x0C);
+            return;
+        }
+        has_interface = 1;
+    }
+    if (network_manager_get_status(&network_status) != OK) {
+        LOG_ERROR("SHELL", "Estado Network indisponivel em net check");
+        video_print("Erro: estado de rede indisponivel.\n", 0x0C);
+        return;
+    }
+
+    video_print("=== Diagnostico de rede agrupado ===\n", 0x0B);
+    video_print("\n[1] Estado geral\n", 0x0B);
+    cmd_net_status();
+    video_print("\n[2] Controladores\n", 0x0B);
+    cmd_net_devices();
+    if (has_interface) {
+        video_print("\n[3] Interface\n", 0x0B);
+        cmd_net_info(id);
+        video_print("\n[4] Ethernet\n", 0x0B);
+        if (info.state == NETWORK_INTERFACE_ACTIVE &&
+            network_status.ethernet_available) {
+            cmd_net_ethernet(id);
+        } else {
+            video_print("Diagnostico Ethernet nao aplicavel.\n", 0x0E);
+        }
+    }
+    video_print(has_interface ? "\n[5] ARP\n" : "\n[3] ARP\n", 0x0B);
+    cmd_net_arp_status();
+    if (arp_get_status(&arp_status) == OK && arp_status.initialized) {
+        cmd_net_arp_table();
+    }
+    video_print(has_interface ? "\n[6] Invariantes: " :
+                                "\n[4] Invariantes: ", 0x0B);
+    result = shell_regcheck_validate_network();
+    video_print(result == OK ? "OK\n" : "ERRO\n",
+                result == OK ? 0x0A : 0x0C);
+}
+
 static void cmd_net(const char* args) {
     const char* arp_args;
+    const char* check_args;
     const char* ethernet_args;
     const char* info_args;
     const char* test_args;
@@ -3100,6 +3164,11 @@ static void cmd_net(const char* args) {
     arp_args = shell_match_subcommand(args, "arp");
     if (arp_args) {
         cmd_net_arp(arp_args);
+        return;
+    }
+    check_args = shell_match_subcommand(args, "check");
+    if (check_args) {
+        cmd_net_check(check_args);
         return;
     }
     info_args = shell_match_subcommand(args, "info");
@@ -3119,7 +3188,8 @@ static void cmd_net(const char* args) {
     }
     LOG_WARN("SHELL", "Uso invalido de net");
     video_print("Uso: net status | net devices | net info <id> | "
-                "net ethernet <id> | net test <id> | net arp ...\n", 0x0C);
+                "net ethernet <id> | net test <id> | net arp ... | "
+                "net check [id]\n", 0x0C);
 }
 
 static void cmd_power(const char* args) {

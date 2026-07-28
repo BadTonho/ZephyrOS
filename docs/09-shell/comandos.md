@@ -49,6 +49,7 @@ Comandos disponiveis:
   net arp config <id> <ip> - Configura interface e IPv4 em RAM
   net arp status|table|clear - Inspeciona ou limpa o cache ARP
   net arp resolve <ip> - Resolve IPv4 para MAC sem bloquear
+  net check [id] - Agrupa os diagnosticos de rede
   acpi status - Exibe tabelas, PM1, modo ACPI e `_S5_`
   power status - Mostra prontidao ACPI S5 e fallback HLT
   kmetrics  - Mostra linha-base manual de metricas do kernel
@@ -265,6 +266,7 @@ zephyr> net arp status
 zephyr> net arp resolve 10.0.2.2
 zephyr> net arp table
 zephyr> net arp clear
+zephyr> net check net-pci-00-03.0
 ```
 
 `net status` separa inventario, controladores reconhecidos, drivers ativos,
@@ -300,6 +302,14 @@ segundos e marca `FAILED` no terceiro segundo, sem bloquear o terminal.
 invalidos, ignorados e timeouts. `net arp table` lista IP, MAC, estado, idade e
 tentativas; `net arp clear` limpa apenas o cache. Entradas resolvidas e falhas
 expiram apos 30 segundos.
+
+`net check [id]` reduz a sequencia manual sem remover nenhum comando
+individual. Sem ID, agrupa estado geral, controladores, ARP e invariantes. Com
+um ID valido, inclui tambem `net info` e `net ethernet`. O comando nao
+configura IP, nao inicia uma resolucao nem cria transmissao de teste; ele
+consolida as consultas e valida o estado atual. A manutencao de uma resolucao
+ja pendente continua normalmente. Assim, depois de `net arp config` e
+`net arp resolve`, uma unica chamada a `net check <id>` mostra o resultado.
 
 ## `acpi status`
 
