@@ -2009,8 +2009,12 @@ static void cmd_acpi_print_power(const acpi_power_info_t* info) {
                 "PRESENTE" : "INDISPONIVEL",
                 info->fadt_power_fields_present ? 0x0A : 0x0E);
     video_print("\n  Hardware-reduced: ", 0x07);
-    video_print(info->hardware_reduced ? "SIM" : "NAO",
-                info->hardware_reduced ? 0x0E : 0x07);
+    if (!info->fadt_power_fields_present) {
+        video_print("INDISPONIVEL", 0x0E);
+    } else {
+        video_print(info->hardware_reduced ? "SIM" : "NAO",
+                    info->hardware_reduced ? 0x0E : 0x07);
+    }
     video_print("\n  SMI_CMD: ", 0x07);
     if (info->smi_command_port) {
         video_print("0x", 0x07);
