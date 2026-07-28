@@ -471,6 +471,26 @@ Plataforma de aplicativos:   [████████████████�
   TX, `device-scan`, `regcheck full` e sintaxe invalida; tambem sem NIC e
   com RTL8139, ambos com falhas controladas e `RegCheck: OK`.
 
+## S2.3 - Camada Ethernet e entrega de RX (planejada)
+
+- [ ] Criar uma API de recepcao por fila fixa ou polling entre o E1000 e a
+  camada Ethernet; a IRQ continuara curta e nao executara ARP/IP diretamente.
+- [ ] Validar, montar e analisar cabecalhos Ethernet, incluindo unicast para
+  a MAC local e broadcast, sobre uma abstracao minima de interface de rede.
+- [ ] Expor observabilidade e comando Shell para inspecionar o fluxo Ethernet
+  sem transmitir automaticamente no boot.
+- [ ] Manter ARP, IPv4, DHCP, DNS, sockets, servicos remotos e RTL8139 fora
+  desta entrega.
+
+## Continuacao da S2 - Rede e atualizacoes (planejada)
+
+- [ ] S2.4: ARP com cache limitado, request, reply e resolucao IP para MAC.
+- [ ] S2.5: IPv4, configuracao estatica e ICMP para diagnostico `ping`.
+- [ ] S2.6: UDP, DHCP e DNS, somente depois de IPv4 e ARP validados.
+- [ ] S2.7: TCP, sockets e servicos remotos, com timeouts e limites claros.
+- [ ] S2.8: ampliar a abstracao de NIC e adicionar RTL8139 sem duplicar a
+  camada de protocolos.
+
 ## Roadmaps por etapa
 
 O roadmap principal mantém a visão geral. Os próximos trabalhos executáveis foram

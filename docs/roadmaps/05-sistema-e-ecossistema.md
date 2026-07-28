@@ -58,6 +58,13 @@ antecipar interfaces ou permissoes que ainda nao existem.
   link e teste TX L2, preservando contratos e IDs da S2.1. Validada com Q3,
   build limpo, QEMU padrao, sem NIC e com RTL8139; os fallbacks concluiram
   com falhas controladas e `RegCheck: OK`.
+- [ ] S2.3: camada Ethernet com entrega segura de RX fora da IRQ, montagem e
+  parsing de frames e abstracao minima de interface; sem ARP ou IPv4.
+- [ ] S2.4: ARP com cache e resolucao IP para MAC.
+- [ ] S2.5: IPv4, configuracao estatica e ICMP de diagnostico.
+- [ ] S2.6: UDP, DHCP e DNS sobre a base IPv4 validada.
+- [ ] S2.7: TCP, sockets e servicos remotos com limites e timeouts.
+- [ ] S2.8: suporte multi-NIC e RTL8139 sem duplicar a camada de protocolos.
 - [ ] Planejar atualizacao assinada ou verificada somente apos existir formato
   de pacote e politica de integridade.
 - [ ] Manter operacoes remotas opcionalmente desabilitadas e visiveis em
