@@ -545,7 +545,7 @@ Plataforma de aplicativos:   [████████████████�
   entradas IPv4 malformadas e regressao visual Classic/Modern; esses
   cenarios nao bloqueiam a conclusao.
 
-## S2.6 - UDP, DHCP e DNS (implementada; aguardando validacao)
+## S2.6 - UDP, DHCP e DNS (concluida e validada)
 
 - [x] UDP com 16 endpoints fixos, pseudo-checksum, callbacks sincronas e
   broadcast limitado reservado ao bootstrap DHCP.
@@ -556,8 +556,12 @@ Plataforma de aplicativos:   [████████████████�
 - [x] Comandos individuais de UDP, DHCP e DNS, `nslookup`, `ping` por nome e
   suite agrupada `net check qemu dhcp <id> <dominio>`.
 - [x] Invariantes e vetores puros integrados ao `regcheck full`.
-- [ ] Validacao do usuario: `q3check`, build limpo, QEMU, suite agrupada e
-  comandos individuais.
+- [x] Validada pelo usuario no QEMU padrao: UDP RX/TX e checksum, ciclo
+  Discover/Offer/Request/ACK, lease, gateway, DNS A, cache sem novo TX,
+  IPv4/ICMP, polling e invariantes concluiram em `OK`.
+- [ ] Cobertura complementar: renovacao/liberacao individual, expiracao de
+  cache, ausencia de NIC, RTL8139, peer externo e regressao visual
+  Classic/Modern; esses cenarios nao bloqueiam a conclusao.
 
 ## Continuacao da S2 - Rede e atualizacoes (planejada)
 

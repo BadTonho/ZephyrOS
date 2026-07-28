@@ -98,7 +98,7 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 - [x] ICMP Echo com resposta automatica, ping cooperativo e RTT.
 - [x] Suite QEMU e invariantes validadas pelo usuario.
 
-## S2.6 - UDP, DHCP e DNS (implementada; aguardando validacao)
+## S2.6 - UDP, DHCP e DNS (concluida e validada)
 
 - [x] UDP com 16 endpoints fixos, checksum, entrega sincrona e broadcast
   limitado para DHCP.
@@ -111,7 +111,10 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 - [x] Comandos individuais, `nslookup`, `ping` por dominio e suite agrupada
   `net check qemu dhcp <id> <dominio>`.
 - [x] Vetores puros e invariantes integrados ao `regcheck full`.
-- [ ] Validacao do usuario no QEMU, fallbacks e Classic/Modern.
+- [x] Suite agrupada validada pelo usuario no QEMU padrao, com UDP, DORA,
+  lease, DNS, cache, ICMP, polling e invariantes em `OK`.
+- [ ] Cobertura complementar: renovacao/liberacao individual, fallbacks,
+  peer externo e Classic/Modern.
 
 ## Sequencia prevista apos S2.6
 

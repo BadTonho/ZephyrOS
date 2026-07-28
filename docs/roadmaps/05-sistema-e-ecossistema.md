@@ -79,8 +79,11 @@ antecipar interfaces ou permissoes que ainda nao existem.
   padrao e o ping individual recebeu quatro replies sem perdas.
 - [ ] Cobertura complementar da S2.5: sem NIC, RTL8139, peer externo,
   entradas malformadas e modos Classic/Modern.
-- [x] S2.6 implementada, aguardando validacao: UDP, DHCP e DNS sobre a base
-  IPv4 validada, com suite agrupada para o QEMU.
+- [x] S2.6 concluida e validada: UDP, DHCP e DNS sobre a base IPv4; a suite
+  agrupada confirmou DORA, lease, DNS A, cache sem novo TX, ICMP, polling e
+  invariantes em `OK` no QEMU padrao.
+- [ ] Cobertura complementar da S2.6: renovacao/liberacao individual,
+  ausencia de NIC, RTL8139, peer externo e modos Classic/Modern.
 - [ ] S2.7: TCP, sockets e servicos remotos com limites e timeouts.
 - [ ] S2.8: suporte multi-NIC e RTL8139 sem duplicar a camada de protocolos.
 - [ ] Planejar atualizacao assinada ou verificada somente apos existir formato
