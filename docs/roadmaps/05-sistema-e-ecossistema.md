@@ -71,12 +71,14 @@ antecipar interfaces ou permissoes que ainda nao existem.
 - [ ] Cobertura complementar da S2.4: peer externo, fallbacks sem
   NIC/RTL8139, `device-scan`, sintaxe invalida e Classic/Modern; esses
   cenarios nao bloqueiam a conclusao.
-- [x] S2.5 implementada: IPv4 estatico com checksum, rota direta/gateway,
+- [x] S2.5 concluida e validada: IPv4 estatico com checksum, rota
+  direta/gateway,
   despacho por protocolo e ICMP Echo com resposta automatica, ping
   cooperativo, RTT e timeout por tentativa. `net check qemu` agora agrupa
-  ARP, IPv4, ICMP, polling e invariantes.
-- [ ] Validar a S2.5 no QEMU padrao, sem NIC, com RTL8139 e nos modos
-  Classic/Modern antes de marca-la como concluida.
+  ARP, IPv4, ICMP, polling e invariantes. A suite concluiu em `OK` no QEMU
+  padrao e o ping individual recebeu quatro replies sem perdas.
+- [ ] Cobertura complementar da S2.5: sem NIC, RTL8139, peer externo,
+  entradas malformadas e modos Classic/Modern.
 - [ ] S2.6: UDP, DHCP e DNS sobre a base IPv4 validada.
 - [ ] S2.7: TCP, sockets e servicos remotos com limites e timeouts.
 - [ ] S2.8: suporte multi-NIC e RTL8139 sem duplicar a camada de protocolos.

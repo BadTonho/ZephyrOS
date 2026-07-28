@@ -519,7 +519,7 @@ Plataforma de aplicativos:   [████████████████�
   `device-scan`, sintaxe invalida e regressao visual Classic/Modern; esses
   cenarios nao bloqueiam a conclusao.
 
-## S2.5 - IPv4 estatico e ICMP Echo (implementada; aguardando validacao)
+## S2.5 - IPv4 estatico e ICMP Echo (concluida e validada)
 
 - [x] IPv4 minimo com cabecalho fixo, MTU 1500, checksum, DF, TTL 64,
   roteamento direto/gateway e despacho fixo por protocolo.
@@ -533,8 +533,12 @@ Plataforma de aplicativos:   [████████████████�
   RTT, polling e invariantes.
 - [x] `regcheck full` ampliado com invariantes e vetores puros de checksum sem
   transmitir ou alterar configuracao/cache.
-- [ ] Validacao do usuario: Q3, build limpo, QEMU padrao, fallbacks e
-  regressao Classic/Modern.
+- [x] Validada pelo usuario no QEMU padrao: ARP reply, cache hit, timeout,
+  IPv4 RX/TX, checksum, ICMP Echo, RTT, polling e invariantes concluiram em
+  `OK`; o `ping` individual recebeu quatro de quatro replies, sem perdas.
+- [ ] Cobertura complementar: ausencia de NIC, RTL8139, peer externo,
+  entradas IPv4 malformadas e regressao visual Classic/Modern; esses
+  cenarios nao bloqueiam a conclusao.
 
 ## Continuacao da S2 - Rede e atualizacoes (planejada)
 
