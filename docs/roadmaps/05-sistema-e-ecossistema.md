@@ -54,9 +54,10 @@ antecipar interfaces ou permissoes que ainda nao existem.
   Network, ACPI e Power, com uma unica validacao manual por `F12`.
 - [x] S2.1 validada manualmente com `regcheck full` no QEMU padrao e sem NIC;
   ambos os cenarios concluiram em `OK` apos `F12`.
-- [ ] S2.2: driver E1000 `8086:100E` implementado com MMIO, DMA, IRQ, MAC,
-  link e teste TX L2, preservando contratos e IDs da S2.1; aguarda validacao
-  manual no QEMU antes de ser concluido.
+- [x] S2.2: driver E1000 `8086:100E` implementado com MMIO, DMA, IRQ, MAC,
+  link e teste TX L2, preservando contratos e IDs da S2.1. Validada com Q3,
+  build limpo, QEMU padrao, sem NIC e com RTL8139; os fallbacks concluiram
+  com falhas controladas e `RegCheck: OK`.
 - [ ] Planejar atualizacao assinada ou verificada somente apos existir formato
   de pacote e politica de integridade.
 - [ ] Manter operacoes remotas opcionalmente desabilitadas e visiveis em

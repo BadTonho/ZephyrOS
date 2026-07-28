@@ -456,7 +456,7 @@ Plataforma de aplicativos:   [████████████████�
   `-nic none`; ambos concluiram em `RegCheck: OK` apos o cancelamento por
   `F12`.
 
-## S2.2 - Driver E1000 Ethernet L2 (implementada; validacao pendente)
+## S2.2 - Driver E1000 Ethernet L2 (implementada e validada)
 
 - [x] Driver para Intel `8086:100E` com BAR0 MMIO de 32 bits, Memory Space,
   bus mastering, reset limitado por PIT, MAC RAL/RAH e IRQ PCI legado.
@@ -467,9 +467,9 @@ Plataforma de aplicativos:   [████████████████�
   integram MAC, estados, contadores e ultimo erro sem alterar IDs estaveis.
 - [x] `net test <id>` envia um unico frame broadcast `0x88B5` sob demanda;
   IPv4, ARP, DHCP, sockets e RTL8139 continuam fora do escopo.
-- [ ] Validar pelo usuario: `make q3check`, build limpo, QEMU padrao, TX,
-  `device-scan`, `regcheck full`, `-nic none`, sintaxe invalida e interfaces
-  Classic/Modern.
+- [x] Validada pelo usuario: `make q3check`, build limpo, QEMU padrao com
+  TX, `device-scan`, `regcheck full` e sintaxe invalida; tambem sem NIC e
+  com RTL8139, ambos com falhas controladas e `RegCheck: OK`.
 
 ## Roadmaps por etapa
 
