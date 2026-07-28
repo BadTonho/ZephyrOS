@@ -65,7 +65,7 @@ antecipar interfaces ou permissoes que ainda nao existem.
   complementar, sem ARP ou IPv4.
 - [x] S2.4: ARP implementado com despacho EtherType, cache de 32 entradas,
   requests/replies, resolucao assincrona, comandos `net arp` e diagnostico
-  agregado `net check [id]`.
+  agregado `net check [id]`, alem da suite ativa `net check qemu`.
 - [ ] Validar a S2.4 com Q3, build limpo, QEMU, timeout, peer externo,
   fallbacks sem NIC/RTL8139 e Classic/Modern.
 - [ ] S2.5: IPv4, configuracao estatica e ICMP de diagnostico.

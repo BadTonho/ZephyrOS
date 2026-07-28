@@ -50,6 +50,7 @@ Comandos disponiveis:
   net arp status|table|clear - Inspeciona ou limpa o cache ARP
   net arp resolve <ip> - Resolve IPv4 para MAC sem bloquear
   net check [id] - Agrupa os diagnosticos de rede
+  net check qemu <id> <ip> - Executa a suite ARP no QEMU
   acpi status - Exibe tabelas, PM1, modo ACPI e `_S5_`
   power status - Mostra prontidao ACPI S5 e fallback HLT
   kmetrics  - Mostra linha-base manual de metricas do kernel
@@ -267,6 +268,7 @@ zephyr> net arp resolve 10.0.2.2
 zephyr> net arp table
 zephyr> net arp clear
 zephyr> net check net-pci-00-03.0
+zephyr> net check qemu net-pci-00-03.0 10.0.2.15
 ```
 
 `net status` separa inventario, controladores reconhecidos, drivers ativos,
@@ -311,6 +313,16 @@ configura IP, nao inicia uma resolucao nem cria transmissao de teste; ele
 consolida as consultas e valida o estado atual. A manutencao de uma resolucao
 ja pendente continua normalmente. Assim, depois de `net arp config` e
 `net arp resolve`, uma unica chamada a `net check <id>` mostra o resultado.
+
+`net check qemu <id> <ip-local>` e a variante ativa para o backend de rede
+padrao do QEMU. Ela configura o IPv4 informado, limpa o cache e executa em
+sequencia: request/reply para `10.0.2.2`, cache hit sem novo TX e tres
+tentativas com timeout para `10.0.2.254`. O processo do Shell dorme um tick
+entre consultas, permitindo que RX e manutencao continuem no processo de
+sistema. Ao final, o comando tambem valida as invariantes e mostra `OK`/`ERRO`
+para cada caso, o estado ARP e a tabela resultante. Os dois enderecos pertencem
+somente ao perfil de teste; nao viram gateway, IP local ou configuracao padrao
+do ZephyrOS.
 
 ## `acpi status`
 

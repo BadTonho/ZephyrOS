@@ -82,6 +82,8 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 - [x] Reply automatico somente para request valido dirigido ao IP local.
 - [x] Comandos `net arp config/status/resolve/table/clear` e diagnostico
   agregado `net check [id]`.
+- [x] Perfil ativo `net check qemu <id> <ip>` para validar reply, cache hit e
+  timeout em uma unica execucao cooperativa.
 - [x] Invariantes ARP adicionadas ao `regcheck full` sem efeitos colaterais.
 - [ ] Validacao manual completa conforme a matriz da S2.4.
 

@@ -125,6 +125,7 @@ Plataforma de aplicativos:   [████████████████�
 | `net arp table` | Lista cache ARP, estado, idade e tentativas |
 | `net arp clear` | Limpa cache e preserva a configuracao local |
 | `net check [id]` | Agrupa estado, interface, Ethernet, ARP e invariantes |
+| `net check qemu <id> <ip>` | Executa reply, cache hit e timeout ARP no QEMU |
 | `acpi status` | Mostra tabelas, PM1, modo ACPI, `_S5_` e prontidao S5 |
 | `power status` | Mostra prontidao S5, desligamento fisico e fallback HLT |
 | `kmetrics [reset]` | Coleta linha-base de PIT, filas, memoria e VESA, incluindo media de bytes por apresentacao |
@@ -506,6 +507,8 @@ Plataforma de aplicativos:   [████████████████�
   bloquear o Shell.
 - [x] Comandos `net arp`, estado no Network e invariantes somente-leitura no
   `regcheck full`.
+- [x] Suite `net check qemu <id> <ip>` agrupa reply, cache hit e timeout sem
+  impedir o polling cooperativo do processo de sistema.
 - [ ] Validar Q3, build limpo, QEMU padrao, timeout, peer externo, sintaxe,
   ausencia de NIC, RTL8139, `device-scan` e Classic/Modern.
 

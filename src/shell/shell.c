@@ -50,6 +50,12 @@
 #define SHELL_IPV4_OCTET_MAX 255U
 #define SHELL_IPV4_OCTET_BITS 8U
 #define SHELL_IPV4_OCTET_DIGITS 3U
+#define SHELL_NET_QEMU_REPLY_IPV4 0x0A000202U
+#define SHELL_NET_QEMU_TIMEOUT_IPV4 0x0A0002FEU
+#define SHELL_NET_CHECK_WAIT_SECONDS 5U
+#define SHELL_NET_CHECK_BLOCK_TICKS 1U
+#define SHELL_NET_CHECK_EXPECTED_ATTEMPTS 3U
+#define SHELL_MAX_TICK_INTERVAL 0xFFFFFFFFU
 
 typedef enum {
     SHELL_BUILTIN_APP_NONE,
@@ -123,6 +129,14 @@ typedef struct {
     int devices_result;
     int network_result;
 } shell_device_scan_result_t;
+
+typedef struct {
+    uint8_t reply;
+    uint8_t cache_hit;
+    uint8_t timeout;
+    uint8_t polling;
+    uint8_t invariants;
+} shell_net_qemu_check_t;
 
 typedef struct {
     uint32_t ticks;
@@ -1854,6 +1868,7 @@ static void cmd_help(void) {
     video_print("  net arp status|table|clear - Inspeciona cache ARP\n", 0x07);
     video_print("  net arp resolve <ip> - Resolve IPv4 para MAC\n", 0x07);
     video_print("  net check [id] - Agrupa diagnosticos de rede\n", 0x07);
+    video_print("  net check qemu <id> <ip> - Executa suite ARP\n", 0x07);
     video_print("  acpi status - Mostra tabelas e energia ACPI observadas\n", 0x07);
     video_print("  power status - Mostra capacidades reais de energia\n", 0x07);
     video_print("  kmetrics - Mostra linha-base de metricas do kernel\n", 0x07);
@@ -3100,11 +3115,206 @@ static void cmd_net_arp(const char* args) {
                 "table | clear\n", 0x0C);
 }
 
+static int cmd_net_find_arp_entry(uint32_t ip_address,
+                                  arp_cache_entry_info_t* out_entry,
+                                  uint8_t* out_found) {
+    if (!out_entry || !out_found) {
+        LOG_ERROR("SHELL", "Destino nulo ao buscar entrada ARP");
+        return ERR_NULL;
+    }
+    *out_found = 0;
+    kmemset(out_entry, 0, sizeof(*out_entry));
+    for (uint32_t index = 0; index < ARP_CACHE_CAPACITY; index++) {
+        int result = arp_get_cache_entry(index, out_entry);
+
+        if (result != OK) {
+            LOG_ERROR("SHELL", "Falha ao buscar entrada ARP da suite");
+            return result;
+        }
+        if (out_entry->used && out_entry->ip_address == ip_address) {
+            *out_found = 1;
+            return OK;
+        }
+    }
+    return OK;
+}
+
+static int cmd_net_wait_arp_state(uint32_t ip_address,
+                                  arp_entry_state_t expected_state) {
+    arp_cache_entry_info_t entry;
+    uint32_t frequency = timer_get_frequency();
+    uint32_t start_tick;
+    uint32_t wait_ticks;
+    uint8_t found;
+    int result;
+
+    if (!frequency ||
+        frequency > SHELL_MAX_TICK_INTERVAL / SHELL_NET_CHECK_WAIT_SECONDS) {
+        LOG_ERROR("SHELL", "Timer invalido na espera da suite ARP");
+        return ERR_STATE;
+    }
+    wait_ticks = frequency * SHELL_NET_CHECK_WAIT_SECONDS;
+    start_tick = timer_get_ticks();
+    do {
+        result = cmd_net_find_arp_entry(ip_address, &entry, &found);
+        if (result != OK) return result;
+        if (found && entry.state == expected_state) return OK;
+        process_block(SHELL_NET_CHECK_BLOCK_TICKS);
+    } while ((uint32_t)(timer_get_ticks() - start_tick) <= wait_ticks);
+    LOG_WARN("SHELL", "Estado ARP esperado nao apareceu na suite");
+    return ERR_TIMEOUT;
+}
+
+static int cmd_net_check_qemu_reply(const arp_status_t* baseline,
+                                    shell_net_qemu_check_t* check) {
+    arp_status_t after_reply;
+    arp_status_t after_hit;
+    uint8_t mac_address[ARP_MAC_ADDRESS_SIZE];
+    uint8_t resolved = 0;
+    int result;
+
+    if (!baseline || !check) {
+        LOG_ERROR("SHELL", "Estado nulo no teste ARP de reply");
+        return ERR_NULL;
+    }
+    result = arp_resolve(SHELL_NET_QEMU_REPLY_IPV4, mac_address, &resolved);
+    if (result != OK || resolved) {
+        LOG_WARN("SHELL", "Request inicial da suite ARP falhou");
+        return result != OK ? result : ERR_STATE;
+    }
+    result = cmd_net_wait_arp_state(SHELL_NET_QEMU_REPLY_IPV4,
+                                    ARP_ENTRY_RESOLVED);
+    if (result != OK) return result;
+    result = arp_get_status(&after_reply);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Estado ARP indisponivel depois do reply");
+        return result;
+    }
+    check->reply = after_reply.rx_replies > baseline->rx_replies &&
+                   after_reply.tx_requests > baseline->tx_requests;
+    result = arp_resolve(SHELL_NET_QEMU_REPLY_IPV4, mac_address, &resolved);
+    if (result != OK) {
+        LOG_WARN("SHELL", "Consulta de cache ARP falhou na suite");
+        return result;
+    }
+    result = arp_get_status(&after_hit);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Estado ARP indisponivel depois do cache hit");
+        return result;
+    }
+    check->cache_hit = resolved &&
+        after_hit.cache_hits == after_reply.cache_hits + 1U &&
+        after_hit.tx_requests == after_reply.tx_requests;
+    return OK;
+}
+
+static int cmd_net_check_qemu_timeout(const arp_status_t* baseline,
+                                      shell_net_qemu_check_t* check) {
+    arp_cache_entry_info_t entry;
+    arp_status_t after_timeout;
+    uint8_t mac_address[ARP_MAC_ADDRESS_SIZE];
+    uint8_t resolved = 0;
+    uint8_t found = 0;
+    int result;
+
+    if (!baseline || !check) {
+        LOG_ERROR("SHELL", "Estado nulo no teste ARP de timeout");
+        return ERR_NULL;
+    }
+    result = arp_resolve(SHELL_NET_QEMU_TIMEOUT_IPV4,
+                         mac_address, &resolved);
+    if (result != OK || resolved) {
+        LOG_WARN("SHELL", "Request de timeout da suite ARP falhou");
+        return result != OK ? result : ERR_STATE;
+    }
+    result = cmd_net_wait_arp_state(SHELL_NET_QEMU_TIMEOUT_IPV4,
+                                    ARP_ENTRY_FAILED);
+    if (result != OK) return result;
+    result = cmd_net_find_arp_entry(SHELL_NET_QEMU_TIMEOUT_IPV4,
+                                    &entry, &found);
+    if (result != OK) return result;
+    result = arp_get_status(&after_timeout);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Estado ARP indisponivel depois do timeout");
+        return result;
+    }
+    check->timeout = found && entry.state == ARP_ENTRY_FAILED &&
+        entry.attempts == SHELL_NET_CHECK_EXPECTED_ATTEMPTS &&
+        after_timeout.timeouts > baseline->timeouts;
+    return OK;
+}
+
+static void cmd_net_check_print_case(const char* label, uint8_t passed) {
+    video_print("  ", 0x07);
+    video_print(label, 0x07);
+    video_print(": ", 0x07);
+    video_print(passed ? "OK\n" : "ERRO\n", passed ? 0x0A : 0x0C);
+}
+
+static void cmd_net_check_qemu(const char* args) {
+    char id[NETWORK_INTERFACE_ID_SIZE];
+    char ip_text[SHELL_IPV4_TEXT_SIZE];
+    arp_status_t baseline;
+    arp_status_t final_status;
+    shell_net_qemu_check_t check;
+    uint32_t local_ip = 0;
+    uint8_t passed;
+    int reply_result;
+    int timeout_result;
+    int result;
+
+    result = shell_read_two_args(args, id, sizeof(id),
+                                 ip_text, sizeof(ip_text));
+    if (result != OK || cmd_net_parse_ipv4(ip_text, &local_ip) != OK ||
+        !arp_ipv4_is_valid(local_ip) ||
+        local_ip == SHELL_NET_QEMU_REPLY_IPV4 ||
+        local_ip == SHELL_NET_QEMU_TIMEOUT_IPV4) {
+        LOG_WARN("SHELL", "Uso invalido de net check qemu");
+        video_print("Uso: net check qemu <id> <ip-local>\n", 0x0C);
+        return;
+    }
+    result = network_manager_configure_arp(id, local_ip);
+    if (result != OK || arp_clear() != OK ||
+        arp_get_status(&baseline) != OK) {
+        LOG_ERROR("SHELL", "Preparacao da suite ARP QEMU falhou");
+        video_print("Erro: nao foi possivel preparar a suite ARP.\n", 0x0C);
+        return;
+    }
+    kmemset(&check, 0, sizeof(check));
+    video_print("=== Suite ARP - perfil QEMU ===\n", 0x0B);
+    video_print("Aguardando reply, cache hit e timeout...\n", 0x07);
+    reply_result = cmd_net_check_qemu_reply(&baseline, &check);
+    timeout_result = cmd_net_check_qemu_timeout(&baseline, &check);
+    result = arp_get_status(&final_status);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Estado final da suite ARP indisponivel");
+        video_print("Erro: resultado final ARP indisponivel.\n", 0x0C);
+        return;
+    }
+    check.polling =
+        final_status.maintenance_cycles > baseline.maintenance_cycles &&
+        final_status.maintenance_errors == baseline.maintenance_errors;
+    check.invariants = shell_regcheck_validate_network() == OK;
+    cmd_net_check_print_case("Request/reply 10.0.2.2", check.reply);
+    cmd_net_check_print_case("Cache hit sem novo TX", check.cache_hit);
+    cmd_net_check_print_case("Timeout 10.0.2.254", check.timeout);
+    cmd_net_check_print_case("Polling e manutencao", check.polling);
+    cmd_net_check_print_case("Invariantes de rede", check.invariants);
+    passed = reply_result == OK && timeout_result == OK &&
+        check.reply && check.cache_hit && check.timeout && check.polling &&
+        check.invariants;
+    video_print("Resultado da suite: ", 0x07);
+    video_print(passed ? "OK\n" : "ERRO\n", passed ? 0x0A : 0x0C);
+    cmd_net_arp_status();
+    cmd_net_arp_table();
+}
+
 static void cmd_net_check(const char* args) {
     char id[NETWORK_INTERFACE_ID_SIZE];
     network_interface_info_t info;
     network_manager_status_t network_status;
     arp_status_t arp_status;
+    const char* qemu_args;
     uint8_t has_interface = 0;
     int result;
 
@@ -3113,11 +3323,17 @@ static void cmd_net_check(const char* args) {
         video_print("Erro: diagnostico agrupado invalido.\n", 0x0C);
         return;
     }
+    qemu_args = shell_match_subcommand(args, "qemu");
+    if (qemu_args) {
+        cmd_net_check_qemu(qemu_args);
+        return;
+    }
     if (*args) {
         result = shell_read_single_arg(args, id, sizeof(id));
         if (result != OK) {
             LOG_WARN("SHELL", "Uso invalido de net check");
-            video_print("Uso: net check [id]\n", 0x0C);
+            video_print("Uso: net check [id] | "
+                        "net check qemu <id> <ip-local>\n", 0x0C);
             return;
         }
         result = network_manager_find(id, &info);
@@ -3205,7 +3421,7 @@ static void cmd_net(const char* args) {
     LOG_WARN("SHELL", "Uso invalido de net");
     video_print("Uso: net status | net devices | net info <id> | "
                 "net ethernet <id> | net test <id> | net arp ... | "
-                "net check [id]\n", 0x0C);
+                "net check [id|qemu <id> <ip>]\n", 0x0C);
 }
 
 static void cmd_power(const char* args) {
