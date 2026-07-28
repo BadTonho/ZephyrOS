@@ -242,7 +242,7 @@ desmontagem, suspensao, hibernacao ou reboot. `power_shutdown()` nunca retorna;
 `acpi_enter_s5()` retorna apenas quando sua pre-validacao impede qualquer
 escrita no hardware.
 
-## Servicos S2.1-S2.5: rede observavel, Ethernet, ARP, IPv4 e ICMP
+## Servicos S2.1-S2.6: Ethernet, ARP, IPv4, ICMP, UDP, DHCP e DNS
 
 `network_manager` filtra por copia o snapshot PCI e mantem ate quatro
 controladores de classe `0x02`. O servico copia identificadores, localizacao,
@@ -258,7 +258,7 @@ reseta, realoca DMA nem reinicializa o E1000 ou a camada Ethernet.
 O componente `Network` do `health` segue estas regras:
 
 - `READY`: existe pelo menos uma interface com driver ativo e as camadas
-  Ethernet, ARP, IPv4 e ICMP foram inicializadas;
+  Ethernet, ARP, IPv4, ICMP, UDP, DHCP e DNS foram inicializadas;
 - `DEGRADED`: controlador detectado sem driver ou inventario parcial;
 - `DISABLED`: nenhum controlador detectado ou snapshot indisponivel.
 
@@ -346,13 +346,51 @@ em uma chamada sem impedir o polling. `ipv4_validate_state()` e
 `icmp_validate_state()` incluem vetores puros de checksum e nao configuram,
 transmitem, limpam cache nem avancam sessoes.
 
-Persistencia, DHCP, DNS, UDP, TCP, sockets, loopback, forwarding, erros ICMP,
-fragmentacao/remontagem, multi-NIC e RTL8139 permanecem fora do contrato.
+Na S2.6, `udp_init()` registra o protocolo IPv4 `17`. Uma tabela fixa de 16
+endpoints entrega `udp_datagram_view_t` apenas durante o callback. O modulo
+valida portas, tamanho e pseudo-checksum IPv4, aceita checksum RX zero e
+sempre gera checksum TX. O envio normal continua assincrono em relacao ao ARP;
+o caminho separado de broadcast limitado e reservado ao bootstrap DHCP.
+
+O IPv4 aceita `255.255.255.255` somente em frame Ethernet broadcast e somente
+para UDP. `ipv4_send_limited_broadcast()` aceita origem zero durante a
+aquisicao DHCP ou o endereco local durante rebinding, sem criar entrada ARP.
+Unicast, roteamento, ICMP e filtros da S2.5 permanecem inalterados.
+
+O cliente DHCP usa UDP 68/67 e os estados `SELECTING`, `REQUESTING`, `BOUND`,
+`RENEWING` e `REBINDING`, alem dos estados terminais e de aplicacao. Discover
+e Request iniciais usam broadcast e repetem em 1, 2 e 4 segundos. ACKs
+validados geram um evento de lease; somente o Network Manager aplica
+ARP/IPv4/ICMP/DNS e confirma o estado `BOUND`. T1 e T2 usam as opcoes do
+servidor ou 50%/87,5% do lease. NAK, expiracao e release removem apenas uma
+configuracao pertencente ao DHCP. Uma configuracao estatica existente
+permanece ativa durante uma aquisicao sem resposta.
+
+O cliente DNS usa uma porta efemera e uma consulta A/IN ativa. O parser
+limitado a 512 bytes valida pergunta, resposta, limites e nomes comprimidos,
+detecta ciclos e segue ate quatro CNAMEs. Tres tentativas usam timeout de um
+segundo somente depois do envio UDP; espera por ARP nao consome esse prazo.
+O cache possui 16 entradas, respeita TTL, ignora TTL zero e substitui a
+entrada expirada ou mais antiga. Servidor manual e configuracao entregue por
+DHCP permanecem somente em RAM.
+
+O polling executa Ethernet e, no maximo uma vez por tick, ARP, ICMP, DHCP e
+DNS. UDP e os callbacks de DHCP/DNS rodam nesse contexto, nunca na IRQ.
+`udp_validate_state()`, `dhcp_validate_state()` e `dns_validate_state()`
+incluem vetores puros de checksum, opcoes, truncamento, compressao e CNAME.
+
+Persistencia, TCP, sockets de usuario, IPv6, mDNS, DNS TCP/EDNS/DNSSEC,
+DHCPDECLINE, loopback, forwarding, erros ICMP, fragmentacao/remontagem,
+multi-NIC e RTL8139 permanecem fora do contrato.
 
 Referencias da implementacao: [RFC 791](https://www.rfc-editor.org/rfc/rfc791.html)
 para cabecalho/checksum IPv4, [RFC 792](https://www.rfc-editor.org/rfc/rfc792.html)
 para ICMP Echo e [RFC 1122](https://www.rfc-editor.org/rfc/rfc1122.html) para o
 comportamento de host.
+
+S2.6 segue [RFC 768](https://www.rfc-editor.org/rfc/rfc768.html) para UDP,
+[RFC 2131](https://www.rfc-editor.org/rfc/rfc2131.html) para DHCP e
+[RFC 1035](https://www.rfc-editor.org/rfc/rfc1035.html) para DNS.
 
 ## Struct `registers_t`
 

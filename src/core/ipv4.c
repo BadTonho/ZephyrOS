@@ -18,6 +18,7 @@
 #define IPV4_MULTICAST_MIN 224U
 #define IPV4_MULTICAST_MAX 239U
 #define IPV4_BROADCAST 0xFFFFFFFFU
+#define IPV4_BROADCAST_MAC_OCTET 0xFFU
 #define IPV4_MAC_GROUP_BIT 0x01U
 #define IPV4_CHECKSUM_VECTOR_EXPECTED 0x22D8U
 
@@ -186,7 +187,8 @@ static ipv4_protocol_handler_fn ipv4_find_handler(uint8_t protocol) {
     return NULL;
 }
 
-static void ipv4_dispatch(const uint8_t* packet, uint16_t total_length) {
+static void ipv4_dispatch(const uint8_t* packet, uint16_t total_length,
+                          ipv4_delivery_t delivery) {
     ipv4_packet_view_t view;
     ipv4_protocol_handler_fn handler;
     int result;
@@ -200,6 +202,7 @@ static void ipv4_dispatch(const uint8_t* packet, uint16_t total_length) {
         ipv4_read_u16(packet + IPV4_OFFSET_IDENTIFICATION);
     view.protocol = packet[IPV4_OFFSET_PROTOCOL];
     view.ttl = packet[IPV4_OFFSET_TTL];
+    view.delivery = delivery;
     handler = ipv4_find_handler(view.protocol);
     if (!handler) {
         ipv4_status.rx_unhandled++;
@@ -248,6 +251,7 @@ static int ipv4_handle_frame(const ethernet_frame_view_t* frame) {
     uint32_t source_ip;
     uint32_t destination_ip;
     uint16_t total_length = 0;
+    ipv4_delivery_t delivery;
 
     if (!frame || frame->ethertype != IPV4_ETHERTYPE ||
         frame->payload_length < IPV4_HEADER_SIZE) {
@@ -266,25 +270,37 @@ static int ipv4_handle_frame(const ethernet_frame_view_t* frame) {
     }
     source_ip = ipv4_read_u32(packet + IPV4_OFFSET_SOURCE);
     destination_ip = ipv4_read_u32(packet + IPV4_OFFSET_DESTINATION);
-    if (!ipv4_status.configured ||
-        frame->destination_type != ETHERNET_DESTINATION_LOCAL_UNICAST ||
-        destination_ip != ipv4_status.local_ip) {
+    if (frame->destination_type == ETHERNET_DESTINATION_BROADCAST &&
+        destination_ip == IPV4_LIMITED_BROADCAST &&
+        packet[IPV4_OFFSET_PROTOCOL] == IPV4_PROTOCOL_UDP) {
+        delivery = IPV4_DELIVERY_LIMITED_BROADCAST;
+    } else if (ipv4_status.configured &&
+               frame->destination_type ==
+                   ETHERNET_DESTINATION_LOCAL_UNICAST &&
+               destination_ip == ipv4_status.local_ip) {
+        delivery = IPV4_DELIVERY_LOCAL_UNICAST;
+    } else {
         ipv4_status.rx_ignored++;
         return OK;
     }
     if (!ipv4_address_is_unicast(source_ip) ||
-        source_ip == ipv4_status.local_ip) {
+        (ipv4_status.configured &&
+         source_ip == ipv4_status.local_ip)) {
         ipv4_status.rx_invalid++;
         return OK;
     }
     ipv4_status.rx_packets++;
     ipv4_status.rx_bytes += total_length;
+    if (delivery == IPV4_DELIVERY_LIMITED_BROADCAST) {
+        ipv4_status.rx_limited_broadcast++;
+    }
     ipv4_status.last_error = OK;
-    ipv4_dispatch(packet, total_length);
+    ipv4_dispatch(packet, total_length, delivery);
     return OK;
 }
 
-static void ipv4_build_packet(uint32_t destination_ip, uint8_t protocol,
+static void ipv4_build_packet(uint32_t source_ip,
+                              uint32_t destination_ip, uint8_t protocol,
                               const uint8_t* payload,
                               uint16_t payload_length) {
     uint16_t total_length = IPV4_HEADER_SIZE + payload_length;
@@ -304,7 +320,7 @@ static void ipv4_build_packet(uint32_t destination_ip, uint8_t protocol,
     ipv4_tx_buffer[IPV4_OFFSET_TTL] = IPV4_DEFAULT_TTL;
     ipv4_tx_buffer[IPV4_OFFSET_PROTOCOL] = protocol;
     ipv4_write_u32(ipv4_tx_buffer + IPV4_OFFSET_SOURCE,
-                   ipv4_status.local_ip);
+                   source_ip);
     ipv4_write_u32(ipv4_tx_buffer + IPV4_OFFSET_DESTINATION,
                    destination_ip);
     if (payload_length) {
@@ -517,7 +533,8 @@ int ipv4_send(uint32_t destination_ip, uint8_t protocol,
         return result;
     }
     if (!resolved) return OK;
-    ipv4_build_packet(destination_ip, protocol, payload, payload_length);
+    ipv4_build_packet(ipv4_status.local_ip, destination_ip, protocol,
+                      payload, payload_length);
     result = ethernet_send(next_hop_mac, IPV4_ETHERTYPE, ipv4_tx_buffer,
                            IPV4_HEADER_SIZE + payload_length);
     if (result != OK) {
@@ -529,6 +546,50 @@ int ipv4_send(uint32_t destination_ip, uint8_t protocol,
     ipv4_status.tx_bytes += IPV4_HEADER_SIZE + payload_length;
     if (via_gateway) ipv4_status.tx_via_gateway++;
     else ipv4_status.tx_direct++;
+    ipv4_status.last_error = OK;
+    *out_sent = 1;
+    return OK;
+}
+
+int ipv4_send_limited_broadcast(uint32_t source_ip, uint8_t protocol,
+                                const uint8_t* payload,
+                                uint16_t payload_length,
+                                uint8_t* out_sent) {
+    uint8_t destination_mac[IPV4_MAC_ADDRESS_SIZE];
+    int result;
+
+    if (!out_sent || (payload_length && !payload)) {
+        LOG_ERROR("NET", "Argumento nulo no broadcast IPv4");
+        return ERR_NULL;
+    }
+    *out_sent = 0;
+    if (!ipv4_status.initialized) {
+        LOG_ERROR("NET", "Broadcast IPv4 antes da inicializacao");
+        return ERR_STATE;
+    }
+    if (protocol != IPV4_PROTOCOL_UDP ||
+        payload_length > IPV4_MAX_PAYLOAD_SIZE ||
+        (source_ip &&
+         (!ipv4_status.configured ||
+          source_ip != ipv4_status.local_ip))) {
+        LOG_ERROR("NET", "Parametros invalidos no broadcast IPv4");
+        return ERR_INVALID;
+    }
+    kmemset(destination_mac, IPV4_BROADCAST_MAC_OCTET,
+            sizeof(destination_mac));
+    ipv4_build_packet(source_ip, IPV4_LIMITED_BROADCAST, protocol,
+                      payload, payload_length);
+    result = ethernet_send(destination_mac, IPV4_ETHERTYPE,
+                           ipv4_tx_buffer,
+                           IPV4_HEADER_SIZE + payload_length);
+    if (result != OK) {
+        ipv4_status.last_error = result;
+        LOG_ERROR("NET", "Falha ao transmitir broadcast IPv4");
+        return result;
+    }
+    ipv4_status.tx_packets++;
+    ipv4_status.tx_bytes += IPV4_HEADER_SIZE + payload_length;
+    ipv4_status.tx_limited_broadcast++;
     ipv4_status.last_error = OK;
     *out_sent = 1;
     return OK;
@@ -636,5 +697,6 @@ int ipv4_validate_state(void) {
 
 const char* ipv4_protocol_name(uint8_t protocol) {
     if (protocol == IPV4_PROTOCOL_ICMP) return "ICMP";
+    if (protocol == IPV4_PROTOCOL_UDP) return "UDP";
     return "DESCONHECIDO";
 }

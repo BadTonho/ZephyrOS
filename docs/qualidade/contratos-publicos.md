@@ -18,6 +18,8 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/core/app_package.h` | `docs/13-aplicativos/pacotes.md` |
 | `src/include/core/arp.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/device_manager.h` | `docs/04-kernel/kernel.md` |
+| `src/include/core/dhcp.h` | `docs/04-kernel/kernel.md` |
+| `src/include/core/dns.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/errors.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/ethernet.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/icmp.h` | `docs/04-kernel/kernel.md` |
@@ -33,6 +35,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/core/string.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/syscall.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/timer.h` | `docs/05-drivers/drivers.md` |
+| `src/include/core/udp.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/video.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/acpi.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/ac97.h` | `docs/05-drivers/drivers.md` |
@@ -93,3 +96,11 @@ de ping, eventos por tentativa, RTT e o reply automatico.
 `src/include/drivers/e1000.h` limita o driver ao Intel `8086:100E`, expoe uma
 fila RX fixa e mantem consultas por copia. Os contratos canonicos permanecem
 em `docs/04-kernel/kernel.md` e `docs/05-drivers/drivers.md`.
+
+Desde a S2.6, `src/include/core/udp.h` define endpoints fixos, visao sincrona
+de datagrama, checksum e envio unicast/broadcast. `src/include/core/dhcp.h`
+define a maquina de estados de aquisicao e renovacao, leases por copia e
+eventos consumidos pelo Network Manager. `src/include/core/dns.h` define
+consulta A assincrona, CNAME limitado, cache com TTL e consultas por copia.
+Os contratos de IPv4 e Network Manager tambem incluem broadcast limitado,
+origem da configuracao e coordenacao estatica/DHCP/DNS.

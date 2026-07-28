@@ -126,9 +126,14 @@ Plataforma de aplicativos:   [████████████████�
 | `net arp clear` | Limpa cache e preserva a configuracao local |
 | `net ipv4 config <id> <ip> <mask> <gw>` | Configura IPv4 estatico em RAM |
 | `net ipv4 status` | Mostra IPv4, ICMP, rotas, perdas e RTT |
-| `ping <ip> [quantidade]` | Executa ICMP Echo cooperativo |
-| `net check [id]` | Agrupa estado, interface, Ethernet, ARP, IPv4/ICMP e invariantes |
+| `net udp status` | Mostra endpoints, datagramas e checksum |
+| `net dhcp acquire/status/renew/release` | Gerencia configuracao dinamica |
+| `net dns config/status/table/clear` | Configura DNS e inspeciona o cache |
+| `nslookup <dominio>` | Resolve registro DNS A cooperativamente |
+| `ping <ip-ou-dominio> [quantidade]` | Executa ICMP Echo cooperativo |
+| `net check [id]` | Agrupa toda a pilha de rede e invariantes |
 | `net check qemu <id> <ip>` | Executa a suite ARP, IPv4 e ICMP no QEMU |
+| `net check qemu dhcp <id> <dominio>` | Executa a suite UDP, DHCP e DNS |
 | `acpi status` | Mostra tabelas, PM1, modo ACPI, `_S5_` e prontidao S5 |
 | `power status` | Mostra prontidao S5, desligamento fisico e fallback HLT |
 | `kmetrics [reset]` | Coleta linha-base de PIT, filas, memoria e VESA, incluindo media de bytes por apresentacao |
@@ -540,9 +545,22 @@ Plataforma de aplicativos:   [████████████████�
   entradas IPv4 malformadas e regressao visual Classic/Modern; esses
   cenarios nao bloqueiam a conclusao.
 
+## S2.6 - UDP, DHCP e DNS (implementada; aguardando validacao)
+
+- [x] UDP com 16 endpoints fixos, pseudo-checksum, callbacks sincronas e
+  broadcast limitado reservado ao bootstrap DHCP.
+- [x] DHCP Discover/Offer/Request/ACK, retentativas, T1/T2, NAK, expiracao,
+  renovacao e release, preservando IPv4 estatico ate um ACK valido.
+- [x] DNS A/IN com uma consulta ativa, nomes comprimidos, CNAME limitado,
+  cache de 16 entradas e expiracao por TTL.
+- [x] Comandos individuais de UDP, DHCP e DNS, `nslookup`, `ping` por nome e
+  suite agrupada `net check qemu dhcp <id> <dominio>`.
+- [x] Invariantes e vetores puros integrados ao `regcheck full`.
+- [ ] Validacao do usuario: `q3check`, build limpo, QEMU, suite agrupada e
+  comandos individuais.
+
 ## Continuacao da S2 - Rede e atualizacoes (planejada)
 
-- [ ] S2.6: UDP, DHCP e DNS, somente depois de IPv4 e ARP validados.
 - [ ] S2.7: TCP, sockets e servicos remotos, com timeouts e limites claros.
 - [ ] S2.8: ampliar a abstracao de NIC e adicionar RTL8139 sem duplicar a
   camada de protocolos.

@@ -433,6 +433,19 @@ int arp_configure(const char* interface_id, const uint8_t* local_mac,
     return OK;
 }
 
+int arp_unconfigure(void) {
+    if (!arp_status.initialized) {
+        LOG_ERROR("NET", "Remocao ARP antes da inicializacao");
+        return ERR_STATE;
+    }
+    kmemset(arp_cache, 0, sizeof(arp_cache));
+    kmemset(&arp_status, 0, sizeof(arp_status));
+    arp_status.initialized = 1;
+    arp_status.last_error = OK;
+    LOG_INFO("NET", "Configuracao ARP removida da memoria");
+    return OK;
+}
+
 int arp_resolve(uint32_t ip_address, uint8_t* out_mac,
                 uint8_t* out_resolved) {
     uint32_t now;

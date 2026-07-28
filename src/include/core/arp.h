@@ -48,6 +48,7 @@ typedef struct {
 int arp_init(void);
 int arp_configure(const char* interface_id, const uint8_t* local_mac,
                   uint32_t local_ip);
+int arp_unconfigure(void);
 int arp_resolve(uint32_t ip_address, uint8_t* out_mac,
                 uint8_t* out_resolved);
 int arp_maintain(void);

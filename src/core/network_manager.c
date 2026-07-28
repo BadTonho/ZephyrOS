@@ -1,5 +1,7 @@
 #include "core/network_manager.h"
 #include "core/arp.h"
+#include "core/dhcp.h"
+#include "core/dns.h"
 #include "core/ethernet.h"
 #include "core/errors.h"
 #include "core/icmp.h"
@@ -8,6 +10,7 @@
 #include "core/recovery.h"
 #include "core/string.h"
 #include "core/timer.h"
+#include "core/udp.h"
 #include "drivers/e1000.h"
 #include "drivers/pci.h"
 
@@ -26,6 +29,8 @@ static network_manager_status_t network_status;
 static int network_manager_initialized = 0;
 static uint32_t network_last_protocol_tick;
 static uint8_t network_has_protocol_tick;
+static network_ipv4_source_t network_ipv4_source;
+static uint8_t network_manual_dns_override;
 
 static void network_append_char(char* text, uint32_t capacity,
                                 uint32_t* offset, char value) {
@@ -150,16 +155,24 @@ static int network_get_protocol_status(
     ethernet_status_t* ethernet_status,
     arp_status_t* arp_layer_status,
     ipv4_status_t* ipv4_layer_status,
-    icmp_status_t* icmp_layer_status) {
+    icmp_status_t* icmp_layer_status,
+    udp_status_t* udp_layer_status,
+    dhcp_status_t* dhcp_layer_status,
+    dns_status_t* dns_layer_status) {
     if (!ethernet_status || !arp_layer_status ||
-        !ipv4_layer_status || !icmp_layer_status) {
+        !ipv4_layer_status || !icmp_layer_status ||
+        !udp_layer_status || !dhcp_layer_status ||
+        !dns_layer_status) {
         LOG_ERROR("NET", "Destino nulo no snapshot de protocolos");
         return ERR_NULL;
     }
     if (ethernet_get_status(ethernet_status) != OK ||
         arp_get_status(arp_layer_status) != OK ||
         ipv4_get_status(ipv4_layer_status) != OK ||
-        icmp_get_status(icmp_layer_status) != OK) {
+        icmp_get_status(icmp_layer_status) != OK ||
+        udp_get_status(udp_layer_status) != OK ||
+        dhcp_get_status(dhcp_layer_status) != OK ||
+        dns_get_status(dns_layer_status) != OK) {
         LOG_ERROR("NET", "Falha ao consultar protocolos de rede");
         return ERR_STATE;
     }
@@ -170,7 +183,10 @@ static void network_apply_protocol_status(
     const ethernet_status_t* ethernet_status,
     const arp_status_t* arp_layer_status,
     const ipv4_status_t* ipv4_layer_status,
-    const icmp_status_t* icmp_layer_status) {
+    const icmp_status_t* icmp_layer_status,
+    const udp_status_t* udp_layer_status,
+    const dhcp_status_t* dhcp_layer_status,
+    const dns_status_t* dns_layer_status) {
     if (!network_status.active_count) return;
     network_status.packet_io_available = 1;
     network_status.ethernet_available =
@@ -190,6 +206,25 @@ static void network_apply_protocol_status(
     network_status.icmp_available =
         network_status.ipv4_available &&
         icmp_layer_status->initialized ? 1U : 0U;
+    network_status.udp_available =
+        network_status.ipv4_available &&
+        udp_layer_status->initialized ? 1U : 0U;
+    network_status.dhcp_available =
+        network_status.udp_available &&
+        dhcp_layer_status->initialized ? 1U : 0U;
+    network_status.dhcp_bound =
+        network_status.dhcp_available &&
+        (dhcp_layer_status->state == DHCP_STATE_BOUND ||
+         dhcp_layer_status->state == DHCP_STATE_RENEWING ||
+         dhcp_layer_status->state == DHCP_STATE_REBINDING);
+    network_status.dns_available =
+        network_status.udp_available &&
+        dns_layer_status->initialized ? 1U : 0U;
+    network_status.dns_configured =
+        network_status.dns_available &&
+        dns_layer_status->configured ? 1U : 0U;
+    network_status.ipv4_source = ipv4_layer_status->configured ?
+        network_ipv4_source : NETWORK_IPV4_SOURCE_NONE;
 }
 
 static int network_build_snapshot(void) {
@@ -199,6 +234,9 @@ static int network_build_snapshot(void) {
     arp_status_t arp_layer_status;
     ipv4_status_t ipv4_layer_status;
     icmp_status_t icmp_layer_status;
+    udp_status_t udp_layer_status;
+    dhcp_status_t dhcp_layer_status;
+    dns_status_t dns_layer_status;
     int pci_result;
     int result = OK;
 
@@ -212,7 +250,9 @@ static int network_build_snapshot(void) {
     }
     if (network_get_protocol_status(
             &ethernet_status, &arp_layer_status,
-            &ipv4_layer_status, &icmp_layer_status) != OK) return ERR_STATE;
+            &ipv4_layer_status, &icmp_layer_status,
+            &udp_layer_status, &dhcp_layer_status,
+            &dns_layer_status) != OK) return ERR_STATE;
     pci_result = pci_get_device_count(&pci_count);
     if (pci_result != OK && pci_result != ERR_OVERFLOW) {
         LOG_ERROR("NET", "Falha ao consultar inventario PCI");
@@ -255,7 +295,9 @@ static int network_build_snapshot(void) {
     }
     network_apply_protocol_status(
         &ethernet_status, &arp_layer_status,
-        &ipv4_layer_status, &icmp_layer_status);
+        &ipv4_layer_status, &icmp_layer_status,
+        &udp_layer_status, &dhcp_layer_status,
+        &dns_layer_status);
     if (network_status.partial) {
         network_status.last_error = ERR_OVERFLOW;
     } else if (network_status.active_count) {
@@ -263,7 +305,10 @@ static int network_build_snapshot(void) {
             network_status.ethernet_available &&
             network_status.arp_available &&
             network_status.ipv4_available &&
-            network_status.icmp_available ? OK : ERR_STATE;
+            network_status.icmp_available &&
+            network_status.udp_available &&
+            network_status.dhcp_available &&
+            network_status.dns_available ? OK : ERR_STATE;
     } else if (network_status.interface_count) {
         network_status.last_error = ERR_UNAVAILABLE;
         for (uint32_t index = 0; index < network_status.interface_count;
@@ -401,6 +446,73 @@ static int network_start_icmp(void) {
     return OK;
 }
 
+static int network_start_udp(void) {
+    udp_status_t status;
+    int result;
+
+    if (!network_status.ipv4_available) return OK;
+    result = udp_get_status(&status);
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao consultar inicializacao UDP");
+        return result;
+    }
+    if (!status.initialized) {
+        result = udp_init();
+        if (result != OK || udp_get_status(&status) != OK ||
+            !status.initialized) {
+            LOG_ERROR("NET", "Falha ao iniciar protocolo UDP");
+            return result != OK ? result : ERR_STATE;
+        }
+    }
+    network_status.udp_available = 1;
+    return OK;
+}
+
+static int network_start_dhcp(void) {
+    dhcp_status_t status;
+    int result;
+
+    if (!network_status.udp_available) return OK;
+    result = dhcp_get_status(&status);
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao consultar inicializacao DHCP");
+        return result;
+    }
+    if (!status.initialized) {
+        result = dhcp_init();
+        if (result != OK || dhcp_get_status(&status) != OK ||
+            !status.initialized) {
+            LOG_ERROR("NET", "Falha ao iniciar cliente DHCP");
+            return result != OK ? result : ERR_STATE;
+        }
+    }
+    network_status.dhcp_available = 1;
+    return OK;
+}
+
+static int network_start_dns(void) {
+    dns_status_t status;
+    int result;
+
+    if (!network_status.udp_available) return OK;
+    result = dns_get_status(&status);
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao consultar inicializacao DNS");
+        return result;
+    }
+    if (!status.initialized) {
+        result = dns_init();
+        if (result != OK || dns_get_status(&status) != OK ||
+            !status.initialized) {
+            LOG_ERROR("NET", "Falha ao iniciar cliente DNS");
+            return result != OK ? result : ERR_STATE;
+        }
+    }
+    network_status.dns_available = 1;
+    network_status.dns_configured = status.configured;
+    return OK;
+}
+
 static void network_sync_recovery(int result) {
     const recovery_component_t* current =
         recovery_get(RECOVERY_COMPONENT_NETWORK);
@@ -436,6 +548,21 @@ static void network_sync_recovery(int result) {
         state = RECOVERY_STATE_DEGRADED;
         error = network_status.last_error;
         message = "Protocolo ICMP indisponivel";
+    } else if (network_status.active_count &&
+               !network_status.udp_available) {
+        state = RECOVERY_STATE_DEGRADED;
+        error = network_status.last_error;
+        message = "Protocolo UDP indisponivel";
+    } else if (network_status.active_count &&
+               !network_status.dhcp_available) {
+        state = RECOVERY_STATE_DEGRADED;
+        error = network_status.last_error;
+        message = "Cliente DHCP indisponivel";
+    } else if (network_status.active_count &&
+               !network_status.dns_available) {
+        state = RECOVERY_STATE_DEGRADED;
+        error = network_status.last_error;
+        message = "Cliente DNS indisponivel";
     } else if (network_status.active_count) {
         state = RECOVERY_STATE_READY;
         error = OK;
@@ -501,8 +628,13 @@ int network_manager_init(void) {
     int arp_result;
     int ipv4_result;
     int icmp_result;
+    int udp_result;
+    int dhcp_result;
+    int dns_result;
 
     LOG_INFO("NET", "Inicializando inventario de rede");
+    network_ipv4_source = NETWORK_IPV4_SOURCE_NONE;
+    network_manual_dns_override = 0;
     network_manager_initialized = 1;
     result = network_build_snapshot();
     if (result != OK && result != ERR_OVERFLOW) {
@@ -538,6 +670,25 @@ int network_manager_init(void) {
         network_status.last_error = icmp_result;
         LOG_ERROR("NET", "Inventario ativo sem protocolo ICMP");
     }
+    udp_result = network_start_udp();
+    if (udp_result != OK) {
+        network_status.udp_available = 0;
+        network_status.last_error = udp_result;
+        LOG_ERROR("NET", "Inventario ativo sem protocolo UDP");
+    }
+    dhcp_result = network_start_dhcp();
+    if (dhcp_result != OK) {
+        network_status.dhcp_available = 0;
+        network_status.last_error = dhcp_result;
+        LOG_ERROR("NET", "Inventario ativo sem cliente DHCP");
+    }
+    dns_result = network_start_dns();
+    if (dns_result != OK) {
+        network_status.dns_available = 0;
+        network_status.dns_configured = 0;
+        network_status.last_error = dns_result;
+        LOG_ERROR("NET", "Inventario ativo sem cliente DNS");
+    }
     network_sync_recovery(result);
     if (result == ERR_OVERFLOW) {
         LOG_WARN("NET", "Inventario de rede inicializado parcialmente");
@@ -567,6 +718,191 @@ int network_manager_refresh(void) {
     return result;
 }
 
+static uint8_t network_dns_reachable(uint32_t local_ip,
+                                     uint32_t subnet_mask,
+                                     uint32_t gateway,
+                                     uint32_t server_ip) {
+    uint32_t network = local_ip & subnet_mask;
+    uint32_t broadcast = network | ~subnet_mask;
+
+    if (!ipv4_address_is_unicast(server_ip) ||
+        server_ip == local_ip || server_ip == network ||
+        server_ip == broadcast) return 0;
+    return (server_ip & subnet_mask) == network || gateway;
+}
+
+static int network_restore_configuration(
+    const ipv4_status_t* ipv4_before,
+    const arp_status_t* arp_before,
+    const dns_status_t* dns_before) {
+    int result;
+
+    if (ipv4_before->configured) {
+        result = ipv4_configure(
+            ipv4_before->interface_id, ipv4_before->local_mac,
+            ipv4_before->local_ip, ipv4_before->subnet_mask,
+            ipv4_before->gateway);
+    } else {
+        result = ipv4_unconfigure();
+        if (result == OK && arp_before->configured) {
+            result = arp_configure(
+                arp_before->interface_id, arp_before->local_mac,
+                arp_before->local_ip);
+        } else if (result == OK) {
+            result = arp_unconfigure();
+        }
+    }
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao restaurar IPv4 anterior");
+        return result;
+    }
+    if (dns_before->configured) {
+        result = dns_configure(dns_before->server_ip);
+    } else {
+        result = dns_unconfigure();
+    }
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao restaurar DNS anterior");
+        return result;
+    }
+    return icmp_reset();
+}
+
+static uint8_t network_ipv4_changed(
+    const ipv4_status_t* before, const char* interface_id,
+    const dhcp_lease_t* lease) {
+    return !before->configured ||
+           !network_id_matches(before->interface_id, interface_id) ||
+           before->local_ip != lease->address ||
+           before->subnet_mask != lease->subnet_mask ||
+           before->gateway != lease->gateway;
+}
+
+static int network_apply_dhcp_lease(const dhcp_lease_t* lease) {
+    network_interface_info_t info;
+    network_interface_text_t text;
+    ipv4_status_t ipv4_before;
+    arp_status_t arp_before;
+    dns_status_t dns_before;
+    dhcp_status_t dhcp;
+    network_ipv4_source_t old_source = network_ipv4_source;
+    uint8_t old_manual = network_manual_dns_override;
+    uint8_t changed;
+    uint8_t lease_configuration_changed;
+    int result;
+
+    if (!lease || dhcp_get_status(&dhcp) != OK ||
+        network_manager_find(dhcp.interface_id, &info) != OK ||
+        network_manager_format_text(&info, &text) != OK ||
+        arp_get_status(&arp_before) != OK ||
+        ipv4_get_status(&ipv4_before) != OK ||
+        dns_get_status(&dns_before) != OK) {
+        LOG_ERROR("NET", "Falha ao preparar aplicacao do lease DHCP");
+        return ERR_STATE;
+    }
+    if (lease->dns_server &&
+        !network_dns_reachable(lease->address, lease->subnet_mask,
+                               lease->gateway,
+                               lease->dns_server)) {
+        LOG_ERROR("NET", "Lease DHCP forneceu DNS sem rota");
+        return ERR_INVALID;
+    }
+    changed = network_ipv4_changed(&ipv4_before, text.id, lease);
+    lease_configuration_changed =
+        changed || old_source != NETWORK_IPV4_SOURCE_DHCP ||
+        dhcp.lease.dns_server != lease->dns_server;
+    result = ipv4_configure(text.id, info.mac_address, lease->address,
+                            lease->subnet_mask, lease->gateway);
+    if (result == OK &&
+        (changed || old_source != NETWORK_IPV4_SOURCE_DHCP)) {
+        result = icmp_reset();
+    }
+    if (result == OK &&
+        (!old_manual || lease_configuration_changed)) {
+        result = lease->dns_server ?
+            dns_configure(lease->dns_server) : dns_unconfigure();
+    }
+    if (result != OK) {
+        network_restore_configuration(
+            &ipv4_before, &arp_before, &dns_before);
+        network_ipv4_source = old_source;
+        network_manual_dns_override = old_manual;
+        LOG_ERROR("NET", "Aplicacao atomica do lease DHCP falhou");
+        return result;
+    }
+    network_ipv4_source = NETWORK_IPV4_SOURCE_DHCP;
+    if (lease_configuration_changed) {
+        network_manual_dns_override = 0;
+    }
+    network_status.arp_configured = 1;
+    network_status.ipv4_configured = 1;
+    network_status.ipv4_source = network_ipv4_source;
+    network_status.dns_configured =
+        (lease->dns_server ||
+         (!lease_configuration_changed && old_manual)) ? 1U : 0U;
+    return OK;
+}
+
+static int network_drop_dhcp_configuration(void) {
+    int result;
+
+    if (network_ipv4_source != NETWORK_IPV4_SOURCE_DHCP) return OK;
+    result = icmp_reset();
+    if (result == OK) result = dns_unconfigure();
+    if (result == OK) result = ipv4_unconfigure();
+    if (result == OK) result = arp_unconfigure();
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao remover configuracao DHCP");
+        return result;
+    }
+    network_ipv4_source = NETWORK_IPV4_SOURCE_NONE;
+    network_manual_dns_override = 0;
+    network_status.arp_configured = 0;
+    network_status.ipv4_configured = 0;
+    network_status.dns_configured = 0;
+    network_status.ipv4_source = NETWORK_IPV4_SOURCE_NONE;
+    return OK;
+}
+
+static void network_refresh_dynamic_status(void) {
+    dhcp_status_t dhcp;
+    dns_status_t dns;
+
+    if (dhcp_get_status(&dhcp) == OK) {
+        network_status.dhcp_bound =
+            dhcp.state == DHCP_STATE_BOUND ||
+            dhcp.state == DHCP_STATE_RENEWING ||
+            dhcp.state == DHCP_STATE_REBINDING;
+    }
+    if (dns_get_status(&dns) == OK) {
+        network_status.dns_configured = dns.configured;
+    }
+    network_status.ipv4_source = network_status.ipv4_configured ?
+        network_ipv4_source : NETWORK_IPV4_SOURCE_NONE;
+}
+
+static int network_process_dhcp_event(void) {
+    dhcp_event_t event;
+    dhcp_lease_t lease;
+    int result;
+    int complete_result;
+
+    result = dhcp_take_event(&event, &lease);
+    if (result != OK || event == DHCP_EVENT_NONE) return result;
+    if (event == DHCP_EVENT_APPLY_LEASE) {
+        result = network_apply_dhcp_lease(&lease);
+    } else {
+        result = network_drop_dhcp_configuration();
+    }
+    complete_result = dhcp_complete_event(event, result);
+    if (complete_result != OK) {
+        LOG_ERROR("NET", "Falha ao concluir evento DHCP");
+        return complete_result;
+    }
+    network_refresh_dynamic_status();
+    return result;
+}
+
 int network_manager_poll(uint32_t* out_processed) {
     uint32_t current_tick;
     int maintenance_error = OK;
@@ -589,10 +925,8 @@ int network_manager_poll(uint32_t* out_processed) {
         return result;
     }
     current_tick = timer_get_ticks();
-    if ((network_status.arp_configured ||
-         network_status.ipv4_configured) &&
-        (!network_has_protocol_tick ||
-         current_tick != network_last_protocol_tick)) {
+    if (!network_has_protocol_tick ||
+        current_tick != network_last_protocol_tick) {
         network_has_protocol_tick = 1;
         network_last_protocol_tick = current_tick;
         if (network_status.arp_configured) {
@@ -612,6 +946,29 @@ int network_manager_poll(uint32_t* out_processed) {
                 LOG_WARN("NET", "Manutencao ICMP falhou sem parar polling");
             }
         }
+        if (network_status.dhcp_available) {
+            result = dhcp_maintain();
+            if (result != OK) {
+                network_status.last_error = result;
+                if (maintenance_error == OK) maintenance_error = result;
+                LOG_WARN("NET", "Manutencao DHCP falhou sem parar polling");
+            }
+            result = network_process_dhcp_event();
+            if (result != OK) {
+                network_status.last_error = result;
+                if (maintenance_error == OK) maintenance_error = result;
+                LOG_WARN("NET", "Evento DHCP falhou sem parar polling");
+            }
+        }
+        if (network_status.dns_available) {
+            result = dns_maintain();
+            if (result != OK) {
+                network_status.last_error = result;
+                if (maintenance_error == OK) maintenance_error = result;
+                LOG_WARN("NET", "Manutencao DNS falhou sem parar polling");
+            }
+        }
+        network_refresh_dynamic_status();
     }
     if (maintenance_error == OK && !network_status.partial) {
         network_status.last_error = OK;
@@ -774,11 +1131,32 @@ int network_manager_send_diagnostic(const char* id) {
     return OK;
 }
 
+static int network_cancel_dynamic_clients(uint8_t clear_dns) {
+    int result;
+
+    if (network_status.dhcp_available) {
+        result = dhcp_reset();
+        if (result != OK) {
+            LOG_ERROR("NET", "Falha ao cancelar cliente DHCP");
+            return result;
+        }
+    }
+    if (network_status.dns_available) {
+        result = clear_dns ? dns_unconfigure() : dns_reset();
+        if (result != OK) {
+            LOG_ERROR("NET", "Falha ao cancelar cliente DNS");
+            return result;
+        }
+    }
+    return OK;
+}
+
 int network_manager_configure_arp(const char* id, uint32_t local_ip) {
     network_interface_info_t info;
     network_interface_text_t text;
     arp_status_t status;
     ipv4_status_t ipv4_status;
+    dhcp_status_t dhcp_status;
     int result;
 
     if (!id) {
@@ -810,6 +1188,13 @@ int network_manager_configure_arp(const char* id, uint32_t local_ip) {
         LOG_ERROR("NET", "Falha ao consultar coerencia IPv4");
         return result;
     }
+    if (!ipv4_status.configured && network_status.dhcp_available &&
+        dhcp_get_status(&dhcp_status) == OK &&
+        (dhcp_status.state == DHCP_STATE_SELECTING ||
+         dhcp_status.state == DHCP_STATE_REQUESTING)) {
+        result = network_cancel_dynamic_clients(1U);
+        if (result != OK) return result;
+    }
     if (ipv4_status.configured &&
         (ipv4_status.local_ip != local_ip ||
          !network_id_matches(ipv4_status.interface_id, text.id))) {
@@ -820,12 +1205,17 @@ int network_manager_configure_arp(const char* id, uint32_t local_ip) {
                 return result;
             }
         }
+        result = network_cancel_dynamic_clients(1U);
+        if (result != OK) return result;
         result = ipv4_unconfigure();
         if (result != OK) {
             LOG_ERROR("NET", "Falha ao invalidar IPv4 para configurar ARP");
             return result;
         }
         network_status.ipv4_configured = 0;
+        network_status.dns_configured = 0;
+        network_ipv4_source = NETWORK_IPV4_SOURCE_NONE;
+        network_manual_dns_override = 0;
     }
     result = arp_configure(text.id, info.mac_address, local_ip);
     if (result != OK) {
@@ -848,6 +1238,7 @@ int network_manager_configure_ipv4(const char* id, uint32_t local_ip,
     network_interface_text_t text;
     ipv4_status_t before;
     ipv4_status_t after;
+    uint8_t same_static;
     int result;
 
     if (!id) {
@@ -871,6 +1262,13 @@ int network_manager_configure_ipv4(const char* id, uint32_t local_ip,
         LOG_ERROR("NET", "Falha ao preparar configuracao IPv4");
         return result != OK ? result : ERR_STATE;
     }
+    same_static = before.configured &&
+        before.local_ip == local_ip &&
+        before.subnet_mask == subnet_mask &&
+        before.gateway == gateway &&
+        network_id_matches(before.interface_id, text.id) &&
+        network_ipv4_source == NETWORK_IPV4_SOURCE_STATIC;
+    if (same_static) return OK;
     result = ipv4_configure(text.id, info.mac_address, local_ip,
                             subnet_mask, gateway);
     if (result != OK) {
@@ -883,15 +1281,131 @@ int network_manager_configure_ipv4(const char* id, uint32_t local_ip,
         return result;
     }
     if (after.configuration_generation !=
-        before.configuration_generation) {
+            before.configuration_generation ||
+        network_ipv4_source != NETWORK_IPV4_SOURCE_STATIC) {
         result = icmp_reset();
         if (result != OK) {
             LOG_ERROR("NET", "Falha ao reiniciar ICMP apos configuracao");
             return result;
         }
+        result = network_cancel_dynamic_clients(1U);
+        if (result != OK) return result;
     }
+    network_ipv4_source = NETWORK_IPV4_SOURCE_STATIC;
+    network_manual_dns_override = 0;
     network_status.arp_configured = 1;
     network_status.ipv4_configured = after.configured;
+    network_status.dns_configured = 0;
+    network_status.dhcp_bound = 0;
+    network_status.ipv4_source = network_ipv4_source;
+    return OK;
+}
+
+int network_manager_acquire_dhcp(const char* id) {
+    network_interface_info_t info;
+    network_interface_text_t text;
+    ipv4_status_t ipv4;
+    int result;
+
+    if (!id) {
+        LOG_ERROR("NET", "ID nulo para aquisicao DHCP");
+        return ERR_NULL;
+    }
+    result = network_manager_find(id, &info);
+    if (result != OK) {
+        LOG_ERROR("NET", "Interface invalida para aquisicao DHCP");
+        return result;
+    }
+    if (info.state != NETWORK_INTERFACE_ACTIVE ||
+        !network_status.arp_available ||
+        !network_status.ipv4_available ||
+        !network_status.icmp_available ||
+        !network_status.udp_available ||
+        !network_status.dhcp_available ||
+        !network_status.dns_available) {
+        LOG_WARN("NET", "Aquisicao DHCP sem pilha ativa");
+        return ERR_UNAVAILABLE;
+    }
+    result = network_manager_format_text(&info, &text);
+    if (result != OK || ipv4_get_status(&ipv4) != OK) {
+        LOG_ERROR("NET", "Falha ao preparar aquisicao DHCP");
+        return result != OK ? result : ERR_STATE;
+    }
+    if (ipv4.configured &&
+        !network_id_matches(ipv4.interface_id, text.id)) {
+        LOG_ERROR("NET", "DHCP solicitado em outra interface");
+        return ERR_STATE;
+    }
+    result = dhcp_acquire(text.id, info.mac_address);
+    if (result != OK) {
+        LOG_ERROR("NET", "Cliente DHCP recusou aquisicao");
+        return result;
+    }
+    return OK;
+}
+
+int network_manager_renew_dhcp(void) {
+    int result;
+
+    if (!network_status.dhcp_available ||
+        network_ipv4_source != NETWORK_IPV4_SOURCE_DHCP) {
+        LOG_ERROR("NET", "Renovacao solicitada sem DHCP ativo");
+        return ERR_STATE;
+    }
+    result = dhcp_renew();
+    if (result != OK) {
+        LOG_ERROR("NET", "Cliente DHCP recusou renovacao");
+        return result;
+    }
+    return OK;
+}
+
+int network_manager_release_dhcp(uint8_t* out_sent) {
+    int result;
+
+    if (!out_sent) {
+        LOG_ERROR("NET", "Destino nulo na liberacao DHCP");
+        return ERR_NULL;
+    }
+    if (!network_status.dhcp_available) {
+        LOG_ERROR("NET", "Liberacao sem cliente DHCP");
+        return ERR_UNAVAILABLE;
+    }
+    result = dhcp_release(out_sent);
+    if (result != OK) {
+        LOG_ERROR("NET", "Cliente DHCP recusou liberacao");
+        return result;
+    }
+    result = network_process_dhcp_event();
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao aplicar liberacao DHCP");
+        return result;
+    }
+    network_refresh_dynamic_status();
+    return OK;
+}
+
+int network_manager_configure_dns(uint32_t server_ip) {
+    ipv4_status_t ipv4;
+    int result;
+
+    if (!network_status.dns_available ||
+        ipv4_get_status(&ipv4) != OK || !ipv4.configured) {
+        LOG_ERROR("NET", "Configuracao DNS sem IPv4 ativo");
+        return ERR_STATE;
+    }
+    if (!network_dns_reachable(ipv4.local_ip, ipv4.subnet_mask,
+                               ipv4.gateway, server_ip)) {
+        LOG_ERROR("NET", "Servidor DNS invalido ou sem rota");
+        return ERR_INVALID;
+    }
+    result = dns_configure(server_ip);
+    if (result != OK) {
+        LOG_ERROR("NET", "Cliente DNS recusou configuracao");
+        return result;
+    }
+    network_manual_dns_override = 1;
+    network_status.dns_configured = 1;
     return OK;
 }
 
@@ -956,5 +1470,13 @@ const char* network_manager_interface_state_name(
 const char* network_manager_link_state_name(network_link_state_t state) {
     if (state == NETWORK_LINK_DOWN) return "DOWN";
     if (state == NETWORK_LINK_UP) return "UP";
+    return "DESCONHECIDO";
+}
+
+const char* network_manager_ipv4_source_name(
+    network_ipv4_source_t source) {
+    if (source == NETWORK_IPV4_SOURCE_NONE) return "NONE";
+    if (source == NETWORK_IPV4_SOURCE_STATIC) return "STATIC";
+    if (source == NETWORK_IPV4_SOURCE_DHCP) return "DHCP";
     return "DESCONHECIDO";
 }

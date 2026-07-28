@@ -27,8 +27,11 @@
 #include "core/recovery.h"
 #include "core/device_manager.h"
 #include "core/arp.h"
+#include "core/dhcp.h"
+#include "core/dns.h"
 #include "core/ipv4.h"
 #include "core/icmp.h"
+#include "core/udp.h"
 #include "core/network_manager.h"
 #include "core/power.h"
 #include "core/app_api.h"
@@ -59,6 +62,9 @@
 #define SHELL_NET_CHECK_BLOCK_TICKS 1U
 #define SHELL_NET_CHECK_EXPECTED_ATTEMPTS 3U
 #define SHELL_PING_WAIT_EXTRA_SECONDS 5U
+#define SHELL_DHCP_WAIT_SECONDS 20U
+#define SHELL_DNS_WAIT_SECONDS 20U
+#define SHELL_DNS_NAME_SIZE DNS_NAME_BUFFER_SIZE
 #define SHELL_MILLISECONDS_PER_SECOND 1000U
 #define SHELL_MAX_TICK_INTERVAL 0xFFFFFFFFU
 
@@ -144,6 +150,17 @@ typedef struct {
     uint8_t polling;
     uint8_t invariants;
 } shell_net_qemu_check_t;
+
+typedef struct {
+    uint8_t udp;
+    uint8_t dhcp;
+    uint8_t lease;
+    uint8_t dns;
+    uint8_t dns_cache;
+    uint8_t icmp;
+    uint8_t polling;
+    uint8_t invariants;
+} shell_net_qemu_dhcp_check_t;
 
 typedef struct {
     uint32_t ticks;
@@ -910,7 +927,10 @@ static int shell_regcheck_validate_network_recovery(
                status->ethernet_available &&
                status->arp_available &&
                status->ipv4_available &&
-               status->icmp_available) {
+               status->icmp_available &&
+               status->udp_available &&
+               status->dhcp_available &&
+               status->dns_available) {
         expected_state = RECOVERY_STATE_READY;
         expected_error = OK;
     } else if (status->active_count) {
@@ -996,6 +1016,41 @@ static int shell_regcheck_validate_ipv4_icmp(
     return OK;
 }
 
+static int shell_regcheck_validate_udp_dhcp_dns(
+    const network_manager_status_t* network_status) {
+    udp_status_t udp;
+    dhcp_status_t dhcp;
+    dns_status_t dns;
+    int result;
+
+    if (!network_status) {
+        LOG_ERROR("SHELL", "RegCheck recebeu estado UDP nulo");
+        return ERR_NULL;
+    }
+    result = udp_get_status(&udp);
+    if (result != OK || dhcp_get_status(&dhcp) != OK ||
+        dns_get_status(&dns) != OK ||
+        udp_validate_state() != OK ||
+        dhcp_validate_state() != OK ||
+        dns_validate_state() != OK ||
+        (network_status->udp_available && !udp.initialized) ||
+        (network_status->dhcp_available && !dhcp.initialized) ||
+        (network_status->dns_available && !dns.initialized) ||
+        (network_status->dhcp_bound !=
+         (uint8_t)(dhcp.state == DHCP_STATE_BOUND ||
+                   dhcp.state == DHCP_STATE_RENEWING ||
+                   dhcp.state == DHCP_STATE_REBINDING)) ||
+        (network_status->dns_configured !=
+         (uint8_t)(network_status->dns_available &&
+                   dns.configured)) ||
+        udp.endpoint_count > UDP_ENDPOINT_CAPACITY ||
+        dns.cache_entries > DNS_CACHE_CAPACITY) {
+        LOG_ERROR("SHELL", "RegCheck detectou UDP/DHCP/DNS invalido");
+        return result == OK ? ERR_STATE : result;
+    }
+    return OK;
+}
+
 static int shell_regcheck_validate_network(void) {
     network_manager_status_t status;
     uint32_t count = 0;
@@ -1010,18 +1065,31 @@ static int shell_regcheck_validate_network(void) {
         status.recognized_count > count || status.active_count > count ||
         (status.arp_configured && !status.arp_available) ||
         (status.ipv4_configured && !status.ipv4_available) ||
+        (status.dhcp_bound && !status.dhcp_available) ||
+        (status.dns_configured &&
+         (!status.dns_available || !status.ipv4_configured)) ||
         (status.arp_available &&
          (!status.active_count || !status.ethernet_available)) ||
         (status.ipv4_available &&
          (!status.active_count || !status.arp_available)) ||
         (status.icmp_available &&
          (!status.active_count || !status.ipv4_available)) ||
+        (status.udp_available &&
+         (!status.active_count || !status.ipv4_available)) ||
+        (status.dhcp_available && !status.udp_available) ||
+        (status.dns_available && !status.udp_available) ||
+        (status.ipv4_configured &&
+         status.ipv4_source == NETWORK_IPV4_SOURCE_NONE) ||
+        (!status.ipv4_configured &&
+         status.ipv4_source != NETWORK_IPV4_SOURCE_NONE) ||
         (status.ethernet_available && !status.active_count) ||
         (status.packet_io_available && !status.active_count) ||
         (!status.packet_io_available && status.active_count) ||
         (status.active_count && status.ethernet_available &&
          status.arp_available && status.ipv4_available &&
-         status.icmp_available && !status.partial &&
+         status.icmp_available && status.udp_available &&
+         status.dhcp_available && status.dns_available &&
+         !status.partial &&
          status.last_error != OK) ||
         (!status.active_count && !status.interface_count &&
          status.last_error != ERR_NOT_FOUND)) {
@@ -1048,6 +1116,8 @@ static int shell_regcheck_validate_network(void) {
     result = shell_regcheck_validate_arp(&status);
     if (result != OK) return result;
     result = shell_regcheck_validate_ipv4_icmp(&status);
+    if (result != OK) return result;
+    result = shell_regcheck_validate_udp_dhcp_dns(&status);
     if (result != OK) return result;
     return shell_regcheck_validate_network_recovery(&status);
 }
@@ -1920,9 +1990,14 @@ static void cmd_help(void) {
     video_print("  net ipv4 config <id> <ip> <mask> <gw> - Configura IPv4\n",
                 0x07);
     video_print("  net ipv4 status - Inspeciona IPv4 e ICMP\n", 0x07);
-    video_print("  ping <ip> [1-10] - Executa ICMP Echo cooperativo\n", 0x07);
+    video_print("  net udp status - Inspeciona datagramas e endpoints\n", 0x07);
+    video_print("  net dhcp acquire <id>|status|renew|release\n", 0x07);
+    video_print("  net dns config <ip>|status|table|clear\n", 0x07);
+    video_print("  nslookup <dominio> - Resolve registro DNS A\n", 0x07);
+    video_print("  ping <ip-ou-dominio> [1-10] - Executa ICMP Echo\n", 0x07);
     video_print("  net check [id] - Agrupa diagnosticos de rede\n", 0x07);
     video_print("  net check qemu <id> <ip> - Executa suite de rede\n", 0x07);
+    video_print("  net check qemu dhcp <id> <dominio> - Suite S2.6\n", 0x07);
     video_print("  acpi status - Mostra tabelas e energia ACPI observadas\n", 0x07);
     video_print("  power status - Mostra capacidades reais de energia\n", 0x07);
     video_print("  kmetrics - Mostra linha-base de metricas do kernel\n", 0x07);
@@ -2669,9 +2744,32 @@ static void cmd_net_status(void) {
     } else {
         video_print("DISPONIVEL (NAO CONFIGURADO)", 0x0E);
     }
+    video_print("  Fonte: ", 0x07);
+    video_print(network_manager_ipv4_source_name(status.ipv4_source),
+                status.ipv4_source == NETWORK_IPV4_SOURCE_DHCP ? 0x0B :
+                status.ipv4_source == NETWORK_IPV4_SOURCE_STATIC ?
+                0x0A : 0x08);
     video_print("\n  ICMP Echo: ", 0x07);
     video_print(status.icmp_available ? "DISPONIVEL" : "INDISPONIVEL",
                 status.icmp_available ? 0x0A : 0x0E);
+    video_print("\n  UDP: ", 0x07);
+    video_print(status.udp_available ? "DISPONIVEL" : "INDISPONIVEL",
+                status.udp_available ? 0x0A : 0x0E);
+    video_print("\n  DHCP: ", 0x07);
+    if (!status.dhcp_available) {
+        video_print("INDISPONIVEL", 0x0E);
+    } else {
+        video_print(status.dhcp_bound ? "BOUND" : "DISPONIVEL",
+                    status.dhcp_bound ? 0x0A : 0x0E);
+    }
+    video_print("\n  DNS: ", 0x07);
+    if (!status.dns_available) {
+        video_print("INDISPONIVEL", 0x0E);
+    } else {
+        video_print(status.dns_configured ?
+                    "CONFIGURADO" : "DISPONIVEL (NAO CONFIGURADO)",
+                    status.dns_configured ? 0x0A : 0x0E);
+    }
     video_print("\n  Ultimo erro: ", 0x07);
     print_num((uint32_t)status.last_error);
     video_print("\n", 0x07);
@@ -3258,6 +3356,10 @@ static void cmd_net_ipv4_print_counters(const ipv4_status_t* status) {
     print_num(status->tx_direct);
     video_print("/", 0x07);
     print_num(status->tx_via_gateway);
+    video_print("  Broadcast RX/TX: ", 0x07);
+    print_num(status->rx_limited_broadcast);
+    video_print("/", 0x07);
+    print_num(status->tx_limited_broadcast);
     video_print("  Entregues: ", 0x07);
     print_num(status->rx_delivered);
     video_print("\n  Invalidos/checksum/opcoes/fragmentos: ", 0x07);
@@ -3410,6 +3512,435 @@ static void cmd_net_ipv4(const char* args) {
                 "status\n", 0x0C);
 }
 
+static void cmd_net_udp_status(void) {
+    udp_status_t status;
+
+    if (udp_get_status(&status) != OK) {
+        LOG_ERROR("SHELL", "Estado UDP indisponivel");
+        video_print("Erro: estado UDP indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("UDP:\n  Estado: ", 0x0B);
+    video_print(status.initialized ? "DISPONIVEL" : "INDISPONIVEL",
+                status.initialized ? 0x0A : 0x0E);
+    video_print("\n  Endpoints: ", 0x07);
+    print_num(status.endpoint_count);
+    video_print("/", 0x07);
+    print_num(UDP_ENDPOINT_CAPACITY);
+    video_print("  Datagramas RX/TX: ", 0x07);
+    print_num(status.rx_datagrams);
+    video_print("/", 0x07);
+    print_num(status.tx_datagrams);
+    video_print("\n  Bytes RX/TX: ", 0x07);
+    print_num(status.rx_bytes);
+    video_print("/", 0x07);
+    print_num(status.tx_bytes);
+    video_print("  Broadcast RX/TX: ", 0x07);
+    print_num(status.rx_broadcast);
+    video_print("/", 0x07);
+    print_num(status.tx_broadcast);
+    video_print("\n  Invalidos/tamanho/checksum/sem listener: ", 0x07);
+    print_num(status.rx_invalid);
+    video_print("/", 0x07);
+    print_num(status.rx_length_errors);
+    video_print("/", 0x07);
+    print_num(status.rx_checksum_errors);
+    video_print("/", 0x07);
+    print_num(status.rx_no_listener);
+    video_print("  Entregues/erros RX/TX: ", 0x07);
+    print_num(status.rx_delivered);
+    video_print("/", 0x07);
+    print_num(status.rx_protocol_errors);
+    video_print("/", 0x07);
+    print_num(status.tx_errors);
+    video_print("\n  Ultimo erro: ", 0x07);
+    print_num((uint32_t)status.last_error);
+    video_print("\n", 0x07);
+}
+
+static void cmd_net_udp(const char* args) {
+    if (shell_args_equal(args, "status")) {
+        cmd_net_udp_status();
+        return;
+    }
+    LOG_WARN("SHELL", "Uso invalido de net udp");
+    video_print("Uso: net udp status\n", 0x0C);
+}
+
+static void cmd_net_dhcp_print_lease(const dhcp_status_t* status) {
+    video_print("\n  Interface: ", 0x07);
+    video_print(status->interface_id[0] ? status->interface_id : "N/D",
+                status->interface_id[0] ? 0x0B : 0x08);
+    video_print("  IPv4: ", 0x07);
+    if (status->lease.address) cmd_net_print_ipv4(status->lease.address);
+    else video_print("N/D", 0x08);
+    video_print("\n  Mascara: ", 0x07);
+    if (status->lease.subnet_mask) {
+        cmd_net_print_ipv4(status->lease.subnet_mask);
+    } else {
+        video_print("N/D", 0x08);
+    }
+    video_print("  Gateway: ", 0x07);
+    if (status->lease.gateway) cmd_net_print_ipv4(status->lease.gateway);
+    else video_print("N/D", 0x08);
+    video_print("  DNS: ", 0x07);
+    if (status->lease.dns_server) {
+        cmd_net_print_ipv4(status->lease.dns_server);
+    } else {
+        video_print("N/D", 0x08);
+    }
+}
+
+static void cmd_net_dhcp_status(void) {
+    dhcp_status_t status;
+
+    if (dhcp_get_status(&status) != OK) {
+        LOG_ERROR("SHELL", "Estado DHCP indisponivel");
+        video_print("Erro: estado DHCP indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("DHCP:\n  Estado: ", 0x0B);
+    video_print(status.initialized ? "DISPONIVEL" : "INDISPONIVEL",
+                status.initialized ? 0x0A : 0x0E);
+    video_print("  Sessao: ", 0x07);
+    video_print(dhcp_state_name(status.state),
+                status.state == DHCP_STATE_BOUND ? 0x0A :
+                status.state == DHCP_STATE_FAILED ||
+                status.state == DHCP_STATE_EXPIRED ? 0x0C : 0x0E);
+    cmd_net_dhcp_print_lease(&status);
+    video_print("\n  Lease/T1/T2 restantes: ", 0x07);
+    print_num(status.lease_remaining_seconds);
+    video_print("/", 0x07);
+    print_num(status.t1_remaining_seconds);
+    video_print("/", 0x07);
+    print_num(status.t2_remaining_seconds);
+    video_print(" s  Tentativas: ", 0x07);
+    print_num(status.attempts);
+    video_print("\n  Discover/Offer/Request/ACK/NAK: ", 0x07);
+    print_num(status.discovers_tx);
+    video_print("/", 0x07);
+    print_num(status.offers_rx);
+    video_print("/", 0x07);
+    print_num(status.requests_tx);
+    video_print("/", 0x07);
+    print_num(status.acks_rx);
+    video_print("/", 0x07);
+    print_num(status.naks_rx);
+    video_print("  Releases: ", 0x07);
+    print_num(status.releases_tx);
+    video_print("\n  Invalidos/ignorados/timeouts: ", 0x07);
+    print_num(status.invalid_packets);
+    video_print("/", 0x07);
+    print_num(status.ignored_packets);
+    video_print("/", 0x07);
+    print_num(status.timeouts);
+    video_print("  Ultimo erro: ", 0x07);
+    print_num((uint32_t)status.last_error);
+    video_print("\n", 0x07);
+}
+
+static int cmd_net_dhcp_wait(dhcp_status_t* out_status) {
+    uint32_t frequency = timer_get_frequency();
+    uint32_t start_tick = timer_get_ticks();
+    uint32_t wait_ticks;
+    dhcp_status_t status;
+
+    if (!out_status) {
+        LOG_ERROR("SHELL", "Destino nulo na espera DHCP");
+        return ERR_NULL;
+    }
+    if (!frequency ||
+        frequency > SHELL_MAX_TICK_INTERVAL / SHELL_DHCP_WAIT_SECONDS) {
+        LOG_ERROR("SHELL", "Timer invalido na espera DHCP");
+        return ERR_STATE;
+    }
+    wait_ticks = frequency * SHELL_DHCP_WAIT_SECONDS;
+    do {
+        if (dhcp_get_status(&status) != OK) return ERR_STATE;
+        if (status.state == DHCP_STATE_BOUND) {
+            *out_status = status;
+            return OK;
+        }
+        if (status.state == DHCP_STATE_FAILED ||
+            status.state == DHCP_STATE_EXPIRED) {
+            *out_status = status;
+            return status.last_error == OK ? ERR_STATE :
+                                             status.last_error;
+        }
+        process_block(SHELL_NET_CHECK_BLOCK_TICKS);
+    } while ((uint32_t)(timer_get_ticks() - start_tick) <= wait_ticks);
+    *out_status = status;
+    LOG_WARN("SHELL", "Guarda de tempo DHCP expirou");
+    return ERR_TIMEOUT;
+}
+
+static void cmd_net_dhcp_acquire(const char* args) {
+    char id[NETWORK_INTERFACE_ID_SIZE];
+    dhcp_status_t status;
+    int result = shell_read_single_arg(args, id, sizeof(id));
+
+    if (result != OK) {
+        LOG_WARN("SHELL", "Uso invalido de net dhcp acquire");
+        video_print("Uso: net dhcp acquire <id>\n", 0x0C);
+        return;
+    }
+    result = network_manager_acquire_dhcp(id);
+    if (result == OK) result = cmd_net_dhcp_wait(&status);
+    if (result != OK) {
+        LOG_WARN("SHELL", "Aquisicao DHCP nao concluiu");
+        video_print("Erro: DHCP falhou (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+    video_print("Lease DHCP aplicado: ", 0x0A);
+    cmd_net_print_ipv4(status.lease.address);
+    video_print(".\n", 0x0A);
+}
+
+static void cmd_net_dhcp_renew(void) {
+    dhcp_status_t status;
+    int result = network_manager_renew_dhcp();
+
+    if (result == OK) result = cmd_net_dhcp_wait(&status);
+    if (result != OK) {
+        LOG_WARN("SHELL", "Renovacao DHCP nao concluiu");
+        video_print("Erro: renovacao DHCP falhou (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+    video_print("Lease DHCP renovado.\n", 0x0A);
+}
+
+static void cmd_net_dhcp_release(void) {
+    uint8_t sent = 0;
+    int result = network_manager_release_dhcp(&sent);
+
+    if (result != OK) {
+        LOG_WARN("SHELL", "Liberacao DHCP nao concluiu");
+        video_print("Erro: liberacao DHCP falhou (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+    video_print(sent ? "DHCPRELEASE enviado; lease removido.\n" :
+                       "Lease DHCP removido localmente.\n",
+                sent ? 0x0A : 0x0E);
+}
+
+static void cmd_net_dhcp(const char* args) {
+    const char* acquire_args = shell_match_subcommand(args, "acquire");
+
+    if (acquire_args) {
+        cmd_net_dhcp_acquire(acquire_args);
+        return;
+    }
+    if (shell_args_equal(args, "status")) {
+        cmd_net_dhcp_status();
+        return;
+    }
+    if (shell_args_equal(args, "renew")) {
+        cmd_net_dhcp_renew();
+        return;
+    }
+    if (shell_args_equal(args, "release")) {
+        cmd_net_dhcp_release();
+        return;
+    }
+    LOG_WARN("SHELL", "Uso invalido de net dhcp");
+    video_print("Uso: net dhcp acquire <id> | status | renew | release\n",
+                0x0C);
+}
+
+static void cmd_net_dns_status(void) {
+    dns_status_t status;
+
+    if (dns_get_status(&status) != OK) {
+        LOG_ERROR("SHELL", "Estado DNS indisponivel");
+        video_print("Erro: estado DNS indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("DNS:\n  Estado: ", 0x0B);
+    video_print(status.initialized ? "DISPONIVEL" : "INDISPONIVEL",
+                status.initialized ? 0x0A : 0x0E);
+    video_print("  Configuracao: ", 0x07);
+    video_print(status.configured ? "ATIVA" : "NAO CONFIGURADO",
+                status.configured ? 0x0A : 0x0E);
+    video_print("\n  Servidor: ", 0x07);
+    if (status.configured) cmd_net_print_ipv4(status.server_ip);
+    else video_print("N/D", 0x08);
+    video_print("  Porta local: ", 0x07);
+    print_num(status.local_port);
+    video_print("  Cache: ", 0x07);
+    print_num(status.cache_entries);
+    video_print("/", 0x07);
+    print_num(DNS_CACHE_CAPACITY);
+    video_print("\n  Consulta: ", 0x07);
+    video_print(dns_state_name(status.state),
+                status.state == DNS_STATE_COMPLETE ? 0x0A :
+                status.state == DNS_STATE_FAILED ? 0x0C : 0x0E);
+    video_print("  Nome: ", 0x07);
+    video_print(status.query_name[0] ? status.query_name : "N/D",
+                status.query_name[0] ? 0x0B : 0x08);
+    video_print("\n  Queries/replies/cache hit/miss: ", 0x07);
+    print_num(status.queries_tx);
+    video_print("/", 0x07);
+    print_num(status.replies_rx);
+    video_print("/", 0x07);
+    print_num(status.cache_hits);
+    video_print("/", 0x07);
+    print_num(status.cache_misses);
+    video_print("\n  Invalidos/ignorados/timeouts: ", 0x07);
+    print_num(status.invalid_packets);
+    video_print("/", 0x07);
+    print_num(status.ignored_packets);
+    video_print("/", 0x07);
+    print_num(status.timeouts);
+    video_print("  Ultimo erro: ", 0x07);
+    print_num((uint32_t)status.last_error);
+    video_print("\n", 0x07);
+}
+
+static void cmd_net_dns_table(void) {
+    uint8_t found = 0;
+
+    video_print("Cache DNS:\n", 0x0B);
+    for (uint32_t index = 0; index < DNS_CACHE_CAPACITY; index++) {
+        dns_cache_entry_info_t entry;
+
+        if (dns_get_cache_entry(index, &entry) != OK) {
+            video_print("  Erro ao consultar entrada.\n", 0x0C);
+            return;
+        }
+        if (!entry.used) continue;
+        found = 1;
+        video_print("  ", 0x07);
+        video_print(entry.name, 0x0B);
+        video_print("  ", 0x07);
+        cmd_net_print_ipv4(entry.address);
+        video_print("  ttl=", 0x07);
+        print_num(entry.ttl_remaining_seconds);
+        video_print("s idade=", 0x07);
+        print_num(entry.age_seconds);
+        video_print("s\n", 0x07);
+    }
+    if (!found) video_print("  Vazio.\n", 0x08);
+}
+
+static void cmd_net_dns_config(const char* args) {
+    char server_text[SHELL_IPV4_TEXT_SIZE];
+    uint32_t server_ip = 0;
+    int result = shell_read_single_arg(args, server_text,
+                                       sizeof(server_text));
+
+    if (result != OK ||
+        cmd_net_parse_ipv4(server_text, &server_ip) != OK) {
+        LOG_WARN("SHELL", "Uso invalido de net dns config");
+        video_print("Uso: net dns config <servidor>\n", 0x0C);
+        return;
+    }
+    result = network_manager_configure_dns(server_ip);
+    if (result != OK) {
+        video_print("Erro: configuracao DNS falhou (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+    video_print("Servidor DNS configurado: ", 0x0A);
+    cmd_net_print_ipv4(server_ip);
+    video_print(".\n", 0x0A);
+}
+
+static void cmd_net_dns(const char* args) {
+    const char* config_args = shell_match_subcommand(args, "config");
+
+    if (config_args) {
+        cmd_net_dns_config(config_args);
+        return;
+    }
+    if (shell_args_equal(args, "status")) {
+        cmd_net_dns_status();
+        return;
+    }
+    if (shell_args_equal(args, "table")) {
+        cmd_net_dns_table();
+        return;
+    }
+    if (shell_args_equal(args, "clear")) {
+        if (dns_clear() == OK) video_print("Cache DNS limpo.\n", 0x0A);
+        else video_print("Erro: cache DNS nao foi limpo.\n", 0x0C);
+        return;
+    }
+    LOG_WARN("SHELL", "Uso invalido de net dns");
+    video_print("Uso: net dns config <servidor> | status | table | clear\n",
+                0x0C);
+}
+
+static int cmd_dns_wait(const char* name, uint32_t* out_ip) {
+    dns_status_t status;
+    uint32_t frequency = timer_get_frequency();
+    uint32_t start_tick = timer_get_ticks();
+    uint32_t wait_ticks;
+    uint8_t resolved = 0;
+    int result;
+
+    if (!name || !out_ip) {
+        LOG_ERROR("SHELL", "Destino nulo na espera DNS");
+        return ERR_NULL;
+    }
+    if (!frequency ||
+        frequency > SHELL_MAX_TICK_INTERVAL / SHELL_DNS_WAIT_SECONDS) {
+        LOG_ERROR("SHELL", "Timer invalido na espera DNS");
+        return ERR_STATE;
+    }
+    wait_ticks = frequency * SHELL_DNS_WAIT_SECONDS;
+    result = dns_resolve(name, out_ip, &resolved);
+    if (result != OK || resolved) return result;
+    do {
+        if (dns_get_status(&status) != OK) return ERR_STATE;
+        if (status.state == DNS_STATE_COMPLETE) {
+            *out_ip = status.result_ip;
+            return OK;
+        }
+        if (status.state == DNS_STATE_FAILED) {
+            return status.last_error == OK ? ERR_STATE :
+                                             status.last_error;
+        }
+        process_block(SHELL_NET_CHECK_BLOCK_TICKS);
+    } while ((uint32_t)(timer_get_ticks() - start_tick) <= wait_ticks);
+    LOG_WARN("SHELL", "Guarda de tempo DNS expirou");
+    return ERR_TIMEOUT;
+}
+
+static void cmd_nslookup(const char* args) {
+    char name[SHELL_DNS_NAME_SIZE];
+    dns_status_t status;
+    uint32_t address = 0;
+    int result = shell_read_single_arg(args, name, sizeof(name));
+
+    if (result != OK) {
+        LOG_WARN("SHELL", "Uso invalido de nslookup");
+        video_print("Uso: nslookup <dominio>\n", 0x0C);
+        return;
+    }
+    result = cmd_dns_wait(name, &address);
+    if (result != OK || dns_get_status(&status) != OK) {
+        video_print("Erro: consulta DNS falhou (codigo ", 0x0C);
+        print_num((uint32_t)(result != OK ? result : ERR_STATE));
+        video_print(").\n", 0x0C);
+        return;
+    }
+    video_print("Servidor: ", 0x07);
+    cmd_net_print_ipv4(status.server_ip);
+    video_print("\nNome: ", 0x07);
+    video_print(status.canonical_name[0] ?
+                status.canonical_name : name, 0x0B);
+    video_print("\nEndereco: ", 0x07);
+    cmd_net_print_ipv4(address);
+    video_print("\n", 0x07);
+}
+
 static int cmd_ping_parse_count(const char* text, uint8_t* out_count) {
     uint32_t value = 0;
 
@@ -3441,18 +3972,18 @@ static int cmd_ping_parse_count(const char* text, uint8_t* out_count) {
     return OK;
 }
 
-static int cmd_ping_parse_args(const char* args, uint32_t* out_target,
+static int cmd_ping_parse_args(const char* args, char* out_target,
+                               uint32_t target_size,
                                uint8_t* out_count) {
     const char* cursor = args;
-    char ip_text[SHELL_IPV4_TEXT_SIZE];
     char count_text[4];
     int result;
 
-    if (!args || !out_target || !out_count) {
+    if (!args || !out_target || !target_size || !out_count) {
         LOG_ERROR("SHELL", "Argumentos nulos ao interpretar ping");
         return ERR_NULL;
     }
-    result = shell_read_token(&cursor, ip_text, sizeof(ip_text));
+    result = shell_read_token(&cursor, out_target, target_size);
     if (result != OK) return result;
     while (*cursor == ' ' || *cursor == '\t') cursor++;
     *out_count = ICMP_PING_DEFAULT_COUNT;
@@ -3464,13 +3995,37 @@ static int cmd_ping_parse_args(const char* args, uint32_t* out_target,
         }
     }
     while (*cursor == ' ' || *cursor == '\t') cursor++;
-    if (*cursor ||
-        cmd_net_parse_ipv4(ip_text, out_target) != OK ||
-        !ipv4_address_is_unicast(*out_target)) {
-        LOG_WARN("SHELL", "Destino ou sintaxe invalida no ping");
+    if (*cursor) {
+        LOG_WARN("SHELL", "Sintaxe invalida no ping");
         return ERR_INVALID;
     }
     return OK;
+}
+
+static uint8_t cmd_ping_target_is_numeric(const char* target) {
+    uint8_t saw_dot = 0;
+
+    if (!target || !*target) return 0;
+    while (*target) {
+        if (*target == '.') saw_dot = 1;
+        else if (*target < '0' || *target > '9') return 0;
+        target++;
+    }
+    return saw_dot;
+}
+
+static int cmd_ping_resolve_target(const char* target,
+                                   uint32_t* out_ip) {
+    if (!target || !out_ip) {
+        LOG_ERROR("SHELL", "Destino nulo ao resolver ping");
+        return ERR_NULL;
+    }
+    if (cmd_ping_target_is_numeric(target)) {
+        if (cmd_net_parse_ipv4(target, out_ip) != OK ||
+            !ipv4_address_is_unicast(*out_ip)) return ERR_INVALID;
+        return OK;
+    }
+    return cmd_dns_wait(target, out_ip);
 }
 
 static void cmd_ping_print_event(const icmp_status_t* status) {
@@ -3588,19 +4143,33 @@ static int cmd_ping_execute(uint32_t target_ip, uint8_t count,
 
 static void cmd_ping(const char* args) {
     icmp_status_t status;
+    char target_text[SHELL_DNS_NAME_SIZE];
     uint32_t target_ip = 0;
     uint8_t count = ICMP_PING_DEFAULT_COUNT;
-    int result = cmd_ping_parse_args(args, &target_ip, &count);
+    int result = cmd_ping_parse_args(
+        args, target_text, sizeof(target_text), &count);
 
     kmemset(&status, 0, sizeof(status));
     if (result != OK) {
         LOG_WARN("SHELL", "Uso invalido de ping");
-        video_print("Uso: ping <ip> [quantidade 1-10]\n", 0x0C);
+        video_print("Uso: ping <ip-ou-dominio> [quantidade 1-10]\n",
+                    0x0C);
+        return;
+    }
+    result = cmd_ping_resolve_target(target_text, &target_ip);
+    if (result != OK) {
+        LOG_WARN("SHELL", "Destino do ping nao foi resolvido");
+        video_print("Erro: destino do ping nao resolvido (codigo ",
+                    0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
         return;
     }
     video_print("PING ", 0x0B);
+    video_print(target_text, 0x0B);
+    video_print(" [", 0x07);
     cmd_net_print_ipv4(target_ip);
-    video_print(" com 32 bytes de dados:\n", 0x07);
+    video_print("] com 32 bytes de dados:\n", 0x07);
     result = cmd_ping_execute(target_ip, count, 1U, &status);
     if (result != OK) {
         LOG_WARN("SHELL", "Ping nao concluiu normalmente");
@@ -3767,9 +4336,13 @@ static int cmd_net_check_qemu_icmp(
     }
     result = cmd_ping_execute(SHELL_NET_QEMU_REPLY_IPV4, 1U, 0U,
                               &icmp_after);
-    if (result != OK || ipv4_get_status(&ipv4_after) != OK) {
+    if (result != OK) {
         LOG_WARN("SHELL", "Ping ICMP da suite QEMU falhou");
-        return result != OK ? result : ERR_STATE;
+        return result;
+    }
+    if (ipv4_get_status(&ipv4_after) != OK) {
+        LOG_ERROR("SHELL", "Estado IPv4 final da suite indisponivel");
+        return ERR_STATE;
     }
     check->ipv4 =
         ipv4_after.tx_packets > ipv4_baseline->tx_packets &&
@@ -3789,6 +4362,203 @@ static int cmd_net_check_qemu_icmp(
     return check->ipv4 && check->icmp ? OK : ERR_STATE;
 }
 
+static int cmd_net_check_qemu_dhcp_acquire(
+    const char* id, const udp_status_t* udp_before,
+    const dhcp_status_t* dhcp_before,
+    shell_net_qemu_dhcp_check_t* check) {
+    udp_status_t udp_after;
+    dhcp_status_t dhcp_after;
+    int result = network_manager_acquire_dhcp(id);
+
+    if (result == OK) result = cmd_net_dhcp_wait(&dhcp_after);
+    if (result != OK) return result;
+    if (udp_get_status(&udp_after) != OK) {
+        LOG_ERROR("SHELL", "Estado UDP final da suite indisponivel");
+        return ERR_STATE;
+    }
+    check->udp =
+        udp_after.tx_datagrams > udp_before->tx_datagrams &&
+        udp_after.rx_datagrams > udp_before->rx_datagrams &&
+        udp_after.rx_checksum_errors ==
+            udp_before->rx_checksum_errors;
+    check->dhcp =
+        dhcp_after.state == DHCP_STATE_BOUND &&
+        dhcp_after.discovers_tx > dhcp_before->discovers_tx &&
+        dhcp_after.offers_rx > dhcp_before->offers_rx &&
+        dhcp_after.requests_tx > dhcp_before->requests_tx &&
+        dhcp_after.acks_rx > dhcp_before->acks_rx;
+    check->lease =
+        dhcp_after.lease.address != 0U &&
+        dhcp_after.lease.subnet_mask == SHELL_NET_QEMU_SUBNET_MASK &&
+        (dhcp_after.lease.address & SHELL_NET_QEMU_SUBNET_MASK) ==
+            0x0A000200U &&
+        dhcp_after.lease.gateway == SHELL_NET_QEMU_REPLY_IPV4 &&
+        dhcp_after.lease.dns_server == 0x0A000203U;
+    return check->udp && check->dhcp && check->lease ? OK : ERR_STATE;
+}
+
+static int cmd_net_check_qemu_dns(
+    const char* domain, const dns_status_t* dns_before,
+    shell_net_qemu_dhcp_check_t* check) {
+    dns_status_t dns_after;
+    udp_status_t udp_before_hit;
+    udp_status_t udp_after_hit;
+    uint32_t address = 0;
+    uint32_t cached_address = 0;
+    uint8_t resolved = 0;
+    int result = cmd_dns_wait(domain, &address);
+
+    if (result != OK) return result;
+    if (dns_get_status(&dns_after) != OK ||
+        udp_get_status(&udp_before_hit) != OK) {
+        LOG_ERROR("SHELL", "Estado DNS/UDP final da suite indisponivel");
+        return ERR_STATE;
+    }
+    check->dns =
+        ipv4_address_is_unicast(address) &&
+        dns_after.queries_tx > dns_before->queries_tx &&
+        dns_after.replies_rx > dns_before->replies_rx &&
+        dns_after.invalid_packets == dns_before->invalid_packets;
+    result = dns_resolve(domain, &cached_address, &resolved);
+    if (result != OK || udp_get_status(&udp_after_hit) != OK) {
+        return result != OK ? result : ERR_STATE;
+    }
+    check->dns_cache =
+        resolved && cached_address == address &&
+        udp_after_hit.tx_datagrams == udp_before_hit.tx_datagrams;
+    return check->dns && check->dns_cache ? OK : ERR_STATE;
+}
+
+static int cmd_net_check_qemu_dhcp_ping(
+    shell_net_qemu_dhcp_check_t* check) {
+    ipv4_status_t ipv4_before;
+    ipv4_status_t ipv4_after;
+    icmp_status_t icmp_before;
+    icmp_status_t icmp_after;
+    int result;
+
+    if (ipv4_get_status(&ipv4_before) != OK ||
+        icmp_get_status(&icmp_before) != OK) {
+        LOG_ERROR("SHELL", "Linha-base ICMP S2.6 indisponivel");
+        return ERR_STATE;
+    }
+    result = cmd_ping_execute(SHELL_NET_QEMU_REPLY_IPV4, 1U, 0U,
+                              &icmp_after);
+    if (result != OK) return result;
+    if (ipv4_get_status(&ipv4_after) != OK) {
+        LOG_ERROR("SHELL", "Estado IPv4 final da suite indisponivel");
+        return ERR_STATE;
+    }
+    check->icmp =
+        ipv4_after.tx_packets > ipv4_before.tx_packets &&
+        ipv4_after.rx_packets > ipv4_before.rx_packets &&
+        ipv4_after.rx_checksum_errors ==
+            ipv4_before.rx_checksum_errors &&
+        icmp_after.state == ICMP_PING_COMPLETE &&
+        icmp_after.received == 1U &&
+        icmp_after.echo_replies_rx > icmp_before.echo_replies_rx;
+    return check->icmp ? OK : ERR_STATE;
+}
+
+static void cmd_net_check_qemu_dhcp_print(
+    const shell_net_qemu_dhcp_check_t* check,
+    uint8_t passed) {
+    cmd_net_check_print_case("UDP RX/TX e checksum", check->udp);
+    cmd_net_check_print_case("DHCP Discover/Offer/Request/ACK",
+                             check->dhcp);
+    cmd_net_check_print_case("Lease, gateway e DNS QEMU", check->lease);
+    cmd_net_check_print_case("Consulta DNS A", check->dns);
+    cmd_net_check_print_case("Cache DNS sem novo TX", check->dns_cache);
+    cmd_net_check_print_case("IPv4/ICMP para gateway", check->icmp);
+    cmd_net_check_print_case("Polling e manutencao", check->polling);
+    cmd_net_check_print_case("Invariantes de rede", check->invariants);
+    video_print("Resultado da suite: ", 0x07);
+    video_print(passed ? "OK\n" : "ERRO\n",
+                passed ? 0x0A : 0x0C);
+}
+
+static void cmd_net_check_qemu_dhcp(const char* args) {
+    char id[NETWORK_INTERFACE_ID_SIZE];
+    char domain[SHELL_DNS_NAME_SIZE];
+    udp_status_t udp_before;
+    dhcp_status_t dhcp_before;
+    dhcp_status_t dhcp_after;
+    dns_status_t dns_before;
+    dns_status_t dns_after;
+    shell_net_qemu_dhcp_check_t check;
+    int acquire_result;
+    int dns_result;
+    int ping_result;
+    uint8_t passed;
+    uint8_t release_sent = 0;
+
+    if (shell_read_two_args(args, id, sizeof(id),
+                            domain, sizeof(domain)) != OK) {
+        LOG_WARN("SHELL", "Uso invalido da suite DHCP QEMU");
+        video_print("Uso: net check qemu dhcp <id> <dominio>\n", 0x0C);
+        return;
+    }
+    if (dhcp_get_status(&dhcp_before) != OK) {
+        video_print("Erro: estado DHCP indisponivel.\n", 0x0C);
+        return;
+    }
+    if (dhcp_before.state == DHCP_STATE_BOUND ||
+        dhcp_before.state == DHCP_STATE_RENEWING ||
+        dhcp_before.state == DHCP_STATE_REBINDING) {
+        if (network_manager_release_dhcp(&release_sent) != OK) {
+            video_print("Erro: lease anterior nao foi removido.\n", 0x0C);
+            return;
+        }
+    } else if (dhcp_before.state == DHCP_STATE_SELECTING ||
+               dhcp_before.state == DHCP_STATE_REQUESTING ||
+               dhcp_before.state == DHCP_STATE_APPLYING) {
+        if (dhcp_reset() != OK) {
+            video_print("Erro: sessao DHCP anterior nao foi reiniciada.\n",
+                        0x0C);
+            return;
+        }
+    }
+    if (udp_get_status(&udp_before) != OK ||
+        dhcp_get_status(&dhcp_before) != OK ||
+        dns_get_status(&dns_before) != OK) {
+        video_print("Erro: linha-base S2.6 indisponivel.\n", 0x0C);
+        return;
+    }
+    kmemset(&check, 0, sizeof(check));
+    video_print("=== Suite de rede - DHCP/DNS QEMU ===\n", 0x0B);
+    video_print("Aguardando DHCP, DNS e ICMP...\n", 0x07);
+    acquire_result = cmd_net_check_qemu_dhcp_acquire(
+        id, &udp_before, &dhcp_before, &check);
+    if (acquire_result == OK && dns_clear() == OK &&
+        dns_get_status(&dns_before) == OK) {
+        dns_result = cmd_net_check_qemu_dns(
+            domain, &dns_before, &check);
+    } else {
+        dns_result = ERR_STATE;
+    }
+    ping_result = acquire_result == OK ?
+        cmd_net_check_qemu_dhcp_ping(&check) : ERR_STATE;
+    if (dhcp_get_status(&dhcp_after) == OK &&
+        dns_get_status(&dns_after) == OK) {
+        check.polling =
+            dhcp_after.maintenance_cycles >
+                dhcp_before.maintenance_cycles &&
+            dns_after.maintenance_cycles >
+                dns_before.maintenance_cycles;
+    }
+    check.invariants = shell_regcheck_validate_network() == OK;
+    passed = acquire_result == OK && dns_result == OK &&
+        ping_result == OK && check.udp && check.dhcp && check.lease &&
+        check.dns && check.dns_cache && check.icmp &&
+        check.polling && check.invariants;
+    cmd_net_check_qemu_dhcp_print(&check, passed);
+    cmd_net_udp_status();
+    cmd_net_dhcp_status();
+    cmd_net_dns_status();
+    cmd_net_dns_table();
+    cmd_net_ipv4_status();
+}
+
 static void cmd_net_check_qemu(const char* args) {
     char id[NETWORK_INTERFACE_ID_SIZE];
     char ip_text[SHELL_IPV4_TEXT_SIZE];
@@ -3803,6 +4573,12 @@ static void cmd_net_check_qemu(const char* args) {
     int timeout_result;
     int icmp_result;
     int result;
+    const char* dhcp_args = shell_match_subcommand(args, "dhcp");
+
+    if (dhcp_args) {
+        cmd_net_check_qemu_dhcp(dhcp_args);
+        return;
+    }
 
     result = shell_read_two_args(args, id, sizeof(id),
                                  ip_text, sizeof(ip_text));
@@ -3811,7 +4587,8 @@ static void cmd_net_check_qemu(const char* args) {
         local_ip == SHELL_NET_QEMU_REPLY_IPV4 ||
         local_ip == SHELL_NET_QEMU_TIMEOUT_IPV4) {
         LOG_WARN("SHELL", "Uso invalido de net check qemu");
-        video_print("Uso: net check qemu <id> <ip-local>\n", 0x0C);
+        video_print("Uso: net check qemu <id> <ip-local> | "
+                    "net check qemu dhcp <id> <dominio>\n", 0x0C);
         return;
     }
     result = network_manager_configure_ipv4(
@@ -3884,7 +4661,8 @@ static void cmd_net_check(const char* args) {
         if (result != OK) {
             LOG_WARN("SHELL", "Uso invalido de net check");
             video_print("Uso: net check [id] | "
-                        "net check qemu <id> <ip-local>\n", 0x0C);
+                        "net check qemu <id> <ip-local> | "
+                        "net check qemu dhcp <id> <dominio>\n", 0x0C);
             return;
         }
         result = network_manager_find(id, &info);
@@ -3925,8 +4703,15 @@ static void cmd_net_check(const char* args) {
     video_print(has_interface ? "\n[6] IPv4 e ICMP\n" :
                                 "\n[4] IPv4 e ICMP\n", 0x0B);
     cmd_net_ipv4_status();
-    video_print(has_interface ? "\n[7] Invariantes: " :
-                                "\n[5] Invariantes: ", 0x0B);
+    video_print(has_interface ? "\n[7] UDP\n" : "\n[5] UDP\n", 0x0B);
+    cmd_net_udp_status();
+    video_print(has_interface ? "\n[8] DHCP\n" : "\n[6] DHCP\n", 0x0B);
+    cmd_net_dhcp_status();
+    video_print(has_interface ? "\n[9] DNS\n" : "\n[7] DNS\n", 0x0B);
+    cmd_net_dns_status();
+    cmd_net_dns_table();
+    video_print(has_interface ? "\n[10] Invariantes: " :
+                                "\n[8] Invariantes: ", 0x0B);
     result = shell_regcheck_validate_network();
     video_print(result == OK ? "OK\n" : "ERRO\n",
                 result == OK ? 0x0A : 0x0C);
@@ -3935,10 +4720,13 @@ static void cmd_net_check(const char* args) {
 static void cmd_net(const char* args) {
     const char* arp_args;
     const char* check_args;
+    const char* dhcp_args;
+    const char* dns_args;
     const char* ethernet_args;
     const char* info_args;
     const char* ipv4_args;
     const char* test_args;
+    const char* udp_args;
 
     if (shell_args_equal(args, "status")) {
         cmd_net_status();
@@ -3956,6 +4744,21 @@ static void cmd_net(const char* args) {
     ipv4_args = shell_match_subcommand(args, "ipv4");
     if (ipv4_args) {
         cmd_net_ipv4(ipv4_args);
+        return;
+    }
+    udp_args = shell_match_subcommand(args, "udp");
+    if (udp_args) {
+        cmd_net_udp(udp_args);
+        return;
+    }
+    dhcp_args = shell_match_subcommand(args, "dhcp");
+    if (dhcp_args) {
+        cmd_net_dhcp(dhcp_args);
+        return;
+    }
+    dns_args = shell_match_subcommand(args, "dns");
+    if (dns_args) {
+        cmd_net_dns(dns_args);
         return;
     }
     check_args = shell_match_subcommand(args, "check");
@@ -3981,8 +4784,8 @@ static void cmd_net(const char* args) {
     LOG_WARN("SHELL", "Uso invalido de net");
     video_print("Uso: net status | net devices | net info <id> | "
                 "net ethernet <id> | net test <id> | net arp ... | "
-                "net ipv4 ... | "
-                "net check [id|qemu <id> <ip>]\n", 0x0C);
+                "net ipv4 ... | net udp ... | net dhcp ... | "
+                "net dns ... | net check ...\n", 0x0C);
 }
 
 static void cmd_power(const char* args) {
@@ -6052,6 +6855,8 @@ int shell_process_command(const char* input) {
         cmd_net(input);
     } else if (kstrcmp(cmd, "ping") == 0) {
         cmd_ping(input);
+    } else if (kstrcmp(cmd, "nslookup") == 0) {
+        cmd_nslookup(input);
     } else if (kstrcmp(cmd, "acpi") == 0) {
         cmd_acpi(input);
     } else if (kstrcmp(cmd, "power") == 0) {

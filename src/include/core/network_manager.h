@@ -31,6 +31,12 @@ typedef enum {
     NETWORK_LINK_UP
 } network_link_state_t;
 
+typedef enum {
+    NETWORK_IPV4_SOURCE_NONE = 0,
+    NETWORK_IPV4_SOURCE_STATIC,
+    NETWORK_IPV4_SOURCE_DHCP
+} network_ipv4_source_t;
+
 typedef struct {
     network_adapter_model_t model;
     network_interface_state_t state;
@@ -69,6 +75,12 @@ typedef struct {
     uint8_t ipv4_available;
     uint8_t ipv4_configured;
     uint8_t icmp_available;
+    uint8_t udp_available;
+    uint8_t dhcp_available;
+    uint8_t dhcp_bound;
+    uint8_t dns_available;
+    uint8_t dns_configured;
+    network_ipv4_source_t ipv4_source;
     uint32_t interface_count;
     uint32_t recognized_count;
     uint32_t active_count;
@@ -103,6 +115,10 @@ int network_manager_configure_arp(const char* id, uint32_t local_ip);
 int network_manager_configure_ipv4(const char* id, uint32_t local_ip,
                                    uint32_t subnet_mask,
                                    uint32_t gateway);
+int network_manager_acquire_dhcp(const char* id);
+int network_manager_renew_dhcp(void);
+int network_manager_release_dhcp(uint8_t* out_sent);
+int network_manager_configure_dns(uint32_t server_ip);
 int network_manager_get_ethernet_diagnostic(
     const char* id, network_ethernet_diagnostic_t* out_diagnostic);
 int network_manager_format_text(const network_interface_info_t* info,
@@ -111,5 +127,6 @@ const char* network_manager_model_name(network_adapter_model_t model);
 const char* network_manager_interface_state_name(
     network_interface_state_t state);
 const char* network_manager_link_state_name(network_link_state_t state);
+const char* network_manager_ipv4_source_name(network_ipv4_source_t source);
 
 #endif

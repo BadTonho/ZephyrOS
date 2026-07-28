@@ -91,14 +91,32 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
   `device-scan`, sintaxe invalida e Classic/Modern; esses cenarios nao
   bloqueiam a conclusao.
 
-## Sequencia prevista apos S2.4
+## S2.5 - IPv4 estatico e ICMP Echo (concluida e validada)
 
-1. **S2.5 - IPv4 e ICMP:** configuracao estatica, checksum e `ping` de
-   diagnostico, depois de ARP validado.
-2. **S2.6 - UDP, DHCP e DNS:** configuracao dinamica e datagramas, somente
-   sobre IPv4 estavel.
-3. **S2.7 - TCP e sockets:** conexoes, timeouts e servicos remotos.
-4. **S2.8 - Multiplas NICs:** ampliar a abstracao e adicionar RTL8139 sem
+- [x] IPv4 minimo, configuracao estatica em RAM, rota direta/gateway,
+  checksum, MTU 1500 e despacho por protocolo.
+- [x] ICMP Echo com resposta automatica, ping cooperativo e RTT.
+- [x] Suite QEMU e invariantes validadas pelo usuario.
+
+## S2.6 - UDP, DHCP e DNS (implementada; aguardando validacao)
+
+- [x] UDP com 16 endpoints fixos, checksum, entrega sincrona e broadcast
+  limitado para DHCP.
+- [x] Cliente DHCP com DORA, retentativas, T1/T2, renovacao, rebinding,
+  expiracao, NAK e release.
+- [x] Configuracao DHCP aplicada atomicamente sem remover IPv4 estatico antes
+  de um ACK valido.
+- [x] DNS A por UDP, compressao segura, CNAME limitado e cache de 16 entradas
+  com TTL.
+- [x] Comandos individuais, `nslookup`, `ping` por dominio e suite agrupada
+  `net check qemu dhcp <id> <dominio>`.
+- [x] Vetores puros e invariantes integrados ao `regcheck full`.
+- [ ] Validacao do usuario no QEMU, fallbacks e Classic/Modern.
+
+## Sequencia prevista apos S2.6
+
+1. **S2.7 - TCP e sockets:** conexoes, timeouts e servicos remotos.
+2. **S2.8 - Multiplas NICs:** ampliar a abstracao e adicionar RTL8139 sem
    prender os protocolos ao E1000.
 
 ---
