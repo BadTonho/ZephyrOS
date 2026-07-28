@@ -34,8 +34,11 @@ antecipar interfaces ou permissoes que ainda nao existem.
   ACPI, prontidao fechada e fallback terminal `CLI+HLT`.
 - [x] Todos os caminhos de shutdown centralizados em `power_shutdown()`, sem
   a porta privada `0xB004` do QEMU.
-- [ ] S1.4 pendente de validacao manual no QEMU padrao e sem ACPI, pelo Shell,
-  Menu Iniciar e Task Manager nos modos Classic e Modern.
+- [x] S1.4 validada manualmente no QEMU padrao: diagnosticos e regressao
+  permaneceram operacionais, sintaxe invalida foi recusada e `shutdown`
+  encerrou fisicamente a VM.
+- [ ] Cobertura complementar: repetir sem ACPI e pelos menus Classic/Modern
+  com e sem Task Manager, sem bloquear a conclusao da entrega principal.
 - [x] Gerenciador de dispositivos com inventario e erros controlados.
 - [x] Gerenciador de energia com estados claros e desligamento S5 seguro.
 - [ ] Evolucao do filesystem somente quando novos recursos exigirem metadados

@@ -40,9 +40,11 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   com os fallbacks e a matriz de regressao preservados. S1.2 concluiu a
   descoberta ACPI somente de leitura, validada no QEMU padrao e sem ACPI.
   S1.3 concluiu a observacao de PM1, modo ACPI e `_S5_`, validada no QEMU
-  padrao e sem ACPI. S1.4 implementou o desligamento fisico S5 por PM1, com
-  aquisicao tardia do modo ACPI e fallback HLT; sua validacao manual ainda
-  esta pendente.
+  padrao e sem ACPI. S1.4 concluiu o desligamento fisico S5 por PM1, com
+  aquisicao tardia do modo ACPI e fallback HLT; diagnosticos, regressao,
+  sintaxe invalida e encerramento fisico foram validados no QEMU padrao.
+  O cenario sem ACPI e os atalhos Classic/Modern permanecem como cobertura
+  complementar.
 
 ## K4 validada
 

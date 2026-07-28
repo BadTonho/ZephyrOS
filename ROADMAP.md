@@ -417,7 +417,7 @@ Plataforma de aplicativos:   [████████████████�
   `health`, PM1, `_S5_`, fallback, comandos diagnosticos, entrada ZAPP e
   matriz de regressao Classic/Modern permaneceram operacionais.
 
-## S1.4 - Desligamento fisico ACPI S5 (implementada; validacao pendente)
+## S1.4 - Desligamento fisico ACPI S5 (concluida)
 
 - [x] Prontidao S5 fechada por snapshot completo, FADT/DSDT, PM1 System I/O,
   `_S5_` inequivoco e modo ACPI habilitado ou ativavel.
@@ -428,9 +428,11 @@ Plataforma de aplicativos:   [████████████████�
   para audio em best effort e usa `CLI+HLT` como fallback terminal.
 - [x] Porta privada `0xB004` do QEMU removida; reboot, filesystem, boot e
   paging permanecem inalterados.
-- [ ] Validacao manual pendente no QEMU padrao e sem ACPI, incluindo comandos
-  de diagnostico, sintaxe invalida, regressao e desligamento por todas as
-  interfaces Classic/Modern.
+- [x] Validacao manual concluida no QEMU padrao: `health`, `acpi status`,
+  `power status`, `memcheck`, `schedcheck`, inventario, re-scan PCI,
+  `regcheck`, entrada ZAPP, sintaxe invalida e desligamento fisico real.
+- Cobertura complementar recomendada: repetir o fallback sem ACPI e os
+  atalhos de desligamento pelos menus Classic/Modern em VMs separadas.
 
 ## Roadmaps por etapa
 

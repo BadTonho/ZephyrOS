@@ -331,7 +331,7 @@ escopo desta entrega.
 Qualquer transicao fisica permanece reservada para uma fase separada, usando
 esses dados sem quebrar o fallback validado pela S1.3.
 
-## S1.4 - Desligamento fisico ACPI S5 (implementada; validacao pendente)
+## S1.4 - Desligamento fisico ACPI S5 (concluida)
 
 - [x] `mode_enable_available` e `s5_transition_ready` consolidam as
   pre-condicoes sem escrever no hardware.
@@ -344,8 +344,11 @@ esses dados sem quebrar o fallback validado pela S1.3.
   do QEMU foi removida.
 - [x] Sem ACPI seguro, S5 permanece simulado e o fallback terminal e
   `CLI+HLT`, sem panic.
-- [ ] Validacao manual pendente no QEMU padrao e sem ACPI, incluindo Shell,
-  Menu Iniciar e Task Manager nos modos Classic e Modern.
+- [x] Validacao manual concluida no QEMU padrao com `health`, ACPI/Power,
+  memoria, scheduler, dispositivos, re-scan PCI, regressao, entrada ZAPP,
+  sintaxe invalida e encerramento fisico da VM pelo Shell.
+- [ ] Cobertura complementar: repetir o fallback sem ACPI e os caminhos do
+  Menu Iniciar/Task Manager nos modos Classic e Modern.
 
 AML generico, `_PTS`, SCI, GPE, PM1 MMIO, hardware-reduced ACPI, suspensao,
 hibernacao e bateria permanecem fora do escopo.
