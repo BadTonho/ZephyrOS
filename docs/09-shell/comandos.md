@@ -41,6 +41,9 @@ Comandos disponiveis:
   devices   - Lista o inventario de hardware (`-v` inclui detalhes)
   device-info <id> - Exibe detalhes de um dispositivo inventariado
   device-scan - Refaz somente a varredura PCI e atualiza o inventario
+  net status - Exibe o estado observavel da rede
+  net devices - Lista controladores de rede PCI
+  net info <id> - Exibe detalhes de uma interface inventariada
   acpi status - Exibe tabelas, PM1, modo ACPI e `_S5_`
   power status - Mostra prontidao ACPI S5 e fallback HLT
   kmetrics  - Mostra linha-base manual de metricas do kernel
@@ -238,6 +241,28 @@ o Shell permanece utilizavel.
 
 IDs PCI sao exibidos como `pci-BB:DD.F`. Para teclados sem `Shift`,
 `device-info` tambem aceita `pci-BB-DD.F` e letras minusculas.
+
+## `net status`, `net devices` e `net info <id>`
+
+Os comandos de rede da S2.1 sao somente diagnosticos. Eles usam o snapshot
+PCI ja existente e nao habilitam bus mastering, acessam BARs, leem MAC ou
+enviam pacotes.
+
+```text
+zephyr> net status
+zephyr> net devices
+zephyr> net info net-pci-00:03.0
+```
+
+`net status` separa inventario, controladores reconhecidos, drivers ativos,
+link, RX/TX e IPv4. `net devices` lista IDs estaveis, modelo e driver
+planejado. `net info <id>` mostra vendor/device, classe, prog-if, revisao, IRQ
+e BAR0-BAR5. A forma `net-pci-BB-DD.F` tambem e aceita.
+
+Intel `8086:100E` aparece como E1000 e Realtek `10EC:8139` como RTL8139, mas
+isso nao confirma driver ou conectividade. Sem NIC, os comandos permanecem
+utilizaveis e mostram inventario vazio. `device-scan` e o unico comando que
+refaz PCI e atualiza tambem o snapshot de rede.
 
 ## `acpi status`
 

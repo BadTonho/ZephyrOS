@@ -44,7 +44,8 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   aquisicao tardia do modo ACPI e fallback HLT; diagnosticos, regressao,
   sintaxe invalida e encerramento fisico foram validados no QEMU padrao.
   O cenario sem ACPI e os atalhos Classic/Modern permanecem como cobertura
-  complementar.
+  complementar. S2.1 implementou o inventario PCI de rede somente de leitura,
+  health e comandos nativos; a validacao manual ainda esta pendente.
 
 ## K4 validada
 

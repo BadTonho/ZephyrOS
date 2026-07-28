@@ -21,6 +21,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/core/keyboard.h` | `docs/05-drivers/drivers.md` |
 | `src/include/core/log.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/memory.h` | `docs/04-kernel/kernel.md` |
+| `src/include/core/network_manager.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/panic.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/power.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/recovery.h` | `docs/04-kernel/kernel.md` |
@@ -72,3 +73,7 @@ Desde a S1.4, `src/include/drivers/acpi.h` inclui os indicadores
 centraliza todos os caminhos de desligamento em `power_shutdown()`. Os
 contratos canonicos permanecem, respectivamente, em
 `docs/05-drivers/drivers.md` e `docs/04-kernel/kernel.md`.
+
+Desde a S2.1, `src/include/core/network_manager.h` define o snapshot estatico
+de controladores PCI de rede, IDs estaveis e capacidades ainda indisponiveis.
+Seu contrato canonico permanece em `docs/04-kernel/kernel.md`.

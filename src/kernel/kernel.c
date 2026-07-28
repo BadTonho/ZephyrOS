@@ -4,6 +4,7 @@
 #include "core/log.h"
 #include "core/errors.h"
 #include "core/device_manager.h"
+#include "core/network_manager.h"
 #include "core/power.h"
 #include "core/recovery.h"
 #include "core/app_api.h"
@@ -571,6 +572,23 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
                                "Inventario de dispositivos indisponivel");
         LOG_ERROR("KERNEL", "Falha ao criar inventario de dispositivos");
         video_print("[!!] Inventario de dispositivos indisponivel\n", 0x0C);
+    }
+
+    video_print("[..] Criando inventario de rede...\n", 0x08);
+    int network_result = network_manager_init();
+    network_manager_status_t network_status;
+    if (network_result != OK && network_result != ERR_OVERFLOW) {
+        LOG_ERROR("KERNEL", "Falha ao criar inventario de rede");
+        video_print("[!!] Inventario de rede indisponivel\n", 0x0C);
+    } else if (network_manager_get_status(&network_status) != OK) {
+        LOG_ERROR("KERNEL", "Falha ao consultar inventario de rede");
+        video_print("[!!] Estado de rede indisponivel\n", 0x0C);
+    } else if (network_status.partial) {
+        video_print("[!!] Inventario de rede parcial\n", 0x0E);
+    } else if (network_status.interface_count) {
+        video_print("[!!] NIC detectada; driver pendente\n", 0x0E);
+    } else {
+        video_print("[--] Nenhum controlador de rede encontrado\n", 0x08);
     }
 
     video_print("[..] Iniciando diagnostico de energia...\n", 0x08);

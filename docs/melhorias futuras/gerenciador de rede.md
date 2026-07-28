@@ -6,16 +6,37 @@
 
 | Fase | Total | Feito | Parcial | Restante |
 |------|-------|-------|---------|----------|
-| 1. Driver de NIC (Ethernet) | 52 | 0 | 0 | 52 |
+| 1. Driver de NIC (Ethernet) | 52 | 6 | 0 | 46 |
 | 2. Stack TCP/IP básico | 68 | 0 | 0 | 68 |
 | 3. Protocolos de rede | 48 | 0 | 0 | 48 |
 | 4. Serviços de rede | 42 | 0 | 0 | 42 |
 | 5. Interface TUI do Gerenciador | 64 | 0 | 0 | 64 |
 | 6. Comandos de rede (Shell) | 38 | 0 | 0 | 38 |
 | 7. Firewall e segurança | 44 | 0 | 0 | 44 |
-| **TOTAL** | **356** | **0** | **0** | **356** |
+| **TOTAL** | **356** | **6** | **0** | **350** |
 
-**Progresso geral: 0%** (0/356 itens completos)
+**Progresso geral: 2%** (6/356 itens completos)
+
+---
+
+## S2.1 segura - Fundacao de rede observavel
+
+- [x] Servico `network_manager` com snapshot estatico de ate quatro
+  controladores PCI de classe `0x02`.
+- [x] Consultas PCI exclusivamente por copia, sem bus mastering, MMIO, I/O,
+  IRQ, buffers ou transmissao.
+- [x] IDs estaveis `net-pci-BB:DD.F` e consultas por indice ou ID.
+- [x] Intel `8086:100E` reconhecida como E1000 e Realtek `10EC:8139` como
+  RTL8139, ambas ainda sem driver.
+- [x] `Network` no `health`: degradado com NIC sem driver, desabilitado sem
+  controlador e pronto reservado para driver ativo.
+- [x] `net status`, `net devices` e `net info <id>` documentam somente
+  capacidades reais.
+- [x] `device-scan` atualiza o snapshot de rede sem inicializar hardware.
+- [ ] Validacao manual pendente no QEMU padrao e com `-nic none`.
+
+Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo. A
+S2.2 implementara primeiro o E1000 e atualizara os totais ao iniciar o driver.
 
 ---
 
@@ -41,9 +62,9 @@
 - [x] Leitura/Escrita de config space — `pci.c:37-47`
 - [x] Busca por class/vendor — `pci.c:117-137`
 - [x] Bus mastering enable — `pci.c:139-144`
-- [ ] Criar busca por class 0x02 (Network Controller) em `pci.c`
+- [x] Filtrar class 0x02 no `network_manager`, sem ampliar a API mutavel PCI
 - [ ] Criar função `pci_get_network_device()` para encontrar NIC
-- [ ] Detectar fabricante (RTL8139, RTL8029, NE2000, etc.)
+- [x] Reconhecer E1000 e RTL8139 pelo snapshot PCI
 
 ### 1.2 Driver RTL8139 (comum em VMs)
 

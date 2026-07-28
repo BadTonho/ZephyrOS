@@ -41,6 +41,9 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `devices` | `[-v]` | Lista o inventario nativo de hardware; `-v` inclui localizacao, IRQ e IDs PCI. |
 | `device-info` | `<id>` | Mostra os detalhes de um dispositivo listado por `devices`. |
 | `device-scan` | - | Refaz somente a varredura PCI e atualiza o inventario sem reinicializar drivers. |
+| `net` | `status` | Mostra inventario, drivers ativos, link, RX/TX e IPv4. |
+| `net` | `devices` | Lista os controladores PCI de rede observados. |
+| `net` | `info <id>` | Mostra IDs, localizacao, IRQ e BARs de uma interface. |
 | `acpi` | `status` | Mostra tabelas, PM1, modo ACPI, `_S5_` e prontidao S5, sem executar transicoes. |
 | `power` | `status` | Mostra ativacao do modo, prontidao S5, desligamento fisico e fallback HLT. |
 | `memcheck` | - | Valida heap, coalescencia, PMM e diretorios ring 3 residuais. |

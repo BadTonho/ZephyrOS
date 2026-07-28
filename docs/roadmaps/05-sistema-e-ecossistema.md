@@ -46,8 +46,13 @@ antecipar interfaces ou permissoes que ainda nao existem.
 
 ## Etapa S2 - Rede e atualizacoes
 
-- [ ] Definir primeiro a arquitetura de rede e conexao; nao criar comandos
-  que finjam conectividade antes de haver driver e protocolo.
+- [x] S2.1: arquitetura observavel de rede definida com snapshot PCI estatico,
+  componente `Network` e comandos `net status`, `net devices` e `net info`.
+- [x] E1000 e RTL8139 reconhecidas sem habilitar bus mastering, acessar BARs,
+  registrar IRQ ou fingir conectividade.
+- [ ] S2.1 pendente de validacao manual no QEMU padrao e sem NIC.
+- [ ] S2.2: implementar primeiro o driver E1000 `8086:100E`, preservando os
+  contratos e IDs definidos na S2.1.
 - [ ] Planejar atualizacao assinada ou verificada somente apos existir formato
   de pacote e politica de integridade.
 - [ ] Manter operacoes remotas opcionalmente desabilitadas e visiveis em

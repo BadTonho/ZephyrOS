@@ -24,6 +24,7 @@ static const char* component_names[RECOVERY_COMPONENT_COUNT] = {
     "App Loader",
     "ACPI",
     "Devices",
+    "Network",
     "Power"
 };
 

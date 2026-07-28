@@ -62,6 +62,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [Gerenciador de Aplicativos](melhorias%20futuras/gerenciador%20de%20aplicativos.md) | Loader ZAPP, aplicativos nativos e roadmap da App Store |
 | [Gerenciador de Dispositivos](melhorias%20futuras/gerenciador%20de%20dispositivos.md) | Inventario nativo seguro e evolucao do gerenciamento de hardware |
 | [Gerenciador de Energia](melhorias%20futuras/gerenciador%20de%20energia.md) | Diagnostico de energia, ACPI, PM1 e desligamento fisico S5 com fallback |
+| [Gerenciador de Rede](melhorias%20futuras/gerenciador%20de%20rede.md) | Inventario PCI de rede, contratos nativos e evolucao da stack |
 | [GUI Moderna](melhorias%20futuras/gui_moderna.md) | Transição para primitivas gráficas 2D e VESA |
 | [Formatação Inteligente](melhorias%20futuras/formatacao%20inteligente.md) | Sistema de reset e reinstalação preservando arquivos |
 | [Verificação e Auto-reparo do Sistema](melhorias%20futuras/verifica%C3%A7%C3%A3o%20de%20sistema.md) | Diagnóstico de integridade e autocorreção de arquivos (SFC) |

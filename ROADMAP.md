@@ -114,6 +114,9 @@ Plataforma de aplicativos:   [████████████████�
 | `devices [-v]` | Lista o inventario nativo de hardware |
 | `device-info <id>` | Mostra detalhes de um dispositivo inventariado |
 | `device-scan` | Refaz somente a varredura PCI e atualiza o inventario |
+| `net status` | Mostra inventario e capacidades reais de rede |
+| `net devices` | Lista controladores PCI de rede |
+| `net info <id>` | Mostra metadados PCI de uma interface |
 | `acpi status` | Mostra tabelas, PM1, modo ACPI, `_S5_` e prontidao S5 |
 | `power status` | Mostra prontidao S5, desligamento fisico e fallback HLT |
 | `kmetrics [reset]` | Coleta linha-base de PIT, filas, memoria e VESA, incluindo media de bytes por apresentacao |
@@ -433,6 +436,20 @@ Plataforma de aplicativos:   [████████████████�
   `regcheck`, entrada ZAPP, sintaxe invalida e desligamento fisico real.
 - Cobertura complementar recomendada: repetir o fallback sem ACPI e os
   atalhos de desligamento pelos menus Classic/Modern em VMs separadas.
+
+## S2.1 - Fundacao de rede observavel (implementada; validacao pendente)
+
+- [x] Snapshot estatico de ate quatro controladores PCI de classe `0x02`,
+  somente por copia e sem acessar BARs ou modificar configuracao.
+- [x] E1000 `8086:100E` e RTL8139 `10EC:8139` reconhecidas como candidatas,
+  mantendo driver, link, RX/TX e IPv4 explicitamente indisponiveis.
+- [x] Componente `Network` integrado ao `health`, degradado quando existe NIC
+  sem driver e desabilitado quando nenhum controlador e encontrado.
+- [x] Comandos `net status`, `net devices` e `net info <id>`, com IDs estaveis
+  e sintaxe invalida controlada.
+- [x] `device-scan` atualiza tambem o snapshot de rede sem iniciar driver.
+- [ ] Validacao manual pendente no QEMU padrao e com `-nic none`, incluindo
+  comandos, re-scan e matriz de regressao.
 
 ## Roadmaps por etapa
 

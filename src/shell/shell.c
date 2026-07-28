@@ -26,6 +26,7 @@
 #include "apps/guitest.h"
 #include "core/recovery.h"
 #include "core/device_manager.h"
+#include "core/network_manager.h"
 #include "core/power.h"
 #include "core/app_api.h"
 #include "core/app_builtin.h"
@@ -1347,6 +1348,9 @@ static void cmd_help(void) {
     video_print("  devices  - Lista inventario de hardware (-v para detalhes)\n", 0x07);
     video_print("  device-info <id> - Mostra detalhes de um dispositivo\n", 0x07);
     video_print("  device-scan - Refaz apenas a varredura PCI\n", 0x07);
+    video_print("  net status - Mostra capacidades atuais de rede\n", 0x07);
+    video_print("  net devices - Lista controladores de rede PCI\n", 0x07);
+    video_print("  net info <id> - Mostra detalhes de uma interface\n", 0x07);
     video_print("  acpi status - Mostra tabelas e energia ACPI observadas\n", 0x07);
     video_print("  power status - Mostra capacidades reais de energia\n", 0x07);
     video_print("  kmetrics - Mostra linha-base de metricas do kernel\n", 0x07);
@@ -1647,6 +1651,18 @@ static int shell_args_equal(const char* args, const char* expected) {
     return *args == '\0';
 }
 
+static const char* shell_match_subcommand(const char* args,
+                                          const char* expected) {
+    if (!args || !expected) return 0;
+    while (*args && *expected && *args == *expected) {
+        args++;
+        expected++;
+    }
+    if (*expected || (*args && *args != ' ' && *args != '\t')) return 0;
+    while (*args == ' ' || *args == '\t') args++;
+    return args;
+}
+
 static int shell_read_single_arg(const char* args, char* out, uint32_t size) {
     uint32_t length = 0;
 
@@ -1836,6 +1852,7 @@ static void cmd_device_info(const char* args) {
 static void cmd_device_scan(const char* args) {
     int pci_result;
     int refresh_result;
+    int network_result;
 
     if (*args) {
         LOG_WARN("SHELL", "Uso invalido de device-scan");
@@ -1851,10 +1868,17 @@ static void cmd_device_scan(const char* args) {
         return;
     }
     refresh_result = device_manager_refresh();
-    if (refresh_result == OK) {
-        recovery_mark_ready(RECOVERY_COMPONENT_DEVICES);
-        video_print("Varredura PCI concluida; inventario atualizado.\n", 0x0A);
+    if (refresh_result != OK && refresh_result != ERR_OVERFLOW) {
+        recovery_mark_disabled(RECOVERY_COMPONENT_DEVICES, refresh_result,
+                               "Inventario de dispositivos indisponivel");
+        LOG_ERROR("SHELL", "Falha ao atualizar inventario de dispositivos");
+        video_print("Erro: inventario de dispositivos indisponivel.\n", 0x0C);
         return;
+    }
+    network_result = network_manager_refresh();
+    if (network_result != OK && network_result != ERR_OVERFLOW) {
+        LOG_WARN("SHELL", "Falha ao atualizar inventario de rede");
+        video_print("Aviso: inventario de rede indisponivel.\n", 0x0E);
     }
     if (refresh_result == ERR_OVERFLOW) {
         recovery_mark_degraded(RECOVERY_COMPONENT_DEVICES, refresh_result,
@@ -1862,10 +1886,203 @@ static void cmd_device_scan(const char* args) {
         video_print("Varredura PCI parcial; inventario atualizado.\n", 0x0E);
         return;
     }
-    recovery_mark_disabled(RECOVERY_COMPONENT_DEVICES, refresh_result,
-                           "Inventario de dispositivos indisponivel");
-    LOG_ERROR("SHELL", "Falha ao atualizar inventario de dispositivos");
-    video_print("Erro: inventario de dispositivos indisponivel.\n", 0x0C);
+    recovery_mark_ready(RECOVERY_COMPONENT_DEVICES);
+    video_print("Varredura PCI concluida; inventario atualizado.\n", 0x0A);
+    if (network_result == ERR_OVERFLOW) {
+        video_print("Aviso: inventario de rede parcial.\n", 0x0E);
+    }
+}
+
+static uint8_t cmd_network_state_color(network_interface_state_t state) {
+    if (state == NETWORK_INTERFACE_ACTIVE) return 0x0A;
+    if (state == NETWORK_INTERFACE_DRIVER_MISSING) return 0x0E;
+    return 0x0C;
+}
+
+static void cmd_net_status(void) {
+    network_manager_status_t status;
+    const recovery_component_t* health;
+
+    if (network_manager_get_status(&status) != OK) {
+        LOG_ERROR("SHELL", "Estado de rede indisponivel");
+        video_print("Erro: diagnostico de rede indisponivel.\n", 0x0C);
+        return;
+    }
+    health = recovery_get(RECOVERY_COMPONENT_NETWORK);
+    if (!health) {
+        LOG_ERROR("SHELL", "Componente Network ausente do health");
+        video_print("Erro: health de rede indisponivel.\n", 0x0C);
+        return;
+    }
+
+    video_print("Rede:\n  Servico: ", 0x0B);
+    video_print(recovery_state_name(health->state),
+                health->state == RECOVERY_STATE_READY ? 0x0A :
+                health->state == RECOVERY_STATE_DEGRADED ? 0x0E : 0x0C);
+    video_print("\n  Inventario: ", 0x07);
+    video_print(status.partial ? "PARCIAL" : "COMPLETO",
+                status.partial ? 0x0E : 0x0A);
+    video_print("\n  Controladores detectados: ", 0x07);
+    print_num(status.interface_count);
+    video_print("\n  Modelos reconhecidos: ", 0x07);
+    print_num(status.recognized_count);
+    video_print("\n  Drivers ativos: ", 0x07);
+    print_num(status.active_count);
+    video_print("\n  Link: ", 0x07);
+    video_print(status.active_count ? "CONSULTAVEL" : "DESCONHECIDO",
+                status.active_count ? 0x0A : 0x0E);
+    video_print("\n  RX/TX: ", 0x07);
+    video_print(status.packet_io_available ?
+                "DISPONIVEL" : "NAO IMPLEMENTADO",
+                status.packet_io_available ? 0x0A : 0x0E);
+    video_print("\n  IPv4: ", 0x07);
+    video_print(status.ipv4_available ? "DISPONIVEL" : "NAO IMPLEMENTADO",
+                status.ipv4_available ? 0x0A : 0x0E);
+    video_print("\n", 0x07);
+}
+
+static int cmd_net_print_interface(const network_interface_info_t* info) {
+    network_interface_text_t text;
+    int result;
+
+    if (!info) {
+        LOG_ERROR("SHELL", "Interface nula ao listar rede");
+        return ERR_NULL;
+    }
+    result = network_manager_format_text(info, &text);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Falha ao formatar interface de rede");
+        return result;
+    }
+    video_print("  ", 0x07);
+    video_print(text.id, 0x0B);
+    video_print("  ", 0x07);
+    video_print(network_manager_interface_state_name(info->state),
+                cmd_network_state_color(info->state));
+    video_print("  ", 0x07);
+    video_print(network_manager_model_name(info->model), 0x07);
+    video_print("  PCI ", 0x08);
+    cmd_print_hex(info->bus, 2U);
+    video_print(":", 0x08);
+    cmd_print_hex(info->device, 2U);
+    video_print(".", 0x08);
+    print_num(info->function);
+    video_print("  ", 0x07);
+    video_print(text.driver, 0x08);
+    video_print("\n", 0x07);
+    return OK;
+}
+
+static void cmd_net_devices(void) {
+    uint32_t count = 0;
+
+    if (network_manager_get_count(&count) != OK) {
+        LOG_ERROR("SHELL", "Inventario de rede indisponivel");
+        video_print("Erro: inventario de rede indisponivel.\n", 0x0C);
+        return;
+    }
+    if (!count) {
+        video_print("Nenhum controlador de rede detectado.\n", 0x0E);
+        return;
+    }
+    video_print("Controladores de rede:\n", 0x0B);
+    for (uint32_t index = 0; index < count; index++) {
+        network_interface_info_t info;
+
+        if (network_manager_get_interface(index, &info) != OK ||
+            cmd_net_print_interface(&info) != OK) {
+            LOG_ERROR("SHELL", "Falha ao listar controlador de rede");
+            video_print("Erro: entrada de rede indisponivel.\n", 0x0C);
+            return;
+        }
+    }
+}
+
+static void cmd_net_info(const char* args) {
+    char id[NETWORK_INTERFACE_ID_SIZE];
+    network_interface_info_t info;
+    network_interface_text_t text;
+    int result = shell_read_single_arg(args, id, sizeof(id));
+
+    if (result != OK) {
+        LOG_WARN("SHELL", "Uso invalido de net info");
+        video_print("Uso: net info <id>\n", 0x0C);
+        return;
+    }
+    result = network_manager_find(id, &info);
+    if (result == ERR_NOT_FOUND) {
+        video_print("Erro: interface de rede nao encontrada.\n", 0x0C);
+        return;
+    }
+    if (result != OK ||
+        network_manager_format_text(&info, &text) != OK) {
+        LOG_ERROR("SHELL", "Falha ao consultar interface de rede");
+        video_print("Erro: interface de rede indisponivel.\n", 0x0C);
+        return;
+    }
+
+    video_print("Interface de rede:\n  ID: ", 0x0B);
+    video_print(text.id, 0x0B);
+    video_print("\n  Nome: ", 0x07);
+    video_print(text.name, 0x07);
+    video_print("\n  Estado: ", 0x07);
+    video_print(network_manager_interface_state_name(info.state),
+                cmd_network_state_color(info.state));
+    video_print("\n  Driver: ", 0x07);
+    video_print(text.driver, 0x0E);
+    video_print("\n  Link: ", 0x07);
+    video_print(network_manager_link_state_name(info.link), 0x0E);
+    video_print("\n  Vendor: 0x", 0x07);
+    cmd_print_hex(info.vendor_id, 4U);
+    video_print("  Device: 0x", 0x07);
+    cmd_print_hex(info.device_id, 4U);
+    video_print("\n  Classe: 0x", 0x07);
+    cmd_print_hex(info.class_code, 2U);
+    video_print("  Subclasse: 0x", 0x07);
+    cmd_print_hex(info.subclass_code, 2U);
+    video_print("  Prog-if: 0x", 0x07);
+    cmd_print_hex(info.prog_if, 2U);
+    video_print("  Revisao: 0x", 0x07);
+    cmd_print_hex(info.revision, 2U);
+    video_print("\n  PCI: ", 0x07);
+    cmd_print_hex(info.bus, 2U);
+    video_print(":", 0x07);
+    cmd_print_hex(info.device, 2U);
+    video_print(".", 0x07);
+    print_num(info.function);
+    video_print("  IRQ: ", 0x07);
+    if (info.irq == NETWORK_IRQ_UNKNOWN) {
+        video_print("N/D", 0x08);
+    } else {
+        print_num(info.irq);
+    }
+    for (uint32_t bar = 0; bar < NETWORK_PCI_BAR_COUNT; bar++) {
+        video_print("\n  BAR", 0x07);
+        print_num(bar);
+        video_print(": 0x", 0x07);
+        cmd_print_hex(info.bars[bar], 8U);
+    }
+    video_print("\n", 0x07);
+}
+
+static void cmd_net(const char* args) {
+    const char* info_args;
+
+    if (shell_args_equal(args, "status")) {
+        cmd_net_status();
+        return;
+    }
+    if (shell_args_equal(args, "devices")) {
+        cmd_net_devices();
+        return;
+    }
+    info_args = shell_match_subcommand(args, "info");
+    if (info_args) {
+        cmd_net_info(info_args);
+        return;
+    }
+    LOG_WARN("SHELL", "Uso invalido de net");
+    video_print("Uso: net status | net devices | net info <id>\n", 0x0C);
 }
 
 static void cmd_power(const char* args) {
@@ -3927,6 +4144,8 @@ int shell_process_command(const char* input) {
         cmd_device_info(input);
     } else if (kstrcmp(cmd, "device-scan") == 0) {
         cmd_device_scan(input);
+    } else if (kstrcmp(cmd, "net") == 0) {
+        cmd_net(input);
     } else if (kstrcmp(cmd, "acpi") == 0) {
         cmd_acpi(input);
     } else if (kstrcmp(cmd, "power") == 0) {
