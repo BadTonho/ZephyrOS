@@ -18,6 +18,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/core/app_package.h` | `docs/13-aplicativos/pacotes.md` |
 | `src/include/core/device_manager.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/errors.h` | `docs/04-kernel/kernel.md` |
+| `src/include/core/ethernet.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/keyboard.h` | `docs/05-drivers/drivers.md` |
 | `src/include/core/log.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/memory.h` | `docs/04-kernel/kernel.md` |
@@ -75,9 +76,10 @@ centraliza todos os caminhos de desligamento em `power_shutdown()`. Os
 contratos canonicos permanecem, respectivamente, em
 `docs/05-drivers/drivers.md` e `docs/04-kernel/kernel.md`.
 
-Desde a S2.2, `src/include/core/network_manager.h` preserva o snapshot PCI e
-os IDs estaveis de rede, acrescentando o estado operacional, MAC, contadores e
-ultimo erro do E1000. `src/include/drivers/e1000.h` limita o driver ao
-controlador Intel `8086:100E`, a frames Ethernet L2 e a consultas por copia.
-Os contratos canonicos permanecem, respectivamente, em
-`docs/04-kernel/kernel.md` e `docs/05-drivers/drivers.md`.
+Desde a S2.3, `src/include/core/network_manager.h` preserva o snapshot PCI e
+os IDs estaveis de rede, acrescentando a disponibilidade e o diagnostico da
+camada Ethernet. `src/include/core/ethernet.h` define a abstracao minima de
+interface, montagem, polling e contadores L2. `src/include/drivers/e1000.h`
+limita o driver ao Intel `8086:100E`, expoe uma fila RX fixa e mantem consultas
+por copia. Os contratos canonicos permanecem em `docs/04-kernel/kernel.md` e
+`docs/05-drivers/drivers.md`.

@@ -58,8 +58,9 @@ antecipar interfaces ou permissoes que ainda nao existem.
   link e teste TX L2, preservando contratos e IDs da S2.1. Validada com Q3,
   build limpo, QEMU padrao, sem NIC e com RTL8139; os fallbacks concluiram
   com falhas controladas e `RegCheck: OK`.
-- [ ] S2.3: camada Ethernet com entrega segura de RX fora da IRQ, montagem e
-  parsing de frames e abstracao minima de interface; sem ARP ou IPv4.
+- [ ] S2.3: camada Ethernet implementada com fila RX fixa, processamento fora
+  da IRQ, montagem/parsing de frames, abstracao minima e diagnostico Shell;
+  validacao manual ainda pendente, sem ARP ou IPv4.
 - [ ] S2.4: ARP com cache e resolucao IP para MAC.
 - [ ] S2.5: IPv4, configuracao estatica e ICMP de diagnostico.
 - [ ] S2.6: UDP, DHCP e DNS sobre a base IPv4 validada.

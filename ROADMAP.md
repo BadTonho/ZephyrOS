@@ -117,6 +117,7 @@ Plataforma de aplicativos:   [████████████████�
 | `net status` | Mostra inventario e capacidades reais de rede |
 | `net devices` | Lista controladores PCI de rede |
 | `net info <id>` | Mostra metadados PCI de uma interface |
+| `net ethernet <id>` | Inspeciona fila, parsing e contadores Ethernet L2 |
 | `net test <id>` | Envia frame Ethernet de diagnostico pelo E1000 |
 | `acpi status` | Mostra tabelas, PM1, modo ACPI, `_S5_` e prontidao S5 |
 | `power status` | Mostra prontidao S5, desligamento fisico e fallback HLT |
@@ -471,16 +472,18 @@ Plataforma de aplicativos:   [████████████████�
   TX, `device-scan`, `regcheck full` e sintaxe invalida; tambem sem NIC e
   com RTL8139, ambos com falhas controladas e `RegCheck: OK`.
 
-## S2.3 - Camada Ethernet e entrega de RX (planejada)
+## S2.3 - Camada Ethernet e entrega de RX (implementada; validacao pendente)
 
-- [ ] Criar uma API de recepcao por fila fixa ou polling entre o E1000 e a
+- [x] Criar uma API de recepcao por fila fixa ou polling entre o E1000 e a
   camada Ethernet; a IRQ continuara curta e nao executara ARP/IP diretamente.
-- [ ] Validar, montar e analisar cabecalhos Ethernet, incluindo unicast para
+- [x] Validar, montar e analisar cabecalhos Ethernet, incluindo unicast para
   a MAC local e broadcast, sobre uma abstracao minima de interface de rede.
-- [ ] Expor observabilidade e comando Shell para inspecionar o fluxo Ethernet
+- [x] Expor observabilidade e comando Shell para inspecionar o fluxo Ethernet
   sem transmitir automaticamente no boot.
-- [ ] Manter ARP, IPv4, DHCP, DNS, sockets, servicos remotos e RTL8139 fora
+- [x] Manter ARP, IPv4, DHCP, DNS, sockets, servicos remotos e RTL8139 fora
   desta entrega.
+- [ ] Validar pelo usuario com Q3, build limpo e QEMU padrao, incluindo RX,
+  TX, frame invalido, `device-scan`, `regcheck full` e Classic/Modern.
 
 ## Continuacao da S2 - Rede e atualizacoes (planejada)
 

@@ -46,7 +46,8 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   O cenario sem ACPI e os atalhos Classic/Modern permanecem como cobertura
   complementar. S2.1 concluiu o inventario PCI de rede somente de leitura,
   health e comandos nativos; `regcheck full` foi validado no QEMU padrao e
-  sem NIC.
+  sem NIC. S2.2 concluiu e validou o E1000 L2. A S2.3 implementou fila RX,
+  camada Ethernet e diagnostico fora da IRQ; a validacao manual esta pendente.
 
 ## K4 validada
 

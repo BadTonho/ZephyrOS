@@ -2,6 +2,7 @@
 #define NETWORK_MANAGER_H
 
 #include "types.h"
+#include "core/ethernet.h"
 
 #define NETWORK_MANAGER_MAX_INTERFACES 4U
 #define NETWORK_PCI_BAR_COUNT 6U
@@ -51,6 +52,10 @@ typedef struct {
     uint32_t rx_errors;
     uint32_t tx_errors;
     uint32_t rx_dropped;
+    uint8_t rx_queue_depth;
+    uint8_t rx_queue_high_water;
+    uint32_t rx_queue_dropped;
+    uint32_t rx_interrupts;
     int driver_error;
 } network_interface_info_t;
 
@@ -58,6 +63,7 @@ typedef struct {
     uint8_t initialized;
     uint8_t partial;
     uint8_t packet_io_available;
+    uint8_t ethernet_available;
     uint8_t ipv4_available;
     uint32_t interface_count;
     uint32_t recognized_count;
@@ -71,14 +77,26 @@ typedef struct {
     char driver[NETWORK_DRIVER_NAME_SIZE];
 } network_interface_text_t;
 
+typedef struct {
+    uint32_t processed_now;
+    uint8_t driver_queue_depth;
+    uint8_t driver_queue_high_water;
+    uint32_t driver_queue_dropped;
+    uint32_t driver_rx_interrupts;
+    ethernet_status_t layer;
+} network_ethernet_diagnostic_t;
+
 int network_manager_init(void);
 int network_manager_refresh(void);
+int network_manager_poll(uint32_t* out_processed);
 int network_manager_get_status(network_manager_status_t* out_status);
 int network_manager_get_count(uint32_t* out_count);
 int network_manager_get_interface(uint32_t index,
                                   network_interface_info_t* out_info);
 int network_manager_find(const char* id, network_interface_info_t* out_info);
 int network_manager_send_diagnostic(const char* id);
+int network_manager_get_ethernet_diagnostic(
+    const char* id, network_ethernet_diagnostic_t* out_diagnostic);
 int network_manager_format_text(const network_interface_info_t* info,
                                 network_interface_text_t* out_text);
 const char* network_manager_model_name(network_adapter_model_t model);

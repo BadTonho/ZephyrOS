@@ -559,7 +559,7 @@ para os drivers existentes.
 
 ## E1000 (`e1000.c`)
 
-O driver S2.2 atende somente ao Intel `8086:100E` (82540EM) usado pelo QEMU.
+O driver S2.3 atende somente ao Intel `8086:100E` (82540EM) usado pelo QEMU.
 Ele requer BAR0 MMIO de 32 bits e uma IRQ PCI legada entre 0 e 15; configura
 Memory Space, bus mastering, reset com timeout do PIT, MAC por RAL/RAH e filas
 DMA de oito descritores RX/TX com buffers de 2 KiB alocados pelo PMM.
@@ -568,13 +568,21 @@ DMA de oito descritores RX/TX com buffers de 2 KiB alocados pelo PMM.
 int e1000_init(void);
 int e1000_get_status(e1000_status_t* out_status);
 int e1000_send_frame(const uint8_t* data, uint16_t length);
+int e1000_receive_frame(uint8_t* data, uint16_t capacity,
+                        uint16_t* out_length, uint8_t* out_received);
 ```
 
 `e1000_status_t` devolve somente uma copia com BDF, IRQ, MAC, link,
-contadores RX/TX, descartes e ultimo erro. `e1000_send_frame()` aceita frames
-Ethernet de 14 a 1518 bytes e espera a conclusao do descritor com limite de
-tempo. A IRQ processa e recicla descritores RX, contabilizando frames sem
-entrega-los a protocolos; ARP, IPv4, DHCP, sockets, promiscuidade e RTL8139
+contadores RX/TX, profundidade/pico da fila, descartes, interrupcoes e ultimo
+erro. `e1000_send_frame()` aceita frames Ethernet de 14 a 1518 bytes e espera
+a conclusao do descritor com limite de tempo.
+
+A IRQ apenas reconhece e contabiliza o evento RX; ela nao copia frames nem
+chama protocolos. O consumidor usa `e1000_receive_frame()` em contexto normal,
+quando o driver valida os descritores, copia os frames para uma fila estatica
+de oito entradas e recicla o DMA. Fila vazia e um resultado valido com
+`out_received = 0`, enquanto ponteiros nulos, driver inativo ou buffer pequeno
+retornam erro controlado. ARP, IPv4, DHCP, sockets, promiscuidade e RTL8139
 ficam fora do escopo.
 
 ### Estrutura

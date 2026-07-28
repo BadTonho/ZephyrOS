@@ -42,6 +42,7 @@
 #define SHELL_KEYBOARD_DISPATCH_BUDGET (IPC_MSG_QUEUE_SIZE / 2U)
 
 static int kernel_service_fallback = 0;
+static int kernel_network_poll_enabled = 1;
 static uint32_t kernel_shell_pid = 0;
 static volatile uint32_t kernel_pending_shell_request = 0;
 
@@ -287,8 +288,15 @@ static void global_mouse_handler(mouse_event_t* evt) {
 
 void system_process_main(void) {
     while (1) {
+        uint32_t network_processed = 0;
+
         keyboard_process_events();
         mouse_process_events();
+        if (kernel_network_poll_enabled &&
+            network_manager_poll(&network_processed) != OK) {
+            kernel_network_poll_enabled = 0;
+            LOG_ERROR("KERNEL", "Processamento Ethernet foi desabilitado");
+        }
         kernel_retry_shell_request();
         taskbar_update_clock();
         wm_update_cpu_stats();
@@ -597,8 +605,12 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         video_print("[!!] Estado de rede indisponivel\n", 0x0C);
     } else if (network_status.partial) {
         video_print("[!!] Inventario de rede parcial\n", 0x0E);
+    } else if (network_status.active_count &&
+               network_status.ethernet_available) {
+        video_print("[OK] Camada Ethernet ativa\n", 0x07);
     } else if (network_status.active_count) {
-        video_print("[OK] Driver de rede ativo\n", 0x07);
+        video_print("[!!] Driver ativo; camada Ethernet indisponivel\n",
+                    0x0E);
     } else if (network_status.interface_count) {
         if (network_status.last_error == ERR_UNAVAILABLE) {
             video_print("[!!] NIC detectada; driver pendente\n", 0x0E);
@@ -747,8 +759,16 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     while (1) {
         if (kernel_service_fallback) {
+            uint32_t network_processed = 0;
+
             keyboard_process_events();
             mouse_process_events();
+            if (kernel_network_poll_enabled &&
+                network_manager_poll(&network_processed) != OK) {
+                kernel_network_poll_enabled = 0;
+                LOG_ERROR("KERNEL",
+                          "Processamento Ethernet fallback desabilitado");
+            }
             kernel_retry_shell_request();
             taskbar_update_clock();
             wm_update_cpu_stats();

@@ -1799,6 +1799,7 @@ static void cmd_help(void) {
     video_print("  net status - Mostra capacidades atuais de rede\n", 0x07);
     video_print("  net devices - Lista controladores de rede PCI\n", 0x07);
     video_print("  net info <id> - Mostra detalhes de uma interface\n", 0x07);
+    video_print("  net ethernet <id> - Inspeciona recepcao Ethernet L2\n", 0x07);
     video_print("  net test <id> - Envia frame Ethernet de diagnostico\n", 0x07);
     video_print("  acpi status - Mostra tabelas e energia ACPI observadas\n", 0x07);
     video_print("  power status - Mostra capacidades reais de energia\n", 0x07);
@@ -2448,6 +2449,10 @@ static void cmd_net_status(void) {
     video_print(status.packet_io_available ?
                 "DISPONIVEL" : "NAO IMPLEMENTADO",
                 status.packet_io_available ? 0x0A : 0x0E);
+    video_print("\n  Ethernet L2: ", 0x07);
+    video_print(status.ethernet_available ?
+                "DISPONIVEL" : "INDISPONIVEL",
+                status.ethernet_available ? 0x0A : 0x0E);
     video_print("\n  IPv4: ", 0x07);
     video_print(status.ipv4_available ? "DISPONIVEL" : "NAO IMPLEMENTADO",
                 status.ipv4_available ? 0x0A : 0x0E);
@@ -2576,6 +2581,14 @@ static void cmd_net_info(const char* args) {
     print_num(info.tx_errors);
     video_print("  RX descartados: ", 0x07);
     print_num(info.rx_dropped);
+    video_print("\n  Fila RX atual/pico: ", 0x07);
+    print_num(info.rx_queue_depth);
+    video_print("/", 0x07);
+    print_num(info.rx_queue_high_water);
+    video_print("  Fila cheia: ", 0x07);
+    print_num(info.rx_queue_dropped);
+    video_print("  IRQs RX: ", 0x07);
+    print_num(info.rx_interrupts);
     video_print("\n  Erro do driver: ", 0x07);
     print_num((uint32_t)info.driver_error);
     video_print("\n  Vendor: 0x", 0x07);
@@ -2631,7 +2644,86 @@ static void cmd_net_test(const char* args) {
     video_print(").\n", 0x0C);
 }
 
+static const char* cmd_net_destination_name(
+    ethernet_destination_t destination) {
+    if (destination == ETHERNET_DESTINATION_LOCAL_UNICAST) {
+        return "UNICAST LOCAL";
+    }
+    if (destination == ETHERNET_DESTINATION_BROADCAST) return "BROADCAST";
+    return "DESCONHECIDO";
+}
+
+static void cmd_net_print_last_ethernet(
+    const ethernet_status_t* status) {
+    if (!status || !status->rx_frames) {
+        video_print("  Ultimo frame: N/D\n", 0x08);
+        return;
+    }
+    video_print("  Ultimo frame: ", 0x07);
+    video_print(cmd_net_destination_name(status->last_destination_type),
+                0x0B);
+    video_print("  tamanho=", 0x07);
+    print_num(status->last_frame_length);
+    video_print("  EtherType=0x", 0x07);
+    cmd_print_hex(status->last_ethertype, 4U);
+    video_print("\n    Origem: ", 0x07);
+    cmd_net_print_mac(status->last_source);
+    video_print("  Destino: ", 0x07);
+    cmd_net_print_mac(status->last_destination);
+    video_print("\n", 0x07);
+}
+
+static void cmd_net_ethernet(const char* args) {
+    char id[NETWORK_INTERFACE_ID_SIZE];
+    network_ethernet_diagnostic_t diagnostic;
+    int result = shell_read_single_arg(args, id, sizeof(id));
+
+    if (result != OK) {
+        LOG_WARN("SHELL", "Uso invalido de net ethernet");
+        video_print("Uso: net ethernet <id>\n", 0x0C);
+        return;
+    }
+    result = network_manager_get_ethernet_diagnostic(id, &diagnostic);
+    if (result != OK) {
+        LOG_WARN("SHELL", "Diagnostico Ethernet nao concluiu");
+        video_print("Erro: diagnostico Ethernet falhou (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+    video_print("Camada Ethernet:\n  Estado: ATIVA", 0x0B);
+    video_print("\n  Processados nesta consulta: ", 0x07);
+    print_num(diagnostic.processed_now);
+    video_print("\n  Fila RX atual/pico: ", 0x07);
+    print_num(diagnostic.driver_queue_depth);
+    video_print("/", 0x07);
+    print_num(diagnostic.driver_queue_high_water);
+    video_print("  Descartes por fila cheia: ", 0x07);
+    print_num(diagnostic.driver_queue_dropped);
+    video_print("  IRQs RX: ", 0x07);
+    print_num(diagnostic.driver_rx_interrupts);
+    video_print("\n  Frames L2 aceitos: ", 0x07);
+    print_num(diagnostic.layer.rx_frames);
+    video_print("  Unicast: ", 0x07);
+    print_num(diagnostic.layer.rx_unicast);
+    video_print("  Broadcast: ", 0x07);
+    print_num(diagnostic.layer.rx_broadcast);
+    video_print("\n  Invalidos: ", 0x07);
+    print_num(diagnostic.layer.rx_invalid);
+    video_print("  Filtrados: ", 0x07);
+    print_num(diagnostic.layer.rx_filtered);
+    video_print("  Sem protocolo: ", 0x07);
+    print_num(diagnostic.layer.rx_unhandled);
+    video_print("\n  Polls: ", 0x07);
+    print_num(diagnostic.layer.polls);
+    video_print("  TX montados pela camada: ", 0x07);
+    print_num(diagnostic.layer.tx_frames);
+    video_print("\n", 0x07);
+    cmd_net_print_last_ethernet(&diagnostic.layer);
+}
+
 static void cmd_net(const char* args) {
+    const char* ethernet_args;
     const char* info_args;
     const char* test_args;
 
@@ -2648,13 +2740,19 @@ static void cmd_net(const char* args) {
         cmd_net_info(info_args);
         return;
     }
+    ethernet_args = shell_match_subcommand(args, "ethernet");
+    if (ethernet_args) {
+        cmd_net_ethernet(ethernet_args);
+        return;
+    }
     test_args = shell_match_subcommand(args, "test");
     if (test_args) {
         cmd_net_test(test_args);
         return;
     }
     LOG_WARN("SHELL", "Uso invalido de net");
-    video_print("Uso: net status | net devices | net info <id> | net test <id>\n", 0x0C);
+    video_print("Uso: net status | net devices | net info <id> | "
+                "net ethernet <id> | net test <id>\n", 0x0C);
 }
 
 static void cmd_power(const char* args) {

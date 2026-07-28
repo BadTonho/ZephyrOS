@@ -1,4 +1,5 @@
 #include "core/network_manager.h"
+#include "core/ethernet.h"
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/recovery.h"
@@ -12,13 +13,7 @@
 #define NETWORK_VENDOR_REALTEK 0x10ECU
 #define NETWORK_DEVICE_RTL8139 0x8139U
 #define NETWORK_HEX_BYTE_DIGITS 2U
-#define NETWORK_DIAGNOSTIC_FRAME_SIZE 60U
-#define NETWORK_ETHERNET_DESTINATION_OFFSET 0U
-#define NETWORK_ETHERNET_SOURCE_OFFSET 6U
-#define NETWORK_ETHERNET_TYPE_OFFSET 12U
-#define NETWORK_ETHERNET_PAYLOAD_OFFSET 14U
-#define NETWORK_DIAGNOSTIC_ETHERTYPE_HIGH 0x88U
-#define NETWORK_DIAGNOSTIC_ETHERTYPE_LOW 0xB5U
+#define NETWORK_DIAGNOSTIC_ETHERTYPE 0x88B5U
 #define NETWORK_ETHERNET_BROADCAST_OCTET 0xFFU
 
 static network_interface_info_t
@@ -107,6 +102,10 @@ static void network_apply_e1000_status(network_interface_info_t* entry,
     entry->rx_errors = status->rx_errors;
     entry->tx_errors = status->tx_errors;
     entry->rx_dropped = status->rx_dropped;
+    entry->rx_queue_depth = status->rx_queue_depth;
+    entry->rx_queue_high_water = status->rx_queue_high_water;
+    entry->rx_queue_dropped = status->rx_queue_dropped;
+    entry->rx_interrupts = status->rx_interrupts;
     entry->driver_error = status->last_error;
     if (status->initialized) {
         entry->state = NETWORK_INTERFACE_ACTIVE;
@@ -144,6 +143,7 @@ static void network_copy_interface(network_interface_info_t* entry,
 static int network_build_snapshot(void) {
     uint8_t pci_count = 0;
     e1000_status_t e1000_status;
+    ethernet_status_t ethernet_status;
     int pci_result;
     int result = OK;
 
@@ -153,6 +153,10 @@ static int network_build_snapshot(void) {
     network_status.last_error = ERR_NOT_FOUND;
     if (e1000_get_status(&e1000_status) != OK) {
         LOG_ERROR("NET", "Falha ao consultar estado do E1000");
+        return ERR_STATE;
+    }
+    if (ethernet_get_status(&ethernet_status) != OK) {
+        LOG_ERROR("NET", "Falha ao consultar camada Ethernet");
         return ERR_STATE;
     }
     pci_result = pci_get_device_count(&pci_count);
@@ -197,11 +201,14 @@ static int network_build_snapshot(void) {
     }
     if (network_status.active_count) {
         network_status.packet_io_available = 1;
+        network_status.ethernet_available =
+            ethernet_status.initialized ? 1U : 0U;
     }
     if (network_status.partial) {
         network_status.last_error = ERR_OVERFLOW;
     } else if (network_status.active_count) {
-        network_status.last_error = OK;
+        network_status.last_error =
+            network_status.ethernet_available ? OK : ERR_STATE;
     } else if (network_status.interface_count) {
         network_status.last_error = ERR_UNAVAILABLE;
         for (uint32_t index = 0; index < network_status.interface_count;
@@ -215,6 +222,44 @@ static int network_build_snapshot(void) {
         }
     }
     return result;
+}
+
+static int network_start_ethernet(void) {
+    ethernet_interface_t interface;
+    ethernet_status_t layer_status;
+    e1000_status_t driver_status;
+    int result;
+
+    if (!network_status.active_count) return OK;
+    result = ethernet_get_status(&layer_status);
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao consultar inicializacao Ethernet");
+        return result;
+    }
+    if (layer_status.initialized) {
+        network_status.ethernet_available = 1;
+        if (!network_status.partial) network_status.last_error = OK;
+        return OK;
+    }
+    result = e1000_get_status(&driver_status);
+    if (result != OK || !driver_status.initialized) {
+        LOG_ERROR("NET", "E1000 indisponivel para camada Ethernet");
+        return result != OK ? result : ERR_STATE;
+    }
+    kmemset(&interface, 0, sizeof(interface));
+    interface.initialized = 1;
+    kmemcpy(interface.mac_address, driver_status.mac_address,
+            ETHERNET_MAC_ADDRESS_SIZE);
+    interface.receive_frame = e1000_receive_frame;
+    interface.send_frame = e1000_send_frame;
+    result = ethernet_init(&interface);
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao iniciar camada Ethernet");
+        return result;
+    }
+    network_status.ethernet_available = 1;
+    if (!network_status.partial) network_status.last_error = OK;
+    return OK;
 }
 
 static void network_sync_recovery(int result) {
@@ -232,6 +277,11 @@ static void network_sync_recovery(int result) {
         state = RECOVERY_STATE_DEGRADED;
         error = ERR_OVERFLOW;
         message = "Inventario de rede parcial";
+    } else if (network_status.active_count &&
+               !network_status.ethernet_available) {
+        state = RECOVERY_STATE_DEGRADED;
+        error = network_status.last_error;
+        message = "Camada Ethernet indisponivel";
     } else if (network_status.active_count) {
         state = RECOVERY_STATE_READY;
         error = OK;
@@ -293,6 +343,7 @@ static int network_id_matches(const char* expected, const char* requested) {
 
 int network_manager_init(void) {
     int result;
+    int ethernet_result;
 
     LOG_INFO("NET", "Inicializando inventario de rede");
     network_manager_initialized = 1;
@@ -303,6 +354,12 @@ int network_manager_init(void) {
         network_sync_recovery(result);
         LOG_ERROR("NET", "Falha ao inicializar inventario de rede");
         return result;
+    }
+    ethernet_result = network_start_ethernet();
+    if (ethernet_result != OK) {
+        network_status.ethernet_available = 0;
+        network_status.last_error = ethernet_result;
+        LOG_ERROR("NET", "Inventario ativo sem camada Ethernet");
     }
     network_sync_recovery(result);
     if (result == ERR_OVERFLOW) {
@@ -331,6 +388,29 @@ int network_manager_refresh(void) {
         LOG_INFO("NET", "Inventario de rede atualizado com sucesso");
     }
     return result;
+}
+
+int network_manager_poll(uint32_t* out_processed) {
+    int result;
+
+    if (!out_processed) {
+        LOG_ERROR("NET", "Destino nulo ao processar recepcao");
+        return ERR_NULL;
+    }
+    *out_processed = 0;
+    if (!network_manager_initialized) {
+        LOG_ERROR("NET", "Recepcao antes da inicializacao de rede");
+        return ERR_STATE;
+    }
+    if (!network_status.ethernet_available) return OK;
+    result = ethernet_poll(ETHERNET_RX_POLL_BUDGET, out_processed);
+    if (result != OK) {
+        network_status.last_error = result;
+        LOG_ERROR("NET", "Falha ao processar recepcao Ethernet");
+        return result;
+    }
+    if (!network_status.partial) network_status.last_error = OK;
+    return OK;
 }
 
 int network_manager_get_status(network_manager_status_t* out_status) {
@@ -457,8 +537,8 @@ int network_manager_find(const char* id, network_interface_info_t* out_info) {
 
 int network_manager_send_diagnostic(const char* id) {
     network_interface_info_t info;
-    uint8_t frame[NETWORK_DIAGNOSTIC_FRAME_SIZE];
-    static const char payload[] = "ZEPHYROS-S2.2-E1000";
+    uint8_t destination[NETWORK_MAC_ADDRESS_SIZE];
+    static const char payload[] = "ZEPHYROS-S2.3-ETHERNET";
     int result;
 
     if (!id) {
@@ -471,29 +551,63 @@ int network_manager_send_diagnostic(const char* id) {
         return result;
     }
     if (info.model != NETWORK_ADAPTER_E1000 ||
-        info.state != NETWORK_INTERFACE_ACTIVE) {
+        info.state != NETWORK_INTERFACE_ACTIVE ||
+        !network_status.ethernet_available) {
         LOG_WARN("NET", "Teste solicitado sem E1000 ativo");
         return ERR_UNAVAILABLE;
     }
-    kmemset(frame, 0, sizeof(frame));
     for (uint32_t index = 0; index < NETWORK_MAC_ADDRESS_SIZE; index++) {
-        frame[NETWORK_ETHERNET_DESTINATION_OFFSET + index] =
-            NETWORK_ETHERNET_BROADCAST_OCTET;
-        frame[NETWORK_ETHERNET_SOURCE_OFFSET + index] =
-            info.mac_address[index];
+        destination[index] = NETWORK_ETHERNET_BROADCAST_OCTET;
     }
-    frame[NETWORK_ETHERNET_TYPE_OFFSET] = NETWORK_DIAGNOSTIC_ETHERTYPE_HIGH;
-    frame[NETWORK_ETHERNET_TYPE_OFFSET + 1U] =
-        NETWORK_DIAGNOSTIC_ETHERTYPE_LOW;
-    for (uint32_t index = 0; index < sizeof(payload) - 1U; index++) {
-        frame[NETWORK_ETHERNET_PAYLOAD_OFFSET + index] =
-            (uint8_t)payload[index];
-    }
-    result = e1000_send_frame(frame, sizeof(frame));
+    result = ethernet_send(destination, NETWORK_DIAGNOSTIC_ETHERTYPE,
+                           (const uint8_t*)payload, sizeof(payload) - 1U);
     if (result != OK) {
-        LOG_ERROR("NET", "Falha no teste de transmissao E1000");
+        LOG_ERROR("NET", "Falha no teste de transmissao Ethernet");
         return result;
     }
+    return OK;
+}
+
+int network_manager_get_ethernet_diagnostic(
+    const char* id, network_ethernet_diagnostic_t* out_diagnostic) {
+    network_interface_info_t info;
+    e1000_status_t driver_status;
+    int result;
+
+    if (!id || !out_diagnostic) {
+        LOG_ERROR("NET", "Argumento nulo no diagnostico Ethernet");
+        return ERR_NULL;
+    }
+    kmemset(out_diagnostic, 0, sizeof(*out_diagnostic));
+    result = network_manager_find(id, &info);
+    if (result != OK) {
+        LOG_ERROR("NET", "Interface invalida no diagnostico Ethernet");
+        return result;
+    }
+    if (info.model != NETWORK_ADAPTER_E1000 ||
+        info.state != NETWORK_INTERFACE_ACTIVE ||
+        !network_status.ethernet_available) {
+        LOG_WARN("NET", "Diagnostico solicitado sem Ethernet ativa");
+        return ERR_UNAVAILABLE;
+    }
+    result = network_manager_poll(&out_diagnostic->processed_now);
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha no polling do diagnostico Ethernet");
+        return result;
+    }
+    if (ethernet_get_status(&out_diagnostic->layer) != OK ||
+        e1000_get_status(&driver_status) != OK) {
+        LOG_ERROR("NET", "Falha ao obter contadores Ethernet");
+        return ERR_STATE;
+    }
+    out_diagnostic->driver_queue_depth =
+        driver_status.rx_queue_depth;
+    out_diagnostic->driver_queue_high_water =
+        driver_status.rx_queue_high_water;
+    out_diagnostic->driver_queue_dropped =
+        driver_status.rx_queue_dropped;
+    out_diagnostic->driver_rx_interrupts =
+        driver_status.rx_interrupts;
     return OK;
 }
 

@@ -242,7 +242,7 @@ desmontagem, suspensao, hibernacao ou reboot. `power_shutdown()` nunca retorna;
 `acpi_enter_s5()` retorna apenas quando sua pre-validacao impede qualquer
 escrita no hardware.
 
-## Servicos S2.1/S2.2: rede observavel e E1000
+## Servicos S2.1-S2.3: rede observavel, E1000 e Ethernet
 
 `network_manager` filtra por copia o snapshot PCI e mantem ate quatro
 controladores de classe `0x02`. O servico copia identificadores, localizacao,
@@ -251,9 +251,9 @@ tambem aceitam `net-pci-BB-DD.F`.
 
 `network_manager_status_t` separa inventario, modelos reconhecidos e drivers
 ativos. `network_interface_info_t` preserva os metadados PCI e informa modelo,
-estado do driver, link, MAC, contadores e ultimo erro. `network_manager_refresh()`
-continua sendo apenas uma nova varredura PCI: nao reseta, realoca DMA nem
-reinicializa o E1000.
+estado do driver, link, MAC, contadores, fila RX e ultimo erro.
+`network_manager_refresh()` continua sendo apenas uma nova varredura PCI: nao
+reseta, realoca DMA nem reinicializa o E1000 ou a camada Ethernet.
 
 O componente `Network` do `health` segue estas regras:
 
@@ -269,6 +269,19 @@ timeout, falta de memoria ou conflito de IRQ deixam apenas Network degradado.
 RTL8139 `10EC:8139` continua sem driver. A sincronizacao com recovery e
 idempotente para que `device-scan` repetido sem mudanca nao aumente o contador
 de falhas.
+
+Na S2.3, `ethernet_interface_t` desacopla a camada L2 do E1000 por callbacks
+de recepcao e transmissao. A IRQ somente reconhece e contabiliza o evento RX.
+O processo de sistema chama `network_manager_poll()`; nesse contexto o driver
+copia frames validos para uma fila estatica de oito entradas, recicla o DMA e
+a camada Ethernet valida tamanho, destino, origem e EtherType. Broadcast e
+unicast para a MAC local sao aceitos; outros destinos, cabecalhos invalidos e
+saturacao da fila possuem contadores separados.
+
+`ethernet_send()` monta cabecalho, origem local e padding minimo antes de usar
+o callback do driver. `network_manager_get_ethernet_diagnostic()` devolve por
+copia fila atual/pico, descartes, interrupcoes, totais L2 e o ultimo cabecalho
+aceito. ARP, IPv4, DHCP, DNS, sockets e RTL8139 permanecem fora do contrato.
 
 ## Struct `registers_t`
 

@@ -20,6 +20,7 @@
 #define E1000_IRQ_MAX 15U
 #define E1000_IRQ_UNKNOWN 0xFFU
 #define E1000_DESCRIPTOR_COUNT 8U
+#define E1000_RX_QUEUE_SLOT_COUNT (E1000_RX_QUEUE_CAPACITY + 1U)
 #define E1000_FRAME_BUFFER_SIZE 2048U
 #define E1000_MIN_FRAME_SIZE 14U
 #define E1000_MAC_LOW_BYTES 4U
@@ -88,6 +89,11 @@ typedef struct {
     uint16_t special;
 } __attribute__((packed)) e1000_tx_descriptor_t;
 
+typedef struct {
+    uint16_t length;
+    uint8_t data[E1000_MAX_FRAME_SIZE];
+} e1000_rx_queue_entry_t;
+
 static e1000_status_t e1000_status;
 static volatile uint32_t* e1000_mmio = 0;
 static volatile e1000_rx_descriptor_t* e1000_rx_ring = 0;
@@ -97,6 +103,10 @@ static uint8_t* e1000_tx_buffers = 0;
 static uint8_t e1000_rx_next = 0;
 static uint8_t e1000_tx_next = 0;
 static uint8_t e1000_tx_in_use[E1000_DESCRIPTOR_COUNT];
+static e1000_rx_queue_entry_t
+    e1000_rx_queue[E1000_RX_QUEUE_SLOT_COUNT];
+static volatile uint8_t e1000_rx_queue_head = 0;
+static volatile uint8_t e1000_rx_queue_tail = 0;
 
 static uint32_t e1000_read(uint32_t offset) {
     return e1000_mmio[offset / sizeof(uint32_t)];
@@ -119,7 +129,17 @@ static void e1000_update_link(void) {
 
 static void e1000_reset_status(int error_code) {
     kmemset(&e1000_status, 0, sizeof(e1000_status));
+    e1000_rx_queue_head = 0;
+    e1000_rx_queue_tail = 0;
     e1000_status.last_error = error_code;
+}
+
+static uint8_t e1000_rx_queue_depth(void) {
+    uint8_t head = e1000_rx_queue_head;
+    uint8_t tail = e1000_rx_queue_tail;
+
+    if (tail >= head) return tail - head;
+    return (uint8_t)(E1000_RX_QUEUE_SLOT_COUNT - head + tail);
 }
 
 static void e1000_disable_hardware(void) {
@@ -340,6 +360,7 @@ int e1000_get_status(e1000_status_t* out_status) {
     }
     e1000_update_link();
     *out_status = e1000_status;
+    out_status->rx_queue_depth = e1000_rx_queue_depth();
     return OK;
 }
 
@@ -403,19 +424,45 @@ int e1000_send_frame(const uint8_t* data, uint16_t length) {
     return OK;
 }
 
-static void e1000_process_rx(void) {
+static uint8_t e1000_enqueue_rx(uint8_t descriptor, uint16_t length) {
+    uint8_t tail = e1000_rx_queue_tail;
+    uint8_t next = (tail + 1U) % E1000_RX_QUEUE_SLOT_COUNT;
+    uint8_t depth;
+
+    if (next == e1000_rx_queue_head) return 0;
+    e1000_rx_queue[tail].length = length;
+    kmemcpy(e1000_rx_queue[tail].data,
+            e1000_rx_buffers + descriptor * E1000_FRAME_BUFFER_SIZE,
+            length);
+    e1000_memory_barrier();
+    e1000_rx_queue_tail = next;
+    depth = e1000_rx_queue_depth();
+    if (depth > e1000_status.rx_queue_high_water) {
+        e1000_status.rx_queue_high_water = depth;
+    }
+    return 1;
+}
+
+static void e1000_poll_rx_descriptors(void) {
     for (uint32_t processed = 0; processed < E1000_DESCRIPTOR_COUNT;
          processed++) {
         uint8_t descriptor = e1000_rx_next;
         uint8_t status = e1000_rx_ring[descriptor].status;
+        uint16_t length = e1000_rx_ring[descriptor].length;
 
         if (!(status & E1000_RX_STATUS_DD)) return;
         if (!(status & E1000_RX_STATUS_EOP) ||
-            e1000_rx_ring[descriptor].errors) {
+            e1000_rx_ring[descriptor].errors ||
+            length < E1000_MIN_FRAME_SIZE ||
+            length > E1000_MAX_FRAME_SIZE) {
             e1000_status.rx_errors++;
             e1000_status.rx_dropped++;
         } else {
             e1000_status.rx_packets++;
+            if (!e1000_enqueue_rx(descriptor, length)) {
+                e1000_status.rx_queue_dropped++;
+                e1000_status.rx_dropped++;
+            }
         }
         e1000_rx_ring[descriptor].status = 0;
         e1000_rx_ring[descriptor].errors = 0;
@@ -425,6 +472,44 @@ static void e1000_process_rx(void) {
     }
 }
 
+int e1000_receive_frame(uint8_t* data, uint16_t capacity,
+                        uint16_t* out_length, uint8_t* out_received) {
+    uint8_t head;
+    uint16_t length;
+
+    if (!data || !out_length || !out_received) {
+        LOG_ERROR("E1000", "Argumento nulo ao receber frame");
+        return ERR_NULL;
+    }
+    *out_length = 0;
+    *out_received = 0;
+    if (!e1000_status.initialized) {
+        LOG_ERROR("E1000", "Recepcao solicitada sem driver ativo");
+        return ERR_STATE;
+    }
+    head = e1000_rx_queue_head;
+    if (head == e1000_rx_queue_tail) {
+        /* A copia ocorre fora da IRQ para que nenhum protocolo dependa do
+           buffer DMA depois que o descritor for reciclado. */
+        e1000_poll_rx_descriptors();
+        head = e1000_rx_queue_head;
+        if (head == e1000_rx_queue_tail) return OK;
+    }
+    length = e1000_rx_queue[head].length;
+    if (capacity < length) {
+        LOG_ERROR("E1000", "Buffer insuficiente para frame recebido");
+        return ERR_OVERFLOW;
+    }
+    kmemcpy(data, e1000_rx_queue[head].data, length);
+    e1000_memory_barrier();
+    e1000_rx_queue_head =
+        (head + 1U) % E1000_RX_QUEUE_SLOT_COUNT;
+    *out_length = length;
+    *out_received = 1;
+    e1000_status.last_error = OK;
+    return OK;
+}
+
 void e1000_handler(registers_t* regs) {
     uint32_t cause;
 
@@ -432,9 +517,15 @@ void e1000_handler(registers_t* regs) {
     if (!e1000_status.initialized || !e1000_mmio) return;
     cause = e1000_read(E1000_REG_ICR);
     if (!cause) return;
-    if (cause & (E1000_INT_RXT0 | E1000_INT_RXO)) e1000_process_rx();
+    if (cause & (E1000_INT_RXT0 | E1000_INT_RXO)) {
+        e1000_status.rx_interrupts++;
+    }
     if (cause & E1000_INT_LSC) e1000_update_link();
-    if (cause & (E1000_INT_RXO | E1000_INT_RXSEQ)) {
+    if (cause & E1000_INT_RXO) {
+        e1000_status.rx_errors++;
+        e1000_status.rx_dropped++;
+    }
+    if (cause & E1000_INT_RXSEQ) {
         e1000_status.rx_errors++;
     }
 }
