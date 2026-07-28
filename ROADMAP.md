@@ -117,6 +117,7 @@ Plataforma de aplicativos:   [████████████████�
 | `net status` | Mostra inventario e capacidades reais de rede |
 | `net devices` | Lista controladores PCI de rede |
 | `net info <id>` | Mostra metadados PCI de uma interface |
+| `net test <id>` | Envia frame Ethernet de diagnostico pelo E1000 |
 | `acpi status` | Mostra tabelas, PM1, modo ACPI, `_S5_` e prontidao S5 |
 | `power status` | Mostra prontidao S5, desligamento fisico e fallback HLT |
 | `kmetrics [reset]` | Coleta linha-base de PIT, filas, memoria e VESA, incluindo media de bytes por apresentacao |
@@ -185,6 +186,7 @@ Plataforma de aplicativos:   [████████████████�
 - [x] Leitura/escrita de configuração (BARs, IRQ, classe/subclasse)
 - [x] Busca por vendor/device ID e classe/subclasse
 - [x] Bus Mastering enable
+- [x] Habilitacao confirmada de Memory Space + Bus Master para drivers MMIO
 
 ### AC97 (`src/drivers/ac97.c`)
 - [x] Driver de áudio via controladora AC97 no PCI
@@ -453,6 +455,21 @@ Plataforma de aplicativos:   [████████████████�
 - [x] Validada manualmente com `regcheck full` no QEMU padrao e com
   `-nic none`; ambos concluiram em `RegCheck: OK` apos o cancelamento por
   `F12`.
+
+## S2.2 - Driver E1000 Ethernet L2 (implementada; validacao pendente)
+
+- [x] Driver para Intel `8086:100E` com BAR0 MMIO de 32 bits, Memory Space,
+  bus mastering, reset limitado por PIT, MAC RAL/RAH e IRQ PCI legado.
+- [x] Filas DMA PMM de oito descritores RX/TX, buffers de 2 KiB, contadores,
+  link observavel, descarte RX controlado e transmissao L2 de frames ate 1518
+  bytes.
+- [x] `network_manager`, `health`, `net status`, `net devices` e `net info`
+  integram MAC, estados, contadores e ultimo erro sem alterar IDs estaveis.
+- [x] `net test <id>` envia um unico frame broadcast `0x88B5` sob demanda;
+  IPv4, ARP, DHCP, sockets e RTL8139 continuam fora do escopo.
+- [ ] Validar pelo usuario: `make q3check`, build limpo, QEMU padrao, TX,
+  `device-scan`, `regcheck full`, `-nic none`, sintaxe invalida e interfaces
+  Classic/Modern.
 
 ## Roadmaps por etapa
 

@@ -38,8 +38,21 @@
 - [x] Validacao manual concluida com `regcheck full` no QEMU padrao e com
   `-nic none`; os dois cenarios retornaram `RegCheck: OK` apos `F12`.
 
-Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo. A
-S2.2 implementara primeiro o E1000 e atualizara os totais ao iniciar o driver.
+Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
+
+## S2.2 - E1000 Ethernet L2 (implementada; validacao pendente)
+
+- [x] Driver `src/drivers/e1000.c` para Intel `8086:100E`, com BAR0 MMIO de
+  32 bits, habilitacao confirmada de Memory Space/DMA, reset com timeout e
+  MAC por RAL/RAH.
+- [x] Oito descritores RX/TX e buffers DMA de 2 KiB, IRQ PCI legado,
+  contadores, link e falhas observaveis sem bloquear boot ou Shell.
+- [x] `network_manager` preserva `net-pci-BB:DD.F`, mostra MAC, estado, link,
+  contadores e ultimo erro; `device-scan` nao reinicializa o hardware.
+- [x] `net test <id>` transmite um frame broadcast privado `0x88B5` somente
+  por solicitacao; RX e contabilizado/reciclado, sem ARP, IPv4 ou DHCP.
+- [ ] Aguardando validacao pelo usuario com Q3, build limpo, QEMU padrao,
+  `net test`, `device-scan`, `regcheck full` e `-nic none`.
 
 ---
 

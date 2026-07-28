@@ -210,6 +210,10 @@ int idt_register_handler(uint8_t n, isr_handler_t handler) {
         LOG_ERROR("IDT", "Handler nulo para interrupcao");
         return ERR_NULL;
     }
+    if (interrupt_handlers[n] && interrupt_handlers[n] != handler) {
+        LOG_ERROR("IDT", "Vetor de interrupcao ja possui handler");
+        return ERR_STATE;
+    }
     interrupt_handlers[n] = handler;
     return OK;
 }

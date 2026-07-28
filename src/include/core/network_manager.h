@@ -9,6 +9,7 @@
 #define NETWORK_INTERFACE_NAME_SIZE 40U
 #define NETWORK_DRIVER_NAME_SIZE 24U
 #define NETWORK_IRQ_UNKNOWN 0xFFU
+#define NETWORK_MAC_ADDRESS_SIZE 6U
 
 typedef enum {
     NETWORK_ADAPTER_UNKNOWN = 0,
@@ -19,7 +20,8 @@ typedef enum {
 typedef enum {
     NETWORK_INTERFACE_DRIVER_MISSING = 0,
     NETWORK_INTERFACE_UNSUPPORTED,
-    NETWORK_INTERFACE_ACTIVE
+    NETWORK_INTERFACE_ACTIVE,
+    NETWORK_INTERFACE_DRIVER_ERROR
 } network_interface_state_t;
 
 typedef enum {
@@ -43,6 +45,13 @@ typedef struct {
     uint8_t function;
     uint8_t irq;
     uint32_t bars[NETWORK_PCI_BAR_COUNT];
+    uint8_t mac_address[NETWORK_MAC_ADDRESS_SIZE];
+    uint32_t rx_packets;
+    uint32_t tx_packets;
+    uint32_t rx_errors;
+    uint32_t tx_errors;
+    uint32_t rx_dropped;
+    int driver_error;
 } network_interface_info_t;
 
 typedef struct {
@@ -53,6 +62,7 @@ typedef struct {
     uint32_t interface_count;
     uint32_t recognized_count;
     uint32_t active_count;
+    int last_error;
 } network_manager_status_t;
 
 typedef struct {
@@ -68,6 +78,7 @@ int network_manager_get_count(uint32_t* out_count);
 int network_manager_get_interface(uint32_t index,
                                   network_interface_info_t* out_info);
 int network_manager_find(const char* id, network_interface_info_t* out_info);
+int network_manager_send_diagnostic(const char* id);
 int network_manager_format_text(const network_interface_info_t* info,
                                 network_interface_text_t* out_text);
 const char* network_manager_model_name(network_adapter_model_t model);

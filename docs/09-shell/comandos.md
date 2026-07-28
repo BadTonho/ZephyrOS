@@ -44,6 +44,7 @@ Comandos disponiveis:
   net status - Exibe o estado observavel da rede
   net devices - Lista controladores de rede PCI
   net info <id> - Exibe detalhes de uma interface inventariada
+  net test <id> - Envia um frame Ethernet de diagnostico
   acpi status - Exibe tabelas, PM1, modo ACPI e `_S5_`
   power status - Mostra prontidao ACPI S5 e fallback HLT
   kmetrics  - Mostra linha-base manual de metricas do kernel
@@ -242,28 +243,33 @@ o Shell permanece utilizavel.
 IDs PCI sao exibidos como `pci-BB:DD.F`. Para teclados sem `Shift`,
 `device-info` tambem aceita `pci-BB-DD.F` e letras minusculas.
 
-## `net status`, `net devices` e `net info <id>`
+## `net status`, `net devices`, `net info <id>` e `net test <id>`
 
-Os comandos de rede da S2.1 sao somente diagnosticos. Eles usam o snapshot
-PCI ja existente e nao habilitam bus mastering, acessam BARs, leem MAC ou
-enviam pacotes.
+Os comandos mantem o snapshot PCI da S2.1 e, quando o Intel E1000 `8086:100E`
+esta ativo, mostram o estado real do driver Ethernet L2. A inicializacao de
+hardware acontece no boot; `device-scan` apenas atualiza o inventario e nunca
+reinicializa o driver.
 
 ```text
 zephyr> net status
 zephyr> net devices
 zephyr> net info net-pci-00:03.0
+zephyr> net test net-pci-00:03.0
 ```
 
 `net status` separa inventario, controladores reconhecidos, drivers ativos,
-link, RX/TX e IPv4. `net devices` lista IDs estaveis, modelo e driver
-planejado. `net info <id>` mostra vendor/device, classe, prog-if, revisao, IRQ
-e BAR0-BAR5. A forma `net-pci-BB-DD.F` tambem e aceita.
+link, RX/TX, IPv4 e o ultimo erro do servico. `net devices` lista IDs estaveis,
+modelo e estado. `net info <id>` mostra MAC, contadores, erro do driver,
+vendor/device, classe, prog-if, revisao, IRQ e BAR0-BAR5. A forma
+`net-pci-BB-DD.F` tambem e aceita.
 
-Intel `8086:100E` aparece como E1000 e Realtek `10EC:8139` como RTL8139, mas
-isso nao confirma driver ou conectividade. Sem NIC, os comandos permanecem
-utilizaveis e mostram inventario vazio. `device-scan` e o comando explicito
-de varredura; `regcheck full` reutiliza internamente o mesmo caminho para a
-regressao compacta.
+`net test <id>` envia um unico frame broadcast com EtherType privado `0x88B5`
+e confirma somente a conclusao do descritor TX. Ele nao abre conexao, nao
+configura IP e nao transmite automaticamente no boot. Sem E1000 ativo, com
+link indisponivel, ID desconhecido ou sintaxe invalida, o Shell retorna erro
+controlado. RTL8139 continua listado sem driver; sem NIC, os comandos seguem
+utilizaveis e mostram inventario vazio. `regcheck full` reutiliza a varredura
+sem resetar o E1000.
 
 ## `acpi status`
 

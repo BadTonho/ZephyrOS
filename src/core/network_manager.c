@@ -3,6 +3,7 @@
 #include "core/log.h"
 #include "core/recovery.h"
 #include "core/string.h"
+#include "drivers/e1000.h"
 #include "drivers/pci.h"
 
 #define NETWORK_PCI_CLASS 0x02U
@@ -11,6 +12,14 @@
 #define NETWORK_VENDOR_REALTEK 0x10ECU
 #define NETWORK_DEVICE_RTL8139 0x8139U
 #define NETWORK_HEX_BYTE_DIGITS 2U
+#define NETWORK_DIAGNOSTIC_FRAME_SIZE 60U
+#define NETWORK_ETHERNET_DESTINATION_OFFSET 0U
+#define NETWORK_ETHERNET_SOURCE_OFFSET 6U
+#define NETWORK_ETHERNET_TYPE_OFFSET 12U
+#define NETWORK_ETHERNET_PAYLOAD_OFFSET 14U
+#define NETWORK_DIAGNOSTIC_ETHERTYPE_HIGH 0x88U
+#define NETWORK_DIAGNOSTIC_ETHERTYPE_LOW 0xB5U
+#define NETWORK_ETHERNET_BROADCAST_OCTET 0xFFU
 
 static network_interface_info_t
     network_interfaces[NETWORK_MANAGER_MAX_INTERFACES];
@@ -79,8 +88,38 @@ static void network_copy_bars(network_interface_info_t* entry,
     entry->bars[5] = pci->bar5;
 }
 
+static int network_is_e1000_entry(const network_interface_info_t* entry,
+                                  const e1000_status_t* status) {
+    return entry && status && status->detected &&
+           entry->model == NETWORK_ADAPTER_E1000 &&
+           entry->bus == status->bus && entry->device == status->device &&
+           entry->function == status->function;
+}
+
+static void network_apply_e1000_status(network_interface_info_t* entry,
+                                       const e1000_status_t* status) {
+    if (!network_is_e1000_entry(entry, status)) return;
+    for (uint32_t index = 0; index < NETWORK_MAC_ADDRESS_SIZE; index++) {
+        entry->mac_address[index] = status->mac_address[index];
+    }
+    entry->rx_packets = status->rx_packets;
+    entry->tx_packets = status->tx_packets;
+    entry->rx_errors = status->rx_errors;
+    entry->tx_errors = status->tx_errors;
+    entry->rx_dropped = status->rx_dropped;
+    entry->driver_error = status->last_error;
+    if (status->initialized) {
+        entry->state = NETWORK_INTERFACE_ACTIVE;
+        entry->link = status->link_up ? NETWORK_LINK_UP : NETWORK_LINK_DOWN;
+    } else if (status->last_error != ERR_NOT_FOUND) {
+        entry->state = NETWORK_INTERFACE_DRIVER_ERROR;
+        entry->link = NETWORK_LINK_UNKNOWN;
+    }
+}
+
 static void network_copy_interface(network_interface_info_t* entry,
-                                   const pci_device_t* pci) {
+                                   const pci_device_t* pci,
+                                   const e1000_status_t* e1000_status) {
     kmemset(entry, 0, sizeof(*entry));
     entry->model = network_detect_model(pci);
     entry->state = entry->model == NETWORK_ADAPTER_UNKNOWN ?
@@ -98,16 +137,24 @@ static void network_copy_interface(network_interface_info_t* entry,
     entry->function = pci->function;
     entry->irq = pci->irq;
     network_copy_bars(entry, pci);
+    entry->driver_error = ERR_UNAVAILABLE;
+    network_apply_e1000_status(entry, e1000_status);
 }
 
 static int network_build_snapshot(void) {
     uint8_t pci_count = 0;
+    e1000_status_t e1000_status;
     int pci_result;
     int result = OK;
 
     kmemset(network_interfaces, 0, sizeof(network_interfaces));
     kmemset(&network_status, 0, sizeof(network_status));
     network_status.initialized = network_manager_initialized ? 1U : 0U;
+    network_status.last_error = ERR_NOT_FOUND;
+    if (e1000_get_status(&e1000_status) != OK) {
+        LOG_ERROR("NET", "Falha ao consultar estado do E1000");
+        return ERR_STATE;
+    }
     pci_result = pci_get_device_count(&pci_count);
     if (pci_result != OK && pci_result != ERR_OVERFLOW) {
         LOG_ERROR("NET", "Falha ao consultar inventario PCI");
@@ -130,16 +177,42 @@ static int network_build_snapshot(void) {
         if (network_status.interface_count >=
             NETWORK_MANAGER_MAX_INTERFACES) {
             network_status.partial = 1;
+            network_status.last_error = ERR_OVERFLOW;
             LOG_WARN("NET", "Limite do inventario de rede atingido");
-            return ERR_OVERFLOW;
+            result = ERR_OVERFLOW;
+            break;
         }
         network_copy_interface(
-            &network_interfaces[network_status.interface_count], &pci);
+            &network_interfaces[network_status.interface_count], &pci,
+            &e1000_status);
         if (network_interfaces[network_status.interface_count].model !=
             NETWORK_ADAPTER_UNKNOWN) {
             network_status.recognized_count++;
         }
+        if (network_interfaces[network_status.interface_count].state ==
+            NETWORK_INTERFACE_ACTIVE) {
+            network_status.active_count++;
+        }
         network_status.interface_count++;
+    }
+    if (network_status.active_count) {
+        network_status.packet_io_available = 1;
+    }
+    if (network_status.partial) {
+        network_status.last_error = ERR_OVERFLOW;
+    } else if (network_status.active_count) {
+        network_status.last_error = OK;
+    } else if (network_status.interface_count) {
+        network_status.last_error = ERR_UNAVAILABLE;
+        for (uint32_t index = 0; index < network_status.interface_count;
+             index++) {
+            if (network_interfaces[index].state ==
+                NETWORK_INTERFACE_DRIVER_ERROR) {
+                network_status.last_error =
+                    network_interfaces[index].driver_error;
+                break;
+            }
+        }
     }
     return result;
 }
@@ -165,8 +238,10 @@ static void network_sync_recovery(int result) {
         message = "Componente operacional";
     } else if (network_status.interface_count) {
         state = RECOVERY_STATE_DEGRADED;
-        error = ERR_UNAVAILABLE;
-        message = "Controlador detectado; driver nao implementado";
+        error = network_status.last_error;
+        message = error == ERR_UNAVAILABLE ?
+                  "Controlador detectado; driver nao implementado" :
+                  "Controlador detectado; driver com falha";
     } else {
         state = RECOVERY_STATE_DISABLED;
         error = ERR_NOT_FOUND;
@@ -286,6 +361,8 @@ int network_manager_get_count(uint32_t* out_count) {
 
 int network_manager_get_interface(uint32_t index,
                                   network_interface_info_t* out_info) {
+    e1000_status_t e1000_status;
+
     if (!out_info) {
         LOG_ERROR("NET", "Destino nulo ao consultar interface");
         return ERR_NULL;
@@ -299,6 +376,11 @@ int network_manager_get_interface(uint32_t index,
         return ERR_INVALID;
     }
     *out_info = network_interfaces[index];
+    if (e1000_get_status(&e1000_status) != OK) {
+        LOG_ERROR("NET", "Falha ao atualizar estado do E1000");
+        return ERR_STATE;
+    }
+    network_apply_e1000_status(out_info, &e1000_status);
     return OK;
 }
 
@@ -328,7 +410,10 @@ int network_manager_format_text(const network_interface_info_t* info,
         network_set_text(out_text->name, NETWORK_INTERFACE_NAME_SIZE,
                          "Intel 82540EM (E1000)");
         network_set_text(out_text->driver, NETWORK_DRIVER_NAME_SIZE,
-                         "e1000 (planejado)");
+                         info->state == NETWORK_INTERFACE_ACTIVE ?
+                         "e1000 (ativo)" :
+                         info->state == NETWORK_INTERFACE_DRIVER_ERROR ?
+                         "e1000 (erro)" : "e1000 (pendente)");
     } else if (info->model == NETWORK_ADAPTER_RTL8139) {
         network_set_text(out_text->name, NETWORK_INTERFACE_NAME_SIZE,
                          "Realtek RTL8139");
@@ -363,12 +448,53 @@ int network_manager_find(const char* id, network_interface_info_t* out_info) {
             return result;
         }
         if (network_id_matches(text.id, id)) {
-            *out_info = network_interfaces[index];
-            return OK;
+            return network_manager_get_interface(index, out_info);
         }
     }
     LOG_WARN("NET", "Interface de rede solicitada nao encontrada");
     return ERR_NOT_FOUND;
+}
+
+int network_manager_send_diagnostic(const char* id) {
+    network_interface_info_t info;
+    uint8_t frame[NETWORK_DIAGNOSTIC_FRAME_SIZE];
+    static const char payload[] = "ZEPHYROS-S2.2-E1000";
+    int result;
+
+    if (!id) {
+        LOG_ERROR("NET", "ID nulo para teste de rede");
+        return ERR_NULL;
+    }
+    result = network_manager_find(id, &info);
+    if (result != OK) {
+        LOG_ERROR("NET", "Interface invalida para teste de rede");
+        return result;
+    }
+    if (info.model != NETWORK_ADAPTER_E1000 ||
+        info.state != NETWORK_INTERFACE_ACTIVE) {
+        LOG_WARN("NET", "Teste solicitado sem E1000 ativo");
+        return ERR_UNAVAILABLE;
+    }
+    kmemset(frame, 0, sizeof(frame));
+    for (uint32_t index = 0; index < NETWORK_MAC_ADDRESS_SIZE; index++) {
+        frame[NETWORK_ETHERNET_DESTINATION_OFFSET + index] =
+            NETWORK_ETHERNET_BROADCAST_OCTET;
+        frame[NETWORK_ETHERNET_SOURCE_OFFSET + index] =
+            info.mac_address[index];
+    }
+    frame[NETWORK_ETHERNET_TYPE_OFFSET] = NETWORK_DIAGNOSTIC_ETHERTYPE_HIGH;
+    frame[NETWORK_ETHERNET_TYPE_OFFSET + 1U] =
+        NETWORK_DIAGNOSTIC_ETHERTYPE_LOW;
+    for (uint32_t index = 0; index < sizeof(payload) - 1U; index++) {
+        frame[NETWORK_ETHERNET_PAYLOAD_OFFSET + index] =
+            (uint8_t)payload[index];
+    }
+    result = e1000_send_frame(frame, sizeof(frame));
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha no teste de transmissao E1000");
+        return result;
+    }
+    return OK;
 }
 
 const char* network_manager_model_name(network_adapter_model_t model) {
@@ -382,6 +508,7 @@ const char* network_manager_interface_state_name(
     if (state == NETWORK_INTERFACE_DRIVER_MISSING) return "DRIVER AUSENTE";
     if (state == NETWORK_INTERFACE_UNSUPPORTED) return "NAO SUPORTADA";
     if (state == NETWORK_INTERFACE_ACTIVE) return "ATIVA";
+    if (state == NETWORK_INTERFACE_DRIVER_ERROR) return "ERRO NO DRIVER";
     return "DESCONHECIDO";
 }
 

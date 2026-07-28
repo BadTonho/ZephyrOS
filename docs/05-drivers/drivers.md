@@ -11,6 +11,7 @@ src/drivers/
 ├── acpi.c           → Descoberta e inventario ACPI
 ├── ac97.c           → Driver de áudio AC97
 ├── ata.c            → Driver de disco (ATA PIO)
+├── e1000.c          → Driver Ethernet Intel 82540EM
 ├── font.c           → Fonte bitmap 8x16
 ├── idt.c            → Tabela de interrupções
 ├── irq.asm          → Handlers de interrupção de hardware
@@ -57,8 +58,12 @@ outb(0xA1, 0x28);  // Vetor base = 40
 
 ```c
 // Registrar handler para IRQ1 (teclado)
-register_interrupt_handler(33, keyboard_handler);
+idt_register_handler(33, keyboard_handler);
 ```
+
+`idt_register_handler()` recusa substituir um handler diferente que ja ocupa
+o vetor. Drivers PCI que usam INTx, como o E1000, falham de forma controlada
+em caso de conflito em vez de sobrescrever outro driver.
 
 ---
 
@@ -543,6 +548,34 @@ ja lidas e permite que o inventario de dispositivos continue de forma parcial.
 Cada funcao PCI e lida uma unica vez. `pci_get_device_count()` e
 `pci_get_device_at()` devolvem copias seguras para consumidores; um novo scan
 somente consulta a configuracao PCI, sem reinicializar ATA, AC97 ou PS/2.
+
+`pci_enable_memory_and_bus_mastering()` habilita explicitamente os bits de
+Memory Space e Bus Master para um dispositivo ja enumerado e confirma a leitura
+de volta. Ela retorna erro para ponteiro nulo, PCI indisponivel ou configuracao
+nao aceita pelo hardware. A API antiga `pci_enable_bus_mastering()` permanece
+para os drivers existentes.
+
+---
+
+## E1000 (`e1000.c`)
+
+O driver S2.2 atende somente ao Intel `8086:100E` (82540EM) usado pelo QEMU.
+Ele requer BAR0 MMIO de 32 bits e uma IRQ PCI legada entre 0 e 15; configura
+Memory Space, bus mastering, reset com timeout do PIT, MAC por RAL/RAH e filas
+DMA de oito descritores RX/TX com buffers de 2 KiB alocados pelo PMM.
+
+```c
+int e1000_init(void);
+int e1000_get_status(e1000_status_t* out_status);
+int e1000_send_frame(const uint8_t* data, uint16_t length);
+```
+
+`e1000_status_t` devolve somente uma copia com BDF, IRQ, MAC, link,
+contadores RX/TX, descartes e ultimo erro. `e1000_send_frame()` aceita frames
+Ethernet de 14 a 1518 bytes e espera a conclusao do descritor com limite de
+tempo. A IRQ processa e recicla descritores RX, contabilizando frames sem
+entrega-los a protocolos; ARP, IPv4, DHCP, sockets, promiscuidade e RTL8139
+ficam fora do escopo.
 
 ### Estrutura
 

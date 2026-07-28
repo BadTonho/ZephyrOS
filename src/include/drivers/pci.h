@@ -56,6 +56,7 @@ uint32_t pci_read(uint8_t bus, uint8_t device, uint8_t function, uint8_t offset)
 void pci_write(uint8_t bus, uint8_t device, uint8_t function, uint8_t offset, uint32_t value);
 pci_device_t* pci_get_device(uint8_t class, uint8_t subclass);
 pci_device_t* pci_get_device_by_id(uint16_t vendor_id, uint16_t device_id);
+int pci_enable_memory_and_bus_mastering(const pci_device_t* dev);
 void pci_enable_bus_mastering(pci_device_t* dev);
 
 #endif

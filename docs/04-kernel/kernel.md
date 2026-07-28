@@ -242,17 +242,18 @@ desmontagem, suspensao, hibernacao ou reboot. `power_shutdown()` nunca retorna;
 `acpi_enter_s5()` retorna apenas quando sua pre-validacao impede qualquer
 escrita no hardware.
 
-## Servico S2.1: inventario de rede observavel
+## Servicos S2.1/S2.2: rede observavel e E1000
 
 `network_manager` filtra por copia o snapshot PCI e mantem ate quatro
 controladores de classe `0x02`. O servico copia identificadores, localizacao,
-IRQ e BAR0-BAR5, mas nunca acessa os enderecos descritos pelos BARs, habilita
-bus mastering ou transmite pacotes.
+IRQ e BAR0-BAR5; os IDs `net-pci-BB:DD.F` permanecem estaveis e consultas
+tambem aceitam `net-pci-BB-DD.F`.
 
 `network_manager_status_t` separa inventario, modelos reconhecidos e drivers
 ativos. `network_interface_info_t` preserva os metadados PCI e informa modelo,
-estado do driver e link. Os IDs `net-pci-BB:DD.F` sao estaveis; consultas
-tambem aceitam `net-pci-BB-DD.F`.
+estado do driver, link, MAC, contadores e ultimo erro. `network_manager_refresh()`
+continua sendo apenas uma nova varredura PCI: nao reseta, realoca DMA nem
+reinicializa o E1000.
 
 O componente `Network` do `health` segue estas regras:
 
@@ -260,10 +261,14 @@ O componente `Network` do `health` segue estas regras:
 - `DEGRADED`: controlador detectado sem driver ou inventario parcial;
 - `DISABLED`: nenhum controlador detectado ou snapshot indisponivel.
 
-Na S2.1, Intel `8086:100E` e reconhecida como E1000 e Realtek `10EC:8139`
-como RTL8139, mas ambas permanecem sem driver. A sincronizacao com recovery e
+Na S2.2, o kernel tenta inicializar o E1000 `8086:100E` depois do PCI e antes
+do snapshot de rede. A inicializacao usa BAR0 MMIO, DMA PMM, IRQ `32 + linha
+PCI`, MAC RAL/RAH e filas Ethernet L2. Sucesso deixa `Network` pronto e
+RX/TX disponivel; IPv4 continua indisponivel. NIC ausente, BAR/IRQ invalido,
+timeout, falta de memoria ou conflito de IRQ deixam apenas Network degradado.
+RTL8139 `10EC:8139` continua sem driver. A sincronizacao com recovery e
 idempotente para que `device-scan` repetido sem mudanca nao aumente o contador
-de falhas. RX/TX, link, MAC, Ethernet e IPv4 permanecem indisponiveis.
+de falhas.
 
 ## Struct `registers_t`
 

@@ -33,6 +33,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/drivers/acpi.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/ac97.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/ata.h` | `docs/05-drivers/drivers.md` |
+| `src/include/drivers/e1000.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/font.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/idt.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/mouse.h` | `docs/05-drivers/drivers.md` |
@@ -74,6 +75,9 @@ centraliza todos os caminhos de desligamento em `power_shutdown()`. Os
 contratos canonicos permanecem, respectivamente, em
 `docs/05-drivers/drivers.md` e `docs/04-kernel/kernel.md`.
 
-Desde a S2.1, `src/include/core/network_manager.h` define o snapshot estatico
-de controladores PCI de rede, IDs estaveis e capacidades ainda indisponiveis.
-Seu contrato canonico permanece em `docs/04-kernel/kernel.md`.
+Desde a S2.2, `src/include/core/network_manager.h` preserva o snapshot PCI e
+os IDs estaveis de rede, acrescentando o estado operacional, MAC, contadores e
+ultimo erro do E1000. `src/include/drivers/e1000.h` limita o driver ao
+controlador Intel `8086:100E`, a frames Ethernet L2 e a consultas por copia.
+Os contratos canonicos permanecem, respectivamente, em
+`docs/04-kernel/kernel.md` e `docs/05-drivers/drivers.md`.

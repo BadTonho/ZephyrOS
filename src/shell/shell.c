@@ -837,10 +837,12 @@ static int shell_regcheck_validate_network_entry(
     }
     if (info->class_code != SHELL_REGCHECK_PCI_NETWORK_CLASS ||
         info->model > NETWORK_ADAPTER_RTL8139 ||
-        info->state > NETWORK_INTERFACE_ACTIVE ||
+        info->state > NETWORK_INTERFACE_DRIVER_ERROR ||
         info->link > NETWORK_LINK_UP ||
         (info->state != NETWORK_INTERFACE_ACTIVE &&
          info->link != NETWORK_LINK_UNKNOWN) ||
+        (info->state == NETWORK_INTERFACE_DRIVER_ERROR &&
+         info->driver_error == OK) ||
         (info->model == NETWORK_ADAPTER_UNKNOWN &&
          info->state != NETWORK_INTERFACE_UNSUPPORTED) ||
         (info->model != NETWORK_ADAPTER_UNKNOWN &&
@@ -882,7 +884,7 @@ static int shell_regcheck_validate_network_recovery(
         expected_error = OK;
     } else if (status->interface_count) {
         expected_state = RECOVERY_STATE_DEGRADED;
-        expected_error = ERR_UNAVAILABLE;
+        expected_error = status->last_error;
     } else {
         expected_state = RECOVERY_STATE_DISABLED;
         expected_error = ERR_NOT_FOUND;
@@ -907,9 +909,13 @@ static int shell_regcheck_validate_network(void) {
         count != status.interface_count ||
         count > NETWORK_MANAGER_MAX_INTERFACES ||
         status.recognized_count > count || status.active_count > count ||
-        (status.ipv4_available && !status.packet_io_available) ||
-        ((status.packet_io_available || status.ipv4_available) &&
-         !status.active_count)) {
+        status.ipv4_available ||
+        (status.packet_io_available && !status.active_count) ||
+        (!status.packet_io_available && status.active_count) ||
+        (status.active_count && !status.partial &&
+         status.last_error != OK) ||
+        (!status.active_count && !status.interface_count &&
+         status.last_error != ERR_NOT_FOUND)) {
         LOG_ERROR("SHELL", "RegCheck Full detectou estado Network invalido");
         return result == OK ? ERR_STATE : result;
     }
@@ -1793,6 +1799,7 @@ static void cmd_help(void) {
     video_print("  net status - Mostra capacidades atuais de rede\n", 0x07);
     video_print("  net devices - Lista controladores de rede PCI\n", 0x07);
     video_print("  net info <id> - Mostra detalhes de uma interface\n", 0x07);
+    video_print("  net test <id> - Envia frame Ethernet de diagnostico\n", 0x07);
     video_print("  acpi status - Mostra tabelas e energia ACPI observadas\n", 0x07);
     video_print("  power status - Mostra capacidades reais de energia\n", 0x07);
     video_print("  kmetrics - Mostra linha-base de metricas do kernel\n", 0x07);
@@ -2385,9 +2392,27 @@ static uint8_t cmd_network_state_color(network_interface_state_t state) {
     return 0x0C;
 }
 
+static network_link_state_t cmd_net_get_link_state(uint32_t count) {
+    network_link_state_t result = NETWORK_LINK_UNKNOWN;
+
+    for (uint32_t index = 0; index < count; index++) {
+        network_interface_info_t info;
+
+        if (network_manager_get_interface(index, &info) != OK) {
+            LOG_ERROR("SHELL", "Falha ao consultar link de rede");
+            return NETWORK_LINK_UNKNOWN;
+        }
+        if (info.state != NETWORK_INTERFACE_ACTIVE) continue;
+        if (info.link == NETWORK_LINK_UP) return NETWORK_LINK_UP;
+        if (info.link == NETWORK_LINK_DOWN) result = NETWORK_LINK_DOWN;
+    }
+    return result;
+}
+
 static void cmd_net_status(void) {
     network_manager_status_t status;
     const recovery_component_t* health;
+    network_link_state_t link;
 
     if (network_manager_get_status(&status) != OK) {
         LOG_ERROR("SHELL", "Estado de rede indisponivel");
@@ -2415,8 +2440,10 @@ static void cmd_net_status(void) {
     video_print("\n  Drivers ativos: ", 0x07);
     print_num(status.active_count);
     video_print("\n  Link: ", 0x07);
-    video_print(status.active_count ? "CONSULTAVEL" : "DESCONHECIDO",
-                status.active_count ? 0x0A : 0x0E);
+    link = cmd_net_get_link_state(status.interface_count);
+    video_print(network_manager_link_state_name(link),
+                link == NETWORK_LINK_UP ? 0x0A :
+                link == NETWORK_LINK_DOWN ? 0x0E : 0x08);
     video_print("\n  RX/TX: ", 0x07);
     video_print(status.packet_io_available ?
                 "DISPONIVEL" : "NAO IMPLEMENTADO",
@@ -2424,7 +2451,20 @@ static void cmd_net_status(void) {
     video_print("\n  IPv4: ", 0x07);
     video_print(status.ipv4_available ? "DISPONIVEL" : "NAO IMPLEMENTADO",
                 status.ipv4_available ? 0x0A : 0x0E);
+    video_print("\n  Ultimo erro: ", 0x07);
+    print_num((uint32_t)status.last_error);
     video_print("\n", 0x07);
+}
+
+static void cmd_net_print_mac(const uint8_t* mac_address) {
+    if (!mac_address) {
+        video_print("N/D", 0x08);
+        return;
+    }
+    for (uint32_t index = 0; index < NETWORK_MAC_ADDRESS_SIZE; index++) {
+        if (index) video_print(":", 0x08);
+        cmd_print_hex(mac_address[index], 2U);
+    }
 }
 
 static int cmd_net_print_interface(const network_interface_info_t* info) {
@@ -2515,9 +2555,29 @@ static void cmd_net_info(const char* args) {
     video_print(network_manager_interface_state_name(info.state),
                 cmd_network_state_color(info.state));
     video_print("\n  Driver: ", 0x07);
-    video_print(text.driver, 0x0E);
+    video_print(text.driver, cmd_network_state_color(info.state));
     video_print("\n  Link: ", 0x07);
-    video_print(network_manager_link_state_name(info.link), 0x0E);
+    video_print(network_manager_link_state_name(info.link),
+                info.link == NETWORK_LINK_UP ? 0x0A :
+                info.link == NETWORK_LINK_DOWN ? 0x0E : 0x08);
+    video_print("\n  MAC: ", 0x07);
+    if (info.state == NETWORK_INTERFACE_ACTIVE) {
+        cmd_net_print_mac(info.mac_address);
+    } else {
+        video_print("N/D", 0x08);
+    }
+    video_print("\n  RX pacotes: ", 0x07);
+    print_num(info.rx_packets);
+    video_print("  TX pacotes: ", 0x07);
+    print_num(info.tx_packets);
+    video_print("\n  RX erros: ", 0x07);
+    print_num(info.rx_errors);
+    video_print("  TX erros: ", 0x07);
+    print_num(info.tx_errors);
+    video_print("  RX descartados: ", 0x07);
+    print_num(info.rx_dropped);
+    video_print("\n  Erro do driver: ", 0x07);
+    print_num((uint32_t)info.driver_error);
     video_print("\n  Vendor: 0x", 0x07);
     cmd_print_hex(info.vendor_id, 4U);
     video_print("  Device: 0x", 0x07);
@@ -2551,8 +2611,29 @@ static void cmd_net_info(const char* args) {
     video_print("\n", 0x07);
 }
 
+static void cmd_net_test(const char* args) {
+    char id[NETWORK_INTERFACE_ID_SIZE];
+    int result = shell_read_single_arg(args, id, sizeof(id));
+
+    if (result != OK) {
+        LOG_WARN("SHELL", "Uso invalido de net test");
+        video_print("Uso: net test <id>\n", 0x0C);
+        return;
+    }
+    result = network_manager_send_diagnostic(id);
+    if (result == OK) {
+        video_print("Teste TX Ethernet concluido.\n", 0x0A);
+        return;
+    }
+    LOG_WARN("SHELL", "Teste TX Ethernet nao concluiu");
+    video_print("Erro: teste TX Ethernet falhou (codigo ", 0x0C);
+    print_num((uint32_t)result);
+    video_print(").\n", 0x0C);
+}
+
 static void cmd_net(const char* args) {
     const char* info_args;
+    const char* test_args;
 
     if (shell_args_equal(args, "status")) {
         cmd_net_status();
@@ -2567,8 +2648,13 @@ static void cmd_net(const char* args) {
         cmd_net_info(info_args);
         return;
     }
+    test_args = shell_match_subcommand(args, "test");
+    if (test_args) {
+        cmd_net_test(test_args);
+        return;
+    }
     LOG_WARN("SHELL", "Uso invalido de net");
-    video_print("Uso: net status | net devices | net info <id>\n", 0x0C);
+    video_print("Uso: net status | net devices | net info <id> | net test <id>\n", 0x0C);
 }
 
 static void cmd_power(const char* args) {
