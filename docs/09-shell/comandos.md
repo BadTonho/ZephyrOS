@@ -293,12 +293,12 @@ zephyr> net socket table
 zephyr> nslookup example.com
 zephyr> ping 10.0.2.2
 zephyr> ping example.com 1
-zephyr> http get http://example.com/
+zephyr> http get http://neverssl.com/
 zephyr> http status
 zephyr> net check net-pci-00-03.0
 zephyr> net check qemu net-pci-00-03.0 10.0.2.15
 zephyr> net check qemu dhcp net-pci-00-03.0 example.com
-zephyr> net check qemu tcp net-pci-00-03.0 example.com
+zephyr> net check qemu tcp net-pci-00-03.0 neverssl.com
 ```
 
 `net status` separa inventario, controladores reconhecidos, drivers ativos,
@@ -418,7 +418,10 @@ HTTP, FIN, polling e invariantes em uma chamada. O dominio e obrigatorio e o
 resultado depende de DNS e HTTP externo disponiveis no host. As tres suites
 QEMU usam rotinas separadas e snapshots estaticos: isso impede que o
 otimizador some os diagnosticos em um unico frame maior que a pilha de 4 KiB
-do processo Shell.
+do processo Shell. O dominio da suite TCP deve responder com
+`Content-Length` ou fechamento de conexao; se o servidor escolher
+`Transfer-Encoding`, a S2.7 o rejeita de forma controlada. Por isso o exemplo
+usa `neverssl.com` em vez de depender do framing atual de `example.com`.
 
 O perfil segue o backend documentado em
 [QEMU Networking](https://gitlab.com/qemu-project/qemu/blob/master/docs/system/devices/net.rst);

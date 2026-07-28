@@ -555,7 +555,11 @@ static int http_finish_headers(void) {
         http_header_buffer, http_status.headers_length, &result);
 
     if (parse_result != OK) {
-        LOG_WARN("NET", "Resposta HTTP possui headers invalidos");
+        if (parse_result == ERR_UNAVAILABLE) {
+            LOG_WARN("NET", "Transfer-Encoding HTTP nao suportado");
+        } else {
+            LOG_WARN("NET", "Resposta HTTP possui headers invalidos");
+        }
         return parse_result;
     }
     http_status.status_code = result.status_code;

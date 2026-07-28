@@ -582,8 +582,11 @@ Plataforma de aplicativos:   [████████████████�
 - [x] Invariantes e vetores puros de TCP/HTTP integrados ao `regcheck full`.
 - [x] Suite QEMU principal validada pelo usuario: DHCP, DNS, handshake,
   dados, checksum, sockets, HTTP, fechamento, polling e invariantes em `OK`.
-- [ ] Revalidar `http get` digitado com Shift e `regcheck full` apos a
-  correcao do uso excessivo da pilha de 4 KiB do Shell.
+- [x] Entrada Shift e integridade da pilha/heap revalidadas pelo usuario:
+  `echo A:B?` funcionou e `regcheck full` permaneceu em `OK` antes e depois
+  do GET e da suite agrupada.
+- [ ] Revalidar o GET completo com um endpoint que responda por
+  `Content-Length` ou EOF; `Transfer-Encoding` permanece fora da S2.7.
 - [ ] Cobertura complementar: peer controlado, perda/retransmissao, janela
   zero, RST, tabela cheia, ausencia de NIC, RTL8139 e Classic/Modern.
 

@@ -4699,9 +4699,15 @@ static void cmd_http(const char* args) {
     result = cmd_http_execute(shell_http_command_url, 1U,
                               &shell_http_command_status);
     if (result != OK) {
-        video_print("Erro: HTTP GET falhou (codigo ", 0x0C);
-        print_num((uint32_t)result);
-        video_print(").\n", 0x0C);
+        if (result == ERR_UNAVAILABLE) {
+            video_print(
+                "Erro: resposta usa Transfer-Encoding nao suportado.\n",
+                0x0C);
+        } else {
+            video_print("Erro: HTTP GET falhou (codigo ", 0x0C);
+            print_num((uint32_t)result);
+            video_print(").\n", 0x0C);
+        }
     }
 }
 
@@ -5192,7 +5198,7 @@ static void cmd_net_check_qemu_tcp_print(
     cmd_net_check_print_case("Handshake e dados TCP", check->tcp);
     cmd_net_check_print_case("Checksum TCP", check->checksum);
     cmd_net_check_print_case("Socket RX/TX", check->sockets);
-    cmd_net_check_print_case("Resposta HTTP valida", check->http);
+    cmd_net_check_print_case("Resposta HTTP suportada", check->http);
     cmd_net_check_print_case("Fechamento TCP", check->closing);
     cmd_net_check_print_case("Polling e manutencao", check->polling);
     cmd_net_check_print_case("Invariantes de rede", check->invariants);
@@ -5201,9 +5207,9 @@ static void cmd_net_check_qemu_tcp_print(
                 passed ? 0x0A : 0x0C);
 }
 
+/* A suite e serial no Shell. Os snapshots em BSS evitam somar varios
+   status grandes a pilha de 4 KiB durante a espera HTTP. */
 static SHELL_NOINLINE void cmd_net_check_qemu_tcp(const char* args) {
-    /* A suite e serial no Shell. Manter os snapshots em BSS evita somar
-       varios status grandes a pilha de 4 KiB durante a espera HTTP. */
     static char id[NETWORK_INTERFACE_ID_SIZE];
     static char domain[SHELL_DNS_NAME_SIZE];
     static char url[HTTP_URL_BUFFER_SIZE];
@@ -5217,6 +5223,7 @@ static SHELL_NOINLINE void cmd_net_check_qemu_tcp(const char* args) {
     uint32_t address = 0;
     int result;
     uint8_t passed;
+    uint8_t metrics_valid = 0;
 
     if (shell_read_two_args(args, id, sizeof(id),
                             domain, sizeof(domain)) != OK) {
@@ -5244,27 +5251,34 @@ static SHELL_NOINLINE void cmd_net_check_qemu_tcp(const char* args) {
     if (result == OK &&
         (tcp_get_status(&tcp_before) != OK ||
          net_socket_get_status(&sockets_before) != OK ||
-         http_get_status(&http_before) != OK)) result = ERR_STATE;
+         http_get_status(&http_before) != OK)) {
+        result = ERR_STATE;
+    } else if (result == OK) {
+        metrics_valid = 1;
+    }
     if (result == OK) {
         result = cmd_http_execute(url, 0U, &http_after);
-        cmd_net_qemu_tcp_wait_close(tcp_before.fin_tx);
+        if (result == OK) {
+            cmd_net_qemu_tcp_wait_close(tcp_before.fin_tx);
+        }
     }
     if (tcp_get_status(&tcp_after) != OK ||
         net_socket_get_status(&sockets_after) != OK ||
         http_get_status(&http_after) != OK) {
         result = ERR_STATE;
+        metrics_valid = 0;
         kmemset(&tcp_after, 0, sizeof(tcp_after));
         kmemset(&sockets_after, 0, sizeof(sockets_after));
         kmemset(&http_after, 0, sizeof(http_after));
     }
-    check.tcp = result == OK &&
+    check.tcp = metrics_valid &&
         tcp_after.syn_tx > tcp_before.syn_tx &&
         tcp_after.syn_ack_rx > tcp_before.syn_ack_rx &&
         tcp_after.segments_rx > tcp_before.segments_rx &&
         tcp_after.segments_tx > tcp_before.segments_tx;
-    check.checksum = result == OK &&
+    check.checksum = metrics_valid &&
         tcp_after.rx_checksum_errors == tcp_before.rx_checksum_errors;
-    check.sockets = result == OK &&
+    check.sockets = metrics_valid &&
         sockets_after.connects > sockets_before.connects &&
         sockets_after.bytes_sent_tcp > sockets_before.bytes_sent_tcp &&
         sockets_after.bytes_received_tcp >
@@ -5277,9 +5291,9 @@ static SHELL_NOINLINE void cmd_net_check_qemu_tcp(const char* args) {
         http_after.headers_length != 0U &&
         http_after.requests_tx > http_before.requests_tx &&
         http_after.responses_rx > http_before.responses_rx;
-    check.closing = result == OK &&
+    check.closing = metrics_valid &&
         tcp_after.fin_tx > tcp_before.fin_tx;
-    check.polling =
+    check.polling = metrics_valid &&
         tcp_after.maintenance_cycles > tcp_before.maintenance_cycles &&
         sockets_after.maintenance_cycles >
             sockets_before.maintenance_cycles &&

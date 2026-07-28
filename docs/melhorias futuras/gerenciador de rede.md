@@ -131,8 +131,11 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 - [x] Vetores puros e invariantes adicionados ao `regcheck full`.
 - [x] Suite principal validada no QEMU padrao com
   `net check qemu tcp net-pci-00-03.0 example.com`.
-- [ ] Revalidar o GET individual e `regcheck full` apos separar os frames
-  das suites agrupadas para respeitar a pilha de 4 KiB do Shell.
+- [x] Revalidar entrada Shift e integridade da pilha/heap apos separar os
+  frames das suites: `echo A:B?` funcionou e `regcheck full` permaneceu em
+  `OK` antes e depois da rede.
+- [ ] Revalidar o GET individual com um servidor que responda por
+  `Content-Length` ou EOF.
 - [ ] Cobertura complementar: perda/retransmissao com peer, RST, janela zero,
   handles obsoletos, tabela cheia, fallbacks e Classic/Modern.
 
