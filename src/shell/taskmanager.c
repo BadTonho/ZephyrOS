@@ -117,6 +117,7 @@ static const wm_hosted_app_t taskmgr_hosted_app = {
     WM_APP_TASKMGR, "ZephyrOS Task Manager", "TaskMgr",
     WM_HOSTED_MIN_WIDTH, WM_HOSTED_MIN_HEIGHT,
     TSKMGR_GUI_DEFAULT_WIDTH + 4, TSKMGR_GUI_DEFAULT_HEIGHT + 28,
+    WM_KEY_REDRAW_WINDOW_MANAGER,
     taskmgr_hosted_draw, taskmgr_gui_handle_key, taskmgr_hosted_mouse,
     taskmgr_hosted_close
 };

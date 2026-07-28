@@ -114,6 +114,7 @@ static const wm_hosted_app_t fm_hosted_app = {
     WM_APP_EXPLORER, "ZephyrOS Explorer", "Explorer",
     WM_HOSTED_MIN_WIDTH, WM_HOSTED_MIN_HEIGHT,
     FM_MODERN_DEFAULT_WIDTH + 4, FM_MODERN_DEFAULT_HEIGHT + 28,
+    WM_KEY_REDRAW_WINDOW_MANAGER,
     fm_hosted_draw, fm_handle_key, fm_hosted_mouse, fm_hosted_close
 };
 

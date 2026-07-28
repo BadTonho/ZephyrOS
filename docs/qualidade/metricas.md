@@ -43,9 +43,19 @@ mudanca; nao crie uma entrada artificial.
   em `0/255`, com pico `6`, `0` descartes e `48` eventos processados. IPC
   registrou `48` envios/recebimentos, sem falhas ou fila cheia; `app inputtest`
   tambem confirmou o cancelamento por `F12` e a devolucao de foco ao Shell.
+- A latencia visual restante foi localizada no Shell hospedado: o WM executava
+  `wm_gui_draw_all()` para press e release, recompondo Desktop, janelas e
+  taskbar por scancode. O pior frame observado chegou a `6` ticks. O terminal
+  moderno agora assume a apresentacao da entrada e acumula apenas as celulas
+  da tecla e do cursor; scroll e saidas longas mantem fallback por area.
+- A entrada no sistema tambem acumulava apresentacoes completas quando os logs
+  da segunda metade do boot atingiam o fim da tela. Essa etapa passa a compor
+  um unico frame ate a cena inicial; o panic handler força a apresentacao
+  pendente antes de interromper o kernel.
 - Conclusao: o custo estrutural redundante do bootstrap foi removido sem
   migrar o PMM para mapeamento sob demanda, e a digitacao normal nao apresentou
-  backlog nem perda de eventos no cenario validado.
+  backlog nem perda de eventos no cenario validado. A reducao visual aguarda
+  comparacao manual de apresentacoes completas, bytes e ticks no QEMU.
 - Impacto: enderecos High Memory, ABI ZAPP, RAM suportada, stage2 e
   `boot.asm` permanecem inalterados. O Shell deixa a atualizacao do relogio
   exclusivamente com o processo System e seu fallback.

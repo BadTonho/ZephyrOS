@@ -44,6 +44,7 @@ void panic(const char* message) {
     video_set_color(VGA_COLOR_WHITE, VGA_COLOR_RED);
     video_print("O sistema foi interrompido.\n", 0x4F);
     video_print("Reinicie o computador para continuar.\n", 0x4F);
+    video_flush_updates();
 
     panic_halt();
 }
@@ -63,6 +64,7 @@ void panic_memory(const char* message, uint32_t mmap_entries,
     panic_print_metric("  Paginas livres: ", free_pages);
     video_print("\nVerifique o mapa E820 e o bitmap PMM.\n", 0x4F);
     video_print("O sistema foi interrompido.\n", 0x4F);
+    video_flush_updates();
 
     panic_halt();
 }

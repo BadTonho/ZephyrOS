@@ -93,6 +93,7 @@ static const wm_hosted_app_t settings_hosted_app = {
     WM_APP_SETTINGS, "Configuracoes do ZephyrOS", "Settings",
     WM_HOSTED_MIN_WIDTH, WM_HOSTED_MIN_HEIGHT,
     SETTINGS_MODERN_DEFAULT_WIDTH + 4, SETTINGS_MODERN_DEFAULT_HEIGHT + 28,
+    WM_KEY_REDRAW_WINDOW_MANAGER,
     settings_hosted_draw, settings_hosted_key, settings_hosted_mouse,
     settings_hosted_close
 };

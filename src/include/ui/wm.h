@@ -29,6 +29,11 @@ typedef enum {
 } wm_app_type_t;
 
 typedef enum {
+    WM_KEY_REDRAW_WINDOW_MANAGER = 0,
+    WM_KEY_REDRAW_APPLICATION
+} wm_key_redraw_t;
+
+typedef enum {
     WM_BTNS_RIGHT = 0,
     WM_BTNS_LEFT
 } wm_btn_position_t;
@@ -56,6 +61,7 @@ typedef struct {
     int min_height;
     int default_width;
     int default_height;
+    wm_key_redraw_t key_redraw;
     wm_redraw_handler_t on_draw;
     wm_key_handler_t on_key;
     wm_mouse_handler_t on_mouse;
@@ -136,6 +142,7 @@ int  wm_is_active(void);
 void wm_set_active(int active);
 int  wm_register_hosted_app(const wm_hosted_app_t* app);
 int  wm_close_hosted_app(wm_app_type_t app_type);
+int  wm_is_hosted_app_focused(wm_app_type_t app_type);
 void wm_request_hosted_redraw(wm_app_type_t app_type);
 
 void wm_update_cpu_stats(void);

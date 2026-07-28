@@ -155,6 +155,7 @@ static const wm_hosted_app_t shell_hosted_app = {
     WM_HOSTED_MIN_WIDTH, WM_HOSTED_MIN_HEIGHT,
     SHELL_HOSTED_DEFAULT_CONTENT_WIDTH + SHELL_HOSTED_FRAME_WIDTH,
     SHELL_HOSTED_DEFAULT_CONTENT_HEIGHT + SHELL_HOSTED_FRAME_HEIGHT,
+    WM_KEY_REDRAW_APPLICATION,
     shell_hosted_draw, shell_hosted_key, shell_hosted_mouse, shell_hosted_close
 };
 static shell_q2check_t shell_q2check;
@@ -451,8 +452,10 @@ static void shell_hosted_draw(int x, int y, int width, int height) {
 
 static void shell_hosted_key(uint8_t scancode) {
     shell_handle_terminal_key(scancode);
-    /* O WM recompõe ao fim do despacho da tecla; evita um segundo frame no loop. */
-    (void)video_terminal_take_hosted_dirty();
+    if (wm_is_hosted_app_focused(WM_APP_SHELL) &&
+        video_terminal_present_hosted_dirty() != OK) {
+        LOG_WARN("SHELL", "Falha ao apresentar entrada do terminal hospedado");
+    }
 }
 
 static int shell_hosted_mouse(mouse_event_t* event, int x, int y,

@@ -473,6 +473,10 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         }
     }
 
+    /* A segunda metade do boot produz scroll no framebuffer. O frame externo
+       preserva os logs no backbuffer e apresenta somente a cena final. */
+    video_begin_update();
+
     video_print("[..] Iniciando processos...\n", 0x08);
     tss_init();
     process_init();
@@ -688,6 +692,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     /* Desktop e a cena padrao; o Shell abre somente por solicitacao. */
     desktop_set_active(1);
     desktop_draw();
+    video_end_update();
 
     while (1) {
         if (kernel_service_fallback) {

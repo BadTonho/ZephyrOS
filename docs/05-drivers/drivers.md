@@ -222,21 +222,25 @@ mouse          # Mostra X, Y, botoes e disponibilidade da roda
 
 O buffer textual do Shell continua sendo um histórico circular de 200 linhas.
 No modo Moderno, ele também pode ser uma superfície do Window Manager: o
-driver atualiza somente esse buffer e o WM o pinta dentro da área interna da
-janela, no mesmo frame VESA que a moldura e a taskbar.
+driver mantém o buffer e a geometria da área interna da janela. Saídas longas
+continuam disponíveis para recomposição pelo WM; na digitação, o próprio
+terminal pode apresentar apenas as células alteradas e o cursor.
 
 ```c
 void video_terminal_set_hosted(int hosted);
 int  video_terminal_is_hosted(void);
 int  video_terminal_draw(int x, int y, int width, int height);
 int  video_terminal_take_hosted_dirty(void);
+int  video_terminal_present_hosted_dirty(void);
 ```
 
 `video_terminal_set_hosted(1)` ativa a superfície sem limpar o histórico.
 Enquanto ela estiver ativa, `video_print()`, `video_put_char()` e as operações
-de scroll atualizam o buffer e sinalizam alteração pendente; elas não podem
-apresentar um frame independente. O consumidor chama
-`video_terminal_take_hosted_dirty()` e solicita uma recomposição ao WM.
+de scroll atualizam o buffer e acumulam um retângulo sujo. O consumidor pode
+usar `video_terminal_present_hosted_dirty()` para apresentar diretamente a
+menor região segura; uma tecla comum cobre a célula escrita e a nova posição
+do cursor. Saídas assíncronas continuam usando
+`video_terminal_take_hosted_dirty()` para solicitar recomposição ao WM.
 
 `video_terminal_draw()` recebe o retângulo VESA de conteúdo, preserva a paleta
 VGA, desenha cursor e rodapé de histórico e faz refluxo visual conforme a
@@ -245,6 +249,11 @@ célula de texto mais o rodapé; em caso contrário retorna erro e registra
 `LOG_WARN`. O mínimo estrutural da janela hospedada é aplicado pelo WM, não
 pelo terminal. No modo Clássico, o terminal continua usando a apresentação
 textual normal.
+
+Durante a segunda metade do boot, `video_begin_update()` mantém os logs no
+backbuffer até a cena inicial estar pronta, reduzindo cópias completas causadas
+por scroll. `video_flush_updates()` encerra frames de texto pendentes e é usado
+pelo panic handler para garantir que um diagnóstico fatal continue visível.
 
 ---
 

@@ -188,6 +188,7 @@ typedef struct {
     const char* taskbar_label;
     int min_width, min_height;
     int default_width, default_height;
+    wm_key_redraw_t key_redraw;
     wm_redraw_handler_t on_draw;
     wm_key_handler_t on_key;
     wm_mouse_handler_t on_mouse;
@@ -196,8 +197,18 @@ typedef struct {
 
 int  wm_register_hosted_app(const wm_hosted_app_t* app);
 int  wm_close_hosted_app(wm_app_type_t app_type);
+int  wm_is_hosted_app_focused(wm_app_type_t app_type);
 void wm_request_hosted_redraw(wm_app_type_t app_type);
 ```
+
+`key_redraw` define quem apresenta a resposta ao teclado. O valor
+`WM_KEY_REDRAW_WINDOW_MANAGER` preserva a recomposição completa usada pelos
+aplicativos gerais; `WM_KEY_REDRAW_APPLICATION` permite que uma superfície com
+controle de dano, como o terminal do Shell, apresente somente sua região suja.
+O WM não inicia uma segunda recomposição depois desse callback enquanto o mesmo
+aplicativo permanecer focado. Se o callback abrir ou focalizar outra janela, a
+composição completa preserva o Z-order; o aplicativo pode consultar essa
+condição com `wm_is_hosted_app_focused()`.
 
 `WM_HOSTED_MIN_WIDTH` e `WM_HOSTED_MIN_HEIGHT` definem o mínimo estrutural
 comum de 180x128 px para as janelas hospedadas. Os aplicativos não impõem um

@@ -37,6 +37,7 @@ void video_put_char(char c, uint8_t color);
 void video_print(const char* str, uint8_t color);
 void video_begin_update(void);
 void video_end_update(void);
+void video_flush_updates(void);
 void video_set_color(uint8_t fg, uint8_t bg);
 void video_newline(void);
 void video_backspace(void);
@@ -66,5 +67,6 @@ void video_terminal_set_hosted(int hosted);
 int  video_terminal_is_hosted(void);
 int  video_terminal_draw(int x, int y, int width, int height);
 int  video_terminal_take_hosted_dirty(void);
+int  video_terminal_present_hosted_dirty(void);
 
 #endif

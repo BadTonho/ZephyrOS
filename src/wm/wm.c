@@ -836,6 +836,13 @@ void wm_request_hosted_redraw(wm_app_type_t app_type) {
     wm_gui_draw_all();
 }
 
+int wm_is_hosted_app_focused(wm_app_type_t app_type) {
+    return wm_active && wm_gui_enabled() && wm_gui_focused >= 0 &&
+           wm_gui_windows[wm_gui_focused].visible &&
+           wm_gui_windows[wm_gui_focused].app &&
+           wm_gui_windows[wm_gui_focused].app->app_type == app_type;
+}
+
 void wm_draw_desktop(void) {
     for (int y = 0; y < SCREEN_ROWS - 1; y++) {
         for (int x = 0; x < SCREEN_COLS; x++) {
@@ -1237,9 +1244,19 @@ static void wm_gui_dispatch_key(uint8_t scancode) {
 }
 
 static void wm_gui_dispatch_key_sequence(int extended, uint8_t scancode) {
+    const wm_hosted_app_t* original_app = wm_gui_focused >= 0 ?
+        wm_gui_windows[wm_gui_focused].app : 0;
+    int application_redraw = wm_gui_focused >= 0 &&
+        original_app && original_app->key_redraw ==
+            WM_KEY_REDRAW_APPLICATION;
+
     if (extended) wm_gui_dispatch_key(WM_SCANCODE_EXTENDED);
     wm_gui_dispatch_key(scancode);
-    if (wm_active && wm_gui_enabled()) wm_gui_draw_all();
+    if (wm_active && wm_gui_enabled() &&
+        (!application_redraw || wm_gui_focused < 0 ||
+         wm_gui_windows[wm_gui_focused].app != original_app)) {
+        wm_gui_draw_all();
+    }
 }
 
 static int wm_gui_handle_key(uint8_t scancode) {
