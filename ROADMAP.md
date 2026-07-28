@@ -379,7 +379,7 @@ Plataforma de aplicativos:   [████████████████�
 
 ---
 
-## S1.1 - Servicos observaveis de sistema (validacao pendente)
+## S1.1 - Servicos observaveis de sistema (concluida)
 
 - [x] Inventario somente de leitura de PCI, ATA, AC97, PS/2, PIT, VGA, VESA e
   PC Speaker, acessivel por `devices`, `device-info` e `device-scan`.
@@ -387,8 +387,9 @@ Plataforma de aplicativos:   [████████████████�
   S1-S4 indisponiveis sem ACPI e S5 explicitamente simulado.
 - [x] Componentes `Devices` e `Power` no `health`, com degradacao controlada
   para inventario PCI parcial.
-- [ ] O usuario deve validar build limpo e a matriz QEMU antes de marcar S1.1
-  como concluida.
+- [x] Build limpo e matriz manual no QEMU validados pelo usuario: inventario
+  compacto e verboso, consulta por ID, re-scan PCI, diagnostico de energia,
+  `health` e regressao sem erros bloqueantes.
 
 ## Roadmaps por etapa
 
