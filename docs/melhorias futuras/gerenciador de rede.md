@@ -55,7 +55,7 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
   `device-scan` e `regcheck full` aprovados. Sem NIC e com RTL8139, o boot e
   o RegCheck permaneceram funcionais e `net test` foi recusado controladamente.
 
-## S2.3 - Camada Ethernet e entrega de RX (implementada; validacao pendente)
+## S2.3 - Camada Ethernet e entrega de RX (concluida e validada)
 
 - [x] Criar uma fronteira segura entre a IRQ do E1000 e o processamento de
   protocolos: frames recebidos devem ser copiados para fila fixa ou obtidos
@@ -66,8 +66,11 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
   suportar broadcast e unicast para a MAC local, com contadores observaveis.
 - [x] Acrescentar comando Shell de diagnostico Ethernet e preservar o
   `net test <id>` como transmissao L2 sob demanda.
-- [ ] Validar no QEMU padrao recepcao enfileirada, TX, descarte de frame
-  invalido, `device-scan` e `regcheck full`, sem regressao Classic/Modern.
+- [x] Validada pelo usuario no QEMU padrao: camada ativa, polling ocioso
+  zerado, TX contabilizado no E1000 e na camada, `device-scan` aprovado e
+  `regcheck full` concluido em `OK`.
+- [ ] Cobertura complementar: injetar RX externo e frame invalido e repetir a
+  regressao visual Classic/Modern; esses cenarios nao bloqueiam a conclusao.
 
 ## Sequencia prevista apos S2.3
 

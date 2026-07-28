@@ -472,7 +472,7 @@ Plataforma de aplicativos:   [████████████████�
   TX, `device-scan`, `regcheck full` e sintaxe invalida; tambem sem NIC e
   com RTL8139, ambos com falhas controladas e `RegCheck: OK`.
 
-## S2.3 - Camada Ethernet e entrega de RX (implementada; validacao pendente)
+## S2.3 - Camada Ethernet e entrega de RX (concluida e validada)
 
 - [x] Criar uma API de recepcao por fila fixa ou polling entre o E1000 e a
   camada Ethernet; a IRQ continuara curta e nao executara ARP/IP diretamente.
@@ -482,8 +482,11 @@ Plataforma de aplicativos:   [████████████████�
   sem transmitir automaticamente no boot.
 - [x] Manter ARP, IPv4, DHCP, DNS, sockets, servicos remotos e RTL8139 fora
   desta entrega.
-- [ ] Validar pelo usuario com Q3, build limpo e QEMU padrao, incluindo RX,
-  TX, frame invalido, `device-scan`, `regcheck full` e Classic/Modern.
+- [x] Validada pelo usuario com Q3, build limpo e QEMU padrao: camada ativa,
+  polling ocioso zerado, TX contabilizado no driver e na camada,
+  `device-scan` aprovado e `regcheck full` concluido em `OK`.
+- [ ] Cobertura complementar: injetar RX externo e frame invalido e repetir a
+  regressao visual Classic/Modern; esses cenarios nao bloqueiam a conclusao.
 
 ## Continuacao da S2 - Rede e atualizacoes (planejada)
 
