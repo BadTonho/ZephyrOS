@@ -208,6 +208,11 @@ make debug
 make clean
 ```
 
+`make run` creates an E1000 NIC explicitly with QEMU user networking.
+`QEMU_NET_ARGS` can be overridden for alternate scenarios without editing
+the Makefile, for example with `-nic none` or
+`-nic user,model=rtl8139`.
+
 ---
 
 ## Shell Commands

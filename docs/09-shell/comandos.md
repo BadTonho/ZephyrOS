@@ -429,6 +429,9 @@ mascarados. O comando `http get` individual continua com uma unica sessao.
 O perfil segue o backend documentado em
 [QEMU Networking](https://gitlab.com/qemu-project/qemu/blob/master/docs/system/devices/net.rst);
 uma configuracao de backend diferente pode nao oferecer o host virtual `.2`.
+O alvo `make run` fixa `-nic user,model=e1000`, evitando depender dos
+dispositivos padrao da versao local do QEMU. Testes sem NIC ou com RTL8139
+podem sobrescrever `QEMU_NET_ARGS`.
 
 ## `acpi status`
 

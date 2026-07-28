@@ -589,8 +589,10 @@ Plataforma de aplicativos:   [████████████████�
   corpo recebidos, seguido por `regcheck full` em `OK`.
 - [ ] Revalidar a suite agrupada apos adicionar repeticao controlada para
   timeout de transporte; `Transfer-Encoding` permanece fora da S2.7.
+- [x] Fallback sem NIC validado: interface inexistente foi recusada sem
+  trafego e o `regcheck full` permaneceu em `OK`.
 - [ ] Cobertura complementar: peer controlado, perda/retransmissao, janela
-  zero, RST, tabela cheia, ausencia de NIC, RTL8139 e Classic/Modern.
+  zero, RST, tabela cheia, RTL8139 e Classic/Modern.
 
 ## Continuacao da S2 - Rede e atualizacoes (planejada)
 

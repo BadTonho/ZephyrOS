@@ -138,8 +138,10 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
   corpo recebidos, seguido por `regcheck full` em `OK`.
 - [ ] Revalidar a suite agrupada apos adicionar repeticao controlada para
   timeouts de transporte do servidor externo.
+- [x] Fallback sem NIC validado: interface inexistente recusada e
+  `regcheck full` em `OK`.
 - [ ] Cobertura complementar: perda/retransmissao com peer, RST, janela zero,
-  handles obsoletos, tabela cheia, fallbacks e Classic/Modern.
+  handles obsoletos, tabela cheia, RTL8139 e Classic/Modern.
 
 ## Sequencia prevista apos S2.7
 

@@ -95,8 +95,10 @@ antecipar interfaces ou permissoes que ainda nao existem.
   corpo recebidos, com `regcheck full` posterior em `OK`.
 - [ ] Revalidar a suite agrupada com a repeticao controlada de conexao para
   timeout; `Transfer-Encoding` continua fora do recorte da S2.7.
+- [x] Fallback sem NIC validado com falha controlada da suite e
+  `regcheck full` em `OK`.
 - [ ] Cobertura complementar da S2.7: peer controlado, perda de segmentos,
-  janela zero, RST, ausencia de NIC, RTL8139 e modos Classic/Modern.
+  janela zero, RST, RTL8139 e modos Classic/Modern.
 - [ ] S2.8: suporte multi-NIC e RTL8139 sem duplicar a camada de protocolos.
 - [ ] Planejar atualizacao assinada ou verificada somente apos existir formato
   de pacote e politica de integridade.
