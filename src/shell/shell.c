@@ -27,6 +27,8 @@
 #include "core/recovery.h"
 #include "core/device_manager.h"
 #include "core/arp.h"
+#include "core/ipv4.h"
+#include "core/icmp.h"
 #include "core/network_manager.h"
 #include "core/power.h"
 #include "core/app_api.h"
@@ -52,9 +54,12 @@
 #define SHELL_IPV4_OCTET_DIGITS 3U
 #define SHELL_NET_QEMU_REPLY_IPV4 0x0A000202U
 #define SHELL_NET_QEMU_TIMEOUT_IPV4 0x0A0002FEU
+#define SHELL_NET_QEMU_SUBNET_MASK 0xFFFFFF00U
 #define SHELL_NET_CHECK_WAIT_SECONDS 5U
 #define SHELL_NET_CHECK_BLOCK_TICKS 1U
 #define SHELL_NET_CHECK_EXPECTED_ATTEMPTS 3U
+#define SHELL_PING_WAIT_EXTRA_SECONDS 5U
+#define SHELL_MILLISECONDS_PER_SECOND 1000U
 #define SHELL_MAX_TICK_INTERVAL 0xFFFFFFFFU
 
 typedef enum {
@@ -134,6 +139,8 @@ typedef struct {
     uint8_t reply;
     uint8_t cache_hit;
     uint8_t timeout;
+    uint8_t ipv4;
+    uint8_t icmp;
     uint8_t polling;
     uint8_t invariants;
 } shell_net_qemu_check_t;
@@ -901,7 +908,9 @@ static int shell_regcheck_validate_network_recovery(
         expected_error = ERR_OVERFLOW;
     } else if (status->active_count &&
                status->ethernet_available &&
-               status->arp_available) {
+               status->arp_available &&
+               status->ipv4_available &&
+               status->icmp_available) {
         expected_state = RECOVERY_STATE_READY;
         expected_error = OK;
     } else if (status->active_count) {
@@ -953,6 +962,40 @@ static int shell_regcheck_validate_arp(
     return OK;
 }
 
+static int shell_regcheck_validate_ipv4_icmp(
+    const network_manager_status_t* network_status) {
+    ipv4_status_t ipv4_status;
+    icmp_status_t icmp_status;
+    int result;
+
+    if (!network_status) {
+        LOG_ERROR("SHELL", "RegCheck Full recebeu estado IPv4 nulo");
+        return ERR_NULL;
+    }
+    result = ipv4_get_status(&ipv4_status);
+    if (result != OK || icmp_get_status(&icmp_status) != OK ||
+        ipv4_validate_state() != OK || icmp_validate_state() != OK ||
+        (network_status->ipv4_available && !ipv4_status.initialized) ||
+        (network_status->icmp_available && !icmp_status.initialized) ||
+        (network_status->ipv4_available &&
+         !network_status->arp_available) ||
+        (network_status->icmp_available &&
+         !network_status->ipv4_available) ||
+        (network_status->ipv4_configured !=
+         (uint8_t)(network_status->ipv4_available &&
+                   ipv4_status.configured)) ||
+        (network_status->ipv4_configured &&
+         (!network_status->arp_configured ||
+          ipv4_status.local_ip == 0U)) ||
+        ipv4_status.handler_count > IPV4_PROTOCOL_HANDLER_CAPACITY ||
+        (network_status->icmp_available &&
+         !ipv4_status.handler_count)) {
+        LOG_ERROR("SHELL", "RegCheck Full detectou estado IPv4/ICMP invalido");
+        return result == OK ? ERR_STATE : result;
+    }
+    return OK;
+}
+
 static int shell_regcheck_validate_network(void) {
     network_manager_status_t status;
     uint32_t count = 0;
@@ -965,15 +1008,20 @@ static int shell_regcheck_validate_network(void) {
         count != status.interface_count ||
         count > NETWORK_MANAGER_MAX_INTERFACES ||
         status.recognized_count > count || status.active_count > count ||
-        status.ipv4_available ||
         (status.arp_configured && !status.arp_available) ||
+        (status.ipv4_configured && !status.ipv4_available) ||
         (status.arp_available &&
          (!status.active_count || !status.ethernet_available)) ||
+        (status.ipv4_available &&
+         (!status.active_count || !status.arp_available)) ||
+        (status.icmp_available &&
+         (!status.active_count || !status.ipv4_available)) ||
         (status.ethernet_available && !status.active_count) ||
         (status.packet_io_available && !status.active_count) ||
         (!status.packet_io_available && status.active_count) ||
         (status.active_count && status.ethernet_available &&
-         status.arp_available && !status.partial &&
+         status.arp_available && status.ipv4_available &&
+         status.icmp_available && !status.partial &&
          status.last_error != OK) ||
         (!status.active_count && !status.interface_count &&
          status.last_error != ERR_NOT_FOUND)) {
@@ -998,6 +1046,8 @@ static int shell_regcheck_validate_network(void) {
         return ERR_STATE;
     }
     result = shell_regcheck_validate_arp(&status);
+    if (result != OK) return result;
+    result = shell_regcheck_validate_ipv4_icmp(&status);
     if (result != OK) return result;
     return shell_regcheck_validate_network_recovery(&status);
 }
@@ -1867,8 +1917,12 @@ static void cmd_help(void) {
     video_print("  net arp config <id> <ip> - Configura ARP em RAM\n", 0x07);
     video_print("  net arp status|table|clear - Inspeciona cache ARP\n", 0x07);
     video_print("  net arp resolve <ip> - Resolve IPv4 para MAC\n", 0x07);
+    video_print("  net ipv4 config <id> <ip> <mask> <gw> - Configura IPv4\n",
+                0x07);
+    video_print("  net ipv4 status - Inspeciona IPv4 e ICMP\n", 0x07);
+    video_print("  ping <ip> [1-10] - Executa ICMP Echo cooperativo\n", 0x07);
     video_print("  net check [id] - Agrupa diagnosticos de rede\n", 0x07);
-    video_print("  net check qemu <id> <ip> - Executa suite ARP\n", 0x07);
+    video_print("  net check qemu <id> <ip> - Executa suite de rede\n", 0x07);
     video_print("  acpi status - Mostra tabelas e energia ACPI observadas\n", 0x07);
     video_print("  power status - Mostra capacidades reais de energia\n", 0x07);
     video_print("  kmetrics - Mostra linha-base de metricas do kernel\n", 0x07);
@@ -2253,6 +2307,37 @@ static int shell_read_two_args(const char* args, char* first,
     return OK;
 }
 
+static int shell_read_four_args(const char* args, char* first,
+                                uint32_t first_size, char* second,
+                                uint32_t second_size, char* third,
+                                uint32_t third_size, char* fourth,
+                                uint32_t fourth_size) {
+    const char* cursor = args;
+    int result;
+
+    if (!args || !first || !second || !third || !fourth) {
+        LOG_ERROR("SHELL", "Argumentos nulos ao ler quatro valores");
+        return ERR_NULL;
+    }
+    result = shell_read_token(&cursor, first, first_size);
+    if (result == OK) {
+        result = shell_read_token(&cursor, second, second_size);
+    }
+    if (result == OK) {
+        result = shell_read_token(&cursor, third, third_size);
+    }
+    if (result == OK) {
+        result = shell_read_token(&cursor, fourth, fourth_size);
+    }
+    if (result != OK) return result;
+    while (*cursor == ' ' || *cursor == '\t') cursor++;
+    if (*cursor) {
+        LOG_WARN("SHELL", "Comando recebeu argumentos excedentes");
+        return ERR_INVALID;
+    }
+    return OK;
+}
+
 static void cmd_print_hex(uint32_t value, uint32_t digits) {
     static const char hex[] = "0123456789ABCDEF";
 
@@ -2577,8 +2662,16 @@ static void cmd_net_status(void) {
         video_print("DISPONIVEL (NAO CONFIGURADO)", 0x0E);
     }
     video_print("\n  IPv4: ", 0x07);
-    video_print(status.ipv4_available ? "DISPONIVEL" : "NAO IMPLEMENTADO",
-                status.ipv4_available ? 0x0A : 0x0E);
+    if (!status.ipv4_available) {
+        video_print("INDISPONIVEL", 0x0E);
+    } else if (status.ipv4_configured) {
+        video_print("CONFIGURADO", 0x0A);
+    } else {
+        video_print("DISPONIVEL (NAO CONFIGURADO)", 0x0E);
+    }
+    video_print("\n  ICMP Echo: ", 0x07);
+    video_print(status.icmp_available ? "DISPONIVEL" : "INDISPONIVEL",
+                status.icmp_available ? 0x0A : 0x0E);
     video_print("\n  Ultimo erro: ", 0x07);
     print_num((uint32_t)status.last_error);
     video_print("\n", 0x07);
@@ -3115,6 +3208,415 @@ static void cmd_net_arp(const char* args) {
                 "table | clear\n", 0x0C);
 }
 
+static uint32_t cmd_net_ticks_to_milliseconds(uint32_t ticks) {
+    uint32_t frequency = timer_get_frequency();
+
+    if (!frequency) return 0;
+    if (ticks >
+        SHELL_MAX_TICK_INTERVAL / SHELL_MILLISECONDS_PER_SECOND) {
+        return SHELL_MAX_TICK_INTERVAL;
+    }
+    return ticks * SHELL_MILLISECONDS_PER_SECOND / frequency;
+}
+
+static void cmd_net_ipv4_print_config(const ipv4_status_t* status) {
+    video_print("IPv4:\n  Estado: ", 0x0B);
+    video_print(status->initialized ? "DISPONIVEL" : "INDISPONIVEL",
+                status->initialized ? 0x0A : 0x0E);
+    video_print("\n  Configuracao: ", 0x07);
+    video_print(status->configured ? "ATIVA" : "NAO CONFIGURADO",
+                status->configured ? 0x0A : 0x0E);
+    video_print("\n  Interface: ", 0x07);
+    video_print(status->configured ? status->interface_id : "N/D",
+                status->configured ? 0x0B : 0x08);
+    video_print("\n  IPv4 local: ", 0x07);
+    if (status->configured) cmd_net_print_ipv4(status->local_ip);
+    else video_print("N/D", 0x08);
+    video_print("  Mascara: ", 0x07);
+    if (status->configured) cmd_net_print_ipv4(status->subnet_mask);
+    else video_print("N/D", 0x08);
+    video_print("  Gateway: ", 0x07);
+    if (status->configured && status->gateway) {
+        cmd_net_print_ipv4(status->gateway);
+    } else {
+        video_print(status->configured ? "SEM ROTA" : "N/D", 0x08);
+    }
+    video_print("\n  MTU: ", 0x07);
+    print_num(IPV4_MTU);
+}
+
+static void cmd_net_ipv4_print_counters(const ipv4_status_t* status) {
+    video_print("\n  Pacotes RX/TX: ", 0x07);
+    print_num(status->rx_packets);
+    video_print("/", 0x07);
+    print_num(status->tx_packets);
+    video_print("  Bytes RX/TX: ", 0x07);
+    print_num(status->rx_bytes);
+    video_print("/", 0x07);
+    print_num(status->tx_bytes);
+    video_print("\n  TX rota direta/gateway: ", 0x07);
+    print_num(status->tx_direct);
+    video_print("/", 0x07);
+    print_num(status->tx_via_gateway);
+    video_print("  Entregues: ", 0x07);
+    print_num(status->rx_delivered);
+    video_print("\n  Invalidos/checksum/opcoes/fragmentos: ", 0x07);
+    print_num(status->rx_invalid);
+    video_print("/", 0x07);
+    print_num(status->rx_checksum_errors);
+    video_print("/", 0x07);
+    print_num(status->rx_options);
+    video_print("/", 0x07);
+    print_num(status->rx_fragments);
+    video_print("\n  Ignorados/sem handler/erros protocolo: ", 0x07);
+    print_num(status->rx_ignored);
+    video_print("/", 0x07);
+    print_num(status->rx_unhandled);
+    video_print("/", 0x07);
+    print_num(status->rx_protocol_errors);
+    video_print("  Handlers: ", 0x07);
+    print_num(status->handler_count);
+    video_print("\n  Ultimo erro: ", 0x07);
+    print_num((uint32_t)status->last_error);
+    video_print("\n", 0x07);
+}
+
+static void cmd_net_icmp_print_status(const icmp_status_t* status) {
+    uint32_t average_ticks = status->received ?
+        status->rtt_total_ticks / status->received : 0U;
+    uint32_t loss_percent = status->requested_count ?
+        (uint32_t)status->timeouts * 100U /
+            status->requested_count : 0U;
+
+    video_print("ICMP Echo:\n  Estado: ", 0x0B);
+    video_print(status->initialized ? "DISPONIVEL" : "INDISPONIVEL",
+                status->initialized ? 0x0A : 0x0E);
+    video_print("\n  Echo request RX/TX: ", 0x07);
+    print_num(status->echo_requests_rx);
+    video_print("/", 0x07);
+    print_num(status->echo_requests_tx);
+    video_print("  Echo reply RX/TX: ", 0x07);
+    print_num(status->echo_replies_rx);
+    video_print("/", 0x07);
+    print_num(status->echo_replies_tx);
+    video_print("\n  Sessao: ", 0x07);
+    video_print(icmp_ping_state_name(status->state),
+                status->state == ICMP_PING_FAILED ? 0x0C :
+                status->state == ICMP_PING_COMPLETE ? 0x0A : 0x0E);
+    video_print("  Alvo: ", 0x07);
+    if (status->requested_count) cmd_net_print_ipv4(status->target_ip);
+    else video_print("N/D", 0x08);
+    video_print("  id/seq: ", 0x07);
+    print_num(status->identifier);
+    video_print("/", 0x07);
+    print_num(status->current_sequence);
+    video_print("\n  Tentativas pedidas: ", 0x07);
+    print_num(status->requested_count);
+    video_print("  enviados/recebidos/timeouts: ", 0x07);
+    print_num(status->sent);
+    video_print("/", 0x07);
+    print_num(status->received);
+    video_print("/", 0x07);
+    print_num(status->timeouts);
+    video_print("  Perdas confirmadas: ", 0x07);
+    print_num(status->timeouts);
+    video_print(" (", 0x07);
+    print_num(loss_percent);
+    video_print("%)", 0x07);
+    video_print("\n  RTT min/medio/max: ", 0x07);
+    print_num(cmd_net_ticks_to_milliseconds(status->rtt_min_ticks));
+    video_print("/", 0x07);
+    print_num(cmd_net_ticks_to_milliseconds(average_ticks));
+    video_print("/", 0x07);
+    print_num(cmd_net_ticks_to_milliseconds(status->rtt_max_ticks));
+    video_print(" ms  Reply pendente: ", 0x07);
+    video_print(status->reply_pending ? "SIM" : "NAO",
+                status->reply_pending ? 0x0E : 0x0A);
+    video_print("\n  Invalidos/ignorados/slot ocupado: ", 0x07);
+    print_num(status->invalid_packets);
+    video_print("/", 0x07);
+    print_num(status->ignored_packets);
+    video_print("/", 0x07);
+    print_num(status->pending_reply_drops);
+    video_print("  Ultimo erro: ", 0x07);
+    print_num((uint32_t)status->last_error);
+    video_print("\n", 0x07);
+}
+
+static void cmd_net_ipv4_status(void) {
+    ipv4_status_t ipv4_status;
+    icmp_status_t icmp_status;
+
+    if (ipv4_get_status(&ipv4_status) != OK ||
+        icmp_get_status(&icmp_status) != OK) {
+        LOG_ERROR("SHELL", "Estado IPv4 ou ICMP indisponivel");
+        video_print("Erro: estado IPv4/ICMP indisponivel.\n", 0x0C);
+        return;
+    }
+    cmd_net_ipv4_print_config(&ipv4_status);
+    cmd_net_ipv4_print_counters(&ipv4_status);
+    cmd_net_icmp_print_status(&icmp_status);
+}
+
+static void cmd_net_ipv4_config(const char* args) {
+    char id[NETWORK_INTERFACE_ID_SIZE];
+    char ip_text[SHELL_IPV4_TEXT_SIZE];
+    char mask_text[SHELL_IPV4_TEXT_SIZE];
+    char gateway_text[SHELL_IPV4_TEXT_SIZE];
+    uint32_t local_ip = 0;
+    uint32_t subnet_mask = 0;
+    uint32_t gateway = 0;
+    int result;
+
+    result = shell_read_four_args(
+        args, id, sizeof(id), ip_text, sizeof(ip_text),
+        mask_text, sizeof(mask_text), gateway_text, sizeof(gateway_text));
+    if (result != OK ||
+        cmd_net_parse_ipv4(ip_text, &local_ip) != OK ||
+        cmd_net_parse_ipv4(mask_text, &subnet_mask) != OK ||
+        cmd_net_parse_ipv4(gateway_text, &gateway) != OK) {
+        LOG_WARN("SHELL", "Uso invalido de net ipv4 config");
+        video_print("Uso: net ipv4 config <id> <ip> <mascara> <gateway>\n",
+                    0x0C);
+        return;
+    }
+    result = network_manager_configure_ipv4(
+        id, local_ip, subnet_mask, gateway);
+    if (result != OK) {
+        LOG_WARN("SHELL", "Configuracao IPv4 nao concluiu");
+        video_print("Erro: configuracao IPv4 falhou (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+    video_print("IPv4 configurado em RAM para ", 0x0A);
+    cmd_net_print_ipv4(local_ip);
+    video_print(".\n", 0x0A);
+}
+
+static void cmd_net_ipv4(const char* args) {
+    const char* config_args = shell_match_subcommand(args, "config");
+
+    if (config_args) {
+        cmd_net_ipv4_config(config_args);
+        return;
+    }
+    if (shell_args_equal(args, "status")) {
+        cmd_net_ipv4_status();
+        return;
+    }
+    LOG_WARN("SHELL", "Uso invalido de net ipv4");
+    video_print("Uso: net ipv4 config <id> <ip> <mascara> <gateway> | "
+                "status\n", 0x0C);
+}
+
+static int cmd_ping_parse_count(const char* text, uint8_t* out_count) {
+    uint32_t value = 0;
+
+    if (!text || !out_count) {
+        LOG_ERROR("SHELL", "Destino nulo ao interpretar quantidade ping");
+        return ERR_NULL;
+    }
+    if (!*text) {
+        LOG_WARN("SHELL", "Quantidade ausente no ping");
+        return ERR_INVALID;
+    }
+    while (*text) {
+        if (*text < '0' || *text > '9') {
+            LOG_WARN("SHELL", "Quantidade nao numerica no ping");
+            return ERR_INVALID;
+        }
+        value = value * 10U + (uint32_t)(*text - '0');
+        if (value > ICMP_PING_MAX_COUNT) {
+            LOG_WARN("SHELL", "Quantidade excede limite do ping");
+            return ERR_INVALID;
+        }
+        text++;
+    }
+    if (!value) {
+        LOG_WARN("SHELL", "Quantidade zero no ping");
+        return ERR_INVALID;
+    }
+    *out_count = (uint8_t)value;
+    return OK;
+}
+
+static int cmd_ping_parse_args(const char* args, uint32_t* out_target,
+                               uint8_t* out_count) {
+    const char* cursor = args;
+    char ip_text[SHELL_IPV4_TEXT_SIZE];
+    char count_text[4];
+    int result;
+
+    if (!args || !out_target || !out_count) {
+        LOG_ERROR("SHELL", "Argumentos nulos ao interpretar ping");
+        return ERR_NULL;
+    }
+    result = shell_read_token(&cursor, ip_text, sizeof(ip_text));
+    if (result != OK) return result;
+    while (*cursor == ' ' || *cursor == '\t') cursor++;
+    *out_count = ICMP_PING_DEFAULT_COUNT;
+    if (*cursor) {
+        result = shell_read_token(&cursor, count_text, sizeof(count_text));
+        if (result != OK ||
+            cmd_ping_parse_count(count_text, out_count) != OK) {
+            return ERR_INVALID;
+        }
+    }
+    while (*cursor == ' ' || *cursor == '\t') cursor++;
+    if (*cursor ||
+        cmd_net_parse_ipv4(ip_text, out_target) != OK ||
+        !ipv4_address_is_unicast(*out_target)) {
+        LOG_WARN("SHELL", "Destino ou sintaxe invalida no ping");
+        return ERR_INVALID;
+    }
+    return OK;
+}
+
+static void cmd_ping_print_event(const icmp_status_t* status) {
+    uint32_t sequence =
+        (uint32_t)status->received + status->timeouts;
+
+    if (status->last_event == ICMP_PING_EVENT_REPLY) {
+        video_print("Resposta de ", 0x0A);
+        cmd_net_print_ipv4(status->target_ip);
+        video_print(": bytes=", 0x07);
+        print_num(ICMP_ECHO_DATA_SIZE);
+        video_print(" seq=", 0x07);
+        print_num(sequence);
+        video_print(" ttl=", 0x07);
+        print_num(status->last_reply_ttl);
+        video_print(" tempo=", 0x07);
+        print_num(cmd_net_ticks_to_milliseconds(
+            status->last_rtt_ticks));
+        video_print("ms\n", 0x07);
+    } else if (status->last_event == ICMP_PING_EVENT_TIMEOUT) {
+        video_print("Timeout para ", 0x0E);
+        cmd_net_print_ipv4(status->target_ip);
+        video_print(" seq=", 0x07);
+        print_num(sequence);
+        video_print("\n", 0x07);
+    }
+}
+
+static int cmd_ping_wait(uint8_t print_events,
+                         icmp_status_t* out_status) {
+    icmp_status_t status;
+    uint32_t frequency = timer_get_frequency();
+    uint32_t start_tick;
+    uint32_t wait_ticks;
+    uint32_t event_generation;
+    uint32_t wait_seconds;
+
+    if (!out_status) {
+        LOG_ERROR("SHELL", "Destino nulo na espera de ping");
+        return ERR_NULL;
+    }
+    if (icmp_get_status(&status) != OK || !frequency) {
+        LOG_ERROR("SHELL", "Estado ou timer indisponivel para ping");
+        return ERR_STATE;
+    }
+    wait_seconds =
+        (uint32_t)status.requested_count + SHELL_PING_WAIT_EXTRA_SECONDS;
+    if (frequency > SHELL_MAX_TICK_INTERVAL / wait_seconds) {
+        LOG_ERROR("SHELL", "Intervalo do ping excede timer");
+        return ERR_STATE;
+    }
+    wait_ticks = frequency * wait_seconds;
+    start_tick = timer_get_ticks();
+    event_generation = status.event_generation;
+    do {
+        if (icmp_get_status(&status) != OK) {
+            LOG_ERROR("SHELL", "Estado ICMP perdido durante ping");
+            return ERR_STATE;
+        }
+        if (status.event_generation != event_generation) {
+            event_generation = status.event_generation;
+            if (print_events) cmd_ping_print_event(&status);
+        }
+        if (status.state == ICMP_PING_COMPLETE) {
+            *out_status = status;
+            return OK;
+        }
+        if (status.state == ICMP_PING_FAILED) {
+            *out_status = status;
+            return status.last_error == OK ? ERR_STATE :
+                                             status.last_error;
+        }
+        process_block(SHELL_NET_CHECK_BLOCK_TICKS);
+    } while ((uint32_t)(timer_get_ticks() - start_tick) <= wait_ticks);
+    *out_status = status;
+    LOG_WARN("SHELL", "Guarda de tempo do ping expirou");
+    return ERR_TIMEOUT;
+}
+
+static void cmd_ping_print_summary(const icmp_status_t* status) {
+    uint32_t lost = status->requested_count - status->received;
+    uint32_t loss_percent = status->requested_count ?
+        lost * 100U / status->requested_count : 0U;
+    uint32_t average_ticks = status->received ?
+        status->rtt_total_ticks / status->received : 0U;
+
+    video_print("\nResumo de ", 0x0B);
+    cmd_net_print_ipv4(status->target_ip);
+    video_print(": enviados=", 0x07);
+    print_num(status->sent);
+    video_print(" recebidos=", 0x07);
+    print_num(status->received);
+    video_print(" perdidos=", 0x07);
+    print_num(lost);
+    video_print(" (", 0x07);
+    print_num(loss_percent);
+    video_print("%)\nRTT min/medio/max = ", 0x07);
+    print_num(cmd_net_ticks_to_milliseconds(status->rtt_min_ticks));
+    video_print("/", 0x07);
+    print_num(cmd_net_ticks_to_milliseconds(average_ticks));
+    video_print("/", 0x07);
+    print_num(cmd_net_ticks_to_milliseconds(status->rtt_max_ticks));
+    video_print(" ms\n", 0x07);
+}
+
+static int cmd_ping_execute(uint32_t target_ip, uint8_t count,
+                            uint8_t print_events,
+                            icmp_status_t* out_status) {
+    int result = icmp_ping_start(target_ip, count,
+                                 ICMP_PING_TIMEOUT_SECONDS);
+
+    if (result != OK) return result;
+    return cmd_ping_wait(print_events, out_status);
+}
+
+static void cmd_ping(const char* args) {
+    icmp_status_t status;
+    uint32_t target_ip = 0;
+    uint8_t count = ICMP_PING_DEFAULT_COUNT;
+    int result = cmd_ping_parse_args(args, &target_ip, &count);
+
+    kmemset(&status, 0, sizeof(status));
+    if (result != OK) {
+        LOG_WARN("SHELL", "Uso invalido de ping");
+        video_print("Uso: ping <ip> [quantidade 1-10]\n", 0x0C);
+        return;
+    }
+    video_print("PING ", 0x0B);
+    cmd_net_print_ipv4(target_ip);
+    video_print(" com 32 bytes de dados:\n", 0x07);
+    result = cmd_ping_execute(target_ip, count, 1U, &status);
+    if (result != OK) {
+        LOG_WARN("SHELL", "Ping nao concluiu normalmente");
+        video_print("Erro: ping falhou (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        if (result == ERR_TIMEOUT &&
+            (status.state == ICMP_PING_RESOLVING ||
+             status.state == ICMP_PING_WAITING_REPLY)) {
+            icmp_reset();
+        }
+        return;
+    }
+    cmd_ping_print_summary(&status);
+}
+
 static int cmd_net_find_arp_entry(uint32_t ip_address,
                                   arp_cache_entry_info_t* out_entry,
                                   uint8_t* out_found) {
@@ -3251,16 +3753,55 @@ static void cmd_net_check_print_case(const char* label, uint8_t passed) {
     video_print(passed ? "OK\n" : "ERRO\n", passed ? 0x0A : 0x0C);
 }
 
+static int cmd_net_check_qemu_icmp(
+    const ipv4_status_t* ipv4_baseline,
+    const icmp_status_t* icmp_baseline,
+    shell_net_qemu_check_t* check) {
+    ipv4_status_t ipv4_after;
+    icmp_status_t icmp_after;
+    int result;
+
+    if (!ipv4_baseline || !icmp_baseline || !check) {
+        LOG_ERROR("SHELL", "Estado nulo no teste ICMP QEMU");
+        return ERR_NULL;
+    }
+    result = cmd_ping_execute(SHELL_NET_QEMU_REPLY_IPV4, 1U, 0U,
+                              &icmp_after);
+    if (result != OK || ipv4_get_status(&ipv4_after) != OK) {
+        LOG_WARN("SHELL", "Ping ICMP da suite QEMU falhou");
+        return result != OK ? result : ERR_STATE;
+    }
+    check->ipv4 =
+        ipv4_after.tx_packets > ipv4_baseline->tx_packets &&
+        ipv4_after.rx_packets > ipv4_baseline->rx_packets &&
+        ipv4_after.rx_checksum_errors ==
+            ipv4_baseline->rx_checksum_errors &&
+        ipv4_after.rx_delivered > ipv4_baseline->rx_delivered;
+    check->icmp =
+        icmp_after.state == ICMP_PING_COMPLETE &&
+        icmp_after.sent == 1U && icmp_after.received == 1U &&
+        icmp_after.timeouts == 0U &&
+        icmp_after.echo_requests_tx >
+            icmp_baseline->echo_requests_tx &&
+        icmp_after.echo_replies_rx >
+            icmp_baseline->echo_replies_rx &&
+        icmp_after.rtt_total_ticks > 0U;
+    return check->ipv4 && check->icmp ? OK : ERR_STATE;
+}
+
 static void cmd_net_check_qemu(const char* args) {
     char id[NETWORK_INTERFACE_ID_SIZE];
     char ip_text[SHELL_IPV4_TEXT_SIZE];
     arp_status_t baseline;
     arp_status_t final_status;
+    ipv4_status_t ipv4_baseline;
+    icmp_status_t icmp_baseline;
     shell_net_qemu_check_t check;
     uint32_t local_ip = 0;
     uint8_t passed;
     int reply_result;
     int timeout_result;
+    int icmp_result;
     int result;
 
     result = shell_read_two_args(args, id, sizeof(id),
@@ -3273,18 +3814,24 @@ static void cmd_net_check_qemu(const char* args) {
         video_print("Uso: net check qemu <id> <ip-local>\n", 0x0C);
         return;
     }
-    result = network_manager_configure_arp(id, local_ip);
+    result = network_manager_configure_ipv4(
+        id, local_ip, SHELL_NET_QEMU_SUBNET_MASK,
+        SHELL_NET_QEMU_REPLY_IPV4);
     if (result != OK || arp_clear() != OK ||
-        arp_get_status(&baseline) != OK) {
-        LOG_ERROR("SHELL", "Preparacao da suite ARP QEMU falhou");
-        video_print("Erro: nao foi possivel preparar a suite ARP.\n", 0x0C);
+        arp_get_status(&baseline) != OK ||
+        ipv4_get_status(&ipv4_baseline) != OK ||
+        icmp_get_status(&icmp_baseline) != OK) {
+        LOG_ERROR("SHELL", "Preparacao da suite de rede QEMU falhou");
+        video_print("Erro: nao foi possivel preparar a suite QEMU.\n", 0x0C);
         return;
     }
     kmemset(&check, 0, sizeof(check));
-    video_print("=== Suite ARP - perfil QEMU ===\n", 0x0B);
-    video_print("Aguardando reply, cache hit e timeout...\n", 0x07);
+    video_print("=== Suite de rede - perfil QEMU ===\n", 0x0B);
+    video_print("Aguardando ARP, IPv4, ICMP e timeout...\n", 0x07);
     reply_result = cmd_net_check_qemu_reply(&baseline, &check);
     timeout_result = cmd_net_check_qemu_timeout(&baseline, &check);
+    icmp_result = cmd_net_check_qemu_icmp(
+        &ipv4_baseline, &icmp_baseline, &check);
     result = arp_get_status(&final_status);
     if (result != OK) {
         LOG_ERROR("SHELL", "Estado final da suite ARP indisponivel");
@@ -3298,15 +3845,19 @@ static void cmd_net_check_qemu(const char* args) {
     cmd_net_check_print_case("Request/reply 10.0.2.2", check.reply);
     cmd_net_check_print_case("Cache hit sem novo TX", check.cache_hit);
     cmd_net_check_print_case("Timeout 10.0.2.254", check.timeout);
+    cmd_net_check_print_case("IPv4 RX/TX e checksum", check.ipv4);
+    cmd_net_check_print_case("ICMP Echo e RTT", check.icmp);
     cmd_net_check_print_case("Polling e manutencao", check.polling);
     cmd_net_check_print_case("Invariantes de rede", check.invariants);
     passed = reply_result == OK && timeout_result == OK &&
+        icmp_result == OK &&
         check.reply && check.cache_hit && check.timeout && check.polling &&
-        check.invariants;
+        check.ipv4 && check.icmp && check.invariants;
     video_print("Resultado da suite: ", 0x07);
     video_print(passed ? "OK\n" : "ERRO\n", passed ? 0x0A : 0x0C);
     cmd_net_arp_status();
     cmd_net_arp_table();
+    cmd_net_ipv4_status();
 }
 
 static void cmd_net_check(const char* args) {
@@ -3371,8 +3922,11 @@ static void cmd_net_check(const char* args) {
     if (arp_get_status(&arp_status) == OK && arp_status.initialized) {
         cmd_net_arp_table();
     }
-    video_print(has_interface ? "\n[6] Invariantes: " :
-                                "\n[4] Invariantes: ", 0x0B);
+    video_print(has_interface ? "\n[6] IPv4 e ICMP\n" :
+                                "\n[4] IPv4 e ICMP\n", 0x0B);
+    cmd_net_ipv4_status();
+    video_print(has_interface ? "\n[7] Invariantes: " :
+                                "\n[5] Invariantes: ", 0x0B);
     result = shell_regcheck_validate_network();
     video_print(result == OK ? "OK\n" : "ERRO\n",
                 result == OK ? 0x0A : 0x0C);
@@ -3383,6 +3937,7 @@ static void cmd_net(const char* args) {
     const char* check_args;
     const char* ethernet_args;
     const char* info_args;
+    const char* ipv4_args;
     const char* test_args;
 
     if (shell_args_equal(args, "status")) {
@@ -3396,6 +3951,11 @@ static void cmd_net(const char* args) {
     arp_args = shell_match_subcommand(args, "arp");
     if (arp_args) {
         cmd_net_arp(arp_args);
+        return;
+    }
+    ipv4_args = shell_match_subcommand(args, "ipv4");
+    if (ipv4_args) {
+        cmd_net_ipv4(ipv4_args);
         return;
     }
     check_args = shell_match_subcommand(args, "check");
@@ -3421,6 +3981,7 @@ static void cmd_net(const char* args) {
     LOG_WARN("SHELL", "Uso invalido de net");
     video_print("Uso: net status | net devices | net info <id> | "
                 "net ethernet <id> | net test <id> | net arp ... | "
+                "net ipv4 ... | "
                 "net check [id|qemu <id> <ip>]\n", 0x0C);
 }
 
@@ -5489,6 +6050,8 @@ int shell_process_command(const char* input) {
         cmd_device_scan(input);
     } else if (kstrcmp(cmd, "net") == 0) {
         cmd_net(input);
+    } else if (kstrcmp(cmd, "ping") == 0) {
+        cmd_ping(input);
     } else if (kstrcmp(cmd, "acpi") == 0) {
         cmd_acpi(input);
     } else if (kstrcmp(cmd, "power") == 0) {

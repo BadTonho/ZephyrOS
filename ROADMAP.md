@@ -124,8 +124,11 @@ Plataforma de aplicativos:   [████████████████�
 | `net arp resolve <ip>` | Inicia ou consulta resolucao IPv4 para MAC |
 | `net arp table` | Lista cache ARP, estado, idade e tentativas |
 | `net arp clear` | Limpa cache e preserva a configuracao local |
-| `net check [id]` | Agrupa estado, interface, Ethernet, ARP e invariantes |
-| `net check qemu <id> <ip>` | Executa reply, cache hit e timeout ARP no QEMU |
+| `net ipv4 config <id> <ip> <mask> <gw>` | Configura IPv4 estatico em RAM |
+| `net ipv4 status` | Mostra IPv4, ICMP, rotas, perdas e RTT |
+| `ping <ip> [quantidade]` | Executa ICMP Echo cooperativo |
+| `net check [id]` | Agrupa estado, interface, Ethernet, ARP, IPv4/ICMP e invariantes |
+| `net check qemu <id> <ip>` | Executa a suite ARP, IPv4 e ICMP no QEMU |
 | `acpi status` | Mostra tabelas, PM1, modo ACPI, `_S5_` e prontidao S5 |
 | `power status` | Mostra prontidao S5, desligamento fisico e fallback HLT |
 | `kmetrics [reset]` | Coleta linha-base de PIT, filas, memoria e VESA, incluindo media de bytes por apresentacao |
@@ -516,9 +519,25 @@ Plataforma de aplicativos:   [████████████████�
   `device-scan`, sintaxe invalida e regressao visual Classic/Modern; esses
   cenarios nao bloqueiam a conclusao.
 
+## S2.5 - IPv4 estatico e ICMP Echo (implementada; aguardando validacao)
+
+- [x] IPv4 minimo com cabecalho fixo, MTU 1500, checksum, DF, TTL 64,
+  roteamento direto/gateway e despacho fixo por protocolo.
+- [x] Configuracao estatica unica em RAM, coordenada atomicamente com ARP e
+  cancelamento de ICMP nas mudancas.
+- [x] ICMP Echo Request/Reply, resposta automatica, sessao unica de ping,
+  timeout por tentativa e RTT por ticks do PIT.
+- [x] Comandos individuais `net ipv4 config`, `net ipv4 status` e `ping`,
+  preservando o diagnostico agrupado `net check`.
+- [x] Suite `net check qemu <id> <ip>` ampliada com IPv4, checksum, Echo Reply,
+  RTT, polling e invariantes.
+- [x] `regcheck full` ampliado com invariantes e vetores puros de checksum sem
+  transmitir ou alterar configuracao/cache.
+- [ ] Validacao do usuario: Q3, build limpo, QEMU padrao, fallbacks e
+  regressao Classic/Modern.
+
 ## Continuacao da S2 - Rede e atualizacoes (planejada)
 
-- [ ] S2.5: IPv4, configuracao estatica e ICMP para diagnostico `ping`.
 - [ ] S2.6: UDP, DHCP e DNS, somente depois de IPv4 e ARP validados.
 - [ ] S2.7: TCP, sockets e servicos remotos, com timeouts e limites claros.
 - [ ] S2.8: ampliar a abstracao de NIC e adicionar RTL8139 sem duplicar a

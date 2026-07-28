@@ -584,8 +584,9 @@ sistema evite polling vazio. O consumidor usa `e1000_receive_frame()` em
 contexto normal, quando o driver valida os descritores, copia os frames para
 uma fila estatica de oito entradas e recicla o DMA. Fila vazia e um resultado
 valido com `out_received = 0`, enquanto ponteiros nulos, driver inativo ou
-buffer pequeno retornam erro controlado. ARP, IPv4, DHCP, sockets,
-promiscuidade e RTL8139 ficam fora do escopo.
+buffer pequeno retornam erro controlado. ARP, IPv4 e ICMP pertencem aos
+servicos `src/core/` e nunca rodam na IRQ; DHCP, sockets, promiscuidade e
+RTL8139 ficam fora do escopo do driver.
 
 ### Estrutura
 

@@ -2,6 +2,8 @@
 #include "core/arp.h"
 #include "core/ethernet.h"
 #include "core/errors.h"
+#include "core/icmp.h"
+#include "core/ipv4.h"
 #include "core/log.h"
 #include "core/recovery.h"
 #include "core/string.h"
@@ -22,8 +24,8 @@ static network_interface_info_t
     network_interfaces[NETWORK_MANAGER_MAX_INTERFACES];
 static network_manager_status_t network_status;
 static int network_manager_initialized = 0;
-static uint32_t network_last_arp_tick;
-static uint8_t network_has_arp_tick;
+static uint32_t network_last_protocol_tick;
+static uint8_t network_has_protocol_tick;
 
 static void network_append_char(char* text, uint32_t capacity,
                                 uint32_t* offset, char value) {
@@ -144,11 +146,59 @@ static void network_copy_interface(network_interface_info_t* entry,
     network_apply_e1000_status(entry, e1000_status);
 }
 
+static int network_get_protocol_status(
+    ethernet_status_t* ethernet_status,
+    arp_status_t* arp_layer_status,
+    ipv4_status_t* ipv4_layer_status,
+    icmp_status_t* icmp_layer_status) {
+    if (!ethernet_status || !arp_layer_status ||
+        !ipv4_layer_status || !icmp_layer_status) {
+        LOG_ERROR("NET", "Destino nulo no snapshot de protocolos");
+        return ERR_NULL;
+    }
+    if (ethernet_get_status(ethernet_status) != OK ||
+        arp_get_status(arp_layer_status) != OK ||
+        ipv4_get_status(ipv4_layer_status) != OK ||
+        icmp_get_status(icmp_layer_status) != OK) {
+        LOG_ERROR("NET", "Falha ao consultar protocolos de rede");
+        return ERR_STATE;
+    }
+    return OK;
+}
+
+static void network_apply_protocol_status(
+    const ethernet_status_t* ethernet_status,
+    const arp_status_t* arp_layer_status,
+    const ipv4_status_t* ipv4_layer_status,
+    const icmp_status_t* icmp_layer_status) {
+    if (!network_status.active_count) return;
+    network_status.packet_io_available = 1;
+    network_status.ethernet_available =
+        ethernet_status->initialized ? 1U : 0U;
+    network_status.arp_available =
+        ethernet_status->initialized &&
+        arp_layer_status->initialized ? 1U : 0U;
+    network_status.arp_configured =
+        network_status.arp_available &&
+        arp_layer_status->configured ? 1U : 0U;
+    network_status.ipv4_available =
+        network_status.arp_available &&
+        ipv4_layer_status->initialized ? 1U : 0U;
+    network_status.ipv4_configured =
+        network_status.ipv4_available &&
+        ipv4_layer_status->configured ? 1U : 0U;
+    network_status.icmp_available =
+        network_status.ipv4_available &&
+        icmp_layer_status->initialized ? 1U : 0U;
+}
+
 static int network_build_snapshot(void) {
     uint8_t pci_count = 0;
     e1000_status_t e1000_status;
     ethernet_status_t ethernet_status;
     arp_status_t arp_layer_status;
+    ipv4_status_t ipv4_layer_status;
+    icmp_status_t icmp_layer_status;
     int pci_result;
     int result = OK;
 
@@ -160,14 +210,9 @@ static int network_build_snapshot(void) {
         LOG_ERROR("NET", "Falha ao consultar estado do E1000");
         return ERR_STATE;
     }
-    if (ethernet_get_status(&ethernet_status) != OK) {
-        LOG_ERROR("NET", "Falha ao consultar camada Ethernet");
-        return ERR_STATE;
-    }
-    if (arp_get_status(&arp_layer_status) != OK) {
-        LOG_ERROR("NET", "Falha ao consultar protocolo ARP");
-        return ERR_STATE;
-    }
+    if (network_get_protocol_status(
+            &ethernet_status, &arp_layer_status,
+            &ipv4_layer_status, &icmp_layer_status) != OK) return ERR_STATE;
     pci_result = pci_get_device_count(&pci_count);
     if (pci_result != OK && pci_result != ERR_OVERFLOW) {
         LOG_ERROR("NET", "Falha ao consultar inventario PCI");
@@ -208,23 +253,17 @@ static int network_build_snapshot(void) {
         }
         network_status.interface_count++;
     }
-    if (network_status.active_count) {
-        network_status.packet_io_available = 1;
-        network_status.ethernet_available =
-            ethernet_status.initialized ? 1U : 0U;
-        network_status.arp_available =
-            ethernet_status.initialized &&
-            arp_layer_status.initialized ? 1U : 0U;
-        network_status.arp_configured =
-            network_status.arp_available &&
-            arp_layer_status.configured ? 1U : 0U;
-    }
+    network_apply_protocol_status(
+        &ethernet_status, &arp_layer_status,
+        &ipv4_layer_status, &icmp_layer_status);
     if (network_status.partial) {
         network_status.last_error = ERR_OVERFLOW;
     } else if (network_status.active_count) {
         network_status.last_error =
             network_status.ethernet_available &&
-            network_status.arp_available ? OK : ERR_STATE;
+            network_status.arp_available &&
+            network_status.ipv4_available &&
+            network_status.icmp_available ? OK : ERR_STATE;
     } else if (network_status.interface_count) {
         network_status.last_error = ERR_UNAVAILABLE;
         for (uint32_t index = 0; index < network_status.interface_count;
@@ -307,6 +346,61 @@ static int network_start_arp(void) {
     return OK;
 }
 
+static int network_start_ipv4(void) {
+    ipv4_status_t status;
+    int result;
+
+    if (!network_status.arp_available) return OK;
+    result = ipv4_get_status(&status);
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao consultar inicializacao IPv4");
+        return result;
+    }
+    if (!status.initialized) {
+        result = ipv4_init();
+        if (result != OK) {
+            LOG_ERROR("NET", "Falha ao iniciar protocolo IPv4");
+            return result;
+        }
+        result = ipv4_get_status(&status);
+        if (result != OK || !status.initialized) {
+            LOG_ERROR("NET", "Falha ao confirmar inicializacao IPv4");
+            return result != OK ? result : ERR_STATE;
+        }
+    }
+    network_status.ipv4_available = 1;
+    network_status.ipv4_configured = status.configured;
+    if (!network_status.partial) network_status.last_error = OK;
+    return OK;
+}
+
+static int network_start_icmp(void) {
+    icmp_status_t status;
+    int result;
+
+    if (!network_status.ipv4_available) return OK;
+    result = icmp_get_status(&status);
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao consultar inicializacao ICMP");
+        return result;
+    }
+    if (!status.initialized) {
+        result = icmp_init();
+        if (result != OK) {
+            LOG_ERROR("NET", "Falha ao iniciar protocolo ICMP");
+            return result;
+        }
+        result = icmp_get_status(&status);
+        if (result != OK || !status.initialized) {
+            LOG_ERROR("NET", "Falha ao confirmar inicializacao ICMP");
+            return result != OK ? result : ERR_STATE;
+        }
+    }
+    network_status.icmp_available = 1;
+    if (!network_status.partial) network_status.last_error = OK;
+    return OK;
+}
+
 static void network_sync_recovery(int result) {
     const recovery_component_t* current =
         recovery_get(RECOVERY_COMPONENT_NETWORK);
@@ -332,6 +426,16 @@ static void network_sync_recovery(int result) {
         state = RECOVERY_STATE_DEGRADED;
         error = network_status.last_error;
         message = "Protocolo ARP indisponivel";
+    } else if (network_status.active_count &&
+               !network_status.ipv4_available) {
+        state = RECOVERY_STATE_DEGRADED;
+        error = network_status.last_error;
+        message = "Protocolo IPv4 indisponivel";
+    } else if (network_status.active_count &&
+               !network_status.icmp_available) {
+        state = RECOVERY_STATE_DEGRADED;
+        error = network_status.last_error;
+        message = "Protocolo ICMP indisponivel";
     } else if (network_status.active_count) {
         state = RECOVERY_STATE_READY;
         error = OK;
@@ -395,6 +499,8 @@ int network_manager_init(void) {
     int result;
     int ethernet_result;
     int arp_result;
+    int ipv4_result;
+    int icmp_result;
 
     LOG_INFO("NET", "Inicializando inventario de rede");
     network_manager_initialized = 1;
@@ -418,6 +524,19 @@ int network_manager_init(void) {
         network_status.arp_configured = 0;
         network_status.last_error = arp_result;
         LOG_ERROR("NET", "Inventario ativo sem protocolo ARP");
+    }
+    ipv4_result = network_start_ipv4();
+    if (ipv4_result != OK) {
+        network_status.ipv4_available = 0;
+        network_status.ipv4_configured = 0;
+        network_status.last_error = ipv4_result;
+        LOG_ERROR("NET", "Inventario ativo sem protocolo IPv4");
+    }
+    icmp_result = network_start_icmp();
+    if (icmp_result != OK) {
+        network_status.icmp_available = 0;
+        network_status.last_error = icmp_result;
+        LOG_ERROR("NET", "Inventario ativo sem protocolo ICMP");
     }
     network_sync_recovery(result);
     if (result == ERR_OVERFLOW) {
@@ -450,6 +569,7 @@ int network_manager_refresh(void) {
 
 int network_manager_poll(uint32_t* out_processed) {
     uint32_t current_tick;
+    int maintenance_error = OK;
     int result;
 
     if (!out_processed) {
@@ -469,20 +589,33 @@ int network_manager_poll(uint32_t* out_processed) {
         return result;
     }
     current_tick = timer_get_ticks();
-    if (network_status.arp_available &&
-        network_status.arp_configured &&
-        (!network_has_arp_tick ||
-         current_tick != network_last_arp_tick)) {
-        network_has_arp_tick = 1;
-        network_last_arp_tick = current_tick;
-        result = arp_maintain();
-        if (result != OK) {
-            network_status.last_error = result;
-            LOG_WARN("NET", "Manutencao ARP falhou sem parar polling");
-            return OK;
+    if ((network_status.arp_configured ||
+         network_status.ipv4_configured) &&
+        (!network_has_protocol_tick ||
+         current_tick != network_last_protocol_tick)) {
+        network_has_protocol_tick = 1;
+        network_last_protocol_tick = current_tick;
+        if (network_status.arp_configured) {
+            result = arp_maintain();
+            if (result != OK) {
+                network_status.last_error = result;
+                maintenance_error = result;
+                LOG_WARN("NET", "Manutencao ARP falhou sem parar polling");
+            }
+        }
+        if (network_status.icmp_available &&
+            network_status.ipv4_configured) {
+            result = icmp_maintain();
+            if (result != OK) {
+                network_status.last_error = result;
+                if (maintenance_error == OK) maintenance_error = result;
+                LOG_WARN("NET", "Manutencao ICMP falhou sem parar polling");
+            }
         }
     }
-    if (!network_status.partial) network_status.last_error = OK;
+    if (maintenance_error == OK && !network_status.partial) {
+        network_status.last_error = OK;
+    }
     return OK;
 }
 
@@ -645,6 +778,7 @@ int network_manager_configure_arp(const char* id, uint32_t local_ip) {
     network_interface_info_t info;
     network_interface_text_t text;
     arp_status_t status;
+    ipv4_status_t ipv4_status;
     int result;
 
     if (!id) {
@@ -662,10 +796,36 @@ int network_manager_configure_arp(const char* id, uint32_t local_ip) {
         LOG_WARN("NET", "Configuracao ARP sem interface ativa");
         return ERR_UNAVAILABLE;
     }
+    if (!arp_ipv4_is_valid(local_ip)) {
+        LOG_ERROR("NET", "IPv4 invalido para configuracao ARP");
+        return ERR_INVALID;
+    }
     result = network_manager_format_text(&info, &text);
     if (result != OK) {
         LOG_ERROR("NET", "Falha ao formatar interface para ARP");
         return result;
+    }
+    result = ipv4_get_status(&ipv4_status);
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao consultar coerencia IPv4");
+        return result;
+    }
+    if (ipv4_status.configured &&
+        (ipv4_status.local_ip != local_ip ||
+         !network_id_matches(ipv4_status.interface_id, text.id))) {
+        if (network_status.icmp_available) {
+            result = icmp_reset();
+            if (result != OK) {
+                LOG_ERROR("NET", "Falha ao cancelar ICMP para configurar ARP");
+                return result;
+            }
+        }
+        result = ipv4_unconfigure();
+        if (result != OK) {
+            LOG_ERROR("NET", "Falha ao invalidar IPv4 para configurar ARP");
+            return result;
+        }
+        network_status.ipv4_configured = 0;
     }
     result = arp_configure(text.id, info.mac_address, local_ip);
     if (result != OK) {
@@ -678,6 +838,60 @@ int network_manager_configure_arp(const char* id, uint32_t local_ip) {
         return result;
     }
     network_status.arp_configured = status.configured;
+    return OK;
+}
+
+int network_manager_configure_ipv4(const char* id, uint32_t local_ip,
+                                   uint32_t subnet_mask,
+                                   uint32_t gateway) {
+    network_interface_info_t info;
+    network_interface_text_t text;
+    ipv4_status_t before;
+    ipv4_status_t after;
+    int result;
+
+    if (!id) {
+        LOG_ERROR("NET", "ID nulo para configuracao IPv4");
+        return ERR_NULL;
+    }
+    result = network_manager_find(id, &info);
+    if (result != OK) {
+        LOG_ERROR("NET", "Interface invalida para configuracao IPv4");
+        return result;
+    }
+    if (info.state != NETWORK_INTERFACE_ACTIVE ||
+        !network_status.arp_available ||
+        !network_status.ipv4_available ||
+        !network_status.icmp_available) {
+        LOG_WARN("NET", "Configuracao IPv4 sem pilha ativa");
+        return ERR_UNAVAILABLE;
+    }
+    result = network_manager_format_text(&info, &text);
+    if (result != OK || ipv4_get_status(&before) != OK) {
+        LOG_ERROR("NET", "Falha ao preparar configuracao IPv4");
+        return result != OK ? result : ERR_STATE;
+    }
+    result = ipv4_configure(text.id, info.mac_address, local_ip,
+                            subnet_mask, gateway);
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao configurar sessao IPv4");
+        return result;
+    }
+    result = ipv4_get_status(&after);
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao confirmar configuracao IPv4");
+        return result;
+    }
+    if (after.configuration_generation !=
+        before.configuration_generation) {
+        result = icmp_reset();
+        if (result != OK) {
+            LOG_ERROR("NET", "Falha ao reiniciar ICMP apos configuracao");
+            return result;
+        }
+    }
+    network_status.arp_configured = 1;
+    network_status.ipv4_configured = after.configured;
     return OK;
 }
 

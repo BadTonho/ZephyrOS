@@ -242,7 +242,7 @@ desmontagem, suspensao, hibernacao ou reboot. `power_shutdown()` nunca retorna;
 `acpi_enter_s5()` retorna apenas quando sua pre-validacao impede qualquer
 escrita no hardware.
 
-## Servicos S2.1-S2.4: rede observavel, E1000, Ethernet e ARP
+## Servicos S2.1-S2.5: rede observavel, Ethernet, ARP, IPv4 e ICMP
 
 `network_manager` filtra por copia o snapshot PCI e mantem ate quatro
 controladores de classe `0x02`. O servico copia identificadores, localizacao,
@@ -257,7 +257,8 @@ reseta, realoca DMA nem reinicializa o E1000 ou a camada Ethernet.
 
 O componente `Network` do `health` segue estas regras:
 
-- `READY`: existe pelo menos uma interface com driver ativo;
+- `READY`: existe pelo menos uma interface com driver ativo e as camadas
+  Ethernet, ARP, IPv4 e ICMP foram inicializadas;
 - `DEGRADED`: controlador detectado sem driver ou inventario parcial;
 - `DISABLED`: nenhum controlador detectado ou snapshot indisponivel.
 
@@ -304,13 +305,54 @@ O aprendizado e restrito ao remetente de request dirigido ao IPv4 local e a
 reply local que corresponda a uma resolucao pendente. Requests validos para o
 host recebem reply automatico fora da IRQ. `arp_validate_state()` e as
 consultas de status/cache sao somente-leitura; o `regcheck full` nao transmite
-nem altera configuracao. IPv4 em pacotes, mascara, gateway, ICMP, DHCP, DNS,
-sockets, persistencia, multi-NIC e RTL8139 permanecem fora do contrato.
+nem altera configuracao.
 
 O status ARP contabiliza cache hits e ciclos de manutencao para que os testes
 assincronos sejam observaveis sem inferencia pelos contadores do driver. Erro
 transitorio ao transmitir um retry fica registrado e logado, mas nao desativa
 o polling de rede; tentativas posteriores e o timeout continuam ativos.
+
+Na S2.5, `ipv4_init()` registra o EtherType `0x0800` depois do ARP e
+`icmp_init()` registra o protocolo IPv4 `1`. As duas tabelas de despacho
+possuem quatro entradas fixas e entregam visoes sincronas: os ponteiros para
+payload so sao validos durante o callback. Toda serializacao e leitura de
+campos multibyte usa ordem de rede explicitamente, sem structs packed.
+
+`network_manager_configure_ipv4()` coordena uma unica interface, IPv4, mascara
+e gateway somente em RAM. A mascara deve ser contigua entre `/1` e `/30`; o
+gateway zero remove a rota padrao e um gateway presente deve pertencer a mesma
+sub-rede. Configuracao identica e idempotente. Qualquer mudanca limpa o cache
+ARP e cancela ICMP; trocar interface ou IP tambem reinicia os contadores ARP.
+Um `net arp config` incompatível invalida primeiro IPv4 e ICMP.
+
+O transmissor IPv4 usa cabecalho fixo de 20 bytes, MTU 1500, TTL 64, flag DF e
+identificacao incremental. `ipv4_send()` informa por `out_sent` se o frame foi
+enviado ou se ainda aguarda ARP. Destinos locais usam rota direta; destinos
+externos usam o gateway. Recepcao aceita somente unicast para o IPv4 local e
+descarta, com contadores separados, checksum incorreto, opcoes, fragmentos,
+TTL zero, comprimentos invalidos e protocolos sem handler.
+
+O ICMP implementa Echo Request/Reply com checksum sobre a mensagem inteira,
+inclusive payload impar. O host responde automaticamente a requests unicast
+validos e conserva um unico reply pendente enquanto aguarda ARP. O ping usa uma
+sessao fixa sem alocacao, identificador nao zero, sequencias a partir de um,
+payload deterministico de 32 bytes e timeout de um segundo depois de cada
+request efetivamente transmitido. A espera por ARP nao consome esse timeout.
+
+O processo de sistema executa Ethernet, manutencao ARP e manutencao ICMP nessa
+ordem, no maximo uma vez por tick para os protocolos. O Shell pode dormir um
+tick entre observacoes de ping, portanto o diagnostico mostra todos os eventos
+em uma chamada sem impedir o polling. `ipv4_validate_state()` e
+`icmp_validate_state()` incluem vetores puros de checksum e nao configuram,
+transmitem, limpam cache nem avancam sessoes.
+
+Persistencia, DHCP, DNS, UDP, TCP, sockets, loopback, forwarding, erros ICMP,
+fragmentacao/remontagem, multi-NIC e RTL8139 permanecem fora do contrato.
+
+Referencias da implementacao: [RFC 791](https://www.rfc-editor.org/rfc/rfc791.html)
+para cabecalho/checksum IPv4, [RFC 792](https://www.rfc-editor.org/rfc/rfc792.html)
+para ICMP Echo e [RFC 1122](https://www.rfc-editor.org/rfc/rfc1122.html) para o
+comportamento de host.
 
 ## Struct `registers_t`
 

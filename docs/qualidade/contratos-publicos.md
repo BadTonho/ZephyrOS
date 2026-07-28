@@ -20,6 +20,8 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/core/device_manager.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/errors.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/ethernet.h` | `docs/04-kernel/kernel.md` |
+| `src/include/core/icmp.h` | `docs/04-kernel/kernel.md` |
+| `src/include/core/ipv4.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/keyboard.h` | `docs/05-drivers/drivers.md` |
 | `src/include/core/log.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/memory.h` | `docs/04-kernel/kernel.md` |
@@ -77,12 +79,17 @@ centraliza todos os caminhos de desligamento em `power_shutdown()`. Os
 contratos canonicos permanecem, respectivamente, em
 `docs/05-drivers/drivers.md` e `docs/04-kernel/kernel.md`.
 
-Desde a S2.4, `src/include/core/network_manager.h` preserva o snapshot PCI e
-os IDs estaveis de rede, acrescentando a disponibilidade da camada Ethernet e
-do ARP. `src/include/core/ethernet.h` define a abstracao de interface, montagem,
-polling, contadores L2 e despacho sincrono por EtherType.
+Desde a S2.5, `src/include/core/network_manager.h` preserva o snapshot PCI e
+os IDs estaveis de rede, acrescentando a disponibilidade e configuracao das
+camadas Ethernet, ARP, IPv4 e ICMP. `src/include/core/ethernet.h` define a
+abstracao de interface, montagem, polling, contadores L2 e despacho sincrono
+por EtherType.
 `src/include/core/arp.h` define IPv4 canonico, configuracao local em RAM,
 resolucao assincrona, cache limitado e consultas por copia.
+`src/include/core/ipv4.h` define configuracao estatica, visao sincrona de
+datagrama, despacho por protocolo, envio assincrono em relacao ao ARP,
+contadores e invariantes. `src/include/core/icmp.h` define Echo, a sessao unica
+de ping, eventos por tentativa, RTT e o reply automatico.
 `src/include/drivers/e1000.h` limita o driver ao Intel `8086:100E`, expoe uma
 fila RX fixa e mantem consultas por copia. Os contratos canonicos permanecem
 em `docs/04-kernel/kernel.md` e `docs/05-drivers/drivers.md`.

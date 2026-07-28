@@ -49,8 +49,11 @@ Comandos disponiveis:
   net arp config <id> <ip> - Configura interface e IPv4 em RAM
   net arp status|table|clear - Inspeciona ou limpa o cache ARP
   net arp resolve <ip> - Resolve IPv4 para MAC sem bloquear
+  net ipv4 config <id> <ip> <mask> <gw> - Configura IPv4 em RAM
+  net ipv4 status - Inspeciona IPv4 e ICMP
+  ping <ip> [1-10] - Executa ICMP Echo cooperativo
   net check [id] - Agrupa os diagnosticos de rede
-  net check qemu <id> <ip> - Executa a suite ARP no QEMU
+  net check qemu <id> <ip> - Executa a suite de rede no QEMU
   acpi status - Exibe tabelas, PM1, modo ACPI e `_S5_`
   power status - Mostra prontidao ACPI S5 e fallback HLT
   kmetrics  - Mostra linha-base manual de metricas do kernel
@@ -249,7 +252,7 @@ o Shell permanece utilizavel.
 IDs PCI sao exibidos como `pci-BB:DD.F`. Para teclados sem `Shift`,
 `device-info` tambem aceita `pci-BB-DD.F` e letras minusculas.
 
-## `net status`, `net devices`, `net info`, `net ethernet`, `net test` e `net arp`
+## Rede: comandos individuais e diagnostico agrupado
 
 Os comandos mantem o snapshot PCI da S2.1 e, quando o Intel E1000 `8086:100E`
 esta ativo, mostram o estado real do driver Ethernet L2. A inicializacao de
@@ -267,12 +270,15 @@ zephyr> net arp status
 zephyr> net arp resolve 10.0.2.2
 zephyr> net arp table
 zephyr> net arp clear
+zephyr> net ipv4 config net-pci-00-03.0 10.0.2.15 255.255.255.0 10.0.2.2
+zephyr> net ipv4 status
+zephyr> ping 10.0.2.2
 zephyr> net check net-pci-00-03.0
 zephyr> net check qemu net-pci-00-03.0 10.0.2.15
 ```
 
 `net status` separa inventario, controladores reconhecidos, drivers ativos,
-link, RX/TX, Ethernet L2, ARP, IPv4 e o ultimo erro do servico. `net devices`
+link, RX/TX, Ethernet L2, ARP, IPv4, ICMP e o ultimo erro. `net devices`
 lista IDs estaveis, modelo e estado. `net info <id>` mostra MAC, contadores,
 fila RX, erro do driver, vendor/device, classe, prog-if, revisao, IRQ e
 BAR0-BAR5. A forma `net-pci-BB-DD.F` tambem e aceita.
@@ -292,10 +298,10 @@ ou sintaxe invalida, o Shell retorna erro controlado. RTL8139 continua listado
 sem driver; sem NIC, os comandos seguem utilizaveis e mostram inventario vazio.
 `regcheck full` reutiliza a varredura sem resetar o E1000 ou a camada Ethernet.
 
-`net arp config <id> <ip-local>` vincula uma interface ativa a um unico IPv4
-local, somente em RAM. Repetir a mesma configuracao preserva cache e
-contadores; trocar ID ou IP limpa cache, pendencias e contadores. Nao ha IP
-padrao, mascara, gateway, DHCP ou persistencia nesta etapa.
+`net arp config <id> <ip-local>` continua disponivel para diagnosticos da
+camada ARP. Repetir a mesma configuracao preserva cache e contadores. Se uma
+configuracao IPv4 ativa usar outro ID ou IP, ela e a sessao ICMP sao
+invalidadas antes de trocar a sessao ARP.
 
 `net arp resolve <ip>` retorna imediatamente o MAC em cache ou informa
 `pendente` depois de enviar o primeiro request. O servico repete em um e dois
@@ -306,23 +312,45 @@ cache hits, ciclos de manutencao, invalidos, ignorados e timeouts. A linha
 `net arp table` lista IP, MAC, estado, idade e tentativas; `net arp clear`
 limpa apenas o cache. Entradas resolvidas e falhas expiram apos 30 segundos.
 
+`net ipv4 config <id> <ip> <mascara> <gateway>` configura uma unica interface
+somente em RAM. A mascara deve ser contigua entre `/1` e `/30`. O gateway
+`0.0.0.0` significa rede local sem rota padrao; quando presente, ele deve
+pertencer a mesma sub-rede e nao pode coincidir com host, rede ou broadcast.
+Uma configuracao identica e idempotente; qualquer mudanca cancela ping,
+descarta reply ICMP pendente e limpa o cache ARP.
+
+`net ipv4 status` agrega o estado IPv4 e ICMP. IPv4 mostra interface, IP,
+mascara, gateway, MTU, pacotes, bytes, rota direta/gateway e descartes por
+checksum, opcoes, fragmentos ou protocolo. ICMP mostra requests/replies RX/TX,
+sessao, perdas, RTT minimo/medio/maximo, invalidos e reply pendente.
+
+`ping <ip> [quantidade]` usa quatro tentativas por padrao e aceita de uma a
+dez. Cada Echo Request carrega 32 bytes deterministicos. A espera por ARP nao
+consome o timeout ICMP; depois do envio, cada tentativa aguarda um segundo.
+O processo Shell dorme um tick entre observacoes, permitindo que o processo de
+sistema continue Ethernet, ARP e ICMP. Cada reply ou timeout e impresso antes
+do resumo completo em uma unica chamada.
+
 `net check [id]` reduz a sequencia manual sem remover nenhum comando
-individual. Sem ID, agrupa estado geral, controladores, ARP e invariantes. Com
-um ID valido, inclui tambem `net info` e `net ethernet`. O comando nao
+individual. Sem ID, agrupa estado geral, controladores, ARP, IPv4/ICMP e
+invariantes. Com um ID valido, inclui tambem `net info` e `net ethernet`. O
+comando nao
 configura IP, nao inicia uma resolucao nem cria transmissao de teste; ele
 consolida as consultas e valida o estado atual. A manutencao de uma resolucao
 ja pendente continua normalmente. Assim, depois de `net arp config` e
 `net arp resolve`, uma unica chamada a `net check <id>` mostra o resultado.
 
 `net check qemu <id> <ip-local>` e a variante ativa para o backend de rede
-padrao do QEMU. Ela configura o IPv4 informado, limpa o cache e executa em
-sequencia: request/reply para `10.0.2.2`, cache hit sem novo TX e tres
-tentativas com timeout para `10.0.2.254`. O processo do Shell dorme um tick
-entre consultas, permitindo que RX e manutencao continuem no processo de
-sistema. Ao final, o comando tambem valida as invariantes e mostra `OK`/`ERRO`
-para cada caso, o estado ARP e a tabela resultante. Os dois enderecos pertencem
-somente ao perfil de teste; nao viram gateway, IP local ou configuracao padrao
-do ZephyrOS.
+padrao do QEMU. Ela configura `/24` e gateway `10.0.2.2`, limpa o cache e
+executa request/reply, cache hit sem novo TX, timeout ARP para `10.0.2.254` e
+um Echo ICMP para o gateway. A suite valida RX/TX IPv4, checksum, Echo Reply,
+RTT, polling e invariantes. Ao final, mostra `OK`/`ERRO`, ARP, tabela e
+IPv4/ICMP. Esses enderecos pertencem somente ao perfil solicitado e nunca
+viram configuracao automatica de boot.
+
+O perfil segue o backend documentado em
+[QEMU Networking](https://gitlab.com/qemu-project/qemu/blob/master/docs/system/devices/net.rst);
+uma configuracao de backend diferente pode nao oferecer o host virtual `.2`.
 
 ## `acpi status`
 

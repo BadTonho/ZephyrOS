@@ -45,6 +45,12 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `net` | `devices` | Lista os controladores PCI de rede observados. |
 | `net` | `info <id>` | Mostra MAC, contadores, erro, IDs, localizacao, IRQ e BARs de uma interface. |
 | `net` | `test <id>` | Envia um frame Ethernet broadcast de diagnostico pelo E1000 ativo. |
+| `net` | `arp ...` | Configura, resolve e inspeciona o cache ARP. |
+| `net` | `ipv4 config <id> <ip> <mask> <gw>` | Configura IPv4 estatico somente em RAM. |
+| `net` | `ipv4 status` | Mostra configuracao, rotas, IPv4, ICMP, perdas e RTT. |
+| `net` | `check [id]` | Agrupa os diagnosticos de rede sem remover os comandos individuais. |
+| `net` | `check qemu <id> <ip>` | Executa a suite ARP, IPv4 e ICMP do QEMU. |
+| `ping` | `<ip> [1-10]` | Executa ICMP Echo e entrega eventos e resumo em uma chamada. |
 | `acpi` | `status` | Mostra tabelas, PM1, modo ACPI, `_S5_` e prontidao S5, sem executar transicoes. |
 | `power` | `status` | Mostra ativacao do modo, prontidao S5, desligamento fisico e fallback HLT. |
 | `memcheck` | - | Valida heap, coalescencia, PMM e diretorios ring 3 residuais. |
