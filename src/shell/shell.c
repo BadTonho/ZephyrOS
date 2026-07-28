@@ -98,13 +98,25 @@ typedef struct {
     int package_result;
     int thread_result;
     int processes_result;
+    int device_scan_result;
+    int devices_result;
+    int network_result;
+    int acpi_result;
+    int power_result;
     int loader_result;
     int cancellation_result;
     int cleanup_result;
+    uint8_t full_mode;
     uint8_t loader_started;
     uint8_t cancellation_started;
     shell_regcheck_state_t state;
 } shell_regcheck_t;
+
+typedef struct {
+    int pci_result;
+    int devices_result;
+    int network_result;
+} shell_device_scan_result_t;
 
 typedef struct {
     uint32_t ticks;
@@ -191,6 +203,11 @@ static void print_num(uint32_t num);
 #define SHELL_MEMCHECK_BLOCK_A 96U
 #define SHELL_MEMCHECK_BLOCK_B 160U
 #define SHELL_MEMCHECK_BLOCK_C 224U
+#define SHELL_REGCHECK_BUILTIN_DEVICE_COUNT 8U
+#define SHELL_REGCHECK_PCI_NETWORK_CLASS 0x02U
+#define SHELL_REGCHECK_ACPI_SDT_HEADER_SIZE 36U
+#define SHELL_REGCHECK_ACPI_MAX_TABLE_SIZE (1024U * 1024U)
+#define SHELL_REGCHECK_ACPI_MAX_ROOT_ENTRIES 256U
 
 static const char app_input_test_message[] =
     "Entrada ZAPP ativa: Enter encerra; F12 cancela.\n";
@@ -200,6 +217,7 @@ static void cmd_appcheck_print_expected_result(const char* label, int actual,
                                                int expected);
 static int shell_should_show_prompt(void);
 static int shell_run_memcheck(shell_memcheck_result_t* result_out);
+static int shell_run_device_scan(shell_device_scan_result_t* scan);
 
 static const char* shell_builtin_app_name(shell_builtin_app_t app) {
     if (app == SHELL_BUILTIN_APP_UPTIME) return "uptime";
@@ -643,6 +661,11 @@ static void shell_regcheck_reset(void) {
     shell_regcheck.package_result = ERR_STATE;
     shell_regcheck.thread_result = ERR_STATE;
     shell_regcheck.processes_result = ERR_STATE;
+    shell_regcheck.device_scan_result = ERR_STATE;
+    shell_regcheck.devices_result = ERR_STATE;
+    shell_regcheck.network_result = ERR_STATE;
+    shell_regcheck.acpi_result = ERR_STATE;
+    shell_regcheck.power_result = ERR_STATE;
     shell_regcheck.loader_result = ERR_STATE;
     shell_regcheck.cancellation_result = ERR_STATE;
     shell_regcheck.cleanup_result = ERR_STATE;
@@ -717,6 +740,405 @@ static int shell_regcheck_validate_scheduler(void) {
         return result == OK ? ERR_STATE : result;
     }
     return OK;
+}
+
+static int shell_regcheck_same_device(const device_info_t* left,
+                                      const device_info_t* right) {
+    return left->kind == right->kind &&
+           left->status == right->status &&
+           left->vendor_id == right->vendor_id &&
+           left->device_id == right->device_id &&
+           left->class_code == right->class_code &&
+           left->subclass_code == right->subclass_code &&
+           left->bus == right->bus &&
+           left->device == right->device &&
+           left->function == right->function &&
+           left->irq == right->irq &&
+           left->capacity_sectors == right->capacity_sectors;
+}
+
+static int shell_regcheck_validate_devices(void) {
+    uint32_t count = 0;
+    uint8_t pci_count = 0;
+    int result = pci_get_device_count(&pci_count);
+
+    if (result != OK) {
+        LOG_ERROR("SHELL", "RegCheck Full nao consultou contagem PCI");
+        return result;
+    }
+    result = device_manager_get_count(&count);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "RegCheck Full nao consultou Devices");
+        return result;
+    }
+    if (count != (uint32_t)pci_count +
+                 SHELL_REGCHECK_BUILTIN_DEVICE_COUNT ||
+        count > DEVICE_MANAGER_MAX_DEVICES) {
+        LOG_ERROR("SHELL", "RegCheck Full detectou contagem Devices invalida");
+        return ERR_STATE;
+    }
+
+    for (uint32_t index = 0; index < count; index++) {
+        device_info_t info;
+        device_info_t found;
+        device_text_t text;
+
+        result = device_manager_get_info(index, &info);
+        if (result != OK ||
+            info.kind > DEVICE_KIND_PC_SPEAKER ||
+            info.status > DEVICE_STATUS_DISABLED) {
+            LOG_ERROR("SHELL", "RegCheck Full detectou entrada Devices invalida");
+            return result == OK ? ERR_STATE : result;
+        }
+        result = device_manager_format_text(&info, &text);
+        if (result != OK || !text.id[0] || !text.name[0] ||
+            !text.type[0] || !text.location[0] || !text.detail[0]) {
+            LOG_ERROR("SHELL", "RegCheck Full nao formatou entrada Devices");
+            return result == OK ? ERR_STATE : result;
+        }
+        result = device_manager_find(text.id, &found);
+        if (result != OK || !shell_regcheck_same_device(&info, &found)) {
+            LOG_ERROR("SHELL", "RegCheck Full detectou ID Devices instavel");
+            return result == OK ? ERR_STATE : result;
+        }
+    }
+    return OK;
+}
+
+static int shell_regcheck_same_network(
+    const network_interface_info_t* left,
+    const network_interface_info_t* right) {
+    if (left->model != right->model || left->state != right->state ||
+        left->link != right->link || left->vendor_id != right->vendor_id ||
+        left->device_id != right->device_id ||
+        left->class_code != right->class_code ||
+        left->subclass_code != right->subclass_code ||
+        left->prog_if != right->prog_if || left->revision != right->revision ||
+        left->bus != right->bus || left->device != right->device ||
+        left->function != right->function || left->irq != right->irq) {
+        return 0;
+    }
+    for (uint32_t bar = 0; bar < NETWORK_PCI_BAR_COUNT; bar++) {
+        if (left->bars[bar] != right->bars[bar]) return 0;
+    }
+    return 1;
+}
+
+static int shell_regcheck_validate_network_entry(
+    const network_interface_info_t* info, uint32_t* recognized,
+    uint32_t* active) {
+    network_interface_info_t found;
+    network_interface_text_t text;
+    int result;
+
+    if (!info || !recognized || !active) {
+        LOG_ERROR("SHELL", "RegCheck Full recebeu entrada Network nula");
+        return ERR_NULL;
+    }
+    if (info->class_code != SHELL_REGCHECK_PCI_NETWORK_CLASS ||
+        info->model > NETWORK_ADAPTER_RTL8139 ||
+        info->state > NETWORK_INTERFACE_ACTIVE ||
+        info->link > NETWORK_LINK_UP ||
+        (info->state != NETWORK_INTERFACE_ACTIVE &&
+         info->link != NETWORK_LINK_UNKNOWN) ||
+        (info->model == NETWORK_ADAPTER_UNKNOWN &&
+         info->state != NETWORK_INTERFACE_UNSUPPORTED) ||
+        (info->model != NETWORK_ADAPTER_UNKNOWN &&
+         info->state == NETWORK_INTERFACE_UNSUPPORTED)) {
+        LOG_ERROR("SHELL", "RegCheck Full detectou entrada Network invalida");
+        return ERR_STATE;
+    }
+    result = network_manager_format_text(info, &text);
+    if (result != OK || !text.id[0] || !text.name[0] || !text.driver[0]) {
+        LOG_ERROR("SHELL", "RegCheck Full nao formatou entrada Network");
+        return result == OK ? ERR_STATE : result;
+    }
+    result = network_manager_find(text.id, &found);
+    if (result != OK || !shell_regcheck_same_network(info, &found)) {
+        LOG_ERROR("SHELL", "RegCheck Full detectou ID Network instavel");
+        return result == OK ? ERR_STATE : result;
+    }
+    if (info->model != NETWORK_ADAPTER_UNKNOWN) (*recognized)++;
+    if (info->state == NETWORK_INTERFACE_ACTIVE) (*active)++;
+    return OK;
+}
+
+static int shell_regcheck_validate_network_recovery(
+    const network_manager_status_t* status) {
+    const recovery_component_t* component =
+        recovery_get(RECOVERY_COMPONENT_NETWORK);
+    recovery_state_t expected_state;
+    int expected_error;
+
+    if (!component || !status) {
+        LOG_ERROR("SHELL", "RegCheck Full nao consultou recovery Network");
+        return ERR_STATE;
+    }
+    if (status->partial) {
+        expected_state = RECOVERY_STATE_DEGRADED;
+        expected_error = ERR_OVERFLOW;
+    } else if (status->active_count) {
+        expected_state = RECOVERY_STATE_READY;
+        expected_error = OK;
+    } else if (status->interface_count) {
+        expected_state = RECOVERY_STATE_DEGRADED;
+        expected_error = ERR_UNAVAILABLE;
+    } else {
+        expected_state = RECOVERY_STATE_DISABLED;
+        expected_error = ERR_NOT_FOUND;
+    }
+    if (component->state != expected_state ||
+        component->last_error != expected_error) {
+        LOG_ERROR("SHELL", "RegCheck Full detectou recovery Network incoerente");
+        return ERR_STATE;
+    }
+    return OK;
+}
+
+static int shell_regcheck_validate_network(void) {
+    network_manager_status_t status;
+    uint32_t count = 0;
+    uint32_t recognized = 0;
+    uint32_t active = 0;
+    int result = network_manager_get_status(&status);
+
+    if (result != OK || !status.initialized ||
+        network_manager_get_count(&count) != OK ||
+        count != status.interface_count ||
+        count > NETWORK_MANAGER_MAX_INTERFACES ||
+        status.recognized_count > count || status.active_count > count ||
+        (status.ipv4_available && !status.packet_io_available) ||
+        ((status.packet_io_available || status.ipv4_available) &&
+         !status.active_count)) {
+        LOG_ERROR("SHELL", "RegCheck Full detectou estado Network invalido");
+        return result == OK ? ERR_STATE : result;
+    }
+    for (uint32_t index = 0; index < count; index++) {
+        network_interface_info_t info;
+
+        result = network_manager_get_interface(index, &info);
+        if (result != OK) {
+            LOG_ERROR("SHELL", "RegCheck Full nao consultou entrada Network");
+            return result;
+        }
+        result = shell_regcheck_validate_network_entry(&info, &recognized,
+                                                       &active);
+        if (result != OK) return result;
+    }
+    if (recognized != status.recognized_count ||
+        active != status.active_count) {
+        LOG_ERROR("SHELL", "RegCheck Full detectou contadores Network invalidos");
+        return ERR_STATE;
+    }
+    return shell_regcheck_validate_network_recovery(&status);
+}
+
+static int shell_regcheck_valid_acpi_table(
+    const acpi_table_info_t* table) {
+    if (!table || table->signature[4] != '\0' ||
+        !table->physical_address ||
+        table->length < SHELL_REGCHECK_ACPI_SDT_HEADER_SIZE ||
+        table->length > SHELL_REGCHECK_ACPI_MAX_TABLE_SIZE) {
+        return 0;
+    }
+    for (uint32_t index = 0; index < 4U; index++) {
+        if (!table->signature[index]) return 0;
+    }
+    return 1;
+}
+
+static int shell_regcheck_validate_acpi_power(
+    const acpi_status_t* status, const acpi_power_info_t* power) {
+    if (!power->initialized || power->mode > ACPI_MODE_INCONSISTENT ||
+        power->s5_state > ACPI_S5_AMBIGUOUS ||
+        (power->pm1a_readable && !power->pm1a_present) ||
+        (power->pm1b_readable && !power->pm1b_present) ||
+        (power->s5_state == ACPI_S5_DECLARED &&
+         (power->s5_candidates != 1U ||
+          power->s5_type_a > 7U || power->s5_type_b > 7U)) ||
+        (!status->available &&
+         (power->fadt_power_fields_present ||
+          power->s5_transition_ready))) {
+        LOG_ERROR("SHELL", "RegCheck Full detectou snapshot ACPI invalido");
+        return ERR_STATE;
+    }
+    if (power->s5_transition_ready &&
+        (!status->available || status->partial ||
+         !status->fadt_present || !status->dsdt_present ||
+         !power->fadt_power_fields_present || power->hardware_reduced ||
+         !power->pm1a_readable ||
+         (power->pm1b_present && !power->pm1b_readable) ||
+         power->s5_state != ACPI_S5_DECLARED ||
+         (power->mode != ACPI_MODE_ENABLED &&
+          !power->mode_enable_available))) {
+        LOG_ERROR("SHELL", "RegCheck Full detectou prontidao S5 incoerente");
+        return ERR_STATE;
+    }
+    return OK;
+}
+
+static int shell_regcheck_validate_acpi_recovery(
+    const acpi_status_t* status) {
+    const recovery_component_t* component =
+        recovery_get(RECOVERY_COMPONENT_ACPI);
+    recovery_state_t expected;
+
+    if (!component || !status) {
+        LOG_ERROR("SHELL", "RegCheck Full nao consultou recovery ACPI");
+        return ERR_STATE;
+    }
+    if (!status->available) {
+        expected = RECOVERY_STATE_DISABLED;
+    } else if (status->partial ||
+               !status->fadt_present || !status->dsdt_present) {
+        expected = RECOVERY_STATE_DEGRADED;
+    } else {
+        expected = RECOVERY_STATE_READY;
+    }
+    if (component->state != expected) {
+        LOG_ERROR("SHELL", "RegCheck Full detectou recovery ACPI incoerente");
+        return ERR_STATE;
+    }
+    return OK;
+}
+
+static int shell_regcheck_validate_acpi(void) {
+    acpi_status_t status;
+    acpi_power_info_t power;
+    uint32_t table_count = 0;
+    int result = acpi_get_status(&status);
+
+    if (result != OK || acpi_get_power_info(&power) != OK ||
+        acpi_get_table_count(&table_count) != OK ||
+        !status.initialized || table_count != status.table_count ||
+        table_count > ACPI_MAX_TABLES ||
+        status.root_entry_count > SHELL_REGCHECK_ACPI_MAX_ROOT_ENTRIES ||
+        status.root_kind > ACPI_ROOT_XSDT ||
+        (status.available &&
+         (status.root_kind == ACPI_ROOT_NONE ||
+          !status.rsdp_address || !status.root_address)) ||
+        (!status.available && status.root_kind != ACPI_ROOT_NONE) ||
+        (status.fadt_present != (status.fadt_address != 0)) ||
+        (status.dsdt_present != (status.dsdt_address != 0)) ||
+        (status.facs_present != (status.facs_address != 0))) {
+        LOG_ERROR("SHELL", "RegCheck Full detectou estado ACPI invalido");
+        return result == OK ? ERR_STATE : result;
+    }
+    for (uint32_t index = 0; index < table_count; index++) {
+        acpi_table_info_t table;
+
+        result = acpi_get_table_at(index, &table);
+        if (result != OK || !shell_regcheck_valid_acpi_table(&table)) {
+            LOG_ERROR("SHELL", "RegCheck Full detectou tabela ACPI invalida");
+            return result == OK ? ERR_STATE : result;
+        }
+    }
+    result = shell_regcheck_validate_acpi_power(&status, &power);
+    if (result != OK) return result;
+    return shell_regcheck_validate_acpi_recovery(&status);
+}
+
+static int shell_regcheck_validate_power(void) {
+    power_status_t status;
+    acpi_status_t acpi;
+    acpi_power_info_t acpi_power;
+    const recovery_component_t* component =
+        recovery_get(RECOVERY_COMPONENT_POWER);
+    int result = power_get_status(&status);
+
+    if (result != OK || acpi_get_status(&acpi) != OK ||
+        acpi_get_power_info(&acpi_power) != OK || !component) {
+        LOG_ERROR("SHELL", "RegCheck Full nao consultou Power");
+        return result == OK ? ERR_STATE : result;
+    }
+    if (status.states[POWER_STATE_S0] != POWER_CAPABILITY_AVAILABLE ||
+        status.states[POWER_STATE_S1] != POWER_CAPABILITY_UNAVAILABLE ||
+        status.states[POWER_STATE_S2] != POWER_CAPABILITY_UNAVAILABLE ||
+        status.states[POWER_STATE_S3] != POWER_CAPABILITY_UNAVAILABLE ||
+        status.states[POWER_STATE_S4] != POWER_CAPABILITY_UNAVAILABLE ||
+        status.cpu_idle != POWER_CAPABILITY_AVAILABLE ||
+        status.reboot != POWER_CAPABILITY_AVAILABLE ||
+        status.acpi_available != acpi.available ||
+        status.acpi_power_tables_available !=
+            (acpi.fadt_present && acpi.dsdt_present) ||
+        status.acpi_partial != acpi.partial ||
+        status.acpi_pm1_control_available !=
+            (acpi_power.pm1a_readable &&
+             (!acpi_power.pm1b_present || acpi_power.pm1b_readable)) ||
+        status.acpi_mode_known !=
+            (acpi_power.mode == ACPI_MODE_ENABLED ||
+             acpi_power.mode == ACPI_MODE_DISABLED) ||
+        status.acpi_mode_enabled !=
+            (acpi_power.mode == ACPI_MODE_ENABLED) ||
+        status.acpi_s5_declared !=
+            (acpi_power.s5_state == ACPI_S5_DECLARED) ||
+        status.acpi_mode_enable_available !=
+            acpi_power.mode_enable_available ||
+        status.acpi_s5_transition_ready !=
+            acpi_power.s5_transition_ready ||
+        component->state != RECOVERY_STATE_READY) {
+        LOG_ERROR("SHELL", "RegCheck Full detectou contrato Power invalido");
+        return ERR_STATE;
+    }
+    if (status.acpi_s5_transition_ready) {
+        if (status.states[POWER_STATE_S5] != POWER_CAPABILITY_AVAILABLE ||
+            status.hardware_poweroff != POWER_CAPABILITY_AVAILABLE) {
+            LOG_ERROR("SHELL", "RegCheck Full detectou S5 pronto incoerente");
+            return ERR_STATE;
+        }
+    } else if (status.states[POWER_STATE_S5] != POWER_CAPABILITY_SIMULATED ||
+               status.hardware_poweroff != POWER_CAPABILITY_UNAVAILABLE) {
+        LOG_ERROR("SHELL", "RegCheck Full detectou fallback Power incoerente");
+        return ERR_STATE;
+    }
+    return OK;
+}
+
+static void shell_regcheck_run_full_checks(void) {
+    shell_device_scan_result_t scan;
+    const recovery_component_t* network_before =
+        recovery_get(RECOVERY_COMPONENT_NETWORK);
+    recovery_state_t previous_network_state = RECOVERY_STATE_UNKNOWN;
+    uint32_t previous_network_failures = 0;
+    int previous_network_error = ERR_STATE;
+    int network_idempotent = 1;
+    log_level_t previous_level = log_get_level();
+
+    if (network_before) {
+        previous_network_state = network_before->state;
+        previous_network_failures = network_before->failures;
+        previous_network_error = network_before->last_error;
+    }
+    log_set_level(LOG_LEVEL_ERROR);
+    shell_regcheck.device_scan_result = shell_run_device_scan(&scan);
+    log_set_level(previous_level);
+
+    network_before = recovery_get(RECOVERY_COMPONENT_NETWORK);
+    if (network_before &&
+        network_before->state == previous_network_state &&
+        network_before->last_error == previous_network_error &&
+        network_before->failures != previous_network_failures) {
+        LOG_ERROR("SHELL", "RegCheck Full detectou falhas Network crescentes");
+        network_idempotent = 0;
+    }
+    if (shell_regcheck.device_scan_result == OK) {
+        shell_regcheck.devices_result = shell_regcheck_validate_devices();
+    } else {
+        shell_regcheck.devices_result = OK;
+    }
+    if (!network_idempotent) {
+        shell_regcheck.network_result = ERR_STATE;
+    } else if (scan.network_result == OK) {
+        shell_regcheck.network_result = shell_regcheck_validate_network();
+    } else if (scan.network_result == ERR_STATE &&
+               shell_regcheck.device_scan_result != OK &&
+               shell_regcheck.device_scan_result != ERR_OVERFLOW) {
+        shell_regcheck.network_result = OK;
+    } else {
+        shell_regcheck.network_result = scan.network_result;
+    }
+    shell_regcheck.acpi_result = shell_regcheck_validate_acpi();
+    shell_regcheck.power_result = shell_regcheck_validate_power();
 }
 
 static int shell_regcheck_validate_packages(void) {
@@ -819,6 +1241,14 @@ static int shell_regcheck_has_failures(void) {
         shell_regcheck.cleanup_result != OK) {
         return 1;
     }
+    if (shell_regcheck.full_mode &&
+        (shell_regcheck.device_scan_result != OK ||
+         shell_regcheck.devices_result != OK ||
+         shell_regcheck.network_result != OK ||
+         shell_regcheck.acpi_result != OK ||
+         shell_regcheck.power_result != OK)) {
+        return 1;
+    }
     if (shell_regcheck.loader_started && shell_regcheck.loader_result != OK) {
         return 1;
     }
@@ -852,6 +1282,18 @@ static void shell_regcheck_finish(void) {
         shell_regcheck_print_failure("threads", shell_regcheck.thread_result);
         shell_regcheck_print_failure("processos",
                                      shell_regcheck.processes_result);
+        if (shell_regcheck.full_mode) {
+            shell_regcheck_print_failure("device_scan",
+                                         shell_regcheck.device_scan_result);
+            shell_regcheck_print_failure("devices",
+                                         shell_regcheck.devices_result);
+            shell_regcheck_print_failure("network",
+                                         shell_regcheck.network_result);
+            shell_regcheck_print_failure("acpi",
+                                         shell_regcheck.acpi_result);
+            shell_regcheck_print_failure("power",
+                                         shell_regcheck.power_result);
+        }
         if (shell_regcheck.loader_started) {
             shell_regcheck_print_failure("loader_ring3",
                                          shell_regcheck.loader_result);
@@ -1357,7 +1799,8 @@ static void cmd_help(void) {
     video_print("  memcheck - Valida heap, PMM e diretorios de usuario\n", 0x07);
     video_print("  schedcheck - Valida invariantes do scheduler\n", 0x07);
     video_print("  q2check  - Executa diagnostico compacto da Q2\n", 0x07);
-    video_print("  regcheck - Executa regressao compacta com F12\n", 0x07);
+    video_print("  regcheck [full] - Executa regressao compacta com F12\n",
+                0x07);
     video_print("  appcheck - Testa API, arquivos, IPC e loader\n", 0x07);
     video_print("  pkg      - Gerencia pacotes .ZPK locais\n", 0x07);
     video_print("             pkg list | info | verify | install | remove\n", 0x08);
@@ -1849,46 +2292,89 @@ static void cmd_device_info(const char* args) {
     video_print("\n", 0x07);
 }
 
+static int shell_run_device_scan(shell_device_scan_result_t* scan) {
+    int recovery_result;
+
+    if (!scan) {
+        LOG_ERROR("SHELL", "Destino nulo para resultado de device-scan");
+        return ERR_NULL;
+    }
+    scan->pci_result = pci_init();
+    scan->devices_result = ERR_STATE;
+    scan->network_result = ERR_STATE;
+    if (scan->pci_result != OK && scan->pci_result != ERR_OVERFLOW) {
+        recovery_result =
+            recovery_mark_disabled(RECOVERY_COMPONENT_DEVICES,
+                                   scan->pci_result, "Varredura PCI falhou");
+        if (recovery_result != OK) {
+            LOG_ERROR("SHELL", "Falha ao desabilitar Devices no health");
+        }
+        LOG_ERROR("SHELL", "Falha ao refazer varredura PCI");
+        return scan->pci_result;
+    }
+
+    scan->devices_result = device_manager_refresh();
+    if (scan->devices_result != OK &&
+        scan->devices_result != ERR_OVERFLOW) {
+        recovery_result =
+            recovery_mark_disabled(
+                RECOVERY_COMPONENT_DEVICES, scan->devices_result,
+                "Inventario de dispositivos indisponivel");
+        if (recovery_result != OK) {
+            LOG_ERROR("SHELL", "Falha ao desabilitar Devices no health");
+        }
+        LOG_ERROR("SHELL", "Falha ao atualizar inventario de dispositivos");
+        return scan->devices_result;
+    }
+    scan->network_result = network_manager_refresh();
+
+    if (scan->pci_result == ERR_OVERFLOW ||
+        scan->devices_result == ERR_OVERFLOW) {
+        recovery_result =
+            recovery_mark_degraded(RECOVERY_COMPONENT_DEVICES, ERR_OVERFLOW,
+                                   "Inventario PCI parcial");
+    } else {
+        recovery_result = recovery_mark_ready(RECOVERY_COMPONENT_DEVICES);
+    }
+    if (recovery_result != OK) {
+        LOG_ERROR("SHELL", "Falha ao sincronizar Devices no health");
+        scan->devices_result = recovery_result;
+        return recovery_result;
+    }
+    if (scan->pci_result != OK) return scan->pci_result;
+    return scan->devices_result;
+}
+
 static void cmd_device_scan(const char* args) {
-    int pci_result;
-    int refresh_result;
-    int network_result;
+    shell_device_scan_result_t scan;
+    int result;
 
     if (*args) {
         LOG_WARN("SHELL", "Uso invalido de device-scan");
         video_print("Uso: device-scan\n", 0x0C);
         return;
     }
-    pci_result = pci_init();
-    if (pci_result != OK && pci_result != ERR_OVERFLOW) {
-        recovery_mark_disabled(RECOVERY_COMPONENT_DEVICES, pci_result,
-                               "Varredura PCI falhou");
-        LOG_ERROR("SHELL", "Falha ao refazer varredura PCI");
+    result = shell_run_device_scan(&scan);
+    if (scan.pci_result != OK && scan.pci_result != ERR_OVERFLOW) {
         video_print("Erro: varredura PCI indisponivel.\n", 0x0C);
         return;
     }
-    refresh_result = device_manager_refresh();
-    if (refresh_result != OK && refresh_result != ERR_OVERFLOW) {
-        recovery_mark_disabled(RECOVERY_COMPONENT_DEVICES, refresh_result,
-                               "Inventario de dispositivos indisponivel");
-        LOG_ERROR("SHELL", "Falha ao atualizar inventario de dispositivos");
+    if (scan.devices_result != OK &&
+        scan.devices_result != ERR_OVERFLOW) {
         video_print("Erro: inventario de dispositivos indisponivel.\n", 0x0C);
         return;
     }
-    network_result = network_manager_refresh();
-    if (network_result != OK && network_result != ERR_OVERFLOW) {
+    if (scan.network_result != OK &&
+        scan.network_result != ERR_OVERFLOW) {
         LOG_WARN("SHELL", "Falha ao atualizar inventario de rede");
         video_print("Aviso: inventario de rede indisponivel.\n", 0x0E);
     }
-    if (refresh_result == ERR_OVERFLOW) {
-        recovery_mark_degraded(RECOVERY_COMPONENT_DEVICES, refresh_result,
-                               "Inventario PCI parcial");
+    if (result == ERR_OVERFLOW) {
         video_print("Varredura PCI parcial; inventario atualizado.\n", 0x0E);
         return;
     }
-    recovery_mark_ready(RECOVERY_COMPONENT_DEVICES);
     video_print("Varredura PCI concluida; inventario atualizado.\n", 0x0A);
-    if (network_result == ERR_OVERFLOW) {
+    if (scan.network_result == ERR_OVERFLOW) {
         video_print("Aviso: inventario de rede parcial.\n", 0x0E);
     }
 }
@@ -3092,10 +3578,12 @@ static void cmd_q2check(void) {
 static void cmd_regcheck(const char* args) {
     paging_user_stats_t paging;
     shell_memcheck_result_t memory;
+    int full_mode = shell_args_equal(args, "full");
     int result;
 
-    if (*args) {
-        video_print("Uso: regcheck\n", 0x0C);
+    if (*args && !full_mode) {
+        LOG_WARN("SHELL", "Uso invalido de regcheck");
+        video_print("Uso: regcheck [full]\n", 0x0C);
         return;
     }
     if (shell_regcheck.state != SHELL_REGCHECK_IDLE ||
@@ -3109,6 +3597,7 @@ static void cmd_regcheck(const char* args) {
     }
 
     shell_regcheck_reset();
+    shell_regcheck.full_mode = full_mode ? 1U : 0U;
     shell_regcheck.initial_focus = process_get_focus();
     shell_regcheck.initial_process_count = process_get_count();
     shell_regcheck.initial_user_count = process_get_user_count();
@@ -3118,6 +3607,7 @@ static void cmd_regcheck(const char* args) {
     shell_regcheck.initial_user_directories = paging.active_directories;
     shell_regcheck.initial_user_pages = paging.active_pages;
 
+    if (shell_regcheck.full_mode) shell_regcheck_run_full_checks();
     shell_regcheck.health_result = shell_regcheck_validate_health();
     shell_regcheck.services_result = shell_regcheck_validate_services();
     shell_regcheck.scheduler_result = shell_regcheck_validate_scheduler();

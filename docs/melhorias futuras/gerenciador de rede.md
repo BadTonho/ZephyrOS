@@ -33,7 +33,10 @@
 - [x] `net status`, `net devices` e `net info <id>` documentam somente
   capacidades reais.
 - [x] `device-scan` atualiza o snapshot de rede sem inicializar hardware.
-- [ ] Validacao manual pendente no QEMU padrao e com `-nic none`.
+- [x] `regcheck full` valida a varredura, o snapshot, IDs e recovery de rede
+  junto dos contratos de Devices, ACPI e Power.
+- [ ] Validacao manual pendente com `regcheck full` no QEMU padrao e com
+  `-nic none`.
 
 Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo. A
 S2.2 implementara primeiro o E1000 e atualizara os totais ao iniciar o driver.

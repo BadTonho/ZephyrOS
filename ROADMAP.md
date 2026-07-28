@@ -123,7 +123,7 @@ Plataforma de aplicativos:   [████████████████�
 | `memcheck` | Valida heap, PMM, coalescencia e limpeza de diretorios ring 3 |
 | `schedcheck` | Valida invariantes do scheduler sem alterar processos |
 | `q2check` | Executa diagnostico compacto da etapa Q2 |
-| `regcheck` | Valida health, processos, scheduler, memoria e cancelamento real por F12 |
+| `regcheck [full]` | Valida a regressao compacta; `full` soma PCI, Devices, Network, ACPI e Power |
 | `appcheck` | Testa API, arquivos, IPC e carregador |
 | `app run <arq> [args]` | Executa aplicativo ring 3 com argumentos simples |
 | `app inputtest` | Testa teclado e foco de aplicativo ring 3 |
@@ -448,8 +448,10 @@ Plataforma de aplicativos:   [████████████████�
 - [x] Comandos `net status`, `net devices` e `net info <id>`, com IDs estaveis
   e sintaxe invalida controlada.
 - [x] `device-scan` atualiza tambem o snapshot de rede sem iniciar driver.
+- [x] `regcheck full` concentra a varredura PCI e os contratos de Devices,
+  Network, ACPI e Power, mantendo o cancelamento real por `F12`.
 - [ ] Validacao manual pendente no QEMU padrao e com `-nic none`, incluindo
-  comandos, re-scan e matriz de regressao.
+  `regcheck full`, comandos, re-scan e matriz de regressao.
 
 ## Roadmaps por etapa
 

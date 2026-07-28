@@ -50,7 +50,7 @@ Comandos disponiveis:
   memcheck  - Valida heap, PMM e diretorios de usuario
   schedcheck - Valida invariantes do scheduler
   q2check   - Executa diagnostico compacto da Q2
-  regcheck  - Executa regressao compacta com F12
+  regcheck [full] - Executa regressao compacta com F12
   appcheck  - Testa API, arquivos, IPC e carregador ZAPP
   pkg       - Gerencia pacotes .ZPK locais
   pkgcheck  - Testa validacoes de pacote sem gravar
@@ -261,8 +261,9 @@ e BAR0-BAR5. A forma `net-pci-BB-DD.F` tambem e aceita.
 
 Intel `8086:100E` aparece como E1000 e Realtek `10EC:8139` como RTL8139, mas
 isso nao confirma driver ou conectividade. Sem NIC, os comandos permanecem
-utilizaveis e mostram inventario vazio. `device-scan` e o unico comando que
-refaz PCI e atualiza tambem o snapshot de rede.
+utilizaveis e mostram inventario vazio. `device-scan` e o comando explicito
+de varredura; `regcheck full` reutiliza internamente o mesmo caminho para a
+regressao compacta.
 
 ## `acpi status`
 
@@ -417,8 +418,20 @@ threads e um ciclo ZAPP silencioso de sucesso. Em seguida inicia outro ZAPP
 silencioso e mostra a instrucao para pressionar `F12`; o cancelamento e feito
 pelo runtime real, nao por simulacao.
 
+`regcheck full` preserva essas etapas e acrescenta uma varredura PCI real,
+reconstrucao dos snapshots de Devices e Network, consultas por indice e ID,
+validacao das tabelas ACPI copiadas e coerencia entre ACPI, Power e S5. Os
+logs informativos da varredura sao silenciados temporariamente; o nivel
+anterior e restaurado antes das demais etapas e falhas reais continuam
+visiveis.
+
 ```text
 zephyr> regcheck
+RegCheck: pressione F12 para validar cancelamento.
+RegCheck: OK
+zephyr>
+
+zephyr> regcheck full
 RegCheck: pressione F12 para validar cancelamento.
 RegCheck: OK
 zephyr>
@@ -426,14 +439,18 @@ zephyr>
 
 Em falha, a saida enumera somente as etapas inesperadas com seu codigo:
 `health`, `servicos_base`, `scheduler`, `memoria`, `pacotes`, `threads`,
-`processos`, `loader_ring3`, `cancelamento_f12` ou `limpeza_final`. O comando
+`processos`, `device_scan`, `devices`, `network`, `acpi`, `power`,
+`loader_ring3`, `cancelamento_f12` ou `limpeza_final`. O comando
 recusa a execucao se houver outro diagnostico, ZAPP, UserTest ou zumbi
-pendente; argumentos extras usam `Uso: regcheck`. Ele nao grava no FAT, nao
-cria pacote temporario nem altera o contador de falhas isoladas.
+pendente; argumentos extras usam `Uso: regcheck [full]`. Ele nao grava no
+FAT, nao cria pacote temporario nem altera o contador de falhas isoladas.
+Ausencia coerente de NIC, ACPI ou AC97 nao e tratada como falha; inventario
+PCI parcial e reportado como erro.
 
 `regcheck` e um atalho, nao uma substituicao para `appcheck`, `q2check`,
 `usertest fault`, `app outputtest [fail]`, `app inputtest` encerrado por
-`Enter` ou a validacao manual das interfaces classic e modern.
+`Enter`, desligamento/reboot ou a validacao manual das interfaces classic e
+modern.
 
 ## `pkg list|info|verify|install|remove`
 
