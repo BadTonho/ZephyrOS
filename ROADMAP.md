@@ -114,8 +114,8 @@ Plataforma de aplicativos:   [████████████████�
 | `devices [-v]` | Lista o inventario nativo de hardware |
 | `device-info <id>` | Mostra detalhes de um dispositivo inventariado |
 | `device-scan` | Refaz somente a varredura PCI e atualiza o inventario |
-| `acpi status` | Mostra tabelas, PM1, modo ACPI e `_S5_` observados |
-| `power status` | Separa capacidades do firmware das transicoes implementadas |
+| `acpi status` | Mostra tabelas, PM1, modo ACPI, `_S5_` e prontidao S5 |
+| `power status` | Mostra prontidao S5, desligamento fisico e fallback HLT |
 | `kmetrics [reset]` | Coleta linha-base de PIT, filas, memoria e VESA, incluindo media de bytes por apresentacao |
 | `memcheck` | Valida heap, PMM, coalescencia e limpeza de diretorios ring 3 |
 | `schedcheck` | Valida invariantes do scheduler sem alterar processos |
@@ -127,7 +127,7 @@ Plataforma de aplicativos:   [████████████████�
 | `app outputtest [fail]` | Testa saida ZAPP acima de 1 KiB e codigos de saida |
 | `app argtest <texto>` | Testa argumentos de aplicativo ring 3 |
 | `reboot` | Reinicia o sistema |
-| `shutdown` | Desliga o sistema |
+| `shutdown` | Desliga por ACPI S5 ou usa fallback terminal HLT |
 
 ## Fase 8 - Extras ✅
 > Arquivos: `src/drivers/speaker.c`, `src/thread/thread.c`
@@ -416,6 +416,21 @@ Plataforma de aplicativos:   [████████████████�
 - [x] Build e validacao manual concluidos no QEMU padrao e sem ACPI:
   `health`, PM1, `_S5_`, fallback, comandos diagnosticos, entrada ZAPP e
   matriz de regressao Classic/Modern permaneceram operacionais.
+
+## S1.4 - Desligamento fisico ACPI S5 (implementada; validacao pendente)
+
+- [x] Prontidao S5 fechada por snapshot completo, FADT/DSDT, PM1 System I/O,
+  `_S5_` inequivoco e modo ACPI habilitado ou ativavel.
+- [x] `acpi_enter_s5()` adquire o modo por `SMI_CMD` quando necessario,
+  confirma `SCI_EN` e escreve PM1a antes de PM1b sem caminho de retorno apos
+  a primeira escrita.
+- [x] `power_shutdown()` centraliza Shell, kernel, Menu Iniciar e Task Manager,
+  para audio em best effort e usa `CLI+HLT` como fallback terminal.
+- [x] Porta privada `0xB004` do QEMU removida; reboot, filesystem, boot e
+  paging permanecem inalterados.
+- [ ] Validacao manual pendente no QEMU padrao e sem ACPI, incluindo comandos
+  de diagnostico, sintaxe invalida, regressao e desligamento por todas as
+  interfaces Classic/Modern.
 
 ## Roadmaps por etapa
 

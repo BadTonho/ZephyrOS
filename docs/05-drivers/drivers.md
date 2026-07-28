@@ -462,10 +462,11 @@ Cada byte representa uma linha de 8 pixels (1 bit por pixel).
 
 ## ACPI (`acpi.c`)
 
-O driver ACPI das S1.2 e S1.3 e somente de leitura. Ele e inicializado depois do mapa
-E820 e antes do paging, pois as regioes da EBDA e do BIOS ainda estao
-identity-mapped nesse ponto. A busca cobre o primeiro KiB da EBDA e
-`0xE0000-0xFFFFF`, sempre em enderecos alinhados a 16 bytes.
+O driver ACPI cria nas S1.2 e S1.3 um snapshot de leitura antes do paging. Na
+S1.4, esse snapshot tambem controla uma unica operacao terminal de S5. A
+inicializacao ocorre depois do mapa E820, pois as regioes da EBDA e do BIOS
+ainda estao identity-mapped nesse ponto. A busca cobre o primeiro KiB da EBDA
+e `0xE0000-0xFFFFF`, sempre em enderecos alinhados a 16 bytes.
 
 O driver valida RSDP, RSDT/XSDT e os checksums das SDTs, prefere XSDT quando
 os enderecos cabem em 32 bits e usa RSDT como fallback. Um snapshot estatico
@@ -498,9 +499,25 @@ O reconhecedor AML e limitado a `Name(_S5_, Package(...))`: valida
 malformacao ou mais de uma declaracao valida fecham a capacidade de forma
 segura. SSDTs e AML generico nao sao interpretados.
 
-O driver nao possui `outb`/`outw`, nao escreve em `SMI_CMD` ou PM1 e nao
-implementa SCI, GPE ou transicoes. Uma declaracao S5 valida confirma apenas o
-contrato do firmware; nao torna o desligamento fisico disponivel.
+Na S1.4, `mode_enable_available` informa se o modo ACPI pode ser adquirido por
+`SMI_CMD` e `s5_transition_ready` consolida todas as pre-condicoes de
+seguranca. S5 so fica pronto com snapshot completo, FADT/DSDT validas,
+plataforma nao hardware-reduced, PM1a e PM1b opcional em System I/O de 16
+bits, uma unica declaracao `_S5_` valida e modo ACPI habilitado ou ativavel.
+
+`acpi_enter_s5()` repete essas validacoes antes da primeira escrita. Se
+`SCI_EN` estiver limpo, desabilita interrupcoes, escreve `ACPI_ENABLE` em
+`SMI_CMD` e limita a espera por confirmacao a 1.000.000 leituras. Em seguida
+preserva os outros bits de PM1, substitui apenas `SLP_TYP`, define `SLP_EN` e
+escreve PM1a antes de PM1b. A funcao retorna erro somente quando nenhuma
+escrita ocorreu; depois da primeira escrita, qualquer falha termina em HLT.
+
+MMIO, hardware-reduced ACPI, AML generico, `_PTS`, SCI, GPE, suspensao e
+hibernacao continuam indisponiveis. A implementacao nao usa a porta privada
+`0xB004` do QEMU. A ordem segue o
+[modelo de programacao ACPI 6.6](https://uefi.org/specs/ACPI/6.6/05_ACPI_Software_Programming_Model.html)
+e o contrato de
+[objetos de estado do sistema](https://uefi.org/htmlspecs/ACPI_Spec_6_4_html/07_Power_and_Performance_Mgmt/oem-supplied-system-level-control-methods.html).
 
 ---
 

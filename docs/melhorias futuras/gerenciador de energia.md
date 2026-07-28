@@ -49,7 +49,7 @@
 - ⬜ S0 Low Power Idle (Modern Standby).
 - ⬜ S1/S2/S3 (formas tradicionais de suspensão).
 - ⬜ S4 (hibernação).
-- 🟡 S5 declarado pelo firmware; desligamento continua simulado.
+- ✅ S5 físico por PM1 System I/O quando o contrato seguro está completo.
 - ⬜ Ver estados disponíveis via powercfg /a.
 
 ### 6. Modern Standby
@@ -273,14 +273,14 @@
 - ✅ Descoberta e validacao de RSDP/RSDT/XSDT.
 - 🟡 FADT e DSDT validadas; SSDT apenas inventariada, sem interpretar AML.
 - ⬜ Driver ACPI completo.
-- ✅ Registos PM1a/PM1b inventariados e observados somente por leitura.
+- ✅ Registos PM1a/PM1b inventariados, observados e usados no desligamento S5.
 - ⬜ GPE (General Purpose Events) handlers.
 - ✅ FACS identificada e validada por assinatura e comprimento.
 - ⬜ ACPI thermal zones.
 
 ### 25. Comandos de shell existentes
 - ✅ Comando `reboot`. *(shell.c:280-285 — outb 0xFE, 0x64)*
-- ✅ Comando `shutdown`. *(shell.c:287-292 — CLI+HLT simulado)*
+- ✅ Comando `shutdown` centralizado em `power_shutdown()`, com S5 ou HLT.
 - ✅ Reiniciar via Menu Iniciar. *(taskbar.c:441)*
 - ✅ Desligar via Menu Iniciar. *(taskbar.c:442)*
 - ✅ Reiniciar via Settings. *(settings.c:103-104)*
@@ -331,16 +331,35 @@ escopo desta entrega.
 Qualquer transicao fisica permanece reservada para uma fase separada, usando
 esses dados sem quebrar o fallback validado pela S1.3.
 
+## S1.4 - Desligamento fisico ACPI S5 (implementada; validacao pendente)
+
+- [x] `mode_enable_available` e `s5_transition_ready` consolidam as
+  pre-condicoes sem escrever no hardware.
+- [x] `acpi_enter_s5()` repete a validacao, adquire o modo por `SMI_CMD`
+  quando necessario e confirma `SCI_EN` com limite fixo.
+- [x] `SLP_TYP` e `SLP_EN` sao escritos em PM1a antes de PM1b, preservando os
+  demais bits; apos a primeira escrita, o caminho termina em S5 ou HLT.
+- [x] Shell, kernel, Menu Iniciar e Task Manager usam `power_shutdown()`.
+- [x] PC Speaker e AC97 sao parados em best effort e a porta privada `0xB004`
+  do QEMU foi removida.
+- [x] Sem ACPI seguro, S5 permanece simulado e o fallback terminal e
+  `CLI+HLT`, sem panic.
+- [ ] Validacao manual pendente no QEMU padrao e sem ACPI, incluindo Shell,
+  Menu Iniciar e Task Manager nos modos Classic e Modern.
+
+AML generico, `_PTS`, SCI, GPE, PM1 MMIO, hardware-reduced ACPI, suspensao,
+hibernacao e bateria permanecem fora do escopo.
+
 ## Resumo de Progresso
 
 | Fase | Total | Feito | Parcial | Restante |
 |------|-------|-------|---------|----------|
-| 1 — Fundamentos | 40 | 2 | 0 | 38 |
+| 1 — Fundamentos | 40 | 3 | 0 | 37 |
 | 2 — Economia/Bateria | 47 | 0 | 0 | 47 |
 | 3 — Processador/Dispositivos | 30 | 2 | 0 | 28 |
 | 4 — Temporizadores/Solicitações | 36 | 1 | 0 | 35 |
 | 5 — powercfg/ACPI/Diagnósticos | 30 | 8 | 2 | 20 |
-| **Total** | **183** | **13** | **2** | **168** |
+| **Total** | **183** | **14** | **2** | **167** |
 
 ---
 
@@ -350,18 +369,18 @@ esses dados sem quebrar o fallback validado pela S1.3.
 |----------------|-------|-----------|
 | HLT (idle CPU) | kernel.c:202 | CPU para entre interrupções |
 | Reboot | shell.c:280-285, taskbar.c:441, settings.c:103 | `outb(0xFE, 0x64)` |
-| Shutdown (simulado) | shell.c:287-292, taskbar.c:442 | CLI+HLT (não desliga realmente) |
+| Shutdown S5 | core/power.c, drivers/acpi.c | ACPI PM1 quando pronto; `CLI+HLT` como fallback |
 | AC97 power-down | ac97.c:61-66 | Desliga codec de áudio |
 | PIT Timer 50Hz | timer.c:10-17 | Único temporizador |
-| ACPI observavel | acpi.c | Snapshot de tabelas, PM1, modo ACPI e `_S5_` |
+| ACPI S5 | acpi.c | Snapshot, prontidao fechada, aquisicao de modo e transicao PM1 |
 
 ---
 
 ## Limitações Técnicas Conhecidas
 
-- **ACPI diagnostico**: PM1 e `_S5_` sao observados, mas AML generico, SCI, GPE e transicoes nao sao executados.
+- **ACPI limitado**: somente S5 por PM1 System I/O; AML generico, `_PTS`, SCI, GPE, MMIO, suspensao e hibernacao nao sao executados.
 - **Sem bateria**: O sistema foi concebido para QEMU (desktop), sem leitura de bateria.
-- **Shutdown simulado**: `CLI+HLT` apenas para a CPU — não desliga a máquina真正的.
+- **Fallback de shutdown**: sem um contrato S5 seguro, `CLI+HLT` para a CPU e mantém a máquina ligada.
 - **Sem USB**: Não existe driver USB, logo não há suspensão seletiva.
 - **Sem CPU frequency scaling**: Não há leitura de MSR nem alteração de frequência.
 - **HLT = C1 apenas**: O único estado de baixo consumo da CPU é o C1 (halt).

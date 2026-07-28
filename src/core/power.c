@@ -2,9 +2,18 @@
 #include "core/errors.h"
 #include "core/log.h"
 #include "drivers/acpi.h"
+#include "drivers/ac97.h"
+#include "drivers/speaker.h"
 
 static power_status_t power_status;
 static int power_initialized = 0;
+
+static void power_halt_fallback(void) __attribute__((noreturn));
+
+static void power_halt_fallback(void) {
+    asm volatile("cli");
+    for (;;) asm volatile("hlt");
+}
 
 int power_init(void) {
     acpi_status_t acpi_status;
@@ -27,6 +36,8 @@ int power_init(void) {
     power_status.acpi_mode_known = 0;
     power_status.acpi_mode_enabled = 0;
     power_status.acpi_s5_declared = 0;
+    power_status.acpi_mode_enable_available = 0;
+    power_status.acpi_s5_transition_ready = 0;
     if (acpi_get_status(&acpi_status) == OK) {
         power_status.acpi_available = acpi_status.available;
         power_status.acpi_power_tables_available =
@@ -47,6 +58,16 @@ int power_init(void) {
             acpi_power_info.mode == ACPI_MODE_ENABLED;
         power_status.acpi_s5_declared =
             acpi_power_info.s5_state == ACPI_S5_DECLARED;
+        power_status.acpi_mode_enable_available =
+            acpi_power_info.mode_enable_available;
+        power_status.acpi_s5_transition_ready =
+            acpi_power_info.s5_transition_ready;
+        if (power_status.acpi_s5_transition_ready) {
+            power_status.states[POWER_STATE_S5] =
+                POWER_CAPABILITY_AVAILABLE;
+            power_status.hardware_poweroff =
+                POWER_CAPABILITY_AVAILABLE;
+        }
     } else {
         LOG_WARN("POWER", "Snapshot de energia ACPI indisponivel");
     }
@@ -66,6 +87,28 @@ int power_get_status(power_status_t* out_status) {
     }
     *out_status = power_status;
     return OK;
+}
+
+void power_shutdown(void) {
+    int result;
+
+    LOG_INFO("POWER", "Iniciando desligamento terminal");
+    speaker_off();
+    ac97_stop();
+    if (!power_initialized) {
+        LOG_ERROR("POWER", "Servico nao inicializado; usando HLT");
+        power_halt_fallback();
+    }
+    if (!power_status.acpi_s5_transition_ready) {
+        LOG_WARN("POWER", "S5 ACPI indisponivel; usando HLT");
+        power_halt_fallback();
+    }
+
+    result = acpi_enter_s5();
+    if (result != OK) {
+        LOG_ERROR("POWER", "S5 ACPI recusado; usando HLT");
+    }
+    power_halt_fallback();
 }
 
 const char* power_capability_name(power_capability_t capability) {

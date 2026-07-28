@@ -1371,7 +1371,7 @@ static void cmd_help(void) {
     video_print("  edit     - Editor de texto\n", 0x07);
     video_print("             edit (novo) | edit arquivo.txt\n", 0x08);
     video_print("  reboot   - Reinicia o sistema\n", 0x07);
-    video_print("  shutdown - Desliga o sistema\n", 0x07);
+    video_print("  shutdown - Desliga por ACPI ou usa fallback HLT\n", 0x07);
     video_print("  guitest  - Testa primitivas GUI 2D\n", 0x07);
     video_end_update();
 }
@@ -1910,7 +1910,18 @@ static void cmd_power(const char* args) {
     video_print("\n  S5 declarado pelo firmware: ", 0x07);
     video_print(status.acpi_s5_declared ? "SIM" : "NAO",
                 status.acpi_s5_declared ? 0x0A : 0x0E);
-    video_print("\n  Transicoes ACPI: NAO IMPLEMENTADAS", 0x0E);
+    video_print("\n  Ativacao do modo ACPI: ", 0x07);
+    if (status.acpi_mode_enabled) {
+        video_print("NAO NECESSARIA", 0x0A);
+    } else {
+        video_print(status.acpi_mode_enable_available ?
+                    "DISPONIVEL" : "INDISPONIVEL",
+                    status.acpi_mode_enable_available ? 0x0A : 0x0E);
+    }
+    video_print("\n  Transicao S5 ACPI: ", 0x07);
+    video_print(status.acpi_s5_transition_ready ?
+                "PRONTA" : "INDISPONIVEL",
+                status.acpi_s5_transition_ready ? 0x0A : 0x0E);
     video_print("\n  S0: ", 0x07);
     video_print(power_capability_name(status.states[POWER_STATE_S0]), 0x0A);
     for (uint32_t state = POWER_STATE_S1; state <= POWER_STATE_S5; state++) {
@@ -1924,12 +1935,13 @@ static void cmd_power(const char* args) {
     video_print("\n  Idle CPU (HLT/C1): ", 0x07);
     video_print(power_capability_name(status.cpu_idle), 0x0A);
     video_print("\n  Desligamento fisico: ", 0x07);
-    video_print(power_capability_name(status.hardware_poweroff), 0x0E);
+    video_print(power_capability_name(status.hardware_poweroff),
+                status.hardware_poweroff == POWER_CAPABILITY_AVAILABLE ?
+                0x0A : 0x0E);
     video_print("\n  Reboot (controlador de teclado): ", 0x07);
     video_print(power_capability_name(status.reboot), 0x0A);
-    video_print("\n  Nota: S5 e o comando shutdown atuais apenas param a CPU; ",
+    video_print("\n  Fallback sem S5 ACPI: HLT; a maquina permanece ligada.\n",
                 0x08);
-    video_print("nao desligam a maquina.\n", 0x08);
 }
 
 static void cmd_acpi_print_table(const char* name, uint8_t present,
@@ -2049,6 +2061,16 @@ static void cmd_acpi_print_power(const acpi_power_info_t* info) {
     }
     video_print(" candidatos=", 0x07);
     print_num(info->s5_candidates);
+    video_print("\n  Ativacao do modo ACPI: ", 0x07);
+    video_print(info->mode == ACPI_MODE_ENABLED ?
+                "NAO NECESSARIA" :
+                (info->mode_enable_available ?
+                 "DISPONIVEL" : "INDISPONIVEL"),
+                (info->mode == ACPI_MODE_ENABLED ||
+                 info->mode_enable_available) ? 0x0A : 0x0E);
+    video_print("\n  Transicao S5: ", 0x07);
+    video_print(info->s5_transition_ready ? "PRONTA" : "INDISPONIVEL",
+                info->s5_transition_ready ? 0x0A : 0x0E);
     video_print("\n", 0x07);
 }
 
@@ -2113,7 +2135,7 @@ static void cmd_acpi(const char* args) {
     } else {
         video_print("  Energia ACPI: INDISPONIVEL\n", 0x0E);
     }
-    video_print("  AML completo/SCI/GPE/transicoes: NAO IMPLEMENTADOS\n",
+    video_print("  AML completo/SCI/GPE: NAO IMPLEMENTADOS\n",
                 0x0E);
 }
 
@@ -3610,10 +3632,14 @@ static void cmd_reboot(void) {
     for (;;) asm volatile("hlt");
 }
 
-static void cmd_shutdown(void) {
+static void cmd_shutdown(const char* args) {
+    if (args && *args) {
+        LOG_WARN("SHELL", "Uso invalido de shutdown");
+        video_print("Uso: shutdown\n", 0x0C);
+        return;
+    }
     video_print("Desligando...\n", 0x0E);
-    asm volatile("cli");
-    for (;;) asm volatile("hlt");
+    power_shutdown();
 }
 
 void shell_init(void) {
@@ -3784,7 +3810,7 @@ void shell_handle_key(uint8_t scancode) {
         } else if (tb_result == 5) {
             cmd_reboot();
         } else if (tb_result == 6) {
-            cmd_shutdown();
+            cmd_shutdown("");
         } else if (tb_result == 7) {
             shell_handle_app_request(IPC_APP_OPEN_DESKTOP);
         } else if (tb_result == 8) {
@@ -3948,7 +3974,7 @@ int shell_process_command(const char* input) {
     } else if (kstrcmp(cmd, "reboot") == 0) {
         cmd_reboot();
     } else if (kstrcmp(cmd, "shutdown") == 0) {
-        cmd_shutdown();
+        cmd_shutdown(input);
     } else if (kstrcmp(cmd, "guitest") == 0) {
         if (recovery_is_enabled(RECOVERY_COMPONENT_GUITEST)) {
             if (wm_is_active()) wm_set_active(0);

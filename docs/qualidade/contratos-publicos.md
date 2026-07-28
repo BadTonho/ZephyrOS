@@ -66,7 +66,9 @@ incluem, desde a K3, estatisticas seguras do heap/PMM e do ciclo de vida de
 diretorios de usuario. Seus detalhes tecnicos permanecem em
 `docs/04-kernel/kernel.md` e `docs/06-memoria/memoria.md`, respectivamente.
 
-Desde a S1.3, `src/include/drivers/acpi.h` inclui o snapshot somente de leitura
-dos registros PM1 e da declaracao `_S5_`; `src/include/core/power.h` expoe
-apenas indicadores derivados. Os contratos canonicos permanecem,
-respectivamente, em `docs/05-drivers/drivers.md` e `docs/04-kernel/kernel.md`.
+Desde a S1.4, `src/include/drivers/acpi.h` inclui os indicadores
+`mode_enable_available` e `s5_transition_ready`, alem da operacao terminal
+`acpi_enter_s5()`. `src/include/core/power.h` expoe os indicadores derivados e
+centraliza todos os caminhos de desligamento em `power_shutdown()`. Os
+contratos canonicos permanecem, respectivamente, em
+`docs/05-drivers/drivers.md` e `docs/04-kernel/kernel.md`.

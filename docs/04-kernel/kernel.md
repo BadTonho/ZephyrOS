@@ -174,15 +174,17 @@ das próximas migrações.
 
 ## Servicos S1.1: dispositivos e energia
 
-O kernel inicializa PCI antes do AC97 e, depois dos drivers, cria dois servicos
-somente de leitura. Ambos falham de forma controlada e aparecem no `health`.
+O kernel inicializa PCI antes do AC97 e, depois dos drivers, cria os servicos
+de dispositivos e energia. Suas consultas sao somente de leitura, falham de
+forma controlada e aparecem no `health`; apenas `power_shutdown()` e terminal.
 
 - `device_manager`: mantem um snapshot estatico de PCI, ATA, AC97, PS/2, PIT,
   VGA, VESA e PC Speaker. Nao reinicializa drivers, nao grava no disco e nao
   habilita ou desabilita hardware.
 - `power`: informa as capacidades reais do sistema atual. S0 e idle HLT/C1
-  estao disponiveis; S1-S4 exigem ACPI e permanecem indisponiveis. S5 e o
-  comando `shutdown` sao explicitamente simulados e nao desligam a maquina.
+  estao disponiveis; S1-S4 permanecem indisponiveis. S5 fica disponivel
+  somente quando o snapshot ACPI atende ao contrato seguro da S1.4; nos
+  demais casos, `shutdown` usa o fallback terminal HLT.
 
 Os headers `core/device_manager.h` e `core/power.h` definem as estruturas de
 snapshot e status. O snapshot de dispositivos guarda somente metadados;
@@ -220,6 +222,25 @@ continua `POWER_CAPABILITY_UNAVAILABLE`.
 As regras do `health` nao mudam. A ausencia de PM1 ou `_S5_` nao degrada uma
 raiz ACPI valida, e o componente `Power` permanece `READY` por ser um servico
 diagnostico com fallback.
+
+## Servico S1.4: desligamento fisico ACPI S5
+
+`power_status_t` acrescenta `acpi_mode_enable_available` e
+`acpi_s5_transition_ready`. Quando a transicao esta pronta, S5 e
+`hardware_poweroff` passam a `POWER_CAPABILITY_AVAILABLE`; sem esse contrato,
+S5 permanece simulado e o desligamento fisico permanece indisponivel.
+
+`power_shutdown()` e a unica operacao terminal de desligamento. Ela para PC
+Speaker e AC97 em best effort, tenta `acpi_enter_s5()` apenas quando a
+capacidade consolidada esta pronta e termina em `CLI+HLT` se a tentativa for
+bloqueada. Shell, kernel, Menu Iniciar Classic/Modern e Task Manager usam esse
+mesmo servico; nao existem mais loops locais de shutdown nem escrita na porta
+privada `0xB004` do QEMU.
+
+O servico nao altera processos ou filesystem e nao implementa flush,
+desmontagem, suspensao, hibernacao ou reboot. `power_shutdown()` nunca retorna;
+`acpi_enter_s5()` retorna apenas quando sua pre-validacao impede qualquer
+escrita no hardware.
 
 ## Struct `registers_t`
 

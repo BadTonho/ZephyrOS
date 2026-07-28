@@ -41,8 +41,8 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `devices` | `[-v]` | Lista o inventario nativo de hardware; `-v` inclui localizacao, IRQ e IDs PCI. |
 | `device-info` | `<id>` | Mostra os detalhes de um dispositivo listado por `devices`. |
 | `device-scan` | - | Refaz somente a varredura PCI e atualiza o inventario sem reinicializar drivers. |
-| `acpi` | `status` | Mostra tabelas, PM1, modo ACPI e `_S5_` observados, sem executar transicoes. |
-| `power` | `status` | Separa capacidades do firmware das transicoes realmente implementadas. |
+| `acpi` | `status` | Mostra tabelas, PM1, modo ACPI, `_S5_` e prontidao S5, sem executar transicoes. |
+| `power` | `status` | Mostra ativacao do modo, prontidao S5, desligamento fisico e fallback HLT. |
 | `memcheck` | - | Valida heap, coalescencia, PMM e diretorios ring 3 residuais. |
 | `schedcheck` | - | Valida os invariantes atuais do scheduler sem alterar processos. |
 | `q2check` | - | Executa o diagnóstico compacto da Q2 com duas falhas isoladas. |
@@ -61,7 +61,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `usertest` | `fault` opcional | Executa e valida o primeiro processo isolado em ring 3. |
 | `guimode` | `classic/modern` | Alterna globalmente entre interface TUI (modo texto) e VESA (gráfica). |
 | `reboot` | - | Reinicia imediatamente o sistema operacional. |
-| `shutdown`| - | Desliga o computador de forma segura. |
+| `shutdown`| - | Desliga por ACPI S5 quando seguro; caso contrario usa `CLI+HLT`. |
 
 ## Scroll do Shell
 

@@ -46,7 +46,12 @@
 #define ACPI_GAS_ACCESS_WORD 2U
 #define ACPI_PM1_CONTROL_MIN_WIDTH 16U
 #define ACPI_PM1_SCI_ENABLE 0x0001U
+#define ACPI_PM1_SLEEP_TYPE_MASK 0x1C00U
+#define ACPI_PM1_SLEEP_TYPE_SHIFT 10U
+#define ACPI_PM1_SLEEP_ENABLE 0x2000U
 #define ACPI_IO_WORD_MAX_PORT 0xFFFEU
+#define ACPI_IO_BYTE_MAX_PORT 0xFFFFU
+#define ACPI_MODE_ENABLE_POLL_LIMIT 1000000U
 #define ACPI_AML_NAME_OP 0x08U
 #define ACPI_AML_ROOT_PREFIX 0x5CU
 #define ACPI_AML_PACKAGE_OP 0x12U
@@ -118,6 +123,14 @@ static inline uint16_t acpi_inw(uint16_t port) {
     uint16_t value;
     asm volatile("inw %1, %0" : "=a"(value) : "Nd"(port));
     return value;
+}
+
+static inline void acpi_outb(uint16_t port, uint8_t value) {
+    asm volatile("outb %0, %1" : : "a"(value), "Nd"(port));
+}
+
+static inline void acpi_outw(uint16_t port, uint16_t value) {
+    asm volatile("outw %0, %1" : : "a"(value), "Nd"(port));
 }
 
 static int acpi_signature_equal(const char* left, const char* right,
@@ -731,6 +744,116 @@ static void acpi_parse_s5(const acpi_sdt_header_t* dsdt) {
     }
 }
 
+static void acpi_finalize_s5_capability(void) {
+    uint8_t mode_ready;
+    uint8_t pm1_ready;
+
+    acpi_power_info.mode_enable_available =
+        acpi_power_info.smi_command_port > 0U &&
+        acpi_power_info.smi_command_port <= ACPI_IO_BYTE_MAX_PORT &&
+        acpi_power_info.acpi_enable_value != 0U;
+    mode_ready = acpi_power_info.mode == ACPI_MODE_ENABLED ||
+                 (acpi_power_info.mode == ACPI_MODE_DISABLED &&
+                  acpi_power_info.mode_enable_available);
+    pm1_ready = acpi_power_info.pm1a_readable &&
+                (!acpi_power_info.pm1b_present ||
+                 acpi_power_info.pm1b_readable);
+    acpi_power_info.s5_transition_ready =
+        acpi_status.available &&
+        !acpi_status.partial &&
+        acpi_status.fadt_present &&
+        acpi_status.dsdt_present &&
+        acpi_power_info.fadt_power_fields_present &&
+        !acpi_power_info.hardware_reduced &&
+        pm1_ready &&
+        acpi_power_info.s5_state == ACPI_S5_DECLARED &&
+        mode_ready;
+}
+
+static acpi_mode_t acpi_read_current_mode(uint16_t* out_pm1a,
+                                          uint16_t* out_pm1b) {
+    uint16_t pm1a = acpi_inw(
+        (uint16_t)acpi_power_info.pm1a_control.address);
+    uint8_t pm1a_enabled = (pm1a & ACPI_PM1_SCI_ENABLE) != 0;
+
+    if (out_pm1a) *out_pm1a = pm1a;
+    if (!acpi_power_info.pm1b_present) return pm1a_enabled ?
+        ACPI_MODE_ENABLED : ACPI_MODE_DISABLED;
+
+    uint16_t pm1b = acpi_inw(
+        (uint16_t)acpi_power_info.pm1b_control.address);
+    uint8_t pm1b_enabled = (pm1b & ACPI_PM1_SCI_ENABLE) != 0;
+
+    if (out_pm1b) *out_pm1b = pm1b;
+    if (pm1a_enabled != pm1b_enabled) return ACPI_MODE_INCONSISTENT;
+    return pm1a_enabled ? ACPI_MODE_ENABLED : ACPI_MODE_DISABLED;
+}
+
+static void acpi_halt_forever(void) __attribute__((noreturn));
+
+static void acpi_halt_forever(void) {
+    asm volatile("cli");
+    for (;;) asm volatile("hlt");
+}
+
+static void acpi_enable_mode_or_halt(void) {
+    LOG_INFO("ACPI", "Solicitando propriedade ACPI via SMI_CMD");
+    acpi_outb((uint16_t)acpi_power_info.smi_command_port,
+              acpi_power_info.acpi_enable_value);
+
+    for (uint32_t i = 0; i < ACPI_MODE_ENABLE_POLL_LIMIT; i++) {
+        if (acpi_read_current_mode(0, 0) == ACPI_MODE_ENABLED) {
+            LOG_INFO("ACPI", "Modo ACPI habilitado para transicao S5");
+            return;
+        }
+        asm volatile("nop");
+    }
+    LOG_ERROR("ACPI", "Timeout ao adquirir modo ACPI; usando HLT");
+    acpi_halt_forever();
+}
+
+static int acpi_s5_preflight(void) {
+    if (!acpi_initialized) {
+        LOG_ERROR("ACPI", "S5 solicitado antes da inicializacao");
+        return ERR_STATE;
+    }
+    if (!acpi_status.available || acpi_status.partial ||
+        !acpi_status.fadt_present || !acpi_status.dsdt_present) {
+        LOG_WARN("ACPI", "S5 bloqueado por snapshot ACPI incompleto");
+        return ERR_UNAVAILABLE;
+    }
+    if (!acpi_power_info.fadt_power_fields_present ||
+        acpi_power_info.hardware_reduced) {
+        LOG_WARN("ACPI", "S5 bloqueado pelo contrato da FADT");
+        return ERR_UNAVAILABLE;
+    }
+    if (!acpi_power_info.pm1a_readable ||
+        (acpi_power_info.pm1b_present &&
+         !acpi_power_info.pm1b_readable)) {
+        LOG_WARN("ACPI", "S5 bloqueado por registro PM1 incompativel");
+        return ERR_UNAVAILABLE;
+    }
+    if (acpi_power_info.s5_state != ACPI_S5_DECLARED) {
+        LOG_WARN("ACPI", "S5 bloqueado por declaracao AML insegura");
+        return ERR_UNAVAILABLE;
+    }
+    if (!acpi_power_info.s5_transition_ready) {
+        LOG_WARN("ACPI", "S5 bloqueado por modo ACPI indisponivel");
+        return ERR_UNAVAILABLE;
+    }
+    return OK;
+}
+
+static uint16_t acpi_build_sleep_value(uint16_t current,
+                                       uint8_t sleep_type) {
+    uint16_t preserved = current &
+        (uint16_t)~(ACPI_PM1_SLEEP_TYPE_MASK | ACPI_PM1_SLEEP_ENABLE);
+
+    return preserved |
+           ((uint16_t)sleep_type << ACPI_PM1_SLEEP_TYPE_SHIFT) |
+           ACPI_PM1_SLEEP_ENABLE;
+}
+
 static void acpi_parse_fadt(uint32_t address,
                             const acpi_sdt_header_t* fadt) {
     const uint8_t* bytes = (const uint8_t*)fadt;
@@ -788,6 +911,7 @@ static void acpi_parse_fadt(uint32_t address,
 }
 
 static int acpi_finish_init(uint32_t start_ticks, int result) {
+    acpi_finalize_s5_capability();
     acpi_status.scan_ticks = timer_get_ticks() - start_ticks;
     acpi_status.initialized = 1;
     acpi_power_info.initialized = 1;
@@ -884,6 +1008,51 @@ int acpi_get_power_info(acpi_power_info_t* out_info) {
     }
     *out_info = acpi_power_info;
     return OK;
+}
+
+int acpi_enter_s5(void) {
+    uint16_t pm1a_value = 0;
+    uint16_t pm1b_value = 0;
+    uint16_t sleep_a;
+    uint16_t sleep_b = 0;
+    acpi_mode_t current_mode;
+    int result = acpi_s5_preflight();
+
+    if (result != OK) return result;
+    current_mode = acpi_read_current_mode(&pm1a_value, &pm1b_value);
+    if (current_mode != ACPI_MODE_ENABLED &&
+        current_mode != ACPI_MODE_DISABLED) {
+        LOG_ERROR("ACPI", "Modo ACPI atual impede transicao S5");
+        return ERR_STATE;
+    }
+    if (current_mode == ACPI_MODE_DISABLED &&
+        !acpi_power_info.mode_enable_available) {
+        LOG_WARN("ACPI", "Modo ACPI desabilitado sem aquisicao segura");
+        return ERR_UNAVAILABLE;
+    }
+
+    LOG_INFO("ACPI", "Iniciando transicao terminal para S5");
+    asm volatile("cli");
+    if (current_mode == ACPI_MODE_DISABLED) acpi_enable_mode_or_halt();
+    current_mode = acpi_read_current_mode(&pm1a_value, &pm1b_value);
+    if (current_mode != ACPI_MODE_ENABLED) {
+        LOG_ERROR("ACPI", "Modo ACPI nao confirmado; usando HLT");
+        acpi_halt_forever();
+    }
+
+    sleep_a = acpi_build_sleep_value(pm1a_value,
+                                     acpi_power_info.s5_type_a);
+    if (acpi_power_info.pm1b_present) {
+        sleep_b = acpi_build_sleep_value(pm1b_value,
+                                         acpi_power_info.s5_type_b);
+    }
+    LOG_INFO("ACPI", "Escrevendo S5 em PM1a antes de PM1b");
+    acpi_outw((uint16_t)acpi_power_info.pm1a_control.address, sleep_a);
+    if (acpi_power_info.pm1b_present) {
+        acpi_outw((uint16_t)acpi_power_info.pm1b_control.address, sleep_b);
+    }
+    LOG_ERROR("ACPI", "Firmware nao concluiu S5; usando HLT");
+    acpi_halt_forever();
 }
 
 int acpi_get_table_count(uint32_t* out_count) {

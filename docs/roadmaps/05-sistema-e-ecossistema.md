@@ -30,8 +30,14 @@ antecipar interfaces ou permissoes que ainda nao existem.
 - [x] S1.3 validada manualmente no QEMU padrao e sem ACPI, incluindo
   `health`, PM1, `_S5_`, fallback, comandos diagnosticos, entrada ZAPP e
   matriz Classic/Modern.
-- [ ] Gerenciador de dispositivos com inventario e erros controlados.
-- [ ] Gerenciador de energia com estados claros e sem desligar recursos em uso.
+- [x] S1.4: desligamento fisico por PM1 System I/O, aquisicao tardia do modo
+  ACPI, prontidao fechada e fallback terminal `CLI+HLT`.
+- [x] Todos os caminhos de shutdown centralizados em `power_shutdown()`, sem
+  a porta privada `0xB004` do QEMU.
+- [ ] S1.4 pendente de validacao manual no QEMU padrao e sem ACPI, pelo Shell,
+  Menu Iniciar e Task Manager nos modos Classic e Modern.
+- [x] Gerenciador de dispositivos com inventario e erros controlados.
+- [x] Gerenciador de energia com estados claros e desligamento S5 seguro.
 - [ ] Evolucao do filesystem somente quando novos recursos exigirem metadados
   ou operacoes inexistentes.
 

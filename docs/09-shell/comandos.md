@@ -42,7 +42,7 @@ Comandos disponiveis:
   device-info <id> - Exibe detalhes de um dispositivo inventariado
   device-scan - Refaz somente a varredura PCI e atualiza o inventario
   acpi status - Exibe tabelas, PM1, modo ACPI e `_S5_`
-  power status - Separa firmware observado de transicoes implementadas
+  power status - Mostra prontidao ACPI S5 e fallback HLT
   kmetrics  - Mostra linha-base manual de metricas do kernel
   memcheck  - Valida heap, PMM e diretorios de usuario
   schedcheck - Valida invariantes do scheduler
@@ -57,7 +57,7 @@ Comandos disponiveis:
   app argtest <texto> - Testa argumentos em aplicativo ring 3
   usertest  - Executa teste isolado em ring 3
   reboot    - Reinicia o sistema
-  shutdown  - Desliga o sistema
+  shutdown  - Desliga por ACPI ou usa fallback HLT
 ```
 
 ## `clear`
@@ -172,7 +172,15 @@ Melodia concluida!
 Reinicia o computador.
 
 ## `shutdown`
-Desliga o computador (para o CPU).
+
+Executa imediatamente o servico terminal `power_shutdown()`. Quando
+`power status` informa `Transicao S5 ACPI: PRONTA`, o kernel adquire o modo
+ACPI se necessario e solicita o desligamento fisico por PM1. Se S5 nao for
+seguro ou estiver indisponivel, o fallback `CLI+HLT` para a CPU e mantem a
+maquina ligada.
+
+O comando nao aceita argumentos. `shutdown invalido` mostra
+`Uso: shutdown` e mantem o sistema ativo.
 
 ## `mouse`
 Mostra o status atual do mouse PS/2 (posição X/Y e botões pressionados).
@@ -234,10 +242,11 @@ IDs PCI sao exibidos como `pci-BB:DD.F`. Para teclados sem `Shift`,
 ## `acpi status`
 
 Mostra o resultado da descoberta ACPI: OEM, revisao, RSDP, tipo e endereco da
-raiz, quantidade de tabelas, FADT, DSDT, FACS, anomalias e ticks gastos. Na
-S1.3 tambem mostra os descritores PM1a/PM1b, SMI_CMD, modo ACPI observado e a
-declaracao `_S5_`. A saida diferencia ACPI pronto, degradado e indisponivel,
-alem de `_S5_` ausente, malformado ou ambiguo.
+raiz, quantidade de tabelas, FADT, DSDT, FACS, anomalias e ticks gastos. Desde
+a S1.3 tambem mostra os descritores PM1a/PM1b, SMI_CMD, modo ACPI observado e
+a declaracao `_S5_`. Na S1.4, mostra separadamente se o modo pode ser ativado
+e se a transicao S5 esta pronta. A saida diferencia ACPI pronto, degradado e
+indisponivel, alem de `_S5_` ausente, malformado ou ambiguo.
 
 ```text
 zephyr> acpi status
@@ -250,10 +259,12 @@ modifica registradores de energia durante sua execucao.
 ## `power status`
 
 Mostra somente capacidades que o kernel pode confirmar. A presenca de ACPI,
-FADT/DSDT, PM1, modo atual e declaracao S5 do firmware aparecem separadas da
-implementacao de transicoes. S1-S4 permanecem indisponiveis; S0 e idle HLT/C1
-estao ativos, e S5 e `shutdown` aparecem como simulados. O comando nao tenta
-suspender, hibernar ou desligar fisicamente a maquina.
+FADT/DSDT, PM1, modo atual, possibilidade de ativacao e declaracao S5 do
+firmware aparecem separadas da prontidao da transicao. S1-S4 permanecem
+indisponiveis; S0 e idle HLT/C1 estao ativos. S5 e desligamento fisico aparecem
+como disponiveis somente quando todas as pre-condicoes seguras forem atendidas;
+caso contrario, S5 permanece simulado e o fallback e HLT. O comando e apenas
+diagnostico e nao executa transicoes.
 
 ```text
 zephyr> power status

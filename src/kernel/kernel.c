@@ -200,8 +200,7 @@ static int kernel_handle_taskbar_mouse(mouse_event_t* evt) {
                          "Nd"((uint16_t)0x64));
             break;
         case 6:
-            asm volatile("outw %0, %1" : : "a"((uint16_t)0x2000),
-                         "Nd"((uint16_t)0xB004));
+            power_shutdown();
             break;
         case 7:
             if (hosted_workspace) wm_set_active(0);

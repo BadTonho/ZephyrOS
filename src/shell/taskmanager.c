@@ -18,6 +18,7 @@
 #include "core/log.h"
 #include "core/recovery.h"
 #include "core/errors.h"
+#include "core/power.h"
 #include "ui/gui.h"
 
 #define TSKMGR_WIDTH  78
@@ -798,8 +799,7 @@ static void taskmgr_handle_taskbar_action(int result) {
             break;
         case 6:
             taskmgr_close();
-            asm volatile("cli");
-            for (;;) asm volatile("hlt");
+            power_shutdown();
             break;
         case 7:
             taskmgr_close();
@@ -1782,7 +1782,7 @@ static void taskmgr_gui_handle_taskbar_action(int result) {
             break;
         case 6:
             taskmgr_close();
-            asm volatile("outw %0, %1" : : "a"((uint16_t)0x2000), "Nd"((uint16_t)0xB004));
+            power_shutdown();
             break;
         case 7: taskmgr_close(); shell_handle_app_request(IPC_APP_OPEN_DESKTOP); break;
         case 8: taskmgr_close(); shell_handle_app_request(IPC_APP_OPEN_SETTINGS); break;

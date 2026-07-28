@@ -31,10 +31,13 @@ typedef struct {
     uint8_t acpi_mode_known;
     uint8_t acpi_mode_enabled;
     uint8_t acpi_s5_declared;
+    uint8_t acpi_mode_enable_available;
+    uint8_t acpi_s5_transition_ready;
 } power_status_t;
 
 int power_init(void);
 int power_get_status(power_status_t* out_status);
+void power_shutdown(void) __attribute__((noreturn));
 const char* power_capability_name(power_capability_t capability);
 
 #endif
