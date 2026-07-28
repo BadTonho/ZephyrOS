@@ -271,12 +271,13 @@ idempotente para que `device-scan` repetido sem mudanca nao aumente o contador
 de falhas.
 
 Na S2.3, `ethernet_interface_t` desacopla a camada L2 do E1000 por callbacks
-de recepcao e transmissao. A IRQ somente reconhece e contabiliza o evento RX.
-O processo de sistema chama `network_manager_poll()`; nesse contexto o driver
-copia frames validos para uma fila estatica de oito entradas, recicla o DMA e
-a camada Ethernet valida tamanho, destino, origem e EtherType. Broadcast e
-unicast para a MAC local sao aceitos; outros destinos, cabecalhos invalidos e
-saturacao da fila possuem contadores separados.
+de RX pendente, recepcao e transmissao. A IRQ somente reconhece, contabiliza e
+marca o evento RX. O processo de sistema chama `network_manager_poll()`, mas a
+camada so consulta descritores quando o driver informa trabalho pendente.
+Nesse contexto o driver copia frames validos para uma fila estatica de oito
+entradas, recicla o DMA e a camada Ethernet valida tamanho, destino, origem e
+EtherType. Broadcast e unicast para a MAC local sao aceitos; outros destinos,
+cabecalhos invalidos e saturacao da fila possuem contadores separados.
 
 `ethernet_send()` monta cabecalho, origem local e padding minimo antes de usar
 o callback do driver. `network_manager_get_ethernet_diagnostic()` devolve por

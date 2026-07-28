@@ -268,9 +268,9 @@ forma `net-pci-BB-DD.F` tambem e aceita.
 `net ethernet <id>` consulta a camada sem transmitir. A saida mostra frames
 processados na consulta, fila atual/pico, descartes por fila cheia, IRQs RX,
 unicast, broadcast, frames invalidos/filtrados, payloads ainda sem protocolo e
-o ultimo cabecalho aceito. O processo de sistema drena a fila fora da IRQ, por
-isso o contador da consulta pode ser zero enquanto os totais continuam
-aumentando.
+o ultimo cabecalho aceito. `Polls` conta somente ciclos acionados por RX
+pendente. O processo de sistema drena a fila fora da IRQ, por isso o contador
+da consulta pode ser zero enquanto os totais continuam aumentando.
 
 `net test <id>` pede que a camada Ethernet monte e envie um unico frame
 broadcast com EtherType privado `0x88B5`, confirmando somente a conclusao do

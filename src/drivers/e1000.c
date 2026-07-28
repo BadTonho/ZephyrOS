@@ -107,6 +107,7 @@ static e1000_rx_queue_entry_t
     e1000_rx_queue[E1000_RX_QUEUE_SLOT_COUNT];
 static volatile uint8_t e1000_rx_queue_head = 0;
 static volatile uint8_t e1000_rx_queue_tail = 0;
+static volatile uint8_t e1000_rx_pending = 0;
 
 static uint32_t e1000_read(uint32_t offset) {
     return e1000_mmio[offset / sizeof(uint32_t)];
@@ -131,6 +132,7 @@ static void e1000_reset_status(int error_code) {
     kmemset(&e1000_status, 0, sizeof(e1000_status));
     e1000_rx_queue_head = 0;
     e1000_rx_queue_tail = 0;
+    e1000_rx_pending = 0;
     e1000_status.last_error = error_code;
 }
 
@@ -472,6 +474,20 @@ static void e1000_poll_rx_descriptors(void) {
     }
 }
 
+int e1000_has_pending_rx(uint8_t* out_pending) {
+    if (!out_pending) {
+        LOG_ERROR("E1000", "Destino nulo ao consultar RX pendente");
+        return ERR_NULL;
+    }
+    if (!e1000_status.initialized) {
+        LOG_ERROR("E1000", "Consulta RX pendente sem driver ativo");
+        return ERR_STATE;
+    }
+    *out_pending = e1000_rx_pending ||
+                   e1000_rx_queue_head != e1000_rx_queue_tail;
+    return OK;
+}
+
 int e1000_receive_frame(uint8_t* data, uint16_t capacity,
                         uint16_t* out_length, uint8_t* out_received) {
     uint8_t head;
@@ -489,6 +505,8 @@ int e1000_receive_frame(uint8_t* data, uint16_t capacity,
     }
     head = e1000_rx_queue_head;
     if (head == e1000_rx_queue_tail) {
+        if (!e1000_rx_pending) return OK;
+        e1000_rx_pending = 0;
         /* A copia ocorre fora da IRQ para que nenhum protocolo dependa do
            buffer DMA depois que o descritor for reciclado. */
         e1000_poll_rx_descriptors();
@@ -519,6 +537,7 @@ void e1000_handler(registers_t* regs) {
     if (!cause) return;
     if (cause & (E1000_INT_RXT0 | E1000_INT_RXO)) {
         e1000_status.rx_interrupts++;
+        e1000_rx_pending = 1;
     }
     if (cause & E1000_INT_LSC) e1000_update_link();
     if (cause & E1000_INT_RXO) {

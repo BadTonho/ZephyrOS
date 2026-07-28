@@ -250,6 +250,7 @@ static int network_start_ethernet(void) {
     interface.initialized = 1;
     kmemcpy(interface.mac_address, driver_status.mac_address,
             ETHERNET_MAC_ADDRESS_SIZE);
+    interface.rx_pending = e1000_has_pending_rx;
     interface.receive_frame = e1000_receive_frame;
     interface.send_frame = e1000_send_frame;
     result = ethernet_init(&interface);

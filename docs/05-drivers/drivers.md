@@ -568,6 +568,7 @@ DMA de oito descritores RX/TX com buffers de 2 KiB alocados pelo PMM.
 int e1000_init(void);
 int e1000_get_status(e1000_status_t* out_status);
 int e1000_send_frame(const uint8_t* data, uint16_t length);
+int e1000_has_pending_rx(uint8_t* out_pending);
 int e1000_receive_frame(uint8_t* data, uint16_t capacity,
                         uint16_t* out_length, uint8_t* out_received);
 ```
@@ -577,13 +578,14 @@ contadores RX/TX, profundidade/pico da fila, descartes, interrupcoes e ultimo
 erro. `e1000_send_frame()` aceita frames Ethernet de 14 a 1518 bytes e espera
 a conclusao do descritor com limite de tempo.
 
-A IRQ apenas reconhece e contabiliza o evento RX; ela nao copia frames nem
-chama protocolos. O consumidor usa `e1000_receive_frame()` em contexto normal,
-quando o driver valida os descritores, copia os frames para uma fila estatica
-de oito entradas e recicla o DMA. Fila vazia e um resultado valido com
-`out_received = 0`, enquanto ponteiros nulos, driver inativo ou buffer pequeno
-retornam erro controlado. ARP, IPv4, DHCP, sockets, promiscuidade e RTL8139
-ficam fora do escopo.
+A IRQ apenas reconhece, contabiliza e marca o evento RX; ela nao copia frames
+nem chama protocolos. `e1000_has_pending_rx()` permite que o processo de
+sistema evite polling vazio. O consumidor usa `e1000_receive_frame()` em
+contexto normal, quando o driver valida os descritores, copia os frames para
+uma fila estatica de oito entradas e recicla o DMA. Fila vazia e um resultado
+valido com `out_received = 0`, enquanto ponteiros nulos, driver inativo ou
+buffer pequeno retornam erro controlado. ARP, IPv4, DHCP, sockets,
+promiscuidade e RTL8139 ficam fora do escopo.
 
 ### Estrutura
 

@@ -142,6 +142,7 @@ int ethernet_init(const ethernet_interface_t* interface) {
         return OK;
     }
     if (!interface || !interface->initialized ||
+        !interface->rx_pending ||
         !interface->receive_frame || !interface->send_frame) {
         LOG_ERROR("NET", "Interface invalida para camada Ethernet");
         return ERR_INVALID;
@@ -164,6 +165,8 @@ int ethernet_init(const ethernet_interface_t* interface) {
 
 int ethernet_poll(uint32_t budget, uint32_t* out_processed) {
     uint32_t processed = 0;
+    uint8_t pending = 0;
+    int result;
 
     if (!out_processed) {
         LOG_ERROR("NET", "Destino nulo ao processar fila Ethernet");
@@ -178,13 +181,23 @@ int ethernet_poll(uint32_t budget, uint32_t* out_processed) {
         LOG_ERROR("NET", "Orcamento de polling Ethernet invalido");
         return ERR_INVALID;
     }
+    result = ethernet_interface.rx_pending(&pending);
+    if (result != OK) {
+        ethernet_status.last_error = result;
+        LOG_ERROR("NET", "Falha ao consultar recepcao pendente");
+        return result;
+    }
+    if (!pending) {
+        ethernet_status.last_error = OK;
+        return OK;
+    }
     ethernet_status.polls++;
     while (processed < budget) {
         uint16_t length = 0;
         uint8_t received = 0;
-        int result = ethernet_interface.receive_frame(
-            ethernet_rx_buffer, sizeof(ethernet_rx_buffer),
-            &length, &received);
+        result = ethernet_interface.receive_frame(
+            ethernet_rx_buffer, sizeof(ethernet_rx_buffer), &length,
+            &received);
 
         if (result != OK) {
             ethernet_status.last_error = result;

@@ -14,6 +14,7 @@ typedef int (*ethernet_receive_frame_fn)(uint8_t* data, uint16_t capacity,
                                          uint16_t* out_length,
                                          uint8_t* out_received);
 typedef int (*ethernet_send_frame_fn)(const uint8_t* data, uint16_t length);
+typedef int (*ethernet_rx_pending_fn)(uint8_t* out_pending);
 
 typedef enum {
     ETHERNET_DESTINATION_UNKNOWN = 0,
@@ -24,6 +25,7 @@ typedef enum {
 typedef struct {
     uint8_t initialized;
     uint8_t mac_address[ETHERNET_MAC_ADDRESS_SIZE];
+    ethernet_rx_pending_fn rx_pending;
     ethernet_receive_frame_fn receive_frame;
     ethernet_send_frame_fn send_frame;
 } ethernet_interface_t;

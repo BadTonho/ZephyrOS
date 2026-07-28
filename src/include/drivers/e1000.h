@@ -32,6 +32,7 @@ typedef struct {
 int e1000_init(void);
 int e1000_get_status(e1000_status_t* out_status);
 int e1000_send_frame(const uint8_t* data, uint16_t length);
+int e1000_has_pending_rx(uint8_t* out_pending);
 int e1000_receive_frame(uint8_t* data, uint16_t capacity,
                         uint16_t* out_length, uint8_t* out_received);
 void e1000_handler(registers_t* regs);
