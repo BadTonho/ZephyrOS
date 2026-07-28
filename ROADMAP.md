@@ -114,6 +114,7 @@ Plataforma de aplicativos:   [████████████████�
 | `devices [-v]` | Lista o inventario nativo de hardware |
 | `device-info <id>` | Mostra detalhes de um dispositivo inventariado |
 | `device-scan` | Refaz somente a varredura PCI e atualiza o inventario |
+| `acpi status` | Mostra o snapshot ACPI somente de leitura |
 | `power status` | Mostra as capacidades reais de energia |
 | `kmetrics [reset]` | Coleta linha-base de PIT, filas, memoria e VESA, incluindo media de bytes por apresentacao |
 | `memcheck` | Valida heap, PMM, coalescencia e limpeza de diretorios ring 3 |
@@ -390,6 +391,17 @@ Plataforma de aplicativos:   [████████████████�
 - [x] Build limpo e matriz manual no QEMU validados pelo usuario: inventario
   compacto e verboso, consulta por ID, re-scan PCI, diagnostico de energia,
   `health` e regressao sem erros bloqueantes.
+
+## S1.2 - Fundacao ACPI observavel (validacao pendente)
+
+- [x] Descoberta somente de leitura de RSDP, RSDT/XSDT, FADT, DSDT e FACS,
+  validada contra o mapa E820 antes da ativacao do paging.
+- [x] Snapshot estatico limitado, consultas por copia e componente `ACPI` no
+  `health`, com estados pronto, degradado e indisponivel.
+- [x] Comandos `acpi status` e `power status` distinguem tabelas detectadas de
+  transicoes realmente implementadas.
+- [ ] O usuario deve validar build limpo, QEMU com e sem ACPI e a matriz de
+  regressao antes de concluir a S1.2.
 
 ## Roadmaps por etapa
 

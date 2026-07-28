@@ -21,6 +21,10 @@ antecipar interfaces ou permissoes que ainda nao existem.
 - [x] S1.1 validada manualmente no QEMU com `devices`, `devices -v`,
   `device-info`, `device-scan`, `power status`, `health` e a matriz de
   regressao, sem erros bloqueantes.
+- [x] S1.2: snapshot ACPI somente de leitura com RSDP, RSDT/XSDT, FADT, DSDT,
+  FACS, `acpi status` e integracao com `Power`/`health`.
+- [ ] Validar S1.2 no QEMU padrao e sem ACPI, incluindo limites de memoria,
+  sintaxe invalida, tempo de varredura e a matriz de regressao.
 - [ ] Gerenciador de dispositivos com inventario e erros controlados.
 - [ ] Gerenciador de energia com estados claros e sem desligar recursos em uso.
 - [ ] Evolucao do filesystem somente quando novos recursos exigirem metadados

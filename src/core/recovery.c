@@ -22,6 +22,7 @@ static const char* component_names[RECOVERY_COMPONENT_COUNT] = {
     "Editor",
     "GUI Test",
     "App Loader",
+    "ACPI",
     "Devices",
     "Power"
 };

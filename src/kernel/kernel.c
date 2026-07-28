@@ -27,6 +27,7 @@
 #include "drivers/vesa.h"
 #include "drivers/font.h"
 #include "drivers/ac97.h"
+#include "drivers/acpi.h"
 #include "ui/taskbar.h"
 #include "ui/desktop.h"
 #include "ui/settings.h"
@@ -412,6 +413,21 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     video_print("[..] Detectando memoria...\n", 0x08);
     memory_init(mmap_addr);
     video_print("[OK] Memoria detectada\n", 0x07);
+
+    int acpi_result = acpi_init((const mmap_entry_t*)mmap_addr,
+                                memory_get_mmap_entries());
+    acpi_status_t acpi_status;
+    if (acpi_get_status(&acpi_status) == OK && acpi_status.available) {
+        if (acpi_result == OK) {
+            recovery_mark_ready(RECOVERY_COMPONENT_ACPI);
+        } else {
+            recovery_mark_degraded(RECOVERY_COMPONENT_ACPI, acpi_result,
+                                   "Snapshot ACPI parcial");
+        }
+    } else {
+        recovery_mark_disabled(RECOVERY_COMPONENT_ACPI, acpi_result,
+                               "ACPI indisponivel; energia em modo diagnostico");
+    }
 
     uint32_t total_mb = memory_get_total() / (1024 * 1024);
     uint32_t free_mb = memory_get_free() / (1024 * 1024);

@@ -190,6 +190,20 @@ snapshot e status. O snapshot de dispositivos guarda somente metadados;
 evitar reservar memoria estatica por descricao. Suas consultas retornam
 codigos de erro quando chamadas antes da inicializacao ou com destinos nulos.
 
+## Servico S1.2: descoberta ACPI
+
+Depois de `memory_init()` e antes de `paging_init()`, o kernel entrega ao
+driver ACPI a referencia temporaria do mapa E820. O driver valida os intervalos
+fisicos, cria um snapshot estatico e descarta essa referencia antes da
+ativacao do paging. Isso preserva o layout High Memory e evita mapear EBDA,
+BIOS ou tabelas de firmware no espaco virtual permanente.
+
+O componente `ACPI` do `health` fica `READY` com raiz, FADT e DSDT validas,
+`DEGRADED` quando existe apenas um inventario parcial e `DISABLED` quando nao
+ha raiz utilizavel. `Power` continua `READY` em todos esses cenarios porque
+seu diagnostico ainda informa S0/HLT e as limitacoes reais. Os campos
+`acpi_power_tables_available` e `acpi_partial` nao habilitam transicoes.
+
 ## Struct `registers_t`
 
 Usada para passar contexto entre handlers:

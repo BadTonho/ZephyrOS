@@ -29,6 +29,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/core/syscall.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/timer.h` | `docs/05-drivers/drivers.md` |
 | `src/include/core/video.h` | `docs/05-drivers/drivers.md` |
+| `src/include/drivers/acpi.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/ac97.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/ata.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/font.h` | `docs/05-drivers/drivers.md` |

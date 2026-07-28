@@ -36,6 +36,7 @@
 #include "drivers/pci.h"
 #include "drivers/vesa.h"
 #include "drivers/font.h"
+#include "drivers/acpi.h"
 
 #define SHELL_Q2CHECK_FAULT_RUNS 2U
 #define SHELL_HOSTED_DEFAULT_CONTENT_WIDTH 880
@@ -1346,6 +1347,7 @@ static void cmd_help(void) {
     video_print("  devices  - Lista inventario de hardware (-v para detalhes)\n", 0x07);
     video_print("  device-info <id> - Mostra detalhes de um dispositivo\n", 0x07);
     video_print("  device-scan - Refaz apenas a varredura PCI\n", 0x07);
+    video_print("  acpi status - Mostra tabelas ACPI detectadas\n", 0x07);
     video_print("  power status - Mostra capacidades reais de energia\n", 0x07);
     video_print("  kmetrics - Mostra linha-base de metricas do kernel\n", 0x07);
     video_print("  memcheck - Valida heap, PMM e diretorios de usuario\n", 0x07);
@@ -1882,8 +1884,18 @@ static void cmd_power(const char* args) {
 
     video_print("Energia:\n", 0x0B);
     video_print("  ACPI: ", 0x07);
-    video_print(status.acpi_available ? "DISPONIVEL" : "INDISPONIVEL",
+    video_print(status.acpi_available ? "DETECTADO" : "INDISPONIVEL",
                 status.acpi_available ? 0x0A : 0x0E);
+    video_print("\n  Tabelas de energia ACPI: ", 0x07);
+    video_print(status.acpi_power_tables_available ?
+                "VALIDADAS" : "INDISPONIVEIS",
+                status.acpi_power_tables_available ? 0x0A : 0x0E);
+    if (status.acpi_available) {
+        video_print("\n  Snapshot ACPI: ", 0x07);
+        video_print(status.acpi_partial ? "PARCIAL" : "COMPLETO",
+                    status.acpi_partial ? 0x0E : 0x0A);
+    }
+    video_print("\n  Transicoes ACPI: NAO IMPLEMENTADAS", 0x0E);
     video_print("\n  S0: ", 0x07);
     video_print(power_capability_name(status.states[POWER_STATE_S0]), 0x0A);
     for (uint32_t state = POWER_STATE_S1; state <= POWER_STATE_S5; state++) {
@@ -1903,6 +1915,72 @@ static void cmd_power(const char* args) {
     video_print("\n  Nota: S5 e o comando shutdown atuais apenas param a CPU; ",
                 0x08);
     video_print("nao desligam a maquina.\n", 0x08);
+}
+
+static void cmd_acpi_print_table(const char* name, uint8_t present,
+                                 uint32_t address) {
+    video_print("  ", 0x07);
+    video_print(name, 0x07);
+    video_print(": ", 0x07);
+    if (!present) {
+        video_print("NAO ENCONTRADA\n", 0x0E);
+        return;
+    }
+    video_print("VALIDA em 0x", 0x0A);
+    cmd_print_hex(address, 8U);
+    video_print("\n", 0x07);
+}
+
+static void cmd_acpi(const char* args) {
+    acpi_status_t status;
+
+    if (!shell_args_equal(args, "status")) {
+        LOG_WARN("SHELL", "Uso invalido de acpi");
+        video_print("Uso: acpi status\n", 0x0C);
+        return;
+    }
+    if (acpi_get_status(&status) != OK) {
+        LOG_ERROR("SHELL", "Diagnostico ACPI indisponivel");
+        video_print("Erro: diagnostico ACPI indisponivel.\n", 0x0C);
+        return;
+    }
+
+    video_print("ACPI:\n  Estado: ", 0x0B);
+    if (!status.available) {
+        video_print("INDISPONIVEL\n", 0x0E);
+        video_print("  RSDP: nao encontrado ou invalido\n", 0x08);
+    } else {
+        video_print(status.partial ? "DEGRADADO" : "PRONTO",
+                    status.partial ? 0x0E : 0x0A);
+        video_print("\n  OEM: ", 0x07);
+        video_print(status.oem_id, 0x0B);
+        video_print(" revisao=", 0x07);
+        print_num(status.revision);
+        video_print("\n  RSDP: 0x", 0x07);
+        cmd_print_hex(status.rsdp_address, 8U);
+        video_print("\n  Raiz: ", 0x07);
+        video_print(acpi_root_kind_name(status.root_kind), 0x0B);
+        video_print(" em 0x", 0x07);
+        cmd_print_hex(status.root_address, 8U);
+        video_print("\n  Entradas raiz=", 0x07);
+        print_num(status.root_entry_count);
+        video_print(" tabelas copiadas=", 0x07);
+        print_num(status.table_count);
+        video_print("\n", 0x07);
+        cmd_acpi_print_table("FADT", status.fadt_present,
+                             status.fadt_address);
+        cmd_acpi_print_table("DSDT", status.dsdt_present,
+                             status.dsdt_address);
+        cmd_acpi_print_table("FACS", status.facs_present,
+                             status.facs_address);
+    }
+    video_print("  Invalidas=", 0x07);
+    print_num(status.malformed_tables);
+    video_print(" ignoradas=", 0x07);
+    print_num(status.skipped_tables);
+    video_print(" ticks=", 0x07);
+    print_num(status.scan_ticks);
+    video_print("\n  AML/SCI/GPE/transicoes: NAO IMPLEMENTADOS\n", 0x0E);
 }
 
 static uint32_t shell_kmetrics_delta(uint32_t current, uint32_t baseline) {
@@ -3689,6 +3767,8 @@ int shell_process_command(const char* input) {
         cmd_device_info(input);
     } else if (kstrcmp(cmd, "device-scan") == 0) {
         cmd_device_scan(input);
+    } else if (kstrcmp(cmd, "acpi") == 0) {
+        cmd_acpi(input);
     } else if (kstrcmp(cmd, "power") == 0) {
         cmd_power(input);
     } else if (kstrcmp(cmd, "kmetrics") == 0) {

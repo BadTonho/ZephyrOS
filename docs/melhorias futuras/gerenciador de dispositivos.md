@@ -488,7 +488,7 @@ fora desta entrega inicial.
 | Mouse | Nenhum | Driver de mouse não existe |
 | Rede | Nenhum | Sem stack de rede |
 | USB | Nenhum | Sem suporte USB |
-| ACPI | Parcial | Campo E820 lido, mas ACPI não parseado |
+| ACPI | Parcial | Snapshot S1.2 de tabelas, sem AML, PM, SCI ou GPE |
 | Máximo de categorias | 12 | Definido na interface TUI |
 | Máximo de dispositivos por categoria | 16 | Limite de memória |
 

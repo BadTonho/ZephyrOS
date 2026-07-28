@@ -25,6 +25,8 @@ typedef struct {
     power_capability_t hardware_poweroff;
     power_capability_t reboot;
     uint8_t acpi_available;
+    uint8_t acpi_power_tables_available;
+    uint8_t acpi_partial;
 } power_status_t;
 
 int power_init(void);

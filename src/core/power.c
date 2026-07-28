@@ -1,11 +1,14 @@
 #include "core/power.h"
 #include "core/errors.h"
 #include "core/log.h"
+#include "drivers/acpi.h"
 
 static power_status_t power_status;
 static int power_initialized = 0;
 
 int power_init(void) {
+    acpi_status_t acpi_status;
+
     LOG_INFO("POWER", "Inicializando diagnostico de energia");
     power_status.states[POWER_STATE_S0] = POWER_CAPABILITY_AVAILABLE;
     power_status.states[POWER_STATE_S1] = POWER_CAPABILITY_UNAVAILABLE;
@@ -17,8 +20,18 @@ int power_init(void) {
     power_status.hardware_poweroff = POWER_CAPABILITY_UNAVAILABLE;
     power_status.reboot = POWER_CAPABILITY_AVAILABLE;
     power_status.acpi_available = 0;
+    power_status.acpi_power_tables_available = 0;
+    power_status.acpi_partial = 0;
+    if (acpi_get_status(&acpi_status) == OK) {
+        power_status.acpi_available = acpi_status.available;
+        power_status.acpi_power_tables_available =
+            acpi_status.fadt_present && acpi_status.dsdt_present;
+        power_status.acpi_partial = acpi_status.partial;
+    } else {
+        LOG_WARN("POWER", "Estado ACPI indisponivel para diagnostico");
+    }
     power_initialized = 1;
-    LOG_INFO("POWER", "Diagnostico de energia inicializado sem ACPI");
+    LOG_INFO("POWER", "Diagnostico de energia inicializado com sucesso");
     return OK;
 }
 

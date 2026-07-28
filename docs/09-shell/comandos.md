@@ -41,6 +41,7 @@ Comandos disponiveis:
   devices   - Lista o inventario de hardware (`-v` inclui detalhes)
   device-info <id> - Exibe detalhes de um dispositivo inventariado
   device-scan - Refaz somente a varredura PCI e atualiza o inventario
+  acpi status - Exibe o snapshot ACPI somente de leitura
   power status - Exibe as capacidades reais de energia
   kmetrics  - Mostra linha-base manual de metricas do kernel
   memcheck  - Valida heap, PMM e diretorios de usuario
@@ -230,12 +231,27 @@ o Shell permanece utilizavel.
 IDs PCI sao exibidos como `pci-BB:DD.F`. Para teclados sem `Shift`,
 `device-info` tambem aceita `pci-BB-DD.F` e letras minusculas.
 
+## `acpi status`
+
+Mostra o resultado da descoberta ACPI: OEM, revisao, RSDP, tipo e endereco da
+raiz, quantidade de tabelas, FADT, DSDT, FACS, anomalias e ticks gastos. A
+saida diferencia ACPI pronto, degradado e indisponivel. Mesmo quando as
+tabelas sao validas, AML, SCI, GPE e transicoes permanecem nao implementados.
+
+```text
+zephyr> acpi status
+```
+
+O unico argumento aceito e `status`; qualquer outra sintaxe retorna uso
+controlado e nao consulta nem modifica registradores de energia.
+
 ## `power status`
 
-Mostra somente capacidades que o kernel pode confirmar. Na S1.1, ACPI e os
-estados S1-S4 permanecem indisponiveis; S0 e idle HLT/C1 estao ativos, e S5 e
-`shutdown` aparecem como simulados. O comando nao tenta suspender, hibernar
-ou desligar fisicamente a maquina.
+Mostra somente capacidades que o kernel pode confirmar. Na S1.2, a presenca
+de ACPI e das tabelas FADT/DSDT aparece separada da implementacao de
+transicoes. S1-S4 permanecem indisponiveis; S0 e idle HLT/C1 estao ativos, e
+S5 e `shutdown` aparecem como simulados. O comando nao tenta suspender,
+hibernar ou desligar fisicamente a maquina.
 
 ```text
 zephyr> power status

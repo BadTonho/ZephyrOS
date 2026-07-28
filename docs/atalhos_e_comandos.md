@@ -41,6 +41,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `devices` | `[-v]` | Lista o inventario nativo de hardware; `-v` inclui localizacao, IRQ e IDs PCI. |
 | `device-info` | `<id>` | Mostra os detalhes de um dispositivo listado por `devices`. |
 | `device-scan` | - | Refaz somente a varredura PCI e atualiza o inventario sem reinicializar drivers. |
+| `acpi` | `status` | Mostra o snapshot ACPI e suas limitacoes, sem executar transicoes. |
 | `power` | `status` | Mostra capacidades reais de energia; nao solicita transicoes ACPI. |
 | `memcheck` | - | Valida heap, coalescencia, PMM e diretorios ring 3 residuais. |
 | `schedcheck` | - | Valida os invariantes atuais do scheduler sem alterar processos. |

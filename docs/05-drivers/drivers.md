@@ -8,6 +8,7 @@ Drivers são programas que permitem ao kernel comunicar com o hardware (disco, t
 
 ```
 src/drivers/
+├── acpi.c           → Descoberta e inventario ACPI
 ├── ac97.c           → Driver de áudio AC97
 ├── ata.c            → Driver de disco (ATA PIO)
 ├── font.c           → Fonte bitmap 8x16
@@ -456,6 +457,30 @@ const uint8_t* glyph = font_get_glyph('A');
 ```
 
 Cada byte representa uma linha de 8 pixels (1 bit por pixel).
+
+---
+
+## ACPI (`acpi.c`)
+
+O driver ACPI da S1.2 e somente de leitura. Ele e inicializado depois do mapa
+E820 e antes do paging, pois as regioes da EBDA e do BIOS ainda estao
+identity-mapped nesse ponto. A busca cobre o primeiro KiB da EBDA e
+`0xE0000-0xFFFFF`, sempre em enderecos alinhados a 16 bytes.
+
+O driver valida RSDP, RSDT/XSDT e os checksums das SDTs, prefere XSDT quando
+os enderecos cabem em 32 bits e usa RSDT como fallback. Um snapshot estatico
+guarda no maximo 64 tabelas e identifica FADT, DSDT e FACS. No maximo 256
+entradas da raiz sao examinadas e tabelas maiores que 1 MiB sao recusadas.
+
+`acpi_init()` recebe o mapa E820 apenas durante o bootstrap. Depois do retorno,
+o driver zera essa referencia e as consultas `acpi_get_status()`,
+`acpi_get_table_at()` e `acpi_find_table()` devolvem somente copias dos
+metadados. Nenhum ponteiro fisico e dereferenciado depois que o paging entra
+em operacao.
+
+Esta etapa nao interpreta AML, `_S5`, SCI ou GPE e nao acessa registradores PM.
+Uma tabela valida confirma somente a descoberta do firmware, nao a
+disponibilidade de suspensao ou desligamento fisico.
 
 ---
 

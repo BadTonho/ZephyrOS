@@ -269,13 +269,13 @@
 - ⬜ Carregador e bateria instalados.
 
 ### 24. ACPI (fundação para tudo)
-- 🟡 Campo ACPI no mapa de memória E820. *(memory.h:20 — lido mas ignorado)*
-- ⬜ Parsing de RSDP/RSDT/XSDT.
-- ⬜ Parsing de FADT/DSDT/SSDT.
+- ✅ Mapa E820 usado para validar todos os intervalos fisicos consultados.
+- ✅ Descoberta e validacao de RSDP/RSDT/XSDT.
+- 🟡 FADT e DSDT validadas; SSDT apenas inventariada, sem interpretar AML.
 - ⬜ Driver ACPI completo.
 - ⬜ Registos PM1a/PM1b.
 - ⬜ GPE (General Purpose Events) handlers.
-- ⬜ FACS (Firmware ACPI Control Structure).
+- ✅ FACS identificada e validada por assinatura e comprimento.
 - ⬜ ACPI thermal zones.
 
 ### 25. Comandos de shell existentes
@@ -297,8 +297,20 @@
 - [x] Validacao manual no QEMU concluida para `power status`, integracao com
   `health`, estados indisponiveis explicitos e regressao sem transicoes novas.
 
-Suspensao, hibernacao, bateria, ACPI e desligamento fisico continuam fora do
-escopo ate existir suporte de firmware e drivers correspondentes.
+Suspensao, hibernacao, bateria e desligamento fisico continuam fora do escopo
+ate existir suporte de firmware e drivers correspondentes.
+
+## S1.2 - Fundacao ACPI observavel (validacao pendente)
+
+- [x] Driver somente de leitura inicializado entre memoria e paging.
+- [x] Snapshot estatico de ate 64 tabelas, com limite de 256 entradas da raiz.
+- [x] RSDP, RSDT/XSDT, FADT, DSDT e FACS validadas sem interpretar AML.
+- [x] Componentes `ACPI` e `Power` preservam fallbacks independentes.
+- [x] `acpi status` e `power status` nao habilitam transicoes.
+- [ ] Validacao manual no QEMU padrao, sem ACPI e na matriz de regressao.
+
+Suspensao, hibernacao, bateria, AML e desligamento fisico permanecem fora do
+escopo desta entrega.
 
 ## Resumo de Progresso
 
@@ -308,8 +320,8 @@ escopo ate existir suporte de firmware e drivers correspondentes.
 | 2 — Economia/Bateria | 47 | 0 | 0 | 47 |
 | 3 — Processador/Dispositivos | 30 | 2 | 0 | 28 |
 | 4 — Temporizadores/Solicitações | 36 | 1 | 0 | 35 |
-| 5 — powercfg/ACPI/Diagnósticos | 30 | 5 | 1 | 24 |
-| **Total** | **183** | **10** | **1** | **172** |
+| 5 — powercfg/ACPI/Diagnósticos | 30 | 8 | 1 | 21 |
+| **Total** | **183** | **13** | **1** | **169** |
 
 ---
 
@@ -322,12 +334,13 @@ escopo ate existir suporte de firmware e drivers correspondentes.
 | Shutdown (simulado) | shell.c:287-292, taskbar.c:442 | CLI+HLT (não desliga realmente) |
 | AC97 power-down | ac97.c:61-66 | Desliga codec de áudio |
 | PIT Timer 50Hz | timer.c:10-17 | Único temporizador |
+| ACPI observavel | acpi.c | Snapshot de RSDP, raiz, FADT, DSDT e FACS |
 
 ---
 
 ## Limitações Técnicas Conhecidas
 
-- **Sem ACPI**: Não há parsing de tabelas ACPI, registos PM, nem GPE handlers.
+- **ACPI diagnostico**: Tabelas sao validadas, mas AML, PM, SCI e GPE nao sao executados.
 - **Sem bateria**: O sistema foi concebido para QEMU (desktop), sem leitura de bateria.
 - **Shutdown simulado**: `CLI+HLT` apenas para a CPU — não desliga a máquina真正的.
 - **Sem USB**: Não existe driver USB, logo não há suspensão seletiva.
