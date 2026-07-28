@@ -580,7 +580,10 @@ Plataforma de aplicativos:   [████████████████�
 - [x] Comandos `net tcp`, `net socket`, `http` e suite agrupada
   `net check qemu tcp <id> <dominio>`.
 - [x] Invariantes e vetores puros de TCP/HTTP integrados ao `regcheck full`.
-- [ ] Aguardando validacao do usuario com Q3, build limpo e suite QEMU.
+- [x] Suite QEMU principal validada pelo usuario: DHCP, DNS, handshake,
+  dados, checksum, sockets, HTTP, fechamento, polling e invariantes em `OK`.
+- [ ] Revalidar `http get` digitado com Shift e `regcheck full` apos a
+  correcao do uso excessivo da pilha de 4 KiB do Shell.
 - [ ] Cobertura complementar: peer controlado, perda/retransmissao, janela
   zero, RST, tabela cheia, ausencia de NIC, RTL8139 e Classic/Modern.
 

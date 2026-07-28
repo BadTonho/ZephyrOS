@@ -205,6 +205,7 @@ static uint8_t appcheck_demo_verify[APP_IMAGE_MAX_FILE_SIZE];
 static int input_pos = 0;
 static int shell_waiting_user_test = 0;
 static uint8_t shell_extended_scancode = 0;
+static uint8_t shell_shift_mask = 0;
 static uint8_t shell_prompt_visible = 0;
 static uint8_t shell_hosted_visible = 0;
 static uint32_t shell_appcheck_loader_pid = 0;
@@ -238,8 +239,20 @@ static const wm_hosted_app_t shell_hosted_app = {
 static shell_q2check_t shell_q2check;
 static shell_regcheck_t shell_regcheck;
 static shell_kmetrics_baseline_t shell_kmetrics_baseline;
+/* O Shell tem pilha de 4 KiB; snapshots HTTP ficam em BSS para que uma
+   espera cooperativa nao alcance os metadados do bloco de pilha no heap. */
+static char shell_http_command_url[HTTP_URL_BUFFER_SIZE];
+static char shell_http_preview[SHELL_HTTP_PREVIEW_SIZE + 1U];
+static http_status_t shell_http_command_status;
+static http_status_t shell_http_wait_status;
 
 #define SHELL_SCANCODE_EXTENDED 0xE0
+#define SHELL_SCANCODE_LEFT_SHIFT 0x2AU
+#define SHELL_SCANCODE_RIGHT_SHIFT 0x36U
+#define SHELL_SCANCODE_LEFT_SHIFT_RELEASE 0xAAU
+#define SHELL_SCANCODE_RIGHT_SHIFT_RELEASE 0xB6U
+#define SHELL_SHIFT_LEFT_MASK 0x01U
+#define SHELL_SHIFT_RIGHT_MASK 0x02U
 #define SHELL_SCANCODE_ISO_SLASH 0x56U
 #define SHELL_SCANCODE_ABNT2_SLASH 0x73U
 #define SHELL_SCANCODE_UP       0x48
@@ -501,6 +514,8 @@ static uint32_t shell_build_regcheck_input_image(void) {
 
 static void shell_reset_input(void) {
     input_pos = 0;
+    shell_extended_scancode = 0;
+    shell_shift_mask = 0;
     kmemset(input_buffer, 0, sizeof(input_buffer));
 }
 
@@ -563,6 +578,7 @@ static int shell_hosted_mouse(mouse_event_t* event, int x, int y,
 
 static void shell_hosted_close(void) {
     shell_hosted_visible = 0;
+    shell_shift_mask = 0;
 }
 
 static int shell_open_hosted(void) {
@@ -4539,7 +4555,7 @@ static int cmd_http_wait(http_status_t* out_status) {
     uint32_t frequency = timer_get_frequency();
     uint32_t start_tick = timer_get_ticks();
     uint32_t wait_ticks;
-    http_status_t status;
+    http_status_t* status = &shell_http_wait_status;
 
     if (!out_status) {
         LOG_ERROR("SHELL", "Destino nulo na espera HTTP");
@@ -4552,19 +4568,19 @@ static int cmd_http_wait(http_status_t* out_status) {
     }
     wait_ticks = frequency * SHELL_HTTP_WAIT_SECONDS;
     do {
-        if (http_get_status(&status) != OK) return ERR_STATE;
-        if (status.state == HTTP_STATE_COMPLETE) {
-            *out_status = status;
+        if (http_get_status(status) != OK) return ERR_STATE;
+        if (status->state == HTTP_STATE_COMPLETE) {
+            *out_status = *status;
             return OK;
         }
-        if (status.state == HTTP_STATE_FAILED) {
-            *out_status = status;
-            return status.last_error == OK ? ERR_STATE :
-                                             status.last_error;
+        if (status->state == HTTP_STATE_FAILED) {
+            *out_status = *status;
+            return status->last_error == OK ? ERR_STATE :
+                                              status->last_error;
         }
         process_block(SHELL_NET_CHECK_BLOCK_TICKS);
     } while ((uint32_t)(timer_get_ticks() - start_tick) <= wait_ticks);
-    *out_status = status;
+    *out_status = *status;
     LOG_WARN("SHELL", "Guarda de tempo HTTP expirou");
     return ERR_TIMEOUT;
 }
@@ -4617,7 +4633,6 @@ static void cmd_http_status(void) {
 static void cmd_http_print_preview(void) {
     const uint8_t* body;
     uint32_t length;
-    char preview[SHELL_HTTP_PREVIEW_SIZE + 1U];
 
     if (http_get_body(&body, &length) != OK) return;
     if (length > SHELL_HTTP_PREVIEW_SIZE) {
@@ -4626,18 +4641,18 @@ static void cmd_http_print_preview(void) {
     for (uint32_t index = 0; index < length; index++) {
         uint8_t value = body[index];
 
-        preview[index] =
+        shell_http_preview[index] =
             (value >= 0x20U && value <= 0x7EU) ||
             value == '\n' || value == '\r' || value == '\t' ?
             (char)value : '.';
     }
-    preview[length] = '\0';
+    shell_http_preview[length] = '\0';
     video_print("Previa do corpo", 0x0B);
     if (length == SHELL_HTTP_PREVIEW_SIZE) {
         video_print(" (primeiros 512 bytes)", 0x0B);
     }
     video_print(":\n", 0x0B);
-    video_print(length ? preview : "(vazio)", 0x07);
+    video_print(length ? shell_http_preview : "(vazio)", 0x07);
     video_print("\n", 0x07);
 }
 
@@ -4666,8 +4681,6 @@ static int cmd_http_execute(const char* url, uint8_t print_result,
 
 static void cmd_http(const char* args) {
     const char* get_args = shell_match_subcommand(args, "get");
-    char url[HTTP_URL_BUFFER_SIZE];
-    http_status_t status;
     int result;
 
     if (shell_args_equal(args, "status")) {
@@ -4675,13 +4688,15 @@ static void cmd_http(const char* args) {
         return;
     }
     if (!get_args ||
-        shell_read_single_arg(get_args, url, sizeof(url)) != OK) {
+        shell_read_single_arg(get_args, shell_http_command_url,
+                              sizeof(shell_http_command_url)) != OK) {
         LOG_WARN("SHELL", "Uso invalido de http");
         video_print("Uso: http get <url> | http status\n", 0x0C);
         return;
     }
     video_print("Executando HTTP GET...\n", 0x07);
-    result = cmd_http_execute(url, 1U, &status);
+    result = cmd_http_execute(shell_http_command_url, 1U,
+                              &shell_http_command_status);
     if (result != OK) {
         video_print("Erro: HTTP GET falhou (codigo ", 0x0C);
         print_num((uint32_t)result);
@@ -5184,16 +5199,18 @@ static void cmd_net_check_qemu_tcp_print(
 }
 
 static void cmd_net_check_qemu_tcp(const char* args) {
-    char id[NETWORK_INTERFACE_ID_SIZE];
-    char domain[SHELL_DNS_NAME_SIZE];
-    char url[HTTP_URL_BUFFER_SIZE];
-    shell_net_qemu_tcp_check_t check;
-    tcp_status_t tcp_before;
-    tcp_status_t tcp_after;
-    net_socket_status_t sockets_before;
-    net_socket_status_t sockets_after;
-    http_status_t http_before;
-    http_status_t http_after;
+    /* A suite e serial no Shell. Manter os snapshots em BSS evita somar
+       varios status grandes a pilha de 4 KiB durante a espera HTTP. */
+    static char id[NETWORK_INTERFACE_ID_SIZE];
+    static char domain[SHELL_DNS_NAME_SIZE];
+    static char url[HTTP_URL_BUFFER_SIZE];
+    static shell_net_qemu_tcp_check_t check;
+    static tcp_status_t tcp_before;
+    static tcp_status_t tcp_after;
+    static net_socket_status_t sockets_before;
+    static net_socket_status_t sockets_after;
+    static http_status_t http_before;
+    static http_status_t http_after;
     uint32_t address = 0;
     int result;
     uint8_t passed;
@@ -5276,7 +5293,7 @@ static void cmd_net_check_qemu_tcp(const char* args) {
     cmd_http_status();
 }
 
-static void cmd_net_check_qemu(const char* args) {
+static void cmd_net_check_qemu_static(const char* args) {
     char id[NETWORK_INTERFACE_ID_SIZE];
     char ip_text[SHELL_IPV4_TEXT_SIZE];
     arp_status_t baseline;
@@ -5290,18 +5307,6 @@ static void cmd_net_check_qemu(const char* args) {
     int timeout_result;
     int icmp_result;
     int result;
-    const char* dhcp_args = shell_match_subcommand(args, "dhcp");
-    const char* tcp_args = shell_match_subcommand(args, "tcp");
-
-    if (tcp_args) {
-        cmd_net_check_qemu_tcp(tcp_args);
-        return;
-    }
-    if (dhcp_args) {
-        cmd_net_check_qemu_dhcp(dhcp_args);
-        return;
-    }
-
     result = shell_read_two_args(args, id, sizeof(id),
                                  ip_text, sizeof(ip_text));
     if (result != OK || cmd_net_parse_ipv4(ip_text, &local_ip) != OK ||
@@ -5358,6 +5363,22 @@ static void cmd_net_check_qemu(const char* args) {
     cmd_net_arp_status();
     cmd_net_arp_table();
     cmd_net_ipv4_status();
+}
+
+static void cmd_net_check_qemu(const char* args) {
+    const char* tcp_args = shell_match_subcommand(args, "tcp");
+    const char* dhcp_args;
+
+    if (tcp_args) {
+        cmd_net_check_qemu_tcp(tcp_args);
+        return;
+    }
+    dhcp_args = shell_match_subcommand(args, "dhcp");
+    if (dhcp_args) {
+        cmd_net_check_qemu_dhcp(dhcp_args);
+        return;
+    }
+    cmd_net_check_qemu_static(args);
 }
 
 static void cmd_net_check(const char* args) {
@@ -7395,6 +7416,22 @@ static int shell_handle_terminal_scroll_key(uint8_t scancode) {
 }
 
 static void shell_handle_terminal_key(uint8_t scancode) {
+    if (scancode == SHELL_SCANCODE_LEFT_SHIFT) {
+        shell_shift_mask |= SHELL_SHIFT_LEFT_MASK;
+        return;
+    }
+    if (scancode == SHELL_SCANCODE_RIGHT_SHIFT) {
+        shell_shift_mask |= SHELL_SHIFT_RIGHT_MASK;
+        return;
+    }
+    if (scancode == SHELL_SCANCODE_LEFT_SHIFT_RELEASE) {
+        shell_shift_mask &= (uint8_t)~SHELL_SHIFT_LEFT_MASK;
+        return;
+    }
+    if (scancode == SHELL_SCANCODE_RIGHT_SHIFT_RELEASE) {
+        shell_shift_mask &= (uint8_t)~SHELL_SHIFT_RIGHT_MASK;
+        return;
+    }
     if (shell_waiting_user_test) return;
 
     shell_resume_terminal();
@@ -7426,10 +7463,24 @@ static void shell_handle_terminal_key(uint8_t scancode) {
         0, 0, 0, 0, 0, 0, 0, 0
     };
 
+    static const char scancode_shift_table[128] = {
+        0,  27, '!','@','#','$','%','^','&','*','(',')','_','+','\b',
+        '\t','Q','W','E','R','T','Y','U','I','O','P','{','}','\n',
+        0,  'A','S','D','F','G','H','J','K','L',':','"','~',
+        0,  '|','Z','X','C','V','B','N','M','<','>',':',0,
+        '*', 0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0
+    };
+
     /* QEMU pode encaminhar a barra ABNT2 por dois scancodes fisicos. */
     char c = (scancode == SHELL_SCANCODE_ISO_SLASH ||
-              scancode == SHELL_SCANCODE_ABNT2_SLASH) ? '/' :
-             scancode_table[scancode];
+              scancode == SHELL_SCANCODE_ABNT2_SLASH) ?
+             (shell_shift_mask ? '?' : '/') :
+             (shell_shift_mask ? scancode_shift_table[scancode] :
+                                 scancode_table[scancode]);
 
     if (scancode == 0x0E) {
         shell_return_to_terminal_tail();

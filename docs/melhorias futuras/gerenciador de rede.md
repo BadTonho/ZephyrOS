@@ -129,8 +129,10 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 - [x] Comandos `net tcp status/connect`, `net socket status/table`,
   `http get/status` e diagnostico agrupado da S2.7.
 - [x] Vetores puros e invariantes adicionados ao `regcheck full`.
-- [ ] Validacao do usuario no QEMU padrao com
+- [x] Suite principal validada no QEMU padrao com
   `net check qemu tcp net-pci-00-03.0 example.com`.
+- [ ] Revalidar o GET individual e `regcheck full` apos reduzir a pilha
+  usada pelos snapshots HTTP do diagnostico agrupado.
 - [ ] Cobertura complementar: perda/retransmissao com peer, RST, janela zero,
   handles obsoletos, tabela cheia, fallbacks e Classic/Modern.
 

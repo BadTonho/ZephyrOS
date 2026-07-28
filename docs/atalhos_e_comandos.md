@@ -83,6 +83,8 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 
 ## Scroll do Shell
 
+- **Shift + tecla**: produz maiusculas e os simbolos da fileira numerica e
+  de pontuacao; `Shift+;` produz `:`.
 - **Seta para Cima / Seta para Baixo**: rola uma linha no historico do terminal.
 - **Page Up / Page Down**: rola uma pagina no historico do terminal.
 - **Home / End**: vai ao inicio ou ao fim do historico.

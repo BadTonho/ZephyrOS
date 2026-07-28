@@ -258,8 +258,9 @@ pela lista. `device-scan` apenas rele o espaco de configuracao PCI e atualiza
 o snapshot; se o limite de 64 entradas for atingido, o resultado e parcial e
 o Shell permanece utilizavel.
 
-IDs PCI sao exibidos como `pci-BB:DD.F`. Para teclados sem `Shift`,
-`device-info` tambem aceita `pci-BB-DD.F` e letras minusculas.
+IDs PCI sao exibidos como `pci-BB:DD.F`. O terminal interpreta Shift para
+maiusculas e simbolos, incluindo `:` com `Shift+;`. A forma
+`pci-BB-DD.F` e letras minusculas continuam aceitas como alternativas.
 
 ## Rede: comandos individuais e diagnostico agrupado
 
