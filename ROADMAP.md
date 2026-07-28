@@ -119,6 +119,11 @@ Plataforma de aplicativos:   [████████████████�
 | `net info <id>` | Mostra metadados PCI de uma interface |
 | `net ethernet <id>` | Inspeciona fila, parsing e contadores Ethernet L2 |
 | `net test <id>` | Envia frame Ethernet de diagnostico pelo E1000 |
+| `net arp config <id> <ip>` | Vincula interface e IPv4 local em RAM |
+| `net arp status` | Mostra configuracao, cache e contadores ARP |
+| `net arp resolve <ip>` | Inicia ou consulta resolucao IPv4 para MAC |
+| `net arp table` | Lista cache ARP, estado, idade e tentativas |
+| `net arp clear` | Limpa cache e preserva a configuracao local |
 | `acpi status` | Mostra tabelas, PM1, modo ACPI, `_S5_` e prontidao S5 |
 | `power status` | Mostra prontidao S5, desligamento fisico e fallback HLT |
 | `kmetrics [reset]` | Coleta linha-base de PIT, filas, memoria e VESA, incluindo media de bytes por apresentacao |
@@ -488,9 +493,23 @@ Plataforma de aplicativos:   [████████████████�
 - [ ] Cobertura complementar: injetar RX externo e frame invalido e repetir a
   regressao visual Classic/Modern; esses cenarios nao bloqueiam a conclusao.
 
+## S2.4 - ARP com cache e resolucao assincrona (implementada; validacao pendente)
+
+- [x] Despacho Ethernet por EtherType com quatro handlers e contadores de
+  entrega, ausencia de protocolo e erro do callback.
+- [x] Requests, replies automaticos e serializacao ARP explicita em ordem de
+  rede, processados fora da IRQ.
+- [x] Cache fixo de 32 entradas, tres tentativas em tres segundos, timeout,
+  expiracao em 30 segundos e substituicao sem remover pendencias.
+- [x] Configuracao de uma interface/IPv4 em RAM e resolucao IP para MAC sem
+  bloquear o Shell.
+- [x] Comandos `net arp`, estado no Network e invariantes somente-leitura no
+  `regcheck full`.
+- [ ] Validar Q3, build limpo, QEMU padrao, timeout, peer externo, sintaxe,
+  ausencia de NIC, RTL8139, `device-scan` e Classic/Modern.
+
 ## Continuacao da S2 - Rede e atualizacoes (planejada)
 
-- [ ] S2.4: ARP com cache limitado, request, reply e resolucao IP para MAC.
 - [ ] S2.5: IPv4, configuracao estatica e ICMP para diagnostico `ping`.
 - [ ] S2.6: UDP, DHCP e DNS, somente depois de IPv4 e ARP validados.
 - [ ] S2.7: TCP, sockets e servicos remotos, com timeouts e limites claros.

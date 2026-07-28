@@ -7,15 +7,15 @@
 | Fase | Total | Feito | Parcial | Restante |
 |------|-------|-------|---------|----------|
 | 1. Driver de NIC (Ethernet) | 52 | 6 | 0 | 46 |
-| 2. Stack TCP/IP básico | 68 | 0 | 0 | 68 |
+| 2. Stack TCP/IP básico | 68 | 17 | 0 | 51 |
 | 3. Protocolos de rede | 48 | 0 | 0 | 48 |
 | 4. Serviços de rede | 42 | 0 | 0 | 42 |
 | 5. Interface TUI do Gerenciador | 64 | 0 | 0 | 64 |
 | 6. Comandos de rede (Shell) | 38 | 0 | 0 | 38 |
 | 7. Firewall e segurança | 44 | 0 | 0 | 44 |
-| **TOTAL** | **356** | **6** | **0** | **350** |
+| **TOTAL** | **356** | **23** | **0** | **333** |
 
-**Progresso geral: 2%** (6/356 itens completos)
+**Progresso geral: 6%** (23/356 itens completos)
 
 ---
 
@@ -72,15 +72,26 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 - [ ] Cobertura complementar: injetar RX externo e frame invalido e repetir a
   regressao visual Classic/Modern; esses cenarios nao bloqueiam a conclusao.
 
-## Sequencia prevista apos S2.3
+## S2.4 - ARP com cache e resolucao assincrona (implementada; validacao pendente)
 
-1. **S2.4 - ARP:** cache limitado, request, reply e resolucao IP para MAC.
-2. **S2.5 - IPv4 e ICMP:** configuracao estatica, checksum e `ping` de
+- [x] EtherType `0x0806` entregue fora da IRQ por tabela fixa de handlers.
+- [x] Pacotes ARP serializados explicitamente em ordem de rede.
+- [x] Uma interface e um IPv4 local configurados somente em RAM.
+- [x] Cache de 32 entradas com estados, expiracao, retries e timeout.
+- [x] Aprendizado restrito a request local e reply de resolucao pendente.
+- [x] Reply automatico somente para request valido dirigido ao IP local.
+- [x] Comandos `net arp config/status/resolve/table/clear`.
+- [x] Invariantes ARP adicionadas ao `regcheck full` sem efeitos colaterais.
+- [ ] Validacao manual completa conforme a matriz da S2.4.
+
+## Sequencia prevista apos S2.4
+
+1. **S2.5 - IPv4 e ICMP:** configuracao estatica, checksum e `ping` de
    diagnostico, depois de ARP validado.
-3. **S2.6 - UDP, DHCP e DNS:** configuracao dinamica e datagramas, somente
+2. **S2.6 - UDP, DHCP e DNS:** configuracao dinamica e datagramas, somente
    sobre IPv4 estavel.
-4. **S2.7 - TCP e sockets:** conexoes, timeouts e servicos remotos.
-5. **S2.8 - Multiplas NICs:** ampliar a abstracao e adicionar RTL8139 sem
+3. **S2.7 - TCP e sockets:** conexoes, timeouts e servicos remotos.
+4. **S2.8 - Multiplas NICs:** ampliar a abstracao e adicionar RTL8139 sem
    prender os protocolos ao E1000.
 
 ---
@@ -225,23 +236,23 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 
 ### 2.1 Camada de Enlace (Ethernet)
 
-- [ ] Criar módulo `src/net/ethernet.c` e `ethernet.h`
-- [ ] Criar struct `eth_header_t`:
+- [x] Criar modulo `src/core/ethernet.c` e header publico
+- [x] Expor visao sincrona validada do frame Ethernet:
   ```
   - dst_mac[6]   = uint8_t
   - src_mac[6]   = uint8_t
   - ether_type   = uint16_t (0x0800=IP, 0x0806=ARP)
   ```
-- [ ] Criar função `ethernet_send(dev, dst_mac, ether_type, data, length)`
-- [ ] Criar função `ethernet_receive(dev, data, length)`
-- [ ] Criar função `ethernet_parse(data, header)`
-- [ ] Implementar broadcast: `ethernet_broadcast(dev, ether_type, data, length)`
-- [ ] Criar tabela ARP cache (`arp_cache[MAX_ARP_ENTRIES]`)
+- [x] Criar funcao `ethernet_send()` desacoplada por callback
+- [x] Receber frames por fila fixa e polling acionado por evento
+- [x] Validar e analisar cabecalho Ethernet II
+- [x] Implementar transmissao e recepcao broadcast
+- [x] Criar tabela ARP cache (`arp_cache[ARP_CACHE_CAPACITY]`)
 
 ### 2.2 Protocolo ARP
 
-- [ ] Criar módulo `src/net/arp.c` e `arp.h`
-- [ ] Criar struct `arp_header_t`:
+- [x] Criar modulo `src/core/arp.c` e `src/include/core/arp.h`
+- [x] Serializar explicitamente o pacote ARP, sem struct packed:
   ```
   - hw_type       = uint16_t (1=Ethernet)
   - proto_type    = uint16_t (0x0800=IPv4)
@@ -253,14 +264,14 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
   - target_mac[6] = uint8_t
   - target_ip     = uint32_t
   ```
-- [ ] Criar função `arp_request(dev, target_ip)` para solicitar MAC
-- [ ] Criar função `arp_reply(dev, target_mac, target_ip)` para responder
-- [ ] Criar função `arp_resolve(ip)` retorna MAC (com cache)
-- [ ] Criar função `arp_cache_add(ip, mac)` para adicionar ao cache
-- [ ] Criar função `arp_cache_find(ip)` para buscar no cache
-- [ ] Criar função `arp_cache_remove(ip)` para remover
-- [ ] Timeout de cache (30 segundos)
-- [ ] Integrar com ethernet_send/receive
+- [x] Enviar request ARP sob demanda
+- [x] Responder automaticamente a request valido para o IP local
+- [x] Criar `arp_resolve(ip, mac, resolved)` assincrono e com cache
+- [x] Adicionar aprendizado restrito ao cache
+- [x] Buscar resolucao pendente ou concluida no cache
+- [x] Limpar, expirar e substituir entradas de forma limitada
+- [x] Timeout de cache (30 segundos)
+- [x] Integrar com despacho e transmissao Ethernet
 
 ### 2.3 Protocolo IPv4
 

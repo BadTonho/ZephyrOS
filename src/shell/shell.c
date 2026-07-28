@@ -26,6 +26,7 @@
 #include "apps/guitest.h"
 #include "core/recovery.h"
 #include "core/device_manager.h"
+#include "core/arp.h"
 #include "core/network_manager.h"
 #include "core/power.h"
 #include "core/app_api.h"
@@ -44,6 +45,11 @@
 #define SHELL_HOSTED_DEFAULT_CONTENT_HEIGHT 560
 #define SHELL_HOSTED_FRAME_WIDTH 4
 #define SHELL_HOSTED_FRAME_HEIGHT 28
+#define SHELL_IPV4_TEXT_SIZE 16U
+#define SHELL_IPV4_OCTET_COUNT 4U
+#define SHELL_IPV4_OCTET_MAX 255U
+#define SHELL_IPV4_OCTET_BITS 8U
+#define SHELL_IPV4_OCTET_DIGITS 3U
 
 typedef enum {
     SHELL_BUILTIN_APP_NONE,
@@ -879,9 +885,14 @@ static int shell_regcheck_validate_network_recovery(
     if (status->partial) {
         expected_state = RECOVERY_STATE_DEGRADED;
         expected_error = ERR_OVERFLOW;
-    } else if (status->active_count) {
+    } else if (status->active_count &&
+               status->ethernet_available &&
+               status->arp_available) {
         expected_state = RECOVERY_STATE_READY;
         expected_error = OK;
+    } else if (status->active_count) {
+        expected_state = RECOVERY_STATE_DEGRADED;
+        expected_error = status->last_error;
     } else if (status->interface_count) {
         expected_state = RECOVERY_STATE_DEGRADED;
         expected_error = status->last_error;
@@ -893,6 +904,37 @@ static int shell_regcheck_validate_network_recovery(
         component->last_error != expected_error) {
         LOG_ERROR("SHELL", "RegCheck Full detectou recovery Network incoerente");
         return ERR_STATE;
+    }
+    return OK;
+}
+
+static int shell_regcheck_validate_arp(
+    const network_manager_status_t* network_status) {
+    arp_status_t status;
+    ethernet_status_t ethernet_status;
+    int result;
+
+    if (!network_status) {
+        LOG_ERROR("SHELL", "RegCheck Full recebeu estado ARP nulo");
+        return ERR_NULL;
+    }
+    result = arp_get_status(&status);
+    if (result != OK ||
+        ethernet_get_status(&ethernet_status) != OK ||
+        arp_validate_state() != OK ||
+        (network_status->arp_available && !status.initialized) ||
+        ethernet_status.handler_count >
+            ETHERNET_PROTOCOL_HANDLER_CAPACITY ||
+        (network_status->arp_available &&
+         !ethernet_status.handler_count) ||
+        (network_status->arp_configured !=
+         (uint8_t)(network_status->arp_available && status.configured)) ||
+        status.cache_entries > ARP_CACHE_CAPACITY ||
+        status.cache_entries != status.incomplete_entries +
+                                status.resolved_entries +
+                                status.failed_entries) {
+        LOG_ERROR("SHELL", "RegCheck Full detectou estado ARP invalido");
+        return result == OK ? ERR_STATE : result;
     }
     return OK;
 }
@@ -910,9 +952,14 @@ static int shell_regcheck_validate_network(void) {
         count > NETWORK_MANAGER_MAX_INTERFACES ||
         status.recognized_count > count || status.active_count > count ||
         status.ipv4_available ||
+        (status.arp_configured && !status.arp_available) ||
+        (status.arp_available &&
+         (!status.active_count || !status.ethernet_available)) ||
+        (status.ethernet_available && !status.active_count) ||
         (status.packet_io_available && !status.active_count) ||
         (!status.packet_io_available && status.active_count) ||
-        (status.active_count && !status.partial &&
+        (status.active_count && status.ethernet_available &&
+         status.arp_available && !status.partial &&
          status.last_error != OK) ||
         (!status.active_count && !status.interface_count &&
          status.last_error != ERR_NOT_FOUND)) {
@@ -936,6 +983,8 @@ static int shell_regcheck_validate_network(void) {
         LOG_ERROR("SHELL", "RegCheck Full detectou contadores Network invalidos");
         return ERR_STATE;
     }
+    result = shell_regcheck_validate_arp(&status);
+    if (result != OK) return result;
     return shell_regcheck_validate_network_recovery(&status);
 }
 
@@ -1801,6 +1850,9 @@ static void cmd_help(void) {
     video_print("  net info <id> - Mostra detalhes de uma interface\n", 0x07);
     video_print("  net ethernet <id> - Inspeciona recepcao Ethernet L2\n", 0x07);
     video_print("  net test <id> - Envia frame Ethernet de diagnostico\n", 0x07);
+    video_print("  net arp config <id> <ip> - Configura ARP em RAM\n", 0x07);
+    video_print("  net arp status|table|clear - Inspeciona cache ARP\n", 0x07);
+    video_print("  net arp resolve <ip> - Resolve IPv4 para MAC\n", 0x07);
     video_print("  acpi status - Mostra tabelas e energia ACPI observadas\n", 0x07);
     video_print("  power status - Mostra capacidades reais de energia\n", 0x07);
     video_print("  kmetrics - Mostra linha-base de metricas do kernel\n", 0x07);
@@ -2138,6 +2190,53 @@ static int shell_read_single_arg(const char* args, char* out, uint32_t size) {
     return OK;
 }
 
+static int shell_read_token(const char** cursor, char* out,
+                            uint32_t size) {
+    uint32_t length = 0;
+
+    if (!cursor || !*cursor || !out || !size) {
+        LOG_ERROR("SHELL", "Destino invalido ao ler token");
+        return ERR_NULL;
+    }
+    while (**cursor == ' ' || **cursor == '\t') (*cursor)++;
+    while (**cursor && **cursor != ' ' && **cursor != '\t') {
+        if (length + 1U >= size) {
+            LOG_WARN("SHELL", "Token do shell excede limite");
+            return ERR_OVERFLOW;
+        }
+        out[length++] = **cursor;
+        (*cursor)++;
+    }
+    if (!length) {
+        LOG_WARN("SHELL", "Token ausente no comando");
+        return ERR_INVALID;
+    }
+    out[length] = '\0';
+    return OK;
+}
+
+static int shell_read_two_args(const char* args, char* first,
+                               uint32_t first_size, char* second,
+                               uint32_t second_size) {
+    const char* cursor = args;
+    int result;
+
+    if (!args || !first || !second) {
+        LOG_ERROR("SHELL", "Argumentos nulos ao ler dois valores");
+        return ERR_NULL;
+    }
+    result = shell_read_token(&cursor, first, first_size);
+    if (result != OK) return result;
+    result = shell_read_token(&cursor, second, second_size);
+    if (result != OK) return result;
+    while (*cursor == ' ' || *cursor == '\t') cursor++;
+    if (*cursor) {
+        LOG_WARN("SHELL", "Comando recebeu argumentos excedentes");
+        return ERR_INVALID;
+    }
+    return OK;
+}
+
 static void cmd_print_hex(uint32_t value, uint32_t digits) {
     static const char hex[] = "0123456789ABCDEF";
 
@@ -2453,6 +2552,14 @@ static void cmd_net_status(void) {
     video_print(status.ethernet_available ?
                 "DISPONIVEL" : "INDISPONIVEL",
                 status.ethernet_available ? 0x0A : 0x0E);
+    video_print("\n  ARP: ", 0x07);
+    if (!status.arp_available) {
+        video_print("INDISPONIVEL", 0x0E);
+    } else if (status.arp_configured) {
+        video_print("CONFIGURADO", 0x0A);
+    } else {
+        video_print("DISPONIVEL (NAO CONFIGURADO)", 0x0E);
+    }
     video_print("\n  IPv4: ", 0x07);
     video_print(status.ipv4_available ? "DISPONIVEL" : "NAO IMPLEMENTADO",
                 status.ipv4_available ? 0x0A : 0x0E);
@@ -2714,6 +2821,12 @@ static void cmd_net_ethernet(const char* args) {
     print_num(diagnostic.layer.rx_filtered);
     video_print("  Sem protocolo: ", 0x07);
     print_num(diagnostic.layer.rx_unhandled);
+    video_print("\n  Entregues a protocolo: ", 0x07);
+    print_num(diagnostic.layer.rx_delivered);
+    video_print("  Erros de protocolo: ", 0x07);
+    print_num(diagnostic.layer.rx_protocol_errors);
+    video_print("  Handlers: ", 0x07);
+    print_num(diagnostic.layer.handler_count);
     video_print("\n  Polls: ", 0x07);
     print_num(diagnostic.layer.polls);
     video_print("  TX montados pela camada: ", 0x07);
@@ -2722,7 +2835,256 @@ static void cmd_net_ethernet(const char* args) {
     cmd_net_print_last_ethernet(&diagnostic.layer);
 }
 
+static int cmd_net_invalid_ipv4(void) {
+    LOG_WARN("SHELL", "IPv4 decimal invalido");
+    return ERR_INVALID;
+}
+
+static int cmd_net_parse_ipv4(const char* text, uint32_t* out_ip) {
+    uint32_t ip_address = 0;
+
+    if (!text || !out_ip) {
+        LOG_ERROR("SHELL", "Destino nulo ao interpretar IPv4");
+        return ERR_NULL;
+    }
+    for (uint32_t octet = 0;
+         octet < SHELL_IPV4_OCTET_COUNT; octet++) {
+        uint32_t value = 0;
+        uint32_t digits = 0;
+
+        while (*text >= '0' && *text <= '9') {
+            if (digits >= SHELL_IPV4_OCTET_DIGITS) {
+                return cmd_net_invalid_ipv4();
+            }
+            value = value * 10U + (uint32_t)(*text - '0');
+            if (value > SHELL_IPV4_OCTET_MAX) {
+                return cmd_net_invalid_ipv4();
+            }
+            digits++;
+            text++;
+        }
+        if (!digits) return cmd_net_invalid_ipv4();
+        ip_address = (ip_address << SHELL_IPV4_OCTET_BITS) | value;
+        if (octet + 1U < SHELL_IPV4_OCTET_COUNT) {
+            if (*text != '.') return cmd_net_invalid_ipv4();
+            text++;
+        }
+    }
+    if (*text) return cmd_net_invalid_ipv4();
+    *out_ip = ip_address;
+    return OK;
+}
+
+static void cmd_net_print_ipv4(uint32_t ip_address) {
+    print_num((ip_address >> 24U) & SHELL_IPV4_OCTET_MAX);
+    video_print(".", 0x07);
+    print_num((ip_address >> 16U) & SHELL_IPV4_OCTET_MAX);
+    video_print(".", 0x07);
+    print_num((ip_address >> 8U) & SHELL_IPV4_OCTET_MAX);
+    video_print(".", 0x07);
+    print_num(ip_address & SHELL_IPV4_OCTET_MAX);
+}
+
+static void cmd_net_arp_config(const char* args) {
+    char id[NETWORK_INTERFACE_ID_SIZE];
+    char ip_text[SHELL_IPV4_TEXT_SIZE];
+    uint32_t ip_address = 0;
+    int result = shell_read_two_args(args, id, sizeof(id),
+                                     ip_text, sizeof(ip_text));
+
+    if (result != OK ||
+        cmd_net_parse_ipv4(ip_text, &ip_address) != OK ||
+        !arp_ipv4_is_valid(ip_address)) {
+        LOG_WARN("SHELL", "Uso invalido de net arp config");
+        video_print("Uso: net arp config <id> <ip-local>\n", 0x0C);
+        return;
+    }
+    result = network_manager_configure_arp(id, ip_address);
+    if (result != OK) {
+        LOG_WARN("SHELL", "Configuracao ARP nao concluiu");
+        video_print("Erro: configuracao ARP falhou (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+    video_print("ARP configurado em RAM para ", 0x0A);
+    cmd_net_print_ipv4(ip_address);
+    video_print(".\n", 0x0A);
+}
+
+static void cmd_net_arp_status(void) {
+    arp_status_t status;
+
+    if (arp_get_status(&status) != OK) {
+        LOG_ERROR("SHELL", "Estado ARP indisponivel");
+        video_print("Erro: estado ARP indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("ARP:\n  Estado: ", 0x0B);
+    video_print(status.initialized ? "DISPONIVEL" : "INDISPONIVEL",
+                status.initialized ? 0x0A : 0x0E);
+    video_print("\n  Configuracao: ", 0x07);
+    video_print(status.configured ? "ATIVA" : "NAO CONFIGURADO",
+                status.configured ? 0x0A : 0x0E);
+    video_print("\n  Interface: ", 0x07);
+    video_print(status.configured ? status.interface_id : "N/D",
+                status.configured ? 0x0B : 0x08);
+    video_print("\n  IPv4 local: ", 0x07);
+    if (status.configured) {
+        cmd_net_print_ipv4(status.local_ip);
+    } else {
+        video_print("N/D", 0x08);
+    }
+    video_print("\n  Cache total/pendente/resolvido/falho: ", 0x07);
+    print_num(status.cache_entries);
+    video_print("/", 0x07);
+    print_num(status.incomplete_entries);
+    video_print("/", 0x07);
+    print_num(status.resolved_entries);
+    video_print("/", 0x07);
+    print_num(status.failed_entries);
+    video_print("\n  Requests RX/TX: ", 0x07);
+    print_num(status.rx_requests);
+    video_print("/", 0x07);
+    print_num(status.tx_requests);
+    video_print("  Replies RX/TX: ", 0x07);
+    print_num(status.rx_replies);
+    video_print("/", 0x07);
+    print_num(status.tx_replies);
+    video_print("\n  Invalidos: ", 0x07);
+    print_num(status.invalid_packets);
+    video_print("  Ignorados: ", 0x07);
+    print_num(status.ignored_packets);
+    video_print("  Timeouts: ", 0x07);
+    print_num(status.timeouts);
+    video_print("\n  Ultimo erro: ", 0x07);
+    print_num((uint32_t)status.last_error);
+    video_print("\n", 0x07);
+}
+
+static void cmd_net_arp_resolve(const char* args) {
+    char ip_text[SHELL_IPV4_TEXT_SIZE];
+    uint8_t mac_address[ARP_MAC_ADDRESS_SIZE];
+    uint8_t resolved = 0;
+    uint32_t ip_address = 0;
+    int result = shell_read_single_arg(args, ip_text, sizeof(ip_text));
+
+    if (result != OK ||
+        cmd_net_parse_ipv4(ip_text, &ip_address) != OK ||
+        !arp_ipv4_is_valid(ip_address)) {
+        LOG_WARN("SHELL", "Uso invalido de net arp resolve");
+        video_print("Uso: net arp resolve <ip>\n", 0x0C);
+        return;
+    }
+    result = arp_resolve(ip_address, mac_address, &resolved);
+    if (result == ERR_TIMEOUT) {
+        video_print("Resolucao ARP falhou por timeout.\n", 0x0C);
+        return;
+    }
+    if (result != OK) {
+        LOG_WARN("SHELL", "Resolucao ARP nao iniciou");
+        video_print("Erro: resolucao ARP falhou (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+    if (!resolved) {
+        video_print("Resolucao ARP pendente.\n", 0x0E);
+        return;
+    }
+    video_print("MAC resolvido: ", 0x0A);
+    cmd_net_print_mac(mac_address);
+    video_print("\n", 0x07);
+}
+
+static void cmd_net_arp_table(void) {
+    arp_status_t status;
+    uint32_t shown = 0;
+
+    if (arp_get_status(&status) != OK || !status.initialized) {
+        LOG_WARN("SHELL", "Tabela ARP indisponivel");
+        video_print("Erro: ARP indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("Tabela ARP:\n", 0x0B);
+    for (uint32_t index = 0; index < ARP_CACHE_CAPACITY; index++) {
+        arp_cache_entry_info_t entry;
+        int result = arp_get_cache_entry(index, &entry);
+
+        if (result != OK) {
+            LOG_ERROR("SHELL", "Falha ao consultar entrada ARP");
+            video_print("Erro: entrada ARP indisponivel.\n", 0x0C);
+            return;
+        }
+        if (!entry.used) continue;
+        video_print("  ", 0x07);
+        cmd_net_print_ipv4(entry.ip_address);
+        video_print("  ", 0x07);
+        if (entry.state == ARP_ENTRY_RESOLVED) {
+            cmd_net_print_mac(entry.mac_address);
+        } else {
+            video_print("N/D", 0x08);
+        }
+        video_print("  ", 0x07);
+        video_print(arp_entry_state_name(entry.state),
+                    entry.state == ARP_ENTRY_RESOLVED ? 0x0A :
+                    entry.state == ARP_ENTRY_FAILED ? 0x0C : 0x0E);
+        video_print("  idade=", 0x07);
+        print_num(entry.age_seconds);
+        video_print("s tentativas=", 0x07);
+        print_num(entry.attempts);
+        video_print("\n", 0x07);
+        shown++;
+    }
+    if (!shown) video_print("  Vazia.\n", 0x08);
+}
+
+static void cmd_net_arp_clear(void) {
+    int result = arp_clear();
+
+    if (result != OK) {
+        LOG_WARN("SHELL", "Limpeza do cache ARP nao concluiu");
+        video_print("Erro: cache ARP nao foi limpo (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+    video_print("Cache ARP limpo; configuracao preservada.\n", 0x0A);
+}
+
+static void cmd_net_arp(const char* args) {
+    const char* config_args;
+    const char* resolve_args;
+
+    config_args = shell_match_subcommand(args, "config");
+    if (config_args) {
+        cmd_net_arp_config(config_args);
+        return;
+    }
+    resolve_args = shell_match_subcommand(args, "resolve");
+    if (resolve_args) {
+        cmd_net_arp_resolve(resolve_args);
+        return;
+    }
+    if (shell_args_equal(args, "status")) {
+        cmd_net_arp_status();
+        return;
+    }
+    if (shell_args_equal(args, "table")) {
+        cmd_net_arp_table();
+        return;
+    }
+    if (shell_args_equal(args, "clear")) {
+        cmd_net_arp_clear();
+        return;
+    }
+    LOG_WARN("SHELL", "Uso invalido de net arp");
+    video_print("Uso: net arp config <id> <ip> | status | resolve <ip> | "
+                "table | clear\n", 0x0C);
+}
+
 static void cmd_net(const char* args) {
+    const char* arp_args;
     const char* ethernet_args;
     const char* info_args;
     const char* test_args;
@@ -2733,6 +3095,11 @@ static void cmd_net(const char* args) {
     }
     if (shell_args_equal(args, "devices")) {
         cmd_net_devices();
+        return;
+    }
+    arp_args = shell_match_subcommand(args, "arp");
+    if (arp_args) {
+        cmd_net_arp(arp_args);
         return;
     }
     info_args = shell_match_subcommand(args, "info");
@@ -2752,7 +3119,7 @@ static void cmd_net(const char* args) {
     }
     LOG_WARN("SHELL", "Uso invalido de net");
     video_print("Uso: net status | net devices | net info <id> | "
-                "net ethernet <id> | net test <id>\n", 0x0C);
+                "net ethernet <id> | net test <id> | net arp ...\n", 0x0C);
 }
 
 static void cmd_power(const char* args) {

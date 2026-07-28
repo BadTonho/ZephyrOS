@@ -46,6 +46,9 @@ Comandos disponiveis:
   net info <id> - Exibe detalhes de uma interface inventariada
   net ethernet <id> - Inspeciona recepcao Ethernet L2
   net test <id> - Envia um frame Ethernet de diagnostico
+  net arp config <id> <ip> - Configura interface e IPv4 em RAM
+  net arp status|table|clear - Inspeciona ou limpa o cache ARP
+  net arp resolve <ip> - Resolve IPv4 para MAC sem bloquear
   acpi status - Exibe tabelas, PM1, modo ACPI e `_S5_`
   power status - Mostra prontidao ACPI S5 e fallback HLT
   kmetrics  - Mostra linha-base manual de metricas do kernel
@@ -244,7 +247,7 @@ o Shell permanece utilizavel.
 IDs PCI sao exibidos como `pci-BB:DD.F`. Para teclados sem `Shift`,
 `device-info` tambem aceita `pci-BB-DD.F` e letras minusculas.
 
-## `net status`, `net devices`, `net info`, `net ethernet` e `net test`
+## `net status`, `net devices`, `net info`, `net ethernet`, `net test` e `net arp`
 
 Os comandos mantem o snapshot PCI da S2.1 e, quando o Intel E1000 `8086:100E`
 esta ativo, mostram o estado real do driver Ethernet L2. A inicializacao de
@@ -257,13 +260,18 @@ zephyr> net devices
 zephyr> net info net-pci-00:03.0
 zephyr> net ethernet net-pci-00:03.0
 zephyr> net test net-pci-00:03.0
+zephyr> net arp config net-pci-00-03.0 10.0.2.15
+zephyr> net arp status
+zephyr> net arp resolve 10.0.2.2
+zephyr> net arp table
+zephyr> net arp clear
 ```
 
 `net status` separa inventario, controladores reconhecidos, drivers ativos,
-link, RX/TX, Ethernet L2, IPv4 e o ultimo erro do servico. `net devices` lista
-IDs estaveis, modelo e estado. `net info <id>` mostra MAC, contadores, fila RX,
-erro do driver, vendor/device, classe, prog-if, revisao, IRQ e BAR0-BAR5. A
-forma `net-pci-BB-DD.F` tambem e aceita.
+link, RX/TX, Ethernet L2, ARP, IPv4 e o ultimo erro do servico. `net devices`
+lista IDs estaveis, modelo e estado. `net info <id>` mostra MAC, contadores,
+fila RX, erro do driver, vendor/device, classe, prog-if, revisao, IRQ e
+BAR0-BAR5. A forma `net-pci-BB-DD.F` tambem e aceita.
 
 `net ethernet <id>` consulta a camada sem transmitir. A saida mostra frames
 processados na consulta, fila atual/pico, descartes por fila cheia, IRQs RX,
@@ -279,6 +287,19 @@ automaticamente no boot. Sem E1000 ativo, com link indisponivel, ID desconhecido
 ou sintaxe invalida, o Shell retorna erro controlado. RTL8139 continua listado
 sem driver; sem NIC, os comandos seguem utilizaveis e mostram inventario vazio.
 `regcheck full` reutiliza a varredura sem resetar o E1000 ou a camada Ethernet.
+
+`net arp config <id> <ip-local>` vincula uma interface ativa a um unico IPv4
+local, somente em RAM. Repetir a mesma configuracao preserva cache e
+contadores; trocar ID ou IP limpa cache, pendencias e contadores. Nao ha IP
+padrao, mascara, gateway, DHCP ou persistencia nesta etapa.
+
+`net arp resolve <ip>` retorna imediatamente o MAC em cache ou informa
+`pendente` depois de enviar o primeiro request. O servico repete em um e dois
+segundos e marca `FAILED` no terceiro segundo, sem bloquear o terminal.
+`net arp status` mostra configuracao, estados do cache, requests/replies,
+invalidos, ignorados e timeouts. `net arp table` lista IP, MAC, estado, idade e
+tentativas; `net arp clear` limpa apenas o cache. Entradas resolvidas e falhas
+expiram apos 30 segundos.
 
 ## `acpi status`
 

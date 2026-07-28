@@ -1,9 +1,11 @@
 #include "core/network_manager.h"
+#include "core/arp.h"
 #include "core/ethernet.h"
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/recovery.h"
 #include "core/string.h"
+#include "core/timer.h"
 #include "drivers/e1000.h"
 #include "drivers/pci.h"
 
@@ -20,6 +22,8 @@ static network_interface_info_t
     network_interfaces[NETWORK_MANAGER_MAX_INTERFACES];
 static network_manager_status_t network_status;
 static int network_manager_initialized = 0;
+static uint32_t network_last_arp_tick;
+static uint8_t network_has_arp_tick;
 
 static void network_append_char(char* text, uint32_t capacity,
                                 uint32_t* offset, char value) {
@@ -144,6 +148,7 @@ static int network_build_snapshot(void) {
     uint8_t pci_count = 0;
     e1000_status_t e1000_status;
     ethernet_status_t ethernet_status;
+    arp_status_t arp_layer_status;
     int pci_result;
     int result = OK;
 
@@ -157,6 +162,10 @@ static int network_build_snapshot(void) {
     }
     if (ethernet_get_status(&ethernet_status) != OK) {
         LOG_ERROR("NET", "Falha ao consultar camada Ethernet");
+        return ERR_STATE;
+    }
+    if (arp_get_status(&arp_layer_status) != OK) {
+        LOG_ERROR("NET", "Falha ao consultar protocolo ARP");
         return ERR_STATE;
     }
     pci_result = pci_get_device_count(&pci_count);
@@ -203,12 +212,19 @@ static int network_build_snapshot(void) {
         network_status.packet_io_available = 1;
         network_status.ethernet_available =
             ethernet_status.initialized ? 1U : 0U;
+        network_status.arp_available =
+            ethernet_status.initialized &&
+            arp_layer_status.initialized ? 1U : 0U;
+        network_status.arp_configured =
+            network_status.arp_available &&
+            arp_layer_status.configured ? 1U : 0U;
     }
     if (network_status.partial) {
         network_status.last_error = ERR_OVERFLOW;
     } else if (network_status.active_count) {
         network_status.last_error =
-            network_status.ethernet_available ? OK : ERR_STATE;
+            network_status.ethernet_available &&
+            network_status.arp_available ? OK : ERR_STATE;
     } else if (network_status.interface_count) {
         network_status.last_error = ERR_UNAVAILABLE;
         for (uint32_t index = 0; index < network_status.interface_count;
@@ -263,6 +279,34 @@ static int network_start_ethernet(void) {
     return OK;
 }
 
+static int network_start_arp(void) {
+    arp_status_t status;
+    int result;
+
+    if (!network_status.ethernet_available) return OK;
+    result = arp_get_status(&status);
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao consultar inicializacao ARP");
+        return result;
+    }
+    if (!status.initialized) {
+        result = arp_init();
+        if (result != OK) {
+            LOG_ERROR("NET", "Falha ao iniciar protocolo ARP");
+            return result;
+        }
+        result = arp_get_status(&status);
+        if (result != OK) {
+            LOG_ERROR("NET", "Falha ao confirmar inicializacao ARP");
+            return result;
+        }
+    }
+    network_status.arp_available = 1;
+    network_status.arp_configured = status.configured;
+    if (!network_status.partial) network_status.last_error = OK;
+    return OK;
+}
+
 static void network_sync_recovery(int result) {
     const recovery_component_t* current =
         recovery_get(RECOVERY_COMPONENT_NETWORK);
@@ -283,6 +327,11 @@ static void network_sync_recovery(int result) {
         state = RECOVERY_STATE_DEGRADED;
         error = network_status.last_error;
         message = "Camada Ethernet indisponivel";
+    } else if (network_status.active_count &&
+               !network_status.arp_available) {
+        state = RECOVERY_STATE_DEGRADED;
+        error = network_status.last_error;
+        message = "Protocolo ARP indisponivel";
     } else if (network_status.active_count) {
         state = RECOVERY_STATE_READY;
         error = OK;
@@ -345,6 +394,7 @@ static int network_id_matches(const char* expected, const char* requested) {
 int network_manager_init(void) {
     int result;
     int ethernet_result;
+    int arp_result;
 
     LOG_INFO("NET", "Inicializando inventario de rede");
     network_manager_initialized = 1;
@@ -361,6 +411,13 @@ int network_manager_init(void) {
         network_status.ethernet_available = 0;
         network_status.last_error = ethernet_result;
         LOG_ERROR("NET", "Inventario ativo sem camada Ethernet");
+    }
+    arp_result = network_start_arp();
+    if (arp_result != OK) {
+        network_status.arp_available = 0;
+        network_status.arp_configured = 0;
+        network_status.last_error = arp_result;
+        LOG_ERROR("NET", "Inventario ativo sem protocolo ARP");
     }
     network_sync_recovery(result);
     if (result == ERR_OVERFLOW) {
@@ -392,6 +449,7 @@ int network_manager_refresh(void) {
 }
 
 int network_manager_poll(uint32_t* out_processed) {
+    uint32_t current_tick;
     int result;
 
     if (!out_processed) {
@@ -409,6 +467,20 @@ int network_manager_poll(uint32_t* out_processed) {
         network_status.last_error = result;
         LOG_ERROR("NET", "Falha ao processar recepcao Ethernet");
         return result;
+    }
+    current_tick = timer_get_ticks();
+    if (network_status.arp_available &&
+        network_status.arp_configured &&
+        (!network_has_arp_tick ||
+         current_tick != network_last_arp_tick)) {
+        network_has_arp_tick = 1;
+        network_last_arp_tick = current_tick;
+        result = arp_maintain();
+        if (result != OK) {
+            network_status.last_error = result;
+            LOG_ERROR("NET", "Falha na manutencao ARP");
+            return result;
+        }
     }
     if (!network_status.partial) network_status.last_error = OK;
     return OK;
@@ -566,6 +638,46 @@ int network_manager_send_diagnostic(const char* id) {
         LOG_ERROR("NET", "Falha no teste de transmissao Ethernet");
         return result;
     }
+    return OK;
+}
+
+int network_manager_configure_arp(const char* id, uint32_t local_ip) {
+    network_interface_info_t info;
+    network_interface_text_t text;
+    arp_status_t status;
+    int result;
+
+    if (!id) {
+        LOG_ERROR("NET", "ID nulo para configuracao ARP");
+        return ERR_NULL;
+    }
+    result = network_manager_find(id, &info);
+    if (result != OK) {
+        LOG_ERROR("NET", "Interface invalida para configuracao ARP");
+        return result;
+    }
+    if (info.state != NETWORK_INTERFACE_ACTIVE ||
+        !network_status.ethernet_available ||
+        !network_status.arp_available) {
+        LOG_WARN("NET", "Configuracao ARP sem interface ativa");
+        return ERR_UNAVAILABLE;
+    }
+    result = network_manager_format_text(&info, &text);
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao formatar interface para ARP");
+        return result;
+    }
+    result = arp_configure(text.id, info.mac_address, local_ip);
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao configurar sessao ARP");
+        return result;
+    }
+    result = arp_get_status(&status);
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao confirmar configuracao ARP");
+        return result;
+    }
+    network_status.arp_configured = status.configured;
     return OK;
 }
 

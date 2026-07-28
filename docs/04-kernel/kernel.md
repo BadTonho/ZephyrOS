@@ -242,7 +242,7 @@ desmontagem, suspensao, hibernacao ou reboot. `power_shutdown()` nunca retorna;
 `acpi_enter_s5()` retorna apenas quando sua pre-validacao impede qualquer
 escrita no hardware.
 
-## Servicos S2.1-S2.3: rede observavel, E1000 e Ethernet
+## Servicos S2.1-S2.4: rede observavel, E1000, Ethernet e ARP
 
 `network_manager` filtra por copia o snapshot PCI e mantem ate quatro
 controladores de classe `0x02`. O servico copia identificadores, localizacao,
@@ -280,9 +280,32 @@ EtherType. Broadcast e unicast para a MAC local sao aceitos; outros destinos,
 cabecalhos invalidos e saturacao da fila possuem contadores separados.
 
 `ethernet_send()` monta cabecalho, origem local e padding minimo antes de usar
-o callback do driver. `network_manager_get_ethernet_diagnostic()` devolve por
+o callback do driver. Uma tabela fixa de quatro handlers entrega uma visao
+sincrona do frame pelo EtherType; o ponteiro de payload so e valido durante o
+callback. Frames entregues, sem handler e recusados pelo protocolo possuem
+contadores separados. `network_manager_get_ethernet_diagnostic()` devolve por
 copia fila atual/pico, descartes, interrupcoes, totais L2 e o ultimo cabecalho
-aceito. ARP, IPv4, DHCP, DNS, sockets e RTL8139 permanecem fora do contrato.
+aceito.
+
+Na S2.4, `arp_init()` registra o EtherType `0x0806` somente depois da camada
+Ethernet. O modulo serializa os 28 bytes do pacote explicitamente em ordem de
+rede, sem structs packed. A configuracao `arp_configure()` vincula uma unica
+interface e um IPv4 local somente em RAM; o valor publico usa a forma canonica
+`(A<<24)|(B<<16)|(C<<8)|D`. Repetir a mesma configuracao e idempotente;
+trocar interface ou IP limpa cache, pendencias e contadores.
+
+O cache ARP possui 32 entradas `INCOMPLETE`, `RESOLVED` ou `FAILED`.
+`arp_resolve()` nunca bloqueia: um miss envia request imediato, repete apos
+um e dois segundos e marca timeout no terceiro segundo. Entradas resolvidas
+ou falhas expiram apos 30 segundos. A substituicao preserva pendencias e usa
+entrada vazia/expirada ou a resolvida/falha mais antiga.
+
+O aprendizado e restrito ao remetente de request dirigido ao IPv4 local e a
+reply local que corresponda a uma resolucao pendente. Requests validos para o
+host recebem reply automatico fora da IRQ. `arp_validate_state()` e as
+consultas de status/cache sao somente-leitura; o `regcheck full` nao transmite
+nem altera configuracao. IPv4 em pacotes, mascara, gateway, ICMP, DHCP, DNS,
+sockets, persistencia, multi-NIC e RTL8139 permanecem fora do contrato.
 
 ## Struct `registers_t`
 

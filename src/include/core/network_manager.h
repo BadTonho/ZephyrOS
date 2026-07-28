@@ -64,6 +64,8 @@ typedef struct {
     uint8_t partial;
     uint8_t packet_io_available;
     uint8_t ethernet_available;
+    uint8_t arp_available;
+    uint8_t arp_configured;
     uint8_t ipv4_available;
     uint32_t interface_count;
     uint32_t recognized_count;
@@ -95,6 +97,7 @@ int network_manager_get_interface(uint32_t index,
                                   network_interface_info_t* out_info);
 int network_manager_find(const char* id, network_interface_info_t* out_info);
 int network_manager_send_diagnostic(const char* id);
+int network_manager_configure_arp(const char* id, uint32_t local_ip);
 int network_manager_get_ethernet_diagnostic(
     const char* id, network_ethernet_diagnostic_t* out_diagnostic);
 int network_manager_format_text(const network_interface_info_t* info,

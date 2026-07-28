@@ -9,8 +9,16 @@
 #define ETHERNET_TYPE_MINIMUM 0x0600U
 #define ETHERNET_BROADCAST_OCTET 0xFFU
 
+typedef struct {
+    uint8_t active;
+    uint16_t ethertype;
+    ethernet_protocol_handler_fn handler;
+} ethernet_protocol_entry_t;
+
 static ethernet_interface_t ethernet_interface;
 static ethernet_status_t ethernet_status;
+static ethernet_protocol_entry_t
+    ethernet_handlers[ETHERNET_PROTOCOL_HANDLER_CAPACITY];
 static uint8_t ethernet_rx_buffer[ETHERNET_MAX_FRAME_SIZE];
 static uint8_t ethernet_tx_buffer[ETHERNET_MAX_FRAME_SIZE];
 
@@ -63,7 +71,6 @@ static void ethernet_copy_mac(uint8_t* destination,
 static void ethernet_record_frame(const uint8_t* frame, uint16_t length,
                                   ethernet_destination_t destination_type) {
     ethernet_status.rx_frames++;
-    ethernet_status.rx_unhandled++;
     if (destination_type == ETHERNET_DESTINATION_BROADCAST) {
         ethernet_status.rx_broadcast++;
     } else {
@@ -78,6 +85,46 @@ static void ethernet_record_frame(const uint8_t* frame, uint16_t length,
     ethernet_copy_mac(ethernet_status.last_source,
                       frame + ETHERNET_SOURCE_OFFSET);
     ethernet_status.last_destination_type = destination_type;
+}
+
+static ethernet_protocol_handler_fn ethernet_find_handler(
+    uint16_t ethertype) {
+    for (uint32_t index = 0;
+         index < ETHERNET_PROTOCOL_HANDLER_CAPACITY; index++) {
+        if (ethernet_handlers[index].active &&
+            ethernet_handlers[index].ethertype == ethertype) {
+            return ethernet_handlers[index].handler;
+        }
+    }
+    return NULL;
+}
+
+static void ethernet_dispatch_frame(const uint8_t* frame, uint16_t length,
+                                    uint16_t ethertype,
+                                    ethernet_destination_t destination_type) {
+    ethernet_protocol_handler_fn handler =
+        ethernet_find_handler(ethertype);
+    ethernet_frame_view_t view;
+    int result;
+
+    if (!handler) {
+        ethernet_status.rx_unhandled++;
+        return;
+    }
+    view.destination = frame + ETHERNET_DESTINATION_OFFSET;
+    view.source = frame + ETHERNET_SOURCE_OFFSET;
+    view.payload = frame + ETHERNET_HEADER_SIZE;
+    view.payload_length = length - ETHERNET_HEADER_SIZE;
+    view.ethertype = ethertype;
+    view.destination_type = destination_type;
+    result = handler(&view);
+    if (result == OK) {
+        ethernet_status.rx_delivered++;
+        return;
+    }
+    ethernet_status.rx_protocol_errors++;
+    ethernet_status.last_error = result;
+    LOG_WARN("NET", "Protocolo Ethernet recusou frame recebido");
 }
 
 static void ethernet_process_frame(const uint8_t* frame, uint16_t length) {
@@ -110,6 +157,7 @@ static void ethernet_process_frame(const uint8_t* frame, uint16_t length) {
         return;
     }
     ethernet_record_frame(frame, length, destination_type);
+    ethernet_dispatch_frame(frame, length, ethertype, destination_type);
 }
 
 static uint16_t ethernet_build_frame(const uint8_t* destination,
@@ -154,12 +202,47 @@ int ethernet_init(const ethernet_interface_t* interface) {
     }
     kmemset(&ethernet_interface, 0, sizeof(ethernet_interface));
     kmemset(&ethernet_status, 0, sizeof(ethernet_status));
+    kmemset(ethernet_handlers, 0, sizeof(ethernet_handlers));
     ethernet_interface = *interface;
     ethernet_copy_mac(ethernet_status.mac_address,
                       interface->mac_address);
     ethernet_status.initialized = 1;
     ethernet_status.last_error = OK;
     LOG_INFO("NET", "Camada Ethernet inicializada com sucesso");
+    return OK;
+}
+
+int ethernet_register_handler(uint16_t ethertype,
+                              ethernet_protocol_handler_fn handler) {
+    int32_t free_index = -1;
+
+    if (!ethernet_status.initialized) {
+        LOG_ERROR("NET", "Registro de protocolo antes da camada Ethernet");
+        return ERR_STATE;
+    }
+    if (!handler || ethertype < ETHERNET_TYPE_MINIMUM) {
+        LOG_ERROR("NET", "Handler Ethernet invalido");
+        return handler ? ERR_INVALID : ERR_NULL;
+    }
+    for (uint32_t index = 0;
+         index < ETHERNET_PROTOCOL_HANDLER_CAPACITY; index++) {
+        if (!ethernet_handlers[index].active && free_index < 0) {
+            free_index = (int32_t)index;
+        } else if (ethernet_handlers[index].active &&
+                   ethernet_handlers[index].ethertype == ethertype) {
+            if (ethernet_handlers[index].handler == handler) return OK;
+            LOG_ERROR("NET", "EtherType ja possui outro handler");
+            return ERR_STATE;
+        }
+    }
+    if (free_index < 0) {
+        LOG_ERROR("NET", "Tabela de protocolos Ethernet cheia");
+        return ERR_OVERFLOW;
+    }
+    ethernet_handlers[free_index].active = 1;
+    ethernet_handlers[free_index].ethertype = ethertype;
+    ethernet_handlers[free_index].handler = handler;
+    ethernet_status.handler_count++;
     return OK;
 }
 

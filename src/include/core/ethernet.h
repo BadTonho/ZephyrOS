@@ -9,6 +9,7 @@
 #define ETHERNET_MAX_FRAME_SIZE 1518U
 #define ETHERNET_MAX_PAYLOAD_SIZE 1500U
 #define ETHERNET_RX_POLL_BUDGET 8U
+#define ETHERNET_PROTOCOL_HANDLER_CAPACITY 4U
 
 typedef int (*ethernet_receive_frame_fn)(uint8_t* data, uint16_t capacity,
                                          uint16_t* out_length,
@@ -21,6 +22,18 @@ typedef enum {
     ETHERNET_DESTINATION_LOCAL_UNICAST,
     ETHERNET_DESTINATION_BROADCAST
 } ethernet_destination_t;
+
+typedef struct {
+    const uint8_t* destination;
+    const uint8_t* source;
+    const uint8_t* payload;
+    uint16_t payload_length;
+    uint16_t ethertype;
+    ethernet_destination_t destination_type;
+} ethernet_frame_view_t;
+
+typedef int (*ethernet_protocol_handler_fn)(
+    const ethernet_frame_view_t* frame);
 
 typedef struct {
     uint8_t initialized;
@@ -39,8 +52,11 @@ typedef struct {
     uint32_t rx_broadcast;
     uint32_t rx_invalid;
     uint32_t rx_filtered;
+    uint32_t rx_delivered;
     uint32_t rx_unhandled;
+    uint32_t rx_protocol_errors;
     uint32_t tx_frames;
+    uint8_t handler_count;
     uint16_t last_frame_length;
     uint16_t last_ethertype;
     uint8_t last_source[ETHERNET_MAC_ADDRESS_SIZE];
@@ -50,6 +66,8 @@ typedef struct {
 } ethernet_status_t;
 
 int ethernet_init(const ethernet_interface_t* interface);
+int ethernet_register_handler(uint16_t ethertype,
+                              ethernet_protocol_handler_fn handler);
 int ethernet_poll(uint32_t budget, uint32_t* out_processed);
 int ethernet_send(const uint8_t* destination, uint16_t ethertype,
                   const uint8_t* payload, uint16_t payload_length);
