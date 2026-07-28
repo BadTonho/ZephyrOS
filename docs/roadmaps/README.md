@@ -39,8 +39,8 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   de leitura e diagnostico de energia sem ACPI, validados manualmente no QEMU
   com os fallbacks e a matriz de regressao preservados. S1.2 concluiu a
   descoberta ACPI somente de leitura, validada no QEMU padrao e sem ACPI.
-  S1.3 implementou a observacao de PM1, modo ACPI e `_S5_`; a validacao manual
-  ainda esta pendente e nenhuma transicao foi habilitada.
+  S1.3 concluiu a observacao de PM1, modo ACPI e `_S5_`, validada no QEMU
+  padrao e sem ACPI; nenhuma transicao foi habilitada.
 
 ## K4 validada
 

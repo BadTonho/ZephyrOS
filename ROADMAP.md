@@ -403,7 +403,7 @@ Plataforma de aplicativos:   [████████████████�
 - [x] Build limpo e QEMU validados pelo usuario: ACPI completo no cenario
   padrao, fallback sem ACPI, sintaxe invalida e matriz de regressao sem erros.
 
-## S1.3 - Preparacao observavel do S5 (validacao pendente)
+## S1.3 - Preparacao observavel do S5 (concluida)
 
 - [x] FADT ampliada com snapshot normalizado de PM1a/PM1b, SMI_CMD, valores
   enable/disable, comprimento PM1 e indicador hardware-reduced.
@@ -413,8 +413,9 @@ Plataforma de aplicativos:   [████████████████�
   constantes, limites, ambiguidade e fallback fechado.
 - [x] `acpi status` e `power status` separam firmware observado de transicoes
   implementadas; S5 e `shutdown` continuam simulados.
-- [ ] Validacao manual pendente no QEMU padrao, sem ACPI, com diferentes
-  quantidades de RAM e matriz de regressao Classic/Modern.
+- [x] Build e validacao manual concluidos no QEMU padrao e sem ACPI:
+  `health`, PM1, `_S5_`, fallback, comandos diagnosticos, entrada ZAPP e
+  matriz de regressao Classic/Modern permaneceram operacionais.
 
 ## Roadmaps por etapa
 

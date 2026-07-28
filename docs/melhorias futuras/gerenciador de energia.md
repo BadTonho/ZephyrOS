@@ -314,7 +314,7 @@ ate existir suporte de firmware e drivers correspondentes.
 Suspensao, hibernacao, bateria, AML e desligamento fisico permanecem fora do
 escopo desta entrega.
 
-## S1.3 - Preparacao observavel do S5 (validacao pendente)
+## S1.3 - Preparacao observavel do S5 (concluida)
 
 - [x] FADT copia SMI_CMD, valores enable/disable, PM1_CNT_LEN,
   HW_REDUCED_ACPI e os descritores legados/estendidos de PM1a/PM1b.
@@ -325,10 +325,11 @@ escopo desta entrega.
 - [x] `acpi status` e `power status` mostram firmware e implementacao como
   capacidades separadas.
 - [x] Nenhuma escrita em SMI_CMD/PM1 e nenhuma mudanca em `shutdown`.
-- [ ] Validacao manual pendente no QEMU padrao, sem ACPI, Classic e Modern.
+- [x] Validacao manual concluida no QEMU padrao e sem ACPI, com `health`,
+  comandos diagnosticos, fallback, entrada ZAPP e interfaces Classic/Modern.
 
-O proximo passo de energia so podera usar esses dados depois da validacao da
-S1.3 e exigira uma fase separada para qualquer transicao fisica.
+Qualquer transicao fisica permanece reservada para uma fase separada, usando
+esses dados sem quebrar o fallback validado pela S1.3.
 
 ## Resumo de Progresso
 
