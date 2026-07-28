@@ -392,7 +392,7 @@ Plataforma de aplicativos:   [████████████████�
   compacto e verboso, consulta por ID, re-scan PCI, diagnostico de energia,
   `health` e regressao sem erros bloqueantes.
 
-## S1.2 - Fundacao ACPI observavel (validacao pendente)
+## S1.2 - Fundacao ACPI observavel (concluida)
 
 - [x] Descoberta somente de leitura de RSDP, RSDT/XSDT, FADT, DSDT e FACS,
   validada contra o mapa E820 antes da ativacao do paging.
@@ -400,8 +400,8 @@ Plataforma de aplicativos:   [████████████████�
   `health`, com estados pronto, degradado e indisponivel.
 - [x] Comandos `acpi status` e `power status` distinguem tabelas detectadas de
   transicoes realmente implementadas.
-- [ ] O usuario deve validar build limpo, QEMU com e sem ACPI e a matriz de
-  regressao antes de concluir a S1.2.
+- [x] Build limpo e QEMU validados pelo usuario: ACPI completo no cenario
+  padrao, fallback sem ACPI, sintaxe invalida e matriz de regressao sem erros.
 
 ## Roadmaps por etapa
 

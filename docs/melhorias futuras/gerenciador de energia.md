@@ -300,14 +300,16 @@
 Suspensao, hibernacao, bateria e desligamento fisico continuam fora do escopo
 ate existir suporte de firmware e drivers correspondentes.
 
-## S1.2 - Fundacao ACPI observavel (validacao pendente)
+## S1.2 - Fundacao ACPI observavel (concluida)
 
 - [x] Driver somente de leitura inicializado entre memoria e paging.
 - [x] Snapshot estatico de ate 64 tabelas, com limite de 256 entradas da raiz.
 - [x] RSDP, RSDT/XSDT, FADT, DSDT e FACS validadas sem interpretar AML.
 - [x] Componentes `ACPI` e `Power` preservam fallbacks independentes.
 - [x] `acpi status` e `power status` nao habilitam transicoes.
-- [ ] Validacao manual no QEMU padrao, sem ACPI e na matriz de regressao.
+- [x] Validacao manual concluida no QEMU padrao e sem ACPI, com `health`,
+  `memcheck`, `schedcheck`, `regcheck`, sintaxe invalida e varredura em zero
+  ticks.
 
 Suspensao, hibernacao, bateria, AML e desligamento fisico permanecem fora do
 escopo desta entrega.

@@ -23,8 +23,8 @@ antecipar interfaces ou permissoes que ainda nao existem.
   regressao, sem erros bloqueantes.
 - [x] S1.2: snapshot ACPI somente de leitura com RSDP, RSDT/XSDT, FADT, DSDT,
   FACS, `acpi status` e integracao com `Power`/`health`.
-- [ ] Validar S1.2 no QEMU padrao e sem ACPI, incluindo limites de memoria,
-  sintaxe invalida, tempo de varredura e a matriz de regressao.
+- [x] S1.2 validada no QEMU padrao e sem ACPI: tabelas completas em zero
+  ticks, fallback controlado, sintaxe invalida e matriz de regressao aprovados.
 - [ ] Gerenciador de dispositivos com inventario e erros controlados.
 - [ ] Gerenciador de energia com estados claros e sem desligar recursos em uso.
 - [ ] Evolucao do filesystem somente quando novos recursos exigirem metadados

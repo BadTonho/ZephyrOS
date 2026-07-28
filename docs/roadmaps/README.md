@@ -37,8 +37,8 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   futuras.
 - Sistema e ecossistema: S1.1 concluida com inventario de dispositivos somente
   de leitura e diagnostico de energia sem ACPI, validados manualmente no QEMU
-  com os fallbacks e a matriz de regressao preservados. S1.2 implementa a
-  descoberta ACPI somente de leitura e aguarda validacao manual.
+  com os fallbacks e a matriz de regressao preservados. S1.2 concluiu a
+  descoberta ACPI somente de leitura, validada no QEMU padrao e sem ACPI.
 
 ## K4 validada
 
