@@ -37,7 +37,7 @@
 > Objetivo: Configurações de sistema, janelas, taskbar e ícones.
 
 ### 1. Sistema
-- ✅ Nome do computador. *(settings.c:94-95 — exibe "ZephyrOS v0.1")*
+- ✅ Nome do computador. *(settings.c usa o texto centralizado "ZephyrOS v0.1.0")*
 - ✅ Informações de memória. *(settings.c:97-98 — total/livre/usado em KB)*
 - ✅ Lista de processos ativos. *(settings.c:100-101 — lista com PID/nome/estado)*
 - ✅ Reiniciar o computador. *(settings.c:103-104 — outb 0xFE, 0x64)*
@@ -427,7 +427,7 @@
 - ⬜ Definir dispositivos padrão de entrada e saída.
 
 ### 15. Sobre
-- ✅ Versão. *(settings.c:122-124 — "ZephyrOS v0.1")*
+- ✅ Versão. *(settings.c usa o texto centralizado "ZephyrOS v0.1.0")*
 - ✅ Créditos. *(settings.c:125-127 — Kernel, Drivers, FS, Interface)*
 
 ### 16. Ferramentas clássicas

@@ -1,0 +1,6 @@
+{
+  "format": "zephyros-ed25519-public-v1",
+  "algorithm": "Ed25519",
+  "public_key_hex": "4a8006ca82cca49ef482be6f554e393d176fbb8236f46bf4308c58bbd82a7808",
+  "key_id_hex": "d4926d816d8373a412e7458cc9f14379"
+}

@@ -17,6 +17,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/core/app_loader.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/app_package.h` | `docs/13-aplicativos/pacotes.md` |
 | `src/include/core/arp.h` | `docs/04-kernel/kernel.md` |
+| `src/include/core/crypto.h` | `docs/14-atualizacoes/contrato-zupd-v1.md` |
 | `src/include/core/device_manager.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/dhcp.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/dns.h` | `docs/04-kernel/kernel.md` |
@@ -39,7 +40,10 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/core/tcp.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/timer.h` | `docs/05-drivers/drivers.md` |
 | `src/include/core/udp.h` | `docs/04-kernel/kernel.md` |
+| `src/include/core/update.h` | `docs/14-atualizacoes/contrato-zupd-v1.md` |
+| `src/include/core/update_trust.h` | `docs/14-atualizacoes/contrato-zupd-v1.md` |
 | `src/include/core/video.h` | `docs/05-drivers/drivers.md` |
+| `src/include/core/version.h` | `docs/04-kernel/kernel.md` |
 | `src/include/drivers/acpi.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/ac97.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/ata.h` | `docs/05-drivers/drivers.md` |
@@ -124,3 +128,10 @@ limitados exigem esse ID. `src/include/core/network_manager.h` expoe erros de
 driver, interface L3, vinculo Ethernet e DHCP pendente. Os headers de E1000 e
 RTL8139 inicializam o dispositivo PCI exato; IDT oferece handlers
 compartilhados e PCI confirma I/O Space com Bus Mastering.
+
+Desde a U2, `src/include/core/crypto.h` define SHA-2 incremental, verificacao
+Ed25519 e autotestes; `src/include/core/update.h` fixa motivos, metadados e
+capacidades do verificador ZUPD somente-leitura; e `update_trust.h` contem
+somente a raiz publica derivada. `version.h` centraliza `0.1.0`, epoch `0` e o
+texto de exibicao. Os contratos permanecem em
+`docs/14-atualizacoes/contrato-zupd-v1.md` e `docs/04-kernel/kernel.md`.

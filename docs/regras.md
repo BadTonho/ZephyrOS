@@ -70,6 +70,8 @@ void driver_init(void) {
 | `IPC` | `ipc.c` | `LOG_INFO("IPC", "Sistema de IPC inicializado")` |
 | `GUI` | `gui.c` | `LOG_INFO("GUI", "Primitivas GUI inicializadas")` |
 | `STRING` | `string.c` | `LOG_DEBUG("STRING", "kmemcpy: 256 bytes copiados")` |
+| `CRYPTO` | `crypto.c` | `LOG_ERROR("CRYPTO", "Autoteste SHA-256 falhou")` |
+| `UPDATE` | `update.c` | `LOG_ERROR("UPDATE", "Assinatura ZUPD invalida")` |
 
 ### Integração com panic
 

@@ -55,8 +55,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   no QEMU com E1000, incluindo recuperacao de timeout HTTP. A S2.8 concluiu
   Multi-NIC e RTL8139, com a suite Multi-NIC e o `regcheck full` aprovados no
   QEMU pelo usuario nos modos Classic e Modern. A U1 concluiu a politica de
-  integridade, o contrato ZUPD v1 e quatro vetores publicos validados; U2-U5
-  permanecem pendentes.
+  integridade, o contrato ZUPD v1 e quatro vetores publicos validados. A U2
+  esta implementada e em validacao, com verificador local, raiz publica,
+  comando Shell, `health` e sete fixtures; U3-U5 permanecem pendentes.
 
 ## K4 validada
 

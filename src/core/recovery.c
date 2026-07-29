@@ -25,7 +25,8 @@ static const char* component_names[RECOVERY_COMPONENT_COUNT] = {
     "ACPI",
     "Devices",
     "Network",
-    "Power"
+    "Power",
+    "Update"
 };
 
 static int recovery_valid_component(recovery_component_id_t component) {

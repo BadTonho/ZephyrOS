@@ -15,6 +15,9 @@ from pathlib import Path
 BOOT_PATH = "src/boot/boot.asm"
 CATALOG_PATH = "docs/qualidade/contratos-publicos.md"
 METRICS_PATH = "docs/qualidade/metricas.md"
+UPDATE_PUBLIC_PATH = "config/update-release-public.json"
+UPDATE_TRUST_PATH = "src/include/core/update_trust.h"
+UPDATER_PATH = "tools/updater.py"
 ERROR_RETURN_RE = re.compile(r"\breturn\s+(ERR_[A-Z0-9_]+)\s*;")
 FUNCTION_RE = re.compile(
     r"(?m)^[ \t]*(?:static\s+)?(?:inline\s+)?int\s+"
@@ -224,6 +227,36 @@ def check_metric_records(repo: Path) -> list[str]:
     return errors
 
 
+def check_update_trust(repo: Path) -> list[str]:
+    """Confere que a raiz publica e o header derivado continuam sincronizados."""
+    public_exists = (repo / UPDATE_PUBLIC_PATH).is_file()
+    header_exists = (repo / UPDATE_TRUST_PATH).is_file()
+    if not public_exists and not header_exists:
+        return []
+    if not public_exists or not header_exists or not (repo / UPDATER_PATH).is_file():
+        return ["material publico ZUPD incompleto"]
+    result = subprocess.run(
+        [
+            sys.executable,
+            UPDATER_PATH,
+            "check-trust",
+            "--public",
+            UPDATE_PUBLIC_PATH,
+            "--header",
+            UPDATE_TRUST_PATH,
+        ],
+        cwd=repo,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    if result.returncode == 0:
+        return []
+    message = result.stderr.strip() or result.stdout.strip()
+    return [message or "header de confianca ZUPD dessincronizado"]
+
+
 def collect_results(repo: Path) -> dict[str, list[str]]:
     """Executa todas as regras do Q3 para um diretorio de trabalho Git."""
     paths = changed_paths(repo)
@@ -233,6 +266,7 @@ def collect_results(repo: Path) -> dict[str, list[str]]:
         "funcoes_falhaveis": check_new_error_functions(repo, paths),
         "contratos_publicos": check_public_contracts(repo, paths),
         "registro_metricas": check_metric_records(repo),
+        "confianca_zupd": check_update_trust(repo),
     }
 
 

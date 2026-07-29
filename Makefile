@@ -40,6 +40,15 @@ LOG_OBJ = build/log.o
 RECOVERY_C = src/core/recovery.c
 RECOVERY_OBJ = build/recovery.o
 
+CRYPTO_C = src/core/crypto.c
+CRYPTO_OBJ = build/crypto.o
+
+CRYPTO_ED25519_C = src/core/crypto_ed25519.c
+CRYPTO_ED25519_OBJ = build/crypto_ed25519.o
+
+UPDATE_C = src/core/update.c
+UPDATE_OBJ = build/update.o
+
 DEVICE_MANAGER_C = src/core/device_manager.c
 DEVICE_MANAGER_OBJ = build/device_manager.o
 
@@ -248,7 +257,7 @@ OS_IMG = build/zephyros.img
 FAT12_DISK_BYTES = 1474560
 
 # Todas as variáveis de objetos
-OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(RECOVERY_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
+OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(UPDATE_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(COMPRESS_OBJ) \
@@ -282,6 +291,18 @@ $(LOG_OBJ): $(LOG_C)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(RECOVERY_OBJ): $(RECOVERY_C)
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(CRYPTO_OBJ): $(CRYPTO_C)
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(CRYPTO_ED25519_OBJ): $(CRYPTO_ED25519_C)
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(UPDATE_OBJ): $(UPDATE_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -535,12 +556,23 @@ $(KERNEL_BIN): $(OBJS) src/linker.ld
 	$(LD) $(LDFLAGS) $(OBJS) -o $@
 
 $(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(KERNEL_BIN) tools\packager.py \
-          assets\icons\SHELL.BMP assets\icons\EXPLORER.BMP assets\icons\TASKMGR.BMP
+          assets\icons\SHELL.BMP assets\icons\EXPLORER.BMP assets\icons\TASKMGR.BMP \
+          docs\fixtures\updates\u2\VALID.ZUP docs\fixtures\updates\u2\TRUNC.ZUP \
+          docs\fixtures\updates\u2\BADHASH.ZUP docs\fixtures\updates\u2\BADSIG.ZUP \
+          docs\fixtures\updates\u2\BADVER.ZUP docs\fixtures\updates\u2\BADFMT.ZUP \
+          docs\fixtures\updates\u2\UNKKEY.ZUP
 	cmd /c "copy /b build\boot.bin+build\stage2.bin+build\kernel.bin build\zephyros.img"
 	python tools\packager.py prepare-image --image $(OS_IMG) --disk-bytes $(FAT12_DISK_BYTES)
 	python tools\packager.py inject-file --file assets\icons\SHELL.BMP --image $(OS_IMG) --fat-name SHELL.BMP
 	python tools\packager.py inject-file --file assets\icons\EXPLORER.BMP --image $(OS_IMG) --fat-name EXPLORER.BMP
 	python tools\packager.py inject-file --file assets\icons\TASKMGR.BMP --image $(OS_IMG) --fat-name TASKMGR.BMP
+	python tools\packager.py inject-file --file docs\fixtures\updates\u2\VALID.ZUP --image $(OS_IMG) --fat-name VALID.ZUP
+	python tools\packager.py inject-file --file docs\fixtures\updates\u2\TRUNC.ZUP --image $(OS_IMG) --fat-name TRUNC.ZUP
+	python tools\packager.py inject-file --file docs\fixtures\updates\u2\BADHASH.ZUP --image $(OS_IMG) --fat-name BADHASH.ZUP
+	python tools\packager.py inject-file --file docs\fixtures\updates\u2\BADSIG.ZUP --image $(OS_IMG) --fat-name BADSIG.ZUP
+	python tools\packager.py inject-file --file docs\fixtures\updates\u2\BADVER.ZUP --image $(OS_IMG) --fat-name BADVER.ZUP
+	python tools\packager.py inject-file --file docs\fixtures\updates\u2\BADFMT.ZUP --image $(OS_IMG) --fat-name BADFMT.ZUP
+	python tools\packager.py inject-file --file docs\fixtures\updates\u2\UNKKEY.ZUP --image $(OS_IMG) --fat-name UNKKEY.ZUP
 
 run: $(OS_IMG)
 	$(QEMU) -drive format=raw,file=$(OS_IMG) $(QEMU_NET_ARGS)
@@ -557,10 +589,13 @@ q3check-test:
 package-test:
 	python tools\packager.py selftest
 
+update-test:
+	python tools\updater.py selftest
+
 package-demo: $(OS_IMG)
 	python tools\packager.py demo --output build\DEMO.zephyrosapp --image $(OS_IMG)
 
 clean:
 	rmdir /s /q build
 
-.PHONY: all run debug q3check q3check-test package-test package-demo clean
+.PHONY: all run debug q3check q3check-test package-test update-test package-demo clean

@@ -4,13 +4,13 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
-## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8 e U1 concluídas
+## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8 e U1 concluídas; U2 em validação
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
 Plataforma de aplicativos:   [██████████████████████████████████████████] Fase 7 validada
 Interface e experiência:     [██████████████████████████████████████████] UI1-UI7 validadas
-Sistema e ecossistema:       [██████████████████████████████████████████] S2.8 e U1 concluídas
+Sistema e ecossistema:       [██████████████████████████████████████████] U2 implementada, em validação
 ```
 
 ---
@@ -607,7 +607,11 @@ Sistema e ecossistema:       [████████████████�
   `net check qemu multi`; Q3, build e matriz QEMU foram aprovados pelo usuario.
 - [x] U1: politica de integridade e contrato ZUPD v1 concluidos, com layout
   autenticado Ed25519/SHA-256 e vetores para sucesso, corrupcao, chave
-  desconhecida e versao incompativel; U2-U5 permanecem pendentes.
+  desconhecida e versao incompativel.
+- [ ] U2 em validacao: ferramenta host, raiz publica de release, parser
+  somente-leitura, SHA-2/Ed25519, `update verify`, `health` e sete fixtures
+  estao implementados. A conclusao aguarda build e matriz QEMU do usuario.
+- [ ] U3-U5 permanecem pendentes.
 
 ## Roadmaps por etapa
 

@@ -41,6 +41,7 @@
 #include "core/app_builtin.h"
 #include "core/app_loader.h"
 #include "core/app_package.h"
+#include "core/update.h"
 #include "core/syscall.h"
 #include "drivers/idt.h"
 #include "drivers/pci.h"
@@ -2188,6 +2189,7 @@ static void cmd_help(void) {
     video_print("  appcheck - Testa API, arquivos, IPC e loader\n", 0x07);
     video_print("  pkg      - Gerencia pacotes .ZPK locais\n", 0x07);
     video_print("             pkg list | info | verify | install | remove\n", 0x08);
+    video_print("  update verify <arquivo.ZUP> - Verifica sem gravar\n", 0x07);
     video_print("  pkgcheck - Testa validacoes de pacote sem gravar\n", 0x07);
     video_print("  app run <arquivo.ZAP> [args] - Executa aplicativo ring 3\n", 0x07);
     video_print("  app inputtest - Testa teclado de aplicativo ring 3\n", 0x07);
@@ -2455,6 +2457,30 @@ static void cmd_health_print_kernel(void) {
     video_print("\n", 0x07);
 }
 
+static void cmd_health_print_update_capabilities(void) {
+    update_capabilities_t capabilities;
+
+    video_print("\nCapacidades de Update:\n", 0x0B);
+    if (update_get_capabilities(&capabilities) != OK) {
+        video_print("  verificacao local: DISABLED\n", 0x0C);
+        video_print("  aplicacao: DISABLED (U3)\n", 0x08);
+        video_print("  rollback: DISABLED (U3)\n", 0x08);
+        video_print("  remoto: DISABLED (U5)\n", 0x08);
+        return;
+    }
+    video_print("  verificacao local: ", 0x07);
+    if (!capabilities.verifier_ready) {
+        video_print("DISABLED\n", 0x0C);
+    } else if (!capabilities.local_file_available) {
+        video_print("DEGRADED (filesystem)\n", 0x0E);
+    } else {
+        video_print("READY\n", 0x0A);
+    }
+    video_print("  aplicacao: DISABLED (U3)\n", 0x08);
+    video_print("  rollback: DISABLED (U3)\n", 0x08);
+    video_print("  remoto: DISABLED (U5)\n", 0x08);
+}
+
 static void cmd_health(void) {
     video_begin_update();
     video_print("Estado dos componentes:\n", 0x0B);
@@ -2463,6 +2489,7 @@ static void cmd_health(void) {
         cmd_health_print_component((recovery_component_id_t)i);
     }
 
+    cmd_health_print_update_capabilities();
     cmd_health_print_kernel();
     video_end_update();
 }
@@ -6964,6 +6991,81 @@ static void cmd_pkg_take_token(const char** cursor, char* output,
     output[length] = '\0';
 }
 
+static void cmd_update_print_version(const char* label,
+                                     const update_version_t* version,
+                                     uint32_t epoch) {
+    video_print(label, 0x07);
+    print_num(version->major);
+    video_print(".", 0x07);
+    print_num(version->minor);
+    video_print(".", 0x07);
+    print_num(version->patch);
+    video_print(" epoch=", 0x08);
+    print_num(epoch);
+    video_print("\n", 0x07);
+}
+
+static void cmd_update_verify(const char* path) {
+    update_verification_t verification;
+    int result = update_verify_file(path, &verification);
+
+    if (result != OK) {
+        video_print("Atualizacao recusada: ", 0x0C);
+        if (verification.reason == ZUPD_REASON_NONE) {
+            video_print("IO", 0x0C);
+        } else {
+            video_print(zupd_reason_name(verification.reason), 0x0C);
+        }
+        video_print(" (motivo=", 0x08);
+        print_num((uint32_t)verification.reason);
+        video_print(", erro=", 0x08);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        if (verification.entry_count > 0U) {
+            cmd_update_print_version(
+                "  Base autenticada: ", &verification.base_version,
+                verification.base_epoch);
+            cmd_update_print_version(
+                "  Alvo autenticado: ", &verification.target_version,
+                verification.target_epoch);
+            video_print("  Arquivos autenticados: ", 0x07);
+            print_num(verification.entry_count);
+            video_print("\n", 0x07);
+        }
+        video_print("Nenhuma gravacao foi realizada.\n", 0x0C);
+        return;
+    }
+    video_print("ZUPD autenticado e compativel.\n", 0x0A);
+    cmd_update_print_version("  Base: ", &verification.base_version,
+                             verification.base_epoch);
+    cmd_update_print_version("  Alvo: ", &verification.target_version,
+                             verification.target_epoch);
+    video_print("  Arquivos: ", 0x07);
+    print_num(verification.entry_count);
+    video_print("  bytes=", 0x08);
+    print_num(verification.total_size);
+    video_print("\n  Motivo: NONE\n", 0x07);
+    video_print("Nenhuma gravacao foi realizada.\n", 0x0A);
+}
+
+static void cmd_update(const char* args) {
+    char operation[16];
+    char path[FS_MAX_PATH];
+    char extra[2];
+    const char* cursor = args;
+
+    cmd_pkg_take_token(&cursor, operation, sizeof(operation));
+    cmd_pkg_take_token(&cursor, path, sizeof(path));
+    cmd_pkg_take_token(&cursor, extra, sizeof(extra));
+    if (kstrcmp(operation, "verify") == 0 && path[0] &&
+        extra[0] == '\0') {
+        cmd_update_verify(path);
+        return;
+    }
+    LOG_WARN("SHELL", "Uso invalido do comando update");
+    video_print("Uso: update verify <arquivo.ZUP>\n", 0x0E);
+}
+
 static int cmd_pkg_is_file_name(const char* value) {
     uint32_t length = kstrlen(value);
 
@@ -7911,6 +8013,8 @@ int shell_process_command(const char* input) {
         cmd_appcheck();
     } else if (kstrcmp(cmd, "pkg") == 0) {
         cmd_pkg(input);
+    } else if (kstrcmp(cmd, "update") == 0) {
+        cmd_update(input);
     } else if (kstrcmp(cmd, "pkgcheck") == 0) {
         cmd_pkgcheck();
     } else if (kstrcmp(cmd, "app") == 0) {

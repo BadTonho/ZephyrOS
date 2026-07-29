@@ -125,9 +125,14 @@ O campo `key_id` seleciona uma chave publica confiavel por comparacao exata.
 A chave publica nao e transportada pelo artefato. O kernel nunca recebe nem
 armazena a chave privada.
 
-A U1 usa somente chaves publicas de teste do RFC 8032. A chave de producao
-sera gerada offline pelo mantenedor na U2; apenas sua chave publica e seu
-`key_id` poderao entrar no repositorio.
+Os fixtures imutaveis da U1 usam somente chaves publicas TEST ONLY dos vetores
+do RFC 8032. Na U2, o mantenedor provisionou offline a unica raiz de release
+do v1. O repositorio contem apenas `config/update-release-public.json` e o
+header derivado `src/include/core/update_trust.h`; seed, senha e chave privada
+nao sao versionadas.
+
+A sincronizacao e conferida por `tools/updater.py check-trust`. O `key_id` da
+raiz de release e `d4926d816d8373a412e7458cc9f14379`.
 
 O v1 possui uma unica chave de release e nao permite rotacao ou revogacao
 automatica. Se essa chave for comprometida, a recuperacao exige uma nova
@@ -136,8 +141,7 @@ incrementado.
 
 ## Ordem de validacao
 
-O verificador da U2 devera usar esta ordem para produzir resultados
-deterministicos:
+O verificador da U2 usa esta ordem para produzir resultados deterministicos:
 
 1. validar magic, versao do formato, algoritmos, limites, tamanhos, campos
    reservados, aritmetica de offsets, ordenacao, caminhos e sobreposicoes;
@@ -149,8 +153,9 @@ Nenhum dado e gravado durante a verificacao.
 
 ## Motivos de rejeicao
 
-Os motivos abaixo formam o diagnostico publico planejado para U2. Eles nao
-adicionam constantes a `errors.h` durante a U1.
+Os motivos abaixo formam o diagnostico publico exposto por
+`src/include/core/update.h`. Eles permanecem separados dos codigos genericos
+de `errors.h`.
 
 | Valor | Motivo | Retorno generico futuro |
 |---:|---|---|
@@ -170,19 +175,31 @@ adicionam constantes a `errors.h` durante a U1.
 Falhas de abertura ou leitura continuam usando `ERR_NOT_FOUND` ou `ERR_DISK`
 fora do validador estrutural.
 
-## Estado futuro no `health`
+## Verificador U2 e `health`
 
-A U1 nao adiciona um componente ao kernel. A partir da U2, o componente
-`Update` devera observar:
+`update_init()` valida a raiz publica e executa autotestes SHA-256, SHA-512 e
+Ed25519. O parser decodifica inteiros little-endian manualmente, usa workspace
+estatico, le payloads em blocos e nao chama APIs de escrita. Uma trava recusa
+verificacoes concorrentes.
+
+O header publico oferece `update_init()`, `update_is_ready()`,
+`update_verify_file()`, `update_get_capabilities()` e
+`zupd_reason_name()`. A versao compartilhada vem de
+`src/include/core/version.h`.
+
+O componente `Update` no `health` observa:
 
 - `READY`: verificador local, autoteste criptografico e chave publica prontos;
-- `DEGRADED`: verificacao local utilizavel, mas uma capacidade auxiliar
-  implementada registrou falha;
+- `DEGRADED`: criptografia pronta, mas o filesystem local esta indisponivel;
 - `DISABLED`: chave ausente/invalida ou autoteste criptografico falhou.
 
 Capacidades ainda nao implementadas nao degradam o componente. Verificacao,
 aplicacao, rollback e acesso remoto devem aparecer separadamente. O remoto
 permanece `DISABLED` por padrao e nao altera a disponibilidade local.
+
+O unico comando da U2 e `update verify <arquivo.ZUP>`. Ele mostra o motivo
+estavel, versoes, epochs, quantidade de arquivos e confirma explicitamente que
+nenhuma gravacao ocorreu.
 
 ## Politica de seguranca
 
@@ -212,9 +229,18 @@ Os vetores imutaveis ficam em `docs/fixtures/updates/v1/`. O manifesto desse
 diretorio registra a chave publica TEST ONLY, o SHA-256 de cada artefato e o
 motivo esperado. Nenhuma seed ou chave privada e versionada.
 
+A matriz U2 fica em `docs/fixtures/updates/u2/` e e assinada pela raiz publica
+de release. Ela contem `VALID.ZUP`, `TRUNC.ZUP`, `BADHASH.ZUP`, `BADSIG.ZUP`,
+`BADVER.ZUP`, `BADFMT.ZUP` e `UNKKEY.ZUP`, com resultados esperados `NONE`,
+`SIZE`, `HASH`, `SIGNATURE`, `BASE_VERSION`, `FORMAT` e `UNKNOWN_KEY`. O
+manifesto `fixtures.json` publica tamanho e SHA-256 de cada arquivo.
+
 ## Referencias
 
 - [RFC 8032 - Ed25519](https://www.rfc-editor.org/info/rfc8032/)
 - [FIPS 180-4 - SHA-256](https://csrc.nist.gov/pubs/fips/180-4/upd1/final)
+- [Monocypher 4.0.3](https://github.com/LoupVaillant/Monocypher/releases/tag/4.0.3)
+- [Manual Ed25519 do Monocypher](https://monocypher.org/manual/ed25519)
 - [`docs/13-aplicativos/pacotes.md`](../13-aplicativos/pacotes.md) - ZPKG v1
+- [`ferramenta-zupd.md`](ferramenta-zupd.md) - chave, build, verificacao e fixtures
 - [`docs/melhorias futuras/atualizacoes.md`](../melhorias%20futuras/atualiza%C3%A7%C3%B5es.md) - roteiro U1-U5

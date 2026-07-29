@@ -445,6 +445,48 @@ S2.7 segue [RFC 9293](https://www.rfc-editor.org/rfc/rfc9293.html) para TCP,
 [RFC 6298](https://www.rfc-editor.org/rfc/rfc6298.html) para RTO e
 [RFC 9112](https://www.rfc-editor.org/rfc/rfc9112.html) para framing HTTP/1.1.
 
+## U2: criptografia e verificacao local ZUPD
+
+`src/include/core/version.h` centraliza a versao `0.1.0`, epoch `0` e o texto
+de exibicao usado pelo banner do kernel e pelo Settings. Esses valores tambem
+definem a base exata aceita pelo verificador.
+
+`src/include/core/crypto.h` oferece SHA-256 incremental, SHA-512 e verificacao
+Ed25519 incremental. `crypto_self_test()` valida SHA-2 e os vetores 1 e 2 do
+RFC 8032 antes de habilitar Update. A equacao Ed25519 e o SHA-512 usam um
+subconjunto verify-only adaptado do Monocypher 4.0.3, com encodings de ponto e
+assinaturas nao canonicos recusados. A versao 4.0.3 foi fixada para incorporar
+a correcao upstream de vazamento temporal na verificacao Ed25519.
+
+`src/include/core/update.h` expoe os motivos publicos `0` a `11`, metadados
+autenticados, capacidades e:
+
+- `update_init()`;
+- `update_is_ready()`;
+- `update_verify_file()`;
+- `update_get_capabilities()`;
+- `zupd_reason_name()`.
+
+O parser le o arquivo por `fs_read_file_range_at()`, decodifica little-endian
+sem casts de structs empacotadas e usa buffers estaticos. A ordem de
+validacao e estrutura, hashes, chave/assinatura e aplicabilidade. A trava do
+modulo impede duas verificacoes simultaneas. Nenhum caminho de U2 chama APIs
+de escrita.
+
+`src/include/core/update_trust.h` e gerado da raiz publica versionada. O
+kernel confirma no boot que o `key_id` e o prefixo de 16 bytes do SHA-256 da
+chave publica e desabilita o componente se a raiz ou qualquer autoteste
+falhar.
+
+`RECOVERY_COMPONENT_UPDATE` foi anexado ao fim da enumeracao para preservar os
+IDs anteriores. Ele fica `READY` quando chave, criptografia e leitura local
+estao disponiveis, `DEGRADED` quando o filesystem falta e `DISABLED` em falha
+criptografica. Aplicacao, rollback e remoto continuam capacidades
+`DISABLED`, sem degradar a verificacao local.
+
+O formato e a politica completos estao em
+[`contrato-zupd-v1.md`](../14-atualizacoes/contrato-zupd-v1.md).
+
 ## Struct `registers_t`
 
 Usada para passar contexto entre handlers:

@@ -65,6 +65,8 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [Gerenciador de Rede](melhorias%20futuras/gerenciador%20de%20rede.md) | Inventario PCI, Ethernet, ARP, IPv4, UDP, DHCP, DNS, TCP e HTTP |
 | [Atualizacoes do Sistema](melhorias%20futuras/atualiza%C3%A7%C3%B5es.md) | Roteiro U1-U5 para integridade, rollback e distribuicao opcional |
 | [Contrato ZUPD v1](14-atualizacoes/contrato-zupd-v1.md) | Formato autenticado, politica de integridade e vetores publicos da U1 |
+| [Ferramenta Host ZUPD v1](14-atualizacoes/ferramenta-zupd.md) | Chave de release, build, verificacao e fixtures da U2 |
+| [Avisos de terceiros](../THIRD_PARTY_NOTICES.md) | Proveniencia e licencas de codigo adaptado |
 | [GUI Moderna](melhorias%20futuras/gui_moderna.md) | Transição para primitivas gráficas 2D e VESA |
 | [Formatação Inteligente](melhorias%20futuras/formatacao%20inteligente.md) | Sistema de reset e reinstalação preservando arquivos |
 | [Verificação e Auto-reparo do Sistema](melhorias%20futuras/verifica%C3%A7%C3%A3o%20de%20sistema.md) | Diagnóstico de integridade e autocorreção de arquivos (SFC) |

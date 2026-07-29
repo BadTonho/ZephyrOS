@@ -10,6 +10,8 @@
 #include "core/app_api.h"
 #include "core/app_loader.h"
 #include "core/app_package.h"
+#include "core/update.h"
+#include "core/version.h"
 #include "core/syscall.h"
 #include "drivers/idt.h"
 #include "core/keyboard.h"
@@ -390,7 +392,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_set_color(VGA_COLOR_CYAN, VGA_COLOR_BLACK);
     video_print("========================================\n", 0x0B);
-    video_print("           ZephyrOS v0.1                 \n", 0x0B);
+    video_print("           " ZEPHYROS_DISPLAY_NAME "              \n", 0x0B);
     video_print("========================================\n", 0x0B);
 
     video_set_color(VGA_COLOR_GREEN, VGA_COLOR_BLACK);
@@ -742,6 +744,21 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     }
 
     app_package_init();
+
+    update_capabilities_t update_capabilities;
+    int update_result = update_init();
+    if (update_result != OK) {
+        recovery_mark_disabled(RECOVERY_COMPONENT_UPDATE, update_result,
+                               "Chave ou autoteste de Update invalido");
+    } else if (update_get_capabilities(&update_capabilities) != OK) {
+        recovery_mark_disabled(RECOVERY_COMPONENT_UPDATE, ERR_STATE,
+                               "Capacidades de Update indisponiveis");
+    } else if (!update_capabilities.local_file_available) {
+        recovery_mark_degraded(RECOVERY_COMPONENT_UPDATE, ERR_UNAVAILABLE,
+                               "Verificador pronto; filesystem indisponivel");
+    } else {
+        recovery_mark_ready(RECOVERY_COMPONENT_UPDATE);
+    }
 
     /* Desktop e a cena padrao; o Shell abre somente por solicitacao. */
     desktop_set_active(1);

@@ -5,7 +5,7 @@
 | Fase | Objetivo | Estado |
 |-------|----------|--------|
 | U1 | Politica de integridade e contrato do pacote de sistema | Concluida |
-| U2 | Verificacao local, assinada e sem escrita | Pendente |
+| U2 | Verificacao local, assinada e sem escrita | Em validacao |
 | U3 | Aplicacao transacional, recuperacao e rollback | Pendente |
 | U4 | Diagnosticos e interfaces Classic/Modern | Pendente |
 | U5 | Distribuicao remota opcional | Pendente |
@@ -17,6 +17,11 @@ sem alterar a App API, o formato ZPKG v1 ou os pacotes ja instalados.
 O contrato canonico e os vetores publicos da U1 estao em
 `docs/14-atualizacoes/contrato-zupd-v1.md` e
 `docs/fixtures/updates/v1/`.
+
+A implementacao da U2, sua raiz publica de release e os sete vetores ficam em
+`tools/updater.py`, `config/update-release-public.json` e
+`docs/fixtures/updates/u2/`. O codigo esta pronto; a fase permanece em
+validacao ate a matriz manual de build e QEMU ser aprovada.
 
 ---
 
@@ -57,16 +62,21 @@ de kernel ou chave de producao foi adicionado nesta fase.
 
 ## Fase U2 - Verificacao Local sem Escrita
 
-- [ ] Criar o empacotador host para gerar e verificar o novo artefato assinado.
-- [ ] Implementar parser somente de leitura no kernel para header, manifesto,
+- [x] Criar o empacotador host para gerar e verificar o novo artefato assinado.
+- [x] Implementar parser somente de leitura no kernel para header, manifesto,
   limites, hashes, assinatura, destino e compatibilidade.
-- [ ] Registrar toda recusa com `LOG_ERROR` e expor `update verify <arquivo>`
+- [x] Registrar toda recusa com `LOG_ERROR` e expor `update verify <arquivo>`
   como diagnostico sem efeitos no disco.
 - [ ] Testar artefato valido, truncado, com hash invalido, assinatura invalida,
   versao incompativel e manifesto malformado, seguido de `regcheck full`.
 
 **Criterio de saida:** somente um pacote completamente autenticado e compativel
 e aceito; todos os demais falham sem escrita, vazamento ou regressao.
+
+Estado atual: os testes host e os fixtures publicos cobrem `NONE`, `SIZE`,
+`HASH`, `SIGNATURE`, `BASE_VERSION`, `FORMAT` e `UNKNOWN_KEY`. Restam o build,
+a execucao dos sete comandos no QEMU, a comparacao da imagem antes/depois,
+`mem` e `regcheck full`; por isso a U2 ainda nao esta concluida.
 
 ## Fase U3 - Aplicacao, Recuperacao e Rollback
 
@@ -124,6 +134,8 @@ aplicacao segura permanecem identicas ao fluxo local.
 
 - `docs/14-atualizacoes/contrato-zupd-v1.md` -- contrato canonico ZUPD v1.
 - `docs/fixtures/updates/v1/` -- vetores publicos e resultados esperados.
+- `docs/fixtures/updates/u2/` -- matriz assinada pela raiz publica de release.
+- `docs/14-atualizacoes/ferramenta-zupd.md` -- operacao segura da ferramenta.
 - `docs/13-aplicativos/pacotes.md` -- contrato do ZPKG v1 de aplicativos.
 - `docs/roadmaps/05-sistema-e-ecossistema.md` -- ordem executavel de U1-U5.
 - `docs/regras.md` -- requisitos de qualidade, logs e validacao.

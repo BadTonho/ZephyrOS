@@ -1,0 +1,45 @@
+{
+  "format": "ZUPD v1",
+  "contract": "../../../14-atualizacoes/contrato-zupd-v1.md",
+  "release_public_key": {
+    "public_key_hex": "4a8006ca82cca49ef482be6f554e393d176fbb8236f46bf4308c58bbd82a7808",
+    "key_id_hex": "d4926d816d8373a412e7458cc9f14379"
+  },
+  "fixtures": {
+    "VALID.ZUP": {
+      "size": 3446,
+      "sha256": "cf7e8454d9a40646f5f41efa66a82c43c566973795755fdacfa3654361813b63",
+      "expected_reason": "ZUPD_REASON_NONE"
+    },
+    "TRUNC.ZUP": {
+      "size": 3445,
+      "sha256": "d832c9550d22cb0bbadd32f3746570def2127394dea1f807c7a551139e7eb2c8",
+      "expected_reason": "ZUPD_REASON_SIZE"
+    },
+    "BADHASH.ZUP": {
+      "size": 3446,
+      "sha256": "f452496938043b84b1695228bf73a64ee5a3f4d0b4cec8844a9da4aa9594c0b9",
+      "expected_reason": "ZUPD_REASON_HASH"
+    },
+    "BADSIG.ZUP": {
+      "size": 3446,
+      "sha256": "4e00be9c2c1188fc7ee323a1090f3bfe1c49c60d71138d20e7887e27463961f0",
+      "expected_reason": "ZUPD_REASON_SIGNATURE"
+    },
+    "BADVER.ZUP": {
+      "size": 3446,
+      "sha256": "d5c8cb835612363bb54fd8b58fd3178d2bc6c1fafd44049b7fd5c6848fc642c5",
+      "expected_reason": "ZUPD_REASON_BASE_VERSION"
+    },
+    "BADFMT.ZUP": {
+      "size": 3446,
+      "sha256": "7d2bab53903d67463a7a23abb8594e5d2af36801b14b6fb579437b2a1bb243a7",
+      "expected_reason": "ZUPD_REASON_FORMAT"
+    },
+    "UNKKEY.ZUP": {
+      "size": 3446,
+      "sha256": "d7d9bb963a411b50c8b2d54e9599509afb5085d98520e51159bef786e74a1880",
+      "expected_reason": "ZUPD_REASON_UNKNOWN_KEY"
+    }
+  }
+}

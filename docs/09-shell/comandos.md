@@ -73,6 +73,7 @@ Comandos disponiveis:
   appcheck  - Testa API, arquivos, IPC e carregador ZAPP
   pkg       - Gerencia pacotes .ZPK locais
   pkgcheck  - Testa validacoes de pacote sem gravar
+  update verify <arquivo.ZUP> - Verifica atualizacao sem gravar
   app run <arquivo.ZAP> [args] - Executa aplicativo ring 3 de forma assincrona
   app inputtest - Testa entrada de teclado em aplicativo ring 3
   app outputtest [fail] - Testa saida ZAPP em blocos e codigos de saida
@@ -227,7 +228,7 @@ zephyr> guimode modern
 ```
 
 ## `health`
-Exibe métricas detalhadas do kernel, estado do recovery, paginação, processos e saúde estrutural da arquitetura. Também mostra o total de falhas isoladas de aplicativos desde o boot e, quando houver uma, somente PID, vetor e código de erro da última ocorrência; endereços de memória não são exibidos.
+Exibe métricas detalhadas do kernel, estado do recovery, paginação, processos e saúde estrutural da arquitetura. Também mostra o componente `Update` e separa verificação local, aplicação, rollback e remoto. Capacidades de U3 e U5 permanecem `DISABLED` sem degradar o verificador local.
 
 Use `Page Up`, `Page Down`, `Home` e `End` para consultar toda a saida quando
 o relatorio ocupar mais de uma tela.
@@ -627,6 +628,24 @@ PCI parcial e reportado como erro.
 `usertest fault`, `app outputtest [fail]`, `app inputtest` encerrado por
 `Enter`, desligamento/reboot ou a validacao manual das interfaces classic e
 modern.
+
+## `update verify <arquivo.ZUP>`
+
+Valida um ZUPD v1 local em modo somente-leitura. O comando verifica estrutura,
+limites, SHA-256 global e individual, `key_id`, assinatura Ed25519,
+arquitetura, versoes, epochs, allowlist e existencia do arquivo alvo.
+
+```text
+zephyr> update verify VALID.ZUP
+```
+
+Em sucesso, mostra `NONE`, versoes base/alvo, epochs, quantidade de arquivos e
+tamanho total. Em falha, mostra o motivo estavel e o codigo generico. Ambos os
+caminhos confirmam `Nenhuma gravacao foi realizada.` Aplicacao e rollback nao
+fazem parte da U2.
+
+Os sete aliases de teste e os resultados esperados estao em
+[`ferramenta-zupd.md`](../14-atualizacoes/ferramenta-zupd.md).
 
 ## `pkg list|info|verify|install|remove`
 

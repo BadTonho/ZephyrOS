@@ -13,6 +13,7 @@
 #include "core/log.h"
 #include "core/recovery.h"
 #include "core/errors.h"
+#include "core/version.h"
 #include "drivers/vesa.h"
 #include "drivers/font.h"
 #include "ui/gui.h"
@@ -591,7 +592,7 @@ static void execute_system_action(int option) {
     switch (option) {
         case 0:
             video_clear();
-            video_print_at(10, 10, "ZephyrOS v0.1", 0x0F);
+            video_print_at(10, 10, ZEPHYROS_DISPLAY_NAME, 0x0F);
             video_print_at(10, 12, "Computador: ZephyrOS-PC", 0x07);
             video_print_at(10, 14, "Pressione Esc para voltar", 0x08);
             break;
@@ -651,7 +652,7 @@ static void execute_about_action(int option) {
 
     video_clear();
     if (option == 0) {
-        video_print_at(10, 8, "ZephyrOS v0.1", 0x0F);
+        video_print_at(10, 8, ZEPHYROS_DISPLAY_NAME, 0x0F);
         video_print_at(10, 10, "Sistema Operacional Educacional", 0x07);
         video_print_at(10, 12, "Desenvolvido em C e Assembly x86", 0x07);
         video_print_at(10, 14, "VGA Text Mode 80x25", 0x07);
@@ -859,7 +860,8 @@ static void settings_gui_draw_dialog_content(int x, int y, int width) {
 
     switch (settings_dialog) {
         case SETTINGS_DIALOG_SYSTEM_INFO:
-            gui_draw_text((uint32_t)x, (uint32_t)y, "ZephyrOS v0.1", GUI_COLOR_TEXT);
+            gui_draw_text((uint32_t)x, (uint32_t)y,
+                          ZEPHYROS_DISPLAY_NAME, GUI_COLOR_TEXT);
             gui_draw_text((uint32_t)x, (uint32_t)(y + 34),
                           "Computador: ZephyrOS-PC", GUI_COLOR_TEXT);
             gui_draw_text((uint32_t)x, (uint32_t)(y + 68),
@@ -885,7 +887,8 @@ static void settings_gui_draw_dialog_content(int x, int y, int width) {
             settings_gui_draw_process_list(x, y + 34, width);
             break;
         case SETTINGS_DIALOG_VERSION:
-            gui_draw_text((uint32_t)x, (uint32_t)y, "ZephyrOS v0.1", GUI_COLOR_TEXT);
+            gui_draw_text((uint32_t)x, (uint32_t)y,
+                          ZEPHYROS_DISPLAY_NAME, GUI_COLOR_TEXT);
             gui_draw_text((uint32_t)x, (uint32_t)(y + 34),
                           "VESA framebuffer + VGA fallback", GUI_COLOR_TEXT);
             gui_draw_text((uint32_t)x, (uint32_t)(y + 68),
