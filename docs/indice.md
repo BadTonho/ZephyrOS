@@ -64,7 +64,6 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [Gerenciador de Energia](melhorias%20futuras/gerenciador%20de%20energia.md) | Diagnostico de energia, ACPI, PM1 e desligamento fisico S5 com fallback |
 | [Gerenciador de Rede](melhorias%20futuras/gerenciador%20de%20rede.md) | Inventario PCI, Ethernet, ARP, IPv4, UDP, DHCP, DNS, TCP e HTTP |
 | [Atualizacoes do Sistema](melhorias%20futuras/atualiza%C3%A7%C3%B5es.md) | Roteiro U1-U5 para integridade, rollback e distribuicao opcional |
-| [07 - Evolucao da Plataforma](roadmaps/07-evolucao-da-plataforma.md) | Mouse, video, volumes, busca, releases por tags e radios sem fio |
 | [Contrato ZUPD v1](14-atualizacoes/contrato-zupd-v1.md) | Formato autenticado, transacao FAT12 e historico redundante U4 |
 | [Distribuicao remota ZUPD v1](14-atualizacoes/distribuicao-remota.md) | Manifesto ZUM1, HTTP manual e cache redundante U5 |
 | [System Updater](14-atualizacoes/system-updater.md) | Aplicativo nativo Classic/Modern para pacotes, estado, historico e remoto |
@@ -84,3 +83,5 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [04 - Interface e Experiência](roadmaps/04-interface-e-experiencia.md) | GUI moderna, taskbar, WM e interação |
 | [05 - Sistema e Ecossistema](roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e apps |
 | [06 - App Store](roadmaps/06-app-store.md) | Catalogo local ZPKG, ciclo de vida, interface Modern e repositorio futuro |
+| [07 - Modernização Visual](roadmaps/07-modernizacao-visual.md) | Escala acessível, visual flat/dark e desempenho VESA mensurável |
+| [08 - Evolução da Plataforma](roadmaps/08-evolucao-da-plataforma.md) | Mouse, volumes, USB incremental, busca, releases e conectividade sem fio |

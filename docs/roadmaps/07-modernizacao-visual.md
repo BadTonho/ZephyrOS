@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Prover uma interface grafica moderna (Flat Design, cantos arredondados, paleta de cores dark/moderna e efeitos visuais sutis) para o ZephyrOS, preparando o subsistema grafico para novas telas de forma modular e altamente otimizada, sem comprometer a taxa de quadros (FPS) da renderização em CPU.
+Prover uma interface grafica moderna (Flat Design, cantos arredondados, paleta de cores dark/moderna e efeitos visuais sutis) para o ZephyrOS. Antes do redesenho, esta frente estabelece metricas de layout e escala que mantem a interface legivel no modo VESA atual, sem depender de FPS ou de aceleracao por GPU.
 
 Esta frente inicia apos a conclusao do Roadmap 06 (App Store) e serve como base visual e de arquitetura para as interfaces que virao no Roadmap 08.
 
@@ -21,14 +21,39 @@ Estas capacidades continuam sendo a fonte de verdade. Este roadmap atua estritam
 - **Adeus ao visual Windows 95**: A identidade visual moderna adotará Flat Design, cantos arredondados, bordas de 1px e paleta escura (Dark Mode). Os relevos e chanfros 3D grossos cinzas serao removidos do modo Modern.
 - **Otimizacao em CPU em primeiro lugar**: Como nao ha aceleracao por GPU, efeitos complexos de transparencia (alpha blending) e cantos arredondados devem usar mascaras de bits pré-calculadas ou equacoes simplificadas para evitar divisoes/calculos de ponto flutuante em loops de rendering.
 - **Sem alteracoes na App API ou no loader ZAPP**: As mudancas focam puramente no desenho e apresentacao das janelas e componentes do kernel.
+- **Troca de modo VESA em runtime fica fora do escopo**: a API atual a recusa. Esta frente oferece escala dentro do modo inicial; escolher outra resolucao exige um projeto separado para boot/stage e aprovacao explicita antes de qualquer alteracao nesses componentes.
+- **Medicao reproduzivel, nao FPS estimado**: desempenho sera comparado por cenas fixas, bytes apresentados e ticks de copia VESA do `kmetrics`.
 
 ## Ordem de dependencia
 
-1. Evolucao das primitivas graficas em `gui.c` (cantos arredondados e bordas flat).
-2. Defincao do novo sistema de cores global (Dark Mode moderno).
-3. Redesenho da moldura de janelas no Window Manager e da barra de tarefas.
-4. Refatoracao visual dos aplicativos nativos (Explorer, Settings, Task Manager).
-5. Otimizacao e validacao de desempenho de rendering (FPS).
+1. Metricas de layout, escala de fonte e alvos de interacao no modo VESA atual.
+2. Evolucao das primitivas graficas em `gui.c` (cantos arredondados e bordas flat).
+3. Definicao do novo sistema de cores global (Dark Mode moderno).
+4. Redesenho da moldura de janelas no Window Manager, Desktop e Taskbar.
+5. Refatoracao visual dos aplicativos nativos (Explorer, Settings, Task Manager).
+6. Otimizacao e validacao de desempenho por cenas reproduziveis.
+
+## MV0 - Layout e escala acessiveis
+
+### Implementacao
+
+- [ ] Definir metricas centrais para espacamento, altura de barra, dimensoes
+  minimas de botoes, tamanho de icones e escala da fonte bitmap, calculadas a
+  partir do modo VESA inicial.
+- [ ] Adicionar `display status` e `display scale <pequena|normal|grande>`;
+  os comandos mostram e alteram somente a escala em RAM, nunca a resolucao.
+- [ ] Aplicar essas metricas em Desktop, Taskbar, Window Manager, Explorer,
+  Settings e Task Manager antes do redesenho Dark/Flat.
+- [ ] Garantir que textos, cursor e controles continuem dentro do framebuffer
+  em cada escala e que o Modo Classico nao seja alterado.
+- [ ] Expor a escala no Settings Modern e no fallback Classic, com logs para
+  entradas invalidas ou layout que nao caiba no modo ativo.
+
+### Criterio de saida
+
+As tres escalas mantem texto legivel e alvos de clique utilizaveis no modo VESA
+inicial. Falha de VESA, escala invalida ou area insuficiente preserva a escala
+anterior e o fallback Classico.
 
 ## MV1 - Evolucao das Primitivas Graficas
 
@@ -88,12 +113,19 @@ O Desktop e o gerenciador de janelas adotam integralmente o novo visual sem rast
   - **Explorer Moderno**: Painéis de arquivos flat, linhas de grade sutis e selecao moderna.
   - **Settings Moderno**: Categorias organizadas em cards modernos com bordas arredondadas.
   - **Task Manager Moderno**: Graficos de performance desenhados com linhas finas coloridas sobre fundo escuro.
-- [ ] Otimizar o rendering de fontes pixel a pixel para suportar espacamento proporcional basico se necessario, ou melhorar o contraste das fontes bitmap contra o fundo escuro.
-- [ ] Realizar teste de performance comparativo: coletar ticks de atualizacao de tela via `kmetrics` e garantir que o tempo de redesenho de janela nao subiu mais do que 10% em comparacao com o visual classic.
+- [ ] Melhorar contraste, espacamento e escala da fonte bitmap dentro das
+  metricas centralizadas da MV0; fonte proporcional fica fora desta frente.
+- [ ] Registrar uma linha-base por cena fixa (modo VESA, escala, janela e
+  acao) com `kmetrics`, incluindo bytes apresentados e ticks de copia VESA.
+- [ ] Aceitar a nova aparencia somente quando a mesma cena nao aumentar mais
+  de 10% os ticks de copia ou bytes apresentados; qualquer excecao precisa ser
+  registrada em `docs/qualidade/metricas.md`.
 
 ### Criterio de saida
 
-Explorer, Settings e Task Manager abrem e funcionam com o novo visual. O redesenho de janelas arrastadas se mantem fluido e o benchmark `kmetrics` valida que a sobrecarga visual na CPU esta dentro do limite seguro.
+Explorer, Settings e Task Manager abrem e funcionam com o novo visual. O
+redesenho de janelas arrastadas se mantem fluido e a comparacao `kmetrics` da
+mesma cena prova que a sobrecarga visual esta dentro do limite definido.
 
 ## Validacao por etapa
 
@@ -105,4 +137,8 @@ make clean && make
 make run
 ```
 
-No QEMU, validar visualmente a transicao para o modo modern com `guimode modern`. A interface deve aparecer com o tema Dark, cantos arredondados nas janelas, botoes modernos e sem artefatos ou lentidao severa.
+No QEMU, validar `display status` e as tres escalas antes de `guimode modern`.
+Depois, testar a mesma cena nas escalas Normal e Grande com Desktop, Explorer,
+Settings e Task Manager, comparando `kmetrics`. A interface deve aparecer com
+o tema Dark, cantos arredondados nas janelas, botoes modernos e sem artefatos
+ou lentidao severa.
