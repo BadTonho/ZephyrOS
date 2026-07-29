@@ -7,7 +7,7 @@
 | U1 | Politica de integridade e contrato do pacote de sistema | Concluida |
 | U2 | Verificacao local, assinada e sem escrita | Concluida |
 | U3 | Aplicacao transacional, recuperacao e rollback | Concluida |
-| U4 | Diagnosticos e interfaces Classic/Modern | Em validacao |
+| U4 | Diagnosticos e interfaces Classic/Modern | Concluida |
 | U5 | Distribuicao remota opcional | Pendente |
 
 O ZPKG v1 continua sendo exclusivamente o container de aplicativos locais.
@@ -26,9 +26,10 @@ A implementacao concluida da U3 e seu `APPLY.ZUP` publico ficam no servico
 `Update`, nas operacoes atomicas FAT12 e em `docs/fixtures/updates/u3/`.
 Aplicacao, rollback e recuperacao foram confirmados pela matriz QEMU.
 
-A implementacao U4 em validacao acrescenta controles `ZUPD*.HIS`, comandos
+A implementacao concluida da U4 acrescenta controles `ZUPD*.HIS`, comandos
 somente-leitura, auditoria host e o aplicativo nativo documentado em
-`docs/14-atualizacoes/system-updater.md`.
+`docs/14-atualizacoes/system-updater.md`. Classic e Modern, aplicacao,
+rollback, failpoint e recuperacao no boot foram confirmados no QEMU.
 
 ---
 
@@ -121,10 +122,12 @@ novamente e terminou com memoria estavel, `regcheck full` em `OK`,
 **Criterio de saida:** todos os estados sao observaveis e operaveis em ambas
 as interfaces, inclusive falhas e recuperacao.
 
-Em validacao: o ring redundante de oito eventos, consultas, comandos,
-`health`, System Updater Classic/Modern e `audit-image` foram implementados.
-A conclusao depende do build e da matriz QEMU: operacoes equivalentes nos dois
-modos, persistencia apos reboot, consultas sem escrita e recuperacao com
+Concluida: o ring redundante de oito eventos, consultas, comandos, `health` e
+System Updater Classic/Modern foram validados. Aplicacao e rollback produziram
+os eventos esperados. O failpoint deixou journal pendente e componente
+degradado; o boot restaurou `0.1.0`, registrou `APPLY/FAILED` seguido de
+`RECOVERY_APPLY/RECOVERED` e tornou o pacote compativel novamente. Memoria,
+`regcheck full` e `audit-image` terminaram em `OK`, com quatro eventos e
 journal limpo.
 
 ## Fase U5 - Distribuicao Remota Opcional

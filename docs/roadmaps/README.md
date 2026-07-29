@@ -60,9 +60,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   fixtures, com build, matriz QEMU, memoria, imagem inalterada e regressao
   aprovados pelo usuario. A U3 concluiu aplicacao/rollback FAT12, recuperacao,
   fixture, failpoint e auditoria offline; os cenarios QEMU terminaram com
-  `regcheck full` em `OK` e journal limpo. A U4 esta em validacao com
-  diagnosticos persistentes e interface dual implementados; U5 permanece
-  pendente.
+  `regcheck full` em `OK` e journal limpo. A U4 concluiu diagnosticos
+  persistentes e System Updater Classic/Modern, incluindo recuperacao por
+  failpoint, quatro eventos e auditoria final limpa. U5 permanece pendente.
 
 ## K4 validada
 
