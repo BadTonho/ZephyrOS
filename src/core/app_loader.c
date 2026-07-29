@@ -14,6 +14,7 @@ static uint32_t app_loader_pending_pid;
 static uint32_t app_loader_active_pid;
 static uint32_t app_loader_focus_acquired;
 static app_loader_result_t app_loader_finished_result;
+static app_launch_info_t app_loader_prepared_launch;
 static int app_loader_result_pending;
 
 static int app_loader_is_busy(void) {
@@ -328,6 +329,8 @@ int app_loader_init(void) {
     app_loader_focus_acquired = 0;
     app_loader_result_pending = 0;
     kmemset(&app_loader_finished_result, 0, sizeof(app_loader_finished_result));
+    kmemset(&app_loader_prepared_launch, 0,
+            sizeof(app_loader_prepared_launch));
 
     if (!paging_is_ready() || !syscall_user_mode_is_enabled() ||
         fs_get_type() == FS_TYPE_NONE) {
@@ -357,7 +360,6 @@ int app_loader_run_image(const char* name, const uint8_t* image,
                          uint32_t size, const app_launch_info_t* launch,
                          uint32_t* pid_out) {
     app_image_header_t header;
-    app_launch_info_t prepared_launch;
     uint32_t created_pid = 0;
     int result;
 
@@ -378,7 +380,7 @@ int app_loader_run_image(const char* name, const uint8_t* image,
         return ERR_INVALID;
     }
 
-    result = app_loader_prepare_launch(launch, &prepared_launch);
+    result = app_loader_prepare_launch(launch, &app_loader_prepared_launch);
     if (result != OK) return result;
     result = app_loader_validate_image(image, size, &header);
     if (result != OK) return result;
@@ -386,7 +388,7 @@ int app_loader_run_image(const char* name, const uint8_t* image,
     result = process_create_user_image_suspended_with_launch(
         name, image + header.code_offset, header.code_size,
         image + header.data_offset, header.data_size, header.entry_offset,
-        header.stack_size, &prepared_launch, &created_pid);
+        header.stack_size, &app_loader_prepared_launch, &created_pid);
     if (result != OK) {
         LOG_WARN("APP_LOADER", "Falha controlada ao criar processo ZAPP");
         return result;
@@ -402,7 +404,6 @@ int app_loader_run_file_with_launch(const char* path,
                                     const app_launch_info_t* launch,
                                     uint32_t* pid_out) {
     uint8_t* image;
-    app_launch_info_t prepared_launch;
     uint32_t read_size;
     int file_size;
     int result;
@@ -431,8 +432,9 @@ int app_loader_run_file_with_launch(const char* path,
         LOG_ERROR("APP_LOADER", "Arquivo nao possui extensao .ZAP");
         return ERR_INVALID;
     }
-    result = app_loader_prepare_launch(launch, &prepared_launch);
-    if (result != OK) return result;
+    if (launch && app_loader_validate_launch_info(launch) != OK) {
+        return ERR_INVALID;
+    }
 
     image = (uint8_t*)kmalloc(APP_IMAGE_MAX_FILE_SIZE + 1U);
     if (!image) {
@@ -453,8 +455,7 @@ int app_loader_run_file_with_launch(const char* path,
         return ERR_OVERFLOW;
     }
 
-    result = app_loader_run_image(path, image, read_size, &prepared_launch,
-                                  pid_out);
+    result = app_loader_run_image(path, image, read_size, launch, pid_out);
 
     kfree(image);
     image = 0;

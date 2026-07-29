@@ -244,6 +244,7 @@ static uint32_t shell_appcheck_zombie_count = 0;
 static shell_builtin_app_t shell_builtin_loader_app = SHELL_BUILTIN_APP_NONE;
 static shell_builtin_app_t shell_appcheck_migration_app = SHELL_BUILTIN_APP_NONE;
 static char appcheck_oversized_args[APP_LAUNCH_MAX_TEXT + 1U];
+static app_launch_info_t appcheck_launch_info;
 
 static void shell_handle_terminal_key(uint8_t scancode);
 static int shell_open_hosted(void);
@@ -7049,34 +7050,38 @@ static void cmd_appcheck_ipc(void) {
 static void cmd_appcheck_launch(void) {
     static const char valid_args[] = "alpha beta";
     static const char too_many_args[] = "1 2 3 4 5 6 7 8 9";
-    app_launch_info_t launch;
     int result;
 
-    result = app_loader_build_launch_info(valid_args, &launch);
+    result = app_loader_build_launch_info(valid_args, &appcheck_launch_info);
     if (result == OK &&
-        (launch.argc != 2U || launch.raw_length != kstrlen(valid_args) ||
-         launch.args[0].offset != 0U || launch.args[0].length == 0U ||
-         launch.args[1].offset <= launch.args[0].offset)) {
+        (appcheck_launch_info.argc != 2U ||
+         appcheck_launch_info.raw_length != kstrlen(valid_args) ||
+         appcheck_launch_info.args[0].offset != 0U ||
+         appcheck_launch_info.args[0].length == 0U ||
+         appcheck_launch_info.args[1].offset <=
+             appcheck_launch_info.args[0].offset)) {
         result = ERR_STATE;
     }
     cmd_appcheck_print_result("loader_argumentos_validos", result);
 
-    result = app_loader_build_launch_info("", &launch);
-    if (result == OK && (launch.argc != 0U || launch.raw_length != 0U)) {
+    result = app_loader_build_launch_info("", &appcheck_launch_info);
+    if (result == OK && (appcheck_launch_info.argc != 0U ||
+                         appcheck_launch_info.raw_length != 0U)) {
         result = ERR_STATE;
     }
     cmd_appcheck_print_result("loader_argumentos_vazios", result);
 
-    result = app_loader_build_launch_info(too_many_args, &launch);
+    result = app_loader_build_launch_info(too_many_args,
+                                          &appcheck_launch_info);
     cmd_appcheck_print_result("loader_argumentos_excesso", result);
 
-    result = app_loader_build_launch_info(appcheck_oversized_args, &launch);
+    result = app_loader_build_launch_info(appcheck_oversized_args,
+                                          &appcheck_launch_info);
     cmd_appcheck_print_result("loader_argumentos_grandes", result);
 }
 
 static void cmd_appcheck_loader(void) {
     app_image_header_t header;
-    app_launch_info_t launch;
     uint32_t image_size;
     uint32_t pid = 0;
     uint32_t migrated_pid = 0;
@@ -7129,12 +7134,14 @@ static void cmd_appcheck_loader(void) {
         result = shell_verify_image(APP_CHECK_DEMO_PATH, image_size);
         cmd_appcheck_print_result("loader_demo_integridade", result);
         if (result == OK) {
-            result = app_loader_build_launch_info("appcheck alpha beta", &launch);
+            result = app_loader_build_launch_info(
+                "appcheck alpha beta", &appcheck_launch_info);
             cmd_appcheck_print_result("loader_argumentos_execucao", result);
         }
         if (result == OK) {
             result = app_loader_run_file_with_launch(APP_CHECK_DEMO_PATH,
-                                                     &launch, &pid);
+                                                     &appcheck_launch_info,
+                                                     &pid);
             cmd_appcheck_print_result("loader_demo_execucao", result);
             if (result == OK) {
                 shell_appcheck_loader_pid = pid;

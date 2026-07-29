@@ -29,6 +29,9 @@ static uint32_t user_fault_count = 0;
 static int user_test_result_pending = 0;
 static uint32_t user_test_result_pid = 0;
 static uint32_t user_test_result_faulted = 0;
+static const app_launch_info_t process_empty_launch = {
+    .abi_version = APP_LAUNCH_ABI_VERSION
+};
 
 static void process_idle_main(void) {
     while (1) {
@@ -602,7 +605,6 @@ static int process_create_user_image_internal(const char* name,
     page_directory_t* dir;
     page_directory_t* kernel_dir;
     uint32_t kernel_stack;
-    app_launch_info_t empty_launch;
     int result;
 
     if (!paging_is_ready() || !tss_is_ready() ||
@@ -617,9 +619,7 @@ static int process_create_user_image_internal(const char* name,
         return ERR_INVALID;
     }
     if (!launch) {
-        kmemset(&empty_launch, 0, sizeof(empty_launch));
-        empty_launch.abi_version = APP_LAUNCH_ABI_VERSION;
-        launch = &empty_launch;
+        launch = &process_empty_launch;
     }
     result = process_user_validate_launch(launch);
     if (result != OK) return result;
