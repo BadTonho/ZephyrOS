@@ -51,9 +51,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   `device-scan` e `regcheck full`; RX externo permanece como cobertura
   complementar. S2.4 a S2.7 concluiram ARP, IPv4/ICMP, UDP/DHCP/DNS e
   TCP/sockets/HTTP; as suites agrupadas e o `regcheck full` foram validados
-  no QEMU com E1000, incluindo recuperacao de timeout HTTP. A S2.8 esta
-  implementada no codigo com Multi-NIC e RTL8139, mas permanece aberta ate o
-  usuario concluir Q3, build e a matriz QEMU.
+  no QEMU com E1000, incluindo recuperacao de timeout HTTP. A S2.8 concluiu
+  Multi-NIC e RTL8139, com a suite Multi-NIC e o `regcheck full` aprovados no
+  QEMU pelo usuario nos modos Classic e Modern.
 
 ## K4 validada
 

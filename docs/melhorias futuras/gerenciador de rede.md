@@ -144,7 +144,7 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 - [ ] Cobertura complementar: perda/retransmissao com peer, RST, janela zero,
   handles obsoletos, tabela cheia, RTL8139 e Classic/Modern.
 
-## S2.8 - Multi-NIC e RTL8139 (implementada; validacao pendente)
+## S2.8 - Multi-NIC e RTL8139 (concluida e validada)
 
 - [x] Registro Ethernet fixo de quatro interfaces, callbacks com contexto
   opaco, TX por ID e polling round-robin com orcamento global.
@@ -160,12 +160,13 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 - [x] Status por NIC, health degradado por falha isolada, comandos
   generalizados e `net check qemu multi <id-a> <id-b>`.
 - [x] Invariantes Multi-NIC integradas ao `regcheck full`.
-- [ ] Usuario validar `make q3check` e `make clean && make` sem warnings novos.
-- [ ] Usuario validar E1000, RTL8139, modelos mistos/iguais, IRQ compartilhada,
-  ausencia/limite de NIC e legibilidade Classic/Modern no QEMU.
+- [x] Q3 e build aprovados pelo usuario sem warnings novos.
+- [x] Matriz QEMU aprovada pelo usuario. A suite Multi-NIC e o `regcheck full`
+  passaram com E1000 + RTL8139 nos modos Classic e Modern, apos mover os
+  snapshots da suite para BSS e eliminar a corrupcao de heap.
 
-A etapa permanece aberta ate a matriz manual acima ser aprovada. Permanecem
-fora do escopo multiplas rotas/IPs simultaneos, hot-plug, shutdown de NIC,
+A etapa esta concluida. Permanecem fora do escopo multiplas rotas/IPs
+simultaneos, hot-plug, shutdown de NIC,
 persistencia, IPv6, VLAN, promiscuidade, multicast e modo RTL8139 C+.
 
 ---

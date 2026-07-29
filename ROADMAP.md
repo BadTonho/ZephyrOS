@@ -598,10 +598,9 @@ Plataforma de aplicativos:   [████████████████�
 
 ## Continuacao da S2 - Rede e atualizacoes
 
-- [ ] S2.8: implementacao Multi-NIC/RTL8139 pronta no codigo, com registro de
-  quatro interfaces, E1000 multi-instancia, IRQ compartilhada, uma unica NIC
-  L3 e suite `net check qemu multi`; conclusao aguarda Q3, build e matriz QEMU
-  executados pelo usuario.
+- [x] S2.8: Multi-NIC/RTL8139 concluida, com registro de quatro interfaces,
+  E1000 multi-instancia, IRQ compartilhada, uma unica NIC L3 e suite
+  `net check qemu multi`; Q3, build e matriz QEMU foram aprovados pelo usuario.
 
 ## Roadmaps por etapa
 
