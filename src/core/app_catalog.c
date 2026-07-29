@@ -17,8 +17,10 @@ typedef struct {
 
 static app_catalog_entry_t catalog_entries[APP_CATALOG_MAX_ENTRIES];
 static app_catalog_source_t catalog_sources[APP_CATALOG_MAX_SOURCES];
+static app_package_info_t catalog_installed[APP_CATALOG_MAX_ENTRIES];
 static app_catalog_status_t catalog_status;
 static uint32_t catalog_source_count = 0;
+static uint32_t catalog_installed_count = 0;
 static int catalog_initialized = 0;
 static int catalog_ready = 0;
 static int catalog_read_error = 0;
@@ -114,6 +116,50 @@ static void app_catalog_collect_sources(void) {
     catalog_status.source_count = catalog_source_count;
 }
 
+static void app_catalog_insert_installed(const app_package_info_t* info) {
+    uint32_t position = 0;
+
+    if (catalog_installed_count >= APP_CATALOG_MAX_ENTRIES) {
+        catalog_status.entry_overflow = 1U;
+        app_catalog_record_problem(APP_CATALOG_REASON_ENTRY_LIMIT);
+        LOG_WARN("APPSTORE", "Pacotes instalados excedem limite do catalogo");
+        return;
+    }
+    while (position < catalog_installed_count &&
+           kstrcmp(catalog_installed[position].id, info->id) < 0) position++;
+    for (uint32_t index = catalog_installed_count; index > position; index--) {
+        catalog_installed[index] = catalog_installed[index - 1U];
+    }
+    catalog_installed[position] = *info;
+    catalog_installed_count++;
+}
+
+static void app_catalog_collect_installed(void) {
+    int count = app_package_get_installed_count();
+
+    catalog_status.installed_count = count > 0 ? (uint32_t)count : 0U;
+    for (int index = 0; index < count; index++) {
+        app_package_info_t info;
+
+        if (app_package_get_installed_info(index, &info) != OK) {
+            catalog_read_error = 1;
+            app_catalog_record_problem(APP_CATALOG_REASON_READ_ERROR);
+            LOG_WARN("APPSTORE", "Falha ao consultar pacote instalado");
+            continue;
+        }
+        app_catalog_insert_installed(&info);
+    }
+}
+
+static const app_package_info_t* app_catalog_find_installed(const char* id) {
+    for (uint32_t index = 0; index < catalog_installed_count; index++) {
+        if (kstrcmp(catalog_installed[index].id, id) == 0) {
+            return &catalog_installed[index];
+        }
+    }
+    return 0;
+}
+
 static int app_catalog_alias_matches(const char* alias, const char* id) {
     uint32_t id_length;
 
@@ -164,9 +210,7 @@ static uint32_t app_catalog_missing_dependencies(
     uint32_t missing = 0;
 
     for (uint32_t index = 0; index < source->dependency_count; index++) {
-        app_package_info_t installed;
-        if (app_package_get_installed_info_by_id(
-                source->dependencies[index], &installed) != OK) {
+        if (!app_catalog_find_installed(source->dependencies[index])) {
             missing |= 1U << index;
         }
     }
@@ -218,6 +262,7 @@ static int app_catalog_append(const app_catalog_entry_t* entry) {
 
 static void app_catalog_add_source(const app_catalog_source_t* source) {
     app_catalog_entry_t entry;
+    const app_package_info_t* installed;
     int result;
 
     kmemset(&entry, 0, sizeof(entry));
@@ -245,17 +290,10 @@ static void app_catalog_add_source(const app_catalog_source_t* source) {
         return;
     }
     catalog_status.valid_source_count++;
-    result = app_package_get_installed_info_by_id(
-        entry.source.id, &entry.installed);
-    if (result == OK) {
+    installed = app_catalog_find_installed(entry.source.id);
+    if (installed) {
+        entry.installed = *installed;
         entry.has_installed = 1U;
-    } else if (result != ERR_NOT_FOUND) {
-        entry.state = APP_CATALOG_STATE_INVALID;
-        entry.reason = APP_CATALOG_REASON_READ_ERROR;
-        catalog_read_error = 1;
-        app_catalog_record_problem(entry.reason);
-        app_catalog_append(&entry);
-        return;
     }
     app_catalog_classify(&entry);
     app_catalog_append(&entry);
@@ -271,20 +309,12 @@ static int app_catalog_has_id(const char* id) {
     return 0;
 }
 
-static void app_catalog_add_installed(void) {
-    int count = app_package_get_installed_count();
-
-    catalog_status.installed_count = count > 0 ? (uint32_t)count : 0U;
-    for (int index = 0; index < count; index++) {
+static void app_catalog_append_installed(void) {
+    for (uint32_t index = 0; index < catalog_installed_count; index++) {
         app_catalog_entry_t entry;
 
         kmemset(&entry, 0, sizeof(entry));
-        if (app_package_get_installed_info(index, &entry.installed) != OK) {
-            catalog_read_error = 1;
-            app_catalog_record_problem(APP_CATALOG_REASON_READ_ERROR);
-            LOG_WARN("APPSTORE", "Falha ao consultar pacote instalado");
-            continue;
-        }
+        entry.installed = catalog_installed[index];
         if (app_catalog_has_id(entry.installed.id)) continue;
         entry.has_installed = 1U;
         entry.state = APP_CATALOG_STATE_INSTALLED;
@@ -381,17 +411,20 @@ int app_catalog_refresh(void) {
     }
     catalog_ready = 0;
     catalog_source_count = 0;
+    catalog_installed_count = 0;
     catalog_read_error = 0;
     kmemset(&catalog_status, 0, sizeof(catalog_status));
     kmemset(catalog_entries, 0, sizeof(catalog_entries));
     kmemset(catalog_sources, 0, sizeof(catalog_sources));
+    kmemset(catalog_installed, 0, sizeof(catalog_installed));
     result = app_catalog_check_dependencies();
     if (result != OK) return result;
     app_catalog_collect_sources();
+    app_catalog_collect_installed();
     for (uint32_t index = 0; index < catalog_source_count; index++) {
         app_catalog_add_source(&catalog_sources[index]);
     }
-    app_catalog_add_installed();
+    app_catalog_append_installed();
     app_catalog_sort_entries();
     catalog_ready = 1;
     app_catalog_refresh_recovery();
