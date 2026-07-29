@@ -11,6 +11,7 @@
 #include "core/app_loader.h"
 #include "core/app_package.h"
 #include "core/update.h"
+#include "core/update_remote.h"
 #include "core/version.h"
 #include "core/syscall.h"
 #include "drivers/idt.h"
@@ -653,6 +654,13 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         }
     } else {
         video_print("[--] Nenhum controlador de rede encontrado\n", 0x08);
+    }
+
+    video_print("[..] Iniciando distribuicao remota de Update...\n", 0x08);
+    if (update_remote_init() == OK) {
+        video_print("[OK] Update remoto pronto e desabilitado\n", 0x07);
+    } else {
+        video_print("[!!] Update remoto indisponivel\n", 0x0E);
     }
 
     video_print("[..] Iniciando diagnostico de energia...\n", 0x08);

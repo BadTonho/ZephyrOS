@@ -6,11 +6,13 @@ from __future__ import annotations
 import argparse
 import getpass
 import hashlib
+import http.server
 import json
 import re
 import struct
 import sys
 import tempfile
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -21,7 +23,9 @@ CONTRACT_PATH = REPO_ROOT / "docs" / "14-atualizacoes" / "contrato-zupd-v1.md"
 U1_FIXTURES = REPO_ROOT / "docs" / "fixtures" / "updates" / "v1"
 U2_FIXTURES = REPO_ROOT / "docs" / "fixtures" / "updates" / "u2"
 U3_FIXTURES = REPO_ROOT / "docs" / "fixtures" / "updates" / "u3"
+U5_FIXTURES = REPO_ROOT / "docs" / "fixtures" / "updates" / "u5"
 RELEASE_PUBLIC = REPO_ROOT / "config" / "update-release-public.json"
+REMOTE_CONFIG = REPO_ROOT / "config" / "update-remote.json"
 VERSION_HEADER = REPO_ROOT / "src" / "include" / "core" / "version.h"
 SHELL_BMP = REPO_ROOT / "assets" / "icons" / "SHELL.BMP"
 UPDATE_ASSETS = {
@@ -98,6 +102,27 @@ UPDATE_STAGE_ALIASES = (
     ("ZSA0.NEW", "ZSA1.NEW", "ZSA2.NEW"),
     ("ZSB0.NEW", "ZSB1.NEW", "ZSB2.NEW"),
 )
+
+REMOTE_MAGIC = b"ZUM1"
+REMOTE_FORMAT_VERSION = 1
+REMOTE_MANIFEST_SIZE = 256
+REMOTE_SIGNED_SIZE = 192
+REMOTE_ARCH_I386 = 1
+REMOTE_CHANNEL_STABLE = 1
+REMOTE_DOMAIN = b"ZEPHYROS-REMOTE-V1\0"
+REMOTE_PATH_SIZE = 100
+REMOTE_RECORD_MAGIC = b"ZUR1"
+REMOTE_RECORD_VERSION = 1
+REMOTE_RECORD_SIZE = 512
+REMOTE_RECORD_HASH_OFFSET = 480
+REMOTE_RECORD_RESERVED_OFFSET = 108
+REMOTE_RECORD_ALIASES = ("ZUR0.STA", "ZUR1.STA")
+REMOTE_PACKAGE_ALIASES = ("ZUR0.ZUP", "ZUR1.ZUP")
+REMOTE_SLOT_NONE = 0xFF
+REMOTE_PHASE_CLEAN = 0
+REMOTE_PHASE_DOWNLOADING = 1
+REMOTE_ATTRIBUTES = 0x26
+REMOTE_DEFAULT_URL = "http://10.0.2.2:8000/zephyros/stable.zum"
 
 REASON_NONE = "NONE"
 REASON_FORMAT = "FORMAT"
@@ -256,6 +281,38 @@ class StoredHistory:
     count: int
     next_index: int
     entries: tuple[StoredHistoryEntry | None, ...]
+
+
+@dataclass(frozen=True)
+class RemoteManifest:
+    """Manifesto remoto ZUM1 autenticado."""
+
+    generation: int
+    base_version: Version
+    target_version: Version
+    base_epoch: int
+    target_epoch: int
+    package_size: int
+    package_sha256: bytes
+    package_path: str
+
+
+@dataclass(frozen=True)
+class RemoteRecord:
+    """Estado redundante do cache remoto U5."""
+
+    sequence: int
+    phase: int
+    active_slot: int
+    pending_slot: int
+    manifest_generation: int
+    package_size: int
+    package_sha256: bytes
+    manifest_sha256: bytes
+    base_version: Version
+    target_version: Version
+    base_epoch: int
+    target_epoch: int
 
 
 def crypto_modules() -> tuple[Any, Any, Any]:
@@ -1101,6 +1158,144 @@ def write_u3_fixtures(private_key: Any, output_dir: Path) -> None:
     )
 
 
+def write_u5_fixtures(private_key: Any, output_dir: Path) -> None:
+    """Gera manifestos remotos publicos sem copiar a chave privada."""
+    output = output_dir.resolve()
+    if output.exists() and any(output.iterdir()):
+        raise UpdateError(f"diretorio de fixtures nao esta vazio: {output}")
+    output.mkdir(parents=True, exist_ok=True)
+    public = private_public_info(private_key)
+    apply_package = (U3_FIXTURES / "APPLY.ZUP").read_bytes()
+    bad_package = (U2_FIXTURES / "BADHASH.ZUP").read_bytes()
+    stable = build_remote_manifest(
+        private_key,
+        public,
+        1,
+        Version(0, 1, 0),
+        Version(0, 1, 1),
+        0,
+        0,
+        apply_package,
+        "/zephyros/APPLY.ZUP",
+    )
+    stable2 = build_remote_manifest(
+        private_key,
+        public,
+        2,
+        Version(0, 1, 0),
+        Version(0, 1, 1),
+        0,
+        0,
+        apply_package,
+        "/zephyros/APPLY.ZUP",
+    )
+    badpkg = build_remote_manifest(
+        private_key,
+        public,
+        3,
+        Version(0, 1, 0),
+        Version(0, 1, 1),
+        0,
+        0,
+        bad_package,
+        "/zephyros/BADHASH.ZUP",
+    )
+    tampered = bytearray(stable)
+    tampered[40] ^= 1
+    fixtures = {
+        "stable.zum": (stable, "OK"),
+        "stable2.zum": (stable2, "OK"),
+        "tampered.zum": (bytes(tampered), "MANIFEST_SIGNATURE"),
+        "badpkg.zum": (badpkg, "PACKAGE_VERIFY/HASH"),
+        "truncated.zum": (stable[:-1], "HTTP"),
+    }
+    published: dict[str, Any] = {
+        "format": "zephyros-update-remote-fixtures-v1",
+        "release_public_key": {
+            "public_key_hex": public.public_key.hex(),
+            "key_id_hex": public.key_id.hex(),
+        },
+        "packages": {
+            "APPLY.ZUP": {
+                "source": "../u3/APPLY.ZUP",
+                "size": len(apply_package),
+                "sha256": hashlib.sha256(apply_package).hexdigest(),
+            },
+            "BADHASH.ZUP": {
+                "source": "../u2/BADHASH.ZUP",
+                "size": len(bad_package),
+                "sha256": hashlib.sha256(bad_package).hexdigest(),
+            },
+        },
+        "fixtures": {},
+    }
+    for name, (data, expected) in fixtures.items():
+        write_new_bytes(output / name, data)
+        published["fixtures"][name] = {
+            "size": len(data),
+            "sha256": hashlib.sha256(data).hexdigest(),
+            "expected": expected,
+        }
+    write_new_text(
+        output / "fixtures.json",
+        json.dumps(published, indent=2, sort_keys=False) + "\n",
+    )
+
+
+def load_remote_config(path: Path) -> dict[str, str]:
+    """Valida a configuracao publica do canal remoto."""
+    try:
+        config = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise UpdateError("configuracao remota invalida") from error
+    if not isinstance(config, dict) or tuple(config) != (
+        "format",
+        "channel",
+        "manifest_url",
+    ):
+        raise UpdateError("campos da configuracao remota divergem")
+    if (
+        config["format"] != "zephyros-update-remote-v1"
+        or config["channel"] != "stable"
+        or not isinstance(config["manifest_url"], str)
+        or not config["manifest_url"].startswith("http://")
+        or len(config["manifest_url"]) > 511
+    ):
+        raise UpdateError("canal ou URL remota invalida")
+    return config
+
+
+def render_remote_config_header(config: dict[str, str]) -> str:
+    """Renderiza o header derivado usado pelo kernel."""
+    return (
+        "#ifndef UPDATE_REMOTE_CONFIG_H\n"
+        "#define UPDATE_REMOTE_CONFIG_H\n\n"
+        f'#define UPDATE_REMOTE_CHANNEL_NAME "{config["channel"]}"\n'
+        "#define UPDATE_REMOTE_DEFAULT_MANIFEST_URL \\\n"
+        f'    "{config["manifest_url"]}"\n\n'
+        "#endif\n"
+    )
+
+
+def sync_remote_config(config_path: Path, output_path: Path) -> None:
+    """Cria um header novo a partir da configuracao publica."""
+    output = require_new_file(output_path, "header remoto")
+    write_new_text(
+        output, render_remote_config_header(load_remote_config(config_path))
+    )
+
+
+def check_remote_config(config_path: Path, header_path: Path) -> None:
+    """Confere equivalencia exata entre JSON e header remoto."""
+    expected = render_remote_config_header(load_remote_config(config_path))
+    try:
+        actual = header_path.read_text(encoding="utf-8")
+    except OSError as error:
+        raise UpdateError("header remoto nao pode ser lido") from error
+    if actual != expected:
+        raise UpdateError("header remoto esta dessincronizado")
+
+
 def expected_reason(
     data: bytes,
     key: PublicKeyInfo,
@@ -1393,6 +1588,212 @@ def select_redundant_record(
     return valid[0][1]
 
 
+def encode_remote_path(path: str) -> bytes:
+    """Codifica o caminho relativo same-origin aceito pelo kernel."""
+    if not isinstance(path, str) or not path.startswith("/"):
+        raise UpdateError("caminho remoto deve iniciar com /")
+    try:
+        encoded = path.encode("ascii", "strict")
+    except UnicodeEncodeError as error:
+        raise UpdateError("caminho remoto deve usar ASCII") from error
+    if ".." in path or "\\" in path or len(encoded) >= REMOTE_PATH_SIZE:
+        raise UpdateError("caminho remoto invalido ou longo")
+    if not re.fullmatch(r"/[A-Za-z0-9._/-]+", path):
+        raise UpdateError("caminho remoto possui caractere invalido")
+    return encoded + bytes(REMOTE_PATH_SIZE - len(encoded))
+
+
+def build_remote_manifest(
+    private_key: Any,
+    public: PublicKeyInfo,
+    generation: int,
+    base_version: Version,
+    target_version: Version,
+    base_epoch: int,
+    target_epoch: int,
+    package: bytes,
+    package_path: str,
+) -> bytes:
+    """Monta e assina o registro ZUM1 de 256 bytes."""
+    if generation < 0 or generation > 0xFFFFFFFF:
+        raise UpdateError("geracao remota excede uint32")
+    if (
+        not 0 <= base_epoch <= 0xFFFFFFFF
+        or not 0 <= target_epoch <= 0xFFFFFFFF
+    ):
+        raise UpdateError("epoch remoto excede uint32")
+    if not package or len(package) > ZUPD_MAX_TOTAL_SIZE:
+        raise UpdateError("pacote remoto possui tamanho invalido")
+    if target_epoch < base_epoch or (
+        target_epoch == base_epoch and target_version <= base_version
+    ):
+        raise UpdateError("versao remota alvo nao e superior")
+    raw = bytearray(REMOTE_MANIFEST_SIZE)
+    raw[0:4] = REMOTE_MAGIC
+    struct.pack_into(
+        "<HHHHI",
+        raw,
+        4,
+        REMOTE_FORMAT_VERSION,
+        REMOTE_MANIFEST_SIZE,
+        REMOTE_ARCH_I386,
+        REMOTE_CHANNEL_STABLE,
+        generation,
+    )
+    struct.pack_into(
+        "<6H",
+        raw,
+        16,
+        base_version.major,
+        base_version.minor,
+        base_version.patch,
+        target_version.major,
+        target_version.minor,
+        target_version.patch,
+    )
+    struct.pack_into("<III", raw, 28, base_epoch, target_epoch, len(package))
+    raw[40:72] = hashlib.sha256(package).digest()
+    raw[72:88] = public.key_id
+    struct.pack_into("<I", raw, 88, 0)
+    raw[92:192] = encode_remote_path(package_path)
+    raw[192:256] = private_key.sign(REMOTE_DOMAIN + bytes(raw[:192]))
+    return bytes(raw)
+
+
+def parse_remote_manifest(data: bytes, trusted: PublicKeyInfo) -> RemoteManifest:
+    """Valida estrutura, campos reservados e assinatura do ZUM1."""
+    if len(data) != REMOTE_MANIFEST_SIZE or data[:4] != REMOTE_MAGIC:
+        raise UpdateError("manifesto remoto possui magic ou tamanho invalido")
+    version, size, architecture, channel, generation = struct.unpack_from(
+        "<HHHHI", data, 4
+    )
+    if (
+        version != REMOTE_FORMAT_VERSION
+        or size != REMOTE_MANIFEST_SIZE
+        or architecture != REMOTE_ARCH_I386
+        or channel != REMOTE_CHANNEL_STABLE
+        or struct.unpack_from("<I", data, 88)[0] != 0
+    ):
+        raise UpdateError("cabecalho remoto invalido")
+    if data[72:88] != trusted.key_id:
+        raise UpdateError("key_id remoto desconhecido")
+    ed25519, _, invalid_signature = crypto_modules()
+    try:
+        ed25519.Ed25519PublicKey.from_public_bytes(trusted.public_key).verify(
+            data[192:256], REMOTE_DOMAIN + data[:192]
+        )
+    except invalid_signature as error:
+        raise UpdateError("assinatura do manifesto remoto invalida") from error
+    versions = struct.unpack_from("<6H", data, 16)
+    base_version = Version(*versions[:3])
+    target_version = Version(*versions[3:])
+    base_epoch, target_epoch, package_size = struct.unpack_from("<III", data, 28)
+    if not package_size or package_size > ZUPD_MAX_TOTAL_SIZE:
+        raise UpdateError("tamanho de pacote remoto invalido")
+    path_raw = data[92:192]
+    try:
+        end = path_raw.index(0)
+        package_path = path_raw[:end].decode("ascii")
+    except (ValueError, UnicodeDecodeError) as error:
+        raise UpdateError("caminho remoto sem terminador valido") from error
+    if any(path_raw[end + 1 :]) or encode_remote_path(package_path) != path_raw:
+        raise UpdateError("padding ou caminho remoto invalido")
+    if target_epoch < base_epoch or (
+        target_epoch == base_epoch and target_version <= base_version
+    ):
+        raise UpdateError("transicao remota nao e crescente")
+    return RemoteManifest(
+        generation,
+        base_version,
+        target_version,
+        base_epoch,
+        target_epoch,
+        package_size,
+        data[40:72],
+        package_path,
+    )
+
+
+def encode_remote_record(record: RemoteRecord) -> bytes:
+    """Serializa o controle redundante ZUR1 usado pela auditoria."""
+    raw = bytearray(REMOTE_RECORD_SIZE)
+    raw[:4] = REMOTE_RECORD_MAGIC
+    struct.pack_into(
+        "<HHIBBBBII",
+        raw,
+        4,
+        REMOTE_RECORD_VERSION,
+        REMOTE_RECORD_SIZE,
+        record.sequence,
+        record.phase,
+        record.active_slot,
+        record.pending_slot,
+        0,
+        record.manifest_generation,
+        record.package_size,
+    )
+    raw[24:56] = record.package_sha256
+    raw[56:88] = record.manifest_sha256
+    struct.pack_into(
+        "<6HII",
+        raw,
+        88,
+        record.base_version.major,
+        record.base_version.minor,
+        record.base_version.patch,
+        record.target_version.major,
+        record.target_version.minor,
+        record.target_version.patch,
+        record.base_epoch,
+        record.target_epoch,
+    )
+    raw[480:512] = hashlib.sha256(raw[:480]).digest()
+    return bytes(raw)
+
+
+def decode_remote_record(data: bytes) -> RemoteRecord:
+    """Decodifica e valida um registro ZUR1 de 512 bytes."""
+    if len(data) != REMOTE_RECORD_SIZE or data[:4] != REMOTE_RECORD_MAGIC:
+        raise UpdateError("registro remoto possui magic ou tamanho invalido")
+    version, size, sequence = struct.unpack_from("<HHI", data, 4)
+    phase, active, pending, flags = struct.unpack_from("<BBBB", data, 12)
+    if (
+        version != REMOTE_RECORD_VERSION
+        or size != REMOTE_RECORD_SIZE
+        or phase not in (REMOTE_PHASE_CLEAN, REMOTE_PHASE_DOWNLOADING)
+        or active not in (0, 1, REMOTE_SLOT_NONE)
+        or pending not in (0, 1, REMOTE_SLOT_NONE)
+        or flags != 0
+        or (phase == REMOTE_PHASE_CLEAN and pending != REMOTE_SLOT_NONE)
+        or (phase == REMOTE_PHASE_DOWNLOADING and pending == REMOTE_SLOT_NONE)
+        or (pending in (0, 1) and pending == active)
+        or any(data[REMOTE_RECORD_RESERVED_OFFSET:REMOTE_RECORD_HASH_OFFSET])
+        or hashlib.sha256(data[:480]).digest() != data[480:512]
+    ):
+        raise UpdateError("registro remoto estruturalmente invalido")
+    generation, package_size = struct.unpack_from("<II", data, 16)
+    values = struct.unpack_from("<6HII", data, 88)
+    record = RemoteRecord(
+        sequence,
+        phase,
+        active,
+        pending,
+        generation,
+        package_size,
+        data[24:56],
+        data[56:88],
+        Version(*values[:3]),
+        Version(*values[3:6]),
+        values[6],
+        values[7],
+    )
+    if active == REMOTE_SLOT_NONE and package_size:
+        raise UpdateError("cache remoto vazio declara pacote")
+    if active in (0, 1) and not package_size:
+        raise UpdateError("cache remoto ativo possui tamanho zero")
+    return record
+
+
 def fat_name(raw: bytes) -> str:
     """Converte os 11 bytes de uma entrada FAT para nome 8.3 legivel."""
     stem = raw[:8].decode("ascii").rstrip()
@@ -1508,8 +1909,11 @@ def audit_image(
     allow_pending: bool,
     expected_history_count: int | None = None,
     expected_last_event: str | None = None,
+    expected_remote_cache: str = "any",
+    expected_remote_alias: str | None = None,
+    expected_remote_pending: str = "clean",
 ) -> None:
-    """Audita persistencia U3/U4 e arquivos transacionais em uma imagem."""
+    """Audita persistencia U3/U4/U5 e arquivos transacionais."""
     root = inspect_fat12_image(image_path)
     state = select_redundant_record(
         tuple(root.get(name, (None, 0))[0] for name in UPDATE_STATE_ALIASES),
@@ -1526,17 +1930,35 @@ def audit_image(
         decode_history_record,
         "historico U4",
     )
+    remote = select_redundant_record(
+        tuple(
+            root.get(name, (None, 0))[0]
+            for name in REMOTE_RECORD_ALIASES
+        ),
+        decode_remote_record,
+        "cache remoto U5",
+    )
     installed = state.installed_version if state else Version(0, 1, 0)
     rollback_available = state.rollback_available if state else False
     pending = journal is not None and journal.kind != UPDATE_JOURNAL_NONE
     history_count = history.count if history else 0
     last_event = history_newest(history, 0) if history_count else None
+    remote_pending = bool(
+        remote and remote.phase == REMOTE_PHASE_DOWNLOADING
+    )
+    remote_alias = (
+        REMOTE_PACKAGE_ALIASES[remote.active_slot]
+        if remote and remote.active_slot in (0, 1)
+        else None
+    )
     internal_aliases = (
         UPDATE_STATE_ALIASES
         + UPDATE_JOURNAL_ALIASES
         + UPDATE_HISTORY_ALIASES
         + tuple(alias for slot in UPDATE_BACKUP_ALIASES for alias in slot)
         + tuple(alias for slot in UPDATE_STAGE_ALIASES for alias in slot)
+        + REMOTE_RECORD_ALIASES
+        + REMOTE_PACKAGE_ALIASES
     )
     for alias in internal_aliases:
         if alias in root and root[alias][1] != 0x26:
@@ -1577,6 +1999,37 @@ def audit_image(
             raise UpdateError(
                 "ultimo evento de recuperacao nao possui resultado RECOVERED"
             )
+    if expected_remote_pending == "clean" and remote_pending:
+        raise UpdateError("imagem possui transferencia U5 pendente")
+    if expected_remote_pending == "pending" and not remote_pending:
+        raise UpdateError("transferencia U5 pendente era esperada")
+    if expected_remote_cache == "empty" and remote_alias is not None:
+        raise UpdateError("cache remoto deveria estar vazio")
+    if expected_remote_cache == "valid" and remote_alias is None:
+        raise UpdateError("cache remoto valido esperado nao existe")
+    if expected_remote_alias is not None and remote_alias != expected_remote_alias:
+        raise UpdateError(
+            f"alias remoto e {remote_alias or 'none'}, "
+            f"esperado {expected_remote_alias}"
+        )
+    if remote_alias is not None:
+        if remote_alias not in root:
+            raise UpdateError("slot ativo do cache remoto esta ausente")
+        remote_data = root[remote_alias][0]
+        if (
+            len(remote_data) != remote.package_size
+            or hashlib.sha256(remote_data).digest()
+            != remote.package_sha256
+        ):
+            raise UpdateError("hash ou tamanho do cache remoto diverge")
+        trusted = load_public_json(RELEASE_PUBLIC)
+        verify_artifact(
+            remote_data, trusted, remote.base_version, remote.base_epoch
+        )
+    if not remote_pending:
+        for alias in REMOTE_PACKAGE_ALIASES:
+            if (alias == remote_alias) != (alias in root):
+                raise UpdateError(f"slot remoto inativo permaneceu: {alias}")
     if state:
         for index, name in enumerate(UPDATE_TARGETS):
             if name not in root:
@@ -1617,6 +2070,12 @@ def audit_image(
             f"  history=READY count={history_count} "
             f"last={operation}/{outcome}"
         )
+    print(
+        "  remote="
+        + ("READY" if remote_alias else "EMPTY")
+        + f" alias={remote_alias or 'none'} "
+        + ("pending=YES" if remote_pending else "pending=NO")
+    )
 
 
 def selftest_u1() -> None:
@@ -2061,6 +2520,195 @@ def selftest_generated() -> None:
         raise UpdateError("asset congelado excede o limite da fixture")
 
 
+def selftest_u5_remote() -> None:
+    """Exercita ZUM1, assinatura, padding e controles A/B."""
+    ed25519, _, _ = crypto_modules()
+    private_key = ed25519.Ed25519PrivateKey.generate()
+    other_key = ed25519.Ed25519PrivateKey.generate()
+    public = private_public_info(private_key)
+    package = (U3_FIXTURES / "APPLY.ZUP").read_bytes()
+    manifest = build_remote_manifest(
+        private_key,
+        public,
+        7,
+        Version(0, 1, 0),
+        Version(0, 1, 1),
+        0,
+        0,
+        package,
+        "/zephyros/APPLY.ZUP",
+    )
+    decoded = parse_remote_manifest(manifest, public)
+    if (
+        decoded.generation != 7
+        or decoded.package_size != len(package)
+        or decoded.package_sha256 != hashlib.sha256(package).digest()
+    ):
+        raise UpdateError("round-trip do manifesto remoto divergiu")
+    corrupted = bytearray(manifest)
+    corrupted[40] ^= 1
+    try:
+        parse_remote_manifest(bytes(corrupted), public)
+    except UpdateError:
+        pass
+    else:
+        raise UpdateError("manifesto remoto adulterado foi aceito")
+    try:
+        parse_remote_manifest(manifest, private_public_info(other_key))
+    except UpdateError:
+        pass
+    else:
+        raise UpdateError("chave remota desconhecida foi aceita")
+    invalid_padding = bytearray(manifest)
+    invalid_padding[191] = 1
+    invalid_padding[192:256] = private_key.sign(
+        REMOTE_DOMAIN + bytes(invalid_padding[:192])
+    )
+    try:
+        parse_remote_manifest(bytes(invalid_padding), public)
+    except UpdateError:
+        pass
+    else:
+        raise UpdateError("padding remoto nao zero foi aceito")
+    try:
+        parse_remote_manifest(manifest[:-1], public)
+    except UpdateError:
+        pass
+    else:
+        raise UpdateError("manifesto remoto truncado foi aceito")
+    try:
+        encode_remote_path("/zephyros/../APPLY.ZUP")
+    except UpdateError:
+        pass
+    else:
+        raise UpdateError("travessia no caminho remoto foi aceita")
+    stream_hash = hashlib.sha256()
+    received = 0
+    for offset in range(0, len(package), 509):
+        chunk = package[offset : offset + 509]
+        stream_hash.update(chunk)
+        received += len(chunk)
+    if (
+        received != len(package)
+        or stream_hash.digest() != hashlib.sha256(package).digest()
+    ):
+        raise UpdateError("streaming incremental remoto divergiu")
+    active_cache = b"cache-anterior"
+    pending = bytearray()
+    pending.extend(package[:509])
+    pending.clear()
+    if active_cache != b"cache-anterior" or pending:
+        raise UpdateError("cancelamento remoto nao preservou o cache ativo")
+    should_retry = lambda error, cancelled, attempt: (
+        not cancelled and error in ("TIMEOUT", "STATE", "NOT_FOUND")
+        and attempt == 0
+    )
+    if (
+        not should_retry("TIMEOUT", False, 0)
+        or should_retry("TIMEOUT", True, 0)
+        or should_retry("SIGNATURE", False, 0)
+        or should_retry("TIMEOUT", False, 1)
+    ):
+        raise UpdateError("politica de retry/cancelamento remoto divergiu")
+    empty_hash = bytes(32)
+    record = RemoteRecord(
+        3,
+        REMOTE_PHASE_CLEAN,
+        0,
+        REMOTE_SLOT_NONE,
+        decoded.generation,
+        decoded.package_size,
+        decoded.package_sha256,
+        hashlib.sha256(manifest).digest(),
+        decoded.base_version,
+        decoded.target_version,
+        decoded.base_epoch,
+        decoded.target_epoch,
+    )
+    if decode_remote_record(encode_remote_record(record)) != record:
+        raise UpdateError("round-trip do registro remoto divergiu")
+    older = RemoteRecord(
+        2, record.phase, record.active_slot, record.pending_slot,
+        record.manifest_generation, record.package_size,
+        record.package_sha256, record.manifest_sha256,
+        record.base_version, record.target_version,
+        record.base_epoch, record.target_epoch,
+    )
+    selected = select_redundant_record(
+        (encode_remote_record(older), encode_remote_record(record)),
+        decode_remote_record, "cache remoto U5 de teste",
+    )
+    if selected.sequence != 3:
+        raise UpdateError("selecao A/B do cache remoto divergiu")
+    corrupted_record = bytearray(encode_remote_record(record))
+    corrupted_record[24] ^= 1
+    selected = select_redundant_record(
+        (encode_remote_record(older), bytes(corrupted_record)),
+        decode_remote_record, "cache remoto U5 corrompido",
+    )
+    if selected.sequence != 2:
+        raise UpdateError("fallback A/B do cache remoto divergiu")
+    divergent = RemoteRecord(
+        record.sequence, record.phase, record.active_slot,
+        record.pending_slot, record.manifest_generation + 1,
+        record.package_size, record.package_sha256,
+        record.manifest_sha256, record.base_version,
+        record.target_version, record.base_epoch, record.target_epoch,
+    )
+    try:
+        select_redundant_record(
+            (encode_remote_record(record), encode_remote_record(divergent)),
+            decode_remote_record, "cache remoto U5 empatado",
+        )
+    except UpdateError:
+        pass
+    else:
+        raise UpdateError("empate divergente do cache remoto foi aceito")
+    pending = RemoteRecord(
+        4,
+        REMOTE_PHASE_DOWNLOADING,
+        0,
+        1,
+        decoded.generation,
+        decoded.package_size,
+        decoded.package_sha256,
+        empty_hash,
+        decoded.base_version,
+        decoded.target_version,
+        0,
+        0,
+    )
+    raw = bytearray(encode_remote_record(pending))
+    raw[REMOTE_RECORD_RESERVED_OFFSET] = 1
+    raw[REMOTE_RECORD_HASH_OFFSET:] = hashlib.sha256(
+        raw[:REMOTE_RECORD_HASH_OFFSET]
+    ).digest()
+    try:
+        decode_remote_record(bytes(raw))
+    except UpdateError:
+        pass
+    else:
+        raise UpdateError("reservado remoto nao zero foi aceito")
+    recovered = RemoteRecord(
+        pending.sequence + 1, REMOTE_PHASE_CLEAN,
+        pending.active_slot, REMOTE_SLOT_NONE,
+        pending.manifest_generation, pending.package_size,
+        pending.package_sha256, pending.manifest_sha256,
+        pending.base_version, pending.target_version,
+        pending.base_epoch, pending.target_epoch,
+    )
+    if (
+        decode_remote_record(encode_remote_record(recovered)).phase
+        != REMOTE_PHASE_CLEAN
+    ):
+        raise UpdateError("recuperacao do estado remoto divergiu")
+    check_remote_config(
+        REMOTE_CONFIG,
+        REPO_ROOT / "src" / "include" / "core" /
+        "update_remote_config.h",
+    )
+
+
 def run_selftest() -> None:
     """Executa a suite host sem gravar no repositorio."""
     selftest_u1()
@@ -2069,6 +2717,7 @@ def run_selftest() -> None:
     selftest_u3_metadata()
     selftest_u4_history()
     selftest_generated()
+    selftest_u5_remote()
     print(
         "Updater selftest: OK"
         if u3_ready
@@ -2149,6 +2798,72 @@ def command_fixtures_u3(args: argparse.Namespace) -> None:
     print("Somente artefatos publicos foram gravados no repositorio.")
 
 
+def command_fixtures_u5(args: argparse.Namespace) -> None:
+    """Gera os manifestos assinados e adulterados da U5."""
+    key = load_private_key(Path(args.private), prompt_password())
+    public = load_public_json(Path(args.public))
+    if private_public_info(key) != public:
+        raise UpdateError("chave privada nao corresponde ao JSON publico")
+    write_u5_fixtures(key, Path(args.output_dir))
+    print(f"Fixtures U5 criadas em {Path(args.output_dir).resolve()}")
+    print("Somente manifestos e hashes publicos foram gravados.")
+
+
+def command_serve_u5(args: argparse.Namespace) -> None:
+    """Serve fixtures U5 e pacotes conhecidos para o QEMU SLIRP."""
+    root = Path(args.root).resolve()
+    routes = {
+        "/zephyros/stable.zum": root / "stable.zum",
+        "/zephyros/stable2.zum": root / "stable2.zum",
+        "/zephyros/tampered.zum": root / "tampered.zum",
+        "/zephyros/badpkg.zum": root / "badpkg.zum",
+        "/zephyros/truncated.zum": root / "truncated.zum",
+        "/zephyros/APPLY.ZUP": U3_FIXTURES / "APPLY.ZUP",
+        "/zephyros/BADHASH.ZUP": U2_FIXTURES / "BADHASH.ZUP",
+    }
+    missing = [path for path in routes.values() if not path.is_file()]
+    if missing:
+        raise UpdateError(f"fixture U5 ausente: {missing[0]}")
+
+    class U5Handler(http.server.BaseHTTPRequestHandler):
+        def do_GET(self) -> None:
+            if self.path == "/zephyros/error.zum":
+                self.send_error(500, "fixture HTTP")
+                return
+            if self.path == "/zephyros/slow.zum":
+                time.sleep(55)
+                target = routes["/zephyros/stable.zum"]
+            else:
+                target = routes.get(self.path)
+            if target is None:
+                self.send_error(404, "fixture inexistente")
+                return
+            data = target.read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/octet-stream")
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Connection", "close")
+            self.end_headers()
+            self.wfile.write(data)
+
+        def log_message(self, format: str, *values: object) -> None:
+            print(f"U5 {self.address_string()} - {format % values}")
+
+    server = http.server.ThreadingHTTPServer(
+        (args.bind, args.port), U5Handler
+    )
+    print(
+        f"Servidor U5 em http://{args.bind}:{args.port}/zephyros/stable.zum"
+    )
+    print("Pressione Ctrl+C para encerrar.")
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        server.server_close()
+
+
 def command_audit_image(args: argparse.Namespace) -> None:
     """Executa a auditoria offline da imagem FAT12 apos encerrar o QEMU."""
     expected_version = (
@@ -2163,6 +2878,9 @@ def command_audit_image(args: argparse.Namespace) -> None:
         args.allow_pending,
         args.expect_history_count,
         args.expect_last_event,
+        args.expect_remote_cache,
+        args.expect_remote_alias,
+        args.expect_remote_pending,
     )
 
 
@@ -2203,6 +2921,22 @@ def build_parser() -> argparse.ArgumentParser:
     fixtures_u3.add_argument("--output-dir", required=True)
     fixtures_u3.set_defaults(handler=command_fixtures_u3)
 
+    fixtures_u5 = subparsers.add_parser(
+        "fixtures-u5", help="gera manifestos remotos da U5"
+    )
+    fixtures_u5.add_argument("--private", required=True)
+    fixtures_u5.add_argument("--public", required=True)
+    fixtures_u5.add_argument("--output-dir", required=True)
+    fixtures_u5.set_defaults(handler=command_fixtures_u5)
+
+    serve_u5 = subparsers.add_parser(
+        "serve-u5", help="serve fixtures U5 para o QEMU"
+    )
+    serve_u5.add_argument("--root", required=True)
+    serve_u5.add_argument("--bind", default="0.0.0.0")
+    serve_u5.add_argument("--port", type=int, default=8000)
+    serve_u5.set_defaults(handler=command_serve_u5)
+
     audit = subparsers.add_parser(
         "audit-image", help="audita estado U3/U4 em uma imagem FAT12"
     )
@@ -2219,6 +2953,17 @@ def build_parser() -> argparse.ArgumentParser:
         "--expect-last-event",
         choices=tuple(UPDATE_HISTORY_OPERATION_NAMES.values()),
     )
+    audit.add_argument(
+        "--expect-remote-cache",
+        choices=("any", "empty", "valid"),
+        default="any",
+    )
+    audit.add_argument("--expect-remote-alias")
+    audit.add_argument(
+        "--expect-remote-pending",
+        choices=("any", "clean", "pending"),
+        default="clean",
+    )
     audit.set_defaults(handler=command_audit_image)
 
     sync = subparsers.add_parser("sync-trust", help="gera o header publico")
@@ -2233,6 +2978,28 @@ def build_parser() -> argparse.ArgumentParser:
     check.add_argument("--header", required=True)
     check.set_defaults(
         handler=lambda args: check_trust(Path(args.public), Path(args.header))
+    )
+
+    sync_remote = subparsers.add_parser(
+        "sync-remote", help="gera o header do canal remoto"
+    )
+    sync_remote.add_argument("--config", required=True)
+    sync_remote.add_argument("--output", required=True)
+    sync_remote.set_defaults(
+        handler=lambda args: sync_remote_config(
+            Path(args.config), Path(args.output)
+        )
+    )
+
+    check_remote = subparsers.add_parser(
+        "check-remote", help="confere JSON e header do canal"
+    )
+    check_remote.add_argument("--config", required=True)
+    check_remote.add_argument("--header", required=True)
+    check_remote.set_defaults(
+        handler=lambda args: check_remote_config(
+            Path(args.config), Path(args.header)
+        )
     )
 
     selftest = subparsers.add_parser("selftest", help="executa testes host")

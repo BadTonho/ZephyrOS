@@ -85,5 +85,11 @@ int  fat12_atomic_write_root(const char* filename, const uint8_t* data,
                              uint32_t size, uint8_t attributes,
                              int require_existing);
 int  fat12_atomic_delete_root(const char* filename);
+int  fat12_stream_begin_root(const char* filename, uint32_t expected_size,
+                             uint8_t attributes);
+int  fat12_stream_write_root(const uint8_t* data, uint32_t size);
+int  fat12_stream_finish_root(void);
+int  fat12_stream_abort_root(void);
+int  fat12_stream_is_active(void);
 
 #endif

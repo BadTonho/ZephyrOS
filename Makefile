@@ -49,6 +49,9 @@ CRYPTO_ED25519_OBJ = build/crypto_ed25519.o
 UPDATE_C = src/core/update.c
 UPDATE_OBJ = build/update.o
 
+UPDATE_REMOTE_C = src/core/update_remote.c
+UPDATE_REMOTE_OBJ = build/update_remote.o
+
 DEVICE_MANAGER_C = src/core/device_manager.c
 DEVICE_MANAGER_OBJ = build/device_manager.o
 
@@ -261,7 +264,7 @@ OS_IMG = build/zephyros.img
 FAT12_DISK_BYTES = 1474560
 
 # Todas as variáveis de objetos
-OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(UPDATE_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
+OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(UPDATE_OBJ) $(UPDATE_REMOTE_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(COMPRESS_OBJ) \
@@ -307,6 +310,10 @@ $(CRYPTO_ED25519_OBJ): $(CRYPTO_ED25519_C)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(UPDATE_OBJ): $(UPDATE_C)
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(UPDATE_REMOTE_OBJ): $(UPDATE_REMOTE_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

@@ -460,9 +460,11 @@ O contrato nao cobre:
 - confidencialidade dos payloads;
 - negacao de servico por remocao ou indisponibilidade do arquivo.
 
-A fonte do arquivo nao concede confianca. U1 a U4 sao locais; na U5, a rede
-sera apenas transporte opcional e o mesmo contrato criptografico continuara
-obrigatorio.
+A fonte do arquivo nao concede confianca. Na U5, a rede e apenas transporte
+opcional: o manifesto ZUM1 e autenticado com a raiz de release e o pacote
+baixado passa novamente por este contrato completo antes do cache. O formato,
+allowlist, ordem de validacao e politica de versao ZUPD nao mudam. O contrato
+remoto fica em [`distribuicao-remota.md`](distribuicao-remota.md).
 
 ## Vetores publicos
 
@@ -490,4 +492,5 @@ manifesto publica os hashes dos assets de origem, payloads e artefato.
 - [Manual Ed25519 do Monocypher](https://monocypher.org/manual/ed25519)
 - [`docs/13-aplicativos/pacotes.md`](../13-aplicativos/pacotes.md) - ZPKG v1
 - [`ferramenta-zupd.md`](ferramenta-zupd.md) - chave, build, verificacao e fixtures
+- [`distribuicao-remota.md`](distribuicao-remota.md) - manifesto e cache U5
 - [`docs/melhorias futuras/atualizacoes.md`](../melhorias%20futuras/atualiza%C3%A7%C3%B5es.md) - roteiro U1-U5

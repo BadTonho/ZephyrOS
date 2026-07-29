@@ -13,6 +13,7 @@
 #define HTTP_READ_CHUNK 512U
 #define HTTP_TIMEOUT_SECONDS 45U
 #define HTTP_MAX_SAFE_TICKS 0x7FFFFFFFU
+#define HTTP_MAX_BODY_LIMIT 0x7FFFFFFFU
 
 typedef struct {
     uint16_t status_code;
@@ -30,6 +31,10 @@ static uint8_t http_request_buffer[HTTP_REQUEST_CAPACITY];
 static uint16_t http_request_length;
 static uint16_t http_request_offset;
 static uint32_t http_started_tick;
+static http_body_sink_t http_body_sink;
+static void* http_body_sink_context;
+static uint32_t http_body_limit;
+static uint8_t http_streaming;
 
 static void http_complete(void);
 
@@ -276,7 +281,8 @@ static int http_build_request(void) {
     if (result == OK) {
         result = http_append_text(
             "\r\nUser-Agent: ZephyrOS/0.1\r\n"
-            "Accept: */*\r\nConnection: close\r\n\r\n");
+            "Accept: */*\r\nAccept-Encoding: identity\r\n"
+            "Connection: close\r\n\r\n");
     }
     if (result != OK) {
         LOG_ERROR("NET", "Falha ao montar request HTTP");
@@ -401,7 +407,8 @@ static int http_parse_header_line(const uint8_t* data,
         if ((data[index] < 0x20U && data[index] != '\t') ||
             data[index] == 0x7FU) return ERR_INVALID;
     }
-    if (http_range_equal(data, colon, "Transfer-Encoding")) {
+    if (http_range_equal(data, colon, "Transfer-Encoding") ||
+        http_range_equal(data, colon, "Content-Encoding")) {
         return ERR_UNAVAILABLE;
     }
     if (!http_range_equal(data, colon, "Content-Length")) return OK;
@@ -453,9 +460,6 @@ static int http_parse_headers(const uint8_t* data, uint32_t length,
     } else if (!result->has_content_length) {
         result->eof_framed = 1;
     }
-    if (result->content_length > HTTP_BODY_CAPACITY) {
-        return ERR_OVERFLOW;
-    }
     return OK;
 }
 
@@ -486,13 +490,19 @@ static void http_clear_session(http_state_t state) {
     http_status.status_code = 0;
     http_status.headers_length = 0;
     http_status.body_length = 0;
+    http_status.body_limit = 0;
     http_status.content_length = 0;
     http_status.has_content_length = 0;
     http_status.eof_framed = 0;
+    http_status.streaming = 0;
     http_status.last_error = OK;
     http_request_length = 0;
     http_request_offset = 0;
     http_started_tick = 0;
+    http_body_sink = 0;
+    http_body_sink_context = 0;
+    http_body_limit = 0;
+    http_streaming = 0;
     kmemset(http_header_buffer, 0, sizeof(http_header_buffer));
     kmemset(http_body_buffer, 0, sizeof(http_body_buffer));
 }
@@ -556,7 +566,7 @@ static int http_finish_headers(void) {
 
     if (parse_result != OK) {
         if (parse_result == ERR_UNAVAILABLE) {
-            LOG_WARN("NET", "Transfer-Encoding HTTP nao suportado");
+            LOG_WARN("NET", "Encoding HTTP nao suportado");
         } else {
             LOG_WARN("NET", "Resposta HTTP possui headers invalidos");
         }
@@ -566,6 +576,11 @@ static int http_finish_headers(void) {
     http_status.content_length = result.content_length;
     http_status.has_content_length = result.has_content_length;
     http_status.eof_framed = result.eof_framed;
+    if (result.has_content_length &&
+        result.content_length > http_body_limit) {
+        LOG_WARN("NET", "Corpo HTTP excede o limite da sessao");
+        return ERR_OVERFLOW;
+    }
     http_status.state = HTTP_STATE_RECEIVING_BODY;
     return OK;
 }
@@ -581,8 +596,9 @@ static void http_complete(void) {
 }
 
 static int http_consume_body(const uint8_t* data, uint16_t length) {
-    uint32_t remaining = HTTP_BODY_CAPACITY -
+    uint32_t remaining = http_body_limit -
                          http_status.body_length;
+    int result;
 
     if (!data && length != 0U) {
         LOG_ERROR("NET", "Corpo HTTP nulo");
@@ -593,8 +609,17 @@ static int http_consume_body(const uint8_t* data, uint16_t length) {
         http_status.body_length + length >
             http_status.content_length) return ERR_INVALID;
     if (length) {
-        kmemcpy(http_body_buffer + http_status.body_length,
-                data, length);
+        if (http_streaming) {
+            result = http_body_sink(
+                data, (uint32_t)length, http_body_sink_context);
+            if (result != OK) {
+                LOG_ERROR("NET", "Consumidor do corpo HTTP recusou dados");
+                return result;
+            }
+        } else {
+            kmemcpy(http_body_buffer + http_status.body_length,
+                    data, length);
+        }
         http_status.body_length += length;
     }
     if (http_status.has_content_length &&
@@ -663,7 +688,8 @@ int http_init(void) {
     return OK;
 }
 
-int http_get_start(const char* url) {
+static int http_get_start_internal(const char* url, uint32_t body_limit,
+                                   http_body_sink_t sink, void* context) {
     char host[HTTP_HOST_BUFFER_SIZE];
     char path[HTTP_PATH_BUFFER_SIZE];
     uint32_t address = 0;
@@ -672,9 +698,13 @@ int http_get_start(const char* url) {
     uint8_t resolved = 0;
     int result;
 
-    if (!url) {
+    if (!url || body_limit == 0U || (sink == 0 && context != 0)) {
         LOG_ERROR("NET", "URL nula no GET HTTP");
         return ERR_NULL;
+    }
+    if (body_limit > HTTP_MAX_BODY_LIMIT) {
+        LOG_ERROR("NET", "Limite de corpo HTTP invalido");
+        return ERR_OVERFLOW;
     }
     if (!http_status.initialized) {
         LOG_ERROR("NET", "GET HTTP antes da inicializacao");
@@ -694,6 +724,12 @@ int http_get_start(const char* url) {
     }
     http_release_socket();
     http_clear_session(HTTP_STATE_RESOLVING);
+    http_body_sink = sink;
+    http_body_sink_context = context;
+    http_body_limit = body_limit;
+    http_streaming = sink ? 1U : 0U;
+    http_status.body_limit = body_limit;
+    http_status.streaming = http_streaming;
     http_copy_text(http_status.url, sizeof(http_status.url),
                    url, kstrlen(url));
     http_copy_text(http_status.host, sizeof(http_status.host),
@@ -720,6 +756,20 @@ int http_get_start(const char* url) {
         return result;
     }
     return OK;
+}
+
+int http_get_start(const char* url) {
+    return http_get_start_internal(
+        url, HTTP_BODY_CAPACITY, 0, 0);
+}
+
+int http_get_stream_start(const char* url, uint32_t body_limit,
+                          http_body_sink_t sink, void* context) {
+    if (!sink) {
+        LOG_ERROR("NET", "Consumidor nulo no GET HTTP streaming");
+        return ERR_NULL;
+    }
+    return http_get_start_internal(url, body_limit, sink, context);
 }
 
 static int http_maintain_resolving(void) {
@@ -878,6 +928,10 @@ int http_get_body(const uint8_t** out_body, uint32_t* out_length) {
         LOG_ERROR("NET", "Consulta de corpo HTTP antes da inicializacao");
         return ERR_STATE;
     }
+    if (http_streaming) {
+        LOG_WARN("NET", "Corpo HTTP streaming nao possui buffer consultavel");
+        return ERR_UNAVAILABLE;
+    }
     *out_body = http_body_buffer;
     *out_length = http_status.body_length;
     return OK;
@@ -905,6 +959,9 @@ static int http_validate_header_vectors(void) {
         "HTTP/1.1 200 OK\r\nContent-Length: 3\r\n\r\n";
     static const uint8_t chunked[] =
         "HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n";
+    static const uint8_t compressed[] =
+        "HTTP/1.1 200 OK\r\nContent-Encoding: gzip\r\n"
+        "Content-Length: 3\r\n\r\n";
     static const uint8_t conflicting[] =
         "HTTP/1.1 200 OK\r\nContent-Length: 3\r\n"
         "Content-Length: 4\r\n\r\n";
@@ -919,6 +976,11 @@ static int http_validate_header_vectors(void) {
     if (http_parse_headers(chunked, sizeof(chunked) - 1U,
                            &result) != ERR_UNAVAILABLE) {
         LOG_ERROR("NET", "Chunked HTTP foi aceito");
+        return ERR_STATE;
+    }
+    if (http_parse_headers(compressed, sizeof(compressed) - 1U,
+                           &result) != ERR_UNAVAILABLE) {
+        LOG_ERROR("NET", "Compressao HTTP foi aceita");
         return ERR_STATE;
     }
     if (http_parse_headers(conflicting, sizeof(conflicting) - 1U,
@@ -944,10 +1006,13 @@ int http_validate_state(void) {
         http_status.host[HTTP_HOST_MAX_LENGTH] != '\0' ||
         http_status.path[HTTP_PATH_MAX_LENGTH] != '\0' ||
         http_status.headers_length > HTTP_HEADER_CAPACITY ||
-        http_status.body_length > HTTP_BODY_CAPACITY ||
-        http_status.content_length > HTTP_BODY_CAPACITY ||
+        http_status.body_length > http_status.body_limit ||
+        http_status.body_limit != http_body_limit ||
+        (http_status.streaming != http_streaming) ||
+        (http_streaming && !http_body_sink) ||
         (http_status.has_content_length &&
-         http_status.body_length > http_status.content_length) ||
+         (http_status.body_length > http_status.content_length ||
+          http_status.content_length > http_status.body_limit)) ||
         (http_status.state == HTTP_STATE_COMPLETE &&
          (http_status.status_code < HTTP_STATUS_MINIMUM ||
           http_status.status_code > HTTP_STATUS_MAXIMUM)) ||

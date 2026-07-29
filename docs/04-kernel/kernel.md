@@ -407,10 +407,13 @@ segmentos limitados pelo MSS. A API nao e exposta como syscall de userspace.
 O cliente HTTP mantem uma sessao GET. Ele aceita somente
 `http://host[:porta]/caminho`, resolve nomes pelo DNS, envia HTTP/1.1 com
 `Host`, `User-Agent`, `Accept` e `Connection: close`, e armazena ate 4096
-bytes de headers e 16 KiB de corpo. O framing aceito usa `Content-Length` ou
-EOF; `Transfer-Encoding`, chunked, headers conflitantes, mensagens
-malformadas e excesso de corpo falham de forma controlada. HTTPS, redirects,
-POST, compressao e escrita em disco permanecem fora do contrato.
+bytes de headers. `http_get_start()` preserva o corpo bufferizado de ate 16
+KiB. Desde a U5, `http_get_stream_start()` entrega o corpo incrementalmente a
+um callback e respeita o limite definido pelo chamador, de ate 128 KiB no
+transporte ZUPD. O framing aceito usa `Content-Length` ou EOF; a U5 exige
+`Content-Length` exato. `Transfer-Encoding`, chunked, headers conflitantes,
+mensagens malformadas e excesso de corpo falham de forma controlada. HTTPS,
+redirects, POST e compressao permanecem fora do contrato.
 
 O polling da S2.7 acrescenta manutencao TCP, sockets e HTTP, nessa ordem,
 depois de DNS. Mudanca efetiva de IPv4, lease removido/expirado ou ARP
@@ -551,6 +554,26 @@ O kernel inicializa o System Updater depois do Window Manager. A abertura pelo
 menu Iniciar usa `IPC_APP_OPEN_UPDATER`, tambem anexado ao fim da enumeracao
 IPC para preservar todos os valores anteriores. Em Modern o aplicativo e
 hospedado pelo WM; se isso nao for possivel, abre automaticamente em Classic.
+
+## U5: distribuicao remota opcional
+
+`src/include/core/update_remote.h` separa transporte remoto do servico
+transacional. O kernel inicializa o modulo depois de filesystem, Update e
+Network Manager. A inicializacao recupera somente o cache local, deixa a
+sessao `DISABLED` e nunca abre conexao nem configura rede.
+
+O manifesto fixo `ZUM1` e autenticado com a mesma raiz Ed25519 do ZUPD. O
+download HTTP usa callback streaming, SHA-256 incremental e a escrita
+sequencial FAT12; depois do ultimo byte, `update_verify_file()` revalida
+integralmente o pacote antes do commit do cache. Timeout transitorio permite
+uma repeticao do byte zero. Cancelamento, assinatura, hash ou politica
+invalidos nao repetem.
+
+Os registros `ZUR0.STA` e `ZUR1.STA` recuperam download interrompido sem
+rede. Os slots `ZUR0.ZUP` e `ZUR1.ZUP` alternam somente depois da autenticacao,
+preservando o pacote anterior em toda falha. FAT32 permite consulta do
+manifesto, mas nao download. O contrato binario completo esta em
+[`distribuicao-remota.md`](../14-atualizacoes/distribuicao-remota.md).
 
 ## Struct `registers_t`
 

@@ -354,6 +354,31 @@ FAT32 continua disponivel para leitura e para `update verify`, mas essas
 operacoes atomicas retornam `ERR_UNAVAILABLE`. Diretorios e caminhos fora da
 raiz tambem ficam fora do contrato U3.
 
+### Escrita sequencial de raiz para U5
+
+A U5 acrescenta uma sessao FAT12 unica para receber arquivos de ate 128 KiB
+sem manter o corpo inteiro em RAM:
+
+```c
+int fs_stream_begin_root(const char* filename, uint32_t expected_size,
+                         uint8_t attributes);
+int fs_stream_write_root(const uint8_t* data, uint32_t size);
+int fs_stream_finish_root(void);
+int fs_stream_abort_root(void);
+int fs_stream_is_active(void);
+```
+
+`begin` exige nome 8.3 de raiz, tamanho conhecido e slot ainda inativo.
+`write` aceita blocos sequenciais e usa um buffer setorial de 512 bytes.
+`finish` exige exatamente o tamanho anunciado antes de publicar o tamanho da
+entrada. `abort` remove primeiro a entrada parcial e depois libera a cadeia.
+Outras mutacoes publicas sao recusadas enquanto a sessao estiver ativa.
+
+O servico remoto usa apenas aliases internos hidden/system/archive
+`ZUR0.ZUP` e `ZUR1.ZUP`. FAT32, subdiretorios e tamanhos acima de 128 KiB
+retornam `ERR_UNAVAILABLE` ou `ERR_OVERFLOW`. O commit autenticado entre os
+slots e responsabilidade de Update, nao do filesystem.
+
 ### Estrutura de Informação
 
 ```c

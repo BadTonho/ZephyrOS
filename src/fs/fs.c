@@ -10,6 +10,15 @@
 static uint8_t current_fs_type = FS_TYPE_NONE;
 static spinlock_t fs_operation_lock;
 
+static int fs_stream_blocks_mutation_unlocked(void) {
+    if (current_fs_type == FS_TYPE_FAT12 &&
+        fat12_stream_is_active()) {
+        LOG_WARN("FS", "Mutacao recusada durante escrita streaming");
+        return 1;
+    }
+    return 0;
+}
+
 static int fs_write_file_in_dir_unlocked(const char* dir_path,
                                          const char* filename,
                                          const uint8_t* data,
@@ -58,7 +67,9 @@ int fs_write_file(const char* filename, const uint8_t* data, uint32_t size) {
     int result;
 
     spinlock_acquire(&fs_operation_lock);
-    if (current_fs_type == FS_TYPE_FAT12) {
+    if (fs_stream_blocks_mutation_unlocked()) {
+        result = ERR_STATE;
+    } else if (current_fs_type == FS_TYPE_FAT12) {
         result = fat12_write_file(filename, data, size);
     } else if (current_fs_type == FS_TYPE_FAT32) {
         result = fat32_write_file(filename, data, size);
@@ -73,7 +84,9 @@ int fs_delete_file(const char* filename) {
     int result;
 
     spinlock_acquire(&fs_operation_lock);
-    if (current_fs_type == FS_TYPE_FAT12) {
+    if (fs_stream_blocks_mutation_unlocked()) {
+        result = ERR_STATE;
+    } else if (current_fs_type == FS_TYPE_FAT12) {
         result = fat12_delete_file(filename);
     } else if (current_fs_type == FS_TYPE_FAT32) {
         result = fat32_delete_file(filename);
@@ -310,7 +323,8 @@ int fs_write_file_at(const char* path, const uint8_t* data, uint32_t size) {
     int result;
 
     spinlock_acquire(&fs_operation_lock);
-    result = fs_write_file_at_unlocked(path, data, size);
+    result = fs_stream_blocks_mutation_unlocked() ?
+             ERR_STATE : fs_write_file_at_unlocked(path, data, size);
     spinlock_release(&fs_operation_lock);
     return result;
 }
@@ -363,6 +377,10 @@ int fs_create_dir_entry(const char* dir_path, const char* name, uint8_t attribut
     int result;
 
     spinlock_acquire(&fs_operation_lock);
+    if (fs_stream_blocks_mutation_unlocked()) {
+        spinlock_release(&fs_operation_lock);
+        return ERR_STATE;
+    }
     uint32_t cluster = fs_resolve_dir_cluster(dir_path);
     if (cluster == 0xFFFFFFFF) {
         spinlock_release(&fs_operation_lock);
@@ -405,7 +423,10 @@ int fs_write_file_in_dir(const char* dir_path, const char* filename,
     int result;
 
     spinlock_acquire(&fs_operation_lock);
-    result = fs_write_file_in_dir_unlocked(dir_path, filename, data, size);
+    result = fs_stream_blocks_mutation_unlocked() ?
+             ERR_STATE :
+             fs_write_file_in_dir_unlocked(
+                 dir_path, filename, data, size);
     spinlock_release(&fs_operation_lock);
     return result;
 }
@@ -414,6 +435,10 @@ int fs_delete_file_in_dir(const char* dir_path, const char* filename) {
     int result;
 
     spinlock_acquire(&fs_operation_lock);
+    if (fs_stream_blocks_mutation_unlocked()) {
+        spinlock_release(&fs_operation_lock);
+        return ERR_STATE;
+    }
     uint32_t cluster = fs_resolve_dir_cluster(dir_path);
     if (cluster == 0xFFFFFFFF) {
         spinlock_release(&fs_operation_lock);
@@ -470,7 +495,9 @@ int fs_atomic_write_root(const char* filename, const uint8_t* data,
     }
 
     spinlock_acquire(&fs_operation_lock);
-    if (current_fs_type == FS_TYPE_FAT12) {
+    if (fs_stream_blocks_mutation_unlocked()) {
+        result = ERR_STATE;
+    } else if (current_fs_type == FS_TYPE_FAT12) {
         result = fat12_atomic_write_root(
             filename, data, size, attributes,
             mode == FS_ATOMIC_REPLACE_ONLY);
@@ -490,7 +517,9 @@ int fs_atomic_delete_root(const char* filename) {
         return ERR_NULL;
     }
     spinlock_acquire(&fs_operation_lock);
-    if (current_fs_type == FS_TYPE_FAT12) {
+    if (fs_stream_blocks_mutation_unlocked()) {
+        result = ERR_STATE;
+    } else if (current_fs_type == FS_TYPE_FAT12) {
         result = fat12_atomic_delete_root(filename);
     } else {
         result = ERR_UNAVAILABLE;
@@ -500,4 +529,73 @@ int fs_atomic_delete_root(const char* filename) {
         LOG_ERROR("FS", "Exclusao atomica FAT12 falhou");
     }
     return result;
+}
+
+int fs_stream_begin_root(const char* filename, uint32_t expected_size,
+                         uint8_t attributes) {
+    int result;
+
+    if (!filename) {
+        LOG_ERROR("FS", "Nome nulo no inicio streaming");
+        return ERR_NULL;
+    }
+    if (!expected_size || expected_size > FS_MAX_STREAM_FILE_SIZE) {
+        LOG_ERROR("FS", "Tamanho invalido no inicio streaming");
+        return ERR_OVERFLOW;
+    }
+    spinlock_acquire(&fs_operation_lock);
+    result = current_fs_type == FS_TYPE_FAT12 ?
+             fat12_stream_begin_root(
+                 filename, expected_size, attributes) :
+             ERR_UNAVAILABLE;
+    spinlock_release(&fs_operation_lock);
+    if (result != OK) LOG_ERROR("FS", "Inicio streaming FAT12 falhou");
+    return result;
+}
+
+int fs_stream_write_root(const uint8_t* data, uint32_t size) {
+    int result;
+
+    if (!data && size) {
+        LOG_ERROR("FS", "Dados nulos na escrita streaming");
+        return ERR_NULL;
+    }
+    spinlock_acquire(&fs_operation_lock);
+    result = current_fs_type == FS_TYPE_FAT12 ?
+             fat12_stream_write_root(data, size) : ERR_UNAVAILABLE;
+    spinlock_release(&fs_operation_lock);
+    if (result != OK) LOG_ERROR("FS", "Escrita streaming FAT12 falhou");
+    return result;
+}
+
+int fs_stream_finish_root(void) {
+    int result;
+
+    spinlock_acquire(&fs_operation_lock);
+    result = current_fs_type == FS_TYPE_FAT12 ?
+             fat12_stream_finish_root() : ERR_UNAVAILABLE;
+    spinlock_release(&fs_operation_lock);
+    if (result != OK) LOG_ERROR("FS", "Finalizacao streaming FAT12 falhou");
+    return result;
+}
+
+int fs_stream_abort_root(void) {
+    int result;
+
+    spinlock_acquire(&fs_operation_lock);
+    result = current_fs_type == FS_TYPE_FAT12 ?
+             fat12_stream_abort_root() : ERR_UNAVAILABLE;
+    spinlock_release(&fs_operation_lock);
+    if (result != OK) LOG_ERROR("FS", "Cancelamento streaming FAT12 falhou");
+    return result;
+}
+
+int fs_stream_is_active(void) {
+    int active;
+
+    spinlock_acquire(&fs_operation_lock);
+    active = current_fs_type == FS_TYPE_FAT12 ?
+             fat12_stream_is_active() : 0;
+    spinlock_release(&fs_operation_lock);
+    return active;
 }

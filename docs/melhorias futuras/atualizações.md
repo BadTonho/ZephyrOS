@@ -8,7 +8,7 @@
 | U2 | Verificacao local, assinada e sem escrita | Concluida |
 | U3 | Aplicacao transacional, recuperacao e rollback | Concluida |
 | U4 | Diagnosticos e interfaces Classic/Modern | Concluida |
-| U5 | Distribuicao remota opcional | Pendente |
+| U5 | Distribuicao remota opcional | Em validacao |
 
 O ZPKG v1 continua sendo exclusivamente o container de aplicativos locais.
 Atualizacoes do sistema usarao um artefato versionado proprio, definido na U1,
@@ -31,6 +31,10 @@ somente-leitura, auditoria host e o aplicativo nativo documentado em
 `docs/14-atualizacoes/system-updater.md`. Classic e Modern, aplicacao,
 rollback, failpoint e recuperacao no boot foram confirmados no QEMU.
 
+A implementacao U5 acrescenta manifesto assinado `ZUM1`, HTTP streaming,
+cache FAT12 A/B, comandos manuais e a aba Remoto. Ela permanece em validacao
+ate os fixtures assinados e a matriz QEMU serem aprovados.
+
 ---
 
 ## Atalhos e Comandos Planejados
@@ -42,10 +46,11 @@ rollback, failpoint e recuperacao no boot foram confirmados no QEMU.
 | `update rollback` | U3 | Restaura a ultima atualizacao recuperavel. |
 | `update status` | U4 | Mostra estado, versao e recuperacao pendente. |
 | `update history` | U4 | Lista operacoes concluidas e falhas. |
-| `update fetch` | U5 | Busca somente metadados remotos quando habilitado. |
+| `update remote ...` | U5 | Habilita, diagnostica e limpa o cache remoto. |
+| `update fetch` | U5 | Consulta ou baixa sem instalar, quando habilitado. |
 
-Comandos U1-U4 ja implementados seguem o estado da tabela; U5 continua
-planejado.
+Todos os comandos U1-U5 estao implementados; os comandos U5 permanecem em
+validacao.
 
 ---
 
@@ -132,11 +137,11 @@ journal limpo.
 
 ## Fase U5 - Distribuicao Remota Opcional
 
-- [ ] Definir manifesto remoto assinado, canal de distribuicao e politica de
+- [x] Definir manifesto remoto assinado, canal de distribuicao e politica de
   cache, timeout, retry e indisponibilidade.
-- [ ] Implementar `update fetch` somente quando a rede estiver pronta e a
+- [x] Implementar `update fetch` somente quando a rede estiver pronta e a
   operacao tiver sido habilitada pelo usuario.
-- [ ] Exigir a mesma verificacao criptografica U2 apos qualquer download;
+- [x] Exigir a mesma verificacao criptografica U2 apos qualquer download;
   nenhuma resposta remota pode disparar instalacao automatica.
 - [ ] Validar rede ausente, timeout, manifesto adulterado, pacote invalido e
   fluxo remoto completo no QEMU, sem perder a operacao local.
@@ -144,11 +149,17 @@ journal limpo.
 **Criterio de saida:** a rede e apenas transporte opcional; autenticidade e
 aplicacao segura permanecem identicas ao fluxo local.
 
+Em validacao: o servico inicia desabilitado, autentica `ZUM1`, baixa por
+streaming para slots `ZUR0/1.ZUP`, preserva o cache anterior e publica somente
+depois de SHA-256 e verificacao ZUPD. Shell e System Updater oferecem consulta,
+download e limpeza confirmados. Fixtures assinados e testes QEMU ainda sao
+necessarios para concluir a fase.
+
 ---
 
 ## Limitacoes
 
-- U1-U4 nao alteram `src/boot/boot.asm`, stage2 ou o contrato de boot atual.
+- U1-U5 nao alteram `src/boot/boot.asm`, stage2 ou o contrato de boot atual.
   Uma atualizacao de bootloader ou kernel exige uma etapa dedicada e aprovacao
   explicita antes de qualquer escrita nesses componentes.
 - Nao ha instalacao automatica, telemetria, conta online, dependencia de GitHub
@@ -162,8 +173,10 @@ aplicacao segura permanecem identicas ao fluxo local.
 - `docs/fixtures/updates/v1/` -- vetores publicos e resultados esperados.
 - `docs/fixtures/updates/u2/` -- matriz assinada pela raiz publica de release.
 - `docs/fixtures/updates/u3/` -- pacote APPLY e payloads publicos da U3.
+- `docs/fixtures/updates/u5/` -- manifestos remotos publicos da U5.
 - `docs/14-atualizacoes/ferramenta-zupd.md` -- operacao segura da ferramenta.
 - `docs/14-atualizacoes/system-updater.md` -- aplicativo dual da U4.
+- `docs/14-atualizacoes/distribuicao-remota.md` -- contrato ZUM1 e cache U5.
 - `docs/13-aplicativos/pacotes.md` -- contrato do ZPKG v1 de aplicativos.
 - `docs/roadmaps/05-sistema-e-ecossistema.md` -- ordem executavel de U1-U5.
 - `docs/regras.md` -- requisitos de qualidade, logs e validacao.

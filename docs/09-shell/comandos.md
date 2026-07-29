@@ -733,7 +733,9 @@ zephyr> update status
 
 Estado ausente no baseline aparece como `EMPTY`, nao como corrupcao. Historico
 com ambas as copias invalidas aparece como `INVALID`, mas nao desabilita por si
-so verificacao, aplicacao ou rollback.
+so verificacao, aplicacao ou rollback. Desde a U5, a linha `remoto` mostra
+`DISABLED`, `READY` ou `DEGRADED` sem confundir falhas de transporte com o
+servico local.
 
 ## `update history`
 
@@ -751,12 +753,47 @@ Aplicacao e rollback confirmados podem registrar `SUCCESS`, `FAILED` ou
 pendente e `RECOVERY_APPLY/RECOVERED` ou
 `RECOVERY_ROLLBACK/RECOVERED`.
 
+## `update remote`
+
+Controla a distribuicao remota somente na sessao atual:
+
+```text
+zephyr> update remote status
+zephyr> update remote enable
+zephyr> update remote disable
+zephyr> update remote clear
+zephyr> update remote clear --confirm
+```
+
+O boot sempre inicia com remoto desabilitado. `enable` nao configura DHCP nem
+faz uma consulta. `status` mostra rede, canal, URL, candidato, progresso,
+retry, motivo e alias do cache. `clear` faz apenas preflight; `--confirm`
+remove os slots e controles remotos, sem alterar arquivos instalados ou
+historico U4.
+
+## `update fetch`
+
+Consulta o manifesto Stable autenticado. Sem confirmacao nao grava:
+
+```text
+zephyr> update fetch
+zephyr> update fetch --confirm
+zephyr> update fetch --url http://10.0.2.2:8000/zephyros/stable2.zum
+zephyr> update fetch --url http://10.0.2.2:8000/zephyros/stable2.zum --confirm
+```
+
+`--confirm` repete a consulta, exige o mesmo manifesto apresentado e baixa o
+ZUPD para o slot FAT12 inativo. O pacote passa por SHA-256 e pelo verificador
+U2 completo antes de substituir o cache anterior. Esc ou F12 cancela de forma
+cooperativa. O download nunca aplica o pacote e nunca entra no historico U4.
+FAT32 permite a consulta, mas recusa cache.
+
 ## `updater`
 
 Abre o aplicativo nativo System Updater. Classic usa TUI em tela cheia;
 Modern abre uma janela hospedada pelo Window Manager e volta automaticamente
-ao Classic se a hospedagem estiver indisponivel. As abas Pacotes, Estado e
-Historico e os fluxos de confirmacao sao descritos em
+ao Classic se a hospedagem estiver indisponivel. As abas Pacotes, Estado,
+Historico e Remoto e os fluxos de confirmacao sao descritos em
 [`system-updater.md`](../14-atualizacoes/system-updater.md).
 
 ## `pkg list|info|verify|install|remove`

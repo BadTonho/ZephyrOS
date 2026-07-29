@@ -4,6 +4,7 @@
 #include "core/spinlock.h"
 #include "core/string.h"
 #include "core/update_trust.h"
+#include "core/update_remote.h"
 #include "core/version.h"
 #include "fs/fs.h"
 
@@ -2219,7 +2220,8 @@ static void update_refresh_capabilities(void) {
         (update_history_store == UPDATE_STORE_EMPTY ||
          update_history_store == UPDATE_STORE_VALID) &&
         !update_history_write_failed;
-    update_capabilities.remote_available = 0;
+    update_capabilities.remote_available =
+        update_remote_capability_available() ? 1U : 0U;
 }
 
 int update_init(void) {

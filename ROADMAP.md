@@ -622,7 +622,9 @@ Sistema e ecossistema:       [████████████████�
   rollback e failpoint passaram no QEMU; a recuperacao preservou `0.1.0`,
   registrou quatro eventos, deixou o journal limpo e terminou com
   `regcheck full` e `audit-image` em `OK`.
-- [ ] U5 permanece pendente; remoto continua `DISABLED`.
+- [ ] U5 em validacao: manifesto assinado `ZUM1`, HTTP streaming, cache FAT12
+  redundante, comandos e quarta aba Classic/Modern estao implementados. Faltam
+  gerar os fixtures publicos com a chave externa e aprovar a matriz QEMU.
 
 ## Roadmaps por etapa
 

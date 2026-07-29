@@ -41,6 +41,8 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/core/timer.h` | `docs/05-drivers/drivers.md` |
 | `src/include/core/udp.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/update.h` | `docs/14-atualizacoes/contrato-zupd-v1.md` |
+| `src/include/core/update_remote.h` | `docs/14-atualizacoes/distribuicao-remota.md` |
+| `src/include/core/update_remote_config.h` | `docs/14-atualizacoes/distribuicao-remota.md` |
 | `src/include/core/update_trust.h` | `docs/14-atualizacoes/contrato-zupd-v1.md` |
 | `src/include/core/video.h` | `docs/05-drivers/drivers.md` |
 | `src/include/core/version.h` | `docs/04-kernel/kernel.md` |
@@ -152,3 +154,13 @@ status agregado, historico redundante e conversores textuais estaveis.
 do System Updater. Os contratos canonicos permanecem em
 `docs/14-atualizacoes/contrato-zupd-v1.md` e
 `docs/14-atualizacoes/system-updater.md`.
+
+Desde a U5, `src/include/core/http.h` acrescenta GET por streaming com callback
+e limite definido pelo chamador. `src/include/fs/fat12.h` e
+`src/include/fs/fs.h` acrescentam escrita sequencial FAT12 de ate 128 KiB.
+`src/include/core/update_remote.h` define o transporte manual, estados,
+motivos, candidato e cache redundante; `update_remote_config.h` deriva o canal
+Stable versionado. Os contratos canonicos permanecem em
+`docs/04-kernel/kernel.md`,
+`docs/08-sistema-arquivos/sistema-arquivos.md` e
+`docs/14-atualizacoes/distribuicao-remota.md`.

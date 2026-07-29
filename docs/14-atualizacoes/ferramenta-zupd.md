@@ -9,8 +9,9 @@ kernel. A ferramenta host usa `cryptography==49.0.0`, fixado em
 
 O fluxo U2 apenas verifica. A U3 acrescenta geracao do fixture transacional e
 auditoria offline da imagem; a U4 estende essa auditoria ao historico
-redundante `ZUH1`. A aplicacao em si acontece somente no kernel FAT12. Nenhum
-comando host acessa a rede ou altera boot, stage2 ou setores de kernel.
+redundante `ZUH1`. A U5 gera e serve manifestos remotos `ZUM1` e audita o
+cache `ZUR1`. A aplicacao em si acontece somente no kernel FAT12. Nenhum
+comando host altera boot, stage2 ou setores de kernel.
 
 ## Preparacao
 
@@ -150,6 +151,63 @@ SHA-256, sequencias, enums, alias, slots inativos, wrap em oito eventos e
 empate divergente entre as duas copias. Ausencia das duas copias e reportada
 como historico vazio e integro.
 
+Para U5, os argumentos adicionais sao:
+
+```text
+--expect-remote-cache any|empty|valid
+--expect-remote-alias ZUR0.ZUP|ZUR1.ZUP
+--expect-remote-pending any|clean|pending
+```
+
+O auditor valida magic `ZUR1`, versao, sequencia, fase, slots, reservados,
+SHA-256 do registro, cadeia FAT do pacote, tamanho e SHA-256 do ZUPD. Em
+estado limpo, somente o slot ativo pode existir. Ausencia dos dois registros
+e cache vazio e integro.
+
+## Canal e fixtures U5
+
+O canal publico versionado pode ser conferido contra o header derivado:
+
+```text
+python tools/updater.py check-remote --config config/update-remote.json --header src/include/core/update_remote_config.h
+```
+
+`sync-remote` cria um header novo e recusa sobrescrita, seguindo a mesma
+politica defensiva de `sync-trust`.
+
+Os manifestos assinados exigem a chave privada externa:
+
+```text
+python tools/updater.py fixtures-u5 --private <arquivo-privado-fora-do-repo> --public config/update-release-public.json --output-dir docs/fixtures/updates/u5
+```
+
+A senha e solicitada sem eco. O diretorio deve estar ausente ou vazio e recebe
+somente artefatos publicos:
+
+| Arquivo | Resultado esperado |
+|---|---|
+| `stable.zum` | manifesto valido, geracao 1 |
+| `stable2.zum` | manifesto valido, geracao 2 |
+| `tampered.zum` | `MANIFEST_SIGNATURE` |
+| `badpkg.zum` | manifesto valido para ZUPD com `HASH` invalido |
+| `truncated.zum` | `HTTP`, corpo com tamanho inexato |
+| `fixtures.json` | chave publica, tamanhos e SHA-256 |
+
+`stable.zum` e `stable2.zum` reutilizam o `APPLY.ZUP` publico da U3.
+`badpkg.zum` reutiliza `BADHASH.ZUP` da U2. Nenhuma seed, senha ou chave
+privada e copiada.
+
+O servidor controlado para o QEMU e:
+
+```text
+python tools/updater.py serve-u5 --bind 0.0.0.0 --port 8000 --root docs/fixtures/updates/u5
+```
+
+Ele publica os manifestos e pacotes em `/zephyros/`. As rotas adicionais
+`error.zum` e `slow.zum` exercitam erro HTTP e timeout; `truncated.zum`
+exercita truncamento. O servidor e apenas um fixture de desenvolvimento e
+deve ser encerrado com Ctrl+C.
+
 ## Validacao no sistema
 
 O Makefile injeta os sete aliases U2 e `APPLY.ZUP` na imagem FAT. Depois do
@@ -203,8 +261,18 @@ mesmas tres abas e permitir aplicar e restaurar. Depois do failpoint e do boot,
 o historico deve conter o encerramento pendente seguido de
 `RECOVERY_APPLY/RECOVERED`.
 
+Para U5, configure IPv4/DHCP manualmente, habilite remoto por sessao, consulte
+o manifesto e confirme o download. Consultas e downloads nao alteram o
+historico U4, e aplicar o alias `ZUR0.ZUP` ou `ZUR1.ZUP` continua sendo uma
+acao local separada. Depois de encerrar o QEMU:
+
+```text
+python tools/updater.py audit-image --image build/zephyros.img --expect-remote-cache valid --expect-remote-alias ZUR0.ZUP --expect-remote-pending clean
+```
+
 ## Referencias
 
 - [cryptography 49.0.0](https://cryptography.io/_/downloads/en/49.0.0/pdf/)
 - [Ed25519 no cryptography](https://cryptography.io/en/49.0.0/hazmat/primitives/asymmetric/ed25519/)
 - [Serializacao de chaves](https://cryptography.io/en/49.0.0/hazmat/primitives/asymmetric/serialization/)
+- [Distribuicao remota ZUPD v1](distribuicao-remota.md)

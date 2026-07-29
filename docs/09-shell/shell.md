@@ -189,14 +189,15 @@ Delete=encerra processo compatível e Esc=sai.
 ### System Updater (`src/updater/updater.c`)
 
 O comando `updater` e o item `Atualizacoes` do menu Iniciar abrem o aplicativo
-nativo da U4. A TUI Classic e a janela Modern compartilham Pacotes, Estado e
-Historico. Toda verificacao e todo preflight sao somente-leitura; aplicar e
-restaurar exigem confirmacao explicita e repetem a validacao pelo servico
-Update.
+nativo das U4/U5. A TUI Classic e a janela Modern compartilham Pacotes,
+Estado, Historico e Remoto. Toda verificacao, consulta e todo preflight sao
+somente-leitura; aplicar, restaurar, baixar e limpar cache exigem confirmacao
+explicita e repetem a validacao pelos servicos Update.
 
 Tab alterna as abas, setas mudam a selecao, F5 atualiza, V verifica, A prepara
-aplicacao, B prepara rollback, Enter confirma e Esc volta ou fecha. O contrato
-completo fica em
+aplicacao, B prepara rollback, Enter confirma e Esc volta ou fecha. Na aba
+Remoto, H alterna o opt-in, C consulta, D prepara download e X prepara a
+limpeza do cache. O contrato completo fica em
 [`system-updater.md`](../14-atualizacoes/system-updater.md).
 
 ### File Manager (`filemanager.c`)

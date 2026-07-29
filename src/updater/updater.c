@@ -5,6 +5,8 @@
 #include "core/recovery.h"
 #include "core/string.h"
 #include "core/update.h"
+#include "core/update_remote.h"
+#include "core/update_remote_config.h"
 #include "core/video.h"
 #include "drivers/vesa.h"
 #include "fs/fs.h"
@@ -31,7 +33,11 @@
 #define UPDATER_SCANCODE_ENTER 0x1CU
 #define UPDATER_SCANCODE_A 0x1EU
 #define UPDATER_SCANCODE_B 0x30U
+#define UPDATER_SCANCODE_C 0x2EU
+#define UPDATER_SCANCODE_D 0x20U
+#define UPDATER_SCANCODE_H 0x23U
 #define UPDATER_SCANCODE_V 0x2FU
+#define UPDATER_SCANCODE_X 0x2DU
 #define UPDATER_SCANCODE_F5 0x3FU
 #define UPDATER_SCANCODE_UP 0x48U
 #define UPDATER_SCANCODE_DOWN 0x50U
@@ -41,20 +47,24 @@ typedef enum {
     UPDATER_TAB_PACKAGES = 0,
     UPDATER_TAB_STATUS,
     UPDATER_TAB_HISTORY,
+    UPDATER_TAB_REMOTE,
     UPDATER_TAB_COUNT
 } updater_tab_t;
 
 typedef enum {
     UPDATER_CONFIRM_NONE = 0,
     UPDATER_CONFIRM_APPLY,
-    UPDATER_CONFIRM_ROLLBACK
+    UPDATER_CONFIRM_ROLLBACK,
+    UPDATER_CONFIRM_REMOTE_FETCH,
+    UPDATER_CONFIRM_REMOTE_CLEAR
 } updater_confirm_t;
 
 typedef enum {
     UPDATER_RESULT_NONE = 0,
     UPDATER_RESULT_VERIFY,
     UPDATER_RESULT_APPLY,
-    UPDATER_RESULT_ROLLBACK
+    UPDATER_RESULT_ROLLBACK,
+    UPDATER_RESULT_REMOTE
 } updater_result_t;
 
 typedef struct {
@@ -78,6 +88,9 @@ static update_status_t updater_status;
 static int updater_status_ready = 0;
 static update_verification_t updater_verification;
 static update_action_result_t updater_action;
+static update_remote_status_t updater_remote_status;
+static update_remote_result_t updater_remote_result;
+static int updater_remote_status_ready = 0;
 static int updater_last_result = OK;
 static int updater_gui_x = 0;
 static int updater_gui_y = 0;
@@ -172,11 +185,39 @@ static void updater_refresh_packages(void) {
         updater_packages[updater_package_count].size = size;
         updater_package_count++;
     }
+    {
+        char remote_alias[UPDATER_PACKAGE_NAME_SIZE];
+
+        if (update_remote_get_cached_alias(
+                remote_alias, sizeof(remote_alias)) == OK) {
+            int duplicate = 0;
+
+            for (int index = 0; index < updater_package_count; index++) {
+                if (kstrcmp(updater_packages[index].name,
+                            remote_alias) == 0) duplicate = 1;
+            }
+            if (!duplicate && updater_package_count < UPDATER_MAX_PACKAGES) {
+                uint32_t remote_size = 0U;
+
+                updater_copy_name(
+                    updater_packages[updater_package_count].name,
+                    remote_alias);
+                fs_get_root_file_info(
+                    remote_alias, &remote_size, 0);
+                updater_packages[updater_package_count].size = remote_size;
+                updater_package_count++;
+            } else if (!duplicate) {
+                updater_package_overflow = 1;
+            }
+        }
+    }
     updater_sort_packages();
 }
 
 static void updater_refresh_status(void) {
     updater_status_ready = update_get_status(&updater_status) == OK;
+    updater_remote_status_ready =
+        update_remote_get_status(&updater_remote_status) == OK;
 }
 
 static void updater_refresh_component(void) {
@@ -378,6 +419,74 @@ static void updater_preflight_rollback(void) {
     updater_refresh_component();
 }
 
+static void updater_remote_toggle(void) {
+    int result;
+
+    if (!updater_remote_status_ready) return;
+    result = updater_remote_status.enabled ?
+             update_remote_disable() : update_remote_enable();
+    if (result != OK) {
+        LOG_ERROR("UPDATER", "Falha ao alternar Update remoto");
+    }
+    updater_last_result = result;
+    updater_result_kind = UPDATER_RESULT_REMOTE;
+    kmemset(&updater_remote_result, 0, sizeof(updater_remote_result));
+    updater_refresh_status();
+    if (result != OK && updater_remote_status_ready) {
+        updater_remote_result.reason = updater_remote_status.reason;
+    }
+    updater_refresh_component();
+}
+
+static void updater_remote_check(int request_confirmation) {
+    int result;
+
+    kmemset(&updater_remote_result, 0, sizeof(updater_remote_result));
+    result = update_remote_check(0, &updater_remote_result);
+    updater_last_result = result;
+    updater_result_kind = UPDATER_RESULT_REMOTE;
+    updater_confirm = result == OK && request_confirmation ?
+        UPDATER_CONFIRM_REMOTE_FETCH : UPDATER_CONFIRM_NONE;
+    updater_refresh_status();
+    updater_refresh_component();
+}
+
+static void updater_remote_clear_preflight(void) {
+    update_remote_options_t options;
+
+    kmemset(&options, 0, sizeof(options));
+    options.dry_run = 1U;
+    kmemset(&updater_remote_result, 0, sizeof(updater_remote_result));
+    updater_last_result =
+        update_remote_clear(&options, &updater_remote_result);
+    updater_result_kind = UPDATER_RESULT_REMOTE;
+    updater_confirm = updater_last_result == OK ?
+        UPDATER_CONFIRM_REMOTE_CLEAR : UPDATER_CONFIRM_NONE;
+    updater_refresh_status();
+    updater_refresh_component();
+}
+
+static void updater_remote_confirm_fetch(void) {
+    update_remote_options_t options;
+
+    kmemset(&options, 0, sizeof(options));
+    options.cancel_check = updater_cancel_check;
+    kmemset(&updater_remote_result, 0, sizeof(updater_remote_result));
+    updater_last_result =
+        update_remote_fetch(0, &options, &updater_remote_result);
+    updater_result_kind = UPDATER_RESULT_REMOTE;
+}
+
+static void updater_remote_confirm_clear(void) {
+    update_remote_options_t options;
+
+    kmemset(&options, 0, sizeof(options));
+    kmemset(&updater_remote_result, 0, sizeof(updater_remote_result));
+    updater_last_result =
+        update_remote_clear(&options, &updater_remote_result);
+    updater_result_kind = UPDATER_RESULT_REMOTE;
+}
+
 static void updater_confirm_action(void) {
     update_action_options_t options;
     updater_confirm_t confirmation = updater_confirm;
@@ -397,6 +506,22 @@ static void updater_confirm_action(void) {
         updater_last_result =
             update_rollback(&options, &updater_action);
         updater_result_kind = UPDATER_RESULT_ROLLBACK;
+    } else if (confirmation == UPDATER_CONFIRM_REMOTE_FETCH) {
+        updater_remote_confirm_fetch();
+    } else if (confirmation == UPDATER_CONFIRM_REMOTE_CLEAR) {
+        updater_remote_confirm_clear();
+    }
+    if (confirmation == UPDATER_CONFIRM_REMOTE_FETCH ||
+        confirmation == UPDATER_CONFIRM_REMOTE_CLEAR) {
+        updater_result_t result_kind = updater_result_kind;
+        int last_result = updater_last_result;
+        update_remote_result_t remote_result = updater_remote_result;
+
+        updater_refresh_packages();
+        updater_result_kind = result_kind;
+        updater_last_result = last_result;
+        updater_remote_result = remote_result;
+        updater_confirm = UPDATER_CONFIRM_NONE;
     }
     updater_refresh_status();
     updater_refresh_component();
@@ -404,7 +529,7 @@ static void updater_confirm_action(void) {
 
 static void updater_classic_draw_tabs(void) {
     static const char* names[UPDATER_TAB_COUNT] = {
-        " Pacotes ", " Estado ", " Historico "
+        " Pacotes ", " Estado ", " Historico ", " Remoto "
     };
     int x = 2;
 
@@ -532,7 +657,16 @@ static void updater_classic_draw_status(void) {
     video_print(updater_status.capabilities.rollback_available ?
                 "READY" : "DISABLED",
                 updater_status.capabilities.rollback_available ? 0x0A : 0x08);
-    video_print("\nRemoto: DISABLED (U5)\n", 0x08);
+    video_print("\nRemoto: ", 0x07);
+    if (!updater_remote_status_ready ||
+        !updater_remote_status.enabled) {
+        video_print("DISABLED\n", 0x08);
+    } else if (!updater_remote_status.network_ready ||
+               updater_remote_status.state == UPDATE_REMOTE_STATE_FAILED) {
+        video_print("DEGRADED\n", 0x0E);
+    } else {
+        video_print("READY\n", 0x0A);
+    }
 }
 
 static void updater_classic_draw_history(void) {
@@ -570,16 +704,104 @@ static void updater_classic_draw_history(void) {
     }
 }
 
+static void updater_classic_draw_remote(void) {
+    video_set_cursor(3, 6);
+    if (!updater_remote_status_ready) {
+        video_print("Servico remoto indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("Sessao: ", 0x07);
+    video_print(updater_remote_status.enabled ?
+                "HABILITADA" : "DESABILITADA",
+                updater_remote_status.enabled ? 0x0A : 0x08);
+    video_print("  Rede: ", 0x07);
+    video_print(updater_remote_status.network_ready ?
+                "READY" : "UNAVAILABLE",
+                updater_remote_status.network_ready ? 0x0A : 0x0E);
+    video_print("\nEstado: ", 0x07);
+    video_print(update_remote_state_name(updater_remote_status.state),
+                updater_remote_status.state ==
+                    UPDATE_REMOTE_STATE_FAILED ? 0x0C : 0x0B);
+    video_print("  Motivo: ", 0x07);
+    video_print(update_remote_reason_name(updater_remote_status.reason),
+                updater_remote_status.reason ==
+                    UPDATE_REMOTE_REASON_NONE ? 0x0A : 0x0E);
+    video_print("\nCanal: ", 0x07);
+    video_print(UPDATE_REMOTE_CHANNEL_NAME, 0x0B);
+    video_print("\nURL: ", 0x07);
+    video_print(updater_remote_status.manifest_url, 0x0F);
+    video_print("\nCache: ", 0x07);
+    video_print(update_remote_store_name(
+                    updater_remote_status.cache_store),
+                updater_remote_status.cache_store ==
+                    UPDATE_REMOTE_STORE_INVALID ? 0x0C : 0x0A);
+    if (updater_remote_status.package_cached) {
+        video_print("  ", 0x07);
+        video_print(updater_remote_status.cached_alias, 0x0B);
+    }
+    video_print("\nProgresso: ", 0x07);
+    {
+        char progress[48];
+
+        progress[0] = '\0';
+        updater_text_append_u32(
+            progress, sizeof(progress),
+            updater_remote_status.bytes_received);
+        updater_text_append(progress, sizeof(progress), "/");
+        updater_text_append_u32(
+            progress, sizeof(progress),
+            updater_remote_status.total_bytes);
+        updater_text_append(progress, sizeof(progress), " retry=");
+        updater_text_append_u32(
+            progress, sizeof(progress),
+            updater_remote_status.retry_count);
+        video_print(progress, 0x0F);
+    }
+    video_print("\n", 0x07);
+    if (updater_remote_status.manifest_cached) {
+        updater_classic_print_version(
+            "Base: ", &updater_remote_status.candidate.base_version,
+            updater_remote_status.candidate.base_epoch);
+        updater_classic_print_version(
+            "Alvo: ", &updater_remote_status.candidate.target_version,
+            updater_remote_status.candidate.target_epoch);
+        video_print("Pacote: ", 0x07);
+        video_print(updater_remote_status.candidate.package_path, 0x0F);
+        video_print(" bytes=", 0x08);
+        {
+            char size[11];
+
+            updater_u32_text(
+                updater_remote_status.candidate.package_size, size);
+            video_print(size, 0x08);
+        }
+        video_print("\n", 0x07);
+    }
+    if (updater_result_kind == UPDATER_RESULT_REMOTE) {
+        video_print("Ultimo resultado: ", 0x07);
+        video_print(update_remote_reason_name(
+                        updater_remote_result.reason),
+                    updater_last_result == OK ? 0x0A : 0x0C);
+        video_print("\n", 0x07);
+    }
+}
+
 static void updater_classic_draw_confirmation(void) {
     if (updater_confirm == UPDATER_CONFIRM_NONE) return;
     video_fill_rect(30, SCREEN_ROWS - 9, 68, 5, ' ', 0x1E);
     video_draw_box(30, SCREEN_ROWS - 9, 68, 5, 0x0E);
-    video_print_at(
-        33, SCREEN_ROWS - 8,
-        updater_confirm == UPDATER_CONFIRM_APPLY ?
-        "Confirmar aplicacao autenticada?" :
-        "Confirmar rollback validado?",
-        0x1E);
+    {
+        const char* question =
+            updater_confirm == UPDATER_CONFIRM_APPLY ?
+            "Confirmar aplicacao autenticada?" :
+            updater_confirm == UPDATER_CONFIRM_ROLLBACK ?
+            "Confirmar rollback validado?" :
+            updater_confirm == UPDATER_CONFIRM_REMOTE_FETCH ?
+            "Confirmar download remoto autenticado?" :
+            "Confirmar limpeza do cache remoto?";
+
+        video_print_at(33, SCREEN_ROWS - 8, question, 0x1E);
+    }
     video_print_at(33, SCREEN_ROWS - 6,
                    "Enter confirma | Esc cancela", 0x1E);
 }
@@ -595,13 +817,20 @@ static void updater_draw_classic(void) {
         updater_classic_draw_result();
     } else if (updater_tab == UPDATER_TAB_STATUS) {
         updater_classic_draw_status();
-    } else {
+    } else if (updater_tab == UPDATER_TAB_HISTORY) {
         updater_classic_draw_history();
+    } else {
+        updater_classic_draw_remote();
     }
-    video_print_at(2, SCREEN_ROWS - 2,
-                   "Tab=aba Setas=selecionar F5=atualizar V=verificar "
-                   "A=aplicar B=rollback Esc=fechar",
-                   0x70);
+    if (updater_tab == UPDATER_TAB_REMOTE) {
+        video_print_at(2, SCREEN_ROWS - 2,
+                       "H=habilitar C=consultar D=baixar X=limpar "
+                       "F5=atualizar Esc=fechar", 0x70);
+    } else {
+        video_print_at(2, SCREEN_ROWS - 2,
+                       "Tab=aba Setas=selecionar F5=atualizar V=verificar "
+                       "A=aplicar B=rollback Esc=fechar", 0x70);
+    }
     updater_classic_draw_confirmation();
     taskbar_draw();
     video_end_update();
@@ -615,7 +844,7 @@ static void updater_gui_line(int x, int y, const char* label,
 
 static void updater_gui_draw_tabs(int x, int y) {
     static const char* names[UPDATER_TAB_COUNT] = {
-        "Pacotes", "Estado", "Historico"
+        "Pacotes", "Estado", "Historico", "Remoto"
     };
 
     for (int index = 0; index < UPDATER_TAB_COUNT; index++) {
@@ -729,8 +958,18 @@ static void updater_gui_draw_status(int x, int y) {
         updater_status.capabilities.rollback_available ? "READY" : "DISABLED",
         updater_status.capabilities.rollback_available ?
         0x00008000U : GUI_COLOR_BORDER_D);
-    updater_gui_line(x, y + 270, "Remoto", "DISABLED (U5)",
-                     GUI_COLOR_BORDER_D);
+    if (!updater_remote_status_ready ||
+        !updater_remote_status.enabled) {
+        updater_gui_line(x, y + 270, "Remoto", "DISABLED",
+                         GUI_COLOR_BORDER_D);
+    } else if (!updater_remote_status.network_ready ||
+               updater_remote_status.state == UPDATE_REMOTE_STATE_FAILED) {
+        updater_gui_line(x, y + 270, "Remoto", "DEGRADED",
+                         0x00808000U);
+    } else {
+        updater_gui_line(x, y + 270, "Remoto", "READY",
+                         0x00008000U);
+    }
 }
 
 static void updater_gui_draw_history(int x, int y) {
@@ -777,22 +1016,107 @@ static void updater_gui_draw_history(int x, int y) {
     }
 }
 
+static void updater_gui_draw_remote(int x, int y) {
+    char value[UPDATE_REMOTE_URL_SIZE];
+
+    if (!updater_remote_status_ready) {
+        gui_draw_text((uint32_t)x, (uint32_t)y,
+                      "Servico remoto indisponivel", 0x00800000U);
+        return;
+    }
+    updater_gui_line(
+        x, y, "Sessao",
+        updater_remote_status.enabled ? "HABILITADA" : "DESABILITADA",
+        updater_remote_status.enabled ? 0x00008000U : GUI_COLOR_BORDER_D);
+    updater_gui_line(
+        x, y + 30, "Rede",
+        updater_remote_status.network_ready ? "READY" : "UNAVAILABLE",
+        updater_remote_status.network_ready ? 0x00008000U : 0x00808000U);
+    updater_gui_line(
+        x, y + 60, "Estado",
+        update_remote_state_name(updater_remote_status.state),
+        updater_remote_status.state == UPDATE_REMOTE_STATE_FAILED ?
+        0x00800000U : GUI_COLOR_TEXT);
+    updater_gui_line(
+        x, y + 90, "Motivo",
+        update_remote_reason_name(updater_remote_status.reason),
+        updater_remote_status.reason == UPDATE_REMOTE_REASON_NONE ?
+        0x00008000U : 0x00808000U);
+    updater_gui_line(
+        x, y + 120, "Cache",
+        update_remote_store_name(updater_remote_status.cache_store),
+        updater_remote_status.cache_store == UPDATE_REMOTE_STORE_INVALID ?
+        0x00800000U : 0x00008000U);
+    updater_gui_line(
+        x, y + 150, "Alias",
+        updater_remote_status.package_cached ?
+        updater_remote_status.cached_alias : "NENHUM",
+        updater_remote_status.package_cached ?
+        GUI_COLOR_TEXT : GUI_COLOR_BORDER_D);
+    value[0] = '\0';
+    updater_text_append_u32(
+        value, sizeof(value), updater_remote_status.bytes_received);
+    updater_text_append(value, sizeof(value), "/");
+    updater_text_append_u32(
+        value, sizeof(value), updater_remote_status.total_bytes);
+    updater_text_append(value, sizeof(value), " retry=");
+    updater_text_append_u32(
+        value, sizeof(value), updater_remote_status.retry_count);
+    if (updater_remote_status.manifest_cached) {
+        updater_text_append(value, sizeof(value), " gen=");
+        updater_text_append_u32(
+            value, sizeof(value),
+            updater_remote_status.candidate.generation);
+    }
+    updater_gui_line(x, y + 180, "Progresso", value, GUI_COLOR_TEXT);
+    if (updater_remote_status.manifest_cached) {
+        updater_version_text(
+            value, sizeof(value),
+            &updater_remote_status.candidate.base_version,
+            updater_remote_status.candidate.base_epoch);
+        updater_gui_line(x, y + 210, "Base", value, GUI_COLOR_TEXT);
+        updater_version_text(
+            value, sizeof(value),
+            &updater_remote_status.candidate.target_version,
+            updater_remote_status.candidate.target_epoch);
+        updater_gui_line(x, y + 240, "Alvo", value, GUI_COLOR_TEXT);
+        value[0] = '\0';
+        updater_text_append(
+            value, sizeof(value),
+            updater_remote_status.candidate.package_path);
+        updater_text_append(value, sizeof(value), " ");
+        updater_text_append_u32(
+            value, sizeof(value),
+            updater_remote_status.candidate.package_size);
+        updater_text_append(value, sizeof(value), " bytes");
+        updater_gui_line(
+            x, y + 270, "Pacote", value, GUI_COLOR_TEXT);
+    }
+    updater_gui_line(x, y + 300, "Canal",
+                     UPDATE_REMOTE_CHANNEL_NAME, GUI_COLOR_TEXT);
+}
+
 static void updater_gui_draw_confirmation(
     int x, int y, int width, int height) {
     int dialog_x;
     int dialog_y;
+    const char* question;
 
     if (updater_confirm == UPDATER_CONFIRM_NONE) return;
     dialog_x = x + (width - 420) / 2;
     dialog_y = y + (height - 150) / 2;
     gui_draw_panel((uint32_t)dialog_x, (uint32_t)dialog_y,
                    420, 150, GUI_COLOR_BG, 0);
+    question = updater_confirm == UPDATER_CONFIRM_APPLY ?
+               "Confirmar aplicacao autenticada?" :
+               updater_confirm == UPDATER_CONFIRM_ROLLBACK ?
+               "Confirmar rollback validado?" :
+               updater_confirm == UPDATER_CONFIRM_REMOTE_FETCH ?
+               "Confirmar download remoto?" :
+               "Confirmar limpeza do cache?";
     gui_draw_text(
         (uint32_t)(dialog_x + 24), (uint32_t)(dialog_y + 28),
-        updater_confirm == UPDATER_CONFIRM_APPLY ?
-        "Confirmar aplicacao autenticada?" :
-        "Confirmar rollback validado?",
-        GUI_COLOR_TEXT);
+        question, GUI_COLOR_TEXT);
     gui_draw_button((uint32_t)(dialog_x + 82),
                     (uint32_t)(dialog_y + 92),
                     112, 30, "Confirmar", 1);
@@ -815,17 +1139,32 @@ static void updater_draw_modern(int x, int y, int width, int height) {
             width - 2 * UPDATER_MODERN_MARGIN, content_height);
     } else if (updater_tab == UPDATER_TAB_STATUS) {
         updater_gui_draw_status(x + 32, content_y + 16);
-    } else {
+    } else if (updater_tab == UPDATER_TAB_HISTORY) {
         updater_gui_draw_history(x + 32, content_y + 16);
+    } else {
+        updater_gui_draw_remote(x + 32, content_y + 16);
     }
-    gui_draw_button((uint32_t)(x + 16), (uint32_t)(y + height - 44),
-                    112, 28, "Atualizar", 0);
-    gui_draw_button((uint32_t)(x + 140), (uint32_t)(y + height - 44),
-                    112, 28, "Verificar", 0);
-    gui_draw_button((uint32_t)(x + 264), (uint32_t)(y + height - 44),
-                    112, 28, "Aplicar", 0);
-    gui_draw_button((uint32_t)(x + 388), (uint32_t)(y + height - 44),
-                    112, 28, "Rollback", 0);
+    if (updater_tab == UPDATER_TAB_REMOTE) {
+        gui_draw_button((uint32_t)(x + 16), (uint32_t)(y + height - 44),
+                        112, 28,
+                        updater_remote_status.enabled ?
+                        "Desabilitar" : "Habilitar", 0);
+        gui_draw_button((uint32_t)(x + 140), (uint32_t)(y + height - 44),
+                        112, 28, "Consultar", 0);
+        gui_draw_button((uint32_t)(x + 264), (uint32_t)(y + height - 44),
+                        112, 28, "Baixar", 0);
+        gui_draw_button((uint32_t)(x + 388), (uint32_t)(y + height - 44),
+                        112, 28, "Limpar", 0);
+    } else {
+        gui_draw_button((uint32_t)(x + 16), (uint32_t)(y + height - 44),
+                        112, 28, "Atualizar", 0);
+        gui_draw_button((uint32_t)(x + 140), (uint32_t)(y + height - 44),
+                        112, 28, "Verificar", 0);
+        gui_draw_button((uint32_t)(x + 264), (uint32_t)(y + height - 44),
+                        112, 28, "Aplicar", 0);
+        gui_draw_button((uint32_t)(x + 388), (uint32_t)(y + height - 44),
+                        112, 28, "Rollback", 0);
+    }
     updater_gui_draw_confirmation(x, y, width, height);
 }
 
@@ -964,8 +1303,21 @@ void updater_handle_key(uint8_t scancode) {
     } else if (scancode == UPDATER_SCANCODE_A &&
                updater_tab == UPDATER_TAB_PACKAGES) {
         updater_preflight_apply();
-    } else if (scancode == UPDATER_SCANCODE_B) {
+    } else if (scancode == UPDATER_SCANCODE_B &&
+               updater_tab != UPDATER_TAB_REMOTE) {
         updater_preflight_rollback();
+    } else if (updater_tab == UPDATER_TAB_REMOTE &&
+               scancode == UPDATER_SCANCODE_H) {
+        updater_remote_toggle();
+    } else if (updater_tab == UPDATER_TAB_REMOTE &&
+               scancode == UPDATER_SCANCODE_C) {
+        updater_remote_check(0);
+    } else if (updater_tab == UPDATER_TAB_REMOTE &&
+               scancode == UPDATER_SCANCODE_D) {
+        updater_remote_check(1);
+    } else if (updater_tab == UPDATER_TAB_REMOTE &&
+               scancode == UPDATER_SCANCODE_X) {
+        updater_remote_clear_preflight();
     }
     updater_draw();
 }
@@ -1027,6 +1379,22 @@ int updater_handle_mouse(mouse_event_t* event) {
         return 1;
     }
     bottom = updater_gui_y + updater_gui_height - 44;
+    if (updater_tab == UPDATER_TAB_REMOTE) {
+        if (updater_point_in(
+                px, py, updater_gui_x + 16, bottom, 112, 28)) {
+            updater_remote_toggle();
+        } else if (updater_point_in(
+                       px, py, updater_gui_x + 140, bottom, 112, 28)) {
+            updater_remote_check(0);
+        } else if (updater_point_in(
+                       px, py, updater_gui_x + 264, bottom, 112, 28)) {
+            updater_remote_check(1);
+        } else if (updater_point_in(
+                       px, py, updater_gui_x + 388, bottom, 112, 28)) {
+            updater_remote_clear_preflight();
+        }
+        return 1;
+    }
     if (updater_point_in(px, py, updater_gui_x + 16, bottom, 112, 28)) {
         updater_refresh_all();
     } else if (updater_point_in(

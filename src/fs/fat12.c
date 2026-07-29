@@ -70,9 +70,27 @@ static void to_upper(char* str, int max_len) {
 
 #define FAT12_CHAIN_LIMIT 4096
 #define FAT12_ATOMIC_MAX_CLUSTERS 128U
+#define FAT12_STREAM_MAX_SIZE (128U * 1024U)
+
+typedef struct {
+    uint8_t active;
+    uint8_t attributes;
+    uint16_t first_cluster;
+    uint16_t last_cluster;
+    uint16_t current_cluster;
+    uint32_t entry_index;
+    uint32_t expected_size;
+    uint32_t accepted_size;
+    uint32_t sector_in_cluster;
+    uint32_t sector_used;
+    uint8_t sector[512];
+} fat12_stream_t;
+
+static fat12_stream_t fat12_stream;
 
 int fat12_init(void) {
     fat12_release();
+    kmemset(&fat12_stream, 0, sizeof(fat12_stream));
 
     if (ata_read_sectors(0, 1, boot_sector) != 0) {
         LOG_WARN("FAT12", "Falha ao ler boot sector");
@@ -1666,4 +1684,224 @@ int fat12_atomic_delete_root(const char* filename) {
         }
     }
     return OK;
+}
+
+static int fat12_stream_allocate_cluster(uint16_t* cluster_out) {
+    uint32_t total_sectors;
+    uint32_t total_clusters;
+
+    if (!cluster_out) {
+        LOG_ERROR("FAT12", "Destino nulo ao alocar cluster streaming");
+        return ERR_NULL;
+    }
+    total_sectors = fs.bpb.total_sectors ?
+                    fs.bpb.total_sectors : fs.bpb.large_sector_count;
+    total_clusters = (total_sectors - fs.data_start) /
+                     fs.bpb.sectors_per_cluster;
+    for (uint32_t cluster = 2U; cluster < total_clusters + 2U; cluster++) {
+        if (fat12_get_cluster((uint16_t)cluster) == FAT12_CLUSTER_FREE) {
+            *cluster_out = (uint16_t)cluster;
+            return OK;
+        }
+    }
+    LOG_ERROR("FAT12", "Sem clusters livres para streaming");
+    return ERR_OVERFLOW;
+}
+
+static int fat12_stream_attach_cluster(void) {
+    uint16_t cluster;
+    int result = fat12_stream_allocate_cluster(&cluster);
+
+    if (result != OK) {
+        LOG_ERROR("FAT12", "Falha ao anexar cluster streaming");
+        return result;
+    }
+    if (fat12_stream.first_cluster == 0U) {
+        fs.root_dir[fat12_stream.entry_index].cluster_low = cluster;
+        if (fat12_flush_root_sector(fat12_stream.entry_index) != OK) {
+            LOG_ERROR("FAT12", "Falha ao persistir primeiro cluster");
+            return ERR_DISK;
+        }
+        fat12_stream.first_cluster = cluster;
+    } else {
+        fat12_set_cluster(fat12_stream.last_cluster, cluster);
+    }
+    fat12_set_cluster(cluster, FAT12_CLUSTER_END);
+    if (fat12_flush_fats() != OK) {
+        if (fat12_stream.last_cluster >= 2U) {
+            fat12_set_cluster(
+                fat12_stream.last_cluster, FAT12_CLUSTER_END);
+        }
+        fat12_set_cluster(cluster, FAT12_CLUSTER_FREE);
+        LOG_ERROR("FAT12", "Falha ao persistir FAT do streaming");
+        return ERR_DISK;
+    }
+    fat12_stream.last_cluster = cluster;
+    fat12_stream.current_cluster = cluster;
+    fat12_stream.sector_in_cluster = 0U;
+    return OK;
+}
+
+static int fat12_stream_flush_sector(void) {
+    uint32_t lba;
+    int result;
+
+    if (!fat12_stream.sector_used) return OK;
+    if (!fat12_stream.current_cluster ||
+        fat12_stream.sector_in_cluster >= fs.bpb.sectors_per_cluster) {
+        result = fat12_stream_attach_cluster();
+        if (result != OK) return result;
+    }
+    kmemset(fat12_stream.sector + fat12_stream.sector_used, 0,
+            sizeof(fat12_stream.sector) - fat12_stream.sector_used);
+    lba = fs.data_start +
+          (fat12_stream.current_cluster - 2U) *
+          fs.bpb.sectors_per_cluster +
+          fat12_stream.sector_in_cluster;
+    if (ata_write_sectors(lba, 1, fat12_stream.sector) != 0) {
+        LOG_ERROR("FAT12", "Falha ao gravar setor streaming");
+        return ERR_DISK;
+    }
+    fat12_stream.sector_in_cluster++;
+    fat12_stream.sector_used = 0U;
+    if (fat12_stream.sector_in_cluster >= fs.bpb.sectors_per_cluster) {
+        fat12_stream.current_cluster = 0U;
+    }
+    return OK;
+}
+
+int fat12_stream_begin_root(const char* filename, uint32_t expected_size,
+                            uint8_t attributes) {
+    char encoded[11];
+    uint32_t entry_index;
+    int result;
+
+    if (!fs.initialized || !filename) {
+        LOG_ERROR("FAT12", "Inicio streaming sem filesystem ou nome");
+        return !filename ? ERR_NULL : ERR_STATE;
+    }
+    if (fat12_stream.active) {
+        LOG_ERROR("FAT12", "Outra escrita streaming esta ativa");
+        return ERR_STATE;
+    }
+    if (!expected_size || expected_size > FAT12_STREAM_MAX_SIZE) {
+        LOG_ERROR("FAT12", "Tamanho streaming invalido");
+        return ERR_OVERFLOW;
+    }
+    result = fat12_encode_root_name(filename, encoded);
+    if (result != OK) {
+        LOG_ERROR("FAT12", "Nome streaming 8.3 invalido");
+        return result;
+    }
+    if (fat12_find_root_index(encoded, &entry_index) == OK) {
+        result = fat12_atomic_delete_root(filename);
+        if (result != OK) {
+            LOG_ERROR("FAT12", "Slot streaming anterior nao foi removido");
+            return result;
+        }
+    }
+    result = fat12_find_root_slot(&entry_index);
+    if (result != OK) {
+        LOG_ERROR("FAT12", "Diretorio raiz sem slot para streaming");
+        return result;
+    }
+    kmemset(&fat12_stream, 0, sizeof(fat12_stream));
+    fat12_stream.active = 1U;
+    fat12_stream.attributes = attributes;
+    fat12_stream.entry_index = entry_index;
+    fat12_stream.expected_size = expected_size;
+    kmemset(&fs.root_dir[entry_index], 0, sizeof(fat12_dir_entry_t));
+    kmemcpy(fs.root_dir[entry_index].name, encoded, sizeof(encoded));
+    fs.root_dir[entry_index].attributes = attributes;
+    if (fat12_flush_root_sector(entry_index) != OK) {
+        kmemset(&fat12_stream, 0, sizeof(fat12_stream));
+        return ERR_DISK;
+    }
+    return OK;
+}
+
+int fat12_stream_write_root(const uint8_t* data, uint32_t size) {
+    uint32_t offset = 0;
+
+    if (!fat12_stream.active) {
+        LOG_ERROR("FAT12", "Escrita streaming sem sessao");
+        return ERR_STATE;
+    }
+    if (!data && size) {
+        LOG_ERROR("FAT12", "Dados streaming nulos");
+        return ERR_NULL;
+    }
+    if (size > fat12_stream.expected_size -
+               fat12_stream.accepted_size) {
+        LOG_ERROR("FAT12", "Escrita streaming excede tamanho");
+        return ERR_OVERFLOW;
+    }
+    while (offset < size) {
+        uint32_t chunk = sizeof(fat12_stream.sector) -
+                         fat12_stream.sector_used;
+
+        if (chunk > size - offset) chunk = size - offset;
+        kmemcpy(fat12_stream.sector + fat12_stream.sector_used,
+                data + offset, chunk);
+        fat12_stream.sector_used += chunk;
+        fat12_stream.accepted_size += chunk;
+        offset += chunk;
+        if (fat12_stream.sector_used == sizeof(fat12_stream.sector) &&
+            fat12_stream_flush_sector() != OK) return ERR_DISK;
+    }
+    return OK;
+}
+
+int fat12_stream_finish_root(void) {
+    if (!fat12_stream.active) {
+        LOG_ERROR("FAT12", "Finalizacao streaming sem sessao");
+        return ERR_STATE;
+    }
+    if (fat12_stream.accepted_size != fat12_stream.expected_size) {
+        LOG_ERROR("FAT12", "Streaming terminou com tamanho divergente");
+        return ERR_INVALID;
+    }
+    if (fat12_stream_flush_sector() != OK) return ERR_DISK;
+    fs.root_dir[fat12_stream.entry_index].file_size =
+        fat12_stream.expected_size;
+    fs.root_dir[fat12_stream.entry_index].attributes =
+        fat12_stream.attributes;
+    if (fat12_flush_root_sector(fat12_stream.entry_index) != OK) {
+        LOG_ERROR("FAT12", "Falha ao publicar tamanho do streaming");
+        return ERR_DISK;
+    }
+    kmemset(&fat12_stream, 0, sizeof(fat12_stream));
+    return OK;
+}
+
+int fat12_stream_abort_root(void) {
+    uint32_t entry_index;
+    uint16_t first_cluster;
+
+    if (!fat12_stream.active) {
+        LOG_DEBUG("FAT12", "Nenhum streaming ativo para cancelar");
+        return OK;
+    }
+    entry_index = fat12_stream.entry_index;
+    first_cluster = fs.root_dir[entry_index].cluster_low;
+    fs.root_dir[entry_index].name[0] = (char)0xE5;
+    fs.root_dir[entry_index].file_size = 0U;
+    fs.root_dir[entry_index].cluster_low = 0U;
+    if (fat12_flush_root_sector(entry_index) != OK) {
+        LOG_ERROR("FAT12", "Falha ao remover entrada streaming");
+        return ERR_DISK;
+    }
+    if (first_cluster >= 2U) {
+        fat12_release_chain(first_cluster);
+        if (fat12_flush_fats() != OK) {
+            LOG_ERROR("FAT12", "Falha ao liberar cadeia streaming");
+            return ERR_DISK;
+        }
+    }
+    kmemset(&fat12_stream, 0, sizeof(fat12_stream));
+    return OK;
+}
+
+int fat12_stream_is_active(void) {
+    return fat12_stream.active ? 1 : 0;
 }

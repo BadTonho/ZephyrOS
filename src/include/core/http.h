@@ -26,6 +26,9 @@ typedef enum {
     HTTP_STATE_FAILED
 } http_state_t;
 
+typedef int (*http_body_sink_t)(const uint8_t* data, uint32_t size,
+                                void* context);
+
 typedef struct {
     uint8_t initialized;
     http_state_t state;
@@ -37,9 +40,11 @@ typedef struct {
     uint16_t status_code;
     uint16_t headers_length;
     uint32_t body_length;
+    uint32_t body_limit;
     uint32_t content_length;
     uint8_t has_content_length;
     uint8_t eof_framed;
+    uint8_t streaming;
     uint32_t requests_started;
     uint32_t requests_tx;
     uint32_t responses_rx;
@@ -54,6 +59,8 @@ typedef struct {
 
 int http_init(void);
 int http_get_start(const char* url);
+int http_get_stream_start(const char* url, uint32_t body_limit,
+                          http_body_sink_t sink, void* context);
 int http_maintain(void);
 int http_reset(void);
 int http_get_status(http_status_t* out_status);

@@ -38,6 +38,8 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `mouse` | - | Exibe debug em tempo real (X, Y, cliques) do Mouse PS/2. |
 | `guitest` | - | Roda um teste nativo das primitivas gráficas GUI 2D. |
 | `health` | `[summary]` | Mostra o relatorio completo ou um resumo compacto para testes. |
+| `update remote` | `status/enable/disable/clear [--confirm]` | Controla o transporte remoto opcional da sessao. |
+| `update fetch` | `[--url <manifesto>] [--confirm]` | Consulta ou baixa um ZUPD autenticado sem aplicar. |
 | `kmetrics` | `[reset]` | Mostra ou inicia a janela manual de métricas K1. |
 | `devices` | `[-v]` | Lista o inventario nativo de hardware; `-v` inclui localizacao, IRQ e IDs PCI. |
 | `device-info` | `<id>` | Mostra os detalhes de um dispositivo listado por `devices`. |

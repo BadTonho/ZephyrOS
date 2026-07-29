@@ -43,6 +43,8 @@
 #include "core/app_loader.h"
 #include "core/app_package.h"
 #include "core/update.h"
+#include "core/update_remote.h"
+#include "core/update_remote_config.h"
 #include "core/syscall.h"
 #include "drivers/idt.h"
 #include "drivers/pci.h"
@@ -2218,7 +2220,9 @@ static void cmd_help(void) {
     video_print("  pkg      - Gerencia pacotes .ZPK locais\n", 0x07);
     video_print("             pkg list | info | verify | install | remove\n", 0x08);
     video_print("  update verify <arquivo.ZUP> - Verifica sem gravar\n", 0x07);
-    video_print("  update status|history - Diagnostico persistente U4\n",
+    video_print("  update status|history - Diagnostico persistente\n",
+                0x07);
+    video_print("  update remote ...|fetch ... - Distribuicao U5\n",
                 0x07);
     video_print("  update apply <arquivo.ZUP> [--confirm] - Aplica U3\n",
                 0x07);
@@ -2494,6 +2498,7 @@ static void cmd_health_print_kernel(void) {
 static void cmd_health_print_update_capabilities(void) {
     update_capabilities_t capabilities;
     update_status_t status;
+    update_remote_status_t remote;
     int status_ready;
 
     video_print("\nCapacidades de Update:\n", 0x0B);
@@ -2502,7 +2507,7 @@ static void cmd_health_print_update_capabilities(void) {
         video_print("  aplicacao: DISABLED\n", 0x08);
         video_print("  rollback: DISABLED\n", 0x08);
         video_print("  historico: DISABLED\n", 0x08);
-        video_print("  remoto: DISABLED (U5)\n", 0x08);
+        video_print("  remoto: DISABLED\n", 0x08);
         return;
     }
     status_ready = update_get_status(&status) == OK;
@@ -2543,7 +2548,18 @@ static void cmd_health_print_update_capabilities(void) {
     } else {
         video_print("DISABLED (requer FAT12)\n", 0x08);
     }
-    video_print("  remoto: DISABLED (U5)\n", 0x08);
+    video_print("  remoto: ", 0x07);
+    if (update_remote_get_status(&remote) != OK || !remote.enabled) {
+        video_print("DISABLED\n", 0x08);
+    } else if (!remote.network_ready ||
+               remote.state == UPDATE_REMOTE_STATE_FAILED ||
+               remote.cache_store == UPDATE_REMOTE_STORE_INVALID) {
+        video_print("DEGRADED (", 0x0E);
+        video_print(update_remote_reason_name(remote.reason), 0x0E);
+        video_print(")\n", 0x0E);
+    } else {
+        video_print("READY\n", 0x0A);
+    }
 }
 
 static uint8_t cmd_health_state_color(recovery_state_t state) {
@@ -2629,6 +2645,20 @@ static recovery_state_t cmd_health_update_history_state(
     return RECOVERY_STATE_DISABLED;
 }
 
+static recovery_state_t cmd_health_update_remote_state(void) {
+    update_remote_status_t remote;
+
+    if (update_remote_get_status(&remote) != OK || !remote.enabled) {
+        return RECOVERY_STATE_DISABLED;
+    }
+    if (!remote.network_ready ||
+        remote.state == UPDATE_REMOTE_STATE_FAILED ||
+        remote.cache_store == UPDATE_REMOTE_STORE_INVALID) {
+        return RECOVERY_STATE_DEGRADED;
+    }
+    return RECOVERY_STATE_READY;
+}
+
 static void cmd_health_print_inline_state(recovery_state_t state) {
     video_print(recovery_state_name(state), cmd_health_state_color(state));
 }
@@ -2672,9 +2702,7 @@ static void cmd_health_print_summary_update(void) {
         cmd_health_update_history_state(
             &capabilities, &status, status_ready));
     video_print(" remoto=", 0x08);
-    cmd_health_print_inline_state(
-        capabilities.remote_available ?
-        RECOVERY_STATE_READY : RECOVERY_STATE_DISABLED);
+    cmd_health_print_inline_state(cmd_health_update_remote_state());
     video_print("\n", 0x07);
 }
 
@@ -7405,6 +7433,7 @@ static void cmd_update_print_capability(const char* label, int ready) {
 
 static void cmd_update_status(void) {
     update_status_t status;
+    update_remote_status_t remote;
     uint32_t history_count = 0;
 
     if (update_get_status(&status) != OK) {
@@ -7452,7 +7481,16 @@ static void cmd_update_status(void) {
     video_print(" ", 0x07);
     cmd_update_print_capability(
         "historico=", status.capabilities.history_available);
-    video_print(" remoto=DISABLED (U5)\n", 0x08);
+    video_print(" remoto=", 0x07);
+    if (update_remote_get_status(&remote) != OK || !remote.enabled) {
+        video_print("DISABLED\n", 0x08);
+    } else if (!remote.network_ready ||
+               remote.state == UPDATE_REMOTE_STATE_FAILED ||
+               remote.cache_store == UPDATE_REMOTE_STORE_INVALID) {
+        video_print("DEGRADED\n", 0x0E);
+    } else {
+        video_print("READY\n", 0x0A);
+    }
     if (status.has_last_event) {
         video_print("  Ultima operacao:\n", 0x07);
         cmd_update_print_history_entry(&status.last_event);
@@ -7569,16 +7607,172 @@ static void cmd_update_test_fail_after(const char* value) {
     video_print(" arquivo(s).\n", 0x0E);
 }
 
+static void cmd_update_print_remote_candidate(
+    const update_remote_candidate_t* candidate) {
+    if (!candidate || !candidate->package_size) return;
+    cmd_update_print_version(
+        "  Base: ", &candidate->base_version, candidate->base_epoch);
+    cmd_update_print_version(
+        "  Alvo: ", &candidate->target_version, candidate->target_epoch);
+    video_print("  Geracao: ", 0x07);
+    print_num(candidate->generation);
+    video_print("  bytes=", 0x08);
+    print_num(candidate->package_size);
+    video_print("\n  Caminho: ", 0x07);
+    video_print(candidate->package_path, 0x07);
+    video_print("\n", 0x07);
+}
+
+static void cmd_update_remote_status(void) {
+    update_remote_status_t status;
+
+    if (update_remote_get_status(&status) != OK) {
+        video_print("Update remoto indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("Update remoto:\n  Estado: ", 0x0B);
+    video_print(update_remote_state_name(status.state),
+                status.state == UPDATE_REMOTE_STATE_FAILED ? 0x0C :
+                status.state == UPDATE_REMOTE_STATE_DISABLED ? 0x08 : 0x0A);
+    video_print("  motivo=", 0x08);
+    video_print(update_remote_reason_name(status.reason), 0x07);
+    video_print("\n  Sessao: ", 0x07);
+    video_print(status.enabled ? "HABILITADA" : "DESABILITADA",
+                status.enabled ? 0x0A : 0x08);
+    video_print("  rede=", 0x08);
+    video_print(status.network_ready ? "READY" : "UNAVAILABLE",
+                status.network_ready ? 0x0A : 0x0E);
+    video_print("\n  Canal: ", 0x07);
+    video_print(UPDATE_REMOTE_CHANNEL_NAME, 0x0B);
+    video_print("\n  URL: ", 0x07);
+    video_print(status.manifest_url, 0x07);
+    video_print("\n  Cache: ", 0x07);
+    video_print(update_remote_store_name(status.cache_store),
+                status.cache_store == UPDATE_REMOTE_STORE_INVALID ?
+                0x0C : 0x0A);
+    if (status.package_cached) {
+        video_print(" alias=", 0x08);
+        video_print(status.cached_alias, 0x0B);
+    }
+    video_print("\n  Progresso: ", 0x07);
+    print_num(status.bytes_received);
+    video_print("/", 0x08);
+    print_num(status.total_bytes);
+    video_print(" retry=", 0x08);
+    print_num(status.retry_count);
+    video_print("\n", 0x07);
+    if (status.manifest_cached) {
+        cmd_update_print_remote_candidate(&status.candidate);
+    }
+}
+
+static void cmd_update_remote_control(const char* action, int confirmed) {
+    update_remote_options_t options;
+    update_remote_result_t result;
+    int operation_result;
+
+    if (kstrcmp(action, "status") == 0) {
+        cmd_update_remote_status();
+        return;
+    }
+    if (kstrcmp(action, "enable") == 0) {
+        operation_result = update_remote_enable();
+        video_print(operation_result == OK ?
+                    "Update remoto habilitado nesta sessao.\n" :
+                    "Falha ao habilitar Update remoto.\n",
+                    operation_result == OK ? 0x0A : 0x0C);
+        cmd_update_remote_status();
+        return;
+    }
+    if (kstrcmp(action, "disable") == 0) {
+        operation_result = update_remote_disable();
+        video_print(operation_result == OK ?
+                    "Update remoto desabilitado.\n" :
+                    "Falha ao desabilitar Update remoto.\n",
+                    operation_result == OK ? 0x0A : 0x0C);
+        return;
+    }
+    if (kstrcmp(action, "clear") != 0) {
+        video_print("Uso: update remote status|enable|disable\n", 0x0E);
+        video_print("     update remote clear [--confirm]\n", 0x0E);
+        return;
+    }
+    kmemset(&options, 0, sizeof(options));
+    options.dry_run = confirmed ? 0U : 1U;
+    operation_result = update_remote_clear(&options, &result);
+    if (operation_result != OK) {
+        video_print("Falha ao limpar cache remoto: ", 0x0C);
+        video_print(update_remote_reason_name(result.reason), 0x0C);
+        video_print("\n", 0x0C);
+    } else if (!confirmed) {
+        video_print("Cache remoto inspecionado. Nenhuma gravacao.\n", 0x0A);
+        video_print("Para confirmar: update remote clear --confirm\n",
+                    0x0E);
+    } else {
+        video_print("Cache remoto removido.\n", 0x0A);
+    }
+}
+
+static void cmd_update_fetch(const char* url, int confirmed) {
+    update_remote_options_t options;
+    update_remote_result_t result;
+    int operation_result;
+
+    kmemset(&options, 0, sizeof(options));
+    options.cancel_check = cmd_update_cancel_check;
+    if (confirmed) {
+        video_print("Baixando ZUPD; Esc/F12 cancela a transferencia...\n",
+                    0x0E);
+        operation_result = update_remote_fetch(
+            url && url[0] ? url : 0, &options, &result);
+    } else {
+        video_print("Consultando manifesto assinado sem gravar...\n", 0x07);
+        operation_result = update_remote_check(
+            url && url[0] ? url : 0, &result);
+    }
+    video_print("Resultado remoto: ", 0x07);
+    video_print(update_remote_reason_name(result.reason),
+                operation_result == OK ? 0x0A : 0x0C);
+    video_print(" bytes=", 0x08);
+    print_num(result.bytes_received);
+    video_print(" retry=", 0x08);
+    print_num(result.retry_count);
+    video_print("\n", 0x07);
+    cmd_update_print_remote_candidate(&result.candidate);
+    if (operation_result != OK) {
+        if (result.cache_preserved) {
+            video_print("O cache remoto anterior foi preservado.\n", 0x0A);
+        }
+        return;
+    }
+    if (!confirmed) {
+        video_print("Manifesto autenticado. Nenhuma gravacao realizada.\n",
+                    0x0A);
+        video_print("Para confirmar: update fetch", 0x0E);
+        if (url && url[0]) {
+            video_print(" --url ", 0x0E);
+            video_print(url, 0x0E);
+        }
+        video_print(" --confirm\n", 0x0E);
+    } else {
+        video_print("Pacote autenticado no cache: ", 0x0A);
+        video_print(result.cached_alias, 0x0B);
+        video_print("\nNenhuma instalacao foi iniciada.\n", 0x0A);
+    }
+}
+
 static void cmd_update(const char* args) {
     char operation[16];
     char first[FS_MAX_PATH];
-    char second[32];
+    char second[UPDATE_REMOTE_URL_SIZE];
+    char third[32];
     char extra[2];
     const char* cursor = args;
 
     cmd_pkg_take_token(&cursor, operation, sizeof(operation));
     cmd_pkg_take_token(&cursor, first, sizeof(first));
     cmd_pkg_take_token(&cursor, second, sizeof(second));
+    cmd_pkg_take_token(&cursor, third, sizeof(third));
     cmd_pkg_take_token(&cursor, extra, sizeof(extra));
     if (kstrcmp(operation, "status") == 0 && first[0] == '\0') {
         cmd_update_status();
@@ -7595,27 +7789,56 @@ static void cmd_update(const char* args) {
     }
     if (kstrcmp(operation, "apply") == 0 && first[0] &&
         extra[0] == '\0' &&
+        third[0] == '\0' &&
         (second[0] == '\0' || kstrcmp(second, "--confirm") == 0)) {
         cmd_update_apply(first, second[0] != '\0');
         return;
     }
     if (kstrcmp(operation, "rollback") == 0 &&
-        extra[0] == '\0' && second[0] == '\0' &&
+        extra[0] == '\0' && second[0] == '\0' && third[0] == '\0' &&
         (first[0] == '\0' || kstrcmp(first, "--confirm") == 0)) {
         cmd_update_rollback(first[0] != '\0');
         return;
     }
     if (kstrcmp(operation, "test") == 0 &&
         kstrcmp(first, "fail-after") == 0 &&
-        second[0] && extra[0] == '\0') {
+        second[0] && third[0] == '\0' && extra[0] == '\0') {
         cmd_update_test_fail_after(second);
         return;
+    }
+    if (kstrcmp(operation, "remote") == 0 && first[0] &&
+        extra[0] == '\0' && third[0] == '\0' &&
+        (second[0] == '\0' ||
+         (kstrcmp(first, "clear") == 0 &&
+          kstrcmp(second, "--confirm") == 0))) {
+        cmd_update_remote_control(first, second[0] != '\0');
+        return;
+    }
+    if (kstrcmp(operation, "fetch") == 0 && extra[0] == '\0') {
+        if (!first[0] && !second[0] && !third[0]) {
+            cmd_update_fetch(0, 0);
+            return;
+        }
+        if (kstrcmp(first, "--confirm") == 0 &&
+            !second[0] && !third[0]) {
+            cmd_update_fetch(0, 1);
+            return;
+        }
+        if (kstrcmp(first, "--url") == 0 && second[0] &&
+            (!third[0] || kstrcmp(third, "--confirm") == 0)) {
+            cmd_update_fetch(second, third[0] != '\0');
+            return;
+        }
     }
     LOG_WARN("SHELL", "Uso invalido do comando update");
     video_print("Uso: update status|history\n", 0x0E);
     video_print("Uso: update verify <arquivo.ZUP>\n", 0x0E);
     video_print("     update apply <arquivo.ZUP> [--confirm]\n", 0x0E);
     video_print("     update rollback [--confirm]\n", 0x0E);
+    video_print("     update remote status|enable|disable\n", 0x0E);
+    video_print("     update remote clear [--confirm]\n", 0x0E);
+    video_print("     update fetch [--url <manifesto>] [--confirm]\n",
+                0x0E);
     video_print("     update test fail-after <1-3>\n", 0x0E);
 }
 
