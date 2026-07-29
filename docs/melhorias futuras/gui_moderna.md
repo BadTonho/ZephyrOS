@@ -1,6 +1,8 @@
 # Roadmap: Modernização da GUI (Fase 10)
 
-O sistema operacional ZephyrOS possui todos os elementos para uma interface gráfica (VESA, Mouse PS/2, Decoder de imagens BMP). O objetivo desta fase é abandonar a renderização atual baseada em texto (TUI) e substituí-la por primitivas gráficas 2D modernas.
+O ZephyrOS mantem a interface Classic como fallback e oferece uma interface
+Modern baseada em VESA, mouse PS/2, primitivas 2D e imagens BMP. As duas
+interfaces coexistem; a modernizacao nao remove os fluxos TUI.
 
 ### Decisão Arquitetural: Linguagem
 - **Etapa Atual (C Puro):** A GUI será construída inteiramente em C para garantir máxima performance, fácil integração com o Kernel atual e evitar complexidades de *runtime* (como inicialização global de objetos e runtime errors). Usaremos uma abordagem *C Object-Oriented* (ex: `ui_create_window()`, `ui_button_draw()`) para manter a organização.
@@ -13,11 +15,13 @@ O sistema operacional ZephyrOS possui todos os elementos para uma interface grá
 | 1 | **Primitivas 2D (`gui.c`)**: `gui_draw_panel`, `gui_draw_button`, `gui_draw_window_frame`, `gui_draw_text`. | ✅ Concluído |
 | 2 | **Desktop Gráfico (`desktop.c`)**: Cards 3D, modo classic/modern, layout responsivo e fallback TUI. | ✅ Concluído |
 | 3 | **Mouse no Desktop (`desktop.c`)**: Seleção por clique e abertura por duplo clique. | ✅ Concluído |
-| 4 | **Mouse Interativo (`wm.c`)**: Hover, foco e Drag and Drop de janelas. | Planejado |
-| 5 | **Desktop com BMP (`desktop.c`)**: Substituir símbolos por imagens carregadas do disco. | Planejado |
-| 6 | **Taskbar Moderna (`taskbar.c`)**: Redesenho gráfico preservando a semântica atual. | Planejado |
-| 7 | **Windows Decorator (`wm.c`)**: Janelas com titlebar desenhadas via primitivas gráficas. | Planejado |
+| 4 | **Mouse Interativo (`wm.c`)**: Foco, arraste e redimensionamento de janelas. | ✅ Concluído |
+| 5 | **Desktop com BMP (`desktop.c`)**: Imagens com cache e fallback desenhado. | ✅ Concluído |
+| 6 | **Taskbar Moderna (`taskbar.c`)**: Redesenho gráfico preservando a semântica atual. | ✅ Concluído |
+| 7 | **Windows Decorator (`wm.c`)**: Janelas com titlebar desenhadas via primitivas gráficas. | ✅ Concluído |
 | 8 | **Double Buffering (`vesa.c`)**: Renderização suave e sem cintilação via backbuffer na RAM. | ✅ Concluído |
+| 9 | **Aplicativos hospedados**: Shell, Explorer, Settings e Task Manager em janelas singleton. | ✅ Concluído |
+| 10 | **Acessibilidade**: Roda PS/2 e atalhos de gerenciamento de janelas. | ✅ Concluído |
 
 ## Detalhes das Fases
 
@@ -43,28 +47,30 @@ O Desktop moderno agora recebe eventos gráficos do mouse:
 - Duplo clique em até 500 ms abre o aplicativo
 - O cursor é invalidado antes de redesenhos completos para evitar artefatos no backbuffer
 
-### Fase 4: Barra de Tarefas Moderna (GUI)
+### Fase 4: Barra de Tarefas Moderna (GUI) ✅
 
-- Preservar os botões, relógio e Menu Iniciar já funcionais.
-- Reutilizar a identidade atual: cinza, bordas 3D, seleção azul e fonte bitmap.
-- Integrar o desenho ao ciclo de frame sem múltiplos flips nem perda da
+- Preserva os botões, relógio e Menu Iniciar nas cinco posições suportadas.
+- Reutiliza a identidade atual: cinza, bordas 3D, seleção azul e fonte bitmap.
+- Integra o desenho ao ciclo de frame sem múltiplos flips nem perda da
   prioridade de clique.
 
-### Fase 5: Input Universal (Mouse)
-Atualmente o Window Manager e as interfaces utilizam muito o teclado (`wm_handle_key`). Precisamos interligar o `mouse_event_t` ao:
-- **Hover**: Saber quando o ponteiro do mouse está sobre um botão para iluminá-lo.
-- **Click (Press)**: Saber onde ocorreu o clique e focar na janela.
-- **Drag (Move + Press)**: Atualizar X,Y das janelas enquanto o mouse é movido com o botão pressionado na Titlebar.
+### Fase 5: Input Universal (Mouse) ✅
 
-### Fase 6: Ícones e detalhes visuais
+- Clique define foco e Z-order sem retirar a prioridade da taskbar.
+- Arraste e redimensionamento ao vivo respeitam a área útil do Desktop.
+- Ícones do Desktop usam grade sem sobreposição.
+- A roda PS/2 é entregue ao conteúdo da janela superior sob o cursor.
 
-O modo clássico não será removido. Depois de a taskbar e o WM gráfico estarem
-estáveis, o Desktop poderá usar ícones BMP do disco com fallback desenhado.
-Transparência e alpha blending não fazem parte do escopo inicial.
+### Fase 6: Ícones e detalhes visuais ✅
+
+O Desktop Modern carrega BMPs de Shell, Explorer e Task Manager com chave
+magenta e cache. Falhas de filesystem, formato ou memoria preservam os
+simbolos desenhados. O modo Classic permanece independente desses arquivos.
 
 ## Limitações Atuais e Atenções
 1. **Performance VESA Resolvida (Double Buffering):** O problema de *flickering* (cintilação) foi resolvido através da implementação de um backbuffer em memória RAM (`vesa_init_backbuffer`). Agora, a tela é copiada de uma só vez para a VRAM (`vesa_flip`).
-2. **Clipping:** Ao sobrepor janelas, precisamos implementar `clipping` ou redesenho com "sujeira" (dirty rectangles) para não sobrecarregar a CPU renderizando o que está escondido.
+2. **Escopo visual:** Transparencia, alpha blending, gradientes e um novo tema
+   permanecem fora do escopo validado.
 
 ## Referências
 - OSDev Wiki - Double Buffering

@@ -32,9 +32,10 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   ciclos ring 3 e nas interfaces classica/moderna. K4 foi validada no QEMU:
   a copia VESA do cursor por regioes minimas reduziu bytes no cenario manual,
   preservando foco, Shell e ausencia de artefatos visuais.
-- Interface: Desktop, Explorer, Task Manager e Settings possuem modo moderno
-  e fallback classico; a taskbar e o Window Manager grafico ainda sao etapas
-  futuras.
+- Interface: UI1 a UI7 validadas. Desktop, taskbar, Window Manager, Shell,
+  Explorer, Task Manager e Settings possuem modo moderno e fallback classico;
+  janelas e icones aceitam interacao direta, os BMPs usam cache com fallback
+  e a roda PS/2 e os atalhos de acessibilidade estao integrados.
 - Sistema e ecossistema: S1.1 concluida com inventario de dispositivos somente
   de leitura e diagnostico de energia sem ACPI, validados manualmente no QEMU
   com os fallbacks e a matriz de regressao preservados. S1.2 concluiu a
@@ -53,7 +54,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   TCP/sockets/HTTP; as suites agrupadas e o `regcheck full` foram validados
   no QEMU com E1000, incluindo recuperacao de timeout HTTP. A S2.8 concluiu
   Multi-NIC e RTL8139, com a suite Multi-NIC e o `regcheck full` aprovados no
-  QEMU pelo usuario nos modos Classic e Modern.
+  QEMU pelo usuario nos modos Classic e Modern. A U1 concluiu a politica de
+  integridade, o contrato ZUPD v1 e quatro vetores publicos validados; U2-U5
+  permanecem pendentes.
 
 ## K4 validada
 

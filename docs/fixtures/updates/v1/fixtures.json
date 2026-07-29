@@ -1,0 +1,58 @@
+{
+  "format": "ZUPD v1",
+  "contract": "../../../14-atualizacoes/contrato-zupd-v1.md",
+  "domain_separator_hex": "5a45504859524f532d5550444154452d563100",
+  "trusted_test_key": {
+    "source": "RFC 8032 test vector 1",
+    "public_key_hex": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a",
+    "key_id_hex": "21fe31dfa154a261626bf854046fd227"
+  },
+  "unknown_test_key": {
+    "source": "RFC 8032 test vector 2",
+    "public_key_hex": "3d4017c3e843895a92b70aa74d1b7ebc9c982ccf2ec4968cc0cd55f12af4660c",
+    "key_id_hex": "39f713d0a644253f04529421b9f51b9b"
+  },
+  "payload": {
+    "path": "SHELL.BMP",
+    "size": 3126,
+    "sha256": "7e430373871f14da041a5b57fae47284f903fe90115c4dc830b5cf533dd737ca"
+  },
+  "fixtures": {
+    "valid.zephyrosupd": {
+      "size": 3446,
+      "sha256": "497f8fc70aede13b6250e4567eac085566ffaa442705c094de1f61cd06b3ca51",
+      "expected_reason": "ZUPD_REASON_NONE",
+      "base_version": "0.1.0",
+      "target_version": "0.1.1",
+      "base_epoch": 0,
+      "target_epoch": 0
+    },
+    "corrupted.zephyrosupd": {
+      "size": 3446,
+      "sha256": "1cf29e54859a92ea385e84dcdac592338a9b5b0ab5abd93dd8863b4d3da0195d",
+      "expected_reason": "ZUPD_REASON_HASH",
+      "base_version": "0.1.0",
+      "target_version": "0.1.1",
+      "base_epoch": 0,
+      "target_epoch": 0
+    },
+    "unknown-key.zephyrosupd": {
+      "size": 3446,
+      "sha256": "d7d9bb963a411b50c8b2d54e9599509afb5085d98520e51159bef786e74a1880",
+      "expected_reason": "ZUPD_REASON_UNKNOWN_KEY",
+      "base_version": "0.1.0",
+      "target_version": "0.1.1",
+      "base_epoch": 0,
+      "target_epoch": 0
+    },
+    "incompatible-version.zephyrosupd": {
+      "size": 3446,
+      "sha256": "95ce9e7fb3634484d38f4d85fc99b419d8eff855322e25425373411012799c8f",
+      "expected_reason": "ZUPD_REASON_BASE_VERSION",
+      "base_version": "9.0.0",
+      "target_version": "9.0.1",
+      "base_epoch": 0,
+      "target_epoch": 0
+    }
+  }
+}

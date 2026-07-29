@@ -103,8 +103,8 @@ antecipar interfaces ou permissoes que ainda nao existem.
   protocolos; Q3, build e matriz QEMU aprovados pelo usuario.
 - [x] Atualizacao segura foi dividida no roteiro U1-U5: politica, verificacao
   local, aplicacao recuperavel, interface dual e distribuicao remota opcional.
-- [ ] U1: definir politica de integridade e contrato do artefato de sistema,
-  separado do ZPKG v1 de aplicativos.
+- [x] U1: politica de integridade e contrato ZUPD v1 concluidos, separados do
+  ZPKG v1, com Ed25519, SHA-256, allowlist e quatro vetores publicos validados.
 - [ ] Manter operacoes remotas opcionalmente desabilitadas e visiveis em
   `health` quando indisponiveis.
 

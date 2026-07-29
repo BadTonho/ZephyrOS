@@ -4,7 +4,7 @@
 
 | Fase | Objetivo | Estado |
 |-------|----------|--------|
-| U1 | Politica de integridade e contrato do pacote de sistema | Pendente |
+| U1 | Politica de integridade e contrato do pacote de sistema | Concluida |
 | U2 | Verificacao local, assinada e sem escrita | Pendente |
 | U3 | Aplicacao transacional, recuperacao e rollback | Pendente |
 | U4 | Diagnosticos e interfaces Classic/Modern | Pendente |
@@ -13,6 +13,10 @@
 O ZPKG v1 continua sendo exclusivamente o container de aplicativos locais.
 Atualizacoes do sistema usarao um artefato versionado proprio, definido na U1,
 sem alterar a App API, o formato ZPKG v1 ou os pacotes ja instalados.
+
+O contrato canonico e os vetores publicos da U1 estao em
+`docs/14-atualizacoes/contrato-zupd-v1.md` e
+`docs/fixtures/updates/v1/`.
 
 ---
 
@@ -33,18 +37,23 @@ Nenhum desses comandos existe antes da fase indicada.
 
 ## Fase U1 - Politica de Integridade e Contrato
 
-- [ ] Definir ameacas cobertas, fontes aceitas, chave ou raiz de confianca,
+- [x] Definir ameacas cobertas, fontes aceitas, chave ou raiz de confianca,
   algoritmo de assinatura e politica de revogacao.
-- [ ] Especificar um novo container de atualizacao de sistema: magic,
+- [x] Especificar um novo container de atualizacao de sistema: magic,
   versao de formato, manifesto, alvo, versao minima, hashes, assinatura e
   tamanho maximo.
-- [ ] Definir compatibilidade, prevencao de downgrade, codigos de erro e os
+- [x] Definir compatibilidade, prevencao de downgrade, codigos de erro e os
   estados que `health` devera expor.
-- [ ] Publicar vetores validos, corrompidos, assinados por chave desconhecida
+- [x] Publicar vetores validos, corrompidos, assinados por chave desconhecida
   e com versao incompativel.
 
 **Criterio de saida:** contrato publico revisado e vetores aprovados, sem
 leitura de rede, escrita no disco ou alteracao do boot.
+
+Concluida: o ZUPD v1 usa Ed25519, SHA-256, baseline `0.1.0`, epoch `0` e
+allowlist de arquivos do sistema. Os quatro vetores foram validados no host
+como `NONE`, `HASH`, `UNKNOWN_KEY` e `BASE_VERSION`. Nenhum comando, parser
+de kernel ou chave de producao foi adicionado nesta fase.
 
 ## Fase U2 - Verificacao Local sem Escrita
 
@@ -113,6 +122,8 @@ aplicacao segura permanecem identicas ao fluxo local.
 
 ## Referencias
 
+- `docs/14-atualizacoes/contrato-zupd-v1.md` -- contrato canonico ZUPD v1.
+- `docs/fixtures/updates/v1/` -- vetores publicos e resultados esperados.
 - `docs/13-aplicativos/pacotes.md` -- contrato do ZPKG v1 de aplicativos.
 - `docs/roadmaps/05-sistema-e-ecossistema.md` -- ordem executavel de U1-U5.
 - `docs/regras.md` -- requisitos de qualidade, logs e validacao.

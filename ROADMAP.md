@@ -4,11 +4,13 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
-## Progresso Geral: base do sistema concluída; Fase 7 e K1-K4 validadas
+## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8 e U1 concluídas
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
 Plataforma de aplicativos:   [██████████████████████████████████████████] Fase 7 validada
+Interface e experiência:     [██████████████████████████████████████████] UI1-UI7 validadas
+Sistema e ecossistema:       [██████████████████████████████████████████] S2.8 e U1 concluídas
 ```
 
 ---
@@ -313,7 +315,7 @@ Plataforma de aplicativos:   [████████████████�
 - [x] Códigos de erro padronizados (`src/include/core/errors.h`)
 - [x] Spinlock para sincronização (`src/include/core/spinlock.h`)
 
-## Fase 10 - GUI Moderna (Em andamento)
+## Fase 10 - GUI Moderna ✅
 > Arquivos principais: `src/drivers/video.c`, `src/drivers/vesa.c`, `src/desktop/desktop.c`, `src/taskbar/taskbar.c`, `src/wm/wm.c`, `src/gui/gui.c`
 
 - [x] **Desktop gráfico compatível**: Cards 3D, seleção azul, layout responsivo e fallback TUI.
@@ -323,11 +325,13 @@ Plataforma de aplicativos:   [████████████████�
 - [x] **Aplicativos modernos**: Explorer, Task Manager e Settings seguem a identidade visual existente e mantêm fallback TUI.
 - [x] **Double Buffering (Backbuffer)**: Renderização no VRAM em dois estágios para prevenir *flickering* (cintilação) durante o redesenho (Vesa Flip).
 - [x] **Entrada gráfica básica**: Roteamento de teclado e mouse preserva prioridade da taskbar e do Menu Iniciar.
-- [ ] **Taskbar moderna**: Redesenhar a taskbar sem mudar sua semântica atual de botões, relógio e Menu Iniciar.
-- [ ] **Primitive Graphics 2D**: Avaliar novas primitivas somente quando houver necessidade visual comprovada.
-- [ ] **Desktop Gráfico Imagens**: Mudar os ícones do Desktop para carregar imagens reais em `.bmp` do disco.
-- [ ] **Window Manager Gráfico**: Mudar as molduras (bordas e titlebars) das janelas do modo texto para primitivas visuais em VESA. Botões de "Fechar/Minimizar/Maximizar" gráficos.
-- [ ] **Integração Plena de Mouse**: Implementar arrastar (Drag & Drop) de janelas pelo mouse.
+- [x] **Taskbar moderna**: Botões, relógio e Menu Iniciar preservam sua semântica nas cinco posições suportadas.
+- [x] **Primitive Graphics 2D**: Novas primitivas foram adicionadas somente para necessidades visuais comprovadas.
+- [x] **Desktop Gráfico Imagens**: Shell, Explorer e Task Manager usam BMPs com cache e fallback desenhado.
+- [x] **Window Manager Gráfico**: Molduras, titlebars e controles gráficos integram foco, Z-order e composição VESA.
+- [x] **Integração Plena de Mouse**: Janelas suportam arraste e redimensionamento; ícones usam encaixe em grade.
+- [x] **Aplicativos hospedados**: Shell, Explorer, Settings e Task Manager usam janelas singleton no modo Moderno.
+- [x] **Acessibilidade**: Roda PS/2 e atalhos `Alt+Tab`, `Alt+F4`, `Alt+F9` e `Alt+F10` integrados ao WM.
 
 ---
 
@@ -601,9 +605,9 @@ Plataforma de aplicativos:   [████████████████�
 - [x] S2.8: Multi-NIC/RTL8139 concluida, com registro de quatro interfaces,
   E1000 multi-instancia, IRQ compartilhada, uma unica NIC L3 e suite
   `net check qemu multi`; Q3, build e matriz QEMU foram aprovados pelo usuario.
-- [ ] U1: definir a politica de integridade e o contrato do artefato de
-  atualizacao de sistema; as fases U2-U5 cobrem verificacao local, rollback,
-  interface dual e distribuicao remota opcional.
+- [x] U1: politica de integridade e contrato ZUPD v1 concluidos, com layout
+  autenticado Ed25519/SHA-256 e vetores para sucesso, corrupcao, chave
+  desconhecida e versao incompativel; U2-U5 permanecem pendentes.
 
 ## Roadmaps por etapa
 
