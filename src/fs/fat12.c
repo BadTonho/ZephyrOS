@@ -261,8 +261,7 @@ static int fat12_find_root_index(const char encoded[11],
             return OK;
         }
     }
-    LOG_WARN("FAT12", "Arquivo raiz nao encontrado");
-    return ERR_NOT_FOUND;
+    return -1;
 }
 
 static int fat12_find_root_slot(uint32_t* index_out) {
@@ -1540,7 +1539,7 @@ int fat12_get_root_file_info(const char* filename, uint32_t* size_out,
         return result;
     }
     result = fat12_find_root_index(encoded, &index);
-    if (result != OK) return result;
+    if (result != OK) return ERR_NOT_FOUND;
     if (size_out) *size_out = fs.root_dir[index].file_size;
     if (attributes_out) *attributes_out = fs.root_dir[index].attributes;
     return OK;
@@ -1650,7 +1649,7 @@ int fat12_atomic_delete_root(const char* filename) {
         return result;
     }
     result = fat12_find_root_index(encoded, &entry_index);
-    if (result != OK) return result;
+    if (result != OK) return ERR_NOT_FOUND;
 
     previous = fs.root_dir[entry_index];
     fs.root_dir[entry_index].name[0] = (char)0xE5;
