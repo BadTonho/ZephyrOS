@@ -439,10 +439,14 @@ static void updater_remote_toggle(void) {
 }
 
 static void updater_remote_check(int request_confirmation) {
+    update_remote_options_t options;
     int result;
 
+    kmemset(&options, 0, sizeof(options));
+    options.dry_run = 1U;
+    options.cancel_check = updater_cancel_check;
     kmemset(&updater_remote_result, 0, sizeof(updater_remote_result));
-    result = update_remote_check(0, &updater_remote_result);
+    result = update_remote_check(0, &options, &updater_remote_result);
     updater_last_result = result;
     updater_result_kind = UPDATER_RESULT_REMOTE;
     updater_confirm = result == OK && request_confirmation ?

@@ -102,6 +102,7 @@ int update_remote_init(void);
 int update_remote_enable(void);
 int update_remote_disable(void);
 int update_remote_check(const char* manifest_url,
+                        const update_remote_options_t* options,
                         update_remote_result_t* result_out);
 int update_remote_fetch(const char* manifest_url,
                         const update_remote_options_t* options,

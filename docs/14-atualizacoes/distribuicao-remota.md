@@ -154,6 +154,10 @@ progresso, estado do cache e:
 - `update_remote_get_cached_alias()`;
 - conversores estaveis de estado, motivo e armazenamento.
 
+`update_remote_check()` recebe as mesmas opcoes cooperativas do download. A
+consulta continua somente-leitura, mas Shell e System Updater podem apresentar
+progresso e cancelar HTTP com `Esc`/`F12` antes de qualquer gravacao.
+
 Os motivos publicos preservam estes valores:
 
 | Valor | Motivo |

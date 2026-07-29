@@ -1089,18 +1089,21 @@ int update_remote_disable(void) {
 }
 
 int update_remote_check(const char* manifest_url,
+                        const update_remote_options_t* options,
                         update_remote_result_t* result_out) {
+    update_remote_options_t defaults = {1U, 0, 0};
     int result;
 
     if (!result_out) {
         LOG_ERROR("UPDATE", "Destino nulo na consulta remota");
         return ERR_NULL;
     }
+    if (!options) options = &defaults;
     kmemset(result_out, 0, sizeof(*result_out));
     result = update_remote_begin();
     if (result != OK) return result;
     result = update_remote_check_internal(
-        manifest_url, 0, result_out);
+        manifest_url, options, result_out);
     if (result == OK) update_remote_status.busy = 0U;
     return result;
 }
@@ -1121,7 +1124,7 @@ int update_remote_fetch(const char* manifest_url,
     if (!options) options = &defaults;
     kmemset(result_out, 0, sizeof(*result_out));
     if (options->dry_run) return update_remote_check(
-        manifest_url, result_out);
+        manifest_url, options, result_out);
     if (update_remote_begin() != OK) return ERR_STATE;
     if (!update_remote_manifest_valid) {
         return update_remote_reject(

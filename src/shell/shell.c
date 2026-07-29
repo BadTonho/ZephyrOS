@@ -7852,6 +7852,7 @@ static void cmd_update_fetch(const char* url, int confirmed) {
     int operation_result;
 
     kmemset(options, 0, sizeof(*options));
+    options->dry_run = confirmed ? 0U : 1U;
     options->cancel_check = cmd_update_cancel_check;
     if (confirmed) {
         video_print("Baixando ZUPD; Esc/F12 cancela a transferencia...\n",
@@ -7859,9 +7860,10 @@ static void cmd_update_fetch(const char* url, int confirmed) {
         operation_result = update_remote_fetch(
             url && url[0] ? url : 0, options, result);
     } else {
-        video_print("Consultando manifesto assinado sem gravar...\n", 0x07);
+        video_print("Consultando manifesto; Esc/F12 cancela sem gravar...\n",
+                    0x07);
         operation_result = update_remote_check(
-            url && url[0] ? url : 0, result);
+            url && url[0] ? url : 0, options, result);
     }
     video_print("Resultado remoto: ", 0x07);
     video_print(update_remote_reason_name(result->reason),
