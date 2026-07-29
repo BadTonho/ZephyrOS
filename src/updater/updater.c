@@ -88,6 +88,8 @@ static update_status_t updater_status;
 static int updater_status_ready = 0;
 static update_verification_t updater_verification;
 static update_action_result_t updater_action;
+static updater_result_t updater_completed_action_kind = UPDATER_RESULT_NONE;
+static update_action_result_t updater_completed_action;
 static update_remote_status_t updater_remote_status;
 static update_remote_result_t updater_remote_result;
 static int updater_remote_status_ready = 0;
@@ -506,10 +508,20 @@ static void updater_confirm_action(void) {
         updater_last_result =
             update_apply_file(path, &options, &updater_action);
         updater_result_kind = UPDATER_RESULT_APPLY;
+        if (updater_last_result == OK ||
+            updater_action.recovery_pending) {
+            updater_completed_action_kind = UPDATER_RESULT_APPLY;
+            updater_completed_action = updater_action;
+        }
     } else if (confirmation == UPDATER_CONFIRM_ROLLBACK) {
         updater_last_result =
             update_rollback(&options, &updater_action);
         updater_result_kind = UPDATER_RESULT_ROLLBACK;
+        if (updater_last_result == OK ||
+            updater_action.recovery_pending) {
+            updater_completed_action_kind = UPDATER_RESULT_ROLLBACK;
+            updater_completed_action = updater_action;
+        }
     } else if (confirmation == UPDATER_CONFIRM_REMOTE_FETCH) {
         updater_remote_confirm_fetch();
     } else if (confirmation == UPDATER_CONFIRM_REMOTE_CLEAR) {
@@ -576,6 +588,23 @@ static void updater_classic_draw_result(void) {
     int x = UPDATER_CLASSIC_LIST_WIDTH + 3;
 
     video_set_cursor(x, 6);
+    if (updater_completed_action_kind != UPDATER_RESULT_NONE) {
+        video_print(
+            updater_completed_action_kind == UPDATER_RESULT_APPLY ?
+            "Aplicacao concluida: " : "Rollback concluido: ", 0x07);
+        video_print(
+            update_action_reason_name(updater_completed_action.reason),
+            updater_completed_action.recovery_pending ? 0x0E : 0x0A);
+        video_print("\n", 0x07);
+        if (updater_completed_action.recovery_pending) {
+            video_print("Recuperacao pendente: reinicie.\n", 0x0E);
+        } else if (updater_completed_action.reboot_required) {
+            video_print(
+                "Reboot necessario para recarregar os BMPs.\n", 0x0E);
+        }
+        if (updater_result_kind == updater_completed_action_kind) return;
+        video_print("\nResultado posterior:\n", 0x08);
+    }
     if (updater_result_kind == UPDATER_RESULT_NONE) {
         video_print("Selecione um pacote e pressione V ou A.\n", 0x08);
         return;
@@ -860,6 +889,7 @@ static void updater_gui_draw_tabs(int x, int y) {
 static void updater_gui_draw_packages(int x, int y, int width, int height) {
     int list_width = 220;
     int visible = (height - 94) / UPDATER_MODERN_ROW_HEIGHT;
+    int result_y = y + 52;
 
     gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)list_width,
                    (uint32_t)(height - 54), GUI_COLOR_BG, 0);
@@ -885,15 +915,34 @@ static void updater_gui_draw_packages(int x, int y, int width, int height) {
                   updater_selected_package() ?
                   updater_selected_package() : "Nenhum pacote",
                   GUI_COLOR_TEXT);
+    if (updater_completed_action_kind != UPDATER_RESULT_NONE) {
+        gui_draw_text(
+            (uint32_t)(x + list_width + 26), (uint32_t)result_y,
+            updater_completed_action_kind == UPDATER_RESULT_APPLY ?
+            "Aplicacao concluida: NONE" : "Rollback concluido: NONE",
+            updater_completed_action.recovery_pending ?
+            0x00808000U : 0x00008000U);
+        result_y += 28;
+        gui_draw_text(
+            (uint32_t)(x + list_width + 26), (uint32_t)result_y,
+            updater_completed_action.recovery_pending ?
+            "Recuperacao pendente: reinicie." :
+            "Reboot necessario para recarregar os BMPs.",
+            0x00808000U);
+        result_y += 36;
+    }
     if (updater_result_kind == UPDATER_RESULT_VERIFY) {
-        gui_draw_text((uint32_t)(x + list_width + 26), (uint32_t)(y + 52),
+        gui_draw_text((uint32_t)(x + list_width + 26),
+                      (uint32_t)result_y,
                       updater_last_result == OK ?
                       "Verificacao: NONE" :
                       zupd_reason_name(updater_verification.reason),
                       updater_last_result == OK ?
                       0x00008000U : 0x00800000U);
-    } else if (updater_result_kind != UPDATER_RESULT_NONE) {
-        gui_draw_text((uint32_t)(x + list_width + 26), (uint32_t)(y + 52),
+    } else if (updater_result_kind != UPDATER_RESULT_NONE &&
+               updater_result_kind != updater_completed_action_kind) {
+        gui_draw_text((uint32_t)(x + list_width + 26),
+                      (uint32_t)result_y,
                       update_action_reason_name(updater_action.reason),
                       updater_last_result == OK ?
                       0x00008000U : 0x00800000U);
@@ -1194,6 +1243,7 @@ static void updater_change_selection(int direction) {
     updater_keep_selection_visible();
     updater_confirm = UPDATER_CONFIRM_NONE;
     updater_result_kind = UPDATER_RESULT_NONE;
+    updater_completed_action_kind = UPDATER_RESULT_NONE;
 }
 
 int updater_init(void) {
@@ -1204,6 +1254,9 @@ int updater_init(void) {
     updater_tab = UPDATER_TAB_PACKAGES;
     updater_confirm = UPDATER_CONFIRM_NONE;
     updater_result_kind = UPDATER_RESULT_NONE;
+    updater_completed_action_kind = UPDATER_RESULT_NONE;
+    kmemset(&updater_completed_action, 0,
+            sizeof(updater_completed_action));
     if (!update_is_ready()) {
         recovery_mark_disabled(
             RECOVERY_COMPONENT_SYSTEM_UPDATER, ERR_STATE,
@@ -1231,6 +1284,9 @@ int updater_open(void) {
     updater_tab = UPDATER_TAB_PACKAGES;
     updater_confirm = UPDATER_CONFIRM_NONE;
     updater_result_kind = UPDATER_RESULT_NONE;
+    updater_completed_action_kind = UPDATER_RESULT_NONE;
+    kmemset(&updater_completed_action, 0,
+            sizeof(updater_completed_action));
     updater_refresh_all();
     updater_mode = UPDATER_MODE_CLASSIC;
     if (desktop_get_mode() == DESKTOP_MODE_MODERN) {
@@ -1294,6 +1350,7 @@ void updater_handle_key(uint8_t scancode) {
                                       UPDATER_TAB_COUNT);
         updater_confirm = UPDATER_CONFIRM_NONE;
     } else if (scancode == UPDATER_SCANCODE_F5) {
+        updater_completed_action_kind = UPDATER_RESULT_NONE;
         updater_refresh_all();
     } else if (scancode == UPDATER_SCANCODE_UP &&
                updater_tab == UPDATER_TAB_PACKAGES) {
@@ -1379,6 +1436,7 @@ int updater_handle_mouse(mouse_event_t* event) {
             updater_selected = index;
             updater_confirm = UPDATER_CONFIRM_NONE;
             updater_result_kind = UPDATER_RESULT_NONE;
+            updater_completed_action_kind = UPDATER_RESULT_NONE;
         }
         return 1;
     }
@@ -1400,6 +1458,7 @@ int updater_handle_mouse(mouse_event_t* event) {
         return 1;
     }
     if (updater_point_in(px, py, updater_gui_x + 16, bottom, 112, 28)) {
+        updater_completed_action_kind = UPDATER_RESULT_NONE;
         updater_refresh_all();
     } else if (updater_point_in(
                    px, py, updater_gui_x + 140, bottom, 112, 28)) {
