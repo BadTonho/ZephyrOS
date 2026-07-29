@@ -37,7 +37,7 @@ Comandos disponiveis:
   mouse     - Mostra status do mouse PS/2
   guitest   - Testa primitivas GUI 2D
   guimode   - Altera entre gui classica (TUI) e moderna
-  health    - Exibe metricas e estado de recovery do kernel
+  health [summary] - Exibe estado completo ou resumo compacto
   devices   - Lista o inventario de hardware (`-v` inclui detalhes)
   device-info <id> - Exibe detalhes de um dispositivo inventariado
   device-scan - Refaz somente a varredura PCI e atualiza o inventario
@@ -227,7 +227,7 @@ Altera o modo de interface do sistema (Classic TUI ou GUI Moderna) dinamicamente
 zephyr> guimode modern
 ```
 
-## `health`
+## `health [summary]`
 Exibe métricas detalhadas do kernel, estado do recovery, paginação, processos e saúde estrutural da arquitetura. Também mostra o componente `Update` e separa verificação local, aplicação, rollback e remoto. Aplicacao fica `READY` somente em FAT12 com estado persistente integro; rollback exige backup valido; remoto U5 permanece `DISABLED` sem degradar o verificador local.
 
 Use `Page Up`, `Page Down`, `Home` e `End` para consultar toda a saida quando
@@ -240,6 +240,25 @@ continuam visíveis.
 ```
 zephyr> health
 ```
+
+`health summary` nao altera nem substitui o relatorio completo. Ele cabe em uma
+tela durante os testes e mostra contagens por estado, todos os componentes nao
+`READY`, capacidades de Update, processos, paging, memoria e validade do heap:
+
+```text
+zephyr> health summary
+Resumo do health:
+  Componentes: READY=20 DEGRADED=1 DISABLED=1 UNKNOWN=0
+  AC97: DISABLED erro=4 falhas=1
+  Media Player: DEGRADED erro=9 falhas=1
+  Update: READY
+    local=READY apply=READY rollback=DISABLED remoto=DISABLED
+  Kernel: proc=4 READY=3 RUNNING=1 BLOCKED=0 ZOMBIE=0 paging=READY
+  Memoria KB: usada=20652 livre=110292 heap=READY
+```
+
+Argumentos diferentes de `summary` sao recusados com
+`Uso: health [summary]`.
 
 ## `devices`, `device-info` e `device-scan`
 

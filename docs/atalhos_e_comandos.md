@@ -36,7 +36,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `edit` | `<arquivo>` | Abre o Editor de Texto integrado. |
 | `mouse` | - | Exibe debug em tempo real (X, Y, cliques) do Mouse PS/2. |
 | `guitest` | - | Roda um teste nativo das primitivas gráficas GUI 2D. |
-| `health` | - | Lista o estado dos componentes e mostra dependências indisponíveis. |
+| `health` | `[summary]` | Mostra o relatorio completo ou um resumo compacto para testes. |
 | `kmetrics` | `[reset]` | Mostra ou inicia a janela manual de métricas K1. |
 | `devices` | `[-v]` | Lista o inventario nativo de hardware; `-v` inclui localizacao, IRQ e IDs PCI. |
 | `device-info` | `<id>` | Mostra os detalhes de um dispositivo listado por `devices`. |

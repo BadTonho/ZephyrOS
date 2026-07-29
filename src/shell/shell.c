@@ -2150,7 +2150,8 @@ static void cmd_help(void) {
     video_print("  compress - Liga/desliga compressao de RAM\n", 0x07);
     video_print("  stats    - Mostra estatisticas de compressao\n", 0x07);
     video_print("  mouse    - Mostra status do mouse PS/2\n", 0x07);
-    video_print("  health   - Mostra estado dos componentes (use PgUp/PgDn)\n", 0x07);
+    video_print("  health [summary] - Estado completo ou resumo compacto\n",
+                0x07);
     video_print("  devices  - Lista inventario de hardware (-v para detalhes)\n", 0x07);
     video_print("  device-info <id> - Mostra detalhes de um dispositivo\n", 0x07);
     video_print("  device-scan - Refaz apenas a varredura PCI\n", 0x07);
@@ -2504,7 +2505,161 @@ static void cmd_health_print_update_capabilities(void) {
     video_print("  remoto: DISABLED (U5)\n", 0x08);
 }
 
-static void cmd_health(void) {
+static uint8_t cmd_health_state_color(recovery_state_t state) {
+    if (state == RECOVERY_STATE_READY) return 0x0A;
+    if (state == RECOVERY_STATE_DEGRADED) return 0x0E;
+    return 0x0C;
+}
+
+static void cmd_health_print_summary_component(
+    const recovery_component_t* entry) {
+    if (!entry) return;
+    video_print("  ", 0x07);
+    video_print(entry->name, 0x0B);
+    video_print(": ", 0x07);
+    video_print(recovery_state_name(entry->state),
+                cmd_health_state_color(entry->state));
+    video_print(" erro=", 0x08);
+    print_num((uint32_t)entry->last_error);
+    video_print(" falhas=", 0x08);
+    print_num(entry->failures);
+    video_print("\n", 0x07);
+}
+
+static void cmd_health_print_summary_components(void) {
+    uint32_t counts[4] = {0, 0, 0, 0};
+
+    for (uint32_t index = 0; index < recovery_get_count(); index++) {
+        const recovery_component_t* entry =
+            recovery_get((recovery_component_id_t)index);
+        recovery_state_t state = entry ?
+            entry->state : RECOVERY_STATE_UNKNOWN;
+
+        if (state > RECOVERY_STATE_DISABLED) {
+            state = RECOVERY_STATE_UNKNOWN;
+        }
+        counts[state]++;
+    }
+    video_print("  Componentes: READY=", 0x07);
+    print_num(counts[RECOVERY_STATE_READY]);
+    video_print(" DEGRADED=", 0x08);
+    print_num(counts[RECOVERY_STATE_DEGRADED]);
+    video_print(" DISABLED=", 0x08);
+    print_num(counts[RECOVERY_STATE_DISABLED]);
+    video_print(" UNKNOWN=", 0x08);
+    print_num(counts[RECOVERY_STATE_UNKNOWN]);
+    video_print("\n", 0x07);
+
+    for (uint32_t index = 0; index < recovery_get_count(); index++) {
+        const recovery_component_t* entry =
+            recovery_get((recovery_component_id_t)index);
+
+        if (!entry || entry->state == RECOVERY_STATE_READY ||
+            index == RECOVERY_COMPONENT_UPDATE) continue;
+        cmd_health_print_summary_component(entry);
+    }
+}
+
+static recovery_state_t cmd_health_update_local_state(
+    const update_capabilities_t* capabilities) {
+    if (!capabilities->verifier_ready) return RECOVERY_STATE_DISABLED;
+    if (!capabilities->local_file_available) return RECOVERY_STATE_DEGRADED;
+    return RECOVERY_STATE_READY;
+}
+
+static recovery_state_t cmd_health_update_apply_state(
+    const update_capabilities_t* capabilities) {
+    if (capabilities->apply_available) return RECOVERY_STATE_READY;
+    if (capabilities->recovery_pending ||
+        (fs_get_type() == FS_TYPE_FAT12 &&
+         !capabilities->persistent_state_ready)) {
+        return RECOVERY_STATE_DEGRADED;
+    }
+    return RECOVERY_STATE_DISABLED;
+}
+
+static void cmd_health_print_inline_state(recovery_state_t state) {
+    video_print(recovery_state_name(state), cmd_health_state_color(state));
+}
+
+static void cmd_health_print_summary_update(void) {
+    const recovery_component_t* component =
+        recovery_get(RECOVERY_COMPONENT_UPDATE);
+    update_capabilities_t capabilities;
+    int capabilities_ready =
+        update_get_capabilities(&capabilities) == OK;
+
+    if (!capabilities_ready) kmemset(&capabilities, 0, sizeof(capabilities));
+    video_print("  Update: ", 0x07);
+    if (component) {
+        cmd_health_print_inline_state(component->state);
+        if (component->state != RECOVERY_STATE_READY) {
+            video_print(" erro=", 0x08);
+            print_num((uint32_t)component->last_error);
+            video_print(" falhas=", 0x08);
+            print_num(component->failures);
+        }
+    } else {
+        video_print("UNKNOWN", 0x0C);
+    }
+    video_print("\n    local=", 0x07);
+    cmd_health_print_inline_state(
+        cmd_health_update_local_state(&capabilities));
+    video_print(" apply=", 0x08);
+    cmd_health_print_inline_state(
+        cmd_health_update_apply_state(&capabilities));
+    video_print(" rollback=", 0x08);
+    cmd_health_print_inline_state(
+        capabilities.rollback_available ?
+        RECOVERY_STATE_READY : RECOVERY_STATE_DISABLED);
+    video_print(" remoto=", 0x08);
+    cmd_health_print_inline_state(
+        capabilities.remote_available ?
+        RECOVERY_STATE_READY : RECOVERY_STATE_DISABLED);
+    video_print("\n", 0x07);
+}
+
+static void cmd_health_print_summary_kernel(void) {
+    memory_heap_stats_t heap;
+
+    memory_get_heap_stats(&heap);
+    video_print("  Kernel: proc=", 0x07);
+    print_num(process_get_count());
+    video_print(" READY=", 0x08);
+    print_num(process_get_state_count(PROCESS_STATE_READY));
+    video_print(" RUNNING=", 0x08);
+    print_num(process_get_state_count(PROCESS_STATE_RUNNING));
+    video_print(" BLOCKED=", 0x08);
+    print_num(process_get_state_count(PROCESS_STATE_BLOCKED));
+    video_print(" ZOMBIE=", 0x08);
+    print_num(process_get_state_count(PROCESS_STATE_ZOMBIE));
+    video_print(" paging=", 0x08);
+    video_print(paging_is_ready() ? "READY" : "DISABLED",
+                paging_is_ready() ? 0x0A : 0x0C);
+    video_print("\n  Memoria KB: usada=", 0x07);
+    print_num(memory_get_used() / 1024U);
+    video_print(" livre=", 0x08);
+    print_num(memory_get_free() / 1024U);
+    video_print(" heap=", 0x08);
+    if (!heap.initialized) {
+        video_print("DISABLED", 0x0C);
+    } else {
+        video_print(heap.valid ? "READY" : "DEGRADED",
+                    heap.valid ? 0x0A : 0x0E);
+    }
+    video_print("\n", 0x07);
+}
+
+static void cmd_health_summary(void) {
+    video_begin_update();
+    video_print("Resumo do health:\n", 0x0B);
+    cmd_health_print_summary_components();
+    cmd_health_print_summary_update();
+    cmd_health_print_summary_kernel();
+    video_end_update();
+}
+
+static void cmd_health_full(void) {
     video_begin_update();
     video_print("Estado dos componentes:\n", 0x0B);
 
@@ -2526,6 +2681,19 @@ static int shell_args_equal(const char* args, const char* expected) {
     if (*expected) return 0;
     while (*args == ' ' || *args == '\t') args++;
     return *args == '\0';
+}
+
+static void cmd_health(const char* args) {
+    if (shell_args_equal(args, "")) {
+        cmd_health_full();
+        return;
+    }
+    if (shell_args_equal(args, "summary")) {
+        cmd_health_summary();
+        return;
+    }
+    LOG_WARN("SHELL", "Uso invalido do comando health");
+    video_print("Uso: health [summary]\n", 0x0E);
 }
 
 static const char* shell_match_subcommand(const char* args,
@@ -8161,7 +8329,7 @@ int shell_process_command(const char* input) {
     } else if (kstrcmp(cmd, "uptime") == 0) {
         cmd_uptime();
     } else if (kstrcmp(cmd, "health") == 0) {
-        cmd_health();
+        cmd_health(input);
     } else if (kstrcmp(cmd, "devices") == 0) {
         cmd_devices(input);
     } else if (kstrcmp(cmd, "device-info") == 0) {
