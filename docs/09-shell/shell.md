@@ -76,11 +76,11 @@ Comandos que abrem Explorer, Settings ou Task Manager preservam a janela do
 Shell e transferem o foco para o novo aplicativo. No modo Clássico, o Shell
 permanece em tela cheia.
 
-`shell_update_hosted_terminal()` é chamado pelo loop do processo Shell para
-apresentar alterações pendentes quando a janela estiver visível e em foco.
-Operações cooperativas longas, como download e aplicação de Update, também
-apresentam o progresso enquanto aguardam e processam `Esc`/`F12`, sem depender
-de clique, roda do mouse ou término do comando para redesenhar.
+`shell_update_hosted_terminal()` é chamado tanto pelo processo Shell quanto
+pelo processo de sistema. Assim, alterações pendentes são apresentadas quando
+a janela estiver visível e em foco mesmo se o Shell estiver bloqueado em rede,
+disco ou outra operação cooperativa. A atualização não depende de clique,
+tecla, roda do mouse ou término do comando.
 
 ### Prompt
 

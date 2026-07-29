@@ -320,6 +320,7 @@ void system_process_main(void) {
             kernel_network_poll_enabled = 0;
             LOG_ERROR("KERNEL", "Processamento Ethernet foi desabilitado");
         }
+        shell_update_hosted_terminal();
         kernel_retry_shell_request();
         taskbar_update_clock();
         wm_update_cpu_stats();
@@ -872,6 +873,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
                 LOG_ERROR("KERNEL",
                           "Processamento Ethernet fallback desabilitado");
             }
+            shell_update_hosted_terminal();
             kernel_retry_shell_request();
             taskbar_update_clock();
             wm_update_cpu_stats();
