@@ -612,7 +612,10 @@ Sistema e ecossistema:       [████████████████�
   somente-leitura, SHA-2/Ed25519, `update verify`, `health` e sete fixtures
   validados. Build limpo, motivos esperados, memoria estavel, imagem sem
   alteracao e `regcheck full` em `OK` foram confirmados pelo usuario.
-- [ ] U3-U5 permanecem pendentes.
+- [ ] U3 em validacao: copy-on-write FAT12, estado/journal redundantes,
+  aplicacao, recuperacao no boot, rollback, failpoint, `APPLY.ZUP` e auditor
+  offline estao implementados; falta a matriz de build/QEMU do usuario.
+- [ ] U4 e U5 permanecem pendentes.
 
 ## Roadmaps por etapa
 

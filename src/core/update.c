@@ -424,14 +424,21 @@ static int update_decode_state_record(update_state_t* state,
         return ERR_INVALID;
     }
     for (uint32_t index = 0; index < UPDATE_TARGET_COUNT; index++) {
+        uint32_t current_offset = UPDATE_STATE_CURRENT_OFFSET +
+                                  index * UPDATE_STATE_FILE_SIZE;
+        uint32_t rollback_offset = UPDATE_STATE_ROLLBACK_OFFSET +
+                                   index * UPDATE_STATE_FILE_SIZE;
+
         update_decode_file_state(
             &state->current[index], record,
-            UPDATE_STATE_CURRENT_OFFSET + index * UPDATE_STATE_FILE_SIZE);
+            current_offset);
         update_decode_file_state(
             &state->rollback[index], record,
-            UPDATE_STATE_ROLLBACK_OFFSET + index * UPDATE_STATE_FILE_SIZE);
+            rollback_offset);
         if (state->current[index].present != 1U ||
-            state->rollback[index].present > 1U) {
+            state->rollback[index].present > 1U ||
+            !update_bytes_zero(record + current_offset + 37U, 3U) ||
+            !update_bytes_zero(record + rollback_offset + 37U, 3U)) {
             LOG_ERROR("UPDATE", "Estado de arquivo U3 invalido");
             return ERR_INVALID;
         }
@@ -441,6 +448,13 @@ static int update_decode_state_record(update_state_t* state,
              (state->rollback[index].size == 0U ||
               state->rollback[index].size > ZUPD_MAX_PAYLOAD_SIZE))) {
             LOG_ERROR("UPDATE", "Tamanho de arquivo do estado U3 invalido");
+            return ERR_INVALID;
+        }
+        if (!state->rollback[index].present &&
+            (state->rollback[index].size != 0U ||
+             !update_bytes_zero(
+                 state->rollback[index].hash, CRYPTO_SHA256_SIZE))) {
+            LOG_ERROR("UPDATE", "Arquivo ausente do estado nao esta zerado");
             return ERR_INVALID;
         }
     }
@@ -566,7 +580,9 @@ static int update_decode_journal_record(
     }
     if ((journal->kind == UPDATE_JOURNAL_NONE &&
          (journal->phase != UPDATE_PHASE_NONE ||
-          journal->entry_count != 0U || journal->progress != 0U)) ||
+          journal->entry_count != 0U || journal->progress != 0U ||
+          !update_bytes_zero(
+              record + 12U, UPDATE_CONTROL_HASH_OFFSET - 12U))) ||
         (journal->kind != UPDATE_JOURNAL_NONE &&
          (journal->phase == UPDATE_PHASE_NONE ||
           journal->entry_count == 0U))) {

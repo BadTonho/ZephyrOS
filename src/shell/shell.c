@@ -2192,6 +2192,10 @@ static void cmd_help(void) {
     video_print("  pkg      - Gerencia pacotes .ZPK locais\n", 0x07);
     video_print("             pkg list | info | verify | install | remove\n", 0x08);
     video_print("  update verify <arquivo.ZUP> - Verifica sem gravar\n", 0x07);
+    video_print("  update apply <arquivo.ZUP> [--confirm] - Aplica U3\n",
+                0x07);
+    video_print("  update rollback [--confirm] - Desfaz a ultima U3\n",
+                0x07);
     video_print("  pkgcheck - Testa validacoes de pacote sem gravar\n", 0x07);
     video_print("  app run <arquivo.ZAP> [args] - Executa aplicativo ring 3\n", 0x07);
     video_print("  app inputtest - Testa teclado de aplicativo ring 3\n", 0x07);

@@ -1,0 +1,36 @@
+{
+  "format": "ZUPD v1",
+  "contract": "../../../14-atualizacoes/contrato-zupd-v1.md",
+  "transformation": "invert-rgb-24bit-v1",
+  "base_version": "0.1.0",
+  "target_version": "0.1.1",
+  "base_epoch": 0,
+  "target_epoch": 0,
+  "release_public_key": {
+    "public_key_hex": "4a8006ca82cca49ef482be6f554e393d176fbb8236f46bf4308c58bbd82a7808",
+    "key_id_hex": "d4926d816d8373a412e7458cc9f14379"
+  },
+  "payloads": {
+    "EXPLORER.BMP": {
+      "source_sha256": "ceedb919224cbf8b361ebb3a5087cf42d7f6332f39bbe55c6f2ef3076ad13ea1",
+      "size": 3126,
+      "sha256": "009cbecbc9bd4bac5f3134a2e6bb6204c984d4ca629b4c95b85de089f5b7368b"
+    },
+    "SHELL.BMP": {
+      "source_sha256": "7e430373871f14da041a5b57fae47284f903fe90115c4dc830b5cf533dd737ca",
+      "size": 3126,
+      "sha256": "3eb2f94b100dce202508d213f36a7467a8fe68a033c8fcff688d55ba55da7e58"
+    },
+    "TASKMGR.BMP": {
+      "source_sha256": "f1ab500c1360c1fa1c4accb4335b2f266fe8e85beab875a0b53138a22af49e48",
+      "size": 3126,
+      "sha256": "21bd3d50d35be23f016504b548c57cd04f1b236e7a5611d4de282b2cd92f8ada"
+    }
+  },
+  "artifact": {
+    "name": "APPLY.ZUP",
+    "size": 9954,
+    "sha256": "a11b825cb0c68d972f3d4651ca04e97a4306cb5f266ef317f727c0eaea70fa86",
+    "expected_reason": "ZUPD_REASON_NONE"
+  }
+}

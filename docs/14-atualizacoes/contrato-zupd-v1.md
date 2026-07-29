@@ -141,7 +141,7 @@ incrementado.
 
 ## Ordem de validacao
 
-O verificador da U2 usa esta ordem para produzir resultados deterministicos:
+O verificador usa esta ordem para produzir resultados deterministicos:
 
 1. validar magic, versao do formato, algoritmos, limites, tamanhos, campos
    reservados, aritmetica de offsets, ordenacao, caminhos e sobreposicoes;
@@ -201,6 +201,155 @@ O unico comando da U2 e `update verify <arquivo.ZUP>`. Ele mostra o motivo
 estavel, versoes, epochs, quantidade de arquivos e confirma explicitamente que
 nenhuma gravacao ocorreu.
 
+## U3: aplicacao FAT12 e versao instalada
+
+A U3 mantem a versao de build do kernel em `0.1.0`, epoch `0`, definida por
+`version.h`. A compatibilidade de novos pacotes passa a usar a versao de
+conteudo instalada e persistida pelo updater. Na ausencia completa dos quatro
+arquivos de controle, essa versao instalada e o baseline `0.1.0`, epoch `0`.
+
+`update verify` continua disponivel em FAT12 e FAT32. Aplicacao, recuperacao e
+rollback existem somente no volume FAT12 atual e somente para arquivos 8.3 no
+diretorio raiz. FAT32 e caminhos com diretorios retornam `ERR_UNAVAILABLE`.
+
+O filesystem serializa suas operacoes publicas durante cada leitura ou
+mutacao. A escrita atomica FAT12 segue:
+
+1. gravar o novo conteudo em clusters ainda livres;
+2. encadear os clusters e persistir todas as copias da FAT;
+3. trocar a entrada do diretorio raiz escrevendo somente seu setor;
+4. depois do ponto de troca, liberar a cadeia antiga e persistir as FATs.
+
+A exclusao atomica marca e persiste primeiro a entrada como removida; somente
+depois libera a cadeia. As APIs publicas relacionadas sao
+`fs_get_root_file_info()`, `fs_atomic_write_root()` e
+`fs_atomic_delete_root()`. A escrita aceita create-or-replace para arquivos
+internos do updater e replace-only para os tres alvos do ZUPD.
+
+## Registros persistentes U3
+
+Cada registro possui exatamente 512 bytes, inteiros little-endian, uma
+sequencia `uint32_t` monotonicamente crescente, campos reservados zerados e
+SHA-256 nos bytes `480..511`, calculado sobre os bytes `0..479`.
+
+As duas copias alternadas de estado usam `ZUPD0.STA` e `ZUPD1.STA`:
+
+| Offset | Campo | Regra |
+|---:|---|---|
+| 0 | `magic[4]` | `ZUST` |
+| 4 | `version` | `uint16_t`, valor `1` |
+| 6 | `record_size` | `uint16_t`, valor `512` |
+| 8 | `sequence` | `uint32_t` |
+| 12 | `installed_version` | tres `uint16_t` |
+| 18 | reservado | 2 bytes zero |
+| 20 | `installed_epoch` | `uint32_t` |
+| 24 | `rollback_available` | `0` ou `1` |
+| 25 | `rollback_slot` | `0` ou `1` |
+| 26 | `rollback_entry_count` | `0` a `3` |
+| 27 | reservado | 1 byte zero |
+| 28 | `previous_version` | tres `uint16_t` |
+| 34 | reservado | 2 bytes zero |
+| 36 | `previous_epoch` | `uint32_t` |
+| 40 | `current[3]` | tres descritores de 40 bytes |
+| 160 | `rollback[3]` | tres descritores de 40 bytes |
+| 280 | reservado | 200 bytes zero |
+| 480 | `record_sha256` | 32 bytes |
+
+Cada descritor de arquivo contem tamanho `uint32_t` no offset `0`, SHA-256 no
+offset `4`, flag `present` no offset `36` e tres bytes reservados. Os IDs sao
+fixos: `0=EXPLORER.BMP`, `1=SHELL.BMP`, `2=TASKMGR.BMP`. Um descritor ausente
+deve estar totalmente zerado.
+
+As duas copias alternadas do journal usam `ZUPD0.JRN` e `ZUPD1.JRN`:
+
+| Offset | Campo | Regra |
+|---:|---|---|
+| 0 | `magic[4]` | `ZUJ1` |
+| 4 | `version` | `uint16_t`, valor `1` |
+| 6 | `record_size` | `uint16_t`, valor `512` |
+| 8 | `sequence` | `uint32_t` |
+| 12 | `kind` | `NONE=0`, `APPLY=1`, `ROLLBACK=2` |
+| 13 | `phase` | `NONE=0`, `PREPARED=1`, `REPLACING=2`, `COMMITTED=3` |
+| 14 | `slot` | `0` ou `1` |
+| 15 | `entry_count` | `0` a `3` |
+| 16 | `progress` | alvos ja trocados |
+| 17 | reservado | 3 bytes zero |
+| 20 | `base_state_sequence` | `uint32_t` |
+| 24 | `base_version` | tres `uint16_t` |
+| 30 | `target_version` | tres `uint16_t` |
+| 36 | `base_epoch` | `uint32_t` |
+| 40 | `target_epoch` | `uint32_t` |
+| 44 | reservado | 4 bytes zero |
+| 48 | `entries[3]` | tres entradas de 76 bytes |
+| 276 | reservado | 204 bytes zero |
+| 480 | `record_sha256` | 32 bytes |
+
+Uma entrada ativa do journal possui `target_id`, flags `old_present` e
+`new_present` nos offsets `0..2`, reservado zero no offset `3`, tamanhos
+antigo/novo nos offsets `4` e `8`, SHA-256 antigo no offset `12` e novo no
+offset `44`. Entradas nao usadas ficam zeradas. Um journal `NONE` tem todos os
+bytes `12..479` zerados.
+
+Se alguma copia de controle existir, mas nenhuma copia valida do mesmo tipo
+puder ser selecionada, o estado e inconsistente: novas gravacoes sao
+bloqueadas e `Update` fica `DEGRADED`.
+
+## Slots, commit e recuperacao
+
+O slot A usa backups `ZBA0.BAK` a `ZBA2.BAK` e staging `ZSA0.NEW` a
+`ZSA2.NEW`. O slot B usa `ZBB0.BAK` a `ZBB2.BAK` e `ZSB0.NEW` a
+`ZSB2.NEW`. Esses nomes sao internos; um pacote ZUPD nao pode cria-los,
+remove-los ou endereca-los.
+
+A aplicacao repete toda a verificacao U2 e o preflight de espaco. Em seguida:
+
+1. copia e valida todos os payloads no staging;
+2. copia e valida os arquivos instalados no slot de backup inativo;
+3. persiste o journal `PREPARED`;
+4. substitui e valida cada alvo, persistindo `REPLACING` e `progress`;
+5. persiste `COMMITTED`, grava a nova versao/epoch e os hashes atuais;
+6. limpa o staging, o rollback mais antigo e, por ultimo, o journal.
+
+Antes de `COMMITTED`, uma aplicacao interrompida restaura todos os arquivos
+anteriores. Depois de `COMMITTED`, o boot valida o estado novo e termina o
+commit. Um rollback interrompido continua ate restaurar toda a geracao. Apenas
+uma geracao concluida de rollback e preservada.
+
+Os BMPs em memoria nao sao recarregados durante a transacao. Aplicacao e
+rollback concluidos informam `reboot_required=1`.
+
+## API e motivos de acao U3
+
+`src/include/core/update.h` acrescenta
+`update_get_installed_version()`, `update_apply_file()`,
+`update_rollback()`, `update_test_fail_after()` e
+`update_action_reason_name()`. O resultado informa versoes/epochs, quantidade
+total e processada, motivo da verificacao, necessidade de reboot e recuperacao
+pendente.
+
+Os motivos de acao sao separados dos motivos criptograficos:
+
+| Valor | Motivo |
+|---:|---|
+| 0 | `UPDATE_ACTION_NONE` |
+| 1 | `UPDATE_ACTION_VERIFY` |
+| 2 | `UPDATE_ACTION_UNSUPPORTED_FS` |
+| 3 | `UPDATE_ACTION_STATE` |
+| 4 | `UPDATE_ACTION_SPACE` |
+| 5 | `UPDATE_ACTION_IO` |
+| 6 | `UPDATE_ACTION_CANCELLED` |
+| 7 | `UPDATE_ACTION_NO_ROLLBACK` |
+| 8 | `UPDATE_ACTION_RECOVERY_PENDING` |
+
+O callback cooperativo consulta Esc/F12 entre staging, backups e trocas. O
+failpoint one-shot `update test fail-after <N>` existe somente para diagnostico
+e deixa deliberadamente o journal para recuperacao no boot.
+
+No `health`, verificacao local permanece `READY`; aplicacao fica `READY`
+somente em FAT12 com estado integro; rollback fica `READY` somente com backup
+valido; remoto permanece `DISABLED (U5)`. Journal pendente ou controles
+invalidos tornam o componente `Update` `DEGRADED`.
+
 ## Politica de seguranca
 
 O contrato cobre:
@@ -234,6 +383,12 @@ de release. Ela contem `VALID.ZUP`, `TRUNC.ZUP`, `BADHASH.ZUP`, `BADSIG.ZUP`,
 `BADVER.ZUP`, `BADFMT.ZUP` e `UNKKEY.ZUP`, com resultados esperados `NONE`,
 `SIZE`, `HASH`, `SIGNATURE`, `BASE_VERSION`, `FORMAT` e `UNKNOWN_KEY`. O
 manifesto `fixtures.json` publica tamanho e SHA-256 de cada arquivo.
+
+O fixture U3 fica em `docs/fixtures/updates/u3/`. `APPLY.ZUP` autentica a
+transicao `0.1.0 -> 0.1.1`, epoch `0`, com os tres BMPs. Os payloads sao
+copias publicas deterministicas em que somente os bytes RGB 24-bit foram
+invertidos; headers, dimensoes, formato e padding permanecem inalterados. O
+manifesto publica os hashes dos assets de origem, payloads e artefato.
 
 ## Referencias
 

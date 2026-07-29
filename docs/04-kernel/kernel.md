@@ -449,7 +449,7 @@ S2.7 segue [RFC 9293](https://www.rfc-editor.org/rfc/rfc9293.html) para TCP,
 
 `src/include/core/version.h` centraliza a versao `0.1.0`, epoch `0` e o texto
 de exibicao usado pelo banner do kernel e pelo Settings. Esses valores tambem
-definem a base exata aceita pelo verificador.
+definem o baseline quando a persistencia U3 ainda nao existe.
 
 `src/include/core/crypto.h` oferece SHA-256 incremental, SHA-512 e verificacao
 Ed25519 incremental. `crypto_self_test()` valida SHA-2 e os vetores 1 e 2 do
@@ -481,11 +481,44 @@ falhar.
 `RECOVERY_COMPONENT_UPDATE` foi anexado ao fim da enumeracao para preservar os
 IDs anteriores. Ele fica `READY` quando chave, criptografia e leitura local
 estao disponiveis, `DEGRADED` quando o filesystem falta e `DISABLED` em falha
-criptografica. Aplicacao, rollback e remoto continuam capacidades
-`DISABLED`, sem degradar a verificacao local.
+criptografica.
 
 O formato e a politica completos estao em
 [`contrato-zupd-v1.md`](../14-atualizacoes/contrato-zupd-v1.md).
+
+## U3: estado instalado e recuperacao no boot
+
+Em FAT12, `update_init()` e executado imediatamente depois de `fs_init()` e
+antes de `icons_init()`. Essa ordem permite selecionar as copias redundantes de
+estado/journal e recuperar uma transacao interrompida antes de qualquer BMP ser
+carregado.
+
+O workspace permanece estatico e reutiliza um buffer de 64 KiB para copiar um
+arquivo por vez. Nao existe alocacao de um pacote completo de 128 KiB. A mesma
+trava do modulo recusa verificacao, aplicacao ou rollback concorrente.
+
+O servico acrescenta:
+
+- `update_get_installed_version()` para consultar a versao de conteudo;
+- `update_apply_file()` com modo dry-run ou confirmacao;
+- `update_rollback()` com modo dry-run ou confirmacao;
+- callback cooperativo de cancelamento entre etapas;
+- failpoint one-shot para interromper a aplicacao apos um alvo;
+- resultado com progresso, motivo, reboot e recuperacao pendente.
+
+Uma aplicacao reexecuta integralmente o verificador U2, valida os hashes
+persistidos dos arquivos atuais, reserva staging/backup/copy-on-write e so
+entao cria o journal. O ponto de commit e o journal `COMMITTED`; a versao
+instalada muda somente depois dele.
+
+No boot, aplicacao anterior ao commit e restaurada, rollback interrompido
+continua e commit pendente e finalizado. Falha irrecuperavel preserva o
+journal, bloqueia novas escritas e marca `RECOVERY_COMPONENT_UPDATE` como
+`DEGRADED`.
+
+As capacidades de `health` sao independentes: verificacao local continua
+`READY`; aplicacao exige FAT12 e estado integro; rollback exige uma geracao
+valida; remoto continua `DISABLED (U5)`.
 
 ## Struct `registers_t`
 

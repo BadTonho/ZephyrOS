@@ -560,7 +560,7 @@ $(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(KERNEL_BIN) tools\packager.py \
           docs\fixtures\updates\u2\VALID.ZUP docs\fixtures\updates\u2\TRUNC.ZUP \
           docs\fixtures\updates\u2\BADHASH.ZUP docs\fixtures\updates\u2\BADSIG.ZUP \
           docs\fixtures\updates\u2\BADVER.ZUP docs\fixtures\updates\u2\BADFMT.ZUP \
-          docs\fixtures\updates\u2\UNKKEY.ZUP
+          docs\fixtures\updates\u2\UNKKEY.ZUP docs\fixtures\updates\u3\APPLY.ZUP
 	cmd /c "copy /b build\boot.bin+build\stage2.bin+build\kernel.bin build\zephyros.img"
 	python tools\packager.py prepare-image --image $(OS_IMG) --disk-bytes $(FAT12_DISK_BYTES)
 	python tools\packager.py inject-file --file assets\icons\SHELL.BMP --image $(OS_IMG) --fat-name SHELL.BMP
@@ -573,6 +573,7 @@ $(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(KERNEL_BIN) tools\packager.py \
 	python tools\packager.py inject-file --file docs\fixtures\updates\u2\BADVER.ZUP --image $(OS_IMG) --fat-name BADVER.ZUP
 	python tools\packager.py inject-file --file docs\fixtures\updates\u2\BADFMT.ZUP --image $(OS_IMG) --fat-name BADFMT.ZUP
 	python tools\packager.py inject-file --file docs\fixtures\updates\u2\UNKKEY.ZUP --image $(OS_IMG) --fat-name UNKKEY.ZUP
+	python tools\packager.py inject-file --file docs\fixtures\updates\u3\APPLY.ZUP --image $(OS_IMG) --fat-name APPLY.ZUP
 
 run: $(OS_IMG)
 	$(QEMU) -drive format=raw,file=$(OS_IMG) $(QEMU_NET_ARGS)

@@ -7,8 +7,10 @@ ZUPD v1, produz fixtures publicos e sincroniza a raiz publica usada pelo
 kernel. A ferramenta host usa `cryptography==49.0.0`, fixado em
 `tools/requirements-updater.txt`.
 
-O fluxo U2 apenas verifica. Ele nao aplica atualizacoes, nao grava na imagem do
-sistema, nao acessa a rede e nao altera boot, stage2 ou setores de kernel.
+O fluxo U2 apenas verifica. A U3 acrescenta geracao do fixture transacional e
+auditoria offline da imagem; a aplicacao em si acontece somente no kernel
+FAT12. Nenhum comando host acessa a rede ou altera boot, stage2 ou setores de
+kernel.
 
 ## Preparacao
 
@@ -104,10 +106,46 @@ O subcomando `fixtures` exige a chave privada correspondente ao JSON publico e
 recusa um diretorio de saida nao vazio. Nenhuma seed, senha ou chave privada e
 gravada junto aos vetores.
 
+## Fixture U3
+
+`fixtures-u3` usa a mesma chave externa para gerar deterministicamente
+`docs/fixtures/updates/u3/APPLY.ZUP`. O artefato autentica a transicao
+`0.1.0 -> 0.1.1`, epoch `0`, e inclui os tres alvos permitidos.
+
+```text
+python tools/updater.py fixtures-u3 --private <arquivo-privado-fora-do-repo> --public config/update-release-public.json --output-dir docs/fixtures/updates/u3
+```
+
+A senha e solicitada sem eco. O diretorio deve estar ausente ou vazio. A
+ferramenta grava apenas:
+
+- `APPLY.ZUP`;
+- `EXPLORER.BMP`, `SHELL.BMP` e `TASKMGR.BMP` publicos;
+- `fixtures.json` com chave publica, tamanhos e SHA-256.
+
+Os payloads invertem somente os bytes RGB dos BMPs 24-bit. Headers, dimensoes,
+compressao, padding e tamanho permanecem iguais aos assets de origem.
+
+## Auditoria offline da imagem
+
+`audit-image` deve ser executado somente depois de encerrar o QEMU. Ele compara
+as copias da FAT12, percorre cadeias e alocacoes, seleciona os controles
+redundantes de maior sequencia, valida SHA-256, arquivos atuais, backups,
+staging e ausencia de journal pendente:
+
+```text
+python tools/updater.py audit-image --image build/zephyros.img --expect-version 0.1.0 --expect-rollback unavailable
+python tools/updater.py audit-image --image build/zephyros.img --expect-version 0.1.1 --expect-rollback available
+```
+
+`--expect-rollback any` omite essa expectativa. `--allow-pending` existe
+somente para diagnosticar uma imagem deliberadamente interrompida; sem essa
+opcao, qualquer transacao pendente e uma falha.
+
 ## Validacao no sistema
 
-O Makefile injeta os sete aliases na imagem FAT. Depois do gate host, o
-mantenedor executa o build e, no QEMU, usa:
+O Makefile injeta os sete aliases U2 e `APPLY.ZUP` na imagem FAT. Depois do
+gate host, o mantenedor executa o build e, no QEMU, usa:
 
 ```text
 health
@@ -126,6 +164,30 @@ regcheck full
 O SHA-256 de `build/zephyros.img` deve ser comparado antes e depois da sessao.
 Somente `VALID.ZUP` pode ser aceito e toda resposta deve confirmar que nenhuma
 gravacao foi realizada.
+
+Para U3, em uma imagem limpa:
+
+```text
+health
+update apply APPLY.ZUP
+update apply APPLY.ZUP --confirm
+```
+
+Depois do reboot, a versao instalada deve ser `0.1.1`, os BMPs devem estar
+visualmente invertidos, rollback deve estar `READY` e
+`update verify APPLY.ZUP` deve retornar `BASE_VERSION`.
+
+O fluxo inverso usa:
+
+```text
+update rollback
+update rollback --confirm
+```
+
+Depois de outro reboot, a versao deve voltar a `0.1.0` e rollback deve ficar
+`DISABLED`. O cenario de recuperacao usa `update test fail-after 1`, aplicacao
+confirmada e reboot; o boot deve restaurar `0.1.0`. Cada cenario termina com
+`mem`, `regcheck full` e `audit-image`.
 
 ## Referencias
 

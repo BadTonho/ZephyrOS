@@ -228,7 +228,7 @@ zephyr> guimode modern
 ```
 
 ## `health`
-Exibe métricas detalhadas do kernel, estado do recovery, paginação, processos e saúde estrutural da arquitetura. Também mostra o componente `Update` e separa verificação local, aplicação, rollback e remoto. Capacidades de U3 e U5 permanecem `DISABLED` sem degradar o verificador local.
+Exibe métricas detalhadas do kernel, estado do recovery, paginação, processos e saúde estrutural da arquitetura. Também mostra o componente `Update` e separa verificação local, aplicação, rollback e remoto. Aplicacao fica `READY` somente em FAT12 com estado persistente integro; rollback exige backup valido; remoto U5 permanece `DISABLED` sem degradar o verificador local.
 
 Use `Page Up`, `Page Down`, `Home` e `End` para consultar toda a saida quando
 o relatorio ocupar mais de uma tela.
@@ -641,11 +641,63 @@ zephyr> update verify VALID.ZUP
 
 Em sucesso, mostra `NONE`, versoes base/alvo, epochs, quantidade de arquivos e
 tamanho total. Em falha, mostra o motivo estavel e o codigo generico. Ambos os
-caminhos confirmam `Nenhuma gravacao foi realizada.` Aplicacao e rollback nao
-fazem parte da U2.
+caminhos confirmam `Nenhuma gravacao foi realizada.` Desde a U3, a versao base
+e comparada com a versao de conteudo instalada, nao com a versao de build do
+kernel.
 
 Os sete aliases de teste e os resultados esperados estao em
 [`ferramenta-zupd.md`](../14-atualizacoes/ferramenta-zupd.md).
+
+## `update apply <arquivo.ZUP> [--confirm]`
+
+Sem `--confirm`, repete toda a verificacao ZUPD e executa o preflight de
+estado, espaco, staging, backup e copy-on-write sem gravar:
+
+```text
+zephyr> update apply APPLY.ZUP
+```
+
+Com `--confirm`, repete o mesmo preflight e inicia a transacao FAT12:
+
+```text
+zephyr> update apply APPLY.ZUP --confirm
+```
+
+Esc ou F12 cancela cooperativamente entre staging, backups e arquivos. Antes
+do commit, o updater tenta restaurar imediatamente o estado anterior. Se a
+restauracao nao puder terminar, o comando informa `RECOVERY_PENDING` e o boot
+seguinte continua a recuperacao. Caracteres diferentes de Esc/F12 sao
+ignorados durante a operacao.
+
+Sucesso informa a nova versao instalada, quantidade processada e necessidade
+de reboot. Os BMPs em memoria nao sao recarregados durante a aplicacao.
+
+## `update rollback [--confirm]`
+
+Sem `--confirm`, valida a geracao anterior e mostra o rollback disponivel sem
+gravar. Com confirmacao, restaura atomicamente os arquivos e a versao anterior:
+
+```text
+zephyr> update rollback
+zephyr> update rollback --confirm
+```
+
+Somente a ultima geracao concluida pode ser restaurada. Depois do rollback, o
+backup e consumido e a capacidade volta a `DISABLED (sem backup)`.
+
+## `update test fail-after <1-3>`
+
+Arma um failpoint diagnostico one-shot para a proxima aplicacao confirmada. O
+updater interrompe depois do N-esimo alvo e deixa o journal deliberadamente
+pendente:
+
+```text
+zephyr> update test fail-after 1
+zephyr> update apply APPLY.ZUP --confirm
+```
+
+Esse comando existe somente para provar a recuperacao no proximo boot. Nao
+deve ser usado em uma atualizacao normal.
 
 ## `pkg list|info|verify|install|remove`
 

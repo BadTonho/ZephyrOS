@@ -135,3 +135,12 @@ capacidades do verificador ZUPD somente-leitura; e `update_trust.h` contem
 somente a raiz publica derivada. `version.h` centraliza `0.1.0`, epoch `0` e o
 texto de exibicao. Os contratos permanecem em
 `docs/14-atualizacoes/contrato-zupd-v1.md` e `docs/04-kernel/kernel.md`.
+
+Desde a U3, `src/include/fs/fat12.h` e `src/include/fs/fs.h` acrescentam
+consulta de arquivo raiz, escrita copy-on-write create-or-replace/replace-only
+e exclusao atomica FAT12. `src/include/core/update.h` acrescenta versao
+instalada, motivos de acao, aplicacao, rollback, cancelamento e failpoint
+diagnostico. Os layouts redundantes de estado/journal, a ordem de commit e os
+retornos FAT32 permanecem canonicos em
+`docs/14-atualizacoes/contrato-zupd-v1.md` e
+`docs/08-sistema-arquivos/sistema-arquivos.md`.

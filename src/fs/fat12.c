@@ -214,6 +214,11 @@ static int fat12_encode_root_name(const char* filename, char encoded[11]) {
             return ERR_INVALID;
         }
         if (value >= 'a' && value <= 'z') value -= 32;
+        if (!((value >= 'A' && value <= 'Z') ||
+              (value >= '0' && value <= '9') || value == '_')) {
+            LOG_ERROR("FAT12", "Caractere invalido no nome raiz 8.3");
+            return ERR_INVALID;
+        }
         encoded[base++] = value;
     }
     if (base == 0U || filename[index] != '.') {
@@ -229,6 +234,11 @@ static int fat12_encode_root_name(const char* filename, char encoded[11]) {
             return ERR_INVALID;
         }
         if (value >= 'a' && value <= 'z') value -= 32;
+        if (!((value >= 'A' && value <= 'Z') ||
+              (value >= '0' && value <= '9') || value == '_')) {
+            LOG_ERROR("FAT12", "Caractere invalido na extensao raiz 8.3");
+            return ERR_INVALID;
+        }
         encoded[8U + extension++] = value;
     }
     if (extension == 0U) {
@@ -1573,6 +1583,11 @@ int fat12_atomic_write_root(const char* filename, const uint8_t* data,
     }
 
     cluster_size = fs.bpb.sectors_per_cluster * fs.bpb.bytes_per_sector;
+    if (fs.bpb.bytes_per_sector == 0U ||
+        fs.bpb.bytes_per_sector > 512U || cluster_size == 0U) {
+        LOG_ERROR("FAT12", "Geometria invalida na escrita atomica");
+        return ERR_INVALID;
+    }
     cluster_count = (size + cluster_size - 1U) / cluster_size;
     if (cluster_count == 0U ||
         cluster_count > FAT12_ATOMIC_MAX_CLUSTERS) return ERR_OVERFLOW;

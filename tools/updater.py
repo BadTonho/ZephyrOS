@@ -1171,7 +1171,12 @@ def decode_journal_record(record: bytes) -> StoredJournal:
     ):
         raise UpdateError("campos de journal U3 invalidos")
     if kind == UPDATE_JOURNAL_NONE:
-        if phase != UPDATE_PHASE_NONE or count != 0 or progress != 0:
+        if (
+            phase != UPDATE_PHASE_NONE
+            or count != 0
+            or progress != 0
+            or any(record[12:UPDATE_CONTROL_HASH_OFFSET])
+        ):
             raise UpdateError("journal U3 limpo inconsistente")
     elif phase == UPDATE_PHASE_NONE or count == 0:
         raise UpdateError("journal U3 pendente inconsistente")
@@ -1274,6 +1279,8 @@ def inspect_fat12_image(image_path: Path) -> dict[str, tuple[bytes, int]]:
     def chain(first: int, label: str) -> list[int]:
         if first == 0:
             return []
+        if first < 2 or first >= clusters + 2:
+            raise UpdateError(f"primeiro cluster FAT12 invalido: {label}")
         result: list[int] = []
         cluster = first
         while 2 <= cluster < 0xFF8:
@@ -1312,6 +1319,8 @@ def inspect_fat12_image(image_path: Path) -> dict[str, tuple[bytes, int]]:
             items = chain(struct.unpack_from("<H", entry, 26)[0], label)
             content = chain_data(items)
             if attributes & 0x10:
+                if not items:
+                    raise UpdateError(f"diretorio FAT12 sem cluster: {label}")
                 walk(content, len(content) // 32, label, False)
             else:
                 if size > len(content) or (
@@ -1319,6 +1328,8 @@ def inspect_fat12_image(image_path: Path) -> dict[str, tuple[bytes, int]]:
                 ):
                     raise UpdateError(f"cadeia FAT12 com tamanho invalido: {label}")
                 if root:
+                    if name in root_files:
+                        raise UpdateError(f"arquivo raiz FAT12 duplicado: {name}")
                     root_files[name] = (content[:size], attributes)
 
     walk(
@@ -1358,6 +1369,15 @@ def audit_image(
     installed = state.installed_version if state else Version(0, 1, 0)
     rollback_available = state.rollback_available if state else False
     pending = journal is not None and journal.kind != UPDATE_JOURNAL_NONE
+    internal_aliases = (
+        UPDATE_STATE_ALIASES
+        + UPDATE_JOURNAL_ALIASES
+        + tuple(alias for slot in UPDATE_BACKUP_ALIASES for alias in slot)
+        + tuple(alias for slot in UPDATE_STAGE_ALIASES for alias in slot)
+    )
+    for alias in internal_aliases:
+        if alias in root and root[alias][1] != 0x26:
+            raise UpdateError(f"atributos do arquivo interno divergem: {alias}")
     if expected_version is not None and installed != expected_version:
         raise UpdateError(
             f"versao instalada {installed}, esperada {expected_version}"

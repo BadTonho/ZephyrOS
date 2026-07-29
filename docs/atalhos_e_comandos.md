@@ -73,6 +73,10 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `pkg` | `install <arquivo.ZPK>` | Instala um pacote local em `APPS/<ID>/`. |
 | `pkg` | `remove <ID>` | Remove pacote sem apagar o arquivo fonte `.ZPK`. |
 | `pkgcheck` | - | Executa as pre-validacoes compactas do servico de pacotes. |
+| `update` | `verify <arquivo.ZUP>` | Verifica assinatura e compatibilidade sem gravar. |
+| `update` | `apply <arquivo.ZUP> [--confirm]` | Executa preflight ou aplica uma transacao FAT12 confirmada. |
+| `update` | `rollback [--confirm]` | Inspeciona ou restaura a ultima geracao de rollback. |
+| `update` | `test fail-after <1-3>` | Arma uma interrupcao diagnostica para validar recuperacao no boot. |
 | `app` | `run <arquivo.ZAP> [args]` | Executa uma imagem flat i386 em ring 3, em primeiro plano. |
 | `app` | `inputtest` | Cria e executa um teste temporario de teclado para `.ZAP`. |
 | `app` | `outputtest [fail]` | Emite 1152 bytes em blocos ZAPP e testa saida com codigo 0 ou 1. |

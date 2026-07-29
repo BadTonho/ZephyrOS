@@ -325,6 +325,35 @@ int  fs_get_info(fs_info_t* info);   // Obtém info do FS ativo
 uint8_t fs_get_type(void);           // FS_TYPE_FAT12 ou FS_TYPE_FAT32
 ```
 
+### Operacoes atomicas de raiz para U3
+
+A U3 serializa leituras e mutacoes publicas do filesystem enquanto troca
+arquivos controlados. As novas operacoes aceitam somente nomes FAT 8.3
+canonicos no diretorio raiz e arquivos de 1 a 64 KiB:
+
+```c
+int fs_get_root_file_info(const char* filename, uint32_t* size_out,
+                          uint8_t* attributes_out);
+int fs_atomic_write_root(const char* filename, const uint8_t* data,
+                         uint32_t size, uint8_t attributes,
+                         fs_atomic_mode_t mode);
+int fs_atomic_delete_root(const char* filename);
+```
+
+`FS_ATOMIC_CREATE_OR_REPLACE` e reservado aos arquivos internos do updater.
+`FS_ATOMIC_REPLACE_ONLY` exige que o alvo ja exista. O valor
+`FS_ATTRIBUTES_PRESERVE` conserva os atributos da entrada substituida.
+
+No FAT12, `fat12_atomic_write_root()` grava a nova cadeia em clusters livres,
+persiste as duas FATs, troca a entrada raiz em um unico setor e somente depois
+libera a cadeia antiga. `fat12_atomic_delete_root()` persiste primeiro a
+entrada removida e libera os clusters em seguida. Assim, uma troca nunca
+publica uma cadeia parcialmente gravada.
+
+FAT32 continua disponivel para leitura e para `update verify`, mas essas
+operacoes atomicas retornam `ERR_UNAVAILABLE`. Diretorios e caminhos fora da
+raiz tambem ficam fora do contrato U3.
+
 ### Estrutura de Informação
 
 ```c

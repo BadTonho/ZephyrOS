@@ -110,8 +110,11 @@ antecipar interfaces ou permissoes que ainda nao existem.
   `update verify`, componente `Update` no `health` e sete fixtures estao
   implementados e validados. Build, matriz QEMU, memoria, imagem inalterada e
   `regcheck full` foram aprovados pelo usuario.
-- [ ] U3-U5: aplicacao/rollback, interface dual e distribuicao remota continuam
-  pendentes e `DISABLED`.
+- [ ] U3 em validacao: aplicacao/rollback FAT12, persistencia redundante,
+  recuperacao no boot, `APPLY.ZUP`, failpoint e `audit-image` estao
+  implementados; conclusao aguarda build e matriz QEMU do usuario.
+- [ ] U4-U5: interface dual e distribuicao remota continuam pendentes; remoto
+  permanece `DISABLED`.
 - [ ] Manter operacoes remotas opcionalmente desabilitadas e visiveis em
   `health` quando indisponiveis.
 

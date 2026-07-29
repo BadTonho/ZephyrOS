@@ -6,7 +6,7 @@
 |-------|----------|--------|
 | U1 | Politica de integridade e contrato do pacote de sistema | Concluida |
 | U2 | Verificacao local, assinada e sem escrita | Concluida |
-| U3 | Aplicacao transacional, recuperacao e rollback | Pendente |
+| U3 | Aplicacao transacional, recuperacao e rollback | Em validacao |
 | U4 | Diagnosticos e interfaces Classic/Modern | Pendente |
 | U5 | Distribuicao remota opcional | Pendente |
 
@@ -22,6 +22,10 @@ A implementacao concluida da U2, sua raiz publica de release e os sete vetores f
 `tools/updater.py`, `config/update-release-public.json` e
 `docs/fixtures/updates/u2/`.
 
+A implementacao U3 e seu `APPLY.ZUP` publico ficam no servico `Update`, nas
+operacoes atomicas FAT12 e em `docs/fixtures/updates/u3/`. Ela permanece em
+validacao ate a matriz QEMU confirmar aplicacao, rollback e recuperacao.
+
 ---
 
 ## Atalhos e Comandos Planejados
@@ -35,7 +39,8 @@ A implementacao concluida da U2, sua raiz publica de release e os sete vetores f
 | `update history` | U4 | Lista operacoes concluidas e falhas. |
 | `update fetch` | U5 | Busca somente metadados remotos quando habilitado. |
 
-Nenhum desses comandos existe antes da fase indicada.
+Comandos U1-U3 ja implementados seguem o estado da tabela; U4 e U5 continuam
+planejados.
 
 ---
 
@@ -80,17 +85,22 @@ antes e depois da verificacao.
 
 ## Fase U3 - Aplicacao, Recuperacao e Rollback
 
-- [ ] Definir area de staging, journal persistente e copia de recuperacao antes
+- [x] Definir area de staging, journal persistente e copia de recuperacao antes
   de substituir qualquer arquivo permitido.
-- [ ] Aplicar arquivos apenas apos a verificacao U2; interromper de forma
+- [x] Aplicar arquivos apenas apos a verificacao U2; interromper de forma
   recuperavel em falta de espaco, erro de I/O, cancelamento ou queda de energia.
-- [ ] Implementar `update apply <arquivo>` e `update rollback`, ambos com
+- [x] Implementar `update apply <arquivo>` e `update rollback`, ambos com
   logs, erros controlados e confirmacao explicita antes da escrita.
 - [ ] Validar sucesso, falha no meio da aplicacao, recuperacao no boot e
   rollback no QEMU, sempre seguido de `regcheck full`.
 
 **Criterio de saida:** o sistema inicia em um estado anterior ou novo valido;
 nunca em uma atualizacao parcialmente aplicada.
+
+Em validacao: copy-on-write FAT12, registros redundantes, slots A/B,
+recuperacao no boot, aplicacao/rollback com dry-run, cancelamento, failpoint,
+`health`, `APPLY.ZUP` e auditor offline estao implementados. U3 so sera marcada
+concluida depois dos testes de build e QEMU executados pelo usuario.
 
 ## Fase U4 - Diagnosticos e Interface Dual
 
@@ -135,6 +145,7 @@ aplicacao segura permanecem identicas ao fluxo local.
 - `docs/14-atualizacoes/contrato-zupd-v1.md` -- contrato canonico ZUPD v1.
 - `docs/fixtures/updates/v1/` -- vetores publicos e resultados esperados.
 - `docs/fixtures/updates/u2/` -- matriz assinada pela raiz publica de release.
+- `docs/fixtures/updates/u3/` -- pacote APPLY e payloads publicos da U3.
 - `docs/14-atualizacoes/ferramenta-zupd.md` -- operacao segura da ferramenta.
 - `docs/13-aplicativos/pacotes.md` -- contrato do ZPKG v1 de aplicativos.
 - `docs/roadmaps/05-sistema-e-ecossistema.md` -- ordem executavel de U1-U5.
