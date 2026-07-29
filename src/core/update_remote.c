@@ -64,6 +64,13 @@ static uint8_t update_remote_manifest_hash[32];
 static uint8_t update_remote_manifest_valid;
 static uint8_t update_remote_cancelled;
 static update_remote_download_t update_remote_download;
+static http_status_t update_remote_http;
+static update_verification_t update_remote_verification;
+static update_remote_record_t update_remote_record_candidates[2];
+static uint8_t update_remote_record_raw[2][UPDATE_REMOTE_RECORD_SIZE];
+static uint8_t update_remote_io_buffer[512];
+static uint8_t update_remote_package_hash[32];
+static char update_remote_package_url[UPDATE_REMOTE_URL_SIZE];
 
 static int update_remote_transient_error(int error);
 
@@ -356,27 +363,22 @@ static int update_remote_build_package_url(const char* manifest_url,
 
 static int update_remote_wait_http(const update_remote_options_t* options,
                                    http_status_t* status_out) {
-    http_status_t http;
-
     if (!status_out) {
         LOG_ERROR("UPDATE", "Destino nulo ao aguardar HTTP");
         return ERR_NULL;
     }
     while (1) {
-        if (http_get_status(&http) != OK) {
+        if (http_get_status(status_out) != OK) {
             LOG_ERROR("UPDATE", "Falha ao consultar estado HTTP");
             return ERR_STATE;
         }
-        update_remote_status.http_status = http.status_code;
-        update_remote_status.bytes_received = http.body_length;
-        if (http.state == HTTP_STATE_COMPLETE) {
-            *status_out = http;
-            return OK;
-        }
-        if (http.state == HTTP_STATE_FAILED) {
-            *status_out = http;
+        update_remote_status.http_status = status_out->status_code;
+        update_remote_status.bytes_received = status_out->body_length;
+        if (status_out->state == HTTP_STATE_COMPLETE) return OK;
+        if (status_out->state == HTTP_STATE_FAILED) {
             LOG_WARN("UPDATE", "Operacao HTTP remota falhou");
-            return http.last_error == OK ? ERR_STATE : http.last_error;
+            return status_out->last_error == OK ?
+                   ERR_STATE : status_out->last_error;
         }
         if (options && options->cancel_check &&
             options->cancel_check(options->cancel_context)) {
@@ -404,7 +406,6 @@ static int update_remote_check_internal(
     const uint8_t* body;
     const char* url = update_remote_effective_url(requested);
     uint32_t length;
-    http_status_t http;
     update_remote_reason_t reason;
     int result;
 
@@ -429,7 +430,8 @@ static int update_remote_check_internal(
         update_remote_cancelled = 0U;
         result = http_get_start(url);
         if (result == OK) {
-            result = update_remote_wait_http(options, &http);
+            result = update_remote_wait_http(
+                options, &update_remote_http);
         }
         if (result == OK || update_remote_cancelled ||
             !update_remote_transient_error(result) ||
@@ -444,10 +446,10 @@ static int update_remote_check_internal(
         return update_remote_reject(
             reason, result, "Consulta do manifesto remoto falhou", output);
     }
-    if (http.status_code != UPDATE_REMOTE_HTTP_OK ||
-        !http.has_content_length ||
-        http.content_length != UPDATE_REMOTE_MANIFEST_SIZE ||
-        http.body_length != UPDATE_REMOTE_MANIFEST_SIZE ||
+    if (update_remote_http.status_code != UPDATE_REMOTE_HTTP_OK ||
+        !update_remote_http.has_content_length ||
+        update_remote_http.content_length != UPDATE_REMOTE_MANIFEST_SIZE ||
+        update_remote_http.body_length != UPDATE_REMOTE_MANIFEST_SIZE ||
         http_get_body(&body, &length) != OK ||
         length != UPDATE_REMOTE_MANIFEST_SIZE) {
         return update_remote_reject(
@@ -596,16 +598,16 @@ static int update_remote_read_record(
 }
 
 static int update_remote_load_records(void) {
-    uint8_t raw[2][UPDATE_REMOTE_RECORD_SIZE];
-    update_remote_record_t records[2];
     uint8_t exists[2];
     int results[2];
     int selected = -1;
 
     results[0] = update_remote_read_record(
-        0U, raw[0], &records[0], &exists[0]);
+        0U, update_remote_record_raw[0],
+        &update_remote_record_candidates[0], &exists[0]);
     results[1] = update_remote_read_record(
-        1U, raw[1], &records[1], &exists[1]);
+        1U, update_remote_record_raw[1],
+        &update_remote_record_candidates[1], &exists[1]);
     if (!exists[0] && !exists[1]) {
         kmemset(&update_remote_record, 0, sizeof(update_remote_record));
         update_remote_record.active_slot = UPDATE_REMOTE_SLOT_NONE;
@@ -615,34 +617,39 @@ static int update_remote_load_records(void) {
         return OK;
     }
     if (results[0] == OK && results[1] == OK &&
-        records[0].sequence == records[1].sequence &&
-        !crypto_equal(raw[0], raw[1], UPDATE_REMOTE_RECORD_SIZE)) {
+        update_remote_record_candidates[0].sequence ==
+            update_remote_record_candidates[1].sequence &&
+        !crypto_equal(
+            update_remote_record_raw[0], update_remote_record_raw[1],
+            UPDATE_REMOTE_RECORD_SIZE)) {
         LOG_ERROR("UPDATE", "Copias remotas empatadas divergem");
         return ERR_INVALID;
     }
     if (results[0] == OK) selected = 0;
     if (results[1] == OK &&
         (selected < 0 ||
-         records[1].sequence > records[selected].sequence)) selected = 1;
+         update_remote_record_candidates[1].sequence >
+            update_remote_record_candidates[selected].sequence)) selected = 1;
     if (selected < 0) {
         LOG_ERROR("UPDATE", "Nenhuma copia valida do estado remoto");
         return ERR_INVALID;
     }
-    update_remote_record = records[selected];
+    update_remote_record = update_remote_record_candidates[selected];
     update_remote_record_slot = selected;
     update_remote_status.cache_store = UPDATE_REMOTE_STORE_VALID;
     return OK;
 }
 
 static int update_remote_write_record(void) {
-    uint8_t raw[UPDATE_REMOTE_RECORD_SIZE];
     int slot = update_remote_record_slot == 0 ? 1 : 0;
     int result;
 
     update_remote_record.sequence++;
-    update_remote_record_encode(raw, &update_remote_record);
+    update_remote_record_encode(
+        update_remote_record_raw[0], &update_remote_record);
     result = fs_atomic_write_root(
-        update_remote_record_aliases[slot], raw, sizeof(raw),
+        update_remote_record_aliases[slot], update_remote_record_raw[0],
+        UPDATE_REMOTE_RECORD_SIZE,
         UPDATE_REMOTE_RECORD_ATTRIBUTES, FS_ATOMIC_CREATE_OR_REPLACE);
     if (result != OK) {
         update_remote_status.cache_store = UPDATE_REMOTE_STORE_INVALID;
@@ -665,7 +672,6 @@ static int update_remote_delete_root(const char* alias) {
 static int update_remote_hash_file(const char* path, uint32_t size,
                                    uint8_t hash_out[32]) {
     crypto_sha256_ctx_t hash;
-    uint8_t buffer[512];
     uint32_t offset = 0U;
 
     if (crypto_sha256_init(&hash) != OK) {
@@ -676,11 +682,14 @@ static int update_remote_hash_file(const char* path, uint32_t size,
         uint32_t chunk = size - offset;
         uint32_t read = 0U;
 
-        if (chunk > sizeof(buffer)) chunk = sizeof(buffer);
+        if (chunk > sizeof(update_remote_io_buffer)) {
+            chunk = sizeof(update_remote_io_buffer);
+        }
         if (fs_read_file_range_at(
-            path, offset, buffer, chunk, &read) != OK ||
+            path, offset, update_remote_io_buffer, chunk, &read) != OK ||
             read != chunk ||
-            crypto_sha256_update(&hash, buffer, chunk) != OK) {
+            crypto_sha256_update(
+                &hash, update_remote_io_buffer, chunk) != OK) {
             LOG_ERROR("UPDATE", "Falha ao hashear pacote remoto local");
             return ERR_DISK;
         }
@@ -807,8 +816,7 @@ static int update_remote_prepare_pending(uint8_t pending_slot) {
 
 static int update_remote_download_attempt(
     const char* package_url, const char* alias,
-    const update_remote_options_t* options, http_status_t* http_out,
-    uint8_t hash_out[32]) {
+    const update_remote_options_t* options) {
     int result;
 
     kmemset(&update_remote_download, 0, sizeof(update_remote_download));
@@ -825,21 +833,22 @@ static int update_remote_download_attempt(
             update_remote_stream_sink, &update_remote_download);
     }
     if (result == OK) {
-        result = update_remote_wait_http(options, http_out);
+        result = update_remote_wait_http(options, &update_remote_http);
     }
     if (result == OK &&
-        (http_out->status_code != UPDATE_REMOTE_HTTP_OK ||
-         !http_out->has_content_length ||
-         http_out->content_length !=
+        (update_remote_http.status_code != UPDATE_REMOTE_HTTP_OK ||
+         !update_remote_http.has_content_length ||
+         update_remote_http.content_length !=
              update_remote_status.candidate.package_size ||
-         http_out->body_length !=
+         update_remote_http.body_length !=
              update_remote_status.candidate.package_size)) {
         result = ERR_INVALID;
     }
     if (result == OK) result = fs_stream_finish_root();
     if (result == OK) {
         result = crypto_sha256_final(
-            &update_remote_download.sha256, hash_out);
+            &update_remote_download.sha256,
+            update_remote_package_hash);
     }
     if (result != OK) fs_stream_abort_root();
     return result;
@@ -947,9 +956,7 @@ static int update_remote_commit_package(
 static int update_remote_receive_package(
     const char* package_url, uint8_t pending_slot,
     const update_remote_options_t* options,
-    uint8_t package_hash[32], update_remote_result_t* output) {
-    update_verification_t verification;
-    http_status_t http;
+    update_remote_result_t* output) {
     int result;
 
     update_remote_status.state = UPDATE_REMOTE_STATE_DOWNLOADING;
@@ -960,7 +967,7 @@ static int update_remote_receive_package(
         update_remote_status.retry_count = attempt;
         result = update_remote_download_attempt(
             package_url, update_remote_package_aliases[pending_slot],
-            options, &http, package_hash);
+            options);
         if (result == OK ||
             !update_remote_transient_error(result) ||
             attempt == UPDATE_REMOTE_MAX_RETRIES) break;
@@ -975,21 +982,25 @@ static int update_remote_receive_package(
         return update_remote_abort_pending(reason, result, output);
     }
     if (!crypto_equal(
-            package_hash,
+            update_remote_package_hash,
             update_remote_status.candidate.package_hash, 32U)) {
         return update_remote_abort_pending(
             UPDATE_REMOTE_REASON_PACKAGE_HASH, ERR_INVALID, output);
     }
     update_remote_status.state = UPDATE_REMOTE_STATE_VALIDATING;
-    kmemset(&verification, 0, sizeof(verification));
+    kmemset(
+        &update_remote_verification, 0,
+        sizeof(update_remote_verification));
     result = update_verify_file(
-        update_remote_package_aliases[pending_slot], &verification);
-    output->verification_reason = verification.reason;
+        update_remote_package_aliases[pending_slot],
+        &update_remote_verification);
+    output->verification_reason = update_remote_verification.reason;
     if (result != OK) {
         return update_remote_abort_pending(
             UPDATE_REMOTE_REASON_PACKAGE_VERIFY, result, output);
     }
-    if (!update_remote_candidate_matches_package(&verification)) {
+    if (!update_remote_candidate_matches_package(
+            &update_remote_verification)) {
         return update_remote_abort_pending(
             UPDATE_REMOTE_REASON_PACKAGE_MISMATCH, ERR_INVALID, output);
     }
@@ -1095,8 +1106,6 @@ int update_remote_fetch(const char* manifest_url,
                         update_remote_result_t* result_out) {
     update_remote_options_t defaults = {0U, 0, 0};
     uint8_t expected_manifest_hash[32];
-    uint8_t package_hash[32];
-    char package_url[UPDATE_REMOTE_URL_SIZE];
     const char* effective;
     uint8_t pending_slot;
     int result;
@@ -1140,7 +1149,7 @@ int update_remote_fetch(const char* manifest_url,
     }
     result = update_remote_build_package_url(
         effective, update_remote_status.candidate.package_path,
-        package_url);
+        update_remote_package_url);
     if (result != OK) {
         return update_remote_reject(
             UPDATE_REMOTE_REASON_MANIFEST_FORMAT, result,
@@ -1155,10 +1164,11 @@ int update_remote_fetch(const char* manifest_url,
             "Falha ao preparar cache remoto", result_out);
     }
     result = update_remote_receive_package(
-        package_url, pending_slot, options, package_hash, result_out);
+        update_remote_package_url, pending_slot, options, result_out);
     if (result != OK) return result;
     if (update_remote_commit_package(
-            pending_slot, package_hash, result_out) != OK) {
+            pending_slot, update_remote_package_hash,
+            result_out) != OK) {
         return update_remote_abort_pending(
             UPDATE_REMOTE_REASON_IO, ERR_DISK, result_out);
     }

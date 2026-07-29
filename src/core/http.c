@@ -28,6 +28,9 @@ static net_socket_handle_t http_socket;
 static uint8_t http_header_buffer[HTTP_HEADER_CAPACITY];
 static uint8_t http_body_buffer[HTTP_BODY_CAPACITY];
 static uint8_t http_request_buffer[HTTP_REQUEST_CAPACITY];
+static uint8_t http_read_buffer[HTTP_READ_CHUNK];
+static char http_parse_host_buffer[HTTP_HOST_BUFFER_SIZE];
+static char http_parse_path_buffer[HTTP_PATH_BUFFER_SIZE];
 static uint16_t http_request_length;
 static uint16_t http_request_offset;
 static uint32_t http_started_tick;
@@ -690,8 +693,6 @@ int http_init(void) {
 
 static int http_get_start_internal(const char* url, uint32_t body_limit,
                                    http_body_sink_t sink, void* context) {
-    char host[HTTP_HOST_BUFFER_SIZE];
-    char path[HTTP_PATH_BUFFER_SIZE];
     uint32_t address = 0;
     uint16_t port = 0;
     uint8_t numeric = 0;
@@ -716,8 +717,9 @@ static int http_get_start_internal(const char* url, uint32_t body_limit,
         LOG_ERROR("NET", "Outra requisicao HTTP esta ativa");
         return ERR_STATE;
     }
-    result = http_parse_url(url, host, path, &port,
-                            &address, &numeric);
+    result = http_parse_url(
+        url, http_parse_host_buffer, http_parse_path_buffer, &port,
+        &address, &numeric);
     if (result != OK) {
         LOG_ERROR("NET", "URL HTTP invalida");
         return result;
@@ -733,9 +735,11 @@ static int http_get_start_internal(const char* url, uint32_t body_limit,
     http_copy_text(http_status.url, sizeof(http_status.url),
                    url, kstrlen(url));
     http_copy_text(http_status.host, sizeof(http_status.host),
-                   host, kstrlen(host));
+                   http_parse_host_buffer,
+                   kstrlen(http_parse_host_buffer));
     http_copy_text(http_status.path, sizeof(http_status.path),
-                   path, kstrlen(path));
+                   http_parse_path_buffer,
+                   kstrlen(http_parse_path_buffer));
     http_status.port = port;
     http_status.requests_started++;
     http_started_tick = timer_get_ticks();
@@ -744,7 +748,8 @@ static int http_get_start_internal(const char* url, uint32_t body_limit,
         if (result != OK) http_fail(result);
         return result;
     }
-    result = dns_resolve(host, &address, &resolved);
+    result = dns_resolve(
+        http_parse_host_buffer, &address, &resolved);
     if (result != OK) {
         http_fail(result);
         LOG_ERROR("NET", "DNS recusou host HTTP");
@@ -827,16 +832,16 @@ static int http_maintain_sending(void) {
 }
 
 static int http_maintain_receiving(void) {
-    uint8_t chunk[HTTP_READ_CHUNK];
     uint16_t read = 0;
     uint8_t eof = 0;
     int result = net_socket_receive(
-        http_socket, chunk, sizeof(chunk), &read, &eof);
+        http_socket, http_read_buffer,
+        sizeof(http_read_buffer), &read, &eof);
 
     if (result != OK) return result;
     http_status.bytes_rx += read;
     if (read) {
-        result = http_consume_bytes(chunk, read);
+        result = http_consume_bytes(http_read_buffer, read);
         if (result != OK) return result;
     }
     if (http_status.state == HTTP_STATE_COMPLETE) return OK;
