@@ -666,6 +666,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 - **Gerenciador de Dispositivos** (`gerenciador de dispositivos.md`)
 - **Gerenciador de Rede / Conexão** (`gerenciador de rede.md`, `gerenciador de conexao.md`)
 - **Atualizações do Sistema** (`atualizações.md`)
+- **Evolução da Plataforma** (`evolucao da plataforma.md`) - mouse, video, volumes, busca, releases por tags e radios sem fio
 - **Formatação Inteligente** (`formatacao inteligente.md`)
 
 ### Melhorias na Interface Atual (UI/UX)
