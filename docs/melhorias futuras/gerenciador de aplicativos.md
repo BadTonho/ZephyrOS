@@ -1,19 +1,22 @@
 # Gerenciador de Aplicativos — ZephyrOS v0.1
 
-## Resumo de Progresso
+## Fonte de verdade executável
 
-| Fase | Total | Feito | Parcial | Restante |
-|------|-------|-------|---------|----------|
-| 1. Framework de Aplicativos | 42 | 0 | 0 | 42 |
-| 2. Formato de Pacote e Instalador | 38 | 0 | 0 | 38 |
-| 3. Loja de Aplicativos (TUI) | 52 | 0 | 0 | 52 |
-| 4. Backend da Loja (Repositório) | 34 | 0 | 0 | 34 |
-| 5. Integração com Sistema | 36 | 0 | 0 | 36 |
-| 6. Atualizações e Dependências | 28 | 0 | 0 | 28 |
-| 7. SDK para Desenvolvedores | 24 | 0 | 0 | 24 |
-| **TOTAL** | **254** | **0** | **0** | **254** |
+O plano atual da App Store está em
+[`docs/roadmaps/06-app-store.md`](../roadmaps/06-app-store.md). Ele substitui a
+ordem antiga deste inventário por cinco fases:
 
-**Progresso geral: 0%** (0/254 itens completos)
+| Fase | Objetivo | Estado |
+|------|----------|--------|
+| AS1 | Catálogo local e observabilidade | Pendente |
+| AS2 | Ciclo de vida local com confirmação | Pendente |
+| AS3 | Aplicativo nativo Modern com fallbacks | Pendente |
+| AS4 | Atualização local e dependências | Futuro |
+| AS5 | Repositório remoto assinado | Futuro |
+
+As seções detalhadas abaixo permanecem como inventário de ideias. Seus
+checklists não devem ser executados em ordem nem usados como status técnico
+quando divergirem do roadmap AS1-AS5.
 
 > **Nota sobre o estado atual:** o loader minimo da Fase 5 ja esta separado
 > deste roadmap da App Store. O sistema agora aceita imagens flat i386 com
@@ -27,23 +30,27 @@
 > instalado por `pkg` e executado pelo loader. Loja, GUI, atualizacoes,
 > assinatura, permissoes e SDK continuam planejados nas fases abaixo.
 
+> **Decisao de interface:** Modern e a matriz obrigatoria da App Store; Shell
+> e o fallback operacional completo. Classic permanece secundario e nao
+> bloqueia a conclusao de uma fase aprovada no Modern e no Shell.
+
 ---
 
 ## Atalhos de Teclado
 
 | Atalho | Ação |
 |--------|------|
-| F2 | Abrir Loja de Aplicativos |
-| Shift+F2 | Gerenciar Aplicativos Instalados |
-| F6 | Verificar atualizações |
-| Esc | Fechar janela |
 | Tab | Alternar entre seções |
 | Setas | Navegar na lista |
-| Enter | Selecionar/Instalar aplicativo |
-| Delete | Desinstalar aplicativo |
-| Space | Ver detalhes do aplicativo |
+| F5 | Atualizar o catálogo local |
+| V | Verificar o pacote selecionado |
 | I | Instalar aplicativo selecionado |
-| U | Desinstalar aplicativo selecionado |
+| A | Abrir aplicativo instalado |
+| R | Preparar remoção |
+| Enter | Confirmar ação preparada |
+| Esc | Cancelar contexto atual |
+| Alt+F4 ou botão X | Fechar a janela Modern |
+| `store` | Abrir pelo Shell |
 
 ---
 

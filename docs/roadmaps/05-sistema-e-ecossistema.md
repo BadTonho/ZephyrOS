@@ -127,7 +127,9 @@ antecipar interfaces ou permissoes que ainda nao existem.
 
 ## Etapa S3 - Ecossistema de aplicativos
 
-- [ ] Usar `.zephyrosapp` como base para instalacao e catalogo de aplicativos.
+- [ ] Executar o roadmap
+  [`06-app-store.md`](06-app-store.md), comecando por AS1: catalogo local e
+  observabilidade sobre `.zephyrosapp`/`ZPKG v1`.
 - [ ] Evoluir Media Manager, Game Manager, ferramentas de desenvolvedor,
   PCSista e Anti-Virus somente sobre APIs ja estabelecidas.
 - [ ] Tratar cada aplicativo opcional como modulo com diagnostico, fallback e

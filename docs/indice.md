@@ -59,7 +59,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [Fundacao do Kernel](melhorias%20futuras/fundacao%20do%20kernel.md) | APIs, modulos, memoria, processos e diagnostico |
 | [Atualizacao e Otimizacao do Kernel](melhorias%20futuras/atualizacao%20do%20kernel.md) | Evolucao segura do kernel baseada em metricas |
 | [API de Aplicativos e Syscalls](melhorias%20futuras/api%20de%20aplicativos%20e%20syscalls.md) | Contrato 0.3, syscalls, argumentos, loader ZAPP e foco seguro ring 3 |
-| [Gerenciador de Aplicativos](melhorias%20futuras/gerenciador%20de%20aplicativos.md) | Loader ZAPP, aplicativos nativos e roadmap da App Store |
+| [Gerenciador de Aplicativos](melhorias%20futuras/gerenciador%20de%20aplicativos.md) | Inventario detalhado e referencia ao roadmap AS1-AS5 |
 | [Gerenciador de Dispositivos](melhorias%20futuras/gerenciador%20de%20dispositivos.md) | Inventario nativo seguro e evolucao do gerenciamento de hardware |
 | [Gerenciador de Energia](melhorias%20futuras/gerenciador%20de%20energia.md) | Diagnostico de energia, ACPI, PM1 e desligamento fisico S5 com fallback |
 | [Gerenciador de Rede](melhorias%20futuras/gerenciador%20de%20rede.md) | Inventario PCI, Ethernet, ARP, IPv4, UDP, DHCP, DNS, TCP e HTTP |
@@ -82,3 +82,4 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [03 - Kernel e Desempenho](roadmaps/03-kernel-e-desempenho.md) | Métricas, scheduler, memória e otimização segura |
 | [04 - Interface e Experiência](roadmaps/04-interface-e-experiencia.md) | GUI moderna, taskbar, WM e interação |
 | [05 - Sistema e Ecossistema](roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e apps |
+| [06 - App Store](roadmaps/06-app-store.md) | Catalogo local ZPKG, ciclo de vida, interface Modern e repositorio futuro |

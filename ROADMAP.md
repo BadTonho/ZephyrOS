@@ -643,6 +643,7 @@ kernel, interface e novos serviços:
 | 3 | [`docs/roadmaps/03-kernel-e-desempenho.md`](docs/roadmaps/03-kernel-e-desempenho.md) | Métricas, scheduler, memória e otimização baseada em evidências. |
 | 4 | [`docs/roadmaps/04-interface-e-experiencia.md`](docs/roadmaps/04-interface-e-experiencia.md) | Taskbar, Window Manager, ícones e interação gráfica. |
 | 5 | [`docs/roadmaps/05-sistema-e-ecossistema.md`](docs/roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e ecossistema. |
+| 6 | [`docs/roadmaps/06-app-store.md`](docs/roadmaps/06-app-store.md) | Catalogo local, ciclo de vida, App Store Modern e distribuicao futura. |
 
 O índice desses arquivos está em [`docs/roadmaps/README.md`](docs/roadmaps/README.md).
 Os documentos em `docs/melhorias futuras/` continuam sendo o backlog detalhado
@@ -676,7 +677,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 - **Gerenciador de Processos** (`gerenciador de processos.md`)
 
 ### Novos Módulos e Aplicativos (App Store / Opcionais)
-- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - App Store e pacotes completos ficam depois do loader ZAPP
+- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1 inicia o catalogo local sobre ZPKG v1
 - **Gerenciador de Mídia** (`gerenciador de midia.md`)
 - **Gerenciador de Jogos** (`gerenciador de jogos.md`)
 - **Anti-Virus** (`anti virus.md`)

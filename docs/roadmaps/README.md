@@ -67,6 +67,8 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   comandos, System Updater Modern, falhas controladas, cancelamento,
   aplicacao/rollback e auditoria final foram aprovados. O Classic continua
   disponivel como fallback e sua regressao e cobertura complementar.
+  O proximo desenvolvimento e AS1 do roadmap da App Store: catalogo local
+  somente-leitura sobre a base ZPKG v1 ja validada.
 
 ## K4 validada
 
@@ -82,6 +84,7 @@ correcao da ordem de apresentacao.
 3. [03 - Kernel e desempenho](03-kernel-e-desempenho.md)
 4. [04 - Interface e experiencia](04-interface-e-experiencia.md)
 5. [05 - Sistema e ecossistema](05-sistema-e-ecossistema.md)
+6. [06 - App Store](06-app-store.md)
 
 As frentes podem receber manutencao corretiva a qualquer momento. Para novas
 funcionalidades, a prioridade e estabilizar a etapa atual antes de abrir uma
