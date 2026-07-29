@@ -1,0 +1,46 @@
+{
+  "format": "zephyros-update-remote-fixtures-v1",
+  "release_public_key": {
+    "public_key_hex": "4a8006ca82cca49ef482be6f554e393d176fbb8236f46bf4308c58bbd82a7808",
+    "key_id_hex": "d4926d816d8373a412e7458cc9f14379"
+  },
+  "packages": {
+    "APPLY.ZUP": {
+      "source": "../u3/APPLY.ZUP",
+      "size": 9954,
+      "sha256": "a11b825cb0c68d972f3d4651ca04e97a4306cb5f266ef317f727c0eaea70fa86"
+    },
+    "BADHASH.ZUP": {
+      "source": "../u2/BADHASH.ZUP",
+      "size": 3446,
+      "sha256": "f452496938043b84b1695228bf73a64ee5a3f4d0b4cec8844a9da4aa9594c0b9"
+    }
+  },
+  "fixtures": {
+    "stable.zum": {
+      "size": 256,
+      "sha256": "8577757d392ec1d551676b497a4025d7557f653e32d6acf13f5037d0248e9e79",
+      "expected": "OK"
+    },
+    "stable2.zum": {
+      "size": 256,
+      "sha256": "f4e44bf740c07f77a51b10447c288b63947a9a378289a3a91051d73ee42a2615",
+      "expected": "OK"
+    },
+    "tampered.zum": {
+      "size": 256,
+      "sha256": "8e6590929ebba43a25c5c75b0066b57350f7a907a13838a4b383f855cf102a28",
+      "expected": "MANIFEST_SIGNATURE"
+    },
+    "badpkg.zum": {
+      "size": 256,
+      "sha256": "6e7b3a3d0532145dd971c577f2857f6f11029985cb9a0805485d38d10bf00680",
+      "expected": "PACKAGE_VERIFY/HASH"
+    },
+    "truncated.zum": {
+      "size": 255,
+      "sha256": "72ac66e540bddb4a4ef335d4014ee0158924d1e62baf9431ce2e1132d1b49b75",
+      "expected": "HTTP"
+    }
+  }
+}

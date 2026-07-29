@@ -2709,6 +2709,96 @@ def selftest_u5_remote() -> None:
     )
 
 
+def selftest_u5_public() -> None:
+    """Valida hashes, assinaturas e resultados dos fixtures publicos U5."""
+    try:
+        published = json.loads(
+            (U5_FIXTURES / "fixtures.json").read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError) as error:
+        raise UpdateError("manifesto publico U5 ausente ou invalido") from error
+    if published.get("format") != "zephyros-update-remote-fixtures-v1":
+        raise UpdateError("formato do manifesto publico U5 divergiu")
+    trusted = load_public_json(RELEASE_PUBLIC)
+    public = published.get("release_public_key", {})
+    if (
+        public.get("public_key_hex") != trusted.public_key.hex()
+        or public.get("key_id_hex") != trusted.key_id.hex()
+    ):
+        raise UpdateError("raiz publica dos fixtures U5 divergiu")
+    packages = published.get("packages", {})
+    package_bytes: dict[str, bytes] = {}
+    for alias in ("APPLY.ZUP", "BADHASH.ZUP"):
+        metadata = packages.get(alias, {})
+        source = (U5_FIXTURES / str(metadata.get("source", ""))).resolve()
+        try:
+            data = source.read_bytes()
+        except OSError as error:
+            raise UpdateError(f"pacote referenciado U5 ausente: {alias}") from error
+        if (
+            len(data) != metadata.get("size")
+            or hashlib.sha256(data).hexdigest() != metadata.get("sha256")
+        ):
+            raise UpdateError(f"hash publicado do pacote U5 divergiu: {alias}")
+        package_bytes[alias] = data
+    fixtures = published.get("fixtures", {})
+    expected_names = {
+        "stable.zum",
+        "stable2.zum",
+        "tampered.zum",
+        "badpkg.zum",
+        "truncated.zum",
+    }
+    if set(fixtures) != expected_names:
+        raise UpdateError("conjunto de fixtures publicos U5 divergiu")
+    for name, metadata in fixtures.items():
+        data = (U5_FIXTURES / name).read_bytes()
+        if (
+            len(data) != metadata.get("size")
+            or hashlib.sha256(data).hexdigest() != metadata.get("sha256")
+        ):
+            raise UpdateError(f"hash publicado do fixture U5 divergiu: {name}")
+    stable = parse_remote_manifest(
+        (U5_FIXTURES / "stable.zum").read_bytes(), trusted
+    )
+    stable2 = parse_remote_manifest(
+        (U5_FIXTURES / "stable2.zum").read_bytes(), trusted
+    )
+    if (
+        stable.generation != 1
+        or stable2.generation != 2
+        or stable.package_path != "/zephyros/APPLY.ZUP"
+        or stable2.package_path != stable.package_path
+        or stable.package_sha256
+        != hashlib.sha256(package_bytes["APPLY.ZUP"]).digest()
+        or stable2.package_sha256 != stable.package_sha256
+    ):
+        raise UpdateError("manifestos validos U5 divergiram do pacote publicado")
+    try:
+        parse_remote_manifest(
+            (U5_FIXTURES / "tampered.zum").read_bytes(), trusted
+        )
+    except UpdateError:
+        pass
+    else:
+        raise UpdateError("fixture U5 adulterado foi aceito")
+    badpkg = parse_remote_manifest(
+        (U5_FIXTURES / "badpkg.zum").read_bytes(), trusted
+    )
+    if (
+        badpkg.package_path != "/zephyros/BADHASH.ZUP"
+        or badpkg.package_sha256
+        != hashlib.sha256(package_bytes["BADHASH.ZUP"]).digest()
+        or expected_reason(
+            package_bytes["BADHASH.ZUP"], trusted, Version(0, 1, 0), 0
+        )
+        != REASON_HASH
+    ):
+        raise UpdateError("fixture U5 de pacote invalido nao resulta em HASH")
+    if len((U5_FIXTURES / "truncated.zum").read_bytes()) == REMOTE_MANIFEST_SIZE:
+        raise UpdateError("fixture U5 truncado possui tamanho completo")
+
+
 def run_selftest() -> None:
     """Executa a suite host sem gravar no repositorio."""
     selftest_u1()
@@ -2718,6 +2808,7 @@ def run_selftest() -> None:
     selftest_u4_history()
     selftest_generated()
     selftest_u5_remote()
+    selftest_u5_public()
     print(
         "Updater selftest: OK"
         if u3_ready
