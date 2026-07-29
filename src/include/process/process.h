@@ -26,7 +26,8 @@ typedef enum {
     IPC_APP_OPEN_TASKMANAGER,
     IPC_APP_OPEN_DESKTOP,
     IPC_APP_OPEN_SETTINGS,
-    IPC_APP_OPEN_TASKMANAGER_GUI
+    IPC_APP_OPEN_TASKMANAGER_GUI,
+    IPC_APP_OPEN_UPDATER
 } ipc_app_request_t;
 
 typedef struct {

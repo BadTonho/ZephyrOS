@@ -113,9 +113,9 @@ implementam gradientes, transparência ou cantos arredondados nesta etapa.
 ## Window Manager (`wm.c`)
 
 O comando `wm` preserva o gerenciador textual no modo Clássico. No modo
-Moderno, ele abre um workspace VESA vazio. Shell, Explorer, Settings e Task
-Manager são aplicativos hospedados: seus comandos e ações do Menu Iniciar
-criam ou focalizam uma única janela de cada tipo.
+Moderno, ele abre um workspace VESA vazio. Shell, Explorer, Settings, Task
+Manager e System Updater são aplicativos hospedados: seus comandos e ações do
+Menu Iniciar criam ou focalizam uma única janela de cada tipo.
 
 ### Estado de renderização
 
@@ -229,14 +229,14 @@ O kernel entrega cliques e roda primeiro à taskbar e ao Menu Iniciar. Botões d
 sem foco é focalizada e a janela focalizada é minimizada. Com o WM ativo, seus
 eventos consomem o mouse antes de Desktop e aplicativos.
 
-No modo Moderno, Shell, Explorer, Settings e Task Manager reutilizam a interação
-direta do WM: os controles da barra de título têm prioridade, a área livre da
-barra inicia arraste e uma faixa de 8 px nas bordas e cantos inicia
-redimensionamento. A captura termina em `RELEASE`; janelas maximizadas devem
-ser restauradas antes de mover ou redimensionar. Cada aplicativo desenha somente
-seu conteúdo e solicita recomposição ao mudar de estado; o WM recompõe o
-workspace no backbuffer, desenha a taskbar por último e invalida o cursor antes
-da pintura.
+No modo Moderno, Shell, Explorer, Settings, Task Manager e System Updater
+reutilizam a interação direta do WM: os controles da barra de título têm
+prioridade, a área livre da barra inicia arraste e uma faixa de 8 px nas
+bordas e cantos inicia redimensionamento. A captura termina em `RELEASE`;
+janelas maximizadas devem ser restauradas antes de mover ou redimensionar.
+Cada aplicativo desenha somente seu conteúdo e solicita recomposição ao mudar
+de estado; o WM recompõe o workspace no backbuffer, desenha a taskbar por
+último e invalida o cursor antes da pintura.
 
 A roda só é entregue à área de conteúdo da janela visível de maior Z-order sob
 o cursor; ela não focaliza nem altera a ordem das janelas. Barra de título,
@@ -276,7 +276,8 @@ Enquanto estiver aberto, um clique fora do Menu Iniciar apenas o fecha; o
 evento e consumido e nao pode acionar a interface que esteja abaixo dele.
 No workspace moderno, `Shell` abre ou focaliza a janela singleton do terminal;
 o X da janela apenas a oculta e preserva seu histórico. `Desktop` encerra o
-workspace antes de voltar à área de trabalho.
+workspace antes de voltar à área de trabalho. `Atualizacoes` abre ou focaliza
+o System Updater; no modo Classic abre a TUI correspondente.
 
 ```
 ┌─────────────────┐
@@ -285,10 +286,15 @@ workspace antes de voltar à área de trabalho.
 │ Explorer         │
 │ Task Manager     │
 │ Configuracoes    │
+│ Atualizacoes     │
 │ Reiniciar        │
 │ Desligar         │
 └─────────────────┘
 ```
+
+`TB_ACTION_UPDATER` e `WM_APP_UPDATER` foram anexados ao fim dos contratos
+publicos existentes. O aplicativo nao adiciona icone ao Desktop e nao altera
+os BMPs da interface.
 
 ### Configuração Dinâmica
 

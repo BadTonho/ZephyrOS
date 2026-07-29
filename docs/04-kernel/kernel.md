@@ -520,6 +520,38 @@ As capacidades de `health` sao independentes: verificacao local continua
 `READY`; aplicacao exige FAT12 e estado integro; rollback exige uma geracao
 valida; remoto continua `DISABLED (U5)`.
 
+## U4: diagnosticos e historico do Update
+
+O servico Update carrega `ZUPD0.HIS` e `ZUPD1.HIS` depois dos registros de
+estado e journal e antes de recuperar uma transacao pendente. O historico e um
+ring buffer redundante de oito eventos `ZUH1`; o layout canonico permanece em
+[`contrato-zupd-v1.md`](../14-atualizacoes/contrato-zupd-v1.md).
+
+As novas consultas publicas sao:
+
+- `update_get_status()`, que agrega versoes de build, instalada e de rollback,
+  epochs, integridade, journal, capacidades e ultimo evento;
+- `update_get_history_count()`;
+- `update_get_history_entry()`, com indice zero para o evento mais recente;
+- conversores estaveis de estado, operacao e resultado para texto.
+
+Essas consultas usam a trava existente e nunca gravam. Aplicacao e rollback
+confirmados acrescentam eventos depois de sair da regiao transacional critica.
+Quando ha journal pendente, a escrita e adiada ate o boot. A recuperacao
+concluida registra a falha interrompida e um evento `RECOVERED`. Falha isolada
+do historico nao desfaz um estado U3 ja comprometido.
+
+`RECOVERY_COMPONENT_SYSTEM_UPDATER` foi anexado ao final da enumeracao de
+Recovery. Ele fica `READY` quando interface e servico local estao disponiveis,
+`DEGRADED` quando filesystem, estado ou historico permitem apenas operacao
+parcial, e `DISABLED` quando Update nao foi inicializado. O componente
+`RECOVERY_COMPONENT_UPDATE` continua representando o servico transacional.
+
+O kernel inicializa o System Updater depois do Window Manager. A abertura pelo
+menu Iniciar usa `IPC_APP_OPEN_UPDATER`, tambem anexado ao fim da enumeracao
+IPC para preservar todos os valores anteriores. Em Modern o aplicativo e
+hospedado pelo WM; se isso nao for possivel, abre automaticamente em Classic.
+
 ## Struct `registers_t`
 
 Usada para passar contexto entre handlers:

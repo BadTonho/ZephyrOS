@@ -7,6 +7,7 @@
 #define TASKBAR_BUTTON_MAX 8
 #define TASKBAR_DEFAULT_ROW (SCREEN_ROWS - 1)
 #define TB_ACTION_WINDOW 10
+#define TB_ACTION_UPDATER 11
 
 typedef enum {
     TB_POS_BOTTOM = 0,

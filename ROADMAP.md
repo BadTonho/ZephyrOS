@@ -617,7 +617,11 @@ Sistema e ecossistema:       [████████████████�
   offline foram validados. Os cenarios de sucesso, rollback e interrupcao
   recuperavel passaram no QEMU; `regcheck full`, memoria e `audit-image`
   confirmaram versao `0.1.0`, journal limpo e rollback consumido.
-- [ ] U4 e U5 permanecem pendentes.
+- [ ] U4 em validacao: `update status`, `update history`, controles `ZUH1`,
+  auditoria host e System Updater Classic/Modern estao implementados. Falta a
+  matriz QEMU para confirmar equivalencia das interfaces, persistencia em
+  reboot, recuperacao e contagem final do historico.
+- [ ] U5 permanece pendente; remoto continua `DISABLED`.
 
 ## Roadmaps por etapa
 

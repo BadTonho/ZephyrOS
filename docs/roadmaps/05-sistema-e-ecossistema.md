@@ -114,8 +114,9 @@ antecipar interfaces ou permissoes que ainda nao existem.
   recuperacao no boot, `APPLY.ZUP`, failpoint e `audit-image` foram
   validados. Aplicacao, rollback e interrupcao recuperavel passaram no QEMU,
   com memoria estavel, `regcheck full` em `OK` e journal final limpo.
-- [ ] U4-U5: interface dual e distribuicao remota continuam pendentes; remoto
-  permanece `DISABLED`.
+- [ ] U4 em validacao: historico redundante, status, auditoria e System Updater
+  Classic/Modern implementados; falta a matriz QEMU e a auditoria final.
+- [ ] U5: distribuicao remota permanece pendente e `DISABLED`.
 - [ ] Manter operacoes remotas opcionalmente desabilitadas e visiveis em
   `health` quando indisponiveis.
 

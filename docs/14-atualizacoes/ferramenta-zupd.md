@@ -8,9 +8,9 @@ kernel. A ferramenta host usa `cryptography==49.0.0`, fixado em
 `tools/requirements-updater.txt`.
 
 O fluxo U2 apenas verifica. A U3 acrescenta geracao do fixture transacional e
-auditoria offline da imagem; a aplicacao em si acontece somente no kernel
-FAT12. Nenhum comando host acessa a rede ou altera boot, stage2 ou setores de
-kernel.
+auditoria offline da imagem; a U4 estende essa auditoria ao historico
+redundante `ZUH1`. A aplicacao em si acontece somente no kernel FAT12. Nenhum
+comando host acessa a rede ou altera boot, stage2 ou setores de kernel.
 
 ## Preparacao
 
@@ -131,16 +131,24 @@ compressao, padding e tamanho permanecem iguais aos assets de origem.
 `audit-image` deve ser executado somente depois de encerrar o QEMU. Ele compara
 as copias da FAT12, percorre cadeias e alocacoes, seleciona os controles
 redundantes de maior sequencia, valida SHA-256, arquivos atuais, backups,
-staging e ausencia de journal pendente:
+staging, ausencia de journal pendente e o ring de historico U4:
 
 ```text
 python tools/updater.py audit-image --image build/zephyros.img --expect-version 0.1.0 --expect-rollback unavailable
 python tools/updater.py audit-image --image build/zephyros.img --expect-version 0.1.1 --expect-rollback available
+python tools/updater.py audit-image --image build/zephyros.img --expect-version 0.1.0 --expect-rollback unavailable --expect-history-count 4 --expect-last-event recovery-apply
 ```
 
 `--expect-rollback any` omite essa expectativa. `--allow-pending` existe
 somente para diagnosticar uma imagem deliberadamente interrompida; sem essa
-opcao, qualquer transacao pendente e uma falha.
+opcao, qualquer transacao pendente e uma falha. `--expect-history-count`
+compara a quantidade de eventos validos. `--expect-last-event` aceita
+`apply`, `rollback`, `recovery-apply` ou `recovery-rollback`.
+
+O decoder host confere magic `ZUH1`, versao, tamanho, campos reservados,
+SHA-256, sequencias, enums, alias, slots inativos, wrap em oito eventos e
+empate divergente entre as duas copias. Ausencia das duas copias e reportada
+como historico vazio e integro.
 
 ## Validacao no sistema
 
@@ -188,6 +196,12 @@ Depois de outro reboot, a versao deve voltar a `0.1.0` e rollback deve ficar
 `DISABLED`. O cenario de recuperacao usa `update test fail-after 1`, aplicacao
 confirmada e reboot; o boot deve restaurar `0.1.0`. Cada cenario termina com
 `mem`, `regcheck full` e `audit-image`.
+
+Para U4, `update status`, `update history`, abertura do aplicativo e preflight
+nao podem alterar a contagem do historico. Classic e Modern devem mostrar as
+mesmas tres abas e permitir aplicar e restaurar. Depois do failpoint e do boot,
+o historico deve conter o encerramento pendente seguido de
+`RECOVERY_APPLY/RECOVERED`.
 
 ## Referencias
 

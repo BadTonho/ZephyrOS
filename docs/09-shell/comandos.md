@@ -252,13 +252,17 @@ Resumo do health:
   AC97: DISABLED erro=4 falhas=1
   Media Player: DEGRADED erro=9 falhas=1
   Update: READY
-    local=READY apply=READY rollback=DISABLED remoto=DISABLED
+    local=READY apply=READY rollback=DISABLED historico=READY remoto=DISABLED
   Kernel: proc=4 READY=3 RUNNING=1 BLOCKED=0 ZOMBIE=0 paging=READY
   Memoria KB: usada=20652 livre=110292 heap=READY
 ```
 
 Argumentos diferentes de `summary` sao recusados com
 `Uso: health [summary]`.
+
+O campo `historico` fica `READY` para historico vazio ou valido, `DEGRADED`
+quando os controles U4 perderam integridade e `DISABLED` quando o armazenamento
+nao esta disponivel.
 
 ## `devices`, `device-info` e `device-scan`
 
@@ -717,6 +721,43 @@ zephyr> update apply APPLY.ZUP --confirm
 
 Esse comando existe somente para provar a recuperacao no proximo boot. Nao
 deve ser usado em uma atualizacao normal.
+
+## `update status`
+
+Mostra, sem gravar, as versoes de build, instalada e de rollback, epochs,
+integridade dos controles, journal, capacidades e ultima operacao persistida:
+
+```text
+zephyr> update status
+```
+
+Estado ausente no baseline aparece como `EMPTY`, nao como corrupcao. Historico
+com ambas as copias invalidas aparece como `INVALID`, mas nao desabilita por si
+so verificacao, aplicacao ou rollback.
+
+## `update history`
+
+Lista ate oito eventos do mais recente para o mais antigo. Cada linha informa
+sequencia, operacao, resultado, transicao, progresso, motivos e alias do
+pacote. A consulta nao grava nem repara controles:
+
+```text
+zephyr> update history
+Historico de Update vazio.
+```
+
+Aplicacao e rollback confirmados podem registrar `SUCCESS`, `FAILED` ou
+`CANCELLED`. Depois de uma recuperacao no boot, aparecem o encerramento
+pendente e `RECOVERY_APPLY/RECOVERED` ou
+`RECOVERY_ROLLBACK/RECOVERED`.
+
+## `updater`
+
+Abre o aplicativo nativo System Updater. Classic usa TUI em tela cheia;
+Modern abre uma janela hospedada pelo Window Manager e volta automaticamente
+ao Classic se a hospedagem estiver indisponivel. As abas Pacotes, Estado e
+Historico e os fluxos de confirmacao sao descritos em
+[`system-updater.md`](../14-atualizacoes/system-updater.md).
 
 ## `pkg list|info|verify|install|remove`
 

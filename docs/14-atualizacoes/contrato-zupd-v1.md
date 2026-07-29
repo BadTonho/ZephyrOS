@@ -350,6 +350,98 @@ somente em FAT12 com estado integro; rollback fica `READY` somente com backup
 valido; remoto permanece `DISABLED (U5)`. Journal pendente ou controles
 invalidos tornam o componente `Update` `DEGRADED`.
 
+## U4: status e historico persistente
+
+A U4 nao altera o container ZUPD nem a ordem transacional da U3. Ela acrescenta
+consultas somente-leitura e um historico local redundante. `update status`,
+`update history`, a abertura do aplicativo e o preflight nao criam nem
+modificam arquivos. Somente uma aplicacao ou um rollback confirmados, ou a
+conclusao de uma recuperacao no boot, podem acrescentar eventos.
+
+`update_store_state_t` usa os estados `UNAVAILABLE`, `EMPTY`, `VALID` e
+`INVALID`. `update_get_status()` informa versoes de build, instalada e de
+rollback, epochs, integridade separada dos controles e dos arquivos atuais,
+integridade do historico, journal pendente, capacidades e o ultimo evento.
+`update_get_history_count()` e
+`update_get_history_entry()` expoem no maximo oito eventos, sempre do mais
+recente para o mais antigo.
+
+O historico usa as copias alternadas `ZUPD0.HIS` e `ZUPD1.HIS`. Cada arquivo
+possui atributos FAT hidden, system e archive e segue o mesmo envelope de
+512 bytes, little-endian e SHA-256 dos controles U3:
+
+| Offset | Campo | Regra |
+|---:|---|---|
+| 0 | `magic[4]` | `ZUH1` |
+| 4 | `version` | `uint16_t`, valor `1` |
+| 6 | `record_size` | `uint16_t`, valor `512` |
+| 8 | `sequence` | `uint32_t` monotonicamente crescente |
+| 12 | `count` | `0` a `8` |
+| 13 | `next_index` | proximo slot do ring, `0` a `7` |
+| 14 | reservado | 18 bytes zero |
+| 32 | `entries[8]` | oito entradas de 56 bytes |
+| 480 | `record_sha256` | SHA-256 dos bytes `0..479` |
+
+Quando `count < 8`, `next_index` deve ser igual a `count` e todos os slots
+restantes ficam zerados. Com oito eventos, `next_index` identifica o slot que
+sera substituido pela proxima gravacao. A ordem logica do slot mais antigo ao
+mais novo deve possuir sequencias consecutivas e terminar na sequencia do
+registro.
+
+Cada entrada possui:
+
+| Offset | Campo | Regra |
+|---:|---|---|
+| 0 | `sequence` | `uint32_t`, nao zero e no maximo a sequencia do registro |
+| 4 | `operation` | `APPLY=1`, `ROLLBACK=2`, `RECOVERY_APPLY=3`, `RECOVERY_ROLLBACK=4` |
+| 5 | `outcome` | `SUCCESS=1`, `FAILED=2`, `CANCELLED=3`, `RECOVERED=4` |
+| 6 | `action_reason` | motivo U3 de `0` a `8` |
+| 7 | `verification_reason` | motivo ZUPD de `0` a `11` |
+| 8 | `from_version` | tres `uint16_t` |
+| 14 | `to_version` | tres `uint16_t` |
+| 20 | `from_epoch` | `uint32_t` |
+| 24 | `to_epoch` | `uint32_t` |
+| 28 | `entry_count` | `uint16_t` |
+| 30 | `completed_entries` | `uint16_t`, no maximo `entry_count` |
+| 32 | `flags` | bit 0 indica reboot; demais bits zero |
+| 33 | `package_alias[13]` | ASCII imprimivel terminado em NUL, sem separadores |
+| 46 | reservado | 10 bytes zero |
+
+Ausencia das duas copias significa historico vazio e integro. A copia valida
+de maior sequencia vence. Se ambas forem validas, tiverem a mesma sequencia e
+bytes diferentes, o historico e invalido. Uma copia corrompida e reparada
+naturalmente na proxima gravacao alternada. Se nenhuma copia existente for
+valida, somente o diagnostico de historico fica degradado; verificacao,
+aplicacao e rollback continuam disponiveis. O proximo evento confirmado inicia
+uma nova geracao e registra a perda no log.
+
+Aplicacao e rollback confirmados registram sucesso, falha ou cancelamento.
+Uma transacao que deixa journal pendente adia a gravacao. Depois da recuperacao
+no boot, o servico registra primeiro o encerramento interrompido e depois
+`RECOVERY_APPLY/RECOVERED` ou `RECOVERY_ROLLBACK/RECOVERED`. Falha em gravar o
+historico nunca desfaz um commit U3 ja concluido.
+
+O alias fica vazio em rollback e em recuperacoes para as quais o journal U3
+nao preserva o nome do pacote. O campo continua terminado em NUL e totalmente
+zerado nesses casos.
+
+`update_capabilities_t` acrescenta `history_available`. O `health` completo e
+compacto mostram `historico=READY`, `DEGRADED` ou `DISABLED` sem confundir
+essa disponibilidade com a capacidade remota U5.
+
+## System Updater U4
+
+O aplicativo nativo `System Updater` usa somente as APIs publicas do servico.
+Ele enumera ate 16 arquivos `.ZUP` da raiz, ignora diretorios e arquivos
+hidden/system, ordena os aliases e informa excesso sem alocacao dinamica.
+Classic e Modern compartilham as abas Pacotes, Estado e Historico e os mesmos
+fluxos de verificacao, preflight, confirmacao, aplicacao e rollback.
+
+Toda confirmacao e cancelada ao mudar aba, selecao ou lista. A confirmacao
+repete integralmente verificacao e preflight antes de gravar. Durante uma
+mutacao, somente Esc ou F12 participa do cancelamento cooperativo. Os BMPs
+continuam sendo recarregados apenas no reboot.
+
 ## Politica de seguranca
 
 O contrato cobre:

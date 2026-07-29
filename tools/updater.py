@@ -72,6 +72,24 @@ UPDATE_PHASE_COMMITTED = 3
 UPDATE_TARGETS = ("EXPLORER.BMP", "SHELL.BMP", "TASKMGR.BMP")
 UPDATE_STATE_ALIASES = ("ZUPD0.STA", "ZUPD1.STA")
 UPDATE_JOURNAL_ALIASES = ("ZUPD0.JRN", "ZUPD1.JRN")
+UPDATE_HISTORY_ALIASES = ("ZUPD0.HIS", "ZUPD1.HIS")
+UPDATE_HISTORY_MAX_ENTRIES = 8
+UPDATE_HISTORY_HEADER_SIZE = 32
+UPDATE_HISTORY_ENTRY_SIZE = 56
+UPDATE_HISTORY_ENTRY_OFFSET = 32
+UPDATE_HISTORY_FLAG_REBOOT = 0x01
+UPDATE_HISTORY_OPERATION_NAMES = {
+    1: "apply",
+    2: "rollback",
+    3: "recovery-apply",
+    4: "recovery-rollback",
+}
+UPDATE_HISTORY_OUTCOME_NAMES = {
+    1: "success",
+    2: "failed",
+    3: "cancelled",
+    4: "recovered",
+}
 UPDATE_BACKUP_ALIASES = (
     ("ZBA0.BAK", "ZBA1.BAK", "ZBA2.BAK"),
     ("ZBB0.BAK", "ZBB1.BAK", "ZBB2.BAK"),
@@ -209,6 +227,35 @@ class StoredJournal:
     slot: int
     entry_count: int
     progress: int
+
+
+@dataclass(frozen=True)
+class StoredHistoryEntry:
+    """Evento persistido em um slot de ZUPD*.HIS."""
+
+    sequence: int
+    operation: int
+    outcome: int
+    action_reason: int
+    verification_reason: int
+    from_version: Version
+    to_version: Version
+    from_epoch: int
+    to_epoch: int
+    entry_count: int
+    completed_entries: int
+    reboot_required: bool
+    package_alias: str
+
+
+@dataclass(frozen=True)
+class StoredHistory:
+    """Ring buffer redundante decodificado de ZUPD*.HIS."""
+
+    sequence: int
+    count: int
+    next_index: int
+    entries: tuple[StoredHistoryEntry | None, ...]
 
 
 def crypto_modules() -> tuple[Any, Any, Any]:
@@ -1211,6 +1258,112 @@ def decode_journal_record(record: bytes) -> StoredJournal:
     )
 
 
+def decode_history_alias(raw: bytes) -> str:
+    """Valida o alias ASCII terminado em NUL armazenado no evento U4."""
+    try:
+        terminator = raw.index(0)
+    except ValueError as error:
+        raise UpdateError("alias do historico U4 nao possui terminador") from error
+    if any(raw[terminator:]):
+        raise UpdateError("padding do alias do historico U4 nao esta zerado")
+    alias = raw[:terminator]
+    if any(value < 0x20 or value > 0x7E for value in alias):
+        raise UpdateError("alias do historico U4 nao usa ASCII imprimivel")
+    if b"/" in alias or b"\\" in alias:
+        raise UpdateError("alias do historico U4 contem separador")
+    return alias.decode("ascii")
+
+
+def decode_history_entry(
+    record: bytes, offset: int, record_sequence: int
+) -> StoredHistoryEntry:
+    """Decodifica e valida uma entrada de 56 bytes do historico U4."""
+    sequence = struct.unpack_from("<I", record, offset)[0]
+    operation, outcome, action_reason, verification_reason = record[
+        offset + 4 : offset + 8
+    ]
+    from_version = Version(*struct.unpack_from("<3H", record, offset + 8))
+    to_version = Version(*struct.unpack_from("<3H", record, offset + 14))
+    from_epoch, to_epoch = struct.unpack_from("<II", record, offset + 20)
+    entry_count, completed = struct.unpack_from("<HH", record, offset + 28)
+    flags = record[offset + 32]
+    alias = decode_history_alias(record[offset + 33 : offset + 46])
+    if (
+        sequence == 0
+        or sequence > record_sequence
+        or operation not in UPDATE_HISTORY_OPERATION_NAMES
+        or outcome not in UPDATE_HISTORY_OUTCOME_NAMES
+        or action_reason > 8
+        or verification_reason > 11
+        or completed > entry_count
+        or flags & ~UPDATE_HISTORY_FLAG_REBOOT
+        or any(record[offset + 46 : offset + UPDATE_HISTORY_ENTRY_SIZE])
+    ):
+        raise UpdateError("entrada do historico U4 invalida")
+    return StoredHistoryEntry(
+        sequence,
+        operation,
+        outcome,
+        action_reason,
+        verification_reason,
+        from_version,
+        to_version,
+        from_epoch,
+        to_epoch,
+        entry_count,
+        completed,
+        bool(flags & UPDATE_HISTORY_FLAG_REBOOT),
+        alias,
+    )
+
+
+def decode_history_record(record: bytes) -> StoredHistory:
+    """Replica a validacao little-endian de ZUPD*.HIS feita no kernel."""
+    validate_control_record(record, b"ZUH1")
+    sequence = struct.unpack_from("<I", record, 8)[0]
+    count, next_index = record[12:14]
+    if (
+        count > UPDATE_HISTORY_MAX_ENTRIES
+        or next_index >= UPDATE_HISTORY_MAX_ENTRIES
+        or (count < UPDATE_HISTORY_MAX_ENTRIES and next_index != count)
+        or any(record[14:UPDATE_HISTORY_HEADER_SIZE])
+    ):
+        raise UpdateError("cabecalho do historico U4 invalido")
+    entries: list[StoredHistoryEntry | None] = []
+    for index in range(UPDATE_HISTORY_MAX_ENTRIES):
+        offset = UPDATE_HISTORY_ENTRY_OFFSET + index * UPDATE_HISTORY_ENTRY_SIZE
+        active = count == UPDATE_HISTORY_MAX_ENTRIES or index < count
+        if active:
+            entries.append(decode_history_entry(record, offset, sequence))
+        else:
+            if any(record[offset : offset + UPDATE_HISTORY_ENTRY_SIZE]):
+                raise UpdateError("slot vazio do historico U4 nao esta zerado")
+            entries.append(None)
+    if count:
+        if sequence < count:
+            raise UpdateError("sequencia do historico U4 inconsistente")
+        oldest = next_index if count == UPDATE_HISTORY_MAX_ENTRIES else 0
+        for order in range(count):
+            slot = (oldest + order) % UPDATE_HISTORY_MAX_ENTRIES
+            expected = sequence - count + 1 + order
+            if entries[slot] is None or entries[slot].sequence != expected:
+                raise UpdateError("ordem do ring do historico U4 inconsistente")
+    return StoredHistory(sequence, count, next_index, tuple(entries))
+
+
+def history_newest(history: StoredHistory, index: int) -> StoredHistoryEntry:
+    """Retorna um evento do ring buffer usando a ordem mais recente primeiro."""
+    if index < 0 or index >= history.count:
+        raise UpdateError("indice do historico U4 fora do intervalo")
+    slot = (
+        history.next_index + UPDATE_HISTORY_MAX_ENTRIES - 1 - index
+    ) % UPDATE_HISTORY_MAX_ENTRIES
+    entry = history.entries[slot]
+    if entry is None:
+        raise UpdateError("slot ativo do historico U4 esta vazio")
+    return entry
+
+
 def select_redundant_record(
     records: tuple[bytes | None, bytes | None],
     decoder: Any,
@@ -1353,8 +1506,10 @@ def audit_image(
     expected_version: Version | None,
     expected_rollback: str,
     allow_pending: bool,
+    expected_history_count: int | None = None,
+    expected_last_event: str | None = None,
 ) -> None:
-    """Audita a persistencia U3 e os arquivos transacionais em uma imagem."""
+    """Audita persistencia U3/U4 e arquivos transacionais em uma imagem."""
     root = inspect_fat12_image(image_path)
     state = select_redundant_record(
         tuple(root.get(name, (None, 0))[0] for name in UPDATE_STATE_ALIASES),
@@ -1366,12 +1521,20 @@ def audit_image(
         decode_journal_record,
         "journal U3",
     )
+    history = select_redundant_record(
+        tuple(root.get(name, (None, 0))[0] for name in UPDATE_HISTORY_ALIASES),
+        decode_history_record,
+        "historico U4",
+    )
     installed = state.installed_version if state else Version(0, 1, 0)
     rollback_available = state.rollback_available if state else False
     pending = journal is not None and journal.kind != UPDATE_JOURNAL_NONE
+    history_count = history.count if history else 0
+    last_event = history_newest(history, 0) if history_count else None
     internal_aliases = (
         UPDATE_STATE_ALIASES
         + UPDATE_JOURNAL_ALIASES
+        + UPDATE_HISTORY_ALIASES
         + tuple(alias for slot in UPDATE_BACKUP_ALIASES for alias in slot)
         + tuple(alias for slot in UPDATE_STAGE_ALIASES for alias in slot)
     )
@@ -1388,6 +1551,32 @@ def audit_image(
         raise UpdateError("rollback esperado nao esta disponivel")
     if expected_rollback == "unavailable" and rollback_available:
         raise UpdateError("rollback inesperado esta disponivel")
+    if (
+        expected_history_count is not None
+        and history_count != expected_history_count
+    ):
+        raise UpdateError(
+            f"historico possui {history_count} evento(s), "
+            f"esperados {expected_history_count}"
+        )
+    if expected_last_event is not None:
+        actual = (
+            UPDATE_HISTORY_OPERATION_NAMES[last_event.operation]
+            if last_event is not None
+            else "none"
+        )
+        if actual != expected_last_event:
+            raise UpdateError(
+                f"ultimo evento do historico e {actual}, "
+                f"esperado {expected_last_event}"
+            )
+        if (
+            expected_last_event.startswith("recovery-")
+            and last_event.outcome != 4
+        ):
+            raise UpdateError(
+                "ultimo evento de recuperacao nao possui resultado RECOVERED"
+            )
     if state:
         for index, name in enumerate(UPDATE_TARGETS):
             if name not in root:
@@ -1419,6 +1608,15 @@ def audit_image(
     print(f"  installed={installed}")
     print(f"  rollback={'READY' if rollback_available else 'DISABLED'}")
     print(f"  journal={'PENDING' if pending else 'CLEAN'}")
+    if last_event is None:
+        print("  history=EMPTY count=0")
+    else:
+        operation = UPDATE_HISTORY_OPERATION_NAMES[last_event.operation]
+        outcome = UPDATE_HISTORY_OUTCOME_NAMES[last_event.outcome]
+        print(
+            f"  history=READY count={history_count} "
+            f"last={operation}/{outcome}"
+        )
 
 
 def selftest_u1() -> None:
@@ -1566,6 +1764,120 @@ def encode_test_clean_journal(sequence: int) -> bytes:
         record[:UPDATE_CONTROL_HASH_OFFSET]
     ).digest()
     return bytes(record)
+
+
+def encode_test_history_entry(
+    record: bytearray,
+    offset: int,
+    sequence: int,
+    operation: int,
+    outcome: int,
+) -> None:
+    """Codifica uma entrada canonica usada pelos autotestes U4."""
+    struct.pack_into("<I4B", record, offset, sequence, operation, outcome, 0, 0)
+    struct.pack_into("<3H", record, offset + 8, 0, 1, 0)
+    struct.pack_into("<3H", record, offset + 14, 0, 1, 1)
+    struct.pack_into("<IIHH", record, offset + 20, 0, 0, 3, 3)
+    record[offset + 32] = UPDATE_HISTORY_FLAG_REBOOT
+    alias = b"APPLY.ZUP\0"
+    record[offset + 33 : offset + 33 + len(alias)] = alias
+
+
+def encode_test_history(
+    sequence: int,
+    event_sequences: tuple[int, ...],
+    next_index: int,
+) -> bytes:
+    """Cria um ring buffer ZUH1 sintetico no layout usado pelo kernel."""
+    if len(event_sequences) > UPDATE_HISTORY_MAX_ENTRIES:
+        raise UpdateError("autoteste U4 excedeu o ring buffer")
+    record = bytearray(UPDATE_CONTROL_SIZE)
+    record[:4] = b"ZUH1"
+    struct.pack_into("<HHI", record, 4, 1, UPDATE_CONTROL_SIZE, sequence)
+    record[12] = len(event_sequences)
+    record[13] = next_index
+    for index, event_sequence in enumerate(event_sequences):
+        offset = UPDATE_HISTORY_ENTRY_OFFSET + index * UPDATE_HISTORY_ENTRY_SIZE
+        operation = (event_sequence % 4) + 1
+        outcome = (event_sequence % 4) + 1
+        encode_test_history_entry(
+            record, offset, event_sequence, operation, outcome
+        )
+    record[UPDATE_CONTROL_HASH_OFFSET:] = hashlib.sha256(
+        record[:UPDATE_CONTROL_HASH_OFFSET]
+    ).digest()
+    return bytes(record)
+
+
+def selftest_u4_history() -> None:
+    """Exercita ring, wrap, redundancia, empate, reservados e SHA-256."""
+    partial = decode_history_record(encode_test_history(3, (1, 2, 3), 3))
+    if partial.count != 3 or history_newest(partial, 0).sequence != 3:
+        raise UpdateError("ordem do historico U4 parcial divergiu")
+    wrapped_record = encode_test_history(10, (9, 10, 3, 4, 5, 6, 7, 8), 2)
+    wrapped = decode_history_record(wrapped_record)
+    if [history_newest(wrapped, index).sequence for index in range(8)] != [
+        10, 9, 8, 7, 6, 5, 4, 3
+    ]:
+        raise UpdateError("wrap apos oito eventos U4 divergiu")
+    older = encode_test_history(9, (9, 2, 3, 4, 5, 6, 7, 8), 1)
+    selected = select_redundant_record(
+        (older, wrapped_record), decode_history_record, "historico U4 de teste"
+    )
+    if selected.sequence != 10:
+        raise UpdateError("redundancia do historico U4 escolheu sequencia errada")
+    corrupted = bytearray(wrapped_record)
+    corrupted[100] ^= 1
+    try:
+        decode_history_record(bytes(corrupted))
+    except UpdateError:
+        pass
+    else:
+        raise UpdateError("SHA-256 corrompido do historico U4 foi aceito")
+    selected = select_redundant_record(
+        (older, bytes(corrupted)),
+        decode_history_record,
+        "historico U4 com uma copia corrompida",
+    )
+    if selected.sequence != 9:
+        raise UpdateError("fallback redundante do historico U4 divergiu")
+    reserved = bytearray(wrapped_record)
+    reserved[14] = 1
+    reserved[UPDATE_CONTROL_HASH_OFFSET:] = hashlib.sha256(
+        reserved[:UPDATE_CONTROL_HASH_OFFSET]
+    ).digest()
+    try:
+        decode_history_record(bytes(reserved))
+    except UpdateError:
+        pass
+    else:
+        raise UpdateError("reservado nao zero do historico U4 foi aceito")
+    entry_reserved = bytearray(wrapped_record)
+    entry_reserved[UPDATE_HISTORY_ENTRY_OFFSET + 46] = 1
+    entry_reserved[UPDATE_CONTROL_HASH_OFFSET:] = hashlib.sha256(
+        entry_reserved[:UPDATE_CONTROL_HASH_OFFSET]
+    ).digest()
+    try:
+        decode_history_record(bytes(entry_reserved))
+    except UpdateError:
+        pass
+    else:
+        raise UpdateError("reservado de entrada do historico U4 foi aceito")
+    divergent = bytearray(wrapped_record)
+    divergent[UPDATE_HISTORY_ENTRY_OFFSET + 33] = ord("B")
+    divergent[UPDATE_CONTROL_HASH_OFFSET:] = hashlib.sha256(
+        divergent[:UPDATE_CONTROL_HASH_OFFSET]
+    ).digest()
+    try:
+        select_redundant_record(
+            (wrapped_record, bytes(divergent)),
+            decode_history_record,
+            "historico U4 empatado",
+        )
+    except UpdateError:
+        pass
+    else:
+        raise UpdateError("empate divergente do historico U4 foi aceito")
 
 
 def modeled_apply_clusters(
@@ -1755,6 +2067,7 @@ def run_selftest() -> None:
     selftest_u2_public()
     u3_ready = selftest_u3_public()
     selftest_u3_metadata()
+    selftest_u4_history()
     selftest_generated()
     print(
         "Updater selftest: OK"
@@ -1848,6 +2161,8 @@ def command_audit_image(args: argparse.Namespace) -> None:
         expected_version,
         args.expect_rollback,
         args.allow_pending,
+        args.expect_history_count,
+        args.expect_last_event,
     )
 
 
@@ -1889,7 +2204,7 @@ def build_parser() -> argparse.ArgumentParser:
     fixtures_u3.set_defaults(handler=command_fixtures_u3)
 
     audit = subparsers.add_parser(
-        "audit-image", help="audita estado U3 em uma imagem FAT12"
+        "audit-image", help="audita estado U3/U4 em uma imagem FAT12"
     )
     audit.add_argument("--image", required=True)
     audit.add_argument("--expect-version")
@@ -1899,6 +2214,11 @@ def build_parser() -> argparse.ArgumentParser:
         default="any",
     )
     audit.add_argument("--allow-pending", action="store_true")
+    audit.add_argument("--expect-history-count", type=int)
+    audit.add_argument(
+        "--expect-last-event",
+        choices=tuple(UPDATE_HISTORY_OPERATION_NAMES.values()),
+    )
     audit.set_defaults(handler=command_audit_image)
 
     sync = subparsers.add_parser("sync-trust", help="gera o header publico")

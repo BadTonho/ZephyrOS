@@ -811,6 +811,10 @@ static void taskmgr_handle_taskbar_action(int result) {
             taskmgr_close();
             settings_open();
             break;
+        case TB_ACTION_UPDATER:
+            taskmgr_close();
+            shell_handle_app_request(IPC_APP_OPEN_UPDATER);
+            break;
         case 9:
             taskmgr_redraw_after_menu_close();
             break;
@@ -1786,6 +1790,10 @@ static void taskmgr_gui_handle_taskbar_action(int result) {
             break;
         case 7: taskmgr_close(); shell_handle_app_request(IPC_APP_OPEN_DESKTOP); break;
         case 8: taskmgr_close(); shell_handle_app_request(IPC_APP_OPEN_SETTINGS); break;
+        case TB_ACTION_UPDATER:
+            taskmgr_close();
+            shell_handle_app_request(IPC_APP_OPEN_UPDATER);
+            break;
         case 9: taskmgr_gui_draw(); break;
         default: break;
     }

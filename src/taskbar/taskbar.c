@@ -29,13 +29,14 @@ static tb_config_t config = {
     .height = 1
 };
 
-#define MENU_ITEM_COUNT 7
+#define MENU_ITEM_COUNT 8
 static const char* menu_items[MENU_ITEM_COUNT] = {
     "Desktop",
     "Shell",
     "Explorer",
     "Task Manager",
     "Configuracoes",
+    "Atualizacoes",
     "Reiniciar",
     "Desligar"
 };
@@ -830,8 +831,9 @@ int taskbar_handle_key(uint8_t scancode) {
                 case 2: return 3;
                 case 3: return 4;
                 case 4: return 8;
-                case 5: return 5;
-                case 6: return 6;
+                case 5: return TB_ACTION_UPDATER;
+                case 6: return 5;
+                case 7: return 6;
             }
             return 1;
         }
@@ -912,8 +914,9 @@ static int taskbar_handle_click_gui(int px, int py) {
                     case 2: return 3;  /* Explorer */
                     case 3: return 4;  /* TaskMgr */
                     case 4: return 8;  /* Configuracoes */
-                    case 5: return 5;  /* Reiniciar */
-                    case 6: return 6;  /* Desligar */
+                    case 5: return TB_ACTION_UPDATER; /* Atualizacoes */
+                    case 6: return 5;  /* Reiniciar */
+                    case 7: return 6;  /* Desligar */
                 }
             }
             return 1;
@@ -991,8 +994,9 @@ int taskbar_handle_click(int px, int py) {
                 case 2: return 3;  /* Explorer */
                 case 3: return 4;  /* TaskMgr */
                 case 4: return 8;  /* Configuracoes */
-                case 5: return 5;  /* Reiniciar */
-                case 6: return 6;  /* Desligar */
+                case 5: return TB_ACTION_UPDATER; /* Atualizacoes */
+                case 6: return 5;  /* Reiniciar */
+                case 7: return 6;  /* Desligar */
             }
             return 1;
         }

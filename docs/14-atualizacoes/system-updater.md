@@ -1,0 +1,92 @@
+# System Updater
+
+## Escopo
+
+O System Updater e o aplicativo nativo da U4 para operar o servico ZUPD local.
+Ele abre pelo comando `updater` ou pelo item `Atualizacoes` do menu Iniciar.
+O modulo fica em `src/updater/updater.c` e seu contrato publico autocontido em
+`src/include/ui/updater.h`.
+
+O aplicativo nao implementa criptografia, parser ZUPD, escrita FAT ou
+recuperacao. Verificacao, preflight, aplicacao e rollback usam exclusivamente
+as APIs publicas de `src/include/core/update.h`. Rede e atualizacao automatica
+permanecem indisponiveis ate a U5.
+
+## Modos de interface
+
+`updater_open()` escolhe o modo global atual:
+
+- Classic abre uma TUI em tela cheia e restaura o Desktop ao fechar;
+- Modern registra uma janela singleton hospedada pelo Window Manager;
+- se a hospedagem moderna estiver indisponivel, o aplicativo usa Classic
+  automaticamente.
+
+Os dois modos mantem o mesmo estado e oferecem as abas:
+
+- `Pacotes`: aliases `.ZUP`, verificacao, preflight e aplicacao;
+- `Estado`: integridade separada dos controles e arquivos atuais, versoes,
+  capacidades e rollback;
+- `Historico`: ate oito eventos persistidos, mais recentes primeiro.
+
+O modulo enumera no maximo 16 arquivos da raiz. Diretorios, arquivos hidden ou
+system e extensoes diferentes de `.ZUP` sao ignorados. A lista e ordenada por
+alias FAT, nao usa alocacao dinamica e informa quando existem itens adicionais.
+
+## Fluxos
+
+Verificar apenas chama `update_verify_file()` e nao grava. Aplicar primeiro
+chama `update_apply_file()` com `dry_run=1`; somente depois de uma confirmacao
+explicita repete integralmente a operacao com `dry_run=0`. Rollback segue a
+mesma separacao usando `update_rollback()`.
+
+Trocar selecao, aba ou atualizar a lista cancela qualquer confirmacao pendente.
+Durante uma mutacao, o callback cooperativo considera somente Esc e F12. O
+resultado mostra motivo de acao/verificacao, progresso, recuperacao pendente e
+necessidade de reboot. Os BMPs nao sao recarregados na sessao atual.
+
+## Teclado e mouse
+
+| Entrada | Acao |
+|---|---|
+| `Tab` | alterna Pacotes, Estado e Historico |
+| Setas | mudam aba ou pacote selecionado |
+| `F5` | atualiza lista, status e historico |
+| `V` | verifica o pacote selecionado |
+| `A` | executa o preflight de aplicacao |
+| `B` | executa o preflight de rollback |
+| `Enter` | confirma a acao pendente |
+| `Esc` | cancela confirmacao ou fecha |
+| `F12` | cancela cooperativamente uma mutacao |
+
+No modo Modern, abas, lista e botoes oferecem por mouse as mesmas operacoes.
+Controles da moldura, foco, arraste, resize, minimizar e fechar continuam
+pertencendo ao Window Manager.
+
+## Recovery e diagnostico
+
+`updater_init()` registra o aplicativo e publica
+`RECOVERY_COMPONENT_SYSTEM_UPDATER`:
+
+- `READY`: interface e servico Update local disponiveis;
+- `DEGRADED`: interface utilizavel com filesystem, estado ou historico parcial;
+- `DISABLED`: servico Update nao inicializado.
+
+O componente e diferente de `RECOVERY_COMPONENT_UPDATE`: o primeiro descreve a
+interface U4, enquanto o segundo descreve o verificador e a transacao U2/U3.
+`update status`, `update history`, `health` e `health summary` permitem
+inspecionar ambos sem gravar.
+
+## Limitacoes
+
+- apenas arquivos `.ZUP` presentes na raiz podem ser selecionados;
+- FAT32 permite verificacao, mas nao aplicacao nem rollback;
+- somente a ultima geracao de rollback pode ser restaurada;
+- nenhuma operacao remota, silenciosa ou automatica existe na U4;
+- o aplicativo nao altera boot, stage2, kernel em setores crus ou Desktop.
+
+## Referencias
+
+- [Contrato ZUPD v1](contrato-zupd-v1.md)
+- [Ferramenta host](ferramenta-zupd.md)
+- [Comandos do Shell](../09-shell/comandos.md)
+- [Desktop e Window Manager](../12-desktop/desktop.md)

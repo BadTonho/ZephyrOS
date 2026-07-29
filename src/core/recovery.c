@@ -26,7 +26,8 @@ static const char* component_names[RECOVERY_COMPONENT_COUNT] = {
     "Devices",
     "Network",
     "Power",
-    "Update"
+    "Update",
+    "System Updater"
 };
 
 static int recovery_valid_component(recovery_component_id_t component) {

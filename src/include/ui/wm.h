@@ -25,7 +25,8 @@ typedef enum {
     WM_APP_EXPLORER,
     WM_APP_TASKMGR,
     WM_APP_SETTINGS,
-    WM_APP_CUSTOM
+    WM_APP_CUSTOM,
+    WM_APP_UPDATER
 } wm_app_type_t;
 
 typedef enum {

@@ -340,6 +340,13 @@ do Shell.
 
 O mouse e o window manager usam o foco para direcionar eventos ao processo correto.
 
+As solicitacoes nativas do menu Iniciar sao acrescentadas somente ao fim de
+`ipc_app_request_t`, preservando os valores anteriores. A U4 acrescenta
+`IPC_APP_OPEN_UPDATER`: o processo System a envia ao Shell, que suspende o
+terminal, fecha uma interface Classic conflitante quando necessario e abre ou
+focaliza a instancia unica do System Updater. O pedido nao transporta pacote,
+senha ou dados de atualizacao.
+
 ### Integração
 
 - **Mouse**: envia eventos de clique/movimento ao processo com foco

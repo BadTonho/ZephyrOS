@@ -34,6 +34,7 @@
 #include "ui/taskbar.h"
 #include "ui/desktop.h"
 #include "ui/settings.h"
+#include "ui/updater.h"
 #include "ui/wm.h"
 #include "ui/filemanager.h"
 #include "ui/icons.h"
@@ -89,7 +90,7 @@ static void kernel_request_shell_app(ipc_app_request_t request) {
     }
 
     if (request < IPC_APP_OPEN_SHELL ||
-        request > IPC_APP_OPEN_TASKMANAGER_GUI) {
+        request > IPC_APP_OPEN_UPDATER) {
         LOG_ERROR("KERNEL", "Solicitacao de aplicativo invalida");
         return;
     }
@@ -121,6 +122,10 @@ static void kernel_redraw_after_menu_close(void) {
     }
     if (settings_is_open()) {
         settings_draw();
+        return;
+    }
+    if (updater_is_open()) {
+        updater_draw();
         return;
     }
     if (fm_is_running()) {
@@ -185,8 +190,19 @@ static int kernel_handle_taskbar_mouse(mouse_event_t* evt) {
             taskmgr_close();
         }
 
-        if (settings_is_open() && tb_result >= 2 && tb_result <= 8) {
+        if (settings_is_open() &&
+            ((tb_result >= 2 && tb_result <= 8) ||
+             tb_result == TB_ACTION_UPDATER)) {
             settings_close();
+        }
+        if (updater_is_open() &&
+            ((tb_result >= 2 && tb_result <= 8) ||
+             tb_result == TB_ACTION_UPDATER)) {
+            if (tb_result == TB_ACTION_UPDATER) {
+                updater_draw();
+                return 1;
+            }
+            updater_close();
         }
         if (wm_is_active() && tb_result >= 2 && tb_result <= 8) {
             wm_set_active(0);
@@ -211,6 +227,9 @@ static int kernel_handle_taskbar_mouse(mouse_event_t* evt) {
             kernel_request_shell_app(IPC_APP_OPEN_DESKTOP);
             break;
         case 8: kernel_request_shell_app(IPC_APP_OPEN_SETTINGS); break;
+        case TB_ACTION_UPDATER:
+            kernel_request_shell_app(IPC_APP_OPEN_UPDATER);
+            break;
         case TB_ACTION_WINDOW: {
             int window_id = taskbar_take_window_request();
             if (window_id >= 0 && wm_is_active()) wm_toggle_window(window_id);
@@ -677,6 +696,13 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     wm_init();
     recovery_mark_ready(RECOVERY_COMPONENT_WM);
     video_print("[OK] Gerenciador de janelas pronto\n", 0x07);
+
+    video_print("[..] Iniciando System Updater...\n", 0x08);
+    if (updater_init() == OK) {
+        video_print("[OK] System Updater pronto\n", 0x07);
+    } else {
+        video_print("[!!] System Updater indisponivel\n", 0x0C);
+    }
 
     recovery_mark_ready(RECOVERY_COMPONENT_TASKMANAGER);
     if (recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM)) {

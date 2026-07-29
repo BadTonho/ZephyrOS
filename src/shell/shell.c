@@ -11,6 +11,7 @@
 #include "ui/taskbar.h"
 #include "ui/desktop.h"
 #include "ui/settings.h"
+#include "ui/updater.h"
 #include "ui/wm.h"
 #include "memory/compress.h"
 #include "apps/mediaplayer.h"
@@ -1977,6 +1978,9 @@ void shell_handle_app_request(uint32_t request) {
         if (settings_is_open() && request != IPC_APP_OPEN_SETTINGS) {
             settings_close();
         }
+        if (updater_is_open() && request != IPC_APP_OPEN_UPDATER) {
+            updater_close();
+        }
     }
 
     switch ((ipc_app_request_t)request) {
@@ -2064,6 +2068,22 @@ void shell_handle_app_request(uint32_t request) {
                 video_print("Erro: Configuracoes indisponiveis.\n", 0x0C);
             }
             break;
+        case IPC_APP_OPEN_UPDATER:
+            if (recovery_is_enabled(
+                    RECOVERY_COMPONENT_SYSTEM_UPDATER)) {
+                shell_suspend_terminal_for_scene();
+                if (desktop_get_mode() != DESKTOP_MODE_MODERN) {
+                    desktop_set_active(0);
+                }
+                if (updater_open() != OK) {
+                    video_print("Erro: System Updater indisponivel.\n",
+                                0x0C);
+                }
+            } else {
+                video_print("Erro: System Updater indisponivel.\n",
+                            0x0C);
+            }
+            break;
         default:
             LOG_ERROR("SHELL", "Solicitacao de aplicativo invalida");
             break;
@@ -2071,6 +2091,10 @@ void shell_handle_app_request(uint32_t request) {
 }
 
 static void shell_redraw_after_overlay_close(void) {
+    if (updater_is_open()) {
+        updater_draw();
+        return;
+    }
     if (desktop_is_active()) {
         desktop_draw();
         return;
@@ -2133,6 +2157,7 @@ static void cmd_help(void) {
     video_print("  desktop  - Abre a area de trabalho\n", 0x07);
     video_print("  guimode  - Alterna Desktop classic/modern\n", 0x07);
     video_print("  settings - Abre o painel de configuracoes\n", 0x07);
+    video_print("  updater  - Abre o System Updater\n", 0x07);
     video_print("  wm       - Abre gerenciador de janelas\n", 0x07);
     video_print("  ls       - Lista arquivos\n", 0x07);
     video_print("  cat      - Exibe conteudo de arquivo\n", 0x07);
@@ -2193,6 +2218,8 @@ static void cmd_help(void) {
     video_print("  pkg      - Gerencia pacotes .ZPK locais\n", 0x07);
     video_print("             pkg list | info | verify | install | remove\n", 0x08);
     video_print("  update verify <arquivo.ZUP> - Verifica sem gravar\n", 0x07);
+    video_print("  update status|history - Diagnostico persistente U4\n",
+                0x07);
     video_print("  update apply <arquivo.ZUP> [--confirm] - Aplica U3\n",
                 0x07);
     video_print("  update rollback [--confirm] - Desfaz a ultima U3\n",
@@ -2466,15 +2493,20 @@ static void cmd_health_print_kernel(void) {
 
 static void cmd_health_print_update_capabilities(void) {
     update_capabilities_t capabilities;
+    update_status_t status;
+    int status_ready;
 
     video_print("\nCapacidades de Update:\n", 0x0B);
     if (update_get_capabilities(&capabilities) != OK) {
         video_print("  verificacao local: DISABLED\n", 0x0C);
         video_print("  aplicacao: DISABLED\n", 0x08);
         video_print("  rollback: DISABLED\n", 0x08);
+        video_print("  historico: DISABLED\n", 0x08);
         video_print("  remoto: DISABLED (U5)\n", 0x08);
         return;
     }
+    status_ready = update_get_status(&status) == OK;
+    if (status_ready) capabilities = status.capabilities;
     video_print("  verificacao local: ", 0x07);
     if (!capabilities.verifier_ready) {
         video_print("DISABLED\n", 0x0C);
@@ -2501,6 +2533,15 @@ static void cmd_health_print_update_capabilities(void) {
         video_print("DISABLED (sem backup)\n", 0x08);
     } else {
         video_print("DISABLED\n", 0x08);
+    }
+    video_print("  historico: ", 0x07);
+    if (capabilities.history_available) {
+        video_print("READY\n", 0x0A);
+    } else if (status_ready &&
+               status.history_store == UPDATE_STORE_INVALID) {
+        video_print("DEGRADED (integridade)\n", 0x0E);
+    } else {
+        video_print("DISABLED (requer FAT12)\n", 0x08);
     }
     video_print("  remoto: DISABLED (U5)\n", 0x08);
 }
@@ -2578,6 +2619,16 @@ static recovery_state_t cmd_health_update_apply_state(
     return RECOVERY_STATE_DISABLED;
 }
 
+static recovery_state_t cmd_health_update_history_state(
+    const update_capabilities_t* capabilities,
+    const update_status_t* status, int status_ready) {
+    if (capabilities->history_available) return RECOVERY_STATE_READY;
+    if (status_ready && status->history_store == UPDATE_STORE_INVALID) {
+        return RECOVERY_STATE_DEGRADED;
+    }
+    return RECOVERY_STATE_DISABLED;
+}
+
 static void cmd_health_print_inline_state(recovery_state_t state) {
     video_print(recovery_state_name(state), cmd_health_state_color(state));
 }
@@ -2586,10 +2637,14 @@ static void cmd_health_print_summary_update(void) {
     const recovery_component_t* component =
         recovery_get(RECOVERY_COMPONENT_UPDATE);
     update_capabilities_t capabilities;
+    update_status_t status;
     int capabilities_ready =
         update_get_capabilities(&capabilities) == OK;
+    int status_ready = update_get_status(&status) == OK;
 
     if (!capabilities_ready) kmemset(&capabilities, 0, sizeof(capabilities));
+    if (!status_ready) kmemset(&status, 0, sizeof(status));
+    if (status_ready) capabilities = status.capabilities;
     video_print("  Update: ", 0x07);
     if (component) {
         cmd_health_print_inline_state(component->state);
@@ -2612,6 +2667,10 @@ static void cmd_health_print_summary_update(void) {
     cmd_health_print_inline_state(
         capabilities.rollback_available ?
         RECOVERY_STATE_READY : RECOVERY_STATE_DISABLED);
+    video_print(" historico=", 0x08);
+    cmd_health_print_inline_state(
+        cmd_health_update_history_state(
+            &capabilities, &status, status_ready));
     video_print(" remoto=", 0x08);
     cmd_health_print_inline_state(
         capabilities.remote_available ?
@@ -7288,6 +7347,142 @@ static void cmd_update_print_action(const update_action_result_t* action) {
     video_print("\n", 0x07);
 }
 
+static void cmd_update_print_version_inline(
+    const update_version_t* version, uint32_t epoch) {
+    print_num(version->major);
+    video_print(".", 0x07);
+    print_num(version->minor);
+    video_print(".", 0x07);
+    print_num(version->patch);
+    video_print("/e", 0x08);
+    print_num(epoch);
+}
+
+static void cmd_update_print_history_entry(
+    const update_history_entry_t* entry) {
+    uint8_t result_color;
+
+    if (!entry) return;
+    result_color =
+        (entry->outcome == UPDATE_HISTORY_OUTCOME_SUCCESS ||
+         entry->outcome == UPDATE_HISTORY_OUTCOME_RECOVERED) ?
+        0x0A : (entry->outcome == UPDATE_HISTORY_OUTCOME_CANCELLED ?
+                0x0E : 0x0C);
+    video_print("  #", 0x07);
+    print_num(entry->sequence);
+    video_print(" ", 0x07);
+    video_print(update_history_operation_name(entry->operation), 0x0B);
+    video_print(" ", 0x07);
+    video_print(update_history_outcome_name(entry->outcome), result_color);
+    video_print("\n    ", 0x07);
+    cmd_update_print_version_inline(
+        &entry->from_version, entry->from_epoch);
+    video_print(" -> ", 0x08);
+    cmd_update_print_version_inline(&entry->to_version, entry->to_epoch);
+    video_print(" arquivos=", 0x08);
+    print_num(entry->completed_entries);
+    video_print("/", 0x08);
+    print_num(entry->entry_count);
+    video_print("\n    motivo=", 0x08);
+    video_print(update_action_reason_name(entry->action_reason), 0x07);
+    if (entry->verification_reason != ZUPD_REASON_NONE) {
+        video_print(" verificacao=", 0x08);
+        video_print(zupd_reason_name(entry->verification_reason), 0x0C);
+    }
+    if (entry->package_alias[0]) {
+        video_print(" pacote=", 0x08);
+        video_print(entry->package_alias, 0x07);
+    }
+    if (entry->reboot_required) video_print(" reboot=SIM", 0x0E);
+    video_print("\n", 0x07);
+}
+
+static void cmd_update_print_capability(const char* label, int ready) {
+    video_print(label, 0x08);
+    video_print(ready ? "READY" : "DISABLED",
+                ready ? 0x0A : 0x08);
+}
+
+static void cmd_update_status(void) {
+    update_status_t status;
+    uint32_t history_count = 0;
+
+    if (update_get_status(&status) != OK) {
+        video_print("Erro: status de Update indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("Status do Update:\n", 0x0B);
+    cmd_update_print_version(
+        "  Build: ", &status.build_version, status.build_epoch);
+    cmd_update_print_version(
+        "  Instalado: ", &status.installed_version,
+        status.installed_epoch);
+    video_print("  Estado: ", 0x07);
+    video_print(status.state_store == UPDATE_STORE_EMPTY ?
+                "BASELINE" : update_store_state_name(status.state_store),
+                status.state_store == UPDATE_STORE_INVALID ? 0x0C : 0x0A);
+    video_print(" arquivos=", 0x08);
+    video_print(update_store_state_name(status.current_files),
+                status.current_files == UPDATE_STORE_INVALID ? 0x0C : 0x0A);
+    video_print("  journal=", 0x08);
+    video_print(status.transaction_pending ? "PENDING\n" : "CLEAN\n",
+                status.transaction_pending ? 0x0E : 0x0A);
+    video_print("  Historico: ", 0x07);
+    video_print(update_store_state_name(status.history_store),
+                status.history_store == UPDATE_STORE_INVALID ? 0x0C : 0x0A);
+    if (update_get_history_count(&history_count) == OK) {
+        video_print(" eventos=", 0x08);
+        print_num(history_count);
+    }
+    video_print("\n  Rollback: ", 0x07);
+    if (status.capabilities.rollback_available) {
+        video_print("READY para ", 0x0A);
+        cmd_update_print_version_inline(
+            &status.rollback_version, status.rollback_epoch);
+        video_print("\n", 0x07);
+    } else {
+        video_print("DISABLED\n", 0x08);
+    }
+    video_print("  Capacidades: ", 0x07);
+    cmd_update_print_capability("local=", status.capabilities.verifier_ready &&
+                                status.capabilities.local_file_available);
+    video_print(" ", 0x07);
+    cmd_update_print_capability(
+        "apply=", status.capabilities.apply_available);
+    video_print(" ", 0x07);
+    cmd_update_print_capability(
+        "historico=", status.capabilities.history_available);
+    video_print(" remoto=DISABLED (U5)\n", 0x08);
+    if (status.has_last_event) {
+        video_print("  Ultima operacao:\n", 0x07);
+        cmd_update_print_history_entry(&status.last_event);
+    }
+}
+
+static void cmd_update_history(void) {
+    uint32_t count = 0;
+
+    if (update_get_history_count(&count) != OK) {
+        video_print("Historico de Update indisponivel ou corrompido.\n",
+                    0x0C);
+        return;
+    }
+    video_print("Historico do Update:\n", 0x0B);
+    if (count == 0U) {
+        video_print("  Nenhuma operacao registrada.\n", 0x08);
+        return;
+    }
+    for (uint32_t index = 0; index < count; index++) {
+        update_history_entry_t entry;
+
+        if (update_get_history_entry(index, &entry) != OK) {
+            video_print("  Erro ao ler entrada do historico.\n", 0x0C);
+            return;
+        }
+        cmd_update_print_history_entry(&entry);
+    }
+}
+
 static void cmd_update_apply(const char* path, int confirmed) {
     update_action_options_t options;
     update_action_result_t action;
@@ -7385,6 +7580,14 @@ static void cmd_update(const char* args) {
     cmd_pkg_take_token(&cursor, first, sizeof(first));
     cmd_pkg_take_token(&cursor, second, sizeof(second));
     cmd_pkg_take_token(&cursor, extra, sizeof(extra));
+    if (kstrcmp(operation, "status") == 0 && first[0] == '\0') {
+        cmd_update_status();
+        return;
+    }
+    if (kstrcmp(operation, "history") == 0 && first[0] == '\0') {
+        cmd_update_history();
+        return;
+    }
     if (kstrcmp(operation, "verify") == 0 && first[0] &&
         second[0] == '\0') {
         cmd_update_verify(first);
@@ -7409,6 +7612,7 @@ static void cmd_update(const char* args) {
         return;
     }
     LOG_WARN("SHELL", "Uso invalido do comando update");
+    video_print("Uso: update status|history\n", 0x0E);
     video_print("Uso: update verify <arquivo.ZUP>\n", 0x0E);
     video_print("     update apply <arquivo.ZUP> [--confirm]\n", 0x0E);
     video_print("     update rollback [--confirm]\n", 0x0E);
@@ -8224,6 +8428,8 @@ void shell_handle_key(uint8_t scancode) {
             shell_handle_app_request(IPC_APP_OPEN_DESKTOP);
         } else if (tb_result == 8) {
             shell_handle_app_request(IPC_APP_OPEN_SETTINGS);
+        } else if (tb_result == TB_ACTION_UPDATER) {
+            shell_handle_app_request(IPC_APP_OPEN_UPDATER);
         } else if (tb_result == 9) {
             shell_redraw_after_overlay_close();
         }
@@ -8248,6 +8454,11 @@ void shell_handle_key(uint8_t scancode) {
 
     if (settings_is_open()) {
         settings_handle_key(scancode);
+        return;
+    }
+
+    if (updater_is_open()) {
+        updater_handle_key(scancode);
         return;
     }
 
@@ -8426,6 +8637,15 @@ int shell_process_command(const char* input) {
             settings_open();
         } else {
             video_print("Erro: Configuracoes indisponiveis.\n", 0x0C);
+        }
+    } else if (kstrcmp(cmd, "updater") == 0) {
+        if (recovery_is_enabled(RECOVERY_COMPONENT_SYSTEM_UPDATER)) {
+            shell_suspend_terminal_for_scene();
+            if (updater_open() != OK) {
+                video_print("Erro: System Updater indisponivel.\n", 0x0C);
+            }
+        } else {
+            video_print("Erro: System Updater indisponivel.\n", 0x0C);
         }
     } else if (kstrcmp(cmd, "wm") == 0) {
         if (recovery_is_enabled(RECOVERY_COMPONENT_WM)) {

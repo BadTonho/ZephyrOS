@@ -7,7 +7,7 @@
 | U1 | Politica de integridade e contrato do pacote de sistema | Concluida |
 | U2 | Verificacao local, assinada e sem escrita | Concluida |
 | U3 | Aplicacao transacional, recuperacao e rollback | Concluida |
-| U4 | Diagnosticos e interfaces Classic/Modern | Pendente |
+| U4 | Diagnosticos e interfaces Classic/Modern | Em validacao |
 | U5 | Distribuicao remota opcional | Pendente |
 
 O ZPKG v1 continua sendo exclusivamente o container de aplicativos locais.
@@ -26,6 +26,10 @@ A implementacao concluida da U3 e seu `APPLY.ZUP` publico ficam no servico
 `Update`, nas operacoes atomicas FAT12 e em `docs/fixtures/updates/u3/`.
 Aplicacao, rollback e recuperacao foram confirmados pela matriz QEMU.
 
+A implementacao U4 em validacao acrescenta controles `ZUPD*.HIS`, comandos
+somente-leitura, auditoria host e o aplicativo nativo documentado em
+`docs/14-atualizacoes/system-updater.md`.
+
 ---
 
 ## Atalhos e Comandos Planejados
@@ -39,8 +43,8 @@ Aplicacao, rollback e recuperacao foram confirmados pela matriz QEMU.
 | `update history` | U4 | Lista operacoes concluidas e falhas. |
 | `update fetch` | U5 | Busca somente metadados remotos quando habilitado. |
 
-Comandos U1-U3 ja implementados seguem o estado da tabela; U4 e U5 continuam
-planejados.
+Comandos U1-U4 ja implementados seguem o estado da tabela; U5 continua
+planejado.
 
 ---
 
@@ -107,15 +111,21 @@ novamente e terminou com memoria estavel, `regcheck full` em `OK`,
 
 ## Fase U4 - Diagnosticos e Interface Dual
 
-- [ ] Adicionar `update status` e `update history`, com estado de integridade,
+- [x] Adicionar `update status` e `update history`, com estado de integridade,
   versao, ultima operacao e recuperacao pendente.
-- [ ] Criar interface de atualizacao nos modos Classic e Modern, preservando
+- [x] Criar interface de atualizacao nos modos Classic e Modern, preservando
   os comandos Shell como fallback completo.
-- [ ] Manter atualizacoes remotas desabilitadas por padrao e mostrar essa
+- [x] Manter atualizacoes remotas desabilitadas por padrao e mostrar essa
   condicao em `health` sem degradar boot, Shell ou uso local.
 
 **Criterio de saida:** todos os estados sao observaveis e operaveis em ambas
 as interfaces, inclusive falhas e recuperacao.
+
+Em validacao: o ring redundante de oito eventos, consultas, comandos,
+`health`, System Updater Classic/Modern e `audit-image` foram implementados.
+A conclusao depende do build e da matriz QEMU: operacoes equivalentes nos dois
+modos, persistencia apos reboot, consultas sem escrita e recuperacao com
+journal limpo.
 
 ## Fase U5 - Distribuicao Remota Opcional
 
@@ -150,6 +160,7 @@ aplicacao segura permanecem identicas ao fluxo local.
 - `docs/fixtures/updates/u2/` -- matriz assinada pela raiz publica de release.
 - `docs/fixtures/updates/u3/` -- pacote APPLY e payloads publicos da U3.
 - `docs/14-atualizacoes/ferramenta-zupd.md` -- operacao segura da ferramenta.
+- `docs/14-atualizacoes/system-updater.md` -- aplicativo dual da U4.
 - `docs/13-aplicativos/pacotes.md` -- contrato do ZPKG v1 de aplicativos.
 - `docs/roadmaps/05-sistema-e-ecossistema.md` -- ordem executavel de U1-U5.
 - `docs/regras.md` -- requisitos de qualidade, logs e validacao.

@@ -72,6 +72,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/ui/icons.h` | `docs/12-desktop/desktop.md` |
 | `src/include/ui/settings.h` | `docs/12-desktop/desktop.md` |
 | `src/include/ui/taskbar.h` | `docs/12-desktop/desktop.md` |
+| `src/include/ui/updater.h` | `docs/14-atualizacoes/system-updater.md` |
 | `src/include/ui/wm.h` | `docs/12-desktop/desktop.md` |
 
 O contrato de `src/include/process/process.h` inclui, desde a K2, os
@@ -144,3 +145,10 @@ diagnostico. Os layouts redundantes de estado/journal, a ordem de commit e os
 retornos FAT32 permanecem canonicos em
 `docs/14-atualizacoes/contrato-zupd-v1.md` e
 `docs/08-sistema-arquivos/sistema-arquivos.md`.
+
+Desde a U4, `src/include/core/update.h` acrescenta estados de armazenamento,
+status agregado, historico redundante e conversores textuais estaveis.
+`src/include/ui/updater.h` define o ciclo de vida e a entrada Classic/Modern
+do System Updater. Os contratos canonicos permanecem em
+`docs/14-atualizacoes/contrato-zupd-v1.md` e
+`docs/14-atualizacoes/system-updater.md`.

@@ -31,6 +31,13 @@
 #define UPDATE_JOURNAL_ENTRY_OFFSET 48U
 #define UPDATE_JOURNAL_ENTRY_SIZE 76U
 
+#define UPDATE_HISTORY_HEADER_SIZE 32U
+#define UPDATE_HISTORY_ENTRY_SIZE 56U
+#define UPDATE_HISTORY_ENTRY_OFFSET 32U
+#define UPDATE_HISTORY_FLAG_REBOOT 0x01U
+#define UPDATE_APPLY_METADATA_CLUSTERS 8U
+#define UPDATE_ROLLBACK_METADATA_CLUSTERS 2U
+
 #define UPDATE_JOURNAL_NONE 0U
 #define UPDATE_JOURNAL_APPLY 1U
 #define UPDATE_JOURNAL_ROLLBACK 2U
@@ -157,6 +164,13 @@ typedef struct {
     update_journal_entry_t entries[UPDATE_TARGET_COUNT];
 } update_journal_t;
 
+typedef struct {
+    uint32_t sequence;
+    uint8_t count;
+    uint8_t next_index;
+    update_history_entry_t entries[UPDATE_HISTORY_MAX_ENTRIES];
+} update_history_t;
+
 static const uint8_t update_domain[UPDATE_DOMAIN_SIZE] = {
     0x5AU, 0x45U, 0x50U, 0x48U, 0x59U, 0x52U, 0x4FU, 0x53U,
     0x2DU, 0x55U, 0x50U, 0x44U, 0x41U, 0x54U, 0x45U, 0x2DU,
@@ -170,9 +184,14 @@ static int update_initialized = 0;
 static int update_state_healthy = 0;
 static int update_state_record_slot = -1;
 static int update_journal_record_slot = -1;
+static int update_history_record_slot = -1;
 static uint16_t update_fail_after = 0;
 static update_state_t update_state;
 static update_journal_t update_journal;
+static update_history_t update_history;
+static update_store_state_t update_history_store =
+    UPDATE_STORE_UNAVAILABLE;
+static int update_history_write_failed = 0;
 
 static const char* update_target_paths[UPDATE_TARGET_COUNT] = {
     "EXPLORER.BMP", "SHELL.BMP", "TASKMGR.BMP"
@@ -184,6 +203,10 @@ static const char* update_state_paths[2] = {
 
 static const char* update_journal_paths[2] = {
     "ZUPD0.JRN", "ZUPD1.JRN"
+};
+
+static const char* update_history_paths[2] = {
+    "ZUPD0.HIS", "ZUPD1.HIS"
 };
 
 static const char* update_backup_paths[2][UPDATE_TARGET_COUNT] = {
@@ -634,6 +657,200 @@ static int update_decode_journal_record(
     return OK;
 }
 
+static int update_history_alias_valid(const char* alias) {
+    int terminated = 0;
+
+    for (uint32_t index = 0; index < UPDATE_HISTORY_PACKAGE_SIZE; index++) {
+        uint8_t value = (uint8_t)alias[index];
+
+        if (value == 0U) {
+            terminated = 1;
+        } else if (terminated || value < 0x20U || value > 0x7EU ||
+                   value == '/' || value == '\\') {
+            return 0;
+        }
+    }
+    return terminated;
+}
+
+static void update_encode_history_entry(
+    uint8_t* record, uint32_t offset,
+    const update_history_entry_t* entry) {
+    update_write_u32(record + offset, entry->sequence);
+    record[offset + 4U] = (uint8_t)entry->operation;
+    record[offset + 5U] = (uint8_t)entry->outcome;
+    record[offset + 6U] = (uint8_t)entry->action_reason;
+    record[offset + 7U] = (uint8_t)entry->verification_reason;
+    update_write_u16(record + offset + 8U, entry->from_version.major);
+    update_write_u16(record + offset + 10U, entry->from_version.minor);
+    update_write_u16(record + offset + 12U, entry->from_version.patch);
+    update_write_u16(record + offset + 14U, entry->to_version.major);
+    update_write_u16(record + offset + 16U, entry->to_version.minor);
+    update_write_u16(record + offset + 18U, entry->to_version.patch);
+    update_write_u32(record + offset + 20U, entry->from_epoch);
+    update_write_u32(record + offset + 24U, entry->to_epoch);
+    update_write_u16(record + offset + 28U, entry->entry_count);
+    update_write_u16(record + offset + 30U, entry->completed_entries);
+    record[offset + 32U] =
+        entry->reboot_required ? UPDATE_HISTORY_FLAG_REBOOT : 0U;
+    kmemcpy(record + offset + 33U, entry->package_alias,
+            UPDATE_HISTORY_PACKAGE_SIZE);
+}
+
+static int update_decode_history_entry(
+    update_history_entry_t* entry, const uint8_t* record,
+    uint32_t offset, uint32_t record_sequence) {
+    uint8_t flags = record[offset + 32U];
+
+    kmemset(entry, 0, sizeof(*entry));
+    entry->sequence = update_read_u32(record + offset);
+    entry->operation =
+        (update_history_operation_t)record[offset + 4U];
+    entry->outcome = (update_history_outcome_t)record[offset + 5U];
+    entry->action_reason =
+        (update_action_reason_t)record[offset + 6U];
+    entry->verification_reason =
+        (zupd_reason_t)record[offset + 7U];
+    entry->from_version.major = update_read_u16(record + offset + 8U);
+    entry->from_version.minor = update_read_u16(record + offset + 10U);
+    entry->from_version.patch = update_read_u16(record + offset + 12U);
+    entry->to_version.major = update_read_u16(record + offset + 14U);
+    entry->to_version.minor = update_read_u16(record + offset + 16U);
+    entry->to_version.patch = update_read_u16(record + offset + 18U);
+    entry->from_epoch = update_read_u32(record + offset + 20U);
+    entry->to_epoch = update_read_u32(record + offset + 24U);
+    entry->entry_count = update_read_u16(record + offset + 28U);
+    entry->completed_entries = update_read_u16(record + offset + 30U);
+    entry->reboot_required =
+        (flags & UPDATE_HISTORY_FLAG_REBOOT) ? 1U : 0U;
+    kmemcpy(entry->package_alias, record + offset + 33U,
+            UPDATE_HISTORY_PACKAGE_SIZE);
+    if (entry->sequence == 0U || entry->sequence > record_sequence ||
+        entry->operation < UPDATE_HISTORY_OPERATION_APPLY ||
+        entry->operation > UPDATE_HISTORY_OPERATION_RECOVERY_ROLLBACK ||
+        entry->outcome < UPDATE_HISTORY_OUTCOME_SUCCESS ||
+        entry->outcome > UPDATE_HISTORY_OUTCOME_RECOVERED ||
+        entry->action_reason > UPDATE_ACTION_RECOVERY_PENDING ||
+        entry->verification_reason > ZUPD_REASON_UNSUPPORTED ||
+        entry->completed_entries > entry->entry_count ||
+        (flags & (uint8_t)~UPDATE_HISTORY_FLAG_REBOOT) != 0U ||
+        !update_history_alias_valid(entry->package_alias) ||
+        !update_bytes_zero(record + offset + 46U, 10U)) {
+        LOG_ERROR("UPDATE", "Entrada de historico U4 invalida");
+        return ERR_INVALID;
+    }
+    return OK;
+}
+
+static int update_encode_history_record(
+    const update_history_t* history,
+    uint8_t record[UPDATE_CONTROL_SIZE]) {
+    uint8_t hash[CRYPTO_SHA256_SIZE];
+    int result;
+
+    kmemset(record, 0, UPDATE_CONTROL_SIZE);
+    kmemcpy(record, "ZUH1", 4U);
+    update_write_u16(record + 4U, UPDATE_CONTROL_VERSION);
+    update_write_u16(record + 6U, UPDATE_CONTROL_SIZE);
+    update_write_u32(record + 8U, history->sequence);
+    record[12] = history->count;
+    record[13] = history->next_index;
+    for (uint32_t index = 0;
+         index < UPDATE_HISTORY_MAX_ENTRIES; index++) {
+        int active = history->count == UPDATE_HISTORY_MAX_ENTRIES ||
+                     index < history->count;
+
+        if (active) {
+            update_encode_history_entry(
+                record, UPDATE_HISTORY_ENTRY_OFFSET +
+                        index * UPDATE_HISTORY_ENTRY_SIZE,
+                &history->entries[index]);
+        }
+    }
+    result = crypto_sha256(record, UPDATE_CONTROL_HASH_OFFSET, hash);
+    if (result != OK) return result;
+    kmemcpy(record + UPDATE_CONTROL_HASH_OFFSET, hash, sizeof(hash));
+    return OK;
+}
+
+static int update_decode_history_record(
+    update_history_t* history,
+    const uint8_t record[UPDATE_CONTROL_SIZE]) {
+    uint8_t hash[CRYPTO_SHA256_SIZE];
+    uint32_t sequence;
+    uint8_t count;
+    uint8_t next_index;
+
+    if (!history || !record) {
+        LOG_ERROR("UPDATE", "Registro de historico U4 nulo");
+        return ERR_NULL;
+    }
+    sequence = update_read_u32(record + 8U);
+    count = record[12];
+    next_index = record[13];
+    if (!crypto_equal(record, (const uint8_t*)"ZUH1", 4U) ||
+        update_read_u16(record + 4U) != UPDATE_CONTROL_VERSION ||
+        update_read_u16(record + 6U) != UPDATE_CONTROL_SIZE ||
+        count > UPDATE_HISTORY_MAX_ENTRIES ||
+        next_index >= UPDATE_HISTORY_MAX_ENTRIES ||
+        (count < UPDATE_HISTORY_MAX_ENTRIES && next_index != count) ||
+        !update_bytes_zero(record + 14U,
+                           UPDATE_HISTORY_HEADER_SIZE - 14U)) {
+        LOG_ERROR("UPDATE", "Formato do historico U4 invalido");
+        return ERR_INVALID;
+    }
+    if (crypto_sha256(record, UPDATE_CONTROL_HASH_OFFSET, hash) != OK ||
+        !crypto_equal(hash, record + UPDATE_CONTROL_HASH_OFFSET,
+                      sizeof(hash))) {
+        LOG_ERROR("UPDATE", "Hash do historico U4 invalido");
+        return ERR_INVALID;
+    }
+    kmemset(history, 0, sizeof(*history));
+    history->sequence = sequence;
+    history->count = count;
+    history->next_index = next_index;
+    for (uint32_t index = 0;
+         index < UPDATE_HISTORY_MAX_ENTRIES; index++) {
+        uint32_t offset = UPDATE_HISTORY_ENTRY_OFFSET +
+                          index * UPDATE_HISTORY_ENTRY_SIZE;
+        int active = count == UPDATE_HISTORY_MAX_ENTRIES || index < count;
+
+        if (!active) {
+            if (!update_bytes_zero(record + offset,
+                                   UPDATE_HISTORY_ENTRY_SIZE)) {
+                LOG_ERROR("UPDATE", "Slot vazio do historico nao esta zerado");
+                return ERR_INVALID;
+            }
+            continue;
+        }
+        if (update_decode_history_entry(
+                &history->entries[index], record, offset,
+                sequence) != OK) {
+            return ERR_INVALID;
+        }
+    }
+    if (count > 0U) {
+        uint32_t oldest = count == UPDATE_HISTORY_MAX_ENTRIES ?
+                          next_index : 0U;
+
+        if (sequence < count) {
+            LOG_ERROR("UPDATE", "Sequencia do historico U4 inconsistente");
+            return ERR_INVALID;
+        }
+        for (uint32_t order = 0; order < count; order++) {
+            uint32_t slot =
+                (oldest + order) % UPDATE_HISTORY_MAX_ENTRIES;
+            uint32_t expected = sequence - count + 1U + order;
+
+            if (history->entries[slot].sequence != expected) {
+                LOG_ERROR("UPDATE", "Ordem do ring U4 inconsistente");
+                return ERR_INVALID;
+            }
+        }
+    }
+    return OK;
+}
+
 static int update_read_control(const char* path,
                                uint8_t record[UPDATE_CONTROL_SIZE],
                                int* exists_out) {
@@ -664,6 +881,191 @@ static int update_read_control(const char* path,
         return ERR_DISK;
     }
     return OK;
+}
+
+static void update_history_mark_invalid(void) {
+    kmemset(&update_history, 0, sizeof(update_history));
+    update_history_record_slot = -1;
+    update_history_store = UPDATE_STORE_INVALID;
+    update_history_write_failed = 0;
+}
+
+static int update_load_history_records(void) {
+    update_history_t candidate;
+    uint8_t record[UPDATE_CONTROL_SIZE];
+    uint8_t selected[UPDATE_CONTROL_SIZE];
+    int found_valid = 0;
+    int found_any = 0;
+
+    kmemset(&update_history, 0, sizeof(update_history));
+    kmemset(selected, 0, sizeof(selected));
+    update_history_record_slot = -1;
+    update_history_store = UPDATE_STORE_EMPTY;
+    update_history_write_failed = 0;
+    for (int slot = 0; slot < 2; slot++) {
+        int exists = 0;
+        int result = update_read_control(
+            update_history_paths[slot], record, &exists);
+
+        if (exists) found_any = 1;
+        if (result != OK || !exists ||
+            update_decode_history_record(&candidate, record) != OK) {
+            continue;
+        }
+        if (found_valid && candidate.sequence == update_history.sequence &&
+            !crypto_equal(record, selected, UPDATE_CONTROL_SIZE)) {
+            LOG_ERROR("UPDATE", "Copias do historico empatadas e divergentes");
+            update_history_mark_invalid();
+            return OK;
+        }
+        if (!found_valid || candidate.sequence > update_history.sequence) {
+            update_history = candidate;
+            update_history_record_slot = slot;
+            kmemcpy(selected, record, sizeof(selected));
+            found_valid = 1;
+        }
+    }
+    if (found_valid) {
+        update_history_store = update_history.count ?
+            UPDATE_STORE_VALID : UPDATE_STORE_EMPTY;
+        return OK;
+    }
+    if (found_any) {
+        LOG_ERROR("UPDATE", "Nenhum registro de historico U4 e valido");
+        update_history_mark_invalid();
+    }
+    return OK;
+}
+
+static int update_write_history_record(update_history_t* history) {
+    uint8_t record[UPDATE_CONTROL_SIZE];
+    uint32_t old_sequence;
+    int old_slot;
+    int next_slot;
+    int result;
+
+    if (!history) {
+        LOG_ERROR("UPDATE", "Historico U4 nulo para persistencia");
+        return ERR_NULL;
+    }
+    old_sequence = history->sequence;
+    if (old_sequence == 0xFFFFFFFFU) {
+        LOG_ERROR("UPDATE", "Sequencia do historico U4 esgotada");
+        return ERR_OVERFLOW;
+    }
+    old_slot = update_history_record_slot;
+    next_slot = old_slot < 0 ? 0 : 1 - old_slot;
+    history->sequence++;
+    result = update_encode_history_record(history, record);
+    if (result == OK) {
+        result = fs_atomic_write_root(
+            update_history_paths[next_slot], record, sizeof(record),
+            UPDATE_STORAGE_ATTRIBUTES, FS_ATOMIC_CREATE_OR_REPLACE);
+    }
+    if (result != OK) {
+        history->sequence = old_sequence;
+        LOG_ERROR("UPDATE", "Falha ao persistir historico redundante");
+        return result;
+    }
+    update_history_record_slot = next_slot;
+    return OK;
+}
+
+static int update_history_append(const update_history_entry_t* source) {
+    update_history_t previous;
+    update_history_entry_t entry;
+    update_store_state_t previous_store;
+    int previous_slot;
+    uint8_t slot;
+    int result;
+
+    if (!source) {
+        LOG_ERROR("UPDATE", "Evento U4 nulo");
+        return ERR_NULL;
+    }
+    if (fs_get_type() != FS_TYPE_FAT12) {
+        LOG_WARN("UPDATE", "Historico U4 requer FAT12");
+        return ERR_UNAVAILABLE;
+    }
+    previous = update_history;
+    previous_store = update_history_store;
+    previous_slot = update_history_record_slot;
+    if (update_history_store == UPDATE_STORE_INVALID) {
+        LOG_WARN("UPDATE", "Historico U4 corrompido sera reiniciado");
+        kmemset(&update_history, 0, sizeof(update_history));
+        update_history_record_slot = -1;
+    }
+    if (update_history.sequence == 0xFFFFFFFFU) {
+        LOG_ERROR("UPDATE", "Sequencia de evento U4 esgotada");
+        return ERR_OVERFLOW;
+    }
+    entry = *source;
+    entry.sequence = update_history.sequence + 1U;
+    slot = update_history.next_index;
+    update_history.entries[slot] = entry;
+    if (update_history.count < UPDATE_HISTORY_MAX_ENTRIES) {
+        update_history.count++;
+    }
+    update_history.next_index =
+        (uint8_t)((slot + 1U) % UPDATE_HISTORY_MAX_ENTRIES);
+    result = update_write_history_record(&update_history);
+    if (result != OK) {
+        update_history = previous;
+        update_history_store = previous_store;
+        update_history_record_slot = previous_slot;
+        update_history_write_failed = 1;
+        return result;
+    }
+    update_history_store = UPDATE_STORE_VALID;
+    update_history_write_failed = 0;
+    return OK;
+}
+
+static int update_history_newest(
+    uint32_t newest_index, update_history_entry_t* entry_out) {
+    uint32_t slot;
+
+    if (!entry_out) {
+        LOG_ERROR("UPDATE", "Saida de historico U4 nula");
+        return ERR_NULL;
+    }
+    if (update_history_store == UPDATE_STORE_UNAVAILABLE) {
+        LOG_WARN("UPDATE", "Historico U4 indisponivel");
+        return ERR_UNAVAILABLE;
+    }
+    if (update_history_store == UPDATE_STORE_INVALID ||
+        update_history_write_failed) {
+        LOG_ERROR("UPDATE", "Historico U4 sem integridade");
+        return ERR_INVALID;
+    }
+    if (newest_index >= update_history.count) {
+        LOG_WARN("UPDATE", "Evento U4 solicitado nao existe");
+        return ERR_NOT_FOUND;
+    }
+    slot = (update_history.next_index + UPDATE_HISTORY_MAX_ENTRIES - 1U -
+            newest_index) % UPDATE_HISTORY_MAX_ENTRIES;
+    *entry_out = update_history.entries[slot];
+    return OK;
+}
+
+static void update_history_copy_alias(
+    char output[UPDATE_HISTORY_PACKAGE_SIZE], const char* path) {
+    uint32_t length;
+
+    kmemset(output, 0, UPDATE_HISTORY_PACKAGE_SIZE);
+    if (!path) return;
+    length = kstrlen(path);
+    if (length == 0U || length >= UPDATE_HISTORY_PACKAGE_SIZE) return;
+    for (uint32_t index = 0; index < length; index++) {
+        char value = path[index];
+
+        if (value == '/' || value == '\\') {
+            kmemset(output, 0, UPDATE_HISTORY_PACKAGE_SIZE);
+            return;
+        }
+        if (value >= 'a' && value <= 'z') value -= 'a' - 'A';
+        output[index] = value;
+    }
 }
 
 static int update_capture_baseline_state(update_state_t* state) {
@@ -1360,6 +1762,41 @@ static int update_action_fail(update_action_result_t* output,
     return error;
 }
 
+static update_history_outcome_t update_history_action_outcome(
+    int result, const update_action_result_t* action) {
+    if (result == OK) return UPDATE_HISTORY_OUTCOME_SUCCESS;
+    if (action && action->reason == UPDATE_ACTION_CANCELLED) {
+        return UPDATE_HISTORY_OUTCOME_CANCELLED;
+    }
+    return UPDATE_HISTORY_OUTCOME_FAILED;
+}
+
+static void update_history_record_action(
+    update_history_operation_t operation, const char* path,
+    int result, const update_action_result_t* action) {
+    update_history_entry_t entry;
+
+    if (!action || action->recovery_pending) return;
+    kmemset(&entry, 0, sizeof(entry));
+    entry.operation = operation;
+    entry.outcome = update_history_action_outcome(result, action);
+    entry.action_reason = action->reason;
+    entry.verification_reason = action->verification_reason;
+    entry.from_version = action->from_version;
+    entry.to_version = action->to_version;
+    entry.from_epoch = action->from_epoch;
+    entry.to_epoch = action->to_epoch;
+    entry.entry_count = action->entry_count;
+    entry.completed_entries = action->completed_entries;
+    entry.reboot_required = action->reboot_required;
+    if (operation == UPDATE_HISTORY_OPERATION_APPLY) {
+        update_history_copy_alias(entry.package_alias, path);
+    }
+    if (update_history_append(&entry) != OK) {
+        LOG_WARN("UPDATE", "Operacao concluida sem persistir historico U4");
+    }
+}
+
 static int update_cancelled(const update_action_options_t* options) {
     return options && options->cancel_check &&
            options->cancel_check(options->cancel_context);
@@ -1416,7 +1853,7 @@ static uint32_t update_clusters_for(uint32_t size, uint32_t cluster_size) {
 static int update_check_apply_space(const update_journal_t* journal) {
     fs_info_t info;
     uint32_t cluster_size;
-    uint32_t required = 8U;
+    uint32_t required = UPDATE_APPLY_METADATA_CLUSTERS;
     uint32_t largest_old = 0;
     uint32_t largest_new = 0;
 
@@ -1439,6 +1876,7 @@ static int update_check_apply_space(const update_journal_t* journal) {
             largest_new = entry->new_file.size;
         }
     }
+    required += update_clusters_for(UPDATE_CONTROL_SIZE, cluster_size);
     required += update_clusters_for(largest_old, cluster_size);
     required += update_clusters_for(largest_new, cluster_size);
     if (required > info.free_clusters) {
@@ -1686,19 +2124,71 @@ static int update_continue_interrupted_rollback(void) {
     return update_finalize_committed();
 }
 
+static void update_history_record_recovery(
+    const update_journal_t* pending, uint8_t interrupted_progress) {
+    update_history_entry_t failed;
+    update_history_entry_t recovered;
+    int is_apply;
+
+    if (!pending) return;
+    is_apply = pending->kind == UPDATE_JOURNAL_APPLY;
+    kmemset(&failed, 0, sizeof(failed));
+    failed.operation = is_apply ?
+        UPDATE_HISTORY_OPERATION_APPLY :
+        UPDATE_HISTORY_OPERATION_ROLLBACK;
+    failed.outcome = UPDATE_HISTORY_OUTCOME_FAILED;
+    failed.action_reason = UPDATE_ACTION_RECOVERY_PENDING;
+    failed.from_version = pending->base_version;
+    failed.to_version = pending->target_version;
+    failed.from_epoch = pending->base_epoch;
+    failed.to_epoch = pending->target_epoch;
+    failed.entry_count = pending->entry_count;
+    failed.completed_entries = interrupted_progress;
+    if (update_history_append(&failed) != OK) {
+        LOG_WARN("UPDATE", "Falha ao registrar transacao interrompida");
+    }
+
+    recovered = failed;
+    recovered.sequence = 0;
+    recovered.operation = is_apply ?
+        UPDATE_HISTORY_OPERATION_RECOVERY_APPLY :
+        UPDATE_HISTORY_OPERATION_RECOVERY_ROLLBACK;
+    recovered.outcome = UPDATE_HISTORY_OUTCOME_RECOVERED;
+    recovered.action_reason = UPDATE_ACTION_NONE;
+    recovered.completed_entries = pending->entry_count;
+    if (is_apply) {
+        recovered.from_version = pending->target_version;
+        recovered.to_version = pending->base_version;
+        recovered.from_epoch = pending->target_epoch;
+        recovered.to_epoch = pending->base_epoch;
+    }
+    if (update_history_append(&recovered) != OK) {
+        LOG_WARN("UPDATE", "Recuperacao concluida sem historico U4");
+    }
+}
+
 static int update_recover_pending(void) {
+    update_journal_t pending;
+    uint8_t interrupted_progress;
+    int result;
+
     if (update_journal.kind == UPDATE_JOURNAL_NONE) return OK;
+    pending = update_journal;
+    interrupted_progress = update_journal.progress;
     LOG_WARN("UPDATE", "Transacao U3 pendente encontrada no boot");
     if (update_journal.phase == UPDATE_PHASE_COMMITTED) {
-        return update_finalize_committed();
+        result = update_finalize_committed();
+    } else if (update_journal.kind == UPDATE_JOURNAL_APPLY) {
+        result = update_restore_interrupted_apply();
+    } else if (update_journal.kind == UPDATE_JOURNAL_ROLLBACK) {
+        result = update_continue_interrupted_rollback();
+    } else {
+        return ERR_INVALID;
     }
-    if (update_journal.kind == UPDATE_JOURNAL_APPLY) {
-        return update_restore_interrupted_apply();
+    if (result == OK) {
+        update_history_record_recovery(&pending, interrupted_progress);
     }
-    if (update_journal.kind == UPDATE_JOURNAL_ROLLBACK) {
-        return update_continue_interrupted_rollback();
-    }
-    return ERR_INVALID;
+    return result;
 }
 
 static void update_set_compile_time_version(void) {
@@ -1724,6 +2214,11 @@ static void update_refresh_capabilities(void) {
     update_capabilities.rollback_available =
         update_capabilities.apply_available &&
         update_state.rollback_available;
+    update_capabilities.history_available =
+        fs_get_type() == FS_TYPE_FAT12 &&
+        (update_history_store == UPDATE_STORE_EMPTY ||
+         update_history_store == UPDATE_STORE_VALID) &&
+        !update_history_write_failed;
     update_capabilities.remote_available = 0;
 }
 
@@ -1738,8 +2233,12 @@ int update_init(void) {
     kmemset(&update_workspace, 0, sizeof(update_workspace));
     kmemset(&update_capabilities, 0, sizeof(update_capabilities));
     kmemset(&update_journal, 0, sizeof(update_journal));
+    kmemset(&update_history, 0, sizeof(update_history));
     update_state_record_slot = -1;
     update_journal_record_slot = -1;
+    update_history_record_slot = -1;
+    update_history_store = UPDATE_STORE_UNAVAILABLE;
+    update_history_write_failed = 0;
     update_state_healthy = 0;
     update_fail_after = 0;
     update_initialized = 0;
@@ -1762,6 +2261,7 @@ int update_init(void) {
 
     state_result = update_load_state_records();
     journal_result = update_load_journal_records();
+    (void)update_load_history_records();
     if (state_result != OK || journal_result != OK) {
         update_refresh_capabilities();
         LOG_ERROR("UPDATE", "Estado persistente U3 invalido");
@@ -1848,6 +2348,118 @@ int update_get_installed_version(update_version_t* version_out,
     *version_out = update_state.installed_version;
     *epoch_out = update_state.installed_epoch;
     return OK;
+}
+
+static update_store_state_t update_effective_history_store(void) {
+    return update_history_write_failed ?
+        UPDATE_STORE_INVALID : update_history_store;
+}
+
+int update_get_status(update_status_t* status_out) {
+    int validation;
+    int result;
+
+    if (!status_out) {
+        LOG_ERROR("UPDATE", "Destino nulo na consulta de status");
+        return ERR_NULL;
+    }
+    if (!update_initialized) {
+        LOG_ERROR("UPDATE", "Status consultado antes da inicializacao");
+        return ERR_STATE;
+    }
+    result = update_begin_operation();
+    if (result != OK) {
+        LOG_ERROR("UPDATE", "Status recusado durante outra operacao");
+        return result;
+    }
+    kmemset(status_out, 0, sizeof(*status_out));
+    status_out->build_version.major = ZEPHYROS_VERSION_MAJOR;
+    status_out->build_version.minor = ZEPHYROS_VERSION_MINOR;
+    status_out->build_version.patch = ZEPHYROS_VERSION_PATCH;
+    status_out->build_epoch = ZEPHYROS_VERSION_EPOCH;
+    status_out->installed_version = update_state.installed_version;
+    status_out->installed_epoch = update_state.installed_epoch;
+    status_out->rollback_version = update_state.previous_version;
+    status_out->rollback_epoch = update_state.previous_epoch;
+    status_out->rollback_entry_count = update_state.rollback_entry_count;
+    status_out->transaction_pending =
+        update_journal.kind != UPDATE_JOURNAL_NONE;
+    if (fs_get_type() != FS_TYPE_FAT12) {
+        status_out->state_store = UPDATE_STORE_UNAVAILABLE;
+        status_out->current_files = UPDATE_STORE_UNAVAILABLE;
+    } else if (!update_state_healthy) {
+        status_out->state_store = UPDATE_STORE_INVALID;
+        status_out->current_files = UPDATE_STORE_INVALID;
+    } else {
+        validation = update_validate_current_state();
+        status_out->state_store = update_state_record_slot < 0 ?
+            UPDATE_STORE_EMPTY : UPDATE_STORE_VALID;
+        status_out->current_files = validation == OK ?
+            UPDATE_STORE_VALID : UPDATE_STORE_INVALID;
+    }
+    status_out->history_store = update_effective_history_store();
+    update_refresh_capabilities();
+    status_out->capabilities = update_capabilities;
+    if (status_out->state_store == UPDATE_STORE_INVALID ||
+        status_out->current_files == UPDATE_STORE_INVALID) {
+        status_out->capabilities.persistent_state_ready = 0;
+        status_out->capabilities.apply_available = 0;
+        status_out->capabilities.rollback_available = 0;
+    }
+    if ((status_out->history_store == UPDATE_STORE_EMPTY ||
+         status_out->history_store == UPDATE_STORE_VALID) &&
+        update_history.count > 0U &&
+        update_history_newest(0U, &status_out->last_event) == OK) {
+        status_out->has_last_event = 1;
+    }
+    update_end_operation();
+    return OK;
+}
+
+int update_get_history_count(uint32_t* count_out) {
+    int result;
+
+    if (!count_out) {
+        LOG_ERROR("UPDATE", "Destino nulo na contagem de historico");
+        return ERR_NULL;
+    }
+    if (!update_initialized) {
+        LOG_ERROR("UPDATE", "Historico consultado antes da inicializacao");
+        return ERR_STATE;
+    }
+    result = update_begin_operation();
+    if (result != OK) return result;
+    if (update_effective_history_store() == UPDATE_STORE_UNAVAILABLE) {
+        result = ERR_UNAVAILABLE;
+    } else if (update_effective_history_store() == UPDATE_STORE_INVALID) {
+        result = ERR_INVALID;
+    } else {
+        *count_out = update_history.count;
+        result = OK;
+    }
+    update_end_operation();
+    if (result != OK) LOG_ERROR("UPDATE", "Historico U4 indisponivel");
+    return result;
+}
+
+int update_get_history_entry(uint32_t newest_index,
+                             update_history_entry_t* entry_out) {
+    int result;
+
+    if (!entry_out) {
+        LOG_ERROR("UPDATE", "Destino nulo na leitura de historico");
+        return ERR_NULL;
+    }
+    if (!update_initialized) {
+        LOG_ERROR("UPDATE", "Entrada de historico consultada sem init");
+        return ERR_STATE;
+    }
+    result = update_begin_operation();
+    if (result != OK) return result;
+    result = update_history_newest(newest_index, entry_out);
+    update_end_operation();
+    if (result != OK) LOG_ERROR("UPDATE", "Entrada de historico indisponivel");
+    return result;
 }
 
 static int update_apply_recover_failure(update_action_result_t* output,
@@ -2044,6 +2656,10 @@ int update_apply_file(const char* path,
             result_out, "Commit U3 requer finalizacao no proximo boot");
     }
     update_end_operation();
+    if (!options->dry_run) {
+        update_history_record_action(
+            UPDATE_HISTORY_OPERATION_APPLY, path, result, result_out);
+    }
     if (result != OK || options->dry_run) return result;
     LOG_INFO("UPDATE", "Atualizacao ZUPD aplicada com sucesso");
     return OK;
@@ -2067,7 +2683,9 @@ static int update_check_rollback_space(const update_journal_t* journal) {
             largest = journal->entries[index].new_file.size;
         }
     }
-    required = update_clusters_for(largest, cluster_size) + 2U;
+    required = update_clusters_for(largest, cluster_size) +
+               UPDATE_ROLLBACK_METADATA_CLUSTERS +
+               update_clusters_for(UPDATE_CONTROL_SIZE, cluster_size);
     if (required > info.free_clusters) {
         LOG_ERROR("UPDATE", "Espaco insuficiente para rollback atomico");
         return ERR_OVERFLOW;
@@ -2189,9 +2807,14 @@ int update_rollback(const update_action_options_t* options,
             "Estado U3 nao permite rollback");
     }
     if (!update_state.rollback_available) {
-        return update_action_fail(
+        result = update_action_fail(
             result_out, UPDATE_ACTION_NO_ROLLBACK, ERR_NOT_FOUND,
             "Nenhum rollback esta disponivel");
+        if (!options->dry_run) {
+            update_history_record_action(
+                UPDATE_HISTORY_OPERATION_ROLLBACK, 0, result, result_out);
+        }
+        return result;
     }
     result = update_begin_operation();
     if (result != OK) {
@@ -2228,6 +2851,10 @@ int update_rollback(const update_action_options_t* options,
             result_out, "Rollback requer finalizacao no proximo boot");
     }
     update_end_operation();
+    if (!options->dry_run) {
+        update_history_record_action(
+            UPDATE_HISTORY_OPERATION_ROLLBACK, 0, result, result_out);
+    }
     if (result != OK || options->dry_run) return result;
     LOG_INFO("UPDATE", "Rollback U3 concluido com sucesso");
     return OK;
@@ -2286,5 +2913,40 @@ const char* update_action_reason_name(update_action_reason_t reason) {
         case UPDATE_ACTION_NO_ROLLBACK: return "NO_ROLLBACK";
         case UPDATE_ACTION_RECOVERY_PENDING: return "RECOVERY_PENDING";
         default: return "INVALID_ACTION_REASON";
+    }
+}
+
+const char* update_store_state_name(update_store_state_t state) {
+    switch (state) {
+        case UPDATE_STORE_UNAVAILABLE: return "UNAVAILABLE";
+        case UPDATE_STORE_EMPTY: return "EMPTY";
+        case UPDATE_STORE_VALID: return "VALID";
+        case UPDATE_STORE_INVALID: return "INVALID";
+        default: return "INVALID_STORE_STATE";
+    }
+}
+
+const char* update_history_operation_name(
+    update_history_operation_t operation) {
+    switch (operation) {
+        case UPDATE_HISTORY_OPERATION_NONE: return "NONE";
+        case UPDATE_HISTORY_OPERATION_APPLY: return "APPLY";
+        case UPDATE_HISTORY_OPERATION_ROLLBACK: return "ROLLBACK";
+        case UPDATE_HISTORY_OPERATION_RECOVERY_APPLY:
+            return "RECOVERY_APPLY";
+        case UPDATE_HISTORY_OPERATION_RECOVERY_ROLLBACK:
+            return "RECOVERY_ROLLBACK";
+        default: return "INVALID_HISTORY_OPERATION";
+    }
+}
+
+const char* update_history_outcome_name(update_history_outcome_t outcome) {
+    switch (outcome) {
+        case UPDATE_HISTORY_OUTCOME_NONE: return "NONE";
+        case UPDATE_HISTORY_OUTCOME_SUCCESS: return "SUCCESS";
+        case UPDATE_HISTORY_OUTCOME_FAILED: return "FAILED";
+        case UPDATE_HISTORY_OUTCOME_CANCELLED: return "CANCELLED";
+        case UPDATE_HISTORY_OUTCOME_RECOVERED: return "RECOVERED";
+        default: return "INVALID_HISTORY_OUTCOME";
     }
 }

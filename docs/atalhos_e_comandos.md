@@ -27,6 +27,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `melody` | - | Toca uma escala musical no PC Speaker. |
 | `explorer`| - | Abre o Gerenciador de Arquivos (File Manager). |
 | `taskmgr` | - | Abre o Gerenciador de Tarefas (Task Manager). |
+| `updater` | - | Abre o System Updater em Classic ou Modern. |
 | `taskcfg` | - | Abre rapidamente as configurações da Barra de Tarefas. |
 | `compress`| `on/off/status`| Gerencia a compressão de memória RAM em tempo real. |
 | `stats` | - | Exibe estatísticas de compactação LZSS de memória. |
@@ -76,6 +77,8 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `update` | `verify <arquivo.ZUP>` | Verifica assinatura e compatibilidade sem gravar. |
 | `update` | `apply <arquivo.ZUP> [--confirm]` | Executa preflight ou aplica uma transacao FAT12 confirmada. |
 | `update` | `rollback [--confirm]` | Inspeciona ou restaura a ultima geracao de rollback. |
+| `update` | `status` | Mostra integridade, versoes, journal e capacidades sem gravar. |
+| `update` | `history` | Lista os oito eventos persistidos mais recentes sem gravar. |
 | `update` | `test fail-after <1-3>` | Arma uma interrupcao diagnostica para validar recuperacao no boot. |
 | `app` | `run <arquivo.ZAP> [args]` | Executa uma imagem flat i386 em ring 3, em primeiro plano. |
 | `app` | `inputtest` | Cria e executa um teste temporario de teclado para `.ZAP`. |
@@ -152,3 +155,16 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 - **`Setas ←/→/↑/↓`**: Seleciona os diferentes ícones de programas.
 - **`Enter`**: Abre o programa focado.
 - **`Duplo Clique`**: Seleciona e abre o aplicativo instantaneamente no modo GUI Modern.
+
+### 2.6. System Updater
+
+- **`Tab`**: Alterna entre Pacotes, Estado e Historico.
+- **`Setas`**: Muda a aba ou o pacote selecionado.
+- **`F5`**: Atualiza pacotes e diagnosticos.
+- **`V`**: Verifica o pacote selecionado sem gravar.
+- **`A`**: Executa o preflight de aplicacao.
+- **`B`**: Executa o preflight de rollback.
+- **`Enter`**: Confirma a acao preparada.
+- **`Esc`**: Cancela a confirmacao ou fecha o aplicativo.
+- **`F12`**: Solicita cancelamento cooperativo durante uma gravacao.
+- **Clique esquerdo (Modern)**: Seleciona abas, pacotes e botoes equivalentes.
