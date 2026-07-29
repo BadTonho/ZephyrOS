@@ -95,6 +95,7 @@ static int udp_deliver(const ipv4_packet_view_t* packet,
         udp_status.rx_no_listener++;
         return OK;
     }
+    view.interface_id = packet->interface_id;
     view.payload = packet->payload + UDP_HEADER_SIZE;
     view.payload_length = udp_length - UDP_HEADER_SIZE;
     view.source_ip = packet->source_ip;
@@ -330,6 +331,7 @@ int udp_send(udp_endpoint_handle_t handle, uint32_t destination_ip,
 }
 
 int udp_send_limited_broadcast(udp_endpoint_handle_t handle,
+                               const char* interface_id,
                                uint32_t source_ip,
                                uint16_t destination_port,
                                const uint8_t* payload,
@@ -339,7 +341,8 @@ int udp_send_limited_broadcast(udp_endpoint_handle_t handle,
     int32_t index;
     int result;
 
-    if (!out_sent || (payload_length && !payload)) {
+    if (!interface_id || !out_sent ||
+        (payload_length && !payload)) {
         LOG_ERROR("NET", "Argumento nulo no broadcast UDP");
         return ERR_NULL;
     }
@@ -360,7 +363,7 @@ int udp_send_limited_broadcast(udp_endpoint_handle_t handle,
                                payload_length, &segment_length);
     if (result != OK) return result;
     result = ipv4_send_limited_broadcast(
-        source_ip, IPV4_PROTOCOL_UDP, udp_tx_buffer,
+        interface_id, source_ip, IPV4_PROTOCOL_UDP, udp_tx_buffer,
         segment_length, out_sent);
     if (result != OK) {
         udp_status.tx_errors++;

@@ -20,6 +20,7 @@ typedef enum {
 } ipv4_delivery_t;
 
 typedef struct {
+    const char* interface_id;
     const uint8_t* payload;
     uint16_t payload_length;
     uint32_t source_ip;
@@ -72,7 +73,8 @@ int ipv4_register_handler(uint8_t protocol,
 int ipv4_send(uint32_t destination_ip, uint8_t protocol,
               const uint8_t* payload, uint16_t payload_length,
               uint8_t* out_sent);
-int ipv4_send_limited_broadcast(uint32_t source_ip, uint8_t protocol,
+int ipv4_send_limited_broadcast(const char* interface_id,
+                                uint32_t source_ip, uint8_t protocol,
                                 const uint8_t* payload,
                                 uint16_t payload_length,
                                 uint8_t* out_sent);

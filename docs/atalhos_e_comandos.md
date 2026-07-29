@@ -44,7 +44,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `net` | `status` | Mostra inventario, drivers ativos, link, RX/TX e IPv4. |
 | `net` | `devices` | Lista os controladores PCI de rede observados. |
 | `net` | `info <id>` | Mostra MAC, contadores, erro, IDs, localizacao, IRQ e BARs de uma interface. |
-| `net` | `test <id>` | Envia um frame Ethernet broadcast de diagnostico pelo E1000 ativo. |
+| `net` | `test <id>` | Envia um frame Ethernet pela E1000 ou RTL8139 escolhida. |
 | `net` | `arp ...` | Configura, resolve e inspeciona o cache ARP. |
 | `net` | `ipv4 config <id> <ip> <mask> <gw>` | Configura IPv4 estatico somente em RAM. |
 | `net` | `ipv4 status` | Mostra configuracao, rotas, IPv4, ICMP, perdas e RTT. |
@@ -55,6 +55,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `net` | `check qemu <id> <ip>` | Executa a suite ARP, IPv4 e ICMP do QEMU. |
 | `net` | `check qemu dhcp <id> <dominio>` | Executa a suite UDP, DHCP e DNS. |
 | `net` | `check qemu tcp <id> <dominio>` | Executa a suite TCP, sockets e HTTP. |
+| `net` | `check qemu multi <id-a> <id-b>` | Valida TX e contadores isolados em duas NICs. |
 | `http` | `get <url>|status` | Executa HTTP GET limitado ou inspeciona a sessao. |
 | `nslookup` | `<dominio>` | Resolve um registro DNS A cooperativamente. |
 | `ping` | `<ip> [1-10]` | Executa ICMP Echo e entrega eventos e resumo em uma chamada. |

@@ -48,6 +48,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/drivers/idt.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/mouse.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/pci.h` | `docs/05-drivers/drivers.md` |
+| `src/include/drivers/rtl8139.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/speaker.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/tss.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/vesa.h` | `docs/05-drivers/drivers.md` |
@@ -115,3 +116,11 @@ limitadas e operacoes nao bloqueantes. `src/include/core/http.h` define uma
 sessao HTTP GET limitada e acesso somente-leitura ao corpo recebido. IPv4 e
 Network Manager passam a expor o protocolo TCP, disponibilidade dos novos
 modulos e contagens ativas.
+
+Desde a S2.8, `src/include/core/ethernet.h` define um registro de quatro NICs,
+callbacks com contexto opaco, TX direcionado e status agregado/por interface.
+As visoes Ethernet, IPv4 e UDP carregam o ID da interface e broadcasts
+limitados exigem esse ID. `src/include/core/network_manager.h` expoe erros de
+driver, interface L3, vinculo Ethernet e DHCP pendente. Os headers de E1000 e
+RTL8139 inicializam o dispositivo PCI exato; IDT oferece handlers
+compartilhados e PCI confirma I/O Space com Bus Mastering.

@@ -264,10 +264,10 @@ maiusculas e simbolos, incluindo `:` com `Shift+;`. A forma
 
 ## Rede: comandos individuais e diagnostico agrupado
 
-Os comandos mantem o snapshot PCI da S2.1 e, quando o Intel E1000 `8086:100E`
-esta ativo, mostram o estado real do driver Ethernet L2. A inicializacao de
-hardware acontece no boot; `device-scan` apenas atualiza o inventario e nunca
-reinicializa o driver.
+Os comandos mantem o snapshot PCI e mostram o estado real de ate quatro E1000
+`8086:100E` ou RTL8139 `10EC:8139`. A inicializacao de hardware acontece no
+boot pelo Network Manager; `device-scan` apenas atualiza o inventario e nunca
+reinicializa drivers.
 
 ```text
 zephyr> net status
@@ -299,13 +299,14 @@ zephyr> net check net-pci-00-03.0
 zephyr> net check qemu net-pci-00-03.0 10.0.2.15
 zephyr> net check qemu dhcp net-pci-00-03.0 example.com
 zephyr> net check qemu tcp net-pci-00-03.0 neverssl.com
+zephyr> net check qemu multi net-pci-00-03.0 net-pci-00-04.0
 ```
 
 `net status` separa inventario, controladores reconhecidos, drivers ativos,
-link, RX/TX, Ethernet L2, ARP, IPv4, ICMP e o ultimo erro. `net devices`
-lista IDs estaveis, modelo e estado. `net info <id>` mostra MAC, contadores,
-fila RX, erro do driver, vendor/device, classe, prog-if, revisao, IRQ e
-BAR0-BAR5. A forma `net-pci-BB-DD.F` tambem e aceita.
+erros de driver, interface L3, link e protocolos. `net devices` lista IDs
+estaveis, modelo, estado e marca `[L3]`/`[DHCP]`. `net info <id>` mostra
+vinculo Ethernet, papel L3, aquisicao DHCP, MAC, contadores, fila RX, erro do
+driver, PCI, IRQ e BAR0-BAR5. A forma `net-pci-BB-DD.F` tambem e aceita.
 
 `net ethernet <id>` consulta a camada sem transmitir. A saida mostra frames
 processados na consulta, fila atual/pico, descartes por fila cheia, IRQs RX,
@@ -317,10 +318,10 @@ da consulta pode ser zero enquanto os totais continuam aumentando.
 `net test <id>` pede que a camada Ethernet monte e envie um unico frame
 broadcast com EtherType privado `0x88B5`, confirmando somente a conclusao do
 descritor TX. Ele nao abre conexao, nao configura IP e nao transmite
-automaticamente no boot. Sem E1000 ativo, com link indisponivel, ID desconhecido
-ou sintaxe invalida, o Shell retorna erro controlado. RTL8139 continua listado
-sem driver; sem NIC, os comandos seguem utilizaveis e mostram inventario vazio.
-`regcheck full` reutiliza a varredura sem resetar o E1000 ou a camada Ethernet.
+automaticamente no boot. Sem NIC ativa, com link indisponivel, ID desconhecido
+ou sintaxe invalida, o Shell retorna erro controlado. O mesmo comando atende
+RTL8139; sem NIC, os comandos seguem utilizaveis e mostram inventario vazio.
+`regcheck full` consulta o registro sem resetar drivers ou a camada Ethernet.
 
 `net arp config <id> <ip-local>` continua disponivel para diagnosticos da
 camada ARP. Repetir a mesma configuracao preserva cache e contadores. Se uma
@@ -352,8 +353,10 @@ sessao, perdas, RTT minimo/medio/maximo, invalidos e reply pendente.
 broadcast, checksum, portas sem listener e erros de callback.
 
 `net dhcp acquire <id>` executa Discover, Offer, Request e ACK em uma chamada
-cooperativa. Uma configuracao estatica existente permanece ativa ate um ACK
-valido. `status` mostra lease, T1/T2, tentativas e contadores; `renew` inicia
+cooperativa. A configuracao IPv4 atual permanece ativa ate um ACK valido,
+mesmo quando a aquisicao usa outra NIC; o ACK troca a interface atomicamente
+e encerra clientes remotos existentes. `status` mostra lease, T1/T2,
+tentativas e contadores; `renew` inicia
 renovacao unicast e `release` tenta DHCPRELEASE antes de remover o lease
 local. Nenhuma aquisicao acontece automaticamente no boot.
 
@@ -426,12 +429,17 @@ Como o servidor e externo, a suite repete a conexao HTTP ate tres vezes
 somente quando ocorre timeout de transporte; erros de protocolo nao sao
 mascarados. O comando `http get` individual continua com uma unica sessao.
 
+`net check qemu multi <id-a> <id-b>` e a suite S2.8. Ela envia um frame de
+diagnostico por vez e confirma que os contadores L2 e do driver aumentam
+somente na interface escolhida. Os dois IDs devem apontar para NICs ativas e
+distintas; a suite tambem executa as invariantes Multi-NIC.
+
 O perfil segue o backend documentado em
 [QEMU Networking](https://gitlab.com/qemu-project/qemu/blob/master/docs/system/devices/net.rst);
 uma configuracao de backend diferente pode nao oferecer o host virtual `.2`.
 O alvo `make run` fixa `-nic user,model=e1000`, evitando depender dos
-dispositivos padrao da versao local do QEMU. Testes sem NIC ou com RTL8139
-podem sobrescrever `QEMU_NET_ARGS`.
+dispositivos padrao da versao local do QEMU. Testes com RTL8139, duas NICs ou
+sem NIC podem sobrescrever `QEMU_NET_ARGS`.
 
 ## `acpi status`
 

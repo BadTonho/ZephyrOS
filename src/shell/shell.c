@@ -907,12 +907,14 @@ static int shell_regcheck_same_network(
 
 static int shell_regcheck_validate_network_entry(
     const network_interface_info_t* info, uint32_t* recognized,
-    uint32_t* active) {
+    uint32_t* active, uint32_t* driver_errors,
+    uint32_t* l3_count, uint32_t* dhcp_count) {
     network_interface_info_t found;
     network_interface_text_t text;
     int result;
 
-    if (!info || !recognized || !active) {
+    if (!info || !recognized || !active || !driver_errors ||
+        !l3_count || !dhcp_count) {
         LOG_ERROR("SHELL", "RegCheck Full recebeu entrada Network nula");
         return ERR_NULL;
     }
@@ -927,7 +929,13 @@ static int shell_regcheck_validate_network_entry(
         (info->model == NETWORK_ADAPTER_UNKNOWN &&
          info->state != NETWORK_INTERFACE_UNSUPPORTED) ||
         (info->model != NETWORK_ADAPTER_UNKNOWN &&
-         info->state == NETWORK_INTERFACE_UNSUPPORTED)) {
+         info->state == NETWORK_INTERFACE_UNSUPPORTED) ||
+        (info->state == NETWORK_INTERFACE_ACTIVE &&
+         !info->ethernet_attached) ||
+        (info->ethernet_attached &&
+         info->state != NETWORK_INTERFACE_ACTIVE) ||
+        (info->l3_active && !info->ethernet_attached) ||
+        (info->dhcp_pending && !info->ethernet_attached)) {
         LOG_ERROR("SHELL", "RegCheck Full detectou entrada Network invalida");
         return ERR_STATE;
     }
@@ -943,6 +951,11 @@ static int shell_regcheck_validate_network_entry(
     }
     if (info->model != NETWORK_ADAPTER_UNKNOWN) (*recognized)++;
     if (info->state == NETWORK_INTERFACE_ACTIVE) (*active)++;
+    if (info->state == NETWORK_INTERFACE_DRIVER_ERROR) {
+        (*driver_errors)++;
+    }
+    if (info->l3_active) (*l3_count)++;
+    if (info->dhcp_pending) (*dhcp_count)++;
     return OK;
 }
 
@@ -960,6 +973,9 @@ static int shell_regcheck_validate_network_recovery(
     if (status->partial) {
         expected_state = RECOVERY_STATE_DEGRADED;
         expected_error = ERR_OVERFLOW;
+    } else if (status->driver_error_count) {
+        expected_state = RECOVERY_STATE_DEGRADED;
+        expected_error = status->last_error;
     } else if (status->active_count &&
                status->ethernet_available &&
                status->arp_available &&
@@ -1046,7 +1062,9 @@ static int shell_regcheck_validate_ipv4_icmp(
                    ipv4_status.configured)) ||
         (network_status->ipv4_configured &&
          (!network_status->arp_configured ||
-          ipv4_status.local_ip == 0U)) ||
+          ipv4_status.local_ip == 0U ||
+          kstrcmp(network_status->l3_interface_id,
+                  ipv4_status.interface_id) != 0)) ||
         ipv4_status.handler_count > IPV4_PROTOCOL_HANDLER_CAPACITY ||
         (network_status->icmp_available &&
          !ipv4_status.handler_count)) {
@@ -1134,73 +1152,134 @@ static int shell_regcheck_validate_tcp_socket_http(
     return OK;
 }
 
+static int shell_regcheck_validate_network_summary(
+    const network_manager_status_t* status,
+    const ethernet_status_t* ethernet, uint32_t count) {
+    if (!status || !ethernet) {
+        LOG_ERROR("SHELL", "RegCheck recebeu resumo Network nulo");
+        return ERR_NULL;
+    }
+    if (!status->initialized || count != status->interface_count ||
+        count > NETWORK_MANAGER_MAX_INTERFACES ||
+        status->recognized_count > count ||
+        status->active_count > count ||
+        status->driver_error_count > status->recognized_count ||
+        status->active_count > ethernet->interface_count ||
+        (status->arp_configured && !status->arp_available) ||
+        (status->ipv4_configured && !status->ipv4_available) ||
+        (status->dhcp_bound && !status->dhcp_available) ||
+        (status->dns_configured &&
+         (!status->dns_available || !status->ipv4_configured)) ||
+        (status->arp_available &&
+         (!status->active_count || !status->ethernet_available)) ||
+        (status->ipv4_available &&
+         (!status->active_count || !status->arp_available)) ||
+        (status->icmp_available &&
+         (!status->active_count || !status->ipv4_available)) ||
+        (status->udp_available &&
+         (!status->active_count || !status->ipv4_available)) ||
+        (status->dhcp_available && !status->udp_available) ||
+        (status->dns_available && !status->udp_available) ||
+        (status->tcp_available && !status->ipv4_available) ||
+        (status->sockets_available && !status->tcp_available) ||
+        (status->http_available &&
+         (!status->sockets_available || !status->dns_available)) ||
+        status->tcp_connection_count > TCP_CONNECTION_CAPACITY ||
+        status->socket_count > NET_SOCKET_CAPACITY ||
+        (status->ipv4_configured &&
+         (status->ipv4_source == NETWORK_IPV4_SOURCE_NONE ||
+          !status->l3_interface_id[0])) ||
+        (!status->ipv4_configured &&
+         (status->ipv4_source != NETWORK_IPV4_SOURCE_NONE ||
+          status->l3_interface_id[0])) ||
+        (status->ethernet_available && !status->active_count) ||
+        (status->packet_io_available && !status->active_count) ||
+        (!status->packet_io_available && status->active_count) ||
+        (status->active_count && status->ethernet_available &&
+         status->arp_available && status->ipv4_available &&
+         status->icmp_available && status->udp_available &&
+         status->dhcp_available && status->dns_available &&
+         status->tcp_available && status->sockets_available &&
+         status->http_available && !status->partial &&
+         !status->driver_error_count && status->last_error != OK) ||
+        (!status->active_count && !status->interface_count &&
+         status->last_error != ERR_NOT_FOUND)) {
+        LOG_ERROR("SHELL", "RegCheck Full detectou estado Network invalido");
+        return ERR_STATE;
+    }
+    return OK;
+}
+
 static int shell_regcheck_validate_network(void) {
     network_manager_status_t status;
+    ethernet_status_t ethernet;
+    dhcp_status_t dhcp;
     uint32_t count = 0;
     uint32_t recognized = 0;
     uint32_t active = 0;
+    uint32_t driver_errors = 0;
+    uint32_t l3_count = 0;
+    uint32_t dhcp_count = 0;
     int result = network_manager_get_status(&status);
 
-    if (result != OK || !status.initialized ||
-        network_manager_get_count(&count) != OK ||
-        count != status.interface_count ||
-        count > NETWORK_MANAGER_MAX_INTERFACES ||
-        status.recognized_count > count || status.active_count > count ||
-        (status.arp_configured && !status.arp_available) ||
-        (status.ipv4_configured && !status.ipv4_available) ||
-        (status.dhcp_bound && !status.dhcp_available) ||
-        (status.dns_configured &&
-         (!status.dns_available || !status.ipv4_configured)) ||
-        (status.arp_available &&
-         (!status.active_count || !status.ethernet_available)) ||
-        (status.ipv4_available &&
-         (!status.active_count || !status.arp_available)) ||
-        (status.icmp_available &&
-         (!status.active_count || !status.ipv4_available)) ||
-        (status.udp_available &&
-         (!status.active_count || !status.ipv4_available)) ||
-        (status.dhcp_available && !status.udp_available) ||
-        (status.dns_available && !status.udp_available) ||
-        (status.tcp_available && !status.ipv4_available) ||
-        (status.sockets_available && !status.tcp_available) ||
-        (status.http_available &&
-         (!status.sockets_available || !status.dns_available)) ||
-        status.tcp_connection_count > TCP_CONNECTION_CAPACITY ||
-        status.socket_count > NET_SOCKET_CAPACITY ||
-        (status.ipv4_configured &&
-         status.ipv4_source == NETWORK_IPV4_SOURCE_NONE) ||
-        (!status.ipv4_configured &&
-         status.ipv4_source != NETWORK_IPV4_SOURCE_NONE) ||
-        (status.ethernet_available && !status.active_count) ||
-        (status.packet_io_available && !status.active_count) ||
-        (!status.packet_io_available && status.active_count) ||
-        (status.active_count && status.ethernet_available &&
-         status.arp_available && status.ipv4_available &&
-         status.icmp_available && status.udp_available &&
-         status.dhcp_available && status.dns_available &&
-         status.tcp_available && status.sockets_available &&
-         status.http_available &&
-         !status.partial &&
-         status.last_error != OK) ||
-        (!status.active_count && !status.interface_count &&
-         status.last_error != ERR_NOT_FOUND)) {
-        LOG_ERROR("SHELL", "RegCheck Full detectou estado Network invalido");
+    if (result != OK ||
+        ethernet_get_status(&ethernet) != OK ||
+        ethernet_validate_state() != OK ||
+        dhcp_get_status(&dhcp) != OK ||
+        network_manager_get_count(&count) != OK) {
+        LOG_ERROR("SHELL", "RegCheck nao consultou estado Network");
         return result == OK ? ERR_STATE : result;
     }
+    result = shell_regcheck_validate_network_summary(
+        &status, &ethernet, count);
+    if (result != OK) return result;
     for (uint32_t index = 0; index < count; index++) {
         network_interface_info_t info;
+        network_interface_text_t text;
+        uint8_t shared_count = 0;
 
         result = network_manager_get_interface(index, &info);
         if (result != OK) {
             LOG_ERROR("SHELL", "RegCheck Full nao consultou entrada Network");
             return result;
         }
-        result = shell_regcheck_validate_network_entry(&info, &recognized,
-                                                       &active);
+        result = shell_regcheck_validate_network_entry(
+            &info, &recognized, &active, &driver_errors,
+            &l3_count, &dhcp_count);
         if (result != OK) return result;
+        if (network_manager_format_text(&info, &text) != OK) {
+            LOG_ERROR("SHELL", "RegCheck nao formatou ID de rede");
+            return ERR_STATE;
+        }
+        for (uint32_t previous = 0; previous < index; previous++) {
+            network_interface_info_t other;
+            network_interface_text_t other_text;
+
+            if (network_manager_get_interface(previous, &other) != OK ||
+                network_manager_format_text(&other, &other_text) != OK ||
+                kstrcmp(text.id, other_text.id) == 0) {
+                LOG_ERROR("SHELL", "RegCheck detectou ID de rede duplicado");
+                return ERR_STATE;
+            }
+        }
+        if (info.state == NETWORK_INTERFACE_ACTIVE &&
+            (idt_get_shared_irq_handler_count(
+                 info.irq, &shared_count) != OK ||
+             !shared_count ||
+             shared_count > IDT_SHARED_IRQ_HANDLER_CAPACITY)) {
+            LOG_ERROR("SHELL", "RegCheck detectou IRQ compartilhada invalida");
+            return ERR_STATE;
+        }
     }
     if (recognized != status.recognized_count ||
-        active != status.active_count) {
+        active != status.active_count ||
+        driver_errors != status.driver_error_count ||
+        l3_count > 1U || dhcp_count > 1U ||
+        l3_count != (uint32_t)status.ipv4_configured ||
+        dhcp_count != (uint32_t)(
+            dhcp.state == DHCP_STATE_SELECTING ||
+            dhcp.state == DHCP_STATE_REQUESTING ||
+            dhcp.state == DHCP_STATE_APPLYING)) {
         LOG_ERROR("SHELL", "RegCheck Full detectou contadores Network invalidos");
         return ERR_STATE;
     }
@@ -2096,6 +2175,8 @@ static void cmd_help(void) {
     video_print("  net check qemu <id> <ip> - Executa suite de rede\n", 0x07);
     video_print("  net check qemu dhcp <id> <dominio> - Suite S2.6\n", 0x07);
     video_print("  net check qemu tcp <id> <dominio> - Suite S2.7\n", 0x07);
+    video_print("  net check qemu multi <id-a> <id-b> - Suite S2.8\n",
+                0x07);
     video_print("  acpi status - Mostra tabelas e energia ACPI observadas\n", 0x07);
     video_print("  power status - Mostra capacidades reais de energia\n", 0x07);
     video_print("  kmetrics - Mostra linha-base de metricas do kernel\n", 0x07);
@@ -2813,6 +2894,8 @@ static void cmd_net_status(void) {
     print_num(status.recognized_count);
     video_print("\n  Drivers ativos: ", 0x07);
     print_num(status.active_count);
+    video_print("  Erros de driver: ", 0x07);
+    print_num(status.driver_error_count);
     video_print("\n  Link: ", 0x07);
     link = cmd_net_get_link_state(status.interface_count);
     video_print(network_manager_link_state_name(link),
@@ -2847,6 +2930,10 @@ static void cmd_net_status(void) {
                 status.ipv4_source == NETWORK_IPV4_SOURCE_DHCP ? 0x0B :
                 status.ipv4_source == NETWORK_IPV4_SOURCE_STATIC ?
                 0x0A : 0x08);
+    video_print("  Interface L3: ", 0x07);
+    video_print(status.l3_interface_id[0] ?
+                status.l3_interface_id : "N/D",
+                status.l3_interface_id[0] ? 0x0B : 0x08);
     video_print("\n  ICMP Echo: ", 0x07);
     video_print(status.icmp_available ? "DISPONIVEL" : "INDISPONIVEL",
                 status.icmp_available ? 0x0A : 0x0E);
@@ -2926,6 +3013,8 @@ static int cmd_net_print_interface(const network_interface_info_t* info) {
     print_num(info->function);
     video_print("  ", 0x07);
     video_print(text.driver, 0x08);
+    if (info->l3_active) video_print("  [L3]", 0x0A);
+    if (info->dhcp_pending) video_print("  [DHCP]", 0x0E);
     video_print("\n", 0x07);
     return OK;
 }
@@ -2991,6 +3080,15 @@ static void cmd_net_info(const char* args) {
     video_print(network_manager_link_state_name(info.link),
                 info.link == NETWORK_LINK_UP ? 0x0A :
                 info.link == NETWORK_LINK_DOWN ? 0x0E : 0x08);
+    video_print("\n  Vinculo Ethernet: ", 0x07);
+    video_print(info.ethernet_attached ? "SIM" : "NAO",
+                info.ethernet_attached ? 0x0A : 0x0E);
+    video_print("  Papel L3: ", 0x07);
+    video_print(info.l3_active ? "ATIVO" : "NAO",
+                info.l3_active ? 0x0A : 0x08);
+    video_print("  DHCP pendente: ", 0x07);
+    video_print(info.dhcp_pending ? "SIM" : "NAO",
+                info.dhcp_pending ? 0x0E : 0x08);
     video_print("\n  MAC: ", 0x07);
     if (info.state == NETWORK_INTERFACE_ACTIVE) {
         cmd_net_print_mac(info.mac_address);
@@ -3080,7 +3178,7 @@ static const char* cmd_net_destination_name(
 }
 
 static void cmd_net_print_last_ethernet(
-    const ethernet_status_t* status) {
+    const ethernet_interface_status_t* status) {
     if (!status || !status->rx_frames) {
         video_print("  Ultimo frame: N/D\n", 0x08);
         return;
@@ -3129,29 +3227,29 @@ static void cmd_net_ethernet(const char* args) {
     video_print("  IRQs RX: ", 0x07);
     print_num(diagnostic.driver_rx_interrupts);
     video_print("\n  Frames L2 aceitos: ", 0x07);
-    print_num(diagnostic.layer.rx_frames);
+    print_num(diagnostic.interface.rx_frames);
     video_print("  Unicast: ", 0x07);
-    print_num(diagnostic.layer.rx_unicast);
+    print_num(diagnostic.interface.rx_unicast);
     video_print("  Broadcast: ", 0x07);
-    print_num(diagnostic.layer.rx_broadcast);
+    print_num(diagnostic.interface.rx_broadcast);
     video_print("\n  Invalidos: ", 0x07);
-    print_num(diagnostic.layer.rx_invalid);
+    print_num(diagnostic.interface.rx_invalid);
     video_print("  Filtrados: ", 0x07);
-    print_num(diagnostic.layer.rx_filtered);
+    print_num(diagnostic.interface.rx_filtered);
     video_print("  Sem protocolo: ", 0x07);
-    print_num(diagnostic.layer.rx_unhandled);
+    print_num(diagnostic.interface.rx_unhandled);
     video_print("\n  Entregues a protocolo: ", 0x07);
-    print_num(diagnostic.layer.rx_delivered);
+    print_num(diagnostic.interface.rx_delivered);
     video_print("  Erros de protocolo: ", 0x07);
-    print_num(diagnostic.layer.rx_protocol_errors);
+    print_num(diagnostic.interface.rx_protocol_errors);
     video_print("  Handlers: ", 0x07);
     print_num(diagnostic.layer.handler_count);
     video_print("\n  Polls: ", 0x07);
-    print_num(diagnostic.layer.polls);
+    print_num(diagnostic.interface.polls);
     video_print("  TX montados pela camada: ", 0x07);
-    print_num(diagnostic.layer.tx_frames);
+    print_num(diagnostic.interface.tx_frames);
     video_print("\n", 0x07);
-    cmd_net_print_last_ethernet(&diagnostic.layer);
+    cmd_net_print_last_ethernet(&diagnostic.interface);
 }
 
 static int cmd_net_invalid_ipv4(void) {
@@ -5359,7 +5457,8 @@ static SHELL_NOINLINE void cmd_net_check_qemu_static(const char* args) {
         LOG_WARN("SHELL", "Uso invalido de net check qemu");
         video_print("Uso: net check qemu <id> <ip-local> | "
                     "net check qemu dhcp <id> <dominio> | "
-                    "net check qemu tcp <id> <dominio>\n", 0x0C);
+                    "net check qemu tcp <id> <dominio> | "
+                    "net check qemu multi <id-a> <id-b>\n", 0x0C);
         return;
     }
     result = network_manager_configure_ipv4(
@@ -5408,10 +5507,102 @@ static SHELL_NOINLINE void cmd_net_check_qemu_static(const char* args) {
     cmd_net_ipv4_status();
 }
 
+static SHELL_NOINLINE void cmd_net_check_qemu_multi(
+    const char* args) {
+    char first_id[NETWORK_INTERFACE_ID_SIZE];
+    char second_id[NETWORK_INTERFACE_ID_SIZE];
+    network_interface_info_t first_info;
+    network_interface_info_t second_info;
+    network_interface_text_t first_text;
+    network_interface_text_t second_text;
+    ethernet_interface_status_t first_before;
+    ethernet_interface_status_t first_middle;
+    ethernet_interface_status_t first_after;
+    ethernet_interface_status_t second_before;
+    ethernet_interface_status_t second_middle;
+    ethernet_interface_status_t second_after;
+    uint8_t first_isolated;
+    uint8_t second_isolated;
+    uint8_t invariants;
+    int result;
+
+    result = shell_read_two_args(
+        args, first_id, sizeof(first_id),
+        second_id, sizeof(second_id));
+    if (result != OK ||
+        network_manager_find(first_id, &first_info) != OK ||
+        network_manager_find(second_id, &second_info) != OK ||
+        network_manager_format_text(&first_info, &first_text) != OK ||
+        network_manager_format_text(&second_info, &second_text) != OK ||
+        first_info.state != NETWORK_INTERFACE_ACTIVE ||
+        second_info.state != NETWORK_INTERFACE_ACTIVE ||
+        kstrcmp(first_text.id, second_text.id) == 0) {
+        LOG_WARN("SHELL", "Uso invalido da suite Multi-NIC QEMU");
+        video_print(
+            "Uso: net check qemu multi <id-a> <id-b>\n", 0x0C);
+        return;
+    }
+    if (ethernet_get_interface_status(
+            first_text.id, &first_before) != OK ||
+        ethernet_get_interface_status(
+            second_text.id, &second_before) != OK ||
+        network_manager_send_diagnostic(first_text.id) != OK ||
+        ethernet_get_interface_status(
+            first_text.id, &first_middle) != OK ||
+        ethernet_get_interface_status(
+            second_text.id, &second_middle) != OK) {
+        LOG_ERROR("SHELL", "Primeiro TX da suite Multi-NIC falhou");
+        video_print("Erro: primeiro TX Multi-NIC falhou.\n", 0x0C);
+        return;
+    }
+    first_isolated =
+        first_middle.tx_frames == first_before.tx_frames + 1U &&
+        first_middle.driver.tx_packets ==
+            first_before.driver.tx_packets + 1U &&
+        second_middle.tx_frames == second_before.tx_frames &&
+        second_middle.driver.tx_packets ==
+            second_before.driver.tx_packets;
+    result = network_manager_send_diagnostic(second_text.id);
+    if (result != OK ||
+        ethernet_get_interface_status(
+            first_text.id, &first_after) != OK ||
+        ethernet_get_interface_status(
+            second_text.id, &second_after) != OK) {
+        LOG_ERROR("SHELL", "Segundo TX da suite Multi-NIC falhou");
+        video_print("Erro: segundo TX Multi-NIC falhou.\n", 0x0C);
+        return;
+    }
+    second_isolated =
+        first_after.tx_frames == first_middle.tx_frames &&
+        first_after.driver.tx_packets ==
+            first_middle.driver.tx_packets &&
+        second_after.tx_frames == second_middle.tx_frames + 1U &&
+        second_after.driver.tx_packets ==
+            second_middle.driver.tx_packets + 1U;
+    invariants = shell_regcheck_validate_network() == OK;
+    video_print("=== Suite de rede - Multi-NIC QEMU ===\n", 0x0B);
+    cmd_net_check_print_case("TX isolado na primeira NIC",
+                             first_isolated);
+    cmd_net_check_print_case("TX isolado na segunda NIC",
+                             second_isolated);
+    cmd_net_check_print_case("Invariantes Multi-NIC", invariants);
+    video_print("Resultado da suite: ", 0x07);
+    video_print(first_isolated && second_isolated && invariants ?
+                "OK\n" : "ERRO\n",
+                first_isolated && second_isolated && invariants ?
+                0x0A : 0x0C);
+}
+
 static SHELL_NOINLINE void cmd_net_check_qemu(const char* args) {
     const char* tcp_args = shell_match_subcommand(args, "tcp");
     const char* dhcp_args;
+    const char* multi_args;
 
+    multi_args = shell_match_subcommand(args, "multi");
+    if (multi_args) {
+        cmd_net_check_qemu_multi(multi_args);
+        return;
+    }
     if (tcp_args) {
         cmd_net_check_qemu_tcp(tcp_args);
         return;
@@ -5450,7 +5641,8 @@ static void cmd_net_check(const char* args) {
             video_print("Uso: net check [id] | "
                         "net check qemu <id> <ip-local> | "
                         "net check qemu dhcp <id> <dominio> | "
-                        "net check qemu tcp <id> <dominio>\n", 0x0C);
+                        "net check qemu tcp <id> <dominio> | "
+                        "net check qemu multi <id-a> <id-b>\n", 0x0C);
             return;
         }
         result = network_manager_find(id, &info);

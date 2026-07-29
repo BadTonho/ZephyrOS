@@ -118,7 +118,7 @@ Plataforma de aplicativos:   [████████████████�
 | `net devices` | Lista controladores PCI de rede |
 | `net info <id>` | Mostra metadados PCI de uma interface |
 | `net ethernet <id>` | Inspeciona fila, parsing e contadores Ethernet L2 |
-| `net test <id>` | Envia frame Ethernet de diagnostico pelo E1000 |
+| `net test <id>` | Envia frame Ethernet pela E1000 ou RTL8139 escolhida |
 | `net arp config <id> <ip>` | Vincula interface e IPv4 local em RAM |
 | `net arp status` | Mostra configuracao, cache e contadores ARP |
 | `net arp resolve <ip>` | Inicia ou consulta resolucao IPv4 para MAC |
@@ -131,6 +131,7 @@ Plataforma de aplicativos:   [████████████████�
 | `net dns config/status/table/clear` | Configura DNS e inspeciona o cache |
 | `net tcp status/connect` | Inspeciona TCP ou testa uma abertura ativa |
 | `net socket status/table` | Inspeciona sockets nativos e filas |
+| `net check qemu multi <id-a> <id-b>` | Valida isolamento de duas NICs |
 | `http get <url>/status` | Executa HTTP GET limitado e mostra a sessao |
 | `nslookup <dominio>` | Resolve registro DNS A cooperativamente |
 | `ping <ip-ou-dominio> [quantidade]` | Executa ICMP Echo cooperativo |
@@ -595,10 +596,12 @@ Plataforma de aplicativos:   [████████████████�
 - [ ] Cobertura complementar: peer controlado, perda/retransmissao, janela
   zero, RST, tabela cheia, RTL8139 e Classic/Modern.
 
-## Continuacao da S2 - Rede e atualizacoes (planejada)
+## Continuacao da S2 - Rede e atualizacoes
 
-- [ ] S2.8: ampliar a abstracao de NIC e adicionar RTL8139 sem duplicar a
-  camada de protocolos.
+- [ ] S2.8: implementacao Multi-NIC/RTL8139 pronta no codigo, com registro de
+  quatro interfaces, E1000 multi-instancia, IRQ compartilhada, uma unica NIC
+  L3 e suite `net check qemu multi`; conclusao aguarda Q3, build e matriz QEMU
+  executados pelo usuario.
 
 ## Roadmaps por etapa
 

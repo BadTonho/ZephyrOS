@@ -187,12 +187,14 @@ static ipv4_protocol_handler_fn ipv4_find_handler(uint8_t protocol) {
     return NULL;
 }
 
-static void ipv4_dispatch(const uint8_t* packet, uint16_t total_length,
+static void ipv4_dispatch(const char* interface_id,
+                          const uint8_t* packet, uint16_t total_length,
                           ipv4_delivery_t delivery) {
     ipv4_packet_view_t view;
     ipv4_protocol_handler_fn handler;
     int result;
 
+    view.interface_id = interface_id;
     view.payload = packet + IPV4_HEADER_SIZE;
     view.payload_length = total_length - IPV4_HEADER_SIZE;
     view.source_ip = ipv4_read_u32(packet + IPV4_OFFSET_SOURCE);
@@ -253,7 +255,8 @@ static int ipv4_handle_frame(const ethernet_frame_view_t* frame) {
     uint16_t total_length = 0;
     ipv4_delivery_t delivery;
 
-    if (!frame || frame->ethertype != IPV4_ETHERTYPE ||
+    if (!frame || !frame->interface_id ||
+        frame->ethertype != IPV4_ETHERTYPE ||
         frame->payload_length < IPV4_HEADER_SIZE) {
         ipv4_status.rx_invalid++;
         return OK;
@@ -275,6 +278,8 @@ static int ipv4_handle_frame(const ethernet_frame_view_t* frame) {
         packet[IPV4_OFFSET_PROTOCOL] == IPV4_PROTOCOL_UDP) {
         delivery = IPV4_DELIVERY_LIMITED_BROADCAST;
     } else if (ipv4_status.configured &&
+               ipv4_text_is_equal(frame->interface_id,
+                                  ipv4_status.interface_id) &&
                frame->destination_type ==
                    ETHERNET_DESTINATION_LOCAL_UNICAST &&
                destination_ip == ipv4_status.local_ip) {
@@ -295,7 +300,7 @@ static int ipv4_handle_frame(const ethernet_frame_view_t* frame) {
         ipv4_status.rx_limited_broadcast++;
     }
     ipv4_status.last_error = OK;
-    ipv4_dispatch(packet, total_length, delivery);
+    ipv4_dispatch(frame->interface_id, packet, total_length, delivery);
     return OK;
 }
 
@@ -535,7 +540,8 @@ int ipv4_send(uint32_t destination_ip, uint8_t protocol,
     if (!resolved) return OK;
     ipv4_build_packet(ipv4_status.local_ip, destination_ip, protocol,
                       payload, payload_length);
-    result = ethernet_send(next_hop_mac, IPV4_ETHERTYPE, ipv4_tx_buffer,
+    result = ethernet_send(ipv4_status.interface_id, next_hop_mac,
+                           IPV4_ETHERTYPE, ipv4_tx_buffer,
                            IPV4_HEADER_SIZE + payload_length);
     if (result != OK) {
         ipv4_status.last_error = result;
@@ -551,14 +557,15 @@ int ipv4_send(uint32_t destination_ip, uint8_t protocol,
     return OK;
 }
 
-int ipv4_send_limited_broadcast(uint32_t source_ip, uint8_t protocol,
+int ipv4_send_limited_broadcast(const char* interface_id,
+                                uint32_t source_ip, uint8_t protocol,
                                 const uint8_t* payload,
                                 uint16_t payload_length,
                                 uint8_t* out_sent) {
     uint8_t destination_mac[IPV4_MAC_ADDRESS_SIZE];
     int result;
 
-    if (!out_sent || (payload_length && !payload)) {
+    if (!interface_id || !out_sent || (payload_length && !payload)) {
         LOG_ERROR("NET", "Argumento nulo no broadcast IPv4");
         return ERR_NULL;
     }
@@ -567,11 +574,13 @@ int ipv4_send_limited_broadcast(uint32_t source_ip, uint8_t protocol,
         LOG_ERROR("NET", "Broadcast IPv4 antes da inicializacao");
         return ERR_STATE;
     }
-    if (protocol != IPV4_PROTOCOL_UDP ||
+    if (!interface_id[0] || protocol != IPV4_PROTOCOL_UDP ||
         payload_length > IPV4_MAX_PAYLOAD_SIZE ||
         (source_ip &&
          (!ipv4_status.configured ||
-          source_ip != ipv4_status.local_ip))) {
+          source_ip != ipv4_status.local_ip ||
+          !ipv4_text_is_equal(interface_id,
+                              ipv4_status.interface_id)))) {
         LOG_ERROR("NET", "Parametros invalidos no broadcast IPv4");
         return ERR_INVALID;
     }
@@ -579,7 +588,7 @@ int ipv4_send_limited_broadcast(uint32_t source_ip, uint8_t protocol,
             sizeof(destination_mac));
     ipv4_build_packet(source_ip, IPV4_LIMITED_BROADCAST, protocol,
                       payload, payload_length);
-    result = ethernet_send(destination_mac, IPV4_ETHERTYPE,
+    result = ethernet_send(interface_id, destination_mac, IPV4_ETHERTYPE,
                            ipv4_tx_buffer,
                            IPV4_HEADER_SIZE + payload_length);
     if (result != OK) {

@@ -62,8 +62,11 @@ idt_register_handler(33, keyboard_handler);
 ```
 
 `idt_register_handler()` recusa substituir um handler diferente que ja ocupa
-o vetor. Drivers PCI que usam INTx, como o E1000, falham de forma controlada
-em caso de conflito em vez de sobrescrever outro driver.
+o vetor. `idt_register_shared_irq_handler(irq_line, handler)` mantem, em
+paralelo, ate quatro handlers por linha IRQ legada. O dispatcher chama
+primeiro o handler exclusivo, depois todos os compartilhados e envia um unico
+EOI ao PIC. E1000 e RTL8139 usam essa tabela e cada handler percorre as suas
+instancias associadas a linha.
 
 ---
 
@@ -553,40 +556,55 @@ somente consulta a configuracao PCI, sem reinicializar ATA, AC97 ou PS/2.
 Memory Space e Bus Master para um dispositivo ja enumerado e confirma a leitura
 de volta. Ela retorna erro para ponteiro nulo, PCI indisponivel ou configuracao
 nao aceita pelo hardware. A API antiga `pci_enable_bus_mastering()` permanece
-para os drivers existentes.
+para os drivers existentes. `pci_enable_io_and_bus_mastering()` oferece a
+mesma confirmacao para drivers baseados em port I/O, como o RTL8139.
 
 ---
 
 ## E1000 (`e1000.c`)
 
-O driver S2.3 atende somente ao Intel `8086:100E` (82540EM) usado pelo QEMU.
-Ele requer BAR0 MMIO de 32 bits e uma IRQ PCI legada entre 0 e 15; configura
-Memory Space, bus mastering, reset com timeout do PIT, MAC por RAL/RAH e filas
-DMA de oito descritores RX/TX com buffers de 2 KiB alocados pelo PMM.
+O driver atende ao Intel `8086:100E` (82540EM) usado pelo QEMU. Cada chamada
+recebe o dispositivo PCI exato e cria ou recupera uma das quatro instancias:
 
 ```c
-int e1000_init(void);
-int e1000_get_status(e1000_status_t* out_status);
-int e1000_send_frame(const uint8_t* data, uint16_t length);
-int e1000_has_pending_rx(uint8_t* out_pending);
-int e1000_receive_frame(uint8_t* data, uint16_t capacity,
-                        uint16_t* out_length, uint8_t* out_received);
+int e1000_init(const pci_device_t* pci, const char* interface_id,
+               ethernet_interface_t* out_interface);
 ```
 
-`e1000_status_t` devolve somente uma copia com BDF, IRQ, MAC, link,
-contadores RX/TX, profundidade/pico da fila, descartes, interrupcoes e ultimo
-erro. `e1000_send_frame()` aceita frames Ethernet de 14 a 1518 bytes e espera
-a conclusao do descritor com limite de tempo.
+Cada instancia possui BAR0 MMIO de 32 bits, IRQ, MAC RAL/RAH, filas DMA de
+oito descritores RX/TX, buffers e contadores proprios. O resultado e uma
+`ethernet_interface_t` com contexto opaco e callbacks de status, RX, TX e
+polling; nao existe mais busca interna pelo primeiro `8086:100E` nem estado
+singleton.
 
-A IRQ apenas reconhece, contabiliza e marca o evento RX; ela nao copia frames
-nem chama protocolos. `e1000_has_pending_rx()` permite que o processo de
-sistema evite polling vazio. O consumidor usa `e1000_receive_frame()` em
-contexto normal, quando o driver valida os descritores, copia os frames para
-uma fila estatica de oito entradas e recicla o DMA. Fila vazia e um resultado
-valido com `out_received = 0`, enquanto ponteiros nulos, driver inativo ou
-buffer pequeno retornam erro controlado. ARP, IPv4 e ICMP pertencem aos
-servicos `src/core/` e nunca rodam na IRQ; DHCP, sockets, promiscuidade e
-RTL8139 ficam fora do escopo do driver.
+A IRQ compartilhada apenas reconhece, contabiliza e marca RX. A copia dos
+descritores para a fila estatica e a execucao dos protocolos ocorrem no
+polling normal. Ponteiros nulos, instancia inativa, frame invalido, falta de
+memoria e timeout retornam erro controlado e nao desativam outras instancias.
+
+## RTL8139 (`rtl8139.c`)
+
+O driver S2.8 atende ao Realtek `10EC:8139` em modo classico, sem C+. Ele usa
+BAR0 de port I/O, DMA de 32 bits, quatro buffers TX de 2 KiB e ring RX de
+8 KiB + 16 bytes, com extensao de 1,5 KiB para pacotes que cruzam o fim:
+
+```c
+int rtl8139_init(const pci_device_t* pci, const char* interface_id,
+                 ethernet_interface_t* out_interface);
+```
+
+Reset, MAC, RBSTART, TSAD0-3, RCR/TCR e mascaras de interrupcao sao
+configurados por instancia. A IRQ reconhece ISR, contabiliza eventos e marca
+RX/overflow; parsing do cabecalho RX, retirada do FCS, avanco de CAPR e
+protocolos permanecem fora da IRQ. Erro de ring reinicia somente o receptor
+da instancia afetada.
+
+O desenho segue o
+[datasheet RTL8139C(L)+](https://people.freebsd.org/~wpaul/RealTek/spec-8139cp%28160%29.pdf)
+em modo classico e o dispositivo
+[`rtl8139` do QEMU](https://www.qemu.org/2018/05/31/nic-parameter/) e o alvo
+de validacao. Promiscuidade, multicast, VLAN e modo C+ nao fazem parte do
+contrato.
 
 ### Estrutura
 

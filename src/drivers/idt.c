@@ -7,10 +7,15 @@
 #include "process/process.h"
 
 #define SYSCALL_VECTOR 0x80
+#define IRQ_VECTOR_BASE 32U
 
 idt_entry_t idt[256];
 idt_ptr_t idt_ptr;
 isr_handler_t interrupt_handlers[256];
+static isr_handler_t
+    shared_irq_handlers[IDT_IRQ_LINE_COUNT]
+                       [IDT_SHARED_IRQ_HANDLER_CAPACITY];
+static uint8_t shared_irq_handler_counts[IDT_IRQ_LINE_COUNT];
 static int idt_ready = 0;
 static int user_syscall_enabled = 0;
 
@@ -138,6 +143,13 @@ void idt_init(void) {
         idt_set_gate(i, 0, 0, 0);
         interrupt_handlers[i] = 0;
     }
+    for (uint32_t irq = 0; irq < IDT_IRQ_LINE_COUNT; irq++) {
+        shared_irq_handler_counts[irq] = 0;
+        for (uint32_t slot = 0;
+             slot < IDT_SHARED_IRQ_HANDLER_CAPACITY; slot++) {
+            shared_irq_handlers[irq][slot] = 0;
+        }
+    }
 
     idt_set_gate(0, (uint32_t)isr0, 0x08, 0x8E);
     idt_set_gate(1, (uint32_t)isr1, 0x08, 0x8E);
@@ -215,6 +227,45 @@ int idt_register_handler(uint8_t n, isr_handler_t handler) {
         return ERR_STATE;
     }
     interrupt_handlers[n] = handler;
+    return OK;
+}
+
+int idt_register_shared_irq_handler(uint8_t irq_line,
+                                    isr_handler_t handler) {
+    uint8_t count;
+
+    if (!handler) {
+        LOG_ERROR("IDT", "Handler compartilhado nulo");
+        return ERR_NULL;
+    }
+    if (irq_line >= IDT_IRQ_LINE_COUNT) {
+        LOG_ERROR("IDT", "Linha IRQ compartilhada invalida");
+        return ERR_INVALID;
+    }
+    count = shared_irq_handler_counts[irq_line];
+    for (uint8_t index = 0; index < count; index++) {
+        if (shared_irq_handlers[irq_line][index] == handler) return OK;
+    }
+    if (count >= IDT_SHARED_IRQ_HANDLER_CAPACITY) {
+        LOG_ERROR("IDT", "Limite de handlers compartilhados atingido");
+        return ERR_OVERFLOW;
+    }
+    shared_irq_handlers[irq_line][count] = handler;
+    shared_irq_handler_counts[irq_line] = count + 1U;
+    return OK;
+}
+
+int idt_get_shared_irq_handler_count(uint8_t irq_line,
+                                     uint8_t* out_count) {
+    if (!out_count) {
+        LOG_ERROR("IDT", "Destino nulo ao consultar IRQ compartilhada");
+        return ERR_NULL;
+    }
+    if (irq_line >= IDT_IRQ_LINE_COUNT) {
+        LOG_ERROR("IDT", "Linha IRQ invalida na consulta");
+        return ERR_INVALID;
+    }
+    *out_count = shared_irq_handler_counts[irq_line];
     return OK;
 }
 
@@ -332,8 +383,18 @@ void isr_handler(registers_t* regs) {
 }
 
 void irq_handler(registers_t* regs) {
+    uint8_t irq_line;
+
     if (interrupt_handlers[regs->int_no]) {
         interrupt_handlers[regs->int_no](regs);
+    }
+    if (regs->int_no >= IRQ_VECTOR_BASE &&
+        regs->int_no < IRQ_VECTOR_BASE + IDT_IRQ_LINE_COUNT) {
+        irq_line = (uint8_t)(regs->int_no - IRQ_VECTOR_BASE);
+        for (uint8_t index = 0;
+             index < shared_irq_handler_counts[irq_line]; index++) {
+            shared_irq_handlers[irq_line][index](regs);
+        }
     }
 
     if (regs->int_no >= 40) {

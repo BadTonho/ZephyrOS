@@ -215,7 +215,8 @@ static int arp_send_request(arp_cache_entry_t* entry, uint32_t now) {
                      entry->ip_address);
     entry->attempts++;
     entry->last_attempt_tick = now;
-    result = ethernet_send(destination, ARP_ETHERTYPE,
+    result = ethernet_send(arp_status.interface_id, destination,
+                           ARP_ETHERTYPE,
                            packet, sizeof(packet));
     if (result != OK) {
         arp_status.last_error = result;
@@ -232,7 +233,8 @@ static int arp_send_reply(const uint8_t* target_mac, uint32_t target_ip) {
     int result;
 
     arp_build_packet(packet, ARP_OPERATION_REPLY, target_mac, target_ip);
-    result = ethernet_send(target_mac, ARP_ETHERTYPE,
+    result = ethernet_send(arp_status.interface_id, target_mac,
+                           ARP_ETHERTYPE,
                            packet, sizeof(packet));
     if (result != OK) {
         arp_status.last_error = result;
@@ -349,6 +351,17 @@ static int arp_handle_frame(const ethernet_frame_view_t* frame) {
     uint32_t sender_ip;
     uint32_t target_ip;
 
+    if (!frame || !frame->interface_id) {
+        arp_status.invalid_packets++;
+        LOG_DEBUG("NET", "Pacote ARP sem interface de origem");
+        return OK;
+    }
+    if (!arp_status.configured ||
+        !arp_text_is_equal(frame->interface_id,
+                           arp_status.interface_id)) {
+        arp_status.ignored_packets++;
+        return OK;
+    }
     if (!arp_header_is_valid(frame, &operation)) {
         arp_status.invalid_packets++;
         LOG_DEBUG("NET", "Pacote ARP com cabecalho invalido");

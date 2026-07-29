@@ -242,52 +242,54 @@ desmontagem, suspensao, hibernacao ou reboot. `power_shutdown()` nunca retorna;
 `acpi_enter_s5()` retorna apenas quando sua pre-validacao impede qualquer
 escrita no hardware.
 
-## Servicos S2.1-S2.7: Ethernet, ARP, IPv4, ICMP, UDP, DHCP, DNS e TCP
+## Servicos S2.1-S2.8: Multi-NIC, Ethernet e pilha TCP/IP
 
 `network_manager` filtra por copia o snapshot PCI e mantem ate quatro
 controladores de classe `0x02`. O servico copia identificadores, localizacao,
 IRQ e BAR0-BAR5; os IDs `net-pci-BB:DD.F` permanecem estaveis e consultas
 tambem aceitam `net-pci-BB-DD.F`.
 
-`network_manager_status_t` separa inventario, modelos reconhecidos e drivers
-ativos. `network_interface_info_t` preserva os metadados PCI e informa modelo,
-estado do driver, link, MAC, contadores, fila RX e ultimo erro.
+`network_manager_status_t` separa inventario, modelos reconhecidos, drivers
+ativos, erros de driver e o ID da interface L3. `network_interface_info_t`
+preserva os metadados PCI e informa modelo, estado do driver, link, MAC,
+contadores, fila RX, ultimo erro, vinculo Ethernet, papel L3 e aquisicao DHCP.
 `network_manager_refresh()` continua sendo apenas uma nova varredura PCI: nao
-reseta, realoca DMA nem reinicializa o E1000 ou a camada Ethernet.
+reseta, realoca DMA nem reinicializa E1000, RTL8139 ou a camada Ethernet.
 
 O componente `Network` do `health` segue estas regras:
 
 - `READY`: existe pelo menos uma interface com driver ativo e as camadas
   Ethernet, ARP, IPv4, ICMP, UDP, DHCP, DNS, TCP, sockets e HTTP foram
   inicializados;
-- `DEGRADED`: controlador detectado sem driver ou inventario parcial;
+- `DEGRADED`: controlador reconhecido com falha, controlador sem driver ou
+  inventario parcial, mesmo quando outra NIC continua operacional;
 - `DISABLED`: nenhum controlador detectado ou snapshot indisponivel.
 
-Na S2.2, o kernel tenta inicializar o E1000 `8086:100E` depois do PCI e antes
-do snapshot de rede. A inicializacao usa BAR0 MMIO, DMA PMM, IRQ `32 + linha
-PCI`, MAC RAL/RAH e filas Ethernet L2. Sucesso deixa `Network` pronto e
-RX/TX disponivel; IPv4 continua indisponivel. NIC ausente, BAR/IRQ invalido,
-timeout, falta de memoria ou conflito de IRQ deixam apenas Network degradado.
-RTL8139 `10EC:8139` continua sem driver. A sincronizacao com recovery e
+Desde a S2.8, o kernel nao inicializa NICs diretamente. Depois do PCI,
+`network_manager_init()` cria o registro Ethernet, percorre todos os
+controladores reconhecidos e inicializa cada E1000 `8086:100E` ou RTL8139
+`10EC:8139` pelo BDF exato. Falha de uma instancia fica registrada e nao
+impede o probe nem o polling das demais. A sincronizacao com recovery e
 idempotente para que `device-scan` repetido sem mudanca nao aumente o contador
 de falhas.
 
-Na S2.3, `ethernet_interface_t` desacopla a camada L2 do E1000 por callbacks
-de RX pendente, recepcao e transmissao. A IRQ somente reconhece, contabiliza e
-marca o evento RX. O processo de sistema chama `network_manager_poll()`, mas a
-camada so consulta descritores quando o driver informa trabalho pendente.
+`ethernet_interface_t` desacopla a camada L2 dos drivers por contexto opaco e
+callbacks de status, RX pendente, recepcao e transmissao. Um registro fixo
+aceita quatro interfaces e o polling usa round-robin com orcamento global de
+oito frames. A IRQ somente reconhece, contabiliza e marca o evento RX. O
+processo de sistema chama `network_manager_poll()`, mas a camada so consulta
+o driver quando ele informa trabalho pendente.
 Nesse contexto o driver copia frames validos para uma fila estatica de oito
 entradas, recicla o DMA e a camada Ethernet valida tamanho, destino, origem e
 EtherType. Broadcast e unicast para a MAC local sao aceitos; outros destinos,
 cabecalhos invalidos e saturacao da fila possuem contadores separados.
 
-`ethernet_send()` monta cabecalho, origem local e padding minimo antes de usar
-o callback do driver. Uma tabela fixa de quatro handlers entrega uma visao
-sincrona do frame pelo EtherType; o ponteiro de payload so e valido durante o
-callback. Frames entregues, sem handler e recusados pelo protocolo possuem
-contadores separados. `network_manager_get_ethernet_diagnostic()` devolve por
-copia fila atual/pico, descartes, interrupcoes, totais L2 e o ultimo cabecalho
-aceito.
+`ethernet_send(interface_id, ...)` direciona explicitamente a transmissao,
+monta cabecalho, origem local e padding minimo antes de usar o callback do
+driver. Uma tabela fixa de quatro handlers entrega uma visao sincrona com o
+ID da interface e o EtherType; o ponteiro de payload so e valido durante o
+callback. `network_manager_get_ethernet_diagnostic()` devolve por copia os
+contadores agregados e os contadores, fila e ultimo frame da NIC solicitada.
 
 Na S2.4, `arp_init()` registra o EtherType `0x0806` somente depois da camada
 Ethernet. O modulo serializa os 28 bytes do pacote explicitamente em ordem de
@@ -354,8 +356,9 @@ sempre gera checksum TX. O envio normal continua assincrono em relacao ao ARP;
 o caminho separado de broadcast limitado e reservado ao bootstrap DHCP.
 
 O IPv4 aceita `255.255.255.255` somente em frame Ethernet broadcast e somente
-para UDP. `ipv4_send_limited_broadcast()` aceita origem zero durante a
-aquisicao DHCP ou o endereco local durante rebinding, sem criar entrada ARP.
+para UDP. `ipv4_send_limited_broadcast(interface_id, ...)` aceita origem zero
+durante a aquisicao DHCP ou o endereco local durante rebinding, sem criar
+entrada ARP.
 Unicast, roteamento, ICMP e filtros da S2.5 permanecem inalterados.
 
 O cliente DHCP usa UDP 68/67 e os estados `SELECTING`, `REQUESTING`, `BOUND`,
@@ -364,8 +367,10 @@ e Request iniciais usam broadcast e repetem em 1, 2 e 4 segundos. ACKs
 validados geram um evento de lease; somente o Network Manager aplica
 ARP/IPv4/ICMP/DNS e confirma o estado `BOUND`. T1 e T2 usam as opcoes do
 servidor ou 50%/87,5% do lease. NAK, expiracao e release removem apenas uma
-configuracao pertencente ao DHCP. Uma configuracao estatica existente
-permanece ativa durante uma aquisicao sem resposta.
+configuracao pertencente ao DHCP. Uma configuracao IPv4 existente permanece
+ativa durante uma aquisicao sem resposta, inclusive quando a negociacao ocorre
+em outra NIC. Somente um ACK valido aplica atomicamente a nova interface e
+encerra clientes HTTP, sockets e conexoes TCP anteriores.
 
 O cliente DNS usa uma porta efemera e uma consulta A/IN ativa. O parser
 limitado a 512 bytes valida pergunta, resposta, limites e nomes comprimidos,
@@ -413,9 +418,19 @@ incompativel aborta HTTP e sockets antes de remover a configuracao. Boot,
 renovacao DHCP sem mudanca e configuracao identica nao criam trafego nem
 interrompem conexoes.
 
+Na S2.8, `ethernet_frame_view_t`, `ipv4_packet_view_t` e
+`udp_datagram_view_t` carregam `interface_id`. ARP e IPv4 unicast aceitam
+somente a interface L3 configurada; DHCP filtra broadcasts pela interface em
+aquisicao. Continua existindo uma unica configuracao ARP/IPv4/DHCP/TCP ativa,
+selecionada pelo ID estavel, embora ate quatro NICs possam operar em L2.
+`ethernet_validate_state()` e `regcheck full` verificam IDs unicos, somas de
+contadores, vinculos com o inventario, uma unica interface L3 e limites das
+IRQs compartilhadas.
+
 Persistencia, sockets de usuario, servidor TCP, IPv6, TLS, mDNS, DNS
 TCP/EDNS/DNSSEC, DHCPDECLINE, loopback, forwarding, erros ICMP,
-fragmentacao/remontagem, multi-NIC e RTL8139 permanecem fora do contrato.
+fragmentacao/remontagem, multiplas rotas/IPs simultaneos, hot-plug, shutdown
+de NIC, VLAN, multicast e modo RTL8139 C+ permanecem fora do contrato.
 
 Referencias da implementacao: [RFC 791](https://www.rfc-editor.org/rfc/rfc791.html)
 para cabecalho/checksum IPv4, [RFC 792](https://www.rfc-editor.org/rfc/rfc792.html)

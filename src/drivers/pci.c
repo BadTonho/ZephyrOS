@@ -13,6 +13,7 @@ static int pci_scan_result = ERR_STATE;
 #define PCI_BUS_COUNT 256U
 #define PCI_DEVICES_PER_BUS 32U
 #define PCI_FUNCTIONS_PER_DEVICE 8U
+#define PCI_COMMAND_IO_SPACE 0x01U
 #define PCI_COMMAND_MEMORY_SPACE 0x02U
 #define PCI_COMMAND_BUS_MASTER 0x04U
 
@@ -213,6 +214,29 @@ int pci_enable_memory_and_bus_mastering(const pci_device_t* dev) {
     if ((command & (PCI_COMMAND_MEMORY_SPACE | PCI_COMMAND_BUS_MASTER)) !=
         (PCI_COMMAND_MEMORY_SPACE | PCI_COMMAND_BUS_MASTER)) {
         LOG_ERROR("PCI", "Nao foi possivel habilitar memoria e DMA PCI");
+        return ERR_UNAVAILABLE;
+    }
+    return OK;
+}
+
+int pci_enable_io_and_bus_mastering(const pci_device_t* dev) {
+    uint32_t command;
+
+    if (!dev) {
+        LOG_ERROR("PCI", "Dispositivo nulo ao habilitar I/O PCI");
+        return ERR_NULL;
+    }
+    if (!pci_initialized) {
+        LOG_ERROR("PCI", "PCI nao inicializado ao habilitar I/O");
+        return ERR_STATE;
+    }
+    command = pci_read(dev->bus, dev->device, dev->function, PCI_COMMAND);
+    command |= PCI_COMMAND_IO_SPACE | PCI_COMMAND_BUS_MASTER;
+    pci_write(dev->bus, dev->device, dev->function, PCI_COMMAND, command);
+    command = pci_read(dev->bus, dev->device, dev->function, PCI_COMMAND);
+    if ((command & (PCI_COMMAND_IO_SPACE | PCI_COMMAND_BUS_MASTER)) !=
+        (PCI_COMMAND_IO_SPACE | PCI_COMMAND_BUS_MASTER)) {
+        LOG_ERROR("PCI", "Nao foi possivel habilitar I/O e DMA PCI");
         return ERR_UNAVAILABLE;
     }
     return OK;

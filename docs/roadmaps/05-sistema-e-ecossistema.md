@@ -99,7 +99,8 @@ antecipar interfaces ou permissoes que ainda nao existem.
   `regcheck full` em `OK`.
 - [ ] Cobertura complementar da S2.7: peer controlado, perda de segmentos,
   janela zero, RST, RTL8139 e modos Classic/Modern.
-- [ ] S2.8: suporte multi-NIC e RTL8139 sem duplicar a camada de protocolos.
+- [ ] S2.8: suporte multi-NIC e RTL8139 implementado sem duplicar a camada de
+  protocolos; conclusao aguarda Q3, build e validacao QEMU pelo usuario.
 - [ ] Planejar atualizacao assinada ou verificada somente apos existir formato
   de pacote e politica de integridade.
 - [ ] Manter operacoes remotas opcionalmente desabilitadas e visiveis em

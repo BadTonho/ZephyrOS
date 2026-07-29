@@ -16,6 +16,7 @@
 #include "core/udp.h"
 #include "drivers/e1000.h"
 #include "drivers/pci.h"
+#include "drivers/rtl8139.h"
 
 #define NETWORK_PCI_CLASS 0x02U
 #define NETWORK_VENDOR_INTEL 0x8086U
@@ -34,6 +35,19 @@ static uint32_t network_last_protocol_tick;
 static uint8_t network_has_protocol_tick;
 static network_ipv4_source_t network_ipv4_source;
 static uint8_t network_manual_dns_override;
+static int network_id_matches(const char* expected,
+                              const char* requested);
+
+typedef struct {
+    uint8_t used;
+    uint8_t bus;
+    uint8_t device;
+    uint8_t function;
+    int result;
+} network_driver_record_t;
+
+static network_driver_record_t
+    network_driver_records[NETWORK_MANAGER_MAX_INTERFACES];
 
 static void network_append_char(char* text, uint32_t capacity,
                                 uint32_t* offset, char value) {
@@ -97,42 +111,97 @@ static void network_copy_bars(network_interface_info_t* entry,
     entry->bars[5] = pci->bar5;
 }
 
-static int network_is_e1000_entry(const network_interface_info_t* entry,
-                                  const e1000_status_t* status) {
-    return entry && status && status->detected &&
-           entry->model == NETWORK_ADAPTER_E1000 &&
-           entry->bus == status->bus && entry->device == status->device &&
-           entry->function == status->function;
+static network_driver_record_t* network_find_driver_record(
+    uint8_t bus, uint8_t device, uint8_t function) {
+    for (uint32_t index = 0;
+         index < NETWORK_MANAGER_MAX_INTERFACES; index++) {
+        network_driver_record_t* record =
+            &network_driver_records[index];
+
+        if (record->used && record->bus == bus &&
+            record->device == device &&
+            record->function == function) {
+            return record;
+        }
+    }
+    return NULL;
 }
 
-static void network_apply_e1000_status(network_interface_info_t* entry,
-                                       const e1000_status_t* status) {
-    if (!network_is_e1000_entry(entry, status)) return;
-    for (uint32_t index = 0; index < NETWORK_MAC_ADDRESS_SIZE; index++) {
-        entry->mac_address[index] = status->mac_address[index];
+static int network_record_driver_result(
+    const network_interface_info_t* entry, int result) {
+    network_driver_record_t* record;
+
+    if (!entry) {
+        LOG_ERROR("NET", "Interface nula ao registrar driver");
+        return ERR_NULL;
     }
-    entry->rx_packets = status->rx_packets;
-    entry->tx_packets = status->tx_packets;
-    entry->rx_errors = status->rx_errors;
-    entry->tx_errors = status->tx_errors;
-    entry->rx_dropped = status->rx_dropped;
-    entry->rx_queue_depth = status->rx_queue_depth;
-    entry->rx_queue_high_water = status->rx_queue_high_water;
-    entry->rx_queue_dropped = status->rx_queue_dropped;
-    entry->rx_interrupts = status->rx_interrupts;
-    entry->driver_error = status->last_error;
-    if (status->initialized) {
-        entry->state = NETWORK_INTERFACE_ACTIVE;
-        entry->link = status->link_up ? NETWORK_LINK_UP : NETWORK_LINK_DOWN;
-    } else if (status->last_error != ERR_NOT_FOUND) {
+    record = network_find_driver_record(
+        entry->bus, entry->device, entry->function);
+    if (!record) {
+        for (uint32_t index = 0;
+             index < NETWORK_MANAGER_MAX_INTERFACES; index++) {
+            if (!network_driver_records[index].used) {
+                record = &network_driver_records[index];
+                break;
+            }
+        }
+    }
+    if (!record) {
+        LOG_ERROR("NET", "Registro de drivers de rede lotado");
+        return ERR_OVERFLOW;
+    }
+    record->used = 1;
+    record->bus = entry->bus;
+    record->device = entry->device;
+    record->function = entry->function;
+    record->result = result;
+    return OK;
+}
+
+static void network_apply_ethernet_status(
+    network_interface_info_t* entry) {
+    network_driver_record_t* record;
+    network_interface_text_t text;
+    ethernet_interface_status_t status;
+
+    if (!entry || entry->model == NETWORK_ADAPTER_UNKNOWN) return;
+    record = network_find_driver_record(
+        entry->bus, entry->device, entry->function);
+    if (!record) return;
+    entry->driver_error = record->result;
+    if (record->result != OK) {
         entry->state = NETWORK_INTERFACE_DRIVER_ERROR;
-        entry->link = NETWORK_LINK_UNKNOWN;
+        return;
     }
+    if (network_manager_format_text(entry, &text) != OK ||
+        ethernet_get_interface_status(text.id, &status) != OK) {
+        entry->state = NETWORK_INTERFACE_DRIVER_ERROR;
+        entry->driver_error = ERR_STATE;
+        return;
+    }
+    entry->ethernet_attached = status.attached;
+    entry->state = status.driver.initialized ?
+                   NETWORK_INTERFACE_ACTIVE :
+                   NETWORK_INTERFACE_DRIVER_ERROR;
+    entry->link = status.driver.link_up ?
+                  NETWORK_LINK_UP : NETWORK_LINK_DOWN;
+    kmemcpy(entry->mac_address, status.mac_address,
+            NETWORK_MAC_ADDRESS_SIZE);
+    entry->rx_packets = status.driver.rx_packets;
+    entry->tx_packets = status.driver.tx_packets;
+    entry->rx_errors = status.driver.rx_errors;
+    entry->tx_errors = status.driver.tx_errors;
+    entry->rx_dropped = status.driver.rx_dropped;
+    entry->rx_queue_depth = status.driver.rx_queue_depth;
+    entry->rx_queue_high_water =
+        status.driver.rx_queue_high_water;
+    entry->rx_queue_dropped = status.driver.rx_queue_dropped;
+    entry->rx_interrupts = status.driver.rx_interrupts;
+    entry->driver_error = status.driver.last_error;
 }
 
 static void network_copy_interface(network_interface_info_t* entry,
-                                   const pci_device_t* pci,
-                                   const e1000_status_t* e1000_status) {
+                                   const pci_device_t* pci) {
     kmemset(entry, 0, sizeof(*entry));
     entry->model = network_detect_model(pci);
     entry->state = entry->model == NETWORK_ADAPTER_UNKNOWN ?
@@ -151,7 +220,7 @@ static void network_copy_interface(network_interface_info_t* entry,
     entry->irq = pci->irq;
     network_copy_bars(entry, pci);
     entry->driver_error = ERR_UNAVAILABLE;
-    network_apply_e1000_status(entry, e1000_status);
+    network_apply_ethernet_status(entry);
 }
 
 static int network_get_protocol_status(
@@ -253,16 +322,11 @@ static void network_apply_protocol_status(
         network_ipv4_source : NETWORK_IPV4_SOURCE_NONE;
 }
 
-static int network_collect_interfaces(
-    const e1000_status_t* e1000_status) {
+static int network_collect_interfaces(void) {
     uint8_t pci_count = 0;
     int pci_result;
     int result = OK;
 
-    if (!e1000_status) {
-        LOG_ERROR("NET", "Estado E1000 nulo no inventario");
-        return ERR_NULL;
-    }
     pci_result = pci_get_device_count(&pci_count);
     if (pci_result != OK && pci_result != ERR_OVERFLOW) {
         LOG_ERROR("NET", "Falha ao consultar inventario PCI");
@@ -289,8 +353,7 @@ static int network_collect_interfaces(
             return ERR_OVERFLOW;
         }
         network_copy_interface(
-            &network_interfaces[network_status.interface_count], &pci,
-            e1000_status);
+            &network_interfaces[network_status.interface_count], &pci);
         if (network_interfaces[network_status.interface_count].model !=
             NETWORK_ADAPTER_UNKNOWN) {
             network_status.recognized_count++;
@@ -299,13 +362,42 @@ static int network_collect_interfaces(
             NETWORK_INTERFACE_ACTIVE) {
             network_status.active_count++;
         }
+        if (network_interfaces[network_status.interface_count].state ==
+            NETWORK_INTERFACE_DRIVER_ERROR) {
+            network_status.driver_error_count++;
+        }
         network_status.interface_count++;
     }
     return result;
 }
 
+static void network_apply_interface_roles(
+    const ipv4_status_t* ipv4_status,
+    const dhcp_status_t* dhcp_status) {
+    uint8_t dhcp_pending =
+        dhcp_status->state == DHCP_STATE_SELECTING ||
+        dhcp_status->state == DHCP_STATE_REQUESTING ||
+        dhcp_status->state == DHCP_STATE_APPLYING;
+
+    if (ipv4_status->configured) {
+        network_set_text(network_status.l3_interface_id,
+                         sizeof(network_status.l3_interface_id),
+                         ipv4_status->interface_id);
+    }
+    for (uint32_t index = 0;
+         index < network_status.interface_count; index++) {
+        network_interface_text_t text;
+        network_interface_info_t* entry = &network_interfaces[index];
+
+        if (network_manager_format_text(entry, &text) != OK) continue;
+        entry->l3_active = ipv4_status->configured &&
+            network_id_matches(text.id, ipv4_status->interface_id);
+        entry->dhcp_pending = dhcp_pending &&
+            network_id_matches(text.id, dhcp_status->interface_id);
+    }
+}
+
 static int network_build_snapshot(void) {
-    e1000_status_t e1000_status;
     ethernet_status_t ethernet_status;
     arp_status_t arp_layer_status;
     ipv4_status_t ipv4_layer_status;
@@ -322,10 +414,6 @@ static int network_build_snapshot(void) {
     kmemset(&network_status, 0, sizeof(network_status));
     network_status.initialized = network_manager_initialized ? 1U : 0U;
     network_status.last_error = ERR_NOT_FOUND;
-    if (e1000_get_status(&e1000_status) != OK) {
-        LOG_ERROR("NET", "Falha ao consultar estado do E1000");
-        return ERR_STATE;
-    }
     if (network_get_protocol_status(
             &ethernet_status, &arp_layer_status,
             &ipv4_layer_status, &icmp_layer_status,
@@ -334,8 +422,10 @@ static int network_build_snapshot(void) {
             &socket_layer_status, &http_layer_status) != OK) {
         return ERR_STATE;
     }
-    result = network_collect_interfaces(&e1000_status);
+    result = network_collect_interfaces();
     if (result != OK && result != ERR_OVERFLOW) return result;
+    network_apply_interface_roles(&ipv4_layer_status,
+                                  &dhcp_layer_status);
     network_apply_protocol_status(
         &ethernet_status, &arp_layer_status,
         &ipv4_layer_status, &icmp_layer_status,
@@ -344,6 +434,17 @@ static int network_build_snapshot(void) {
         &socket_layer_status, &http_layer_status);
     if (network_status.partial) {
         network_status.last_error = ERR_OVERFLOW;
+    } else if (network_status.driver_error_count) {
+        network_status.last_error = ERR_STATE;
+        for (uint32_t index = 0;
+             index < network_status.interface_count; index++) {
+            if (network_interfaces[index].state ==
+                NETWORK_INTERFACE_DRIVER_ERROR) {
+                network_status.last_error =
+                    network_interfaces[index].driver_error;
+                break;
+            }
+        }
     } else if (network_status.active_count) {
         network_status.last_error =
             network_status.ethernet_available &&
@@ -371,10 +472,67 @@ static int network_build_snapshot(void) {
     return result;
 }
 
+static int network_find_pci_device(
+    const network_interface_info_t* entry, pci_device_t* out_pci) {
+    uint8_t count = 0;
+    int result;
+
+    if (!entry || !out_pci) {
+        LOG_ERROR("NET", "Argumento nulo ao localizar NIC PCI");
+        return ERR_NULL;
+    }
+    result = pci_get_device_count(&count);
+    if (result != OK && result != ERR_OVERFLOW) return result;
+    for (uint8_t index = 0; index < count; index++) {
+        result = pci_get_device_at(index, out_pci);
+        if (result != OK) return result;
+        if (out_pci->bus == entry->bus &&
+            out_pci->device == entry->device &&
+            out_pci->function == entry->function) {
+            return OK;
+        }
+    }
+    LOG_ERROR("NET", "NIC desapareceu do inventario PCI");
+    return ERR_NOT_FOUND;
+}
+
+static int network_probe_drivers(void) {
+    LOG_INFO("NET", "Inicializando drivers das interfaces reconhecidas");
+    for (uint32_t index = 0;
+         index < network_status.interface_count; index++) {
+        network_interface_info_t* entry = &network_interfaces[index];
+        network_interface_text_t text;
+        ethernet_interface_t interface;
+        pci_device_t pci;
+        int result;
+
+        if (entry->model == NETWORK_ADAPTER_UNKNOWN) continue;
+        result = network_find_pci_device(entry, &pci);
+        if (result == OK) {
+            result = network_manager_format_text(entry, &text);
+        }
+        if (result == OK) {
+            kmemset(&interface, 0, sizeof(interface));
+            result = entry->model == NETWORK_ADAPTER_E1000 ?
+                e1000_init(&pci, text.id, &interface) :
+                rtl8139_init(&pci, text.id, &interface);
+        }
+        if (result == OK) {
+            result = ethernet_attach_interface(&interface);
+        }
+        if (network_record_driver_result(entry, result) != OK) {
+            LOG_ERROR("NET", "Falha ao registrar resultado do driver");
+        }
+        if (result != OK) {
+            LOG_WARN("NET", "Falha isolada ao inicializar interface");
+        }
+    }
+    LOG_INFO("NET", "Probe dos drivers de rede concluido");
+    return OK;
+}
+
 static int network_start_ethernet(void) {
-    ethernet_interface_t interface;
     ethernet_status_t layer_status;
-    e1000_status_t driver_status;
     int result;
 
     if (!network_status.active_count) return OK;
@@ -388,26 +546,8 @@ static int network_start_ethernet(void) {
         if (!network_status.partial) network_status.last_error = OK;
         return OK;
     }
-    result = e1000_get_status(&driver_status);
-    if (result != OK || !driver_status.initialized) {
-        LOG_ERROR("NET", "E1000 indisponivel para camada Ethernet");
-        return result != OK ? result : ERR_STATE;
-    }
-    kmemset(&interface, 0, sizeof(interface));
-    interface.initialized = 1;
-    kmemcpy(interface.mac_address, driver_status.mac_address,
-            ETHERNET_MAC_ADDRESS_SIZE);
-    interface.rx_pending = e1000_has_pending_rx;
-    interface.receive_frame = e1000_receive_frame;
-    interface.send_frame = e1000_send_frame;
-    result = ethernet_init(&interface);
-    if (result != OK) {
-        LOG_ERROR("NET", "Falha ao iniciar camada Ethernet");
-        return result;
-    }
-    network_status.ethernet_available = 1;
-    if (!network_status.partial) network_status.last_error = OK;
-    return OK;
+    LOG_ERROR("NET", "Registro Ethernet incoerente com inventario");
+    return ERR_STATE;
 }
 
 static int network_start_arp(void) {
@@ -644,6 +784,10 @@ static void network_sync_recovery(int result) {
         state = RECOVERY_STATE_DEGRADED;
         error = ERR_OVERFLOW;
         message = "Inventario de rede parcial";
+    } else if (network_status.driver_error_count) {
+        state = RECOVERY_STATE_DEGRADED;
+        error = network_status.last_error;
+        message = "Uma ou mais interfaces falharam";
     } else if (network_status.active_count &&
                !network_status.ethernet_available) {
         state = RECOVERY_STATE_DEGRADED;
@@ -753,23 +897,91 @@ static int network_id_matches(const char* expected, const char* requested) {
     return *expected == '\0' && *requested == '\0';
 }
 
+static void network_start_protocols(void) {
+    int result = network_start_ethernet();
+
+    if (result != OK) {
+        network_status.ethernet_available = 0;
+        network_status.last_error = result;
+        LOG_ERROR("NET", "Inventario ativo sem camada Ethernet");
+    }
+    result = network_start_arp();
+    if (result != OK) {
+        network_status.arp_available = 0;
+        network_status.arp_configured = 0;
+        network_status.last_error = result;
+        LOG_ERROR("NET", "Inventario ativo sem protocolo ARP");
+    }
+    result = network_start_ipv4();
+    if (result != OK) {
+        network_status.ipv4_available = 0;
+        network_status.ipv4_configured = 0;
+        network_status.last_error = result;
+        LOG_ERROR("NET", "Inventario ativo sem protocolo IPv4");
+    }
+    result = network_start_icmp();
+    if (result != OK) {
+        network_status.icmp_available = 0;
+        network_status.last_error = result;
+        LOG_ERROR("NET", "Inventario ativo sem protocolo ICMP");
+    }
+    result = network_start_udp();
+    if (result != OK) {
+        network_status.udp_available = 0;
+        network_status.last_error = result;
+        LOG_ERROR("NET", "Inventario ativo sem protocolo UDP");
+    }
+    result = network_start_dhcp();
+    if (result != OK) {
+        network_status.dhcp_available = 0;
+        network_status.last_error = result;
+        LOG_ERROR("NET", "Inventario ativo sem cliente DHCP");
+    }
+    result = network_start_dns();
+    if (result != OK) {
+        network_status.dns_available = 0;
+        network_status.dns_configured = 0;
+        network_status.last_error = result;
+        LOG_ERROR("NET", "Inventario ativo sem cliente DNS");
+    }
+    result = network_start_tcp();
+    if (result != OK) {
+        network_status.tcp_available = 0;
+        network_status.tcp_connection_count = 0;
+        network_status.last_error = result;
+        LOG_ERROR("NET", "Inventario ativo sem protocolo TCP");
+    }
+    result = network_start_sockets();
+    if (result != OK) {
+        network_status.sockets_available = 0;
+        network_status.socket_count = 0;
+        network_status.last_error = result;
+        LOG_ERROR("NET", "Inventario ativo sem sockets nativos");
+    }
+    result = network_start_http();
+    if (result != OK) {
+        network_status.http_available = 0;
+        network_status.last_error = result;
+        LOG_ERROR("NET", "Inventario ativo sem cliente HTTP");
+    }
+}
+
 int network_manager_init(void) {
     int result;
-    int ethernet_result;
-    int arp_result;
-    int ipv4_result;
-    int icmp_result;
-    int udp_result;
-    int dhcp_result;
-    int dns_result;
-    int tcp_result;
-    int socket_result;
-    int http_result;
+    int snapshot_result;
 
     LOG_INFO("NET", "Inicializando inventario de rede");
     network_ipv4_source = NETWORK_IPV4_SOURCE_NONE;
     network_manual_dns_override = 0;
+    kmemset(network_driver_records, 0,
+            sizeof(network_driver_records));
     network_manager_initialized = 1;
+    result = ethernet_init();
+    if (result != OK) {
+        network_manager_initialized = 0;
+        LOG_ERROR("NET", "Falha ao inicializar registro Ethernet");
+        return result;
+    }
     result = network_build_snapshot();
     if (result != OK && result != ERR_OVERFLOW) {
         network_manager_initialized = 0;
@@ -778,70 +990,26 @@ int network_manager_init(void) {
         LOG_ERROR("NET", "Falha ao inicializar inventario de rede");
         return result;
     }
-    ethernet_result = network_start_ethernet();
-    if (ethernet_result != OK) {
-        network_status.ethernet_available = 0;
-        network_status.last_error = ethernet_result;
-        LOG_ERROR("NET", "Inventario ativo sem camada Ethernet");
+    if (network_probe_drivers() != OK) {
+        network_manager_initialized = 0;
+        LOG_ERROR("NET", "Falha ao executar probe das interfaces");
+        return ERR_STATE;
     }
-    arp_result = network_start_arp();
-    if (arp_result != OK) {
-        network_status.arp_available = 0;
-        network_status.arp_configured = 0;
-        network_status.last_error = arp_result;
-        LOG_ERROR("NET", "Inventario ativo sem protocolo ARP");
+    snapshot_result = network_build_snapshot();
+    if (snapshot_result != OK && snapshot_result != ERR_OVERFLOW) {
+        network_manager_initialized = 0;
+        LOG_ERROR("NET", "Falha ao reconstruir inventario apos probe");
+        return snapshot_result;
     }
-    ipv4_result = network_start_ipv4();
-    if (ipv4_result != OK) {
-        network_status.ipv4_available = 0;
-        network_status.ipv4_configured = 0;
-        network_status.last_error = ipv4_result;
-        LOG_ERROR("NET", "Inventario ativo sem protocolo IPv4");
-    }
-    icmp_result = network_start_icmp();
-    if (icmp_result != OK) {
-        network_status.icmp_available = 0;
-        network_status.last_error = icmp_result;
-        LOG_ERROR("NET", "Inventario ativo sem protocolo ICMP");
-    }
-    udp_result = network_start_udp();
-    if (udp_result != OK) {
-        network_status.udp_available = 0;
-        network_status.last_error = udp_result;
-        LOG_ERROR("NET", "Inventario ativo sem protocolo UDP");
-    }
-    dhcp_result = network_start_dhcp();
-    if (dhcp_result != OK) {
-        network_status.dhcp_available = 0;
-        network_status.last_error = dhcp_result;
-        LOG_ERROR("NET", "Inventario ativo sem cliente DHCP");
-    }
-    dns_result = network_start_dns();
-    if (dns_result != OK) {
-        network_status.dns_available = 0;
-        network_status.dns_configured = 0;
-        network_status.last_error = dns_result;
-        LOG_ERROR("NET", "Inventario ativo sem cliente DNS");
-    }
-    tcp_result = network_start_tcp();
-    if (tcp_result != OK) {
-        network_status.tcp_available = 0;
-        network_status.tcp_connection_count = 0;
-        network_status.last_error = tcp_result;
-        LOG_ERROR("NET", "Inventario ativo sem protocolo TCP");
-    }
-    socket_result = network_start_sockets();
-    if (socket_result != OK) {
-        network_status.sockets_available = 0;
-        network_status.socket_count = 0;
-        network_status.last_error = socket_result;
-        LOG_ERROR("NET", "Inventario ativo sem sockets nativos");
-    }
-    http_result = network_start_http();
-    if (http_result != OK) {
-        network_status.http_available = 0;
-        network_status.last_error = http_result;
-        LOG_ERROR("NET", "Inventario ativo sem cliente HTTP");
+    if (snapshot_result == ERR_OVERFLOW) result = ERR_OVERFLOW;
+    network_start_protocols();
+    snapshot_result = network_build_snapshot();
+    if (snapshot_result != OK && snapshot_result != ERR_OVERFLOW) {
+        network_status.last_error = snapshot_result;
+        LOG_ERROR("NET", "Falha ao consolidar estado da rede");
+        result = snapshot_result;
+    } else if (snapshot_result == ERR_OVERFLOW) {
+        result = ERR_OVERFLOW;
     }
     network_sync_recovery(result);
     if (result == ERR_OVERFLOW) {
@@ -1035,6 +1203,8 @@ static int network_apply_dhcp_lease(const dhcp_lease_t* lease) {
     network_status.arp_configured = 1;
     network_status.ipv4_configured = 1;
     network_status.ipv4_source = network_ipv4_source;
+    network_set_text(network_status.l3_interface_id,
+                     sizeof(network_status.l3_interface_id), text.id);
     network_status.dns_configured =
         (lease->dns_server ||
          (!lease_configuration_changed && old_manual)) ? 1U : 0U;
@@ -1060,12 +1230,14 @@ static int network_drop_dhcp_configuration(void) {
     network_status.ipv4_configured = 0;
     network_status.dns_configured = 0;
     network_status.ipv4_source = NETWORK_IPV4_SOURCE_NONE;
+    network_status.l3_interface_id[0] = '\0';
     return OK;
 }
 
 static void network_refresh_dynamic_status(void) {
     dhcp_status_t dhcp;
     dns_status_t dns;
+    ipv4_status_t ipv4;
     tcp_status_t tcp;
     net_socket_status_t sockets;
 
@@ -1077,6 +1249,12 @@ static void network_refresh_dynamic_status(void) {
     }
     if (dns_get_status(&dns) == OK) {
         network_status.dns_configured = dns.configured;
+    }
+    if (ipv4_get_status(&ipv4) == OK) {
+        network_status.ipv4_configured = ipv4.configured;
+        network_set_text(network_status.l3_interface_id,
+                         sizeof(network_status.l3_interface_id),
+                         ipv4.configured ? ipv4.interface_id : "");
     }
     if (tcp_get_status(&tcp) == OK) {
         network_status.tcp_connection_count = tcp.connection_count;
@@ -1201,7 +1379,8 @@ int network_manager_poll(uint32_t* out_processed) {
         }
         network_refresh_dynamic_status();
     }
-    if (maintenance_error == OK && !network_status.partial) {
+    if (maintenance_error == OK && !network_status.partial &&
+        !network_status.driver_error_count) {
         network_status.last_error = OK;
     }
     return OK;
@@ -1235,7 +1414,9 @@ int network_manager_get_count(uint32_t* out_count) {
 
 int network_manager_get_interface(uint32_t index,
                                   network_interface_info_t* out_info) {
-    e1000_status_t e1000_status;
+    network_interface_text_t text;
+    ipv4_status_t ipv4;
+    dhcp_status_t dhcp;
 
     if (!out_info) {
         LOG_ERROR("NET", "Destino nulo ao consultar interface");
@@ -1250,11 +1431,20 @@ int network_manager_get_interface(uint32_t index,
         return ERR_INVALID;
     }
     *out_info = network_interfaces[index];
-    if (e1000_get_status(&e1000_status) != OK) {
-        LOG_ERROR("NET", "Falha ao atualizar estado do E1000");
+    network_apply_ethernet_status(out_info);
+    if (network_manager_format_text(out_info, &text) != OK ||
+        ipv4_get_status(&ipv4) != OK ||
+        dhcp_get_status(&dhcp) != OK) {
+        LOG_ERROR("NET", "Falha ao atualizar papel da interface");
         return ERR_STATE;
     }
-    network_apply_e1000_status(out_info, &e1000_status);
+    out_info->l3_active = ipv4.configured &&
+        network_id_matches(text.id, ipv4.interface_id);
+    out_info->dhcp_pending =
+        (dhcp.state == DHCP_STATE_SELECTING ||
+         dhcp.state == DHCP_STATE_REQUESTING ||
+         dhcp.state == DHCP_STATE_APPLYING) &&
+        network_id_matches(text.id, dhcp.interface_id);
     return OK;
 }
 
@@ -1292,7 +1482,10 @@ int network_manager_format_text(const network_interface_info_t* info,
         network_set_text(out_text->name, NETWORK_INTERFACE_NAME_SIZE,
                          "Realtek RTL8139");
         network_set_text(out_text->driver, NETWORK_DRIVER_NAME_SIZE,
-                         "rtl8139 (planejado)");
+                         info->state == NETWORK_INTERFACE_ACTIVE ?
+                         "rtl8139 (ativo)" :
+                         info->state == NETWORK_INTERFACE_DRIVER_ERROR ?
+                         "rtl8139 (erro)" : "rtl8139 (pendente)");
     } else {
         network_set_text(out_text->name, NETWORK_INTERFACE_NAME_SIZE,
                          "Controlador de rede PCI");
@@ -1331,6 +1524,7 @@ int network_manager_find(const char* id, network_interface_info_t* out_info) {
 
 int network_manager_send_diagnostic(const char* id) {
     network_interface_info_t info;
+    network_interface_text_t text;
     uint8_t destination[NETWORK_MAC_ADDRESS_SIZE];
     static const char payload[] = "ZEPHYROS-S2.3-ETHERNET";
     int result;
@@ -1344,16 +1538,18 @@ int network_manager_send_diagnostic(const char* id) {
         LOG_ERROR("NET", "Interface invalida para teste de rede");
         return result;
     }
-    if (info.model != NETWORK_ADAPTER_E1000 ||
-        info.state != NETWORK_INTERFACE_ACTIVE ||
+    if (info.state != NETWORK_INTERFACE_ACTIVE ||
         !network_status.ethernet_available) {
-        LOG_WARN("NET", "Teste solicitado sem E1000 ativo");
+        LOG_WARN("NET", "Teste solicitado sem interface ativa");
         return ERR_UNAVAILABLE;
     }
+    result = network_manager_format_text(&info, &text);
+    if (result != OK) return result;
     for (uint32_t index = 0; index < NETWORK_MAC_ADDRESS_SIZE; index++) {
         destination[index] = NETWORK_ETHERNET_BROADCAST_OCTET;
     }
-    result = ethernet_send(destination, NETWORK_DIAGNOSTIC_ETHERTYPE,
+    result = ethernet_send(text.id, destination,
+                           NETWORK_DIAGNOSTIC_ETHERTYPE,
                            (const uint8_t*)payload, sizeof(payload) - 1U);
     if (result != OK) {
         LOG_ERROR("NET", "Falha no teste de transmissao Ethernet");
@@ -1449,6 +1645,7 @@ int network_manager_configure_arp(const char* id, uint32_t local_ip) {
         network_status.dns_configured = 0;
         network_ipv4_source = NETWORK_IPV4_SOURCE_NONE;
         network_manual_dns_override = 0;
+        network_status.l3_interface_id[0] = '\0';
     }
     result = arp_configure(text.id, info.mac_address, local_ip);
     if (result != OK) {
@@ -1538,13 +1735,15 @@ int network_manager_configure_ipv4(const char* id, uint32_t local_ip,
     network_status.dns_configured = 0;
     network_status.dhcp_bound = 0;
     network_status.ipv4_source = network_ipv4_source;
+    network_set_text(network_status.l3_interface_id,
+                     sizeof(network_status.l3_interface_id), text.id);
     return OK;
 }
 
 int network_manager_acquire_dhcp(const char* id) {
     network_interface_info_t info;
     network_interface_text_t text;
-    ipv4_status_t ipv4;
+    dhcp_status_t dhcp;
     int result;
 
     if (!id) {
@@ -1567,20 +1766,25 @@ int network_manager_acquire_dhcp(const char* id) {
         return ERR_UNAVAILABLE;
     }
     result = network_manager_format_text(&info, &text);
-    if (result != OK || ipv4_get_status(&ipv4) != OK) {
+    if (result != OK || dhcp_get_status(&dhcp) != OK) {
         LOG_ERROR("NET", "Falha ao preparar aquisicao DHCP");
         return result != OK ? result : ERR_STATE;
     }
-    if (ipv4.configured &&
-        !network_id_matches(ipv4.interface_id, text.id)) {
-        LOG_ERROR("NET", "DHCP solicitado em outra interface");
-        return ERR_STATE;
+    if (dhcp.state != DHCP_STATE_IDLE &&
+        dhcp.state != DHCP_STATE_FAILED &&
+        dhcp.state != DHCP_STATE_EXPIRED) {
+        result = dhcp_reset();
+        if (result != OK) {
+            LOG_ERROR("NET", "Falha ao reiniciar aquisicao DHCP");
+            return result;
+        }
     }
     result = dhcp_acquire(text.id, info.mac_address);
     if (result != OK) {
         LOG_ERROR("NET", "Cliente DHCP recusou aquisicao");
         return result;
     }
+    network_status.dhcp_bound = 0;
     return OK;
 }
 
@@ -1667,7 +1871,7 @@ int network_manager_configure_dns(uint32_t server_ip) {
 int network_manager_get_ethernet_diagnostic(
     const char* id, network_ethernet_diagnostic_t* out_diagnostic) {
     network_interface_info_t info;
-    e1000_status_t driver_status;
+    network_interface_text_t text;
     int result;
 
     if (!id || !out_diagnostic) {
@@ -1680,8 +1884,7 @@ int network_manager_get_ethernet_diagnostic(
         LOG_ERROR("NET", "Interface invalida no diagnostico Ethernet");
         return result;
     }
-    if (info.model != NETWORK_ADAPTER_E1000 ||
-        info.state != NETWORK_INTERFACE_ACTIVE ||
+    if (info.state != NETWORK_INTERFACE_ACTIVE ||
         !network_status.ethernet_available) {
         LOG_WARN("NET", "Diagnostico solicitado sem Ethernet ativa");
         return ERR_UNAVAILABLE;
@@ -1691,19 +1894,22 @@ int network_manager_get_ethernet_diagnostic(
         LOG_ERROR("NET", "Falha no polling do diagnostico Ethernet");
         return result;
     }
+    result = network_manager_format_text(&info, &text);
+    if (result != OK) return result;
     if (ethernet_get_status(&out_diagnostic->layer) != OK ||
-        e1000_get_status(&driver_status) != OK) {
+        ethernet_get_interface_status(
+            text.id, &out_diagnostic->interface) != OK) {
         LOG_ERROR("NET", "Falha ao obter contadores Ethernet");
         return ERR_STATE;
     }
     out_diagnostic->driver_queue_depth =
-        driver_status.rx_queue_depth;
+        out_diagnostic->interface.driver.rx_queue_depth;
     out_diagnostic->driver_queue_high_water =
-        driver_status.rx_queue_high_water;
+        out_diagnostic->interface.driver.rx_queue_high_water;
     out_diagnostic->driver_queue_dropped =
-        driver_status.rx_queue_dropped;
+        out_diagnostic->interface.driver.rx_queue_dropped;
     out_diagnostic->driver_rx_interrupts =
-        driver_status.rx_interrupts;
+        out_diagnostic->interface.driver.rx_interrupts;
     return OK;
 }
 

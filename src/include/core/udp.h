@@ -12,6 +12,7 @@
 typedef uint32_t udp_endpoint_handle_t;
 
 typedef struct {
+    const char* interface_id;
     const uint8_t* payload;
     uint16_t payload_length;
     uint32_t source_ip;
@@ -51,6 +52,7 @@ int udp_send(udp_endpoint_handle_t handle, uint32_t destination_ip,
              uint16_t destination_port, const uint8_t* payload,
              uint16_t payload_length, uint8_t* out_sent);
 int udp_send_limited_broadcast(udp_endpoint_handle_t handle,
+                               const char* interface_id,
                                uint32_t source_ip,
                                uint16_t destination_port,
                                const uint8_t* payload,

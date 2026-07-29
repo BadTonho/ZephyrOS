@@ -120,6 +120,18 @@ static uint8_t dhcp_mac_valid(const uint8_t* mac) {
     return nonzero;
 }
 
+static uint8_t dhcp_text_is_equal(const char* first,
+                                  const char* second) {
+    uint32_t index = 0;
+
+    if (!first || !second) return 0;
+    while (first[index] && second[index] &&
+           first[index] == second[index]) {
+        index++;
+    }
+    return first[index] == second[index];
+}
+
 static int dhcp_copy_text(char* destination, uint32_t capacity,
                           const char* source) {
     uint32_t length = 0;
@@ -358,7 +370,8 @@ static int dhcp_send_discover(void) {
     result = dhcp_build_discover(&length);
     if (result == OK) {
         result = udp_send_limited_broadcast(
-            dhcp_endpoint, 0U, DHCP_SERVER_PORT,
+            dhcp_endpoint, dhcp_status.interface_id, 0U,
+            DHCP_SERVER_PORT,
             dhcp_tx_buffer, length, &sent);
     }
     if (result != OK || !sent || !frequency) {
@@ -380,7 +393,8 @@ static int dhcp_send_selecting_request(void) {
     result = dhcp_build_request(1U, 0U, &length);
     if (result == OK) {
         result = udp_send_limited_broadcast(
-            dhcp_endpoint, 0U, DHCP_SERVER_PORT,
+            dhcp_endpoint, dhcp_status.interface_id, 0U,
+            DHCP_SERVER_PORT,
             dhcp_tx_buffer, length, &sent);
     }
     if (result != OK || !sent || !frequency) {
@@ -415,7 +429,8 @@ static int dhcp_send_bound_request(uint8_t rebinding) {
     if (result != OK) return result;
     if (rebinding) {
         result = udp_send_limited_broadcast(
-            dhcp_endpoint, dhcp_status.lease.address,
+            dhcp_endpoint, dhcp_status.interface_id,
+            dhcp_status.lease.address,
             DHCP_SERVER_PORT, dhcp_tx_buffer, length, &sent);
     } else {
         result = udp_send(
@@ -655,6 +670,16 @@ static int dhcp_handle_datagram(const udp_datagram_view_t* datagram) {
     dhcp_parsed_t parsed;
     int result;
 
+    if (!datagram || !datagram->interface_id) {
+        dhcp_status.invalid_packets++;
+        LOG_DEBUG("NET", "Datagrama DHCP sem interface de origem");
+        return OK;
+    }
+    if (!dhcp_text_is_equal(datagram->interface_id,
+                            dhcp_status.interface_id)) {
+        dhcp_status.ignored_packets++;
+        return OK;
+    }
     if (dhcp_status.state != DHCP_STATE_SELECTING &&
         dhcp_status.state != DHCP_STATE_REQUESTING &&
         dhcp_status.state != DHCP_STATE_RENEWING &&

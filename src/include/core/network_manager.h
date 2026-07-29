@@ -53,6 +53,9 @@ typedef struct {
     uint8_t irq;
     uint32_t bars[NETWORK_PCI_BAR_COUNT];
     uint8_t mac_address[NETWORK_MAC_ADDRESS_SIZE];
+    uint8_t ethernet_attached;
+    uint8_t l3_active;
+    uint8_t dhcp_pending;
     uint32_t rx_packets;
     uint32_t tx_packets;
     uint32_t rx_errors;
@@ -89,6 +92,8 @@ typedef struct {
     uint32_t interface_count;
     uint32_t recognized_count;
     uint32_t active_count;
+    uint32_t driver_error_count;
+    char l3_interface_id[NETWORK_INTERFACE_ID_SIZE];
     int last_error;
 } network_manager_status_t;
 
@@ -105,6 +110,7 @@ typedef struct {
     uint32_t driver_queue_dropped;
     uint32_t driver_rx_interrupts;
     ethernet_status_t layer;
+    ethernet_interface_status_t interface;
 } network_ethernet_diagnostic_t;
 
 int network_manager_init(void);

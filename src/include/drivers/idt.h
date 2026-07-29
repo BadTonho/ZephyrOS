@@ -4,6 +4,9 @@
 #include "types.h"
 #include "core/errors.h"
 
+#define IDT_IRQ_LINE_COUNT 16U
+#define IDT_SHARED_IRQ_HANDLER_CAPACITY 4U
+
 typedef struct {
     uint16_t base_low;
     uint16_t selector;
@@ -29,6 +32,10 @@ typedef void (*isr_handler_t)(registers_t*);
 void idt_init(void);
 void idt_set_gate(uint8_t num, uint32_t base, uint16_t selector, uint8_t flags);
 int idt_register_handler(uint8_t n, isr_handler_t handler);
+int idt_register_shared_irq_handler(uint8_t irq_line,
+                                    isr_handler_t handler);
+int idt_get_shared_irq_handler_count(uint8_t irq_line,
+                                     uint8_t* out_count);
 int idt_enable_user_syscall(void);
 int idt_is_user_syscall_enabled(void);
 

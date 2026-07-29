@@ -21,7 +21,6 @@
 #include "drivers/tss.h"
 #include "drivers/ata.h"
 #include "drivers/pci.h"
-#include "drivers/e1000.h"
 #include "fs/fs.h"
 #include "apps/shell.h"
 #include "drivers/speaker.h"
@@ -583,17 +582,6 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         video_print("[!!] Inventario de dispositivos indisponivel\n", 0x0C);
     }
 
-    video_print("[..] Iniciando E1000...\n", 0x08);
-    int e1000_result = e1000_init();
-    if (e1000_result == OK) {
-        video_print("[OK] E1000 pronto\n", 0x07);
-    } else if (e1000_result == ERR_NOT_FOUND) {
-        video_print("[--] E1000 nao encontrado\n", 0x08);
-    } else {
-        LOG_ERROR("KERNEL", "Falha ao inicializar E1000");
-        video_print("[!!] E1000 indisponivel\n", 0x0E);
-    }
-
     video_print("[..] Criando inventario de rede...\n", 0x08);
     int network_result = network_manager_init();
     network_manager_status_t network_status;
@@ -605,6 +593,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         video_print("[!!] Estado de rede indisponivel\n", 0x0C);
     } else if (network_status.partial) {
         video_print("[!!] Inventario de rede parcial\n", 0x0E);
+    } else if (network_status.active_count &&
+               network_status.driver_error_count) {
+        video_print("[!!] Rede ativa com NIC degradada\n", 0x0E);
     } else if (network_status.active_count &&
                network_status.ethernet_available) {
         video_print("[OK] Camada Ethernet ativa\n", 0x07);
