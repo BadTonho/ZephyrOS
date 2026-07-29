@@ -44,13 +44,32 @@ camadas de configuracao, descoberta, montagem e distribuicao sobre elas.
 
 ## Ordem de dependencia
 
-1. Configuracao de mouse e escala de interface sem persistencia.
-2. Descoberta de volumes e montagem somente-leitura.
-3. Indice em RAM e busca por nomes sobre volumes montados.
-4. Canal de release por tag sobre o ZUPD remoto existente.
-5. Transporte e drivers especificos de Wi-Fi e Bluetooth.
+1. Pilha USB e suporte inicial a controladoras UHCI/EHCI.
+2. Configuracao de mouse e escala de interface sem persistencia.
+3. Descoberta de volumes e montagem somente-leitura (incluindo armazenamento USB MSC).
+4. Indice em RAM e busca por nomes sobre volumes montados.
+5. Canal de release por tag sobre o ZUPD remoto existente.
+6. Transporte e drivers especificos de Wi-Fi e Bluetooth (com suporte a transporte USB).
 
-## EP1 - Mouse e video acessiveis
+## EP1 - Pilha USB e controladoras base
+
+### Implementacao
+
+- [ ] Detectar e inventariar controladores de host USB no barramento PCI (UHCI/EHCI via PCI class `0x0C` and subclass `0x03`).
+- [ ] Inicializar o controlador UHCI (configuração de portas I/O, enfileiramento de descritores de transferência e habilitar interrupções).
+- [ ] Implementar a pilha USB Core: enumeração de dispositivos no barramento, atribuição de endereços de porta e leitura de descritores de dispositivo, configuração e interface.
+- [ ] Desenvolver suporte a transferências de Controle (Control) e Lote (Bulk) para comunicação de dados.
+- [ ] Criar drivers mínimos para classes USB de exemplo:
+  - USB Mass Storage Class (MSC) para leitura de setores em pendrives virtuais.
+  - USB Human Interface Device (HID) para teclado e mouse como alternativa aos drivers PS/2 nativos.
+- [ ] Adicionar comandos do Shell: `usb status`, `usb list` e `usb device <id>`.
+- [ ] Registrar o status do serviço USB no sistema de `health` do kernel.
+
+### Criterio de saida
+
+A enumeração e leitura de dispositivos USB no QEMU não interferem com o mouse e teclado PS/2 existentes. Controladores ausentes no PCI resultam em serviço desabilitado no `health` de forma controlada, e erros de comunicação USB geram `LOG_ERROR` sem travar o kernel.
+
+## EP2 - Mouse e video acessiveis
 
 ### Implementacao
 
@@ -84,13 +103,13 @@ apos aplicar ou reverter um modo VESA. Valores invalidos, hardware ausente e
 timeout de confirmacao falham controladamente, sem bloquear o fallback
 Classico.
 
-## EP2 - Volumes e montagem de particoes
+## EP3 - Volumes e montagem de particoes
 
 ### Implementacao
 
 - [ ] Descobrir MBR somente em leitura e inventariar discos, particoes e
   volumes por identificadores estaveis.
-- [ ] Criar uma abstracao de volume acima de ATA sem alterar a API FAT atual
+- [ ] Criar uma abstracao de volume acima de ATA (e do driver USB Mass Storage da EP1) sem alterar a API FAT atual
   ate os chamadores passarem explicitamente o volume alvo.
 - [ ] Validar limites do volume e BPB antes de montar FAT12/FAT32 sob demanda.
 - [ ] Limitar memoria, numero de volumes e operacoes concorrentes; toda falha
@@ -99,6 +118,7 @@ Classico.
   `storage unmount <id>`; comandos de consulta nao gravam no disco.
 - [ ] Mostrar volumes montados no Explorer e Settings, mantendo o volume de
   boot como fallback quando nenhum volume adicional for valido.
+- [ ] Integrar volumes detectados via USB MSC na EP1 à interface de volumes montáveis.
 - [ ] Documentar uma fase futura, separada, para GPT, formatacao e alteracao
   da tabela de particoes com staging, journal e recuperacao.
 
@@ -108,7 +128,7 @@ Listar e montar um volume valido nao modifica setores. Particoes ausentes,
 corrompidas ou com filesystem desconhecido permanecem isoladas, sem afetar o
 boot, Shell, filesystem atual ou outros volumes montados.
 
-## EP3 - Indice e pesquisa de arquivos
+## EP4 - Indice e pesquisa de arquivos
 
 ### Implementacao
 
@@ -133,7 +153,7 @@ Uma busca limitada encontra caminhos corretos sem travar a interface. Indice
 corrompido, cancelado ou sem memoria gera log e pode ser reconstruido, sem
 impedir navegacao normal do Explorer ou uso do filesystem.
 
-## EP4 - Canal de releases por tags do GitHub
+## EP5 - Canal de releases por tags do GitHub
 
 ### Implementacao
 
@@ -162,14 +182,15 @@ somente `update apply` instala uma atualizacao apos confirmacao. Rede ausente,
 origem maliciosa e falha de download preservam cache, atualizacao local e
 rollback existentes.
 
-## EP5 - Wi-Fi e Bluetooth por hardware suportado
+## EP6 - Wi-Fi e Bluetooth por hardware suportado
 
 ### Implementacao
 
 - [ ] Inventariar controladores sem inicializar hardware e selecionar um
   chipset alvo para Wi-Fi e outro para Bluetooth, incluindo seu transporte
-  (PCI/PCIe ou USB), DMA, IRQ e firmware requerido.
-- [ ] Planejar e implementar a base de transporte que estiver faltando antes
+  (PCI/PCIe ou USB da EP1), DMA, IRQ e firmware requerido.
+- [ ] Planejar e implementar a base de transporte (como o pareamento de USB
+  ou drivers de barramento específicos) que estiver faltando antes
   de qualquer associacao Wi-Fi ou emparelhamento Bluetooth.
 - [ ] Integrar uma interface Wi-Fi validada ao `network_manager`, reutilizando
   Ethernet, IPv4, DHCP, DNS, TCP e HTTP em vez de duplicar a pilha IP.
