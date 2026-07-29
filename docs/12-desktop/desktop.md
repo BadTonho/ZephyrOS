@@ -129,7 +129,9 @@ Menu Iniciar criam ou focalizam uma única janela de cada tipo.
 - **Entrada**: o corpo focaliza uma janela; os controles da barra de título
   fecham, minimizam ou maximizam/restauram. Teclado e mouse do conteúdo são
   encaminhados ao aplicativo focalizado; `Esc`, `Tab`, `F1` e `F2` não são
-  atalhos globais do WM moderno. Em um workspace vazio, `Esc` não produz ação.
+  atalhos globais do WM moderno. Em um workspace vazio ou aplicativo hospedado
+  ocioso, `Esc` não fecha janelas; ele permanece reservado para cancelar o
+  contexto interno atual.
   A janela focalizada recebe um contorno azul de 2 px, além da sua barra de
   título ativa.
 
@@ -140,7 +142,7 @@ No modo Moderno, `Alt+Tab` avança o foco entre janelas visíveis e
 minimiza e `Alt+F10` alterna entre maximizar e restaurar. Esses atalhos não
 alteram a API pública do WM. Teclas sem `Alt`, inclusive `Tab`, `F1` e `F2`,
 continuam sendo encaminhadas diretamente ao aplicativo focalizado. O modo
-Clássico preserva os atalhos do WM textual.
+Clássico preserva os atalhos do WM textual e o fechamento ocioso por `Esc`.
 
 ### Estrutura de Janela
 

@@ -613,7 +613,7 @@ static void fm_modern_draw_toolbar(int x, int y, int width) {
     gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)width,
                    FM_MODERN_TOOLBAR_HEIGHT, GUI_COLOR_BG, 0);
     fm_draw_text_limited(x + FM_MODERN_INSET, y + 6, width - 16,
-                         "F1 Ajuda  F2 Renomear  F3 Ver  F5 Atualizar  F6 Pasta  F7 Arquivo  F8 Excluir  Esc Sair",
+                         "F1 Ajuda  F2 Renomear  F3 Ver  F5 Atualizar  F6 Pasta  F7 Arquivo  F8 Excluir  Alt+F4 Sair",
                          GUI_COLOR_TEXT);
 }
 
@@ -904,7 +904,7 @@ static void fm_modern_draw_help(void) {
         "F7          Criar novo arquivo",
         "F8          Excluir arquivo",
         "Ctrl+L      Digitar caminho",
-        "Esc         Sair do Explorer"
+        "Esc         Voltar ao Explorer"
     };
     int line_count = sizeof(lines) / sizeof(lines[0]);
 
@@ -1915,8 +1915,8 @@ void fm_handle_key(uint8_t scancode) {
         return;
     }
 
-    if (scancode == 0x01) { // Esc = Fechar
-        fm_close();
+    if (scancode == 0x01) {
+        if (state.mode == FM_MODE_CLASSIC) fm_close();
         return;
     }
 

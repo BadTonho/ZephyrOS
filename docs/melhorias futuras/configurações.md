@@ -28,7 +28,8 @@
 - ✅ Navegação por Tab entre categorias. *(settings.c:507-516)*
 - ✅ Navegação por setas nas opções. *(settings.c:518-536)*
 - ✅ Enter para editar. *(settings.c:538-542)*
-- ✅ Esc para fechar. *(settings.c:502-504)*
+- ✅ Esc cancela edição/diálogo e fecha somente o Classic ocioso. *(settings.c)*
+- ✅ Botão X ou Alt+F4 fecha a janela Modern. *(wm.c)*
 - ✅ Tipos de opção: Toggle, Lista, Ação. *(settings.h:20-25)*
 
 ---

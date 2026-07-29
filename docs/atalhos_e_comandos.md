@@ -124,7 +124,8 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 
 ### 2.2. Window Manager (Gerenciador de Janelas)
 - **`Tab`**: Alterna o foco para a próxima janela aberta.
-- **`Esc`**: Fecha a janela que está atualmente em foco.
+- **`Esc`**: Cancela o contexto interno do aplicativo; quando ocioso, não fecha janelas Modern.
+- **`Alt+F4`** ou **botão `X`**: Fecha a janela Modern atualmente em foco.
 - **`F1`**: Minimiza a janela atual.
 - **`F2`**: Maximiza a janela atual (ou restaura caso já esteja maximizada).
 - **`Clique Esquerdo (na Barra de Título)`**: Permite segurar e arrastar a janela (no modo gráfico).
@@ -153,7 +154,8 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 - **`R`**: Reinicia o processo (permitido apenas para serviços do sistema, ex: Explorer).
 - **`F`**: Foca/Alterna a tela diretamente para a janela do aplicativo responsável pelo processo.
 - **`S`**: Altera a coluna e o sentido da ordenação (Sort) da tabela de uso de CPU/RAM.
-- **`Esc`**: Fecha o Task Manager.
+- **`Esc`**: Fecha detalhes; no modo Classic, também fecha o Task Manager.
+- **`Alt+F4`** ou **botão `X`**: Fecha o Task Manager Modern.
 
 ### 2.5. Área de Trabalho (Desktop)
 - **`Setas ←/→/↑/↓`**: Seleciona os diferentes ícones de programas.
@@ -169,6 +171,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 - **`A`**: Executa o preflight de aplicacao.
 - **`B`**: Executa o preflight de rollback.
 - **`Enter`**: Confirma a acao preparada.
-- **`Esc`**: Cancela a confirmacao ou fecha o aplicativo.
+- **`Esc`**: Cancela a confirmacao ou operacao; no Classic ocioso, fecha o aplicativo.
+- **`Alt+F4`** ou **botao `X`**: Fecha o aplicativo Modern.
 - **`F12`**: Solicita cancelamento cooperativo durante uma gravacao.
 - **Clique esquerdo (Modern)**: Seleciona abas, pacotes e botoes equivalentes.

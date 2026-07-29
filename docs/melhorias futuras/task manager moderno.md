@@ -23,7 +23,8 @@
 | Encerrar processo | `Delete` |
 | Focar processo compativel | `F` |
 | Reiniciar processo compativel | `R` |
-| Fechar | `Esc` |
+| Fechar propriedades | `Esc` |
+| Fechar janela | botão `X` ou `Alt+F4` |
 | Abrir diagnostico textual | `taskmgr` no Shell |
 
 ## Fases

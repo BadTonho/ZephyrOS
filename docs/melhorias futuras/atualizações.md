@@ -215,7 +215,8 @@ U1-U5 acima.
 | F5 | Instalar atualização selecionada |
 | Setas | Navegar na lista |
 | Enter | Selecionar/instalar |
-| Esc | Fechar janela |
+| Esc | Cancelar contexto; fechar somente no Classic ocioso |
+| Alt+F4 ou botão X | Fechar janela Modern |
 | Tab | Alternar entre seções |
 | Delete | Remover atualização instalada |
 

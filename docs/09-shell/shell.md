@@ -195,8 +195,9 @@ moderno, abrem uma janela gráfica própria. As duas interfaces usam três abas:
 **Processos**, **Memória** e **Threads**; CPU, espera, tempo, páginas e dados
 ATA aparecem nas tabelas e painéis de detalhes conforme houver espaço.
 
-Atalhos: Tab=alterna aba, Setas=navega, S=ordena, Enter=propriedades,
-Delete=encerra processo compatível e Esc=sai.
+Atalhos: Tab=alterna aba, Setas=navega, S=ordena, Enter=propriedades e
+Delete=encerra processo compatível. Esc fecha detalhes e, no Classic ocioso,
+sai; no Modern, o fechamento usa o botão `X` ou `Alt+F4`.
 
 ### System Updater (`src/updater/updater.c`)
 
@@ -207,7 +208,9 @@ somente-leitura; aplicar, restaurar, baixar e limpar cache exigem confirmacao
 explicita e repetem a validacao pelos servicos Update.
 
 Tab alterna as abas, setas mudam a selecao, F5 atualiza, V verifica, A prepara
-aplicacao, B prepara rollback, Enter confirma e Esc volta ou fecha. Na aba
+aplicacao, B prepara rollback e Enter confirma. Esc cancela o contexto atual e
+fecha somente a TUI Classic quando ociosa; a janela Modern usa `X` ou
+`Alt+F4`. Na aba
 Remoto, H alterna o opt-in, C consulta, D prepara download e X prepara a
 limpeza do cache. O contrato completo fica em
 [`system-updater.md`](../14-atualizacoes/system-updater.md).

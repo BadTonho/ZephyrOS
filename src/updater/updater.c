@@ -1485,7 +1485,7 @@ void updater_handle_key(uint8_t scancode) {
         return;
     }
     if (scancode == UPDATER_SCANCODE_ESC) {
-        updater_close();
+        if (updater_mode == UPDATER_MODE_CLASSIC) updater_close();
         return;
     }
     if (scancode == UPDATER_SCANCODE_TAB) {

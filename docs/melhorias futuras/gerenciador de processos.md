@@ -265,7 +265,8 @@
 - ✅ Abrir pelo Terminal/Prompt. *(shell.c:473 — comando `taskmgr`)*
 - ✅ Abrir pelo Menu Iniciar. *(taskbar.c:431-443 — item "Task Manager")*
 - ✅ Abrir pelo Desktop. *(desktop.c:49-52 — ícone "TaskMgr")*
-- ✅ Tecla ESC para fechar. *(taskmanager.c:402-405)*
+- ✅ Esc fecha propriedades e fecha somente a TUI Classic quando ociosa. *(taskmanager.c)*
+- ✅ Botão X ou Alt+F4 fecha a janela Modern. *(wm.c)*
 - ✅ Tab para trocar de aba. *(taskmanager.c:407-413)*
 - ✅ Setas para navegar. *(taskmanager.c:415-433)*
 - ✅ Delete para finalizar. *(taskmanager.c:435-451)*
@@ -340,7 +341,8 @@
 | `S` | Alterar ordenação das colunas | ✅ |
 | `R` | Reiniciar processo (somente sistema) | ✅ |
 | `F` | Alternar para aplicativo | ✅ |
-| `Esc` | Fechar task manager | ✅ |
+| `Esc` | Fechar propriedades; no Classic ocioso, fechar o app | ✅ |
+| `Alt+F4` ou botão X | Fechar a janela Modern | ✅ |
 | `taskmgr` (shell) | Abrir task manager | ✅ |
 | Menu Iniciar → Task Manager | Abrir task manager | ✅ |
 | Desktop → TaskMgr | Abrir task manager | ✅ |

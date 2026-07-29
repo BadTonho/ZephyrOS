@@ -1843,7 +1843,6 @@ void taskmgr_gui_handle_key(uint8_t scancode) {
         return;
     }
     if (scancode == 0x01) {
-        taskmgr_close();
         return;
     }
     if (scancode == 0x0F) {

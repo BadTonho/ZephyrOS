@@ -75,12 +75,13 @@ estado e progresso; `Esc` ou `F12` solicita cancelamento cooperativo.
 | `D` | prepara o download na aba Remoto |
 | `X` | prepara a limpeza do cache na aba Remoto |
 | `Enter` | confirma a acao pendente |
-| `Esc` | cancela confirmacao ou fecha |
+| `Esc` | cancela confirmacao ou mutacao; fecha somente o Classic ocioso |
 | `F12` | cancela cooperativamente uma mutacao |
+| `Alt+F4` ou botao `X` | fecha a janela Modern |
 
 No modo Modern, abas, lista e botoes oferecem por mouse as mesmas operacoes.
 Controles da moldura, foco, arraste, resize, minimizar e fechar continuam
-pertencendo ao Window Manager.
+pertencendo ao Window Manager. Um `Esc` ocioso nao fecha a janela hospedada.
 
 ## Recovery e diagnostico
 

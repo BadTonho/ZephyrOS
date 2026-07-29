@@ -259,7 +259,8 @@ int  taskmgr_handle_key(scancode);
 |-------|------|
 | Tab | Alterna guia |
 | Up/Down | Navega na lista |
-| Esc | Fechar |
+| Esc | Fechar detalhes; no Classic ocioso, fechar o aplicativo |
+| Alt+F4 ou botão X | Fechar a janela Modern |
 
 ---
 
@@ -327,7 +328,8 @@ typedef struct {
 | F5 | Atualizar lista |
 | F7 | Criar novo arquivo |
 | F8 | Excluir (com confirmação) |
-| Esc | Sair |
+| Esc | Voltar/cancelar; no Classic ocioso, sair |
+| Alt+F4 ou botão X | Fechar a janela Modern |
 
 ### API
 

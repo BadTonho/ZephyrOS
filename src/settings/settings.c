@@ -770,7 +770,7 @@ static void settings_draw_modern_main(void) {
     }
     gui_draw_text((uint32_t)(settings_gui_x + 18),
                   (uint32_t)(settings_gui_y + settings_gui_height - 34),
-                  "Tab categorias | Setas navegam | Enter edita | Esc fecha",
+                  "Tab categorias | Setas navegam | Enter edita | Alt+F4 fecha",
                   GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(settings_gui_x + settings_gui_width - 150),
                   (uint32_t)(settings_gui_y + settings_gui_height - 34),
@@ -1070,7 +1070,7 @@ int settings_handle_key(uint8_t scancode) {
     }
 
     if (scancode == 0x01) {
-        settings_close();
+        if (settings_mode == SETTINGS_MODE_CLASSIC) settings_close();
         return 1;
     }
 
