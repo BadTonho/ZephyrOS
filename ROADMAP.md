@@ -612,9 +612,11 @@ Sistema e ecossistema:       [████████████████�
   somente-leitura, SHA-2/Ed25519, `update verify`, `health` e sete fixtures
   validados. Build limpo, motivos esperados, memoria estavel, imagem sem
   alteracao e `regcheck full` em `OK` foram confirmados pelo usuario.
-- [ ] U3 em validacao: copy-on-write FAT12, estado/journal redundantes,
+- [x] U3 concluida: copy-on-write FAT12, estado/journal redundantes,
   aplicacao, recuperacao no boot, rollback, failpoint, `APPLY.ZUP` e auditor
-  offline estao implementados; falta a matriz de build/QEMU do usuario.
+  offline foram validados. Os cenarios de sucesso, rollback e interrupcao
+  recuperavel passaram no QEMU; `regcheck full`, memoria e `audit-image`
+  confirmaram versao `0.1.0`, journal limpo e rollback consumido.
 - [ ] U4 e U5 permanecem pendentes.
 
 ## Roadmaps por etapa

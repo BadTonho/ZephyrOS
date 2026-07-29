@@ -58,8 +58,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   integridade, o contrato ZUPD v1 e quatro vetores publicos validados. A U2
   concluiu o verificador local, raiz publica, comando Shell, `health` e sete
   fixtures, com build, matriz QEMU, memoria, imagem inalterada e regressao
-  aprovados pelo usuario. A U3 esta em validacao com aplicacao/rollback FAT12,
-  recuperacao, fixture e auditor implementados; U4-U5 permanecem pendentes.
+  aprovados pelo usuario. A U3 concluiu aplicacao/rollback FAT12, recuperacao,
+  fixture, failpoint e auditoria offline; os cenarios QEMU terminaram com
+  `regcheck full` em `OK` e journal limpo. U4-U5 permanecem pendentes.
 
 ## K4 validada
 

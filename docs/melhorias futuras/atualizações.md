@@ -6,7 +6,7 @@
 |-------|----------|--------|
 | U1 | Politica de integridade e contrato do pacote de sistema | Concluida |
 | U2 | Verificacao local, assinada e sem escrita | Concluida |
-| U3 | Aplicacao transacional, recuperacao e rollback | Em validacao |
+| U3 | Aplicacao transacional, recuperacao e rollback | Concluida |
 | U4 | Diagnosticos e interfaces Classic/Modern | Pendente |
 | U5 | Distribuicao remota opcional | Pendente |
 
@@ -22,9 +22,9 @@ A implementacao concluida da U2, sua raiz publica de release e os sete vetores f
 `tools/updater.py`, `config/update-release-public.json` e
 `docs/fixtures/updates/u2/`.
 
-A implementacao U3 e seu `APPLY.ZUP` publico ficam no servico `Update`, nas
-operacoes atomicas FAT12 e em `docs/fixtures/updates/u3/`. Ela permanece em
-validacao ate a matriz QEMU confirmar aplicacao, rollback e recuperacao.
+A implementacao concluida da U3 e seu `APPLY.ZUP` publico ficam no servico
+`Update`, nas operacoes atomicas FAT12 e em `docs/fixtures/updates/u3/`.
+Aplicacao, rollback e recuperacao foram confirmados pela matriz QEMU.
 
 ---
 
@@ -91,16 +91,19 @@ antes e depois da verificacao.
   recuperavel em falta de espaco, erro de I/O, cancelamento ou queda de energia.
 - [x] Implementar `update apply <arquivo>` e `update rollback`, ambos com
   logs, erros controlados e confirmacao explicita antes da escrita.
-- [ ] Validar sucesso, falha no meio da aplicacao, recuperacao no boot e
+- [x] Validar sucesso, falha no meio da aplicacao, recuperacao no boot e
   rollback no QEMU, sempre seguido de `regcheck full`.
 
 **Criterio de saida:** o sistema inicia em um estado anterior ou novo valido;
 nunca em uma atualizacao parcialmente aplicada.
 
-Em validacao: copy-on-write FAT12, registros redundantes, slots A/B,
-recuperacao no boot, aplicacao/rollback com dry-run, cancelamento, failpoint,
-`health`, `APPLY.ZUP` e auditor offline estao implementados. U3 so sera marcada
-concluida depois dos testes de build e QEMU executados pelo usuario.
+Concluida: copy-on-write FAT12, registros redundantes, slots A/B, recuperacao
+no boot, aplicacao/rollback com dry-run, cancelamento, failpoint, `health`,
+`APPLY.ZUP` e auditor offline foram validados. Aplicacao e rollback terminaram
+com os hashes e versoes esperados. O failpoint apos o primeiro alvo deixou
+`Update: DEGRADED`; o boot restaurou `0.1.0`, tornou o pacote aplicavel
+novamente e terminou com memoria estavel, `regcheck full` em `OK`,
+`rollback=DISABLED` e journal limpo no `audit-image`.
 
 ## Fase U4 - Diagnosticos e Interface Dual
 
