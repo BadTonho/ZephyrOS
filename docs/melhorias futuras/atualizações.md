@@ -1,6 +1,131 @@
-# Atualizações do Sistema — ZephyrOS v0.1
+# Atualizações do Sistema — Roadmap U1-U5
 
-## Resumo de Progresso
+## Resumo Atual
+
+| Fase | Objetivo | Estado |
+|-------|----------|--------|
+| U1 | Politica de integridade e contrato do pacote de sistema | Pendente |
+| U2 | Verificacao local, assinada e sem escrita | Pendente |
+| U3 | Aplicacao transacional, recuperacao e rollback | Pendente |
+| U4 | Diagnosticos e interfaces Classic/Modern | Pendente |
+| U5 | Distribuicao remota opcional | Pendente |
+
+O ZPKG v1 continua sendo exclusivamente o container de aplicativos locais.
+Atualizacoes do sistema usarao um artefato versionado proprio, definido na U1,
+sem alterar a App API, o formato ZPKG v1 ou os pacotes ja instalados.
+
+---
+
+## Atalhos e Comandos Planejados
+
+| Comando | Fase | Acao |
+|---------|------|------|
+| `update verify <arquivo>` | U2 | Valida um artefato local sem gravar. |
+| `update apply <arquivo>` | U3 | Aplica uma atualizacao previamente validada. |
+| `update rollback` | U3 | Restaura a ultima atualizacao recuperavel. |
+| `update status` | U4 | Mostra estado, versao e recuperacao pendente. |
+| `update history` | U4 | Lista operacoes concluidas e falhas. |
+| `update fetch` | U5 | Busca somente metadados remotos quando habilitado. |
+
+Nenhum desses comandos existe antes da fase indicada.
+
+---
+
+## Fase U1 - Politica de Integridade e Contrato
+
+- [ ] Definir ameacas cobertas, fontes aceitas, chave ou raiz de confianca,
+  algoritmo de assinatura e politica de revogacao.
+- [ ] Especificar um novo container de atualizacao de sistema: magic,
+  versao de formato, manifesto, alvo, versao minima, hashes, assinatura e
+  tamanho maximo.
+- [ ] Definir compatibilidade, prevencao de downgrade, codigos de erro e os
+  estados que `health` devera expor.
+- [ ] Publicar vetores validos, corrompidos, assinados por chave desconhecida
+  e com versao incompativel.
+
+**Criterio de saida:** contrato publico revisado e vetores aprovados, sem
+leitura de rede, escrita no disco ou alteracao do boot.
+
+## Fase U2 - Verificacao Local sem Escrita
+
+- [ ] Criar o empacotador host para gerar e verificar o novo artefato assinado.
+- [ ] Implementar parser somente de leitura no kernel para header, manifesto,
+  limites, hashes, assinatura, destino e compatibilidade.
+- [ ] Registrar toda recusa com `LOG_ERROR` e expor `update verify <arquivo>`
+  como diagnostico sem efeitos no disco.
+- [ ] Testar artefato valido, truncado, com hash invalido, assinatura invalida,
+  versao incompativel e manifesto malformado, seguido de `regcheck full`.
+
+**Criterio de saida:** somente um pacote completamente autenticado e compativel
+e aceito; todos os demais falham sem escrita, vazamento ou regressao.
+
+## Fase U3 - Aplicacao, Recuperacao e Rollback
+
+- [ ] Definir area de staging, journal persistente e copia de recuperacao antes
+  de substituir qualquer arquivo permitido.
+- [ ] Aplicar arquivos apenas apos a verificacao U2; interromper de forma
+  recuperavel em falta de espaco, erro de I/O, cancelamento ou queda de energia.
+- [ ] Implementar `update apply <arquivo>` e `update rollback`, ambos com
+  logs, erros controlados e confirmacao explicita antes da escrita.
+- [ ] Validar sucesso, falha no meio da aplicacao, recuperacao no boot e
+  rollback no QEMU, sempre seguido de `regcheck full`.
+
+**Criterio de saida:** o sistema inicia em um estado anterior ou novo valido;
+nunca em uma atualizacao parcialmente aplicada.
+
+## Fase U4 - Diagnosticos e Interface Dual
+
+- [ ] Adicionar `update status` e `update history`, com estado de integridade,
+  versao, ultima operacao e recuperacao pendente.
+- [ ] Criar interface de atualizacao nos modos Classic e Modern, preservando
+  os comandos Shell como fallback completo.
+- [ ] Manter atualizacoes remotas desabilitadas por padrao e mostrar essa
+  condicao em `health` sem degradar boot, Shell ou uso local.
+
+**Criterio de saida:** todos os estados sao observaveis e operaveis em ambas
+as interfaces, inclusive falhas e recuperacao.
+
+## Fase U5 - Distribuicao Remota Opcional
+
+- [ ] Definir manifesto remoto assinado, canal de distribuicao e politica de
+  cache, timeout, retry e indisponibilidade.
+- [ ] Implementar `update fetch` somente quando a rede estiver pronta e a
+  operacao tiver sido habilitada pelo usuario.
+- [ ] Exigir a mesma verificacao criptografica U2 apos qualquer download;
+  nenhuma resposta remota pode disparar instalacao automatica.
+- [ ] Validar rede ausente, timeout, manifesto adulterado, pacote invalido e
+  fluxo remoto completo no QEMU, sem perder a operacao local.
+
+**Criterio de saida:** a rede e apenas transporte opcional; autenticidade e
+aplicacao segura permanecem identicas ao fluxo local.
+
+---
+
+## Limitacoes
+
+- U1-U4 nao alteram `src/boot/boot.asm`, stage2 ou o contrato de boot atual.
+  Uma atualizacao de bootloader ou kernel exige uma etapa dedicada e aprovacao
+  explicita antes de qualquer escrita nesses componentes.
+- Nao ha instalacao automatica, telemetria, conta online, dependencia de GitHub
+  ou atualizacao silenciosa.
+- O ZPKG v1 de aplicativos nao e reutilizado como pacote de sistema; qualquer
+  migracao futura precisara de formato e versao explicitamente compativeis.
+
+## Referencias
+
+- `docs/13-aplicativos/pacotes.md` -- contrato do ZPKG v1 de aplicativos.
+- `docs/roadmaps/05-sistema-e-ecossistema.md` -- ordem executavel de U1-U5.
+- `docs/regras.md` -- requisitos de qualidade, logs e validacao.
+
+---
+
+## Backlog Legado (nao executavel)
+
+O conteudo abaixo foi preservado como referencia historica. Ele antecede o
+ZPKG v1 e a rede S2.8, portanto nao define a ordem nem os contratos do roteiro
+U1-U5 acima.
+
+## Resumo de Progresso (Legado)
 
 | Fase | Total | Feito | Parcial | Restante |
 |------|-------|-------|---------|----------|

@@ -101,8 +101,10 @@ antecipar interfaces ou permissoes que ainda nao existem.
   janela zero, RST, RTL8139 e modos Classic/Modern.
 - [x] S2.8: suporte multi-NIC e RTL8139 validado sem duplicar a camada de
   protocolos; Q3, build e matriz QEMU aprovados pelo usuario.
-- [ ] Planejar atualizacao assinada ou verificada somente apos existir formato
-  de pacote e politica de integridade.
+- [x] Atualizacao segura foi dividida no roteiro U1-U5: politica, verificacao
+  local, aplicacao recuperavel, interface dual e distribuicao remota opcional.
+- [ ] U1: definir politica de integridade e contrato do artefato de sistema,
+  separado do ZPKG v1 de aplicativos.
 - [ ] Manter operacoes remotas opcionalmente desabilitadas e visiveis em
   `health` quando indisponiveis.
 

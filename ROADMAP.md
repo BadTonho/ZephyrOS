@@ -601,6 +601,9 @@ Plataforma de aplicativos:   [████████████████�
 - [x] S2.8: Multi-NIC/RTL8139 concluida, com registro de quatro interfaces,
   E1000 multi-instancia, IRQ compartilhada, uma unica NIC L3 e suite
   `net check qemu multi`; Q3, build e matriz QEMU foram aprovados pelo usuario.
+- [ ] U1: definir a politica de integridade e o contrato do artefato de
+  atualizacao de sistema; as fases U2-U5 cobrem verificacao local, rollback,
+  interface dual e distribuicao remota opcional.
 
 ## Roadmaps por etapa
 
