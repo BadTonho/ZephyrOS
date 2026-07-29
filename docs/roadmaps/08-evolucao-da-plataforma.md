@@ -1,4 +1,4 @@
-# Roadmap 07 - Evolucao da Plataforma
+# Roadmap 08 - Evolucao da Plataforma
 
 ## Objetivo
 
@@ -8,7 +8,7 @@ filesystem, rede cabeada ou atualizacao segura.
 
 Esta frente organiza preferencias de mouse e video, volumes/particoes,
 pesquisa de arquivos, distribuicao por tags do GitHub e suporte inicial a
-Wi-Fi/Bluetooth. Ela inicia depois da etapa ativa da App Store, mas suas fases
+Wi-Fi/Bluetooth. Ela inicia depois da modernizacao visual da interface (Roadmap 07), mas suas fases
 menores podem receber manutencao de planejamento sem antecipar implementacao.
 
 ## Base ja validada
@@ -234,7 +234,7 @@ com `git diff --check`, `git status --short` e, quando houver stage,
 
 - `docs/roadmaps/04-interface-e-experiencia.md` - contratos de interface dual.
 - `docs/roadmaps/05-sistema-e-ecossistema.md` - rede, dispositivos e ZUPD.
-- `docs/roadmaps/06-app-store.md` - etapa anterior desta frente.
+- `docs/roadmaps/07-modernizacao-visual.md` - etapa anterior desta frente.
 - `docs/melhorias futuras/mouse.md` - estado do mouse PS/2.
 - `docs/melhorias futuras/gerenciador de arquivos.md` - Explorer e busca.
 - `docs/melhorias futuras/gerenciador de rede.md` - base de rede existente.

@@ -85,7 +85,8 @@ correcao da ordem de apresentacao.
 4. [04 - Interface e experiencia](04-interface-e-experiencia.md)
 5. [05 - Sistema e ecossistema](05-sistema-e-ecossistema.md)
 6. [06 - App Store](06-app-store.md)
-7. [07 - Evolucao da Plataforma](07-evolucao-da-plataforma.md)
+7. [07 - Modernizacao Visual](07-modernizacao-visual.md)
+8. [08 - Evolucao da Plataforma](08-evolucao-da-plataforma.md)
 
 As frentes podem receber manutencao corretiva a qualquer momento. Para novas
 funcionalidades, a prioridade e estabilizar a etapa atual antes de abrir uma
