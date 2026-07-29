@@ -117,10 +117,12 @@ antecipar interfaces ou permissoes que ainda nao existem.
 - [x] U4 concluida: historico redundante, status, auditoria e System Updater
   Classic/Modern validados, incluindo aplicacao, rollback, failpoint,
   recuperacao no boot, `regcheck full` e auditoria final limpa.
-- [ ] U5 em validacao: manifesto `ZUM1`, HTTP streaming, cache FAT12 A/B,
-  comandos e aba Remoto estao implementados; faltam fixtures assinados e
-  matriz QEMU.
-- [ ] Manter operacoes remotas opcionalmente desabilitadas e visiveis em
+- [x] U5 concluida: manifesto `ZUM1`, HTTP streaming, cache FAT12 A/B,
+  comandos e aba Remoto foram validados no Shell e no Modern. Fixtures,
+  alternancia de slot, falhas controladas, retry, cancelamento,
+  aplicacao/rollback, `regcheck full` e auditoria passaram. O Classic permanece
+  como fallback com cobertura complementar.
+- [x] Manter operacoes remotas opcionalmente desabilitadas e visiveis em
   `health` quando indisponiveis.
 
 ## Etapa S3 - Ecossistema de aplicativos

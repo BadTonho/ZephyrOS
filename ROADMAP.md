@@ -4,13 +4,13 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
-## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8 e U1-U2 concluídas
+## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8 e U1-U5 concluídas
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
 Plataforma de aplicativos:   [██████████████████████████████████████████] Fase 7 validada
 Interface e experiência:     [██████████████████████████████████████████] UI1-UI7 validadas
-Sistema e ecossistema:       [██████████████████████████████████████████] S2.8 e U1-U2 concluídas
+Sistema e ecossistema:       [██████████████████████████████████████████] S2.8 e U1-U5 concluídas
 ```
 
 ---
@@ -622,11 +622,13 @@ Sistema e ecossistema:       [████████████████�
   rollback e failpoint passaram no QEMU; a recuperacao preservou `0.1.0`,
   registrou quatro eventos, deixou o journal limpo e terminou com
   `regcheck full` e `audit-image` em `OK`.
-- [ ] U5 em validacao: manifesto assinado `ZUM1`, HTTP streaming, cache FAT12
-  redundante, comandos e quarta aba Classic/Modern estao implementados. O
-  Network Manager inicia DHCP sem bloquear o boot, mas a distribuicao remota
-  permanece opt-in e nao abre conexoes automaticamente. Falta aprovar a matriz
-  QEMU.
+- [x] U5 concluida: manifesto assinado `ZUM1`, HTTP streaming, cache FAT12
+  redundante, comandos e aba Remoto foram validados no Shell e no System
+  Updater Modern. DHCP automatico, opt-in por sessao, consulta sem escrita,
+  alternancia `ZUR0/1.ZUP`, autenticacao, preservacao do cache, timeout/retry,
+  cancelamento, aplicacao local, rollback, `regcheck full` e `audit-image`
+  passaram no QEMU. O Classic permanece como fallback implementado, com
+  regressao complementar que nao bloqueia a fase.
 
 ## Roadmaps por etapa
 

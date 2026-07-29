@@ -22,6 +22,10 @@ recuperacao. Verificacao, preflight, aplicacao e rollback usam
 - se a hospedagem moderna estiver indisponivel, o aplicativo usa Classic
   automaticamente.
 
+Para a U5, Shell e Modern formam a matriz obrigatoria de aceitacao. O Classic
+continua disponivel como fallback funcional, mas sua regressao e complementar
+e nao bloqueia a conclusao da distribuicao remota.
+
 Os dois modos mantem o mesmo estado e oferecem as abas:
 
 - `Pacotes`: aliases `.ZUP`, verificacao, preflight e aplicacao;

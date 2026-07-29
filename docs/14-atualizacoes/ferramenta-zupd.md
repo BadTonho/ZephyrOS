@@ -261,10 +261,11 @@ mesmas tres abas e permitir aplicar e restaurar. Depois do failpoint e do boot,
 o historico deve conter o encerramento pendente seguido de
 `RECOVERY_APPLY/RECOVERED`.
 
-Para U5, configure IPv4/DHCP manualmente, habilite remoto por sessao, consulte
-o manifesto e confirme o download. Consultas e downloads nao alteram o
-historico U4, e aplicar o alias `ZUR0.ZUP` ou `ZUR1.ZUP` continua sendo uma
-acao local separada. Depois de encerrar o QEMU:
+Para U5, aguarde o DHCP automatico, habilite remoto por sessao, consulte o
+manifesto e confirme o download. Consultas e downloads nao alteram o historico
+U4, e aplicar o alias `ZUR0.ZUP` ou `ZUR1.ZUP` continua sendo uma acao local
+separada. Shell e System Updater Modern formam a matriz obrigatoria; o Classic
+permanece como fallback com cobertura complementar. Depois de encerrar o QEMU:
 
 ```text
 python tools/updater.py audit-image --image build/zephyros.img --expect-remote-cache valid --expect-remote-alias ZUR0.ZUP --expect-remote-pending clean

@@ -62,9 +62,11 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   fixture, failpoint e auditoria offline; os cenarios QEMU terminaram com
   `regcheck full` em `OK` e journal limpo. A U4 concluiu diagnosticos
   persistentes e System Updater Classic/Modern, incluindo recuperacao por
-  failpoint, quatro eventos e auditoria final limpa. A U5 esta em validacao:
-  transporte HTTP manual, manifesto assinado, cache redundante e interfaces
-  estao implementados; fixtures e matriz QEMU ainda precisam de aprovacao.
+  failpoint, quatro eventos e auditoria final limpa. A U5 concluiu o transporte
+  HTTP manual, manifesto assinado, cache redundante e aba Remoto. Fixtures,
+  comandos, System Updater Modern, falhas controladas, cancelamento,
+  aplicacao/rollback e auditoria final foram aprovados. O Classic continua
+  disponivel como fallback e sua regressao e cobertura complementar.
 
 ## K4 validada
 

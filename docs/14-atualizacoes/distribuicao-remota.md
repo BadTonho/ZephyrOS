@@ -7,6 +7,10 @@ uma raiz de confianca: o manifesto remoto e assinado pela mesma chave publica
 Ed25519 de release e todo pacote baixado passa novamente pelo verificador ZUPD
 v1 antes de ser publicado no cache.
 
+A U5 esta concluida com Shell e System Updater Modern como matriz obrigatoria.
+O modo Classic permanece implementado como fallback, mas sua regressao visual
+e cobertura complementar e nao bloqueia a fase.
+
 O servico e inicializado no boot apenas para recuperar o cache FAT12. A
 habilitacao remota volta a `DISABLED` em todo boot. Separadamente, o Network
 Manager inicia DHCP em background quando encontra uma NIC ativa com link. Isso

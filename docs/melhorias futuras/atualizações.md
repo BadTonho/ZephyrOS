@@ -8,7 +8,7 @@
 | U2 | Verificacao local, assinada e sem escrita | Concluida |
 | U3 | Aplicacao transacional, recuperacao e rollback | Concluida |
 | U4 | Diagnosticos e interfaces Classic/Modern | Concluida |
-| U5 | Distribuicao remota opcional | Em validacao |
+| U5 | Distribuicao remota opcional | Concluida |
 
 O ZPKG v1 continua sendo exclusivamente o container de aplicativos locais.
 Atualizacoes do sistema usarao um artefato versionado proprio, definido na U1,
@@ -31,9 +31,10 @@ somente-leitura, auditoria host e o aplicativo nativo documentado em
 `docs/14-atualizacoes/system-updater.md`. Classic e Modern, aplicacao,
 rollback, failpoint e recuperacao no boot foram confirmados no QEMU.
 
-A implementacao U5 acrescenta manifesto assinado `ZUM1`, HTTP streaming,
-cache FAT12 A/B, comandos manuais e a aba Remoto. Ela permanece em validacao
-ate os fixtures assinados e a matriz QEMU serem aprovados.
+A implementacao concluida da U5 acrescenta manifesto assinado `ZUM1`, HTTP
+streaming, cache FAT12 A/B, comandos manuais e a aba Remoto. Fixtures, Shell e
+System Updater Modern foram aprovados no QEMU. O Classic permanece disponivel
+como fallback e nao bloqueia a conclusao da fase.
 
 ---
 
@@ -49,8 +50,7 @@ ate os fixtures assinados e a matriz QEMU serem aprovados.
 | `update remote ...` | U5 | Habilita, diagnostica e limpa o cache remoto. |
 | `update fetch` | U5 | Consulta ou baixa sem instalar, quando habilitado. |
 
-Todos os comandos U1-U5 estao implementados; os comandos U5 permanecem em
-validacao.
+Todos os comandos U1-U5 estao implementados e validados.
 
 ---
 
@@ -143,17 +143,18 @@ journal limpo.
   operacao tiver sido habilitada pelo usuario.
 - [x] Exigir a mesma verificacao criptografica U2 apos qualquer download;
   nenhuma resposta remota pode disparar instalacao automatica.
-- [ ] Validar rede ausente, timeout, manifesto adulterado, pacote invalido e
+- [x] Validar rede ausente, timeout, manifesto adulterado, pacote invalido e
   fluxo remoto completo no QEMU, sem perder a operacao local.
 
 **Criterio de saida:** a rede e apenas transporte opcional; autenticidade e
 aplicacao segura permanecem identicas ao fluxo local.
 
-Em validacao: o servico inicia desabilitado, autentica `ZUM1`, baixa por
-streaming para slots `ZUR0/1.ZUP`, preserva o cache anterior e publica somente
-depois de SHA-256 e verificacao ZUPD. Shell e System Updater oferecem consulta,
-download e limpeza confirmados. Fixtures assinados e testes QEMU ainda sao
-necessarios para concluir a fase.
+Concluida: o servico inicia desabilitado, autentica `ZUM1`, baixa por streaming
+para slots `ZUR0/1.ZUP`, preserva o cache anterior e publica somente depois de
+SHA-256 e verificacao ZUPD. Shell e System Updater Modern confirmaram consulta,
+download, limpeza, falhas controladas e cancelamento. Aplicacao/rollback,
+memoria, `regcheck full` e `audit-image` terminaram em `OK`. O Classic continua
+implementado como fallback, com validacao complementar.
 
 ---
 
