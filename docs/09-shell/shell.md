@@ -47,9 +47,19 @@ O buffer armazena até 255 caracteres + null terminator.
 ### Scrollback
 
 O terminal mantém um histórico circular fixo de 200 linhas, sem `kmalloc`.
-`Seta para Cima/Abaixo`, `Page Up/Page Down`, `Home` e `End` navegam pelo
-histórico. Ao digitar, apagar ou confirmar um comando, o Shell retorna ao fim
-para preservar o prompt. `clear` remove a tela e o histórico.
+`Shift+Seta para Cima/Abaixo`, `Page Up/Page Down`, `Home`, `End` e a roda do
+mouse navegam pela saída. A roda funciona tanto no Shell Classic quanto na
+janela Modern. Ao digitar, apagar ou confirmar um comando, o Shell retorna ao
+fim para preservar o prompt. `clear` remove a tela e o histórico de saída.
+
+### Histórico de comandos
+
+O Shell mantém em memória os últimos 16 comandos da sessão, sem alocação
+dinâmica. `Seta para Cima` volta aos comandos anteriores e `Seta para Baixo`
+avança até o mais recente. Ao ultrapassar o comando mais recente, o texto que
+estava sendo digitado antes da navegação é restaurado. Comandos consecutivos
+idênticos ocupam uma única entrada. Esse histórico não é persistido em disco e
+não é removido pelo comando `clear`.
 
 ### Shell hospedado no modo Moderno
 

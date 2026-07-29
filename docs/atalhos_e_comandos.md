@@ -95,11 +95,13 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 
 - **Shift + tecla**: produz maiusculas e os simbolos da fileira numerica e
   de pontuacao; `Shift+;` produz `:`.
-- **Seta para Cima / Seta para Baixo**: rola uma linha no historico do terminal.
+- **Seta para Cima / Seta para Baixo**: navega pelos ultimos 16 comandos.
+- **Shift + Seta para Cima / Baixo**: rola uma linha na saida do terminal.
 - **Page Up / Page Down**: rola uma pagina no historico do terminal.
 - **Home / End**: vai ao inicio ou ao fim do historico.
+- **Roda do mouse**: rola tres linhas no Shell Classic e Modern.
 - **Digitacao, Backspace ou Enter**: retorna ao fim para manter o prompt visivel.
-- **`clear`**: apaga as 200 linhas mantidas no historico atual.
+- **`clear`**: apaga as 200 linhas de saida, mas preserva os comandos da sessao.
 
 ---
 

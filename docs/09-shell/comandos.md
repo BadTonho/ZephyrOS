@@ -91,13 +91,21 @@ Limpa a tela e apaga todo o historico do terminal atual.
 O Shell preserva as ultimas 200 linhas de saida textual. A rolagem funciona
 somente quando nenhuma aplicacao esta com foco:
 
-- `Seta para cima` / `Seta para baixo`: navega uma linha;
+- `Shift+Seta para cima` / `Shift+Seta para baixo`: navega uma linha;
 - `Page Up` / `Page Down`: navega uma pagina;
 - `Home` / `End`: vai ao inicio ou ao fim do historico.
+- `Roda do mouse`: navega tres linhas no Classic e no Modern.
 
 Ao digitar, apagar ou enviar um comando, o Shell volta automaticamente ao fim
 do historico para manter o prompt visivel. O comando `clear` remove tambem as
 linhas armazenadas.
+
+## Historico de comandos
+
+O Shell preserva os ultimos 16 comandos da sessao. `Seta para cima` volta aos
+comandos anteriores e `Seta para baixo` avanca ate restaurar o texto que estava
+sendo digitado. Comandos consecutivos identicos nao sao duplicados. O comando
+`clear` nao remove o historico de comandos.
 
 ## `ls`
 Lista todos os arquivos no disco FAT12.

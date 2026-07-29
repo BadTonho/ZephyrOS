@@ -2,6 +2,7 @@
 #define SHELL_H
 
 #include "types.h"
+#include "drivers/mouse.h"
 
 #define SHELL_BUFFER_SIZE 256
 #define SHELL_MAX_ARGS 16
@@ -14,6 +15,7 @@ void shell_report_user_test_result(void);
 void shell_report_app_loader_result(void);
 void shell_update_hosted_terminal(void);
 void shell_print_prompt(void);
+int  shell_handle_mouse(mouse_event_t* event);
 int  shell_process_command(const char* input);
 
 #endif

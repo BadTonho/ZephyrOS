@@ -276,6 +276,8 @@ static void global_mouse_handler(mouse_event_t* evt) {
         return;
     }
 
+    if (evt->event == MOUSE_EVENT_WHEEL && shell_handle_mouse(evt)) return;
+
     /* O restante do sistema legado so processa clique esquerdo (press). */
     if (evt->event != MOUSE_EVENT_PRESS) return;
     if (!(evt->changed & MOUSE_BTN_LEFT)) return;

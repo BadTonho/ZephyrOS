@@ -82,6 +82,7 @@
 #define SHELL_NOINLINE __attribute__((noinline))
 #define SHELL_UPDATE_SCANCODE_ESCAPE 0x01U
 #define SHELL_UPDATE_SCANCODE_F12 0x58U
+#define SHELL_COMMAND_HISTORY_CAPACITY 16U
 
 typedef enum {
     SHELL_BUILTIN_APP_NONE,
@@ -218,10 +219,16 @@ typedef struct {
 } shell_update_workspace_t;
 
 static char input_buffer[SHELL_BUFFER_SIZE];
+static char shell_command_history[SHELL_COMMAND_HISTORY_CAPACITY]
+                                 [SHELL_BUFFER_SIZE];
+static char shell_command_draft[SHELL_BUFFER_SIZE];
 static char appcheck_oversized_text[APP_API_MAX_TEXT_SIZE + 1];
 static uint8_t appcheck_demo_image[APP_IMAGE_MAX_FILE_SIZE];
 static uint8_t appcheck_demo_verify[APP_IMAGE_MAX_FILE_SIZE];
 static int input_pos = 0;
+static uint32_t shell_history_count = 0;
+static uint32_t shell_history_next = 0;
+static uint32_t shell_history_depth = 0;
 static int shell_waiting_user_test = 0;
 static uint8_t shell_extended_scancode = 0;
 static uint8_t shell_shift_mask = 0;
@@ -246,6 +253,7 @@ static int shell_hosted_mouse(mouse_event_t* event, int x, int y,
 static void shell_hosted_close(void);
 static int shell_is_hosted_visible(void);
 static void shell_suspend_terminal(void);
+static void shell_history_reset_navigation(void);
 
 static const wm_hosted_app_t shell_hosted_app = {
     WM_APP_SHELL, "ZephyrOS Shell", "Shell",
@@ -538,6 +546,7 @@ static void shell_reset_input(void) {
     input_pos = 0;
     shell_extended_scancode = 0;
     shell_shift_mask = 0;
+    shell_history_reset_navigation();
     kmemset(input_buffer, 0, sizeof(input_buffer));
 }
 
@@ -564,6 +573,95 @@ static void shell_return_to_terminal_tail(void) {
     if (video_terminal_is_scrolled()) video_terminal_scroll_end();
 }
 
+static void shell_history_copy(char* destination, const char* source) {
+    uint32_t index = 0;
+
+    if (!destination) return;
+    if (!source) source = "";
+    while (source[index] && index + 1U < SHELL_BUFFER_SIZE) {
+        destination[index] = source[index];
+        index++;
+    }
+    destination[index] = '\0';
+}
+
+static void shell_history_reset_navigation(void) {
+    shell_history_depth = 0;
+    shell_command_draft[0] = '\0';
+}
+
+static void shell_history_replace_input(const char* command) {
+    uint32_t index = 0;
+
+    shell_return_to_terminal_tail();
+    while (input_pos > 0) {
+        video_backspace();
+        input_pos--;
+    }
+    kmemset(input_buffer, 0, sizeof(input_buffer));
+    if (!command) return;
+    while (command[index] && index + 1U < SHELL_BUFFER_SIZE) {
+        input_buffer[index] = command[index];
+        video_put_char(command[index], 0x07);
+        index++;
+    }
+    input_buffer[index] = '\0';
+    input_pos = (int)index;
+}
+
+static void shell_history_record(const char* command) {
+    uint32_t previous;
+
+    if (!command || !command[0]) {
+        shell_history_reset_navigation();
+        return;
+    }
+    if (shell_history_count) {
+        previous = (shell_history_next + SHELL_COMMAND_HISTORY_CAPACITY - 1U) %
+                   SHELL_COMMAND_HISTORY_CAPACITY;
+        if (kstrcmp(shell_command_history[previous], command) == 0) {
+            shell_history_reset_navigation();
+            return;
+        }
+    }
+    shell_history_copy(shell_command_history[shell_history_next], command);
+    shell_history_next =
+        (shell_history_next + 1U) % SHELL_COMMAND_HISTORY_CAPACITY;
+    if (shell_history_count < SHELL_COMMAND_HISTORY_CAPACITY) {
+        shell_history_count++;
+    }
+    shell_history_reset_navigation();
+}
+
+static void shell_history_navigate(int direction) {
+    uint32_t history_index;
+
+    if (direction < 0) {
+        if (!shell_history_count ||
+            shell_history_depth >= shell_history_count) return;
+        if (!shell_history_depth) {
+            shell_history_copy(shell_command_draft, input_buffer);
+        }
+        shell_history_depth++;
+    } else {
+        if (!shell_history_depth) return;
+        shell_history_depth--;
+        if (!shell_history_depth) {
+            shell_history_replace_input(shell_command_draft);
+            return;
+        }
+    }
+    history_index =
+        (shell_history_next + SHELL_COMMAND_HISTORY_CAPACITY -
+         shell_history_depth) % SHELL_COMMAND_HISTORY_CAPACITY;
+    shell_history_replace_input(shell_command_history[history_index]);
+}
+
+static void shell_history_detach_for_edit(void) {
+    if (!shell_history_depth) return;
+    shell_history_reset_navigation();
+}
+
 static void shell_hosted_draw(int x, int y, int width, int height) {
     if (video_terminal_draw(x, y, width, height) != OK) {
         LOG_WARN("SHELL", "Falha ao desenhar terminal hospedado");
@@ -578,6 +676,16 @@ static void shell_hosted_key(uint8_t scancode) {
     }
 }
 
+int shell_handle_mouse(mouse_event_t* event) {
+    if (!event) {
+        LOG_ERROR("SHELL", "Evento de mouse nulo");
+        return 0;
+    }
+    if (!video_terminal_is_active() ||
+        event->event != MOUSE_EVENT_WHEEL || event->wheel == 0) return 0;
+    return video_terminal_scroll(event->wheel * SHELL_WHEEL_SCROLL_LINES);
+}
+
 static int shell_hosted_mouse(mouse_event_t* event, int x, int y,
                               int width, int height) {
     (void)x;
@@ -589,10 +697,7 @@ static int shell_hosted_mouse(mouse_event_t* event, int x, int y,
         LOG_ERROR("SHELL", "Evento de mouse nulo no terminal hospedado");
         return 0;
     }
-    if (event->event != MOUSE_EVENT_WHEEL || event->wheel == 0) return 0;
-    if (!video_terminal_scroll(event->wheel * SHELL_WHEEL_SCROLL_LINES)) {
-        return 0;
-    }
+    if (!shell_handle_mouse(event)) return 0;
     /* O WM recompõe o mesmo frame ao terminar este callback. */
     (void)video_terminal_take_hosted_dirty();
     return 1;
@@ -2170,6 +2275,8 @@ static void cmd_help(void) {
     video_print("Comandos disponiveis:\n", 0x0B);
     video_print("  help     - Mostra esta mensagem\n", 0x07);
     video_print("  clear    - Limpa tela e historico do terminal\n", 0x07);
+    video_print("  Setas cima/baixo - Navega comandos; Shift rola saida\n",
+                0x08);
     video_print("  desktop  - Abre a area de trabalho\n", 0x07);
     video_print("  guimode  - Alterna Desktop classic/modern\n", 0x07);
     video_print("  settings - Abre o painel de configuracoes\n", 0x07);
@@ -8525,6 +8632,7 @@ static void process_input(void) {
     }
 
     input_buffer[input_pos] = '\0';
+    shell_history_record(input_buffer);
     shell_process_command(input_buffer);
 
     shell_reset_input();
@@ -8587,6 +8695,15 @@ static void shell_handle_terminal_key(uint8_t scancode) {
 
     if (shell_extended_scancode) {
         shell_extended_scancode = 0;
+        if (scancode == SHELL_SCANCODE_UP ||
+            scancode == SHELL_SCANCODE_DOWN) {
+            if (shell_shift_mask) {
+                (void)shell_handle_terminal_scroll_key(scancode);
+            } else {
+                shell_history_navigate(scancode == SHELL_SCANCODE_UP ? -1 : 1);
+            }
+            return;
+        }
         if (shell_handle_terminal_scroll_key(scancode)) return;
     }
 
@@ -8622,6 +8739,7 @@ static void shell_handle_terminal_key(uint8_t scancode) {
                                  scancode_table[scancode]);
 
     if (scancode == 0x0E) {
+        shell_history_detach_for_edit();
         shell_return_to_terminal_tail();
         if (input_pos > 0) {
             input_pos--;
@@ -8640,6 +8758,7 @@ static void shell_handle_terminal_key(uint8_t scancode) {
     /* Teclas de controle podem chegar antes do primeiro caractere visivel
        quando o QEMU entrega o foco. Elas nao devem contaminar o comando. */
     if (c >= ' ' && c <= '~' && input_pos < SHELL_BUFFER_SIZE - 1) {
+        shell_history_detach_for_edit();
         shell_return_to_terminal_tail();
         input_buffer[input_pos++] = c;
         input_buffer[input_pos] = '\0';
