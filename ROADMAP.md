@@ -647,6 +647,12 @@ kernel, interface e novos serviços:
 | 7 | [`docs/roadmaps/07-modernizacao-visual.md`](docs/roadmaps/07-modernizacao-visual.md) | Escala acessivel, visual flat/dark e desempenho VESA mensuravel. |
 | 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | Mouse, volumes ATA, USB incremental, busca, releases e conectividade sem fio. |
 
+Os numeros 06 e 07 identificam os documentos, nao uma barreira de conclusao
+integral. A ordem executavel compartilhada e **AS1-AS2 -> MV0-MV3 -> AS3 ->
+MV4 -> AS4-AS5**. Dessa forma, catalogo e ciclo de vida sao estabilizados
+primeiro, a fundacao visual e definida em seguida e a App Store Modern ja
+nasce no novo padrao, sem uma segunda refatoracao imediata.
+
 O índice desses arquivos está em [`docs/roadmaps/README.md`](docs/roadmaps/README.md).
 Os documentos em `docs/melhorias futuras/` continuam sendo o backlog detalhado
 de cada produto; o status técnico atual deve ser confirmado neste arquivo e nos

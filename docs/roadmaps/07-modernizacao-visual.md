@@ -4,7 +4,11 @@
 
 Prover uma interface grafica moderna (Flat Design, cantos arredondados, paleta de cores dark/moderna e efeitos visuais sutis) para o ZephyrOS. Antes do redesenho, esta frente estabelece metricas de layout e escala que mantem a interface legivel no modo VESA atual, sem depender de FPS ou de aceleracao por GPU.
 
-Esta frente inicia apos a conclusao do Roadmap 06 (App Store) e serve como base visual e de arquitetura para as interfaces que virao no Roadmap 08.
+Esta frente e intercalada com o Roadmap 06 (App Store): MV0-MV3 iniciam depois
+de AS1-AS2 e devem terminar antes de AS3. Assim, a App Store nasce sobre a
+fundacao visual nova em vez de precisar de um segundo redesenho. MV4 ocorre
+depois de AS3 e tambem valida a App Store. Esta frente ainda serve como base
+visual e de arquitetura para as interfaces que virao no Roadmap 08.
 
 ## Base ja validada
 
@@ -26,12 +30,15 @@ Estas capacidades continuam sendo a fonte de verdade. Este roadmap atua estritam
 
 ## Ordem de dependencia
 
-1. Metricas de layout, escala de fonte e alvos de interacao no modo VESA atual.
-2. Evolucao das primitivas graficas em `gui.c` (cantos arredondados e bordas flat).
-3. Definicao do novo sistema de cores global (Dark Mode moderno).
-4. Redesenho da moldura de janelas no Window Manager, Desktop e Taskbar.
-5. Refatoracao visual dos aplicativos nativos (Explorer, Settings, Task Manager).
-6. Otimizacao e validacao de desempenho por cenas reproduziveis.
+1. AS1-AS2 do Roadmap 06: backend e Shell da App Store aprovados.
+2. Metricas de layout, escala de fonte e alvos de interacao no modo VESA atual.
+3. Evolucao das primitivas graficas em `gui.c` (cantos arredondados e bordas flat).
+4. Definicao do novo sistema de cores global (Dark Mode moderno).
+5. Redesenho da moldura de janelas no Window Manager, Desktop e Taskbar.
+6. AS3 do Roadmap 06: App Store Modern sobre a fundacao MV0-MV3.
+7. Refatoracao visual dos aplicativos nativos, incluindo a App Store.
+8. Otimizacao e validacao de desempenho por cenas reproduziveis.
+9. AS4-AS5 do Roadmap 06: evolucoes posteriores ao MVP.
 
 ## MV0 - Layout e escala acessiveis
 
@@ -113,6 +120,8 @@ O Desktop e o gerenciador de janelas adotam integralmente o novo visual sem rast
   - **Explorer Moderno**: Painéis de arquivos flat, linhas de grade sutis e selecao moderna.
   - **Settings Moderno**: Categorias organizadas em cards modernos com bordas arredondadas.
   - **Task Manager Moderno**: Graficos de performance desenhados com linhas finas coloridas sobre fundo escuro.
+  - **App Store Moderna**: catalogo, detalhes, botoes e confirmacoes usando as
+    mesmas metricas, controles e estados visuais.
 - [ ] Melhorar contraste, espacamento e escala da fonte bitmap dentro das
   metricas centralizadas da MV0; fonte proporcional fica fora desta frente.
 - [ ] Registrar uma linha-base por cena fixa (modo VESA, escala, janela e
@@ -123,9 +132,10 @@ O Desktop e o gerenciador de janelas adotam integralmente o novo visual sem rast
 
 ### Criterio de saida
 
-Explorer, Settings e Task Manager abrem e funcionam com o novo visual. O
-redesenho de janelas arrastadas se mantem fluido e a comparacao `kmetrics` da
-mesma cena prova que a sobrecarga visual esta dentro do limite definido.
+Explorer, Settings, Task Manager e App Store abrem e funcionam com o novo
+visual. O redesenho de janelas arrastadas se mantem fluido e a comparacao
+`kmetrics` da mesma cena prova que a sobrecarga visual esta dentro do limite
+definido.
 
 ## Validacao por etapa
 
@@ -139,6 +149,6 @@ make run
 
 No QEMU, validar `display status` e as tres escalas antes de `guimode modern`.
 Depois, testar a mesma cena nas escalas Normal e Grande com Desktop, Explorer,
-Settings e Task Manager, comparando `kmetrics`. A interface deve aparecer com
-o tema Dark, cantos arredondados nas janelas, botoes modernos e sem artefatos
-ou lentidao severa.
+Settings, Task Manager e App Store, comparando `kmetrics`. A interface deve
+aparecer com o tema Dark, cantos arredondados nas janelas, botoes modernos e
+sem artefatos ou lentidao severa.

@@ -68,7 +68,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   aplicacao/rollback e auditoria final foram aprovados. O Classic continua
   disponivel como fallback e sua regressao e cobertura complementar.
   O proximo desenvolvimento e AS1 do roadmap da App Store: catalogo local
-  somente-leitura sobre a base ZPKG v1 ja validada.
+  somente-leitura sobre a base ZPKG v1 ja validada. Os roadmaps 06 e 07 usam
+  execucao intercalada para que a App Store Modern nao seja desenhada duas
+  vezes: AS1-AS2, MV0-MV3, AS3, MV4 e, depois, AS4-AS5.
 
 ## K4 validada
 
@@ -87,6 +89,15 @@ correcao da ordem de apresentacao.
 6. [06 - App Store](06-app-store.md)
 7. [07 - Modernizacao Visual](07-modernizacao-visual.md)
 8. [08 - Evolucao da Plataforma](08-evolucao-da-plataforma.md)
+
+Os numeros 06 e 07 mantem a organizacao documental, mas sua execucao e
+intercalada nesta ordem:
+
+1. AS1-AS2 do Roadmap 06.
+2. MV0-MV3 do Roadmap 07.
+3. AS3 do Roadmap 06.
+4. MV4 do Roadmap 07, incluindo a App Store.
+5. AS4-AS5 do Roadmap 06.
 
 As frentes podem receber manutencao corretiva a qualquer momento. Para novas
 funcionalidades, a prioridade e estabilizar a etapa atual antes de abrir uma

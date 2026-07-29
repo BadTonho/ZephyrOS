@@ -41,6 +41,23 @@ camada de catalogo, politica, confirmacao e interface sobre elas.
 - CRC32 detecta corrupcao acidental, mas nao autentica autoria. A interface
   deve exibir `LOCAL / NAO ASSINADO` para todo pacote ZPKG v1.
 
+## Sequencia integrada com o Roadmap 07
+
+Os numeros 06 e 07 identificam os documentos, mas nao exigem a conclusao
+integral de um antes do inicio do outro. Para evitar construir a App Store com
+o visual antigo e refazer sua interface logo depois, a execucao oficial sera:
+
+1. **AS1 e AS2**: catalogo, observabilidade e ciclo de vida pelo servico e
+   pelo Shell.
+2. **MV0 a MV3 do Roadmap 07**: metricas, primitivas, tema e moldura Modern.
+3. **AS3**: aplicativo App Store ja construido sobre a fundacao visual nova.
+4. **MV4 do Roadmap 07**: modernizacao e medicao dos aplicativos, incluindo a
+   App Store.
+5. **AS4 e AS5**: evolucoes locais e remotas posteriores ao MVP.
+
+AS1 e AS2 nao dependem do redesenho. AS3 depende de MV0-MV3 para nao duplicar
+trabalho de layout, controles, cores e molduras.
+
 ## Modelo do catalogo local
 
 O catalogo do MVP nao tera banco de dados proprio. Ele sera reconstruido a
@@ -138,6 +155,9 @@ ID instalado e dependente reverso falham sem deixar diretorio parcial.
 
 ## AS3 - Aplicativo nativo App Store
 
+Esta fase comeca somente depois de AS1-AS2 e de MV0-MV3 do Roadmap 07 estarem
+aprovados.
+
 ### Integracao
 
 - [ ] Criar o modulo em `src/appstore/appstore.c`.
@@ -182,7 +202,8 @@ com selecoes antigas e todos os erros continuam reproduziveis pelo Shell.
 
 ## AS4 - Atualizacao local e dependencias
 
-Esta fase comeca somente depois do MVP AS1-AS3.
+Esta fase comeca somente depois do MVP AS1-AS3 e da validacao MV4 compartilhada
+com o Roadmap 07.
 
 - [ ] Comparar `MAJOR.MINOR.PATCH` sem conversao ambigua ou overflow.
 - [ ] Permitir somente atualizacao para versao superior por padrao.
@@ -274,4 +295,5 @@ No QEMU:
 
 Implementar **AS1 - Catalogo local e observabilidade**. Nenhum codigo de
 instalacao, interface grafica ou rede deve ser alterado antes de o contrato
-somente-leitura e seus motivos estaveis serem aprovados.
+somente-leitura e seus motivos estaveis serem aprovados. Depois da aprovacao de
+AS2, a execucao passa para MV0-MV3 do Roadmap 07 antes de iniciar AS3.
