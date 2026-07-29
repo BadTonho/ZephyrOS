@@ -554,9 +554,10 @@ concluida registra a falha interrompida e um evento `RECOVERED`. Falha isolada
 do historico nao desfaz um estado U3 ja comprometido.
 
 `RECOVERY_COMPONENT_SYSTEM_UPDATER` foi anexado ao final da enumeracao de
-Recovery. Ele fica `READY` quando interface e servico local estao disponiveis,
-`DEGRADED` quando filesystem, estado ou historico permitem apenas operacao
-parcial, e `DISABLED` quando Update nao foi inicializado. O componente
+Recovery. Ele fica `READY` quando interface, worker cooperativo e servico local
+estao disponiveis, `DEGRADED` quando filesystem, estado ou historico permitem
+apenas operacao parcial, e `DISABLED` quando Update nao foi inicializado ou o
+worker nao pode ser criado. O componente
 `RECOVERY_COMPONENT_UPDATE` continua representando o servico transacional.
 
 O kernel inicializa o System Updater depois do Window Manager. A abertura pelo
@@ -576,7 +577,10 @@ download HTTP usa callback streaming, SHA-256 incremental e a escrita
 sequencial FAT12; depois do ultimo byte, `update_verify_file()` revalida
 integralmente o pacote antes do commit do cache. Timeout transitorio permite
 uma repeticao do byte zero. Cancelamento, assinatura, hash ou politica
-invalidos nao repetem.
+invalidos nao repetem. Consulta e download iniciados pelo System Updater rodam
+no processo nativo `Updater Worker`: enquanto ele bloqueia cooperativamente
+entre ciclos HTTP, `Zephyr System` continua atendendo o polling da rede,
+teclado, mouse e composicao do Window Manager.
 
 Os registros `ZUR0.STA` e `ZUR1.STA` recuperam download interrompido sem
 rede. Os slots `ZUR0.ZUP` e `ZUR1.ZUP` alternam somente depois da autenticacao,

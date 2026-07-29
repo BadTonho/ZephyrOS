@@ -54,6 +54,12 @@ manifesto e nao grava. Baixar apresenta uma confirmacao, repete a consulta e
 so publica o slot depois de SHA-256 e verificacao ZUPD completa. Limpar cache
 tambem exige confirmacao. Trocar de aba cancela qualquer confirmacao remota.
 
+Consulta e download iniciados pela interface sao enfileirados em um processo
+cooperativo dedicado. O callback de teclado ou mouse retorna imediatamente,
+deixando o processo de sistema continuar o polling da rede e a composicao do
+Window Manager. Enquanto o worker aguarda HTTP, a janela continua mostrando
+estado e progresso; `Esc` ou `F12` solicita cancelamento cooperativo.
+
 ## Teclado e mouse
 
 | Entrada | Acao |
@@ -81,9 +87,9 @@ pertencendo ao Window Manager.
 `updater_init()` registra o aplicativo e publica
 `RECOVERY_COMPONENT_SYSTEM_UPDATER`:
 
-- `READY`: interface e servico Update local disponiveis;
+- `READY`: interface, worker cooperativo e servico Update local disponiveis;
 - `DEGRADED`: interface utilizavel com filesystem, estado ou historico parcial;
-- `DISABLED`: servico Update nao inicializado.
+- `DISABLED`: servico Update nao inicializado ou worker indisponivel.
 
 O componente e diferente de `RECOVERY_COMPONENT_UPDATE`: o primeiro descreve a
 interface U4, enquanto o segundo descreve o verificador e a transacao U2/U3.

@@ -157,6 +157,9 @@ progresso, estado do cache e:
 `update_remote_check()` recebe as mesmas opcoes cooperativas do download. A
 consulta continua somente-leitura, mas Shell e System Updater podem apresentar
 progresso e cancelar HTTP com `Esc`/`F12` antes de qualquer gravacao.
+No System Updater, consulta e download rodam em um processo cooperativo
+dedicado para que o processo de sistema continue atendendo rede, mouse e
+Window Manager durante toda a espera HTTP.
 
 Os motivos publicos preservam estes valores:
 
