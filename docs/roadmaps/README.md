@@ -56,8 +56,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   Multi-NIC e RTL8139, com a suite Multi-NIC e o `regcheck full` aprovados no
   QEMU pelo usuario nos modos Classic e Modern. A U1 concluiu a politica de
   integridade, o contrato ZUPD v1 e quatro vetores publicos validados. A U2
-  esta implementada e em validacao, com verificador local, raiz publica,
-  comando Shell, `health` e sete fixtures; U3-U5 permanecem pendentes.
+  concluiu o verificador local, raiz publica, comando Shell, `health` e sete
+  fixtures, com build, matriz QEMU, memoria, imagem inalterada e regressao
+  aprovados pelo usuario; U3-U5 permanecem pendentes.
 
 ## K4 validada
 

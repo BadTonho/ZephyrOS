@@ -105,10 +105,11 @@ antecipar interfaces ou permissoes que ainda nao existem.
   local, aplicacao recuperavel, interface dual e distribuicao remota opcional.
 - [x] U1: politica de integridade e contrato ZUPD v1 concluidos, separados do
   ZPKG v1, com Ed25519, SHA-256, allowlist e quatro vetores publicos validados.
-- [ ] U2 em validacao: empacotador/verificador host, raiz publica de release,
+- [x] U2 concluida: empacotador/verificador host, raiz publica de release,
   servico criptografico, parser local somente-leitura, comando
   `update verify`, componente `Update` no `health` e sete fixtures estao
-  implementados. O fechamento depende do build e da matriz QEMU do usuario.
+  implementados e validados. Build, matriz QEMU, memoria, imagem inalterada e
+  `regcheck full` foram aprovados pelo usuario.
 - [ ] U3-U5: aplicacao/rollback, interface dual e distribuicao remota continuam
   pendentes e `DISABLED`.
 - [ ] Manter operacoes remotas opcionalmente desabilitadas e visiveis em

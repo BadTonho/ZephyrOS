@@ -5,7 +5,7 @@
 | Fase | Objetivo | Estado |
 |-------|----------|--------|
 | U1 | Politica de integridade e contrato do pacote de sistema | Concluida |
-| U2 | Verificacao local, assinada e sem escrita | Em validacao |
+| U2 | Verificacao local, assinada e sem escrita | Concluida |
 | U3 | Aplicacao transacional, recuperacao e rollback | Pendente |
 | U4 | Diagnosticos e interfaces Classic/Modern | Pendente |
 | U5 | Distribuicao remota opcional | Pendente |
@@ -18,10 +18,9 @@ O contrato canonico e os vetores publicos da U1 estao em
 `docs/14-atualizacoes/contrato-zupd-v1.md` e
 `docs/fixtures/updates/v1/`.
 
-A implementacao da U2, sua raiz publica de release e os sete vetores ficam em
+A implementacao concluida da U2, sua raiz publica de release e os sete vetores ficam em
 `tools/updater.py`, `config/update-release-public.json` e
-`docs/fixtures/updates/u2/`. O codigo esta pronto; a fase permanece em
-validacao ate a matriz manual de build e QEMU ser aprovada.
+`docs/fixtures/updates/u2/`.
 
 ---
 
@@ -67,16 +66,17 @@ de kernel ou chave de producao foi adicionado nesta fase.
   limites, hashes, assinatura, destino e compatibilidade.
 - [x] Registrar toda recusa com `LOG_ERROR` e expor `update verify <arquivo>`
   como diagnostico sem efeitos no disco.
-- [ ] Testar artefato valido, truncado, com hash invalido, assinatura invalida,
+- [x] Testar artefato valido, truncado, com hash invalido, assinatura invalida,
   versao incompativel e manifesto malformado, seguido de `regcheck full`.
 
 **Criterio de saida:** somente um pacote completamente autenticado e compativel
 e aceito; todos os demais falham sem escrita, vazamento ou regressao.
 
-Estado atual: os testes host e os fixtures publicos cobrem `NONE`, `SIZE`,
-`HASH`, `SIGNATURE`, `BASE_VERSION`, `FORMAT` e `UNKNOWN_KEY`. Restam o build,
-a execucao dos sete comandos no QEMU, a comparacao da imagem antes/depois,
-`mem` e `regcheck full`; por isso a U2 ainda nao esta concluida.
+Concluida: os testes host e os fixtures publicos cobrem `NONE`, `SIZE`,
+`HASH`, `SIGNATURE`, `BASE_VERSION`, `FORMAT` e `UNKNOWN_KEY`. O build, os
+sete comandos no QEMU, `mem`, `regcheck full` e a comparacao da imagem foram
+aprovados. A memoria permaneceu estavel e o SHA-256 da imagem foi identico
+antes e depois da verificacao.
 
 ## Fase U3 - Aplicacao, Recuperacao e Rollback
 
