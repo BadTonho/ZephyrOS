@@ -372,6 +372,15 @@ ativa durante uma aquisicao sem resposta, inclusive quando a negociacao ocorre
 em outra NIC. Somente um ACK valido aplica atomicamente a nova interface e
 encerra clientes HTTP, sockets e conexoes TCP anteriores.
 
+Depois de inicializar o Network Manager, o kernel inicia uma aquisicao DHCP
+na primeira interface ativa, vinculada ao Ethernet e com link, seguindo a
+ordem PCI. A chamada envia o primeiro Discover e retorna imediatamente: o
+boot nao espera o lease, e as retentativas continuam no polling do processo
+de sistema. Ausencia de NIC, link ou servidor DHCP permanece somente como
+diagnostico e nao impede Desktop ou Shell. A tentativa automatica ocorre uma
+vez por boot; `net dhcp acquire <id>` continua disponivel para nova tentativa
+ou para selecionar outra interface.
+
 O cliente DNS usa uma porta efemera e uma consulta A/IN ativa. O parser
 limitado a 512 bytes valida pergunta, resposta, limites e nomes comprimidos,
 detecta ciclos e segue ate quatro CNAMEs. Tres tentativas usam timeout de um

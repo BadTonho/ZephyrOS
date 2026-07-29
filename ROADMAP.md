@@ -623,8 +623,10 @@ Sistema e ecossistema:       [████████████████�
   registrou quatro eventos, deixou o journal limpo e terminou com
   `regcheck full` e `audit-image` em `OK`.
 - [ ] U5 em validacao: manifesto assinado `ZUM1`, HTTP streaming, cache FAT12
-  redundante, comandos e quarta aba Classic/Modern estao implementados. Faltam
-  gerar os fixtures publicos com a chave externa e aprovar a matriz QEMU.
+  redundante, comandos e quarta aba Classic/Modern estao implementados. O
+  Network Manager inicia DHCP sem bloquear o boot, mas a distribuicao remota
+  permanece opt-in e nao abre conexoes automaticamente. Falta aprovar a matriz
+  QEMU.
 
 ## Roadmaps por etapa
 

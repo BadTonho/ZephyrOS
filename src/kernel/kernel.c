@@ -363,6 +363,44 @@ void desktop_process_main(void) {
     }
 }
 
+static int kernel_start_automatic_dhcp(void) {
+    network_interface_info_t info;
+    network_interface_text_t text;
+    uint32_t interface_count = 0;
+    int result;
+
+    result = network_manager_get_count(&interface_count);
+    if (result != OK) {
+        LOG_ERROR("KERNEL", "Falha ao enumerar NICs para DHCP automatico");
+        return result;
+    }
+    for (uint32_t index = 0; index < interface_count; index++) {
+        result = network_manager_get_interface(index, &info);
+        if (result != OK) {
+            LOG_ERROR("KERNEL", "Falha ao consultar NIC para DHCP automatico");
+            return result;
+        }
+        if (info.state != NETWORK_INTERFACE_ACTIVE ||
+            !info.ethernet_attached ||
+            info.link != NETWORK_LINK_UP) continue;
+        result = network_manager_format_text(&info, &text);
+        if (result != OK) {
+            LOG_ERROR("KERNEL", "Falha ao identificar NIC para DHCP automatico");
+            return result;
+        }
+        LOG_INFO("KERNEL", "Iniciando aquisicao DHCP automatica");
+        result = network_manager_acquire_dhcp(text.id);
+        if (result != OK) {
+            LOG_ERROR("KERNEL", "Falha ao iniciar DHCP automatico");
+            return result;
+        }
+        LOG_INFO("KERNEL", "DHCP automatico iniciado sem bloquear o boot");
+        return OK;
+    }
+    LOG_WARN("KERNEL", "Nenhuma NIC ativa com link para DHCP automatico");
+    return ERR_NOT_FOUND;
+}
+
 void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     vesa_init(vesa_info_addr);
     font_init();
@@ -656,6 +694,20 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         }
     } else {
         video_print("[--] Nenhum controlador de rede encontrado\n", 0x08);
+    }
+
+    if (network_result == OK || network_result == ERR_OVERFLOW) {
+        int dhcp_result = kernel_start_automatic_dhcp();
+
+        if (dhcp_result == OK) {
+            video_print("[OK] DHCP automatico iniciado em background\n",
+                        0x07);
+        } else if (dhcp_result == ERR_NOT_FOUND) {
+            video_print("[--] DHCP automatico sem interface elegivel\n",
+                        0x08);
+        } else {
+            video_print("[!!] DHCP automatico indisponivel\n", 0x0E);
+        }
     }
 
     video_print("[..] Iniciando distribuicao remota de Update...\n", 0x08);

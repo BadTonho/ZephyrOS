@@ -773,11 +773,11 @@ zephyr> update remote clear
 zephyr> update remote clear --confirm
 ```
 
-O boot sempre inicia com remoto desabilitado. `enable` nao configura DHCP nem
-faz uma consulta. `status` mostra rede, canal, URL, candidato, progresso,
-retry, motivo e alias do cache. `clear` faz apenas preflight; `--confirm`
-remove os slots e controles remotos, sem alterar arquivos instalados ou
-historico U4.
+O boot sempre inicia com remoto desabilitado. O Network Manager tenta DHCP
+automaticamente em background, mas `enable` nao configura a rede nem faz uma
+consulta. `status` mostra rede, canal, URL, candidato, progresso, retry,
+motivo e alias do cache. `clear` faz apenas preflight; `--confirm` remove os
+slots e controles remotos, sem alterar arquivos instalados ou historico U4.
 
 ## `update fetch`
 

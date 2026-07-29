@@ -8,8 +8,10 @@ Ed25519 de release e todo pacote baixado passa novamente pelo verificador ZUPD
 v1 antes de ser publicado no cache.
 
 O servico e inicializado no boot apenas para recuperar o cache FAT12. A
-habilitacao remota volta a `DISABLED` em todo boot. A inicializacao nao
-configura DHCP, nao abre conexoes e nao instala pacotes.
+habilitacao remota volta a `DISABLED` em todo boot. Separadamente, o Network
+Manager inicia DHCP em background quando encontra uma NIC ativa com link. Isso
+nao habilita o remoto: a inicializacao da U5 nao abre conexoes, nao consulta
+manifestos e nao instala pacotes.
 
 O canal Stable de desenvolvimento fica em `config/update-remote.json`. O
 header derivado `src/include/core/update_remote_config.h` fixa:
@@ -207,9 +209,10 @@ HTTP simples nao protege confidencialidade, disponibilidade, metadados ou
 observacao do trafego. Sem Secure Boot e armazenamento protegido, adulteracao
 offline do sistema ou rollback integral do disco permanecem fora do modelo.
 
-Nao existem TLS, atualizacao silenciosa, DHCP automatico, consulta no boot,
-telemetria, instalacao direta pelo download ou varios candidatos em um mesmo
-manifesto.
+Nao existem TLS, atualizacao silenciosa, consulta remota no boot, telemetria,
+instalacao direta pelo download ou varios candidatos em um mesmo manifesto.
+O DHCP automatico pertence ao Network Manager, usa somente RAM e nunca dispara
+HTTP ou habilita a distribuicao remota.
 
 ## Referencias
 
