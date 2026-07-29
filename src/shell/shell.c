@@ -206,6 +206,17 @@ typedef struct {
     uint8_t valid;
 } shell_kmetrics_baseline_t;
 
+typedef struct {
+    char operation[16];
+    char first[FS_MAX_PATH];
+    char second[UPDATE_REMOTE_URL_SIZE];
+    char third[32];
+    char extra[2];
+    update_remote_status_t remote_status;
+    update_remote_options_t remote_options;
+    update_remote_result_t remote_result;
+} shell_update_workspace_t;
+
 static char input_buffer[SHELL_BUFFER_SIZE];
 static char appcheck_oversized_text[APP_API_MAX_TEXT_SIZE + 1];
 static uint8_t appcheck_demo_image[APP_IMAGE_MAX_FILE_SIZE];
@@ -253,6 +264,9 @@ static char shell_http_command_url[HTTP_URL_BUFFER_SIZE];
 static char shell_http_preview[SHELL_HTTP_PREVIEW_SIZE + 1U];
 static http_status_t shell_http_command_status;
 static http_status_t shell_http_wait_status;
+/* Parser, status e resultados U5 compartilham a mesma sessao do Shell.
+   Mantê-los no BSS evita somar cerca de 1 KiB à pilha durante Ed25519. */
+static shell_update_workspace_t shell_update_workspace;
 
 #define SHELL_SCANCODE_EXTENDED 0xE0
 #define SHELL_SCANCODE_LEFT_SHIFT 0x2AU
@@ -7624,51 +7638,54 @@ static void cmd_update_print_remote_candidate(
 }
 
 static void cmd_update_remote_status(void) {
-    update_remote_status_t status;
+    update_remote_status_t* status =
+        &shell_update_workspace.remote_status;
 
-    if (update_remote_get_status(&status) != OK) {
+    if (update_remote_get_status(status) != OK) {
         video_print("Update remoto indisponivel.\n", 0x0C);
         return;
     }
     video_print("Update remoto:\n  Estado: ", 0x0B);
-    video_print(update_remote_state_name(status.state),
-                status.state == UPDATE_REMOTE_STATE_FAILED ? 0x0C :
-                status.state == UPDATE_REMOTE_STATE_DISABLED ? 0x08 : 0x0A);
+    video_print(update_remote_state_name(status->state),
+                status->state == UPDATE_REMOTE_STATE_FAILED ? 0x0C :
+                status->state == UPDATE_REMOTE_STATE_DISABLED ? 0x08 : 0x0A);
     video_print("  motivo=", 0x08);
-    video_print(update_remote_reason_name(status.reason), 0x07);
+    video_print(update_remote_reason_name(status->reason), 0x07);
     video_print("\n  Sessao: ", 0x07);
-    video_print(status.enabled ? "HABILITADA" : "DESABILITADA",
-                status.enabled ? 0x0A : 0x08);
+    video_print(status->enabled ? "HABILITADA" : "DESABILITADA",
+                status->enabled ? 0x0A : 0x08);
     video_print("  rede=", 0x08);
-    video_print(status.network_ready ? "READY" : "UNAVAILABLE",
-                status.network_ready ? 0x0A : 0x0E);
+    video_print(status->network_ready ? "READY" : "UNAVAILABLE",
+                status->network_ready ? 0x0A : 0x0E);
     video_print("\n  Canal: ", 0x07);
     video_print(UPDATE_REMOTE_CHANNEL_NAME, 0x0B);
     video_print("\n  URL: ", 0x07);
-    video_print(status.manifest_url, 0x07);
+    video_print(status->manifest_url, 0x07);
     video_print("\n  Cache: ", 0x07);
-    video_print(update_remote_store_name(status.cache_store),
-                status.cache_store == UPDATE_REMOTE_STORE_INVALID ?
+    video_print(update_remote_store_name(status->cache_store),
+                status->cache_store == UPDATE_REMOTE_STORE_INVALID ?
                 0x0C : 0x0A);
-    if (status.package_cached) {
+    if (status->package_cached) {
         video_print(" alias=", 0x08);
-        video_print(status.cached_alias, 0x0B);
+        video_print(status->cached_alias, 0x0B);
     }
     video_print("\n  Progresso: ", 0x07);
-    print_num(status.bytes_received);
+    print_num(status->bytes_received);
     video_print("/", 0x08);
-    print_num(status.total_bytes);
+    print_num(status->total_bytes);
     video_print(" retry=", 0x08);
-    print_num(status.retry_count);
+    print_num(status->retry_count);
     video_print("\n", 0x07);
-    if (status.manifest_cached) {
-        cmd_update_print_remote_candidate(&status.candidate);
+    if (status->manifest_cached) {
+        cmd_update_print_remote_candidate(&status->candidate);
     }
 }
 
 static void cmd_update_remote_control(const char* action, int confirmed) {
-    update_remote_options_t options;
-    update_remote_result_t result;
+    update_remote_options_t* options =
+        &shell_update_workspace.remote_options;
+    update_remote_result_t* result =
+        &shell_update_workspace.remote_result;
     int operation_result;
 
     if (kstrcmp(action, "status") == 0) {
@@ -7697,12 +7714,12 @@ static void cmd_update_remote_control(const char* action, int confirmed) {
         video_print("     update remote clear [--confirm]\n", 0x0E);
         return;
     }
-    kmemset(&options, 0, sizeof(options));
-    options.dry_run = confirmed ? 0U : 1U;
-    operation_result = update_remote_clear(&options, &result);
+    kmemset(options, 0, sizeof(*options));
+    options->dry_run = confirmed ? 0U : 1U;
+    operation_result = update_remote_clear(options, result);
     if (operation_result != OK) {
         video_print("Falha ao limpar cache remoto: ", 0x0C);
-        video_print(update_remote_reason_name(result.reason), 0x0C);
+        video_print(update_remote_reason_name(result->reason), 0x0C);
         video_print("\n", 0x0C);
     } else if (!confirmed) {
         video_print("Cache remoto inspecionado. Nenhuma gravacao.\n", 0x0A);
@@ -7714,33 +7731,35 @@ static void cmd_update_remote_control(const char* action, int confirmed) {
 }
 
 static void cmd_update_fetch(const char* url, int confirmed) {
-    update_remote_options_t options;
-    update_remote_result_t result;
+    update_remote_options_t* options =
+        &shell_update_workspace.remote_options;
+    update_remote_result_t* result =
+        &shell_update_workspace.remote_result;
     int operation_result;
 
-    kmemset(&options, 0, sizeof(options));
-    options.cancel_check = cmd_update_cancel_check;
+    kmemset(options, 0, sizeof(*options));
+    options->cancel_check = cmd_update_cancel_check;
     if (confirmed) {
         video_print("Baixando ZUPD; Esc/F12 cancela a transferencia...\n",
                     0x0E);
         operation_result = update_remote_fetch(
-            url && url[0] ? url : 0, &options, &result);
+            url && url[0] ? url : 0, options, result);
     } else {
         video_print("Consultando manifesto assinado sem gravar...\n", 0x07);
         operation_result = update_remote_check(
-            url && url[0] ? url : 0, &result);
+            url && url[0] ? url : 0, result);
     }
     video_print("Resultado remoto: ", 0x07);
-    video_print(update_remote_reason_name(result.reason),
+    video_print(update_remote_reason_name(result->reason),
                 operation_result == OK ? 0x0A : 0x0C);
     video_print(" bytes=", 0x08);
-    print_num(result.bytes_received);
+    print_num(result->bytes_received);
     video_print(" retry=", 0x08);
-    print_num(result.retry_count);
+    print_num(result->retry_count);
     video_print("\n", 0x07);
-    cmd_update_print_remote_candidate(&result.candidate);
+    cmd_update_print_remote_candidate(&result->candidate);
     if (operation_result != OK) {
-        if (result.cache_preserved) {
+        if (result->cache_preserved) {
             video_print("O cache remoto anterior foi preservado.\n", 0x0A);
         }
         return;
@@ -7756,24 +7775,29 @@ static void cmd_update_fetch(const char* url, int confirmed) {
         video_print(" --confirm\n", 0x0E);
     } else {
         video_print("Pacote autenticado no cache: ", 0x0A);
-        video_print(result.cached_alias, 0x0B);
+        video_print(result->cached_alias, 0x0B);
         video_print("\nNenhuma instalacao foi iniciada.\n", 0x0A);
     }
 }
 
 static void cmd_update(const char* args) {
-    char operation[16];
-    char first[FS_MAX_PATH];
-    char second[UPDATE_REMOTE_URL_SIZE];
-    char third[32];
-    char extra[2];
+    char* operation = shell_update_workspace.operation;
+    char* first = shell_update_workspace.first;
+    char* second = shell_update_workspace.second;
+    char* third = shell_update_workspace.third;
+    char* extra = shell_update_workspace.extra;
     const char* cursor = args;
 
-    cmd_pkg_take_token(&cursor, operation, sizeof(operation));
-    cmd_pkg_take_token(&cursor, first, sizeof(first));
-    cmd_pkg_take_token(&cursor, second, sizeof(second));
-    cmd_pkg_take_token(&cursor, third, sizeof(third));
-    cmd_pkg_take_token(&cursor, extra, sizeof(extra));
+    cmd_pkg_take_token(
+        &cursor, operation, sizeof(shell_update_workspace.operation));
+    cmd_pkg_take_token(
+        &cursor, first, sizeof(shell_update_workspace.first));
+    cmd_pkg_take_token(
+        &cursor, second, sizeof(shell_update_workspace.second));
+    cmd_pkg_take_token(
+        &cursor, third, sizeof(shell_update_workspace.third));
+    cmd_pkg_take_token(
+        &cursor, extra, sizeof(shell_update_workspace.extra));
     if (kstrcmp(operation, "status") == 0 && first[0] == '\0') {
         cmd_update_status();
         return;

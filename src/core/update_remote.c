@@ -64,6 +64,7 @@ static uint8_t update_remote_manifest_hash[32];
 static uint8_t update_remote_manifest_valid;
 static uint8_t update_remote_cancelled;
 static update_remote_download_t update_remote_download;
+static crypto_ed25519_verify_ctx_t update_remote_manifest_verify;
 static http_status_t update_remote_http;
 static update_verification_t update_remote_verification;
 static update_remote_record_t update_remote_record_candidates[2];
@@ -234,20 +235,23 @@ static int update_remote_path_valid(const uint8_t* raw, char* path_out) {
 }
 
 static int update_remote_verify_manifest_signature(const uint8_t* raw) {
-    crypto_ed25519_verify_ctx_t verify;
     int result;
 
     result = crypto_ed25519_verify_init(
-        &verify, raw + UPDATE_REMOTE_SIGNED_SIZE,
+        &update_remote_manifest_verify,
+        raw + UPDATE_REMOTE_SIGNED_SIZE,
         UPDATE_TRUST_PUBLIC_KEY);
     if (result != OK) return result;
     result = crypto_ed25519_verify_update(
-        &verify, update_remote_domain, sizeof(update_remote_domain));
+        &update_remote_manifest_verify,
+        update_remote_domain, sizeof(update_remote_domain));
     if (result != OK) return result;
     result = crypto_ed25519_verify_update(
-        &verify, raw, UPDATE_REMOTE_SIGNED_SIZE);
+        &update_remote_manifest_verify,
+        raw, UPDATE_REMOTE_SIGNED_SIZE);
     if (result != OK) return result;
-    return crypto_ed25519_verify_final(&verify);
+    return crypto_ed25519_verify_final(
+        &update_remote_manifest_verify);
 }
 
 static int update_remote_manifest_versions_valid(
