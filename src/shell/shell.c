@@ -77,6 +77,8 @@
 #define SHELL_MILLISECONDS_PER_SECOND 1000U
 #define SHELL_MAX_TICK_INTERVAL 0xFFFFFFFFU
 #define SHELL_NOINLINE __attribute__((noinline))
+#define SHELL_UPDATE_SCANCODE_ESCAPE 0x01U
+#define SHELL_UPDATE_SCANCODE_F12 0x58U
 
 typedef enum {
     SHELL_BUILTIN_APP_NONE,
@@ -2463,8 +2465,8 @@ static void cmd_health_print_update_capabilities(void) {
     video_print("\nCapacidades de Update:\n", 0x0B);
     if (update_get_capabilities(&capabilities) != OK) {
         video_print("  verificacao local: DISABLED\n", 0x0C);
-        video_print("  aplicacao: DISABLED (U3)\n", 0x08);
-        video_print("  rollback: DISABLED (U3)\n", 0x08);
+        video_print("  aplicacao: DISABLED\n", 0x08);
+        video_print("  rollback: DISABLED\n", 0x08);
         video_print("  remoto: DISABLED (U5)\n", 0x08);
         return;
     }
@@ -2476,8 +2478,25 @@ static void cmd_health_print_update_capabilities(void) {
     } else {
         video_print("READY\n", 0x0A);
     }
-    video_print("  aplicacao: DISABLED (U3)\n", 0x08);
-    video_print("  rollback: DISABLED (U3)\n", 0x08);
+    video_print("  aplicacao: ", 0x07);
+    if (capabilities.apply_available) {
+        video_print("READY\n", 0x0A);
+    } else if (capabilities.recovery_pending) {
+        video_print("DEGRADED (recuperacao pendente)\n", 0x0E);
+    } else if (fs_get_type() == FS_TYPE_FAT12 &&
+               !capabilities.persistent_state_ready) {
+        video_print("DEGRADED (estado persistente)\n", 0x0E);
+    } else {
+        video_print("DISABLED (requer FAT12)\n", 0x08);
+    }
+    video_print("  rollback: ", 0x07);
+    if (capabilities.rollback_available) {
+        video_print("READY\n", 0x0A);
+    } else if (capabilities.apply_available) {
+        video_print("DISABLED (sem backup)\n", 0x08);
+    } else {
+        video_print("DISABLED\n", 0x08);
+    }
     video_print("  remoto: DISABLED (U5)\n", 0x08);
 }
 
@@ -7048,22 +7067,180 @@ static void cmd_update_verify(const char* path) {
     video_print("Nenhuma gravacao foi realizada.\n", 0x0A);
 }
 
+static int cmd_update_cancel_check(void* context) {
+    ipc_msg_t message;
+
+    (void)context;
+    keyboard_process_events();
+    while (ipc_receive(&message)) {
+        if (message.type == IPC_MSG_KEYBOARD &&
+            (message.data1 == SHELL_UPDATE_SCANCODE_ESCAPE ||
+             message.data1 == SHELL_UPDATE_SCANCODE_F12)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+static void cmd_update_refresh_component(void) {
+    update_capabilities_t capabilities;
+
+    if (update_get_capabilities(&capabilities) != OK) return;
+    if (capabilities.recovery_pending ||
+        (fs_get_type() == FS_TYPE_FAT12 &&
+         !capabilities.persistent_state_ready)) {
+        recovery_mark_degraded(
+            RECOVERY_COMPONENT_UPDATE, ERR_STATE,
+            capabilities.recovery_pending ?
+            "Recuperacao de Update pendente" :
+            "Estado persistente de Update invalido");
+    } else {
+        recovery_mark_ready(RECOVERY_COMPONENT_UPDATE);
+    }
+}
+
+static void cmd_update_print_action(const update_action_result_t* action) {
+    video_print("  Resultado: ", 0x07);
+    video_print(update_action_reason_name(action->reason),
+                action->reason == UPDATE_ACTION_NONE ? 0x0A : 0x0C);
+    video_print("\n", 0x07);
+    if (action->entry_count == 0U) return;
+    cmd_update_print_version(
+        "  Origem: ", &action->from_version, action->from_epoch);
+    cmd_update_print_version(
+        "  Destino: ", &action->to_version, action->to_epoch);
+    video_print("  Arquivos: ", 0x07);
+    print_num(action->entry_count);
+    video_print(" processados=", 0x08);
+    print_num(action->completed_entries);
+    video_print("\n", 0x07);
+}
+
+static void cmd_update_apply(const char* path, int confirmed) {
+    update_action_options_t options;
+    update_action_result_t action;
+    int result;
+
+    kmemset(&options, 0, sizeof(options));
+    options.dry_run = confirmed ? 0U : 1U;
+    options.cancel_check = cmd_update_cancel_check;
+    video_print(confirmed ?
+                "Aplicando ZUPD; Esc/F12 cancela entre arquivos...\n" :
+                "Executando verificacao e preflight sem gravar...\n",
+                confirmed ? 0x0E : 0x07);
+    result = update_apply_file(path, &options, &action);
+    cmd_update_print_action(&action);
+    cmd_update_refresh_component();
+    if (result != OK) {
+        if (action.verification_reason != ZUPD_REASON_NONE) {
+            video_print("  Verificacao: ", 0x07);
+            video_print(zupd_reason_name(action.verification_reason), 0x0C);
+            video_print("\n", 0x07);
+        }
+        if (action.recovery_pending) {
+            video_print("Reinicie para executar a recuperacao automatica.\n",
+                        0x0E);
+        }
+        return;
+    }
+    if (!confirmed) {
+        video_print("Preflight aprovado. Nenhuma gravacao foi realizada.\n",
+                    0x0A);
+        video_print("Para confirmar: update apply ", 0x0E);
+        video_print(path, 0x0E);
+        video_print(" --confirm\n", 0x0E);
+        return;
+    }
+    video_print("Atualizacao aplicada. Rollback preservado.\n", 0x0A);
+    video_print("Reinicie para recarregar os arquivos visuais.\n", 0x0E);
+}
+
+static void cmd_update_rollback(int confirmed) {
+    update_action_options_t options;
+    update_action_result_t action;
+    int result;
+
+    kmemset(&options, 0, sizeof(options));
+    options.dry_run = confirmed ? 0U : 1U;
+    options.cancel_check = cmd_update_cancel_check;
+    result = update_rollback(&options, &action);
+    cmd_update_print_action(&action);
+    cmd_update_refresh_component();
+    if (result != OK) {
+        if (action.recovery_pending) {
+            video_print("Reinicie para continuar o rollback.\n", 0x0E);
+        }
+        return;
+    }
+    if (!confirmed) {
+        video_print("Rollback validado. Nenhuma gravacao foi realizada.\n",
+                    0x0A);
+        video_print("Para confirmar: update rollback --confirm\n", 0x0E);
+        return;
+    }
+    video_print("Rollback concluido. Reinicie para recarregar os BMPs.\n",
+                0x0A);
+}
+
+static void cmd_update_test_fail_after(const char* value) {
+    uint32_t entries = parse_number(value);
+    int result;
+
+    if (entries == 0U || entries > 3U) {
+        LOG_ERROR("SHELL", "Failpoint U3 fora do limite");
+        video_print("Uso: update test fail-after <1-3>\n", 0x0E);
+        return;
+    }
+    result = update_test_fail_after((uint16_t)entries);
+    if (result != OK) {
+        video_print("Erro: failpoint U3 indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("TEST ONLY: a proxima aplicacao sera interrompida apos ",
+                0x0E);
+    print_num(entries);
+    video_print(" arquivo(s).\n", 0x0E);
+}
+
 static void cmd_update(const char* args) {
     char operation[16];
-    char path[FS_MAX_PATH];
+    char first[FS_MAX_PATH];
+    char second[32];
     char extra[2];
     const char* cursor = args;
 
     cmd_pkg_take_token(&cursor, operation, sizeof(operation));
-    cmd_pkg_take_token(&cursor, path, sizeof(path));
+    cmd_pkg_take_token(&cursor, first, sizeof(first));
+    cmd_pkg_take_token(&cursor, second, sizeof(second));
     cmd_pkg_take_token(&cursor, extra, sizeof(extra));
-    if (kstrcmp(operation, "verify") == 0 && path[0] &&
-        extra[0] == '\0') {
-        cmd_update_verify(path);
+    if (kstrcmp(operation, "verify") == 0 && first[0] &&
+        second[0] == '\0') {
+        cmd_update_verify(first);
+        return;
+    }
+    if (kstrcmp(operation, "apply") == 0 && first[0] &&
+        extra[0] == '\0' &&
+        (second[0] == '\0' || kstrcmp(second, "--confirm") == 0)) {
+        cmd_update_apply(first, second[0] != '\0');
+        return;
+    }
+    if (kstrcmp(operation, "rollback") == 0 &&
+        extra[0] == '\0' && second[0] == '\0' &&
+        (first[0] == '\0' || kstrcmp(first, "--confirm") == 0)) {
+        cmd_update_rollback(first[0] != '\0');
+        return;
+    }
+    if (kstrcmp(operation, "test") == 0 &&
+        kstrcmp(first, "fail-after") == 0 &&
+        second[0] && extra[0] == '\0') {
+        cmd_update_test_fail_after(second);
         return;
     }
     LOG_WARN("SHELL", "Uso invalido do comando update");
     video_print("Uso: update verify <arquivo.ZUP>\n", 0x0E);
+    video_print("     update apply <arquivo.ZUP> [--confirm]\n", 0x0E);
+    video_print("     update rollback [--confirm]\n", 0x0E);
+    video_print("     update test fail-after <1-3>\n", 0x0E);
 }
 
 static int cmd_pkg_is_file_name(const char* value) {

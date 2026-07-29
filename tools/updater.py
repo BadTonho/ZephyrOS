@@ -20,9 +20,14 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_PATH = REPO_ROOT / "docs" / "14-atualizacoes" / "contrato-zupd-v1.md"
 U1_FIXTURES = REPO_ROOT / "docs" / "fixtures" / "updates" / "v1"
 U2_FIXTURES = REPO_ROOT / "docs" / "fixtures" / "updates" / "u2"
+U3_FIXTURES = REPO_ROOT / "docs" / "fixtures" / "updates" / "u3"
 RELEASE_PUBLIC = REPO_ROOT / "config" / "update-release-public.json"
 VERSION_HEADER = REPO_ROOT / "src" / "include" / "core" / "version.h"
 SHELL_BMP = REPO_ROOT / "assets" / "icons" / "SHELL.BMP"
+UPDATE_ASSETS = {
+    name: REPO_ROOT / "assets" / "icons" / name
+    for name in ("EXPLORER.BMP", "SHELL.BMP", "TASKMGR.BMP")
+}
 
 ZUPD_MAGIC = b"ZUPD"
 ZUPD_FORMAT_VERSION = 1
@@ -47,6 +52,34 @@ ENTRY = struct.Struct("<64sIIIHHHH32s12s")
 VERSION_RE = re.compile(r"^([0-9]+)\.([0-9]+)\.([0-9]+)$")
 FAT_PATH_RE = re.compile(r"^[A-Z0-9_]{1,8}\.[A-Z0-9]{1,3}$")
 DEFINE_RE = re.compile(r"^#define\s+(ZEPHYROS_VERSION_[A-Z]+)\s+([0-9]+)U?\s*$")
+
+UPDATE_CONTROL_SIZE = 512
+UPDATE_CONTROL_VERSION = 1
+UPDATE_CONTROL_HASH_OFFSET = 480
+UPDATE_TARGET_COUNT = 3
+UPDATE_STATE_CURRENT_OFFSET = 40
+UPDATE_STATE_ROLLBACK_OFFSET = 160
+UPDATE_STATE_FILE_SIZE = 40
+UPDATE_JOURNAL_ENTRY_OFFSET = 48
+UPDATE_JOURNAL_ENTRY_SIZE = 76
+UPDATE_JOURNAL_NONE = 0
+UPDATE_JOURNAL_APPLY = 1
+UPDATE_JOURNAL_ROLLBACK = 2
+UPDATE_PHASE_NONE = 0
+UPDATE_PHASE_PREPARED = 1
+UPDATE_PHASE_REPLACING = 2
+UPDATE_PHASE_COMMITTED = 3
+UPDATE_TARGETS = ("EXPLORER.BMP", "SHELL.BMP", "TASKMGR.BMP")
+UPDATE_STATE_ALIASES = ("ZUPD0.STA", "ZUPD1.STA")
+UPDATE_JOURNAL_ALIASES = ("ZUPD0.JRN", "ZUPD1.JRN")
+UPDATE_BACKUP_ALIASES = (
+    ("ZBA0.BAK", "ZBA1.BAK", "ZBA2.BAK"),
+    ("ZBB0.BAK", "ZBB1.BAK", "ZBB2.BAK"),
+)
+UPDATE_STAGE_ALIASES = (
+    ("ZSA0.NEW", "ZSA1.NEW", "ZSA2.NEW"),
+    ("ZSB0.NEW", "ZSB1.NEW", "ZSB2.NEW"),
+)
 
 REASON_NONE = "NONE"
 REASON_FORMAT = "FORMAT"
@@ -139,6 +172,43 @@ class ArtifactInfo:
     target_epoch: int
     total_size: int
     entries: tuple[EntryInfo, ...]
+
+
+@dataclass(frozen=True)
+class StoredFileState:
+    """Tamanho e hash persistidos para um arquivo controlado pela U3."""
+
+    size: int
+    sha256: bytes
+    present: bool
+
+
+@dataclass(frozen=True)
+class StoredUpdateState:
+    """Estado redundante instalado decodificado de ZUPD*.STA."""
+
+    sequence: int
+    installed_version: Version
+    installed_epoch: int
+    rollback_available: bool
+    rollback_slot: int
+    rollback_entry_count: int
+    previous_version: Version
+    previous_epoch: int
+    current: tuple[StoredFileState, ...]
+    rollback: tuple[StoredFileState, ...]
+
+
+@dataclass(frozen=True)
+class StoredJournal:
+    """Resumo suficiente para auditar um registro ZUPD*.JRN."""
+
+    sequence: int
+    kind: int
+    phase: int
+    slot: int
+    entry_count: int
+    progress: int
 
 
 def crypto_modules() -> tuple[Any, Any, Any]:
@@ -884,6 +954,106 @@ def write_fixtures(private_key: Any, output_dir: Path) -> None:
     )
 
 
+def invert_bmp_pixels(data: bytes) -> bytes:
+    """Inverte apenas bytes RGB de um BMP 24-bit sem alterar padding/header."""
+    if len(data) < 54 or data[:2] != b"BM":
+        raise UpdateError("asset U3 nao e um BMP valido")
+    pixel_offset = struct.unpack_from("<I", data, 10)[0]
+    dib_size = struct.unpack_from("<I", data, 14)[0]
+    width = struct.unpack_from("<i", data, 18)[0]
+    height = struct.unpack_from("<i", data, 22)[0]
+    planes = struct.unpack_from("<H", data, 26)[0]
+    bits_per_pixel = struct.unpack_from("<H", data, 28)[0]
+    compression = struct.unpack_from("<I", data, 30)[0]
+    if (
+        dib_size < 40
+        or width <= 0
+        or height == 0
+        or planes != 1
+        or bits_per_pixel != 24
+        or compression != 0
+    ):
+        raise UpdateError("fixture U3 requer BMP 24-bit sem compressao")
+    row_pixels = width * 3
+    row_size = (row_pixels + 3) & ~3
+    rows = abs(height)
+    if pixel_offset < 14 + dib_size or pixel_offset + row_size * rows > len(data):
+        raise UpdateError("layout de pixels do BMP U3 e invalido")
+    transformed = bytearray(data)
+    for row in range(rows):
+        start = pixel_offset + row * row_size
+        for offset in range(start, start + row_pixels):
+            transformed[offset] ^= 0xFF
+    return bytes(transformed)
+
+
+def u3_fixture_payloads() -> list[tuple[str, bytes]]:
+    """Produz os tres BMPs publicos e deterministicamente transformados."""
+    payloads: list[tuple[str, bytes]] = []
+    for name in UPDATE_TARGETS:
+        try:
+            original = UPDATE_ASSETS[name].read_bytes()
+        except OSError as error:
+            raise UpdateError(f"asset U3 ausente: {name}") from error
+        transformed = invert_bmp_pixels(original)
+        if len(transformed) != len(original) or transformed == original:
+            raise UpdateError(f"transformacao U3 invalida para {name}")
+        payloads.append((name, transformed))
+    return payloads
+
+
+def write_u3_fixtures(private_key: Any, output_dir: Path) -> None:
+    """Grava APPLY.ZUP, payloads publicos e manifesto sem sobrescrever."""
+    output = output_dir.resolve()
+    if output.exists() and any(output.iterdir()):
+        raise UpdateError(f"diretorio de fixtures nao esta vazio: {output}")
+    output.mkdir(parents=True, exist_ok=True)
+    info = private_public_info(private_key)
+    payloads = u3_fixture_payloads()
+    artifact = build_from_parts(
+        private_key,
+        Version(0, 1, 0),
+        Version(0, 1, 1),
+        0,
+        0,
+        payloads,
+    )
+    manifest: dict[str, Any] = {
+        "format": "ZUPD v1",
+        "contract": "../../../14-atualizacoes/contrato-zupd-v1.md",
+        "transformation": "invert-rgb-24bit-v1",
+        "base_version": "0.1.0",
+        "target_version": "0.1.1",
+        "base_epoch": 0,
+        "target_epoch": 0,
+        "release_public_key": {
+            "public_key_hex": info.public_key.hex(),
+            "key_id_hex": info.key_id.hex(),
+        },
+        "payloads": {},
+        "artifact": {
+            "name": "APPLY.ZUP",
+            "size": len(artifact),
+            "sha256": hashlib.sha256(artifact).hexdigest(),
+            "expected_reason": "ZUPD_REASON_NONE",
+        },
+    }
+    for name, payload in payloads:
+        write_new_bytes(output / name, payload)
+        manifest["payloads"][name] = {
+            "source_sha256": hashlib.sha256(
+                UPDATE_ASSETS[name].read_bytes()
+            ).hexdigest(),
+            "size": len(payload),
+            "sha256": hashlib.sha256(payload).hexdigest(),
+        }
+    write_new_bytes(output / "APPLY.ZUP", artifact)
+    write_new_text(
+        output / "fixtures.json",
+        json.dumps(manifest, indent=2, sort_keys=False) + "\n",
+    )
+
+
 def expected_reason(
     data: bytes,
     key: PublicKeyInfo,
@@ -896,6 +1066,339 @@ def expected_reason(
         return REASON_NONE
     except Rejection as error:
         return error.reason
+
+
+def decode_stored_file(record: bytes, offset: int) -> StoredFileState:
+    """Decodifica um descritor de arquivo de 40 bytes do estado U3."""
+    size = struct.unpack_from("<I", record, offset)[0]
+    digest = record[offset + 4 : offset + 36]
+    present = record[offset + 36]
+    if present not in (0, 1) or any(record[offset + 37 : offset + 40]):
+        raise UpdateError("descritor de arquivo U3 invalido")
+    if present and not 1 <= size <= ZUPD_MAX_PAYLOAD_SIZE:
+        raise UpdateError("tamanho persistido de arquivo U3 invalido")
+    if not present and (size != 0 or any(digest)):
+        raise UpdateError("descritor ausente de arquivo U3 nao esta zerado")
+    return StoredFileState(size, digest, bool(present))
+
+
+def validate_control_record(record: bytes, magic: bytes) -> None:
+    """Valida envelope, reservados comuns e SHA-256 de um controle U3."""
+    if len(record) != UPDATE_CONTROL_SIZE:
+        raise UpdateError("registro U3 nao possui 512 bytes")
+    if (
+        record[:4] != magic
+        or struct.unpack_from("<H", record, 4)[0] != UPDATE_CONTROL_VERSION
+        or struct.unpack_from("<H", record, 6)[0] != UPDATE_CONTROL_SIZE
+    ):
+        raise UpdateError("cabecalho de controle U3 invalido")
+    expected = hashlib.sha256(record[:UPDATE_CONTROL_HASH_OFFSET]).digest()
+    if expected != record[UPDATE_CONTROL_HASH_OFFSET:]:
+        raise UpdateError("SHA-256 de controle U3 invalido")
+
+
+def decode_state_record(record: bytes) -> StoredUpdateState:
+    """Replica a validacao little-endian de ZUPD*.STA feita no kernel."""
+    validate_control_record(record, b"ZUST")
+    if (
+        any(record[18:20])
+        or record[27] != 0
+        or any(record[34:36])
+        or any(record[280:UPDATE_CONTROL_HASH_OFFSET])
+    ):
+        raise UpdateError("reservado de estado U3 nao esta zerado")
+    current = tuple(
+        decode_stored_file(
+            record, UPDATE_STATE_CURRENT_OFFSET + index * UPDATE_STATE_FILE_SIZE
+        )
+        for index in range(UPDATE_TARGET_COUNT)
+    )
+    rollback = tuple(
+        decode_stored_file(
+            record, UPDATE_STATE_ROLLBACK_OFFSET + index * UPDATE_STATE_FILE_SIZE
+        )
+        for index in range(UPDATE_TARGET_COUNT)
+    )
+    rollback_available = record[24]
+    rollback_slot = record[25]
+    rollback_count = record[26]
+    previous = Version(*struct.unpack_from("<3H", record, 28))
+    previous_epoch = struct.unpack_from("<I", record, 36)[0]
+    if not all(item.present for item in current):
+        raise UpdateError("estado U3 nao descreve todos os alvos")
+    if rollback_available not in (0, 1) or rollback_slot not in (0, 1):
+        raise UpdateError("flags de rollback U3 invalidas")
+    if rollback_count != sum(item.present for item in rollback):
+        raise UpdateError("contagem de rollback U3 divergente")
+    if bool(rollback_available) != bool(rollback_count):
+        raise UpdateError("disponibilidade de rollback U3 inconsistente")
+    if not rollback_available and (
+        previous != Version(0, 0, 0) or previous_epoch != 0
+    ):
+        raise UpdateError("versao anterior sem rollback U3")
+    return StoredUpdateState(
+        sequence=struct.unpack_from("<I", record, 8)[0],
+        installed_version=Version(*struct.unpack_from("<3H", record, 12)),
+        installed_epoch=struct.unpack_from("<I", record, 20)[0],
+        rollback_available=bool(rollback_available),
+        rollback_slot=rollback_slot,
+        rollback_entry_count=rollback_count,
+        previous_version=previous,
+        previous_epoch=previous_epoch,
+        current=current,
+        rollback=rollback,
+    )
+
+
+def decode_journal_record(record: bytes) -> StoredJournal:
+    """Replica a validacao estrutural de ZUPD*.JRN feita no kernel."""
+    validate_control_record(record, b"ZUJ1")
+    if (
+        any(record[17:20])
+        or any(record[44:48])
+        or any(record[276:UPDATE_CONTROL_HASH_OFFSET])
+    ):
+        raise UpdateError("reservado de journal U3 nao esta zerado")
+    kind, phase, slot, count, progress = record[12:17]
+    if (
+        kind not in (UPDATE_JOURNAL_NONE, UPDATE_JOURNAL_APPLY,
+                     UPDATE_JOURNAL_ROLLBACK)
+        or phase not in (UPDATE_PHASE_NONE, UPDATE_PHASE_PREPARED,
+                         UPDATE_PHASE_REPLACING, UPDATE_PHASE_COMMITTED)
+        or slot not in (0, 1)
+        or count > UPDATE_TARGET_COUNT
+        or progress > count
+    ):
+        raise UpdateError("campos de journal U3 invalidos")
+    if kind == UPDATE_JOURNAL_NONE:
+        if phase != UPDATE_PHASE_NONE or count != 0 or progress != 0:
+            raise UpdateError("journal U3 limpo inconsistente")
+    elif phase == UPDATE_PHASE_NONE or count == 0:
+        raise UpdateError("journal U3 pendente inconsistente")
+    seen: set[int] = set()
+    for index in range(UPDATE_TARGET_COUNT):
+        offset = UPDATE_JOURNAL_ENTRY_OFFSET + index * UPDATE_JOURNAL_ENTRY_SIZE
+        entry = record[offset : offset + UPDATE_JOURNAL_ENTRY_SIZE]
+        if index >= count:
+            if any(entry):
+                raise UpdateError("entrada nao usada do journal U3 nao zerada")
+            continue
+        target_id, old_present, new_present, reserved = entry[:4]
+        old_size, new_size = struct.unpack_from("<II", entry, 4)
+        if (
+            target_id >= UPDATE_TARGET_COUNT
+            or target_id in seen
+            or old_present != 1
+            or new_present != 1
+            or reserved != 0
+            or not 1 <= old_size <= ZUPD_MAX_PAYLOAD_SIZE
+            or not 1 <= new_size <= ZUPD_MAX_PAYLOAD_SIZE
+        ):
+            raise UpdateError("entrada ativa do journal U3 invalida")
+        seen.add(target_id)
+    return StoredJournal(
+        struct.unpack_from("<I", record, 8)[0],
+        kind,
+        phase,
+        slot,
+        count,
+        progress,
+    )
+
+
+def select_redundant_record(
+    records: tuple[bytes | None, bytes | None],
+    decoder: Any,
+    label: str,
+) -> Any | None:
+    """Seleciona a copia valida de maior sequencia ou denuncia perda total."""
+    valid: list[tuple[int, Any]] = []
+    for slot, record in enumerate(records):
+        if record is None:
+            continue
+        try:
+            decoded = decoder(record)
+        except UpdateError:
+            continue
+        valid.append((slot, decoded))
+    if not valid:
+        if any(record is not None for record in records):
+            raise UpdateError(f"nenhuma copia valida de {label}")
+        return None
+    valid.sort(key=lambda item: item[1].sequence, reverse=True)
+    if (
+        len(valid) == 2
+        and valid[0][1].sequence == valid[1][1].sequence
+        and records[valid[0][0]] != records[valid[1][0]]
+    ):
+        raise UpdateError(f"copias de {label} empatadas e divergentes")
+    return valid[0][1]
+
+
+def fat_name(raw: bytes) -> str:
+    """Converte os 11 bytes de uma entrada FAT para nome 8.3 legivel."""
+    stem = raw[:8].decode("ascii").rstrip()
+    extension = raw[8:11].decode("ascii").rstrip()
+    return f"{stem}.{extension}" if extension else stem
+
+
+def inspect_fat12_image(image_path: Path) -> dict[str, tuple[bytes, int]]:
+    """Valida FATs, cadeias/alocacoes e retorna os arquivos da raiz."""
+    try:
+        from packager import PackageError, fat12_geometry, fat12_get
+    except ImportError:
+        from tools.packager import PackageError, fat12_geometry, fat12_get
+    try:
+        image = bytearray(image_path.read_bytes())
+        bps, spc, reserved, fat_count, spf, root_start, clusters = (
+            fat12_geometry(image)
+        )
+    except (OSError, PackageError) as error:
+        raise UpdateError(f"imagem FAT12 invalida: {image_path}") from error
+    fat_size = spf * bps
+    fats = [
+        image[(reserved + copy * spf) * bps:
+              (reserved + copy * spf) * bps + fat_size]
+        for copy in range(fat_count)
+    ]
+    if any(fat != fats[0] for fat in fats[1:]):
+        raise UpdateError("copias da FAT12 divergem")
+    root_entries = struct.unpack_from("<H", image, 17)[0]
+    root_offset = root_start * bps
+    root_sectors = (root_entries * 32 + bps - 1) // bps
+    data_start = root_start + root_sectors
+    cluster_size = bps * spc
+    claimed: set[int] = set()
+    root_files: dict[str, tuple[bytes, int]] = {}
+
+    def chain(first: int, label: str) -> list[int]:
+        if first == 0:
+            return []
+        result: list[int] = []
+        cluster = first
+        while 2 <= cluster < 0xFF8:
+            if cluster >= clusters + 2 or cluster in claimed:
+                raise UpdateError(f"cadeia FAT12 invalida ou cruzada: {label}")
+            claimed.add(cluster)
+            result.append(cluster)
+            cluster = fat12_get(fats[0], cluster)
+        if cluster < 0xFF8:
+            raise UpdateError(f"cadeia FAT12 sem terminador: {label}")
+        return result
+
+    def chain_data(items: list[int]) -> bytes:
+        content = bytearray()
+        for cluster in items:
+            start = (data_start + (cluster - 2) * spc) * bps
+            content.extend(image[start:start + cluster_size])
+        return bytes(content)
+
+    def walk(entries: bytes, count: int, prefix: str, root: bool) -> None:
+        for index in range(count):
+            entry = entries[index * 32 : (index + 1) * 32]
+            if len(entry) < 32 or entry[0] == 0:
+                break
+            attributes = entry[11]
+            if entry[0] == 0xE5 or attributes == 0x0F or attributes & 0x08:
+                continue
+            if entry[0] == ord("."):
+                continue
+            try:
+                name = fat_name(entry[:11])
+            except UnicodeDecodeError as error:
+                raise UpdateError("nome FAT12 nao usa ASCII") from error
+            label = f"{prefix}/{name}" if prefix else name
+            size = struct.unpack_from("<I", entry, 28)[0]
+            items = chain(struct.unpack_from("<H", entry, 26)[0], label)
+            content = chain_data(items)
+            if attributes & 0x10:
+                walk(content, len(content) // 32, label, False)
+            else:
+                if size > len(content) or (
+                    size > 0 and len(content) - cluster_size >= size
+                ):
+                    raise UpdateError(f"cadeia FAT12 com tamanho invalido: {label}")
+                if root:
+                    root_files[name] = (content[:size], attributes)
+
+    walk(
+        bytes(image[root_offset:root_offset + root_entries * 32]),
+        root_entries,
+        "",
+        True,
+    )
+    allocated = {
+        cluster
+        for cluster in range(2, clusters + 2)
+        if fat12_get(fats[0], cluster) != 0
+    }
+    if allocated != claimed:
+        raise UpdateError("FAT12 contem clusters orfaos ou nao rastreados")
+    return root_files
+
+
+def audit_image(
+    image_path: Path,
+    expected_version: Version | None,
+    expected_rollback: str,
+    allow_pending: bool,
+) -> None:
+    """Audita a persistencia U3 e os arquivos transacionais em uma imagem."""
+    root = inspect_fat12_image(image_path)
+    state = select_redundant_record(
+        tuple(root.get(name, (None, 0))[0] for name in UPDATE_STATE_ALIASES),
+        decode_state_record,
+        "estado U3",
+    )
+    journal = select_redundant_record(
+        tuple(root.get(name, (None, 0))[0] for name in UPDATE_JOURNAL_ALIASES),
+        decode_journal_record,
+        "journal U3",
+    )
+    installed = state.installed_version if state else Version(0, 1, 0)
+    rollback_available = state.rollback_available if state else False
+    pending = journal is not None and journal.kind != UPDATE_JOURNAL_NONE
+    if expected_version is not None and installed != expected_version:
+        raise UpdateError(
+            f"versao instalada {installed}, esperada {expected_version}"
+        )
+    if not allow_pending and pending:
+        raise UpdateError("imagem possui transacao U3 pendente")
+    if expected_rollback == "available" and not rollback_available:
+        raise UpdateError("rollback esperado nao esta disponivel")
+    if expected_rollback == "unavailable" and rollback_available:
+        raise UpdateError("rollback inesperado esta disponivel")
+    if state:
+        for index, name in enumerate(UPDATE_TARGETS):
+            if name not in root:
+                raise UpdateError(f"arquivo instalado ausente: {name}")
+            data = root[name][0]
+            expected = state.current[index]
+            if len(data) != expected.size or hashlib.sha256(data).digest() != expected.sha256:
+                raise UpdateError(f"arquivo instalado diverge do estado: {name}")
+    if not allow_pending:
+        for aliases in UPDATE_STAGE_ALIASES:
+            if any(alias in root for alias in aliases):
+                raise UpdateError("staging U3 permaneceu apos a transacao")
+        for slot, aliases in enumerate(UPDATE_BACKUP_ALIASES):
+            for index, alias in enumerate(aliases):
+                should_exist = bool(
+                    state
+                    and state.rollback_available
+                    and state.rollback_slot == slot
+                    and state.rollback[index].present
+                )
+                if should_exist != (alias in root):
+                    raise UpdateError(f"estado do backup U3 diverge: {alias}")
+                if should_exist:
+                    data = root[alias][0]
+                    expected = state.rollback[index]
+                    if len(data) != expected.size or hashlib.sha256(data).digest() != expected.sha256:
+                        raise UpdateError(f"backup U3 diverge: {alias}")
+    print("Audit image: OK")
+    print(f"  installed={installed}")
+    print(f"  rollback={'READY' if rollback_available else 'DISABLED'}")
+    print(f"  journal={'PENDING' if pending else 'CLEAN'}")
 
 
 def selftest_u1() -> None:
@@ -942,6 +1445,188 @@ def selftest_u2_public() -> None:
             raise UpdateError(
                 f"fixture U2 {name}: esperado {expected}, obtido {actual}"
             )
+
+
+def selftest_u3_public() -> bool:
+    """Valida APPLY.ZUP e payloads publicados; retorna falso no checkpoint."""
+    manifest_path = U3_FIXTURES / "fixtures.json"
+    if not manifest_path.is_file():
+        return False
+    try:
+        fixture_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise UpdateError("manifesto publico U3 invalido") from error
+    trusted = load_public_json(RELEASE_PUBLIC)
+    published_key = fixture_manifest["release_public_key"]
+    if (
+        published_key["public_key_hex"] != trusted.public_key.hex()
+        or published_key["key_id_hex"] != trusted.key_id.hex()
+    ):
+        raise UpdateError("manifesto U3 nao corresponde a raiz publica")
+    artifact_path = U3_FIXTURES / fixture_manifest["artifact"]["name"]
+    artifact = artifact_path.read_bytes()
+    artifact_meta = fixture_manifest["artifact"]
+    if (
+        len(artifact) != artifact_meta["size"]
+        or hashlib.sha256(artifact).hexdigest() != artifact_meta["sha256"]
+    ):
+        raise UpdateError("hash ou tamanho publicado diverge em APPLY.ZUP")
+    info = verify_artifact(artifact, trusted, Version(0, 1, 0), 0)
+    if (
+        info.target_version != Version(0, 1, 1)
+        or info.target_epoch != 0
+        or tuple(entry.path for entry in info.entries) != UPDATE_TARGETS
+    ):
+        raise UpdateError("metadados autenticados de APPLY.ZUP divergem")
+    for entry in info.entries:
+        metadata = fixture_manifest["payloads"][entry.path]
+        payload = (U3_FIXTURES / entry.path).read_bytes()
+        transformed = invert_bmp_pixels(UPDATE_ASSETS[entry.path].read_bytes())
+        artifact_payload = artifact[
+            entry.payload_offset : entry.payload_offset + entry.payload_size
+        ]
+        if payload != transformed or payload != artifact_payload:
+            raise UpdateError(f"payload U3 diverge: {entry.path}")
+        if (
+            len(payload) != metadata["size"]
+            or hashlib.sha256(payload).hexdigest() != metadata["sha256"]
+        ):
+            raise UpdateError(f"hash publicado U3 diverge: {entry.path}")
+    return True
+
+
+def encode_test_file(
+    record: bytearray, offset: int, data: bytes, present: bool
+) -> None:
+    """Codifica um descritor usado apenas pelos autotestes de metadados."""
+    if not present:
+        return
+    struct.pack_into("<I", record, offset, len(data))
+    record[offset + 4 : offset + 36] = hashlib.sha256(data).digest()
+    record[offset + 36] = 1
+
+
+def encode_test_state(sequence: int, rollback: bool) -> bytes:
+    """Cria um estado canônico sintético para testar o decoder host."""
+    record = bytearray(UPDATE_CONTROL_SIZE)
+    record[:4] = b"ZUST"
+    struct.pack_into("<HHI", record, 4, 1, UPDATE_CONTROL_SIZE, sequence)
+    version = (0, 1, 1) if rollback else (0, 1, 0)
+    struct.pack_into("<3H", record, 12, *version)
+    if rollback:
+        record[24:27] = bytes((1, 0, UPDATE_TARGET_COUNT))
+        struct.pack_into("<3H", record, 28, 0, 1, 0)
+    for index, name in enumerate(UPDATE_TARGETS):
+        current = f"current-{name}".encode("ascii")
+        previous = f"previous-{name}".encode("ascii")
+        encode_test_file(
+            record,
+            UPDATE_STATE_CURRENT_OFFSET + index * UPDATE_STATE_FILE_SIZE,
+            current,
+            True,
+        )
+        encode_test_file(
+            record,
+            UPDATE_STATE_ROLLBACK_OFFSET + index * UPDATE_STATE_FILE_SIZE,
+            previous,
+            rollback,
+        )
+    record[UPDATE_CONTROL_HASH_OFFSET:] = hashlib.sha256(
+        record[:UPDATE_CONTROL_HASH_OFFSET]
+    ).digest()
+    return bytes(record)
+
+
+def encode_test_clean_journal(sequence: int) -> bytes:
+    """Cria um journal limpo canônico usado nos autotestes host."""
+    record = bytearray(UPDATE_CONTROL_SIZE)
+    record[:4] = b"ZUJ1"
+    struct.pack_into("<HHI", record, 4, 1, UPDATE_CONTROL_SIZE, sequence)
+    record[UPDATE_CONTROL_HASH_OFFSET:] = hashlib.sha256(
+        record[:UPDATE_CONTROL_HASH_OFFSET]
+    ).digest()
+    return bytes(record)
+
+
+def modeled_apply_clusters(
+    old_sizes: tuple[int, ...],
+    new_sizes: tuple[int, ...],
+    cluster_size: int,
+) -> int:
+    """Replica a reserva conservadora calculada pelo preflight do kernel."""
+    clusters = lambda size: (size + cluster_size - 1) // cluster_size
+    return (
+        8
+        + sum(clusters(size) for size in old_sizes)
+        + sum(clusters(size) for size in new_sizes)
+        + clusters(max(old_sizes))
+        + clusters(max(new_sizes))
+    )
+
+
+def modeled_apply_has_space(
+    free_clusters: int,
+    old_sizes: tuple[int, ...],
+    new_sizes: tuple[int, ...],
+    cluster_size: int,
+) -> bool:
+    """Indica se o modelo U3 aceita a quantidade informada de clusters."""
+    return free_clusters >= modeled_apply_clusters(
+        old_sizes, new_sizes, cluster_size
+    )
+
+
+def selftest_u3_metadata() -> None:
+    """Exercita redundancia, corrupcao, espaco e transicoes da persistencia."""
+    baseline = encode_test_state(1, False)
+    applied = encode_test_state(2, True)
+    baseline_state = decode_state_record(baseline)
+    applied_state = decode_state_record(applied)
+    if (
+        baseline_state.rollback_available
+        or not applied_state.rollback_available
+        or applied_state.previous_version != Version(0, 1, 0)
+    ):
+        raise UpdateError("transicao sintetica de estado U3 divergiu")
+    selected = select_redundant_record(
+        (baseline, applied), decode_state_record, "estado U3 de teste"
+    )
+    if selected.sequence != 2:
+        raise UpdateError("selecao de sequencia redundante U3 divergiu")
+    corrupted = bytearray(applied)
+    corrupted[100] ^= 1
+    selected = select_redundant_record(
+        (baseline, bytes(corrupted)),
+        decode_state_record,
+        "estado U3 corrompido",
+    )
+    if selected.sequence != 1:
+        raise UpdateError("fallback redundante U3 nao escolheu copia valida")
+    try:
+        select_redundant_record(
+            (bytes(corrupted), bytes(corrupted)),
+            decode_state_record,
+            "estado U3 corrompido",
+        )
+    except UpdateError:
+        pass
+    else:
+        raise UpdateError("perda das duas copias U3 foi aceita")
+    journal = decode_journal_record(encode_test_clean_journal(7))
+    if journal.kind != UPDATE_JOURNAL_NONE or journal.sequence != 7:
+        raise UpdateError("journal limpo sintetico divergiu")
+    required = modeled_apply_clusters(
+        (3126, 3126, 3126), (3126, 3126, 3126), 512
+    )
+    if (
+        modeled_apply_has_space(
+            required - 1, (3126, 3126, 3126), (3126, 3126, 3126), 512
+        )
+        or not modeled_apply_has_space(
+            required, (3126, 3126, 3126), (3126, 3126, 3126), 512
+        )
+    ):
+        raise UpdateError("modelo de falta de espaco U3 divergiu")
 
 
 def selftest_manifest_rejections(private_key: Any) -> None:
@@ -1048,8 +1733,14 @@ def run_selftest() -> None:
     """Executa a suite host sem gravar no repositorio."""
     selftest_u1()
     selftest_u2_public()
+    u3_ready = selftest_u3_public()
+    selftest_u3_metadata()
     selftest_generated()
-    print("Updater selftest: OK")
+    print(
+        "Updater selftest: OK"
+        if u3_ready
+        else "Updater selftest: OK (fixture U3 aguarda checkpoint)"
+    )
 
 
 def print_artifact(info: ArtifactInfo) -> None:
@@ -1114,6 +1805,32 @@ def command_fixtures(args: argparse.Namespace) -> None:
     print(f"Fixtures U2 criadas em {Path(args.output_dir).resolve()}")
 
 
+def command_fixtures_u3(args: argparse.Namespace) -> None:
+    """Gera APPLY.ZUP e os BMPs publicos usando a chave externa."""
+    key = load_private_key(Path(args.private), prompt_password())
+    public = load_public_json(Path(args.public))
+    if private_public_info(key) != public:
+        raise UpdateError("chave privada nao corresponde ao JSON publico")
+    write_u3_fixtures(key, Path(args.output_dir))
+    print(f"Fixtures U3 criadas em {Path(args.output_dir).resolve()}")
+    print("Somente artefatos publicos foram gravados no repositorio.")
+
+
+def command_audit_image(args: argparse.Namespace) -> None:
+    """Executa a auditoria offline da imagem FAT12 apos encerrar o QEMU."""
+    expected_version = (
+        Version.parse(args.expect_version)
+        if args.expect_version is not None
+        else None
+    )
+    audit_image(
+        Path(args.image),
+        expected_version,
+        args.expect_rollback,
+        args.allow_pending,
+    )
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Monta a interface CLI publica da ferramenta."""
     parser = argparse.ArgumentParser(description=__doc__)
@@ -1142,6 +1859,27 @@ def build_parser() -> argparse.ArgumentParser:
     fixtures.add_argument("--public", required=True)
     fixtures.add_argument("--output-dir", required=True)
     fixtures.set_defaults(handler=command_fixtures)
+
+    fixtures_u3 = subparsers.add_parser(
+        "fixtures-u3", help="gera APPLY.ZUP e payloads da U3"
+    )
+    fixtures_u3.add_argument("--private", required=True)
+    fixtures_u3.add_argument("--public", required=True)
+    fixtures_u3.add_argument("--output-dir", required=True)
+    fixtures_u3.set_defaults(handler=command_fixtures_u3)
+
+    audit = subparsers.add_parser(
+        "audit-image", help="audita estado U3 em uma imagem FAT12"
+    )
+    audit.add_argument("--image", required=True)
+    audit.add_argument("--expect-version")
+    audit.add_argument(
+        "--expect-rollback",
+        choices=("any", "available", "unavailable"),
+        default="any",
+    )
+    audit.add_argument("--allow-pending", action="store_true")
+    audit.set_defaults(handler=command_audit_image)
 
     sync = subparsers.add_parser("sync-trust", help="gera o header publico")
     sync.add_argument("--public", required=True)

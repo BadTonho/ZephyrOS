@@ -69,6 +69,7 @@ static void to_upper(char* str, int max_len) {
 }
 
 #define FAT12_CHAIN_LIMIT 4096
+#define FAT12_ATOMIC_MAX_CLUSTERS 128U
 
 int fat12_init(void) {
     fat12_release();
@@ -194,6 +195,169 @@ static void fat12_set_cluster(uint16_t cluster, uint16_t value) {
         old = (old & 0xF000) | (value);
     }
     *(uint16_t*)((uint8_t*)fat + offset) = old;
+}
+
+static int fat12_encode_root_name(const char* filename, char encoded[11]) {
+    uint32_t base = 0;
+    uint32_t extension = 0;
+    uint32_t index = 0;
+
+    if (!filename || !encoded || filename[0] == '\0') {
+        LOG_ERROR("FAT12", "Nome raiz nulo ou vazio");
+        return ERR_NULL;
+    }
+    kmemset(encoded, ' ', 11);
+    while (filename[index] && filename[index] != '.') {
+        char value = filename[index++];
+        if (base >= 8U || value == '/' || value == '\\' || value == ' ') {
+            LOG_ERROR("FAT12", "Nome raiz 8.3 invalido");
+            return ERR_INVALID;
+        }
+        if (value >= 'a' && value <= 'z') value -= 32;
+        encoded[base++] = value;
+    }
+    if (base == 0U || filename[index] != '.') {
+        LOG_ERROR("FAT12", "Extensao raiz 8.3 ausente");
+        return ERR_INVALID;
+    }
+    index++;
+    while (filename[index]) {
+        char value = filename[index++];
+        if (extension >= 3U || value == '.' || value == '/' ||
+            value == '\\' || value == ' ') {
+            LOG_ERROR("FAT12", "Extensao raiz 8.3 invalida");
+            return ERR_INVALID;
+        }
+        if (value >= 'a' && value <= 'z') value -= 32;
+        encoded[8U + extension++] = value;
+    }
+    if (extension == 0U) {
+        LOG_ERROR("FAT12", "Extensao raiz 8.3 vazia");
+        return ERR_INVALID;
+    }
+    return OK;
+}
+
+static int fat12_find_root_index(const char encoded[11],
+                                 uint32_t* index_out) {
+    for (uint32_t index = 0; index < fs.bpb.root_entries; index++) {
+        fat12_dir_entry_t* entry = &fs.root_dir[index];
+
+        if (entry->name[0] == 0x00) break;
+        if ((uint8_t)entry->name[0] == 0xE5 ||
+            (entry->attributes & 0x08U)) continue;
+        if (strncmp(entry->name, encoded, 11U) == 0) {
+            if (index_out) *index_out = index;
+            return OK;
+        }
+    }
+    LOG_WARN("FAT12", "Arquivo raiz nao encontrado");
+    return ERR_NOT_FOUND;
+}
+
+static int fat12_find_root_slot(uint32_t* index_out) {
+    if (!index_out) {
+        LOG_ERROR("FAT12", "Destino de slot raiz nulo");
+        return ERR_NULL;
+    }
+    for (uint32_t index = 0; index < fs.bpb.root_entries; index++) {
+        uint8_t first = (uint8_t)fs.root_dir[index].name[0];
+        if (first == 0x00U || first == 0xE5U) {
+            *index_out = index;
+            return OK;
+        }
+    }
+    LOG_ERROR("FAT12", "Diretorio raiz sem entrada livre");
+    return ERR_OVERFLOW;
+}
+
+static int fat12_flush_fats(void) {
+    for (uint32_t copy = 0; copy < fs.bpb.num_fats; copy++) {
+        uint32_t start = fs.fat_start + copy * fs.bpb.sectors_per_fat;
+        for (uint32_t sector = 0; sector < fs.bpb.sectors_per_fat; sector++) {
+            if (ata_write_sectors(
+                    start + sector, 1,
+                    (uint8_t*)fs.fat + sector * fs.bpb.bytes_per_sector) != 0) {
+                LOG_ERROR("FAT12", "Falha ao persistir copia da FAT");
+                return ERR_DISK;
+            }
+        }
+    }
+    return OK;
+}
+
+static int fat12_flush_root_sector(uint32_t entry_index) {
+    uint32_t entries_per_sector = fs.bpb.bytes_per_sector /
+                                  sizeof(fat12_dir_entry_t);
+    uint32_t sector = entry_index / entries_per_sector;
+    uint8_t* data = (uint8_t*)fs.root_dir +
+                    sector * fs.bpb.bytes_per_sector;
+
+    if (ata_write_sectors(fs.root_start + sector, 1, data) != 0) {
+        LOG_ERROR("FAT12", "Falha ao persistir entrada do diretorio raiz");
+        return ERR_DISK;
+    }
+    return OK;
+}
+
+static void fat12_release_chain(uint16_t first_cluster) {
+    uint16_t cluster = first_cluster;
+    uint32_t steps = 0;
+
+    while (cluster >= 2U && cluster < FAT12_CLUSTER_END &&
+           steps++ < FAT12_CHAIN_LIMIT) {
+        uint16_t next = fat12_get_cluster(cluster);
+        fat12_set_cluster(cluster, FAT12_CLUSTER_FREE);
+        cluster = next;
+    }
+}
+
+static int fat12_select_atomic_clusters(uint16_t clusters_out[],
+                                        uint32_t cluster_count) {
+    uint32_t total_sectors = fs.bpb.total_sectors ?
+                             fs.bpb.total_sectors :
+                             fs.bpb.large_sector_count;
+    uint32_t total_clusters = (total_sectors - fs.data_start) /
+                              fs.bpb.sectors_per_cluster;
+    uint32_t selected = 0;
+
+    for (uint32_t cluster = 2U;
+         cluster < total_clusters + 2U && selected < cluster_count;
+         cluster++) {
+        if (fat12_get_cluster((uint16_t)cluster) == FAT12_CLUSTER_FREE) {
+            clusters_out[selected++] = (uint16_t)cluster;
+        }
+    }
+    return selected == cluster_count ? OK : ERR_OVERFLOW;
+}
+
+static int fat12_write_atomic_clusters(const uint16_t clusters[],
+                                       uint32_t cluster_count,
+                                       const uint8_t* data, uint32_t size) {
+    uint32_t written = 0;
+
+    for (uint32_t index = 0; index < cluster_count; index++) {
+        uint32_t lba = fs.data_start +
+                       (clusters[index] - 2U) * fs.bpb.sectors_per_cluster;
+        for (uint32_t sector = 0; sector < fs.bpb.sectors_per_cluster;
+             sector++) {
+            uint8_t buffer[512];
+            uint32_t chunk = size - written;
+
+            if (chunk > fs.bpb.bytes_per_sector) {
+                chunk = fs.bpb.bytes_per_sector;
+            }
+            kmemset(buffer, 0, sizeof(buffer));
+            if (chunk > 0U) kmemcpy(buffer, data + written, chunk);
+            if (ata_write_sectors(lba + sector, 1, buffer) != 0) {
+                LOG_ERROR("FAT12", "Falha ao gravar cadeia copy-on-write");
+                return ERR_DISK;
+            }
+            written += chunk;
+            if (written == size) break;
+        }
+    }
+    return written == size ? OK : ERR_DISK;
 }
 
 static fat12_dir_entry_t* fat12_find_entry(const char* filename) {
@@ -1348,4 +1512,144 @@ int fat12_create_dir_entry(uint16_t dir_cluster, const char* name, uint8_t attri
     kfree(cluster_buf);
     cluster_buf = 0;
     return 0;
+}
+
+int fat12_get_root_file_info(const char* filename, uint32_t* size_out,
+                             uint8_t* attributes_out) {
+    char encoded[11];
+    uint32_t index;
+    int result;
+
+    if (!fs.initialized) {
+        LOG_ERROR("FAT12", "Consulta raiz antes da inicializacao");
+        return ERR_STATE;
+    }
+    result = fat12_encode_root_name(filename, encoded);
+    if (result != OK) {
+        LOG_ERROR("FAT12", "Nome 8.3 invalido na consulta raiz");
+        return result;
+    }
+    result = fat12_find_root_index(encoded, &index);
+    if (result != OK) return result;
+    if (size_out) *size_out = fs.root_dir[index].file_size;
+    if (attributes_out) *attributes_out = fs.root_dir[index].attributes;
+    return OK;
+}
+
+int fat12_atomic_write_root(const char* filename, const uint8_t* data,
+                            uint32_t size, uint8_t attributes,
+                            int require_existing) {
+    uint16_t clusters[FAT12_ATOMIC_MAX_CLUSTERS];
+    fat12_dir_entry_t previous;
+    char encoded[11];
+    uint32_t entry_index;
+    uint32_t cluster_size;
+    uint32_t cluster_count;
+    int existing;
+    int result;
+
+    if (!fs.initialized) {
+        LOG_ERROR("FAT12", "Escrita atomica antes da inicializacao");
+        return ERR_STATE;
+    }
+    if (!filename || !data) {
+        LOG_ERROR("FAT12", "Argumento nulo na escrita atomica");
+        return ERR_NULL;
+    }
+    if (size == 0U || size > 64U * 1024U) {
+        LOG_ERROR("FAT12", "Tamanho invalido na escrita atomica");
+        return ERR_OVERFLOW;
+    }
+    result = fat12_encode_root_name(filename, encoded);
+    if (result != OK) {
+        LOG_ERROR("FAT12", "Nome 8.3 invalido na escrita atomica");
+        return result;
+    }
+    existing = fat12_find_root_index(encoded, &entry_index) == OK;
+    if (require_existing && !existing) return ERR_NOT_FOUND;
+    if (!existing && fat12_find_root_slot(&entry_index) != OK) {
+        LOG_ERROR("FAT12", "Diretorio raiz sem entrada livre");
+        return ERR_OVERFLOW;
+    }
+
+    cluster_size = fs.bpb.sectors_per_cluster * fs.bpb.bytes_per_sector;
+    cluster_count = (size + cluster_size - 1U) / cluster_size;
+    if (cluster_count == 0U ||
+        cluster_count > FAT12_ATOMIC_MAX_CLUSTERS) return ERR_OVERFLOW;
+    result = fat12_select_atomic_clusters(clusters, cluster_count);
+    if (result != OK) {
+        LOG_ERROR("FAT12", "Espaco insuficiente para copy-on-write");
+        return result;
+    }
+    result = fat12_write_atomic_clusters(clusters, cluster_count, data, size);
+    if (result != OK) return result;
+
+    for (uint32_t index = 0; index < cluster_count; index++) {
+        uint16_t next = index + 1U < cluster_count ?
+                        clusters[index + 1U] : FAT12_CLUSTER_END;
+        fat12_set_cluster(clusters[index], next);
+    }
+    if (fat12_flush_fats() != OK) {
+        fat12_release_chain(clusters[0]);
+        fat12_flush_fats();
+        return ERR_DISK;
+    }
+
+    previous = fs.root_dir[entry_index];
+    kmemset(&fs.root_dir[entry_index], 0, sizeof(fat12_dir_entry_t));
+    kmemcpy(fs.root_dir[entry_index].name, encoded, sizeof(encoded));
+    fs.root_dir[entry_index].attributes =
+        attributes == 0xFFU ?
+        (existing ? previous.attributes : 0x20U) : attributes;
+    fs.root_dir[entry_index].cluster_low = clusters[0];
+    fs.root_dir[entry_index].file_size = size;
+    if (fat12_flush_root_sector(entry_index) != OK) {
+        fs.root_dir[entry_index] = previous;
+        fat12_release_chain(clusters[0]);
+        fat12_flush_fats();
+        return ERR_DISK;
+    }
+
+    if (existing && previous.cluster_low >= 2U) {
+        fat12_release_chain(previous.cluster_low);
+        if (fat12_flush_fats() != OK) {
+            LOG_WARN("FAT12", "Arquivo trocado; cadeia antiga pode ter vazado");
+        }
+    }
+    return OK;
+}
+
+int fat12_atomic_delete_root(const char* filename) {
+    fat12_dir_entry_t previous;
+    char encoded[11];
+    uint32_t entry_index;
+    int result;
+
+    if (!fs.initialized) {
+        LOG_ERROR("FAT12", "Exclusao atomica antes da inicializacao");
+        return ERR_STATE;
+    }
+    result = fat12_encode_root_name(filename, encoded);
+    if (result != OK) {
+        LOG_ERROR("FAT12", "Nome 8.3 invalido na exclusao atomica");
+        return result;
+    }
+    result = fat12_find_root_index(encoded, &entry_index);
+    if (result != OK) return result;
+
+    previous = fs.root_dir[entry_index];
+    fs.root_dir[entry_index].name[0] = (char)0xE5;
+    fs.root_dir[entry_index].file_size = 0;
+    fs.root_dir[entry_index].cluster_low = 0;
+    if (fat12_flush_root_sector(entry_index) != OK) {
+        fs.root_dir[entry_index] = previous;
+        return ERR_DISK;
+    }
+    if (previous.cluster_low >= 2U) {
+        fat12_release_chain(previous.cluster_low);
+        if (fat12_flush_fats() != OK) {
+            LOG_WARN("FAT12", "Arquivo removido; cadeia pode ter vazado");
+        }
+    }
+    return OK;
 }

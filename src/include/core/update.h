@@ -48,12 +48,56 @@ typedef struct {
     uint8_t apply_available;
     uint8_t rollback_available;
     uint8_t remote_available;
+    uint8_t persistent_state_ready;
+    uint8_t recovery_pending;
 } update_capabilities_t;
+
+typedef enum {
+    UPDATE_ACTION_NONE = 0,
+    UPDATE_ACTION_VERIFY = 1,
+    UPDATE_ACTION_UNSUPPORTED_FS = 2,
+    UPDATE_ACTION_STATE = 3,
+    UPDATE_ACTION_SPACE = 4,
+    UPDATE_ACTION_IO = 5,
+    UPDATE_ACTION_CANCELLED = 6,
+    UPDATE_ACTION_NO_ROLLBACK = 7,
+    UPDATE_ACTION_RECOVERY_PENDING = 8
+} update_action_reason_t;
+
+typedef int (*update_cancel_check_t)(void* context);
+
+typedef struct {
+    uint8_t dry_run;
+    update_cancel_check_t cancel_check;
+    void* cancel_context;
+} update_action_options_t;
+
+typedef struct {
+    update_action_reason_t reason;
+    zupd_reason_t verification_reason;
+    update_version_t from_version;
+    update_version_t to_version;
+    uint32_t from_epoch;
+    uint32_t to_epoch;
+    uint16_t entry_count;
+    uint16_t completed_entries;
+    uint8_t reboot_required;
+    uint8_t recovery_pending;
+} update_action_result_t;
 
 int update_init(void);
 int update_is_ready(void);
 int update_verify_file(const char* path, update_verification_t* result_out);
 int update_get_capabilities(update_capabilities_t* capabilities_out);
+int update_get_installed_version(update_version_t* version_out,
+                                 uint32_t* epoch_out);
+int update_apply_file(const char* path,
+                      const update_action_options_t* options,
+                      update_action_result_t* result_out);
+int update_rollback(const update_action_options_t* options,
+                    update_action_result_t* result_out);
+int update_test_fail_after(uint16_t completed_entries);
 const char* zupd_reason_name(zupd_reason_t reason);
+const char* update_action_reason_name(update_action_reason_t reason);
 
 #endif

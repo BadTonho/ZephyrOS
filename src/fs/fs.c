@@ -5,10 +5,18 @@
 #include "core/log.h"
 #include "core/errors.h"
 #include "core/string.h"
+#include "core/spinlock.h"
 
 static uint8_t current_fs_type = FS_TYPE_NONE;
+static spinlock_t fs_operation_lock;
+
+static int fs_write_file_in_dir_unlocked(const char* dir_path,
+                                         const char* filename,
+                                         const uint8_t* data,
+                                         uint32_t size);
 
 int fs_init(void) {
+    spinlock_init(&fs_operation_lock);
     current_fs_type = FS_TYPE_NONE;
 
     int fat12_result = fat12_init();
@@ -32,61 +40,103 @@ int fs_init(void) {
 }
 
 int fs_read_file(const char* filename, uint8_t* buffer, uint32_t max_size) {
+    int result;
+
+    spinlock_acquire(&fs_operation_lock);
     if (current_fs_type == FS_TYPE_FAT12) {
-        return fat12_read_file(filename, buffer, max_size);
+        result = fat12_read_file(filename, buffer, max_size);
     } else if (current_fs_type == FS_TYPE_FAT32) {
-        return fat32_read_file(filename, buffer, max_size);
+        result = fat32_read_file(filename, buffer, max_size);
+    } else {
+        result = ERR_NOT_FOUND;
     }
-    return ERR_NOT_FOUND;
+    spinlock_release(&fs_operation_lock);
+    return result;
 }
 
 int fs_write_file(const char* filename, const uint8_t* data, uint32_t size) {
+    int result;
+
+    spinlock_acquire(&fs_operation_lock);
     if (current_fs_type == FS_TYPE_FAT12) {
-        return fat12_write_file(filename, data, size);
+        result = fat12_write_file(filename, data, size);
     } else if (current_fs_type == FS_TYPE_FAT32) {
-        return fat32_write_file(filename, data, size);
+        result = fat32_write_file(filename, data, size);
+    } else {
+        result = ERR_NOT_FOUND;
     }
-    return ERR_NOT_FOUND;
+    spinlock_release(&fs_operation_lock);
+    return result;
 }
 
 int fs_delete_file(const char* filename) {
+    int result;
+
+    spinlock_acquire(&fs_operation_lock);
     if (current_fs_type == FS_TYPE_FAT12) {
-        return fat12_delete_file(filename);
+        result = fat12_delete_file(filename);
     } else if (current_fs_type == FS_TYPE_FAT32) {
-        return fat32_delete_file(filename);
+        result = fat32_delete_file(filename);
+    } else {
+        result = ERR_NOT_FOUND;
     }
-    return ERR_NOT_FOUND;
+    spinlock_release(&fs_operation_lock);
+    return result;
 }
 
 int fs_list_dir(void) {
+    int result;
+
+    spinlock_acquire(&fs_operation_lock);
     if (current_fs_type == FS_TYPE_FAT12) {
-        return fat12_list_dir();
+        result = fat12_list_dir();
     } else if (current_fs_type == FS_TYPE_FAT32) {
-        return fat32_list_dir();
+        result = fat32_list_dir();
+    } else {
+        result = ERR_NOT_FOUND;
     }
-    return ERR_NOT_FOUND;
+    spinlock_release(&fs_operation_lock);
+    return result;
 }
 
 int fs_get_file_count(void) {
+    int result;
+
+    spinlock_acquire(&fs_operation_lock);
     if (current_fs_type == FS_TYPE_FAT12) {
-        return fat12_get_file_count();
+        result = fat12_get_file_count();
     } else if (current_fs_type == FS_TYPE_FAT32) {
-        return fat32_get_file_count();
+        result = fat32_get_file_count();
+    } else {
+        result = 0;
     }
-    return 0;
+    spinlock_release(&fs_operation_lock);
+    return result;
 }
 
 int fs_get_file_info(int index, char* name_out, uint32_t* size_out, uint8_t* attr_out) {
+    int result;
+
+    spinlock_acquire(&fs_operation_lock);
     if (current_fs_type == FS_TYPE_FAT12) {
-        return fat12_get_file_info(index, name_out, size_out, attr_out);
+        result = fat12_get_file_info(index, name_out, size_out, attr_out);
     } else if (current_fs_type == FS_TYPE_FAT32) {
-        return fat32_get_file_info(index, name_out, size_out, attr_out);
+        result = fat32_get_file_info(index, name_out, size_out, attr_out);
+    } else {
+        result = ERR_NOT_FOUND;
     }
-    return ERR_NOT_FOUND;
+    spinlock_release(&fs_operation_lock);
+    return result;
 }
 
 int fs_get_info(fs_info_t* info) {
-    if (!info) return ERR_NULL;
+    int result = OK;
+
+    if (!info) {
+        LOG_ERROR("FS", "Destino nulo na consulta do filesystem");
+        return ERR_NULL;
+    }
+    spinlock_acquire(&fs_operation_lock);
 
     info->type = current_fs_type;
 
@@ -113,10 +163,11 @@ int fs_get_info(fs_info_t* info) {
         kmemcpy(info->label, fs->bpb.volume_label, 11);
         info->label[11] = '\0';
     } else {
-        return ERR_NOT_FOUND;
+        result = ERR_NOT_FOUND;
     }
 
-    return OK;
+    spinlock_release(&fs_operation_lock);
+    return result;
 }
 
 uint8_t fs_get_type(void) {
@@ -141,12 +192,18 @@ static uint32_t fs_resolve_dir_cluster(const char* dir_path) {
 }
 
 int fs_read_file_at(const char* path, uint8_t* buffer, uint32_t max_size) {
+    int result;
+
+    spinlock_acquire(&fs_operation_lock);
     if (current_fs_type == FS_TYPE_FAT12) {
-        return fat12_read_file_at(path, buffer, max_size);
+        result = fat12_read_file_at(path, buffer, max_size);
     } else if (current_fs_type == FS_TYPE_FAT32) {
-        return fat32_read_file_at(path, buffer, max_size);
+        result = fat32_read_file_at(path, buffer, max_size);
+    } else {
+        result = ERR_NOT_FOUND;
     }
-    return ERR_NOT_FOUND;
+    spinlock_release(&fs_operation_lock);
+    return result;
 }
 
 int fs_read_file_range_at(const char* path, uint32_t offset,
@@ -164,14 +221,17 @@ int fs_read_file_range_at(const char* path, uint32_t offset,
     }
     *bytes_read = 0;
 
+    spinlock_acquire(&fs_operation_lock);
     if (current_fs_type == FS_TYPE_FAT12) {
         result = fat12_read_file_range_at(path, offset, buffer, max_size);
     } else if (current_fs_type == FS_TYPE_FAT32) {
         result = fat32_read_file_range_at(path, offset, buffer, max_size);
     } else {
+        spinlock_release(&fs_operation_lock);
         LOG_WARN("FS", "Leitura por faixa sem filesystem montado");
         return ERR_UNAVAILABLE;
     }
+    spinlock_release(&fs_operation_lock);
 
     if (result < 0) {
         LOG_WARN("FS", "Arquivo nao encontrado ou leitura por faixa falhou");
@@ -182,7 +242,8 @@ int fs_read_file_range_at(const char* path, uint32_t offset,
     return OK;
 }
 
-int fs_write_file_at(const char* path, const uint8_t* data, uint32_t size) {
+static int fs_write_file_at_unlocked(const char* path, const uint8_t* data,
+                                     uint32_t size) {
     char dir_path[FS_MAX_PATH];
     char filename[FS_MAX_PATH];
     uint32_t length;
@@ -217,7 +278,7 @@ int fs_write_file_at(const char* path, const uint8_t* data, uint32_t size) {
     }
 
     if (last_slash < 0) {
-        result = fs_write_file_in_dir("", path, data, size);
+        result = fs_write_file_in_dir_unlocked("", path, data, size);
     } else {
         uint32_t dir_length = (uint32_t)last_slash;
         uint32_t filename_length = length - (uint32_t)last_slash - 1;
@@ -232,7 +293,8 @@ int fs_write_file_at(const char* path, const uint8_t* data, uint32_t size) {
         dir_path[dir_length] = '\0';
         kmemcpy(filename, path + last_slash + 1, filename_length);
         filename[filename_length] = '\0';
-        result = fs_write_file_in_dir(dir_path, filename, data, size);
+        result = fs_write_file_in_dir_unlocked(
+            dir_path, filename, data, size);
     }
 
     if (result < 0) {
@@ -244,62 +306,198 @@ int fs_write_file_at(const char* path, const uint8_t* data, uint32_t size) {
     return OK;
 }
 
+int fs_write_file_at(const char* path, const uint8_t* data, uint32_t size) {
+    int result;
+
+    spinlock_acquire(&fs_operation_lock);
+    result = fs_write_file_at_unlocked(path, data, size);
+    spinlock_release(&fs_operation_lock);
+    return result;
+}
+
 int fs_get_file_count_at(const char* dir_path) {
+    int result;
+
+    spinlock_acquire(&fs_operation_lock);
     uint32_t cluster = fs_resolve_dir_cluster(dir_path);
-    if (cluster == 0xFFFFFFFF) return 0;
+    if (cluster == 0xFFFFFFFF) {
+        spinlock_release(&fs_operation_lock);
+        return 0;
+    }
 
     if (current_fs_type == FS_TYPE_FAT12) {
-        return fat12_get_file_count_at((uint16_t)cluster);
+        result = fat12_get_file_count_at((uint16_t)cluster);
     } else if (current_fs_type == FS_TYPE_FAT32) {
-        return fat32_get_file_count_at(cluster);
+        result = fat32_get_file_count_at(cluster);
+    } else {
+        result = 0;
     }
-    return 0;
+    spinlock_release(&fs_operation_lock);
+    return result;
 }
 
 int fs_get_file_info_at(const char* dir_path, int index, char* name_out, uint32_t* size_out, uint8_t* attr_out) {
+    int result;
+
+    spinlock_acquire(&fs_operation_lock);
     uint32_t cluster = fs_resolve_dir_cluster(dir_path);
-    if (cluster == 0xFFFFFFFF) return ERR_NOT_FOUND;
+    if (cluster == 0xFFFFFFFF) {
+        spinlock_release(&fs_operation_lock);
+        return ERR_NOT_FOUND;
+    }
 
     if (current_fs_type == FS_TYPE_FAT12) {
-        return fat12_get_file_info_at((uint16_t)cluster, index, name_out, size_out, attr_out);
+        result = fat12_get_file_info_at(
+            (uint16_t)cluster, index, name_out, size_out, attr_out);
     } else if (current_fs_type == FS_TYPE_FAT32) {
-        return fat32_get_file_info_at(cluster, index, name_out, size_out, attr_out);
+        result = fat32_get_file_info_at(
+            cluster, index, name_out, size_out, attr_out);
+    } else {
+        result = ERR_NOT_FOUND;
     }
-    return ERR_NOT_FOUND;
+    spinlock_release(&fs_operation_lock);
+    return result;
 }
 
 int fs_create_dir_entry(const char* dir_path, const char* name, uint8_t attributes) {
+    int result;
+
+    spinlock_acquire(&fs_operation_lock);
     uint32_t cluster = fs_resolve_dir_cluster(dir_path);
-    if (cluster == 0xFFFFFFFF) return ERR_NOT_FOUND;
+    if (cluster == 0xFFFFFFFF) {
+        spinlock_release(&fs_operation_lock);
+        return ERR_NOT_FOUND;
+    }
 
     if (current_fs_type == FS_TYPE_FAT12) {
-        return fat12_create_dir_entry((uint16_t)cluster, name, attributes);
+        result = fat12_create_dir_entry(
+            (uint16_t)cluster, name, attributes);
     } else if (current_fs_type == FS_TYPE_FAT32) {
-        return fat32_create_dir_entry(cluster, name, attributes);
+        result = fat32_create_dir_entry(cluster, name, attributes);
+    } else {
+        result = ERR_NOT_FOUND;
     }
-    return ERR_NOT_FOUND;
+    spinlock_release(&fs_operation_lock);
+    return result;
 }
 
-int fs_write_file_in_dir(const char* dir_path, const char* filename, const uint8_t* data, uint32_t size) {
+static int fs_write_file_in_dir_unlocked(const char* dir_path,
+                                         const char* filename,
+                                         const uint8_t* data,
+                                         uint32_t size) {
     uint32_t cluster = fs_resolve_dir_cluster(dir_path);
-    if (cluster == 0xFFFFFFFF) return ERR_NOT_FOUND;
+    if (cluster == 0xFFFFFFFF) {
+        LOG_ERROR("FS", "Diretorio de destino nao encontrado");
+        return ERR_NOT_FOUND;
+    }
 
     if (current_fs_type == FS_TYPE_FAT12) {
         return fat12_write_file_in_dir((uint16_t)cluster, filename, data, size);
     } else if (current_fs_type == FS_TYPE_FAT32) {
         return fat32_write_file_in_dir(cluster, filename, data, size);
     }
+    LOG_ERROR("FS", "Filesystem indisponivel para escrita");
     return ERR_NOT_FOUND;
 }
 
+int fs_write_file_in_dir(const char* dir_path, const char* filename,
+                         const uint8_t* data, uint32_t size) {
+    int result;
+
+    spinlock_acquire(&fs_operation_lock);
+    result = fs_write_file_in_dir_unlocked(dir_path, filename, data, size);
+    spinlock_release(&fs_operation_lock);
+    return result;
+}
+
 int fs_delete_file_in_dir(const char* dir_path, const char* filename) {
+    int result;
+
+    spinlock_acquire(&fs_operation_lock);
     uint32_t cluster = fs_resolve_dir_cluster(dir_path);
-    if (cluster == 0xFFFFFFFF) return ERR_NOT_FOUND;
+    if (cluster == 0xFFFFFFFF) {
+        spinlock_release(&fs_operation_lock);
+        return ERR_NOT_FOUND;
+    }
 
     if (current_fs_type == FS_TYPE_FAT12) {
-        return fat12_delete_file_in_dir((uint16_t)cluster, filename);
+        result = fat12_delete_file_in_dir((uint16_t)cluster, filename);
     } else if (current_fs_type == FS_TYPE_FAT32) {
-        return fat32_delete_file_in_dir(cluster, filename);
+        result = fat32_delete_file_in_dir(cluster, filename);
+    } else {
+        result = ERR_NOT_FOUND;
     }
-    return ERR_NOT_FOUND;
+    spinlock_release(&fs_operation_lock);
+    return result;
+}
+
+int fs_get_root_file_info(const char* filename, uint32_t* size_out,
+                          uint8_t* attributes_out) {
+    int result;
+
+    if (!filename) {
+        LOG_ERROR("FS", "Nome nulo na consulta atomica");
+        return ERR_NULL;
+    }
+    spinlock_acquire(&fs_operation_lock);
+    if (current_fs_type == FS_TYPE_FAT12) {
+        result = fat12_get_root_file_info(
+            filename, size_out, attributes_out);
+    } else {
+        result = ERR_UNAVAILABLE;
+    }
+    spinlock_release(&fs_operation_lock);
+    return result;
+}
+
+int fs_atomic_write_root(const char* filename, const uint8_t* data,
+                         uint32_t size, uint8_t attributes,
+                         fs_atomic_mode_t mode) {
+    int result;
+
+    if (!filename || !data) {
+        LOG_ERROR("FS", "Argumento nulo na escrita atomica");
+        return ERR_NULL;
+    }
+    if (size == 0U || size > FS_MAX_ATOMIC_FILE_SIZE) {
+        LOG_ERROR("FS", "Tamanho invalido na escrita atomica");
+        return ERR_OVERFLOW;
+    }
+    if (mode != FS_ATOMIC_CREATE_OR_REPLACE &&
+        mode != FS_ATOMIC_REPLACE_ONLY) {
+        LOG_ERROR("FS", "Modo invalido na escrita atomica");
+        return ERR_INVALID;
+    }
+
+    spinlock_acquire(&fs_operation_lock);
+    if (current_fs_type == FS_TYPE_FAT12) {
+        result = fat12_atomic_write_root(
+            filename, data, size, attributes,
+            mode == FS_ATOMIC_REPLACE_ONLY);
+    } else {
+        result = ERR_UNAVAILABLE;
+    }
+    spinlock_release(&fs_operation_lock);
+    if (result != OK) LOG_ERROR("FS", "Escrita atomica FAT12 falhou");
+    return result;
+}
+
+int fs_atomic_delete_root(const char* filename) {
+    int result;
+
+    if (!filename) {
+        LOG_ERROR("FS", "Nome nulo na exclusao atomica");
+        return ERR_NULL;
+    }
+    spinlock_acquire(&fs_operation_lock);
+    if (current_fs_type == FS_TYPE_FAT12) {
+        result = fat12_atomic_delete_root(filename);
+    } else {
+        result = ERR_UNAVAILABLE;
+    }
+    spinlock_release(&fs_operation_lock);
+    if (result != OK && result != ERR_NOT_FOUND) {
+        LOG_ERROR("FS", "Exclusao atomica FAT12 falhou");
+    }
+    return result;
 }

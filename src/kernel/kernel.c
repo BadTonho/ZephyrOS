@@ -540,6 +540,28 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         video_print("[!!] Nenhum sistema de arquivos encontrado\n", 0x0C);
     }
 
+    update_capabilities_t update_capabilities;
+    int update_result = update_init();
+    if (update_result != OK) {
+        recovery_mark_disabled(RECOVERY_COMPONENT_UPDATE, update_result,
+                               "Chave ou autoteste de Update invalido");
+    } else if (update_get_capabilities(&update_capabilities) != OK) {
+        recovery_mark_disabled(RECOVERY_COMPONENT_UPDATE, ERR_STATE,
+                               "Capacidades de Update indisponiveis");
+    } else if (!update_capabilities.local_file_available) {
+        recovery_mark_degraded(RECOVERY_COMPONENT_UPDATE, ERR_UNAVAILABLE,
+                               "Verificador pronto; filesystem indisponivel");
+    } else if (fs_get_type() == FS_TYPE_FAT12 &&
+               !update_capabilities.persistent_state_ready) {
+        recovery_mark_degraded(
+            RECOVERY_COMPONENT_UPDATE, ERR_STATE,
+            update_capabilities.recovery_pending ?
+            "Recuperacao de Update pendente" :
+            "Estado persistente de Update invalido");
+    } else {
+        recovery_mark_ready(RECOVERY_COMPONENT_UPDATE);
+    }
+
     video_print("[..] Iniciando PC Speaker...\n", 0x08);
     speaker_init();
     video_print("[OK] PC Speaker pronto\n", 0x07);
@@ -744,21 +766,6 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     }
 
     app_package_init();
-
-    update_capabilities_t update_capabilities;
-    int update_result = update_init();
-    if (update_result != OK) {
-        recovery_mark_disabled(RECOVERY_COMPONENT_UPDATE, update_result,
-                               "Chave ou autoteste de Update invalido");
-    } else if (update_get_capabilities(&update_capabilities) != OK) {
-        recovery_mark_disabled(RECOVERY_COMPONENT_UPDATE, ERR_STATE,
-                               "Capacidades de Update indisponiveis");
-    } else if (!update_capabilities.local_file_available) {
-        recovery_mark_degraded(RECOVERY_COMPONENT_UPDATE, ERR_UNAVAILABLE,
-                               "Verificador pronto; filesystem indisponivel");
-    } else {
-        recovery_mark_ready(RECOVERY_COMPONENT_UPDATE);
-    }
 
     /* Desktop e a cena padrao; o Shell abre somente por solicitacao. */
     desktop_set_active(1);

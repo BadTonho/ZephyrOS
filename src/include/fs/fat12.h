@@ -79,5 +79,11 @@ uint16_t fat12_resolve_path(const char* path);
 int  fat12_create_dir_entry(uint16_t dir_cluster, const char* name, uint8_t attributes);
 int  fat12_write_file_in_dir(uint16_t dir_cluster, const char* filename, const uint8_t* data, uint32_t size);
 int  fat12_delete_file_in_dir(uint16_t dir_cluster, const char* filename);
+int  fat12_get_root_file_info(const char* filename, uint32_t* size_out,
+                              uint8_t* attributes_out);
+int  fat12_atomic_write_root(const char* filename, const uint8_t* data,
+                             uint32_t size, uint8_t attributes,
+                             int require_existing);
+int  fat12_atomic_delete_root(const char* filename);
 
 #endif
