@@ -5507,20 +5507,22 @@ static SHELL_NOINLINE void cmd_net_check_qemu_static(const char* args) {
     cmd_net_ipv4_status();
 }
 
+/* A suite e serial no Shell. IDs e snapshots em BSS evitam exceder a
+   pilha de 4 KiB durante os diagnosticos das duas interfaces. */
 static SHELL_NOINLINE void cmd_net_check_qemu_multi(
     const char* args) {
-    char first_id[NETWORK_INTERFACE_ID_SIZE];
-    char second_id[NETWORK_INTERFACE_ID_SIZE];
-    network_interface_info_t first_info;
-    network_interface_info_t second_info;
-    network_interface_text_t first_text;
-    network_interface_text_t second_text;
-    ethernet_interface_status_t first_before;
-    ethernet_interface_status_t first_middle;
-    ethernet_interface_status_t first_after;
-    ethernet_interface_status_t second_before;
-    ethernet_interface_status_t second_middle;
-    ethernet_interface_status_t second_after;
+    static char first_id[NETWORK_INTERFACE_ID_SIZE];
+    static char second_id[NETWORK_INTERFACE_ID_SIZE];
+    static network_interface_info_t first_info;
+    static network_interface_info_t second_info;
+    static network_interface_text_t first_text;
+    static network_interface_text_t second_text;
+    static ethernet_interface_status_t first_before;
+    static ethernet_interface_status_t first_middle;
+    static ethernet_interface_status_t first_after;
+    static ethernet_interface_status_t second_before;
+    static ethernet_interface_status_t second_middle;
+    static ethernet_interface_status_t second_after;
     uint8_t first_isolated;
     uint8_t second_isolated;
     uint8_t invariants;
