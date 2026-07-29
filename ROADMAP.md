@@ -644,6 +644,7 @@ kernel, interface e novos serviços:
 | 4 | [`docs/roadmaps/04-interface-e-experiencia.md`](docs/roadmaps/04-interface-e-experiencia.md) | Taskbar, Window Manager, ícones e interação gráfica. |
 | 5 | [`docs/roadmaps/05-sistema-e-ecossistema.md`](docs/roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e ecossistema. |
 | 6 | [`docs/roadmaps/06-app-store.md`](docs/roadmaps/06-app-store.md) | Catalogo local, ciclo de vida, App Store Modern e distribuicao futura. |
+| 7 | [`docs/roadmaps/07-evolucao-da-plataforma.md`](docs/roadmaps/07-evolucao-da-plataforma.md) | Mouse, video, volumes, busca, releases por tags e radios sem fio. |
 
 O índice desses arquivos está em [`docs/roadmaps/README.md`](docs/roadmaps/README.md).
 Os documentos em `docs/melhorias futuras/` continuam sendo o backlog detalhado
@@ -666,7 +667,6 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 - **Gerenciador de Dispositivos** (`gerenciador de dispositivos.md`)
 - **Gerenciador de Rede / Conexão** (`gerenciador de rede.md`, `gerenciador de conexao.md`)
 - **Atualizações do Sistema** (`atualizações.md`)
-- **Evolução da Plataforma** (`evolucao da plataforma.md`) - mouse, video, volumes, busca, releases por tags e radios sem fio
 - **Formatação Inteligente** (`formatacao inteligente.md`)
 
 ### Melhorias na Interface Atual (UI/UX)
