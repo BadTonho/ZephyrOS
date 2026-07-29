@@ -747,10 +747,22 @@ int app_builtin_run_argtest(const app_launch_info_t* launch,
                                 launch, pid_out);
 }
 
+static int app_builtin_preflight_loader(void) {
+    /* Evita montar imagens grandes na stack quando o loader ja recusaria
+       o lancamento. O appcheck exercita deliberadamente este caminho. */
+    if (app_loader_is_foreground_active()) {
+        LOG_WARN("APP_BUILTIN", "Loader ocupado antes de montar ZAPP interno");
+        return ERR_STATE;
+    }
+    return OK;
+}
+
 int app_builtin_run_uptime(uint32_t* pid_out) {
     uint32_t image_size;
-    int result = app_builtin_build_uptime(&image_size);
+    int result = app_builtin_preflight_loader();
 
+    if (result != OK) return result;
+    result = app_builtin_build_uptime(&image_size);
     if (result != OK) {
         LOG_ERROR("APP_BUILTIN", "Falha ao montar ZAPP de uptime");
         return result;
@@ -763,8 +775,10 @@ int app_builtin_run_uptime(uint32_t* pid_out) {
 
 int app_builtin_run_mem(uint32_t* pid_out) {
     uint32_t image_size;
-    int result = app_builtin_build_mem(&image_size);
+    int result = app_builtin_preflight_loader();
 
+    if (result != OK) return result;
+    result = app_builtin_build_mem(&image_size);
     if (result != OK) {
         LOG_ERROR("APP_BUILTIN", "Falha ao montar ZAPP de memoria");
         return result;
