@@ -77,8 +77,10 @@ Shell e transferem o foco para o novo aplicativo. No modo Clássico, o Shell
 permanece em tela cheia.
 
 `shell_update_hosted_terminal()` é chamado pelo loop do processo Shell para
-consumir alterações pendentes do terminal e pedir uma recomposição única ao
-WM quando a janela estiver visível.
+apresentar alterações pendentes quando a janela estiver visível e em foco.
+Operações cooperativas longas, como download e aplicação de Update, também
+apresentam o progresso enquanto aguardam e processam `Esc`/`F12`, sem depender
+de clique, roda do mouse ou término do comando para redesenhar.
 
 ### Prompt
 

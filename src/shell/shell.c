@@ -252,6 +252,7 @@ static int shell_hosted_mouse(mouse_event_t* event, int x, int y,
                               int width, int height);
 static void shell_hosted_close(void);
 static int shell_is_hosted_visible(void);
+static void shell_present_hosted_progress(void);
 static void shell_suspend_terminal(void);
 static void shell_history_reset_navigation(void);
 
@@ -670,8 +671,13 @@ static void shell_hosted_draw(int x, int y, int width, int height) {
 
 static void shell_hosted_key(uint8_t scancode) {
     shell_handle_terminal_key(scancode);
-    if (wm_is_hosted_app_focused(WM_APP_SHELL) &&
-        video_terminal_present_hosted_dirty() != OK) {
+    shell_present_hosted_progress();
+}
+
+static void shell_present_hosted_progress(void) {
+    if (!shell_is_hosted_visible() ||
+        !wm_is_hosted_app_focused(WM_APP_SHELL)) return;
+    if (video_terminal_present_hosted_dirty() != OK) {
         LOG_WARN("SHELL", "Falha ao apresentar entrada do terminal hospedado");
     }
 }
@@ -7451,6 +7457,7 @@ static int cmd_update_cancel_check(void* context) {
     ipc_msg_t message;
 
     (void)context;
+    shell_present_hosted_progress();
     keyboard_process_events();
     while (ipc_receive(&message)) {
         if (message.type == IPC_MSG_KEYBOARD &&
@@ -8616,10 +8623,7 @@ static int shell_should_show_prompt(void) {
 }
 
 void shell_update_hosted_terminal(void) {
-    if (!shell_is_hosted_visible()) return;
-    if (video_terminal_take_hosted_dirty()) {
-        wm_request_hosted_redraw(WM_APP_SHELL);
-    }
+    shell_present_hosted_progress();
 }
 
 static void process_input(void) {
