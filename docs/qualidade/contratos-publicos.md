@@ -12,6 +12,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/apps/shell.h` | `docs/09-shell/shell.md` |
 | `src/include/apps/taskmanager.h` | `docs/13-aplicativos/aplicativos.md` |
 | `src/include/core/app_api.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
+| `src/include/core/app_catalog.h` | `docs/13-aplicativos/app-store.md` |
 | `src/include/core/app_builtin.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/app_files.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/app_loader.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
@@ -164,3 +165,10 @@ Stable versionado. Os contratos canonicos permanecem em
 `docs/04-kernel/kernel.md`,
 `docs/08-sistema-arquivos/sistema-arquivos.md` e
 `docs/14-atualizacoes/distribuicao-remota.md`.
+
+Desde o AS1, `src/include/core/app_catalog.h` define o snapshot local
+somente-leitura, estados, motivos, capacidades e consultas por copia da App
+Store. `src/include/core/recovery.h` acrescenta
+`RECOVERY_COMPONENT_APP_STORE` ao fim da enumeracao. Os contratos canonicos
+permanecem em `docs/13-aplicativos/app-store.md` e
+`docs/04-kernel/kernel.md`.

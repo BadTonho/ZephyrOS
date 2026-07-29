@@ -127,6 +127,9 @@ app run APPS/DEMO/APP.ZAP
 `pkgcheck` nao substitui `appcheck`; ele cobre apenas as pre-validacoes locais
 do servico de pacotes.
 
+O catalogo somente-leitura construido sobre este servico e documentado em
+[`app-store.md`](app-store.md).
+
 ## Validacao manual
 
 Depois de `make package-demo`, execute no QEMU:

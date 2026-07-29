@@ -565,6 +565,24 @@ menu Iniciar usa `IPC_APP_OPEN_UPDATER`, tambem anexado ao fim da enumeracao
 IPC para preservar todos os valores anteriores. Em Modern o aplicativo e
 hospedado pelo WM; se isso nao for possivel, abre automaticamente em Classic.
 
+## AS1: catalogo local da App Store
+
+Depois de inicializar o loader ZAPP e o servico `PKG`, o kernel inicializa
+`app_catalog_init()`. O snapshot combina ate 16 fontes `.ZPK` da raiz e os
+registros validos em `APPS/`, mantendo ate 32 entradas em memoria estatica.
+Fontes sao verificadas pelo parser ZPKG existente e nunca sao mantidas
+integralmente no catalogo.
+
+`RECOVERY_COMPONENT_APP_STORE` foi anexado depois do System Updater para
+preservar os IDs anteriores. Ele fica `READY` para um snapshot completo,
+`DEGRADED` quando ha fonte invalida, leitura parcial ou limite excedido, e
+`DISABLED` quando filesystem, loader ou servico `PKG` nao estao disponiveis.
+O `health` completo e o resumo exibem esse componente; fontes invalidas nao
+impedem consultas das entradas validas.
+
+O contrato detalhado esta em
+[`app-store.md`](../13-aplicativos/app-store.md).
+
 ## U5: distribuicao remota opcional
 
 `src/include/core/update_remote.h` separa transporte remoto do servico

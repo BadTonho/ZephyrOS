@@ -1,0 +1,47 @@
+{
+  "fixtures": {
+    "BADALIAS.ZPK": {
+      "id": "ALIASOK",
+      "reason": "ALIAS_MISMATCH",
+      "sha256": "67014c8258c5029be29c24931a4dc11618970ec0a6ed10fa0ef3db25bae5d6d8",
+      "size": 163,
+      "state": "INVALID"
+    },
+    "BADAPI.ZPK": {
+      "id": "BADAPI",
+      "reason": "PACKAGE_INVALID",
+      "sha256": "ccf9d22ca39b25e85d9493ac072a13df8521099f63dcc624616edd2ba029c300",
+      "size": 160,
+      "state": "INVALID"
+    },
+    "BADCRC.ZPK": {
+      "id": "BADCRC",
+      "reason": "PACKAGE_INVALID",
+      "sha256": "7a9970d4d95918dfac6379fb607e359f48d1f33a0944c09169cb97fa25298863",
+      "size": 160,
+      "state": "INVALID"
+    },
+    "NEEDSDEP.ZPK": {
+      "id": "NEEDSDEP",
+      "reason": "DEPENDENCY_MISSING",
+      "sha256": "8a8d75ab5efee7e59e1a2cc8aa7887b7a22c86f0b8ab4ae43eef1b62df80a13f",
+      "size": 178,
+      "state": "BLOCKED"
+    },
+    "SAMEVER.ZPK": {
+      "id": "SAMEVER",
+      "reason": "NONE",
+      "sha256": "bf01c033fa4092481b2441d37a2cf864a91db19a3af95c84a9f36e8ac843ab9b",
+      "size": 166,
+      "state": "AVAILABLE_THEN_SAME_VERSION"
+    },
+    "VALID.ZPK": {
+      "id": "VALID",
+      "reason": "NONE",
+      "sha256": "f3416401e4af0d35a665ee398928237da4b8272aa99a7950f625640a37440c78",
+      "size": 163,
+      "state": "AVAILABLE"
+    }
+  },
+  "format": "zephyros-app-store-fixtures-v1"
+}

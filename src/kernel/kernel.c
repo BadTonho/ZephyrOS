@@ -8,6 +8,7 @@
 #include "core/power.h"
 #include "core/recovery.h"
 #include "core/app_api.h"
+#include "core/app_catalog.h"
 #include "core/app_loader.h"
 #include "core/app_package.h"
 #include "core/update.h"
@@ -855,6 +856,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     }
 
     app_package_init();
+    app_catalog_init();
 
     /* Desktop e a cena padrao; o Shell abre somente por solicitacao. */
     desktop_set_active(1);

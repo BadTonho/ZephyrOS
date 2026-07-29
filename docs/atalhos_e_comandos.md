@@ -75,6 +75,9 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `pkg` | `verify <arquivo.ZPK>` | Valida formato, manifesto, CRC32 e ZAPP sem gravar. |
 | `pkg` | `install <arquivo.ZPK>` | Instala um pacote local em `APPS/<ID>/`. |
 | `pkg` | `remove <ID>` | Remove pacote sem apagar o arquivo fonte `.ZPK`. |
+| `store` | `status` | Mostra estado, contagens e limites do catalogo local sem gravar. |
+| `store` | `list` | Lista fontes e instalados em ordem deterministica. |
+| `store` | `info <ID|alias.ZPK>` | Mostra versoes, confianca, dependencias e capacidades. |
 | `pkgcheck` | - | Executa as pre-validacoes compactas do servico de pacotes. |
 | `update` | `verify <arquivo.ZUP>` | Verifica assinatura e compatibilidade sem gravar. |
 | `update` | `apply <arquivo.ZUP> [--confirm]` | Executa preflight ou aplica uma transacao FAT12 confirmada. |

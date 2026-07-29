@@ -72,6 +72,7 @@ Comandos disponiveis:
   regcheck [full] - Executa regressao compacta com F12
   appcheck  - Testa API, arquivos, IPC e carregador ZAPP
   pkg       - Gerencia pacotes .ZPK locais
+  store     - Consulta o catalogo local da App Store
   pkgcheck  - Testa validacoes de pacote sem gravar
   update verify <arquivo.ZUP> - Verifica atualizacao sem gravar
   app run <arquivo.ZAP> [args] - Executa aplicativo ring 3 de forma assincrona
@@ -251,7 +252,8 @@ zephyr> health
 
 `health summary` nao altera nem substitui o relatorio completo. Ele cabe em uma
 tela durante os testes e mostra contagens por estado, todos os componentes nao
-`READY`, capacidades de Update, processos, paging, memoria e validade do heap:
+`READY`, capacidades de Update, o estado da App Store, processos, paging,
+memoria e validade do heap:
 
 ```text
 zephyr> health summary
@@ -261,6 +263,8 @@ Resumo do health:
   Media Player: DEGRADED erro=9 falhas=1
   Update: READY
     local=READY apply=READY rollback=DISABLED historico=READY remoto=DISABLED
+  App Store: READY
+    fontes=0 validas=0 invalidas=0 instaladas=0 entradas=0
   Kernel: proc=4 READY=3 RUNNING=1 BLOCKED=0 ZOMBIE=0 paging=READY
   Memoria KB: usada=20652 livre=110292 heap=READY
 ```
@@ -828,6 +832,28 @@ do ID e preserva o arquivo fonte `ID.ZPK` no diretorio raiz.
 
 O contrato completo, limites e fluxo host para FAT12 estao em
 [`pacotes.md`](../13-aplicativos/pacotes.md).
+
+## `store status|list|info`
+
+Os comandos `store` consultam o snapshot local da App Store. Cada comando
+atualiza o catalogo antes de responder e nao grava no volume:
+
+```text
+store status
+store list
+store info VALID
+store info BADCRC.ZPK
+```
+
+`store status` mostra recovery, contagens, limites e o motivo geral.
+`store list` usa ordem lexica deterministica e separa versao fonte de versao
+instalada. `store info <ID|alias.ZPK>` mostra manifesto disponivel, confianca
+`LOCAL / NAO ASSINADO`, dependencias, bloqueios e capacidades informativas.
+
+Fontes invalidas permanecem visiveis sem impedir consultas das fontes validas.
+Instalar, remover, atualizar, executar ou abrir a interface nativa pelo comando
+`store` permanecem fora do AS1. O contrato completo esta em
+[`app-store.md`](../13-aplicativos/app-store.md).
 
 ## `pkgcheck`
 

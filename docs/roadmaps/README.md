@@ -67,10 +67,11 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   comandos, System Updater Modern, falhas controladas, cancelamento,
   aplicacao/rollback e auditoria final foram aprovados. O Classic continua
   disponivel como fallback e sua regressao e cobertura complementar.
-  O proximo desenvolvimento e AS1 do roadmap da App Store: catalogo local
-  somente-leitura sobre a base ZPKG v1 ja validada. Os roadmaps 06 e 07 usam
-  execucao intercalada para que a App Store Modern nao seja desenhada duas
-  vezes: AS1-AS2, MV0-MV3, AS3, MV4 e, depois, AS4-AS5.
+  O AS1 do roadmap da App Store esta implementado e passou nos autotestes
+  host, mas aguarda build e matriz QEMU do usuario antes de ser validado ou de
+  abrir AS2. Os roadmaps 06 e 07 usam execucao intercalada para que a App
+  Store Modern nao seja desenhada duas vezes: AS1-AS2, MV0-MV3, AS3, MV4 e,
+  depois, AS4-AS5.
 
 ## K4 validada
 

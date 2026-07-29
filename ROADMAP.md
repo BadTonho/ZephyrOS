@@ -113,6 +113,7 @@ Sistema e ecossistema:       [████████████████�
 | `guitest` | Testa primitivas GUI 2D |
 | `guimode` | Altera entre gui classica e moderna |
 | `health` | Exibe metricas e estado de recovery |
+| `store status|list|info` | Consulta o catalogo local da App Store sem gravar |
 | `devices [-v]` | Lista o inventario nativo de hardware |
 | `device-info <id>` | Mostra detalhes de um dispositivo inventariado |
 | `device-scan` | Refaz somente a varredura PCI e atualiza o inventario |
@@ -392,6 +393,14 @@ Sistema e ecossistema:       [████████████████�
   `APPS/<ID>/APP.ZAP` mais `META.DAT`.
 - [x] Validado no host e QEMU: pacote demo, remocao, caminho instalado, F12,
   diagnosticos, interfaces classica/moderna e ausencia de processos residuais.
+
+### AS1 - Catalogo local e observabilidade (validacao pendente)
+
+- [x] Snapshot somente-leitura de fontes `.ZPK` e pacotes instalados, com
+  ordem deterministica, estados, motivos e capacidades.
+- [x] Comandos `store status|list|info`, recovery e integracao com `health`.
+- [x] Fixtures publicos, auditor host e alvos `store-test`/`store-demo`.
+- [ ] Build, QEMU, memoria e matriz de regressao aguardam validacao do usuario.
 
 ### Q4 - Regressao compacta ✅
 

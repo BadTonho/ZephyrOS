@@ -109,6 +109,9 @@ APP_BUILTIN_OBJ = build/app_builtin.o
 APP_PACKAGE_C = src/core/app_package.c
 APP_PACKAGE_OBJ = build/app_package.o
 
+APP_CATALOG_C = src/core/app_catalog.c
+APP_CATALOG_OBJ = build/app_catalog.o
+
 SYSCALL_C = src/core/syscall.c
 SYSCALL_OBJ = build/syscall.o
 
@@ -262,13 +265,21 @@ OS_IMG = build/zephyros.img
 # O volume FAT12 fica depois dessa area para que o Explorer nunca sobrescreva
 # o codigo usado no proximo boot. A reserva e calculada pelo payload real.
 FAT12_DISK_BYTES = 1474560
+STORE_FIXTURES_DIR = docs\fixtures\apps\store
+STORE_FIXTURES = $(STORE_FIXTURES_DIR)\VALID.ZPK \
+                 $(STORE_FIXTURES_DIR)\BADCRC.ZPK \
+                 $(STORE_FIXTURES_DIR)\BADAPI.ZPK \
+                 $(STORE_FIXTURES_DIR)\BADALIAS.ZPK \
+                 $(STORE_FIXTURES_DIR)\NEEDSDEP.ZPK \
+                 $(STORE_FIXTURES_DIR)\SAMEVER.ZPK \
+                 $(STORE_FIXTURES_DIR)\fixtures.json
 
 # Todas as variáveis de objetos
 OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(UPDATE_OBJ) $(UPDATE_REMOTE_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(COMPRESS_OBJ) \
-       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(UPDATER_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ) $(DEVICE_MANAGER_OBJ) $(NETWORK_MANAGER_OBJ) $(POWER_OBJ) $(ETHERNET_OBJ) $(ARP_OBJ) $(IPV4_OBJ) $(ICMP_OBJ) $(UDP_OBJ) $(DHCP_OBJ) $(DNS_OBJ) $(TCP_OBJ) $(NET_SOCKET_OBJ) $(HTTP_OBJ)
+       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(UPDATER_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ) $(DEVICE_MANAGER_OBJ) $(NETWORK_MANAGER_OBJ) $(POWER_OBJ) $(ETHERNET_OBJ) $(ARP_OBJ) $(IPV4_OBJ) $(ICMP_OBJ) $(UDP_OBJ) $(DHCP_OBJ) $(DNS_OBJ) $(TCP_OBJ) $(NET_SOCKET_OBJ) $(HTTP_OBJ) $(APP_CATALOG_OBJ)
 
 # Targets
 all: $(OS_IMG)
@@ -390,6 +401,10 @@ $(APP_BUILTIN_OBJ): $(APP_BUILTIN_C)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(APP_PACKAGE_OBJ): $(APP_PACKAGE_C)
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(APP_CATALOG_OBJ): $(APP_CATALOG_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -611,7 +626,20 @@ update-test:
 package-demo: $(OS_IMG)
 	python tools\packager.py demo --output build\DEMO.zephyrosapp --image $(OS_IMG)
 
+store-test:
+	python tools\packager.py selftest
+	python tools\packager.py audit-store --fixtures-dir $(STORE_FIXTURES_DIR)
+
+store-demo: $(OS_IMG) $(STORE_FIXTURES)
+	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\VALID.ZPK --image $(OS_IMG) --fat-name VALID.ZPK --replace
+	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\BADCRC.ZPK --image $(OS_IMG) --fat-name BADCRC.ZPK --replace
+	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\BADAPI.ZPK --image $(OS_IMG) --fat-name BADAPI.ZPK --replace
+	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\BADALIAS.ZPK --image $(OS_IMG) --fat-name BADALIAS.ZPK --replace
+	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\NEEDSDEP.ZPK --image $(OS_IMG) --fat-name NEEDSDEP.ZPK --replace
+	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\SAMEVER.ZPK --image $(OS_IMG) --fat-name SAMEVER.ZPK --replace
+	python tools\packager.py audit-store --fixtures-dir $(STORE_FIXTURES_DIR) --image $(OS_IMG)
+
 clean:
 	rmdir /s /q build
 
-.PHONY: all run debug q3check q3check-test package-test update-test package-demo clean
+.PHONY: all run debug q3check q3check-test package-test update-test package-demo store-test store-demo clean

@@ -87,22 +87,22 @@ listagem usa workspace estatico e nao mantem pacotes inteiros em memoria.
 
 ### Implementacao
 
-- [ ] Criar o contrato canonico em `docs/13-aplicativos/app-store.md`.
-- [ ] Criar o servico em `src/core/app_catalog.c` e o header autocontido
+- [x] Criar o contrato canonico em `docs/13-aplicativos/app-store.md`.
+- [x] Criar o servico em `src/core/app_catalog.c` e o header autocontido
   `src/include/core/app_catalog.h`.
-- [ ] Definir estados, motivos e consultas estaveis no header publico.
-- [ ] Registrar o novo objeto no Makefile e o contrato no catalogo de headers.
-- [ ] Enumerar e ordenar ate 16 arquivos `.ZPK` da raiz.
-- [ ] Combinar fontes locais com os registros instalados em `APPS/`.
-- [ ] Validar alias, header, manifesto, CRC32, ZAPP, versao e dependencias.
-- [ ] Expor consultas somente-leitura para contagem, entrada e status geral.
-- [ ] Adicionar `store status`, `store list` e `store info <ID|alias.ZPK>`.
-- [ ] Mostrar separadamente pacote invalido e servico indisponivel.
-- [ ] Adicionar `RECOVERY_COMPONENT_APP_STORE` ao final da enumeracao:
+- [x] Definir estados, motivos e consultas estaveis no header publico.
+- [x] Registrar o novo objeto no Makefile e o contrato no catalogo de headers.
+- [x] Enumerar e ordenar ate 16 arquivos `.ZPK` da raiz.
+- [x] Combinar fontes locais com os registros instalados em `APPS/`.
+- [x] Validar alias, header, manifesto, CRC32, ZAPP, versao e dependencias.
+- [x] Expor consultas somente-leitura para contagem, entrada e status geral.
+- [x] Adicionar `store status`, `store list` e `store info <ID|alias.ZPK>`.
+- [x] Mostrar separadamente pacote invalido e servico indisponivel.
+- [x] Adicionar `RECOVERY_COMPONENT_APP_STORE` ao final da enumeracao:
   - `READY`: catalogo local e servico `PKG` disponiveis;
   - `DEGRADED`: catalogo parcial com alguma fonte invalida;
   - `DISABLED`: filesystem, loader ou servico `PKG` indisponivel.
-- [ ] Mostrar App Store no `health` completo e no `health summary`.
+- [x] Mostrar App Store no `health` completo e no `health summary`.
 
 ### Fixtures
 
@@ -126,6 +126,13 @@ desses fixtures.
 
 Listagem e consultas produzem sempre a mesma ordem e os mesmos motivos, nao
 gravam no disco e nao deixam alocacoes, handles ou processos residuais.
+
+### Estado
+
+Implementacao e autotestes host preparados; `packager.py selftest`,
+`audit-store`, `q3check` e `git diff --check` passaram. O AS1 ainda nao esta
+validado: build, QEMU, ordem observada, memoria e regressao dependem da matriz
+manual do usuario.
 
 ## AS2 - Ciclo de vida local com confirmacao
 
@@ -293,7 +300,6 @@ No QEMU:
 
 ## Proximo passo
 
-Implementar **AS1 - Catalogo local e observabilidade**. Nenhum codigo de
-instalacao, interface grafica ou rede deve ser alterado antes de o contrato
-somente-leitura e seus motivos estaveis serem aprovados. Depois da aprovacao de
-AS2, a execucao passa para MV0-MV3 do Roadmap 07 antes de iniciar AS3.
+Validar **AS1 - Catalogo local e observabilidade** no build e no QEMU. AS2 nao
+deve iniciar antes dessa aprovacao. Depois da aprovacao de AS2, a execucao
+passa para MV0-MV3 do Roadmap 07 antes de iniciar AS3.

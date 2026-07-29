@@ -39,6 +39,7 @@
 #include "core/network_manager.h"
 #include "core/power.h"
 #include "core/app_api.h"
+#include "core/app_catalog.h"
 #include "core/app_builtin.h"
 #include "core/app_loader.h"
 #include "core/app_package.h"
@@ -927,7 +928,8 @@ static int shell_regcheck_validate_services(void) {
         !app_api_file_is_ready() || !app_api_ipc_is_ready() ||
         !syscall_is_ready() || !syscall_user_mode_is_enabled() ||
         !idt_is_user_syscall_enabled() || !paging_is_ready() ||
-        !app_loader_is_ready() || !app_package_is_ready()) {
+        !app_loader_is_ready() || !app_package_is_ready() ||
+        !app_catalog_is_ready()) {
         LOG_ERROR("SHELL", "RegCheck encontrou servico obrigatorio indisponivel");
         return ERR_STATE;
     }
@@ -2346,6 +2348,9 @@ static void cmd_help(void) {
     video_print("  appcheck - Testa API, arquivos, IPC e loader\n", 0x07);
     video_print("  pkg      - Gerencia pacotes .ZPK locais\n", 0x07);
     video_print("             pkg list | info | verify | install | remove\n", 0x08);
+    video_print("  store    - Consulta o catalogo local da App Store\n", 0x07);
+    video_print("             store status | list | info <ID|alias.ZPK>\n",
+                0x08);
     video_print("  update verify <arquivo.ZUP> - Verifica sem gravar\n", 0x07);
     video_print("  update status|history - Diagnostico persistente\n",
                 0x07);
@@ -2739,7 +2744,8 @@ static void cmd_health_print_summary_components(void) {
             recovery_get((recovery_component_id_t)index);
 
         if (!entry || entry->state == RECOVERY_STATE_READY ||
-            index == RECOVERY_COMPONENT_UPDATE) continue;
+            index == RECOVERY_COMPONENT_UPDATE ||
+            index == RECOVERY_COMPONENT_APP_STORE) continue;
         cmd_health_print_summary_component(entry);
     }
 }
@@ -2833,6 +2839,39 @@ static void cmd_health_print_summary_update(void) {
     video_print("\n", 0x07);
 }
 
+static void cmd_health_print_summary_app_store(void) {
+    const recovery_component_t* component =
+        recovery_get(RECOVERY_COMPONENT_APP_STORE);
+    app_catalog_status_t status;
+    int status_ready = app_catalog_get_status(&status) == OK;
+
+    video_print("  App Store: ", 0x07);
+    if (component) {
+        cmd_health_print_inline_state(component->state);
+        if (component->state != RECOVERY_STATE_READY) {
+            video_print(" erro=", 0x08);
+            print_num((uint32_t)component->last_error);
+            video_print(" falhas=", 0x08);
+            print_num(component->failures);
+        }
+    } else {
+        video_print("UNKNOWN", 0x0C);
+    }
+    if (status_ready) {
+        video_print("\n    fontes=", 0x07);
+        print_num(status.source_count);
+        video_print(" validas=", 0x08);
+        print_num(status.valid_source_count);
+        video_print(" invalidas=", 0x08);
+        print_num(status.invalid_source_count);
+        video_print(" instaladas=", 0x08);
+        print_num(status.installed_count);
+        video_print(" entradas=", 0x08);
+        print_num(status.entry_count);
+    }
+    video_print("\n", 0x07);
+}
+
 static void cmd_health_print_summary_kernel(void) {
     memory_heap_stats_t heap;
 
@@ -2869,6 +2908,7 @@ static void cmd_health_summary(void) {
     video_print("Resumo do health:\n", 0x0B);
     cmd_health_print_summary_components();
     cmd_health_print_summary_update();
+    cmd_health_print_summary_app_store();
     cmd_health_print_summary_kernel();
     video_end_update();
 }
@@ -8173,6 +8213,213 @@ static void cmd_pkgcheck(void) {
     video_print(passed ? "OK\n" : "ERRO\n", passed ? 0x0A : 0x0C);
 }
 
+static void cmd_store_print_capabilities(uint32_t capabilities) {
+    int printed = 0;
+
+    if (capabilities & APP_CATALOG_CAPABILITY_VERIFY) {
+        video_print("VERIFY", 0x07);
+        printed = 1;
+    }
+    if (capabilities & APP_CATALOG_CAPABILITY_INSTALL) {
+        video_print(printed ? ", INSTALL" : "INSTALL", 0x07);
+        printed = 1;
+    }
+    if (capabilities & APP_CATALOG_CAPABILITY_RUN) {
+        video_print(printed ? ", RUN" : "RUN", 0x07);
+        printed = 1;
+    }
+    if (capabilities & APP_CATALOG_CAPABILITY_REMOVE) {
+        video_print(printed ? ", REMOVE" : "REMOVE", 0x07);
+        printed = 1;
+    }
+    if (capabilities & APP_CATALOG_CAPABILITY_UPDATE) {
+        video_print(printed ? ", UPDATE" : "UPDATE", 0x07);
+        printed = 1;
+    }
+    if (!printed) video_print("nenhuma", 0x08);
+}
+
+static void cmd_store_print_dependencies(const app_catalog_entry_t* entry) {
+    const app_package_info_t* info;
+
+    info = entry->source.id[0] ? &entry->source : &entry->installed;
+    if (!info->id[0]) {
+        video_print("N/D", 0x08);
+        return;
+    }
+    if (info->dependency_count == 0) {
+        video_print("nenhuma", 0x08);
+        return;
+    }
+    for (uint32_t index = 0; index < info->dependency_count; index++) {
+        if (index) video_print(", ", 0x07);
+        video_print(info->dependencies[index],
+                    (entry->missing_dependency_mask & (1U << index)) ?
+                    0x0C : 0x07);
+        if (entry->missing_dependency_mask & (1U << index)) {
+            video_print("(ausente)", 0x0C);
+        }
+    }
+}
+
+static void cmd_store_print_list_entry(const app_catalog_entry_t* entry) {
+    const char* id = entry->source.id[0] ?
+        entry->source.id : entry->installed.id;
+
+    video_print("  ", 0x07);
+    video_print(entry->alias[0] ? entry->alias : "(instalado)", 0x0B);
+    video_print(" id=", 0x08);
+    video_print(id[0] ? id : "N/D", 0x07);
+    video_print(" fonte=", 0x08);
+    video_print(entry->source.version[0] ? entry->source.version : "-", 0x07);
+    video_print(" instalada=", 0x08);
+    video_print(entry->installed.version[0] ?
+                entry->installed.version : "-", 0x07);
+    video_print(" ", 0x07);
+    video_print(app_catalog_state_name(entry->state),
+                entry->state == APP_CATALOG_STATE_INVALID ? 0x0C :
+                entry->state == APP_CATALOG_STATE_BLOCKED ? 0x0E : 0x0A);
+    if (entry->reason != APP_CATALOG_REASON_NONE) {
+        video_print(" motivo=", 0x08);
+        video_print(app_catalog_reason_name(entry->reason), 0x0E);
+    }
+    video_print("\n", 0x07);
+}
+
+static void cmd_store_print_usage(void) {
+    video_print("Uso: store status | store list | ", 0x0E);
+    video_print("store info <ID|alias.ZPK>\n", 0x0E);
+}
+
+static void cmd_store_status(void) {
+    const recovery_component_t* component;
+    app_catalog_status_t status;
+    int refresh_result = app_catalog_refresh();
+
+    component = recovery_get(RECOVERY_COMPONENT_APP_STORE);
+    if (app_catalog_get_status(&status) != OK) {
+        video_print("Erro: status da App Store indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("App Store: ", 0x0B);
+    video_print(component ? recovery_state_name(component->state) : "UNKNOWN",
+                component ? cmd_health_state_color(component->state) : 0x0C);
+    video_print("\n  refresh=", 0x07);
+    video_print(refresh_result == OK ? "OK" : "ERRO",
+                refresh_result == OK ? 0x0A : 0x0C);
+    video_print(" motivo=", 0x08);
+    video_print(app_catalog_reason_name(status.reason),
+                status.reason == APP_CATALOG_REASON_NONE ? 0x0A : 0x0E);
+    video_print("\n  fontes=", 0x07);
+    print_num(status.source_count);
+    video_print(" validas=", 0x08);
+    print_num(status.valid_source_count);
+    video_print(" invalidas=", 0x08);
+    print_num(status.invalid_source_count);
+    video_print(" instaladas=", 0x08);
+    print_num(status.installed_count);
+    video_print(" entradas=", 0x08);
+    print_num(status.entry_count);
+    video_print("\n  limite_fontes=", 0x07);
+    print_num(APP_CATALOG_MAX_SOURCES);
+    video_print(status.source_overflow ? " EXCEDIDO" : " OK",
+                status.source_overflow ? 0x0E : 0x0A);
+    video_print(" limite_entradas=", 0x08);
+    print_num(APP_CATALOG_MAX_ENTRIES);
+    video_print(status.entry_overflow ? " EXCEDIDO\n" : " OK\n",
+                status.entry_overflow ? 0x0E : 0x0A);
+}
+
+static void cmd_store_list(void) {
+    uint32_t count = 0;
+
+    if (app_catalog_refresh() != OK ||
+        app_catalog_get_count(&count) != OK) {
+        video_print("Erro: catalogo da App Store indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("Catalogo local (LOCAL / NAO ASSINADO):\n", 0x0B);
+    if (count == 0) {
+        video_print("  (vazio)\n", 0x08);
+        return;
+    }
+    for (uint32_t index = 0; index < count; index++) {
+        app_catalog_entry_t entry;
+        if (app_catalog_get_entry(index, &entry) == OK) {
+            cmd_store_print_list_entry(&entry);
+        }
+    }
+}
+
+static void cmd_store_info(char* key) {
+    app_catalog_entry_t entry;
+    const app_package_info_t* info;
+
+    if (app_catalog_refresh() != OK) {
+        video_print("Erro: catalogo da App Store indisponivel.\n", 0x0C);
+        return;
+    }
+    cmd_pkg_uppercase_id(key);
+    if (app_catalog_find_entry(key, &entry) != OK) {
+        video_print("Erro: entrada da App Store nao encontrada.\n", 0x0C);
+        return;
+    }
+    info = entry.source.id[0] ? &entry.source : &entry.installed;
+    video_print("Entrada da App Store:\n  Alias: ", 0x0B);
+    video_print(entry.alias[0] ? entry.alias : "N/D", 0x07);
+    video_print("\n  ID: ", 0x07);
+    video_print(info->id[0] ? info->id : "N/D", 0x07);
+    video_print("\n  Nome: ", 0x07);
+    video_print(info->name[0] ? info->name : "N/D", 0x07);
+    video_print("\n  Versao fonte: ", 0x07);
+    video_print(entry.source.version[0] ? entry.source.version : "N/D", 0x07);
+    video_print("\n  Versao instalada: ", 0x07);
+    video_print(entry.installed.version[0] ?
+                entry.installed.version : "N/D", 0x07);
+    video_print("\n  Estado: ", 0x07);
+    video_print(app_catalog_state_name(entry.state),
+                entry.state == APP_CATALOG_STATE_INVALID ? 0x0C :
+                entry.state == APP_CATALOG_STATE_BLOCKED ? 0x0E : 0x0A);
+    video_print("\n  Motivo: ", 0x07);
+    video_print(app_catalog_reason_name(entry.reason),
+                entry.reason == APP_CATALOG_REASON_NONE ? 0x0A : 0x0E);
+    video_print("\n  Confianca: ", 0x07);
+    video_print(entry.has_source ? "LOCAL / NAO ASSINADO" : "N/D", 0x0E);
+    video_print("\n  Tamanho fonte: ", 0x07);
+    print_num(entry.source_size);
+    video_print("\n  Dependencias: ", 0x07);
+    cmd_store_print_dependencies(&entry);
+    video_print("\n  Capacidades: ", 0x07);
+    cmd_store_print_capabilities(entry.capabilities);
+    video_print("\n", 0x07);
+}
+
+static void cmd_store(const char* args) {
+    char operation[16];
+    char value[FS_MAX_PATH];
+    char extra[2];
+    const char* cursor = args;
+
+    cmd_pkg_take_token(&cursor, operation, sizeof(operation));
+    cmd_pkg_take_token(&cursor, value, sizeof(value));
+    cmd_pkg_take_token(&cursor, extra, sizeof(extra));
+    if (operation[0] == '\0') {
+        cmd_store_print_usage();
+    } else if (kstrcmp(operation, "status") == 0 &&
+               value[0] == '\0' && extra[0] == '\0') {
+        cmd_store_status();
+    } else if (kstrcmp(operation, "list") == 0 &&
+               value[0] == '\0' && extra[0] == '\0') {
+        cmd_store_list();
+    } else if (kstrcmp(operation, "info") == 0 &&
+               value[0] != '\0' && extra[0] == '\0') {
+        cmd_store_info(value);
+    } else {
+        LOG_WARN("SHELL", "Uso invalido do comando store");
+        cmd_store_print_usage();
+    }
+}
+
 static void cmd_app(const char* args) {
     char subcommand[16];
     char path[FS_MAX_PATH];
@@ -8945,6 +9192,8 @@ int shell_process_command(const char* input) {
         cmd_appcheck();
     } else if (kstrcmp(cmd, "pkg") == 0) {
         cmd_pkg(input);
+    } else if (kstrcmp(cmd, "store") == 0) {
+        cmd_store(input);
     } else if (kstrcmp(cmd, "update") == 0) {
         cmd_update(input);
     } else if (kstrcmp(cmd, "pkgcheck") == 0) {

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import struct
@@ -34,6 +35,15 @@ FAT12_ATTR_ARCHIVE = 0x20
 ID_RE = re.compile(r"^[A-Z0-9_]{1,8}$")
 VERSION_RE = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
 REQUIRED_MANIFEST_KEYS = ("id", "name", "version", "api", "entry", "dependencies")
+STORE_FIXTURE_FORMAT = "zephyros-app-store-fixtures-v1"
+STORE_FIXTURE_ALIASES = (
+    "VALID.ZPK",
+    "BADCRC.ZPK",
+    "BADAPI.ZPK",
+    "BADALIAS.ZPK",
+    "NEEDSDEP.ZPK",
+    "SAMEVER.ZPK",
+)
 
 
 class PackageError(ValueError):
@@ -483,6 +493,196 @@ def build_demo_zapp() -> bytes:
     return header + code
 
 
+def store_fixture_manifest(
+    package_id: str,
+    name: str,
+    version: str = "1.0.0",
+    api: str = "0.3",
+    dependencies: str = "",
+) -> dict[str, str]:
+    """Monta um manifesto na ordem canonica para os fixtures da App Store."""
+    return {
+        "id": package_id,
+        "name": name,
+        "version": version,
+        "api": api,
+        "entry": "APP.ZAP",
+        "dependencies": dependencies,
+    }
+
+
+def build_store_fixtures() -> dict[str, bytes]:
+    """Gera deterministicamente a matriz publica do catalogo AS1."""
+    zapp = build_demo_zapp()
+    fixtures = {
+        "VALID.ZPK": build_package(
+            store_fixture_manifest("VALID", "Store Valid"), zapp
+        ),
+        "BADAPI.ZPK": build_package(
+            store_fixture_manifest("BADAPI", "Bad API", api="9.9"), zapp
+        ),
+        "BADALIAS.ZPK": build_package(
+            store_fixture_manifest("ALIASOK", "Bad Alias"), zapp
+        ),
+        "NEEDSDEP.ZPK": build_package(
+            store_fixture_manifest(
+                "NEEDSDEP", "Needs Dependency", dependencies="MISSING"
+            ),
+            zapp,
+        ),
+        "SAMEVER.ZPK": build_package(
+            store_fixture_manifest("SAMEVER", "Same Version"), zapp
+        ),
+    }
+    bad_crc = bytearray(
+        build_package(store_fixture_manifest("BADCRC", "Bad CRC"), zapp)
+    )
+    bad_crc[-1] ^= 0xFF
+    fixtures["BADCRC.ZPK"] = bytes(bad_crc)
+    return {alias: fixtures[alias] for alias in STORE_FIXTURE_ALIASES}
+
+
+def store_fixture_expectations() -> dict[str, dict[str, str]]:
+    """Descreve os resultados publicos esperados pelo catalogo AS1."""
+    return {
+        "VALID.ZPK": {
+            "id": "VALID",
+            "state": "AVAILABLE",
+            "reason": "NONE",
+        },
+        "BADCRC.ZPK": {
+            "id": "BADCRC",
+            "state": "INVALID",
+            "reason": "PACKAGE_INVALID",
+        },
+        "BADAPI.ZPK": {
+            "id": "BADAPI",
+            "state": "INVALID",
+            "reason": "PACKAGE_INVALID",
+        },
+        "BADALIAS.ZPK": {
+            "id": "ALIASOK",
+            "state": "INVALID",
+            "reason": "ALIAS_MISMATCH",
+        },
+        "NEEDSDEP.ZPK": {
+            "id": "NEEDSDEP",
+            "state": "BLOCKED",
+            "reason": "DEPENDENCY_MISSING",
+        },
+        "SAMEVER.ZPK": {
+            "id": "SAMEVER",
+            "state": "AVAILABLE_THEN_SAME_VERSION",
+            "reason": "NONE",
+        },
+    }
+
+
+def write_store_fixtures(output_dir: Path) -> None:
+    """Grava somente os artefatos publicos conhecidos e seu manifesto."""
+    fixtures = build_store_fixtures()
+    expectations = store_fixture_expectations()
+    output_dir.mkdir(parents=True, exist_ok=True)
+    published: dict[str, object] = {
+        "format": STORE_FIXTURE_FORMAT,
+        "fixtures": {},
+    }
+    fixture_metadata = published["fixtures"]
+    if not isinstance(fixture_metadata, dict):
+        raise PackageError("estrutura interna dos fixtures invalida")
+    for alias, data in fixtures.items():
+        (output_dir / alias).write_bytes(data)
+        fixture_metadata[alias] = {
+            **expectations[alias],
+            "size": len(data),
+            "sha256": hashlib.sha256(data).hexdigest(),
+        }
+    (output_dir / "fixtures.json").write_text(
+        json.dumps(published, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def load_store_fixture_manifest(fixtures_dir: Path) -> dict[str, object]:
+    """Le e valida a forma basica do manifesto publico AS1."""
+    try:
+        published = json.loads(
+            (fixtures_dir / "fixtures.json").read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError) as error:
+        raise PackageError("manifesto dos fixtures da App Store invalido") from error
+    if not isinstance(published, dict) or (
+        published.get("format") != STORE_FIXTURE_FORMAT
+    ):
+        raise PackageError("formato dos fixtures da App Store divergiu")
+    metadata = published.get("fixtures")
+    if not isinstance(metadata, dict) or set(metadata) != set(STORE_FIXTURE_ALIASES):
+        raise PackageError("conjunto dos fixtures da App Store divergiu")
+    return published
+
+
+def audit_store_fixture_semantics(fixtures: dict[str, bytes]) -> None:
+    """Confere que cada vetor cobre exatamente o caso publicado."""
+    valid = parse_package(fixtures["VALID.ZPK"])
+    bad_alias = parse_package(fixtures["BADALIAS.ZPK"])
+    needs_dep = parse_package(fixtures["NEEDSDEP.ZPK"])
+    same_version = parse_package(fixtures["SAMEVER.ZPK"])
+    if valid.manifest["id"] != "VALID":
+        raise PackageError("fixture VALID divergiu")
+    if (
+        bad_alias.manifest["id"] != "ALIASOK"
+        or alias_name(bad_alias.manifest["id"]) == "BADALIAS.ZPK"
+    ):
+        raise PackageError("fixture BADALIAS divergiu")
+    if needs_dep.manifest["dependencies"] != "MISSING":
+        raise PackageError("fixture NEEDSDEP divergiu")
+    if same_version.manifest["version"] != "1.0.0":
+        raise PackageError("fixture SAMEVER divergiu")
+    for alias in ("BADCRC.ZPK", "BADAPI.ZPK"):
+        try:
+            parse_package(fixtures[alias])
+        except PackageError:
+            continue
+        raise PackageError(f"fixture invalido foi aceito: {alias}")
+
+
+def audit_store_fixtures(
+    fixtures_dir: Path, image_path: Path | None = None
+) -> None:
+    """Audita hashes, semantica e, opcionalmente, aliases na imagem FAT12."""
+    published = load_store_fixture_manifest(fixtures_dir)
+    metadata = published["fixtures"]
+    expected = build_store_fixtures()
+    expectations = store_fixture_expectations()
+    fixtures: dict[str, bytes] = {}
+    if not isinstance(metadata, dict):
+        raise PackageError("metadados dos fixtures da App Store invalidos")
+    for alias in STORE_FIXTURE_ALIASES:
+        try:
+            data = (fixtures_dir / alias).read_bytes()
+        except OSError as error:
+            raise PackageError(f"fixture ausente: {alias}") from error
+        entry = metadata.get(alias)
+        if not isinstance(entry, dict):
+            raise PackageError(f"metadado ausente: {alias}")
+        if (
+            data != expected[alias]
+            or entry.get("size") != len(data)
+            or entry.get("sha256") != hashlib.sha256(data).hexdigest()
+            or any(
+                entry.get(field) != value
+                for field, value in expectations[alias].items()
+            )
+        ):
+            raise PackageError(f"fixture dessincronizado: {alias}")
+        if image_path is not None and read_root_file(image_path, alias) != data:
+            raise PackageError(f"fixture divergiu na imagem: {alias}")
+        fixtures[alias] = data
+        print(f"store_fixture_{alias} OK")
+    audit_store_fixture_semantics(fixtures)
+    print("App Store fixtures: OK")
+
+
 def create_fixture_image(path: Path) -> None:
     """Gera uma imagem FAT12 vazia para testar a injecao sem QEMU."""
     image = bytearray(1474560)
@@ -534,6 +734,7 @@ def run_selftest() -> int:
         "reserva_dinamica": False,
         "bpb_invalido": False,
         "imagem_excedida": False,
+        "store_fixtures": False,
     }
     try:
         parse_package(package)
@@ -552,6 +753,15 @@ def run_selftest() -> int:
             checks["substituicao"] = read_root_file(image_path, "DEMO.ZPK") == package
             inject_root_file(b"desktop icon", image_path, "ICON.BMP")
             checks["arquivo"] = read_root_file(image_path, "ICON.BMP") == b"desktop icon"
+
+            store_dir = Path(temp_dir) / "store"
+            write_store_fixtures(store_dir)
+            for alias in STORE_FIXTURE_ALIASES:
+                inject_root_file(
+                    (store_dir / alias).read_bytes(), image_path, alias
+                )
+            audit_store_fixtures(store_dir, image_path)
+            checks["store_fixtures"] = True
 
             boot_path = Path(temp_dir) / "boot-payload.img"
             create_fixture_boot_payload(boot_path, 1300)
@@ -659,6 +869,27 @@ def command_demo(arguments: argparse.Namespace) -> int:
     return 0
 
 
+def command_fixtures_store(arguments: argparse.Namespace) -> int:
+    """Gera os fixtures publicos e deterministicos do catalogo AS1."""
+    output_dir = Path(arguments.output_dir)
+    try:
+        write_store_fixtures(output_dir)
+    except OSError as error:
+        raise PackageError("falha ao gravar fixtures da App Store") from error
+    print(f"Fixtures da App Store criados em {output_dir.resolve()}")
+    return 0
+
+
+def command_audit_store(arguments: argparse.Namespace) -> int:
+    """Audita os fixtures AS1 e seus aliases opcionais na imagem FAT12."""
+    image_path = Path(arguments.image) if arguments.image else None
+    try:
+        audit_store_fixtures(Path(arguments.fixtures_dir), image_path)
+    except OSError as error:
+        raise PackageError("falha ao auditar fixtures da App Store") from error
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Monta a interface de linha de comando do empacotador."""
     parser = argparse.ArgumentParser(description="Empacotador .zephyrosapp")
@@ -691,6 +922,13 @@ def build_parser() -> argparse.ArgumentParser:
     demo.add_argument("--output", required=True)
     demo.add_argument("--image", required=True)
     demo.set_defaults(handler=command_demo)
+    fixtures_store = commands.add_parser("fixtures-store")
+    fixtures_store.add_argument("--output-dir", required=True)
+    fixtures_store.set_defaults(handler=command_fixtures_store)
+    audit_store = commands.add_parser("audit-store")
+    audit_store.add_argument("--fixtures-dir", required=True)
+    audit_store.add_argument("--image")
+    audit_store.set_defaults(handler=command_audit_store)
     selftest = commands.add_parser("selftest")
     selftest.set_defaults(handler=lambda arguments: run_selftest())
     return parser
