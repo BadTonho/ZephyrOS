@@ -44,6 +44,7 @@ static int wm_active = 0;
     ((int)display_scale_px(WM_GUI_BASE_RESIZE_ZONE))
 #define WM_GUI_FRAME_BORDER_WIDTH 1
 #define WM_GUI_FRAME_RADIUS_BASE 8U
+#define WM_GUI_CONTROL_COUNT 3
 #define WM_GUI_CONTROL_RADIUS_DIVISOR 4
 #define WM_GUI_CONTROL_SYMBOL_DIVISOR 4
 #define WM_GUI_COLOR_CONTROL_CLOSE 0x00E06C75U
@@ -292,7 +293,7 @@ static vesa_color_t wm_gui_color(uint32_t raw) {
 }
 
 static wm_gui_control_t wm_gui_control_at(int slot) {
-    static const wm_gui_control_t orders[6][3] = {
+    static const wm_gui_control_t orders[6][WM_GUI_CONTROL_COUNT] = {
         {WM_GUI_CONTROL_CLOSE, WM_GUI_CONTROL_MINIMIZE, WM_GUI_CONTROL_MAXIMIZE},
         {WM_GUI_CONTROL_CLOSE, WM_GUI_CONTROL_MAXIMIZE, WM_GUI_CONTROL_MINIMIZE},
         {WM_GUI_CONTROL_MINIMIZE, WM_GUI_CONTROL_MAXIMIZE, WM_GUI_CONTROL_CLOSE},
@@ -308,6 +309,8 @@ static void wm_gui_control_rect(const wm_gui_window_t* window, int slot,
                                  tb_rect_t* rect) {
     int offset = slot * (WM_GUI_CONTROL_SIZE + WM_GUI_CONTROL_GAP);
     int margin = (int)display_scale_px(WM_GUI_BASE_CONTROL_MARGIN);
+    int group_width = WM_GUI_CONTROL_SIZE * WM_GUI_CONTROL_COUNT +
+                      WM_GUI_CONTROL_GAP * (WM_GUI_CONTROL_COUNT - 1);
 
     rect->y = window->y + WM_GUI_FRAME_INSET +
               (WM_GUI_TITLE_HEIGHT - WM_GUI_CONTROL_SIZE) / 2;
@@ -317,7 +320,7 @@ static void wm_gui_control_rect(const wm_gui_window_t* window, int slot,
         rect->x = window->x + margin + offset;
     } else {
         rect->x = window->x + window->width - margin -
-                  WM_GUI_CONTROL_SIZE - offset;
+                  group_width + offset;
     }
 }
 
@@ -476,7 +479,8 @@ static void wm_gui_draw_frame(const wm_gui_window_t* window) {
 
 static void wm_gui_draw_title(const wm_gui_window_t* window,
                               const display_metrics_t* metrics) {
-    int control_width = WM_GUI_CONTROL_SIZE * 3 + WM_GUI_CONTROL_GAP * 2;
+    int control_width = WM_GUI_CONTROL_SIZE * WM_GUI_CONTROL_COUNT +
+                        WM_GUI_CONTROL_GAP * (WM_GUI_CONTROL_COUNT - 1);
     int margin = (int)display_scale_px(WM_GUI_BASE_CONTROL_MARGIN);
     int title_x;
     int title_right;
@@ -508,7 +512,9 @@ static void wm_gui_draw_window(const wm_gui_window_t* window) {
     if (!window || display_get_metrics(&metrics) != OK) return;
     wm_gui_draw_frame(window);
     wm_gui_draw_title(window, &metrics);
-    for (int i = 0; i < 3; i++) wm_gui_draw_control(window, i);
+    for (int i = 0; i < WM_GUI_CONTROL_COUNT; i++) {
+        wm_gui_draw_control(window, i);
+    }
     if (window->app->on_draw) {
         vesa_set_clip_rect(window->x + WM_GUI_FRAME_INSET,
                            window->y + WM_GUI_CONTENT_TOP,
@@ -774,7 +780,7 @@ static int wm_gui_handle_mouse(mouse_event_t* event) {
     }
     if (selected < 0) return 0;
     wm_gui_focus(selected);
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < WM_GUI_CONTROL_COUNT; i++) {
         tb_rect_t rect;
         wm_gui_control_rect(&wm_gui_windows[selected], i, &rect);
         if (event->x >= rect.x && event->x < rect.x + rect.width &&

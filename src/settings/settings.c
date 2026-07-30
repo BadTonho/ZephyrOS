@@ -79,6 +79,9 @@ static const char* windows_button_side_values[] = {"Direita", "Esquerda"};
 static const char* windows_button_order_values[] = {
     "x _ <>", "x <> _", "_ <> x", "<> _ x", "_ x <>", "<> x _"
 };
+static const char* windows_button_order_modern_values[] = {
+    "X - []", "X [] -", "- [] X", "[] - X", "- X []", "[] X -"
+};
 static const char* windows_border_values[] = {"Simples", "Dupla"};
 static const char* sound_volume_values[] = {"Mudo", "Baixo", "Medio", "Alto", "Maximo"};
 
@@ -255,6 +258,15 @@ static void settings_update_taskbar_position_options(void) {
     position->value = taskbar_config ? taskbar_config->position : TB_POS_BOTTOM;
 }
 
+static void settings_update_window_order_values(void) {
+    settings_option_t* order =
+        &categories[SETTINGS_CAT_WINDOWS].options[1];
+
+    order->list_values = settings_mode == SETTINGS_MODE_CLASSIC ?
+                         windows_button_order_modern_values :
+                         windows_button_order_values;
+}
+
 static void settings_sync_display_scale(void) {
     display_metrics_t metrics;
 
@@ -266,16 +278,19 @@ static void settings_select_mode(void) {
     settings_mode = SETTINGS_MODE_SIMPLE;
     if (desktop_get_mode() != DESKTOP_MODE_CLASSIC) {
         settings_update_taskbar_position_options();
+        settings_update_window_order_values();
         return;
     }
 
     if (settings_classic_layout()) {
         settings_mode = SETTINGS_MODE_CLASSIC;
         settings_update_taskbar_position_options();
+        settings_update_window_order_values();
         return;
     }
 
     settings_update_taskbar_position_options();
+    settings_update_window_order_values();
     LOG_WARN("SETTINGS", "Visual Classic indisponivel; usando modo Simple");
 }
 
@@ -321,9 +336,11 @@ void settings_open(void) {
         settings_hosted = 1;
         settings_mode = SETTINGS_MODE_CLASSIC;
         settings_update_taskbar_position_options();
+        settings_update_window_order_values();
         if (wm_register_hosted_app(&settings_hosted_app) == OK) return;
         settings_hosted = 0;
         settings_mode = SETTINGS_MODE_SIMPLE;
+        settings_update_window_order_values();
         wm_set_active(0);
         desktop_set_active(0);
         LOG_WARN("SETTINGS", "Workspace indisponivel; usando Settings Simple");
@@ -408,10 +425,12 @@ void settings_draw(void) {
         (!mode || !mode->initialized || !vesa_has_backbuffer())) {
         LOG_WARN("SETTINGS", "Backbuffer indisponivel; retornando para TUI");
         settings_mode = SETTINGS_MODE_SIMPLE;
+        settings_update_window_order_values();
     }
     if (settings_mode == SETTINGS_MODE_CLASSIC && !settings_classic_layout()) {
         LOG_WARN("SETTINGS", "Area de trabalho insuficiente; retornando para TUI");
         settings_mode = SETTINGS_MODE_SIMPLE;
+        settings_update_window_order_values();
     }
     if (settings_mode == SETTINGS_MODE_CLASSIC) {
         settings_classic_draw();
