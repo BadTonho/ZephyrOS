@@ -50,6 +50,8 @@ icon_entry_t* icons_get_fm(icon_fm_id_t id);
 icon_entry_t* icons_get_tb(icon_tb_id_t id);
 int icons_get_desktop_bitmap_status(icon_desktop_id_t id);
 int icons_draw_desktop_bitmap(icon_desktop_id_t id, int x, int y);
+int icons_draw_desktop_bitmap_resized(icon_desktop_id_t id, int x, int y,
+                                      uint32_t size);
 
 void icons_set_desktop(icon_desktop_id_t id, char ch, uint8_t color, uint8_t color_sel);
 void icons_set_wm(icon_wm_id_t id, char ch, uint8_t color, uint8_t color_sel);

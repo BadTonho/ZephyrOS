@@ -15,6 +15,10 @@ void gui_init(void);
 
 // Primitive text rendering (pixel accurate)
 void gui_draw_text(uint32_t x, uint32_t y, const char* text, uint32_t color);
+void gui_draw_scaled_text(uint32_t x, uint32_t y, const char* text,
+                          uint32_t color);
+int gui_measure_scaled_text(const char* text, uint32_t* width,
+                            uint32_t* height);
 
 /* Painel 3D reutilizavel por componentes da interface grafica. */
 void gui_draw_panel(uint32_t x, uint32_t y, uint32_t w, uint32_t h,
@@ -22,8 +26,12 @@ void gui_draw_panel(uint32_t x, uint32_t y, uint32_t w, uint32_t h,
 
 // Button drawing
 void gui_draw_button(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const char* text, int pressed);
+void gui_draw_scaled_button(uint32_t x, uint32_t y, uint32_t w, uint32_t h,
+                            const char* text, int pressed);
 
 // Window frame drawing
 void gui_draw_window_frame(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const char* title, int active);
+void gui_draw_scaled_window_frame(uint32_t x, uint32_t y, uint32_t w,
+                                  uint32_t h, const char* title, int active);
 
 #endif

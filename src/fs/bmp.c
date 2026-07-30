@@ -203,6 +203,41 @@ void bmp_draw_transparent(bmp_image_t* img, int x, int y,
     }
 }
 
+int bmp_draw_transparent_resized(bmp_image_t* img, int x, int y,
+                                 uint32_t width, uint32_t height,
+                                 vesa_color_t transparent_color) {
+    vesa_mode_t* mode = vesa_get_mode();
+
+    if (!img) {
+        LOG_ERROR("FS", "Imagem BMP nula para redimensionamento");
+        return ERR_NULL;
+    }
+    if (!img->initialized || !img->width || !img->height) {
+        LOG_ERROR("FS", "Imagem BMP nao inicializada para redimensionamento");
+        return ERR_STATE;
+    }
+    if (x < 0 || y < 0 || !width || !height || !mode || !mode->initialized ||
+        width > mode->width || height > mode->height ||
+        (uint32_t)x > mode->width - width ||
+        (uint32_t)y > mode->height - height) {
+        LOG_ERROR("FS", "Destino invalido para BMP redimensionado");
+        return ERR_INVALID;
+    }
+
+    for (uint32_t row = 0; row < height; row++) {
+        uint32_t source_y = row * img->height / height;
+        for (uint32_t col = 0; col < width; col++) {
+            uint32_t source_x = col * img->width / width;
+            vesa_color_t color = bmp_get_pixel(img, source_x, source_y);
+
+            if (color.raw != transparent_color.raw) {
+                vesa_put_pixel((uint32_t)x + col, (uint32_t)y + row, color);
+            }
+        }
+    }
+    return OK;
+}
+
 void bmp_draw_scaled(bmp_image_t* img, int x, int y, uint32_t scale) {
     if (!img || !img->initialized) return;
 

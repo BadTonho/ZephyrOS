@@ -51,6 +51,9 @@ int  bmp_load(const uint8_t* raw_data, uint32_t size, bmp_image_t* out);
 void bmp_draw(bmp_image_t* img, int x, int y);
 void bmp_draw_transparent(bmp_image_t* img, int x, int y,
                           vesa_color_t transparent_color);
+int bmp_draw_transparent_resized(bmp_image_t* img, int x, int y,
+                                 uint32_t width, uint32_t height,
+                                 vesa_color_t transparent_color);
 void bmp_draw_scaled(bmp_image_t* img, int x, int y, uint32_t scale);
 void bmp_free(bmp_image_t* out);
 

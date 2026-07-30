@@ -457,6 +457,7 @@ typedef struct {
 int  bmp_load(raw_data, size, &image);      // Carrega BMP da memória
 void bmp_draw(&image, x, y);                 // Renderiza na tela (VESA)
 void bmp_draw_transparent(&image, x, y, key);// Ignora pixels da cor-chave
+int  bmp_draw_transparent_resized(&image, x, y, width, height, key);
 void bmp_draw_scaled(&image, x, y, scale);   // Renderiza com escala
 void bmp_free(&image);                       // Libera memória
 ```
@@ -464,6 +465,11 @@ void bmp_free(&image);                       // Libera memória
 `bmp_draw_transparent()` preserva os pixels cuja cor seja igual à chave
 fornecida. O Desktop usa a chave magenta (`#FF00FF`) para os ícones BMP, de
 forma que a seleção do cartão continue visível atrás da imagem.
+
+`bmp_draw_transparent_resized()` preserva a mesma cor-chave e redimensiona
+para largura e altura arbitrárias por nearest-neighbor. A função não altera a
+imagem carregada nem aloca memória durante o desenho; o sistema de ícones a
+usa para exibir o único cache 32x32 nos tamanhos da escala Modern.
 
 ### Exemplo
 

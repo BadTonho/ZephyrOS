@@ -42,6 +42,10 @@ Estas capacidades continuam sendo a fonte de verdade. Este roadmap atua estritam
 
 ## MV0 - Layout e escala acessiveis
 
+**Estado:** implementacao inicial presente no repositorio; aguardando
+`make q3check`, build e aprovacao da matriz QEMU pelo usuario. Os checkboxes
+abaixo permanecem abertos ate essa validacao.
+
 ### Implementacao
 
 - [ ] Definir metricas centrais para espacamento, altura de barra, dimensoes
@@ -61,6 +65,21 @@ Estas capacidades continuam sendo a fonte de verdade. Este roadmap atua estritam
 As tres escalas mantem texto legivel e alvos de clique utilizaveis no modo VESA
 inicial. Falha de VESA, escala invalida ou area insuficiente preserva a escala
 anterior e o fallback Classico.
+
+### Matriz QEMU pendente
+
+1. Rodar `make q3check`, `make clean && make` e `make run`, nessa ordem.
+2. Confirmar `display status` inicial em `normal`, VESA 1024x768x32 e
+   backbuffer ativo.
+3. Alternar pequena, normal e grande pelo Shell e pelo Settings.
+4. Em cada preset, validar Desktop, cinco posicoes da Taskbar, Menu Iniciar,
+   Explorer, Settings e todas as abas do Task Manager.
+5. Exercitar clique, selecao, arraste, resize, minimizar, maximizar e textos
+   proximos das bordas.
+6. Confirmar que sintaxe invalida e area insuficiente preservam a escala.
+7. Voltar a `guimode classic` e confirmar fonte, grade, cursor, taskbar e
+   aplicativos Classic inalterados.
+8. Encerrar com `health summary`, `memcheck` e `regcheck full`, sem residuos.
 
 ## MV1 - Evolucao das Primitivas Graficas
 

@@ -37,6 +37,7 @@ Comandos disponiveis:
   mouse     - Mostra status do mouse PS/2
   guitest   - Testa primitivas GUI 2D
   guimode   - Altera entre gui classica (TUI) e moderna
+  display   - Mostra estado ou altera a escala da GUI moderna
   health [summary] - Exibe estado completo ou resumo compacto
   devices   - Lista o inventario de hardware (`-v` inclui detalhes)
   device-info <id> - Exibe detalhes de um dispositivo inventariado
@@ -235,6 +236,28 @@ Altera o modo de interface do sistema (Classic TUI ou GUI Moderna) dinamicamente
 ```
 zephyr> guimode modern
 ```
+
+## `display status|scale pequena|normal|grande`
+
+`display status` mostra modo VESA, backbuffer, interface Classic/Modern,
+escala ativa, fonte, espaçamento, taskbar, botão mínimo, ícone, requisito do
+preset e área útil atual.
+
+`display scale` aceita exatamente um dos nomes `pequena`, `normal` ou
+`grande`. A mudança é imediata e vale somente até o próximo boot. Argumento
+ausente, valor inválido, backbuffer indisponível, VESA menor que o requisito
+ou reflow impossível exibem o motivo e preservam a escala anterior.
+
+```text
+zephyr> display status
+zephyr> display scale pequena
+zephyr> display scale normal
+zephyr> display scale grande
+```
+
+O comando pode ser consultado no Classic, mas a escala afeta somente as rotas
+Modern. O Settings usa a mesma API e volta visualmente ao valor anterior
+quando uma aplicação é recusada.
 
 ## `health [summary]`
 Exibe métricas detalhadas do kernel, estado do recovery, paginação, processos e saúde estrutural da arquitetura. Também mostra o componente `Update` e separa verificação local, aplicação, rollback e remoto. Aplicacao fica `READY` somente em FAT12 com estado persistente integro; rollback exige backup valido; remoto U5 permanece `DISABLED` sem degradar o verificador local.

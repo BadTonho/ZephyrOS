@@ -9,6 +9,7 @@
 #include "drivers/font.h"
 #include "drivers/mouse.h"
 #include "ui/gui.h"
+#include "ui/display.h"
 
 static tb_button_t buttons[TASKBAR_BUTTON_MAX];
 static int button_count = 0;
@@ -99,37 +100,39 @@ static void taskbar_clamp_rect(tb_rect_t* rect, vesa_mode_t* mode) {
 
 int taskbar_get_bounds(tb_rect_t* bounds) {
     vesa_mode_t* mode = vesa_get_mode();
+    display_metrics_t metrics;
 
     if (!bounds) {
         LOG_ERROR("TASKBAR", "Destino de limites nulo");
         return 0;
     }
     if (!taskbar_uses_gui()) return 0;
+    if (display_get_metrics(&metrics) != OK || !metrics.available) return 0;
 
     bounds->x = 0;
     bounds->y = 0;
     bounds->width = mode->width;
-    bounds->height = TASKBAR_HEIGHT;
+    bounds->height = metrics.taskbar_height;
 
     switch (config.position) {
         case TB_POS_BOTTOM:
-            bounds->y = mode->height - TASKBAR_HEIGHT;
+            bounds->y = mode->height - metrics.taskbar_height;
             break;
         case TB_POS_TOP:
             break;
         case TB_POS_LEFT:
-            bounds->width = TASKBAR_SIDE_WIDTH;
+            bounds->width = metrics.taskbar_side_width;
             bounds->height = mode->height;
             break;
         case TB_POS_RIGHT:
-            bounds->x = mode->width - TASKBAR_SIDE_WIDTH;
-            bounds->width = TASKBAR_SIDE_WIDTH;
+            bounds->x = mode->width - metrics.taskbar_side_width;
+            bounds->width = metrics.taskbar_side_width;
             bounds->height = mode->height;
             break;
         case TB_POS_CUSTOM:
-            bounds->x = config.custom_x * FONT_WIDTH;
-            bounds->y = config.custom_y * FONT_HEIGHT;
-            bounds->width = TASKBAR_CUSTOM_WIDTH;
+            bounds->x = config.custom_x * metrics.font_width;
+            bounds->y = config.custom_y * metrics.font_height;
+            bounds->width = display_scale_px(TASKBAR_CUSTOM_WIDTH);
             taskbar_clamp_rect(bounds, mode);
             break;
     }
@@ -260,44 +263,71 @@ static void taskbar_format_time(uint32_t current_second, char* time_str) {
 
 static void taskbar_draw_clock_gui_text(const char* time_str) {
     tb_rect_t bounds;
+    display_metrics_t metrics;
     int clock_x;
     int clock_y;
+    int clock_width;
     vesa_color_t bg;
 
     if (!taskbar_get_bounds(&bounds)) return;
+    if (display_get_metrics(&metrics) != OK) return;
+    clock_width = metrics.font_width * 5;
     if (taskbar_is_horizontal_gui()) {
-        clock_x = bounds.x + bounds.width - 48;
-        clock_y = bounds.y + 4;
+        clock_x = bounds.x + bounds.width - clock_width - metrics.spacing;
+        clock_y = bounds.y + (bounds.height - metrics.font_height) / 2;
     } else {
-        clock_x = bounds.x + (bounds.width - 40) / 2;
-        clock_y = bounds.y + bounds.height - 20;
+        clock_x = bounds.x + (bounds.width - clock_width) / 2;
+        clock_y = bounds.y + bounds.height -
+                  metrics.font_height - metrics.spacing;
     }
     bg.raw = GUI_COLOR_BG;
-    vesa_fill_rect(clock_x, clock_y, 40, 16, bg);
-    gui_draw_text(clock_x, clock_y, time_str, GUI_COLOR_TEXT);
+    vesa_fill_rect(clock_x, clock_y, clock_width, metrics.font_height, bg);
+    gui_draw_scaled_text(clock_x, clock_y, time_str, GUI_COLOR_TEXT);
 }
 
 static int taskbar_get_button_rect(const tb_rect_t* bounds, int index,
-                                   tb_rect_t* rect) {
+                                    tb_rect_t* rect) {
+    display_metrics_t metrics;
     int vertical = !taskbar_is_horizontal_gui();
     int clock_limit;
+    int margin;
+    int gap;
+    int start_width;
+    int app_width;
 
     if (!bounds || !rect || index < -1 || index >= button_count) return 0;
+    if (display_get_metrics(&metrics) != OK) return 0;
+    margin = (int)display_scale_px(2);
+    gap = (int)display_scale_px(4);
+    start_width = metrics.button_min_width;
+    app_width = (int)display_scale_px(90);
+    if (app_width < metrics.button_min_width) {
+        app_width = metrics.button_min_width;
+    }
 
     if (!vertical) {
-        rect->x = bounds->x + (index < 0 ? 2 : 66 + index * 94);
-        rect->y = bounds->y + 2;
-        rect->width = index < 0 ? 60 : 90;
-        rect->height = TASKBAR_BUTTON_HEIGHT;
-        clock_limit = bounds->x + bounds->width - 50;
+        rect->x = bounds->x + margin;
+        if (index >= 0) {
+            rect->x += start_width + gap + index * (app_width + gap);
+        }
+        rect->y = bounds->y + (bounds->height - metrics.button_min_height) / 2;
+        rect->width = index < 0 ? start_width : app_width;
+        rect->height = metrics.button_min_height;
+        clock_limit = bounds->x + bounds->width -
+                      metrics.font_width * 5 - metrics.spacing * 2;
         return rect->x + rect->width <= clock_limit;
     }
 
-    rect->x = bounds->x + 2;
-    rect->y = bounds->y + (index < 0 ? 2 : 26 + index * 22);
-    rect->width = bounds->width - 4;
-    rect->height = TASKBAR_BUTTON_HEIGHT;
-    clock_limit = bounds->y + bounds->height - 22;
+    rect->x = bounds->x + margin;
+    rect->y = bounds->y + margin;
+    if (index >= 0) {
+        rect->y += metrics.button_min_height + gap +
+                   index * (metrics.button_min_height + gap);
+    }
+    rect->width = bounds->width - margin * 2;
+    rect->height = metrics.button_min_height;
+    clock_limit = bounds->y + bounds->height -
+                  metrics.font_height - metrics.spacing * 2;
     return rect->y + rect->height <= clock_limit;
 }
 
@@ -318,14 +348,14 @@ static void taskbar_draw_gui(void) {
     vesa_draw_vline(bounds.x, bounds.y, bounds.height, light);
 
     if (taskbar_get_button_rect(&bounds, -1, &button)) {
-        gui_draw_button(button.x, button.y, button.width, button.height,
-                        "Inicio", menu_open);
+        gui_draw_scaled_button(button.x, button.y, button.width, button.height,
+                               "Inicio", menu_open);
     }
     for (int i = 0; i < button_count; i++) {
         tb_button_t* btn = &buttons[i];
         if (!taskbar_get_button_rect(&bounds, i, &button)) break;
-        gui_draw_button(button.x, button.y, button.width, button.height,
-                        btn->name, btn->active);
+        gui_draw_scaled_button(button.x, button.y, button.width, button.height,
+                               btn->name, btn->active);
     }
 
     taskbar_format_time(timer_get_ticks() / 50, time_str);
@@ -597,12 +627,16 @@ void taskbar_redraw_menu(void) {
 static int taskbar_get_menu_bounds(tb_rect_t* menu) {
     vesa_mode_t* mode = vesa_get_mode();
     tb_rect_t bounds;
+    display_metrics_t metrics;
+    int padding;
 
     if (!menu || !taskbar_get_bounds(&bounds)) return 0;
+    if (display_get_metrics(&metrics) != OK) return 0;
+    padding = (int)display_scale_px(5);
 
-    menu->width = TASKBAR_MENU_WIDTH;
-    menu->height = MENU_ITEM_COUNT * FONT_HEIGHT + 10;
-    menu->x = bounds.x + 2;
+    menu->width = display_scale_px(TASKBAR_MENU_WIDTH);
+    menu->height = MENU_ITEM_COUNT * metrics.row_height + padding * 2;
+    menu->x = bounds.x + (int)display_scale_px(2);
     menu->y = bounds.y - menu->height;
 
     switch (config.position) {
@@ -630,9 +664,14 @@ static int taskbar_get_menu_bounds(tb_rect_t* menu) {
 
 static void taskbar_draw_menu_gui(void) {
     tb_rect_t menu;
+    display_metrics_t metrics;
+    int padding;
+
     if (!menu_open) return;
     if (!taskbar_uses_gui()) return;
     if (!taskbar_get_menu_bounds(&menu)) return;
+    if (display_get_metrics(&metrics) != OK) return;
+    padding = (int)display_scale_px(5);
 
     vesa_frame_begin_region((uint32_t)menu.x, (uint32_t)menu.y,
                             (uint32_t)menu.width, (uint32_t)menu.height);
@@ -649,14 +688,20 @@ static void taskbar_draw_menu_gui(void) {
     vesa_draw_vline(menu.x + menu.width - 1, menu.y, menu.height, dark);
     
     for (int i = 0; i < MENU_ITEM_COUNT; i++) {
-        int item_y = menu.y + 5 + i * FONT_HEIGHT;
+        int item_y = menu.y + padding + i * metrics.row_height;
+        int text_y = item_y +
+                     (metrics.row_height - metrics.font_height) / 2;
         
         if (menu_selection == i) {
             vesa_color_t sel_bg; sel_bg.raw = GUI_COLOR_TITLE_BG;
-            vesa_fill_rect(menu.x + 3, item_y, menu.width - 6, FONT_HEIGHT, sel_bg);
-            gui_draw_text(menu.x + 10, item_y, menu_items[i], GUI_COLOR_TEXT_W);
+            vesa_fill_rect(menu.x + (int)display_scale_px(3), item_y,
+                           menu.width - (int)display_scale_px(6),
+                           metrics.row_height, sel_bg);
+            gui_draw_scaled_text(menu.x + metrics.spacing, text_y,
+                                 menu_items[i], GUI_COLOR_TEXT_W);
         } else {
-            gui_draw_text(menu.x + 10, item_y, menu_items[i], GUI_COLOR_TEXT);
+            gui_draw_scaled_text(menu.x + metrics.spacing, text_y,
+                                 menu_items[i], GUI_COLOR_TEXT);
         }
     }
 
@@ -894,8 +939,10 @@ static int taskbar_handle_click_gui(int px, int py) {
     tb_rect_t bounds;
     tb_rect_t menu;
     tb_rect_t button;
+    display_metrics_t metrics;
 
     if (!taskbar_get_bounds(&bounds)) return 0;
+    if (display_get_metrics(&metrics) != OK) return 0;
 
     // Se menu aberto, verifica clique no menu
     if (menu_open) {
@@ -904,9 +951,10 @@ static int taskbar_handle_click_gui(int px, int py) {
             return 1;
         }
         if (taskbar_point_in_rect(px, py, &menu)) {
-            int rel_y = py - (menu.y + 5);
-            if (rel_y >= 0 && rel_y < MENU_ITEM_COUNT * FONT_HEIGHT) {
-                int selected = rel_y / FONT_HEIGHT;
+            int rel_y = py - (menu.y + (int)display_scale_px(5));
+            if (rel_y >= 0 &&
+                rel_y < MENU_ITEM_COUNT * metrics.row_height) {
+                int selected = rel_y / metrics.row_height;
                 taskbar_reset_menu();
                 switch (selected) {
                     case 0: return 7;  /* Desktop */

@@ -9,6 +9,7 @@
 #include "ui/gui.h"
 #include "ui/taskbar.h"
 #include "ui/icons.h"
+#include "ui/display.h"
 
 #define DESKTOP_MODERN_MARGIN 24
 #define DESKTOP_MODERN_TOP_MARGIN 24
@@ -18,7 +19,6 @@
 #define DESKTOP_MODERN_GAP_Y 16
 #define DESKTOP_MODERN_MAX_COLUMNS 5
 #define DESKTOP_MODERN_SYMBOL_SCALE 2
-#define DESKTOP_MODERN_BMP_SIZE 32
 #define DESKTOP_DOUBLE_CLICK_TICKS 25
 #define DESKTOP_DRAG_THRESHOLD 4
 #define DESKTOP_MODERN_MAX_SLOTS (DESKTOP_MAX_ICONS * 2)
@@ -61,7 +61,8 @@ static icon_entry_t* desktop_get_icon_entry(desktop_app_type_t type) {
     }
 }
 
-static int desktop_draw_modern_bitmap(desktop_app_type_t type, int x, int y) {
+static int desktop_draw_modern_bitmap(desktop_app_type_t type, int x, int y,
+                                      uint32_t size) {
     icon_desktop_id_t id;
 
     switch (type) {
@@ -72,7 +73,7 @@ static int desktop_draw_modern_bitmap(desktop_app_type_t type, int x, int y) {
             LOG_ERROR("DESKTOP", "Tipo de bitmap moderno invalido");
             return ERR_NOT_FOUND;
     }
-    return icons_draw_desktop_bitmap(id, x, y);
+    return icons_draw_desktop_bitmap_resized(id, x, y, size);
 }
 
 static int desktop_text_length(const char* text) {
@@ -91,12 +92,14 @@ static uint32_t desktop_modern_background(void) {
 static int desktop_modern_get_columns(const tb_rect_t* work_area) {
     int available_width;
     int columns;
+    int margin = (int)display_scale_px(DESKTOP_MODERN_MARGIN);
+    int gap_x = (int)display_scale_px(DESKTOP_MODERN_GAP_X);
+    int card_width = (int)display_scale_px(DESKTOP_MODERN_CARD_WIDTH);
 
     if (!work_area) return 1;
 
-    available_width = work_area->width - (DESKTOP_MODERN_MARGIN * 2);
-    columns = (available_width + DESKTOP_MODERN_GAP_X) /
-              (DESKTOP_MODERN_CARD_WIDTH + DESKTOP_MODERN_GAP_X);
+    available_width = work_area->width - (margin * 2);
+    columns = (available_width + gap_x) / (card_width + gap_x);
 
     if (columns < 1) columns = 1;
     if (columns > DESKTOP_MODERN_MAX_COLUMNS) {
@@ -123,6 +126,12 @@ static int desktop_build_modern_slots(const tb_rect_t* work_area) {
     int limit_y;
     int row = 0;
     int available_slots = 0;
+    int margin = (int)display_scale_px(DESKTOP_MODERN_MARGIN);
+    int top_margin = (int)display_scale_px(DESKTOP_MODERN_TOP_MARGIN);
+    int card_width = (int)display_scale_px(DESKTOP_MODERN_CARD_WIDTH);
+    int card_height = (int)display_scale_px(DESKTOP_MODERN_CARD_HEIGHT);
+    int gap_x = (int)display_scale_px(DESKTOP_MODERN_GAP_X);
+    int gap_y = (int)display_scale_px(DESKTOP_MODERN_GAP_Y);
 
     if (!work_area) {
         LOG_ERROR("DESKTOP", "Area de trabalho nula para icones modernos");
@@ -133,30 +142,28 @@ static int desktop_build_modern_slots(const tb_rect_t* work_area) {
         has_reserved_area = 1;
     }
 
-    start_x = work_area->x + DESKTOP_MODERN_MARGIN;
-    start_y = work_area->y + DESKTOP_MODERN_TOP_MARGIN;
-    limit_x = work_area->x + work_area->width - DESKTOP_MODERN_MARGIN;
-    limit_y = work_area->y + work_area->height - DESKTOP_MODERN_MARGIN;
+    start_x = work_area->x + margin;
+    start_y = work_area->y + top_margin;
+    limit_x = work_area->x + work_area->width - margin;
+    limit_y = work_area->y + work_area->height - margin;
     modern_slot_count = 0;
 
     for (int y = start_y;
-         y + DESKTOP_MODERN_CARD_HEIGHT <= limit_y &&
+         y + card_height <= limit_y &&
          modern_slot_count < DESKTOP_MODERN_MAX_SLOTS;
-         y += DESKTOP_MODERN_CARD_HEIGHT + DESKTOP_MODERN_GAP_Y, row++) {
+         y += card_height + gap_y, row++) {
         for (int col = 0; col < modern_columns &&
              modern_slot_count < DESKTOP_MODERN_MAX_SLOTS; col++) {
-            int x = start_x + col *
-                    (DESKTOP_MODERN_CARD_WIDTH + DESKTOP_MODERN_GAP_X);
+            int x = start_x + col * (card_width + gap_x);
 
-            if (x + DESKTOP_MODERN_CARD_WIDTH > limit_x) continue;
+            if (x + card_width > limit_x) continue;
             desktop_slots[modern_slot_count].x = x;
             desktop_slots[modern_slot_count].y = y;
             desktop_slots[modern_slot_count].grid_index =
                 row * modern_columns + col;
             desktop_slots[modern_slot_count].available =
                 !has_reserved_area || !desktop_rects_intersect(
-                    x, y, DESKTOP_MODERN_CARD_WIDTH,
-                    DESKTOP_MODERN_CARD_HEIGHT, &reserved_area);
+                    x, y, card_width, card_height, &reserved_area);
             if (desktop_slots[modern_slot_count].available) available_slots++;
             modern_slot_count++;
         }
@@ -190,6 +197,8 @@ static int desktop_find_free_slot(const uint8_t* used, int start_slot) {
 
 static void desktop_assign_modern_slots(void) {
     uint8_t used[DESKTOP_MODERN_MAX_SLOTS] = {0};
+    int card_width = (int)display_scale_px(DESKTOP_MODERN_CARD_WIDTH);
+    int card_height = (int)display_scale_px(DESKTOP_MODERN_CARD_HEIGHT);
 
     for (int i = 0; i < icon_count; i++) {
         int slot = desktop_find_slot_by_grid(desktop_icon_slots[i]);
@@ -206,8 +215,8 @@ static void desktop_assign_modern_slots(void) {
         used[slot] = 1;
         desktop_icons[i].modern_x = desktop_slots[slot].x;
         desktop_icons[i].modern_y = desktop_slots[slot].y;
-        desktop_icons[i].modern_width = DESKTOP_MODERN_CARD_WIDTH;
-        desktop_icons[i].modern_height = DESKTOP_MODERN_CARD_HEIGHT;
+        desktop_icons[i].modern_width = card_width;
+        desktop_icons[i].modern_height = card_height;
     }
 }
 
@@ -283,22 +292,32 @@ static void draw_single_icon_classic(desktop_icon_t* icon) {
 
 static void draw_single_icon_modern(desktop_icon_t* icon) {
     icon_entry_t* entry = desktop_get_icon_entry(icon->type);
+    display_metrics_t metrics;
+    uint32_t label_width;
+    uint32_t label_height;
+
     if (!entry) {
         LOG_ERROR("DESKTOP", "Registro do icone moderno nao encontrado");
         return;
     }
+    if (display_get_metrics(&metrics) != OK) return;
 
     uint32_t background = icon->selected ? GUI_COLOR_TITLE_BG : GUI_COLOR_BG;
     uint32_t foreground = icon->selected ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
-    int symbol_width = FONT_WIDTH * DESKTOP_MODERN_SYMBOL_SCALE;
+    int symbol_scale = metrics.scale == DISPLAY_SCALE_LARGE ? 3 :
+                       DESKTOP_MODERN_SYMBOL_SCALE;
+    int symbol_width = FONT_WIDTH * symbol_scale;
     int symbol_x = icon->modern_x + (icon->modern_width - symbol_width) / 2;
-    int symbol_y = icon->modern_y + 14;
+    int symbol_y = icon->modern_y + (int)display_scale_px(14);
     int bitmap_x = icon->modern_x +
-                   (icon->modern_width - DESKTOP_MODERN_BMP_SIZE) / 2;
-    int bitmap_y = icon->modern_y + 10;
-    int label_width = desktop_text_length(icon->name) * FONT_WIDTH;
-    int label_x = icon->modern_x + (icon->modern_width - label_width) / 2;
-    int label_y = icon->modern_y + icon->modern_height - FONT_HEIGHT - 10;
+                   (icon->modern_width - metrics.icon_size) / 2;
+    int bitmap_y = icon->modern_y + (int)display_scale_px(10);
+    if (gui_measure_scaled_text(icon->name, &label_width,
+                                &label_height) != OK) return;
+    int label_x = icon->modern_x +
+                  (icon->modern_width - (int)label_width) / 2;
+    int label_y = icon->modern_y + icon->modern_height -
+                  (int)label_height - (int)display_scale_px(10);
 
     gui_draw_panel(icon->modern_x, icon->modern_y,
                    icon->modern_width, icon->modern_height,
@@ -306,13 +325,16 @@ static void draw_single_icon_modern(desktop_icon_t* icon) {
 
     vesa_color_t symbol_color;
     symbol_color.raw = foreground;
-    if (desktop_draw_modern_bitmap(icon->type, bitmap_x, bitmap_y) != OK) {
+    if (desktop_draw_modern_bitmap(icon->type, bitmap_x, bitmap_y,
+                                   metrics.icon_size) != OK) {
         vesa_draw_char(symbol_x, symbol_y, entry->ch, symbol_color,
-                       DESKTOP_MODERN_SYMBOL_SCALE);
+                       symbol_scale);
     }
 
-    if (label_x < icon->modern_x + 4) label_x = icon->modern_x + 4;
-    gui_draw_text(label_x, label_y, icon->name, foreground);
+    if (label_x < icon->modern_x + (int)display_scale_px(4)) {
+        label_x = icon->modern_x + (int)display_scale_px(4);
+    }
+    gui_draw_scaled_text(label_x, label_y, icon->name, foreground);
 }
 
 static void desktop_draw_icons_classic(void) {
@@ -581,8 +603,10 @@ void desktop_add_icon(const char* name, desktop_app_type_t type) {
     desktop_icons[icon_count].y = DESKTOP_START_Y + row * DESKTOP_ICON_SPACING_Y;
     desktop_icons[icon_count].modern_x = 0;
     desktop_icons[icon_count].modern_y = 0;
-    desktop_icons[icon_count].modern_width = DESKTOP_MODERN_CARD_WIDTH;
-    desktop_icons[icon_count].modern_height = DESKTOP_MODERN_CARD_HEIGHT;
+    desktop_icons[icon_count].modern_width =
+        (int)display_scale_px(DESKTOP_MODERN_CARD_WIDTH);
+    desktop_icons[icon_count].modern_height =
+        (int)display_scale_px(DESKTOP_MODERN_CARD_HEIGHT);
     desktop_icons[icon_count].selected = (icon_count == selected_icon) ? 1 : 0;
     desktop_icon_slots[icon_count] = icon_count;
 
@@ -664,6 +688,7 @@ int desktop_is_active(void) {
 
 int desktop_set_mode(desktop_mode_t mode) {
     vesa_mode_t* vesa_mode = vesa_get_mode();
+    display_metrics_t metrics;
 
     if (mode != DESKTOP_MODE_CLASSIC && mode != DESKTOP_MODE_MODERN) {
         LOG_ERROR("DESKTOP", "Modo de Desktop invalido");
@@ -671,8 +696,10 @@ int desktop_set_mode(desktop_mode_t mode) {
     }
 
     if (mode == DESKTOP_MODE_MODERN &&
-        (!vesa_mode || !vesa_mode->initialized)) {
-        LOG_ERROR("DESKTOP", "Modo moderno requer VESA");
+        (!vesa_mode || !vesa_mode->initialized ||
+         !vesa_has_backbuffer() ||
+         display_get_metrics(&metrics) != OK || !metrics.available)) {
+        LOG_ERROR("DESKTOP", "Modo moderno requer display VESA acessivel");
         desktop_mode = DESKTOP_MODE_CLASSIC;
         return ERR_NOT_FOUND;
     }

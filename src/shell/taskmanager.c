@@ -20,6 +20,11 @@
 #include "core/errors.h"
 #include "core/power.h"
 #include "ui/gui.h"
+#include "ui/display.h"
+
+/* O Task Manager usa estas primitivas apenas na interface Modern. */
+#define gui_draw_text gui_draw_scaled_text
+#define gui_draw_button gui_draw_scaled_button
 
 #define TSKMGR_WIDTH  78
 #define TSKMGR_HEIGHT 23
@@ -45,21 +50,28 @@
 #define TSKMGR_CLASSIC_PROCESS_ROWS 13
 #define TSKMGR_CLASSIC_THREAD_ROWS 11
 
-#define TSKMGR_GUI_MIN_WIDTH 600
-#define TSKMGR_GUI_MIN_HEIGHT 420
+#define TSKMGR_GUI_MIN_WIDTH 720
+#define TSKMGR_GUI_MIN_HEIGHT 500
 #define TSKMGR_GUI_DEFAULT_WIDTH 760
 #define TSKMGR_GUI_DEFAULT_HEIGHT 520
-#define TSKMGR_GUI_TITLE_HEIGHT 22
-#define TSKMGR_GUI_CONTROL_SIZE 16
-#define TSKMGR_GUI_MARGIN 12
-#define TSKMGR_GUI_TAB_HEIGHT 24
-#define TSKMGR_GUI_ROW_HEIGHT 24
-#define TSKMGR_GUI_LIST_HEADER_HEIGHT 36
-#define TSKMGR_GUI_THREADS_ROW_OFFSET 70
+#define TSKMGR_GUI_PX(value) ((int)display_scale_px(value))
+#define TSKMGR_GUI_TITLE_HEIGHT ((int)display_scale_px(24))
+#define TSKMGR_GUI_CONTROL_SIZE ((int)display_scale_px(24))
+#define TSKMGR_GUI_MARGIN ((int)display_scale_px(12))
+#define TSKMGR_GUI_TAB_HEIGHT ((int)display_scale_px(24))
+#define TSKMGR_GUI_ROW_HEIGHT ((int)display_scale_px(24))
+#define TSKMGR_GUI_LIST_HEADER_HEIGHT ((int)display_scale_px(36))
+#define TSKMGR_GUI_THREADS_ROW_OFFSET ((int)display_scale_px(70))
+#define TSKMGR_GUI_TABS_TOP ((int)display_scale_px(32))
+#define TSKMGR_GUI_CONTENT_TOP ((int)display_scale_px(68))
+#define TSKMGR_GUI_PROCESS_LIST_TOP \
+    (TSKMGR_GUI_CONTENT_TOP + (int)display_scale_px(40))
+#define TSKMGR_GUI_PANEL_BOTTOM ((int)display_scale_px(142))
 #define TSKMGR_GUI_MAX_VISIBLE_ROWS 14
-#define TSKMGR_GUI_DETAIL_WIDTH 250
-#define TSKMGR_GUI_DETAIL_MIN_WIDTH 210
-#define TSKMGR_GUI_LIST_MIN_WIDTH 360
+#define TSKMGR_GUI_DETAIL_WIDTH TSKMGR_GUI_PX(250)
+#define TSKMGR_GUI_DETAIL_MIN_WIDTH TSKMGR_GUI_PX(210)
+#define TSKMGR_GUI_LIST_MIN_WIDTH TSKMGR_GUI_PX(450)
+#define TSKMGR_GUI_DETAIL_GAP TSKMGR_GUI_PX(8)
 
 static int is_open = 0;
 static int selected_tab = 0;
@@ -116,8 +128,10 @@ static void taskmgr_clamp_window(void);
 
 static const wm_hosted_app_t taskmgr_hosted_app = {
     WM_APP_TASKMGR, "ZephyrOS Task Manager", "TaskMgr",
-    WM_HOSTED_MIN_WIDTH, WM_HOSTED_MIN_HEIGHT,
-    TSKMGR_GUI_DEFAULT_WIDTH + 4, TSKMGR_GUI_DEFAULT_HEIGHT + 28,
+    TSKMGR_GUI_MIN_WIDTH + WM_HOSTED_FRAME_MAX_WIDTH,
+    TSKMGR_GUI_MIN_HEIGHT + WM_HOSTED_FRAME_MAX_HEIGHT,
+    TSKMGR_GUI_DEFAULT_WIDTH + WM_HOSTED_FRAME_MAX_WIDTH,
+    TSKMGR_GUI_DEFAULT_HEIGHT + WM_HOSTED_FRAME_MAX_HEIGHT,
     WM_KEY_REDRAW_WINDOW_MANAGER,
     taskmgr_hosted_draw, taskmgr_gui_handle_key, taskmgr_hosted_mouse,
     taskmgr_hosted_close
@@ -1032,7 +1046,8 @@ static void taskmgr_clamp_window(void) {
 }
 
 static int taskmgr_gui_visible_rows(void) {
-    int rows = (gui_height - 250) / TSKMGR_GUI_ROW_HEIGHT;
+    int rows = (gui_height - (int)display_scale_px(250)) /
+               TSKMGR_GUI_ROW_HEIGHT;
     if (rows < 1) rows = 1;
     if (rows > TSKMGR_GUI_MAX_VISIBLE_ROWS) rows = TSKMGR_GUI_MAX_VISIBLE_ROWS;
     return rows;
@@ -1041,21 +1056,28 @@ static int taskmgr_gui_visible_rows(void) {
 static int taskmgr_gui_has_side_details(void) {
     int content_width = gui_width - (TSKMGR_GUI_MARGIN * 2);
     return content_width >= TSKMGR_GUI_LIST_MIN_WIDTH +
-           TSKMGR_GUI_DETAIL_MIN_WIDTH + 12;
+           TSKMGR_GUI_DETAIL_MIN_WIDTH + TSKMGR_GUI_PX(16);
 }
 
 static int taskmgr_gui_process_list_y(void) {
-    return gui_y + 104;
+    return gui_y + TSKMGR_GUI_PROCESS_LIST_TOP;
 }
 
 static int taskmgr_gui_process_list_height(void) {
-    int height = gui_height - 142 - 36;
-    if (!taskmgr_gui_has_side_details()) height -= 90;
+    display_metrics_t metrics;
+    int height = gui_height + TSKMGR_GUI_CONTENT_TOP -
+                 TSKMGR_GUI_PANEL_BOTTOM - TSKMGR_GUI_PROCESS_LIST_TOP;
+    if (!taskmgr_gui_has_side_details() &&
+        (display_get_metrics(&metrics) != OK ||
+         metrics.scale != DISPLAY_SCALE_LARGE)) {
+        height -= (int)display_scale_px(90);
+    }
     return height;
 }
 
 static int taskmgr_gui_process_visible_rows(void) {
-    int rows = (taskmgr_gui_process_list_height() - 36) / TSKMGR_GUI_ROW_HEIGHT;
+    int rows = (taskmgr_gui_process_list_height() -
+                TSKMGR_GUI_LIST_HEADER_HEIGHT) / TSKMGR_GUI_ROW_HEIGHT;
     if (rows < 1) rows = 1;
     if (rows > TSKMGR_GUI_MAX_VISIBLE_ROWS) rows = TSKMGR_GUI_MAX_VISIBLE_ROWS;
     return rows;
@@ -1150,22 +1172,32 @@ static uint32_t taskmgr_gui_state_color(process_state_t state) {
 
 static void taskmgr_gui_draw_tabs(void) {
     const char* names[] = {"Processos", "Memoria", "Threads"};
+    int tab_width = (int)display_scale_px(112);
+    int tab_gap = (int)display_scale_px(4);
+    display_metrics_t metrics;
     int x = gui_x + TSKMGR_GUI_MARGIN;
-    int y = gui_y + 32;
+    int y = gui_y + TSKMGR_GUI_TABS_TOP;
+
+    if (display_get_metrics(&metrics) != OK) return;
 
     for (int i = 0; i < 3; i++) {
         uint32_t background = selected_tab == i ? GUI_COLOR_TITLE_BG : GUI_COLOR_BG;
         uint32_t text_color = selected_tab == i ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
-        gui_draw_panel((uint32_t)x, (uint32_t)y, 112, TSKMGR_GUI_TAB_HEIGHT,
-                       background, selected_tab == i);
-        gui_draw_text((uint32_t)(x + 16), (uint32_t)(y + 4), names[i], text_color);
-        x += 116;
+        gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)tab_width,
+                       TSKMGR_GUI_TAB_HEIGHT,
+                        background, selected_tab == i);
+        gui_draw_text((uint32_t)(x + metrics.spacing),
+                      (uint32_t)(y +
+                          (TSKMGR_GUI_TAB_HEIGHT - metrics.font_height) / 2),
+                      names[i], text_color);
+        x += tab_width + tab_gap;
     }
 }
 
 static void taskmgr_gui_draw_process_details(process_t* process, int x, int y,
                                              int width, int height) {
     char name[19];
+    int right_x = x + width / 2;
 
     gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)width, (uint32_t)height,
                    GUI_COLOR_BG, 0);
@@ -1177,50 +1209,67 @@ static void taskmgr_gui_draw_process_details(process_t* process, int x, int y,
         return;
     }
     taskmgr_gui_copy_text(name, sizeof(name), process->name);
+    if (width < TSKMGR_GUI_PX(400)) name[8] = '\0';
 
     if (height < 130) {
         gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 32), "PID:", GUI_COLOR_TEXT);
         taskmgr_gui_draw_num(x + 48, y + 32, process->pid, GUI_COLOR_TEXT);
-        gui_draw_text((uint32_t)(x + 128), (uint32_t)(y + 32), "TCK:", GUI_COLOR_TEXT);
-        taskmgr_gui_draw_num(x + 168, y + 32, tick_usage[process - processes], GUI_COLOR_TEXT);
-        gui_draw_text((uint32_t)(x + 192), (uint32_t)(y + 32), "%", GUI_COLOR_TEXT);
+        gui_draw_text((uint32_t)right_x, (uint32_t)(y + 32),
+                      "TCK:", GUI_COLOR_TEXT);
+        taskmgr_gui_draw_num(right_x + TSKMGR_GUI_PX(40), y + 32,
+                             tick_usage[process - processes], GUI_COLOR_TEXT);
+        gui_draw_text((uint32_t)(right_x + TSKMGR_GUI_PX(64)),
+                      (uint32_t)(y + 32), "%", GUI_COLOR_TEXT);
         gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 56), "Nome:", GUI_COLOR_TEXT);
         gui_draw_text((uint32_t)(x + 48), (uint32_t)(y + 56), name, GUI_COLOR_TEXT);
         gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 80), "Estado:", GUI_COLOR_TEXT);
         gui_draw_text((uint32_t)(x + 66), (uint32_t)(y + 80),
                       taskmgr_process_state_name(process->state), GUI_COLOR_TEXT);
-        gui_draw_text((uint32_t)(x + 128), (uint32_t)(y + 80), "Wait:", GUI_COLOR_TEXT);
-        taskmgr_gui_draw_num(x + 176, y + 80, process->wait_ticks, GUI_COLOR_TEXT);
+        gui_draw_text((uint32_t)right_x, (uint32_t)(y + 80),
+                      "Wait:", GUI_COLOR_TEXT);
+        taskmgr_gui_draw_num(right_x + TSKMGR_GUI_PX(48), y + 80,
+                             process->wait_ticks, GUI_COLOR_TEXT);
         return;
     }
 
     gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 34), "PID:", GUI_COLOR_TEXT);
     taskmgr_gui_draw_num(x + 48, y + 34, process->pid, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 128), (uint32_t)(y + 34), "TCK:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 168, y + 34, tick_usage[process - processes], GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 192), (uint32_t)(y + 34), "%", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)right_x, (uint32_t)(y + 34),
+                  "TCK:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(right_x + TSKMGR_GUI_PX(40), y + 34,
+                         tick_usage[process - processes], GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(right_x + TSKMGR_GUI_PX(64)),
+                  (uint32_t)(y + 34), "%", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 58), "Nome:", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 48), (uint32_t)(y + 58), name, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 128), (uint32_t)(y + 58), "Tipo:", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 168), (uint32_t)(y + 58),
+    gui_draw_text((uint32_t)right_x, (uint32_t)(y + 58),
+                  "Tipo:", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(right_x + TSKMGR_GUI_PX(40)),
+                  (uint32_t)(y + 58),
                   taskmgr_process_type(process), GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 82), "Estado:", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 66), (uint32_t)(y + 82),
                   taskmgr_process_state_name(process->state), GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 128), (uint32_t)(y + 82), "Wait:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 176, y + 82, process->wait_ticks, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)right_x, (uint32_t)(y + 82),
+                  "Wait:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(right_x + TSKMGR_GUI_PX(48), y + 82,
+                         process->wait_ticks, GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 106), "Tipo:", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 50), (uint32_t)(y + 106),
                   taskmgr_process_type(process), GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 128), (uint32_t)(y + 106), "Tempo:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 184, y + 106,
+    gui_draw_text((uint32_t)right_x, (uint32_t)(y + 106),
+                  "Tempo:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(right_x + TSKMGR_GUI_PX(56), y + 106,
                          process->total_ticks / TSKMGR_TICKS_PER_SECOND,
                          GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 208), (uint32_t)(y + 106), "s", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(right_x + TSKMGR_GUI_PX(80)),
+                  (uint32_t)(y + 106), "s", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 130), "Ticks:", GUI_COLOR_TEXT);
     taskmgr_gui_draw_num(x + 56, y + 130, process->total_ticks, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 128), (uint32_t)(y + 130), "Prox:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 176, y + 130, process->next_pid, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)right_x, (uint32_t)(y + 130),
+                  "Prox:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(right_x + TSKMGR_GUI_PX(48), y + 130,
+                         process->next_pid, GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 154), "EIP:", GUI_COLOR_TEXT);
     taskmgr_gui_draw_hex(x + 50, y + 154, process->context.eip, GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 178), "ESP:", GUI_COLOR_TEXT);
@@ -1238,9 +1287,9 @@ static void taskmgr_gui_draw_processes(void) {
     int indexes[MAX_PROCESSES];
     int count = taskmgr_collect_processes(indexes);
     int x = gui_x + TSKMGR_GUI_MARGIN;
-    int y = gui_y + 68;
+    int y = gui_y + TSKMGR_GUI_CONTENT_TOP;
     int width = gui_width - (TSKMGR_GUI_MARGIN * 2);
-    int panel_height = gui_height - 142;
+    int panel_height = gui_height - TSKMGR_GUI_PANEL_BOTTOM;
     int list_y = taskmgr_gui_process_list_y();
     int list_height = taskmgr_gui_process_list_height();
     int list_width = width;
@@ -1261,43 +1310,68 @@ static void taskmgr_gui_draw_processes(void) {
 
     gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)width,
                    (uint32_t)panel_height, GUI_COLOR_BG, 0);
-    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 8), "Processos:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 94, y + 8, (uint32_t)count, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 140), (uint32_t)(y + 8), "Prontos:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 212, y + 8, ready, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 250), (uint32_t)(y + 8), "Rodando:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 322, y + 8, running, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 350), (uint32_t)(y + 8), "TCK soma:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 430, y + 8, tick_sum, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 454), (uint32_t)(y + 8), "%", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 24), "Bloq:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 58, y + 24, blocked, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 110), (uint32_t)(y + 24), "Zombie:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 174, y + 24, zombie, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 230), (uint32_t)(y + 24), "Threads:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 302, y + 24, thread_get_count(), GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(10)),
+                  (uint32_t)(y + TSKMGR_GUI_PX(8)), "Processos:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(94), y + TSKMGR_GUI_PX(8),
+                         (uint32_t)count, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(140)),
+                  (uint32_t)(y + TSKMGR_GUI_PX(8)), "Prontos:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(212), y + TSKMGR_GUI_PX(8),
+                         ready, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(250)),
+                  (uint32_t)(y + TSKMGR_GUI_PX(8)), "Rodando:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(322), y + TSKMGR_GUI_PX(8),
+                         running, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(350)),
+                  (uint32_t)(y + TSKMGR_GUI_PX(8)), "TCK soma:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(430), y + TSKMGR_GUI_PX(8),
+                         tick_sum, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(454)),
+                  (uint32_t)(y + TSKMGR_GUI_PX(8)), "%", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(10)),
+                  (uint32_t)(y + TSKMGR_GUI_PX(24)), "Bloq:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(58), y + TSKMGR_GUI_PX(24),
+                         blocked, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(110)),
+                  (uint32_t)(y + TSKMGR_GUI_PX(24)), "Zombie:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(174), y + TSKMGR_GUI_PX(24),
+                         zombie, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(230)),
+                  (uint32_t)(y + TSKMGR_GUI_PX(24)), "Threads:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(302), y + TSKMGR_GUI_PX(24),
+                         thread_get_count(), GUI_COLOR_TEXT);
 
     if (taskmgr_gui_has_side_details()) {
-        list_width = width - TSKMGR_GUI_DETAIL_WIDTH - 8;
-        detail_x = x + list_width + 8;
+        list_width = width - TSKMGR_GUI_DETAIL_WIDTH - TSKMGR_GUI_DETAIL_GAP;
+        detail_x = x + list_width + TSKMGR_GUI_DETAIL_GAP;
     }
     gui_draw_panel((uint32_t)x, (uint32_t)list_y, (uint32_t)list_width,
                    (uint32_t)list_height, GUI_COLOR_BG, 0);
-    gui_draw_text((uint32_t)(x + 10), (uint32_t)(list_y + 8), "PID", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 56), (uint32_t)(list_y + 8), "Nome", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 170), (uint32_t)(list_y + 8), "Estado", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 260), (uint32_t)(list_y + 8), "CPU", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 310), (uint32_t)(list_y + 8), "Tipo", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 370), (uint32_t)(list_y + 8), "Tempo", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 440), (uint32_t)(list_y + 8), "Wait", GUI_COLOR_TEXT);
-    vesa_draw_hline((uint32_t)(x + 6), (uint32_t)(list_y + 30),
-                    (uint32_t)(list_width - 12), taskmgr_gui_color(GUI_COLOR_BORDER_D));
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(10)),
+                  (uint32_t)(list_y + TSKMGR_GUI_PX(8)), "PID", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(56)),
+                  (uint32_t)(list_y + TSKMGR_GUI_PX(8)), "Nome", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(170)),
+                  (uint32_t)(list_y + TSKMGR_GUI_PX(8)), "Estado", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(260)),
+                  (uint32_t)(list_y + TSKMGR_GUI_PX(8)), "CPU", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(310)),
+                  (uint32_t)(list_y + TSKMGR_GUI_PX(8)), "Tipo", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(370)),
+                  (uint32_t)(list_y + TSKMGR_GUI_PX(8)), "Tempo", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(440)),
+                  (uint32_t)(list_y + TSKMGR_GUI_PX(8)), "Wait", GUI_COLOR_TEXT);
+    vesa_draw_hline((uint32_t)(x + TSKMGR_GUI_PX(6)),
+                    (uint32_t)(list_y + TSKMGR_GUI_PX(30)),
+                    (uint32_t)(list_width - TSKMGR_GUI_PX(12)),
+                    taskmgr_gui_color(GUI_COLOR_BORDER_D));
 
     for (int row = 0; row < taskmgr_gui_process_visible_rows() &&
          scroll_offset + row < count; row++) {
         int absolute_row = scroll_offset + row;
         process_t* process = &processes[indexes[absolute_row]];
-        int row_y = list_y + 36 + row * TSKMGR_GUI_ROW_HEIGHT;
+        int row_y = list_y + TSKMGR_GUI_LIST_HEADER_HEIGHT +
+                    row * TSKMGR_GUI_ROW_HEIGHT;
         uint32_t text_color = absolute_row == selected_row ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
         uint32_t seconds = process->total_ticks / TSKMGR_TICKS_PER_SECOND;
         char name[14];
@@ -1307,28 +1381,42 @@ static void taskmgr_gui_draw_processes(void) {
         if (absolute_row == selected_row) {
             vesa_color_t selection;
             selection.raw = GUI_COLOR_TITLE_BG;
-            vesa_fill_rect((uint32_t)(x + 5), (uint32_t)row_y,
-                           (uint32_t)(list_width - 10), TSKMGR_GUI_ROW_HEIGHT, selection);
+            vesa_fill_rect((uint32_t)(x + TSKMGR_GUI_PX(5)), (uint32_t)row_y,
+                           (uint32_t)(list_width - TSKMGR_GUI_PX(10)),
+                           TSKMGR_GUI_ROW_HEIGHT, selection);
             prop_pid = (int)process->pid;
         }
 
         taskmgr_gui_copy_text(name, sizeof(name), process->name);
-        taskmgr_gui_draw_num(x + 10, row_y + 4, process->pid, text_color);
-        gui_draw_text((uint32_t)(x + 56), (uint32_t)(row_y + 4), name, text_color);
-        gui_draw_text((uint32_t)(x + 170), (uint32_t)(row_y + 4),
+        taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(10),
+                             row_y + TSKMGR_GUI_PX(4),
+                             process->pid, text_color);
+        gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(56)),
+                      (uint32_t)(row_y + TSKMGR_GUI_PX(4)), name, text_color);
+        gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(170)),
+                      (uint32_t)(row_y + TSKMGR_GUI_PX(4)),
                       taskmgr_process_state_name(process->state), state_color);
-        taskmgr_gui_draw_num(x + 260, row_y + 4, tick_usage[indexes[absolute_row]], text_color);
-        gui_draw_text((uint32_t)(x + 284), (uint32_t)(row_y + 4), "%", text_color);
-        gui_draw_text((uint32_t)(x + 310), (uint32_t)(row_y + 4),
+        taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(260),
+                             row_y + TSKMGR_GUI_PX(4),
+                             tick_usage[indexes[absolute_row]], text_color);
+        gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(284)),
+                      (uint32_t)(row_y + TSKMGR_GUI_PX(4)), "%", text_color);
+        gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(310)),
+                      (uint32_t)(row_y + TSKMGR_GUI_PX(4)),
                       taskmgr_process_type(process), text_color);
-        taskmgr_gui_draw_num(x + 370, row_y + 4, seconds, text_color);
-        gui_draw_text((uint32_t)(x + 370 + num_digits(seconds) * 8),
-                      (uint32_t)(row_y + 4), "s", text_color);
-        taskmgr_gui_draw_num(x + 440, row_y + 4, process->wait_ticks, text_color);
+        taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(370),
+                             row_y + TSKMGR_GUI_PX(4), seconds, text_color);
+        gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(370) +
+                      num_digits(seconds) * TSKMGR_GUI_PX(8)),
+                      (uint32_t)(row_y + TSKMGR_GUI_PX(4)), "s", text_color);
+        taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(440),
+                             row_y + TSKMGR_GUI_PX(4),
+                             process->wait_ticks, text_color);
     }
 
     if (!count) {
-        gui_draw_text((uint32_t)(x + 16), (uint32_t)(list_y + 48),
+        gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(16)),
+                      (uint32_t)(list_y + TSKMGR_GUI_PX(48)),
                       "Nenhum processo ativo", GUI_COLOR_TEXT);
     }
 
@@ -1337,9 +1425,12 @@ static void taskmgr_gui_draw_processes(void) {
         taskmgr_gui_draw_process_details(selected, detail_x, list_y,
                                          TSKMGR_GUI_DETAIL_WIDTH, list_height);
     } else {
-        int detail_y = list_y + list_height + 6;
+        int detail_y = list_y + list_height + TSKMGR_GUI_PX(6);
         int detail_height = y + panel_height - detail_y;
-        taskmgr_gui_draw_process_details(selected, x, detail_y, list_width, detail_height);
+        if (detail_height >= TSKMGR_GUI_PX(80)) {
+            taskmgr_gui_draw_process_details(selected, x, detail_y,
+                                             list_width, detail_height);
+        }
     }
 }
 
@@ -1353,13 +1444,15 @@ static void taskmgr_gui_draw_memory(void) {
     uint32_t used_percent = taskmgr_percent(used, total);
     ata_device_t* device = ata_get_device();
     int x = gui_x + TSKMGR_GUI_MARGIN + 18;
-    int y = gui_y + 82;
+    int y = gui_y + TSKMGR_GUI_CONTENT_TOP + TSKMGR_GUI_PX(14);
     uint32_t bar_color = used_percent > 80 ? 0x00800000 :
                          (used_percent > 60 ? 0x00808000 : 0x00008000);
 
-    gui_draw_panel((uint32_t)(gui_x + TSKMGR_GUI_MARGIN), (uint32_t)(gui_y + 68),
+    gui_draw_panel((uint32_t)(gui_x + TSKMGR_GUI_MARGIN),
+                   (uint32_t)(gui_y + TSKMGR_GUI_CONTENT_TOP),
                    (uint32_t)(gui_width - TSKMGR_GUI_MARGIN * 2),
-                   (uint32_t)(gui_height - 142), GUI_COLOR_BG, 0);
+                   (uint32_t)(gui_height - TSKMGR_GUI_PANEL_BOTTOM),
+                   GUI_COLOR_BG, 0);
     gui_draw_text((uint32_t)x, (uint32_t)y, "Memoria fisica", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)x, (uint32_t)(y + 34), "Total:", GUI_COLOR_TEXT);
     taskmgr_gui_draw_num(x + 120, y + 34, total / 1024, GUI_COLOR_TEXT);
@@ -1392,7 +1485,7 @@ static void taskmgr_gui_draw_memory(void) {
     taskmgr_gui_draw_num(x + 380, y + 220, ata_get_write_ops(), GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)x, (uint32_t)(y + 248), "Modelo:", GUI_COLOR_TEXT);
     if (device && device->present) {
-        char model[17];
+        char model[12];
         taskmgr_gui_copy_text(model, sizeof(model), device->model);
         gui_draw_text((uint32_t)(x + 120), (uint32_t)(y + 248), model, GUI_COLOR_TEXT);
     } else {
@@ -1412,9 +1505,9 @@ static void taskmgr_gui_draw_memory(void) {
 
 static void taskmgr_gui_draw_threads(void) {
     int x = gui_x + TSKMGR_GUI_MARGIN;
-    int y = gui_y + 68;
+    int y = gui_y + TSKMGR_GUI_CONTENT_TOP;
     int width = gui_width - TSKMGR_GUI_MARGIN * 2;
-    int panel_height = gui_height - 142;
+    int panel_height = gui_height - TSKMGR_GUI_PANEL_BOTTOM;
     int visible_rows = taskmgr_gui_visible_rows();
     int total_threads = 0;
     int running_threads = 0;
@@ -1434,45 +1527,72 @@ static void taskmgr_gui_draw_threads(void) {
     if (selected_row >= scroll_offset + visible_rows) {
         scroll_offset = selected_row - visible_rows + 1;
     }
-    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 8), "Threads:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 76, y + 8, (uint32_t)total_threads, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 130), (uint32_t)(y + 8), "Rodando:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 198, y + 8, (uint32_t)running_threads, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 260), (uint32_t)(y + 8), "Bloqueadas:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 350, y + 8, (uint32_t)blocked_threads, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 42), "TID", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 70), (uint32_t)(y + 42), "Nome", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 260), (uint32_t)(y + 42), "Estado", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 350), (uint32_t)(y + 42), "Espera", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 420), (uint32_t)(y + 42), "EIP", GUI_COLOR_TEXT);
-    if (width > 620) {
-        gui_draw_text((uint32_t)(x + 540), (uint32_t)(y + 42), "ESP", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(10)),
+                  (uint32_t)(y + TSKMGR_GUI_PX(8)), "Threads:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(76), y + TSKMGR_GUI_PX(8),
+                         (uint32_t)total_threads, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(130)),
+                  (uint32_t)(y + TSKMGR_GUI_PX(8)), "Rodando:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(198), y + TSKMGR_GUI_PX(8),
+                         (uint32_t)running_threads, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(260)),
+                  (uint32_t)(y + TSKMGR_GUI_PX(8)), "Bloqueadas:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(350), y + TSKMGR_GUI_PX(8),
+                         (uint32_t)blocked_threads, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(10)),
+                  (uint32_t)(y + TSKMGR_GUI_PX(42)), "TID", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(70)),
+                  (uint32_t)(y + TSKMGR_GUI_PX(42)), "Nome", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(260)),
+                  (uint32_t)(y + TSKMGR_GUI_PX(42)), "Estado", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(350)),
+                  (uint32_t)(y + TSKMGR_GUI_PX(42)), "Espera", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(420)),
+                  (uint32_t)(y + TSKMGR_GUI_PX(42)), "EIP", GUI_COLOR_TEXT);
+    if (width > TSKMGR_GUI_PX(620)) {
+        gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(540)),
+                      (uint32_t)(y + TSKMGR_GUI_PX(42)), "ESP", GUI_COLOR_TEXT);
     }
-    vesa_draw_hline((uint32_t)(x + 6), (uint32_t)(y + 64),
-                    (uint32_t)(width - 12), taskmgr_gui_color(GUI_COLOR_BORDER_D));
+    vesa_draw_hline((uint32_t)(x + TSKMGR_GUI_PX(6)),
+                    (uint32_t)(y + TSKMGR_GUI_PX(64)),
+                    (uint32_t)(width - TSKMGR_GUI_PX(12)),
+                    taskmgr_gui_color(GUI_COLOR_BORDER_D));
 
     for (int row = 0; row < visible_rows && scroll_offset + row < total_threads; row++) {
         int absolute_row = scroll_offset + row;
         thread_t* thread = taskmgr_find_thread_by_row(absolute_row);
-        int row_y = y + 70 + row * TSKMGR_GUI_ROW_HEIGHT;
+        int row_y = y + TSKMGR_GUI_THREADS_ROW_OFFSET +
+                    row * TSKMGR_GUI_ROW_HEIGHT;
         uint32_t text_color = absolute_row == selected_row ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
         char name[24];
         if (!thread) continue;
         taskmgr_gui_copy_text(name, sizeof(name), thread->name);
+        name[15] = '\0';
         if (absolute_row == selected_row) {
             vesa_color_t selection;
             selection.raw = GUI_COLOR_TITLE_BG;
-            vesa_fill_rect((uint32_t)(x + 5), (uint32_t)row_y,
-                           (uint32_t)(width - 10), TSKMGR_GUI_ROW_HEIGHT, selection);
+            vesa_fill_rect((uint32_t)(x + TSKMGR_GUI_PX(5)), (uint32_t)row_y,
+                           (uint32_t)(width - TSKMGR_GUI_PX(10)),
+                           TSKMGR_GUI_ROW_HEIGHT, selection);
         }
-        taskmgr_gui_draw_num(x + 10, row_y + 4, thread->id, text_color);
-        gui_draw_text((uint32_t)(x + 70), (uint32_t)(row_y + 4), name, text_color);
-        gui_draw_text((uint32_t)(x + 260), (uint32_t)(row_y + 4),
+        taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(10),
+                             row_y + TSKMGR_GUI_PX(4),
+                             thread->id, text_color);
+        gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(70)),
+                      (uint32_t)(row_y + TSKMGR_GUI_PX(4)), name, text_color);
+        gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(260)),
+                      (uint32_t)(row_y + TSKMGR_GUI_PX(4)),
                       taskmgr_thread_state_name(thread->state), text_color);
-        taskmgr_gui_draw_num(x + 350, row_y + 4, thread->wait_ticks, text_color);
-        taskmgr_gui_draw_hex(x + 420, row_y + 4, thread->eip, text_color);
-        if (width > 620) {
-            taskmgr_gui_draw_hex(x + 540, row_y + 4, thread->esp, text_color);
+        taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(350),
+                             row_y + TSKMGR_GUI_PX(4),
+                             thread->wait_ticks, text_color);
+        taskmgr_gui_draw_hex(x + TSKMGR_GUI_PX(420),
+                             row_y + TSKMGR_GUI_PX(4),
+                             thread->eip, text_color);
+        if (width > TSKMGR_GUI_PX(620)) {
+            taskmgr_gui_draw_hex(x + TSKMGR_GUI_PX(540),
+                                 row_y + TSKMGR_GUI_PX(4),
+                                 thread->esp, text_color);
         }
     }
 
@@ -1492,7 +1612,7 @@ static void taskmgr_gui_draw_threads(void) {
                       "EIP", GUI_COLOR_TEXT);
         taskmgr_gui_draw_hex(x + 292, y + panel_height - 38,
                              selected_thread->eip, GUI_COLOR_TEXT);
-        if (width > 620) {
+        if (width > TSKMGR_GUI_PX(620)) {
             gui_draw_text((uint32_t)(x + 420), (uint32_t)(y + panel_height - 38),
                           "ESP", GUI_COLOR_TEXT);
             taskmgr_gui_draw_hex(x + 452, y + panel_height - 38,
@@ -1503,18 +1623,27 @@ static void taskmgr_gui_draw_threads(void) {
 
 static void taskmgr_gui_draw_properties(void) {
     process_t* process = taskmgr_find_process_by_pid(prop_pid);
-    int width = gui_width >= 560 ? 500 : gui_width - 40;
-    int height = gui_height >= 360 ? 300 : gui_height - 40;
+    int width = TSKMGR_GUI_PX(500);
+    int height = TSKMGR_GUI_PX(300);
     int x = gui_x + (gui_width - width) / 2;
     int y = gui_y + (gui_height - height) / 2;
+
+    if (width > gui_width - TSKMGR_GUI_PX(40)) {
+        width = gui_width - TSKMGR_GUI_PX(40);
+        x = gui_x + (gui_width - width) / 2;
+    }
+    if (height > gui_height - TSKMGR_GUI_PX(40)) {
+        height = gui_height - TSKMGR_GUI_PX(40);
+        y = gui_y + (gui_height - height) / 2;
+    }
 
     if (!process) {
         show_properties = 0;
         return;
     }
 
-    gui_draw_window_frame((uint32_t)x, (uint32_t)y, width, height,
-                          "Propriedades do processo", 1);
+    gui_draw_scaled_window_frame((uint32_t)x, (uint32_t)y, width, height,
+                                 "Propriedades do processo", 1);
     gui_draw_text((uint32_t)(x + 18), (uint32_t)(y + 42), "PID:", GUI_COLOR_TEXT);
     taskmgr_gui_draw_num(x + 104, y + 42, process->pid, GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 270), (uint32_t)(y + 42), "Tipo:", GUI_COLOR_TEXT);
@@ -1555,13 +1684,26 @@ static void taskmgr_gui_draw_properties(void) {
 }
 
 static void taskmgr_gui_draw_window(void) {
+    const char* update_text = "100ms | ZephyrOS";
+    uint32_t update_width = 0;
+    uint32_t update_height = 0;
+
     if (!taskmgr_hosted) {
-        gui_draw_window_frame((uint32_t)gui_x, (uint32_t)gui_y,
-                              (uint32_t)gui_width, (uint32_t)gui_height,
-                              "ZephyrOS Task Manager", 1);
-        gui_draw_button((uint32_t)(gui_x + gui_width - 40), (uint32_t)(gui_y + 3),
-                        TSKMGR_GUI_CONTROL_SIZE, TSKMGR_GUI_CONTROL_SIZE, "_", 0);
-        gui_draw_button((uint32_t)(gui_x + gui_width - 58), (uint32_t)(gui_y + 3),
+        int control_gap = TSKMGR_GUI_PX(2);
+        int control_y = gui_y + TSKMGR_GUI_PX(2);
+        int close_x = gui_x + gui_width - TSKMGR_GUI_PX(2) -
+                      TSKMGR_GUI_CONTROL_SIZE;
+        int minimize_x = close_x - control_gap - TSKMGR_GUI_CONTROL_SIZE;
+        int maximize_x = minimize_x - control_gap - TSKMGR_GUI_CONTROL_SIZE;
+
+        gui_draw_scaled_window_frame((uint32_t)gui_x, (uint32_t)gui_y,
+                                     (uint32_t)gui_width,
+                                     (uint32_t)gui_height,
+                                     "ZephyrOS Task Manager", 1);
+        gui_draw_button((uint32_t)minimize_x, (uint32_t)control_y,
+                        TSKMGR_GUI_CONTROL_SIZE, TSKMGR_GUI_CONTROL_SIZE,
+                        "_", 0);
+        gui_draw_button((uint32_t)maximize_x, (uint32_t)control_y,
                         TSKMGR_GUI_CONTROL_SIZE, TSKMGR_GUI_CONTROL_SIZE,
                         gui_maximized ? "R" : "M", 0);
     }
@@ -1574,11 +1716,14 @@ static void taskmgr_gui_draw_window(void) {
         default: selected_tab = 0; taskmgr_gui_draw_processes(); break;
     }
 
-    gui_draw_text((uint32_t)(gui_x + 14), (uint32_t)(gui_y + gui_height - 48),
-                  "Tab  Setas  S:ord  Enter:det  Del:mata", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(gui_x + gui_width - 238),
-                  (uint32_t)(gui_y + gui_height - 48),
-                  "Atualizacao: 100ms | ZephyrOS", GUI_COLOR_TEXT);
+    (void)gui_measure_scaled_text(update_text, &update_width, &update_height);
+    gui_draw_text((uint32_t)(gui_x + TSKMGR_GUI_PX(14)),
+                  (uint32_t)(gui_y + gui_height - TSKMGR_GUI_PX(48)),
+                  "Tab Setas S:ord Enter:det Del:mata", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(gui_x + gui_width - (int)update_width -
+                             TSKMGR_GUI_PX(14)),
+                  (uint32_t)(gui_y + gui_height - TSKMGR_GUI_PX(48)),
+                  update_text, GUI_COLOR_TEXT);
     if (show_properties) taskmgr_gui_draw_properties();
 }
 
@@ -1942,7 +2087,7 @@ static int taskmgr_gui_handle_wheel(mouse_event_t* event) {
     if (!event || event->wheel == 0 || show_properties) return 0;
     process_list_width = gui_width - TSKMGR_GUI_MARGIN * 2;
     if (taskmgr_gui_has_side_details()) {
-        process_list_width -= TSKMGR_GUI_DETAIL_WIDTH + 8;
+        process_list_width -= TSKMGR_GUI_DETAIL_WIDTH + TSKMGR_GUI_DETAIL_GAP;
     }
     if (selected_tab == 0 && taskmgr_gui_hit(event->x, event->y,
             gui_x + TSKMGR_GUI_MARGIN,
@@ -1953,7 +2098,8 @@ static int taskmgr_gui_handle_wheel(mouse_event_t* event) {
     }
     if (selected_tab == 2 && taskmgr_gui_hit(event->x, event->y,
             gui_x + TSKMGR_GUI_MARGIN,
-            gui_y + 68 + TSKMGR_GUI_THREADS_ROW_OFFSET,
+            gui_y + TSKMGR_GUI_CONTENT_TOP +
+            TSKMGR_GUI_THREADS_ROW_OFFSET,
             gui_width - TSKMGR_GUI_MARGIN * 2,
             taskmgr_gui_visible_rows() * TSKMGR_GUI_ROW_HEIGHT)) {
         return taskmgr_gui_scroll_selected(event->wheel);
@@ -1992,14 +2138,22 @@ int taskmgr_gui_handle_mouse(mouse_event_t* event) {
     if (!taskmgr_gui_hit(event->x, event->y, gui_x, gui_y, gui_width, gui_height)) return 1;
 
     if (!taskmgr_hosted) {
-        close_x = gui_x + gui_width - 20;
-        maximize_x = gui_x + gui_width - 58;
-        minimize_x = gui_x + gui_width - 40;
-        if (taskmgr_gui_hit(event->x, event->y, close_x, gui_y + 3, 16, 16)) {
+        int control_y = gui_y + TSKMGR_GUI_PX(2);
+        int control_gap = TSKMGR_GUI_PX(2);
+
+        close_x = gui_x + gui_width - TSKMGR_GUI_PX(2) -
+                  TSKMGR_GUI_CONTROL_SIZE;
+        minimize_x = close_x - control_gap - TSKMGR_GUI_CONTROL_SIZE;
+        maximize_x = minimize_x - control_gap - TSKMGR_GUI_CONTROL_SIZE;
+        if (taskmgr_gui_hit(event->x, event->y, close_x, control_y,
+                            TSKMGR_GUI_CONTROL_SIZE,
+                            TSKMGR_GUI_CONTROL_SIZE)) {
             taskmgr_close();
             return 1;
         }
-        if (taskmgr_gui_hit(event->x, event->y, maximize_x, gui_y + 3, 16, 16)) {
+        if (taskmgr_gui_hit(event->x, event->y, maximize_x, control_y,
+                            TSKMGR_GUI_CONTROL_SIZE,
+                            TSKMGR_GUI_CONTROL_SIZE)) {
             gui_minimized = 0;
             if (gui_maximized) {
                 gui_maximized = 0;
@@ -2023,12 +2177,17 @@ int taskmgr_gui_handle_mouse(mouse_event_t* event) {
             taskmgr_gui_draw();
             return 1;
         }
-        if (taskmgr_gui_hit(event->x, event->y, minimize_x, gui_y + 3, 16, 16)) {
+        if (taskmgr_gui_hit(event->x, event->y, minimize_x, control_y,
+                            TSKMGR_GUI_CONTROL_SIZE,
+                            TSKMGR_GUI_CONTROL_SIZE)) {
             taskmgr_gui_minimize();
             return 1;
         }
-        if (taskmgr_gui_hit(event->x, event->y, gui_x + 2, gui_y + 2,
-                            gui_width - 64, TSKMGR_GUI_TITLE_HEIGHT)) {
+        if (taskmgr_gui_hit(
+                event->x, event->y, gui_x + TSKMGR_GUI_PX(2),
+                gui_y + TSKMGR_GUI_PX(2),
+                gui_width - 3 * (TSKMGR_GUI_CONTROL_SIZE + control_gap) -
+                TSKMGR_GUI_PX(4), TSKMGR_GUI_TITLE_HEIGHT)) {
             gui_drag_active = 1;
             gui_drag_offset_x = event->x - gui_x;
             gui_drag_offset_y = event->y - gui_y;
@@ -2039,8 +2198,12 @@ int taskmgr_gui_handle_mouse(mouse_event_t* event) {
     }
 
     if (taskmgr_gui_hit(event->x, event->y, gui_x + TSKMGR_GUI_MARGIN,
-                        gui_y + 32, 336, TSKMGR_GUI_TAB_HEIGHT)) {
-        selected_tab = (event->x - (gui_x + TSKMGR_GUI_MARGIN)) / 116;
+            gui_y + TSKMGR_GUI_TABS_TOP,
+            3 * ((int)display_scale_px(112) + (int)display_scale_px(4)),
+            TSKMGR_GUI_TAB_HEIGHT)) {
+        selected_tab = (event->x - (gui_x + TSKMGR_GUI_MARGIN)) /
+                       ((int)display_scale_px(112) +
+                        (int)display_scale_px(4));
         if (selected_tab > 2) selected_tab = 2;
         selected_row = 0;
         scroll_offset = 0;
@@ -2049,12 +2212,14 @@ int taskmgr_gui_handle_mouse(mouse_event_t* event) {
     }
     process_list_width = gui_width - TSKMGR_GUI_MARGIN * 2;
     if (taskmgr_gui_has_side_details()) {
-        process_list_width -= TSKMGR_GUI_DETAIL_WIDTH + 8;
+        process_list_width -= TSKMGR_GUI_DETAIL_WIDTH + TSKMGR_GUI_DETAIL_GAP;
     }
     if (selected_tab == 0 && taskmgr_gui_hit(event->x, event->y,
-            gui_x + TSKMGR_GUI_MARGIN, taskmgr_gui_process_list_y() + 36,
+            gui_x + TSKMGR_GUI_MARGIN,
+            taskmgr_gui_process_list_y() + TSKMGR_GUI_LIST_HEADER_HEIGHT,
             process_list_width, taskmgr_gui_process_visible_rows() * TSKMGR_GUI_ROW_HEIGHT)) {
-        int row = (event->y - taskmgr_gui_process_list_y() - 36) /
+        int row = (event->y - taskmgr_gui_process_list_y() -
+                   TSKMGR_GUI_LIST_HEADER_HEIGHT) /
                   TSKMGR_GUI_ROW_HEIGHT;
         if (row < 0) return 1;
         selected_row = scroll_offset + row;
@@ -2063,10 +2228,14 @@ int taskmgr_gui_handle_mouse(mouse_event_t* event) {
         return 1;
     }
     if (selected_tab == 2 && taskmgr_gui_hit(event->x, event->y,
-            gui_x + TSKMGR_GUI_MARGIN, gui_y + 68 + 70,
+            gui_x + TSKMGR_GUI_MARGIN,
+            gui_y + TSKMGR_GUI_CONTENT_TOP +
+            TSKMGR_GUI_THREADS_ROW_OFFSET,
             gui_width - TSKMGR_GUI_MARGIN * 2,
             taskmgr_gui_visible_rows() * TSKMGR_GUI_ROW_HEIGHT)) {
-        int row = (event->y - (gui_y + 68 + 70)) / TSKMGR_GUI_ROW_HEIGHT;
+        int row = (event->y - (gui_y + TSKMGR_GUI_CONTENT_TOP +
+                               TSKMGR_GUI_THREADS_ROW_OFFSET)) /
+                  TSKMGR_GUI_ROW_HEIGHT;
         if (row < 0) return 1;
         selected_row = scroll_offset + row;
         if (taskmgr_find_thread_by_row(selected_row)) taskmgr_gui_draw();

@@ -11,6 +11,7 @@ src/taskbar/taskbar.c    → Barra de tarefas e menu Iniciar (Dual interface)
 src/settings/settings.c  → Sistema de configurações
 src/icons/icons.c        → Registro de ícones customizáveis
 src/gui/gui.c            → Primitivas gráficas 2D para a GUI Moderna
+src/gui/display.c        → Escala e métricas centrais da GUI Moderna
 ```
 
 ---
@@ -22,6 +23,48 @@ O sistema operacional implementa uma estratégia de retrocompatibilidade visual 
 - **Classic TUI**: Usa `video.c` (memória VGA) ou desenho alinhado em grid para exibir a interface de maneira retro e otimizada.
 - **GUI Moderna**: Usa `gui.c` para desenhar painéis cinza, bordas 3D, barra de título azul, seleção azul e texto fora do grid com a fonte bitmap existente.
 - **Alternância Dinâmica**: O comando `guimode classic|modern` permite alterar a engine visual em tempo de execução sem desligar os aplicativos rodando.
+
+---
+
+## Escala global do modo Moderno (`display.c`)
+
+O MV0 centraliza as metricas da interface em `ui/display.h`. A escala existe
+somente em RAM, inicia em `normal` a cada boot e nunca troca a resolucao VESA.
+O modo Classic nao consulta essas metricas: sua grade, fonte 8x16, cursor,
+taskbar e aplicativos permanecem inalterados.
+
+| Escala | Fator | Fonte | Espaco | Taskbar | Botao minimo | Icone | Titulo | VESA minima |
+|--------|------:|------:|-------:|--------:|-------------:|------:|-------:|------------:|
+| pequena | 1/1 | 8x16 | 8 px | 24 px | 60x24 px | 32 px | 24 px | 800x600 |
+| normal | 5/4 | 10x20 | 10 px | 30 px | 75x30 px | 40 px | 30 px | 800x600 |
+| grande | 3/2 | 12x24 | 12 px | 36 px | 90x36 px | 48 px | 36 px | 1024x768 |
+
+```c
+typedef struct {
+    display_scale_t scale;
+    uint16_t factor_numerator, factor_denominator;
+    uint16_t font_width, font_height, spacing;
+    uint16_t taskbar_height, taskbar_side_width;
+    uint16_t button_min_width, button_min_height;
+    uint16_t icon_size, title_bar_height, row_height;
+    uint16_t min_width, min_height;
+    uint8_t available;
+} display_metrics_t;
+
+int display_init(void);
+int display_get_metrics(display_metrics_t* metrics);
+int display_apply_scale(display_scale_t scale);
+int display_parse_scale(const char* name, display_scale_t* scale);
+const char* display_scale_name(display_scale_t scale);
+uint32_t display_scale_px(uint32_t pixels);
+```
+
+`display_init()` roda depois de VESA/backbuffer e antes de Taskbar/Desktop.
+Sem VESA, backbuffer ou area minima, o kernel preserva o fallback Classic.
+`display_apply_scale()` valida o preset antes de altera-lo, reorganiza a cena
+ativa e restaura as metricas anteriores se o reflow falhar. Desktop, Taskbar,
+WM, Explorer, Settings e Task Manager usam a mesma geometria no desenho e no
+hit-testing.
 
 ---
 
@@ -40,17 +83,17 @@ Cria 3 ícones padrão: Shell, Explorer e TaskMgr.
 No modo `GUI Moderna`, o desktop desenha fundo, cards de ícone e símbolos por
 primitivas, permitindo:
 - Seleção visual azul em vez de caractere invertido.
-- Grade responsiva de cartões 112×96 px com slots em memória, calculada
-  conforme a resolução VESA e a área útil da taskbar.
+- Grade responsiva com cartões-base de 112×96 px, escalados pelo preset, e
+  slots em memória calculados conforme a resolução VESA e a área útil.
 - Clique simples para seleção, duplo clique para abrir e arraste com encaixe
   no próximo slot livre.
 - Barras acopladas reduzem a grade; a taskbar personalizada também reserva
   seus slots para que nenhum cartão fique sob ela.
 
 As posições duram somente até reiniciar. Shell, Explorer e Task Manager usam
-BMPs 24 bpp de 32×32 px no modo moderno quando estiverem no cache; os arquivos
-usam magenta como cor transparente. Seleção múltipla e persistência em disco
-continuam fora do modo moderno atual.
+BMPs 24 bpp de 32×32 px no cache e os desenham em 32, 40 ou 48 px conforme o
+preset; os arquivos usam magenta como cor transparente. Seleção múltipla e
+persistência em disco continuam fora do modo moderno atual.
 
 No modo Clássico, os ícones são organizados em grade (5 colunas) e mostrados na VGA Text Mode/Grid:
 
@@ -102,11 +145,21 @@ Motor gráfico da GUI Moderna, permitindo renderização independente da grade T
 ```c
 void gui_draw_text(int x, int y, const char* text, uint32_t color);
 void gui_draw_button(int x, int y, int w, int h, const char* label, int pressed);
+void gui_draw_scaled_text(int x, int y, const char* text, uint32_t color);
+int  gui_measure_scaled_text(const char* text, uint32_t* width, uint32_t* height);
+void gui_draw_scaled_button(int x, int y, int w, int h,
+                            const char* label, int pressed);
 void gui_draw_window_frame(int x, int y, int w, int h, const char* title, int active);
+void gui_draw_scaled_window_frame(int x, int y, int w, int h,
+                                  const char* title, int active);
 ```
 
 As cenas modernas usam backbuffer e um único ciclo de frame. As primitivas não
 implementam gradientes, transparência ou cantos arredondados nesta etapa.
+
+As primitivas antigas continuam fixas em 8x16. Somente as variantes `scaled`
+consultam `ui/display.h`, preservando Updater, Shell hospedado e aplicacoes
+fora do MV0.
 
 ---
 
@@ -201,6 +254,7 @@ int  wm_register_hosted_app(const wm_hosted_app_t* app);
 int  wm_close_hosted_app(wm_app_type_t app_type);
 int  wm_is_hosted_app_focused(wm_app_type_t app_type);
 void wm_request_hosted_redraw(wm_app_type_t app_type);
+int  wm_reflow_display(void);
 ```
 
 `key_redraw` define quem apresenta a resposta ao teclado. O valor
@@ -213,10 +267,16 @@ composição completa preserva o Z-order; o aplicativo pode consultar essa
 condição com `wm_is_hosted_app_focused()`.
 
 `WM_HOSTED_MIN_WIDTH` e `WM_HOSTED_MIN_HEIGHT` definem o mínimo estrutural
-comum de 180x128 px para as janelas hospedadas. Os aplicativos não impõem um
-mínimo adicional pela quantidade de controles: ao reduzir uma janela, o WM
-mantém a moldura e o recorte da área interna, enquanto cada conteúdo pode
-ocultar ou interromper elementos que não couberem.
+comum de 180x128 px para as janelas hospedadas. Explorer, Settings e Task
+Manager publicam mínimos funcionais maiores. As constantes
+`WM_HOSTED_FRAME_MAX_WIDTH` e `WM_HOSTED_FRAME_MAX_HEIGHT` reservam a moldura
+da escala grande nesses descritores. Os mínimos externos registrados são
+666x402 para Explorer, 726x492 para Settings e 726x542 para Task Manager.
+
+Ao trocar a escala, `wm_reflow_display()` cancela capturas antigas de arraste
+e redimensionamento, recalcula moldura e área útil, preserva dimensões ainda
+válidas e limita cada janela ao novo workspace. Se algum mínimo não couber, o
+reflow falha e a escala anterior é restaurada.
 
 O registro é singleton por `app_type`: registrar uma janela visível apenas a
 restaura/focaliza, sem criar botão duplicado. Fechar uma janela chama `on_close`
@@ -233,8 +293,8 @@ eventos consomem o mouse antes de Desktop e aplicativos.
 
 No modo Moderno, Shell, Explorer, Settings, Task Manager e System Updater
 reutilizam a interação direta do WM: os controles da barra de título têm
-prioridade, a área livre da barra inicia arraste e uma faixa de 8 px nas
-bordas e cantos inicia redimensionamento. A captura termina em `RELEASE`;
+prioridade, a área livre da barra inicia arraste e uma faixa escalada de
+8, 10 ou 12 px nas bordas e cantos inicia redimensionamento. A captura termina em `RELEASE`;
 janelas maximizadas devem ser restauradas antes de mover ou redimensionar.
 Cada aplicativo desenha somente seu conteúdo e solicita recomposição ao mudar
 de estado; o WM recompõe o workspace no backbuffer, desenha a taskbar por
@@ -260,11 +320,12 @@ interfaces abertas. Cada compositor de cena desenha a taskbar por ultimo; as
 funcoes que alteram seus botoes ou configuracao apenas atualizam estado e nao
 apresentam um frame por conta propria.
 
-No modo moderno, a taskbar usa limites em pixels e suporta as cinco posições:
-Baixo e Cima usam 24 px de altura; Esquerda e Direita usam 96 px de largura;
-Custom usa 320×24 px em `custom_x * 8`/`custom_y * 16`, sempre limitada à
-tela. Barras acopladas reduzem a área de trabalho; a barra customizada fica
-sobreposta e recebe pintura e clique antes do conteúdo abaixo.
+No modo moderno, a taskbar usa as métricas do preset e suporta as cinco
+posições. Baixo/Cima usam 24, 30 ou 36 px; Esquerda/Direita e o modo Custom
+escalam pelo mesmo fator. Texto, relógio, botões, menus, limites de clique e
+área de trabalho compartilham a geometria calculada. Barras acopladas reduzem
+a área de trabalho; a barra customizada fica sobreposta e recebe pintura e
+clique antes do conteúdo abaixo.
 
 `tb_rect_t`, `taskbar_get_bounds()` e `taskbar_get_work_area()` formam o
 contrato de geometria moderna. `taskbar_add_window()`,
@@ -320,11 +381,15 @@ No modo Moderno, a opção de posição da taskbar também expõe Baixo, Cima,
 Esquerda, Direita e Custom. Ao mudar uma posição acoplada, o painel recalcula
 seu layout a partir de `taskbar_get_work_area()`.
 
+A opção `Escala` aparece tanto no Settings Classic quanto no Modern, é
+sincronizada ao abrir e chama `display_apply_scale()`. Uma recusa restaura
+imediatamente o valor visual anterior.
+
 ### Categorias
 
 | Categoria | Opções |
 |-----------|--------|
-| Tela | Tema (Clássico/Moderna), Resolução |
+| Tela | Tema, Escala (Pequena/Normal/Grande), Mostrar grade |
 | Barra de Tarefas | Posição, Tamanho ícone, Fixada, Relógio |
 | Janelas | Botões lado, Ordem botões, Título, Borda |
 | Ícones | Editor visual (Desktop, WM, Arquivos) |
@@ -359,8 +424,13 @@ icon_registry_t* icons_get_registry(void);
 icon_entry_t* icons_get_desktop(id);
 int icons_get_desktop_bitmap_status(id); // OK para BMP no cache
 int icons_draw_desktop_bitmap(id, x, y); // OK ou código para fallback
+int icons_draw_desktop_bitmap_resized(id, x, y, size);
 void icons_reset_defaults(void);
 ```
+
+Os BMPs 32x32 permanecem armazenados uma única vez. A variante redimensionada
+usa nearest-neighbor durante o desenho, sem nova alocação, para produzir
+ícones de 32, 40 ou 48 px conforme a escala Modern.
 
 O comando Shell `icons` mostra o estado do filesystem e se cada um dos três
 ícones de Desktop está em modo `BMP` ou `FALLBACK`.

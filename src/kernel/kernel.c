@@ -40,6 +40,7 @@
 #include "ui/wm.h"
 #include "ui/filemanager.h"
 #include "ui/icons.h"
+#include "ui/display.h"
 #include "apps/taskmanager.h"
 #include "apps/guitest.h"
 
@@ -738,6 +739,14 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     icons_init();
     video_print("[OK] Icones prontos\n", 0x07);
 
+    video_print("[..] Iniciando metricas de display...\n", 0x08);
+    int display_result = display_init();
+    if (display_result == OK) {
+        video_print("[OK] Metricas de display prontas\n", 0x07);
+    } else {
+        video_print("[!!] Display Modern indisponivel\n", 0x0E);
+    }
+
     video_print("[..] Iniciando taskbar...\n", 0x08);
     taskbar_init();
     recovery_mark_ready(RECOVERY_COMPONENT_TASKBAR);
@@ -745,7 +754,8 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Iniciando desktop...\n", 0x08);
     desktop_init();
-    if (!recovery_is_available(RECOVERY_COMPONENT_BACKBUFFER)) {
+    if (!recovery_is_available(RECOVERY_COMPONENT_BACKBUFFER) ||
+        display_result != OK) {
         desktop_set_mode(DESKTOP_MODE_CLASSIC);
     }
     recovery_mark_ready(RECOVERY_COMPONENT_DESKTOP);

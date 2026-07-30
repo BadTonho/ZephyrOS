@@ -160,10 +160,17 @@ int icons_get_desktop_bitmap_status(icon_desktop_id_t id) {
 }
 
 int icons_draw_desktop_bitmap(icon_desktop_id_t id, int x, int y) {
+    return icons_draw_desktop_bitmap_resized(id, x, y,
+                                             ICONS_DESKTOP_BMP_SIZE);
+}
+
+int icons_draw_desktop_bitmap_resized(icon_desktop_id_t id, int x, int y,
+                                      uint32_t size) {
     vesa_color_t transparent_color;
     vesa_mode_t* mode;
 
-    if (id >= ICON_DESKTOP_COUNT || x < 0 || y < 0) {
+    if (id < ICON_DESKTOP_SHELL || id >= ICON_DESKTOP_COUNT ||
+        x < 0 || y < 0 || !size) {
         LOG_ERROR("ICONS", "Destino de bitmap de Desktop invalido");
         return ERR_INVALID;
     }
@@ -171,17 +178,16 @@ int icons_draw_desktop_bitmap(icon_desktop_id_t id, int x, int y) {
 
     mode = vesa_get_mode();
     if (!mode || !mode->initialized ||
-        mode->width < ICONS_DESKTOP_BMP_SIZE ||
-        mode->height < ICONS_DESKTOP_BMP_SIZE ||
-        x > (int)(mode->width - ICONS_DESKTOP_BMP_SIZE) ||
-        y > (int)(mode->height - ICONS_DESKTOP_BMP_SIZE)) {
+        mode->width < size || mode->height < size ||
+        x > (int)(mode->width - size) ||
+        y > (int)(mode->height - size)) {
         LOG_ERROR("ICONS", "Bitmap de Desktop excede os limites VESA");
         return ERR_INVALID;
     }
 
     transparent_color.raw = vesa_rgb(255, 0, 255);
-    bmp_draw_transparent(&desktop_bmps[id].image, x, y, transparent_color);
-    return OK;
+    return bmp_draw_transparent_resized(&desktop_bmps[id].image, x, y, size,
+                                        size, transparent_color);
 }
 
 void icons_set_desktop(icon_desktop_id_t id, char ch, uint8_t color, uint8_t color_sel) {

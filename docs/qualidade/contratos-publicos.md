@@ -70,6 +70,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/process/thread.h` | `docs/07-processos/processos.md` |
 | `src/include/types.h` | `docs/02-arquitetura/arquitetura.md` |
 | `src/include/ui/desktop.h` | `docs/12-desktop/desktop.md` |
+| `src/include/ui/display.h` | `docs/12-desktop/desktop.md` |
 | `src/include/ui/filemanager.h` | `docs/12-desktop/desktop.md` |
 | `src/include/ui/gui.h` | `docs/12-desktop/desktop.md` |
 | `src/include/ui/icons.h` | `docs/12-desktop/desktop.md` |

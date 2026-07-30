@@ -11,6 +11,8 @@
 #define WM_MIN_HEIGHT 5
 #define WM_HOSTED_MIN_WIDTH 180
 #define WM_HOSTED_MIN_HEIGHT 128
+#define WM_HOSTED_FRAME_MAX_WIDTH 6
+#define WM_HOSTED_FRAME_MAX_HEIGHT 42
 #define WM_RESULT_NONE 0
 #define WM_RESULT_EXIT 1
 
@@ -145,6 +147,7 @@ int  wm_register_hosted_app(const wm_hosted_app_t* app);
 int  wm_close_hosted_app(wm_app_type_t app_type);
 int  wm_is_hosted_app_focused(wm_app_type_t app_type);
 void wm_request_hosted_redraw(wm_app_type_t app_type);
+int  wm_reflow_display(void);
 
 void wm_update_cpu_stats(void);
 

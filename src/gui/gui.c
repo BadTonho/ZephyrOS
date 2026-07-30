@@ -3,6 +3,8 @@
 #include "drivers/font.h"
 #include "core/string.h"
 #include "core/log.h"
+#include "core/errors.h"
+#include "ui/display.h"
 
 static int gui_clamp_to_screen(uint32_t* x, uint32_t* y,
                                uint32_t* width, uint32_t* height) {
@@ -43,6 +45,85 @@ void gui_draw_text(uint32_t x, uint32_t y, const char* text, uint32_t color) {
         if (glyph) vesa_draw_glyph8x16(curr_x, curr_y, glyph, fg);
         curr_x += FONT_WIDTH;
     }
+}
+
+static void gui_draw_scaled_glyph(uint32_t x, uint32_t y,
+                                  const uint8_t* glyph, vesa_color_t color,
+                                  const display_metrics_t* metrics) {
+    for (uint32_t row = 0; row < metrics->font_height; row++) {
+        uint32_t source_row = row * FONT_HEIGHT / metrics->font_height;
+        uint8_t bits = glyph[source_row];
+
+        for (uint32_t col = 0; col < metrics->font_width; col++) {
+            uint32_t source_col = col * FONT_WIDTH / metrics->font_width;
+            if (bits & (0x80U >> source_col)) {
+                vesa_put_pixel(x + col, y + row, color);
+            }
+        }
+    }
+}
+
+void gui_draw_scaled_text(uint32_t x, uint32_t y, const char* text,
+                          uint32_t color) {
+    display_metrics_t metrics;
+    vesa_color_t foreground;
+    uint32_t current_x = x;
+    uint32_t current_y = y;
+
+    if (!text) {
+        LOG_ERROR("GUI", "Texto escalado nulo");
+        return;
+    }
+    if (display_get_metrics(&metrics) != OK || !metrics.available) {
+        gui_draw_text(x, y, text, color);
+        return;
+    }
+
+    foreground.raw = color;
+    while (*text) {
+        char character = *text++;
+        const uint8_t* glyph;
+
+        if (character == '\n') {
+            current_x = x;
+            current_y += metrics.font_height;
+            continue;
+        }
+        glyph = font_get_glyph(character);
+        if (glyph) {
+            gui_draw_scaled_glyph(current_x, current_y, glyph, foreground,
+                                  &metrics);
+        }
+        current_x += metrics.font_width;
+    }
+}
+
+int gui_measure_scaled_text(const char* text, uint32_t* width,
+                            uint32_t* height) {
+    display_metrics_t metrics;
+    uint32_t line_width = 0;
+    uint32_t max_width = 0;
+    uint32_t line_count = 1;
+
+    if (!text || !width || !height) {
+        LOG_ERROR("GUI", "Entrada nula ao medir texto escalado");
+        return ERR_NULL;
+    }
+    if (display_get_metrics(&metrics) != OK) return ERR_STATE;
+
+    while (*text) {
+        if (*text++ == '\n') {
+            if (line_width > max_width) max_width = line_width;
+            line_width = 0;
+            line_count++;
+        } else {
+            line_width += metrics.font_width;
+        }
+    }
+    if (line_width > max_width) max_width = line_width;
+    *width = max_width;
+    *height = line_count * metrics.font_height;
+    return OK;
 }
 
 void gui_draw_panel(uint32_t x, uint32_t y, uint32_t w, uint32_t h,
@@ -97,6 +178,71 @@ void gui_draw_button(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const char*
         
         gui_draw_text(text_x, text_y, text, GUI_COLOR_TEXT);
     }
+}
+
+void gui_draw_scaled_button(uint32_t x, uint32_t y, uint32_t w, uint32_t h,
+                            const char* text, int pressed) {
+    uint32_t text_width;
+    uint32_t text_height;
+    int32_t text_x;
+    int32_t text_y;
+
+    if (!gui_clamp_to_screen(&x, &y, &w, &h)) return;
+    gui_draw_panel(x, y, w, h, GUI_COLOR_BG, pressed);
+    if (!text) return;
+    if (gui_measure_scaled_text(text, &text_width, &text_height) != OK) return;
+
+    text_x = (int32_t)x + ((int32_t)w - (int32_t)text_width) / 2;
+    text_y = (int32_t)y + ((int32_t)h - (int32_t)text_height) / 2;
+    if (pressed) {
+        text_x++;
+        text_y++;
+    }
+    if (text_x < 0 || text_y < 0) {
+        LOG_WARN("GUI", "Texto escalado nao cabe no botao");
+        return;
+    }
+    gui_draw_scaled_text((uint32_t)text_x, (uint32_t)text_y, text,
+                         GUI_COLOR_TEXT);
+}
+
+void gui_draw_scaled_window_frame(uint32_t x, uint32_t y, uint32_t w,
+                                  uint32_t h, const char* title, int active) {
+    display_metrics_t metrics;
+    vesa_color_t background;
+    vesa_color_t light_border;
+    vesa_color_t dark_border;
+    vesa_color_t title_background;
+    uint32_t inset;
+    uint32_t title_y;
+    uint32_t button_x;
+
+    if (!gui_clamp_to_screen(&x, &y, &w, &h) || w < 20 || h < 20) return;
+    if (display_get_metrics(&metrics) != OK) return;
+
+    inset = display_scale_px(2);
+    background.raw = GUI_COLOR_BG;
+    light_border.raw = GUI_COLOR_BORDER_L;
+    dark_border.raw = GUI_COLOR_BORDER_D;
+    title_background.raw = active ? GUI_COLOR_TITLE_BG : 0x00606060;
+
+    vesa_fill_rect(x, y, w, h, background);
+    vesa_draw_hline(x, y, w, light_border);
+    vesa_draw_vline(x, y, h, light_border);
+    vesa_draw_hline(x, y + h - 1, w, dark_border);
+    vesa_draw_vline(x + w - 1, y, h, dark_border);
+    vesa_fill_rect(x + inset, y + inset, w - inset * 2,
+                   metrics.title_bar_height, title_background);
+
+    title_y = y + inset +
+              (metrics.title_bar_height - metrics.font_height) / 2;
+    if (title) {
+        gui_draw_scaled_text(x + metrics.spacing, title_y, title,
+                             GUI_COLOR_TEXT_W);
+    }
+    button_x = x + w - inset - metrics.title_bar_height;
+    gui_draw_scaled_button(button_x, y + inset, metrics.title_bar_height,
+                           metrics.title_bar_height, "X", 0);
 }
 
 void gui_draw_window_frame(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const char* title, int active) {

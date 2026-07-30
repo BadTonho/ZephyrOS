@@ -52,6 +52,7 @@
 #include "drivers/vesa.h"
 #include "drivers/font.h"
 #include "drivers/acpi.h"
+#include "ui/display.h"
 
 #define SHELL_Q2CHECK_FAULT_RUNS 2U
 #define SHELL_HOSTED_DEFAULT_CONTENT_WIDTH 880
@@ -2303,6 +2304,7 @@ static void cmd_help(void) {
                 0x08);
     video_print("  desktop  - Abre a area de trabalho\n", 0x07);
     video_print("  guimode  - Alterna Desktop classic/modern\n", 0x07);
+    video_print("  display  - Mostra status ou altera escala da GUI\n", 0x07);
     video_print("  settings - Abre o painel de configuracoes\n", 0x07);
     video_print("  updater  - Abre o System Updater\n", 0x07);
     video_print("  wm       - Abre gerenciador de janelas\n", 0x07);
@@ -8801,6 +8803,136 @@ static void cmd_guimode(const char* args) {
     video_print("Uso: guimode classic|modern\n", 0x0C);
 }
 
+static void cmd_display_status(void) {
+    display_metrics_t metrics;
+    vesa_mode_t* mode = vesa_get_mode();
+    tb_rect_t work_area;
+
+    if (display_get_metrics(&metrics) != OK) {
+        video_print("Display indisponivel.\n", 0x0C);
+        return;
+    }
+    work_area.x = 0;
+    work_area.y = 0;
+    work_area.width = mode && mode->initialized ? (int)mode->width : 0;
+    work_area.height = mode && mode->initialized ? (int)mode->height : 0;
+    if (desktop_get_mode() == DESKTOP_MODE_MODERN) {
+        (void)taskbar_get_work_area(&work_area);
+    }
+
+    video_print("Display:\n", 0x0B);
+    video_print("  VESA: ", 0x07);
+    if (mode && mode->initialized) {
+        print_num(mode->width);
+        video_print("x", 0x07);
+        print_num(mode->height);
+        video_print("x", 0x07);
+        print_num(mode->bpp);
+        video_print("\n", 0x07);
+    } else {
+        video_print("indisponivel\n", 0x0C);
+    }
+    video_print("  Backbuffer: ", 0x07);
+    video_print(vesa_has_backbuffer() ? "OK\n" : "indisponivel\n",
+                vesa_has_backbuffer() ? 0x0A : 0x0C);
+    video_print("  Interface: ", 0x07);
+    video_print(desktop_get_mode() == DESKTOP_MODE_MODERN ?
+                "modern\n" : "classic\n", 0x07);
+    video_print("  Escala: ", 0x07);
+    video_print(display_scale_name(metrics.scale), 0x0B);
+    video_print(" (", 0x07);
+    print_num(metrics.factor_numerator);
+    video_print("/", 0x07);
+    print_num(metrics.factor_denominator);
+    video_print(metrics.available ? ", disponivel)\n" :
+                                    ", indisponivel)\n", 0x07);
+    video_print("  Fonte: ", 0x07);
+    print_num(metrics.font_width);
+    video_print("x", 0x07);
+    print_num(metrics.font_height);
+    video_print("  Espaco: ", 0x07);
+    print_num(metrics.spacing);
+    video_print(" px\n", 0x07);
+    video_print("  Taskbar: ", 0x07);
+    print_num(metrics.taskbar_height);
+    video_print("x", 0x07);
+    print_num(metrics.taskbar_side_width);
+    video_print(" px  Titulo: ", 0x07);
+    print_num(metrics.title_bar_height);
+    video_print(" px\n", 0x07);
+    video_print("  Botao minimo: ", 0x07);
+    print_num(metrics.button_min_width);
+    video_print("x", 0x07);
+    print_num(metrics.button_min_height);
+    video_print("  Icone: ", 0x07);
+    print_num(metrics.icon_size);
+    video_print(" px\n", 0x07);
+    video_print("  VESA minima: ", 0x07);
+    print_num(metrics.min_width);
+    video_print("x", 0x07);
+    print_num(metrics.min_height);
+    video_print("\n", 0x07);
+    video_print("  Area util: ", 0x07);
+    print_num((uint32_t)work_area.width);
+    video_print("x", 0x07);
+    print_num((uint32_t)work_area.height);
+    video_print("\n", 0x07);
+}
+
+static void cmd_display(const char* args) {
+    char scale_name[16];
+    display_scale_t scale;
+    int index = 0;
+    int result;
+
+    if (args && kstrcmp(args, "status") == 0) {
+        cmd_display_status();
+        return;
+    }
+    if (!args || args[0] != 's' || args[1] != 'c' || args[2] != 'a' ||
+        args[3] != 'l' || args[4] != 'e' ||
+        (args[5] != ' ' && args[5] != '\t')) {
+        video_print("Uso: display status | display scale "
+                    "<pequena|normal|grande>\n", 0x0C);
+        return;
+    }
+
+    args += 5;
+    while (*args == ' ' || *args == '\t') args++;
+    while (args[index] && args[index] != ' ' && args[index] != '\t' &&
+           index < (int)sizeof(scale_name) - 1) {
+        scale_name[index] = args[index];
+        index++;
+    }
+    scale_name[index] = '\0';
+    args += index;
+    while (*args == ' ' || *args == '\t') args++;
+    if (!scale_name[0] || *args ||
+        display_parse_scale(scale_name, &scale) != OK) {
+        video_print("Escala invalida; use pequena, normal ou grande.\n",
+                    0x0C);
+        return;
+    }
+
+    result = display_apply_scale(scale);
+    if (result != OK) {
+        if (result == ERR_OVERFLOW) {
+            video_print("Escala recusada: VESA ou area util insuficiente; ",
+                        0x0C);
+        } else if (result == ERR_UNAVAILABLE || result == ERR_STATE) {
+            video_print("Escala recusada: display Modern indisponivel; ",
+                        0x0C);
+        } else {
+            video_print("Escala recusada: reflow da cena falhou; ", 0x0C);
+        }
+        video_print("estado anterior preservado.\n", 0x0C);
+        return;
+    }
+    video_print("Escala ", 0x0A);
+    video_print(display_scale_name(scale), 0x0A);
+    video_print(" aplicada em RAM.\n", 0x0A);
+}
+
 static void cmd_clear(void) {
     video_terminal_clear();
     if (!shell_is_hosted_visible()) taskbar_draw();
@@ -9457,6 +9589,8 @@ int shell_process_command(const char* input) {
         }
     } else if (kstrcmp(cmd, "guimode") == 0) {
         cmd_guimode(input);
+    } else if (kstrcmp(cmd, "display") == 0) {
+        cmd_display(input);
     } else if (kstrcmp(cmd, "explorer") == 0) {
         if (shell_prepare_filemanager() != OK) {
             video_print("Erro: Explorer indisponivel.\n", 0x0C);

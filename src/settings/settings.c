@@ -17,22 +17,29 @@
 #include "drivers/vesa.h"
 #include "drivers/font.h"
 #include "ui/gui.h"
+#include "ui/display.h"
+
+/* Todas as chamadas GUI deste modulo pertencem ao caminho Modern. */
+#define gui_draw_text gui_draw_scaled_text
+#define gui_draw_button gui_draw_scaled_button
 
 #ifndef NULL
 #define NULL ((void*)0)
 #endif
 
-#define SETTINGS_MODERN_MIN_WIDTH 600
-#define SETTINGS_MODERN_MIN_HEIGHT 400
+#define SETTINGS_MODERN_MIN_WIDTH 720
+#define SETTINGS_MODERN_MIN_HEIGHT 450
 #define SETTINGS_MODERN_DEFAULT_WIDTH 720
 #define SETTINGS_MODERN_DEFAULT_HEIGHT 520
-#define SETTINGS_MODERN_MARGIN 12
-#define SETTINGS_MODERN_SIDE_WIDTH 184
-#define SETTINGS_MODERN_TITLE_HEIGHT 22
-#define SETTINGS_MODERN_ROW_HEIGHT 32
-#define SETTINGS_MODERN_TAB_HEIGHT 24
-#define SETTINGS_MODERN_DIALOG_WIDTH 480
-#define SETTINGS_MODERN_DIALOG_HEIGHT 300
+#define SETTINGS_MODERN_PX(value) ((int)display_scale_px(value))
+#define SETTINGS_MODERN_MARGIN ((int)display_scale_px(12))
+#define SETTINGS_MODERN_SIDE_WIDTH ((int)display_scale_px(168))
+#define SETTINGS_MODERN_TITLE_HEIGHT ((int)display_scale_px(24))
+#define SETTINGS_MODERN_ROW_HEIGHT ((int)display_scale_px(32))
+#define SETTINGS_MODERN_TAB_HEIGHT ((int)display_scale_px(24))
+#define SETTINGS_MODERN_BUTTON_HEIGHT ((int)display_scale_px(24))
+#define SETTINGS_MODERN_DIALOG_WIDTH SETTINGS_MODERN_PX(480)
+#define SETTINGS_MODERN_DIALOG_HEIGHT SETTINGS_MODERN_PX(300)
 
 typedef enum {
     SETTINGS_DIALOG_NONE = 0,
@@ -65,7 +72,7 @@ static int settings_hosted = 0;
 static settings_page_t categories[SETTINGS_CAT_COUNT];
 
 static const char* display_theme_values[] = {"Classico", "Escuro", "Azul"};
-static const char* display_resolution_values[] = {"80x25", "80x50", "Auto"};
+static const char* display_scale_values[] = {"Pequena", "Normal", "Grande"};
 static const char* taskbar_position_values[] = {"Baixo", "Cima", "Esquerda", "Direita", "Custom"};
 static const char* taskbar_size_values[] = {"Pequeno", "Medio", "Grande"};
 static const char* windows_button_side_values[] = {"Direita", "Esquerda"};
@@ -92,8 +99,10 @@ static void settings_hosted_close(void);
 
 static const wm_hosted_app_t settings_hosted_app = {
     WM_APP_SETTINGS, "Configuracoes do ZephyrOS", "Settings",
-    WM_HOSTED_MIN_WIDTH, WM_HOSTED_MIN_HEIGHT,
-    SETTINGS_MODERN_DEFAULT_WIDTH + 4, SETTINGS_MODERN_DEFAULT_HEIGHT + 28,
+    SETTINGS_MODERN_MIN_WIDTH + WM_HOSTED_FRAME_MAX_WIDTH,
+    SETTINGS_MODERN_MIN_HEIGHT + WM_HOSTED_FRAME_MAX_HEIGHT,
+    SETTINGS_MODERN_DEFAULT_WIDTH + WM_HOSTED_FRAME_MAX_WIDTH,
+    SETTINGS_MODERN_DEFAULT_HEIGHT + WM_HOSTED_FRAME_MAX_HEIGHT,
     WM_KEY_REDRAW_WINDOW_MANAGER,
     settings_hosted_draw, settings_hosted_key, settings_hosted_mouse,
     settings_hosted_close
@@ -111,8 +120,8 @@ static void init_categories(void) {
         display_theme_values, 3
     };
     categories[SETTINGS_CAT_DISPLAY].options[1] = (settings_option_t){
-        "Resolucao", SETTINGS_OPT_LIST, 0, 2,
-        display_resolution_values, 3
+        "Escala", SETTINGS_OPT_LIST, DISPLAY_SCALE_NORMAL,
+        DISPLAY_SCALE_LARGE, display_scale_values, DISPLAY_SCALE_COUNT
     };
     categories[SETTINGS_CAT_DISPLAY].options[2] = (settings_option_t){
         "Mostrar grade", SETTINGS_OPT_TOGGLE, 0, 1, NULL, 0
@@ -251,6 +260,13 @@ static void settings_update_taskbar_position_options(void) {
     position->value = taskbar_config ? taskbar_config->position : TB_POS_BOTTOM;
 }
 
+static void settings_sync_display_scale(void) {
+    display_metrics_t metrics;
+
+    if (display_get_metrics(&metrics) != OK) return;
+    categories[SETTINGS_CAT_DISPLAY].options[1].value = metrics.scale;
+}
+
 static void settings_select_mode(void) {
     settings_mode = SETTINGS_MODE_CLASSIC;
     if (desktop_get_mode() != DESKTOP_MODE_MODERN) {
@@ -269,6 +285,7 @@ static void settings_select_mode(void) {
 }
 
 void settings_init(void) {
+    LOG_INFO("SETTINGS", "Inicializando configuracoes");
     settings_active = 0;
     selected_category = 0;
     selected_option = 0;
@@ -277,6 +294,8 @@ void settings_init(void) {
     settings_dialog = SETTINGS_DIALOG_NONE;
     settings_hosted = 0;
     init_categories();
+    settings_sync_display_scale();
+    LOG_INFO("SETTINGS", "Configuracoes inicializadas com sucesso");
 }
 
 void settings_open(void) {
@@ -286,6 +305,7 @@ void settings_open(void) {
         return;
     }
 
+    settings_sync_display_scale();
     if (desktop_get_mode() == DESKTOP_MODE_MODERN && settings_hosted) {
         wm_set_active(1);
         wm_register_hosted_app(&settings_hosted_app);
@@ -423,6 +443,16 @@ static void apply_wm_settings(void) {
 }
 
 static void settings_apply_category(void) {
+    if (selected_category == SETTINGS_CAT_DISPLAY) {
+        settings_option_t* scale =
+            &categories[SETTINGS_CAT_DISPLAY].options[1];
+        int result = display_apply_scale((display_scale_t)scale->value);
+
+        if (result != OK) {
+            LOG_WARN("SETTINGS", "Escala recusada; valor anterior preservado");
+        }
+        settings_sync_display_scale();
+    }
     if (selected_category == SETTINGS_CAT_TASKBAR) {
         apply_taskbar_settings();
     }
@@ -684,6 +714,20 @@ static int settings_gui_hit(int x, int y, int left, int top, int width, int heig
     return x >= left && x < left + width && y >= top && y < top + height;
 }
 
+static int settings_gui_value_width(int content_width) {
+    display_metrics_t metrics;
+    int width = content_width / 4;
+    int minimum;
+    int maximum = SETTINGS_MODERN_PX(166);
+
+    if (display_get_metrics(&metrics) != OK) return maximum;
+    minimum = metrics.font_width * 8 + metrics.spacing * 2;
+    if (minimum < metrics.button_min_width) minimum = metrics.button_min_width;
+    if (width < minimum) width = minimum;
+    if (width > maximum) width = maximum;
+    return width;
+}
+
 static void settings_gui_draw_option_value(settings_option_t* option,
                                            int x, int y, int width, int selected) {
     const char* value = "";
@@ -694,7 +738,8 @@ static void settings_gui_draw_option_value(settings_option_t* option,
         toggle[1] = option->value ? 'x' : ' ';
         toggle[2] = ']';
         toggle[3] = '\0';
-        gui_draw_button((uint32_t)x, (uint32_t)y, (uint32_t)width, 24,
+        gui_draw_button((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                        SETTINGS_MODERN_BUTTON_HEIGHT,
                         toggle, selected);
         return;
     }
@@ -703,43 +748,54 @@ static void settings_gui_draw_option_value(settings_option_t* option,
         value = option->list_values[option->value];
     }
     if (option->type == SETTINGS_OPT_ACTION) value = "Executar";
-    gui_draw_button((uint32_t)x, (uint32_t)y, (uint32_t)width, 24,
+    gui_draw_button((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                    SETTINGS_MODERN_BUTTON_HEIGHT,
                     value, selected);
 }
 
 static void settings_gui_draw_main_header(int x, int y, int width) {
-    gui_draw_text((uint32_t)(x + 12), (uint32_t)(y + 8),
+    gui_draw_text((uint32_t)(x + SETTINGS_MODERN_PX(12)),
+                  (uint32_t)(y + SETTINGS_MODERN_PX(8)),
                   categories[selected_category].name, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + width - 220), (uint32_t)(y + 8),
-                  "Configuracoes do sistema", GUI_COLOR_TEXT);
-    vesa_draw_hline((uint32_t)(x + 8), (uint32_t)(y + 30),
-                    (uint32_t)(width - 16), settings_gui_color(GUI_COLOR_BORDER_D));
+    vesa_draw_hline((uint32_t)(x + SETTINGS_MODERN_PX(8)),
+                    (uint32_t)(y + SETTINGS_MODERN_PX(30)),
+                    (uint32_t)(width - SETTINGS_MODERN_PX(16)),
+                    settings_gui_color(GUI_COLOR_BORDER_D));
 }
 
 static void settings_draw_modern_main(void) {
     int side_x = settings_gui_x + SETTINGS_MODERN_MARGIN;
-    int side_y = settings_gui_y + 32;
-    int side_height = settings_gui_height - 76;
-    int content_x = side_x + SETTINGS_MODERN_SIDE_WIDTH + 8;
+    int side_y = settings_gui_y + SETTINGS_MODERN_PX(32);
+    int side_height = settings_gui_height - SETTINGS_MODERN_PX(76);
+    int content_x = side_x + SETTINGS_MODERN_SIDE_WIDTH +
+                    SETTINGS_MODERN_PX(8);
     int content_y = side_y;
-    int content_width = settings_gui_width - SETTINGS_MODERN_SIDE_WIDTH - 32;
+    int content_width = settings_gui_width - SETTINGS_MODERN_SIDE_WIDTH -
+                        SETTINGS_MODERN_PX(32);
     int content_height = side_height;
+    int value_width = settings_gui_value_width(content_width);
     settings_page_t* page = &categories[selected_category];
 
     gui_draw_panel((uint32_t)side_x, (uint32_t)side_y,
                    SETTINGS_MODERN_SIDE_WIDTH, (uint32_t)side_height,
                    GUI_COLOR_BG, 0);
-    gui_draw_text((uint32_t)(side_x + 12), (uint32_t)(side_y + 10),
+    gui_draw_text((uint32_t)(side_x + SETTINGS_MODERN_PX(12)),
+                  (uint32_t)(side_y + SETTINGS_MODERN_PX(10)),
                   "Categorias", GUI_COLOR_TEXT);
 
     for (int i = 0; i < SETTINGS_CAT_COUNT; i++) {
-        int row_y = side_y + 38 + i * SETTINGS_MODERN_ROW_HEIGHT;
+        int row_y = side_y + SETTINGS_MODERN_PX(38) +
+                    i * SETTINGS_MODERN_ROW_HEIGHT;
         uint32_t background = i == selected_category ? GUI_COLOR_TITLE_BG : GUI_COLOR_BG;
         uint32_t text_color = i == selected_category ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
-        gui_draw_panel((uint32_t)(side_x + 6), (uint32_t)row_y,
-                       SETTINGS_MODERN_SIDE_WIDTH - 12, 28, background,
+        gui_draw_panel((uint32_t)(side_x + SETTINGS_MODERN_PX(6)),
+                       (uint32_t)row_y,
+                       SETTINGS_MODERN_SIDE_WIDTH - SETTINGS_MODERN_PX(12),
+                       SETTINGS_MODERN_ROW_HEIGHT - SETTINGS_MODERN_PX(4),
+                       background,
                        i == selected_category);
-        gui_draw_text((uint32_t)(side_x + 16), (uint32_t)(row_y + 6),
+        gui_draw_text((uint32_t)(side_x + SETTINGS_MODERN_PX(16)),
+                      (uint32_t)(row_y + SETTINGS_MODERN_PX(6)),
                       categories[i].name, text_color);
     }
 
@@ -749,56 +805,74 @@ static void settings_draw_modern_main(void) {
     settings_gui_draw_main_header(content_x, content_y, content_width);
 
     for (int i = 0; i < page->option_count; i++) {
-        int row_y = content_y + 46 + i * SETTINGS_MODERN_ROW_HEIGHT;
-        int value_x = content_x + content_width - 190;
+        int row_y = content_y + SETTINGS_MODERN_PX(46) +
+                    i * SETTINGS_MODERN_ROW_HEIGHT;
+        int value_x = content_x + content_width -
+                      SETTINGS_MODERN_PX(24) - value_width;
         uint32_t text_color = i == selected_option ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
 
         if (i == selected_option) {
             vesa_color_t selection = settings_gui_color(GUI_COLOR_TITLE_BG);
-            vesa_fill_rect((uint32_t)(content_x + 6), (uint32_t)row_y,
-                           (uint32_t)(content_width - 12), 28, selection);
+            vesa_fill_rect((uint32_t)(content_x + SETTINGS_MODERN_PX(6)),
+                           (uint32_t)row_y,
+                           (uint32_t)(content_width - SETTINGS_MODERN_PX(12)),
+                           SETTINGS_MODERN_ROW_HEIGHT - SETTINGS_MODERN_PX(4),
+                           selection);
         }
-        gui_draw_text((uint32_t)(content_x + 18), (uint32_t)(row_y + 6),
+        gui_draw_text((uint32_t)(content_x + SETTINGS_MODERN_PX(18)),
+                      (uint32_t)(row_y + SETTINGS_MODERN_PX(6)),
                       page->options[i].name, text_color);
-        settings_gui_draw_option_value(&page->options[i], value_x, row_y + 2,
-                                       166, i == selected_option && editing_option);
+        settings_gui_draw_option_value(
+            &page->options[i], value_x, row_y + SETTINGS_MODERN_PX(2),
+            value_width,
+            i == selected_option && editing_option);
     }
 
     if (page->option_count == 0) {
-        gui_draw_text((uint32_t)(content_x + 18), (uint32_t)(content_y + 52),
+        gui_draw_text((uint32_t)(content_x + SETTINGS_MODERN_PX(18)),
+                      (uint32_t)(content_y + SETTINGS_MODERN_PX(52)),
                       "Nenhuma opcao disponivel", 0x00800000);
     }
-    gui_draw_text((uint32_t)(settings_gui_x + 18),
-                  (uint32_t)(settings_gui_y + settings_gui_height - 34),
-                  "Tab categorias | Setas navegam | Enter edita | Alt+F4 fecha",
+    gui_draw_text((uint32_t)(settings_gui_x + SETTINGS_MODERN_PX(18)),
+                  (uint32_t)(settings_gui_y + settings_gui_height -
+                             SETTINGS_MODERN_PX(34)),
+                  "Tab: categorias | Setas | Enter: editar",
                   GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(settings_gui_x + settings_gui_width - 150),
-                  (uint32_t)(settings_gui_y + settings_gui_height - 34),
+    gui_draw_text((uint32_t)(settings_gui_x + settings_gui_width -
+                             SETTINGS_MODERN_PX(150)),
+                  (uint32_t)(settings_gui_y + settings_gui_height -
+                             SETTINGS_MODERN_PX(34)),
                   settings_mode == SETTINGS_MODE_MODERN ? "GUI" : "TUI",
                   GUI_COLOR_TEXT);
 }
 
 static void settings_gui_draw_icon_editor(void) {
-    int x = settings_gui_x + SETTINGS_MODERN_MARGIN + 24;
-    int y = settings_gui_y + 42;
-    int width = settings_gui_width - 72;
-    int row_width = width - 16;
+    int x = settings_gui_x + SETTINGS_MODERN_MARGIN + SETTINGS_MODERN_PX(24);
+    int y = settings_gui_y + SETTINGS_MODERN_PX(42);
+    int width = settings_gui_width - SETTINGS_MODERN_PX(72);
+    int row_width = width - SETTINGS_MODERN_PX(16);
 
     gui_draw_panel((uint32_t)(settings_gui_x + SETTINGS_MODERN_MARGIN),
-                   (uint32_t)(settings_gui_y + 32), (uint32_t)(settings_gui_width - 24),
-                   (uint32_t)(settings_gui_height - 76), GUI_COLOR_BG, 0);
+                   (uint32_t)(settings_gui_y + SETTINGS_MODERN_PX(32)),
+                   (uint32_t)(settings_gui_width - SETTINGS_MODERN_PX(24)),
+                   (uint32_t)(settings_gui_height - SETTINGS_MODERN_PX(76)),
+                   GUI_COLOR_BG, 0);
     gui_draw_text((uint32_t)x, (uint32_t)y, icon_editor_title, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)x, (uint32_t)(y + 28),
+    gui_draw_text((uint32_t)x, (uint32_t)(y + SETTINGS_MODERN_PX(28)),
                   "Item", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 128), (uint32_t)(y + 28),
+    gui_draw_text((uint32_t)(x + SETTINGS_MODERN_PX(128)),
+                  (uint32_t)(y + SETTINGS_MODERN_PX(28)),
                   "Caractere", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 250), (uint32_t)(y + 28),
+    gui_draw_text((uint32_t)(x + SETTINGS_MODERN_PX(250)),
+                  (uint32_t)(y + SETTINGS_MODERN_PX(28)),
                   "Cor", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 340), (uint32_t)(y + 28),
+    gui_draw_text((uint32_t)(x + SETTINGS_MODERN_PX(340)),
+                  (uint32_t)(y + SETTINGS_MODERN_PX(28)),
                   "Cor sel.", GUI_COLOR_TEXT);
 
     for (int i = 0; i < icon_editor_count; i++) {
-        int row_y = y + 52 + i * 34;
+        int row_y = y + SETTINGS_MODERN_PX(52) +
+                    i * SETTINGS_MODERN_PX(34);
         uint32_t row_color = i == icon_editor_selected ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
         char character[2];
         char color_value[16];
@@ -810,28 +884,45 @@ static void settings_gui_draw_icon_editor(void) {
         int_to_str((uint32_t)(uint8_t)icon_editor_entries[i].color_selected,
                    selected_color_value);
         if (i == icon_editor_selected) {
-            vesa_fill_rect((uint32_t)(x - 8), (uint32_t)row_y,
-                           (uint32_t)row_width, 28,
+            vesa_fill_rect((uint32_t)(x - SETTINGS_MODERN_PX(8)),
+                           (uint32_t)row_y, (uint32_t)row_width,
+                           (uint32_t)SETTINGS_MODERN_PX(28),
                            settings_gui_color(GUI_COLOR_TITLE_BG));
         }
-        gui_draw_text((uint32_t)x, (uint32_t)(row_y + 6), icon_editor_names[i], row_color);
-        gui_draw_button((uint32_t)(x + 112), (uint32_t)(row_y + 2), 88, 24,
+        gui_draw_text((uint32_t)x,
+                      (uint32_t)(row_y + SETTINGS_MODERN_PX(6)),
+                      icon_editor_names[i], row_color);
+        gui_draw_button((uint32_t)(x + SETTINGS_MODERN_PX(112)),
+                        (uint32_t)(row_y + SETTINGS_MODERN_PX(2)),
+                        (uint32_t)SETTINGS_MODERN_PX(88),
+                        SETTINGS_MODERN_BUTTON_HEIGHT,
                         character,
                         icon_editor_field == 0 && i == icon_editor_selected);
-        gui_draw_button((uint32_t)(x + 224), (uint32_t)(row_y + 2), 72, 24,
+        gui_draw_button((uint32_t)(x + SETTINGS_MODERN_PX(224)),
+                        (uint32_t)(row_y + SETTINGS_MODERN_PX(2)),
+                        (uint32_t)SETTINGS_MODERN_PX(72),
+                        SETTINGS_MODERN_BUTTON_HEIGHT,
                         color_value,
                         icon_editor_field == 1 && i == icon_editor_selected);
-        gui_draw_button((uint32_t)(x + 314), (uint32_t)(row_y + 2), 72, 24,
+        gui_draw_button((uint32_t)(x + SETTINGS_MODERN_PX(314)),
+                        (uint32_t)(row_y + SETTINGS_MODERN_PX(2)),
+                        (uint32_t)SETTINGS_MODERN_PX(72),
+                        SETTINGS_MODERN_BUTTON_HEIGHT,
                         selected_color_value,
                         icon_editor_field == 2 && i == icon_editor_selected);
     }
 
-    gui_draw_button((uint32_t)(settings_gui_x + settings_gui_width - 136),
-                    (uint32_t)(settings_gui_y + settings_gui_height - 54),
-                    104, 28, "Voltar", 0);
-    gui_draw_text((uint32_t)(settings_gui_x + 24),
-                  (uint32_t)(settings_gui_y + settings_gui_height - 42),
-                  "Setas: item/campo | +/-: alterar | Enter: concluir",
+    gui_draw_button(
+        (uint32_t)(settings_gui_x + settings_gui_width -
+                   SETTINGS_MODERN_PX(136)),
+        (uint32_t)(settings_gui_y + settings_gui_height -
+                   SETTINGS_MODERN_PX(54)),
+        (uint32_t)SETTINGS_MODERN_PX(104),
+        (uint32_t)SETTINGS_MODERN_PX(28), "Voltar", 0);
+    gui_draw_text((uint32_t)(settings_gui_x + SETTINGS_MODERN_PX(24)),
+                  (uint32_t)(settings_gui_y + settings_gui_height -
+                             SETTINGS_MODERN_PX(42)),
+                  "Setas: item/campo | +/-: alterar",
                   GUI_COLOR_TEXT);
 }
 
@@ -918,11 +1009,15 @@ static void settings_draw_modern_dialog(void) {
     if (settings_dialog == SETTINGS_DIALOG_PROCESSES) title = "Processos";
     if (settings_dialog == SETTINGS_DIALOG_VERSION) title = "Versao";
     if (settings_dialog == SETTINGS_DIALOG_CREDITS) title = "Creditos";
-    gui_draw_window_frame((uint32_t)x, (uint32_t)y, (uint32_t)width,
-                          (uint32_t)height, title, 1);
-    settings_gui_draw_dialog_content(x + 20, y + 42, width - 40);
-    gui_draw_button((uint32_t)(x + width - 124), (uint32_t)(y + height - 46),
-                    96, 28, "Voltar", 0);
+    gui_draw_scaled_window_frame((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                                 (uint32_t)height, title, 1);
+    settings_gui_draw_dialog_content(
+        x + SETTINGS_MODERN_PX(20), y + SETTINGS_MODERN_PX(42),
+        width - SETTINGS_MODERN_PX(40));
+    gui_draw_button((uint32_t)(x + width - SETTINGS_MODERN_PX(124)),
+                    (uint32_t)(y + height - SETTINGS_MODERN_PX(46)),
+                    (uint32_t)SETTINGS_MODERN_PX(96),
+                    (uint32_t)SETTINGS_MODERN_PX(28), "Voltar", 0);
 }
 
 static void settings_modern_draw(void) {
@@ -935,10 +1030,10 @@ static void settings_modern_draw(void) {
         mouse_invalidate_cursor();
         vesa_frame_begin();
         vesa_clear(settings_gui_color(GUI_COLOR_BG));
-        gui_draw_window_frame((uint32_t)settings_gui_x, (uint32_t)settings_gui_y,
-                              (uint32_t)settings_gui_width,
-                              (uint32_t)settings_gui_height,
-                              "Configuracoes do ZephyrOS", 1);
+        gui_draw_scaled_window_frame(
+            (uint32_t)settings_gui_x, (uint32_t)settings_gui_y,
+            (uint32_t)settings_gui_width, (uint32_t)settings_gui_height,
+            "Configuracoes do ZephyrOS", 1);
     }
 
     if (icon_editor_active) {
@@ -1130,11 +1225,14 @@ static void settings_gui_dialog_bounds(int* x, int* y, int* width, int* height) 
 }
 
 static int settings_gui_handle_icon_mouse(int px, int py) {
-    int x = settings_gui_x + SETTINGS_MODERN_MARGIN + 24;
-    int y = settings_gui_y + 42;
+    int x = settings_gui_x + SETTINGS_MODERN_MARGIN + SETTINGS_MODERN_PX(24);
+    int y = settings_gui_y + SETTINGS_MODERN_PX(42);
 
-    if (settings_gui_hit(px, py, settings_gui_x + settings_gui_width - 136,
-                         settings_gui_y + settings_gui_height - 54, 104, 28)) {
+    if (settings_gui_hit(
+            px, py,
+            settings_gui_x + settings_gui_width - SETTINGS_MODERN_PX(136),
+            settings_gui_y + settings_gui_height - SETTINGS_MODERN_PX(54),
+            SETTINGS_MODERN_PX(104), SETTINGS_MODERN_PX(28))) {
         icon_editor_active = 0;
         icon_editor_entries = 0;
         icon_editor_names = 0;
@@ -1142,13 +1240,22 @@ static int settings_gui_handle_icon_mouse(int px, int py) {
         return 1;
     }
     for (int i = 0; i < icon_editor_count; i++) {
-        int row_y = y + 52 + i * 34;
-        if (settings_gui_hit(px, py, x - 8, row_y,
-                             settings_gui_width - 72, 28)) {
+        int row_y = y + SETTINGS_MODERN_PX(52) +
+                    i * SETTINGS_MODERN_PX(34);
+        if (settings_gui_hit(px, py, x - SETTINGS_MODERN_PX(8), row_y,
+                             settings_gui_width - SETTINGS_MODERN_PX(72),
+                             SETTINGS_MODERN_PX(28))) {
             icon_editor_selected = i;
-            if (px >= x + 112 && px < x + 200) icon_editor_field = 0;
-            else if (px >= x + 224 && px < x + 296) icon_editor_field = 1;
-            else if (px >= x + 314 && px < x + 386) icon_editor_field = 2;
+            if (px >= x + SETTINGS_MODERN_PX(112) &&
+                px < x + SETTINGS_MODERN_PX(200)) {
+                icon_editor_field = 0;
+            } else if (px >= x + SETTINGS_MODERN_PX(224) &&
+                       px < x + SETTINGS_MODERN_PX(296)) {
+                icon_editor_field = 1;
+            } else if (px >= x + SETTINGS_MODERN_PX(314) &&
+                       px < x + SETTINGS_MODERN_PX(386)) {
+                icon_editor_field = 2;
+            }
             settings_draw();
             return 1;
         }
@@ -1163,8 +1270,16 @@ static int settings_gui_handle_dialog_mouse(int px, int py) {
     int height;
 
     settings_gui_dialog_bounds(&x, &y, &width, &height);
-    if (settings_gui_hit(px, py, x + width - 20, y + 3, 16, 16) ||
-        settings_gui_hit(px, py, x + width - 124, y + height - 46, 96, 28)) {
+    if (settings_gui_hit(
+            px, py,
+            x + width - SETTINGS_MODERN_PX(2) -
+            SETTINGS_MODERN_TITLE_HEIGHT,
+            y + SETTINGS_MODERN_PX(2),
+            SETTINGS_MODERN_TITLE_HEIGHT, SETTINGS_MODERN_TITLE_HEIGHT) ||
+        settings_gui_hit(
+            px, py, x + width - SETTINGS_MODERN_PX(124),
+            y + height - SETTINGS_MODERN_PX(46),
+            SETTINGS_MODERN_PX(96), SETTINGS_MODERN_PX(28))) {
         settings_dialog = SETTINGS_DIALOG_NONE;
         settings_draw();
     }
@@ -1173,7 +1288,10 @@ static int settings_gui_handle_dialog_mouse(int px, int py) {
 
 int settings_handle_mouse(mouse_event_t* event) {
     int value_x;
+    int value_width;
+    int content_width;
     int row;
+    int row_offset;
     settings_page_t* page;
 
     if (!event) {
@@ -1187,8 +1305,12 @@ int settings_handle_mouse(mouse_event_t* event) {
         !(event->changed & MOUSE_BTN_LEFT)) return 1;
 
     if (!settings_hosted &&
-        settings_gui_hit(event->x, event->y, settings_gui_x + settings_gui_width - 20,
-                         settings_gui_y + 3, 16, 16)) {
+        settings_gui_hit(
+            event->x, event->y,
+            settings_gui_x + settings_gui_width - SETTINGS_MODERN_PX(2) -
+            SETTINGS_MODERN_TITLE_HEIGHT,
+            settings_gui_y + SETTINGS_MODERN_PX(2),
+            SETTINGS_MODERN_TITLE_HEIGHT, SETTINGS_MODERN_TITLE_HEIGHT)) {
         settings_close();
         return 1;
     }
@@ -1201,10 +1323,16 @@ int settings_handle_mouse(mouse_event_t* event) {
 
     if (settings_gui_hit(event->x, event->y,
                          settings_gui_x + SETTINGS_MODERN_MARGIN,
-                         settings_gui_y + 32, SETTINGS_MODERN_SIDE_WIDTH,
-                         settings_gui_height - 76)) {
-        row = (event->y - (settings_gui_y + 70)) / SETTINGS_MODERN_ROW_HEIGHT;
-        if (row >= 0 && row < SETTINGS_CAT_COUNT) {
+                         settings_gui_y + SETTINGS_MODERN_PX(32),
+                         SETTINGS_MODERN_SIDE_WIDTH,
+                         settings_gui_height - SETTINGS_MODERN_PX(76))) {
+        row_offset = event->y -
+                     (settings_gui_y + SETTINGS_MODERN_PX(70));
+        if (row_offset < 0) return 1;
+        row = row_offset / SETTINGS_MODERN_ROW_HEIGHT;
+        if (row_offset % SETTINGS_MODERN_ROW_HEIGHT <
+                SETTINGS_MODERN_ROW_HEIGHT - SETTINGS_MODERN_PX(4) &&
+            row >= 0 && row < SETTINGS_CAT_COUNT) {
             selected_category = row;
             selected_option = 0;
             editing_option = 0;
@@ -1214,12 +1342,21 @@ int settings_handle_mouse(mouse_event_t* event) {
     }
 
     page = &categories[selected_category];
-    row = (event->y - (settings_gui_y + 32 + 46)) / SETTINGS_MODERN_ROW_HEIGHT;
-    if (row < 0 || row >= page->option_count) return 1;
+    row_offset = event->y - (settings_gui_y + SETTINGS_MODERN_PX(32) +
+                             SETTINGS_MODERN_PX(46));
+    if (row_offset < 0) return 1;
+    row = row_offset / SETTINGS_MODERN_ROW_HEIGHT;
+    if (row_offset % SETTINGS_MODERN_ROW_HEIGHT >=
+            SETTINGS_MODERN_ROW_HEIGHT - SETTINGS_MODERN_PX(4) ||
+        row < 0 || row >= page->option_count) return 1;
     selected_option = row;
-    value_x = settings_gui_x + SETTINGS_MODERN_MARGIN + SETTINGS_MODERN_SIDE_WIDTH +
-              8 + (settings_gui_width - SETTINGS_MODERN_SIDE_WIDTH - 32) - 190;
-    if (event->x < value_x) {
+    content_width = settings_gui_width - SETTINGS_MODERN_SIDE_WIDTH -
+                    SETTINGS_MODERN_PX(32);
+    value_width = settings_gui_value_width(content_width);
+    value_x = settings_gui_x + SETTINGS_MODERN_MARGIN +
+              SETTINGS_MODERN_SIDE_WIDTH + SETTINGS_MODERN_PX(8) +
+              content_width - SETTINGS_MODERN_PX(24) - value_width;
+    if (event->x < value_x || event->x >= value_x + value_width) {
         editing_option = 0;
         settings_draw();
         return 1;
