@@ -709,7 +709,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 - **Gerenciador de Processos** (`gerenciador de processos.md`)
 
 ### Novos Módulos e Aplicativos (App Store / Opcionais)
-- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1, AS2, MV0, MV0.1, MV1 e MV2 validados; MV3 implementado e aguardando validacao QEMU antes do AS3
+- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1, AS2, MV0, MV0.1, MV1, MV2 e MV3 concluidos e validados; AS3 e o proximo passo
 - **Gerenciador de Mídia** (`gerenciador de midia.md`)
 - **Gerenciador de Jogos** (`gerenciador de jogos.md`)
 - **Anti-Virus** (`anti virus.md`)
