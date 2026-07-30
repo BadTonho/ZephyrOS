@@ -245,7 +245,9 @@ de vídeo, teclado e Shell; a matriz funcional completa pertence ao Classic.
 
 `display status` mostra modo VESA, backbuffer, interface Simple/Classic,
 escala ativa, fonte, espaçamento, taskbar, botão mínimo, ícone, requisito do
-preset e área útil atual.
+preset e área útil atual. No Classic, identifica a face nativa `Zephyr UI`
+ativa. No Simple, separa a fonte legada 8x16 em uso do preset Classic mantido
+somente em RAM.
 
 `display scale` aceita exatamente um dos nomes `pequena`, `normal` ou
 `grande`. A mudança é imediata e vale somente até o próximo boot. Argumento

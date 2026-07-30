@@ -433,7 +433,7 @@ $(VESA_OBJ): $(VESA_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(FONT_OBJ): $(FONT_C)
+$(FONT_OBJ): $(FONT_C) src/drivers/font_data.inc src/include/drivers/font.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -626,6 +626,7 @@ debug: $(OS_IMG)
 
 q3check:
 	python tools\q3check.py
+	python tools\vendor_terminus.py --check
 
 q3check-test:
 	python tools\q3check.py --self-test

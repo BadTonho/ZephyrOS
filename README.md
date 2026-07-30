@@ -323,3 +323,5 @@ Contributions are welcome! Please read [`CONTRIBUTING.md`](CONTRIBUTING.md) befo
 ## License
 
 This project is open-source and licensed under the [MIT License](LICENSE).
+Third-party components retain their respective licenses as documented in
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

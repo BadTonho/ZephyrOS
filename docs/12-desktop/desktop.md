@@ -65,6 +65,11 @@ taskbar e aplicativos permanecem inalterados.
 | normal | 5/4 | 10x20 | 10 px | 30 px | 75x30 px | 40 px | 30 px | 800x600 |
 | grande | 3/2 | 12x24 | 12 px | 36 px | 90x36 px | 48 px | 36 px | 1024x768 |
 
+Desde o MV0.1, essas tres dimensoes selecionam faces nativas da familia
+monoespacada `Zephyr UI Bitmap`. A GUI Classic nao amplia mais a fonte 8x16
+por nearest-neighbor no caminho normal. O redimensionador anterior permanece
+somente como fallback com log caso uma combinacao de metricas nao tenha face.
+
 ```c
 typedef struct {
     display_scale_t scale;
@@ -183,9 +188,10 @@ void gui_draw_scaled_window_frame(int x, int y, int w, int h,
 As cenas Classic usam backbuffer e um único ciclo de frame. As primitivas não
 implementam gradientes, transparência ou cantos arredondados nesta etapa.
 
-As primitivas antigas continuam fixas em 8x16. Somente as variantes `scaled`
-consultam `ui/display.h`, preservando Updater, Shell hospedado e aplicacoes
-fora do MV0.
+As primitivas antigas continuam usando a fonte legada 8x16. Somente as
+variantes `scaled` consultam `ui/display.h` e selecionam a face nativa Zephyr
+UI de mesma dimensao, preservando Simple, Updater, Shell hospedado e
+aplicacoes fora do MV0. Nao ha antialiasing nem alocacao durante o desenho.
 
 ---
 

@@ -237,7 +237,9 @@ whitespace invalido, novas funcoes C que retornam `ERR_*` sem `LOG_ERROR` ou
 tecnico canonico definido no [catalogo de contratos](qualidade/contratos-publicos.md).
 Ele tambem valida que cada evidencia registrada em
 [metricas de otimizacao](qualidade/metricas.md) contenha todos os campos do
-modelo.
+modelo. Quando as fontes do MV0.1 estao presentes, o alvo tambem executa
+`tools/vendor_terminus.py --check` para validar os hashes dos BDFs e confirmar
+que os dados privados do driver estao sincronizados.
 
 Uma mudanca de desempenho deve registrar comparacao reproduzivel de antes e
 depois em [metricas de otimizacao](qualidade/metricas.md). Se a mudanca nao

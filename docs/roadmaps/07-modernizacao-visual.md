@@ -90,6 +90,41 @@ anterior e o fallback Simple.
 8. `health summary`, `memcheck` e `regcheck full` foram executados; MemCheck e
    RegCheck terminaram em `OK`, sem processos, memoria ou pacotes residuais.
 
+## MV0.1 - Tipografia bitmap legivel
+
+**Estado:** implementacao presente no repositorio; aguardando `make q3check`,
+build completo e aprovacao da matriz QEMU pelo usuario.
+
+### Implementacao
+
+- [x] Incorporar as faces normais 8x16, 10x20 e 12x24 da familia derivada
+  `Zephyr UI Bitmap`, com BDFs, hashes, gerador deterministico e OFL 1.1.
+- [x] Preservar a fonte e as APIs legadas 8x16 para Simple, Shell hospedado,
+  Updater e primitivas fora do MV0.
+- [x] Usar os glyphs nativos no texto escalado do Classic sem mudar metricas,
+  medicao, hit-testing ou reflow.
+- [x] Manter o redimensionador antigo somente como fallback com log e mapear
+  bytes fora do ASCII imprimivel para `?` no caminho nativo.
+- [x] Diferenciar no `display status` a fonte Classic nativa da fonte Simple
+  legada.
+- [ ] Aprovar a nova tipografia nas tres escalas e concluir a matriz abaixo.
+
+### Criterio de saida
+
+As tres escalas usam glyphs nativos nitidos, preservam a geometria validada do
+MV0 e distinguem letras, numeros e pontuacao sem cortes. O Simple permanece
+visualmente inalterado.
+
+### Matriz QEMU pendente
+
+1. Rodar `make q3check`, `make clean && make` e `make run`, nessa ordem.
+2. Alternar pequena, normal e grande pelo Shell e pelo Settings.
+3. Verificar Desktop, Menu Iniciar, Taskbar, titulos, Explorer, Settings e
+   Task Manager, incluindo `I/l/1`, `O/0`, `S/5` e pontuacao.
+4. Confirmar centralizacao, cortes e textos proximos das bordas.
+5. Fazer o smoke test do Simple e confirmar a fonte legada 8x16.
+6. Encerrar com `health summary`, `memcheck` e `regcheck full`.
+
 ## MV1 - Evolucao das Primitivas Graficas
 
 ### Implementacao
@@ -150,8 +185,8 @@ O Desktop e o gerenciador de janelas adotam integralmente o novo visual sem rast
   - **Task Manager Moderno**: Graficos de performance desenhados com linhas finas coloridas sobre fundo escuro.
   - **App Store Moderna**: catalogo, detalhes, botoes e confirmacoes usando as
     mesmas metricas, controles e estados visuais.
-- [ ] Melhorar contraste, espacamento e escala da fonte bitmap dentro das
-  metricas centralizadas da MV0; fonte proporcional fica fora desta frente.
+- [ ] Refinar contraste e espacamento da Zephyr UI Bitmap sobre as faces
+  nativas do MV0.1; fonte proporcional fica fora desta frente.
 - [ ] Registrar uma linha-base por cena fixa (modo VESA, escala, janela e
   acao) com `kmetrics`, incluindo bytes apresentados e ticks de copia VESA.
 - [ ] Aceitar a nova aparencia somente quando a mesma cena nao aumentar mais
