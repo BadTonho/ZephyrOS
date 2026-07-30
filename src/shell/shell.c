@@ -219,6 +219,17 @@ typedef struct {
     update_remote_result_t remote_result;
 } shell_update_workspace_t;
 
+typedef struct {
+    char operation[16];
+    char value[FS_MAX_PATH];
+    char option[16];
+    char extra[2];
+    app_catalog_entry_t entry;
+    app_package_action_result_t action;
+    app_launch_info_t launch;
+    uint32_t pid;
+} shell_store_workspace_t;
+
 static char input_buffer[SHELL_BUFFER_SIZE];
 static char shell_command_history[SHELL_COMMAND_HISTORY_CAPACITY]
                                  [SHELL_BUFFER_SIZE];
@@ -278,6 +289,9 @@ static http_status_t shell_http_wait_status;
 /* Parser, status e resultados U5 compartilham a mesma sessao do Shell.
    Mantê-los no BSS evita somar cerca de 1 KiB à pilha durante Ed25519. */
 static shell_update_workspace_t shell_update_workspace;
+/* Resultados AS2 e argumentos ZAPP excedem 1 KiB combinados. O workspace
+   serializado evita repetir a pressao de stack detectada no appcheck AS1. */
+static shell_store_workspace_t shell_store_workspace;
 
 #define SHELL_SCANCODE_EXTENDED 0xE0
 #define SHELL_SCANCODE_LEFT_SHIFT 0x2AU
@@ -1643,7 +1657,8 @@ static int shell_regcheck_validate_packages(void) {
     kmemset(&diagnostic, 0, sizeof(diagnostic));
     result = app_package_run_diagnostics(&diagnostic);
     if (result != OK || !diagnostic.invalid_package ||
-        !diagnostic.missing_dependency || !diagnostic.insufficient_space) {
+        !diagnostic.missing_dependency || !diagnostic.insufficient_space ||
+        !diagnostic.mutation_serialization) {
         LOG_ERROR("SHELL", "RegCheck detectou validacao de pacote invalida");
         return result == OK ? ERR_STATE : result;
     }
@@ -2349,8 +2364,10 @@ static void cmd_help(void) {
     video_print("  appcheck - Testa API, arquivos, IPC e loader\n", 0x07);
     video_print("  pkg      - Gerencia pacotes .ZPK locais\n", 0x07);
     video_print("             pkg list | info | verify | install | remove\n", 0x08);
-    video_print("  store    - Consulta o catalogo local da App Store\n", 0x07);
+    video_print("  store    - Consulta e gerencia a App Store local\n", 0x07);
     video_print("             store status | list | info <ID|alias.ZPK>\n",
+                0x08);
+    video_print("             store install/remove/run (use --confirm)\n",
                 0x08);
     video_print("  update verify <arquivo.ZUP> - Verifica sem gravar\n", 0x07);
     video_print("  update status|history - Diagnostico persistente\n",
@@ -8204,7 +8221,8 @@ static void cmd_pkgcheck(void) {
     kmemset(&diagnostic, 0, sizeof(diagnostic));
     result = app_package_run_diagnostics(&diagnostic);
     passed = result == OK && diagnostic.invalid_package &&
-             diagnostic.missing_dependency && diagnostic.insufficient_space;
+             diagnostic.missing_dependency && diagnostic.insufficient_space &&
+             diagnostic.mutation_serialization;
 
     video_print("PkgCheck:\n", 0x0B);
     video_print("  pacote_invalido ", 0x07);
@@ -8216,6 +8234,9 @@ static void cmd_pkgcheck(void) {
     video_print("  espaco_insuficiente ", 0x07);
     video_print(diagnostic.insufficient_space ? "OK\n" : "ERRO\n",
                 diagnostic.insufficient_space ? 0x0A : 0x0C);
+    video_print("  serializacao_mutacao ", 0x07);
+    video_print(diagnostic.mutation_serialization ? "OK\n" : "ERRO\n",
+                diagnostic.mutation_serialization ? 0x0A : 0x0C);
     video_print("  resultado ", 0x07);
     video_print(passed ? "OK\n" : "ERRO\n", passed ? 0x0A : 0x0C);
 }
@@ -8296,6 +8317,9 @@ static void cmd_store_print_list_entry(const app_catalog_entry_t* entry) {
 static void cmd_store_print_usage(void) {
     video_print("Uso: store status | store list | ", 0x0E);
     video_print("store info <ID|alias.ZPK>\n", 0x0E);
+    video_print("     store install <alias.ZPK> [--confirm]\n", 0x0E);
+    video_print("     store remove <ID> [--confirm]\n", 0x0E);
+    video_print("     store run <ID> [args]\n", 0x0E);
 }
 
 static void cmd_store_status(void) {
@@ -8401,26 +8425,237 @@ static void cmd_store_info(char* key) {
     video_print("\n", 0x07);
 }
 
-static void cmd_store(const char* args) {
-    char operation[16];
-    char value[FS_MAX_PATH];
-    char extra[2];
-    const char* cursor = args;
+static void cmd_store_print_action_blockers(
+    const app_package_action_result_t* action) {
+    if (!action || action->blocker_count == 0U) return;
+    video_print("  Bloqueadores: ", 0x07);
+    for (uint32_t index = 0; index < action->blocker_count; index++) {
+        if (index) video_print(", ", 0x07);
+        video_print(action->blocker_ids[index], 0x0E);
+    }
+    if (action->blocker_overflow) video_print(", ...", 0x0E);
+    video_print("\n", 0x07);
+}
 
-    cmd_pkg_take_token(&cursor, operation, sizeof(operation));
-    cmd_pkg_take_token(&cursor, value, sizeof(value));
-    cmd_pkg_take_token(&cursor, extra, sizeof(extra));
-    if (operation[0] == '\0') {
+static void cmd_store_print_action_result(
+    const char* label, int operation_result) {
+    app_package_action_result_t* action = &shell_store_workspace.action;
+
+    video_print(label, 0x0B);
+    video_print(operation_result == OK ? "OK" : "BLOQUEADO",
+                operation_result == OK ? 0x0A : 0x0C);
+    video_print(" motivo=", 0x08);
+    video_print(app_package_action_reason_name(action->reason),
+                action->reason == APP_PACKAGE_ACTION_REASON_NONE ?
+                    0x0A : 0x0E);
+    if (operation_result != OK) {
+        video_print(" erro=", 0x08);
+        print_num((uint32_t)operation_result);
+    }
+    video_print("\n", 0x07);
+    if (action->info.id[0]) {
+        video_print("  Pacote: ", 0x07);
+        video_print(action->info.id, 0x0A);
+        video_print(" ", 0x07);
+        video_print(action->info.version, 0x08);
+        video_print(" - ", 0x07);
+        video_print(action->info.name, 0x07);
+        video_print("\n", 0x07);
+    }
+    if (action->required_clusters > 0U) {
+        video_print("  Clusters: necessarios=", 0x07);
+        print_num(action->required_clusters);
+        video_print(" livres=", 0x08);
+        print_num(action->free_clusters);
+        video_print("\n", 0x07);
+    }
+    cmd_store_print_action_blockers(action);
+}
+
+static int cmd_store_find_action_entry(char* key) {
+    if (app_catalog_refresh() != OK) {
+        LOG_WARN("SHELL", "Catalogo indisponivel para acao da App Store");
+        video_print("Erro: catalogo da App Store indisponivel.\n", 0x0C);
+        return ERR_UNAVAILABLE;
+    }
+    cmd_pkg_uppercase_id(key);
+    if (app_catalog_find_entry(key, &shell_store_workspace.entry) != OK) {
+        LOG_WARN("SHELL", "Entrada de acao nao encontrada no catalogo");
+        return ERR_NOT_FOUND;
+    }
+    return OK;
+}
+
+static void cmd_store_refresh_after_mutation(void) {
+    if (app_catalog_refresh() != OK) {
+        LOG_WARN("SHELL", "Catalogo nao atualizou apos mutacao da App Store");
+        video_print("Aviso: operacao terminou, mas o catalogo nao atualizou.\n",
+                    0x0E);
+    }
+}
+
+static void cmd_store_set_local_failure(
+    app_package_action_reason_t reason) {
+    kmemset(&shell_store_workspace.action, 0,
+            sizeof(shell_store_workspace.action));
+    shell_store_workspace.action.reason = reason;
+}
+
+static void cmd_store_install(char* alias, int confirmed) {
+    int result = cmd_store_find_action_entry(alias);
+
+    if (result != OK || !shell_store_workspace.entry.has_source) {
+        cmd_store_set_local_failure(
+            result == ERR_UNAVAILABLE ?
+                APP_PACKAGE_ACTION_REASON_PACKAGE_SERVICE_UNAVAILABLE :
+                APP_PACKAGE_ACTION_REASON_SOURCE_NOT_FOUND);
+        cmd_store_print_action_result("Preflight de instalacao: ",
+                                      result == OK ? ERR_NOT_FOUND : result);
+        if (confirmed) cmd_store_refresh_after_mutation();
+        return;
+    }
+    result = confirmed ?
+        app_package_install_confirmed(
+            alias, &shell_store_workspace.action) :
+        app_package_preflight_install(
+            alias, &shell_store_workspace.action);
+    if (confirmed) cmd_store_refresh_after_mutation();
+    cmd_store_print_action_result(
+        confirmed ? "Instalacao confirmada: " :
+                    "Preflight de instalacao: ",
+        result);
+    if (result != OK) {
+        video_print("Nenhuma gravacao foi realizada.\n", 0x0C);
+        return;
+    }
+    if (confirmed) {
+        video_print("Pacote instalado: ", 0x0A);
+        video_print(shell_store_workspace.action.info.id, 0x0A);
+        video_print(".\n", 0x0A);
+        return;
+    }
+    video_print("Nenhuma gravacao foi realizada.\n", 0x0A);
+    video_print("Para confirmar: store install ", 0x0E);
+    video_print(alias, 0x0E);
+    video_print(" --confirm\n", 0x0E);
+}
+
+static void cmd_store_remove(char* id, int confirmed) {
+    int result = cmd_store_find_action_entry(id);
+
+    if (result != OK) {
+        cmd_store_set_local_failure(
+            result == ERR_UNAVAILABLE ?
+                APP_PACKAGE_ACTION_REASON_PACKAGE_SERVICE_UNAVAILABLE :
+                APP_PACKAGE_ACTION_REASON_NOT_INSTALLED);
+        cmd_store_print_action_result("Preflight de remocao: ", result);
+        if (confirmed) cmd_store_refresh_after_mutation();
+        return;
+    }
+    result = confirmed ?
+        app_package_remove_confirmed(
+            id, &shell_store_workspace.action) :
+        app_package_preflight_remove(
+            id, &shell_store_workspace.action);
+    if (confirmed) cmd_store_refresh_after_mutation();
+    cmd_store_print_action_result(
+        confirmed ? "Remocao confirmada: " : "Preflight de remocao: ",
+        result);
+    if (result != OK) {
+        video_print("Nenhuma gravacao foi realizada.\n", 0x0C);
+        return;
+    }
+    if (confirmed) {
+        video_print("Pacote removido: ", 0x0A);
+        video_print(id, 0x0A);
+        video_print(".\n", 0x0A);
+        return;
+    }
+    video_print("Nenhuma gravacao foi realizada.\n", 0x0A);
+    video_print("Para confirmar: store remove ", 0x0E);
+    video_print(id, 0x0E);
+    video_print(" --confirm\n", 0x0E);
+}
+
+static void cmd_store_run(char* id, const char* arguments) {
+    int result = cmd_store_find_action_entry(id);
+
+    if (result != OK || !shell_store_workspace.entry.has_installed) {
+        cmd_store_set_local_failure(
+            result == ERR_UNAVAILABLE ?
+                APP_PACKAGE_ACTION_REASON_PACKAGE_SERVICE_UNAVAILABLE :
+                APP_PACKAGE_ACTION_REASON_NOT_INSTALLED);
+        cmd_store_print_action_result("Execucao instalada: ",
+                                      result == OK ? ERR_NOT_FOUND : result);
+        return;
+    }
+    result = app_loader_build_launch_info(
+        arguments, &shell_store_workspace.launch);
+    if (result != OK) {
+        cmd_store_set_local_failure(
+            APP_PACKAGE_ACTION_REASON_INVALID_ARGUMENT);
+        cmd_store_print_action_result("Execucao instalada: ", result);
+        return;
+    }
+    result = app_package_run_installed(
+        id, &shell_store_workspace.launch, &shell_store_workspace.pid,
+        &shell_store_workspace.action);
+    cmd_store_print_action_result("Execucao instalada: ", result);
+    if (result != OK) return;
+    video_print("Aplicativo iniciado de forma assincrona, PID ", 0x0A);
+    print_num(shell_store_workspace.pid);
+    video_print(". Use F12 para cancelar.\n", 0x0A);
+}
+
+static void cmd_store(const char* args) {
+    const char* cursor = args;
+    int confirmed;
+
+    kmemset(&shell_store_workspace, 0, sizeof(shell_store_workspace));
+    if (!args) {
         cmd_store_print_usage();
-    } else if (kstrcmp(operation, "status") == 0 &&
-               value[0] == '\0' && extra[0] == '\0') {
+        return;
+    }
+    cmd_pkg_take_token(&cursor, shell_store_workspace.operation,
+                       sizeof(shell_store_workspace.operation));
+    cmd_pkg_take_token(&cursor, shell_store_workspace.value,
+                       sizeof(shell_store_workspace.value));
+    if (kstrcmp(shell_store_workspace.operation, "run") == 0 &&
+        shell_store_workspace.value[0]) {
+        while (*cursor == ' ' || *cursor == '\t') cursor++;
+        cmd_pkg_uppercase_id(shell_store_workspace.value);
+        cmd_store_run(shell_store_workspace.value, cursor);
+        return;
+    }
+    cmd_pkg_take_token(&cursor, shell_store_workspace.option,
+                       sizeof(shell_store_workspace.option));
+    cmd_pkg_take_token(&cursor, shell_store_workspace.extra,
+                       sizeof(shell_store_workspace.extra));
+    confirmed = kstrcmp(shell_store_workspace.option, "--confirm") == 0;
+    if (shell_store_workspace.operation[0] == '\0') {
+        cmd_store_print_usage();
+    } else if (kstrcmp(shell_store_workspace.operation, "status") == 0 &&
+               shell_store_workspace.value[0] == '\0' &&
+               shell_store_workspace.option[0] == '\0') {
         cmd_store_status();
-    } else if (kstrcmp(operation, "list") == 0 &&
-               value[0] == '\0' && extra[0] == '\0') {
+    } else if (kstrcmp(shell_store_workspace.operation, "list") == 0 &&
+               shell_store_workspace.value[0] == '\0' &&
+               shell_store_workspace.option[0] == '\0') {
         cmd_store_list();
-    } else if (kstrcmp(operation, "info") == 0 &&
-               value[0] != '\0' && extra[0] == '\0') {
-        cmd_store_info(value);
+    } else if (kstrcmp(shell_store_workspace.operation, "info") == 0 &&
+               shell_store_workspace.value[0] != '\0' &&
+               shell_store_workspace.option[0] == '\0') {
+        cmd_store_info(shell_store_workspace.value);
+    } else if (kstrcmp(shell_store_workspace.operation, "install") == 0 &&
+               shell_store_workspace.value[0] != '\0' &&
+               shell_store_workspace.extra[0] == '\0' &&
+               (shell_store_workspace.option[0] == '\0' || confirmed)) {
+        cmd_store_install(shell_store_workspace.value, confirmed);
+    } else if (kstrcmp(shell_store_workspace.operation, "remove") == 0 &&
+               shell_store_workspace.value[0] != '\0' &&
+               shell_store_workspace.extra[0] == '\0' &&
+               (shell_store_workspace.option[0] == '\0' || confirmed)) {
+        cmd_store_remove(shell_store_workspace.value, confirmed);
     } else {
         LOG_WARN("SHELL", "Uso invalido do comando store");
         cmd_store_print_usage();

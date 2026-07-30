@@ -1,15 +1,14 @@
-# App Store - Catalogo local AS1
+# App Store - Catalogo AS1 e ciclo de vida AS2
 
 ## Resumo de progresso
 
-O AS1 implementa o catalogo local somente-leitura da App Store sobre o
-container `ZPKG v1` e o servico `PKG` existentes. O codigo, os comandos Shell
-e os fixtures host foram validados no host e no QEMU. A fase esta
-**concluida e validada**.
+O AS1 implementa o catalogo local somente-leitura sobre `ZPKG v1` e o servico
+`PKG`; ele esta concluido e validado. O AS2 acrescenta preflight, confirmacao,
+instalacao, remocao e execucao pelo Shell. A implementacao AS2 esta concluida
+no codigo, mas permanece **pendente de build e validacao QEMU do usuario**.
 
-Esta etapa nao instala, remove, atualiza nem executa pacotes pelo comando
-`store`. Essas mutacoes pertencem ao AS2. A interface nativa Classic/Modern
-pertence ao AS3.
+A interface nativa Classic/Modern pertence ao AS3. Atualizacao, downgrade e
+resolucao automatica de dependencias continuam fora desta fase.
 
 ## Fontes e snapshot
 
@@ -74,9 +73,8 @@ LOADER_UNAVAILABLE
 PACKAGE_SERVICE_UNAVAILABLE
 ```
 
-`INSUFFICIENT_SPACE` esta reservado para o preflight AS2. No AS1, as
-capacidades `INSTALL` e `UPDATE` descrevem apenas a classificacao do catalogo;
-qualquer mutacao futura repetira o preflight completo.
+`INSUFFICIENT_SPACE` e calculado pelo preflight AS2. As capacidades do catalogo
+continuam informativas; toda mutacao rele o pacote e o estado instalado.
 
 ### Capacidades e estruturas
 
@@ -110,6 +108,23 @@ app_catalog_reason_name()
 para explicar a dependencia ausente. Contagem, entrada e busca exigem um
 snapshot consultavel.
 
+## Ciclo de vida AS2
+
+O servico `PKG` expoe preflights separados para instalar e remover. Eles
+validam novamente fonte, alias, dependencias, espaco, ID instalado e
+dependentes reversos, mas nunca escrevem. A operacao confirmada adquire o gate
+global de mutacao e repete integralmente o preflight antes de alterar `APPS/`.
+
+Somente o token final exato `--confirm` autoriza instalacao ou remocao. Nao ha
+confirmacao armazenada entre comandos. Dependencias ausentes e dependentes
+reversos sao mostrados por ID em ordem lexical; o MVP nao tenta instala-los ou
+remove-los automaticamente.
+
+Todas as interfaces de mutacao, inclusive `pkg`, compartilham o mesmo gate.
+Mutacoes sao bloqueadas enquanto um ZAPP externo estiver em primeiro plano.
+`store run` aceita somente um ID instalado e executa
+`APPS/<ID>/APP.ZAP` pelo loader existente.
+
 ## Recovery e health
 
 `RECOVERY_COMPONENT_APP_STORE` foi anexado ao fim da enumeracao:
@@ -131,6 +146,11 @@ continuam consultaveis e `app_catalog_refresh()` retorna `OK`.
 | `store status` | Atualiza e mostra recovery, contagens, limites e motivo geral. |
 | `store list` | Atualiza e lista entradas em ordem deterministica. |
 | `store info <ID\|alias.ZPK>` | Mostra manifesto, versoes, confianca, dependencias e capacidades. |
+| `store install <alias.ZPK>` | Executa preflight sem escrita e mostra o comando de confirmacao. |
+| `store install <alias.ZPK> --confirm` | Repete o preflight e instala o pacote. |
+| `store remove <ID>` | Executa preflight de remocao sem escrita. |
+| `store remove <ID> --confirm` | Repete o preflight e remove o pacote. |
+| `store run <ID> [args]` | Executa somente o ZAPP instalado; F12 cancela. |
 
 Todo pacote fonte e apresentado como `LOCAL / NAO ASSINADO`. O comando sem
 subcomando mostra somente o uso; abrir a interface grafica fica para AS3.
@@ -165,11 +185,27 @@ Os atalhos sao:
 ```text
 make store-test
 make store-demo
+make store-as2-test
+make store-as2-demo
 ```
 
 `store-test` executa o autoteste do empacotador e audita os fixtures
 versionados. `store-demo` injeta somente a matriz AS1 com substituicao
-idempotente e nao participa do build normal.
+idempotente. Os alvos `store-as2-*` usam uma matriz separada e nao alteram os
+seis aliases ou hashes canonicos do AS1. Nenhum alvo participa do build normal.
+
+### Fixtures AS2
+
+Os artefatos de ciclo de vida ficam em `docs/fixtures/apps/store-as2/`:
+
+| Alias | Cobertura |
+|---|---|
+| `WAITAPP.ZPK` | Instalacao, argumentos, execucao persistente e F12. |
+| `BASE.ZPK` | Dependencia instalavel sem requisitos. |
+| `DEPEND.ZPK` | Depende de `BASE` e bloqueia sua remocao. |
+
+`fixtures-store-as2` gera a matriz; `audit-store-as2` confere nomes, hashes,
+manifestos, payload de espera, dependencia e, opcionalmente, os bytes FAT12.
 
 ## Validacao concluida
 
@@ -193,9 +229,16 @@ aninhadas de `app_launch_info_t`. O loader, o processo e o Shell passaram a
 usar buffers internos serializados; depois da correcao, o demonstrativo ZAPP,
 o retorno de foco e as migracoes de `uptime` e `mem` concluiram normalmente.
 
+## Estado da validacao AS2
+
+O codigo usa workspace estatico no Shell para o resultado de acao e
+`app_launch_info_t`. Autoteste, auditorias AS1/AS2, `q3check` e
+`git diff --check` passaram. O build limpo e a matriz QEMU ainda devem ser
+executados pelo usuario antes de marcar AS2 como validado ou iniciar MV0-MV3.
+
 ## Limitacoes
 
-- sem instalacao, remocao, execucao ou atualizacao por `store`;
+- sem atualizacao ou downgrade por `store`;
 - sem resolucao automatica de dependencias;
 - sem assinatura, repositorio remoto, conta ou telemetria;
 - sem banco de dados proprio ou persistencia do snapshot;

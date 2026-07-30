@@ -273,6 +273,11 @@ STORE_FIXTURES = $(STORE_FIXTURES_DIR)\VALID.ZPK \
                  $(STORE_FIXTURES_DIR)\NEEDSDEP.ZPK \
                  $(STORE_FIXTURES_DIR)\SAMEVER.ZPK \
                  $(STORE_FIXTURES_DIR)\fixtures.json
+STORE_AS2_FIXTURES_DIR = docs\fixtures\apps\store-as2
+STORE_AS2_FIXTURES = $(STORE_AS2_FIXTURES_DIR)\WAITAPP.ZPK \
+                     $(STORE_AS2_FIXTURES_DIR)\BASE.ZPK \
+                     $(STORE_AS2_FIXTURES_DIR)\DEPEND.ZPK \
+                     $(STORE_AS2_FIXTURES_DIR)\fixtures.json
 
 # Todas as variáveis de objetos
 OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(UPDATE_OBJ) $(UPDATE_REMOTE_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
@@ -639,7 +644,17 @@ store-demo: $(OS_IMG) $(STORE_FIXTURES)
 	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\SAMEVER.ZPK --image $(OS_IMG) --fat-name SAMEVER.ZPK --replace
 	python tools\packager.py audit-store --fixtures-dir $(STORE_FIXTURES_DIR) --image $(OS_IMG)
 
+store-as2-test:
+	python tools\packager.py selftest
+	python tools\packager.py audit-store-as2 --fixtures-dir $(STORE_AS2_FIXTURES_DIR)
+
+store-as2-demo: $(OS_IMG) $(STORE_AS2_FIXTURES)
+	python tools\packager.py inject-file --file $(STORE_AS2_FIXTURES_DIR)\WAITAPP.ZPK --image $(OS_IMG) --fat-name WAITAPP.ZPK --replace
+	python tools\packager.py inject-file --file $(STORE_AS2_FIXTURES_DIR)\BASE.ZPK --image $(OS_IMG) --fat-name BASE.ZPK --replace
+	python tools\packager.py inject-file --file $(STORE_AS2_FIXTURES_DIR)\DEPEND.ZPK --image $(OS_IMG) --fat-name DEPEND.ZPK --replace
+	python tools\packager.py audit-store-as2 --fixtures-dir $(STORE_AS2_FIXTURES_DIR) --image $(OS_IMG)
+
 clean:
 	rmdir /s /q build
 
-.PHONY: all run debug q3check q3check-test package-test update-test package-demo store-test store-demo clean
+.PHONY: all run debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo clean

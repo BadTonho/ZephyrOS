@@ -113,6 +113,46 @@ O loader aceita caminhos; assim uma instalacao pode ser executada com:
 app run APPS/DEMO/APP.ZAP
 ```
 
+## Ciclo de vida publico AS2
+
+O AS2 acrescenta preflight e confirmacao sem alterar `ZPKG v1`. As consultas
+`app_package_preflight_install()` e `app_package_preflight_remove()` releem o
+estado real, preenchem `app_package_action_result_t` e nunca gravam.
+`app_package_install_confirmed()` e `app_package_remove_confirmed()` adquirem
+um gate global de mutacao e repetem o mesmo preflight antes da primeira
+escrita. As operacoes administrativas antigas continuam disponiveis e tambem
+passam pelo gate.
+
+O resultado contem manifesto, clusters necessarios/livres e ate 32 IDs
+bloqueadores em ordem lexical. Dependencias ausentes tem prioridade sobre
+`ALREADY_INSTALLED`; dependentes reversos impedem a remocao. Os motivos
+append-only sao:
+
+```text
+NONE
+INVALID_ARGUMENT
+SOURCE_NOT_FOUND
+PACKAGE_INVALID
+ALIAS_MISMATCH
+DEPENDENCY_MISSING
+INSUFFICIENT_SPACE
+ALREADY_INSTALLED
+NOT_INSTALLED
+DEPENDENT_INSTALLED
+FILESYSTEM_UNAVAILABLE
+LOADER_UNAVAILABLE
+PACKAGE_SERVICE_UNAVAILABLE
+LOADER_BUSY
+MUTATION_BUSY
+READ_ERROR
+WRITE_ERROR
+```
+
+`app_package_run_installed()` aceita somente um ID instalado, monta
+`APPS/<ID>/APP.ZAP` internamente e entrega os argumentos ao loader existente.
+Mutacoes sao recusadas enquanto um ZAPP externo estiver em primeiro plano;
+execucao tambem e recusada durante uma mutacao.
+
 ## Comandos
 
 | Comando | Acao |
@@ -122,10 +162,11 @@ app run APPS/DEMO/APP.ZAP
 | `pkg verify <arquivo.ZPK>` | Valida o pacote fonte sem gravar. |
 | `pkg install <arquivo.ZPK>` | Valida e instala uma unica imagem ZAPP. |
 | `pkg remove <ID>` | Remove os arquivos instalados depois de verificar dependentes. |
-| `pkgcheck` | Diagnostico sem escrita para pacote invalido, dependencia ausente e espaco insuficiente. |
+| `pkgcheck` | Diagnostico sem escrita para pacote invalido, dependencia ausente, espaco insuficiente e serializacao. |
 
 `pkgcheck` nao substitui `appcheck`; ele cobre apenas as pre-validacoes locais
-do servico de pacotes.
+do servico de pacotes. O caso de espaco usa o mesmo calculo do preflight AS2
+com geometria sintetica, e o teste do gate nao cria ou remove arquivos.
 
 O catalogo somente-leitura construido sobre este servico e documentado em
 [`app-store.md`](app-store.md).

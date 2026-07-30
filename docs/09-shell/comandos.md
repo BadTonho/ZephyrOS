@@ -72,7 +72,7 @@ Comandos disponiveis:
   regcheck [full] - Executa regressao compacta com F12
   appcheck  - Testa API, arquivos, IPC e carregador ZAPP
   pkg       - Gerencia pacotes .ZPK locais
-  store     - Consulta o catalogo local da App Store
+  store     - Consulta e gerencia a App Store local
   pkgcheck  - Testa validacoes de pacote sem gravar
   update verify <arquivo.ZUP> - Verifica atualizacao sem gravar
   app run <arquivo.ZAP> [args] - Executa aplicativo ring 3 de forma assincrona
@@ -833,16 +833,18 @@ do ID e preserva o arquivo fonte `ID.ZPK` no diretorio raiz.
 O contrato completo, limites e fluxo host para FAT12 estao em
 [`pacotes.md`](../13-aplicativos/pacotes.md).
 
-## `store status|list|info`
+## `store status|list|info|install|remove|run`
 
-Os comandos `store` consultam o snapshot local da App Store. Cada comando
-atualiza o catalogo antes de responder e nao grava no volume:
+Os comandos `store` atualizam o snapshot local antes de responder. Consultas
+e preflights nunca gravam:
 
 ```text
 store status
 store list
 store info VALID
 store info BADCRC.ZPK
+store install WAITAPP.ZPK
+store remove WAITAPP
 ```
 
 `store status` mostra recovery, contagens, limites e o motivo geral.
@@ -850,16 +852,32 @@ store info BADCRC.ZPK
 instalada. `store info <ID|alias.ZPK>` mostra manifesto disponivel, confianca
 `LOCAL / NAO ASSINADO`, dependencias, bloqueios e capacidades informativas.
 
-Fontes invalidas permanecem visiveis sem impedir consultas das fontes validas.
-Instalar, remover, atualizar, executar ou abrir a interface nativa pelo comando
-`store` permanecem fora do AS1. O contrato completo esta em
+Instalar e remover exigem uma segunda chamada com o token final exato
+`--confirm`; a confirmacao nao fica armazenada e o preflight e repetido:
+
+```text
+store install WAITAPP.ZPK --confirm
+store run WAITAPP alpha beta
+store remove WAITAPP
+store remove WAITAPP --confirm
+```
+
+`store run <ID> [args]` aceita somente um pacote instalado e usa o loader
+assincrono existente; F12 cancela e devolve o foco ao Shell. Dependencias
+ausentes e dependentes reversos aparecem por ID, sem resolucao automatica.
+Atualizacao e downgrade permanecem fora do AS2.
+
+Fontes invalidas continuam visiveis sem impedir as fontes validas. Depois de
+toda tentativa confirmada, o catalogo e atualizado novamente. O contrato
+completo esta em
 [`app-store.md`](../13-aplicativos/app-store.md).
 
 ## `pkgcheck`
 
-Executa tres pre-validacoes compactas sem escrever no disco: pacote invalido,
-dependencia ausente e espaco insuficiente. Ele nao substitui `appcheck` e nao
-instala nem remove pacotes.
+Executa quatro validacoes compactas sem escrever no disco: pacote invalido,
+dependencia ausente, o mesmo calculo de espaco do preflight e o gate de
+serializacao de mutacoes. Ele nao substitui `appcheck` e nao instala nem
+remove pacotes.
 
 ## `app run <arquivo.ZAP> [arg1 arg2 ...]`
 

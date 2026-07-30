@@ -44,6 +44,12 @@ STORE_FIXTURE_ALIASES = (
     "NEEDSDEP.ZPK",
     "SAMEVER.ZPK",
 )
+STORE_AS2_FIXTURE_FORMAT = "zephyros-app-store-as2-fixtures-v1"
+STORE_AS2_FIXTURE_ALIASES = (
+    "WAITAPP.ZPK",
+    "BASE.ZPK",
+    "DEPEND.ZPK",
+)
 
 
 class PackageError(ValueError):
@@ -493,6 +499,17 @@ def build_demo_zapp() -> bytes:
     return header + code
 
 
+def build_wait_zapp() -> bytes:
+    """Cria um ZAPP minimo que permanece ativo ate o cancelamento por F12."""
+    code = b"\xEB\xFE"
+    header = ZAPP_HEADER.pack(
+        ZAPP_MAGIC, ZAPP_VERSION, ZAPP_ARCH_I386, ZAPP_HEADER.size,
+        ZAPP_HEADER.size, len(code), ZAPP_HEADER.size + len(code), 0,
+        0, ZAPP_STACK_SIZE, 0,
+    )
+    return header + code
+
+
 def store_fixture_manifest(
     package_id: str,
     name: str,
@@ -683,6 +700,151 @@ def audit_store_fixtures(
     print("App Store fixtures: OK")
 
 
+def build_store_as2_fixtures() -> dict[str, bytes]:
+    """Gera a matriz separada de ciclo de vida local do AS2."""
+    demo = build_demo_zapp()
+    wait = build_wait_zapp()
+    fixtures = {
+        "WAITAPP.ZPK": build_package(
+            store_fixture_manifest("WAITAPP", "Wait for F12"), wait
+        ),
+        "BASE.ZPK": build_package(
+            store_fixture_manifest("BASE", "Dependency Base"), demo
+        ),
+        "DEPEND.ZPK": build_package(
+            store_fixture_manifest(
+                "DEPEND", "Reverse Dependent", dependencies="BASE"
+            ),
+            demo,
+        ),
+    }
+    return {
+        alias: fixtures[alias] for alias in STORE_AS2_FIXTURE_ALIASES
+    }
+
+
+def store_as2_fixture_expectations() -> dict[str, dict[str, str]]:
+    """Descreve os estados e comportamentos esperados na matriz AS2."""
+    return {
+        "WAITAPP.ZPK": {
+            "id": "WAITAPP",
+            "state": "AVAILABLE",
+            "reason": "NONE",
+            "behavior": "WAIT_FOR_F12",
+        },
+        "BASE.ZPK": {
+            "id": "BASE",
+            "state": "AVAILABLE",
+            "reason": "NONE",
+            "behavior": "EXIT_SUCCESS",
+        },
+        "DEPEND.ZPK": {
+            "id": "DEPEND",
+            "state": "BLOCKED_THEN_AVAILABLE",
+            "reason": "DEPENDENCY_MISSING",
+            "behavior": "DEPENDS_ON_BASE",
+        },
+    }
+
+
+def write_store_as2_fixtures(output_dir: Path) -> None:
+    """Grava os artefatos AS2 sem alterar o conjunto canonico do AS1."""
+    fixtures = build_store_as2_fixtures()
+    expectations = store_as2_fixture_expectations()
+    output_dir.mkdir(parents=True, exist_ok=True)
+    published: dict[str, object] = {
+        "format": STORE_AS2_FIXTURE_FORMAT,
+        "fixtures": {},
+    }
+    metadata = published["fixtures"]
+    if not isinstance(metadata, dict):
+        raise PackageError("estrutura interna dos fixtures AS2 invalida")
+    for alias, data in fixtures.items():
+        (output_dir / alias).write_bytes(data)
+        metadata[alias] = {
+            **expectations[alias],
+            "size": len(data),
+            "sha256": hashlib.sha256(data).hexdigest(),
+        }
+    (output_dir / "fixtures.json").write_text(
+        json.dumps(published, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def load_store_as2_manifest(fixtures_dir: Path) -> dict[str, object]:
+    """Le e valida o manifesto da matriz AS2."""
+    try:
+        published = json.loads(
+            (fixtures_dir / "fixtures.json").read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError) as error:
+        raise PackageError("manifesto dos fixtures AS2 invalido") from error
+    if not isinstance(published, dict):
+        raise PackageError("estrutura do manifesto AS2 invalida")
+    metadata = published.get("fixtures")
+    if (
+        published.get("format") != STORE_AS2_FIXTURE_FORMAT
+        or not isinstance(metadata, dict)
+        or set(metadata) != set(STORE_AS2_FIXTURE_ALIASES)
+    ):
+        raise PackageError("conjunto dos fixtures AS2 divergiu")
+    return published
+
+
+def audit_store_as2_semantics(fixtures: dict[str, bytes]) -> None:
+    """Confere espera por F12 e o par de dependencia reversa."""
+    wait = parse_package(fixtures["WAITAPP.ZPK"])
+    base = parse_package(fixtures["BASE.ZPK"])
+    dependent = parse_package(fixtures["DEPEND.ZPK"])
+    if wait.manifest["id"] != "WAITAPP" or wait.payload != build_wait_zapp():
+        raise PackageError("fixture WAITAPP divergiu")
+    if base.manifest["id"] != "BASE" or base.manifest["dependencies"]:
+        raise PackageError("fixture BASE divergiu")
+    if (
+        dependent.manifest["id"] != "DEPEND"
+        or dependent.manifest["dependencies"] != "BASE"
+    ):
+        raise PackageError("fixture DEPEND divergiu")
+
+
+def audit_store_as2_fixtures(
+    fixtures_dir: Path, image_path: Path | None = None
+) -> None:
+    """Audita hashes, semantica e bytes FAT12 da matriz AS2."""
+    published = load_store_as2_manifest(fixtures_dir)
+    metadata = published["fixtures"]
+    expected = build_store_as2_fixtures()
+    expectations = store_as2_fixture_expectations()
+    fixtures: dict[str, bytes] = {}
+    if not isinstance(metadata, dict):
+        raise PackageError("metadados dos fixtures AS2 invalidos")
+    for alias in STORE_AS2_FIXTURE_ALIASES:
+        try:
+            data = (fixtures_dir / alias).read_bytes()
+        except OSError as error:
+            raise PackageError(f"fixture AS2 ausente: {alias}") from error
+        entry = metadata.get(alias)
+        if not isinstance(entry, dict):
+            raise PackageError(f"metadado AS2 ausente: {alias}")
+        if (
+            data != expected[alias]
+            or entry.get("size") != len(data)
+            or entry.get("sha256") != hashlib.sha256(data).hexdigest()
+            or any(
+                entry.get(field) != value
+                for field, value in expectations[alias].items()
+            )
+        ):
+            raise PackageError(f"fixture AS2 dessincronizado: {alias}")
+        if image_path is not None and read_root_file(image_path, alias) != data:
+            raise PackageError(f"fixture AS2 divergiu na imagem: {alias}")
+        fixtures[alias] = data
+        print(f"store_as2_fixture_{alias} OK")
+    audit_store_as2_semantics(fixtures)
+    print("App Store AS2 fixtures: OK")
+
+
 def create_fixture_image(path: Path) -> None:
     """Gera uma imagem FAT12 vazia para testar a injecao sem QEMU."""
     image = bytearray(1474560)
@@ -735,6 +897,7 @@ def run_selftest() -> int:
         "bpb_invalido": False,
         "imagem_excedida": False,
         "store_fixtures": False,
+        "store_as2_fixtures": False,
     }
     try:
         parse_package(package)
@@ -762,6 +925,15 @@ def run_selftest() -> int:
                 )
             audit_store_fixtures(store_dir, image_path)
             checks["store_fixtures"] = True
+
+            store_as2_dir = Path(temp_dir) / "store-as2"
+            write_store_as2_fixtures(store_as2_dir)
+            for alias in STORE_AS2_FIXTURE_ALIASES:
+                inject_root_file(
+                    (store_as2_dir / alias).read_bytes(), image_path, alias
+                )
+            audit_store_as2_fixtures(store_as2_dir, image_path)
+            checks["store_as2_fixtures"] = True
 
             boot_path = Path(temp_dir) / "boot-payload.img"
             create_fixture_boot_payload(boot_path, 1300)
@@ -890,6 +1062,29 @@ def command_audit_store(arguments: argparse.Namespace) -> int:
     return 0
 
 
+def command_fixtures_store_as2(arguments: argparse.Namespace) -> int:
+    """Gera os fixtures deterministicos de ciclo de vida AS2."""
+    output_dir = Path(arguments.output_dir)
+    try:
+        write_store_as2_fixtures(output_dir)
+    except OSError as error:
+        raise PackageError("falha ao gravar fixtures AS2") from error
+    print(f"Fixtures AS2 criados em {output_dir.resolve()}")
+    return 0
+
+
+def command_audit_store_as2(arguments: argparse.Namespace) -> int:
+    """Audita a matriz AS2 e seus aliases opcionais na imagem FAT12."""
+    image_path = Path(arguments.image) if arguments.image else None
+    try:
+        audit_store_as2_fixtures(
+            Path(arguments.fixtures_dir), image_path
+        )
+    except OSError as error:
+        raise PackageError("falha ao auditar fixtures AS2") from error
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Monta a interface de linha de comando do empacotador."""
     parser = argparse.ArgumentParser(description="Empacotador .zephyrosapp")
@@ -929,6 +1124,13 @@ def build_parser() -> argparse.ArgumentParser:
     audit_store.add_argument("--fixtures-dir", required=True)
     audit_store.add_argument("--image")
     audit_store.set_defaults(handler=command_audit_store)
+    fixtures_store_as2 = commands.add_parser("fixtures-store-as2")
+    fixtures_store_as2.add_argument("--output-dir", required=True)
+    fixtures_store_as2.set_defaults(handler=command_fixtures_store_as2)
+    audit_store_as2 = commands.add_parser("audit-store-as2")
+    audit_store_as2.add_argument("--fixtures-dir", required=True)
+    audit_store_as2.add_argument("--image")
+    audit_store_as2.set_defaults(handler=command_audit_store_as2)
     selftest = commands.add_parser("selftest")
     selftest.set_defaults(handler=lambda arguments: run_selftest())
     return parser

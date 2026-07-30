@@ -172,3 +172,8 @@ Store. `src/include/core/recovery.h` acrescenta
 `RECOVERY_COMPONENT_APP_STORE` ao fim da enumeracao. Os contratos canonicos
 permanecem em `docs/13-aplicativos/app-store.md` e
 `docs/04-kernel/kernel.md`.
+
+Desde o AS2, `src/include/core/app_package.h` acrescenta preflights,
+confirmacao, motivos de acao, bloqueadores, serializacao e execucao por ID
+instalado. O contrato canonico permanece em
+`docs/13-aplicativos/pacotes.md`.

@@ -136,31 +136,42 @@ AVAILABLE`, memoria estavel em `20680 KB`, recovery `DEGRADED`, `appcheck`,
 `memcheck` e `regcheck full` em `OK`, sem processos ou arquivos instalados
 residuais.
 
-## AS2 - Ciclo de vida local com confirmacao
+## AS2 - Ciclo de vida local com confirmacao (aguardando QEMU)
 
 ### Implementacao
 
-- [ ] Adicionar preflight separado para instalar e remover.
-- [ ] Repetir integralmente o preflight depois da confirmacao.
-- [ ] Serializar mutacoes para impedir instalacao/remocao concorrente.
-- [ ] Bloquear mutacoes enquanto um ZAPP externo estiver em primeiro plano.
-- [ ] Preservar as regras atuais de espaco e dependencias.
-- [ ] Adicionar `store install <alias.ZPK>` como preflight sem escrita.
-- [ ] Exigir `store install <alias.ZPK> --confirm` para instalar.
-- [ ] Adicionar `store remove <ID>` como preflight sem escrita.
-- [ ] Exigir `store remove <ID> --confirm` para remover.
-- [ ] Adicionar `store run <ID> [args]` sobre o loader existente.
-- [ ] Atualizar o catalogo somente depois do encerramento da operacao.
-- [ ] Manter `pkg` como interface administrativa compativel.
+- [x] Adicionar preflight separado para instalar e remover.
+- [x] Repetir integralmente o preflight depois da confirmacao.
+- [x] Serializar mutacoes para impedir instalacao/remocao concorrente.
+- [x] Bloquear mutacoes enquanto um ZAPP externo estiver em primeiro plano.
+- [x] Preservar as regras atuais de espaco e dependencias.
+- [x] Adicionar `store install <alias.ZPK>` como preflight sem escrita.
+- [x] Exigir `store install <alias.ZPK> --confirm` para instalar.
+- [x] Adicionar `store remove <ID>` como preflight sem escrita.
+- [x] Exigir `store remove <ID> --confirm` para remover.
+- [x] Adicionar `store run <ID> [args]` sobre o loader existente.
+- [x] Atualizar o catalogo somente depois do encerramento da operacao.
+- [x] Manter `pkg` como interface administrativa compativel.
 
 O MVP nao resolvera dependencias automaticamente. Se uma dependencia estiver
 ausente, o preflight informa os IDs bloqueadores e nao grava.
+
+Os seis fixtures AS1 permanecem imutaveis. A matriz separada AS2 acrescenta
+`WAITAPP.ZPK`, `BASE.ZPK` e `DEPEND.ZPK`, com geracao/auditoria deterministica
+e alvos `store-as2-test`/`store-as2-demo`.
 
 ### Criterio de saida
 
 Somente `--confirm` pode alterar `APPS/`. Instalacao, execucao e remocao do
 fixture valido passam; pacote invalido, dependencia ausente, falta de espaco,
 ID instalado e dependente reverso falham sem deixar diretorio parcial.
+
+### Estado
+
+Implementacao e fixtures concluidos no repositorio. Autoteste, auditorias
+AS1/AS2, `q3check` e `git diff --check` passaram. AS2 permanece pendente de
+build limpo e da matriz QEMU do usuario; nao esta validado e ainda nao libera
+o inicio oficial de MV0-MV3.
 
 ## AS3 - Aplicativo nativo App Store
 
@@ -270,10 +281,12 @@ ausencia de chaves privadas, credenciais, caminhos locais e artefatos de build.
 ```text
 make package-test
 make store-test
+make store-as2-test
 make q3check
 make clean
 make
 make store-demo
+make store-as2-demo
 make run
 ```
 
@@ -302,5 +315,6 @@ No QEMU:
 
 ## Proximo passo
 
-Executar **AS2 - Ciclo de vida local com confirmacao**. Depois da aprovacao de
-AS2, a execucao passa para MV0-MV3 do Roadmap 07 antes de iniciar AS3.
+Validar **AS2 - Ciclo de vida local com confirmacao** no build e no QEMU.
+Somente depois da aprovacao, a execucao passa para MV0-MV3 do Roadmap 07 antes
+de iniciar AS3.

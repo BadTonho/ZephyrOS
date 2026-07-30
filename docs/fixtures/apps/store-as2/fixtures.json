@@ -1,0 +1,29 @@
+{
+  "fixtures": {
+    "BASE.ZPK": {
+      "behavior": "EXIT_SUCCESS",
+      "id": "BASE",
+      "reason": "NONE",
+      "sha256": "3bd285245c66c8a5f4d9a1e1dce15fee7bb607d1776f29ccc614340e5bc25db0",
+      "size": 166,
+      "state": "AVAILABLE"
+    },
+    "DEPEND.ZPK": {
+      "behavior": "DEPENDS_ON_BASE",
+      "id": "DEPEND",
+      "reason": "DEPENDENCY_MISSING",
+      "sha256": "e286fd56d9d0a9a8ffa8cea1946230aaeb6616b3a2df303a2f382b80899dc0c1",
+      "size": 174,
+      "state": "BLOCKED_THEN_AVAILABLE"
+    },
+    "WAITAPP.ZPK": {
+      "behavior": "WAIT_FOR_F12",
+      "id": "WAITAPP",
+      "reason": "NONE",
+      "sha256": "254874f821fc1fa1dd19fae3d17646e3d656c5c9282f00f8dc492945e81a3814",
+      "size": 157,
+      "state": "AVAILABLE"
+    }
+  },
+  "format": "zephyros-app-store-as2-fixtures-v1"
+}

@@ -113,7 +113,8 @@ Sistema e ecossistema:       [████████████████�
 | `guitest` | Testa primitivas GUI 2D |
 | `guimode` | Altera entre gui classica e moderna |
 | `health` | Exibe metricas e estado de recovery |
-| `store status|list|info` | Consulta o catalogo local da App Store sem gravar |
+| `store status|list|info` | Consulta o catalogo local da App Store |
+| `store install|remove|run` | Preflight, ciclo confirmado e execucao instalada |
 | `devices [-v]` | Lista o inventario nativo de hardware |
 | `device-info <id>` | Mostra detalhes de um dispositivo inventariado |
 | `device-scan` | Refaz somente a varredura PCI e atualiza o inventario |
@@ -403,6 +404,15 @@ Sistema e ecossistema:       [████████████████�
 - [x] Build limpo e matriz QEMU aprovados: ordem e motivos deterministas,
   transicao `AVAILABLE -> SAME_VERSION -> AVAILABLE`, memoria estavel,
   `appcheck`, `memcheck` e `regcheck full` em `OK`, sem processos residuais.
+
+### AS2 - Ciclo de vida local (implementada; validacao QEMU pendente)
+
+- [x] Preflights sem escrita, motivos estaveis, espaco e bloqueadores por ID.
+- [x] Gate unico para mutacoes `pkg`/`store` e repeticao apos `--confirm`.
+- [x] Comandos `store install|remove|run` com workspace estatico no Shell.
+- [x] Fixtures separados `WAITAPP`, `BASE` e `DEPEND`, auditor e alvos AS2.
+- [x] Autoteste, auditorias AS1/AS2, `q3check` e `diff --check`.
+- [ ] Build limpo e matriz QEMU do usuario antes de iniciar MV0-MV3.
 
 ### Q4 - Regressao compacta ✅
 
@@ -696,7 +706,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 - **Gerenciador de Processos** (`gerenciador de processos.md`)
 
 ### Novos Módulos e Aplicativos (App Store / Opcionais)
-- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1 inicia o catalogo local sobre ZPKG v1
+- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1 validado; ciclo AS2 implementado e aguardando QEMU
 - **Gerenciador de Mídia** (`gerenciador de midia.md`)
 - **Gerenciador de Jogos** (`gerenciador de jogos.md`)
 - **Anti-Virus** (`anti virus.md`)
