@@ -50,22 +50,22 @@ Estas capacidades continuam sendo a fonte de verdade. Este roadmap atua estritam
 
 ## MV0 - Layout e escala acessiveis
 
-**Estado:** implementacao inicial presente no repositorio; aguardando
-`make q3check`, build e aprovacao da matriz QEMU pelo usuario. Os checkboxes
-abaixo permanecem abertos ate essa validacao.
+**Estado:** implementado e validado pelo usuario em 30/07/2026. `make q3check`,
+build completo e matriz QEMU foram aprovados com VESA 1024x768x24 e
+backbuffer ativo.
 
 ### Implementacao
 
-- [ ] Definir metricas centrais para espacamento, altura de barra, dimensoes
+- [x] Definir metricas centrais para espacamento, altura de barra, dimensoes
   minimas de botoes, tamanho de icones e escala da fonte bitmap, calculadas a
   partir do modo VESA inicial.
-- [ ] Adicionar `display status` e `display scale <pequena|normal|grande>`;
+- [x] Adicionar `display status` e `display scale <pequena|normal|grande>`;
   os comandos mostram e alteram somente a escala em RAM, nunca a resolucao.
-- [ ] Aplicar essas metricas em Desktop, Taskbar, Window Manager, Explorer,
+- [x] Aplicar essas metricas em Desktop, Taskbar, Window Manager, Explorer,
   Settings e Task Manager no modo Classic antes do redesenho Dark/Flat.
-- [ ] Garantir que textos, cursor e controles continuem dentro do framebuffer
+- [x] Garantir que textos, cursor e controles continuem dentro do framebuffer
   em cada escala e que o Modo Simple nao seja alterado.
-- [ ] Expor a escala no Settings Classic e no fallback Simple, com logs para
+- [x] Expor a escala no Settings Classic e no fallback Simple, com logs para
   entradas invalidas ou layout que nao caiba no modo ativo.
 
 ### Criterio de saida
@@ -74,21 +74,21 @@ As tres escalas mantem texto legivel e alvos de clique utilizaveis no modo VESA
 inicial. Falha de VESA, escala invalida ou area insuficiente preserva a escala
 anterior e o fallback Simple.
 
-### Matriz QEMU pendente
+### Matriz QEMU aprovada
 
-1. Rodar `make q3check`, `make clean && make` e `make run`, nessa ordem.
-2. Confirmar `display status` inicial em `normal`, VESA 1024x768x32 e
-   backbuffer ativo.
-3. Alternar pequena, normal e grande pelo Shell e pelo Settings.
-4. Em cada preset, validar Desktop, cinco posicoes da Taskbar, Menu Iniciar,
-   Explorer, Settings e todas as abas do Task Manager.
-5. Exercitar clique, selecao, arraste, resize, minimizar, maximizar e textos
-   proximos das bordas.
-6. Confirmar que sintaxe invalida e area insuficiente preservam a escala.
-7. Fazer apenas o smoke test do fallback: entrar em `guimode simple`,
-   confirmar video, teclado e Shell, executar um comando basico e retornar
-   com `guimode classic`.
-8. Encerrar com `health summary`, `memcheck` e `regcheck full`, sem residuos.
+1. `make q3check`, `make clean && make` e `make run` aprovados pelo usuario.
+2. `display status` iniciou em `normal`, com VESA 1024x768x24 e backbuffer
+   ativo. O MV0 preservou o modo de video existente e nao alterou o boot.
+3. As escalas pequena, normal e grande foram aprovadas pelo Shell e Settings.
+4. Desktop, cinco posicoes da Taskbar, Menu Iniciar, Explorer, Settings e
+   todas as abas do Task Manager foram aprovados nos tres presets.
+5. Clique, selecao, arraste, resize, minimizar, maximizar e textos proximos
+   das bordas foram aprovados.
+6. Sintaxe invalida e area insuficiente preservaram a escala anterior.
+7. O smoke test do fallback Simple confirmou video, teclado e Shell; o retorno
+   ao Classic preservou a escala em RAM.
+8. `health summary`, `memcheck` e `regcheck full` foram executados; MemCheck e
+   RegCheck terminaram em `OK`, sem processos, memoria ou pacotes residuais.
 
 ## MV1 - Evolucao das Primitivas Graficas
 
