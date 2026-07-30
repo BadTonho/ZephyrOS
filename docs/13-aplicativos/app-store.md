@@ -4,8 +4,8 @@
 
 O AS1 implementa o catalogo local somente-leitura sobre `ZPKG v1` e o servico
 `PKG`; ele esta concluido e validado. O AS2 acrescenta preflight, confirmacao,
-instalacao, remocao e execucao pelo Shell. A implementacao AS2 esta concluida
-no codigo, mas permanece **pendente de build e validacao QEMU do usuario**.
+instalacao, remocao e execucao pelo Shell. O AS2 esta concluido e validado no
+host e no QEMU.
 
 A interface nativa Classic/Modern pertence ao AS3. Atualizacao, downgrade e
 resolucao automatica de dependencias continuam fora desta fase.
@@ -229,12 +229,29 @@ aninhadas de `app_launch_info_t`. O loader, o processo e o Shell passaram a
 usar buffers internos serializados; depois da correcao, o demonstrativo ZAPP,
 o retorno de foco e as migracoes de `uptime` e `mem` concluiram normalmente.
 
-## Estado da validacao AS2
+## Validacao AS2
 
-O codigo usa workspace estatico no Shell para o resultado de acao e
-`app_launch_info_t`. Autoteste, auditorias AS1/AS2, `q3check` e
-`git diff --check` passaram. O build limpo e a matriz QEMU ainda devem ser
-executados pelo usuario antes de marcar AS2 como validado ou iniciar MV0-MV3.
+O AS2 foi validado no host e no QEMU em 30/07/2026. O codigo usa workspace
+estatico no Shell para o resultado de acao e `app_launch_info_t`. Autoteste,
+auditorias AS1/AS2, `q3check`, `git diff --check` e build limpo passaram.
+
+A matriz manual confirmou:
+
+1. preflights sem escrita e motivos esperados para pacote invalido, alias
+   divergente e dependencia ausente;
+2. instalacao somente com `--confirm` e recusa de uma segunda instalacao;
+3. execucao instalada de `WAITAPP` com argumentos, cancelamento por `F12` e
+   devolucao de foco ao Shell sem processo ring 3 ou zumbi;
+4. preflight de remocao sem alteracao e remocao confirmada;
+5. bloqueio da remocao de `BASE` enquanto `DEPEND` estava instalado, inclusive
+   com `--confirm`, seguido da remocao segura na ordem inversa;
+6. `health summary`, `pkgcheck`, `appcheck`, `memcheck` e `regcheck full`
+   concluidos, com memoria estavel em `20680 KB`;
+7. estado final sem pacotes instalados, diretorios parciais ou processos
+   residuais.
+
+Com AS1 e AS2 aprovados, o proximo passo oficial e MV0-MV3 do Roadmap 07 antes
+do AS3.
 
 ## Limitacoes
 

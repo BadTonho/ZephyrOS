@@ -70,10 +70,11 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   O AS1 do roadmap da App Store esta validado no host e no QEMU: catalogo com
   seis fixtures, estados deterministas, ciclo `SAME_VERSION`, memoria estavel,
   recovery degradado e regressao completa passaram sem processos residuais.
-  O ciclo de vida AS2 esta implementado no codigo e aguarda build/matriz QEMU
-  do usuario. Depois dessa aprovacao, os roadmaps 06 e 07 usam execucao
-  intercalada para que a App Store Modern nao seja desenhada duas vezes:
-  MV0-MV3, AS3, MV4 e, depois, AS4-AS5.
+  O ciclo de vida AS2 tambem esta validado no host e no QEMU: preflights sem
+  escrita, confirmacao explicita, bloqueio de dependentes, execucao com `F12`,
+  regressao completa e memoria estavel passaram sem residuos. Os roadmaps 06 e
+  07 agora usam execucao intercalada para que a App Store Modern nao seja
+  desenhada duas vezes: MV0-MV3, AS3, MV4 e, depois, AS4-AS5.
 
 ## K4 validada
 

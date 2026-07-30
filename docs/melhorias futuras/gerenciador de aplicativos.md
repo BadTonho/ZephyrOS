@@ -9,7 +9,7 @@ ordem antiga deste inventário por cinco fases:
 | Fase | Objetivo | Estado |
 |------|----------|--------|
 | AS1 | Catálogo local e observabilidade | Validado |
-| AS2 | Ciclo de vida local com confirmação | Implementado; QEMU pendente |
+| AS2 | Ciclo de vida local com confirmação | Validado |
 | AS3 | Aplicativo nativo Modern com fallbacks | Pendente |
 | AS4 | Atualização local e dependências | Futuro |
 | AS5 | Repositório remoto assinado | Futuro |

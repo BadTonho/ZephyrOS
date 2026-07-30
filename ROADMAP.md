@@ -405,14 +405,16 @@ Sistema e ecossistema:       [████████████████�
   transicao `AVAILABLE -> SAME_VERSION -> AVAILABLE`, memoria estavel,
   `appcheck`, `memcheck` e `regcheck full` em `OK`, sem processos residuais.
 
-### AS2 - Ciclo de vida local (implementada; validacao QEMU pendente)
+### AS2 - Ciclo de vida local (validada no QEMU)
 
 - [x] Preflights sem escrita, motivos estaveis, espaco e bloqueadores por ID.
 - [x] Gate unico para mutacoes `pkg`/`store` e repeticao apos `--confirm`.
 - [x] Comandos `store install|remove|run` com workspace estatico no Shell.
 - [x] Fixtures separados `WAITAPP`, `BASE` e `DEPEND`, auditor e alvos AS2.
 - [x] Autoteste, auditorias AS1/AS2, `q3check` e `diff --check`.
-- [ ] Build limpo e matriz QEMU do usuario antes de iniciar MV0-MV3.
+- [x] Build limpo e matriz QEMU aprovados: preflights sem escrita, confirmacao
+  explicita, bloqueio por dependencia, execucao e cancelamento por `F12`,
+  memoria estavel em `20680 KB` e nenhuma aplicacao ou processo residual.
 
 ### Q4 - Regressao compacta ✅
 
@@ -706,7 +708,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 - **Gerenciador de Processos** (`gerenciador de processos.md`)
 
 ### Novos Módulos e Aplicativos (App Store / Opcionais)
-- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1 validado; ciclo AS2 implementado e aguardando QEMU
+- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1 e AS2 validados; proximo passo MV0-MV3
 - **Gerenciador de Mídia** (`gerenciador de midia.md`)
 - **Gerenciador de Jogos** (`gerenciador de jogos.md`)
 - **Anti-Virus** (`anti virus.md`)

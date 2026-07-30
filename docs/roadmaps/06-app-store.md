@@ -136,7 +136,7 @@ AVAILABLE`, memoria estavel em `20680 KB`, recovery `DEGRADED`, `appcheck`,
 `memcheck` e `regcheck full` em `OK`, sem processos ou arquivos instalados
 residuais.
 
-## AS2 - Ciclo de vida local com confirmacao (aguardando QEMU)
+## AS2 - Ciclo de vida local com confirmacao (validado no QEMU)
 
 ### Implementacao
 
@@ -169,9 +169,13 @@ ID instalado e dependente reverso falham sem deixar diretorio parcial.
 ### Estado
 
 Implementacao e fixtures concluidos no repositorio. Autoteste, auditorias
-AS1/AS2, `q3check` e `git diff --check` passaram. AS2 permanece pendente de
-build limpo e da matriz QEMU do usuario; nao esta validado e ainda nao libera
-o inicio oficial de MV0-MV3.
+AS1/AS2, `q3check`, `git diff --check` e build limpo passaram. A matriz QEMU
+confirmou preflights sem escrita, motivos e bloqueadores estaveis, confirmacao
+explicita, execucao instalada de `WAITAPP` com argumentos e cancelamento por
+`F12`, bloqueio reverso `BASE`/`DEPEND` e remocao segura. `health summary`,
+`pkgcheck`, `appcheck`, `memcheck` e `regcheck full` concluiram; a memoria
+permaneceu em `20680 KB`, sem processo, zumbi ou pacote instalado residual.
+AS2 esta validado e libera o inicio oficial de MV0-MV3.
 
 ## AS3 - Aplicativo nativo App Store
 
@@ -315,6 +319,6 @@ No QEMU:
 
 ## Proximo passo
 
-Validar **AS2 - Ciclo de vida local com confirmacao** no build e no QEMU.
-Somente depois da aprovacao, a execucao passa para MV0-MV3 do Roadmap 07 antes
-de iniciar AS3.
+Executar **MV0-MV3 do Roadmap 07**. Depois da fundacao visual aprovada, a
+execucao retorna ao AS3 para implementar a App Store nativa sem duplicar o
+redesenho.

@@ -130,8 +130,8 @@ antecipar interfaces ou permissoes que ainda nao existem.
 - [x] Concluir e validar o AS1 do roadmap
   [`06-app-store.md`](06-app-store.md): catalogo local e observabilidade sobre
   `.zephyrosapp`/`ZPKG v1`.
-- [ ] Validar no build/QEMU o AS2 ja implementado: ciclo de vida local com
-  confirmacao.
+- [x] Concluir e validar no build/QEMU o AS2: ciclo de vida local com
+  confirmacao, bloqueio de dependentes e execucao cancelavel por `F12`.
 - [ ] Evoluir Media Manager, Game Manager, ferramentas de desenvolvedor,
   PCSista e Anti-Virus somente sobre APIs ja estabelecidas.
 - [ ] Tratar cada aplicativo opcional como modulo com diagnostico, fallback e
