@@ -171,8 +171,8 @@ Novas primitivas desenham formas sem artefatos visuais ou estouro de limites. O 
 
 ## MV2 - Novo Sistema de Cores e Estilos (Tema Dark Modern)
 
-**Estado:** implementado em 30/07/2026 e aguardando validacao do usuario.
-O renderer Classic permanece visualmente inalterado e `guimode modern`
+**Estado:** implementado e validado pelo usuario em 30/07/2026.
+O renderer Classic permaneceu visualmente inalterado e `guimode modern`
 continua reservado.
 
 ### Implementacao
@@ -194,11 +194,13 @@ continua reservado.
 
 ### Criterio de saida
 
-Pendente da matriz QEMU do usuario: a base Modern deve responder visualmente
-a Normal/Hover/Pressed nas tres escalas, enquanto boot, Desktop, WM, Taskbar,
-Settings, aplicativos e `guitest` Classic permanecem visualmente identicos.
-Somente apos essa aprovacao o MV2 sera marcado como validado e o MV3 passara a
-ser o proximo passo.
+A etapa foi aprovada pelo usuario no QEMU. A cena confirmou a paleta oficial,
+as primitivas preservadas do MV1, o botao Modern e a preferencia em RAM para
+`Classico` e `Modern Dark`, sem aplicar o novo estilo ao renderer Classic.
+`kmetrics` nao apresentou comportamento anormal, `memcheck` e `regcheck full`
+terminaram em `OK`, e os estados conhecidos de AC97 e Media Player
+permaneceram sem regressao atribuida ao MV2. O MV3 passa a ser o proximo
+passo.
 
 ## MV3 - Redesenho do Window Manager e Desktop
 
