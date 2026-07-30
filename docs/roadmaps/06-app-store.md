@@ -83,7 +83,7 @@ arquivos hidden/system, e ordenara por alias FAT. Cada entrada combinara:
 Um manifesto cujo `id` nao corresponda ao alias `ID.ZPK` sera recusado. A
 listagem usa workspace estatico e nao mantem pacotes inteiros em memoria.
 
-## AS1 - Catalogo local e observabilidade
+## AS1 - Catalogo local e observabilidade (validado no QEMU)
 
 ### Implementacao
 
@@ -129,10 +129,12 @@ gravam no disco e nao deixam alocacoes, handles ou processos residuais.
 
 ### Estado
 
-Implementacao e autotestes host preparados; `packager.py selftest`,
-`audit-store`, `q3check` e `git diff --check` passaram. O AS1 ainda nao esta
-validado: build, QEMU, ordem observada, memoria e regressao dependem da matriz
-manual do usuario.
+AS1 concluido e validado no host e no QEMU. `packager.py selftest`,
+`audit-store`, `q3check`, build limpo e os seis fixtures passaram. A matriz
+confirmou ordem e motivos deterministas, `AVAILABLE -> SAME_VERSION ->
+AVAILABLE`, memoria estavel em `20680 KB`, recovery `DEGRADED`, `appcheck`,
+`memcheck` e `regcheck full` em `OK`, sem processos ou arquivos instalados
+residuais.
 
 ## AS2 - Ciclo de vida local com confirmacao
 
@@ -300,6 +302,5 @@ No QEMU:
 
 ## Proximo passo
 
-Validar **AS1 - Catalogo local e observabilidade** no build e no QEMU. AS2 nao
-deve iniciar antes dessa aprovacao. Depois da aprovacao de AS2, a execucao
-passa para MV0-MV3 do Roadmap 07 antes de iniciar AS3.
+Executar **AS2 - Ciclo de vida local com confirmacao**. Depois da aprovacao de
+AS2, a execucao passa para MV0-MV3 do Roadmap 07 antes de iniciar AS3.

@@ -4,8 +4,8 @@
 
 O AS1 implementa o catalogo local somente-leitura da App Store sobre o
 container `ZPKG v1` e o servico `PKG` existentes. O codigo, os comandos Shell
-e os fixtures host estao preparados, mas a fase permanece **aguardando a
-validacao de build e QEMU pelo usuario**.
+e os fixtures host foram validados no host e no QEMU. A fase esta
+**concluida e validada**.
 
 Esta etapa nao instala, remove, atualiza nem executa pacotes pelo comando
 `store`. Essas mutacoes pertencem ao AS2. A interface nativa Classic/Modern
@@ -171,18 +171,27 @@ make store-demo
 versionados. `store-demo` injeta somente a matriz AS1 com substituicao
 idempotente e nao participa do build normal.
 
-## Validacao pendente do usuario
+## Validacao concluida
 
-Depois de `make store-demo` e `make run`:
+O AS1 foi validado no host e no QEMU em 29/07/2026:
 
-1. Conferir `store status`, `store list` repetido e cada `store info`.
-2. Confirmar os seis estados iniciais.
-3. Executar `pkg install SAMEVER.ZPK` e confirmar `SAME_VERSION`.
-4. Repetir consultas entre duas leituras de `mem`.
-5. Executar `health`, `health summary`, `pkgcheck`, `appcheck`, `memcheck` e
-   `regcheck full`.
-6. Remover `SAMEVER` e confirmar ausencia de processo, diretorio parcial ou
-   alteracao nos `.ZPK` fonte.
+1. Autotestes, auditoria deterministica dos fixtures, `q3check` e
+   `git diff --check` passaram.
+2. Os seis aliases apareceram em ordem lexical, com tres fontes validas, tres
+   invalidas e os estados e motivos previstos.
+3. `SAMEVER` percorreu `AVAILABLE -> SAME_VERSION -> AVAILABLE` durante
+   instalacao e remocao, sem alterar o arquivo `.ZPK` fonte.
+4. Quatro refreshes com o catalogo populado mantiveram a memoria usada em
+   `20680 KB`.
+5. `health summary`, `pkgcheck`, `appcheck`, `memcheck` e `regcheck full`
+   concluiram em `OK`, inclusive com o recovery da App Store em `DEGRADED`.
+6. A regressao final confirmou ausencia de processos ring 3, zumbis,
+   diretorios parciais e pacotes instalados residuais.
+
+Durante a matriz, o `appcheck` revelou pressao de stack causada por copias
+aninhadas de `app_launch_info_t`. O loader, o processo e o Shell passaram a
+usar buffers internos serializados; depois da correcao, o demonstrativo ZAPP,
+o retorno de foco e as migracoes de `uptime` e `mem` concluiram normalmente.
 
 ## Limitacoes
 

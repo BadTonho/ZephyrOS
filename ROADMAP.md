@@ -394,13 +394,15 @@ Sistema e ecossistema:       [████████████████�
 - [x] Validado no host e QEMU: pacote demo, remocao, caminho instalado, F12,
   diagnosticos, interfaces classica/moderna e ausencia de processos residuais.
 
-### AS1 - Catalogo local e observabilidade (validacao pendente)
+### AS1 - Catalogo local e observabilidade (validada no QEMU)
 
 - [x] Snapshot somente-leitura de fontes `.ZPK` e pacotes instalados, com
   ordem deterministica, estados, motivos e capacidades.
 - [x] Comandos `store status|list|info`, recovery e integracao com `health`.
 - [x] Fixtures publicos, auditor host e alvos `store-test`/`store-demo`.
-- [ ] Build, QEMU, memoria e matriz de regressao aguardam validacao do usuario.
+- [x] Build limpo e matriz QEMU aprovados: ordem e motivos deterministas,
+  transicao `AVAILABLE -> SAME_VERSION -> AVAILABLE`, memoria estavel,
+  `appcheck`, `memcheck` e `regcheck full` em `OK`, sem processos residuais.
 
 ### Q4 - Regressao compacta ✅
 

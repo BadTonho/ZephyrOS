@@ -8,7 +8,7 @@ ordem antiga deste inventário por cinco fases:
 
 | Fase | Objetivo | Estado |
 |------|----------|--------|
-| AS1 | Catálogo local e observabilidade | Pendente |
+| AS1 | Catálogo local e observabilidade | Validado |
 | AS2 | Ciclo de vida local com confirmação | Pendente |
 | AS3 | Aplicativo nativo Modern com fallbacks | Pendente |
 | AS4 | Atualização local e dependências | Futuro |
