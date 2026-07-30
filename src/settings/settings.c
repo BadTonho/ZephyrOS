@@ -152,7 +152,8 @@ static void init_categories(void) {
         windows_button_side_values, 2
     };
     categories[SETTINGS_CAT_WINDOWS].options[1] = (settings_option_t){
-        "Ordem botoes", SETTINGS_OPT_LIST, 0, 5,
+        "Ordem botoes", SETTINGS_OPT_LIST, WM_BTN_MIN_MAX_CLOSE,
+        WM_BTN_MAX_CLOSE_MIN,
         windows_button_order_values, 6
     };
     categories[SETTINGS_CAT_WINDOWS].options[2] = (settings_option_t){

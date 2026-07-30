@@ -844,7 +844,7 @@ void wm_init(void) {
     wm_active = 0;
 
     wm.config.btn_position = WM_BTNS_RIGHT;
-    wm.config.btn_order = WM_BTN_CLOSE_MIN_MAX;
+    wm.config.btn_order = WM_BTN_MIN_MAX_CLOSE;
     wm.config.show_title_text = 1;
     wm.config.title_bar_height = 1;
     wm.config.border_style = 0;
