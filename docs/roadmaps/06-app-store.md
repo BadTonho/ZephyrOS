@@ -321,6 +321,6 @@ No QEMU:
 
 ## Proximo passo
 
-Executar **MV1-MV3 do Roadmap 07**, pois MV0 e MV0.1 ja foram aprovados.
-Depois da fundacao visual aprovada, a execucao retorna ao AS3 para implementar
-a App Store nativa sem duplicar o redesenho.
+Executar **MV2-MV3 do Roadmap 07**, pois MV0, MV0.1 e MV1 ja foram
+aprovados. Depois da fundacao visual aprovada, a execucao retorna ao AS3 para
+implementar a App Store nativa sem duplicar o redesenho.
