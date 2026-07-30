@@ -421,47 +421,57 @@ static void wm_gui_draw_frame(const wm_gui_window_t* window) {
                       GUI_MODERN_COLOR_BORDER_INACTIVE;
     uint32_t title = window->focused ? GUI_MODERN_COLOR_HOVER :
                      GUI_MODERN_COLOR_WINDOW;
+    vesa_color_t border_color = wm_gui_color(border);
+    vesa_color_t window_color = wm_gui_color(GUI_MODERN_COLOR_WINDOW);
     int radius = (int)display_scale_px(WM_GUI_FRAME_RADIUS_BASE);
-    int title_x = window->x + WM_GUI_FRAME_INSET;
-    int title_y = window->y + WM_GUI_FRAME_INSET;
-    int title_width = window->width - WM_GUI_FRAME_INSET * 2;
-    int title_radius;
+    int inner_radius;
 
     if (radius < WM_GUI_FRAME_BORDER_WIDTH) radius = WM_GUI_FRAME_BORDER_WIDTH;
+    if (radius > WM_GUI_TITLE_HEIGHT / 2) radius = WM_GUI_TITLE_HEIGHT / 2;
     if (radius > window->height / 2) radius = window->height / 2;
-    gui_draw_rounded_rect((uint32_t)window->x, (uint32_t)window->y,
-                          (uint32_t)window->width, (uint32_t)window->height,
-                          (uint32_t)radius, border);
+
+    /* O corpo e pintado uma unica vez; os cantos superiores ficam livres
+       para revelar a cena que ja foi composta abaixo da janela. */
     vesa_fill_rect((uint32_t)window->x, (uint32_t)(window->y + radius),
                    (uint32_t)window->width,
-                   (uint32_t)(window->height - radius), wm_gui_color(border));
+                   (uint32_t)(window->height - radius), window_color);
 
-    title_radius = radius - WM_GUI_FRAME_BORDER_WIDTH;
-    if (title_radius < 1) title_radius = 1;
-    if (title_radius > WM_GUI_TITLE_HEIGHT / 2) {
-        title_radius = WM_GUI_TITLE_HEIGHT / 2;
-    }
-    gui_draw_rounded_rect((uint32_t)title_x, (uint32_t)title_y,
-                          (uint32_t)title_width, WM_GUI_TITLE_HEIGHT,
-                          (uint32_t)title_radius, title);
-    if (window->focused && WM_GUI_TITLE_HEIGHT > title_radius) {
+    gui_draw_rounded_rect((uint32_t)window->x, (uint32_t)window->y,
+                          (uint32_t)window->width, WM_GUI_TITLE_HEIGHT,
+                          (uint32_t)radius, border);
+
+    inner_radius = radius - WM_GUI_FRAME_BORDER_WIDTH;
+    if (inner_radius < 1) inner_radius = 1;
+    gui_draw_rounded_rect(
+        (uint32_t)(window->x + WM_GUI_FRAME_BORDER_WIDTH),
+        (uint32_t)(window->y + WM_GUI_FRAME_BORDER_WIDTH),
+        (uint32_t)(window->width - WM_GUI_FRAME_BORDER_WIDTH * 2),
+        (uint32_t)(WM_GUI_TITLE_HEIGHT - WM_GUI_FRAME_BORDER_WIDTH),
+        (uint32_t)inner_radius, title);
+
+    if (window->focused && WM_GUI_TITLE_HEIGHT > radius) {
         gui_draw_vertical_gradient(
-            (uint32_t)title_x, (uint32_t)(title_y + title_radius),
-            (uint32_t)title_width,
-            (uint32_t)(WM_GUI_TITLE_HEIGHT - title_radius),
+            (uint32_t)(window->x + WM_GUI_FRAME_BORDER_WIDTH),
+            (uint32_t)(window->y + radius),
+            (uint32_t)(window->width - WM_GUI_FRAME_BORDER_WIDTH * 2),
+            (uint32_t)(WM_GUI_TITLE_HEIGHT - radius),
             GUI_MODERN_COLOR_HOVER, GUI_MODERN_COLOR_WINDOW);
-    } else if (WM_GUI_TITLE_HEIGHT > title_radius) {
-        vesa_fill_rect((uint32_t)title_x, (uint32_t)(title_y + title_radius),
-                       (uint32_t)title_width,
-                       (uint32_t)(WM_GUI_TITLE_HEIGHT - title_radius),
-                       wm_gui_color(title));
+    } else if (WM_GUI_TITLE_HEIGHT > radius) {
+        vesa_fill_rect(
+            (uint32_t)(window->x + WM_GUI_FRAME_BORDER_WIDTH),
+            (uint32_t)(window->y + radius),
+            (uint32_t)(window->width - WM_GUI_FRAME_BORDER_WIDTH * 2),
+            (uint32_t)(WM_GUI_TITLE_HEIGHT - radius), wm_gui_color(title));
     }
-    vesa_fill_rect((uint32_t)(window->x + WM_GUI_FRAME_INSET),
-                   (uint32_t)(window->y + WM_GUI_CONTENT_TOP),
-                   (uint32_t)(window->width - WM_GUI_FRAME_INSET * 2),
-                   (uint32_t)(window->height - WM_GUI_CONTENT_TOP -
-                              WM_GUI_CONTENT_BOTTOM),
-                   wm_gui_color(GUI_MODERN_COLOR_WINDOW));
+
+    vesa_draw_vline((uint32_t)window->x, (uint32_t)(window->y + radius),
+                    (uint32_t)(window->height - radius), border_color);
+    vesa_draw_vline((uint32_t)(window->x + window->width - 1),
+                    (uint32_t)(window->y + radius),
+                    (uint32_t)(window->height - radius), border_color);
+    vesa_draw_hline((uint32_t)window->x,
+                    (uint32_t)(window->y + window->height - 1),
+                    (uint32_t)window->width, border_color);
 }
 
 static void wm_gui_draw_title(const wm_gui_window_t* window,
@@ -930,6 +940,7 @@ int wm_register_hosted_app(const wm_hosted_app_t* app) {
     if (index >= 0 && wm_gui_windows[index].visible) {
         wm_gui_focus(index);
         wm_gui_draw_all();
+        LOG_INFO("WM", "Aplicativo hospedado focalizado");
         return OK;
     }
     if (index < 0) {
@@ -942,6 +953,7 @@ int wm_register_hosted_app(const wm_hosted_app_t* app) {
     wm_gui_initialize_window(index, app, &work_area);
     wm_gui_focus(index);
     wm_gui_draw_all();
+    LOG_INFO("WM", "Aplicativo hospedado aberto");
     return OK;
 }
 
