@@ -17,12 +17,12 @@ recuperacao. Verificacao, preflight, aplicacao e rollback usam
 
 `updater_open()` escolhe o modo global atual:
 
-- Classic abre uma TUI em tela cheia e restaura o Desktop ao fechar;
-- Modern registra uma janela singleton hospedada pelo Window Manager;
-- se a hospedagem moderna estiver indisponivel, o aplicativo usa Classic
+- Simple abre uma TUI em tela cheia e restaura o Desktop ao fechar;
+- Classic registra uma janela singleton hospedada pelo Window Manager;
+- se a hospedagem classic estiver indisponivel, o aplicativo usa Simple
   automaticamente.
 
-Para a U5, Shell e Modern formam a matriz obrigatoria de aceitacao. O Classic
+Para a U5, Shell e Classic formam a matriz obrigatoria de aceitacao. O Simple
 continua disponivel como fallback funcional, mas sua regressao e complementar
 e nao bloqueia a conclusao da distribuicao remota.
 
@@ -79,11 +79,11 @@ estado e progresso; `Esc` ou `F12` solicita cancelamento cooperativo.
 | `D` | prepara o download na aba Remoto |
 | `X` | prepara a limpeza do cache na aba Remoto |
 | `Enter` | confirma a acao pendente |
-| `Esc` | cancela confirmacao ou mutacao; fecha somente o Classic ocioso |
+| `Esc` | cancela confirmacao ou mutacao; fecha somente o Simple ocioso |
 | `F12` | cancela cooperativamente uma mutacao |
-| `Alt+F4` ou botao `X` | fecha a janela Modern |
+| `Alt+F4` ou botao `X` | fecha a janela Classic |
 
-No modo Modern, abas, lista e botoes oferecem por mouse as mesmas operacoes.
+No modo Classic, abas, lista e botoes oferecem por mouse as mesmas operacoes.
 Controles da moldura, foco, arraste, resize, minimizar e fechar continuam
 pertencendo ao Window Manager. Um `Esc` ocioso nao fecha a janela hospedada.
 

@@ -570,7 +570,7 @@ static void shell_reset_input(void) {
 
 static int shell_is_hosted_visible(void) {
     return shell_hosted_visible && wm_is_active() &&
-           desktop_get_mode() == DESKTOP_MODE_MODERN &&
+           desktop_get_mode() == DESKTOP_MODE_CLASSIC &&
            video_terminal_is_hosted();
 }
 
@@ -734,8 +734,8 @@ static void shell_hosted_close(void) {
 static int shell_open_hosted(void) {
     int result;
 
-    if (desktop_get_mode() != DESKTOP_MODE_MODERN) {
-        LOG_WARN("SHELL", "Shell hospedado requer modo Moderno");
+    if (desktop_get_mode() != DESKTOP_MODE_CLASSIC) {
+        LOG_WARN("SHELL", "Shell hospedado requer modo Classic");
         return ERR_UNAVAILABLE;
     }
     wm_set_active(1);
@@ -2114,7 +2114,7 @@ static int shell_prepare_filemanager(void) {
 }
 
 void shell_handle_app_request(uint32_t request) {
-    int hosted_workspace = desktop_get_mode() == DESKTOP_MODE_MODERN &&
+    int hosted_workspace = desktop_get_mode() == DESKTOP_MODE_CLASSIC &&
                            wm_is_active();
 
     if (!hosted_workspace) {
@@ -2131,7 +2131,7 @@ void shell_handle_app_request(uint32_t request) {
 
     switch ((ipc_app_request_t)request) {
         case IPC_APP_OPEN_SHELL:
-            if (desktop_get_mode() == DESKTOP_MODE_MODERN) {
+            if (desktop_get_mode() == DESKTOP_MODE_CLASSIC) {
                 if (shell_open_hosted() == OK) break;
                 shell_reset_input();
                 video_terminal_begin();
@@ -2151,7 +2151,7 @@ void shell_handle_app_request(uint32_t request) {
         case IPC_APP_OPEN_EXPLORER:
             if (shell_prepare_filemanager() == OK) {
                 shell_suspend_terminal_for_scene();
-                if (desktop_get_mode() != DESKTOP_MODE_MODERN) {
+                if (desktop_get_mode() != DESKTOP_MODE_CLASSIC) {
                     desktop_set_active(0);
                 }
                 fm_run();
@@ -2162,17 +2162,17 @@ void shell_handle_app_request(uint32_t request) {
         case IPC_APP_OPEN_TASKMANAGER:
             if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
                 shell_suspend_terminal_for_scene();
-                if (desktop_get_mode() != DESKTOP_MODE_MODERN) {
+                if (desktop_get_mode() != DESKTOP_MODE_CLASSIC) {
                     desktop_set_active(0);
                 }
-                if (desktop_get_mode() == DESKTOP_MODE_MODERN &&
+                if (desktop_get_mode() == DESKTOP_MODE_CLASSIC &&
                     taskmgr_open_gui() != OK) {
                     desktop_set_active(0);
                     wm_set_active(0);
                     shell_suspend_terminal();
                     LOG_WARN("SHELL", "GUI do Task Manager indisponivel; usando TUI");
                     taskmgr_run();
-                } else if (desktop_get_mode() != DESKTOP_MODE_MODERN) {
+                } else if (desktop_get_mode() != DESKTOP_MODE_CLASSIC) {
                     taskmgr_run();
                 }
             } else {
@@ -2185,7 +2185,7 @@ void shell_handle_app_request(uint32_t request) {
                 break;
             }
             shell_suspend_terminal_for_scene();
-            if (desktop_get_mode() != DESKTOP_MODE_MODERN) {
+            if (desktop_get_mode() != DESKTOP_MODE_CLASSIC) {
                 desktop_set_active(0);
             }
             if (taskmgr_open_gui() != OK) {
@@ -2206,7 +2206,7 @@ void shell_handle_app_request(uint32_t request) {
         case IPC_APP_OPEN_SETTINGS:
             if (recovery_is_enabled(RECOVERY_COMPONENT_SETTINGS)) {
                 shell_suspend_terminal_for_scene();
-                if (desktop_get_mode() != DESKTOP_MODE_MODERN) {
+                if (desktop_get_mode() != DESKTOP_MODE_CLASSIC) {
                     desktop_set_active(0);
                 }
                 settings_open();
@@ -2218,7 +2218,7 @@ void shell_handle_app_request(uint32_t request) {
             if (recovery_is_enabled(
                     RECOVERY_COMPONENT_SYSTEM_UPDATER)) {
                 shell_suspend_terminal_for_scene();
-                if (desktop_get_mode() != DESKTOP_MODE_MODERN) {
+                if (desktop_get_mode() != DESKTOP_MODE_CLASSIC) {
                     desktop_set_active(0);
                 }
                 if (updater_open() != OK) {
@@ -2303,7 +2303,7 @@ static void cmd_help(void) {
     video_print("  Setas cima/baixo - Navega comandos; Shift rola saida\n",
                 0x08);
     video_print("  desktop  - Abre a area de trabalho\n", 0x07);
-    video_print("  guimode  - Alterna Desktop classic/modern\n", 0x07);
+    video_print("  guimode  - Alterna Desktop simple/classic\n", 0x07);
     video_print("  display  - Mostra status ou altera escala da GUI\n", 0x07);
     video_print("  settings - Abre o painel de configuracoes\n", 0x07);
     video_print("  updater  - Abre o System Updater\n", 0x07);
@@ -8763,8 +8763,13 @@ static void cmd_guimode(const char* args) {
 
     if (!args || !*args) {
         video_print("Modo Desktop: ", 0x0B);
-        video_print(desktop_get_mode() == DESKTOP_MODE_MODERN ?
-                    "modern\n" : "classic\n", 0x07);
+        if (desktop_get_mode() == DESKTOP_MODE_CLASSIC) {
+            video_print("classic\n", 0x07);
+        } else if (desktop_get_mode() == DESKTOP_MODE_SIMPLE) {
+            video_print("simple\n", 0x07);
+        } else {
+            video_print("modern (reservado)\n", 0x07);
+        }
         return;
     }
 
@@ -8774,33 +8779,38 @@ static void cmd_guimode(const char* args) {
     }
     mode_name[i] = '\0';
 
-    if (kstrcmp(mode_name, "classic") == 0) {
-        result = desktop_set_mode(DESKTOP_MODE_CLASSIC);
+    if (kstrcmp(mode_name, "simple") == 0) {
+        result = desktop_set_mode(DESKTOP_MODE_SIMPLE);
         if (result == OK) {
             if (wm_is_active()) wm_set_active(0);
             shell_resume_terminal();
+            video_print("Desktop em modo simple.\n", 0x0A);
+        }
+        return;
+    }
+
+    if (kstrcmp(mode_name, "classic") == 0) {
+        if (!recovery_is_available(RECOVERY_COMPONENT_VESA) ||
+            !recovery_is_available(RECOVERY_COMPONENT_BACKBUFFER)) {
+            video_print("Modo classic indisponivel; simple mantido.\n", 0x0C);
+            return;
+        }
+
+        result = desktop_set_mode(DESKTOP_MODE_CLASSIC);
+        if (result == OK) {
             video_print("Desktop em modo classic.\n", 0x0A);
+        } else if (result == ERR_NOT_FOUND) {
+            video_print("Modo classic requer VESA; simple mantido.\n", 0x0C);
         }
         return;
     }
 
     if (kstrcmp(mode_name, "modern") == 0) {
-        if (!recovery_is_available(RECOVERY_COMPONENT_VESA) ||
-            !recovery_is_available(RECOVERY_COMPONENT_BACKBUFFER)) {
-            video_print("Modo modern indisponivel; classic mantido.\n", 0x0C);
-            return;
-        }
-
-        result = desktop_set_mode(DESKTOP_MODE_MODERN);
-        if (result == OK) {
-            video_print("Desktop em modo modern.\n", 0x0A);
-        } else if (result == ERR_NOT_FOUND) {
-            video_print("Modo modern requer VESA; classic mantido.\n", 0x0C);
-        }
+        video_print("Modo modern reservado para a futura interface.\n", 0x0E);
         return;
     }
 
-    video_print("Uso: guimode classic|modern\n", 0x0C);
+    video_print("Uso: guimode simple|classic\n", 0x0C);
 }
 
 static void cmd_display_status(void) {
@@ -8816,7 +8826,7 @@ static void cmd_display_status(void) {
     work_area.y = 0;
     work_area.width = mode && mode->initialized ? (int)mode->width : 0;
     work_area.height = mode && mode->initialized ? (int)mode->height : 0;
-    if (desktop_get_mode() == DESKTOP_MODE_MODERN) {
+    if (desktop_get_mode() == DESKTOP_MODE_CLASSIC) {
         (void)taskbar_get_work_area(&work_area);
     }
 
@@ -8836,8 +8846,13 @@ static void cmd_display_status(void) {
     video_print(vesa_has_backbuffer() ? "OK\n" : "indisponivel\n",
                 vesa_has_backbuffer() ? 0x0A : 0x0C);
     video_print("  Interface: ", 0x07);
-    video_print(desktop_get_mode() == DESKTOP_MODE_MODERN ?
-                "modern\n" : "classic\n", 0x07);
+    if (desktop_get_mode() == DESKTOP_MODE_CLASSIC) {
+        video_print("classic\n", 0x07);
+    } else if (desktop_get_mode() == DESKTOP_MODE_SIMPLE) {
+        video_print("simple\n", 0x07);
+    } else {
+        video_print("modern (reservado)\n", 0x07);
+    }
     video_print("  Escala: ", 0x07);
     video_print(display_scale_name(metrics.scale), 0x0B);
     video_print(" (", 0x07);
@@ -8920,7 +8935,7 @@ static void cmd_display(const char* args) {
             video_print("Escala recusada: VESA ou area util insuficiente; ",
                         0x0C);
         } else if (result == ERR_UNAVAILABLE || result == ERR_STATE) {
-            video_print("Escala recusada: display Modern indisponivel; ",
+            video_print("Escala recusada: display Classic indisponivel; ",
                         0x0C);
         } else {
             video_print("Escala recusada: reflow da cena falhou; ", 0x0C);
@@ -9613,7 +9628,7 @@ int shell_process_command(const char* input) {
     } else if (kstrcmp(cmd, "taskmgr") == 0) {
         if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
             shell_suspend_terminal_for_scene();
-            if (desktop_get_mode() == DESKTOP_MODE_MODERN) {
+            if (desktop_get_mode() == DESKTOP_MODE_CLASSIC) {
                 if (taskmgr_open_gui() != OK) {
                     wm_set_active(0);
                     shell_suspend_terminal();
@@ -9646,7 +9661,7 @@ int shell_process_command(const char* input) {
         }
     } else if (kstrcmp(cmd, "wm") == 0) {
         if (recovery_is_enabled(RECOVERY_COMPONENT_WM)) {
-            if (desktop_get_mode() == DESKTOP_MODE_MODERN && wm_is_active()) {
+            if (desktop_get_mode() == DESKTOP_MODE_CLASSIC && wm_is_active()) {
                 wm_set_active(0);
             }
             shell_suspend_terminal();

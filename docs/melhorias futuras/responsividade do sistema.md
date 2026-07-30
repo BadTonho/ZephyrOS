@@ -14,7 +14,7 @@
 
 Esta melhoria nao adiciona comandos novos. O comando `clear` agora remove
 tambem o historico do terminal. Os comandos existentes continuam validos nos
-modos `classic` e `modern`.
+modos `simple` e `classic`.
 
 ## Fases
 
@@ -26,7 +26,7 @@ modos `classic` e `modern`.
 - A area antiga do cursor e incluida antes de qualquer redesenho parcial.
 - Ao mover o cursor, a apresentacao escolhe a uniao das posicoes ou duas
   regioes minimas conforme o menor volume de bytes a copiar.
-- O caminho classico continua usando VGA sem depender do backbuffer.
+- O caminho Simple continua usando VGA sem depender do backbuffer.
 
 ### Fase 2 - Atualizacao responsiva
 

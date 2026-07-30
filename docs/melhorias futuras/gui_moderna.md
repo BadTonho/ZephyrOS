@@ -1,8 +1,9 @@
-# Roadmap: Modernização da GUI (Fase 10)
+# Roadmap histórico: GUI Classic (Fase 10)
 
-O ZephyrOS mantem a interface Classic como fallback e oferece uma interface
-Modern baseada em VESA, mouse PS/2, primitivas 2D e imagens BMP. As duas
+O ZephyrOS mantem a interface Simple como fallback e oferece uma interface
+Classic baseada em VESA, mouse PS/2, primitivas 2D e imagens BMP. As duas
 interfaces coexistem; a modernizacao nao remove os fluxos TUI.
+O nome Modern agora fica reservado ao redesenho futuro descrito no Roadmap 07.
 
 ### Decisão Arquitetural: Linguagem
 - **Etapa Atual (C Puro):** A GUI será construída inteiramente em C para garantir máxima performance, fácil integração com o Kernel atual e evitar complexidades de *runtime* (como inicialização global de objetos e runtime errors). Usaremos uma abordagem *C Object-Oriented* (ex: `ui_create_window()`, `ui_button_draw()`) para manter a organização.
@@ -13,11 +14,11 @@ interfaces coexistem; a modernizacao nao remove os fluxos TUI.
 | Etapa | Componente | Status |
 |---|---|---|
 | 1 | **Primitivas 2D (`gui.c`)**: `gui_draw_panel`, `gui_draw_button`, `gui_draw_window_frame`, `gui_draw_text`. | ✅ Concluído |
-| 2 | **Desktop Gráfico (`desktop.c`)**: Cards 3D, modo classic/modern, layout responsivo e fallback TUI. | ✅ Concluído |
+| 2 | **Desktop Gráfico (`desktop.c`)**: Cards 3D, modo simple/classic, layout responsivo e fallback TUI. | ✅ Concluído |
 | 3 | **Mouse no Desktop (`desktop.c`)**: Seleção por clique e abertura por duplo clique. | ✅ Concluído |
 | 4 | **Mouse Interativo (`wm.c`)**: Foco, arraste e redimensionamento de janelas. | ✅ Concluído |
 | 5 | **Desktop com BMP (`desktop.c`)**: Imagens com cache e fallback desenhado. | ✅ Concluído |
-| 6 | **Taskbar Moderna (`taskbar.c`)**: Redesenho gráfico preservando a semântica atual. | ✅ Concluído |
+| 6 | **Taskbar Classic (`taskbar.c`)**: Redesenho gráfico preservando a semântica atual. | ✅ Concluído |
 | 7 | **Windows Decorator (`wm.c`)**: Janelas com titlebar desenhadas via primitivas gráficas. | ✅ Concluído |
 | 8 | **Double Buffering (`vesa.c`)**: Renderização suave e sem cintilação via backbuffer na RAM. | ✅ Concluído |
 | 9 | **Aplicativos hospedados**: Shell, Explorer, Settings e Task Manager em janelas singleton. | ✅ Concluído |
@@ -36,18 +37,18 @@ Implementado em `src/gui/gui.c` com as seguintes primitivas:
 O Desktop passou a oferecer uma interface gráfica compatível com a identidade visual existente:
 - Cards com fundo cinza, bordas 3D e seleção azul
 - Grade alinhada à esquerda com posições calculadas conforme a resolução VESA
-- Modos `classic` e `modern`, com fallback automático quando VESA não está disponível
-- Comando `guimode classic|modern` no shell
+- Modos `simple` e `classic`, com fallback automático quando VESA não está disponível
+- Comando `guimode simple|classic` no shell
 - Símbolos desenhados por primitivas, sem dependência de arquivos BMP
 
 ### Fase 3: Input do Desktop ✅
-O Desktop moderno agora recebe eventos gráficos do mouse:
+O Desktop classic agora recebe eventos gráficos do mouse:
 - Clique esquerdo seleciona um card
 - Clique em área vazia remove a seleção
 - Duplo clique em até 500 ms abre o aplicativo
 - O cursor é invalidado antes de redesenhos completos para evitar artefatos no backbuffer
 
-### Fase 4: Barra de Tarefas Moderna (GUI) ✅
+### Fase 4: Barra de Tarefas Classic (GUI) ✅
 
 - Preserva os botões, relógio e Menu Iniciar nas cinco posições suportadas.
 - Reutiliza a identidade atual: cinza, bordas 3D, seleção azul e fonte bitmap.
@@ -63,9 +64,9 @@ O Desktop moderno agora recebe eventos gráficos do mouse:
 
 ### Fase 6: Ícones e detalhes visuais ✅
 
-O Desktop Modern carrega BMPs de Shell, Explorer e Task Manager com chave
+O Desktop Classic carrega BMPs de Shell, Explorer e Task Manager com chave
 magenta e cache. Falhas de filesystem, formato ou memoria preservam os
-simbolos desenhados. O modo Classic permanece independente desses arquivos.
+simbolos desenhados. O modo Simple permanece independente desses arquivos.
 
 ## Limitações Atuais e Atenções
 1. **Performance VESA Resolvida (Double Buffering):** O problema de *flickering* (cintilação) foi resolvido através da implementação de um backbuffer em memória RAM (`vesa_init_backbuffer`). Agora, a tela é copiada de uma só vez para a VRAM (`vesa_flip`).

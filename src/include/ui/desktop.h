@@ -27,7 +27,9 @@ typedef enum {
 } desktop_app_type_t;
 
 typedef enum {
-    DESKTOP_MODE_CLASSIC = 0,
+    DESKTOP_MODE_SIMPLE = 0,
+    DESKTOP_MODE_CLASSIC,
+    /* Reservado para a futura interface realmente moderna. */
     DESKTOP_MODE_MODERN
 } desktop_mode_t;
 
@@ -36,10 +38,10 @@ typedef struct {
     desktop_app_type_t type;
     int x;
     int y;
-    int modern_x;
-    int modern_y;
-    int modern_width;
-    int modern_height;
+    int classic_x;
+    int classic_y;
+    int classic_width;
+    int classic_height;
     int selected;
 } desktop_icon_t;
 

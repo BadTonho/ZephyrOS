@@ -5,8 +5,8 @@
 #include "drivers/mouse.h"
 
 typedef enum {
-    UPDATER_MODE_CLASSIC = 0,
-    UPDATER_MODE_MODERN
+    UPDATER_MODE_SIMPLE = 0,
+    UPDATER_MODE_CLASSIC
 } updater_mode_t;
 
 int updater_init(void);

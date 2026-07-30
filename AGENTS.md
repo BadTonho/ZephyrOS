@@ -445,9 +445,22 @@ O agente de IA **NUNCA** deve executar comandos de build via terminal (`make`, `
 
 ---
 
-## Regra #15: Dual Interface (Classic / Modern)
+## Regra #15: Modos de Interface (Simple / Classic / Modern)
 
-O sistema operacional DEVE manter retrocompatibilidade visual. A interface gráfica baseada em texto original (TUI em `video.c`) deve ser preservada como um "Modo Clássico" (Fallback) para hardwares limitados ou escolha do usuário. O desenvolvimento da "GUI Moderna" (`gui.c`, `gui.h`) deve coexistir, e novos aplicativos/interfaces devem planejar suportar ambos os modos de renderização.
+- **Simple**: TUI original baseada em `video.c`, preservada somente como fallback
+  operacional para falha de VESA/backbuffer. Fica congelada: recebe correções
+  críticas, mas não novas funcionalidades nem regressão visual completa.
+- **Classic**: GUI VESA atual baseada em `gui.c`/`gui.h`. É a interface
+  principal, recebe as novas funcionalidades e concentra a matriz obrigatória
+  de testes de Desktop, Taskbar, Window Manager e aplicativos hospedados.
+- **Modern**: nome reservado para a futura interface realmente moderna. Não
+  deve ser oferecido como modo selecionável enquanto essa implementação não
+  existir.
+
+Novos aplicativos e interfaces DEVEM priorizar o modo Classic gráfico. O modo
+Simple exige apenas um smoke test de fallback: entrar com `guimode simple`,
+confirmar vídeo, teclado e Shell, executar um comando básico e retornar com
+`guimode classic`.
 
 ---
 

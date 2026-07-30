@@ -70,7 +70,7 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
   zerado, TX contabilizado no E1000 e na camada, `device-scan` aprovado e
   `regcheck full` concluido em `OK`.
 - [ ] Cobertura complementar: injetar RX externo e frame invalido e repetir a
-  regressao visual Classic/Modern; esses cenarios nao bloqueiam a conclusao.
+  regressao visual Simple/Classic; esses cenarios nao bloqueiam a conclusao.
 
 ## S2.4 - ARP com cache e resolucao assincrona (concluida e validada)
 
@@ -88,7 +88,7 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 - [x] Validada pelo usuario no QEMU padrao: reply, cache hit sem novo TX,
   timeout apos tres tentativas, polling sem erros e invariantes em `OK`.
 - [ ] Cobertura complementar: peer externo, ausencia de NIC, RTL8139,
-  `device-scan`, sintaxe invalida e Classic/Modern; esses cenarios nao
+  `device-scan`, sintaxe invalida e Simple/Classic; esses cenarios nao
   bloqueiam a conclusao.
 
 ## S2.5 - IPv4 estatico e ICMP Echo (concluida e validada)
@@ -114,7 +114,7 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 - [x] Suite agrupada validada pelo usuario no QEMU padrao, com UDP, DORA,
   lease, DNS, cache, ICMP, polling e invariantes em `OK`.
 - [ ] Cobertura complementar: renovacao/liberacao individual, fallbacks,
-  peer externo e Classic/Modern.
+  peer externo e Simple/Classic.
 
 ## S2.7 - TCP cliente, sockets e HTTP GET (concluida e validada)
 
@@ -142,7 +142,7 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 - [x] Fallback sem NIC validado: interface inexistente recusada e
   `regcheck full` em `OK`.
 - [ ] Cobertura complementar: perda/retransmissao com peer, RST, janela zero,
-  handles obsoletos, tabela cheia, RTL8139 e Classic/Modern.
+  handles obsoletos, tabela cheia, RTL8139 e Simple/Classic.
 
 ## S2.8 - Multi-NIC e RTL8139 (concluida e validada)
 
@@ -162,7 +162,7 @@ Esta entrega nao e contabilizada nos 356 itens do roadmap legado abaixo.
 - [x] Invariantes Multi-NIC integradas ao `regcheck full`.
 - [x] Q3 e build aprovados pelo usuario sem warnings novos.
 - [x] Matriz QEMU aprovada pelo usuario. A suite Multi-NIC e o `regcheck full`
-  passaram com E1000 + RTL8139 nos modos Classic e Modern, apos mover os
+  passaram com E1000 + RTL8139 nos modos Simple e Classic, apos mover os
   snapshots da suite para BSS e eliminar a corrupcao de heap.
 
 A etapa esta concluida. Permanecem fora do escopo multiplas rotas/IPs

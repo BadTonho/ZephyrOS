@@ -26,8 +26,8 @@ typedef enum {
 } settings_option_type_t;
 
 typedef enum {
-    SETTINGS_MODE_CLASSIC = 0,
-    SETTINGS_MODE_MODERN
+    SETTINGS_MODE_SIMPLE = 0,
+    SETTINGS_MODE_CLASSIC
 } settings_mode_t;
 
 typedef struct {

@@ -7,7 +7,7 @@
 | U1 | Politica de integridade e contrato do pacote de sistema | Concluida |
 | U2 | Verificacao local, assinada e sem escrita | Concluida |
 | U3 | Aplicacao transacional, recuperacao e rollback | Concluida |
-| U4 | Diagnosticos e interfaces Classic/Modern | Concluida |
+| U4 | Diagnosticos e interfaces Simple/Classic | Concluida |
 | U5 | Distribuicao remota opcional | Concluida |
 
 O ZPKG v1 continua sendo exclusivamente o container de aplicativos locais.
@@ -28,12 +28,12 @@ Aplicacao, rollback e recuperacao foram confirmados pela matriz QEMU.
 
 A implementacao concluida da U4 acrescenta controles `ZUPD*.HIS`, comandos
 somente-leitura, auditoria host e o aplicativo nativo documentado em
-`docs/14-atualizacoes/system-updater.md`. Classic e Modern, aplicacao,
+`docs/14-atualizacoes/system-updater.md`. Simple e Classic, aplicacao,
 rollback, failpoint e recuperacao no boot foram confirmados no QEMU.
 
 A implementacao concluida da U5 acrescenta manifesto assinado `ZUM1`, HTTP
 streaming, cache FAT12 A/B, comandos manuais e a aba Remoto. Fixtures, Shell e
-System Updater Modern foram aprovados no QEMU. O Classic permanece disponivel
+System Updater Classic foram aprovados no QEMU. O Simple permanece disponivel
 como fallback e nao bloqueia a conclusao da fase.
 
 ---
@@ -119,7 +119,7 @@ novamente e terminou com memoria estavel, `regcheck full` em `OK`,
 
 - [x] Adicionar `update status` e `update history`, com estado de integridade,
   versao, ultima operacao e recuperacao pendente.
-- [x] Criar interface de atualizacao nos modos Classic e Modern, preservando
+- [x] Criar interface de atualizacao nos modos Simple e Classic, preservando
   os comandos Shell como fallback completo.
 - [x] Manter atualizacoes remotas desabilitadas por padrao e mostrar essa
   condicao em `health` sem degradar boot, Shell ou uso local.
@@ -128,7 +128,7 @@ novamente e terminou com memoria estavel, `regcheck full` em `OK`,
 as interfaces, inclusive falhas e recuperacao.
 
 Concluida: o ring redundante de oito eventos, consultas, comandos, `health` e
-System Updater Classic/Modern foram validados. Aplicacao e rollback produziram
+System Updater Simple/Classic foram validados. Aplicacao e rollback produziram
 os eventos esperados. O failpoint deixou journal pendente e componente
 degradado; o boot restaurou `0.1.0`, registrou `APPLY/FAILED` seguido de
 `RECOVERY_APPLY/RECOVERED` e tornou o pacote compativel novamente. Memoria,
@@ -151,9 +151,9 @@ aplicacao segura permanecem identicas ao fluxo local.
 
 Concluida: o servico inicia desabilitado, autentica `ZUM1`, baixa por streaming
 para slots `ZUR0/1.ZUP`, preserva o cache anterior e publica somente depois de
-SHA-256 e verificacao ZUPD. Shell e System Updater Modern confirmaram consulta,
+SHA-256 e verificacao ZUPD. Shell e System Updater Classic confirmaram consulta,
 download, limpeza, falhas controladas e cancelamento. Aplicacao/rollback,
-memoria, `regcheck full` e `audit-image` terminaram em `OK`. O Classic continua
+memoria, `regcheck full` e `audit-image` terminaram em `OK`. O Simple continua
 implementado como fallback, com validacao complementar.
 
 ---
@@ -216,8 +216,8 @@ U1-U5 acima.
 | F5 | Instalar atualização selecionada |
 | Setas | Navegar na lista |
 | Enter | Selecionar/instalar |
-| Esc | Cancelar contexto; fechar somente no Classic ocioso |
-| Alt+F4 ou botão X | Fechar janela Modern |
+| Esc | Cancelar contexto; fechar somente no Simple ocioso |
+| Alt+F4 ou botão X | Fechar janela Classic |
 | Tab | Alternar entre seções |
 | Delete | Remover atualização instalada |
 

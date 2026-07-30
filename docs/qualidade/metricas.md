@@ -21,7 +21,7 @@ mudanca; nao crie uma entrada artificial.
 ### 2026-07-27 - High Memory, bootstrap do paging em blocos
 
 - Cenario QEMU: executar `make clean && make`, iniciar com `make run`, usar
-  `kmetrics`; repetir `kmetrics reset` e digitacao nos modos Classic e Modern.
+  `kmetrics`; repetir `kmetrics reset` e digitacao nos modos Simple e Classic.
 - Metrica observavel: paginas identity-mapped, Page Tables e ticks de
   `paging_init()`, alem de processados, pico e descartes da fila de teclado.
 - Antes: com 128 MiB e framebuffer 1024x768x32, cerca de 31275 paginas do
@@ -46,7 +46,7 @@ mudanca; nao crie uma entrada artificial.
 - A latencia visual restante foi localizada no Shell hospedado: o WM executava
   `wm_gui_draw_all()` para press e release, recompondo Desktop, janelas e
   taskbar por scancode. O pior frame observado chegou a `6` ticks. O terminal
-  moderno agora assume a apresentacao da entrada e acumula apenas as celulas
+  classic agora assume a apresentacao da entrada e acumula apenas as celulas
   da tecla e do cursor; scroll e saidas longas mantem fallback por area.
 - A entrada no sistema tambem acumulava apresentacoes completas quando os logs
   da segunda metade do boot atingiam o fim da tela. Essa etapa passa a compor
@@ -79,7 +79,7 @@ mudanca; nao crie uma entrada artificial.
 
 ### 2026-07-24 - K4, cursor VESA por regioes minimas
 
-- Cenario QEMU: mesma janela e modo VESA; `kmetrics reset`, Desktop moderno,
+- Cenario QEMU: mesma janela e modo VESA; `kmetrics reset`, Desktop classic,
   dez movimentos entre cantos opostos sem clique, retorno ao Shell e
   `kmetrics`.
 - Metrica observavel: bytes VESA, apresentacoes parciais, `media_bytes` e
@@ -111,7 +111,7 @@ PIT, nao indicam ausencia de custo.
 | K1-A boot/Shell | Aguardar o boot e consultar `kmetrics`. | Concluido: snapshot de processos, filas, memoria e VESA capturado. |
 | K1-B Shell/scrollback | `kmetrics reset`; `health`; `PgUp`, `PgDn` e `End`; `kmetrics`. | Concluido: scrollback navegavel e filas sem pendencia residual. |
 | K1-C ring 3 | `kmetrics reset`; `app outputtest`; `app inputtest` com `F12`; `q2check`; `kmetrics`. | Concluido: deltas IPC/scheduler observados; foco restaurado e sem ZAPP/zumbi. |
-| K1-D interfaces | Para classic e modern: `kmetrics reset`; abrir/fechar Desktop, Explorer, Settings e Task Manager; `kmetrics`. | Concluido: ambos os modos testados; apresentacoes/copias VESA observadas no moderno. |
+| K1-D interfaces | Para simple e classic: `kmetrics reset`; abrir/fechar Desktop, Explorer, Settings e Task Manager; `kmetrics`. | Concluido: ambos os modos testados; apresentacoes/copias VESA observadas no classic. |
 
 CPU real permanece `N/D`: `TCK%` e somente a participacao estimada nos ticks
 do PIT. RDTSC/PMU exigem calibracao e ficam explicitamente adiados.
@@ -127,7 +127,7 @@ ring 3 e fallbacks do Idle apenas para confirmar o contrato do scheduler.
 | K2-A invariantes | `schedcheck`; `kmetrics`. | Concluido: todas as linhas em `OK`; quantum de usuario confirmado em 1 tick. |
 | K2-B preempcao | `kmetrics reset`; `app inputtest`; aguardar; `F12`; `kmetrics`; `schedcheck`. | Concluido: preempcoes de usuario positivas; foco, prompt e invariantes restaurados. |
 | K2-C regressao | `app outputtest`, `q2check`, `usertest fault`, `threadtest`, `appcheck`, `health` e `procs`. | Concluido: sem panic ou processo residual; erros deliberados de `appcheck` permaneceram controlados. |
-| K2-D interfaces | Nos modos classic e modern: abrir/fechar Desktop, Explorer, Settings e Task Manager; `schedcheck`; `kmetrics`. | Concluido: Shell e interfaces operacionais nos dois modos; invariantes aprovados. |
+| K2-D interfaces | Nos modos simple e classic: abrir/fechar Desktop, Explorer, Settings e Task Manager; `schedcheck`; `kmetrics`. | Concluido: Shell e interfaces operacionais nos dois modos; invariantes aprovados. |
 
 ## Validacao K3 (integridade, nao otimizacao)
 
@@ -141,4 +141,4 @@ nao um alvo numerico nesta etapa.
 | K3-A diagnostico | `memcheck`; `memcheck invalido`; `kmetrics`; `health`; `procs`. | Concluido: cinco linhas compactas em `OK`, uso invalido controlado e nenhum processo criado. |
 | K3-B ring 3 | `kmetrics reset`; `app inputtest`; `F12`; `kmetrics`; `memcheck`. | Concluido: diretorios e paginas de usuario retornaram a zero apos coleta. |
 | K3-C regressao | `app outputtest`; `q2check`; `usertest fault`; `appcheck`; `threadtest`; `memcheck`. | Concluido: sem panic, ZAPP ou zumbi residual; falhas deliberadas permaneceram controladas. |
-| K3-D interfaces | Nos modos classic e modern, abrir/fechar Desktop, Explorer, Settings e Task Manager; `memcheck`; `kmetrics`; `schedcheck`. | Concluido: interfaces e diagnosticos preservados nos dois modos. |
+| K3-D interfaces | Nos modos simple e classic, abrir/fechar Desktop, Explorer, Settings e Task Manager; `memcheck`; `kmetrics`; `schedcheck`. | Concluido: interfaces e diagnosticos preservados nos dois modos. |

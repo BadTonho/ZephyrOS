@@ -469,7 +469,7 @@ forma que a seleção do cartão continue visível atrás da imagem.
 `bmp_draw_transparent_resized()` preserva a mesma cor-chave e redimensiona
 para largura e altura arbitrárias por nearest-neighbor. A função não altera a
 imagem carregada nem aloca memória durante o desenho; o sistema de ícones a
-usa para exibir o único cache 32x32 nos tamanhos da escala Modern.
+usa para exibir o único cache 32x32 nos tamanhos da escala Classic.
 
 ### Exemplo
 

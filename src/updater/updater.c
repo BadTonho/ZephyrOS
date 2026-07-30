@@ -19,15 +19,15 @@
 #define UPDATER_MAX_PACKAGES 16
 #define UPDATER_PACKAGE_NAME_SIZE 13
 #define UPDATER_FS_DIRECTORY 0x10U
-#define UPDATER_CLASSIC_LIST_X 3
-#define UPDATER_CLASSIC_LIST_Y 6
-#define UPDATER_CLASSIC_LIST_WIDTH 28
-#define UPDATER_MODERN_MIN_WIDTH 640
-#define UPDATER_MODERN_MIN_HEIGHT 420
-#define UPDATER_MODERN_DEFAULT_WIDTH 780
-#define UPDATER_MODERN_DEFAULT_HEIGHT 560
-#define UPDATER_MODERN_MARGIN 12
-#define UPDATER_MODERN_ROW_HEIGHT 24
+#define UPDATER_SIMPLE_LIST_X 3
+#define UPDATER_SIMPLE_LIST_Y 6
+#define UPDATER_SIMPLE_LIST_WIDTH 28
+#define UPDATER_CLASSIC_MIN_WIDTH 640
+#define UPDATER_CLASSIC_MIN_HEIGHT 420
+#define UPDATER_CLASSIC_DEFAULT_WIDTH 780
+#define UPDATER_CLASSIC_DEFAULT_HEIGHT 560
+#define UPDATER_CLASSIC_MARGIN 12
+#define UPDATER_CLASSIC_ROW_HEIGHT 24
 #define UPDATER_SCANCODE_ESC 0x01U
 #define UPDATER_SCANCODE_TAB 0x0FU
 #define UPDATER_SCANCODE_ENTER 0x1CU
@@ -86,7 +86,7 @@ static int updater_scroll = 0;
 static int updater_active = 0;
 static int updater_hosted = 0;
 static int updater_initialized = 0;
-static updater_mode_t updater_mode = UPDATER_MODE_CLASSIC;
+static updater_mode_t updater_mode = UPDATER_MODE_SIMPLE;
 static updater_tab_t updater_tab = UPDATER_TAB_PACKAGES;
 static updater_confirm_t updater_confirm = UPDATER_CONFIRM_NONE;
 static updater_result_t updater_result_kind = UPDATER_RESULT_NONE;
@@ -102,8 +102,8 @@ static int updater_remote_status_ready = 0;
 static int updater_last_result = OK;
 static int updater_gui_x = 0;
 static int updater_gui_y = 0;
-static int updater_gui_width = UPDATER_MODERN_DEFAULT_WIDTH;
-static int updater_gui_height = UPDATER_MODERN_DEFAULT_HEIGHT;
+static int updater_gui_width = UPDATER_CLASSIC_DEFAULT_WIDTH;
+static int updater_gui_height = UPDATER_CLASSIC_DEFAULT_HEIGHT;
 static volatile updater_remote_job_t updater_remote_job =
     UPDATER_REMOTE_JOB_NONE;
 static volatile updater_remote_job_t updater_remote_job_running =
@@ -124,8 +124,8 @@ static void updater_remote_worker_main(void);
 
 static const wm_hosted_app_t updater_hosted_app = {
     WM_APP_UPDATER, "ZephyrOS System Updater", "Updater",
-    UPDATER_MODERN_MIN_WIDTH, UPDATER_MODERN_MIN_HEIGHT,
-    UPDATER_MODERN_DEFAULT_WIDTH, UPDATER_MODERN_DEFAULT_HEIGHT,
+    UPDATER_CLASSIC_MIN_WIDTH, UPDATER_CLASSIC_MIN_HEIGHT,
+    UPDATER_CLASSIC_DEFAULT_WIDTH, UPDATER_CLASSIC_DEFAULT_HEIGHT,
     WM_KEY_REDRAW_WINDOW_MANAGER,
     updater_hosted_draw, updater_hosted_key, updater_hosted_mouse,
     updater_hosted_close
@@ -354,7 +354,7 @@ static void updater_history_detail_text(
     }
 }
 
-static void updater_classic_print_version(
+static void updater_simple_print_version(
     const char* label, const update_version_t* version, uint32_t epoch) {
     char text[64];
 
@@ -635,7 +635,7 @@ static void updater_confirm_action(void) {
     updater_refresh_component();
 }
 
-static void updater_classic_draw_tabs(void) {
+static void updater_simple_draw_tabs(void) {
     static const char* names[UPDATER_TAB_COUNT] = {
         " Pacotes ", " Estado ", " Historico ", " Remoto "
     };
@@ -649,25 +649,25 @@ static void updater_classic_draw_tabs(void) {
     }
 }
 
-static void updater_classic_draw_packages(void) {
-    video_draw_box(1, 4, UPDATER_CLASSIC_LIST_WIDTH,
+static void updater_simple_draw_packages(void) {
+    video_draw_box(1, 4, UPDATER_SIMPLE_LIST_WIDTH,
                    SCREEN_ROWS - 8, 0x08);
     video_print_at(3, 4, " Pacotes locais ", 0x0B);
     if (updater_package_count == 0) {
-        video_print_at(UPDATER_CLASSIC_LIST_X,
-                       UPDATER_CLASSIC_LIST_Y,
+        video_print_at(UPDATER_SIMPLE_LIST_X,
+                       UPDATER_SIMPLE_LIST_Y,
                        "Nenhum *.ZUP", 0x08);
     }
     for (int index = 0; index < updater_package_count; index++) {
         uint8_t color = index == updater_selected ? 0x1F : 0x07;
 
         if (index == updater_selected) {
-            video_fill_rect(2, UPDATER_CLASSIC_LIST_Y + index,
-                            UPDATER_CLASSIC_LIST_WIDTH - 2,
+            video_fill_rect(2, UPDATER_SIMPLE_LIST_Y + index,
+                            UPDATER_SIMPLE_LIST_WIDTH - 2,
                             1, ' ', color);
         }
-        video_print_at(UPDATER_CLASSIC_LIST_X,
-                       UPDATER_CLASSIC_LIST_Y + index,
+        video_print_at(UPDATER_SIMPLE_LIST_X,
+                       UPDATER_SIMPLE_LIST_Y + index,
                        updater_packages[index].name, color);
     }
     if (updater_package_overflow) {
@@ -676,8 +676,8 @@ static void updater_classic_draw_packages(void) {
     }
 }
 
-static void updater_classic_draw_result(void) {
-    int x = UPDATER_CLASSIC_LIST_WIDTH + 3;
+static void updater_simple_draw_result(void) {
+    int x = UPDATER_SIMPLE_LIST_WIDTH + 3;
 
     video_set_cursor(x, 6);
     if (updater_completed_action_kind != UPDATER_RESULT_NONE) {
@@ -708,10 +708,10 @@ static void updater_classic_draw_result(void) {
                     updater_last_result == OK ? 0x0A : 0x0C);
         video_print("\n", 0x07);
         if (updater_verification.entry_count) {
-            updater_classic_print_version(
+            updater_simple_print_version(
                 "Base: ", &updater_verification.base_version,
                 updater_verification.base_epoch);
-            updater_classic_print_version(
+            updater_simple_print_version(
                 "Alvo: ", &updater_verification.target_version,
                 updater_verification.target_epoch);
         }
@@ -723,10 +723,10 @@ static void updater_classic_draw_result(void) {
                 updater_last_result == OK ? 0x0A : 0x0C);
     video_print("\n", 0x07);
     if (updater_action.entry_count) {
-        updater_classic_print_version(
+        updater_simple_print_version(
             "Origem: ", &updater_action.from_version,
             updater_action.from_epoch);
-        updater_classic_print_version(
+        updater_simple_print_version(
             "Destino: ", &updater_action.to_version,
             updater_action.to_epoch);
     }
@@ -737,20 +737,20 @@ static void updater_classic_draw_result(void) {
     }
 }
 
-static void updater_classic_draw_status(void) {
+static void updater_simple_draw_status(void) {
     video_set_cursor(3, 6);
     if (!updater_status_ready) {
         video_print("Status de Update indisponivel.\n", 0x0C);
         return;
     }
-    updater_classic_print_version(
+    updater_simple_print_version(
         "Build: ", &updater_status.build_version,
         updater_status.build_epoch);
-    updater_classic_print_version(
+    updater_simple_print_version(
         "Instalado: ", &updater_status.installed_version,
         updater_status.installed_epoch);
     if (updater_status.capabilities.rollback_available) {
-        updater_classic_print_version(
+        updater_simple_print_version(
             "Rollback: ", &updater_status.rollback_version,
             updater_status.rollback_epoch);
     } else {
@@ -794,7 +794,7 @@ static void updater_classic_draw_status(void) {
     }
 }
 
-static void updater_classic_draw_history(void) {
+static void updater_simple_draw_history(void) {
     uint32_t count = 0;
 
     video_set_cursor(3, 6);
@@ -840,7 +840,7 @@ static const char* updater_remote_active_job_name(void) {
     return "AGUARDANDO";
 }
 
-static void updater_classic_draw_remote(void) {
+static void updater_simple_draw_remote(void) {
     video_set_cursor(3, 6);
     if (!updater_remote_status_ready) {
         video_print("Servico remoto indisponivel.\n", 0x0C);
@@ -895,10 +895,10 @@ static void updater_classic_draw_remote(void) {
     }
     video_print("\n", 0x07);
     if (updater_remote_status.manifest_cached) {
-        updater_classic_print_version(
+        updater_simple_print_version(
             "Base: ", &updater_remote_status.candidate.base_version,
             updater_remote_status.candidate.base_epoch);
-        updater_classic_print_version(
+        updater_simple_print_version(
             "Alvo: ", &updater_remote_status.candidate.target_version,
             updater_remote_status.candidate.target_epoch);
         video_print("Pacote: ", 0x07);
@@ -927,7 +927,7 @@ static void updater_classic_draw_remote(void) {
     }
 }
 
-static void updater_classic_draw_confirmation(void) {
+static void updater_simple_draw_confirmation(void) {
     if (updater_confirm == UPDATER_CONFIRM_NONE) return;
     video_fill_rect(30, SCREEN_ROWS - 9, 68, 5, ' ', 0x1E);
     video_draw_box(30, SCREEN_ROWS - 9, 68, 5, 0x0E);
@@ -947,21 +947,21 @@ static void updater_classic_draw_confirmation(void) {
                    "Enter confirma | Esc cancela", 0x1E);
 }
 
-static void updater_draw_classic(void) {
+static void updater_draw_simple(void) {
     video_begin_update();
     video_fill_rect(0, 0, SCREEN_COLS, SCREEN_ROWS, ' ', 0x07);
     video_fill_rect(0, 0, SCREEN_COLS, 1, ' ', 0x1F);
     video_print_at(2, 0, "ZephyrOS System Updater", 0x1F);
-    updater_classic_draw_tabs();
+    updater_simple_draw_tabs();
     if (updater_tab == UPDATER_TAB_PACKAGES) {
-        updater_classic_draw_packages();
-        updater_classic_draw_result();
+        updater_simple_draw_packages();
+        updater_simple_draw_result();
     } else if (updater_tab == UPDATER_TAB_STATUS) {
-        updater_classic_draw_status();
+        updater_simple_draw_status();
     } else if (updater_tab == UPDATER_TAB_HISTORY) {
-        updater_classic_draw_history();
+        updater_simple_draw_history();
     } else {
-        updater_classic_draw_remote();
+        updater_simple_draw_remote();
     }
     if (updater_tab == UPDATER_TAB_REMOTE) {
         video_print_at(2, SCREEN_ROWS - 2,
@@ -972,7 +972,7 @@ static void updater_draw_classic(void) {
                        "Tab=aba Setas=selecionar F5=atualizar V=verificar "
                        "A=aplicar B=rollback Esc=fechar", 0x70);
     }
-    updater_classic_draw_confirmation();
+    updater_simple_draw_confirmation();
     taskbar_draw();
     video_end_update();
 }
@@ -996,14 +996,14 @@ static void updater_gui_draw_tabs(int x, int y) {
 
 static void updater_gui_draw_packages(int x, int y, int width, int height) {
     int list_width = 220;
-    int visible = (height - 94) / UPDATER_MODERN_ROW_HEIGHT;
+    int visible = (height - 94) / UPDATER_CLASSIC_ROW_HEIGHT;
     int result_y = y + 52;
 
     gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)list_width,
                    (uint32_t)(height - 54), GUI_COLOR_BG, 0);
     for (int row = 0; row < visible; row++) {
         int index = updater_scroll + row;
-        int row_y = y + 10 + row * UPDATER_MODERN_ROW_HEIGHT;
+        int row_y = y + 10 + row * UPDATER_CLASSIC_ROW_HEIGHT;
 
         if (index >= updater_package_count) break;
         if (index == updater_selected) {
@@ -1294,18 +1294,18 @@ static void updater_gui_draw_confirmation(
                     112, 30, "Cancelar", 0);
 }
 
-static void updater_draw_modern(int x, int y, int width, int height) {
+static void updater_draw_classic(int x, int y, int width, int height) {
     int content_y = y + 48;
     int content_height = height - 104;
 
     gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)width,
                    (uint32_t)height, GUI_COLOR_BG, 0);
-    updater_gui_draw_tabs(x + UPDATER_MODERN_MARGIN,
-                          y + UPDATER_MODERN_MARGIN);
+    updater_gui_draw_tabs(x + UPDATER_CLASSIC_MARGIN,
+                          y + UPDATER_CLASSIC_MARGIN);
     if (updater_tab == UPDATER_TAB_PACKAGES) {
         updater_gui_draw_packages(
-            x + UPDATER_MODERN_MARGIN, content_y,
-            width - 2 * UPDATER_MODERN_MARGIN, content_height);
+            x + UPDATER_CLASSIC_MARGIN, content_y,
+            width - 2 * UPDATER_CLASSIC_MARGIN, content_height);
     } else if (updater_tab == UPDATER_TAB_STATUS) {
         updater_gui_draw_status(x + 32, content_y + 16);
     } else if (updater_tab == UPDATER_TAB_HISTORY) {
@@ -1338,7 +1338,7 @@ static void updater_draw_modern(int x, int y, int width, int height) {
 }
 
 static void updater_keep_selection_visible(void) {
-    int visible = (updater_gui_height - 198) / UPDATER_MODERN_ROW_HEIGHT;
+    int visible = (updater_gui_height - 198) / UPDATER_CLASSIC_ROW_HEIGHT;
 
     if (visible < 1) visible = 1;
     if (updater_selected < updater_scroll) {
@@ -1419,23 +1419,23 @@ int updater_open(void) {
     kmemset(&updater_completed_action, 0,
             sizeof(updater_completed_action));
     updater_refresh_all();
-    updater_mode = UPDATER_MODE_CLASSIC;
-    if (desktop_get_mode() == DESKTOP_MODE_MODERN) {
+    updater_mode = UPDATER_MODE_SIMPLE;
+    if (desktop_get_mode() == DESKTOP_MODE_CLASSIC) {
         wm_set_active(1);
         updater_hosted = 1;
-        updater_mode = UPDATER_MODE_MODERN;
+        updater_mode = UPDATER_MODE_CLASSIC;
         if (wm_register_hosted_app(&updater_hosted_app) == OK) {
-            LOG_INFO("UPDATER", "System Updater moderno aberto");
+            LOG_INFO("UPDATER", "System Updater Classic aberto");
             return OK;
         }
         updater_hosted = 0;
-        updater_mode = UPDATER_MODE_CLASSIC;
+        updater_mode = UPDATER_MODE_SIMPLE;
         wm_set_active(0);
-        LOG_WARN("UPDATER", "Workspace moderno indisponivel; usando TUI");
+        LOG_WARN("UPDATER", "Workspace Classic indisponivel; usando Simple");
     }
     desktop_set_active(0);
-    updater_draw_classic();
-    LOG_INFO("UPDATER", "System Updater classico aberto");
+    updater_draw_simple();
+    LOG_INFO("UPDATER", "System Updater Simple aberto");
     return OK;
 }
 
@@ -1462,7 +1462,7 @@ void updater_draw(void) {
         wm_request_hosted_redraw(WM_APP_UPDATER);
         return;
     }
-    updater_draw_classic();
+    updater_draw_simple();
 }
 
 void updater_handle_key(uint8_t scancode) {
@@ -1485,7 +1485,7 @@ void updater_handle_key(uint8_t scancode) {
         return;
     }
     if (scancode == UPDATER_SCANCODE_ESC) {
-        if (updater_mode == UPDATER_MODE_CLASSIC) updater_close();
+        if (updater_mode == UPDATER_MODE_SIMPLE) updater_close();
         return;
     }
     if (scancode == UPDATER_SCANCODE_TAB) {
@@ -1563,19 +1563,19 @@ int updater_handle_mouse(mouse_event_t* event) {
     }
     for (int index = 0; index < UPDATER_TAB_COUNT; index++) {
         if (updater_point_in(
-                px, py, updater_gui_x + UPDATER_MODERN_MARGIN + index * 116,
-                updater_gui_y + UPDATER_MODERN_MARGIN, 108, 28)) {
+                px, py, updater_gui_x + UPDATER_CLASSIC_MARGIN + index * 116,
+                updater_gui_y + UPDATER_CLASSIC_MARGIN, 108, 28)) {
             updater_tab = (updater_tab_t)index;
             updater_confirm = UPDATER_CONFIRM_NONE;
             return 1;
         }
     }
     if (updater_tab == UPDATER_TAB_PACKAGES &&
-        updater_point_in(px, py, updater_gui_x + UPDATER_MODERN_MARGIN,
+        updater_point_in(px, py, updater_gui_x + UPDATER_CLASSIC_MARGIN,
                          updater_gui_y + 48, 220,
                          updater_gui_height - 158)) {
         int row = (py - (updater_gui_y + 58)) /
-                  UPDATER_MODERN_ROW_HEIGHT;
+                  UPDATER_CLASSIC_ROW_HEIGHT;
         int index = updater_scroll + row;
 
         if (row >= 0 && index < updater_package_count) {
@@ -1634,7 +1634,7 @@ static void updater_hosted_draw(int x, int y, int width, int height) {
     updater_gui_y = y;
     updater_gui_width = width;
     updater_gui_height = height;
-    updater_draw_modern(x, y, width, height);
+    updater_draw_classic(x, y, width, height);
 }
 
 static void updater_hosted_key(uint8_t scancode) {
@@ -1657,5 +1657,5 @@ static void updater_hosted_close(void) {
     updater_hosted = 0;
     updater_active = 0;
     updater_confirm = UPDATER_CONFIRM_NONE;
-    LOG_INFO("UPDATER", "System Updater moderno fechado");
+    LOG_INFO("UPDATER", "System Updater Classic fechado");
 }

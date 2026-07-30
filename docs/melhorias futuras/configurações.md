@@ -1,6 +1,6 @@
 # Roadmap — Configurações
 
-> **Estado de referencia:** Settings possui modos classico e moderno com
+> **Estado de referencia:** Settings possui modos Simple e Classic com
 > fallback controlado. As listas abaixo preservam o backlog de configuracoes;
 > detalhes do comportamento atual ficam no capitulo de Desktop e no roadmap de
 > interface por etapa.
@@ -28,8 +28,8 @@
 - ✅ Navegação por Tab entre categorias. *(settings.c:507-516)*
 - ✅ Navegação por setas nas opções. *(settings.c:518-536)*
 - ✅ Enter para editar. *(settings.c:538-542)*
-- ✅ Esc cancela edição/diálogo e fecha somente o Classic ocioso. *(settings.c)*
-- ✅ Botão X ou Alt+F4 fecha a janela Modern. *(wm.c)*
+- ✅ Esc cancela edição/diálogo e fecha somente o Simple ocioso. *(settings.c)*
+- ✅ Botão X ou Alt+F4 fecha a janela Classic. *(wm.c)*
 - ✅ Tipos de opção: Toggle, Lista, Ação. *(settings.h:20-25)*
 
 ---
@@ -488,7 +488,7 @@
 
 ## Fase 6 - Interface grafica com fallback TUI
 
-- [x] Adicionar `SETTINGS_MODE_CLASSIC` e `SETTINGS_MODE_MODERN`.
+- [x] Adicionar `SETTINGS_MODE_SIMPLE` e `SETTINGS_MODE_CLASSIC`.
 - [x] Selecionar o modo pelo `guimode` global e pela disponibilidade de VESA/backbuffer.
 - [x] Modernizar categorias, opcoes, toggles, listas e acoes com as primitivas GUI existentes.
 - [x] Modernizar editor de icones, informacoes do sistema, memoria, processos, versao e creditos.

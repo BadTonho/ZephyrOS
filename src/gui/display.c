@@ -34,7 +34,7 @@ static int display_mode_supports(const display_metrics_t* metrics) {
 }
 
 static int display_refresh_scene(void) {
-    if (desktop_get_mode() == DESKTOP_MODE_MODERN && wm_is_active()) {
+    if (desktop_get_mode() == DESKTOP_MODE_CLASSIC && wm_is_active()) {
         return wm_reflow_display();
     }
     if (desktop_is_active()) {

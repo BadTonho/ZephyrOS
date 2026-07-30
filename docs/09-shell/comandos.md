@@ -36,8 +36,8 @@ Comandos disponiveis:
   edit      - Editor de texto (edit ARQUIVO.TXT)
   mouse     - Mostra status do mouse PS/2
   guitest   - Testa primitivas GUI 2D
-  guimode   - Altera entre gui classica (TUI) e moderna
-  display   - Mostra estado ou altera a escala da GUI moderna
+  guimode   - Altera entre gui simple (TUI) e classic
+  display   - Mostra estado ou altera a escala da GUI classic
   health [summary] - Exibe estado completo ou resumo compacto
   devices   - Lista o inventario de hardware (`-v` inclui detalhes)
   device-info <id> - Exibe detalhes de um dispositivo inventariado
@@ -96,7 +96,7 @@ somente quando nenhuma aplicacao esta com foco:
 - `Shift+Seta para cima` / `Shift+Seta para baixo`: navega uma linha;
 - `Page Up` / `Page Down`: navega uma pagina;
 - `Home` / `End`: vai ao inicio ou ao fim do historico.
-- `Roda do mouse`: navega tres linhas no Classic e no Modern.
+- `Roda do mouse`: navega tres linhas no Simple e no Classic.
 
 Ao digitar, apagar ou enviar um comando, o Shell volta automaticamente ao fim
 do historico para manter o prompt visivel. O comando `clear` remove tambem as
@@ -230,16 +230,20 @@ Testa as primitivas gráficas 2D do módulo GUI (janela, botões, texto).
 zephyr> guitest
 ```
 
-## `guimode classic|modern`
-Altera o modo de interface do sistema (Classic TUI ou GUI Moderna) dinamicamente, demonstrando o fallback visual sem afetar a arquitetura interna do kernel.
+## `guimode simple|classic`
+Altera o modo de interface do sistema (Simple TUI ou GUI Classic) dinamicamente, demonstrando o fallback visual sem afetar a arquitetura interna do kernel.
 
 ```
-zephyr> guimode modern
+zephyr> guimode classic
 ```
+
+`guimode modern` não altera o estado: o nome está reservado para a futura
+interface. O modo Simple é fallback congelado e recebe somente um smoke test
+de vídeo, teclado e Shell; a matriz funcional completa pertence ao Classic.
 
 ## `display status|scale pequena|normal|grande`
 
-`display status` mostra modo VESA, backbuffer, interface Classic/Modern,
+`display status` mostra modo VESA, backbuffer, interface Simple/Classic,
 escala ativa, fonte, espaçamento, taskbar, botão mínimo, ícone, requisito do
 preset e área útil atual.
 
@@ -255,8 +259,8 @@ zephyr> display scale normal
 zephyr> display scale grande
 ```
 
-O comando pode ser consultado no Classic, mas a escala afeta somente as rotas
-Modern. O Settings usa a mesma API e volta visualmente ao valor anterior
+O comando pode ser consultado no Simple, mas a escala afeta somente as rotas
+Classic. O Settings usa a mesma API e volta visualmente ao valor anterior
 quando uma aplicação é recusada.
 
 ## `health [summary]`
@@ -684,8 +688,8 @@ PCI parcial e reportado como erro.
 
 `regcheck` e um atalho, nao uma substituicao para `appcheck`, `q2check`,
 `usertest fault`, `app outputtest [fail]`, `app inputtest` encerrado por
-`Enter`, desligamento/reboot ou a validacao manual das interfaces classic e
-modern.
+`Enter`, desligamento/reboot ou a validacao manual das interfaces simple e
+classic.
 
 ## `update verify <arquivo.ZUP>`
 
@@ -825,9 +829,9 @@ FAT32 permite a consulta, mas recusa cache.
 
 ## `updater`
 
-Abre o aplicativo nativo System Updater. Classic usa TUI em tela cheia;
-Modern abre uma janela hospedada pelo Window Manager e volta automaticamente
-ao Classic se a hospedagem estiver indisponivel. As abas Pacotes, Estado,
+Abre o aplicativo nativo System Updater. Simple usa TUI em tela cheia;
+Classic abre uma janela hospedada pelo Window Manager e volta automaticamente
+ao Simple se a hospedagem estiver indisponivel. As abas Pacotes, Estado,
 Historico e Remoto e os fluxos de confirmacao sao descritos em
 [`system-updater.md`](../14-atualizacoes/system-updater.md).
 
@@ -993,8 +997,8 @@ teste e apresenta um novo prompt, para que o proximo comando nunca fique
 misturado ao aviso assincrono do processo.
 
 ## `explorer`
-Abre o gerenciador de arquivos ZephyrOS Explorer. Em `guimode modern`, usa a
-janela gráfica; em `guimode classic` ou sem VESA/backbuffer, mantém a TUI.
+Abre o gerenciador de arquivos ZephyrOS Explorer. Em `guimode classic`, usa a
+janela gráfica; em `guimode simple` ou sem VESA/backbuffer, mantém a TUI.
 
 ```
 zephyr> explorer
@@ -1011,7 +1015,7 @@ zephyr> desktop
 
 ## `taskmgr`
 Abre a TUI de diagnóstico do gerenciador de tarefas, com processos, memória e
-threads. Pela taskbar ou Desktop em modo moderno, o mesmo componente abre sua
+threads. Pela taskbar ou Desktop em modo classic, o mesmo componente abre sua
 janela gráfica própria.
 
 ```

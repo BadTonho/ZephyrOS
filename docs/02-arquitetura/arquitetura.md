@@ -13,7 +13,7 @@ O ZephyrOS é organizado em camadas, cada uma responsável por uma parte especí
 │     (desktop, wm, taskbar,          │
 │      settings, filemanager, icons)  │
 ├─────────────────────────────────────┤
-│     GUI Primitives (gui.c)          │  ← Primitivas 2D (Modo Moderno)
+│     GUI Primitives (gui.c)          │  ← Primitivas 2D (Modo Classic)
 ├─────────────────────────────────────┤
 │         Sistema de Arquivos         │  ← FAT12, FAT32, BMP, WAV
 ├─────────────────────────────────────┤
@@ -128,7 +128,7 @@ O diagnostico consulta os modulos sem alterar a politica de escalonamento:
 - o Shell agrega o estado de recovery e as metricas do kernel no comando
   `health`;
 - Desktop, Explorer, Settings e Task Manager continuam usando suas interfaces
-  classica e moderna, apenas consumindo os contratos estabilizados.
+  simple e classic, apenas consumindo os contratos estabilizados.
 
 Essa separacao permite evoluir memoria, processos e diagnostico em etapas sem
 acoplar a fundacao do kernel ao visual das aplicacoes.

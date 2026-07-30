@@ -230,7 +230,7 @@ mouse          # Mostra X, Y, botoes e disponibilidade da roda
 ## Video e terminal hospedado (`video.c`)
 
 O buffer textual do Shell continua sendo um histórico circular de 200 linhas.
-No modo Moderno, ele também pode ser uma superfície do Window Manager: o
+No modo Classic, ele também pode ser uma superfície do Window Manager: o
 driver mantém o buffer e a geometria da área interna da janela. Saídas longas
 continuam disponíveis para recomposição pelo WM; na digitação, o próprio
 terminal pode apresentar apenas as células alteradas e o cursor.

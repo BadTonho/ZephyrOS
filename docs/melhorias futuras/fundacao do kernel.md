@@ -6,7 +6,7 @@ Status: concluida e validada no QEMU.
 
 Esta etapa organiza as bases internas do ZephyrOS antes de buscar otimizacoes
 de baixo nivel. A meta e tornar o kernel previsivel, modular e facil de
-estender sem abandonar os modos classico e moderno.
+estender sem abandonar os modos Simple e Classic.
 
 ## Objetivo
 

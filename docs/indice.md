@@ -53,8 +53,8 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [App Store - AS1 e AS2](13-aplicativos/app-store.md) | Catalogo local, preflight, ciclo confirmado, recovery e fixtures |
 | [Configuracoes](melhorias%20futuras/configura%C3%A7%C3%B5es.md) | Painel de configuracoes e interface grafica com fallback TUI |
 | [Resiliência e fallback seguro](melhorias%20futuras/resiliencia%20do%20sistema.md) | Estados de componentes, códigos de erro e fallbacks |
-| [Explorer moderno](melhorias%20futuras/explorer%20moderno.md) | Interface gráfica do File Manager com fallback TUI |
-| [Task Manager moderno](melhorias%20futuras/task%20manager%20moderno.md) | Janela grafica com TUI de diagnostico preservada |
+| [Explorer Classic](melhorias%20futuras/explorer%20moderno.md) | Interface gráfica do File Manager com fallback TUI |
+| [Task Manager Classic](melhorias%20futuras/task%20manager%20moderno.md) | Janela grafica com TUI de diagnostico preservada |
 | [Task Manager - metricas avancadas](melhorias%20futuras/task%20manager%20metricas%20avancadas.md) | Proxima etapa para metricas do kernel e historico |
 | [Responsividade do sistema](melhorias%20futuras/responsividade%20do%20sistema.md) | Frames parciais, atualizacao responsiva e otimizacao grafica |
 | [Fundacao do Kernel](melhorias%20futuras/fundacao%20do%20kernel.md) | APIs, modulos, memoria, processos e diagnostico |
@@ -67,10 +67,10 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [Atualizacoes do Sistema](melhorias%20futuras/atualiza%C3%A7%C3%B5es.md) | Roteiro U1-U5 para integridade, rollback e distribuicao opcional |
 | [Contrato ZUPD v1](14-atualizacoes/contrato-zupd-v1.md) | Formato autenticado, transacao FAT12 e historico redundante U4 |
 | [Distribuicao remota ZUPD v1](14-atualizacoes/distribuicao-remota.md) | Manifesto ZUM1, HTTP manual e cache redundante U5 |
-| [System Updater](14-atualizacoes/system-updater.md) | Aplicativo nativo Classic/Modern para pacotes, estado, historico e remoto |
+| [System Updater](14-atualizacoes/system-updater.md) | Aplicativo nativo Simple/Classic para pacotes, estado, historico e remoto |
 | [Ferramenta Host ZUPD v1](14-atualizacoes/ferramenta-zupd.md) | Chave, fixtures e auditoria offline dos controles U3/U4/U5 |
 | [Avisos de terceiros](../THIRD_PARTY_NOTICES.md) | Proveniencia e licencas de codigo adaptado |
-| [GUI Moderna](melhorias%20futuras/gui_moderna.md) | Transição para primitivas gráficas 2D e VESA |
+| [GUI Classic](melhorias%20futuras/gui_moderna.md) | Histórico da transição para primitivas gráficas 2D e VESA |
 | [Formatação Inteligente](melhorias%20futuras/formatacao%20inteligente.md) | Sistema de reset e reinstalação preservando arquivos |
 | [Verificação e Auto-reparo do Sistema](melhorias%20futuras/verifica%C3%A7%C3%A3o%20de%20sistema.md) | Diagnóstico de integridade e autocorreção de arquivos (SFC) |
 | [Atalhos e Comandos do Sistema](atalhos_e_comandos.md) | Lista completa de atalhos de teclado e comandos do shell |
@@ -81,7 +81,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [01 - Estabilização e Qualidade](roadmaps/01-estabilizacao-e-qualidade.md) | Regressão, diagnósticos e fallbacks |
 | [02 - Plataforma de Aplicativos](roadmaps/02-plataforma-de-aplicativos.md) | Migração gradual, ZAPP e pacotes |
 | [03 - Kernel e Desempenho](roadmaps/03-kernel-e-desempenho.md) | Métricas, scheduler, memória e otimização segura |
-| [04 - Interface e Experiência](roadmaps/04-interface-e-experiencia.md) | GUI moderna, taskbar, WM e interação |
+| [04 - Interface e Experiência](roadmaps/04-interface-e-experiencia.md) | GUI Classic, taskbar, WM e interação |
 | [05 - Sistema e Ecossistema](roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e apps |
 | [06 - App Store](roadmaps/06-app-store.md) | Catalogo local ZPKG, ciclo de vida, interface Modern e repositorio futuro |
 | [07 - Modernização Visual](roadmaps/07-modernizacao-visual.md) | Escala acessível, visual flat/dark e desempenho VESA mensurável |

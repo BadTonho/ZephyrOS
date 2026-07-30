@@ -152,10 +152,16 @@ retornos FAT32 permanecem canonicos em
 
 Desde a U4, `src/include/core/update.h` acrescenta estados de armazenamento,
 status agregado, historico redundante e conversores textuais estaveis.
-`src/include/ui/updater.h` define o ciclo de vida e a entrada Classic/Modern
+`src/include/ui/updater.h` define o ciclo de vida e a entrada Simple/Classic
 do System Updater. Os contratos canonicos permanecem em
 `docs/14-atualizacoes/contrato-zupd-v1.md` e
 `docs/14-atualizacoes/system-updater.md`.
+
+Desde o MV0, `src/include/ui/desktop.h` define `DESKTOP_MODE_SIMPLE`,
+`DESKTOP_MODE_CLASSIC` e reserva `DESKTOP_MODE_MODERN` para a interface
+futura. `filemanager.h`, `settings.h` e `updater.h` expõem apenas seus
+renderers implementados `SIMPLE` e `CLASSIC`. A política e os contratos
+canônicos ficam em `docs/12-desktop/desktop.md`.
 
 Desde a U5, `src/include/core/http.h` acrescenta GET por streaming com callback
 e limite definido pelo chamador. `src/include/fs/fat12.h` e

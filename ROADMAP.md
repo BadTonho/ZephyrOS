@@ -111,7 +111,7 @@ Sistema e ecossistema:       [████████████████�
 | `edit` | Editor de texto (edit ARQUIVO.TXT) |
 | `mouse` | Mostra status do mouse PS/2 |
 | `guitest` | Testa primitivas GUI 2D |
-| `guimode` | Altera entre gui classica e moderna |
+| `guimode` | Altera entre gui simple e classic |
 | `health` | Exibe metricas e estado de recovery |
 | `store status|list|info` | Consulta o catalogo local da App Store |
 | `store install|remove|run` | Preflight, ciclo confirmado e execucao instalada |
@@ -282,10 +282,10 @@ Sistema e ecossistema:       [████████████████�
 - [x] TUI de diagnóstico e janela gráfica própria, com abas Processos, Memória e Threads
 - [x] Métricas de ticks, memória, espera, ATA e detalhes do processo selecionado
 - [x] Atualização periódica, seleção, ordenação e ações pelo teclado
-- [x] Comando `taskmgr` no shell; taskbar e Desktop usam a janela gráfica no modo moderno
+- [x] Comando `taskmgr` no shell; taskbar e Desktop usam a janela gráfica no modo Classic
 
 ### File Manager (`src/filemanager/filemanager.c`)
-- [x] Interface Explorer clássica com colunas e status bar, e modo moderno com moldura, painéis e seleção gráfica
+- [x] Interface Explorer Simple com colunas e status bar, e modo Classic com moldura, painéis e seleção gráfica
 - [x] Navegação: setas, Page Up/Down, Home/End
 - [x] F2: Renomear, F3: Visualizar, F5: Refresh, F7: Novo, F8: Excluir
 - [x] Integração com taskbar
@@ -304,7 +304,7 @@ Sistema e ecossistema:       [████████████████�
 - [x] Foco de janela (process_set_focus / process_get_focus)
 - [x] Integração com mouse e window manager
 
-### GUI Moderna (`src/gui/gui.c`)
+### GUI Classic (`src/gui/gui.c`)
 - [x] Primitivas gráficas 2D (pixel-level)
 - [x] gui_draw_text() - texto renderizado pixel a pixel
 - [x] gui_draw_button() - botão com estado pressed
@@ -317,22 +317,23 @@ Sistema e ecossistema:       [████████████████�
 - [x] Códigos de erro padronizados (`src/include/core/errors.h`)
 - [x] Spinlock para sincronização (`src/include/core/spinlock.h`)
 
-## Fase 10 - GUI Moderna ✅
+## Fase 10 - GUI Classic ✅
 > Arquivos principais: `src/drivers/video.c`, `src/drivers/vesa.c`, `src/desktop/desktop.c`, `src/taskbar/taskbar.c`, `src/wm/wm.c`, `src/gui/gui.c`
 
 - [x] **Desktop gráfico compatível**: Cards 3D, seleção azul, layout responsivo e fallback TUI.
-- [x] **Modo explícito de interface**: Comando `guimode classic|modern`.
+- [x] **Modo explícito de interface**: Comando `guimode simple|classic`;
+  `modern` fica reservado para a interface futura.
 - [x] **Interação gráfica do Desktop**: Clique para selecionar e duplo clique para abrir aplicativos.
 - [x] **Renderização de Textos Livres**: Substituir `video_put_char_at` por texto gráfico (desenho pixel a pixel) que possa ser renderizado em qualquer X/Y, não apenas na grade (col/row) - `gui_draw_text`.
 - [x] **Aplicativos modernos**: Explorer, Task Manager e Settings seguem a identidade visual existente e mantêm fallback TUI.
 - [x] **Double Buffering (Backbuffer)**: Renderização no VRAM em dois estágios para prevenir *flickering* (cintilação) durante o redesenho (Vesa Flip).
 - [x] **Entrada gráfica básica**: Roteamento de teclado e mouse preserva prioridade da taskbar e do Menu Iniciar.
-- [x] **Taskbar moderna**: Botões, relógio e Menu Iniciar preservam sua semântica nas cinco posições suportadas.
+- [x] **Taskbar Classic**: Botões, relógio e Menu Iniciar preservam sua semântica nas cinco posições suportadas.
 - [x] **Primitive Graphics 2D**: Novas primitivas foram adicionadas somente para necessidades visuais comprovadas.
 - [x] **Desktop Gráfico Imagens**: Shell, Explorer e Task Manager usam BMPs com cache e fallback desenhado.
 - [x] **Window Manager Gráfico**: Molduras, titlebars e controles gráficos integram foco, Z-order e composição VESA.
 - [x] **Integração Plena de Mouse**: Janelas suportam arraste e redimensionamento; ícones usam encaixe em grade.
-- [x] **Aplicativos hospedados**: Shell, Explorer, Settings e Task Manager usam janelas singleton no modo Moderno.
+- [x] **Aplicativos hospedados**: Shell, Explorer, Settings e Task Manager usam janelas singleton no modo Classic.
 - [x] **Acessibilidade**: Roda PS/2 e atalhos `Alt+Tab`, `Alt+F4`, `Alt+F9` e `Alt+F10` integrados ao WM.
 
 ---
@@ -393,7 +394,7 @@ Sistema e ecossistema:       [████████████████�
 - [x] Servico interno `PKG`, comandos `pkg`, `pkgcheck` e instalacao em
   `APPS/<ID>/APP.ZAP` mais `META.DAT`.
 - [x] Validado no host e QEMU: pacote demo, remocao, caminho instalado, F12,
-  diagnosticos, interfaces classica/moderna e ausencia de processos residuais.
+  diagnosticos, interfaces Simple/Classic e ausencia de processos residuais.
 
 ### AS1 - Catalogo local e observabilidade (validada no QEMU)
 
@@ -468,7 +469,7 @@ Sistema e ecossistema:       [████████████████�
   implementadas; S5 e `shutdown` continuam simulados.
 - [x] Build e validacao manual concluidos no QEMU padrao e sem ACPI:
   `health`, PM1, `_S5_`, fallback, comandos diagnosticos, entrada ZAPP e
-  matriz de regressao Classic/Modern permaneceram operacionais.
+  matriz de regressao Simple/Classic permaneceram operacionais.
 
 ## S1.4 - Desligamento fisico ACPI S5 (concluida)
 
@@ -485,7 +486,7 @@ Sistema e ecossistema:       [████████████████�
   `power status`, `memcheck`, `schedcheck`, inventario, re-scan PCI,
   `regcheck`, entrada ZAPP, sintaxe invalida e desligamento fisico real.
 - Cobertura complementar recomendada: repetir o fallback sem ACPI e os
-  atalhos de desligamento pelos menus Classic/Modern em VMs separadas.
+  atalhos de desligamento pelos menus Simple/Classic em VMs separadas.
 
 ## S2.1 - Fundacao de rede observavel (concluida)
 
@@ -533,7 +534,7 @@ Sistema e ecossistema:       [████████████████�
   polling ocioso zerado, TX contabilizado no driver e na camada,
   `device-scan` aprovado e `regcheck full` concluido em `OK`.
 - [ ] Cobertura complementar: injetar RX externo e frame invalido e repetir a
-  regressao visual Classic/Modern; esses cenarios nao bloqueiam a conclusao.
+  regressao visual Simple/Classic; esses cenarios nao bloqueiam a conclusao.
 
 ## S2.4 - ARP com cache e resolucao assincrona (concluida e validada)
 
@@ -553,7 +554,7 @@ Sistema e ecossistema:       [████████████████�
   TX, tres tentativas, timeout, polling sem erros e invariantes concluiram em
   `OK`.
 - [ ] Cobertura complementar: peer externo, ausencia de NIC, RTL8139,
-  `device-scan`, sintaxe invalida e regressao visual Classic/Modern; esses
+  `device-scan`, sintaxe invalida e regressao visual Simple/Classic; esses
   cenarios nao bloqueiam a conclusao.
 
 ## S2.5 - IPv4 estatico e ICMP Echo (concluida e validada)
@@ -574,7 +575,7 @@ Sistema e ecossistema:       [████████████████�
   IPv4 RX/TX, checksum, ICMP Echo, RTT, polling e invariantes concluiram em
   `OK`; o `ping` individual recebeu quatro de quatro replies, sem perdas.
 - [ ] Cobertura complementar: ausencia de NIC, RTL8139, peer externo,
-  entradas IPv4 malformadas e regressao visual Classic/Modern; esses
+  entradas IPv4 malformadas e regressao visual Simple/Classic; esses
   cenarios nao bloqueiam a conclusao.
 
 ## S2.6 - UDP, DHCP e DNS (concluida e validada)
@@ -593,7 +594,7 @@ Sistema e ecossistema:       [████████████████�
   IPv4/ICMP, polling e invariantes concluiram em `OK`.
 - [ ] Cobertura complementar: renovacao/liberacao individual, expiracao de
   cache, ausencia de NIC, RTL8139, peer externo e regressao visual
-  Classic/Modern; esses cenarios nao bloqueiam a conclusao.
+  Simple/Classic; esses cenarios nao bloqueiam a conclusao.
 
 ## S2.7 - TCP cliente, sockets do kernel e HTTP GET (concluida)
 
@@ -621,7 +622,7 @@ Sistema e ecossistema:       [████████████████�
 - [x] Fallback sem NIC validado: interface inexistente foi recusada sem
   trafego e o `regcheck full` permaneceu em `OK`.
 - [ ] Cobertura complementar: peer controlado, perda/retransmissao, janela
-  zero, RST, tabela cheia, RTL8139 e Classic/Modern.
+  zero, RST, tabela cheia, RTL8139 e Simple/Classic.
 
 ## Continuacao da S2 - Rede e atualizacoes
 
@@ -641,16 +642,16 @@ Sistema e ecossistema:       [████████████████�
   recuperavel passaram no QEMU; `regcheck full`, memoria e `audit-image`
   confirmaram versao `0.1.0`, journal limpo e rollback consumido.
 - [x] U4 concluida: `update status`, `update history`, controles `ZUH1`,
-  auditoria host e System Updater Classic/Modern foram validados. Aplicacao,
+  auditoria host e System Updater Simple/Classic foram validados. Aplicacao,
   rollback e failpoint passaram no QEMU; a recuperacao preservou `0.1.0`,
   registrou quatro eventos, deixou o journal limpo e terminou com
   `regcheck full` e `audit-image` em `OK`.
 - [x] U5 concluida: manifesto assinado `ZUM1`, HTTP streaming, cache FAT12
   redundante, comandos e aba Remoto foram validados no Shell e no System
-  Updater Modern. DHCP automatico, opt-in por sessao, consulta sem escrita,
+  Updater Classic. DHCP automatico, opt-in por sessao, consulta sem escrita,
   alternancia `ZUR0/1.ZUP`, autenticacao, preservacao do cache, timeout/retry,
   cancelamento, aplicacao local, rollback, `regcheck full` e `audit-image`
-  passaram no QEMU. O Classic permanece como fallback implementado, com
+  passaram no QEMU. O Simple permanece como fallback implementado, com
   regressao complementar que nao bloqueia a fase.
 
 ## Roadmaps por etapa
@@ -703,7 +704,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 - **Barra de Tarefas Avançada** (`barra de tarefas.md`)
 - **Gerenciador de Janelas (WM)** (`gerenciador de janelas.md`)
 - **Gerenciador de Arquivos** (`gerenciador de arquivos.md`)
-- **Explorer Moderno** (`explorer moderno.md`)
+- **Explorer Classic** (`explorer moderno.md`)
 - **Painel de Configurações** (`configurações.md`)
 - **Gerenciador de Processos** (`gerenciador de processos.md`)
 

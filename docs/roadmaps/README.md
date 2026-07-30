@@ -23,17 +23,17 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   `memcheck`, sem substituir a matriz detalhada.
 - Kernel e desempenho: K1 foi validada no QEMU com `kmetrics`, linha-base
   manual de PIT, scheduler, filas, memoria e VESA nos cenarios de Shell, ring
-  3 e interfaces classica/moderna. CPU real foi adiada; `TCK%` identifica
+  3 e interfaces Simple/Classic. CPU real foi adiada; `TCK%` identifica
   somente a estimativa baseada em ticks. K2 foi validada no QEMU com
   `schedcheck`, preempcao de ring 3, testes de regressao e interfaces
-  classica/moderna; permanece o round-robin de 1 tick para ring 3. K3 foi
+  Simple/Classic; permanece o round-robin de 1 tick para ring 3. K3 foi
   validada no QEMU com estatisticas e guardas de heap/PMM, registro seguro de
   diretorios de usuario e o diagnostico compacto `memcheck`, inclusive apos
-  ciclos ring 3 e nas interfaces classica/moderna. K4 foi validada no QEMU:
+  ciclos ring 3 e nas interfaces Simple/Classic. K4 foi validada no QEMU:
   a copia VESA do cursor por regioes minimas reduziu bytes no cenario manual,
   preservando foco, Shell e ausencia de artefatos visuais.
 - Interface: UI1 a UI7 validadas. Desktop, taskbar, Window Manager, Shell,
-  Explorer, Task Manager e Settings possuem modo moderno e fallback classico;
+  Explorer, Task Manager e Settings possuem modo Classic e fallback Simple;
   janelas e icones aceitam interacao direta, os BMPs usam cache com fallback
   e a roda PS/2 e os atalhos de acessibilidade estao integrados.
 - Sistema e ecossistema: S1.1 concluida com inventario de dispositivos somente
@@ -44,7 +44,7 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   padrao e sem ACPI. S1.4 concluiu o desligamento fisico S5 por PM1, com
   aquisicao tardia do modo ACPI e fallback HLT; diagnosticos, regressao,
   sintaxe invalida e encerramento fisico foram validados no QEMU padrao.
-  O cenario sem ACPI e os atalhos Classic/Modern permanecem como cobertura
+  O cenario sem ACPI e os atalhos Simple/Classic permanecem como cobertura
   complementar. S2.1 concluiu o inventario PCI de rede somente de leitura,
   health e comandos nativos; `regcheck full` foi validado no QEMU padrao e
   sem NIC. S2.2 concluiu e validou o E1000 L2. A S2.3 concluiu fila RX,
@@ -54,18 +54,18 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   TCP/sockets/HTTP; as suites agrupadas e o `regcheck full` foram validados
   no QEMU com E1000, incluindo recuperacao de timeout HTTP. A S2.8 concluiu
   Multi-NIC e RTL8139, com a suite Multi-NIC e o `regcheck full` aprovados no
-  QEMU pelo usuario nos modos Classic e Modern. A U1 concluiu a politica de
+  QEMU pelo usuario nos modos Simple e Classic. A U1 concluiu a politica de
   integridade, o contrato ZUPD v1 e quatro vetores publicos validados. A U2
   concluiu o verificador local, raiz publica, comando Shell, `health` e sete
   fixtures, com build, matriz QEMU, memoria, imagem inalterada e regressao
   aprovados pelo usuario. A U3 concluiu aplicacao/rollback FAT12, recuperacao,
   fixture, failpoint e auditoria offline; os cenarios QEMU terminaram com
   `regcheck full` em `OK` e journal limpo. A U4 concluiu diagnosticos
-  persistentes e System Updater Classic/Modern, incluindo recuperacao por
+  persistentes e System Updater Simple/Classic, incluindo recuperacao por
   failpoint, quatro eventos e auditoria final limpa. A U5 concluiu o transporte
   HTTP manual, manifesto assinado, cache redundante e aba Remoto. Fixtures,
-  comandos, System Updater Modern, falhas controladas, cancelamento,
-  aplicacao/rollback e auditoria final foram aprovados. O Classic continua
+  comandos, System Updater Classic, falhas controladas, cancelamento,
+  aplicacao/rollback e auditoria final foram aprovados. O Simple continua
   disponivel como fallback e sua regressao e cobertura complementar.
   O AS1 do roadmap da App Store esta validado no host e no QEMU: catalogo com
   seis fixtures, estados deterministas, ciclo `SAME_VERSION`, memoria estavel,

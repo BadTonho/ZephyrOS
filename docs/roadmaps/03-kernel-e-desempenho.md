@@ -22,7 +22,7 @@ contratos de processos, memoria, IPC e diagnostico ja validados.
   CPU real permanece `N/D`.
 - [x] Registrar os quatro cenarios reproduziveis no QEMU antes de mudar
   scheduler ou alocador: boot/Shell, scrollback, ciclo ring 3 e interfaces
-  classica/moderna.
+  Simple/Classic.
 
 CPU real por RDTSC/PMU fica adiada ate existir calibracao confiavel e uma
 politica propria; esta etapa nao altera quantum, prioridade, heap ou paging.
@@ -40,7 +40,7 @@ politica propria; esta etapa nao altera quantum, prioridade, heap ou paging.
   `schedcheck` consulta os invariantes sem criar processos.
 - [x] Validar build, diagnosticos e matriz QEMU: `schedcheck`, preempcao por
   `app inputtest`/`F12`, testes ring 3, `threadtest`, `appcheck`, `health`,
-  ausencia de processos residuais e interfaces classica/moderna.
+  ausencia de processos residuais e interfaces Simple/Classic.
 
 ## Etapa K3 - Memoria e paging (validada no QEMU)
 
@@ -49,7 +49,7 @@ politica propria; esta etapa nao altera quantum, prioridade, heap ou paging.
 - [x] Reforcar limites e propriedade do PMM, e registrar/liberar somente
   diretorios de usuario conhecidos.
 - [x] Validado no QEMU: `memcheck`, ring 3, F12, regressao e interfaces
-  classic/modern; desempenho permanece `N/D`.
+  simple/classic; desempenho permanece `N/D`.
 - [ ] Avaliar memoria por processo somente depois de uma fonte confiavel de
   contagem por alocacao.
 
@@ -62,7 +62,7 @@ politica propria; esta etapa nao altera quantum, prioridade, heap ou paging.
   no mesmo QEMU antes/depois; a reducao de bytes, e nao a quantidade bruta de
   apresentacoes, e a medida primaria.
 - [x] Validar ausencia de rastro ou piscada do cursor e manter Shell, ring 3,
-  diagnosticos e interfaces classica/moderna; documentar empate ou regressao
+  diagnosticos e interfaces Simple/Classic; documentar empate ou regressao
   se nao houver ganho perceptivel.
 
 Validado no QEMU: a comparacao manual confirmou menos bytes VESA no mesmo

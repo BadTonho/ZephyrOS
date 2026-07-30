@@ -10,7 +10,7 @@ transforma falhas observadas em testes repetiveis.
 
 - Recovery com estados `READY`, `DEGRADED` e `DISABLED`.
 - `health`, `appcheck`, `usertest`, `usertest fault` e `threadtest`.
-- Fallback classico quando VESA ou backbuffer nao estao disponiveis.
+- Fallback Simple quando VESA ou backbuffer nao estao disponiveis.
 - Isolamento de falhas ring 3 e `KERNEL PANIC` reservado a falhas de kernel.
 - Scrollback de 200 linhas e `clear` no Shell.
 
@@ -28,7 +28,7 @@ transforma falhas observadas em testes repetiveis.
 Validacao registrada no QEMU apos a Fase 6C: `health`, `threadtest`,
 `appcheck`, `echo`, `uptime`, `mem`, `usertest`, `usertest fault` e
 `app inputtest` com encerramento normal e por `F12` funcionaram; as interfaces
-classica e moderna tambem foram abertas e fechadas sem regressao observada.
+Simple e Classic tambem foram abertas e fechadas sem regressao observada.
 Esta etapa define o protocolo; ela nao cria um novo comando, uma variante de
 build ou uma simulacao de falha. Os cenarios sem VESA, filesystem ou AC97
 permanecem obrigatorios sempre que uma mudanca futura tocar essas dependencias.
@@ -42,7 +42,7 @@ antes de iniciar a proxima etapa.
 |------|-----------|-----------|
 | Boot e Shell | Inicie o sistema; execute `health`, use `PgUp`, `PgDn` e `End`, depois execute `threadtest`, `echo regressao q1`, `uptime` e `mem`. | Sem `KERNEL PANIC`; `health` permanece navegavel; cada comando conclui e o Shell aceita o proximo. |
 | Ring 3 e loader | Execute `appcheck` e aguarde sua conclusao, incluindo o demonstrativo do loader e as migracoes de `uptime` e `mem`. Execute `app inputtest`, envie uma tecla e termine com `Enter`; execute-o novamente e termine com `F12`. Execute `usertest` e `usertest fault`. | Os fluxos normais concluem, a falha isolada encerra somente o processo de usuario e o Shell continua utilizavel. |
-| Interfaces nativas | Em `guimode classic` e novamente em `guimode modern`, abra e feche Desktop, Explorer, Settings e Task Manager. No Explorer, abra o dialogo de nova pasta com `F6` e cancele com `Esc`, sem confirmar ou gravar nada. | Cada interface abre no modo disponivel, fecha de forma controlada e devolve o controle ao Shell. |
+| Interfaces nativas | Em `guimode classic`, abra e feche Desktop, Explorer, Settings e Task Manager. Depois faça apenas o smoke test do fallback: `guimode simple`, confirme video, teclado e Shell, execute um comando basico e retorne com `guimode classic`. | A matriz completa passa no Classic; o Simple preserva o fallback operacional e devolve o controle ao Shell. |
 
 ### Foco, prompt e limpeza
 
@@ -95,7 +95,7 @@ comando ou variante de build apenas para este teste.
 
 | Dependencia | Confirmar |
 |-------------|-----------|
-| VESA ou backbuffer | `health` informa o estado; `guimode modern` usa fallback classico ou falha de modo controlado; Shell e interfaces classicas continuam acessiveis. |
+| VESA ou backbuffer | `health` informa o estado; `guimode classic` usa fallback Simple ou falha de modo controlado; Shell e a TUI Simple continuam acessiveis. |
 | Filesystem | `health` informa o estado; operacoes dependentes de arquivos e loader retornam indisponibilidade controlada; Shell e diagnosticos continuam acessiveis. |
 | AC97 | `health` informa o estado; a tentativa de fluxo de audio retorna indisponibilidade controlada; Shell permanece operacional. |
 
@@ -128,7 +128,7 @@ comando ou variante de build apenas para este teste.
 
 Validado: `make q3check` e seus oito auto-testes concluiram em `OK`; o usuario
 executou `make clean && make` e confirmou no QEMU `health`, `q2check`,
-`appcheck` e os modos `guimode classic` e `guimode modern`, sem regressao.
+`appcheck` e os modos `guimode simple` e `guimode classic`, sem regressao.
 
 ## Etapa Q4 - Regressao compacta (validada no QEMU)
 
@@ -151,5 +151,5 @@ ausencia de processos, zumbis ou diretorios de usuario residuais.
 ## Criterio de saida
 
 Uma etapa funcional so avanca quando o boot e os comandos de diagnostico
-continuam acessiveis, os modos classico e moderno funcionam e uma falha de
+continuam acessiveis, os modos Simple e Classic funcionam e uma falha de
 recurso opcional nao derruba o kernel.

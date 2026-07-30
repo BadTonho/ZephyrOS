@@ -7,7 +7,7 @@ O AS1 implementa o catalogo local somente-leitura sobre `ZPKG v1` e o servico
 instalacao, remocao e execucao pelo Shell. O AS2 esta concluido e validado no
 host e no QEMU.
 
-A interface nativa Classic/Modern pertence ao AS3. Atualizacao, downgrade e
+A interface nativa Simple/Classic/Modern pertence ao AS3. Atualizacao, downgrade e
 resolucao automatica de dependencias continuam fora desta fase.
 
 ## Fontes e snapshot
@@ -259,7 +259,7 @@ do AS3.
 - sem resolucao automatica de dependencias;
 - sem assinatura, repositorio remoto, conta ou telemetria;
 - sem banco de dados proprio ou persistencia do snapshot;
-- sem interface App Store Classic/Modern;
+- sem interface App Store Simple/Classic/Modern;
 - sem mudanca de ZPKG v1, App API `0.3`, loader ou boot.
 
 ## Referencias

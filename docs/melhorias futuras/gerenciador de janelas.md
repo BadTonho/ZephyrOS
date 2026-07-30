@@ -306,8 +306,8 @@
 | Atalho | Ação | Status |
 |---|---|---|
 | `Tab` | Alternar foco entre janelas | ✅ |
-| `Esc` | Cancelar contexto do app; não fechar janela Modern ociosa | ✅ |
-| `Alt+F4` ou botão X | Fechar janela Modern focada | ✅ |
+| `Esc` | Cancelar contexto do app; não fechar janela Classic ociosa | ✅ |
+| `Alt+F4` ou botão X | Fechar janela Classic focada | ✅ |
 | `F1` | Minimizar janela focada | ✅ |
 | `F2` | Maximizar/restaurar janela | ✅ |
 | `wm` (shell) | Abrir o window manager | ✅ |

@@ -27,7 +27,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `melody` | - | Toca uma escala musical no PC Speaker. |
 | `explorer`| - | Abre o Gerenciador de Arquivos (File Manager). |
 | `taskmgr` | - | Abre o Gerenciador de Tarefas (Task Manager). |
-| `updater` | - | Abre o System Updater em Classic ou Modern. |
+| `updater` | - | Abre o System Updater em Simple ou Classic. |
 | `taskcfg` | - | Abre rapidamente as configurações da Barra de Tarefas. |
 | `compress`| `on/off/status`| Gerencia a compressão de memória RAM em tempo real. |
 | `stats` | - | Exibe estatísticas de compactação LZSS de memória. |
@@ -90,7 +90,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `app` | `outputtest [fail]` | Emite 1152 bytes em blocos ZAPP e testa saida com codigo 0 ou 1. |
 | `app` | `argtest <texto>` | Exibe argumentos recebidos por uma imagem ZAPP interna. |
 | `usertest` | `fault` opcional | Executa e valida o primeiro processo isolado em ring 3. |
-| `guimode` | `classic/modern` | Alterna globalmente entre interface TUI (modo texto) e VESA (gráfica). |
+| `guimode` | `simple/classic` | Alterna globalmente entre interface TUI (modo texto) e VESA (gráfica). |
 | `reboot` | - | Reinicia imediatamente o sistema operacional. |
 | `shutdown`| - | Desliga por ACPI S5 quando seguro; caso contrario usa `CLI+HLT`. |
 
@@ -102,7 +102,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 - **Shift + Seta para Cima / Baixo**: rola uma linha na saida do terminal.
 - **Page Up / Page Down**: rola uma pagina no historico do terminal.
 - **Home / End**: vai ao inicio ou ao fim do historico.
-- **Roda do mouse**: rola tres linhas no Shell Classic e Modern.
+- **Roda do mouse**: rola tres linhas no Shell Simple e Classic.
 - **Digitacao, Backspace ou Enter**: retorna ao fim para manter o prompt visivel.
 - **`clear`**: apaga as 200 linhas de saida, mas preserva os comandos da sessao.
 
@@ -127,8 +127,8 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 
 ### 2.2. Window Manager (Gerenciador de Janelas)
 - **`Tab`**: Alterna o foco para a próxima janela aberta.
-- **`Esc`**: Cancela o contexto interno do aplicativo; quando ocioso, não fecha janelas Modern.
-- **`Alt+F4`** ou **botão `X`**: Fecha a janela Modern atualmente em foco.
+- **`Esc`**: Cancela o contexto interno do aplicativo; quando ocioso, não fecha janelas Classic.
+- **`Alt+F4`** ou **botão `X`**: Fecha a janela Classic atualmente em foco.
 - **`F1`**: Minimiza a janela atual.
 - **`F2`**: Maximiza a janela atual (ou restaura caso já esteja maximizada).
 - **`Clique Esquerdo (na Barra de Título)`**: Permite segurar e arrastar a janela (no modo gráfico).
@@ -147,7 +147,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 - **`F9`**: Copia o arquivo selecionado para a área de transferência do Explorer.
 - **`F10`**: Recorta o arquivo selecionado (Move).
 - **`F11`**: Cola o arquivo copiado ou recortado no diretório atual.
-- **`Duplo Clique`**: (Modo Moderno) Abre o arquivo ou a pasta.
+- **`Duplo Clique`**: (Modo Classic) Abre o arquivo ou a pasta.
 
 ### 2.4. Gerenciador de Tarefas (Task Manager)
 - **`Tab`**: Alterna entre as guias de visualização (Processos, Memória, Threads).
@@ -157,13 +157,13 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 - **`R`**: Reinicia o processo (permitido apenas para serviços do sistema, ex: Explorer).
 - **`F`**: Foca/Alterna a tela diretamente para a janela do aplicativo responsável pelo processo.
 - **`S`**: Altera a coluna e o sentido da ordenação (Sort) da tabela de uso de CPU/RAM.
-- **`Esc`**: Fecha detalhes; no modo Classic, também fecha o Task Manager.
-- **`Alt+F4`** ou **botão `X`**: Fecha o Task Manager Modern.
+- **`Esc`**: Fecha detalhes; no modo Simple, também fecha o Task Manager.
+- **`Alt+F4`** ou **botão `X`**: Fecha o Task Manager Classic.
 
 ### 2.5. Área de Trabalho (Desktop)
 - **`Setas ←/→/↑/↓`**: Seleciona os diferentes ícones de programas.
 - **`Enter`**: Abre o programa focado.
-- **`Duplo Clique`**: Seleciona e abre o aplicativo instantaneamente no modo GUI Modern.
+- **`Duplo Clique`**: Seleciona e abre o aplicativo instantaneamente no modo GUI Classic.
 
 ### 2.6. System Updater
 
@@ -174,7 +174,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 - **`A`**: Executa o preflight de aplicacao.
 - **`B`**: Executa o preflight de rollback.
 - **`Enter`**: Confirma a acao preparada.
-- **`Esc`**: Cancela a confirmacao ou operacao; no Classic ocioso, fecha o aplicativo.
-- **`Alt+F4`** ou **botao `X`**: Fecha o aplicativo Modern.
+- **`Esc`**: Cancela a confirmacao ou operacao; no Simple ocioso, fecha o aplicativo.
+- **`Alt+F4`** ou **botao `X`**: Fecha o aplicativo Classic.
 - **`F12`**: Solicita cancelamento cooperativo durante uma gravacao.
-- **Clique esquerdo (Modern)**: Seleciona abas, pacotes e botoes equivalentes.
+- **Clique esquerdo (Classic)**: Seleciona abas, pacotes e botoes equivalentes.

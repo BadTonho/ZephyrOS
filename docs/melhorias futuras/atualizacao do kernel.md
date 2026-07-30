@@ -12,7 +12,7 @@ componentes que realmente limitam a experiencia.
 ## Objetivo
 
 Manter um kernel pequeno, estavel e eficiente para que o ZephyrOS possa
-executar jogos, aplicativos produtivos e interfaces classica e moderna com
+executar jogos, aplicativos produtivos e interfaces Simple e Classic com
 baixo custo de recursos.
 
 ## Ordem de trabalho
@@ -77,7 +77,7 @@ falhas ou dificultar a manutencao.
 
 - melhoria mensuravel na responsividade ou no uso de recursos;
 - nenhum aumento de travamentos ou falhas recuperaveis;
-- interfaces classica e moderna preservadas;
+- interfaces Simple e Classic preservadas;
 - documentacao das metricas e dos trade-offs;
 - build e testes do usuario aprovados.
 

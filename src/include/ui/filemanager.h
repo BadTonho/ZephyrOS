@@ -19,8 +19,8 @@
 #define FM_ADDRESS_INPUT_COLOR 0x1F
 
 typedef enum {
-    FM_MODE_CLASSIC = 0,
-    FM_MODE_MODERN
+    FM_MODE_SIMPLE = 0,
+    FM_MODE_CLASSIC
 } fm_mode_t;
 
 typedef struct {
