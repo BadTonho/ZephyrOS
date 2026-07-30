@@ -174,19 +174,39 @@ Motor gráfico da GUI Classic, permitindo renderização independente da grade T
 ### Funções Base
 
 ```c
-void gui_draw_text(int x, int y, const char* text, uint32_t color);
-void gui_draw_button(int x, int y, int w, int h, const char* label, int pressed);
-void gui_draw_scaled_text(int x, int y, const char* text, uint32_t color);
+void gui_draw_text(uint32_t x, uint32_t y, const char* text, uint32_t color);
+void gui_draw_button(uint32_t x, uint32_t y, uint32_t w, uint32_t h,
+                     const char* label, int pressed);
+void gui_draw_scaled_text(uint32_t x, uint32_t y, const char* text,
+                          uint32_t color);
 int  gui_measure_scaled_text(const char* text, uint32_t* width, uint32_t* height);
-void gui_draw_scaled_button(int x, int y, int w, int h,
+void gui_draw_scaled_button(uint32_t x, uint32_t y, uint32_t w, uint32_t h,
                             const char* label, int pressed);
-void gui_draw_window_frame(int x, int y, int w, int h, const char* title, int active);
-void gui_draw_scaled_window_frame(int x, int y, int w, int h,
+void gui_draw_window_frame(uint32_t x, uint32_t y, uint32_t w, uint32_t h,
+                           const char* title, int active);
+void gui_draw_scaled_window_frame(uint32_t x, uint32_t y,
+                                  uint32_t w, uint32_t h,
                                   const char* title, int active);
+void gui_draw_rounded_rect(uint32_t x, uint32_t y, uint32_t width,
+                           uint32_t height, uint32_t radius,
+                           uint32_t color);
+void gui_draw_flat_border(uint32_t x, uint32_t y, uint32_t width,
+                          uint32_t height, uint32_t color);
+void gui_draw_vertical_gradient(uint32_t x, uint32_t y, uint32_t width,
+                                uint32_t height, uint32_t top_color,
+                                uint32_t bottom_color);
 ```
 
-As cenas Classic usam backbuffer e um único ciclo de frame. As primitivas não
-implementam gradientes, transparência ou cantos arredondados nesta etapa.
+As cenas Classic usam backbuffer e um único ciclo de frame. O MV1 adiciona
+primitivas preenchidas de cantos arredondados, borda flat de 1 pixel e
+gradiente vertical RGB. Essas APIs são aditivas e ainda não alteram painéis,
+botões, molduras ou a paleta Classic.
+
+O raio é limitado à metade da menor dimensão e usa spans calculados por
+midpoint/Bresenham, sem ponto flutuante ou alocação. O gradiente interpola uma
+cor por linha com ponto fixo e preserva exatamente as cores da primeira e da
+última linha. Dimensões vazias ou regiões fora do framebuffer não desenham;
+as demais operações respeitam o clip VESA ativo.
 
 As primitivas antigas continuam usando a fonte legada 8x16. Somente as
 variantes `scaled` consultam `ui/display.h` e selecionam a face nativa Zephyr

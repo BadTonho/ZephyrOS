@@ -2395,7 +2395,7 @@ static void cmd_help(void) {
     video_print("             edit (novo) | edit arquivo.txt\n", 0x08);
     video_print("  reboot   - Reinicia o sistema\n", 0x07);
     video_print("  shutdown - Desliga por ACPI ou usa fallback HLT\n", 0x07);
-    video_print("  guitest  - Testa primitivas GUI 2D\n", 0x07);
+    video_print("  guitest [modern] - Testa primitivas GUI 2D\n", 0x07);
     video_end_update();
 }
 
@@ -8813,6 +8813,48 @@ static void cmd_guimode(const char* args) {
     video_print("Uso: guimode simple|classic\n", 0x0C);
 }
 
+static void cmd_guitest(const char* args) {
+    char scene_name[16];
+    int index = 0;
+    int modern_scene = 0;
+
+    if (args && *args) {
+        while (args[index] && args[index] != ' ' && args[index] != '\t' &&
+               index < (int)sizeof(scene_name) - 1) {
+            scene_name[index] = args[index];
+            index++;
+        }
+        scene_name[index] = '\0';
+        args += index;
+        while (*args == ' ' || *args == '\t') args++;
+        if (*args || kstrcmp(scene_name, "modern") != 0) {
+            LOG_WARN("SHELL", "Argumento invalido para guitest");
+            video_print("Uso: guitest [modern]\n", 0x0C);
+            return;
+        }
+        modern_scene = 1;
+    }
+    if (modern_scene && desktop_get_mode() != DESKTOP_MODE_CLASSIC) {
+        LOG_WARN("SHELL", "guitest modern requer o modo Classic");
+        video_print("Erro: guitest modern requer guimode classic.\n", 0x0C);
+        return;
+    }
+    if (!recovery_is_enabled(RECOVERY_COMPONENT_GUITEST) ||
+        !recovery_is_enabled(RECOVERY_COMPONENT_VESA)) {
+        LOG_WARN("SHELL", "GUI Test indisponivel");
+        video_print("Erro: GUI Test indisponivel.\n", 0x0C);
+        return;
+    }
+
+    if (wm_is_active()) wm_set_active(0);
+    shell_suspend_terminal();
+    if (modern_scene) {
+        guitest_open_modern();
+    } else {
+        guitest_open();
+    }
+}
+
 static void cmd_display_status(void) {
     display_metrics_t metrics;
     vesa_mode_t* mode = vesa_get_mode();
@@ -9454,6 +9496,11 @@ void shell_handle_key(uint8_t scancode) {
         return;
     }
 
+    if (guitest_is_active()) {
+        guitest_handle_key(scancode);
+        return;
+    }
+
     if (wm_is_active()) {
         if (wm_handle_key(scancode) == WM_RESULT_EXIT) {
             wm_set_active(0);
@@ -9628,13 +9675,7 @@ int shell_process_command(const char* input) {
     } else if (kstrcmp(cmd, "shutdown") == 0) {
         cmd_shutdown(input);
     } else if (kstrcmp(cmd, "guitest") == 0) {
-        if (recovery_is_enabled(RECOVERY_COMPONENT_GUITEST)) {
-            if (wm_is_active()) wm_set_active(0);
-            shell_suspend_terminal();
-            guitest_open();
-        } else {
-            video_print("Erro: GUI Test indisponivel.\n", 0x0C);
-        }
+        cmd_guitest(input);
     } else if (kstrcmp(cmd, "taskmgr") == 0) {
         if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
             shell_suspend_terminal_for_scene();

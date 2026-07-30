@@ -131,18 +131,34 @@ visualmente inalterado.
 
 ## MV1 - Evolucao das Primitivas Graficas
 
+**Estado:** implementado em 30/07/2026 e aguardando validacao do usuario.
+Ainda faltam `make q3check`, build completo e a matriz QEMU antes de marcar
+esta etapa como validada.
+
 ### Implementacao
 
-- [ ] Modificar `src/gui/gui.c` e `src/include/ui/gui.h` para introduzir:
+- [x] Modificar `src/gui/gui.c` e `src/include/ui/gui.h` para introduzir:
   - `gui_draw_rounded_rect`: preenchimento de retangulos com cantos arredondados de raio parametrizado.
   - `gui_draw_flat_border`: borda simples de 1 pixel (substituindo o chanfro 3D clássico).
   - `gui_draw_vertical_gradient`: gradientes de duas cores muito leves para barras de titulo.
-- [ ] Otimizar os algoritmos de circulo/cantos arredondados para usar equacoes incrementais de ponto fixo (como o algoritmo de circulo de midpoint de Bresenham) para evitar processamento pesado.
-- [ ] Adicionar um comando diagnostico `guitest modern` no Shell para renderizar e inspecionar visualmente as novas primitivas e gradientes.
+- [x] Otimizar os algoritmos de cantos arredondados com spans e o algoritmo
+  incremental midpoint/Bresenham, sem ponto flutuante, raiz quadrada,
+  alocacao ou divisao por pixel.
+- [x] Adicionar um comando diagnostico `guitest modern` no Shell para
+  renderizar e inspecionar visualmente as novas primitivas, clipping e
+  gradientes nas tres escalas do Classic.
 
 ### Criterio de saida
 
 Novas primitivas desenham formas sem artefatos visuais ou estouro de limites. O comando `guitest modern` executa e exibe as formas perfeitamente nas resolucoes VESA testadas, sem travar o kernel.
+
+### Matriz QEMU pendente
+
+1. Executar `make q3check`, `make clean && make` e `make run`.
+2. Aprovar `guitest` e `guitest modern` nas escalas pequena, normal e grande.
+3. Na escala normal, repetir a cena MV1 nas cinco posicoes da Taskbar.
+4. Confirmar fechamento por X e Esc, sintaxe invalida e rejeicao no Simple.
+5. Executar `kmetrics`, `health summary`, `memcheck` e `regcheck full`.
 
 ## MV2 - Novo Sistema de Cores e Estilos (Tema Dark Modern)
 
