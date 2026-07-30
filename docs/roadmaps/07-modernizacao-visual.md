@@ -204,8 +204,8 @@ passo.
 
 ## MV3 - Redesenho do Window Manager e Desktop
 
-**Estado:** implementado no repositorio em 30/07/2026; aguarda `q3check`,
-build e matriz QEMU do usuario antes de ser marcado como validado.
+**Estado:** concluido e validado pelo usuario em 30/07/2026. `make q3check`,
+build completo e matriz QEMU foram aprovados.
 
 ### Implementacao
 
@@ -224,8 +224,10 @@ build e matriz QEMU do usuario antes de ser marcado como validado.
 
 O Desktop e o gerenciador de janelas adotam integralmente o novo visual sem
 rastro de pixels, piscadas (flickering) ou perda perceptivel de performance ao
-arrastar janelas no QEMU. A validacao pendente tambem deve registrar `kmetrics`
-antes/depois no cenario de arraste em `docs/qualidade/metricas.md`.
+arrastar janelas no QEMU. Desktop, Shell, Explorer, Settings, Task Manager,
+Taskbar, Menu Iniciar, controles de janela, escalas e fallback Simple foram
+aprovados. `kmetrics`, `memcheck` e `regcheck full` permaneceram operacionais;
+os dois ultimos terminaram em `OK`.
 
 ## MV4 - Modernizacao de Aplicativos e Performance
 

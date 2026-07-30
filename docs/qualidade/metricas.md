@@ -18,7 +18,7 @@ mudanca; nao crie uma entrada artificial.
 
 ## Registros
 
-### 2026-07-30 - MV3, composicao visual Modern estatica (aguarda QEMU)
+### 2026-07-30 - MV3, composicao visual Modern estatica
 
 - Cenario QEMU: em `guimode classic`, executar `kmetrics reset`, abrir uma
   janela hospedada, arrasta-la entre cantos opostos dez vezes e executar
@@ -26,10 +26,12 @@ mudanca; nao crie uma entrada artificial.
   linha-base anterior.
 - Metrica observavel: apresentacoes VESA, bytes copiados e maior tempo de
   copia em ticks.
-- Antes: pendente de coleta pelo usuario na base MV2.
-- Depois: pendente de coleta apos a validacao MV3.
-- Conclusao: pendente; o efeito glass foi pre-mesclado no boot para nao
-  introduzir alpha blending no caminho de cada frame.
+- Antes: os valores quantitativos da base MV2 nao foram retidos.
+- Depois: a cena foi aprovada pelo usuario no QEMU sem flickering, rastros ou
+  regressao perceptivel; os valores pareados nao foram retidos.
+- Conclusao: validacao visual e funcional concluida. O efeito glass foi
+  pre-mesclado no boot para nao introduzir alpha blending no caminho de cada
+  frame.
 - Impacto: Simple, boot, API de hospedagem e geometria de hit-testing devem
   permanecer inalterados.
 
