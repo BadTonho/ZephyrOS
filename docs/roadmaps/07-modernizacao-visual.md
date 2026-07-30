@@ -92,8 +92,9 @@ anterior e o fallback Simple.
 
 ## MV0.1 - Tipografia bitmap legivel
 
-**Estado:** implementacao presente no repositorio; aguardando `make q3check`,
-build completo e aprovacao da matriz QEMU pelo usuario.
+**Estado:** implementado e validado pelo usuario em 30/07/2026. `make q3check`,
+build completo e matriz QEMU foram aprovados nas tres escalas, preservando a
+fonte legada do Simple.
 
 ### Implementacao
 
@@ -107,7 +108,7 @@ build completo e aprovacao da matriz QEMU pelo usuario.
   bytes fora do ASCII imprimivel para `?` no caminho nativo.
 - [x] Diferenciar no `display status` a fonte Classic nativa da fonte Simple
   legada.
-- [ ] Aprovar a nova tipografia nas tres escalas e concluir a matriz abaixo.
+- [x] Aprovar a nova tipografia nas tres escalas e concluir a matriz abaixo.
 
 ### Criterio de saida
 
@@ -115,15 +116,18 @@ As tres escalas usam glyphs nativos nitidos, preservam a geometria validada do
 MV0 e distinguem letras, numeros e pontuacao sem cortes. O Simple permanece
 visualmente inalterado.
 
-### Matriz QEMU pendente
+### Matriz QEMU aprovada
 
-1. Rodar `make q3check`, `make clean && make` e `make run`, nessa ordem.
-2. Alternar pequena, normal e grande pelo Shell e pelo Settings.
-3. Verificar Desktop, Menu Iniciar, Taskbar, titulos, Explorer, Settings e
-   Task Manager, incluindo `I/l/1`, `O/0`, `S/5` e pontuacao.
-4. Confirmar centralizacao, cortes e textos proximos das bordas.
-5. Fazer o smoke test do Simple e confirmar a fonte legada 8x16.
-6. Encerrar com `health summary`, `memcheck` e `regcheck full`.
+1. `make q3check`, `make clean && make` e `make run` foram aprovados pelo
+   usuario.
+2. As escalas pequena, normal e grande foram aprovadas pelo Shell e Settings.
+3. Desktop, Menu Iniciar, Taskbar, titulos, Explorer, Settings e Task Manager
+   apresentaram glyphs nativos legiveis, incluindo letras ambiguas, numeros e
+   pontuacao.
+4. Centralizacao, cortes e textos proximos das bordas permaneceram corretos.
+5. O smoke test do Simple confirmou a fonte legada 8x16 inalterada.
+6. `health summary` nao apresentou nova regressao; `memcheck` e
+   `regcheck full` terminaram em `OK`.
 
 ## MV1 - Evolucao das Primitivas Graficas
 
