@@ -25,9 +25,9 @@ O sistema operacional segue a política da regra `#15` do `AGENTS.md`:
 - **Simple TUI**: usa `video.c` como fallback operacional congelado. Recebe
   correções críticas, mas não novas funcionalidades ou regressão visual
   completa.
-- **GUI Classic**: usa `gui.c` para desenhar painéis cinza, bordas 3D, barra
-  de título azul, seleção azul e texto fora do grid. É a interface principal
-  e a matriz obrigatória de aceitação.
+- **GUI Classic**: é a interface principal e a matriz obrigatória de
+  aceitação. No MV3, ela usa a aparência Modern Dark: superfícies flat,
+  fundo escuro, bordas de 1 px, cantos arredondados e acento teal.
 - **GUI Modern**: reservada para o redesenho futuro e ainda não selecionável.
 - **Alternância Dinâmica**: O comando `guimode simple|classic` permite alterar a engine visual em tempo de execução sem desligar os aplicativos rodando.
 
@@ -214,19 +214,22 @@ cor por linha com ponto fixo e preserva exatamente as cores da primeira e da
 última linha. Dimensões vazias ou regiões fora do framebuffer não desenham;
 as demais operações respeitam o clip VESA ativo.
 
-O MV2 acrescenta uma rota Modern paralela, sem substituir as APIs Classic:
+O MV2 acrescentou a paleta e os controles Modern. No MV3, essa aparência
+passa a compor Desktop, Window Manager e Taskbar dentro do modo Classic;
+`guimode modern` continua reservado.
 
 - `gui_theme_t` registra `GUI_THEME_CLASSIC` ou `GUI_THEME_MODERN_DARK`;
 - `gui_button_state_t` diferencia `NORMAL`, `HOVER` e `PRESSED`;
-- `gui_set_theme()` mantém somente a preferência preparada em RAM, sem
-  redesenhar a cena atual; valores inválidos preservam o estado anterior;
+- `gui_set_theme(GUI_THEME_MODERN_DARK)` confirma o estilo ativo; o valor
+  legado `GUI_THEME_CLASSIC` retorna `ERR_UNAVAILABLE` e preserva o Modern;
 - `gui_draw_modern_button()` usa raio base escalado de 4 px, borda flat,
   texto nativo centralizado e altera apenas as cores entre os três estados.
 
 A paleta oficial Modern é `#1E1E24` para fundo, `#2A2B36` para janela/título,
 `#00ADB5` para acento, `#EEEEEE` para texto, `#4B4D5A` para borda inativa,
 `#343746` para hover e `#007F86` para pressed. As constantes `GUI_COLOR_*`,
-os painéis 3D e os botões/molduras Classic permanecem inalterados.
+os painéis 3D permanecem disponíveis somente para rotas legadas fora do
+Desktop/WM/Taskbar MV3.
 
 As primitivas antigas continuam usando a fonte legada 8x16. Somente as
 variantes `scaled` consultam `ui/display.h` e selecionam a face nativa Zephyr
@@ -257,8 +260,10 @@ Menu Iniciar criam ou focalizam uma única janela de cada tipo.
   atalhos globais do WM classic. Em um workspace vazio ou aplicativo hospedado
   ocioso, `Esc` não fecha janelas; ele permanece reservado para cancelar o
   contexto interno atual.
-  A janela focalizada recebe um contorno azul de 2 px, além da sua barra de
-  título ativa.
+  A janela focalizada recebe borda teal flat de 1 px e gradiente sutil na
+  barra de título; janelas inativas usam a borda inativa. Os controles
+  continuam nas mesmas zonas de clique, mas aparecem como círculos compactos
+  de minimizar, maximizar/restaurar e fechar.
 
 ### Acessibilidade por teclado
 
@@ -386,11 +391,11 @@ hospedadas continuam fora do escopo.
 
 ## Taskbar (`taskbar.c`)
 
-A taskbar preserva a identidade visual existente e funciona nos dois modos de
-interface. Ela desenha menu, botões e relógio e mantém prioridade sobre as
-interfaces abertas. Cada compositor de cena desenha a taskbar por ultimo; as
-funcoes que alteram seus botoes ou configuracao apenas atualizam estado e nao
-apresentam um frame por conta propria.
+A taskbar mantém a semântica nos dois modos de interface. No Classic MV3, ela
+usa fundo glass estático, botões flat arredondados, bordas de 1 px e Menu
+Iniciar Modern; no Simple preserva a TUI. Cada compositor de cena desenha a
+taskbar por ultimo; as funcoes que alteram seus botoes ou configuracao apenas
+atualizam estado e nao apresentam um frame por conta propria.
 
 No modo classic, a taskbar usa as métricas do preset e suporta as cinco
 posições. Baixo/Cima usam 24, 30 ou 36 px; Esquerda/Direita e o modo Custom
@@ -398,6 +403,11 @@ escalam pelo mesmo fator. Texto, relógio, botões, menus, limites de clique e
 área de trabalho compartilham a geometria calculada. Barras acopladas reduzem
 a área de trabalho; a barra customizada fica sobreposta e recebe pintura e
 clique antes do conteúdo abaixo.
+
+Sem wallpaper configurável, o glass é a mistura pré-calculada de 75% de
+`#2A2B36` sobre `#1E1E24`, feita uma vez no boot. A atualização isolada do
+relógio repinta a mesma base cacheada antes do texto; não há alpha blending,
+leitura do framebuffer ou alocação no caminho de cada frame.
 
 `tb_rect_t`, `taskbar_get_bounds()` e `taskbar_get_work_area()` formam o
 contrato de geometria classic. `taskbar_add_window()`,
@@ -457,16 +467,15 @@ A opção `Escala` aparece tanto no Settings Simple quanto no Classic, é
 sincronizada ao abrir e chama `display_apply_scale()`. Uma recusa restaura
 imediatamente o valor visual anterior.
 
-A opção `Tema` oferece somente `Classico` e `Modern Dark`. Ela chama
-`gui_set_theme()` e registra a preferência preparada até o próximo boot, mas
-o próprio Settings e todo o restante do modo Classic mantêm o estilo atual.
-Essa seleção não habilita `guimode modern`.
+O tema Modern Dark é aplicado ao modo Classic no boot. O seletor de tema foi
+removido do Settings para não reintroduzir a skin Windows 95; isso não
+habilita `guimode modern`.
 
 ### Categorias
 
 | Categoria | Opções |
 |-----------|--------|
-| Tela | Tema, Escala (Pequena/Normal/Grande), Mostrar grade |
+| Tela | Escala (Pequena/Normal/Grande), Mostrar grade |
 | Barra de Tarefas | Posição, Tamanho ícone, Fixada, Relógio |
 | Janelas | Botões lado, Ordem botões, Título, Borda |
 | Ícones | Editor visual (Desktop, WM, Arquivos) |

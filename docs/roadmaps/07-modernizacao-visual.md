@@ -204,21 +204,28 @@ passo.
 
 ## MV3 - Redesenho do Window Manager e Desktop
 
+**Estado:** implementado no repositorio em 30/07/2026; aguarda `q3check`,
+build e matriz QEMU do usuario antes de ser marcado como validado.
+
 ### Implementacao
 
-- [ ] Refatorar a funcao de desenho de moldura de janela no Window Manager (`wm_draw_window_frame` ou equivalente em `src/wm/wm.c`):
-  - Aplicar cantos arredondados no topo da moldura.
-  - Substituir os botoes `[_][X]` classicos por icones minimalistas de controle de janela (ex: um circulo ou tracos finos).
-  - Usar gradiente suave na barra de titulo da janela ativa.
-- [ ] Atualizar o visual do Desktop:
-  - Fundo padrao em tom escuro harmonioso ou gradiente simples caso nao haja bitmap de wallpaper.
-  - Icones com bordas arredondadas e selecao azul-neon flat.
-- [ ] Aplicar transparancia simulada (Alpha Blending estatico) sutil na Barra de Tarefas:
-  - Mesclar o background da barra com os pixels de fundo do wallpaper uma unica vez no boot ou na atualizacao do wallpaper para evitar processamento continuo.
+- [x] Refatorar a moldura das janelas hospedadas: topo arredondado, borda
+  flat, titulo ativo em gradiente e controles circulares coloridos sem alterar
+  hit-testing, ordem ou lado configuraveis.
+- [x] Atualizar o Desktop Classic com fundo `#1E1E24`, cards arredondados e
+  selecao teal flat, preservando bitmap, grade e arraste dos icones.
+- [x] Aplicar glass estatico na Taskbar: a cor final e pre-mesclada no boot
+  com 75% de `Window` sobre o fundo; o redesenho e a atualizacao do relogio
+  apenas reutilizam a cor, sem blend por frame, leitura de pixels ou alocacao.
+- [x] Modernizar botoes e Menu Iniciar nas cinco posicoes da Taskbar com
+  superficies flat, bordas de 1 px e paleta Modern.
 
 ### Criterio de saida
 
-O Desktop e o gerenciador de janelas adotam integralmente o novo visual sem rastro de pixels, piscadas (flickering) ou perda perceptivel de performance ao arrastar janelas no QEMU.
+O Desktop e o gerenciador de janelas adotam integralmente o novo visual sem
+rastro de pixels, piscadas (flickering) ou perda perceptivel de performance ao
+arrastar janelas no QEMU. A validacao pendente tambem deve registrar `kmetrics`
+antes/depois no cenario de arraste em `docs/qualidade/metricas.md`.
 
 ## MV4 - Modernizacao de Aplicativos e Performance
 

@@ -388,7 +388,7 @@ guitest modern
   primitivas do MV1: retângulos preenchidos com raios diferentes, bordas flat
   de 1 pixel, clipping e gradientes verticais nos dois sentidos.
 - A cena MV2 preserva esses casos e acrescenta as sete cores da paleta
-  oficial, o nome do tema preparado e um botão Modern interativo. O botão
+  oficial, o nome do tema Modern Dark ativo e um botão Modern interativo. O botão
   mostra `Normal` fora do cursor, `Hover` sob o cursor e `Pressed` enquanto o
   botão esquerdo permanece pressionado dentro; arrastar para fora restaura
   `Normal` e soltar dentro restaura `Hover`.

@@ -250,8 +250,8 @@ A matriz manual confirmou:
 7. estado final sem pacotes instalados, diretorios parciais ou processos
    residuais.
 
-Com AS1, AS2, MV0, MV0.1, MV1 e MV2 aprovados, o proximo passo oficial e o
-MV3 do Roadmap 07 antes do AS3.
+Com AS1, AS2, MV0, MV0.1, MV1 e MV2 aprovados, o MV3 do Roadmap 07 esta
+implementado e aguarda validacao QEMU antes do AS3.
 
 ## Limitacoes
 

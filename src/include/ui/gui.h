@@ -35,7 +35,7 @@ typedef enum {
 
 void gui_init(void);
 
-/* Preferencia preparada em RAM; nao altera o renderer Classic atual. */
+/* Modern Dark e a aparencia ativa da GUI Classic; o tema legado e reservado. */
 int gui_set_theme(gui_theme_t theme);
 gui_theme_t gui_get_theme(void);
 const char* gui_theme_name(gui_theme_t theme);

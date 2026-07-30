@@ -163,6 +163,13 @@ futura. `filemanager.h`, `settings.h` e `updater.h` expõem apenas seus
 renderers implementados `SIMPLE` e `CLASSIC`. A política e os contratos
 canônicos ficam em `docs/12-desktop/desktop.md`.
 
+Desde o MV3, o modo `DESKTOP_MODE_CLASSIC` adota a aparencia Modern Dark sem
+alterar as assinaturas de `ui/gui.h`, `ui/wm.h` ou `ui/taskbar.h`. O enum
+`GUI_THEME_CLASSIC` permanece por compatibilidade, mas `gui_set_theme()` o
+recusa com `ERR_UNAVAILABLE`; `GUI_THEME_MODERN_DARK` e a unica apresentacao
+ativa. A hospedagem de aplicativos, suas areas internas e callbacks permanecem
+inalterados.
+
 Desde a U5, `src/include/core/http.h` acrescenta GET por streaming com callback
 e limite definido pelo chamador. `src/include/fs/fat12.h` e
 `src/include/fs/fs.h` acrescentam escrita sequencial FAT12 de ate 128 KiB.
