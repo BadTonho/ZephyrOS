@@ -224,11 +224,18 @@ X=100 Y=200 Buttons=0x01
 ```
 
 ## `guitest`
-Testa as primitivas gráficas 2D do módulo GUI (janela, botões, texto).
+Testa as primitivas gráficas 2D do módulo GUI.
 
 ```
 zephyr> guitest
+zephyr> guitest modern
 ```
+
+Sem argumento, preserva a cena Classic de janela, botão e texto.
+`guitest modern` exige `guimode classic` e abre a cena diagnóstica MV2 com as
+primitivas do MV1, a paleta oficial e o botão Modern nos estados
+Normal/Hover/Pressed. A seleção de tema do Settings é apenas exibida como
+preferência preparada e não habilita o modo Modern.
 
 ## `guimode simple|classic`
 Altera o modo de interface do sistema (Simple TUI ou GUI Classic) dinamicamente, demonstrando o fallback visual sem afetar a arquitetura interna do kernel.

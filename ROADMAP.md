@@ -110,7 +110,7 @@ Sistema e ecossistema:       [████████████████�
 | `stop` | Para player de mídia |
 | `edit` | Editor de texto (edit ARQUIVO.TXT) |
 | `mouse` | Mostra status do mouse PS/2 |
-| `guitest` | Testa primitivas GUI 2D |
+| `guitest [modern]` | Testa primitivas GUI 2D e a base visual Modern |
 | `guimode` | Altera entre gui simple e classic |
 | `health` | Exibe metricas e estado de recovery |
 | `store status|list|info` | Consulta o catalogo local da App Store |
@@ -709,7 +709,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 - **Gerenciador de Processos** (`gerenciador de processos.md`)
 
 ### Novos Módulos e Aplicativos (App Store / Opcionais)
-- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1, AS2, MV0, MV0.1 e MV1 validados; proximo passo seguir para MV2-MV3
+- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1, AS2, MV0, MV0.1 e MV1 validados; MV2 implementado e aguardando validacao antes de MV3
 - **Gerenciador de Mídia** (`gerenciador de midia.md`)
 - **Gerenciador de Jogos** (`gerenciador de jogos.md`)
 - **Anti-Virus** (`anti virus.md`)

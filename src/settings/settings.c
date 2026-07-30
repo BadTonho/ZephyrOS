@@ -40,6 +40,8 @@
 #define SETTINGS_CLASSIC_BUTTON_HEIGHT ((int)display_scale_px(24))
 #define SETTINGS_CLASSIC_DIALOG_WIDTH SETTINGS_CLASSIC_PX(480)
 #define SETTINGS_CLASSIC_DIALOG_HEIGHT SETTINGS_CLASSIC_PX(300)
+#define SETTINGS_SIMPLE_LIST_ARROW_OFFSET 10
+#define SETTINGS_SIMPLE_THEME_ARROW_OFFSET 12
 
 typedef enum {
     SETTINGS_DIALOG_NONE = 0,
@@ -71,7 +73,7 @@ static int settings_hosted = 0;
 
 static settings_page_t categories[SETTINGS_CAT_COUNT];
 
-static const char* display_theme_values[] = {"Classico", "Escuro", "Azul"};
+static const char* display_theme_values[GUI_THEME_COUNT];
 static const char* display_scale_values[] = {"Pequena", "Normal", "Grande"};
 static const char* taskbar_position_values[] = {"Baixo", "Cima", "Esquerda", "Direita", "Custom"};
 static const char* taskbar_size_values[] = {"Pequeno", "Medio", "Grande"};
@@ -112,12 +114,15 @@ static void init_categories(void) {
     for (int i = 0; i < SETTINGS_CAT_COUNT; i++) {
         categories[i].option_count = 0;
     }
+    for (int i = 0; i < GUI_THEME_COUNT; i++) {
+        display_theme_values[i] = gui_theme_name((gui_theme_t)i);
+    }
 
     categories[SETTINGS_CAT_DISPLAY].name = "Tela";
     categories[SETTINGS_CAT_DISPLAY].option_count = 3;
     categories[SETTINGS_CAT_DISPLAY].options[0] = (settings_option_t){
-        "Tema", SETTINGS_OPT_LIST, 0, 2,
-        display_theme_values, 3
+        "Tema", SETTINGS_OPT_LIST, gui_get_theme(), GUI_THEME_COUNT - 1,
+        display_theme_values, GUI_THEME_COUNT
     };
     categories[SETTINGS_CAT_DISPLAY].options[1] = (settings_option_t){
         "Escala", SETTINGS_OPT_LIST, DISPLAY_SCALE_NORMAL,
@@ -267,6 +272,10 @@ static void settings_sync_display_scale(void) {
     categories[SETTINGS_CAT_DISPLAY].options[1].value = metrics.scale;
 }
 
+static void settings_sync_display_theme(void) {
+    categories[SETTINGS_CAT_DISPLAY].options[0].value = gui_get_theme();
+}
+
 static void settings_select_mode(void) {
     settings_mode = SETTINGS_MODE_SIMPLE;
     if (desktop_get_mode() != DESKTOP_MODE_CLASSIC) {
@@ -294,6 +303,7 @@ void settings_init(void) {
     settings_dialog = SETTINGS_DIALOG_NONE;
     settings_hosted = 0;
     init_categories();
+    settings_sync_display_theme();
     settings_sync_display_scale();
     LOG_INFO("SETTINGS", "Configuracoes inicializadas com sucesso");
 }
@@ -305,6 +315,7 @@ void settings_open(void) {
         return;
     }
 
+    settings_sync_display_theme();
     settings_sync_display_scale();
     if (desktop_get_mode() == DESKTOP_MODE_CLASSIC && settings_hosted) {
         wm_set_active(1);
@@ -388,9 +399,14 @@ static void settings_draw_simple(void) {
             int val = page->options[i].value;
             if (page->options[i].list_values &&
                 val >= 0 && val < page->options[i].list_count) {
+                int arrow_offset =
+                    page->options[i].list_values == display_theme_values ?
+                    SETTINGS_SIMPLE_THEME_ARROW_OFFSET :
+                    SETTINGS_SIMPLE_LIST_ARROW_OFFSET;
+
                 video_print_at(55, 4 + i, "< ", color);
                 video_print_at(57, 4 + i, page->options[i].list_values[val], color);
-                video_print_at(57 + 10, 4 + i, " >", color);
+                video_print_at(57 + arrow_offset, 4 + i, " >", color);
             }
         } else if (page->options[i].type == SETTINGS_OPT_ACTION) {
             video_print_at(55, 4 + i, "[Executar]", color);
@@ -444,14 +460,24 @@ static void apply_wm_settings(void) {
 
 static void settings_apply_category(void) {
     if (selected_category == SETTINGS_CAT_DISPLAY) {
-        settings_option_t* scale =
-            &categories[SETTINGS_CAT_DISPLAY].options[1];
-        int result = display_apply_scale((display_scale_t)scale->value);
+        settings_page_t* display = &categories[SETTINGS_CAT_DISPLAY];
 
-        if (result != OK) {
-            LOG_WARN("SETTINGS", "Escala recusada; valor anterior preservado");
+        if (selected_option == 0) {
+            if (gui_set_theme((gui_theme_t)display->options[0].value) != OK) {
+                LOG_WARN("SETTINGS",
+                         "Tema recusado; valor anterior preservado");
+                settings_sync_display_theme();
+            }
+        } else if (selected_option == 1) {
+            int result = display_apply_scale(
+                (display_scale_t)display->options[1].value);
+
+            if (result != OK) {
+                LOG_WARN("SETTINGS",
+                         "Escala recusada; valor anterior preservado");
+            }
+            settings_sync_display_scale();
         }
-        settings_sync_display_scale();
     }
     if (selected_category == SETTINGS_CAT_TASKBAR) {
         apply_taskbar_settings();

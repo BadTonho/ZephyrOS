@@ -387,7 +387,12 @@ guitest modern
 - `guitest modern` mantém uma moldura externa Classic e apresenta as
   primitivas do MV1: retângulos preenchidos com raios diferentes, bordas flat
   de 1 pixel, clipping e gradientes verticais nos dois sentidos.
-- A cena MV1 usa a escala ativa e a área útil da Taskbar. Ela exige
+- A cena MV2 preserva esses casos e acrescenta as sete cores da paleta
+  oficial, o nome do tema preparado e um botão Modern interativo. O botão
+  mostra `Normal` fora do cursor, `Hover` sob o cursor e `Pressed` enquanto o
+  botão esquerdo permanece pressionado dentro; arrastar para fora restaura
+  `Normal` e soltar dentro restaura `Hover`.
+- A cena usa a escala ativa e a área útil da Taskbar. Ela exige
   `guimode classic`; não habilita o modo Modern reservado.
 - O X da moldura e `Esc` fecham ambas as cenas. Qualquer outro argumento
   mostra `Uso: guitest [modern]` sem abandonar o Shell.

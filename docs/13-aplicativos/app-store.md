@@ -250,8 +250,9 @@ A matriz manual confirmou:
 7. estado final sem pacotes instalados, diretorios parciais ou processos
    residuais.
 
-Com AS1, AS2, MV0, MV0.1 e MV1 aprovados, o proximo passo oficial e executar
-MV2-MV3 do Roadmap 07 antes do AS3.
+Com AS1, AS2, MV0, MV0.1 e MV1 aprovados, o MV2 esta implementado e
+aguardando validacao. Depois dessa aprovacao, o proximo passo oficial e o MV3
+do Roadmap 07 antes do AS3.
 
 ## Limitacoes
 
