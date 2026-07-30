@@ -377,16 +377,24 @@ Comando que testa as primitivas gráficas 2D do módulo GUI.
 
 ```bash
 guitest
+guitest modern
 ```
 
 ### O que testa
 
-- `gui_draw_window_frame()` - moldura de janela com título
-- `gui_draw_button()` - botão com estado pressed/released
-- `gui_draw_text()` - texto renderizado pixel a pixel
+- `guitest` preserva a cena Classic com `gui_draw_window_frame()`,
+  `gui_draw_button()` e `gui_draw_text()`.
+- `guitest modern` mantém uma moldura externa Classic e apresenta as
+  primitivas do MV1: retângulos preenchidos com raios diferentes, bordas flat
+  de 1 pixel, clipping e gradientes verticais nos dois sentidos.
+- A cena MV1 usa a escala ativa e a área útil da Taskbar. Ela exige
+  `guimode classic`; não habilita o modo Modern reservado.
+- O X da moldura e `Esc` fecham ambas as cenas. Qualquer outro argumento
+  mostra `Uso: guitest [modern]` sem abandonar o Shell.
 
-### Arquivo
+### Arquivos
 
 ```
 src/gui/gui.c
+src/shell/guitest_app.c
 ```

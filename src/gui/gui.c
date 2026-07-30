@@ -7,6 +7,7 @@
 #include "ui/display.h"
 
 #define GUI_BITMAP_BYTE_BITS 8U
+#define GUI_GRADIENT_FIXED_ONE 65536
 
 static int gui_clamp_to_screen(uint32_t* x, uint32_t* y,
                                uint32_t* width, uint32_t* height) {
@@ -19,6 +20,20 @@ static int gui_clamp_to_screen(uint32_t* x, uint32_t* y,
     if (*width > mode->width - *x) *width = mode->width - *x;
     if (*height > mode->height - *y) *height = mode->height - *y;
     return *width && *height;
+}
+
+static uint32_t gui_min_u32(uint32_t first, uint32_t second) {
+    return first < second ? first : second;
+}
+
+static void gui_draw_rounded_span(uint32_t x, uint32_t y, uint32_t width,
+                                  uint32_t inset, vesa_color_t color) {
+    uint32_t max_inset;
+
+    if (!width) return;
+    max_inset = (width - 1U) / 2U;
+    if (inset > max_inset) inset = max_inset;
+    vesa_draw_hline(x + inset, y, width - inset * 2U, color);
 }
 
 void gui_init(void) {
@@ -190,6 +205,131 @@ void gui_draw_panel(uint32_t x, uint32_t y, uint32_t w, uint32_t h,
     vesa_draw_hline(x + 1, y + h - 2, w - 2, dark_border);
     vesa_draw_vline(x + w - 1, y, h, dark_border);
     vesa_draw_vline(x + w - 2, y + 1, h - 2, dark_border);
+}
+
+void gui_draw_rounded_rect(uint32_t x, uint32_t y, uint32_t width,
+                           uint32_t height, uint32_t radius,
+                           uint32_t color) {
+    vesa_color_t fill_color;
+    uint32_t max_radius;
+    int32_t circle_x;
+    int32_t circle_y;
+    int32_t error;
+
+    if (!gui_clamp_to_screen(&x, &y, &width, &height)) return;
+    fill_color.raw = color;
+    max_radius = gui_min_u32(width, height) / 2U;
+    if (radius > max_radius) radius = max_radius;
+    if (!radius) {
+        vesa_fill_rect(x, y, width, height, fill_color);
+        return;
+    }
+
+    if (height > radius * 2U) {
+        vesa_fill_rect(x, y + radius, width, height - radius * 2U,
+                       fill_color);
+    }
+
+    circle_x = (int32_t)radius;
+    circle_y = 0;
+    error = 1 - circle_x;
+    while (circle_x >= circle_y) {
+        uint32_t outer_row = radius - (uint32_t)circle_x;
+        uint32_t inner_row = radius - (uint32_t)circle_y;
+        uint32_t outer_inset = radius - (uint32_t)circle_y;
+        uint32_t inner_inset = radius - (uint32_t)circle_x;
+
+        gui_draw_rounded_span(x, y + outer_row, width, outer_inset,
+                              fill_color);
+        gui_draw_rounded_span(x, y + inner_row, width, inner_inset,
+                              fill_color);
+        gui_draw_rounded_span(x, y + height - 1U - outer_row, width,
+                              outer_inset, fill_color);
+        gui_draw_rounded_span(x, y + height - 1U - inner_row, width,
+                              inner_inset, fill_color);
+
+        circle_y++;
+        if (error < 0) {
+            error += 2 * circle_y + 1;
+        } else {
+            circle_x--;
+            error += 2 * (circle_y - circle_x) + 1;
+        }
+    }
+}
+
+void gui_draw_flat_border(uint32_t x, uint32_t y, uint32_t width,
+                          uint32_t height, uint32_t color) {
+    vesa_color_t border_color;
+
+    if (!gui_clamp_to_screen(&x, &y, &width, &height)) return;
+    border_color.raw = color;
+    if (height == 1U) {
+        vesa_draw_hline(x, y, width, border_color);
+        return;
+    }
+    if (width == 1U) {
+        vesa_draw_vline(x, y, height, border_color);
+        return;
+    }
+
+    vesa_draw_hline(x, y, width, border_color);
+    vesa_draw_hline(x, y + height - 1U, width, border_color);
+    if (height > 2U) {
+        vesa_draw_vline(x, y + 1U, height - 2U, border_color);
+        vesa_draw_vline(x + width - 1U, y + 1U, height - 2U,
+                        border_color);
+    }
+}
+
+void gui_draw_vertical_gradient(uint32_t x, uint32_t y, uint32_t width,
+                                uint32_t height, uint32_t top_color,
+                                uint32_t bottom_color) {
+    vesa_color_t top;
+    vesa_color_t bottom;
+    vesa_color_t row_color;
+    int32_t red_fixed;
+    int32_t green_fixed;
+    int32_t blue_fixed;
+    int32_t red_step;
+    int32_t green_step;
+    int32_t blue_step;
+
+    if (!gui_clamp_to_screen(&x, &y, &width, &height)) return;
+    top.raw = top_color;
+    bottom.raw = bottom_color;
+    if (height == 1U) {
+        vesa_fill_rect(x, y, width, height, top);
+        return;
+    }
+
+    red_fixed = (int32_t)top.channels.red * GUI_GRADIENT_FIXED_ONE;
+    green_fixed = (int32_t)top.channels.green * GUI_GRADIENT_FIXED_ONE;
+    blue_fixed = (int32_t)top.channels.blue * GUI_GRADIENT_FIXED_ONE;
+    red_step = ((int32_t)bottom.channels.red - top.channels.red) *
+               GUI_GRADIENT_FIXED_ONE / (int32_t)(height - 1U);
+    green_step = ((int32_t)bottom.channels.green - top.channels.green) *
+                 GUI_GRADIENT_FIXED_ONE / (int32_t)(height - 1U);
+    blue_step = ((int32_t)bottom.channels.blue - top.channels.blue) *
+                GUI_GRADIENT_FIXED_ONE / (int32_t)(height - 1U);
+
+    for (uint32_t row = 0; row < height; row++) {
+        row_color.raw = 0;
+        if (row == height - 1U) {
+            row_color = bottom;
+        } else {
+            row_color.channels.red =
+                (uint8_t)(red_fixed / GUI_GRADIENT_FIXED_ONE);
+            row_color.channels.green =
+                (uint8_t)(green_fixed / GUI_GRADIENT_FIXED_ONE);
+            row_color.channels.blue =
+                (uint8_t)(blue_fixed / GUI_GRADIENT_FIXED_ONE);
+        }
+        vesa_draw_hline(x, y + row, width, row_color);
+        red_fixed += red_step;
+        green_fixed += green_step;
+        blue_fixed += blue_step;
+    }
 }
 
 void gui_draw_button(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const char* text, int pressed) {
