@@ -1,5 +1,7 @@
 #include "drivers/font.h"
 #include "drivers/vesa.h"
+#include "core/errors.h"
+#include "core/log.h"
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Woverride-init"
@@ -103,6 +105,31 @@ static const uint8_t font_8x16[128][16] = {
 };
 #pragma GCC diagnostic pop
 
+#include "font_data.inc"
+
+#define FONT_FACE_COUNT 3U
+
+static const font_face_t font_faces[FONT_FACE_COUNT] = {
+    {
+        (const uint8_t*)zephyr_ui_8x16,
+        ZEPHYR_UI_8X16_WIDTH, ZEPHYR_UI_8X16_HEIGHT,
+        ZEPHYR_UI_8X16_ROW_STRIDE, ZEPHYR_UI_8X16_GLYPH_STRIDE,
+        ZEPHYR_UI_ASCII_FIRST, ZEPHYR_UI_ASCII_LAST
+    },
+    {
+        (const uint8_t*)zephyr_ui_10x20,
+        ZEPHYR_UI_10X20_WIDTH, ZEPHYR_UI_10X20_HEIGHT,
+        ZEPHYR_UI_10X20_ROW_STRIDE, ZEPHYR_UI_10X20_GLYPH_STRIDE,
+        ZEPHYR_UI_ASCII_FIRST, ZEPHYR_UI_ASCII_LAST
+    },
+    {
+        (const uint8_t*)zephyr_ui_12x24,
+        ZEPHYR_UI_12X24_WIDTH, ZEPHYR_UI_12X24_HEIGHT,
+        ZEPHYR_UI_12X24_ROW_STRIDE, ZEPHYR_UI_12X24_GLYPH_STRIDE,
+        ZEPHYR_UI_ASCII_FIRST, ZEPHYR_UI_ASCII_LAST
+    }
+};
+
 void font_init(void) {
 }
 
@@ -119,4 +146,51 @@ uint32_t font_get_width(void) {
 
 uint32_t font_get_height(void) {
     return FONT_HEIGHT;
+}
+
+int font_get_face(uint16_t width, uint16_t height, const font_face_t** face) {
+    if (!face) {
+        LOG_ERROR("GUI", "Destino de face bitmap nulo");
+        return ERR_NULL;
+    }
+    *face = (const font_face_t*)0;
+    for (uint32_t index = 0; index < FONT_FACE_COUNT; index++) {
+        if (font_faces[index].width == width &&
+            font_faces[index].height == height) {
+            *face = &font_faces[index];
+            return OK;
+        }
+    }
+
+    LOG_ERROR("GUI", "Face bitmap nativa indisponivel");
+    return ERR_NOT_FOUND;
+}
+
+int font_get_face_glyph(const font_face_t* face, char character,
+                        const uint8_t** glyph) {
+    uint8_t codepoint = (uint8_t)character;
+    uint32_t index;
+
+    if (!face || !glyph) {
+        LOG_ERROR("GUI", "Entrada nula ao consultar glyph bitmap");
+        return ERR_NULL;
+    }
+    *glyph = (const uint8_t*)0;
+    if (!face->glyphs || !face->width || !face->height ||
+        !face->row_stride || !face->glyph_stride ||
+        face->glyph_stride <
+            (uint32_t)face->row_stride * (uint32_t)face->height ||
+        face->first_character > (uint8_t)'?' ||
+        face->last_character < (uint8_t)'?') {
+        LOG_ERROR("GUI", "Face bitmap possui estado invalido");
+        return ERR_STATE;
+    }
+    if (codepoint < face->first_character ||
+        codepoint > face->last_character) {
+        codepoint = (uint8_t)'?';
+    }
+
+    index = (uint32_t)(codepoint - face->first_character);
+    *glyph = face->glyphs + index * face->glyph_stride;
+    return OK;
 }

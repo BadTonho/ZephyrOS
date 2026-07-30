@@ -1,5 +1,25 @@
 # Third-Party Notices
 
+## Zephyr UI Bitmap / Terminus Font 4.49.1
+
+ZephyrOS inclui em `src/drivers/font_data.inc` um subconjunto ASCII derivado
+das faces normais 8x16, 10x20 e 12x24 da Terminus Font 4.49.1:
+
+- projeto: <https://terminus-font.sourceforge.net/>;
+- release: `terminus-font-4.49.1.tar.gz`;
+- SHA-256 do arquivo:
+  `d961c1b781627bf417f9b340693d64fc219e0113ad3a3af1a3424c7aa373ef79`;
+- caracteres incorporados: U+0020 a U+007E;
+- nome da derivacao no ZephyrOS: `Zephyr UI Bitmap`;
+- gerador reproduzivel: `tools/vendor_terminus.py`;
+- licenca upstream: `SIL Open Font License 1.1`.
+
+Os BDFs originais, seus hashes individuais, a proveniencia e o texto integral
+da licenca estao em `assets/fonts/terminus`. O nome reservado upstream nao e
+usado para a familia derivada.
+
+Copyright (C) 2020 Dimitar Toshkov Zhekov.
+
 ## Monocypher 4.0.3
 
 ZephyrOS inclui em `src/core/crypto_ed25519.c` um subconjunto verify-only de

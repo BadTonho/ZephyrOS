@@ -8861,11 +8861,21 @@ static void cmd_display_status(void) {
     print_num(metrics.factor_denominator);
     video_print(metrics.available ? ", disponivel)\n" :
                                     ", indisponivel)\n", 0x07);
-    video_print("  Fonte: ", 0x07);
-    print_num(metrics.font_width);
-    video_print("x", 0x07);
-    print_num(metrics.font_height);
-    video_print("  Espaco: ", 0x07);
+    if (desktop_get_mode() == DESKTOP_MODE_SIMPLE) {
+        video_print("  Fonte ativa: legada 8x16\n", 0x07);
+        video_print("  Preset Classic: " FONT_UI_FAMILY_NAME " ", 0x07);
+        print_num(metrics.font_width);
+        video_print("x", 0x07);
+        print_num(metrics.font_height);
+        video_print(" (nativa, RAM)\n", 0x07);
+        video_print("  Espaco Classic: ", 0x07);
+    } else {
+        video_print("  Fonte: " FONT_UI_FAMILY_NAME " ", 0x07);
+        print_num(metrics.font_width);
+        video_print("x", 0x07);
+        print_num(metrics.font_height);
+        video_print(" (nativa)  Espaco: ", 0x07);
+    }
     print_num(metrics.spacing);
     video_print(" px\n", 0x07);
     video_print("  Taskbar: ", 0x07);

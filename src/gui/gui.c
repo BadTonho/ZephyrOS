@@ -6,6 +6,8 @@
 #include "core/errors.h"
 #include "ui/display.h"
 
+#define GUI_BITMAP_BYTE_BITS 8U
+
 static int gui_clamp_to_screen(uint32_t* x, uint32_t* y,
                                uint32_t* width, uint32_t* height) {
     vesa_mode_t* mode = vesa_get_mode();
@@ -47,9 +49,10 @@ void gui_draw_text(uint32_t x, uint32_t y, const char* text, uint32_t color) {
     }
 }
 
-static void gui_draw_scaled_glyph(uint32_t x, uint32_t y,
-                                  const uint8_t* glyph, vesa_color_t color,
-                                  const display_metrics_t* metrics) {
+static void gui_draw_resampled_glyph(uint32_t x, uint32_t y,
+                                     const uint8_t* glyph,
+                                     vesa_color_t color,
+                                     const display_metrics_t* metrics) {
     for (uint32_t row = 0; row < metrics->font_height; row++) {
         uint32_t source_row = row * FONT_HEIGHT / metrics->font_height;
         uint8_t bits = glyph[source_row];
@@ -63,12 +66,31 @@ static void gui_draw_scaled_glyph(uint32_t x, uint32_t y,
     }
 }
 
+static void gui_draw_native_glyph(uint32_t x, uint32_t y,
+                                  const uint8_t* glyph,
+                                  vesa_color_t color,
+                                  const font_face_t* face) {
+    for (uint32_t row = 0; row < face->height; row++) {
+        const uint8_t* bits = glyph + row * face->row_stride;
+
+        for (uint32_t col = 0; col < face->width; col++) {
+            uint32_t byte_index = col / GUI_BITMAP_BYTE_BITS;
+            uint32_t bit_index = col % GUI_BITMAP_BYTE_BITS;
+            if (bits[byte_index] & (0x80U >> bit_index)) {
+                vesa_put_pixel(x + col, y + row, color);
+            }
+        }
+    }
+}
+
 void gui_draw_scaled_text(uint32_t x, uint32_t y, const char* text,
                           uint32_t color) {
     display_metrics_t metrics;
+    const font_face_t* face;
     vesa_color_t foreground;
     uint32_t current_x = x;
     uint32_t current_y = y;
+    int native_face_available;
 
     if (!text) {
         LOG_ERROR("GUI", "Texto escalado nulo");
@@ -79,6 +101,8 @@ void gui_draw_scaled_text(uint32_t x, uint32_t y, const char* text,
         return;
     }
 
+    native_face_available =
+        font_get_face(metrics.font_width, metrics.font_height, &face) == OK;
     foreground.raw = color;
     while (*text) {
         char character = *text++;
@@ -89,10 +113,20 @@ void gui_draw_scaled_text(uint32_t x, uint32_t y, const char* text,
             current_y += metrics.font_height;
             continue;
         }
-        glyph = font_get_glyph(character);
-        if (glyph) {
-            gui_draw_scaled_glyph(current_x, current_y, glyph, foreground,
-                                  &metrics);
+        if (native_face_available) {
+            if (font_get_face_glyph(face, character, &glyph) == OK) {
+                gui_draw_native_glyph(current_x, current_y, glyph, foreground,
+                                      face);
+            } else {
+                native_face_available = 0;
+            }
+        }
+        if (!native_face_available) {
+            glyph = font_get_glyph(character);
+            if (glyph) {
+                gui_draw_resampled_glyph(current_x, current_y, glyph,
+                                         foreground, &metrics);
+            }
         }
         current_x += metrics.font_width;
     }

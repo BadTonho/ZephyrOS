@@ -12,7 +12,7 @@ src/drivers/
 ├── ac97.c           → Driver de áudio AC97
 ├── ata.c            → Driver de disco (ATA PIO)
 ├── e1000.c          → Driver Ethernet Intel 82540EM
-├── font.c           → Fonte bitmap 8x16
+├── font.c           → Fonte legada 8x16 e faces nativas Zephyr UI
 ├── idt.c            → Tabela de interrupções
 ├── irq.asm          → Handlers de interrupção de hardware
 ├── isr.asm          → Handlers de exceção do CPU
@@ -449,7 +449,10 @@ ficou abaixo da resolucao, nao que nao teve custo.
 
 ## Font (`font.c`)
 
-Fonte bitmap **8x16** para renderização de texto em modo gráfico (VESA).
+O driver preserva a fonte bitmap legada **8x16** e oferece a familia derivada
+**Zephyr UI Bitmap** em faces nativas 8x16, 10x20 e 12x24. A familia nova usa
+somente o subconjunto ASCII imprimivel da Terminus Font 4.49.1 normal e nao
+faz redimensionamento durante o desenho.
 
 ### Carregamento
 
@@ -457,14 +460,36 @@ Fonte bitmap **8x16** para renderização de texto em modo gráfico (VESA).
 font_init();
 ```
 
-### Obtendo Glyph
+### Obtendo glyph legado
 
 ```c
 const uint8_t* glyph = font_get_glyph('A');
 // glyph[0..15] = 16 bytes representando 8x16 pixels
 ```
 
-Cada byte representa uma linha de 8 pixels (1 bit por pixel).
+Esse contrato permanece inalterado para Simple, Shell hospedado, Updater e
+primitivas fora do MV0.
+
+### Obtendo uma face nativa
+
+```c
+const font_face_t* face;
+const uint8_t* glyph;
+
+font_get_face(10, 20, &face);
+font_get_face_glyph(face, 'A', &glyph);
+```
+
+`font_face_t` publica largura, altura, bytes por linha, bytes por glyph,
+intervalo de caracteres e um ponteiro imutavel para os dados. Os bits usam
+ordem MSB-first; bytes fora de U+0020..U+007E selecionam `?`. As consultas nao
+alocam memoria e retornam codigos de erro com log para ponteiros, estados ou
+dimensoes invalidas.
+
+Os BDFs, hashes e a licenca ficam em `assets/fonts/terminus`.
+`tools/vendor_terminus.py` valida os originais e gera deterministicamente
+`src/drivers/font_data.inc`; `make q3check` confirma que o arquivo gerado esta
+sincronizado.
 
 ---
 
