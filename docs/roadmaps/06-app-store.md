@@ -27,10 +27,12 @@ camada de catalogo, politica, confirmacao e interface sobre elas.
 
 ## Decisoes de produto
 
-- **Modern e a interface principal e a matriz obrigatoria de aceitacao.**
+- **Classic e a interface grafica principal durante AS1-AS2 e MV0.**
+- **Modern passara a ser a matriz grafica de AS3 somente depois de MV1-MV3
+  implementarem o renderer futuro.**
 - O Shell oferece fallback operacional completo e diagnostico reproduzivel.
-- Classic permanece planejado como fallback secundario; sua regressao visual
-  e complementar e nao bloqueia uma fase ja aprovada no Modern e no Shell.
+- Simple permanece como fallback secundario congelado; seu smoke test e
+  complementar e nao substitui a validacao do Classic/Modern e do Shell.
 - Aplicativos nativos do kernel nao podem ser instalados ou removidos pela
   loja.
 - Nenhuma acao ocorre no boot e nenhuma instalacao e silenciosa.
@@ -214,8 +216,8 @@ worker cooperativo manterá Window Manager, rede, mouse e Shell responsivos.
 ### Fallback
 
 - [ ] O Shell preserva todas as operacoes e diagnosticos.
-- [ ] Classic oferece uma TUI funcional quando a hospedagem Modern falhar.
-- [ ] A validacao obrigatoria usa Shell e Modern; Classic e cobertura
+- [ ] Simple oferece uma TUI funcional quando a hospedagem Modern falhar.
+- [ ] A validacao obrigatoria usa Shell e Modern; Simple e cobertura
   complementar.
 
 ### Criterio de saida

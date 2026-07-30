@@ -15,7 +15,7 @@ funcionalidade entregue.
 | Arquitetura e modulos atuais | [02 - Arquitetura](02-arquitetura/arquitetura.md) | Mapa de componentes e inicializacao. |
 | Kernel, memoria, drivers, processos e FS | Capitulos 03 a 08 | Contratos tecnicos atuais. |
 | Shell e atalhos | [09 - Shell](09-shell/shell.md) e [Atalhos](atalhos_e_comandos.md) | Comandos e interacoes atuais. |
-| Desktop e aplicativos nativos | Capitulos 12 e 13 | Interfaces classica e moderna atuais. |
+| Desktop e aplicativos nativos | Capitulos 12 e 13 | Interfaces Simple e Classic atuais; Modern reservado. |
 | App API e apps ring 3 | [API de Aplicativos e Syscalls](melhorias%20futuras/api%20de%20aplicativos%20e%20syscalls.md) | ABI 0.3, ZAPP, foco e limites. |
 
 ## Estado tecnico documentado
@@ -23,8 +23,8 @@ funcionalidade entregue.
 - Desktop inicia como cena padrao; o terminal e aberto explicitamente pelo
   Desktop, Menu Iniciar ou taskbar.
 - Shell possui scrollback de 200 linhas e `clear` apaga tela e historico.
-- Desktop, Explorer, Settings e a janela do Task Manager oferecem modo moderno
-  com fallback classico. O comando `taskmgr` preserva a TUI de diagnostico.
+- Desktop, Explorer, Settings e a janela do Task Manager oferecem modo Classic
+  com fallback Simple. O comando `taskmgr` preserva a TUI de diagnostico.
 - App API 0.3, syscalls 0 a 9, `int 0x80` em DPL3, arquivos, IPC, loader ZAPP,
   argumentos simples e foco seguro foram validados no QEMU.
 - `echo` e a primeira ferramenta migrada para ring 3, sempre com fallback

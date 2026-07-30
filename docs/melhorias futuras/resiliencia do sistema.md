@@ -4,7 +4,7 @@
 
 - [x] Criar registro fixo de estados dos componentes.
 - [x] Registrar falhas sem depender do heap.
-- [x] Adicionar fallback de VESA para VGA/classic.
+- [x] Adicionar fallback de VESA para VGA/Simple.
 - [x] Verificar falhas na criação dos processos principais.
 - [x] Adicionar comando shell `health`.
 - [x] Isolar processos em modo usuário.
@@ -16,8 +16,8 @@
 |---------|------|
 | `health` | Lista estado, falhas e último código dos componentes |
 | `health --repair` | Executa diagnóstico e auto-reparo de componentes/arquivos degradados |
-| `guimode classic` | Usa a interface clássica |
-| `guimode modern` | Usa a interface moderna quando VESA e backbuffer estão disponíveis |
+| `guimode simple` | Usa a interface TUI de fallback |
+| `guimode classic` | Usa a interface gráfica quando VESA e backbuffer estão disponíveis |
 
 ## Fases
 
@@ -65,4 +65,3 @@
 - `src/drivers/idt.c`
 - `src/memory/paging.c`
 - `docs/melhorias futuras/verificação de sistema.md`
-

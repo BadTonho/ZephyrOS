@@ -14,7 +14,7 @@ quando suas dependencias tecnicas estiverem validadas.
 ## Base ja validada
 
 - [x] Mouse PS/2, cursor grafico, roda e roteamento global de eventos.
-- [x] VESA com framebuffer e interfaces Classic/Modern; troca de modo em
+- [x] VESA com framebuffer e interfaces Simple/Classic; troca de modo em
   runtime permanece desabilitada.
 - [x] Settings, Desktop, Taskbar, Window Manager e Explorer nos dois modos.
 - [x] ATA PIO, FAT12, FAT32 e interface unificada de filesystem.
@@ -27,7 +27,7 @@ camadas de configuracao, descoberta, montagem e distribuicao sobre elas.
 
 ## Decisoes de produto
 
-- Classic continua como fallback completo; Modern e Shell devem permanecer
+- Simple continua como fallback completo; Classic e Shell devem permanecer
   operacionais durante qualquer falha de mouse, volume, USB ou radio.
 - Nenhuma fase altera `src/boot/boot.asm`, stage2 ou escreve setores crus sem
   uma etapa transacional especificamente aprovada.
@@ -42,7 +42,7 @@ camadas de configuracao, descoberta, montagem e distribuicao sobre elas.
 - Wi-Fi e Bluetooth sao fases independentes e exigem chipset, transporte e
   matriz de validacao definidos antes de inicializar hardware.
 - Toda capacidade executavel tera comandos Shell, logs, erros controlados e
-  regressao Classic/Modern correspondente.
+  regressao Simple/Classic correspondente.
 
 ## Ordem de dependencia
 
@@ -67,7 +67,7 @@ camadas de configuracao, descoberta, montagem e distribuicao sobre elas.
   descarte pacotes da fila PS/2.
 - [ ] Adicionar `mouse speed <1-10>` e `mouse primary left|right`; `mouse`
   exibira configuracao efetiva, estado bruto e falhas do driver.
-- [ ] Expor os controles equivalentes no Settings Classic/Modern e registrar
+- [ ] Expor os controles equivalentes no Settings Simple/Classic e registrar
   toda recusa de configuracao com `LOG_ERROR`.
 
 Persistencia de preferencias fica fora da EP1. Enquanto nao houver uma area de
@@ -78,7 +78,7 @@ usuario.
 
 Mouse, clique, arrasto, roda, teclado, cursor e Shell continuam utilizaveis.
 Valores invalidos e hardware ausente falham controladamente, sem bloquear o
-fallback Classico.
+fallback Simple.
 
 ## EP2 - Volumes ATA e montagem de particoes
 
@@ -242,7 +242,7 @@ rollback existentes.
 ### Criterio de saida
 
 Ausencia de radio, firmware, USB ou driver resulta em diagnostico e erro
-controlado. Ethernet, atualizacoes locais, Shell e interfaces Classic/Modern
+controlado. Ethernet, atualizacoes locais, Shell e interfaces Simple/Classic
 permanecem funcionais, e nenhum segredo de Wi-Fi chega ao repositorio.
 
 ## EP8 - Bluetooth por hardware suportado
@@ -265,7 +265,7 @@ permanecem funcionais, e nenhum segredo de Wi-Fi chega ao repositorio.
 
 Ausencia de radio, firmware, USB ou driver resulta em diagnostico e erro
 controlado. Wi-Fi, Ethernet, atualizacoes locais, Shell e interfaces
-Classic/Modern permanecem funcionais, e nenhum segredo Bluetooth chega ao
+Simple/Classic permanecem funcionais, e nenhum segredo Bluetooth chega ao
 repositorio.
 
 ## Validacao por etapa
@@ -284,7 +284,7 @@ make run
 
 No QEMU, a matriz deve incluir caminho de sucesso, entrada invalida, hardware
 ou volume ausente, cancelamento, `health`, `mem`, `regcheck full` e regressao
-Classic/Modern. Antes de commit, revisar apenas os arquivos alterados com
+Simple/Classic. Antes de commit, revisar apenas os arquivos alterados com
 `git diff --check`, `git status --short` e, quando houver stage,
 `git diff --cached --check`.
 

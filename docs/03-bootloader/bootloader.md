@@ -48,7 +48,7 @@ detect_memory:
 O estágio 2 coleta o mapa E820 antes de carregar o kernel. O modo VESA só é
 configurado depois que a carga termina, mantendo eventuais erros de memória,
 A20 e disco visíveis no modo texto. Se VESA falhar, o kernel recebe essa
-informação e mantém o fallback clássico.
+informação e mantém o fallback Simple.
 
 O BIOS retorna uma tabela com as regiões de memória disponíveis:
 - Endereço base

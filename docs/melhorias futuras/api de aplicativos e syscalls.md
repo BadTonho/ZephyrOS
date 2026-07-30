@@ -11,7 +11,7 @@ segura e estavel entre aplicativos, sistema de arquivos, memoria, processos e
 interfaces graficas.
 
 A implementacao sera incremental. Shell, Explorer, Settings, Task Manager e
-as interfaces classica e moderna continuarao funcionando durante a transicao.
+as interfaces Simple e Classic continuarao funcionando durante a transicao.
 
 ## Objetivo
 
@@ -303,7 +303,7 @@ suficientes.
 - [x] permitir `app run APPS/<ID>/APP.ZAP` e expor `pkg` e `pkgcheck` no
   Shell;
 - [x] validado no host e no QEMU: fluxo demo, remocao, diagnosticos, foco,
-  F12, interfaces classica/moderna e ausencia de processos residuais.
+  F12, interfaces Simple/Classic e ausencia de processos residuais.
 
 O escopo deliberadamente nao inclui permissao, assinatura, atualizacao,
 rollback, multiplos arquivos, GUI/App Store, resolucao automatica de
@@ -317,7 +317,7 @@ dependencias ou biblioteca de usuario. O contrato detalhado esta em
 - uma falha no processo `usertest` nao altera o estado do kernel;
 - o Shell continua funcionando depois de encerrar um aplicativo;
 - Explorer, Task Manager, Settings e Desktop continuam disponiveis;
-- os modos classic e modern permanecem compativeis;
+- os modos simple e classic permanecem compativeis;
 - o comando `health` mostra falhas da camada de aplicativos;
 - `usertest fault` encerra somente o processo ring 3;
 - o fallback nativo continua disponivel durante o carregador;

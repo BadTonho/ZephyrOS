@@ -8,7 +8,8 @@ Operating system built from scratch in C + x86 Assembly, aiming to be a real, fu
 
 ## Project Status
 
-ZephyrOS is an experimental operating system under active development. It runs primarily on **QEMU** and maintains dual user interfaces: a **Classic Mode** utilizing VGA text mode and a **Modern Mode** leveraging VESA VBE graphic resolutions when hardware or emulators support it.
+ZephyrOS is an experimental operating system under active development. It runs primarily on **QEMU** and maintains dual user interfaces: a **Simple Mode** utilizing VGA text mode and a **Classic Mode** leveraging VESA VBE graphic resolutions when hardware or emulators support it.
+The `modern` name is reserved for a future interface and is not selectable yet.
 
 The project is currently intended for educational and experimental purposes and is not yet ready for production on real hardware. Refer to [`ROADMAP.md`](ROADMAP.md) and [`docs/`](docs/) for progress logs, known limitations, and upcoming milestones.
 
@@ -46,8 +47,8 @@ The project is currently intended for educational and experimental purposes and 
 | Text Editor | ✅ | Built-in editor with syntax highlighting and word wrap |
 | Media Player | ✅ | WAV audio player with visual playback indicators |
 | Task Manager | ✅ | Real-time monitoring of processes, threads, CPU, and memory |
-| File Manager | ✅ | Graphical and classic explorer (navigate, create, rename, delete) |
-| Desktop Environment | ✅ | Desktop GUI with customizable icons, start menu, and classic fallback |
+| File Manager | ✅ | Graphical and simple explorer (navigate, create, rename, delete) |
+| Desktop Environment | ✅ | Desktop GUI with customizable icons, start menu, and simple fallback |
 | Window Manager | ✅ | Overlapping windows (focus, z-order, titlebars, resize, minimize, move) |
 | Taskbar | ✅ | Taskbar with application buttons, digital clock, and Start Menu |
 | Settings | ✅ | System configuration suite (display, taskbar, window rules, icons, sound) |
@@ -109,7 +110,7 @@ Sistema/
     │   ├── mediaplayer.c    # Audio media player application
     │   └── taskmanager.c    # Process & thread task manager application
     ├── filemanager/         # File manager application
-    │   └── filemanager.c    # Dual classic/modern file explorer
+    │   └── filemanager.c    # Dual simple/classic file explorer
     ├── desktop/             # Graphical Desktop environment
     │   └── desktop.c        # Desktop renderer & icon layout
     ├── wm/                  # Window Manager
@@ -245,7 +246,7 @@ The interactive Shell initializes automatically during kernel startup. In the de
 | `app inputtest` | Test focus and input handling of Ring 3 app | `app inputtest` |
 | `app argtest` | Test argument passing to Ring 3 application | `app argtest alpha beta` |
 | `usertest` | Execute user-mode test process | `usertest` |
-| `guimode` | Switch between `classic` (text) and `modern` (VESA) | `guimode modern` |
+| `guimode` | Switch between `simple` (text) and `classic` (VESA) | `guimode classic` |
 | `reboot` | Perform CPU hardware reset | `reboot` |
 | `shutdown` | Shutdown system via ACPI / QEMU exit | `shutdown` |
 

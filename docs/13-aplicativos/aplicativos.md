@@ -207,7 +207,7 @@ Gerenciador de tarefas com monitoramento de processos, CPU, memória e threads.
 | Threads | Estado, espera, EIP, ESP e stack sem desreferenciar endereços |
 
 O comando `taskmgr` abre deliberadamente a TUI para diagnóstico. O Desktop e
-a taskbar, no modo moderno, abrem uma janela gráfica própria com as mesmas
+a taskbar, no modo classic, abrem uma janela gráfica própria com as mesmas
 fontes de dados, botões de janela e arraste pela barra de título.
 
 ### Layout
@@ -259,8 +259,8 @@ int  taskmgr_handle_key(scancode);
 |-------|------|
 | Tab | Alterna guia |
 | Up/Down | Navega na lista |
-| Esc | Fechar detalhes; no Classic ocioso, fechar o aplicativo |
-| Alt+F4 ou botão X | Fechar a janela Modern |
+| Esc | Fechar detalhes; no Simple ocioso, fechar o aplicativo |
+| Alt+F4 ou botão X | Fechar a janela Classic |
 
 ---
 
@@ -268,8 +268,8 @@ int  taskmgr_handle_key(scancode);
 
 ### Visão Geral
 
-Gerenciador de arquivos ZephyrOS Explorer com modo clássico TUI e modo
-moderno selecionado por `guimode`. Sem VESA ou backbuffer, o fallback TUI é
+Gerenciador de arquivos ZephyrOS Explorer com modo simple TUI e modo
+classic selecionado por `guimode`. Sem VESA ou backbuffer, o fallback TUI é
 automático.
 
 ### Estrutura
@@ -328,8 +328,8 @@ typedef struct {
 | F5 | Atualizar lista |
 | F7 | Criar novo arquivo |
 | F8 | Excluir (com confirmação) |
-| Esc | Voltar/cancelar; no Classic ocioso, sair |
-| Alt+F4 ou botão X | Fechar a janela Modern |
+| Esc | Voltar/cancelar; no Simple ocioso, sair |
+| Alt+F4 ou botão X | Fechar a janela Classic |
 
 ### API
 

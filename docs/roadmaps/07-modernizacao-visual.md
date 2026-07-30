@@ -14,15 +14,22 @@ visual e de arquitetura para as interfaces que virao no Roadmap 08.
 
 - [x] Framebuffer VESA LFB com Double Buffering (Backbuffer) e Vesa Flip ativos.
 - [x] Primitivas graficas 2D (pixel, retangulo, linha, texto bitmap) em `src/gui/gui.c`.
-- [x] Desktop, Taskbar, Window Manager, Explorer, Settings e Task Manager com suporte a janelas Modern.
+- [x] Desktop, Taskbar, Window Manager, Explorer, Settings e Task Manager com suporte a janelas Classic.
 - [x] Roteamento de eventos de teclado, mouse, Z-order e foco de janelas estaveis.
 
 Estas capacidades continuam sendo a fonte de verdade. Este roadmap atua estritamente na refatoracao visual e evolucao das funcoes de desenho em `src/gui/gui.c` e nos componentes de interface.
 
 ## Decisoes de produto
 
-- **Classic Mode (TUI) permanece intocado como fallback operacional.** Nenhuma mudanca grafica no modo Modern deve quebrar ou alterar a renderizacao em modo texto.
-- **Adeus ao visual Windows 95**: A identidade visual moderna adotará Flat Design, cantos arredondados, bordas de 1px e paleta escura (Dark Mode). Os relevos e chanfros 3D grossos cinzas serao removidos do modo Modern.
+- **Simple Mode (TUI) permanece congelado como fallback operacional.** Recebe
+  somente correcoes criticas e um smoke test de video, teclado e Shell.
+- **Classic Mode e a GUI VESA principal atual.** MV0 aplica escala e metricas
+  nessa rota, que concentra a matriz funcional obrigatoria.
+- **Modern Mode esta reservado para o futuro.** Ele nao e selecionavel ate que
+  o redesenho realmente moderno esteja implementado.
+- **Adeus ao visual Windows 95**: A futura identidade Modern adotará Flat
+  Design, cantos arredondados, bordas de 1px e paleta escura (Dark Mode). Os
+  relevos e chanfros 3D grossos cinzas pertencem ao Classic atual.
 - **Otimizacao em CPU em primeiro lugar**: Como nao ha aceleracao por GPU, efeitos complexos de transparencia (alpha blending) e cantos arredondados devem usar mascaras de bits pré-calculadas ou equacoes simplificadas para evitar divisoes/calculos de ponto flutuante em loops de rendering.
 - **Sem alteracoes na App API ou no loader ZAPP**: As mudancas focam puramente no desenho e apresentacao das janelas e componentes do kernel.
 - **Troca de modo VESA em runtime fica fora do escopo**: a API atual a recusa. Esta frente oferece escala dentro do modo inicial; escolher outra resolucao exige um projeto separado para boot/stage e aprovacao explicita antes de qualquer alteracao nesses componentes.
@@ -31,10 +38,11 @@ Estas capacidades continuam sendo a fonte de verdade. Este roadmap atua estritam
 ## Ordem de dependencia
 
 1. AS1-AS2 do Roadmap 06: backend e Shell da App Store aprovados.
-2. Metricas de layout, escala de fonte e alvos de interacao no modo VESA atual.
-3. Evolucao das primitivas graficas em `gui.c` (cantos arredondados e bordas flat).
-4. Definicao do novo sistema de cores global (Dark Mode moderno).
-5. Redesenho da moldura de janelas no Window Manager, Desktop e Taskbar.
+2. Metricas de layout, escala de fonte e alvos de interacao no Classic VESA.
+3. Evolucao das primitivas graficas para o futuro Modern (cantos arredondados
+   e bordas flat).
+4. Definicao do novo sistema de cores global do Modern.
+5. Implementacao da moldura Modern no Window Manager, Desktop e Taskbar.
 6. AS3 do Roadmap 06: App Store Modern sobre a fundacao MV0-MV3.
 7. Refatoracao visual dos aplicativos nativos, incluindo a App Store.
 8. Otimizacao e validacao de desempenho por cenas reproduziveis.
@@ -54,17 +62,17 @@ abaixo permanecem abertos ate essa validacao.
 - [ ] Adicionar `display status` e `display scale <pequena|normal|grande>`;
   os comandos mostram e alteram somente a escala em RAM, nunca a resolucao.
 - [ ] Aplicar essas metricas em Desktop, Taskbar, Window Manager, Explorer,
-  Settings e Task Manager antes do redesenho Dark/Flat.
+  Settings e Task Manager no modo Classic antes do redesenho Dark/Flat.
 - [ ] Garantir que textos, cursor e controles continuem dentro do framebuffer
-  em cada escala e que o Modo Classico nao seja alterado.
-- [ ] Expor a escala no Settings Modern e no fallback Classic, com logs para
+  em cada escala e que o Modo Simple nao seja alterado.
+- [ ] Expor a escala no Settings Classic e no fallback Simple, com logs para
   entradas invalidas ou layout que nao caiba no modo ativo.
 
 ### Criterio de saida
 
 As tres escalas mantem texto legivel e alvos de clique utilizaveis no modo VESA
 inicial. Falha de VESA, escala invalida ou area insuficiente preserva a escala
-anterior e o fallback Classico.
+anterior e o fallback Simple.
 
 ### Matriz QEMU pendente
 
@@ -77,8 +85,9 @@ anterior e o fallback Classico.
 5. Exercitar clique, selecao, arraste, resize, minimizar, maximizar e textos
    proximos das bordas.
 6. Confirmar que sintaxe invalida e area insuficiente preservam a escala.
-7. Voltar a `guimode classic` e confirmar fonte, grade, cursor, taskbar e
-   aplicativos Classic inalterados.
+7. Fazer apenas o smoke test do fallback: entrar em `guimode simple`,
+   confirmar video, teclado e Shell, executar um comando basico e retornar
+   com `guimode classic`.
 8. Encerrar com `health summary`, `memcheck` e `regcheck full`, sem residuos.
 
 ## MV1 - Evolucao das Primitivas Graficas
@@ -166,8 +175,8 @@ make clean && make
 make run
 ```
 
-No QEMU, validar `display status` e as tres escalas antes de `guimode modern`.
-Depois, testar a mesma cena nas escalas Normal e Grande com Desktop, Explorer,
-Settings, Task Manager e App Store, comparando `kmetrics`. A interface deve
-aparecer com o tema Dark, cantos arredondados nas janelas, botoes modernos e
-sem artefatos ou lentidao severa.
+No QEMU, manter `guimode classic` para validar `display status`, as tres
+escalas e a matriz completa de Desktop, Explorer, Settings, Task Manager e
+App Store, comparando `kmetrics`. O Simple recebe somente o smoke test de
+fallback descrito no MV0. `guimode modern` deve informar que o nome esta
+reservado enquanto o renderer futuro ainda nao existir.

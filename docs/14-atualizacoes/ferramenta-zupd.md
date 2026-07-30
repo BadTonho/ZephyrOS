@@ -256,7 +256,7 @@ confirmada e reboot; o boot deve restaurar `0.1.0`. Cada cenario termina com
 `mem`, `regcheck full` e `audit-image`.
 
 Para U4, `update status`, `update history`, abertura do aplicativo e preflight
-nao podem alterar a contagem do historico. Classic e Modern devem mostrar as
+nao podem alterar a contagem do historico. Simple e Classic devem mostrar as
 mesmas tres abas e permitir aplicar e restaurar. Depois do failpoint e do boot,
 o historico deve conter o encerramento pendente seguido de
 `RECOVERY_APPLY/RECOVERED`.
@@ -264,7 +264,7 @@ o historico deve conter o encerramento pendente seguido de
 Para U5, aguarde o DHCP automatico, habilite remoto por sessao, consulte o
 manifesto e confirme o download. Consultas e downloads nao alteram o historico
 U4, e aplicar o alias `ZUR0.ZUP` ou `ZUR1.ZUP` continua sendo uma acao local
-separada. Shell e System Updater Modern formam a matriz obrigatoria; o Classic
+separada. Shell e System Updater Classic formam a matriz obrigatoria; o Simple
 permanece como fallback com cobertura complementar. Depois de encerrar o QEMU:
 
 ```text

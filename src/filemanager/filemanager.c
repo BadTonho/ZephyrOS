@@ -18,33 +18,33 @@
 #include "drivers/vesa.h"
 #include "ui/display.h"
 
-/* As primitivas GUI deste arquivo sao usadas apenas pelo Explorer Modern. */
+/* As primitivas GUI deste arquivo sao usadas pelo Explorer Classic. */
 #define gui_draw_text gui_draw_scaled_text
 
 #define FM_CLASSIC_VISIBLE_ROWS 17
-#define FM_MODERN_MARGIN ((int)display_scale_px(24))
-#define FM_MODERN_MIN_WIDTH 660
-#define FM_MODERN_MIN_HEIGHT 360
-#define FM_MODERN_SIDE_WIDTH ((int)display_scale_px(184))
-#define FM_MODERN_CONTENT_OFFSET ((int)display_scale_px(30))
-#define FM_MODERN_INSET ((int)display_scale_px(8))
-#define FM_MODERN_PANE_GAP ((int)display_scale_px(8))
-#define FM_MODERN_TOOLBAR_HEIGHT ((int)display_scale_px(28))
-#define FM_MODERN_ADDRESS_HEIGHT ((int)display_scale_px(28))
-#define FM_MODERN_HEADER_HEIGHT ((int)display_scale_px(28))
-#define FM_MODERN_STATUS_HEIGHT ((int)display_scale_px(28))
-#define FM_MODERN_ROW_HEIGHT ((int)display_scale_px(28))
-#define FM_MODERN_ROW_GAP ((int)display_scale_px(2))
-#define FM_MODERN_MAX_TEXT 256
-#define FM_MODERN_SIDE_ITEM_COUNT 8
-#define FM_MODERN_SIDE_HEADER_OFFSET ((int)display_scale_px(34))
-#define FM_MODERN_CONTENT_FIXED_HEIGHT \
-    (FM_MODERN_CONTENT_OFFSET + FM_MODERN_TOOLBAR_HEIGHT + \
-     FM_MODERN_PANE_GAP + FM_MODERN_ADDRESS_HEIGHT + \
-     FM_MODERN_PANE_GAP + FM_MODERN_STATUS_HEIGHT + \
-     FM_MODERN_PANE_GAP + (int)display_scale_px(8))
-#define FM_MODERN_DEFAULT_WIDTH 720
-#define FM_MODERN_DEFAULT_HEIGHT 500
+#define FM_CLASSIC_MARGIN ((int)display_scale_px(24))
+#define FM_CLASSIC_MIN_WIDTH 660
+#define FM_CLASSIC_MIN_HEIGHT 360
+#define FM_CLASSIC_SIDE_WIDTH ((int)display_scale_px(184))
+#define FM_CLASSIC_CONTENT_OFFSET ((int)display_scale_px(30))
+#define FM_CLASSIC_INSET ((int)display_scale_px(8))
+#define FM_CLASSIC_PANE_GAP ((int)display_scale_px(8))
+#define FM_CLASSIC_TOOLBAR_HEIGHT ((int)display_scale_px(28))
+#define FM_CLASSIC_ADDRESS_HEIGHT ((int)display_scale_px(28))
+#define FM_CLASSIC_HEADER_HEIGHT ((int)display_scale_px(28))
+#define FM_CLASSIC_STATUS_HEIGHT ((int)display_scale_px(28))
+#define FM_CLASSIC_ROW_HEIGHT ((int)display_scale_px(28))
+#define FM_CLASSIC_ROW_GAP ((int)display_scale_px(2))
+#define FM_CLASSIC_MAX_TEXT 256
+#define FM_CLASSIC_SIDE_ITEM_COUNT 8
+#define FM_CLASSIC_SIDE_HEADER_OFFSET ((int)display_scale_px(34))
+#define FM_CLASSIC_CONTENT_FIXED_HEIGHT \
+    (FM_CLASSIC_CONTENT_OFFSET + FM_CLASSIC_TOOLBAR_HEIGHT + \
+     FM_CLASSIC_PANE_GAP + FM_CLASSIC_ADDRESS_HEIGHT + \
+     FM_CLASSIC_PANE_GAP + FM_CLASSIC_STATUS_HEIGHT + \
+     FM_CLASSIC_PANE_GAP + (int)display_scale_px(8))
+#define FM_CLASSIC_DEFAULT_WIDTH 720
+#define FM_CLASSIC_DEFAULT_HEIGHT 500
 
 static fm_state_t state;
 static char input_buffer[32];
@@ -84,12 +84,12 @@ static const char* side_pane_paths[] = {
     "/Musica",
     "/Videos"
 };
-static const int side_pane_count = FM_MODERN_SIDE_ITEM_COUNT;
+static const int side_pane_count = FM_CLASSIC_SIDE_ITEM_COUNT;
 
 static void fm_refresh_files(void);
 static void fm_draw_all(void);
+static void fm_draw_simple_all(void);
 static void fm_draw_classic_all(void);
-static void fm_draw_modern_all(void);
 static void fm_draw_address_bar(void);
 static void fm_draw_file_list(void);
 static void fm_draw_status_bar(void);
@@ -98,16 +98,16 @@ static void fm_draw_create_file(void);
 static void fm_draw_rename_file(void);
 static void fm_draw_confirm_delete(void);
 static void fm_draw_view_file(void);
-static int fm_modern_get_layout(int* x, int* y, int* width, int* height);
-static int fm_modern_get_content_height(int height);
+static int fm_classic_get_layout(int* x, int* y, int* width, int* height);
+static int fm_classic_get_content_height(int height);
 static int fm_side_items_for_height(int height);
 static int fm_visible_side_items(void);
 static int fm_visible_rows(void);
 static void fm_select_mode(void);
 static void fm_redraw_file_view(void);
-static void fm_modern_draw_input_dialog(void);
-static void fm_modern_draw_help(void);
-static void fm_modern_draw_view_file(void);
+static void fm_classic_draw_input_dialog(void);
+static void fm_classic_draw_help(void);
+static void fm_classic_draw_view_file(void);
 static void fm_hosted_draw(int x, int y, int width, int height);
 static int fm_hosted_mouse(mouse_event_t* event, int x, int y,
                            int width, int height);
@@ -115,10 +115,10 @@ static void fm_hosted_close(void);
 
 static const wm_hosted_app_t fm_hosted_app = {
     WM_APP_EXPLORER, "ZephyrOS Explorer", "Explorer",
-    FM_MODERN_MIN_WIDTH + WM_HOSTED_FRAME_MAX_WIDTH,
-    FM_MODERN_MIN_HEIGHT + WM_HOSTED_FRAME_MAX_HEIGHT,
-    FM_MODERN_DEFAULT_WIDTH + WM_HOSTED_FRAME_MAX_WIDTH,
-    FM_MODERN_DEFAULT_HEIGHT + WM_HOSTED_FRAME_MAX_HEIGHT,
+    FM_CLASSIC_MIN_WIDTH + WM_HOSTED_FRAME_MAX_WIDTH,
+    FM_CLASSIC_MIN_HEIGHT + WM_HOSTED_FRAME_MAX_HEIGHT,
+    FM_CLASSIC_DEFAULT_WIDTH + WM_HOSTED_FRAME_MAX_WIDTH,
+    FM_CLASSIC_DEFAULT_HEIGHT + WM_HOSTED_FRAME_MAX_HEIGHT,
     WM_KEY_REDRAW_WINDOW_MANAGER,
     fm_hosted_draw, fm_handle_key, fm_hosted_mouse, fm_hosted_close
 };
@@ -277,7 +277,7 @@ static int fm_display_icon_scale(void) {
     return metrics.scale == DISPLAY_SCALE_LARGE ? 3 : 2;
 }
 
-static int fm_modern_get_layout(int* x, int* y, int* width, int* height) {
+static int fm_classic_get_layout(int* x, int* y, int* width, int* height) {
     vesa_mode_t* mode = vesa_get_mode();
     tb_rect_t work_area;
 
@@ -296,56 +296,56 @@ static int fm_modern_get_layout(int* x, int* y, int* width, int* height) {
     work_area.width = mode->width;
     work_area.height = mode->height;
     taskbar_get_work_area(&work_area);
-    *x = work_area.x + FM_MODERN_MARGIN;
-    *y = work_area.y + FM_MODERN_MARGIN;
-    *width = work_area.width - (FM_MODERN_MARGIN * 2);
-    *height = work_area.height - (FM_MODERN_MARGIN * 2);
+    *x = work_area.x + FM_CLASSIC_MARGIN;
+    *y = work_area.y + FM_CLASSIC_MARGIN;
+    *width = work_area.width - (FM_CLASSIC_MARGIN * 2);
+    *height = work_area.height - (FM_CLASSIC_MARGIN * 2);
 
-    return *width >= FM_MODERN_MIN_WIDTH &&
-           *height >= FM_MODERN_MIN_HEIGHT;
+    return *width >= FM_CLASSIC_MIN_WIDTH &&
+           *height >= FM_CLASSIC_MIN_HEIGHT;
 }
 
 static void fm_select_mode(void) {
-    fm_mode_t next_mode = FM_MODE_CLASSIC;
-    int wants_modern = desktop_get_mode() == DESKTOP_MODE_MODERN;
+    fm_mode_t next_mode = FM_MODE_SIMPLE;
+    int wants_classic = desktop_get_mode() == DESKTOP_MODE_CLASSIC;
     int x;
     int y;
     int width;
     int height;
 
-    if (wants_modern &&
-        fm_modern_get_layout(&x, &y, &width, &height)) {
-        next_mode = FM_MODE_MODERN;
+    if (wants_classic &&
+        fm_classic_get_layout(&x, &y, &width, &height)) {
+        next_mode = FM_MODE_CLASSIC;
     }
 
-    if (wants_modern && next_mode == FM_MODE_CLASSIC &&
+    if (wants_classic && next_mode == FM_MODE_SIMPLE &&
         !fm_fallback_logged) {
-        LOG_WARN("FM", "VESA/backbuffer indisponivel; Explorer classico ativo");
+        LOG_WARN("FM", "VESA/backbuffer indisponivel; Explorer Simple ativo");
         fm_fallback_logged = 1;
     }
-    if (next_mode == FM_MODE_MODERN) fm_fallback_logged = 0;
+    if (next_mode == FM_MODE_CLASSIC) fm_fallback_logged = 0;
 
     if (state.mode == next_mode) return;
 
     state.mode = next_mode;
-    if (state.mode == FM_MODE_MODERN) {
-        LOG_INFO("FM", "Explorer usando modo moderno");
+    if (state.mode == FM_MODE_CLASSIC) {
+        LOG_INFO("FM", "Explorer usando modo Classic");
     } else {
-        LOG_WARN("FM", "Explorer usando modo classico como fallback");
+        LOG_WARN("FM", "Explorer usando modo Simple como fallback");
     }
 }
 
-static int fm_modern_get_content_height(int height) {
-    return height - FM_MODERN_CONTENT_FIXED_HEIGHT;
+static int fm_classic_get_content_height(int height) {
+    return height - FM_CLASSIC_CONTENT_FIXED_HEIGHT;
 }
 
 static int fm_side_items_for_height(int height) {
     int visible = 0;
 
     for (int i = 0; i < side_pane_count; i++) {
-        int row_bottom = FM_MODERN_SIDE_HEADER_OFFSET +
-                         i * (FM_MODERN_ROW_HEIGHT + FM_MODERN_ROW_GAP) +
-                         FM_MODERN_ROW_HEIGHT;
+        int row_bottom = FM_CLASSIC_SIDE_HEADER_OFFSET +
+                         i * (FM_CLASSIC_ROW_HEIGHT + FM_CLASSIC_ROW_GAP) +
+                         FM_CLASSIC_ROW_HEIGHT;
 
         if (row_bottom > height) break;
         visible++;
@@ -359,11 +359,11 @@ static int fm_visible_side_items(void) {
     int width;
     int height;
 
-    if (state.mode != FM_MODE_MODERN ||
-        !fm_modern_get_layout(&x, &y, &width, &height)) {
+    if (state.mode != FM_MODE_CLASSIC ||
+        !fm_classic_get_layout(&x, &y, &width, &height)) {
         return side_pane_count;
     }
-    return fm_side_items_for_height(fm_modern_get_content_height(height));
+    return fm_side_items_for_height(fm_classic_get_content_height(height));
 }
 
 static int fm_visible_rows(void) {
@@ -374,14 +374,14 @@ static int fm_visible_rows(void) {
     int content_height;
     int rows;
 
-    if (state.mode != FM_MODE_MODERN ||
-        !fm_modern_get_layout(&x, &y, &width, &height)) {
+    if (state.mode != FM_MODE_CLASSIC ||
+        !fm_classic_get_layout(&x, &y, &width, &height)) {
         return FM_CLASSIC_VISIBLE_ROWS;
     }
 
-    content_height = fm_modern_get_content_height(height);
-    rows = (content_height - FM_MODERN_SIDE_HEADER_OFFSET) /
-           (FM_MODERN_ROW_HEIGHT + FM_MODERN_ROW_GAP);
+    content_height = fm_classic_get_content_height(height);
+    rows = (content_height - FM_CLASSIC_SIDE_HEADER_OFFSET) /
+           (FM_CLASSIC_ROW_HEIGHT + FM_CLASSIC_ROW_GAP);
     return rows > 0 ? rows : 1;
 }
 
@@ -402,13 +402,13 @@ static void fm_copy_display_text(char* dst, int capacity, const char* text,
 
 static void fm_draw_text_limited(int x, int y, int width, const char* text,
                                  uint32_t color) {
-    char clipped[FM_MODERN_MAX_TEXT];
+    char clipped[FM_CLASSIC_MAX_TEXT];
     int max_chars = (width - (int)display_scale_px(8)) /
                     fm_display_font_width();
 
     if (max_chars < 1) return;
-    if (max_chars >= FM_MODERN_MAX_TEXT) max_chars = FM_MODERN_MAX_TEXT - 1;
-    fm_copy_display_text(clipped, FM_MODERN_MAX_TEXT, text, max_chars);
+    if (max_chars >= FM_CLASSIC_MAX_TEXT) max_chars = FM_CLASSIC_MAX_TEXT - 1;
+    fm_copy_display_text(clipped, FM_CLASSIC_MAX_TEXT, text, max_chars);
     gui_draw_text((uint32_t)x, (uint32_t)y, clipped, color);
 }
 
@@ -439,7 +439,7 @@ static void fm_draw_menu_bar(void) {
 }
 
 static void fm_draw_address_bar(void) {
-    if (state.mode == FM_MODE_MODERN) {
+    if (state.mode == FM_MODE_CLASSIC) {
         fm_draw_all();
         return;
     }
@@ -515,7 +515,7 @@ static void fm_draw_separator_bottom(void) {
 }
 
 static void fm_draw_status_bar(void) {
-    if (state.mode == FM_MODE_MODERN) {
+    if (state.mode == FM_MODE_CLASSIC) {
         fm_draw_all();
         return;
     }
@@ -577,7 +577,7 @@ static void fm_refresh_files(void) {
 }
 
 static void fm_draw_file_list(void) {
-    if (state.mode == FM_MODE_MODERN) {
+    if (state.mode == FM_MODE_CLASSIC) {
         fm_draw_all();
         return;
     }
@@ -636,30 +636,30 @@ static void fm_draw_file_list(void) {
     }
 }
 
-static void fm_modern_draw_toolbar(int x, int y, int width) {
+static void fm_classic_draw_toolbar(int x, int y, int width) {
     gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)width,
-                   FM_MODERN_TOOLBAR_HEIGHT, GUI_COLOR_BG, 0);
-    fm_draw_text_limited(x + FM_MODERN_INSET,
+                   FM_CLASSIC_TOOLBAR_HEIGHT, GUI_COLOR_BG, 0);
+    fm_draw_text_limited(x + FM_CLASSIC_INSET,
                          y + (int)display_scale_px(6),
                          width - (int)display_scale_px(16),
                          "F1 Ajuda  F2 Renomear  F3 Ver  F5 Atualizar  F6 Pasta  F7 Arquivo  F8 Excluir  Alt+F4 Sair",
                          GUI_COLOR_TEXT);
 }
 
-static void fm_modern_draw_address(int x, int y, int width) {
+static void fm_classic_draw_address(int x, int y, int width) {
     char display_path[FM_MAX_PATH];
     uint32_t background = state.address_mode ? GUI_COLOR_TITLE_BG : GUI_COLOR_BG;
     uint32_t foreground = state.address_mode ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
 
     gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)width,
-                   FM_MODERN_ADDRESS_HEIGHT, background, state.address_mode);
+                   FM_CLASSIC_ADDRESS_HEIGHT, background, state.address_mode);
     fm_build_display_path(display_path, FM_MAX_PATH);
     if (state.address_mode) {
         fm_copy_display_text(display_path, FM_MAX_PATH,
                              state.address_buffer, FM_MAX_PATH - 1);
     }
 
-    gui_draw_text((uint32_t)(x + FM_MODERN_INSET),
+    gui_draw_text((uint32_t)(x + FM_CLASSIC_INSET),
                   (uint32_t)(y + (int)display_scale_px(6)),
                   "Endereco:", foreground);
     fm_draw_text_limited(x + (int)display_scale_px(92),
@@ -668,18 +668,18 @@ static void fm_modern_draw_address(int x, int y, int width) {
                          display_path, foreground);
 }
 
-static void fm_modern_draw_side(int x, int y, int width, int height) {
+static void fm_classic_draw_side(int x, int y, int width, int height) {
     int visible_items = fm_side_items_for_height(height);
 
     gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)width,
                    (uint32_t)height, GUI_COLOR_BG, 0);
-    gui_draw_text((uint32_t)(x + FM_MODERN_INSET),
+    gui_draw_text((uint32_t)(x + FM_CLASSIC_INSET),
                   (uint32_t)(y + (int)display_scale_px(8)),
                   "Acesso Rapido", GUI_COLOR_TITLE_BG);
 
     for (int i = 0; i < visible_items; i++) {
-        int row_y = y + FM_MODERN_SIDE_HEADER_OFFSET +
-                    i * (FM_MODERN_ROW_HEIGHT + FM_MODERN_ROW_GAP);
+        int row_y = y + FM_CLASSIC_SIDE_HEADER_OFFSET +
+                    i * (FM_CLASSIC_ROW_HEIGHT + FM_CLASSIC_ROW_GAP);
         int selected = state.focus_pane == 0 && state.side_selected == i;
         uint32_t background = selected ? GUI_COLOR_TITLE_BG : GUI_COLOR_BG;
         uint32_t foreground = selected ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
@@ -687,7 +687,7 @@ static void fm_modern_draw_side(int x, int y, int width, int height) {
         gui_draw_panel((uint32_t)(x + (int)display_scale_px(4)),
                        (uint32_t)row_y,
                        (uint32_t)(width - (int)display_scale_px(8)),
-                       FM_MODERN_ROW_HEIGHT,
+                       FM_CLASSIC_ROW_HEIGHT,
                        background, selected);
         fm_draw_text_limited(x + (int)display_scale_px(14),
                              row_y + (int)display_scale_px(6),
@@ -696,11 +696,11 @@ static void fm_modern_draw_side(int x, int y, int width, int height) {
     }
 }
 
-static void fm_modern_draw_list(int x, int y, int width, int height) {
+static void fm_classic_draw_list(int x, int y, int width, int height) {
     int rows = fm_visible_rows();
     int start = state.scroll_offset;
     int header_y = y + (int)display_scale_px(4);
-    int list_y = header_y + FM_MODERN_HEADER_HEIGHT +
+    int list_y = header_y + FM_CLASSIC_HEADER_HEIGHT +
                  (int)display_scale_px(4);
     int name_x = x + (int)display_scale_px(20);
     int size_x = x + width / 2;
@@ -711,7 +711,7 @@ static void fm_modern_draw_list(int x, int y, int width, int height) {
     gui_draw_panel((uint32_t)(x + (int)display_scale_px(4)),
                    (uint32_t)header_y,
                    (uint32_t)(width - (int)display_scale_px(8)),
-                   FM_MODERN_HEADER_HEIGHT,
+                   FM_CLASSIC_HEADER_HEIGHT,
                    GUI_COLOR_TITLE_BG, 0);
     gui_draw_text((uint32_t)name_x,
                   (uint32_t)(header_y + (int)display_scale_px(6)),
@@ -725,7 +725,7 @@ static void fm_modern_draw_list(int x, int y, int width, int height) {
 
     for (int row = 0; row < rows; row++) {
         int file_index = start + row;
-        int row_y = list_y + row * (FM_MODERN_ROW_HEIGHT + FM_MODERN_ROW_GAP);
+        int row_y = list_y + row * (FM_CLASSIC_ROW_HEIGHT + FM_CLASSIC_ROW_GAP);
         fm_file_entry_t* file;
         icon_entry_t* icon;
         uint32_t background;
@@ -745,7 +745,7 @@ static void fm_modern_draw_list(int x, int y, int width, int height) {
         gui_draw_panel((uint32_t)(x + (int)display_scale_px(4)),
                        (uint32_t)row_y,
                        (uint32_t)(width - (int)display_scale_px(8)),
-                       FM_MODERN_ROW_HEIGHT,
+                       FM_CLASSIC_ROW_HEIGHT,
                        background, active);
         if (icon) {
             vesa_color_t icon_color;
@@ -793,20 +793,20 @@ static void fm_modern_draw_list(int x, int y, int width, int height) {
     }
 }
 
-static void fm_modern_draw_status(int x, int y, int width) {
+static void fm_classic_draw_status(int x, int y, int width) {
     char selection[24];
     char size[16];
 
     gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)width,
-                   FM_MODERN_STATUS_HEIGHT, GUI_COLOR_BG, 0);
+                   FM_CLASSIC_STATUS_HEIGHT, GUI_COLOR_BG, 0);
     if (state.file_count == 0) {
-        gui_draw_text((uint32_t)(x + FM_MODERN_INSET),
+        gui_draw_text((uint32_t)(x + FM_CLASSIC_INSET),
                       (uint32_t)(y + (int)display_scale_px(6)),
                       "Nenhum arquivo encontrado", GUI_COLOR_TEXT);
         return;
     }
 
-    gui_draw_text((uint32_t)(x + FM_MODERN_INSET),
+    gui_draw_text((uint32_t)(x + FM_CLASSIC_INSET),
                   (uint32_t)(y + (int)display_scale_px(6)),
                   "Arquivo:", GUI_COLOR_TEXT);
     fm_draw_text_limited(
@@ -836,7 +836,7 @@ static void fm_modern_draw_status(int x, int y, int width) {
                   selection, GUI_COLOR_TITLE_BG);
 }
 
-static void fm_draw_modern_all(void) {
+static void fm_draw_classic_all(void) {
     int x;
     int y;
     int width;
@@ -850,19 +850,19 @@ static void fm_draw_modern_all(void) {
     int visible_side_items;
     vesa_color_t background;
 
-    if (!fm_modern_get_layout(&x, &y, &width, &height)) {
-        LOG_WARN("FM", "Layout moderno indisponivel; usando modo classico");
-        state.mode = FM_MODE_CLASSIC;
-        fm_draw_classic_all();
+    if (!fm_classic_get_layout(&x, &y, &width, &height)) {
+        LOG_WARN("FM", "Layout Classic indisponivel; usando modo Simple");
+        state.mode = FM_MODE_SIMPLE;
+        fm_draw_simple_all();
         return;
     }
 
     if (fm_help_mode) {
-        fm_modern_draw_help();
+        fm_classic_draw_help();
         return;
     }
     if (input_mode == 2) {
-        fm_modern_draw_view_file();
+        fm_classic_draw_view_file();
         return;
     }
 
@@ -875,14 +875,14 @@ static void fm_draw_modern_all(void) {
                                      "ZephyrOS Explorer", 1);
     }
 
-    content_x = x + FM_MODERN_INSET;
-    content_y = y + FM_MODERN_CONTENT_OFFSET;
-    content_width = width - (FM_MODERN_INSET * 2);
-    fm_modern_draw_toolbar(content_x, content_y, content_width);
-    content_y += FM_MODERN_TOOLBAR_HEIGHT + FM_MODERN_PANE_GAP;
-    fm_modern_draw_address(content_x, content_y, content_width);
-    content_y += FM_MODERN_ADDRESS_HEIGHT + FM_MODERN_PANE_GAP;
-    content_height = fm_modern_get_content_height(height);
+    content_x = x + FM_CLASSIC_INSET;
+    content_y = y + FM_CLASSIC_CONTENT_OFFSET;
+    content_width = width - (FM_CLASSIC_INSET * 2);
+    fm_classic_draw_toolbar(content_x, content_y, content_width);
+    content_y += FM_CLASSIC_TOOLBAR_HEIGHT + FM_CLASSIC_PANE_GAP;
+    fm_classic_draw_address(content_x, content_y, content_width);
+    content_y += FM_CLASSIC_ADDRESS_HEIGHT + FM_CLASSIC_PANE_GAP;
+    content_height = fm_classic_get_content_height(height);
     visible_side_items = fm_side_items_for_height(content_height);
     if (visible_side_items == 0) {
         state.side_selected = 0;
@@ -891,19 +891,19 @@ static void fm_draw_modern_all(void) {
         state.side_selected = visible_side_items - 1;
     }
 
-    fm_modern_draw_side(content_x, content_y, FM_MODERN_SIDE_WIDTH,
+    fm_classic_draw_side(content_x, content_y, FM_CLASSIC_SIDE_WIDTH,
                         content_height);
-    list_x = content_x + FM_MODERN_SIDE_WIDTH + FM_MODERN_PANE_GAP;
-    list_width = content_width - FM_MODERN_SIDE_WIDTH - FM_MODERN_PANE_GAP;
-    fm_modern_draw_list(list_x, content_y, list_width, content_height);
-    fm_modern_draw_status(content_x,
-                          content_y + content_height + FM_MODERN_PANE_GAP,
+    list_x = content_x + FM_CLASSIC_SIDE_WIDTH + FM_CLASSIC_PANE_GAP;
+    list_width = content_width - FM_CLASSIC_SIDE_WIDTH - FM_CLASSIC_PANE_GAP;
+    fm_classic_draw_list(list_x, content_y, list_width, content_height);
+    fm_classic_draw_status(content_x,
+                          content_y + content_height + FM_CLASSIC_PANE_GAP,
                           content_width);
-    if (input_mode == 1) fm_modern_draw_input_dialog();
+    if (input_mode == 1) fm_classic_draw_input_dialog();
     if (!fm_hosted) taskbar_draw();
 }
 
-static void fm_modern_draw_input_dialog(void) {
+static void fm_classic_draw_input_dialog(void) {
     int x;
     int y;
     int width;
@@ -915,7 +915,7 @@ static void fm_modern_draw_input_dialog(void) {
     const char* title = "Entrada";
     const char* prompt = "Nome:";
 
-    if (!fm_modern_get_layout(&x, &y, &width, &height)) return;
+    if (!fm_classic_get_layout(&x, &y, &width, &height)) return;
 
     dialog_width = width > (int)display_scale_px(520) ?
                    (int)display_scale_px(520) :
@@ -960,7 +960,7 @@ static void fm_modern_draw_input_dialog(void) {
                          input_buffer, GUI_COLOR_TEXT_W);
 }
 
-static void fm_modern_draw_help(void) {
+static void fm_classic_draw_help(void) {
     int x;
     int y;
     int width;
@@ -987,7 +987,7 @@ static void fm_modern_draw_help(void) {
     int columns;
     int rows_per_column;
 
-    if (!fm_modern_get_layout(&x, &y, &width, &height)) return;
+    if (!fm_classic_get_layout(&x, &y, &width, &height)) return;
     if (!fm_hosted) {
         vesa_color_t background;
 
@@ -1017,7 +1017,7 @@ static void fm_modern_draw_help(void) {
     if (!fm_hosted) taskbar_draw();
 }
 
-static void fm_modern_draw_view_file(void) {
+static void fm_classic_draw_view_file(void) {
     int x;
     int y;
     int width;
@@ -1027,11 +1027,11 @@ static void fm_modern_draw_view_file(void) {
     int line_pos = 0;
     int row = 0;
     uint8_t* buffer;
-    char line[FM_MODERN_MAX_TEXT];
+    char line[FM_CLASSIC_MAX_TEXT];
     char file_path[FM_MAX_PATH];
     fm_file_entry_t* file;
 
-    if (!fm_modern_get_layout(&x, &y, &width, &height)) return;
+    if (!fm_classic_get_layout(&x, &y, &width, &height)) return;
     if (!fm_hosted) {
         vesa_color_t background;
 
@@ -1099,7 +1099,7 @@ static void fm_modern_draw_view_file(void) {
 
     text_width = (width - (int)display_scale_px(48)) /
                  fm_display_font_width();
-    if (text_width >= FM_MODERN_MAX_TEXT) text_width = FM_MODERN_MAX_TEXT - 1;
+    if (text_width >= FM_CLASSIC_MAX_TEXT) text_width = FM_CLASSIC_MAX_TEXT - 1;
     max_rows = (height - (int)display_scale_px(92)) /
                fm_display_font_height();
     line[0] = '\0';
@@ -1137,7 +1137,7 @@ static void fm_modern_draw_view_file(void) {
 }
 
 static void fm_draw_help(void) {
-    if (state.mode == FM_MODE_MODERN) {
+    if (state.mode == FM_MODE_CLASSIC) {
         fm_help_mode = 1;
         fm_draw_all();
         return;
@@ -1170,7 +1170,7 @@ static void fm_draw_help(void) {
 
 
 static void fm_draw_create_dir(void) {
-    if (state.mode == FM_MODE_MODERN) {
+    if (state.mode == FM_MODE_CLASSIC) {
         fm_draw_all();
         return;
     }
@@ -1181,7 +1181,7 @@ static void fm_draw_create_dir(void) {
 }
 
 static void fm_draw_create_file(void) {
-    if (state.mode == FM_MODE_MODERN) {
+    if (state.mode == FM_MODE_CLASSIC) {
         fm_draw_all();
         return;
     }
@@ -1192,7 +1192,7 @@ static void fm_draw_create_file(void) {
 }
 
 static void fm_draw_rename_file(void) {
-    if (state.mode == FM_MODE_MODERN) {
+    if (state.mode == FM_MODE_CLASSIC) {
         fm_draw_all();
         return;
     }
@@ -1203,7 +1203,7 @@ static void fm_draw_rename_file(void) {
 }
 
 static void fm_draw_confirm_delete(void) {
-    if (state.mode == FM_MODE_MODERN) {
+    if (state.mode == FM_MODE_CLASSIC) {
         fm_draw_all();
         return;
     }
@@ -1214,14 +1214,14 @@ static void fm_draw_confirm_delete(void) {
 }
 
 static void fm_draw_view_file(void) {
-    if (state.mode == FM_MODE_MODERN) {
+    if (state.mode == FM_MODE_CLASSIC) {
         input_mode = 2;
         if (fm_hosted) {
             fm_draw_all();
             return;
         }
         vesa_frame_begin();
-        fm_modern_draw_view_file();
+        fm_classic_draw_view_file();
         vesa_frame_end();
         return;
     }
@@ -1309,7 +1309,7 @@ static void fm_draw_view_file(void) {
     taskbar_draw();
 }
 
-static void fm_draw_classic_all(void) {
+static void fm_draw_simple_all(void) {
     video_clear();
     fm_draw_title_bar();
     fm_draw_menu_bar();
@@ -1329,14 +1329,14 @@ static void fm_draw_all(void) {
     }
     fm_select_mode();
 
-    if (state.mode == FM_MODE_MODERN) {
+    if (state.mode == FM_MODE_CLASSIC) {
         vesa_frame_begin();
-        fm_draw_modern_all();
+        fm_draw_classic_all();
         vesa_frame_end();
         return;
     }
 
-    fm_draw_classic_all();
+    fm_draw_simple_all();
 }
 
 void fm_draw(void) {
@@ -1389,26 +1389,26 @@ static int fm_hosted_mouse(mouse_event_t* event, int x, int y,
     fm_hosted_y = y;
     fm_hosted_width = width;
     fm_hosted_height = height;
-    if (!fm_modern_get_layout(&content_x, &content_y,
+    if (!fm_classic_get_layout(&content_x, &content_y,
                               &content_width, &content_height)) return 0;
 
-    list_x = content_x + FM_MODERN_INSET + FM_MODERN_SIDE_WIDTH +
-             FM_MODERN_PANE_GAP;
-    list_width = content_width - (FM_MODERN_INSET * 2) -
-                 FM_MODERN_SIDE_WIDTH - FM_MODERN_PANE_GAP;
-    panel_y = content_y + FM_MODERN_CONTENT_OFFSET +
-              FM_MODERN_TOOLBAR_HEIGHT + FM_MODERN_PANE_GAP +
-              FM_MODERN_ADDRESS_HEIGHT + FM_MODERN_PANE_GAP;
-    panel_height = fm_modern_get_content_height(content_height);
+    list_x = content_x + FM_CLASSIC_INSET + FM_CLASSIC_SIDE_WIDTH +
+             FM_CLASSIC_PANE_GAP;
+    list_width = content_width - (FM_CLASSIC_INSET * 2) -
+                 FM_CLASSIC_SIDE_WIDTH - FM_CLASSIC_PANE_GAP;
+    panel_y = content_y + FM_CLASSIC_CONTENT_OFFSET +
+              FM_CLASSIC_TOOLBAR_HEIGHT + FM_CLASSIC_PANE_GAP +
+              FM_CLASSIC_ADDRESS_HEIGHT + FM_CLASSIC_PANE_GAP;
+    panel_height = fm_classic_get_content_height(content_height);
     list_y = panel_y +
-             (int)display_scale_px(4) + FM_MODERN_HEADER_HEIGHT +
+             (int)display_scale_px(4) + FM_CLASSIC_HEADER_HEIGHT +
              (int)display_scale_px(4);
 
     if (event->event == MOUSE_EVENT_WHEEL && event->wheel != 0) {
         if (event->x < list_x || event->x >= list_x + list_width ||
             event->y < list_y ||
             event->y >= list_y + fm_visible_rows() *
-                        (FM_MODERN_ROW_HEIGHT + FM_MODERN_ROW_GAP)) {
+                        (FM_CLASSIC_ROW_HEIGHT + FM_CLASSIC_ROW_GAP)) {
             return 0;
         }
         return fm_scroll_file_selection(event->wheel);
@@ -1416,15 +1416,15 @@ static int fm_hosted_mouse(mouse_event_t* event, int x, int y,
     if (event->event != MOUSE_EVENT_PRESS ||
         !(event->changed & MOUSE_BTN_LEFT)) return 0;
 
-    if (event->x >= content_x + FM_MODERN_INSET &&
-        event->x < content_x + FM_MODERN_INSET + FM_MODERN_SIDE_WIDTH &&
-        event->y >= panel_y + FM_MODERN_SIDE_HEADER_OFFSET) {
+    if (event->x >= content_x + FM_CLASSIC_INSET &&
+        event->x < content_x + FM_CLASSIC_INSET + FM_CLASSIC_SIDE_WIDTH &&
+        event->y >= panel_y + FM_CLASSIC_SIDE_HEADER_OFFSET) {
         int relative_y = event->y -
-                         (panel_y + FM_MODERN_SIDE_HEADER_OFFSET);
-        int step = FM_MODERN_ROW_HEIGHT + FM_MODERN_ROW_GAP;
+                         (panel_y + FM_CLASSIC_SIDE_HEADER_OFFSET);
+        int step = FM_CLASSIC_ROW_HEIGHT + FM_CLASSIC_ROW_GAP;
         int row = relative_y / step;
 
-        if (relative_y % step < FM_MODERN_ROW_HEIGHT &&
+        if (relative_y % step < FM_CLASSIC_ROW_HEIGHT &&
             row >= 0 && row < fm_side_items_for_height(panel_height)) {
             state.focus_pane = 0;
             state.side_selected = row;
@@ -1434,11 +1434,11 @@ static int fm_hosted_mouse(mouse_event_t* event, int x, int y,
     if (event->x >= list_x && event->x < list_x + list_width &&
         event->y >= list_y) {
         int relative_y = event->y - list_y;
-        int step = FM_MODERN_ROW_HEIGHT + FM_MODERN_ROW_GAP;
+        int step = FM_CLASSIC_ROW_HEIGHT + FM_CLASSIC_ROW_GAP;
         int row = relative_y / step;
         int file_index = state.scroll_offset + row;
 
-        if (relative_y % step < FM_MODERN_ROW_HEIGHT &&
+        if (relative_y % step < FM_CLASSIC_ROW_HEIGHT &&
             row >= 0 && row < fm_visible_rows() &&
             file_index >= 0 && file_index < state.file_count) {
             state.focus_pane = 1;
@@ -1454,7 +1454,7 @@ static void fm_hosted_draw(int x, int y, int width, int height) {
     fm_hosted_y = y;
     fm_hosted_width = width;
     fm_hosted_height = height;
-    fm_draw_modern_all();
+    fm_draw_classic_all();
 }
 
 static void fm_hosted_close(void) {
@@ -1465,7 +1465,7 @@ static void fm_hosted_close(void) {
 }
 
 static void fm_redraw_file_view(void) {
-    if (state.mode == FM_MODE_MODERN) {
+    if (state.mode == FM_MODE_CLASSIC) {
         fm_draw_all();
         return;
     }
@@ -1498,7 +1498,7 @@ void fm_init(void) {
     rename_mode = 0;
     confirm_delete = 0;
     fm_help_mode = 0;
-    state.mode = FM_MODE_CLASSIC;
+    state.mode = FM_MODE_SIMPLE;
     state.focus_pane = 1;
     state.side_selected = 0;
     fm_fallback_logged = 0;
@@ -1516,23 +1516,23 @@ void fm_open(void) {
         return;
     }
 
-    if (desktop_get_mode() == DESKTOP_MODE_MODERN && fm_hosted) {
+    if (desktop_get_mode() == DESKTOP_MODE_CLASSIC && fm_hosted) {
         wm_set_active(1);
         wm_register_hosted_app(&fm_hosted_app);
         return;
     }
 
     fm_init();
-    if (desktop_get_mode() == DESKTOP_MODE_MODERN) {
+    if (desktop_get_mode() == DESKTOP_MODE_CLASSIC) {
         wm_set_active(1);
         fm_hosted = 1;
-        state.mode = FM_MODE_MODERN;
+        state.mode = FM_MODE_CLASSIC;
         if (wm_register_hosted_app(&fm_hosted_app) == OK) return;
         fm_hosted = 0;
-        state.mode = FM_MODE_CLASSIC;
+        state.mode = FM_MODE_SIMPLE;
         wm_set_active(0);
         desktop_set_active(0);
-        LOG_WARN("FM", "Workspace indisponivel; usando Explorer classico");
+        LOG_WARN("FM", "Workspace indisponivel; usando Explorer Simple");
     }
     taskbar_add_app(TB_APP_EXPLORER, "Explorer");
     fm_draw_all();
@@ -1635,7 +1635,7 @@ void fm_handle_key(uint8_t scancode) {
                 state.address_pos--;
                 state.address_buffer[state.address_pos] = '\0';
                 int cx = 3 + state.address_pos;
-                if (state.mode == FM_MODE_MODERN) {
+                if (state.mode == FM_MODE_CLASSIC) {
                     fm_draw_all();
                 } else {
                     video_put_char_at(' ', FM_ADDRESS_INPUT_COLOR, cx, 2);
@@ -1662,7 +1662,7 @@ void fm_handle_key(uint8_t scancode) {
             state.address_buffer[state.address_pos++] = c;
             state.address_buffer[state.address_pos] = '\0';
             int cx = 3 + state.address_pos - 1;
-            if (state.mode == FM_MODE_MODERN) {
+            if (state.mode == FM_MODE_CLASSIC) {
                 fm_draw_all();
             } else {
                 video_put_char_at(c, FM_ADDRESS_INPUT_COLOR, cx, 2);
@@ -1778,7 +1778,7 @@ void fm_handle_key(uint8_t scancode) {
                 if (create_dir_mode) cx = 24 + input_pos;
                 else if (create_file_mode) cx = 26 + input_pos;
                 else if (rename_mode) cx = 27 + input_pos;
-                if (state.mode == FM_MODE_MODERN) {
+                if (state.mode == FM_MODE_CLASSIC) {
                     fm_draw_all();
                 } else {
                     video_put_char_at(' ', 0x17, cx, 11);
@@ -1794,7 +1794,7 @@ void fm_handle_key(uint8_t scancode) {
             if (create_dir_mode) cx = 24 + input_pos - 1;
             else if (create_file_mode) cx = 26 + input_pos - 1;
             else if (rename_mode) cx = 27 + input_pos - 1;
-            if (state.mode == FM_MODE_MODERN) {
+            if (state.mode == FM_MODE_CLASSIC) {
                 fm_draw_all();
             } else {
                 video_put_char_at(c, 0x17, cx, 11);
@@ -1881,7 +1881,7 @@ void fm_handle_key(uint8_t scancode) {
             }
         } else {
             input_mode = 2;
-            if (state.mode == FM_MODE_MODERN) {
+            if (state.mode == FM_MODE_CLASSIC) {
                 fm_draw_all();
             } else {
                 video_clear();
@@ -1928,7 +1928,7 @@ void fm_handle_key(uint8_t scancode) {
         input_pos = 0;
         input_buffer[0] = '\0';
         fm_draw_all();
-        if (state.mode == FM_MODE_CLASSIC) fm_draw_create_dir();
+        if (state.mode == FM_MODE_SIMPLE) fm_draw_create_dir();
         return;
     }
 
@@ -1941,7 +1941,7 @@ void fm_handle_key(uint8_t scancode) {
         input_pos = 0;
         input_buffer[0] = '\0';
         fm_draw_all();
-        if (state.mode == FM_MODE_CLASSIC) fm_draw_create_file();
+        if (state.mode == FM_MODE_SIMPLE) fm_draw_create_file();
         return;
     }
 
@@ -1952,7 +1952,7 @@ void fm_handle_key(uint8_t scancode) {
             input_pos = 0;
             input_buffer[0] = '\0';
             fm_draw_all();
-            if (state.mode == FM_MODE_CLASSIC) fm_draw_confirm_delete();
+            if (state.mode == FM_MODE_SIMPLE) fm_draw_confirm_delete();
         }
         return;
     }
@@ -1979,7 +1979,7 @@ void fm_handle_key(uint8_t scancode) {
             }
             input_buffer[input_pos] = '\0';
             fm_draw_all();
-            if (state.mode == FM_MODE_CLASSIC) {
+            if (state.mode == FM_MODE_SIMPLE) {
                 fm_draw_rename_file();
                 video_print_at(27, 11, state.files[state.selected].name, 0x17);
             }
@@ -2058,7 +2058,7 @@ void fm_handle_key(uint8_t scancode) {
     }
 
     if (scancode == 0x01) {
-        if (state.mode == FM_MODE_CLASSIC) fm_close();
+        if (state.mode == FM_MODE_SIMPLE) fm_close();
         return;
     }
 

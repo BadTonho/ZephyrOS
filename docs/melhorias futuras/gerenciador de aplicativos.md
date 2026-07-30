@@ -31,7 +31,7 @@ quando divergirem do roadmap AS1-AS5.
 > assinatura, permissoes e SDK continuam planejados nas fases abaixo.
 
 > **Decisao de interface:** Modern e a matriz obrigatoria da App Store; Shell
-> e o fallback operacional completo. Classic permanece secundario e nao
+> e o fallback operacional completo. Simple permanece secundario e nao
 > bloqueia a conclusao de uma fase aprovada no Modern e no Shell.
 
 ---

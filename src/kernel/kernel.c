@@ -177,7 +177,7 @@ static int kernel_handle_taskbar_mouse(mouse_event_t* evt) {
     }
 
     hosted_workspace = wm_is_active() &&
-                       desktop_get_mode() == DESKTOP_MODE_MODERN;
+                       desktop_get_mode() == DESKTOP_MODE_CLASSIC;
     if (!hosted_workspace) {
         if (taskmgr_is_gui_open() && tb_result >= 2 && tb_result <= 8) {
             if (tb_result == 4) {
@@ -264,8 +264,8 @@ static void global_mouse_handler(mouse_event_t* evt) {
         return;
     }
 
-    /* O Desktop moderno precisa do gesto completo para arrastar icones. */
-    if (desktop_is_active() && desktop_get_mode() == DESKTOP_MODE_MODERN) {
+    /* O Desktop Classic grafico precisa do gesto completo para arrastar. */
+    if (desktop_is_active() && desktop_get_mode() == DESKTOP_MODE_CLASSIC) {
         int result = desktop_handle_mouse(evt);
 
         if (result == DESKTOP_APP_SHELL) {
@@ -555,7 +555,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     } else {
         recovery_mark_disabled(RECOVERY_COMPONENT_BACKBUFFER,
                                backbuffer_result,
-                               "Backbuffer indisponivel; Desktop classic ativo");
+                               "Backbuffer indisponivel; Desktop simple ativo");
         if (recovery_is_available(RECOVERY_COMPONENT_VESA)) {
             recovery_mark_degraded(RECOVERY_COMPONENT_VESA, backbuffer_result,
                                    "VESA degradado sem backbuffer");
@@ -744,7 +744,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     if (display_result == OK) {
         video_print("[OK] Metricas de display prontas\n", 0x07);
     } else {
-        video_print("[!!] Display Modern indisponivel\n", 0x0E);
+        video_print("[!!] Display Classic indisponivel\n", 0x0E);
     }
 
     video_print("[..] Iniciando taskbar...\n", 0x08);
@@ -756,7 +756,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     desktop_init();
     if (!recovery_is_available(RECOVERY_COMPONENT_BACKBUFFER) ||
         display_result != OK) {
-        desktop_set_mode(DESKTOP_MODE_CLASSIC);
+        desktop_set_mode(DESKTOP_MODE_SIMPLE);
     }
     recovery_mark_ready(RECOVERY_COMPONENT_DESKTOP);
     video_print("[OK] Desktop pronto\n", 0x07);

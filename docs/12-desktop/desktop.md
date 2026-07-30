@@ -1,6 +1,8 @@
 # 12 - Desktop e Interface
 
-Ambiente visual do ZephyrOS suportando uma arquitetura **Dual Interface**: Classic TUI (Text User Interface) e GUI Moderna (Graphical User Interface baseada em VESA e primitivas 2D).
+Ambiente visual do ZephyrOS com dois modos implementados: Simple TUI
+(fallback) e GUI Classic baseada em VESA. O nome Modern fica reservado para a
+futura interface realmente moderna.
 
 ## Arquivos
 
@@ -10,27 +12,51 @@ src/wm/wm.c              → Gerenciador de janelas (Dual interface frames)
 src/taskbar/taskbar.c    → Barra de tarefas e menu Iniciar (Dual interface)
 src/settings/settings.c  → Sistema de configurações
 src/icons/icons.c        → Registro de ícones customizáveis
-src/gui/gui.c            → Primitivas gráficas 2D para a GUI Moderna
-src/gui/display.c        → Escala e métricas centrais da GUI Moderna
+src/gui/gui.c            → Primitivas gráficas 2D para a GUI Classic
+src/gui/display.c        → Escala e métricas centrais da GUI Classic
 ```
 
 ---
 
-## Dual Interface (Classic TUI vs GUI Moderna)
+## Modos de interface
 
-O sistema operacional implementa uma estratégia de retrocompatibilidade visual (regra `#15` do `AGENTS.md`). Isso significa que a interface moderna não substitui o modo clássico, mas coexiste como uma camada renderizável alternável. 
+O sistema operacional segue a política da regra `#15` do `AGENTS.md`:
 
-- **Classic TUI**: Usa `video.c` (memória VGA) ou desenho alinhado em grid para exibir a interface de maneira retro e otimizada.
-- **GUI Moderna**: Usa `gui.c` para desenhar painéis cinza, bordas 3D, barra de título azul, seleção azul e texto fora do grid com a fonte bitmap existente.
-- **Alternância Dinâmica**: O comando `guimode classic|modern` permite alterar a engine visual em tempo de execução sem desligar os aplicativos rodando.
+- **Simple TUI**: usa `video.c` como fallback operacional congelado. Recebe
+  correções críticas, mas não novas funcionalidades ou regressão visual
+  completa.
+- **GUI Classic**: usa `gui.c` para desenhar painéis cinza, bordas 3D, barra
+  de título azul, seleção azul e texto fora do grid. É a interface principal
+  e a matriz obrigatória de aceitação.
+- **GUI Modern**: reservada para o redesenho futuro e ainda não selecionável.
+- **Alternância Dinâmica**: O comando `guimode simple|classic` permite alterar a engine visual em tempo de execução sem desligar os aplicativos rodando.
+
+`guimode modern` apenas informa que o modo está reservado.
+`desktop_set_mode(DESKTOP_MODE_MODERN)` retorna `ERR_UNAVAILABLE` e preserva
+o modo ativo. A validação do Simple é um smoke test: entrar no modo, confirmar
+vídeo, teclado e Shell, executar um comando básico e retornar ao Classic.
+Desktop, Taskbar, WM e aplicativos hospedados são testados integralmente
+apenas no Classic.
+
+```c
+typedef enum {
+    DESKTOP_MODE_SIMPLE = 0,
+    DESKTOP_MODE_CLASSIC,
+    DESKTOP_MODE_MODERN
+} desktop_mode_t;
+```
+
+Em `desktop_icon_t`, `x`/`y` pertencem à grade Simple; `classic_x`,
+`classic_y`, `classic_width` e `classic_height` guardam a geometria em pixels
+do Classic.
 
 ---
 
-## Escala global do modo Moderno (`display.c`)
+## Escala global do modo Classic (`display.c`)
 
 O MV0 centraliza as metricas da interface em `ui/display.h`. A escala existe
 somente em RAM, inicia em `normal` a cada boot e nunca troca a resolucao VESA.
-O modo Classic nao consulta essas metricas: sua grade, fonte 8x16, cursor,
+O modo Simple nao consulta essas metricas: sua grade, fonte 8x16, cursor,
 taskbar e aplicativos permanecem inalterados.
 
 | Escala | Fator | Fonte | Espaco | Taskbar | Botao minimo | Icone | Titulo | VESA minima |
@@ -60,7 +86,7 @@ uint32_t display_scale_px(uint32_t pixels);
 ```
 
 `display_init()` roda depois de VESA/backbuffer e antes de Taskbar/Desktop.
-Sem VESA, backbuffer ou area minima, o kernel preserva o fallback Classic.
+Sem VESA, backbuffer ou area minima, o kernel preserva o fallback Simple.
 `display_apply_scale()` valida o preset antes de altera-lo, reorganiza a cena
 ativa e restaura as metricas anteriores se o reflow falhar. Desktop, Taskbar,
 WM, Explorer, Settings e Task Manager usam a mesma geometria no desenho e no
@@ -80,7 +106,7 @@ Cria 3 ícones padrão: Shell, Explorer e TaskMgr.
 
 ### Renderização (Desktop Gráfico)
 
-No modo `GUI Moderna`, o desktop desenha fundo, cards de ícone e símbolos por
+No modo `GUI Classic`, o desktop desenha fundo, cards de ícone e símbolos por
 primitivas, permitindo:
 - Seleção visual azul em vez de caractere invertido.
 - Grade responsiva com cartões-base de 112×96 px, escalados pelo preset, e
@@ -93,9 +119,9 @@ primitivas, permitindo:
 As posições duram somente até reiniciar. Shell, Explorer e Task Manager usam
 BMPs 24 bpp de 32×32 px no cache e os desenham em 32, 40 ou 48 px conforme o
 preset; os arquivos usam magenta como cor transparente. Seleção múltipla e
-persistência em disco continuam fora do modo moderno atual.
+persistência em disco continuam fora do modo classic atual.
 
-No modo Clássico, os ícones são organizados em grade (5 colunas) e mostrados na VGA Text Mode/Grid:
+No modo Simple, os ícones são organizados em grade (5 colunas) e mostrados na VGA Text Mode/Grid:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -131,14 +157,14 @@ void desktop_set_active(active);
 | Setas | Navega entre ícones |
 | Enter / Duplo Clique | Abre aplicativo selecionado |
 | Clique Único | Seleciona o ícone |
-| Arrastar (Moderno) | Move para o slot livre mais próximo |
+| Arrastar (Classic) | Move para o slot livre mais próximo |
 | Esc | Sai do desktop |
 
 ---
 
 ## Primitivas Gráficas 2D (`gui.c`)
 
-Motor gráfico da GUI Moderna, permitindo renderização independente da grade TUI clássica.
+Motor gráfico da GUI Classic, permitindo renderização independente da grade TUI simple.
 
 ### Funções Base
 
@@ -154,7 +180,7 @@ void gui_draw_scaled_window_frame(int x, int y, int w, int h,
                                   const char* title, int active);
 ```
 
-As cenas modernas usam backbuffer e um único ciclo de frame. As primitivas não
+As cenas Classic usam backbuffer e um único ciclo de frame. As primitivas não
 implementam gradientes, transparência ou cantos arredondados nesta etapa.
 
 As primitivas antigas continuam fixas em 8x16. Somente as variantes `scaled`
@@ -165,15 +191,15 @@ fora do MV0.
 
 ## Window Manager (`wm.c`)
 
-O comando `wm` preserva o gerenciador textual no modo Clássico. No modo
-Moderno, ele abre um workspace VESA vazio. Shell, Explorer, Settings, Task
+O comando `wm` preserva o gerenciador textual no modo Simple. No modo
+Classic, ele abre um workspace VESA vazio. Shell, Explorer, Settings, Task
 Manager e System Updater são aplicativos hospedados: seus comandos e ações do
 Menu Iniciar criam ou focalizam uma única janela de cada tipo.
 
 ### Estado de renderização
 
 - **Modo TUI**: janelas do WM usam bordas de caracteres e as APIs legadas.
-- **Modo moderno**: janelas hospedadas são compostas do menor para o maior
+- **Modo classic**: janelas hospedadas são compostas do menor para o maior
   Z-order e a taskbar é desenhada por último no mesmo ciclo VESA. Quando uma
   janela é aberta a partir do Desktop, os ícones continuam como fundo da
   composição; ao fechar a última janela, o controle retorna ao Desktop. Antes
@@ -182,7 +208,7 @@ Menu Iniciar criam ou focalizam uma única janela de cada tipo.
 - **Entrada**: o corpo focaliza uma janela; os controles da barra de título
   fecham, minimizam ou maximizam/restauram. Teclado e mouse do conteúdo são
   encaminhados ao aplicativo focalizado; `Esc`, `Tab`, `F1` e `F2` não são
-  atalhos globais do WM moderno. Em um workspace vazio ou aplicativo hospedado
+  atalhos globais do WM classic. Em um workspace vazio ou aplicativo hospedado
   ocioso, `Esc` não fecha janelas; ele permanece reservado para cancelar o
   contexto interno atual.
   A janela focalizada recebe um contorno azul de 2 px, além da sua barra de
@@ -190,12 +216,12 @@ Menu Iniciar criam ou focalizam uma única janela de cada tipo.
 
 ### Acessibilidade por teclado
 
-No modo Moderno, `Alt+Tab` avança o foco entre janelas visíveis e
+No modo Classic, `Alt+Tab` avança o foco entre janelas visíveis e
 `Alt+Shift+Tab` retorna. `Alt+F4` fecha a janela focalizada, `Alt+F9` a
 minimiza e `Alt+F10` alterna entre maximizar e restaurar. Esses atalhos não
 alteram a API pública do WM. Teclas sem `Alt`, inclusive `Tab`, `F1` e `F2`,
 continuam sendo encaminhadas diretamente ao aplicativo focalizado. O modo
-Clássico preserva os atalhos do WM textual e o fechamento ocioso por `Esc`.
+Simple preserva os atalhos do WM textual e o fechamento ocioso por `Esc`.
 
 ### Estrutura de Janela
 
@@ -230,7 +256,7 @@ int  wm_handle_mouse(event);
 void wm_toggle_window(id);
 ```
 
-### Aplicativos hospedados (modo Moderno)
+### Aplicativos hospedados (modo Classic)
 
 `wm_window_t` e as APIs TUI permanecem legadas. A hospedagem gráfica usa o
 descritor público abaixo; suas dimensões incluem a moldura do WM e os callbacks
@@ -291,7 +317,7 @@ O kernel entrega cliques e roda primeiro à taskbar e ao Menu Iniciar. Botões d
 sem foco é focalizada e a janela focalizada é minimizada. Com o WM ativo, seus
 eventos consomem o mouse antes de Desktop e aplicativos.
 
-No modo Moderno, Shell, Explorer, Settings, Task Manager e System Updater
+No modo Classic, Shell, Explorer, Settings, Task Manager e System Updater
 reutilizam a interação direta do WM: os controles da barra de título têm
 prioridade, a área livre da barra inicia arraste e uma faixa escalada de
 8, 10 ou 12 px nas bordas e cantos inicia redimensionamento. A captura termina em `RELEASE`;
@@ -307,7 +333,7 @@ ela alcance um aplicativo. Shell rola três linhas visuais por notch; Explorer
 move a seleção somente sobre a lista de arquivos; Task Manager faz o mesmo nas
 listas de Processos e Threads. Settings não tem uma área rolável e ignora a
 roda. Arraste de ícones, BMP e aplicativos externos já são componentes
-separados do Desktop moderno; seleção múltipla e roda fora das janelas
+separados do Desktop classic; seleção múltipla e roda fora das janelas
 hospedadas continuam fora do escopo.
 
 ---
@@ -320,7 +346,7 @@ interfaces abertas. Cada compositor de cena desenha a taskbar por ultimo; as
 funcoes que alteram seus botoes ou configuracao apenas atualizam estado e nao
 apresentam um frame por conta propria.
 
-No modo moderno, a taskbar usa as métricas do preset e suporta as cinco
+No modo classic, a taskbar usa as métricas do preset e suporta as cinco
 posições. Baixo/Cima usam 24, 30 ou 36 px; Esquerda/Direita e o modo Custom
 escalam pelo mesmo fator. Texto, relógio, botões, menus, limites de clique e
 área de trabalho compartilham a geometria calculada. Barras acopladas reduzem
@@ -328,7 +354,7 @@ a área de trabalho; a barra customizada fica sobreposta e recebe pintura e
 clique antes do conteúdo abaixo.
 
 `tb_rect_t`, `taskbar_get_bounds()` e `taskbar_get_work_area()` formam o
-contrato de geometria moderna. `taskbar_add_window()`,
+contrato de geometria classic. `taskbar_add_window()`,
 `taskbar_remove_window()`, `taskbar_set_window_active()` e
 `taskbar_take_window_request()` integram botões de janelas ao WM sem redesenho
 implícito.
@@ -337,10 +363,10 @@ implícito.
 
 Enquanto estiver aberto, um clique fora do Menu Iniciar apenas o fecha; o
 evento e consumido e nao pode acionar a interface que esteja abaixo dele.
-No workspace moderno, `Shell` abre ou focaliza a janela singleton do terminal;
+No workspace classic, `Shell` abre ou focaliza a janela singleton do terminal;
 o X da janela apenas a oculta e preserva seu histórico. `Desktop` encerra o
 workspace antes de voltar à área de trabalho. `Atualizacoes` abre ou focaliza
-o System Updater; no modo Classic abre a TUI correspondente.
+o System Updater; no modo Simple abre a TUI correspondente.
 
 ```
 ┌─────────────────┐
@@ -377,11 +403,11 @@ typedef struct {
 
 Sistema de configuração geral.
 
-No modo Moderno, a opção de posição da taskbar também expõe Baixo, Cima,
+No modo Classic, a opção de posição da taskbar também expõe Baixo, Cima,
 Esquerda, Direita e Custom. Ao mudar uma posição acoplada, o painel recalcula
 seu layout a partir de `taskbar_get_work_area()`.
 
-A opção `Escala` aparece tanto no Settings Classic quanto no Modern, é
+A opção `Escala` aparece tanto no Settings Simple quanto no Classic, é
 sincronizada ao abrir e chama `display_apply_scale()`. Uma recusa restaura
 imediatamente o valor visual anterior.
 
@@ -405,8 +431,8 @@ Permite a customização dinâmica de ícones de caracteres e mantém um cache d
 BMPs de Shell, Explorer e Task Manager. O build injeta `SHELL.BMP`,
 `EXPLORER.BMP` e `TASKMGR.BMP` no diretório raiz FAT12; eles são carregados uma
 única vez na inicialização. Se VESA, filesystem, arquivo, formato ou memória
-não estiverem disponíveis, o cartão moderno usa o símbolo vetorial existente e
-o modo Clássico continua usando caracteres.
+não estiverem disponíveis, o cartão classic usa o símbolo vetorial existente e
+o modo Simple continua usando caracteres.
 
 ```c
 typedef struct {
@@ -430,7 +456,7 @@ void icons_reset_defaults(void);
 
 Os BMPs 32x32 permanecem armazenados uma única vez. A variante redimensionada
 usa nearest-neighbor durante o desenho, sem nova alocação, para produzir
-ícones de 32, 40 ou 48 px conforme a escala Modern.
+ícones de 32, 40 ou 48 px conforme a escala Classic.
 
 O comando Shell `icons` mostra o estado do filesystem e se cada um dos três
 ícones de Desktop está em modo `BMP` ou `FALLBACK`.

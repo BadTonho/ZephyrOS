@@ -9,8 +9,10 @@ Sistema operacional do zero em C + Assembly (x86), com o objetivo de ser um OS r
 ## Status do projeto
 
 O ZephyrOS é um sistema operacional experimental em desenvolvimento ativo. Ele é executado
-principalmente no QEMU e mantém duas interfaces: modo clássico em VGA text mode e modo
-moderno com VESA quando o hardware ou emulador oferece suporte.
+principalmente no QEMU e mantém duas interfaces: modo simple em VGA text mode e modo
+classic com VESA quando o hardware ou emulador oferece suporte.
+O nome `modern` está reservado para uma futura interface, ainda não
+selecionável.
 
 O projeto ainda não deve ser considerado pronto para uso em hardware real. Consulte o
 [`ROADMAP.md`](ROADMAP.md) e a documentação em [`docs/`](docs/) para acompanhar as etapas
@@ -50,8 +52,8 @@ concluídas, limitações conhecidas e próximos objetivos.
 | Editor | ✅ | Editor de texto com syntax highlight, word wrap |
 | Media Player | ✅ | Player de áudio WAV com visualização |
 | Task Manager | ✅ | Monitor de processos/threads/CPU/memória |
-| File Manager | ✅ | Explorer clássico e moderno (navegar, criar, renomear, excluir) |
-| Desktop | ✅ | Ambiente desktop moderno com fallback clássico, ícones e menu Iniciar |
+| File Manager | ✅ | Explorer simple e classic (navegar, criar, renomear, excluir) |
+| Desktop | ✅ | Ambiente desktop classic com fallback simple, ícones e menu Iniciar |
 | Window Manager | ✅ | Gerenciador de janelas (mover, redimensionar, minimizar) |
 | Taskbar | ✅ | Barra de tarefas configurável (posição, tamanho, relógio) |
 | Settings | ✅ | Sistema de configurações (tela, taskbar, janelas, ícones, som) |
@@ -113,7 +115,7 @@ Sistema/
     │   ├── mediaplayer.c    # Media player (WAV)
     │   └── taskmanager.c    # Gerenciador de tarefas
     ├── filemanager/         # Gerenciador de arquivos
-    │   └── filemanager.c    # Explorer clássico/moderno
+    │   └── filemanager.c    # Explorer simple/classic
     ├── desktop/             # Ambiente desktop
     │   └── desktop.c        # Desktop com ícones
     ├── wm/                  # Gerenciador de janelas
@@ -248,7 +250,7 @@ taskbar/Menu Iniciar ou pelo ícone do Desktop.
 | `app inputtest` | Testa foco e teclado de app ring 3 | `app inputtest` |
 | `app argtest` | Testa argumentos entregues a uma app ring 3 | `app argtest alpha beta` |
 | `usertest` | Executa o processo de teste em modo usuário | `usertest` |
-| `guimode` | Alterna entre `classic` e `modern` | `guimode modern` |
+| `guimode` | Alterna entre `simple` e `classic` | `guimode classic` |
 | `reboot` | Reinicia o sistema | `reboot` |
 | `shutdown` | Desliga o sistema | `shutdown` |
 

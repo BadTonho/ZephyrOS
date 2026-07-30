@@ -48,8 +48,8 @@ O buffer armazena até 255 caracteres + null terminator.
 
 O terminal mantém um histórico circular fixo de 200 linhas, sem `kmalloc`.
 `Shift+Seta para Cima/Abaixo`, `Page Up/Page Down`, `Home`, `End` e a roda do
-mouse navegam pela saída. A roda funciona tanto no Shell Classic quanto na
-janela Modern. Ao digitar, apagar ou confirmar um comando, o Shell retorna ao
+mouse navegam pela saída. A roda funciona tanto no Shell Simple quanto na
+janela Classic. Ao digitar, apagar ou confirmar um comando, o Shell retorna ao
 fim para preservar o prompt. `clear` remove a tela e o histórico de saída.
 
 ### Histórico de comandos
@@ -61,9 +61,9 @@ estava sendo digitado antes da navegação é restaurado. Comandos consecutivos
 idênticos ocupam uma única entrada. Esse histórico não é persistido em disco e
 não é removido pelo comando `clear`.
 
-### Shell hospedado no modo Moderno
+### Shell hospedado no modo Classic
 
-No modo Moderno, o item `Shell` do Menu Iniciar abre ou focaliza uma única
+No modo Classic, o item `Shell` do Menu Iniciar abre ou focaliza uma única
 janela hospedada pelo Window Manager. Ela mantém o mesmo buffer de entrada,
 histórico e atalhos de scroll do terminal em tela cheia, mas o texto é
 refluído visualmente quando a janela é redimensionada ou a taskbar muda de
@@ -73,7 +73,7 @@ histórico.
 O botão X apenas oculta a janela e remove seu botão da taskbar; o Shell e seu
 histórico continuam ativos. Reabrir pelo Menu Iniciar mostra o mesmo terminal.
 Comandos que abrem Explorer, Settings ou Task Manager preservam a janela do
-Shell e transferem o foco para o novo aplicativo. No modo Clássico, o Shell
+Shell e transferem o foco para o novo aplicativo. No modo Simple, o Shell
 permanece em tela cheia.
 
 `shell_update_hosted_terminal()` é chamado tanto pelo processo Shell quanto
@@ -191,25 +191,25 @@ Duração: 00:30
 ### Task Manager (`taskmanager.c`)
 
 O comando `taskmgr` mantém a TUI de diagnóstico. Desktop e taskbar, no modo
-moderno, abrem uma janela gráfica própria. As duas interfaces usam três abas:
+classic, abrem uma janela gráfica própria. As duas interfaces usam três abas:
 **Processos**, **Memória** e **Threads**; CPU, espera, tempo, páginas e dados
 ATA aparecem nas tabelas e painéis de detalhes conforme houver espaço.
 
 Atalhos: Tab=alterna aba, Setas=navega, S=ordena, Enter=propriedades e
-Delete=encerra processo compatível. Esc fecha detalhes e, no Classic ocioso,
-sai; no Modern, o fechamento usa o botão `X` ou `Alt+F4`.
+Delete=encerra processo compatível. Esc fecha detalhes e, no Simple ocioso,
+sai; no Classic, o fechamento usa o botão `X` ou `Alt+F4`.
 
 ### System Updater (`src/updater/updater.c`)
 
 O comando `updater` e o item `Atualizacoes` do menu Iniciar abrem o aplicativo
-nativo das U4/U5. A TUI Classic e a janela Modern compartilham Pacotes,
+nativo das U4/U5. A TUI Simple e a janela Classic compartilham Pacotes,
 Estado, Historico e Remoto. Toda verificacao, consulta e todo preflight sao
 somente-leitura; aplicar, restaurar, baixar e limpar cache exigem confirmacao
 explicita e repetem a validacao pelos servicos Update.
 
 Tab alterna as abas, setas mudam a selecao, F5 atualiza, V verifica, A prepara
 aplicacao, B prepara rollback e Enter confirma. Esc cancela o contexto atual e
-fecha somente a TUI Classic quando ociosa; a janela Modern usa `X` ou
+fecha somente a TUI Simple quando ociosa; a janela Classic usa `X` ou
 `Alt+F4`. Na aba
 Remoto, H alterna o opt-in, C consulta, D prepara download e X prepara a
 limpeza do cache. O contrato completo fica em

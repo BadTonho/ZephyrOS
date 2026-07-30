@@ -1,4 +1,4 @@
-# Task Manager moderno - ZephyrOS
+# Task Manager Classic - ZephyrOS
 
 ## Resumo de Progresso
 

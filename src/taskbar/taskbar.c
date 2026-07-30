@@ -66,7 +66,7 @@ static const char* size_names[] = {"Pequeno", "Medio", "Grande"};
 static int taskbar_uses_gui(void) {
     vesa_mode_t* mode = vesa_get_mode();
 
-    return desktop_get_mode() == DESKTOP_MODE_MODERN && mode &&
+    return desktop_get_mode() == DESKTOP_MODE_CLASSIC && mode &&
            mode->initialized && vesa_has_backbuffer();
 }
 
@@ -829,7 +829,7 @@ int taskbar_handle_config_key(uint8_t scancode) {
                 taskbar_set_custom_position(20, 12);
                 break;
         }
-        if (desktop_is_active() && desktop_get_mode() == DESKTOP_MODE_MODERN) {
+        if (desktop_is_active() && desktop_get_mode() == DESKTOP_MODE_CLASSIC) {
             desktop_draw();
         }
         taskbar_draw_config_menu();

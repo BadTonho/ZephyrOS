@@ -434,7 +434,7 @@ essa disponibilidade com a capacidade remota U5.
 O aplicativo nativo `System Updater` usa somente as APIs publicas do servico.
 Ele enumera ate 16 arquivos `.ZUP` da raiz, ignora diretorios e arquivos
 hidden/system, ordena os aliases e informa excesso sem alocacao dinamica.
-Classic e Modern compartilham as abas Pacotes, Estado e Historico e os mesmos
+Simple e Classic compartilham as abas Pacotes, Estado e Historico e os mesmos
 fluxos de verificacao, preflight, confirmacao, aplicacao e rollback.
 
 Toda confirmacao e cancelada ao mudar aba, selecao ou lista. A confirmacao

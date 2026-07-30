@@ -22,7 +22,7 @@
 #include "ui/gui.h"
 #include "ui/display.h"
 
-/* O Task Manager usa estas primitivas apenas na interface Modern. */
+/* O Task Manager usa estas primitivas apenas na interface Classic grafica. */
 #define gui_draw_text gui_draw_scaled_text
 #define gui_draw_button gui_draw_scaled_button
 
@@ -47,8 +47,8 @@
 #define TSKMGR_TICKS_PER_SECOND 50U
 #define TSKMGR_UI_FRAME_TICKS 1U
 #define TSKMGR_METRICS_TICKS 5U
-#define TSKMGR_CLASSIC_PROCESS_ROWS 13
-#define TSKMGR_CLASSIC_THREAD_ROWS 11
+#define TSKMGR_SIMPLE_PROCESS_ROWS 13
+#define TSKMGR_SIMPLE_THREAD_ROWS 11
 
 #define TSKMGR_GUI_MIN_WIDTH 720
 #define TSKMGR_GUI_MIN_HEIGHT 500
@@ -460,7 +460,7 @@ static void draw_processes(void) {
     for (uint32_t k = 0; k < total_active; k++) {
         int i = active_pids[k];
 
-        if (row >= scroll_offset && visible_row < TSKMGR_CLASSIC_PROCESS_ROWS) {
+        if (row >= scroll_offset && visible_row < TSKMGR_SIMPLE_PROCESS_ROWS) {
             int y = start_y + 2 + visible_row;
             uint8_t row_color = COLOR_TEXT;
 
@@ -694,12 +694,12 @@ static void draw_threads(void) {
         selected_row = total_threads ? (int)total_threads - 1 : 0;
     }
     if (selected_row < scroll_offset) scroll_offset = selected_row;
-    if (selected_row >= scroll_offset + TSKMGR_CLASSIC_THREAD_ROWS) {
-        scroll_offset = selected_row - TSKMGR_CLASSIC_THREAD_ROWS + 1;
+    if (selected_row >= scroll_offset + TSKMGR_SIMPLE_THREAD_ROWS) {
+        scroll_offset = selected_row - TSKMGR_SIMPLE_THREAD_ROWS + 1;
     }
 
     int row = 0;
-    for (int visible = 0; visible < TSKMGR_CLASSIC_THREAD_ROWS &&
+    for (int visible = 0; visible < TSKMGR_SIMPLE_THREAD_ROWS &&
          scroll_offset + visible < (int)total_threads; visible++) {
         thread_t* t = taskmgr_find_thread_by_row(scroll_offset + visible);
         if (t) {
@@ -941,11 +941,11 @@ void taskmgr_handle_key(uint8_t scancode) {
             selected_row++;
         }
         if (selected_tab == 0 &&
-            selected_row >= scroll_offset + TSKMGR_CLASSIC_PROCESS_ROWS) {
+            selected_row >= scroll_offset + TSKMGR_SIMPLE_PROCESS_ROWS) {
             scroll_offset++;
         }
         if (selected_tab == 2 &&
-            selected_row >= scroll_offset + TSKMGR_CLASSIC_THREAD_ROWS) {
+            selected_row >= scroll_offset + TSKMGR_SIMPLE_THREAD_ROWS) {
             scroll_offset++;
         }
         taskmgr_refresh();
@@ -1829,7 +1829,7 @@ int taskmgr_open_gui(void) {
         taskmgr_gui_restore();
         return OK;
     }
-    if (desktop_get_mode() != DESKTOP_MODE_MODERN || !mode ||
+    if (desktop_get_mode() != DESKTOP_MODE_CLASSIC || !mode ||
         !mode->initialized || !vesa_has_backbuffer()) {
         LOG_WARN("TSKMGR", "GUI indisponivel; usando TUI");
         return ERR_UNAVAILABLE;

@@ -326,7 +326,7 @@ escopo desta entrega.
   capacidades separadas.
 - [x] Nenhuma escrita em SMI_CMD/PM1 e nenhuma mudanca em `shutdown`.
 - [x] Validacao manual concluida no QEMU padrao e sem ACPI, com `health`,
-  comandos diagnosticos, fallback, entrada ZAPP e interfaces Classic/Modern.
+  comandos diagnosticos, fallback, entrada ZAPP e interfaces Simple/Classic.
 
 Qualquer transicao fisica permanece reservada para uma fase separada, usando
 esses dados sem quebrar o fallback validado pela S1.3.
@@ -348,7 +348,7 @@ esses dados sem quebrar o fallback validado pela S1.3.
   memoria, scheduler, dispositivos, re-scan PCI, regressao, entrada ZAPP,
   sintaxe invalida e encerramento fisico da VM pelo Shell.
 - [ ] Cobertura complementar: repetir o fallback sem ACPI e os caminhos do
-  Menu Iniciar/Task Manager nos modos Classic e Modern.
+  Menu Iniciar/Task Manager nos modos Simple e Classic.
 
 AML generico, `_PTS`, SCI, GPE, PM1 MMIO, hardware-reduced ACPI, suspensao,
 hibernacao e bateria permanecem fora do escopo.

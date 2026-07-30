@@ -233,7 +233,7 @@ S5 permanece simulado e o desligamento fisico permanece indisponivel.
 `power_shutdown()` e a unica operacao terminal de desligamento. Ela para PC
 Speaker e AC97 em best effort, tenta `acpi_enter_s5()` apenas quando a
 capacidade consolidada esta pronta e termina em `CLI+HLT` se a tentativa for
-bloqueada. Shell, kernel, Menu Iniciar Classic/Modern e Task Manager usam esse
+bloqueada. Shell, kernel, Menu Iniciar Simple/Classic e Task Manager usam esse
 mesmo servico; nao existem mais loops locais de shutdown nem escrita na porta
 privada `0xB004` do QEMU.
 
@@ -562,7 +562,7 @@ worker nao pode ser criado. O componente
 
 O kernel inicializa o System Updater depois do Window Manager. A abertura pelo
 menu Iniciar usa `IPC_APP_OPEN_UPDATER`, tambem anexado ao fim da enumeracao
-IPC para preservar todos os valores anteriores. Em Modern o aplicativo e
+IPC para preservar todos os valores anteriores. Em Classic o aplicativo e
 hospedado pelo WM; se isso nao for possivel, abre automaticamente em Classic.
 
 ## AS1: catalogo local da App Store

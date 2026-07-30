@@ -105,11 +105,14 @@ When adding new source files, place them in the correct directory:
 - Public headers → `src/include/<module>/`
 - Never add new source files directly to the root of `src/`.
 
-### 7. Dual Interface Rule (Classic & Modern Modes)
-ZephyrOS maintains visual backwards compatibility:
-- VGA 80x25 Text Mode (`video.c`) is preserved as a **Classic Mode** fallback.
-- VESA Graphics Mode (`vesa.c` / `gui.c`) powers the **Modern Mode**.
-- New system components and applications should support or gracefully fall back to both rendering modes.
+### 7. Interface Modes (Simple / Classic / Modern)
+
+- VGA 80x25 Text Mode (`video.c`) is preserved as a frozen **Simple Mode**
+  fallback. It receives critical fixes and a minimal smoke test only.
+- VESA Graphics Mode (`vesa.c` / `gui.c`) powers the primary **Classic Mode**
+  and receives new features plus the full UI acceptance matrix.
+- **Modern Mode** is reserved for a future renderer and must not be exposed as
+  selectable before it is implemented.
 
 ### 8. Shell Test Command Requirement
 Whenever implementing a new executable feature, driver, or hardware capability, you **MUST** register a corresponding interactive command in `src/shell/shell.c` so it can be tested and inspected from the command line.

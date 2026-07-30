@@ -129,7 +129,7 @@ static void wm_gui_constrain_window(wm_gui_window_t* window);
 static int wm_gui_enabled(void) {
     vesa_mode_t* mode = vesa_get_mode();
 
-    return desktop_get_mode() == DESKTOP_MODE_MODERN && mode &&
+    return desktop_get_mode() == DESKTOP_MODE_CLASSIC && mode &&
            mode->initialized && vesa_has_backbuffer();
 }
 
