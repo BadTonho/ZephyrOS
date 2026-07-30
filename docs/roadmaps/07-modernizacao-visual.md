@@ -131,9 +131,9 @@ visualmente inalterado.
 
 ## MV1 - Evolucao das Primitivas Graficas
 
-**Estado:** implementado em 30/07/2026 e aguardando validacao do usuario.
-Ainda faltam `make q3check`, build completo e a matriz QEMU antes de marcar
-esta etapa como validada.
+**Estado:** implementado e validado pelo usuario em 30/07/2026.
+`make q3check`, build completo e a matriz QEMU foram aprovados com VESA
+1024x768x24 e backbuffer ativo.
 
 ### Implementacao
 
@@ -152,13 +152,22 @@ esta etapa como validada.
 
 Novas primitivas desenham formas sem artefatos visuais ou estouro de limites. O comando `guitest modern` executa e exibe as formas perfeitamente nas resolucoes VESA testadas, sem travar o kernel.
 
-### Matriz QEMU pendente
+### Matriz QEMU aprovada
 
-1. Executar `make q3check`, `make clean && make` e `make run`.
-2. Aprovar `guitest` e `guitest modern` nas escalas pequena, normal e grande.
-3. Na escala normal, repetir a cena MV1 nas cinco posicoes da Taskbar.
-4. Confirmar fechamento por X e Esc, sintaxe invalida e rejeicao no Simple.
-5. Executar `kmetrics`, `health summary`, `memcheck` e `regcheck full`.
+1. `make q3check`, `make clean && make` e `make run` foram aprovados pelo
+   usuario.
+2. `guitest` preservou a cena Classic e `guitest modern` apresentou cantos
+   arredondados simetricos, bordas flat continuas, clipping correto e
+   gradientes sem artefatos nas escalas pequena, normal e grande.
+3. Na escala normal, a cena MV1 permaneceu funcional nas cinco posicoes da
+   Taskbar.
+4. O X e Esc fecharam a cena restaurando o terminal; sintaxe invalida foi
+   rejeitada e o Simple recusou `guitest modern` sem habilitar o modo Modern.
+5. `kmetrics` capturou as apresentacoes VESA sem travamento. `memcheck` e
+   `regcheck full` terminaram em `OK`, sem estado residual do GUI Test.
+6. `health summary` nao apresentou regressao atribuida ao MV1. O ambiente
+   QEMU manteve AC97 desabilitado e Media Player degradado, sem afetar as
+   primitivas ou a interface Classic.
 
 ## MV2 - Novo Sistema de Cores e Estilos (Tema Dark Modern)
 
