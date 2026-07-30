@@ -10,7 +10,8 @@
 #define GUI_GRADIENT_FIXED_ONE 65536
 #define GUI_MODERN_BORDER_WIDTH 1U
 
-static gui_theme_t gui_current_theme = GUI_THEME_CLASSIC;
+/* O Classic continua sendo o modo de interface; sua apresentacao e Modern. */
+static gui_theme_t gui_current_theme = GUI_THEME_MODERN_DARK;
 
 static int gui_clamp_to_screen(uint32_t* x, uint32_t* y,
                                uint32_t* width, uint32_t* height) {
@@ -45,14 +46,17 @@ void gui_init(void) {
 
 int gui_set_theme(gui_theme_t theme) {
     if ((uint32_t)theme >= (uint32_t)GUI_THEME_COUNT) {
-        LOG_WARN("GUI", "Tema preparado invalido; estado preservado");
+        LOG_WARN("GUI", "Tema invalido; estado Modern preservado");
         return ERR_INVALID;
     }
 
+    if (theme == GUI_THEME_CLASSIC) {
+        LOG_WARN("GUI", "Tema Classico indisponivel no MV3");
+        return ERR_UNAVAILABLE;
+    }
+
     gui_current_theme = theme;
-    LOG_INFO("GUI", theme == GUI_THEME_CLASSIC ?
-             "Tema Classico preparado em RAM" :
-             "Tema Modern Dark preparado em RAM");
+    LOG_INFO("GUI", "Tema Modern Dark ativo");
     return OK;
 }
 

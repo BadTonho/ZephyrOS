@@ -309,7 +309,7 @@ static void guitest_draw_palette_card(const display_metrics_t* metrics,
                                   swatch_height, gap);
 
     gui_draw_scaled_text((uint32_t)details_x, (uint32_t)content_y,
-                         "Tema preparado:", GUI_MODERN_COLOR_TEXT);
+                         "Tema ativo:", GUI_MODERN_COLOR_TEXT);
     state_y = content_y + (int)metrics->font_height + gap;
     gui_draw_scaled_text((uint32_t)details_x, (uint32_t)state_y,
                          gui_theme_name(gui_get_theme()),

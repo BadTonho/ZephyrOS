@@ -18,6 +18,21 @@ mudanca; nao crie uma entrada artificial.
 
 ## Registros
 
+### 2026-07-30 - MV3, composicao visual Modern estatica (aguarda QEMU)
+
+- Cenario QEMU: em `guimode classic`, executar `kmetrics reset`, abrir uma
+  janela hospedada, arrasta-la entre cantos opostos dez vezes e executar
+  `kmetrics`; repetir com a mesma resolucao, escala e posicao da Taskbar da
+  linha-base anterior.
+- Metrica observavel: apresentacoes VESA, bytes copiados e maior tempo de
+  copia em ticks.
+- Antes: pendente de coleta pelo usuario na base MV2.
+- Depois: pendente de coleta apos a validacao MV3.
+- Conclusao: pendente; o efeito glass foi pre-mesclado no boot para nao
+  introduzir alpha blending no caminho de cada frame.
+- Impacto: Simple, boot, API de hospedagem e geometria de hit-testing devem
+  permanecer inalterados.
+
 ### 2026-07-27 - High Memory, bootstrap do paging em blocos
 
 - Cenario QEMU: executar `make clean && make`, iniciar com `make run`, usar

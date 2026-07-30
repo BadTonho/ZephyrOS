@@ -85,8 +85,7 @@ static int desktop_text_length(const char* text) {
 }
 
 static uint32_t desktop_classic_background(void) {
-    /* O fundo reutiliza o azul escuro da identidade visual atual. */
-    return vesa_rgb(0, 64, 96);
+    return GUI_MODERN_COLOR_BG;
 }
 
 static int desktop_classic_get_columns(const tb_rect_t* work_area) {
@@ -302,8 +301,12 @@ static void draw_single_icon_classic(desktop_icon_t* icon) {
     }
     if (display_get_metrics(&metrics) != OK) return;
 
-    uint32_t background = icon->selected ? GUI_COLOR_TITLE_BG : GUI_COLOR_BG;
-    uint32_t foreground = icon->selected ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
+    uint32_t background = icon->selected ? GUI_MODERN_COLOR_ACCENT :
+                          GUI_MODERN_COLOR_WINDOW;
+    uint32_t border = icon->selected ? GUI_MODERN_COLOR_ACCENT :
+                      GUI_MODERN_COLOR_BORDER_INACTIVE;
+    uint32_t foreground = GUI_MODERN_COLOR_TEXT;
+    uint32_t radius = display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE);
     int symbol_scale = metrics.scale == DISPLAY_SCALE_LARGE ? 3 :
                        DESKTOP_CLASSIC_SYMBOL_SCALE;
     int symbol_width = FONT_WIDTH * symbol_scale;
@@ -319,9 +322,15 @@ static void draw_single_icon_classic(desktop_icon_t* icon) {
     int label_y = icon->classic_y + icon->classic_height -
                   (int)label_height - (int)display_scale_px(10);
 
-    gui_draw_panel(icon->classic_x, icon->classic_y,
-                   icon->classic_width, icon->classic_height,
-                   background, icon->selected);
+    gui_draw_rounded_rect((uint32_t)icon->classic_x,
+                          (uint32_t)icon->classic_y,
+                          (uint32_t)icon->classic_width,
+                          (uint32_t)icon->classic_height, radius, border);
+    gui_draw_rounded_rect((uint32_t)(icon->classic_x + 1),
+                          (uint32_t)(icon->classic_y + 1),
+                          (uint32_t)(icon->classic_width - 2),
+                          (uint32_t)(icon->classic_height - 2),
+                          radius > 1U ? radius - 1U : 0U, background);
 
     vesa_color_t symbol_color;
     symbol_color.raw = foreground;

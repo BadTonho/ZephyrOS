@@ -29,8 +29,9 @@ funcionalidade entregue.
   argumentos simples e foco seguro foram validados no QEMU.
 - `echo` e a primeira ferramenta migrada para ring 3, sempre com fallback
   nativo controlado.
-- O Window Manager generico continua textual; a taskbar ainda usa a identidade
-  visual existente. Esses dois pontos pertencem ao backlog de interface.
+- O Window Manager generico continua textual no fallback Simple. No Classic,
+  as janelas hospedadas e a taskbar usam a composicao Modern Dark do MV3;
+  a validacao QEMU dessa etapa permanece pendente.
 
 ## Como ler os roadmaps antigos
 

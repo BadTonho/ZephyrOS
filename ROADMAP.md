@@ -325,7 +325,7 @@ Sistema e ecossistema:       [████████████████�
   `modern` fica reservado para a interface futura.
 - [x] **Interação gráfica do Desktop**: Clique para selecionar e duplo clique para abrir aplicativos.
 - [x] **Renderização de Textos Livres**: Substituir `video_put_char_at` por texto gráfico (desenho pixel a pixel) que possa ser renderizado em qualquer X/Y, não apenas na grade (col/row) - `gui_draw_text`.
-- [x] **Aplicativos modernos**: Explorer, Task Manager e Settings seguem a identidade visual existente e mantêm fallback TUI.
+- [x] **Aplicativos modernos**: Explorer, Task Manager e Settings usam janelas Classic Modern Dark e mantêm fallback TUI.
 - [x] **Double Buffering (Backbuffer)**: Renderização no VRAM em dois estágios para prevenir *flickering* (cintilação) durante o redesenho (Vesa Flip).
 - [x] **Entrada gráfica básica**: Roteamento de teclado e mouse preserva prioridade da taskbar e do Menu Iniciar.
 - [x] **Taskbar Classic**: Botões, relógio e Menu Iniciar preservam sua semântica nas cinco posições suportadas.
@@ -709,7 +709,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 - **Gerenciador de Processos** (`gerenciador de processos.md`)
 
 ### Novos Módulos e Aplicativos (App Store / Opcionais)
-- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1, AS2, MV0, MV0.1, MV1 e MV2 validados; proximo passo seguir para MV3
+- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1, AS2, MV0, MV0.1, MV1 e MV2 validados; MV3 implementado e aguardando validacao QEMU antes do AS3
 - **Gerenciador de Mídia** (`gerenciador de midia.md`)
 - **Gerenciador de Jogos** (`gerenciador de jogos.md`)
 - **Anti-Virus** (`anti virus.md`)

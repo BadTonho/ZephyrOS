@@ -62,12 +62,49 @@ static const char* size_names[] = {"Pequeno", "Medio", "Grande"};
 #define TASKBAR_CUSTOM_WIDTH 320
 #define TASKBAR_MENU_WIDTH 160
 #define TASKBAR_BUTTON_HEIGHT 20
+#define TASKBAR_GLASS_WINDOW_WEIGHT 3U
+#define TASKBAR_GLASS_WEIGHT_DIVISOR 4U
+
+static uint32_t taskbar_glass_background = GUI_MODERN_COLOR_WINDOW;
 
 static int taskbar_uses_gui(void) {
     vesa_mode_t* mode = vesa_get_mode();
 
     return desktop_get_mode() == DESKTOP_MODE_CLASSIC && mode &&
            mode->initialized && vesa_has_backbuffer();
+}
+
+static uint8_t taskbar_blend_glass_channel(uint8_t wallpaper,
+                                           uint8_t window) {
+    return (uint8_t)((wallpaper +
+                     (uint32_t)window * TASKBAR_GLASS_WINDOW_WEIGHT) /
+                     TASKBAR_GLASS_WEIGHT_DIVISOR);
+}
+
+static void taskbar_prepare_glass_background(void) {
+    vesa_color_t wallpaper;
+    vesa_color_t window;
+    vesa_color_t result;
+
+    wallpaper.raw = GUI_MODERN_COLOR_BG;
+    window.raw = GUI_MODERN_COLOR_WINDOW;
+    result.channels.red = taskbar_blend_glass_channel(
+        wallpaper.channels.red, window.channels.red);
+    result.channels.green = taskbar_blend_glass_channel(
+        wallpaper.channels.green, window.channels.green);
+    result.channels.blue = taskbar_blend_glass_channel(
+        wallpaper.channels.blue, window.channels.blue);
+    result.channels.alpha = 0;
+    taskbar_glass_background = result.raw;
+}
+
+static void taskbar_fill_glass_region(int x, int y, int width, int height) {
+    vesa_color_t background;
+
+    if (width <= 0 || height <= 0) return;
+    background.raw = taskbar_glass_background;
+    vesa_fill_rect((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                   (uint32_t)height, background);
 }
 
 static int taskbar_config_item_count(void) {
@@ -207,6 +244,7 @@ static void update_dimensions(void) {
 }
 
 void taskbar_init(void) {
+    LOG_INFO("TASKBAR", "Inicializando taskbar");
     button_count = 0;
     menu_open = 0;
     menu_selection = 0;
@@ -216,7 +254,9 @@ void taskbar_init(void) {
     pending_window_id = -1;
 
     update_dimensions();
+    taskbar_prepare_glass_background();
     taskbar_add_app(TB_APP_SHELL, "Shell");
+    LOG_INFO("TASKBAR", "Taskbar inicializada com sucesso");
 }
 
 static int get_row(void) {
@@ -261,28 +301,30 @@ static void taskbar_format_time(uint32_t current_second, char* time_str) {
     time_str[5] = '\0';
 }
 
-static void taskbar_draw_clock_gui_text(const char* time_str) {
+static int taskbar_get_clock_rect(tb_rect_t* clock) {
     tb_rect_t bounds;
     display_metrics_t metrics;
-    int clock_x;
-    int clock_y;
-    int clock_width;
-    vesa_color_t bg;
 
-    if (!taskbar_get_bounds(&bounds)) return;
-    if (display_get_metrics(&metrics) != OK) return;
-    clock_width = metrics.font_width * 5;
+    if (!clock || !taskbar_get_bounds(&bounds)) return 0;
+    if (display_get_metrics(&metrics) != OK) return 0;
+    clock->width = metrics.font_width * 5;
+    clock->height = metrics.font_height;
     if (taskbar_is_horizontal_gui()) {
-        clock_x = bounds.x + bounds.width - clock_width - metrics.spacing;
-        clock_y = bounds.y + (bounds.height - metrics.font_height) / 2;
+        clock->x = bounds.x + bounds.width - clock->width - metrics.spacing;
+        clock->y = bounds.y + (bounds.height - clock->height) / 2;
     } else {
-        clock_x = bounds.x + (bounds.width - clock_width) / 2;
-        clock_y = bounds.y + bounds.height -
-                  metrics.font_height - metrics.spacing;
+        clock->x = bounds.x + (bounds.width - clock->width) / 2;
+        clock->y = bounds.y + bounds.height - clock->height - metrics.spacing;
     }
-    bg.raw = GUI_COLOR_BG;
-    vesa_fill_rect(clock_x, clock_y, clock_width, metrics.font_height, bg);
-    gui_draw_scaled_text(clock_x, clock_y, time_str, GUI_COLOR_TEXT);
+    return 1;
+}
+
+static void taskbar_draw_clock_gui_text(const char* time_str) {
+    tb_rect_t clock;
+
+    if (!time_str || !taskbar_get_clock_rect(&clock)) return;
+    taskbar_fill_glass_region(clock.x, clock.y, clock.width, clock.height);
+    gui_draw_scaled_text(clock.x, clock.y, time_str, GUI_MODERN_COLOR_TEXT);
 }
 
 static int taskbar_get_button_rect(const tb_rect_t* bounds, int index,
@@ -340,22 +382,27 @@ static void taskbar_draw_gui(void) {
 
     mouse_invalidate_cursor();
 
-    vesa_color_t bg; bg.raw = GUI_COLOR_BG;
-    vesa_color_t light; light.raw = GUI_COLOR_BORDER_L;
-
-    vesa_fill_rect(bounds.x, bounds.y, bounds.width, bounds.height, bg);
-    vesa_draw_hline(bounds.x, bounds.y, bounds.width, light);
-    vesa_draw_vline(bounds.x, bounds.y, bounds.height, light);
+    taskbar_fill_glass_region(bounds.x, bounds.y, bounds.width,
+                               bounds.height);
+    gui_draw_flat_border((uint32_t)bounds.x, (uint32_t)bounds.y,
+                         (uint32_t)bounds.width, (uint32_t)bounds.height,
+                         GUI_MODERN_COLOR_BORDER_INACTIVE);
 
     if (taskbar_get_button_rect(&bounds, -1, &button)) {
-        gui_draw_scaled_button(button.x, button.y, button.width, button.height,
-                               "Inicio", menu_open);
+        gui_draw_modern_button((uint32_t)button.x, (uint32_t)button.y,
+                               (uint32_t)button.width,
+                               (uint32_t)button.height, "Inicio",
+                               menu_open ? GUI_BUTTON_STATE_PRESSED :
+                                           GUI_BUTTON_STATE_NORMAL);
     }
     for (int i = 0; i < button_count; i++) {
         tb_button_t* btn = &buttons[i];
         if (!taskbar_get_button_rect(&bounds, i, &button)) break;
-        gui_draw_scaled_button(button.x, button.y, button.width, button.height,
-                               btn->name, btn->active);
+        gui_draw_modern_button((uint32_t)button.x, (uint32_t)button.y,
+                               (uint32_t)button.width,
+                               (uint32_t)button.height, btn->name,
+                               btn->active ? GUI_BUTTON_STATE_PRESSED :
+                                             GUI_BUTTON_STATE_NORMAL);
     }
 
     taskbar_format_time(timer_get_ticks() / 50, time_str);
@@ -462,20 +509,12 @@ void taskbar_update_clock(void) {
     taskbar_format_time(current_second, time_str);
 
     if (taskbar_uses_gui()) {
-        tb_rect_t bounds;
-        int clock_x;
-        int clock_y;
+        tb_rect_t clock;
 
-        if (!taskbar_get_bounds(&bounds)) return;
-        if (taskbar_is_horizontal_gui()) {
-            clock_x = bounds.x + bounds.width - 48;
-            clock_y = bounds.y + 4;
-        } else {
-            clock_x = bounds.x + (bounds.width - 40) / 2;
-            clock_y = bounds.y + bounds.height - 20;
-        }
-        vesa_frame_begin_region((uint32_t)clock_x, (uint32_t)clock_y,
-                                40, 16);
+        if (!taskbar_get_clock_rect(&clock)) return;
+        vesa_frame_begin_region((uint32_t)clock.x, (uint32_t)clock.y,
+                                (uint32_t)clock.width,
+                                (uint32_t)clock.height);
         mouse_invalidate_cursor();
         taskbar_draw_clock_gui_text(time_str);
         vesa_frame_end();
@@ -666,26 +705,27 @@ static void taskbar_draw_menu_gui(void) {
     tb_rect_t menu;
     display_metrics_t metrics;
     int padding;
+    uint32_t radius;
 
     if (!menu_open) return;
     if (!taskbar_uses_gui()) return;
     if (!taskbar_get_menu_bounds(&menu)) return;
     if (display_get_metrics(&metrics) != OK) return;
     padding = (int)display_scale_px(5);
+    radius = display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE);
 
     vesa_frame_begin_region((uint32_t)menu.x, (uint32_t)menu.y,
                             (uint32_t)menu.width, (uint32_t)menu.height);
     mouse_invalidate_cursor();
     
-    vesa_color_t bg; bg.raw = GUI_COLOR_BG;
-    vesa_color_t light; light.raw = GUI_COLOR_BORDER_L;
-    vesa_color_t dark; dark.raw = GUI_COLOR_BORDER_D;
-    
-    vesa_fill_rect(menu.x, menu.y, menu.width, menu.height, bg);
-    vesa_draw_hline(menu.x, menu.y, menu.width, light);
-    vesa_draw_vline(menu.x, menu.y, menu.height, light);
-    vesa_draw_hline(menu.x, menu.y + menu.height - 1, menu.width, dark);
-    vesa_draw_vline(menu.x + menu.width - 1, menu.y, menu.height, dark);
+    gui_draw_rounded_rect((uint32_t)menu.x, (uint32_t)menu.y,
+                          (uint32_t)menu.width, (uint32_t)menu.height,
+                          radius, GUI_MODERN_COLOR_BORDER_INACTIVE);
+    gui_draw_rounded_rect((uint32_t)(menu.x + 1), (uint32_t)(menu.y + 1),
+                          (uint32_t)(menu.width - 2),
+                          (uint32_t)(menu.height - 2),
+                          radius > 1U ? radius - 1U : 0U,
+                          GUI_MODERN_COLOR_WINDOW);
     
     for (int i = 0; i < MENU_ITEM_COUNT; i++) {
         int item_y = menu.y + padding + i * metrics.row_height;
@@ -693,15 +733,18 @@ static void taskbar_draw_menu_gui(void) {
                      (metrics.row_height - metrics.font_height) / 2;
         
         if (menu_selection == i) {
-            vesa_color_t sel_bg; sel_bg.raw = GUI_COLOR_TITLE_BG;
-            vesa_fill_rect(menu.x + (int)display_scale_px(3), item_y,
-                           menu.width - (int)display_scale_px(6),
-                           metrics.row_height, sel_bg);
+            gui_draw_rounded_rect(
+                (uint32_t)(menu.x + (int)display_scale_px(3)),
+                (uint32_t)item_y,
+                (uint32_t)(menu.width - (int)display_scale_px(6)),
+                (uint32_t)metrics.row_height,
+                display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE),
+                GUI_MODERN_COLOR_ACCENT);
             gui_draw_scaled_text(menu.x + metrics.spacing, text_y,
                                  menu_items[i], GUI_COLOR_TEXT_W);
         } else {
             gui_draw_scaled_text(menu.x + metrics.spacing, text_y,
-                                 menu_items[i], GUI_COLOR_TEXT);
+                                 menu_items[i], GUI_MODERN_COLOR_TEXT);
         }
     }
 

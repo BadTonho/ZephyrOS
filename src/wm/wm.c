@@ -42,7 +42,13 @@ static int wm_active = 0;
 #define WM_GUI_CONTENT_BOTTOM WM_GUI_FRAME_INSET
 #define WM_GUI_RESIZE_ZONE \
     ((int)display_scale_px(WM_GUI_BASE_RESIZE_ZONE))
-#define WM_GUI_FOCUS_RING_WIDTH 2
+#define WM_GUI_FRAME_BORDER_WIDTH 1
+#define WM_GUI_FRAME_RADIUS_BASE 8U
+#define WM_GUI_CONTROL_RADIUS_DIVISOR 4
+#define WM_GUI_CONTROL_SYMBOL_DIVISOR 4
+#define WM_GUI_COLOR_CONTROL_CLOSE 0x00E06C75U
+#define WM_GUI_COLOR_CONTROL_MINIMIZE 0x00E5C07BU
+#define WM_GUI_COLOR_CONTROL_MAXIMIZE 0x0098C379U
 #define WM_GUI_RESIZE_LEFT 0x01
 #define WM_GUI_RESIZE_RIGHT 0x02
 #define WM_GUI_RESIZE_TOP 0x04
@@ -347,60 +353,152 @@ static int wm_gui_point_in_content(const wm_gui_window_t* window, int x, int y) 
            y < window->y + window->height - WM_GUI_CONTENT_BOTTOM;
 }
 
-static void wm_gui_draw_window(const wm_gui_window_t* window) {
-    vesa_color_t title_color = wm_gui_color(window->focused ?
-                                               GUI_COLOR_TITLE_BG : 0x00606060);
-    vesa_color_t focus_color = wm_gui_color(GUI_COLOR_TITLE_BG);
-    display_metrics_t metrics;
-    int title_x;
-    int title_y;
+static uint32_t wm_gui_control_color(wm_gui_control_t control) {
+    if (control == WM_GUI_CONTROL_CLOSE) return WM_GUI_COLOR_CONTROL_CLOSE;
+    if (control == WM_GUI_CONTROL_MINIMIZE) return WM_GUI_COLOR_CONTROL_MINIMIZE;
+    return WM_GUI_COLOR_CONTROL_MAXIMIZE;
+}
 
-    if (display_get_metrics(&metrics) != OK) return;
+static void wm_gui_draw_control_symbol(const tb_rect_t* rect,
+                                       wm_gui_control_t control,
+                                       int maximized) {
+    vesa_color_t symbol;
+    int center_x;
+    int center_y;
+    int half;
 
-    gui_draw_panel((uint32_t)window->x, (uint32_t)window->y,
-                   (uint32_t)window->width, (uint32_t)window->height,
-                   GUI_COLOR_BG, wm.config.border_style != 0);
-    if (window->focused) {
-        vesa_draw_rect((uint32_t)window->x, (uint32_t)window->y,
-                       (uint32_t)window->width, (uint32_t)window->height,
-                       focus_color);
-        vesa_draw_rect((uint32_t)(window->x + WM_GUI_FOCUS_RING_WIDTH - 1),
-                       (uint32_t)(window->y + WM_GUI_FOCUS_RING_WIDTH - 1),
-                       (uint32_t)(window->width - WM_GUI_FOCUS_RING_WIDTH),
-                       (uint32_t)(window->height - WM_GUI_FOCUS_RING_WIDTH),
-                       focus_color);
+    if (!rect) return;
+    symbol.raw = GUI_MODERN_COLOR_BG;
+    center_x = rect->x + rect->width / 2;
+    center_y = rect->y + rect->height / 2;
+    half = rect->height / WM_GUI_CONTROL_SYMBOL_DIVISOR;
+    if (half < 1) half = 1;
+
+    if (control == WM_GUI_CONTROL_CLOSE) {
+        vesa_draw_line(center_x - half, center_y - half,
+                       center_x + half, center_y + half, symbol);
+        vesa_draw_line(center_x + half, center_y - half,
+                       center_x - half, center_y + half, symbol);
+    } else if (control == WM_GUI_CONTROL_MINIMIZE) {
+        vesa_draw_hline((uint32_t)(center_x - half),
+                        (uint32_t)(center_y + half / 2),
+                        (uint32_t)(half * 2 + 1), symbol);
+    } else if (maximized) {
+        vesa_draw_rect((uint32_t)(center_x - half),
+                       (uint32_t)(center_y - half + 1),
+                       (uint32_t)(half * 2), (uint32_t)(half * 2), symbol);
+        vesa_draw_rect((uint32_t)(center_x - half + 2),
+                       (uint32_t)(center_y - half - 1),
+                       (uint32_t)(half * 2), (uint32_t)(half * 2), symbol);
+    } else {
+        vesa_draw_rect((uint32_t)(center_x - half),
+                       (uint32_t)(center_y - half),
+                       (uint32_t)(half * 2), (uint32_t)(half * 2), symbol);
+    }
+}
+
+static void wm_gui_draw_control(const wm_gui_window_t* window,
+                                int slot) {
+    tb_rect_t rect;
+    wm_gui_control_t control;
+    vesa_color_t color;
+    int radius;
+
+    if (!window) return;
+    control = wm_gui_control_at(slot);
+    wm_gui_control_rect(window, slot, &rect);
+    color.raw = wm_gui_control_color(control);
+    radius = rect.height / WM_GUI_CONTROL_RADIUS_DIVISOR;
+    if (radius < 1) radius = 1;
+    vesa_fill_circle(rect.x + rect.width / 2, rect.y + rect.height / 2,
+                     radius, color);
+    wm_gui_draw_control_symbol(&rect, control,
+                               window->state == WM_STATE_MAXIMIZED);
+}
+
+static void wm_gui_draw_frame(const wm_gui_window_t* window) {
+    uint32_t border = window->focused ? GUI_MODERN_COLOR_ACCENT :
+                      GUI_MODERN_COLOR_BORDER_INACTIVE;
+    uint32_t title = window->focused ? GUI_MODERN_COLOR_HOVER :
+                     GUI_MODERN_COLOR_WINDOW;
+    int radius = (int)display_scale_px(WM_GUI_FRAME_RADIUS_BASE);
+    int title_x = window->x + WM_GUI_FRAME_INSET;
+    int title_y = window->y + WM_GUI_FRAME_INSET;
+    int title_width = window->width - WM_GUI_FRAME_INSET * 2;
+    int title_radius;
+
+    if (radius < WM_GUI_FRAME_BORDER_WIDTH) radius = WM_GUI_FRAME_BORDER_WIDTH;
+    if (radius > window->height / 2) radius = window->height / 2;
+    gui_draw_rounded_rect((uint32_t)window->x, (uint32_t)window->y,
+                          (uint32_t)window->width, (uint32_t)window->height,
+                          (uint32_t)radius, border);
+    vesa_fill_rect((uint32_t)window->x, (uint32_t)(window->y + radius),
+                   (uint32_t)window->width,
+                   (uint32_t)(window->height - radius), wm_gui_color(border));
+
+    title_radius = radius - WM_GUI_FRAME_BORDER_WIDTH;
+    if (title_radius < 1) title_radius = 1;
+    if (title_radius > WM_GUI_TITLE_HEIGHT / 2) {
+        title_radius = WM_GUI_TITLE_HEIGHT / 2;
+    }
+    gui_draw_rounded_rect((uint32_t)title_x, (uint32_t)title_y,
+                          (uint32_t)title_width, WM_GUI_TITLE_HEIGHT,
+                          (uint32_t)title_radius, title);
+    if (window->focused && WM_GUI_TITLE_HEIGHT > title_radius) {
+        gui_draw_vertical_gradient(
+            (uint32_t)title_x, (uint32_t)(title_y + title_radius),
+            (uint32_t)title_width,
+            (uint32_t)(WM_GUI_TITLE_HEIGHT - title_radius),
+            GUI_MODERN_COLOR_HOVER, GUI_MODERN_COLOR_WINDOW);
+    } else if (WM_GUI_TITLE_HEIGHT > title_radius) {
+        vesa_fill_rect((uint32_t)title_x, (uint32_t)(title_y + title_radius),
+                       (uint32_t)title_width,
+                       (uint32_t)(WM_GUI_TITLE_HEIGHT - title_radius),
+                       wm_gui_color(title));
     }
     vesa_fill_rect((uint32_t)(window->x + WM_GUI_FRAME_INSET),
-                   (uint32_t)(window->y + WM_GUI_FRAME_INSET),
+                   (uint32_t)(window->y + WM_GUI_CONTENT_TOP),
                    (uint32_t)(window->width - WM_GUI_FRAME_INSET * 2),
-                   WM_GUI_TITLE_HEIGHT,
-                   title_color);
+                   (uint32_t)(window->height - WM_GUI_CONTENT_TOP -
+                              WM_GUI_CONTENT_BOTTOM),
+                   wm_gui_color(GUI_MODERN_COLOR_WINDOW));
+}
+
+static void wm_gui_draw_title(const wm_gui_window_t* window,
+                              const display_metrics_t* metrics) {
+    int control_width = WM_GUI_CONTROL_SIZE * 3 + WM_GUI_CONTROL_GAP * 2;
+    int margin = (int)display_scale_px(WM_GUI_BASE_CONTROL_MARGIN);
+    int title_x;
+    int title_right;
+    int title_y;
+
+    if (!window || !metrics || !wm.config.show_title_text) return;
     if (wm.config.btn_position == WM_BTNS_LEFT) {
-        title_x = window->x +
-                  (int)display_scale_px(WM_GUI_BASE_CONTROL_MARGIN) +
-                  3 * (WM_GUI_CONTROL_SIZE + WM_GUI_CONTROL_GAP) +
-                  metrics.spacing;
+        title_x = window->x + margin + control_width + metrics->spacing;
+        title_right = window->x + window->width - margin;
     } else {
-        title_x = window->x +
-                  (int)display_scale_px(WM_GUI_BASE_TITLE_MARGIN);
+        title_x = window->x + (int)display_scale_px(WM_GUI_BASE_TITLE_MARGIN);
+        title_right = window->x + window->width - margin - control_width;
     }
     title_y = window->y + WM_GUI_FRAME_INSET +
-              (WM_GUI_TITLE_HEIGHT - metrics.font_height) / 2;
-    if (wm.config.show_title_text) {
-        gui_draw_scaled_text((uint32_t)title_x, (uint32_t)title_y,
-                             window->app->title, GUI_COLOR_TEXT_W);
-    }
-    for (int i = 0; i < 3; i++) {
-        tb_rect_t rect;
-        wm_gui_control_t control = wm_gui_control_at(i);
-        const char* label = control == WM_GUI_CONTROL_CLOSE ? "X" :
-                            control == WM_GUI_CONTROL_MINIMIZE ? "_" :
-                            window->state == WM_STATE_MAXIMIZED ? "R" : "M";
-        wm_gui_control_rect(window, i, &rect);
-        gui_draw_scaled_button((uint32_t)rect.x, (uint32_t)rect.y,
-                               (uint32_t)rect.width, (uint32_t)rect.height,
-                               label, 0);
-    }
+              (WM_GUI_TITLE_HEIGHT - metrics->font_height) / 2;
+    if (title_right <= title_x) return;
+
+    vesa_set_clip_rect((uint32_t)title_x,
+                       (uint32_t)(window->y + WM_GUI_FRAME_INSET),
+                       (uint32_t)(title_right - title_x), WM_GUI_TITLE_HEIGHT);
+    gui_draw_scaled_text((uint32_t)title_x, (uint32_t)title_y,
+                         window->app->title, GUI_MODERN_COLOR_TEXT);
+    vesa_reset_clip_rect();
+}
+
+static void wm_gui_draw_window(const wm_gui_window_t* window) {
+    display_metrics_t metrics;
+
+    if (!window || display_get_metrics(&metrics) != OK) return;
+    wm_gui_draw_frame(window);
+    wm_gui_draw_title(window, &metrics);
+    for (int i = 0; i < 3; i++) wm_gui_draw_control(window, i);
     if (window->app->on_draw) {
         vesa_set_clip_rect(window->x + WM_GUI_FRAME_INSET,
                            window->y + WM_GUI_CONTENT_TOP,
@@ -417,7 +515,7 @@ static void wm_gui_draw_window(const wm_gui_window_t* window) {
 }
 
 static void wm_gui_draw_all(void) {
-    vesa_color_t background = wm_gui_color(vesa_rgb(0, 64, 96));
+    vesa_color_t background = wm_gui_color(GUI_MODERN_COLOR_BG);
 
     wm_gui_reflow_pending = 0;
     vesa_frame_begin();
