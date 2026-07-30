@@ -264,6 +264,9 @@ Menu Iniciar criam ou focalizam uma única janela de cada tipo.
   barra de título; janelas inativas usam a borda inativa. Os controles
   continuam nas mesmas zonas de clique, mas aparecem como círculos compactos
   de minimizar, maximizar/restaurar e fechar.
+  O padrao inicial segue o Windows: controles no lado direito, com minimizar,
+  maximizar/restaurar e fechar da esquerda para a direita. Lado e ordem
+  continuam configuraveis no Settings.
 
 ### Acessibilidade por teclado
 
