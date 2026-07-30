@@ -36,7 +36,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `stop` | - | Interrompe imediatamente qualquer reprodução de áudio. |
 | `edit` | `<arquivo>` | Abre o Editor de Texto integrado. |
 | `mouse` | - | Exibe debug em tempo real (X, Y, cliques) do Mouse PS/2. |
-| `guitest` | - | Roda um teste nativo das primitivas gráficas GUI 2D. |
+| `guitest` | `[modern]` | Testa a cena Classic ou a base visual Modern diagnóstica. |
 | `health` | `[summary]` | Mostra o relatorio completo ou um resumo compacto para testes. |
 | `update remote` | `status/enable/disable/clear [--confirm]` | Controla o transporte remoto opcional da sessao. |
 | `update fetch` | `[--url <manifesto>] [--confirm]` | Consulta ou baixa um ZUPD autenticado sem aplicar. |

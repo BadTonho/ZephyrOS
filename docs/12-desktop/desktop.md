@@ -195,6 +195,12 @@ void gui_draw_flat_border(uint32_t x, uint32_t y, uint32_t width,
 void gui_draw_vertical_gradient(uint32_t x, uint32_t y, uint32_t width,
                                 uint32_t height, uint32_t top_color,
                                 uint32_t bottom_color);
+int gui_set_theme(gui_theme_t theme);
+gui_theme_t gui_get_theme(void);
+const char* gui_theme_name(gui_theme_t theme);
+void gui_draw_modern_button(uint32_t x, uint32_t y,
+                            uint32_t width, uint32_t height,
+                            const char* text, gui_button_state_t state);
 ```
 
 As cenas Classic usam backbuffer e um único ciclo de frame. O MV1 adiciona
@@ -207,6 +213,20 @@ midpoint/Bresenham, sem ponto flutuante ou alocação. O gradiente interpola uma
 cor por linha com ponto fixo e preserva exatamente as cores da primeira e da
 última linha. Dimensões vazias ou regiões fora do framebuffer não desenham;
 as demais operações respeitam o clip VESA ativo.
+
+O MV2 acrescenta uma rota Modern paralela, sem substituir as APIs Classic:
+
+- `gui_theme_t` registra `GUI_THEME_CLASSIC` ou `GUI_THEME_MODERN_DARK`;
+- `gui_button_state_t` diferencia `NORMAL`, `HOVER` e `PRESSED`;
+- `gui_set_theme()` mantém somente a preferência preparada em RAM, sem
+  redesenhar a cena atual; valores inválidos preservam o estado anterior;
+- `gui_draw_modern_button()` usa raio base escalado de 4 px, borda flat,
+  texto nativo centralizado e altera apenas as cores entre os três estados.
+
+A paleta oficial Modern é `#1E1E24` para fundo, `#2A2B36` para janela/título,
+`#00ADB5` para acento, `#EEEEEE` para texto, `#4B4D5A` para borda inativa,
+`#343746` para hover e `#007F86` para pressed. As constantes `GUI_COLOR_*`,
+os painéis 3D e os botões/molduras Classic permanecem inalterados.
 
 As primitivas antigas continuam usando a fonte legada 8x16. Somente as
 variantes `scaled` consultam `ui/display.h` e selecionam a face nativa Zephyr
@@ -436,6 +456,11 @@ seu layout a partir de `taskbar_get_work_area()`.
 A opção `Escala` aparece tanto no Settings Simple quanto no Classic, é
 sincronizada ao abrir e chama `display_apply_scale()`. Uma recusa restaura
 imediatamente o valor visual anterior.
+
+A opção `Tema` oferece somente `Classico` e `Modern Dark`. Ela chama
+`gui_set_theme()` e registra a preferência preparada até o próximo boot, mas
+o próprio Settings e todo o restante do modo Classic mantêm o estilo atual.
+Essa seleção não habilita `guimode modern`.
 
 ### Categorias
 

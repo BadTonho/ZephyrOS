@@ -8,6 +8,9 @@
 
 #define GUI_BITMAP_BYTE_BITS 8U
 #define GUI_GRADIENT_FIXED_ONE 65536
+#define GUI_MODERN_BORDER_WIDTH 1U
+
+static gui_theme_t gui_current_theme = GUI_THEME_CLASSIC;
 
 static int gui_clamp_to_screen(uint32_t* x, uint32_t* y,
                                uint32_t* width, uint32_t* height) {
@@ -38,6 +41,30 @@ static void gui_draw_rounded_span(uint32_t x, uint32_t y, uint32_t width,
 
 void gui_init(void) {
     // Inicializacoes futuras (ex: double buffer, etc)
+}
+
+int gui_set_theme(gui_theme_t theme) {
+    if ((uint32_t)theme >= (uint32_t)GUI_THEME_COUNT) {
+        LOG_WARN("GUI", "Tema preparado invalido; estado preservado");
+        return ERR_INVALID;
+    }
+
+    gui_current_theme = theme;
+    LOG_INFO("GUI", theme == GUI_THEME_CLASSIC ?
+             "Tema Classico preparado em RAM" :
+             "Tema Modern Dark preparado em RAM");
+    return OK;
+}
+
+gui_theme_t gui_get_theme(void) {
+    return gui_current_theme;
+}
+
+const char* gui_theme_name(gui_theme_t theme) {
+    if (theme == GUI_THEME_CLASSIC) return "Classico";
+    if (theme == GUI_THEME_MODERN_DARK) return "Modern Dark";
+    LOG_WARN("GUI", "Nome solicitado para tema invalido");
+    return "Desconhecido";
 }
 
 void gui_draw_text(uint32_t x, uint32_t y, const char* text, uint32_t color) {
@@ -378,6 +405,68 @@ void gui_draw_scaled_button(uint32_t x, uint32_t y, uint32_t w, uint32_t h,
     }
     gui_draw_scaled_text((uint32_t)text_x, (uint32_t)text_y, text,
                          GUI_COLOR_TEXT);
+}
+
+static void gui_get_modern_button_colors(gui_button_state_t state,
+                                         uint32_t* background,
+                                         uint32_t* border) {
+    *border = state == GUI_BUTTON_STATE_NORMAL ?
+              GUI_MODERN_COLOR_BORDER_INACTIVE : GUI_MODERN_COLOR_ACCENT;
+    if (state == GUI_BUTTON_STATE_HOVER) {
+        *background = GUI_MODERN_COLOR_HOVER;
+    } else if (state == GUI_BUTTON_STATE_PRESSED) {
+        *background = GUI_MODERN_COLOR_PRESSED;
+    } else {
+        *background = GUI_MODERN_COLOR_WINDOW;
+    }
+}
+
+void gui_draw_modern_button(uint32_t x, uint32_t y,
+                            uint32_t width, uint32_t height,
+                            const char* text, gui_button_state_t state) {
+    uint32_t background;
+    uint32_t border;
+    uint32_t radius;
+    uint32_t text_width;
+    uint32_t text_height;
+    int32_t text_x;
+    int32_t text_y;
+
+    if ((uint32_t)state >= (uint32_t)GUI_BUTTON_STATE_COUNT) {
+        LOG_WARN("GUI", "Estado invalido para botao Modern");
+        return;
+    }
+    if (!gui_clamp_to_screen(&x, &y, &width, &height)) return;
+
+    gui_get_modern_button_colors(state, &background, &border);
+    radius = display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE);
+    gui_draw_rounded_rect(x, y, width, height, radius, border);
+    if (width > GUI_MODERN_BORDER_WIDTH * 2U &&
+        height > GUI_MODERN_BORDER_WIDTH * 2U) {
+        uint32_t inner_radius = radius > GUI_MODERN_BORDER_WIDTH ?
+                                radius - GUI_MODERN_BORDER_WIDTH : 0;
+
+        gui_draw_rounded_rect(
+            x + GUI_MODERN_BORDER_WIDTH, y + GUI_MODERN_BORDER_WIDTH,
+            width - GUI_MODERN_BORDER_WIDTH * 2U,
+            height - GUI_MODERN_BORDER_WIDTH * 2U,
+            inner_radius, background);
+    }
+    if (!text) return;
+    if (gui_measure_scaled_text(text, &text_width, &text_height) != OK) return;
+    if (text_width > width || text_height > height) {
+        LOG_WARN("GUI", "Texto nao cabe no botao Modern");
+        return;
+    }
+
+    text_x = (int32_t)x + ((int32_t)width - (int32_t)text_width) / 2;
+    text_y = (int32_t)y + ((int32_t)height - (int32_t)text_height) / 2;
+    if (text_x < 0 || text_y < 0) {
+        LOG_WARN("GUI", "Texto nao cabe no botao Modern");
+        return;
+    }
+    gui_draw_scaled_text((uint32_t)text_x, (uint32_t)text_y, text,
+                         GUI_MODERN_COLOR_TEXT);
 }
 
 void gui_draw_scaled_window_frame(uint32_t x, uint32_t y, uint32_t w,

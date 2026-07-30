@@ -171,20 +171,34 @@ Novas primitivas desenham formas sem artefatos visuais ou estouro de limites. O 
 
 ## MV2 - Novo Sistema de Cores e Estilos (Tema Dark Modern)
 
+**Estado:** implementado em 30/07/2026 e aguardando validacao do usuario.
+O renderer Classic permanece visualmente inalterado e `guimode modern`
+continua reservado.
+
 ### Implementacao
 
-- [ ] Definir a paleta de cores global do tema moderno no header `src/include/ui/gui.h` utilizando constantes:
-  - Fundo principal: Cinza-escuro/Chumbo (ex: `#1E1E24`).
-  - Barras de titulo e janelas: Cinza-azulado escuro (ex: `#2A2B36`).
-  - Cor de acento (foco): Ciano ou Azul Neon (ex: `#00ADB5`).
-  - Texto principal: Branco ou Cinza-claro (ex: `#EEEEEE`).
-  - Bordas de janela ativa/inativa.
-- [ ] Padronizar `gui_draw_button` para desenhar botoes com cantos ligeiramente arredondados (raio de 3 a 4 pixels), sem relevo 3D cinza, usando a nova paleta para os estados Normal, Hover (Foco) e Pressed (Pressionado).
-- [ ] Registrar o novo tema de cores no Settings, permitindo futuramente alternar paletas (sem persistência nesta fase).
+- [x] Definir no contrato `ui/gui.h` a paleta Modern global: fundo
+  `#1E1E24`, janela/titulo `#2A2B36`, acento `#00ADB5`, texto `#EEEEEE`,
+  borda inativa `#4B4D5A`, hover `#343746` e pressed `#007F86`.
+- [x] Adicionar `gui_draw_modern_button()` em uma rota paralela, com raio
+  base escalado de 4 px, borda flat, texto nativo centralizado e estados
+  Normal, Hover e Pressed definidos apenas por cores.
+- [x] Preservar integralmente `GUI_COLOR_*`, `gui_draw_button()`,
+  `gui_draw_scaled_button()`, paineis, molduras e chamadores Classic.
+- [x] Registrar `Classico` e `Modern Dark` no Settings. A preferencia fica em
+  RAM, inicia em Classic, nao redesenha a cena atual e nao habilita o modo
+  Modern reservado.
+- [x] Evoluir `guitest modern` para consumir a paleta global, preservar os
+  diagnosticos do MV1 e acrescentar amostras da paleta, nome do tema preparado
+  e um botao interativo com hover, press, arraste para fora e release.
 
 ### Criterio de saida
 
-Botoes e controles desenham com o novo design Flat e Dark. A alternancia de estados de foco e clique responde visualmente de forma imediata.
+Pendente da matriz QEMU do usuario: a base Modern deve responder visualmente
+a Normal/Hover/Pressed nas tres escalas, enquanto boot, Desktop, WM, Taskbar,
+Settings, aplicativos e `guitest` Classic permanecem visualmente identicos.
+Somente apos essa aprovacao o MV2 sera marcado como validado e o MV3 passara a
+ser o proximo passo.
 
 ## MV3 - Redesenho do Window Manager e Desktop
 

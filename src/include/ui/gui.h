@@ -11,7 +11,34 @@
 #define GUI_COLOR_TEXT_W   0x00FFFFFF // White
 #define GUI_COLOR_TITLE_BG 0x00000080 // Dark Blue for active title
 
+#define GUI_MODERN_COLOR_BG              0x001E1E24U
+#define GUI_MODERN_COLOR_WINDOW          0x002A2B36U
+#define GUI_MODERN_COLOR_ACCENT          0x0000ADB5U
+#define GUI_MODERN_COLOR_TEXT            0x00EEEEEEU
+#define GUI_MODERN_COLOR_BORDER_INACTIVE 0x004B4D5AU
+#define GUI_MODERN_COLOR_HOVER           0x00343746U
+#define GUI_MODERN_COLOR_PRESSED         0x00007F86U
+#define GUI_MODERN_BUTTON_RADIUS_BASE    4U
+
+typedef enum {
+    GUI_THEME_CLASSIC = 0,
+    GUI_THEME_MODERN_DARK,
+    GUI_THEME_COUNT
+} gui_theme_t;
+
+typedef enum {
+    GUI_BUTTON_STATE_NORMAL = 0,
+    GUI_BUTTON_STATE_HOVER,
+    GUI_BUTTON_STATE_PRESSED,
+    GUI_BUTTON_STATE_COUNT
+} gui_button_state_t;
+
 void gui_init(void);
+
+/* Preferencia preparada em RAM; nao altera o renderer Classic atual. */
+int gui_set_theme(gui_theme_t theme);
+gui_theme_t gui_get_theme(void);
+const char* gui_theme_name(gui_theme_t theme);
 
 // Primitive text rendering (pixel accurate)
 void gui_draw_text(uint32_t x, uint32_t y, const char* text, uint32_t color);
@@ -38,6 +65,9 @@ void gui_draw_vertical_gradient(uint32_t x, uint32_t y, uint32_t width,
 void gui_draw_button(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const char* text, int pressed);
 void gui_draw_scaled_button(uint32_t x, uint32_t y, uint32_t w, uint32_t h,
                             const char* text, int pressed);
+void gui_draw_modern_button(uint32_t x, uint32_t y,
+                            uint32_t width, uint32_t height,
+                            const char* text, gui_button_state_t state);
 
 // Window frame drawing
 void gui_draw_window_frame(uint32_t x, uint32_t y, uint32_t w, uint32_t h, const char* title, int active);
