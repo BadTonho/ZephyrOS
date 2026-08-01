@@ -239,7 +239,7 @@ de dependencia, confirmacao, instalacao/remocao, `WAITAPP` com `F12`, retorno
 de foco, singleton pelo Menu Iniciar/taskbar, fallback Simple e diagnosticos
 finais concluiram sem residuos.
 
-## AS4 - Atualizacao local e dependencias (implementada; validacao pendente)
+## AS4 - Atualizacao local e dependencias (concluida e validada)
 
 Esta fase comeca somente depois do MVP AS1-AS3 e da validacao MV4 compartilhada
 com o Roadmap 07.
@@ -258,12 +258,14 @@ com o Roadmap 07.
 - [x] Expor `store update`, `store rollback`, `store history` e failpoint AS4.
 - [x] Adicionar fixtures seed/update e alvos `store-as4-*`.
 
-### Validacao pendente
+### Validacao concluida
 
-O usuario executara `make q3check`, `make clean && make`,
-`make store-as4-test`, os demos seed/update e a matriz QEMU de update,
-rollback, downgrade, ciclo, plano incompleto, failpoints/reboot, Simple e
-Classic antes de marcar a fase como validada.
+O usuario executou `make q3check`, build limpo, os alvos AS4 e a matriz QEMU.
+Foram validados o plano `UPDEPB -> UPDEPA -> UPTARGET`, update, downgrade com
+dupla confirmacao, rollback consumivel, ciclo, plano incompleto, historico e
+failpoints apos a primeira e a quinta troca. Os dois reboots recuperaram o
+estado anterior com journal limpo e heap integro. A interface Classic repetiu
+update e rollback e preservou a selecao por alias/ID depois de `F5`.
 
 ### Criterio de saida
 
