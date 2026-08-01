@@ -152,35 +152,55 @@ oferece o protocolo Intellimouse, roda vertical via IRQ12.
 ### Inicialização
 
 ```c
-mouse_init();
+if (mouse_init() != OK) {
+    /* Teclado e Shell continuam disponiveis sem o dispositivo. */
+}
 ```
 
 Configura o controlador PS/2 para habilitar o mouse auxiliar e negocia a
 sequencia de taxas `200, 100, 80` do Intellimouse. Se o dispositivo nao
 confirmar a identificacao `0x03`, o driver mantem o protocolo de tres bytes e
 registra um unico aviso; movimento e cliques continuam operacionais.
+Timeout, ACK ausente ou falha ao registrar a IRQ retornam erro, deixam o
+driver indisponivel e nao bloqueiam o restante da inicializacao.
 
 ### Fluxo de Dados
 
 ```
-Mouse move/clica → IRQ12 → mouse_handler() → ring buffer → process_events() → callback
+Mouse move/clica → IRQ12 → ring buffer → escala/remapeamento → callback
 ```
 
 ### API
 
 ```c
-void           mouse_init(void);
+int            mouse_init(void);
 void           mouse_process_events(void);
 mouse_callback_t mouse_set_callback(mouse_callback_t cb);
 int            mouse_get_x(void);
 int            mouse_get_y(void);
 uint8_t        mouse_get_buttons(void);
 int            mouse_has_wheel(void);
+int            mouse_get_config(mouse_config_t* config);
+int            mouse_get_status(mouse_status_t* status);
+int            mouse_set_speed(uint8_t speed);
+int            mouse_set_acceleration(int enabled);
+int            mouse_set_primary_button(mouse_primary_button_t primary);
 ```
 
 `mouse_has_wheel()` retorna diferente de zero somente depois que a negociacao
 Intellimouse conclui com sucesso. Os pacotes comuns continuam tendo tres bytes;
 os de roda usam quatro bytes e geram `MOUSE_EVENT_WHEEL`.
+
+`mouse_config_t` mantem velocidade `1-10`, aceleracao e botao principal. Os
+padroes sao velocidade `3`, aceleracao desligada e botao esquerdo. Com o botao
+direito como principal, esquerda e direita sao trocados antes do callback;
+`mouse_get_buttons()` e `mouse_event_t` continuam expondo a mascara efetiva.
+`mouse_status_t` acrescenta a mascara bruta, disponibilidade, configuracao,
+ultimo erro e total de pacotes descartados para diagnostico.
+
+A aceleracao usa somente inteiros: movimento bruto abaixo de 4 conserva `1x`,
+entre 4 e 7 usa `1,5x` e a partir de 8 usa `2x`. A velocidade e aplicada depois
+da retirada da fila, e a posicao final permanece limitada ao framebuffer.
 
 ### Callback
 
@@ -215,13 +235,19 @@ faixa grande do framebuffer sem alterar a fila, os callbacks ou os cliques.
 ### Comando Shell
 
 ```bash
-mouse          # Mostra X, Y, botoes e disponibilidade da roda
+mouse                            # Status bruto/efetivo e configuracao
+mouse speed 1                    # Velocidade entre 1 e 10
+mouse primary right              # Botao principal left ou right
+mouse acceleration on            # Aceleracao on ou off
 ```
+
+As preferencias permanecem somente em RAM e voltam aos padroes no proximo
+boot. Entradas invalidas ou driver indisponivel preservam o estado anterior.
 
 ### Limitações
 
 - Movimento relativo apenas (sem posição absoluta)
-- Velocidade fixa (MOUSE_SPEED = 3)
+- Preferencias nao persistem apos reiniciar
 - Cursor de 12x16 pixels
 - Roda vertical opcional; botao central e roda horizontal nao sao tratados
 

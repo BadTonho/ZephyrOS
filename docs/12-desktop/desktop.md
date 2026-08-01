@@ -470,6 +470,12 @@ A opção `Escala` aparece tanto no Settings Simple quanto no Classic, é
 sincronizada ao abrir e chama `display_apply_scale()`. Uma recusa restaura
 imediatamente o valor visual anterior.
 
+A categoria `Mouse` também é compartilhada pelos dois modos. Velocidade,
+botão principal e aceleração são sincronizados ao abrir e aplicados pela API
+do driver. Uma recusa restaura o valor efetivo; as preferências ficam somente
+em RAM. No Classic, a altura das categorias se ajusta para manter as oito
+entradas dentro da janela nas três escalas.
+
 O tema Modern Dark é aplicado ao modo Classic no boot. O seletor de tema foi
 removido do Settings para não reintroduzir a skin Windows 95; isso não
 habilita `guimode modern`.
@@ -485,6 +491,7 @@ habilita `guimode modern`.
 | Sistema | Nome PC, Info memória, Processos, Reiniciar |
 | Som | Volume, Beep iniciar, Som teclado |
 | Sobre | Versão, Créditos |
+| Mouse | Velocidade (1-10), Botão principal, Aceleração |
 
 ---
 

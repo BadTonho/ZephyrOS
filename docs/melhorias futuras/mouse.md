@@ -76,7 +76,7 @@ typedef struct {
 
 typedef void (*mouse_callback_t)(mouse_packet_t*);
 
-void mouse_init(void);
+int mouse_init(void);
 void mouse_process_events(void);
 mouse_callback_t mouse_set_callback(mouse_callback_t cb);
 int mouse_get_x(void);
@@ -111,7 +111,9 @@ Adicionar `$(MOUSE_OBJ)` a lista `OBJS`.
 
 Na inicializacao (apos keyboard_init):
 ```c
-mouse_init();
+if (mouse_init() != OK) {
+    /* Preserva o fallback por teclado. */
+}
 ```
 
 No loop principal (apos keyboard_process_events):

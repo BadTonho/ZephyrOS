@@ -35,7 +35,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `view` | `<arquivo.bmp>`| Visualiza uma imagem BMP na tela VESA. |
 | `stop` | - | Interrompe imediatamente qualquer reprodução de áudio. |
 | `edit` | `<arquivo>` | Abre o Editor de Texto integrado. |
-| `mouse` | - | Exibe debug em tempo real (X, Y, cliques) do Mouse PS/2. |
+| `mouse` | `[speed 1-10|primary left/right|acceleration on/off]` | Inspeciona ou altera preferências do Mouse PS/2 em RAM. |
 | `guitest` | `[modern]` | Testa a cena Classic ou a base visual Modern diagnóstica. |
 | `health` | `[summary]` | Mostra o relatorio completo ou um resumo compacto para testes. |
 | `update remote` | `status/enable/disable/clear [--confirm]` | Controla o transporte remoto opcional da sessao. |

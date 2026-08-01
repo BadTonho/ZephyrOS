@@ -496,9 +496,14 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     video_print("[OK] Driver de teclado PS/2\n", 0x07);
 
     video_print("[..] Iniciando mouse...\n", 0x08);
-    mouse_init();
-    mouse_set_callback(global_mouse_handler);
-    video_print("[OK] Driver de mouse PS/2\n", 0x07);
+    int mouse_result = mouse_init();
+    if (mouse_result == OK) {
+        mouse_set_callback(global_mouse_handler);
+        video_print("[OK] Driver de mouse PS/2\n", 0x07);
+    } else {
+        LOG_ERROR("KERNEL", "Mouse PS/2 indisponivel; mantendo teclado e Shell");
+        video_print("[!!] Mouse PS/2 indisponivel; usando teclado\n", 0x0E);
+    }
 
     video_print("[..] Iniciando timer...\n", 0x08);
     timer_init(50);

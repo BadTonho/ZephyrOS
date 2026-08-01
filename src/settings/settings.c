@@ -83,6 +83,10 @@ static const char* windows_button_order_modern_values[] = {
 };
 static const char* windows_border_values[] = {"Simples", "Dupla"};
 static const char* sound_volume_values[] = {"Mudo", "Baixo", "Medio", "Alto", "Maximo"};
+static const char* mouse_speed_values[] = {
+    "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"
+};
+static const char* mouse_primary_values[] = {"Esquerdo", "Direito"};
 
 static void settings_draw_classic_main(void);
 static void settings_draw_classic_icon_editor(void);
@@ -109,6 +113,58 @@ static const wm_hosted_app_t settings_hosted_app = {
     settings_hosted_draw, settings_hosted_key, settings_hosted_mouse,
     settings_hosted_close
 };
+
+static void init_system_categories(void) {
+    categories[SETTINGS_CAT_SYSTEM].name = "Sistema";
+    categories[SETTINGS_CAT_SYSTEM].option_count = 4;
+    categories[SETTINGS_CAT_SYSTEM].options[0] = (settings_option_t){
+        "Nome do PC", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
+    };
+    categories[SETTINGS_CAT_SYSTEM].options[1] = (settings_option_t){
+        "Info memoria", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
+    };
+    categories[SETTINGS_CAT_SYSTEM].options[2] = (settings_option_t){
+        "Processos", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
+    };
+    categories[SETTINGS_CAT_SYSTEM].options[3] = (settings_option_t){
+        "Reiniciar", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
+    };
+
+    categories[SETTINGS_CAT_SOUND].name = "Som";
+    categories[SETTINGS_CAT_SOUND].option_count = 3;
+    categories[SETTINGS_CAT_SOUND].options[0] = (settings_option_t){
+        "Volume", SETTINGS_OPT_LIST, 2, 4, sound_volume_values, 5
+    };
+    categories[SETTINGS_CAT_SOUND].options[1] = (settings_option_t){
+        "Beep ao iniciar", SETTINGS_OPT_TOGGLE, 1, 1, NULL, 0
+    };
+    categories[SETTINGS_CAT_SOUND].options[2] = (settings_option_t){
+        "Som teclado", SETTINGS_OPT_TOGGLE, 0, 1, NULL, 0
+    };
+
+    categories[SETTINGS_CAT_ABOUT].name = "Sobre";
+    categories[SETTINGS_CAT_ABOUT].option_count = 2;
+    categories[SETTINGS_CAT_ABOUT].options[0] = (settings_option_t){
+        "Versao", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
+    };
+    categories[SETTINGS_CAT_ABOUT].options[1] = (settings_option_t){
+        "Creditos", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
+    };
+
+    categories[SETTINGS_CAT_MOUSE].name = "Mouse";
+    categories[SETTINGS_CAT_MOUSE].option_count = 3;
+    categories[SETTINGS_CAT_MOUSE].options[0] = (settings_option_t){
+        "Velocidade", SETTINGS_OPT_LIST, MOUSE_SPEED_DEFAULT - 1,
+        MOUSE_SPEED_MAX - 1, mouse_speed_values, MOUSE_SPEED_MAX
+    };
+    categories[SETTINGS_CAT_MOUSE].options[1] = (settings_option_t){
+        "Botao principal", SETTINGS_OPT_LIST, MOUSE_PRIMARY_LEFT,
+        MOUSE_PRIMARY_RIGHT, mouse_primary_values, 2
+    };
+    categories[SETTINGS_CAT_MOUSE].options[2] = (settings_option_t){
+        "Aceleracao", SETTINGS_OPT_TOGGLE, 0, 1, NULL, 0
+    };
+}
 
 static void init_categories(void) {
     for (int i = 0; i < SETTINGS_CAT_COUNT; i++) {
@@ -177,43 +233,7 @@ static void init_categories(void) {
     categories[SETTINGS_CAT_ICONS].options[3] = (settings_option_t){
         "Restaurar padrao", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
     };
-
-    categories[SETTINGS_CAT_SYSTEM].name = "Sistema";
-    categories[SETTINGS_CAT_SYSTEM].option_count = 4;
-    categories[SETTINGS_CAT_SYSTEM].options[0] = (settings_option_t){
-        "Nome do PC", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
-    };
-    categories[SETTINGS_CAT_SYSTEM].options[1] = (settings_option_t){
-        "Info memoria", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
-    };
-    categories[SETTINGS_CAT_SYSTEM].options[2] = (settings_option_t){
-        "Processos", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
-    };
-    categories[SETTINGS_CAT_SYSTEM].options[3] = (settings_option_t){
-        "Reiniciar", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
-    };
-
-    categories[SETTINGS_CAT_SOUND].name = "Som";
-    categories[SETTINGS_CAT_SOUND].option_count = 3;
-    categories[SETTINGS_CAT_SOUND].options[0] = (settings_option_t){
-        "Volume", SETTINGS_OPT_LIST, 2, 4,
-        sound_volume_values, 5
-    };
-    categories[SETTINGS_CAT_SOUND].options[1] = (settings_option_t){
-        "Beep ao iniciar", SETTINGS_OPT_TOGGLE, 1, 1, NULL, 0
-    };
-    categories[SETTINGS_CAT_SOUND].options[2] = (settings_option_t){
-        "Som teclado", SETTINGS_OPT_TOGGLE, 0, 1, NULL, 0
-    };
-
-    categories[SETTINGS_CAT_ABOUT].name = "Sobre";
-    categories[SETTINGS_CAT_ABOUT].option_count = 2;
-    categories[SETTINGS_CAT_ABOUT].options[0] = (settings_option_t){
-        "Versao", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
-    };
-    categories[SETTINGS_CAT_ABOUT].options[1] = (settings_option_t){
-        "Creditos", SETTINGS_OPT_ACTION, 0, 0, NULL, 0
-    };
+    init_system_categories();
 }
 
 static int settings_classic_layout(void) {
@@ -274,6 +294,19 @@ static void settings_sync_display_scale(void) {
     categories[SETTINGS_CAT_DISPLAY].options[0].value = metrics.scale;
 }
 
+static void settings_sync_mouse_preferences(void) {
+    mouse_config_t config;
+
+    if (mouse_get_config(&config) != OK) {
+        LOG_ERROR("SETTINGS", "Falha ao sincronizar preferencias do mouse");
+        return;
+    }
+    categories[SETTINGS_CAT_MOUSE].options[0].value = config.speed - 1;
+    categories[SETTINGS_CAT_MOUSE].options[1].value = config.primary_button;
+    categories[SETTINGS_CAT_MOUSE].options[2].value =
+        config.acceleration_enabled ? 1 : 0;
+}
+
 static void settings_select_mode(void) {
     settings_mode = SETTINGS_MODE_SIMPLE;
     if (desktop_get_mode() != DESKTOP_MODE_CLASSIC) {
@@ -305,6 +338,7 @@ void settings_init(void) {
     settings_hosted = 0;
     init_categories();
     settings_sync_display_scale();
+    settings_sync_mouse_preferences();
     LOG_INFO("SETTINGS", "Configuracoes inicializadas com sucesso");
 }
 
@@ -316,6 +350,7 @@ void settings_open(void) {
     }
 
     settings_sync_display_scale();
+    settings_sync_mouse_preferences();
     if (desktop_get_mode() == DESKTOP_MODE_CLASSIC && settings_hosted) {
         wm_set_active(1);
         wm_register_hosted_app(&settings_hosted_app);
@@ -457,6 +492,24 @@ static void apply_wm_settings(void) {
     wm_set_border_style(wm->options[3].value);
 }
 
+static void apply_mouse_settings(void) {
+    settings_page_t* mouse = &categories[SETTINGS_CAT_MOUSE];
+    int result;
+
+    if (selected_option == 0) {
+        result = mouse_set_speed((uint8_t)(mouse->options[0].value + 1));
+    } else if (selected_option == 1) {
+        result = mouse_set_primary_button(
+            (mouse_primary_button_t)mouse->options[1].value);
+    } else {
+        result = mouse_set_acceleration(mouse->options[2].value);
+    }
+    if (result != OK) {
+        LOG_ERROR("SETTINGS", "Preferencia do mouse recusada");
+        settings_sync_mouse_preferences();
+    }
+}
+
 static void settings_apply_category(void) {
     if (selected_category == SETTINGS_CAT_DISPLAY) {
         settings_page_t* display = &categories[SETTINGS_CAT_DISPLAY];
@@ -477,6 +530,9 @@ static void settings_apply_category(void) {
     }
     if (selected_category == SETTINGS_CAT_WINDOWS) {
         apply_wm_settings();
+    }
+    if (selected_category == SETTINGS_CAT_MOUSE) {
+        apply_mouse_settings();
     }
 }
 
@@ -797,6 +853,15 @@ static void settings_gui_draw_main_header(int x, int y, int width) {
                     settings_gui_color(GUI_MODERN_COLOR_BORDER_INACTIVE));
 }
 
+static int settings_gui_category_row_height(void) {
+    int side_height = settings_gui_height - SETTINGS_CLASSIC_PX(76);
+    int available_height = side_height - SETTINGS_CLASSIC_PX(38);
+    int fitted_height = available_height / SETTINGS_CAT_COUNT;
+
+    return fitted_height < SETTINGS_CLASSIC_ROW_HEIGHT ?
+           fitted_height : SETTINGS_CLASSIC_ROW_HEIGHT;
+}
+
 static void settings_draw_classic_main(void) {
     int side_x = settings_gui_x + SETTINGS_CLASSIC_MARGIN;
     int side_y = settings_gui_y + SETTINGS_CLASSIC_PX(32);
@@ -808,6 +873,7 @@ static void settings_draw_classic_main(void) {
                         SETTINGS_CLASSIC_PX(32);
     int content_height = side_height;
     int value_width = settings_gui_value_width(content_width);
+    int category_row_height = settings_gui_category_row_height();
     settings_page_t* page = &categories[selected_category];
 
     settings_gui_draw_surface(side_x, side_y, SETTINGS_CLASSIC_SIDE_WIDTH,
@@ -819,7 +885,7 @@ static void settings_draw_classic_main(void) {
 
     for (int i = 0; i < SETTINGS_CAT_COUNT; i++) {
         int row_y = side_y + SETTINGS_CLASSIC_PX(38) +
-                    i * SETTINGS_CLASSIC_ROW_HEIGHT;
+                    i * category_row_height;
         int selected = i == selected_category;
         uint32_t text_color = GUI_MODERN_COLOR_TEXT;
 
@@ -827,7 +893,7 @@ static void settings_draw_classic_main(void) {
             settings_gui_draw_surface(
                 side_x + SETTINGS_CLASSIC_PX(6), row_y,
                 SETTINGS_CLASSIC_SIDE_WIDTH - SETTINGS_CLASSIC_PX(12),
-                SETTINGS_CLASSIC_ROW_HEIGHT - SETTINGS_CLASSIC_PX(4),
+                category_row_height - SETTINGS_CLASSIC_PX(4),
                 GUI_MODERN_COLOR_HOVER, GUI_MODERN_COLOR_ACCENT);
         }
         gui_draw_text((uint32_t)(side_x + SETTINGS_CLASSIC_PX(16)),
@@ -1316,6 +1382,7 @@ static int settings_gui_handle_dialog_mouse(int px, int py) {
 }
 
 int settings_handle_mouse(mouse_event_t* event) {
+    int category_row_height;
     int value_x;
     int value_width;
     int content_width;
@@ -1355,12 +1422,13 @@ int settings_handle_mouse(mouse_event_t* event) {
                          settings_gui_y + SETTINGS_CLASSIC_PX(32),
                          SETTINGS_CLASSIC_SIDE_WIDTH,
                          settings_gui_height - SETTINGS_CLASSIC_PX(76))) {
+        category_row_height = settings_gui_category_row_height();
         row_offset = event->y -
                      (settings_gui_y + SETTINGS_CLASSIC_PX(70));
         if (row_offset < 0) return 1;
-        row = row_offset / SETTINGS_CLASSIC_ROW_HEIGHT;
-        if (row_offset % SETTINGS_CLASSIC_ROW_HEIGHT <
-                SETTINGS_CLASSIC_ROW_HEIGHT - SETTINGS_CLASSIC_PX(4) &&
+        row = row_offset / category_row_height;
+        if (row_offset % category_row_height <
+                category_row_height - SETTINGS_CLASSIC_PX(4) &&
             row >= 0 && row < SETTINGS_CAT_COUNT) {
             selected_category = row;
             selected_option = 0;

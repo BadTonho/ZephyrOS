@@ -34,7 +34,7 @@ Comandos disponiveis:
   view      - Exibe imagem BMP
   stop      - Para player de midia
   edit      - Editor de texto (edit ARQUIVO.TXT)
-  mouse     - Mostra status do mouse PS/2
+  mouse     - Mostra status ou altera preferencias do mouse PS/2
   guitest   - Testa primitivas GUI 2D
   guimode   - Altera entre gui simple (TUI) e classic
   display   - Mostra estado ou altera a escala da GUI classic
@@ -216,12 +216,20 @@ O comando nao aceita argumentos. `shutdown invalido` mostra
 `Uso: shutdown` e mantem o sistema ativo.
 
 ## `mouse`
-Mostra o status atual do mouse PS/2 (posição X/Y e botões pressionados).
+Sem argumentos, mostra disponibilidade, posição, roda, velocidade, aceleração,
+botão principal, máscaras bruta/efetiva, pacotes descartados e último erro.
 
 ```
 zephyr> mouse
-X=100 Y=200 Buttons=0x01
+zephyr> mouse speed 1
+zephyr> mouse primary right
+zephyr> mouse acceleration on
 ```
+
+A velocidade aceita `1-10`; o botão principal aceita `left|right`; a
+aceleração aceita `on|off`. Valores inválidos ou argumentos adicionais geram
+erro e preservam a configuração anterior. As preferências existem somente em
+RAM e retornam a `3`, `off` e `left` no próximo boot.
 
 ## `guitest`
 Testa as primitivas gráficas 2D do módulo GUI.

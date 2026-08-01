@@ -109,7 +109,7 @@ Sistema e ecossistema:       [████████████████�
 | `view` | Exibe imagem BMP |
 | `stop` | Para player de mídia |
 | `edit` | Editor de texto (edit ARQUIVO.TXT) |
-| `mouse` | Mostra status do mouse PS/2 |
+| `mouse` | Mostra status ou altera preferências do mouse PS/2 em RAM |
 | `guitest [modern]` | Testa primitivas GUI 2D e a base visual Modern |
 | `guimode` | Altera entre gui simple e classic |
 | `health` | Exibe metricas e estado de recovery |
