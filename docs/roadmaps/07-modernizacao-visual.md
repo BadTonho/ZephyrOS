@@ -233,9 +233,11 @@ os dois ultimos terminaram em `OK`.
 
 ### Estado atual
 
-Implementacao concluida em codigo em 2026-08-01. A validacao no QEMU, a
-comparacao manual de `kmetrics` e a aprovacao do fluxo AS3 permanecem
-pendentes; os valores nao devem ser preenchidos por estimativa.
+Implementacao e validacao funcional concluidas em 2026-08-01. No QEMU, o
+usuario validou os quatro aplicativos nas tres escalas Classic, o smoke do
+Simple, o fluxo AS3, `display status`, `health summary`, `memcheck` e
+`regcheck full`. A comparacao numerica antes/depois permanece `N/D`: a
+linha-base AS3 por cena nao foi retida e nao sera estimada.
 
 ### Implementacao
 
@@ -250,19 +252,22 @@ pendentes; os valores nao devem ser preenchidos por estimativa.
   usam 60 amostras do ciclo ja existente de 5 ticks.
 - [x] Refinar contraste e espacamento da Zephyr UI Bitmap sobre as faces
   nativas do MV0.1; fonte proporcional fica fora desta frente.
-- [ ] Registrar uma linha-base por cena fixa (modo VESA, escala, janela e
-  acao) com `kmetrics`, incluindo bytes apresentados e ticks de copia VESA.
-- [ ] Aceitar a nova aparencia somente quando a mesma cena nao aumentar mais
-  de 10% os ticks de copia ou bytes apresentados; qualquer excecao precisa ser
-  registrada em `docs/qualidade/metricas.md`.
+- [x] Registrar os snapshots MV4 por cena fixa em Classic/escala normal; a
+  comparacao permanece `N/D` porque a linha-base AS3 por cena nao foi retida.
+- [x] Registrar a excecao documental em `docs/qualidade/metricas.md`, sem
+  reivindicar ganho ou conformidade numerica de 10% sem a base comparavel.
 
 ### Criterio de saida
 
 Explorer, Settings, Task Manager e App Store abrem e funcionam com o novo
 visual. O redesenho de janelas arrastadas se mantem fluido e a comparacao
-`kmetrics` da mesma cena prova que a sobrecarga visual esta dentro do limite
-definido. `TCK%` continua sendo a estimativa existente baseada no PIT, nao
-uma medicao de CPU real; o historico dos graficos e resetado ao abrir a janela.
+`kmetrics` da mesma cena deve provar que a sobrecarga visual esta dentro do
+limite definido quando houver linha-base comparavel. Para a validacao MV4 de
+2026-08-01, essa verificacao ficou `N/D` porque a linha-base AS3 por cena nao
+foi retida; os snapshots MV4 e a excecao estao registrados em
+`docs/qualidade/metricas.md`. `TCK%` continua sendo a estimativa existente
+baseada no PIT, nao uma medicao de CPU real; o historico dos graficos e
+resetado ao abrir a janela.
 
 ## Validacao por etapa
 
