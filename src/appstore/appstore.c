@@ -578,18 +578,16 @@ static void appstore_simple_draw_entries(void) {
     for (int row = 0; row < max_rows; row++) {
         int index = appstore_visible_index((uint32_t)(appstore_scroll + row));
         app_catalog_entry_t* entry;
-        const app_package_info_t* info;
         int color;
 
         if (index < 0) break;
         entry = &appstore_entries[index];
-        info = appstore_entry_info(entry);
         color = index == appstore_selected ? 0x1F : appstore_entry_color(entry);
         if (index == appstore_selected) {
             video_fill_rect(2, 6 + row, APPSTORE_SIMPLE_LIST_WIDTH - 2,
                             1, ' ', 0x1F);
         }
-        video_print_at(3, 6 + row, info ? info->id : "N/D", color);
+        video_print_at(3, 6 + row, appstore_entry_label(entry), color);
     }
 }
 
@@ -815,6 +813,17 @@ static void appstore_gui_draw_disabled_button(int x, int y,
                   GUI_MODERN_COLOR_BORDER_INACTIVE);
 }
 
+static void appstore_gui_draw_action_button(int x, int y, const char* text,
+                                            int enabled) {
+    if (!enabled) {
+        appstore_gui_draw_disabled_button(x, y, text);
+        return;
+    }
+    gui_draw_modern_button((uint32_t)x, (uint32_t)y, APPSTORE_BUTTON_WIDTH,
+                           APPSTORE_BUTTON_HEIGHT, text,
+                           GUI_BUTTON_STATE_HOVER);
+}
+
 static void appstore_draw_classic(int x, int y, int width, int height) {
     int content_y = y + 50;
     int content_height = height - 108;
@@ -834,22 +843,14 @@ static void appstore_draw_classic(int x, int y, int width, int height) {
     }
     appstore_gui_draw_disabled_button(x + 16, y + height - 44,
                                       "Atualizar AS4");
-    gui_draw_modern_button((uint32_t)(x + 140), (uint32_t)(y + height - 44),
-                           APPSTORE_BUTTON_WIDTH, APPSTORE_BUTTON_HEIGHT,
-                           "Verificar", appstore_can(entry, APP_CATALOG_CAPABILITY_VERIFY) ?
-                           GUI_BUTTON_STATE_NORMAL : GUI_BUTTON_STATE_HOVER);
-    gui_draw_modern_button((uint32_t)(x + 264), (uint32_t)(y + height - 44),
-                           APPSTORE_BUTTON_WIDTH, APPSTORE_BUTTON_HEIGHT,
-                           "Instalar", appstore_can(entry, APP_CATALOG_CAPABILITY_INSTALL) ?
-                           GUI_BUTTON_STATE_NORMAL : GUI_BUTTON_STATE_HOVER);
-    gui_draw_modern_button((uint32_t)(x + 388), (uint32_t)(y + height - 44),
-                           APPSTORE_BUTTON_WIDTH, APPSTORE_BUTTON_HEIGHT,
-                           "Abrir", appstore_can(entry, APP_CATALOG_CAPABILITY_RUN) ?
-                           GUI_BUTTON_STATE_NORMAL : GUI_BUTTON_STATE_HOVER);
-    gui_draw_modern_button((uint32_t)(x + 512), (uint32_t)(y + height - 44),
-                           APPSTORE_BUTTON_WIDTH, APPSTORE_BUTTON_HEIGHT,
-                           "Remover", appstore_can(entry, APP_CATALOG_CAPABILITY_REMOVE) ?
-                           GUI_BUTTON_STATE_NORMAL : GUI_BUTTON_STATE_HOVER);
+    appstore_gui_draw_action_button(x + 140, y + height - 44, "Verificar",
+                                    appstore_can(entry, APP_CATALOG_CAPABILITY_VERIFY));
+    appstore_gui_draw_action_button(x + 264, y + height - 44, "Instalar",
+                                    appstore_can(entry, APP_CATALOG_CAPABILITY_INSTALL));
+    appstore_gui_draw_action_button(x + 388, y + height - 44, "Abrir",
+                                    appstore_can(entry, APP_CATALOG_CAPABILITY_RUN));
+    appstore_gui_draw_action_button(x + 512, y + height - 44, "Remover",
+                                    appstore_can(entry, APP_CATALOG_CAPABILITY_REMOVE));
     appstore_gui_draw_confirmation(x, y, width, height);
 }
 
