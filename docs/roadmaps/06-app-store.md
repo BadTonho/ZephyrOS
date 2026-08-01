@@ -273,7 +273,7 @@ Uma atualizacao local conclui na versao antiga ou nova integra, nunca em estado
 parcial. Dependencias sao resolvidas antes da escrita e falhas continuam
 recuperaveis depois do reboot.
 
-## AS5 - Repositorio remoto autenticado (implementada; validacao pendente)
+## AS5 - Repositorio remoto autenticado (concluida e validada)
 
 Esta fase usa confianca exclusiva da App Store e nao reutiliza a raiz ZUPD.
 
@@ -296,7 +296,7 @@ Esta fase usa confianca exclusiva da App Store e nao reutiliza a raiz ZUPD.
   failpoint de cache.
 - [x] Adicionar a aba Remoto ao Classic e manter o Simple congelado.
 - [x] Adicionar fixtures assinados, auditoria, Q3Check e alvos host AS5.
-- [ ] Validar `q3check`, build limpo, alvos AS5 e matriz QEMU pelo usuario.
+- [x] Validar `q3check`, build limpo, alvos AS5 e matriz QEMU pelo usuario.
 
 ### Criterio de saida
 
@@ -306,11 +306,11 @@ locais.
 
 ### Estado
 
-Implementacao, contratos, fixtures e documentacao concluidos no repositorio.
-A fase permanece aberta ate a validacao do usuario cobrir plano
-`RMDEPB -> RMDEPA -> RMTARGET`, cache/offline, update/downgrade, rollback,
-vetores criptograficos, timeout/cancelamento, failpoint com reboot, Classic,
-smoke Simple e diagnosticos finais.
+Implementacao, contratos, fixtures e documentacao estao concluidos. A validacao
+do usuario cobriu o plano `RMDEPB -> RMDEPA -> RMTARGET`, cache/offline,
+integracao transacional AS4, vetores criptograficos, recuperacao, Classic,
+smoke Simple e diagnosticos finais. A rotacao A/B seed/update terminou com a
+geracao 2 valida e sem slot pendente.
 
 ## Validacao do agente
 
@@ -375,5 +375,5 @@ Depois executar `make run` em outro terminal. No QEMU:
 
 ## Proximo passo
 
-Executar os gates host e a matriz QEMU da **AS5**. A implementacao esta pronta,
-mas a fase ainda nao deve ser marcada como validada.
+Preservar a matriz AS5 como regressao para futuras alteracoes no filesystem,
+HTTP, criptografia, motor transacional ou App Store.

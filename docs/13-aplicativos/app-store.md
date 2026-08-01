@@ -443,13 +443,20 @@ registrou `RECOVERY`, limpou o journal e manteve o heap integro. A interface
 Classic repetiu update e rollback, habilitou `Reverter` somente quando havia
 backup e preservou `UPTARGET` selecionado depois do refresh por `F5`.
 
-## Validacao AS5 pendente
+## Validacao AS5 concluida
 
-O codigo, fixtures e documentacao estao prontos para os gates host e a matriz
-QEMU. A fase somente sera marcada como validada depois de `q3check`, build
-limpo, alvos AS5, consulta/download/cancelamento, instalacao offline, update,
-rollback, falhas criptograficas, replay, failpoint com reboot e diagnosticos
-finais executados pelo usuario.
+Os gates host, o build limpo, os alvos AS5 e a matriz QEMU foram executados
+pelo usuario. A validacao cobriu opt-in por sessao, catalogo autenticado,
+planejamento `RMDEPB -> RMDEPA -> RMTARGET`, publicacao A/B, instalacao
+offline, procedencia, persistencia depois do reboot e a aba Remoto Classic.
+Os fixtures negativos validaram assinatura, hash, chave, replay, ciclo e plano
+incompleto. Os fluxos de recuperacao e os diagnosticos finais preservaram o
+cache ativo, o heap e os contratos AS4 reutilizados pela instalacao remota.
+
+Durante a matriz, foram corrigidos caminhos profundos que excediam a pilha do
+Shell, reautenticacao redundante do mesmo catalogo, nomes 8.3 do cache e a
+remocao do slot inativo na raiz FAT12. A rotacao final seed/update publicou a
+geracao 2 com `cache=VALID` e `pendente=NAO`.
 
 ## Limitacoes
 
