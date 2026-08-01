@@ -45,6 +45,7 @@
 #define MOUSE_IRQ_VECTOR 44
 #define MOUSE_WAIT_TIMEOUT 100000U
 #define MOUSE_BUTTON_MASK 0x07
+#define MOUSE_EFLAGS_INTERRUPT_ENABLE 0x200U
 
 typedef struct {
     uint32_t x;
@@ -503,9 +504,23 @@ static void mouse_handler(registers_t* regs) {
 
 /* ========== Inicializacao ========== */
 
-static int mouse_init_fail(int error, const char* message) {
+static uint32_t mouse_suspend_interrupts(void) {
+    uint32_t flags;
+
+    asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
+    return flags;
+}
+
+static void mouse_restore_interrupts(uint32_t flags) {
+    if (flags & MOUSE_EFLAGS_INTERRUPT_ENABLE) {
+        asm volatile("sti" : : : "memory");
+    }
+}
+
+static int mouse_init_fail(int error, const char* message, uint32_t flags) {
     driver_initialized = 0;
     last_error = error;
+    mouse_restore_interrupts(flags);
     LOG_ERROR("MOUSE", message);
     return error;
 }
@@ -535,45 +550,54 @@ static void mouse_reset_state(void) {
 }
 
 int mouse_init(void) {
+    uint32_t interrupt_flags;
     uint8_t controller_config;
     int result;
 
     LOG_INFO("MOUSE", "Inicializando driver PS/2...");
     mouse_reset_state();
+    /* A IRQ1 nao pode consumir respostas da transacao compartilhada PS/2. */
+    interrupt_flags = mouse_suspend_interrupts();
 
     /* Habilita porta auxiliar (mouse) */
     result = mouse_wait(1);
     if (result != OK) {
-        return mouse_init_fail(result, "Falha ao habilitar porta auxiliar");
+        return mouse_init_fail(result, "Falha ao habilitar porta auxiliar",
+                               interrupt_flags);
     }
     outb(MOUSE_CONTROLLER_PORT, MOUSE_CONTROLLER_ENABLE_AUX);
 
     /* Configura controladora para gerar IRQ12 */
     result = mouse_wait(1);
     if (result != OK) {
-        return mouse_init_fail(result, "Falha ao consultar controladora PS/2");
+        return mouse_init_fail(result, "Falha ao consultar controladora PS/2",
+                               interrupt_flags);
     }
     outb(MOUSE_CONTROLLER_PORT, MOUSE_CONTROLLER_READ_CONFIG);
     result = mouse_read(&controller_config);
     if (result != OK) {
-        return mouse_init_fail(result, "Falha ao ler configuracao PS/2");
+        return mouse_init_fail(result, "Falha ao ler configuracao PS/2",
+                               interrupt_flags);
     }
     controller_config |= MOUSE_CONTROLLER_IRQ12_ENABLE;
     result = mouse_wait(1);
     if (result != OK) {
-        return mouse_init_fail(result, "Falha ao preparar configuracao PS/2");
+        return mouse_init_fail(result, "Falha ao preparar configuracao PS/2",
+                               interrupt_flags);
     }
     outb(MOUSE_CONTROLLER_PORT, MOUSE_CONTROLLER_WRITE_CONFIG);
     result = mouse_wait(1);
     if (result != OK) {
-        return mouse_init_fail(result, "Falha ao gravar configuracao PS/2");
+        return mouse_init_fail(result, "Falha ao gravar configuracao PS/2",
+                               interrupt_flags);
     }
     outb(MOUSE_DATA_PORT, controller_config);
 
     /* Restaura padroes */
     result = mouse_write_ack(MOUSE_CMD_SET_DEFAULTS);
     if (result != OK) {
-        return mouse_init_fail(result, "Mouse PS/2 ausente ou sem resposta");
+        return mouse_init_fail(result, "Mouse PS/2 ausente ou sem resposta",
+                               interrupt_flags);
     }
 
     result = mouse_enable_wheel_protocol();
@@ -586,7 +610,8 @@ int mouse_init(void) {
         result = mouse_set_sample_rate(MOUSE_SAMPLE_RATE_FAST);
         if (result != OK) {
             return mouse_init_fail(result,
-                                   "Falha ao ativar protocolo PS/2 basico");
+                                   "Falha ao ativar protocolo PS/2 basico",
+                                   interrupt_flags);
         }
         if (!wheel_fallback_logged) {
             wheel_fallback_logged = 1;
@@ -596,14 +621,16 @@ int mouse_init(void) {
 
     result = mouse_write_ack(MOUSE_CMD_ENABLE_REPORTING);
     if (result != OK) {
-        return mouse_init_fail(result, "Falha ao habilitar dados do mouse");
+        return mouse_init_fail(result, "Falha ao habilitar dados do mouse",
+                               interrupt_flags);
     }
 
-    /* O registro libera a IRQ12 somente apos o ACK ter sido consumido. */
+    /* Instala o handler antes de restaurar as interrupcoes do processador. */
     result = idt_register_handler(MOUSE_IRQ_VECTOR,
                                   (isr_handler_t)mouse_handler);
     if (result != OK) {
-        return mouse_init_fail(result, "Falha ao registrar IRQ do mouse");
+        return mouse_init_fail(result, "Falha ao registrar IRQ do mouse",
+                               interrupt_flags);
     }
 
     /* Posiciona cursor no centro da tela */
@@ -617,6 +644,7 @@ int mouse_init(void) {
 
     driver_initialized = 1;
     last_error = OK;
+    mouse_restore_interrupts(interrupt_flags);
     LOG_INFO("MOUSE", "Inicializado com sucesso");
     return OK;
 }
