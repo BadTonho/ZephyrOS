@@ -228,6 +228,7 @@ typedef struct {
     char extra[16];
     app_catalog_entry_t entry;
     app_package_action_result_t action;
+    app_package_status_t status;
     app_launch_info_t launch;
     uint32_t pid;
 } shell_store_workspace_t;
@@ -8623,6 +8624,17 @@ static void cmd_store_set_local_failure(
     shell_store_workspace.action.reason = reason;
 }
 
+static void cmd_store_print_failed_transaction(int confirmed) {
+    if (confirmed &&
+        app_package_get_status(&shell_store_workspace.status) == OK &&
+        shell_store_workspace.status.transaction_pending) {
+        video_print("Transacao interrompida; reinicie para recuperar.\n",
+                    0x0E);
+        return;
+    }
+    video_print("Nenhuma gravacao foi realizada.\n", 0x0C);
+}
+
 static int cmd_store_build_plan(char* key, int update, int allow_downgrade) {
     app_package_plan_t* plan = &shell_store_workspace.action.plan;
     int result;
@@ -8664,7 +8676,7 @@ static void cmd_store_install(char* alias, int confirmed) {
                     "Preflight de instalacao: ",
         result);
     if (result != OK) {
-        video_print("Nenhuma gravacao foi realizada.\n", 0x0C);
+        cmd_store_print_failed_transaction(confirmed);
         return;
     }
     if (confirmed) {
@@ -8700,7 +8712,7 @@ static void cmd_store_update(char* key, int allow_downgrade, int confirmed) {
         confirmed ? "Atualizacao confirmada: " :
                     "Preflight de atualizacao: ", result);
     if (result != OK) {
-        video_print("Nenhuma gravacao foi realizada.\n", 0x0C);
+        cmd_store_print_failed_transaction(confirmed);
         return;
     }
     if (!confirmed) {
@@ -8760,7 +8772,7 @@ static void cmd_store_rollback(char* id, int confirmed) {
         confirmed ? "Rollback confirmado: " : "Preflight de rollback: ",
         result);
     if (result != OK) {
-        video_print("Nenhuma gravacao foi realizada.\n", 0x0C);
+        cmd_store_print_failed_transaction(confirmed);
         return;
     }
     if (!confirmed) {
