@@ -928,7 +928,7 @@ static int app_remote_clear_directory(uint8_t slot) {
         }
         count = fs_get_file_count_at(directory);
     }
-    if (fs_delete_file_in_dir("", directory) != OK) {
+    if (fs_atomic_delete_root(directory) != OK) {
         LOG_ERROR("APPREMOTE", "Falha ao remover diretorio de cache");
         return ERR_DISK;
     }
