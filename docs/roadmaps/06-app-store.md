@@ -215,25 +215,29 @@ worker cooperativo manterá Window Manager, rede, mouse e Shell responsivos.
 
 ### Estado
 
-Implementacao concluida e aguardando a validacao host/QEMU pelo usuario. O
-modulo usa um worker cooperativo para refresh, verificacao, preflight,
-instalacao, remocao e abertura; a interface usa somente os contratos AS1/AS2.
-Atualizar permanece visivel, mas desativado com a indicacao de que pertence ao
-AS4. O modo Simple entrega as tres abas e as mesmas operacoes; o retorno de
-foco de ZAPPs permanece no Shell.
+Implementacao e validacao host/QEMU concluidas pelo usuario. O modulo usa um
+worker cooperativo para refresh, verificacao, preflight, instalacao, remocao e
+abertura; a interface usa somente os contratos AS1/AS2. Atualizar permanece
+visivel, mas desativado com a indicacao de que pertence ao AS4. O modo Simple
+entrega as tres abas e as mesmas operacoes; o retorno de foco de ZAPPs
+permanece no Shell.
 
 ### Fallback
 
 - [x] O Shell preserva todas as operacoes e diagnosticos.
 - [x] Simple oferece uma TUI funcional quando a hospedagem Modern falhar.
-- [ ] A validacao obrigatoria usa Shell e Modern; Simple e cobertura
-  complementar.
+- [x] Classic, Shell e o smoke test complementar Simple foram validados.
 
 ### Criterio de saida
 
 O usuario consegue listar, inspecionar, instalar, abrir e remover `VALID.ZPK`
 pelo Modern. A janela permanece responsiva, as confirmacoes nao se confundem
 com selecoes antigas e todos os erros continuam reproduziveis pelo Shell.
+
+A matriz AS3 foi aprovada pelo usuario: fontes validas e invalidas, bloqueio
+de dependencia, confirmacao, instalacao/remocao, `WAITAPP` com `F12`, retorno
+de foco, singleton pelo Menu Iniciar/taskbar, fallback Simple e diagnosticos
+finais concluiram sem residuos.
 
 ## AS4 - Atualizacao local e dependencias
 
@@ -328,6 +332,5 @@ No QEMU:
 
 ## Proximo passo
 
-Validar o **AS3** no host e no QEMU. Depois da aprovacao da matriz de catalogo,
-ciclo de vida, Modern e fallback Simple, a execucao segue para o **MV4** do
-Roadmap 07.
+Prosseguir para o **MV4** do Roadmap 07. O AS3 esta concluido e validado no
+host e no QEMU.

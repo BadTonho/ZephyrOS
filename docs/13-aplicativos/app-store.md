@@ -6,7 +6,7 @@ O AS1 implementa o catalogo local somente-leitura sobre `ZPKG v1` e o servico
 `PKG`; ele esta concluido e validado. O AS2 acrescenta preflight, confirmacao,
 instalacao, remocao e execucao pelo Shell. O AS2 esta concluido e validado no
 host e no QEMU. O AS3 implementa a interface nativa hospedada, com fallback
-Simple completo, e aguarda a validacao host/QEMU pelo usuario.
+Simple completo, e foi validado no host e no QEMU pelo usuario.
 
 A interface AS3 usa a aparencia Modern Dark dentro do renderer Classic VESA;
 `guimode modern` continua reservado. Atualizacao, downgrade e resolucao
@@ -284,19 +284,21 @@ A matriz manual confirmou:
 7. estado final sem pacotes instalados, diretorios parciais ou processos
    residuais.
 
-Com AS1, AS2 e MV0-MV3 aprovados, o AS3 esta implementado e aguarda a
-validacao QEMU antes do MV4.
+## Validacao AS3
 
-## Validacao AS3 pendente
+O AS3 foi validado pelo usuario no host e no QEMU em 01/08/2026. A imagem de
+teste conteve as nove fontes AS1/AS2, com seis validas e tres invalidas. A
+matriz confirmou catalogo, detalhes, `F5`, verificacao de `VALID` e recusa de
+`BADCRC`, preflight de dependencia, confirmacao, instalacao e remocao sem
+diretorios parciais.
 
-O usuario deve executar os autotestes AS1/AS2 e o gate Q3 antes do build
-limpo. No QEMU, deve injetar os fixtures, abrir `store` pelo Shell e pelo Menu
-Iniciar, e confirmar no Classic as abas, a selecao, a atualizacao por F5, os
-motivos de `BADCRC` e `NEEDSDEP`, a confirmacao de `VALID`, a abertura com F12
-e a remocao. Em `guimode simple`, deve repetir o fluxo pelo teclado e retornar
-ao Classic. A aprovacao exige `health summary`, `pkgcheck`, `appcheck`,
-`memcheck` e `regcheck full` sem pacote parcial, processo ring 3 residual ou
-regressao de foco.
+`WAITAPP` foi aberto pela Store, a janela foi fechada para deixar o ZAPP em
+primeiro plano e `F12` o cancelou com retorno de foco ao Shell. A confirmacao
+contextual, a reabertura singleton pelo Menu Iniciar/taskbar e o smoke test
+em `guimode simple` tambem passaram. Ao final, `health summary`, `pkgcheck`,
+`appcheck`, `memcheck` e `regcheck full` confirmaram catalogo degradado apenas
+pelos fixtures invalidos, sem pacote instalado, processo ring 3, zumbi ou
+vazamento residual.
 
 ## Limitacoes
 
