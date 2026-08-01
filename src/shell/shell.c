@@ -225,7 +225,7 @@ typedef struct {
     char operation[16];
     char value[FS_MAX_PATH];
     char option[16];
-    char extra[2];
+    char extra[16];
     app_catalog_entry_t entry;
     app_package_action_result_t action;
     app_launch_info_t launch;
@@ -2390,7 +2390,7 @@ static void cmd_help(void) {
     video_print("  store    - Consulta e gerencia a App Store local\n", 0x07);
     video_print("             store status | list | info <ID|alias.ZPK>\n",
                 0x08);
-    video_print("             store install/remove/run (use --confirm)\n",
+    video_print("             store install/update/rollback/history (use --confirm)\n",
                 0x08);
     video_print("  update verify <arquivo.ZUP> - Verifica sem gravar\n", 0x07);
     video_print("  update status|history - Diagnostico persistente\n",
@@ -8238,6 +8238,7 @@ static void cmd_pkg(const char* args) {
 
 static void cmd_pkgcheck(void) {
     app_package_diagnostic_t diagnostic;
+    app_package_status_t status;
     int result;
     int passed;
 
@@ -8260,6 +8261,29 @@ static void cmd_pkgcheck(void) {
     video_print("  serializacao_mutacao ", 0x07);
     video_print(diagnostic.mutation_serialization ? "OK\n" : "ERRO\n",
                 diagnostic.mutation_serialization ? 0x0A : 0x0C);
+    video_print("  transacao_as4 ", 0x07);
+    video_print(diagnostic.transaction_supported ? "FAT12 OK\n" : "INDISPONIVEL\n",
+                diagnostic.transaction_supported ? 0x0A : 0x0E);
+    video_print("  journal_pendente ", 0x07);
+    video_print(diagnostic.transaction_pending ? "SIM\n" : "NAO\n",
+                diagnostic.transaction_pending ? 0x0E : 0x0A);
+    video_print("  rollback_disponivel ", 0x07);
+    video_print(diagnostic.rollback_available ? "SIM\n" : "NAO\n",
+                diagnostic.rollback_available ? 0x0E : 0x08);
+    if (app_package_get_status(&status) == OK && status.rollback_count) {
+        video_print("  rollbacks_as4 ", 0x07);
+        print_num(status.rollback_count);
+        video_print("\n", 0x07);
+    }
+    if (app_package_get_status(&status) == OK &&
+        status.last_history.sequence != 0U) {
+        video_print("  ultimo_historico ", 0x07);
+        video_print(app_package_history_operation_name(
+                        status.last_history.operation), 0x08);
+        video_print(" ", 0x08);
+        video_print(status.last_history.id, 0x08);
+        video_print("\n", 0x07);
+    }
     video_print("  resultado ", 0x07);
     video_print(passed ? "OK\n" : "ERRO\n", passed ? 0x0A : 0x0C);
 }
@@ -8341,6 +8365,11 @@ static void cmd_store_print_usage(void) {
     video_print("Uso: store status | store list | ", 0x0E);
     video_print("store info <ID|alias.ZPK>\n", 0x0E);
     video_print("     store install <alias.ZPK> [--confirm]\n", 0x0E);
+    video_print("     store update <ID|alias.ZPK> [--downgrade] [--confirm]\n",
+                0x0E);
+    video_print("     store rollback <ID> [--confirm]\n", 0x0E);
+    video_print("     store history [ID]\n", 0x0E);
+    video_print("     store test fail-after <1..32>\n", 0x0E);
     video_print("     store remove <ID> [--confirm]\n", 0x0E);
     video_print("     store run <ID> [args]\n", 0x0E);
 }
@@ -8348,6 +8377,7 @@ static void cmd_store_print_usage(void) {
 static void cmd_store_status(void) {
     const recovery_component_t* component;
     app_catalog_status_t status;
+    app_package_status_t transaction;
     int refresh_result = app_catalog_refresh();
 
     component = recovery_get(RECOVERY_COMPONENT_APP_STORE);
@@ -8382,6 +8412,35 @@ static void cmd_store_status(void) {
     print_num(APP_CATALOG_MAX_ENTRIES);
     video_print(status.entry_overflow ? " EXCEDIDO\n" : " OK\n",
                 status.entry_overflow ? 0x0E : 0x0A);
+    if (app_package_get_status(&transaction) == OK) {
+        video_print("  transacao=", 0x07);
+        video_print(transaction.transaction_supported ? "FAT12" : "INDISPONIVEL",
+                    transaction.transaction_supported ? 0x0A : 0x0E);
+        video_print(" journal=", 0x08);
+        video_print(transaction.transaction_pending ? "PENDENTE" : "LIMPO",
+                    transaction.transaction_pending ? 0x0E : 0x0A);
+        video_print(" rollback=", 0x08);
+        video_print(transaction.rollback_available ? transaction.rollback_id :
+                    "N/D", transaction.rollback_available ? 0x0A : 0x08);
+        if (transaction.rollback_available) {
+            video_print(" ", 0x08);
+            video_print(transaction.rollback_version, 0x08);
+        }
+        if (transaction.rollback_count > 1U) {
+            video_print(" +", 0x08);
+            print_num(transaction.rollback_count - 1U);
+            video_print(" app(s)", 0x08);
+        }
+        video_print("\n", 0x07);
+        if (transaction.last_history.sequence != 0U) {
+            video_print("  ultimo_historico=", 0x07);
+            video_print(app_package_history_operation_name(
+                            transaction.last_history.operation), 0x08);
+            video_print(" ", 0x08);
+            video_print(transaction.last_history.id, 0x08);
+            video_print("\n", 0x07);
+        }
+    }
 }
 
 static void cmd_store_list(void) {
@@ -8407,6 +8466,7 @@ static void cmd_store_list(void) {
 
 static void cmd_store_info(char* key) {
     app_catalog_entry_t entry;
+    app_package_status_t transaction;
     const app_package_info_t* info;
 
     if (app_catalog_refresh() != OK) {
@@ -8445,6 +8505,44 @@ static void cmd_store_info(char* key) {
     cmd_store_print_dependencies(&entry);
     video_print("\n  Capacidades: ", 0x07);
     cmd_store_print_capabilities(entry.capabilities);
+    if (app_package_get_status(&transaction) == OK) {
+        const app_package_rollback_entry_t* rollback = 0;
+
+        for (uint32_t index = 0; index < transaction.rollback_count; index++) {
+            if (info->id[0] &&
+                kstrcmp(transaction.rollbacks[index].id, info->id) == 0) {
+                rollback = &transaction.rollbacks[index];
+                break;
+            }
+        }
+        video_print("\n  Rollback: ", 0x07);
+        if (rollback) {
+            video_print("disponivel para ", 0x0A);
+            video_print(rollback->version, 0x0A);
+        } else {
+            video_print("indisponivel", 0x08);
+        }
+    }
+    video_print("\n", 0x07);
+}
+
+static void cmd_store_print_plan(const app_package_plan_t* plan) {
+    if (!plan || plan->entry_count == 0U) return;
+    video_print("  Plano topologico: ", 0x07);
+    for (uint32_t index = 0; index < plan->entry_count; index++) {
+        const app_package_plan_entry_t* entry = &plan->entries[index];
+
+        if (index) video_print(" -> ", 0x08);
+        video_print(entry->id, 0x0B);
+        video_print("(", 0x08);
+        video_print(app_package_plan_action_name(entry->action), 0x07);
+        video_print(" ", 0x08);
+        video_print(entry->from_version[0] ? entry->from_version : "novo",
+                    0x07);
+        video_print("->", 0x08);
+        video_print(entry->to_version, 0x07);
+        video_print(")", 0x08);
+    }
     video_print("\n", 0x07);
 }
 
@@ -8493,6 +8591,7 @@ static void cmd_store_print_action_result(
         video_print("\n", 0x07);
     }
     cmd_store_print_action_blockers(action);
+    cmd_store_print_plan(&action->plan);
 }
 
 static int cmd_store_find_action_entry(char* key) {
@@ -8524,24 +8623,42 @@ static void cmd_store_set_local_failure(
     shell_store_workspace.action.reason = reason;
 }
 
-static void cmd_store_install(char* alias, int confirmed) {
-    int result = cmd_store_find_action_entry(alias);
+static int cmd_store_build_plan(char* key, int update, int allow_downgrade) {
+    app_package_plan_t plan;
+    int result;
 
+    result = cmd_store_find_action_entry(key);
     if (result != OK || !shell_store_workspace.entry.has_source) {
         cmd_store_set_local_failure(
             result == ERR_UNAVAILABLE ?
                 APP_PACKAGE_ACTION_REASON_PACKAGE_SERVICE_UNAVAILABLE :
                 APP_PACKAGE_ACTION_REASON_SOURCE_NOT_FOUND);
+        return result == OK ? ERR_NOT_FOUND : result;
+    }
+    kmemset(&plan, 0, sizeof(plan));
+    result = update ? app_catalog_build_update_plan(key, allow_downgrade, &plan) :
+                      app_catalog_build_install_plan(key, &plan);
+    shell_store_workspace.action.plan = plan;
+    if (result != OK) {
+        shell_store_workspace.action.reason = plan.reason ? plan.reason :
+            APP_PACKAGE_ACTION_REASON_PLAN_INCOMPLETE;
+    }
+    return result;
+}
+
+static void cmd_store_install(char* alias, int confirmed) {
+    int result = cmd_store_build_plan(alias, 0, 0);
+
+    if (result != OK) {
         cmd_store_print_action_result("Preflight de instalacao: ",
-                                      result == OK ? ERR_NOT_FOUND : result);
-        if (confirmed) cmd_store_refresh_after_mutation();
+                                      result);
         return;
     }
     result = confirmed ?
-        app_package_install_confirmed(
-            alias, &shell_store_workspace.action) :
-        app_package_preflight_install(
-            alias, &shell_store_workspace.action);
+        app_package_apply_plan_confirmed(&shell_store_workspace.action.plan,
+                                         &shell_store_workspace.action) :
+        app_package_preflight_plan(&shell_store_workspace.action.plan,
+                                   &shell_store_workspace.action);
     if (confirmed) cmd_store_refresh_after_mutation();
     cmd_store_print_action_result(
         confirmed ? "Instalacao confirmada: " :
@@ -8561,6 +8678,38 @@ static void cmd_store_install(char* alias, int confirmed) {
     video_print("Para confirmar: store install ", 0x0E);
     video_print(alias, 0x0E);
     video_print(" --confirm\n", 0x0E);
+}
+
+static void cmd_store_update(char* key, int allow_downgrade, int confirmed) {
+    int result = cmd_store_build_plan(key, 1, allow_downgrade && confirmed);
+
+    if (result != OK) {
+        cmd_store_print_action_result("Preflight de atualizacao: ", result);
+        if (shell_store_workspace.action.reason ==
+            APP_PACKAGE_ACTION_REASON_DOWNGRADE_REQUIRES_CONFIRM) {
+            video_print("Downgrade exige --downgrade e --confirm.\n", 0x0E);
+        }
+        return;
+    }
+    result = confirmed ?
+        app_package_apply_plan_confirmed(&shell_store_workspace.action.plan,
+                                         &shell_store_workspace.action) :
+        app_package_preflight_plan(&shell_store_workspace.action.plan,
+                                   &shell_store_workspace.action);
+    if (confirmed) cmd_store_refresh_after_mutation();
+    cmd_store_print_action_result(
+        confirmed ? "Atualizacao confirmada: " :
+                    "Preflight de atualizacao: ", result);
+    if (result != OK) {
+        video_print("Nenhuma gravacao foi realizada.\n", 0x0C);
+        return;
+    }
+    if (!confirmed) {
+        video_print("Nenhuma gravacao foi realizada.\n", 0x0A);
+        video_print("Para confirmar: store update ", 0x0E);
+        video_print(key, 0x0E);
+        video_print(" --confirm\n", 0x0E);
+    }
 }
 
 static void cmd_store_remove(char* id, int confirmed) {
@@ -8600,6 +8749,77 @@ static void cmd_store_remove(char* id, int confirmed) {
     video_print(" --confirm\n", 0x0E);
 }
 
+static void cmd_store_rollback(char* id, int confirmed) {
+    int result;
+
+    cmd_pkg_uppercase_id(id);
+    result = confirmed ? app_package_rollback_confirmed(
+        id, &shell_store_workspace.action) : app_package_preflight_rollback(
+        id, &shell_store_workspace.action);
+    if (confirmed) cmd_store_refresh_after_mutation();
+    cmd_store_print_action_result(
+        confirmed ? "Rollback confirmado: " : "Preflight de rollback: ",
+        result);
+    if (result != OK) {
+        video_print("Nenhuma gravacao foi realizada.\n", 0x0C);
+        return;
+    }
+    if (!confirmed) {
+        video_print("Nenhuma gravacao foi realizada.\n", 0x0A);
+        video_print("Para confirmar: store rollback ", 0x0E);
+        video_print(id, 0x0E);
+        video_print(" --confirm\n", 0x0E);
+    }
+}
+
+static void cmd_store_history(char* id) {
+    uint32_t count = 0;
+    int printed = 0;
+
+    if (id && id[0]) cmd_pkg_uppercase_id(id);
+    if (app_package_get_history_count(&count) != OK) {
+        video_print("Historico AS4 indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("Historico App Store:\n", 0x0B);
+    for (uint32_t index = 0; index < count; index++) {
+        app_package_history_entry_t entry;
+
+        if (app_package_get_history_entry(index, &entry) != OK ||
+            (id && id[0] && kstrcmp(entry.id, id) != 0)) continue;
+        video_print("  #", 0x08);
+        print_num(entry.sequence);
+        video_print(" ", 0x07);
+        video_print(app_package_history_operation_name(entry.operation), 0x0B);
+        video_print(" ", 0x07);
+        video_print(entry.id[0] ? entry.id : "N/D", 0x07);
+        video_print(" ", 0x08);
+        video_print(entry.from_version[0] ? entry.from_version : "-", 0x08);
+        video_print("->", 0x08);
+        video_print(entry.to_version[0] ? entry.to_version : "-", 0x08);
+        video_print(" ", 0x08);
+        video_print(app_package_history_outcome_name(entry.outcome),
+                    entry.outcome == APP_PACKAGE_HISTORY_OUTCOME_SUCCESS ?
+                    0x0A : 0x0E);
+        video_print("\n", 0x07);
+        printed = 1;
+    }
+    if (!printed) video_print("  (vazio)\n", 0x08);
+}
+
+static void cmd_store_test_fail_after(char* value) {
+    uint32_t count = parse_number(value);
+    int result = app_package_test_fail_after((uint16_t)count);
+
+    if (result == OK) {
+        video_print("Failpoint AS4 configurado apos ", 0x0A);
+        print_num(count);
+        video_print(" trocas de arquivo.\n", 0x0A);
+    } else {
+        video_print("Uso: store test fail-after <1..32>\n", 0x0E);
+    }
+}
+
 static void cmd_store_run(char* id, const char* arguments) {
     int result = cmd_store_find_action_entry(id);
 
@@ -8633,6 +8853,7 @@ static void cmd_store_run(char* id, const char* arguments) {
 static void cmd_store(const char* args) {
     const char* cursor = args;
     int confirmed;
+    int downgrade;
 
     kmemset(&shell_store_workspace, 0, sizeof(shell_store_workspace));
     if (!args || !args[0]) {
@@ -8654,7 +8875,10 @@ static void cmd_store(const char* args) {
                        sizeof(shell_store_workspace.option));
     cmd_pkg_take_token(&cursor, shell_store_workspace.extra,
                        sizeof(shell_store_workspace.extra));
-    confirmed = kstrcmp(shell_store_workspace.option, "--confirm") == 0;
+    confirmed = kstrcmp(shell_store_workspace.option, "--confirm") == 0 ||
+                kstrcmp(shell_store_workspace.extra, "--confirm") == 0;
+    downgrade = kstrcmp(shell_store_workspace.option, "--downgrade") == 0 ||
+                kstrcmp(shell_store_workspace.extra, "--downgrade") == 0;
     if (shell_store_workspace.operation[0] == '\0') {
         shell_handle_app_request(IPC_APP_OPEN_APP_STORE);
     } else if (kstrcmp(shell_store_workspace.operation, "status") == 0 &&
@@ -8674,11 +8898,37 @@ static void cmd_store(const char* args) {
                shell_store_workspace.extra[0] == '\0' &&
                (shell_store_workspace.option[0] == '\0' || confirmed)) {
         cmd_store_install(shell_store_workspace.value, confirmed);
+    } else if (kstrcmp(shell_store_workspace.operation, "update") == 0 &&
+               shell_store_workspace.value[0] != '\0' &&
+               ((shell_store_workspace.option[0] == '\0' &&
+                 shell_store_workspace.extra[0] == '\0') ||
+                (confirmed && downgrade))) {
+        cmd_store_update(shell_store_workspace.value, downgrade, confirmed);
+    } else if (kstrcmp(shell_store_workspace.operation, "update") == 0 &&
+               shell_store_workspace.value[0] != '\0' &&
+               shell_store_workspace.extra[0] == '\0' &&
+               (kstrcmp(shell_store_workspace.option, "--confirm") == 0 ||
+                kstrcmp(shell_store_workspace.option, "--downgrade") == 0)) {
+        cmd_store_update(shell_store_workspace.value, downgrade, confirmed);
     } else if (kstrcmp(shell_store_workspace.operation, "remove") == 0 &&
                shell_store_workspace.value[0] != '\0' &&
                shell_store_workspace.extra[0] == '\0' &&
                (shell_store_workspace.option[0] == '\0' || confirmed)) {
         cmd_store_remove(shell_store_workspace.value, confirmed);
+    } else if (kstrcmp(shell_store_workspace.operation, "rollback") == 0 &&
+               shell_store_workspace.value[0] != '\0' &&
+               shell_store_workspace.extra[0] == '\0' &&
+               (shell_store_workspace.option[0] == '\0' || confirmed)) {
+        cmd_store_rollback(shell_store_workspace.value, confirmed);
+    } else if (kstrcmp(shell_store_workspace.operation, "history") == 0 &&
+               shell_store_workspace.option[0] == '\0' &&
+               shell_store_workspace.extra[0] == '\0') {
+        cmd_store_history(shell_store_workspace.value);
+    } else if (kstrcmp(shell_store_workspace.operation, "test") == 0 &&
+               kstrcmp(shell_store_workspace.value, "fail-after") == 0 &&
+               shell_store_workspace.option[0] != '\0' &&
+               shell_store_workspace.extra[0] == '\0') {
+        cmd_store_test_fail_after(shell_store_workspace.option);
     } else {
         LOG_WARN("SHELL", "Uso invalido do comando store");
         cmd_store_print_usage();

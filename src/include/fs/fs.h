@@ -66,6 +66,13 @@ int      fs_atomic_write_root(const char* filename, const uint8_t* data,
                               uint32_t size, uint8_t attributes,
                               fs_atomic_mode_t mode);
 int      fs_atomic_delete_root(const char* filename);
+int      fs_atomic_write_file_in_dir(const char* dir_path,
+                                     const char* filename,
+                                     const uint8_t* data, uint32_t size,
+                                     uint8_t attributes,
+                                     fs_atomic_mode_t mode);
+int      fs_atomic_delete_file_in_dir(const char* dir_path,
+                                      const char* filename);
 int      fs_stream_begin_root(const char* filename, uint32_t expected_size,
                               uint8_t attributes);
 int      fs_stream_write_root(const uint8_t* data, uint32_t size);

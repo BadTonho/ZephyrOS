@@ -8,7 +8,6 @@
 
 #define APP_CATALOG_DIRECTORY_ATTRIBUTE 0x10U
 #define APP_CATALOG_EXTENSION_SIZE      4U
-#define APP_CATALOG_VERSION_PARTS       3U
 
 typedef struct {
     char alias[APP_CATALOG_ALIAS_SIZE];
@@ -173,36 +172,14 @@ static int app_catalog_alias_matches(const char* alias, const char* id) {
            alias[id_length + 2U] == 'P' && alias[id_length + 3U] == 'K';
 }
 
-static int app_catalog_compare_decimal(const char** left_cursor,
-                                       const char** right_cursor) {
-    const char* left = *left_cursor;
-    const char* right = *right_cursor;
-    const char* left_end = left;
-    const char* right_end = right;
-
-    while (*left_end && *left_end != '.') left_end++;
-    while (*right_end && *right_end != '.') right_end++;
-    while (left + 1 < left_end && *left == '0') left++;
-    while (right + 1 < right_end && *right == '0') right++;
-    if ((left_end - left) != (right_end - right)) {
-        return (left_end - left) > (right_end - right) ? 1 : -1;
-    }
-    while (left < left_end) {
-        if (*left != *right) return *left > *right ? 1 : -1;
-        left++;
-        right++;
-    }
-    *left_cursor = *left_end == '.' ? left_end + 1 : left_end;
-    *right_cursor = *right_end == '.' ? right_end + 1 : right_end;
-    return 0;
-}
-
 static int app_catalog_compare_versions(const char* left, const char* right) {
-    for (uint32_t part = 0; part < APP_CATALOG_VERSION_PARTS; part++) {
-        int comparison = app_catalog_compare_decimal(&left, &right);
-        if (comparison != 0) return comparison;
+    int comparison = 0;
+
+    if (app_package_compare_versions(left, right, &comparison) != OK) {
+        LOG_ERROR("APPSTORE", "Versao invalida no catalogo");
+        return 0;
     }
-    return 0;
+    return comparison;
 }
 
 static uint32_t app_catalog_missing_dependencies(
@@ -221,9 +198,16 @@ static void app_catalog_classify(app_catalog_entry_t* entry) {
     int comparison;
 
     entry->capabilities = APP_CATALOG_CAPABILITY_VERIFY;
-    if (entry->has_installed) {
+    if (!entry->has_installed) {
+        entry->capabilities |= APP_CATALOG_CAPABILITY_INSTALL;
+    } else {
         entry->capabilities |= APP_CATALOG_CAPABILITY_RUN |
                                APP_CATALOG_CAPABILITY_REMOVE;
+        comparison = app_catalog_compare_versions(entry->source.version,
+                                                  entry->installed.version);
+        if (comparison > 0) {
+            entry->capabilities |= APP_CATALOG_CAPABILITY_UPDATE;
+        }
     }
     entry->missing_dependency_mask =
         app_catalog_missing_dependencies(&entry->source);
@@ -234,7 +218,6 @@ static void app_catalog_classify(app_catalog_entry_t* entry) {
     }
     if (!entry->has_installed) {
         entry->state = APP_CATALOG_STATE_AVAILABLE;
-        entry->capabilities |= APP_CATALOG_CAPABILITY_INSTALL;
         return;
     }
     comparison = app_catalog_compare_versions(entry->source.version,
@@ -244,6 +227,7 @@ static void app_catalog_classify(app_catalog_entry_t* entry) {
         entry->capabilities |= APP_CATALOG_CAPABILITY_UPDATE;
     } else if (comparison < 0) {
         entry->state = APP_CATALOG_STATE_DOWNGRADE;
+        entry->capabilities |= APP_CATALOG_CAPABILITY_UPDATE;
     } else {
         entry->state = APP_CATALOG_STATE_SAME_VERSION;
     }
@@ -345,6 +329,182 @@ static void app_catalog_sort_entries(void) {
     }
 }
 
+typedef struct {
+    app_package_plan_t* plan;
+    uint8_t visiting[APP_CATALOG_MAX_ENTRIES];
+    uint8_t visited[APP_CATALOG_MAX_ENTRIES];
+    int update_target;
+} app_catalog_plan_context_t;
+
+static int app_catalog_find_source_index(const char* key,
+                                         uint32_t* index_out) {
+    if (!key || !index_out) return ERR_NULL;
+    for (uint32_t index = 0; index < catalog_status.entry_count; index++) {
+        const app_catalog_entry_t* entry = &catalog_entries[index];
+
+        if (!entry->has_source) continue;
+        if (kstrcmp(entry->alias, key) == 0 ||
+            kstrcmp(entry->source.id, key) == 0) {
+            *index_out = index;
+            return OK;
+        }
+    }
+    return ERR_NOT_FOUND;
+}
+
+static void app_catalog_plan_sort_dependencies(
+    const app_package_info_t* info,
+    char dependencies[APP_PACKAGE_MAX_DEPENDENCIES][APP_PACKAGE_ID_SIZE]) {
+    for (uint32_t index = 0; index < info->dependency_count; index++) {
+        app_catalog_copy_text(dependencies[index], APP_PACKAGE_ID_SIZE,
+                              info->dependencies[index]);
+    }
+    for (uint32_t index = 1; index < info->dependency_count; index++) {
+        char item[APP_PACKAGE_ID_SIZE];
+        uint32_t position = index;
+
+        app_catalog_copy_text(item, sizeof(item), dependencies[index]);
+        while (position > 0U &&
+               kstrcmp(dependencies[position - 1U], item) > 0) {
+            app_catalog_copy_text(dependencies[position], APP_PACKAGE_ID_SIZE,
+                                  dependencies[position - 1U]);
+            position--;
+        }
+        app_catalog_copy_text(dependencies[position], APP_PACKAGE_ID_SIZE,
+                              item);
+    }
+}
+
+static int app_catalog_plan_append(app_catalog_plan_context_t* context,
+                                   const app_catalog_entry_t* entry,
+                                   app_package_plan_action_t action,
+                                   uint32_t* position_out) {
+    app_package_plan_entry_t* item;
+    app_package_plan_t* plan = context->plan;
+
+    if (plan->entry_count >= APP_PACKAGE_MAX_PLAN_ENTRIES) {
+        plan->reason = APP_PACKAGE_ACTION_REASON_PLAN_INCOMPLETE;
+        LOG_WARN("APPSTORE", "Plano de dependencias excedeu o limite");
+        return ERR_OVERFLOW;
+    }
+    item = &plan->entries[plan->entry_count];
+    kmemset(item, 0, sizeof(*item));
+    app_catalog_copy_text(item->id, sizeof(item->id), entry->source.id);
+    app_catalog_copy_text(item->alias, sizeof(item->alias), entry->alias);
+    app_catalog_copy_text(item->from_version, sizeof(item->from_version),
+                          entry->has_installed ? entry->installed.version : "");
+    app_catalog_copy_text(item->to_version, sizeof(item->to_version),
+                          entry->source.version);
+    item->action = action;
+    if (position_out) *position_out = plan->entry_count;
+    plan->entry_count++;
+    return OK;
+}
+
+static int app_catalog_plan_visit(app_catalog_plan_context_t* context,
+                                  uint32_t index, int target) {
+    const app_catalog_entry_t* entry = &catalog_entries[index];
+    char dependencies[APP_PACKAGE_MAX_DEPENDENCIES][APP_PACKAGE_ID_SIZE];
+    app_package_plan_action_t action;
+    int comparison;
+
+    if (!entry->has_source || entry->state == APP_CATALOG_STATE_INVALID) {
+        context->plan->reason = APP_PACKAGE_ACTION_REASON_PLAN_INCOMPLETE;
+        return ERR_NOT_FOUND;
+    }
+    if (context->visiting[index]) {
+        context->plan->reason = APP_PACKAGE_ACTION_REASON_PLAN_CYCLE;
+        LOG_WARN("APPSTORE", "Ciclo detectado no plano de dependencias");
+        return ERR_STATE;
+    }
+    if (context->visited[index]) return OK;
+    if (!target && entry->has_installed) {
+        context->visited[index] = 1U;
+        return OK;
+    }
+    context->visiting[index] = 1U;
+    app_catalog_plan_sort_dependencies(&entry->source, dependencies);
+    for (uint32_t dependency = 0;
+         dependency < entry->source.dependency_count; dependency++) {
+        uint32_t dependency_index;
+        int result = app_catalog_find_source_index(dependencies[dependency],
+                                                   &dependency_index);
+
+        if (app_catalog_find_installed(dependencies[dependency])) continue;
+        if (result != OK) {
+            context->plan->reason = APP_PACKAGE_ACTION_REASON_PLAN_INCOMPLETE;
+            context->visiting[index] = 0U;
+            return result;
+        }
+        result = app_catalog_plan_visit(context, dependency_index, 0);
+        if (result != OK) {
+            context->visiting[index] = 0U;
+            return result;
+        }
+    }
+    action = entry->has_installed ? APP_PACKAGE_PLAN_ACTION_UPDATE :
+                                   APP_PACKAGE_PLAN_ACTION_INSTALL;
+    if (target && context->update_target) {
+        comparison = app_catalog_compare_versions(entry->source.version,
+                                                  entry->installed.version);
+        if (comparison == 0) {
+            context->plan->reason = APP_PACKAGE_ACTION_REASON_UPDATE_NOT_AVAILABLE;
+            context->visiting[index] = 0U;
+            return ERR_STATE;
+        }
+        if (comparison < 0 && !context->plan->allow_downgrade) {
+            context->plan->reason =
+                APP_PACKAGE_ACTION_REASON_DOWNGRADE_REQUIRES_CONFIRM;
+            context->visiting[index] = 0U;
+            return ERR_STATE;
+        }
+    } else if (target && entry->has_installed) {
+        context->plan->reason = APP_PACKAGE_ACTION_REASON_PLAN_CONFLICT;
+        context->visiting[index] = 0U;
+        return ERR_STATE;
+    }
+    if (app_catalog_plan_append(context, entry, action,
+                                target ? &context->plan->target_index : 0) != OK) {
+        context->visiting[index] = 0U;
+        return ERR_OVERFLOW;
+    }
+    context->visiting[index] = 0U;
+    context->visited[index] = 1U;
+    return OK;
+}
+
+static int app_catalog_build_plan(const char* key, int update_target,
+                                  int allow_downgrade,
+                                  app_package_plan_t* plan_out) {
+    app_catalog_plan_context_t context;
+    uint32_t target_index;
+    int result;
+
+    if (!key || !plan_out) {
+        LOG_ERROR("APPSTORE", "Argumento nulo ao montar plano local");
+        return ERR_NULL;
+    }
+    kmemset(plan_out, 0, sizeof(*plan_out));
+    plan_out->allow_downgrade = allow_downgrade ? 1U : 0U;
+    if (!catalog_ready || app_catalog_refresh() != OK) {
+        plan_out->reason = APP_PACKAGE_ACTION_REASON_PACKAGE_SERVICE_UNAVAILABLE;
+        LOG_WARN("APPSTORE", "Catalogo indisponivel para plano local");
+        return ERR_UNAVAILABLE;
+    }
+    result = app_catalog_find_source_index(key, &target_index);
+    if (result != OK) {
+        plan_out->reason = APP_PACKAGE_ACTION_REASON_SOURCE_NOT_FOUND;
+        return result;
+    }
+    kmemset(&context, 0, sizeof(context));
+    context.plan = plan_out;
+    context.update_target = update_target;
+    result = app_catalog_plan_visit(&context, target_index, 1);
+    if (result != OK) return result;
+    plan_out->reason = APP_PACKAGE_ACTION_REASON_NONE;
+    return OK;
+}
+
 static int app_catalog_check_dependencies(void) {
     if (fs_get_type() == FS_TYPE_NONE) {
         catalog_status.reason = APP_CATALOG_REASON_FILESYSTEM_UNAVAILABLE;
@@ -372,7 +532,13 @@ static int app_catalog_check_dependencies(void) {
 }
 
 static void app_catalog_refresh_recovery(void) {
-    if (catalog_read_error) {
+    app_package_status_t transaction;
+
+    if (app_package_get_status(&transaction) == OK &&
+        transaction.transaction_pending) {
+        recovery_mark_degraded(RECOVERY_COMPONENT_APP_STORE, ERR_STATE,
+                               "Journal transacional AS4 pendente ou invalido");
+    } else if (catalog_read_error) {
         recovery_mark_degraded(RECOVERY_COMPONENT_APP_STORE, ERR_DISK,
                                "Catalogo App Store possui leitura parcial");
     } else if (catalog_status.source_overflow ||
@@ -497,6 +663,17 @@ int app_catalog_find_entry(const char* id_or_alias,
     }
     LOG_WARN("APPSTORE", "Entrada do catalogo nao encontrada");
     return ERR_NOT_FOUND;
+}
+
+int app_catalog_build_install_plan(const char* id_or_alias,
+                                   app_package_plan_t* plan_out) {
+    return app_catalog_build_plan(id_or_alias, 0, 0, plan_out);
+}
+
+int app_catalog_build_update_plan(const char* id_or_alias,
+                                  int allow_downgrade,
+                                  app_package_plan_t* plan_out) {
+    return app_catalog_build_plan(id_or_alias, 1, allow_downgrade, plan_out);
 }
 
 const char* app_catalog_state_name(app_catalog_state_t state) {

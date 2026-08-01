@@ -73,6 +73,11 @@ int app_catalog_get_count(uint32_t* count_out);
 int app_catalog_get_entry(uint32_t index, app_catalog_entry_t* entry_out);
 int app_catalog_find_entry(const char* id_or_alias,
                            app_catalog_entry_t* entry_out);
+int app_catalog_build_install_plan(const char* id_or_alias,
+                                   app_package_plan_t* plan_out);
+int app_catalog_build_update_plan(const char* id_or_alias,
+                                  int allow_downgrade,
+                                  app_package_plan_t* plan_out);
 const char* app_catalog_state_name(app_catalog_state_t state);
 const char* app_catalog_reason_name(app_catalog_reason_t reason);
 

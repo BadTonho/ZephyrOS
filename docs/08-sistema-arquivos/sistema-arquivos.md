@@ -325,7 +325,7 @@ int  fs_get_info(fs_info_t* info);   // Obtém info do FS ativo
 uint8_t fs_get_type(void);           // FS_TYPE_FAT12 ou FS_TYPE_FAT32
 ```
 
-### Operacoes atomicas de raiz para U3
+### Operacoes atomicas FAT12 para U3 e AS4
 
 A U3 serializa leituras e mutacoes publicas do filesystem enquanto troca
 arquivos controlados. As novas operacoes aceitam somente nomes FAT 8.3
@@ -338,6 +338,10 @@ int fs_atomic_write_root(const char* filename, const uint8_t* data,
                          uint32_t size, uint8_t attributes,
                          fs_atomic_mode_t mode);
 int fs_atomic_delete_root(const char* filename);
+int fs_atomic_write_file_in_dir(const char* dir_path, const char* filename,
+                                const uint8_t* data, uint32_t size,
+                                uint8_t attributes, fs_atomic_mode_t mode);
+int fs_atomic_delete_file_in_dir(const char* dir_path, const char* filename);
 ```
 
 `FS_ATOMIC_CREATE_OR_REPLACE` e reservado aos arquivos internos do updater.
@@ -350,9 +354,11 @@ libera a cadeia antiga. `fat12_atomic_delete_root()` persiste primeiro a
 entrada removida e libera os clusters em seguida. Assim, uma troca nunca
 publica uma cadeia parcialmente gravada.
 
-FAT32 continua disponivel para leitura e para `update verify`, mas essas
-operacoes atomicas retornam `ERR_UNAVAILABLE`. Diretorios e caminhos fora da
-raiz tambem ficam fora do contrato U3.
+AS4 estende a mesma troca copy-on-write a um arquivo 8.3 dentro de um
+subdiretorio FAT12 existente. A nova cadeia e persistida antes da entrada do
+diretorio; a cadeia anterior so e liberada depois. FAT32 continua disponivel
+para leitura e para `update verify`, mas essas operacoes atomicas retornam
+`ERR_UNAVAILABLE` e nao escrevem.
 
 ### Escrita sequencial de raiz para U5
 

@@ -531,6 +531,69 @@ int fs_atomic_delete_root(const char* filename) {
     return result;
 }
 
+int fs_atomic_write_file_in_dir(const char* dir_path, const char* filename,
+                                const uint8_t* data, uint32_t size,
+                                uint8_t attributes, fs_atomic_mode_t mode) {
+    uint32_t cluster;
+    int result;
+
+    if (!dir_path || !filename || !data) {
+        LOG_ERROR("FS", "Argumento nulo na escrita atomica em diretorio");
+        return ERR_NULL;
+    }
+    if (size == 0U || size > FS_MAX_ATOMIC_FILE_SIZE) {
+        LOG_ERROR("FS", "Tamanho invalido na escrita atomica em diretorio");
+        return ERR_OVERFLOW;
+    }
+    if (mode != FS_ATOMIC_CREATE_OR_REPLACE &&
+        mode != FS_ATOMIC_REPLACE_ONLY) {
+        LOG_ERROR("FS", "Modo invalido na escrita atomica em diretorio");
+        return ERR_INVALID;
+    }
+    spinlock_acquire(&fs_operation_lock);
+    cluster = fs_resolve_dir_cluster(dir_path);
+    if (fs_stream_blocks_mutation_unlocked()) {
+        result = ERR_STATE;
+    } else if (cluster == 0xFFFFFFFFU) {
+        result = ERR_NOT_FOUND;
+    } else if (current_fs_type == FS_TYPE_FAT12) {
+        result = fat12_atomic_write_file_in_dir(
+            (uint16_t)cluster, filename, data, size, attributes,
+            mode == FS_ATOMIC_REPLACE_ONLY);
+    } else {
+        result = ERR_UNAVAILABLE;
+    }
+    spinlock_release(&fs_operation_lock);
+    if (result != OK) LOG_ERROR("FS", "Escrita atomica em diretorio falhou");
+    return result;
+}
+
+int fs_atomic_delete_file_in_dir(const char* dir_path, const char* filename) {
+    uint32_t cluster;
+    int result;
+
+    if (!dir_path || !filename) {
+        LOG_ERROR("FS", "Argumento nulo na exclusao atomica em diretorio");
+        return ERR_NULL;
+    }
+    spinlock_acquire(&fs_operation_lock);
+    cluster = fs_resolve_dir_cluster(dir_path);
+    if (fs_stream_blocks_mutation_unlocked()) {
+        result = ERR_STATE;
+    } else if (cluster == 0xFFFFFFFFU) {
+        result = ERR_NOT_FOUND;
+    } else if (current_fs_type == FS_TYPE_FAT12) {
+        result = fat12_atomic_delete_file_in_dir((uint16_t)cluster, filename);
+    } else {
+        result = ERR_UNAVAILABLE;
+    }
+    spinlock_release(&fs_operation_lock);
+    if (result != OK && result != ERR_NOT_FOUND) {
+        LOG_ERROR("FS", "Exclusao atomica em diretorio falhou");
+    }
+    return result;
+}
+
 int fs_stream_begin_root(const char* filename, uint32_t expected_size,
                          uint8_t attributes) {
     int result;

@@ -1,0 +1,48 @@
+{
+  "fixtures": {
+    "BROKEN.ZPK": {
+      "dependencies": "NOFONTE",
+      "id": "BROKEN",
+      "sha256": "5f012e07bb0236937ea984559b8300ca6b533c68772282c8d5a0a956220d839b",
+      "size": 171,
+      "version": "1.0.0"
+    },
+    "CYCLEA.ZPK": {
+      "dependencies": "CYCLEB",
+      "id": "CYCLEA",
+      "sha256": "ed8b422d76e39d01ec5b583ab82e0c71a05e87a77b83c590016c9e9d2ebba1da",
+      "size": 166,
+      "version": "1.0.0"
+    },
+    "CYCLEB.ZPK": {
+      "dependencies": "CYCLEA",
+      "id": "CYCLEB",
+      "sha256": "e999431b20e110a3b7a3875731fce45a8363e3fdafc62ea6e08d8a4659f95a0f",
+      "size": 166,
+      "version": "1.0.0"
+    },
+    "UPDEPA.ZPK": {
+      "dependencies": "UPDEPB",
+      "id": "UPDEPA",
+      "sha256": "2dd376c4e718d9938731dad3f2def3a3cf39f5abb801c520eef7ad202595b54f",
+      "size": 178,
+      "version": "1.0.0"
+    },
+    "UPDEPB.ZPK": {
+      "dependencies": "",
+      "id": "UPDEPB",
+      "sha256": "6689d8fd2c7c7cc662e0bed014f85bf5e99f4ed5ae0950a69f2411869634529e",
+      "size": 172,
+      "version": "1.0.0"
+    },
+    "UPTARGET.ZPK": {
+      "dependencies": "",
+      "id": "UPTARGET",
+      "sha256": "5dd99646b25ba97cb2c34842c01cb93bae8b51a650fbac758595a5f9ec46032c",
+      "size": 168,
+      "version": "1.0.0"
+    }
+  },
+  "format": "zephyros-app-store-as4-fixtures-v1",
+  "profile": "seed"
+}

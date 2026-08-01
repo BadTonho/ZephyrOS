@@ -869,7 +869,7 @@ do ID e preserva o arquivo fonte `ID.ZPK` no diretorio raiz.
 O contrato completo, limites e fluxo host para FAT12 estao em
 [`pacotes.md`](../13-aplicativos/pacotes.md).
 
-## `store [status|list|info|install|remove|run]`
+## `store [status|list|info|install|update|rollback|history|run]`
 
 `store` sem argumentos abre a App Store no Window Manager; se a hospedagem
 Classic falhar, abre a TUI Simple com as mesmas abas e operacoes. Os
@@ -883,6 +883,9 @@ store info VALID
 store info BADCRC.ZPK
 store install WAITAPP.ZPK
 store remove WAITAPP
+store update UPTARGET
+store rollback UPTARGET
+store history UPTARGET
 ```
 
 `store status` mostra recovery, contagens, limites e o motivo geral.
@@ -898,12 +901,20 @@ store install WAITAPP.ZPK --confirm
 store run WAITAPP alpha beta
 store remove WAITAPP
 store remove WAITAPP --confirm
+store update UPTARGET --confirm
+store update UPTARGET --downgrade --confirm
+store rollback UPTARGET --confirm
 ```
 
 `store run <ID> [args]` aceita somente um pacote instalado e usa o loader
 assincrono existente; F12 cancela e devolve o foco ao Shell. Dependencias
-ausentes e dependentes reversos aparecem por ID, sem resolucao automatica.
-Atualizacao e downgrade permanecem fora do AS2.
+ausentes e dependentes reversos aparecem por ID. AS4 resolve dependencias
+locais ausentes para instalar ou atualizar, mostra a ordem topologica antes da
+escrita e nao atualiza dependencias ja instaladas. Update normal aceita somente
+versao superior; downgrade exige explicitamente `--downgrade --confirm`.
+`store rollback` consome a copia anterior recuperavel do ID solicitado e
+`store test fail-after <1..32>` existe somente para validar reboot e
+recuperacao no QEMU.
 
 Fontes invalidas continuam visiveis sem impedir as fontes validas. Depois de
 toda tentativa confirmada, o catalogo e atualizado novamente. O contrato
@@ -915,7 +926,8 @@ completo esta em
 Executa quatro validacoes compactas sem escrever no disco: pacote invalido,
 dependencia ausente, o mesmo calculo de espaco do preflight e o gate de
 serializacao de mutacoes. Ele nao substitui `appcheck` e nao instala nem
-remove pacotes.
+remove pacotes. Tambem informa suporte transacional AS4, journal pendente,
+rollbacks por app e ultimo historico quando existirem.
 
 ## `app run <arquivo.ZAP> [arg1 arg2 ...]`
 
