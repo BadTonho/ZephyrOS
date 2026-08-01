@@ -50,7 +50,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [12 - Desktop e Interface](12-desktop/desktop.md) | Desktop, Window Manager, Taskbar, Settings, Icons |
 | [13 - Aplicativos](13-aplicativos/aplicativos.md) | Editor, Media Player, File Manager, Task Manager |
 | [Pacotes locais](13-aplicativos/pacotes.md) | Formato ZPKG v1, empacotador host e comandos `pkg` |
-| [App Store - AS1 e AS2](13-aplicativos/app-store.md) | Catalogo local, preflight, ciclo confirmado, recovery e fixtures |
+| [App Store - AS1 a AS3](13-aplicativos/app-store.md) | Catalogo local, ciclo confirmado, interface nativa e fixtures |
 | [Configuracoes](melhorias%20futuras/configura%C3%A7%C3%B5es.md) | Painel de configuracoes e interface grafica com fallback TUI |
 | [Resiliência e fallback seguro](melhorias%20futuras/resiliencia%20do%20sistema.md) | Estados de componentes, códigos de erro e fallbacks |
 | [Explorer Classic](melhorias%20futuras/explorer%20moderno.md) | Interface gráfica do File Manager com fallback TUI |

@@ -506,6 +506,14 @@ typedef struct {
 } icon_registry_t;
 ```
 
+### App Store AS3
+
+A App Store e um aplicativo hospedado singleton: `WM_APP_APPSTORE` identifica
+sua janela e `TB_ACTION_APPSTORE` identifica a acao correspondente no Menu
+Iniciar. O item abre ou focaliza a loja no Classic e abre sua TUI funcional no
+Simple; ele nao cria icone adicional no Desktop. Os identificadores foram
+anexados aos contratos publicos, preservando os valores existentes.
+
 ### API
 
 ```c

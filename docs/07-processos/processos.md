@@ -347,6 +347,10 @@ terminal, fecha uma interface Classic conflitante quando necessario e abre ou
 focaliza a instancia unica do System Updater. O pedido nao transporta pacote,
 senha ou dados de atualizacao.
 
+O AS3 acrescenta `IPC_APP_OPEN_APP_STORE` ao fim da mesma enumeracao. O pedido
+abre ou focaliza a instancia unica da App Store e nao transporta caminho de
+pacote, credencial ou argumento de ZAPP.
+
 ### Integração
 
 - **Mouse**: envia eventos de clique/movimento ao processo com foco

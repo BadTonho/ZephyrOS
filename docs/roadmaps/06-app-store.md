@@ -186,13 +186,13 @@ aprovados.
 
 ### Integracao
 
-- [ ] Criar o modulo em `src/appstore/appstore.c`.
-- [ ] Criar header autocontido em `src/include/ui/appstore.h`.
-- [ ] Registrar objeto no Makefile.
-- [ ] Adicionar `IPC_APP_OPEN_APP_STORE` ao final da enumeracao.
-- [ ] Adicionar `App Store` ao menu Iniciar, sem icone no Desktop no MVP.
-- [ ] Registrar uma janela singleton hospedada pelo Window Manager.
-- [ ] Fazer o comando `store` sem argumentos abrir o aplicativo.
+- [x] Criar o modulo em `src/appstore/appstore.c`.
+- [x] Criar header autocontido em `src/include/ui/appstore.h`.
+- [x] Registrar objeto no Makefile.
+- [x] Adicionar `IPC_APP_OPEN_APP_STORE` ao final da enumeracao.
+- [x] Adicionar `App Store` ao menu Iniciar, sem icone no Desktop no MVP.
+- [x] Registrar uma janela singleton hospedada pelo Window Manager.
+- [x] Fazer o comando `store` sem argumentos abrir o aplicativo.
 
 ### Interface Modern
 
@@ -213,10 +213,19 @@ botao `X` ou `Alt+F4`.
 Operacoes de filesystem devem rodar fora do callback de desenho/entrada. Um
 worker cooperativo manterá Window Manager, rede, mouse e Shell responsivos.
 
+### Estado
+
+Implementacao concluida e aguardando a validacao host/QEMU pelo usuario. O
+modulo usa um worker cooperativo para refresh, verificacao, preflight,
+instalacao, remocao e abertura; a interface usa somente os contratos AS1/AS2.
+Atualizar permanece visivel, mas desativado com a indicacao de que pertence ao
+AS4. O modo Simple entrega as tres abas e as mesmas operacoes; o retorno de
+foco de ZAPPs permanece no Shell.
+
 ### Fallback
 
-- [ ] O Shell preserva todas as operacoes e diagnosticos.
-- [ ] Simple oferece uma TUI funcional quando a hospedagem Modern falhar.
+- [x] O Shell preserva todas as operacoes e diagnosticos.
+- [x] Simple oferece uma TUI funcional quando a hospedagem Modern falhar.
 - [ ] A validacao obrigatoria usa Shell e Modern; Simple e cobertura
   complementar.
 
@@ -321,6 +330,6 @@ No QEMU:
 
 ## Proximo passo
 
-Executar o **MV3 do Roadmap 07**, pois MV0, MV0.1, MV1 e MV2 ja foram
-aprovados. Depois da fundacao visual aprovada, a execucao retorna ao AS3 para
-implementar a App Store nativa sem duplicar o redesenho.
+Validar o **AS3** no host e no QEMU. Depois da aprovacao da matriz de catalogo,
+ciclo de vida, Modern e fallback Simple, a execucao segue para o **MV4** do
+Roadmap 07.

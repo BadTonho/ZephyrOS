@@ -74,7 +74,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   escrita, confirmacao explicita, bloqueio de dependentes, execucao com `F12`,
   regressao completa e memoria estavel passaram sem residuos. Os roadmaps 06 e
   07 agora usam execucao intercalada para que a App Store Modern nao seja
-  desenhada duas vezes: MV0-MV3, AS3, MV4 e, depois, AS4-AS5.
+  desenhada duas vezes: MV0-MV3, AS3, MV4 e, depois, AS4-AS5. O AS3 esta
+  implementado com janela singleton, worker cooperativo e fallback Simple;
+  sua validacao host/QEMU permanece pendente.
 
 ## K4 validada
 

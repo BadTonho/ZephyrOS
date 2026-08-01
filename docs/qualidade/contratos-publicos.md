@@ -75,6 +75,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/ui/gui.h` | `docs/12-desktop/desktop.md` |
 | `src/include/ui/icons.h` | `docs/12-desktop/desktop.md` |
 | `src/include/ui/settings.h` | `docs/12-desktop/desktop.md` |
+| `src/include/ui/appstore.h` | `docs/13-aplicativos/app-store.md` |
 | `src/include/ui/taskbar.h` | `docs/12-desktop/desktop.md` |
 | `src/include/ui/updater.h` | `docs/14-atualizacoes/system-updater.md` |
 | `src/include/ui/wm.h` | `docs/12-desktop/desktop.md` |
@@ -191,3 +192,7 @@ Desde o AS2, `src/include/core/app_package.h` acrescenta preflights,
 confirmacao, motivos de acao, bloqueadores, serializacao e execucao por ID
 instalado. O contrato canonico permanece em
 `docs/13-aplicativos/pacotes.md`.
+
+Desde o AS3, `src/include/ui/appstore.h` define o ciclo de vida, os modos
+Simple/Classic e a entrada da App Store nativa. O contrato canonico permanece
+em `docs/13-aplicativos/app-store.md`.

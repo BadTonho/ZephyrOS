@@ -1,14 +1,16 @@
-# App Store - Catalogo AS1 e ciclo de vida AS2
+# App Store - Catalogo, ciclo de vida e interface AS3
 
 ## Resumo de progresso
 
 O AS1 implementa o catalogo local somente-leitura sobre `ZPKG v1` e o servico
 `PKG`; ele esta concluido e validado. O AS2 acrescenta preflight, confirmacao,
 instalacao, remocao e execucao pelo Shell. O AS2 esta concluido e validado no
-host e no QEMU.
+host e no QEMU. O AS3 implementa a interface nativa hospedada, com fallback
+Simple completo, e aguarda a validacao host/QEMU pelo usuario.
 
-A interface nativa Simple/Classic/Modern pertence ao AS3. Atualizacao, downgrade e
-resolucao automatica de dependencias continuam fora desta fase.
+A interface AS3 usa a aparencia Modern Dark dentro do renderer Classic VESA;
+`guimode modern` continua reservado. Atualizacao, downgrade e resolucao
+automatica de dependencias continuam fora desta fase.
 
 ## Fontes e snapshot
 
@@ -143,6 +145,7 @@ continuam consultaveis e `app_catalog_refresh()` retorna `OK`.
 
 | Comando | Acao |
 |---|---|
+| `store` | Abre a App Store hospedada; usa TUI completa no fallback Simple. |
 | `store status` | Atualiza e mostra recovery, contagens, limites e motivo geral. |
 | `store list` | Atualiza e lista entradas em ordem deterministica. |
 | `store info <ID\|alias.ZPK>` | Mostra manifesto, versoes, confianca, dependencias e capacidades. |
@@ -152,8 +155,35 @@ continuam consultaveis e `app_catalog_refresh()` retorna `OK`.
 | `store remove <ID> --confirm` | Repete o preflight e remove o pacote. |
 | `store run <ID> [args]` | Executa somente o ZAPP instalado; F12 cancela. |
 
-Todo pacote fonte e apresentado como `LOCAL / NAO ASSINADO`. O comando sem
-subcomando mostra somente o uso; abrir a interface grafica fica para AS3.
+Todo pacote fonte e apresentado como `LOCAL / NAO ASSINADO`. Os subcomandos
+preservam o diagnostico reproduzivel pelo Shell.
+
+## Interface AS3
+
+`src/include/ui/appstore.h` define o ciclo de vida da interface:
+
+```text
+appstore_init/open/close/draw
+appstore_handle_key/appstore_handle_mouse
+appstore_is_open/appstore_get_mode
+```
+
+O modulo possui uma janela singleton hospedada pelo Window Manager e um worker
+cooperativo. Refresh, verificacao, preflight, instalacao, remocao e abertura
+de ZAPPs sao executados fora dos callbacks de desenho e entrada. O worker usa
+somente `app_catalog_*`, `app_package_*` e o loader existente; nao duplica
+validacao de ZPKG, CRC, dependencias ou serializacao de mutacoes.
+
+As abas sao **Catalogo**, **Instalados** e **Detalhes**. `Tab`, setas, `F5`,
+`V`, `I`, `A`, `R` e Enter equivalem aos botoes Atualizar, Verificar,
+Instalar, Abrir e Remover. Atualizar permanece desativado e explica que a
+operacao pertence ao AS4. A confirmacao modal e vinculada ao ID/alias e a
+selecao atual; trocar aba, selecao ou atualizar o catalogo a cancela.
+
+No modo Classic, Esc cancela somente o contexto atual e a janela fecha por X
+ou Alt+F4. No fallback Simple, Esc tambem fecha a TUI quando nao ha
+confirmacao pendente. Abrir um app instalado preserva o retorno de foco do
+loader para o Shell apos o fim ou cancelamento por F12.
 
 ## Fixtures e atalhos host
 
@@ -250,8 +280,19 @@ A matriz manual confirmou:
 7. estado final sem pacotes instalados, diretorios parciais ou processos
    residuais.
 
-Com AS1, AS2, MV0, MV0.1, MV1 e MV2 aprovados, o MV3 do Roadmap 07 esta
-implementado e aguarda validacao QEMU antes do AS3.
+Com AS1, AS2 e MV0-MV3 aprovados, o AS3 esta implementado e aguarda a
+validacao QEMU antes do MV4.
+
+## Validacao AS3 pendente
+
+O usuario deve executar os autotestes AS1/AS2 e o gate Q3 antes do build
+limpo. No QEMU, deve injetar os fixtures, abrir `store` pelo Shell e pelo Menu
+Iniciar, e confirmar no Classic as abas, a selecao, a atualizacao por F5, os
+motivos de `BADCRC` e `NEEDSDEP`, a confirmacao de `VALID`, a abertura com F12
+e a remocao. Em `guimode simple`, deve repetir o fluxo pelo teclado e retornar
+ao Classic. A aprovacao exige `health summary`, `pkgcheck`, `appcheck`,
+`memcheck` e `regcheck full` sem pacote parcial, processo ring 3 residual ou
+regressao de foco.
 
 ## Limitacoes
 
@@ -259,7 +300,6 @@ implementado e aguarda validacao QEMU antes do AS3.
 - sem resolucao automatica de dependencias;
 - sem assinatura, repositorio remoto, conta ou telemetria;
 - sem banco de dados proprio ou persistencia do snapshot;
-- sem interface App Store Simple/Classic/Modern;
 - sem mudanca de ZPKG v1, App API `0.3`, loader ou boot.
 
 ## Referencias
