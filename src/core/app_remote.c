@@ -104,6 +104,8 @@ static uint8_t app_remote_package_buffer[HTTP_BODY_CAPACITY];
 static uint8_t app_remote_metadata_buffer[APP_PACKAGE_MAX_MANIFEST_SIZE];
 static uint8_t app_remote_record_raw[2][APP_REMOTE_RECORD_SIZE];
 static uint8_t app_remote_authenticated_cache_hash[32];
+static uint8_t app_remote_authenticated_catalog_hash[32];
+static uint8_t app_remote_candidate_catalog_hash[32];
 static crypto_ed25519_verify_ctx_t app_remote_signature;
 static http_status_t app_remote_http;
 static int app_remote_record_slot = -1;
@@ -112,6 +114,7 @@ static uint8_t app_remote_cancel_requested;
 static uint8_t app_remote_last_cancelled;
 static uint8_t app_remote_fail_after;
 static uint8_t app_remote_cache_signature_authenticated;
+static uint8_t app_remote_catalog_signature_authenticated;
 static uint8_t app_remote_provenance_reliable;
 static uint8_t app_remote_provenance_trusted[APP_REMOTE_PROVENANCE_MAX];
 
@@ -1568,8 +1571,13 @@ int app_remote_init(void) {
     kmemset(app_remote_pending_ids, 0, sizeof(app_remote_pending_ids));
     app_remote_pending_count = 0U;
     app_remote_cache_signature_authenticated = 0U;
+    app_remote_catalog_signature_authenticated = 0U;
     kmemset(app_remote_authenticated_cache_hash, 0,
             sizeof(app_remote_authenticated_cache_hash));
+    kmemset(app_remote_authenticated_catalog_hash, 0,
+            sizeof(app_remote_authenticated_catalog_hash));
+    kmemset(app_remote_candidate_catalog_hash, 0,
+            sizeof(app_remote_candidate_catalog_hash));
     app_remote_record_slot = -1;
     app_remote_provenance_slot = -1;
     app_remote_status.cache_state = fs_get_type() == FS_TYPE_FAT12 ?
@@ -1670,6 +1678,7 @@ int app_remote_check(const char* catalog_url,
     const uint8_t* body;
     uint32_t size;
     app_remote_reason_t reason;
+    int signature_authenticated;
     int result;
 
     if (!result_out) {
@@ -1692,13 +1701,24 @@ int app_remote_check(const char* catalog_url,
         return app_remote_fail(app_remote_transport_reason(result), result,
                                "Consulta do catalogo remoto falhou", result_out);
     }
+    if (crypto_sha256(body, size, app_remote_candidate_catalog_hash) != OK) {
+        return app_remote_fail(APP_REMOTE_REASON_CATALOG_FORMAT, ERR_INVALID,
+                               "Hash do catalogo remoto falhou", result_out);
+    }
+    signature_authenticated = app_remote_catalog_signature_authenticated &&
+        crypto_equal(app_remote_candidate_catalog_hash,
+                     app_remote_authenticated_catalog_hash, 32U);
     result = app_remote_parse_catalog(body, size,
                                       app_remote_record.highest_generation,
-                                      0, &reason);
+                                      signature_authenticated, &reason);
     if (result != OK) {
         return app_remote_fail(reason, result,
                                "Catalogo remoto recusado", result_out);
     }
+    kmemcpy(app_remote_authenticated_catalog_hash,
+            app_remote_candidate_catalog_hash,
+            sizeof(app_remote_authenticated_catalog_hash));
+    app_remote_catalog_signature_authenticated = 1U;
     kmemcpy(app_remote_catalog, body, size);
     app_remote_catalog_size = size;
     app_remote_status.catalog_available = 1U;
