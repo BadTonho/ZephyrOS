@@ -178,7 +178,9 @@ src/drivers/mouse.c
 ### Inicialização
 
 ```c
-mouse_init();
+if (mouse_init() != OK) {
+    /* O sistema continua operando pelo teclado. */
+}
 ```
 
 Habilita o mouse auxiliar no controlador PS/2 e configura a resolução.
@@ -193,12 +195,17 @@ Habilita o mouse auxiliar no controlador PS/2 e configura a resolução.
 ### API
 
 ```c
-void            mouse_init(void);
+int             mouse_init(void);
 void            mouse_process_events(void);
 mouse_callback_t mouse_set_callback(mouse_callback_t cb);
 int             mouse_get_x(void);
 int             mouse_get_y(void);
 uint8_t         mouse_get_buttons(void);
+int             mouse_get_config(mouse_config_t* config);
+int             mouse_get_status(mouse_status_t* status);
+int             mouse_set_speed(uint8_t speed);
+int             mouse_set_acceleration(int enabled);
+int             mouse_set_primary_button(mouse_primary_button_t primary);
 ```
 
 ### Botões
@@ -216,12 +223,15 @@ O cursor é desenhado diretamente no framebuffer VESA usando primitivas de pixel
 ### Comando Shell
 
 ```bash
-mouse    # Mostra: X=100 Y=200 Buttons=0x01
+mouse
+mouse speed 1
+mouse primary right
+mouse acceleration on
 ```
 
 ### Limitações
 
-- Velocidade fixa (MOUSE_SPEED = 3 pixels por evento)
-- Sem suporte a scroll wheel
+- Velocidade `1-10` e aceleracao opcional, configuradas somente em RAM
+- Roda vertical depende do protocolo Intellimouse
 - Sem suporte a drivers USB (apenas PS/2)
 - Cursor de 12x16 pixels

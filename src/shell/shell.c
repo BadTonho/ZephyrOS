@@ -2352,7 +2352,7 @@ static void cmd_help(void) {
     video_print("  taskcfg  - Configura a barra de tarefas\n", 0x07);
     video_print("  compress - Liga/desliga compressao de RAM\n", 0x07);
     video_print("  stats    - Mostra estatisticas de compressao\n", 0x07);
-    video_print("  mouse    - Mostra status do mouse PS/2\n", 0x07);
+    video_print("  mouse    - Status e preferencias do mouse PS/2\n", 0x07);
     video_print("  health [summary] - Estado completo ou resumo compacto\n",
                 0x07);
     video_print("  devices  - Lista inventario de hardware (-v para detalhes)\n", 0x07);
@@ -9653,6 +9653,154 @@ static void cmd_display(const char* args) {
     video_print(" aplicada em RAM.\n", 0x0A);
 }
 
+static void cmd_mouse_print_usage(void) {
+    video_print("Uso: mouse | mouse speed <1-10> | ", 0x0C);
+    video_print("mouse primary <left|right> | ", 0x0C);
+    video_print("mouse acceleration <on|off>\n", 0x0C);
+}
+
+static int cmd_mouse_read_token(const char** cursor, char* token,
+                                int token_size) {
+    const char* input;
+    int length = 0;
+
+    if (!cursor || !*cursor || !token || token_size < 2) {
+        LOG_ERROR("SHELL", "Destino invalido no parser do comando mouse");
+        return ERR_NULL;
+    }
+    input = *cursor;
+    while (*input == ' ' || *input == '\t') input++;
+    if (!*input) {
+        LOG_ERROR("SHELL", "Argumento ausente no comando mouse");
+        return ERR_INVALID;
+    }
+    while (*input && *input != ' ' && *input != '\t') {
+        if (length >= token_size - 1) {
+            LOG_ERROR("SHELL", "Argumento longo demais no comando mouse");
+            return ERR_OVERFLOW;
+        }
+        token[length++] = *input++;
+    }
+    token[length] = '\0';
+    *cursor = input;
+    return OK;
+}
+
+static int cmd_mouse_has_extra_args(const char* cursor) {
+    while (*cursor == ' ' || *cursor == '\t') cursor++;
+    if (!*cursor) return 0;
+    LOG_ERROR("SHELL", "Argumentos excedentes no comando mouse");
+    return 1;
+}
+
+static void cmd_mouse_print_status(void) {
+    mouse_status_t status;
+
+    if (mouse_get_status(&status) != OK) {
+        video_print("Erro: status do mouse indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("Mouse PS/2:\n", 0x0B);
+    video_print("  Driver: ", 0x07);
+    video_print(status.initialized ? "DISPONIVEL\n" : "INDISPONIVEL\n",
+                status.initialized ? 0x0A : 0x0C);
+    video_print("  Posicao: ", 0x07);
+    print_num((uint32_t)status.x);
+    video_print(",", 0x07);
+    print_num((uint32_t)status.y);
+    video_print("\n  Velocidade: ", 0x07);
+    print_num(status.config.speed);
+    video_print("\n  Aceleracao: ", 0x07);
+    video_print(status.config.acceleration_enabled ? "ON" : "OFF", 0x0B);
+    video_print("\n  Botao principal: ", 0x07);
+    video_print(status.config.primary_button == MOUSE_PRIMARY_RIGHT ?
+                "right" : "left", 0x0B);
+    video_print("\n  Botoes efetivos: ", 0x07);
+    print_num(status.effective_buttons);
+    video_print("  brutos: ", 0x07);
+    print_num(status.raw_buttons);
+    video_print("\n  Roda: ", 0x07);
+    video_print(status.wheel_supported ? "DISPONIVEL" : "INDISPONIVEL",
+                status.wheel_supported ? 0x0A : 0x0E);
+    video_print("\n  Pacotes descartados: ", 0x07);
+    print_num(status.dropped_packets);
+    video_print("\n  Ultimo erro: ", 0x07);
+    print_num((uint32_t)status.last_error);
+    video_print("\n  Persistencia: somente RAM\n", 0x0E);
+}
+
+static int cmd_mouse_parse_speed(const char* value, uint8_t* speed) {
+    if (!value || !speed) {
+        LOG_ERROR("SHELL", "Destino nulo ao interpretar velocidade do mouse");
+        return ERR_NULL;
+    }
+    if (value[0] >= '1' && value[0] <= '9' && value[1] == '\0') {
+        *speed = (uint8_t)(value[0] - '0');
+        return OK;
+    }
+    if (value[0] == '1' && value[1] == '0' && value[2] == '\0') {
+        *speed = MOUSE_SPEED_MAX;
+        return OK;
+    }
+    LOG_ERROR("SHELL", "Velocidade invalida no comando mouse");
+    return ERR_INVALID;
+}
+
+static int cmd_mouse_apply(const char* action, const char* value) {
+    uint8_t speed;
+
+    if (kstrcmp(action, "speed") == 0) {
+        if (cmd_mouse_parse_speed(value, &speed) != OK) return ERR_INVALID;
+        return mouse_set_speed(speed);
+    }
+    if (kstrcmp(action, "primary") == 0) {
+        if (kstrcmp(value, "left") == 0) {
+            return mouse_set_primary_button(MOUSE_PRIMARY_LEFT);
+        }
+        if (kstrcmp(value, "right") == 0) {
+            return mouse_set_primary_button(MOUSE_PRIMARY_RIGHT);
+        }
+        LOG_ERROR("SHELL", "Botao principal invalido no comando mouse");
+        return ERR_INVALID;
+    }
+    if (kstrcmp(action, "acceleration") == 0) {
+        if (kstrcmp(value, "on") == 0) return mouse_set_acceleration(1);
+        if (kstrcmp(value, "off") == 0) return mouse_set_acceleration(0);
+        LOG_ERROR("SHELL", "Aceleracao invalida no comando mouse");
+        return ERR_INVALID;
+    }
+    LOG_ERROR("SHELL", "Subcomando de mouse desconhecido");
+    return ERR_INVALID;
+}
+
+static void cmd_mouse(const char* args) {
+    char action[16];
+    char value[16];
+    const char* cursor = args;
+    int result;
+
+    if (!args || !*args) {
+        cmd_mouse_print_status();
+        return;
+    }
+    if (cmd_mouse_read_token(&cursor, action, sizeof(action)) != OK ||
+        cmd_mouse_read_token(&cursor, value, sizeof(value)) != OK ||
+        cmd_mouse_has_extra_args(cursor)) {
+        cmd_mouse_print_usage();
+        return;
+    }
+    result = cmd_mouse_apply(action, value);
+    if (result != OK) {
+        video_print(result == ERR_UNAVAILABLE ?
+                    "Erro: driver de mouse indisponivel.\n" :
+                    "Erro: preferencia invalida; estado preservado.\n", 0x0C);
+        cmd_mouse_print_usage();
+        return;
+    }
+    video_print("Preferencia do mouse aplicada em RAM.\n", 0x0A);
+    cmd_mouse_print_status();
+}
+
 static void cmd_clear(void) {
     video_terminal_clear();
     if (!shell_is_hosted_visible()) taskbar_draw();
@@ -10455,20 +10603,7 @@ int shell_process_command(const char* input) {
             editor_run();
         }
     } else if (kstrcmp(cmd, "mouse") == 0) {
-        video_print("Mouse PS/2:\n", 0x0B);
-        video_print("  X: ", 0x07);
-        print_num(mouse_get_x());
-        video_print("\n  Y: ", 0x07);
-        print_num(mouse_get_y());
-        video_print("\n  Botoes: ", 0x07);
-        print_num(mouse_get_buttons());
-        video_print("\n  roda: ", 0x07);
-        if (mouse_has_wheel()) {
-            video_print("DISPONIVEL", 0x0A);
-        } else {
-            video_print("INDISPONIVEL (FALLBACK 3 BYTES)", 0x0E);
-        }
-        video_print("\n", 0x07);
+        cmd_mouse(input);
     } else {
         video_print("Comando nao encontrado: ", 0x0C);
         video_print(cmd, 0x0C);

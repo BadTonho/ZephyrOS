@@ -5,9 +5,6 @@
 #include "drivers/vesa.h"
 #include "core/errors.h"
 
-/* Multiplicador de velocidade para telas de alta resolucao */
-#define MOUSE_SPEED 3
-
 /* Dimensoes do cursor em pixels */
 #define CURSOR_W 12
 #define CURSOR_H 16
@@ -30,6 +27,24 @@
 #define MOUSE_WHEEL_SIGN_EXTEND 0xF0
 #define MOUSE_WHEEL_DELTA_MAX 127
 #define MOUSE_WHEEL_DELTA_MIN -127
+#define MOUSE_ACCEL_MEDIUM_THRESHOLD 4
+#define MOUSE_ACCEL_FAST_THRESHOLD 8
+#define MOUSE_ACCEL_MEDIUM_NUMERATOR 3
+#define MOUSE_ACCEL_MEDIUM_DENOMINATOR 2
+#define MOUSE_ACCEL_FAST_NUMERATOR 2
+#define MOUSE_CONTROLLER_PORT 0x64
+#define MOUSE_DATA_PORT 0x60
+#define MOUSE_STATUS_OUTPUT_FULL 0x01
+#define MOUSE_STATUS_INPUT_FULL 0x02
+#define MOUSE_STATUS_AUX_DATA 0x20
+#define MOUSE_CONTROLLER_ENABLE_AUX 0xA8
+#define MOUSE_CONTROLLER_READ_CONFIG 0x20
+#define MOUSE_CONTROLLER_WRITE_CONFIG 0x60
+#define MOUSE_CONTROLLER_WRITE_MOUSE 0xD4
+#define MOUSE_CONTROLLER_IRQ12_ENABLE 0x02
+#define MOUSE_IRQ_VECTOR 44
+#define MOUSE_WAIT_TIMEOUT 100000U
+#define MOUSE_BUTTON_MASK 0x07
 
 typedef struct {
     uint32_t x;
@@ -38,12 +53,26 @@ typedef struct {
     uint32_t height;
 } mouse_damage_region_t;
 
+typedef struct {
+    int32_t dx;
+    int32_t dy;
+    int32_t wheel;
+    uint8_t next_raw_buttons;
+    int raw_buttons_changed;
+} mouse_event_batch_t;
+
 static mouse_packet_t event_queue[MOUSE_QUEUE_SIZE];
 static volatile int queue_head = 0;
 static volatile int queue_tail = 0;
 
 static mouse_callback_t current_callback = 0;
 static int driver_initialized = 0;
+static int last_error = OK;
+static volatile uint32_t dropped_packets = 0;
+static int queue_overflow_logged = 0;
+static mouse_config_t mouse_config = {
+    MOUSE_SPEED_DEFAULT, 0, MOUSE_PRIMARY_LEFT
+};
 
 /* Estado do cursor */
 static int cursor_drawn = 0;
@@ -57,6 +86,7 @@ static int cursor_visible = 1;
 /* Estado dos botoes para detectar press/release */
 static uint8_t prev_buttons = 0;
 static uint8_t current_buttons = 0;
+static uint8_t raw_buttons = 0;
 
 /* Sincronizacao do protocolo PS/2, com fallback para tres bytes. */
 static uint8_t cycle = 0;
@@ -75,57 +105,91 @@ static void outb(uint16_t port, uint8_t val) {
     asm volatile("outb %0, %1" : : "a"(val), "Nd"(port));
 }
 
-static void mouse_wait(uint8_t a_type) {
-    uint32_t timeout = 100000;
+static int mouse_wait(uint8_t a_type) {
+    uint32_t timeout = MOUSE_WAIT_TIMEOUT;
     if (a_type == 0) {
         /* Espera dado disponivel (bit 0 do status) */
         while (timeout--) {
-            if ((inb(0x64) & 1) == 1) return;
+            if ((inb(MOUSE_CONTROLLER_PORT) & MOUSE_STATUS_OUTPUT_FULL) != 0) {
+                return OK;
+            }
         }
     } else {
         /* Espera controladora pronta para receber (bit 1 limpo) */
         while (timeout--) {
-            if ((inb(0x64) & 2) == 0) return;
+            if ((inb(MOUSE_CONTROLLER_PORT) & MOUSE_STATUS_INPUT_FULL) == 0) {
+                return OK;
+            }
         }
     }
+    LOG_ERROR("MOUSE", "Timeout aguardando controladora PS/2");
+    return ERR_TIMEOUT;
 }
 
-static void mouse_write(uint8_t a_write) {
-    mouse_wait(1);
-    outb(0x64, 0xD4);
-    mouse_wait(1);
-    outb(0x60, a_write);
+static int mouse_write(uint8_t a_write) {
+    int result = mouse_wait(1);
+
+    if (result != OK) return result;
+    outb(MOUSE_CONTROLLER_PORT, MOUSE_CONTROLLER_WRITE_MOUSE);
+    result = mouse_wait(1);
+    if (result != OK) return result;
+    outb(MOUSE_DATA_PORT, a_write);
+    return OK;
 }
 
-static uint8_t mouse_read(void) {
-    mouse_wait(0);
-    return inb(0x60);
+static int mouse_read(uint8_t* value) {
+    int result;
+
+    if (!value) {
+        LOG_ERROR("MOUSE", "Destino nulo ao ler controladora PS/2");
+        return ERR_NULL;
+    }
+    result = mouse_wait(0);
+    if (result != OK) return result;
+    *value = inb(MOUSE_DATA_PORT);
+    return OK;
 }
 
 static int mouse_write_ack(uint8_t value) {
-    mouse_write(value);
-    return mouse_read() == MOUSE_RESPONSE_ACK;
+    uint8_t response;
+    int result = mouse_write(value);
+
+    if (result != OK) return result;
+    result = mouse_read(&response);
+    if (result != OK) return result;
+    if (response != MOUSE_RESPONSE_ACK) {
+        LOG_ERROR("MOUSE", "Controladora PS/2 nao confirmou comando");
+        return ERR_NOT_FOUND;
+    }
+    return OK;
 }
 
 static int mouse_set_sample_rate(uint8_t rate) {
-    return mouse_write_ack(MOUSE_CMD_SET_SAMPLE_RATE) && mouse_write_ack(rate);
+    int result = mouse_write_ack(MOUSE_CMD_SET_SAMPLE_RATE);
+
+    if (result != OK) return result;
+    return mouse_write_ack(rate);
 }
 
 static int mouse_enable_wheel_protocol(void) {
     uint8_t device_id;
+    int result;
 
-    if (!mouse_set_sample_rate(MOUSE_SAMPLE_RATE_FAST) ||
-        !mouse_set_sample_rate(MOUSE_SAMPLE_RATE_MID) ||
-        !mouse_set_sample_rate(MOUSE_SAMPLE_RATE_WHEEL) ||
-        !mouse_write_ack(MOUSE_CMD_GET_DEVICE_ID)) {
-        return 0;
-    }
-    device_id = mouse_read();
-    if (device_id != MOUSE_ID_INTELLIMOUSE) return 0;
+    result = mouse_set_sample_rate(MOUSE_SAMPLE_RATE_FAST);
+    if (result != OK) return result;
+    result = mouse_set_sample_rate(MOUSE_SAMPLE_RATE_MID);
+    if (result != OK) return result;
+    result = mouse_set_sample_rate(MOUSE_SAMPLE_RATE_WHEEL);
+    if (result != OK) return result;
+    result = mouse_write_ack(MOUSE_CMD_GET_DEVICE_ID);
+    if (result != OK) return result;
+    result = mouse_read(&device_id);
+    if (result != OK) return result;
+    if (device_id != MOUSE_ID_INTELLIMOUSE) return ERR_NOT_FOUND;
 
     packet_size = MOUSE_PACKET_WHEEL_SIZE;
     wheel_supported = 1;
-    return 1;
+    return OK;
 }
 
 static int8_t mouse_decode_wheel(uint8_t value) {
@@ -297,15 +361,123 @@ static void mouse_present_cursor(int old_x, int old_y, int had_old_cursor) {
     mouse_present_damage_region(&old_region);
 }
 
+static uint8_t mouse_map_buttons(uint8_t buttons) {
+    uint8_t mapped = buttons & MOUSE_BTN_MIDDLE;
+
+    if (mouse_config.primary_button == MOUSE_PRIMARY_RIGHT) {
+        if (buttons & MOUSE_BTN_RIGHT) mapped |= MOUSE_BTN_LEFT;
+        if (buttons & MOUSE_BTN_LEFT) mapped |= MOUSE_BTN_RIGHT;
+        return mapped;
+    }
+    return buttons & (MOUSE_BTN_LEFT | MOUSE_BTN_RIGHT | MOUSE_BTN_MIDDLE);
+}
+
+static int32_t mouse_delta_magnitude(int32_t dx, int32_t dy) {
+    int32_t abs_dx = dx < 0 ? -dx : dx;
+    int32_t abs_dy = dy < 0 ? -dy : dy;
+
+    return abs_dx > abs_dy ? abs_dx : abs_dy;
+}
+
+static int32_t mouse_scale_delta(int32_t delta, int32_t magnitude) {
+    int32_t scaled = delta * (int32_t)mouse_config.speed;
+
+    if (!mouse_config.acceleration_enabled ||
+        magnitude < MOUSE_ACCEL_MEDIUM_THRESHOLD) {
+        return scaled;
+    }
+    if (magnitude < MOUSE_ACCEL_FAST_THRESHOLD) {
+        return (scaled * MOUSE_ACCEL_MEDIUM_NUMERATOR) /
+               MOUSE_ACCEL_MEDIUM_DENOMINATOR;
+    }
+    return scaled * MOUSE_ACCEL_FAST_NUMERATOR;
+}
+
+static void mouse_collect_event_batch(mouse_event_batch_t* batch) {
+    batch->dx = 0;
+    batch->dy = 0;
+    batch->wheel = 0;
+    batch->next_raw_buttons = raw_buttons;
+    batch->raw_buttons_changed = 0;
+
+    while (queue_head != queue_tail) {
+        mouse_packet_t pkt = event_queue[queue_head];
+
+        queue_head = (queue_head + 1) % MOUSE_QUEUE_SIZE;
+        batch->dx += pkt.dx;
+        batch->dy += pkt.dy;
+        batch->wheel += pkt.wheel;
+        if (pkt.buttons != raw_buttons) {
+            batch->next_raw_buttons = pkt.buttons;
+            batch->raw_buttons_changed = 1;
+            break;
+        }
+        if (pkt.wheel != 0) break;
+    }
+}
+
+static void mouse_apply_movement(const vesa_mode_t* mode,
+                                 const mouse_event_batch_t* batch) {
+    int32_t magnitude = mouse_delta_magnitude(batch->dx, batch->dy);
+
+    cursor_x += mouse_scale_delta(batch->dx, magnitude);
+    cursor_y -= mouse_scale_delta(batch->dy, magnitude);
+    if (cursor_x < 0) cursor_x = 0;
+    if (cursor_y < 0) cursor_y = 0;
+    if (cursor_x >= (int)mode->width) cursor_x = mode->width - 1;
+    if (cursor_y >= (int)mode->height) cursor_y = mode->height - 1;
+}
+
+static void mouse_dispatch_event(const mouse_event_batch_t* batch,
+                                 uint8_t changed) {
+    mouse_event_t event;
+
+    if (!current_callback) return;
+    event.x = cursor_x;
+    event.y = cursor_y;
+    event.buttons = current_buttons;
+    event.changed = changed;
+    event.wheel = 0;
+
+    if (changed) {
+        event.event = (current_buttons & changed) ?
+                      MOUSE_EVENT_PRESS : MOUSE_EVENT_RELEASE;
+        current_callback(&event);
+        return;
+    }
+    if (batch->wheel != 0) {
+        int32_t wheel = batch->wheel;
+
+        if (wheel > MOUSE_WHEEL_DELTA_MAX) wheel = MOUSE_WHEEL_DELTA_MAX;
+        if (wheel < MOUSE_WHEEL_DELTA_MIN) wheel = MOUSE_WHEEL_DELTA_MIN;
+        event.event = MOUSE_EVENT_WHEEL;
+        event.wheel = (int8_t)wheel;
+        current_callback(&event);
+        return;
+    }
+    if (batch->dx != 0 || batch->dy != 0) {
+        event.event = MOUSE_EVENT_MOVE;
+        current_callback(&event);
+    }
+}
+
+static void mouse_report_queue_overflow(void) {
+    if (!dropped_packets || queue_overflow_logged) return;
+
+    queue_overflow_logged = 1;
+    last_error = ERR_OVERFLOW;
+    LOG_ERROR("MOUSE", "Fila PS/2 cheia; pacotes foram descartados");
+}
+
 /* ========== Handler de interrupcao (IRQ12) ========== */
 
 static void mouse_handler(registers_t* regs) {
     (void)regs;
-    uint8_t status = inb(0x64);
-    if (!(status & 1)) return;
-    if (!(status & 0x20)) return;
+    uint8_t status = inb(MOUSE_CONTROLLER_PORT);
+    if (!(status & MOUSE_STATUS_OUTPUT_FULL)) return;
+    if (!(status & MOUSE_STATUS_AUX_DATA)) return;
 
-    packet[cycle++] = inb(0x60);
+    packet[cycle++] = inb(MOUSE_DATA_PORT);
     if (cycle == packet_size) {
         cycle = 0;
 
@@ -321,58 +493,117 @@ static void mouse_handler(registers_t* regs) {
             event_queue[queue_tail].dy = dy;
             event_queue[queue_tail].wheel = wheel_supported ?
                 mouse_decode_wheel(packet[3]) : 0;
-            event_queue[queue_tail].buttons = packet[0] & 0x07;
+            event_queue[queue_tail].buttons = packet[0] & MOUSE_BUTTON_MASK;
             queue_tail = next_tail;
+        } else {
+            dropped_packets++;
         }
     }
 }
 
 /* ========== Inicializacao ========== */
 
-void mouse_init(void) {
-    LOG_INFO("MOUSE", "Inicializando driver PS/2...");
+static int mouse_init_fail(int error, const char* message) {
+    driver_initialized = 0;
+    last_error = error;
+    LOG_ERROR("MOUSE", message);
+    return error;
+}
+
+static void mouse_reset_state(void) {
+    driver_initialized = 0;
+    current_callback = 0;
     packet_size = MOUSE_PACKET_STANDARD_SIZE;
     wheel_supported = 0;
     cycle = 0;
+    queue_head = 0;
+    queue_tail = 0;
+    dropped_packets = 0;
+    queue_overflow_logged = 0;
+    prev_buttons = 0;
+    current_buttons = 0;
+    raw_buttons = 0;
+    cursor_drawn = 0;
+    cursor_x = 0;
+    cursor_y = 0;
+    prev_x = 0;
+    prev_y = 0;
+    mouse_config.speed = MOUSE_SPEED_DEFAULT;
+    mouse_config.acceleration_enabled = 0;
+    mouse_config.primary_button = MOUSE_PRIMARY_LEFT;
+    last_error = OK;
+}
+
+int mouse_init(void) {
+    uint8_t controller_config;
+    int result;
+
+    LOG_INFO("MOUSE", "Inicializando driver PS/2...");
+    mouse_reset_state();
 
     /* Habilita porta auxiliar (mouse) */
-    mouse_wait(1);
-    outb(0x64, 0xA8);
+    result = mouse_wait(1);
+    if (result != OK) {
+        return mouse_init_fail(result, "Falha ao habilitar porta auxiliar");
+    }
+    outb(MOUSE_CONTROLLER_PORT, MOUSE_CONTROLLER_ENABLE_AUX);
 
     /* Configura controladora para gerar IRQ12 */
-    mouse_wait(1);
-    outb(0x64, 0x20);
-    mouse_wait(0);
-    uint8_t status = inb(0x60) | 2;
-    mouse_wait(1);
-    outb(0x64, 0x60);
-    mouse_wait(1);
-    outb(0x60, status);
+    result = mouse_wait(1);
+    if (result != OK) {
+        return mouse_init_fail(result, "Falha ao consultar controladora PS/2");
+    }
+    outb(MOUSE_CONTROLLER_PORT, MOUSE_CONTROLLER_READ_CONFIG);
+    result = mouse_read(&controller_config);
+    if (result != OK) {
+        return mouse_init_fail(result, "Falha ao ler configuracao PS/2");
+    }
+    controller_config |= MOUSE_CONTROLLER_IRQ12_ENABLE;
+    result = mouse_wait(1);
+    if (result != OK) {
+        return mouse_init_fail(result, "Falha ao preparar configuracao PS/2");
+    }
+    outb(MOUSE_CONTROLLER_PORT, MOUSE_CONTROLLER_WRITE_CONFIG);
+    result = mouse_wait(1);
+    if (result != OK) {
+        return mouse_init_fail(result, "Falha ao gravar configuracao PS/2");
+    }
+    outb(MOUSE_DATA_PORT, controller_config);
 
     /* Restaura padroes */
-    mouse_write(MOUSE_CMD_SET_DEFAULTS);
-    mouse_read();
+    result = mouse_write_ack(MOUSE_CMD_SET_DEFAULTS);
+    if (result != OK) {
+        return mouse_init_fail(result, "Mouse PS/2 ausente ou sem resposta");
+    }
 
-    if (mouse_enable_wheel_protocol()) {
+    result = mouse_enable_wheel_protocol();
+    if (result == OK) {
         LOG_INFO("MOUSE", "Roda PS/2 habilitada");
     } else {
         /* O protocolo basico conserva a taxa de movimento anterior. */
-        (void)mouse_set_sample_rate(MOUSE_SAMPLE_RATE_FAST);
+        packet_size = MOUSE_PACKET_STANDARD_SIZE;
+        wheel_supported = 0;
+        result = mouse_set_sample_rate(MOUSE_SAMPLE_RATE_FAST);
+        if (result != OK) {
+            return mouse_init_fail(result,
+                                   "Falha ao ativar protocolo PS/2 basico");
+        }
         if (!wheel_fallback_logged) {
             wheel_fallback_logged = 1;
             LOG_WARN("MOUSE", "Roda PS/2 indisponivel; usando protocolo basico");
         }
     }
 
-    /* Habilita data reporting */
-    if (!mouse_write_ack(MOUSE_CMD_ENABLE_REPORTING)) {
-        LOG_WARN("MOUSE", "Nao confirmou habilitacao de dados do mouse");
+    result = mouse_write_ack(MOUSE_CMD_ENABLE_REPORTING);
+    if (result != OK) {
+        return mouse_init_fail(result, "Falha ao habilitar dados do mouse");
     }
 
-    /* Registra handler na IRQ12 (INT 44) */
-    if (idt_register_handler(44, (isr_handler_t)mouse_handler) != OK) {
-        LOG_ERROR("MOUSE", "Falha ao registrar IRQ do mouse");
-        return;
+    /* O registro libera a IRQ12 somente apos o ACK ter sido consumido. */
+    result = idt_register_handler(MOUSE_IRQ_VECTOR,
+                                  (isr_handler_t)mouse_handler);
+    if (result != OK) {
+        return mouse_init_fail(result, "Falha ao registrar IRQ do mouse");
     }
 
     /* Posiciona cursor no centro da tela */
@@ -385,13 +616,22 @@ void mouse_init(void) {
     }
 
     driver_initialized = 1;
+    last_error = OK;
     LOG_INFO("MOUSE", "Inicializado com sucesso");
+    return OK;
 }
 
 /* ========== Processamento de eventos ========== */
 
 void mouse_process_events(void) {
+    mouse_event_batch_t batch;
+    uint8_t changed;
+    int old_x;
+    int old_y;
+    int had_old_cursor;
+
     if (!driver_initialized) return;
+    mouse_report_queue_overflow();
     vesa_mode_t* mode = vesa_get_mode();
     if (!mode || !mode->initialized) return;
 
@@ -405,84 +645,24 @@ void mouse_process_events(void) {
     }
 
     /* Apaga o cursor UMA VEZ antes de processar todos os eventos */
-    int old_x = prev_x;
-    int old_y = prev_y;
-    int had_old_cursor = cursor_drawn;
+    old_x = prev_x;
+    old_y = prev_y;
+    had_old_cursor = cursor_drawn;
     erase_cursor();
 
-    /*
-     * Acumula movimentos consecutivos, mas para no primeiro evento de
-     * botao. Assim um clique rapido nao desaparece quando press e release
-     * chegam na mesma fila entre dois ciclos do sistema.
-     */
-    int32_t total_dx = 0;
-    int32_t total_dy = 0;
-    int32_t total_wheel = 0;
-    uint8_t next_buttons = current_buttons;
-
-    while (queue_head != queue_tail) {
-        mouse_packet_t pkt = event_queue[queue_head];
-        queue_head = (queue_head + 1) % MOUSE_QUEUE_SIZE;
-
-        total_dx += pkt.dx;
-        total_dy += pkt.dy;
-        total_wheel += pkt.wheel;
-        if (pkt.buttons != current_buttons) {
-            next_buttons = pkt.buttons;
-            break;
-        }
-        if (pkt.wheel != 0) break;
-    }
-
-    /* Aplica multiplicador de velocidade */
-    cursor_x += total_dx * MOUSE_SPEED;
-    cursor_y -= total_dy * MOUSE_SPEED;
-
-    /* Limita dentro da tela */
-    if (cursor_x < 0) cursor_x = 0;
-    if (cursor_y < 0) cursor_y = 0;
-    if (cursor_x >= (int)mode->width) cursor_x = mode->width - 1;
-    if (cursor_y >= (int)mode->height) cursor_y = mode->height - 1;
+    mouse_collect_event_batch(&batch);
+    mouse_apply_movement(mode, &batch);
 
     /* Detecta press/release comparando com estado anterior */
     prev_buttons = current_buttons;
-    current_buttons = next_buttons;
-    uint8_t changed = prev_buttons ^ current_buttons;
+    if (batch.raw_buttons_changed) {
+        raw_buttons = batch.next_raw_buttons;
+        current_buttons = mouse_map_buttons(raw_buttons);
+    }
+    changed = prev_buttons ^ current_buttons;
 
     if (changed) vesa_frame_begin();
-
-    /* Despacha evento ao callback registrado */
-    if (current_callback) {
-        mouse_event_t evt;
-        evt.x = cursor_x;
-        evt.y = cursor_y;
-        evt.buttons = current_buttons;
-        evt.changed = changed;
-        evt.wheel = 0;
-
-        if (changed) {
-            /* Algum botao mudou de estado */
-            if (current_buttons & changed) {
-                evt.event = MOUSE_EVENT_PRESS;
-            } else {
-                evt.event = MOUSE_EVENT_RELEASE;
-            }
-            current_callback(&evt);
-        } else if (total_wheel != 0) {
-            if (total_wheel > MOUSE_WHEEL_DELTA_MAX) {
-                total_wheel = MOUSE_WHEEL_DELTA_MAX;
-            }
-            if (total_wheel < MOUSE_WHEEL_DELTA_MIN) {
-                total_wheel = MOUSE_WHEEL_DELTA_MIN;
-            }
-            evt.event = MOUSE_EVENT_WHEEL;
-            evt.wheel = (int8_t)total_wheel;
-            current_callback(&evt);
-        } else if (total_dx != 0 || total_dy != 0) {
-            evt.event = MOUSE_EVENT_MOVE;
-            current_callback(&evt);
-        }
-    }
+    mouse_dispatch_event(&batch, changed);
 
     /* Redesenha o cursor UMA VEZ na posicao final */
     draw_cursor();
@@ -512,4 +692,76 @@ int mouse_has_wheel(void) {
         return 0;
     }
     return wheel_supported;
+}
+
+int mouse_get_config(mouse_config_t* config) {
+    if (!config) {
+        LOG_ERROR("MOUSE", "Destino nulo ao consultar configuracao");
+        return ERR_NULL;
+    }
+    *config = mouse_config;
+    return OK;
+}
+
+int mouse_get_status(mouse_status_t* status) {
+    if (!status) {
+        LOG_ERROR("MOUSE", "Destino nulo ao consultar status");
+        return ERR_NULL;
+    }
+    status->x = cursor_x;
+    status->y = cursor_y;
+    status->initialized = driver_initialized ? 1 : 0;
+    status->raw_buttons = raw_buttons;
+    status->effective_buttons = current_buttons;
+    status->wheel_supported = wheel_supported ? 1 : 0;
+    status->dropped_packets = dropped_packets;
+    status->last_error = last_error;
+    status->config = mouse_config;
+    return OK;
+}
+
+int mouse_set_speed(uint8_t speed) {
+    if (!driver_initialized) {
+        last_error = ERR_UNAVAILABLE;
+        LOG_ERROR("MOUSE", "Velocidade recusada; driver indisponivel");
+        return ERR_UNAVAILABLE;
+    }
+    if (speed < MOUSE_SPEED_MIN || speed > MOUSE_SPEED_MAX) {
+        last_error = ERR_INVALID;
+        LOG_ERROR("MOUSE", "Velocidade fora do intervalo permitido");
+        return ERR_INVALID;
+    }
+    mouse_config.speed = speed;
+    return OK;
+}
+
+int mouse_set_acceleration(int enabled) {
+    if (!driver_initialized) {
+        last_error = ERR_UNAVAILABLE;
+        LOG_ERROR("MOUSE", "Aceleracao recusada; driver indisponivel");
+        return ERR_UNAVAILABLE;
+    }
+    if (enabled != 0 && enabled != 1) {
+        last_error = ERR_INVALID;
+        LOG_ERROR("MOUSE", "Valor invalido para aceleracao");
+        return ERR_INVALID;
+    }
+    mouse_config.acceleration_enabled = (uint8_t)enabled;
+    return OK;
+}
+
+int mouse_set_primary_button(mouse_primary_button_t primary_button) {
+    if (!driver_initialized) {
+        last_error = ERR_UNAVAILABLE;
+        LOG_ERROR("MOUSE", "Botao principal recusado; driver indisponivel");
+        return ERR_UNAVAILABLE;
+    }
+    if (primary_button != MOUSE_PRIMARY_LEFT &&
+        primary_button != MOUSE_PRIMARY_RIGHT) {
+        last_error = ERR_INVALID;
+        LOG_ERROR("MOUSE", "Botao principal invalido");
+        return ERR_INVALID;
+    }
+    mouse_config.primary_button = primary_button;
+    return OK;
 }

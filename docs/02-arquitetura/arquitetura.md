@@ -74,7 +74,7 @@ taskbar_init()      → Barra de tarefas desenhada
 desktop_init()      → Desktop com ícones
 settings_init()     → Configurações carregadas
 wm_init()           → Window Manager ativo
-mouse_init()        → Mouse PS/2 configurado
+mouse_init()        → Mouse PS/2 configurado ou fallback por teclado
 ipc_init()          → Sistema de IPC ativo
 process_set_focus_fallback() → Shell configurado como foco seguro
 syscall_enable_user_mode() → Gate int 0x80 elevado a DPL 3

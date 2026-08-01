@@ -4,7 +4,7 @@
 #include "types.h"
 #include "drivers/mouse.h"
 
-#define SETTINGS_MAX_CATEGORIES 6
+#define SETTINGS_MAX_CATEGORIES 8
 #define SETTINGS_MAX_OPTIONS 8
 
 typedef enum {
@@ -15,6 +15,7 @@ typedef enum {
     SETTINGS_CAT_SYSTEM,
     SETTINGS_CAT_SOUND,
     SETTINGS_CAT_ABOUT,
+    SETTINGS_CAT_MOUSE,
     SETTINGS_CAT_COUNT
 } settings_category_t;
 

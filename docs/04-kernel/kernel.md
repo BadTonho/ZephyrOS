@@ -53,7 +53,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     recovery_init();
     idt_init();
     keyboard_init();
-    mouse_init();
+    if (mouse_init() == OK) {
+        mouse_set_callback(global_mouse_handler);
+    }
     timer_init(50);
 
     /* Memoria e contratos basicos. */
