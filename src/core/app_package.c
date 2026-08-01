@@ -1930,12 +1930,20 @@ static int app_package_preflight_plan_internal(
 
 int app_package_preflight_plan(const app_package_plan_t* plan,
                                app_package_action_result_t* result_out) {
+    app_package_plan_t plan_copy;
+    const app_package_plan_t* active_plan = plan;
+
     if (!result_out) {
         LOG_ERROR("PKG", "Saida nula no preflight de plano");
         return ERR_NULL;
     }
+    /* O chamador pode manter o plano dentro do proprio resultado. */
+    if (plan) {
+        plan_copy = *plan;
+        active_plan = &plan_copy;
+    }
     app_package_action_reset(result_out);
-    return app_package_preflight_plan_internal(plan, 0, result_out);
+    return app_package_preflight_plan_internal(active_plan, 0, result_out);
 }
 
 static void app_package_remove_root_if_present(const char* path) {
@@ -2403,6 +2411,8 @@ static int app_package_transaction_init(void) {
 
 int app_package_apply_plan_confirmed(const app_package_plan_t* plan,
                                      app_package_action_result_t* result_out) {
+    app_package_plan_t plan_copy;
+    const app_package_plan_t* active_plan = plan;
     const app_package_plan_entry_t* target;
     int previous_index;
     int result;
@@ -2411,12 +2421,17 @@ int app_package_apply_plan_confirmed(const app_package_plan_t* plan,
         LOG_ERROR("PKG", "Saida nula na aplicacao do plano");
         return ERR_NULL;
     }
+    /* Preserve o plano quando ele pertence ao resultado que sera reiniciado. */
+    if (plan) {
+        plan_copy = *plan;
+        active_plan = &plan_copy;
+    }
     app_package_action_reset(result_out);
     result = app_package_mutation_begin(result_out);
     if (result != OK) return result;
-    result = app_package_preflight_plan_internal(plan, 1, result_out);
+    result = app_package_preflight_plan_internal(active_plan, 1, result_out);
     if (result != OK) goto done;
-    target = &plan->entries[plan->target_index];
+    target = &active_plan->entries[active_plan->target_index];
     previous_index = app_package_state_find_rollback(target->id);
     kmemset(&app_package_journal, 0, sizeof(app_package_journal));
     app_package_journal.sequence = app_package_transaction_state.sequence + 1U;
@@ -2426,7 +2441,7 @@ int app_package_apply_plan_confirmed(const app_package_plan_t* plan,
                                     APP_PACKAGE_HISTORY_OPERATION_INSTALL;
     app_package_journal.slot = 0U;
     app_package_journal.previous_backup_slot = APP_PACKAGE_NO_BACKUP_SLOT;
-    app_package_journal.plan = *plan;
+    app_package_journal.plan = *active_plan;
     if (target->action == APP_PACKAGE_PLAN_ACTION_UPDATE) {
         int backup_slot = app_package_state_find_free_slot();
 
@@ -2447,7 +2462,8 @@ int app_package_apply_plan_confirmed(const app_package_plan_t* plan,
                                 sizeof(app_package_journal.backup_version),
                                 target->from_version);
     }
-    result = app_package_stage_plan(plan, app_package_journal.slot, result_out);
+    result = app_package_stage_plan(active_plan, app_package_journal.slot,
+                                    result_out);
     if (result != OK) goto done;
     if (app_package_journal.backup_id[0]) {
         result = app_package_write_backup(app_package_journal.backup_id,
@@ -2455,13 +2471,14 @@ int app_package_apply_plan_confirmed(const app_package_plan_t* plan,
                                           result_out);
         if (result != OK) {
             app_package_cleanup_stage_files(app_package_journal.slot,
-                                            plan->entry_count);
+                                            active_plan->entry_count);
             goto done;
         }
     }
     result = app_package_write_journal();
     if (result != OK) {
-        app_package_cleanup_stage_files(app_package_journal.slot, plan->entry_count);
+        app_package_cleanup_stage_files(app_package_journal.slot,
+                                        active_plan->entry_count);
         if (app_package_journal.backup_id[0]) {
             app_package_cleanup_backup_files(app_package_journal.backup_slot);
         }
@@ -2471,7 +2488,7 @@ int app_package_apply_plan_confirmed(const app_package_plan_t* plan,
         goto done;
     }
     app_package_transaction_pending = 1;
-    result = app_package_apply_staged_plan(plan, result_out);
+    result = app_package_apply_staged_plan(active_plan, result_out);
     if (result != OK) goto done;
     app_package_journal.phase = APP_PACKAGE_JOURNAL_COMMITTED;
     result = app_package_write_journal();
@@ -2487,7 +2504,7 @@ int app_package_apply_plan_confirmed(const app_package_plan_t* plan,
                                APP_PACKAGE_HISTORY_OUTCOME_SUCCESS,
                                APP_PACKAGE_ACTION_REASON_NONE, target->id,
                                target->from_version, target->to_version,
-                               plan->entry_count);
+                               active_plan->entry_count);
     result = app_package_finalize_committed_journal();
     if (result != OK) {
         result = app_package_action_fail(result_out,
