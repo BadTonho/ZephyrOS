@@ -100,6 +100,7 @@ static uint32_t app_remote_catalog_size;
 static uint8_t app_remote_package_buffer[HTTP_BODY_CAPACITY];
 static uint8_t app_remote_metadata_buffer[APP_PACKAGE_MAX_MANIFEST_SIZE];
 static uint8_t app_remote_record_raw[2][APP_REMOTE_RECORD_SIZE];
+static uint8_t app_remote_authenticated_cache_hash[32];
 static crypto_ed25519_verify_ctx_t app_remote_signature;
 static http_status_t app_remote_http;
 static int app_remote_record_slot = -1;
@@ -107,6 +108,7 @@ static int app_remote_provenance_slot = -1;
 static uint8_t app_remote_cancel_requested;
 static uint8_t app_remote_last_cancelled;
 static uint8_t app_remote_fail_after;
+static uint8_t app_remote_cache_signature_authenticated;
 static uint8_t app_remote_provenance_reliable;
 static uint8_t app_remote_provenance_trusted[APP_REMOTE_PROVENANCE_MAX];
 
@@ -456,6 +458,7 @@ static int app_remote_decode_entry(const uint8_t* raw,
 
 static int app_remote_parse_catalog(const uint8_t* raw, uint32_t size,
                                     uint32_t minimum_generation,
+                                    int signature_authenticated,
                                     app_remote_reason_t* reason_out) {
     uint32_t generation;
     uint16_t count;
@@ -493,7 +496,8 @@ static int app_remote_parse_catalog(const uint8_t* raw, uint32_t size,
         *reason_out = APP_REMOTE_REASON_UNKNOWN_KEY;
         return ERR_INVALID;
     }
-    if (app_remote_verify_signature(raw, signed_size) != OK) {
+    if (!signature_authenticated &&
+        app_remote_verify_signature(raw, signed_size) != OK) {
         *reason_out = APP_REMOTE_REASON_SIGNATURE;
         return ERR_INVALID;
     }
@@ -1008,6 +1012,7 @@ static int app_remote_load_active_cache(void) {
     char path[FS_MAX_PATH];
     uint8_t hash[32];
     app_remote_reason_t reason;
+    int signature_authenticated;
     int size;
 
     if (app_remote_record.active_slot == APP_REMOTE_SLOT_NONE) {
@@ -1023,15 +1028,23 @@ static int app_remote_load_active_cache(void) {
     app_remote_copy_text(path + kstrlen(path),
                          sizeof(path) - kstrlen(path), "/PLAN.CAT");
     size = fs_read_file_at(path, app_remote_catalog, sizeof(app_remote_catalog));
-    if (size <= 0 || crypto_sha256(app_remote_catalog, (uint32_t)size, hash) != OK ||
-        !crypto_equal(hash, app_remote_record.catalog_hash, 32U) ||
-        app_remote_parse_catalog(app_remote_catalog, (uint32_t)size,
+    if (size <= 0 || crypto_sha256(app_remote_catalog, (uint32_t)size,
+                                  hash) != OK ||
+        !crypto_equal(hash, app_remote_record.catalog_hash, 32U)) {
+        app_remote_status.cache_state = APP_REMOTE_CACHE_INVALID;
+        return ERR_INVALID;
+    }
+    signature_authenticated = app_remote_cache_signature_authenticated &&
+        crypto_equal(hash, app_remote_authenticated_cache_hash, 32U);
+    if (app_remote_parse_catalog(app_remote_catalog, (uint32_t)size,
                                  app_remote_record.highest_generation,
-                                 &reason) != OK ||
+                                 signature_authenticated, &reason) != OK ||
         app_remote_status.generation != app_remote_record.cache_generation) {
         app_remote_status.cache_state = APP_REMOTE_CACHE_INVALID;
         return ERR_INVALID;
     }
+    kmemcpy(app_remote_authenticated_cache_hash, hash, sizeof(hash));
+    app_remote_cache_signature_authenticated = 1U;
     app_remote_catalog_size = (uint32_t)size;
     for (uint32_t index = 0; index < app_remote_record.cached_count; index++) {
         int entry_index = app_remote_find_index(app_remote_record.cached_ids[index]);
@@ -1528,6 +1541,9 @@ static int app_remote_publish_cache(const char* id, const char* catalog_url,
         LOG_ERROR("APPREMOTE", "Publicacao final do cache nao foi duravel");
         return ERR_DISK;
     }
+    kmemcpy(app_remote_authenticated_cache_hash, authenticated_hash,
+            sizeof(app_remote_authenticated_cache_hash));
+    app_remote_cache_signature_authenticated = 1U;
     app_remote_status.cache_pending = 0U;
     app_remote_status.highest_generation = app_remote_record.highest_generation;
     app_remote_status.cache_state = APP_REMOTE_CACHE_VALID;
@@ -1548,6 +1564,9 @@ int app_remote_init(void) {
     kmemset(&app_remote_record, 0, sizeof(app_remote_record));
     kmemset(app_remote_pending_ids, 0, sizeof(app_remote_pending_ids));
     app_remote_pending_count = 0U;
+    app_remote_cache_signature_authenticated = 0U;
+    kmemset(app_remote_authenticated_cache_hash, 0,
+            sizeof(app_remote_authenticated_cache_hash));
     app_remote_record_slot = -1;
     app_remote_provenance_slot = -1;
     app_remote_status.cache_state = fs_get_type() == FS_TYPE_FAT12 ?
@@ -1672,7 +1691,7 @@ int app_remote_check(const char* catalog_url,
     }
     result = app_remote_parse_catalog(body, size,
                                       app_remote_record.highest_generation,
-                                      &reason);
+                                      0, &reason);
     if (result != OK) {
         return app_remote_fail(reason, result,
                                "Catalogo remoto recusado", result_out);
@@ -1915,6 +1934,9 @@ int app_remote_clear(int confirmed, app_remote_result_t* result_out) {
     app_remote_record.phase = APP_REMOTE_PHASE_CLEAN;
     app_remote_record.cache_generation = 0U;
     app_remote_record.cached_count = 0U;
+    app_remote_cache_signature_authenticated = 0U;
+    kmemset(app_remote_authenticated_cache_hash, 0,
+            sizeof(app_remote_authenticated_cache_hash));
     kmemset(app_remote_record.target_id, 0,
             sizeof(app_remote_record.target_id));
     kmemset(app_remote_record.cached_ids, 0,
