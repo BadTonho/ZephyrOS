@@ -37,6 +37,9 @@ mudanca; nao crie uma entrada artificial.
 - Criterio: aceitar cada cena somente se bytes e ticks nao crescerem mais que
   10%. Quando a medida-base de ticks for zero, registrar `N/D` para percentual
   e justificar que o PIT nao resolveu a duracao; ainda registrar os bytes.
+- Conclusao: a modernizacao MV4 foi aprovada funcionalmente nas quatro cenas;
+  a comparacao quantitativa permanece `N/D`, pois a linha-base AS3 por cena
+  nao foi registrada e nao pode ser reconstruida com rigor.
 - Impacto: Explorer, Settings, Task Manager e App Store usam somente as
   primitivas Modern existentes no caminho Classic. O historico de 60 pontos do
   Task Manager e local a janela, e `Carga agregada` continua a leitura
