@@ -493,6 +493,14 @@ static void appstore_worker_run(const char* id) {
     appstore_set_result(APPSTORE_RESULT_RUN, result,
                         result == OK ? "Aplicativo iniciado" :
                         "Execucao bloqueada");
+    if (result == OK && appstore_hosted) {
+        result = wm_close_hosted_app(WM_APP_APPSTORE);
+        if (result != OK) {
+            LOG_WARN("APPSTORE", "ZAPP iniciou, mas a janela nao fechou");
+            return;
+        }
+        LOG_INFO("APPSTORE", "ZAPP iniciado; F12 cancela e devolve foco ao Shell");
+    }
 }
 
 static void appstore_worker_finish(void) {

@@ -182,8 +182,9 @@ selecao atual; trocar aba, selecao ou atualizar o catalogo a cancela.
 
 No modo Classic, Esc cancela somente o contexto atual e a janela fecha por X
 ou Alt+F4. No fallback Simple, Esc tambem fecha a TUI quando nao ha
-confirmacao pendente. Abrir um app instalado preserva o retorno de foco do
-loader para o Shell apos o fim ou cancelamento por F12.
+confirmacao pendente. Abrir um app instalado fecha a janela da Store para
+deixar o ZAPP em primeiro plano; o loader devolve o foco ao Shell apos o fim
+ou cancelamento por F12.
 
 ## Fixtures e atalhos host
 
