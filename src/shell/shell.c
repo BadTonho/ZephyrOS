@@ -44,6 +44,7 @@
 #include "core/app_builtin.h"
 #include "core/app_loader.h"
 #include "core/app_package.h"
+#include "core/app_remote.h"
 #include "core/update.h"
 #include "core/update_remote.h"
 #include "core/update_remote_config.h"
@@ -231,6 +232,12 @@ typedef struct {
     app_package_status_t status;
     app_launch_info_t launch;
     uint32_t pid;
+    char remote_url[APP_REMOTE_URL_SIZE];
+    char remote_token[APP_REMOTE_URL_SIZE];
+    app_remote_entry_t remote_entry;
+    app_remote_status_t remote_status;
+    app_remote_options_t remote_options;
+    app_remote_result_t remote_result;
 } shell_store_workspace_t;
 
 static char input_buffer[SHELL_BUFFER_SIZE];
@@ -8240,6 +8247,7 @@ static void cmd_pkg(const char* args) {
 static void cmd_pkgcheck(void) {
     app_package_diagnostic_t diagnostic;
     app_package_status_t status;
+    app_remote_status_t remote;
     int result;
     int passed;
 
@@ -8283,6 +8291,23 @@ static void cmd_pkgcheck(void) {
                         status.last_history.operation), 0x08);
         video_print(" ", 0x08);
         video_print(status.last_history.id, 0x08);
+        video_print("\n", 0x07);
+    }
+    if (app_remote_get_status(&remote) == OK) {
+        video_print("  remoto_as5 ", 0x07);
+        video_print(app_remote_state_name(remote.state), 0x08);
+        video_print(" cache=", 0x08);
+        video_print(app_remote_cache_state_name(remote.cache_state),
+                    remote.cache_state == APP_REMOTE_CACHE_VALID ?
+                    0x0A : 0x08);
+        video_print(" geracao=", 0x08);
+        print_num(remote.highest_generation);
+        video_print(" pendente=", 0x08);
+        video_print(remote.cache_pending ? "SIM" : "NAO",
+                    remote.cache_pending ? 0x0E : 0x0A);
+        video_print(" procedencia=", 0x08);
+        video_print(app_remote_is_provenance_available() ? "OK" : "N/D",
+                    app_remote_is_provenance_available() ? 0x0A : 0x08);
         video_print("\n", 0x07);
     }
     video_print("  resultado ", 0x07);
@@ -8373,6 +8398,16 @@ static void cmd_store_print_usage(void) {
     video_print("     store test fail-after <1..32>\n", 0x0E);
     video_print("     store remove <ID> [--confirm]\n", 0x0E);
     video_print("     store run <ID> [args]\n", 0x0E);
+    video_print("     store remote status|enable|disable|list\n", 0x0E);
+    video_print("     store remote check [--url URL]\n", 0x0E);
+    video_print("     store remote info <ID>\n", 0x0E);
+    video_print("     store remote fetch <ID> [--url URL] [--confirm]\n",
+                0x0E);
+    video_print("     store remote install <ID> [--confirm]\n", 0x0E);
+    video_print("     store remote update <ID> [--downgrade] [--confirm]\n",
+                0x0E);
+    video_print("     store remote clear [--confirm]\n", 0x0E);
+    video_print("     store remote test fail-after <1..16>\n", 0x0E);
 }
 
 static void cmd_store_status(void) {
@@ -8442,6 +8477,19 @@ static void cmd_store_status(void) {
             video_print("\n", 0x07);
         }
     }
+    if (app_remote_get_status(&shell_store_workspace.remote_status) == OK) {
+        video_print("  remoto_as5=", 0x07);
+        video_print(app_remote_state_name(
+                        shell_store_workspace.remote_status.state), 0x08);
+        video_print(" cache=", 0x08);
+        video_print(app_remote_cache_state_name(
+                        shell_store_workspace.remote_status.cache_state),
+                    shell_store_workspace.remote_status.cache_state ==
+                    APP_REMOTE_CACHE_VALID ? 0x0A : 0x08);
+        video_print(" geracao=", 0x08);
+        print_num(shell_store_workspace.remote_status.highest_generation);
+        video_print("\n", 0x07);
+    }
 }
 
 static void cmd_store_list(void) {
@@ -8474,6 +8522,7 @@ static void cmd_store_info(char* key) {
         video_print("Erro: catalogo da App Store indisponivel.\n", 0x0C);
         return;
     }
+    (void)app_remote_refresh_provenance();
     cmd_pkg_uppercase_id(key);
     if (app_catalog_find_entry(key, &entry) != OK) {
         video_print("Erro: entrada da App Store nao encontrada.\n", 0x0C);
@@ -8499,7 +8548,14 @@ static void cmd_store_info(char* key) {
     video_print(app_catalog_reason_name(entry.reason),
                 entry.reason == APP_CATALOG_REASON_NONE ? 0x0A : 0x0E);
     video_print("\n  Confianca: ", 0x07);
-    video_print(entry.has_source ? "LOCAL / NAO ASSINADO" : "N/D", 0x0E);
+    video_print(entry.installed.id[0] &&
+                app_remote_is_provenance_available() &&
+                app_remote_get_installed_trust(
+                    entry.installed.id, entry.installed.version) ?
+                "REMOTO / AUTENTICADO (TESTE)" :
+                entry.installed.id[0] &&
+                !app_remote_is_provenance_available() ? "N/D" :
+                entry.has_source ? "LOCAL / NAO ASSINADO" : "N/D", 0x0E);
     video_print("\n  Tamanho fonte: ", 0x07);
     print_num(entry.source_size);
     video_print("\n  Dependencias: ", 0x07);
@@ -8861,6 +8917,317 @@ static void cmd_store_run(char* id, const char* arguments) {
     video_print(". Use F12 para cancelar.\n", 0x0A);
 }
 
+static void cmd_store_remote_status(void) {
+    app_remote_status_t* status = &shell_store_workspace.remote_status;
+
+    if (app_remote_get_status(status) != OK) {
+        video_print("Repositorio remoto indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("Repositorio App Store remoto (raiz de teste):\n", 0x0B);
+    video_print("  estado=", 0x07);
+    video_print(app_remote_state_name(status->state),
+                status->state == APP_REMOTE_STATE_FAILED ? 0x0C :
+                status->enabled ? 0x0A : 0x08);
+    video_print(" motivo=", 0x08);
+    video_print(app_remote_reason_name(status->reason),
+                status->reason == APP_REMOTE_REASON_NONE ? 0x0A : 0x0E);
+    video_print(" rede=", 0x08);
+    video_print(status->network_ready ? "READY" : "UNAVAILABLE",
+                status->network_ready ? 0x0A : 0x0E);
+    video_print(" autenticado=", 0x08);
+    video_print(status->catalog_available ? "SIM" : "NAO",
+                status->catalog_available ? 0x0A : 0x0E);
+    video_print("\n  geracao=", 0x07);
+    print_num(status->generation);
+    video_print(" maxima=", 0x08);
+    print_num(status->highest_generation);
+    video_print(" entradas=", 0x08);
+    print_num(status->entry_count);
+    video_print("\n  cache=", 0x07);
+    video_print(app_remote_cache_state_name(status->cache_state),
+                status->cache_state == APP_REMOTE_CACHE_VALID ? 0x0A : 0x0E);
+    video_print(" pendente=", 0x08);
+    video_print(status->cache_pending ? "SIM" : "NAO",
+                status->cache_pending ? 0x0E : 0x0A);
+    if (status->cache_target_available) {
+        video_print(" alvo=", 0x08);
+        video_print(status->cache_target, 0x0B);
+    }
+    video_print("\n  URL=", 0x07);
+    video_print(status->catalog_url[0] ? status->catalog_url : "padrao",
+                0x08);
+    video_print("\n", 0x07);
+}
+
+static void cmd_store_remote_print_entry(const app_remote_entry_t* entry) {
+    if (!entry) return;
+    video_print("  ", 0x07);
+    video_print(entry->info.id, 0x0B);
+    video_print(" ", 0x07);
+    video_print(entry->info.version, 0x07);
+    video_print(" ", 0x07);
+    video_print(app_remote_entry_state_name(entry->state),
+                entry->state == APP_REMOTE_ENTRY_BLOCKED ? 0x0C : 0x0A);
+    video_print(entry->cached ? " CACHE" : "", 0x0E);
+    video_print("\n", 0x07);
+}
+
+static void cmd_store_remote_list(void) {
+    uint32_t count = 0U;
+
+    (void)app_remote_refresh_provenance();
+    if (app_remote_get_count(&count) != OK) {
+        video_print("Catalogo remoto ainda nao foi consultado.\n", 0x0E);
+        return;
+    }
+    video_print("Catalogo REMOTO / AUTENTICADO (TESTE):\n", 0x0B);
+    for (uint32_t index = 0; index < count; index++) {
+        if (app_remote_get_entry(index,
+                                 &shell_store_workspace.remote_entry) == OK) {
+            cmd_store_remote_print_entry(&shell_store_workspace.remote_entry);
+        }
+    }
+}
+
+static void cmd_store_remote_info(char* id) {
+    app_remote_entry_t* entry = &shell_store_workspace.remote_entry;
+
+    cmd_pkg_uppercase_id(id);
+    (void)app_remote_refresh_provenance();
+    if (app_remote_find_entry(id, entry) != OK) {
+        video_print("Entrada remota nao encontrada.\n", 0x0C);
+        return;
+    }
+    video_print("Aplicativo REMOTO / AUTENTICADO (TESTE):\n  ID: ", 0x0B);
+    video_print(entry->info.id, 0x07);
+    video_print("\n  Nome: ", 0x07);
+    video_print(entry->info.name, 0x07);
+    video_print("\n  Versao: ", 0x07);
+    video_print(entry->info.version, 0x07);
+    video_print("\n  Estado: ", 0x07);
+    video_print(app_remote_entry_state_name(entry->state), 0x0A);
+    video_print("\n  Motivo: ", 0x07);
+    video_print(app_remote_reason_name(entry->reason),
+                entry->reason == APP_REMOTE_REASON_NONE ? 0x0A : 0x0E);
+    video_print("\n  Cache: ", 0x07);
+    video_print(entry->cached ? "SIM" : "NAO",
+                entry->cached ? 0x0A : 0x08);
+    video_print("\n  Tamanho: ", 0x07);
+    print_num(entry->package_size);
+    video_print(" bytes\n  SHA-256: ", 0x07);
+    for (uint32_t index = 0; index < 32U; index++) {
+        cmd_print_hex(entry->package_hash[index], 2U);
+    }
+    video_print("\n  Dependencias: ", 0x07);
+    if (!entry->info.dependency_count) video_print("nenhuma", 0x08);
+    for (uint32_t index = 0; index < entry->info.dependency_count; index++) {
+        if (index) video_print(", ", 0x07);
+        video_print(entry->info.dependencies[index], 0x07);
+    }
+    video_print("\n  Caminho: ", 0x07);
+    video_print(entry->package_path, 0x08);
+    video_print("\n  Procedencia instalada: ", 0x07);
+    video_print(!entry->installed ? "N/A" :
+                app_remote_get_installed_trust(
+                    entry->info.id, entry->installed_version) ?
+                "REMOTO / AUTENTICADO (TESTE)" : "N/D",
+                entry->installed && app_remote_get_installed_trust(
+                    entry->info.id, entry->installed_version) ? 0x0A : 0x08);
+    video_print("\n", 0x07);
+}
+
+static void cmd_store_remote_print_result(const char* label, int result) {
+    app_remote_result_t* remote = &shell_store_workspace.remote_result;
+
+    video_print(label, 0x0B);
+    video_print(result == OK ? "OK" : "BLOQUEADO",
+                result == OK ? 0x0A : 0x0C);
+    video_print(" motivo=", 0x08);
+    video_print(app_remote_reason_name(remote->reason),
+                remote->reason == APP_REMOTE_REASON_NONE ? 0x0A : 0x0E);
+    if (remote->http_status) {
+        video_print(" HTTP=", 0x08);
+        print_num(remote->http_status);
+    }
+    video_print("\n", 0x07);
+    if (remote->required_clusters || remote->free_clusters) {
+        video_print("  Clusters: necessarios=", 0x07);
+        print_num(remote->required_clusters);
+        video_print(" livres=", 0x08);
+        print_num(remote->free_clusters);
+        video_print("\n", 0x07);
+    }
+    cmd_store_print_plan(&remote->plan);
+    if (remote->package_action.reason != APP_PACKAGE_ACTION_REASON_NONE) {
+        shell_store_workspace.action = remote->package_action;
+        cmd_store_print_action_result("  Motor AS4: ", result);
+    }
+}
+
+static int cmd_store_remote_options(const char** cursor, int allow_url,
+                                    int* confirmed, int* downgrade) {
+    char* token = shell_store_workspace.remote_token;
+
+    while (1) {
+        cmd_pkg_take_token(cursor, token,
+                           sizeof(shell_store_workspace.remote_token));
+        if (!token[0]) return OK;
+        if (kstrcmp(token, "--confirm") == 0) {
+            *confirmed = 1;
+        } else if (kstrcmp(token, "--downgrade") == 0) {
+            *downgrade = 1;
+        } else if (allow_url && kstrcmp(token, "--url") == 0) {
+            cmd_pkg_take_token(cursor, shell_store_workspace.remote_url,
+                               sizeof(shell_store_workspace.remote_url));
+            if (!shell_store_workspace.remote_url[0]) {
+                LOG_WARN("SHELL", "URL ausente na operacao remota");
+                return ERR_INVALID;
+            }
+        } else {
+            LOG_WARN("SHELL", "Opcao remota da App Store e invalida");
+            return ERR_INVALID;
+        }
+    }
+}
+
+static int cmd_store_remote_control(const char* action, const char* arguments,
+                                    app_remote_options_t* options) {
+    const char* cursor = arguments;
+    int confirmed = 0;
+    int downgrade = 0;
+    int result;
+
+    if (kstrcmp(action, "status") == 0) {
+        cmd_store_remote_status();
+        return 1;
+    }
+    if (kstrcmp(action, "enable") == 0 || kstrcmp(action, "disable") == 0) {
+        result = kstrcmp(action, "enable") == 0 ?
+                 app_remote_enable() : app_remote_disable();
+        video_print(result == OK ? "Controle remoto atualizado.\n" :
+                                   "Controle remoto falhou.\n",
+                    result == OK ? 0x0A : 0x0C);
+        cmd_store_remote_status();
+        return 1;
+    }
+    if (kstrcmp(action, "list") == 0) {
+        cmd_store_remote_list();
+        return 1;
+    }
+    if (kstrcmp(action, "check") != 0 && kstrcmp(action, "clear") != 0) {
+        return 0;
+    }
+    if (cmd_store_remote_options(&cursor, kstrcmp(action, "check") == 0,
+                                 &confirmed, &downgrade) != OK ||
+        downgrade || (kstrcmp(action, "check") == 0 && confirmed)) {
+        cmd_store_print_usage();
+        return 1;
+    }
+    kmemset(options, 0, sizeof(*options));
+    options->cancel_check = cmd_update_cancel_check;
+    result = kstrcmp(action, "check") == 0 ?
+        app_remote_check(shell_store_workspace.remote_url, options,
+                         &shell_store_workspace.remote_result) :
+        app_remote_clear(confirmed, &shell_store_workspace.remote_result);
+    cmd_store_remote_print_result(
+        kstrcmp(action, "check") == 0 ? "Consulta remota: " :
+                                        "Limpeza remota: ", result);
+    if (kstrcmp(action, "clear") == 0 && !confirmed && result == OK) {
+        video_print("Nenhuma gravacao. Confirme com --confirm.\n", 0x0E);
+    }
+    return 1;
+}
+
+static void cmd_store_remote(const char* args) {
+    const char* cursor = args;
+    char* action = shell_store_workspace.value;
+    char* id = shell_store_workspace.option;
+    app_remote_options_t* options = &shell_store_workspace.remote_options;
+    int confirmed = 0;
+    int downgrade = 0;
+    int result;
+
+    cmd_pkg_take_token(&cursor, action, sizeof(shell_store_workspace.value));
+    if (cmd_store_remote_control(action, cursor, options)) return;
+    cmd_pkg_take_token(&cursor, id, sizeof(shell_store_workspace.option));
+    if (kstrcmp(action, "test") == 0) {
+        cmd_pkg_take_token(&cursor, shell_store_workspace.extra,
+                           sizeof(shell_store_workspace.extra));
+        if (kstrcmp(id, "fail-after") == 0 &&
+            shell_store_workspace.extra[0]) {
+            uint32_t fail_after = parse_number(
+                shell_store_workspace.extra);
+
+            result = fail_after >= 1U && fail_after <= 16U ?
+                     app_remote_test_fail_after((uint8_t)fail_after) :
+                     ERR_INVALID;
+            video_print(result == OK ? "Failpoint AS5 configurado.\n" :
+                                       "Failpoint AS5 invalido.\n",
+                        result == OK ? 0x0A : 0x0C);
+            return;
+        }
+        cmd_store_print_usage();
+        return;
+    }
+    if (!id[0]) {
+        cmd_store_print_usage();
+        return;
+    }
+    if (kstrcmp(action, "info") == 0) {
+        cmd_store_remote_info(id);
+        return;
+    }
+    if (cmd_store_remote_options(&cursor,
+                                 kstrcmp(action, "fetch") == 0,
+                                 &confirmed, &downgrade) != OK) {
+        cmd_store_print_usage();
+        return;
+    }
+    cmd_pkg_uppercase_id(id);
+    kmemset(options, 0, sizeof(*options));
+    options->allow_downgrade = downgrade ? 1U : 0U;
+    options->cancel_check = cmd_update_cancel_check;
+    if (kstrcmp(action, "update") == 0 && downgrade && !confirmed) {
+        video_print("Downgrade remoto exige --downgrade e --confirm.\n", 0x0E);
+        return;
+    }
+    if (kstrcmp(action, "update") == 0 && !downgrade &&
+        app_remote_find_entry(id, &shell_store_workspace.remote_entry) == OK &&
+        shell_store_workspace.remote_entry.state == APP_REMOTE_ENTRY_DOWNGRADE) {
+        video_print("Downgrade remoto exige --downgrade e --confirm.\n", 0x0E);
+        return;
+    }
+    if (kstrcmp(action, "fetch") == 0 && !downgrade) {
+        result = app_remote_fetch(id, shell_store_workspace.remote_url,
+                                  confirmed, options,
+                                  &shell_store_workspace.remote_result);
+        cmd_store_remote_print_result(confirmed ? "Cache remoto: " :
+                                                  "Plano de download: ",
+                                      result);
+    } else if (kstrcmp(action, "install") == 0 && !downgrade) {
+        result = app_remote_apply_cached(
+            id, 0, confirmed, options,
+            &shell_store_workspace.remote_result);
+        cmd_store_remote_print_result(confirmed ? "Instalacao remota: " :
+                                                  "Preflight remoto: ", result);
+    } else if (kstrcmp(action, "update") == 0 &&
+               (!downgrade || confirmed)) {
+        result = app_remote_apply_cached(
+            id, 1, confirmed, options,
+            &shell_store_workspace.remote_result);
+        cmd_store_remote_print_result(confirmed ? "Atualizacao remota: " :
+                                                  "Preflight remoto: ", result);
+    } else {
+        cmd_store_print_usage();
+        return;
+    }
+    if (confirmed && result == OK) cmd_store_refresh_after_mutation();
+    if (!confirmed && result == OK) {
+        video_print("Nenhuma gravacao foi realizada. Use --confirm.\n", 0x0E);
+    }
+}
+
 static void cmd_store(const char* args) {
     const char* cursor = args;
     int confirmed;
@@ -8873,6 +9240,10 @@ static void cmd_store(const char* args) {
     }
     cmd_pkg_take_token(&cursor, shell_store_workspace.operation,
                        sizeof(shell_store_workspace.operation));
+    if (kstrcmp(shell_store_workspace.operation, "remote") == 0) {
+        cmd_store_remote(cursor);
+        return;
+    }
     cmd_pkg_take_token(&cursor, shell_store_workspace.value,
                        sizeof(shell_store_workspace.value));
     if (kstrcmp(shell_store_workspace.operation, "run") == 0 &&

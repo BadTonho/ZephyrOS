@@ -1,0 +1,21 @@
+{
+  "artifacts": [
+    {"expected":"NONE","file":"seed/RMDEPA.ZPK.b64","sha256":"7230b1cdc4e03e55a35c4e40f20a601595cc6fa477af685f85db520da7f62fa8","type":"package"},
+    {"expected":"NONE","file":"seed/RMDEPB.ZPK.b64","sha256":"e65f22fe39bfc4148869b90f606fcf35e3466f1f6574b000cd7b483934c2168f","type":"package"},
+    {"expected":"NONE","file":"seed/RMTARGET.ZPK.b64","sha256":"541cfad618dd2e386a66206fcb1d9de2c93f241cf0ebedbc6c4ae22338e59a9a","type":"package"},
+    {"expected":"NONE","file":"update/RMDEPA.ZPK.b64","sha256":"7230b1cdc4e03e55a35c4e40f20a601595cc6fa477af685f85db520da7f62fa8","type":"package"},
+    {"expected":"NONE","file":"update/RMDEPB.ZPK.b64","sha256":"e65f22fe39bfc4148869b90f606fcf35e3466f1f6574b000cd7b483934c2168f","type":"package"},
+    {"expected":"NONE","file":"update/RMTARGET.ZPK.b64","sha256":"29456f00c016c59a3639c8828550fed039b6537e9b210333780440c9b6d14132","type":"package"},
+    {"expected":"NONE","file":"seed/stable.zac.b64","package_dir":"seed","sha256":"62453a1526b31c501c5c2095548bb433eead14d212367714d4179faa57ab01b0","type":"catalog"},
+    {"expected":"NONE","file":"update/stable.zac.b64","package_dir":"update","sha256":"add037426d1ff4e1cc70a10584a4ed6ba67841339720b4a4d46beee867902568","type":"catalog"},
+    {"expected":"REPLAY","file":"seed/stable.zac.b64","minimum_generation":2,"sha256":"62453a1526b31c501c5c2095548bb433eead14d212367714d4179faa57ab01b0","type":"catalog"},
+    {"expected":"PLAN_INCOMPLETE","file":"invalid/plan-incomplete.zac.b64","parser_expected":"NONE","sha256":"b9ff15928edb41010f3d03e3369bb4f5ee0fd293efae4d8d1fd0b42119b80946","type":"catalog"},
+    {"expected":"PLAN_CYCLE","file":"invalid/cycle.zac.b64","parser_expected":"NONE","sha256":"8619db9687f2b4ac57a2d35f1ed7626ac8c92e27af61232f28e37e52ecd60d64","type":"catalog"},
+    {"expected":"PACKAGE_MISMATCH","file":"invalid/divergent.zac.b64","package_dir":"update","parser_expected":"NONE","sha256":"1428662c633a8af1236f1ae951d02ba5a5a94fcd8f04203e025023d2a58721f5","type":"catalog"},
+    {"expected":"PACKAGE_HASH","file":"invalid/hash.zac.b64","package_dir":"update","parser_expected":"NONE","sha256":"5f28f27e7ce42d1fff74238001dc81847ee26742467c5cd448c38619d14db31c","type":"catalog"},
+    {"expected":"SIGNATURE","file":"invalid/badsig.zac.b64","sha256":"3f0283d8bf55273df3c4fbfd1d15522856fc63162353e44efef56b0818a7f44a","type":"catalog"},
+    {"expected":"UNKNOWN_KEY","file":"invalid/unknown.zac.b64","sha256":"98798b3c8bab85b853a3a320954923246cdf24013361131fcabeeca721d7db34","type":"catalog"},
+    {"expected":"REVOKED_KEY","file":"invalid/revoked.zac.b64","sha256":"d28c4325dd002a0180ea2b4e5632a6ef2af8d13dc9fd8420412602f7b876d195","type":"catalog"}
+  ],
+  "format": "zephyros-app-store-as5-fixtures-v1"
+}

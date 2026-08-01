@@ -182,6 +182,12 @@ int app_package_preflight_plan(const app_package_plan_t* plan,
                                app_package_action_result_t* result_out);
 int app_package_apply_plan_confirmed(const app_package_plan_t* plan,
                                      app_package_action_result_t* result_out);
+int app_package_preflight_plan_from_directory(
+    const app_package_plan_t* plan, const char* source_directory,
+    app_package_action_result_t* result_out);
+int app_package_apply_plan_from_directory_confirmed(
+    const app_package_plan_t* plan, const char* source_directory,
+    app_package_action_result_t* result_out);
 int app_package_preflight_rollback(const char* id,
                                    app_package_action_result_t* result_out);
 int app_package_rollback_confirmed(const char* id,

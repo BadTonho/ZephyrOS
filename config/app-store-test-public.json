@@ -1,0 +1,10 @@
+{
+  "algorithm": "Ed25519",
+  "format": "zephyros-app-store-ed25519-public-v1",
+  "key_id_hex": "0f8bfcbd720f408e08cf24367844af15",
+  "public_key_hex": "62a10ee8aa15c9a422f96133fd4d632af8127633e2a5850b98aa24cdab1557fe",
+  "revoked_key_ids": [
+    "2f965cb991fadc0a5cd2e13c77ef9b7a"
+  ],
+  "trust": "test-only"
+}

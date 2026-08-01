@@ -33,6 +33,7 @@ static int app_package_mutation_active = 0;
 static spinlock_t app_package_mutation_lock;
 static app_package_action_result_t app_package_legacy_result;
 static app_package_plan_t app_package_active_plan;
+static char app_package_active_source_directory[13];
 
 typedef struct {
     uint8_t* data;
@@ -1765,19 +1766,73 @@ static int app_package_plan_contains_before(const app_package_plan_t* plan,
     return 0;
 }
 
+static int app_package_build_source_path(const char* source_directory,
+                                         const char* alias,
+                                         char path[FS_MAX_PATH]) {
+    uint32_t directory_length;
+    uint32_t alias_length;
+
+    if (!source_directory || !alias || !path) {
+        LOG_ERROR("PKG", "Fonte de plano recebeu argumento nulo");
+        return ERR_NULL;
+    }
+    directory_length = kstrlen(source_directory);
+    alias_length = kstrlen(alias);
+    if (!directory_length) {
+        app_package_copy_string(path, FS_MAX_PATH, alias);
+        return OK;
+    }
+    if (directory_length > 8U || alias_length > 12U ||
+        directory_length + alias_length + 2U > FS_MAX_PATH) {
+        LOG_ERROR("PKG", "Caminho da fonte de plano excede limite");
+        return ERR_OVERFLOW;
+    }
+    for (uint32_t index = 0; index < directory_length; index++) {
+        char value = source_directory[index];
+
+        if (!((value >= 'A' && value <= 'Z') ||
+              (value >= '0' && value <= '9') || value == '_')) {
+            LOG_ERROR("PKG", "Diretorio da fonte de plano e inseguro");
+            return ERR_INVALID;
+        }
+    }
+    kmemcpy(path, source_directory, directory_length);
+    path[directory_length] = '/';
+    app_package_copy_string(path + directory_length + 1U,
+                            FS_MAX_PATH - directory_length - 1U, alias);
+    return OK;
+}
+
 static int app_package_validate_plan_entry(const app_package_plan_t* plan,
                                            uint32_t index,
+                                           const char* source_directory,
                                            app_package_action_result_t* result,
                                            uint32_t* required_bytes) {
     app_package_install_context_t context;
     const app_package_plan_entry_t* item = &plan->entries[index];
+    char source_path[FS_MAX_PATH];
+    char expected_id[APP_PACKAGE_ID_SIZE];
     app_package_info_t installed;
     int installed_result;
     int version_comparison = 0;
     int status;
 
     kmemset(&context, 0, sizeof(context));
-    status = app_package_read_install_source(item->alias, 1, &context, result);
+    if (app_package_alias_is_valid(item->alias, expected_id) != OK ||
+        kstrcmp(expected_id, item->id) != 0) {
+        LOG_WARN("PKG", "Alias do plano nao corresponde ao ID");
+        status = app_package_action_fail(
+            result, APP_PACKAGE_ACTION_REASON_ALIAS_MISMATCH, ERR_INVALID);
+        goto done;
+    }
+    status = app_package_build_source_path(source_directory, item->alias,
+                                           source_path);
+    if (status != OK) {
+        status = app_package_action_fail(
+            result, APP_PACKAGE_ACTION_REASON_INVALID_ARGUMENT, status);
+        goto done;
+    }
+    status = app_package_read_install_source(source_path, 0, &context, result);
     if (status != OK) goto done;
     if (kstrcmp(context.info.id, item->id) != 0 ||
         kstrcmp(context.info.version, item->to_version) != 0) {
@@ -1863,14 +1918,15 @@ done:
 }
 
 static int app_package_preflight_plan_internal(
-    const app_package_plan_t* plan, int mutation_owned,
+    const app_package_plan_t* plan, const char* source_directory,
+    int mutation_owned,
     app_package_action_result_t* result_out) {
     fs_info_t info;
     uint32_t required_bytes = 0U;
     uint32_t cluster_size;
     int result;
 
-    if (!plan || !result_out || plan->entry_count == 0U ||
+    if (!plan || !source_directory || !result_out || plan->entry_count == 0U ||
         plan->entry_count > APP_PACKAGE_MAX_PLAN_ENTRIES ||
         plan->target_index >= plan->entry_count) {
         return app_package_action_fail(result_out,
@@ -1906,7 +1962,8 @@ static int app_package_preflight_plan_internal(
                                        ERR_STATE);
     }
     for (uint32_t index = 0; index < plan->entry_count; index++) {
-        result = app_package_validate_plan_entry(plan, index, result_out,
+        result = app_package_validate_plan_entry(plan, index, source_directory,
+                                                 result_out,
                                                  &required_bytes);
         if (result != OK) return result;
     }
@@ -1946,7 +2003,19 @@ int app_package_preflight_plan(const app_package_plan_t* plan,
     } else {
         app_package_action_reset(result_out);
     }
-    return app_package_preflight_plan_internal(plan, 0, result_out);
+    return app_package_preflight_plan_internal(plan, "", 0, result_out);
+}
+
+int app_package_preflight_plan_from_directory(
+    const app_package_plan_t* plan, const char* source_directory,
+    app_package_action_result_t* result_out) {
+    if (!source_directory || !result_out) {
+        LOG_ERROR("PKG", "Diretorio ou saida nula no preflight remoto");
+        return ERR_NULL;
+    }
+    app_package_action_reset(result_out);
+    return app_package_preflight_plan_internal(
+        plan, source_directory, 0, result_out);
 }
 
 static void app_package_remove_root_if_present(const char* path) {
@@ -1994,16 +2063,24 @@ static void app_package_discard_rollback(const char* id) {
 }
 
 static int app_package_stage_entry(const app_package_plan_entry_t* item,
+                                   const char* source_directory,
                                    uint8_t slot, uint32_t index,
                                    app_package_action_result_t* result_out) {
     app_package_install_context_t context;
+    char source_path[FS_MAX_PATH];
     char app_path[13];
     char meta_path[13];
     uint32_t manifest_size;
     int result;
 
     kmemset(&context, 0, sizeof(context));
-    result = app_package_read_install_source(item->alias, 1, &context,
+    result = app_package_build_source_path(source_directory, item->alias,
+                                           source_path);
+    if (result != OK) {
+        return app_package_action_fail(
+            result_out, APP_PACKAGE_ACTION_REASON_INVALID_ARGUMENT, result);
+    }
+    result = app_package_read_install_source(source_path, 0, &context,
                                              result_out);
     if (result != OK) goto done;
     if (kstrcmp(context.info.id, item->id) != 0 ||
@@ -2038,10 +2115,12 @@ done:
 }
 
 static int app_package_stage_plan(const app_package_plan_t* plan,
+                                  const char* source_directory,
                                   uint8_t slot,
                                   app_package_action_result_t* result_out) {
     for (uint32_t index = 0; index < plan->entry_count; index++) {
-        int result = app_package_stage_entry(&plan->entries[index], slot, index,
+        int result = app_package_stage_entry(&plan->entries[index],
+                                             source_directory, slot, index,
                                              result_out);
         if (result != OK) {
             app_package_cleanup_stage_files(slot, plan->entry_count);
@@ -2412,18 +2491,59 @@ static int app_package_transaction_init(void) {
     return OK;
 }
 
-int app_package_apply_plan_confirmed(const app_package_plan_t* plan,
-                                     app_package_action_result_t* result_out) {
+static int app_package_prepare_plan_journal(
+    const app_package_plan_t* plan,
+    app_package_action_result_t* result_out) {
+    const app_package_plan_entry_t* target =
+        &plan->entries[plan->target_index];
+    int previous_index = app_package_state_find_rollback(target->id);
+
+    kmemset(&app_package_journal, 0, sizeof(app_package_journal));
+    app_package_journal.sequence = app_package_transaction_state.sequence + 1U;
+    app_package_journal.phase = APP_PACKAGE_JOURNAL_PREPARED;
+    app_package_journal.operation =
+        target->action == APP_PACKAGE_PLAN_ACTION_UPDATE ?
+        APP_PACKAGE_HISTORY_OPERATION_UPDATE :
+        APP_PACKAGE_HISTORY_OPERATION_INSTALL;
+    app_package_journal.slot = 0U;
+    app_package_journal.previous_backup_slot = APP_PACKAGE_NO_BACKUP_SLOT;
+    app_package_journal.plan = *plan;
+    if (target->action == APP_PACKAGE_PLAN_ACTION_UPDATE) {
+        int backup_slot = app_package_state_find_free_slot();
+
+        if (backup_slot < 0) {
+            LOG_WARN("PKG", "Nenhum slot de backup livre para o plano");
+            return app_package_action_fail(
+                result_out, APP_PACKAGE_ACTION_REASON_TRANSACTION_UNAVAILABLE,
+                ERR_OVERFLOW);
+        }
+        app_package_journal.backup_slot = (uint8_t)backup_slot;
+        if (previous_index >= 0) {
+            app_package_journal.previous_backup_slot =
+                app_package_transaction_state.rollbacks[previous_index].slot;
+        }
+        app_package_copy_string(app_package_journal.backup_id,
+                                sizeof(app_package_journal.backup_id),
+                                target->id);
+        app_package_copy_string(app_package_journal.backup_version,
+                                sizeof(app_package_journal.backup_version),
+                                target->from_version);
+    }
+    return OK;
+}
+
+static int app_package_apply_plan_from_directory_internal(
+    const app_package_plan_t* plan, const char* source_directory,
+    app_package_action_result_t* result_out) {
     const app_package_plan_t* active_plan = &app_package_active_plan;
     const app_package_plan_entry_t* target;
-    int previous_index;
     int result;
 
     if (!result_out) {
         LOG_ERROR("PKG", "Saida nula na aplicacao do plano");
         return ERR_NULL;
     }
-    if (!plan) {
+    if (!plan || !source_directory) {
         app_package_action_reset(result_out);
         return app_package_action_fail(
             result_out, APP_PACKAGE_ACTION_REASON_INVALID_ARGUMENT,
@@ -2433,42 +2553,19 @@ int app_package_apply_plan_confirmed(const app_package_plan_t* plan,
     if (result != OK) return result;
     /* A escrita FAT12 aprofunda a pilha; o plano ativo fica em estado estatico. */
     app_package_active_plan = *plan;
+    app_package_copy_string(app_package_active_source_directory,
+                            sizeof(app_package_active_source_directory),
+                            source_directory);
     app_package_action_reset(result_out);
-    result = app_package_preflight_plan_internal(active_plan, 1, result_out);
+    result = app_package_preflight_plan_internal(
+        active_plan, app_package_active_source_directory, 1, result_out);
     if (result != OK) goto done;
     target = &active_plan->entries[active_plan->target_index];
-    previous_index = app_package_state_find_rollback(target->id);
-    kmemset(&app_package_journal, 0, sizeof(app_package_journal));
-    app_package_journal.sequence = app_package_transaction_state.sequence + 1U;
-    app_package_journal.phase = APP_PACKAGE_JOURNAL_PREPARED;
-    app_package_journal.operation = target->action == APP_PACKAGE_PLAN_ACTION_UPDATE ?
-                                    APP_PACKAGE_HISTORY_OPERATION_UPDATE :
-                                    APP_PACKAGE_HISTORY_OPERATION_INSTALL;
-    app_package_journal.slot = 0U;
-    app_package_journal.previous_backup_slot = APP_PACKAGE_NO_BACKUP_SLOT;
-    app_package_journal.plan = *active_plan;
-    if (target->action == APP_PACKAGE_PLAN_ACTION_UPDATE) {
-        int backup_slot = app_package_state_find_free_slot();
-
-        if (backup_slot < 0) {
-            result = app_package_action_fail(
-                result_out, APP_PACKAGE_ACTION_REASON_TRANSACTION_UNAVAILABLE,
-                ERR_OVERFLOW);
-            goto done;
-        }
-        app_package_journal.backup_slot = (uint8_t)backup_slot;
-        if (previous_index >= 0) {
-            app_package_journal.previous_backup_slot =
-                app_package_transaction_state.rollbacks[previous_index].slot;
-        }
-        app_package_copy_string(app_package_journal.backup_id,
-                                sizeof(app_package_journal.backup_id), target->id);
-        app_package_copy_string(app_package_journal.backup_version,
-                                sizeof(app_package_journal.backup_version),
-                                target->from_version);
-    }
-    result = app_package_stage_plan(active_plan, app_package_journal.slot,
-                                    result_out);
+    result = app_package_prepare_plan_journal(active_plan, result_out);
+    if (result != OK) goto done;
+    result = app_package_stage_plan(active_plan,
+                                    app_package_active_source_directory,
+                                    app_package_journal.slot, result_out);
     if (result != OK) goto done;
     if (app_package_journal.backup_id[0]) {
         result = app_package_write_backup(app_package_journal.backup_id,
@@ -2520,6 +2617,22 @@ int app_package_apply_plan_confirmed(const app_package_plan_t* plan,
 done:
     app_package_mutation_end();
     return result;
+}
+
+int app_package_apply_plan_confirmed(const app_package_plan_t* plan,
+                                     app_package_action_result_t* result_out) {
+    return app_package_apply_plan_from_directory_internal(plan, "", result_out);
+}
+
+int app_package_apply_plan_from_directory_confirmed(
+    const app_package_plan_t* plan, const char* source_directory,
+    app_package_action_result_t* result_out) {
+    if (!source_directory) {
+        LOG_ERROR("PKG", "Diretorio nulo na aplicacao de plano remoto");
+        return ERR_NULL;
+    }
+    return app_package_apply_plan_from_directory_internal(
+        plan, source_directory, result_out);
 }
 
 static int app_package_read_backup_files(uint8_t slot, app_package_info_t* info,

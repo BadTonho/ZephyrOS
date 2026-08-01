@@ -18,6 +18,10 @@ METRICS_PATH = "docs/qualidade/metricas.md"
 UPDATE_PUBLIC_PATH = "config/update-release-public.json"
 UPDATE_TRUST_PATH = "src/include/core/update_trust.h"
 UPDATER_PATH = "tools/updater.py"
+APP_STORE_PUBLIC_PATH = "config/app-store-test-public.json"
+APP_STORE_TRUST_PATH = "src/include/core/app_remote_trust.h"
+APP_STORE_FIXTURES_PATH = "docs/fixtures/apps/store-as5"
+PACKAGER_PATH = "tools/packager.py"
 ERROR_RETURN_RE = re.compile(r"\breturn\s+(ERR_[A-Z0-9_]+)\s*;")
 FUNCTION_RE = re.compile(
     r"(?m)^[ \t]*(?:static\s+)?(?:inline\s+)?int\s+"
@@ -257,6 +261,60 @@ def check_update_trust(repo: Path) -> list[str]:
     return [message or "header de confianca ZUPD dessincronizado"]
 
 
+def check_app_store_trust(repo: Path) -> list[str]:
+    """Audita raiz publica, ZAC1 assinados e ausencia de chave privada."""
+    required = (
+        APP_STORE_PUBLIC_PATH, APP_STORE_TRUST_PATH,
+        f"{APP_STORE_FIXTURES_PATH}/fixtures.json", PACKAGER_PATH,
+    )
+    if not any((repo / path).exists() for path in required):
+        return []
+    missing = [path for path in required if not (repo / path).is_file()]
+    if missing:
+        return [f"material publico AS5 incompleto: {', '.join(missing)}"]
+    errors: list[str] = []
+    candidates = run_git(repo, ["ls-files"]).splitlines()
+    candidates += split_paths(
+        run_git(repo, ["ls-files", "--others", "--exclude-standard", "-z"])
+    )
+    for path in sorted(set(candidates)):
+        normalized = path.lower()
+        as5_related = (
+            "app-store" in normalized or "store-as5" in normalized or
+            "app_remote" in normalized
+        )
+        if not as5_related:
+            continue
+        if re.search(
+            r"(?:private|secret).*(?:pem|key|json)$", normalized
+        ):
+            errors.append(f"material privado AS5 versionado: {path}")
+        file_path = repo / path
+        if file_path.is_file() and file_path.stat().st_size <= 1024 * 1024:
+            try:
+                if any(
+                    line.strip() == b"-----BEGIN PRIVATE KEY-----"
+                    for line in file_path.read_bytes().splitlines()
+                ):
+                    errors.append(f"chave privada versionada: {path}")
+            except OSError:
+                continue
+    result = subprocess.run(
+        [
+            sys.executable, PACKAGER_PATH, "audit-store-as5",
+            "--fixtures-dir", APP_STORE_FIXTURES_PATH,
+            "--public", APP_STORE_PUBLIC_PATH,
+            "--header", APP_STORE_TRUST_PATH,
+        ],
+        cwd=repo, capture_output=True, text=True,
+        encoding="utf-8", errors="replace",
+    )
+    if result.returncode != 0:
+        message = result.stderr.strip() or result.stdout.strip()
+        errors.append(message or "confianca AS5 dessincronizada")
+    return errors
+
+
 def collect_results(repo: Path) -> dict[str, list[str]]:
     """Executa todas as regras do Q3 para um diretorio de trabalho Git."""
     paths = changed_paths(repo)
@@ -267,6 +325,7 @@ def collect_results(repo: Path) -> dict[str, list[str]]:
         "contratos_publicos": check_public_contracts(repo, paths),
         "registro_metricas": check_metric_records(repo),
         "confianca_zupd": check_update_trust(repo),
+        "confianca_as5": check_app_store_trust(repo),
     }
 
 

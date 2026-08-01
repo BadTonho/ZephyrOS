@@ -4,15 +4,19 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
+import http.server
 import json
 import re
+import socketserver
 import struct
 import sys
 import tempfile
 import zlib
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 
 PACKAGE_MAGIC = b"ZPKG"
@@ -59,6 +63,19 @@ STORE_AS4_FIXTURE_ALIASES = (
     "CYCLEA.ZPK",
     "CYCLEB.ZPK",
 )
+STORE_AS5_FIXTURE_FORMAT = "zephyros-app-store-as5-fixtures-v1"
+STORE_AS5_PUBLIC_FORMAT = "zephyros-app-store-ed25519-public-v1"
+STORE_AS5_DOMAIN = b"ZEPHYROS-APP-CATALOG-V1\0"
+STORE_AS5_HEADER_SIZE = 128
+STORE_AS5_ENTRY_SIZE = 256
+STORE_AS5_SIGNATURE_SIZE = 64
+STORE_AS5_MAX_ENTRIES = 16
+STORE_AS5_CHANNEL = 1
+STORE_AS5_HASH_SHA256 = 1
+STORE_AS5_SIGNATURE_ED25519 = 1
+STORE_AS5_PACKAGE_LIMIT = 16384
+STORE_AS5_PROFILES = ("seed", "update")
+STORE_AS5_IDS = ("RMDEPA", "RMDEPB", "RMTARGET")
 
 
 class PackageError(ValueError):
@@ -971,6 +988,412 @@ def audit_store_as4_fixtures(
     print(f"App Store AS4 fixtures ({profile}): OK")
 
 
+def store_as5_crypto_modules() -> tuple[Any, Any, Any]:
+    """Carrega Ed25519 somente nos comandos AS5 que dependem dela."""
+    try:
+        from cryptography.exceptions import InvalidSignature
+        from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric import ed25519
+    except ImportError as error:
+        raise PackageError(
+            "AS5 requer tools/requirements-updater.txt"
+        ) from error
+    return ed25519, serialization, InvalidSignature
+
+
+def store_as5_public_config(path: Path) -> dict[str, object]:
+    """Le a raiz publica exclusiva da App Store de teste."""
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise PackageError("configuracao publica AS5 invalida") from error
+    if (
+        not isinstance(data, dict)
+        or data.get("format") != STORE_AS5_PUBLIC_FORMAT
+        or data.get("algorithm") != "Ed25519"
+        or data.get("trust") != "test-only"
+    ):
+        raise PackageError("contrato da chave publica AS5 divergiu")
+    try:
+        public = bytes.fromhex(str(data["public_key_hex"]))
+        key_id = bytes.fromhex(str(data["key_id_hex"]))
+        revoked = [bytes.fromhex(str(item)) for item in data["revoked_key_ids"]]
+    except (KeyError, TypeError, ValueError) as error:
+        raise PackageError("material publico AS5 invalido") from error
+    if len(public) != 32 or len(key_id) != 16 or any(
+        len(item) != 16 for item in revoked
+    ):
+        raise PackageError("tamanho da chave publica AS5 invalido")
+    if hashlib.sha256(public).digest()[:16] != key_id:
+        raise PackageError("key ID AS5 nao corresponde a chave publica")
+    if key_id in revoked or len(set(revoked)) != len(revoked):
+        raise PackageError("tabela de revogacao AS5 e conflitante")
+    return {**data, "public": public, "key_id": key_id, "revoked": revoked}
+
+
+def store_as5_fixed(value: str, size: int, label: str) -> bytes:
+    """Codifica um campo ASCII NUL-padded do ZAC1."""
+    encoded = ensure_ascii(value, label, size - 1).encode("ascii")
+    return encoded + bytes(size - len(encoded))
+
+
+def build_store_as5_packages(profile: str) -> dict[str, bytes]:
+    """Gera os tres pacotes remotos deterministas de instalacao/update."""
+    if profile not in STORE_AS5_PROFILES:
+        raise PackageError("perfil AS5 invalido")
+    demo = build_demo_zapp()
+    target_version = "1.0.0" if profile == "seed" else "1.1.0"
+    packages = {
+        "RMDEPA": build_package(
+            store_fixture_manifest("RMDEPA", "Remote Dependency A",
+                                   dependencies="RMDEPB"), demo
+        ),
+        "RMDEPB": build_package(
+            store_fixture_manifest("RMDEPB", "Remote Dependency B"), demo
+        ),
+        "RMTARGET": build_package(
+            store_fixture_manifest("RMTARGET", "Remote Target",
+                                   target_version,
+                                   dependencies="RMDEPA"), demo
+        ),
+    }
+    return packages
+
+
+def build_store_as5_catalog(
+    packages: dict[str, bytes], generation: int, key_id: bytes,
+    private_key: Any, overrides: dict[str, dict[str, object]] | None = None,
+) -> bytes:
+    """Monta e assina um catalogo ZAC1 ordenado por ID."""
+    if not 1 <= len(packages) <= STORE_AS5_MAX_ENTRIES or generation <= 0:
+        raise PackageError("quantidade ou geracao ZAC1 invalida")
+    entries = bytearray()
+    overrides = overrides or {}
+    for package_id in sorted(packages):
+        data = packages[package_id]
+        parsed = parse_package(data)
+        override = overrides.get(package_id, {})
+        catalog_id = str(override.get("id", parsed.manifest["id"]))
+        name = str(override.get("name", parsed.manifest["name"]))
+        version = str(override.get("version", parsed.manifest["version"]))
+        dependencies = str(
+            override.get("dependencies", parsed.manifest["dependencies"])
+        )
+        dependency_ids = [] if not dependencies else dependencies.split(",")
+        package_hash = override.get("hash", hashlib.sha256(data).digest())
+        path = str(override.get("path", f"/zephyros/apps/{package_id}.ZPK"))
+        if not isinstance(package_hash, bytes) or len(package_hash) != 32:
+            raise PackageError("hash ZAC1 invalido")
+        entry = bytearray(STORE_AS5_ENTRY_SIZE)
+        entry[0:9] = store_as5_fixed(catalog_id, 9, "ID remoto")
+        entry[9:41] = store_as5_fixed(name, 32, "nome remoto")
+        entry[41:57] = store_as5_fixed(version, 16, "versao remota")
+        if len(dependency_ids) > 4:
+            raise PackageError("dependencias ZAC1 excederam o limite")
+        entry[57] = len(dependency_ids)
+        for index, dependency in enumerate(dependency_ids):
+            entry[58 + index * 9:67 + index * 9] = store_as5_fixed(
+                dependency, 9, "dependencia remota"
+            )
+        struct.pack_into("<I", entry, 96, len(data))
+        entry[100:132] = package_hash
+        entry[132:232] = store_as5_fixed(path, 100, "caminho remoto")
+        entries.extend(entry)
+    header = bytearray(STORE_AS5_HEADER_SIZE)
+    header[0:4] = b"ZAC1"
+    struct.pack_into(
+        "<HHHHIHHHH", header, 4, 1, STORE_AS5_HEADER_SIZE,
+        STORE_AS5_ENTRY_SIZE, len(packages), generation,
+        STORE_AS5_CHANNEL, STORE_AS5_HASH_SHA256,
+        STORE_AS5_SIGNATURE_ED25519, 0,
+    )
+    header[24:40] = key_id
+    header[40:72] = hashlib.sha256(entries).digest()
+    signed = bytes(header + entries)
+    return signed + private_key.sign(STORE_AS5_DOMAIN + signed)
+
+
+def parse_store_as5_catalog(
+    raw: bytes, public_config: dict[str, object], minimum_generation: int = 0
+) -> tuple[dict[str, object], str]:
+    """Autentica ZAC1 no host e devolve a razao estavel de recusa."""
+    if len(raw) < STORE_AS5_HEADER_SIZE + STORE_AS5_SIGNATURE_SIZE:
+        return {}, "CATALOG_FORMAT"
+    if raw[:4] != b"ZAC1":
+        return {}, "CATALOG_FORMAT"
+    version, header_size, entry_size, count = struct.unpack_from("<HHHH", raw, 4)
+    generation = struct.unpack_from("<I", raw, 12)[0]
+    channel, hash_alg, signature_alg, flags = struct.unpack_from("<HHHH", raw, 16)
+    signed_size = STORE_AS5_HEADER_SIZE + count * STORE_AS5_ENTRY_SIZE
+    if (
+        version != 1 or header_size != STORE_AS5_HEADER_SIZE
+        or entry_size != STORE_AS5_ENTRY_SIZE
+        or not 1 <= count <= STORE_AS5_MAX_ENTRIES
+        or len(raw) != signed_size + STORE_AS5_SIGNATURE_SIZE
+        or generation <= 0 or channel != STORE_AS5_CHANNEL
+        or hash_alg != STORE_AS5_HASH_SHA256
+        or signature_alg != STORE_AS5_SIGNATURE_ED25519 or flags != 0
+        or any(raw[72:STORE_AS5_HEADER_SIZE])
+    ):
+        return {}, "CATALOG_FORMAT"
+    key_id = raw[24:40]
+    if key_id in public_config["revoked"]:
+        return {}, "REVOKED_KEY"
+    if key_id != public_config["key_id"]:
+        return {}, "UNKNOWN_KEY"
+    ed25519, _, invalid_signature = store_as5_crypto_modules()
+    try:
+        ed25519.Ed25519PublicKey.from_public_bytes(
+            public_config["public"]
+        ).verify(raw[signed_size:], STORE_AS5_DOMAIN + raw[:signed_size])
+    except invalid_signature:
+        return {}, "SIGNATURE"
+    if generation < minimum_generation:
+        return {}, "REPLAY"
+    entries_raw = raw[STORE_AS5_HEADER_SIZE:signed_size]
+    if hashlib.sha256(entries_raw).digest() != raw[40:72]:
+        return {}, "CATALOG_FORMAT"
+    entries: list[dict[str, object]] = []
+    previous = ""
+
+    def fixed_text(field: bytes) -> str:
+        end = field.find(b"\0")
+        if end <= 0 or any(field[end + 1:]):
+            raise ValueError("campo fixo ZAC1 invalido")
+        value = field[:end].decode("ascii")
+        if any(ord(character) < 0x20 or ord(character) > 0x7E
+               for character in value):
+            raise ValueError("campo fixo ZAC1 nao imprimivel")
+        return value
+
+    for index in range(count):
+        entry = entries_raw[index * STORE_AS5_ENTRY_SIZE:(index + 1) * STORE_AS5_ENTRY_SIZE]
+        try:
+            package_id = fixed_text(entry[0:9])
+            name = fixed_text(entry[9:41])
+            version_text = fixed_text(entry[41:57])
+            dependency_count = entry[57]
+            if dependency_count > 4:
+                return {}, "CATALOG_FORMAT"
+            dependencies = [
+                fixed_text(entry[58 + item * 9:67 + item * 9])
+                for item in range(dependency_count)
+            ]
+            path = fixed_text(entry[132:232])
+        except (UnicodeDecodeError, IndexError, ValueError):
+            return {}, "CATALOG_FORMAT"
+        package_size = struct.unpack_from("<I", entry, 96)[0]
+        if (
+            not ID_RE.fullmatch(package_id) or previous >= package_id
+            or not VERSION_RE.fullmatch(version_text)
+            or any(not ID_RE.fullmatch(item) for item in dependencies)
+            or len(set(dependencies)) != len(dependencies)
+            or any(entry[58 + item * 9:67 + item * 9]
+                   for item in range(dependency_count, 4))
+            or any(entry[94:96])
+            or not 1 <= package_size <= STORE_AS5_PACKAGE_LIMIT
+            or path != f"/zephyros/apps/{package_id}.ZPK"
+            or any(entry[236:]) or struct.unpack_from("<I", entry, 232)[0] != 0
+        ):
+            if previous >= package_id:
+                return {}, "DUPLICATE"
+            if len(set(dependencies)) != len(dependencies):
+                return {}, "PLAN_CONFLICT"
+            return {}, "PATH" if path != f"/zephyros/apps/{package_id}.ZPK" else "CATALOG_FORMAT"
+        previous = package_id
+        entries.append({
+            "id": package_id, "name": name, "version": version_text,
+            "dependencies": dependencies,
+            "size": package_size,
+            "sha256": entry[100:132], "path": path,
+        })
+    return {"generation": generation, "entries": entries}, "NONE"
+
+
+def store_as5_read_blob(path: Path) -> bytes:
+    """Le artefato binario ou sua representacao base64 versionavel."""
+    try:
+        data = path.read_bytes()
+    except OSError as error:
+        raise PackageError(f"artefato AS5 ausente: {path}") from error
+    if path.suffix.lower() == ".b64":
+        try:
+            return base64.b64decode(data.strip(), validate=True)
+        except ValueError as error:
+            raise PackageError(f"base64 AS5 invalido: {path}") from error
+    return data
+
+
+def store_as5_catalog_semantics(
+    catalog: dict[str, object], package_dir: Path | None
+) -> str:
+    """Replica planejamento e vinculacao pacote/catalogo para a auditoria."""
+    entries = catalog.get("entries")
+    if not isinstance(entries, list):
+        return "CATALOG_FORMAT"
+    by_id = {str(entry["id"]): entry for entry in entries}
+    visiting: set[str] = set()
+    visited: set[str] = set()
+
+    def visit(package_id: str) -> str:
+        if package_id in visiting:
+            return "PLAN_CYCLE"
+        if package_id in visited:
+            return "NONE"
+        entry = by_id.get(package_id)
+        if not entry:
+            return "PLAN_INCOMPLETE"
+        visiting.add(package_id)
+        for dependency in entry["dependencies"]:
+            reason = visit(str(dependency))
+            if reason != "NONE":
+                return reason
+        visiting.remove(package_id)
+        visited.add(package_id)
+        return "NONE"
+
+    plan_reason = visit("RMTARGET") if "RMTARGET" in by_id else "NONE"
+    if plan_reason != "NONE":
+        return plan_reason
+    if package_dir is None:
+        return "NONE"
+    for entry in entries:
+        path = package_dir / f"{entry['id']}.ZPK.b64"
+        package = store_as5_read_blob(path)
+        if len(package) != entry["size"] or hashlib.sha256(package).digest() != entry["sha256"]:
+            return "PACKAGE_HASH"
+        parsed = parse_package(package)
+        dependencies = [] if not parsed.manifest["dependencies"] else parsed.manifest["dependencies"].split(",")
+        if (
+            parsed.manifest["id"] != entry["id"]
+            or parsed.manifest["name"] != entry["name"]
+            or parsed.manifest["version"] != entry["version"]
+            or dependencies != entry["dependencies"]
+        ):
+            return "PACKAGE_MISMATCH"
+    return "NONE"
+
+
+def store_as5_header_bytes(text: str, symbol: str) -> bytes:
+    """Extrai uma tabela hexadecimal pequena do header de confianca."""
+    match = re.search(
+        rf"{re.escape(symbol)}[^=]*=\s*\{{(.*?)\}};", text, re.DOTALL
+    )
+    if not match:
+        raise PackageError(f"simbolo AS5 ausente no header: {symbol}")
+    return bytes(int(value, 16) for value in re.findall(r"0x([0-9A-Fa-f]{2})", match.group(1)))
+
+
+def audit_store_as5_header(header_path: Path,
+                           public: dict[str, object]) -> None:
+    """Confere que o header derivado usa exatamente a raiz publica JSON."""
+    try:
+        text = header_path.read_text(encoding="utf-8")
+    except OSError as error:
+        raise PackageError("header de confianca AS5 ausente") from error
+    if (
+        store_as5_header_bytes(text, "APP_REMOTE_TRUST_PUBLIC_KEY") != public["public"]
+        or store_as5_header_bytes(text, "APP_REMOTE_TRUST_KEY_ID") != public["key_id"]
+        or store_as5_header_bytes(text, "APP_REMOTE_REVOKED_KEY_IDS") != b"".join(public["revoked"])
+    ):
+        raise PackageError("header e raiz publica AS5 estao dessincronizados")
+
+
+def audit_store_as5_fixtures(
+    fixtures_dir: Path, public_path: Path, header_path: Path | None = None
+) -> None:
+    """Audita chave publica, assinaturas, hashes e matriz negativa AS5."""
+    public = store_as5_public_config(public_path)
+    if header_path is not None:
+        audit_store_as5_header(header_path, public)
+    try:
+        manifest = json.loads(
+            (fixtures_dir / "fixtures.json").read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError) as error:
+        raise PackageError("manifesto dos fixtures AS5 invalido") from error
+    artifacts = manifest.get("artifacts") if isinstance(manifest, dict) else None
+    if (
+        not isinstance(manifest, dict)
+        or manifest.get("format") != STORE_AS5_FIXTURE_FORMAT
+        or not isinstance(artifacts, list) or not artifacts
+    ):
+        raise PackageError("conjunto dos fixtures AS5 divergiu")
+    for item in artifacts:
+        if not isinstance(item, dict):
+            raise PackageError("entrada de fixture AS5 invalida")
+        path = fixtures_dir / str(item.get("file", ""))
+        blob = store_as5_read_blob(path)
+        if hashlib.sha256(blob).hexdigest() != item.get("sha256"):
+            raise PackageError(f"hash publicado AS5 divergiu: {path}")
+        if item.get("type") == "package":
+            parse_package(blob)
+            print(f"store_as5_{path.name} OK")
+            continue
+        if item.get("type") != "catalog":
+            raise PackageError("tipo de fixture AS5 desconhecido")
+        minimum = int(item.get("minimum_generation", 0))
+        catalog, parser_reason = parse_store_as5_catalog(blob, public, minimum)
+        expected_parser = item.get("parser_expected", item.get("expected"))
+        if parser_reason != expected_parser:
+            raise PackageError(
+                f"catalogo AS5 {path.name}: esperado parser {expected_parser}, obteve {parser_reason}"
+            )
+        reason = parser_reason
+        if parser_reason == "NONE":
+            package_dir_value = item.get("package_dir")
+            package_dir = fixtures_dir / str(package_dir_value) if package_dir_value else None
+            reason = store_as5_catalog_semantics(catalog, package_dir)
+        if reason != item.get("expected"):
+            raise PackageError(
+                f"catalogo AS5 {path.name}: esperado {item.get('expected')}, obteve {reason}"
+            )
+        if parser_reason == "NONE" and not catalog.get("entries"):
+            raise PackageError("catalogo AS5 valido ficou vazio")
+        print(f"store_as5_{path.name} {reason} OK")
+    print("App Store AS5 fixtures: OK")
+
+
+class StoreAs5Handler(http.server.BaseHTTPRequestHandler):
+    """Serve perfil selecionado e catalogos negativos, decodificando Base64."""
+    fixture_root: Path
+    fixture_base: Path
+
+    def do_GET(self) -> None:  # noqa: N802 - contrato de BaseHTTPRequestHandler
+        name = "stable.zac.b64" if self.path == "/zephyros/apps/stable.zac" else ""
+        root = self.fixture_root
+        catalog_routes = {
+            "/zephyros/apps/seed/stable.zac": self.fixture_base / "seed" / "stable.zac.b64",
+            "/zephyros/apps/update/stable.zac": self.fixture_base / "update" / "stable.zac.b64",
+        }
+        if self.path in catalog_routes:
+            path = catalog_routes[self.path]
+        elif (
+            self.path.startswith("/zephyros/apps/invalid/")
+            and self.path.endswith(".zac")
+        ):
+            fixture_name = self.path.rsplit("/", 1)[-1][:-4]
+            path = self.fixture_base / "invalid" / f"{fixture_name}.zac.b64"
+        else:
+            path = None
+        if self.path.startswith("/zephyros/apps/") and self.path.endswith(".ZPK"):
+            name = self.path.rsplit("/", 1)[-1] + ".b64"
+        if name:
+            path = root / name
+        if not path or not path.is_file():
+            self.send_error(404)
+            return
+        data = store_as5_read_blob(path)
+        self.send_response(200)
+        self.send_header("Content-Type", "application/octet-stream")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
+    def log_message(self, format: str, *args: object) -> None:
+        print(f"AS5 HTTP: {format % args}")
+
+
 def create_fixture_image(path: Path) -> None:
     """Gera uma imagem FAT12 vazia para testar a injecao sem QEMU."""
     image = bytearray(1474560)
@@ -1242,6 +1665,66 @@ def command_audit_store_as4(arguments: argparse.Namespace) -> int:
     return 0
 
 
+def command_sign_store_as5(arguments: argparse.Namespace) -> int:
+    """Gera um perfil ZAC1 usando uma chave privada mantida fora do repo."""
+    ed25519, serialization, _ = store_as5_crypto_modules()
+    public = store_as5_public_config(Path(arguments.public))
+    try:
+        private = serialization.load_pem_private_key(
+            Path(arguments.private).read_bytes(), password=None
+        )
+    except (OSError, ValueError, TypeError) as error:
+        raise PackageError("chave privada AS5 nao pode ser carregada") from error
+    if not isinstance(private, ed25519.Ed25519PrivateKey):
+        raise PackageError("chave privada AS5 nao e Ed25519")
+    raw_public = private.public_key().public_bytes(
+        serialization.Encoding.Raw, serialization.PublicFormat.Raw
+    )
+    if raw_public != public["public"]:
+        raise PackageError("chave privada AS5 nao corresponde a raiz publica")
+    packages = build_store_as5_packages(arguments.profile)
+    generation = 1 if arguments.profile == "seed" else 2
+    catalog = build_store_as5_catalog(
+        packages, generation, public["key_id"], private
+    )
+    output = Path(arguments.output_dir)
+    output.mkdir(parents=True, exist_ok=True)
+    (output / "stable.zac").write_bytes(catalog)
+    for package_id, package in packages.items():
+        (output / f"{package_id}.ZPK").write_bytes(package)
+    print(f"Catalogo AS5 {arguments.profile} assinado em {output.resolve()}")
+    return 0
+
+
+def command_audit_store_as5(arguments: argparse.Namespace) -> int:
+    """Executa a auditoria completa dos artefatos assinados AS5."""
+    audit_store_as5_fixtures(
+        Path(arguments.fixtures_dir), Path(arguments.public),
+        Path(arguments.header) if arguments.header else None,
+    )
+    return 0
+
+
+def command_serve_store_as5(arguments: argparse.Namespace) -> int:
+    """Serve o perfil AS5 no endpoint HTTP consumido pelo QEMU."""
+    root = Path(arguments.fixtures_dir) / arguments.profile
+    if not root.is_dir():
+        raise PackageError("perfil AS5 para HTTP nao foi encontrado")
+    StoreAs5Handler.fixture_root = root
+    StoreAs5Handler.fixture_base = Path(arguments.fixtures_dir)
+    socketserver.TCPServer.allow_reuse_address = True
+    with socketserver.TCPServer((arguments.bind, arguments.port),
+                                StoreAs5Handler) as server:
+        print(
+            f"AS5 HTTP {arguments.profile}: http://{arguments.bind}:{arguments.port}/zephyros/apps/stable.zac"
+        )
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            print("AS5 HTTP encerrado")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Monta a interface de linha de comando do empacotador."""
     parser = argparse.ArgumentParser(description="Empacotador .zephyrosapp")
@@ -1297,6 +1780,25 @@ def build_parser() -> argparse.ArgumentParser:
     audit_store_as4.add_argument("--fixtures-dir", required=True)
     audit_store_as4.add_argument("--image")
     audit_store_as4.set_defaults(handler=command_audit_store_as4)
+    sign_store_as5 = commands.add_parser("sign-store-as5")
+    sign_store_as5.add_argument("--profile", required=True,
+                                choices=STORE_AS5_PROFILES)
+    sign_store_as5.add_argument("--private", required=True)
+    sign_store_as5.add_argument("--public", required=True)
+    sign_store_as5.add_argument("--output-dir", required=True)
+    sign_store_as5.set_defaults(handler=command_sign_store_as5)
+    audit_store_as5 = commands.add_parser("audit-store-as5")
+    audit_store_as5.add_argument("--fixtures-dir", required=True)
+    audit_store_as5.add_argument("--public", required=True)
+    audit_store_as5.add_argument("--header")
+    audit_store_as5.set_defaults(handler=command_audit_store_as5)
+    serve_store_as5 = commands.add_parser("serve-store-as5")
+    serve_store_as5.add_argument("--fixtures-dir", required=True)
+    serve_store_as5.add_argument("--profile", choices=STORE_AS5_PROFILES,
+                                 default="update")
+    serve_store_as5.add_argument("--bind", default="0.0.0.0")
+    serve_store_as5.add_argument("--port", type=int, default=8000)
+    serve_store_as5.set_defaults(handler=command_serve_store_as5)
     selftest = commands.add_parser("selftest")
     selftest.set_defaults(handler=lambda arguments: run_selftest())
     return parser

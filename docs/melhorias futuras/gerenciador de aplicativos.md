@@ -12,11 +12,16 @@ ordem antiga deste inventário por cinco fases:
 | AS2 | Ciclo de vida local com confirmação | Validado |
 | AS3 | Aplicativo nativo Modern com fallbacks | Validado |
 | AS4 | Atualização local e dependências | Validado |
-| AS5 | Repositório remoto assinado | Futuro |
+| AS5 | Repositório remoto autenticado | Implementado; validação pendente |
 
 As seções detalhadas abaixo permanecem como inventário de ideias. Seus
 checklists não devem ser executados em ordem nem usados como status técnico
 quando divergirem do roadmap AS1-AS5.
+
+O AS5 preserva `ZPKG v1` e usa catálogo `ZAC1` assinado por Ed25519, SHA-256
+por pacote, cache FAT12 A/B e opt-in manual. O Shell é o fallback remoto
+completo; a aba Remoto existe somente no Classic. A raiz de teste é exclusiva
+da App Store e não reutiliza a confiança ZUPD.
 
 > **Nota sobre o estado atual:** o loader minimo da Fase 5 ja esta separado
 > deste roadmap da App Store. O sistema agora aceita imagens flat i386 com

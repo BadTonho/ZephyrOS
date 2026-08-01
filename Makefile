@@ -109,6 +109,9 @@ APP_BUILTIN_OBJ = build/app_builtin.o
 APP_PACKAGE_C = src/core/app_package.c
 APP_PACKAGE_OBJ = build/app_package.o
 
+APP_REMOTE_C = src/core/app_remote.c
+APP_REMOTE_OBJ = build/app_remote.o
+
 APP_CATALOG_C = src/core/app_catalog.c
 APP_CATALOG_OBJ = build/app_catalog.o
 
@@ -302,13 +305,15 @@ STORE_AS4_UPDATE_FIXTURES = $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPTARGET.ZPK \
                             $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEA.ZPK \
                             $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEB.ZPK \
                             $(STORE_AS4_UPDATE_FIXTURES_DIR)\fixtures.json
+STORE_AS5_FIXTURES_DIR = docs\fixtures\apps\store-as5
+STORE_AS5_PUBLIC = config\app-store-test-public.json
 
 # Todas as variáveis de objetos
 OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(UPDATE_OBJ) $(UPDATE_REMOTE_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(COMPRESS_OBJ) \
-       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(UPDATER_OBJ) $(APPSTORE_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ) $(DEVICE_MANAGER_OBJ) $(NETWORK_MANAGER_OBJ) $(POWER_OBJ) $(ETHERNET_OBJ) $(ARP_OBJ) $(IPV4_OBJ) $(ICMP_OBJ) $(UDP_OBJ) $(DHCP_OBJ) $(DNS_OBJ) $(TCP_OBJ) $(NET_SOCKET_OBJ) $(HTTP_OBJ) $(APP_CATALOG_OBJ) $(DISPLAY_OBJ)
+       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(UPDATER_OBJ) $(APPSTORE_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ) $(APP_REMOTE_OBJ) $(DEVICE_MANAGER_OBJ) $(NETWORK_MANAGER_OBJ) $(POWER_OBJ) $(ETHERNET_OBJ) $(ARP_OBJ) $(IPV4_OBJ) $(ICMP_OBJ) $(UDP_OBJ) $(DHCP_OBJ) $(DNS_OBJ) $(TCP_OBJ) $(NET_SOCKET_OBJ) $(HTTP_OBJ) $(APP_CATALOG_OBJ) $(DISPLAY_OBJ)
 
 # Targets
 all: $(OS_IMG)
@@ -354,6 +359,10 @@ $(UPDATE_OBJ): $(UPDATE_C)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(UPDATE_REMOTE_OBJ): $(UPDATE_REMOTE_C)
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(APP_REMOTE_OBJ): $(APP_REMOTE_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -726,7 +735,16 @@ store-as4-update-demo: $(OS_IMG) $(STORE_AS4_UPDATE_FIXTURES)
 	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEB.ZPK --image $(OS_IMG) --fat-name CYCLEB.ZPK --replace
 	python tools\packager.py audit-store-as4 --fixtures-dir $(STORE_AS4_UPDATE_FIXTURES_DIR) --image $(OS_IMG)
 
+store-as5-test:
+	python tools\packager.py audit-store-as5 --fixtures-dir $(STORE_AS5_FIXTURES_DIR) --public $(STORE_AS5_PUBLIC) --header src\include\core\app_remote_trust.h
+
+store-as5-seed-demo: store-as5-test
+	python tools\packager.py serve-store-as5 --fixtures-dir $(STORE_AS5_FIXTURES_DIR) --profile seed --port 8000
+
+store-as5-serve: store-as5-test
+	python tools\packager.py serve-store-as5 --fixtures-dir $(STORE_AS5_FIXTURES_DIR) --profile update --port 8000
+
 clean:
 	rmdir /s /q build
 
-.PHONY: all run debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo clean
+.PHONY: all run debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean

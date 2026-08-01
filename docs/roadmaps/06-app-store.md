@@ -273,25 +273,44 @@ Uma atualizacao local conclui na versao antiga ou nova integra, nunca em estado
 parcial. Dependencias sao resolvidas antes da escrita e falhas continuam
 recuperaveis depois do reboot.
 
-## AS5 - Repositorio remoto assinado
+## AS5 - Repositorio remoto autenticado (implementada; validacao pendente)
 
-Esta fase e futura e nao reutilizara implicitamente a confianca do ZUPD.
+Esta fase usa confianca exclusiva da App Store e nao reutiliza a raiz ZUPD.
 
-- [ ] Definir ameacas, chave de publicador e politica de revogacao.
-- [ ] Definir catalogo remoto assinado e versionado.
-- [ ] Escolher entre assinatura destacada para ZPKG v1 ou um ZPKG v2.
-- [ ] Manter HTTP apenas como transporte, com autenticidade criptografica.
-- [ ] Exigir opt-in por sessao e consulta manual.
-- [ ] Baixar para cache antes de oferecer instalacao.
-- [ ] Nunca instalar, atualizar ou executar automaticamente.
-- [ ] Preservar catalogo/cache anterior em timeout, cancelamento ou fraude.
-- [ ] Separar claramente `LOCAL / NAO ASSINADO` de `REMOTO / AUTENTICADO`.
+- [x] Criar o contrato publico `app_remote` e inicializa-lo antes do catalogo.
+- [x] Definir o catalogo binario `ZAC1`, geracao monotona e assinatura
+  Ed25519 sobre dominio proprio.
+- [x] Preservar `ZPKG v1` e autenticar cada pacote por SHA-256.
+- [x] Adicionar chave publica ativa de teste e IDs revogados sem versionar
+  material privado.
+- [x] Recusar assinatura, chave, replay, caminho, duplicacao e metadados
+  conflitantes antes de publicar cache.
+- [x] Resolver apenas dependencias instaladas ou presentes no catalogo remoto
+  autenticado, sem misturar fontes locais implicitamente.
+- [x] Implementar cache FAT12 A/B, registros redundantes, limpeza de slot
+  pendente e preservacao do slot ativo.
+- [x] Reusar transacao, rollback, historico e gate AS4 para planos vindos de
+  um diretorio de cache.
+- [x] Registrar procedencia separadamente e usar confianca `N/D` em falha.
+- [x] Adicionar comandos `store remote`, opt-in por sessao, cancelamento e
+  failpoint de cache.
+- [x] Adicionar a aba Remoto ao Classic e manter o Simple congelado.
+- [x] Adicionar fixtures assinados, auditoria, Q3Check e alvos host AS5.
+- [ ] Validar `q3check`, build limpo, alvos AS5 e matriz QEMU pelo usuario.
 
 ### Criterio de saida
 
 Nenhum pacote remoto aparece como instalavel antes de autenticar catalogo e
 artefato. Rede ausente ou host malicioso nao degrada instalacao e execucao
 locais.
+
+### Estado
+
+Implementacao, contratos, fixtures e documentacao concluidos no repositorio.
+A fase permanece aberta ate a validacao do usuario cobrir plano
+`RMDEPB -> RMDEPA -> RMTARGET`, cache/offline, update/downgrade, rollback,
+vetores criptograficos, timeout/cancelamento, failpoint com reboot, Classic,
+smoke Simple e diagnosticos finais.
 
 ## Validacao do agente
 
@@ -307,33 +326,45 @@ git status --short
 Cada fase tambem exige revisao restrita aos arquivos alterados, incluindo
 ausencia de chaves privadas, credenciais, caminhos locais e artefatos de build.
 
-## Validacao do usuario para o MVP AS1-AS3
+## Validacao do usuario para AS5
 
 ```text
 make package-test
 make store-test
 make store-as2-test
+make store-as4-test
+make store-as5-test
 make q3check
 make clean
 make
-make run
 ```
 
-No QEMU:
+Em um terminal separado, manter o repositorio de teste ativo:
 
-1. Confirmar `store status`, `store list` e os motivos dos fixtures.
-2. Confirmar que consultas nao alteram a imagem nem `APPS/`.
-3. Fazer preflight e instalar `VALID.ZPK` com confirmacao.
-4. Abrir o aplicativo instalado e cancelar com F12.
-5. Tentar os pacotes invalidos e a dependencia ausente.
-6. Remover o aplicativo com confirmacao.
-7. Repetir o fluxo no App Store Modern.
-8. Executar `health summary`, `mem`, `pkgcheck`, `appcheck` e `regcheck full`.
-9. Confirmar ausencia de processos ring 3, diretorios parciais e vazamento.
+```text
+make store-as5-seed-demo
+```
+
+Depois executar `make run` em outro terminal. No QEMU:
+
+1. Confirmar remoto desabilitado no boot e o catalogo local intacto.
+2. Habilitar, consultar e validar o plano `RMDEPB -> RMDEPA -> RMTARGET`.
+3. Confirmar que o preflight de fetch nao grava e que o fetch confirmado
+   publica o cache completo.
+4. Desabilitar a rede e instalar o plano autenticado a partir do cache.
+5. Servir o perfil update, testar update, recusa/confirmacao de downgrade,
+   rollback e historico AS4.
+6. Validar assinatura, hash, chave, replay, ciclo e plano incompleto com os
+   fixtures negativos.
+7. Validar timeout, F12/Esc, espaco, mutacao concorrente e failpoint com reboot,
+   preservando o slot ativo.
+8. Repetir as acoes pela aba Remoto no Classic e fazer apenas o smoke Simple.
+9. Executar `health summary`, `pkgcheck`, `appcheck`, `memcheck` e
+   `regcheck full`, verificando que nao restaram arquivos pendentes.
 
 ## Fora do MVP AS1-AS3
 
-- assinatura de pacotes e repositorio remoto;
+- multiplos repositorios ou raiz de confianca oficial;
 - atualizacao automatica ou consulta no boot;
 - pagamento, contas, telemetria, avaliacao ou recomendacao;
 - API grafica para aplicativos externos;
@@ -344,5 +375,5 @@ No QEMU:
 
 ## Proximo passo
 
-Prosseguir para o **MV4** do Roadmap 07. O AS3 esta concluido e validado no
-host e no QEMU.
+Executar os gates host e a matriz QEMU da **AS5**. A implementacao esta pronta,
+mas a fase ainda nao deve ser marcada como validada.
