@@ -222,7 +222,10 @@ make store-as2-demo
 `store-test` executa o autoteste do empacotador e audita os fixtures
 versionados. `store-demo` injeta somente a matriz AS1 com substituicao
 idempotente. Os alvos `store-as2-*` usam uma matriz separada e nao alteram os
-seis aliases ou hashes canonicos do AS1. Nenhum alvo participa do build normal.
+seis aliases ou hashes canonicos do AS1. Durante a validacao AS3, o build
+normal tambem injeta as matrizes AS1 e AS2 na imagem, para que `make clean &&
+make` sempre produza um catalogo testavel. Os alvos `store-*-demo` continuam
+disponiveis para reinjetar uma matriz na imagem ja criada.
 
 ### Fixtures AS2
 

@@ -300,8 +300,6 @@ make store-as2-test
 make q3check
 make clean
 make
-make store-demo
-make store-as2-demo
 make run
 ```
 
