@@ -893,13 +893,13 @@ int appstore_open(void) {
     appstore_tab = APPSTORE_TAB_CATALOG;
     appstore_generation++;
     appstore_clear_context();
-    appstore_request_refresh();
     appstore_mode = APPSTORE_MODE_SIMPLE;
     if (desktop_get_mode() == DESKTOP_MODE_CLASSIC) {
         wm_set_active(1);
         appstore_hosted = 1;
         appstore_mode = APPSTORE_MODE_CLASSIC;
         if (wm_register_hosted_app(&appstore_hosted_app) == OK) {
+            appstore_request_refresh();
             LOG_INFO("APPSTORE", "App Store Classic aberta");
             return OK;
         }
@@ -909,6 +909,7 @@ int appstore_open(void) {
         LOG_WARN("APPSTORE", "Workspace Classic indisponivel; usando Simple");
     }
     desktop_set_active(0);
+    appstore_request_refresh();
     appstore_draw_simple();
     LOG_INFO("APPSTORE", "App Store Simple aberta");
     return OK;
