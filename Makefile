@@ -608,6 +608,7 @@ $(KERNEL_BIN): $(OBJS) src/linker.ld
 
 $(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(KERNEL_BIN) tools\packager.py \
           assets\icons\SHELL.BMP assets\icons\EXPLORER.BMP assets\icons\TASKMGR.BMP \
+          $(STORE_FIXTURES) $(STORE_AS2_FIXTURES) \
           docs\fixtures\updates\u2\VALID.ZUP docs\fixtures\updates\u2\TRUNC.ZUP \
           docs\fixtures\updates\u2\BADHASH.ZUP docs\fixtures\updates\u2\BADSIG.ZUP \
           docs\fixtures\updates\u2\BADVER.ZUP docs\fixtures\updates\u2\BADFMT.ZUP \
@@ -617,6 +618,15 @@ $(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(KERNEL_BIN) tools\packager.py \
 	python tools\packager.py inject-file --file assets\icons\SHELL.BMP --image $(OS_IMG) --fat-name SHELL.BMP
 	python tools\packager.py inject-file --file assets\icons\EXPLORER.BMP --image $(OS_IMG) --fat-name EXPLORER.BMP
 	python tools\packager.py inject-file --file assets\icons\TASKMGR.BMP --image $(OS_IMG) --fat-name TASKMGR.BMP
+	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\VALID.ZPK --image $(OS_IMG) --fat-name VALID.ZPK
+	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\BADCRC.ZPK --image $(OS_IMG) --fat-name BADCRC.ZPK
+	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\BADAPI.ZPK --image $(OS_IMG) --fat-name BADAPI.ZPK
+	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\BADALIAS.ZPK --image $(OS_IMG) --fat-name BADALIAS.ZPK
+	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\NEEDSDEP.ZPK --image $(OS_IMG) --fat-name NEEDSDEP.ZPK
+	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\SAMEVER.ZPK --image $(OS_IMG) --fat-name SAMEVER.ZPK
+	python tools\packager.py inject-file --file $(STORE_AS2_FIXTURES_DIR)\WAITAPP.ZPK --image $(OS_IMG) --fat-name WAITAPP.ZPK
+	python tools\packager.py inject-file --file $(STORE_AS2_FIXTURES_DIR)\BASE.ZPK --image $(OS_IMG) --fat-name BASE.ZPK
+	python tools\packager.py inject-file --file $(STORE_AS2_FIXTURES_DIR)\DEPEND.ZPK --image $(OS_IMG) --fat-name DEPEND.ZPK
 	python tools\packager.py inject-file --file docs\fixtures\updates\u2\VALID.ZUP --image $(OS_IMG) --fat-name VALID.ZUP
 	python tools\packager.py inject-file --file docs\fixtures\updates\u2\TRUNC.ZUP --image $(OS_IMG) --fat-name TRUNC.ZUP
 	python tools\packager.py inject-file --file docs\fixtures\updates\u2\BADHASH.ZUP --image $(OS_IMG) --fat-name BADHASH.ZUP
