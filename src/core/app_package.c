@@ -15,6 +15,7 @@
 #define APP_PACKAGE_CLUSTER_OVERHEAD 2U
 #define APP_PACKAGE_CRC32_POLYNOMIAL 0xEDB88320U
 #define APP_PACKAGE_ALIAS_SIZE 13U
+#define APP_PACKAGE_SOURCE_PATH_SIZE 22U
 #define APP_PACKAGE_TRANSACTION_SLOTS 2U
 #define APP_PACKAGE_ROLLBACK_SLOTS APP_PACKAGE_MAX_ROLLBACKS
 #define APP_PACKAGE_NO_BACKUP_SLOT 0xFFU
@@ -1768,7 +1769,7 @@ static int app_package_plan_contains_before(const app_package_plan_t* plan,
 
 static int app_package_build_source_path(const char* source_directory,
                                          const char* alias,
-                                         char path[FS_MAX_PATH]) {
+                                         char path[APP_PACKAGE_SOURCE_PATH_SIZE]) {
     uint32_t directory_length;
     uint32_t alias_length;
 
@@ -1779,11 +1780,12 @@ static int app_package_build_source_path(const char* source_directory,
     directory_length = kstrlen(source_directory);
     alias_length = kstrlen(alias);
     if (!directory_length) {
-        app_package_copy_string(path, FS_MAX_PATH, alias);
+        app_package_copy_string(path, APP_PACKAGE_SOURCE_PATH_SIZE, alias);
         return OK;
     }
     if (directory_length > 8U || alias_length > 12U ||
-        directory_length + alias_length + 2U > FS_MAX_PATH) {
+        directory_length + alias_length + 2U >
+            APP_PACKAGE_SOURCE_PATH_SIZE) {
         LOG_ERROR("PKG", "Caminho da fonte de plano excede limite");
         return ERR_OVERFLOW;
     }
@@ -1799,7 +1801,9 @@ static int app_package_build_source_path(const char* source_directory,
     kmemcpy(path, source_directory, directory_length);
     path[directory_length] = '/';
     app_package_copy_string(path + directory_length + 1U,
-                            FS_MAX_PATH - directory_length - 1U, alias);
+                            APP_PACKAGE_SOURCE_PATH_SIZE - directory_length -
+                                1U,
+                            alias);
     return OK;
 }
 
@@ -1810,7 +1814,7 @@ static int app_package_validate_plan_entry(const app_package_plan_t* plan,
                                            uint32_t* required_bytes) {
     app_package_install_context_t context;
     const app_package_plan_entry_t* item = &plan->entries[index];
-    char source_path[FS_MAX_PATH];
+    char source_path[APP_PACKAGE_SOURCE_PATH_SIZE];
     char expected_id[APP_PACKAGE_ID_SIZE];
     app_package_info_t installed;
     int installed_result;
@@ -2067,7 +2071,7 @@ static int app_package_stage_entry(const app_package_plan_entry_t* item,
                                    uint8_t slot, uint32_t index,
                                    app_package_action_result_t* result_out) {
     app_package_install_context_t context;
-    char source_path[FS_MAX_PATH];
+    char source_path[APP_PACKAGE_SOURCE_PATH_SIZE];
     char app_path[13];
     char meta_path[13];
     uint32_t manifest_size;

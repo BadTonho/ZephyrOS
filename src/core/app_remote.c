@@ -93,6 +93,9 @@ static app_remote_record_t app_remote_record;
 static app_remote_provenance_t app_remote_provenance;
 static app_remote_result_t app_remote_internal_result;
 static app_package_plan_t app_remote_active_plan;
+/* A pilha do Shell possui 4 KiB. O status AS4 inclui ate 32 rollbacks e deve
+   permanecer fora do caminho profundo de aplicacao FAT12. */
+static app_package_status_t app_remote_package_status;
 static char app_remote_pending_ids[APP_REMOTE_MAX_ENTRIES][APP_PACKAGE_ID_SIZE];
 static uint8_t app_remote_pending_count;
 static uint8_t app_remote_catalog[APP_REMOTE_MAX_CATALOG_SIZE];
@@ -1867,11 +1870,13 @@ int app_remote_apply_cached(const char* id, int update, int confirmed,
     }
     if (confirmed) {
         int provenance_result = OK;
-        app_package_status_t package_status;
 
-        if (app_package_get_status(&package_status) != OK ||
-            !package_status.history_available ||
-            package_status.last_history.sequence == 0U) {
+        kmemset(&app_remote_package_status, 0,
+                sizeof(app_remote_package_status));
+
+        if (app_package_get_status(&app_remote_package_status) != OK ||
+            !app_remote_package_status.history_available ||
+            app_remote_package_status.last_history.sequence == 0U) {
             provenance_result = ERR_UNAVAILABLE;
         }
 
@@ -1881,7 +1886,7 @@ int app_remote_apply_cached(const char* id, int update, int confirmed,
                 &app_remote_active_plan.entries[index];
             if (provenance_result != OK || app_remote_record_provenance(
                     item->id, item->to_version,
-                    package_status.last_history.sequence) != OK) {
+                    app_remote_package_status.last_history.sequence) != OK) {
                 provenance_result = ERR_INVALID;
             }
         }
