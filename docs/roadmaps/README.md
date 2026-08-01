@@ -78,9 +78,8 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   validado no host e no QEMU com janela singleton, worker cooperativo,
   fallback Simple, ciclo completo de pacotes e retorno de foco por `F12`. O
   AS4 tambem foi validado com planos topologicos, update/downgrade, rollback e
-  recuperacao por failpoint. O AS5 esta implementado com `ZAC1` assinado,
-  cache FAT12 A/B, Shell e aba Remoto Classic; seus gates host e QEMU ainda
-  aguardam execucao pelo usuario.
+  recuperacao por failpoint. O AS5 foi validado com `ZAC1` assinado, cache
+  FAT12 A/B, instalacao offline, recuperacao, Shell e aba Remoto Classic.
 
 ## K4 validada
 
