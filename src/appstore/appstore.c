@@ -336,6 +336,26 @@ static void appstore_select_first_visible(void) {
     appstore_scroll = 0;
 }
 
+static int appstore_restore_selection(const char* alias, const char* id) {
+    for (uint32_t index = 0; index < appstore_entry_count; index++) {
+        app_catalog_entry_t* entry = &appstore_entries[index];
+        int visible = appstore_tab == APPSTORE_TAB_CATALOG ?
+                      entry->has_source : entry->has_installed;
+
+        if (!visible) continue;
+        if ((alias && alias[0] && kstrcmp(entry->alias, alias) == 0) ||
+            (id && id[0] &&
+             ((entry->has_source && kstrcmp(entry->source.id, id) == 0) ||
+              (entry->has_installed &&
+               kstrcmp(entry->installed.id, id) == 0)))) {
+            appstore_selected = (int)index;
+            appstore_keep_selection_visible();
+            return 1;
+        }
+    }
+    return 0;
+}
+
 static void appstore_change_selection(int direction) {
     uint32_t count = appstore_visible_count();
     int current = -1;
@@ -357,8 +377,17 @@ static void appstore_change_selection(int direction) {
 }
 
 static void appstore_refresh_snapshot(void) {
+    app_catalog_entry_t* selected_entry = appstore_selected_entry();
+    const app_package_info_t* selected_info =
+        appstore_entry_info(selected_entry);
+    char selected_alias[APP_CATALOG_ALIAS_SIZE];
+    char selected_id[APP_PACKAGE_ID_SIZE];
     uint32_t count = 0;
 
+    appstore_copy_text(selected_alias, sizeof(selected_alias),
+                       selected_entry ? selected_entry->alias : "");
+    appstore_copy_text(selected_id, sizeof(selected_id),
+                       selected_info ? selected_info->id : "");
     appstore_entry_count = 0U;
     kmemset(&appstore_status, 0, sizeof(appstore_status));
     if (app_catalog_refresh() != OK ||
@@ -375,7 +404,9 @@ static void appstore_refresh_snapshot(void) {
             appstore_entry_count++;
         }
     }
-    appstore_select_first_visible();
+    if (!appstore_restore_selection(selected_alias, selected_id)) {
+        appstore_select_first_visible();
+    }
     appstore_set_result(APPSTORE_RESULT_REFRESH, OK, "Catalogo atualizado");
 }
 
