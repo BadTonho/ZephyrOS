@@ -32,6 +32,7 @@ static int app_package_ready = 0;
 static int app_package_mutation_active = 0;
 static spinlock_t app_package_mutation_lock;
 static app_package_action_result_t app_package_legacy_result;
+static app_package_plan_t app_package_active_plan;
 
 typedef struct {
     uint8_t* data;
@@ -1075,7 +1076,6 @@ static int app_package_build_single_install_plan(
 int app_package_preflight_install(
     const char* alias, app_package_action_result_t* result_out) {
     app_package_install_context_t context;
-    app_package_plan_t plan;
     int result;
 
     if (!result_out) {
@@ -1084,9 +1084,10 @@ int app_package_preflight_install(
     }
     app_package_action_reset(result_out);
     if (app_package_transaction_supported) {
-        result = app_package_build_single_install_plan(alias, &plan, result_out);
-        return result == OK ? app_package_preflight_plan(&plan, result_out) :
-                              result;
+        result = app_package_build_single_install_plan(
+            alias, &result_out->plan, result_out);
+        return result == OK ?
+            app_package_preflight_plan(&result_out->plan, result_out) : result;
     }
     result = app_package_prepare_install(
         alias, 1, 1, 0, &context, result_out);
@@ -1097,7 +1098,6 @@ int app_package_preflight_install(
 int app_package_install_confirmed(
     const char* alias, app_package_action_result_t* result_out) {
     app_package_install_context_t context;
-    app_package_plan_t plan;
     int result;
 
     if (!result_out) {
@@ -1106,9 +1106,11 @@ int app_package_install_confirmed(
     }
     app_package_action_reset(result_out);
     if (app_package_transaction_supported) {
-        result = app_package_build_single_install_plan(alias, &plan, result_out);
-        return result == OK ? app_package_apply_plan_confirmed(&plan, result_out) :
-                              result;
+        result = app_package_build_single_install_plan(
+            alias, &result_out->plan, result_out);
+        return result == OK ?
+            app_package_apply_plan_confirmed(&result_out->plan, result_out) :
+            result;
     }
     result = app_package_mutation_begin(result_out);
     if (result == OK) {
@@ -1132,7 +1134,6 @@ int app_package_install_confirmed(
 
 int app_package_install_file(const char* path, app_package_info_t* info_out) {
     app_package_install_context_t context;
-    app_package_plan_t plan;
     uint32_t path_length;
     int result;
 
@@ -1147,10 +1148,10 @@ int app_package_install_file(const char* path, app_package_info_t* info_out) {
         path[path_length - 2U] == 'P' && path[path_length - 1U] == 'K' &&
         path_length < APP_PACKAGE_ALIAS_SIZE) {
         result = app_package_build_single_install_plan(
-            path, &plan, &app_package_legacy_result);
+            path, &app_package_legacy_result.plan, &app_package_legacy_result);
         if (result == OK) {
             result = app_package_apply_plan_confirmed(
-                &plan, &app_package_legacy_result);
+                &app_package_legacy_result.plan, &app_package_legacy_result);
         }
         if (result == OK) *info_out = app_package_legacy_result.info;
         return result;
@@ -1930,20 +1931,22 @@ static int app_package_preflight_plan_internal(
 
 int app_package_preflight_plan(const app_package_plan_t* plan,
                                app_package_action_result_t* result_out) {
-    app_package_plan_t plan_copy;
-    const app_package_plan_t* active_plan = plan;
-
     if (!result_out) {
         LOG_ERROR("PKG", "Saida nula no preflight de plano");
         return ERR_NULL;
     }
-    /* O chamador pode manter o plano dentro do proprio resultado. */
-    if (plan) {
-        plan_copy = *plan;
-        active_plan = &plan_copy;
+    if (plan == &result_out->plan) {
+        result_out->reason = APP_PACKAGE_ACTION_REASON_NONE;
+        kmemset(&result_out->info, 0, sizeof(result_out->info));
+        kmemset(result_out->blocker_ids, 0, sizeof(result_out->blocker_ids));
+        result_out->blocker_count = 0U;
+        result_out->blocker_overflow = 0U;
+        result_out->required_clusters = 0U;
+        result_out->free_clusters = 0U;
+    } else {
+        app_package_action_reset(result_out);
     }
-    app_package_action_reset(result_out);
-    return app_package_preflight_plan_internal(active_plan, 0, result_out);
+    return app_package_preflight_plan_internal(plan, 0, result_out);
 }
 
 static void app_package_remove_root_if_present(const char* path) {
@@ -2411,8 +2414,7 @@ static int app_package_transaction_init(void) {
 
 int app_package_apply_plan_confirmed(const app_package_plan_t* plan,
                                      app_package_action_result_t* result_out) {
-    app_package_plan_t plan_copy;
-    const app_package_plan_t* active_plan = plan;
+    const app_package_plan_t* active_plan = &app_package_active_plan;
     const app_package_plan_entry_t* target;
     int previous_index;
     int result;
@@ -2421,14 +2423,17 @@ int app_package_apply_plan_confirmed(const app_package_plan_t* plan,
         LOG_ERROR("PKG", "Saida nula na aplicacao do plano");
         return ERR_NULL;
     }
-    /* Preserve o plano quando ele pertence ao resultado que sera reiniciado. */
-    if (plan) {
-        plan_copy = *plan;
-        active_plan = &plan_copy;
+    if (!plan) {
+        app_package_action_reset(result_out);
+        return app_package_action_fail(
+            result_out, APP_PACKAGE_ACTION_REASON_INVALID_ARGUMENT,
+            ERR_INVALID);
     }
-    app_package_action_reset(result_out);
     result = app_package_mutation_begin(result_out);
     if (result != OK) return result;
+    /* A escrita FAT12 aprofunda a pilha; o plano ativo fica em estado estatico. */
+    app_package_active_plan = *plan;
+    app_package_action_reset(result_out);
     result = app_package_preflight_plan_internal(active_plan, 1, result_out);
     if (result != OK) goto done;
     target = &active_plan->entries[active_plan->target_index];
@@ -2709,8 +2714,7 @@ int app_package_preflight_rollback(const char* id,
 
 int app_package_rollback_confirmed(const char* id,
                                    app_package_action_result_t* result_out) {
-    app_package_plan_t plan;
-    app_package_action_result_t prepared;
+    const app_package_plan_t* plan = &app_package_active_plan;
     uint8_t source_slot;
     uint8_t stage_slot;
     int source_index;
@@ -2724,10 +2728,9 @@ int app_package_rollback_confirmed(const char* id,
     app_package_action_reset(result_out);
     result = app_package_mutation_begin(result_out);
     if (result != OK) return result;
-    kmemset(&prepared, 0, sizeof(prepared));
-    result = app_package_prepare_rollback_internal(id, 1, &prepared);
+    result = app_package_prepare_rollback_internal(id, 1, result_out);
     if (result != OK) goto done;
-    plan = prepared.plan;
+    app_package_active_plan = result_out->plan;
     source_index = app_package_state_find_rollback(id);
     backup_slot = app_package_state_find_free_slot();
     if (source_index < 0 || backup_slot < 0) {
@@ -2745,12 +2748,12 @@ int app_package_rollback_confirmed(const char* id,
     app_package_journal.slot = stage_slot;
     app_package_journal.backup_slot = (uint8_t)backup_slot;
     app_package_journal.previous_backup_slot = source_slot;
-    app_package_journal.plan = plan;
+    app_package_journal.plan = *plan;
     app_package_copy_string(app_package_journal.backup_id,
                             sizeof(app_package_journal.backup_id), id);
     app_package_copy_string(app_package_journal.backup_version,
                             sizeof(app_package_journal.backup_version),
-                            plan.entries[0].from_version);
+                            plan->entries[0].from_version);
     result = app_package_stage_rollback(source_slot, stage_slot, result_out);
     if (result != OK) goto done;
     result = app_package_write_backup(id, app_package_journal.backup_slot,
@@ -2769,7 +2772,7 @@ int app_package_rollback_confirmed(const char* id,
         goto done;
     }
     app_package_transaction_pending = 1;
-    result = app_package_apply_staged_plan(&plan, result_out);
+    result = app_package_apply_staged_plan(plan, result_out);
     if (result != OK) goto done;
     app_package_journal.phase = APP_PACKAGE_JOURNAL_COMMITTED;
     result = app_package_write_journal();
@@ -2782,8 +2785,8 @@ int app_package_rollback_confirmed(const char* id,
     app_package_history_append(APP_PACKAGE_HISTORY_OPERATION_ROLLBACK,
                                APP_PACKAGE_HISTORY_OUTCOME_SUCCESS,
                                APP_PACKAGE_ACTION_REASON_NONE, id,
-                               plan.entries[0].from_version,
-                               plan.entries[0].to_version, 1U);
+                               plan->entries[0].from_version,
+                               plan->entries[0].to_version, 1U);
     result = app_package_finalize_committed_journal();
     if (result != OK) {
         result = app_package_action_fail(result_out,
