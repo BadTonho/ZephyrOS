@@ -2,6 +2,7 @@
 #include "core/app_catalog.h"
 #include "core/app_loader.h"
 #include "core/app_package.h"
+#include "core/app_remote.h"
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/recovery.h"
@@ -30,11 +31,14 @@
 #define APPSTORE_SCANCODE_ENTER 0x1CU
 #define APPSTORE_SCANCODE_A 0x1EU
 #define APPSTORE_SCANCODE_B 0x30U
+#define APPSTORE_SCANCODE_D 0x20U
+#define APPSTORE_SCANCODE_E 0x12U
 #define APPSTORE_SCANCODE_I 0x17U
 #define APPSTORE_SCANCODE_R 0x13U
 #define APPSTORE_SCANCODE_U 0x16U
 #define APPSTORE_SCANCODE_V 0x2FU
 #define APPSTORE_SCANCODE_F5 0x3FU
+#define APPSTORE_SCANCODE_F12 0x58U
 #define APPSTORE_SCANCODE_UP 0x48U
 #define APPSTORE_SCANCODE_DOWN 0x50U
 
@@ -42,6 +46,7 @@ typedef enum {
     APPSTORE_TAB_CATALOG = 0,
     APPSTORE_TAB_INSTALLED,
     APPSTORE_TAB_DETAILS,
+    APPSTORE_TAB_REMOTE,
     APPSTORE_TAB_COUNT
 } appstore_tab_t;
 
@@ -50,7 +55,10 @@ typedef enum {
     APPSTORE_CONFIRM_INSTALL,
     APPSTORE_CONFIRM_REMOVE,
     APPSTORE_CONFIRM_UPDATE,
-    APPSTORE_CONFIRM_ROLLBACK
+    APPSTORE_CONFIRM_ROLLBACK,
+    APPSTORE_CONFIRM_REMOTE_FETCH,
+    APPSTORE_CONFIRM_REMOTE_INSTALL,
+    APPSTORE_CONFIRM_REMOTE_UPDATE
 } appstore_confirm_t;
 
 typedef enum {
@@ -61,7 +69,8 @@ typedef enum {
     APPSTORE_RESULT_REMOVE,
     APPSTORE_RESULT_RUN,
     APPSTORE_RESULT_UPDATE,
-    APPSTORE_RESULT_ROLLBACK
+    APPSTORE_RESULT_ROLLBACK,
+    APPSTORE_RESULT_REMOTE
 } appstore_result_t;
 
 typedef enum {
@@ -75,7 +84,15 @@ typedef enum {
     APPSTORE_JOB_REMOVE,
     APPSTORE_JOB_PREFLIGHT_ROLLBACK,
     APPSTORE_JOB_ROLLBACK,
-    APPSTORE_JOB_RUN
+    APPSTORE_JOB_RUN,
+    APPSTORE_JOB_REMOTE_ENABLE,
+    APPSTORE_JOB_REMOTE_CHECK,
+    APPSTORE_JOB_REMOTE_PREFLIGHT_FETCH,
+    APPSTORE_JOB_REMOTE_FETCH,
+    APPSTORE_JOB_REMOTE_PREFLIGHT_INSTALL,
+    APPSTORE_JOB_REMOTE_INSTALL,
+    APPSTORE_JOB_REMOTE_PREFLIGHT_UPDATE,
+    APPSTORE_JOB_REMOTE_UPDATE
 } appstore_job_t;
 
 typedef struct {
@@ -89,6 +106,11 @@ static uint32_t appstore_entry_count;
 static app_catalog_status_t appstore_status;
 static app_package_action_result_t appstore_action;
 static app_package_info_t appstore_verification;
+static app_remote_entry_t appstore_remote_entries[APP_REMOTE_MAX_ENTRIES];
+static app_remote_status_t appstore_remote_status;
+static app_remote_result_t appstore_remote_result;
+static app_remote_options_t appstore_remote_options;
+static uint32_t appstore_remote_count;
 static appstore_pending_job_t appstore_job;
 static appstore_pending_job_t appstore_running_job;
 static volatile appstore_job_t appstore_queued_type = APPSTORE_JOB_NONE;
@@ -232,6 +254,7 @@ static int appstore_plan_is_downgrade(void) {
 static uint32_t appstore_visible_count(void) {
     uint32_t count = 0;
 
+    if (appstore_tab == APPSTORE_TAB_REMOTE) return appstore_remote_count;
     for (uint32_t index = 0; index < appstore_entry_count; index++) {
         if (appstore_tab == APPSTORE_TAB_CATALOG &&
             appstore_entries[index].has_source) count++;
@@ -244,6 +267,9 @@ static uint32_t appstore_visible_count(void) {
 static int appstore_visible_index(uint32_t visible_index) {
     uint32_t current = 0;
 
+    if (appstore_tab == APPSTORE_TAB_REMOTE) {
+        return visible_index < appstore_remote_count ? (int)visible_index : -1;
+    }
     for (uint32_t index = 0; index < appstore_entry_count; index++) {
         int visible = appstore_tab == APPSTORE_TAB_CATALOG ?
                       appstore_entries[index].has_source :
@@ -257,9 +283,16 @@ static int appstore_visible_index(uint32_t visible_index) {
 }
 
 static app_catalog_entry_t* appstore_selected_entry(void) {
+    if (appstore_tab == APPSTORE_TAB_REMOTE) return 0;
     if (appstore_selected < 0 ||
         (uint32_t)appstore_selected >= appstore_entry_count) return 0;
     return &appstore_entries[appstore_selected];
+}
+
+static app_remote_entry_t* appstore_selected_remote_entry(void) {
+    if (appstore_tab != APPSTORE_TAB_REMOTE || appstore_selected < 0 ||
+        (uint32_t)appstore_selected >= appstore_remote_count) return 0;
+    return &appstore_remote_entries[appstore_selected];
 }
 
 static const app_package_info_t* appstore_entry_info(
@@ -280,6 +313,13 @@ static void appstore_selected_key(appstore_job_t type, char* output,
                                   uint32_t size) {
     app_catalog_entry_t* entry = appstore_selected_entry();
     const app_package_info_t* info = appstore_entry_info(entry);
+
+    if (appstore_tab == APPSTORE_TAB_REMOTE) {
+        app_remote_entry_t* remote = appstore_selected_remote_entry();
+
+        appstore_copy_text(output, size, remote ? remote->info.id : "");
+        return;
+    }
 
     if (!entry || !info) {
         appstore_copy_text(output, size, "");
@@ -337,6 +377,7 @@ static void appstore_select_first_visible(void) {
 }
 
 static int appstore_restore_selection(const char* alias, const char* id) {
+    if (appstore_tab == APPSTORE_TAB_REMOTE) return 0;
     for (uint32_t index = 0; index < appstore_entry_count; index++) {
         app_catalog_entry_t* entry = &appstore_entries[index];
         int visible = appstore_tab == APPSTORE_TAB_CATALOG ?
@@ -407,7 +448,44 @@ static void appstore_refresh_snapshot(void) {
     if (!appstore_restore_selection(selected_alias, selected_id)) {
         appstore_select_first_visible();
     }
+    (void)app_remote_refresh_provenance();
     appstore_set_result(APPSTORE_RESULT_REFRESH, OK, "Catalogo atualizado");
+}
+
+static void appstore_refresh_remote_snapshot(void) {
+    app_remote_entry_t* selected = appstore_selected_remote_entry();
+    char selected_id[APP_PACKAGE_ID_SIZE];
+    uint32_t count = 0U;
+
+    appstore_copy_text(selected_id, sizeof(selected_id),
+                       selected ? selected->info.id : "");
+    appstore_remote_count = 0U;
+    kmemset(&appstore_remote_status, 0, sizeof(appstore_remote_status));
+    if (app_remote_get_status(&appstore_remote_status) != OK) {
+        LOG_ERROR("APPSTORE", "Status remoto indisponivel para a interface");
+        return;
+    }
+    if (app_remote_get_count(&count) != OK) {
+        if (appstore_tab == APPSTORE_TAB_REMOTE) appstore_select_first_visible();
+        return;
+    }
+    for (uint32_t index = 0; index < count &&
+         index < APP_REMOTE_MAX_ENTRIES; index++) {
+        if (app_remote_get_entry(index,
+                                 &appstore_remote_entries[index]) == OK) {
+            appstore_remote_count++;
+        }
+    }
+    appstore_selected = -1;
+    for (uint32_t index = 0; index < appstore_remote_count; index++) {
+        if (selected_id[0] && kstrcmp(
+                appstore_remote_entries[index].info.id, selected_id) == 0) {
+            appstore_selected = (int)index;
+            break;
+        }
+    }
+    if (appstore_selected < 0) appstore_select_first_visible();
+    appstore_keep_selection_visible();
 }
 
 static void appstore_queue_job(appstore_job_t type) {
@@ -418,7 +496,9 @@ static void appstore_queue_job(appstore_job_t type) {
     appstore_job.type = type;
     appstore_job.generation = appstore_generation;
     appstore_selected_key(type, appstore_job.key, sizeof(appstore_job.key));
-    if (!appstore_job.key[0] && type != APPSTORE_JOB_REFRESH) {
+    if (!appstore_job.key[0] && type != APPSTORE_JOB_REFRESH &&
+        type != APPSTORE_JOB_REMOTE_ENABLE &&
+        type != APPSTORE_JOB_REMOTE_CHECK) {
         LOG_WARN("APPSTORE", "Operacao solicitada sem item selecionado");
         appstore_job.type = APPSTORE_JOB_NONE;
         appstore_queued_type = APPSTORE_JOB_NONE;
@@ -434,7 +514,24 @@ static void appstore_queue_job(appstore_job_t type) {
 static void appstore_request_refresh(void) {
     appstore_generation++;
     appstore_clear_context();
-    appstore_queue_job(APPSTORE_JOB_REFRESH);
+    appstore_queue_job(appstore_tab == APPSTORE_TAB_REMOTE ?
+                       APPSTORE_JOB_REMOTE_CHECK : APPSTORE_JOB_REFRESH);
+}
+
+static void appstore_request_remote_enable(void) {
+    appstore_queue_job(APPSTORE_JOB_REMOTE_ENABLE);
+}
+
+static void appstore_request_remote_fetch(void) {
+    if (!appstore_selected_remote_entry() ||
+        !appstore_remote_status.enabled ||
+        !appstore_remote_status.network_ready ||
+        !appstore_remote_status.catalog_available) {
+        appstore_set_result(APPSTORE_RESULT_REMOTE, ERR_NOT_FOUND,
+                            "Download remoto indisponivel");
+        return;
+    }
+    appstore_queue_job(APPSTORE_JOB_REMOTE_PREFLIGHT_FETCH);
 }
 
 static int appstore_can(const app_catalog_entry_t* entry,
@@ -455,6 +552,18 @@ static void appstore_request_verify(void) {
 
 static void appstore_request_install(void) {
     app_catalog_entry_t* entry = appstore_selected_entry();
+    app_remote_entry_t* remote = appstore_selected_remote_entry();
+
+    if (appstore_tab == APPSTORE_TAB_REMOTE) {
+        if (!appstore_remote_status.enabled || !remote ||
+            !remote->cached || remote->installed) {
+            appstore_set_result(APPSTORE_RESULT_REMOTE, ERR_STATE,
+                                "Instalacao remota requer plano em cache");
+            return;
+        }
+        appstore_queue_job(APPSTORE_JOB_REMOTE_PREFLIGHT_INSTALL);
+        return;
+    }
 
     if (!appstore_can(entry, APP_CATALOG_CAPABILITY_INSTALL)) {
         appstore_set_result(APPSTORE_RESULT_INSTALL, ERR_STATE,
@@ -477,6 +586,20 @@ static void appstore_request_remove(void) {
 
 static void appstore_request_update(void) {
     app_catalog_entry_t* entry = appstore_selected_entry();
+    app_remote_entry_t* remote = appstore_selected_remote_entry();
+
+    if (appstore_tab == APPSTORE_TAB_REMOTE) {
+        if (!appstore_remote_status.enabled || !remote ||
+            !remote->cached || !remote->installed ||
+            (remote->state != APP_REMOTE_ENTRY_UPDATE_AVAILABLE &&
+             remote->state != APP_REMOTE_ENTRY_DOWNGRADE)) {
+            appstore_set_result(APPSTORE_RESULT_REMOTE, ERR_STATE,
+                                "Atualizacao remota requer plano em cache");
+            return;
+        }
+        appstore_queue_job(APPSTORE_JOB_REMOTE_PREFLIGHT_UPDATE);
+        return;
+    }
 
     if (!appstore_can(entry, APP_CATALOG_CAPABILITY_UPDATE)) {
         appstore_set_result(APPSTORE_RESULT_UPDATE, ERR_STATE,
@@ -488,7 +611,17 @@ static void appstore_request_update(void) {
 
 static void appstore_request_rollback(void) {
     app_catalog_entry_t* entry = appstore_selected_entry();
+    app_remote_entry_t* remote = appstore_selected_remote_entry();
 
+    if (appstore_tab == APPSTORE_TAB_REMOTE) {
+        if (!remote || !remote->installed) {
+            appstore_set_result(APPSTORE_RESULT_ROLLBACK, ERR_STATE,
+                                "Rollback indisponivel para o item");
+            return;
+        }
+        appstore_queue_job(APPSTORE_JOB_PREFLIGHT_ROLLBACK);
+        return;
+    }
     if (!entry || !entry->has_installed) {
         appstore_set_result(APPSTORE_RESULT_ROLLBACK, ERR_STATE,
                             "Rollback indisponivel para o item");
@@ -499,6 +632,17 @@ static void appstore_request_rollback(void) {
 
 static void appstore_request_run(void) {
     app_catalog_entry_t* entry = appstore_selected_entry();
+    app_remote_entry_t* remote = appstore_selected_remote_entry();
+
+    if (appstore_tab == APPSTORE_TAB_REMOTE) {
+        if (!remote || !remote->installed) {
+            appstore_set_result(APPSTORE_RESULT_RUN, ERR_STATE,
+                                "Aplicativo remoto ainda nao esta instalado");
+            return;
+        }
+        appstore_queue_job(APPSTORE_JOB_RUN);
+        return;
+    }
 
     if (!appstore_can(entry, APP_CATALOG_CAPABILITY_RUN)) {
         appstore_set_result(APPSTORE_RESULT_RUN, ERR_STATE,
@@ -517,7 +661,13 @@ static void appstore_confirm_action(void) {
         appstore_clear_context();
         return;
     }
-    if (appstore_confirm == APPSTORE_CONFIRM_INSTALL) {
+    if (appstore_confirm == APPSTORE_CONFIRM_REMOTE_FETCH) {
+        job = APPSTORE_JOB_REMOTE_FETCH;
+    } else if (appstore_confirm == APPSTORE_CONFIRM_REMOTE_INSTALL) {
+        job = APPSTORE_JOB_REMOTE_INSTALL;
+    } else if (appstore_confirm == APPSTORE_CONFIRM_REMOTE_UPDATE) {
+        job = APPSTORE_JOB_REMOTE_UPDATE;
+    } else if (appstore_confirm == APPSTORE_CONFIRM_INSTALL) {
         job = APPSTORE_JOB_INSTALL;
     } else if (appstore_confirm == APPSTORE_CONFIRM_REMOVE) {
         job = APPSTORE_JOB_REMOVE;
@@ -651,6 +801,9 @@ static void appstore_worker_rollback(const char* id) {
                        result == OK ? "Rollback concluido" :
                        "Rollback bloqueado");
     appstore_refresh_snapshot();
+    if (appstore_tab == APPSTORE_TAB_REMOTE) {
+        appstore_refresh_remote_snapshot();
+    }
     appstore_set_result(APPSTORE_RESULT_ROLLBACK, result, result_text);
 }
 
@@ -669,6 +822,70 @@ static void appstore_worker_run(const char* id) {
         }
         LOG_INFO("APPSTORE", "ZAPP iniciado; F12 cancela e devolve foco ao Shell");
     }
+}
+
+static void appstore_worker_remote_enable(void) {
+    app_remote_status_t status;
+    int result;
+
+    result = app_remote_get_status(&status);
+    if (result == OK) {
+        result = status.enabled ? app_remote_disable() : app_remote_enable();
+    }
+    appstore_refresh_remote_snapshot();
+    appstore_set_result(APPSTORE_RESULT_REMOTE, result,
+                        result == OK ? "Controle remoto atualizado" :
+                        "Controle remoto bloqueado");
+}
+
+static void appstore_worker_remote_check(void) {
+    int result;
+
+    kmemset(&appstore_remote_options, 0, sizeof(appstore_remote_options));
+    result = app_remote_check(0, &appstore_remote_options,
+                              &appstore_remote_result);
+    appstore_refresh_remote_snapshot();
+    appstore_set_result(APPSTORE_RESULT_REMOTE, result,
+                        result == OK ? "Catalogo remoto autenticado" :
+                        "Consulta remota bloqueada");
+}
+
+static void appstore_worker_remote_fetch(const char* id, int confirmed) {
+    int result;
+
+    kmemset(&appstore_remote_options, 0, sizeof(appstore_remote_options));
+    result = app_remote_fetch(id, 0, confirmed, &appstore_remote_options,
+                              &appstore_remote_result);
+    kmemset(&appstore_action, 0, sizeof(appstore_action));
+    appstore_action.plan = appstore_remote_result.plan;
+    appstore_refresh_remote_snapshot();
+    appstore_set_result(APPSTORE_RESULT_REMOTE, result,
+                        result == OK ?
+                        (confirmed ? "Plano remoto em cache" :
+                                     "Confirmar download remoto") :
+                        "Download remoto bloqueado");
+}
+
+static void appstore_worker_remote_apply(const char* id, int update,
+                                         int confirmed) {
+    int result;
+
+    kmemset(&appstore_remote_options, 0, sizeof(appstore_remote_options));
+    appstore_remote_options.allow_downgrade = update ? 1U : 0U;
+    result = app_remote_apply_cached(
+        id, update, confirmed, &appstore_remote_options,
+        &appstore_remote_result);
+    appstore_action = appstore_remote_result.package_action;
+    if (!appstore_action.plan.entry_count) {
+        appstore_action.plan = appstore_remote_result.plan;
+    }
+    if (confirmed) appstore_refresh_snapshot();
+    appstore_refresh_remote_snapshot();
+    appstore_set_result(APPSTORE_RESULT_REMOTE, result,
+                        result == OK ?
+                        (confirmed ? "Plano remoto aplicado" :
+                                     "Confirmar aplicacao remota") :
+                        "Aplicacao remota bloqueada");
 }
 
 static void appstore_worker_finish(void) {
@@ -696,6 +913,24 @@ static void appstore_worker_finish(void) {
     } else if (!stale && appstore_last_result == OK &&
                type == APPSTORE_JOB_PREFLIGHT_ROLLBACK) {
         appstore_confirm = APPSTORE_CONFIRM_ROLLBACK;
+        appstore_copy_text(appstore_confirm_key, sizeof(appstore_confirm_key),
+                           appstore_running_job.key);
+        appstore_confirm_generation = appstore_generation;
+    } else if (!stale && appstore_last_result == OK &&
+               type == APPSTORE_JOB_REMOTE_PREFLIGHT_FETCH) {
+        appstore_confirm = APPSTORE_CONFIRM_REMOTE_FETCH;
+        appstore_copy_text(appstore_confirm_key, sizeof(appstore_confirm_key),
+                           appstore_running_job.key);
+        appstore_confirm_generation = appstore_generation;
+    } else if (!stale && appstore_last_result == OK &&
+               type == APPSTORE_JOB_REMOTE_PREFLIGHT_INSTALL) {
+        appstore_confirm = APPSTORE_CONFIRM_REMOTE_INSTALL;
+        appstore_copy_text(appstore_confirm_key, sizeof(appstore_confirm_key),
+                           appstore_running_job.key);
+        appstore_confirm_generation = appstore_generation;
+    } else if (!stale && appstore_last_result == OK &&
+               type == APPSTORE_JOB_REMOTE_PREFLIGHT_UPDATE) {
+        appstore_confirm = APPSTORE_CONFIRM_REMOTE_UPDATE;
         appstore_copy_text(appstore_confirm_key, sizeof(appstore_confirm_key),
                            appstore_running_job.key);
         appstore_confirm_generation = appstore_generation;
@@ -736,6 +971,25 @@ static void appstore_worker_main(void) {
             appstore_worker_rollback(appstore_running_job.key);
         } else if (appstore_running_job.type == APPSTORE_JOB_RUN) {
             appstore_worker_run(appstore_running_job.key);
+        } else if (appstore_running_job.type == APPSTORE_JOB_REMOTE_ENABLE) {
+            appstore_worker_remote_enable();
+        } else if (appstore_running_job.type == APPSTORE_JOB_REMOTE_CHECK) {
+            appstore_worker_remote_check();
+        } else if (appstore_running_job.type ==
+                   APPSTORE_JOB_REMOTE_PREFLIGHT_FETCH) {
+            appstore_worker_remote_fetch(appstore_running_job.key, 0);
+        } else if (appstore_running_job.type == APPSTORE_JOB_REMOTE_FETCH) {
+            appstore_worker_remote_fetch(appstore_running_job.key, 1);
+        } else if (appstore_running_job.type ==
+                   APPSTORE_JOB_REMOTE_PREFLIGHT_INSTALL) {
+            appstore_worker_remote_apply(appstore_running_job.key, 0, 0);
+        } else if (appstore_running_job.type == APPSTORE_JOB_REMOTE_INSTALL) {
+            appstore_worker_remote_apply(appstore_running_job.key, 0, 1);
+        } else if (appstore_running_job.type ==
+                   APPSTORE_JOB_REMOTE_PREFLIGHT_UPDATE) {
+            appstore_worker_remote_apply(appstore_running_job.key, 1, 0);
+        } else if (appstore_running_job.type == APPSTORE_JOB_REMOTE_UPDATE) {
+            appstore_worker_remote_apply(appstore_running_job.key, 1, 1);
         } else {
             appstore_set_result(APPSTORE_RESULT_NONE, ERR_INVALID,
                                 "Worker recebeu operacao invalida");
@@ -758,6 +1012,18 @@ static uint32_t appstore_gui_entry_color(const app_catalog_entry_t* entry) {
     if (entry->state == APP_CATALOG_STATE_INVALID) return 0x00D65A5AU;
     if (entry->state == APP_CATALOG_STATE_BLOCKED) return 0x00E0A850U;
     return GUI_MODERN_COLOR_TEXT;
+}
+
+static const char* appstore_entry_trust(const app_catalog_entry_t* entry,
+                                        const app_package_info_t* info) {
+    if (entry && entry->installed.id[0]) {
+        if (!app_remote_is_provenance_available()) return "N/D";
+        if (info && app_remote_get_installed_trust(
+                entry->installed.id, entry->installed.version)) {
+            return "REMOTO / AUTENTICADO (TESTE)";
+        }
+    }
+    return entry && entry->has_source ? "LOCAL / NAO ASSINADO" : "N/D";
 }
 
 static void appstore_simple_draw_entries(void) {
@@ -810,7 +1076,8 @@ static void appstore_simple_draw_details(void) {
     video_print_at(x, 12, "Motivo: ", 0x07);
     video_print(app_catalog_reason_name(entry->reason),
                 entry->reason == APP_CATALOG_REASON_NONE ? 0x0A : 0x0E);
-    video_print_at(x, 14, "Confianca: LOCAL / NAO ASSINADO", 0x0E);
+    video_print_at(x, 14, "Confianca: ", 0x07);
+    video_print(appstore_entry_trust(entry, info), 0x0E);
     video_print_at(x, 16, "Dependencias: ", 0x07);
     if (info->dependency_count == 0U) video_print("nenhuma", 0x08);
     for (uint32_t index = 0; index < info->dependency_count; index++) {
@@ -836,6 +1103,15 @@ static void appstore_simple_draw_confirmation(void) {
     question = appstore_confirm == APPSTORE_CONFIRM_UPDATE &&
                appstore_plan_is_downgrade() ?
                "Confirmar downgrade diagnostico?" :
+               appstore_confirm == APPSTORE_CONFIRM_REMOTE_FETCH ?
+               "Baixar e publicar plano autenticado?" :
+               appstore_confirm == APPSTORE_CONFIRM_REMOTE_INSTALL ?
+               "Instalar plano remoto em cache?" :
+               appstore_confirm == APPSTORE_CONFIRM_REMOTE_UPDATE &&
+               appstore_plan_is_downgrade() ?
+               "Confirmar downgrade remoto diagnostico?" :
+               appstore_confirm == APPSTORE_CONFIRM_REMOTE_UPDATE ?
+               "Atualizar pelo plano remoto em cache?" :
                appstore_confirm == APPSTORE_CONFIRM_INSTALL ?
                "Confirmar instalacao?" :
                appstore_confirm == APPSTORE_CONFIRM_REMOVE ?
@@ -858,7 +1134,7 @@ static void appstore_simple_draw_confirmation(void) {
 }
 
 static void appstore_draw_simple(void) {
-    static const char* names[APPSTORE_TAB_COUNT] = {
+    static const char* names[3] = {
         " Catalogo ", " Instalados ", " Detalhes "
     };
 
@@ -866,7 +1142,7 @@ static void appstore_draw_simple(void) {
     video_fill_rect(0, 0, SCREEN_COLS, SCREEN_ROWS, ' ', 0x07);
     video_fill_rect(0, 0, SCREEN_COLS, 1, ' ', 0x1F);
     video_print_at(2, 0, "ZephyrOS App Store", 0x1F);
-    for (int index = 0; index < APPSTORE_TAB_COUNT; index++) {
+    for (int index = 0; index < 3; index++) {
         video_print_at(2 + index * 15, 2, names[index],
                        appstore_tab == index ? 0x1F : 0x07);
     }
@@ -886,7 +1162,7 @@ static void appstore_draw_simple(void) {
 
 static void appstore_gui_draw_tabs(int x, int y) {
     static const char* names[APPSTORE_TAB_COUNT] = {
-        "Catalogo", "Instalados", "Detalhes"
+        "Catalogo", "Instalados", "Detalhes", "Remoto"
     };
 
     for (int index = 0; index < APPSTORE_TAB_COUNT; index++) {
@@ -915,6 +1191,23 @@ static void appstore_gui_draw_entries(int x, int y, int width, int height) {
         int row_y = y + 12 + row * APPSTORE_CLASSIC_ROW_HEIGHT;
 
         if (index < 0) break;
+        if (appstore_tab == APPSTORE_TAB_REMOTE) {
+            app_remote_entry_t* remote = &appstore_remote_entries[index];
+            uint32_t color = remote->state == APP_REMOTE_ENTRY_BLOCKED ?
+                             0x00D65A5AU :
+                             remote->state == APP_REMOTE_ENTRY_UPDATE_AVAILABLE ?
+                             0x00E0A850U : GUI_MODERN_COLOR_TEXT;
+
+            if (index == appstore_selected) {
+                appstore_gui_draw_surface(x + 6, row_y - 4,
+                                          list_width - 12, 22,
+                                          GUI_MODERN_COLOR_HOVER,
+                                          GUI_MODERN_COLOR_ACCENT);
+            }
+            gui_draw_text((uint32_t)(x + 14), (uint32_t)row_y,
+                          remote->info.id, color);
+            continue;
+        }
         entry = &appstore_entries[index];
         if (index == appstore_selected) {
             appstore_gui_draw_surface(x + 6, row_y - 4, list_width - 12, 22,
@@ -938,6 +1231,70 @@ static void appstore_gui_line(int x, int y, const char* label,
     gui_draw_text((uint32_t)(x + 142), (uint32_t)y, value, color);
 }
 
+static void appstore_gui_draw_remote_details(int x, int y) {
+    app_remote_entry_t* entry = appstore_selected_remote_entry();
+    char dependencies[APPSTORE_TEXT_SIZE];
+    char size[16];
+    const char* installed_version;
+    const char* authenticated_label = appstore_gui_width >= 700 ?
+        "REMOTO / AUTENTICADO (TESTE)" : "AUTENTICADO (TESTE)";
+    uint32_t result_color = appstore_last_result == OK ?
+                            0x005FBF7FU : 0x00D65A5AU;
+
+    if (!entry) {
+        gui_draw_text((uint32_t)x, (uint32_t)y,
+                      appstore_remote_status.enabled ?
+                      "Consulte o catalogo remoto com F5" :
+                      "Repositorio remoto desabilitado; pressione E",
+                      GUI_MODERN_COLOR_BORDER_INACTIVE);
+        return;
+    }
+    installed_version = entry->installed_version[0] ?
+                        entry->installed_version : "N/D";
+    appstore_u32_text(entry->package_size, size, sizeof(size));
+    appstore_dependencies_text(&entry->info, dependencies,
+                               sizeof(dependencies));
+    gui_draw_text((uint32_t)x, (uint32_t)y, entry->info.name,
+                  GUI_MODERN_COLOR_TEXT);
+    appstore_gui_line(x, y + 24, "ID", entry->info.id,
+                      GUI_MODERN_COLOR_TEXT);
+    appstore_gui_line(x, y + 44, "Versao remota", entry->info.version,
+                      GUI_MODERN_COLOR_TEXT);
+    appstore_gui_line(x, y + 64, "Instalado", installed_version,
+                      GUI_MODERN_COLOR_TEXT);
+    appstore_gui_line(x, y + 84, "Estado",
+                      app_remote_entry_state_name(entry->state),
+                      entry->state == APP_REMOTE_ENTRY_BLOCKED ?
+                      0x00D65A5AU : GUI_MODERN_COLOR_TEXT);
+    gui_draw_text((uint32_t)x, (uint32_t)(y + 104), "Confianca",
+                  GUI_MODERN_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 110), (uint32_t)(y + 104),
+                  authenticated_label, 0x005FBF7FU);
+    appstore_gui_line(x, y + 124, "Cache", entry->cached ? "SIM" : "NAO",
+                      entry->cached ? 0x005FBF7FU :
+                      GUI_MODERN_COLOR_BORDER_INACTIVE);
+    appstore_gui_line(x, y + 144, "Tamanho", size,
+                      GUI_MODERN_COLOR_TEXT);
+    appstore_gui_line(x, y + 164, "Dependencias", dependencies,
+                      GUI_MODERN_COLOR_TEXT);
+    appstore_gui_line(x, y + 184, "Resultado",
+                      app_remote_reason_name(appstore_remote_result.reason),
+                      appstore_remote_result.reason == APP_REMOTE_REASON_NONE ?
+                      GUI_MODERN_COLOR_BORDER_INACTIVE : 0x00E0A850U);
+    gui_draw_text((uint32_t)x, (uint32_t)(y + 204), "Procedencia",
+                  GUI_MODERN_COLOR_TEXT);
+    gui_draw_text(
+        (uint32_t)(x + 110), (uint32_t)(y + 204),
+        !entry->installed ? "N/A" :
+        app_remote_get_installed_trust(entry->info.id, installed_version) ?
+        authenticated_label : "N/D",
+        entry->installed && app_remote_get_installed_trust(
+            entry->info.id, installed_version) ? 0x005FBF7FU :
+            GUI_MODERN_COLOR_BORDER_INACTIVE);
+    gui_draw_text((uint32_t)x, (uint32_t)(y + 240), appstore_result_text,
+                  result_color);
+}
+
 static void appstore_gui_draw_details(int x, int y) {
     app_catalog_entry_t* entry = appstore_selected_entry();
     const app_package_info_t* info = appstore_entry_info(entry);
@@ -946,6 +1303,10 @@ static void appstore_gui_draw_details(int x, int y) {
     char size[16];
     uint32_t result_color;
 
+    if (appstore_tab == APPSTORE_TAB_REMOTE) {
+        appstore_gui_draw_remote_details(x, y);
+        return;
+    }
     if (!entry || !info) {
         gui_draw_text((uint32_t)x, (uint32_t)y, "Nenhum aplicativo selecionado",
                       GUI_MODERN_COLOR_BORDER_INACTIVE);
@@ -968,8 +1329,8 @@ static void appstore_gui_draw_details(int x, int y) {
     appstore_gui_line(x, y + 152, "Motivo", app_catalog_reason_name(entry->reason),
                       entry->reason == APP_CATALOG_REASON_NONE ?
                       GUI_MODERN_COLOR_TEXT : 0x00E0A850U);
-    appstore_gui_line(x, y + 176, "Confianca", entry->has_source ?
-                      "LOCAL / NAO ASSINADO" : "N/D", 0x00E0A850U);
+    appstore_gui_line(x, y + 176, "Confianca",
+                      appstore_entry_trust(entry, info), 0x00E0A850U);
     appstore_gui_line(x, y + 200, "Tamanho", size, GUI_MODERN_COLOR_TEXT);
     appstore_gui_line(x, y + 224, "Dependencias", dependencies,
                       GUI_MODERN_COLOR_TEXT);
@@ -988,20 +1349,30 @@ static void appstore_gui_draw_confirmation(int x, int y, int width, int height) 
     int dialog_x;
     int dialog_y;
     const char* question;
+    char transition[APPSTORE_TEXT_SIZE];
 
     if (appstore_confirm == APPSTORE_CONFIRM_NONE) return;
     dialog_x = x + (width - 420) / 2;
-    dialog_y = y + (height - 150) / 2;
+    dialog_y = y + (height - 170) / 2;
     question = appstore_confirm == APPSTORE_CONFIRM_UPDATE &&
                appstore_plan_is_downgrade() ?
                "Confirmar downgrade diagnostico?" :
+               appstore_confirm == APPSTORE_CONFIRM_REMOTE_FETCH ?
+               "Baixar e publicar plano autenticado?" :
+               appstore_confirm == APPSTORE_CONFIRM_REMOTE_INSTALL ?
+               "Instalar plano remoto em cache?" :
+               appstore_confirm == APPSTORE_CONFIRM_REMOTE_UPDATE &&
+               appstore_plan_is_downgrade() ?
+               "Confirmar downgrade remoto diagnostico?" :
+               appstore_confirm == APPSTORE_CONFIRM_REMOTE_UPDATE ?
+               "Atualizar pelo plano remoto em cache?" :
                appstore_confirm == APPSTORE_CONFIRM_INSTALL ?
                "Confirmar instalacao?" :
                appstore_confirm == APPSTORE_CONFIRM_REMOVE ?
                "Confirmar remocao?" :
                appstore_confirm == APPSTORE_CONFIRM_UPDATE ?
                "Confirmar atualizacao local?" : "Confirmar rollback?";
-    appstore_gui_draw_surface(dialog_x, dialog_y, 420, 150,
+    appstore_gui_draw_surface(dialog_x, dialog_y, 420, 170,
                               GUI_MODERN_COLOR_WINDOW, GUI_MODERN_COLOR_ACCENT);
     gui_draw_text((uint32_t)(dialog_x + 24), (uint32_t)(dialog_y + 28), question,
                   GUI_MODERN_COLOR_TEXT);
@@ -1015,13 +1386,33 @@ static void appstore_gui_draw_confirmation(int x, int y, int width, int height) 
             appstore_append_text(plan, sizeof(plan),
                                  appstore_action.plan.entries[index].id);
         }
-        gui_draw_text((uint32_t)(dialog_x + 24), (uint32_t)(dialog_y + 58),
+        gui_draw_text((uint32_t)(dialog_x + 24), (uint32_t)(dialog_y + 54),
                       plan, GUI_MODERN_COLOR_TEXT);
+        transition[0] = '\0';
+        if (appstore_action.plan.target_index <
+            appstore_action.plan.entry_count) {
+            const app_package_plan_entry_t* target =
+                &appstore_action.plan.entries[
+                    appstore_action.plan.target_index];
+
+            appstore_append_text(transition, sizeof(transition), "Alvo ");
+            appstore_append_text(transition, sizeof(transition), target->id);
+            appstore_append_text(transition, sizeof(transition), ": ");
+            appstore_append_text(transition, sizeof(transition),
+                                 target->from_version[0] ?
+                                 target->from_version : "novo");
+            appstore_append_text(transition, sizeof(transition), " -> ");
+            appstore_append_text(transition, sizeof(transition),
+                                 target->to_version);
+            gui_draw_text((uint32_t)(dialog_x + 24),
+                          (uint32_t)(dialog_y + 78), transition,
+                          GUI_MODERN_COLOR_TEXT);
+        }
     }
-    gui_draw_modern_button((uint32_t)(dialog_x + 82), (uint32_t)(dialog_y + 92),
+    gui_draw_modern_button((uint32_t)(dialog_x + 82), (uint32_t)(dialog_y + 116),
                            APPSTORE_BUTTON_WIDTH, APPSTORE_BUTTON_HEIGHT,
                            "Confirmar", GUI_BUTTON_STATE_PRESSED);
-    gui_draw_modern_button((uint32_t)(dialog_x + 226), (uint32_t)(dialog_y + 92),
+    gui_draw_modern_button((uint32_t)(dialog_x + 226), (uint32_t)(dialog_y + 116),
                            APPSTORE_BUTTON_WIDTH, APPSTORE_BUTTON_HEIGHT,
                            "Cancelar", GUI_BUTTON_STATE_NORMAL);
 }
@@ -1073,6 +1464,96 @@ static int appstore_rollback_is_available(const app_catalog_entry_t* entry) {
     return 0;
 }
 
+static int appstore_remote_rollback_is_available(
+    const app_remote_entry_t* entry) {
+    app_package_status_t status;
+
+    if (!entry || !entry->installed ||
+        app_package_get_status(&status) != OK) return 0;
+    for (uint32_t index = 0; index < status.rollback_count; index++) {
+        if (kstrcmp(status.rollbacks[index].id, entry->info.id) == 0) return 1;
+    }
+    return 0;
+}
+
+static int appstore_remote_buttons_per_row(int width) {
+    return width >= 780 ? 7 : 4;
+}
+
+static void appstore_remote_button_position(int x, int y, int width,
+                                            int height, int index,
+                                            int* button_x, int* button_y,
+                                            int* button_width) {
+    int per_row = appstore_remote_buttons_per_row(width);
+    int rows = per_row == 7 ? 1 : 2;
+    int step = (width - 24) / per_row;
+
+    if (button_x) *button_x = x + 12 + (index % per_row) * step;
+    if (button_y) *button_y = y + height - 44 -
+                                (rows - 1 - index / per_row) * 32;
+    if (button_width) *button_width = step - 8;
+}
+
+static void appstore_draw_classic_remote(int x, int y, int width,
+                                         int height) {
+    static const char* labels[] = {
+        "Habilitar", "Consultar", "Baixar", "Instalar",
+        "Atualizar", "Abrir", "Reverter"
+    };
+    app_remote_entry_t* entry = appstore_selected_remote_entry();
+    int rows = appstore_remote_buttons_per_row(width) == 7 ? 1 : 2;
+    int content_y = y + 50;
+    int content_height = height - (rows == 1 ? 108 : 138);
+    int enabled[] = {
+        1,
+        appstore_remote_status.enabled &&
+            appstore_remote_status.network_ready,
+        entry && appstore_remote_status.enabled &&
+            appstore_remote_status.network_ready &&
+            appstore_remote_status.catalog_available &&
+            appstore_remote_status.cache_state != APP_REMOTE_CACHE_INVALID,
+        entry && appstore_remote_status.enabled && entry->cached &&
+            !entry->installed,
+        entry && appstore_remote_status.enabled && entry->cached &&
+            entry->installed &&
+            (entry->state == APP_REMOTE_ENTRY_UPDATE_AVAILABLE ||
+             entry->state == APP_REMOTE_ENTRY_DOWNGRADE),
+        entry && entry->installed,
+        appstore_remote_rollback_is_available(entry)
+    };
+
+    appstore_gui_draw_surface(x, y, width, height, GUI_MODERN_COLOR_BG,
+                              GUI_MODERN_COLOR_BORDER_INACTIVE);
+    appstore_gui_draw_tabs(x + APPSTORE_CLASSIC_MARGIN,
+                           y + APPSTORE_CLASSIC_MARGIN);
+    appstore_gui_draw_entries(x + APPSTORE_CLASSIC_MARGIN, content_y,
+                              width - 2 * APPSTORE_CLASSIC_MARGIN,
+                              content_height);
+    for (int index = 0; index < 7; index++) {
+        int button_x;
+        int button_y;
+        int button_width;
+
+        appstore_remote_button_position(x, y, width, height, index,
+                                        &button_x, &button_y, &button_width);
+        if (enabled[index]) {
+            gui_draw_modern_button((uint32_t)button_x, (uint32_t)button_y,
+                                   (uint32_t)button_width,
+                                   APPSTORE_BUTTON_HEIGHT, labels[index],
+                                   GUI_BUTTON_STATE_HOVER);
+        } else {
+            appstore_gui_draw_surface(button_x, button_y, button_width,
+                                      APPSTORE_BUTTON_HEIGHT,
+                                      GUI_MODERN_COLOR_WINDOW,
+                                      GUI_MODERN_COLOR_BORDER_INACTIVE);
+            gui_draw_text((uint32_t)(button_x + 8),
+                          (uint32_t)(button_y + 9), labels[index],
+                          GUI_MODERN_COLOR_BORDER_INACTIVE);
+        }
+    }
+    appstore_gui_draw_confirmation(x, y, width, height);
+}
+
 static void appstore_draw_classic(int x, int y, int width, int height) {
     int content_y = y + 50;
     int content_height = height -
@@ -1090,6 +1571,11 @@ static void appstore_draw_classic(int x, int y, int width, int height) {
         appstore_can(entry, APP_CATALOG_CAPABILITY_REMOVE),
         appstore_rollback_is_available(entry)
     };
+
+    if (appstore_tab == APPSTORE_TAB_REMOTE) {
+        appstore_draw_classic_remote(x, y, width, height);
+        return;
+    }
 
     appstore_gui_draw_surface(x, y, width, height, GUI_MODERN_COLOR_BG,
                               GUI_MODERN_COLOR_BORDER_INACTIVE);
@@ -1147,6 +1633,7 @@ int appstore_init(void) {
     }
     appstore_initialized = 1;
     appstore_refresh_snapshot();
+    appstore_refresh_remote_snapshot();
     LOG_INFO("APPSTORE", "Interface da App Store inicializada com sucesso");
     return OK;
 }
@@ -1215,7 +1702,13 @@ void appstore_draw(void) {
 
 void appstore_handle_key(uint8_t scancode) {
     if (!appstore_active || (scancode & 0x80U)) return;
-    if (appstore_busy) return;
+    if (appstore_busy) {
+        if (scancode == APPSTORE_SCANCODE_ESC ||
+            scancode == APPSTORE_SCANCODE_F12) {
+            app_remote_request_cancel();
+        }
+        return;
+    }
     if (appstore_confirm != APPSTORE_CONFIRM_NONE) {
         if (scancode == APPSTORE_SCANCODE_ENTER) appstore_confirm_action();
         else if (scancode == APPSTORE_SCANCODE_ESC) appstore_clear_context();
@@ -1227,10 +1720,16 @@ void appstore_handle_key(uint8_t scancode) {
         return;
     }
     if (scancode == APPSTORE_SCANCODE_TAB) {
-        appstore_tab = (appstore_tab_t)((appstore_tab + 1) % APPSTORE_TAB_COUNT);
+        int tab_count = appstore_mode == APPSTORE_MODE_SIMPLE ? 3 :
+                        APPSTORE_TAB_COUNT;
+
+        appstore_tab = (appstore_tab_t)((appstore_tab + 1) % tab_count);
         appstore_generation++;
         appstore_clear_context();
-        appstore_select_first_visible();
+        if (appstore_tab != APPSTORE_TAB_DETAILS) appstore_select_first_visible();
+        if (appstore_tab == APPSTORE_TAB_REMOTE) {
+            appstore_refresh_remote_snapshot();
+        }
     } else if (scancode == APPSTORE_SCANCODE_F5) appstore_request_refresh();
     else if (scancode == APPSTORE_SCANCODE_UP &&
              appstore_tab != APPSTORE_TAB_DETAILS) appstore_change_selection(-1);
@@ -1242,6 +1741,13 @@ void appstore_handle_key(uint8_t scancode) {
     else if (scancode == APPSTORE_SCANCODE_A) appstore_request_run();
     else if (scancode == APPSTORE_SCANCODE_R) appstore_request_remove();
     else if (scancode == APPSTORE_SCANCODE_B) appstore_request_rollback();
+    else if (scancode == APPSTORE_SCANCODE_E &&
+             appstore_tab == APPSTORE_TAB_REMOTE) {
+        appstore_request_remote_enable();
+    } else if (scancode == APPSTORE_SCANCODE_D &&
+               appstore_tab == APPSTORE_TAB_REMOTE) {
+        appstore_request_remote_fetch();
+    }
     appstore_draw();
 }
 
@@ -1252,12 +1758,12 @@ static int appstore_point_in(int px, int py, int x, int y,
 
 static int appstore_handle_confirmation_click(int px, int py) {
     int dialog_x = appstore_gui_x + (appstore_gui_width - 420) / 2;
-    int dialog_y = appstore_gui_y + (appstore_gui_height - 150) / 2;
+    int dialog_y = appstore_gui_y + (appstore_gui_height - 170) / 2;
 
-    if (appstore_point_in(px, py, dialog_x + 82, dialog_y + 92,
+    if (appstore_point_in(px, py, dialog_x + 82, dialog_y + 116,
                           APPSTORE_BUTTON_WIDTH, APPSTORE_BUTTON_HEIGHT)) {
         appstore_confirm_action();
-    } else if (appstore_point_in(px, py, dialog_x + 226, dialog_y + 92,
+    } else if (appstore_point_in(px, py, dialog_x + 226, dialog_y + 116,
                                  APPSTORE_BUTTON_WIDTH, APPSTORE_BUTTON_HEIGHT)) {
         appstore_clear_context();
     }
@@ -1280,7 +1786,13 @@ int appstore_handle_mouse(mouse_event_t* event) {
             appstore_tab = (appstore_tab_t)index;
             appstore_generation++;
             appstore_clear_context();
-            appstore_select_first_visible();
+            if (appstore_tab != APPSTORE_TAB_DETAILS) {
+                if (appstore_tab == APPSTORE_TAB_REMOTE) {
+                    appstore_refresh_remote_snapshot();
+                } else {
+                    appstore_select_first_visible();
+                }
+            }
             appstore_draw();
             return 1;
         }
@@ -1290,8 +1802,11 @@ int appstore_handle_mouse(mouse_event_t* event) {
                           appstore_gui_x + APPSTORE_CLASSIC_MARGIN,
                           appstore_gui_y + 50, 230,
                           appstore_gui_height -
-                          (appstore_action_buttons_per_row(
-                               appstore_gui_width) == 6 ? 108 : 138))) {
+                          (appstore_tab == APPSTORE_TAB_REMOTE ?
+                           (appstore_remote_buttons_per_row(
+                                appstore_gui_width) == 7 ? 108 : 138) :
+                           (appstore_action_buttons_per_row(
+                                appstore_gui_width) == 6 ? 108 : 138)))) {
         int row = (event->y - (appstore_gui_y + 62)) / APPSTORE_CLASSIC_ROW_HEIGHT;
         int index = appstore_visible_index((uint32_t)(appstore_scroll + row));
 
@@ -1299,6 +1814,31 @@ int appstore_handle_mouse(mouse_event_t* event) {
             appstore_selected = index;
             appstore_generation++;
             appstore_clear_context();
+        }
+        appstore_draw();
+        return 1;
+    }
+    if (appstore_tab == APPSTORE_TAB_REMOTE) {
+        for (int index = 0; index < 7; index++) {
+            int button_x;
+            int button_y;
+            int button_width;
+
+            appstore_remote_button_position(
+                appstore_gui_x, appstore_gui_y, appstore_gui_width,
+                appstore_gui_height, index, &button_x, &button_y,
+                &button_width);
+            if (!appstore_point_in(event->x, event->y, button_x, button_y,
+                                   button_width,
+                                   APPSTORE_BUTTON_HEIGHT)) continue;
+            if (index == 0) appstore_request_remote_enable();
+            else if (index == 1) appstore_request_refresh();
+            else if (index == 2) appstore_request_remote_fetch();
+            else if (index == 3) appstore_request_install();
+            else if (index == 4) appstore_request_update();
+            else if (index == 5) appstore_request_run();
+            else appstore_request_rollback();
+            break;
         }
         appstore_draw();
         return 1;

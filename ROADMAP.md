@@ -113,9 +113,10 @@ Sistema e ecossistema:       [████████████████�
 | `guitest [modern]` | Testa primitivas GUI 2D e a base visual Modern |
 | `guimode` | Altera entre gui simple e classic |
 | `health` | Exibe metricas e estado de recovery |
-| `store` | Abre a App Store nativa; fallback TUI no modo Simple |
+| `store` | Abre a App Store nativa; fallback TUI local no modo Simple |
 | `store status|list|info` | Consulta o catalogo local da App Store |
 | `store install|update|rollback|remove|run` | Planos locais, ciclo confirmado, rollback e execucao instalada |
+| `store remote ...` | Consulta, armazena e aplica planos remotos autenticados manualmente |
 | `devices [-v]` | Lista o inventario nativo de hardware |
 | `device-info <id>` | Mostra detalhes de um dispositivo inventariado |
 | `device-scan` | Refaz somente a varredura PCI e atualiza o inventario |
@@ -439,6 +440,20 @@ Sistema e ecossistema:       [████████████████�
 - [x] Host, build e matriz QEMU AS4 pelo usuario, incluindo planos,
   update/downgrade, rollback, failpoints com recuperacao e interface Classic.
 
+### AS5 - Repositorio remoto autenticado (implementada; validacao pendente)
+
+- [x] Servico publico `app_remote`, catalogo `ZAC1`, Ed25519, SHA-256 por
+  pacote e tabela de confianca de teste separada da ZUPD.
+- [x] Opt-in por sessao, consulta manual, planejador remoto isolado das fontes
+  locais e cache FAT12 A/B com recuperacao do slot pendente.
+- [x] Integracao com a transacao AS4 para instalacao/update offline, rollback,
+  historico, procedencia e gate unico de mutacao.
+- [x] Comandos `store remote`, aba Remoto Classic, cancelamento e failpoint;
+  Simple permanece congelado e usa o Shell como fallback remoto.
+- [x] Fixtures seed/update e negativos, chave publica, auditoria do empacotador,
+  Q3Check e alvos `store-as5-*`, sem chave privada versionada.
+- [ ] Executar gates host, build e matriz QEMU AS5 pelo usuario.
+
 ### Q4 - Regressao compacta ✅
 
 - [x] `regcheck` concentra health, processos, servicos, scheduler, memoria,
@@ -731,7 +746,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 - **Gerenciador de Processos** (`gerenciador de processos.md`)
 
 ### Novos Módulos e Aplicativos (App Store / Opcionais)
-- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1-AS4 concluidos e validados
+- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1-AS4 validados; AS5 implementada e aguardando validacao
 - **Gerenciador de Mídia** (`gerenciador de midia.md`)
 - **Gerenciador de Jogos** (`gerenciador de jogos.md`)
 - **Anti-Virus** (`anti virus.md`)

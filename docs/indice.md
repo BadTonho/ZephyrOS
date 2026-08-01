@@ -49,8 +49,8 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [11 - Referências](11-referencias/referencias.md) | Links e glossário |
 | [12 - Desktop e Interface](12-desktop/desktop.md) | Desktop, Window Manager, Taskbar, Settings, Icons |
 | [13 - Aplicativos](13-aplicativos/aplicativos.md) | Editor, Media Player, File Manager, Task Manager |
-| [Pacotes locais](13-aplicativos/pacotes.md) | Formato ZPKG v1, empacotador host e comandos `pkg` |
-| [App Store - AS1 a AS4](13-aplicativos/app-store.md) | Catalogo local, transacoes FAT12, interface nativa e fixtures |
+| [Pacotes locais](13-aplicativos/pacotes.md) | Formato ZPKG v1, transacoes e fonte de plano em diretorio AS5 |
+| [App Store - AS1 a AS5](13-aplicativos/app-store.md) | Catalogos local/remoto, Ed25519, cache A/B, transacoes e interface nativa |
 | [Configuracoes](melhorias%20futuras/configura%C3%A7%C3%B5es.md) | Painel de configuracoes e interface grafica com fallback TUI |
 | [Resiliência e fallback seguro](melhorias%20futuras/resiliencia%20do%20sistema.md) | Estados de componentes, códigos de erro e fallbacks |
 | [Explorer Classic](melhorias%20futuras/explorer%20moderno.md) | Interface gráfica do File Manager com fallback TUI |
@@ -83,6 +83,6 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [03 - Kernel e Desempenho](roadmaps/03-kernel-e-desempenho.md) | Métricas, scheduler, memória e otimização segura |
 | [04 - Interface e Experiência](roadmaps/04-interface-e-experiencia.md) | GUI Classic, taskbar, WM e interação |
 | [05 - Sistema e Ecossistema](roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e apps |
-| [06 - App Store](roadmaps/06-app-store.md) | Catalogo local ZPKG, ciclo de vida, interface Modern e repositorio futuro |
+| [06 - App Store](roadmaps/06-app-store.md) | Catalogo local ZPKG, ciclo de vida e repositorio remoto autenticado |
 | [07 - Modernização Visual](roadmaps/07-modernizacao-visual.md) | Escala acessível, visual flat/dark e desempenho VESA mensurável |
 | [08 - Evolução da Plataforma](roadmaps/08-evolucao-da-plataforma.md) | Mouse, volumes, USB incremental, busca, releases e conectividade sem fio |

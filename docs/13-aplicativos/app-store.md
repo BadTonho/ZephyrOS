@@ -1,4 +1,4 @@
-# App Store - Catalogo, transacoes locais e interface AS4
+# App Store - Catalogo local, repositorio remoto e interface AS5
 
 ## Resumo de progresso
 
@@ -13,6 +13,13 @@ A interface AS4 usa a aparencia Modern Dark dentro do renderer Classic VESA;
 plano topologico de dependencias, rollback manual e historico compacto, sem
 rede, assinatura, alteracao do ZPKG, App API ou loader. A fase foi validada no
 host e no QEMU pelo usuario em 01/08/2026.
+
+AS5 acrescenta um repositorio HTTP manual autenticado por Ed25519, catalogo
+binario `ZAC1`, hash SHA-256 por pacote e cache FAT12 A/B. O codigo esta
+implementado; build, auditorias host e matriz QEMU permanecem pendentes de
+validacao pelo usuario. HTTP e somente transporte: consulta, download,
+instalacao e atualizacao exigem acoes explicitas e o remoto inicia desabilitado
+em toda sessao.
 
 ## Fontes e snapshot
 
@@ -154,6 +161,36 @@ historico. Cada app atualizado mantem uma copia anterior recuperavel; o
 rollback consome somente a copia do app selecionado. A fonte `.ZPK` local
 permanece intacta, por isso a Store pode voltar a indicar update disponivel.
 
+## Repositorio autenticado AS5
+
+`app_remote` e inicializado depois de `app_package_init()` e antes do catalogo
+local. Seu contrato publico fica em `core/app_remote.h`; configuracao e
+confianca de teste ficam em `core/app_remote_config.h` e
+`core/app_remote_trust.h`. A tabela de confianca e exclusiva da App Store e
+nao reutiliza a raiz ZUPD.
+
+O catalogo `ZAC1` possui header fixo de 128 bytes, ate 16 entradas de 256
+bytes em ordem lexical por ID e assinatura Ed25519 de 64 bytes sobre dominio
+proprio, header e entradas. Header e entradas registram geracao monotona,
+canal, key ID, SHA-256 do bloco, manifesto resumido, tamanho, SHA-256 e caminho
+HTTP de cada `ZPKG v1`. Campos reservados, caminhos inseguros, duplicacoes,
+conflitos, chave desconhecida/revogada, assinatura invalida e replay sao
+recusados antes de qualquer publicacao.
+
+O planejador remoto inclui somente dependencias instaladas ou presentes no
+mesmo catalogo autenticado. Fontes locais nao assinadas nunca entram
+implicitamente. O plano completo e baixado no slot inativo `ASCACHE0` ou
+`ASCACHE1`; `PLAN.CAT` e cada `<ID>.ZPK` sao revalidados antes de publicar os
+registros redundantes `ASR0.STA`/`ASR1.STA`. Um slot pendente e descartado no
+boot sem tocar no ativo. A maior geracao publicada sobrevive a limpeza do
+cache.
+
+Instalacao e update a partir do cache usam as APIs append-only de diretorio do
+`app_package` e, portanto, a mesma transacao, gate, rollback e historico AS4.
+A procedencia autenticada usa controle redundante separado; se ele nao puder
+ser lido ou persistido, a interface informa confianca `N/D`. FAT32 permite
+consulta autenticada em RAM, mas recusa cache e mutacao AS5 sem escrita.
+
 ## Recovery e health
 
 `RECOVERY_COMPONENT_APP_STORE` foi anexado ao fim da enumeracao:
@@ -185,11 +222,21 @@ continuam consultaveis e `app_catalog_refresh()` retorna `OK`.
 | `store remove <ID>` | Executa preflight de remocao sem escrita. |
 | `store remove <ID> --confirm` | Repete o preflight e remove o pacote. |
 | `store run <ID> [args]` | Executa somente o ZAPP instalado; F12 cancela. |
+| `store remote status` | Mostra opt-in, rede, geracao, autenticacao, cache ativo e publicacao pendente. |
+| `store remote enable\|disable` | Habilita ou desabilita o remoto somente na sessao. |
+| `store remote check [--url URL]` | Consulta e autentica o `ZAC1` sem gravar. |
+| `store remote list` | Lista o catalogo remoto autenticado em memoria. |
+| `store remote info <ID>` | Mostra manifesto remoto, hash, caminho e cache. |
+| `store remote fetch <ID> [--url URL] [--confirm]` | Mostra ou baixa o plano completo no slot inativo. |
+| `store remote install <ID> [--confirm]` | Mostra ou instala offline o plano autenticado em cache. |
+| `store remote update <ID> [--downgrade] [--confirm]` | Atualiza do cache; downgrade exige os dois sinais. |
+| `store remote clear [--confirm]` | Mostra ou limpa somente os slots de cache. |
+| `store remote test fail-after <1..16>` | Configura failpoint de publicacao do cache. |
 
 Todo pacote fonte e apresentado como `LOCAL / NAO ASSINADO`. Os subcomandos
 preservam o diagnostico reproduzivel pelo Shell.
 
-## Interface AS3 e AS4
+## Interface AS3 a AS5
 
 `src/include/ui/appstore.h` define o ciclo de vida da interface:
 
@@ -206,11 +253,19 @@ desenho e entrada. O worker usa somente `app_catalog_*`, `app_package_*` e o
 loader existente; nao duplica validacao de ZPKG, CRC, dependencias ou
 serializacao de mutacoes.
 
-As abas sao **Catalogo**, **Instalados** e **Detalhes**. `Tab`, setas, `F5`,
+As abas locais sao **Catalogo**, **Instalados** e **Detalhes**. `Tab`, setas, `F5`,
 `V`, `I`, `U`, `A`, `R`, `B` e Enter equivalem aos botoes Verificar,
 Instalar, Atualizar, Abrir, Remover e Reverter. A confirmacao mostra a ordem
 topologica e identifica downgrade diagnostico. A confirmacao modal e vinculada ao ID/alias e a
 selecao atual; trocar aba, selecao ou atualizar o catalogo a cancela.
+
+No Classic, AS5 acrescenta a aba **Remoto**, separada do catalogo local. Ela
+mostra `REMOTO / AUTENTICADO (TESTE)` e oferece Habilitar, Consultar, Baixar,
+Instalar, Atualizar, Abrir e Reverter. Os atalhos sao `E`, `F5`, `D`, `I`, `U`,
+`A` e `B`; em largura minima os sete botoes ocupam duas linhas. Rede e
+filesystem continuam no worker, e Esc/F12 solicitam cancelamento cooperativo
+do download. O modo Simple permanece congelado; o Shell e o fallback remoto
+completo.
 
 No modo Classic, Esc cancela somente o contexto atual e a janela fecha por X
 ou Alt+F4. No fallback Simple, Esc tambem fecha a TUI quando nao ha
@@ -289,6 +344,31 @@ make store-as4-update-demo
 O build normal injeta o perfil `update`; as seis fontes AS4, junto das nove
 AS1/AS2, mantem o catalogo abaixo do limite de 16 fontes.
 
+### Fixtures AS5
+
+Os artefatos publicos assinados ficam em `docs/fixtures/apps/store-as5/`.
+`seed` e `update` cobrem `RMTARGET`, `RMDEPA` e `RMDEPB`; `invalid` cobre plano
+incompleto, ciclo, pacote divergente, hash incorreto, assinatura adulterada,
+chave desconhecida/revogada e replay. Os arquivos binarios sao versionados em
+Base64 para nao injetar pacotes remotos na imagem normal.
+
+```text
+make store-as5-test
+make store-as5-seed-demo
+make store-as5-serve
+```
+
+`store-as5-test` audita chave publica, key ID, assinatura, hashes, manifestos
+e cenarios negativos. Os outros dois alvos servem os perfis seed e update em
+`10.0.2.2:8000`. A chave privada de teste nao pertence ao repositorio; o
+comando host `sign-store-as5` exige que ela seja fornecida externamente.
+
+O servidor tambem publica os catalogos negativos em
+`/zephyros/apps/invalid/<nome>.zac` e os catalogos de replay em
+`/zephyros/apps/seed/stable.zac` e `/zephyros/apps/update/stable.zac`. Assim,
+`store remote check --url URL` exercita a matriz criptografica no QEMU sem
+copiar esses artefatos para a imagem.
+
 ## Validacao concluida
 
 O AS1 foi validado no host e no QEMU em 29/07/2026:
@@ -363,12 +443,23 @@ registrou `RECOVERY`, limpou o journal e manteve o heap integro. A interface
 Classic repetiu update e rollback, habilitou `Reverter` somente quando havia
 backup e preservou `UPTARGET` selecionado depois do refresh por `F5`.
 
+## Validacao AS5 pendente
+
+O codigo, fixtures e documentacao estao prontos para os gates host e a matriz
+QEMU. A fase somente sera marcada como validada depois de `q3check`, build
+limpo, alvos AS5, consulta/download/cancelamento, instalacao offline, update,
+rollback, falhas criptograficas, replay, failpoint com reboot e diagnosticos
+finais executados pelo usuario.
+
 ## Limitacoes
 
-- sem rede, assinatura, repositorio remoto, conta ou telemetria;
+- um unico publicador e chave publica de teste; ainda sem raiz oficial;
+- HTTP sem TLS; autenticidade e integridade dependem de Ed25519 e SHA-256;
+- sem consulta, download, instalacao ou atualizacao automatica;
+- sem conta, pagamento, recomendacao ou telemetria;
 - dependencias ja instaladas nao recebem atualizacao implicita;
 - apenas uma versao anterior por aplicativo atualizado fica recuperavel;
-- mutacoes transacionais AS4 ficam indisponiveis no FAT32;
+- cache/mutacoes AS5 e transacoes AS4 ficam indisponiveis no FAT32;
 - sem banco de dados proprio ou persistencia do snapshot;
 - sem mudanca de ZPKG v1, App API `0.3`, loader ou boot.
 

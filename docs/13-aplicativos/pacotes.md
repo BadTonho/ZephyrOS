@@ -176,6 +176,24 @@ Os novos motivos append-only incluem `PLAN_INCOMPLETE`, `PLAN_CYCLE`,
 `HISTORY_UNAVAILABLE`. `app_package_status_t` informa suporte, journal, a
 tabela compacta de rollbacks por app e o ultimo registro de historico.
 
+## Fonte de plano em diretorio AS5
+
+AS5 preserva integralmente `ZPKG v1` e acrescenta somente duas APIs publicas
+append-only:
+
+```text
+app_package_preflight_plan_from_directory()
+app_package_apply_plan_from_directory_confirmed()
+```
+
+Elas recebem um plano ja construido e o alias de um diretorio FAT12 privado.
+Cada entrada ainda passa pelo parser ZPKG, CRC32, manifesto, ID, versao,
+dependencias, ZAPP, espaco, loader e gate de mutacao do servico. As APIs AS1 a
+AS4 continuam chamando o mesmo motor com a raiz como fonte. O servico remoto
+usa essas operacoes somente depois de validar assinatura do catalogo e
+SHA-256 dos pacotes em cache; `app_package` nao conhece HTTP, Ed25519 nem a
+tabela de confianca AS5.
+
 ## Comandos
 
 | Comando | Acao |

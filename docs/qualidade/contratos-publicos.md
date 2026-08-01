@@ -17,6 +17,9 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/core/app_files.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/app_loader.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/app_package.h` | `docs/13-aplicativos/pacotes.md` |
+| `src/include/core/app_remote.h` | `docs/13-aplicativos/app-store.md` |
+| `src/include/core/app_remote_config.h` | `docs/13-aplicativos/app-store.md` |
+| `src/include/core/app_remote_trust.h` | `docs/13-aplicativos/app-store.md` |
 | `src/include/core/arp.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/crypto.h` | `docs/14-atualizacoes/contrato-zupd-v1.md` |
 | `src/include/core/device_manager.h` | `docs/04-kernel/kernel.md` |
@@ -197,3 +200,11 @@ contrato canonico permanece em
 Desde o AS3, `src/include/ui/appstore.h` define o ciclo de vida, os modos
 Simple/Classic e a entrada da App Store nativa. O contrato canonico permanece
 em `docs/13-aplicativos/app-store.md`.
+
+Desde o AS5, `src/include/core/app_remote.h` define estados, motivos, entradas,
+planos, cache, procedencia e operacoes manuais do repositorio remoto.
+`app_remote_config.h` fixa o canal e a URL de teste; `app_remote_trust.h`
+contem somente a chave publica exclusiva da App Store e IDs revogados.
+`app_package.h` acrescenta, de forma append-only, preflight e aplicacao de
+plano a partir de um diretorio autenticado. Os contratos canonicos permanecem
+em `docs/13-aplicativos/app-store.md` e `docs/13-aplicativos/pacotes.md`.

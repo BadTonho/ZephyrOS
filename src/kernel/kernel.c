@@ -11,6 +11,7 @@
 #include "core/app_catalog.h"
 #include "core/app_loader.h"
 #include "core/app_package.h"
+#include "core/app_remote.h"
 #include "core/update.h"
 #include "core/update_remote.h"
 #include "core/version.h"
@@ -886,6 +887,11 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     }
 
     app_package_init();
+    if (app_remote_init() == OK) {
+        video_print("[OK] Repositorio de apps pronto e desabilitado\n", 0x07);
+    } else {
+        video_print("[!!] Repositorio de apps indisponivel\n", 0x0E);
+    }
     app_catalog_init();
     if (appstore_init() == OK) {
         video_print("[OK] App Store pronta\n", 0x07);

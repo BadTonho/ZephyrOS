@@ -73,7 +73,7 @@ Comandos disponiveis:
   regcheck [full] - Executa regressao compacta com F12
   appcheck  - Testa API, arquivos, IPC e carregador ZAPP
   pkg       - Gerencia pacotes .ZPK locais
-  store     - Abre e gerencia a App Store local
+  store     - Abre e gerencia a App Store local/remota
   pkgcheck  - Testa validacoes de pacote sem gravar
   update verify <arquivo.ZUP> - Verifica atualizacao sem gravar
   app run <arquivo.ZAP> [args] - Executa aplicativo ring 3 de forma assincrona
@@ -869,10 +869,10 @@ do ID e preserva o arquivo fonte `ID.ZPK` no diretorio raiz.
 O contrato completo, limites e fluxo host para FAT12 estao em
 [`pacotes.md`](../13-aplicativos/pacotes.md).
 
-## `store [status|list|info|install|update|rollback|history|run]`
+## `store [status|list|info|install|update|rollback|history|run|remote]`
 
 `store` sem argumentos abre a App Store no Window Manager; se a hospedagem
-Classic falhar, abre a TUI Simple com as mesmas abas e operacoes. Os
+Classic falhar, abre a TUI Simple com as operacoes locais AS1-AS4. Os
 subcomandos atualizam o snapshot local antes de responder. Consultas e
 preflights nunca gravam:
 
@@ -920,6 +920,63 @@ Fontes invalidas continuam visiveis sem impedir as fontes validas. Depois de
 toda tentativa confirmada, o catalogo e atualizado novamente. O contrato
 completo esta em
 [`app-store.md`](../13-aplicativos/app-store.md).
+
+### `store remote`
+
+O repositorio AS5 inicia desabilitado em todo boot. `enable` habilita apenas a
+sessao e nao consulta, baixa ou instala automaticamente:
+
+```text
+store remote status
+store remote enable
+store remote disable
+store remote check
+store remote check --url http://10.0.2.2:8000/zephyros/apps/stable.zac
+store remote list
+store remote info RMTARGET
+```
+
+`check` autentica o catalogo `ZAC1` por Ed25519 e valida sua geracao, key ID,
+estrutura e hash sem gravar. A origem aparece como
+`REMOTO / AUTENTICADO (TESTE)`. Chave desconhecida/revogada, assinatura
+invalida, replay e metadados conflitantes sao recusados.
+
+`fetch` sem confirmacao usa o catalogo autenticado em memoria, monta o plano
+completo e mostra espaco sem escrita. Com `--confirm`, repete a consulta,
+baixa dependencias no slot FAT12 inativo e publica o cache somente depois de
+validar SHA-256, CRC32,
+manifesto, ID, versao, dependencias e ZAPP:
+
+```text
+store remote fetch RMTARGET
+store remote fetch RMTARGET --confirm
+store remote install RMTARGET
+store remote install RMTARGET --confirm
+store remote update RMTARGET --confirm
+store remote update RMTARGET --downgrade --confirm
+```
+
+Instalacao e update usam exclusivamente o plano autenticado em cache e podem
+ser repetidos offline durante a sessao habilitada. Eles reutilizam transacao,
+rollback, historico e gate AS4. Downgrade exige simultaneamente `--downgrade`
+e `--confirm`. Esc/F12 cancelam downloads cooperativos.
+
+```text
+store remote clear
+store remote clear --confirm
+store remote test fail-after 1
+```
+
+`clear` preserva a maior geracao publicada para impedir replay. O failpoint
+de 1 a 16 existe somente para validar que reboot descarta o slot pendente e
+preserva o cache ativo. FAT32 permite `check` em RAM, mas recusa cache e
+instalacao AS5. A aba Remoto e exclusiva do Classic; no Simple, estes comandos
+do Shell formam o fallback remoto completo.
+
+O servidor dos alvos AS5 expoe os casos negativos em
+`/zephyros/apps/invalid/<nome>.zac`; use essa rota com `check --url`. Os perfis
+`/zephyros/apps/seed/stable.zac` e `/zephyros/apps/update/stable.zac` permitem
+reproduzir replay depois que a geracao superior tiver sido aceita.
 
 ## `pkgcheck`
 
