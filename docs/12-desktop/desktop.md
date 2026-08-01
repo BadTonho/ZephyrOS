@@ -458,6 +458,21 @@ typedef struct {
 
 ---
 
+## Explorer (`filemanager.c`)
+
+Na EP2, o Explorer Classic trata “Este Computador” como raiz virtual. Ela
+lista `C:\`, que representa o volume de boot e continua usando a API global,
+mais os volumes Storage efetivamente montados, exibidos como
+`<volume-id>:\`. Entrar, subir e usar voltar/avancar preserva o par
+volume/caminho; subir da raiz de qualquer volume retorna a “Este Computador”.
+
+Diretorios e arquivos adicionais usam `storage_list_dir()` e
+`storage_read_file_range()`. A fonte ativa guarda a geracao observada; se o
+volume for desmontado, o proximo refresh devolve a navegacao a raiz virtual
+sem reutilizar dados antigos. Criar, renomear, excluir, recortar, colar e as
+demais mutacoes ficam bloqueadas fora do boot, com barra e status
+“Somente leitura”. O Explorer Simple permanece limitado ao volume de boot.
+
 ## Settings (`settings.c`)
 
 Sistema de configuração geral.
@@ -473,8 +488,15 @@ imediatamente o valor visual anterior.
 A categoria `Mouse` também é compartilhada pelos dois modos. Velocidade,
 botão principal e aceleração são sincronizados ao abrir e aplicados pela API
 do driver. Uma recusa restaura o valor efetivo; as preferências ficam somente
-em RAM. No Classic, a altura das categorias se ajusta para manter as oito
-entradas dentro da janela nas três escalas.
+em RAM.
+
+A categoria `Armazenamento` existe somente no Classic e e somente de status.
+Ela sincroniza a cada desenho o numero de discos/volumes, os quatro slots ATA
+presentes e ate quatro montagens, distinguindo boot gravavel e volumes
+adicionais somente-leitura. Mount e unmount continuam exclusivos do Shell. O
+Simple preserva as oito categorias anteriores e o comportamento do volume de
+boot. No Classic, a altura se ajusta para manter as nove categorias nas tres
+escalas.
 
 O tema Modern Dark é aplicado ao modo Classic no boot. O seletor de tema foi
 removido do Settings para não reintroduzir a skin Windows 95; isso não
@@ -492,6 +514,7 @@ habilita `guimode modern`.
 | Som | Volume, Beep iniciar, Som teclado |
 | Sobre | Versão, Créditos |
 | Mouse | Velocidade (1-10), Botão principal, Aceleração |
+| Armazenamento (Classic) | Discos e montagens, somente status |
 
 ---
 

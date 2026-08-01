@@ -100,6 +100,10 @@ fallback Simple.
 
 ## EP2 - Volumes ATA e montagem de particoes
 
+**Estado:** implementada em 01/08/2026 e aguardando validacao do usuario. Os
+itens permanecem desmarcados ate a aprovacao de Q3, build completo, testes do
+gerador, hashes antes/depois e matriz QEMU.
+
 ### Implementacao
 
 - [ ] Descobrir MBR somente em leitura e inventariar discos ATA, particoes e
@@ -121,6 +125,17 @@ fallback Simple.
 Listar e montar um volume ATA valido nao modifica setores. Particoes ausentes,
 corrompidas ou com filesystem desconhecido permanecem isoladas, sem afetar o
 boot, Shell, filesystem atual ou outros volumes montados.
+
+### Validacao pendente
+
+1. `make q3check`, `make clean && make`, `make storage-fixtures-test` e
+   `make storage-fixtures`.
+2. `make run-storage` com os quatro slots IDE e aprovacao de descoberta,
+   isolamento, mount/unmount, Explorer Classic e Settings Storage.
+3. `make storage-fixtures-verify` com hashes identicos e contador de escrita
+   zero nos discos auxiliares.
+4. `make run`, regressao do volume de boot e smoke test Simple, seguidos de
+   `devices`, `health summary`, `memcheck` e `regcheck full`.
 
 ## EP3 - Indice e pesquisa de arquivos
 

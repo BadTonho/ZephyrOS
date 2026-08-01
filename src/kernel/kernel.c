@@ -27,6 +27,7 @@
 #include "drivers/ata.h"
 #include "drivers/pci.h"
 #include "fs/fs.h"
+#include "fs/storage.h"
 #include "apps/shell.h"
 #include "drivers/speaker.h"
 #include "process/thread.h"
@@ -604,15 +605,15 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     video_print("[OK] Thread scheduler pronto\n", 0x07);
 
     video_print("[..] Detectando disco...\n", 0x08);
-    ata_init();
+    int ata_result = ata_init();
     ata_device_t* dev = ata_get_device();
-    if (dev) {
+    if (ata_result == OK && dev) {
         recovery_mark_ready(RECOVERY_COMPONENT_ATA);
         video_print("[OK] Disco: ", 0x07);
         video_print(dev->model, 0x07);
         video_print("\n", 0x07);
     } else {
-        recovery_mark_disabled(RECOVERY_COMPONENT_ATA, ERR_NOT_FOUND,
+        recovery_mark_disabled(RECOVERY_COMPONENT_ATA, ata_result,
                                "Nenhum dispositivo ATA disponivel");
         video_print("[!!] Nenhum disco encontrado\n", 0x0C);
     }
@@ -627,6 +628,21 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
                                fs_result,
                                "Sistema de arquivos indisponivel");
         video_print("[!!] Nenhum sistema de arquivos encontrado\n", 0x0C);
+    }
+
+    video_print("[..] Inventariando volumes...\n", 0x08);
+    int storage_result = storage_init();
+    if (storage_result == OK) {
+        recovery_mark_ready(RECOVERY_COMPONENT_STORAGE);
+        video_print("[OK] Inventario de volumes pronto\n", 0x07);
+    } else if (ata_result == OK) {
+        recovery_mark_degraded(RECOVERY_COMPONENT_STORAGE, storage_result,
+                               "Storage parcial; filesystem legado preservado");
+        video_print("[!!] Inventario de volumes parcial\n", 0x0E);
+    } else {
+        recovery_mark_disabled(RECOVERY_COMPONENT_STORAGE, storage_result,
+                               "Storage indisponivel sem disco ATA");
+        video_print("[!!] Storage indisponivel\n", 0x0C);
     }
 
     update_capabilities_t update_capabilities;

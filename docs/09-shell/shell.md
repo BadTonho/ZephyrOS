@@ -242,6 +242,22 @@ Funcionalidades:
 - Barra de status com info do arquivo selecionado
 - Integração com taskbar
 
+No Classic, “Este Computador” e uma raiz virtual com `C:\` e os volumes EP2
+montados. O historico inclui volume e caminho, enquanto a fonte ativa acompanha
+a geracao; uma desmontagem retorna a raiz virtual. Volumes adicionais permitem
+listar diretorios e visualizar
+arquivos 8.3, mas bloqueiam toda mutacao com indicacao “Somente leitura”. O
+Simple continua usando apenas o filesystem global de boot.
+
+### Storage (`storage`)
+
+`storage list`, `storage info <ataN|volume-id>`,
+`storage mount <volume-id>` e `storage unmount <volume-id>` controlam o
+registro de volumes adicionais. As consultas mostram erros e contadores por
+disco; as montagens sao temporarias e nao oferecem qualquer operacao de
+escrita. O comando tambem permanece disponivel no fallback Simple para
+diagnostico.
+
 ---
 
 ## Adicionando um Novo Comando

@@ -35,6 +35,7 @@ Comandos disponiveis:
   stop      - Para player de midia
   edit      - Editor de texto (edit ARQUIVO.TXT)
   mouse     - Mostra status ou altera preferencias do mouse PS/2
+  storage   - Lista, inspeciona e monta volumes ATA somente-leitura
   guitest   - Testa primitivas GUI 2D
   guimode   - Altera entre gui simple (TUI) e classic
   display   - Mostra estado ou altera a escala da GUI classic
@@ -231,6 +232,30 @@ aceleração aceita `on|off`. Valores inválidos ou argumentos adicionais geram
 erro e preservam a configuração anterior. As preferências existem somente em
 RAM e retornam a `3`, `off` e `left` no próximo boot.
 
+## `storage`
+
+Sem subcomando, mostra o resumo do inventario e o uso. IDs nao diferenciam
+maiusculas e minusculas; argumentos ausentes, excedentes ou invalidos geram
+log, exibem o uso e nao alteram montagens.
+
+```text
+zephyr> storage list
+zephyr> storage info ata1
+zephyr> storage info ata1p4
+zephyr> storage mount ata1p4
+zephyr> storage unmount ata1p4
+```
+
+`storage list` mostra discos, particoes, FAT, limites, estado, acesso e erro
+individual. `storage info` acrescenta geometria, label, geracao e contadores
+ATA. Um mount repetido, unmount de volume desmontado ou unmount do boot retorna
+`ERR_STATE`. Montagens adicionais existem somente em RAM e sao sempre
+somente-leitura; FAT16, GPT/EBR e formatos desconhecidos nao sao montados.
+
+O alias `ata-primary` continua aceito pelo inventario de dispositivos; os IDs
+de slots sao `ata0` a `ata3`, e os volumes usam `ataNraw` ou `ataNp1` a
+`ataNp4`.
+
 ## `guitest`
 Testa as primitivas gráficas 2D do módulo GUI.
 
@@ -329,6 +354,7 @@ grafica. Eles nao reinicializam ATA, AC97 ou PS/2 e nao gravam no disco.
 zephyr> devices
 zephyr> devices -v
 zephyr> device-info ata-primary
+zephyr> device-info ata0
 zephyr> device-scan
 ```
 
@@ -338,7 +364,8 @@ pela lista. `device-scan` apenas rele o espaco de configuracao PCI e atualiza
 o snapshot; se o limite de 64 entradas for atingido, o resultado e parcial e
 o Shell permanece utilizavel.
 
-IDs PCI sao exibidos como `pci-BB:DD.F`. O terminal interpreta Shift para
+Discos ATA presentes sao exibidos como `ata0` a `ata3`; `ata-primary` e alias
+do primeiro disco legado. IDs PCI sao exibidos como `pci-BB:DD.F`. O terminal interpreta Shift para
 maiusculas e simbolos, incluindo `:` com `Shift+;`. A forma
 `pci-BB-DD.F` e letras minusculas continuam aceitas como alternativas.
 

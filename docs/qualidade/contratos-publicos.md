@@ -66,6 +66,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/fs/fat12.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/fat32.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/fs.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
+| `src/include/fs/storage.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/wav.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/memory/compress.h` | `docs/06-memoria/memoria.md` |
 | `src/include/memory/paging.h` | `docs/06-memoria/memoria.md` |
@@ -208,3 +209,14 @@ contem somente a chave publica exclusiva da App Store e IDs revogados.
 `app_package.h` acrescenta, de forma append-only, preflight e aplicacao de
 plano a partir de um diretorio autenticado. Os contratos canonicos permanecem
 em `docs/13-aplicativos/app-store.md` e `docs/13-aplicativos/pacotes.md`.
+
+Desde a EP2, `src/include/drivers/ata.h` expoe quatro slots ATA, leitura
+direcionada e snapshots/contadores por dispositivo, preservando a API global
+do disco legado. `src/include/fs/storage.h` define o inventario estatico de
+discos e volumes, montagens FAT12/FAT32 adicionais somente-leitura, geracao e
+leitura direcionada. `RECOVERY_COMPONENT_STORAGE` foi anexado ao enum de
+Recovery. `filemanager.h` passa a guardar volume/geracao no historico Classic
+e `settings.h` anexa a categoria de status Storage. Os contratos canonicos
+ficam em `docs/05-drivers/drivers.md`,
+`docs/08-sistema-arquivos/sistema-arquivos.md`, `docs/04-kernel/kernel.md` e
+`docs/12-desktop/desktop.md`.

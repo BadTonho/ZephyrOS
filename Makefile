@@ -193,6 +193,9 @@ FAT32_OBJ = build/fat32.o
 FS_C = src/fs/fs.c
 FS_OBJ = build/fs.o
 
+STORAGE_C = src/fs/storage.c
+STORAGE_OBJ = build/storage.o
+
 WAV_C = src/fs/wav.c
 WAV_OBJ = build/wav.o
 
@@ -271,6 +274,11 @@ DISPLAY_OBJ = build/display.o
 # Output
 KERNEL_BIN = build/kernel.bin
 OS_IMG = build/zephyros.img
+STORAGE_FIXTURES_TOOL = tools\storage_fixtures.py
+STORAGE_FIXTURES_STAMP = build\storage-fixtures.stamp
+STORAGE_VALID_IMG = build\storage-valid.img
+STORAGE_CORRUPT_IMG = build\storage-corrupt.img
+STORAGE_UNKNOWN_IMG = build\storage-unknown.img
 
 # A imagem de boot reserva os primeiros setores para o stage2 e o kernel.
 # O volume FAT12 fica depois dessa area para que o Explorer nunca sobrescreva
@@ -313,7 +321,7 @@ OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(RECOVERY_OBJ) $(CRYP
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(COMPRESS_OBJ) \
-       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(UPDATER_OBJ) $(APPSTORE_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ) $(APP_REMOTE_OBJ) $(DEVICE_MANAGER_OBJ) $(NETWORK_MANAGER_OBJ) $(POWER_OBJ) $(ETHERNET_OBJ) $(ARP_OBJ) $(IPV4_OBJ) $(ICMP_OBJ) $(UDP_OBJ) $(DHCP_OBJ) $(DNS_OBJ) $(TCP_OBJ) $(NET_SOCKET_OBJ) $(HTTP_OBJ) $(APP_CATALOG_OBJ) $(DISPLAY_OBJ)
+       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(STORAGE_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(UPDATER_OBJ) $(APPSTORE_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ) $(APP_REMOTE_OBJ) $(DEVICE_MANAGER_OBJ) $(NETWORK_MANAGER_OBJ) $(POWER_OBJ) $(ETHERNET_OBJ) $(ARP_OBJ) $(IPV4_OBJ) $(ICMP_OBJ) $(UDP_OBJ) $(DHCP_OBJ) $(DNS_OBJ) $(TCP_OBJ) $(NET_SOCKET_OBJ) $(HTTP_OBJ) $(APP_CATALOG_OBJ) $(DISPLAY_OBJ)
 
 # Targets
 all: $(OS_IMG)
@@ -546,6 +554,10 @@ $(FS_OBJ): $(FS_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
+$(STORAGE_OBJ): $(STORAGE_C)
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
 $(WAV_OBJ): $(WAV_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
@@ -670,6 +682,21 @@ $(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(KERNEL_BIN) tools\packager.py \
 run: $(OS_IMG)
 	$(QEMU) -drive format=raw,file=$(OS_IMG) $(QEMU_NET_ARGS)
 
+$(STORAGE_FIXTURES_STAMP): $(STORAGE_FIXTURES_TOOL)
+	@if not exist build mkdir build
+	python $(STORAGE_FIXTURES_TOOL) generate --output-dir build
+
+storage-fixtures: $(STORAGE_FIXTURES_STAMP)
+
+storage-fixtures-test:
+	python $(STORAGE_FIXTURES_TOOL) selftest
+
+storage-fixtures-verify: $(STORAGE_FIXTURES_STAMP)
+	python $(STORAGE_FIXTURES_TOOL) verify --output-dir build
+
+run-storage: $(OS_IMG) $(STORAGE_FIXTURES_STAMP)
+	$(QEMU) -drive format=raw,file=$(OS_IMG),if=ide,index=0 -drive format=raw,file=$(STORAGE_VALID_IMG),if=ide,index=1 -drive format=raw,file=$(STORAGE_CORRUPT_IMG),if=ide,index=2 -drive format=raw,file=$(STORAGE_UNKNOWN_IMG),if=ide,index=3 $(QEMU_NET_ARGS)
+
 debug: $(OS_IMG)
 	$(QEMU) -drive format=raw,file=$(OS_IMG) $(QEMU_NET_ARGS) -s -S &
 
@@ -747,4 +774,4 @@ store-as5-serve: store-as5-test
 clean:
 	rmdir /s /q build
 
-.PHONY: all run debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
+.PHONY: all run run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean

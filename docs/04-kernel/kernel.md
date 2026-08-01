@@ -182,7 +182,8 @@ forma controlada e aparecem no `health`; apenas `power_shutdown()` e terminal.
 
 - `device_manager`: mantem um snapshot estatico de PCI, ATA, AC97, PS/2, PIT,
   VGA, VESA e PC Speaker. Nao reinicializa drivers, nao grava no disco e nao
-  habilita ou desabilita hardware.
+  habilita ou desabilita hardware. Na EP2, cada disco presente aparece como
+  `ata0` a `ata3`; `ata-primary` continua como alias do primeiro disco legado.
 - `power`: informa as capacidades reais do sistema atual. S0 e idle HLT/C1
   estao disponiveis; S1-S4 permanecem indisponiveis. S5 fica disponivel
   somente quando o snapshot ACPI atende ao contrato seguro da S1.4; nos
@@ -586,6 +587,13 @@ preservar os IDs anteriores. Ele fica `READY` para um snapshot completo,
 `DISABLED` quando filesystem, loader ou servico `PKG` nao estao disponiveis.
 O `health` completo e o resumo exibem esse componente; fontes invalidas nao
 impedem consultas das entradas validas.
+
+Na EP2, `RECOVERY_COMPONENT_STORAGE` e anexado ao fim do enum. Ele fica
+`READY` quando o inventario ATA/volumes foi criado, `DEGRADED` quando existe
+disco mas a descoberta geral terminou parcialmente e `DISABLED` quando ATA ou
+o inventario Storage nao estao disponiveis. Uma particao MBR/BPB invalida fica
+registrada somente em seu volume e nao degrada os demais. O kernel inicializa
+Storage depois do filesystem legado e antes dos consumidores de interface.
 
 O contrato detalhado esta em
 [`app-store.md`](../13-aplicativos/app-store.md).

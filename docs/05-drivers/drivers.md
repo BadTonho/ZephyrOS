@@ -348,6 +348,20 @@ Byte 1: Cor (fundo 4 bits + frente 4 bits)
 
 Comunicação com disco rígido via modo **PIO** (Programmed I/O).
 
+### Slots, canais e compatibilidade
+
+O driver mantem quatro slots fixos: `ata0`/`ata1` no canal primario
+(`0x1F0`, IRQ 14) e `ata2`/`ata3` no secundario (`0x170`, IRQ 15). O indice
+par e master e o impar e slave. `ata_init()` retorna erro quando o canal
+primario ou todos os discos falham; falha no registro do canal secundario e
+isolada e nao derruba o primario.
+
+`ata_get_device()` e as leituras/escritas legadas continuam apontando para o
+primeiro disco presente, usado pelo volume de boot. `ata_get_device_at()`
+retorna snapshot por copia; `ata_read_device_sectors()` seleciona um slot sem
+criar uma API de escrita direcionada; `ata_get_device_counters()` separa
+leituras e escritas por disco. Todo acesso e limitado a LBA28.
+
 ### Portas
 
 | Porta | Função |
@@ -369,10 +383,11 @@ Comunicação com disco rígido via modo **PIO** (Programmed I/O).
 | WRITE | 0x30 | Escrever setores |
 | IDENTIFY | 0xEC | Identificar disco |
 
-### Operação Assíncrona (IRQ 14)
+### Interrupcoes
 
-A leitura e gravação de disco são implementadas de maneira assíncrona usando o **IRQ 14** e `thread_block()`.
-Quando a thread pede para ler do disco, ela cede o processador, e quando o disco finaliza a operação e envia a interrupção, o manipulador do IRQ 14 realiza `thread_unblock()` permitindo que a thread volte a processar sem gastar ciclos de CPU à toa.
+As IRQs 14 e 15 sao registradas para reconhecer e limpar o status dos dois
+canais. A transferencia PIO permanece sincronizada por polling com limites e
+tentativas finitas; ela nao promete I/O assincrono nem bloqueio de thread.
 
 ---
 

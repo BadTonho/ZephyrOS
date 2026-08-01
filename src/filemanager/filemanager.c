@@ -4,6 +4,7 @@
 #include "process/process.h"
 #include "core/keyboard.h"
 #include "fs/fs.h"
+#include "fs/storage.h"
 #include "core/memory.h"
 #include "ui/taskbar.h"
 #include "ui/desktop.h"
@@ -112,6 +113,11 @@ static void fm_hosted_draw(int x, int y, int width, int height);
 static int fm_hosted_mouse(mouse_event_t* event, int x, int y,
                            int width, int height);
 static void fm_hosted_close(void);
+static void fm_select_virtual_root(void);
+static int fm_select_boot_source(const char* path);
+static int fm_select_mounted_source(const char* id);
+static void fm_validate_storage_source(void);
+static void fm_record_history(void);
 
 static const wm_hosted_app_t fm_hosted_app = {
     WM_APP_EXPLORER, "ZephyrOS Explorer", "Explorer",
@@ -174,25 +180,163 @@ static int str_equal(const char* a, const char* b) {
     return *a == *b;
 }
 
-static void fm_push_history(void) {
-    if (state.history_count < FM_MAX_HISTORY) {
-        str_copy(state.history[state.history_count], state.current_path);
-        state.history_count++;
-        state.history_pos = state.history_count - 1;
-    } else {
-        for (int i = 0; i < FM_MAX_HISTORY - 1; i++) {
-            str_copy(state.history[i], state.history[i + 1]);
+static void fm_store_history_source(int index) {
+    if (index < 0 || index >= FM_MAX_HISTORY) return;
+    str_copy(state.history_volume[index], state.storage_volume_id);
+    state.history_virtual[index] = state.storage_virtual;
+    state.history_boot[index] = state.storage_boot;
+}
+
+static void fm_restore_history_source(int index) {
+    if (index < 0 || index >= FM_MAX_HISTORY) return;
+    str_copy(state.storage_volume_id, state.history_volume[index]);
+    state.storage_virtual = state.history_virtual[index];
+    state.storage_boot = state.history_boot[index];
+    state.storage_read_only = state.storage_virtual || !state.storage_boot;
+    if (!state.storage_virtual && state.storage_volume_id[0]) {
+        storage_volume_t volume;
+
+        if (storage_find_volume(state.storage_volume_id, &volume) == OK &&
+            volume.mounted) {
+            state.storage_generation = volume.generation;
+            state.storage_read_only = volume.read_only;
+            return;
         }
-        str_copy(state.history[FM_MAX_HISTORY - 1], state.current_path);
-        state.history_pos = FM_MAX_HISTORY - 1;
+        state.storage_virtual = 1;
+        state.storage_boot = 0;
+        state.storage_volume_id[0] = '\0';
+        state.current_path[0] = '\0';
     }
 }
 
+static void fm_select_virtual_root(void) {
+    state.storage_virtual = 1;
+    state.storage_boot = 0;
+    state.storage_read_only = 1;
+    state.storage_generation = 0;
+    state.storage_volume_id[0] = '\0';
+    state.current_path[0] = '\0';
+    state.selected = 0;
+    state.scroll_offset = 0;
+}
+
+static int fm_select_boot_source(const char* path) {
+    storage_status_t status;
+
+    state.storage_virtual = 0;
+    state.storage_boot = 1;
+    state.storage_read_only = 0;
+    state.storage_generation = 0;
+    state.storage_volume_id[0] = '\0';
+    if (storage_get_status(&status) == OK) {
+        for (uint8_t index = 0; index < status.mounted_count; index++) {
+            storage_volume_t volume;
+
+            if (storage_get_mounted_at(index, &volume) == OK && volume.boot) {
+                str_copy(state.storage_volume_id, volume.id);
+                state.storage_generation = volume.generation;
+                break;
+            }
+        }
+    }
+    str_copy(state.current_path, path ? path : "");
+    state.selected = 0;
+    state.scroll_offset = 0;
+    return OK;
+}
+
+static int fm_select_mounted_source(const char* id) {
+    storage_volume_t volume;
+    int result = ERR_NOT_FOUND;
+
+    if (!id) {
+        LOG_ERROR("FM", "ID nulo ao selecionar volume montado");
+        return ERR_NULL;
+    }
+    if (str_equal(id, "C:")) {
+        storage_status_t status;
+
+        if (storage_get_status(&status) == OK) {
+            for (uint8_t index = 0; index < status.mounted_count; index++) {
+                if (storage_get_mounted_at(index, &volume) == OK &&
+                    volume.boot) {
+                    result = OK;
+                    break;
+                }
+            }
+        }
+    } else {
+        result = storage_find_volume(id, &volume);
+        if (result == OK && !volume.mounted) result = ERR_STATE;
+    }
+
+    if (result != OK) {
+        LOG_ERROR("FM", "Volume montado nao encontrado no Explorer");
+        return result;
+    }
+    state.storage_virtual = 0;
+    state.storage_boot = volume.boot;
+    state.storage_read_only = volume.read_only;
+    state.storage_generation = volume.generation;
+    str_copy(state.storage_volume_id, volume.id);
+    state.current_path[0] = '\0';
+    state.selected = 0;
+    state.scroll_offset = 0;
+    return OK;
+}
+
+static void fm_validate_storage_source(void) {
+    storage_volume_t volume;
+
+    if (state.mode != FM_MODE_CLASSIC || state.storage_virtual ||
+        state.storage_boot) return;
+    if (storage_find_volume(state.storage_volume_id, &volume) == OK &&
+        volume.mounted && volume.generation == state.storage_generation) {
+        return;
+    }
+    LOG_WARN("FM", "Montagem mudou; retornando a Este Computador");
+    input_mode = 0;
+    rename_mode = 0;
+    confirm_delete = 0;
+    create_dir_mode = 0;
+    create_file_mode = 0;
+    fm_select_virtual_root();
+    state.history_count = 0;
+    state.history_pos = 0;
+    fm_record_history();
+    fm_refresh_files();
+}
+
+static void fm_record_history(void) {
+    if (state.history_count > 0 && state.history_pos >= 0 &&
+        str_equal(state.history[state.history_pos], state.current_path) &&
+        str_equal(state.history_volume[state.history_pos],
+                  state.storage_volume_id) &&
+        state.history_virtual[state.history_pos] == state.storage_virtual &&
+        state.history_boot[state.history_pos] == state.storage_boot) return;
+    if (state.history_pos + 1 < state.history_count) {
+        state.history_count = state.history_pos + 1;
+    }
+    if (state.history_count >= FM_MAX_HISTORY) {
+        for (int i = 0; i < FM_MAX_HISTORY - 1; i++) {
+            str_copy(state.history[i], state.history[i + 1]);
+            str_copy(state.history_volume[i], state.history_volume[i + 1]);
+            state.history_virtual[i] = state.history_virtual[i + 1];
+            state.history_boot[i] = state.history_boot[i + 1];
+        }
+        state.history_count = FM_MAX_HISTORY - 1;
+    }
+    str_copy(state.history[state.history_count], state.current_path);
+    fm_store_history_source(state.history_count);
+    state.history_count++;
+    state.history_pos = state.history_count - 1;
+}
+
 static void fm_navigate_to(const char* path) {
-    fm_push_history();
     str_copy(state.current_path, path);
     state.selected = 0;
     state.scroll_offset = 0;
+    fm_record_history();
     fm_refresh_files();
     fm_draw_all();
 }
@@ -205,8 +349,81 @@ static void fm_navigate_to_no_history(const char* path) {
     fm_draw_all();
 }
 
+static void fm_copy_normalized_path(char* destination, const char* source) {
+    uint32_t offset = 0;
+
+    while (source && *source && offset + 1U < FM_MAX_PATH) {
+        destination[offset++] = *source == '\\' ? '/' : *source;
+        source++;
+    }
+    destination[offset] = '\0';
+}
+
+static int fm_navigate_address_value(const char* address) {
+    int colon = -1;
+    uint32_t length;
+
+    if (!address) {
+        LOG_ERROR("FM", "Endereco nulo no Explorer");
+        return ERR_NULL;
+    }
+    if (state.mode != FM_MODE_CLASSIC) {
+        fm_navigate_to(address);
+        return OK;
+    }
+    length = (uint32_t)str_len(address);
+    for (uint32_t index = 0; index < length; index++) {
+        if (address[index] == ':') {
+            colon = (int)index;
+            break;
+        }
+    }
+    if (colon < 0) {
+        fm_navigate_to(address);
+        return OK;
+    }
+    if (colon == 1 && (address[0] == 'C' || address[0] == 'c')) {
+        fm_select_boot_source("");
+    } else {
+        char id[FM_VOLUME_ID_LEN];
+        storage_volume_t volume;
+
+        if (colon <= 0 || colon >= FM_VOLUME_ID_LEN) {
+            LOG_ERROR("FM", "Prefixo de volume invalido no endereco");
+            return ERR_INVALID;
+        }
+        for (int index = 0; index < colon; index++) id[index] = address[index];
+        id[colon] = '\0';
+        if (storage_find_volume(id, &volume) != OK || !volume.mounted) {
+            LOG_ERROR("FM", "Volume do endereco nao esta montado");
+            return ERR_NOT_FOUND;
+        }
+        state.storage_virtual = 0;
+        state.storage_boot = volume.boot;
+        state.storage_read_only = volume.read_only;
+        state.storage_generation = volume.generation;
+        str_copy(state.storage_volume_id, volume.id);
+    }
+    fm_copy_normalized_path(state.current_path, address + colon + 1);
+    state.selected = 0;
+    state.scroll_offset = 0;
+    fm_record_history();
+    fm_refresh_files();
+    fm_draw_all();
+    return OK;
+}
+
 static void fm_go_up(void) {
-    if (state.current_path[0] == '\0') return;
+    if (state.storage_virtual) return;
+    if (state.current_path[0] == '\0') {
+        if (state.mode == FM_MODE_CLASSIC) {
+            fm_select_virtual_root();
+            fm_record_history();
+            fm_refresh_files();
+            fm_draw_all();
+        }
+        return;
+    }
 
     int len = str_len(state.current_path);
     if (len > 0 && state.current_path[len - 1] == '/') {
@@ -230,6 +447,7 @@ static void fm_go_up(void) {
 
     state.selected = 0;
     state.scroll_offset = 0;
+    fm_record_history();
     fm_refresh_files();
     fm_draw_all();
 }
@@ -238,6 +456,7 @@ static void fm_go_back(void) {
     if (state.history_pos > 0) {
         state.history_pos--;
         str_copy(state.current_path, state.history[state.history_pos]);
+        fm_restore_history_source(state.history_pos);
         state.selected = 0;
         state.scroll_offset = 0;
         fm_refresh_files();
@@ -249,6 +468,7 @@ static void fm_go_forward(void) {
     if (state.history_pos < state.history_count - 1) {
         state.history_pos++;
         str_copy(state.current_path, state.history[state.history_pos]);
+        fm_restore_history_source(state.history_pos);
         state.selected = 0;
         state.scroll_offset = 0;
         fm_refresh_files();
@@ -329,8 +549,18 @@ static void fm_select_mode(void) {
 
     state.mode = next_mode;
     if (state.mode == FM_MODE_CLASSIC) {
+        fm_select_virtual_root();
+        state.history_count = 0;
+        state.history_pos = 0;
+        fm_record_history();
+        fm_refresh_files();
         LOG_INFO("FM", "Explorer usando modo Classic");
     } else {
+        fm_select_boot_source("");
+        state.history_count = 0;
+        state.history_pos = 0;
+        fm_record_history();
+        fm_refresh_files();
         LOG_WARN("FM", "Explorer usando modo Simple como fallback");
     }
 }
@@ -417,7 +647,17 @@ static void fm_build_display_path(char* path, int capacity) {
     int start = state.current_path[0] == '/' ? 1 : 0;
 
     if (!path || capacity < 4) return;
-    path[pos++] = 'C';
+    if (state.storage_virtual) {
+        fm_copy_display_text(path, capacity, "Este Computador", capacity - 1);
+        return;
+    }
+    if (state.storage_boot) {
+        path[pos++] = 'C';
+    } else {
+        for (int i = 0; state.storage_volume_id[i] && pos < capacity - 3; i++) {
+            path[pos++] = state.storage_volume_id[i];
+        }
+    }
     path[pos++] = ':';
     path[pos++] = '\\';
 
@@ -556,16 +796,60 @@ static void fm_draw_status_bar(void) {
 }
 
 static void fm_refresh_files(void) {
-    state.file_count = fs_get_file_count_at(state.current_path);
-    if (state.file_count > FM_MAX_FILES) {
-        state.file_count = FM_MAX_FILES;
-    }
+    if (state.mode == FM_MODE_CLASSIC && state.storage_virtual) {
+        storage_status_t status;
 
-    for (int i = 0; i < state.file_count; i++) {
-        uint8_t attr;
-        fs_get_file_info_at(state.current_path, i, state.files[i].name, &state.files[i].size, &attr);
-        state.files[i].attributes = attr;
-        state.files[i].is_dir = (attr & 0x10) ? 1 : 0;
+        state.file_count = 0;
+        if (storage_get_status(&status) == OK) {
+            for (uint8_t index = 0;
+                 index < status.mounted_count && state.file_count < FM_MAX_FILES;
+                 index++) {
+                storage_volume_t volume;
+                fm_file_entry_t* entry;
+
+                if (storage_get_mounted_at(index, &volume) != OK) continue;
+                entry = &state.files[state.file_count++];
+                str_copy(entry->name, volume.boot ? "C:" : volume.id);
+                entry->size = volume.sector_count;
+                entry->attributes = 0x10;
+                entry->is_dir = 1;
+            }
+        }
+    } else if (state.mode == FM_MODE_CLASSIC && !state.storage_boot) {
+        storage_volume_t volume;
+        storage_dir_entry_t entries[STORAGE_MAX_DIR_ENTRIES];
+        uint32_t count = 0;
+        int result = storage_find_volume(state.storage_volume_id, &volume);
+
+        if (result != OK || !volume.mounted ||
+            volume.generation != state.storage_generation) {
+            LOG_WARN("FM", "Montagem mudou; retornando a Este Computador");
+            fm_select_virtual_root();
+            state.history_count = 0;
+            state.history_pos = 0;
+            fm_record_history();
+            fm_refresh_files();
+            return;
+        }
+        result = storage_list_dir(state.storage_volume_id, state.current_path,
+                                  entries, STORAGE_MAX_DIR_ENTRIES, &count);
+        state.file_count = result == OK ? (int)count : 0;
+        for (int i = 0; i < state.file_count; i++) {
+            str_copy(state.files[i].name, entries[i].name);
+            state.files[i].size = entries[i].size;
+            state.files[i].attributes = entries[i].attributes;
+            state.files[i].is_dir = entries[i].is_directory;
+        }
+    } else {
+        state.file_count = fs_get_file_count_at(state.current_path);
+        if (state.file_count > FM_MAX_FILES) state.file_count = FM_MAX_FILES;
+        for (int i = 0; i < state.file_count; i++) {
+            uint8_t attr;
+            fs_get_file_info_at(state.current_path, i, state.files[i].name,
+                                &state.files[i].size, &attr);
+            state.files[i].attributes = attr;
+            state.files[i].is_dir = (attr & 0x10) ? 1 : 0;
+        }
     }
 
     if (state.selected >= state.file_count) {
@@ -647,6 +931,8 @@ static void fm_classic_draw_toolbar(int x, int y, int width) {
     fm_draw_text_limited(x + FM_CLASSIC_INSET,
                          y + (int)display_scale_px(6),
                          width - (int)display_scale_px(16),
+                         (state.storage_virtual || state.storage_read_only) ?
+                         "F1 Ajuda  F3 Ver  F5 Atualizar  Somente leitura  Alt+F4 Sair" :
                          "F1 Ajuda  F2 Renomear  F3 Ver  F5 Atualizar  F6 Pasta  F7 Arquivo  F8 Excluir  Alt+F4 Sair",
                          GUI_MODERN_COLOR_TEXT);
 }
@@ -813,7 +1099,8 @@ static void fm_classic_draw_list(int x, int y, int width, int height) {
                           "-", foreground);
             gui_draw_text((uint32_t)type_x,
                           (uint32_t)(row_y + (int)display_scale_px(6)),
-                          "Pasta", foreground);
+                          state.storage_virtual ? "Volume" : "Pasta",
+                          foreground);
         } else {
             int_to_str(file->size, size);
             fm_draw_text_limited(
@@ -838,6 +1125,12 @@ static void fm_classic_draw_status(int x, int y, int width) {
     gui_draw_flat_border((uint32_t)x, (uint32_t)y, (uint32_t)width,
                          FM_CLASSIC_STATUS_HEIGHT,
                          GUI_MODERN_COLOR_BORDER_INACTIVE);
+    if ((state.storage_virtual || state.storage_read_only) &&
+        state.file_count == 0) {
+        gui_draw_text((uint32_t)(x + width - (int)display_scale_px(170)),
+                      (uint32_t)(y + (int)display_scale_px(6)),
+                      "Somente leitura", GUI_MODERN_COLOR_ACCENT);
+    }
     if (state.file_count == 0) {
         gui_draw_text((uint32_t)(x + FM_CLASSIC_INSET),
                       (uint32_t)(y + (int)display_scale_px(6)),
@@ -854,7 +1147,11 @@ static void fm_classic_draw_status(int x, int y, int width) {
         width - (int)display_scale_px(260),
         state.files[state.selected].name, GUI_MODERN_COLOR_TEXT);
 
-    if (state.files[state.selected].is_dir) {
+    if (state.storage_virtual || state.storage_read_only) {
+        gui_draw_text((uint32_t)(x + width - (int)display_scale_px(170)),
+                      (uint32_t)(y + (int)display_scale_px(6)),
+                      "Somente leitura", GUI_MODERN_COLOR_ACCENT);
+    } else if (state.files[state.selected].is_dir) {
         gui_draw_text((uint32_t)(x + width - (int)display_scale_px(170)),
                       (uint32_t)(y + (int)display_scale_px(6)),
                       "Pasta", GUI_MODERN_COLOR_TEXT);
@@ -892,9 +1189,15 @@ static void fm_draw_classic_all(void) {
     if (!fm_classic_get_layout(&x, &y, &width, &height)) {
         LOG_WARN("FM", "Layout Classic indisponivel; usando modo Simple");
         state.mode = FM_MODE_SIMPLE;
+        fm_select_boot_source("");
+        state.history_count = 0;
+        state.history_pos = 0;
+        fm_record_history();
+        fm_refresh_files();
         fm_draw_simple_all();
         return;
     }
+    fm_validate_storage_source();
 
     if (fm_help_mode) {
         fm_classic_draw_help();
@@ -1143,7 +1446,16 @@ static void fm_classic_draw_view_file(void) {
         return;
     }
 
-    int bytes = fs_read_file_at(file_path, buffer, 4095);
+    int bytes;
+    if (state.storage_boot) {
+        bytes = fs_read_file_at(file_path, buffer, STORAGE_MAX_VIEW_BYTES);
+    } else {
+        uint32_t bytes_read = 0;
+        int read_result = storage_read_file_range(
+            state.storage_volume_id, file_path, 0, buffer,
+            STORAGE_MAX_VIEW_BYTES, &bytes_read);
+        bytes = read_result == OK ? (int)bytes_read : -1;
+    }
     if (bytes < 0) {
         LOG_ERROR("FM", "Falha ao ler arquivo na visualizacao");
         gui_draw_text((uint32_t)(x + (int)display_scale_px(24)),
@@ -1555,7 +1867,7 @@ void fm_init(void) {
     fs_create_dir_entry("", "Musica", 0x10);
     fs_create_dir_entry("", "Videos", 0x10);
 
-    state.current_path[0] = '\0';
+    fm_select_boot_source("");
     state.history_count = 0;
     state.history_pos = 0;
     state.address_mode = 0;
@@ -1571,7 +1883,7 @@ void fm_init(void) {
     fm_fallback_logged = 0;
     old_name[0] = '\0';
 
-    fm_push_history();
+    fm_record_history();
     fm_refresh_files();
 }
 
@@ -1594,9 +1906,19 @@ void fm_open(void) {
         wm_set_active(1);
         fm_hosted = 1;
         state.mode = FM_MODE_CLASSIC;
+        fm_select_virtual_root();
+        state.history_count = 0;
+        state.history_pos = 0;
+        fm_record_history();
+        fm_refresh_files();
         if (wm_register_hosted_app(&fm_hosted_app) == OK) return;
         fm_hosted = 0;
         state.mode = FM_MODE_SIMPLE;
+        fm_select_boot_source("");
+        state.history_count = 0;
+        state.history_pos = 0;
+        fm_record_history();
+        fm_refresh_files();
         wm_set_active(0);
         desktop_set_active(0);
         LOG_WARN("FM", "Workspace indisponivel; usando Explorer Simple");
@@ -1637,6 +1959,19 @@ static const char scancode_table[128] = {
 };
 
 static int alt_pressed = 0;
+
+static int fm_block_read_only_mutation(uint8_t scancode) {
+    int mutation_key = scancode == 0x3CU || scancode == 0x40U ||
+                       scancode == 0x41U || scancode == 0x42U ||
+                       scancode == 0x43U || scancode == 0x44U ||
+                       scancode == 0x53U || scancode == 0x57U;
+
+    if (!mutation_key || state.mode != FM_MODE_CLASSIC ||
+        (!state.storage_virtual && !state.storage_read_only)) return 0;
+    LOG_WARN("FM", "Mutacao recusada em volume somente-leitura");
+    fm_draw_all();
+    return 1;
+}
 
 void fm_handle_key(uint8_t scancode) {
     int taskbar_result;
@@ -1681,6 +2016,20 @@ void fm_handle_key(uint8_t scancode) {
 
     if (scancode & 0x80) return;
 
+    if (fm_block_read_only_mutation(scancode)) return;
+
+    if (state.mode == FM_MODE_CLASSIC && input_mode == 1 &&
+        (state.storage_virtual || state.storage_read_only)) {
+        input_mode = 0;
+        rename_mode = 0;
+        create_dir_mode = 0;
+        create_file_mode = 0;
+        confirm_delete = 0;
+        LOG_WARN("FM", "Mutacao cancelada apos mudanca de montagem");
+        fm_draw_all();
+        return;
+    }
+
     if (fm_help_mode) {
         if (scancode == 0x01) {
             fm_help_mode = 0;
@@ -1717,7 +2066,10 @@ void fm_handle_key(uint8_t scancode) {
             state.address_buffer[state.address_pos] = '\0';
             state.address_mode = 0;
             if (state.address_pos > 0) {
-                fm_navigate_to(state.address_buffer);
+                if (fm_navigate_address_value(state.address_buffer) != OK) {
+                    LOG_ERROR("FM", "Navegacao por endereco recusada");
+                    fm_draw_all();
+                }
             } else {
                 fm_draw_all();
             }
@@ -1938,11 +2290,28 @@ void fm_handle_key(uint8_t scancode) {
                 state.side_selected = visible_items - 1;
             }
             state.focus_pane = 1;
-            fm_navigate_to(side_pane_paths[state.side_selected]);
+            if (state.mode == FM_MODE_CLASSIC && state.side_selected == 0) {
+                fm_select_virtual_root();
+            } else {
+                fm_select_boot_source(side_pane_paths[state.side_selected]);
+            }
+            fm_record_history();
+            fm_refresh_files();
             fm_draw_all();
             return;
         }
         if (state.file_count == 0) return;
+        if (state.mode == FM_MODE_CLASSIC && state.storage_virtual) {
+            if (fm_select_mounted_source(state.files[state.selected].name) == OK) {
+                fm_record_history();
+                fm_refresh_files();
+            } else {
+                fm_select_virtual_root();
+                fm_refresh_files();
+            }
+            fm_draw_all();
+            return;
+        }
         fm_file_entry_t* f = &state.files[state.selected];
         if (f->is_dir) {
             char new_path[FM_MAX_PATH];
