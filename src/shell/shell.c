@@ -2,6 +2,7 @@
 #include "core/video.h"
 #include "core/keyboard.h"
 #include "fs/fs.h"
+#include "fs/storage.h"
 #include "core/memory.h"
 #include "core/timer.h"
 #include "process/process.h"
@@ -2324,9 +2325,7 @@ static uint32_t parse_number(const char* str) {
     return num;
 }
 
-static void cmd_help(void) {
-    video_begin_update();
-    video_print("Comandos disponiveis:\n", 0x0B);
+static void cmd_help_core(void) {
     video_print("  help     - Mostra esta mensagem\n", 0x07);
     video_print("  clear    - Limpa tela e historico do terminal\n", 0x07);
     video_print("  Setas cima/baixo - Navega comandos; Shift rola saida\n",
@@ -2337,6 +2336,12 @@ static void cmd_help(void) {
     video_print("  settings - Abre o painel de configuracoes\n", 0x07);
     video_print("  updater  - Abre o System Updater\n", 0x07);
     video_print("  wm       - Abre gerenciador de janelas\n", 0x07);
+}
+
+static void cmd_help(void) {
+    video_begin_update();
+    video_print("Comandos disponiveis:\n", 0x0B);
+    cmd_help_core();
     video_print("  ls       - Lista arquivos\n", 0x07);
     video_print("  cat      - Exibe conteudo de arquivo\n", 0x07);
     video_print("  echo     - Exibe texto\n", 0x07);
@@ -2353,6 +2358,7 @@ static void cmd_help(void) {
     video_print("  compress - Liga/desliga compressao de RAM\n", 0x07);
     video_print("  stats    - Mostra estatisticas de compressao\n", 0x07);
     video_print("  mouse    - Status e preferencias do mouse PS/2\n", 0x07);
+    video_print("  storage  - Lista, inspeciona e monta volumes ATA\n", 0x07);
     video_print("  health [summary] - Estado completo ou resumo compacto\n",
                 0x07);
     video_print("  devices  - Lista inventario de hardware (-v para detalhes)\n", 0x07);
@@ -9653,6 +9659,209 @@ static void cmd_display(const char* args) {
     video_print(" aplicada em RAM.\n", 0x0A);
 }
 
+static void cmd_storage_print_usage(void) {
+    video_print("Uso: storage list | storage info <id> | ", 0x0C);
+    video_print("storage mount <id> | storage unmount <id>\n", 0x0C);
+}
+
+static int cmd_storage_read_token(const char** cursor, char* token,
+                                  int token_size) {
+    const char* input;
+    int length = 0;
+
+    if (!cursor || !*cursor || !token || token_size < 2) {
+        LOG_ERROR("SHELL", "Destino invalido no parser de storage");
+        return ERR_NULL;
+    }
+    input = *cursor;
+    while (*input == ' ' || *input == '\t') input++;
+    if (!*input) {
+        token[0] = '\0';
+        *cursor = input;
+        return ERR_NOT_FOUND;
+    }
+    while (*input && *input != ' ' && *input != '\t') {
+        if (length >= token_size - 1) {
+            LOG_ERROR("SHELL", "Argumento storage longo demais");
+            return ERR_OVERFLOW;
+        }
+        token[length++] = *input++;
+    }
+    token[length] = '\0';
+    *cursor = input;
+    return OK;
+}
+
+static int cmd_storage_has_extra(const char* cursor) {
+    if (!cursor) {
+        LOG_ERROR("SHELL", "Cursor nulo no parser de storage");
+        return 1;
+    }
+    while (*cursor == ' ' || *cursor == '\t') cursor++;
+    if (!*cursor) return 0;
+    LOG_ERROR("SHELL", "Argumentos excedentes no comando storage");
+    return 1;
+}
+
+static void cmd_storage_print_disk(const storage_disk_t* disk) {
+    if (!disk) return;
+    video_print("Disco ", 0x0B);
+    video_print(disk->id, 0x0B);
+    video_print(": ", 0x07);
+    video_print(disk->model, 0x07);
+    video_print("\n  Slot/canal: ", 0x07);
+    print_num(disk->slot);
+    video_print(disk->channel ? " secundario " : " primario ", 0x07);
+    video_print(disk->slave ? "slave\n" : "master\n", 0x07);
+    video_print("  Setores: ", 0x07);
+    print_num(disk->sector_count);
+    video_print("  Leituras: ", 0x07);
+    print_num(disk->read_ops);
+    video_print("  Escritas: ", 0x07);
+    print_num(disk->write_ops);
+    video_print("  Erro: ", 0x07);
+    print_num((uint32_t)disk->last_error);
+    video_print("\n", 0x07);
+}
+
+static void cmd_storage_print_volume(const storage_volume_t* volume) {
+    if (!volume) return;
+    video_print("Volume ", 0x0B);
+    video_print(volume->id, 0x0B);
+    video_print(" (", 0x07);
+    video_print(volume->disk_id, 0x07);
+    video_print(")\n  Estado: ", 0x07);
+    video_print(storage_volume_state_name(volume->state),
+                volume->mounted ? 0x0A : 0x0E);
+    video_print("  FS: ", 0x07);
+    video_print(storage_fs_name(volume->fs_type), 0x0B);
+    video_print("  Acesso: ", 0x07);
+    video_print(volume->boot ? "BOOT/LEGACY-RW" : "READ-ONLY", 0x0B);
+    video_print("\n  LBA inicial: ", 0x07);
+    print_num(volume->start_lba);
+    video_print("  Setores: ", 0x07);
+    print_num(volume->sector_count);
+    video_print("  Bytes/setor: ", 0x07);
+    print_num(volume->bytes_per_sector);
+    video_print("  Setores/cluster: ", 0x07);
+    print_num(volume->sectors_per_cluster);
+    video_print("  Particao: ", 0x07);
+    print_num(volume->partition_index);
+    video_print("  Tipo: ", 0x07);
+    cmd_print_hex(volume->partition_type, 2U);
+    video_print("\n  Label: ", 0x07);
+    video_print(volume->label[0] ? volume->label : "(sem label)", 0x07);
+    video_print("  Geracao: ", 0x07);
+    print_num(volume->generation);
+    video_print("  Erro: ", 0x07);
+    print_num((uint32_t)volume->last_error);
+    video_print("\n", 0x07);
+}
+
+static void cmd_storage_list(void) {
+    storage_status_t status;
+
+    if (storage_get_status(&status) != OK || !status.initialized) {
+        video_print("Storage indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("Storage ATA: discos=", 0x0B);
+    print_num(status.disk_count);
+    video_print(" volumes=", 0x07);
+    print_num(status.volume_count);
+    video_print(" montados=", 0x07);
+    print_num(status.mounted_count);
+    video_print("\n", 0x07);
+    for (uint8_t index = 0; index < status.disk_count; index++) {
+        storage_disk_t disk;
+        if (storage_get_disk_at(index, &disk) == OK) cmd_storage_print_disk(&disk);
+    }
+    for (uint8_t index = 0; index < status.volume_count; index++) {
+        storage_volume_t volume;
+        if (storage_get_volume_at(index, &volume) == OK) {
+            cmd_storage_print_volume(&volume);
+        }
+    }
+    video_print("Montagens adicionais permanecem somente em RAM.\n", 0x0E);
+}
+
+static void cmd_storage_info(const char* id) {
+    storage_disk_t disk;
+    storage_volume_t volume;
+
+    if (storage_find_disk(id, &disk) == OK) {
+        cmd_storage_print_disk(&disk);
+        return;
+    }
+    if (storage_find_volume(id, &volume) == OK) {
+        cmd_storage_print_volume(&volume);
+        if (storage_find_disk(volume.disk_id, &disk) == OK) {
+            cmd_storage_print_disk(&disk);
+        }
+        return;
+    }
+    LOG_WARN("SHELL", "ID storage nao encontrado");
+    video_print("Erro: disco ou volume nao encontrado.\n", 0x0C);
+}
+
+static void cmd_storage(const char* args) {
+    char action[16];
+    char id[STORAGE_ID_SIZE];
+    const char* cursor = args;
+    int result;
+
+    if (!args || !*args) {
+        storage_status_t status;
+        if (storage_get_status(&status) == OK) {
+            video_print("Storage: discos=", 0x0B);
+            print_num(status.disk_count);
+            video_print(" volumes=", 0x07);
+            print_num(status.volume_count);
+            video_print(" montados=", 0x07);
+            print_num(status.mounted_count);
+            video_print("\n", 0x07);
+        }
+        cmd_storage_print_usage();
+        return;
+    }
+    result = cmd_storage_read_token(&cursor, action, sizeof(action));
+    if (result != OK) {
+        cmd_storage_print_usage();
+        return;
+    }
+    if (kstrcmp(action, "list") == 0) {
+        if (cmd_storage_has_extra(cursor)) cmd_storage_print_usage();
+        else cmd_storage_list();
+        return;
+    }
+    if (cmd_storage_read_token(&cursor, id, sizeof(id)) != OK ||
+        cmd_storage_has_extra(cursor)) {
+        LOG_ERROR("SHELL", "ID ausente ou sintaxe invalida em storage");
+        cmd_storage_print_usage();
+        return;
+    }
+    if (kstrcmp(action, "info") == 0) {
+        cmd_storage_info(id);
+        return;
+    }
+    if (kstrcmp(action, "mount") == 0) result = storage_mount(id);
+    else if (kstrcmp(action, "unmount") == 0) result = storage_unmount(id);
+    else {
+        LOG_ERROR("SHELL", "Subcomando storage desconhecido");
+        cmd_storage_print_usage();
+        return;
+    }
+    if (result != OK) {
+        video_print("Erro: operacao storage recusada (codigo ", 0x0C);
+        print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+    video_print(kstrcmp(action, "mount") == 0 ?
+                "Volume montado somente-leitura em RAM.\n" :
+                "Volume desmontado.\n", 0x0A);
+}
+
 static void cmd_mouse_print_usage(void) {
     video_print("Uso: mouse | mouse speed <1-10> | ", 0x0C);
     video_print("mouse primary <left|right> | ", 0x0C);
@@ -10602,6 +10811,8 @@ int shell_process_command(const char* input) {
             shell_suspend_terminal();
             editor_run();
         }
+    } else if (kstrcmp(cmd, "storage") == 0) {
+        cmd_storage(input);
     } else if (kstrcmp(cmd, "mouse") == 0) {
         cmd_mouse(input);
     } else {

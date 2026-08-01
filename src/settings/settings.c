@@ -14,6 +14,7 @@
 #include "core/recovery.h"
 #include "core/errors.h"
 #include "core/version.h"
+#include "fs/storage.h"
 #include "drivers/vesa.h"
 #include "drivers/font.h"
 #include "ui/gui.h"
@@ -102,6 +103,7 @@ static void settings_hosted_key(uint8_t scancode);
 static int settings_hosted_mouse(mouse_event_t* event, int x, int y,
                                  int width, int height);
 static void settings_hosted_close(void);
+static void settings_gui_draw_storage_status(int x, int y, int width);
 
 static const wm_hosted_app_t settings_hosted_app = {
     WM_APP_SETTINGS, "Configuracoes do ZephyrOS", "Settings",
@@ -164,6 +166,8 @@ static void init_system_categories(void) {
     categories[SETTINGS_CAT_MOUSE].options[2] = (settings_option_t){
         "Aceleracao", SETTINGS_OPT_TOGGLE, 0, 1, NULL, 0
     };
+    categories[SETTINGS_CAT_STORAGE].name = "Armazenamento";
+    categories[SETTINGS_CAT_STORAGE].option_count = 0;
 }
 
 static void init_categories(void) {
@@ -396,6 +400,11 @@ void settings_close(void) {
     desktop_draw();
 }
 
+static int settings_visible_category_count(void) {
+    return settings_mode == SETTINGS_MODE_SIMPLE ?
+           SETTINGS_CAT_STORAGE : SETTINGS_CAT_COUNT;
+}
+
 static void settings_draw_simple(void) {
     video_fill_rect(0, 0, SCREEN_COLS, SCREEN_ROWS, ' ', 0x07);
 
@@ -405,7 +414,7 @@ static void settings_draw_simple(void) {
     video_fill_rect(0, 1, 25, SCREEN_ROWS - 1, ' ', 0x07);
     video_draw_box(0, 1, 25, SCREEN_ROWS - 3, 0x08);
 
-    for (int i = 0; i < SETTINGS_CAT_COUNT; i++) {
+    for (int i = 0; i < settings_visible_category_count(); i++) {
         uint8_t color = (selected_category == i) ? 0x1F : 0x07;
         if (selected_category == i) {
             video_fill_rect(1, 2 + i, 23, 1, ' ', 0x1F);
@@ -470,6 +479,11 @@ void settings_draw(void) {
     if (settings_mode == SETTINGS_MODE_CLASSIC) {
         settings_classic_draw();
         return;
+    }
+    if (selected_category >= settings_visible_category_count()) {
+        selected_category = 0;
+        selected_option = 0;
+        editing_option = 0;
     }
     settings_draw_simple();
     taskbar_draw();
@@ -853,6 +867,66 @@ static void settings_gui_draw_main_header(int x, int y, int width) {
                     settings_gui_color(GUI_MODERN_COLOR_BORDER_INACTIVE));
 }
 
+static void settings_gui_draw_storage_status(int x, int y, int width) {
+    storage_status_t status;
+    int row_y = y + SETTINGS_CLASSIC_PX(48);
+
+    if (storage_get_status(&status) != OK || !status.initialized) {
+        gui_draw_text((uint32_t)(x + SETTINGS_CLASSIC_PX(18)),
+                      (uint32_t)row_y, "Storage indisponivel",
+                      0x00C00000U);
+        return;
+    }
+    gui_draw_text((uint32_t)(x + SETTINGS_CLASSIC_PX(18)),
+                  (uint32_t)row_y, "Discos:", GUI_MODERN_COLOR_TEXT);
+    settings_gui_draw_num(x + SETTINGS_CLASSIC_PX(108), row_y,
+                          status.disk_count, GUI_MODERN_COLOR_ACCENT);
+    gui_draw_text((uint32_t)(x + SETTINGS_CLASSIC_PX(170)),
+                  (uint32_t)row_y, "Volumes:", GUI_MODERN_COLOR_TEXT);
+    settings_gui_draw_num(x + SETTINGS_CLASSIC_PX(270), row_y,
+                          status.volume_count, GUI_MODERN_COLOR_ACCENT);
+    gui_draw_text((uint32_t)(x + SETTINGS_CLASSIC_PX(18)),
+                  (uint32_t)(row_y + SETTINGS_CLASSIC_PX(26)),
+                  "Dispositivos ATA", GUI_MODERN_COLOR_ACCENT);
+    row_y += SETTINGS_CLASSIC_PX(50);
+    for (uint8_t index = 0; index < status.disk_count; index++) {
+        storage_disk_t disk;
+
+        if (storage_get_disk_at(index, &disk) != OK) continue;
+        gui_draw_text((uint32_t)(x + SETTINGS_CLASSIC_PX(18)),
+                      (uint32_t)row_y, disk.id, GUI_MODERN_COLOR_TEXT);
+        settings_gui_draw_num(x + SETTINGS_CLASSIC_PX(108), row_y,
+                              disk.sector_count, GUI_MODERN_COLOR_TEXT);
+        gui_draw_text((uint32_t)(x + width - SETTINGS_CLASSIC_PX(92)),
+                      (uint32_t)row_y, "setores",
+                      GUI_MODERN_COLOR_BORDER_INACTIVE);
+        row_y += SETTINGS_CLASSIC_PX(22);
+    }
+    gui_draw_text((uint32_t)(x + SETTINGS_CLASSIC_PX(18)),
+                  (uint32_t)(row_y + SETTINGS_CLASSIC_PX(4)),
+                  "Volumes montados", GUI_MODERN_COLOR_ACCENT);
+    row_y += SETTINGS_CLASSIC_PX(30);
+    for (uint8_t index = 0; index < status.mounted_count; index++) {
+        storage_volume_t volume;
+
+        if (storage_get_mounted_at(index, &volume) != OK) continue;
+        gui_draw_text((uint32_t)(x + SETTINGS_CLASSIC_PX(18)),
+                      (uint32_t)row_y, volume.id, GUI_MODERN_COLOR_TEXT);
+        gui_draw_text((uint32_t)(x + SETTINGS_CLASSIC_PX(116)),
+                      (uint32_t)row_y, storage_fs_name(volume.fs_type),
+                      GUI_MODERN_COLOR_TEXT);
+        gui_draw_text((uint32_t)(x + width - SETTINGS_CLASSIC_PX(112)),
+                      (uint32_t)row_y,
+                      volume.boot ? "BOOT RW" : "READ-ONLY",
+                      GUI_MODERN_COLOR_ACCENT);
+        row_y += SETTINGS_CLASSIC_PX(22);
+    }
+    gui_draw_text((uint32_t)(x + SETTINGS_CLASSIC_PX(18)),
+                  (uint32_t)(y + SETTINGS_CLASSIC_PX(324)),
+                  "Montagens adicionais permanecem somente em RAM.",
+                  GUI_MODERN_COLOR_BORDER_INACTIVE);
+}
+
 static int settings_gui_category_row_height(void) {
     int side_height = settings_gui_height - SETTINGS_CLASSIC_PX(76);
     int available_height = side_height - SETTINGS_CLASSIC_PX(38);
@@ -883,7 +957,7 @@ static void settings_draw_classic_main(void) {
                   (uint32_t)(side_y + SETTINGS_CLASSIC_PX(10)),
                   "Categorias", GUI_MODERN_COLOR_ACCENT);
 
-    for (int i = 0; i < SETTINGS_CAT_COUNT; i++) {
+    for (int i = 0; i < settings_visible_category_count(); i++) {
         int row_y = side_y + SETTINGS_CLASSIC_PX(38) +
                     i * category_row_height;
         int selected = i == selected_category;
@@ -905,6 +979,10 @@ static void settings_draw_classic_main(void) {
                               content_height, GUI_MODERN_COLOR_WINDOW,
                               GUI_MODERN_COLOR_BORDER_INACTIVE);
     settings_gui_draw_main_header(content_x, content_y, content_width);
+
+    if (selected_category == SETTINGS_CAT_STORAGE) {
+        settings_gui_draw_storage_status(content_x, content_y, content_width);
+    }
 
     for (int i = 0; i < page->option_count; i++) {
         int row_y = content_y + SETTINGS_CLASSIC_PX(46) +
@@ -929,7 +1007,7 @@ static void settings_draw_classic_main(void) {
             i == selected_option && editing_option);
     }
 
-    if (page->option_count == 0) {
+    if (page->option_count == 0 && selected_category != SETTINGS_CAT_STORAGE) {
         gui_draw_text((uint32_t)(content_x + SETTINGS_CLASSIC_PX(18)),
                       (uint32_t)(content_y + SETTINGS_CLASSIC_PX(52)),
                       "Nenhuma opcao disponivel", GUI_MODERN_COLOR_BORDER_INACTIVE);
@@ -1266,12 +1344,18 @@ int settings_handle_key(uint8_t scancode) {
 
     if (scancode == 0x0F) {
         selected_option = 0;
-        if (selected_category < SETTINGS_CAT_COUNT - 1) {
+        if (selected_category < settings_visible_category_count() - 1) {
             selected_category++;
         } else {
             selected_category = 0;
         }
         settings_draw();
+        return 1;
+    }
+
+    if (page->option_count == 0) {
+        selected_option = 0;
+        editing_option = 0;
         return 1;
     }
 

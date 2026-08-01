@@ -18,6 +18,7 @@ src/fs/
 │   ├── fat12.c       → Sistema de arquivos FAT12
 │   ├── fat32.c       → Sistema de arquivos FAT32
 │   ├── fs.c          → Interface unificada FAT12/FAT32
+│   ├── storage.c     → Volumes ATA adicionais somente-leitura
 │   ├── bmp.c         → Leitura de imagens BMP
 │   └── wav.c         → Leitura de áudio WAV
 ```
@@ -76,6 +77,57 @@ int ata_read_sectors(uint32_t lba, uint8_t count, uint8_t* buffer) {
     }
 }
 ```
+
+---
+
+## Storage EP2 (`storage.c`)
+
+Storage e uma API paralela ao filesystem global. O volume de boot continua
+usando `fs_*`, FAT12/FAT32 legados e a unica rota de escrita ATA. O registro
+adicional suporta no maximo quatro discos, 16 volumes e quatro montagens
+simultaneas contando o boot, com uma operacao adicional serializada por vez.
+Getters retornam sempre copias.
+
+Os discos usam IDs `ata0` a `ata3`. Um superfloppy FAT reconhecido antes do
+MBR usa `ataNraw`; as quatro entradas primarias MBR usam `ataNp1` a
+`ataNp4`. O volume de boot e fixo, aparece montado como gravavel apenas pela
+API legada e nao pode ser desmontado. Todos os outros comecam desmontados,
+ficam somente-leitura e perdem a montagem no reboot.
+
+```c
+int storage_get_status(storage_status_t* out_status);
+int storage_get_volume_at(uint8_t index, storage_volume_t* out_volume);
+int storage_mount(const char* id);
+int storage_unmount(const char* id);
+int storage_list_dir(const char* id, const char* path,
+                     storage_dir_entry_t* entries, uint32_t capacity,
+                     uint32_t* out_count);
+int storage_read_file_range(const char* id, const char* path,
+                            uint32_t offset, uint8_t* buffer,
+                            uint32_t max_size, uint32_t* out_read);
+```
+
+Nao existe funcao de escrita direcionada. A descoberta le somente quatro
+particoes MBR primarias e isola flag invalida, overflow, limite fora do disco
+e sobreposicao. No mount, o BPB e relido e valida assinatura `55AA`, setor de
+512 bytes, cluster em potencia de dois, FAT suficiente, geometria/raiz e
+limite da particao. FAT16 e formatos desconhecidos retornam
+`ERR_UNAVAILABLE`.
+
+O leitor usa buffers setoriais fixos, nomes 8.3, caminho de ate 256 bytes, 64
+entradas por listagem, ate 4095 bytes por visualizacao e 4096 passos por
+cadeia. GPT, EBR, LBA48, particoes logicas e hot-plug ficam fora da EP2.
+Formatar, criar, redimensionar ou excluir particoes exige uma fase separada
+com staging, journal e recuperacao.
+
+### Fixtures e verificacao
+
+`tools/storage_fixtures.py` gera imagens deterministicas valida, corrompida e
+desconhecida. `make storage-fixtures-test` testa o gerador,
+`make storage-fixtures` cria imagens/hashes, `make run-storage` conecta boot e
+as tres fixtures nos quatro slots IDE, e `make storage-fixtures-verify`
+compara tamanho e SHA-256 depois do QEMU. `run-storage` nao usa modo
+somente-leitura: qualquer escrita auxiliar precisa aparecer na verificacao.
 
 ---
 

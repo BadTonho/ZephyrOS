@@ -189,16 +189,38 @@ static int device_add_pci_entries(void) {
 }
 
 static int device_add_ata(void) {
-    ata_device_t* ata = ata_get_device();
-    device_info_t* entry = device_add(DEVICE_KIND_ATA_PRIMARY,
-                                      ata ? DEVICE_STATUS_READY :
-                                            DEVICE_STATUS_DISABLED);
+    uint8_t added = 0;
 
-    if (!entry) {
-        LOG_ERROR("DEV", "Falha ao adicionar ATA ao inventario");
-        return ERR_OVERFLOW;
+    if (!ata_get_device()) {
+        device_info_t* entry = device_add(DEVICE_KIND_ATA_PRIMARY,
+                                          DEVICE_STATUS_DISABLED);
+        if (!entry) {
+            LOG_ERROR("DEV", "Falha ao registrar ATA indisponivel");
+            return ERR_OVERFLOW;
+        }
+        entry->device = 0;
+        return OK;
     }
-    if (ata) entry->capacity_sectors = ata->sectors;
+
+    for (uint8_t slot = 0; slot < ATA_MAX_DEVICES; slot++) {
+        ata_device_t ata;
+        device_info_t* entry;
+
+        if (ata_get_device_at(slot, &ata) != OK) continue;
+        entry = device_add(DEVICE_KIND_ATA_PRIMARY, DEVICE_STATUS_READY);
+        if (!entry) {
+            LOG_ERROR("DEV", "Falha ao adicionar ATA ao inventario");
+            return ERR_OVERFLOW;
+        }
+        entry->device = slot;
+        entry->bus = ata.channel;
+        entry->function = ata.slave;
+        entry->irq = ata.channel ? 15U : 14U;
+        entry->capacity_sectors = ata.sectors;
+        added++;
+    }
+
+    if (!added) LOG_WARN("DEV", "ATA inicializado sem slot inventariavel");
     return OK;
 }
 
@@ -320,17 +342,28 @@ static void device_format_pci_text(const device_info_t* info,
 
 static void device_format_ata_text(const device_info_t* info,
                                    device_text_t* out_text) {
-    ata_device_t* ata = ata_get_device();
+    ata_device_t ata;
+    char id[] = "ata0";
+    int found = info->status == DEVICE_STATUS_READY &&
+                ata_get_device_at(info->device, &ata) == OK;
 
-    device_set_text(out_text->id, DEVICE_ID_SIZE, "ata-primary");
+    if (info->device < ATA_MAX_DEVICES) id[3] = (char)('0' + info->device);
+    device_set_text(out_text->id, DEVICE_ID_SIZE, id);
     device_set_text(out_text->name, DEVICE_NAME_SIZE,
-                    ata ? ata->model : "ATA primario");
+                    found ? ata.model : "ATA indisponivel");
     device_set_text(out_text->type, DEVICE_TYPE_SIZE, "Armazenamento");
-    device_set_text(out_text->location, DEVICE_LOCATION_SIZE, "ATA primario");
-    if (info->status == DEVICE_STATUS_READY && ata) {
-        device_set_text(out_text->detail, DEVICE_DETAIL_SIZE,
-                        ata->slave ? "Canal primario slave" :
-                                     "Canal primario master");
+    device_set_text(out_text->location, DEVICE_LOCATION_SIZE,
+                    info->bus ? "ATA secundario" : "ATA primario");
+    if (info->status == DEVICE_STATUS_READY && found) {
+        if (ata.channel) {
+            device_set_text(out_text->detail, DEVICE_DETAIL_SIZE,
+                            ata.slave ? "Canal secundario slave" :
+                                        "Canal secundario master");
+        } else {
+            device_set_text(out_text->detail, DEVICE_DETAIL_SIZE,
+                            ata.slave ? "Canal primario slave" :
+                                        "Canal primario master");
+        }
     } else {
         device_set_text(out_text->detail, DEVICE_DETAIL_SIZE,
                         "Nenhum disco ATA detectado");
@@ -491,6 +524,15 @@ int device_manager_find(const char* id, device_info_t* out_info) {
     if (!device_manager_initialized) {
         LOG_ERROR("DEV", "Busca antes da inicializacao do inventario");
         return ERR_STATE;
+    }
+    if (device_id_matches("ata-primary", id)) {
+        for (uint32_t index = 0; index < device_count; index++) {
+            if (device_entries[index].kind == DEVICE_KIND_ATA_PRIMARY &&
+                device_entries[index].status == DEVICE_STATUS_READY) {
+                *out_info = device_entries[index];
+                return OK;
+            }
+        }
     }
     for (uint32_t index = 0; index < device_count; index++) {
         int result = device_manager_format_text(&device_entries[index], &text);

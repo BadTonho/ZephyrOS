@@ -7,6 +7,7 @@
 #define FM_NAME_LEN 13
 #define FM_MAX_PATH 256
 #define FM_MAX_HISTORY 16
+#define FM_VOLUME_ID_LEN 12
 #define FM_TITLE_BAR_COLOR 0x1F
 #define FM_BORDER_COLOR 0x07
 #define FM_FILE_COLOR 0x07
@@ -39,6 +40,9 @@ typedef struct {
     int running;
     char current_path[FM_MAX_PATH];
     char history[FM_MAX_HISTORY][FM_MAX_PATH];
+    char history_volume[FM_MAX_HISTORY][FM_VOLUME_ID_LEN];
+    uint8_t history_virtual[FM_MAX_HISTORY];
+    uint8_t history_boot[FM_MAX_HISTORY];
     int history_count;
     int history_pos;
     int address_mode;
@@ -53,6 +57,11 @@ typedef struct {
     uint32_t clipboard_size;
     int clipboard_op;
     int create_dir_mode;
+    char storage_volume_id[FM_VOLUME_ID_LEN];
+    uint32_t storage_generation;
+    uint8_t storage_virtual;
+    uint8_t storage_boot;
+    uint8_t storage_read_only;
     fm_mode_t mode;
 } fm_state_t;
 
