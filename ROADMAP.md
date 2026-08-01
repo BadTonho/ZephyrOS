@@ -440,7 +440,7 @@ Sistema e ecossistema:       [████████████████�
 - [x] Host, build e matriz QEMU AS4 pelo usuario, incluindo planos,
   update/downgrade, rollback, failpoints com recuperacao e interface Classic.
 
-### AS5 - Repositorio remoto autenticado (implementada; validacao pendente)
+### AS5 - Repositorio remoto autenticado (concluida e validada)
 
 - [x] Servico publico `app_remote`, catalogo `ZAC1`, Ed25519, SHA-256 por
   pacote e tabela de confianca de teste separada da ZUPD.
@@ -452,7 +452,9 @@ Sistema e ecossistema:       [████████████████�
   Simple permanece congelado e usa o Shell como fallback remoto.
 - [x] Fixtures seed/update e negativos, chave publica, auditoria do empacotador,
   Q3Check e alvos `store-as5-*`, sem chave privada versionada.
-- [ ] Executar gates host, build e matriz QEMU AS5 pelo usuario.
+- [x] Gates host, build e matriz QEMU AS5 executados pelo usuario, incluindo
+  autenticacao, cache A/B, instalacao offline, persistencia, interface Classic,
+  recuperacao e diagnosticos de integridade.
 
 ### Q4 - Regressao compacta ✅
 
@@ -746,7 +748,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 - **Gerenciador de Processos** (`gerenciador de processos.md`)
 
 ### Novos Módulos e Aplicativos (App Store / Opcionais)
-- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1-AS4 validados; AS5 implementada e aguardando validacao
+- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1-AS5 concluidos e validados
 - **Gerenciador de Mídia** (`gerenciador de midia.md`)
 - **Gerenciador de Jogos** (`gerenciador de jogos.md`)
 - **Anti-Virus** (`anti virus.md`)

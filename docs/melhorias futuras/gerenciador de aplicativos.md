@@ -12,7 +12,7 @@ ordem antiga deste inventário por cinco fases:
 | AS2 | Ciclo de vida local com confirmação | Validado |
 | AS3 | Aplicativo nativo Modern com fallbacks | Validado |
 | AS4 | Atualização local e dependências | Validado |
-| AS5 | Repositório remoto autenticado | Implementado; validação pendente |
+| AS5 | Repositório remoto autenticado | Validado |
 
 As seções detalhadas abaixo permanecem como inventário de ideias. Seus
 checklists não devem ser executados em ordem nem usados como status técnico
