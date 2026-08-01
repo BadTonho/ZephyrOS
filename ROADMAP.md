@@ -115,7 +115,7 @@ Sistema e ecossistema:       [████████████████�
 | `health` | Exibe metricas e estado de recovery |
 | `store` | Abre a App Store nativa; fallback TUI no modo Simple |
 | `store status|list|info` | Consulta o catalogo local da App Store |
-| `store install|remove|run` | Preflight, ciclo confirmado e execucao instalada |
+| `store install|update|rollback|remove|run` | Planos locais, ciclo confirmado, rollback e execucao instalada |
 | `devices [-v]` | Lista o inventario nativo de hardware |
 | `device-info <id>` | Mostra detalhes de um dispositivo inventariado |
 | `device-scan` | Refaz somente a varredura PCI e atualiza o inventario |
@@ -428,6 +428,16 @@ Sistema e ecossistema:       [████████████████�
   confirmacao, instalacao/remocao, `WAITAPP`/`F12`, foco, singleton, Simple e
   diagnosticos finais sem residuos.
 
+### AS4 - Atualizacao local transacional (implementada; validacao pendente)
+
+- [x] Planos topologicos locais, update/downgrade confirmado e dependencias
+  transitivas ausentes no FAT12.
+- [x] Staging, journal redundante, recuperacao no boot, rollback manual e
+  historico compacto sem alterar ZPKG, App API ou loader.
+- [x] Store Classic/Simple e Shell com update, rollback, historico, failpoint
+  e fixtures seed/update `UPTARGET`/`UPDEPA`/`UPDEPB`.
+- [ ] Host, build e matriz QEMU AS4 pelo usuario.
+
 ### Q4 - Regressao compacta ✅
 
 - [x] `regcheck` concentra health, processos, servicos, scheduler, memoria,
@@ -720,7 +730,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 - **Gerenciador de Processos** (`gerenciador de processos.md`)
 
 ### Novos Módulos e Aplicativos (App Store / Opcionais)
-- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1, AS2 e AS3 validados; MV4 funcionalmente validado, comparacao historica N/D
+- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1-AS3 validados; AS4 implementado e aguardando matriz de validacao
 - **Gerenciador de Mídia** (`gerenciador de midia.md`)
 - **Gerenciador de Jogos** (`gerenciador de jogos.md`)
 - **Anti-Virus** (`anti virus.md`)

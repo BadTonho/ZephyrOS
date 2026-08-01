@@ -71,6 +71,7 @@ static void to_upper(char* str, int max_len) {
 #define FAT12_CHAIN_LIMIT 4096
 #define FAT12_ATOMIC_MAX_CLUSTERS 128U
 #define FAT12_STREAM_MAX_SIZE (128U * 1024U)
+#define FAT12_ATTRIBUTES_PRESERVE 0xFFU
 
 typedef struct {
     uint8_t active;
@@ -1677,6 +1678,247 @@ int fat12_atomic_delete_root(const char* filename) {
         fs.root_dir[entry_index] = previous;
         return ERR_DISK;
     }
+    if (previous.cluster_low >= 2U) {
+        fat12_release_chain(previous.cluster_low);
+        if (fat12_flush_fats() != OK) {
+            LOG_WARN("FAT12", "Arquivo removido; cadeia pode ter vazado");
+        }
+    }
+    return OK;
+}
+
+static int fat12_find_dir_slot(uint16_t dir_cluster, const char encoded[11],
+                               int require_existing, uint16_t* cluster_out,
+                               uint32_t* offset_out, int* existing_out) {
+    uint32_t cluster_size;
+    uint8_t* buffer;
+    uint16_t cluster;
+    uint16_t free_cluster = 0;
+    uint32_t free_offset = 0;
+    uint32_t steps = 0;
+
+    if (!encoded || !cluster_out || !offset_out || !existing_out ||
+        dir_cluster < 2U) {
+        LOG_ERROR("FAT12", "Destino invalido na busca atomica em diretorio");
+        return ERR_INVALID;
+    }
+    cluster_size = fs.bpb.sectors_per_cluster * fs.bpb.bytes_per_sector;
+    if (cluster_size == 0U) return ERR_INVALID;
+    buffer = (uint8_t*)kmalloc(cluster_size);
+    if (!buffer) {
+        LOG_ERROR("FAT12", "Falha ao alocar busca atomica em diretorio");
+        return ERR_MEM;
+    }
+    cluster = dir_cluster;
+    while (cluster >= 2U && cluster < FAT12_CLUSTER_END &&
+           steps++ < FAT12_CHAIN_LIMIT) {
+        uint32_t lba = fs.data_start +
+                       (cluster - 2U) * fs.bpb.sectors_per_cluster;
+        uint32_t entries = cluster_size / sizeof(fat12_dir_entry_t);
+
+        for (uint32_t sector = 0; sector < fs.bpb.sectors_per_cluster;
+             sector++) {
+            if (ata_read_sectors(lba + sector, 1,
+                                 buffer + sector * fs.bpb.bytes_per_sector) != 0) {
+                kfree(buffer);
+                LOG_ERROR("FAT12", "Falha ao ler diretorio atomico");
+                return ERR_DISK;
+            }
+        }
+        for (uint32_t index = 0; index < entries; index++) {
+            fat12_dir_entry_t* entry =
+                (fat12_dir_entry_t*)(buffer +
+                                     index * sizeof(fat12_dir_entry_t));
+
+            if ((uint8_t)entry->name[0] == 0x00U) {
+                if (!free_cluster) {
+                    free_cluster = cluster;
+                    free_offset = index * sizeof(fat12_dir_entry_t);
+                }
+                break;
+            }
+            if ((uint8_t)entry->name[0] == 0xE5U) {
+                if (!free_cluster) {
+                    free_cluster = cluster;
+                    free_offset = index * sizeof(fat12_dir_entry_t);
+                }
+                continue;
+            }
+            if ((entry->attributes & 0x08U) == 0U &&
+                strncmp(entry->name, encoded, 11U) == 0) {
+                *cluster_out = cluster;
+                *offset_out = index * sizeof(fat12_dir_entry_t);
+                *existing_out = 1;
+                kfree(buffer);
+                return OK;
+            }
+        }
+        cluster = fat12_get_cluster(cluster);
+    }
+    kfree(buffer);
+    if (require_existing) return ERR_NOT_FOUND;
+    if (!free_cluster) {
+        LOG_ERROR("FAT12", "Diretorio sem slot para escrita atomica");
+        return ERR_OVERFLOW;
+    }
+    *cluster_out = free_cluster;
+    *offset_out = free_offset;
+    *existing_out = 0;
+    return OK;
+}
+
+static int fat12_write_dir_cluster(uint16_t cluster, const uint8_t* buffer) {
+    uint32_t lba = fs.data_start +
+                   (cluster - 2U) * fs.bpb.sectors_per_cluster;
+
+    for (uint32_t sector = 0; sector < fs.bpb.sectors_per_cluster;
+         sector++) {
+        if (ata_write_sectors(lba + sector, 1,
+                              (uint8_t*)buffer +
+                              sector * fs.bpb.bytes_per_sector) != 0) {
+            LOG_ERROR("FAT12", "Falha ao persistir diretorio atomico");
+            return ERR_DISK;
+        }
+    }
+    return OK;
+}
+
+static int fat12_read_dir_cluster_buffer(uint16_t cluster, uint8_t* buffer) {
+    uint32_t lba = fs.data_start +
+                   (cluster - 2U) * fs.bpb.sectors_per_cluster;
+
+    for (uint32_t sector = 0; sector < fs.bpb.sectors_per_cluster;
+         sector++) {
+        if (ata_read_sectors(lba + sector, 1,
+                             buffer + sector * fs.bpb.bytes_per_sector) != 0) {
+            LOG_ERROR("FAT12", "Falha ao reler diretorio atomico");
+            return ERR_DISK;
+        }
+    }
+    return OK;
+}
+
+int fat12_atomic_write_file_in_dir(uint16_t dir_cluster, const char* filename,
+                                    const uint8_t* data, uint32_t size,
+                                    uint8_t attributes, int require_existing) {
+    uint16_t clusters[FAT12_ATOMIC_MAX_CLUSTERS];
+    fat12_dir_entry_t previous;
+    char encoded[11];
+    uint32_t cluster_size;
+    uint32_t cluster_count;
+    uint32_t offset;
+    uint16_t entry_cluster;
+    uint8_t* directory;
+    int existing;
+    int result;
+
+    if (!fs.initialized) {
+        LOG_ERROR("FAT12", "Escrita atomica em diretorio antes da inicializacao");
+        return ERR_STATE;
+    }
+    if (!filename || !data || size == 0U || size > 64U * 1024U) {
+        LOG_ERROR("FAT12", "Argumento invalido na escrita atomica em diretorio");
+        return ERR_INVALID;
+    }
+    result = fat12_encode_root_name(filename, encoded);
+    if (result != OK) return result;
+    result = fat12_find_dir_slot(dir_cluster, encoded, require_existing,
+                                 &entry_cluster, &offset, &existing);
+    if (result != OK) return result;
+    cluster_size = fs.bpb.sectors_per_cluster * fs.bpb.bytes_per_sector;
+    cluster_count = (size + cluster_size - 1U) / cluster_size;
+    if (cluster_count == 0U || cluster_count > FAT12_ATOMIC_MAX_CLUSTERS) {
+        LOG_ERROR("FAT12", "Cadeia atomica em diretorio fora do limite");
+        return ERR_OVERFLOW;
+    }
+    result = fat12_select_atomic_clusters(clusters, cluster_count);
+    if (result != OK) {
+        LOG_ERROR("FAT12", "Espaco insuficiente para escrita atomica em diretorio");
+        return result;
+    }
+    result = fat12_write_atomic_clusters(clusters, cluster_count, data, size);
+    if (result != OK) return result;
+    for (uint32_t index = 0; index < cluster_count; index++) {
+        fat12_set_cluster(clusters[index],
+                          index + 1U < cluster_count ? clusters[index + 1U] :
+                          FAT12_CLUSTER_END);
+    }
+    if (fat12_flush_fats() != OK) {
+        fat12_release_chain(clusters[0]);
+        fat12_flush_fats();
+        return ERR_DISK;
+    }
+    directory = (uint8_t*)kmalloc(cluster_size);
+    if (!directory) {
+        fat12_release_chain(clusters[0]);
+        fat12_flush_fats();
+        LOG_ERROR("FAT12", "Falha ao alocar diretorio atomico");
+        return ERR_MEM;
+    }
+    result = fat12_read_dir_cluster_buffer(entry_cluster, directory);
+    if (result == OK) {
+        fat12_dir_entry_t* entry = (fat12_dir_entry_t*)(directory + offset);
+        previous = *entry;
+        kmemset(entry, 0, sizeof(*entry));
+        kmemcpy(entry->name, encoded, sizeof(encoded));
+        entry->attributes = attributes == FAT12_ATTRIBUTES_PRESERVE && existing ?
+                            previous.attributes : attributes;
+        entry->cluster_low = clusters[0];
+        entry->file_size = size;
+        result = fat12_write_dir_cluster(entry_cluster, directory);
+    }
+    kfree(directory);
+    if (result != OK) {
+        fat12_release_chain(clusters[0]);
+        fat12_flush_fats();
+        return result;
+    }
+    if (existing && previous.cluster_low >= 2U) {
+        fat12_release_chain(previous.cluster_low);
+        if (fat12_flush_fats() != OK) {
+            LOG_WARN("FAT12", "Arquivo trocado; cadeia antiga pode ter vazado");
+        }
+    }
+    return OK;
+}
+
+int fat12_atomic_delete_file_in_dir(uint16_t dir_cluster,
+                                     const char* filename) {
+    char encoded[11];
+    uint32_t cluster_size;
+    uint32_t offset;
+    uint16_t entry_cluster;
+    uint8_t* directory;
+    fat12_dir_entry_t previous;
+    int existing;
+    int result;
+
+    if (!fs.initialized || !filename) {
+        LOG_ERROR("FAT12", "Exclusao atomica em diretorio invalida");
+        return ERR_INVALID;
+    }
+    result = fat12_encode_root_name(filename, encoded);
+    if (result != OK) return result;
+    result = fat12_find_dir_slot(dir_cluster, encoded, 1, &entry_cluster,
+                                 &offset, &existing);
+    if (result != OK || !existing) return ERR_NOT_FOUND;
+    cluster_size = fs.bpb.sectors_per_cluster * fs.bpb.bytes_per_sector;
+    directory = (uint8_t*)kmalloc(cluster_size);
+    if (!directory) {
+        LOG_ERROR("FAT12", "Falha ao alocar exclusao atomica em diretorio");
+        return ERR_MEM;
+    }
+    result = fat12_read_dir_cluster_buffer(entry_cluster, directory);
+    if (result == OK) {
+        fat12_dir_entry_t* entry = (fat12_dir_entry_t*)(directory + offset);
+        previous = *entry;
+        entry->name[0] = (char)0xE5;
+        entry->file_size = 0;
+        entry->cluster_low = 0;
+        result = fat12_write_dir_cluster(entry_cluster, directory);
+    }
+    kfree(directory);
+    if (result != OK) return result;
     if (previous.cluster_low >= 2U) {
         fat12_release_chain(previous.cluster_low);
         if (fat12_flush_fats() != OK) {

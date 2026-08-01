@@ -7,9 +7,10 @@ imagem ZAPP e seu manifesto. O artefato no host usa a extensao
 `.zephyrosapp`; dentro da imagem FAT12 ele e gravado com o alias 8.3
 `ID.ZPK`. Os dois arquivos contem os mesmos bytes.
 
-Esta fase nao adiciona syscall, nao altera a App API `0.3` e nao define
+O AS1 nao adicionou syscall, nao alterou a App API `0.3` nem definiu
 assinatura, rede, atualizacao, rollback, permissoes, GUI/App Store, icones ou
-multiplos arquivos por pacote.
+multiplos arquivos por pacote. AS4 acrescenta apenas atualizacao local FAT12,
+rollback e historico; o container e a App API continuam inalterados.
 
 ## Container ZPKG v1
 
@@ -152,6 +153,28 @@ WRITE_ERROR
 `APPS/<ID>/APP.ZAP` internamente e entrega os argumentos ao loader existente.
 Mutacoes sao recusadas enquanto um ZAPP externo estiver em primeiro plano;
 execucao tambem e recusada durante uma mutacao.
+
+## Atualizacao transacional AS4
+
+AS4 preserva o container `ZPKG v1` e centraliza a comparacao de versao em
+`app_package_compare_versions()`. Planos possuem ate 16 entradas e sao
+revalidados integralmente no preflight e na confirmacao. Uma instalacao pode
+incluir dependencias locais transitivas em ordem topologica; uma atualizacao
+altera somente o alvo e nao atualiza dependencias ja instaladas.
+
+No FAT12, staging, backup, journal, estado e historico usam aliases privados
+hidden/system. `APP.ZAP` e `META.DAT` sao escritos copy-on-write dentro de
+`APPS/<ID>`. O journal e recuperado em `app_package_init()` antes do catalogo;
+falha de journal bloqueia mutacoes e preserva consultas. FAT32 recusa a
+mutacao AS4 sem escrita. Cada app atualizado conserva uma unica versao
+anterior recuperavel; `rollback` restaura e consome somente a copia daquele
+app. A tabela persistente comporta os 32 IDs expostos pelo catalogo.
+
+Os novos motivos append-only incluem `PLAN_INCOMPLETE`, `PLAN_CYCLE`,
+`PLAN_CONFLICT`, `DOWNGRADE_REQUIRES_CONFIRM`, `TRANSACTION_UNAVAILABLE`,
+`TRANSACTION_PENDING`, `ROLLBACK_UNAVAILABLE`, `RECOVERY_FAILED` e
+`HISTORY_UNAVAILABLE`. `app_package_status_t` informa suporte, journal, a
+tabela compacta de rollbacks por app e o ultimo registro de historico.
 
 ## Comandos
 

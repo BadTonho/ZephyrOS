@@ -1,4 +1,4 @@
-# App Store - Catalogo, ciclo de vida e interface AS3
+# App Store - Catalogo, transacoes locais e interface AS4
 
 ## Resumo de progresso
 
@@ -8,9 +8,10 @@ instalacao, remocao e execucao pelo Shell. O AS2 esta concluido e validado no
 host e no QEMU. O AS3 implementa a interface nativa hospedada, com fallback
 Simple completo, e foi validado no host e no QEMU pelo usuario.
 
-A interface AS3 usa a aparencia Modern Dark dentro do renderer Classic VESA;
-`guimode modern` continua reservado. Atualizacao, downgrade e resolucao
-automatica de dependencias continuam fora desta fase.
+A interface AS4 usa a aparencia Modern Dark dentro do renderer Classic VESA;
+`guimode modern` continua reservado. AS4 acrescenta atualizacao local FAT12,
+plano topologico de dependencias, rollback manual e historico compacto, sem
+rede, assinatura, alteracao do ZPKG, App API ou loader.
 
 ## Fontes e snapshot
 
@@ -102,6 +103,8 @@ app_catalog_get_status()
 app_catalog_get_count()
 app_catalog_get_entry()
 app_catalog_find_entry()
+app_catalog_build_install_plan()
+app_catalog_build_update_plan()
 app_catalog_state_name()
 app_catalog_reason_name()
 ```
@@ -127,6 +130,29 @@ Mutacoes sao bloqueadas enquanto um ZAPP externo estiver em primeiro plano.
 `store run` aceita somente um ID instalado e executa
 `APPS/<ID>/APP.ZAP` pelo loader existente.
 
+## Transacoes AS4
+
+`app_package_compare_versions()` valida exatamente tres componentes numericos
+e compara cada um como texto normalizado, sem conversao numerica. O planejador
+gera no maximo 16 entradas: dependencias locais ausentes em ordem topologica
+lexica e, por ultimo, o alvo. Dependencias instaladas nunca recebem update
+implicito; fonte ausente/invalida, ciclo ou conflito recusam o plano antes de
+qualquer escrita.
+
+No FAT12, o servico cria staging privado, copia a versao anterior do alvo e
+persiste journal redundante antes de trocar `APP.ZAP` e `META.DAT` por escrita
+copy-on-write. No boot, `app_package_init()` recupera journal `PREPARED` ou
+`REPLACING` antes de o catalogo ser lido. Journal invalido ou recuperacao
+incompleta bloqueiam mutacoes, mas mantem as consultas. FAT32 informa suporte
+transacional indisponivel e nao grava AS4.
+
+As APIs publicas incluem `app_package_preflight_plan()`,
+`app_package_apply_plan_confirmed()`, `app_package_preflight_rollback()`,
+`app_package_rollback_confirmed()`, `app_package_get_status()` e leitura de
+historico. Cada app atualizado mantem uma copia anterior recuperavel; o
+rollback consome somente a copia do app selecionado. A fonte `.ZPK` local
+permanece intacta, por isso a Store pode voltar a indicar update disponivel.
+
 ## Recovery e health
 
 `RECOVERY_COMPONENT_APP_STORE` foi anexado ao fim da enumeracao:
@@ -151,6 +177,10 @@ continuam consultaveis e `app_catalog_refresh()` retorna `OK`.
 | `store info <ID\|alias.ZPK>` | Mostra manifesto, versoes, confianca, dependencias e capacidades. |
 | `store install <alias.ZPK>` | Executa preflight sem escrita e mostra o comando de confirmacao. |
 | `store install <alias.ZPK> --confirm` | Repete o preflight e instala o pacote. |
+| `store update <ID\|alias.ZPK> [--downgrade] [--confirm]` | Mostra/aplica o plano local; downgrade exige os dois tokens. |
+| `store rollback <ID> [--confirm]` | Restaura e consome a versao anterior recuperavel. |
+| `store history [ID]` | Lista o historico compacto, opcionalmente filtrado. |
+| `store test fail-after <1..32>` | Configura failpoint AS4 apenas para validacao QEMU. |
 | `store remove <ID>` | Executa preflight de remocao sem escrita. |
 | `store remove <ID> --confirm` | Repete o preflight e remove o pacote. |
 | `store run <ID> [args]` | Executa somente o ZAPP instalado; F12 cancela. |
@@ -158,7 +188,7 @@ continuam consultaveis e `app_catalog_refresh()` retorna `OK`.
 Todo pacote fonte e apresentado como `LOCAL / NAO ASSINADO`. Os subcomandos
 preservam o diagnostico reproduzivel pelo Shell.
 
-## Interface AS3
+## Interface AS3 e AS4
 
 `src/include/ui/appstore.h` define o ciclo de vida da interface:
 
@@ -169,15 +199,16 @@ appstore_is_open/appstore_get_mode
 ```
 
 O modulo possui uma janela singleton hospedada pelo Window Manager e um worker
-cooperativo. Refresh, verificacao, preflight, instalacao, remocao e abertura
-de ZAPPs sao executados fora dos callbacks de desenho e entrada. O worker usa
-somente `app_catalog_*`, `app_package_*` e o loader existente; nao duplica
-validacao de ZPKG, CRC, dependencias ou serializacao de mutacoes.
+cooperativo. Refresh, verificacao, preflight, instalacao, atualizacao,
+rollback, remocao e abertura de ZAPPs sao executados fora dos callbacks de
+desenho e entrada. O worker usa somente `app_catalog_*`, `app_package_*` e o
+loader existente; nao duplica validacao de ZPKG, CRC, dependencias ou
+serializacao de mutacoes.
 
 As abas sao **Catalogo**, **Instalados** e **Detalhes**. `Tab`, setas, `F5`,
-`V`, `I`, `A`, `R` e Enter equivalem aos botoes Atualizar, Verificar,
-Instalar, Abrir e Remover. Atualizar permanece desativado e explica que a
-operacao pertence ao AS4. A confirmacao modal e vinculada ao ID/alias e a
+`V`, `I`, `U`, `A`, `R`, `B` e Enter equivalem aos botoes Verificar,
+Instalar, Atualizar, Abrir, Remover e Reverter. A confirmacao mostra a ordem
+topologica e identifica downgrade diagnostico. A confirmacao modal e vinculada ao ID/alias e a
 selecao atual; trocar aba, selecao ou atualizar o catalogo a cancela.
 
 No modo Classic, Esc cancela somente o contexto atual e a janela fecha por X
@@ -240,6 +271,22 @@ Os artefatos de ciclo de vida ficam em `docs/fixtures/apps/store-as2/`:
 
 `fixtures-store-as2` gera a matriz; `audit-store-as2` confere nomes, hashes,
 manifestos, payload de espera, dependencia e, opcionalmente, os bytes FAT12.
+
+### Fixtures AS4
+
+Os perfis ficam em `docs/fixtures/apps/store-as4-seed/` e
+`docs/fixtures/apps/store-as4-update/`. O seed possui `UPTARGET 1.0.0`; o
+update possui `UPTARGET 1.1.0 -> UPDEPA -> UPDEPB`. Ambos tambem cobrem
+`BROKEN` (fonte de dependencia ausente) e `CYCLEA`/`CYCLEB` (ciclo).
+
+```text
+make store-as4-test
+make store-as4-seed-demo
+make store-as4-update-demo
+```
+
+O build normal injeta o perfil `update`; as seis fontes AS4, junto das nove
+AS1/AS2, mantem o catalogo abaixo do limite de 16 fontes.
 
 ## Validacao concluida
 

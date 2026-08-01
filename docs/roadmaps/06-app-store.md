@@ -239,21 +239,31 @@ de dependencia, confirmacao, instalacao/remocao, `WAITAPP` com `F12`, retorno
 de foco, singleton pelo Menu Iniciar/taskbar, fallback Simple e diagnosticos
 finais concluiram sem residuos.
 
-## AS4 - Atualizacao local e dependencias
+## AS4 - Atualizacao local e dependencias (implementada; validacao pendente)
 
 Esta fase comeca somente depois do MVP AS1-AS3 e da validacao MV4 compartilhada
 com o Roadmap 07.
 
-- [ ] Comparar `MAJOR.MINOR.PATCH` sem conversao ambigua ou overflow.
-- [ ] Permitir somente atualizacao para versao superior por padrao.
-- [ ] Exigir confirmacao separada para downgrade diagnostico.
-- [ ] Planejar dependencias disponiveis no catalogo em ordem topologica.
-- [ ] Recusar ciclos, conflitos, dependencias duplicadas e plano incompleto.
-- [ ] Exibir todo o plano antes de qualquer gravacao.
-- [ ] Definir staging, commit e recuperacao para troca de `APP.ZAP` e
+- [x] Comparar `MAJOR.MINOR.PATCH` sem conversao ambigua ou overflow.
+- [x] Permitir somente atualizacao para versao superior por padrao.
+- [x] Exigir confirmacao separada para downgrade diagnostico.
+- [x] Planejar dependencias disponiveis no catalogo em ordem topologica.
+- [x] Recusar ciclos, conflitos, dependencias duplicadas e plano incompleto.
+- [x] Exibir todo o plano antes de qualquer gravacao.
+- [x] Definir staging, commit e recuperacao para troca de `APP.ZAP` e
   `META.DAT` sem perder a versao instalada em falha de I/O.
-- [ ] Manter no maximo uma versao anterior recuperavel por aplicativo.
-- [ ] Adicionar historico compacto de instalacao, remocao e atualizacao.
+- [x] Manter uma versao anterior recuperavel por aplicativo atualizado.
+- [x] Adicionar historico compacto de instalacao, remocao, atualizacao,
+  rollback e recuperacao.
+- [x] Expor `store update`, `store rollback`, `store history` e failpoint AS4.
+- [x] Adicionar fixtures seed/update e alvos `store-as4-*`.
+
+### Validacao pendente
+
+O usuario executara `make q3check`, `make clean && make`,
+`make store-as4-test`, os demos seed/update e a matriz QEMU de update,
+rollback, downgrade, ciclo, plano incompleto, failpoints/reboot, Simple e
+Classic antes de marcar a fase como validada.
 
 ### Criterio de saida
 

@@ -181,16 +181,17 @@ Stable versionado. Os contratos canonicos permanecem em
 `docs/08-sistema-arquivos/sistema-arquivos.md` e
 `docs/14-atualizacoes/distribuicao-remota.md`.
 
-Desde o AS1, `src/include/core/app_catalog.h` define o snapshot local
-somente-leitura, estados, motivos, capacidades e consultas por copia da App
-Store. `src/include/core/recovery.h` acrescenta
+Desde o AS1/AS4, `src/include/core/app_catalog.h` define o snapshot local
+somente-leitura, estados, motivos, capacidades, consultas por copia e
+construtores de plano local da App Store. `src/include/core/recovery.h` acrescenta
 `RECOVERY_COMPONENT_APP_STORE` ao fim da enumeracao. Os contratos canonicos
 permanecem em `docs/13-aplicativos/app-store.md` e
 `docs/04-kernel/kernel.md`.
 
-Desde o AS2, `src/include/core/app_package.h` acrescenta preflights,
-confirmacao, motivos de acao, bloqueadores, serializacao e execucao por ID
-instalado. O contrato canonico permanece em
+Desde o AS2/AS4, `src/include/core/app_package.h` acrescenta preflights,
+confirmacao, motivos de acao, bloqueadores, serializacao, planos topologicos,
+status transacional, tabela de rollback por app, historico e execucao por ID instalado. O
+contrato canonico permanece em
 `docs/13-aplicativos/pacotes.md`.
 
 Desde o AS3, `src/include/ui/appstore.h` define o ciclo de vida, os modos

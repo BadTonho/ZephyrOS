@@ -50,6 +50,15 @@ STORE_AS2_FIXTURE_ALIASES = (
     "BASE.ZPK",
     "DEPEND.ZPK",
 )
+STORE_AS4_FIXTURE_FORMAT = "zephyros-app-store-as4-fixtures-v1"
+STORE_AS4_FIXTURE_ALIASES = (
+    "UPTARGET.ZPK",
+    "UPDEPA.ZPK",
+    "UPDEPB.ZPK",
+    "BROKEN.ZPK",
+    "CYCLEA.ZPK",
+    "CYCLEB.ZPK",
+)
 
 
 class PackageError(ValueError):
@@ -845,6 +854,123 @@ def audit_store_as2_fixtures(
     print("App Store AS2 fixtures: OK")
 
 
+def build_store_as4_fixtures(profile: str) -> dict[str, bytes]:
+    """Gera as fontes locais de update e planejamento do AS4."""
+    if profile not in ("seed", "update"):
+        raise PackageError("perfil AS4 invalido")
+    demo = build_demo_zapp()
+    target_version = "1.0.0" if profile == "seed" else "1.1.0"
+    target_dependencies = "" if profile == "seed" else "UPDEPA"
+    fixtures = {
+        "UPTARGET.ZPK": build_package(
+            store_fixture_manifest("UPTARGET", "Update Target", target_version,
+                                   dependencies=target_dependencies), demo
+        ),
+        "UPDEPA.ZPK": build_package(
+            store_fixture_manifest("UPDEPA", "Update Dependency A",
+                                   dependencies="UPDEPB"), demo
+        ),
+        "UPDEPB.ZPK": build_package(
+            store_fixture_manifest("UPDEPB", "Update Dependency B"), demo
+        ),
+        "BROKEN.ZPK": build_package(
+            store_fixture_manifest("BROKEN", "Broken Plan",
+                                   dependencies="NOFONTE"), demo
+        ),
+        "CYCLEA.ZPK": build_package(
+            store_fixture_manifest("CYCLEA", "Cycle A", dependencies="CYCLEB"),
+            demo,
+        ),
+        "CYCLEB.ZPK": build_package(
+            store_fixture_manifest("CYCLEB", "Cycle B", dependencies="CYCLEA"),
+            demo,
+        ),
+    }
+    return {alias: fixtures[alias] for alias in STORE_AS4_FIXTURE_ALIASES}
+
+
+def store_as4_fixture_expectations(profile: str) -> dict[str, dict[str, str]]:
+    """Publica os casos de planejamento AS4 sem depender do runtime."""
+    return {
+        "UPTARGET.ZPK": {
+            "id": "UPTARGET", "version": "1.0.0" if profile == "seed" else "1.1.0",
+            "dependencies": "" if profile == "seed" else "UPDEPA",
+        },
+        "UPDEPA.ZPK": {"id": "UPDEPA", "version": "1.0.0", "dependencies": "UPDEPB"},
+        "UPDEPB.ZPK": {"id": "UPDEPB", "version": "1.0.0", "dependencies": ""},
+        "BROKEN.ZPK": {"id": "BROKEN", "version": "1.0.0", "dependencies": "NOFONTE"},
+        "CYCLEA.ZPK": {"id": "CYCLEA", "version": "1.0.0", "dependencies": "CYCLEB"},
+        "CYCLEB.ZPK": {"id": "CYCLEB", "version": "1.0.0", "dependencies": "CYCLEA"},
+    }
+
+
+def write_store_as4_fixtures(output_dir: Path, profile: str) -> None:
+    """Grava seed ou update deterministico, com metadados auditaveis."""
+    fixtures = build_store_as4_fixtures(profile)
+    expectations = store_as4_fixture_expectations(profile)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    published: dict[str, object] = {
+        "format": STORE_AS4_FIXTURE_FORMAT, "profile": profile, "fixtures": {}
+    }
+    metadata = published["fixtures"]
+    if not isinstance(metadata, dict):
+        raise PackageError("estrutura interna dos fixtures AS4 invalida")
+    for alias, data in fixtures.items():
+        (output_dir / alias).write_bytes(data)
+        metadata[alias] = {
+            **expectations[alias], "size": len(data),
+            "sha256": hashlib.sha256(data).hexdigest(),
+        }
+    (output_dir / "fixtures.json").write_text(
+        json.dumps(published, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+
+
+def audit_store_as4_fixtures(
+    fixtures_dir: Path, image_path: Path | None = None
+) -> None:
+    """Audita pacote, perfil e aliases FAT12 da matriz AS4."""
+    try:
+        published = json.loads(
+            (fixtures_dir / "fixtures.json").read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError) as error:
+        raise PackageError("manifesto AS4 invalido") from error
+    profile = published.get("profile") if isinstance(published, dict) else None
+    metadata = published.get("fixtures") if isinstance(published, dict) else None
+    if (
+        not isinstance(published, dict)
+        or published.get("format") != STORE_AS4_FIXTURE_FORMAT
+        or profile not in ("seed", "update") or not isinstance(metadata, dict)
+        or set(metadata) != set(STORE_AS4_FIXTURE_ALIASES)
+    ):
+        raise PackageError("conjunto dos fixtures AS4 divergiu")
+    fixtures = build_store_as4_fixtures(profile)
+    expectations = store_as4_fixture_expectations(profile)
+    for alias, expected in fixtures.items():
+        try:
+            data = (fixtures_dir / alias).read_bytes()
+        except OSError as error:
+            raise PackageError(f"fixture AS4 ausente: {alias}") from error
+        entry = metadata.get(alias)
+        if (
+            not isinstance(entry, dict) or data != expected
+            or entry.get("size") != len(data)
+            or entry.get("sha256") != hashlib.sha256(data).hexdigest()
+            or any(entry.get(field) != value
+                   for field, value in expectations[alias].items())
+        ):
+            raise PackageError(f"fixture AS4 dessincronizado: {alias}")
+        parsed = parse_package(data)
+        if any(parsed.manifest.get(field) != value
+               for field, value in expectations[alias].items()):
+            raise PackageError(f"semantica AS4 divergiu: {alias}")
+        if image_path is not None and read_root_file(image_path, alias) != data:
+            raise PackageError(f"fixture AS4 divergiu na imagem: {alias}")
+        print(f"store_as4_fixture_{profile}_{alias} OK")
+    print(f"App Store AS4 fixtures ({profile}): OK")
+
+
 def create_fixture_image(path: Path) -> None:
     """Gera uma imagem FAT12 vazia para testar a injecao sem QEMU."""
     image = bytearray(1474560)
@@ -898,6 +1024,7 @@ def run_selftest() -> int:
         "imagem_excedida": False,
         "store_fixtures": False,
         "store_as2_fixtures": False,
+        "store_as4_fixtures": False,
     }
     try:
         parse_package(package)
@@ -934,6 +1061,15 @@ def run_selftest() -> int:
                 )
             audit_store_as2_fixtures(store_as2_dir, image_path)
             checks["store_as2_fixtures"] = True
+
+            store_as4_dir = Path(temp_dir) / "store-as4"
+            write_store_as4_fixtures(store_as4_dir, "update")
+            for alias in STORE_AS4_FIXTURE_ALIASES:
+                inject_root_file(
+                    (store_as4_dir / alias).read_bytes(), image_path, alias
+                )
+            audit_store_as4_fixtures(store_as4_dir, image_path)
+            checks["store_as4_fixtures"] = True
 
             boot_path = Path(temp_dir) / "boot-payload.img"
             create_fixture_boot_payload(boot_path, 1300)
@@ -1085,6 +1221,27 @@ def command_audit_store_as2(arguments: argparse.Namespace) -> int:
     return 0
 
 
+def command_fixtures_store_as4(arguments: argparse.Namespace) -> int:
+    """Gera os fixtures AS4 para a imagem seed ou update."""
+    output_dir = Path(arguments.output_dir)
+    try:
+        write_store_as4_fixtures(output_dir, arguments.profile)
+    except OSError as error:
+        raise PackageError("falha ao gravar fixtures AS4") from error
+    print(f"Fixtures AS4 ({arguments.profile}) criados em {output_dir.resolve()}")
+    return 0
+
+
+def command_audit_store_as4(arguments: argparse.Namespace) -> int:
+    """Audita a matriz de update AS4 e seus aliases FAT12 opcionais."""
+    image_path = Path(arguments.image) if arguments.image else None
+    try:
+        audit_store_as4_fixtures(Path(arguments.fixtures_dir), image_path)
+    except OSError as error:
+        raise PackageError("falha ao auditar fixtures AS4") from error
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Monta a interface de linha de comando do empacotador."""
     parser = argparse.ArgumentParser(description="Empacotador .zephyrosapp")
@@ -1131,6 +1288,15 @@ def build_parser() -> argparse.ArgumentParser:
     audit_store_as2.add_argument("--fixtures-dir", required=True)
     audit_store_as2.add_argument("--image")
     audit_store_as2.set_defaults(handler=command_audit_store_as2)
+    fixtures_store_as4 = commands.add_parser("fixtures-store-as4")
+    fixtures_store_as4.add_argument("--output-dir", required=True)
+    fixtures_store_as4.add_argument("--profile", required=True,
+                                    choices=("seed", "update"))
+    fixtures_store_as4.set_defaults(handler=command_fixtures_store_as4)
+    audit_store_as4 = commands.add_parser("audit-store-as4")
+    audit_store_as4.add_argument("--fixtures-dir", required=True)
+    audit_store_as4.add_argument("--image")
+    audit_store_as4.set_defaults(handler=command_audit_store_as4)
     selftest = commands.add_parser("selftest")
     selftest.set_defaults(handler=lambda arguments: run_selftest())
     return parser

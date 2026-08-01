@@ -29,8 +29,10 @@
 #define APPSTORE_SCANCODE_TAB 0x0FU
 #define APPSTORE_SCANCODE_ENTER 0x1CU
 #define APPSTORE_SCANCODE_A 0x1EU
+#define APPSTORE_SCANCODE_B 0x30U
 #define APPSTORE_SCANCODE_I 0x17U
 #define APPSTORE_SCANCODE_R 0x13U
+#define APPSTORE_SCANCODE_U 0x16U
 #define APPSTORE_SCANCODE_V 0x2FU
 #define APPSTORE_SCANCODE_F5 0x3FU
 #define APPSTORE_SCANCODE_UP 0x48U
@@ -46,7 +48,9 @@ typedef enum {
 typedef enum {
     APPSTORE_CONFIRM_NONE = 0,
     APPSTORE_CONFIRM_INSTALL,
-    APPSTORE_CONFIRM_REMOVE
+    APPSTORE_CONFIRM_REMOVE,
+    APPSTORE_CONFIRM_UPDATE,
+    APPSTORE_CONFIRM_ROLLBACK
 } appstore_confirm_t;
 
 typedef enum {
@@ -56,7 +60,8 @@ typedef enum {
     APPSTORE_RESULT_INSTALL,
     APPSTORE_RESULT_REMOVE,
     APPSTORE_RESULT_RUN,
-    APPSTORE_RESULT_UPDATE_UNAVAILABLE
+    APPSTORE_RESULT_UPDATE,
+    APPSTORE_RESULT_ROLLBACK
 } appstore_result_t;
 
 typedef enum {
@@ -64,8 +69,12 @@ typedef enum {
     APPSTORE_JOB_VERIFY,
     APPSTORE_JOB_PREFLIGHT_INSTALL,
     APPSTORE_JOB_INSTALL,
+    APPSTORE_JOB_PREFLIGHT_UPDATE,
+    APPSTORE_JOB_UPDATE,
     APPSTORE_JOB_PREFLIGHT_REMOVE,
     APPSTORE_JOB_REMOVE,
+    APPSTORE_JOB_PREFLIGHT_ROLLBACK,
+    APPSTORE_JOB_ROLLBACK,
     APPSTORE_JOB_RUN
 } appstore_job_t;
 
@@ -205,6 +214,21 @@ static void appstore_blockers_text(char* output, uint32_t size) {
     if (appstore_action.blocker_overflow) appstore_append_text(output, size, ", ...");
 }
 
+static int appstore_plan_is_downgrade(void) {
+    const app_package_plan_t* plan = &appstore_action.plan;
+    const app_package_plan_entry_t* target;
+    int comparison = 0;
+
+    if (plan->entry_count == 0U || plan->target_index >= plan->entry_count) {
+        return 0;
+    }
+    target = &plan->entries[plan->target_index];
+    if (target->action != APP_PACKAGE_PLAN_ACTION_UPDATE ||
+        !target->from_version[0] || !target->to_version[0]) return 0;
+    return app_package_compare_versions(target->to_version, target->from_version,
+                                        &comparison) == OK && comparison < 0;
+}
+
 static uint32_t appstore_visible_count(void) {
     uint32_t count = 0;
 
@@ -263,7 +287,9 @@ static void appstore_selected_key(appstore_job_t type, char* output,
     }
     if ((type == APPSTORE_JOB_VERIFY ||
          type == APPSTORE_JOB_PREFLIGHT_INSTALL ||
-         type == APPSTORE_JOB_INSTALL) && entry->alias[0]) {
+         type == APPSTORE_JOB_INSTALL ||
+         type == APPSTORE_JOB_PREFLIGHT_UPDATE ||
+         type == APPSTORE_JOB_UPDATE) && entry->alias[0]) {
         appstore_copy_text(output, size, entry->alias);
         return;
     }
@@ -418,6 +444,28 @@ static void appstore_request_remove(void) {
     appstore_queue_job(APPSTORE_JOB_PREFLIGHT_REMOVE);
 }
 
+static void appstore_request_update(void) {
+    app_catalog_entry_t* entry = appstore_selected_entry();
+
+    if (!appstore_can(entry, APP_CATALOG_CAPABILITY_UPDATE)) {
+        appstore_set_result(APPSTORE_RESULT_UPDATE, ERR_STATE,
+                            "Atualizacao indisponivel para o item");
+        return;
+    }
+    appstore_queue_job(APPSTORE_JOB_PREFLIGHT_UPDATE);
+}
+
+static void appstore_request_rollback(void) {
+    app_catalog_entry_t* entry = appstore_selected_entry();
+
+    if (!entry || !entry->has_installed) {
+        appstore_set_result(APPSTORE_RESULT_ROLLBACK, ERR_STATE,
+                            "Rollback indisponivel para o item");
+        return;
+    }
+    appstore_queue_job(APPSTORE_JOB_PREFLIGHT_ROLLBACK);
+}
+
 static void appstore_request_run(void) {
     app_catalog_entry_t* entry = appstore_selected_entry();
 
@@ -430,14 +478,22 @@ static void appstore_request_run(void) {
 }
 
 static void appstore_confirm_action(void) {
-    appstore_job_t job = appstore_confirm == APPSTORE_CONFIRM_INSTALL ?
-                         APPSTORE_JOB_INSTALL : APPSTORE_JOB_REMOVE;
+    appstore_job_t job;
     char selected_key[APP_CATALOG_ALIAS_SIZE];
 
     if (appstore_confirm == APPSTORE_CONFIRM_NONE ||
         appstore_confirm_generation != appstore_generation) {
         appstore_clear_context();
         return;
+    }
+    if (appstore_confirm == APPSTORE_CONFIRM_INSTALL) {
+        job = APPSTORE_JOB_INSTALL;
+    } else if (appstore_confirm == APPSTORE_CONFIRM_REMOVE) {
+        job = APPSTORE_JOB_REMOVE;
+    } else if (appstore_confirm == APPSTORE_CONFIRM_UPDATE) {
+        job = APPSTORE_JOB_UPDATE;
+    } else {
+        job = APPSTORE_JOB_ROLLBACK;
     }
     appstore_selected_key(job, selected_key, sizeof(selected_key));
     if (kstrcmp(selected_key, appstore_confirm_key) != 0) {
@@ -458,12 +514,45 @@ static void appstore_worker_verify(const char* alias) {
                         "Verificacao bloqueada");
 }
 
+static int appstore_worker_build_plan(const char* key, int update) {
+    app_package_plan_t plan;
+    int result;
+
+    kmemset(&appstore_action, 0, sizeof(appstore_action));
+    kmemset(&plan, 0, sizeof(plan));
+    result = update ? app_catalog_build_update_plan(key, 1, &plan) :
+                      app_catalog_build_install_plan(key, &plan);
+    appstore_action.plan = plan;
+    if (result != OK) {
+        appstore_action.reason = plan.reason ? plan.reason :
+                                 APP_PACKAGE_ACTION_REASON_PLAN_INCOMPLETE;
+    }
+    return result;
+}
+
 static void appstore_worker_preflight_install(const char* alias) {
-    int result = app_package_preflight_install(alias, &appstore_action);
+    int result = appstore_worker_build_plan(alias, 0);
+
+    if (result == OK) {
+        result = app_package_preflight_plan(&appstore_action.plan,
+                                            &appstore_action);
+    }
 
     appstore_set_result(APPSTORE_RESULT_INSTALL, result,
                         result == OK ? "Confirmar instalacao" :
                         "Preflight de instalacao bloqueado");
+}
+
+static void appstore_worker_preflight_update(const char* key) {
+    int result = appstore_worker_build_plan(key, 1);
+
+    if (result == OK) {
+        result = app_package_preflight_plan(&appstore_action.plan,
+                                            &appstore_action);
+    }
+    appstore_set_result(APPSTORE_RESULT_UPDATE, result,
+                        result == OK ? "Confirmar atualizacao" :
+                        "Preflight de atualizacao bloqueado");
 }
 
 static void appstore_worker_preflight_remove(const char* id) {
@@ -475,15 +564,34 @@ static void appstore_worker_preflight_remove(const char* id) {
 }
 
 static void appstore_worker_install(const char* alias) {
-    int result = app_package_install_confirmed(alias, &appstore_action);
+    int result = appstore_worker_build_plan(alias, 0);
     appstore_result_t result_kind = APPSTORE_RESULT_INSTALL;
     char result_text[APPSTORE_TEXT_SIZE];
 
+    if (result == OK) {
+        result = app_package_apply_plan_confirmed(&appstore_action.plan,
+                                                  &appstore_action);
+    }
     appstore_copy_text(result_text, sizeof(result_text),
                        result == OK ? "Aplicativo instalado" :
                        "Instalacao bloqueada");
     appstore_refresh_snapshot();
     appstore_set_result(result_kind, result, result_text);
+}
+
+static void appstore_worker_update(const char* key) {
+    int result = appstore_worker_build_plan(key, 1);
+    char result_text[APPSTORE_TEXT_SIZE];
+
+    if (result == OK) {
+        result = app_package_apply_plan_confirmed(&appstore_action.plan,
+                                                  &appstore_action);
+    }
+    appstore_copy_text(result_text, sizeof(result_text),
+                       result == OK ? "Aplicativo atualizado" :
+                       "Atualizacao bloqueada");
+    appstore_refresh_snapshot();
+    appstore_set_result(APPSTORE_RESULT_UPDATE, result, result_text);
 }
 
 static void appstore_worker_remove(const char* id) {
@@ -496,6 +604,25 @@ static void appstore_worker_remove(const char* id) {
                        "Remocao bloqueada");
     appstore_refresh_snapshot();
     appstore_set_result(result_kind, result, result_text);
+}
+
+static void appstore_worker_preflight_rollback(const char* id) {
+    int result = app_package_preflight_rollback(id, &appstore_action);
+
+    appstore_set_result(APPSTORE_RESULT_ROLLBACK, result,
+                        result == OK ? "Confirmar rollback" :
+                        "Preflight de rollback bloqueado");
+}
+
+static void appstore_worker_rollback(const char* id) {
+    int result = app_package_rollback_confirmed(id, &appstore_action);
+    char result_text[APPSTORE_TEXT_SIZE];
+
+    appstore_copy_text(result_text, sizeof(result_text),
+                       result == OK ? "Rollback concluido" :
+                       "Rollback bloqueado");
+    appstore_refresh_snapshot();
+    appstore_set_result(APPSTORE_RESULT_ROLLBACK, result, result_text);
 }
 
 static void appstore_worker_run(const char* id) {
@@ -531,6 +658,18 @@ static void appstore_worker_finish(void) {
         appstore_copy_text(appstore_confirm_key, sizeof(appstore_confirm_key),
                            appstore_running_job.key);
         appstore_confirm_generation = appstore_generation;
+    } else if (!stale && appstore_last_result == OK &&
+               type == APPSTORE_JOB_PREFLIGHT_UPDATE) {
+        appstore_confirm = APPSTORE_CONFIRM_UPDATE;
+        appstore_copy_text(appstore_confirm_key, sizeof(appstore_confirm_key),
+                           appstore_running_job.key);
+        appstore_confirm_generation = appstore_generation;
+    } else if (!stale && appstore_last_result == OK &&
+               type == APPSTORE_JOB_PREFLIGHT_ROLLBACK) {
+        appstore_confirm = APPSTORE_CONFIRM_ROLLBACK;
+        appstore_copy_text(appstore_confirm_key, sizeof(appstore_confirm_key),
+                           appstore_running_job.key);
+        appstore_confirm_generation = appstore_generation;
     }
     appstore_busy = 0;
     appstore_running_job.type = APPSTORE_JOB_NONE;
@@ -554,10 +693,18 @@ static void appstore_worker_main(void) {
             appstore_worker_preflight_install(appstore_running_job.key);
         } else if (appstore_running_job.type == APPSTORE_JOB_INSTALL) {
             appstore_worker_install(appstore_running_job.key);
+        } else if (appstore_running_job.type == APPSTORE_JOB_PREFLIGHT_UPDATE) {
+            appstore_worker_preflight_update(appstore_running_job.key);
+        } else if (appstore_running_job.type == APPSTORE_JOB_UPDATE) {
+            appstore_worker_update(appstore_running_job.key);
         } else if (appstore_running_job.type == APPSTORE_JOB_PREFLIGHT_REMOVE) {
             appstore_worker_preflight_remove(appstore_running_job.key);
         } else if (appstore_running_job.type == APPSTORE_JOB_REMOVE) {
             appstore_worker_remove(appstore_running_job.key);
+        } else if (appstore_running_job.type == APPSTORE_JOB_PREFLIGHT_ROLLBACK) {
+            appstore_worker_preflight_rollback(appstore_running_job.key);
+        } else if (appstore_running_job.type == APPSTORE_JOB_ROLLBACK) {
+            appstore_worker_rollback(appstore_running_job.key);
         } else if (appstore_running_job.type == APPSTORE_JOB_RUN) {
             appstore_worker_run(appstore_running_job.key);
         } else {
@@ -654,14 +801,31 @@ static void appstore_simple_draw_details(void) {
 
 static void appstore_simple_draw_confirmation(void) {
     const char* question;
+    char plan[APPSTORE_TEXT_SIZE];
 
     if (appstore_confirm == APPSTORE_CONFIRM_NONE) return;
-    question = appstore_confirm == APPSTORE_CONFIRM_INSTALL ?
-               "Confirmar instalacao?" : "Confirmar remocao?";
-    video_fill_rect(28, SCREEN_ROWS - 8, 48, 5, ' ', 0x1E);
-    video_draw_box(28, SCREEN_ROWS - 8, 48, 5, 0x0E);
-    video_print_at(30, SCREEN_ROWS - 7, question, 0x1E);
-    video_print_at(30, SCREEN_ROWS - 5, "Enter confirma | Esc cancela", 0x1E);
+    question = appstore_confirm == APPSTORE_CONFIRM_UPDATE &&
+               appstore_plan_is_downgrade() ?
+               "Confirmar downgrade diagnostico?" :
+               appstore_confirm == APPSTORE_CONFIRM_INSTALL ?
+               "Confirmar instalacao?" :
+               appstore_confirm == APPSTORE_CONFIRM_REMOVE ?
+               "Confirmar remocao?" :
+               appstore_confirm == APPSTORE_CONFIRM_UPDATE ?
+               "Confirmar atualizacao?" : "Confirmar rollback?";
+    plan[0] = '\0';
+    for (uint32_t index = 0; index < appstore_action.plan.entry_count;
+         index++) {
+        if (index) appstore_append_text(plan, sizeof(plan), " -> ");
+        appstore_append_text(plan, sizeof(plan),
+                             appstore_action.plan.entries[index].id);
+    }
+    video_fill_rect(22, SCREEN_ROWS - 9, 58, 6, ' ', 0x1E);
+    video_draw_box(22, SCREEN_ROWS - 9, 58, 6, 0x0E);
+    video_print_at(24, SCREEN_ROWS - 8, question, 0x1E);
+    video_print_at(24, SCREEN_ROWS - 6, plan[0] ? plan : "Item selecionado",
+                   0x1E);
+    video_print_at(24, SCREEN_ROWS - 4, "Enter confirma | Esc cancela", 0x1E);
 }
 
 static void appstore_draw_simple(void) {
@@ -684,7 +848,7 @@ static void appstore_draw_simple(void) {
     }
     video_print_at(2, SCREEN_ROWS - 2,
                    appstore_busy ? "Operacao em andamento..." :
-                   "Tab Setas F5 V=verificar I=instalar A=abrir R=remover Esc=fechar",
+                   "Tab Setas F5 V I U A R B Enter/Esc",
                    0x70);
     appstore_simple_draw_confirmation();
     taskbar_draw();
@@ -761,9 +925,7 @@ static void appstore_gui_draw_details(int x, int y) {
     appstore_u32_text(entry->source_size, size, sizeof(size));
     appstore_dependencies_text(info, dependencies, sizeof(dependencies));
     appstore_blockers_text(blockers, sizeof(blockers));
-    result_color = appstore_result_kind == APPSTORE_RESULT_UPDATE_UNAVAILABLE ?
-                   0x00E0A850U :
-                   appstore_last_result == OK ? 0x005FBF7FU : 0x00D65A5AU;
+    result_color = appstore_last_result == OK ? 0x005FBF7FU : 0x00D65A5AU;
     gui_draw_text((uint32_t)x, (uint32_t)y, info->name, GUI_MODERN_COLOR_TEXT);
     appstore_gui_line(x, y + 32, "ID", info->id, GUI_MODERN_COLOR_TEXT);
     appstore_gui_line(x, y + 56, "Fonte", entry->has_source ?
@@ -801,12 +963,32 @@ static void appstore_gui_draw_confirmation(int x, int y, int width, int height) 
     if (appstore_confirm == APPSTORE_CONFIRM_NONE) return;
     dialog_x = x + (width - 420) / 2;
     dialog_y = y + (height - 150) / 2;
-    question = appstore_confirm == APPSTORE_CONFIRM_INSTALL ?
-               "Confirmar instalacao?" : "Confirmar remocao?";
+    question = appstore_confirm == APPSTORE_CONFIRM_UPDATE &&
+               appstore_plan_is_downgrade() ?
+               "Confirmar downgrade diagnostico?" :
+               appstore_confirm == APPSTORE_CONFIRM_INSTALL ?
+               "Confirmar instalacao?" :
+               appstore_confirm == APPSTORE_CONFIRM_REMOVE ?
+               "Confirmar remocao?" :
+               appstore_confirm == APPSTORE_CONFIRM_UPDATE ?
+               "Confirmar atualizacao local?" : "Confirmar rollback?";
     appstore_gui_draw_surface(dialog_x, dialog_y, 420, 150,
                               GUI_MODERN_COLOR_WINDOW, GUI_MODERN_COLOR_ACCENT);
     gui_draw_text((uint32_t)(dialog_x + 24), (uint32_t)(dialog_y + 28), question,
                   GUI_MODERN_COLOR_TEXT);
+    if (appstore_action.plan.entry_count > 0U) {
+        char plan[APPSTORE_TEXT_SIZE];
+
+        plan[0] = '\0';
+        for (uint32_t index = 0; index < appstore_action.plan.entry_count;
+             index++) {
+            if (index) appstore_append_text(plan, sizeof(plan), " -> ");
+            appstore_append_text(plan, sizeof(plan),
+                                 appstore_action.plan.entries[index].id);
+        }
+        gui_draw_text((uint32_t)(dialog_x + 24), (uint32_t)(dialog_y + 58),
+                      plan, GUI_MODERN_COLOR_TEXT);
+    }
     gui_draw_modern_button((uint32_t)(dialog_x + 82), (uint32_t)(dialog_y + 92),
                            APPSTORE_BUTTON_WIDTH, APPSTORE_BUTTON_HEIGHT,
                            "Confirmar", GUI_BUTTON_STATE_PRESSED);
@@ -835,10 +1017,50 @@ static void appstore_gui_draw_action_button(int x, int y, const char* text,
                            GUI_BUTTON_STATE_HOVER);
 }
 
+static int appstore_action_buttons_per_row(int width) {
+    return width >= 760 ? 6 : 3;
+}
+
+static void appstore_action_button_position(int x, int y, int width,
+                                            int height, int index,
+                                            int* button_x, int* button_y) {
+    int per_row = appstore_action_buttons_per_row(width);
+    int rows = per_row == 6 ? 1 : 2;
+
+    if (button_x) *button_x = x + 16 + (index % per_row) * 124;
+    if (button_y) *button_y = y + height - 44 -
+                                (rows - 1 - index / per_row) * 32;
+}
+
+static int appstore_rollback_is_available(const app_catalog_entry_t* entry) {
+    app_package_status_t status;
+    const app_package_info_t* info = appstore_entry_info(entry);
+
+    if (!entry || !entry->has_installed || !info ||
+        app_package_get_status(&status) != OK) return 0;
+    for (uint32_t index = 0; index < status.rollback_count; index++) {
+        if (kstrcmp(status.rollbacks[index].id, info->id) == 0) return 1;
+    }
+    return 0;
+}
+
 static void appstore_draw_classic(int x, int y, int width, int height) {
     int content_y = y + 50;
-    int content_height = height - 108;
+    int content_height = height -
+                         (appstore_action_buttons_per_row(width) == 6 ?
+                          108 : 138);
     app_catalog_entry_t* entry = appstore_selected_entry();
+    static const char* labels[] = {
+        "Atualizar", "Verificar", "Instalar", "Abrir", "Remover", "Reverter"
+    };
+    int enabled[] = {
+        appstore_can(entry, APP_CATALOG_CAPABILITY_UPDATE),
+        appstore_can(entry, APP_CATALOG_CAPABILITY_VERIFY),
+        appstore_can(entry, APP_CATALOG_CAPABILITY_INSTALL),
+        appstore_can(entry, APP_CATALOG_CAPABILITY_RUN),
+        appstore_can(entry, APP_CATALOG_CAPABILITY_REMOVE),
+        appstore_rollback_is_available(entry)
+    };
 
     appstore_gui_draw_surface(x, y, width, height, GUI_MODERN_COLOR_BG,
                               GUI_MODERN_COLOR_BORDER_INACTIVE);
@@ -855,16 +1077,15 @@ static void appstore_draw_classic(int x, int y, int width, int height) {
                                   width - 2 * APPSTORE_CLASSIC_MARGIN,
                                   content_height);
     }
-    appstore_gui_draw_disabled_button(x + 16, y + height - 44,
-                                      "Atualizar AS4");
-    appstore_gui_draw_action_button(x + 140, y + height - 44, "Verificar",
-                                    appstore_can(entry, APP_CATALOG_CAPABILITY_VERIFY));
-    appstore_gui_draw_action_button(x + 264, y + height - 44, "Instalar",
-                                    appstore_can(entry, APP_CATALOG_CAPABILITY_INSTALL));
-    appstore_gui_draw_action_button(x + 388, y + height - 44, "Abrir",
-                                    appstore_can(entry, APP_CATALOG_CAPABILITY_RUN));
-    appstore_gui_draw_action_button(x + 512, y + height - 44, "Remover",
-                                    appstore_can(entry, APP_CATALOG_CAPABILITY_REMOVE));
+    for (int index = 0; index < 6; index++) {
+        int button_x;
+        int button_y;
+
+        appstore_action_button_position(x, y, width, height, index,
+                                        &button_x, &button_y);
+        appstore_gui_draw_action_button(button_x, button_y, labels[index],
+                                        enabled[index]);
+    }
     appstore_gui_draw_confirmation(x, y, width, height);
 }
 
@@ -988,8 +1209,10 @@ void appstore_handle_key(uint8_t scancode) {
              appstore_tab != APPSTORE_TAB_DETAILS) appstore_change_selection(1);
     else if (scancode == APPSTORE_SCANCODE_V) appstore_request_verify();
     else if (scancode == APPSTORE_SCANCODE_I) appstore_request_install();
+    else if (scancode == APPSTORE_SCANCODE_U) appstore_request_update();
     else if (scancode == APPSTORE_SCANCODE_A) appstore_request_run();
     else if (scancode == APPSTORE_SCANCODE_R) appstore_request_remove();
+    else if (scancode == APPSTORE_SCANCODE_B) appstore_request_rollback();
     appstore_draw();
 }
 
@@ -1013,8 +1236,6 @@ static int appstore_handle_confirmation_click(int px, int py) {
 }
 
 int appstore_handle_mouse(mouse_event_t* event) {
-    int bottom;
-
     if (!event || !appstore_active || !appstore_hosted) return 0;
     if (event->event != MOUSE_EVENT_PRESS ||
         !(event->changed & MOUSE_BTN_LEFT)) return 1;
@@ -1039,7 +1260,9 @@ int appstore_handle_mouse(mouse_event_t* event) {
         appstore_point_in(event->x, event->y,
                           appstore_gui_x + APPSTORE_CLASSIC_MARGIN,
                           appstore_gui_y + 50, 230,
-                          appstore_gui_height - 158)) {
+                          appstore_gui_height -
+                          (appstore_action_buttons_per_row(
+                               appstore_gui_width) == 6 ? 108 : 138))) {
         int row = (event->y - (appstore_gui_y + 62)) / APPSTORE_CLASSIC_ROW_HEIGHT;
         int index = appstore_visible_index((uint32_t)(appstore_scroll + row));
 
@@ -1051,23 +1274,24 @@ int appstore_handle_mouse(mouse_event_t* event) {
         appstore_draw();
         return 1;
     }
-    bottom = appstore_gui_y + appstore_gui_height - 44;
-    if (appstore_point_in(event->x, event->y, appstore_gui_x + 16, bottom,
-                          APPSTORE_BUTTON_WIDTH, APPSTORE_BUTTON_HEIGHT)) {
-        appstore_set_result(APPSTORE_RESULT_UPDATE_UNAVAILABLE, ERR_STATE,
-                            "Atualizacao local pertence ao AS4");
-    } else if (appstore_point_in(event->x, event->y, appstore_gui_x + 140, bottom,
-                                 APPSTORE_BUTTON_WIDTH, APPSTORE_BUTTON_HEIGHT)) {
-        appstore_request_verify();
-    } else if (appstore_point_in(event->x, event->y, appstore_gui_x + 264, bottom,
-                                 APPSTORE_BUTTON_WIDTH, APPSTORE_BUTTON_HEIGHT)) {
-        appstore_request_install();
-    } else if (appstore_point_in(event->x, event->y, appstore_gui_x + 388, bottom,
-                                 APPSTORE_BUTTON_WIDTH, APPSTORE_BUTTON_HEIGHT)) {
-        appstore_request_run();
-    } else if (appstore_point_in(event->x, event->y, appstore_gui_x + 512, bottom,
-                                 APPSTORE_BUTTON_WIDTH, APPSTORE_BUTTON_HEIGHT)) {
-        appstore_request_remove();
+    for (int index = 0; index < 6; index++) {
+        int button_x;
+        int button_y;
+
+        appstore_action_button_position(appstore_gui_x, appstore_gui_y,
+                                        appstore_gui_width,
+                                        appstore_gui_height, index,
+                                        &button_x, &button_y);
+        if (!appstore_point_in(event->x, event->y, button_x, button_y,
+                               APPSTORE_BUTTON_WIDTH,
+                               APPSTORE_BUTTON_HEIGHT)) continue;
+        if (index == 0) appstore_request_update();
+        else if (index == 1) appstore_request_verify();
+        else if (index == 2) appstore_request_install();
+        else if (index == 3) appstore_request_run();
+        else if (index == 4) appstore_request_remove();
+        else appstore_request_rollback();
+        break;
     }
     appstore_draw();
     return 1;

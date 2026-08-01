@@ -286,6 +286,22 @@ STORE_AS2_FIXTURES = $(STORE_AS2_FIXTURES_DIR)\WAITAPP.ZPK \
                      $(STORE_AS2_FIXTURES_DIR)\BASE.ZPK \
                      $(STORE_AS2_FIXTURES_DIR)\DEPEND.ZPK \
                      $(STORE_AS2_FIXTURES_DIR)\fixtures.json
+STORE_AS4_SEED_FIXTURES_DIR = docs\fixtures\apps\store-as4-seed
+STORE_AS4_UPDATE_FIXTURES_DIR = docs\fixtures\apps\store-as4-update
+STORE_AS4_SEED_FIXTURES = $(STORE_AS4_SEED_FIXTURES_DIR)\UPTARGET.ZPK \
+                          $(STORE_AS4_SEED_FIXTURES_DIR)\UPDEPA.ZPK \
+                          $(STORE_AS4_SEED_FIXTURES_DIR)\UPDEPB.ZPK \
+                          $(STORE_AS4_SEED_FIXTURES_DIR)\BROKEN.ZPK \
+                          $(STORE_AS4_SEED_FIXTURES_DIR)\CYCLEA.ZPK \
+                          $(STORE_AS4_SEED_FIXTURES_DIR)\CYCLEB.ZPK \
+                          $(STORE_AS4_SEED_FIXTURES_DIR)\fixtures.json
+STORE_AS4_UPDATE_FIXTURES = $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPTARGET.ZPK \
+                            $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPDEPA.ZPK \
+                            $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPDEPB.ZPK \
+                            $(STORE_AS4_UPDATE_FIXTURES_DIR)\BROKEN.ZPK \
+                            $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEA.ZPK \
+                            $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEB.ZPK \
+                            $(STORE_AS4_UPDATE_FIXTURES_DIR)\fixtures.json
 
 # Todas as variáveis de objetos
 OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(UPDATE_OBJ) $(UPDATE_REMOTE_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
@@ -608,7 +624,7 @@ $(KERNEL_BIN): $(OBJS) src/linker.ld
 
 $(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(KERNEL_BIN) tools\packager.py \
           assets\icons\SHELL.BMP assets\icons\EXPLORER.BMP assets\icons\TASKMGR.BMP \
-          $(STORE_FIXTURES) $(STORE_AS2_FIXTURES) \
+          $(STORE_FIXTURES) $(STORE_AS2_FIXTURES) $(STORE_AS4_UPDATE_FIXTURES) \
           docs\fixtures\updates\u2\VALID.ZUP docs\fixtures\updates\u2\TRUNC.ZUP \
           docs\fixtures\updates\u2\BADHASH.ZUP docs\fixtures\updates\u2\BADSIG.ZUP \
           docs\fixtures\updates\u2\BADVER.ZUP docs\fixtures\updates\u2\BADFMT.ZUP \
@@ -627,6 +643,12 @@ $(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(KERNEL_BIN) tools\packager.py \
 	python tools\packager.py inject-file --file $(STORE_AS2_FIXTURES_DIR)\WAITAPP.ZPK --image $(OS_IMG) --fat-name WAITAPP.ZPK
 	python tools\packager.py inject-file --file $(STORE_AS2_FIXTURES_DIR)\BASE.ZPK --image $(OS_IMG) --fat-name BASE.ZPK
 	python tools\packager.py inject-file --file $(STORE_AS2_FIXTURES_DIR)\DEPEND.ZPK --image $(OS_IMG) --fat-name DEPEND.ZPK
+	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPTARGET.ZPK --image $(OS_IMG) --fat-name UPTARGET.ZPK
+	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPDEPA.ZPK --image $(OS_IMG) --fat-name UPDEPA.ZPK
+	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPDEPB.ZPK --image $(OS_IMG) --fat-name UPDEPB.ZPK
+	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\BROKEN.ZPK --image $(OS_IMG) --fat-name BROKEN.ZPK
+	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEA.ZPK --image $(OS_IMG) --fat-name CYCLEA.ZPK
+	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEB.ZPK --image $(OS_IMG) --fat-name CYCLEB.ZPK
 	python tools\packager.py inject-file --file docs\fixtures\updates\u2\VALID.ZUP --image $(OS_IMG) --fat-name VALID.ZUP
 	python tools\packager.py inject-file --file docs\fixtures\updates\u2\TRUNC.ZUP --image $(OS_IMG) --fat-name TRUNC.ZUP
 	python tools\packager.py inject-file --file docs\fixtures\updates\u2\BADHASH.ZUP --image $(OS_IMG) --fat-name BADHASH.ZUP
@@ -681,7 +703,30 @@ store-as2-demo: $(OS_IMG) $(STORE_AS2_FIXTURES)
 	python tools\packager.py inject-file --file $(STORE_AS2_FIXTURES_DIR)\DEPEND.ZPK --image $(OS_IMG) --fat-name DEPEND.ZPK --replace
 	python tools\packager.py audit-store-as2 --fixtures-dir $(STORE_AS2_FIXTURES_DIR) --image $(OS_IMG)
 
+store-as4-test:
+	python tools\packager.py selftest
+	python tools\packager.py audit-store-as4 --fixtures-dir $(STORE_AS4_SEED_FIXTURES_DIR)
+	python tools\packager.py audit-store-as4 --fixtures-dir $(STORE_AS4_UPDATE_FIXTURES_DIR)
+
+store-as4-seed-demo: $(OS_IMG) $(STORE_AS4_SEED_FIXTURES)
+	python tools\packager.py inject-file --file $(STORE_AS4_SEED_FIXTURES_DIR)\UPTARGET.ZPK --image $(OS_IMG) --fat-name UPTARGET.ZPK --replace
+	python tools\packager.py inject-file --file $(STORE_AS4_SEED_FIXTURES_DIR)\UPDEPA.ZPK --image $(OS_IMG) --fat-name UPDEPA.ZPK --replace
+	python tools\packager.py inject-file --file $(STORE_AS4_SEED_FIXTURES_DIR)\UPDEPB.ZPK --image $(OS_IMG) --fat-name UPDEPB.ZPK --replace
+	python tools\packager.py inject-file --file $(STORE_AS4_SEED_FIXTURES_DIR)\BROKEN.ZPK --image $(OS_IMG) --fat-name BROKEN.ZPK --replace
+	python tools\packager.py inject-file --file $(STORE_AS4_SEED_FIXTURES_DIR)\CYCLEA.ZPK --image $(OS_IMG) --fat-name CYCLEA.ZPK --replace
+	python tools\packager.py inject-file --file $(STORE_AS4_SEED_FIXTURES_DIR)\CYCLEB.ZPK --image $(OS_IMG) --fat-name CYCLEB.ZPK --replace
+	python tools\packager.py audit-store-as4 --fixtures-dir $(STORE_AS4_SEED_FIXTURES_DIR) --image $(OS_IMG)
+
+store-as4-update-demo: $(OS_IMG) $(STORE_AS4_UPDATE_FIXTURES)
+	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPTARGET.ZPK --image $(OS_IMG) --fat-name UPTARGET.ZPK --replace
+	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPDEPA.ZPK --image $(OS_IMG) --fat-name UPDEPA.ZPK --replace
+	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPDEPB.ZPK --image $(OS_IMG) --fat-name UPDEPB.ZPK --replace
+	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\BROKEN.ZPK --image $(OS_IMG) --fat-name BROKEN.ZPK --replace
+	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEA.ZPK --image $(OS_IMG) --fat-name CYCLEA.ZPK --replace
+	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEB.ZPK --image $(OS_IMG) --fat-name CYCLEB.ZPK --replace
+	python tools\packager.py audit-store-as4 --fixtures-dir $(STORE_AS4_UPDATE_FIXTURES_DIR) --image $(OS_IMG)
+
 clean:
 	rmdir /s /q build
 
-.PHONY: all run debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo clean
+.PHONY: all run debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo clean
