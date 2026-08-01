@@ -826,16 +826,19 @@ static void appstore_worker_run(const char* id) {
 
 static void appstore_worker_remote_enable(void) {
     app_remote_status_t status;
+    int enable_requested = 0;
     int result;
 
     result = app_remote_get_status(&status);
     if (result == OK) {
-        result = status.enabled ? app_remote_disable() : app_remote_enable();
+        enable_requested = !status.enabled;
+        result = enable_requested ? app_remote_enable() : app_remote_disable();
     }
     appstore_refresh_remote_snapshot();
     appstore_set_result(APPSTORE_RESULT_REMOTE, result,
-                        result == OK ? "Controle remoto atualizado" :
-                        "Controle remoto bloqueado");
+                        result != OK ? "Controle remoto bloqueado" :
+                        enable_requested ? "Repositorio remoto habilitado" :
+                                           "Repositorio remoto desabilitado");
 }
 
 static void appstore_worker_remote_check(void) {
@@ -1496,8 +1499,9 @@ static void appstore_remote_button_position(int x, int y, int width,
 
 static void appstore_draw_classic_remote(int x, int y, int width,
                                          int height) {
-    static const char* labels[] = {
-        "Habilitar", "Consultar", "Baixar", "Instalar",
+    const char* labels[] = {
+        appstore_remote_status.enabled ? "Desabilitar" : "Habilitar",
+        "Consultar", "Baixar", "Instalar",
         "Atualizar", "Abrir", "Reverter"
     };
     app_remote_entry_t* entry = appstore_selected_remote_entry();
