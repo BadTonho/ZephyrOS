@@ -113,6 +113,7 @@ Sistema e ecossistema:       [████████████████�
 | `guitest [modern]` | Testa primitivas GUI 2D e a base visual Modern |
 | `guimode` | Altera entre gui simple e classic |
 | `health` | Exibe metricas e estado de recovery |
+| `store` | Abre a App Store nativa; fallback TUI no modo Simple |
 | `store status|list|info` | Consulta o catalogo local da App Store |
 | `store install|remove|run` | Preflight, ciclo confirmado e execucao instalada |
 | `devices [-v]` | Lista o inventario nativo de hardware |
@@ -417,6 +418,14 @@ Sistema e ecossistema:       [████████████████�
   explicita, bloqueio por dependencia, execucao e cancelamento por `F12`,
   memoria estavel em `20680 KB` e nenhuma aplicacao ou processo residual.
 
+### AS3 - App Store nativa (implementada; validacao pendente)
+
+- [x] Janela singleton Classic com visual Modern Dark e fallback TUI Simple.
+- [x] Catalogo, instalados, detalhes, confirmacao contextual e worker
+  cooperativo sobre os contratos AS1/AS2.
+- [x] Integracao no Menu Iniciar, IPC, Window Manager e comando `store`.
+- [ ] Validar host e matriz QEMU de catalogo, ciclo de vida, foco e memoria.
+
 ### Q4 - Regressao compacta ✅
 
 - [x] `regcheck` concentra health, processos, servicos, scheduler, memoria,
@@ -709,7 +718,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 - **Gerenciador de Processos** (`gerenciador de processos.md`)
 
 ### Novos Módulos e Aplicativos (App Store / Opcionais)
-- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1, AS2, MV0, MV0.1, MV1, MV2 e MV3 concluidos e validados; AS3 e o proximo passo
+- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1, AS2 e MV0-MV3 validados; AS3 implementado e aguardando validacao
 - **Gerenciador de Mídia** (`gerenciador de midia.md`)
 - **Gerenciador de Jogos** (`gerenciador de jogos.md`)
 - **Anti-Virus** (`anti virus.md`)

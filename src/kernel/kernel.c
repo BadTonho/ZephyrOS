@@ -37,6 +37,7 @@
 #include "ui/desktop.h"
 #include "ui/settings.h"
 #include "ui/updater.h"
+#include "ui/appstore.h"
 #include "ui/wm.h"
 #include "ui/filemanager.h"
 #include "ui/icons.h"
@@ -93,7 +94,7 @@ static void kernel_request_shell_app(ipc_app_request_t request) {
     }
 
     if (request < IPC_APP_OPEN_SHELL ||
-        request > IPC_APP_OPEN_UPDATER) {
+        request > IPC_APP_OPEN_APP_STORE) {
         LOG_ERROR("KERNEL", "Solicitacao de aplicativo invalida");
         return;
     }
@@ -129,6 +130,10 @@ static void kernel_redraw_after_menu_close(void) {
     }
     if (updater_is_open()) {
         updater_draw();
+        return;
+    }
+    if (appstore_is_open()) {
+        appstore_draw();
         return;
     }
     if (fm_is_running()) {
@@ -195,17 +200,29 @@ static int kernel_handle_taskbar_mouse(mouse_event_t* evt) {
 
         if (settings_is_open() &&
             ((tb_result >= 2 && tb_result <= 8) ||
-             tb_result == TB_ACTION_UPDATER)) {
+             tb_result == TB_ACTION_UPDATER ||
+             tb_result == TB_ACTION_APPSTORE)) {
             settings_close();
         }
         if (updater_is_open() &&
             ((tb_result >= 2 && tb_result <= 8) ||
-             tb_result == TB_ACTION_UPDATER)) {
+             tb_result == TB_ACTION_UPDATER ||
+             tb_result == TB_ACTION_APPSTORE)) {
             if (tb_result == TB_ACTION_UPDATER) {
                 updater_draw();
                 return 1;
             }
             updater_close();
+        }
+        if (appstore_is_open() &&
+            ((tb_result >= 2 && tb_result <= 8) ||
+             tb_result == TB_ACTION_UPDATER ||
+             tb_result == TB_ACTION_APPSTORE)) {
+            if (tb_result == TB_ACTION_APPSTORE) {
+                appstore_draw();
+                return 1;
+            }
+            appstore_close();
         }
         if (wm_is_active() && tb_result >= 2 && tb_result <= 8) {
             wm_set_active(0);
@@ -232,6 +249,9 @@ static int kernel_handle_taskbar_mouse(mouse_event_t* evt) {
         case 8: kernel_request_shell_app(IPC_APP_OPEN_SETTINGS); break;
         case TB_ACTION_UPDATER:
             kernel_request_shell_app(IPC_APP_OPEN_UPDATER);
+            break;
+        case TB_ACTION_APPSTORE:
+            kernel_request_shell_app(IPC_APP_OPEN_APP_STORE);
             break;
         case TB_ACTION_WINDOW: {
             int window_id = taskbar_take_window_request();
@@ -867,6 +887,11 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     app_package_init();
     app_catalog_init();
+    if (appstore_init() == OK) {
+        video_print("[OK] App Store pronta\n", 0x07);
+    } else {
+        video_print("[!!] App Store indisponivel\n", 0x0C);
+    }
 
     /* Desktop e a cena padrao; o Shell abre somente por solicitacao. */
     desktop_set_active(1);

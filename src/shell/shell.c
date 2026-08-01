@@ -12,6 +12,7 @@
 #include "ui/desktop.h"
 #include "ui/settings.h"
 #include "ui/updater.h"
+#include "ui/appstore.h"
 #include "ui/wm.h"
 #include "memory/compress.h"
 #include "apps/mediaplayer.h"
@@ -2127,6 +2128,9 @@ void shell_handle_app_request(uint32_t request) {
         if (updater_is_open() && request != IPC_APP_OPEN_UPDATER) {
             updater_close();
         }
+        if (appstore_is_open() && request != IPC_APP_OPEN_APP_STORE) {
+            appstore_close();
+        }
     }
 
     switch ((ipc_app_request_t)request) {
@@ -2230,6 +2234,19 @@ void shell_handle_app_request(uint32_t request) {
                             0x0C);
             }
             break;
+        case IPC_APP_OPEN_APP_STORE:
+            if (recovery_is_enabled(RECOVERY_COMPONENT_APP_STORE)) {
+                shell_suspend_terminal_for_scene();
+                if (desktop_get_mode() != DESKTOP_MODE_CLASSIC) {
+                    desktop_set_active(0);
+                }
+                if (appstore_open() != OK) {
+                    video_print("Erro: App Store indisponivel.\n", 0x0C);
+                }
+            } else {
+                video_print("Erro: App Store indisponivel.\n", 0x0C);
+            }
+            break;
         default:
             LOG_ERROR("SHELL", "Solicitacao de aplicativo invalida");
             break;
@@ -2237,6 +2254,10 @@ void shell_handle_app_request(uint32_t request) {
 }
 
 static void shell_redraw_after_overlay_close(void) {
+    if (appstore_is_open()) {
+        appstore_draw();
+        return;
+    }
     if (updater_is_open()) {
         updater_draw();
         return;
@@ -8614,8 +8635,8 @@ static void cmd_store(const char* args) {
     int confirmed;
 
     kmemset(&shell_store_workspace, 0, sizeof(shell_store_workspace));
-    if (!args) {
-        cmd_store_print_usage();
+    if (!args || !args[0]) {
+        shell_handle_app_request(IPC_APP_OPEN_APP_STORE);
         return;
     }
     cmd_pkg_take_token(&cursor, shell_store_workspace.operation,
@@ -8635,7 +8656,7 @@ static void cmd_store(const char* args) {
                        sizeof(shell_store_workspace.extra));
     confirmed = kstrcmp(shell_store_workspace.option, "--confirm") == 0;
     if (shell_store_workspace.operation[0] == '\0') {
-        cmd_store_print_usage();
+        shell_handle_app_request(IPC_APP_OPEN_APP_STORE);
     } else if (kstrcmp(shell_store_workspace.operation, "status") == 0 &&
                shell_store_workspace.value[0] == '\0' &&
                shell_store_workspace.option[0] == '\0') {
@@ -9490,6 +9511,8 @@ void shell_handle_key(uint8_t scancode) {
             shell_handle_app_request(IPC_APP_OPEN_SETTINGS);
         } else if (tb_result == TB_ACTION_UPDATER) {
             shell_handle_app_request(IPC_APP_OPEN_UPDATER);
+        } else if (tb_result == TB_ACTION_APPSTORE) {
+            shell_handle_app_request(IPC_APP_OPEN_APP_STORE);
         } else if (tb_result == 9) {
             shell_redraw_after_overlay_close();
         }
@@ -9524,6 +9547,11 @@ void shell_handle_key(uint8_t scancode) {
 
     if (updater_is_open()) {
         updater_handle_key(scancode);
+        return;
+    }
+
+    if (appstore_is_open()) {
+        appstore_handle_key(scancode);
         return;
     }
 

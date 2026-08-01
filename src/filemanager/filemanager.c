@@ -1596,6 +1596,9 @@ void fm_handle_key(uint8_t scancode) {
         } else if (taskbar_result == TB_ACTION_UPDATER) {
             fm_close();
             shell_handle_app_request(IPC_APP_OPEN_UPDATER);
+        } else if (taskbar_result == TB_ACTION_APPSTORE) {
+            fm_close();
+            shell_handle_app_request(IPC_APP_OPEN_APP_STORE);
         }
         return;
     }

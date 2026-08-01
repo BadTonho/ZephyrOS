@@ -73,7 +73,7 @@ Comandos disponiveis:
   regcheck [full] - Executa regressao compacta com F12
   appcheck  - Testa API, arquivos, IPC e carregador ZAPP
   pkg       - Gerencia pacotes .ZPK locais
-  store     - Consulta e gerencia a App Store local
+  store     - Abre e gerencia a App Store local
   pkgcheck  - Testa validacoes de pacote sem gravar
   update verify <arquivo.ZUP> - Verifica atualizacao sem gravar
   app run <arquivo.ZAP> [args] - Executa aplicativo ring 3 de forma assincrona
@@ -869,10 +869,12 @@ do ID e preserva o arquivo fonte `ID.ZPK` no diretorio raiz.
 O contrato completo, limites e fluxo host para FAT12 estao em
 [`pacotes.md`](../13-aplicativos/pacotes.md).
 
-## `store status|list|info|install|remove|run`
+## `store [status|list|info|install|remove|run]`
 
-Os comandos `store` atualizam o snapshot local antes de responder. Consultas
-e preflights nunca gravam:
+`store` sem argumentos abre a App Store no Window Manager; se a hospedagem
+Classic falhar, abre a TUI Simple com as mesmas abas e operacoes. Os
+subcomandos atualizam o snapshot local antes de responder. Consultas e
+preflights nunca gravam:
 
 ```text
 store status

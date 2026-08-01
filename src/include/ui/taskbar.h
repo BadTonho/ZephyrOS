@@ -8,6 +8,7 @@
 #define TASKBAR_DEFAULT_ROW (SCREEN_ROWS - 1)
 #define TB_ACTION_WINDOW 10
 #define TB_ACTION_UPDATER 11
+#define TB_ACTION_APPSTORE 12
 
 typedef enum {
     TB_POS_BOTTOM = 0,

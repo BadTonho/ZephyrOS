@@ -565,6 +565,11 @@ menu Iniciar usa `IPC_APP_OPEN_UPDATER`, tambem anexado ao fim da enumeracao
 IPC para preservar todos os valores anteriores. Em Classic o aplicativo e
 hospedado pelo WM; se isso nao for possivel, abre automaticamente em Classic.
 
+Depois de inicializar o catalogo e o servico `PKG`, o kernel inicializa a
+interface da App Store. `IPC_APP_OPEN_APP_STORE` tambem e append-only; o
+Classic hospeda sua janela singleton e o fallback Simple mantem uma TUI
+funcional quando a hospedagem nao estiver disponivel.
+
 ## AS1: catalogo local da App Store
 
 Depois de inicializar o loader ZAPP e o servico `PKG`, o kernel inicializa
