@@ -28,9 +28,12 @@ mudanca; nao crie uma entrada artificial.
   selecionar entradas/detalhes e fechar).
 - Metrica observavel: bytes apresentados e ticks de copia VESA do snapshot
   `kmetrics`; a comparacao usa a mesma cena, escala e estado inicial.
-- Antes: pendente de coleta no binario AS3 anterior. A linha-base nao deve ser
-  inferida do redesenho nem substituida por uma medicao de outra escala.
-- Depois: pendente de coleta no binario MV4.
+- Antes: a linha-base AS3 por cena nao foi retida antes do build MV4; ela nao
+  foi inferida de snapshots globais ou de outra escala.
+- Depois: os quatro cenarios foram executados e aprovados pelo usuario no
+  QEMU em Classic/escala normal. Os valores abaixo sao os snapshots MV4 apos
+  `kmetrics reset`; a apresentacao final em cada caso foi de 576 bytes e 0
+  tick, abaixo da resolucao do PIT.
 - Criterio: aceitar cada cena somente se bytes e ticks nao crescerem mais que
   10%. Quando a medida-base de ticks for zero, registrar `N/D` para percentual
   e justificar que o PIT nao resolveu a duracao; ainda registrar os bytes.
@@ -41,10 +44,10 @@ mudanca; nao crie uma entrada artificial.
 
 | Cena | Bytes antes | Bytes depois | Ticks antes | Ticks depois | Resultado |
 |---|---:|---:|---:|---:|---|
-| Explorer | Pendente | Pendente | Pendente | Pendente | Pendente QEMU |
-| Settings | Pendente | Pendente | Pendente | Pendente | Pendente QEMU |
-| Task Manager | Pendente | Pendente | Pendente | Pendente | Pendente QEMU |
-| App Store | Pendente | Pendente | Pendente | Pendente | Pendente QEMU |
+| Explorer | N/D | 69951855 | N/D | N/D (ultima=0) | Funcional OK; comparacao indisponivel |
+| Settings | N/D | 67887492 | N/D | N/D (ultima=0) | Funcional OK; comparacao indisponivel |
+| Task Manager | N/D | 330176325 | N/D | N/D (ultima=0) | Funcional OK; comparacao indisponivel |
+| App Store | N/D | 100875579 | N/D | N/D (ultima=0) | Funcional OK; comparacao indisponivel |
 
 ### 2026-07-30 - MV3, composicao visual Modern estatica
 
