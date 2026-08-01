@@ -232,6 +232,14 @@ static const app_package_info_t* appstore_entry_info(
     return entry->has_source ? &entry->source : &entry->installed;
 }
 
+static const char* appstore_entry_label(const app_catalog_entry_t* entry) {
+    const app_package_info_t* info = appstore_entry_info(entry);
+
+    if (info && info->id[0]) return info->id;
+    if (entry && entry->alias[0]) return entry->alias;
+    return "N/D";
+}
+
 static void appstore_selected_key(appstore_job_t type, char* output,
                                   uint32_t size) {
     app_catalog_entry_t* entry = appstore_selected_entry();
@@ -695,12 +703,10 @@ static void appstore_gui_draw_entries(int x, int y, int width, int height) {
     for (int row = 0; row < visible; row++) {
         int index = appstore_visible_index((uint32_t)(appstore_scroll + row));
         app_catalog_entry_t* entry;
-        const app_package_info_t* info;
         int row_y = y + 12 + row * APPSTORE_CLASSIC_ROW_HEIGHT;
 
         if (index < 0) break;
         entry = &appstore_entries[index];
-        info = appstore_entry_info(entry);
         if (index == appstore_selected) {
             gui_draw_rounded_rect((uint32_t)(x + 6), (uint32_t)(row_y - 4),
                                   (uint32_t)(list_width - 12), 22,
@@ -708,7 +714,8 @@ static void appstore_gui_draw_entries(int x, int y, int width, int height) {
                                   GUI_MODERN_COLOR_HOVER);
         }
         gui_draw_text((uint32_t)(x + 14), (uint32_t)row_y,
-                      info ? info->id : "N/D", appstore_gui_entry_color(entry));
+                      appstore_entry_label(entry),
+                      appstore_gui_entry_color(entry));
     }
     gui_draw_rounded_rect((uint32_t)(x + list_width + 12), (uint32_t)y,
                           (uint32_t)(width - list_width - 12), (uint32_t)height,
