@@ -679,7 +679,7 @@ kernel, interface e novos serviços:
 | 4 | [`docs/roadmaps/04-interface-e-experiencia.md`](docs/roadmaps/04-interface-e-experiencia.md) | Taskbar, Window Manager, ícones e interação gráfica. |
 | 5 | [`docs/roadmaps/05-sistema-e-ecossistema.md`](docs/roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e ecossistema. |
 | 6 | [`docs/roadmaps/06-app-store.md`](docs/roadmaps/06-app-store.md) | Catalogo local, ciclo de vida, App Store Modern e distribuicao futura. |
-| 7 | [`docs/roadmaps/07-modernizacao-visual.md`](docs/roadmaps/07-modernizacao-visual.md) | Escala acessivel, visual flat/dark e desempenho VESA mensuravel. |
+| 7 | [`docs/roadmaps/07-modernizacao-visual.md`](docs/roadmaps/07-modernizacao-visual.md) | Escala acessivel, visual flat/dark e desempenho VESA mensuravel; MV4 implementado, validacao QEMU pendente. |
 | 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | Mouse, volumes ATA, USB incremental, busca, releases e conectividade sem fio. |
 
 Os numeros 06 e 07 identificam os documentos, nao uma barreira de conclusao
@@ -720,7 +720,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 - **Gerenciador de Processos** (`gerenciador de processos.md`)
 
 ### Novos Módulos e Aplicativos (App Store / Opcionais)
-- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1, AS2 e AS3 validados; proxima etapa MV4
+- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1, AS2 e AS3 validados; MV4 implementado, com metricas e QEMU pendentes
 - **Gerenciador de Mídia** (`gerenciador de midia.md`)
 - **Gerenciador de Jogos** (`gerenciador de jogos.md`)
 - **Anti-Virus** (`anti virus.md`)

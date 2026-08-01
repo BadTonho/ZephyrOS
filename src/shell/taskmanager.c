@@ -24,7 +24,18 @@
 
 /* O Task Manager usa estas primitivas apenas na interface Classic grafica. */
 #define gui_draw_text gui_draw_scaled_text
-#define gui_draw_button gui_draw_scaled_button
+
+/* Mantem a logica legada legivel, mas remove as faces 3D do caminho Classic. */
+#undef GUI_COLOR_BG
+#undef GUI_COLOR_BORDER_D
+#undef GUI_COLOR_TEXT
+#undef GUI_COLOR_TEXT_W
+#undef GUI_COLOR_TITLE_BG
+#define GUI_COLOR_BG GUI_MODERN_COLOR_BG
+#define GUI_COLOR_BORDER_D GUI_MODERN_COLOR_BORDER_INACTIVE
+#define GUI_COLOR_TEXT GUI_MODERN_COLOR_TEXT
+#define GUI_COLOR_TEXT_W GUI_MODERN_COLOR_TEXT
+#define GUI_COLOR_TITLE_BG GUI_MODERN_COLOR_HOVER
 
 #define TSKMGR_WIDTH  78
 #define TSKMGR_HEIGHT 23
@@ -72,6 +83,7 @@
 #define TSKMGR_GUI_DETAIL_MIN_WIDTH TSKMGR_GUI_PX(210)
 #define TSKMGR_GUI_LIST_MIN_WIDTH TSKMGR_GUI_PX(450)
 #define TSKMGR_GUI_DETAIL_GAP TSKMGR_GUI_PX(8)
+#define TSKMGR_GUI_HISTORY_SAMPLES 60U
 
 static int is_open = 0;
 static int selected_tab = 0;
@@ -84,6 +96,10 @@ static int prop_pid = 0;
 static uint32_t last_tick_sample = 0;
 static uint32_t last_process_ticks[64] = {0};
 static uint32_t tick_usage[64] = {0};
+static uint8_t taskmgr_memory_history[TSKMGR_GUI_HISTORY_SAMPLES] = {0};
+static uint8_t taskmgr_load_history[TSKMGR_GUI_HISTORY_SAMPLES] = {0};
+static uint32_t taskmgr_history_head = 0;
+static uint32_t taskmgr_history_count = 0;
 
 static int gui_open = 0;
 static int gui_minimized = 0;
@@ -125,6 +141,14 @@ static void taskmgr_gui_copy_text(char* destination, int size, const char* sourc
 static void taskmgr_update_cpu_metrics(void);
 static int taskmgr_get_work_area(tb_rect_t* work_area);
 static void taskmgr_clamp_window(void);
+static void taskmgr_gui_reset_history(void);
+static void taskmgr_gui_sample_history(void);
+static void taskmgr_gui_draw_surface(int x, int y, int width, int height,
+                                     uint32_t background, uint32_t border);
+static void taskmgr_gui_draw_history_graph(int x, int y, int width, int height,
+                                           const char* title,
+                                           const uint8_t* history,
+                                           uint32_t color);
 
 static const wm_hosted_app_t taskmgr_hosted_app = {
     WM_APP_TASKMGR, "ZephyrOS Task Manager", "TaskMgr",
@@ -154,6 +178,94 @@ static vesa_color_t taskmgr_gui_color(uint32_t raw) {
     return color;
 }
 
+static void taskmgr_gui_draw_surface(int x, int y, int width, int height,
+                                     uint32_t background, uint32_t border) {
+    if (width <= 0 || height <= 0) return;
+    gui_draw_rounded_rect((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                          (uint32_t)height,
+                          display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE),
+                          background);
+    gui_draw_flat_border((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                         (uint32_t)height, border);
+}
+
+static void taskmgr_gui_reset_history(void) {
+    for (uint32_t index = 0; index < TSKMGR_GUI_HISTORY_SAMPLES; index++) {
+        taskmgr_memory_history[index] = 0;
+        taskmgr_load_history[index] = 0;
+    }
+    taskmgr_history_head = 0;
+    taskmgr_history_count = 0;
+}
+
+static uint32_t taskmgr_gui_aggregate_load(void) {
+    uint32_t total = 0;
+
+    for (int index = 0; index < MAX_PROCESSES; index++) {
+        if (processes[index].state != PROCESS_STATE_UNUSED) {
+            total += tick_usage[index];
+        }
+    }
+    return total > 100U ? 100U : total;
+}
+
+static void taskmgr_gui_sample_history(void) {
+    uint32_t memory_percent = taskmgr_percent(memory_get_used(),
+                                               memory_get_total());
+
+    taskmgr_memory_history[taskmgr_history_head] = (uint8_t)memory_percent;
+    taskmgr_load_history[taskmgr_history_head] =
+        (uint8_t)taskmgr_gui_aggregate_load();
+    taskmgr_history_head = (taskmgr_history_head + 1U) %
+                           TSKMGR_GUI_HISTORY_SAMPLES;
+    if (taskmgr_history_count < TSKMGR_GUI_HISTORY_SAMPLES) {
+        taskmgr_history_count++;
+    }
+}
+
+static void taskmgr_gui_draw_history_graph(int x, int y, int width, int height,
+                                           const char* title,
+                                           const uint8_t* history,
+                                           uint32_t color) {
+    int plot_x = x + TSKMGR_GUI_PX(8);
+    int plot_y = y + TSKMGR_GUI_PX(24);
+    int plot_width = width - TSKMGR_GUI_PX(16);
+    int plot_height = height - TSKMGR_GUI_PX(32);
+    uint32_t oldest;
+    vesa_color_t line_color;
+
+    taskmgr_gui_draw_surface(x, y, width, height, GUI_MODERN_COLOR_WINDOW,
+                             GUI_MODERN_COLOR_BORDER_INACTIVE);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(8)),
+                  (uint32_t)(y + TSKMGR_GUI_PX(6)), title,
+                  GUI_MODERN_COLOR_TEXT);
+    if (!history || taskmgr_history_count < 2U || plot_width < 2 ||
+        plot_height < 2) return;
+
+    vesa_draw_hline((uint32_t)plot_x,
+                    (uint32_t)(plot_y + plot_height / 2),
+                    (uint32_t)plot_width,
+                    taskmgr_gui_color(GUI_MODERN_COLOR_BORDER_INACTIVE));
+    oldest = (taskmgr_history_head + TSKMGR_GUI_HISTORY_SAMPLES -
+              taskmgr_history_count) % TSKMGR_GUI_HISTORY_SAMPLES;
+    line_color.raw = color;
+    for (uint32_t point = 1U; point < taskmgr_history_count; point++) {
+        uint32_t previous_index = (oldest + point - 1U) %
+                                  TSKMGR_GUI_HISTORY_SAMPLES;
+        uint32_t current_index = (oldest + point) % TSKMGR_GUI_HISTORY_SAMPLES;
+        int previous_x = plot_x + (int)((point - 1U) * (uint32_t)(plot_width - 1) /
+                                        (taskmgr_history_count - 1U));
+        int current_x = plot_x + (int)(point * (uint32_t)(plot_width - 1) /
+                                       (taskmgr_history_count - 1U));
+        int previous_y = plot_y + plot_height - 1 -
+                         ((int)history[previous_index] * (plot_height - 1) / 100);
+        int current_y = plot_y + plot_height - 1 -
+                        ((int)history[current_index] * (plot_height - 1) / 100);
+
+        vesa_draw_line(previous_x, previous_y, current_x, current_y, line_color);
+    }
+}
+
 void taskmgr_init(void) {
     is_open = 0;
     gui_open = 0;
@@ -170,6 +282,7 @@ void taskmgr_init(void) {
     gui_last_metrics_tick = 0;
     gui_redraw_pending = 0;
     taskmgr_hosted = 0;
+    taskmgr_gui_reset_history();
 }
 
 void taskmgr_open(void) {
@@ -1151,26 +1264,28 @@ static void taskmgr_gui_draw_bar(int x, int y, int width, uint32_t percent,
                                  uint32_t color) {
     vesa_color_t bg;
     vesa_color_t fill;
+    int height = TSKMGR_GUI_PX(14);
     int fill_width;
 
     if (percent > 100) percent = 100;
-    if (width < 8) return;
-    bg.raw = GUI_COLOR_BORDER_D;
+    if (width < 8 || height < 3) return;
+    bg.raw = GUI_MODERN_COLOR_BORDER_INACTIVE;
     fill.raw = color;
-    vesa_fill_rect((uint32_t)x, (uint32_t)y, (uint32_t)width, 14, bg);
+    vesa_fill_rect((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                   (uint32_t)height, bg);
     fill_width = (width - 2) * (int)percent / 100;
     if (fill_width > 0) {
         vesa_fill_rect((uint32_t)(x + 1), (uint32_t)(y + 1),
-                       (uint32_t)fill_width, 12, fill);
+                       (uint32_t)fill_width, (uint32_t)(height - 2), fill);
     }
 }
 
 static uint32_t taskmgr_gui_state_color(process_state_t state) {
     switch (state) {
-        case PROCESS_STATE_RUNNING: return 0x00008000;
-        case PROCESS_STATE_BLOCKED: return 0x00808000;
-        case PROCESS_STATE_ZOMBIE: return 0x00800000;
-        default: return GUI_COLOR_TEXT;
+        case PROCESS_STATE_RUNNING: return 0x005FBF7FU;
+        case PROCESS_STATE_BLOCKED: return 0x00E0A850U;
+        case PROCESS_STATE_ZOMBIE: return 0x00D65A5AU;
+        default: return GUI_MODERN_COLOR_TEXT;
     }
 }
 
@@ -1178,22 +1293,14 @@ static void taskmgr_gui_draw_tabs(void) {
     const char* names[] = {"Processos", "Memoria", "Threads"};
     int tab_width = (int)display_scale_px(112);
     int tab_gap = (int)display_scale_px(4);
-    display_metrics_t metrics;
     int x = gui_x + TSKMGR_GUI_MARGIN;
     int y = gui_y + TSKMGR_GUI_TABS_TOP;
 
-    if (display_get_metrics(&metrics) != OK) return;
-
     for (int i = 0; i < 3; i++) {
-        uint32_t background = selected_tab == i ? GUI_COLOR_TITLE_BG : GUI_COLOR_BG;
-        uint32_t text_color = selected_tab == i ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
-        gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)tab_width,
-                       TSKMGR_GUI_TAB_HEIGHT,
-                        background, selected_tab == i);
-        gui_draw_text((uint32_t)(x + metrics.spacing),
-                      (uint32_t)(y +
-                          (TSKMGR_GUI_TAB_HEIGHT - metrics.font_height) / 2),
-                      names[i], text_color);
+        gui_draw_modern_button((uint32_t)x, (uint32_t)y,
+                               (uint32_t)tab_width, TSKMGR_GUI_TAB_HEIGHT,
+                               names[i], selected_tab == i ?
+                               GUI_BUTTON_STATE_PRESSED : GUI_BUTTON_STATE_NORMAL);
         x += tab_width + tab_gap;
     }
 }
@@ -1203,13 +1310,13 @@ static void taskmgr_gui_draw_process_details(process_t* process, int x, int y,
     char name[19];
     int right_x = x + width / 2;
 
-    gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)width, (uint32_t)height,
-                   GUI_COLOR_BG, 0);
+    taskmgr_gui_draw_surface(x, y, width, height, GUI_MODERN_COLOR_WINDOW,
+                             GUI_MODERN_COLOR_BORDER_INACTIVE);
     gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 8),
-                  "Detalhes selecionados", GUI_COLOR_TEXT);
+                  "Detalhes selecionados", GUI_MODERN_COLOR_TEXT);
     if (!process) {
         gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 38),
-                      "Nenhum processo", GUI_COLOR_TEXT);
+                      "Nenhum processo", GUI_MODERN_COLOR_BORDER_INACTIVE);
         return;
     }
     taskmgr_gui_copy_text(name, sizeof(name), process->name);
@@ -1312,8 +1419,9 @@ static void taskmgr_gui_draw_processes(void) {
         scroll_offset = selected_row - taskmgr_gui_process_visible_rows() + 1;
     }
 
-    gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)width,
-                   (uint32_t)panel_height, GUI_COLOR_BG, 0);
+    taskmgr_gui_draw_surface(x, y, width, panel_height,
+                             GUI_MODERN_COLOR_WINDOW,
+                             GUI_MODERN_COLOR_BORDER_INACTIVE);
     gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(10)),
                   (uint32_t)(y + TSKMGR_GUI_PX(8)), "Processos:", GUI_COLOR_TEXT);
     taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(94), y + TSKMGR_GUI_PX(8),
@@ -1349,8 +1457,9 @@ static void taskmgr_gui_draw_processes(void) {
         list_width = width - TSKMGR_GUI_DETAIL_WIDTH - TSKMGR_GUI_DETAIL_GAP;
         detail_x = x + list_width + TSKMGR_GUI_DETAIL_GAP;
     }
-    gui_draw_panel((uint32_t)x, (uint32_t)list_y, (uint32_t)list_width,
-                   (uint32_t)list_height, GUI_COLOR_BG, 0);
+    taskmgr_gui_draw_surface(x, list_y, list_width, list_height,
+                             GUI_MODERN_COLOR_WINDOW,
+                             GUI_MODERN_COLOR_BORDER_INACTIVE);
     gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(10)),
                   (uint32_t)(list_y + TSKMGR_GUI_PX(8)), "PID", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(56)),
@@ -1383,11 +1492,11 @@ static void taskmgr_gui_draw_processes(void) {
                                taskmgr_gui_state_color(process->state);
 
         if (absolute_row == selected_row) {
-            vesa_color_t selection;
-            selection.raw = GUI_COLOR_TITLE_BG;
-            vesa_fill_rect((uint32_t)(x + TSKMGR_GUI_PX(5)), (uint32_t)row_y,
-                           (uint32_t)(list_width - TSKMGR_GUI_PX(10)),
-                           TSKMGR_GUI_ROW_HEIGHT, selection);
+            taskmgr_gui_draw_surface(x + TSKMGR_GUI_PX(5), row_y,
+                                     list_width - TSKMGR_GUI_PX(10),
+                                     TSKMGR_GUI_ROW_HEIGHT,
+                                     GUI_MODERN_COLOR_HOVER,
+                                     GUI_MODERN_COLOR_ACCENT);
             prop_pid = (int)process->pid;
         }
 
@@ -1447,16 +1556,18 @@ static void taskmgr_gui_draw_memory(void) {
     uint32_t used_pages = taskmgr_pages_used(total_pages, free_pages);
     uint32_t used_percent = taskmgr_percent(used, total);
     ata_device_t* device = ata_get_device();
-    int x = gui_x + TSKMGR_GUI_MARGIN + 18;
+    int panel_x = gui_x + TSKMGR_GUI_MARGIN;
+    int panel_y = gui_y + TSKMGR_GUI_CONTENT_TOP;
+    int panel_width = gui_width - TSKMGR_GUI_MARGIN * 2;
+    int panel_height = gui_height - TSKMGR_GUI_PANEL_BOTTOM;
+    int x = panel_x + TSKMGR_GUI_PX(18);
     int y = gui_y + TSKMGR_GUI_CONTENT_TOP + TSKMGR_GUI_PX(14);
-    uint32_t bar_color = used_percent > 80 ? 0x00800000 :
-                         (used_percent > 60 ? 0x00808000 : 0x00008000);
+    uint32_t bar_color = used_percent > 80 ? 0x00D65A5AU :
+                         (used_percent > 60 ? 0x00E0A850U : 0x005FBF7FU);
 
-    gui_draw_panel((uint32_t)(gui_x + TSKMGR_GUI_MARGIN),
-                   (uint32_t)(gui_y + TSKMGR_GUI_CONTENT_TOP),
-                   (uint32_t)(gui_width - TSKMGR_GUI_MARGIN * 2),
-                   (uint32_t)(gui_height - TSKMGR_GUI_PANEL_BOTTOM),
-                   GUI_COLOR_BG, 0);
+    taskmgr_gui_draw_surface(panel_x, panel_y, panel_width, panel_height,
+                             GUI_MODERN_COLOR_WINDOW,
+                             GUI_MODERN_COLOR_BORDER_INACTIVE);
     gui_draw_text((uint32_t)x, (uint32_t)y, "Memoria fisica", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)x, (uint32_t)(y + 34), "Total:", GUI_COLOR_TEXT);
     taskmgr_gui_draw_num(x + 120, y + 34, total / 1024, GUI_COLOR_TEXT);
@@ -1493,17 +1604,33 @@ static void taskmgr_gui_draw_memory(void) {
         taskmgr_gui_copy_text(model, sizeof(model), device->model);
         gui_draw_text((uint32_t)(x + 120), (uint32_t)(y + 248), model, GUI_COLOR_TEXT);
     } else {
-        gui_draw_text((uint32_t)(x + 120), (uint32_t)(y + 248), "N/D", 0x00800000);
+        gui_draw_text((uint32_t)(x + 120), (uint32_t)(y + 248), "N/D", 0x00D65A5AU);
     }
     gui_draw_text((uint32_t)(x + 260), (uint32_t)(y + 248), "Setores:", GUI_COLOR_TEXT);
     if (device && device->present) {
         taskmgr_gui_draw_num(x + 380, y + 248, device->sectors, GUI_COLOR_TEXT);
     } else {
-        gui_draw_text((uint32_t)(x + 380), (uint32_t)(y + 248), "N/D", 0x00800000);
+        gui_draw_text((uint32_t)(x + 380), (uint32_t)(y + 248), "N/D", 0x00D65A5AU);
     }
     if (!total) {
         gui_draw_text((uint32_t)(x + 196), (uint32_t)(y + 34),
-                      "N/D", 0x00800000);
+                      "N/D", 0x00D65A5AU);
+    }
+    {
+        int graph_y = y + TSKMGR_GUI_PX(276);
+        int graph_height = panel_y + panel_height - graph_y - TSKMGR_GUI_PX(8);
+        int graph_gap = TSKMGR_GUI_PX(8);
+        int graph_width = (panel_width - TSKMGR_GUI_PX(36) - graph_gap) / 2;
+
+        if (graph_height >= TSKMGR_GUI_PX(44) && graph_width >= TSKMGR_GUI_PX(120)) {
+            taskmgr_gui_draw_history_graph(x, graph_y, graph_width, graph_height,
+                                           "Memoria usada", taskmgr_memory_history,
+                                           GUI_MODERN_COLOR_ACCENT);
+            taskmgr_gui_draw_history_graph(x + graph_width + graph_gap, graph_y,
+                                           graph_width, graph_height,
+                                           "Carga agregada", taskmgr_load_history,
+                                           0x005FBF7FU);
+        }
     }
 }
 
@@ -1517,8 +1644,9 @@ static void taskmgr_gui_draw_threads(void) {
     int running_threads = 0;
     int blocked_threads = 0;
 
-    gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)width,
-                   (uint32_t)panel_height, GUI_COLOR_BG, 0);
+    taskmgr_gui_draw_surface(x, y, width, panel_height,
+                             GUI_MODERN_COLOR_WINDOW,
+                             GUI_MODERN_COLOR_BORDER_INACTIVE);
     for (int i = 0; i < MAX_THREADS; i++) {
         thread_t* thread = thread_get_by_id((uint32_t)i + 1);
         if (!thread) continue;
@@ -1573,11 +1701,11 @@ static void taskmgr_gui_draw_threads(void) {
         taskmgr_gui_copy_text(name, sizeof(name), thread->name);
         name[15] = '\0';
         if (absolute_row == selected_row) {
-            vesa_color_t selection;
-            selection.raw = GUI_COLOR_TITLE_BG;
-            vesa_fill_rect((uint32_t)(x + TSKMGR_GUI_PX(5)), (uint32_t)row_y,
-                           (uint32_t)(width - TSKMGR_GUI_PX(10)),
-                           TSKMGR_GUI_ROW_HEIGHT, selection);
+            taskmgr_gui_draw_surface(x + TSKMGR_GUI_PX(5), row_y,
+                                     width - TSKMGR_GUI_PX(10),
+                                     TSKMGR_GUI_ROW_HEIGHT,
+                                     GUI_MODERN_COLOR_HOVER,
+                                     GUI_MODERN_COLOR_ACCENT);
         }
         taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(10),
                              row_y + TSKMGR_GUI_PX(4),
@@ -1646,8 +1774,11 @@ static void taskmgr_gui_draw_properties(void) {
         return;
     }
 
-    gui_draw_scaled_window_frame((uint32_t)x, (uint32_t)y, width, height,
-                                 "Propriedades do processo", 1);
+    taskmgr_gui_draw_surface(x, y, width, height, GUI_MODERN_COLOR_WINDOW,
+                             GUI_MODERN_COLOR_ACCENT);
+    gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(18)),
+                  (uint32_t)(y + TSKMGR_GUI_PX(14)),
+                  "Propriedades do processo", GUI_MODERN_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 18), (uint32_t)(y + 42), "PID:", GUI_COLOR_TEXT);
     taskmgr_gui_draw_num(x + 104, y + 42, process->pid, GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 270), (uint32_t)(y + 42), "Tipo:", GUI_COLOR_TEXT);
@@ -1704,12 +1835,15 @@ static void taskmgr_gui_draw_window(void) {
                                      (uint32_t)gui_width,
                                      (uint32_t)gui_height,
                                      "ZephyrOS Task Manager", 1);
-        gui_draw_button((uint32_t)minimize_x, (uint32_t)control_y,
-                        TSKMGR_GUI_CONTROL_SIZE, TSKMGR_GUI_CONTROL_SIZE,
-                        "_", 0);
-        gui_draw_button((uint32_t)maximize_x, (uint32_t)control_y,
-                        TSKMGR_GUI_CONTROL_SIZE, TSKMGR_GUI_CONTROL_SIZE,
-                        gui_maximized ? "R" : "M", 0);
+        gui_draw_modern_button((uint32_t)minimize_x, (uint32_t)control_y,
+                               TSKMGR_GUI_CONTROL_SIZE,
+                               TSKMGR_GUI_CONTROL_SIZE, "_",
+                               GUI_BUTTON_STATE_NORMAL);
+        gui_draw_modern_button((uint32_t)maximize_x, (uint32_t)control_y,
+                               TSKMGR_GUI_CONTROL_SIZE,
+                               TSKMGR_GUI_CONTROL_SIZE,
+                               gui_maximized ? "R" : "M",
+                               GUI_BUTTON_STATE_NORMAL);
     }
     taskmgr_gui_draw_tabs();
 
@@ -1856,7 +1990,9 @@ int taskmgr_open_gui(void) {
     selected_row = 0;
     scroll_offset = 0;
     show_properties = 0;
+    taskmgr_gui_reset_history();
     taskmgr_update_cpu_metrics();
+    taskmgr_gui_sample_history();
     gui_last_tick = timer_get_ticks();
     gui_last_metrics_tick = gui_last_tick;
     taskmgr_hosted = 1;
@@ -1910,6 +2046,7 @@ void taskmgr_gui_update(void) {
     if (now - gui_last_metrics_tick >= TSKMGR_METRICS_TICKS) {
         gui_last_metrics_tick = now;
         taskmgr_update_cpu_metrics();
+        taskmgr_gui_sample_history();
         redraw = 1;
     }
     if (gui_redraw_pending && !redraw) {

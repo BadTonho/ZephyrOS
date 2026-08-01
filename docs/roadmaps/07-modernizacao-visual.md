@@ -231,15 +231,24 @@ os dois ultimos terminaram em `OK`.
 
 ## MV4 - Modernizacao de Aplicativos e Performance
 
+### Estado atual
+
+Implementacao concluida em codigo em 2026-08-01. A validacao no QEMU, a
+comparacao manual de `kmetrics` e a aprovacao do fluxo AS3 permanecem
+pendentes; os valores nao devem ser preenchidos por estimativa.
+
 ### Implementacao
 
-- [ ] Refatorar o desenho das telas internas dos aplicativos nativos hospedados no modo Modern:
+- [x] Refatorar o desenho das telas internas dos aplicativos nativos hospedados no modo Classic:
   - **Explorer Moderno**: Painéis de arquivos flat, linhas de grade sutis e selecao moderna.
   - **Settings Moderno**: Categorias organizadas em cards modernos com bordas arredondadas.
   - **Task Manager Moderno**: Graficos de performance desenhados com linhas finas coloridas sobre fundo escuro.
   - **App Store Moderna**: catalogo, detalhes, botoes e confirmacoes usando as
     mesmas metricas, controles e estados visuais.
-- [ ] Refinar contraste e espacamento da Zephyr UI Bitmap sobre as faces
+- [x] Manter funcoes, atalhos, hit-testing, Shell, loader, pacotes e fallback
+  Simple; os graficos do Task Manager sao observacionais, locais a janela e
+  usam 60 amostras do ciclo ja existente de 5 ticks.
+- [x] Refinar contraste e espacamento da Zephyr UI Bitmap sobre as faces
   nativas do MV0.1; fonte proporcional fica fora desta frente.
 - [ ] Registrar uma linha-base por cena fixa (modo VESA, escala, janela e
   acao) com `kmetrics`, incluindo bytes apresentados e ticks de copia VESA.
@@ -252,7 +261,8 @@ os dois ultimos terminaram em `OK`.
 Explorer, Settings, Task Manager e App Store abrem e funcionam com o novo
 visual. O redesenho de janelas arrastadas se mantem fluido e a comparacao
 `kmetrics` da mesma cena prova que a sobrecarga visual esta dentro do limite
-definido.
+definido. `TCK%` continua sendo a estimativa existente baseada no PIT, nao
+uma medicao de CPU real; o historico dos graficos e resetado ao abrir a janela.
 
 ## Validacao por etapa
 
@@ -264,8 +274,20 @@ make clean && make
 make run
 ```
 
-No QEMU, manter `guimode classic` para validar `display status`, as tres
-escalas e a matriz completa de Desktop, Explorer, Settings, Task Manager e
-App Store, comparando `kmetrics`. O Simple recebe somente o smoke test de
-fallback descrito no MV0. `guimode modern` deve informar que o nome esta
-reservado enquanto o renderer futuro ainda nao existir.
+No QEMU, manter `guimode classic`, executar `display status` e repetir a
+matriz nas escalas pequena, normal e grande: abrir, desenhar, usar teclado e
+mouse, redimensionar e fechar Explorer, Settings, Task Manager e App Store.
+Em escala normal, registrar a linha-base e a comparacao final em
+`docs/qualidade/metricas.md` com a sequencia `kmetrics reset`, cena e
+`kmetrics` para cada caso: Explorer (abrir, F5, mover selecao, fechar),
+Settings (abrir, trocar categoria/opcao sem persistir, fechar), Task Manager
+(abrir, alternar as tres abas, fechar) e App Store (abrir, F5, selecionar
+entradas/detalhes, fechar). Bytes apresentados e ticks de copia VESA nao podem
+crescer mais de 10%; zero tick deve ser registrado como `N/D` com a
+justificativa de resolucao do PIT.
+
+Tambem repetir o fluxo AS3 aprovado, seguido de `display status`, `kmetrics`,
+`health summary`, `memcheck` e `regcheck full`. O Simple recebe somente o
+smoke test de fallback descrito no MV0: `guimode simple`, Shell e um comando
+basico, seguido de `guimode classic`. `guimode modern` deve informar que o
+nome esta reservado enquanto o renderer futuro ainda nao existir.

@@ -18,6 +18,34 @@ mudanca; nao crie uma entrada artificial.
 
 ## Registros
 
+### 2026-08-01 - MV4, aplicativos Classic Modern Dark
+
+- Cenario QEMU: manter a mesma resolucao, `guimode classic` e escala normal.
+  Para cada cena, executar `kmetrics reset`, realizar a acao e executar
+  `kmetrics`: Explorer (abrir, F5, mover a selecao e fechar), Settings (abrir,
+  trocar categoria e opcao sem persistir e fechar), Task Manager (abrir,
+  alternar Processos/Memoria/Threads e fechar) e App Store (abrir, F5,
+  selecionar entradas/detalhes e fechar).
+- Metrica observavel: bytes apresentados e ticks de copia VESA do snapshot
+  `kmetrics`; a comparacao usa a mesma cena, escala e estado inicial.
+- Antes: pendente de coleta no binario AS3 anterior. A linha-base nao deve ser
+  inferida do redesenho nem substituida por uma medicao de outra escala.
+- Depois: pendente de coleta no binario MV4.
+- Criterio: aceitar cada cena somente se bytes e ticks nao crescerem mais que
+  10%. Quando a medida-base de ticks for zero, registrar `N/D` para percentual
+  e justificar que o PIT nao resolveu a duracao; ainda registrar os bytes.
+- Impacto: Explorer, Settings, Task Manager e App Store usam somente as
+  primitivas Modern existentes no caminho Classic. O historico de 60 pontos do
+  Task Manager e local a janela, e `Carga agregada` continua a leitura
+  observacional baseada em `TCK%`, nao CPU real, API ou persistencia.
+
+| Cena | Bytes antes | Bytes depois | Ticks antes | Ticks depois | Resultado |
+|---|---:|---:|---:|---:|---|
+| Explorer | Pendente | Pendente | Pendente | Pendente | Pendente QEMU |
+| Settings | Pendente | Pendente | Pendente | Pendente | Pendente QEMU |
+| Task Manager | Pendente | Pendente | Pendente | Pendente | Pendente QEMU |
+| App Store | Pendente | Pendente | Pendente | Pendente | Pendente QEMU |
+
 ### 2026-07-30 - MV3, composicao visual Modern estatica
 
 - Cenario QEMU: em `guimode classic`, executar `kmetrics reset`, abrir uma

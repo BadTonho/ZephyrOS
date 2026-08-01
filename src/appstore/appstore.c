@@ -9,6 +9,7 @@
 #include "core/video.h"
 #include "process/process.h"
 #include "ui/desktop.h"
+#include "ui/display.h"
 #include "ui/gui.h"
 #include "ui/taskbar.h"
 #include "ui/wm.h"
@@ -110,6 +111,17 @@ static int appstore_hosted_mouse(mouse_event_t* event, int x, int y,
 static void appstore_hosted_close(void);
 static void appstore_worker_main(void);
 static void appstore_gui_draw_details(int x, int y);
+
+static void appstore_gui_draw_surface(int x, int y, int width, int height,
+                                      uint32_t background, uint32_t border) {
+    if (width <= 0 || height <= 0) return;
+    gui_draw_rounded_rect((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                          (uint32_t)height,
+                          display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE),
+                          background);
+    gui_draw_flat_border((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                         (uint32_t)height, border);
+}
 
 static const wm_hosted_app_t appstore_hosted_app = {
     WM_APP_APPSTORE, "ZephyrOS App Store", "App Store",
@@ -697,11 +709,9 @@ static void appstore_gui_draw_entries(int x, int y, int width, int height) {
     int list_width = 230;
     int visible = (height - 54) / APPSTORE_CLASSIC_ROW_HEIGHT;
 
-    gui_draw_rounded_rect((uint32_t)x, (uint32_t)y, (uint32_t)list_width,
-                          (uint32_t)height, GUI_MODERN_BUTTON_RADIUS_BASE,
-                          GUI_MODERN_COLOR_WINDOW);
-    gui_draw_flat_border((uint32_t)x, (uint32_t)y, (uint32_t)list_width,
-                         (uint32_t)height, GUI_MODERN_COLOR_BORDER_INACTIVE);
+    appstore_gui_draw_surface(x, y, list_width, height,
+                              GUI_MODERN_COLOR_WINDOW,
+                              GUI_MODERN_COLOR_BORDER_INACTIVE);
     if (count == 0U) {
         gui_draw_text((uint32_t)(x + 14), (uint32_t)(y + 16), "Nenhum item",
                       GUI_MODERN_COLOR_BORDER_INACTIVE);
@@ -714,21 +724,18 @@ static void appstore_gui_draw_entries(int x, int y, int width, int height) {
         if (index < 0) break;
         entry = &appstore_entries[index];
         if (index == appstore_selected) {
-            gui_draw_rounded_rect((uint32_t)(x + 6), (uint32_t)(row_y - 4),
-                                  (uint32_t)(list_width - 12), 22,
-                                  GUI_MODERN_BUTTON_RADIUS_BASE,
-                                  GUI_MODERN_COLOR_HOVER);
+            appstore_gui_draw_surface(x + 6, row_y - 4, list_width - 12, 22,
+                                      GUI_MODERN_COLOR_HOVER,
+                                      GUI_MODERN_COLOR_ACCENT);
         }
         gui_draw_text((uint32_t)(x + 14), (uint32_t)row_y,
                       appstore_entry_label(entry),
                       appstore_gui_entry_color(entry));
     }
-    gui_draw_rounded_rect((uint32_t)(x + list_width + 12), (uint32_t)y,
-                          (uint32_t)(width - list_width - 12), (uint32_t)height,
-                          GUI_MODERN_BUTTON_RADIUS_BASE, GUI_MODERN_COLOR_WINDOW);
-    gui_draw_flat_border((uint32_t)(x + list_width + 12), (uint32_t)y,
-                         (uint32_t)(width - list_width - 12), (uint32_t)height,
-                         GUI_MODERN_COLOR_BORDER_INACTIVE);
+    appstore_gui_draw_surface(x + list_width + 12, y,
+                              width - list_width - 12, height,
+                              GUI_MODERN_COLOR_WINDOW,
+                              GUI_MODERN_COLOR_BORDER_INACTIVE);
     appstore_gui_draw_details(x + list_width + 30, y + 18);
 }
 
@@ -796,10 +803,8 @@ static void appstore_gui_draw_confirmation(int x, int y, int width, int height) 
     dialog_y = y + (height - 150) / 2;
     question = appstore_confirm == APPSTORE_CONFIRM_INSTALL ?
                "Confirmar instalacao?" : "Confirmar remocao?";
-    gui_draw_rounded_rect((uint32_t)dialog_x, (uint32_t)dialog_y, 420, 150,
-                          GUI_MODERN_BUTTON_RADIUS_BASE, GUI_MODERN_COLOR_WINDOW);
-    gui_draw_flat_border((uint32_t)dialog_x, (uint32_t)dialog_y, 420, 150,
-                         GUI_MODERN_COLOR_ACCENT);
+    appstore_gui_draw_surface(dialog_x, dialog_y, 420, 150,
+                              GUI_MODERN_COLOR_WINDOW, GUI_MODERN_COLOR_ACCENT);
     gui_draw_text((uint32_t)(dialog_x + 24), (uint32_t)(dialog_y + 28), question,
                   GUI_MODERN_COLOR_TEXT);
     gui_draw_modern_button((uint32_t)(dialog_x + 82), (uint32_t)(dialog_y + 92),
@@ -812,11 +817,9 @@ static void appstore_gui_draw_confirmation(int x, int y, int width, int height) 
 
 static void appstore_gui_draw_disabled_button(int x, int y,
                                               const char* text) {
-    gui_draw_rounded_rect((uint32_t)x, (uint32_t)y, APPSTORE_BUTTON_WIDTH,
-                          APPSTORE_BUTTON_HEIGHT, GUI_MODERN_BUTTON_RADIUS_BASE,
-                          GUI_MODERN_COLOR_WINDOW);
-    gui_draw_flat_border((uint32_t)x, (uint32_t)y, APPSTORE_BUTTON_WIDTH,
-                         APPSTORE_BUTTON_HEIGHT, GUI_MODERN_COLOR_BORDER_INACTIVE);
+    appstore_gui_draw_surface(x, y, APPSTORE_BUTTON_WIDTH,
+                              APPSTORE_BUTTON_HEIGHT, GUI_MODERN_COLOR_WINDOW,
+                              GUI_MODERN_COLOR_BORDER_INACTIVE);
     gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 9), text,
                   GUI_MODERN_COLOR_BORDER_INACTIVE);
 }
@@ -837,12 +840,15 @@ static void appstore_draw_classic(int x, int y, int width, int height) {
     int content_height = height - 108;
     app_catalog_entry_t* entry = appstore_selected_entry();
 
-    gui_draw_rounded_rect((uint32_t)x, (uint32_t)y, (uint32_t)width,
-                          (uint32_t)height, GUI_MODERN_BUTTON_RADIUS_BASE,
-                          GUI_MODERN_COLOR_BG);
+    appstore_gui_draw_surface(x, y, width, height, GUI_MODERN_COLOR_BG,
+                              GUI_MODERN_COLOR_BORDER_INACTIVE);
     appstore_gui_draw_tabs(x + APPSTORE_CLASSIC_MARGIN,
                            y + APPSTORE_CLASSIC_MARGIN);
     if (appstore_tab == APPSTORE_TAB_DETAILS) {
+        appstore_gui_draw_surface(x + APPSTORE_CLASSIC_MARGIN, content_y,
+                                  width - 2 * APPSTORE_CLASSIC_MARGIN,
+                                  content_height, GUI_MODERN_COLOR_WINDOW,
+                                  GUI_MODERN_COLOR_BORDER_INACTIVE);
         appstore_gui_draw_details(x + 32, content_y + 18);
     } else {
         appstore_gui_draw_entries(x + APPSTORE_CLASSIC_MARGIN, content_y,
