@@ -515,16 +515,14 @@ static void appstore_worker_verify(const char* alias) {
 }
 
 static int appstore_worker_build_plan(const char* key, int update) {
-    app_package_plan_t plan;
+    app_package_plan_t* plan = &appstore_action.plan;
     int result;
 
     kmemset(&appstore_action, 0, sizeof(appstore_action));
-    kmemset(&plan, 0, sizeof(plan));
-    result = update ? app_catalog_build_update_plan(key, 1, &plan) :
-                      app_catalog_build_install_plan(key, &plan);
-    appstore_action.plan = plan;
+    result = update ? app_catalog_build_update_plan(key, 1, plan) :
+                      app_catalog_build_install_plan(key, plan);
     if (result != OK) {
-        appstore_action.reason = plan.reason ? plan.reason :
+        appstore_action.reason = plan->reason ? plan->reason :
                                  APP_PACKAGE_ACTION_REASON_PLAN_INCOMPLETE;
     }
     return result;

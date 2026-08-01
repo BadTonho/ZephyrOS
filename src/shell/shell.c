@@ -8624,7 +8624,7 @@ static void cmd_store_set_local_failure(
 }
 
 static int cmd_store_build_plan(char* key, int update, int allow_downgrade) {
-    app_package_plan_t plan;
+    app_package_plan_t* plan = &shell_store_workspace.action.plan;
     int result;
 
     result = cmd_store_find_action_entry(key);
@@ -8635,12 +8635,11 @@ static int cmd_store_build_plan(char* key, int update, int allow_downgrade) {
                 APP_PACKAGE_ACTION_REASON_SOURCE_NOT_FOUND);
         return result == OK ? ERR_NOT_FOUND : result;
     }
-    kmemset(&plan, 0, sizeof(plan));
-    result = update ? app_catalog_build_update_plan(key, allow_downgrade, &plan) :
-                      app_catalog_build_install_plan(key, &plan);
-    shell_store_workspace.action.plan = plan;
+    kmemset(plan, 0, sizeof(*plan));
+    result = update ? app_catalog_build_update_plan(key, allow_downgrade, plan) :
+                      app_catalog_build_install_plan(key, plan);
     if (result != OK) {
-        shell_store_workspace.action.reason = plan.reason ? plan.reason :
+        shell_store_workspace.action.reason = plan->reason ? plan->reason :
             APP_PACKAGE_ACTION_REASON_PLAN_INCOMPLETE;
     }
     return result;
