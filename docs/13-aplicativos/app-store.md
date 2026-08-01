@@ -11,7 +11,8 @@ Simple completo, e foi validado no host e no QEMU pelo usuario.
 A interface AS4 usa a aparencia Modern Dark dentro do renderer Classic VESA;
 `guimode modern` continua reservado. AS4 acrescenta atualizacao local FAT12,
 plano topologico de dependencias, rollback manual e historico compacto, sem
-rede, assinatura, alteracao do ZPKG, App API ou loader.
+rede, assinatura, alteracao do ZPKG, App API ou loader. A fase foi validada no
+host e no QEMU pelo usuario em 01/08/2026.
 
 ## Fontes e snapshot
 
@@ -347,11 +348,27 @@ em `guimode simple` tambem passaram. Ao final, `health summary`, `pkgcheck`,
 pelos fixtures invalidos, sem pacote instalado, processo ring 3, zumbi ou
 vazamento residual.
 
+## Validacao AS4
+
+O AS4 foi validado pelo usuario no host e no QEMU em 01/08/2026. `q3check`,
+build limpo e os alvos AS4 passaram. A matriz confirmou instalacao inicial,
+o plano topologico `UPDEPB -> UPDEPA -> UPTARGET`, atualizacao para `1.1.0`,
+rollback para `1.0.0` e downgrade diagnostico somente com `--downgrade` e
+`--confirm`.
+
+`BROKEN.ZPK` foi recusado como `PLAN_INCOMPLETE` e `CYCLEA.ZPK` como
+`PLAN_CYCLE`. Failpoints apos a primeira e a quinta troca deixaram journal
+pendente; depois do reboot, a recuperacao restaurou o estado anterior,
+registrou `RECOVERY`, limpou o journal e manteve o heap integro. A interface
+Classic repetiu update e rollback, habilitou `Reverter` somente quando havia
+backup e preservou `UPTARGET` selecionado depois do refresh por `F5`.
+
 ## Limitacoes
 
-- sem atualizacao ou downgrade por `store`;
-- sem resolucao automatica de dependencias;
-- sem assinatura, repositorio remoto, conta ou telemetria;
+- sem rede, assinatura, repositorio remoto, conta ou telemetria;
+- dependencias ja instaladas nao recebem atualizacao implicita;
+- apenas uma versao anterior por aplicativo atualizado fica recuperavel;
+- mutacoes transacionais AS4 ficam indisponiveis no FAT32;
 - sem banco de dados proprio ou persistencia do snapshot;
 - sem mudanca de ZPKG v1, App API `0.3`, loader ou boot.
 

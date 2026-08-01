@@ -428,7 +428,7 @@ Sistema e ecossistema:       [████████████████�
   confirmacao, instalacao/remocao, `WAITAPP`/`F12`, foco, singleton, Simple e
   diagnosticos finais sem residuos.
 
-### AS4 - Atualizacao local transacional (implementada; validacao pendente)
+### AS4 - Atualizacao local transacional (concluida e validada)
 
 - [x] Planos topologicos locais, update/downgrade confirmado e dependencias
   transitivas ausentes no FAT12.
@@ -436,7 +436,8 @@ Sistema e ecossistema:       [████████████████�
   historico compacto sem alterar ZPKG, App API ou loader.
 - [x] Store Classic/Simple e Shell com update, rollback, historico, failpoint
   e fixtures seed/update `UPTARGET`/`UPDEPA`/`UPDEPB`.
-- [ ] Host, build e matriz QEMU AS4 pelo usuario.
+- [x] Host, build e matriz QEMU AS4 pelo usuario, incluindo planos,
+  update/downgrade, rollback, failpoints com recuperacao e interface Classic.
 
 ### Q4 - Regressao compacta ✅
 
@@ -730,7 +731,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 - **Gerenciador de Processos** (`gerenciador de processos.md`)
 
 ### Novos Módulos e Aplicativos (App Store / Opcionais)
-- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1-AS3 validados; AS4 implementado e aguardando matriz de validacao
+- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1-AS4 concluidos e validados
 - **Gerenciador de Mídia** (`gerenciador de midia.md`)
 - **Gerenciador de Jogos** (`gerenciador de jogos.md`)
 - **Anti-Virus** (`anti virus.md`)
