@@ -418,13 +418,15 @@ Sistema e ecossistema:       [████████████████�
   explicita, bloqueio por dependencia, execucao e cancelamento por `F12`,
   memoria estavel em `20680 KB` e nenhuma aplicacao ou processo residual.
 
-### AS3 - App Store nativa (implementada; validacao pendente)
+### AS3 - App Store nativa (concluida e validada)
 
 - [x] Janela singleton Classic com visual Modern Dark e fallback TUI Simple.
 - [x] Catalogo, instalados, detalhes, confirmacao contextual e worker
   cooperativo sobre os contratos AS1/AS2.
 - [x] Integracao no Menu Iniciar, IPC, Window Manager e comando `store`.
-- [ ] Validar host e matriz QEMU de catalogo, ciclo de vida, foco e memoria.
+- [x] Host e matriz QEMU validados: catalogo valido/invalido, dependencias,
+  confirmacao, instalacao/remocao, `WAITAPP`/`F12`, foco, singleton, Simple e
+  diagnosticos finais sem residuos.
 
 ### Q4 - Regressao compacta ✅
 
@@ -718,7 +720,7 @@ O projeto conta com uma extensa lista de melhorias e novos módulos planejados, 
 - **Gerenciador de Processos** (`gerenciador de processos.md`)
 
 ### Novos Módulos e Aplicativos (App Store / Opcionais)
-- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1, AS2 e MV0-MV3 validados; AS3 implementado e aguardando validacao
+- **Gerenciador de Aplicativos (App Store)** (`gerenciador de aplicativos.md`) - AS1, AS2 e AS3 validados; proxima etapa MV4
 - **Gerenciador de Mídia** (`gerenciador de midia.md`)
 - **Gerenciador de Jogos** (`gerenciador de jogos.md`)
 - **Anti-Virus** (`anti virus.md`)

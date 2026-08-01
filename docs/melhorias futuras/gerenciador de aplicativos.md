@@ -10,7 +10,7 @@ ordem antiga deste inventário por cinco fases:
 |------|----------|--------|
 | AS1 | Catálogo local e observabilidade | Validado |
 | AS2 | Ciclo de vida local com confirmação | Validado |
-| AS3 | Aplicativo nativo Modern com fallbacks | Implementado; validação pendente |
+| AS3 | Aplicativo nativo Modern com fallbacks | Validado |
 | AS4 | Atualização local e dependências | Futuro |
 | AS5 | Repositório remoto assinado | Futuro |
 
