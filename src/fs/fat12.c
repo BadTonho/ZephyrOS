@@ -906,7 +906,7 @@ int fat12_get_file_count_at(uint16_t dir_cluster) {
     int count = 0;
     for (uint32_t i = 0; i < max_entries; i++) {
         if (entries[i].name[0] == 0x00) break;
-        if (entries[i].name[0] == 0xE5) continue;
+        if ((uint8_t)entries[i].name[0] == 0xE5U) continue;
         if (entries[i].attributes & 0x08) continue;
         count++;
     }
@@ -938,7 +938,7 @@ int fat12_get_file_info_at(uint16_t dir_cluster, int index, char* name_out, uint
     int count = 0;
     for (uint32_t i = 0; i < max_entries; i++) {
         if (entries[i].name[0] == 0x00) break;
-        if (entries[i].name[0] == 0xE5) continue;
+        if ((uint8_t)entries[i].name[0] == 0xE5U) continue;
         if (entries[i].attributes & 0x08) continue;
 
         if (count == index) {
