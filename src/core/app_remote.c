@@ -881,12 +881,23 @@ static int app_remote_write_record(void) {
 }
 
 static int app_remote_directory_exists(uint8_t slot) {
-    uint8_t attributes = 0U;
+    int count;
 
     if (slot > 1U) return 0;
-    if (fs_get_root_file_info(app_remote_directories[slot], 0,
-                              &attributes) != OK) return 0;
-    return (attributes & APP_PACKAGE_DIRECTORY_ATTRIBUTE) != 0U;
+    count = fs_get_file_count_at("");
+    for (int index = 0; index < count; index++) {
+        char name[13];
+        uint8_t attributes = 0U;
+
+        if (fs_get_file_info_at("", index, name, 0, &attributes) != OK) {
+            LOG_WARN("APPREMOTE", "Falha ao localizar slot de cache");
+            continue;
+        }
+        if (kstrcmp(name, app_remote_directories[slot]) == 0) {
+            return (attributes & APP_PACKAGE_DIRECTORY_ATTRIBUTE) != 0U;
+        }
+    }
+    return 0;
 }
 
 static int app_remote_clear_directory(uint8_t slot) {
@@ -1402,18 +1413,27 @@ static int app_remote_preflight_cache_space(
 }
 
 static int app_remote_revalidate_pending_cache(
-    uint8_t slot, app_remote_result_t* output) {
-    app_remote_reason_t reason;
+    uint8_t slot, const uint8_t authenticated_hash[32],
+    uint32_t authenticated_generation, app_remote_result_t* output) {
+    uint8_t current_hash[32];
 
-    if (!output) {
+    if (!authenticated_hash || !output) {
         LOG_ERROR("APPREMOTE", "Revalidacao pendente recebeu saida nula");
         return ERR_NULL;
     }
     app_remote_status.state = APP_REMOTE_STATE_VALIDATING;
-    if (app_remote_parse_catalog(
-            app_remote_catalog, app_remote_catalog_size,
-            app_remote_record.highest_generation, &reason) != OK) {
-        output->reason = reason;
+    /* O check confirmado acabou de autenticar estes bytes. Comparar o
+       digest evita repetir a verificacao Ed25519 longa sem aceitar mudanca. */
+    if (authenticated_generation == 0U ||
+        app_remote_status.generation != authenticated_generation ||
+        app_remote_catalog_size < APP_REMOTE_HEADER_SIZE +
+                                  APP_REMOTE_SIGNATURE_SIZE ||
+        app_remote_read_u32(app_remote_catalog + 12U) !=
+            authenticated_generation ||
+        crypto_sha256(app_remote_catalog, app_remote_catalog_size,
+                      current_hash) != OK ||
+        !crypto_equal(current_hash, authenticated_hash, 32U)) {
+        output->reason = APP_REMOTE_REASON_CATALOG_FORMAT;
         LOG_WARN("APPREMOTE", "Catalogo mudou antes da publicacao do cache");
         return ERR_INVALID;
     }
@@ -1434,6 +1454,8 @@ static int app_remote_publish_cache(const char* id, const char* catalog_url,
                                     const app_remote_options_t* options,
                                     app_remote_result_t* output) {
     uint8_t slot = app_remote_record.active_slot == 0U ? 1U : 0U;
+    uint8_t authenticated_hash[32];
+    uint32_t authenticated_generation = app_remote_status.generation;
     app_remote_record_t writing_record;
     app_remote_reason_t plan_reason;
     app_package_info_t installed;
@@ -1454,6 +1476,12 @@ static int app_remote_publish_cache(const char* id, const char* catalog_url,
     output->plan = app_remote_active_plan;
     result = app_remote_preflight_cache_space(&app_remote_active_plan, output);
     if (result != OK) return result;
+    if (crypto_sha256(app_remote_catalog, app_remote_catalog_size,
+                      authenticated_hash) != OK) {
+        output->reason = APP_REMOTE_REASON_CATALOG_FORMAT;
+        LOG_ERROR("APPREMOTE", "Hash do catalogo autenticado falhou");
+        return ERR_INVALID;
+    }
     app_remote_record.pending_slot = slot;
     app_remote_record.phase = APP_REMOTE_PHASE_WRITING;
     app_remote_pending_count = 0U;
@@ -1471,7 +1499,8 @@ static int app_remote_publish_cache(const char* id, const char* catalog_url,
             slot, catalog_url, &app_remote_active_plan, options, output);
     }
     if (result == OK) {
-        result = app_remote_revalidate_pending_cache(slot, output);
+        result = app_remote_revalidate_pending_cache(
+            slot, authenticated_hash, authenticated_generation, output);
     }
     if (result != OK) return result;
     writing_record = app_remote_record;
