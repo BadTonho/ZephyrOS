@@ -57,17 +57,21 @@ camadas de configuracao, descoberta, montagem e distribuicao sobre elas.
 
 ## EP1 - Preferencias de mouse
 
+**Estado:** implementada e validada pelo usuario em 01/08/2026. O gate Q3,
+build completo e matriz QEMU foram aprovados depois de proteger a transacao
+compartilhada PS/2 contra a IRQ do teclado.
+
 ### Implementacao
 
-- [ ] Criar configuracao central de sensibilidade, aceleracao opcional e
+- [x] Criar configuracao central de sensibilidade, aceleracao opcional e
   botao principal, com valores padrao seguros.
-- [ ] Remapear o botao principal antes do despacho para Desktop, Taskbar, WM
+- [x] Remapear o botao principal antes do despacho para Desktop, Taskbar, WM
   e apps; manter o estado bruto observavel para diagnostico.
-- [ ] Garantir que o escalonamento de movimento respeite limites de tela e nao
+- [x] Garantir que o escalonamento de movimento respeite limites de tela e nao
   descarte pacotes da fila PS/2.
-- [ ] Adicionar `mouse speed <1-10>` e `mouse primary left|right`; `mouse`
+- [x] Adicionar `mouse speed <1-10>` e `mouse primary left|right`; `mouse`
   exibira configuracao efetiva, estado bruto e falhas do driver.
-- [ ] Expor os controles equivalentes no Settings Simple/Classic e registrar
+- [x] Expor os controles equivalentes no Settings Simple/Classic e registrar
   toda recusa de configuracao com `LOG_ERROR`.
 
 Persistencia de preferencias fica fora da EP1. Enquanto nao houver uma area de
@@ -79,6 +83,20 @@ usuario.
 Mouse, clique, arrasto, roda, teclado, cursor e Shell continuam utilizaveis.
 Valores invalidos e hardware ausente falham controladamente, sem bloquear o
 fallback Simple.
+
+### Matriz QEMU aprovada
+
+1. Os padroes `3`, `off` e `left`, as velocidades `1` e `10` e a aceleracao
+   `on/off` foram aprovados; valores invalidos preservaram o estado anterior.
+2. O botao direito como principal preservou clique, arraste, resize, roda,
+   cursor e despacho para Desktop, Taskbar, WM, Settings e aplicativos.
+3. `mouse` distinguiu estado bruto/efetivo, configuracao, roda, ultimo erro e
+   pacotes descartados; as preferencias permaneceram somente em RAM.
+4. Settings Simple e Classic sincronizaram e aplicaram os tres controles.
+5. A primeira execucao sem resposta valida do mouse preservou teclado, Shell,
+   boot e regressao; a transacao PS/2 protegida foi revalidada com sucesso.
+6. `health summary`, `memcheck` e `regcheck full` foram executados;
+   MemCheck e RegCheck terminaram em `OK`.
 
 ## EP2 - Volumes ATA e montagem de particoes
 

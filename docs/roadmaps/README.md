@@ -80,6 +80,11 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   AS4 tambem foi validado com planos topologicos, update/downgrade, rollback e
   recuperacao por failpoint. O AS5 foi validado com `ZAC1` assinado, cache
   FAT12 A/B, instalacao offline, recuperacao, Shell e aba Remoto Classic.
+- Evolucao da plataforma: EP1 validada no QEMU com velocidade `1-10`,
+  aceleracao, botao principal esquerdo/direito, estado bruto/efetivo e Settings
+  Simple/Classic. A falha inicial da transacao compartilhada PS/2 preservou o
+  fallback por teclado e foi corrigida protegendo a inicializacao contra a IRQ
+  do teclado; MemCheck e RegCheck terminaram em `OK`.
 
 ## K4 validada
 
