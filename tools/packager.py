@@ -1188,8 +1188,10 @@ def parse_store_as5_catalog(
             or not VERSION_RE.fullmatch(version_text)
             or any(not ID_RE.fullmatch(item) for item in dependencies)
             or len(set(dependencies)) != len(dependencies)
-            or any(entry[58 + item * 9:67 + item * 9]
-                   for item in range(dependency_count, 4))
+            or any(
+                any(entry[58 + item * 9:67 + item * 9])
+                for item in range(dependency_count, 4)
+            )
             or any(entry[94:96])
             or not 1 <= package_size <= STORE_AS5_PACKAGE_LIMIT
             or path != f"/zephyros/apps/{package_id}.ZPK"
