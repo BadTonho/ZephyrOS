@@ -21,7 +21,6 @@
 
 /* Todas as chamadas GUI deste modulo pertencem ao caminho Classic grafico. */
 #define gui_draw_text gui_draw_scaled_text
-#define gui_draw_button gui_draw_scaled_button
 
 #ifndef NULL
 #define NULL ((void*)0)
@@ -724,6 +723,25 @@ static vesa_color_t settings_gui_color(uint32_t raw) {
     return color;
 }
 
+static void settings_gui_draw_surface(int x, int y, int width, int height,
+                                      uint32_t background, uint32_t border) {
+    if (width <= 0 || height <= 0) return;
+    gui_draw_rounded_rect((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                          (uint32_t)height,
+                          display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE),
+                          background);
+    gui_draw_flat_border((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                         (uint32_t)height, border);
+}
+
+static void settings_gui_draw_modern_button(int x, int y, int width,
+                                            const char* text, int selected) {
+    gui_draw_modern_button((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                           SETTINGS_CLASSIC_BUTTON_HEIGHT, text,
+                           selected ? GUI_BUTTON_STATE_PRESSED :
+                                      GUI_BUTTON_STATE_NORMAL);
+}
+
 static void settings_gui_draw_num(int x, int y, uint32_t value, uint32_t color) {
     char buffer[16];
     int_to_str(value, buffer);
@@ -758,9 +776,7 @@ static void settings_gui_draw_option_value(settings_option_t* option,
         toggle[1] = option->value ? 'x' : ' ';
         toggle[2] = ']';
         toggle[3] = '\0';
-        gui_draw_button((uint32_t)x, (uint32_t)y, (uint32_t)width,
-                        SETTINGS_CLASSIC_BUTTON_HEIGHT,
-                        toggle, selected);
+        settings_gui_draw_modern_button(x, y, width, toggle, selected);
         return;
     }
     if (option->type == SETTINGS_OPT_LIST && option->list_values &&
@@ -768,19 +784,17 @@ static void settings_gui_draw_option_value(settings_option_t* option,
         value = option->list_values[option->value];
     }
     if (option->type == SETTINGS_OPT_ACTION) value = "Executar";
-    gui_draw_button((uint32_t)x, (uint32_t)y, (uint32_t)width,
-                    SETTINGS_CLASSIC_BUTTON_HEIGHT,
-                    value, selected);
+    settings_gui_draw_modern_button(x, y, width, value, selected);
 }
 
 static void settings_gui_draw_main_header(int x, int y, int width) {
     gui_draw_text((uint32_t)(x + SETTINGS_CLASSIC_PX(12)),
                   (uint32_t)(y + SETTINGS_CLASSIC_PX(8)),
-                  categories[selected_category].name, GUI_COLOR_TEXT);
+                  categories[selected_category].name, GUI_MODERN_COLOR_TEXT);
     vesa_draw_hline((uint32_t)(x + SETTINGS_CLASSIC_PX(8)),
                     (uint32_t)(y + SETTINGS_CLASSIC_PX(30)),
                     (uint32_t)(width - SETTINGS_CLASSIC_PX(16)),
-                    settings_gui_color(GUI_COLOR_BORDER_D));
+                    settings_gui_color(GUI_MODERN_COLOR_BORDER_INACTIVE));
 }
 
 static void settings_draw_classic_main(void) {
@@ -796,32 +810,34 @@ static void settings_draw_classic_main(void) {
     int value_width = settings_gui_value_width(content_width);
     settings_page_t* page = &categories[selected_category];
 
-    gui_draw_panel((uint32_t)side_x, (uint32_t)side_y,
-                   SETTINGS_CLASSIC_SIDE_WIDTH, (uint32_t)side_height,
-                   GUI_COLOR_BG, 0);
+    settings_gui_draw_surface(side_x, side_y, SETTINGS_CLASSIC_SIDE_WIDTH,
+                              side_height, GUI_MODERN_COLOR_WINDOW,
+                              GUI_MODERN_COLOR_BORDER_INACTIVE);
     gui_draw_text((uint32_t)(side_x + SETTINGS_CLASSIC_PX(12)),
                   (uint32_t)(side_y + SETTINGS_CLASSIC_PX(10)),
-                  "Categorias", GUI_COLOR_TEXT);
+                  "Categorias", GUI_MODERN_COLOR_ACCENT);
 
     for (int i = 0; i < SETTINGS_CAT_COUNT; i++) {
         int row_y = side_y + SETTINGS_CLASSIC_PX(38) +
                     i * SETTINGS_CLASSIC_ROW_HEIGHT;
-        uint32_t background = i == selected_category ? GUI_COLOR_TITLE_BG : GUI_COLOR_BG;
-        uint32_t text_color = i == selected_category ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
-        gui_draw_panel((uint32_t)(side_x + SETTINGS_CLASSIC_PX(6)),
-                       (uint32_t)row_y,
-                       SETTINGS_CLASSIC_SIDE_WIDTH - SETTINGS_CLASSIC_PX(12),
-                       SETTINGS_CLASSIC_ROW_HEIGHT - SETTINGS_CLASSIC_PX(4),
-                       background,
-                       i == selected_category);
+        int selected = i == selected_category;
+        uint32_t text_color = GUI_MODERN_COLOR_TEXT;
+
+        if (selected) {
+            settings_gui_draw_surface(
+                side_x + SETTINGS_CLASSIC_PX(6), row_y,
+                SETTINGS_CLASSIC_SIDE_WIDTH - SETTINGS_CLASSIC_PX(12),
+                SETTINGS_CLASSIC_ROW_HEIGHT - SETTINGS_CLASSIC_PX(4),
+                GUI_MODERN_COLOR_HOVER, GUI_MODERN_COLOR_ACCENT);
+        }
         gui_draw_text((uint32_t)(side_x + SETTINGS_CLASSIC_PX(16)),
                       (uint32_t)(row_y + SETTINGS_CLASSIC_PX(6)),
                       categories[i].name, text_color);
     }
 
-    gui_draw_panel((uint32_t)content_x, (uint32_t)content_y,
-                   (uint32_t)content_width, (uint32_t)content_height,
-                   GUI_COLOR_BG, 0);
+    settings_gui_draw_surface(content_x, content_y, content_width,
+                              content_height, GUI_MODERN_COLOR_WINDOW,
+                              GUI_MODERN_COLOR_BORDER_INACTIVE);
     settings_gui_draw_main_header(content_x, content_y, content_width);
 
     for (int i = 0; i < page->option_count; i++) {
@@ -829,15 +845,14 @@ static void settings_draw_classic_main(void) {
                     i * SETTINGS_CLASSIC_ROW_HEIGHT;
         int value_x = content_x + content_width -
                       SETTINGS_CLASSIC_PX(24) - value_width;
-        uint32_t text_color = i == selected_option ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
+        uint32_t text_color = GUI_MODERN_COLOR_TEXT;
 
         if (i == selected_option) {
-            vesa_color_t selection = settings_gui_color(GUI_COLOR_TITLE_BG);
-            vesa_fill_rect((uint32_t)(content_x + SETTINGS_CLASSIC_PX(6)),
-                           (uint32_t)row_y,
-                           (uint32_t)(content_width - SETTINGS_CLASSIC_PX(12)),
-                           SETTINGS_CLASSIC_ROW_HEIGHT - SETTINGS_CLASSIC_PX(4),
-                           selection);
+            settings_gui_draw_surface(
+                content_x + SETTINGS_CLASSIC_PX(6), row_y,
+                content_width - SETTINGS_CLASSIC_PX(12),
+                SETTINGS_CLASSIC_ROW_HEIGHT - SETTINGS_CLASSIC_PX(4),
+                GUI_MODERN_COLOR_HOVER, GUI_MODERN_COLOR_ACCENT);
         }
         gui_draw_text((uint32_t)(content_x + SETTINGS_CLASSIC_PX(18)),
                       (uint32_t)(row_y + SETTINGS_CLASSIC_PX(6)),
@@ -851,19 +866,19 @@ static void settings_draw_classic_main(void) {
     if (page->option_count == 0) {
         gui_draw_text((uint32_t)(content_x + SETTINGS_CLASSIC_PX(18)),
                       (uint32_t)(content_y + SETTINGS_CLASSIC_PX(52)),
-                      "Nenhuma opcao disponivel", 0x00800000);
+                      "Nenhuma opcao disponivel", GUI_MODERN_COLOR_BORDER_INACTIVE);
     }
     gui_draw_text((uint32_t)(settings_gui_x + SETTINGS_CLASSIC_PX(18)),
                   (uint32_t)(settings_gui_y + settings_gui_height -
                              SETTINGS_CLASSIC_PX(34)),
                   "Tab: categorias | Setas | Enter: editar",
-                  GUI_COLOR_TEXT);
+                  GUI_MODERN_COLOR_TEXT);
     gui_draw_text((uint32_t)(settings_gui_x + settings_gui_width -
                              SETTINGS_CLASSIC_PX(150)),
                   (uint32_t)(settings_gui_y + settings_gui_height -
                              SETTINGS_CLASSIC_PX(34)),
                   settings_mode == SETTINGS_MODE_CLASSIC ? "GUI" : "TUI",
-                  GUI_COLOR_TEXT);
+                  GUI_MODERN_COLOR_BORDER_INACTIVE);
 }
 
 static void settings_gui_draw_icon_editor(void) {
@@ -872,28 +887,29 @@ static void settings_gui_draw_icon_editor(void) {
     int width = settings_gui_width - SETTINGS_CLASSIC_PX(72);
     int row_width = width - SETTINGS_CLASSIC_PX(16);
 
-    gui_draw_panel((uint32_t)(settings_gui_x + SETTINGS_CLASSIC_MARGIN),
-                   (uint32_t)(settings_gui_y + SETTINGS_CLASSIC_PX(32)),
-                   (uint32_t)(settings_gui_width - SETTINGS_CLASSIC_PX(24)),
-                   (uint32_t)(settings_gui_height - SETTINGS_CLASSIC_PX(76)),
-                   GUI_COLOR_BG, 0);
-    gui_draw_text((uint32_t)x, (uint32_t)y, icon_editor_title, GUI_COLOR_TEXT);
+    settings_gui_draw_surface(settings_gui_x + SETTINGS_CLASSIC_MARGIN,
+                              settings_gui_y + SETTINGS_CLASSIC_PX(32),
+                              settings_gui_width - SETTINGS_CLASSIC_PX(24),
+                              settings_gui_height - SETTINGS_CLASSIC_PX(76),
+                              GUI_MODERN_COLOR_WINDOW,
+                              GUI_MODERN_COLOR_BORDER_INACTIVE);
+    gui_draw_text((uint32_t)x, (uint32_t)y, icon_editor_title, GUI_MODERN_COLOR_TEXT);
     gui_draw_text((uint32_t)x, (uint32_t)(y + SETTINGS_CLASSIC_PX(28)),
-                  "Item", GUI_COLOR_TEXT);
+                  "Item", GUI_MODERN_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + SETTINGS_CLASSIC_PX(128)),
                   (uint32_t)(y + SETTINGS_CLASSIC_PX(28)),
-                  "Caractere", GUI_COLOR_TEXT);
+                  "Caractere", GUI_MODERN_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + SETTINGS_CLASSIC_PX(250)),
                   (uint32_t)(y + SETTINGS_CLASSIC_PX(28)),
-                  "Cor", GUI_COLOR_TEXT);
+                  "Cor", GUI_MODERN_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + SETTINGS_CLASSIC_PX(340)),
                   (uint32_t)(y + SETTINGS_CLASSIC_PX(28)),
-                  "Cor sel.", GUI_COLOR_TEXT);
+                  "Cor sel.", GUI_MODERN_COLOR_TEXT);
 
     for (int i = 0; i < icon_editor_count; i++) {
         int row_y = y + SETTINGS_CLASSIC_PX(52) +
                     i * SETTINGS_CLASSIC_PX(34);
-        uint32_t row_color = i == icon_editor_selected ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
+        uint32_t row_color = GUI_MODERN_COLOR_TEXT;
         char character[2];
         char color_value[16];
         char selected_color_value[16];
@@ -904,46 +920,37 @@ static void settings_gui_draw_icon_editor(void) {
         int_to_str((uint32_t)(uint8_t)icon_editor_entries[i].color_selected,
                    selected_color_value);
         if (i == icon_editor_selected) {
-            vesa_fill_rect((uint32_t)(x - SETTINGS_CLASSIC_PX(8)),
-                           (uint32_t)row_y, (uint32_t)row_width,
-                           (uint32_t)SETTINGS_CLASSIC_PX(28),
-                           settings_gui_color(GUI_COLOR_TITLE_BG));
+            settings_gui_draw_surface(x - SETTINGS_CLASSIC_PX(8), row_y,
+                                      row_width, SETTINGS_CLASSIC_PX(28),
+                                      GUI_MODERN_COLOR_HOVER,
+                                      GUI_MODERN_COLOR_ACCENT);
         }
         gui_draw_text((uint32_t)x,
                       (uint32_t)(row_y + SETTINGS_CLASSIC_PX(6)),
                       icon_editor_names[i], row_color);
-        gui_draw_button((uint32_t)(x + SETTINGS_CLASSIC_PX(112)),
-                        (uint32_t)(row_y + SETTINGS_CLASSIC_PX(2)),
-                        (uint32_t)SETTINGS_CLASSIC_PX(88),
-                        SETTINGS_CLASSIC_BUTTON_HEIGHT,
-                        character,
-                        icon_editor_field == 0 && i == icon_editor_selected);
-        gui_draw_button((uint32_t)(x + SETTINGS_CLASSIC_PX(224)),
-                        (uint32_t)(row_y + SETTINGS_CLASSIC_PX(2)),
-                        (uint32_t)SETTINGS_CLASSIC_PX(72),
-                        SETTINGS_CLASSIC_BUTTON_HEIGHT,
-                        color_value,
-                        icon_editor_field == 1 && i == icon_editor_selected);
-        gui_draw_button((uint32_t)(x + SETTINGS_CLASSIC_PX(314)),
-                        (uint32_t)(row_y + SETTINGS_CLASSIC_PX(2)),
-                        (uint32_t)SETTINGS_CLASSIC_PX(72),
-                        SETTINGS_CLASSIC_BUTTON_HEIGHT,
-                        selected_color_value,
-                        icon_editor_field == 2 && i == icon_editor_selected);
+        settings_gui_draw_modern_button(
+            x + SETTINGS_CLASSIC_PX(112), row_y + SETTINGS_CLASSIC_PX(2),
+            SETTINGS_CLASSIC_PX(88), character,
+            icon_editor_field == 0 && i == icon_editor_selected);
+        settings_gui_draw_modern_button(
+            x + SETTINGS_CLASSIC_PX(224), row_y + SETTINGS_CLASSIC_PX(2),
+            SETTINGS_CLASSIC_PX(72), color_value,
+            icon_editor_field == 1 && i == icon_editor_selected);
+        settings_gui_draw_modern_button(
+            x + SETTINGS_CLASSIC_PX(314), row_y + SETTINGS_CLASSIC_PX(2),
+            SETTINGS_CLASSIC_PX(72), selected_color_value,
+            icon_editor_field == 2 && i == icon_editor_selected);
     }
 
-    gui_draw_button(
-        (uint32_t)(settings_gui_x + settings_gui_width -
-                   SETTINGS_CLASSIC_PX(136)),
-        (uint32_t)(settings_gui_y + settings_gui_height -
-                   SETTINGS_CLASSIC_PX(54)),
-        (uint32_t)SETTINGS_CLASSIC_PX(104),
-        (uint32_t)SETTINGS_CLASSIC_PX(28), "Voltar", 0);
+    settings_gui_draw_modern_button(
+        settings_gui_x + settings_gui_width - SETTINGS_CLASSIC_PX(136),
+        settings_gui_y + settings_gui_height - SETTINGS_CLASSIC_PX(54),
+        SETTINGS_CLASSIC_PX(104), "Voltar", 0);
     gui_draw_text((uint32_t)(settings_gui_x + SETTINGS_CLASSIC_PX(24)),
                   (uint32_t)(settings_gui_y + settings_gui_height -
                              SETTINGS_CLASSIC_PX(42)),
                   "Setas: item/campo | +/-: alterar",
-                  GUI_COLOR_TEXT);
+                  GUI_MODERN_COLOR_TEXT);
 }
 
 static void settings_gui_draw_process_list(int x, int y, int width) {
@@ -953,14 +960,14 @@ static void settings_gui_draw_process_list(int x, int y, int width) {
     for (int i = 0; i < 64 && row < 8; i++) {
         if (processes[i].state == PROCESS_STATE_UNUSED) continue;
         gui_draw_text((uint32_t)x, (uint32_t)(y + row * 24),
-                      processes[i].name, GUI_COLOR_TEXT);
+                      processes[i].name, GUI_MODERN_COLOR_TEXT);
         settings_gui_draw_num(x + width - 80, y + row * 24,
-                              processes[i].pid, GUI_COLOR_TEXT);
+                              processes[i].pid, GUI_MODERN_COLOR_TEXT);
         row++;
     }
     if (row == 0) {
         gui_draw_text((uint32_t)x, (uint32_t)y,
-                      "Nenhum processo ativo", GUI_COLOR_TEXT);
+                      "Nenhum processo ativo", GUI_MODERN_COLOR_TEXT);
     }
 }
 
@@ -972,47 +979,47 @@ static void settings_gui_draw_dialog_content(int x, int y, int width) {
     switch (settings_dialog) {
         case SETTINGS_DIALOG_SYSTEM_INFO:
             gui_draw_text((uint32_t)x, (uint32_t)y,
-                          ZEPHYROS_DISPLAY_NAME, GUI_COLOR_TEXT);
+                          ZEPHYROS_DISPLAY_NAME, GUI_MODERN_COLOR_TEXT);
             gui_draw_text((uint32_t)x, (uint32_t)(y + 34),
-                          "Computador: ZephyrOS-PC", GUI_COLOR_TEXT);
+                          "Computador: ZephyrOS-PC", GUI_MODERN_COLOR_TEXT);
             gui_draw_text((uint32_t)x, (uint32_t)(y + 68),
-                          "Sistema operacional educacional", GUI_COLOR_TEXT);
+                          "Sistema operacional educacional", GUI_MODERN_COLOR_TEXT);
             break;
         case SETTINGS_DIALOG_MEMORY:
             total = memory_get_total() / 1024;
             free_memory = memory_get_free() / 1024;
             used_memory = memory_get_used() / 1024;
-            gui_draw_text((uint32_t)x, (uint32_t)y, "Memoria do sistema", GUI_COLOR_TEXT);
-            gui_draw_text((uint32_t)x, (uint32_t)(y + 34), "Total:", GUI_COLOR_TEXT);
-            settings_gui_draw_num(x + 120, y + 34, total, GUI_COLOR_TEXT);
-            gui_draw_text((uint32_t)(x + 176), (uint32_t)(y + 34), "KB", GUI_COLOR_TEXT);
-            gui_draw_text((uint32_t)x, (uint32_t)(y + 68), "Livre:", GUI_COLOR_TEXT);
-            settings_gui_draw_num(x + 120, y + 68, free_memory, GUI_COLOR_TEXT);
-            gui_draw_text((uint32_t)(x + 176), (uint32_t)(y + 68), "KB", GUI_COLOR_TEXT);
-            gui_draw_text((uint32_t)x, (uint32_t)(y + 102), "Usada:", GUI_COLOR_TEXT);
-            settings_gui_draw_num(x + 120, y + 102, used_memory, GUI_COLOR_TEXT);
-            gui_draw_text((uint32_t)(x + 176), (uint32_t)(y + 102), "KB", GUI_COLOR_TEXT);
+            gui_draw_text((uint32_t)x, (uint32_t)y, "Memoria do sistema", GUI_MODERN_COLOR_TEXT);
+            gui_draw_text((uint32_t)x, (uint32_t)(y + 34), "Total:", GUI_MODERN_COLOR_TEXT);
+            settings_gui_draw_num(x + 120, y + 34, total, GUI_MODERN_COLOR_TEXT);
+            gui_draw_text((uint32_t)(x + 176), (uint32_t)(y + 34), "KB", GUI_MODERN_COLOR_TEXT);
+            gui_draw_text((uint32_t)x, (uint32_t)(y + 68), "Livre:", GUI_MODERN_COLOR_TEXT);
+            settings_gui_draw_num(x + 120, y + 68, free_memory, GUI_MODERN_COLOR_TEXT);
+            gui_draw_text((uint32_t)(x + 176), (uint32_t)(y + 68), "KB", GUI_MODERN_COLOR_TEXT);
+            gui_draw_text((uint32_t)x, (uint32_t)(y + 102), "Usada:", GUI_MODERN_COLOR_TEXT);
+            settings_gui_draw_num(x + 120, y + 102, used_memory, GUI_MODERN_COLOR_TEXT);
+            gui_draw_text((uint32_t)(x + 176), (uint32_t)(y + 102), "KB", GUI_MODERN_COLOR_TEXT);
             break;
         case SETTINGS_DIALOG_PROCESSES:
-            gui_draw_text((uint32_t)x, (uint32_t)y, "Processos ativos", GUI_COLOR_TEXT);
+            gui_draw_text((uint32_t)x, (uint32_t)y, "Processos ativos", GUI_MODERN_COLOR_TEXT);
             settings_gui_draw_process_list(x, y + 34, width);
             break;
         case SETTINGS_DIALOG_VERSION:
             gui_draw_text((uint32_t)x, (uint32_t)y,
-                          ZEPHYROS_DISPLAY_NAME, GUI_COLOR_TEXT);
+                          ZEPHYROS_DISPLAY_NAME, GUI_MODERN_COLOR_TEXT);
             gui_draw_text((uint32_t)x, (uint32_t)(y + 34),
-                          "VESA framebuffer + VGA fallback", GUI_COLOR_TEXT);
+                          "VESA framebuffer + VGA fallback", GUI_MODERN_COLOR_TEXT);
             gui_draw_text((uint32_t)x, (uint32_t)(y + 68),
-                          "Kernel x86 freestanding", GUI_COLOR_TEXT);
+                          "Kernel x86 freestanding", GUI_MODERN_COLOR_TEXT);
             break;
         case SETTINGS_DIALOG_CREDITS:
-            gui_draw_text((uint32_t)x, (uint32_t)y, "Creditos", GUI_COLOR_TEXT);
+            gui_draw_text((uint32_t)x, (uint32_t)y, "Creditos", GUI_MODERN_COLOR_TEXT);
             gui_draw_text((uint32_t)x, (uint32_t)(y + 34),
-                          "Kernel e drivers", GUI_COLOR_TEXT);
+                          "Kernel e drivers", GUI_MODERN_COLOR_TEXT);
             gui_draw_text((uint32_t)x, (uint32_t)(y + 68),
-                          "Sistema de arquivos FAT", GUI_COLOR_TEXT);
+                          "Sistema de arquivos FAT", GUI_MODERN_COLOR_TEXT);
             gui_draw_text((uint32_t)x, (uint32_t)(y + 102),
-                          "Interface TUI e GUI 2D", GUI_COLOR_TEXT);
+                          "Interface TUI e GUI 2D", GUI_MODERN_COLOR_TEXT);
             break;
         default:
             break;
@@ -1029,15 +1036,17 @@ static void settings_draw_classic_dialog(void) {
     if (settings_dialog == SETTINGS_DIALOG_PROCESSES) title = "Processos";
     if (settings_dialog == SETTINGS_DIALOG_VERSION) title = "Versao";
     if (settings_dialog == SETTINGS_DIALOG_CREDITS) title = "Creditos";
-    gui_draw_scaled_window_frame((uint32_t)x, (uint32_t)y, (uint32_t)width,
-                                 (uint32_t)height, title, 1);
+    settings_gui_draw_surface(x, y, width, height, GUI_MODERN_COLOR_WINDOW,
+                              GUI_MODERN_COLOR_ACCENT);
+    gui_draw_text((uint32_t)(x + SETTINGS_CLASSIC_PX(20)),
+                  (uint32_t)(y + SETTINGS_CLASSIC_PX(14)), title,
+                  GUI_MODERN_COLOR_TEXT);
     settings_gui_draw_dialog_content(
         x + SETTINGS_CLASSIC_PX(20), y + SETTINGS_CLASSIC_PX(42),
         width - SETTINGS_CLASSIC_PX(40));
-    gui_draw_button((uint32_t)(x + width - SETTINGS_CLASSIC_PX(124)),
-                    (uint32_t)(y + height - SETTINGS_CLASSIC_PX(46)),
-                    (uint32_t)SETTINGS_CLASSIC_PX(96),
-                    (uint32_t)SETTINGS_CLASSIC_PX(28), "Voltar", 0);
+    settings_gui_draw_modern_button(x + width - SETTINGS_CLASSIC_PX(124),
+                                    y + height - SETTINGS_CLASSIC_PX(46),
+                                    SETTINGS_CLASSIC_PX(96), "Voltar", 0);
 }
 
 static void settings_classic_draw(void) {
@@ -1049,7 +1058,7 @@ static void settings_classic_draw(void) {
     if (!settings_hosted) {
         mouse_invalidate_cursor();
         vesa_frame_begin();
-        vesa_clear(settings_gui_color(GUI_COLOR_BG));
+        vesa_clear(settings_gui_color(GUI_MODERN_COLOR_BG));
         gui_draw_scaled_window_frame(
             (uint32_t)settings_gui_x, (uint32_t)settings_gui_y,
             (uint32_t)settings_gui_width, (uint32_t)settings_gui_height,

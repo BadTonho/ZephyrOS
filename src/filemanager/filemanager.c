@@ -637,22 +637,34 @@ static void fm_draw_file_list(void) {
 }
 
 static void fm_classic_draw_toolbar(int x, int y, int width) {
-    gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)width,
-                   FM_CLASSIC_TOOLBAR_HEIGHT, GUI_COLOR_BG, 0);
+    gui_draw_rounded_rect((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                          FM_CLASSIC_TOOLBAR_HEIGHT,
+                          display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE),
+                          GUI_MODERN_COLOR_WINDOW);
+    gui_draw_flat_border((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                         FM_CLASSIC_TOOLBAR_HEIGHT,
+                         GUI_MODERN_COLOR_BORDER_INACTIVE);
     fm_draw_text_limited(x + FM_CLASSIC_INSET,
                          y + (int)display_scale_px(6),
                          width - (int)display_scale_px(16),
                          "F1 Ajuda  F2 Renomear  F3 Ver  F5 Atualizar  F6 Pasta  F7 Arquivo  F8 Excluir  Alt+F4 Sair",
-                         GUI_COLOR_TEXT);
+                         GUI_MODERN_COLOR_TEXT);
 }
 
 static void fm_classic_draw_address(int x, int y, int width) {
     char display_path[FM_MAX_PATH];
-    uint32_t background = state.address_mode ? GUI_COLOR_TITLE_BG : GUI_COLOR_BG;
-    uint32_t foreground = state.address_mode ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
+    uint32_t background = state.address_mode ? GUI_MODERN_COLOR_HOVER :
+                                               GUI_MODERN_COLOR_WINDOW;
+    uint32_t foreground = GUI_MODERN_COLOR_TEXT;
 
-    gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)width,
-                   FM_CLASSIC_ADDRESS_HEIGHT, background, state.address_mode);
+    gui_draw_rounded_rect((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                          FM_CLASSIC_ADDRESS_HEIGHT,
+                          display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE),
+                          background);
+    gui_draw_flat_border((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                         FM_CLASSIC_ADDRESS_HEIGHT,
+                         state.address_mode ? GUI_MODERN_COLOR_ACCENT :
+                         GUI_MODERN_COLOR_BORDER_INACTIVE);
     fm_build_display_path(display_path, FM_MAX_PATH);
     if (state.address_mode) {
         fm_copy_display_text(display_path, FM_MAX_PATH,
@@ -671,24 +683,35 @@ static void fm_classic_draw_address(int x, int y, int width) {
 static void fm_classic_draw_side(int x, int y, int width, int height) {
     int visible_items = fm_side_items_for_height(height);
 
-    gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)width,
-                   (uint32_t)height, GUI_COLOR_BG, 0);
+    gui_draw_rounded_rect((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                          (uint32_t)height,
+                          display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE),
+                          GUI_MODERN_COLOR_WINDOW);
+    gui_draw_flat_border((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                         (uint32_t)height, GUI_MODERN_COLOR_BORDER_INACTIVE);
     gui_draw_text((uint32_t)(x + FM_CLASSIC_INSET),
                   (uint32_t)(y + (int)display_scale_px(8)),
-                  "Acesso Rapido", GUI_COLOR_TITLE_BG);
+                  "Acesso Rapido", GUI_MODERN_COLOR_ACCENT);
 
     for (int i = 0; i < visible_items; i++) {
         int row_y = y + FM_CLASSIC_SIDE_HEADER_OFFSET +
                     i * (FM_CLASSIC_ROW_HEIGHT + FM_CLASSIC_ROW_GAP);
         int selected = state.focus_pane == 0 && state.side_selected == i;
-        uint32_t background = selected ? GUI_COLOR_TITLE_BG : GUI_COLOR_BG;
-        uint32_t foreground = selected ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
+        uint32_t foreground = GUI_MODERN_COLOR_TEXT;
 
-        gui_draw_panel((uint32_t)(x + (int)display_scale_px(4)),
-                       (uint32_t)row_y,
-                       (uint32_t)(width - (int)display_scale_px(8)),
-                       FM_CLASSIC_ROW_HEIGHT,
-                       background, selected);
+        if (selected) {
+            gui_draw_rounded_rect((uint32_t)(x + (int)display_scale_px(4)),
+                                  (uint32_t)row_y,
+                                  (uint32_t)(width - (int)display_scale_px(8)),
+                                  FM_CLASSIC_ROW_HEIGHT,
+                                  display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE),
+                                  GUI_MODERN_COLOR_HOVER);
+            gui_draw_flat_border((uint32_t)(x + (int)display_scale_px(4)),
+                                 (uint32_t)row_y,
+                                 (uint32_t)(width - (int)display_scale_px(8)),
+                                 FM_CLASSIC_ROW_HEIGHT,
+                                 GUI_MODERN_COLOR_ACCENT);
+        }
         fm_draw_text_limited(x + (int)display_scale_px(14),
                              row_y + (int)display_scale_px(6),
                              width - (int)display_scale_px(24),
@@ -706,29 +729,33 @@ static void fm_classic_draw_list(int x, int y, int width, int height) {
     int size_x = x + width / 2;
     int type_x = x + (width * 3) / 4;
 
-    gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)width,
-                   (uint32_t)height, GUI_COLOR_BG, 0);
-    gui_draw_panel((uint32_t)(x + (int)display_scale_px(4)),
-                   (uint32_t)header_y,
-                   (uint32_t)(width - (int)display_scale_px(8)),
-                   FM_CLASSIC_HEADER_HEIGHT,
-                   GUI_COLOR_TITLE_BG, 0);
+    gui_draw_rounded_rect((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                          (uint32_t)height,
+                          display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE),
+                          GUI_MODERN_COLOR_WINDOW);
+    gui_draw_flat_border((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                         (uint32_t)height, GUI_MODERN_COLOR_BORDER_INACTIVE);
+    gui_draw_rounded_rect((uint32_t)(x + (int)display_scale_px(4)),
+                          (uint32_t)header_y,
+                          (uint32_t)(width - (int)display_scale_px(8)),
+                          FM_CLASSIC_HEADER_HEIGHT,
+                          display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE),
+                          GUI_MODERN_COLOR_HOVER);
     gui_draw_text((uint32_t)name_x,
                   (uint32_t)(header_y + (int)display_scale_px(6)),
-                  "Nome", GUI_COLOR_TEXT_W);
+                  "Nome", GUI_MODERN_COLOR_TEXT);
     gui_draw_text((uint32_t)size_x,
                   (uint32_t)(header_y + (int)display_scale_px(6)),
-                  "Tamanho", GUI_COLOR_TEXT_W);
+                  "Tamanho", GUI_MODERN_COLOR_TEXT);
     gui_draw_text((uint32_t)type_x,
                   (uint32_t)(header_y + (int)display_scale_px(6)),
-                  "Tipo", GUI_COLOR_TEXT_W);
+                  "Tipo", GUI_MODERN_COLOR_TEXT);
 
     for (int row = 0; row < rows; row++) {
         int file_index = start + row;
         int row_y = list_y + row * (FM_CLASSIC_ROW_HEIGHT + FM_CLASSIC_ROW_GAP);
         fm_file_entry_t* file;
         icon_entry_t* icon;
-        uint32_t background;
         uint32_t foreground;
         char name[FM_NAME_LEN + 4];
         char size[16];
@@ -739,14 +766,21 @@ static void fm_classic_draw_list(int x, int y, int width, int height) {
         icon = icons_get_fm(file->is_dir ? ICON_FM_FOLDER : ICON_FM_FILE);
         int selected = file_index == state.selected;
         int active = selected && state.focus_pane == 1;
-        background = active ? GUI_COLOR_TITLE_BG : GUI_COLOR_BG;
-        foreground = active ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
+        foreground = GUI_MODERN_COLOR_TEXT;
 
-        gui_draw_panel((uint32_t)(x + (int)display_scale_px(4)),
-                       (uint32_t)row_y,
-                       (uint32_t)(width - (int)display_scale_px(8)),
-                       FM_CLASSIC_ROW_HEIGHT,
-                       background, active);
+        if (active) {
+            gui_draw_rounded_rect((uint32_t)(x + (int)display_scale_px(4)),
+                                  (uint32_t)row_y,
+                                  (uint32_t)(width - (int)display_scale_px(8)),
+                                  FM_CLASSIC_ROW_HEIGHT,
+                                  display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE),
+                                  GUI_MODERN_COLOR_HOVER);
+            gui_draw_flat_border((uint32_t)(x + (int)display_scale_px(4)),
+                                 (uint32_t)row_y,
+                                 (uint32_t)(width - (int)display_scale_px(8)),
+                                 FM_CLASSIC_ROW_HEIGHT,
+                                 GUI_MODERN_COLOR_ACCENT);
+        }
         if (icon) {
             vesa_color_t icon_color;
             icon_color.raw = foreground;
@@ -797,43 +831,48 @@ static void fm_classic_draw_status(int x, int y, int width) {
     char selection[24];
     char size[16];
 
-    gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)width,
-                   FM_CLASSIC_STATUS_HEIGHT, GUI_COLOR_BG, 0);
+    gui_draw_rounded_rect((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                          FM_CLASSIC_STATUS_HEIGHT,
+                          display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE),
+                          GUI_MODERN_COLOR_WINDOW);
+    gui_draw_flat_border((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                         FM_CLASSIC_STATUS_HEIGHT,
+                         GUI_MODERN_COLOR_BORDER_INACTIVE);
     if (state.file_count == 0) {
         gui_draw_text((uint32_t)(x + FM_CLASSIC_INSET),
                       (uint32_t)(y + (int)display_scale_px(6)),
-                      "Nenhum arquivo encontrado", GUI_COLOR_TEXT);
+                      "Nenhum arquivo encontrado", GUI_MODERN_COLOR_BORDER_INACTIVE);
         return;
     }
 
     gui_draw_text((uint32_t)(x + FM_CLASSIC_INSET),
                   (uint32_t)(y + (int)display_scale_px(6)),
-                  "Arquivo:", GUI_COLOR_TEXT);
+                  "Arquivo:", GUI_MODERN_COLOR_TEXT);
     fm_draw_text_limited(
         x + (int)display_scale_px(82),
         y + (int)display_scale_px(6),
         width - (int)display_scale_px(260),
-        state.files[state.selected].name, GUI_COLOR_TEXT);
+        state.files[state.selected].name, GUI_MODERN_COLOR_TEXT);
 
     if (state.files[state.selected].is_dir) {
         gui_draw_text((uint32_t)(x + width - (int)display_scale_px(170)),
                       (uint32_t)(y + (int)display_scale_px(6)),
-                      "Pasta", GUI_COLOR_TEXT);
+                      "Pasta", GUI_MODERN_COLOR_TEXT);
     } else {
         int_to_str(state.files[state.selected].size, size);
         fm_draw_text_limited(
             x + width - (int)display_scale_px(170),
             y + (int)display_scale_px(6), (int)display_scale_px(80),
-            size, GUI_COLOR_TEXT);
+            size, GUI_MODERN_COLOR_TEXT);
         gui_draw_text((uint32_t)(x + width - (int)display_scale_px(82)),
                       (uint32_t)(y + (int)display_scale_px(6)),
-                      "bytes", GUI_COLOR_TEXT);
+                      "bytes", GUI_MODERN_COLOR_TEXT);
     }
 
     int_to_str(state.selected + 1, selection);
     gui_draw_text((uint32_t)(x + width - (int)display_scale_px(40)),
                   (uint32_t)(y + (int)display_scale_px(6)),
-                  selection, GUI_COLOR_TITLE_BG);
+                  selection, GUI_MODERN_COLOR_ACCENT);
 }
 
 static void fm_draw_classic_all(void) {
@@ -868,7 +907,7 @@ static void fm_draw_classic_all(void) {
 
     if (!fm_hosted) {
         mouse_invalidate_cursor();
-        background.raw = GUI_COLOR_BG;
+        background.raw = GUI_MODERN_COLOR_BG;
         vesa_clear(background);
         gui_draw_scaled_window_frame((uint32_t)x, (uint32_t)y,
                                      (uint32_t)width, (uint32_t)height,
@@ -940,24 +979,56 @@ static void fm_classic_draw_input_dialog(void) {
         prompt = "Nome do arquivo:";
     }
 
-    gui_draw_scaled_window_frame((uint32_t)dialog_x, (uint32_t)dialog_y,
-                                 (uint32_t)dialog_width,
-                                 (uint32_t)dialog_height, title, 1);
+    gui_draw_rounded_rect((uint32_t)dialog_x, (uint32_t)dialog_y,
+                          (uint32_t)dialog_width, (uint32_t)dialog_height,
+                          display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE),
+                          GUI_MODERN_COLOR_WINDOW);
+    gui_draw_flat_border((uint32_t)dialog_x, (uint32_t)dialog_y,
+                         (uint32_t)dialog_width, (uint32_t)dialog_height,
+                         GUI_MODERN_COLOR_ACCENT);
+    gui_draw_text((uint32_t)(dialog_x + (int)display_scale_px(16)),
+                  (uint32_t)(dialog_y + (int)display_scale_px(14)), title,
+                  GUI_MODERN_COLOR_TEXT);
     gui_draw_text((uint32_t)(dialog_x + (int)display_scale_px(16)),
                   (uint32_t)(dialog_y + (int)display_scale_px(42)),
-                  prompt, GUI_COLOR_TEXT);
+                  prompt, GUI_MODERN_COLOR_TEXT);
 
     if (confirm_delete) return;
 
-    gui_draw_panel((uint32_t)(dialog_x + (int)display_scale_px(16)),
-                   (uint32_t)(dialog_y + (int)display_scale_px(66)),
-                   (uint32_t)(dialog_width - (int)display_scale_px(32)),
-                   (uint32_t)display_scale_px(30),
-                   GUI_COLOR_TITLE_BG, 1);
+    gui_draw_rounded_rect((uint32_t)(dialog_x + (int)display_scale_px(16)),
+                          (uint32_t)(dialog_y + (int)display_scale_px(66)),
+                          (uint32_t)(dialog_width - (int)display_scale_px(32)),
+                          (uint32_t)display_scale_px(30),
+                          display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE),
+                          GUI_MODERN_COLOR_HOVER);
+    gui_draw_flat_border((uint32_t)(dialog_x + (int)display_scale_px(16)),
+                         (uint32_t)(dialog_y + (int)display_scale_px(66)),
+                         (uint32_t)(dialog_width - (int)display_scale_px(32)),
+                         (uint32_t)display_scale_px(30),
+                         GUI_MODERN_COLOR_ACCENT);
     fm_draw_text_limited(dialog_x + (int)display_scale_px(24),
                          dialog_y + (int)display_scale_px(72),
                          dialog_width - (int)display_scale_px(48),
-                         input_buffer, GUI_COLOR_TEXT_W);
+                         input_buffer, GUI_MODERN_COLOR_TEXT);
+}
+
+static void fm_classic_draw_page_surface(int x, int y, int width, int height,
+                                         const char* title) {
+    gui_draw_rounded_rect((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                          (uint32_t)height,
+                          display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE),
+                          GUI_MODERN_COLOR_WINDOW);
+    gui_draw_flat_border((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                         (uint32_t)height, GUI_MODERN_COLOR_BORDER_INACTIVE);
+    gui_draw_rounded_rect((uint32_t)(x + FM_CLASSIC_INSET),
+                          (uint32_t)(y + FM_CLASSIC_INSET),
+                          (uint32_t)(width - FM_CLASSIC_INSET * 2),
+                          (uint32_t)display_scale_px(24),
+                          display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE),
+                          GUI_MODERN_COLOR_HOVER);
+    gui_draw_text((uint32_t)(x + FM_CLASSIC_INSET * 2),
+                  (uint32_t)(y + (int)display_scale_px(12)), title,
+                  GUI_MODERN_COLOR_TEXT);
 }
 
 static void fm_classic_draw_help(void) {
@@ -992,12 +1063,10 @@ static void fm_classic_draw_help(void) {
         vesa_color_t background;
 
         mouse_invalidate_cursor();
-        background.raw = GUI_COLOR_BG;
+        background.raw = GUI_MODERN_COLOR_BG;
         vesa_clear(background);
-        gui_draw_scaled_window_frame((uint32_t)x, (uint32_t)y,
-                                     (uint32_t)width, (uint32_t)height,
-                                     "Ajuda do Explorer", 1);
     }
+    fm_classic_draw_page_surface(x, y, width, height, "Ajuda do Explorer");
     available_rows = (height - top_offset - bottom_offset) / row_height;
     columns = available_rows < line_count ? 2 : 1;
     rows_per_column = (line_count + columns - 1) / columns;
@@ -1009,11 +1078,11 @@ static void fm_classic_draw_help(void) {
         int line_y = y + top_offset + row * row_height;
 
         gui_draw_text((uint32_t)line_x, (uint32_t)line_y,
-                      lines[i], GUI_COLOR_TEXT);
+                      lines[i], GUI_MODERN_COLOR_TEXT);
     }
     gui_draw_text((uint32_t)(x + (int)display_scale_px(24)),
                   (uint32_t)(y + height - (int)display_scale_px(34)),
-                  "Pressione Esc para voltar.", GUI_COLOR_TITLE_BG);
+                  "Pressione Esc para voltar.", GUI_MODERN_COLOR_ACCENT);
     if (!fm_hosted) taskbar_draw();
 }
 
@@ -1036,12 +1105,10 @@ static void fm_classic_draw_view_file(void) {
         vesa_color_t background;
 
         mouse_invalidate_cursor();
-        background.raw = GUI_COLOR_BG;
+        background.raw = GUI_MODERN_COLOR_BG;
         vesa_clear(background);
-        gui_draw_scaled_window_frame((uint32_t)x, (uint32_t)y,
-                                     (uint32_t)width, (uint32_t)height,
-                                     "Visualizando arquivo", 1);
     }
+    fm_classic_draw_page_surface(x, y, width, height, "Visualizando arquivo");
 
     if (state.selected < 0 || state.selected >= state.file_count) {
         if (!fm_hosted) taskbar_draw();
@@ -1051,7 +1118,7 @@ static void fm_classic_draw_view_file(void) {
     if (file->is_dir) {
         gui_draw_text((uint32_t)(x + (int)display_scale_px(24)),
                       (uint32_t)(y + (int)display_scale_px(54)),
-                      "Nao e possivel visualizar pastas.", GUI_COLOR_TEXT);
+                      "Nao e possivel visualizar pastas.", GUI_MODERN_COLOR_TEXT);
         if (!fm_hosted) taskbar_draw();
         return;
     }
@@ -1090,7 +1157,7 @@ static void fm_classic_draw_view_file(void) {
     if (bytes == 0) {
         gui_draw_text((uint32_t)(x + (int)display_scale_px(24)),
                       (uint32_t)(y + (int)display_scale_px(54)),
-                      "(arquivo vazio)", GUI_COLOR_TEXT);
+                      "(arquivo vazio)", GUI_MODERN_COLOR_TEXT);
         kfree(buffer);
         buffer = 0;
         if (!fm_hosted) taskbar_draw();
@@ -1111,7 +1178,7 @@ static void fm_classic_draw_view_file(void) {
             gui_draw_text((uint32_t)(x + (int)display_scale_px(24)),
                           (uint32_t)(y + (int)display_scale_px(52) +
                                      row * fm_display_font_height()),
-                          line, GUI_COLOR_TEXT);
+                          line, GUI_MODERN_COLOR_TEXT);
             row++;
             line_pos = 0;
             if (c == '\n') continue;
@@ -1126,11 +1193,11 @@ static void fm_classic_draw_view_file(void) {
         gui_draw_text((uint32_t)(x + (int)display_scale_px(24)),
                       (uint32_t)(y + (int)display_scale_px(52) +
                                  row * fm_display_font_height()),
-                      line, GUI_COLOR_TEXT);
+                      line, GUI_MODERN_COLOR_TEXT);
     }
     gui_draw_text((uint32_t)(x + (int)display_scale_px(24)),
                   (uint32_t)(y + height - (int)display_scale_px(34)),
-                  "Pressione Esc para voltar.", GUI_COLOR_TITLE_BG);
+                  "Pressione Esc para voltar.", GUI_MODERN_COLOR_ACCENT);
     kfree(buffer);
     buffer = 0;
     if (!fm_hosted) taskbar_draw();
