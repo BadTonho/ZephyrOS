@@ -5,6 +5,7 @@
 #include "core/keyboard.h"
 #include "fs/fs.h"
 #include "fs/storage.h"
+#include "fs/file_index.h"
 #include "core/memory.h"
 #include "ui/taskbar.h"
 #include "ui/desktop.h"
@@ -46,6 +47,23 @@
      FM_CLASSIC_PANE_GAP + (int)display_scale_px(8))
 #define FM_CLASSIC_DEFAULT_WIDTH 720
 #define FM_CLASSIC_DEFAULT_HEIGHT 500
+#define FM_CLASSIC_SEARCH_BUTTON_WIDTH ((int)display_scale_px(112))
+#define FM_SEARCH_REDRAW_STEP 8U
+#define FM_SEARCH_PATH_SIZE \
+    (FM_MAX_PATH + FM_VOLUME_ID_LEN + FM_NAME_LEN + 4)
+#define FM_CLASSIC_WARNING_COLOR 0x00FF6B6BU
+#define FM_SCANCODE_CTRL_MAKE 0x1DU
+#define FM_SCANCODE_CTRL_BREAK 0x9DU
+#define FM_SCANCODE_F 0x21U
+#define FM_SEARCH_SCANCODE_ESCAPE 0x01U
+#define FM_SEARCH_SCANCODE_BACKSPACE 0x0EU
+#define FM_SEARCH_SCANCODE_ENTER 0x1CU
+#define FM_SEARCH_SCANCODE_HOME 0x47U
+#define FM_SEARCH_SCANCODE_UP 0x48U
+#define FM_SEARCH_SCANCODE_PAGE_UP 0x49U
+#define FM_SEARCH_SCANCODE_END 0x4FU
+#define FM_SEARCH_SCANCODE_DOWN 0x50U
+#define FM_SEARCH_SCANCODE_PAGE_DOWN 0x51U
 
 static fm_state_t state;
 static char input_buffer[32];
@@ -63,6 +81,20 @@ static int fm_hosted_x = 0;
 static int fm_hosted_y = 0;
 static int fm_hosted_width = 0;
 static int fm_hosted_height = 0;
+/* Resultados globais ficam em BSS; a pilha dos processos tem 4 KiB. */
+static file_index_result_t fm_search_results[FILE_INDEX_MAX_RESULTS];
+static file_index_search_status_t fm_search_status;
+static file_index_status_t fm_search_index_status;
+static char fm_search_query[FILE_INDEX_QUERY_SIZE];
+static int fm_search_active = 0;
+static int fm_search_input = 0;
+static int fm_search_pos = 0;
+static int fm_search_selected = 0;
+static int fm_search_scroll = 0;
+static int fm_search_last_clicked = -1;
+static uint32_t fm_search_event_generation = 0;
+static file_index_state_t fm_search_index_state =
+    FILE_INDEX_STATE_UNINITIALIZED;
 
 
 static const char* side_pane_names[] = {
@@ -118,6 +150,10 @@ static int fm_select_boot_source(const char* path);
 static int fm_select_mounted_source(const char* id);
 static void fm_validate_storage_source(void);
 static void fm_record_history(void);
+static void fm_search_begin(void);
+static void fm_search_close(void);
+static void fm_search_refresh(void);
+static int fm_search_activate_selected(void);
 
 static const wm_hosted_app_t fm_hosted_app = {
     WM_APP_EXPLORER, "ZephyrOS Explorer", "Explorer",
@@ -282,6 +318,151 @@ static int fm_select_mounted_source(const char* id) {
     state.current_path[0] = '\0';
     state.selected = 0;
     state.scroll_offset = 0;
+    return OK;
+}
+
+static void fm_search_apply_index_status(const file_index_status_t* status) {
+    if (!status) return;
+    fm_search_index_status = *status;
+    fm_search_status.partial = status->partial;
+    fm_search_status.stale = status->stale;
+    fm_search_status.building =
+        status->state == FILE_INDEX_STATE_BUILDING;
+    fm_search_status.cancelled =
+        status->state == FILE_INDEX_STATE_CANCELLED;
+    fm_search_status.last_error = status->last_error;
+    fm_search_event_generation = status->event_generation;
+    fm_search_index_state = status->state;
+}
+
+static void fm_search_refresh(void) {
+    file_index_status_t status;
+    int result;
+
+    kmemset(&fm_search_status, 0, sizeof(fm_search_status));
+    kmemset(&fm_search_index_status, 0, sizeof(fm_search_index_status));
+    fm_search_last_clicked = -1;
+    if (file_index_get_status(&status) == OK) {
+        fm_search_apply_index_status(&status);
+    }
+    if (!fm_search_query[0]) {
+        fm_search_selected = 0;
+        fm_search_scroll = 0;
+        return;
+    }
+    result = file_index_search(fm_search_query, fm_search_results,
+                               FILE_INDEX_MAX_RESULTS, &fm_search_status);
+    if (result != OK) {
+        int search_error = result;
+
+        kmemset(&fm_search_status, 0, sizeof(fm_search_status));
+        fm_search_status.last_error = search_error;
+        if (file_index_get_status(&status) == OK) {
+            fm_search_apply_index_status(&status);
+            if (fm_search_status.last_error == OK) {
+                fm_search_status.last_error = search_error;
+            }
+        }
+    }
+    if (fm_search_selected >= (int)fm_search_status.returned_matches) {
+        fm_search_selected = (int)fm_search_status.returned_matches - 1;
+    }
+    if (fm_search_selected < 0) fm_search_selected = 0;
+    if (fm_search_scroll > fm_search_selected) {
+        fm_search_scroll = fm_search_selected;
+    }
+}
+
+static void fm_search_begin(void) {
+    state.address_mode = 0;
+    state.address_pos = 0;
+    fm_search_active = 1;
+    fm_search_input = 1;
+    fm_search_pos = 0;
+    fm_search_query[0] = '\0';
+    fm_search_selected = 0;
+    fm_search_scroll = 0;
+    fm_search_last_clicked = -1;
+    state.focus_pane = 1;
+    fm_search_refresh();
+}
+
+static void fm_search_close(void) {
+    fm_search_active = 0;
+    fm_search_input = 0;
+    fm_search_last_clicked = -1;
+}
+
+static int fm_search_scroll_selection(int delta) {
+    int count = (int)fm_search_status.returned_matches;
+    int previous = fm_search_selected;
+    int rows = fm_visible_rows();
+
+    if (count <= 0 || !delta) return 0;
+    while (delta > 0 && fm_search_selected > 0) {
+        fm_search_selected--;
+        delta--;
+    }
+    while (delta < 0 && fm_search_selected < count - 1) {
+        fm_search_selected++;
+        delta++;
+    }
+    if (fm_search_selected < fm_search_scroll) {
+        fm_search_scroll = fm_search_selected;
+    } else if (fm_search_selected >= fm_search_scroll + rows) {
+        fm_search_scroll = fm_search_selected - rows + 1;
+    }
+    if (previous == fm_search_selected) return 0;
+    fm_search_last_clicked = -1;
+    return 1;
+}
+
+static int fm_search_activate_selected(void) {
+    file_index_result_t* result;
+    storage_volume_t volume;
+    char target[FM_MAX_PATH];
+
+    if (fm_search_selected < 0 ||
+        fm_search_selected >= (int)fm_search_status.returned_matches) {
+        LOG_ERROR("FM", "Resultado inexistente na ativacao da pesquisa");
+        return ERR_NOT_FOUND;
+    }
+    result = &fm_search_results[fm_search_selected];
+    if (storage_find_volume(result->entry.volume_id, &volume) != OK ||
+        !volume.mounted ||
+        volume.generation != result->entry.volume_generation) {
+        LOG_WARN("FM", "Resultado do indice aponta para volume ausente");
+        fm_search_refresh();
+        return ERR_STATE;
+    }
+    if (result->entry.is_directory) {
+        if (fm_join_path(target, result->entry.parent_path,
+                         result->entry.name) != OK) {
+            LOG_ERROR("FM", "Caminho indexado excede o limite do Explorer");
+            return ERR_OVERFLOW;
+        }
+    } else {
+        str_copy(target, result->entry.parent_path);
+    }
+    if (fm_select_mounted_source(result->entry.volume_id) != OK) {
+        LOG_ERROR("FM", "Fonte do resultado nao pode ser selecionada");
+        return ERR_NOT_FOUND;
+    }
+    str_copy(state.current_path, target);
+    fm_search_close();
+    fm_record_history();
+    fm_refresh_files();
+    if (!result->entry.is_directory) {
+        for (int index = 0; index < state.file_count; index++) {
+            if (str_equal(state.files[index].name, result->entry.name)) {
+                state.selected = index;
+                if (state.selected >= fm_visible_rows()) {
+                    state.scroll_offset = state.selected - fm_visible_rows() + 1;
+                }
+                break;
+            }
+        }
+    }
     return OK;
 }
 
@@ -556,6 +737,7 @@ static void fm_select_mode(void) {
         fm_refresh_files();
         LOG_INFO("FM", "Explorer usando modo Classic");
     } else {
+        fm_search_close();
         fm_select_boot_source("");
         state.history_count = 0;
         state.history_pos = 0;
@@ -932,15 +1114,16 @@ static void fm_classic_draw_toolbar(int x, int y, int width) {
                          y + (int)display_scale_px(6),
                          width - (int)display_scale_px(16),
                          (state.storage_virtual || state.storage_read_only) ?
-                         "F1 Ajuda  F3 Ver  F5 Atualizar  Somente leitura  Alt+F4 Sair" :
-                         "F1 Ajuda  F2 Renomear  F3 Ver  F5 Atualizar  F6 Pasta  F7 Arquivo  F8 Excluir  Alt+F4 Sair",
+                         "Ctrl+F Pesquisar  F1 Ajuda  F3 Ver  F5 Atualizar  Somente leitura  Alt+F4 Sair" :
+                         "Ctrl+F Pesquisar  F1 Ajuda  F2 Renomear  F3 Ver  F5 Atualizar  F6 Pasta  F7 Arquivo  F8 Excluir",
                          GUI_MODERN_COLOR_TEXT);
 }
 
 static void fm_classic_draw_address(int x, int y, int width) {
     char display_path[FM_MAX_PATH];
-    uint32_t background = state.address_mode ? GUI_MODERN_COLOR_HOVER :
-                                               GUI_MODERN_COLOR_WINDOW;
+    int search_x = x + width - FM_CLASSIC_SEARCH_BUTTON_WIDTH;
+    uint32_t background = state.address_mode || fm_search_input ?
+                          GUI_MODERN_COLOR_HOVER : GUI_MODERN_COLOR_WINDOW;
     uint32_t foreground = GUI_MODERN_COLOR_TEXT;
 
     gui_draw_rounded_rect((uint32_t)x, (uint32_t)y, (uint32_t)width,
@@ -949,21 +1132,38 @@ static void fm_classic_draw_address(int x, int y, int width) {
                           background);
     gui_draw_flat_border((uint32_t)x, (uint32_t)y, (uint32_t)width,
                          FM_CLASSIC_ADDRESS_HEIGHT,
-                         state.address_mode ? GUI_MODERN_COLOR_ACCENT :
+                         (state.address_mode || fm_search_input) ?
+                         GUI_MODERN_COLOR_ACCENT :
                          GUI_MODERN_COLOR_BORDER_INACTIVE);
     fm_build_display_path(display_path, FM_MAX_PATH);
     if (state.address_mode) {
         fm_copy_display_text(display_path, FM_MAX_PATH,
                              state.address_buffer, FM_MAX_PATH - 1);
+    } else if (fm_search_active) {
+        fm_copy_display_text(display_path, FM_MAX_PATH,
+                             fm_search_query, FILE_INDEX_QUERY_SIZE - 1U);
     }
 
     gui_draw_text((uint32_t)(x + FM_CLASSIC_INSET),
                   (uint32_t)(y + (int)display_scale_px(6)),
-                  "Endereco:", foreground);
+                  fm_search_active ? "Pesquisar:" : "Endereco:", foreground);
     fm_draw_text_limited(x + (int)display_scale_px(92),
                          y + (int)display_scale_px(6),
-                         width - (int)display_scale_px(100),
+                         search_x - x - (int)display_scale_px(100),
                          display_path, foreground);
+    gui_draw_rounded_rect((uint32_t)search_x, (uint32_t)y,
+                          (uint32_t)FM_CLASSIC_SEARCH_BUTTON_WIDTH,
+                          FM_CLASSIC_ADDRESS_HEIGHT,
+                          display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE),
+                          fm_search_active ? GUI_MODERN_COLOR_ACCENT :
+                                             GUI_MODERN_COLOR_HOVER);
+    gui_draw_flat_border((uint32_t)search_x, (uint32_t)y,
+                         (uint32_t)FM_CLASSIC_SEARCH_BUTTON_WIDTH,
+                         FM_CLASSIC_ADDRESS_HEIGHT,
+                         GUI_MODERN_COLOR_BORDER_INACTIVE);
+    gui_draw_text((uint32_t)(search_x + (int)display_scale_px(12)),
+                  (uint32_t)(y + (int)display_scale_px(6)),
+                  "Pesquisar", GUI_MODERN_COLOR_TEXT);
 }
 
 static void fm_classic_draw_side(int x, int y, int width, int height) {
@@ -1005,6 +1205,105 @@ static void fm_classic_draw_side(int x, int y, int width, int height) {
     }
 }
 
+static void fm_search_build_location(const file_index_entry_t* entry,
+                                     char* output) {
+    int offset = 0;
+
+    while (entry->volume_id[offset] && offset + 1 < FM_SEARCH_PATH_SIZE) {
+        output[offset] = entry->volume_id[offset];
+        offset++;
+    }
+    if (offset + 2 < FM_SEARCH_PATH_SIZE) {
+        output[offset++] = ':';
+        output[offset++] = '/';
+    }
+    for (int index = 0; entry->parent_path[index] &&
+         offset + 1 < FM_SEARCH_PATH_SIZE; index++) {
+        output[offset++] = entry->parent_path[index];
+    }
+    output[offset] = '\0';
+}
+
+static void fm_classic_draw_search_list(int x, int y, int width, int height) {
+    int rows = fm_visible_rows();
+    int header_y = y + (int)display_scale_px(4);
+    int list_y = header_y + FM_CLASSIC_HEADER_HEIGHT +
+                 (int)display_scale_px(4);
+    int name_x = x + (int)display_scale_px(20);
+    int path_x = x + width / 3;
+    int type_x = x + (width * 4) / 5;
+
+    gui_draw_rounded_rect((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                          (uint32_t)height,
+                          display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE),
+                          GUI_MODERN_COLOR_WINDOW);
+    gui_draw_flat_border((uint32_t)x, (uint32_t)y, (uint32_t)width,
+                         (uint32_t)height, GUI_MODERN_COLOR_BORDER_INACTIVE);
+    gui_draw_rounded_rect((uint32_t)(x + (int)display_scale_px(4)),
+                          (uint32_t)header_y,
+                          (uint32_t)(width - (int)display_scale_px(8)),
+                          FM_CLASSIC_HEADER_HEIGHT,
+                          display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE),
+                          GUI_MODERN_COLOR_HOVER);
+    gui_draw_text((uint32_t)name_x,
+                  (uint32_t)(header_y + (int)display_scale_px(6)),
+                  "Nome", GUI_MODERN_COLOR_TEXT);
+    gui_draw_text((uint32_t)path_x,
+                  (uint32_t)(header_y + (int)display_scale_px(6)),
+                  "Volume e caminho", GUI_MODERN_COLOR_TEXT);
+    gui_draw_text((uint32_t)type_x,
+                  (uint32_t)(header_y + (int)display_scale_px(6)),
+                  "Tipo", GUI_MODERN_COLOR_TEXT);
+
+    for (int row = 0; row < rows; row++) {
+        int result_index = fm_search_scroll + row;
+        int row_y = list_y + row *
+                    (FM_CLASSIC_ROW_HEIGHT + FM_CLASSIC_ROW_GAP);
+        file_index_result_t* result;
+        icon_entry_t* icon;
+        char location[FM_SEARCH_PATH_SIZE];
+        uint32_t foreground;
+
+        if (result_index >= (int)fm_search_status.returned_matches) break;
+        result = &fm_search_results[result_index];
+        foreground = result->availability == FILE_INDEX_RESULT_AVAILABLE ?
+                     GUI_MODERN_COLOR_TEXT : FM_CLASSIC_WARNING_COLOR;
+        if (result_index == fm_search_selected) {
+            gui_draw_rounded_rect((uint32_t)(x + (int)display_scale_px(4)),
+                                  (uint32_t)row_y,
+                                  (uint32_t)(width - (int)display_scale_px(8)),
+                                  FM_CLASSIC_ROW_HEIGHT,
+                                  display_scale_px(GUI_MODERN_BUTTON_RADIUS_BASE),
+                                  GUI_MODERN_COLOR_HOVER);
+            gui_draw_flat_border((uint32_t)(x + (int)display_scale_px(4)),
+                                 (uint32_t)row_y,
+                                 (uint32_t)(width - (int)display_scale_px(8)),
+                                 FM_CLASSIC_ROW_HEIGHT,
+                                 GUI_MODERN_COLOR_ACCENT);
+        }
+        icon = icons_get_fm(result->entry.is_directory ?
+                            ICON_FM_FOLDER : ICON_FM_FILE);
+        if (icon) {
+            vesa_color_t color;
+            color.raw = foreground;
+            vesa_draw_char(x + (int)display_scale_px(10),
+                           row_y + (int)display_scale_px(4), icon->ch,
+                           color, fm_display_icon_scale());
+        }
+        fm_draw_text_limited(name_x, row_y + (int)display_scale_px(6),
+                             path_x - name_x - (int)display_scale_px(8),
+                             result->entry.name, foreground);
+        fm_search_build_location(&result->entry, location);
+        fm_draw_text_limited(path_x, row_y + (int)display_scale_px(6),
+                             type_x - path_x - (int)display_scale_px(8),
+                             location, foreground);
+        gui_draw_text((uint32_t)type_x,
+                      (uint32_t)(row_y + (int)display_scale_px(6)),
+                      result->entry.is_directory ? "Pasta" : "Arquivo",
+                      foreground);
+    }
+}
+
 static void fm_classic_draw_list(int x, int y, int width, int height) {
     int rows = fm_visible_rows();
     int start = state.scroll_offset;
@@ -1014,6 +1313,11 @@ static void fm_classic_draw_list(int x, int y, int width, int height) {
     int name_x = x + (int)display_scale_px(20);
     int size_x = x + width / 2;
     int type_x = x + (width * 3) / 4;
+
+    if (fm_search_active) {
+        fm_classic_draw_search_list(x, y, width, height);
+        return;
+    }
 
     gui_draw_rounded_rect((uint32_t)x, (uint32_t)y, (uint32_t)width,
                           (uint32_t)height,
@@ -1114,6 +1418,60 @@ static void fm_classic_draw_list(int x, int y, int width, int height) {
     }
 }
 
+static void fm_classic_draw_search_status(int x, int y, int width) {
+    const char* warning = 0;
+    char selection[24];
+    char progress[16];
+
+    if (fm_search_input) {
+        gui_draw_text((uint32_t)(x + FM_CLASSIC_INSET),
+                      (uint32_t)(y + (int)display_scale_px(6)),
+                      "Digite o termo e pressione Enter",
+                      GUI_MODERN_COLOR_TEXT);
+    } else if (!fm_search_status.returned_matches) {
+        gui_draw_text((uint32_t)(x + FM_CLASSIC_INSET),
+                      (uint32_t)(y + (int)display_scale_px(6)),
+                      "Nenhum resultado global",
+                      GUI_MODERN_COLOR_BORDER_INACTIVE);
+    } else {
+        gui_draw_text((uint32_t)(x + FM_CLASSIC_INSET),
+                      (uint32_t)(y + (int)display_scale_px(6)),
+                      "Resultado:", GUI_MODERN_COLOR_TEXT);
+        fm_draw_text_limited(
+            x + (int)display_scale_px(92), y + (int)display_scale_px(6),
+            width - (int)display_scale_px(330),
+            fm_search_results[fm_search_selected].entry.name,
+            GUI_MODERN_COLOR_TEXT);
+    }
+    if (fm_search_status.last_error != OK) warning = "Erro no indice";
+    else if (fm_search_status.cancelled) warning = "Cancelado";
+    else if (fm_search_status.volume_missing) warning = "Volume ausente";
+    else if (fm_search_status.result_stale) warning = "Resultado obsoleto";
+    else if (fm_search_status.stale) warning = "Desatualizado";
+    else if (fm_search_status.building) warning = "Construindo";
+    else if (fm_search_status.partial) warning = "Parcial";
+    if (warning) {
+        gui_draw_text((uint32_t)(x + width - (int)display_scale_px(160)),
+                      (uint32_t)(y + (int)display_scale_px(6)), warning,
+                      FM_CLASSIC_WARNING_COLOR);
+    }
+    if (fm_search_status.building) {
+        int_to_str(fm_search_index_status.candidate_entries, progress);
+        gui_draw_text((uint32_t)(x + width - (int)display_scale_px(300)),
+                      (uint32_t)(y + (int)display_scale_px(6)),
+                      "Indexados:", GUI_MODERN_COLOR_TEXT);
+        fm_draw_text_limited(x + width - (int)display_scale_px(220),
+                             y + (int)display_scale_px(6),
+                             (int)display_scale_px(52), progress,
+                             GUI_MODERN_COLOR_ACCENT);
+    }
+    int_to_str(fm_search_status.returned_matches, selection);
+    fm_draw_text_limited(x + width - (int)display_scale_px(70),
+                         y + (int)display_scale_px(6),
+                         (int)display_scale_px(60), selection,
+                         GUI_MODERN_COLOR_ACCENT);
+}
+
 static void fm_classic_draw_status(int x, int y, int width) {
     char selection[24];
     char size[16];
@@ -1125,6 +1483,10 @@ static void fm_classic_draw_status(int x, int y, int width) {
     gui_draw_flat_border((uint32_t)x, (uint32_t)y, (uint32_t)width,
                          FM_CLASSIC_STATUS_HEIGHT,
                          GUI_MODERN_COLOR_BORDER_INACTIVE);
+    if (fm_search_active) {
+        fm_classic_draw_search_status(x, y, width);
+        return;
+    }
     if ((state.storage_virtual || state.storage_read_only) &&
         state.file_count == 0) {
         gui_draw_text((uint32_t)(x + width - (int)display_scale_px(170)),
@@ -1722,6 +2084,21 @@ void fm_draw(void) {
     fm_draw_all();
 }
 
+void fm_update(void) {
+    file_index_status_t status;
+    uint32_t event_delta;
+
+    if (!state.running || state.mode != FM_MODE_CLASSIC ||
+        !fm_search_active) return;
+    if (file_index_get_status(&status) != OK ||
+        status.event_generation == fm_search_event_generation) return;
+    event_delta = status.event_generation - fm_search_event_generation;
+    if (status.state == fm_search_index_state &&
+        event_delta < FM_SEARCH_REDRAW_STEP) return;
+    fm_search_refresh();
+    fm_draw_all();
+}
+
 static int fm_scroll_file_selection(int delta) {
     int rows;
     int previous = state.selected;
@@ -1744,6 +2121,37 @@ static int fm_scroll_file_selection(int delta) {
         state.scroll_offset = state.selected - rows + 1;
     }
     return 1;
+}
+
+static int fm_search_button_pressed(const mouse_event_t* event, int x, int y,
+                                    int width) {
+    int address_x = x + FM_CLASSIC_INSET;
+    int address_y = y + FM_CLASSIC_CONTENT_OFFSET +
+                    FM_CLASSIC_TOOLBAR_HEIGHT + FM_CLASSIC_PANE_GAP;
+    int address_width = width - (FM_CLASSIC_INSET * 2);
+
+    if (event->x < address_x + address_width -
+                       FM_CLASSIC_SEARCH_BUTTON_WIDTH ||
+        event->x >= address_x + address_width || event->y < address_y ||
+        event->y >= address_y + FM_CLASSIC_ADDRESS_HEIGHT) return 0;
+    fm_search_begin();
+    return 1;
+}
+
+static void fm_mouse_select_item(int item_index) {
+    state.focus_pane = 1;
+    if (!fm_search_active) {
+        state.selected = item_index;
+        return;
+    }
+    if (fm_search_last_clicked == item_index) {
+        fm_search_selected = item_index;
+        fm_search_activate_selected();
+        return;
+    }
+    fm_search_selected = item_index;
+    fm_search_last_clicked = item_index;
+    fm_search_input = 0;
 }
 
 static int fm_hosted_mouse(mouse_event_t* event, int x, int y,
@@ -1790,10 +2198,15 @@ static int fm_hosted_mouse(mouse_event_t* event, int x, int y,
                         (FM_CLASSIC_ROW_HEIGHT + FM_CLASSIC_ROW_GAP)) {
             return 0;
         }
-        return fm_scroll_file_selection(event->wheel);
+        return fm_search_active ?
+               fm_search_scroll_selection(event->wheel) :
+               fm_scroll_file_selection(event->wheel);
     }
     if (event->event != MOUSE_EVENT_PRESS ||
         !(event->changed & MOUSE_BTN_LEFT)) return 0;
+
+    if (fm_search_button_pressed(event, content_x, content_y,
+                                 content_width)) return 1;
 
     if (event->x >= content_x + FM_CLASSIC_INSET &&
         event->x < content_x + FM_CLASSIC_INSET + FM_CLASSIC_SIDE_WIDTH &&
@@ -1805,6 +2218,7 @@ static int fm_hosted_mouse(mouse_event_t* event, int x, int y,
 
         if (relative_y % step < FM_CLASSIC_ROW_HEIGHT &&
             row >= 0 && row < fm_side_items_for_height(panel_height)) {
+            if (fm_search_active) fm_search_close();
             state.focus_pane = 0;
             state.side_selected = row;
             return 1;
@@ -1815,13 +2229,16 @@ static int fm_hosted_mouse(mouse_event_t* event, int x, int y,
         int relative_y = event->y - list_y;
         int step = FM_CLASSIC_ROW_HEIGHT + FM_CLASSIC_ROW_GAP;
         int row = relative_y / step;
-        int file_index = state.scroll_offset + row;
+        int file_index = (fm_search_active ? fm_search_scroll :
+                          state.scroll_offset) + row;
+        int item_count = fm_search_active ?
+                         (int)fm_search_status.returned_matches :
+                         state.file_count;
 
         if (relative_y % step < FM_CLASSIC_ROW_HEIGHT &&
             row >= 0 && row < fm_visible_rows() &&
-            file_index >= 0 && file_index < state.file_count) {
-            state.focus_pane = 1;
-            state.selected = file_index;
+            file_index >= 0 && file_index < item_count) {
+            fm_mouse_select_item(file_index);
             return 1;
         }
     }
@@ -1841,6 +2258,7 @@ static void fm_hosted_close(void) {
     state.running = 0;
     fm_help_mode = 0;
     input_mode = 0;
+    fm_search_close();
 }
 
 static void fm_redraw_file_view(void) {
@@ -1881,6 +2299,10 @@ void fm_init(void) {
     state.focus_pane = 1;
     state.side_selected = 0;
     fm_fallback_logged = 0;
+    fm_search_close();
+    fm_search_query[0] = '\0';
+    fm_search_event_generation = 0;
+    fm_search_index_state = FILE_INDEX_STATE_UNINITIALIZED;
     old_name[0] = '\0';
 
     fm_record_history();
@@ -1932,6 +2354,7 @@ void fm_close(void) {
         wm_close_hosted_app(WM_APP_EXPLORER);
         return;
     }
+    fm_search_close();
     state.running = 0;
     taskbar_remove_app(TB_APP_EXPLORER);
     desktop_set_active(1);
@@ -1959,6 +2382,7 @@ static const char scancode_table[128] = {
 };
 
 static int alt_pressed = 0;
+static int ctrl_pressed = 0;
 
 static int fm_block_read_only_mutation(uint8_t scancode) {
     int mutation_key = scancode == 0x3CU || scancode == 0x40U ||
@@ -1970,6 +2394,89 @@ static int fm_block_read_only_mutation(uint8_t scancode) {
         (!state.storage_virtual && !state.storage_read_only)) return 0;
     LOG_WARN("FM", "Mutacao recusada em volume somente-leitura");
     fm_draw_all();
+    return 1;
+}
+
+static void fm_search_move_page(int direction) {
+    int rows = fm_visible_rows();
+    int count = (int)fm_search_status.returned_matches;
+
+    fm_search_selected += direction * rows;
+    if (fm_search_selected < 0) fm_search_selected = 0;
+    if (fm_search_selected >= count) fm_search_selected = count - 1;
+    if (fm_search_selected < 0) fm_search_selected = 0;
+    if (fm_search_selected < fm_search_scroll) {
+        fm_search_scroll = fm_search_selected;
+    } else if (fm_search_selected >= fm_search_scroll + rows) {
+        fm_search_scroll = fm_search_selected - rows + 1;
+    }
+    fm_search_last_clicked = -1;
+}
+
+static int fm_search_handle_key(uint8_t scancode) {
+    char character = scancode_table[scancode];
+
+    if (scancode == FM_SEARCH_SCANCODE_ESCAPE) {
+        fm_search_close();
+        fm_draw_all();
+        return 1;
+    }
+    if (scancode == FM_SEARCH_SCANCODE_BACKSPACE && fm_search_input) {
+        if (fm_search_pos > 0) {
+            fm_search_query[--fm_search_pos] = '\0';
+            fm_search_refresh();
+            fm_draw_all();
+        }
+        return 1;
+    }
+    if (scancode == FM_SEARCH_SCANCODE_ENTER) {
+        if (fm_search_input) {
+            if (fm_search_pos > 0) {
+                fm_search_input = 0;
+                fm_search_refresh();
+            }
+        } else {
+            fm_search_activate_selected();
+        }
+        fm_draw_all();
+        return 1;
+    }
+    if (scancode == FM_SEARCH_SCANCODE_UP) {
+        fm_search_scroll_selection(1);
+        fm_draw_all();
+        return 1;
+    }
+    if (scancode == FM_SEARCH_SCANCODE_DOWN) {
+        fm_search_scroll_selection(-1);
+        fm_draw_all();
+        return 1;
+    }
+    if (scancode == FM_SEARCH_SCANCODE_PAGE_UP ||
+        scancode == FM_SEARCH_SCANCODE_PAGE_DOWN) {
+        fm_search_move_page(scancode == FM_SEARCH_SCANCODE_PAGE_UP ? -1 : 1);
+        fm_draw_all();
+        return 1;
+    }
+    if (scancode == FM_SEARCH_SCANCODE_HOME ||
+        scancode == FM_SEARCH_SCANCODE_END) {
+        fm_search_selected = scancode == FM_SEARCH_SCANCODE_HOME ? 0 :
+            (int)fm_search_status.returned_matches - 1;
+        if (fm_search_selected < 0) fm_search_selected = 0;
+        fm_search_scroll = scancode == FM_SEARCH_SCANCODE_HOME ? 0 :
+            fm_search_selected - fm_visible_rows() + 1;
+        if (fm_search_scroll < 0) fm_search_scroll = 0;
+        fm_search_last_clicked = -1;
+        fm_draw_all();
+        return 1;
+    }
+    if (fm_search_input && character && !ctrl_pressed &&
+        fm_search_pos + 1 < FILE_INDEX_QUERY_SIZE) {
+        fm_search_query[fm_search_pos++] = character;
+        fm_search_query[fm_search_pos] = '\0';
+        fm_search_refresh();
+        fm_draw_all();
+        return 1;
+    }
     return 1;
 }
 
@@ -2014,7 +2521,27 @@ void fm_handle_key(uint8_t scancode) {
         return;
     }
 
+    if (scancode == FM_SCANCODE_CTRL_MAKE) {
+        ctrl_pressed = 1;
+        return;
+    }
+    if (scancode == FM_SCANCODE_CTRL_BREAK) {
+        ctrl_pressed = 0;
+        return;
+    }
+
     if (scancode & 0x80) return;
+
+    if (state.mode == FM_MODE_CLASSIC && ctrl_pressed &&
+        scancode == FM_SCANCODE_F && !input_mode && !fm_help_mode) {
+        fm_search_begin();
+        fm_draw_all();
+        return;
+    }
+    if (state.mode == FM_MODE_CLASSIC && fm_search_active) {
+        fm_search_handle_key(scancode);
+        return;
+    }
 
     if (fm_block_read_only_mutation(scancode)) return;
 

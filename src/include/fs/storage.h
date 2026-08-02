@@ -15,6 +15,7 @@
 #define STORAGE_MAX_DIR_ENTRIES 64U
 #define STORAGE_MAX_CHAIN_STEPS 4096U
 #define STORAGE_MAX_VIEW_BYTES 4095U
+#define STORAGE_SECTOR_SIZE 512U
 
 typedef enum {
     STORAGE_LAYOUT_RAW = 0,
@@ -71,9 +72,26 @@ typedef struct {
 typedef struct {
     char name[STORAGE_NAME_SIZE];
     uint32_t size;
+    uint32_t cluster;
     uint8_t attributes;
     uint8_t is_directory;
 } storage_dir_entry_t;
+
+typedef struct {
+    char volume_id[STORAGE_ID_SIZE];
+    uint32_t volume_generation;
+    uint32_t directory_cluster;
+    uint32_t current_cluster;
+    uint32_t sector_index;
+    uint32_t entry_index;
+    uint32_t chain_steps;
+    storage_fs_type_t fs_type;
+    uint8_t fixed_root;
+    uint8_t sector_loaded;
+    uint8_t active;
+    uint8_t done;
+    uint8_t sector[STORAGE_SECTOR_SIZE];
+} storage_dir_cursor_t;
 
 typedef struct {
     uint8_t initialized;
@@ -95,6 +113,11 @@ int storage_unmount(const char* id);
 int storage_list_dir(const char* id, const char* path,
                      storage_dir_entry_t* entries, uint32_t capacity,
                      uint32_t* out_count);
+int storage_dir_cursor_open(const char* id, const char* path,
+                            storage_dir_cursor_t* cursor);
+int storage_dir_cursor_next(storage_dir_cursor_t* cursor,
+                            storage_dir_entry_t* out_entry,
+                            uint8_t* out_found, uint8_t* out_done);
 int storage_read_file_range(const char* id, const char* path,
                             uint32_t offset, uint8_t* buffer,
                             uint32_t max_size, uint32_t* out_read);

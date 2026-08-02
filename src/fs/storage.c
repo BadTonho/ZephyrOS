@@ -6,7 +6,6 @@
 #include "core/spinlock.h"
 #include "core/string.h"
 
-#define STORAGE_SECTOR_SIZE 512U
 #define STORAGE_MBR_SIGNATURE_OFFSET 510U
 #define STORAGE_MBR_TABLE_OFFSET 446U
 #define STORAGE_MBR_ENTRY_SIZE 16U
@@ -1014,6 +1013,7 @@ static void storage_list_visitor(const storage_raw_entry_t* entry,
     kmemset(output, 0, sizeof(*output));
     storage_copy_text(output->name, STORAGE_NAME_SIZE, name);
     output->size = entry->size;
+    output->cluster = entry->first_cluster;
     output->attributes = entry->attributes;
     output->is_directory = (entry->attributes & STORAGE_ATTR_DIRECTORY) ? 1 : 0;
 }
@@ -1443,6 +1443,177 @@ int storage_list_dir(const char* id, const char* path,
                                          "falha ao listar diretorio");
     spinlock_release(&storage_operation_lock);
     return result;
+}
+
+static int storage_cursor_is_dot(const char* name) {
+    return name && name[0] == '.' &&
+           (name[1] == '\0' || (name[1] == '.' && name[2] == '\0'));
+}
+
+static int storage_cursor_load_sector(const storage_volume_t* volume,
+                                      const storage_mount_t* mount,
+                                      storage_dir_cursor_t* cursor) {
+    uint32_t relative_lba;
+    uint32_t next;
+    int result;
+
+    if (!volume || !mount || !cursor) {
+        LOG_ERROR("FS", "Argumento nulo ao carregar cursor de volume");
+        return ERR_NULL;
+    }
+
+    if (cursor->fixed_root) {
+        if (cursor->sector_index >= mount->root_sectors) {
+            cursor->done = 1;
+            return OK;
+        }
+        relative_lba = mount->root_start + cursor->sector_index;
+    } else {
+        if (cursor->sector_index >= mount->sectors_per_cluster) {
+            if (cursor->chain_steps++ >= STORAGE_MAX_CHAIN_STEPS) {
+                return ERR_OVERFLOW;
+            }
+            result = storage_next_cluster(volume, mount,
+                                          cursor->current_cluster, &next);
+            if (result != OK) return result;
+            if (storage_cluster_is_bad(mount, next)) return ERR_DISK;
+            if (storage_cluster_is_end(mount, next)) {
+                cursor->done = 1;
+                return OK;
+            }
+            cursor->current_cluster = next;
+            cursor->sector_index = 0;
+            return OK;
+        }
+        if (cursor->current_cluster < STORAGE_FIRST_DATA_CLUSTER ||
+            cursor->current_cluster >=
+                mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER) {
+            return ERR_INVALID;
+        }
+        relative_lba = mount->data_start +
+                       (cursor->current_cluster - STORAGE_FIRST_DATA_CLUSTER) *
+                       mount->sectors_per_cluster + cursor->sector_index;
+    }
+    result = storage_read_relative(volume, relative_lba, 1, cursor->sector);
+    if (result != OK) return result;
+    cursor->sector_loaded = 1;
+    cursor->entry_index = 0;
+    return OK;
+}
+
+int storage_dir_cursor_open(const char* id, const char* path,
+                            storage_dir_cursor_t* cursor) {
+    storage_mount_t* mount;
+    storage_volume_t* volume;
+    uint32_t cluster;
+    uint8_t fixed_root;
+    int index;
+    int result;
+
+    if (!id || !path || !cursor) {
+        LOG_ERROR("FS", "Argumento nulo ao abrir cursor de volume");
+        return ERR_NULL;
+    }
+    if (kstrlen(path) >= STORAGE_MAX_PATH) {
+        LOG_ERROR("FS", "Caminho excede limite do cursor de volume");
+        return ERR_OVERFLOW;
+    }
+    spinlock_acquire(&storage_operation_lock);
+    index = storage_initialized ? storage_volume_index(id) : -1;
+    if (index < 0 || !storage_volumes[index].mounted) {
+        spinlock_release(&storage_operation_lock);
+        storage_log_volume(LOG_LEVEL_ERROR, id, "cursor sem volume montado");
+        return index < 0 ? ERR_NOT_FOUND : ERR_STATE;
+    }
+    volume = &storage_volumes[index];
+    mount = storage_mount_for_volume((uint8_t)index);
+    result = mount ? storage_resolve_directory(
+                         volume, mount, path, &cluster, &fixed_root) :
+                     ERR_STATE;
+    if (result == OK) {
+        kmemset(cursor, 0, sizeof(*cursor));
+        storage_copy_text(cursor->volume_id, STORAGE_ID_SIZE, volume->id);
+        cursor->volume_generation = volume->generation;
+        cursor->directory_cluster = cluster;
+        cursor->current_cluster = cluster;
+        cursor->fs_type = mount->fs_type;
+        cursor->fixed_root = fixed_root;
+        cursor->active = 1;
+    }
+    spinlock_release(&storage_operation_lock);
+    if (result != OK) {
+        storage_log_volume(LOG_LEVEL_ERROR, id,
+                           "falha ao abrir cursor de diretorio");
+    }
+    return result;
+}
+
+int storage_dir_cursor_next(storage_dir_cursor_t* cursor,
+                            storage_dir_entry_t* out_entry,
+                            uint8_t* out_found, uint8_t* out_done) {
+    storage_mount_t* mount;
+    storage_volume_t* volume;
+    int index;
+    int result = OK;
+
+    if (!cursor || !out_entry || !out_found || !out_done) {
+        LOG_ERROR("FS", "Argumento nulo ao avancar cursor de volume");
+        return ERR_NULL;
+    }
+    *out_found = 0;
+    *out_done = cursor->done;
+    spinlock_acquire(&storage_operation_lock);
+    index = storage_initialized ? storage_volume_index(cursor->volume_id) : -1;
+    volume = index >= 0 ? &storage_volumes[index] : 0;
+    mount = index >= 0 ? storage_mount_for_volume((uint8_t)index) : 0;
+    if (!cursor->active || !volume || !volume->mounted || !mount ||
+        volume->generation != cursor->volume_generation ||
+        mount->fs_type != cursor->fs_type) {
+        result = ERR_STATE;
+    } else if (!cursor->done && !cursor->sector_loaded) {
+        result = storage_cursor_load_sector(volume, mount, cursor);
+    }
+    if (result != OK || cursor->done || !cursor->sector_loaded) {
+        *out_done = cursor->done;
+        spinlock_release(&storage_operation_lock);
+        if (result != OK) LOG_ERROR("FS", "Cursor de volume ficou invalido");
+        return result;
+    }
+    while (cursor->entry_index <
+           STORAGE_SECTOR_SIZE / STORAGE_DIR_ENTRY_SIZE) {
+        const uint8_t* source = cursor->sector +
+                                cursor->entry_index++ * STORAGE_DIR_ENTRY_SIZE;
+        storage_raw_entry_t raw;
+
+        if (source[0] == 0x00U) {
+            cursor->done = 1;
+            *out_done = 1;
+            break;
+        }
+        if (source[0] == 0xE5U ||
+            source[STORAGE_DIR_ATTRIBUTE_OFFSET] == STORAGE_ATTR_LFN ||
+            (source[STORAGE_DIR_ATTRIBUTE_OFFSET] & STORAGE_ATTR_VOLUME)) {
+            continue;
+        }
+        storage_parse_raw_entry(mount, source, &raw);
+        kmemset(out_entry, 0, sizeof(*out_entry));
+        storage_entry_name(&raw, out_entry->name);
+        if (storage_cursor_is_dot(out_entry->name)) continue;
+        out_entry->size = raw.size;
+        out_entry->cluster = raw.first_cluster;
+        out_entry->attributes = raw.attributes;
+        out_entry->is_directory =
+            (raw.attributes & STORAGE_ATTR_DIRECTORY) ? 1U : 0U;
+        *out_found = 1;
+        break;
+    }
+    if (!*out_found && !cursor->done) {
+        cursor->sector_loaded = 0;
+        cursor->sector_index++;
+        cursor->entry_index = 0;
+    }
+    spinlock_release(&storage_operation_lock);
+    return OK;
 }
 
 int storage_read_file_range(const char* id, const char* path,

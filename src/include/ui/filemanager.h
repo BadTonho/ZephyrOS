@@ -71,6 +71,7 @@ void fm_open(void);
 void fm_close(void);
 void fm_run(void);
 void fm_draw(void);
+void fm_update(void);
 int fm_is_running(void);
 fm_mode_t fm_get_mode(void);
 void fm_handle_key(uint8_t scancode);

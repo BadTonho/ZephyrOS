@@ -11,6 +11,9 @@
 #define FS_MAX_PATH     256
 #define FS_MAX_ATOMIC_FILE_SIZE (64U * 1024U)
 #define FS_MAX_STREAM_FILE_SIZE (128U * 1024U)
+#define FS_DIR_SECTOR_SIZE 512U
+#define FS_DIR_ENTRY_SIZE  32U
+#define FS_DIR_CHAIN_LIMIT 4096U
 
 #define FS_ATTRIBUTE_HIDDEN     0x02U
 #define FS_ATTRIBUTE_SYSTEM     0x04U
@@ -28,6 +31,29 @@ typedef struct {
     uint8_t  attributes;
     char     name[13];
 } fs_file_info_t;
+
+typedef struct {
+    char     name[13];
+    uint32_t size;
+    uint32_t cluster;
+    uint8_t  attributes;
+    uint8_t  is_directory;
+} fs_dir_entry_t;
+
+typedef struct {
+    uint32_t generation;
+    uint32_t directory_cluster;
+    uint32_t current_cluster;
+    uint32_t sector_index;
+    uint32_t entry_index;
+    uint32_t chain_steps;
+    uint8_t  fs_type;
+    uint8_t  fixed_root;
+    uint8_t  sector_loaded;
+    uint8_t  active;
+    uint8_t  done;
+    uint8_t  sector[FS_DIR_SECTOR_SIZE];
+} fs_dir_cursor_t;
 
 typedef struct {
     uint32_t total_sectors;
@@ -49,6 +75,11 @@ int      fs_get_file_count(void);
 int      fs_get_file_info(int index, char* name_out, uint32_t* size_out, uint8_t* attr_out);
 int      fs_get_info(fs_info_t* info);
 uint8_t  fs_get_type(void);
+uint32_t fs_get_generation(void);
+int      fs_dir_cursor_open(const char* path, fs_dir_cursor_t* cursor);
+int      fs_dir_cursor_next(fs_dir_cursor_t* cursor,
+                            fs_dir_entry_t* out_entry,
+                            uint8_t* out_found, uint8_t* out_done);
 
 int      fs_read_file_at(const char* path, uint8_t* buffer, uint32_t max_size);
 int      fs_read_file_range_at(const char* path, uint32_t offset,

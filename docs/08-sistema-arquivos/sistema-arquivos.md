@@ -19,6 +19,7 @@ src/fs/
 │   ├── fat32.c       → Sistema de arquivos FAT32
 │   ├── fs.c          → Interface unificada FAT12/FAT32
 │   ├── storage.c     → Volumes ATA adicionais somente-leitura
+│   ├── file_index.c  → Indice global cooperativo em RAM
 │   ├── bmp.c         → Leitura de imagens BMP
 │   └── wav.c         → Leitura de áudio WAV
 ```
@@ -128,6 +129,66 @@ desconhecida. `make storage-fixtures-test` testa o gerador,
 as tres fixtures nos quatro slots IDE, e `make storage-fixtures-verify`
 compara tamanho e SHA-256 depois do QEMU. `run-storage` nao usa modo
 somente-leitura: qualquer escrita auxiliar precisa aparecer na verificacao.
+
+## Indice global EP3 (`file_index.c`)
+
+O indice publica nomes e caminhos 8.3 de arquivos e diretorios de todos os
+volumes montados. A primeira versao existe somente em RAM e limita-se a 512
+entradas, 128 diretorios percorridos, profundidade 16, quatro fontes, termos
+de 63 caracteres e 64 resultados. Pesquisa de conteudo, curingas, metadados
+ricos e persistencia ficam fora da EP3.
+
+`fs_dir_cursor_t` e `storage_dir_cursor_t` preservam cluster, setor e entrada
+entre chamadas. Um avanco carrega no maximo um setor de diretorio e, quando a
+cadeia termina o cluster atual, somente a consulta FAT necessaria. O indexador
+usa DFS deterministico na ordem das montagens e das entradas em disco; um
+passo e executado por iteracao do processo de sistema e tambem no fallback do
+kernel.
+
+```c
+uint32_t fs_get_generation(void);
+int fs_dir_cursor_open(const char* path, fs_dir_cursor_t* cursor);
+int fs_dir_cursor_next(fs_dir_cursor_t* cursor, fs_dir_entry_t* entry,
+                       uint8_t* found, uint8_t* done);
+int storage_dir_cursor_open(const char* id, const char* path,
+                            storage_dir_cursor_t* cursor);
+int storage_dir_cursor_next(storage_dir_cursor_t* cursor,
+                            storage_dir_entry_t* entry,
+                            uint8_t* found, uint8_t* done);
+```
+
+A geracao monotonicamente crescente do filesystem de boot muda depois de
+remontagem e de cada mutacao concluida: escrita, criacao, exclusao, operacao
+atomica e finalizacao de streaming. O indice compara essa geracao e as
+geracoes de montagem do Storage continuamente. Qualquer mudanca descarta o
+candidato e inicia um rebuild automatico, mantendo a tabela ativa anterior
+ate o novo checksum ser publicado.
+
+```c
+int file_index_init(void);
+int file_index_poll(uint32_t budget, uint32_t* out_steps);
+int file_index_rebuild(void);
+int file_index_cancel(void);
+int file_index_get_status(file_index_status_t* status);
+int file_index_search(const char* query, file_index_result_t* results,
+                      uint32_t capacity,
+                      file_index_search_status_t* status);
+int file_index_validate_state(void);
+int file_index_self_test(void);
+```
+
+As tabelas ativa e candidata sao alocadas no heap. Falha de memoria preserva
+a ativa e suspende repeticoes para a mesma assinatura de fontes; um novo
+evento ou `index rebuild` tenta novamente. Cancelamento tambem preserva a
+tabela ativa e suspende o rebuild automatico ate evento novo. Limite cheio
+publica resultado parcial. Canarios, checksum incremental e validacao
+estrutural detectam corrupcao e agendam reconstrucao sem degradar filesystem,
+Explorer ou Recovery.
+
+A busca e case-insensitive e procura substring no nome ou no caminho completo
+normalizado `<volume-id>:/pasta/nome`. Cada resultado conserva ID e geracao de
+montagem; volume desmontado, geracao obsoleta, tabela parcial, rebuild ativo,
+cancelamento e indice desatualizado sao estados observaveis.
 
 ---
 

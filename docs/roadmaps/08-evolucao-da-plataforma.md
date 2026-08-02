@@ -148,21 +148,27 @@ boot, Shell, filesystem atual ou outros volumes montados.
 
 ## EP3 - Indice e pesquisa de arquivos
 
+**Estado:** implementada em 02/08/2026, aguardando validacao do usuario. O
+codigo, contratos, comandos, regcheck e Explorer Classic estao prontos; Q3,
+build, fixtures, hashes e a matriz QEMU ainda nao foram executados pelo
+usuario.
+
 ### Implementacao
 
-- [ ] Definir o contrato inicial do indice: volume, caminho, nome, tipo e
+- [x] Definir o contrato inicial do indice: volume, caminho, nome, tipo e
   tamanho; pesquisa de conteudo e metadados ricos ficam fora desta etapa.
-- [ ] Construir o indice cooperativamente, com orcamento por tick,
+- [x] Construir o indice cooperativamente, com orcamento por tick,
   cancelamento, progresso e limites explicitos de memoria e entradas.
-- [ ] Associar entradas ao ID e a geracao do volume para detectar montagem,
+- [x] Associar entradas ao ID e a geracao do volume para detectar montagem,
   desmontagem ou alteracao externa que deixe resultados desatualizados.
-- [ ] Atualizar ou invalidar entradas nas operacoes existentes de criar,
+- [x] Atualizar ou invalidar entradas nas operacoes existentes de criar,
   renomear, copiar, mover e excluir do filesystem.
-- [ ] Adicionar `index status`, `index rebuild` e `search <termo>` no Shell;
+- [x] Adicionar `index status`, `index rebuild`, `index cancel`, `index check`
+  e `search <termo>` no Shell;
   a busca informa resultado parcial, volume ausente ou indice desatualizado.
-- [ ] Integrar uma tela de pesquisa no Explorer sem bloquear desenho, entrada,
+- [x] Integrar uma tela de pesquisa no Explorer sem bloquear desenho, entrada,
   mouse, rede ou Shell.
-- [ ] Manter a primeira versao em RAM. Persistencia so entra depois de definir
+- [x] Manter a primeira versao em RAM. Persistencia so entra depois de definir
   gravacao recuperavel sobre a camada de volumes da EP2.
 
 ### Criterio de saida
@@ -170,6 +176,18 @@ boot, Shell, filesystem atual ou outros volumes montados.
 Uma busca limitada encontra caminhos corretos sem travar a interface. Indice
 corrompido, cancelado ou sem memoria gera log e pode ser reconstruido, sem
 impedir navegacao normal do Explorer ou uso do filesystem.
+
+### Validacao pendente
+
+1. Executar `make q3check` e `make clean && make`.
+2. Executar `make storage-fixtures-test`, `make storage-fixtures` e depois
+   `make run-storage`.
+3. Nesse ambiente, validar busca FAT12/FAT32, subdiretorios, nomes repetidos,
+   mount/unmount durante rebuild/resultados e responsividade; ao sair,
+   executar `make storage-fixtures-verify` para confirmar os hashes.
+4. Executar `make run` e validar mutacoes no boot, rebuild automatico,
+   cancelamento, indice parcial, recuperacao de corrupcao, Explorer Classic,
+   comandos Shell, `memcheck`, `regcheck full` e o smoke test do Simple.
 
 ## EP4 - USB incremental
 

@@ -85,6 +85,10 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   Simple/Classic. A falha inicial da transacao compartilhada PS/2 preservou o
   fallback por teclado e foi corrigida protegendo a inicializacao contra a IRQ
   do teclado; MemCheck e RegCheck terminaram em `OK`.
+  A EP2 tambem esta validada com quatro slots ATA, FAT12/FAT32 somente-leitura,
+  fixtures e hashes intactos. A EP3 esta implementada com indice cooperativo
+  em RAM, Shell e pesquisa no Explorer Classic, mas aguarda Q3, build, fixtures,
+  hashes e matriz QEMU executados pelo usuario.
 
 ## K4 validada
 

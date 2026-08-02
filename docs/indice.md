@@ -43,7 +43,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [05 - Drivers](05-drivers/drivers.md) | Comunicação com hardware (VGA, VESA, PCI, AC97) |
 | [06 - Memória](06-memoria/memoria.md) | Gerenciamento de memória + compressão LZSS |
 | [07 - Processos](07-processos/processos.md) | Processos e threads |
-| [08 - Sistema de Arquivos](08-sistema-arquivos/sistema-arquivos.md) | FAT12, FAT32, BMP, WAV, FS unificado |
+| [08 - Sistema de Arquivos](08-sistema-arquivos/sistema-arquivos.md) | FAT12, FAT32, Storage e indice global EP3 |
 | [09 - Shell](09-shell/shell.md) | Terminal interativo, comandos e aplicativos |
 | [10 - Extras](10-extras/extras.md) | PC Speaker, syscalls |
 | [11 - Referências](11-referencias/referencias.md) | Links e glossário |
@@ -85,4 +85,4 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [05 - Sistema e Ecossistema](roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e apps |
 | [06 - App Store](roadmaps/06-app-store.md) | Catalogo local ZPKG, ciclo de vida e repositorio remoto autenticado |
 | [07 - Modernização Visual](roadmaps/07-modernizacao-visual.md) | Escala acessível, visual flat/dark e desempenho VESA mensurável |
-| [08 - Evolução da Plataforma](roadmaps/08-evolucao-da-plataforma.md) | Mouse, volumes, USB incremental, busca, releases e conectividade sem fio |
+| [08 - Evolução da Plataforma](roadmaps/08-evolucao-da-plataforma.md) | EP1-EP2 validadas; EP3 implementada, aguardando validacao; USB e conectividade futuras |
