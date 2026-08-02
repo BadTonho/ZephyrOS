@@ -337,7 +337,7 @@ static void print_num(uint32_t num);
 #define SHELL_MEMCHECK_BLOCK_A 96U
 #define SHELL_MEMCHECK_BLOCK_B 160U
 #define SHELL_MEMCHECK_BLOCK_C 224U
-#define SHELL_REGCHECK_BUILTIN_DEVICE_COUNT 8U
+#define SHELL_REGCHECK_NON_ATA_DEVICE_COUNT 7U
 #define SHELL_REGCHECK_PCI_NETWORK_CLASS 0x02U
 #define SHELL_REGCHECK_ACPI_SDT_HEADER_SIZE 36U
 #define SHELL_REGCHECK_ACPI_MAX_TABLE_SIZE (1024U * 1024U)
@@ -1000,6 +1000,8 @@ static int shell_regcheck_same_device(const device_info_t* left,
 static int shell_regcheck_validate_devices(void) {
     uint32_t count = 0;
     uint8_t pci_count = 0;
+    uint8_t ata_count = 0;
+    uint32_t ata_inventory_count;
     int result = pci_get_device_count(&pci_count);
 
     if (result != OK) {
@@ -1011,8 +1013,17 @@ static int shell_regcheck_validate_devices(void) {
         LOG_ERROR("SHELL", "RegCheck Full nao consultou Devices");
         return result;
     }
+    ata_inventory_count = 1U;
+    if (ata_get_device()) {
+        result = ata_get_device_count(&ata_count);
+        if (result != OK || ata_count == 0) {
+            LOG_ERROR("SHELL", "RegCheck Full nao consultou contagem ATA");
+            return result == OK ? ERR_STATE : result;
+        }
+        ata_inventory_count = ata_count;
+    }
     if (count != (uint32_t)pci_count +
-                 SHELL_REGCHECK_BUILTIN_DEVICE_COUNT ||
+                 SHELL_REGCHECK_NON_ATA_DEVICE_COUNT + ata_inventory_count ||
         count > DEVICE_MANAGER_MAX_DEVICES) {
         LOG_ERROR("SHELL", "RegCheck Full detectou contagem Devices invalida");
         return ERR_STATE;
