@@ -6,6 +6,7 @@
 #include "core/memory.h"
 #include "core/timer.h"
 #include "process/process.h"
+#include "drivers/ata.h"
 #include "drivers/speaker.h"
 #include "process/thread.h"
 #include "apps/taskmanager.h"
