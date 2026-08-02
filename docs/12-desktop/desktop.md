@@ -473,6 +473,20 @@ sem reutilizar dados antigos. Criar, renomear, excluir, recortar, colar e as
 demais mutacoes ficam bloqueadas fora do boot, com barra e status
 “Somente leitura”. O Explorer Simple permanece limitado ao volume de boot.
 
+Na EP3, o Explorer Classic abre a pesquisa global por `Ctrl+F` ou pelo
+controle clicavel `Pesquisar`. O termo aceita ate 63 caracteres; os 64
+resultados ficam em workspace estatico e exibem nome, volume, caminho e tipo.
+Setas, Page Up/Down, Home/End, roda e clique selecionam resultados. `Enter` ou
+um segundo clique abre uma pasta; para arquivo, abre a pasta de origem e deixa
+o nome selecionado. `Esc` fecha a pesquisa e restaura a navegacao anterior.
+
+`fm_update()` observa a geracao de eventos do indice e solicita redesenho
+hospedado em lotes durante o rebuild, atualizando progresso, resultados e
+avisos de parcial, construcao, cancelamento, obsolescencia ou volume ausente.
+Falha do indice nao fecha nem degrada o Explorer: a navegacao comum permanece
+independente. O Explorer Simple continua congelado e usa `index`/`search` no
+Shell como fallback.
+
 ## Settings (`settings.c`)
 
 Sistema de configuração geral.

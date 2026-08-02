@@ -36,6 +36,8 @@ Comandos disponiveis:
   edit      - Editor de texto (edit ARQUIVO.TXT)
   mouse     - Mostra status ou altera preferencias do mouse PS/2
   storage   - Lista, inspeciona e monta volumes ATA somente-leitura
+  index     - Mostra, reconstrui, cancela ou valida o indice global
+  search <termo> - Pesquisa nomes e caminhos em todos os volumes montados
   guitest   - Testa primitivas GUI 2D
   guimode   - Altera entre gui simple (TUI) e classic
   display   - Mostra estado ou altera a escala da GUI classic
@@ -1120,6 +1122,22 @@ zephyr> explorer
 ```
 
 Navegação com setas, F3 visualizar, F7 criar, F8 excluir com confirmação, F2 renomear.
+
+## `index status|rebuild|cancel|check`
+
+Controla e inspeciona o indice global em RAM. `status` mostra progresso,
+fontes, entradas, memoria, flags e ultimo erro. `rebuild` constroi uma tabela
+candidata enquanto preserva a ativa. `cancel` interrompe apenas a candidata e
+suspende a repeticao para a mesma geracao. `check` valida canarios, checksum,
+estrutura e o autoteste compacto sem alterar o filesystem.
+
+## `search <termo>`
+
+Pesquisa, sem diferenciar maiusculas/minusculas, uma substring no nome ou no
+caminho completo normalizado. Exibe ate 64 resultados com volume, caminho,
+tipo e tamanho. A saida sinaliza indice parcial, em construcao, cancelado,
+desatualizado, erro anterior, resultado obsoleto e volume ausente. Termos
+maiores que 63 caracteres sao recusados.
 
 ## `desktop`
 Ativa o ambiente desktop com ícones e menu Iniciar.

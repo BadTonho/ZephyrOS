@@ -37,6 +37,8 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `edit` | `<arquivo>` | Abre o Editor de Texto integrado. |
 | `mouse` | `[speed 1-10|primary left/right|acceleration on/off]` | Inspeciona ou altera preferências do Mouse PS/2 em RAM. |
 | `storage` | `list|info <id>|mount <id>|unmount <id>` | Inspeciona e monta volumes ATA adicionais somente-leitura. |
+| `index` | `status|rebuild|cancel|check` | Inspeciona e controla o indice global em RAM. |
+| `search` | `<termo>` | Pesquisa nomes e caminhos em todos os volumes montados. |
 | `guitest` | `[modern]` | Testa a cena Classic ou a base visual Modern diagnóstica. |
 | `health` | `[summary]` | Mostra o relatorio completo ou um resumo compacto para testes. |
 | `update remote` | `status/enable/disable/clear [--confirm]` | Controla o transporte remoto opcional da sessao. |
@@ -69,7 +71,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `schedcheck` | - | Valida os invariantes atuais do scheduler sem alterar processos. |
 | `q2check` | - | Executa o diagnóstico compacto da Q2 com duas falhas isoladas. |
 | `regcheck` | - | Valida health, processos, scheduler e memoria sem listagem; pausa para `F12`. |
-| `regcheck` | `full` | Soma varredura PCI, Devices, Network, ACPI e Power; mostra somente falhas e o resultado final. |
+| `regcheck` | `full` | Soma varredura PCI, Devices, Network, ACPI, Power e validacao do indice; mostra somente falhas e o resultado final. |
 | `appcheck` | - | Testa API, arquivos, IPC e carregador ZAPP. |
 | `pkg` | `list` | Lista os pacotes locais instalados. |
 | `pkg` | `info <ID|arquivo.ZPK>` | Mostra metadados instalados ou do pacote fonte validado. |
@@ -135,6 +137,10 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 - **`Clique Esquerdo (na Barra de Título)`**: Permite segurar e arrastar a janela (no modo gráfico).
 
 ### 2.3. Explorer (Gerenciador de Arquivos)
+- **`Ctrl+F`** ou **controle `Pesquisar`**: Abre a pesquisa global no Classic.
+- **`Esc` na pesquisa**: Retorna a navegacao anterior sem alterar a pasta.
+- **`Enter`/segundo clique em resultado**: Abre a pasta ou seleciona o arquivo na pasta de origem.
+- **Roda do mouse na pesquisa**: Navega pelos resultados globais.
 - **`Setas` / `Page Up` / `Page Down`**: Navega verticalmente pela lista de arquivos.
 - **`Home` / `End`**: Pula rapidamente para o topo ou para o fim da lista.
 - **`Enter`**: Abre o diretório ou executa o arquivo.

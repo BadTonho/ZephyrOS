@@ -258,6 +258,22 @@ disco; as montagens sao temporarias e nao oferecem qualquer operacao de
 escrita. O comando tambem permanece disponivel no fallback Simple para
 diagnostico.
 
+### Indice e pesquisa EP3 (`index`, `search`)
+
+`index status` mostra estado, entradas ativa/candidata, fontes, progresso,
+memoria, flags e ultimo erro. `index rebuild` inicia uma nova tabela sem
+descartar a ativa; `index cancel` preserva a ativa e suspende a repeticao ate
+um evento de fonte; `index check` executa canarios, checksum, validacao
+estrutural e o autoteste compacto. `regcheck full` inclui a mesma validacao e
+os casos de matching, limites, cancelamento e corrupcao.
+
+`search <termo>` aceita ate 63 caracteres e usa um workspace estatico para
+ate 64 resultados. A saida mostra volume, caminho, tipo e tamanho, seguida de
+avisos para indice parcial, em construcao, cancelado, desatualizado, erro,
+resultado obsoleto ou volume ausente. Esses comandos sao o fallback completo
+do modo Simple, que
+nao recebe uma tela nova.
+
 ---
 
 ## Adicionando um Novo Comando

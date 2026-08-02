@@ -28,6 +28,7 @@
 #include "drivers/pci.h"
 #include "fs/fs.h"
 #include "fs/storage.h"
+#include "fs/file_index.h"
 #include "apps/shell.h"
 #include "drivers/speaker.h"
 #include "process/thread.h"
@@ -336,6 +337,7 @@ static void global_mouse_handler(mouse_event_t* evt) {
 void system_process_main(void) {
     while (1) {
         uint32_t network_processed = 0;
+        uint32_t index_steps = 0;
 
         keyboard_process_events();
         mouse_process_events();
@@ -344,6 +346,8 @@ void system_process_main(void) {
             kernel_network_poll_enabled = 0;
             LOG_ERROR("KERNEL", "Processamento Ethernet foi desabilitado");
         }
+        file_index_poll(1U, &index_steps);
+        fm_update();
         shell_update_hosted_terminal();
         kernel_retry_shell_request();
         taskbar_update_clock();
@@ -645,6 +649,13 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         video_print("[!!] Storage indisponivel\n", 0x0C);
     }
 
+    video_print("[..] Iniciando indice de arquivos...\n", 0x08);
+    if (file_index_init() == OK) {
+        video_print("[OK] Indice cooperativo iniciado\n", 0x07);
+    } else {
+        video_print("[!!] Indice indisponivel; filesystem preservado\n", 0x0E);
+    }
+
     update_capabilities_t update_capabilities;
     int update_result = update_init();
     if (update_result != OK) {
@@ -928,6 +939,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     while (1) {
         if (kernel_service_fallback) {
             uint32_t network_processed = 0;
+            uint32_t index_steps = 0;
 
             keyboard_process_events();
             mouse_process_events();
@@ -937,6 +949,8 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
                 LOG_ERROR("KERNEL",
                           "Processamento Ethernet fallback desabilitado");
             }
+            file_index_poll(1U, &index_steps);
+            fm_update();
             shell_update_hosted_terminal();
             kernel_retry_shell_request();
             taskbar_update_clock();

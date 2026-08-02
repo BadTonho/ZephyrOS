@@ -65,6 +65,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/fs/bmp.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/fat12.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/fat32.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
+| `src/include/fs/file_index.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/fs.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/storage.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/wav.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
@@ -178,6 +179,7 @@ inalterados.
 Desde a U5, `src/include/core/http.h` acrescenta GET por streaming com callback
 e limite definido pelo chamador. `src/include/fs/fat12.h` e
 `src/include/fs/fs.h` acrescentam escrita sequencial FAT12 de ate 128 KiB.
+
 `src/include/core/update_remote.h` define o transporte manual, estados,
 motivos, candidato e cache redundante; `update_remote_config.h` deriva o canal
 Stable versionado. Os contratos canonicos permanecem em
@@ -219,4 +221,14 @@ Recovery. `filemanager.h` passa a guardar volume/geracao no historico Classic
 e `settings.h` anexa a categoria de status Storage. Os contratos canonicos
 ficam em `docs/05-drivers/drivers.md`,
 `docs/08-sistema-arquivos/sistema-arquivos.md`, `docs/04-kernel/kernel.md` e
+`docs/12-desktop/desktop.md`.
+
+Desde a EP3, `src/include/fs/fs.h` e `src/include/fs/storage.h` expoem cursores
+retomaveis de diretorio, incluindo cluster nas entradas. `fs.h` tambem expoe a
+geracao monotona do volume de boot. `src/include/fs/file_index.h` define as
+tabelas limitadas, estados, busca, polling, cancelamento, validacao e autoteste
+do indice global em RAM. `src/include/ui/filemanager.h` acrescenta
+`fm_update()` para sincronizar a tela de pesquisa Classic com os eventos do
+indice. Os contratos canonicos ficam em
+`docs/08-sistema-arquivos/sistema-arquivos.md` e
 `docs/12-desktop/desktop.md`.

@@ -3,6 +3,7 @@
 #include "core/keyboard.h"
 #include "fs/fs.h"
 #include "fs/storage.h"
+#include "fs/file_index.h"
 #include "core/memory.h"
 #include "core/timer.h"
 #include "process/process.h"
@@ -89,6 +90,7 @@
 #define SHELL_UPDATE_SCANCODE_ESCAPE 0x01U
 #define SHELL_UPDATE_SCANCODE_F12 0x58U
 #define SHELL_COMMAND_HISTORY_CAPACITY 16U
+#define SHELL_INDEX_ACTION_SIZE 16U
 
 typedef enum {
     SHELL_BUILTIN_APP_NONE,
@@ -148,6 +150,7 @@ typedef struct {
     int network_result;
     int acpi_result;
     int power_result;
+    int index_result;
     int loader_result;
     int cancellation_result;
     int cleanup_result;
@@ -242,6 +245,12 @@ typedef struct {
     app_remote_result_t remote_result;
 } shell_store_workspace_t;
 
+typedef struct {
+    char query[FILE_INDEX_QUERY_SIZE];
+    file_index_result_t results[FILE_INDEX_MAX_RESULTS];
+    file_index_search_status_t status;
+} shell_index_workspace_t;
+
 static char input_buffer[SHELL_BUFFER_SIZE];
 static char shell_command_history[SHELL_COMMAND_HISTORY_CAPACITY]
                                  [SHELL_BUFFER_SIZE];
@@ -304,6 +313,8 @@ static shell_update_workspace_t shell_update_workspace;
 /* Resultados AS2 e argumentos ZAPP excedem 1 KiB combinados. O workspace
    serializado evita repetir a pressao de stack detectada no appcheck AS1. */
 static shell_store_workspace_t shell_store_workspace;
+/* Os 64 resultados do indice excedem a pilha de 4 KiB do Shell. */
+static shell_index_workspace_t shell_index_workspace;
 
 #define SHELL_SCANCODE_EXTENDED 0xE0
 #define SHELL_SCANCODE_LEFT_SHIFT 0x2AU
@@ -906,6 +917,7 @@ static void shell_regcheck_reset(void) {
     shell_regcheck.network_result = ERR_STATE;
     shell_regcheck.acpi_result = ERR_STATE;
     shell_regcheck.power_result = ERR_STATE;
+    shell_regcheck.index_result = ERR_STATE;
     shell_regcheck.loader_result = ERR_STATE;
     shell_regcheck.cancellation_result = ERR_STATE;
     shell_regcheck.cleanup_result = ERR_STATE;
@@ -1671,6 +1683,10 @@ static void shell_regcheck_run_full_checks(void) {
     }
     shell_regcheck.acpi_result = shell_regcheck_validate_acpi();
     shell_regcheck.power_result = shell_regcheck_validate_power();
+    shell_regcheck.index_result = file_index_validate_state();
+    if (shell_regcheck.index_result == OK) {
+        shell_regcheck.index_result = file_index_self_test();
+    }
 }
 
 static int shell_regcheck_validate_packages(void) {
@@ -1779,7 +1795,8 @@ static int shell_regcheck_has_failures(void) {
          shell_regcheck.devices_result != OK ||
          shell_regcheck.network_result != OK ||
          shell_regcheck.acpi_result != OK ||
-         shell_regcheck.power_result != OK)) {
+         shell_regcheck.power_result != OK ||
+         shell_regcheck.index_result != OK)) {
         return 1;
     }
     if (shell_regcheck.loader_started && shell_regcheck.loader_result != OK) {
@@ -1826,6 +1843,8 @@ static void shell_regcheck_finish(void) {
                                          shell_regcheck.acpi_result);
             shell_regcheck_print_failure("power",
                                          shell_regcheck.power_result);
+            shell_regcheck_print_failure("file_index",
+                                         shell_regcheck.index_result);
         }
         if (shell_regcheck.loader_started) {
             shell_regcheck_print_failure("loader_ring3",
@@ -2371,6 +2390,9 @@ static void cmd_help(void) {
     video_print("  stats    - Mostra estatisticas de compressao\n", 0x07);
     video_print("  mouse    - Status e preferencias do mouse PS/2\n", 0x07);
     video_print("  storage  - Lista, inspeciona e monta volumes ATA\n", 0x07);
+    video_print("  index status|rebuild|cancel|check - Controla o indice\n",
+                0x07);
+    video_print("  search <termo> - Pesquisa nomes e caminhos globais\n", 0x07);
     video_print("  health [summary] - Estado completo ou resumo compacto\n",
                 0x07);
     video_print("  devices  - Lista inventario de hardware (-v para detalhes)\n", 0x07);
@@ -9874,6 +9896,205 @@ static void cmd_storage(const char* args) {
                 "Volume desmontado.\n", 0x0A);
 }
 
+static void cmd_index_print_usage(void) {
+    video_print("Uso: index status | index rebuild | index cancel | ", 0x0C);
+    video_print("index check\n", 0x0C);
+}
+
+static int cmd_index_read_action(
+    const char* args, char action[SHELL_INDEX_ACTION_SIZE]) {
+    uint32_t length = 0;
+
+    if (!args || !action) {
+        LOG_ERROR("SHELL", "Argumento nulo no parser do indice");
+        return ERR_NULL;
+    }
+    while (*args == ' ' || *args == '\t') args++;
+    while (*args && *args != ' ' && *args != '\t') {
+        if (length + 1U >= SHELL_INDEX_ACTION_SIZE) {
+            LOG_ERROR("SHELL", "Subcomando do indice excede o limite");
+            return ERR_OVERFLOW;
+        }
+        action[length++] = *args++;
+    }
+    action[length] = '\0';
+    while (*args == ' ' || *args == '\t') args++;
+    if (!length || *args) {
+        LOG_ERROR("SHELL", "Sintaxe invalida no comando index");
+        return ERR_INVALID;
+    }
+    return OK;
+}
+
+static void cmd_index_status(void) {
+    file_index_status_t status;
+
+    if (file_index_get_status(&status) != OK) {
+        video_print("Indice indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("Indice: ", 0x0B);
+    video_print(file_index_state_name(status.state), 0x0B);
+    video_print(" ativos=", 0x07);
+    print_num(status.active_entries);
+    video_print(" candidato=", 0x07);
+    print_num(status.candidate_entries);
+    video_print(" fontes=", 0x07);
+    print_num(status.source_count);
+    video_print(" concluidas=", 0x07);
+    print_num(status.sources_completed);
+    video_print("\nDiretorios=", 0x07);
+    print_num(status.directories_scanned);
+    video_print(" passos=", 0x07);
+    print_num(status.scan_steps);
+    video_print(" memoria=", 0x07);
+    print_num(status.memory_bytes);
+    video_print(" evento=", 0x07);
+    print_num(status.event_generation);
+    video_print(" erro=", 0x07);
+    print_num((uint32_t)status.last_error);
+    video_print("\n", 0x07);
+    if (status.partial) video_print("Aviso: indice parcial.\n", 0x0E);
+    if (status.stale) video_print("Aviso: indice desatualizado.\n", 0x0E);
+    if (status.automatic_suspended) {
+        video_print("Aviso: rebuild automatico suspenso.\n", 0x0E);
+    }
+}
+
+static void cmd_index(const char* args) {
+    char action[SHELL_INDEX_ACTION_SIZE];
+    int result;
+
+    if (cmd_index_read_action(args, action) != OK) {
+        cmd_index_print_usage();
+        return;
+    }
+    if (kstrcmp(action, "status") == 0) {
+        cmd_index_status();
+        return;
+    }
+    if (kstrcmp(action, "rebuild") == 0) result = file_index_rebuild();
+    else if (kstrcmp(action, "cancel") == 0) result = file_index_cancel();
+    else if (kstrcmp(action, "check") == 0) {
+        result = file_index_validate_state();
+        if (result == OK) result = file_index_self_test();
+    } else {
+        cmd_index_print_usage();
+        return;
+    }
+    if (result != OK) {
+        video_print("Operacao do indice falhou; codigo=", 0x0C);
+        print_num((uint32_t)result);
+        video_print("\n", 0x0C);
+        return;
+    }
+    video_print(kstrcmp(action, "check") == 0 ?
+                "Indice e autoteste validos.\n" :
+                (kstrcmp(action, "cancel") == 0 ?
+                 "Rebuild cancelado; indice ativo preservado.\n" :
+                 "Rebuild cooperativo iniciado.\n"), 0x0A);
+}
+
+static int cmd_search_copy_query(const char* args) {
+    uint32_t length;
+
+    if (!args) {
+        LOG_ERROR("SHELL", "Termo nulo no comando search");
+        return ERR_NULL;
+    }
+    while (*args == ' ' || *args == '\t') args++;
+    length = kstrlen(args);
+    while (length && (args[length - 1U] == ' ' ||
+                      args[length - 1U] == '\t')) length--;
+    if (!length) {
+        LOG_ERROR("SHELL", "Termo vazio no comando search");
+        return ERR_INVALID;
+    }
+    if (length >= FILE_INDEX_QUERY_SIZE) {
+        LOG_ERROR("SHELL", "Termo excede o limite do comando search");
+        return ERR_OVERFLOW;
+    }
+    kmemcpy(shell_index_workspace.query, args, length);
+    shell_index_workspace.query[length] = '\0';
+    return OK;
+}
+
+static void cmd_search_print_result(const file_index_result_t* result) {
+    const file_index_entry_t* entry = &result->entry;
+
+    video_print(entry->volume_id, 0x0B);
+    video_print(":/", 0x07);
+    if (entry->parent_path[0]) {
+        video_print(entry->parent_path, 0x07);
+        video_print("/", 0x07);
+    }
+    video_print(entry->name, entry->is_directory ? 0x0B : 0x07);
+    video_print(entry->is_directory ? "  [DIR] " : "  [ARQ] ", 0x08);
+    print_num(entry->size);
+    video_print(" bytes", 0x08);
+    if (result->availability == FILE_INDEX_RESULT_VOLUME_MISSING) {
+        video_print("  [volume ausente ou desmontado]", 0x0C);
+    } else if (result->availability == FILE_INDEX_RESULT_STALE) {
+        video_print("  [resultado obsoleto]", 0x0C);
+    }
+    video_print("\n", 0x07);
+}
+
+static void cmd_search_print_warnings(void) {
+    file_index_search_status_t* status = &shell_index_workspace.status;
+
+    if (status->partial) video_print("Aviso: resultados parciais.\n", 0x0E);
+    if (status->building) video_print("Aviso: indice em construcao.\n", 0x0E);
+    if (status->cancelled) video_print("Aviso: rebuild cancelado.\n", 0x0E);
+    if (status->stale) video_print("Aviso: indice desatualizado.\n", 0x0E);
+    if (status->volume_missing) {
+        video_print("Aviso: um ou mais volumes estao ausentes.\n", 0x0E);
+    }
+    if (status->result_stale) {
+        video_print("Aviso: um ou mais resultados estao obsoletos.\n", 0x0E);
+    }
+    if (status->last_error != OK) {
+        video_print("Aviso: ultimo erro do indice=", 0x0E);
+        print_num((uint32_t)status->last_error);
+        video_print("\n", 0x0E);
+    }
+}
+
+static void cmd_search(const char* args) {
+    int result = cmd_search_copy_query(args);
+
+    if (result != OK) {
+        video_print("Uso: search <termo de ate 63 caracteres>\n", 0x0C);
+        return;
+    }
+    result = file_index_search(shell_index_workspace.query,
+                               shell_index_workspace.results,
+                               FILE_INDEX_MAX_RESULTS,
+                               &shell_index_workspace.status);
+    if (result != OK) {
+        file_index_status_t status;
+
+        video_print("Pesquisa indisponivel; codigo=", 0x0C);
+        print_num((uint32_t)result);
+        video_print("\n", 0x0C);
+        if (file_index_get_status(&status) == OK &&
+            status.state == FILE_INDEX_STATE_CANCELLED) {
+            video_print("Aviso: rebuild cancelado e sem indice ativo.\n", 0x0E);
+        }
+        return;
+    }
+    for (uint32_t index = 0;
+         index < shell_index_workspace.status.returned_matches; index++) {
+        cmd_search_print_result(&shell_index_workspace.results[index]);
+    }
+    video_print("Correspondencias: ", 0x0B);
+    print_num(shell_index_workspace.status.total_matches);
+    video_print(" (exibidas ", 0x07);
+    print_num(shell_index_workspace.status.returned_matches);
+    video_print(")\n", 0x07);
+    cmd_search_print_warnings();
+}
+
 static void cmd_mouse_print_usage(void) {
     video_print("Uso: mouse | mouse speed <1-10> | ", 0x0C);
     video_print("mouse primary <left|right> | ", 0x0C);
@@ -10825,6 +11046,10 @@ int shell_process_command(const char* input) {
         }
     } else if (kstrcmp(cmd, "storage") == 0) {
         cmd_storage(input);
+    } else if (kstrcmp(cmd, "index") == 0) {
+        cmd_index(input);
+    } else if (kstrcmp(cmd, "search") == 0) {
+        cmd_search(input);
     } else if (kstrcmp(cmd, "mouse") == 0) {
         cmd_mouse(input);
     } else {
