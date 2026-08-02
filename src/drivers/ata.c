@@ -23,6 +23,8 @@ static void ata_secondary_irq_handler(registers_t* regs) {
 }
 
 #define ATA_READ_RETRIES 3
+#define ATA_STATUS_DELAY_READS 4
+#define ATA_RESET_DELAY_READS 64
 
 static void outb(uint16_t port, uint8_t val) {
     asm volatile("outb %0, %1" : : "a"(val), "Nd"(port));
@@ -41,7 +43,7 @@ static uint16_t inw(uint16_t port) {
 }
 
 static void ata_delay(uint16_t port) {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < ATA_STATUS_DELAY_READS; i++) {
         inb(port + ATA_REG_STATUS);
     }
 }
@@ -128,11 +130,14 @@ static void ata_select_drive(uint16_t port, uint8_t slave) {
     ata_delay(port);
 }
 
-static void ata_soft_reset(uint16_t ctrl) {
+static void ata_soft_reset(uint16_t io, uint16_t ctrl) {
     outb(ctrl, 0x04);
-    for (int i = 0; i < 4; i++) inb(ctrl);
+    for (int i = 0; i < ATA_STATUS_DELAY_READS; i++) inb(ctrl);
     outb(ctrl, 0x00);
-    for (int i = 0; i < 4; i++) inb(ctrl);
+    /* O reset afeta master e slave. De tempo ao canal para concluir a
+       desassertacao antes de selecionar um dos dispositivos. */
+    for (int i = 0; i < ATA_RESET_DELAY_READS; i++) inb(ctrl);
+    ata_delay(io);
 }
 
 static int ata_prepare_transfer(const ata_device_t* dev, uint32_t lba) {
@@ -172,9 +177,23 @@ static int ata_detect(uint8_t slot, uint16_t io, uint16_t ctrl,
     dev->present = 0;
     dev->last_error = ERR_NOT_FOUND;
 
-    ata_soft_reset(ctrl);
     ata_select_drive(io, slave);
     ata_delay(io);
+
+    for (uint32_t wait = 0; wait < ATA_WAIT_LIMIT; wait++) {
+        uint8_t selected_status = inb(io + ATA_REG_STATUS);
+
+        if (selected_status == 0 || selected_status == 0xFF) {
+            LOG_DEBUG("ATA", "Nenhum dispositivo no canal selecionado");
+            return ERR_NOT_FOUND;
+        }
+        if (!(selected_status & ATA_SR_BSY)) break;
+        if (wait + 1U == ATA_WAIT_LIMIT) {
+            LOG_WARN("ATA", "Timeout aguardando dispositivo apos reset");
+            dev->last_error = ERR_TIMEOUT;
+            return ERR_TIMEOUT;
+        }
+    }
 
     outb(io + ATA_REG_SECCOUNT, 0);
     outb(io + ATA_REG_LBA_LOW, 0);
@@ -255,9 +274,12 @@ int ata_init(void) {
         secondary_available = 0;
     }
 
+    /* Reiniciar uma vez por canal preserva o slave durante a enumeracao. */
+    ata_soft_reset(ATA_PRIMARY_IO, ATA_PRIMARY_CTRL);
     ata_detect(0, ATA_PRIMARY_IO, ATA_PRIMARY_CTRL, 0, 0, &devices[0]);
     ata_detect(1, ATA_PRIMARY_IO, ATA_PRIMARY_CTRL, 0, 1, &devices[1]);
     if (secondary_available) {
+        ata_soft_reset(ATA_SECONDARY_IO, ATA_SECONDARY_CTRL);
         ata_detect(2, ATA_SECONDARY_IO, ATA_SECONDARY_CTRL, 1, 0, &devices[2]);
         ata_detect(3, ATA_SECONDARY_IO, ATA_SECONDARY_CTRL, 1, 1, &devices[3]);
     }
@@ -356,7 +378,7 @@ static int ata_read_from_device(ata_device_t* dev, uint32_t lba,
     for (int attempt = 0; attempt < ATA_READ_RETRIES; attempt++) {
         if (ata_prepare_transfer(dev, lba) != OK) {
             LOG_WARN("ATA", "Disco nao ficou pronto para leitura");
-            ata_soft_reset(dev->ctrl_port);
+            ata_soft_reset(io, dev->ctrl_port);
             continue;
         }
 
@@ -385,7 +407,7 @@ static int ata_read_from_device(ata_device_t* dev, uint32_t lba,
             return OK;
         }
         LOG_WARN("ATA", "Falha durante leitura; tentando novamente");
-        ata_soft_reset(dev->ctrl_port);
+        ata_soft_reset(io, dev->ctrl_port);
     }
 
     LOG_ERROR("ATA", "Leitura ATA falhou apos tentativas");
@@ -460,7 +482,7 @@ int ata_write_sectors(uint32_t lba, uint8_t count, const uint8_t* buffer) {
             outw(io + ATA_REG_DATA, data);
         }
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < ATA_STATUS_DELAY_READS; i++) {
             inb(io + ATA_REG_STATUS);
         }
     }
