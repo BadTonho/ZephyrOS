@@ -100,24 +100,24 @@ fallback Simple.
 
 ## EP2 - Volumes ATA e montagem de particoes
 
-**Estado:** implementada em 01/08/2026 e aguardando validacao do usuario. Os
-itens permanecem desmarcados ate a aprovacao de Q3, build completo, testes do
-gerador, hashes antes/depois e matriz QEMU.
+**Estado:** implementada em 01/08/2026 e validada pelo usuario em 02/08/2026.
+Q3, build completo, gerador deterministico, hashes antes/depois, boot normal e
+matriz QEMU com quatro slots IDE foram aprovados.
 
 ### Implementacao
 
-- [ ] Descobrir MBR somente em leitura e inventariar discos ATA, particoes e
+- [x] Descobrir MBR somente em leitura e inventariar discos ATA, particoes e
   volumes por identificadores estaveis.
-- [ ] Criar uma abstracao de volume acima de ATA sem alterar a API FAT atual
+- [x] Criar uma abstracao de volume acima de ATA sem alterar a API FAT atual
   ate os chamadores passarem explicitamente o volume alvo.
-- [ ] Validar limites do volume e BPB antes de montar FAT12/FAT32 sob demanda.
-- [ ] Limitar memoria, numero de volumes e operacoes concorrentes; toda falha
+- [x] Validar limites do volume e BPB antes de montar FAT12/FAT32 sob demanda.
+- [x] Limitar memoria, numero de volumes e operacoes concorrentes; toda falha
   de leitura, formato ou montagem deve ter log por volume.
-- [ ] Adicionar `storage list`, `storage info <id>`, `storage mount <id>` e
+- [x] Adicionar `storage list`, `storage info <id>`, `storage mount <id>` e
   `storage unmount <id>`; comandos de consulta nao gravam no disco.
-- [ ] Mostrar volumes montados no Explorer e Settings, mantendo o volume de
+- [x] Mostrar volumes montados no Explorer e Settings, mantendo o volume de
   boot como fallback quando nenhum volume adicional for valido.
-- [ ] Documentar uma fase futura, separada, para GPT, formatacao e alteracao
+- [x] Documentar uma fase futura, separada, para GPT, formatacao e alteracao
   da tabela de particoes com staging, journal e recuperacao.
 
 ### Criterio de saida
@@ -126,16 +126,25 @@ Listar e montar um volume ATA valido nao modifica setores. Particoes ausentes,
 corrompidas ou com filesystem desconhecido permanecem isoladas, sem afetar o
 boot, Shell, filesystem atual ou outros volumes montados.
 
-### Validacao pendente
+### Resultados da validacao
 
 1. `make q3check`, `make clean && make`, `make storage-fixtures-test` e
-   `make storage-fixtures`.
-2. `make run-storage` com os quatro slots IDE e aprovacao de descoberta,
-   isolamento, mount/unmount, Explorer Classic e Settings Storage.
-3. `make storage-fixtures-verify` com hashes identicos e contador de escrita
-   zero nos discos auxiliares.
-4. `make run`, regressao do volume de boot e smoke test Simple, seguidos de
-   `devices`, `health summary`, `memcheck` e `regcheck full`.
+   `make storage-fixtures` foram aprovados.
+2. `run-storage` detectou `ata0`-`ata3`, dez volumes e nenhum MBR fantasma
+   no boot. FAT12/FAT32 montaram e navegaram; BPB/MBR corrompidos e tipo
+   desconhecido permaneceram isolados.
+3. Mount repetido, unmount repetido/do boot, IDs e argumentos invalidos e o
+   limite de quatro montagens foram recusados sem alterar o estado.
+4. Explorer Classic navegou e visualizou as fixtures, bloqueou mutacoes
+   somente-leitura e retornou a “Este Computador” ao detectar unmount por
+   geracao. Settings sincronizou discos e montagens.
+5. Os discos auxiliares terminaram com zero escritas. Os SHA-256 permaneceram
+   `4727e93495809cfae2d746332454f1c23e0faeb37924c9fd16e00fc45c6e4078`,
+   `4f0f4f98f9a5988dedaec577de2808648948bb1f9c12bf6394bf7da1be45d469` e
+   `068d2e5b814af6efba8c4daf88857a915311ea099bebc277c8dec171fdc09abf`.
+6. `make run` preservou o boot com um disco/volume/montagem; o fallback
+   Simple, `devices`, `health summary`, `memcheck` e `regcheck full`
+   passaram. MemCheck e RegCheck terminaram em `OK`.
 
 ## EP3 - Indice e pesquisa de arquivos
 
