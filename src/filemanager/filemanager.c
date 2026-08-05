@@ -286,6 +286,25 @@ static int fm_rename_selected_file(void) {
     return result;
 }
 
+static int fm_delete_selected_file(void) {
+    int result;
+
+    if (state.selected < 0 || state.selected >= state.file_count ||
+        state.files[state.selected].is_dir) {
+        LOG_ERROR("FM", "Selecao invalida para excluir arquivo");
+        return ERR_INVALID;
+    }
+    result = fs_atomic_delete_file_in_dir(
+        state.current_path, state.files[state.selected].name);
+    if (result != OK) {
+        LOG_ERROR("FM", "Exclusao do arquivo nao foi concluida");
+        return result;
+    }
+    if (state.selected > 0) state.selected--;
+    fm_refresh_files();
+    return OK;
+}
+
 static int fm_boot_directory_exists(const char* name) {
     int count = fs_get_file_count_at("");
     char entry_name[FM_NAME_LEN];
@@ -2728,11 +2747,7 @@ void fm_handle_key(uint8_t scancode) {
             if (confirm_delete) {
                 // S ou s = confirmar exclusao
                 if (input_buffer[0] == 'S' || input_buffer[0] == 's') {
-                    if (state.selected >= 0 && state.selected < state.file_count) {
-                        fs_delete_file_in_dir(state.current_path, state.files[state.selected].name);
-                        if (state.selected > 0) state.selected--;
-                        fm_refresh_files();
-                    }
+                    fm_delete_selected_file();
                 }
                 confirm_delete = 0;
                 input_mode = 0;
