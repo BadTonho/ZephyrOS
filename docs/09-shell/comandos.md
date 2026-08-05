@@ -1127,7 +1127,8 @@ Navegação com setas, F3 visualizar, F7 criar, F8 excluir com confirmação, F2
 
 Controla e inspeciona o indice global em RAM. `status` mostra progresso,
 fontes, entradas, memoria, flags e ultimo erro. `rebuild` constroi uma tabela
-candidata enquanto preserva a ativa. `cancel` interrompe apenas a candidata e
+candidata enquanto preserva a ativa. `cancel` descarta a candidata, quando ela
+ainda existe, e preserva a tabela ativa; se o rebuild ja terminou, ainda
 suspende a repeticao para a mesma geracao. `check` valida canarios, checksum,
 estrutura e o autoteste compacto sem alterar o filesystem.
 
