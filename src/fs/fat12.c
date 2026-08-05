@@ -1809,6 +1809,88 @@ static int fat12_read_dir_cluster_buffer(uint16_t cluster, uint8_t* buffer) {
     return OK;
 }
 
+int fat12_rename_file_in_dir(uint16_t dir_cluster, const char* old_name,
+                             const char* new_name) {
+    char old_encoded[11];
+    char new_encoded[11];
+    uint32_t old_index;
+    uint32_t new_index;
+    int result;
+
+    if (!fs.initialized) {
+        LOG_ERROR("FAT12", "Renomeacao solicitada antes da inicializacao");
+        return ERR_STATE;
+    }
+    result = fat12_encode_root_name(old_name, old_encoded);
+    if (result != OK) return result;
+    result = fat12_encode_root_name(new_name, new_encoded);
+    if (result != OK) return result;
+    if (strncmp(old_encoded, new_encoded, 11U) == 0) return OK;
+
+    if (dir_cluster == 0U) {
+        fat12_dir_entry_t previous;
+
+        if (fat12_find_root_index(new_encoded, &new_index) == OK) {
+            LOG_ERROR("FAT12", "Nome de destino ja existe na raiz");
+            return ERR_STATE;
+        }
+        result = fat12_find_root_index(old_encoded, &old_index);
+        if (result != OK) {
+            LOG_ERROR("FAT12", "Arquivo de origem nao existe na raiz");
+            return ERR_NOT_FOUND;
+        }
+        previous = fs.root_dir[old_index];
+        kmemcpy(fs.root_dir[old_index].name, new_encoded, 11U);
+        result = fat12_flush_root_sector(old_index);
+        if (result != OK) fs.root_dir[old_index] = previous;
+        return result;
+    }
+
+    {
+        uint16_t old_cluster;
+        uint16_t conflict_cluster;
+        uint32_t old_offset;
+        uint32_t conflict_offset;
+        uint32_t cluster_size = fs.bpb.sectors_per_cluster *
+                                fs.bpb.bytes_per_sector;
+        uint8_t* directory;
+        int existing;
+
+        result = fat12_find_dir_slot(dir_cluster, new_encoded, 1,
+                                     &conflict_cluster, &conflict_offset,
+                                     &existing);
+        if (result == OK) {
+            LOG_ERROR("FAT12", "Nome de destino ja existe no diretorio");
+            return ERR_STATE;
+        }
+        if (result != ERR_NOT_FOUND) {
+            LOG_ERROR("FAT12", "Falha ao verificar destino da renomeacao");
+            return result;
+        }
+        result = fat12_find_dir_slot(dir_cluster, old_encoded, 1,
+                                     &old_cluster, &old_offset, &existing);
+        if (result != OK) {
+            LOG_ERROR("FAT12", "Arquivo de origem nao existe no diretorio");
+            return result;
+        }
+        directory = (uint8_t*)kmalloc(cluster_size);
+        if (!directory) {
+            LOG_ERROR("FAT12", "Memoria insuficiente para renomear arquivo");
+            return ERR_MEM;
+        }
+        result = fat12_read_dir_cluster_buffer(old_cluster, directory);
+        if (result == OK) {
+            fat12_dir_entry_t* entry =
+                (fat12_dir_entry_t*)(directory + old_offset);
+            kmemcpy(entry->name, new_encoded, 11U);
+            result = fat12_write_dir_cluster(old_cluster, directory);
+        }
+        kfree(directory);
+        directory = 0;
+        return result;
+    }
+}
+
 int fat12_atomic_write_file_in_dir(uint16_t dir_cluster, const char* filename,
                                     const uint8_t* data, uint32_t size,
                                     uint8_t attributes, int require_existing) {

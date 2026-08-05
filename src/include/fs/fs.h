@@ -91,6 +91,8 @@ int      fs_get_file_info_at(const char* dir_path, int index, char* name_out, ui
 int      fs_create_dir_entry(const char* dir_path, const char* name, uint8_t attributes);
 int      fs_write_file_in_dir(const char* dir_path, const char* filename, const uint8_t* data, uint32_t size);
 int      fs_delete_file_in_dir(const char* dir_path, const char* filename);
+int      fs_rename_file_in_dir(const char* dir_path, const char* old_name,
+                               const char* new_name);
 int      fs_get_root_file_info(const char* filename, uint32_t* size_out,
                                uint8_t* attributes_out);
 int      fs_atomic_write_root(const char* filename, const uint8_t* data,

@@ -437,7 +437,14 @@ int  fs_get_file_count(void);
 int  fs_get_file_info(index, name, size, attr);
 int  fs_get_info(fs_info_t* info);   // Obtém info do FS ativo
 uint8_t fs_get_type(void);           // FS_TYPE_FAT12 ou FS_TYPE_FAT32
+int  fs_rename_file_in_dir(dir_path, old_name, new_name);
 ```
+
+`fs_rename_file_in_dir()` renomeia arquivos FAT12 8.3 na propria entrada de
+diretorio, preservando atributos, tamanho e cadeia de clusters. A operacao
+recusa destino existente, incrementa a geracao do filesystem somente apos a
+persistencia e retorna `ERR_UNAVAILABLE` para FAT32. O Explorer usa essa rota
+em vez de simular renomeacao por exclusao e nova escrita.
 
 ### Operacoes atomicas FAT12 para U3 e AS4
 

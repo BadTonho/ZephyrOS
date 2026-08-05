@@ -259,10 +259,6 @@ static int fm_rename_target_conflicts(const char* target) {
 }
 
 static int fm_rename_selected_file(void) {
-    uint8_t empty[1] = {0};
-    uint8_t* content = empty;
-    uint32_t size;
-    char file_path[FM_MAX_PATH];
     char source_name[FM_NAME_LEN];
     char target_name[FM_NAME_LEN];
     int result;
@@ -284,44 +280,10 @@ static int fm_rename_selected_file(void) {
         LOG_ERROR("FM", "Ja existe um item com o nome de destino");
         return ERR_STATE;
     }
-
-    size = state.files[state.selected].size;
-    if (size > 0) {
-        content = (uint8_t*)kmalloc(size);
-        if (!content) {
-            LOG_ERROR("FM", "Memoria insuficiente para renomear arquivo");
-            return ERR_MEM;
-        }
-        result = fm_join_path(file_path, state.current_path, old_name);
-        if (result != OK ||
-            fs_read_file_at(file_path, content, size) != (int)size) {
-            LOG_ERROR("FM", "Falha ao ler arquivo antes da renomeacao");
-            kfree(content);
-            content = 0;
-            return ERR_DISK;
-        }
-    }
-
-    result = fs_delete_file_in_dir(state.current_path, old_name);
-    if (result < 0) {
-        LOG_ERROR("FM", "Falha ao remover nome antigo na renomeacao");
-    } else {
-        result = fs_write_file_in_dir(
-            state.current_path, target_name, content, size);
-        if (result < 0) {
-            LOG_ERROR("FM", "Falha ao gravar novo nome; restaurando arquivo");
-            if (fs_write_file_in_dir(
-                    state.current_path, source_name, content, size) < 0) {
-                LOG_ERROR("FM", "Falha ao restaurar arquivo apos renomeacao");
-            }
-        }
-    }
-
-    if (size > 0) {
-        kfree(content);
-        content = 0;
-    }
-    return result < 0 ? ERR_DISK : OK;
+    result = fs_rename_file_in_dir(
+        state.current_path, source_name, target_name);
+    if (result != OK) LOG_ERROR("FM", "Renomeacao do arquivo nao foi concluida");
+    return result;
 }
 
 static int fm_boot_directory_exists(const char* name) {

@@ -225,7 +225,9 @@ ficam em `docs/05-drivers/drivers.md`,
 
 Desde a EP3, `src/include/fs/fs.h` e `src/include/fs/storage.h` expoem cursores
 retomaveis de diretorio, incluindo cluster nas entradas. `fs.h` tambem expoe a
-geracao monotona do volume de boot. `src/include/fs/file_index.h` define as
+geracao monotona do volume de boot e renomeacao FAT12 8.3 na propria entrada
+de diretorio; `src/include/fs/fat12.h` publica a primitiva correspondente.
+`src/include/fs/file_index.h` define as
 tabelas limitadas, estados, busca, polling, cancelamento, validacao e autoteste
 do indice global em RAM. `src/include/ui/filemanager.h` acrescenta
 `fm_update()` para sincronizar a tela de pesquisa Classic com os eventos do
