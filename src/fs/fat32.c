@@ -306,7 +306,8 @@ int fat32_write_file(const char* filename, const uint8_t* data, uint32_t size) {
 
         for (uint32_t i = 0; i < 512 / 32; i++) {
             fat32_dir_entry_t* e = (fat32_dir_entry_t*)(cluster_buf + i * 32);
-            if (e->name[0] == 0x00 || e->name[0] == 0xE5) {
+            if (e->name[0] == 0x00 ||
+                (uint8_t)e->name[0] == 0xE5U) {
                 kmemset(e, 0, sizeof(fat32_dir_entry_t));
                 kmemcpy(e->name, filename, 11);
                 e->attributes = 0x20;
