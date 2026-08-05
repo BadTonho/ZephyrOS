@@ -65,6 +65,9 @@
 #define FM_SEARCH_SCANCODE_END 0x4FU
 #define FM_SEARCH_SCANCODE_DOWN 0x50U
 #define FM_SEARCH_SCANCODE_PAGE_DOWN 0x51U
+#define FM_DIRECTORY_ATTRIBUTE 0x10U
+#define FM_FAT_BASE_LENGTH 8U
+#define FM_FAT_EXTENSION_LENGTH 3U
 
 static fm_state_t state;
 static char input_buffer[32];
@@ -215,6 +218,59 @@ static int str_equal(const char* a, const char* b) {
         a++; b++;
     }
     return *a == *b;
+}
+
+static char fm_upper_ascii(char value) {
+    if (value >= 'a' && value <= 'z') return (char)(value - ('a' - 'A'));
+    return value;
+}
+
+static void fm_fat_display_name(const char* name, char* output) {
+    uint32_t input = 0;
+    uint32_t length = 0;
+    uint32_t base = 0;
+    uint32_t extension = 0;
+
+    while (name[input] && name[input] != '.' &&
+           base < FM_FAT_BASE_LENGTH) {
+        output[length++] = fm_upper_ascii(name[input++]);
+        base++;
+    }
+    if (name[input] == '.') {
+        input++;
+        output[length++] = '.';
+        while (name[input] && extension < FM_FAT_EXTENSION_LENGTH) {
+            output[length++] = fm_upper_ascii(name[input++]);
+            extension++;
+        }
+    }
+    output[length] = '\0';
+}
+
+static int fm_boot_directory_exists(const char* name) {
+    int count = fs_get_file_count_at("");
+    char entry_name[FM_NAME_LEN];
+    char canonical_name[FM_NAME_LEN];
+
+    fm_fat_display_name(name, canonical_name);
+
+    for (int index = 0; index < count; index++) {
+        uint8_t attributes = 0;
+
+        if (fs_get_file_info_at("", index, entry_name, 0, &attributes) == OK &&
+            (attributes & FM_DIRECTORY_ATTRIBUTE) &&
+            str_equal(entry_name, canonical_name)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+static void fm_ensure_boot_directory(const char* name) {
+    if (fm_boot_directory_exists(name)) return;
+    if (fs_create_dir_entry("", name, FM_DIRECTORY_ATTRIBUTE) != OK) {
+        LOG_ERROR("FM", "Falha ao criar diretorio padrao do Explorer");
+    }
 }
 
 static void fm_store_history_source(int index) {
@@ -2270,13 +2326,13 @@ void fm_init(void) {
     state.view_mode = 0;
     state.running = 1;
 
-    fs_create_dir_entry("", ".trash", 0x10);
-    fs_create_dir_entry("", "Desktop", 0x10);
-    fs_create_dir_entry("", "Documentos", 0x10);
-    fs_create_dir_entry("", "Downloads", 0x10);
-    fs_create_dir_entry("", "Imagens", 0x10);
-    fs_create_dir_entry("", "Musica", 0x10);
-    fs_create_dir_entry("", "Videos", 0x10);
+    fm_ensure_boot_directory(".TRASH");
+    fm_ensure_boot_directory("DESKTOP");
+    fm_ensure_boot_directory("DOCUMENTOS");
+    fm_ensure_boot_directory("DOWNLOADS");
+    fm_ensure_boot_directory("IMAGENS");
+    fm_ensure_boot_directory("MUSICA");
+    fm_ensure_boot_directory("VIDEOS");
 
     fm_select_boot_source("");
     state.history_count = 0;
