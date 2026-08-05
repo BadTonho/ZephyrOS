@@ -247,6 +247,83 @@ static void fm_fat_display_name(const char* name, char* output) {
     output[length] = '\0';
 }
 
+static int fm_rename_target_conflicts(const char* target) {
+    char current[FM_NAME_LEN];
+
+    for (int index = 0; index < state.file_count; index++) {
+        if (index == state.selected) continue;
+        fm_fat_display_name(state.files[index].name, current);
+        if (str_equal(current, target)) return 1;
+    }
+    return 0;
+}
+
+static int fm_rename_selected_file(void) {
+    uint8_t empty[1] = {0};
+    uint8_t* content = empty;
+    uint32_t size;
+    char file_path[FM_MAX_PATH];
+    char source_name[FM_NAME_LEN];
+    char target_name[FM_NAME_LEN];
+    int result;
+
+    if (state.selected < 0 || state.selected >= state.file_count ||
+        state.files[state.selected].is_dir || input_pos <= 0) {
+        LOG_ERROR("FM", "Selecao invalida para renomear arquivo");
+        return ERR_INVALID;
+    }
+
+    fm_fat_display_name(old_name, source_name);
+    fm_fat_display_name(input_buffer, target_name);
+    if (!target_name[0]) {
+        LOG_ERROR("FM", "Nome de destino vazio na renomeacao");
+        return ERR_INVALID;
+    }
+    if (str_equal(source_name, target_name)) return OK;
+    if (fm_rename_target_conflicts(target_name)) {
+        LOG_ERROR("FM", "Ja existe um item com o nome de destino");
+        return ERR_STATE;
+    }
+
+    size = state.files[state.selected].size;
+    if (size > 0) {
+        content = (uint8_t*)kmalloc(size);
+        if (!content) {
+            LOG_ERROR("FM", "Memoria insuficiente para renomear arquivo");
+            return ERR_MEM;
+        }
+        result = fm_join_path(file_path, state.current_path, old_name);
+        if (result != OK ||
+            fs_read_file_at(file_path, content, size) != (int)size) {
+            LOG_ERROR("FM", "Falha ao ler arquivo antes da renomeacao");
+            kfree(content);
+            content = 0;
+            return ERR_DISK;
+        }
+    }
+
+    result = fs_delete_file_in_dir(state.current_path, old_name);
+    if (result < 0) {
+        LOG_ERROR("FM", "Falha ao remover nome antigo na renomeacao");
+    } else {
+        result = fs_write_file_in_dir(
+            state.current_path, target_name, content, size);
+        if (result < 0) {
+            LOG_ERROR("FM", "Falha ao gravar novo nome; restaurando arquivo");
+            if (fs_write_file_in_dir(
+                    state.current_path, source_name, content, size) < 0) {
+                LOG_ERROR("FM", "Falha ao restaurar arquivo apos renomeacao");
+            }
+        }
+    }
+
+    if (size > 0) {
+        kfree(content);
+        content = 0;
+    }
+    return result < 0 ? ERR_DISK : OK;
+}
+
 static int fm_boot_directory_exists(const char* name) {
     int count = fs_get_file_count_at("");
     char entry_name[FM_NAME_LEN];
@@ -2702,38 +2779,8 @@ void fm_handle_key(uint8_t scancode) {
             }
 
             if (rename_mode) {
-                if (input_pos > 0 && state.selected >= 0 && state.selected < state.file_count) {
-                    uint8_t* content = 0;
-                    uint32_t size = 0;
-
-                    if (!state.files[state.selected].is_dir && state.files[state.selected].size > 0) {
-                        content = (uint8_t*)kmalloc(state.files[state.selected].size);
-                        if (content) {
-                            char file_path[FM_MAX_PATH];
-                            if (fm_join_path(file_path, state.current_path, old_name) == OK) {
-                                int bytes = fs_read_file_at(file_path, content, state.files[state.selected].size);
-                                if (bytes > 0) size = (uint32_t)bytes;
-                            }
-                            if (size == 0) {
-                                kfree(content);
-                                content = 0;
-                            }
-                        }
-                    }
-
-                    fs_delete_file_in_dir(state.current_path, old_name);
-
-                    if (content && size > 0) {
-                        fs_write_file_in_dir(state.current_path, input_buffer, content, size);
-                        kfree(content);
-                        content = 0;
-                    } else {
-                        uint8_t empty[1] = {0};
-                        fs_write_file_in_dir(state.current_path, input_buffer, empty, 0);
-                    }
-
-                    fm_refresh_files();
-                }
+                fm_rename_selected_file();
+                fm_refresh_files();
                 rename_mode = 0;
                 input_mode = 0;
                 fm_draw_all();
@@ -2973,7 +3020,8 @@ void fm_handle_key(uint8_t scancode) {
     }
 
     if (scancode == 0x3C) { // F2 = Renomear
-        if (state.selected >= 0 && state.selected < state.file_count) {
+        if (state.selected >= 0 && state.selected < state.file_count &&
+            !state.files[state.selected].is_dir) {
             input_mode = 1;
             rename_mode = 1;
             create_dir_mode = 0;
@@ -2998,6 +3046,8 @@ void fm_handle_key(uint8_t scancode) {
                 fm_draw_rename_file();
                 video_print_at(27, 11, state.files[state.selected].name, 0x17);
             }
+        } else {
+            LOG_WARN("FM", "Renomeacao de pasta nao e suportada");
         }
         return;
     }
