@@ -812,6 +812,35 @@ int fs_delete_file_in_dir(const char* dir_path, const char* filename) {
     return result;
 }
 
+int fs_rename_file_in_dir(const char* dir_path, const char* old_name,
+                          const char* new_name) {
+    uint32_t cluster;
+    int result;
+
+    if (!dir_path || !old_name || !new_name) {
+        LOG_ERROR("FS", "Argumento nulo na renomeacao");
+        return ERR_NULL;
+    }
+    spinlock_acquire(&fs_operation_lock);
+    if (fs_stream_blocks_mutation_unlocked()) {
+        result = ERR_STATE;
+    } else {
+        cluster = fs_resolve_dir_cluster(dir_path);
+        if (cluster == FS_INVALID_CLUSTER) {
+            result = ERR_NOT_FOUND;
+        } else if (current_fs_type == FS_TYPE_FAT12) {
+            result = fat12_rename_file_in_dir(
+                (uint16_t)cluster, old_name, new_name);
+        } else {
+            result = ERR_UNAVAILABLE;
+        }
+    }
+    if (result == OK) fs_advance_generation_unlocked();
+    spinlock_release(&fs_operation_lock);
+    if (result != OK) LOG_ERROR("FS", "Renomeacao de arquivo falhou");
+    return result;
+}
+
 int fs_get_root_file_info(const char* filename, uint32_t* size_out,
                           uint8_t* attributes_out) {
     int result;
