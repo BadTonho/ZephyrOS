@@ -7,6 +7,7 @@
 #include "fs/storage.h"
 #include "fs/file_index.h"
 #include "core/memory.h"
+#include "core/string.h"
 #include "ui/taskbar.h"
 #include "ui/desktop.h"
 #include "ui/wm.h"
@@ -88,7 +89,7 @@ static file_index_status_t fm_search_index_status;
 static char fm_search_query[FILE_INDEX_QUERY_SIZE];
 static int fm_search_active = 0;
 static int fm_search_input = 0;
-static int fm_search_pos = 0;
+static uint32_t fm_search_pos = 0;
 static int fm_search_selected = 0;
 static int fm_search_scroll = 0;
 static int fm_search_last_clicked = -1;
@@ -518,14 +519,6 @@ static void fm_navigate_to(const char* path) {
     state.selected = 0;
     state.scroll_offset = 0;
     fm_record_history();
-    fm_refresh_files();
-    fm_draw_all();
-}
-
-static void fm_navigate_to_no_history(const char* path) {
-    str_copy(state.current_path, path);
-    state.selected = 0;
-    state.scroll_offset = 0;
     fm_refresh_files();
     fm_draw_all();
 }
