@@ -85,4 +85,4 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [05 - Sistema e Ecossistema](roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e apps |
 | [06 - App Store](roadmaps/06-app-store.md) | Catalogo local ZPKG, ciclo de vida e repositorio remoto autenticado |
 | [07 - Modernização Visual](roadmaps/07-modernizacao-visual.md) | Escala acessível, visual flat/dark e desempenho VESA mensurável |
-| [08 - Evolução da Plataforma](roadmaps/08-evolucao-da-plataforma.md) | EP1-EP2 validadas; EP3 implementada, aguardando validacao; USB e conectividade futuras |
+| [08 - Evolução da Plataforma](roadmaps/08-evolucao-da-plataforma.md) | EP1-EP3 validadas; USB e conectividade futuras |

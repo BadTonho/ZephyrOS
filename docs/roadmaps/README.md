@@ -86,9 +86,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   fallback por teclado e foi corrigida protegendo a inicializacao contra a IRQ
   do teclado; MemCheck e RegCheck terminaram em `OK`.
   A EP2 tambem esta validada com quatro slots ATA, FAT12/FAT32 somente-leitura,
-  fixtures e hashes intactos. A EP3 esta implementada com indice cooperativo
-  em RAM, Shell e pesquisa no Explorer Classic, mas aguarda Q3, build, fixtures,
-  hashes e matriz QEMU executados pelo usuario.
+  fixtures e hashes intactos. A EP3 foi validada em QEMU com indice cooperativo
+  em RAM, Shell, pesquisa no Explorer Classic, mutacoes com rebuild automatico,
+  mount/unmount, cancelamento, fallback Simple, MemCheck e RegCheck em `OK`.
 
 ## K4 validada
 
