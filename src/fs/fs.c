@@ -970,6 +970,8 @@ int fs_atomic_delete_file_in_dir(const char* dir_path, const char* filename) {
         result = ERR_STATE;
     } else if (cluster == 0xFFFFFFFFU) {
         result = ERR_NOT_FOUND;
+    } else if (current_fs_type == FS_TYPE_FAT12 && cluster == 0U) {
+        result = fat12_atomic_delete_root(filename);
     } else if (current_fs_type == FS_TYPE_FAT12) {
         result = fat12_atomic_delete_file_in_dir((uint16_t)cluster, filename);
     } else {
