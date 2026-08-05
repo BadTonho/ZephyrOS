@@ -1166,6 +1166,10 @@ Editor de texto com syntax highlighting e word wrap.
 zephyr> edit TESTE.TXT
 ```
 
+O nome informado deve existir. Para criar um arquivo vazio, use `F7` no
+Explorer e depois abra-o com `edit`; sem argumento, o Editor prepara
+`UNNAMED.TXT`.
+
 Funcionalidades:
 - Syntax highlight: C, Python, Assembly, Markdown
 - Word wrap automático
@@ -1178,8 +1182,8 @@ Teclas:
 | Tecla | Ação |
 |-------|------|
 | Setas | Navegação |
-| Ctrl+S | Salvar |
-| Ctrl+Q | Sair |
+| F2 | Salvar |
+| Esc | Sair |
 | Home/End | Início/fim da linha |
 | Page Up/Down | Rola página |
 
