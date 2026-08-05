@@ -180,10 +180,11 @@ int file_index_self_test(void);
 As tabelas ativa e candidata sao alocadas no heap. Falha de memoria preserva
 a ativa e suspende repeticoes para a mesma assinatura de fontes; um novo
 evento ou `index rebuild` tenta novamente. Cancelamento tambem preserva a
-tabela ativa e suspende o rebuild automatico ate evento novo. Limite cheio
-publica resultado parcial. Canarios, checksum incremental e validacao
-estrutural detectam corrupcao e agendam reconstrucao sem degradar filesystem,
-Explorer ou Recovery.
+tabela ativa e suspende o rebuild automatico ate evento novo, inclusive se a
+tabela candidata terminar antes de o comando `index cancel` ser processado.
+Limite cheio publica resultado parcial. Canarios, checksum incremental e
+validacao estrutural detectam corrupcao e agendam reconstrucao sem degradar
+filesystem, Explorer ou Recovery.
 
 A busca e case-insensitive e procura substring no nome ou no caminho completo
 normalizado `<volume-id>:/pasta/nome`. Cada resultado conserva ID e geracao de

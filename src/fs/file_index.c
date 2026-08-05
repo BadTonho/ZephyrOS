@@ -753,9 +753,10 @@ int file_index_cancel(void) {
     result = file_index_capture_sources(sources, &source_count);
     if (result != OK) return result;
     spinlock_acquire(&file_index_lock);
-    if (file_index_state != FILE_INDEX_STATE_BUILDING) {
+    if (file_index_state != FILE_INDEX_STATE_BUILDING &&
+        !file_index_active) {
         spinlock_release(&file_index_lock);
-        LOG_WARN("FS", "Nao ha rebuild ativo para cancelar");
+        LOG_WARN("FS", "Nao ha indice ativo ou rebuild para cancelar");
         return ERR_STATE;
     }
     file_index_release_candidate();
@@ -767,7 +768,7 @@ int file_index_cancel(void) {
     file_index_last_error = OK;
     file_index_advance_event();
     spinlock_release(&file_index_lock);
-    LOG_INFO("FS", "Reconstrucao do indice cancelada");
+    LOG_INFO("FS", "Indexacao automatica cancelada");
     return OK;
 }
 
@@ -904,7 +905,8 @@ static int file_index_contains(const char* text, const char* query) {
         uint32_t offset = 0;
 
         while (query[offset] && text[start + offset] &&
-               file_index_lower(text[start + offset]) == query[offset]) {
+               file_index_lower(text[start + offset]) ==
+               file_index_lower(query[offset])) {
             offset++;
         }
         if (!query[offset]) return 1;
@@ -1089,8 +1091,10 @@ int file_index_self_test(void) {
     file_index_copy_text(entry.name, STORAGE_NAME_SIZE, "README.TXT");
     if (file_index_normalize_query("read", normalized) != OK ||
         !file_index_entry_matches(&entry, normalized) ||
+        !file_index_entry_matches(&entry, "README") ||
         file_index_normalize_query("docs/gui", normalized) != OK ||
-        !file_index_entry_matches(&entry, normalized)) {
+        !file_index_entry_matches(&entry, normalized) ||
+        !file_index_entry_matches(&entry, "DoCs\\GuI")) {
         LOG_ERROR("FS", "Autoteste de matching do indice falhou");
         return ERR_STATE;
     }
