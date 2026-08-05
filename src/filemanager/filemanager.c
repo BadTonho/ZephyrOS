@@ -2972,7 +2972,8 @@ void fm_handle_key(uint8_t scancode) {
         if (state.clipboard_op > 0 && state.clipboard_size > 0) {
             uint8_t* buf = kmalloc(state.clipboard_size + 1);
             if (buf) {
-                if (fs_read_file_at(state.clipboard_dir, buf, state.clipboard_size) >= 0) {
+                if (fs_read_file_at(state.clipboard_path, buf,
+                                    state.clipboard_size) >= 0) {
                     fs_write_file_in_dir(state.current_path, state.clipboard_name, buf, state.clipboard_size);
                     if (state.clipboard_op == 2) {
                         fs_delete_file_in_dir(state.clipboard_dir, state.clipboard_name);
