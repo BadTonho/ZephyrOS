@@ -91,6 +91,7 @@
 #define SHELL_UPDATE_SCANCODE_F12 0x58U
 #define SHELL_COMMAND_HISTORY_CAPACITY 16U
 #define SHELL_INDEX_ACTION_SIZE 16U
+#define SHELL_FS_DIRECTORY_ATTRIBUTE 0x10U
 
 typedef enum {
     SHELL_BUILTIN_APP_NONE,
@@ -10318,6 +10319,41 @@ static void cmd_echo_native(const char* text) {
     video_print("\n", 0x07);
 }
 
+static void cmd_edit(const char* input) {
+    if (!recovery_is_enabled(RECOVERY_COMPONENT_EDITOR)) {
+        video_print("Erro: Editor indisponivel.\n", 0x0C);
+        return;
+    }
+    if (input && *input) {
+        char name[13];
+        uint32_t size = 0;
+        uint8_t attributes = 0;
+        int index = 0;
+
+        while (input[index] && index < 12) {
+            name[index] = input[index];
+            index++;
+        }
+        name[index] = '\0';
+        str_upper(name);
+        if (fs_get_type() == FS_TYPE_FAT12 &&
+            (fs_get_root_file_info(name, &size, &attributes) != OK ||
+             (attributes & SHELL_FS_DIRECTORY_ATTRIBUTE))) {
+            LOG_WARN("SHELL", "Arquivo solicitado ao Editor nao existe");
+            video_print("Erro: arquivo nao encontrado; crie-o com F7 no Explorer.\n",
+                        0x0C);
+            return;
+        }
+        if (wm_is_active()) wm_set_active(0);
+        shell_suspend_terminal();
+        editor_run_file(name);
+        return;
+    }
+    if (wm_is_active()) wm_set_active(0);
+    shell_suspend_terminal();
+    editor_run();
+}
+
 static void cmd_echo(const char* text) {
     app_launch_info_t launch;
     uint32_t pid = 0;
@@ -11028,22 +11064,7 @@ int shell_process_command(const char* input) {
     } else if (kstrcmp(cmd, "stats") == 0) {
         compress_print_stats();
     } else if (kstrcmp(cmd, "edit") == 0) {
-        if (!recovery_is_enabled(RECOVERY_COMPONENT_EDITOR)) {
-            video_print("Erro: Editor indisponivel.\n", 0x0C);
-        } else if (*input) {
-            char name[13];
-            int n = 0;
-            while (input[n] && n < 12) { name[n] = input[n]; n++; }
-            name[n] = '\0';
-            str_upper(name);
-            if (wm_is_active()) wm_set_active(0);
-            shell_suspend_terminal();
-            editor_run_file(name);
-        } else {
-            if (wm_is_active()) wm_set_active(0);
-            shell_suspend_terminal();
-            editor_run();
-        }
+        cmd_edit(input);
     } else if (kstrcmp(cmd, "storage") == 0) {
         cmd_storage(input);
     } else if (kstrcmp(cmd, "index") == 0) {

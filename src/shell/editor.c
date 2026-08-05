@@ -970,6 +970,7 @@ void editor_run(void) {
     editor_new();
     if (editor.line_count == 0) {
         video_print("Erro: sem memoria para abrir o editor.\n", 0x0C);
+        editor_close();
         return;
     }
     editor.running = 1;
@@ -996,6 +997,7 @@ void editor_run_file(const char* filename) {
     editor_init();
     if (editor_open(filename) != OK) {
         video_print("Erro: nao foi possivel abrir o arquivo.\n", 0x0C);
+        editor_close();
         return;
     }
     editor.running = 1;
