@@ -151,7 +151,8 @@ int fat12_init(void) {
 
     int has_free = 0;
     for (uint32_t i = 0; i < fs.bpb.root_entries; i++) {
-        if (fs.root_dir[i].name[0] == 0x00 || fs.root_dir[i].name[0] == 0xE5) {
+        if (fs.root_dir[i].name[0] == 0x00 ||
+            (uint8_t)fs.root_dir[i].name[0] == 0xE5U) {
             has_free = 1;
             break;
         }
@@ -418,7 +419,7 @@ static fat12_dir_entry_t* fat12_find_entry(const char* filename) {
 
     for (uint32_t idx = 0; idx < fs.bpb.root_entries; idx++) {
         if (fs.root_dir[idx].name[0] == 0x00) break;
-        if (fs.root_dir[idx].name[0] == 0xE5) continue;
+        if ((uint8_t)fs.root_dir[idx].name[0] == 0xE5U) continue;
         if (fs.root_dir[idx].attributes & 0x08) continue;
 
         if (strncmp(fs.root_dir[idx].name, fat12_name, 11) == 0) {
@@ -483,7 +484,8 @@ int fat12_write_file(const char* filename, const uint8_t* data, uint32_t size) {
 
     if (!entry) {
         for (uint32_t i = 0; i < fs.bpb.root_entries; i++) {
-            if (fs.root_dir[i].name[0] == 0x00 || fs.root_dir[i].name[0] == 0xE5) {
+            if (fs.root_dir[i].name[0] == 0x00 ||
+                (uint8_t)fs.root_dir[i].name[0] == 0xE5U) {
                 entry = &fs.root_dir[i];
                 kmemset(entry, 0, sizeof(fat12_dir_entry_t));
                 kmemcpy(entry->name, filename, 11);
@@ -557,7 +559,7 @@ int fat12_list_dir(void) {
     int count = 0;
     for (uint32_t i = 0; i < fs.bpb.root_entries; i++) {
         if (fs.root_dir[i].name[0] == 0x00) break;
-        if (fs.root_dir[i].name[0] == 0xE5) continue;
+        if ((uint8_t)fs.root_dir[i].name[0] == 0xE5U) continue;
         if (fs.root_dir[i].attributes & 0x08) continue;
 
         char name[13];
@@ -655,7 +657,7 @@ int fat12_get_file_count(void) {
     int count = 0;
     for (uint32_t i = 0; i < fs.bpb.root_entries; i++) {
         if (fs.root_dir[i].name[0] == 0x00) break;
-        if (fs.root_dir[i].name[0] == 0xE5) continue;
+        if ((uint8_t)fs.root_dir[i].name[0] == 0xE5U) continue;
         if (fs.root_dir[i].attributes & 0x08) continue;
         count++;
     }
@@ -668,7 +670,7 @@ int fat12_get_file_info(int index, char* name_out, uint32_t* size_out, uint8_t* 
     int count = 0;
     for (uint32_t i = 0; i < fs.bpb.root_entries; i++) {
         if (fs.root_dir[i].name[0] == 0x00) break;
-        if (fs.root_dir[i].name[0] == 0xE5) continue;
+        if ((uint8_t)fs.root_dir[i].name[0] == 0xE5U) continue;
         if (fs.root_dir[i].attributes & 0x08) continue;
 
         if (count == index) {
@@ -747,7 +749,7 @@ static fat12_dir_entry_t* fat12_read_dir_cluster(uint16_t cluster, fat12_dir_ent
                 cluster_buf = 0;
                 return entries;
             }
-            if (entry->name[0] == 0xE5) continue;
+            if ((uint8_t)entry->name[0] == 0xE5U) continue;
             if (entry->attributes & 0x08) continue;
 
             kmemcpy(&entries[entry_idx], entry, sizeof(fat12_dir_entry_t));
@@ -793,7 +795,7 @@ static fat12_dir_entry_t* fat12_find_in_dir(uint16_t dir_cluster, const char* fa
                 cluster_buf = 0;
                 return 0;
             }
-            if (entry->name[0] == 0xE5) continue;
+            if ((uint8_t)entry->name[0] == 0xE5U) continue;
             if (entry->attributes & 0x08) continue;
 
             if (strncmp(entry->name, fat12_name, 11) == 0) {
@@ -861,7 +863,7 @@ uint16_t fat12_resolve_path(const char* path) {
         if (current_cluster == 0) {
             for (uint32_t idx = 0; idx < fs.bpb.root_entries; idx++) {
                 if (fs.root_dir[idx].name[0] == 0x00) break;
-                if (fs.root_dir[idx].name[0] == 0xE5) continue;
+                if ((uint8_t)fs.root_dir[idx].name[0] == 0xE5U) continue;
                 if (fs.root_dir[idx].attributes & 0x08) continue;
                 if (strncmp(fs.root_dir[idx].name, fat12_name, 11) == 0) {
                     entry = &fs.root_dir[idx];
@@ -1120,7 +1122,8 @@ int fat12_write_file_in_dir(uint16_t dir_cluster, const char* filename, const ui
     if (dir_cluster == 0) {
         fat12_dir_entry_t* entry = 0;
         for (uint32_t idx = 0; idx < fs.bpb.root_entries; idx++) {
-            if (fs.root_dir[idx].name[0] == 0x00 || fs.root_dir[idx].name[0] == 0xE5) {
+            if (fs.root_dir[idx].name[0] == 0x00 ||
+                (uint8_t)fs.root_dir[idx].name[0] == 0xE5U) {
                 entry = &fs.root_dir[idx];
                 kmemset(entry, 0, sizeof(fat12_dir_entry_t));
                 kmemcpy(entry->name, fat12_name, 11);
@@ -1195,7 +1198,8 @@ int fat12_write_file_in_dir(uint16_t dir_cluster, const char* filename, const ui
         uint32_t entries_per_cluster = bytes_per_cluster / 32;
         for (uint32_t i = 0; i < entries_per_cluster; i++) {
             fat12_dir_entry_t* entry = (fat12_dir_entry_t*)(cluster_buf + i * 32);
-            if (entry->name[0] == 0x00 || entry->name[0] == 0xE5) {
+            if (entry->name[0] == 0x00 ||
+                (uint8_t)entry->name[0] == 0xE5U) {
                 kmemset(entry, 0, sizeof(fat12_dir_entry_t));
                 kmemcpy(entry->name, fat12_name, 11);
                 entry->attributes = 0x20;
@@ -1308,7 +1312,7 @@ int fat12_delete_file_in_dir(uint16_t dir_cluster, const char* filename) {
         for (uint32_t idx = 0; idx < fs.bpb.root_entries; idx++) {
             fat12_dir_entry_t* candidate = &fs.root_dir[idx];
             if (candidate->name[0] == 0x00) break;
-            if (candidate->name[0] == 0xE5) continue;
+            if ((uint8_t)candidate->name[0] == 0xE5U) continue;
             if (candidate->attributes & 0x08) continue;
             if (strncmp(candidate->name, fat12_name, 11) == 0) {
                 entry = candidate;
@@ -1377,7 +1381,7 @@ int fat12_delete_file_in_dir(uint16_t dir_cluster, const char* filename) {
                 cluster_buf = 0;
                 return -1;
             }
-            if (entry->name[0] == 0xE5) continue;
+            if ((uint8_t)entry->name[0] == 0xE5U) continue;
             if (entry->attributes & 0x08) continue;
 
             if (strncmp(entry->name, fat12_name, 11) == 0) {
@@ -1511,7 +1515,8 @@ int fat12_create_dir_entry(uint16_t dir_cluster, const char* name, uint8_t attri
         uint32_t entries_per_cluster = bytes_per_cluster / 32;
         for (uint32_t i = 0; i < entries_per_cluster; i++) {
             fat12_dir_entry_t* entry = (fat12_dir_entry_t*)(cluster_buf + i * 32);
-            if (entry->name[0] == 0x00 || entry->name[0] == 0xE5) {
+            if (entry->name[0] == 0x00 ||
+                (uint8_t)entry->name[0] == 0xE5U) {
                 kmemset(entry, 0, sizeof(fat12_dir_entry_t));
                 kmemcpy(entry->name, fat12_name, 11);
                 entry->attributes = attributes;
