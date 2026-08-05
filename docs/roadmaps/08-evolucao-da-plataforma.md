@@ -148,10 +148,7 @@ boot, Shell, filesystem atual ou outros volumes montados.
 
 ## EP3 - Indice e pesquisa de arquivos
 
-**Estado:** implementada em 02/08/2026, aguardando validacao do usuario. O
-codigo, contratos, comandos, regcheck e Explorer Classic estao prontos; Q3,
-build, fixtures, hashes e a matriz QEMU ainda nao foram executados pelo
-usuario.
+**Estado:** implementada em 02/08/2026 e validada pelo usuario em 05/08/2026.
 
 ### Implementacao
 
@@ -177,17 +174,25 @@ Uma busca limitada encontra caminhos corretos sem travar a interface. Indice
 corrompido, cancelado ou sem memoria gera log e pode ser reconstruido, sem
 impedir navegacao normal do Explorer ou uso do filesystem.
 
-### Validacao pendente
+### Validacao concluida em 05/08/2026
 
-1. Executar `make q3check` e `make clean && make`.
-2. Executar `make storage-fixtures-test`, `make storage-fixtures` e depois
-   `make run-storage`.
-3. Nesse ambiente, validar busca FAT12/FAT32, subdiretorios, nomes repetidos,
-   mount/unmount durante rebuild/resultados e responsividade; ao sair,
-   executar `make storage-fixtures-verify` para confirmar os hashes.
-4. Executar `make run` e validar mutacoes no boot, rebuild automatico,
-   cancelamento, indice parcial, recuperacao de corrupcao, Explorer Classic,
-   comandos Shell, `memcheck`, `regcheck full` e o smoke test do Simple.
+1. `make q3check`, build limpo e execucao no QEMU passaram apos a revisao dos
+   warnings encontrados durante a integracao.
+2. As fixtures FAT12/FAT32 foram montadas em `run-storage`; buscas globais
+   encontraram raiz, subdiretorios e nomes repetidos. Mount/unmount atualizou
+   fontes e resultados sem bloquear Shell ou Explorer.
+3. `storage-fixtures-verify` preservou os tres SHA-256 canonicos da EP2, sem
+   escrita nos discos adicionais.
+4. Rebuild, cancelamento, publicacao posterior e `index check` passaram. Os
+   autotestes cobriram matching, limites, cancelamento e corrupcao.
+5. Criacao, renomeacao, copia, movimentacao e exclusao no volume de boot
+   dispararam rebuild automatico e produziram resultados atuais no Shell e no
+   Explorer Classic. A validacao tambem corrigiu renomeacao FAT12 na propria
+   entrada, exclusao atomica da raiz e filtragem do marcador apagado `0xE5`.
+6. Pesquisa por teclado e mouse, abertura de resultados, roda, retorno com
+   Esc e atualizacao da tela Classic passaram. O smoke test Simple preservou
+   video, teclado, Shell, busca e retorno ao Classic.
+7. `memcheck`, `index check` e `regcheck full` terminaram em `OK`.
 
 ## EP4 - USB incremental
 
