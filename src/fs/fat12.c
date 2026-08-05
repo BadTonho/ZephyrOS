@@ -1304,8 +1304,19 @@ int fat12_delete_file_in_dir(uint16_t dir_cluster, const char* filename) {
     uint16_t c = (dir_cluster == 0) ? 0 : dir_cluster;
 
     if (dir_cluster == 0) {
-        fat12_dir_entry_t* entry = fat12_find_in_dir(0, fat12_name);
+        fat12_dir_entry_t* entry = 0;
+        for (uint32_t idx = 0; idx < fs.bpb.root_entries; idx++) {
+            fat12_dir_entry_t* candidate = &fs.root_dir[idx];
+            if (candidate->name[0] == 0x00) break;
+            if (candidate->name[0] == 0xE5) continue;
+            if (candidate->attributes & 0x08) continue;
+            if (strncmp(candidate->name, fat12_name, 11) == 0) {
+                entry = candidate;
+                break;
+            }
+        }
         if (!entry) {
+            LOG_ERROR("FAT12", "Arquivo da raiz nao encontrado para exclusao");
             kfree(cluster_buf);
             cluster_buf = 0;
             return -1;
