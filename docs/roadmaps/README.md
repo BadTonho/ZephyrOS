@@ -107,6 +107,7 @@ correcao da ordem de apresentacao.
 6. [06 - App Store](06-app-store.md)
 7. [07 - Modernizacao Visual](07-modernizacao-visual.md)
 8. [08 - Evolucao da Plataforma](08-evolucao-da-plataforma.md)
+9. [09 - Funcionalidades aplicaveis](09-funcionalidades-aplicaveis.md)
 
 Os numeros 06 e 07 mantem a organizacao documental, mas sua execucao e
 intercalada nesta ordem:

@@ -711,6 +711,7 @@ kernel, interface e novos serviços:
 | 6 | [`docs/roadmaps/06-app-store.md`](docs/roadmaps/06-app-store.md) | Catalogo local, ciclo de vida, App Store Modern e distribuicao futura. |
 | 7 | [`docs/roadmaps/07-modernizacao-visual.md`](docs/roadmaps/07-modernizacao-visual.md) | Escala acessivel, visual flat/dark e desempenho VESA mensuravel; MV4 funcionalmente validado, comparacao historica N/D. |
 | 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1, EP2 e EP3 validadas. |
+| 9 | [`docs/roadmaps/09-funcionalidades-aplicaveis.md`](docs/roadmaps/09-funcionalidades-aplicaveis.md) | Logs, timers, espera, work queue, dispositivos, I/O, cache e métricas do scheduler. |
 
 Os numeros 06 e 07 identificam os documentos, nao uma barreira de conclusao
 integral. A ordem executavel compartilhada e **AS1-AS2 -> MV0-MV3 -> AS3 ->
