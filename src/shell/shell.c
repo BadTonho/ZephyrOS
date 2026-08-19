@@ -6,6 +6,7 @@
 #include "fs/file_index.h"
 #include "core/memory.h"
 #include "core/timer.h"
+#include "core/wait.h"
 #include "process/process.h"
 #include "drivers/ata.h"
 #include "drivers/speaker.h"
@@ -260,6 +261,7 @@ static char shell_command_history[SHELL_COMMAND_HISTORY_CAPACITY]
 static char shell_command_draft[SHELL_BUFFER_SIZE];
 static log_record_t shell_log_records[SHELL_LOG_TAIL_MAXIMUM];
 static timer_info_t shell_timer_records[TIMER_CAPACITY];
+static wait_info_t shell_wait_records[MAX_PROCESSES + MAX_THREADS];
 static char appcheck_oversized_text[APP_API_MAX_TEXT_SIZE + 1];
 static uint8_t appcheck_demo_image[APP_IMAGE_MAX_FILE_SIZE];
 static uint8_t appcheck_demo_verify[APP_IMAGE_MAX_FILE_SIZE];
@@ -2405,6 +2407,7 @@ static void cmd_help(void) {
     video_print("  log      - Consulta, configura e testa o log circular\n",
                 0x07);
     video_print("  timer    - Inspeciona e testa temporizadores\n", 0x07);
+    video_print("  wait     - Inspeciona esperas e executa autoteste\n", 0x07);
     video_print("  devices  - Lista inventario de hardware (-v para detalhes)\n", 0x07);
     video_print("  device-info <id> - Mostra detalhes de um dispositivo\n", 0x07);
     video_print("  device-scan - Refaz apenas a varredura PCI\n", 0x07);
@@ -3568,6 +3571,131 @@ static void cmd_timer(const char* arguments) {
         return;
     }
     cmd_timer_invalid();
+}
+
+static void cmd_wait_usage(void) {
+    video_print("Uso: wait [status|list|check]\n", 0x0E);
+}
+
+static void cmd_wait_invalid(void) {
+    LOG_WARN_CODE("SHELL", ERR_INVALID, "Argumentos invalidos para wait");
+    cmd_wait_usage();
+}
+
+static void cmd_wait_status(void) {
+    wait_stats_t stats;
+
+    if (wait_get_stats(&stats) != OK) {
+        video_print("Erro: estatisticas de espera indisponiveis.\n", 0x0C);
+        return;
+    }
+    video_print("Servico de espera: canais=", 0x0B);
+    print_num(stats.channels_active);
+    video_print(" waiters=", 0x07);
+    print_num(stats.active_waiters);
+    video_print(" pico=", 0x07);
+    print_num(stats.peak_waiters);
+    video_print("\nInicios=", 0x07);
+    print_num(stats.waits_started);
+    video_print(" eventos=", 0x07);
+    print_num(stats.event_wakes);
+    video_print(" timeouts=", 0x07);
+    print_num(stats.timeout_wakes);
+    video_print(" cancelamentos=", 0x07);
+    print_num(stats.cancellation_wakes);
+    video_print(" indisponiveis=", 0x07);
+    print_num(stats.unavailable_wakes);
+    video_print("\nOperacoes invalidas=", 0x07);
+    print_num(stats.invalid_operations);
+    video_print("\n", 0x07);
+}
+
+static void cmd_wait_print_info(const wait_info_t* info) {
+    video_print(info->target == WAIT_TARGET_PROCESS ? "processo=" : "thread=",
+                0x08);
+    print_num(info->id);
+    video_print(" nome=", 0x08);
+    video_print(info->name, 0x07);
+    video_print(" canal=", 0x08);
+    video_print(info->channel_owner, 0x0B);
+    video_print(" motivo=", 0x08);
+    video_print(wait_reason_name(info->reason), 0x07);
+    video_print(" restante=", 0x08);
+    if (!info->deadline_active) {
+        video_print("infinito", 0x07);
+    } else {
+        print_num(info->remaining_ticks);
+    }
+    video_print("\n", 0x07);
+}
+
+static void cmd_wait_list(void) {
+    uint32_t process_count = 0U;
+    uint32_t thread_count = 0U;
+    uint32_t total;
+
+    if (process_copy_waiters(shell_wait_records, MAX_PROCESSES,
+                             &process_count) != OK ||
+        thread_copy_waiters(shell_wait_records + process_count, MAX_THREADS,
+                            &thread_count) != OK) {
+        video_print("Erro: lista de esperas indisponivel.\n", 0x0C);
+        return;
+    }
+    total = process_count + thread_count;
+    if (!total) {
+        video_print("Nenhuma tarefa bloqueada por canal.\n", 0x08);
+        return;
+    }
+    video_print("Tarefas bloqueadas por canal:\n", 0x0B);
+    for (uint32_t index = 0U; index < total; index++) {
+        cmd_wait_print_info(&shell_wait_records[index]);
+    }
+}
+
+static void cmd_wait_print_test(const char* name, uint8_t passed) {
+    video_print("  ", 0x07);
+    video_print(name, 0x07);
+    video_print(": ", 0x07);
+    video_print(passed ? "OK\n" : "ERRO\n", passed ? 0x0A : 0x0C);
+}
+
+static void cmd_wait_check(void) {
+    wait_self_test_result_t test;
+    int result = wait_self_test(&test);
+
+    video_print("Autoteste de esperas (canal privado):\n", 0x0B);
+    cmd_wait_print_test("ciclo do canal", test.channel_lifecycle);
+    cmd_wait_print_test("sinal de condicao", test.condition_signal);
+    cmd_wait_print_test("disponibilidade", test.availability);
+    cmd_wait_print_test("evento/timeout/cancelamento", test.accounting);
+    cmd_wait_print_test("motivos/recurso ausente", test.reasons);
+    cmd_wait_print_test("limites", test.limits);
+    cmd_wait_print_test("reset seguro", test.reset);
+    cmd_wait_print_test("invariantes", test.invariants);
+    video_print("Resultado: ", 0x0B);
+    video_print(result == OK ? "OK" : "ERRO", result == OK ? 0x0A : 0x0C);
+    video_print(" (", 0x07);
+    print_num(test.passed);
+    video_print(" aprovados, ", 0x07);
+    print_num(test.failed);
+    video_print(" falhos)\n", 0x07);
+}
+
+static void cmd_wait(const char* arguments) {
+    if (shell_args_equal(arguments, "") ||
+        shell_args_equal(arguments, "status")) {
+        cmd_wait_status();
+        return;
+    }
+    if (shell_args_equal(arguments, "list")) {
+        cmd_wait_list();
+        return;
+    }
+    if (shell_args_equal(arguments, "check")) {
+        cmd_wait_check();
+        return;
+    }
+    cmd_wait_invalid();
 }
 
 static uint8_t cmd_device_status_color(device_status_t status) {
@@ -11299,6 +11427,8 @@ int shell_process_command(const char* input) {
         cmd_log(input);
     } else if (kstrcmp(cmd, "timer") == 0) {
         cmd_timer(input);
+    } else if (kstrcmp(cmd, "wait") == 0) {
+        cmd_wait(input);
     } else if (kstrcmp(cmd, "devices") == 0) {
         cmd_devices(input);
     } else if (kstrcmp(cmd, "device-info") == 0) {

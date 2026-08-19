@@ -37,6 +37,9 @@ PANIC_OBJ = build/panic.o
 LOG_C = src/core/log.c
 LOG_OBJ = build/log.o
 
+WAIT_C = src/core/wait.c
+WAIT_OBJ = build/wait.o
+
 RECOVERY_C = src/core/recovery.c
 RECOVERY_OBJ = build/recovery.o
 
@@ -320,7 +323,7 @@ STORE_AS5_FIXTURES_DIR = docs\fixtures\apps\store-as5
 STORE_AS5_PUBLIC = config\app-store-test-public.json
 
 # Todas as variáveis de objetos
-OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(UPDATE_OBJ) $(UPDATE_REMOTE_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
+OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(WAIT_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(UPDATE_OBJ) $(UPDATE_REMOTE_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(COMPRESS_OBJ) \
@@ -350,6 +353,10 @@ $(PANIC_OBJ): $(PANIC_C)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(LOG_OBJ): $(LOG_C)
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(WAIT_OBJ): $(WAIT_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

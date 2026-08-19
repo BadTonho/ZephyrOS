@@ -318,6 +318,8 @@ Evolução da plataforma:      [███████████████---
 - [x] Comando `guitest` no shell
 
 ### Core Enhancements
+- [x] Servico R3 de espera por eventos, timeout e cancelamento, integrado ao
+  canal IPC do Shell (implementado; validacao no QEMU pendente)
 - [x] Logging com 4 níveis, ring estruturado e observabilidade (`src/core/log.c`)
 - [x] Serviço R2 de timers canceláveis, com callbacks diferidos e piloto ICMP
   (implementado; validação no QEMU pendente)

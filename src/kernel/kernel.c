@@ -20,6 +20,7 @@
 #include "core/keyboard.h"
 #include "drivers/mouse.h"
 #include "core/timer.h"
+#include "core/wait.h"
 #include "core/memory.h"
 #include "memory/paging.h"
 #include "process/process.h"
@@ -373,6 +374,7 @@ void shell_process_main(void) {
     while (1) {
         uint32_t keyboard_events = 0;
         int received = 0;
+        wait_reason_t wait_reason = WAIT_REASON_NONE;
 
         while (keyboard_events < SHELL_KEYBOARD_DISPATCH_BUDGET &&
                ipc_receive(&msg)) {
@@ -386,7 +388,13 @@ void shell_process_main(void) {
             }
         }
         if (!received) {
-            process_yield();
+            if (ipc_wait(WAIT_TIMEOUT_INFINITE, &wait_reason) != OK) {
+                LOG_ERROR("KERNEL", "Falha na espera do Shell por IPC");
+                process_yield();
+            } else if (wait_reason != WAIT_REASON_EVENT) {
+                LOG_WARN("KERNEL", "Shell acordado sem evento IPC");
+                process_yield();
+            }
         }
         app_loader_reap_finished();
         shell_report_user_test_result();
@@ -616,6 +624,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Iniciando processos...\n", 0x08);
     tss_init();
+    wait_init();
     process_init();
     process_bootstrap_idle();
     ipc_init();
