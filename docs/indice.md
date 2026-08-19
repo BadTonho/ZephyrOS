@@ -86,3 +86,4 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [06 - App Store](roadmaps/06-app-store.md) | Catalogo local ZPKG, ciclo de vida e repositorio remoto autenticado |
 | [07 - Modernização Visual](roadmaps/07-modernizacao-visual.md) | Escala acessível, visual flat/dark e desempenho VESA mensurável |
 | [08 - Evolução da Plataforma](roadmaps/08-evolucao-da-plataforma.md) | EP1-EP3 validadas; USB e conectividade futuras |
+| [09 - Funcionalidades aplicáveis](roadmaps/09-funcionalidades-aplicaveis.md) | Logs, timers, espera, work queue, dispositivos, I/O, cache e scheduler |
