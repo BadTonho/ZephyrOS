@@ -319,10 +319,10 @@ Evolução da plataforma:      [███████████████---
 
 ### Core Enhancements
 - [x] Servico R3 de espera por eventos, timeout e cancelamento, integrado ao
-  canal IPC do Shell (implementado; validacao no QEMU pendente)
+  canal IPC do Shell (implementado e validado no QEMU)
 - [x] Logging com 4 níveis, ring estruturado e observabilidade (`src/core/log.c`)
 - [x] Serviço R2 de timers canceláveis, com callbacks diferidos e piloto ICMP
-  (implementado; validação no QEMU pendente)
+  (implementado e validado no QEMU)
 - [x] Utilitários de string (`src/core/string.c` - kmemset, kmemcpy, kstrcmp, kstrlen)
 - [x] Códigos de erro padronizados (`src/include/core/errors.h`)
 - [x] Spinlock para sincronização (`src/include/core/spinlock.h`)
