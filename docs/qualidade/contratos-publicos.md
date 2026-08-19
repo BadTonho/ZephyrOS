@@ -43,6 +43,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/core/syscall.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/tcp.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/timer.h` | `docs/05-drivers/drivers.md` |
+| `src/include/core/wait.h` | `docs/07-processos/processos.md` |
 | `src/include/core/udp.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/update.h` | `docs/14-atualizacoes/contrato-zupd-v1.md` |
 | `src/include/core/update_remote.h` | `docs/14-atualizacoes/distribuicao-remota.md` |
@@ -239,3 +240,9 @@ Desde a R2, `src/include/core/timer.h` define proprietarios e timers por handles
 geracionais, modos one-shot/periodico, estados `IDLE`, `ARMED` e `PENDING`,
 inicio em milissegundos, cancelamento, consultas, estatisticas, invariantes e
 autoteste privado. O contrato canonico fica em `docs/05-drivers/drivers.md`.
+
+Desde a R3, `src/include/core/wait.h` define canais estaticos com sequencia de
+condicao, disponibilidade, motivos de desbloqueio, deadlines absolutos,
+estatisticas e autoteste privado. O contrato canonico fica em
+`docs/07-processos/processos.md`; as APIs de processo/thread permanecem
+internas ao kernel e nao alteram a ABI ring 3.

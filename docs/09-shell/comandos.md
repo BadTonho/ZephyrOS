@@ -1282,4 +1282,20 @@ Abre o sistema de configurações do ZephyrOS.
 zephyr> settings
 ```
 
+## `wait [status|list|check]`
+
+Inspeciona o servico interno de espera cooperativa do kernel.
+
+- `wait status` mostra canais ativos, waiters, picos, eventos, timeouts,
+  cancelamentos e recursos indisponiveis.
+- `wait list` lista processos e threads bloqueados por canal, incluindo nome,
+  canal, motivo e prazo restante.
+- `wait check` executa o autoteste em um canal privado, sem alterar esperas
+  reais do sistema. Ele cobre evento, timeout, cancelamentos individual e
+  coletivo, recurso ausente, limites, condição já alterada e wrap do tick.
+
+O processo Shell usa o canal IPC do proprio processo: quando nao ha mensagens
+na fila, ele fica em `BLOCKED` e volta a `READY` quando teclado ou outro
+produtor envia uma mensagem.
+
 Categorias: Tela, Barra de Tarefas, Janelas, Ícones, Sistema, Som, Sobre.

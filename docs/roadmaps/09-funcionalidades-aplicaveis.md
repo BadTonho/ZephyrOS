@@ -15,7 +15,7 @@ forem necessárias.
 - [x] R0 - análise arquitetural e seleção das funcionalidades aplicáveis.
 - [x] R1 - observabilidade e log circular (implementada e validada).
 - [ ] R2 - serviço de temporizadores canceláveis (implementado; validação pendente).
-- [ ] R3 - espera por eventos, timeout e cancelamento.
+- [x] R3 - espera por eventos, timeout e cancelamento (implementada; validação pendente).
 - [ ] R4 - fila de trabalho cooperativa.
 - [ ] R5 - modelo unificado de dispositivos.
 - [ ] R6 - fila de requisições de bloco.
@@ -116,22 +116,24 @@ loops ocupados e a regressão existente mantém seus prazos atuais.
 
 ### Implementação
 
-- [ ] Definir um canal de espera com condição, proprietário e motivo.
-- [ ] Permitir bloquear até evento, prazo ou cancelamento.
-- [ ] Permitir acordar uma tarefa ou todas as tarefas de um canal.
-- [ ] Diferenciar conclusão, timeout, cancelamento e dispositivo ausente.
-- [ ] Integrar com os estados atuais `READY`, `RUNNING`, `BLOCKED` e `ZOMBIE`.
-- [ ] Manter processos e threads existentes, mas documentar um contrato comum
+- [x] Definir um canal de espera com condição, proprietário e motivo.
+- [x] Permitir bloquear até evento, prazo ou cancelamento.
+- [x] Permitir acordar uma tarefa ou todas as tarefas de um canal.
+- [x] Diferenciar conclusão, timeout, cancelamento e dispositivo ausente.
+- [x] Integrar com os estados atuais `READY`, `RUNNING`, `BLOCKED` e `ZOMBIE`.
+- [x] Manter processos e threads existentes, mas documentar um contrato comum
   de espera e desbloqueio.
-- [ ] Substituir polling manual apenas em módulos que tenham cobertura de
+- [x] Substituir polling manual apenas em módulos que tenham cobertura de
   regressão.
-- [ ] Adicionar diagnóstico de tarefas bloqueadas e seus motivos.
+- [x] Adicionar diagnóstico de tarefas bloqueadas e seus motivos.
 
 ### Critério de saída
 
-Uma tarefa bloqueada acorda somente por sua condição, timeout ou cancelamento;
+Uma tarefa bloqueada acorda somente por sua condição, timeout, cancelamento ou
+indisponibilidade do recurso;
 nenhuma espera fica ocupando CPU sem necessidade; Shell, rede, índice e
-interfaces continuam responsivos.
+interfaces continuam responsivos. O código e o `wait check` estão concluídos;
+a validação de integração no QEMU permanece pendente.
 
 ## R4 - Fila de trabalho cooperativa
 
@@ -270,8 +272,11 @@ make run
 
 - `src/core/log.c` - log atual e buffer linear.
 - `src/drivers/timer.c` - ticks e IRQ de timer.
+- `src/core/wait.c` - canais, deadlines, motivos e autoteste privado R3.
 - `src/process/process.c` - processos, bloqueio e scheduler.
+- `src/process/ipc.c` - fila de mensagens e espera do consumidor IPC.
 - `src/thread/thread.c` - threads e bloqueio temporizado.
+- `src/shell/shell.c` - comandos `wait status`, `wait list` e `wait check`.
 - `src/core/device_manager.c` - inventário e estados atuais de dispositivos.
 - `src/fs/file_index.c` - índice cooperativo e polling por orçamento.
 - `src/drivers/ata.c` - leitura, escrita, retries e timeouts ATA.
@@ -280,6 +285,6 @@ make run
 ## Estado
 
 Roadmap próprio do ZephyrOS, criado para orientar melhorias incrementais sem
-substituir a arquitetura existente. R0 e R1 estão concluídas; R2 está
-implementada e aguarda validação manual, enquanto R3-R8 ainda não foram
+substituir a arquitetura existente. R0 e R1 estão concluídas; R2 e R3 estão
+implementadas e aguardam validação manual, enquanto R4-R8 ainda não foram
 implementadas.

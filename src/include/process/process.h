@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "core/app_api.h"
+#include "core/wait.h"
 #include "memory/paging.h"
 #include "drivers/idt.h"
 
@@ -98,6 +99,13 @@ typedef struct {
     ipc_msg_t msg_queue[IPC_MSG_QUEUE_SIZE];
     uint32_t msg_head;
     uint32_t msg_tail;
+    wait_channel_t ipc_wait_channel;
+    wait_channel_t* wait_channel;
+    uint32_t wait_condition;
+    uint32_t wait_deadline;
+    wait_reason_t wait_reason;
+    uint8_t wait_deadline_active;
+    uint8_t wait_active;
 } process_t;
 
 typedef struct {
@@ -149,6 +157,13 @@ int process_take_user_test_result(uint32_t* pid, uint32_t* faulted);
 void process_yield(void);
 void process_block(uint32_t ticks);
 void process_unblock(process_t* proc);
+int process_wait(wait_channel_t* channel, uint32_t observed_condition,
+                 uint32_t timeout_ticks, wait_reason_t* out_reason);
+int process_wake_channel(wait_channel_t* channel, wait_wake_mode_t mode,
+                         wait_reason_t reason, uint32_t* out_woken);
+int process_cancel_wait(process_t* proc);
+int process_copy_waiters(wait_info_t* output, uint32_t max_entries,
+                         uint32_t* out_count);
 void ipc_init(void);
 int ipc_is_ready(void);
 
@@ -162,6 +177,7 @@ int scheduler_validate_invariants(scheduler_validation_t* validation);
 
 int ipc_send(uint32_t pid, ipc_msg_t* msg);
 int ipc_receive(ipc_msg_t* msg);
+int ipc_wait(uint32_t timeout_ticks, wait_reason_t* out_reason);
 void ipc_get_stats(ipc_stats_t* stats);
 uint32_t ipc_get_pending_count(void);
 int process_set_focus(uint32_t pid);

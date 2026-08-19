@@ -3,6 +3,9 @@
 #include "core/log.h"
 #include "core/errors.h"
 #include "core/string.h"
+#include "core/timer.h"
+
+#define THREAD_WAIT_EFLAGS_INTERRUPT_ENABLE (1U << 9U)
 
 #define THREAD_TEST_ITERATIONS 3U
 #define THREAD_TEST_TRACE_SIZE (THREAD_TEST_ITERATIONS * 2U)
@@ -20,6 +23,60 @@ static uint32_t thread_test_a_runs = 0;
 static uint32_t thread_test_b_runs = 0;
 static uint32_t thread_test_trace_pos = 0;
 static char thread_test_trace[THREAD_TEST_TRACE_SIZE];
+
+static uint32_t thread_wait_irq_save(void) {
+    uint32_t flags;
+
+    asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
+    return flags;
+}
+
+static void thread_wait_irq_restore(uint32_t flags) {
+    if (flags & THREAD_WAIT_EFLAGS_INTERRUPT_ENABLE) {
+        asm volatile("sti" : : : "memory");
+    }
+}
+
+static int thread_wait_reason_valid(wait_reason_t reason) {
+    return reason == WAIT_REASON_EVENT ||
+           reason == WAIT_REASON_CANCELLED ||
+           reason == WAIT_REASON_DEVICE_UNAVAILABLE;
+}
+
+static void thread_wait_clear(thread_t* thread, wait_reason_t reason) {
+    wait_channel_t* channel;
+
+    if (!thread) return;
+    channel = thread->wait_channel;
+    if (thread->wait_active && channel) wait_note_wake(channel, reason);
+    thread->wait_active = 0U;
+    thread->wait_channel = 0;
+    thread->wait_condition = 0U;
+    thread->wait_deadline = WAIT_TIMEOUT_INFINITE;
+    thread->wait_reason = reason;
+    thread->wait_deadline_active = 0U;
+    thread->wait_ticks = 0U;
+    if (thread->state == THREAD_BLOCKED) thread->state = THREAD_RUNNING;
+}
+
+static int thread_wait_deadline_reached(const thread_t* thread,
+                                        uint32_t now) {
+    if (!thread || !thread->wait_deadline_active) return 0;
+    return (int32_t)(now - thread->wait_deadline) >= 0;
+}
+
+static void thread_copy_wait_text(char* destination, uint32_t capacity,
+                                  const char* source) {
+    uint32_t index = 0U;
+
+    if (!destination || !capacity) return;
+    if (!source) source = "";
+    while (index + 1U < capacity && source[index]) {
+        destination[index] = source[index];
+        index++;
+    }
+    destination[index] = '\0';
+}
 
 static int thread_index(const thread_t* thread) {
     for (int i = 0; i < MAX_THREADS; i++) {
@@ -170,6 +227,9 @@ thread_t* thread_create(const char* name, void (*entry)(void)) {
     }
 
     thread->eip = (uint32_t)entry;
+    thread->wait_deadline = WAIT_TIMEOUT_INFINITE;
+    thread->wait_reason = WAIT_REASON_NONE;
+    thread->wait_deadline_active = 0U;
     thread_count++;
     if (thread_self_test_active) {
         LOG_DEBUG("THRD", "Thread de auto teste criada");
@@ -192,6 +252,8 @@ void thread_destroy(thread_t* thread) {
         LOG_WARN("THRD", "Tentativa de destruir thread ja liberada");
         return;
     }
+
+    if (thread->wait_active) thread_cancel_wait(thread);
 
     if (thread->stack) {
         kfree(thread->stack);
@@ -309,6 +371,12 @@ void thread_block(uint32_t ticks) {
         return;
     }
 
+    current_thread->wait_channel = 0;
+    current_thread->wait_condition = 0U;
+    current_thread->wait_deadline = WAIT_TIMEOUT_INFINITE;
+    current_thread->wait_reason = WAIT_REASON_NONE;
+    current_thread->wait_deadline_active = 0U;
+    current_thread->wait_active = 0U;
     current_thread->state = THREAD_BLOCKED;
     current_thread->wait_ticks = ticks;
     thread_yield();
@@ -320,12 +388,20 @@ void thread_block_indefinite(void) {
         return;
     }
 
+    current_thread->wait_channel = 0;
+    current_thread->wait_condition = 0U;
+    current_thread->wait_deadline = WAIT_TIMEOUT_INFINITE;
+    current_thread->wait_reason = WAIT_REASON_NONE;
+    current_thread->wait_deadline_active = 0U;
+    current_thread->wait_active = 0U;
     current_thread->state = THREAD_BLOCKED;
     current_thread->wait_ticks = 0;
     thread_yield();
 }
 
 void thread_unblock(thread_t* thread) {
+    uint32_t flags;
+
     if (!thread || thread_index(thread) < 0) {
         LOG_ERROR("THRD", "Ponteiro invalido ao desbloquear thread");
         return;
@@ -335,8 +411,171 @@ void thread_unblock(thread_t* thread) {
         return;
     }
 
-    thread->state = THREAD_RUNNING;
-    thread->wait_ticks = 0;
+    flags = thread_wait_irq_save();
+    if (thread->wait_active) thread_wait_clear(thread, WAIT_REASON_EVENT);
+    else {
+        thread->state = THREAD_RUNNING;
+        thread->wait_ticks = 0U;
+        thread->wait_reason = WAIT_REASON_EVENT;
+    }
+    thread_wait_irq_restore(flags);
+}
+
+int thread_wait(wait_channel_t* channel, uint32_t observed_condition,
+                uint32_t timeout_ticks, wait_reason_t* out_reason) {
+    uint32_t flags;
+    uint32_t now;
+
+    if (!out_reason) {
+        LOG_ERROR("THRD", "Destino nulo para resultado da espera");
+        return ERR_NULL;
+    }
+    *out_reason = WAIT_REASON_NONE;
+    if (!current_thread || current_thread->state != THREAD_RUNNING) {
+        LOG_ERROR("THRD", "Espera sem thread executavel");
+        return ERR_STATE;
+    }
+    if (!channel || !channel->initialized || current_thread->wait_active) {
+        LOG_ERROR("THRD", "Canal ou estado invalido para espera");
+        return ERR_INVALID;
+    }
+    if (timeout_ticks != WAIT_TIMEOUT_INFINITE &&
+        timeout_ticks > WAIT_MAX_TIMEOUT_TICKS) {
+        LOG_ERROR("THRD", "Timeout de espera excede o limite");
+        return ERR_INVALID;
+    }
+
+    flags = thread_wait_irq_save();
+    if (!channel->available) {
+        current_thread->wait_reason = WAIT_REASON_DEVICE_UNAVAILABLE;
+        *out_reason = current_thread->wait_reason;
+        thread_wait_irq_restore(flags);
+        return OK;
+    }
+    if (channel->condition != observed_condition) {
+        current_thread->wait_reason = WAIT_REASON_EVENT;
+        *out_reason = current_thread->wait_reason;
+        thread_wait_irq_restore(flags);
+        return OK;
+    }
+    if (timeout_ticks == WAIT_TIMEOUT_IMMEDIATE) {
+        current_thread->wait_reason = WAIT_REASON_TIMEOUT;
+        *out_reason = current_thread->wait_reason;
+        thread_wait_irq_restore(flags);
+        return OK;
+    }
+
+    now = timer_get_ticks();
+    current_thread->wait_channel = channel;
+    current_thread->wait_condition = observed_condition;
+    current_thread->wait_deadline_active = timeout_ticks == WAIT_TIMEOUT_INFINITE ?
+                                           0U : 1U;
+    current_thread->wait_deadline = current_thread->wait_deadline_active ?
+                                    now + timeout_ticks : WAIT_TIMEOUT_INFINITE;
+    current_thread->wait_reason = WAIT_REASON_NONE;
+    current_thread->wait_active = 1U;
+    current_thread->wait_ticks = timeout_ticks == WAIT_TIMEOUT_INFINITE ?
+                                  0U : timeout_ticks;
+    wait_note_waiter(channel);
+    current_thread->state = THREAD_BLOCKED;
+    thread_wait_irq_restore(flags);
+    thread_yield();
+    *out_reason = current_thread->wait_reason;
+    return OK;
+}
+
+int thread_wake_channel(wait_channel_t* channel, wait_wake_mode_t mode,
+                        wait_reason_t reason, uint32_t* out_woken) {
+    uint32_t flags;
+    uint32_t woken = 0U;
+
+    if (!out_woken) {
+        LOG_ERROR("THRD", "Destino nulo para contagem de wake");
+        return ERR_NULL;
+    }
+    *out_woken = 0U;
+    if (!channel || !channel->initialized ||
+        (mode != WAIT_WAKE_ONE && mode != WAIT_WAKE_ALL) ||
+        !thread_wait_reason_valid(reason)) {
+        LOG_ERROR("THRD", "Parametros invalidos ao acordar canal");
+        return ERR_INVALID;
+    }
+
+    flags = thread_wait_irq_save();
+    if (reason == WAIT_REASON_EVENT || reason == WAIT_REASON_DEVICE_UNAVAILABLE) {
+        wait_channel_signal(channel);
+    }
+    if (reason == WAIT_REASON_DEVICE_UNAVAILABLE) channel->available = 0U;
+    for (uint32_t index = 0U; index < MAX_THREADS; index++) {
+        thread_t* thread = &threads[index];
+
+        if (thread->state != THREAD_BLOCKED || !thread->wait_active ||
+            thread->wait_channel != channel) continue;
+        thread_wait_clear(thread, reason);
+        woken++;
+        if (mode == WAIT_WAKE_ONE) break;
+    }
+    thread_wait_irq_restore(flags);
+    *out_woken = woken;
+    return OK;
+}
+
+int thread_cancel_wait(thread_t* thread) {
+    uint32_t flags;
+
+    if (!thread || thread_index(thread) < 0) {
+        LOG_ERROR("THRD", "Ponteiro invalido ao cancelar espera");
+        return ERR_NULL;
+    }
+    flags = thread_wait_irq_save();
+    if (!thread->wait_active || thread->state != THREAD_BLOCKED) {
+        thread_wait_irq_restore(flags);
+        LOG_WARN("THRD", "Thread nao possui espera cancelavel");
+        return ERR_STATE;
+    }
+    thread_wait_clear(thread, WAIT_REASON_CANCELLED);
+    thread_wait_irq_restore(flags);
+    return OK;
+}
+
+int thread_copy_waiters(wait_info_t* output, uint32_t max_entries,
+                        uint32_t* out_count) {
+    uint32_t count = 0U;
+    uint32_t flags;
+
+    if (!out_count || (max_entries && !output)) {
+        LOG_ERROR("THRD", "Destino invalido para lista de esperas");
+        return ERR_NULL;
+    }
+    flags = thread_wait_irq_save();
+    for (uint32_t index = 0U; index < MAX_THREADS && count < max_entries;
+         index++) {
+        thread_t* thread = &threads[index];
+        wait_info_t* info;
+
+        if (!thread->wait_active || thread->state != THREAD_BLOCKED) continue;
+        info = &output[count++];
+        kmemset(info, 0, sizeof(*info));
+        info->id = thread->id;
+        info->target = WAIT_TARGET_THREAD;
+        thread_copy_wait_text(info->name, WAIT_INFO_NAME_LENGTH, thread->name);
+        thread_copy_wait_text(info->channel_owner,
+                              WAIT_CHANNEL_OWNER_LENGTH,
+                              thread->wait_channel ?
+                              thread->wait_channel->owner : "");
+        info->reason = thread->wait_reason;
+        info->deadline_tick = thread->wait_deadline;
+        info->deadline_active = thread->wait_deadline_active;
+        if (info->deadline_active) {
+            wait_deadline_remaining_active(thread->wait_deadline,
+                                           thread->wait_deadline_active,
+                                           &info->remaining_ticks);
+        }
+        info->active = 1U;
+    }
+    *out_count = count;
+    thread_wait_irq_restore(flags);
+    return OK;
 }
 
 thread_t* thread_get_current(void) {
@@ -357,13 +596,28 @@ uint32_t thread_get_count(void) {
 }
 
 void thread_scheduler_tick(void) {
+    uint32_t now;
+
     if (!thread_initialized) return;
+    now = timer_get_ticks();
 
     for (int i = 0; i < MAX_THREADS; i++) {
-        if (threads[i].state == THREAD_BLOCKED && threads[i].wait_ticks > 0) {
+        if (threads[i].state == THREAD_BLOCKED && threads[i].wait_active) {
+            if (!threads[i].wait_channel ||
+                !threads[i].wait_channel->available) {
+                thread_wait_clear(&threads[i],
+                                  WAIT_REASON_DEVICE_UNAVAILABLE);
+            } else if (thread_wait_deadline_reached(&threads[i], now)) {
+                thread_wait_clear(&threads[i], WAIT_REASON_TIMEOUT);
+            } else if (threads[i].wait_deadline_active) {
+                threads[i].wait_ticks = threads[i].wait_deadline - now;
+            }
+        } else if (threads[i].state == THREAD_BLOCKED &&
+                   threads[i].wait_ticks > 0) {
             threads[i].wait_ticks--;
             if (threads[i].wait_ticks == 0) {
                 threads[i].state = THREAD_RUNNING;
+                threads[i].wait_reason = WAIT_REASON_TIMEOUT;
             }
         }
     }

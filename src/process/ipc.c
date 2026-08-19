@@ -29,7 +29,7 @@ int ipc_is_ready(void) {
 int ipc_send(uint32_t pid, ipc_msg_t* msg) {
     process_t* target;
     uint32_t next_head;
-    int wake_target = 0;
+    uint32_t woken = 0U;
 
     if (!ipc_ready) {
         LOG_ERROR("IPC", "Envio antes da inicializacao");
@@ -69,12 +69,12 @@ int ipc_send(uint32_t pid, ipc_msg_t* msg) {
     target->msg_queue[target->msg_head] = *msg;
     target->msg_head = next_head;
     ipc_stats.sent++;
-    if (target->state == PROCESS_STATE_BLOCKED) {
-        wake_target = 1;
-    }
 
     spinlock_release(&ipc_lock);
-    if (wake_target) process_unblock(target);
+    if (process_wake_channel(&target->ipc_wait_channel, WAIT_WAKE_ONE,
+                             WAIT_REASON_EVENT, &woken) != OK) {
+        LOG_WARN("IPC", "Falha ao acordar consumidor IPC");
+    }
     return 1;
 }
 
@@ -109,6 +109,42 @@ int ipc_receive(ipc_msg_t* msg) {
     ipc_stats.received++;
     spinlock_release(&ipc_lock);
     return 1;
+}
+
+int ipc_wait(uint32_t timeout_ticks, wait_reason_t* out_reason) {
+    process_t* current = process_get_current();
+    uint32_t condition;
+    uint8_t has_message = 0U;
+
+    if (!out_reason) {
+        LOG_ERROR("IPC", "Destino nulo para resultado da espera IPC");
+        return ERR_NULL;
+    }
+    *out_reason = WAIT_REASON_NONE;
+    if (!ipc_ready) {
+        LOG_ERROR("IPC", "Espera solicitada antes da inicializacao");
+        return ERR_STATE;
+    }
+    if (!current) {
+        LOG_ERROR("IPC", "Espera IPC sem processo atual");
+        return ERR_STATE;
+    }
+    if (wait_channel_get_condition(&current->ipc_wait_channel,
+                                   &condition) != OK) {
+        LOG_ERROR("IPC", "Canal IPC do processo indisponivel");
+        return ERR_STATE;
+    }
+
+    spinlock_acquire(&ipc_lock);
+    has_message = current->msg_head != current->msg_tail;
+    spinlock_release(&ipc_lock);
+    if (has_message) {
+        *out_reason = WAIT_REASON_EVENT;
+        return OK;
+    }
+
+    return process_wait(&current->ipc_wait_channel, condition,
+                        timeout_ticks, out_reason);
 }
 
 void ipc_get_stats(ipc_stats_t* stats) {

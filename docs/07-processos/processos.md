@@ -156,6 +156,58 @@ politica simples atual.
 
 ---
 
+## Espera por eventos (R3)
+
+O contrato R3 adiciona espera cooperativa por canal sem alterar a ABI dos
+aplicativos ring 3. Cada processo possui um canal IPC embutido; outros
+subsistemas podem manter canais estaticos proprios.
+O armazenamento do canal deve iniciar zerado; o servico rejeita reinicializacao
+de um canal ainda ativo para preservar a contabilidade.
+
+```c
+typedef enum {
+    WAIT_REASON_NONE,
+    WAIT_REASON_EVENT,
+    WAIT_REASON_TIMEOUT,
+    WAIT_REASON_CANCELLED,
+    WAIT_REASON_DEVICE_UNAVAILABLE
+} wait_reason_t;
+
+int process_wait(wait_channel_t* channel, uint32_t observed_condition,
+                 uint32_t timeout_ticks, wait_reason_t* out_reason);
+int process_wake_channel(wait_channel_t* channel, wait_wake_mode_t mode,
+                         wait_reason_t reason, uint32_t* out_woken);
+int process_cancel_wait(process_t* process);
+
+int thread_wait(wait_channel_t* channel, uint32_t observed_condition,
+                uint32_t timeout_ticks, wait_reason_t* out_reason);
+int thread_wake_channel(wait_channel_t* channel, wait_wake_mode_t mode,
+                        wait_reason_t reason, uint32_t* out_woken);
+int thread_cancel_wait(thread_t* thread);
+```
+
+`WAIT_TIMEOUT_IMMEDIATE` retorna `TIMEOUT` sem bloquear e
+`WAIT_TIMEOUT_INFINITE` usa espera sem deadline. Demais prazos sao convertidos
+para um tick absoluto e comparados com aritmetica segura de wraparound. A
+transicao para `BLOCKED` e a verificacao da sequencia do canal ocorrem na mesma
+regiao critica, evitando perder um evento entre o teste da condicao e o
+bloqueio.
+
+O produtor deve incrementar a condicao e acordar um ou todos os waiters. O
+consumidor deve testar novamente sua condicao depois de acordar, pois o evento
+e uma notificacao e nao uma garantia de que o recurso ainda esta disponivel.
+Cancelamento individual, cancelamento coletivo e indisponibilidade registram
+motivos distintos. Processos e threads mantem o mesmo contrato de metadados,
+mas os canais continuam estaticos e fornecidos pelo consumidor. O scheduler
+continua aceitando `process_block()` e `thread_block()` para os consumidores
+legados; esperas R3 usam deadline e metadados de canal.
+
+O Shell expoe `wait status`, `wait list` e `wait check`. O primeiro consumidor
+real e o processo Shell, que dorme no canal IPC quando a fila esta vazia e e
+acordado por `ipc_send()` apos uma mensagem de teclado ou solicitacao nativa.
+
+---
+
 ## Threads
 
 ### O que é uma Thread?
