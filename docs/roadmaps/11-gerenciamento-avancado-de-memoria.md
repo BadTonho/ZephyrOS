@@ -1,0 +1,132 @@
+# Roadmap 11 - Gerenciamento Avancado de Memoria
+
+## Objetivo
+
+Evoluir o subsistema de memória do ZephyrOS incorporando conceitos consagrados da gestão de memória do Linux (como os alocadores de objetos de tamanho fixo *SLAB/SLUB*, estruturas de áreas virtuais *VMA* e paginação sob demanda), garantindo tempo constante $O(1)$ na alocação de estruturas críticas, eliminação de fragmentação de heap e proteção rigorosa de memória em espaço de usuário.
+
+Este roadmap preserva a compatibilidade total com o Bitmap Allocator físico e o Paging existente, sem alterar os contratos do bootloader.
+
+## Resumo de progresso
+
+- [ ] MM1 - Alocador SLAB/SLUB de objetos de tamanho fixo (`kmem_cache_t`).
+- [ ] MM2 - Áreas de Memória Virtual do Processo (VMA - *Virtual Memory Areas*).
+- [ ] MM3 - Alocação sob Demanda (*Demand Paging*) e tratamento de Page Faults.
+- [ ] MM4 - Métricas de fragmentação, zonas de memória e monitoramento em tempo real.
+
+## Atalhos
+
+- [Roadmap 03 - Kernel e Desempenho](03-kernel-e-desempenho.md)
+- [Roadmap 10 - VFS e Abstracao de I/O](10-vfs-e-abstracao-io.md)
+- [Roadmap 12 - Concorrencia e Sincronizacao](12-concorrencia-e-sincronizacao.md)
+- [Índice dos Roadmaps](README.md)
+- [Índice da Documentação](../indice.md)
+
+## Base já validada
+
+- Detecção de mapa de memória E820 via bootloader.
+- PMM (Physical Memory Manager) baseado em bitmap de 4KB por página.
+- VMM (Virtual Memory Manager) com Page Directory e Page Tables de dois níveis x86.
+- Heap de kernel com `kmalloc()`, `kfree()` e alinhamento `kmalloc_aligned()`.
+- Ferramenta de diagnóstico `memcheck` validada no QEMU.
+
+## Princípios de engenharia
+
+- **Prevenção de Fragmentação:** O heap genérico (`kmalloc`) não deve ser utilizado para alocação intensiva de estruturas de tamanho fixo repetitivas (como nós de processos, sockets ou buffers).
+- **Tempo Constante $O(1)$:** Alocações e liberações em pools SLAB operam em tempo determinístico, sem varredura de blocos livres.
+- **Proteção por Segmento:** Cada VMA define explicitamente se a região permite leitura, escrita ou execução (`PROT_READ | PROT_WRITE | PROT_EXEC`).
+- **Segurança de Falhas:** Falhas de página em ring 3 devem ser isoladas, sinalizadas ou tratadas sem resultar em Kernel Panic imediato.
+
+## Ordem de dependência
+
+1. MM1 - Alocador SLAB/SLUB de estruturas fixas do kernel.
+2. MM2 - Estruturas de VMA no contexto de processos.
+3. MM3 - Demand Paging na carga e expansão de heap de aplicativos.
+4. MM4 - Métricas de fragmentação e integração com `memcheck` e Task Manager.
+
+---
+
+## MM1 - Alocador SLAB/SLUB de objetos fixos
+
+### Implementação
+
+- [ ] Implementar a estrutura `kmem_cache_t` representando um pool de objetos de tamanho homogêneo.
+- [ ] Criar as funções públicas:
+  `kmem_cache_t* kmem_cache_create(const char* name, uint32_t obj_size, uint32_t align);`
+  `void* kmem_cache_alloc(kmem_cache_t* cache);`
+  `void kmem_cache_free(kmem_cache_t* cache, void* obj);`
+  `void kmem_cache_destroy(kmem_cache_t* cache);`
+- [ ] Organizar cada cache em slabs divididos em três listas: `full` (cheios), `partial` (parciais) e `empty` (vazios), ou lista simples no estilo SLUB com bitmap/freelist interno.
+- [ ] Migrar estruturas essenciais para caches dedicados: `process_t`, `thread_t`, `file_t`, `vnode_t` e `net_packet_t`.
+
+### Critério de saída
+
+Criação e destruição de centenas de estruturas de processos e arquivos ocorrem sem degradação do heap genérico do kernel e sem vazamento de memória.
+
+### Comandos Shell / Diagnóstico
+
+- `slabinfo`: exibe todos os caches SLAB ativos, tamanho de objeto, quantidade alocada, uso de páginas e taxa de ocupação.
+- `slabtest`: bateria de testes de estresse de alocação/liberação simultânea em múltiplos caches.
+
+---
+
+## MM2 - Áreas de Memória Virtual (VMA)
+
+### Implementação
+
+- [ ] Definir a estrutura `vm_area_t` contendo:
+  - `uint32_t start_addr;`
+  - `uint32_t end_addr;`
+  - `uint32_t flags;` (`VM_READ`, `VM_WRITE`, `VM_EXEC`, `VM_SHARED`, `VM_ANONYMOUS`)
+  - `struct file* file;` (para mapeamentos backed por arquivo)
+  - `uint32_t offset;`
+- [ ] Adicionar lista ligada ordenada de VMAs na estrutura `process_t`.
+- [ ] Implementar a syscall `sys_mmap()` para alocação anônima de regiões virtuais contíguas.
+- [ ] Implementar a syscall `sys_munmap()` para liberação e invalidação de páginas virtuais associadas.
+
+### Critério de saída
+
+Processos conseguem alocar e mapear múltiplos segmentos virtuais com permissões granulares sem manipulação direta e manual de Page Tables.
+
+### Comandos Shell / Diagnóstico
+
+- `vmamap <pid>`: lista os segmentos virtuais do processo informado (código, dados, heap, stack) com suas permissões.
+
+---
+
+## MM3 - Alocação sob Demanda (Demand Paging)
+
+### Implementação
+
+- [ ] Modificar o loader de aplicativos ring 3 para registrar as VMAs de código e dados sem alocar previamente todas as páginas físicas de uma só vez.
+- [ ] No tratador de exceção 14 (Page Fault ISR):
+  - Inspecionar o endereço de falta no registrador `CR2`.
+  - Verificar se o endereço pertence a uma VMA válida com permissão correspondente.
+  - Alocar uma página física livre do PMM e mapeá-la na Page Table do processo sob demanda.
+  - Retornar da interrupção para continuar a execução do código de usuário.
+- [ ] Caso o endereço não pertença a nenhuma VMA válida, disparar `SIGSEGV` ou encerrar o processo ring 3 de forma isolada, registrando erro no log sem gerar panic no kernel.
+
+### Critério de saída
+
+Executáveis grandes são carregados quase instantaneamente consumindo apenas a quantidade de páginas físicas que realmente são executadas.
+
+### Comandos Shell / Diagnóstico
+
+- `pagefault status`: exibe contadores de faltas de página tratadas com sucesso versus faltas inválidas capturadas.
+
+---
+
+## MM4 - Métricas de fragmentação e monitoramento
+
+### Implementação
+
+- [ ] Calcular índice de fragmentação da memória física (blocos contíguos livres vs páginas isoladas).
+- [ ] Mapear as estatísticas de memória em categorias claras: Kernel, Heap, SLAB, Processos, Buffers e Livre.
+- [ ] Expor as métricas através da camada de diagnóstico e integrar à interface gráfica (Task Manager Classic/Modern).
+
+### Critério de saída
+
+O sistema fornece diagnóstico preciso da alocação de memória em tempo real sem impacto perceptível no desempenho.
+
+### Comandos Shell / Diagnóstico
+
+- `mem detailed`: relatório completo da divisão da memória entre kernel, processos, caches e blocos físicos livres.

@@ -87,3 +87,10 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [07 - Modernização Visual](roadmaps/07-modernizacao-visual.md) | Escala acessível, visual flat/dark e desempenho VESA mensurável |
 | [08 - Evolução da Plataforma](roadmaps/08-evolucao-da-plataforma.md) | EP1-EP3 validadas; USB e conectividade futuras |
 | [09 - Funcionalidades aplicáveis](roadmaps/09-funcionalidades-aplicaveis.md) | Logs, timers, espera, work queue, dispositivos, I/O, cache e scheduler |
+| [10 - VFS e Abstração de I/O](roadmaps/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, montagens, /dev/ e pipes |
+| [11 - Gerenciamento Avançado de Memória](roadmaps/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging |
+| [12 - Concorrência e Sincronização](roadmaps/12-concorrencia-e-sincronizacao.md) | Top-Half/Bottom-Half, wait queues, workqueues e sinais assíncronos |
+| [13 - Armazenamento e Buffer Cache](roadmaps/13-armazenamento-e-buffer-cache.md) | Block layer, fila de requisições, buffer cache LRU e sincronização sync |
+| [14 - Stack de Rede Avançada](roadmaps/14-stack-de-rede-avancada.md) | Socket buffers sk_buff zero-copy, sockets AF_UNIX/AF_INET e select/poll |
+| [15 - Introspecção e Pseudo-Filesystems](roadmaps/15-introspeccao-e-pseudo-fs.md) | Pseudo-filesystems /proc e /sys para diagnósticos, processos e hardware |
+| [16 - Energia e ACPI Avançado](roadmaps/16-energia-e-acpi-avancado.md) | Loop de CPU idle com HLT, parser ACPI (FADT/MADT), poweroff e reboot |
