@@ -234,3 +234,8 @@ do indice global em RAM. `src/include/ui/filemanager.h` acrescenta
 indice. Os contratos canonicos ficam em
 `docs/08-sistema-arquivos/sistema-arquivos.md` e
 `docs/12-desktop/desktop.md`.
+
+Desde a R2, `src/include/core/timer.h` define proprietarios e timers por handles
+geracionais, modos one-shot/periodico, estados `IDLE`, `ARMED` e `PENDING`,
+inicio em milissegundos, cancelamento, consultas, estatisticas, invariantes e
+autoteste privado. O contrato canonico fica em `docs/05-drivers/drivers.md`.

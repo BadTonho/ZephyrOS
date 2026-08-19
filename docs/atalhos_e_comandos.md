@@ -43,6 +43,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `health` | `[summary]` | Mostra o relatorio completo ou um resumo compacto para testes. |
 | `log` | `[status|tail [1-16]|clear|level|check]` | Consulta, limpa e testa o ring de logs. |
 | `log level` | `console|buffer <error|warn|info|debug>` | Altera os níveis independentes, mantendo o buffer tão detalhado quanto o console. |
+| `timer` | `[status|list|check]` | Inspeciona ocupação, prazos e contadores ou executa o autoteste privado. |
 | `update remote` | `status/enable/disable/clear [--confirm]` | Controla o transporte remoto opcional da sessao. |
 | `update fetch` | `[--url <manifesto>] [--confirm]` | Consulta ou baixa um ZUPD autenticado sem aplicar. |
 | `kmetrics` | `[reset]` | Mostra ou inicia a janela manual de métricas K1. |

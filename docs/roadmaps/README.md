@@ -89,6 +89,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   fixtures e hashes intactos. A EP3 foi validada em QEMU com indice cooperativo
   em RAM, Shell, pesquisa no Explorer Classic, mutacoes com rebuild automatico,
   mount/unmount, cancelamento, fallback Simple, MemCheck e RegCheck em `OK`.
+- Funcionalidades aplicaveis: R1 foi validada no QEMU com log circular,
+  diagnosticos e regressao. R2 implementa timers cancelaveis e o piloto ICMP;
+  permanece aguardando a validacao manual descrita no Roadmap 09.
 
 ## K4 validada
 

@@ -43,6 +43,7 @@ Comandos disponiveis:
   display   - Mostra estado ou altera a escala da GUI classic
   health [summary] - Exibe estado completo ou resumo compacto
   log       - Consulta, configura e testa o log circular
+  timer     - Inspeciona e testa temporizadores
   devices   - Lista o inventario de hardware (`-v` inclui detalhes)
   device-info <id> - Exibe detalhes de um dispositivo inventariado
   device-scan - Refaz somente a varredura PCI e atualiza o inventario
@@ -109,6 +110,21 @@ Consulta e controla o ring de observabilidade:
 Os níveis aceitos são `error`, `warn`, `info` e `debug`. O buffer não pode ser
 menos detalhado que o console. `log tail` mostra sequência, primeiro e último
 tick, nível, módulo, mensagem, ocorrências, flags e código de erro opcional.
+
+## `timer`
+
+Inspeciona o serviço fixo de temporizadores sem permitir mutações manuais:
+
+| Forma | Resultado |
+|------|-----------|
+| `timer` ou `timer status` | Exibe tick, frequência, ocupação, estados e contadores cumulativos. |
+| `timer list` | Lista proprietários, nomes, handles, modo, estado, prazo, período, execuções, atrasos e último erro. |
+| `timer check` | Executa 12 casos em tabelas privadas, sem alterar timers reais. |
+
+Argumentos adicionais são recusados com `ERR_INVALID`. O autoteste cobre
+conversão e limites, one-shot, periódicos sem deriva, períodos perdidos,
+cancelamento armado e pendente, destruição do proprietário, handles antigos,
+wrap de ticks, capacidade, erro de callback e invariantes.
 
 ## Historico rolavel do Shell
 

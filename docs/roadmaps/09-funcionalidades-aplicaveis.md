@@ -13,8 +13,8 @@ forem necessárias.
 ## Resumo de progresso
 
 - [x] R0 - análise arquitetural e seleção das funcionalidades aplicáveis.
-- [ ] R1 - observabilidade e log circular (implementada; validação pendente).
-- [ ] R2 - serviço de temporizadores canceláveis.
+- [x] R1 - observabilidade e log circular (implementada e validada).
+- [ ] R2 - serviço de temporizadores canceláveis (implementado; validação pendente).
 - [ ] R3 - espera por eventos, timeout e cancelamento.
 - [ ] R4 - fila de trabalho cooperativa.
 - [ ] R5 - modelo unificado de dispositivos.
@@ -70,11 +70,10 @@ Roadmap 08. R6 só deve avançar depois de R2, R3 e R5 estarem estáveis.
 
 ### Estado da entrega
 
-Implementação concluída no código e na documentação. A fase permanece aberta
-até a validação manual do usuário no QEMU com `log status`, `log tail`,
-`log level`, `log clear`, entradas inválidas, repetição exponencial e
-`log check`, seguida por `q2check`, `regcheck full`, `memcheck` e smoke tests
-nos modos Simple e Classic.
+Implementação e validação manual concluídas. O usuário confirmou no QEMU
+`log status`, `log tail`, `log level`, `log clear`, sintaxe inválida e
+`log check` com oito casos aprovados. `q2check`, `regcheck full` e `memcheck`
+também terminaram em `OK`, preservando o Shell e os modos Simple e Classic.
 
 ### Critério de saída
 
@@ -86,15 +85,27 @@ Shell. Falhas de inicialização e recuperação continuam registradas.
 
 ### Implementação
 
-- [ ] Criar timer de disparo único e timer periódico.
-- [ ] Usar prazo monotônico absoluto, sem cada módulo calcular sua própria
+- [x] Criar timer de disparo único e timer periódico.
+- [x] Usar prazo monotônico absoluto, sem cada módulo calcular sua própria
   conversão de segundos para ticks.
-- [ ] Adicionar criação, início, cancelamento, consulta e destruição segura.
-- [ ] Impedir callback depois da destruição do proprietário.
-- [ ] Registrar timeout, cancelamento, atraso e execução do callback.
-- [ ] Migrar gradualmente retries de rede, ATA, atualização e futuras operações
-  USB.
-- [ ] Adicionar comando Shell de status e diagnóstico.
+- [x] Adicionar criação, início, cancelamento, consulta e destruição segura.
+- [x] Impedir callback depois da destruição do proprietário.
+- [x] Registrar timeout, cancelamento, atraso e execução do callback.
+- [x] Migrar o timeout do ICMP como primeiro consumidor real do serviço.
+- [x] Adicionar comando Shell de status, listagem e diagnóstico.
+- [ ] Migrar gradualmente os demais retries de rede, ATA, atualização e futuras
+  operações USB depois da validação do piloto ICMP.
+
+### Estado da entrega
+
+R2 está implementada no código e na documentação, aguardando validação manual.
+O PIT permanece em 50 Hz; a IRQ somente marca vencimentos e o processo System
+despacha até oito callbacks depois do polling de rede. O autoteste usa tabelas
+privadas e o `regcheck` inclui apenas a validação estrutural somente-leitura.
+
+Validar no QEMU `timer status`, `timer list`, `timer check`, sintaxe inválida,
+ping com reply e timeout, `net check qemu`, `q2check`, `regcheck full`,
+`memcheck`, `log check` e o smoke test dos modos Simple e Classic.
 
 ### Critério de saída
 
@@ -269,5 +280,6 @@ make run
 ## Estado
 
 Roadmap próprio do ZephyrOS, criado para orientar melhorias incrementais sem
-substituir a arquitetura existente. R0 registra a análise; R1 está implementada
-e aguarda validação manual, enquanto R2-R8 ainda não foram implementadas.
+substituir a arquitetura existente. R0 e R1 estão concluídas; R2 está
+implementada e aguarda validação manual, enquanto R3-R8 ainda não foram
+implementadas.

@@ -116,6 +116,7 @@ Evolução da plataforma:      [███████████████---
 | `guimode` | Altera entre gui simple e classic |
 | `health` | Exibe metricas e estado de recovery |
 | `log ...` | Consulta, configura, limpa e testa o log circular |
+| `timer [status|list|check]` | Inspeciona e testa o serviço de temporizadores |
 | `store` | Abre a App Store nativa; fallback TUI local no modo Simple |
 | `store status|list|info` | Consulta o catalogo local da App Store |
 | `store install|update|rollback|remove|run` | Planos locais, ciclo confirmado, rollback e execucao instalada |
@@ -318,6 +319,8 @@ Evolução da plataforma:      [███████████████---
 
 ### Core Enhancements
 - [x] Logging com 4 níveis, ring estruturado e observabilidade (`src/core/log.c`)
+- [x] Serviço R2 de timers canceláveis, com callbacks diferidos e piloto ICMP
+  (implementado; validação no QEMU pendente)
 - [x] Utilitários de string (`src/core/string.c` - kmemset, kmemcpy, kstrcmp, kstrlen)
 - [x] Códigos de erro padronizados (`src/include/core/errors.h`)
 - [x] Spinlock para sincronização (`src/include/core/spinlock.h`)
