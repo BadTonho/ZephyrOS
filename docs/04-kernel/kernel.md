@@ -94,6 +94,43 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 }
 ```
 
+## Log circular e observabilidade
+
+O serviço público de log mantém 32 registros estruturados em ordem
+cronológica. Cada `log_record_t` contém sequência monotônica, primeiro e
+último tick, nível, módulo de até 15 caracteres, mensagem de até 79 caracteres,
+quantidade de ocorrências, flags de truncamento e um código de erro opcional.
+Quando o ring fica cheio, o registro mais antigo é sobrescrito e a sequência
+continua avançando. Logs emitidos antes da inicialização do timer usam tick
+zero.
+
+Os níveis de armazenamento e console são independentes e começam em `INFO`.
+O buffer deve ser pelo menos tão detalhado quanto o console; por isso,
+`log_set_buffer_level()` e `log_set_console_level()` retornam `ERR_INVALID`
+quando a combinação quebraria essa regra. A API antiga permanece compatível:
+`log_set_level()` altera os dois níveis, `log_get_level()` consulta o console,
+as macros `LOG_ERROR`, `LOG_WARN`, `LOG_INFO` e `LOG_DEBUG` não mudaram e
+`log_get_buffer()` serializa os registros como `[NIV] [MODULO] mensagem`.
+
+Falhas que possuem um código podem usar `LOG_ERROR_CODE` ou `LOG_WARN_CODE`.
+Consultas estruturadas usam `log_get_stats()` e `log_copy_recent()`. Strings
+maiores que o registro são terminadas com segurança, marcadas por flags e
+contabilizadas. Argumentos inválidos incrementam descartes sem fazer o próprio
+logger entrar em recursão.
+
+Registros consecutivos com o mesmo nível, módulo, código e mensagem são
+agrupados. O ring atualiza `occurrences` e `last_tick`; o console preserva a
+primeira ocorrência e só volta a imprimir resumos nas contagens 2, 4, 8, 16 e
+assim por diante. O acesso ao ring salva EFLAGS, desabilita interrupções e
+restaura o estado anterior sem spinlock; a escrita de vídeo acontece fora da
+seção crítica.
+
+`log_clear_buffer()` remove os registros e encerra o agrupamento corrente, mas
+preserva níveis, sequência e contadores cumulativos, incrementando apenas o
+contador de limpezas. `log_self_test()` usa um ring privado de quatro entradas
+para validar ordem, wrap, agrupamento, truncamento, código opcional, limpeza,
+serialização e filtragem sem alterar o histórico real.
+
 ## Panic Handler (`panic.c`)
 
 Quando algo crítico falha, o kernel chama `panic()`:

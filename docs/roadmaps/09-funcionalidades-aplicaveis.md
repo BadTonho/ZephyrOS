@@ -13,7 +13,7 @@ forem necessárias.
 ## Resumo de progresso
 
 - [x] R0 - análise arquitetural e seleção das funcionalidades aplicáveis.
-- [ ] R1 - observabilidade e log circular.
+- [ ] R1 - observabilidade e log circular (implementada; validação pendente).
 - [ ] R2 - serviço de temporizadores canceláveis.
 - [ ] R3 - espera por eventos, timeout e cancelamento.
 - [ ] R4 - fila de trabalho cooperativa.
@@ -59,14 +59,22 @@ Roadmap 08. R6 só deve avançar depois de R2, R3 e R5 estarem estáveis.
 
 ### Implementação
 
-- [ ] Trocar o buffer linear por um buffer circular limitado.
-- [ ] Adicionar sequência monotônica, tick, módulo, nível e código de erro.
-- [ ] Contabilizar mensagens descartadas e mensagens repetidas.
-- [ ] Separar nível mínimo de armazenamento do nível de exibição.
-- [ ] Criar consulta de últimas mensagens e estatísticas do buffer.
-- [ ] Aplicar limitação de repetição em falhas de IRQ, ATA, USB e rede.
-- [ ] Preservar o formato legível no console Simple e Classic.
-- [ ] Adicionar comando Shell de consulta e limpeza do log.
+- [x] Trocar o buffer linear por um buffer circular limitado.
+- [x] Adicionar sequência monotônica, tick, módulo, nível e código de erro.
+- [x] Contabilizar mensagens descartadas e mensagens repetidas.
+- [x] Separar nível mínimo de armazenamento do nível de exibição.
+- [x] Criar consulta de últimas mensagens e estatísticas do buffer.
+- [x] Aplicar agrupamento genérico aos logs consecutivos de qualquer módulo.
+- [x] Preservar o formato legível no console Simple e Classic.
+- [x] Adicionar comando Shell de consulta, configuração, teste e limpeza.
+
+### Estado da entrega
+
+Implementação concluída no código e na documentação. A fase permanece aberta
+até a validação manual do usuário no QEMU com `log status`, `log tail`,
+`log level`, `log clear`, entradas inválidas, repetição exponencial e
+`log check`, seguida por `q2check`, `regcheck full`, `memcheck` e smoke tests
+nos modos Simple e Classic.
 
 ### Critério de saída
 
@@ -261,5 +269,5 @@ make run
 ## Estado
 
 Roadmap próprio do ZephyrOS, criado para orientar melhorias incrementais sem
-substituir a arquitetura existente. R0 registra a análise; nenhuma fase R1-R8
-foi implementada por este documento.
+substituir a arquitetura existente. R0 registra a análise; R1 está implementada
+e aguarda validação manual, enquanto R2-R8 ainda não foram implementadas.
