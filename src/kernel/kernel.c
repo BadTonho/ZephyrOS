@@ -334,6 +334,16 @@ static void global_mouse_handler(mouse_event_t* evt) {
 
 }
 
+static void kernel_dispatch_timers(void) {
+    uint32_t dispatched = 0U;
+    int result = timer_dispatch_pending(TIMER_DISPATCH_BUDGET, &dispatched);
+
+    if (result != OK) {
+        LOG_WARN_CODE("KERNEL", result,
+                      "Despacho de callback de timer terminou com erro");
+    }
+}
+
 void system_process_main(void) {
     while (1) {
         uint32_t network_processed = 0;
@@ -346,6 +356,7 @@ void system_process_main(void) {
             kernel_network_poll_enabled = 0;
             LOG_ERROR("KERNEL", "Processamento Ethernet foi desabilitado");
         }
+        kernel_dispatch_timers();
         file_index_poll(1U, &index_steps);
         fm_update();
         shell_update_hosted_terminal();
@@ -511,7 +522,13 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     }
 
     video_print("[..] Iniciando timer...\n", 0x08);
-    timer_init(50);
+    int timer_result = timer_init(50U);
+    if (timer_result != OK) {
+        LOG_ERROR_CODE("KERNEL", timer_result,
+                       "Timer PIT essencial nao foi inicializado");
+        video_print("[ERRO] Timer PIT indisponivel\n", 0x0C);
+        panic("TIMER: falha ao inicializar PIT");
+    }
     video_print("[OK] Timer PIT (50 Hz)\n", 0x07);
 
     video_print("[..] Detectando memoria...\n", 0x08);
@@ -949,6 +966,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
                 LOG_ERROR("KERNEL",
                           "Processamento Ethernet fallback desabilitado");
             }
+            kernel_dispatch_timers();
             file_index_poll(1U, &index_steps);
             fm_update();
             shell_update_hosted_terminal();

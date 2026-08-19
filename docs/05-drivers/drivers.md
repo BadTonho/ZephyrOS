@@ -294,25 +294,61 @@ pelo panic handler para garantir que um diagnóstico fatal continue visível.
 
 ## Timer (`timer.c`)
 
-O **PIT** (Programmable Interval Timer) gera interrupções periódicas.
+O **PIT** (Programmable Interval Timer) permanece configurado em 50 Hz, com
+resolução de 20 ms. `timer_init()` valida frequência e divisor, registra a
+IRQ0 e retorna um código de erro; a ausência do PIT é fatal porque scheduler,
+uptime e os serviços temporizados dependem dele.
 
 ### Configuração
 
 ```c
-timer_init(50);  // 50 Hz = 20ms por tick
+if (timer_init(50U) != OK) {
+    panic("TIMER: falha ao inicializar PIT");
+}
 ```
 
-### Como funciona
+### Serviço de temporizadores R2
+
+O driver mantém tabelas estáticas de 32 timers e 16 proprietários. Ambos usam
+handles opacos com slot e geração; destruir um proprietário invalida
+atomicamente todos os seus timers. Nomes possuem 16 bytes incluindo o
+terminador. Não há alocação dinâmica.
+
+`timer_create()` associa callback e contexto a um proprietário. Um timer
+`IDLE` pode ser iniciado por `timer_start_once()` ou
+`timer_start_periodic()`, sempre em milissegundos. A conversão arredonda para
+cima, usa no mínimo um tick e recusa intervalos acima de `0x7FFFFFFF` ticks.
+`timer_cancel()` aceita `IDLE` de forma idempotente e também cancela um
+vencimento já marcado como `PENDING`; handles antigos retornam `ERR_INVALID`.
+
+Os prazos são absolutos e monotônicos no contador de 32 bits. A comparação é
+segura durante wrap desde que o intervalo respeite o limite. Um periódico
+atrasado executa uma vez, avança a partir do prazo anterior e contabiliza os
+períodos perdidos, sem deriva nem tempestade de callbacks.
+
+### Contexto de execução
 
 1. Configura o canal 0 do PIT para gerar IRQ0
 2. A cada tick, `timer_handler()` é chamado
-3. Incrementa contador de ticks
-4. O scheduler atualiza bloqueios temporizados e preempta somente processos
-   interrompidos em ring 3
+3. A IRQ incrementa o contador, marca timers vencidos e atualiza os schedulers
+4. O processo de sistema faz o polling de rede
+5. `timer_dispatch_pending()` executa até oito callbacks fora da IRQ e fora da
+   seção crítica
+
+O prazo periódico seguinte é atualizado antes do callback. Assim, o callback
+pode cancelar ou destruir seu próprio timer com segurança. Erros retornados
+pelo callback são registrados no log circular e nas estatísticas.
 
 `timer_get_frequency()` expoe a frequencia configurada para diagnosticos. A
 50 Hz, o quantum de ring 3 e 1 tick (20 ms); processos nativos de ring 0
 cedem cooperativamente. Os ticks do PIT nao representam tempo de CPU real.
+
+`timer_get_stats()`, `timer_get_info()` e `timer_copy_active()` fornecem
+snapshots de ocupação, estados, prazos, execuções, cancelamentos, atrasos,
+períodos perdidos, erros e operações inválidas. `timer_validate_state()` é
+somente-leitura e participa do `regcheck`; `timer_self_test()` usa tabelas
+privadas e não altera timers reais. O Shell expõe `timer status`, `timer list`
+e `timer check`.
 
 ---
 

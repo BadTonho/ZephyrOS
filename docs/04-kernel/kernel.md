@@ -56,7 +56,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     if (mouse_init() == OK) {
         mouse_set_callback(global_mouse_handler);
     }
-    timer_init(50);
+    if (timer_init(50U) != OK) {
+        panic("TIMER: falha ao inicializar PIT");
+    }
 
     /* Memoria e contratos basicos. */
     memory_init(mmap_addr);
@@ -381,6 +383,10 @@ validos e conserva um unico reply pendente enquanto aguarda ARP. O ping usa uma
 sessao fixa sem alocacao, identificador nao zero, sequencias a partir de um,
 payload deterministico de 32 bytes e timeout de um segundo depois de cada
 request efetivamente transmitido. A espera por ARP nao consome esse timeout.
+Desde a R2, esse prazo usa um timer one-shot pertencente ao ICMP. Reply, reset,
+falha ou mudança de configuração cancelam tanto timers armados quanto
+vencimentos pendentes; a comparação manual de ticks não faz mais parte da
+manutenção ICMP.
 
 O processo de sistema executa Ethernet, manutencao ARP e manutencao ICMP nessa
 ordem, no maximo uma vez por tick para os protocolos. O Shell pode dormir um
@@ -388,6 +394,9 @@ tick entre observacoes de ping, portanto o diagnostico mostra todos os eventos
 em uma chamada sem impedir o polling. `ipv4_validate_state()` e
 `icmp_validate_state()` incluem vetores puros de checksum e nao configuram,
 transmitem, limpam cache nem avancam sessoes.
+Depois do polling de rede, o mesmo processo despacha até oito callbacks de
+timer. Essa ordem permite que um Echo Reply recebido no tick limite cancele o
+timeout `PENDING` antes da execução do callback.
 
 Na S2.6, `udp_init()` registra o protocolo IPv4 `17`. Uma tabela fixa de 16
 endpoints entrega `udp_datagram_view_t` apenas durante o callback. O modulo

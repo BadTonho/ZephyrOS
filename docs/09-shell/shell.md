@@ -173,6 +173,20 @@ O armazenamento deve permanecer tão detalhado quanto o console. Combinações e
 argumentos inválidos exibem o uso do comando e são registrados com
 `ERR_INVALID`.
 
+### Diagnóstico de temporizadores
+
+O comando `timer` mantém a interface de diagnóstico pequena e somente-leitura:
+
+- `timer` ou `timer status`: mostra frequência, ocupação, estados e contadores;
+- `timer list`: mostra todos os timers criados e seus metadados atuais;
+- `timer check`: executa 12 casos em tabelas privadas, sem disparar callbacks
+  reais nem alterar o timer do ICMP.
+
+Não existem subcomandos para criar, iniciar ou cancelar timers manualmente. A
+lista expõe handle, proprietário, nome, modo, estado, prazo, período,
+execuções, atrasos, períodos perdidos e último erro. Sintaxe inválida mostra o
+uso e registra `ERR_INVALID`.
+
 ---
 
 ## Aplicativos

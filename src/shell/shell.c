@@ -259,6 +259,7 @@ static char shell_command_history[SHELL_COMMAND_HISTORY_CAPACITY]
                                  [SHELL_BUFFER_SIZE];
 static char shell_command_draft[SHELL_BUFFER_SIZE];
 static log_record_t shell_log_records[SHELL_LOG_TAIL_MAXIMUM];
+static timer_info_t shell_timer_records[TIMER_CAPACITY];
 static char appcheck_oversized_text[APP_API_MAX_TEXT_SIZE + 1];
 static uint8_t appcheck_demo_image[APP_IMAGE_MAX_FILE_SIZE];
 static uint8_t appcheck_demo_verify[APP_IMAGE_MAX_FILE_SIZE];
@@ -972,7 +973,7 @@ static int shell_regcheck_validate_services(void) {
         !syscall_is_ready() || !syscall_user_mode_is_enabled() ||
         !idt_is_user_syscall_enabled() || !paging_is_ready() ||
         !app_loader_is_ready() || !app_package_is_ready() ||
-        !app_catalog_is_ready()) {
+        !app_catalog_is_ready() || timer_validate_state() != OK) {
         LOG_ERROR("SHELL", "RegCheck encontrou servico obrigatorio indisponivel");
         return ERR_STATE;
     }
@@ -2403,6 +2404,7 @@ static void cmd_help(void) {
                 0x07);
     video_print("  log      - Consulta, configura e testa o log circular\n",
                 0x07);
+    video_print("  timer    - Inspeciona e testa temporizadores\n", 0x07);
     video_print("  devices  - Lista inventario de hardware (-v para detalhes)\n", 0x07);
     video_print("  device-info <id> - Mostra detalhes de um dispositivo\n", 0x07);
     video_print("  device-scan - Refaz apenas a varredura PCI\n", 0x07);
@@ -3414,6 +3416,158 @@ static void cmd_log(const char* arguments) {
         return;
     }
     cmd_log_invalid();
+}
+
+static void cmd_timer_usage(void) {
+    video_print("Uso: timer [status|list|check]\n", 0x0E);
+}
+
+static void cmd_timer_invalid(void) {
+    LOG_WARN_CODE("SHELL", ERR_INVALID, "Argumentos invalidos para timer");
+    cmd_timer_usage();
+}
+
+static void cmd_timer_status(void) {
+    timer_stats_t stats;
+
+    if (timer_get_stats(&stats) != OK) {
+        video_print("Erro: estatisticas de timer indisponiveis.\n", 0x0C);
+        return;
+    }
+    video_print("Servico de timers: tick=", 0x0B);
+    print_num(stats.current_tick);
+    video_print(" frequencia=", 0x07);
+    print_num(stats.frequency);
+    video_print(" Hz\nProprietarios: ", 0x07);
+    print_num(stats.owner_occupancy);
+    video_print("/", 0x07);
+    print_num(stats.owner_capacity);
+    video_print("  Timers: ", 0x07);
+    print_num(stats.occupancy);
+    video_print("/", 0x07);
+    print_num(stats.capacity);
+    video_print(" (armados=", 0x07);
+    print_num(stats.armed);
+    video_print(" pendentes=", 0x07);
+    print_num(stats.pending);
+    video_print(")\nMaior ocupacao: ", 0x07);
+    print_num(stats.high_watermark);
+    video_print("  Criados: ", 0x07);
+    print_num(stats.timers_created);
+    video_print("  Inicios: ", 0x07);
+    print_num(stats.timers_started);
+    video_print("\nVencimentos: ", 0x07);
+    print_num(stats.expirations);
+    video_print("  Cancelamentos: ", 0x07);
+    print_num(stats.cancellations);
+    video_print("  Destruicoes: ", 0x07);
+    print_num(stats.timers_destroyed);
+    video_print("\nCallbacks: ", 0x07);
+    print_num(stats.callbacks);
+    video_print("  Erros: ", 0x07);
+    print_num(stats.callback_errors);
+    video_print("  Atrasos: ", 0x07);
+    print_num(stats.delayed_callbacks);
+    video_print("\nPeriodos perdidos: ", 0x07);
+    print_num(stats.missed_periods);
+    video_print("  Operacoes invalidas: ", 0x07);
+    print_num(stats.invalid_operations);
+    video_print("\n", 0x07);
+}
+
+static void cmd_timer_print_entry(const timer_info_t* info) {
+    video_print("handle=0x", 0x08);
+    cmd_print_hex(info->handle, 8U);
+    video_print(" owner=", 0x08);
+    video_print(info->owner_name, 0x0B);
+    video_print(" timer=", 0x08);
+    video_print(info->name, 0x0B);
+    video_print("\n  modo=", 0x08);
+    video_print(timer_mode_name(info->mode), 0x07);
+    video_print(" estado=", 0x08);
+    video_print(timer_state_name(info->state), 0x07);
+    video_print(" prazo=", 0x08);
+    print_num(info->deadline_tick);
+    video_print(" periodo=", 0x08);
+    print_num(info->period_ticks);
+    video_print("\n  execucoes=", 0x08);
+    print_num(info->executions);
+    video_print(" atrasos=", 0x08);
+    print_num(info->delayed_callbacks);
+    video_print(" perdidos=", 0x08);
+    print_num(info->missed_periods);
+    video_print(" ultimo_atraso=", 0x08);
+    print_num(info->last_lateness_ticks);
+    video_print(" erro=", 0x08);
+    cmd_log_print_signed(info->last_error);
+    video_print("\n", 0x07);
+}
+
+static void cmd_timer_list(void) {
+    uint32_t count = 0U;
+
+    if (timer_copy_active(shell_timer_records, TIMER_CAPACITY, &count) != OK) {
+        video_print("Erro: lista de timers indisponivel.\n", 0x0C);
+        return;
+    }
+    if (!count) {
+        video_print("Nenhum timer criado.\n", 0x08);
+        return;
+    }
+    video_print("Timers criados:\n", 0x0B);
+    for (uint32_t index = 0U; index < count; index++) {
+        cmd_timer_print_entry(&shell_timer_records[index]);
+    }
+}
+
+static void cmd_timer_print_test(const char* name, uint8_t passed) {
+    video_print("  ", 0x07);
+    video_print(name, 0x07);
+    video_print(": ", 0x07);
+    video_print(passed ? "OK\n" : "ERRO\n", passed ? 0x0A : 0x0C);
+}
+
+static void cmd_timer_check(void) {
+    timer_self_test_result_t test;
+    int result = timer_self_test(&test);
+
+    video_print("Autoteste de timers (tabelas privadas):\n", 0x0B);
+    cmd_timer_print_test("conversao e limites", test.conversion_and_limits);
+    cmd_timer_print_test("one-shot", test.one_shot);
+    cmd_timer_print_test("periodico sem deriva", test.periodic_no_drift);
+    cmd_timer_print_test("periodos agrupados", test.periodic_coalescing);
+    cmd_timer_print_test("cancelamento armado", test.cancel_armed);
+    cmd_timer_print_test("cancelamento pendente", test.cancel_pending);
+    cmd_timer_print_test("destruicao do proprietario", test.owner_destruction);
+    cmd_timer_print_test("handles antigos", test.stale_handles);
+    cmd_timer_print_test("wrap de ticks", test.tick_wrap);
+    cmd_timer_print_test("capacidade", test.capacity);
+    cmd_timer_print_test("erro de callback", test.callback_errors);
+    cmd_timer_print_test("invariantes", test.invariants);
+    video_print("Resultado: ", 0x0B);
+    video_print(result == OK ? "OK" : "ERRO", result == OK ? 0x0A : 0x0C);
+    video_print(" (", 0x07);
+    print_num(test.passed);
+    video_print(" aprovados, ", 0x07);
+    print_num(test.failed);
+    video_print(" falhos)\n", 0x07);
+}
+
+static void cmd_timer(const char* arguments) {
+    if (shell_args_equal(arguments, "") ||
+        shell_args_equal(arguments, "status")) {
+        cmd_timer_status();
+        return;
+    }
+    if (shell_args_equal(arguments, "list")) {
+        cmd_timer_list();
+        return;
+    }
+    if (shell_args_equal(arguments, "check")) {
+        cmd_timer_check();
+        return;
+    }
+    cmd_timer_invalid();
 }
 
 static uint8_t cmd_device_status_color(device_status_t status) {
@@ -11143,6 +11297,8 @@ int shell_process_command(const char* input) {
         cmd_health(input);
     } else if (kstrcmp(cmd, "log") == 0) {
         cmd_log(input);
+    } else if (kstrcmp(cmd, "timer") == 0) {
+        cmd_timer(input);
     } else if (kstrcmp(cmd, "devices") == 0) {
         cmd_devices(input);
     } else if (kstrcmp(cmd, "device-info") == 0) {
