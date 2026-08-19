@@ -92,6 +92,8 @@
 #define SHELL_COMMAND_HISTORY_CAPACITY 16U
 #define SHELL_INDEX_ACTION_SIZE 16U
 #define SHELL_FS_DIRECTORY_ATTRIBUTE 0x10U
+#define SHELL_LOG_TAIL_DEFAULT 10U
+#define SHELL_LOG_TAIL_MAXIMUM 16U
 
 typedef enum {
     SHELL_BUILTIN_APP_NONE,
@@ -256,6 +258,7 @@ static char input_buffer[SHELL_BUFFER_SIZE];
 static char shell_command_history[SHELL_COMMAND_HISTORY_CAPACITY]
                                  [SHELL_BUFFER_SIZE];
 static char shell_command_draft[SHELL_BUFFER_SIZE];
+static log_record_t shell_log_records[SHELL_LOG_TAIL_MAXIMUM];
 static char appcheck_oversized_text[APP_API_MAX_TEXT_SIZE + 1];
 static uint8_t appcheck_demo_image[APP_IMAGE_MAX_FILE_SIZE];
 static uint8_t appcheck_demo_verify[APP_IMAGE_MAX_FILE_SIZE];
@@ -1647,7 +1650,8 @@ static void shell_regcheck_run_full_checks(void) {
     uint32_t previous_network_failures = 0;
     int previous_network_error = ERR_STATE;
     int network_idempotent = 1;
-    log_level_t previous_level = log_get_level();
+    log_level_t previous_console_level = log_get_console_level();
+    log_level_t previous_buffer_level = log_get_buffer_level();
 
     if (network_before) {
         previous_network_state = network_before->state;
@@ -1656,7 +1660,8 @@ static void shell_regcheck_run_full_checks(void) {
     }
     log_set_level(LOG_LEVEL_ERROR);
     shell_regcheck.device_scan_result = shell_run_device_scan(&scan);
-    log_set_level(previous_level);
+    log_set_buffer_level(previous_buffer_level);
+    log_set_console_level(previous_console_level);
 
     network_before = recovery_get(RECOVERY_COMPONENT_NETWORK);
     if (network_before &&
@@ -2395,6 +2400,8 @@ static void cmd_help(void) {
                 0x07);
     video_print("  search <termo> - Pesquisa nomes e caminhos globais\n", 0x07);
     video_print("  health [summary] - Estado completo ou resumo compacto\n",
+                0x07);
+    video_print("  log      - Consulta, configura e testa o log circular\n",
                 0x07);
     video_print("  devices  - Lista inventario de hardware (-v para detalhes)\n", 0x07);
     video_print("  device-info <id> - Mostra detalhes de um dispositivo\n", 0x07);
@@ -3165,6 +3172,248 @@ static void cmd_print_hex(uint32_t value, uint32_t digits) {
         video_print(value_char, 0x07);
         digits--;
     }
+}
+
+static const char* cmd_log_level_name(log_level_t level) {
+    if (level == LOG_LEVEL_ERROR) return "error";
+    if (level == LOG_LEVEL_WARN) return "warn";
+    if (level == LOG_LEVEL_INFO) return "info";
+    if (level == LOG_LEVEL_DEBUG) return "debug";
+    return "invalid";
+}
+
+static int cmd_log_parse_level(const char* name, log_level_t* level) {
+    if (!name || !level) return 0;
+    if (kstrcmp(name, "error") == 0) *level = LOG_LEVEL_ERROR;
+    else if (kstrcmp(name, "warn") == 0) *level = LOG_LEVEL_WARN;
+    else if (kstrcmp(name, "info") == 0) *level = LOG_LEVEL_INFO;
+    else if (kstrcmp(name, "debug") == 0) *level = LOG_LEVEL_DEBUG;
+    else return 0;
+    return 1;
+}
+
+static uint32_t cmd_log_parse_tail_count(const char* text) {
+    uint32_t value = 0U;
+
+    if (!text || !*text) return 0U;
+    while (*text) {
+        if (*text < '0' || *text > '9') return 0U;
+        value = value * 10U + (uint32_t)(*text - '0');
+        if (value > SHELL_LOG_TAIL_MAXIMUM) return 0U;
+        text++;
+    }
+    return value;
+}
+
+static void cmd_log_usage(void) {
+    video_print("Uso: log [status|tail [1-16]|clear|level|check]\n", 0x0E);
+    video_print("     log level <console|buffer> "
+                "<error|warn|info|debug>\n", 0x0E);
+}
+
+static void cmd_log_invalid(void) {
+    LOG_WARN_CODE("SHELL", ERR_INVALID, "Argumentos invalidos para log");
+    cmd_log_usage();
+}
+
+static void cmd_log_print_levels(const log_stats_t* stats) {
+    video_print("Niveis do log: console=", 0x0B);
+    video_print(cmd_log_level_name(stats->console_level), 0x07);
+    video_print(" buffer=", 0x0B);
+    video_print(cmd_log_level_name(stats->buffer_level), 0x07);
+    video_print("\n", 0x07);
+}
+
+static void cmd_log_status(void) {
+    log_stats_t stats;
+
+    if (log_get_stats(&stats) != OK) {
+        video_print("Erro: estatisticas do log indisponiveis.\n", 0x0C);
+        return;
+    }
+    video_print("Log circular: ", 0x0B);
+    print_num(stats.occupancy);
+    video_print("/", 0x07);
+    print_num(stats.capacity);
+    video_print(" registros\n", 0x07);
+    cmd_log_print_levels(&stats);
+    video_print("Proxima sequencia: ", 0x08);
+    print_num(stats.next_sequence);
+    video_print("\nSobrescritas: ", 0x08);
+    print_num(stats.overwritten_records);
+    video_print("  Agrupamentos: ", 0x08);
+    print_num(stats.grouped_events);
+    video_print("\nTruncamentos: ", 0x08);
+    print_num(stats.truncated_events);
+    video_print("  Descartes: ", 0x08);
+    print_num(stats.dropped_events);
+    video_print("  Limpezas: ", 0x08);
+    print_num(stats.clear_count);
+    video_print("\n", 0x07);
+}
+
+static void cmd_log_print_signed(int32_t value) {
+    uint32_t magnitude;
+
+    if (value < 0) {
+        video_print("-", 0x07);
+        magnitude = (uint32_t)(-(value + 1)) + 1U;
+    } else {
+        magnitude = (uint32_t)value;
+    }
+    print_num(magnitude);
+}
+
+static void cmd_log_print_record(const log_record_t* record) {
+    video_print("seq=", 0x08);
+    print_num(record->sequence);
+    video_print(" ticks=", 0x08);
+    print_num(record->first_tick);
+    video_print("..", 0x08);
+    print_num(record->last_tick);
+    video_print(" [", 0x07);
+    video_print(log_level_str(record->level), 0x0B);
+    video_print("] [", 0x07);
+    video_print(record->module, 0x0B);
+    video_print("] ", 0x07);
+    video_print(record->message, 0x07);
+    video_print("\n  ocorrencias=", 0x08);
+    print_num(record->occurrences);
+    video_print(" flags=0x", 0x08);
+    cmd_print_hex(record->flags, 2U);
+    if (record->flags & LOG_RECORD_FLAG_HAS_ERROR_CODE) {
+        video_print(" erro=", 0x08);
+        cmd_log_print_signed(record->error_code);
+    }
+    video_print("\n", 0x07);
+}
+
+static void cmd_log_tail(const char* arguments) {
+    char count_text[4];
+    uint32_t requested = SHELL_LOG_TAIL_DEFAULT;
+    uint32_t count = 0U;
+
+    if (arguments && *arguments) {
+        if (shell_read_single_arg(arguments, count_text,
+                                  sizeof(count_text)) != OK) {
+            cmd_log_invalid();
+            return;
+        }
+        requested = cmd_log_parse_tail_count(count_text);
+        if (requested == 0U) {
+            cmd_log_invalid();
+            return;
+        }
+    }
+    if (log_copy_recent(shell_log_records, requested, &count) != OK) {
+        video_print("Erro: historico do log indisponivel.\n", 0x0C);
+        return;
+    }
+    if (count == 0U) {
+        video_print("Log vazio.\n", 0x08);
+        return;
+    }
+    for (uint32_t index = 0U; index < count; index++) {
+        cmd_log_print_record(&shell_log_records[index]);
+    }
+}
+
+static void cmd_log_level(const char* arguments) {
+    char target[8];
+    char level_name[8];
+    log_level_t level;
+    int result;
+
+    if (!arguments || !*arguments) {
+        log_stats_t stats;
+        if (log_get_stats(&stats) == OK) cmd_log_print_levels(&stats);
+        else video_print("Erro: niveis do log indisponiveis.\n", 0x0C);
+        return;
+    }
+    if (shell_read_two_args(arguments, target, sizeof(target), level_name,
+                            sizeof(level_name)) != OK ||
+        !cmd_log_parse_level(level_name, &level)) {
+        cmd_log_invalid();
+        return;
+    }
+    if (kstrcmp(target, "console") == 0) {
+        result = log_set_console_level(level);
+    } else if (kstrcmp(target, "buffer") == 0) {
+        result = log_set_buffer_level(level);
+    } else {
+        cmd_log_invalid();
+        return;
+    }
+    if (result != OK) {
+        LOG_WARN_CODE("SHELL", ERR_INVALID, "Combinacao de niveis invalida");
+        video_print("Erro: o buffer deve ser tao detalhado quanto o console.\n",
+                    0x0C);
+        return;
+    }
+    video_print("Nivel ", 0x0A);
+    video_print(target, 0x0A);
+    video_print(" alterado para ", 0x0A);
+    video_print(level_name, 0x0A);
+    video_print(".\n", 0x0A);
+}
+
+static void cmd_log_print_test(const char* name, uint8_t passed) {
+    video_print("  ", 0x07);
+    video_print(name, 0x07);
+    video_print(": ", 0x07);
+    video_print(passed ? "OK\n" : "ERRO\n", passed ? 0x0A : 0x0C);
+}
+
+static void cmd_log_check(void) {
+    log_self_test_result_t test;
+    int result = log_self_test(&test);
+
+    video_print("Autoteste do log (ring privado):\n", 0x0B);
+    cmd_log_print_test("ordem e metadados", test.order_and_metadata);
+    cmd_log_print_test("wrap e sobrescrita", test.wrap_and_overwrite);
+    cmd_log_print_test("agrupamento", test.repetition_grouping);
+    cmd_log_print_test("truncamento", test.safe_truncation);
+    cmd_log_print_test("codigo de erro", test.optional_error_code);
+    cmd_log_print_test("limpeza", test.clear_behavior);
+    cmd_log_print_test("serializacao", test.text_serialization);
+    cmd_log_print_test("filtragem", test.level_filtering);
+    video_print("Resultado: ", 0x0B);
+    video_print(result == OK ? "OK" : "ERRO", result == OK ? 0x0A : 0x0C);
+    video_print(" (", 0x07);
+    print_num(test.passed);
+    video_print(" aprovados, ", 0x07);
+    print_num(test.failed);
+    video_print(" falhos)\n", 0x07);
+}
+
+static void cmd_log(const char* arguments) {
+    const char* subarguments;
+
+    if (shell_args_equal(arguments, "") ||
+        shell_args_equal(arguments, "status")) {
+        cmd_log_status();
+        return;
+    }
+    subarguments = shell_match_subcommand(arguments, "tail");
+    if (subarguments) {
+        cmd_log_tail(subarguments);
+        return;
+    }
+    if (shell_args_equal(arguments, "clear")) {
+        log_clear_buffer();
+        video_print("Log circular limpo.\n", 0x0A);
+        return;
+    }
+    subarguments = shell_match_subcommand(arguments, "level");
+    if (subarguments) {
+        cmd_log_level(subarguments);
+        return;
+    }
+    if (shell_args_equal(arguments, "check")) {
+        cmd_log_check();
+        return;
+    }
+    cmd_log_invalid();
 }
 
 static uint8_t cmd_device_status_color(device_status_t status) {
@@ -10892,6 +11141,8 @@ int shell_process_command(const char* input) {
         cmd_uptime();
     } else if (kstrcmp(cmd, "health") == 0) {
         cmd_health(input);
+    } else if (kstrcmp(cmd, "log") == 0) {
+        cmd_log(input);
     } else if (kstrcmp(cmd, "devices") == 0) {
         cmd_devices(input);
     } else if (kstrcmp(cmd, "device-info") == 0) {

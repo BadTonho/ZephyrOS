@@ -115,6 +115,7 @@ Evolução da plataforma:      [███████████████---
 | `guitest [modern]` | Testa primitivas GUI 2D e a base visual Modern |
 | `guimode` | Altera entre gui simple e classic |
 | `health` | Exibe metricas e estado de recovery |
+| `log ...` | Consulta, configura, limpa e testa o log circular |
 | `store` | Abre a App Store nativa; fallback TUI local no modo Simple |
 | `store status|list|info` | Consulta o catalogo local da App Store |
 | `store install|update|rollback|remove|run` | Planos locais, ciclo confirmado, rollback e execucao instalada |
@@ -316,7 +317,7 @@ Evolução da plataforma:      [███████████████---
 - [x] Comando `guitest` no shell
 
 ### Core Enhancements
-- [x] Sistema de logging com 4 níveis e buffer (`src/core/log.c`)
+- [x] Logging com 4 níveis, ring estruturado e observabilidade (`src/core/log.c`)
 - [x] Utilitários de string (`src/core/string.c` - kmemset, kmemcpy, kstrcmp, kstrlen)
 - [x] Códigos de erro padronizados (`src/include/core/errors.h`)
 - [x] Spinlock para sincronização (`src/include/core/spinlock.h`)

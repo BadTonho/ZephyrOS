@@ -42,6 +42,7 @@ Comandos disponiveis:
   guimode   - Altera entre gui simple (TUI) e classic
   display   - Mostra estado ou altera a escala da GUI classic
   health [summary] - Exibe estado completo ou resumo compacto
+  log       - Consulta, configura e testa o log circular
   devices   - Lista o inventario de hardware (`-v` inclui detalhes)
   device-info <id> - Exibe detalhes de um dispositivo inventariado
   device-scan - Refaz somente a varredura PCI e atualiza o inventario
@@ -90,6 +91,24 @@ Comandos disponiveis:
 
 ## `clear`
 Limpa a tela e apaga todo o historico do terminal atual.
+
+## `log`
+
+Consulta e controla o ring de observabilidade:
+
+| Forma | Resultado |
+|------|-----------|
+| `log` ou `log status` | Exibe ocupação, níveis e contadores cumulativos. |
+| `log tail [1-16]` | Exibe os últimos registros; o padrão é 10. |
+| `log clear` | Limpa os registros, preservando níveis, sequência e contadores. |
+| `log level` | Exibe os níveis independentes de console e buffer. |
+| `log level console <nível>` | Altera o nível exibido no console. |
+| `log level buffer <nível>` | Altera o nível armazenado no ring. |
+| `log check` | Executa o autoteste em um ring privado de quatro entradas. |
+
+Os níveis aceitos são `error`, `warn`, `info` e `debug`. O buffer não pode ser
+menos detalhado que o console. `log tail` mostra sequência, primeiro e último
+tick, nível, módulo, mensagem, ocorrências, flags e código de erro opcional.
 
 ## Historico rolavel do Shell
 

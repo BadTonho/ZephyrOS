@@ -154,6 +154,25 @@ int shell_process_command(const char* input) {
 
 > **Nota:** A lista detalhada de todos os comandos do shell foi separada no documento [Comandos do Shell](comandos.md).
 
+### Diagnóstico do log
+
+O comando `log` expõe o ring de observabilidade sem criar outra interface:
+
+- `log` ou `log status`: mostra ocupação, níveis, próxima sequência e
+  contadores cumulativos;
+- `log tail [1-16]`: mostra os registros recentes em ordem cronológica, com
+  sequência, ticks, nível, módulo, ocorrências, flags e código opcional;
+- `log clear`: limpa somente os registros e confirma diretamente no console;
+- `log level`: mostra os níveis de console e buffer;
+- `log level console <error|warn|info|debug>`: altera a exibição;
+- `log level buffer <error|warn|info|debug>`: altera o armazenamento;
+- `log check`: executa oito verificações em um ring privado, sem apagar o
+  histórico real.
+
+O armazenamento deve permanecer tão detalhado quanto o console. Combinações e
+argumentos inválidos exibem o uso do comando e são registrados com
+`ERR_INVALID`.
+
 ---
 
 ## Aplicativos
