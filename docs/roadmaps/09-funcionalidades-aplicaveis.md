@@ -14,8 +14,8 @@ forem necessárias.
 
 - [x] R0 - análise arquitetural e seleção das funcionalidades aplicáveis.
 - [x] R1 - observabilidade e log circular (implementada e validada).
-- [ ] R2 - serviço de temporizadores canceláveis (implementado; validação pendente).
-- [x] R3 - espera por eventos, timeout e cancelamento (implementada; validação pendente).
+- [x] R2 - serviço de temporizadores canceláveis (implementado e validado).
+- [x] R3 - espera por eventos, timeout e cancelamento (implementada e validada).
 - [ ] R4 - fila de trabalho cooperativa.
 - [ ] R5 - modelo unificado de dispositivos.
 - [ ] R6 - fila de requisições de bloco.
@@ -98,19 +98,21 @@ Shell. Falhas de inicialização e recuperação continuam registradas.
 
 ### Estado da entrega
 
-R2 está implementada no código e na documentação, aguardando validação manual.
-O PIT permanece em 50 Hz; a IRQ somente marca vencimentos e o processo System
-despacha até oito callbacks depois do polling de rede. O autoteste usa tabelas
-privadas e o `regcheck` inclui apenas a validação estrutural somente-leitura.
+R2 está implementada no código e na documentação, com validação manual
+concluída no QEMU. O PIT permanece em 50 Hz; a IRQ somente marca vencimentos e
+o processo System despacha até oito callbacks depois do polling de rede. O
+autoteste usa tabelas privadas e o `regcheck` inclui apenas a validação
+estrutural somente-leitura.
 
-Validar no QEMU `timer status`, `timer list`, `timer check`, sintaxe inválida,
-ping com reply e timeout, `net check qemu`, `q2check`, `regcheck full`,
-`memcheck`, `log check` e o smoke test dos modos Simple e Classic.
+No QEMU foram validados `timer status`, `timer list`, `timer check`, ping com
+reply e timeout, `net check qemu`, `q2check`, `regcheck full`, `memcheck`,
+`log check` e o smoke test dos modos Simple e Classic.
 
 ### Critério de saída
 
 Timers cancelados não executam callbacks antigos, timeouts não dependem de
-loops ocupados e a regressão existente mantém seus prazos atuais.
+loops ocupados e a regressão existente mantém seus prazos atuais. Critério
+validado no QEMU.
 
 ## R3 - Espera por eventos, timeout e cancelamento
 
@@ -127,13 +129,20 @@ loops ocupados e a regressão existente mantém seus prazos atuais.
   regressão.
 - [x] Adicionar diagnóstico de tarefas bloqueadas e seus motivos.
 
+### Estado da entrega
+
+R3 está implementada e validada manualmente no QEMU. `wait status`, `wait
+list`, `wait check`, `q2check`, `regcheck full`, `memcheck` e `log check`
+concluíram sem falhas, e o smoke test Simple/Classic preservou o retorno ao
+Shell.
+
 ### Critério de saída
 
 Uma tarefa bloqueada acorda somente por sua condição, timeout, cancelamento ou
 indisponibilidade do recurso;
 nenhuma espera fica ocupando CPU sem necessidade; Shell, rede, índice e
 interfaces continuam responsivos. O código e o `wait check` estão concluídos;
-a validação de integração no QEMU permanece pendente.
+a validação de integração no QEMU também foi concluída.
 
 ## R4 - Fila de trabalho cooperativa
 
@@ -285,6 +294,5 @@ make run
 ## Estado
 
 Roadmap próprio do ZephyrOS, criado para orientar melhorias incrementais sem
-substituir a arquitetura existente. R0 e R1 estão concluídas; R2 e R3 estão
-implementadas e aguardam validação manual, enquanto R4-R8 ainda não foram
-implementadas.
+substituir a arquitetura existente. R0, R1, R2 e R3 estão concluídas e
+validadas; R4-R8 ainda não foram implementadas.

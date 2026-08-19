@@ -90,9 +90,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   em RAM, Shell, pesquisa no Explorer Classic, mutacoes com rebuild automatico,
   mount/unmount, cancelamento, fallback Simple, MemCheck e RegCheck em `OK`.
 - Funcionalidades aplicaveis: R1 foi validada no QEMU com log circular,
-  diagnosticos e regressao. R2 implementa timers cancelaveis e o piloto ICMP;
-  R3 implementa espera por canais no IPC do Shell. Ambas permanecem aguardando
-  a validacao manual descrita no Roadmap 09.
+  diagnosticos e regressao. R2 e R3 foram validadas manualmente no QEMU, com
+  timers, espera, rede, cancelamento, `q2check`, `regcheck full`, `memcheck`,
+  `log check` e regressao Simple/Classic aprovados.
 
 ## K4 validada
 
