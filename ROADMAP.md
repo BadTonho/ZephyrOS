@@ -718,6 +718,13 @@ kernel, interface e novos serviços:
 | 7 | [`docs/roadmaps/07-modernizacao-visual.md`](docs/roadmaps/07-modernizacao-visual.md) | Escala acessivel, visual flat/dark e desempenho VESA mensuravel; MV4 funcionalmente validado, comparacao historica N/D. |
 | 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1, EP2 e EP3 validadas. |
 | 9 | [`docs/roadmaps/09-funcionalidades-aplicaveis.md`](docs/roadmaps/09-funcionalidades-aplicaveis.md) | Logs, timers, espera, work queue, dispositivos, I/O, cache e métricas do scheduler. |
+| 10 | [`docs/roadmaps/10-vfs-e-abstracao-io.md`](docs/roadmaps/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, pontos de montagem, dispositivos /dev/ e pipes. |
+| 11 | [`docs/roadmaps/11-gerenciamento-avancado-de-memoria.md`](docs/roadmaps/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging. |
+| 12 | [`docs/roadmaps/12-concorrencia-e-sincronizacao.md`](docs/roadmaps/12-concorrencia-e-sincronizacao.md) | Top-Half/Bottom-Half, wait queues, kernel workqueues e sinais assíncronos. |
+| 13 | [`docs/roadmaps/13-armazenamento-e-buffer-cache.md`](docs/roadmaps/13-armazenamento-e-buffer-cache.md) | Block layer, fila de requisições, buffer cache LRU e sincronização sync. |
+| 14 | [`docs/roadmaps/14-stack-de-rede-avancada.md`](docs/roadmaps/14-stack-de-rede-avancada.md) | Socket buffers sk_buff zero-copy, sockets AF_UNIX/AF_INET e select/poll. |
+| 15 | [`docs/roadmaps/15-introspeccao-e-pseudo-fs.md`](docs/roadmaps/15-introspeccao-e-pseudo-fs.md) | Pseudo-filesystems /proc e /sys para diagnósticos, processos e hardware. |
+| 16 | [`docs/roadmaps/16-energia-e-acpi-avancado.md`](docs/roadmaps/16-energia-e-acpi-avancado.md) | Loop de CPU idle com HLT, parser ACPI (FADT/MADT), poweroff e reboot. |
 
 Os numeros 06 e 07 identificam os documentos, nao uma barreira de conclusao
 integral. A ordem executavel compartilhada e **AS1-AS2 -> MV0-MV3 -> AS3 ->
