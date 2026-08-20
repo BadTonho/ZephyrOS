@@ -271,6 +271,10 @@ static int app_remote_begin(app_remote_result_t* output) {
         return ERR_STATE;
     }
     app_remote_status.busy = 1U;
+    app_remote_status.operation_generation++;
+    if (!app_remote_status.operation_generation) {
+        app_remote_status.operation_generation = 1U;
+    }
     app_remote_status.reason = APP_REMOTE_REASON_NONE;
     return OK;
 }

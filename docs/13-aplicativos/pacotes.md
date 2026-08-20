@@ -176,6 +176,13 @@ Os novos motivos append-only incluem `PLAN_INCOMPLETE`, `PLAN_CYCLE`,
 `HISTORY_UNAVAILABLE`. `app_package_status_t` informa suporte, journal, a
 tabela compacta de rollbacks por app e o ultimo registro de historico.
 
+No ciclo de jobs da Fase 5, verificacao, instalacao e remocao continuam
+usando essas APIs sincrônicas como wrappers compatíveis. O Shell so publica
+`CANCELLED` depois que o ponto seguro da transacao retorna e o journal,
+backup ou rollback pendente foi drenado; falha de recovery permanece
+`FAILED`. `app_package_status_t.operation_generation` identifica a mutacao
+mais recente e evita associar status de uma transacao antiga ao job seguinte.
+
 ## Fonte de plano em diretorio AS5
 
 AS5 preserva integralmente `ZPKG v1` e acrescenta somente duas APIs publicas

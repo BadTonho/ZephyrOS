@@ -18,6 +18,7 @@ typedef struct {
     uint32_t cancelled;
     uint32_t start_failed;
     uint32_t focus_acquired;
+    uint32_t generation;
 } app_loader_result_t;
 
 typedef struct __attribute__((packed)) {
@@ -55,5 +56,6 @@ int app_loader_is_foreground_active(void);
 uint32_t app_loader_get_foreground_pid(void);
 int app_loader_cancel_foreground(uint32_t exit_code);
 int app_loader_take_finished_result(app_loader_result_t* result);
+void app_loader_set_operation_generation(uint32_t generation);
 
 #endif

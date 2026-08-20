@@ -61,6 +61,29 @@ static int kernel_network_poll_enabled = 1;
 static int kernel_usb_poll_enabled = 1;
 static uint32_t kernel_shell_pid = 0;
 static volatile uint32_t kernel_pending_shell_request = 0;
+static uint32_t kernel_last_process_event_generation = 0;
+
+static void kernel_wake_shell_for_event(void) {
+    process_t* shell_process;
+    uint32_t woken = 0U;
+
+    if (!shell_job_is_active() || !kernel_shell_pid) return;
+    shell_process = process_get_by_pid(kernel_shell_pid);
+    if (!shell_process) return;
+    if (process_wake_channel(&shell_process->ipc_wait_channel,
+                             WAIT_WAKE_ONE, WAIT_REASON_EVENT,
+                             &woken) != OK) {
+        LOG_WARN("KERNEL", "Falha ao acordar Shell por evento de job");
+    }
+}
+
+static void kernel_wake_shell_for_process_event(void) {
+    uint32_t generation = process_get_event_generation();
+
+    if (generation == kernel_last_process_event_generation) return;
+    kernel_last_process_event_generation = generation;
+    kernel_wake_shell_for_event();
+}
 
 static int kernel_send_shell_request(uint32_t request) {
     ipc_msg_t msg;
@@ -341,14 +364,16 @@ static void global_mouse_handler(mouse_event_t* evt) {
 
 }
 
-static void kernel_dispatch_timers(void) {
+static uint32_t kernel_dispatch_timers(void) {
     uint32_t dispatched = 0U;
     int result = timer_dispatch_pending(TIMER_DISPATCH_BUDGET, &dispatched);
 
     if (result != OK) {
         LOG_WARN_CODE("KERNEL", result,
                       "Despacho de callback de timer terminou com erro");
+        return 0U;
     }
+    return dispatched;
 }
 
 static void kernel_poll_usb(void) {
@@ -372,10 +397,15 @@ void system_process_main(void) {
             network_manager_poll(&network_processed) != OK) {
             kernel_network_poll_enabled = 0;
             LOG_ERROR("KERNEL", "Processamento Ethernet foi desabilitado");
+            kernel_wake_shell_for_event();
         }
+        if (network_processed > 0U) kernel_wake_shell_for_event();
         kernel_poll_usb();
-        kernel_dispatch_timers();
-        file_index_poll(1U, &index_steps);
+        if (kernel_dispatch_timers() > 0U) kernel_wake_shell_for_event();
+        if (file_index_poll(1U, &index_steps) != OK || index_steps > 0U) {
+            kernel_wake_shell_for_event();
+        }
+        kernel_wake_shell_for_process_event();
         fm_update();
         shell_update_hosted_terminal();
         kernel_retry_shell_request();
@@ -392,6 +422,7 @@ void shell_process_main(void) {
         uint32_t keyboard_events = 0;
         int received = 0;
         wait_reason_t wait_reason = WAIT_REASON_NONE;
+        uint32_t wait_timeout = WAIT_TIMEOUT_INFINITE;
 
         while (keyboard_events < SHELL_KEYBOARD_DISPATCH_BUDGET &&
                ipc_receive(&msg)) {
@@ -405,8 +436,10 @@ void shell_process_main(void) {
             }
         }
         if (!received) {
-            uint32_t wait_timeout = shell_job_is_active() ? 1U :
-                                                            WAIT_TIMEOUT_INFINITE;
+            if (shell_job_get_wait_timeout(&wait_timeout) != OK) {
+                wait_timeout = shell_job_is_active() ? 0U :
+                                                       WAIT_TIMEOUT_INFINITE;
+            }
             if (ipc_wait(wait_timeout, &wait_reason) != OK) {
                 LOG_ERROR("KERNEL", "Falha na espera do Shell por IPC");
                 process_yield();
@@ -1035,10 +1068,15 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
                 kernel_network_poll_enabled = 0;
                 LOG_ERROR("KERNEL",
                           "Processamento Ethernet fallback desabilitado");
+                kernel_wake_shell_for_event();
             }
+            if (network_processed > 0U) kernel_wake_shell_for_event();
             kernel_poll_usb();
-            kernel_dispatch_timers();
-            file_index_poll(1U, &index_steps);
+            if (kernel_dispatch_timers() > 0U) kernel_wake_shell_for_event();
+            if (file_index_poll(1U, &index_steps) != OK || index_steps > 0U) {
+                kernel_wake_shell_for_event();
+            }
+            kernel_wake_shell_for_process_event();
             fm_update();
             shell_update_hosted_terminal();
             kernel_retry_shell_request();

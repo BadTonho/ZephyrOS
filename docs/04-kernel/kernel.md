@@ -410,9 +410,12 @@ vencimentos pendentes; a comparação manual de ticks não faz mais parte da
 manutenção ICMP.
 
 O processo de sistema executa Ethernet, manutencao ARP e manutencao ICMP nessa
-ordem, no maximo uma vez por tick para os protocolos. O Shell pode dormir um
-tick entre observacoes de ping, portanto o diagnostico mostra todos os eventos
-em uma chamada sem impedir o polling. `ipv4_validate_state()` e
+ordem, no maximo uma vez por tick para os protocolos. O Shell nao usa mais um
+polling fixo de um tick: o processo de sistema sinaliza o canal IPC do Shell
+quando ha progresso, e o job recalcula o timeout ate o deadline. Os campos
+`event_generation` de DNS, ICMP e HTTP continuam identificando eventos
+observaveis; a geracao do Shell rejeita resultados de outra execucao.
+`ipv4_validate_state()` e
 `icmp_validate_state()` incluem vetores puros de checksum e nao configuram,
 transmitem, limpam cache nem avancam sessoes.
 Depois do polling de rede, o mesmo processo despacha até oito callbacks de

@@ -105,6 +105,7 @@ typedef struct {
     char catalog_url[APP_REMOTE_URL_SIZE];
     char cache_target[APP_PACKAGE_ID_SIZE];
     uint8_t key_id[16];
+    uint32_t operation_generation;
 } app_remote_status_t;
 
 typedef struct {

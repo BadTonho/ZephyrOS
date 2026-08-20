@@ -81,7 +81,6 @@
 #define SHELL_NET_QEMU_TIMEOUT_IPV4 0x0A0002FEU
 #define SHELL_NET_QEMU_SUBNET_MASK 0xFFFFFF00U
 #define SHELL_NET_CHECK_WAIT_SECONDS 5U
-#define SHELL_NET_CHECK_BLOCK_TICKS 1U
 #define SHELL_NET_CHECK_EXPECTED_ATTEMPTS 3U
 #define SHELL_PING_WAIT_EXTRA_SECONDS 5U
 #define SHELL_DHCP_WAIT_SECONDS 20U
@@ -276,6 +275,7 @@ static shell_builtin_app_t shell_appcheck_migration_app = SHELL_BUILTIN_APP_NONE
 static uint32_t shell_user_test_pid = 0;
 static uint8_t shell_checks_cancel_requested = 0;
 static uint8_t shell_checks_cancel_started = 0;
+static uint32_t shell_checks_job_generation = 0U;
 
 static char appcheck_oversized_args[APP_LAUNCH_MAX_TEXT + 1U];
 static app_launch_info_t appcheck_launch_info;
@@ -341,9 +341,22 @@ static void shell_checks_job_finish(shell_job_context_t* context,
     }
 }
 
+static shell_job_step_result_t shell_checks_job_drain(
+    shell_job_context_t* context) {
+    int active;
+
+    (void)context;
+    active = shell_q2check.state != SHELL_Q2CHECK_IDLE ||
+             shell_regcheck.state != SHELL_REGCHECK_IDLE ||
+             shell_appcheck_loader_pid != 0U ||
+             shell_appcheck_migration_pid != 0U ||
+             shell_waiting_user_test;
+    return active ? SHELL_JOB_STEP_PENDING : SHELL_JOB_STEP_COMPLETE;
+}
+
 static const shell_job_definition_t shell_checks_job_definition = {
     "checks", SHELL_JOB_KIND_CHECK, shell_checks_job_step, NULL,
-    shell_checks_job_finish
+    shell_checks_job_finish, shell_checks_job_drain
 };
 
 static void cmd_appcheck_print_result(const char* label, int result);
@@ -2077,6 +2090,13 @@ int shell_checks_handle_loader_result(const app_loader_result_t* result) {
     process_t* current;
 
     if (!result) return 0;
+    if (result->generation &&
+        (!shell_job_generation_matches(shell_checks_job_generation) ||
+         result->generation != shell_checks_job_generation)) {
+        shell_job_note_stale_event(result->generation);
+        LOG_WARN("SHELL", "Resultado do App Loader pertence a geracao antiga");
+        return 1;
+    }
 
     if (shell_checks_cancel_requested) {
         if (shell_regcheck.state != SHELL_REGCHECK_IDLE) {
@@ -2152,6 +2172,9 @@ int shell_checks_start_job(const char* command) {
     keyboard_set_focus_cancel_filter(shell_checks_should_cancel_focused_user);
     if (shell_job_start(&shell_checks_job_definition, command) != OK) {
         LOG_WARN("SHELL", "Job de diagnostico nao foi registrado");
+    } else {
+        shell_checks_job_generation = shell_job_get_generation();
+        app_loader_set_operation_generation(shell_checks_job_generation);
     }
     return 1;
 }

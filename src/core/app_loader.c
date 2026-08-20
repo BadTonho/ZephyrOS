@@ -16,6 +16,7 @@ static uint32_t app_loader_focus_acquired;
 static app_loader_result_t app_loader_finished_result;
 static app_launch_info_t app_loader_prepared_launch;
 static int app_loader_result_pending;
+static uint32_t app_loader_operation_generation;
 
 static int app_loader_is_busy(void) {
     return app_loader_pending_pid != 0 || app_loader_active_pid != 0 ||
@@ -149,6 +150,7 @@ static void app_loader_store_result(uint32_t pid, uint32_t exit_code,
     app_loader_finished_result.cancelled = cancelled;
     app_loader_finished_result.start_failed = start_failed;
     app_loader_finished_result.focus_acquired = focus_acquired;
+    app_loader_finished_result.generation = app_loader_operation_generation;
     app_loader_result_pending = 1;
 }
 
@@ -328,6 +330,7 @@ int app_loader_init(void) {
     app_loader_active_pid = 0;
     app_loader_focus_acquired = 0;
     app_loader_result_pending = 0;
+    app_loader_operation_generation = 0U;
     kmemset(&app_loader_finished_result, 0, sizeof(app_loader_finished_result));
     kmemset(&app_loader_prepared_launch, 0,
             sizeof(app_loader_prepared_launch));
@@ -514,5 +517,10 @@ int app_loader_take_finished_result(app_loader_result_t* result) {
     *result = app_loader_finished_result;
     kmemset(&app_loader_finished_result, 0, sizeof(app_loader_finished_result));
     app_loader_result_pending = 0;
+    app_loader_operation_generation = 0U;
     return OK;
+}
+
+void app_loader_set_operation_generation(uint32_t generation) {
+    app_loader_operation_generation = generation;
 }

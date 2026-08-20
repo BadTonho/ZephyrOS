@@ -205,6 +205,11 @@ legados; esperas R3 usam deadline e metadados de canal.
 O Shell expoe `wait status`, `wait list` e `wait check`. O primeiro consumidor
 real e o processo Shell, que dorme no canal IPC quando a fila esta vazia e e
 acordado por `ipc_send()` apos uma mensagem de teclado ou solicitacao nativa.
+Na Fase 5, o mesmo canal funciona como agregador de eventos: o processo de
+sistema o sinaliza para progresso de rede, indice, timer e conclusao de
+processo, sem criar mensagens artificiais. `process_get_event_generation()`
+permite ao Shell rejeitar conclusoes de processos que pertencem a uma geracao
+anterior do job.
 
 ---
 

@@ -81,7 +81,6 @@
 #define SHELL_NET_QEMU_TIMEOUT_IPV4 0x0A0002FEU
 #define SHELL_NET_QEMU_SUBNET_MASK 0xFFFFFF00U
 #define SHELL_NET_CHECK_WAIT_SECONDS 5U
-#define SHELL_NET_CHECK_BLOCK_TICKS 1U
 #define SHELL_NET_CHECK_EXPECTED_ATTEMPTS 3U
 #define SHELL_PING_WAIT_EXTRA_SECONDS 5U
 #define SHELL_DHCP_WAIT_SECONDS 20U
@@ -674,6 +673,8 @@ static void cmd_search(const char* args) {
     cmd_search_print_warnings();
 }
 
+static uint32_t shell_index_operation_generation;
+
 static shell_job_step_result_t shell_index_job_step(
     shell_job_context_t* context) {
     file_index_status_t status;
@@ -681,6 +682,19 @@ static shell_job_step_result_t shell_index_job_step(
     if (!context || file_index_get_status(&status) != OK) {
         if (context) context->last_error = ERR_STATE;
         LOG_ERROR("SHELL", "Falha ao consultar job do indice");
+        return SHELL_JOB_STEP_FAILED;
+    }
+    if (!shell_job_generation_matches(context->generation)) {
+        context->stale_events++;
+        context->last_error = ERR_STATE;
+        LOG_WARN("SHELL", "Resultado do indice pertence a geracao antiga");
+        return SHELL_JOB_STEP_FAILED;
+    }
+    if (shell_index_operation_generation &&
+        status.operation_generation != shell_index_operation_generation) {
+        context->stale_events++;
+        context->last_error = ERR_STATE;
+        LOG_WARN("SHELL", "Reconstrucao do indice mudou de geracao");
         return SHELL_JOB_STEP_FAILED;
     }
     shell_job_set_phase(context, file_index_state_name(status.state));
@@ -710,6 +724,16 @@ static int shell_index_job_cancel(shell_job_context_t* context) {
     return file_index_cancel();
 }
 
+static shell_job_step_result_t shell_index_job_drain(
+    shell_job_context_t* context) {
+    file_index_status_t status;
+
+    (void)context;
+    if (file_index_get_status(&status) != OK) return SHELL_JOB_STEP_FAILED;
+    return status.state == FILE_INDEX_STATE_BUILDING ?
+           SHELL_JOB_STEP_PENDING : SHELL_JOB_STEP_COMPLETE;
+}
+
 static void shell_index_job_finish(shell_job_context_t* context,
                                    shell_job_state_t state, int result) {
     (void)context;
@@ -727,10 +751,11 @@ static void shell_index_job_finish(shell_job_context_t* context,
 
 static const shell_job_definition_t shell_index_job_definition = {
     "index", SHELL_JOB_KIND_INDEX, shell_index_job_step,
-    shell_index_job_cancel, shell_index_job_finish
+    shell_index_job_cancel, shell_index_job_finish, shell_index_job_drain
 };
 
 int shell_storage_start_job(const char* arguments) {
+    file_index_status_t status;
     int result;
 
     if (!shell_command_args_equal(arguments, "rebuild")) return 0;
@@ -741,6 +766,12 @@ int shell_storage_start_job(const char* arguments) {
         video_print("\n", 0x0C);
         return 1;
     }
+    if (file_index_get_status(&status) != OK) {
+        file_index_cancel();
+        video_print("Status do indice indisponivel.\n", 0x0C);
+        return 1;
+    }
+    shell_index_operation_generation = status.operation_generation;
     result = shell_job_start(&shell_index_job_definition, arguments);
     if (result != OK) {
         file_index_cancel();

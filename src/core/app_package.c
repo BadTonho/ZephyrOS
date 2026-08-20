@@ -31,6 +31,7 @@
 
 static int app_package_ready = 0;
 static int app_package_mutation_active = 0;
+static uint32_t app_package_operation_generation;
 static spinlock_t app_package_mutation_lock;
 static app_package_action_result_t app_package_legacy_result;
 static app_package_plan_t app_package_active_plan;
@@ -197,6 +198,10 @@ static int app_package_mutation_begin(
             result, APP_PACKAGE_ACTION_REASON_MUTATION_BUSY, ERR_STATE);
     }
     app_package_mutation_active = 1;
+    app_package_operation_generation++;
+    if (!app_package_operation_generation) {
+        app_package_operation_generation = 1U;
+    }
     spinlock_release(&app_package_mutation_lock);
     return OK;
 }
@@ -786,6 +791,7 @@ int app_package_init(void) {
     app_package_ready = 0;
     spinlock_init(&app_package_mutation_lock);
     app_package_mutation_active = 0;
+    app_package_operation_generation = 0U;
     kmemset(&app_package_legacy_result, 0,
             sizeof(app_package_legacy_result));
     kmemset(&app_package_transaction_state, 0,
@@ -2928,6 +2934,7 @@ int app_package_get_status(app_package_status_t* status_out) {
     status_out->transaction_pending = app_package_transaction_pending ||
                                       app_package_transaction_failed;
     status_out->history_available = app_package_history_available;
+    status_out->operation_generation = app_package_operation_generation;
     for (uint32_t index = 0; index < APP_PACKAGE_ROLLBACK_SLOTS; index++) {
         const app_package_rollback_record_t* rollback =
             &app_package_transaction_state.rollbacks[index];

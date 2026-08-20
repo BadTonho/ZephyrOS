@@ -375,35 +375,38 @@ video_print("  meucomando - Descrição\n", 0x07);
 ```
 ---
 
-## Jobs cooperativos (Fase 4)
+## Jobs cooperativos (Fases 4 e 5)
 
 `src/shell/shell_job.c` mantem um unico contexto estatico para operacoes
 demoradas. Os estados publicados por `src/include/apps/shell_job.h` sao
-`IDLE`, `RUNNING`, `CANCEL_REQUESTED`, `SUCCEEDED`, `FAILED` e `CANCELLED`.
-O contexto registra o tipo do job, fase, progresso, ticks de inicio e fim,
-erro, teclas bloqueadas e pedidos de cancelamento.
+`IDLE`, `RUNNING`, `CANCEL_REQUESTED`, `DRAINING`, `SUCCEEDED`, `FAILED` e
+`CANCELLED`. O contexto registra tipo, geracao, fase, progresso, ticks de
+inicio e fim, deadline, erro, teclas bloqueadas, pedidos de cancelamento,
+acordadas e eventos tardios.
 
 Quando um comando cooperativo inicia, o Shell mostra uma unica informacao de
-entrada bloqueada. O loop passa a usar espera IPC curta, executa um passo por
-ciclo, continua consumindo eventos de teclado e atualiza o terminal hospedado.
+entrada bloqueada. O loop espera no `ipc_wait_channel` do proprio processo,
+com o timeout restante ate o deadline do job, executa um passo por ciclo,
+continua consumindo eventos de teclado e atualiza o terminal hospedado.
 Teclas comuns sao consumidas e ignoradas; `Esc` e `F12` solicitam
 cancelamento. Durante qualquer modo do `regcheck`, `F11` solicita ao runtime o
 cancelamento seguro do ZAPP em foco. O primeiro evento bloqueado gera somente
 um aviso no log.
 
 `job status` exibe o ultimo estado conhecido, o job ativo ou concluido, fase,
-progresso, erro, teclas bloqueadas e cancelamentos. Ao concluir, falhar ou
-cancelar, o executor limpa a entrada e mostra exatamente um novo prompt.
+geracao, progresso, erro, deadline, teclas bloqueadas, cancelamentos,
+acordadas e eventos descartados. Ao concluir, falhar ou cancelar, o executor
+limpa a entrada e mostra exatamente um novo prompt.
 
 As flags `MAY_BLOCK`, `OPENS_SCENE` e `COOPERATIVE` da tabela em
 `src/shell/shell_dispatch.c` sao metadados de encaminhamento. A flag
 `COOPERATIVE` identifica os comandos ligados ao executor, mas a politica de
 prompt e o cancelamento continuam centralizados no ciclo do Shell.
 
-Nesta fase, rede usa os estados assincronos existentes de DNS, ICMP, HTTP e
-DHCP; `index rebuild` usa `file_index_poll`; e os adaptadores de pacotes,
-Store e Update preservam as APIs sincronas, bombeando eventos durante as
-operacoes que ja possuem pontos de cancelamento. Os testes Q2, RegCheck e
-AppCheck usam o mesmo fluxo de resultados do App Loader. Cenas interativas
-como Editor, Player, Task Manager e Window Manager permanecem fora deste
-executor.
+Rede usa os estados assincronos existentes de DNS, ICMP, HTTP e DHCP;
+`index rebuild` usa `file_index_poll`; e os adaptadores de pacotes, Store e
+Update preservam as APIs sincronas publicas, bombeando eventos nos pontos de
+cancelamento e drenando journals, rollback e recovery antes de publicar o
+estado final. Os testes Q2, RegCheck e AppCheck associam resultados do App
+Loader a geracao do job. Cenas interativas como Editor, Player, Task Manager e
+Window Manager permanecem fora deste executor.

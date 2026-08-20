@@ -169,6 +169,13 @@ confianca de teste ficam em `core/app_remote_config.h` e
 `core/app_remote_trust.h`. A tabela de confianca e exclusiva da App Store e
 nao reutiliza a raiz ZUPD.
 
+As operacoes remotas preservam a geracao do catalogo e do cache durante o
+job. `Esc`/`F12` solicita cancelamento, o callback remoto drena HTTP e a
+publicacao A/B antes de o Shell mostrar `CANCELLED`; resultados de uma
+geracao antiga sao ignorados pelo executor. O campo
+`app_remote_status_t.operation_generation` separa a execucao remota da
+geracao do catalogo autenticado.
+
 O catalogo `ZAC1` possui header fixo de 128 bytes, ate 16 entradas de 256
 bytes em ordem lexical por ID e assinatura Ed25519 de 64 bytes sobre dominio
 proprio, header e entradas. Header e entradas registram geracao monotona,

@@ -9,6 +9,7 @@
 #include "core/string.h"
 #include "core/timer.h"
 #include "core/video.h"
+#include "core/wait.h"
 
 #define SHELL_JOB_SCANCODE_ESCAPE 0x01U
 #define SHELL_JOB_SCANCODE_F12 0x58U
@@ -20,6 +21,10 @@ static uint8_t shell_job_cancel_called;
 static uint8_t shell_job_block_warning;
 static uint32_t shell_job_ipc_queue_full_baseline;
 static uint8_t shell_job_queue_warning;
+static uint32_t shell_job_generation_counter;
+static int shell_job_drain_error;
+static uint8_t shell_job_cancel_failed;
+static uint8_t shell_job_timeout_requested;
 
 static void shell_job_mark_cancel_requested(void) {
     if (!shell_job_is_active() || shell_job_context.cancel_requested) return;
@@ -27,6 +32,15 @@ static void shell_job_mark_cancel_requested(void) {
     shell_job_context.cancel_requests++;
     shell_job_context.state = SHELL_JOB_STATE_CANCEL_REQUESTED;
     LOG_INFO("SHELL", "Cancelamento de job solicitado");
+}
+
+static void shell_job_mark_timeout_requested(void) {
+    if (!shell_job_is_active() || shell_job_context.cancel_requested) return;
+    shell_job_context.cancel_requested = 1U;
+    shell_job_context.state = SHELL_JOB_STATE_CANCEL_REQUESTED;
+    shell_job_context.last_error = ERR_TIMEOUT;
+    shell_job_timeout_requested = 1U;
+    LOG_WARN("SHELL", "Timeout de job atingido; iniciando drenagem");
 }
 
 static void shell_job_copy_text(char* destination, uint32_t capacity,
@@ -42,8 +56,7 @@ static void shell_job_copy_text(char* destination, uint32_t capacity,
     destination[index] = '\0';
 }
 
-static void shell_job_finish(shell_job_state_t state, int result) {
-    shell_job_context.state = state;
+static void shell_job_complete(shell_job_state_t state, int result) {
     shell_job_context.last_error = result;
     shell_job_context.completed_ticks = timer_get_ticks();
 
@@ -61,12 +74,47 @@ static void shell_job_finish(shell_job_state_t state, int result) {
         LOG_ERROR("SHELL", "Job cooperativo terminou com erro");
     }
 
+    shell_job_context.state = state;
     shell_job_definition = NULL;
     shell_job_cancel_called = 0U;
     shell_job_block_warning = 0U;
     shell_job_ipc_queue_full_baseline = 0U;
     shell_job_queue_warning = 0U;
     shell_runtime_finish_command();
+}
+
+static void shell_job_begin_drain(int result) {
+    shell_job_drain_error = result;
+    shell_job_context.state = SHELL_JOB_STATE_DRAINING;
+    shell_job_set_phase(&shell_job_context, "drenando");
+}
+
+static void shell_job_poll_drain(void) {
+    shell_job_step_result_t drain_result;
+
+    if (!shell_job_definition) return;
+    if (!shell_job_definition->drain) {
+        shell_job_complete(shell_job_cancel_failed ||
+                               shell_job_timeout_requested ?
+                           SHELL_JOB_STATE_FAILED : SHELL_JOB_STATE_CANCELLED,
+                           shell_job_drain_error == OK ? ERR_TIMEOUT :
+                                                          shell_job_drain_error);
+        return;
+    }
+
+    drain_result = shell_job_definition->drain(&shell_job_context);
+    if (drain_result == SHELL_JOB_STEP_PENDING) return;
+    if (drain_result == SHELL_JOB_STEP_FAILED) {
+        shell_job_complete(SHELL_JOB_STATE_FAILED,
+                           shell_job_context.last_error == OK ? ERR_STATE :
+                                                                 shell_job_context.last_error);
+        return;
+    }
+    shell_job_complete(shell_job_cancel_failed ||
+                           shell_job_timeout_requested ?
+                       SHELL_JOB_STATE_FAILED : SHELL_JOB_STATE_CANCELLED,
+                       shell_job_drain_error == OK ? ERR_TIMEOUT :
+                                                      shell_job_drain_error);
 }
 
 void shell_job_reset(void) {
@@ -77,6 +125,10 @@ void shell_job_reset(void) {
     shell_job_block_warning = 0U;
     shell_job_ipc_queue_full_baseline = 0U;
     shell_job_queue_warning = 0U;
+    shell_job_generation_counter = 0U;
+    shell_job_drain_error = OK;
+    shell_job_cancel_failed = 0U;
+    shell_job_timeout_requested = 0U;
 }
 
 int shell_job_start(const shell_job_definition_t* definition,
@@ -102,8 +154,15 @@ int shell_job_start(const shell_job_definition_t* definition,
     shell_job_context.state = SHELL_JOB_STATE_RUNNING;
     shell_job_context.started_tick = timer_get_ticks();
     shell_job_context.last_error = OK;
+    shell_job_context.deadline_tick = WAIT_TIMEOUT_INFINITE;
+    shell_job_generation_counter++;
+    if (!shell_job_generation_counter) shell_job_generation_counter = 1U;
+    shell_job_context.generation = shell_job_generation_counter;
     shell_job_definition = definition;
     shell_job_cancel_called = 0U;
+    shell_job_drain_error = OK;
+    shell_job_cancel_failed = 0U;
+    shell_job_timeout_requested = 0U;
     shell_job_block_warning = 0U;
     {
         ipc_stats_t ipc_stats;
@@ -130,14 +189,33 @@ void shell_job_poll(void) {
 
     if (!shell_job_is_active()) return;
 
+    shell_job_context.wakeups++;
+    if (shell_job_context.deadline_active) {
+        uint32_t remaining = 0U;
+
+        if (wait_deadline_remaining_active(shell_job_context.deadline_tick,
+                                           shell_job_context.deadline_active,
+                                           &remaining) != OK) {
+            shell_job_context.last_error = ERR_STATE;
+            shell_job_complete(SHELL_JOB_STATE_FAILED, ERR_STATE);
+            return;
+        }
+        if (!remaining) shell_job_mark_timeout_requested();
+    }
+    if (shell_job_context.state == SHELL_JOB_STATE_DRAINING) {
+        shell_job_poll_drain();
+        return;
+    }
+
     if (shell_job_context.cancel_requested &&
         shell_job_definition->cancel && !shell_job_cancel_called) {
         shell_job_cancel_called = 1U;
         result = shell_job_definition->cancel(&shell_job_context);
         if (result == OK) {
-            shell_job_finish(SHELL_JOB_STATE_CANCELLED, ERR_TIMEOUT);
+            shell_job_begin_drain(ERR_TIMEOUT);
         } else {
-            shell_job_finish(SHELL_JOB_STATE_FAILED, result);
+            shell_job_cancel_failed = 1U;
+            shell_job_begin_drain(result);
         }
         return;
     }
@@ -145,16 +223,15 @@ void shell_job_poll(void) {
     step_result = shell_job_definition->step(&shell_job_context);
     if (step_result == SHELL_JOB_STEP_PENDING) return;
     if (step_result == SHELL_JOB_STEP_COMPLETE) {
-        shell_job_finish(SHELL_JOB_STATE_SUCCEEDED,
-                         shell_job_context.last_error);
+        shell_job_complete(SHELL_JOB_STATE_SUCCEEDED,
+                           shell_job_context.last_error);
     } else if (step_result == SHELL_JOB_STEP_CANCELLED) {
-        shell_job_finish(SHELL_JOB_STATE_CANCELLED,
-                         shell_job_context.last_error == OK ? ERR_TIMEOUT :
-                                                               shell_job_context.last_error);
+        shell_job_begin_drain(shell_job_context.last_error == OK ? ERR_TIMEOUT :
+                                                                    shell_job_context.last_error);
     } else {
-        shell_job_finish(SHELL_JOB_STATE_FAILED,
-                         shell_job_context.last_error == OK ? ERR_STATE :
-                                                               shell_job_context.last_error);
+        shell_job_complete(SHELL_JOB_STATE_FAILED,
+                           shell_job_context.last_error == OK ? ERR_STATE :
+                                                                 shell_job_context.last_error);
     }
 }
 
@@ -232,11 +309,50 @@ int shell_job_get_status(shell_job_status_t* status_out) {
     status_out->cancel_requests = shell_job_context.cancel_requests;
     status_out->last_error = shell_job_context.last_error;
     status_out->active = shell_job_is_active();
+    status_out->generation = shell_job_context.generation;
+    status_out->deadline_tick = shell_job_context.deadline_tick;
+    status_out->wakeups = shell_job_context.wakeups;
+    status_out->stale_events = shell_job_context.stale_events;
+    status_out->cancel_requested = shell_job_context.cancel_requested;
+    status_out->draining = shell_job_context.state == SHELL_JOB_STATE_DRAINING;
+    status_out->deadline_active = shell_job_context.deadline_active;
     return OK;
 }
 
 int shell_job_cancel_requested(void) {
     return shell_job_context.cancel_requested;
+}
+
+uint32_t shell_job_get_generation(void) {
+    return shell_job_context.generation;
+}
+
+int shell_job_generation_matches(uint32_t generation) {
+    if (!generation || !shell_job_is_active()) return 0;
+    return shell_job_context.generation == generation;
+}
+
+void shell_job_note_stale_event(uint32_t generation) {
+    if (!generation) return;
+    if (shell_job_is_active() && shell_job_context.generation == generation) {
+        return;
+    }
+    shell_job_context.stale_events++;
+    LOG_WARN("SHELL", "Evento de geracao antiga descartado");
+}
+
+int shell_job_get_wait_timeout(uint32_t* timeout_out) {
+    if (!timeout_out) {
+        LOG_ERROR("SHELL", "Destino nulo para timeout do job");
+        return ERR_NULL;
+    }
+    if (!shell_job_is_active() || !shell_job_context.deadline_active) {
+        *timeout_out = WAIT_TIMEOUT_INFINITE;
+        return OK;
+    }
+    return wait_deadline_remaining_active(shell_job_context.deadline_tick,
+                                          shell_job_context.deadline_active,
+                                          timeout_out);
 }
 
 void shell_job_set_phase(shell_job_context_t* context, const char* phase) {
@@ -251,6 +367,33 @@ void shell_job_set_progress(shell_job_context_t* context,
     context->total = total;
 }
 
+void shell_job_set_timeout(shell_job_context_t* context, uint32_t ticks) {
+    if (!context) return;
+    if (!ticks) {
+        shell_job_clear_timeout(context);
+        return;
+    }
+    context->deadline_tick = timer_get_ticks() + ticks;
+    context->deadline_active = 1U;
+}
+
+void shell_job_set_deadline(shell_job_context_t* context,
+                            uint32_t deadline_tick) {
+    if (!context) return;
+    if (deadline_tick == WAIT_TIMEOUT_INFINITE) {
+        shell_job_clear_timeout(context);
+        return;
+    }
+    context->deadline_tick = deadline_tick;
+    context->deadline_active = 1U;
+}
+
+void shell_job_clear_timeout(shell_job_context_t* context) {
+    if (!context) return;
+    context->deadline_tick = WAIT_TIMEOUT_INFINITE;
+    context->deadline_active = 0U;
+}
+
 const char* shell_job_state_name(shell_job_state_t state) {
     switch (state) {
         case SHELL_JOB_STATE_RUNNING: return "RUNNING";
@@ -258,6 +401,7 @@ const char* shell_job_state_name(shell_job_state_t state) {
         case SHELL_JOB_STATE_SUCCEEDED: return "SUCCEEDED";
         case SHELL_JOB_STATE_FAILED: return "FAILED";
         case SHELL_JOB_STATE_CANCELLED: return "CANCELLED";
+        case SHELL_JOB_STATE_DRAINING: return "DRAINING";
         default: return "IDLE";
     }
 }
@@ -283,6 +427,8 @@ void shell_dispatch_cmd_job(const char* arguments) {
     if (shell_job_get_status(&status) != OK) return;
     video_print("Job: ", 0x0B);
     video_print(shell_job_state_name(status.state), 0x0A);
+    video_print(" geracao=", 0x07);
+    shell_command_print_num(status.generation);
     video_print(" tipo=", 0x07);
     video_print(shell_job_kind_name(status.kind), 0x0B);
     video_print(" comando=", 0x07);
@@ -299,5 +445,13 @@ void shell_dispatch_cmd_job(const char* arguments) {
     shell_command_print_num(status.blocked_events);
     video_print(" cancelamentos=", 0x07);
     shell_command_print_num(status.cancel_requests);
+    video_print(" deadline=", 0x07);
+    shell_command_print_num(status.deadline_tick);
+    video_print(" deadline_ativo=", 0x07);
+    shell_command_print_num(status.deadline_active);
+    video_print(" acordadas=", 0x07);
+    shell_command_print_num(status.wakeups);
+    video_print(" tardias=", 0x07);
+    shell_command_print_num(status.stale_events);
     video_print("\n", 0x07);
 }

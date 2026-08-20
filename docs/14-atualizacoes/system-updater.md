@@ -102,6 +102,11 @@ interface U4, enquanto o segundo descreve o verificador e a transacao U2/U3.
 inspecionar ambos sem gravar. Falha remota nao degrada o componente System
 Updater nem o servico Update local; somente a capacidade `remoto` muda.
 
+O worker usa o ciclo de vida de jobs da Fase 5: verify, fetch, apply e
+rollback exibem geracao, progresso e deadline; cancelamento espera o ponto
+seguro da etapa atomica e drena journal/recovery antes de publicar o estado
+final. Os wrappers publicos de `update.h` permanecem compatíveis.
+
 ## Limitacoes
 
 - apenas arquivos `.ZUP` presentes na raiz podem ser selecionados;

@@ -8,6 +8,7 @@
 #include "core/update_remote.h"
 #include "core/update_remote_config.h"
 #include "core/video.h"
+#include "core/wait.h"
 #include "drivers/vesa.h"
 #include "fs/fs.h"
 #include "process/process.h"
@@ -114,6 +115,7 @@ static uint8_t updater_remote_job_confirm = 0U;
 static uint32_t updater_remote_progress_bytes = 0U;
 static update_remote_state_t updater_remote_progress_state =
     UPDATE_REMOTE_STATE_DISABLED;
+static process_t* updater_remote_worker_process;
 
 static void updater_hosted_draw(int x, int y, int width, int height);
 static void updater_hosted_key(uint8_t scancode);
@@ -519,6 +521,8 @@ static void updater_remote_confirm_fetch(void) {
 
 static int updater_remote_start_job(updater_remote_job_t job,
                                     int request_confirmation) {
+    uint32_t woken = 0U;
+
     if (job == UPDATER_REMOTE_JOB_NONE) {
         LOG_ERROR("UPDATER", "Job remoto invalido");
         return ERR_INVALID;
@@ -537,6 +541,12 @@ static int updater_remote_start_job(updater_remote_job_t job,
     updater_confirm = UPDATER_CONFIRM_NONE;
     updater_result_kind = UPDATER_RESULT_REMOTE;
     kmemset(&updater_remote_result, 0, sizeof(updater_remote_result));
+    if (updater_remote_worker_process &&
+        process_wake_channel(&updater_remote_worker_process->ipc_wait_channel,
+                             WAIT_WAKE_ONE, WAIT_REASON_EVENT,
+                             &woken) != OK) {
+        LOG_WARN("UPDATER", "Falha ao acordar worker remoto do Updater");
+    }
     updater_draw();
     return OK;
 }
@@ -558,7 +568,12 @@ static void updater_remote_worker_main(void) {
         updater_remote_job_t job = updater_remote_job;
 
         if (job == UPDATER_REMOTE_JOB_NONE) {
-            process_block(1U);
+            wait_reason_t wait_reason = WAIT_REASON_NONE;
+
+            if (ipc_wait(WAIT_TIMEOUT_INFINITE, &wait_reason) != OK) {
+                LOG_WARN("UPDATER", "Falha na espera do worker remoto");
+                process_yield();
+            }
             continue;
         }
         updater_remote_job_running = job;
@@ -1363,8 +1378,6 @@ static void updater_change_selection(int direction) {
 }
 
 int updater_init(void) {
-    process_t* worker;
-
     LOG_INFO("UPDATER", "Inicializando System Updater");
     updater_active = 0;
     updater_hosted = 0;
@@ -1377,6 +1390,7 @@ int updater_init(void) {
             sizeof(updater_completed_action));
     updater_remote_job = UPDATER_REMOTE_JOB_NONE;
     updater_remote_job_running = UPDATER_REMOTE_JOB_NONE;
+    updater_remote_worker_process = 0;
     updater_remote_job_busy = 0U;
     updater_remote_cancel_requested = 0U;
     if (!update_is_ready()) {
@@ -1386,9 +1400,9 @@ int updater_init(void) {
         LOG_ERROR("UPDATER", "Servico Update nao inicializado");
         return ERR_STATE;
     }
-    worker = process_create(
+    updater_remote_worker_process = process_create(
         "Updater Worker", updater_remote_worker_main);
-    if (!worker) {
+    if (!updater_remote_worker_process) {
         recovery_mark_disabled(
             RECOVERY_COMPONENT_SYSTEM_UPDATER, ERR_MEM,
             "Worker cooperativo do System Updater indisponivel");

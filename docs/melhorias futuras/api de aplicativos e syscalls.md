@@ -241,6 +241,11 @@ imagem temporaria e que, ao receber o resultado final, o foco ja voltou para
 o processo Shell. O resultado fica pendente enquanto uma interface nativa
 estiver cobrindo o terminal, evitando perder a notificacao de encerramento.
 
+O resultado publico do App Loader tambem carrega a geracao da operacao que o
+originou. O Shell associa essa geracao ao job ativo e descarta resultados
+tardios depois de cancelamento ou troca para a proxima execucao, preservando
+o fluxo existente de foco, reaproveitamento e `take_finished_result()`.
+
 ### Fase 6B - Argumentos e primeira migracao nativa - validada
 
 - [x] definir `app_launch_info_t` com ABI `1`, ate 8 argumentos e texto bruto

@@ -78,6 +78,7 @@ typedef struct {
     char manifest_url[UPDATE_REMOTE_URL_SIZE];
     char cached_alias[UPDATE_REMOTE_ALIAS_SIZE];
     update_remote_candidate_t candidate;
+    uint32_t operation_generation;
 } update_remote_status_t;
 
 typedef struct {

@@ -1327,11 +1327,14 @@ Categorias: Tela, Barra de Tarefas, Janelas, Ícones, Sistema, Som, Sobre.
 ## `job status`
 
 Mostra o ultimo estado conhecido do executor cooperativo de operacoes
-demoradas. A saida inclui tipo, comando, fase, progresso, erro, quantidade de
-teclas bloqueadas e pedidos de cancelamento.
+demoradas. A saida inclui estado, geracao, tipo, comando, fase, progresso,
+erro, deadline, quantidade de teclas bloqueadas, pedidos de cancelamento,
+acordadas e eventos descartados. Durante a drenagem, o estado publicado e
+`DRAINING` e o job continua ativo.
 
 Durante um job ativo, teclas comuns sao consumidas para evitar o enchimento da
 fila IPC. `Esc` e `F12` solicitam o cancelamento geral do job. Durante qualquer
 modo do `regcheck`, `F11` solicita ao runtime o cancelamento seguro do ZAPP em
 foco para validar a etapa. Ao terminar, falhar ou cancelar, o Shell exibe um
-unico novo prompt.
+unico novo prompt. Timeout publica `FAILED` com `ERR_TIMEOUT`; cancelamento
+explicito publica `CANCELLED` depois da drenagem.
