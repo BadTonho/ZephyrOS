@@ -3,6 +3,7 @@
 #include "core/panic.h"
 #include "core/log.h"
 #include "core/errors.h"
+#include "core/string.h"
 #include "core/device_manager.h"
 #include "core/network_manager.h"
 #include "core/usb_manager.h"
