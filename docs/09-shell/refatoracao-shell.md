@@ -145,8 +145,9 @@ Classic e bloqueio de entrada durante `q2check` e `usertest`.
 
 ## Fase 3 — Estado da implementacao
 
-A implementacao estrutural da Fase 3 foi concluida e aguarda `q3check`, build
-limpo e validacao funcional no QEMU antes de ser marcada como concluida.
+A implementacao estrutural da Fase 3 e a matriz funcional no QEMU foram
+concluidas. A marcacao formal como concluida ainda depende da confirmacao de
+`q3check` e do build limpo.
 
 ### Subfases e fronteiras
 
@@ -181,18 +182,17 @@ As funcoes e estados abaixo continuam privados aos modulos:
 
 Nenhuma alteracao foi feita em `src/boot/boot.asm`.
 
-### Validacao pendente da Fase 3
+### Validacao da Fase 3
 
-O usuario deve executar, nesta ordem:
+O QEMU foi validado cobrindo os comandos basicos e `storage/index/search`,
+diagnosticos, rede, `q2check`, `regcheck`, `appcheck`, `usertest`, pacotes,
+Desktop, Explorer, Task Manager, Settings, Updater, WM, Editor, Player e o
+terminal hospedado, incluindo o smoke test Simple/Classic e o bloqueio e
+retomada da entrada.
+
+Para fechar os gates formais, o usuario deve executar:
 
 ```text
 make q3check
 make clean && make
-make run
 ```
-
-No QEMU, a matriz deve cobrir os comandos basicos e `storage/index/search`,
-diagnosticos, rede, `q2check`, `regcheck`, `appcheck`, `usertest`, pacotes,
-Desktop, Explorer, Task Manager, Settings, Updater, WM, Editor, Player e o
-terminal hospedado, repetindo o smoke test Simple/Classic e o bloqueio e
-retomada da entrada.
