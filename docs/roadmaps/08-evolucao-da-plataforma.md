@@ -234,7 +234,7 @@ QEMU para a validacao manual.
 
 ### EP4.2 - UHCI, portas e transferencias de controle
 
-**Estado:** implementada; validacao manual no QEMU pendente.
+**Estado:** implementada e validada pelo usuario em 20/08/2026.
 
 - [x] Inicializar apenas UHCI, com portas I/O, frame list, queue head, pool
   limitado de TDs, buffers DMA alinhados, timeout absoluto, IRQ compartilhada
@@ -249,7 +249,7 @@ QEMU para a validacao manual.
   fallback, IDs de sessao `usb-dev-BB:DD.F-pN-aN` e invariantes no
   `regcheck full`.
 
-### Validacao planejada da EP4.2
+### Validacao concluida da EP4.2
 
 1. `make q3check`, `make clean && make`, `make run` e `make run-usb`.
 2. No `run`, `usb status`, `usb ports`, `usb devices`, `health summary`,
@@ -261,6 +261,14 @@ QEMU para a validacao manual.
 4. Sem dispositivo, as portas ficam `EMPTY`, zero dispositivos e UHCI pronto.
    Com `QEMU_USB_ARGS="-device usb-ehci,id=usb"`, EHCI permanece apenas
    inventariado, sem BAR, DMA, IRQ ou transferencia, com USB `DEGRADED`.
+
+Os quatro cenarios foram executados no QEMU. O `usb-kbd` produziu o dispositivo
+`usb-dev-00:04.0-p1-a1`, com a porta 1 `CONFIGURED`, endereco USB 1 e os
+descritores Device/Configuration validos. O cenario sem dispositivo manteve as
+duas portas `EMPTY`, zero dispositivos e UHCI `READY`. O `run` padrao manteve
+USB `DISABLED`, Shell, teclado PS/2 e mouse funcionais, com `regcheck full` e
+`memcheck` em `OK`. O fixture EHCI foi somente inventariado como `DEGRADED`,
+com DMA, IRQ, portas e transferencias indisponiveis, conforme o escopo.
 
 ### EP4.3 - Bulk e USB Mass Storage somente-leitura
 
