@@ -228,6 +228,14 @@ forma controlada e aparecem no `health`; apenas `power_shutdown()` e terminal.
   somente quando o snapshot ACPI atende ao contrato seguro da S1.4; nos
   demais casos, `shutdown` usa o fallback terminal HLT.
 
+- `usb_manager`: apos `pci_init()` cria um inventario somente-leitura dos
+  controladores PCI de classe `0x0C`, subclasse `0x03`. ProgIF `0x00` e UHCI,
+  `0x20` e EHCI e os demais ficam como controladores fora do escopo. O servico
+  copia vendor/device, classe, BDF, IRQ e seis BARs do snapshot PCI, limita-se
+  a oito entradas e expoe `usb status`, `usb list` e `usb device <id>`. Ele nao
+  escreve configuracao PCI, nao acessa BARs e nao inicializa DMA, IRQ, portas
+  ou transferencias USB.
+
 Os headers `core/device_manager.h` e `core/power.h` definem as estruturas de
 snapshot e status. O snapshot de dispositivos guarda somente metadados;
 `device_manager_format_text()` monta as strings de exibicao sob demanda para
@@ -640,6 +648,13 @@ disco mas a descoberta geral terminou parcialmente e `DISABLED` quando ATA ou
 o inventario Storage nao estao disponiveis. Uma particao MBR/BPB invalida fica
 registrada somente em seu volume e nao degrada os demais. O kernel inicializa
 Storage depois do filesystem legado e antes dos consumidores de interface.
+
+Na EP4.1, `RECOVERY_COMPONENT_USB` e anexado depois de Storage para preservar
+os valores anteriores. O componente fica `READY` quando ha apenas UHCI/EHCI
+inventariados, `DEGRADED` quando o inventario e parcial ou inclui controlador
+fora do escopo, e `DISABLED` quando PCI esta indisponivel ou nenhum controlador
+USB foi encontrado. `device-scan` atualiza o snapshot USB de forma idempotente;
+nenhum desses estados inicializa o driver de transferencias.
 
 O contrato detalhado esta em
 [`app-store.md`](../13-aplicativos/app-store.md).
