@@ -198,7 +198,7 @@ impedir navegacao normal do Explorer ou uso do filesystem.
 
 ### EP4.1 - Inventario e contrato de controladores
 
-**Estado:** implementada; validacao manual do usuario pendente.
+**Estado:** implementada e validada pelo usuario em 20/08/2026.
 
 O escopo desta entrega e somente a descoberta por PCI. O `usb_manager` le o
 snapshot ja criado pelo PCI, copia BDF, IRQ e BARs e nao escreve configuracao,
@@ -221,15 +221,16 @@ Recovery e a ausencia de inicializacao de DMA, IRQ ou transferencias. O alvo
 `run` permanece inalterado; `run-usb` acrescenta um controlador UHCI PIIX3 ao
 QEMU para a validacao manual.
 
-### Validacao pendente da EP4.1
+### Validacao concluida da EP4.1
 
-O usuario deve executar `make q3check`, `make clean && make`, `make run` e
-`make run-usb`. No QEMU sem USB, `usb status`, `usb list`, uma busca por ID
-inexistente, `health summary`, `regcheck full` e `memcheck` devem terminar sem
-falha estrutural e reportar USB `DISABLED`. No `run-usb`, `usb status`,
-`usb list`, `usb device <id>`, `device-scan` e `regcheck full` devem confirmar
-UHCI e o ID estavel. Um `QEMU_USB_ARGS` alternativo deve confirmar EHCI apenas
-como inventario.
+1. No `run` padrao, USB reportou `DISABLED`, sem controladores; entradas
+   inexistentes e comandos invalidos falharam de forma controlada.
+2. No `run-usb`, UHCI foi identificado como `usb-pci-00:04.0`, com dados PCI,
+   ID estavel, `device-scan` concluido e DMA, IRQ e transferencias indisponiveis.
+3. Com `QEMU_USB_ARGS` alternativo, EHCI foi identificado com inventario
+   completo e sem inicializacao de transferencias.
+4. `health summary`, `regcheck full` e `memcheck` terminaram em `OK` nos
+   cenarios validados.
 
 ### EP4.2 - UHCI, portas e transferencias de controle
 
