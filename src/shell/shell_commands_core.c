@@ -354,7 +354,7 @@ static void cmd_help(void) {
     video_print("  memcheck - Valida heap, PMM e diretorios de usuario\n", 0x07);
     video_print("  schedcheck - Valida invariantes do scheduler\n", 0x07);
     video_print("  q2check  - Executa diagnostico compacto da Q2\n", 0x07);
-    video_print("  regcheck [full] - full usa F11; normal usa F12\n",
+    video_print("  regcheck [full] - sem full: F12; com full: F11\n",
                 0x07);
     video_print("  appcheck - Testa API, arquivos, IPC e loader\n", 0x07);
     video_print("  pkg      - Gerencia pacotes .ZPK locais\n", 0x07);

@@ -76,7 +76,7 @@ Comandos disponiveis:
   memcheck  - Valida heap, PMM e diretorios de usuario
   schedcheck - Valida invariantes do scheduler
   q2check   - Executa diagnostico compacto da Q2
-  regcheck [full] - Executa regressao compacta; full usa F11 para cancelar
+  regcheck [full] - sem full: F12; com full: F11 para cancelar
   appcheck  - Testa API, arquivos, IPC e carregador ZAPP
   pkg       - Gerencia pacotes .ZPK locais
   store     - Abre e gerencia a App Store local/remota
