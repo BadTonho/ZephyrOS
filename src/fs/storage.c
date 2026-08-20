@@ -84,6 +84,7 @@ static uint8_t storage_volume_count;
 static uint8_t storage_mounted_count;
 static uint8_t storage_initialized;
 static int storage_last_error;
+static uint32_t storage_refresh_epoch;
 static spinlock_t storage_registry_lock;
 static spinlock_t storage_operation_lock;
 
@@ -124,7 +125,20 @@ static int storage_text_equal(const char* left, const char* right) {
     return *left == '\0' && *right == '\0';
 }
 
-static void storage_build_disk_id(uint8_t slot, char* id) {
+static void storage_append_text(char* destination, uint32_t capacity,
+                                const char* source) {
+    uint32_t offset = 0U;
+
+    if (!destination || !capacity) return;
+    while (destination[offset] && offset + 1U < capacity) offset++;
+    while (source && *source && offset + 1U < capacity) {
+        destination[offset++] = *source++;
+    }
+    destination[offset] = '\0';
+}
+
+static void storage_build_ata_id(uint8_t slot, char* id) {
+    if (!id) return;
     id[0] = 'a';
     id[1] = 't';
     id[2] = 'a';
@@ -132,18 +146,16 @@ static void storage_build_disk_id(uint8_t slot, char* id) {
     id[4] = '\0';
 }
 
-static void storage_build_volume_id(uint8_t slot, uint8_t partition,
+static void storage_build_volume_id(const char* disk_id, uint8_t partition,
                                     char* id) {
-    storage_build_disk_id(slot, id);
-    if (partition == 0) {
-        id[4] = 'r';
-        id[5] = 'a';
-        id[6] = 'w';
-        id[7] = '\0';
-    } else {
-        id[4] = 'p';
-        id[5] = (char)('0' + partition);
-        id[6] = '\0';
+    storage_copy_text(id, STORAGE_ID_SIZE, disk_id);
+    if (partition == 0U) storage_append_text(id, STORAGE_ID_SIZE, "raw");
+    else {
+        storage_append_text(id, STORAGE_ID_SIZE, "p");
+        if (partition < 10U) {
+            char number[2] = { (char)('0' + partition), '\0' };
+            storage_append_text(id, STORAGE_ID_SIZE, number);
+        }
     }
 }
 
@@ -224,8 +236,7 @@ static int storage_read_relative(const storage_volume_t* volume,
         return ERR_OVERFLOW;
     }
     absolute_lba = volume->start_lba + relative_lba;
-    return ata_read_device_sectors(volume->disk_slot, absolute_lba,
-                                   count, buffer);
+    return block_read(volume->disk_id, absolute_lba, count, buffer);
 }
 
 static void storage_copy_label(char* label, const uint8_t* source) {
@@ -378,7 +389,8 @@ static int storage_probe_volume(storage_volume_t* volume,
     return storage_read_relative(volume, root_lba, 1, sector);
 }
 
-static storage_volume_t* storage_add_volume(uint8_t slot, uint8_t partition,
+static storage_volume_t* storage_add_volume(const char* disk_id,
+                                            uint8_t partition,
                                             storage_layout_t layout,
                                             uint8_t partition_type,
                                             uint32_t start_lba,
@@ -392,9 +404,13 @@ static storage_volume_t* storage_add_volume(uint8_t slot, uint8_t partition,
     }
     volume = &storage_volumes[storage_volume_count++];
     kmemset(volume, 0, sizeof(*volume));
-    storage_build_volume_id(slot, partition, volume->id);
-    storage_build_disk_id(slot, volume->disk_id);
-    volume->disk_slot = slot;
+    if (!disk_id) {
+        LOG_ERROR("FS", "ID de bloco nulo no volume");
+        storage_volume_count--;
+        return 0;
+    }
+    storage_build_volume_id(disk_id, partition, volume->id);
+    storage_copy_text(volume->disk_id, STORAGE_DISK_ID_SIZE, disk_id);
     volume->partition_index = partition;
     volume->partition_type = partition_type;
     volume->layout = layout;
@@ -466,7 +482,7 @@ static void storage_mark_overlaps(uint8_t first_index) {
             uint32_t a_end = a->start_lba + a->sector_count;
             uint32_t b_end;
 
-            if (b->disk_slot != a->disk_slot ||
+             if (!storage_text_equal(b->disk_id, a->disk_id) ||
                 b->layout != STORAGE_LAYOUT_MBR ||
                 b->state == STORAGE_VOLUME_INVALID) continue;
             b_end = b->start_lba + b->sector_count;
@@ -484,7 +500,7 @@ static void storage_mark_overlaps(uint8_t first_index) {
     }
 }
 
-static void storage_scan_mbr(uint8_t slot, uint32_t disk_sectors,
+static void storage_scan_mbr(const char* disk_id, uint32_t disk_sectors,
                              const uint8_t* sector) {
     uint8_t first_index = storage_volume_count;
 
@@ -500,7 +516,7 @@ static void storage_scan_mbr(uint8_t slot, uint32_t disk_sectors,
         storage_volume_t* volume;
 
         if (!type && !start_lba && !sector_count) continue;
-        volume = storage_add_volume(slot, index + 1U, STORAGE_LAYOUT_MBR,
+        volume = storage_add_volume(disk_id, index + 1U, STORAGE_LAYOUT_MBR,
                                     type, start_lba, sector_count);
         if (!volume) return;
         if ((boot_flag != 0 && boot_flag != STORAGE_MBR_BOOTABLE_FLAG) ||
@@ -518,20 +534,21 @@ static void storage_scan_mbr(uint8_t slot, uint32_t disk_sectors,
     }
 }
 
-static int storage_register_raw(uint8_t slot, uint32_t disk_sectors,
-                                const uint8_t* sector, uint8_t boot_slot) {
+static int storage_register_raw(const char* disk_id, uint32_t disk_sectors,
+                                const uint8_t* sector,
+                                const char* boot_disk_id) {
     storage_volume_t candidate;
     storage_mount_t probe;
     storage_volume_t* volume;
     int result;
 
     kmemset(&candidate, 0, sizeof(candidate));
-    storage_build_volume_id(slot, 0, candidate.id);
-    candidate.disk_slot = slot;
+    storage_build_volume_id(disk_id, 0U, candidate.id);
+    storage_copy_text(candidate.disk_id, STORAGE_DISK_ID_SIZE, disk_id);
     candidate.sector_count = disk_sectors;
     result = storage_parse_bpb(&candidate, sector, &probe);
     if (result != OK) return result;
-    volume = storage_add_volume(slot, 0, STORAGE_LAYOUT_RAW, 0, 0,
+    volume = storage_add_volume(disk_id, 0U, STORAGE_LAYOUT_RAW, 0, 0,
                                 disk_sectors);
     if (!volume) {
         LOG_ERROR("FS", "Falha ao registrar volume superfloppy");
@@ -543,7 +560,9 @@ static int storage_register_raw(uint8_t slot, uint32_t disk_sectors,
     storage_copy_text(volume->label, STORAGE_LABEL_SIZE, candidate.label);
     volume->last_error = OK;
 
-    if (slot == boot_slot && fs_get_type() != FS_TYPE_NONE) {
+    if (disk_id && boot_disk_id &&
+        storage_text_equal(disk_id, boot_disk_id) &&
+        fs_get_type() != FS_TYPE_NONE) {
         storage_mount_t* mount = storage_free_mount();
 
         if (!mount) {
@@ -564,11 +583,11 @@ static int storage_register_raw(uint8_t slot, uint32_t disk_sectors,
     return OK;
 }
 
-static int storage_add_disk(const ata_device_t* ata) {
+static int storage_add_disk(const block_device_t* block) {
     storage_disk_t* disk;
 
-    if (!ata) {
-        LOG_ERROR("FS", "Dispositivo ATA nulo no inventario");
+    if (!block) {
+        LOG_ERROR("FS", "Dispositivo de bloco nulo no inventario");
         return ERR_NULL;
     }
     if (storage_disk_count >= STORAGE_MAX_DISKS) {
@@ -577,21 +596,34 @@ static int storage_add_disk(const ata_device_t* ata) {
     }
     disk = &storage_disks[storage_disk_count++];
     kmemset(disk, 0, sizeof(*disk));
-    storage_build_disk_id(ata->slot, disk->id);
-    storage_copy_text(disk->model, STORAGE_MODEL_SIZE, ata->model);
-    disk->slot = ata->slot;
-    disk->channel = ata->channel;
-    disk->slave = ata->slave;
-    disk->sector_count = ata->sectors;
-    disk->read_ops = ata->read_ops;
-    disk->write_ops = ata->write_ops;
-    disk->last_error = ata->last_error;
+    storage_copy_text(disk->id, STORAGE_DISK_ID_SIZE, block->id);
+    storage_copy_text(disk->model, STORAGE_MODEL_SIZE, block->model);
+    disk->kind = block->provider == BLOCK_PROVIDER_USB_MSC ?
+                 STORAGE_DISK_USB_MSC : STORAGE_DISK_ATA;
+    disk->sector_size = block->sector_size;
+    disk->read_only = block->read_only;
+    if (disk->kind == STORAGE_DISK_ATA && block->id[3] >= '0' &&
+        block->id[3] <= '9') disk->slot = (uint8_t)(block->id[3] - '0');
+    disk->sector_count = block->sector_count;
+    disk->read_ops = block->read_ops;
+    disk->write_ops = block->write_ops;
+    disk->last_error = block->last_error;
     return OK;
 }
 
-int storage_init(void) {
+static void storage_boot_disk_id(char* id, uint32_t capacity) {
     ata_device_t* boot_device;
-    uint8_t boot_slot = 0xFFU;
+
+    if (!id || !capacity) return;
+    kmemset(id, 0, capacity);
+    boot_device = ata_get_device();
+    if (boot_device) storage_build_ata_id(boot_device->slot, id);
+}
+
+int storage_init(void) {
+    char boot_disk_id[STORAGE_DISK_ID_SIZE];
+    uint32_t block_count = 0U;
+    int block_result;
 
     LOG_INFO("FS", "Inicializando inventario de armazenamento");
     spinlock_init(&storage_registry_lock);
@@ -604,26 +636,35 @@ int storage_init(void) {
     storage_mounted_count = 0;
     storage_last_error = OK;
     storage_initialized = 0;
-    boot_device = ata_get_device();
-    if (!boot_device) {
+    storage_boot_disk_id(boot_disk_id, sizeof(boot_disk_id));
+    block_result = block_get_count(&block_count);
+    if (block_result != OK) {
+        storage_initialized = 1;
+        storage_last_error = block_result;
+        LOG_ERROR("FS", "Camada de bloco indisponivel");
+        return block_result;
+    }
+    if (!block_count) {
         storage_initialized = 1;
         storage_last_error = ERR_NOT_FOUND;
-        LOG_ERROR("FS", "Nenhum disco ATA para inventariar");
+        LOG_ERROR("FS", "Nenhum dispositivo de bloco para inventariar");
         return ERR_NOT_FOUND;
     }
-    boot_slot = boot_device->slot;
 
-    for (uint8_t slot = 0; slot < ATA_MAX_DEVICES; slot++) {
-        ata_device_t ata;
+    for (uint32_t index = 0U; index < block_count; index++) {
+        block_device_t block;
         uint8_t sector[STORAGE_SECTOR_SIZE];
         int raw_result;
 
-        if (ata_get_device_at(slot, &ata) != OK) continue;
-        if (storage_add_disk(&ata) != OK) {
+        if (block_get_at(index, &block) != OK) {
+            LOG_WARN("FS", "Dispositivo de bloco ausente durante o inventario");
+            continue;
+        }
+        if (storage_add_disk(&block) != OK) {
             storage_last_error = ERR_OVERFLOW;
             continue;
         }
-        if (ata_read_device_sectors(slot, 0, 1, sector) != OK) {
+        if (block_read(block.id, 0U, 1U, sector) != OK) {
             storage_disks[storage_disk_count - 1U].last_error = ERR_DISK;
             storage_last_error = ERR_DISK;
             storage_log_volume(
@@ -632,11 +673,12 @@ int storage_init(void) {
                 "falha ao ler primeiro setor");
             continue;
         }
-        raw_result = storage_register_raw(slot, ata.sectors, sector, boot_slot);
+        raw_result = storage_register_raw(block.id, block.sector_count,
+                                          sector, boot_disk_id);
         if (raw_result == OK) continue;
         if (sector[STORAGE_MBR_SIGNATURE_OFFSET] == 0x55U &&
             sector[STORAGE_MBR_SIGNATURE_OFFSET + 1U] == 0xAAU) {
-            storage_scan_mbr(slot, ata.sectors, sector);
+            storage_scan_mbr(block.id, block.sector_count, sector);
         } else {
             storage_disks[storage_disk_count - 1U].last_error = ERR_INVALID;
             storage_log_volume(
@@ -649,7 +691,7 @@ int storage_init(void) {
     storage_initialized = 1;
     if (!storage_disk_count) {
         storage_last_error = ERR_NOT_FOUND;
-        LOG_ERROR("FS", "ATA ativo sem disco inventariavel");
+        LOG_ERROR("FS", "Nenhum disco inventariavel apos a leitura de bloco");
         return ERR_NOT_FOUND;
     }
     if (storage_last_error != OK) {
@@ -658,6 +700,23 @@ int storage_init(void) {
     }
     LOG_INFO("FS", "Inventario de armazenamento inicializado com sucesso");
     return OK;
+}
+
+int storage_refresh(void) {
+    int result;
+
+    if (!storage_initialized) {
+        LOG_ERROR("FS", "Atualizacao de storage antes da inicializacao");
+        return ERR_STATE;
+    }
+    LOG_INFO("FS", "Atualizando inventario de armazenamento");
+    storage_refresh_epoch++;
+    if (!storage_refresh_epoch) storage_refresh_epoch = 1U;
+    result = storage_init();
+    for (uint8_t index = 0U; index < storage_volume_count; index++) {
+        storage_volumes[index].generation += storage_refresh_epoch;
+    }
+    return result;
 }
 
 static int storage_read_fat_bytes(const storage_volume_t* volume,
@@ -1146,13 +1205,13 @@ static int storage_read_entry_range(const storage_volume_t* volume,
 }
 
 static void storage_refresh_disk(storage_disk_t* disk) {
-    ata_device_t ata;
+    block_device_t block;
 
-    if (!disk || ata_get_device_at(disk->slot, &ata) != OK) return;
-    disk->read_ops = ata.read_ops;
-    disk->write_ops = ata.write_ops;
-    if (ata.last_error != OK || disk->last_error == OK) {
-        disk->last_error = ata.last_error;
+    if (!disk || block_find(disk->id, &block) != OK) return;
+    disk->read_ops = block.read_ops;
+    disk->write_ops = block.write_ops;
+    if (block.last_error != OK || disk->last_error == OK) {
+        disk->last_error = block.last_error;
     }
 }
 
@@ -1266,9 +1325,9 @@ int storage_mount(const char* id) {
     storage_mount_t probe;
     storage_mount_t* mount;
     storage_volume_t* volume;
-    uint32_t writes_before = 0;
-    uint32_t writes_after = 0;
-    uint32_t reads = 0;
+    uint32_t writes_before = 0U;
+    uint32_t writes_after = 0U;
+    block_device_t block;
     int index;
     int result;
 
@@ -1300,17 +1359,17 @@ int storage_mount(const char* id) {
         spinlock_release(&storage_operation_lock);
         return result;
     }
-    result = ata_get_device_counters(volume->disk_slot, &reads,
-                                     &writes_before);
+    result = block_find(volume->disk_id, &block);
     if (result != OK) {
         storage_log_volume(LOG_LEVEL_ERROR, volume->id,
-                           "contadores ATA indisponiveis antes do mount");
+                           "provedor de bloco indisponivel antes do mount");
         spinlock_release(&storage_operation_lock);
         return result;
     }
+    writes_before = block.write_ops;
     result = storage_probe_volume(volume, &probe);
-    if (ata_get_device_counters(volume->disk_slot, &reads,
-                                &writes_after) != OK) result = ERR_STATE;
+    if (block_find(volume->disk_id, &block) != OK) result = ERR_STATE;
+    else writes_after = block.write_ops;
     if (result == OK && writes_before != writes_after) result = ERR_STATE;
     if (result != OK) {
         storage_mark_volume_error(volume, result,

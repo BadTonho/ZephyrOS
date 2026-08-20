@@ -51,6 +51,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/core/update_trust.h` | `docs/14-atualizacoes/contrato-zupd-v1.md` |
 | `src/include/core/usb_manager.h` | `docs/04-kernel/kernel.md` |
 | `src/include/drivers/uhci.h` | `docs/05-drivers/drivers.md` |
+| `src/include/drivers/usb_msc.h` | `docs/05-drivers/drivers.md` |
 | `src/include/core/video.h` | `docs/05-drivers/drivers.md` |
 | `src/include/core/version.h` | `docs/04-kernel/kernel.md` |
 | `src/include/drivers/acpi.h` | `docs/05-drivers/drivers.md` |
@@ -66,6 +67,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/drivers/tss.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/vesa.h` | `docs/05-drivers/drivers.md` |
 | `src/include/fs/bmp.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
+| `src/include/fs/block.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/fat12.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/fat32.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/file_index.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
@@ -258,3 +260,12 @@ DMA, portas e deadlines do primeiro driver USB real. EHCI continua somente no
 inventario: nunca recebe BAR, I/O, DMA, IRQ ou transferencias. O componente
 `RECOVERY_COMPONENT_USB` preserva os valores numericos anteriores e
 `run-usb` oferece UHCI com `usb-kbd`, alem de fixtures sem dispositivo e EHCI.
+
+Desde a EP4.3, `src/include/fs/block.h` define o registro estatico unificado
+de provedores ATA e USB MSC, capacidades, setor de 512 bytes, leitura
+setorial, contadores, ultimo erro e recusa de escrita somente-leitura.
+`src/include/drivers/usb_msc.h` define os snapshots de MSC, estados, LUN,
+endpoints Bulk, capacidade, contadores BOT e validacao. O ID USB preserva a
+sessao UHCI no formato `usb-ms-BB:DD.F-pN-aN-l0`; `run-usb` continua apenas
+com teclado e `run-usb-msc` acrescenta a fixture `storage-valid.img` em modo
+somente-leitura.

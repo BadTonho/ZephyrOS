@@ -14,6 +14,7 @@ QEMU ?= qemu-system-i386
 QEMU_NET_ARGS ?= -nic user,model=e1000
 QEMU_USB_ARGS ?= -device piix3-usb-uhci,id=usb
 QEMU_USB_DEVICE_ARGS ?= -device usb-kbd,bus=usb.0
+QEMU_USB_MSC_ARGS ?= -drive if=none,id=usb-stick,format=raw,file=$(STORAGE_VALID_IMG),readonly=on -device usb-storage,bus=usb.0,drive=usb-stick
 
 # Flags
 CFLAGS = -m32 -O2 -fno-strict-aliasing -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -I src/include -I src/include/core -I src/include/drivers -I src/include/fs -I src/include/memory -I src/include/process -I src/include/apps -I src/include/ui
@@ -65,6 +66,9 @@ USB_MANAGER_OBJ = build/usb_manager.o
 
 UHCI_C = src/drivers/uhci.c
 UHCI_OBJ = build/uhci.o
+
+USB_MSC_C = src/drivers/usb_msc.c
+USB_MSC_OBJ = build/usb_msc.o
 
 NETWORK_MANAGER_C = src/core/network_manager.c
 NETWORK_MANAGER_OBJ = build/network_manager.o
@@ -204,6 +208,9 @@ FAT32_OBJ = build/fat32.o
 FS_C = src/fs/fs.c
 FS_OBJ = build/fs.o
 
+BLOCK_C = src/fs/block.c
+BLOCK_OBJ = build/block.o
+
 STORAGE_C = src/fs/storage.c
 STORAGE_OBJ = build/storage.o
 
@@ -333,9 +340,9 @@ STORE_AS5_PUBLIC = config\app-store-test-public.json
 # Todas as variáveis de objetos
 OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(WAIT_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(UPDATE_OBJ) $(UPDATE_REMOTE_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
-       $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(UHCI_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) \
+       $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(UHCI_OBJ) $(USB_MSC_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(COMPRESS_OBJ) \
-       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(STORAGE_OBJ) $(FILE_INDEX_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(UPDATER_OBJ) $(APPSTORE_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ) $(APP_REMOTE_OBJ) $(DEVICE_MANAGER_OBJ) $(USB_MANAGER_OBJ) $(NETWORK_MANAGER_OBJ) $(POWER_OBJ) $(ETHERNET_OBJ) $(ARP_OBJ) $(IPV4_OBJ) $(ICMP_OBJ) $(UDP_OBJ) $(DHCP_OBJ) $(DNS_OBJ) $(TCP_OBJ) $(NET_SOCKET_OBJ) $(HTTP_OBJ) $(APP_CATALOG_OBJ) $(DISPLAY_OBJ)
+       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(BLOCK_OBJ) $(STORAGE_OBJ) $(FILE_INDEX_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(UPDATER_OBJ) $(APPSTORE_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ) $(APP_REMOTE_OBJ) $(DEVICE_MANAGER_OBJ) $(USB_MANAGER_OBJ) $(NETWORK_MANAGER_OBJ) $(POWER_OBJ) $(ETHERNET_OBJ) $(ARP_OBJ) $(IPV4_OBJ) $(ICMP_OBJ) $(UDP_OBJ) $(DHCP_OBJ) $(DNS_OBJ) $(TCP_OBJ) $(NET_SOCKET_OBJ) $(HTTP_OBJ) $(APP_CATALOG_OBJ) $(DISPLAY_OBJ)
 
 # Targets
 all: $(OS_IMG)
@@ -401,6 +408,10 @@ $(USB_MANAGER_OBJ): $(USB_MANAGER_C)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(UHCI_OBJ): $(UHCI_C)
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(USB_MSC_OBJ): $(USB_MSC_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -580,6 +591,10 @@ $(FS_OBJ): $(FS_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
+$(BLOCK_OBJ): $(BLOCK_C)
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
 $(STORAGE_OBJ): $(STORAGE_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
@@ -715,6 +730,9 @@ run: $(OS_IMG)
 run-usb: $(OS_IMG)
 	$(QEMU) -drive format=raw,file=$(OS_IMG) $(QEMU_NET_ARGS) $(QEMU_USB_ARGS) $(QEMU_USB_DEVICE_ARGS)
 
+run-usb-msc: $(OS_IMG) $(STORAGE_FIXTURES_STAMP)
+	$(QEMU) -drive format=raw,file=$(OS_IMG) $(QEMU_NET_ARGS) $(QEMU_USB_ARGS) $(QEMU_USB_DEVICE_ARGS) $(QEMU_USB_MSC_ARGS)
+
 $(STORAGE_FIXTURES_STAMP): $(STORAGE_FIXTURES_TOOL)
 	@if not exist build mkdir build
 	python $(STORAGE_FIXTURES_TOOL) generate --output-dir build
@@ -807,4 +825,4 @@ store-as5-serve: store-as5-test
 clean:
 	rmdir /s /q build
 
-.PHONY: all run run-usb run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
+.PHONY: all run run-usb run-usb-msc run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean

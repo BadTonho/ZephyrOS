@@ -272,13 +272,29 @@ com DMA, IRQ, portas e transferencias indisponiveis, conforme o escopo.
 
 ### EP4.3 - Bulk e USB Mass Storage somente-leitura
 
-- [ ] Implementar transferencias Bulk e o transporte Bulk-Only Transport (BOT).
-- [ ] Implementar o subconjunto SCSI necessario: Inquiry, Test Unit Ready,
+**Estado:** implementada no codigo; validacao QEMU e aceite do usuario pendentes.
+
+Nesta implementacao, UHCI fornece Bulk sincrono com TDs fragmentados por
+`wMaxPacketSize`, toggles por endpoint, timeout, buffers DMA fixos e
+recuperacao Mass Storage Reset/CLEAR_FEATURE com uma unica tentativa. O BOT
+valida CBW/CSW e o SCSI cobre INQUIRY, TEST UNIT READY, READ CAPACITY(10) e
+READ(10), sempre em LUN 0 e setores de 512 bytes.
+
+`block_device_t` publica ATA e USB MSC no mesmo inventario. `storage_refresh()`
+reconcilia os dispositivos apos `device-scan`, `usb storage` exibe os
+metadados do MSC e `run-usb-msc` conecta `storage-valid.img` somente-leitura.
+`run-usb` permanece sem MSC para preservar a regressao da EP4.2.
+
+Hubs, hot-plug, HID, EHCI, multiplos LUNs, `READ CAPACITY(16)` e escrita USB
+continuam fora do escopo.
+
+- [x] Implementar transferencias Bulk e o transporte Bulk-Only Transport (BOT).
+- [x] Implementar o subconjunto SCSI necessario: Inquiry, Test Unit Ready,
   Read Capacity e Read10, sempre sem escrita no dispositivo USB.
-- [ ] Registrar o dispositivo MSC como provedor da camada de bloco (`block_device_t`),
+- [x] Registrar o dispositivo MSC como provedor da camada de bloco (`block_device_t`),
   permitindo sua montagem transparente de volumes FAT sem acoplamento direto
   entre o driver USB e o sistema de arquivos.
-- [ ] Manter disco ATA e volume de boot como fallbacks operacionais prioritários.
+- [x] Manter disco ATA e volume de boot como fallbacks operacionais prioritários.
 
 ### EP4.4 - Interrupt e USB HID
 
@@ -294,7 +310,8 @@ com DMA, IRQ, portas e transferencias indisponiveis, conforme o escopo.
 
 Cada subetapa preserva o funcionamento de teclado e mouse PS/2. UHCI ausente,
 dispositivo malformado ou erro de comunicacao produz `LOG_ERROR` e componente
-degradado, sem suporte ficticio a EHCI, hubs, HID ou MSC ainda nao entregues.
+degradado, sem suporte ficticio a EHCI, hubs ou HID. O MSC da EP4.3 fica
+restrito ao contrato BOT/SCSI somente-leitura descrito acima.
 
 ## EP5 - Publicacao por tags e verificacao no host
 
