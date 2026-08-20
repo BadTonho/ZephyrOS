@@ -98,7 +98,6 @@
 #define SHELL_UPDATE_SCANCODE_ESCAPE 0x01U
 #define SHELL_UPDATE_SCANCODE_F12 0x58U
 #define SHELL_REGCHECK_SCANCODE_F11 0x57U
-#define SHELL_REGCHECK_SCANCODE_F12 0x58U
 #define SHELL_INDEX_ACTION_SIZE 16U
 #define SHELL_FS_DIRECTORY_ATTRIBUTE 0x10U
 #define SHELL_LOG_TAIL_DEFAULT 10U
@@ -1335,8 +1334,7 @@ static int shell_regcheck_start_image(shell_regcheck_state_t state) {
     } else if (state == SHELL_REGCHECK_WAIT_CANCEL) {
         name = "REGCANCEL.ZAP";
         image_size = shell_build_regcheck_input_image(
-            shell_regcheck.full_mode ? SHELL_REGCHECK_SCANCODE_F11 :
-                                       SHELL_REGCHECK_SCANCODE_F12);
+            SHELL_REGCHECK_SCANCODE_F11);
     } else {
         LOG_ERROR("SHELL", "RegCheck recebeu etapa ZAPP invalida");
         return ERR_INVALID;
@@ -1445,9 +1443,7 @@ static void shell_regcheck_finish(void) {
                                          shell_regcheck.loader_result);
         }
         if (shell_regcheck.cancellation_started) {
-            shell_regcheck_print_failure(
-                shell_regcheck.full_mode ? "cancelamento_f11" :
-                                            "cancelamento_f12",
+            shell_regcheck_print_failure("cancelamento_f11",
                                          shell_regcheck.cancellation_result);
         }
         shell_regcheck_print_failure("limpeza_final",
@@ -1492,9 +1488,7 @@ static void shell_regcheck_handle_loader_result(const app_loader_result_t* resul
         shell_regcheck.cancellation_started = 1;
         launch_result = shell_regcheck_start_image(SHELL_REGCHECK_WAIT_CANCEL);
         if (launch_result == OK) {
-            video_print(shell_regcheck.full_mode ?
-                        "RegCheck: pressione F11 para validar cancelamento.\n" :
-                        "RegCheck: pressione F12 para validar cancelamento.\n",
+            video_print("RegCheck: pressione F11 para validar cancelamento.\n",
                         0x0B);
             return;
         }
@@ -2061,17 +2055,13 @@ int shell_checks_input_blocked(void) {
 int shell_checks_handle_job_key(uint8_t scancode) {
     app_message_t message;
     uint32_t foreground_pid;
-    uint8_t expected_scancode;
     int result;
 
     if (!shell_job_is_active() ||
         shell_regcheck.state != SHELL_REGCHECK_WAIT_CANCEL) {
         return 0;
     }
-    expected_scancode = shell_regcheck.full_mode ?
-                        SHELL_REGCHECK_SCANCODE_F11 :
-                        SHELL_REGCHECK_SCANCODE_F12;
-    if (scancode != expected_scancode) return 0;
+    if (scancode != SHELL_REGCHECK_SCANCODE_F11) return 0;
 
     foreground_pid = app_loader_get_foreground_pid();
     if (foreground_pid == 0U) {

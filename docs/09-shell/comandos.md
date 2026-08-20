@@ -76,7 +76,7 @@ Comandos disponiveis:
   memcheck  - Valida heap, PMM e diretorios de usuario
   schedcheck - Valida invariantes do scheduler
   q2check   - Executa diagnostico compacto da Q2
-  regcheck [full] - sem full: F12; com full: F11 para cancelar
+  regcheck [full] - F11 cancela nos modos normal e full
   appcheck  - Testa API, arquivos, IPC e carregador ZAPP
   pkg       - Gerencia pacotes .ZPK locais
   store     - Abre e gerencia a App Store local/remota
@@ -759,8 +759,8 @@ mostrar aprovacoes por etapa, ele valida internamente o estado de `health`, a
 linha-base equivalente a `procs`, os invariantes de `schedcheck`, o
 heap/PMM/paging de `memcheck`, pre-validacoes de pacote, troca cooperativa de
 threads e um ciclo ZAPP silencioso de sucesso. Em seguida inicia outro ZAPP
-silencioso e mostra a instrucao para pressionar `F12` no modo normal ou `F11`
-no modo `full`; o cancelamento e feito pelo runtime real, nao por simulacao.
+silencioso e mostra a instrucao para pressionar `F11` nos modos normal e
+`full`; o cancelamento e feito pelo runtime real, nao por simulacao.
 
 `regcheck full` preserva essas etapas e acrescenta uma varredura PCI real,
 reconstrucao dos snapshots de Devices e Network, consultas por indice e ID,
@@ -771,7 +771,7 @@ visiveis.
 
 ```text
 zephyr> regcheck
-RegCheck: pressione F12 para validar cancelamento.
+RegCheck: pressione F11 para validar cancelamento.
 RegCheck: OK
 zephyr>
 
@@ -784,7 +784,7 @@ zephyr>
 Em falha, a saida enumera somente as etapas inesperadas com seu codigo:
 `health`, `servicos_base`, `scheduler`, `memoria`, `pacotes`, `threads`,
 `processos`, `device_scan`, `devices`, `network`, `acpi`, `power`,
-`loader_ring3`, `cancelamento_f12` (ou `cancelamento_f11` no modo `full`) ou
+`loader_ring3`, `cancelamento_f11` ou
 `limpeza_final`. O comando
 recusa a execucao se houver outro diagnostico, ZAPP, UserTest ou zumbi
 pendente; argumentos extras usam `Uso: regcheck [full]`. Ele nao grava no
@@ -1331,6 +1331,6 @@ demoradas. A saida inclui tipo, comando, fase, progresso, erro, quantidade de
 teclas bloqueadas e pedidos de cancelamento.
 
 Durante um job ativo, teclas comuns sao consumidas para evitar o enchimento da
-fila IPC. `Esc` e `F12` solicitam cancelamento; durante `regcheck full`, `F11`
-e encaminhado ao ZAPP de cancelamento. Ao terminar, falhar ou cancelar, o Shell
-exibe um unico novo prompt.
+fila IPC. `Esc` e `F12` solicitam o cancelamento geral do job. Durante qualquer
+modo do `regcheck`, `F11` e encaminhado ao ZAPP para validar o cancelamento.
+Ao terminar, falhar ou cancelar, o Shell exibe um unico novo prompt.

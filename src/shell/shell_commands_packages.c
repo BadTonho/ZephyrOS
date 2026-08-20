@@ -130,7 +130,7 @@ typedef enum {
 typedef enum {
     SHELL_REGCHECK_IDLE = 0,
     SHELL_REGCHECK_WAIT_DEMO,
-    SHELL_REGCHECK_WAIT_F12
+    SHELL_REGCHECK_WAIT_CANCEL
 } shell_regcheck_state_t;
 
 typedef struct {
