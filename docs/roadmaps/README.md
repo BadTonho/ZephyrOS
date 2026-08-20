@@ -92,8 +92,8 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   A EP4.1 foi implementada com inventario USB somente-leitura via snapshot PCI,
   comandos `usb`, Recovery, `device-scan`, `regcheck full` e o alvo `run-usb`;
   UHCI e EHCI foram validados pelo usuario no QEMU. A EP4.2 implementa o
-  primeiro runtime UHCI, enumeracao de portas raiz e controle USB; a validacao
-  manual dessa etapa ainda esta pendente.
+  primeiro runtime UHCI, enumeracao de portas raiz e controle USB; a etapa foi
+  validada no QEMU com `usb-kbd`, portas vazias e fixture EHCI fora do escopo.
 - Funcionalidades aplicaveis: R1 foi validada no QEMU com log circular,
   diagnosticos e regressao. R2 e R3 foram validadas manualmente no QEMU, com
   timers, espera, rede, cancelamento, `q2check`, `regcheck full`, `memcheck`,
