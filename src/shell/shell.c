@@ -1090,7 +1090,15 @@ static int shell_regcheck_same_usb(const usb_controller_info_t* left,
         left->subclass_code != right->subclass_code ||
         left->prog_if != right->prog_if || left->revision != right->revision ||
         left->bus != right->bus || left->device != right->device ||
-        left->function != right->function || left->irq != right->irq) {
+        left->function != right->function || left->irq != right->irq ||
+        left->uhci_initialized != right->uhci_initialized ||
+        left->uhci_irq_registered != right->uhci_irq_registered ||
+        left->uhci_dma_ready != right->uhci_dma_ready ||
+        left->uhci_transfer_ready != right->uhci_transfer_ready ||
+        left->uhci_port_count != right->uhci_port_count ||
+        left->uhci_device_count != right->uhci_device_count ||
+        left->uhci_port_errors != right->uhci_port_errors ||
+        left->uhci_last_error != right->uhci_last_error) {
         return 0;
     }
     for (uint32_t bar = 0; bar < USB_CONTROLLER_BAR_COUNT; bar++) {
@@ -1117,9 +1125,16 @@ static int shell_regcheck_validate_usb_entry(
         (info->model == USB_CONTROLLER_MODEL_OTHER &&
          (info->state != USB_CONTROLLER_DEGRADED ||
           info->reason != USB_CONTROLLER_REASON_OUT_OF_SCOPE)) ||
-        (info->model != USB_CONTROLLER_MODEL_OTHER &&
-         (info->state != USB_CONTROLLER_READY ||
-          info->reason != USB_CONTROLLER_REASON_DRIVER_NOT_INITIALIZED))) {
+        (info->model == USB_CONTROLLER_MODEL_EHCI &&
+         (info->state != USB_CONTROLLER_DEGRADED ||
+          info->reason != USB_CONTROLLER_REASON_OUT_OF_SCOPE)) ||
+        (info->model == USB_CONTROLLER_MODEL_UHCI &&
+         ((!info->uhci_initialized && info->state != USB_CONTROLLER_DEGRADED &&
+           info->state != USB_CONTROLLER_DISABLED) ||
+          (info->uhci_initialized && info->reason !=
+           USB_CONTROLLER_REASON_DRIVER_READY &&
+           info->reason != USB_CONTROLLER_REASON_PORT_FAILURE &&
+           info->reason != USB_CONTROLLER_REASON_DRIVER_FAILURE)))) {
         LOG_ERROR("SHELL", "RegCheck detectou entrada USB invalida");
         return ERR_STATE;
     }
@@ -1151,8 +1166,12 @@ static int shell_regcheck_validate_usb(void) {
         count != status.controller_count ||
         count > USB_MANAGER_MAX_CONTROLLERS ||
         status.uhci_count + status.ehci_count + status.other_count != count ||
-        status.dma_initialized || status.irq_initialized ||
-        status.transfer_available) {
+        status.uhci_ready_count > status.uhci_count ||
+        status.port_count > USB_MANAGER_MAX_PORTS ||
+        status.configured_device_count > USB_MANAGER_MAX_DEVICES ||
+        status.dma_td_in_use > status.dma_td_capacity ||
+        status.class_driver_active || status.hub_support_active ||
+        status.hotplug_active || usb_manager_validate_state() != OK) {
         LOG_ERROR("SHELL", "RegCheck detectou resumo USB invalido");
         return result == OK ? ERR_STATE : result;
     }
@@ -1163,6 +1182,23 @@ static int shell_regcheck_validate_usb(void) {
         if (result != OK || shell_regcheck_validate_usb_entry(&info) != OK) {
             LOG_ERROR("SHELL", "RegCheck detectou controlador USB invalido");
             return result == OK ? ERR_STATE : result;
+        }
+        if (info.model == USB_CONTROLLER_MODEL_UHCI &&
+            info.uhci_initialized) {
+            usb_uhci_status_t runtime;
+
+            result = usb_manager_get_uhci_status(index, &runtime);
+            if (result != OK || !runtime.initialized ||
+                !runtime.irq_registered || !runtime.dma_ready ||
+                !runtime.control_transfer_ready ||
+                runtime.class_driver_active || runtime.hub_support_active ||
+                runtime.hotplug_active || runtime.td_in_use > runtime.td_capacity ||
+                runtime.buffer_in_use > runtime.buffer_capacity ||
+                runtime.port_count != USB_UHCI_PORT_COUNT ||
+                runtime.timeout_count > 0xFFFFFFFFU - runtime.recovery_count) {
+                LOG_ERROR("SHELL", "RegCheck detectou runtime UHCI invalido");
+                return result == OK ? ERR_STATE : result;
+            }
         }
     }
     component = recovery_get(RECOVERY_COMPONENT_USB);
@@ -1176,9 +1212,9 @@ static int shell_regcheck_validate_usb(void) {
     } else if (!count) {
         expected_state = RECOVERY_STATE_DISABLED;
         expected_error = ERR_NOT_FOUND;
-    } else if (status.other_count) {
+    } else if (status.last_error != OK) {
         expected_state = RECOVERY_STATE_DEGRADED;
-        expected_error = ERR_UNAVAILABLE;
+        expected_error = status.last_error;
     } else {
         expected_state = RECOVERY_STATE_READY;
         expected_error = OK;
@@ -2554,7 +2590,7 @@ static void cmd_help(void) {
     video_print("  devices  - Lista inventario de hardware (-v para detalhes)\n", 0x07);
     video_print("  device-info <id> - Mostra detalhes de um dispositivo\n", 0x07);
     video_print("  device-scan - Refaz varredura PCI, USB e rede\n", 0x07);
-    video_print("  usb status|list - Inspeciona controladores USB\n", 0x07);
+    video_print("  usb status|list|ports|devices - Inspeciona USB\n", 0x07);
     video_print("  usb device <id> - Mostra detalhes de um controlador USB\n",
                 0x07);
     video_print("  net status - Mostra capacidades atuais de rede\n", 0x07);
@@ -4007,6 +4043,13 @@ static uint8_t cmd_usb_state_color(usb_controller_state_t state) {
     return 0x08;
 }
 
+static uint8_t cmd_usb_port_color(usb_port_state_t state) {
+    if (state == USB_PORT_CONFIGURED) return 0x0A;
+    if (state == USB_PORT_DEGRADED) return 0x0E;
+    if (state == USB_PORT_EMPTY) return 0x08;
+    return 0x0B;
+}
+
 static void cmd_usb_status(void) {
     usb_manager_status_t status;
     const recovery_component_t* health;
@@ -4036,8 +4079,24 @@ static void cmd_usb_status(void) {
     print_num(status.ehci_count);
     video_print("  Outros: ", 0x07);
     print_num(status.other_count);
-    video_print("\n  DMA: INDISPONIVEL  IRQ: INDISPONIVEL", 0x0E);
-    video_print("\n  Transferencias: INDISPONIVEL", 0x0E);
+    video_print("\n  DMA: ", 0x07);
+    video_print(status.dma_initialized ? "READY" : "INDISPONIVEL",
+                status.dma_initialized ? 0x0A : 0x0E);
+    video_print("  IRQ: ", 0x07);
+    video_print(status.irq_initialized ? "READY" : "INDISPONIVEL",
+                status.irq_initialized ? 0x0A : 0x0E);
+    video_print("\n  Controle: ", 0x07);
+    video_print(status.transfer_available ? "READY" : "INDISPONIVEL",
+                status.transfer_available ? 0x0A : 0x0E);
+    video_print("\n  Portas: ", 0x07);
+    print_num(status.port_count);
+    video_print("  Dispositivos: ", 0x07);
+    print_num(status.configured_device_count);
+    video_print("  TDs: ", 0x07);
+    print_num(status.dma_td_in_use);
+    video_print("/", 0x07);
+    print_num(status.dma_td_capacity);
+    video_print("\n  Classe: INDISPONIVEL  Hubs: INDISPONIVEL  Hotplug: INDISPONIVEL", 0x08);
     video_print("\n  Ultimo erro: ", 0x07);
     print_num((uint32_t)status.last_error);
     video_print("\n", 0x07);
@@ -4093,6 +4152,110 @@ static void cmd_usb_list(const char* args) {
             video_print("Erro: entrada USB indisponivel.\n", 0x0C);
             return;
         }
+    }
+}
+
+static void cmd_usb_ports(const char* args) {
+    uint32_t count = 0U;
+
+    if (!shell_args_equal(args, "")) {
+        LOG_WARN("SHELL", "Uso invalido de usb ports");
+        video_print("Uso: usb ports\n", 0x0C);
+        return;
+    }
+    if (usb_manager_get_port_count(&count) != OK) {
+        LOG_ERROR("SHELL", "Contagem de portas USB indisponivel");
+        video_print("Erro: portas USB indisponiveis.\n", 0x0C);
+        return;
+    }
+    video_print("Portas USB UHCI:\n", 0x0B);
+    for (uint32_t index = 0; index < count; index++) {
+        usb_port_info_t port;
+
+        if (usb_manager_get_port(index, &port) != OK) {
+            LOG_ERROR("SHELL", "Falha ao consultar porta USB");
+            video_print("Erro: porta USB indisponivel.\n", 0x0C);
+            return;
+        }
+        video_print("  ", 0x07);
+        video_print(port.controller_id, 0x0B);
+        video_print(" p", 0x07);
+        print_num(port.port_number);
+        video_print("  ", 0x07);
+        video_print(usb_manager_port_state_name(port.state),
+                    cmd_usb_port_color(port.state));
+        video_print("  ", 0x07);
+        video_print(usb_manager_port_reason_name(port.reason), 0x08);
+        video_print("  ", 0x07);
+        video_print(usb_manager_speed_name(port.speed), 0x07);
+        video_print(" addr=", 0x07);
+        print_num(port.usb_address);
+        if (port.device_id[0]) {
+            video_print("  ", 0x07);
+            video_print(port.device_id, 0x0A);
+        }
+        video_print("\n", 0x07);
+    }
+}
+
+static void cmd_usb_devices(const char* args) {
+    uint32_t count = 0U;
+
+    if (!shell_args_equal(args, "")) {
+        LOG_WARN("SHELL", "Uso invalido de usb devices");
+        video_print("Uso: usb devices\n", 0x0C);
+        return;
+    }
+    if (usb_manager_get_device_count(&count) != OK) {
+        LOG_ERROR("SHELL", "Contagem de dispositivos USB indisponivel");
+        video_print("Erro: dispositivos USB indisponiveis.\n", 0x0C);
+        return;
+    }
+    video_print("Dispositivos USB configurados:\n", 0x0B);
+    for (uint32_t index = 0; index < count; index++) {
+        usb_device_info_t device;
+
+        if (usb_manager_get_device(index, &device) != OK) {
+            LOG_ERROR("SHELL", "Falha ao consultar dispositivo USB");
+            video_print("Erro: dispositivo USB indisponivel.\n", 0x0C);
+            return;
+        }
+        video_print("  ID: ", 0x07);
+        video_print(device.id, 0x0A);
+        video_print("  ", 0x07);
+        video_print(usb_manager_speed_name(device.speed), 0x07);
+        video_print(" addr=", 0x07);
+        print_num(device.usb_address);
+        video_print("  PCI: ", 0x07);
+        video_print(device.controller_id, 0x0B);
+        video_print(" p", 0x07);
+        print_num(device.port_number);
+        video_print("\n    Vendor: 0x", 0x07);
+        cmd_print_hex(device.vendor_id, 4U);
+        video_print(" Product: 0x", 0x07);
+        cmd_print_hex(device.product_id, 4U);
+        video_print(" Class: 0x", 0x07);
+        cmd_print_hex(device.device_class, 2U);
+        video_print(" Subclass: 0x", 0x07);
+        cmd_print_hex(device.device_subclass, 2U);
+        video_print(" Protocol: 0x", 0x07);
+        cmd_print_hex(device.device_protocol, 2U);
+        video_print("\n    Config: ", 0x07);
+        print_num(device.configuration_value);
+        video_print(" Interface: ", 0x07);
+        print_num(device.interface_number);
+        video_print(" Endpoints: ", 0x07);
+        print_num(device.endpoint_count);
+        video_print("  DeviceDesc: ", 0x07);
+        video_print(device.device_descriptor_valid ? "OK" : "INVALID", 0x0A);
+        video_print("  ConfigDesc: ", 0x07);
+        video_print(device.configuration_descriptor_valid ? "OK" : "INVALID",
+                    0x0A);
+        video_print("\n    Classe: sem driver  Hub: nao  Estado: ", 0x08);
+        video_print(device.state == USB_DEVICE_CONFIGURED ? "CONFIGURED" :
+                    "DEGRADED", device.state == USB_DEVICE_CONFIGURED ?
+                    0x0A : 0x0E);
+        video_print("\n", 0x07);
     }
 }
 
@@ -4167,13 +4330,21 @@ static void cmd_usb(const char* args) {
         cmd_usb_list("");
         return;
     }
+    if (shell_args_equal(args, "ports")) {
+        cmd_usb_ports("");
+        return;
+    }
+    if (shell_args_equal(args, "devices")) {
+        cmd_usb_devices("");
+        return;
+    }
     subargs = shell_match_subcommand(args, "device");
     if (subargs) {
         cmd_usb_device(subargs);
         return;
     }
     LOG_WARN("SHELL", "Uso invalido do comando usb");
-    video_print("Uso: usb status|list|device <id>\n", 0x0E);
+    video_print("Uso: usb status|list|ports|devices|device <id>\n", 0x0E);
 }
 
 static int shell_run_device_scan(shell_device_scan_result_t* scan) {

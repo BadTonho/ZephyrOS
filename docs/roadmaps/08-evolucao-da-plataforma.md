@@ -234,12 +234,33 @@ QEMU para a validacao manual.
 
 ### EP4.2 - UHCI, portas e transferencias de controle
 
-- [ ] Inicializar apenas UHCI, com portas I/O, listas de descritores, timeout,
-  IRQ e recuperacao controlada; EHCI continua fora do escopo ativo.
-- [ ] Implementar deteccao, alimentacao quando aplicavel, reset de porta,
-  enumeracao, atribuicao de endereco e leitura de descritores.
-- [ ] Implementar transferencias de controle e configuracao de uma interface,
-  sem hubs externos, hot-plug ou drivers de classe nesta subetapa.
+**Estado:** implementada; validacao manual no QEMU pendente.
+
+- [x] Inicializar apenas UHCI, com portas I/O, frame list, queue head, pool
+  limitado de TDs, buffers DMA alinhados, timeout absoluto, IRQ compartilhada
+  e recuperacao controlada; EHCI continua fora do escopo ativo.
+- [x] Detectar velocidade, resetar portas raiz, atribuir endereco e ler os
+  descritores Device e Configuration, validando uma Configuration, uma
+  Interface e seus Endpoints.
+- [x] Executar transferencias de controle e `SET_CONFIGURATION`, mantendo
+  portas com falha isoladas e sem hubs, hot-plug, strings, HID, Bulk, MSC ou
+  qualquer driver de classe.
+- [x] Adicionar `usb ports` e `usb devices`, polling UHCI nos loops normal e
+  fallback, IDs de sessao `usb-dev-BB:DD.F-pN-aN` e invariantes no
+  `regcheck full`.
+
+### Validacao planejada da EP4.2
+
+1. `make q3check`, `make clean && make`, `make run` e `make run-usb`.
+2. No `run`, `usb status`, `usb ports`, `usb devices`, `health summary`,
+   `regcheck full` e `memcheck`: USB `DISABLED`, sem portas ativas e PS/2
+   preservado.
+3. No `run-usb`, `usb-kbd` deve produzir uma porta `CONFIGURED`, um ID de
+   sessao, descritores Device/Configuration validos e `SET_CONFIGURATION`,
+   sem atividade HID.
+4. Sem dispositivo, as portas ficam `EMPTY`, zero dispositivos e UHCI pronto.
+   Com `QEMU_USB_ARGS="-device usb-ehci,id=usb"`, EHCI permanece apenas
+   inventariado, sem BAR, DMA, IRQ ou transferencia, com USB `DEGRADED`.
 
 ### EP4.3 - Bulk e USB Mass Storage somente-leitura
 
