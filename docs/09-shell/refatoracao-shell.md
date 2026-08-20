@@ -221,12 +221,12 @@ posterior. Editor, Player, Task Manager, WM e demais cenas interativas mantem
 o fluxo atual.
 
 A Fase 4 foi concluida e validada pelo usuario com `make q3check`, build limpo
-e execucao no QEMU. A validacao confirmou `job status`, cancelamento por F12,
-teclas bloqueadas sem saturacao da fila IPC, `index rebuild`, `q2check`,
-conclusao de jobs, ausencia de prompt duplicado e o fluxo cooperativo no Shell.
-Os timeouts normais do polling curto durante jobs ativos nao geram mais o aviso
-`Shell acordado sem evento IPC`; o log permanece reservado para uma espera
-anormal fora de jobs.
+e execucao no QEMU. A validacao confirmou `job status`, cancelamento por F11 no
+RegCheck normal e full, cancelamento geral por F12 em rede, teclas bloqueadas
+sem saturacao da fila IPC, `index rebuild`, `q2check`, conclusao de jobs,
+ausencia de prompt duplicado e o fluxo cooperativo no Shell. Os timeouts normais
+do polling curto durante jobs ativos nao geram o aviso `Shell acordado sem
+evento IPC`; o log permanece reservado para uma espera anormal fora de jobs.
 
 Referencias adicionais:
 
