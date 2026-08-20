@@ -21,6 +21,14 @@ static uint8_t shell_job_block_warning;
 static uint32_t shell_job_ipc_queue_full_baseline;
 static uint8_t shell_job_queue_warning;
 
+static void shell_job_mark_cancel_requested(void) {
+    if (!shell_job_is_active() || shell_job_context.cancel_requested) return;
+    shell_job_context.cancel_requested = 1U;
+    shell_job_context.cancel_requests++;
+    shell_job_context.state = SHELL_JOB_STATE_CANCEL_REQUESTED;
+    LOG_INFO("SHELL", "Cancelamento de job solicitado");
+}
+
 static void shell_job_copy_text(char* destination, uint32_t capacity,
                                 const char* source) {
     uint32_t index = 0U;
@@ -105,8 +113,13 @@ int shell_job_start(const shell_job_definition_t* definition,
     shell_job_queue_warning = 0U;
 
     LOG_INFO("SHELL", "Job cooperativo iniciado");
-    video_print("Operacao iniciada; entrada bloqueada. F12/Esc cancela.\n",
-                0x0E);
+    if (arguments && kstrcmp(arguments, "regcheck full") == 0) {
+        video_print("Operacao iniciada; entrada bloqueada. F11/Esc cancela.\n",
+                    0x0E);
+    } else {
+        video_print("Operacao iniciada; entrada bloqueada. F12/Esc cancela.\n",
+                    0x0E);
+    }
     return OK;
 }
 
@@ -172,12 +185,7 @@ void shell_job_handle_key(uint8_t scancode) {
     if (!shell_job_is_active()) return;
     if (scancode == SHELL_JOB_SCANCODE_ESCAPE ||
         scancode == SHELL_JOB_SCANCODE_F12) {
-        if (!shell_job_context.cancel_requested) {
-            shell_job_context.cancel_requested = 1U;
-            shell_job_context.cancel_requests++;
-            shell_job_context.state = SHELL_JOB_STATE_CANCEL_REQUESTED;
-            LOG_INFO("SHELL", "Cancelamento de job solicitado");
-        }
+        shell_job_mark_cancel_requested();
         return;
     }
 
@@ -186,6 +194,10 @@ void shell_job_handle_key(uint8_t scancode) {
         shell_job_block_warning = 1U;
         LOG_WARN("SHELL", "Entrada ignorada durante job cooperativo");
     }
+}
+
+void shell_job_request_cancel(void) {
+    shell_job_mark_cancel_requested();
 }
 
 int shell_job_is_active(void) {

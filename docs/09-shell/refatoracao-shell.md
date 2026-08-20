@@ -209,7 +209,8 @@ subcomandos longos de `net`), `index rebuild`, pacotes/Store/Update e os
 workflows Q2, RegCheck e AppCheck. O loop do Shell usa espera IPC curta durante
 um job, continua drenando teclado e encaminha mensagens de aplicativo e
 resultados do App Loader na ordem original. `Esc` e `F12` solicitam
-cancelamento; as demais teclas sao consumidas, com um unico aviso de log.
+cancelamento; durante `regcheck full`, `F11` e encaminhado ao ZAPP de
+cancelamento. As demais teclas sao consumidas, com um unico aviso de log.
 
 As operacoes de rede e indice avancam por APIs de estado/poll ja existentes.
 Os caminhos de pacotes e atualizacao continuam usando os wrappers sincronos
