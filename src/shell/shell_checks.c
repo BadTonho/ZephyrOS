@@ -97,6 +97,8 @@
 #define SHELL_NOINLINE __attribute__((noinline))
 #define SHELL_UPDATE_SCANCODE_ESCAPE 0x01U
 #define SHELL_UPDATE_SCANCODE_F12 0x58U
+#define SHELL_REGCHECK_SCANCODE_F11 0x57U
+#define SHELL_REGCHECK_SCANCODE_F12 0x58U
 #define SHELL_INDEX_ACTION_SIZE 16U
 #define SHELL_FS_DIRECTORY_ATTRIBUTE 0x10U
 #define SHELL_LOG_TAIL_DEFAULT 10U
@@ -130,7 +132,7 @@ typedef enum {
 typedef enum {
     SHELL_REGCHECK_IDLE = 0,
     SHELL_REGCHECK_WAIT_DEMO,
-    SHELL_REGCHECK_WAIT_F12
+    SHELL_REGCHECK_WAIT_CANCEL
 } shell_regcheck_state_t;
 
 typedef struct {
@@ -547,7 +549,7 @@ void shell_checks_run_app_inputtest(void) {
     video_print(". Aguarde o foco do aplicativo.\n", 0x0A);
 }
 
-static uint32_t shell_build_regcheck_input_image(void) {
+static uint32_t shell_build_regcheck_input_image(uint8_t cancel_scancode) {
     app_image_header_t header;
     uint8_t* code = appcheck_demo_image + APP_IMAGE_HEADER_SIZE;
     uint32_t loop_offset;
@@ -570,7 +572,7 @@ static uint32_t shell_build_regcheck_input_image(void) {
                          USER_DATA_BASE + APP_INPUT_EVENT_DATA1_OFFSET);
     offset += 4;
     code[offset++] = 0x3D;
-    shell_demo_patch_u32(code, offset, 0x58U);
+    shell_demo_patch_u32(code, offset, cancel_scancode);
     offset += 4;
     if (shell_demo_emit_jne(code, &offset, loop_offset) != OK) return 0;
 
@@ -1328,9 +1330,11 @@ static int shell_regcheck_start_image(shell_regcheck_state_t state) {
     if (state == SHELL_REGCHECK_WAIT_DEMO) {
         name = "REGDEMO.ZAP";
         image_size = shell_build_demo_image();
-    } else if (state == SHELL_REGCHECK_WAIT_F12) {
-        name = "REGF12.ZAP";
-        image_size = shell_build_regcheck_input_image();
+    } else if (state == SHELL_REGCHECK_WAIT_CANCEL) {
+        name = "REGCANCEL.ZAP";
+        image_size = shell_build_regcheck_input_image(
+            shell_regcheck.full_mode ? SHELL_REGCHECK_SCANCODE_F11 :
+                                       SHELL_REGCHECK_SCANCODE_F12);
     } else {
         LOG_ERROR("SHELL", "RegCheck recebeu etapa ZAPP invalida");
         return ERR_INVALID;
@@ -1439,7 +1443,9 @@ static void shell_regcheck_finish(void) {
                                          shell_regcheck.loader_result);
         }
         if (shell_regcheck.cancellation_started) {
-            shell_regcheck_print_failure("cancelamento_f12",
+            shell_regcheck_print_failure(
+                shell_regcheck.full_mode ? "cancelamento_f11" :
+                                            "cancelamento_f12",
                                          shell_regcheck.cancellation_result);
         }
         shell_regcheck_print_failure("limpeza_final",
@@ -1482,9 +1488,11 @@ static void shell_regcheck_handle_loader_result(const app_loader_result_t* resul
         }
 
         shell_regcheck.cancellation_started = 1;
-        launch_result = shell_regcheck_start_image(SHELL_REGCHECK_WAIT_F12);
+        launch_result = shell_regcheck_start_image(SHELL_REGCHECK_WAIT_CANCEL);
         if (launch_result == OK) {
-            video_print("RegCheck: pressione F12 para validar cancelamento.\n",
+            video_print(shell_regcheck.full_mode ?
+                        "RegCheck: pressione F11 para validar cancelamento.\n" :
+                        "RegCheck: pressione F12 para validar cancelamento.\n",
                         0x0B);
             return;
         }
@@ -1494,7 +1502,7 @@ static void shell_regcheck_handle_loader_result(const app_loader_result_t* resul
         return;
     }
 
-    if (shell_regcheck.state == SHELL_REGCHECK_WAIT_F12) {
+    if (shell_regcheck.state == SHELL_REGCHECK_WAIT_CANCEL) {
         shell_regcheck.cancellation_result =
             shell_regcheck_validate_loader_result(result, 1);
         shell_regcheck_finish_after_ring3();
@@ -2048,6 +2056,40 @@ int shell_checks_input_blocked(void) {
     return shell_waiting_user_test;
 }
 
+int shell_checks_handle_job_key(uint8_t scancode) {
+    app_message_t message;
+    uint32_t foreground_pid;
+    uint8_t expected_scancode;
+    int result;
+
+    if (!shell_job_is_active() ||
+        shell_regcheck.state != SHELL_REGCHECK_WAIT_CANCEL) {
+        return 0;
+    }
+    expected_scancode = shell_regcheck.full_mode ?
+                        SHELL_REGCHECK_SCANCODE_F11 :
+                        SHELL_REGCHECK_SCANCODE_F12;
+    if (scancode != expected_scancode) return 0;
+
+    foreground_pid = app_loader_get_foreground_pid();
+    if (foreground_pid == 0U) {
+        LOG_WARN("SHELL", "RegCheck sem processo em primeiro plano");
+        shell_job_request_cancel();
+        return 1;
+    }
+    message.type = APP_MESSAGE_KEYBOARD;
+    message.data1 = scancode;
+    message.data2 = 0U;
+    result = app_api_message_send(foreground_pid, &message);
+    if (result != OK) {
+        LOG_WARN("SHELL", "Falha ao encaminhar tecla de cancelamento do RegCheck");
+        shell_job_request_cancel();
+    } else {
+        LOG_INFO("SHELL", "Tecla de cancelamento encaminhada ao RegCheck");
+    }
+    return 1;
+}
+
 int shell_checks_handle_loader_result(const app_loader_result_t* result) {
     int appcheck_result;
     process_t* current;
@@ -2110,6 +2152,7 @@ int shell_checks_start_job(const char* command) {
     if (!command ||
         (kstrcmp(command, "q2check") != 0 &&
          kstrcmp(command, "regcheck") != 0 &&
+         kstrcmp(command, "regcheck full") != 0 &&
          kstrcmp(command, "appcheck") != 0 &&
          kstrcmp(command, "usertest") != 0)) {
         return 0;
@@ -2144,7 +2187,8 @@ void shell_dispatch_cmd_q2check(const char* arguments) {
 
 void shell_dispatch_cmd_regcheck(const char* arguments) {
     cmd_regcheck(arguments);
-    shell_checks_start_job("regcheck");
+    shell_checks_start_job(shell_command_args_equal(arguments, "full") ?
+                           "regcheck full" : "regcheck");
 }
 
 void shell_dispatch_cmd_appcheck(const char* arguments) {

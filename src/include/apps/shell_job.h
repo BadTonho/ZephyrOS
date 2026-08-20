@@ -85,6 +85,7 @@ int shell_job_start(const shell_job_definition_t* definition,
 void shell_job_poll(void);
 void shell_job_pump_events(void);
 void shell_job_handle_key(uint8_t scancode);
+void shell_job_request_cancel(void);
 int shell_job_is_active(void);
 int shell_job_input_blocked(void);
 int shell_job_get_status(shell_job_status_t* status_out);

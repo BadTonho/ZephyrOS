@@ -370,6 +370,7 @@ void shell_runtime_handle_terminal_key(uint8_t scancode) {
 
 void shell_handle_key(uint8_t scancode) {
     if (shell_job_is_active()) {
+        if (shell_checks_handle_job_key(scancode)) return;
         shell_job_handle_key(scancode);
         return;
     }
