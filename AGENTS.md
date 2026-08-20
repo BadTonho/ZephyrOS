@@ -370,7 +370,29 @@ void modulo_handle_key(uint8_t scancode) {
 - [ ] `modulo_handle_key()` — trata input
 - [ ] Usar o fluxo de teclado/IPC e as APIs declaradas nos headers atuais
 - [ ] Chamar `taskbar_draw()` ao fechar
-- [ ] Comando registrado no `shell.c`
+- [ ] Comando registrado na tabela de `src/shell/shell_dispatch.c`
+- [ ] Adaptador e handler mantidos no modulo de dominio correspondente
+
+### Organizacao atual do Shell
+
+Desde a refatoracao do Shell, nao concentrar novos comandos ou estados de
+dominio em `shell.c`:
+
+- `shell.c`: API publica de `shell.h`, roteamento de teclado/mouse/IPC,
+  politica de terminal e prompt, e resultados genericos de aplicativos;
+- `shell_input.c`: buffer, historico, edicao e scancodes da entrada;
+- `shell_dispatch.c`: parsing e tabela unica de comandos;
+- `shell_command_utils.c`: helpers internos de argumentos e formatacao;
+- `shell_commands_*.c` e `shell_checks.c`: handlers e estados privados por
+  dominio;
+- `shell_hosted.c`: terminal hospedado e callbacks do Window Manager;
+- `shell_job.c`: executor cooperativo de operacoes demoradas;
+- `shell_runtime.h`: bridge interno entre os modulos do Shell.
+
+As assinaturas publicas de `src/include/apps/shell.h` devem permanecer
+intactas. Novos comandos devem ser adicionados a tabela do dispatcher e ao
+adaptador do modulo responsavel, sem duplicar parsing ou mover a politica de
+prompt para os handlers.
 
 Não inventar callbacks ou funções de teclado. Antes de criar uma integração,
 consultar `src/include/core/keyboard.h` e o dispatcher atual do Shell.
