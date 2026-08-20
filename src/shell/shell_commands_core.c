@@ -288,6 +288,7 @@ static void cmd_help_core(void) {
 static void cmd_help(void) {
     video_begin_update();
     video_print("Comandos disponiveis:\n", 0x0B);
+    video_print("  job status - Mostra o job cooperativo atual\n", 0x07);
     cmd_help_core();
     video_print("  ls       - Lista arquivos\n", 0x07);
     video_print("  cat      - Exibe conteudo de arquivo\n", 0x07);

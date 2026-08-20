@@ -34,6 +34,7 @@
 #include "fs/storage.h"
 #include "fs/file_index.h"
 #include "apps/shell.h"
+#include "apps/shell_job.h"
 #include "drivers/speaker.h"
 #include "process/thread.h"
 #include "drivers/vesa.h"
@@ -404,7 +405,9 @@ void shell_process_main(void) {
             }
         }
         if (!received) {
-            if (ipc_wait(WAIT_TIMEOUT_INFINITE, &wait_reason) != OK) {
+            uint32_t wait_timeout = shell_job_is_active() ? 1U :
+                                                            WAIT_TIMEOUT_INFINITE;
+            if (ipc_wait(wait_timeout, &wait_reason) != OK) {
                 LOG_ERROR("KERNEL", "Falha na espera do Shell por IPC");
                 process_yield();
             } else if (wait_reason != WAIT_REASON_EVENT) {
@@ -415,6 +418,7 @@ void shell_process_main(void) {
         app_loader_reap_finished();
         shell_report_user_test_result();
         shell_report_app_loader_result();
+        shell_job_poll();
         taskmgr_gui_update();
         shell_update_hosted_terminal();
     }

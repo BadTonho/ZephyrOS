@@ -408,3 +408,8 @@ pacote, credencial ou argumento de ZAPP.
 - **Mouse**: envia eventos de clique/movimento ao processo com foco
 - **Window Manager**: atualiza foco ao criar/destruir janelas
 - **Keyboard**: envia teclas ao processo com foco (via callback)
+O ciclo de diagnosticos do Shell usa `process_cancel_user_test()` para
+cancelar explicitamente o processo ring 3 reservado ao `usertest`, mantendo o
+resultado no mesmo canal de coleta usado pelo encerramento normal. A rotina
+recusa PIDs que nao pertencem a um UserTest e nao altera a API publica de
+`shell.h`.

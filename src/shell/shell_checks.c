@@ -65,6 +65,7 @@
 #include "ui/display.h"
 #include "apps/shell_command_utils.h"
 #include "apps/shell_runtime.h"
+#include "apps/shell_job.h"
 
 #define SHELL_Q2CHECK_FAULT_RUNS 2U
 #define SHELL_HOSTED_DEFAULT_CONTENT_WIDTH 880
@@ -271,11 +272,78 @@ static uint32_t shell_appcheck_migration_pid = 0;
 static uint32_t shell_appcheck_user_count = 0;
 static uint32_t shell_appcheck_zombie_count = 0;
 static shell_builtin_app_t shell_appcheck_migration_app = SHELL_BUILTIN_APP_NONE;
+static uint32_t shell_user_test_pid = 0;
+static uint8_t shell_checks_cancel_requested = 0;
+static uint8_t shell_checks_cancel_started = 0;
+
 static char appcheck_oversized_args[APP_LAUNCH_MAX_TEXT + 1U];
 static app_launch_info_t appcheck_launch_info;
 
 static shell_q2check_t shell_q2check;
 static shell_regcheck_t shell_regcheck;
+
+static shell_job_step_result_t shell_checks_job_step(
+    shell_job_context_t* context) {
+    int active;
+    int result;
+
+    if (!context) return SHELL_JOB_STEP_FAILED;
+    if (context->cancel_requested) {
+        if (!shell_checks_cancel_started) {
+            shell_checks_cancel_started = 1;
+            shell_checks_cancel_requested = 1;
+            if (shell_user_test_pid != 0U) {
+                result = process_cancel_user_test(shell_user_test_pid,
+                                                  PROCESS_EXIT_CANCELLED);
+            } else if (app_loader_is_foreground_active()) {
+                result = app_loader_cancel_foreground(PROCESS_EXIT_CANCELLED);
+            } else {
+                result = ERR_NOT_FOUND;
+            }
+            if (result != OK && result != ERR_NOT_FOUND) {
+                context->last_error = result;
+                return SHELL_JOB_STEP_FAILED;
+            }
+        }
+        shell_job_set_phase(context, "cancelando");
+        active = shell_q2check.state != SHELL_Q2CHECK_IDLE ||
+                 shell_regcheck.state != SHELL_REGCHECK_IDLE ||
+                 shell_appcheck_loader_pid != 0U ||
+                 shell_appcheck_migration_pid != 0U ||
+                 shell_waiting_user_test;
+        if (active) return SHELL_JOB_STEP_PENDING;
+        context->last_error = ERR_TIMEOUT;
+        return SHELL_JOB_STEP_CANCELLED;
+    }
+    active = shell_q2check.state != SHELL_Q2CHECK_IDLE ||
+             shell_regcheck.state != SHELL_REGCHECK_IDLE ||
+             shell_appcheck_loader_pid != 0U ||
+             shell_appcheck_migration_pid != 0U ||
+             shell_waiting_user_test;
+    shell_job_set_phase(context, active ? "aguardando resultado" : "finalizado");
+    if (active) return SHELL_JOB_STEP_PENDING;
+    context->last_error = OK;
+    return SHELL_JOB_STEP_COMPLETE;
+}
+
+static void shell_checks_job_finish(shell_job_context_t* context,
+                                    shell_job_state_t state, int result) {
+    (void)context;
+    shell_checks_cancel_requested = 0;
+    shell_checks_cancel_started = 0;
+    if (state == SHELL_JOB_STATE_CANCELLED) {
+        video_print("Diagnostico cooperativo cancelado.\n", 0x0E);
+    } else if (state != SHELL_JOB_STATE_SUCCEEDED) {
+        video_print("Diagnostico cooperativo terminou com erro; codigo=", 0x0C);
+        shell_command_print_num((uint32_t)result);
+        video_print("\n", 0x0C);
+    }
+}
+
+static const shell_job_definition_t shell_checks_job_definition = {
+    "checks", SHELL_JOB_KIND_CHECK, shell_checks_job_step, NULL,
+    shell_checks_job_finish
+};
 
 static void cmd_appcheck_print_result(const char* label, int result);
 static void cmd_appcheck_print_expected_result(const char* label, int actual,
@@ -592,6 +660,7 @@ static int shell_q2check_start_fault(uint32_t fault_index) {
         return result;
     }
     shell_q2check.expected_pid = pid;
+    shell_user_test_pid = pid;
     shell_q2check.state = fault_index == SHELL_Q2CHECK_FIRST_FAULT_INDEX ?
                           SHELL_Q2CHECK_FIRST_FAULT :
                           SHELL_Q2CHECK_SECOND_FAULT;
@@ -620,8 +689,9 @@ static void shell_q2check_finish(void) {
     shell_q2check_print_result("resultado", result);
     shell_q2check.state = SHELL_Q2CHECK_IDLE;
     shell_waiting_user_test = 0;
+    shell_user_test_pid = 0;
     shell_runtime_reset_input();
-    shell_print_prompt();
+    if (!shell_job_is_active()) shell_print_prompt();
 }
 
 static void shell_q2check_handle_user_test_result(uint32_t pid,
@@ -1378,7 +1448,7 @@ static void shell_regcheck_finish(void) {
     }
     shell_regcheck_reset();
     shell_runtime_reset_input();
-    shell_print_prompt();
+    if (!shell_job_is_active()) shell_print_prompt();
 }
 
 static void shell_regcheck_finish_after_ring3(void) {
@@ -1493,7 +1563,7 @@ static void shell_appcheck_finish_migration(const app_loader_result_t* result) {
         shell_appcheck_start_migration(SHELL_BUILTIN_APP_MEM) == OK) {
         return;
     }
-    shell_runtime_finish_command();
+    if (!shell_job_is_active()) shell_runtime_finish_command();
 }
 
 static void cmd_appcheck_print_result(const char* label, int result) {
@@ -1928,6 +1998,15 @@ void shell_checks_report_user_test_result(void) {
     if (!video_terminal_is_active()) return;
     if (process_take_user_test_result(&pid, &faulted) != OK) return;
 
+    if (shell_checks_cancel_requested) {
+        shell_q2check_reset();
+        shell_waiting_user_test = 0;
+        shell_user_test_pid = 0;
+        process_reap_finished_user();
+        shell_runtime_reset_input();
+        return;
+    }
+
     if (shell_q2check.state != SHELL_Q2CHECK_IDLE) {
         shell_q2check_handle_user_test_result(pid, faulted);
         return;
@@ -1940,8 +2019,9 @@ void shell_checks_report_user_test_result(void) {
     video_print(faulted ? " encerrado apos falha isolada.\n" :
                          " encerrado com sucesso.\n", 0x07);
     shell_waiting_user_test = 0;
+    shell_user_test_pid = 0;
     shell_runtime_reset_input();
-    shell_print_prompt();
+    if (!shell_job_is_active()) shell_print_prompt();
     process_reap_finished_user();
 }
 
@@ -1961,6 +2041,7 @@ static void cmd_usertest(const char* args) {
     shell_command_print_num(pid);
     video_print(".\n", 0x0A);
     shell_waiting_user_test = 1;
+    shell_user_test_pid = pid;
 }
 
 int shell_checks_input_blocked(void) {
@@ -1972,6 +2053,26 @@ int shell_checks_handle_loader_result(const app_loader_result_t* result) {
     process_t* current;
 
     if (!result) return 0;
+
+    if (shell_checks_cancel_requested) {
+        if (shell_regcheck.state != SHELL_REGCHECK_IDLE) {
+            shell_regcheck_reset();
+            shell_runtime_reset_input();
+            return 1;
+        }
+        if (shell_appcheck_loader_pid == result->pid) {
+            shell_appcheck_loader_pid = 0;
+            shell_appcheck_migration_app = SHELL_BUILTIN_APP_NONE;
+            shell_runtime_reset_input();
+            return 1;
+        }
+        if (shell_appcheck_migration_pid == result->pid) {
+            shell_appcheck_migration_pid = 0;
+            shell_appcheck_migration_app = SHELL_BUILTIN_APP_NONE;
+            shell_runtime_reset_input();
+            return 1;
+        }
+    }
 
     if (shell_regcheck.state != SHELL_REGCHECK_IDLE) {
         shell_regcheck_handle_loader_result(result);
@@ -1991,7 +2092,7 @@ int shell_checks_handle_loader_result(const app_loader_result_t* result) {
         if (shell_appcheck_start_migration(SHELL_BUILTIN_APP_UPTIME) == OK) {
             return 1;
         }
-        shell_runtime_finish_command();
+        if (!shell_job_is_active()) shell_runtime_finish_command();
         return 1;
     }
 
@@ -2003,16 +2104,58 @@ int shell_checks_handle_loader_result(const app_loader_result_t* result) {
     return 0;
 }
 
+int shell_checks_start_job(const char* command) {
+    int active;
+
+    if (!command ||
+        (kstrcmp(command, "q2check") != 0 &&
+         kstrcmp(command, "regcheck") != 0 &&
+         kstrcmp(command, "appcheck") != 0 &&
+         kstrcmp(command, "usertest") != 0)) {
+        return 0;
+    }
+    active = shell_q2check.state != SHELL_Q2CHECK_IDLE ||
+             shell_regcheck.state != SHELL_REGCHECK_IDLE ||
+             shell_appcheck_loader_pid != 0U ||
+             shell_appcheck_migration_pid != 0U;
+    if (kstrcmp(command, "usertest") == 0) {
+        active = active || shell_waiting_user_test;
+    }
+    if (!active) return 0;
+    shell_checks_cancel_requested = 0;
+    shell_checks_cancel_started = 0;
+    if (shell_job_start(&shell_checks_job_definition, command) != OK) {
+        LOG_WARN("SHELL", "Job de diagnostico nao foi registrado");
+    }
+    return 1;
+}
+
 #define SHELL_CHECKS_WRAP_ARGS(adapter, handler) \
     void adapter(const char* arguments) { handler(arguments); }
 
 #define SHELL_CHECKS_WRAP_NO_ARGS(adapter, handler) \
     void adapter(const char* arguments) { (void)arguments; handler(); }
 
-SHELL_CHECKS_WRAP_NO_ARGS(shell_dispatch_cmd_q2check, cmd_q2check)
-SHELL_CHECKS_WRAP_ARGS(shell_dispatch_cmd_regcheck, cmd_regcheck)
-SHELL_CHECKS_WRAP_NO_ARGS(shell_dispatch_cmd_appcheck, cmd_appcheck)
-SHELL_CHECKS_WRAP_ARGS(shell_dispatch_cmd_usertest, cmd_usertest)
+void shell_dispatch_cmd_q2check(const char* arguments) {
+    (void)arguments;
+    cmd_q2check();
+    shell_checks_start_job("q2check");
+}
+
+void shell_dispatch_cmd_regcheck(const char* arguments) {
+    cmd_regcheck(arguments);
+    shell_checks_start_job("regcheck");
+}
+
+void shell_dispatch_cmd_appcheck(const char* arguments) {
+    (void)arguments;
+    cmd_appcheck();
+    shell_checks_start_job("appcheck");
+}
+void shell_dispatch_cmd_usertest(const char* arguments) {
+    cmd_usertest(arguments);
+    shell_checks_start_job("usertest");
+}
 
 #undef SHELL_CHECKS_WRAP_ARGS
 #undef SHELL_CHECKS_WRAP_NO_ARGS

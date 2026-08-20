@@ -105,10 +105,11 @@ Separar os handlers em módulos pequenos:
 
 ### Fase 4 — Operações demoradas
 
-Depois da separação estrutural, comandos demorados devem usar uma operação
-cooperativa ou uma work queue. Enquanto isso não existir, o Shell deve deixar
-claro quando a entrada está temporariamente bloqueada e registrar falhas de
-fila com o módulo `SHELL` ou `KBD`.
+O executor cooperativo de `src/shell/shell_job.c` agora atende essa fronteira:
+comandos marcados com `SHELL_DISPATCH_FLAG_COOPERATIVE` mantêm um único job
+ativo, consomem teclado durante o polling e registram cancelamento, timeout,
+falha e saturação da fila IPC. A validação funcional ainda está pendente dos
+gates descritos no estado da Fase 4 ao final deste documento.
 
 ## Ordem recomendada
 
@@ -196,3 +197,35 @@ Para fechar os gates formais, o usuario deve executar:
 make q3check
 make clean && make
 ```
+## Fase 4 - Estado da implementacao
+
+A estrutura inicial de jobs cooperativos foi implementada em
+`src/shell/shell_job.c` e `src/include/apps/shell_job.h`. O executor possui um
+unico job ativo, contexto estatico, progresso, fases, erros, ticks e contadores
+de eventos bloqueados. O comando `job status` consulta o ultimo estado sem
+alterar a API publica de `shell.h`.
+
+Os adaptadores cooperativos cobrem rede (`ping`, `nslookup`, `http` e os
+subcomandos longos de `net`), `index rebuild`, pacotes/Store/Update e os
+workflows Q2, RegCheck e AppCheck. O loop do Shell usa espera IPC curta durante
+um job, continua drenando teclado e encaminha mensagens de aplicativo e
+resultados do App Loader na ordem original. `Esc` e `F12` solicitam
+cancelamento; as demais teclas sao consumidas, com um unico aviso de log.
+
+As operacoes de rede e indice avancam por APIs de estado/poll ja existentes.
+Os caminhos de pacotes e atualizacao continuam usando os wrappers sincronos
+compatíveis, com bombeamento de eventos nos pontos de cancelamento existentes;
+uma decomposicao interna adicional dessas operacoes fica para uma iteracao
+posterior. Editor, Player, Task Manager, WM e demais cenas interativas mantem
+o fluxo atual.
+
+Ainda nao marcar a Fase 4 como concluida: faltam `make q3check`, build limpo e
+validacao funcional no QEMU. A validacao deve confirmar `job status`, sucesso,
+falha, timeout, operacao ocupada, cancelamento, ausencia de prompt duplicado,
+fila IPC sem saturacao e o smoke test Simple/Classic/terminal hospedado.
+
+Referencias adicionais:
+
+- [Contrato do executor de jobs](../../src/include/apps/shell_job.h)
+- [Implementacao do executor](../../src/shell/shell_job.c)
+- [Comandos do Shell](comandos.md)

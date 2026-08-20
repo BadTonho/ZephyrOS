@@ -1,6 +1,7 @@
 #include "apps/shell.h"
 #include "apps/shell_input.h"
 #include "apps/shell_dispatch.h"
+#include "apps/shell_job.h"
 #include "core/video.h"
 #include "core/keyboard.h"
 #include "fs/fs.h"
@@ -337,6 +338,10 @@ static int cmd_update_cancel_check(void* context) {
     ipc_msg_t message;
 
     (void)context;
+    if (shell_job_is_active()) {
+        shell_job_pump_events();
+        return shell_job_cancel_requested();
+    }
     shell_hosted_present_progress();
     keyboard_process_events();
     while (ipc_receive(&message)) {
@@ -2101,15 +2106,135 @@ static void cmd_store(const char* args) {
         cmd_store_print_usage();
     }
 }
+#define SHELL_PACKAGES_JOB_MAX_TOKEN 16U
+
+typedef enum {
+    SHELL_PACKAGES_JOB_PKG = 0,
+    SHELL_PACKAGES_JOB_STORE,
+    SHELL_PACKAGES_JOB_UPDATE
+} shell_packages_job_operation_t;
+
+static shell_packages_job_operation_t shell_packages_job_operation;
+
+static shell_job_step_result_t shell_packages_job_step(
+    shell_job_context_t* context) {
+    if (!context) return SHELL_JOB_STEP_FAILED;
+    if (context->cancel_requested &&
+        shell_packages_job_operation != SHELL_PACKAGES_JOB_STORE &&
+        shell_packages_job_operation != SHELL_PACKAGES_JOB_UPDATE) {
+        context->last_error = ERR_TIMEOUT;
+        return SHELL_JOB_STEP_CANCELLED;
+    }
+    shell_job_set_phase(context, "executando");
+    if (shell_packages_job_operation == SHELL_PACKAGES_JOB_PKG) {
+        cmd_pkg(context->arguments);
+    } else if (shell_packages_job_operation == SHELL_PACKAGES_JOB_STORE) {
+        cmd_store(context->arguments);
+    } else {
+        cmd_update(context->arguments);
+    }
+    if (context->cancel_requested) {
+        context->last_error = ERR_TIMEOUT;
+        return SHELL_JOB_STEP_CANCELLED;
+    }
+    context->last_error = OK;
+    return SHELL_JOB_STEP_COMPLETE;
+}
+
+static void shell_packages_job_finish(shell_job_context_t* context,
+                                      shell_job_state_t state, int result) {
+    (void)context;
+    if (state == SHELL_JOB_STATE_CANCELLED) {
+        video_print("Operacao de pacotes cancelada.\n", 0x0E);
+    } else if (state != SHELL_JOB_STATE_SUCCEEDED) {
+        video_print("Operacao de pacotes terminou com erro; codigo=", 0x0C);
+        shell_command_print_num((uint32_t)result);
+        video_print("\n", 0x0C);
+    }
+}
+
+static const shell_job_definition_t shell_pkg_job_definition = {
+    "pkg", SHELL_JOB_KIND_PACKAGES, shell_packages_job_step, NULL,
+    shell_packages_job_finish
+};
+
+static const shell_job_definition_t shell_store_job_definition = {
+    "store", SHELL_JOB_KIND_PACKAGES, shell_packages_job_step, NULL,
+    shell_packages_job_finish
+};
+
+static const shell_job_definition_t shell_update_job_definition = {
+    "update", SHELL_JOB_KIND_PACKAGES, shell_packages_job_step, NULL,
+    shell_packages_job_finish
+};
+
+static int shell_packages_should_start(const char* command,
+                                       const char* arguments) {
+    char first[SHELL_PACKAGES_JOB_MAX_TOKEN];
+    const char* cursor = arguments;
+
+    if (!command || !arguments ||
+        shell_command_read_token(&cursor, first, sizeof(first)) != OK) {
+        return 0;
+    }
+    if (kstrcmp(command, "pkg") == 0) {
+        return kstrcmp(first, "verify") == 0 ||
+               kstrcmp(first, "install") == 0 ||
+               kstrcmp(first, "remove") == 0;
+    }
+    if (kstrcmp(command, "update") == 0) {
+        return kstrcmp(first, "apply") == 0 ||
+               kstrcmp(first, "rollback") == 0 ||
+               kstrcmp(first, "verify") == 0 ||
+               kstrcmp(first, "fetch") == 0 ||
+               kstrcmp(first, "remote") == 0;
+    }
+    if (kstrcmp(command, "store") != 0) return 0;
+    return kstrcmp(first, "remote") == 0 ||
+           kstrcmp(first, "install") == 0 ||
+           kstrcmp(first, "update") == 0 ||
+           kstrcmp(first, "remove") == 0 ||
+           kstrcmp(first, "rollback") == 0;
+}
+
+int shell_packages_start_job(const char* command, const char* arguments) {
+    const shell_job_definition_t* definition;
+
+    if (!shell_packages_should_start(command, arguments)) return 0;
+    shell_packages_job_operation =
+        kstrcmp(command, "pkg") == 0 ? SHELL_PACKAGES_JOB_PKG :
+        kstrcmp(command, "store") == 0 ? SHELL_PACKAGES_JOB_STORE :
+                                          SHELL_PACKAGES_JOB_UPDATE;
+    definition = shell_packages_job_operation == SHELL_PACKAGES_JOB_PKG ?
+                 &shell_pkg_job_definition :
+                 shell_packages_job_operation == SHELL_PACKAGES_JOB_STORE ?
+                 &shell_store_job_definition : &shell_update_job_definition;
+    if (shell_job_start(definition, arguments) != OK) {
+        video_print("Job de pacotes recusado.\n", 0x0C);
+    }
+    return 1;
+}
+
 #define SHELL_PACKAGES_WRAP_ARGS(adapter, handler) \
     void adapter(const char* arguments) { handler(arguments); }
 
 #define SHELL_PACKAGES_WRAP_NO_ARGS(adapter, handler) \
     void adapter(const char* arguments) { (void)arguments; handler(); }
 
-SHELL_PACKAGES_WRAP_ARGS(shell_dispatch_cmd_pkg, cmd_pkg)
-SHELL_PACKAGES_WRAP_ARGS(shell_dispatch_cmd_store, cmd_store)
-SHELL_PACKAGES_WRAP_ARGS(shell_dispatch_cmd_update, cmd_update)
+void shell_dispatch_cmd_pkg(const char* arguments) {
+    if (shell_packages_start_job("pkg", arguments)) return;
+    cmd_pkg(arguments);
+}
+
+void shell_dispatch_cmd_store(const char* arguments) {
+    if (shell_packages_start_job("store", arguments)) return;
+    cmd_store(arguments);
+}
+
+void shell_dispatch_cmd_update(const char* arguments) {
+    if (shell_packages_start_job("update", arguments)) return;
+    cmd_update(arguments);
+}
 SHELL_PACKAGES_WRAP_NO_ARGS(shell_dispatch_cmd_pkgcheck, cmd_pkgcheck)
 
 #undef SHELL_PACKAGES_WRAP_ARGS

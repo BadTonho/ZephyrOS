@@ -1,6 +1,7 @@
 #include "apps/shell.h"
 #include "apps/shell_input.h"
 #include "apps/shell_dispatch.h"
+#include "apps/shell_job.h"
 #include "core/video.h"
 #include "core/keyboard.h"
 #include "fs/fs.h"
@@ -673,12 +674,91 @@ static void cmd_search(const char* args) {
     cmd_search_print_warnings();
 }
 
+static shell_job_step_result_t shell_index_job_step(
+    shell_job_context_t* context) {
+    file_index_status_t status;
+
+    if (!context || file_index_get_status(&status) != OK) {
+        if (context) context->last_error = ERR_STATE;
+        LOG_ERROR("SHELL", "Falha ao consultar job do indice");
+        return SHELL_JOB_STEP_FAILED;
+    }
+    shell_job_set_phase(context, file_index_state_name(status.state));
+    shell_job_set_progress(context, status.scan_steps,
+                           status.candidate_entries);
+    if (context->cancel_requested) {
+        context->last_error = file_index_cancel();
+        return context->last_error == OK ? SHELL_JOB_STEP_CANCELLED :
+                                           SHELL_JOB_STEP_FAILED;
+    }
+    if (status.state == FILE_INDEX_STATE_BUILDING) {
+        return SHELL_JOB_STEP_PENDING;
+    }
+    if (status.state == FILE_INDEX_STATE_READY ||
+        status.state == FILE_INDEX_STATE_EMPTY) {
+        context->last_error = OK;
+        return SHELL_JOB_STEP_COMPLETE;
+    }
+    context->last_error = status.last_error == OK ? ERR_STATE :
+                                                   status.last_error;
+    return status.state == FILE_INDEX_STATE_CANCELLED ?
+           SHELL_JOB_STEP_CANCELLED : SHELL_JOB_STEP_FAILED;
+}
+
+static int shell_index_job_cancel(shell_job_context_t* context) {
+    (void)context;
+    return file_index_cancel();
+}
+
+static void shell_index_job_finish(shell_job_context_t* context,
+                                   shell_job_state_t state, int result) {
+    (void)context;
+    if (state == SHELL_JOB_STATE_SUCCEEDED) {
+        video_print("Indice reconstruido com sucesso.\n", 0x0A);
+    } else if (state == SHELL_JOB_STATE_CANCELLED) {
+        video_print("Rebuild do indice cancelado; indice ativo preservado.\n",
+                    0x0E);
+    } else {
+        video_print("Rebuild do indice falhou; codigo=", 0x0C);
+        shell_command_print_num((uint32_t)result);
+        video_print("\n", 0x0C);
+    }
+}
+
+static const shell_job_definition_t shell_index_job_definition = {
+    "index", SHELL_JOB_KIND_INDEX, shell_index_job_step,
+    shell_index_job_cancel, shell_index_job_finish
+};
+
+int shell_storage_start_job(const char* arguments) {
+    int result;
+
+    if (!shell_command_args_equal(arguments, "rebuild")) return 0;
+    result = file_index_rebuild();
+    if (result != OK) {
+        video_print("Operacao do indice falhou; codigo=", 0x0C);
+        shell_command_print_num((uint32_t)result);
+        video_print("\n", 0x0C);
+        return 1;
+    }
+    result = shell_job_start(&shell_index_job_definition, arguments);
+    if (result != OK) {
+        file_index_cancel();
+        video_print("Job do indice recusado; codigo=", 0x0C);
+        shell_command_print_num((uint32_t)result);
+        video_print("\n", 0x0C);
+    }
+    return 1;
+}
+
 #define SHELL_STORAGE_WRAP_ARGS(adapter, handler) \
     void adapter(const char* arguments) { handler(arguments); }
 
 SHELL_STORAGE_WRAP_ARGS(shell_dispatch_cmd_storage, cmd_storage)
-SHELL_STORAGE_WRAP_ARGS(shell_dispatch_cmd_index, cmd_index)
+void shell_dispatch_cmd_index(const char* arguments) {
+    if (shell_storage_start_job(arguments)) return;
+    cmd_index(arguments);
+}
 SHELL_STORAGE_WRAP_ARGS(shell_dispatch_cmd_search, cmd_search)
 
 #undef SHELL_STORAGE_WRAP_ARGS
-
