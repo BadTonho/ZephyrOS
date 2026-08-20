@@ -10,7 +10,7 @@
 #define APP_API_TICKS_PER_SECOND 50
 #define APP_HANDLE_INVALID 0
 #define APP_EXIT_SUCCESS 0U
-/* Reservado ao runtime para cancelamentos controlados, como F12. */
+/* Reservado ao runtime para cancelamentos controlados, como F11 e F12. */
 #define APP_EXIT_CANCELLED 0x0000F120U
 
 #define APP_LAUNCH_ABI_VERSION 1U

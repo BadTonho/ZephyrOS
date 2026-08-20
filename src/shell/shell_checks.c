@@ -577,8 +577,10 @@ static uint32_t shell_build_regcheck_input_image(uint8_t cancel_scancode) {
     if (shell_demo_emit_jne(code, &offset, loop_offset) != OK) return 0;
 
     shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_PROCESS_EXIT);
-    code[offset++] = 0x31;
-    code[offset++] = 0xDB;
+    /* O resultado desta etapa precisa ser identificado como cancelamento,
+       inclusive quando F11 chega diretamente ao ZAPP sem passar pelo
+       cancelamento especial do driver para F12. */
+    shell_demo_emit_mov(code, &offset, 3, APP_EXIT_CANCELLED);
     code[offset++] = 0xCD;
     code[offset++] = 0x80;
     code[offset++] = 0xF4;
