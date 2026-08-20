@@ -39,14 +39,30 @@ static const char scancode_table[128] = {
     0, 0, 0, 0, 0, 0, 0, 0
 };
 
-char keyboard_scancode_to_ascii(uint8_t scancode) {
+static const char scancode_shift_table[128] = {
+    0,  27, '!','@','#','$','%','^','&','*','(',')','_','+','\b',
+    '\t','Q','W','E','R','T','Y','U','I','O','P','{','}','\n',
+    0,  'A','S','D','F','G','H','J','K','L',':','"','~',
+    0,  '|','Z','X','C','V','B','N','M','<','>',':',0,
+    '*', 0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0
+};
+
+char keyboard_scancode_to_ascii_shifted(uint8_t scancode, uint8_t shifted) {
     /* Hosts podem entregar a barra ABNT2 como a tecla ISO extra ou ABNT2. */
     if (scancode == KEYBOARD_SCANCODE_ISO_SLASH ||
-        scancode == KEYBOARD_SCANCODE_ABNT2_SLASH) return '/';
-    if (scancode < 128) {
-        return scancode_table[scancode];
+        scancode == KEYBOARD_SCANCODE_ABNT2_SLASH) {
+        return shifted ? '?' : '/';
     }
-    return 0;
+    if (scancode >= 128) return 0;
+    return shifted ? scancode_shift_table[scancode] : scancode_table[scancode];
+}
+
+char keyboard_scancode_to_ascii(uint8_t scancode) {
+    return keyboard_scancode_to_ascii_shifted(scancode, 0);
 }
 
 void keyboard_init(void) {

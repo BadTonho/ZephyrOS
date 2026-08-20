@@ -137,6 +137,12 @@ static const char scancode_table[128] = {
 };
 ```
 
+O driver tambem expoe `keyboard_scancode_to_ascii_shifted(scancode, shifted)`
+para consumidores que precisam da mesma tabela com Shift. A funcao legada
+`keyboard_scancode_to_ascii()` permanece como atalho para a conversao sem
+Shift. As barras ISO/ABNT2 sao normalizadas pelo proprio driver: `/` sem Shift
+e `?` com Shift.
+
 ### Metricas
 
 `keyboard_metrics_t` informa ocupacao atual e capacidade da fila, descartes,

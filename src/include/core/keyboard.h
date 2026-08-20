@@ -18,6 +18,7 @@ void keyboard_init(void);
 void keyboard_handler(registers_t* regs);
 void keyboard_process_events(void);
 char keyboard_scancode_to_ascii(uint8_t scancode);
+char keyboard_scancode_to_ascii_shifted(uint8_t scancode, uint8_t shifted);
 void keyboard_get_metrics(keyboard_metrics_t* metrics);
 
 #endif

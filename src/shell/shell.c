@@ -1,4 +1,5 @@
 #include "apps/shell.h"
+#include "apps/shell_input.h"
 #include "core/video.h"
 #include "core/keyboard.h"
 #include "fs/fs.h"
@@ -92,7 +93,6 @@
 #define SHELL_NOINLINE __attribute__((noinline))
 #define SHELL_UPDATE_SCANCODE_ESCAPE 0x01U
 #define SHELL_UPDATE_SCANCODE_F12 0x58U
-#define SHELL_COMMAND_HISTORY_CAPACITY 16U
 #define SHELL_INDEX_ACTION_SIZE 16U
 #define SHELL_FS_DIRECTORY_ATTRIBUTE 0x10U
 #define SHELL_LOG_TAIL_DEFAULT 10U
@@ -260,24 +260,13 @@ typedef struct {
     file_index_search_status_t status;
 } shell_index_workspace_t;
 
-static char input_buffer[SHELL_BUFFER_SIZE];
-static char shell_command_history[SHELL_COMMAND_HISTORY_CAPACITY]
-                                 [SHELL_BUFFER_SIZE];
-static char shell_command_draft[SHELL_BUFFER_SIZE];
 static log_record_t shell_log_records[SHELL_LOG_TAIL_MAXIMUM];
 static timer_info_t shell_timer_records[TIMER_CAPACITY];
 static wait_info_t shell_wait_records[MAX_PROCESSES + MAX_THREADS];
 static char appcheck_oversized_text[APP_API_MAX_TEXT_SIZE + 1];
 static uint8_t appcheck_demo_image[APP_IMAGE_MAX_FILE_SIZE];
 static uint8_t appcheck_demo_verify[APP_IMAGE_MAX_FILE_SIZE];
-static int input_pos = 0;
-static uint32_t shell_history_count = 0;
-static uint32_t shell_history_next = 0;
-static uint32_t shell_history_depth = 0;
 static int shell_waiting_user_test = 0;
-static uint8_t shell_extended_scancode = 0;
-static uint8_t shell_shift_mask = 0;
-static uint8_t shell_prompt_visible = 0;
 static uint8_t shell_hosted_visible = 0;
 static uint32_t shell_appcheck_loader_pid = 0;
 static uint32_t shell_echo_loader_pid = 0;
@@ -307,7 +296,6 @@ static void cmd_usb_device(const char* args);
 static void shell_print_usb_fixture_report(void);
 static void shell_present_hosted_progress(void);
 static void shell_suspend_terminal(void);
-static void shell_history_reset_navigation(void);
 
 static const wm_hosted_app_t shell_hosted_app = {
     WM_APP_SHELL, "ZephyrOS Shell", "Shell",
@@ -335,22 +323,6 @@ static shell_store_workspace_t shell_store_workspace;
 /* Os 64 resultados do indice excedem a pilha de 4 KiB do Shell. */
 static shell_index_workspace_t shell_index_workspace;
 
-#define SHELL_SCANCODE_EXTENDED 0xE0
-#define SHELL_SCANCODE_LEFT_SHIFT 0x2AU
-#define SHELL_SCANCODE_RIGHT_SHIFT 0x36U
-#define SHELL_SCANCODE_LEFT_SHIFT_RELEASE 0xAAU
-#define SHELL_SCANCODE_RIGHT_SHIFT_RELEASE 0xB6U
-#define SHELL_SHIFT_LEFT_MASK 0x01U
-#define SHELL_SHIFT_RIGHT_MASK 0x02U
-#define SHELL_SCANCODE_ISO_SLASH 0x56U
-#define SHELL_SCANCODE_ABNT2_SLASH 0x73U
-#define SHELL_SCANCODE_UP       0x48
-#define SHELL_SCANCODE_DOWN     0x50
-#define SHELL_SCANCODE_PAGE_UP  0x49
-#define SHELL_SCANCODE_PAGE_DOWN 0x51
-#define SHELL_SCANCODE_HOME     0x47
-#define SHELL_SCANCODE_END      0x4F
-#define SHELL_SCROLL_PAGE_LINES 20
 #define SHELL_WHEEL_SCROLL_LINES 3
 
 static void print_num(uint32_t num);
@@ -602,11 +574,7 @@ static uint32_t shell_build_regcheck_input_image(void) {
 }
 
 static void shell_reset_input(void) {
-    input_pos = 0;
-    shell_extended_scancode = 0;
-    shell_shift_mask = 0;
-    shell_history_reset_navigation();
-    kmemset(input_buffer, 0, sizeof(input_buffer));
+    shell_input_reset();
 }
 
 static int shell_is_hosted_visible(void) {
@@ -620,105 +588,7 @@ static void shell_suspend_terminal_for_scene(void) {
 }
 
 static void shell_resume_terminal(void) {
-    if (!wm_is_active() && video_terminal_is_hosted()) {
-        video_terminal_begin();
-        return;
-    }
-    if (!video_terminal_is_active()) video_terminal_begin();
-}
-
-static void shell_return_to_terminal_tail(void) {
-    shell_resume_terminal();
-    if (video_terminal_is_scrolled()) video_terminal_scroll_end();
-}
-
-static void shell_history_copy(char* destination, const char* source) {
-    uint32_t index = 0;
-
-    if (!destination) return;
-    if (!source) source = "";
-    while (source[index] && index + 1U < SHELL_BUFFER_SIZE) {
-        destination[index] = source[index];
-        index++;
-    }
-    destination[index] = '\0';
-}
-
-static void shell_history_reset_navigation(void) {
-    shell_history_depth = 0;
-    shell_command_draft[0] = '\0';
-}
-
-static void shell_history_replace_input(const char* command) {
-    uint32_t index = 0;
-
-    shell_return_to_terminal_tail();
-    while (input_pos > 0) {
-        video_backspace();
-        input_pos--;
-    }
-    kmemset(input_buffer, 0, sizeof(input_buffer));
-    if (!command) return;
-    while (command[index] && index + 1U < SHELL_BUFFER_SIZE) {
-        input_buffer[index] = command[index];
-        video_put_char(command[index], 0x07);
-        index++;
-    }
-    input_buffer[index] = '\0';
-    input_pos = (int)index;
-}
-
-static void shell_history_record(const char* command) {
-    uint32_t previous;
-
-    if (!command || !command[0]) {
-        shell_history_reset_navigation();
-        return;
-    }
-    if (shell_history_count) {
-        previous = (shell_history_next + SHELL_COMMAND_HISTORY_CAPACITY - 1U) %
-                   SHELL_COMMAND_HISTORY_CAPACITY;
-        if (kstrcmp(shell_command_history[previous], command) == 0) {
-            shell_history_reset_navigation();
-            return;
-        }
-    }
-    shell_history_copy(shell_command_history[shell_history_next], command);
-    shell_history_next =
-        (shell_history_next + 1U) % SHELL_COMMAND_HISTORY_CAPACITY;
-    if (shell_history_count < SHELL_COMMAND_HISTORY_CAPACITY) {
-        shell_history_count++;
-    }
-    shell_history_reset_navigation();
-}
-
-static void shell_history_navigate(int direction) {
-    uint32_t history_index;
-
-    if (direction < 0) {
-        if (!shell_history_count ||
-            shell_history_depth >= shell_history_count) return;
-        if (!shell_history_depth) {
-            shell_history_copy(shell_command_draft, input_buffer);
-        }
-        shell_history_depth++;
-    } else {
-        if (!shell_history_depth) return;
-        shell_history_depth--;
-        if (!shell_history_depth) {
-            shell_history_replace_input(shell_command_draft);
-            return;
-        }
-    }
-    history_index =
-        (shell_history_next + SHELL_COMMAND_HISTORY_CAPACITY -
-         shell_history_depth) % SHELL_COMMAND_HISTORY_CAPACITY;
-    shell_history_replace_input(shell_command_history[history_index]);
-}
-
-static void shell_history_detach_for_edit(void) {
-    if (!shell_history_depth) return;
-    shell_history_reset_navigation();
+    shell_input_resume_terminal(wm_is_active());
 }
 
 static void shell_hosted_draw(int x, int y, int width, int height) {
@@ -769,7 +639,7 @@ static int shell_hosted_mouse(mouse_event_t* event, int x, int y,
 
 static void shell_hosted_close(void) {
     shell_hosted_visible = 0;
-    shell_shift_mask = 0;
+    shell_input_reset_modifiers();
 }
 
 static void shell_print_usb_fixture_report(void) {
@@ -11753,8 +11623,7 @@ static void cmd_shutdown(const char* args) {
 }
 
 void shell_init(void) {
-    shell_reset_input();
-    shell_prompt_visible = 0;
+    shell_input_init();
     shell_hosted_visible = 0;
     kmemset(&shell_kmetrics_baseline, 0, sizeof(shell_kmetrics_baseline));
 }
@@ -11767,10 +11636,7 @@ static void cmd_threadtest(void) {
 }
 
 void shell_print_prompt(void) {
-    shell_resume_terminal();
-    if (shell_prompt_visible) return;
-    video_print(SHELL_PROMPT, 0x0A);
-    shell_prompt_visible = 1;
+    shell_input_print_prompt(wm_is_active());
 }
 
 static int shell_should_show_prompt(void) {
@@ -11793,17 +11659,14 @@ void shell_update_hosted_terminal(void) {
 }
 
 static void process_input(void) {
-    shell_prompt_visible = 0;
-    video_print("\n", 0x07);
+    const char* input = shell_input_get_buffer();
 
-    if (input_pos == 0) {
+    if (!input[0]) {
         shell_print_prompt();
         return;
     }
 
-    input_buffer[input_pos] = '\0';
-    shell_history_record(input_buffer);
-    shell_process_command(input_buffer);
+    shell_process_command(input);
 
     shell_reset_input();
     if (shell_should_show_prompt()) {
@@ -11811,136 +11674,16 @@ static void process_input(void) {
     }
 }
 
-static int shell_handle_terminal_scroll_key(uint8_t scancode) {
-    switch (scancode) {
-        case SHELL_SCANCODE_UP:
-            return video_terminal_scroll(1);
-        case SHELL_SCANCODE_DOWN:
-            return video_terminal_scroll(-1);
-        case SHELL_SCANCODE_PAGE_UP:
-            return video_terminal_scroll(SHELL_SCROLL_PAGE_LINES);
-        case SHELL_SCANCODE_PAGE_DOWN:
-            return video_terminal_scroll(-SHELL_SCROLL_PAGE_LINES);
-        case SHELL_SCANCODE_HOME:
-            video_terminal_scroll_home();
-            return 1;
-        case SHELL_SCANCODE_END:
-            video_terminal_scroll_end();
-            return 1;
-        default:
-            return 0;
-    }
-}
-
 static void shell_handle_terminal_key(uint8_t scancode) {
-    if (scancode == SHELL_SCANCODE_LEFT_SHIFT) {
-        shell_shift_mask |= SHELL_SHIFT_LEFT_MASK;
-        return;
-    }
-    if (scancode == SHELL_SCANCODE_RIGHT_SHIFT) {
-        shell_shift_mask |= SHELL_SHIFT_RIGHT_MASK;
-        return;
-    }
-    if (scancode == SHELL_SCANCODE_LEFT_SHIFT_RELEASE) {
-        shell_shift_mask &= (uint8_t)~SHELL_SHIFT_LEFT_MASK;
-        return;
-    }
-    if (scancode == SHELL_SCANCODE_RIGHT_SHIFT_RELEASE) {
-        shell_shift_mask &= (uint8_t)~SHELL_SHIFT_RIGHT_MASK;
-        return;
-    }
-    if (shell_waiting_user_test) return;
-
-    shell_resume_terminal();
-
-    if (scancode == SHELL_SCANCODE_EXTENDED) {
-        shell_extended_scancode = 1;
-        return;
-    }
-
-    if (scancode & 0x80) {
-        shell_extended_scancode = 0;
-        return;
-    }
-
-    if (shell_extended_scancode) {
-        shell_extended_scancode = 0;
-        if (scancode == SHELL_SCANCODE_UP ||
-            scancode == SHELL_SCANCODE_DOWN) {
-            if (shell_shift_mask) {
-                (void)shell_handle_terminal_scroll_key(scancode);
-            } else {
-                shell_history_navigate(scancode == SHELL_SCANCODE_UP ? -1 : 1);
-            }
-            return;
-        }
-        if (shell_handle_terminal_scroll_key(scancode)) return;
-    }
-
-    static const char scancode_table[128] = {
-        0,  27, '1','2','3','4','5','6','7','8','9','0','-','=','\b',
-        '\t','q','w','e','r','t','y','u','i','o','p','[',']','\n',
-        0,  'a','s','d','f','g','h','j','k','l',';','\'','`',
-        0,  '\\','z','x','c','v','b','n','m',',','.',';',0,
-        '*', 0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    static const char scancode_shift_table[128] = {
-        0,  27, '!','@','#','$','%','^','&','*','(',')','_','+','\b',
-        '\t','Q','W','E','R','T','Y','U','I','O','P','{','}','\n',
-        0,  'A','S','D','F','G','H','J','K','L',':','"','~',
-        0,  '|','Z','X','C','V','B','N','M','<','>',':',0,
-        '*', 0, ' ', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0
-    };
-
-    /* QEMU pode encaminhar a barra ABNT2 por dois scancodes fisicos. */
-    char c = (scancode == SHELL_SCANCODE_ISO_SLASH ||
-              scancode == SHELL_SCANCODE_ABNT2_SLASH) ?
-             (shell_shift_mask ? '?' : '/') :
-             (shell_shift_mask ? scancode_shift_table[scancode] :
-                                 scancode_table[scancode]);
-
-    if (scancode == 0x0E) {
-        shell_history_detach_for_edit();
-        shell_return_to_terminal_tail();
-        if (input_pos > 0) {
-            input_pos--;
-            input_buffer[input_pos] = '\0';
-            video_backspace();
-        }
-        return;
-    }
-
-    if (scancode == 0x1C) {
-        shell_return_to_terminal_tail();
-        process_input();
-        return;
-    }
-
-    /* Teclas de controle podem chegar antes do primeiro caractere visivel
-       quando o QEMU entrega o foco. Elas nao devem contaminar o comando. */
-    if (c >= ' ' && c <= '~' && input_pos < SHELL_BUFFER_SIZE - 1) {
-        shell_history_detach_for_edit();
-        shell_return_to_terminal_tail();
-        input_buffer[input_pos++] = c;
-        input_buffer[input_pos] = '\0';
-        video_put_char(c, 0x07);
-    }
-
+    shell_input_event_t event = shell_input_handle_key(
+        scancode, wm_is_active(), shell_waiting_user_test);
+    if (event == SHELL_INPUT_EVENT_COMMAND_READY) process_input();
 }
 
 void shell_handle_key(uint8_t scancode) {
     int config_result = taskbar_handle_config_key(scancode);
     if (config_result) {
-        shell_extended_scancode = 0;
+        shell_input_cancel_extended();
         if (config_result == 9) {
             shell_redraw_after_overlay_close();
         }
@@ -11949,7 +11692,7 @@ void shell_handle_key(uint8_t scancode) {
 
     int tb_result = taskbar_handle_key(scancode);
     if (tb_result) {
-        shell_extended_scancode = 0;
+        shell_input_cancel_extended();
         if (tb_result == 2) {
             shell_handle_app_request(IPC_APP_OPEN_SHELL);
         } else if (tb_result == 3) {

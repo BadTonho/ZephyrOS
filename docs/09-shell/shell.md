@@ -10,6 +10,10 @@ O shell é a interface que permite ao usuário interagir com o sistema operacion
 
 ## Arquivo
 
+`src/shell/shell_input.c` concentra o estado e o processamento da linha de
+entrada; `src/shell/shell.c` continua com o dispatcher e a execução dos
+comandos.
+
 ```
 src/shell/
 │   ├── shell.c          → Shell interativo, scrollback e comandos nativos/ZAPP
@@ -22,15 +26,19 @@ src/shell/
 
 ## Como Funciona
 
+O arquivo `src/shell/shell_input.c` concentra o buffer, o historico, a edicao
+da linha, o prompt e o tratamento de scancodes. `shell.c` permanece responsavel
+por rotear teclas entre aplicativos e executar comandos.
+
 ### Fluxo
 
 ```
 1. Usuário digita tecla
 2. keyboard_handler() recebe scancode
-3. shell_handle_key() converte para caractere
-4. Caractere é adicionado ao buffer
-5. Se Enter, processa o comando
-6. Mostra novo prompt
+3. shell_handle_key() encaminha a tecla para shell_input_handle_key()
+4. shell_input_handle_key() adiciona o caractere ao buffer
+5. Ao receber Enter, o modulo informa COMMAND_READY ao Shell
+6. O Shell chama shell_process_command() e mostra novo prompt
 ```
 
 ### Buffer de Input
@@ -38,8 +46,7 @@ src/shell/
 ```c
 #define SHELL_BUFFER_SIZE 256
 
-static char input_buffer[SHELL_BUFFER_SIZE];
-static int input_pos = 0;
+/* Estado mantido em src/shell/shell_input.c. */
 ```
 
 O buffer armazena até 255 caracteres + null terminator.
@@ -104,15 +111,10 @@ O prompt é verde (`0x0A`) e aparece após cada comando.
 
 ### Tabela de Scancodes
 
-```c
-static const char scancode_table[128] = {
-    0,  27, '1','2','3','4','5','6','7','8','9','0','-','=','\b',
-    '\t','q','w','e','r','t','y','u','i','o','p','[',']','\n',
-    0,  'a','s','d','f','g','h','j','k','l',';','\'','`',
-    0,  '\\','z','x','c','v','b','n','m',',','.','/',0,
-    // ...
-};
-```
+O mapa unshifted/shifted fica centralizado em `src/drivers/keyboard.c` e e
+consumido por `keyboard_scancode_to_ascii_shifted()`. O Shell nao mantem mais
+uma tabela propria. Isso garante que a conversao de letras, simbolos e das
+barras ISO/ABNT2 seja igual em todas as camadas.
 
 ---
 
