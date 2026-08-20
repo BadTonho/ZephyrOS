@@ -296,6 +296,12 @@ static int shell_hosted_mouse(mouse_event_t* event, int x, int y,
                               int width, int height);
 static void shell_hosted_close(void);
 static int shell_is_hosted_visible(void);
+static void cmd_usb_status(void);
+static void cmd_usb_list(const char* args);
+static void cmd_usb_ports(const char* args);
+static void cmd_usb_devices(const char* args);
+static void cmd_usb_device(const char* args);
+static void shell_print_usb_fixture_report(void);
 static void shell_present_hosted_progress(void);
 static void shell_suspend_terminal(void);
 static void shell_history_reset_navigation(void);
@@ -763,6 +769,38 @@ static void shell_hosted_close(void) {
     shell_shift_mask = 0;
 }
 
+static void shell_print_usb_fixture_report(void) {
+    uint32_t device_count = 0U;
+    uint32_t controller_count = 0U;
+
+    if (usb_manager_get_device_count(&device_count) != OK) {
+        LOG_WARN("SHELL", "Relatorio USB automatico indisponivel");
+        return;
+    }
+    if (!device_count) return;
+    if (usb_manager_get_count(&controller_count) != OK) {
+        LOG_WARN("SHELL", "Controladores ausentes no relatorio USB");
+        return;
+    }
+
+    video_print("USB fixture report (automatico):\n", 0x0B);
+    cmd_usb_status();
+    cmd_usb_list("");
+    cmd_usb_ports("");
+    cmd_usb_devices("");
+    for (uint32_t index = 0U; index < controller_count; index++) {
+        usb_controller_info_t info;
+        usb_controller_text_t text;
+
+        if (usb_manager_get_info(index, &info) != OK ||
+            usb_manager_format_text(&info, &text) != OK) {
+            LOG_WARN("SHELL", "Detalhe de controlador ausente no relatorio USB");
+            continue;
+        }
+        cmd_usb_device(text.id);
+    }
+}
+
 static int shell_open_hosted(void) {
     int result;
 
@@ -784,6 +822,7 @@ static int shell_open_hosted(void) {
         LOG_WARN("SHELL", "Workspace nao comporta o Shell hospedado");
         return result;
     }
+    shell_print_usb_fixture_report();
     shell_print_prompt();
     return OK;
 }
