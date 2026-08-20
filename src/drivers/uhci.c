@@ -181,12 +181,20 @@ static void uhci_out32(const uhci_controller_t* controller,
 
 static uint32_t uhci_timeout_ticks(uint32_t milliseconds) {
     uint32_t frequency = timer_get_frequency();
-    uint64_t ticks;
+    uint32_t whole_seconds;
+    uint32_t remainder_ms;
+    uint32_t whole_ticks;
+    uint32_t partial_ticks;
 
     if (!frequency) return 1U;
-    ticks = ((uint64_t)milliseconds * frequency + 999U) / 1000U;
-    if (!ticks) ticks = 1U;
-    return ticks > 0xFFFFFFFFULL ? 0xFFFFFFFFU : (uint32_t)ticks;
+    whole_seconds = milliseconds / 1000U;
+    remainder_ms = milliseconds % 1000U;
+    if (whole_seconds > 0xFFFFFFFFU / frequency) return 0xFFFFFFFFU;
+    whole_ticks = whole_seconds * frequency;
+    partial_ticks = (remainder_ms * frequency + 999U) / 1000U;
+    if (whole_ticks > 0xFFFFFFFFU - partial_ticks) return 0xFFFFFFFFU;
+    whole_ticks += partial_ticks;
+    return whole_ticks ? whole_ticks : 1U;
 }
 
 static int uhci_timeout_expired(uint32_t start, uint32_t milliseconds) {
