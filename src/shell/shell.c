@@ -1,5 +1,6 @@
 #include "apps/shell.h"
 #include "apps/shell_input.h"
+#include "apps/shell_dispatch.h"
 #include "core/video.h"
 #include "core/keyboard.h"
 #include "fs/fs.h"
@@ -296,6 +297,7 @@ static void cmd_usb_device(const char* args);
 static void shell_print_usb_fixture_report(void);
 static void shell_present_hosted_progress(void);
 static void shell_suspend_terminal(void);
+static void cmd_threadtest(void);
 
 static const wm_hosted_app_t shell_hosted_app = {
     WM_APP_SHELL, "ZephyrOS Shell", "Shell",
@@ -11622,6 +11624,227 @@ static void cmd_shutdown(const char* args) {
     power_shutdown();
 }
 
+#define SHELL_DISPATCH_WRAP_NO_ARGS(adapter, handler) \
+    void adapter(const char* arguments) {              \
+        (void)arguments;                               \
+        handler();                                     \
+    }
+
+#define SHELL_DISPATCH_WRAP_ARGS(adapter, handler) \
+    void adapter(const char* arguments) {          \
+        handler(arguments);                         \
+    }
+
+SHELL_DISPATCH_WRAP_NO_ARGS(shell_dispatch_cmd_help, cmd_help)
+SHELL_DISPATCH_WRAP_NO_ARGS(shell_dispatch_cmd_clear, cmd_clear)
+SHELL_DISPATCH_WRAP_NO_ARGS(shell_dispatch_cmd_ls, cmd_ls)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_cat, cmd_cat)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_echo, cmd_echo)
+SHELL_DISPATCH_WRAP_NO_ARGS(shell_dispatch_cmd_mem, cmd_mem)
+SHELL_DISPATCH_WRAP_NO_ARGS(shell_dispatch_cmd_procs, cmd_procs)
+SHELL_DISPATCH_WRAP_NO_ARGS(shell_dispatch_cmd_threads, cmd_threads)
+SHELL_DISPATCH_WRAP_NO_ARGS(shell_dispatch_cmd_threadtest, cmd_threadtest)
+SHELL_DISPATCH_WRAP_NO_ARGS(shell_dispatch_cmd_uptime, cmd_uptime)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_health, cmd_health)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_log, cmd_log)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_timer, cmd_timer)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_wait, cmd_wait)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_devices, cmd_devices)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_device_info, cmd_device_info)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_device_scan, cmd_device_scan)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_usb, cmd_usb)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_net, cmd_net)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_ping, cmd_ping)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_nslookup, cmd_nslookup)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_http, cmd_http)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_acpi, cmd_acpi)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_power, cmd_power)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_kmetrics, cmd_kmetrics)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_memcheck, cmd_memcheck)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_schedcheck, cmd_schedcheck)
+SHELL_DISPATCH_WRAP_NO_ARGS(shell_dispatch_cmd_q2check, cmd_q2check)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_regcheck, cmd_regcheck)
+SHELL_DISPATCH_WRAP_NO_ARGS(shell_dispatch_cmd_appcheck, cmd_appcheck)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_pkg, cmd_pkg)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_store, cmd_store)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_update, cmd_update)
+SHELL_DISPATCH_WRAP_NO_ARGS(shell_dispatch_cmd_pkgcheck, cmd_pkgcheck)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_app, cmd_app)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_usertest, cmd_usertest)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_beep, cmd_beep)
+SHELL_DISPATCH_WRAP_NO_ARGS(shell_dispatch_cmd_melody, cmd_melody)
+
+void shell_dispatch_cmd_desktop(const char* arguments) {
+    (void)arguments;
+    if (!desktop_is_active()) {
+        if (wm_is_active()) wm_set_active(0);
+        shell_suspend_terminal();
+        desktop_set_active(1);
+        desktop_draw();
+    }
+}
+
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_guimode, cmd_guimode)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_display, cmd_display)
+
+void shell_dispatch_cmd_explorer(const char* arguments) {
+    (void)arguments;
+    if (shell_prepare_filemanager() != OK) {
+        video_print("Erro: Explorer indisponivel.\n", 0x0C);
+    } else {
+        shell_suspend_terminal_for_scene();
+        fm_run();
+    }
+}
+
+SHELL_DISPATCH_WRAP_NO_ARGS(shell_dispatch_cmd_reboot, cmd_reboot)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_shutdown, cmd_shutdown)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_guitest, cmd_guitest)
+
+void shell_dispatch_cmd_taskmgr(const char* arguments) {
+    (void)arguments;
+    if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
+        shell_suspend_terminal_for_scene();
+        if (desktop_get_mode() == DESKTOP_MODE_CLASSIC) {
+            if (taskmgr_open_gui() != OK) {
+                wm_set_active(0);
+                shell_suspend_terminal();
+                LOG_WARN("SHELL", "GUI do Task Manager indisponivel; usando TUI");
+                taskmgr_run();
+            }
+        } else {
+            taskmgr_run();
+        }
+    } else {
+        video_print("Erro: Task Manager indisponivel.\n", 0x0C);
+    }
+}
+
+void shell_dispatch_cmd_taskcfg(const char* arguments) {
+    (void)arguments;
+    taskbar_draw_config_menu();
+}
+
+void shell_dispatch_cmd_settings(const char* arguments) {
+    (void)arguments;
+    if (recovery_is_enabled(RECOVERY_COMPONENT_SETTINGS)) {
+        shell_suspend_terminal_for_scene();
+        settings_open();
+    } else {
+        video_print("Erro: Configuracoes indisponiveis.\n", 0x0C);
+    }
+}
+
+void shell_dispatch_cmd_updater(const char* arguments) {
+    (void)arguments;
+    if (recovery_is_enabled(RECOVERY_COMPONENT_SYSTEM_UPDATER)) {
+        shell_suspend_terminal_for_scene();
+        if (updater_open() != OK) {
+            video_print("Erro: System Updater indisponivel.\n", 0x0C);
+        }
+    } else {
+        video_print("Erro: System Updater indisponivel.\n", 0x0C);
+    }
+}
+
+void shell_dispatch_cmd_wm(const char* arguments) {
+    (void)arguments;
+    if (recovery_is_enabled(RECOVERY_COMPONENT_WM)) {
+        if (desktop_get_mode() == DESKTOP_MODE_CLASSIC && wm_is_active()) {
+            wm_set_active(0);
+        }
+        shell_suspend_terminal();
+        desktop_set_active(0);
+        wm_set_active(1);
+    } else {
+        video_print("Erro: Window Manager indisponivel.\n", 0x0C);
+    }
+}
+
+void shell_dispatch_cmd_play(const char* arguments) {
+    if (!recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM) ||
+        !recovery_is_enabled(RECOVERY_COMPONENT_MEDIAPLAYER) ||
+        !recovery_is_available(RECOVERY_COMPONENT_AC97)) {
+        video_print("Erro: audio ou filesystem indisponivel.\n", 0x0C);
+    } else if (!arguments || !*arguments) {
+        video_print("Uso: play <arquivo.wav>\n", 0x0C);
+    } else {
+        char name[13];
+        int n = 0;
+        while (arguments[n] && n < 12) {
+            name[n] = arguments[n];
+            n++;
+        }
+        name[n] = '\0';
+        str_upper(name);
+        video_print("Tocando: ", 0x0A);
+        video_print(name, 0x0A);
+        video_print("\n", 0x0A);
+        int play_result = mp_play_audio(name);
+        if (play_result != OK) {
+            video_print("Erro: nao foi possivel reproduzir o audio.\n", 0x0C);
+        }
+    }
+}
+
+void shell_dispatch_cmd_view(const char* arguments) {
+    if (!recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM) ||
+        !recovery_is_enabled(RECOVERY_COMPONENT_MEDIAPLAYER) ||
+        !recovery_is_enabled(RECOVERY_COMPONENT_VESA)) {
+        video_print("Erro: imagem ou filesystem indisponivel.\n", 0x0C);
+    } else if (!arguments || !*arguments) {
+        video_print("Uso: view <arquivo.bmp>\n", 0x0C);
+    } else {
+        char name[13];
+        int n = 0;
+        while (arguments[n] && n < 12) {
+            name[n] = arguments[n];
+            n++;
+        }
+        name[n] = '\0';
+        str_upper(name);
+        if (wm_is_active()) wm_set_active(0);
+        shell_suspend_terminal();
+        int view_result = mp_play_image(name);
+        if (view_result != OK) {
+            video_print("Erro: nao foi possivel exibir a imagem.\n", 0x0C);
+        }
+    }
+}
+
+SHELL_DISPATCH_WRAP_NO_ARGS(shell_dispatch_cmd_icons, cmd_icons)
+
+void shell_dispatch_cmd_stop(const char* arguments) {
+    (void)arguments;
+    mp_stop();
+    video_print("Player parado.\n", 0x0A);
+}
+
+void shell_dispatch_cmd_compress(const char* arguments) {
+    (void)arguments;
+    if (compress_is_enabled()) {
+        compress_disable();
+        video_print("Compressao de RAM DESATIVADA\n", 0x0C);
+    } else {
+        compress_enable();
+        video_print("Compressao de RAM ATIVADA\n", 0x0A);
+    }
+}
+
+void shell_dispatch_cmd_stats(const char* arguments) {
+    (void)arguments;
+    compress_print_stats();
+}
+
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_edit, cmd_edit)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_storage, cmd_storage)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_index, cmd_index)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_search, cmd_search)
+SHELL_DISPATCH_WRAP_ARGS(shell_dispatch_cmd_mouse, cmd_mouse)
+
+#undef SHELL_DISPATCH_WRAP_ARGS
+#undef SHELL_DISPATCH_WRAP_NO_ARGS
+
 void shell_init(void) {
     shell_input_init();
     shell_hosted_visible = 0;
@@ -11783,250 +12006,11 @@ void shell_handle_key(uint8_t scancode) {
 }
 
 int shell_process_command(const char* input) {
-    static char cmd[32];
-    int i = 0;
-
     if (!input) {
         LOG_ERROR("SHELL", "Comando nulo recebido");
         return ERR_NULL;
     }
 
     shell_resume_terminal();
-
-    while (*input == ' ' || *input == '\t' || *input == '\r' ||
-           *input == '\n' || *input == 27) {
-        input++;
-    }
-
-    if (!*input) return 0;
-
-    while (*input && *input != ' ' && *input != '\t' && i < 31) {
-        if ((uint8_t)*input >= ' ' && (uint8_t)*input <= '~') {
-            cmd[i++] = *input;
-        }
-        input++;
-    }
-    cmd[i] = '\0';
-
-    while (*input == ' ' || *input == '\t') input++;
-
-    if (kstrcmp(cmd, "help") == 0) {
-        cmd_help();
-    } else if (kstrcmp(cmd, "clear") == 0) {
-        cmd_clear();
-    } else if (kstrcmp(cmd, "ls") == 0) {
-        cmd_ls();
-    } else if (kstrcmp(cmd, "cat") == 0) {
-        cmd_cat(input);
-    } else if (kstrcmp(cmd, "echo") == 0) {
-        cmd_echo(input);
-    } else if (kstrcmp(cmd, "mem") == 0) {
-        cmd_mem();
-    } else if (kstrcmp(cmd, "procs") == 0) {
-        cmd_procs();
-    } else if (kstrcmp(cmd, "threads") == 0) {
-        cmd_threads();
-    } else if (kstrcmp(cmd, "threadtest") == 0) {
-        cmd_threadtest();
-    } else if (kstrcmp(cmd, "uptime") == 0) {
-        cmd_uptime();
-    } else if (kstrcmp(cmd, "health") == 0) {
-        cmd_health(input);
-    } else if (kstrcmp(cmd, "log") == 0) {
-        cmd_log(input);
-    } else if (kstrcmp(cmd, "timer") == 0) {
-        cmd_timer(input);
-    } else if (kstrcmp(cmd, "wait") == 0) {
-        cmd_wait(input);
-    } else if (kstrcmp(cmd, "devices") == 0) {
-        cmd_devices(input);
-    } else if (kstrcmp(cmd, "device-info") == 0) {
-        cmd_device_info(input);
-    } else if (kstrcmp(cmd, "device-scan") == 0) {
-        cmd_device_scan(input);
-    } else if (kstrcmp(cmd, "usb") == 0) {
-        cmd_usb(input);
-    } else if (kstrcmp(cmd, "net") == 0) {
-        cmd_net(input);
-    } else if (kstrcmp(cmd, "ping") == 0) {
-        cmd_ping(input);
-    } else if (kstrcmp(cmd, "nslookup") == 0) {
-        cmd_nslookup(input);
-    } else if (kstrcmp(cmd, "http") == 0) {
-        cmd_http(input);
-    } else if (kstrcmp(cmd, "acpi") == 0) {
-        cmd_acpi(input);
-    } else if (kstrcmp(cmd, "power") == 0) {
-        cmd_power(input);
-    } else if (kstrcmp(cmd, "kmetrics") == 0) {
-        cmd_kmetrics(input);
-    } else if (kstrcmp(cmd, "memcheck") == 0) {
-        cmd_memcheck(input);
-    } else if (kstrcmp(cmd, "schedcheck") == 0) {
-        cmd_schedcheck(input);
-    } else if (kstrcmp(cmd, "q2check") == 0) {
-        cmd_q2check();
-    } else if (kstrcmp(cmd, "regcheck") == 0) {
-        cmd_regcheck(input);
-    } else if (kstrcmp(cmd, "appcheck") == 0) {
-        cmd_appcheck();
-    } else if (kstrcmp(cmd, "pkg") == 0) {
-        cmd_pkg(input);
-    } else if (kstrcmp(cmd, "store") == 0) {
-        cmd_store(input);
-    } else if (kstrcmp(cmd, "update") == 0) {
-        cmd_update(input);
-    } else if (kstrcmp(cmd, "pkgcheck") == 0) {
-        cmd_pkgcheck();
-    } else if (kstrcmp(cmd, "app") == 0) {
-        cmd_app(input);
-    } else if (kstrcmp(cmd, "usertest") == 0) {
-        cmd_usertest(input);
-    } else if (kstrcmp(cmd, "beep") == 0) {
-        cmd_beep(input);
-    } else if (kstrcmp(cmd, "melody") == 0) {
-        cmd_melody();
-    } else if (kstrcmp(cmd, "desktop") == 0) {
-        if (!desktop_is_active()) {
-            if (wm_is_active()) wm_set_active(0);
-            shell_suspend_terminal();
-            desktop_set_active(1);
-            desktop_draw();
-        }
-    } else if (kstrcmp(cmd, "guimode") == 0) {
-        cmd_guimode(input);
-    } else if (kstrcmp(cmd, "display") == 0) {
-        cmd_display(input);
-    } else if (kstrcmp(cmd, "explorer") == 0) {
-        if (shell_prepare_filemanager() != OK) {
-            video_print("Erro: Explorer indisponivel.\n", 0x0C);
-        } else {
-            shell_suspend_terminal_for_scene();
-            fm_run();
-        }
-    } else if (kstrcmp(cmd, "reboot") == 0) {
-        cmd_reboot();
-    } else if (kstrcmp(cmd, "shutdown") == 0) {
-        cmd_shutdown(input);
-    } else if (kstrcmp(cmd, "guitest") == 0) {
-        cmd_guitest(input);
-    } else if (kstrcmp(cmd, "taskmgr") == 0) {
-        if (recovery_is_enabled(RECOVERY_COMPONENT_TASKMANAGER)) {
-            shell_suspend_terminal_for_scene();
-            if (desktop_get_mode() == DESKTOP_MODE_CLASSIC) {
-                if (taskmgr_open_gui() != OK) {
-                    wm_set_active(0);
-                    shell_suspend_terminal();
-                    LOG_WARN("SHELL", "GUI do Task Manager indisponivel; usando TUI");
-                    taskmgr_run();
-                }
-            } else {
-                taskmgr_run();
-            }
-        } else {
-            video_print("Erro: Task Manager indisponivel.\n", 0x0C);
-        }
-    } else if (kstrcmp(cmd, "taskcfg") == 0) {
-        taskbar_draw_config_menu();
-    } else if (kstrcmp(cmd, "settings") == 0) {
-        if (recovery_is_enabled(RECOVERY_COMPONENT_SETTINGS)) {
-            shell_suspend_terminal_for_scene();
-            settings_open();
-        } else {
-            video_print("Erro: Configuracoes indisponiveis.\n", 0x0C);
-        }
-    } else if (kstrcmp(cmd, "updater") == 0) {
-        if (recovery_is_enabled(RECOVERY_COMPONENT_SYSTEM_UPDATER)) {
-            shell_suspend_terminal_for_scene();
-            if (updater_open() != OK) {
-                video_print("Erro: System Updater indisponivel.\n", 0x0C);
-            }
-        } else {
-            video_print("Erro: System Updater indisponivel.\n", 0x0C);
-        }
-    } else if (kstrcmp(cmd, "wm") == 0) {
-        if (recovery_is_enabled(RECOVERY_COMPONENT_WM)) {
-            if (desktop_get_mode() == DESKTOP_MODE_CLASSIC && wm_is_active()) {
-                wm_set_active(0);
-            }
-            shell_suspend_terminal();
-            desktop_set_active(0);
-            wm_set_active(1);
-        } else {
-            video_print("Erro: Window Manager indisponivel.\n", 0x0C);
-        }
-    } else if (kstrcmp(cmd, "play") == 0) {
-        if (!recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM) ||
-            !recovery_is_enabled(RECOVERY_COMPONENT_MEDIAPLAYER) ||
-            !recovery_is_available(RECOVERY_COMPONENT_AC97)) {
-            video_print("Erro: audio ou filesystem indisponivel.\n", 0x0C);
-        } else if (!*input) {
-            video_print("Uso: play <arquivo.wav>\n", 0x0C);
-        } else {
-            char name[13];
-            int n = 0;
-            while (input[n] && n < 12) { name[n] = input[n]; n++; }
-            name[n] = '\0';
-            str_upper(name);
-            video_print("Tocando: ", 0x0A);
-            video_print(name, 0x0A);
-            video_print("\n", 0x0A);
-            int play_result = mp_play_audio(name);
-            if (play_result != OK) {
-                video_print("Erro: nao foi possivel reproduzir o audio.\n", 0x0C);
-            }
-        }
-    } else if (kstrcmp(cmd, "view") == 0) {
-        if (!recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM) ||
-            !recovery_is_enabled(RECOVERY_COMPONENT_MEDIAPLAYER) ||
-            !recovery_is_enabled(RECOVERY_COMPONENT_VESA)) {
-            video_print("Erro: imagem ou filesystem indisponivel.\n", 0x0C);
-        } else if (!*input) {
-            video_print("Uso: view <arquivo.bmp>\n", 0x0C);
-        } else {
-            char name[13];
-            int n = 0;
-            while (input[n] && n < 12) { name[n] = input[n]; n++; }
-            name[n] = '\0';
-            str_upper(name);
-            if (wm_is_active()) wm_set_active(0);
-            shell_suspend_terminal();
-            int view_result = mp_play_image(name);
-            if (view_result != OK) {
-                video_print("Erro: nao foi possivel exibir a imagem.\n", 0x0C);
-            }
-        }
-    } else if (kstrcmp(cmd, "icons") == 0) {
-        cmd_icons();
-    } else if (kstrcmp(cmd, "stop") == 0) {
-        mp_stop();
-        video_print("Player parado.\n", 0x0A);
-    } else if (kstrcmp(cmd, "compress") == 0) {
-        if (compress_is_enabled()) {
-            compress_disable();
-            video_print("Compressao de RAM DESATIVADA\n", 0x0C);
-        } else {
-            compress_enable();
-            video_print("Compressao de RAM ATIVADA\n", 0x0A);
-        }
-    } else if (kstrcmp(cmd, "stats") == 0) {
-        compress_print_stats();
-    } else if (kstrcmp(cmd, "edit") == 0) {
-        cmd_edit(input);
-    } else if (kstrcmp(cmd, "storage") == 0) {
-        cmd_storage(input);
-    } else if (kstrcmp(cmd, "index") == 0) {
-        cmd_index(input);
-    } else if (kstrcmp(cmd, "search") == 0) {
-        cmd_search(input);
-    } else if (kstrcmp(cmd, "mouse") == 0) {
-        cmd_mouse(input);
-    } else {
-        video_print("Comando nao encontrado: ", 0x0C);
-        video_print(cmd, 0x0C);
-        video_print("\n", 0x0C);
-        video_print("Digite 'help' para ver os comandos.\n", 0x08);
-    }
-
-    return 0;
+    return shell_dispatch_execute(input);
 }

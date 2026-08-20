@@ -70,16 +70,24 @@ driver e pelo Shell. A implementação agora usa a tabela unificada de
 
 ### Fase 2 — Dispatcher
 
-Criar `src/shell/shell_dispatch.c` para separar:
+Estado: implementada estruturalmente; aguardando validação no build limpo e no
+QEMU.
+
+`src/shell/shell_dispatch.c` e `src/include/apps/shell_dispatch.h` agora
+separam:
 
 - remoção de espaços e extração do nome do comando;
-- validação dos argumentos;
+- preservação do contrato de argumentos existente;
 - tabela de comandos;
 - chamada do handler correspondente;
 - mensagem para comandos desconhecidos.
 
-Uma tabela com nome, handler e flags de execução deve substituir gradualmente a
-cadeia de `if/else`, sem exigir a conversão de todos os comandos de uma vez.
+Todos os comandos top-level atuais usam a tabela com nome, handler e flags de
+execução. Adaptadores uniformes permanecem em `shell.c`, portanto os handlers
+e suas dependências privadas ainda não foram movidos para os módulos da Fase 3.
+As flags são metadados e não alteram prompt, bloqueio ou execução assíncrona.
+`shell_process_command()` mantém a API pública, valida entrada nula, retoma o
+terminal e delega ao dispatcher.
 
 ### Fase 3 — Comandos por domínio
 
@@ -119,10 +127,17 @@ conjunto estiver estável, `make clean && make`. A Fase 1 foi validada com esses
 gates e no QEMU, cobrindo digitação normal, comandos, símbolos, métricas e
 consulta do log, sem regressão observada no Shell hospedado.
 
+A Fase 2 aguarda os mesmos gates e a validação dos caminhos de comandos
+conhecidos, argumentos com espaços, entrada vazia, comando desconhecido,
+comando longo, diagnósticos, aplicativos nos modos Simple e Classic e bloqueio
+de entrada durante `q2check` e `usertest`.
+
 ## Referências do diagnóstico
 
 - [Documentação atual do Shell](shell.md)
 - [Lista de comandos](comandos.md)
 - [Header público do Shell](../../src/include/apps/shell.h)
+- [Contrato interno do dispatcher](../../src/include/apps/shell_dispatch.h)
+- [Implementação do dispatcher](../../src/shell/shell_dispatch.c)
 - [Implementação atual do Shell](../../src/shell/shell.c)
 - [Driver de teclado](../../src/drivers/keyboard.c)

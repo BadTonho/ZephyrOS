@@ -11,12 +11,14 @@ O shell é a interface que permite ao usuário interagir com o sistema operacion
 ## Arquivo
 
 `src/shell/shell_input.c` concentra o estado e o processamento da linha de
-entrada; `src/shell/shell.c` continua com o dispatcher e a execução dos
-comandos.
+entrada; `src/shell/shell_dispatch.c` concentra o parsing e a tabela de
+encaminhamento; `src/shell/shell.c` mantém os handlers e as políticas de
+execução.
 
 ```
 src/shell/
-│   ├── shell.c          → Shell interativo, scrollback e comandos nativos/ZAPP
+│   ├── shell.c          → Shell interativo, scrollback e handlers nativos/ZAPP
+│   ├── shell_dispatch.c → Parser e tabela de comandos
 │   ├── editor.c         → Editor de texto com syntax highlight
 │   ├── mediaplayer.c    → Media player (WAV)
 │   └── taskmanager.c    → Gerenciador de tarefas
@@ -27,8 +29,10 @@ src/shell/
 ## Como Funciona
 
 O arquivo `src/shell/shell_input.c` concentra o buffer, o historico, a edicao
-da linha, o prompt e o tratamento de scancodes. `shell.c` permanece responsavel
-por rotear teclas entre aplicativos e executar comandos.
+da linha, o prompt e o tratamento de scancodes. `shell_dispatch.c` remove
+espacos, extrai o nome do comando e procura o handler na tabela. `shell.c`
+permanece responsavel por rotear teclas, manter o estado de aplicativos e
+executar os handlers.
 
 ### Fluxo
 
@@ -38,7 +42,10 @@ por rotear teclas entre aplicativos e executar comandos.
 3. shell_handle_key() encaminha a tecla para shell_input_handle_key()
 4. shell_input_handle_key() adiciona o caractere ao buffer
 5. Ao receber Enter, o modulo informa COMMAND_READY ao Shell
-6. O Shell chama shell_process_command() e mostra novo prompt
+6. shell_process_command() retoma o terminal e chama shell_dispatch_execute()
+7. shell_dispatch_execute() extrai o comando e procura a entrada na tabela
+8. O adaptador chama o handler existente em shell.c
+9. O Shell decide se deve mostrar o novo prompt
 ```
 
 ### Buffer de Input
@@ -122,31 +129,20 @@ barras ISO/ABNT2 seja igual em todas as camadas.
 
 ### Separando Comando e Argumentos
 
-```c
-int shell_process_command(const char* input) {
-    // Remove espaços no início
-    while (*input == ' ') input++;
+`shell_process_command()` mantém a validação da entrada nula e a retomada do
+terminal, depois delega para `shell_dispatch_execute()`. O dispatcher mantém o
+contrato legado: ignora espaços, tabs, CR, LF e ESC no início; extrai no máximo
+31 caracteres imprimíveis do nome; remove espaços e tabs entre nome e
+argumentos; e entrega o restante sem interpretar aspas ou subcomandos.
 
-    // Extrai o comando (até espaço ou fim)
-    char cmd[32];
-    int i = 0;
-    while (*input && *input != ' ' && i < 31) {
-        cmd[i++] = *input++;
-    }
-    cmd[i] = '\0';
+A tabela em `src/shell/shell_dispatch.c` contém nome, handler e flags de
+execução. As flags `MAY_BLOCK` e `OPENS_SCENE` são metadados nesta fase e não
+alteram o comportamento. Adaptadores uniformes em `shell.c` preservam os
+handlers atuais, inclusive os comandos que abrem cenas ou aplicativos.
 
-    // Pula espaços entre comando e argumentos
-    while (*input == ' ') input++;
-
-    // Executa o comando
-    if (strcmp(cmd, "help") == 0) {
-        cmd_help();
-    } else if (strcmp(cmd, "cat") == 0) {
-        cmd_cat(input);  // input agora é o argumento
-    }
-    // ...
-}
-```
+Comandos desconhecidos mantêm a mensagem existente e retornam `OK`, assim como
+comandos vazios. Entrada nula continua retornando `ERR_NULL` por meio da API
+pública `shell_process_command()`.
 
 ---
 
@@ -322,12 +318,16 @@ static void cmd_meu_comando(const char* args) {
 }
 ```
 
-2. Adicione o `strcmp` no parser:
+2. Adicione um adaptador uniforme em `shell.c` e uma entrada na tabela de
+   `shell_dispatch.c`:
 
 ```c
-} else if (strcmp(cmd, "meucomando") == 0) {
-    cmd_meu_comando(input);
+void shell_dispatch_cmd_meucomando(const char* arguments) {
+    cmd_meu_comando(arguments);
 }
+
+{"meucomando", shell_dispatch_cmd_meucomando,
+ SHELL_DISPATCH_FLAG_NONE},
 ```
 
 3. Atualize o `cmd_help()`:
