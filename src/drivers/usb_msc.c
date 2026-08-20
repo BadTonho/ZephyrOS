@@ -184,7 +184,7 @@ static int msc_reset_recovery(usb_msc_record_t* record) {
         return result;
     }
     record->info.last_error = OK;
-    record->reset_count++;
+    record->info.reset_count++;
     return OK;
 }
 
@@ -241,14 +241,14 @@ static int msc_bot_command(usb_msc_record_t* record, const uint8_t* cdb,
 
     for (uint32_t attempt = 0U; attempt < USB_MSC_RECOVERY_ATTEMPTS;
          attempt++) {
-        record->command_count++;
+        record->info.command_count++;
         result = msc_bot_command_once(record, cdb, cdb_length, data,
                                       data_length, direction_in);
         if (result == OK) return OK;
         if (attempt + 1U < USB_MSC_RECOVERY_ATTEMPTS &&
             msc_reset_recovery(record) != OK) break;
     }
-    record->last_error = result;
+    record->info.last_error = result;
     record->info.state = USB_MSC_DEGRADED;
     LOG_ERROR("MSC", "Comando BOT/SCSI falhou");
     return result;
@@ -308,8 +308,8 @@ static int msc_scsi_read_sector(usb_msc_record_t* record, uint32_t lba,
     cdb[7] = 0U;
     cdb[8] = 1U;
     if (msc_bot_command(record, cdb, 10U, buffer, USB_MSC_SECTOR_SIZE,
-                        1U) != OK) return record->last_error;
-    record->read_ops++;
+                        1U) != OK) return record->info.last_error;
+    record->info.read_ops++;
     return OK;
 }
 
