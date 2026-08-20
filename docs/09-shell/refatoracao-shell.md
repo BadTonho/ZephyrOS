@@ -111,6 +111,37 @@ ativo, consomem teclado durante o polling e registram cancelamento, timeout,
 falha e saturação da fila IPC. A implementação foi validada no QEMU; o estado
 formal da Fase 4 está registrado ao final deste documento.
 
+### Fase 5 - Sincronizacao, drenagem e migracao final dos jobs (proposta)
+
+Esta fase ainda esta pendente. A proposta e consolidar o ciclo de vida do
+executor antes de converter os caminhos sincronicos restantes.
+
+Objetivos:
+
+- tratar cancelamento como solicitacao seguida de drenagem, garantindo que o
+  job nao tenha callback, IPC ou resultado atrasado depois de `CANCELLED`;
+- associar cada execucao a um contexto e uma geracao, impedindo que um
+  resultado antigo seja entregue ao job seguinte;
+- substituir o polling fixo de 1 tick por espera orientada a eventos de rede,
+  disco, timer, conclusao e cancelamento;
+- finalizar APIs `start/poll/cancel/status` para `pkg`, `store`, `update`,
+  atualizacao remota e operacoes de rede que ainda forem sincronicas;
+- preservar um unico job ativo, contexto estatico, `shell.h` intacto e os
+  modos Simple, Classic e terminal hospedado.
+
+O modelo toma como referencia as garantias de `workqueue` e
+`cancel_work_sync()` do Linux, sem importar um pool de workers ou uma fila
+concorrente para o ZephyrOS. A referencia de sincronizacao e o modelo de
+completions/waitqueues, priorizando eventos e condicoes explicitas em vez de
+loops de espera artificiais:
+
+- https://docs.kernel.org/core-api/workqueue.html
+- https://docs.kernel.org/scheduler/completion.html
+
+A Fase 5 somente sera concluida apos validar cancelamento, timeout, falha,
+progresso, `job status`, ausencia de resultados tardios e funcionamento nos
+modos Simple e Classic.
+
 ## Ordem recomendada
 
 1. Extrair a entrada de linha sem mudar a API pública.
