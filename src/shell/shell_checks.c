@@ -277,6 +277,10 @@ static app_launch_info_t appcheck_launch_info;
 static shell_q2check_t shell_q2check;
 static shell_regcheck_t shell_regcheck;
 
+static void cmd_appcheck_print_result(const char* label, int result);
+static void cmd_appcheck_print_expected_result(const char* label, int actual,
+                                               int expected);
+
 static const char app_input_test_message[] =
     "Entrada ZAPP ativa: Enter encerra; F12 cancela.\n";
 static void shell_demo_patch_u32(uint8_t* code, uint32_t offset,
