@@ -387,8 +387,8 @@ Quando um comando cooperativo inicia, o Shell mostra uma unica informacao de
 entrada bloqueada. O loop passa a usar espera IPC curta, executa um passo por
 ciclo, continua consumindo eventos de teclado e atualiza o terminal hospedado.
 Teclas comuns sao consumidas e ignoradas; `Esc` e `F12` solicitam
-cancelamento. Durante `regcheck full`, `F11` e encaminhado ao ZAPP de
-cancelamento. O primeiro evento bloqueado gera somente um aviso no log.
+cancelamento. Durante qualquer modo do `regcheck`, `F11` e encaminhado ao ZAPP
+de cancelamento. O primeiro evento bloqueado gera somente um aviso no log.
 
 `job status` exibe o ultimo estado conhecido, o job ativo ou concluido, fase,
 progresso, erro, teclas bloqueadas e cancelamentos. Ao concluir, falhar ou

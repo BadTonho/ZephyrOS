@@ -113,7 +113,8 @@ int shell_job_start(const shell_job_definition_t* definition,
     shell_job_queue_warning = 0U;
 
     LOG_INFO("SHELL", "Job cooperativo iniciado");
-    if (arguments && kstrcmp(arguments, "regcheck full") == 0) {
+    if (arguments && (kstrcmp(arguments, "regcheck") == 0 ||
+                      kstrcmp(arguments, "regcheck full") == 0)) {
         video_print("Operacao iniciada; entrada bloqueada. F11/Esc cancela.\n",
                     0x0E);
     } else {

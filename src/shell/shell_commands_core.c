@@ -129,7 +129,7 @@ typedef enum {
 typedef enum {
     SHELL_REGCHECK_IDLE = 0,
     SHELL_REGCHECK_WAIT_DEMO,
-    SHELL_REGCHECK_WAIT_F12
+    SHELL_REGCHECK_WAIT_CANCEL
 } shell_regcheck_state_t;
 
 typedef struct {
@@ -354,7 +354,7 @@ static void cmd_help(void) {
     video_print("  memcheck - Valida heap, PMM e diretorios de usuario\n", 0x07);
     video_print("  schedcheck - Valida invariantes do scheduler\n", 0x07);
     video_print("  q2check  - Executa diagnostico compacto da Q2\n", 0x07);
-    video_print("  regcheck [full] - sem full: F12; com full: F11\n",
+    video_print("  regcheck [full] - F11 cancela nos modos normal e full\n",
                 0x07);
     video_print("  appcheck - Testa API, arquivos, IPC e loader\n", 0x07);
     video_print("  pkg      - Gerencia pacotes .ZPK locais\n", 0x07);
