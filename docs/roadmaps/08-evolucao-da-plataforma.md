@@ -272,19 +272,23 @@ com DMA, IRQ, portas e transferencias indisponiveis, conforme o escopo.
 
 ### EP4.3 - Bulk e USB Mass Storage somente-leitura
 
-- [ ] Implementar transferencias Bulk e o transporte Bulk-Only Transport.
+- [ ] Implementar transferencias Bulk e o transporte Bulk-Only Transport (BOT).
 - [ ] Implementar o subconjunto SCSI necessario: Inquiry, Test Unit Ready,
   Read Capacity e Read10, sempre sem escrita no dispositivo USB.
-- [ ] Registrar um bloco MSC como fonte de volume e permitir sua montagem pela
-  API da EP2, mantendo disco ATA e volume de boot como fallbacks.
+- [ ] Registrar o dispositivo MSC como provedor da camada de bloco (`block_device_t`),
+  permitindo sua montagem transparente de volumes FAT sem acoplamento direto
+  entre o driver USB e o sistema de arquivos.
+- [ ] Manter disco ATA e volume de boot como fallbacks operacionais prioritários.
 
 ### EP4.4 - Interrupt e USB HID
 
-- [ ] Implementar transferencias Interrupt antes de aceitar interfaces HID.
-- [ ] Adicionar teclado e mouse HID somente como alternativas aos drivers PS/2
-  existentes, sem substituir o caminho PS/2 nem alterar foco global.
+- [ ] Implementar transferencias Interrupt através do despachante assíncrono,
+  sem bloqueios por espera ocupada na CPU.
+- [ ] Adicionar teclado e mouse HID somente como fontes adicionais de eventos de
+  entrada, roteando para a fila global de input sem alterar o foco nem
+  substituir os drivers PS/2 existentes.
 - [ ] Validar desconexao, pacote invalido, timeout e dispositivo ausente sem
-  travar kernel, Shell ou interfaces.
+  travar kernel, Shell ou interfaces gráficas.
 
 ### Criterio de saida
 

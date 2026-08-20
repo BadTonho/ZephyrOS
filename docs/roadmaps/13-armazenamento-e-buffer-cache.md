@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Implementar uma camada de abstração de dispositivos de bloco (*Block Layer*) e um sistema de cache de leitura e escrita (*Buffer Cache / Page Cache*) inspirado na arquitetura de I/O do Linux, otimizando o acesso a discos ATA e mídias USB Mass Storage através do agrupamento de requisições contíguas e sincronização controlada de blocos modificados (*dirty pages*).
+Implementar uma camada de abstração de dispositivos de bloco (*Block Layer*) e um sistema de cache de leitura e escrita (*Buffer Cache / Page Cache*) no ZephyrOS, otimizando o acesso a discos ATA e mídias USB Mass Storage através do agrupamento de requisições contíguas e sincronização controlada de blocos modificados (*dirty pages*).
 
 ## Resumo de progresso
 

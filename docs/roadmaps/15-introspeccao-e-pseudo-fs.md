@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Implementar a arquitetura de introspecção do kernel inspirada nos pseudo-filesystems do Linux (`/proc` e `/sys`), permitindo que métricas de CPU, memória, processos, drivers e barramentos de hardware sejam expostos como nós de arquivos de texto virtuais gerados dinamicamente em memória, facilitando o consumo por aplicativos (como o Task Manager e Device Manager) e comandos do Shell sem a necessidade de centenas de syscalls proprietárias.
+Implementar a arquitetura de introspecção do kernel através de pseudo-filesystems (`/proc` e `/sys`), permitindo que métricas de CPU, memória, processos, drivers e barramentos de hardware sejam expostos como nós de arquivos de texto virtuais gerados dinamicamente em memória, facilitando o consumo por aplicativos (como o Task Manager e Device Manager) e comandos do Shell sem a necessidade de centenas de syscalls proprietárias.
 
 ## Resumo de progresso
 
