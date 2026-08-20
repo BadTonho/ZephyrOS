@@ -234,7 +234,10 @@ static void usb_apply_runtime_controller(uint32_t index) {
     /* Uma falha de inicializacao ja foi registrada no inventario. Nao
        consultar um runtime inexistente a cada ciclo do kernel, pois isso
        transforma uma falha isolada em uma inundacao de logs. */
-    if (!info->uhci_initialized && info->uhci_last_error != OK) return;
+    if (!info->uhci_initialized && info->uhci_last_error != OK) {
+        usb_runtime_failures++;
+        return;
+    }
     if (uhci_get_status(info->bus, info->device, info->function, &runtime) != OK) {
         info->state = USB_CONTROLLER_DISABLED;
         info->reason = USB_CONTROLLER_REASON_DRIVER_FAILURE;

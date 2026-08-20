@@ -260,7 +260,16 @@ static void uhci_disable(uhci_controller_t* controller) {
 }
 
 static int uhci_validate_pci(const pci_device_t* pci, uint16_t* out_io) {
+    const uint32_t bars[USB_CONTROLLER_BAR_COUNT] = {
+        pci ? pci->bar0 : 0U,
+        pci ? pci->bar1 : 0U,
+        pci ? pci->bar2 : 0U,
+        pci ? pci->bar3 : 0U,
+        pci ? pci->bar4 : 0U,
+        pci ? pci->bar5 : 0U
+    };
     uint32_t io_base;
+    uint32_t bar_index;
 
     if (!pci || !out_io) {
         LOG_ERROR("UHCI", "Argumento nulo ao validar PCI UHCI");
@@ -269,19 +278,21 @@ static int uhci_validate_pci(const pci_device_t* pci, uint16_t* out_io) {
     if (pci->class != USB_CONTROLLER_PCI_CLASS ||
         pci->subclass != USB_CONTROLLER_PCI_SUBCLASS ||
         pci->prog_if != USB_CONTROLLER_PROG_IF_UHCI ||
-        pci->irq == USB_CONTROLLER_IRQ_UNKNOWN || pci->irq > UHCI_IRQ_MAX ||
-        !(pci->bar0 & UHCI_PCI_BAR_IO)) {
+        pci->irq == USB_CONTROLLER_IRQ_UNKNOWN || pci->irq > UHCI_IRQ_MAX) {
         LOG_ERROR("UHCI", "Capacidade PCI UHCI invalida");
         return ERR_UNAVAILABLE;
     }
-    io_base = pci->bar0 & UHCI_PCI_BAR_ADDRESS_MASK;
-    if (!io_base || io_base > 0xFFFFU ||
-        io_base + UHCI_IO_SPACE_BYTES > 0x10000U) {
-        LOG_ERROR("UHCI", "BAR0 I/O UHCI fora do espaco suportado");
-        return ERR_UNAVAILABLE;
+    for (bar_index = 0U; bar_index < USB_CONTROLLER_BAR_COUNT; bar_index++) {
+        if (!(bars[bar_index] & UHCI_PCI_BAR_IO)) continue;
+        io_base = bars[bar_index] & UHCI_PCI_BAR_ADDRESS_MASK;
+        if (io_base && io_base <= 0xFFFFU &&
+            io_base + UHCI_IO_SPACE_BYTES <= 0x10000U) {
+            *out_io = (uint16_t)io_base;
+            return OK;
+        }
     }
-    *out_io = (uint16_t)io_base;
-    return OK;
+    LOG_ERROR("UHCI", "Nenhum BAR I/O UHCI valido encontrado");
+    return ERR_UNAVAILABLE;
 }
 
 static int uhci_allocate_dma(uhci_controller_t* controller) {
