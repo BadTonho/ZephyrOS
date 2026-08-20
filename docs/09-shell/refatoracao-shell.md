@@ -70,8 +70,7 @@ driver e pelo Shell. A implementação agora usa a tabela unificada de
 
 ### Fase 2 — Dispatcher
 
-Estado: implementada estruturalmente; aguardando validação no build limpo e no
-QEMU.
+Estado: concluída e validada no build limpo e no QEMU.
 
 `src/shell/shell_dispatch.c` e `src/include/apps/shell_dispatch.h` agora
 separam:
@@ -127,10 +126,10 @@ conjunto estiver estável, `make clean && make`. A Fase 1 foi validada com esses
 gates e no QEMU, cobrindo digitação normal, comandos, símbolos, métricas e
 consulta do log, sem regressão observada no Shell hospedado.
 
-A Fase 2 aguarda os mesmos gates e a validação dos caminhos de comandos
-conhecidos, argumentos com espaços, entrada vazia, comando desconhecido,
-comando longo, diagnósticos, aplicativos nos modos Simple e Classic e bloqueio
-de entrada durante `q2check` e `usertest`.
+A Fase 2 foi validada com os mesmos gates e no QEMU, cobrindo caminhos de
+comandos conhecidos, argumentos com espaços, entrada vazia, comando
+desconhecido, comando longo, diagnósticos, aplicativos nos modos Simple e
+Classic e bloqueio de entrada durante `q2check` e `usertest`.
 
 ## Referências do diagnóstico
 
