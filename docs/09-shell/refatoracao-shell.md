@@ -105,11 +105,11 @@ Separar os handlers em módulos pequenos:
 
 ### Fase 4 — Operações demoradas
 
-O executor cooperativo de `src/shell/shell_job.c` agora atende essa fronteira:
+O executor cooperativo de `src/shell/shell_job.c` atende essa fronteira:
 comandos marcados com `SHELL_DISPATCH_FLAG_COOPERATIVE` mantêm um único job
 ativo, consomem teclado durante o polling e registram cancelamento, timeout,
-falha e saturação da fila IPC. A validação funcional ainda está pendente dos
-gates descritos no estado da Fase 4 ao final deste documento.
+falha e saturação da fila IPC. A implementação foi validada no QEMU; o estado
+formal da Fase 4 está registrado ao final deste documento.
 
 ## Ordem recomendada
 
@@ -147,8 +147,7 @@ Classic e bloqueio de entrada durante `q2check` e `usertest`.
 ## Fase 3 — Estado da implementacao
 
 A implementacao estrutural da Fase 3 e a matriz funcional no QEMU foram
-concluidas. A marcacao formal como concluida ainda depende da confirmacao de
-`q3check` e do build limpo.
+concluidas e confirmadas pelo usuario com `q3check` e build limpo.
 
 ### Subfases e fronteiras
 
@@ -219,10 +218,13 @@ uma decomposicao interna adicional dessas operacoes fica para uma iteracao
 posterior. Editor, Player, Task Manager, WM e demais cenas interativas mantem
 o fluxo atual.
 
-Ainda nao marcar a Fase 4 como concluida: faltam `make q3check`, build limpo e
-validacao funcional no QEMU. A validacao deve confirmar `job status`, sucesso,
-falha, timeout, operacao ocupada, cancelamento, ausencia de prompt duplicado,
-fila IPC sem saturacao e o smoke test Simple/Classic/terminal hospedado.
+A Fase 4 foi concluida e validada pelo usuario com `make q3check`, build limpo
+e execucao no QEMU. A validacao confirmou `job status`, cancelamento por F12,
+teclas bloqueadas sem saturacao da fila IPC, `index rebuild`, `q2check`,
+conclusao de jobs, ausencia de prompt duplicado e o fluxo cooperativo no Shell.
+Os avisos `Shell acordado sem evento IPC` correspondem ao polling curto durante
+jobs ativos e permanecem como ruido de observabilidade para uma melhoria futura;
+nao indicaram perda de teclado nem falha do executor.
 
 Referencias adicionais:
 
