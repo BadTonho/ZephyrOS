@@ -55,6 +55,7 @@ static uint32_t file_index_directories;
 static uint32_t file_index_steps;
 static uint32_t file_index_candidate_hash;
 static uint32_t file_index_event_generation;
+static uint32_t file_index_operation_generation;
 static uint32_t file_index_validate_cursor;
 static uint32_t file_index_validate_hash;
 static file_index_state_t file_index_state;
@@ -360,6 +361,8 @@ static int file_index_start_rebuild_unlocked(
     file_index_steps = 0;
     file_index_candidate_hash = FILE_INDEX_HASH_OFFSET;
     file_index_state = FILE_INDEX_STATE_BUILDING;
+    file_index_operation_generation++;
+    if (!file_index_operation_generation) file_index_operation_generation = 1U;
     file_index_last_error = OK;
     file_index_stale = file_index_active &&
                        !file_index_active_sources_equal(
@@ -709,6 +712,7 @@ int file_index_init(void) {
     file_index_state = FILE_INDEX_STATE_EMPTY;
     file_index_last_error = OK;
     file_index_event_generation = 1U;
+    file_index_operation_generation = 0U;
     file_index_validate_hash = FILE_INDEX_HASH_OFFSET;
     result = file_index_capture_sources(sources, &source_count);
     if (result != OK) {
@@ -861,6 +865,7 @@ int file_index_get_status(file_index_status_t* out_status) {
                                 file_index_active->source_count : 0U);
     out_status->sources_completed = file_index_source_index;
     out_status->event_generation = file_index_event_generation;
+    out_status->operation_generation = file_index_operation_generation;
     out_status->memory_bytes =
         (file_index_active ? sizeof(file_index_table_t) : 0U) +
         (file_index_candidate ? sizeof(file_index_table_t) : 0U);

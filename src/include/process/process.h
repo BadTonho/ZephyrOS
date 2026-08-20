@@ -144,6 +144,7 @@ process_t* process_get_current(void);
 uint32_t process_get_count(void);
 process_t* process_get_by_pid(uint32_t pid);
 uint32_t process_get_current_pid(void);
+uint32_t process_get_event_generation(void);
 uint32_t process_get_state_count(process_state_t state);
 uint32_t process_get_user_count(void);
 uint32_t process_get_user_fault_count(void);

@@ -194,6 +194,13 @@ Falha remota nunca degrada verificacao, aplicacao, rollback ou historico
 local. O `health` informa `remoto=DISABLED`, `READY` ou `DEGRADED` de forma
 independente.
 
+Durante um job do Shell, check, fetch e clear conservam a geracao da
+operacao. O cancelamento aguarda o retorno seguro do HTTP e da publicacao de
+cache; o resultado so e publicado depois da drenagem. Um resultado tardio de
+geracao anterior e registrado e descartado, sem alterar o cache ativo.
+`update_remote_status_t.operation_generation` identifica a execucao remota;
+`generation` continua reservado a geracao do manifesto/cache.
+
 ## Comandos
 
 ```text

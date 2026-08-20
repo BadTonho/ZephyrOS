@@ -30,6 +30,7 @@ static uint32_t user_fault_count = 0;
 static int user_test_result_pending = 0;
 static uint32_t user_test_result_pid = 0;
 static uint32_t user_test_result_faulted = 0;
+static uint32_t process_event_generation = 0;
 static const app_launch_info_t process_empty_launch = {
     .abi_version = APP_LAUNCH_ABI_VERSION
 };
@@ -174,6 +175,7 @@ void process_init(void) {
     user_test_result_pending = 0;
     user_test_result_pid = 0;
     user_test_result_faulted = 0;
+    process_event_generation = 0;
     for (int i = 0; i < MAX_PROCESSES; i++) {
         kmemset(&processes[i], 0, sizeof(process_t));
         processes[i].state = PROCESS_STATE_UNUSED;
@@ -456,6 +458,8 @@ static int process_mark_user_zombie(process_t* proc, uint32_t exit_code,
 
     proc->exit_code = exit_code;
     proc->state = PROCESS_STATE_ZOMBIE;
+    process_event_generation++;
+    if (!process_event_generation) process_event_generation = 1U;
     if (proc->user_test) {
         user_test_result_pending = 1;
         user_test_result_pid = proc->pid;
@@ -1083,6 +1087,10 @@ uint32_t process_get_current_pid(void) {
         return 0;
     }
     return current_process->pid;
+}
+
+uint32_t process_get_event_generation(void) {
+    return process_event_generation;
 }
 
 uint32_t process_get_state_count(process_state_t state) {

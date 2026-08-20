@@ -8,6 +8,7 @@
 #include "core/recovery.h"
 #include "core/string.h"
 #include "core/video.h"
+#include "core/wait.h"
 #include "process/process.h"
 #include "ui/desktop.h"
 #include "ui/display.h"
@@ -134,6 +135,7 @@ static uint32_t appstore_last_pid;
 static char appstore_result_text[APPSTORE_TEXT_SIZE];
 static char appstore_confirm_key[APP_CATALOG_ALIAS_SIZE];
 static uint32_t appstore_confirm_generation;
+static process_t* appstore_worker_process;
 
 static void appstore_hosted_draw(int x, int y, int width, int height);
 static void appstore_hosted_key(uint8_t scancode);
@@ -489,6 +491,8 @@ static void appstore_refresh_remote_snapshot(void) {
 }
 
 static void appstore_queue_job(appstore_job_t type) {
+    uint32_t woken = 0U;
+
     if (appstore_busy || appstore_queued_type != APPSTORE_JOB_NONE) {
         LOG_WARN("APPSTORE", "Operacao da App Store ja esta pendente");
         return;
@@ -508,6 +512,12 @@ static void appstore_queue_job(appstore_job_t type) {
     }
     appstore_queued_type = type;
     appstore_busy = 1;
+    if (appstore_worker_process &&
+        process_wake_channel(&appstore_worker_process->ipc_wait_channel,
+                             WAIT_WAKE_ONE, WAIT_REASON_EVENT,
+                             &woken) != OK) {
+        LOG_WARN("APPSTORE", "Falha ao acordar worker da App Store");
+    }
     appstore_draw();
 }
 
@@ -946,7 +956,12 @@ static void appstore_worker_finish(void) {
 static void appstore_worker_main(void) {
     while (1) {
         if (appstore_queued_type == APPSTORE_JOB_NONE) {
-            process_block(1U);
+            wait_reason_t wait_reason = WAIT_REASON_NONE;
+
+            if (ipc_wait(WAIT_TIMEOUT_INFINITE, &wait_reason) != OK) {
+                LOG_WARN("APPSTORE", "Falha na espera do worker da App Store");
+                process_yield();
+            }
             continue;
         }
         appstore_running_job = appstore_job;
@@ -1609,8 +1624,6 @@ static void appstore_draw_classic(int x, int y, int width, int height) {
 }
 
 int appstore_init(void) {
-    process_t* worker;
-
     LOG_INFO("APPSTORE", "Inicializando interface da App Store");
     appstore_initialized = 0;
     appstore_active = 0;
@@ -1620,6 +1633,7 @@ int appstore_init(void) {
     appstore_job.type = APPSTORE_JOB_NONE;
     appstore_running_job.type = APPSTORE_JOB_NONE;
     appstore_queued_type = APPSTORE_JOB_NONE;
+    appstore_worker_process = 0;
     appstore_generation = 1U;
     appstore_clear_context();
     if (!app_catalog_is_ready() || !app_package_is_ready()) {
@@ -1628,8 +1642,9 @@ int appstore_init(void) {
         LOG_ERROR("APPSTORE", "Servicos da App Store indisponiveis");
         return ERR_STATE;
     }
-    worker = process_create("App Store Worker", appstore_worker_main);
-    if (!worker) {
+    appstore_worker_process = process_create("App Store Worker",
+                                             appstore_worker_main);
+    if (!appstore_worker_process) {
         recovery_mark_disabled(RECOVERY_COMPONENT_APP_STORE, ERR_MEM,
                                "Worker cooperativo da App Store indisponivel");
         LOG_ERROR("APPSTORE", "Falha ao criar worker cooperativo");

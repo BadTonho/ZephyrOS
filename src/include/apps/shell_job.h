@@ -13,7 +13,8 @@ typedef enum {
     SHELL_JOB_STATE_CANCEL_REQUESTED,
     SHELL_JOB_STATE_SUCCEEDED,
     SHELL_JOB_STATE_FAILED,
-    SHELL_JOB_STATE_CANCELLED
+    SHELL_JOB_STATE_CANCELLED,
+    SHELL_JOB_STATE_DRAINING
 } shell_job_state_t;
 
 typedef enum {
@@ -39,6 +40,8 @@ typedef int (*shell_job_cancel_fn)(shell_job_context_t* context);
 typedef void (*shell_job_finish_fn)(shell_job_context_t* context,
                                     shell_job_state_t state,
                                     int result);
+typedef shell_job_step_result_t (*shell_job_drain_fn)(
+    shell_job_context_t* context);
 
 typedef struct {
     const char* command;
@@ -46,6 +49,7 @@ typedef struct {
     shell_job_step_fn step;
     shell_job_cancel_fn cancel;
     shell_job_finish_fn finish;
+    shell_job_drain_fn drain;
 } shell_job_definition_t;
 
 struct shell_job_context {
@@ -62,6 +66,11 @@ struct shell_job_context {
     uint32_t cancel_requests;
     int last_error;
     uint8_t cancel_requested;
+    uint32_t generation;
+    uint32_t deadline_tick;
+    uint32_t wakeups;
+    uint32_t stale_events;
+    uint8_t deadline_active;
 };
 
 typedef struct {
@@ -77,6 +86,13 @@ typedef struct {
     uint32_t cancel_requests;
     int last_error;
     uint8_t active;
+    uint32_t generation;
+    uint32_t deadline_tick;
+    uint32_t wakeups;
+    uint32_t stale_events;
+    uint8_t cancel_requested;
+    uint8_t draining;
+    uint8_t deadline_active;
 } shell_job_status_t;
 
 void shell_job_reset(void);
@@ -90,9 +106,16 @@ int shell_job_is_active(void);
 int shell_job_input_blocked(void);
 int shell_job_get_status(shell_job_status_t* status_out);
 int shell_job_cancel_requested(void);
+uint32_t shell_job_get_generation(void);
+int shell_job_generation_matches(uint32_t generation);
+void shell_job_note_stale_event(uint32_t generation);
+int shell_job_get_wait_timeout(uint32_t* timeout_out);
 void shell_job_set_phase(shell_job_context_t* context, const char* phase);
 void shell_job_set_progress(shell_job_context_t* context,
                             uint32_t progress, uint32_t total);
+void shell_job_set_timeout(shell_job_context_t* context, uint32_t ticks);
+void shell_job_set_deadline(shell_job_context_t* context, uint32_t deadline_tick);
+void shell_job_clear_timeout(shell_job_context_t* context);
 const char* shell_job_state_name(shell_job_state_t state);
 const char* shell_job_kind_name(shell_job_kind_t kind);
 

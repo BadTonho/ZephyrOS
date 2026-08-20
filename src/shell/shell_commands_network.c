@@ -81,7 +81,6 @@
 #define SHELL_NET_QEMU_TIMEOUT_IPV4 0x0A0002FEU
 #define SHELL_NET_QEMU_SUBNET_MASK 0xFFFFFF00U
 #define SHELL_NET_CHECK_WAIT_SECONDS 5U
-#define SHELL_NET_CHECK_BLOCK_TICKS 1U
 #define SHELL_NET_CHECK_EXPECTED_ATTEMPTS 3U
 #define SHELL_PING_WAIT_EXTRA_SECONDS 5U
 #define SHELL_DHCP_WAIT_SECONDS 20U
@@ -121,12 +120,14 @@
 #define SHELL_REGCHECK_ACPI_MAX_TABLE_SIZE (1024U * 1024U)
 #define SHELL_REGCHECK_ACPI_MAX_ROOT_ENTRIES 256U
 
+static uint8_t shell_network_job_inner_failed;
+
 static int shell_network_job_block_tick(void) {
     if (shell_job_is_active()) {
         shell_job_pump_events();
         if (shell_job_cancel_requested()) return 1;
     }
-    process_block(SHELL_NET_CHECK_BLOCK_TICKS);
+    process_yield();
     return shell_job_is_active() && shell_job_cancel_requested();
 }
 
@@ -1721,10 +1722,14 @@ static int cmd_net_dhcp_wait(dhcp_status_t* out_status) {
             return status.last_error == OK ? ERR_STATE :
                                              status.last_error;
         }
-        if (shell_network_job_block_tick()) return ERR_TIMEOUT;
+        if (shell_network_job_block_tick()) {
+            shell_network_job_inner_failed = 1U;
+            return ERR_TIMEOUT;
+        }
     } while ((uint32_t)(timer_get_ticks() - start_tick) <= wait_ticks);
     *out_status = status;
     LOG_WARN("SHELL", "Guarda de tempo DHCP expirou");
+    shell_network_job_inner_failed = 1U;
     return ERR_TIMEOUT;
 }
 
@@ -1961,9 +1966,13 @@ static int cmd_dns_wait(const char* name, uint32_t* out_ip) {
             return status.last_error == OK ? ERR_STATE :
                                              status.last_error;
         }
-        if (shell_network_job_block_tick()) return ERR_TIMEOUT;
+        if (shell_network_job_block_tick()) {
+            shell_network_job_inner_failed = 1U;
+            return ERR_TIMEOUT;
+        }
     } while ((uint32_t)(timer_get_ticks() - start_tick) <= wait_ticks);
     LOG_WARN("SHELL", "Guarda de tempo DNS expirou");
+    shell_network_job_inner_failed = 1U;
     return ERR_TIMEOUT;
 }
 
@@ -2152,10 +2161,14 @@ static int cmd_ping_wait(uint8_t print_events,
             return status.last_error == OK ? ERR_STATE :
                                              status.last_error;
         }
-        if (shell_network_job_block_tick()) return ERR_TIMEOUT;
+        if (shell_network_job_block_tick()) {
+            shell_network_job_inner_failed = 1U;
+            return ERR_TIMEOUT;
+        }
     } while ((uint32_t)(timer_get_ticks() - start_tick) <= wait_ticks);
     *out_status = status;
     LOG_WARN("SHELL", "Guarda de tempo do ping expirou");
+    shell_network_job_inner_failed = 1U;
     return ERR_TIMEOUT;
 }
 
@@ -2344,9 +2357,13 @@ static int cmd_net_wait_socket_connected(
             return info.last_error == OK ? ERR_STATE :
                                            info.last_error;
         }
-        if (shell_network_job_block_tick()) return ERR_TIMEOUT;
+        if (shell_network_job_block_tick()) {
+            shell_network_job_inner_failed = 1U;
+            return ERR_TIMEOUT;
+        }
     } while ((uint32_t)(timer_get_ticks() - start_tick) <= wait_ticks);
     LOG_WARN("SHELL", "Guarda de tempo TCP expirou");
+    shell_network_job_inner_failed = 1U;
     return ERR_TIMEOUT;
 }
 
@@ -2522,10 +2539,14 @@ static int cmd_http_wait(http_status_t* out_status) {
             return status->last_error == OK ? ERR_STATE :
                                               status->last_error;
         }
-        if (shell_network_job_block_tick()) return ERR_TIMEOUT;
+        if (shell_network_job_block_tick()) {
+            shell_network_job_inner_failed = 1U;
+            return ERR_TIMEOUT;
+        }
     } while ((uint32_t)(timer_get_ticks() - start_tick) <= wait_ticks);
     *out_status = *status;
     LOG_WARN("SHELL", "Guarda de tempo HTTP expirou");
+    shell_network_job_inner_failed = 1U;
     return ERR_TIMEOUT;
 }
 
@@ -2698,9 +2719,13 @@ static int cmd_net_wait_arp_state(uint32_t ip_address,
         result = cmd_net_find_arp_entry(ip_address, &entry, &found);
         if (result != OK) return result;
         if (found && entry.state == expected_state) return OK;
-        if (shell_network_job_block_tick()) return ERR_TIMEOUT;
+        if (shell_network_job_block_tick()) {
+            shell_network_job_inner_failed = 1U;
+            return ERR_TIMEOUT;
+        }
     } while ((uint32_t)(timer_get_ticks() - start_tick) <= wait_ticks);
     LOG_WARN("SHELL", "Estado ARP esperado nao apareceu na suite");
+    shell_network_job_inner_failed = 1U;
     return ERR_TIMEOUT;
 }
 
@@ -3130,8 +3155,12 @@ static void cmd_net_qemu_tcp_wait_close(uint32_t fin_baseline) {
 
         if (tcp_get_status(&status) == OK &&
             status.fin_tx > fin_baseline) return;
-        if (shell_network_job_block_tick()) return;
+        if (shell_network_job_block_tick()) {
+            shell_network_job_inner_failed = 1U;
+            return;
+        }
     } while ((uint32_t)(timer_get_ticks() - start_tick) <= wait_ticks);
+    shell_network_job_inner_failed = 1U;
 }
 
 static int cmd_net_qemu_tcp_run_http(
@@ -3659,6 +3688,7 @@ typedef struct {
     net_socket_handle_t socket;
     uint16_t port;
     uint32_t event_generation;
+    uint32_t job_generation;
 } shell_network_job_t;
 
 static shell_network_job_t shell_network_job;
@@ -3675,6 +3705,7 @@ static int shell_network_job_timeout(shell_job_context_t* context,
         return 1;
     }
     wait_ticks = frequency * seconds;
+    shell_job_set_deadline(context, context->started_tick + wait_ticks);
     if ((uint32_t)(timer_get_ticks() - context->started_tick) > wait_ticks) {
         context->last_error = ERR_TIMEOUT;
         LOG_WARN("SHELL", "Timeout em job cooperativo de rede");
@@ -3709,6 +3740,12 @@ static shell_job_step_result_t shell_network_job_step(
     int result;
 
     if (!context) return SHELL_JOB_STEP_FAILED;
+    if (!shell_job_generation_matches(shell_network_job.job_generation)) {
+        context->stale_events++;
+        context->last_error = ERR_STATE;
+        LOG_WARN("SHELL", "Resultado de rede pertence a geracao antiga");
+        return SHELL_JOB_STEP_FAILED;
+    }
     if (shell_network_job.operation == SHELL_NETWORK_JOB_CHECK) {
         if (context->cancel_requested) {
             context->last_error = ERR_TIMEOUT;
@@ -3719,6 +3756,10 @@ static shell_job_step_result_t shell_network_job_step(
         if (context->cancel_requested) {
             context->last_error = ERR_TIMEOUT;
             return SHELL_JOB_STEP_CANCELLED;
+        }
+        if (shell_network_job_inner_failed) {
+            context->last_error = ERR_TIMEOUT;
+            return SHELL_JOB_STEP_FAILED;
         }
         context->last_error = OK;
         return SHELL_JOB_STEP_COMPLETE;
@@ -3881,6 +3922,12 @@ static int shell_network_job_cancel(shell_job_context_t* context) {
     return result;
 }
 
+static shell_job_step_result_t shell_network_job_drain(
+    shell_job_context_t* context) {
+    (void)context;
+    return SHELL_JOB_STEP_COMPLETE;
+}
+
 static void shell_network_job_finish(shell_job_context_t* context,
                                      shell_job_state_t state, int result) {
     dns_status_t dns_status;
@@ -3937,8 +3984,19 @@ static void shell_network_job_finish(shell_job_context_t* context,
 
 static const shell_job_definition_t shell_network_job_definition = {
     "network", SHELL_JOB_KIND_NETWORK, shell_network_job_step,
-    shell_network_job_cancel, shell_network_job_finish
+    shell_network_job_cancel, shell_network_job_finish,
+    shell_network_job_drain
 };
+
+static int shell_network_job_start(const char* arguments) {
+    int result = shell_job_start(&shell_network_job_definition, arguments);
+
+    if (result == OK) {
+        shell_network_job_inner_failed = 0U;
+        shell_network_job.job_generation = shell_job_get_generation();
+    }
+    return result;
+}
 
 static int shell_network_start_dns_job(const char* arguments) {
     uint8_t resolved = 0U;
@@ -3961,7 +4019,7 @@ static int shell_network_start_dns_job(const char* arguments) {
         return 1;
     }
     shell_network_job.phase = SHELL_NETWORK_JOB_PHASE_RESOLVE;
-    if (shell_job_start(&shell_network_job_definition, arguments) != OK) {
+    if (shell_network_job_start(arguments) != OK) {
         dns_reset();
     }
     return 1;
@@ -4000,7 +4058,7 @@ static int shell_network_start_ping_job(const char* arguments) {
         shell_network_job_print_error("ping", result);
         return 1;
     }
-    if (shell_job_start(&shell_network_job_definition, arguments) != OK) {
+    if (shell_network_job_start(arguments) != OK) {
         icmp_reset();
         dns_reset();
     }
@@ -4028,7 +4086,7 @@ static int shell_network_start_http_job(const char* arguments) {
     }
     shell_network_job.phase = SHELL_NETWORK_JOB_PHASE_TRANSFER;
     video_print("Executando HTTP GET...\n", 0x07);
-    if (shell_job_start(&shell_network_job_definition, arguments) != OK) {
+    if (shell_network_job_start(arguments) != OK) {
         http_reset();
     }
     return 1;
@@ -4062,7 +4120,7 @@ static int shell_network_start_dhcp_job(const char* arguments) {
     }
     shell_network_job.operation = SHELL_NETWORK_JOB_DHCP;
     shell_network_job.phase = SHELL_NETWORK_JOB_PHASE_TRANSFER;
-    if (shell_job_start(&shell_network_job_definition, arguments) != OK) {
+    if (shell_network_job_start(arguments) != OK) {
         dhcp_reset();
     }
     return 1;
@@ -4093,7 +4151,7 @@ int shell_network_start_job(const char* command, const char* arguments) {
             kmemset(&shell_network_job, 0, sizeof(shell_network_job));
             shell_network_job.operation = SHELL_NETWORK_JOB_CHECK;
             shell_network_job.phase = SHELL_NETWORK_JOB_PHASE_TRANSFER;
-            if (shell_job_start(&shell_network_job_definition, arguments) != OK) {
+            if (shell_network_job_start(arguments) != OK) {
                 video_print("Job de rede recusado.\n", 0x0C);
             }
             return 1;

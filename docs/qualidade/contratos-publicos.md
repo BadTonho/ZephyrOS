@@ -4,6 +4,12 @@ Este catalogo associa cada header em `src/include/` ao documento tecnico que
 descreve seu contrato. Quando um desses headers mudar, o `make q3check` exige
 que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 
+A Fase 5 acrescenta somente campos e funcoes ao fim dos contratos alterados:
+geracao de execucao no Shell Job, App Loader, pacotes e operacoes remotas,
+estado de drenagem e deadline, geracao de operacao do indice e contador de
+eventos de processos.
+Nenhuma assinatura de `shell.h` ou ABI ring 3 foi alterada.
+
 | Header publico | Documento canonico |
 |---|---|
 | `src/include/apps/editor.h` | `docs/13-aplicativos/aplicativos.md` |

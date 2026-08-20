@@ -52,6 +52,7 @@ typedef struct {
     uint32_t source_count;
     uint32_t sources_completed;
     uint32_t event_generation;
+    uint32_t operation_generation;
     uint32_t memory_bytes;
     uint8_t initialized;
     uint8_t partial;

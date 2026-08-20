@@ -206,6 +206,12 @@ int file_index_validate_state(void);
 int file_index_self_test(void);
 ```
 
+`file_index_status_t.event_generation` identifica mudancas observaveis da
+tabela e `operation_generation` identifica cada reconstrucao iniciada. O
+Shell conserva a geracao da reconstrucao no job; se outra reconstrucao ou
+evento substituir a operacao, o resultado antigo e descartado e a tabela
+ativa permanece protegida.
+
 As tabelas ativa e candidata sao alocadas no heap. Falha de memoria preserva
 a ativa e suspende repeticoes para a mesma assinatura de fontes; um novo
 evento ou `index rebuild` tenta novamente. Cancelamento tambem preserva a

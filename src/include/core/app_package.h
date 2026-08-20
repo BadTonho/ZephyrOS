@@ -135,6 +135,7 @@ typedef struct {
     uint32_t rollback_count;
     app_package_rollback_entry_t
         rollbacks[APP_PACKAGE_MAX_ROLLBACKS];
+    uint32_t operation_generation;
 } app_package_status_t;
 
 typedef struct {

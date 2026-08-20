@@ -158,6 +158,10 @@ static int update_remote_begin(void) {
         return ERR_STATE;
     }
     update_remote_status.busy = 1U;
+    update_remote_status.operation_generation++;
+    if (!update_remote_status.operation_generation) {
+        update_remote_status.operation_generation = 1U;
+    }
     return OK;
 }
 

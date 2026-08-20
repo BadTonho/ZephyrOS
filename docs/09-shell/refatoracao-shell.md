@@ -111,10 +111,12 @@ ativo, consomem teclado durante o polling e registram cancelamento, timeout,
 falha e saturação da fila IPC. A implementação foi validada no QEMU; o estado
 formal da Fase 4 está registrado ao final deste documento.
 
-### Fase 5 - Sincronizacao, drenagem e migracao final dos jobs (proposta)
+### Fase 5 - Sincronizacao, drenagem e migracao final dos jobs (implementada)
 
-Esta fase ainda esta pendente. A proposta e consolidar o ciclo de vida do
-executor antes de converter os caminhos sincronicos restantes.
+A base da Fase 5 foi implementada. O executor agora consolida o ciclo de vida
+de cada operacao antes de publicar o resultado e mantem os wrappers sincronos
+existentes como fachada compatível para os modulos que ainda fazem uma etapa
+atomica inteira.
 
 Objetivos:
 
@@ -138,9 +140,10 @@ loops de espera artificiais:
 - https://docs.kernel.org/core-api/workqueue.html
 - https://docs.kernel.org/scheduler/completion.html
 
-A Fase 5 somente sera concluida apos validar cancelamento, timeout, falha,
-progresso, `job status`, ausencia de resultados tardios e funcionamento nos
-modos Simple e Classic.
+A validacao executavel da Fase 5 continua sendo responsabilidade do usuario:
+ela deve cobrir cancelamento, timeout, falha, progresso, `job status`,
+ausencia de resultados tardios e funcionamento nos modos Simple, Classic e
+terminal hospedado.
 
 ## Ordem recomendada
 
@@ -237,8 +240,8 @@ alterar a API publica de `shell.h`.
 
 Os adaptadores cooperativos cobrem rede (`ping`, `nslookup`, `http` e os
 subcomandos longos de `net`), `index rebuild`, pacotes/Store/Update e os
-workflows Q2, RegCheck e AppCheck. O loop do Shell usa espera IPC curta durante
-um job, continua drenando teclado e encaminha mensagens de aplicativo e
+workflows Q2, RegCheck e AppCheck. O loop do Shell usa o canal IPC agregador
+durante um job, continua drenando teclado e encaminha mensagens de aplicativo e
 resultados do App Loader na ordem original. `Esc` e `F12` solicitam
 cancelamento; durante qualquer modo do `regcheck`, `F11` solicita ao runtime o
 cancelamento seguro do ZAPP em foco. As demais teclas sao consumidas, com um
@@ -255,12 +258,40 @@ A Fase 4 foi concluida e validada pelo usuario com `make q3check`, build limpo
 e execucao no QEMU. A validacao confirmou `job status`, cancelamento por F11 no
 RegCheck normal e full, cancelamento geral por F12 em rede, teclas bloqueadas
 sem saturacao da fila IPC, `index rebuild`, `q2check`, conclusao de jobs,
-ausencia de prompt duplicado e o fluxo cooperativo no Shell. Os timeouts normais
-do polling curto durante jobs ativos nao geram o aviso `Shell acordado sem
-evento IPC`; o log permanece reservado para uma espera anormal fora de jobs.
+ausencia de prompt duplicado e o fluxo cooperativo no Shell. Na Fase 5, os
+despertares por evento e deadline nao geram o aviso `Shell acordado sem evento
+IPC`; o log permanece reservado para uma espera anormal fora de jobs.
 
 Referencias adicionais:
 
 - [Contrato do executor de jobs](../../src/include/apps/shell_job.h)
 - [Implementacao do executor](../../src/shell/shell_job.c)
 - [Comandos do Shell](comandos.md)
+
+## Fase 5 - Estado da implementacao
+
+`shell_job` preserva um unico contexto estatico e acrescenta uma geracao
+monotona por execucao, `DRAINING`, deadline, contadores de acordadas e eventos
+descartados. O cancelamento e idempotente: a solicitacao passa por um ponto
+seguro, cancela ou desfaz a etapa atual, drena callbacks e resultados e so
+entao publica `CANCELLED` ou `FAILED`. Timeout publica `FAILED` com
+`ERR_TIMEOUT`.
+
+O processo Shell usa o proprio `ipc_wait_channel` como canal agregador. O
+processo de sistema sinaliza esse canal para progresso de rede, indice, timer
+e conclusao de processo, sem inserir mensagens artificiais na fila IPC. O
+timeout da espera e calculado a partir do deadline do job; o polling fixo de
+um tick e `SHELL_NET_CHECK_BLOCK_TICKS` foram removidos.
+
+Resultados do App Loader, indice, rede e adaptadores de pacotes carregam a
+geracao que iniciou a operacao. Resultados antigos sao registrados e
+descartados. `job status` exibe estado, geracao, fase, progresso, erro,
+deadline, acordadas, cancelamentos e eventos tardios. Os modos Simple,
+Classic e terminal hospedado continuam usando a mesma politica de prompt e
+as assinaturas publicas de `shell.h` permanecem intactas.
+
+As APIs assincronas de DNS, ICMP, HTTP, DHCP e indice continuam sendo as
+fontes de `start/poll/status` dos jobs de rede e storage. Pacotes, Store,
+Update e operacoes remotas mantem seus wrappers sincronos publicos e usam os
+pontos de cancelamento, journal, rollback e recovery existentes; o executor
+os envolve com geracao e drenagem sem alterar a ABI publica.

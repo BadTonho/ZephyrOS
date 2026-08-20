@@ -81,7 +81,6 @@
 #define SHELL_NET_QEMU_TIMEOUT_IPV4 0x0A0002FEU
 #define SHELL_NET_QEMU_SUBNET_MASK 0xFFFFFF00U
 #define SHELL_NET_CHECK_WAIT_SECONDS 5U
-#define SHELL_NET_CHECK_BLOCK_TICKS 1U
 #define SHELL_NET_CHECK_EXPECTED_ATTEMPTS 3U
 #define SHELL_PING_WAIT_EXTRA_SECONDS 5U
 #define SHELL_DHCP_WAIT_SECONDS 20U
@@ -265,6 +264,7 @@ typedef struct {
 
 static shell_update_workspace_t shell_update_workspace;
 static shell_store_workspace_t shell_store_workspace;
+static uint32_t shell_packages_job_generation;
 static void cmd_pkg_take_token(const char** cursor, char* output,
                                uint32_t output_size) {
     uint32_t length = 0;
@@ -339,6 +339,10 @@ static int cmd_update_cancel_check(void* context) {
 
     (void)context;
     if (shell_job_is_active()) {
+        if (!shell_job_generation_matches(shell_packages_job_generation)) {
+            LOG_WARN("SHELL", "Cancelamento de pacote pertence a geracao antiga");
+            return 1;
+        }
         shell_job_pump_events();
         return shell_job_cancel_requested();
     }
@@ -2119,6 +2123,12 @@ static shell_packages_job_operation_t shell_packages_job_operation;
 static shell_job_step_result_t shell_packages_job_step(
     shell_job_context_t* context) {
     if (!context) return SHELL_JOB_STEP_FAILED;
+    if (!shell_job_generation_matches(shell_packages_job_generation)) {
+        context->stale_events++;
+        context->last_error = ERR_STATE;
+        LOG_WARN("SHELL", "Resultado de pacote pertence a geracao antiga");
+        return SHELL_JOB_STEP_FAILED;
+    }
     if (context->cancel_requested &&
         shell_packages_job_operation != SHELL_PACKAGES_JOB_STORE &&
         shell_packages_job_operation != SHELL_PACKAGES_JOB_UPDATE) {
@@ -2153,19 +2163,47 @@ static void shell_packages_job_finish(shell_job_context_t* context,
     }
 }
 
+static int shell_packages_job_cancel(shell_job_context_t* context) {
+    (void)context;
+    if (shell_packages_job_operation == SHELL_PACKAGES_JOB_STORE) {
+        app_remote_request_cancel();
+    }
+    return OK;
+}
+
+static shell_job_step_result_t shell_packages_job_drain(
+    shell_job_context_t* context) {
+    app_remote_status_t remote_status;
+    update_remote_status_t update_remote_status;
+
+    (void)context;
+    if (app_package_is_mutation_active()) return SHELL_JOB_STEP_PENDING;
+    if (app_remote_get_status(&remote_status) == OK && remote_status.busy) {
+        return SHELL_JOB_STEP_PENDING;
+    }
+    if (update_remote_get_status(&update_remote_status) == OK &&
+        update_remote_status.busy) {
+        return SHELL_JOB_STEP_PENDING;
+    }
+    return SHELL_JOB_STEP_COMPLETE;
+}
+
 static const shell_job_definition_t shell_pkg_job_definition = {
-    "pkg", SHELL_JOB_KIND_PACKAGES, shell_packages_job_step, NULL,
-    shell_packages_job_finish
+    "pkg", SHELL_JOB_KIND_PACKAGES, shell_packages_job_step,
+    shell_packages_job_cancel, shell_packages_job_finish,
+    shell_packages_job_drain
 };
 
 static const shell_job_definition_t shell_store_job_definition = {
-    "store", SHELL_JOB_KIND_PACKAGES, shell_packages_job_step, NULL,
-    shell_packages_job_finish
+    "store", SHELL_JOB_KIND_PACKAGES, shell_packages_job_step,
+    shell_packages_job_cancel, shell_packages_job_finish,
+    shell_packages_job_drain
 };
 
 static const shell_job_definition_t shell_update_job_definition = {
-    "update", SHELL_JOB_KIND_PACKAGES, shell_packages_job_step, NULL,
-    shell_packages_job_finish
+    "update", SHELL_JOB_KIND_PACKAGES, shell_packages_job_step,
+    shell_packages_job_cancel, shell_packages_job_finish,
+    shell_packages_job_drain
 };
 
 static int shell_packages_should_start(const char* command,
@@ -2211,6 +2249,8 @@ int shell_packages_start_job(const char* command, const char* arguments) {
                  &shell_store_job_definition : &shell_update_job_definition;
     if (shell_job_start(definition, arguments) != OK) {
         video_print("Job de pacotes recusado.\n", 0x0C);
+    } else {
+        shell_packages_job_generation = shell_job_get_generation();
     }
     return 1;
 }
