@@ -410,7 +410,8 @@ void shell_process_main(void) {
             if (ipc_wait(wait_timeout, &wait_reason) != OK) {
                 LOG_ERROR("KERNEL", "Falha na espera do Shell por IPC");
                 process_yield();
-            } else if (wait_reason != WAIT_REASON_EVENT) {
+            } else if (wait_reason != WAIT_REASON_EVENT &&
+                       !shell_job_is_active()) {
                 LOG_WARN("KERNEL", "Shell acordado sem evento IPC");
                 process_yield();
             }

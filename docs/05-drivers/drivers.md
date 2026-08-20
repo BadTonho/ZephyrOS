@@ -568,6 +568,11 @@ pode exigir duas copias pequenas em vez de uma faixa grande. A duracao de uma
 copia pode ser `0` quando termina entre dois ticks do PIT; isso significa que
 ficou abaixo da resolucao, nao que nao teve custo.
 
+`keyboard_set_focus_cancel_filter()` permite ao runtime registrar uma decisao
+contextual para cancelar o aplicativo ring 3 em foco. O driver preserva o F12
+como cancelamento geral e usa esse filtro somente para teclas especiais de um
+fluxo ativo, como o F11 do RegCheck.
+
 ---
 
 ## Font (`font.c`)

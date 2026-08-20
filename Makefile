@@ -395,7 +395,7 @@ $(ENTRY_OBJ): $(ENTRY_SRC)
 	@if not exist build mkdir build
 	$(NASM) -f elf32 $< -o $@
 
-$(KERNEL_OBJ): $(KERNEL_C) src/include/apps/shell_job.h
+$(KERNEL_OBJ): $(KERNEL_C) src/include/apps/shell_job.h src/include/core/keyboard.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -691,7 +691,7 @@ $(SHELL_COMMANDS_NETWORK_OBJ): $(SHELL_COMMANDS_NETWORK_C) src/include/apps/shel
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(SHELL_CHECKS_OBJ): $(SHELL_CHECKS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h
+$(SHELL_CHECKS_OBJ): $(SHELL_CHECKS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/keyboard.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

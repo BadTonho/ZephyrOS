@@ -36,6 +36,7 @@ int shell_runtime_is_hosted_visible(void);
 int shell_runtime_prepare_filemanager(void);
 
 int shell_checks_input_blocked(void);
+int shell_checks_should_cancel_focused_user(uint8_t scancode);
 int shell_checks_handle_job_key(uint8_t scancode);
 int shell_checks_handle_loader_result(const app_loader_result_t* result);
 void shell_checks_report_user_test_result(void);

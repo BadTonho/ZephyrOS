@@ -209,8 +209,9 @@ subcomandos longos de `net`), `index rebuild`, pacotes/Store/Update e os
 workflows Q2, RegCheck e AppCheck. O loop do Shell usa espera IPC curta durante
 um job, continua drenando teclado e encaminha mensagens de aplicativo e
 resultados do App Loader na ordem original. `Esc` e `F12` solicitam
-cancelamento; durante qualquer modo do `regcheck`, `F11` e encaminhado ao ZAPP
-de cancelamento. As demais teclas sao consumidas, com um unico aviso de log.
+cancelamento; durante qualquer modo do `regcheck`, `F11` solicita ao runtime o
+cancelamento seguro do ZAPP em foco. As demais teclas sao consumidas, com um
+unico aviso de log.
 
 As operacoes de rede e indice avancam por APIs de estado/poll ja existentes.
 Os caminhos de pacotes e atualizacao continuam usando os wrappers sincronos
@@ -223,9 +224,9 @@ A Fase 4 foi concluida e validada pelo usuario com `make q3check`, build limpo
 e execucao no QEMU. A validacao confirmou `job status`, cancelamento por F12,
 teclas bloqueadas sem saturacao da fila IPC, `index rebuild`, `q2check`,
 conclusao de jobs, ausencia de prompt duplicado e o fluxo cooperativo no Shell.
-Os avisos `Shell acordado sem evento IPC` correspondem ao polling curto durante
-jobs ativos e permanecem como ruido de observabilidade para uma melhoria futura;
-nao indicaram perda de teclado nem falha do executor.
+Os timeouts normais do polling curto durante jobs ativos nao geram mais o aviso
+`Shell acordado sem evento IPC`; o log permanece reservado para uma espera
+anormal fora de jobs.
 
 Referencias adicionais:
 
