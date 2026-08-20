@@ -778,12 +778,12 @@ static void shell_print_usb_fixture_report(void) {
         LOG_WARN("SHELL", "Relatorio USB automatico indisponivel");
         return;
     }
-    if (usb_manager_get_port_count(&port_count) != OK ||
-        (!device_count && !port_count)) return;
     if (usb_manager_get_count(&controller_count) != OK) {
         LOG_WARN("SHELL", "Controladores ausentes no relatorio USB");
         return;
     }
+    if (usb_manager_get_port_count(&port_count) != OK ||
+        (!device_count && !port_count && !controller_count)) return;
 
     video_print("USB fixture report (automatico):\n", 0x0B);
     cmd_usb_status();
