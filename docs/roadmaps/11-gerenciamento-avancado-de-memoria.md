@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Evoluir o subsistema de memória do ZephyrOS incorporando conceitos consagrados da gestão de memória do Linux (como os alocadores de objetos de tamanho fixo *SLAB/SLUB*, estruturas de áreas virtuais *VMA* e paginação sob demanda), garantindo tempo constante $O(1)$ na alocação de estruturas críticas, eliminação de fragmentação de heap e proteção rigorosa de memória em espaço de usuário.
+Evoluir o subsistema de memória do ZephyrOS incorporando alocadores de objetos de tamanho fixo *SLAB/SLUB*, estruturas de áreas virtuais *VMA* e paginação sob demanda (*Demand Paging*), garantindo tempo constante $O(1)$ na alocação de estruturas críticas, eliminação de fragmentação de heap e proteção rigorosa de memória em espaço de usuário.
 
 Este roadmap preserva a compatibilidade total com o Bitmap Allocator físico e o Paging existente, sem alterar os contratos do bootloader.
 

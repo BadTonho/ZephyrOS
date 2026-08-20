@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Consolidar o subsistema de gerenciamento de energia e controle de hardware do ZephyrOS através do padrão ACPI (*Advanced Configuration and Power Interface*), inspirado nas estratégias do Linux para economia de energia em tempo ocioso (CPU Idle com loop seguro de instrução `hlt`), descoberta detalhada de topologia de hardware via tabelas ACPI e desligamento (*poweroff*) e reinicialização (*reboot*) limpos e determinísticos.
+Consolidar o subsistema de gerenciamento de energia e controle de hardware do ZephyrOS através do padrão ACPI (*Advanced Configuration and Power Interface*), incorporando economia de energia em tempo ocioso (CPU Idle com loop seguro de instrução `hlt`), descoberta detalhada de topologia de hardware via tabelas ACPI e desligamento (*poweroff*) e reinicialização (*reboot*) limpos e determinísticos.
 
 ## Resumo de progresso
 

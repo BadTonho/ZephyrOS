@@ -144,108 +144,25 @@ nenhuma espera fica ocupando CPU sem necessidade; Shell, rede, índice e
 interfaces continuam responsivos. O código e o `wait check` estão concluídos;
 a validação de integração no QEMU também foi concluída.
 
-## R4 - Fila de trabalho cooperativa
+## R4 - Fila de trabalho cooperativa (Mapeada para Roadmap 12)
 
-### Implementação
+A infraestrutura de fila de trabalho do kernel foi consolidada no [Roadmap 12 - Concorrencia e Sincronizacao](12-concorrencia-e-sincronizacao.md#sync3---filas-de-trabalho-do-kernel-kernel-workqueues), onde atua em conjunto com a divisão de interrupções Top-Half/Bottom-Half e o despachante de tarefas assíncronas do kernel (`kworker`).
 
-- [ ] Criar item de trabalho com estado, proprietário, prioridade limitada e
-  callback.
-- [ ] Implementar fila com limite de itens e orçamento de execução por rodada.
-- [ ] Permitir cancelamento antes do início e pedido de cancelamento durante
-  uma operação cooperativa.
-- [ ] Separar captura mínima de IRQ do processamento pesado.
-- [ ] Integrar primeiro o índice de arquivos, tarefas de rede e diagnósticos.
-- [ ] Reservar o mesmo contrato para enumeração USB e operações de bloco.
-- [ ] Expor profundidade, maior ocupação, itens cancelados e itens falhos.
-- [ ] Adicionar comando Shell de status e cancelamento controlado.
+## R5 - Modelo unificado de dispositivos (Mapeado para Roadmap 15)
 
-### Critério de saída
+O modelo hierárquico e ciclo de vida de dispositivos (`DISCOVERED`, `READY`, `DEGRADED`, `DISABLED`) foi consolidado no [Roadmap 15 - Introspeccao e Pseudo-Filesystems](15-introspeccao-e-pseudo-fs.md#proc3---mapeamento-de-sys-para-hardware), integrando a árvore de barramentos e periféricos com o pseudo-filesystem `/sys`.
 
-Uma tarefa longa não bloqueia teclado, mouse, Shell, Desktop ou rede. A fila
-respeita o limite de memória, pode ser cancelada e produz diagnóstico quando
-fica congestionada.
+## R6 - Fila de requisições de bloco (Mapeada para Roadmap 13)
 
-## R5 - Modelo unificado de dispositivos
+A fila unificada de requisições de bloco para ATA e USB foi integrada diretamente à arquitetura da Block Layer no [Roadmap 13 - Armazenamento e Buffer Cache](13-armazenamento-e-buffer-cache.md#blk1---fila-unificada-de-requisicoes-de-bloco), conectando o agendamento de I/O ao Buffer Cache com dirty pages.
 
-### Implementação
+## R7 - Cache de caminhos e resolução de nomes (Mapeado para Roadmap 10)
 
-- [ ] Ampliar o inventário atual com ID estável, barramento, classe, pai,
-  capacidades, driver e último erro.
-- [ ] Definir ciclo `DISCOVERED`, `PROBING`, `READY`, `DEGRADED`, `DISABLED`
-  e `REMOVED`.
-- [ ] Separar descoberta, associação do driver, inicialização, parada e
-  remoção.
-- [ ] Registrar recursos utilizados: IRQ, portas, memória, DMA e filas.
-- [ ] Associar dispositivos PCI, ATA, rede, AC97, PS/2 e USB ao contrato
-  comum sem apagar suas estruturas específicas.
-- [ ] Exibir relações pai/filho e motivo de indisponibilidade.
-- [ ] Manter `devices`, `device-info`, `device-scan` e `health` compatíveis.
-- [ ] Adicionar diagnóstico de transições inválidas de estado.
+O cache de resolução de caminhos (`dentry cache`) foi consolidado como parte integrante da camada de VFS no [Roadmap 10 - VFS e Abstracao de I/O](10-vfs-e-abstracao-io.md#vfs2---tabela-de-montagem-e-caminhos-universais), resolvendo nós e pontos de montagem diretamente nos descritores virtuais.
 
-### Critério de saída
+## R8 - Contabilidade e organização do scheduler (Mapeada para Roadmap 12)
 
-Um dispositivo ausente, malformado ou com driver falho permanece isolado e
-visível no diagnóstico. A falha não bloqueia boot, Shell, Simple, Classic ou
-outros dispositivos.
-
-## R6 - Fila de requisições de bloco
-
-### Implementação
-
-- [ ] Criar `block_request_t` próprio com operação, dispositivo, LBA,
-  quantidade, buffer, identificador, estado e erro.
-- [ ] Implementar fila FIFO limitada antes de qualquer reordenação.
-- [ ] Adicionar estados `QUEUED`, `ACTIVE`, `COMPLETED`, `FAILED` e
-  `CANCELLED`.
-- [ ] Associar conclusão a identificador sem procurar linearmente a requisição.
-- [ ] Registrar timeout, retry, latência e descartes.
-- [ ] Adaptar ATA sem alterar contratos FAT ou volumes já validados.
-- [ ] Usar o mesmo contrato para USB Mass Storage somente-leitura.
-- [ ] Adicionar comando Shell de status das filas e requisições.
-
-### Critério de saída
-
-ATA continua funcionando com os mesmos limites e fixtures, requisições
-inválidas falham sem escrita indevida e uma futura fonte USB pode usar a
-mesma camada sem conhecer FAT12 ou FAT32.
-
-## R7 - Cache de caminhos e resolução de nomes
-
-### Implementação
-
-- [ ] Criar cache limitado por volume, diretório pai e nome.
-- [ ] Registrar entrada encontrada e entrada ausente separadamente.
-- [ ] Associar cada entrada à geração do volume.
-- [ ] Invalidar por criação, exclusão, renomeação, movimentação, montagem e
-  desmontagem.
-- [ ] Manter o índice global como fonte de pesquisa, sem duplicar seu contrato.
-- [ ] Medir acertos, falhas, invalidações e memória consumida.
-- [ ] Adicionar comando Shell para status, limpeza e reconstrução do cache.
-
-### Critério de saída
-
-Explorer, Shell e aplicativos resolvem caminhos atuais sem observar entradas
-de um volume antigo. Cache corrompido ou cheio volta para a consulta normal
-sem impedir o uso do filesystem.
-
-## R8 - Contabilidade e organização do scheduler
-
-### Implementação
-
-- [ ] Manter round-robin como política inicial.
-- [ ] Separar operações de inserir, remover, acordar e escolher processos.
-- [ ] Reduzir a dependência de varreduras completas quando a tabela crescer.
-- [ ] Registrar tempo executando, pronto, bloqueado e latência de despertar.
-- [ ] Registrar motivo de bloqueio e número de preempções por processo.
-- [ ] Adicionar fila explícita de tarefas prontas, com limite e invariantes.
-- [ ] Integrar as métricas ao Task Manager, `kmetrics` e `schedcheck`.
-- [ ] Só testar outra política depois de existir uma linha de base confiável.
-
-### Critério de saída
-
-O scheduler mantém as invariantes atuais, não perde processos acordados,
-mede a distribuição de CPU e permite comparar mudanças sem alterar boot,
-syscalls ou o contrato dos aplicativos.
+O gerenciamento de contabilidade de tempo de CPU, filas explícitas de tarefas prontas e eliminação de polling foi consolidado no [Roadmap 12 - Concorrencia e Sincronizacao](12-concorrencia-e-sincronizacao.md#sync2---primitivas-de-espera-sem-busy-waiting-wait-queues).
 
 ## Limitações e fora de escopo
 

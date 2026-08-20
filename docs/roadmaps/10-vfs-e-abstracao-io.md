@@ -2,9 +2,9 @@
 
 ## Objetivo
 
-Implementar uma camada unificada de Sistema de Arquivos Virtual (VFS - *Virtual File System*) no ZephyrOS, baseada no conceito arquitetural consolidado no Linux de abstração de I/O (*"everything is a file"*), permitindo que arquivos em disco, dispositivos de hardware, pipes de comunicação e pseudo-arquivos sejam manipulados de forma homogênea através de descritores de arquivos (`fd`) e uma tabela de operações unificada (`file_operations_t`).
+Implementar uma camada unificada de Sistema de Arquivos Virtual (VFS - *Virtual File System*) no ZephyrOS, baseada no conceito arquitetural de abstração universal de I/O (*"everything is a file"*), permitindo que arquivos em disco, dispositivos de hardware, pipes de comunicação e pseudo-arquivos sejam manipulados de forma homogênea através de descritores de arquivos (`fd`) e uma tabela de operações unificada (`file_operations_t`).
 
-Este roadmap não copia código do Linux nem introduz dependências externas. Ele estabelece uma arquitetura própria, modular e limpa para o ZephyrOS em 32-bit x86.
+Este roadmap estabelece uma arquitetura própria, modular, segura e limpa para o ZephyrOS em 32-bit x86.
 
 ## Resumo de progresso
 

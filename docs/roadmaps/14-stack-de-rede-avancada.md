@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Aprimorar a pilha de rede TCP/IP do ZephyrOS através da adoção do conceito arquitetural de *Socket Buffers (sk_buff)* do Linux para manipulação de cabeçalhos com zero-copy entre camadas, suporte a múltiplos tipos de sockets (incluindo IPC local `AF_UNIX`) e multiplexação de I/O através de primitivas como `select()` e `poll()`.
+Aprimorar a pilha de rede TCP/IP do ZephyrOS através da adoção do conceito arquitetural de *Socket Buffers (sk_buff)* para manipulação de cabeçalhos com zero-copy entre camadas, suporte a múltiplos tipos de sockets (incluindo IPC local `AF_UNIX`) e multiplexação de I/O através de primitivas como `select()` e `poll()`.
 
 ## Resumo de progresso
 
