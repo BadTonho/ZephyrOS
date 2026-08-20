@@ -272,7 +272,7 @@ com DMA, IRQ, portas e transferencias indisponiveis, conforme o escopo.
 
 ### EP4.3 - Bulk e USB Mass Storage somente-leitura
 
-**Estado:** implementada no codigo; validacao QEMU e aceite do usuario pendentes.
+**Estado:** implementada e validada pelo usuario em 20/08/2026.
 
 Nesta implementacao, UHCI fornece Bulk sincrono com TDs fragmentados por
 `wMaxPacketSize`, toggles por endpoint, timeout, buffers DMA fixos e
@@ -295,6 +295,23 @@ continuam fora do escopo.
   permitindo sua montagem transparente de volumes FAT sem acoplamento direto
   entre o driver USB e o sistema de arquivos.
 - [x] Manter disco ATA e volume de boot como fallbacks operacionais prioritários.
+
+### Resultados da validação EP4.3
+
+- [x] `make run` preservou ATA, volume de boot e Shell.
+- [x] `make run-usb QEMU_USB_DEVICE_ARGS=` deixou UHCI/Bulk prontos sem
+  registrar MSC.
+- [x] `make run-usb-msc QEMU_USB_DEVICE_ARGS=` enumerou o MSC, publicou o
+  disco `usb-ms-00:04.0-p1-a1-l0` e detectou quatro partições FAT.
+- [x] Montagem e desmontagem de `usb-ms-00:04.0-p1-a1-l0p1` e
+  `usb-ms-00:04.0-p1-a1-l0p4` funcionaram em somente-leitura; `VALID.ZPK`
+  retornou o cabeçalho `ZPKG`.
+- [x] Dois `device-scan` permaneceram idempotentes, com `discos=2` e
+  `volumes=5`; `index check`, `health summary`, `memcheck` e `regcheck full`
+  terminaram em `OK`.
+- [x] O MSC terminou com escritas `0`, resets `0`, erro `0` e o hash SHA-256
+  de `build/storage-valid.img` permaneceu
+  `4727E93495809CFAE2D746332454F1C23E0FAEB37924C9FD16E00FC45C6E4078`.
 
 ### EP4.4 - Interrupt e USB HID
 
