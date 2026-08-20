@@ -426,8 +426,13 @@ static void uhci_make_device_id(const uhci_controller_t* controller,
         uint32_t width = widths[value_index];
         if (value_index == 1U) output[offset++] = ':';
         else if (value_index == 2U) output[offset++] = '.';
-        else if (value_index == 3U) output[offset++] = 'p';
-        else if (value_index == 4U) output[offset++] = 'a';
+        else if (value_index == 3U) {
+            output[offset++] = '-';
+            output[offset++] = 'p';
+        } else if (value_index == 4U) {
+            output[offset++] = '-';
+            output[offset++] = 'a';
+        }
         while (width > 0U && offset + 1U < capacity) {
             uint32_t shift = (width - 1U) * 4U;
             output[offset++] = hex[(values[value_index] >> shift) & 0xFU];
