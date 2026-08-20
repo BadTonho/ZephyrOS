@@ -444,8 +444,9 @@ static int uhci_reset_port(uhci_controller_t* controller, uint32_t port) {
     while (!uhci_timeout_expired(start, UHCI_RESET_TIMEOUT_MS / 2U)) {
         asm volatile("pause");
     }
+    value = uhci_in16(controller, offset);
     value = (uint16_t)((value & (UHCI_PORT_CCS | UHCI_PORT_LSDA)) |
-                       UHCI_PORT_CSC | UHCI_PORT_PEC);
+                       UHCI_PORT_PE | UHCI_PORT_CSC | UHCI_PORT_PEC);
     uhci_out16(controller, offset, value);
     start = timer_get_ticks();
     while (!uhci_timeout_expired(start, UHCI_SET_ADDRESS_DELAY_MS * 5U)) {
