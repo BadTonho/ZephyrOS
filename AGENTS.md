@@ -489,3 +489,18 @@ limpeza ou reescrita de histórico, remoção de informações pessoais ou alter
 
 Se houver dúvida sobre qualquer arquivo modificado ou staged, o agente DEVE parar e informar
 o usuário antes do commit.
+
+---
+
+## Regra #17: IDs Operacionais Exatos
+
+Ao orientar qualquer comando que use um ID de dispositivo, disco, volume,
+partição ou outro identificador dinâmico, o agente DEVE copiar o ID exatamente
+da saída mais recente fornecida pelo usuário ou obtida no sistema. É PROIBIDO
+inventar, reconstruir, abreviar, normalizar, trocar separadores ou presumir
+sufixos de um ID.
+
+Se o ID não estiver completamente legível ou disponível, o agente DEVE pedir a
+saída textual ou uma captura mais clara antes de indicar o comando. Quando
+houver vários IDs, o agente DEVE identificar qual linha da saída originou o ID
+e repetir o valor literalmente.
