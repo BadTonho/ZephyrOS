@@ -44,7 +44,7 @@ A refatoração deve ser incremental, mantendo as funções públicas declaradas
 
 ### Fase 1 — Entrada de linha
 
-Estado: implementada estruturalmente. O buffer, historico, prompt, navegacao e
+Estado: concluida e validada. O buffer, historico, prompt, navegacao e
 scancodes agora vivem em `src/shell/shell_input.c`; o Shell continua sendo o
 responsavel por executar o comando e decidir quando mostrar o prompt.
 
@@ -115,9 +115,9 @@ fila com o módulo `SHELL` ou `KBD`.
 ## Validação
 
 Após cada etapa de código, o usuário deve executar `make q3check` e, quando o
-conjunto estiver estável, `make clean && make`. A validação no QEMU deve cobrir
-digitação normal, Backspace, Enter, histórico, Shift, barra `/`, comandos
-longos e entrada durante operações demoradas.
+conjunto estiver estável, `make clean && make`. A Fase 1 foi validada com esses
+gates e no QEMU, cobrindo digitação normal, comandos, símbolos, métricas e
+consulta do log, sem regressão observada no Shell hospedado.
 
 ## Referências do diagnóstico
 
