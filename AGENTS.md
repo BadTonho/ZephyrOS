@@ -4,24 +4,24 @@ Leia este arquivo no início de toda sessão. Siga estas regras SEMPRE.
 
 ---
 
-## Build
+## Build e validação
+
+Os comandos abaixo são referências para execução pelo usuário:
 
 ```bash
+# Gate de qualidade após alterar código
+make q3check
+
 # Build completo
 make clean && make
 
-# Gate de qualidade Q3 (antes de build/testes apos mudar codigo)
-make q3check
-
-# Run no QEMU
+# Execução no QEMU
 make run
 ```
 
-Ferramentas (Windows):
-- NASM: `C:\Users\Admin\AppData\Local\bin\NASM\nasm.exe`
-- GCC: `D:\code\i686-elf-tools-windows\bin\i686-elf-gcc.exe`
-- LD: `D:\code\i686-elf-tools-windows\bin\i686-elf-ld.exe`
-- QEMU: `C:\Program Files\QEMU\qemu-system-i386.exe`
+As ferramentas devem ser encontradas pelo `PATH` ou configuradas em
+`Makefile.local`, que não é versionado. O agente pode revisar o Makefile e os
+comandos, mas não executa build, testes ou QEMU neste projeto.
 
 ---
 
@@ -35,7 +35,11 @@ caso for necessario mexer no boot, tem que ser comunicado ao usuario
 
 ## Regra #1: Log de Erros
 
-TODA função que pode falhar DEVE ter log.
+Toda falha observável em API pública, inicialização, operação de hardware,
+I/O, alocação ou validação DEVE ter log.
+
+Helpers internos podem apenas propagar o erro quando o chamador registrar o
+contexto final, evitando logs duplicados e excesso de ruído.
 
 ```c
 #include "core/log.h"
@@ -49,7 +53,7 @@ LOG_WARN("MODULO", "Memoria baixa, continuando...");
 LOG_DEBUG("MODULO", "Variavel x = 5");
 ```
 
-Módulos: `BOOT`, `LOG`, `IDT`, `KBD`, `TIMER`, `MEM`, `ATA`, `VESA`, `FAT12`, `FAT32`, `AC97`, `PCI`, `THRD`, `SHELL`, `WM`, `PROC`, `FS`, `DESKTOP`, `MOUSE`, `IPC`, `GUI`, `STRING`
+Módulos: `BOOT`, `LOG`, `IDT`, `KBD`, `TIMER`, `MEM`, `ATA`, `VESA`, `FAT12`, `FAT32`, `AC97`, `PCI`, `UHCI`, `USB`, `MSC`, `BLOCK`, `STORAGE`, `THRD`, `SHELL`, `WM`, `PROC`, `FS`, `DESKTOP`, `MOUSE`, `IPC`, `GUI`, `STRING`
 
 ---
 
@@ -72,6 +76,11 @@ int funcao(void) {
 }
 ```
 
+Os códigos canônicos ficam em `src/include/core/errors.h`; novos códigos não
+devem ser redefinidos localmente sem atualizar esse contrato. Assinaturas
+públicas existentes devem ser preservadas, atualizando todos os chamadores
+quando uma alteração for realmente necessária.
+
 Para erros fatais que derrubam o sistema:
 ```c
 LOG_ERROR("MOD", "Erro fatal");
@@ -82,10 +91,14 @@ panic("MOD: Erro fatal");
 
 ## Regra #3: Inicialização de Módulos
 
-Toda função `xxx_init()` DEVE:
+Toda função `xxx_init()` nova ou modificada DEVE:
 1. Logar `LOG_INFO` antes de iniciar
 2. Logar `LOG_INFO` após sucesso
 3. Logar `LOG_ERROR` e retornar/panic em falha
+
+Funções legadas que já retornam `void` não devem ter sua assinatura alterada
+somente por esta regra. Nesses casos, a falha deve ser registrada e o módulo
+deve publicar estado degradado ou indisponível quando aplicável.
 
 ---
 
@@ -94,8 +107,11 @@ Toda função `xxx_init()` DEVE:
 - **Nomes de funções**: `modulo_verbo()` → `ata_read_sector()`, `fat12_list_dir()`
 - **Nomes de variáveis**: `snake_case` → `sector_count`, `current_pid`
 - **Constantes**: `UPPER_SNAKE_CASE` → `MAX_SECTORS`, `BUFFER_SIZE`
-- **Funções**: máx 100 linhas
-- **Aninhamento**: máx 4 níveis
+- **Funções novas**: preferencialmente até 100 linhas; funções legadas maiores
+  devem ser alteradas somente quando houver benefício claro ou necessidade de
+  manutenção.
+- **Aninhamento novo**: preferencialmente até 4 níveis; exceções devem ser
+  simplificadas quando possível, sem criar refatorações artificiais.
 - **Sem magic numbers**: usar `#define`
 - **Comentários**: explicar o "porquê", não o "o quê"
 
@@ -112,7 +128,8 @@ Toda função `xxx_init()` DEVE:
 
 ## Documentação
 
-- Roadmaps: `docs/melhorias futuras/*.md`
+- Roadmaps principais: `docs/roadmaps/*.md`
+- Ideias e melhorias futuras: `docs/melhorias futuras/*.md`
 - Regras detalhadas: `docs/regras.md`
 - Roadmap principal: `ROADMAP.md`
 - Índice da docs: `docs/indice.md`
@@ -128,9 +145,9 @@ src/
 ├── boot/           → Bootloader (ASM)
 ├── kernel/         → Kernel core (entry, panic, switch)
 ├── core/           → Serviços centrais (log, string)
-├── drivers/        → Drivers de hardware (video, vesa, font, idt, isr, irq, keyboard, mouse, timer, tss, ata, speaker, pci, ac97)
+├── drivers/        → Drivers de hardware (video, vesa, font, idt, isr, irq, keyboard, mouse, timer, tss, ata, speaker, pci, ac97, uhci, usb_msc)
 ├── memory/         → Gerenciamento de memória (memory, paging, compress)
-├── fs/             → Sistema de arquivos (fat12, fat32, fs, wav, bmp)
+├── fs/             → Sistema de arquivos (fat12, fat32, fs, block, storage, file_index, wav, bmp)
 ├── process/        → Gerenciador de processos
 ├── thread/         → Gerenciador de threads
 ├── shell/          → Apps do shell (editor, taskmanager, mediaplayer)
@@ -143,8 +160,8 @@ src/
 ├── gui/            → Primitivas gráficas 2D (gui.c)
 └── include/        → Headers organizados por módulo
     ├── core/       → video.h, panic.h, log.h, keyboard.h, timer.h, memory.h, errors.h, spinlock.h, string.h
-    ├── drivers/    → idt.h, ata.h, ac97.h, pci.h, vesa.h, speaker.h, font.h, tss.h, mouse.h
-    ├── fs/         → fat12.h, fat32.h, fs.h, wav.h, bmp.h
+    ├── drivers/    → idt.h, ata.h, ac97.h, pci.h, vesa.h, speaker.h, font.h, tss.h, mouse.h, uhci.h, usb_msc.h
+    ├── fs/         → fat12.h, fat32.h, fs.h, block.h, storage.h, file_index.h, wav.h, bmp.h
     ├── memory/     → paging.h, compress.h
     ├── process/    → process.h, thread.h
     ├── apps/       → shell.h, editor.h, mediaplayer.h, taskmanager.h
@@ -153,13 +170,19 @@ src/
 
 ### Regras
 
+A árvore acima é a referência de organização, não uma lista fechada de arquivos.
+Novos arquivos devem seguir a separação por responsabilidade e o diretório do
+módulo correspondente.
+
 - [ ] Drivers de hardware → `src/drivers/`
 - [ ] Serviços do kernel → `src/core/`
 - [ ] Apps do shell → `src/shell/`
 - [ ] Headers → `src/include/<modulo>/`
 - [ ] NÃO misturar drivers com apps
 - [ ] NÃO criar arquivos na raiz de `src/`
-- [ ] Cada módulo DEVE ter no máximo 2-3 arquivos (.c + .h)
+- [ ] Submódulos novos DEVEM permanecer pequenos quando possível; módulos
+      maiores podem ter mais arquivos quando isso melhorar a separação e a
+      manutenção. Exceções devem ser justificadas na documentação técnica.
 
 ---
 
@@ -230,9 +253,11 @@ ptr = NULL; // sempre nullar após free
 ### Regras
 
 - [ ] SEMPRE verificar se `kmalloc` retornou NULL
-- [ ] SEMPRE `kfree` ao final da função que alocou
-- [ ] NUNCA usar `kfree` em ponteiro NULL
-- [ ] NUNCA usar ponteiro após `kfree`
+- [ ] Toda alocação deve ter um proprietário claramente definido e uma
+      liberação em todos os caminhos de saída aplicáveis
+- [ ] Não liberar memória estática, global, emprestada ou cuja posse tenha
+      sido transferida
+- [ ] Não usar memória após `kfree` e não liberar o mesmo bloco duas vezes
 - [ ] Usar `kmalloc_aligned()` quando precisar de alinhamento de página
 - [ ] NÃO vazar memória — cada `malloc` tem um `free`
 
@@ -243,6 +268,7 @@ ptr = NULL; // sempre nullar após free
 ```c
 // src/drivers/nomedriver.c
 #include "drivers/nomedriver.h"
+#include "core/errors.h"
 #include "core/log.h"
 #include "core/panic.h"
 
@@ -250,16 +276,17 @@ ptr = NULL; // sempre nullar após free
 static int driver_initialized = 0;
 
 // Inicialização
-void driver_init(void) {
+int driver_init(void) {
     LOG_INFO("DRIVER", "Inicializando...");
 
     if (hardware_falhou) {
         LOG_ERROR("DRIVER", "Hardware nao encontrado!");
-        return;
+        return ERR_NOT_FOUND;
     }
 
     driver_initialized = 1;
     LOG_INFO("DRIVER", "Inicializado com sucesso");
+    return OK;
 }
 
 // Funções públicas
@@ -289,6 +316,10 @@ int driver_read(uint32_t addr, uint8_t* buf, int size) {
 - [ ] Verificar ponteiros nulos
 - [ ] Retornar código de erro
 
+Drivers legados que já possuem uma função de inicialização `void` devem
+preservar sua assinatura; nesse caso, registrar a falha e publicar o estado
+indisponível ou degradado.
+
 ---
 
 ## Regra #9: Estrutura de um Módulo Shell
@@ -300,14 +331,10 @@ int driver_read(uint32_t addr, uint8_t* buf, int size) {
 #include "core/video.h"
 
 static int modulo_active = 0;
-static void (*prev_callback)(uint8_t) = NULL;
 
 void modulo_open(void) {
     if (modulo_active) return;
     modulo_active = 1;
-
-    prev_callback = keyboard_get_callback();
-    keyboard_set_callback(modulo_handle_key);
 
     modulo_draw();
     LOG_INFO("SHELL", "Modulo aberto");
@@ -315,7 +342,6 @@ void modulo_open(void) {
 
 void modulo_close(void) {
     modulo_active = 0;
-    keyboard_set_callback(prev_callback);
     video_clear();
     taskbar_draw();
     LOG_INFO("SHELL", "Modulo fechado");
@@ -342,9 +368,12 @@ void modulo_handle_key(uint8_t scancode) {
 - [ ] `modulo_close()` — fecha e restaura estado
 - [ ] `modulo_draw()` — desenha interface
 - [ ] `modulo_handle_key()` — trata input
-- [ ] Salvar/restaurar callback anterior do teclado
+- [ ] Usar o fluxo de teclado/IPC e as APIs declaradas nos headers atuais
 - [ ] Chamar `taskbar_draw()` ao fechar
 - [ ] Comando registrado no `shell.c`
+
+Não inventar callbacks ou funções de teclado. Antes de criar uma integração,
+consultar `src/include/core/keyboard.h` e o dispatcher atual do Shell.
 
 ---
 
@@ -390,11 +419,13 @@ OBJS = ... $(NOVO_OBJ)
 | `ROADMAP.md` | Roadmap geral do projeto |
 | `docs/indice.md` | Índice de toda documentação |
 | `docs/regras.md` | Regras detalhadas de código |
-| `docs/melhorias futuras/*.md` | Roadmaps de cada feature |
+| `docs/roadmaps/*.md` | Roadmaps das fases e features planejadas |
+| `docs/melhorias futuras/*.md` | Ideias e melhorias ainda não priorizadas |
 
 ### Ao criar nova feature
 
-- [ ] Criar roadmap em `docs/melhorias futuras/nome.md`
+- [ ] Criar roadmap em `docs/roadmaps/nome.md` para feature priorizada
+- [ ] Usar `docs/melhorias futuras/nome.md` para proposta ainda não priorizada
 - [ ] Seguir formato: Resumo de Progresso → Atalhos → Fases → Limitações → Referências
 - [ ] Atualizar `docs/indice.md` se necessário
 - [ ] Atualizar `ROADMAP.md` se for fase principal
@@ -404,8 +435,10 @@ OBJS = ... $(NOVO_OBJ)
 ## Regra #12: Não Quebrar o Build
 
 - [ ] NUNCA commitar código que não compila
-- [ ] Para alterações de código, SEMPRE orientar o usuário a testar `make clean && make` antes de commitar
-- [ ] Antes de build/testes após mudar código, `make q3check` passou sem erros?
+- [ ] Para alterações de código, orientar o usuário a executar `make q3check` e
+      depois `make clean && make` antes de commitar
+- [ ] A validação executável pertence ao usuário; o agente não deve executar
+      build, testes ou QEMU neste projeto
 - [ ] Warnings novos devem ser revisados; warnings existentes devem ser documentados quando não puderem ser corrigidos na etapa atual
 - [ ] Se adicionar header, verificar se não quebra outros arquivos
 - [ ] Se modificar struct, verificar todas as funções que usam ela
@@ -420,7 +453,7 @@ Antes de commitar:
 2. [ ] Toda função de erro tem `LOG_ERROR`?
 3. [ ] Toda init tem `LOG_INFO`?
 4. [ ] Sem magic numbers?
-5. [ ] Funções com máx 100 linhas?
+5. [ ] Funções novas respeitam preferencialmente 100 linhas e 4 níveis de aninhamento?
 6. [ ] Arquivo no diretório correto?
 7. [ ] Header com include guard?
 8. [ ] Makefile atualizado (se novo .c)?
@@ -437,7 +470,11 @@ Antes de commitar:
 
 ## Regra #13: Comandos Shell para Novas Funcionalidades
 
-Sempre que criar ou implementar uma funcionalidade executável, módulo ou driver no projeto, você DEVE criar um comando correspondente no shell (`src/shell/shell.c`) para testar, inspecionar ou executar essa funcionalidade, mantendo o projeto organizado e rastreável. Alterações somente de documentação, refatorações internas, configuração de build ou correções que não criem uma capacidade executável não exigem um comando novo.
+Funcionalidades executáveis voltadas ao usuário DEVEM ter um comando Shell ou
+diagnóstico equivalente para testar, inspecionar ou executar a capacidade.
+Camadas internas, helpers, callbacks e mudanças somente de infraestrutura
+podem ser validados por `health`, `regcheck`, testes determinísticos ou comandos
+já existentes, sem criar um comando artificial para cada função.
 
 ---
 
