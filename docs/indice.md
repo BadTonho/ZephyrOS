@@ -45,6 +45,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [07 - Processos](07-processos/processos.md) | Processos e threads |
 | [08 - Sistema de Arquivos](08-sistema-arquivos/sistema-arquivos.md) | FAT12, FAT32, Storage e indice global EP3 |
 | [09 - Shell](09-shell/shell.md) | Terminal interativo, comandos e aplicativos |
+| [Refatoração do Shell](09-shell/refatoracao-shell.md) | Diagnóstico e plano incremental para separar entrada, dispatcher e comandos |
 | [10 - Extras](10-extras/extras.md) | PC Speaker, syscalls |
 | [11 - Referências](11-referencias/referencias.md) | Links e glossário |
 | [12 - Desktop e Interface](12-desktop/desktop.md) | Desktop, Window Manager, Taskbar, Settings, Icons |
