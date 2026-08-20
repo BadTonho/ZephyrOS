@@ -44,7 +44,16 @@ A refatoração deve ser incremental, mantendo as funções públicas declaradas
 
 ### Fase 1 — Entrada de linha
 
-Criar `src/shell/shell_input.c` e o header correspondente para concentrar:
+Estado: implementada estruturalmente. O buffer, historico, prompt, navegacao e
+scancodes agora vivem em `src/shell/shell_input.c`; o Shell continua sendo o
+responsavel por executar o comando e decidir quando mostrar o prompt.
+
+O contrato de `src/include/apps/shell_input.h` mantém a fronteira explícita:
+`shell_input_handle_key()` altera a linha e retorna
+`SHELL_INPUT_EVENT_COMMAND_READY` no Enter; `shell.c` consulta o buffer, chama
+`shell_process_command()` e decide se deve exibir o próximo prompt.
+
+A implementação de `src/shell/shell_input.c` e seu header concentram:
 
 - buffer e posição do cursor;
 - backspace e Enter;
@@ -54,8 +63,10 @@ Criar `src/shell/shell_input.c` e o header correspondente para concentrar:
 - prompt e edição da linha;
 - limite do buffer e aviso ao usuário.
 
-O mapa de teclado deve ser centralizado em uma única camada compartilhada pelo
-driver e pelo Shell.
+O mapa de teclado foi centralizado em uma única camada compartilhada pelo
+driver e pelo Shell. A implementação agora usa a tabela unificada de
+`src/drivers/keyboard.c` através de `keyboard_scancode_to_ascii_shifted()`;
+`shell.c` não mantém mais uma tabela duplicada.
 
 ### Fase 2 — Dispatcher
 
