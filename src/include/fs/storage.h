@@ -2,12 +2,13 @@
 #define STORAGE_H
 
 #include "types.h"
+#include "fs/block.h"
 
-#define STORAGE_MAX_DISKS 4U
+#define STORAGE_MAX_DISKS BLOCK_MAX_DEVICES
 #define STORAGE_MAX_VOLUMES 16U
 #define STORAGE_MAX_MOUNTS 4U
-#define STORAGE_ID_SIZE 12U
-#define STORAGE_DISK_ID_SIZE 8U
+#define STORAGE_ID_SIZE BLOCK_DEVICE_ID_SIZE
+#define STORAGE_DISK_ID_SIZE BLOCK_DEVICE_ID_SIZE
 #define STORAGE_LABEL_SIZE 12U
 #define STORAGE_MODEL_SIZE 41U
 #define STORAGE_NAME_SIZE 13U
@@ -35,9 +36,17 @@ typedef enum {
     STORAGE_VOLUME_MOUNTED
 } storage_volume_state_t;
 
+typedef enum {
+    STORAGE_DISK_ATA = 0,
+    STORAGE_DISK_USB_MSC
+} storage_disk_kind_t;
+
 typedef struct {
     char id[STORAGE_DISK_ID_SIZE];
     char model[STORAGE_MODEL_SIZE];
+    storage_disk_kind_t kind;
+    uint16_t sector_size;
+    uint8_t read_only;
     uint8_t slot;
     uint8_t channel;
     uint8_t slave;
@@ -102,6 +111,7 @@ typedef struct {
 } storage_status_t;
 
 int storage_init(void);
+int storage_refresh(void);
 int storage_get_status(storage_status_t* out_status);
 int storage_get_disk_at(uint8_t index, storage_disk_t* out_disk);
 int storage_find_disk(const char* id, storage_disk_t* out_disk);

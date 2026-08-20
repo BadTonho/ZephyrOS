@@ -5,6 +5,7 @@
 #include "core/string.h"
 #include "drivers/pci.h"
 #include "drivers/uhci.h"
+#include "drivers/usb_msc.h"
 
 #define USB_HEX_DIGITS_BYTE 2U
 
@@ -268,6 +269,7 @@ static void usb_apply_runtime_controller(uint32_t index) {
     usb_status.dma_initialized = 1U;
     usb_status.irq_initialized = 1U;
     usb_status.transfer_available = 1U;
+    if (runtime.bulk_transfer_ready) usb_status.bulk_transfer_available = 1U;
     usb_status.dma_td_capacity += runtime.td_capacity;
     usb_status.dma_td_in_use += runtime.td_in_use;
     usb_status.port_count += runtime.port_count;
@@ -304,6 +306,8 @@ static void usb_collect_runtime(void) {
     usb_status.dma_td_capacity = 0U;
     usb_status.dma_td_in_use = 0U;
     usb_status.class_driver_active = 0U;
+    usb_status.msc_device_count = 0U;
+    usb_status.bulk_transfer_available = 0U;
     usb_status.hub_support_active = 0U;
     usb_status.hotplug_active = 0U;
     usb_port_count = 0U;
@@ -319,6 +323,28 @@ static void usb_collect_runtime(void) {
              usb_status.controller_count || usb_runtime_failures) {
         usb_status.last_error = ERR_UNAVAILABLE;
     } else usb_status.last_error = OK;
+}
+
+static void usb_sync_msc_runtime(void) {
+    uint32_t count = 0U;
+
+    usb_status.class_driver_active = 0U;
+    usb_status.msc_device_count = 0U;
+    if (usb_msc_get_count(&count) != OK) return;
+    for (uint32_t index = 0U; index < count; index++) {
+        usb_msc_info_t info;
+
+        if (usb_msc_get_at(index, &info) != OK ||
+            !usb_msc_is_active(info.id)) continue;
+        usb_status.class_driver_active = 1U;
+        usb_status.msc_device_count++;
+        for (uint32_t device = 0U; device < usb_device_count; device++) {
+            if (usb_id_matches(usb_devices[device].id, info.id)) {
+                usb_devices[device].class_driver_active = 1U;
+                break;
+            }
+        }
+    }
 }
 
 static int usb_start_controllers(void) {
@@ -363,6 +389,7 @@ static int usb_start_controllers(void) {
 
 int usb_manager_init(void) {
     int result;
+    int msc_result;
 
     LOG_INFO("USB", "Inicializando inventario e runtime USB");
     usb_manager_initialized = 1;
@@ -376,6 +403,11 @@ int usb_manager_init(void) {
     }
     usb_start_controllers();
     usb_collect_runtime();
+    msc_result = usb_msc_init();
+    if (msc_result != OK) {
+        LOG_WARN("USB", "Um ou mais dispositivos MSC ficaram degradados");
+    }
+    usb_sync_msc_runtime();
     usb_status.initialized = 1U;
     usb_sync_recovery(result);
     if (result == ERR_OVERFLOW) LOG_WARN("USB", "Inventario USB parcial");
@@ -385,6 +417,7 @@ int usb_manager_init(void) {
 
 int usb_manager_refresh(void) {
     int result;
+    int msc_result;
 
     if (!usb_manager_initialized) {
         LOG_ERROR("USB", "Atualizacao antes da inicializacao USB");
@@ -399,6 +432,11 @@ int usb_manager_refresh(void) {
     }
     usb_start_controllers();
     usb_collect_runtime();
+    msc_result = usb_msc_refresh();
+    if (msc_result != OK) {
+        LOG_WARN("USB", "Atualizacao MSC encontrou dispositivo degradado");
+    }
+    usb_sync_msc_runtime();
     usb_status.initialized = 1U;
     usb_sync_recovery(result);
     if (result == ERR_OVERFLOW) LOG_WARN("USB", "Inventario USB atualizado parcialmente");
@@ -489,6 +527,7 @@ int usb_manager_poll(uint32_t budget, uint32_t* out_processed) {
         return result;
     }
     usb_collect_runtime();
+    usb_sync_msc_runtime();
     usb_sync_recovery(OK);
     return OK;
 }
@@ -617,7 +656,10 @@ int usb_manager_validate_state(void) {
     if (usb_status.controller_count > USB_MANAGER_MAX_CONTROLLERS ||
         usb_port_count > USB_MANAGER_MAX_PORTS ||
         usb_device_count > USB_MANAGER_MAX_DEVICES ||
-        usb_status.class_driver_active || usb_status.hub_support_active ||
+        usb_status.msc_device_count > USB_MSC_MAX_DEVICES ||
+        usb_status.class_driver_active !=
+        (usb_status.msc_device_count != 0U) ||
+        usb_status.hub_support_active ||
         usb_status.hotplug_active) {
         LOG_ERROR("USB", "Limites ou capacidades USB invalidos");
         return ERR_STATE;
@@ -632,7 +674,7 @@ int usb_manager_validate_state(void) {
                                 &status) == OK) {
                 if (uhci_validate_state(info->bus, info->device,
                                         info->function) != OK ||
-                    status.class_driver_active || status.hub_support_active ||
+                    status.hub_support_active ||
                     status.hotplug_active || status.td_in_use > status.td_capacity ||
                     status.buffer_in_use > status.buffer_capacity) {
                     LOG_ERROR("USB", "Runtime UHCI invalido");
@@ -652,6 +694,10 @@ int usb_manager_validate_state(void) {
         usb_status.configured_device_count != usb_device_count ||
         usb_status.dma_td_in_use > usb_status.dma_td_capacity) {
         LOG_ERROR("USB", "Agregacao USB inconsistente");
+        return ERR_STATE;
+    }
+    if (usb_msc_validate_state() != OK) {
+        LOG_ERROR("USB", "Estado MSC inconsistente");
         return ERR_STATE;
     }
     for (uint32_t index = 0; index < usb_port_count; index++) {
@@ -686,12 +732,22 @@ int usb_manager_validate_state(void) {
         if (!device->id[0] || !device->controller_id[0] ||
             device->usb_address == 0U || device->usb_address > 127U ||
             device->state != USB_DEVICE_CONFIGURED ||
-            device->class_driver_active || device->hub_present ||
+            device->hub_present ||
             !device->device_descriptor_valid ||
             !device->configuration_descriptor_valid ||
             !device->max_packet_size0 || !device->configuration_length) {
             LOG_ERROR("USB", "Entrada de dispositivo USB invalida");
             return ERR_STATE;
+        }
+        if (device->class_driver_active) {
+            usb_msc_info_t msc;
+
+            if (usb_msc_find(device->id, &msc) != OK ||
+                (msc.state != USB_MSC_READY &&
+                 msc.state != USB_MSC_DEGRADED)) {
+                LOG_ERROR("USB", "Driver de classe USB sem registro MSC");
+                return ERR_STATE;
+            }
         }
     }
     return OK;

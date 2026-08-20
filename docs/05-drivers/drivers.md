@@ -27,6 +27,9 @@ src/drivers/
 └── video.c          → VGA Text Mode
 ```
 
+Na EP4.3, `src/drivers/usb_msc.c` complementa `uhci.c` com BOT/SCSI
+somente-leitura; os contratos publicos ficam em `usb_msc.h` e `uhci.h`.
+
 ---
 
 ## IDT (`idt.c`)
@@ -295,6 +298,21 @@ pelo panic handler para garantir que um diagnóstico fatal continue visível.
 
 ## UHCI (`uhci.c`)
 
+### Bulk e MSC (EP4.3)
+
+`uhci_bulk_transfer()` e sincrona, limitada a 1024 bytes por operacao e a
+`UHCI_BULK_TIMEOUT_MS`. O buffer DMA e fixo; os TDs sao fragmentados pelo
+`wMaxPacketSize` do endpoint e cada endpoint conserva seu toggle DATA0/DATA1.
+Timeout ou erro recupera o controlador UHCI e retorna codigo controlado.
+
+`usb_msc.c` aceita somente classe `0x08`, subclass `0x06`, protocolo `0x50`,
+uma interface, LUN 0 e exatamente um Bulk IN/OUT. O BOT valida CBW/CSW,
+assinatura, tag, residue e status e implementa somente `INQUIRY`, `TEST UNIT
+READY`, `READ CAPACITY(10)` e `READ(10)`. O reset de recuperacao envia Mass
+Storage Reset, limpa HALT nos dois endpoints e permite uma unica tentativa
+adicional. O provedor publicado em `block_device_t` e somente-leitura e usa
+setores de 512 bytes.
+
 O driver UHCI usa somente a porta I/O descrita no BAR0 do controlador PCI e
 habilita I/O/bus mastering apenas depois de validar classe, ProgIF, IRQ e
 limites do BAR. O agendamento DMA possui frame list de 1024 entradas, um queue
@@ -308,8 +326,9 @@ reset, controle, `SET_ADDRESS` e recuperação. Cada porta raiz pode ficar
 
 A enumeração aceita apenas uma configuração, uma interface e seus endpoints,
 lê os descritores Device/Configuration, atribui um endereço e executa
-`SET_CONFIGURATION`. Não existem hubs, strings, hot-plug, HID, MSC ou
-transferências Bulk/Interrupt nesta etapa. O driver EHCI não é inicializado.
+`SET_CONFIGURATION`. Não existem hubs, strings, hot-plug ou HID; o driver EHCI
+não é inicializado. A EP4.3 acrescenta Bulk síncrono e MSC somente-leitura
+conforme o contrato acima.
 
 ---
 

@@ -33,6 +33,7 @@
 #include "core/recovery.h"
 #include "core/device_manager.h"
 #include "core/usb_manager.h"
+#include "drivers/usb_msc.h"
 #include "core/arp.h"
 #include "core/dhcp.h"
 #include "core/dns.h"
@@ -170,6 +171,7 @@ typedef struct {
     int pci_result;
     int devices_result;
     int usb_result;
+    int storage_result;
     int network_result;
 } shell_device_scan_result_t;
 
@@ -300,6 +302,7 @@ static void cmd_usb_status(void);
 static void cmd_usb_list(const char* args);
 static void cmd_usb_ports(const char* args);
 static void cmd_usb_devices(const char* args);
+static void cmd_usb_storage(const char* args);
 static void cmd_usb_device(const char* args);
 static void shell_print_usb_fixture_report(void);
 static void shell_present_hosted_progress(void);
@@ -790,6 +793,7 @@ static void shell_print_usb_fixture_report(void) {
     cmd_usb_list("");
     cmd_usb_ports("");
     cmd_usb_devices("");
+    cmd_usb_storage("");
     for (uint32_t index = 0U; index < controller_count; index++) {
         usb_controller_info_t info;
         usb_controller_text_t text;
@@ -1211,8 +1215,10 @@ static int shell_regcheck_validate_usb(void) {
         status.port_count > USB_MANAGER_MAX_PORTS ||
         status.configured_device_count > USB_MANAGER_MAX_DEVICES ||
         status.dma_td_in_use > status.dma_td_capacity ||
-        status.class_driver_active || status.hub_support_active ||
-        status.hotplug_active || usb_manager_validate_state() != OK) {
+        status.msc_device_count > USB_MSC_MAX_DEVICES ||
+        status.hub_support_active ||
+        status.hotplug_active || block_validate_state() != OK ||
+        usb_msc_validate_state() != OK || usb_manager_validate_state() != OK) {
         LOG_ERROR("SHELL", "RegCheck detectou resumo USB invalido");
         return result == OK ? ERR_STATE : result;
     }
@@ -1232,8 +1238,9 @@ static int shell_regcheck_validate_usb(void) {
             if (result != OK || !runtime.initialized ||
                 !runtime.irq_registered || !runtime.dma_ready ||
                 !runtime.control_transfer_ready ||
-                runtime.class_driver_active || runtime.hub_support_active ||
-                runtime.hotplug_active || runtime.td_in_use > runtime.td_capacity ||
+                runtime.hub_support_active || runtime.hotplug_active ||
+                !runtime.bulk_transfer_ready ||
+                runtime.td_in_use > runtime.td_capacity ||
                 runtime.buffer_in_use > runtime.buffer_capacity ||
                 runtime.port_count != USB_UHCI_PORT_COUNT ||
                 runtime.timeout_count > 0xFFFFFFFFU - runtime.recovery_count) {
@@ -2618,7 +2625,7 @@ static void cmd_help(void) {
     video_print("  compress - Liga/desliga compressao de RAM\n", 0x07);
     video_print("  stats    - Mostra estatisticas de compressao\n", 0x07);
     video_print("  mouse    - Status e preferencias do mouse PS/2\n", 0x07);
-    video_print("  storage  - Lista, inspeciona e monta volumes ATA\n", 0x07);
+    video_print("  storage  - Lista, inspeciona e monta volumes\n", 0x07);
     video_print("  index status|rebuild|cancel|check - Controla o indice\n",
                 0x07);
     video_print("  search <termo> - Pesquisa nomes e caminhos globais\n", 0x07);
@@ -2631,7 +2638,7 @@ static void cmd_help(void) {
     video_print("  devices  - Lista inventario de hardware (-v para detalhes)\n", 0x07);
     video_print("  device-info <id> - Mostra detalhes de um dispositivo\n", 0x07);
     video_print("  device-scan - Refaz varredura PCI, USB e rede\n", 0x07);
-    video_print("  usb status|list|ports|devices - Inspeciona USB\n", 0x07);
+    video_print("  usb status|list|ports|devices|storage - Inspeciona USB\n", 0x07);
     video_print("  usb device <id> - Mostra detalhes de um controlador USB\n",
                 0x07);
     video_print("  net status - Mostra capacidades atuais de rede\n", 0x07);
@@ -4129,6 +4136,9 @@ static void cmd_usb_status(void) {
     video_print("\n  Controle: ", 0x07);
     video_print(status.transfer_available ? "READY" : "INDISPONIVEL",
                 status.transfer_available ? 0x0A : 0x0E);
+    video_print("  Bulk: ", 0x07);
+    video_print(status.bulk_transfer_available ? "READY" : "INDISPONIVEL",
+                status.bulk_transfer_available ? 0x0A : 0x0E);
     video_print("\n  Portas: ", 0x07);
     print_num(status.port_count);
     video_print("  Dispositivos: ", 0x07);
@@ -4137,7 +4147,9 @@ static void cmd_usb_status(void) {
     print_num(status.dma_td_in_use);
     video_print("/", 0x07);
     print_num(status.dma_td_capacity);
-    video_print("\n  Classe: INDISPONIVEL  Hubs: INDISPONIVEL  Hotplug: INDISPONIVEL", 0x08);
+    video_print("\n  MSC ativos: ", 0x07);
+    print_num(status.msc_device_count);
+    video_print("  Hubs: INDISPONIVEL  Hotplug: INDISPONIVEL", 0x08);
     video_print("\n  Ultimo erro: ", 0x07);
     print_num((uint32_t)status.last_error);
     video_print("\n", 0x07);
@@ -4292,10 +4304,78 @@ static void cmd_usb_devices(const char* args) {
         video_print("  ConfigDesc: ", 0x07);
         video_print(device.configuration_descriptor_valid ? "OK" : "INVALID",
                     0x0A);
-        video_print("\n    Classe: sem driver  Hub: nao  Estado: ", 0x08);
+        video_print("\n    Classe: ", 0x08);
+        video_print(device.class_driver_active ? "MSC ativo" : "sem driver",
+                    device.class_driver_active ? 0x0A : 0x08);
+        video_print("  Hub: nao  Estado: ", 0x08);
         video_print(device.state == USB_DEVICE_CONFIGURED ? "CONFIGURED" :
                     "DEGRADED", device.state == USB_DEVICE_CONFIGURED ?
                     0x0A : 0x0E);
+        video_print("\n", 0x07);
+    }
+}
+
+static void cmd_usb_storage(const char* args) {
+    uint32_t count = 0U;
+
+    if (!shell_args_equal(args, "")) {
+        LOG_WARN("SHELL", "Uso invalido de usb storage");
+        video_print("Uso: usb storage\n", 0x0C);
+        return;
+    }
+    if (usb_msc_get_count(&count) != OK) {
+        LOG_ERROR("SHELL", "Contagem MSC indisponivel");
+        video_print("Erro: inventario USB MSC indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("USB Mass Storage: ", 0x0B);
+    print_num(count);
+    video_print(" dispositivo(s)\n", 0x07);
+    for (uint32_t index = 0U; index < count; index++) {
+        usb_msc_info_t info;
+
+        if (usb_msc_get_at(index, &info) != OK) {
+            LOG_ERROR("SHELL", "Falha ao consultar entrada MSC");
+            video_print("Erro: entrada MSC indisponivel.\n", 0x0C);
+            return;
+        }
+        video_print("  ID: ", 0x07);
+        video_print(info.id, 0x0A);
+        video_print("  Estado: ", 0x07);
+        video_print(usb_msc_state_name(info.state),
+                    info.state == USB_MSC_READY ? 0x0A : 0x0E);
+        video_print("\n    Bloco: ", 0x07);
+        video_print(info.block_id, 0x0B);
+        video_print("  LUN: ", 0x07);
+        print_num(info.lun);
+        video_print("  Interface: ", 0x07);
+        print_num(info.interface_number);
+        video_print("  Setor: ", 0x07);
+        print_num(info.sector_size);
+        video_print("  Capacidade: ", 0x07);
+        print_num(info.sector_count);
+        video_print("\n    Vendor: ", 0x07);
+        video_print(info.vendor[0] ? info.vendor : "(desconhecido)", 0x07);
+        video_print("  Produto: ", 0x07);
+        video_print(info.product[0] ? info.product : "(desconhecido)", 0x07);
+        video_print("  Revisao: ", 0x07);
+        video_print(info.revision[0] ? info.revision : "(desconhecida)", 0x07);
+        video_print("\n    Bulk IN 0x", 0x07);
+        cmd_print_hex(info.bulk_in_endpoint, 2U);
+        video_print("/", 0x07);
+        print_num(info.bulk_in_max_packet);
+        video_print("  Bulk OUT 0x", 0x07);
+        cmd_print_hex(info.bulk_out_endpoint, 2U);
+        video_print("/", 0x07);
+        print_num(info.bulk_out_max_packet);
+        video_print("\n    Comandos: ", 0x07);
+        print_num(info.command_count);
+        video_print("  Leituras: ", 0x07);
+        print_num(info.read_ops);
+        video_print("  Resets: ", 0x07);
+        print_num(info.reset_count);
+        video_print("  Ultimo erro: ", 0x07);
+        print_num((uint32_t)info.last_error);
         video_print("\n", 0x07);
     }
 }
@@ -4379,13 +4459,17 @@ static void cmd_usb(const char* args) {
         cmd_usb_devices("");
         return;
     }
+    if (shell_args_equal(args, "storage")) {
+        cmd_usb_storage("");
+        return;
+    }
     subargs = shell_match_subcommand(args, "device");
     if (subargs) {
         cmd_usb_device(subargs);
         return;
     }
     LOG_WARN("SHELL", "Uso invalido do comando usb");
-    video_print("Uso: usb status|list|ports|devices|device <id>\n", 0x0E);
+    video_print("Uso: usb status|list|ports|devices|storage|device <id>\n", 0x0E);
 }
 
 static int shell_run_device_scan(shell_device_scan_result_t* scan) {
@@ -4398,6 +4482,7 @@ static int shell_run_device_scan(shell_device_scan_result_t* scan) {
     scan->pci_result = pci_init();
     scan->devices_result = ERR_STATE;
     scan->usb_result = ERR_STATE;
+    scan->storage_result = ERR_STATE;
     scan->network_result = ERR_STATE;
     if (scan->pci_result != OK && scan->pci_result != ERR_OVERFLOW) {
         recovery_result =
@@ -4417,6 +4502,15 @@ static int shell_run_device_scan(shell_device_scan_result_t* scan) {
     if (scan->usb_result != OK && scan->usb_result != ERR_OVERFLOW) {
         LOG_ERROR("SHELL", "Falha ao atualizar inventario USB");
         return scan->usb_result;
+    }
+    scan->storage_result = storage_refresh();
+    if (file_index_rebuild() != OK) {
+        LOG_WARN("SHELL", "Indice aguardara a nova geracao de Storage");
+    }
+    if (scan->storage_result != OK &&
+        scan->storage_result != ERR_NOT_FOUND &&
+        scan->storage_result != ERR_STATE) {
+        LOG_WARN("SHELL", "Storage atualizado com estado degradado");
     }
 
     scan->devices_result = device_manager_refresh();
@@ -4479,6 +4573,10 @@ static void cmd_device_scan(const char* args) {
         scan.network_result != ERR_OVERFLOW) {
         LOG_WARN("SHELL", "Falha ao atualizar inventario de rede");
         video_print("Aviso: inventario de rede indisponivel.\n", 0x0E);
+    }
+    if (scan.storage_result != OK && scan.storage_result != ERR_NOT_FOUND &&
+        scan.storage_result != ERR_STATE) {
+        video_print("Aviso: inventario de storage degradado.\n", 0x0E);
     }
     if (result == ERR_OVERFLOW) {
         video_print("Varredura PCI/USB parcial; inventario atualizado.\n",
@@ -10835,10 +10933,18 @@ static void cmd_storage_print_disk(const storage_disk_t* disk) {
     video_print(disk->id, 0x0B);
     video_print(": ", 0x07);
     video_print(disk->model, 0x07);
-    video_print("\n  Slot/canal: ", 0x07);
-    print_num(disk->slot);
-    video_print(disk->channel ? " secundario " : " primario ", 0x07);
-    video_print(disk->slave ? "slave\n" : "master\n", 0x07);
+    if (disk->kind == STORAGE_DISK_USB_MSC) {
+        video_print("\n  Provedor: USB MSC somente-leitura\n", 0x07);
+    } else {
+        video_print("\n  Provedor: ATA  Slot/canal: ", 0x07);
+        print_num(disk->slot);
+        video_print(disk->channel ? " secundario " : " primario ", 0x07);
+        video_print(disk->slave ? "slave\n" : "master\n", 0x07);
+    }
+    video_print("  Bytes/setor: ", 0x07);
+    print_num(disk->sector_size);
+    video_print("  Acesso: ", 0x07);
+    video_print(disk->read_only ? "READ-ONLY\n" : "READ-WRITE\n", 0x07);
     video_print("  Setores: ", 0x07);
     print_num(disk->sector_count);
     video_print("  Leituras: ", 0x07);
@@ -10891,7 +10997,7 @@ static void cmd_storage_list(void) {
         video_print("Storage indisponivel.\n", 0x0C);
         return;
     }
-    video_print("Storage ATA: discos=", 0x0B);
+    video_print("Storage: discos=", 0x0B);
     print_num(status.disk_count);
     video_print(" volumes=", 0x07);
     print_num(status.volume_count);

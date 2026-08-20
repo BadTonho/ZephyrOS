@@ -240,6 +240,14 @@ forma controlada e aparecem no `health`; apenas `power_shutdown()` e terminal.
   enumeracao fica restrita a portas raiz, Device/Configuration, uma interface
   e `SET_CONFIGURATION`; nao ha hubs, hot-plug, strings, HID ou driver de
   classe. EHCI nunca acessa BAR, I/O, DMA ou IRQ.
+- `usb_msc`: apos a enumeracao UHCI, reconhece somente interfaces MSC BOT
+  SCSI com exatamente um Bulk IN e um Bulk OUT. Executa INQUIRY, TEST UNIT
+  READY, READ CAPACITY(10) e READ(10), publica LUN 0 como provedor somente-
+  leitura de `block_device_t` e deixa a montagem FAT para `storage mount`.
+- `block`: registra estaticamente provedores ATA e USB MSC, preserva os IDs ATA
+  legados, valida callbacks/LBA/setor de 512 bytes e recusa escrita em
+  provedores somente-leitura. `storage_refresh()` reconcilia esse registro
+  depois de cada atualizacao USB sem duplicar discos ou volumes.
 
 Os headers `core/device_manager.h` e `core/power.h` definem as estruturas de
 snapshot e status. O snapshot de dispositivos guarda somente metadados;
@@ -660,6 +668,11 @@ mesmo sem dispositivos; uma porta com erro, falha de inicializacao UHCI,
 inventario parcial ou somente EHCI deixa USB `DEGRADED`. Sem PCI ou sem
 controlador USB, USB fica `DISABLED`. `device-scan` atualiza o inventario de
 forma idempotente e o polling UHCI roda nos loops normal e fallback do kernel.
+
+Na EP4.3, um teclado USB configurado continua sendo apenas um dispositivo USB
+sem driver de classe e nao degrada o health. Somente um MSC BOT validado conta
+como driver de classe ativo; falhas SCSI/BOT marcam o registro MSC como
+`DEGRADED`, preservando o controlador UHCI e os demais dispositivos.
 
 O contrato detalhado esta em
 [`app-store.md`](../13-aplicativos/app-store.md).

@@ -18,6 +18,7 @@
 #define USB_UHCI_TD_CAPACITY 64U
 #define USB_UHCI_BUFFER_CAPACITY 8U
 #define USB_UHCI_DESCRIPTOR_BUFFER_SIZE 512U
+#define USB_UHCI_BULK_BUFFER_SIZE 1024U
 #define USB_CONTROLLER_IRQ_UNKNOWN 0xFFU
 #define USB_CONTROLLER_PCI_CLASS 0x0CU
 #define USB_CONTROLLER_PCI_SUBCLASS 0x03U
@@ -123,6 +124,8 @@ typedef struct {
     uint8_t class_driver_active;
     uint8_t hub_support_active;
     uint8_t hotplug_active;
+    uint32_t msc_device_count;
+    uint8_t bulk_transfer_available;
     int last_error;
 } usb_manager_status_t;
 
@@ -133,6 +136,7 @@ typedef struct {
     uint8_t irq_pending;
     uint8_t dma_ready;
     uint8_t control_transfer_ready;
+    uint8_t bulk_transfer_ready;
     uint8_t class_driver_active;
     uint8_t hub_support_active;
     uint8_t hotplug_active;
@@ -150,6 +154,7 @@ typedef struct {
     uint32_t irq_events;
     uint32_t timeout_count;
     uint32_t recovery_count;
+    uint32_t bulk_transfer_count;
     int last_error;
 } usb_uhci_status_t;
 
@@ -192,6 +197,12 @@ typedef struct {
     uint8_t interface_subclass;
     uint8_t interface_protocol;
     uint8_t endpoint_count;
+    uint8_t bulk_in_endpoint;
+    uint8_t bulk_out_endpoint;
+    uint8_t bulk_in_count;
+    uint8_t bulk_out_count;
+    uint16_t bulk_in_max_packet;
+    uint16_t bulk_out_max_packet;
     uint8_t class_driver_active;
     uint8_t hub_present;
     uint8_t device_descriptor_valid;

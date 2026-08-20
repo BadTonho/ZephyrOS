@@ -29,6 +29,7 @@
 #include "drivers/ata.h"
 #include "drivers/pci.h"
 #include "fs/fs.h"
+#include "fs/block.h"
 #include "fs/storage.h"
 #include "fs/file_index.h"
 #include "apps/shell.h"
@@ -650,6 +651,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Detectando disco...\n", 0x08);
     int ata_result = ata_init();
+    int block_result;
     ata_device_t* dev = ata_get_device();
     if (ata_result == OK && dev) {
         recovery_mark_ready(RECOVERY_COMPONENT_ATA);
@@ -660,6 +662,10 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         recovery_mark_disabled(RECOVERY_COMPONENT_ATA, ata_result,
                                "Nenhum dispositivo ATA disponivel");
         video_print("[!!] Nenhum disco encontrado\n", 0x0C);
+    }
+    block_result = block_init();
+    if (block_result != OK) {
+        LOG_ERROR("KERNEL", "Falha ao inicializar camada de bloco");
     }
 
     video_print("[..] Montando sistema de arquivos...\n", 0x08);
@@ -737,6 +743,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     video_print("[..] Criando inventario USB...\n", 0x08);
     int usb_result = usb_manager_init();
     usb_manager_status_t usb_status;
+    kmemset(&usb_status, 0, sizeof(usb_status));
     if (usb_result != OK && usb_result != ERR_OVERFLOW) {
         LOG_ERROR("KERNEL", "Falha ao criar inventario USB");
         video_print("[!!] Inventario USB indisponivel\n", 0x0C);
@@ -752,6 +759,20 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
                     0x0E);
     } else {
         video_print("[OK] Inventario USB pronto\n", 0x07);
+    }
+    if (storage_result == OK || block_result == OK) {
+        int refreshed_storage = storage_refresh();
+
+        if (refreshed_storage != OK) storage_result = refreshed_storage;
+        if (file_index_rebuild() != OK) {
+            LOG_WARN("KERNEL", "Indice aguardara a nova geracao de Storage");
+        }
+        if (storage_result == OK) {
+            recovery_mark_ready(RECOVERY_COMPONENT_STORAGE);
+        } else if (ata_result == OK || usb_status.msc_device_count) {
+            recovery_mark_degraded(RECOVERY_COMPONENT_STORAGE, storage_result,
+                                   "Storage parcial apos atualizacao USB");
+        }
     }
 
     video_print("[..] Iniciando AC97...\n", 0x08);

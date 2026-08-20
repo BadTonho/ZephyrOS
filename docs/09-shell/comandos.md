@@ -35,7 +35,7 @@ Comandos disponiveis:
   stop      - Para player de midia
   edit      - Editor de texto (edit ARQUIVO.TXT)
   mouse     - Mostra status ou altera preferencias do mouse PS/2
-  storage   - Lista, inspeciona e monta volumes ATA somente-leitura
+  storage   - Lista, inspeciona e monta volumes ATA/USB somente-leitura
   index     - Mostra, reconstrui, cancela ou valida o indice global
   search <termo> - Pesquisa nomes e caminhos em todos os volumes montados
   guitest   - Testa primitivas GUI 2D
@@ -46,7 +46,7 @@ Comandos disponiveis:
   timer     - Inspeciona e testa temporizadores
   devices   - Lista o inventario de hardware (`-v` inclui detalhes)
   device-info <id> - Exibe detalhes de um dispositivo inventariado
-  device-scan - Refaz somente a varredura PCI e atualiza o inventario
+  device-scan - Refaz a varredura PCI/USB e atualiza o inventario
   net status - Exibe o estado observavel da rede
   net devices - Lista controladores de rede PCI
   net info <id> - Exibe detalhes de uma interface inventariada
@@ -293,6 +293,28 @@ O alias `ata-primary` continua aceito pelo inventario de dispositivos; os IDs
 de slots sao `ata0` a `ata3`, e os volumes usam `ataNraw` ou `ataNp1` a
 `ataNp4`.
 
+O mesmo comando lista discos USB MSC. O disco USB usa o ID
+`usb-ms-BB:DD.F-pN-aN-l0`; seus volumes seguem o formato
+`usb-ms-BB:DD.F-pN-aN-l0raw` ou o sufixo `p1` a `p4`. A topologia ATA
+slot/canal/master/slave nao e exibida para USB. A descoberta e automatica,
+mas a montagem continua sob demanda e somente-leitura.
+
+## `usb storage`
+
+`usb storage` mostra apenas os dispositivos MSC reconhecidos, incluindo LUN,
+estado `READY`/`DEGRADED`, capacidade, setor, vendor/product/revisao,
+endpoints Bulk IN/OUT, `wMaxPacketSize`, contadores BOT/leitura/reset e ultimo
+erro. Teclado USB, hubs, EHCI e interfaces fora do contrato MSC nao aparecem
+como falha de classe neste comando.
+
+```text
+zephyr> usb storage
+```
+
+`usb devices` continua mostrando a enumeracao geral USB. O campo de classe
+ativa identifica somente MSC pronto; o teclado USB permanece configurado sem
+driver de classe.
+
 ## `guitest`
 Testa as primitivas gráficas 2D do módulo GUI.
 
@@ -397,9 +419,10 @@ zephyr> device-scan
 
 `devices` mostra ID, estado, tipo e nome. `devices -v` acrescenta localizacao,
 IRQ e IDs PCI quando existirem. `device-info <id>` consulta um ID retornado
-pela lista. `device-scan` apenas rele o espaco de configuracao PCI e atualiza
-o snapshot; se o limite de 64 entradas for atingido, o resultado e parcial e
-o Shell permanece utilizavel.
+pela lista. `device-scan` relê o espaco de configuracao PCI, atualiza USB/MSC
+e reconcilia Storage de forma idempotente; se o limite de 64 entradas for
+atingido, o resultado e parcial e o Shell permanece utilizavel. A operacao nao
+monta automaticamente volumes USB ja detectados.
 
 Discos ATA presentes sao exibidos como `ata0` a `ata3`; `ata-primary` e alias
 do primeiro disco legado. IDs PCI sao exibidos como `pci-BB:DD.F`. O terminal interpreta Shift para

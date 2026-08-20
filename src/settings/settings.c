@@ -887,7 +887,7 @@ static void settings_gui_draw_storage_status(int x, int y, int width) {
                           status.volume_count, GUI_MODERN_COLOR_ACCENT);
     gui_draw_text((uint32_t)(x + SETTINGS_CLASSIC_PX(18)),
                   (uint32_t)(row_y + SETTINGS_CLASSIC_PX(26)),
-                  "Dispositivos ATA", GUI_MODERN_COLOR_ACCENT);
+                  "Dispositivos de armazenamento", GUI_MODERN_COLOR_ACCENT);
     row_y += SETTINGS_CLASSIC_PX(50);
     for (uint8_t index = 0; index < status.disk_count; index++) {
         storage_disk_t disk;

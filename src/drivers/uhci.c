@@ -3,6 +3,7 @@
 #include "core/log.h"
 #include "core/memory.h"
 #include "core/string.h"
+#include "core/spinlock.h"
 #include "core/timer.h"
 #include "drivers/idt.h"
 
@@ -25,7 +26,6 @@
 #define UHCI_REQUEST_HOST_TO_DEVICE 0x00U
 #define UHCI_REQUEST_STANDARD 0x00U
 #define UHCI_REQUEST_RECIPIENT_DEVICE 0x00U
-#define UHCI_REQUEST_RECIPIENT_INTERFACE 0x01U
 #define UHCI_PID_OUT 0xE1U
 #define UHCI_PID_IN 0x69U
 #define UHCI_PID_SETUP 0x2DU
@@ -116,6 +116,8 @@ typedef struct {
     uint8_t configuration_descriptor[USB_UHCI_DESCRIPTOR_BUFFER_SIZE];
     uint16_t configuration_length;
     uint8_t valid_descriptors;
+    uint8_t bulk_in_toggle;
+    uint8_t bulk_out_toggle;
 } uhci_device_record_t;
 
 typedef struct {
@@ -145,6 +147,7 @@ typedef struct {
     uint32_t recovery_count;
     uint8_t next_address;
     uint8_t port_errors;
+    spinlock_t transfer_lock;
     int last_error;
     usb_port_info_t ports[USB_UHCI_PORT_COUNT];
     uhci_device_record_t devices[USB_UHCI_PORT_COUNT];
@@ -220,6 +223,20 @@ static uhci_controller_t* uhci_find(uint8_t bus, uint8_t device,
     return 0;
 }
 
+static uhci_device_record_t* uhci_find_device_record(
+    uhci_controller_t* controller, const usb_device_info_t* device) {
+    if (!controller || !device || device->controller_bus != controller->bus ||
+        device->controller_device != controller->device ||
+        device->controller_function != controller->function) return 0;
+    for (uint32_t index = 0U; index < controller->device_count; index++) {
+        uhci_device_record_t* record = &controller->devices[index];
+
+        if (record->info.usb_address == device->usb_address &&
+            record->info.port_number == device->port_number) return record;
+    }
+    return 0;
+}
+
 static uhci_controller_t* uhci_allocate(void) {
     for (uint32_t index = 0; index < UHCI_CONTROLLER_CAPACITY; index++) {
         if (!uhci_controllers[index].used) {
@@ -227,6 +244,7 @@ static uhci_controller_t* uhci_allocate(void) {
                     sizeof(uhci_controllers[index]));
             uhci_controllers[index].used = 1;
             uhci_controllers[index].next_address = 1U;
+            spinlock_init(&uhci_controllers[index].transfer_lock);
             return &uhci_controllers[index];
         }
     }
@@ -460,11 +478,12 @@ static int uhci_reset_port(uhci_controller_t* controller, uint32_t port) {
     return OK;
 }
 
-static uint32_t uhci_token(uint8_t pid, uint8_t address, uint8_t toggle,
-                           uint16_t length) {
+static uint32_t uhci_token(uint8_t pid, uint8_t address, uint8_t endpoint,
+                           uint8_t toggle, uint16_t length) {
     uint32_t encoded_length = length ? (uint32_t)(length - 1U) : 0x7FFU;
 
     return pid | ((uint32_t)address << UHCI_TD_TOKEN_ADDRESS_SHIFT) |
+           ((uint32_t)endpoint << UHCI_TD_TOKEN_ENDPOINT_SHIFT) |
            ((uint32_t)toggle << UHCI_TD_TOGGLE_SHIFT) |
            ((encoded_length & UHCI_TD_TOKEN_MAX_LENGTH_MASK) <<
             UHCI_TD_LENGTH_SHIFT);
@@ -485,7 +504,7 @@ static uint32_t uhci_td_actual(uint32_t status) {
 }
 
 static int uhci_wait_transfer(uhci_controller_t* controller,
-                              uint32_t td_count) {
+                              uint32_t td_count, uint32_t timeout_ms) {
     uint32_t start = timer_get_ticks();
 
     while (1) {
@@ -501,14 +520,14 @@ static int uhci_wait_transfer(uhci_controller_t* controller,
         if (!active) {
             if (errors) {
                 controller->recovery_count++;
-                LOG_ERROR("UHCI", "Transferencia de controle retornou erro");
+                LOG_ERROR("UHCI", "Transferencia UHCI retornou erro");
                 return ERR_STATE;
             }
             return OK;
         }
-        if (uhci_timeout_expired(start, UHCI_CONTROL_TIMEOUT_MS)) {
+        if (uhci_timeout_expired(start, timeout_ms)) {
             controller->timeout_count++;
-            LOG_ERROR("UHCI", "Timeout em transferencia de controle");
+            LOG_ERROR("UHCI", "Timeout em transferencia UHCI");
             return ERR_TIMEOUT;
         }
         asm volatile("pause");
@@ -554,29 +573,29 @@ static int uhci_control_transfer(uhci_controller_t* controller,
         controller->td_pool[td].link = next;
     }
     controller->td_pool[0].status = uhci_td_status(low_speed, !length);
-    controller->td_pool[0].token = uhci_token(UHCI_PID_SETUP, address, 0U,
+    controller->td_pool[0].token = uhci_token(UHCI_PID_SETUP, address, 0U, 0U,
                                                UHCI_SETUP_SIZE);
     controller->td_pool[0].buffer = controller->buffer_pool_phys;
     if (length) {
         controller->td_pool[1].status = uhci_td_status(low_speed, 0U);
         controller->td_pool[1].token = uhci_token(
             request_type & UHCI_REQUEST_DEVICE_TO_HOST ? UHCI_PID_IN :
-            UHCI_PID_OUT, address, 1U, length);
+            UHCI_PID_OUT, address, 0U, 1U, length);
         controller->td_pool[1].buffer = controller->buffer_pool_phys +
                                         UHCI_CONTROL_BUFFER_DATA_OFFSET;
         controller->td_pool[2].status = uhci_td_status(low_speed, 1U);
         controller->td_pool[2].token = uhci_token(
             request_type & UHCI_REQUEST_DEVICE_TO_HOST ? UHCI_PID_OUT :
-            UHCI_PID_IN, address, 1U, 0U);
+            UHCI_PID_IN, address, 0U, 1U, 0U);
     } else {
         controller->td_pool[1].status = uhci_td_status(low_speed, 1U);
         controller->td_pool[1].token = uhci_token(
             request_type & UHCI_REQUEST_DEVICE_TO_HOST ? UHCI_PID_OUT :
-            UHCI_PID_IN, address, 1U, 0U);
+            UHCI_PID_IN, address, 0U, 1U, 0U);
     }
     controller->queue_head->element = controller->td_pool_phys;
     asm volatile("" : : : "memory");
-    result = uhci_wait_transfer(controller, td_count);
+    result = uhci_wait_transfer(controller, td_count, UHCI_CONTROL_TIMEOUT_MS);
     controller->queue_head->element = UHCI_PTR_TERM;
     if (result != OK) {
         uhci_recover_controller(controller);
@@ -668,20 +687,36 @@ static int uhci_parse_configuration(uhci_device_record_t* record) {
                                                   UHCI_INTERFACE_PROTOCOL_OFFSET];
         } else if (type == UHCI_DESCRIPTOR_TYPE_ENDPOINT) {
             uint16_t max_packet;
+            uint8_t endpoint_address;
+            uint8_t transfer_type;
 
             if (length < UHCI_ENDPOINT_DESCRIPTOR_LENGTH || !interface_seen) {
                 LOG_ERROR("UHCI", "Endpoint USB fora de uma interface");
                 return ERR_INVALID;
             }
+            endpoint_address = data[offset + UHCI_ENDPOINT_ADDRESS_OFFSET];
+            transfer_type = data[offset + 3U] & 0x03U;
             max_packet = (uint16_t)(data[offset + UHCI_ENDPOINT_MAX_PACKET_OFFSET] |
-                         ((uint16_t)data[offset + UHCI_ENDPOINT_MAX_PACKET_OFFSET +
-                                           1U] << 8U));
-            if (!(data[offset + UHCI_ENDPOINT_ADDRESS_OFFSET] & 0x80U) &&
-                !(data[offset + UHCI_ENDPOINT_ADDRESS_OFFSET] & 0x0FU)) {
+                          ((uint16_t)data[offset + UHCI_ENDPOINT_MAX_PACKET_OFFSET +
+                                            1U] << 8U));
+            if (!(endpoint_address & 0x0FU)) {
                 return ERR_INVALID;
             }
             if (!max_packet || max_packet > 64U) return ERR_INVALID;
             endpoint_count++;
+            if (transfer_type == 2U &&
+                (max_packet == 8U || max_packet == 16U ||
+                 max_packet == 32U || max_packet == 64U)) {
+                if (endpoint_address & 0x80U) {
+                    record->info.bulk_in_count++;
+                    record->info.bulk_in_endpoint = endpoint_address;
+                    record->info.bulk_in_max_packet = max_packet;
+                } else {
+                    record->info.bulk_out_count++;
+                    record->info.bulk_out_endpoint = endpoint_address;
+                    record->info.bulk_out_max_packet = max_packet;
+                }
+            }
         }
         offset += length;
     }
@@ -1001,6 +1036,7 @@ static int uhci_copy_status(const uhci_controller_t* controller,
     out_status->dma_ready = controller->frame_list && controller->queue_head &&
                             controller->td_pool && controller->buffer_pool;
     out_status->control_transfer_ready = controller->running;
+    out_status->bulk_transfer_ready = controller->running;
     out_status->class_driver_active = 0U;
     out_status->hub_support_active = 0U;
     out_status->hotplug_active = 0U;
@@ -1018,6 +1054,7 @@ static int uhci_copy_status(const uhci_controller_t* controller,
     out_status->irq_events = controller->irq_events;
     out_status->timeout_count = controller->timeout_count;
     out_status->recovery_count = controller->recovery_count;
+    out_status->bulk_transfer_count = controller->bulk_transfer_count;
     out_status->last_error = controller->last_error;
     return OK;
 }
@@ -1160,7 +1197,6 @@ int uhci_validate_state(uint8_t bus, uint8_t device, uint8_t function) {
     for (uint32_t index = 0; index < controller->device_count; index++) {
         if (!controller->devices[index].valid_descriptors ||
             controller->devices[index].info.state != USB_DEVICE_CONFIGURED ||
-            controller->devices[index].info.class_driver_active ||
             controller->devices[index].info.hub_present ||
             !controller->devices[index].info.id[0] ||
             !controller->devices[index].info.device_descriptor_valid ||
@@ -1171,10 +1207,198 @@ int uhci_validate_state(uint8_t bus, uint8_t device, uint8_t function) {
             UHCI_CONFIGURATION_HEADER_LENGTH ||
             controller->devices[index].info.configuration_length >
             USB_UHCI_DESCRIPTOR_BUFFER_SIZE ||
-            controller->devices[index].info.endpoint_count > 16U) {
+            controller->devices[index].info.endpoint_count > 16U ||
+            controller->devices[index].info.bulk_in_count >
+            controller->devices[index].info.endpoint_count ||
+            controller->devices[index].info.bulk_out_count >
+            controller->devices[index].info.endpoint_count ||
+            (controller->devices[index].info.bulk_in_count &&
+             !controller->devices[index].info.bulk_in_max_packet) ||
+            (controller->devices[index].info.bulk_out_count &&
+             !controller->devices[index].info.bulk_out_max_packet)) {
             LOG_ERROR("UHCI", "Dispositivo USB configurado invalido");
             return ERR_STATE;
         }
     }
+    return OK;
+}
+
+int uhci_control_request(const usb_device_info_t* device,
+                         uint8_t request_type, uint8_t request,
+                         uint16_t value, uint16_t index, uint16_t length,
+                         uint8_t* data, uint16_t* out_length) {
+    uhci_controller_t* controller;
+    uhci_device_record_t* record;
+    int result;
+
+    if (!device) {
+        LOG_ERROR("UHCI", "Dispositivo nulo na requisicao de controle");
+        return ERR_NULL;
+    }
+    controller = uhci_find(device->controller_bus, device->controller_device,
+                           device->controller_function);
+    record = uhci_find_device_record(controller, device);
+    if (!record || !controller->running) {
+        LOG_ERROR("UHCI", "Dispositivo ausente no controle UHCI");
+        return ERR_NOT_FOUND;
+    }
+    spinlock_acquire(&controller->transfer_lock);
+    result = uhci_control_transfer(controller, device->usb_address,
+                                   device->speed == USB_DEVICE_SPEED_LOW,
+                                   request_type, request, value, index, length,
+                                   data, out_length);
+    spinlock_release(&controller->transfer_lock);
+    return result;
+}
+
+static int uhci_bulk_transfer_once(uhci_controller_t* controller,
+                                   uhci_device_record_t* record,
+                                   const usb_device_info_t* device,
+                                   uint8_t endpoint_address,
+                                   uint8_t direction_in, uint8_t* buffer,
+                                   uint16_t length, uint16_t* out_length) {
+    uint8_t* dma_buffer;
+    uint16_t max_packet;
+    uint8_t toggle;
+    uint8_t initial_toggle;
+    uint32_t td_count;
+    uint32_t copied = 0U;
+    uint32_t completed_tds = 0U;
+    int result;
+
+    if (!controller || !record || !device || !buffer || !length ||
+        length > USB_UHCI_BULK_BUFFER_SIZE ||
+        (endpoint_address & 0x0FU) == 0U ||
+        ((endpoint_address & 0x80U) != 0U) != (direction_in != 0U) ||
+        endpoint_address != (direction_in ? record->info.bulk_in_endpoint :
+                             record->info.bulk_out_endpoint)) {
+        LOG_ERROR("UHCI", "Argumento invalido na transferencia Bulk");
+        return ERR_INVALID;
+    }
+    max_packet = direction_in ? record->info.bulk_in_max_packet :
+                 record->info.bulk_out_max_packet;
+    if (!max_packet || max_packet > 64U) {
+        LOG_ERROR("UHCI", "Endpoint Bulk sem tamanho valido");
+        return ERR_UNAVAILABLE;
+    }
+    dma_buffer = controller->buffer_pool + UHCI_BULK_BUFFER_OFFSET;
+    if (!direction_in) kmemcpy(dma_buffer, buffer, length);
+    td_count = (length + max_packet - 1U) / max_packet;
+    if (!td_count || td_count > USB_UHCI_TD_CAPACITY) {
+        LOG_ERROR("UHCI", "Quantidade de TDs Bulk fora do limite");
+        return ERR_OVERFLOW;
+    }
+    initial_toggle = direction_in ? record->bulk_in_toggle :
+                   record->bulk_out_toggle;
+    toggle = initial_toggle;
+    kmemset(controller->td_pool, 0, td_count * UHCI_TD_SIZE);
+    controller->td_in_use = td_count;
+    controller->buffer_in_use = 1U;
+    for (uint32_t td = 0U; td < td_count; td++) {
+        uint32_t remaining = length - copied;
+        uint16_t packet = remaining > max_packet ? max_packet :
+                          (uint16_t)remaining;
+        uint32_t next = td + 1U < td_count ? controller->td_pool_phys +
+                     (td + 1U) * UHCI_TD_SIZE : UHCI_PTR_TERM;
+
+        controller->td_pool[td].link = next;
+        controller->td_pool[td].status = uhci_td_status(
+            device->speed == USB_DEVICE_SPEED_LOW, td + 1U == td_count);
+        controller->td_pool[td].token = uhci_token(
+            direction_in ? UHCI_PID_IN : UHCI_PID_OUT, device->usb_address,
+            endpoint_address & 0x0FU, toggle, packet);
+        controller->td_pool[td].buffer = controller->buffer_pool_phys +
+                                         UHCI_BULK_BUFFER_OFFSET + copied;
+        copied += packet;
+        toggle ^= 1U;
+    }
+    controller->queue_head->element = controller->td_pool_phys;
+    asm volatile("" : : : "memory");
+    result = uhci_wait_transfer(controller, td_count, UHCI_BULK_TIMEOUT_MS);
+    controller->queue_head->element = UHCI_PTR_TERM;
+    if (result != OK) {
+        uhci_recover_controller(controller);
+        controller->td_in_use = 0U;
+        controller->buffer_in_use = 0U;
+        return result;
+    }
+    copied = 0U;
+    for (uint32_t td = 0U; td < td_count; td++) {
+        uint32_t remaining = length - copied;
+        uint16_t packet = remaining > max_packet ? max_packet :
+                          (uint16_t)remaining;
+        uint32_t actual = uhci_td_actual(controller->td_pool[td].status);
+
+        if (actual > packet) actual = packet;
+        if (direction_in && actual) kmemcpy(buffer + copied, dma_buffer + copied,
+                                            actual);
+        copied += actual;
+        completed_tds = td + 1U;
+        if (actual < packet) break;
+    }
+    if (direction_in ? record->info.bulk_in_endpoint == endpoint_address :
+                       record->info.bulk_out_endpoint == endpoint_address) {
+        toggle = initial_toggle ^ (completed_tds & 1U);
+        if (direction_in) record->bulk_in_toggle = toggle;
+        else record->bulk_out_toggle = toggle;
+    }
+    controller->td_in_use = 0U;
+    controller->buffer_in_use = 0U;
+    controller->bulk_transfer_count++;
+    if (out_length) *out_length = direction_in ? (uint16_t)copied : length;
+    return OK;
+}
+
+int uhci_bulk_transfer(const usb_device_info_t* device,
+                       uint8_t endpoint_address, uint8_t direction_in,
+                       uint8_t* buffer, uint16_t length,
+                       uint16_t* out_length) {
+    uhci_controller_t* controller;
+    uhci_device_record_t* record;
+    int result;
+
+    if (!device || !buffer || !length) {
+        LOG_ERROR("UHCI", "Argumento nulo na transferencia Bulk");
+        return ERR_NULL;
+    }
+    if (device->speed == USB_DEVICE_SPEED_LOW) {
+        LOG_ERROR("UHCI", "Bulk nao suporta dispositivo low-speed");
+        return ERR_UNAVAILABLE;
+    }
+    controller = uhci_find(device->controller_bus, device->controller_device,
+                           device->controller_function);
+    record = uhci_find_device_record(controller, device);
+    if (!record || !controller->running) {
+        LOG_ERROR("UHCI", "Controlador ou dispositivo Bulk indisponivel");
+        return ERR_NOT_FOUND;
+    }
+    spinlock_acquire(&controller->transfer_lock);
+    result = uhci_bulk_transfer_once(controller, record, device,
+                                     endpoint_address, direction_in, buffer,
+                                     length, out_length);
+    spinlock_release(&controller->transfer_lock);
+    if (result != OK) LOG_ERROR("UHCI", "Transferencia Bulk falhou");
+    return result;
+}
+
+int uhci_reset_bulk_toggles(const usb_device_info_t* device) {
+    uhci_controller_t* controller;
+    uhci_device_record_t* record;
+
+    if (!device) {
+        LOG_ERROR("UHCI", "Dispositivo nulo ao resetar toggles Bulk");
+        return ERR_NULL;
+    }
+    controller = uhci_find(device->controller_bus, device->controller_device,
+                           device->controller_function);
+    record = uhci_find_device_record(controller, device);
+    if (!record || !controller->running) {
+        LOG_ERROR("UHCI", "Dispositivo ausente ao resetar toggles Bulk");
+        return ERR_NOT_FOUND;
+    }
+    spinlock_acquire(&controller->transfer_lock);
+    record->bulk_in_toggle = 0U;
+    record->bulk_out_toggle = 0U;
+    spinlock_release(&controller->transfer_lock);
     return OK;
 }

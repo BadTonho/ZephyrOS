@@ -16,6 +16,8 @@
 #define UHCI_SET_ADDRESS_DELAY_MS 2U
 #define UHCI_RECOVERY_TIMEOUT_MS 50U
 #define UHCI_POLL_BUDGET 4U
+#define UHCI_BULK_TIMEOUT_MS 500U
+#define UHCI_BULK_BUFFER_OFFSET 1024U
 
 int uhci_init(const pci_device_t* pci, const char* controller_id);
 int uhci_poll(uint32_t budget, uint32_t* out_processed);
@@ -30,5 +32,14 @@ int uhci_get_device_count(uint8_t bus, uint8_t device, uint8_t function,
 int uhci_get_device(uint8_t bus, uint8_t device, uint8_t function,
                     uint32_t index, usb_device_info_t* out_info);
 int uhci_validate_state(uint8_t bus, uint8_t device, uint8_t function);
+int uhci_control_request(const usb_device_info_t* device,
+                         uint8_t request_type, uint8_t request,
+                         uint16_t value, uint16_t index, uint16_t length,
+                         uint8_t* data, uint16_t* out_length);
+int uhci_bulk_transfer(const usb_device_info_t* device,
+                       uint8_t endpoint_address, uint8_t direction_in,
+                       uint8_t* buffer, uint16_t length,
+                       uint16_t* out_length);
+int uhci_reset_bulk_toggles(const usb_device_info_t* device);
 
 #endif

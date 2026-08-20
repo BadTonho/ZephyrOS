@@ -85,18 +85,20 @@ int ata_read_sectors(uint32_t lba, uint8_t count, uint8_t* buffer) {
 
 Storage e uma API paralela ao filesystem global. O volume de boot continua
 usando `fs_*`, FAT12/FAT32 legados e a unica rota de escrita ATA. O registro
-adicional suporta no maximo quatro discos, 16 volumes e quatro montagens
+adicional suporta ate `BLOCK_MAX_DEVICES` discos, 16 volumes e quatro montagens
 simultaneas contando o boot, com uma operacao adicional serializada por vez.
 Getters retornam sempre copias.
 
-Os discos usam IDs `ata0` a `ata3`. Um superfloppy FAT reconhecido antes do
+Os discos ATA usam IDs `ata0` a `ata3`. Um superfloppy FAT reconhecido antes do
 MBR usa `ataNraw`; as quatro entradas primarias MBR usam `ataNp1` a
-`ataNp4`. O volume de boot e fixo, aparece montado como gravavel apenas pela
+`ataNp4`. Discos USB MSC usam os IDs estaveis `usb-ms-BB:DD.F-pN-aN-l0` e
+os mesmos sufixos de volume. O volume de boot e fixo, aparece montado como gravavel apenas pela
 API legada e nao pode ser desmontado. Todos os outros comecam desmontados,
 ficam somente-leitura e perdem a montagem no reboot.
 
 ```c
 int storage_get_status(storage_status_t* out_status);
+int storage_refresh(void);
 int storage_get_volume_at(uint8_t index, storage_volume_t* out_volume);
 int storage_mount(const char* id);
 int storage_unmount(const char* id);
@@ -129,6 +131,33 @@ desconhecida. `make storage-fixtures-test` testa o gerador,
 as tres fixtures nos quatro slots IDE, e `make storage-fixtures-verify`
 compara tamanho e SHA-256 depois do QEMU. `run-storage` nao usa modo
 somente-leitura: qualquer escrita auxiliar precisa aparecer na verificacao.
+
+## Camada de bloco e USB MSC (EP4.3)
+
+`block_device_t` e a fronteira comum entre o ATA legado e dispositivos USB
+Mass Storage. Cada provedor possui ID unico, modelo, capacidade em setores,
+setor fixo de 512 bytes, estado online, contadores de leitura/escrita e ultimo
+erro. A API valida callbacks, limites de LBA e capacidade antes de chamar o
+driver; escrita em um provedor somente-leitura retorna `ERR_UNAVAILABLE`.
+
+Os IDs ATA permanecem `ata0` a `ata3`. Um MSC valido recebe um ID de bloco no
+formato `usb-ms-BB:DD.F-pN-aN-l0`, derivado do ID estavel da sessao UHCI. O
+inventario `storage` consome somente `block_device_t`, portanto discos USB e
+ATA aparecem juntos sem aplicar topologia de canal/master/slave ao USB.
+
+O driver MSC aceita somente uma interface de classe `0x08`, subclass `0x06`,
+protocolo BOT `0x50`, LUN 0, exatamente um Bulk IN e um Bulk OUT e setores de
+512 bytes. O BOT implementa CBW, Data-In e CSW com validacao de assinatura,
+tag, residue e status. O subconjunto SCSI e `INQUIRY`, `TEST UNIT READY`,
+`READ CAPACITY(10)` e `READ(10)`. A montagem FAT12/FAT32 continua sob demanda:
+`storage list` detecta e lista o volume, enquanto `storage mount <id>` relê o
+BPB e cria a montagem somente em RAM.
+
+O caminho USB usa UHCI Bulk sincrono, TDs fragmentados por `wMaxPacketSize`,
+toggles por endpoint, buffers DMA fixos e timeout absoluto. Em falha, executa
+Mass Storage Reset, `CLEAR_FEATURE(HALT)` nos dois endpoints, reseta os toggles
+e permite uma unica nova tentativa. Hubs, hot-plug, EHCI, multiplos LUNs,
+`READ CAPACITY(16)` e escrita USB permanecem fora do escopo.
 
 ## Indice global EP3 (`file_index.c`)
 
