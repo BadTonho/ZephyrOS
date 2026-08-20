@@ -20,6 +20,8 @@ static volatile uint32_t processed_total;
 static volatile uint32_t peak_queued;
 static uint8_t drop_warning_active;
 static uint8_t forward_warning_active;
+static keyboard_focus_cancel_filter_t focus_cancel_filter;
+static uint8_t keyboard_initialized;
 
 static uint8_t inb(uint16_t port) {
     uint8_t result;
@@ -67,6 +69,7 @@ char keyboard_scancode_to_ascii(uint8_t scancode) {
 
 void keyboard_init(void) {
     LOG_INFO("KBD", "Inicializando teclado");
+    keyboard_initialized = 0;
     queue_head = 0;
     queue_tail = 0;
     dropped_events = 0;
@@ -75,11 +78,21 @@ void keyboard_init(void) {
     peak_queued = 0;
     drop_warning_active = 0;
     forward_warning_active = 0;
+    focus_cancel_filter = 0;
     if (idt_register_handler(33, keyboard_handler) != OK) {
         LOG_ERROR("KBD", "Falha ao registrar IRQ do teclado");
         return;
     }
+    keyboard_initialized = 1;
     LOG_INFO("KBD", "Teclado inicializado com sucesso");
+}
+
+void keyboard_set_focus_cancel_filter(keyboard_focus_cancel_filter_t filter) {
+    if (!keyboard_initialized) {
+        LOG_WARN("KBD", "Filtro de cancelamento ignorado antes da inicializacao");
+        return;
+    }
+    focus_cancel_filter = filter;
 }
 
 void keyboard_handler(registers_t* regs) {
@@ -124,16 +137,32 @@ void keyboard_process_events(void) {
         uint8_t scancode = event_queue[queue_tail];
         uint32_t focus = process_get_focus();
         process_t* target = process_get_by_pid(focus);
+        int filtered_cancel = 0;
         ipc_msg_t msg;
 
-        if (scancode == KEYBOARD_SCANCODE_F12) {
+        if (focus_cancel_filter && scancode != KEYBOARD_SCANCODE_F12) {
+            filtered_cancel = focus_cancel_filter(scancode);
+        }
+
+        if (scancode == KEYBOARD_SCANCODE_F12 || filtered_cancel) {
             int result = process_cancel_focused_user(PROCESS_EXIT_CANCELLED);
 
             if (result == OK) {
                 queue_tail = (uint8_t)((queue_tail + 1) % KEYBOARD_QUEUE_SIZE);
                 dispatched++;
                 forward_warning_active = 0;
-                LOG_DEBUG("KBD", "F12 cancelou aplicativo ring 3 em foco");
+                if (scancode == KEYBOARD_SCANCODE_F12) {
+                    LOG_DEBUG("KBD", "F12 cancelou aplicativo ring 3 em foco");
+                } else {
+                    LOG_DEBUG("KBD", "Tecla de cancelamento encerrou aplicativo em foco");
+                }
+                continue;
+            }
+            if (filtered_cancel) {
+                LOG_WARN("KBD", "Tecla de cancelamento nao conseguiu encerrar aplicativo em foco");
+                queue_tail = (uint8_t)((queue_tail + 1) % KEYBOARD_QUEUE_SIZE);
+                dispatched++;
+                forward_warning_active = 0;
                 continue;
             }
             if (result != ERR_UNAVAILABLE && result != ERR_NOT_FOUND) {

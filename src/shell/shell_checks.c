@@ -576,10 +576,8 @@ static uint32_t shell_build_regcheck_input_image(uint8_t cancel_scancode) {
     if (shell_demo_emit_jne(code, &offset, loop_offset) != OK) return 0;
 
     shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_PROCESS_EXIT);
-    /* O resultado desta etapa precisa ser identificado como cancelamento,
-       inclusive quando F11 chega diretamente ao ZAPP sem passar pelo
-       cancelamento especial do driver para F12. */
-    shell_demo_emit_mov(code, &offset, 3, APP_EXIT_CANCELLED);
+    code[offset++] = 0x31;
+    code[offset++] = 0xDB;
     code[offset++] = 0xCD;
     code[offset++] = 0x80;
     code[offset++] = 0xF4;
@@ -2052,32 +2050,24 @@ int shell_checks_input_blocked(void) {
     return shell_waiting_user_test;
 }
 
+int shell_checks_should_cancel_focused_user(uint8_t scancode) {
+    return shell_job_is_active() &&
+           shell_regcheck.state == SHELL_REGCHECK_WAIT_CANCEL &&
+           scancode == SHELL_REGCHECK_SCANCODE_F11 &&
+           app_loader_is_foreground_active();
+}
+
 int shell_checks_handle_job_key(uint8_t scancode) {
-    app_message_t message;
-    uint32_t foreground_pid;
     int result;
 
-    if (!shell_job_is_active() ||
-        shell_regcheck.state != SHELL_REGCHECK_WAIT_CANCEL) {
-        return 0;
-    }
-    if (scancode != SHELL_REGCHECK_SCANCODE_F11) return 0;
+    if (!shell_checks_should_cancel_focused_user(scancode)) return 0;
 
-    foreground_pid = app_loader_get_foreground_pid();
-    if (foreground_pid == 0U) {
-        LOG_WARN("SHELL", "RegCheck sem processo em primeiro plano");
-        shell_job_request_cancel();
-        return 1;
-    }
-    message.type = APP_MESSAGE_KEYBOARD;
-    message.data1 = scancode;
-    message.data2 = 0U;
-    result = app_api_message_send(foreground_pid, &message);
+    result = app_loader_cancel_foreground(PROCESS_EXIT_CANCELLED);
     if (result != OK) {
-        LOG_WARN("SHELL", "Falha ao encaminhar tecla de cancelamento do RegCheck");
+        LOG_WARN("SHELL", "Falha ao cancelar ZAPP do RegCheck com F11");
         shell_job_request_cancel();
     } else {
-        LOG_INFO("SHELL", "Tecla de cancelamento encaminhada ao RegCheck");
+        LOG_INFO("SHELL", "F11 solicitou cancelamento do ZAPP do RegCheck");
     }
     return 1;
 }
@@ -2159,6 +2149,7 @@ int shell_checks_start_job(const char* command) {
     if (!active) return 0;
     shell_checks_cancel_requested = 0;
     shell_checks_cancel_started = 0;
+    keyboard_set_focus_cancel_filter(shell_checks_should_cancel_focused_user);
     if (shell_job_start(&shell_checks_job_definition, command) != OK) {
         LOG_WARN("SHELL", "Job de diagnostico nao foi registrado");
     }

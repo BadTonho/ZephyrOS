@@ -1332,5 +1332,6 @@ teclas bloqueadas e pedidos de cancelamento.
 
 Durante um job ativo, teclas comuns sao consumidas para evitar o enchimento da
 fila IPC. `Esc` e `F12` solicitam o cancelamento geral do job. Durante qualquer
-modo do `regcheck`, `F11` e encaminhado ao ZAPP para validar o cancelamento.
-Ao terminar, falhar ou cancelar, o Shell exibe um unico novo prompt.
+modo do `regcheck`, `F11` solicita ao runtime o cancelamento seguro do ZAPP em
+foco para validar a etapa. Ao terminar, falhar ou cancelar, o Shell exibe um
+unico novo prompt.
