@@ -145,6 +145,7 @@ typedef struct {
     uint32_t irq_events;
     uint32_t timeout_count;
     uint32_t recovery_count;
+    uint32_t bulk_transfer_count;
     uint8_t next_address;
     uint8_t port_errors;
     spinlock_t transfer_lock;
