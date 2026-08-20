@@ -29,7 +29,8 @@ static const char* component_names[RECOVERY_COMPONENT_COUNT] = {
     "Update",
     "System Updater",
     "App Store",
-    "Storage"
+    "Storage",
+    "USB"
 };
 
 static int recovery_valid_component(recovery_component_id_t component) {

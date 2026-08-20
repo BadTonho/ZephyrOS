@@ -32,6 +32,7 @@
 #include "apps/guitest.h"
 #include "core/recovery.h"
 #include "core/device_manager.h"
+#include "core/usb_manager.h"
 #include "core/arp.h"
 #include "core/dhcp.h"
 #include "core/dns.h"
@@ -151,6 +152,7 @@ typedef struct {
     int processes_result;
     int device_scan_result;
     int devices_result;
+    int usb_result;
     int network_result;
     int acpi_result;
     int power_result;
@@ -167,6 +169,7 @@ typedef struct {
 typedef struct {
     int pci_result;
     int devices_result;
+    int usb_result;
     int network_result;
 } shell_device_scan_result_t;
 
@@ -921,6 +924,7 @@ static void shell_regcheck_reset(void) {
     shell_regcheck.processes_result = ERR_STATE;
     shell_regcheck.device_scan_result = ERR_STATE;
     shell_regcheck.devices_result = ERR_STATE;
+    shell_regcheck.usb_result = ERR_STATE;
     shell_regcheck.network_result = ERR_STATE;
     shell_regcheck.acpi_result = ERR_STATE;
     shell_regcheck.power_result = ERR_STATE;
@@ -1072,6 +1076,118 @@ static int shell_regcheck_validate_devices(void) {
             LOG_ERROR("SHELL", "RegCheck Full detectou ID Devices instavel");
             return result == OK ? ERR_STATE : result;
         }
+    }
+    return OK;
+}
+
+static int shell_regcheck_same_usb(const usb_controller_info_t* left,
+                                   const usb_controller_info_t* right) {
+    if (!left || !right || left->model != right->model ||
+        left->state != right->state || left->reason != right->reason ||
+        left->vendor_id != right->vendor_id ||
+        left->device_id != right->device_id ||
+        left->class_code != right->class_code ||
+        left->subclass_code != right->subclass_code ||
+        left->prog_if != right->prog_if || left->revision != right->revision ||
+        left->bus != right->bus || left->device != right->device ||
+        left->function != right->function || left->irq != right->irq) {
+        return 0;
+    }
+    for (uint32_t bar = 0; bar < USB_CONTROLLER_BAR_COUNT; bar++) {
+        if (left->bars[bar] != right->bars[bar]) return 0;
+    }
+    return 1;
+}
+
+static int shell_regcheck_validate_usb_entry(
+    const usb_controller_info_t* info) {
+    usb_controller_info_t found;
+    usb_controller_text_t text;
+    int result;
+
+    if (!info || info->class_code != USB_CONTROLLER_PCI_CLASS ||
+        info->subclass_code != USB_CONTROLLER_PCI_SUBCLASS ||
+        (info->prog_if == USB_CONTROLLER_PROG_IF_UHCI &&
+         info->model != USB_CONTROLLER_MODEL_UHCI) ||
+        (info->prog_if == USB_CONTROLLER_PROG_IF_EHCI &&
+         info->model != USB_CONTROLLER_MODEL_EHCI) ||
+        (info->prog_if != USB_CONTROLLER_PROG_IF_UHCI &&
+         info->prog_if != USB_CONTROLLER_PROG_IF_EHCI &&
+         info->model != USB_CONTROLLER_MODEL_OTHER) ||
+        (info->model == USB_CONTROLLER_MODEL_OTHER &&
+         (info->state != USB_CONTROLLER_DEGRADED ||
+          info->reason != USB_CONTROLLER_REASON_OUT_OF_SCOPE)) ||
+        (info->model != USB_CONTROLLER_MODEL_OTHER &&
+         (info->state != USB_CONTROLLER_READY ||
+          info->reason != USB_CONTROLLER_REASON_DRIVER_NOT_INITIALIZED))) {
+        LOG_ERROR("SHELL", "RegCheck detectou entrada USB invalida");
+        return ERR_STATE;
+    }
+    result = usb_manager_format_text(info, &text);
+    if (result != OK || !text.id[0] || !text.name[0] ||
+        !text.location[0] || !text.detail[0]) {
+        LOG_ERROR("SHELL", "RegCheck nao formatou entrada USB");
+        return result == OK ? ERR_STATE : result;
+    }
+    result = usb_manager_find(text.id, &found);
+    if (result != OK || !shell_regcheck_same_usb(info, &found)) {
+        LOG_ERROR("SHELL", "RegCheck detectou ID USB instavel");
+        return result == OK ? ERR_STATE : result;
+    }
+    return OK;
+}
+
+static int shell_regcheck_validate_usb(void) {
+    usb_manager_status_t status;
+    const recovery_component_t* component;
+    uint32_t count = 0;
+    int result;
+    recovery_state_t expected_state;
+    int expected_error;
+
+    result = usb_manager_get_status(&status);
+    if (result != OK || !status.initialized ||
+        usb_manager_get_count(&count) != OK ||
+        count != status.controller_count ||
+        count > USB_MANAGER_MAX_CONTROLLERS ||
+        status.uhci_count + status.ehci_count + status.other_count != count ||
+        status.dma_initialized || status.irq_initialized ||
+        status.transfer_available) {
+        LOG_ERROR("SHELL", "RegCheck detectou resumo USB invalido");
+        return result == OK ? ERR_STATE : result;
+    }
+    for (uint32_t index = 0; index < count; index++) {
+        usb_controller_info_t info;
+
+        result = usb_manager_get_info(index, &info);
+        if (result != OK || shell_regcheck_validate_usb_entry(&info) != OK) {
+            LOG_ERROR("SHELL", "RegCheck detectou controlador USB invalido");
+            return result == OK ? ERR_STATE : result;
+        }
+    }
+    component = recovery_get(RECOVERY_COMPONENT_USB);
+    if (!component) {
+        LOG_ERROR("SHELL", "RegCheck nao consultou recovery USB");
+        return ERR_STATE;
+    }
+    if (status.partial) {
+        expected_state = RECOVERY_STATE_DEGRADED;
+        expected_error = ERR_OVERFLOW;
+    } else if (!count) {
+        expected_state = RECOVERY_STATE_DISABLED;
+        expected_error = ERR_NOT_FOUND;
+    } else if (status.other_count) {
+        expected_state = RECOVERY_STATE_DEGRADED;
+        expected_error = ERR_UNAVAILABLE;
+    } else {
+        expected_state = RECOVERY_STATE_READY;
+        expected_error = OK;
+    }
+    if (status.last_error != expected_error ||
+        component->state != expected_state ||
+        component->last_error != expected_error) {
+        LOG_ERROR("SHELL", "RegCheck detectou recovery USB incoerente");
+        return ERR_STATE;
     }
     return OK;
 }
@@ -1652,7 +1768,13 @@ static void shell_regcheck_run_full_checks(void) {
     recovery_state_t previous_network_state = RECOVERY_STATE_UNKNOWN;
     uint32_t previous_network_failures = 0;
     int previous_network_error = ERR_STATE;
+    const recovery_component_t* usb_before =
+        recovery_get(RECOVERY_COMPONENT_USB);
+    recovery_state_t previous_usb_state = RECOVERY_STATE_UNKNOWN;
+    uint32_t previous_usb_failures = 0;
+    int previous_usb_error = ERR_STATE;
     int network_idempotent = 1;
+    int usb_idempotent = 1;
     log_level_t previous_console_level = log_get_console_level();
     log_level_t previous_buffer_level = log_get_buffer_level();
 
@@ -1660,6 +1782,11 @@ static void shell_regcheck_run_full_checks(void) {
         previous_network_state = network_before->state;
         previous_network_failures = network_before->failures;
         previous_network_error = network_before->last_error;
+    }
+    if (usb_before) {
+        previous_usb_state = usb_before->state;
+        previous_usb_failures = usb_before->failures;
+        previous_usb_error = usb_before->last_error;
     }
     log_set_level(LOG_LEVEL_ERROR);
     shell_regcheck.device_scan_result = shell_run_device_scan(&scan);
@@ -1674,10 +1801,24 @@ static void shell_regcheck_run_full_checks(void) {
         LOG_ERROR("SHELL", "RegCheck Full detectou falhas Network crescentes");
         network_idempotent = 0;
     }
+    usb_before = recovery_get(RECOVERY_COMPONENT_USB);
+    if (usb_before && usb_before->state == previous_usb_state &&
+        usb_before->last_error == previous_usb_error &&
+        usb_before->failures != previous_usb_failures) {
+        LOG_ERROR("SHELL", "RegCheck Full detectou falhas USB crescentes");
+        usb_idempotent = 0;
+    }
     if (shell_regcheck.device_scan_result == OK) {
         shell_regcheck.devices_result = shell_regcheck_validate_devices();
     } else {
         shell_regcheck.devices_result = OK;
+    }
+    if (!usb_idempotent) {
+        shell_regcheck.usb_result = ERR_STATE;
+    } else if (scan.usb_result == OK || scan.usb_result == ERR_OVERFLOW) {
+        shell_regcheck.usb_result = shell_regcheck_validate_usb();
+    } else {
+        shell_regcheck.usb_result = scan.usb_result;
     }
     if (!network_idempotent) {
         shell_regcheck.network_result = ERR_STATE;
@@ -1802,6 +1943,7 @@ static int shell_regcheck_has_failures(void) {
     if (shell_regcheck.full_mode &&
         (shell_regcheck.device_scan_result != OK ||
          shell_regcheck.devices_result != OK ||
+         shell_regcheck.usb_result != OK ||
          shell_regcheck.network_result != OK ||
          shell_regcheck.acpi_result != OK ||
          shell_regcheck.power_result != OK ||
@@ -1846,6 +1988,7 @@ static void shell_regcheck_finish(void) {
                                          shell_regcheck.device_scan_result);
             shell_regcheck_print_failure("devices",
                                          shell_regcheck.devices_result);
+            shell_regcheck_print_failure("usb", shell_regcheck.usb_result);
             shell_regcheck_print_failure("network",
                                          shell_regcheck.network_result);
             shell_regcheck_print_failure("acpi",
@@ -2410,7 +2553,10 @@ static void cmd_help(void) {
     video_print("  wait     - Inspeciona esperas e executa autoteste\n", 0x07);
     video_print("  devices  - Lista inventario de hardware (-v para detalhes)\n", 0x07);
     video_print("  device-info <id> - Mostra detalhes de um dispositivo\n", 0x07);
-    video_print("  device-scan - Refaz apenas a varredura PCI\n", 0x07);
+    video_print("  device-scan - Refaz varredura PCI, USB e rede\n", 0x07);
+    video_print("  usb status|list - Inspeciona controladores USB\n", 0x07);
+    video_print("  usb device <id> - Mostra detalhes de um controlador USB\n",
+                0x07);
     video_print("  net status - Mostra capacidades atuais de rede\n", 0x07);
     video_print("  net devices - Lista controladores de rede PCI\n", 0x07);
     video_print("  net info <id> - Mostra detalhes de uma interface\n", 0x07);
@@ -3847,6 +3993,189 @@ static void cmd_device_info(const char* args) {
     video_print("\n", 0x07);
 }
 
+static uint8_t cmd_usb_recovery_color(recovery_state_t state) {
+    if (state == RECOVERY_STATE_READY) return 0x0A;
+    if (state == RECOVERY_STATE_DEGRADED) return 0x0E;
+    if (state == RECOVERY_STATE_DISABLED) return 0x0C;
+    return 0x08;
+}
+
+static uint8_t cmd_usb_state_color(usb_controller_state_t state) {
+    if (state == USB_CONTROLLER_READY) return 0x0A;
+    if (state == USB_CONTROLLER_DEGRADED) return 0x0E;
+    if (state == USB_CONTROLLER_DISABLED) return 0x0C;
+    return 0x08;
+}
+
+static void cmd_usb_status(void) {
+    usb_manager_status_t status;
+    const recovery_component_t* health;
+
+    if (usb_manager_get_status(&status) != OK) {
+        LOG_ERROR("SHELL", "Estado USB indisponivel");
+        video_print("Erro: inventario USB indisponivel.\n", 0x0C);
+        return;
+    }
+    health = recovery_get(RECOVERY_COMPONENT_USB);
+    if (!health) {
+        LOG_ERROR("SHELL", "Componente USB ausente do health");
+        video_print("Erro: health USB indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("USB:\n  Servico: ", 0x0B);
+    video_print(recovery_state_name(health->state),
+                cmd_usb_recovery_color(health->state));
+    video_print("\n  Inventario: ", 0x07);
+    video_print(status.partial ? "PARCIAL" : "COMPLETO",
+                status.partial ? 0x0E : 0x0A);
+    video_print("\n  Controladores: ", 0x07);
+    print_num(status.controller_count);
+    video_print("\n  UHCI: ", 0x07);
+    print_num(status.uhci_count);
+    video_print("  EHCI: ", 0x07);
+    print_num(status.ehci_count);
+    video_print("  Outros: ", 0x07);
+    print_num(status.other_count);
+    video_print("\n  DMA: INDISPONIVEL  IRQ: INDISPONIVEL", 0x0E);
+    video_print("\n  Transferencias: INDISPONIVEL", 0x0E);
+    video_print("\n  Ultimo erro: ", 0x07);
+    print_num((uint32_t)status.last_error);
+    video_print("\n", 0x07);
+}
+
+static int cmd_usb_print_entry(const usb_controller_info_t* info) {
+    usb_controller_text_t text;
+    int result;
+
+    if (!info) {
+        LOG_ERROR("SHELL", "Entrada nula ao listar USB");
+        return ERR_NULL;
+    }
+    result = usb_manager_format_text(info, &text);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Falha ao formatar entrada USB");
+        return result;
+    }
+    video_print("  ", 0x07);
+    video_print(text.id, 0x0B);
+    video_print("  ", 0x07);
+    video_print(usb_manager_state_name(info->state),
+                cmd_usb_state_color(info->state));
+    video_print("  ", 0x07);
+    video_print(usb_manager_model_name(info->model), 0x07);
+    video_print("  ", 0x07);
+    video_print(text.location, 0x07);
+    video_print("\n    ", 0x08);
+    video_print(text.detail, 0x07);
+    video_print("\n", 0x07);
+    return OK;
+}
+
+static void cmd_usb_list(const char* args) {
+    uint32_t count = 0;
+
+    if (!shell_args_equal(args, "")) {
+        LOG_WARN("SHELL", "Uso invalido de usb list");
+        video_print("Uso: usb list\n", 0x0C);
+        return;
+    }
+    if (usb_manager_get_count(&count) != OK) {
+        LOG_ERROR("SHELL", "Contagem USB indisponivel");
+        video_print("Erro: inventario USB indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("Controladores USB detectados:\n", 0x0B);
+    for (uint32_t index = 0; index < count; index++) {
+        usb_controller_info_t info;
+
+        if (usb_manager_get_info(index, &info) != OK ||
+            cmd_usb_print_entry(&info) != OK) {
+            video_print("Erro: entrada USB indisponivel.\n", 0x0C);
+            return;
+        }
+    }
+}
+
+static void cmd_usb_device(const char* args) {
+    char id[USB_CONTROLLER_ID_SIZE];
+    usb_controller_info_t info;
+    usb_controller_text_t text;
+    int result = shell_read_single_arg(args, id, sizeof(id));
+
+    if (result != OK) {
+        LOG_WARN("SHELL", "Uso invalido de usb device");
+        video_print("Uso: usb device <id>\n", 0x0C);
+        return;
+    }
+    result = usb_manager_find(id, &info);
+    if (result == ERR_NOT_FOUND) {
+        video_print("Erro: controlador USB nao encontrado.\n", 0x0C);
+        return;
+    }
+    if (result != OK || usb_manager_format_text(&info, &text) != OK) {
+        LOG_ERROR("SHELL", "Falha ao consultar controlador USB");
+        video_print("Erro: controlador USB indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("Controlador USB:\n  ID: ", 0x0B);
+    video_print(text.id, 0x0B);
+    video_print("\n  Nome: ", 0x07);
+    video_print(text.name, 0x07);
+    video_print("\n  Modelo: ", 0x07);
+    video_print(usb_manager_model_name(info.model), 0x07);
+    video_print("\n  Estado: ", 0x07);
+    video_print(usb_manager_state_name(info.state),
+                cmd_usb_state_color(info.state));
+    video_print("\n  Motivo: ", 0x07);
+    video_print(usb_manager_reason_name(info.reason), 0x07);
+    video_print("\n  Local: ", 0x07);
+    video_print(text.location, 0x07);
+    video_print("\n  Vendor: 0x", 0x07);
+    cmd_print_hex(info.vendor_id, 4U);
+    video_print("  Device: 0x", 0x07);
+    cmd_print_hex(info.device_id, 4U);
+    video_print("\n  Class: 0x", 0x07);
+    cmd_print_hex(info.class_code, 2U);
+    video_print("  Subclass: 0x", 0x07);
+    cmd_print_hex(info.subclass_code, 2U);
+    video_print("  ProgIF: 0x", 0x07);
+    cmd_print_hex(info.prog_if, 2U);
+    video_print("\n  Revision: 0x", 0x07);
+    cmd_print_hex(info.revision, 2U);
+    video_print("  IRQ: ", 0x07);
+    if (info.irq == USB_CONTROLLER_IRQ_UNKNOWN) video_print("UNKNOWN", 0x08);
+    else print_num(info.irq);
+    video_print("\n  BARs: ", 0x07);
+    for (uint32_t bar = 0; bar < USB_CONTROLLER_BAR_COUNT; bar++) {
+        video_print("0x", 0x08);
+        cmd_print_hex(info.bars[bar], 8U);
+        if (bar + 1U < USB_CONTROLLER_BAR_COUNT) video_print(", ", 0x08);
+    }
+    video_print("\n  Detalhe: ", 0x07);
+    video_print(text.detail, 0x07);
+    video_print("\n", 0x07);
+}
+
+static void cmd_usb(const char* args) {
+    const char* subargs;
+
+    if (shell_args_equal(args, "") || shell_args_equal(args, "status")) {
+        cmd_usb_status();
+        return;
+    }
+    if (shell_args_equal(args, "list")) {
+        cmd_usb_list("");
+        return;
+    }
+    subargs = shell_match_subcommand(args, "device");
+    if (subargs) {
+        cmd_usb_device(subargs);
+        return;
+    }
+    LOG_WARN("SHELL", "Uso invalido do comando usb");
+    video_print("Uso: usb status|list|device <id>\n", 0x0E);
+}
+
 static int shell_run_device_scan(shell_device_scan_result_t* scan) {
     int recovery_result;
 
@@ -3856,6 +4185,7 @@ static int shell_run_device_scan(shell_device_scan_result_t* scan) {
     }
     scan->pci_result = pci_init();
     scan->devices_result = ERR_STATE;
+    scan->usb_result = ERR_STATE;
     scan->network_result = ERR_STATE;
     if (scan->pci_result != OK && scan->pci_result != ERR_OVERFLOW) {
         recovery_result =
@@ -3866,6 +4196,15 @@ static int shell_run_device_scan(shell_device_scan_result_t* scan) {
         }
         LOG_ERROR("SHELL", "Falha ao refazer varredura PCI");
         return scan->pci_result;
+    }
+
+    scan->usb_result = usb_manager_refresh();
+    if (scan->usb_result == ERR_STATE) {
+        scan->usb_result = usb_manager_init();
+    }
+    if (scan->usb_result != OK && scan->usb_result != ERR_OVERFLOW) {
+        LOG_ERROR("SHELL", "Falha ao atualizar inventario USB");
+        return scan->usb_result;
     }
 
     scan->devices_result = device_manager_refresh();
@@ -3897,6 +4236,7 @@ static int shell_run_device_scan(shell_device_scan_result_t* scan) {
         return recovery_result;
     }
     if (scan->pci_result != OK) return scan->pci_result;
+    if (scan->usb_result == ERR_OVERFLOW) return ERR_OVERFLOW;
     return scan->devices_result;
 }
 
@@ -3919,16 +4259,24 @@ static void cmd_device_scan(const char* args) {
         video_print("Erro: inventario de dispositivos indisponivel.\n", 0x0C);
         return;
     }
+    if (scan.usb_result != OK && scan.usb_result != ERR_OVERFLOW) {
+        video_print("Erro: inventario USB indisponivel.\n", 0x0C);
+        return;
+    }
     if (scan.network_result != OK &&
         scan.network_result != ERR_OVERFLOW) {
         LOG_WARN("SHELL", "Falha ao atualizar inventario de rede");
         video_print("Aviso: inventario de rede indisponivel.\n", 0x0E);
     }
     if (result == ERR_OVERFLOW) {
-        video_print("Varredura PCI parcial; inventario atualizado.\n", 0x0E);
+        video_print("Varredura PCI/USB parcial; inventario atualizado.\n",
+                    0x0E);
         return;
     }
     video_print("Varredura PCI concluida; inventario atualizado.\n", 0x0A);
+    if (scan.usb_result == ERR_OVERFLOW) {
+        video_print("Aviso: inventario USB parcial.\n", 0x0E);
+    }
     if (scan.network_result == ERR_OVERFLOW) {
         video_print("Aviso: inventario de rede parcial.\n", 0x0E);
     }
@@ -11435,6 +11783,8 @@ int shell_process_command(const char* input) {
         cmd_device_info(input);
     } else if (kstrcmp(cmd, "device-scan") == 0) {
         cmd_device_scan(input);
+    } else if (kstrcmp(cmd, "usb") == 0) {
+        cmd_usb(input);
     } else if (kstrcmp(cmd, "net") == 0) {
         cmd_net(input);
     } else if (kstrcmp(cmd, "ping") == 0) {

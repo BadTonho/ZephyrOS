@@ -49,6 +49,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/core/update_remote.h` | `docs/14-atualizacoes/distribuicao-remota.md` |
 | `src/include/core/update_remote_config.h` | `docs/14-atualizacoes/distribuicao-remota.md` |
 | `src/include/core/update_trust.h` | `docs/14-atualizacoes/contrato-zupd-v1.md` |
+| `src/include/core/usb_manager.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/video.h` | `docs/05-drivers/drivers.md` |
 | `src/include/core/version.h` | `docs/04-kernel/kernel.md` |
 | `src/include/drivers/acpi.h` | `docs/05-drivers/drivers.md` |
@@ -246,3 +247,11 @@ condicao, disponibilidade, motivos de desbloqueio, deadlines absolutos,
 estatisticas e autoteste privado. O contrato canonico fica em
 `docs/07-processos/processos.md`; as APIs de processo/thread permanecem
 internas ao kernel e nao alteram a ABI ring 3.
+
+Desde a EP4.1, `src/include/core/usb_manager.h` define o inventario limitado a
+oito controladores USB encontrados no snapshot PCI, com classificacao UHCI,
+EHCI ou outro, IDs `usb-pci-BB:DD.F`, dados PCI copiados, estados, motivos e
+consultas por indice/ID. A fase e somente de descoberta: nao escreve PCI, nao
+acessa BARs e nao inicializa DMA, IRQ, portas ou transferencias. O componente
+`RECOVERY_COMPONENT_USB` foi anexado ao fim do enum para preservar os valores
+anteriores; `run-usb` e apenas um perfil QEMU de validacao.

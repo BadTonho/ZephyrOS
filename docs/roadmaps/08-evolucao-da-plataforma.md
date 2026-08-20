@@ -198,12 +198,38 @@ impedir navegacao normal do Explorer ou uso do filesystem.
 
 ### EP4.1 - Inventario e contrato de controladores
 
-- [ ] Detectar e inventariar controladores USB no PCI, distinguindo UHCI e
+**Estado:** implementada; validacao manual do usuario pendente.
+
+O escopo desta entrega e somente a descoberta por PCI. O `usb_manager` le o
+snapshot ja criado pelo PCI, copia BDF, IRQ e BARs e nao escreve configuracao,
+nao acessa BARs e nao inicializa DMA, IRQ, portas ou transferencias USB. O
+limite e de oito controladores, com IDs estaveis no formato
+`usb-pci-BB:DD.F`. UHCI (`ProgIF 0x00`) e EHCI (`ProgIF 0x20`) sao
+classificados; outros controladores permanecem inventariados como fora do
+escopo.
+
+- [x] Detectar e inventariar controladores USB no PCI, distinguindo UHCI e
   EHCI, sem habilitar DMA, IRQ ou transferencias durante a descoberta.
-- [ ] Adicionar `usb status`, `usb list` e `usb device <id>` para consultas
+- [x] Adicionar `usb status`, `usb list` e `usb device <id>` para consultas
   somente-leitura e integrar o componente USB ao `health`.
-- [ ] Definir IDs estaveis, estados `READY`, `DEGRADED` e `DISABLED`, limites
+- [x] Definir IDs estaveis, estados `READY`, `DEGRADED` e `DISABLED`, limites
   de dispositivos e motivos de erro antes de inicializar um controlador.
+
+`device-scan` atualiza o inventario USB de forma idempotente. `regcheck full`
+verifica limites, classificacao, IDs, dados copiados do PCI, coerencia com o
+Recovery e a ausencia de inicializacao de DMA, IRQ ou transferencias. O alvo
+`run` permanece inalterado; `run-usb` acrescenta um controlador UHCI PIIX3 ao
+QEMU para a validacao manual.
+
+### Validacao pendente da EP4.1
+
+O usuario deve executar `make q3check`, `make clean && make`, `make run` e
+`make run-usb`. No QEMU sem USB, `usb status`, `usb list`, uma busca por ID
+inexistente, `health summary`, `regcheck full` e `memcheck` devem terminar sem
+falha estrutural e reportar USB `DISABLED`. No `run-usb`, `usb status`,
+`usb list`, `usb device <id>`, `device-scan` e `regcheck full` devem confirmar
+UHCI e o ID estavel. Um `QEMU_USB_ARGS` alternativo deve confirmar EHCI apenas
+como inventario.
 
 ### EP4.2 - UHCI, portas e transferencias de controle
 

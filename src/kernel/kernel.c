@@ -5,6 +5,7 @@
 #include "core/errors.h"
 #include "core/device_manager.h"
 #include "core/network_manager.h"
+#include "core/usb_manager.h"
 #include "core/power.h"
 #include "core/recovery.h"
 #include "core/app_api.h"
@@ -718,6 +719,26 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     } else {
         LOG_ERROR("KERNEL", "Falha ao enumerar PCI");
         video_print("[!!] PCI indisponivel\n", 0x0C);
+    }
+
+    video_print("[..] Criando inventario USB...\n", 0x08);
+    int usb_result = usb_manager_init();
+    usb_manager_status_t usb_status;
+    if (usb_result != OK && usb_result != ERR_OVERFLOW) {
+        LOG_ERROR("KERNEL", "Falha ao criar inventario USB");
+        video_print("[!!] Inventario USB indisponivel\n", 0x0C);
+    } else if (usb_manager_get_status(&usb_status) != OK) {
+        LOG_ERROR("KERNEL", "Falha ao consultar inventario USB");
+        video_print("[!!] Estado USB indisponivel\n", 0x0C);
+    } else if (usb_status.partial) {
+        video_print("[!!] Inventario USB parcial\n", 0x0E);
+    } else if (!usb_status.controller_count) {
+        video_print("[--] Nenhum controlador USB encontrado\n", 0x08);
+    } else if (usb_status.other_count) {
+        video_print("[!!] USB detectado com controlador fora do escopo\n",
+                    0x0E);
+    } else {
+        video_print("[OK] Inventario USB pronto\n", 0x07);
     }
 
     video_print("[..] Iniciando AC97...\n", 0x08);
