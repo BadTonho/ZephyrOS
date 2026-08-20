@@ -14,6 +14,7 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 | `src/include/apps/shell_command_utils.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/apps/shell_input.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/apps/shell_runtime.h` | `docs/09-shell/refatoracao-shell.md` |
+| `src/include/apps/shell_job.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/apps/taskmanager.h` | `docs/13-aplicativos/aplicativos.md` |
 | `src/include/core/app_api.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/app_catalog.h` | `docs/13-aplicativos/app-store.md` |

@@ -8,7 +8,8 @@ typedef void (*shell_dispatch_handler_t)(const char* arguments);
 typedef enum {
     SHELL_DISPATCH_FLAG_NONE = 0x00,
     SHELL_DISPATCH_FLAG_MAY_BLOCK = 0x01,
-    SHELL_DISPATCH_FLAG_OPENS_SCENE = 0x02
+    SHELL_DISPATCH_FLAG_OPENS_SCENE = 0x02,
+    SHELL_DISPATCH_FLAG_COOPERATIVE = 0x04
 } shell_dispatch_flags_t;
 
 typedef struct {

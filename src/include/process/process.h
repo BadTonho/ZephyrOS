@@ -136,6 +136,7 @@ int process_create_user_image_suspended_with_launch(
     uint32_t stack_size, const app_launch_info_t* launch,
     uint32_t* pid_out);
 int process_create_user_test(int trigger_fault, uint32_t* pid_out);
+int process_cancel_user_test(uint32_t pid, uint32_t exit_code);
 int process_start_user(uint32_t pid);
 void process_destroy(process_t* proc);
 int process_reap_finished_user(void);

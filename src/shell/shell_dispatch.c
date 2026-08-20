@@ -1,4 +1,5 @@
 #include "apps/shell_dispatch.h"
+#include "apps/shell_job.h"
 #include "core/errors.h"
 #include "core/string.h"
 #include "core/video.h"
@@ -70,6 +71,7 @@ extern void shell_dispatch_cmd_search(const char* arguments);
 extern void shell_dispatch_cmd_mouse(const char* arguments);
 
 static const shell_dispatch_entry_t shell_dispatch_table[] = {
+    {"job", shell_dispatch_cmd_job, SHELL_DISPATCH_FLAG_NONE},
     {"help", shell_dispatch_cmd_help, SHELL_DISPATCH_FLAG_NONE},
     {"clear", shell_dispatch_cmd_clear, SHELL_DISPATCH_FLAG_NONE},
     {"ls", shell_dispatch_cmd_ls, SHELL_DISPATCH_FLAG_NONE},
@@ -91,11 +93,14 @@ static const shell_dispatch_entry_t shell_dispatch_table[] = {
     {"device-scan", shell_dispatch_cmd_device_scan,
      SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"usb", shell_dispatch_cmd_usb, SHELL_DISPATCH_FLAG_MAY_BLOCK},
-    {"net", shell_dispatch_cmd_net, SHELL_DISPATCH_FLAG_MAY_BLOCK},
-    {"ping", shell_dispatch_cmd_ping, SHELL_DISPATCH_FLAG_MAY_BLOCK},
+    {"net", shell_dispatch_cmd_net,
+     SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_COOPERATIVE},
+    {"ping", shell_dispatch_cmd_ping,
+     SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_COOPERATIVE},
     {"nslookup", shell_dispatch_cmd_nslookup,
-     SHELL_DISPATCH_FLAG_MAY_BLOCK},
-    {"http", shell_dispatch_cmd_http, SHELL_DISPATCH_FLAG_MAY_BLOCK},
+     SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_COOPERATIVE},
+    {"http", shell_dispatch_cmd_http,
+     SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_COOPERATIVE},
     {"acpi", shell_dispatch_cmd_acpi, SHELL_DISPATCH_FLAG_NONE},
     {"power", shell_dispatch_cmd_power, SHELL_DISPATCH_FLAG_NONE},
     {"kmetrics", shell_dispatch_cmd_kmetrics, SHELL_DISPATCH_FLAG_NONE},
@@ -104,20 +109,23 @@ static const shell_dispatch_entry_t shell_dispatch_table[] = {
     {"schedcheck", shell_dispatch_cmd_schedcheck,
      SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"q2check", shell_dispatch_cmd_q2check,
-     SHELL_DISPATCH_FLAG_MAY_BLOCK},
+     SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_COOPERATIVE},
     {"regcheck", shell_dispatch_cmd_regcheck,
-     SHELL_DISPATCH_FLAG_MAY_BLOCK},
+     SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_COOPERATIVE},
     {"appcheck", shell_dispatch_cmd_appcheck,
-     SHELL_DISPATCH_FLAG_MAY_BLOCK},
-    {"pkg", shell_dispatch_cmd_pkg, SHELL_DISPATCH_FLAG_MAY_BLOCK},
-    {"store", shell_dispatch_cmd_store, SHELL_DISPATCH_FLAG_MAY_BLOCK},
-    {"update", shell_dispatch_cmd_update, SHELL_DISPATCH_FLAG_MAY_BLOCK},
+     SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_COOPERATIVE},
+    {"pkg", shell_dispatch_cmd_pkg,
+     SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_COOPERATIVE},
+    {"store", shell_dispatch_cmd_store,
+     SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_COOPERATIVE},
+    {"update", shell_dispatch_cmd_update,
+     SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_COOPERATIVE},
     {"pkgcheck", shell_dispatch_cmd_pkgcheck,
      SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"app", shell_dispatch_cmd_app,
      SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_OPENS_SCENE},
     {"usertest", shell_dispatch_cmd_usertest,
-     SHELL_DISPATCH_FLAG_MAY_BLOCK},
+     SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_COOPERATIVE},
     {"beep", shell_dispatch_cmd_beep, SHELL_DISPATCH_FLAG_NONE},
     {"melody", shell_dispatch_cmd_melody, SHELL_DISPATCH_FLAG_NONE},
     {"desktop", shell_dispatch_cmd_desktop,
@@ -153,7 +161,8 @@ static const shell_dispatch_entry_t shell_dispatch_table[] = {
      SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_OPENS_SCENE},
     {"storage", shell_dispatch_cmd_storage,
      SHELL_DISPATCH_FLAG_MAY_BLOCK},
-    {"index", shell_dispatch_cmd_index, SHELL_DISPATCH_FLAG_MAY_BLOCK},
+    {"index", shell_dispatch_cmd_index,
+     SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_COOPERATIVE},
     {"search", shell_dispatch_cmd_search, SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"mouse", shell_dispatch_cmd_mouse, SHELL_DISPATCH_FLAG_NONE}
 };

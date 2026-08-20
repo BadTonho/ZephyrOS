@@ -2,6 +2,7 @@
 #include "apps/shell_input.h"
 #include "apps/shell_dispatch.h"
 #include "apps/shell_command_utils.h"
+#include "apps/shell_job.h"
 #include "apps/shell_runtime.h"
 #include "apps/taskmanager.h"
 #include "apps/guitest.h"
@@ -315,6 +316,7 @@ void shell_report_app_loader_result(void) {
 
 void shell_init(void) {
     shell_input_init();
+    shell_job_reset();
     shell_hosted_reset();
     shell_diagnostics_reset();
 }
@@ -325,7 +327,8 @@ void shell_print_prompt(void) {
 
 static int shell_should_show_prompt(void) {
     if (shell_runtime_is_hosted_visible()) {
-        return !shell_checks_input_blocked() && !app_loader_is_foreground_active();
+        return !shell_checks_input_blocked() && !shell_job_input_blocked() &&
+               !app_loader_is_foreground_active();
     }
 
     /* Apps que retornam ao Desktop ja redesenham a cena antes de voltar. */
@@ -334,6 +337,7 @@ static int shell_should_show_prompt(void) {
     if (taskmgr_is_open() || taskmgr_is_gui_open()) return 0;
     if (settings_is_open() || wm_is_active() || guitest_is_active()) return 0;
     if (shell_checks_input_blocked()) return 0;
+    if (shell_job_input_blocked()) return 0;
     if (app_loader_is_foreground_active()) return 0;
     return 1;
 }
@@ -365,6 +369,11 @@ void shell_runtime_handle_terminal_key(uint8_t scancode) {
 }
 
 void shell_handle_key(uint8_t scancode) {
+    if (shell_job_is_active()) {
+        shell_job_handle_key(scancode);
+        return;
+    }
+
     int config_result = taskbar_handle_config_key(scancode);
     if (config_result) {
         shell_input_cancel_extended();

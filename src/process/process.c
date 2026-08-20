@@ -820,6 +820,29 @@ int process_create_user_test(int trigger_fault, uint32_t* pid_out) {
                                      PAGE_SIZE, 1, pid_out);
 }
 
+int process_cancel_user_test(uint32_t pid, uint32_t exit_code) {
+    process_t* proc = process_get_by_pid(pid);
+    int result;
+
+    if (!proc) {
+        LOG_WARN("PROC", "UserTest nao encontrado para cancelamento");
+        return ERR_NOT_FOUND;
+    }
+    if (!proc->user_test) {
+        LOG_WARN("PROC", "PID informado nao e um UserTest");
+        return ERR_UNAVAILABLE;
+    }
+    if (proc->state == PROCESS_STATE_ZOMBIE) return OK;
+
+    result = process_mark_user_zombie(proc, exit_code, 0);
+    if (result != OK) {
+        LOG_ERROR("PROC", "Falha ao cancelar UserTest");
+        return result;
+    }
+    LOG_DEBUG("PROC", "UserTest cancelado");
+    return OK;
+}
+
 uint32_t process_get_user_count(void) {
     uint32_t count = 0;
     for (int i = 0; i < MAX_PROCESSES; i++) {

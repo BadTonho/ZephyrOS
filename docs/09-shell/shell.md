@@ -65,6 +65,7 @@ src/shell/
 |-- shell_commands_packages.c   pkg, store, update e pkgcheck
 |-- shell_commands_apps.c       apps, cenas e aplicativos nativos
 |-- shell_hosted.c              terminal hospedado no Window Manager
+|-- shell_job.c                 executor cooperativo de operacoes demoradas
 `-- shell.c                     API publica, roteamento e politica de prompt
 ```
 
@@ -158,6 +159,11 @@ barras ISO/ABNT2 seja igual em todas as camadas.
 
 ## Parser de Comandos
 
+Os comandos marcados com `SHELL_DISPATCH_FLAG_COOPERATIVE` sao executados
+atraves do executor de jobs quando possuem uma operacao demorada. O dispatcher
+continua somente encaminhando o comando; o loop do Shell controla polling,
+cancelamento, consumo de teclado e exibicao do prompt.
+
 ### Separando Comando e Argumentos
 
 `shell_process_command()` mantém a validação da entrada nula e a retomada do
@@ -167,8 +173,9 @@ contrato legado: ignora espaços, tabs, CR, LF e ESC no início; extrai no máxi
 argumentos; e entrega o restante sem interpretar aspas ou subcomandos.
 
 A tabela em `src/shell/shell_dispatch.c` contém nome, handler e flags de
-execução. As flags `MAY_BLOCK` e `OPENS_SCENE` são metadados nesta fase e não
-alteram o comportamento. Adaptadores uniformes em `shell.c` preservam os
+execução. As flags `MAY_BLOCK`, `OPENS_SCENE` e `COOPERATIVE` são metadados de
+encaminhamento; `COOPERATIVE` identifica os comandos ligados ao executor de
+jobs. Adaptadores uniformes nos módulos de domínio preservam os
 handlers atuais, inclusive os comandos que abrem cenas ou aplicativos.
 
 Comandos desconhecidos mantêm a mensagem existente e retornam `OK`, assim como
@@ -366,3 +373,35 @@ void shell_dispatch_cmd_meucomando(const char* arguments) {
 ```c
 video_print("  meucomando - Descrição\n", 0x07);
 ```
+---
+
+## Jobs cooperativos (Fase 4)
+
+`src/shell/shell_job.c` mantem um unico contexto estatico para operacoes
+demoradas. Os estados publicados por `src/include/apps/shell_job.h` sao
+`IDLE`, `RUNNING`, `CANCEL_REQUESTED`, `SUCCEEDED`, `FAILED` e `CANCELLED`.
+O contexto registra o tipo do job, fase, progresso, ticks de inicio e fim,
+erro, teclas bloqueadas e pedidos de cancelamento.
+
+Quando um comando cooperativo inicia, o Shell mostra uma unica informacao de
+entrada bloqueada. O loop passa a usar espera IPC curta, executa um passo por
+ciclo, continua consumindo eventos de teclado e atualiza o terminal hospedado.
+Teclas comuns sao consumidas e ignoradas; `Esc` e `F12` solicitam
+cancelamento. O primeiro evento bloqueado gera somente um aviso no log.
+
+`job status` exibe o ultimo estado conhecido, o job ativo ou concluido, fase,
+progresso, erro, teclas bloqueadas e cancelamentos. Ao concluir, falhar ou
+cancelar, o executor limpa a entrada e mostra exatamente um novo prompt.
+
+As flags `MAY_BLOCK`, `OPENS_SCENE` e `COOPERATIVE` da tabela em
+`src/shell/shell_dispatch.c` sao metadados de encaminhamento. A flag
+`COOPERATIVE` identifica os comandos ligados ao executor, mas a politica de
+prompt e o cancelamento continuam centralizados no ciclo do Shell.
+
+Nesta fase, rede usa os estados assincronos existentes de DNS, ICMP, HTTP e
+DHCP; `index rebuild` usa `file_index_poll`; e os adaptadores de pacotes,
+Store e Update preservam as APIs sincronas, bombeando eventos durante as
+operacoes que ja possuem pontos de cancelamento. Os testes Q2, RegCheck e
+AppCheck usam o mesmo fluxo de resultados do App Loader. Cenas interativas
+como Editor, Player, Task Manager e Window Manager permanecem fora deste
+executor.

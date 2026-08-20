@@ -10,6 +10,7 @@ Mostra a lista de todos os comandos.
 ```
 zephyr> help
 Comandos disponiveis:
+  job status - Mostra o job cooperativo atual
   help      - Mostra esta mensagem
   clear     - Limpa tela e historico do terminal
   desktop   - Abre a area de trabalho
@@ -1322,3 +1323,12 @@ na fila, ele fica em `BLOCKED` e volta a `READY` quando teclado ou outro
 produtor envia uma mensagem.
 
 Categorias: Tela, Barra de Tarefas, Janelas, Ícones, Sistema, Som, Sobre.
+## `job status`
+
+Mostra o ultimo estado conhecido do executor cooperativo de operacoes
+demoradas. A saida inclui tipo, comando, fase, progresso, erro, quantidade de
+teclas bloqueadas e pedidos de cancelamento.
+
+Durante um job ativo, teclas comuns sao consumidas para evitar o enchimento da
+fila IPC. `Esc` e `F12` solicitam cancelamento. Ao terminar, falhar ou cancelar,
+o Shell exibe um unico novo prompt.
