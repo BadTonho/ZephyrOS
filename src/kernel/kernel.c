@@ -51,9 +51,11 @@
 #include "apps/guitest.h"
 
 #define SHELL_KEYBOARD_DISPATCH_BUDGET (IPC_MSG_QUEUE_SIZE / 2U)
+#define KERNEL_USB_POLL_BUDGET 4U
 
 static int kernel_service_fallback = 0;
 static int kernel_network_poll_enabled = 1;
+static int kernel_usb_poll_enabled = 1;
 static uint32_t kernel_shell_pid = 0;
 static volatile uint32_t kernel_pending_shell_request = 0;
 
@@ -346,6 +348,16 @@ static void kernel_dispatch_timers(void) {
     }
 }
 
+static void kernel_poll_usb(void) {
+    uint32_t processed = 0U;
+
+    if (!kernel_usb_poll_enabled) return;
+    if (usb_manager_poll(KERNEL_USB_POLL_BUDGET, &processed) != OK) {
+        kernel_usb_poll_enabled = 0;
+        LOG_ERROR("KERNEL", "Processamento USB UHCI foi desabilitado");
+    }
+}
+
 void system_process_main(void) {
     while (1) {
         uint32_t network_processed = 0;
@@ -358,6 +370,7 @@ void system_process_main(void) {
             kernel_network_poll_enabled = 0;
             LOG_ERROR("KERNEL", "Processamento Ethernet foi desabilitado");
         }
+        kernel_poll_usb();
         kernel_dispatch_timers();
         file_index_poll(1U, &index_steps);
         fm_update();
@@ -734,8 +747,8 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         video_print("[!!] Inventario USB parcial\n", 0x0E);
     } else if (!usb_status.controller_count) {
         video_print("[--] Nenhum controlador USB encontrado\n", 0x08);
-    } else if (usb_status.other_count) {
-        video_print("[!!] USB detectado com controlador fora do escopo\n",
+    } else if (usb_status.last_error != OK) {
+        video_print("[!!] Runtime USB degradado; inventario preservado\n",
                     0x0E);
     } else {
         video_print("[OK] Inventario USB pronto\n", 0x07);
@@ -996,6 +1009,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
                 LOG_ERROR("KERNEL",
                           "Processamento Ethernet fallback desabilitado");
             }
+            kernel_poll_usb();
             kernel_dispatch_timers();
             file_index_poll(1U, &index_steps);
             fm_update();

@@ -22,6 +22,7 @@ src/drivers/
 ├── speaker.c        → PC Speaker (som)
 ├── timer.c          → Timer (PIT)
 ├── tss.c            → Task State Segment
+├── uhci.c           → Controlador USB UHCI, portas raiz e controle USB
 ├── vesa.c           → VESA BIOS Extensions (modo gráfico)
 └── video.c          → VGA Text Mode
 ```
@@ -289,6 +290,26 @@ Durante a segunda metade do boot, `video_begin_update()` mantém os logs no
 backbuffer até a cena inicial estar pronta, reduzindo cópias completas causadas
 por scroll. `video_flush_updates()` encerra frames de texto pendentes e é usado
 pelo panic handler para garantir que um diagnóstico fatal continue visível.
+
+---
+
+## UHCI (`uhci.c`)
+
+O driver UHCI usa somente a porta I/O descrita no BAR0 do controlador PCI e
+habilita I/O/bus mastering apenas depois de validar classe, ProgIF, IRQ e
+limites do BAR. O agendamento DMA possui frame list de 1024 entradas, um queue
+head de controle, pool fixo de TDs e buffers de descritor limitados; todas as
+estruturas são páginas físicas alinhadas do PMM.
+
+O handler de IRQ compartilhada apenas reconhece o status e sinaliza trabalho.
+`uhci_poll()` processa o estado fora da IRQ, com deadlines absolutos para
+reset, controle, `SET_ADDRESS` e recuperação. Cada porta raiz pode ficar
+`EMPTY`, `ENUMERATING`, `CONFIGURED` ou `DEGRADED` sem desabilitar as demais.
+
+A enumeração aceita apenas uma configuração, uma interface e seus endpoints,
+lê os descritores Device/Configuration, atribui um endereço e executa
+`SET_CONFIGURATION`. Não existem hubs, strings, hot-plug, HID, MSC ou
+transferências Bulk/Interrupt nesta etapa. O driver EHCI não é inicializado.
 
 ---
 

@@ -233,5 +233,6 @@ mouse acceleration on
 
 - Velocidade `1-10` e aceleracao opcional, configuradas somente em RAM
 - Roda vertical depende do protocolo Intellimouse
-- Sem suporte a drivers USB (apenas PS/2)
+- USB possui inventario UHCI e enumeracao de controle, mas ainda nao possui
+  drivers de classe; teclado e mouse continuam exclusivamente no caminho PS/2
 - Cursor de 12x16 pixels
