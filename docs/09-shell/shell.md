@@ -48,6 +48,37 @@ executar os handlers.
 9. O Shell decide se deve mostrar o novo prompt
 ```
 
+### Arquitetura apos a Fase 3
+
+O fluxo continua com `shell_input.c` para entrada, `shell_dispatch.c` para o
+parser e `shell.c` para a politica publica do terminal. Os handlers foram
+separados por dominio:
+
+```
+src/shell/
+|-- shell_command_utils.c       helpers de argumentos e formatacao
+|-- shell_commands_core.c       comandos basicos, memoria, processos e som
+|-- shell_commands_storage.c    storage, index e search
+|-- shell_commands_diagnostics.c health, log, timers e diagnosticos
+|-- shell_commands_network.c    net, ping, nslookup e http
+|-- shell_checks.c              q2check, regcheck, appcheck e usertest
+|-- shell_commands_packages.c   pkg, store, update e pkgcheck
+|-- shell_commands_apps.c       apps, cenas e aplicativos nativos
+|-- shell_hosted.c              terminal hospedado no Window Manager
+`-- shell.c                     API publica, roteamento e politica de prompt
+```
+
+`src/include/apps/shell_runtime.h` e o bridge interno. Ele limita a troca
+entre os modulos a suspensao/retomada do terminal, prompt, File Manager,
+bloqueio de entrada, resultados do App Loader e hooks dos diagnosticos. Os
+estados de busca, rede, pacotes e testes permanecem privados nos respectivos
+modulos. A tabela de comandos e o parsing nao foram duplicados.
+
+O passo 8 do fluxo acima descreve a situacao da Fase 2; na Fase 3, cada
+adaptador `shell_dispatch_cmd_*` vive no modulo de dominio correspondente.
+`shell.c` conserva somente a API publica, o roteamento de UI/IPC, a politica
+de prompt e o encaminhamento final de resultados genericos.
+
 ### Buffer de Input
 
 ```c

@@ -137,6 +137,62 @@ Classic e bloqueio de entrada durante `q2check` e `usertest`.
 - [Lista de comandos](comandos.md)
 - [Header público do Shell](../../src/include/apps/shell.h)
 - [Contrato interno do dispatcher](../../src/include/apps/shell_dispatch.h)
+- [Helpers internos de comandos](../../src/include/apps/shell_command_utils.h)
+- [Bridge interno de runtime](../../src/include/apps/shell_runtime.h)
 - [Implementação do dispatcher](../../src/shell/shell_dispatch.c)
 - [Implementação atual do Shell](../../src/shell/shell.c)
 - [Driver de teclado](../../src/drivers/keyboard.c)
+
+## Fase 3 — Estado da implementacao
+
+A implementacao estrutural da Fase 3 foi concluida e aguarda `q3check`, build
+limpo e validacao funcional no QEMU antes de ser marcada como concluida.
+
+### Subfases e fronteiras
+
+- **3A — Core, storage e utilitarios:** `shell_command_utils.c`,
+  `shell_commands_core.c` e `shell_commands_storage.c` concentram formatacao,
+  parsing de argumentos, comandos basicos e o estado de indexacao/busca.
+- **3B — Rede, diagnosticos e testes:** `shell_commands_diagnostics.c`,
+  `shell_commands_network.c` e `shell_checks.c` mantem os estados de rede,
+  UserTest, RegCheck e AppCheck, incluindo o bloqueio de entrada e os hooks de
+  validacao entre modulos.
+- **3C — Aplicativos, pacotes e terminal hospedado:**
+  `shell_commands_packages.c`, `shell_commands_apps.c` e `shell_hosted.c`
+  isolam os workspaces de pacotes, cenas nativas e callbacks do Window
+  Manager.
+
+O header interno `src/include/apps/shell_runtime.h` e o unico bridge entre
+esses dominios e `shell.c`. Ele nao substitui nem altera `shell.h`: fornece
+somente operacoes de ciclo de vida do terminal, prompt, File Manager,
+bloqueio de entrada, resultados de testes/App Loader e hooks estreitos para
+diagnosticos, rede e reboot/shutdown. Os adaptadores `shell_dispatch_cmd_*`
+continuam com uma unica definicao, fora de `shell.c`, e a ordem de consumo dos
+resultados do App Loader permanece a mesma.
+
+As funcoes e estados abaixo continuam privados aos modulos:
+
+- Core: estado dos loaders de `echo`, `mem` e `uptime`.
+- Storage: workspace de `index` e `search`.
+- Diagnosticos/rede: registros, metricas, buffers HTTP e validacoes.
+- Checks: estados Q2, RegCheck, AppCheck, UserTest e imagens ZAPP de teste.
+- Pacotes: workspaces de Package Manager, App Store e Update.
+- Hosted: visibilidade e callbacks da janela do Shell.
+
+Nenhuma alteracao foi feita em `src/boot/boot.asm`.
+
+### Validacao pendente da Fase 3
+
+O usuario deve executar, nesta ordem:
+
+```text
+make q3check
+make clean && make
+make run
+```
+
+No QEMU, a matriz deve cobrir os comandos basicos e `storage/index/search`,
+diagnosticos, rede, `q2check`, `regcheck`, `appcheck`, `usertest`, pacotes,
+Desktop, Explorer, Task Manager, Settings, Updater, WM, Editor, Player e o
+terminal hospedado, repetindo o smoke test Simple/Classic e o bloqueio e
+retomada da entrada.
