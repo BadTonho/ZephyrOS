@@ -56,6 +56,7 @@ camadas de configuracao, descoberta, montagem e distribuicao sobre elas.
 8. EP6.2/6.3: canal GitHub, recuperacao e matriz de validacao.
 9. Wi-Fi para um chipset e transporte escolhidos.
 10. Bluetooth HCI para um controlador e transporte escolhidos.
+11. EP9: imagem do sistema, slots de boot e recuperacao pos-reboot.
 
 ## EP1 - Preferencias de mouse
 
@@ -517,6 +518,70 @@ Ausencia de radio, firmware, USB ou driver resulta em diagnostico e erro
 controlado. Wi-Fi, Ethernet, atualizacoes locais, Shell e interfaces
 Simple/Classic permanecem funcionais, e nenhum segredo Bluetooth chega ao
 repositorio.
+
+## EP9 - Atualizacao da imagem do sistema e slots de boot
+
+**Estado:** planejada; nao iniciar antes de uma aprovacao explicita para
+alterar boot/stage2.
+
+**Planejamento registrado em:** 2026-08-21 16:45:17
+(America/Sao_Paulo).
+
+Esta fase separa a atualizacao de arquivos do sistema em execucao da
+atualizacao da imagem que o proximo boot carregara. O ZUPD v1 continua limitado
+a arquivos regulares e nao recebe alvos de boot, stage2, kernel ou setores
+crus.
+
+### EP9.0 - Contratos e pacotes separados
+
+- [ ] Manter o pacote runtime baseado em ZUPD v1 para recursos e arquivos
+  regulares; download e staging podem ocorrer com o sistema em execucao, mas
+  arquivos ja carregados so mudam apos recarga ou reboot.
+- [ ] Definir um contrato distinto `ZSYS v1` para a imagem de sistema,
+  incluindo kernel, stage2 e metadados de compatibilidade, sem aceitar esse
+  pacote no parser ZUPD v1.
+- [ ] Publicar no descritor da Release os artefatos runtime e system
+  separadamente, com hashes e assinaturas coerentes com a mesma versao/epoch.
+- [ ] Definir se os dois artefatos usam caches independentes ou se a primeira
+  entrega permite somente um tipo selecionado por vez; o U5 atual possui um
+  unico candidato/cache remoto.
+
+### EP9.1 - Staging e slots de imagem
+
+- [ ] Criar dois slots de imagem do sistema, com estado redundante, sequencia,
+  tamanho, hash e marcador de slot pendente, sem sobrescrever a imagem em uso.
+- [ ] Gravar e verificar a imagem nova em staging antes de publicar o slot
+  pendente; interrupcao deve preservar o slot ativo anterior.
+- [ ] Definir limites de tamanho, memoria, espaco, timeout, cancelamento,
+  recuperacao e politica anti-downgrade para a imagem completa.
+
+### EP9.2 - Boot, tentativa e rollback
+
+- [ ] Alterar o contrato de boot/stage2 somente depois de aprovacao explicita,
+  para selecionar o slot pendente e validar sua assinatura/hash antes de
+  transferir o controle ao kernel.
+- [ ] Registrar tentativa de boot, sucesso confirmado pelo kernel e falha de
+  inicializacao; uma tentativa interrompida deve voltar ao slot anterior.
+- [ ] Manter uma via de recuperacao que funcione sem rede e sem depender do
+  kernel novo, incluindo diagnostico do slot ativo, pendente e anterior.
+
+### EP9.3 - Comandos e validacao
+
+- [ ] Adicionar comandos separados para consultar, baixar, aplicar e cancelar
+  uma imagem `system`, sem misturar o fluxo `runtime` do ZUPD v1.
+- [ ] Exigir confirmacao explicita e reboot para ativar `ZSYS`; baixar nunca
+  instala nem altera a imagem em uso.
+- [ ] Cobrir imagem ausente, assinatura/hash invalidos, versao incompatível,
+  falta de espaco, falha durante staging, falha no primeiro boot, rollback,
+  energia interrompida, cache corrompido e regressao Simple/Classic.
+
+### Criterio de saida
+
+Uma imagem nova pode ser baixada e preparada enquanto o sistema antigo segue
+operacional. A ativacao ocorre somente no reboot, com verificacao autenticada,
+slot anterior preservado e rollback automatico quando o novo kernel nao
+confirma inicializacao. Nenhuma escrita de setor cru sera aceita antes do
+contrato transacional e da aprovacao do boot.
 
 ## Validacao por etapa
 
