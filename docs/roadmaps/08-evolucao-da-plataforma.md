@@ -50,10 +50,12 @@ camadas de configuracao, descoberta, montagem e distribuicao sobre elas.
 2. Volumes ATA e montagem somente-leitura.
 3. Indice em RAM sobre os volumes montados.
 4. USB fatiado: inventario, UHCI/controle, MSC/Bulk e HID/Interrupt.
-5. Publicacao e verificacao de releases por tags no host.
-6. TLS e acesso direto opcional ao GitHub pelo kernel.
-7. Wi-Fi para um chipset e transporte escolhidos.
-8. Bluetooth HCI para um controlador e transporte escolhidos.
+5. Publicacao e verificacao de Releases no host, com tag auxiliar opcional.
+6. EP6.0: selecao explicita de Release por tag, ainda protegida por ZUM1/ZUPD.
+7. EP6.1: TLS, certificados e estrategia de tempo.
+8. EP6.2/6.3: canal GitHub, recuperacao e matriz de validacao.
+9. Wi-Fi para um chipset e transporte escolhidos.
+10. Bluetooth HCI para um controlador e transporte escolhidos.
 
 ## EP1 - Preferencias de mouse
 
@@ -409,34 +411,66 @@ Assets, origem, trava ou tag opcional inconsistentes falham no host sem gerar
 uma Release utilizavel. O criterio foi aprovado pela suite host e pelo gate de
 qualidade; esta etapa nao exige QEMU.
 
-## EP6 - TLS e canal GitHub opcional
+## EP6 - Selecao por tag, TLS e canal GitHub opcional
 
-### Implementacao
+**Estado:** planejada; depende da EP5 validada.
+
+**Planejamento atualizado em:** 2026-08-21 16:39:48
+(America/Sao_Paulo).
+
+Esta frente implementa a ideia de escolher uma Release do sistema por uma tag
+especifica, sem transformar a tag em raiz de confianca ou em versao numerica.
+A versao oficial continua vindo dos campos assinados do ZUPD/ZUM1. Nao existe
+`latest`, comparacao numerica de tags ou atualizacao automatica no boot.
+
+### EP6.0 - Contrato de selecao por tag
+
+- [ ] Definir `update github check --tag <tag>` e
+  `update github fetch --tag <tag> [--confirm]` como operacoes explicitamente
+  opt-in; a ausencia de tag, tag inexistente ou Release sem asset falha sem
+  alterar o cache.
+- [ ] Resolver a tag para uma Release e seus assets usando um canal de origem
+  configuravel, exigindo um manifesto ZUM1 e um pacote ZUPD assinados; a
+  metadata da Release, o titulo e a tag somente selecionam o candidato.
+- [ ] Reutilizar o cache, o download cooperativo e a aplicacao confirmada da
+  U5: baixar nao instala, e `update apply` continua separado e exige reboot.
+- [ ] Exibir antes da confirmacao a tag solicitada, a Release encontrada, a
+  versao/epoch assinados, o hash e o estado do cache; nunca escolher a maior
+  tag automaticamente.
+
+### EP6.1 - TLS e identidade do canal
 
 - [ ] Definir o contrato minimo de TLS, estrategia de tempo e politica de
   validacao de certificados antes de abrir conexoes HTTPS no kernel.
 - [ ] Avaliar pinning de chave ou certificado somente como complemento de TLS,
   com rotacao e revogacao documentadas; nunca como substituto da assinatura
   ZUM1/ZUPD.
-- [ ] Adaptar U5 a um canal de release configuravel e criar
-  `update github status`, `update github check` e `update github fetch`,
-  sempre opt-in e sem instalacao automatica.
+
+### EP6.2 - Canal GitHub configuravel
+
+- [ ] Adaptar U5 a um canal de Release configuravel e implementar a descoberta
+  da Release pelo valor exato de `--tag`, sem credenciais ou conta GitHub.
 - [ ] Limitar URL, redirecionamentos, tamanho de resposta, retries, memoria e
   tempo de operacao; nenhum token ou conta GitHub e necessario.
+
+### EP6.3 - Falhas, cache e regressao
+
 - [ ] Cobrir falha de DNS, certificado invalido, hora indisponivel, tag
   inexistente, asset ausente, download interrompido, manifesto adulterado,
   cache preservado e rollback com fixtures e matriz QEMU.
 
-Esta etapa so inicia depois da EP5. Enquanto TLS, relogio confiavel e validacao
-de certificados nao existirem, conexao direta a `github.com` permanece fora do
-kernel e o transporte remoto atual continua opcional.
+EP6.0 pode ser exercitada com o servidor de fixtures U5 antes de habilitar
+GitHub real. EP6.2 so inicia depois de TLS, relogio confiavel e validacao de
+certificados definidos; enquanto isso, conexao direta a `github.com` permanece
+fora do kernel e o transporte remoto HTTP atual continua opcional.
 
 ### Criterio de saida
 
-Uma tag publicada pode ser descoberta e baixada como cache verificavel, mas
-somente `update apply` instala uma atualizacao apos confirmacao. Rede ausente,
-origem maliciosa e falha de download preservam cache, atualizacao local e
-rollback existentes.
+Uma tag exata seleciona uma Release verificavel, mas somente ZUM1/ZUPD
+assinados autorizam o candidato. Baixar nao instala; somente `update apply`
+aplica uma atualizacao apos confirmacao e reboot. Rede ausente, origem
+maliciosa, tag inexistente e falha de download preservam cache, atualizacao
+local e rollback existentes.
 
 ## EP7 - Wi-Fi por hardware suportado
 
