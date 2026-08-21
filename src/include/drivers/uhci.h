@@ -33,6 +33,7 @@ int uhci_get_port_count(uint8_t bus, uint8_t device, uint8_t function,
                         uint32_t* out_count);
 int uhci_get_port(uint8_t bus, uint8_t device, uint8_t function,
                  uint32_t index, usb_port_info_t* out_info);
+int uhci_log_port_diagnostics(uint8_t bus, uint8_t device, uint8_t function);
 int uhci_get_device_count(uint8_t bus, uint8_t device, uint8_t function,
                           uint32_t* out_count);
 int uhci_get_device(uint8_t bus, uint8_t device, uint8_t function,

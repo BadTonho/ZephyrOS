@@ -1878,12 +1878,22 @@ int uhci_get_port(uint8_t bus, uint8_t device, uint8_t function,
         return ERR_INVALID;
     }
     *out_info = controller->ports[index];
-    if (out_info->state == USB_PORT_DEGRADED &&
-        controller->enumeration[index].last_error != OK) {
-        /* Reapresenta a causa retida quando o inventario e consultado. */
-        uhci_log_enumeration_failure(
-            index, &controller->enumeration[index],
-            controller->enumeration[index].last_error);
+    return OK;
+}
+
+int uhci_log_port_diagnostics(uint8_t bus, uint8_t device, uint8_t function) {
+    uhci_controller_t* controller = uhci_find(bus, device, function);
+
+    if (!controller || !controller->initialized) {
+        LOG_ERROR("UHCI", "Controlador ausente no diagnostico de portas");
+        return ERR_NOT_FOUND;
+    }
+    for (uint32_t port = 0U; port < USB_UHCI_PORT_COUNT; port++) {
+        uhci_enum_context_t* context = &controller->enumeration[port];
+
+        if (controller->ports[port].state != USB_PORT_DEGRADED ||
+            context->last_error == OK) continue;
+        uhci_log_enumeration_failure(port, context, context->last_error);
     }
     return OK;
 }
