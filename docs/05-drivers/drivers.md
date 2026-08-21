@@ -22,13 +22,15 @@ src/drivers/
 ├── speaker.c        → PC Speaker (som)
 ├── timer.c          → Timer (PIT)
 ├── tss.c            → Task State Segment
-├── uhci.c           → Controlador USB UHCI, portas raiz e controle USB
+├── uhci.c           → Controlador USB UHCI, portas raiz e transferencias USB
+├── usb_hid.c        → Teclado e mouse USB HID Boot
 ├── vesa.c           → VESA BIOS Extensions (modo gráfico)
 └── video.c          → VGA Text Mode
 ```
 
 Na EP4.3, `src/drivers/usb_msc.c` complementa `uhci.c` com BOT/SCSI
-somente-leitura; os contratos publicos ficam em `usb_msc.h` e `uhci.h`.
+somente-leitura. Na EP4.4, `src/drivers/usb_hid.c` usa Interrupt IN Boot; os
+contratos publicos ficam em `usb_msc.h`, `usb_hid.h` e `uhci.h`.
 
 ---
 
@@ -862,6 +864,60 @@ int uhci_bulk_transfer(uint8_t address, uint8_t endpoint, uint8_t is_in,
                        uint8_t* toggle, void* buffer, uint32_t length,
                        uint32_t timeout_ticks, uint32_t* out_transferred);
 ```
+
+---
+
+## Input core e fila diferida (EP4.4)
+
+`src/core/input.c` e o ponto comum entre PS/2 e USB HID. O driver PS/2
+converte seus dados para HID Usage; o driver USB publica o mesmo formato. O
+`input core` mantem filas estaticas separadas para teclado e ponteiro, registra
+metricas de ocupacao, descartes e ultimo erro, e encaminha eventos em lotes no
+contexto normal do processo System. O Shell, IPC, Window Manager e GUI
+continuam recebendo os scancodes Set 1 e `mouse_event_t` ja existentes.
+
+`src/core/irq_deferred.c` recebe somente trabalhos estaticos com callback e
+contexto opaco. O handler de IRQ nao executa o callback: ele reconhece a
+interrupcao, e `irq_deferred_dispatch()` executa conclusoes em contexto normal.
+Cancelamento marca o trabalho e impede que uma conclusao antiga seja
+reutilizada depois que o dispositivo desapareceu.
+
+---
+
+### Interrupt IN do UHCI
+
+`uhci_interrupt_submit()` cria uma requisicao persistente para um endpoint
+Interrupt IN. Cada controlador reserva dois slots de QH/TD/buffer e fases
+periodicas no frame list de 1024 entradas. O TD usa deadline absoluto, toggle,
+IOC e buffer DMA fixo. `uhci_interrupt_cancel()` remove a fase, termina o QH e
+invalida a geracao antes de liberar o slot. Control e Bulk continuam usando o
+QH sincrono e seus buffers originais.
+
+O handler UHCI compartilhado apenas limpa o status e marca pendencia. O
+polling verifica TDs, distingue NAK esperado, timeout e erro, e agenda a
+conclusao pela fila diferida. O callback recebe o buffer somente durante a
+chamada; uma transferencia bem-sucedida e rearmada automaticamente depois do
+callback.
+
+### USB HID Boot (`usb_hid.c`)
+
+O driver aceita somente interfaces HID classe `0x03`, subclass Boot `0x01`,
+protocolo teclado `0x01` ou mouse `0x02`, com um Interrupt IN. A inicializacao
+envia `SET_PROTOCOL(Boot)` e `SET_IDLE`. Relatorios de teclado usam oito bytes
+e de mouse tres ou quatro bytes. Rollover, tamanho incorreto e relatorios
+invalidos incrementam contadores e sao descartados; nao causam espera ocupada
+nem panic. Timeout, erro de transporte e cancelamento deixam o registro
+`DEGRADED` ou `DISABLED` e sao exibidos por `usb hid status`.
+
+O teclado USB publica Usage IDs e o adaptador atual os transforma nos
+scancodes Set 1 usados por F12, Esc, modificadores, setas e cancelamento. O
+mouse USB publica movimento relativo, botao e roda; o processamento existente
+mantem aceleracao, remapeamento do botao principal, cursor e callbacks do
+Desktop Classic.
+
+O comando `usb hid check` valida HID, input core e fila diferida. O alvo
+`run-usb-hid` adiciona `usb-kbd` e `usb-mouse` ao QEMU. Parser completo de
+Report Descriptor, hubs, hot-plug real e EHCI permanecem fora desta etapa.
 
 ---
 

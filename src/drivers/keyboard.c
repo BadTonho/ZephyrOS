@@ -1,5 +1,6 @@
 #include "core/keyboard.h"
 #include "drivers/idt.h"
+#include "core/input.h"
 #include "core/log.h"
 #include "core/errors.h"
 #include "process/process.h"
@@ -22,6 +23,18 @@ static uint8_t drop_warning_active;
 static uint8_t forward_warning_active;
 static keyboard_focus_cancel_filter_t focus_cancel_filter;
 static uint8_t keyboard_initialized;
+static uint8_t keyboard_ps2_extended;
+
+static uint32_t keyboard_irq_save(void) {
+    uint32_t flags;
+
+    asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
+    return flags;
+}
+
+static void keyboard_irq_restore(uint32_t flags) {
+    if (flags & (1U << 9U)) asm volatile("sti" : : : "memory");
+}
 
 static uint8_t inb(uint16_t port) {
     uint8_t result;
@@ -67,6 +80,227 @@ char keyboard_scancode_to_ascii(uint8_t scancode) {
     return keyboard_scancode_to_ascii_shifted(scancode, 0);
 }
 
+static uint16_t keyboard_ps2_usage(uint8_t scancode, uint8_t extended) {
+    static const uint16_t digits[] = {
+        INPUT_USAGE_1, INPUT_USAGE_2, INPUT_USAGE_3, INPUT_USAGE_4,
+        INPUT_USAGE_5, INPUT_USAGE_6, INPUT_USAGE_7, INPUT_USAGE_8,
+        INPUT_USAGE_9, INPUT_USAGE_0
+    };
+    static const uint16_t top_row[] = {
+        INPUT_USAGE_Q, INPUT_USAGE_W, INPUT_USAGE_E, INPUT_USAGE_R,
+        INPUT_USAGE_T, INPUT_USAGE_Y, INPUT_USAGE_U, INPUT_USAGE_I,
+        INPUT_USAGE_O, INPUT_USAGE_P
+    };
+    static const uint16_t home_row[] = {
+        INPUT_USAGE_A, INPUT_USAGE_S, INPUT_USAGE_D, INPUT_USAGE_F,
+        INPUT_USAGE_G, INPUT_USAGE_H, INPUT_USAGE_J, INPUT_USAGE_K,
+        INPUT_USAGE_L
+    };
+    static const uint16_t bottom_row[] = {
+        INPUT_USAGE_Z, INPUT_USAGE_X, INPUT_USAGE_C, INPUT_USAGE_V,
+        INPUT_USAGE_B, INPUT_USAGE_N, INPUT_USAGE_M
+    };
+
+    if (extended) {
+        switch (scancode) {
+            case 0x1CU: return INPUT_USAGE_ENTER;
+            case 0x1DU: return INPUT_USAGE_RIGHT_CTRL;
+            case 0x37U: return INPUT_USAGE_PRINT_SCREEN;
+            case 0x38U: return INPUT_USAGE_RIGHT_ALT;
+            case 0x47U: return INPUT_USAGE_HOME;
+            case 0x48U: return INPUT_USAGE_UP;
+            case 0x49U: return INPUT_USAGE_PAGE_UP;
+            case 0x4BU: return INPUT_USAGE_LEFT;
+            case 0x4DU: return INPUT_USAGE_RIGHT;
+            case 0x4FU: return INPUT_USAGE_END;
+            case 0x50U: return INPUT_USAGE_DOWN;
+            case 0x51U: return INPUT_USAGE_PAGE_DOWN;
+            case 0x52U: return INPUT_USAGE_INSERT;
+            case 0x53U: return INPUT_USAGE_DELETE;
+            case 0x5BU: return INPUT_USAGE_LEFT_GUI;
+            case 0x5CU: return INPUT_USAGE_RIGHT_GUI;
+            default: return 0U;
+        }
+    }
+    if (scancode >= 0x02U && scancode <= 0x0BU) {
+        return digits[scancode - 0x02U];
+    }
+    if (scancode >= 0x10U && scancode <= 0x19U) {
+        return top_row[scancode - 0x10U];
+    }
+    if (scancode >= 0x1EU && scancode <= 0x26U) {
+        return home_row[scancode - 0x1EU];
+    }
+    if (scancode >= 0x2CU && scancode <= 0x32U) {
+        return bottom_row[scancode - 0x2CU];
+    }
+    if (scancode >= 0x3BU && scancode <= 0x44U) {
+        return INPUT_USAGE_F1 + (scancode - 0x3BU);
+    }
+    switch (scancode) {
+        case 0x01U: return INPUT_USAGE_ESCAPE;
+        case 0x0CU: return INPUT_USAGE_MINUS;
+        case 0x0DU: return INPUT_USAGE_EQUAL;
+        case 0x0EU: return INPUT_USAGE_BACKSPACE;
+        case 0x0FU: return INPUT_USAGE_TAB;
+        case 0x1AU: return INPUT_USAGE_LEFT_BRACKET;
+        case 0x1BU: return INPUT_USAGE_RIGHT_BRACKET;
+        case 0x1CU: return INPUT_USAGE_ENTER;
+        case 0x1DU: return INPUT_USAGE_LEFT_CTRL;
+        case 0x2AU: return INPUT_USAGE_LEFT_SHIFT;
+        case 0x2BU: return INPUT_USAGE_BACKSLASH;
+        case 0x35U: return INPUT_USAGE_SLASH;
+        case 0x36U: return INPUT_USAGE_RIGHT_SHIFT;
+        case 0x37U: return INPUT_USAGE_PRINT_SCREEN;
+        case 0x38U: return INPUT_USAGE_LEFT_ALT;
+        case 0x39U: return INPUT_USAGE_SPACE;
+        case 0x3AU: return INPUT_USAGE_CAPS_LOCK;
+        case 0x45U: return INPUT_USAGE_NUM_LOCK;
+        case 0x46U: return INPUT_USAGE_SCROLL_LOCK;
+        case 0x47U: return INPUT_USAGE_HOME;
+        case 0x48U: return INPUT_USAGE_UP;
+        case 0x49U: return INPUT_USAGE_PAGE_UP;
+        case 0x4BU: return INPUT_USAGE_LEFT;
+        case 0x4DU: return INPUT_USAGE_RIGHT;
+        case 0x4FU: return INPUT_USAGE_END;
+        case 0x50U: return INPUT_USAGE_DOWN;
+        case 0x51U: return INPUT_USAGE_PAGE_DOWN;
+        case 0x52U: return INPUT_USAGE_INSERT;
+        case 0x53U: return INPUT_USAGE_DELETE;
+        case 0x57U: return INPUT_USAGE_F1 + 10U;
+        case 0x58U: return INPUT_USAGE_F12;
+        case 0x27U: return INPUT_USAGE_SEMICOLON;
+        case 0x28U: return INPUT_USAGE_APOSTROPHE;
+        case 0x29U: return INPUT_USAGE_GRAVE;
+        case 0x33U: return INPUT_USAGE_COMMA;
+        case 0x34U: return INPUT_USAGE_DOT;
+        default: return 0U;
+    }
+}
+
+static int keyboard_usage_scancode(uint16_t usage, uint8_t* out_scancode,
+                                   uint8_t* out_extended) {
+    if (!out_scancode || !out_extended) return ERR_NULL;
+    *out_extended = 0U;
+    if (usage >= INPUT_USAGE_1 && usage <= INPUT_USAGE_0) {
+        *out_scancode = (uint8_t)(0x02U + (usage - INPUT_USAGE_1));
+        if (usage == INPUT_USAGE_0) *out_scancode = 0x0BU;
+        return OK;
+    }
+    if (usage >= INPUT_USAGE_A && usage <= INPUT_USAGE_Z) {
+        static const uint8_t letters[] = {
+            0x1EU, 0x30U, 0x2EU, 0x20U, 0x12U, 0x21U, 0x22U,
+            0x23U, 0x17U, 0x24U, 0x25U, 0x26U, 0x32U, 0x31U,
+            0x18U, 0x19U, 0x10U, 0x13U, 0x1FU, 0x14U, 0x16U,
+            0x2FU, 0x11U, 0x2DU, 0x15U, 0x2CU
+        };
+        *out_scancode = letters[usage - INPUT_USAGE_A];
+        return OK;
+    }
+    if (usage >= INPUT_USAGE_F1 && usage <= INPUT_USAGE_F12) {
+        *out_scancode = (uint8_t)(0x3BU + (usage - INPUT_USAGE_F1));
+        if (usage == INPUT_USAGE_F11) *out_scancode = 0x57U;
+        if (usage == INPUT_USAGE_F12) *out_scancode = 0x58U;
+        return OK;
+    }
+    switch (usage) {
+        case INPUT_USAGE_ENTER: *out_scancode = 0x1CU; return OK;
+        case INPUT_USAGE_ESCAPE: *out_scancode = 0x01U; return OK;
+        case INPUT_USAGE_BACKSPACE: *out_scancode = 0x0EU; return OK;
+        case INPUT_USAGE_TAB: *out_scancode = 0x0FU; return OK;
+        case INPUT_USAGE_SPACE: *out_scancode = 0x39U; return OK;
+        case INPUT_USAGE_MINUS: *out_scancode = 0x0CU; return OK;
+        case INPUT_USAGE_EQUAL: *out_scancode = 0x0DU; return OK;
+        case INPUT_USAGE_LEFT_BRACKET: *out_scancode = 0x1AU; return OK;
+        case INPUT_USAGE_RIGHT_BRACKET: *out_scancode = 0x1BU; return OK;
+        case INPUT_USAGE_BACKSLASH: *out_scancode = 0x2BU; return OK;
+        case INPUT_USAGE_SEMICOLON: *out_scancode = 0x27U; return OK;
+        case INPUT_USAGE_APOSTROPHE: *out_scancode = 0x28U; return OK;
+        case INPUT_USAGE_GRAVE: *out_scancode = 0x29U; return OK;
+        case INPUT_USAGE_COMMA: *out_scancode = 0x33U; return OK;
+        case INPUT_USAGE_DOT: *out_scancode = 0x34U; return OK;
+        case INPUT_USAGE_SLASH: *out_scancode = 0x35U; return OK;
+        case INPUT_USAGE_CAPS_LOCK: *out_scancode = 0x3AU; return OK;
+        case INPUT_USAGE_NUM_LOCK: *out_scancode = 0x45U; return OK;
+        case INPUT_USAGE_SCROLL_LOCK: *out_scancode = 0x46U; return OK;
+        case INPUT_USAGE_LEFT_CTRL: *out_scancode = 0x1DU; return OK;
+        case INPUT_USAGE_LEFT_SHIFT: *out_scancode = 0x2AU; return OK;
+        case INPUT_USAGE_LEFT_ALT: *out_scancode = 0x38U; return OK;
+        case INPUT_USAGE_RIGHT_CTRL: *out_scancode = 0x1DU; *out_extended = 1U; return OK;
+        case INPUT_USAGE_RIGHT_SHIFT: *out_scancode = 0x36U; return OK;
+        case INPUT_USAGE_RIGHT_ALT: *out_scancode = 0x38U; *out_extended = 1U; return OK;
+        case INPUT_USAGE_LEFT_GUI: *out_scancode = 0x5BU; *out_extended = 1U; return OK;
+        case INPUT_USAGE_RIGHT_GUI: *out_scancode = 0x5CU; *out_extended = 1U; return OK;
+        case INPUT_USAGE_PRINT_SCREEN: *out_scancode = 0x37U; *out_extended = 1U; return OK;
+        case INPUT_USAGE_HOME: *out_scancode = 0x47U; *out_extended = 1U; return OK;
+        case INPUT_USAGE_UP: *out_scancode = 0x48U; *out_extended = 1U; return OK;
+        case INPUT_USAGE_PAGE_UP: *out_scancode = 0x49U; *out_extended = 1U; return OK;
+        case INPUT_USAGE_LEFT: *out_scancode = 0x4BU; *out_extended = 1U; return OK;
+        case INPUT_USAGE_RIGHT: *out_scancode = 0x4DU; *out_extended = 1U; return OK;
+        case INPUT_USAGE_END: *out_scancode = 0x4FU; *out_extended = 1U; return OK;
+        case INPUT_USAGE_DOWN: *out_scancode = 0x50U; *out_extended = 1U; return OK;
+        case INPUT_USAGE_PAGE_DOWN: *out_scancode = 0x51U; *out_extended = 1U; return OK;
+        case INPUT_USAGE_INSERT: *out_scancode = 0x52U; *out_extended = 1U; return OK;
+        case INPUT_USAGE_DELETE: *out_scancode = 0x53U; *out_extended = 1U; return OK;
+        default: return ERR_UNAVAILABLE;
+    }
+}
+
+static int keyboard_enqueue_scancodes(const uint8_t* bytes, uint32_t count) {
+    uint32_t flags;
+    uint32_t head;
+    uint32_t tail;
+    uint32_t available;
+
+    if (!bytes || !count || count > 2U) return ERR_INVALID;
+    flags = keyboard_irq_save();
+    head = queue_head;
+    tail = queue_tail;
+    available = tail > head ? tail - head - 1U :
+                KEYBOARD_QUEUE_SIZE - head + tail - 1U;
+    if (available < count) {
+        dropped_events++;
+        dropped_total++;
+        keyboard_irq_restore(flags);
+        return ERR_OVERFLOW;
+    }
+    for (uint32_t index = 0U; index < count; index++) {
+        event_queue[head] = bytes[index];
+        head = (head + 1U) % KEYBOARD_QUEUE_SIZE;
+    }
+    queue_head = (uint8_t)head;
+    {
+        uint32_t queued = queue_head >= queue_tail ?
+                          (uint32_t)(queue_head - queue_tail) :
+                          KEYBOARD_QUEUE_SIZE - queue_tail + queue_head;
+        if (queued > peak_queued) peak_queued = queued;
+    }
+    keyboard_irq_restore(flags);
+    return OK;
+}
+
+static int keyboard_input_sink(const input_key_event_t* event) {
+    uint8_t scancode;
+    uint8_t extended;
+    uint8_t bytes[2];
+    uint32_t count = 1U;
+    int result;
+
+    if (!event) return ERR_NULL;
+    result = keyboard_usage_scancode(event->usage, &scancode, &extended);
+    if (result == ERR_UNAVAILABLE) return OK;
+    if (result != OK) return result;
+    if (!event->pressed) scancode |= 0x80U;
+    if (extended) {
+        bytes[0] = 0xE0U;
+        bytes[1] = scancode;
+        count = 2U;
+    } else {
+        bytes[0] = scancode;
+    }
+    return keyboard_enqueue_scancodes(bytes, count);
+}
+
 void keyboard_init(void) {
     LOG_INFO("KBD", "Inicializando teclado");
     keyboard_initialized = 0;
@@ -79,6 +313,11 @@ void keyboard_init(void) {
     drop_warning_active = 0;
     forward_warning_active = 0;
     focus_cancel_filter = 0;
+    keyboard_ps2_extended = 0U;
+    if (input_register_key_sink(keyboard_input_sink) != OK) {
+        LOG_ERROR("KBD", "Falha ao registrar consumidor de entrada");
+        return;
+    }
     if (idt_register_handler(33, keyboard_handler) != OK) {
         LOG_ERROR("KBD", "Falha ao registrar IRQ do teclado");
         return;
@@ -96,29 +335,39 @@ void keyboard_set_focus_cancel_filter(keyboard_focus_cancel_filter_t filter) {
 }
 
 void keyboard_handler(registers_t* regs) {
+    uint8_t scancode;
+    uint8_t released;
+    uint16_t usage;
+    input_key_event_t event;
+
     (void)regs;
-    uint8_t scancode = inb(0x60);
-
-    // Nao descarta scancode & 0x80 para permitir a detecao de Key Release 
-    // e prefixos estendidos (0xE0). Os apps tratam press/release conforme necessario.
-
-    uint8_t next_head = (uint8_t)((queue_head + 1) % KEYBOARD_QUEUE_SIZE);
-    if (next_head == queue_tail) {
-        dropped_events++;
-        dropped_total++;
+    scancode = inb(0x60);
+    if (scancode == 0xE0U) {
+        keyboard_ps2_extended = 1U;
         return;
     }
-
-    event_queue[queue_head] = scancode;
-    queue_head = next_head;
-    uint32_t queued = queue_head >= queue_tail ?
-                      (uint32_t)(queue_head - queue_tail) :
-                      KEYBOARD_QUEUE_SIZE - queue_tail + queue_head;
-    if (queued > peak_queued) peak_queued = queued;
+    if (scancode == 0xE1U) {
+        keyboard_ps2_extended = 0U;
+        return;
+    }
+    released = (scancode & 0x80U) ? 1U : 0U;
+    usage = keyboard_ps2_usage(scancode & 0x7FU, keyboard_ps2_extended);
+    keyboard_ps2_extended = 0U;
+    if (!usage) return;
+    event.usage = usage;
+    event.pressed = released ? 0U : 1U;
+    event.modifiers = 0U;
+    event.source = INPUT_SOURCE_PS2;
+    (void)input_publish_key(&event);
 }
 
 void keyboard_process_events(void) {
     uint32_t dispatched = 0;
+    uint32_t input_processed = 0U;
+
+    if (input_dispatch(KEYBOARD_DISPATCH_BUDGET, &input_processed) != OK) {
+        LOG_WARN("KBD", "Despacho do nucleo de entrada indisponivel");
+    }
 
     if (dropped_events > 0) {
         dropped_events = 0;

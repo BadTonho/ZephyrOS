@@ -28,6 +28,8 @@
 #include "memory/paging.h"
 #include "core/string.h"
 #include "core/errors.h"
+#include "core/input.h"
+#include "core/irq_deferred.h"
 #include "core/log.h"
 #include "drivers/mouse.h"
 #include "ui/gui.h"
@@ -35,6 +37,7 @@
 #include "core/recovery.h"
 #include "core/device_manager.h"
 #include "core/usb_manager.h"
+#include "drivers/usb_hid.h"
 #include "drivers/usb_msc.h"
 #include "core/arp.h"
 #include "core/dhcp.h"
@@ -990,9 +993,14 @@ static int shell_regcheck_validate_usb(void) {
         status.configured_device_count > USB_MANAGER_MAX_DEVICES ||
         status.dma_td_in_use > status.dma_td_capacity ||
         status.msc_device_count > USB_MSC_MAX_DEVICES ||
+        status.hid_device_count > USB_HID_MAX_DEVICES ||
+        status.hid_active_count > status.hid_device_count ||
         status.hub_support_active ||
         status.hotplug_active || block_validate_state() != OK ||
-        usb_msc_validate_state() != OK || usb_manager_validate_state() != OK) {
+        usb_msc_validate_state() != OK || usb_hid_validate_state() != OK ||
+        input_validate_state() != OK ||
+        irq_deferred_validate_state() != OK ||
+        usb_manager_validate_state() != OK) {
         LOG_ERROR("SHELL", "RegCheck detectou resumo USB invalido");
         return result == OK ? ERR_STATE : result;
     }
@@ -1014,6 +1022,7 @@ static int shell_regcheck_validate_usb(void) {
                 !runtime.control_transfer_ready ||
                 runtime.hub_support_active || runtime.hotplug_active ||
                 !runtime.bulk_transfer_ready ||
+                !runtime.interrupt_transfer_ready ||
                 runtime.td_in_use > runtime.td_capacity ||
                 runtime.buffer_in_use > runtime.buffer_capacity ||
                 runtime.port_count != USB_UHCI_PORT_COUNT ||
