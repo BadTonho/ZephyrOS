@@ -107,6 +107,7 @@
 #define UHCI_ENUMERATION_RETRIES 3U
 #define UHCI_DEVICE_MAX_PACKET_MIN 8U
 #define UHCI_DEVICE_MAX_PACKET_MAX 64U
+#define UHCI_DIAGNOSTIC_PREVIEW_BYTES 20U
 
 typedef enum {
     UHCI_ENUM_STAGE_RESET = 0,
@@ -554,6 +555,33 @@ static void uhci_make_device_id(const uhci_controller_t* controller,
         }
     }
     output[offset] = '\0';
+}
+
+static void uhci_log_configuration_preview(
+    const uhci_device_record_t* record) {
+    static const char hex[] = "0123456789ABCDEF";
+    static const char prefix[] = "Config USB bytes:";
+    char message[LOG_MESSAGE_CAPACITY];
+    uint32_t offset = 0U;
+    uint32_t count;
+
+    if (!record) return;
+    for (uint32_t index = 0U;
+         prefix[index] && offset + 1U < LOG_MESSAGE_CAPACITY; index++) {
+        message[offset++] = prefix[index];
+    }
+    count = record->configuration_length < UHCI_DIAGNOSTIC_PREVIEW_BYTES ?
+            record->configuration_length : UHCI_DIAGNOSTIC_PREVIEW_BYTES;
+    for (uint32_t index = 0U; index < count && offset + 3U <
+         LOG_MESSAGE_CAPACITY; index++) {
+        uint8_t value = record->configuration_descriptor[index];
+
+        message[offset++] = ' ';
+        message[offset++] = hex[value >> 4U];
+        message[offset++] = hex[value & 0x0FU];
+    }
+    message[offset] = '\0';
+    LOG_WARN("UHCI", message);
 }
 
 static void uhci_set_port_empty(uhci_controller_t* controller,
@@ -1894,6 +1922,7 @@ int uhci_log_port_diagnostics(uint8_t bus, uint8_t device, uint8_t function) {
         if (controller->ports[port].state != USB_PORT_DEGRADED ||
             context->last_error == OK) continue;
         uhci_log_enumeration_failure(port, context, context->last_error);
+        uhci_log_configuration_preview(&controller->devices[port]);
     }
     return OK;
 }
