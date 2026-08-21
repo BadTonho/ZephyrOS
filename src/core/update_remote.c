@@ -650,7 +650,9 @@ static int update_remote_load_records(void) {
     }
     update_remote_record = update_remote_record_candidates[selected];
     update_remote_record_slot = selected;
-    update_remote_status.cache_store = UPDATE_REMOTE_STORE_VALID;
+    update_remote_status.cache_store =
+        update_remote_record.active_slot <= 1U ?
+        UPDATE_REMOTE_STORE_VALID : UPDATE_REMOTE_STORE_EMPTY;
     return OK;
 }
 
@@ -671,7 +673,9 @@ static int update_remote_write_record(void) {
         return result;
     }
     update_remote_record_slot = slot;
-    update_remote_status.cache_store = UPDATE_REMOTE_STORE_VALID;
+    update_remote_status.cache_store =
+        update_remote_record.active_slot <= 1U ?
+        UPDATE_REMOTE_STORE_VALID : UPDATE_REMOTE_STORE_EMPTY;
     return OK;
 }
 
