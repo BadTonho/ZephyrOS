@@ -440,4 +440,6 @@ Verifique se o cross-compiler está correto. Use `i686-elf-gcc` em vez de `gcc` 
 
 ## Licença
 
-Este projeto é distribuído sob a [Licença MIT](LICENSE).
+Este projeto é distribuído sob a [Licença GNU General Public License v3.0 (GPLv3)](LICENSE).
+Componentes de terceiros mantêm suas respectivas licenças conforme documentado em
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

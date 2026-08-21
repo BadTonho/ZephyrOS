@@ -154,4 +154,4 @@ in the same change. Performance work also requires a before/after record in
 ---
 
 ## License
-By contributing to ZephyrOS, you agree that your contributions will be licensed under the project's [MIT License](LICENSE).
+By contributing to ZephyrOS, you agree that your contributions will be licensed under the project's [GNU General Public License v3.0 (GPLv3)](LICENSE).

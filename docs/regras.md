@@ -279,6 +279,25 @@ confirmação antes de prosseguir.
 
 ---
 
+## 10. Registro de Etapas e Validações
+
+Toda etapa, subetapa, fase, correção ou validação concluída DEVE registrar a
+data e a hora exatas em que foi concluída, no roadmap ou documento canônico da
+frente correspondente.
+
+O registro DEVE usar o formato ISO 8601 com fuso explícito:
+
+```text
+Concluída em: YYYY-MM-DD HH:MM (America/Sao_Paulo)
+```
+
+Quando implementação e validação ocorrerem em momentos diferentes, registrar
+ambos os horários separadamente. Não inventar nem estimar horários de etapas
+históricas; nesses casos, manter o registro sem horário até que o usuário
+forneça a informação.
+
+---
+
 ## Checklist de Revisão
 
 Antes de commitar, verificar:
