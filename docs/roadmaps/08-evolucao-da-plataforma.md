@@ -369,9 +369,12 @@ restrito ao contrato BOT/SCSI somente-leitura descrito acima.
 
 ## EP5 - Releases oficiais e verificacao no host
 
-**Estado:** implementada no host; validacao pelo usuario pendente.
+**Estado:** implementada e validada pelo usuario.
 
 **Implementacao concluida em:** 2026-08-21 16:33:39
+(America/Sao_Paulo).
+
+**Validacao concluida em:** 2026-08-21 16:36:35
 (America/Sao_Paulo).
 
 ### Implementacao
@@ -387,6 +390,14 @@ restrito ao contrato BOT/SCSI somente-leitura descrito acima.
 - [x] Cobrir fixtures deterministicas de Release com e sem tag, asset ausente,
   manifesto adulterado, pacote invalido, trava, commit e tag divergentes.
 
+### Resultados da validacao
+
+- [x] `make update-test` terminou com `Updater selftest: OK`.
+- [x] `make q3check` aprovou whitespace, protecao do boot, funcoes falhaveis,
+  contratos publicos, metricas e confianca ZUPD/AS5.
+- [x] A verificacao da Terminus Font confirmou fontes e dados gerados em `OK`.
+- [x] `make clean` e o build completo terminaram sem erros.
+
 Esta etapa nao cria um comando novo no kernel nem muda o transporte U5. Ela
 torna a publicacao reproduzivel e valida que a Release ou sua tag nunca
 substituem a assinatura do manifesto ou do pacote.
@@ -395,7 +406,8 @@ substituem a assinatura do manifesto ou do pacote.
 
 Uma Release gera artefatos verificaveis e coerentes antes da publicacao.
 Assets, origem, trava ou tag opcional inconsistentes falham no host sem gerar
-uma Release utilizavel. A validacao executavel permanece pendente do usuario.
+uma Release utilizavel. O criterio foi aprovado pela suite host e pelo gate de
+qualidade; esta etapa nao exige QEMU.
 
 ## EP6 - TLS e canal GitHub opcional
 
