@@ -414,7 +414,7 @@ qualidade; esta etapa nao exige QEMU.
 
 ## EP6 - Selecao por tag, TLS e canal GitHub opcional
 
-**Estado:** EP6.0 implementada; validacao funcional pelo usuario pendente.
+**Estado:** EP6.0 implementada e validada pelo usuario.
 
 **Planejamento atualizado em:** 2026-08-21 16:39:48
 (America/Sao_Paulo).
@@ -464,9 +464,11 @@ Correcao do diagnostico de cabecalho e das rotas das fixtures invalidas
 concluida em: 2026-08-21 19:27 (America/Sao_Paulo).
 Correcao do estado EMPTY apos falha de download sem pacote ativo concluida
 em: 2026-08-21 19:39 (America/Sao_Paulo).
-Validacao funcional pelo usuario pendente apos `make clean && make`.
+Validacao funcional da EP6.0 concluida em: 2026-08-21 20:07
+(America/Sao_Paulo).
 
-A matriz EP6.0 cobre duas tags validas, tag ausente/invalida/inexistente,
+A matriz EP6.0 foi executada e concluida pelo usuario, cobrindo duas tags
+validas, tag ausente/invalida/inexistente,
 argumentos extras, descritor invalido, asset ausente, hashes e
 `version_lock` divergentes, manifesto ZUM1 adulterado, ZUPD invalido,
 confirmacao sem preflight ou com tag diferente, cancelamento, rede ausente,
