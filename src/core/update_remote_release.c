@@ -548,11 +548,34 @@ static int update_release_parse_descriptor(
         result = ERR_INVALID;
     }
     if (result == OK) result = update_release_json_expect(&json, ',');
+    if (result != OK) {
+        *reason_out = UPDATE_REMOTE_REASON_RELEASE_ASSET;
+        LOG_ERROR_CODE("UPDATE", result,
+                       "Separador antes dos assets da Release invalido");
+        return result;
+    }
     if (result == OK) result = update_release_json_key(&json, "assets");
+    if (result != OK) {
+        *reason_out = UPDATE_REMOTE_REASON_RELEASE_ASSET;
+        LOG_ERROR_CODE("UPDATE", result,
+                       "Campo assets da Release ausente ou invalido");
+        return result;
+    }
     if (result == OK) result = update_release_json_expect(&json, '{');
+    if (result != OK) {
+        *reason_out = UPDATE_REMOTE_REASON_RELEASE_ASSET;
+        LOG_ERROR_CODE("UPDATE", result,
+                       "Objeto assets da Release invalido");
+        return result;
+    }
     if (result == OK) {
         result = update_release_json_key(&json, "package");
-        if (result != OK) *reason_out = UPDATE_REMOTE_REASON_RELEASE_ASSET;
+        if (result != OK) {
+            *reason_out = UPDATE_REMOTE_REASON_RELEASE_ASSET;
+            LOG_ERROR_CODE("UPDATE", result,
+                           "Campo package da Release ausente ou invalido");
+            return result;
+        }
     }
     if (result == OK) result = update_release_json_asset(
         &json, package_name, package_capacity,
@@ -563,11 +586,21 @@ static int update_release_parse_descriptor(
     }
     if (result == OK) {
         result = update_release_json_expect(&json, ',');
-        if (result != OK) *reason_out = UPDATE_REMOTE_REASON_RELEASE_ASSET;
+        if (result != OK) {
+            *reason_out = UPDATE_REMOTE_REASON_RELEASE_ASSET;
+            LOG_ERROR_CODE("UPDATE", result,
+                           "Separador entre assets da Release invalido");
+            return result;
+        }
     }
     if (result == OK) {
         result = update_release_json_key(&json, "manifest");
-        if (result != OK) *reason_out = UPDATE_REMOTE_REASON_RELEASE_ASSET;
+        if (result != OK) {
+            *reason_out = UPDATE_REMOTE_REASON_RELEASE_ASSET;
+            LOG_ERROR_CODE("UPDATE", result,
+                           "Campo manifest da Release ausente ou invalido");
+            return result;
+        }
     }
     if (result == OK) result = update_release_json_asset(
         &json, manifest_name, manifest_capacity,
