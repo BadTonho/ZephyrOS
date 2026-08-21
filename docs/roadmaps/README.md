@@ -94,6 +94,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   UHCI e EHCI foram validados pelo usuario no QEMU. A EP4.2 implementa o
   primeiro runtime UHCI, enumeracao de portas raiz e controle USB; a etapa foi
   validada no QEMU com `usb-kbd`, portas vazias e fixture EHCI fora do escopo.
+  A EP4.3 implementa Bulk sincrono, driver Mass Storage BOT/SCSI somente-leitura,
+  registro em `block_device_t` e integracao com `storage mount`, validada no
+  QEMU com `storage-valid.img` e regressao completa.
 - Funcionalidades aplicaveis: R1 foi validada no QEMU com log circular,
   diagnosticos e regressao. R2 e R3 foram validadas manualmente no QEMU, com
   timers, espera, rede, cancelamento, `q2check`, `regcheck full`, `memcheck`,

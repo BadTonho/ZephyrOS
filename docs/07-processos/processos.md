@@ -418,3 +418,55 @@ cancelar explicitamente o processo ring 3 reservado ao `usertest`, mantendo o
 resultado no mesmo canal de coleta usado pelo encerramento normal. A rotina
 recusa PIDs que nao pertencem a um UserTest e nao altera a API publica de
 `shell.h`.
+
+---
+
+## Serviço de Espera Cooperativa R3 (`wait.c` / `wait.h`)
+
+O subsistema de espera cooperativa (R3) fornece canais de sincronização estáticos
+com suporte a timeouts baseados em ticks absolutos do PIT, motivos de acordada
+explícitos, cancelamento assíncrono e rastreamento de contadores.
+
+### Canais e Estrutura
+
+Cada canal de espera (`wait_channel_t`) possui:
+- Proprietário textual (ex: `"IPC"`, `"TIMER"`, `"NET"`);
+- Sequência de condição monotônica (`condition_sequence`) para evitar acordadas perdidas (*lost wakeups*);
+- Flag de disponibilidade de recurso (`resource_available`).
+
+```c
+typedef struct {
+    char owner[WAIT_CHANNEL_OWNER_SIZE];
+    uint32_t condition_sequence;
+    uint8_t resource_available;
+    uint8_t initialized;
+} wait_channel_t;
+```
+
+### Motivos de Bloqueio e Acordada (`wait_reason_t`)
+
+- `WAIT_REASON_EVENT`: Desbloqueio normal por evento entregue;
+- `WAIT_REASON_TIMEOUT`: Prazo absoluto expirado pelo PIT;
+- `WAIT_REASON_CANCELLED`: Cancelamento solicitado pelo chamador ou por interrupção do Shell;
+- `WAIT_REASON_UNAVAILABLE`: Recurso fechado ou destruído enquanto aguardava.
+
+### API do Subsistema
+
+```c
+void wait_channel_init(wait_channel_t* channel, const char* owner);
+void wait_channel_signal(wait_channel_t* channel);
+int  wait_get_stats(wait_stats_t* out_stats);
+int  wait_self_test(wait_self_test_result_t* out_result);
+
+/* Integração com Processos e Threads */
+int process_wait_channel(wait_channel_t* channel, uint32_t timeout_ticks,
+                         uint32_t expected_sequence, wait_reason_t* out_reason);
+int process_wake_channel(wait_channel_t* channel, wait_wake_mode_t mode,
+                         wait_reason_t reason, uint32_t* out_woken);
+```
+
+O Shell conecta sua fila IPC ao canal de espera do processo: quando não há
+mensagens, o processo Shell passa a `BLOCKED` e é acordado imediatamente quando
+o teclado ou outro produtor envia uma mensagem IPC. O autoteste privado
+(`wait_self_test`) valida sinais, limites, cancelamento coletivo/individual e
+wrap de ticks sem interferir nas filas reais do sistema.

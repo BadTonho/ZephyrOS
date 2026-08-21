@@ -60,8 +60,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         panic("TIMER: falha ao inicializar PIT");
     }
 
-    /* Memoria e contratos basicos. */
+    /* Memoria, ACPI pré-paging e contratos básicos. */
     memory_init(mmap_addr);
+    acpi_init(memory_get_mmap());
     app_api_init();
     syscall_init();                 // inicia com gate DPL 0
     paging_init();
@@ -72,27 +73,47 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     ipc_init();
     thread_init();
 
-    /* Dispositivos, filesystem e interfaces nativas. */
+    /* Camada de bloco, filesystem, storage e índice. */
+    block_init();
     ata_init();
     fs_init();
+    storage_init();
+    file_index_init();
+    update_init();
+
+    /* Dispositivos, áudio, USB, rede e energia. */
     speaker_init();
     pci_init();
+    usb_manager_init();
+    storage_refresh();
     ac97_init();
     device_manager_init();
+    network_manager_init();
+    update_remote_init();
     power_init();
+
+    /* Interface gráfica Classic, display e janelas. */
     icons_init();
+    display_init();
     taskbar_init();
     desktop_init();
     settings_init();
     wm_init();
+    updater_init();
 
-    /* Servicos em segundo plano, Shell e cena inicial. */
+    /* Processos de sistema, Shell, modo usuário e App Store. */
     process_create("Zephyr System", system_process_main);
     process_create("Shell", shell_process_main);
     process_create("Desktop", desktop_process_main);
     syscall_enable_user_mode();     // eleva int 0x80 para DPL 3
     app_loader_init();
-    desktop_draw();                 // Shell nao e a tela padrao
+    app_package_init();
+    app_remote_init();
+    app_catalog_init();
+    appstore_init();
+
+    /* Desktop e a cena padrao; o Shell abre por solicitacao. */
+    desktop_draw();
 }
 ```
 

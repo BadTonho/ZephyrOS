@@ -430,6 +430,26 @@ do primeiro disco legado. IDs PCI sao exibidos como `pci-BB:DD.F`. O terminal in
 maiusculas e simbolos, incluindo `:` com `Shift+;`. A forma
 `pci-BB-DD.F` e letras minusculas continuam aceitas como alternativas.
 
+## `usb [status|list|device|ports|devices|storage]`
+
+Os comandos USB inspecionam o subsistema USB implementado nas fases EP4.1 a EP4.3:
+
+```text
+zephyr> usb status
+zephyr> usb list
+zephyr> usb device usb-pci-00:04.0
+zephyr> usb ports
+zephyr> usb devices
+zephyr> usb storage
+```
+
+- `usb status`: Exibe o estado consolidado do subsistema (serviço, integridade do inventário, contagem de controladores UHCI/EHCI/outros, disponibilidade de DMA, IRQ, transferências de Controle e Bulk, contagem de portas, dispositivos configurados, ocupação de TDs DMA e MSCs ativos).
+- `usb list`: Lista todos os controladores PCI USB detectados, exibindo ID estável (`usb-pci-BB:DD.F`), estado (`READY`, `DEGRADED`, `DISABLED`), modelo (UHCI, EHCI, Outro) e localização PCI.
+- `usb device <id>`: Exibe informações detalhadas do controlador especificado (BARs, IRQ, classe e recursos).
+- `usb ports`: Lista as portas raiz UHCI com estado (`CONFIGURED`, `DEGRADED`, `EMPTY`), velocidade (Low/Full speed), endereço atribuído e ID de sessão do dispositivo conectado.
+- `usb devices`: Lista os dispositivos USB configurados, detalhando ID (`usb-dev-BB:DD.F-pN-aN`), velocidade, endereço, Vendor/Product ID, Classe/Subclasse/Protocolo, configuração ativa, número de endpoints e validade dos descritores Device/Configuration.
+- `usb storage`: Inspeciona os dispositivos USB Mass Storage (BOT/SCSI) ativos registrados na camada de bloco, detalhando ID de sessão, ID de bloco associado (`usb-ms-BB:DD.F-pN-aN-l0`), LUN, tamanho de setor (512B) e capacidade em setores.
+
 ## Rede: comandos individuais e diagnostico agrupado
 
 Os comandos mantem o snapshot PCI e mostram o estado real de ate quatro E1000
@@ -1304,10 +1324,24 @@ zephyr> taskcfg
 
 ## `settings`
 Abre o sistema de configurações do ZephyrOS.
+Categorias: Tela, Barra de Tarefas, Janelas, Ícones, Sistema, Som, Sobre.
 
-```
+```text
 zephyr> settings
 ```
+
+## `display [pequena|normal|grande]`
+
+Inspeciona ou altera a escala visual do modo Classic em tempo de execução (MV0/MV0.1):
+
+```text
+zephyr> display
+zephyr> display pequena
+zephyr> display normal
+zephyr> display grande
+```
+
+Sem argumentos, exibe a escala ativa, fatores de escala, dimensões de fonte e métricas de botões, ícones e taskbar.
 
 ## `wait [status|list|check]`
 
@@ -1324,8 +1358,6 @@ Inspeciona o servico interno de espera cooperativa do kernel.
 O processo Shell usa o canal IPC do proprio processo: quando nao ha mensagens
 na fila, ele fica em `BLOCKED` e volta a `READY` quando teclado ou outro
 produtor envia uma mensagem.
-
-Categorias: Tela, Barra de Tarefas, Janelas, Ícones, Sistema, Som, Sobre.
 ## `job status`
 
 Mostra o ultimo estado conhecido do executor cooperativo de operacoes
