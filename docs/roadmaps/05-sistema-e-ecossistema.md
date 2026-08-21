@@ -125,6 +125,24 @@ antecipar interfaces ou permissoes que ainda nao existem.
 - [x] Manter operacoes remotas opcionalmente desabilitadas e visiveis em
   `health` quando indisponiveis.
 
+### Continuidade da atualizacao do sistema
+
+U1-U5 permanecem como a base executavel no dispositivo: autenticacao,
+staging, aplicacao, rollback e transporte HTTP manual. A evolucao posterior
+nao substitui esses contratos e esta concentrada no Roadmap 08:
+
+- [x] EP5: Releases oficiais geradas e verificadas no host, com trava de
+  versao assinada e tag auxiliar opcional.
+  Implementacao concluida em: 2026-08-21 16:33 (America/Sao_Paulo).
+  Validacao concluida em: 2026-08-21 16:36 (America/Sao_Paulo).
+- [ ] EP6: selecao por tag exata, TLS e canal GitHub configuravel. A tag nao
+  define versao e baixar continua separado de aplicar.
+- [ ] EP9: artefato `ZSYS` separado do `ZUPD`, slots A/B, ativacao no reboot e
+  rollback de boot. Alteracoes em boot/stage2 dependem de aprovacao explicita.
+
+Este documento nao duplica EP5-EP9; o contrato detalhado e os criterios de
+saida continuam em [`08-evolucao-da-plataforma.md`](08-evolucao-da-plataforma.md).
+
 ## Etapa S3 - Ecossistema de aplicativos
 
 - [x] Concluir e validar o AS1 do roadmap

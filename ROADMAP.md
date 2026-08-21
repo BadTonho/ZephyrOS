@@ -4,15 +4,18 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
-## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP4.3 validadas; EP4.4 implementada
+## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP4.4 validadas; EP5 validada no host; EP6 e EP9 planejadas
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
 Plataforma de aplicativos:   [██████████████████████████████████████████] Fase 7 validada
 Interface e experiência:     [██████████████████████████████████████████] UI1-UI7 validadas
 Sistema e ecossistema:       [██████████████████████████████████████████] S2.8 e U1-U5 concluídas
-Evolução da plataforma:      [████████████████████------------------------] EP1-EP4.3 validadas; EP4.4 implementada
+Evolução da plataforma:      [████████████████████████--------------------] EP1-EP4.4 validadas; EP5 host validada; EP6 planejada; EP9 futura
 ```
+
+**Documentação de atualização sincronizada em:** 2026-08-21 17:00
+(America/Sao_Paulo).
 
 ---
 
@@ -710,6 +713,20 @@ Evolução da plataforma:      [████████████████
   cancelamento, aplicacao local, rollback, `regcheck full` e `audit-image`
   passaram no QEMU. O Simple permanece como fallback implementado, com
   regressao complementar que nao bloqueia a fase.
+- [x] EP5 implementada e validada no host: `release-build` e `release-check`
+  geram e conferem Releases imutaveis com ZUPD/ZUM1, trava de versao assinada,
+  hashes, commit de origem e tag auxiliar opcional. Os registros de
+  implementacao e validacao estao no Roadmap 08.
+- [ ] EP6 planejada: selecao explicita por tag exata, TLS e canal GitHub
+  configuravel. A tag continua sendo apenas descoberta; ZUPD/ZUM1 continuam
+  sendo a autoridade de versao e integridade.
+- [ ] EP9 planejada: pacote `ZSYS` separado do runtime, staging em slots A/B,
+  ativacao somente no reboot e rollback de boot. Nenhuma alteracao em boot ou
+  stage2 e autorizada antes da etapa dedicada.
+
+Para atualizacoes do sistema, U1-U5 continuam sendo a base executavel no
+dispositivo; EP5-EP9 sao a continuidade de Release, transporte e imagem do
+sistema descrita em `docs/roadmaps/08-evolucao-da-plataforma.md`.
 
 ## Roadmaps por etapa
 
@@ -726,7 +743,7 @@ kernel, interface e novos serviços:
 | 5 | [`docs/roadmaps/05-sistema-e-ecossistema.md`](docs/roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e ecossistema. |
 | 6 | [`docs/roadmaps/06-app-store.md`](docs/roadmaps/06-app-store.md) | Catalogo local, ciclo de vida, App Store Modern e distribuicao futura. |
 | 7 | [`docs/roadmaps/07-modernizacao-visual.md`](docs/roadmaps/07-modernizacao-visual.md) | Escala acessivel, visual flat/dark e desempenho VESA mensuravel; MV4 funcionalmente validado, comparacao historica N/D. |
-| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP4.3 validadas pelo usuário em 20/08/2026; EP4.4 implementada em 21/08/2026 e aguardando validação. |
+| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP4.4 validadas; EP5 implementada e validada no host; EP6 planejada; EP9 futura para imagem do sistema e recuperação de boot. |
 | 9 | [`docs/roadmaps/09-funcionalidades-aplicaveis.md`](docs/roadmaps/09-funcionalidades-aplicaveis.md) | Logs, timers, espera, work queue, dispositivos, I/O, cache e métricas do scheduler. |
 | 10 | [`docs/roadmaps/10-vfs-e-abstracao-io.md`](docs/roadmaps/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, pontos de montagem, dispositivos /dev/ e pipes. |
 | 11 | [`docs/roadmaps/11-gerenciamento-avancado-de-memoria.md`](docs/roadmaps/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging. |
