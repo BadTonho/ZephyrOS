@@ -442,8 +442,9 @@ A versao oficial continua vindo dos campos assinados do ZUPD/ZUM1. Nao existe
 Implementacao concluida em: 2026-08-21 17:52 (America/Sao_Paulo).
 Correcao do hash publicado da fixture EP6 concluida em: 2026-08-21 18:10
 (America/Sao_Paulo).
-Validacao funcional pelo usuario pendente apos `make q3check` e
-`make clean && make`.
+Selftest de fixtures EP6 concluido em: 2026-08-21 18:12
+(America/Sao_Paulo).
+Validacao funcional pelo usuario pendente apos `make clean && make`.
 
 A matriz EP6.0 cobre duas tags validas, tag ausente/invalida/inexistente,
 argumentos extras, descritor invalido, asset ausente, hashes e
