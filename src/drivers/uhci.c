@@ -103,6 +103,23 @@
 #define UHCI_CONTROL_BUFFER_DATA 1U
 #define UHCI_CONTROL_BUFFER_DATA_OFFSET (UHCI_CONTROL_BUFFER_DATA * \
                                          USB_UHCI_DESCRIPTOR_BUFFER_SIZE)
+#define UHCI_CONTROL_DEFAULT_MAX_PACKET 8U
+#define UHCI_ENUMERATION_RETRIES 3U
+#define UHCI_DEVICE_MAX_PACKET_MIN 8U
+#define UHCI_DEVICE_MAX_PACKET_MAX 64U
+
+typedef enum {
+    UHCI_ENUM_STAGE_RESET = 0,
+    UHCI_ENUM_STAGE_DEVICE_PREFIX,
+    UHCI_ENUM_STAGE_SET_ADDRESS,
+    UHCI_ENUM_STAGE_ADDRESS_SETTLE,
+    UHCI_ENUM_STAGE_DEVICE_FULL,
+    UHCI_ENUM_STAGE_CONFIGURATION_HEADER,
+    UHCI_ENUM_STAGE_CONFIGURATION_FULL,
+    UHCI_ENUM_STAGE_CONFIGURATION_PARSE,
+    UHCI_ENUM_STAGE_SET_CONFIGURATION,
+    UHCI_ENUM_STAGE_PUBLISH
+} uhci_enum_stage_t;
 
 typedef struct {
     uint32_t link;
@@ -153,6 +170,16 @@ struct uhci_device_record {
     uint8_t bulk_out_toggle;
 };
 
+typedef struct {
+    uint8_t active;
+    uint8_t address;
+    uint8_t max_packet_size0;
+    uint8_t attempt;
+    usb_device_speed_t speed;
+    uhci_enum_stage_t stage;
+    int last_error;
+} uhci_enum_context_t;
+
 struct uhci_controller {
     uint8_t used;
     uint8_t initialized;
@@ -193,6 +220,7 @@ struct uhci_controller {
     int last_error;
     usb_port_info_t ports[USB_UHCI_PORT_COUNT];
     uhci_device_record_t devices[USB_UHCI_PORT_COUNT];
+    uhci_enum_context_t enumeration[USB_UHCI_PORT_COUNT];
     uint8_t device_count;
     uhci_interrupt_request_t interrupt_requests[USB_UHCI_INTERRUPT_CAPACITY];
 };
@@ -286,13 +314,39 @@ static uhci_device_record_t* uhci_find_device_record(
     if (!controller || !device || device->controller_bus != controller->bus ||
         device->controller_device != controller->device ||
         device->controller_function != controller->function) return 0;
-    for (uint32_t index = 0U; index < controller->device_count; index++) {
+    for (uint32_t index = 0U; index < USB_UHCI_PORT_COUNT; index++) {
         uhci_device_record_t* record = &controller->devices[index];
 
-        if (record->info.usb_address == device->usb_address &&
+        if (record->valid_descriptors &&
+            record->info.usb_address == device->usb_address &&
             record->info.port_number == device->port_number) return record;
     }
     return 0;
+}
+
+static uhci_device_record_t* uhci_get_device_record_at(
+    uhci_controller_t* controller, uint32_t index) {
+    uint32_t found = 0U;
+
+    if (!controller) return 0;
+    for (uint32_t port = 0U; port < USB_UHCI_PORT_COUNT; port++) {
+        uhci_device_record_t* record = &controller->devices[port];
+
+        if (!record->valid_descriptors) continue;
+        if (found == index) return record;
+        found++;
+    }
+    return 0;
+}
+
+static uint32_t uhci_count_valid_devices(const uhci_controller_t* controller) {
+    uint32_t count = 0U;
+
+    if (!controller) return 0U;
+    for (uint32_t port = 0U; port < USB_UHCI_PORT_COUNT; port++) {
+        if (controller->devices[port].valid_descriptors) count++;
+    }
+    return count;
 }
 
 static uhci_controller_t* uhci_allocate(void) {
@@ -599,25 +653,58 @@ static int uhci_wait_transfer(uhci_controller_t* controller,
     }
 }
 
+static int uhci_valid_control_packet_size(uint8_t max_packet_size) {
+    return max_packet_size >= UHCI_DEVICE_MAX_PACKET_MIN &&
+           max_packet_size <= UHCI_DEVICE_MAX_PACKET_MAX &&
+           (max_packet_size == 8U || max_packet_size == 16U ||
+            max_packet_size == 32U || max_packet_size == 64U);
+}
+
+static void uhci_control_release_sync(uhci_controller_t* controller) {
+    if (!controller) return;
+    controller->sync_td_in_use = 0U;
+    controller->sync_buffer_in_use = 0U;
+    uhci_update_resource_usage(controller);
+}
+
 static int uhci_control_transfer(uhci_controller_t* controller,
                                  uint8_t address, uint8_t low_speed,
+                                 uint8_t max_packet_size,
                                  uint8_t request_type, uint8_t request,
                                  uint16_t value, uint16_t index,
                                  uint16_t length, uint8_t* data,
                                  uint16_t* out_length) {
-    uint8_t* setup = controller->buffer_pool +
-                     UHCI_CONTROL_BUFFER_SETUP *
-                     USB_UHCI_DESCRIPTOR_BUFFER_SIZE;
-    uint8_t* transfer_data = controller->buffer_pool +
-                              UHCI_CONTROL_BUFFER_DATA_OFFSET;
-    uint32_t td_count = length ? 3U : 2U;
+    uint8_t* setup;
+    uint8_t* transfer_data;
+    uint32_t data_td_count = 0U;
+    uint32_t td_count;
+    uint32_t copied = 0U;
+    uint32_t actual_total = 0U;
+    uint8_t data_in = request_type & UHCI_REQUEST_DEVICE_TO_HOST;
     int result;
 
-    if (length > USB_UHCI_DESCRIPTOR_BUFFER_SIZE ||
-        (length && !data) || !controller->running) {
+    if (!controller || !controller->running ||
+        length > USB_UHCI_DESCRIPTOR_BUFFER_SIZE ||
+        (length && !data) || !uhci_valid_control_packet_size(max_packet_size)) {
         LOG_ERROR("UHCI", "Argumento invalido na transferencia de controle");
-        return !controller->running ? ERR_STATE : ERR_INVALID;
+        return !controller || !controller->running ? ERR_STATE : ERR_INVALID;
     }
+    if (length) {
+        data_td_count = (length + max_packet_size - 1U) / max_packet_size;
+        td_count = data_td_count + 2U;
+    } else {
+        td_count = 2U;
+    }
+    if (td_count > UHCI_SYNC_TD_CAPACITY) {
+        LOG_ERROR("UHCI", "Transferencia de controle excede os TDs UHCI");
+        return ERR_OVERFLOW;
+    }
+    if (out_length) *out_length = 0U;
+    setup = controller->buffer_pool +
+                     UHCI_CONTROL_BUFFER_SETUP *
+                     USB_UHCI_DESCRIPTOR_BUFFER_SIZE;
+    transfer_data = controller->buffer_pool +
+                              UHCI_CONTROL_BUFFER_DATA_OFFSET;
     setup[0] = request_type;
     setup[1] = request;
     setup[2] = (uint8_t)value;
@@ -626,7 +713,7 @@ static int uhci_control_transfer(uhci_controller_t* controller,
     setup[5] = (uint8_t)(index >> 8U);
     setup[6] = (uint8_t)length;
     setup[7] = (uint8_t)(length >> 8U);
-    if (length && !(request_type & UHCI_REQUEST_DEVICE_TO_HOST)) {
+    if (length && !data_in) {
         kmemcpy(transfer_data, data, length);
     }
     kmemset(controller->td_pool, 0, td_count * UHCI_TD_SIZE);
@@ -643,21 +730,31 @@ static int uhci_control_transfer(uhci_controller_t* controller,
                                                UHCI_SETUP_SIZE);
     controller->td_pool[0].buffer = controller->buffer_pool_phys;
     if (length) {
-        controller->td_pool[1].status = uhci_td_status(low_speed, 0U);
-        controller->td_pool[1].token = uhci_token(
-            request_type & UHCI_REQUEST_DEVICE_TO_HOST ? UHCI_PID_IN :
-            UHCI_PID_OUT, address, 0U, 1U, length);
-        controller->td_pool[1].buffer = controller->buffer_pool_phys +
-                                        UHCI_CONTROL_BUFFER_DATA_OFFSET;
-        controller->td_pool[2].status = uhci_td_status(low_speed, 1U);
-        controller->td_pool[2].token = uhci_token(
-            request_type & UHCI_REQUEST_DEVICE_TO_HOST ? UHCI_PID_OUT :
-            UHCI_PID_IN, address, 0U, 1U, 0U);
+        copied = 0U;
+        for (uint32_t td = 0U; td < data_td_count; td++) {
+            uint32_t remaining = length - copied;
+            uint16_t packet = remaining > max_packet_size ? max_packet_size :
+                              (uint16_t)remaining;
+            uint32_t status = uhci_td_status(low_speed, 0U);
+
+            if (data_in) status |= UHCI_TD_SPD;
+            controller->td_pool[td + 1U].status = status;
+            controller->td_pool[td + 1U].token = uhci_token(
+                data_in ? UHCI_PID_IN : UHCI_PID_OUT, address, 0U,
+                (uint8_t)(1U ^ (td & 1U)), packet);
+            controller->td_pool[td + 1U].buffer =
+                controller->buffer_pool_phys + UHCI_CONTROL_BUFFER_DATA_OFFSET +
+                copied;
+            copied += packet;
+        }
+        controller->td_pool[td_count - 1U].status =
+            uhci_td_status(low_speed, 1U);
+        controller->td_pool[td_count - 1U].token = uhci_token(
+            data_in ? UHCI_PID_OUT : UHCI_PID_IN, address, 0U, 1U, 0U);
     } else {
         controller->td_pool[1].status = uhci_td_status(low_speed, 1U);
         controller->td_pool[1].token = uhci_token(
-            request_type & UHCI_REQUEST_DEVICE_TO_HOST ? UHCI_PID_OUT :
-            UHCI_PID_IN, address, 0U, 1U, 0U);
+            data_in ? UHCI_PID_OUT : UHCI_PID_IN, address, 0U, 1U, 0U);
     }
     controller->queue_head->element = controller->td_pool_phys;
     asm volatile("" : : : "memory");
@@ -665,49 +762,61 @@ static int uhci_control_transfer(uhci_controller_t* controller,
     controller->queue_head->element = UHCI_PTR_TERM;
     if (result != OK) {
         uhci_recover_controller(controller);
-        controller->sync_td_in_use = 0U;
-        controller->sync_buffer_in_use = 0U;
-        uhci_update_resource_usage(controller);
+        uhci_control_release_sync(controller);
         return result;
     }
-    if (length && (request_type & UHCI_REQUEST_DEVICE_TO_HOST)) {
-        uint32_t actual = uhci_td_actual(controller->td_pool[1].status);
-        if (actual > length) actual = length;
-        kmemcpy(data, transfer_data, actual);
-        if (out_length) *out_length = (uint16_t)actual;
-    } else if (out_length) {
-        *out_length = 0U;
+    if (length && data_in) {
+        copied = 0U;
+        for (uint32_t td = 0U; td < data_td_count; td++) {
+            uint32_t remaining = length - copied;
+            uint16_t packet = remaining > max_packet_size ? max_packet_size :
+                              (uint16_t)remaining;
+            uint32_t actual = uhci_td_actual(
+                controller->td_pool[td + 1U].status);
+
+            if (actual > packet) actual = packet;
+            kmemcpy(data + copied, transfer_data + copied, actual);
+            copied += actual;
+            actual_total += actual;
+            if (actual < packet) break;
+        }
+        if (out_length) *out_length = (uint16_t)actual_total;
     }
-    controller->sync_td_in_use = 0U;
-    controller->sync_buffer_in_use = 0U;
-    uhci_update_resource_usage(controller);
+    uhci_control_release_sync(controller);
     return OK;
 }
 
 static int uhci_read_descriptor(uhci_controller_t* controller, uint8_t address,
-                                uint8_t low_speed, uint8_t type,
+                                uint8_t low_speed, uint8_t max_packet_size,
+                                uint8_t type,
                                 uint8_t* data, uint16_t length) {
     uint16_t actual = 0;
-    int result = uhci_control_transfer(
-        controller, address, low_speed,
+    int result;
+
+    if (!data || !length) {
+        LOG_ERROR("UHCI", "Buffer invalido ao ler descritor USB");
+        return ERR_INVALID;
+    }
+    result = uhci_control_transfer(
+        controller, address, low_speed, max_packet_size,
         UHCI_REQUEST_DEVICE_TO_HOST | UHCI_REQUEST_STANDARD |
         UHCI_REQUEST_RECIPIENT_DEVICE, UHCI_REQUEST_GET_DESCRIPTOR,
         (uint16_t)(type << 8U), 0U, length, data, &actual);
 
     if (result != OK) return result;
-    if (actual < length && type == UHCI_DESCRIPTOR_DEVICE && actual < 8U) {
-        LOG_ERROR("UHCI", "Descritor Device incompleto");
+    if (actual < 2U || data[1] != type) {
+        LOG_ERROR("UHCI", "Tipo de descritor USB inesperado");
         return ERR_INVALID;
     }
-    if (actual < length && type == UHCI_DESCRIPTOR_CONFIGURATION) {
-        LOG_ERROR("UHCI", "Descritor Configuration incompleto");
+    if (actual < length) {
+        LOG_ERROR("UHCI", "Descritor USB incompleto");
         return ERR_INVALID;
     }
     return OK;
 }
 
 static int uhci_parse_configuration(uhci_device_record_t* record) {
-    uint8_t* data = record->configuration_descriptor;
+    uint8_t* data;
     uint32_t offset = 0;
     uint32_t configuration_count = 0;
     uint32_t interface_count = 0;
@@ -718,6 +827,7 @@ static int uhci_parse_configuration(uhci_device_record_t* record) {
         LOG_ERROR("UHCI", "Descritor Configuration ausente");
         return ERR_INVALID;
     }
+    data = record->configuration_descriptor;
     while (offset < record->configuration_length) {
         uint8_t length;
         uint8_t type;
@@ -733,12 +843,19 @@ static int uhci_parse_configuration(uhci_device_record_t* record) {
             return ERR_INVALID;
         }
         if (type == UHCI_DESCRIPTOR_TYPE_CONFIGURATION) {
-            if (length < UHCI_CONFIG_DESCRIPTOR_LENGTH) return ERR_INVALID;
+            if (length < UHCI_CONFIG_DESCRIPTOR_LENGTH) {
+                LOG_ERROR("UHCI", "Descritor Configuration curto");
+                return ERR_INVALID;
+            }
             configuration_count++;
             record->info.configuration_value = data[offset +
                                                    UHCI_CONFIG_VALUE_OFFSET];
         } else if (type == UHCI_DESCRIPTOR_TYPE_INTERFACE) {
-            if (length < UHCI_INTERFACE_DESCRIPTOR_LENGTH || interface_seen ||
+            if (length < UHCI_INTERFACE_DESCRIPTOR_LENGTH) {
+                LOG_ERROR("UHCI", "Descritor Interface USB curto");
+                return ERR_INVALID;
+            }
+            if (interface_seen ||
                 data[offset + UHCI_INTERFACE_ALTERNATE_OFFSET] != 0U) {
                 LOG_ERROR("UHCI", "Interface USB fora do escopo");
                 return ERR_UNAVAILABLE;
@@ -768,9 +885,13 @@ static int uhci_parse_configuration(uhci_device_record_t* record) {
                           ((uint16_t)data[offset + UHCI_ENDPOINT_MAX_PACKET_OFFSET +
                                             1U] << 8U));
             if (!(endpoint_address & 0x0FU)) {
+                LOG_ERROR("UHCI", "Endpoint USB zero invalido");
                 return ERR_INVALID;
             }
-            if (!max_packet || max_packet > 64U) return ERR_INVALID;
+            if (!max_packet || max_packet > 64U) {
+                LOG_ERROR("UHCI", "Tamanho de pacote USB invalido");
+                return ERR_INVALID;
+            }
             endpoint_count++;
             if (transfer_type == 2U &&
                 (max_packet == 8U || max_packet == 16U ||
@@ -803,7 +924,7 @@ static int uhci_parse_configuration(uhci_device_record_t* record) {
     if (configuration_count != 1U || interface_count != UHCI_INTERFACE_COUNT_LIMIT ||
         !interface_seen || endpoint_count > 16U ||
         (!endpoint_count && record->info.interface_class != 0U)) {
-        LOG_ERROR("UHCI", "Configuration USB nao suportada");
+        LOG_ERROR("UHCI", "Layout Configuration USB nao suportado");
         return ERR_UNAVAILABLE;
     }
     record->info.endpoint_count = (uint8_t)endpoint_count;
@@ -817,114 +938,207 @@ static int uhci_parse_configuration(uhci_device_record_t* record) {
     return OK;
 }
 
-static int uhci_enumerate_port(uhci_controller_t* controller, uint32_t port) {
-    uhci_device_record_t* record = &controller->devices[controller->device_count];
+static void uhci_log_enumeration_failure(
+    uint32_t port, const uhci_enum_context_t* context, int result) {
+    if (port == 0U) {
+        LOG_WARN_CODE("UHCI", result,
+                      "Falha na enumeracao UHCI da porta 1");
+    } else if (port == 1U) {
+        LOG_WARN_CODE("UHCI", result,
+                      "Falha na enumeracao UHCI da porta 2");
+    } else {
+        LOG_WARN_CODE("UHCI", result,
+                      "Falha na enumeracao UHCI de porta desconhecida");
+    }
+    if (!context) return;
+    switch (context->stage) {
+        case UHCI_ENUM_STAGE_RESET:
+            LOG_WARN_CODE("UHCI", result, "Etapa UHCI: reset da porta");
+            break;
+        case UHCI_ENUM_STAGE_DEVICE_PREFIX:
+            LOG_WARN_CODE("UHCI", result,
+                          "Etapa UHCI: Device Descriptor inicial");
+            break;
+        case UHCI_ENUM_STAGE_SET_ADDRESS:
+            LOG_WARN_CODE("UHCI", result, "Etapa UHCI: SET_ADDRESS");
+            break;
+        case UHCI_ENUM_STAGE_ADDRESS_SETTLE:
+            LOG_WARN_CODE("UHCI", result,
+                          "Etapa UHCI: espera apos SET_ADDRESS");
+            break;
+        case UHCI_ENUM_STAGE_DEVICE_FULL:
+            LOG_WARN_CODE("UHCI", result,
+                          "Etapa UHCI: Device Descriptor completo");
+            break;
+        case UHCI_ENUM_STAGE_CONFIGURATION_HEADER:
+            LOG_WARN_CODE("UHCI", result,
+                          "Etapa UHCI: Configuration Descriptor inicial");
+            break;
+        case UHCI_ENUM_STAGE_CONFIGURATION_FULL:
+            LOG_WARN_CODE("UHCI", result,
+                          "Etapa UHCI: Configuration Descriptor completo");
+            break;
+        case UHCI_ENUM_STAGE_CONFIGURATION_PARSE:
+            LOG_WARN_CODE("UHCI", result,
+                          "Etapa UHCI: parsing da configuracao");
+            break;
+        case UHCI_ENUM_STAGE_SET_CONFIGURATION:
+            LOG_WARN_CODE("UHCI", result, "Etapa UHCI: SET_CONFIGURATION");
+            break;
+        case UHCI_ENUM_STAGE_PUBLISH:
+            LOG_WARN_CODE("UHCI", result,
+                          "Etapa UHCI: publicacao do dispositivo");
+            break;
+        default:
+            LOG_WARN_CODE("UHCI", result, "Etapa UHCI desconhecida");
+            break;
+    }
+}
+
+static int uhci_enumerate_port_once(uhci_controller_t* controller,
+                                    uint32_t port,
+                                    uhci_enum_context_t* context) {
+    uhci_device_record_t* record = &controller->devices[port];
     usb_port_info_t* port_info = &controller->ports[port];
-    uint8_t first_descriptor[8];
+    uint8_t first_descriptor[8] = {0};
     uint8_t address;
-    uint16_t actual = 0;
+    uint16_t actual = 0U;
     uint16_t total_length;
     int result;
 
-    kmemset(record, 0, sizeof(*record));
+    context->stage = UHCI_ENUM_STAGE_RESET;
     port_info->state = USB_PORT_RESETTING;
     result = uhci_reset_port(controller, port);
-    if (result != OK) {
-        port_info->reason = USB_PORT_REASON_RESET_TIMEOUT;
-        goto failed;
-    }
+    if (result != OK) return result;
     port_info->connected = 1U;
     port_info->enabled = 1U;
     port_info->speed = (uhci_in16(controller, uhci_port_offset(port)) &
                         UHCI_PORT_LSDA) ? USB_DEVICE_SPEED_LOW :
                         USB_DEVICE_SPEED_FULL;
+    context->speed = port_info->speed;
+    context->max_packet_size0 = UHCI_CONTROL_DEFAULT_MAX_PACKET;
     port_info->state = USB_PORT_ENUMERATING;
-    result = uhci_read_descriptor(controller, 0U,
-                                  port_info->speed == USB_DEVICE_SPEED_LOW,
-                                  UHCI_DESCRIPTOR_DEVICE, first_descriptor, 8U);
-    if (result != OK || first_descriptor[0] < 8U ||
+
+    context->stage = UHCI_ENUM_STAGE_DEVICE_PREFIX;
+    result = uhci_read_descriptor(
+        controller, 0U, port_info->speed == USB_DEVICE_SPEED_LOW,
+        UHCI_CONTROL_DEFAULT_MAX_PACKET, UHCI_DESCRIPTOR_DEVICE,
+        first_descriptor, sizeof(first_descriptor));
+    if (result != OK) return result;
+    if (first_descriptor[0] < sizeof(first_descriptor) ||
         first_descriptor[1] != UHCI_DESCRIPTOR_TYPE_DEVICE ||
-        !first_descriptor[7]) {
-        result = ERR_INVALID;
-        goto failed;
+        !uhci_valid_control_packet_size(first_descriptor[7])) {
+        LOG_ERROR("UHCI", "Device Descriptor inicial invalido");
+        return ERR_INVALID;
+    }
+    context->max_packet_size0 = first_descriptor[7];
+
+    if (!controller->next_address ||
+        controller->next_address > UHCI_MAX_USB_ADDRESS) {
+        LOG_ERROR("UHCI", "Limite de enderecos USB UHCI atingido");
+        return ERR_OVERFLOW;
     }
     address = controller->next_address++;
-    if (!address || address > UHCI_MAX_USB_ADDRESS) {
-        result = ERR_OVERFLOW;
-        goto failed;
-    }
+    context->address = address;
+    context->stage = UHCI_ENUM_STAGE_SET_ADDRESS;
     result = uhci_control_transfer(
         controller, 0U, port_info->speed == USB_DEVICE_SPEED_LOW,
+        UHCI_CONTROL_DEFAULT_MAX_PACKET,
         UHCI_REQUEST_HOST_TO_DEVICE | UHCI_REQUEST_STANDARD |
         UHCI_REQUEST_RECIPIENT_DEVICE, UHCI_REQUEST_SET_ADDRESS,
         address, 0U, 0U, 0, &actual);
-    if (result != OK) goto failed;
+    if (result != OK) return result;
+
+    context->stage = UHCI_ENUM_STAGE_ADDRESS_SETTLE;
     {
         uint32_t start = timer_get_ticks();
         while (!uhci_timeout_expired(start, UHCI_SET_ADDRESS_DELAY_MS)) {
             asm volatile("pause");
         }
     }
+
+    context->stage = UHCI_ENUM_STAGE_DEVICE_FULL;
     result = uhci_read_descriptor(
         controller, address, port_info->speed == USB_DEVICE_SPEED_LOW,
-        UHCI_DESCRIPTOR_DEVICE, record->device_descriptor,
-        UHCI_DEVICE_DESCRIPTOR_LENGTH);
-    if (result != OK || record->device_descriptor[0] <
-        UHCI_DEVICE_DESCRIPTOR_LENGTH || record->device_descriptor[1] !=
-        UHCI_DESCRIPTOR_TYPE_DEVICE) {
-        result = ERR_INVALID;
-        goto failed;
+        context->max_packet_size0, UHCI_DESCRIPTOR_DEVICE,
+        record->device_descriptor, UHCI_DEVICE_DESCRIPTOR_LENGTH);
+    if (result != OK) return result;
+    if (record->device_descriptor[0] < UHCI_DEVICE_DESCRIPTOR_LENGTH ||
+        record->device_descriptor[1] != UHCI_DESCRIPTOR_TYPE_DEVICE ||
+        !uhci_valid_control_packet_size(record->device_descriptor[
+            UHCI_DEVICE_MPS_OFFSET])) {
+        LOG_ERROR("UHCI", "Device Descriptor completo invalido");
+        return ERR_INVALID;
     }
+    context->max_packet_size0 = record->device_descriptor[
+        UHCI_DEVICE_MPS_OFFSET];
     record->info.usb_address = address;
     record->info.speed = port_info->speed;
-    record->info.vendor_id = (uint16_t)(record->device_descriptor[8] |
-                              ((uint16_t)record->device_descriptor[9] << 8U));
-    record->info.product_id = (uint16_t)(record->device_descriptor[10] |
-                               ((uint16_t)record->device_descriptor[11] << 8U));
-    record->info.device_class = record->device_descriptor[4];
-    record->info.device_subclass = record->device_descriptor[5];
-    record->info.device_protocol = record->device_descriptor[6];
-    record->info.max_packet_size0 = record->device_descriptor[7];
-    record->info.num_configurations = record->device_descriptor[17];
+    record->info.vendor_id = (uint16_t)(record->device_descriptor[
+                              UHCI_DEVICE_VENDOR_OFFSET] |
+                              ((uint16_t)record->device_descriptor[
+                              UHCI_DEVICE_VENDOR_OFFSET + 1U] << 8U));
+    record->info.product_id = (uint16_t)(record->device_descriptor[
+                               UHCI_DEVICE_PRODUCT_OFFSET] |
+                               ((uint16_t)record->device_descriptor[
+                               UHCI_DEVICE_PRODUCT_OFFSET + 1U] << 8U));
+    record->info.device_class = record->device_descriptor[
+        UHCI_DEVICE_CLASS_OFFSET];
+    record->info.device_subclass = record->device_descriptor[
+        UHCI_DEVICE_SUBCLASS_OFFSET];
+    record->info.device_protocol = record->device_descriptor[
+        UHCI_DEVICE_PROTOCOL_OFFSET];
+    record->info.max_packet_size0 = context->max_packet_size0;
+    record->info.num_configurations = record->device_descriptor[
+        UHCI_DEVICE_CONFIG_COUNT_OFFSET];
     record->info.device_descriptor_valid = 1U;
-    if (!record->info.num_configurations || record->info.max_packet_size0 > 64U) {
-        result = ERR_INVALID;
-        goto failed;
+    if (!record->info.num_configurations) {
+        LOG_ERROR("UHCI", "Dispositivo USB sem configuracao");
+        return ERR_INVALID;
     }
+
+    context->stage = UHCI_ENUM_STAGE_CONFIGURATION_HEADER;
     result = uhci_read_descriptor(
         controller, address, port_info->speed == USB_DEVICE_SPEED_LOW,
-        UHCI_DESCRIPTOR_CONFIGURATION, record->configuration_descriptor,
-        UHCI_CONFIGURATION_HEADER_LENGTH);
-    if (result != OK || record->configuration_descriptor[0] <
-        UHCI_CONFIGURATION_HEADER_LENGTH || record->configuration_descriptor[1] !=
-        UHCI_DESCRIPTOR_TYPE_CONFIGURATION) {
-        result = ERR_INVALID;
-        goto failed;
-    }
+        context->max_packet_size0, UHCI_DESCRIPTOR_CONFIGURATION,
+        record->configuration_descriptor, UHCI_CONFIGURATION_HEADER_LENGTH);
+    if (result != OK) return result;
     total_length = (uint16_t)(record->configuration_descriptor[
                    UHCI_CONFIG_TOTAL_LENGTH_OFFSET] |
                    ((uint16_t)record->configuration_descriptor[
                    UHCI_CONFIG_TOTAL_LENGTH_OFFSET + 1U] << 8U));
-    if (total_length < UHCI_CONFIGURATION_HEADER_LENGTH ||
+    if (record->configuration_descriptor[0] < UHCI_CONFIGURATION_HEADER_LENGTH ||
+        record->configuration_descriptor[1] !=
+        UHCI_DESCRIPTOR_TYPE_CONFIGURATION ||
+        total_length < UHCI_CONFIGURATION_HEADER_LENGTH ||
         total_length > UHCI_MAX_DESCRIPTOR_LENGTH) {
-        result = ERR_INVALID;
-        goto failed;
+        LOG_ERROR("UHCI", "Cabecalho Configuration USB invalido");
+        return ERR_INVALID;
     }
+
+    context->stage = UHCI_ENUM_STAGE_CONFIGURATION_FULL;
     result = uhci_read_descriptor(
         controller, address, port_info->speed == USB_DEVICE_SPEED_LOW,
-        UHCI_DESCRIPTOR_CONFIGURATION, record->configuration_descriptor,
-        total_length);
-    if (result != OK) goto failed;
+        context->max_packet_size0, UHCI_DESCRIPTOR_CONFIGURATION,
+        record->configuration_descriptor, total_length);
+    if (result != OK) return result;
     record->configuration_length = total_length;
     record->info.configuration_length = total_length;
+
+    context->stage = UHCI_ENUM_STAGE_CONFIGURATION_PARSE;
     result = uhci_parse_configuration(record);
-    if (result != OK) goto failed;
+    if (result != OK) return result;
+
+    context->stage = UHCI_ENUM_STAGE_SET_CONFIGURATION;
     result = uhci_control_transfer(
         controller, address, port_info->speed == USB_DEVICE_SPEED_LOW,
+        context->max_packet_size0,
         UHCI_REQUEST_HOST_TO_DEVICE | UHCI_REQUEST_STANDARD |
         UHCI_REQUEST_RECIPIENT_DEVICE, UHCI_REQUEST_SET_CONFIGURATION,
         record->info.configuration_value, 0U, 0U, 0, &actual);
-    if (result != OK) goto failed;
+    if (result != OK) return result;
+
+    context->stage = UHCI_ENUM_STAGE_PUBLISH;
     record->info.state = USB_DEVICE_CONFIGURED;
     record->info.configuration_descriptor_valid = 1U;
     record->info.class_driver_active = 0U;
@@ -939,29 +1153,76 @@ static int uhci_enumerate_port(uhci_controller_t* controller, uint32_t port) {
     kmemcpy(port_info->device_id, record->info.id, USB_DEVICE_ID_SIZE);
     port_info->usb_address = address;
     port_info->state = USB_PORT_CONFIGURED;
-    controller->device_count++;
+    port_info->reason = USB_PORT_REASON_NONE;
+    record->valid_descriptors = 1U;
     return OK;
+}
 
-failed:
-    port_info->state = USB_PORT_DEGRADED;
-    if (port_info->reason != USB_PORT_REASON_RESET_TIMEOUT) {
-        port_info->reason = result == ERR_TIMEOUT ?
-                            USB_PORT_REASON_CONTROL_TIMEOUT :
-                            result == ERR_UNAVAILABLE ?
-                            USB_PORT_REASON_UNSUPPORTED_LAYOUT :
-                            USB_PORT_REASON_INVALID_DESCRIPTOR;
+static int uhci_enumeration_retryable(int result) {
+    return result == ERR_TIMEOUT || result == ERR_STATE ||
+           result == ERR_INVALID;
+}
+
+static usb_port_reason_t uhci_enumeration_reason(
+    const uhci_enum_context_t* context, int result) {
+    if (context && context->stage == UHCI_ENUM_STAGE_RESET &&
+        result == ERR_TIMEOUT) return USB_PORT_REASON_RESET_TIMEOUT;
+    if (result == ERR_TIMEOUT) return USB_PORT_REASON_CONTROL_TIMEOUT;
+    if (result == ERR_UNAVAILABLE) return USB_PORT_REASON_UNSUPPORTED_LAYOUT;
+    if (result == ERR_INVALID) return USB_PORT_REASON_INVALID_DESCRIPTOR;
+    return USB_PORT_REASON_DRIVER_FAILURE;
+}
+
+static int uhci_enumerate_port(uhci_controller_t* controller, uint32_t port) {
+    uhci_device_record_t* record = &controller->devices[port];
+    uhci_enum_context_t* context = &controller->enumeration[port];
+    usb_port_info_t* port_info = &controller->ports[port];
+    uint8_t address_start = controller->next_address;
+    int result = ERR_STATE;
+
+    for (uint32_t attempt = 1U; attempt <= UHCI_ENUMERATION_RETRIES;
+         attempt++) {
+        /* O reset invalida o endereco parcial da tentativa anterior. */
+        controller->next_address = address_start;
+        uhci_set_port_empty(controller, port);
+        kmemset(record, 0, sizeof(*record));
+        kmemset(context, 0, sizeof(*context));
+        context->active = 1U;
+        context->attempt = (uint8_t)attempt;
+        context->max_packet_size0 = UHCI_CONTROL_DEFAULT_MAX_PACKET;
+        context->stage = UHCI_ENUM_STAGE_RESET;
+        result = uhci_enumerate_port_once(controller, port, context);
+        if (result == OK) {
+            context->active = 0U;
+            context->last_error = OK;
+            return OK;
+        }
+        context->last_error = result;
+        uhci_log_enumeration_failure(port, context, result);
+        if (!uhci_enumeration_retryable(result) ||
+            attempt == UHCI_ENUMERATION_RETRIES) break;
     }
+    port_info->state = USB_PORT_DEGRADED;
+    port_info->reason = uhci_enumeration_reason(context, result);
     port_info->connected = 1U;
     port_info->enabled = 0U;
+    port_info->usb_address = context->address;
+    context->active = 0U;
     controller->port_errors++;
     controller->last_error = result;
-    LOG_WARN("UHCI", "Porta UHCI degradada durante enumeracao");
+    LOG_WARN_CODE("UHCI", result,
+                  "Porta UHCI degradada apos tentativas de enumeracao");
     return result;
 }
 
 static int uhci_initialize_ports(uhci_controller_t* controller) {
+    controller->device_count = 0U;
+    controller->port_errors = 0U;
+    kmemset(controller->devices, 0, sizeof(controller->devices));
+    kmemset(controller->enumeration, 0, sizeof(controller->enumeration));
     for (uint32_t port = 0; port < USB_UHCI_PORT_COUNT; port++) {
         uint16_t status = uhci_in16(controller, uhci_port_offset(port));
+        int result;
 
         uhci_set_port_empty(controller, port);
         if (status == 0xFFFFU) {
@@ -971,8 +1232,9 @@ static int uhci_initialize_ports(uhci_controller_t* controller) {
             continue;
         }
         if (!(status & UHCI_PORT_CCS)) continue;
-        if (uhci_enumerate_port(controller, port) != OK &&
-            controller->last_error == OK) controller->last_error = ERR_STATE;
+        result = uhci_enumerate_port(controller, port);
+        if (result == OK) controller->device_count++;
+        else if (controller->last_error == OK) controller->last_error = result;
     }
     return controller->port_errors ? ERR_STATE : OK;
 }
@@ -1598,13 +1860,23 @@ int uhci_get_device(uint8_t bus, uint8_t device, uint8_t function,
         LOG_ERROR("UHCI", "Indice de dispositivo UHCI invalido");
         return ERR_INVALID;
     }
-    *out_info = controller->devices[index].info;
+    {
+        uhci_device_record_t* record = uhci_get_device_record_at(controller,
+                                                                  index);
+
+        if (!record) {
+            LOG_ERROR("UHCI", "Registro de dispositivo UHCI ausente");
+            return ERR_STATE;
+        }
+        *out_info = record->info;
+    }
     return OK;
 }
 
 int uhci_validate_state(uint8_t bus, uint8_t device, uint8_t function) {
     uhci_controller_t* controller = uhci_find(bus, device, function);
     uint8_t shared_irq_count = 0U;
+    uint32_t valid_device_count;
 
     if (!controller) {
         LOG_ERROR("UHCI", "Controlador UHCI ausente na validacao");
@@ -1702,34 +1974,40 @@ int uhci_validate_state(uint8_t bus, uint8_t device, uint8_t function) {
             return ERR_STATE;
         }
     }
-    for (uint32_t index = 0; index < controller->device_count; index++) {
-        if (!controller->devices[index].valid_descriptors ||
-            controller->devices[index].info.state != USB_DEVICE_CONFIGURED ||
-            controller->devices[index].info.hub_present ||
-            !controller->devices[index].info.id[0] ||
-            !controller->devices[index].info.device_descriptor_valid ||
-            !controller->devices[index].info.configuration_descriptor_valid ||
-            !controller->devices[index].info.max_packet_size0 ||
-            controller->devices[index].info.max_packet_size0 > 64U ||
-            controller->devices[index].info.configuration_length <
+    valid_device_count = uhci_count_valid_devices(controller);
+    if (valid_device_count != controller->device_count) {
+        LOG_ERROR("UHCI", "Contagem de dispositivos UHCI inconsistente");
+        return ERR_STATE;
+    }
+    for (uint32_t port = 0U; port < USB_UHCI_PORT_COUNT; port++) {
+        uhci_device_record_t* record = &controller->devices[port];
+
+        if (!record->valid_descriptors) continue;
+        if (record->info.state != USB_DEVICE_CONFIGURED ||
+            record->info.port_number != port + 1U ||
+            !record->info.usb_address ||
+            controller->ports[port].state != USB_PORT_CONFIGURED ||
+            controller->ports[port].usb_address != record->info.usb_address ||
+            record->info.hub_present || !record->info.id[0] ||
+            !record->info.device_descriptor_valid ||
+            !record->info.configuration_descriptor_valid ||
+            !uhci_valid_control_packet_size(record->info.max_packet_size0) ||
+            record->info.configuration_length <
             UHCI_CONFIGURATION_HEADER_LENGTH ||
-            controller->devices[index].info.configuration_length >
+            record->info.configuration_length >
             USB_UHCI_DESCRIPTOR_BUFFER_SIZE ||
-            controller->devices[index].info.endpoint_count > 16U ||
-            controller->devices[index].info.bulk_in_count >
-            controller->devices[index].info.endpoint_count ||
-            controller->devices[index].info.bulk_out_count >
-            controller->devices[index].info.endpoint_count ||
-            controller->devices[index].info.interrupt_in_count >
-            controller->devices[index].info.endpoint_count ||
-            (controller->devices[index].info.bulk_in_count &&
-             !controller->devices[index].info.bulk_in_max_packet) ||
-            (controller->devices[index].info.bulk_out_count &&
-             !controller->devices[index].info.bulk_out_max_packet) ||
-            (controller->devices[index].info.interrupt_in_count &&
-             (!controller->devices[index].info.interrupt_in_endpoint ||
-              !controller->devices[index].info.interrupt_in_max_packet ||
-              !controller->devices[index].info.interrupt_interval))) {
+            record->info.endpoint_count > 16U ||
+            record->info.bulk_in_count > record->info.endpoint_count ||
+            record->info.bulk_out_count > record->info.endpoint_count ||
+            record->info.interrupt_in_count > record->info.endpoint_count ||
+            (record->info.bulk_in_count &&
+             !record->info.bulk_in_max_packet) ||
+            (record->info.bulk_out_count &&
+             !record->info.bulk_out_max_packet) ||
+            (record->info.interrupt_in_count &&
+             (!record->info.interrupt_in_endpoint ||
+              !record->info.interrupt_in_max_packet ||
+              !record->info.interrupt_interval))) {
             LOG_ERROR("UHCI", "Dispositivo USB configurado invalido");
             return ERR_STATE;
         }
@@ -1758,7 +2036,8 @@ int uhci_control_request(const usb_device_info_t* device,
     }
     spinlock_acquire(&controller->transfer_lock);
     result = uhci_control_transfer(controller, device->usb_address,
-                                   device->speed == USB_DEVICE_SPEED_LOW,
+                                   record->info.speed == USB_DEVICE_SPEED_LOW,
+                                   record->info.max_packet_size0,
                                    request_type, request, value, index, length,
                                    data, out_length);
     spinlock_release(&controller->transfer_lock);
