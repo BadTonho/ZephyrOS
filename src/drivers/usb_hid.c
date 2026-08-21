@@ -245,8 +245,13 @@ static void hid_interrupt_callback(void* context, int result,
 
     if (!record || !record->info.active) return;
     if (result != OK) {
-        if (result == ERR_TIMEOUT) record->info.timeout_count++;
-        else record->info.error_count++;
+        if (result == ERR_TIMEOUT) {
+            /* Timeout de polling e' transitivo; o UHCI rearma a requisicao. */
+            record->info.timeout_count++;
+            record->info.last_error = result;
+            return;
+        }
+        record->info.error_count++;
         record->info.last_error = result;
         record->info.state = USB_HID_STATE_DEGRADED;
         if (result == ERR_NOT_FOUND || result == ERR_UNAVAILABLE) {
