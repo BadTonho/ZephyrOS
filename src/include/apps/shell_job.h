@@ -71,6 +71,8 @@ struct shell_job_context {
     uint32_t wakeups;
     uint32_t stale_events;
     uint8_t deadline_active;
+    uint32_t next_wake_tick;
+    uint8_t next_wake_active;
 };
 
 typedef struct {
@@ -93,6 +95,8 @@ typedef struct {
     uint8_t cancel_requested;
     uint8_t draining;
     uint8_t deadline_active;
+    uint32_t next_wake_tick;
+    uint8_t next_wake_active;
 } shell_job_status_t;
 
 void shell_job_reset(void);
@@ -116,6 +120,9 @@ void shell_job_set_progress(shell_job_context_t* context,
 void shell_job_set_timeout(shell_job_context_t* context, uint32_t ticks);
 void shell_job_set_deadline(shell_job_context_t* context, uint32_t deadline_tick);
 void shell_job_clear_timeout(shell_job_context_t* context);
+void shell_job_set_next_wake(shell_job_context_t* context,
+                             uint32_t next_wake_tick);
+void shell_job_clear_next_wake(shell_job_context_t* context);
 const char* shell_job_state_name(shell_job_state_t state);
 const char* shell_job_kind_name(shell_job_kind_t kind);
 

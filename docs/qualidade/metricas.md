@@ -32,8 +32,9 @@ mudanca; nao crie uma entrada artificial.
   snapshot pareado de `kmetrics`; portanto, nenhum valor quantitativo e
   inferido retroativamente.
 - Depois: cada `video_print()` agrupa a apresentacao de sua saida, e o
-  diagnostico padrao de rede agrupa cada secao antes de ceder o processador.
-  A validacao quantitativa e funcional no QEMU fica pendente do usuario.
+  diagnostico padrao de rede publica uma secao por passo, agendando o proximo
+  despertar sem chamar `process_yield()` no meio da mesma execucao. A
+  validacao quantitativa e funcional no QEMU fica pendente do usuario.
 - Conclusao: pendente. A alteracao remove o caminho conhecido de redesenho
   integral por linha, mas nao declara ganho ate a comparacao reproduzivel.
 - Impacto: o historico estatico cresce de 200 para 500 linhas, consumindo

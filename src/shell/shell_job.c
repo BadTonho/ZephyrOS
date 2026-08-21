@@ -59,6 +59,8 @@ static void shell_job_copy_text(char* destination, uint32_t capacity,
 static void shell_job_complete(shell_job_state_t state, int result) {
     shell_job_context.last_error = result;
     shell_job_context.completed_ticks = timer_get_ticks();
+    shell_job_context.next_wake_tick = WAIT_TIMEOUT_INFINITE;
+    shell_job_context.next_wake_active = 0U;
 
     if (shell_job_definition && shell_job_definition->finish) {
         shell_job_definition->finish(&shell_job_context, state, result);
@@ -120,6 +122,8 @@ static void shell_job_poll_drain(void) {
 void shell_job_reset(void) {
     kmemset(&shell_job_context, 0, sizeof(shell_job_context));
     shell_job_context.state = SHELL_JOB_STATE_IDLE;
+    shell_job_context.deadline_tick = WAIT_TIMEOUT_INFINITE;
+    shell_job_context.next_wake_tick = WAIT_TIMEOUT_INFINITE;
     shell_job_definition = NULL;
     shell_job_cancel_called = 0U;
     shell_job_block_warning = 0U;
@@ -155,6 +159,7 @@ int shell_job_start(const shell_job_definition_t* definition,
     shell_job_context.started_tick = timer_get_ticks();
     shell_job_context.last_error = OK;
     shell_job_context.deadline_tick = WAIT_TIMEOUT_INFINITE;
+    shell_job_context.next_wake_tick = WAIT_TIMEOUT_INFINITE;
     shell_job_generation_counter++;
     if (!shell_job_generation_counter) shell_job_generation_counter = 1U;
     shell_job_context.generation = shell_job_generation_counter;
@@ -201,6 +206,22 @@ void shell_job_poll(void) {
             return;
         }
         if (!remaining) shell_job_mark_timeout_requested();
+    }
+    if (shell_job_context.next_wake_active) {
+        uint32_t remaining = 0U;
+
+        if (wait_deadline_remaining_active(shell_job_context.next_wake_tick,
+                                           shell_job_context.next_wake_active,
+                                           &remaining) != OK) {
+            shell_job_context.last_error = ERR_STATE;
+            shell_job_complete(SHELL_JOB_STATE_FAILED, ERR_STATE);
+            return;
+        }
+        if (!remaining) {
+            shell_job_clear_next_wake(&shell_job_context);
+        } else if (!shell_job_context.cancel_requested) {
+            return;
+        }
     }
     if (shell_job_context.state == SHELL_JOB_STATE_DRAINING) {
         shell_job_poll_drain();
@@ -311,11 +332,13 @@ int shell_job_get_status(shell_job_status_t* status_out) {
     status_out->active = shell_job_is_active();
     status_out->generation = shell_job_context.generation;
     status_out->deadline_tick = shell_job_context.deadline_tick;
+    status_out->next_wake_tick = shell_job_context.next_wake_tick;
     status_out->wakeups = shell_job_context.wakeups;
     status_out->stale_events = shell_job_context.stale_events;
     status_out->cancel_requested = shell_job_context.cancel_requested;
     status_out->draining = shell_job_context.state == SHELL_JOB_STATE_DRAINING;
     status_out->deadline_active = shell_job_context.deadline_active;
+    status_out->next_wake_active = shell_job_context.next_wake_active;
     return OK;
 }
 
@@ -342,17 +365,35 @@ void shell_job_note_stale_event(uint32_t generation) {
 }
 
 int shell_job_get_wait_timeout(uint32_t* timeout_out) {
+    uint32_t timeout = WAIT_TIMEOUT_INFINITE;
+
     if (!timeout_out) {
         LOG_ERROR("SHELL", "Destino nulo para timeout do job");
         return ERR_NULL;
     }
-    if (!shell_job_is_active() || !shell_job_context.deadline_active) {
+    if (!shell_job_is_active()) {
         *timeout_out = WAIT_TIMEOUT_INFINITE;
         return OK;
     }
-    return wait_deadline_remaining_active(shell_job_context.deadline_tick,
-                                          shell_job_context.deadline_active,
-                                          timeout_out);
+    if (shell_job_context.deadline_active &&
+        wait_deadline_remaining_active(shell_job_context.deadline_tick, 1U,
+                                       &timeout) != OK) {
+        return ERR_STATE;
+    }
+    if (shell_job_context.next_wake_active) {
+        uint32_t next_wake_timeout = 0U;
+
+        if (wait_deadline_remaining_active(shell_job_context.next_wake_tick,
+                                           1U, &next_wake_timeout) != OK) {
+            return ERR_STATE;
+        }
+        if (!shell_job_context.deadline_active ||
+            next_wake_timeout < timeout) {
+            timeout = next_wake_timeout;
+        }
+    }
+    *timeout_out = timeout;
+    return OK;
 }
 
 void shell_job_set_phase(shell_job_context_t* context, const char* phase) {
@@ -392,6 +433,23 @@ void shell_job_clear_timeout(shell_job_context_t* context) {
     if (!context) return;
     context->deadline_tick = WAIT_TIMEOUT_INFINITE;
     context->deadline_active = 0U;
+}
+
+void shell_job_set_next_wake(shell_job_context_t* context,
+                             uint32_t next_wake_tick) {
+    if (!context) return;
+    if (next_wake_tick == WAIT_TIMEOUT_INFINITE) {
+        shell_job_clear_next_wake(context);
+        return;
+    }
+    context->next_wake_tick = next_wake_tick;
+    context->next_wake_active = 1U;
+}
+
+void shell_job_clear_next_wake(shell_job_context_t* context) {
+    if (!context) return;
+    context->next_wake_tick = WAIT_TIMEOUT_INFINITE;
+    context->next_wake_active = 0U;
 }
 
 const char* shell_job_state_name(shell_job_state_t state) {
@@ -449,6 +507,10 @@ void shell_dispatch_cmd_job(const char* arguments) {
     shell_command_print_num(status.deadline_tick);
     video_print(" deadline_ativo=", 0x07);
     shell_command_print_num(status.deadline_active);
+    video_print(" proximo_despertar=", 0x07);
+    shell_command_print_num(status.next_wake_tick);
+    video_print(" despertar_ativo=", 0x07);
+    shell_command_print_num(status.next_wake_active);
     video_print(" acordadas=", 0x07);
     shell_command_print_num(status.wakeups);
     video_print(" tardias=", 0x07);
