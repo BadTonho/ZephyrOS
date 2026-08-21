@@ -178,6 +178,7 @@ typedef struct {
     usb_device_speed_t speed;
     uhci_enum_stage_t stage;
     int last_error;
+    const char* failure_detail;
 } uhci_enum_context_t;
 
 struct uhci_controller {
@@ -815,7 +816,8 @@ static int uhci_read_descriptor(uhci_controller_t* controller, uint8_t address,
     return OK;
 }
 
-static int uhci_parse_configuration(uhci_device_record_t* record) {
+static int uhci_parse_configuration(uhci_device_record_t* record,
+                                     uhci_enum_context_t* context) {
     uint8_t* data;
     uint32_t offset = 0;
     uint32_t configuration_count = 0;
@@ -856,11 +858,19 @@ static int uhci_parse_configuration(uhci_device_record_t* record) {
                 return ERR_INVALID;
             }
             if (interface_seen) {
+                if (context) {
+                    context->failure_detail =
+                        "Configuration USB possui mais de uma interface";
+                }
                 LOG_ERROR_CODE("UHCI", ERR_UNAVAILABLE,
                                "Configuration USB possui mais de uma interface");
                 return ERR_UNAVAILABLE;
             }
             if (data[offset + UHCI_INTERFACE_ALTERNATE_OFFSET] != 0U) {
+                if (context) {
+                    context->failure_detail =
+                        "Interface USB usa alternate setting";
+                }
                 LOG_ERROR_CODE("UHCI", ERR_UNAVAILABLE,
                                "Interface USB usa alternate setting");
                 return ERR_UNAVAILABLE;
@@ -927,21 +937,37 @@ static int uhci_parse_configuration(uhci_device_record_t* record) {
         offset += length;
     }
     if (configuration_count != 1U) {
+        if (context) {
+            context->failure_detail =
+                "Configuration USB sem descritor unico";
+        }
         LOG_ERROR_CODE("UHCI", ERR_UNAVAILABLE,
                        "Configuration USB sem descritor unico");
         return ERR_UNAVAILABLE;
     }
     if (interface_count != UHCI_INTERFACE_COUNT_LIMIT || !interface_seen) {
+        if (context) {
+            context->failure_detail =
+                "Configuration USB sem interface Boot unica";
+        }
         LOG_ERROR_CODE("UHCI", ERR_UNAVAILABLE,
                        "Configuration USB sem interface Boot unica");
         return ERR_UNAVAILABLE;
     }
     if (endpoint_count > 16U) {
+        if (context) {
+            context->failure_detail =
+                "Configuration USB excede o limite de endpoints";
+        }
         LOG_ERROR_CODE("UHCI", ERR_UNAVAILABLE,
                        "Configuration USB excede o limite de endpoints");
         return ERR_UNAVAILABLE;
     }
     if (!endpoint_count && record->info.interface_class != 0U) {
+        if (context) {
+            context->failure_detail =
+                "Interface USB possui classe sem endpoint";
+        }
         LOG_ERROR_CODE("UHCI", ERR_UNAVAILABLE,
                        "Interface USB possui classe sem endpoint");
         return ERR_UNAVAILABLE;
@@ -950,6 +976,10 @@ static int uhci_parse_configuration(uhci_device_record_t* record) {
     record->info.hub_present =
         record->info.interface_class == 0x09U ? 1U : 0U;
     if (record->info.hub_present) {
+        if (context) {
+            context->failure_detail =
+                "Hubs USB nao sao suportados nesta etapa";
+        }
         LOG_ERROR_CODE("UHCI", ERR_UNAVAILABLE,
                        "Hubs USB nao sao suportados nesta etapa");
         return ERR_UNAVAILABLE;
@@ -1012,6 +1042,9 @@ static void uhci_log_enumeration_failure(
         default:
             LOG_WARN_CODE("UHCI", result, "Etapa UHCI desconhecida");
             break;
+    }
+    if (context->failure_detail) {
+        LOG_WARN_CODE("UHCI", result, context->failure_detail);
     }
 }
 
@@ -1146,7 +1179,7 @@ static int uhci_enumerate_port_once(uhci_controller_t* controller,
     record->info.configuration_length = total_length;
 
     context->stage = UHCI_ENUM_STAGE_CONFIGURATION_PARSE;
-    result = uhci_parse_configuration(record);
+    result = uhci_parse_configuration(record, context);
     if (result != OK) return result;
 
     context->stage = UHCI_ENUM_STAGE_SET_CONFIGURATION;
@@ -1845,6 +1878,13 @@ int uhci_get_port(uint8_t bus, uint8_t device, uint8_t function,
         return ERR_INVALID;
     }
     *out_info = controller->ports[index];
+    if (out_info->state == USB_PORT_DEGRADED &&
+        controller->enumeration[index].last_error != OK) {
+        /* Reapresenta a causa retida quando o inventario e consultado. */
+        uhci_log_enumeration_failure(
+            index, &controller->enumeration[index],
+            controller->enumeration[index].last_error);
+    }
     return OK;
 }
 
