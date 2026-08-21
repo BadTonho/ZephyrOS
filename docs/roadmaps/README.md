@@ -98,7 +98,12 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   registro em `block_device_t` e integracao com `storage mount`, validada no
   QEMU com `storage-valid.img` e regressao completa. A EP4.4 foi implementada
   com Interrupt IN UHCI, `input core`, fila de conclusoes diferidas e driver
-  USB HID Boot para teclado e mouse; a validacao manual ainda esta pendente.
+  USB HID Boot para teclado e mouse; a validacao manual foi concluida.
+  A EP5 foi implementada e validada no host com Releases, trava de versao
+  assinada e tag auxiliar opcional. A EP6 esta planejada para selecao explicita
+  por tag, TLS e canal GitHub; a EP9 registra a futura imagem de sistema,
+  slots A/B e recuperacao de boot, ainda sem autorizacao para alterar boot ou
+  stage2.
 - Funcionalidades aplicaveis: R1 foi validada no QEMU com log circular,
   diagnosticos e regressao. R2 e R3 foram validadas manualmente no QEMU, com
   timers, espera, rede, cancelamento, `q2check`, `regcheck full`, `memcheck`,
