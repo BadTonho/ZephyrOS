@@ -299,5 +299,6 @@ explicito de portas degradadas; o UHCI reserva TDs, buffers e fases periodicas
 sem alterar Control ou Bulk. `usb_hid.h`
 define o driver HID Boot para teclado/mouse, contadores, estados e validacao.
 `usb hid status` e `usb hid check` inspecionam os contratos; `run-usb-hid`
-conecta teclado e mouse USB ao QEMU. O parser completo de Report Descriptor,
+conecta teclado e mouse USB ao QEMU nas portas raiz 1 e 2, respectivamente. O
+parser completo de Report Descriptor,
 hubs, hot-plug real e EHCI continuam fora do escopo.

@@ -916,7 +916,8 @@ mantem aceleracao, remapeamento do botao principal, cursor e callbacks do
 Desktop Classic.
 
 O comando `usb hid check` valida HID, input core e fila diferida. O alvo
-`run-usb-hid` adiciona `usb-kbd` e `usb-mouse` ao QEMU. Parser completo de
+`run-usb-hid` adiciona `usb-kbd` na porta raiz 1 e `usb-mouse` na porta raiz 2
+do QEMU. Parser completo de
 Report Descriptor, hubs, hot-plug real e EHCI permanecem fora desta etapa.
 
 ---
