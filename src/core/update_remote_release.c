@@ -422,6 +422,13 @@ static int update_release_parse_descriptor(
     char* source_commit = update_release_workspace.source_commit;
     char* package_name = update_release_workspace.package_name;
     char* manifest_name = update_release_workspace.manifest_name;
+    const uint32_t text_capacity = sizeof(update_release_workspace.text);
+    const uint32_t source_commit_capacity =
+        sizeof(update_release_workspace.source_commit);
+    const uint32_t package_capacity =
+        sizeof(update_release_workspace.package_name);
+    const uint32_t manifest_capacity =
+        sizeof(update_release_workspace.manifest_name);
     uint32_t manifest_size = 0U;
     int result;
 
@@ -438,7 +445,7 @@ static int update_release_parse_descriptor(
     result = update_release_json_expect(&json, '{');
     if (result == OK) result = update_release_json_key(&json, "format");
     if (result == OK) result = update_release_json_string(
-        &json, text, sizeof(text));
+        &json, text, text_capacity);
     if (result == OK && kstrcmp(text, UPDATE_RELEASE_FORMAT) != 0) {
         result = ERR_INVALID;
     }
@@ -465,14 +472,14 @@ static int update_release_parse_descriptor(
     if (result == OK) result = update_release_json_expect(&json, ',');
     if (result == OK) result = update_release_json_key(&json, "channel");
     if (result == OK) result = update_release_json_string(
-        &json, text, sizeof(text));
+        &json, text, text_capacity);
     if (result == OK && kstrcmp(text, UPDATE_REMOTE_CHANNEL_NAME) != 0) {
         result = ERR_INVALID;
     }
     if (result == OK) result = update_release_json_expect(&json, ',');
     if (result == OK) result = update_release_json_key(&json, "source_commit");
     if (result == OK) result = update_release_json_string(
-        &json, source_commit, sizeof(source_commit));
+        &json, source_commit, source_commit_capacity);
     if (result == OK && update_release_validate_source_commit(source_commit) != OK) {
         result = ERR_INVALID;
     }
@@ -499,14 +506,14 @@ static int update_release_parse_descriptor(
     if (result == OK) result = update_release_json_key(
         &json, "minimum_version");
     if (result == OK) result = update_release_json_string(
-        &json, text, sizeof(text));
+        &json, text, text_capacity);
     if (result == OK) result = update_release_parse_version(
         text, &descriptor->lock.minimum_version);
     if (result == OK) result = update_release_json_expect(&json, ',');
     if (result == OK) result = update_release_json_key(
         &json, "target_version");
     if (result == OK) result = update_release_json_string(
-        &json, text, sizeof(text));
+        &json, text, text_capacity);
     if (result == OK) result = update_release_parse_version(
         text, &descriptor->lock.target_version);
     if (result == OK) result = update_release_json_expect(&json, ',');
@@ -530,7 +537,7 @@ static int update_release_parse_descriptor(
         if (result != OK) *reason_out = UPDATE_REMOTE_REASON_RELEASE_ASSET;
     }
     if (result == OK) result = update_release_json_asset(
-        &json, package_name, sizeof(package_name),
+        &json, package_name, package_capacity,
         &descriptor->release.package_size,
         descriptor->release.package_hash, 0);
     if (result != OK && *reason_out == UPDATE_REMOTE_REASON_RELEASE_FORMAT) {
@@ -545,7 +552,7 @@ static int update_release_parse_descriptor(
         if (result != OK) *reason_out = UPDATE_REMOTE_REASON_RELEASE_ASSET;
     }
     if (result == OK) result = update_release_json_asset(
-        &json, manifest_name, sizeof(manifest_name),
+        &json, manifest_name, manifest_capacity,
         &manifest_size,
         descriptor->release.manifest_hash, 1);
     if (result != OK && *reason_out == UPDATE_REMOTE_REASON_RELEASE_FORMAT) {
