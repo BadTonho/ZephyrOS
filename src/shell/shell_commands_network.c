@@ -131,14 +131,6 @@ static int shell_network_job_block_tick(void) {
     return shell_job_is_active() && shell_job_cancel_requested();
 }
 
-static int shell_network_job_check_checkpoint(void) {
-    if (shell_network_job_block_tick()) {
-        shell_network_job_inner_failed = 1U;
-        return 1;
-    }
-    return 0;
-}
-
 typedef enum {
     SHELL_Q2CHECK_IDLE = 0,
     SHELL_Q2CHECK_FIRST_FAULT,
@@ -3543,20 +3535,17 @@ static void cmd_net_check(const char* args) {
     video_print("\n[1] Estado geral\n", 0x0B);
     cmd_net_status();
     video_end_update();
-    if (shell_network_job_check_checkpoint()) return;
 
     video_begin_update();
     video_print("\n[2] Controladores\n", 0x0B);
     cmd_net_devices();
     video_end_update();
-    if (shell_network_job_check_checkpoint()) return;
 
     if (has_interface) {
         video_begin_update();
         video_print("\n[3] Interface\n", 0x0B);
         cmd_net_info(id);
         video_end_update();
-        if (shell_network_job_check_checkpoint()) return;
 
         video_begin_update();
         video_print("\n[4] Ethernet\n", 0x0B);
@@ -3567,7 +3556,6 @@ static void cmd_net_check(const char* args) {
             video_print("Diagnostico Ethernet nao aplicavel.\n", 0x0E);
         }
         video_end_update();
-        if (shell_network_job_check_checkpoint()) return;
     }
 
     video_begin_update();
@@ -3577,39 +3565,33 @@ static void cmd_net_check(const char* args) {
         cmd_net_arp_table();
     }
     video_end_update();
-    if (shell_network_job_check_checkpoint()) return;
 
     video_begin_update();
     video_print(has_interface ? "\n[6] IPv4 e ICMP\n" :
                                 "\n[4] IPv4 e ICMP\n", 0x0B);
     cmd_net_ipv4_status();
     video_end_update();
-    if (shell_network_job_check_checkpoint()) return;
 
     video_begin_update();
     video_print(has_interface ? "\n[7] UDP\n" : "\n[5] UDP\n", 0x0B);
     cmd_net_udp_status();
     video_end_update();
-    if (shell_network_job_check_checkpoint()) return;
 
     video_begin_update();
     video_print(has_interface ? "\n[8] DHCP\n" : "\n[6] DHCP\n", 0x0B);
     cmd_net_dhcp_status();
     video_end_update();
-    if (shell_network_job_check_checkpoint()) return;
 
     video_begin_update();
     video_print(has_interface ? "\n[9] DNS\n" : "\n[7] DNS\n", 0x0B);
     cmd_net_dns_status();
     cmd_net_dns_table();
     video_end_update();
-    if (shell_network_job_check_checkpoint()) return;
 
     video_begin_update();
     video_print(has_interface ? "\n[10] TCP\n" : "\n[8] TCP\n", 0x0B);
     cmd_net_tcp_status();
     video_end_update();
-    if (shell_network_job_check_checkpoint()) return;
 
     video_begin_update();
     video_print(has_interface ? "\n[11] Sockets\n" :
@@ -3617,14 +3599,12 @@ static void cmd_net_check(const char* args) {
     cmd_net_socket_status();
     cmd_net_socket_table();
     video_end_update();
-    if (shell_network_job_check_checkpoint()) return;
 
     video_begin_update();
     video_print(has_interface ? "\n[12] HTTP\n" :
                                 "\n[10] HTTP\n", 0x0B);
     cmd_http_status();
     video_end_update();
-    if (shell_network_job_check_checkpoint()) return;
 
     video_begin_update();
     video_print(has_interface ? "\n[13] Invariantes: " :
@@ -3734,9 +3714,34 @@ typedef enum {
     SHELL_NETWORK_JOB_PHASE_COMPLETE
 } shell_network_job_phase_t;
 
+typedef enum {
+    SHELL_NETWORK_CHECK_MODE_COMMAND = 0,
+    SHELL_NETWORK_CHECK_MODE_REPORT,
+    SHELL_NETWORK_CHECK_MODE_QEMU
+} shell_network_check_mode_t;
+
+typedef enum {
+    SHELL_NETWORK_CHECK_STAGE_GENERAL = 0,
+    SHELL_NETWORK_CHECK_STAGE_CONTROLLERS,
+    SHELL_NETWORK_CHECK_STAGE_INTERFACE,
+    SHELL_NETWORK_CHECK_STAGE_ETHERNET,
+    SHELL_NETWORK_CHECK_STAGE_ARP,
+    SHELL_NETWORK_CHECK_STAGE_IPV4_ICMP,
+    SHELL_NETWORK_CHECK_STAGE_UDP,
+    SHELL_NETWORK_CHECK_STAGE_DHCP,
+    SHELL_NETWORK_CHECK_STAGE_DNS,
+    SHELL_NETWORK_CHECK_STAGE_TCP,
+    SHELL_NETWORK_CHECK_STAGE_SOCKETS,
+    SHELL_NETWORK_CHECK_STAGE_HTTP,
+    SHELL_NETWORK_CHECK_STAGE_INVARIANTS,
+    SHELL_NETWORK_CHECK_STAGE_DONE
+} shell_network_check_stage_t;
+
 typedef struct {
     shell_network_job_operation_t operation;
     shell_network_job_phase_t phase;
+    shell_network_check_mode_t check_mode;
+    shell_network_check_stage_t check_stage;
     char target[SHELL_DNS_NAME_SIZE];
     char url[HTTP_URL_BUFFER_SIZE];
     char interface_id[NETWORK_INTERFACE_ID_SIZE];
@@ -3747,6 +3752,9 @@ typedef struct {
     uint16_t port;
     uint32_t event_generation;
     uint32_t job_generation;
+    uint32_t check_progress;
+    uint32_t check_total;
+    uint8_t check_has_interface;
 } shell_network_job_t;
 
 static shell_network_job_t shell_network_job;
@@ -3788,6 +3796,171 @@ static void shell_network_job_print_ping_header(void) {
     video_print("] com 32 bytes de dados:\n", 0x07);
 }
 
+static int shell_network_job_check_stage_is_optional(
+    shell_network_check_stage_t stage) {
+    return stage == SHELL_NETWORK_CHECK_STAGE_INTERFACE ||
+           stage == SHELL_NETWORK_CHECK_STAGE_ETHERNET;
+}
+
+static const char* shell_network_job_check_stage_name(
+    shell_network_check_stage_t stage) {
+    switch (stage) {
+        case SHELL_NETWORK_CHECK_STAGE_GENERAL: return "estado";
+        case SHELL_NETWORK_CHECK_STAGE_CONTROLLERS: return "controladores";
+        case SHELL_NETWORK_CHECK_STAGE_INTERFACE: return "interface";
+        case SHELL_NETWORK_CHECK_STAGE_ETHERNET: return "ethernet";
+        case SHELL_NETWORK_CHECK_STAGE_ARP: return "arp";
+        case SHELL_NETWORK_CHECK_STAGE_IPV4_ICMP: return "ipv4-icmp";
+        case SHELL_NETWORK_CHECK_STAGE_UDP: return "udp";
+        case SHELL_NETWORK_CHECK_STAGE_DHCP: return "dhcp";
+        case SHELL_NETWORK_CHECK_STAGE_DNS: return "dns";
+        case SHELL_NETWORK_CHECK_STAGE_TCP: return "tcp";
+        case SHELL_NETWORK_CHECK_STAGE_SOCKETS: return "sockets";
+        case SHELL_NETWORK_CHECK_STAGE_HTTP: return "http";
+        case SHELL_NETWORK_CHECK_STAGE_INVARIANTS: return "invariantes";
+        default: return "concluindo";
+    }
+}
+
+static int shell_network_job_check_emit_stage(
+    shell_job_context_t* context) {
+    arp_status_t arp_status;
+    network_interface_info_t info;
+    network_manager_status_t network_status;
+    int result = OK;
+
+    if (!context) return ERR_NULL;
+    shell_job_set_phase(context, shell_network_job_check_stage_name(
+                                      shell_network_job.check_stage));
+    video_begin_update();
+    switch (shell_network_job.check_stage) {
+        case SHELL_NETWORK_CHECK_STAGE_GENERAL:
+            video_print("=== Diagnostico de rede agrupado ===\n", 0x0B);
+            video_print("\n[1] Estado geral\n", 0x0B);
+            cmd_net_status();
+            break;
+        case SHELL_NETWORK_CHECK_STAGE_CONTROLLERS:
+            video_print("\n[2] Controladores\n", 0x0B);
+            cmd_net_devices();
+            break;
+        case SHELL_NETWORK_CHECK_STAGE_INTERFACE:
+            video_print("\n[3] Interface\n", 0x0B);
+            cmd_net_info(shell_network_job.interface_id);
+            break;
+        case SHELL_NETWORK_CHECK_STAGE_ETHERNET:
+            video_print("\n[4] Ethernet\n", 0x0B);
+            if (network_manager_find(shell_network_job.interface_id, &info) != OK ||
+                network_manager_get_status(&network_status) != OK) {
+                LOG_ERROR("SHELL", "Estado Ethernet indisponivel em net check");
+                video_print("Erro: estado Ethernet indisponivel.\n", 0x0C);
+                result = ERR_STATE;
+            } else if (info.state == NETWORK_INTERFACE_ACTIVE &&
+                       network_status.ethernet_available) {
+                cmd_net_ethernet(shell_network_job.interface_id);
+            } else {
+                video_print("Diagnostico Ethernet nao aplicavel.\n", 0x0E);
+            }
+            break;
+        case SHELL_NETWORK_CHECK_STAGE_ARP:
+            video_print(shell_network_job.check_has_interface ? "\n[5] ARP\n" :
+                        "\n[3] ARP\n", 0x0B);
+            cmd_net_arp_status();
+            if (arp_get_status(&arp_status) == OK && arp_status.initialized) {
+                cmd_net_arp_table();
+            }
+            break;
+        case SHELL_NETWORK_CHECK_STAGE_IPV4_ICMP:
+            video_print(shell_network_job.check_has_interface ?
+                        "\n[6] IPv4 e ICMP\n" : "\n[4] IPv4 e ICMP\n", 0x0B);
+            cmd_net_ipv4_status();
+            break;
+        case SHELL_NETWORK_CHECK_STAGE_UDP:
+            video_print(shell_network_job.check_has_interface ? "\n[7] UDP\n" :
+                        "\n[5] UDP\n", 0x0B);
+            cmd_net_udp_status();
+            break;
+        case SHELL_NETWORK_CHECK_STAGE_DHCP:
+            video_print(shell_network_job.check_has_interface ? "\n[8] DHCP\n" :
+                        "\n[6] DHCP\n", 0x0B);
+            cmd_net_dhcp_status();
+            break;
+        case SHELL_NETWORK_CHECK_STAGE_DNS:
+            video_print(shell_network_job.check_has_interface ? "\n[9] DNS\n" :
+                        "\n[7] DNS\n", 0x0B);
+            cmd_net_dns_status();
+            cmd_net_dns_table();
+            break;
+        case SHELL_NETWORK_CHECK_STAGE_TCP:
+            video_print(shell_network_job.check_has_interface ? "\n[10] TCP\n" :
+                        "\n[8] TCP\n", 0x0B);
+            cmd_net_tcp_status();
+            break;
+        case SHELL_NETWORK_CHECK_STAGE_SOCKETS:
+            video_print(shell_network_job.check_has_interface ?
+                        "\n[11] Sockets\n" : "\n[9] Sockets\n", 0x0B);
+            cmd_net_socket_status();
+            cmd_net_socket_table();
+            break;
+        case SHELL_NETWORK_CHECK_STAGE_HTTP:
+            video_print(shell_network_job.check_has_interface ? "\n[12] HTTP\n" :
+                        "\n[10] HTTP\n", 0x0B);
+            cmd_http_status();
+            break;
+        case SHELL_NETWORK_CHECK_STAGE_INVARIANTS:
+            video_print(shell_network_job.check_has_interface ?
+                        "\n[13] Invariantes: " : "\n[11] Invariantes: ",
+                        0x0B);
+            result = shell_network_validate_for_checks();
+            video_print(result == OK ? "OK\n" : "ERRO\n",
+                        result == OK ? 0x0A : 0x0C);
+            break;
+        default:
+            result = ERR_STATE;
+            break;
+    }
+    video_end_update();
+    return result;
+}
+
+static shell_job_step_result_t shell_network_job_check_report_step(
+    shell_job_context_t* context) {
+    int result;
+
+    if (!context) return SHELL_JOB_STEP_FAILED;
+    if (context->cancel_requested) {
+        context->last_error = ERR_TIMEOUT;
+        return SHELL_JOB_STEP_CANCELLED;
+    }
+    while (shell_network_job.check_stage < SHELL_NETWORK_CHECK_STAGE_DONE &&
+           !shell_network_job.check_has_interface &&
+           shell_network_job_check_stage_is_optional(
+               shell_network_job.check_stage)) {
+        shell_network_job.check_stage++;
+    }
+    if (shell_network_job.check_stage >= SHELL_NETWORK_CHECK_STAGE_DONE) {
+        context->last_error = OK;
+        return SHELL_JOB_STEP_COMPLETE;
+    }
+
+    result = shell_network_job_check_emit_stage(context);
+    shell_network_job.check_stage++;
+    shell_network_job.check_progress++;
+    shell_job_set_progress(context, shell_network_job.check_progress,
+                           shell_network_job.check_total);
+    if (result != OK) {
+        context->last_error = result;
+        return SHELL_JOB_STEP_FAILED;
+    }
+    if (shell_network_job.check_stage >= SHELL_NETWORK_CHECK_STAGE_DONE) {
+        context->last_error = OK;
+        return SHELL_JOB_STEP_COMPLETE;
+    }
+    /* Cada secao ja foi apresentada; a proxima rodada e agendada sem
+       transformar o prazo do job em timeout nem bloquear um tick fixo. */
+    shell_job_set_next_wake(context, timer_get_ticks());
+    return SHELL_JOB_STEP_PENDING;
+}
+
 static shell_job_step_result_t shell_network_job_step(
     shell_job_context_t* context) {
     dns_status_t dns_status;
@@ -3805,6 +3978,9 @@ static shell_job_step_result_t shell_network_job_step(
         return SHELL_JOB_STEP_FAILED;
     }
     if (shell_network_job.operation == SHELL_NETWORK_JOB_CHECK) {
+        if (shell_network_job.check_mode == SHELL_NETWORK_CHECK_MODE_REPORT) {
+            return shell_network_job_check_report_step(context);
+        }
         if (context->cancel_requested) {
             context->last_error = ERR_TIMEOUT;
             return SHELL_JOB_STEP_CANCELLED;
@@ -4046,6 +4222,55 @@ static const shell_job_definition_t shell_network_job_definition = {
     shell_network_job_drain
 };
 
+static int shell_network_job_prepare_check(const char* arguments) {
+    char id[NETWORK_INTERFACE_ID_SIZE];
+    network_interface_info_t info;
+    network_manager_status_t status;
+    const char* qemu_args;
+    int result;
+
+    if (!arguments) {
+        LOG_ERROR("SHELL", "Argumentos nulos em job net check");
+        video_print("Erro: diagnostico agrupado invalido.\n", 0x0C);
+        return ERR_NULL;
+    }
+    qemu_args = shell_command_match_subcommand(arguments, "qemu");
+    if (qemu_args) {
+        shell_network_job.check_mode = SHELL_NETWORK_CHECK_MODE_QEMU;
+        return OK;
+    }
+    if (*arguments) {
+        result = shell_command_read_single_arg(arguments, id, sizeof(id));
+        if (result != OK) {
+            LOG_WARN("SHELL", "Uso invalido de net check");
+            video_print("Uso: net check [id] | "
+                        "net check qemu <id> <ip-local> | "
+                        "net check qemu dhcp <id> <dominio> | "
+                        "net check qemu tcp <id> <dominio> | "
+                        "net check qemu multi <id-a> <id-b>\n", 0x0C);
+            return result;
+        }
+        result = network_manager_find(id, &info);
+        if (result != OK) {
+            LOG_WARN("SHELL", "Interface invalida em job net check");
+            video_print("Erro: interface de rede nao encontrada.\n", 0x0C);
+            return result;
+        }
+        kmemcpy(shell_network_job.interface_id, id, kstrlen(id) + 1U);
+        shell_network_job.check_has_interface = 1U;
+    }
+    if (network_manager_get_status(&status) != OK) {
+        LOG_ERROR("SHELL", "Estado Network indisponivel em job net check");
+        video_print("Erro: estado de rede indisponivel.\n", 0x0C);
+        return ERR_STATE;
+    }
+    shell_network_job.check_mode = SHELL_NETWORK_CHECK_MODE_REPORT;
+    shell_network_job.check_stage = SHELL_NETWORK_CHECK_STAGE_GENERAL;
+    shell_network_job.check_total = shell_network_job.check_has_interface ?
+                                    13U : 11U;
+    return OK;
+}
+
 static int shell_network_job_start(const char* arguments) {
     int result = shell_job_start(&shell_network_job_definition, arguments);
 
@@ -4203,8 +4428,17 @@ int shell_network_start_job(const char* command, const char* arguments) {
         const char* tcp_args = shell_command_match_subcommand(arguments, "tcp");
 
         if (dhcp_args) return shell_network_start_dhcp_job(dhcp_args);
-        if (check_args ||
-            (tcp_args && shell_command_match_subcommand(tcp_args, "connect")) ||
+        if (check_args) {
+            kmemset(&shell_network_job, 0, sizeof(shell_network_job));
+            shell_network_job.operation = SHELL_NETWORK_JOB_CHECK;
+            shell_network_job.phase = SHELL_NETWORK_JOB_PHASE_TRANSFER;
+            if (shell_network_job_prepare_check(check_args) != OK) return 1;
+            if (shell_network_job_start(arguments) != OK) {
+                video_print("Job de rede recusado.\n", 0x0C);
+            }
+            return 1;
+        }
+        if ((tcp_args && shell_command_match_subcommand(tcp_args, "connect")) ||
             (arp_args && shell_command_match_subcommand(arp_args, "resolve"))) {
             kmemset(&shell_network_job, 0, sizeof(shell_network_job));
             shell_network_job.operation = SHELL_NETWORK_JOB_CHECK;

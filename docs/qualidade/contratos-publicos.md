@@ -6,8 +6,10 @@ que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 
 A Fase 5 acrescenta somente campos e funcoes ao fim dos contratos alterados:
 geracao de execucao no Shell Job, App Loader, pacotes e operacoes remotas,
-estado de drenagem e deadline, geracao de operacao do indice e contador de
-eventos de processos.
+estado de drenagem, deadline e proximo despertar, geracao de operacao do
+indice e contador de eventos de processos. `shell_job.h` acrescenta
+`next_wake_tick`, `next_wake_active`, `shell_job_set_next_wake()` e
+`shell_job_clear_next_wake()` sem remover assinaturas existentes.
 Nenhuma assinatura de `shell.h` ou ABI ring 3 foi alterada.
 O contrato de `core/video.h` mantém o scrollback textual estático e fixa sua
 capacidade em 500 linhas; `video_print()` agrupa a apresentação de saída longa

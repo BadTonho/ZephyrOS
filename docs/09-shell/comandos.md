@@ -1330,9 +1330,9 @@ Categorias: Tela, Barra de Tarefas, Janelas, Ícones, Sistema, Som, Sobre.
 
 Mostra o ultimo estado conhecido do executor cooperativo de operacoes
 demoradas. A saida inclui estado, geracao, tipo, comando, fase, progresso,
-erro, deadline, quantidade de teclas bloqueadas, pedidos de cancelamento,
-acordadas e eventos descartados. Durante a drenagem, o estado publicado e
-`DRAINING` e o job continua ativo.
+erro, deadline, proximo despertar, quantidade de teclas bloqueadas, pedidos de
+cancelamento, acordadas e eventos descartados. Durante a drenagem, o estado
+publicado e `DRAINING` e o job continua ativo.
 
 Durante um job ativo, teclas comuns sao consumidas para evitar o enchimento da
 fila IPC. `Esc` e `F12` solicitam o cancelamento geral do job. Durante qualquer

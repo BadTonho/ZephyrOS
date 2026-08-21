@@ -280,8 +280,11 @@ entao publica `CANCELLED` ou `FAILED`. Timeout publica `FAILED` com
 O processo Shell usa o proprio `ipc_wait_channel` como canal agregador. O
 processo de sistema sinaliza esse canal para progresso de rede, indice, timer
 e conclusao de processo, sem inserir mensagens artificiais na fila IPC. O
-timeout da espera e calculado a partir do deadline do job; o polling fixo de
-um tick e `SHELL_NET_CHECK_BLOCK_TICKS` foram removidos.
+timeout da espera e calculado a partir do menor deadline entre o prazo fatal e
+o proximo despertar do job; o polling fixo de um tick e
+`SHELL_NET_CHECK_BLOCK_TICKS` foram removidos. O `net check` padrao publica
+uma secao por passo do job, em vez de manter o diagnostico inteiro na mesma
+chamada.
 
 O terminal preserva 500 linhas em buffer circular estático. `video_print()`
 agrupa relatórios extensos e recompõe a cauda uma única vez por escrita, para
@@ -291,9 +294,9 @@ rolagem.
 Resultados do App Loader, indice, rede e adaptadores de pacotes carregam a
 geracao que iniciou a operacao. Resultados antigos sao registrados e
 descartados. `job status` exibe estado, geracao, fase, progresso, erro,
-deadline, acordadas, cancelamentos e eventos tardios. Os modos Simple,
-Classic e terminal hospedado continuam usando a mesma politica de prompt e
-as assinaturas publicas de `shell.h` permanecem intactas.
+deadline, proximo despertar, acordadas, cancelamentos e eventos tardios. Os
+modos Simple, Classic e terminal hospedado continuam usando a mesma politica
+de prompt e as assinaturas publicas de `shell.h` permanecem intactas.
 
 As APIs assincronas de DNS, ICMP, HTTP, DHCP e indice continuam sendo as
 fontes de `start/poll/status` dos jobs de rede e storage. Pacotes, Store,

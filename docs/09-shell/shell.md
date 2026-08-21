@@ -383,21 +383,23 @@ video_print("  meucomando - Descrição\n", 0x07);
 demoradas. Os estados publicados por `src/include/apps/shell_job.h` sao
 `IDLE`, `RUNNING`, `CANCEL_REQUESTED`, `DRAINING`, `SUCCEEDED`, `FAILED` e
 `CANCELLED`. O contexto registra tipo, geracao, fase, progresso, ticks de
-inicio e fim, deadline, erro, teclas bloqueadas, pedidos de cancelamento,
-acordadas e eventos tardios.
+inicio e fim, deadline, proximo despertar, erro, teclas bloqueadas, pedidos de
+cancelamento, acordadas e eventos tardios.
 
 Quando um comando cooperativo inicia, o Shell mostra uma unica informacao de
 entrada bloqueada. O loop espera no `ipc_wait_channel` do proprio processo,
-com o timeout restante ate o deadline do job, executa um passo por ciclo,
-continua consumindo eventos de teclado e atualiza o terminal hospedado.
+com o menor timeout entre o deadline e o proximo despertar do job, executa um
+passo por ciclo, continua consumindo eventos de teclado e atualiza o terminal
+hospedado.
 Teclas comuns sao consumidas e ignoradas; `Esc` e `F12` solicitam
 cancelamento. Durante qualquer modo do `regcheck`, `F11` solicita ao runtime o
 cancelamento seguro do ZAPP em foco. O primeiro evento bloqueado gera somente
 um aviso no log.
 
 `job status` exibe o ultimo estado conhecido, o job ativo ou concluido, fase,
-geracao, progresso, erro, deadline, teclas bloqueadas, cancelamentos,
-acordadas e eventos descartados. Ao concluir, falhar ou cancelar, o executor
+geracao, progresso, erro, deadline, proximo despertar, teclas bloqueadas,
+cancelamentos, acordadas e eventos descartados. Ao concluir, falhar ou
+cancelar, o executor
 limpa a entrada e mostra exatamente um novo prompt.
 
 As flags `MAY_BLOCK`, `OPENS_SCENE` e `COOPERATIVE` da tabela em
