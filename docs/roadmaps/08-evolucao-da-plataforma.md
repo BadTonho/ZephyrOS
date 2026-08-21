@@ -367,27 +367,35 @@ dispositivo malformado ou erro de comunicacao produz `LOG_ERROR` e componente
 degradado, sem suporte ficticio a EHCI, hubs ou HID. O MSC da EP4.3 fica
 restrito ao contrato BOT/SCSI somente-leitura descrito acima.
 
-## EP5 - Publicacao por tags e verificacao no host
+## EP5 - Releases oficiais e verificacao no host
+
+**Estado:** implementada no host; validacao pelo usuario pendente.
+
+**Implementacao concluida em:** 2026-08-21 16:33:39
+(America/Sao_Paulo).
 
 ### Implementacao
 
-- [ ] Definir uma politica host em que uma tag imutavel gera ZUPD, manifesto
-  ZUM1 assinado, hashes e artefatos de release coerentes.
-- [ ] Estender a ferramenta host com verificacao offline de tag, versao,
-  versao minima, hashes e assinatura antes da publicacao.
-- [ ] Tratar GitHub apenas como origem de distribuicao: o kernel aceita a
+- [x] Definir uma politica host em que a Release agrupa ZUPD, manifesto ZUM1,
+  hashes e descritor coerentes; a tag e somente um marcador auxiliar opcional.
+- [x] Manter a trava oficial de versao e epoch nos campos assinados do ZUPD e
+  ZUM1, sem deriva-la do identificador, titulo ou tag da Release.
+- [x] Estender a ferramenta host com `release-build` e `release-check` para
+  verificar offline origem Git, assets, versao minima, hashes e assinaturas.
+- [x] Tratar GitHub apenas como origem de distribuicao: o kernel aceita a
   release somente depois de validar ZUM1 e ZUPD pelas chaves ja confiaveis.
-- [ ] Publicar fixtures locais equivalentes a tag inexistente, artefato
-  ausente, manifesto adulterado e pacote invalido para a ferramenta host.
+- [x] Cobrir fixtures deterministicas de Release com e sem tag, asset ausente,
+  manifesto adulterado, pacote invalido, trava, commit e tag divergentes.
 
 Esta etapa nao cria um comando novo no kernel nem muda o transporte U5. Ela
-torna a publicacao reproduzivel e valida que a tag nunca substitui a assinatura
-do manifesto ou do pacote.
+torna a publicacao reproduzivel e valida que a Release ou sua tag nunca
+substituem a assinatura do manifesto ou do pacote.
 
 ### Criterio de saida
 
-Uma tag gera artefatos verificaveis e coerentes antes da publicacao. Tags ou
-assets inconsistentes falham no host sem gerar uma release utilizavel.
+Uma Release gera artefatos verificaveis e coerentes antes da publicacao.
+Assets, origem, trava ou tag opcional inconsistentes falham no host sem gerar
+uma Release utilizavel. A validacao executavel permanece pendente do usuario.
 
 ## EP6 - TLS e canal GitHub opcional
 

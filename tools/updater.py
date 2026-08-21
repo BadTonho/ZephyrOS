@@ -9,6 +9,7 @@ import hashlib
 import http.server
 import json
 import re
+import subprocess
 import struct
 import sys
 import tempfile
@@ -54,6 +55,8 @@ ZUPD_ALLOWLIST = ("EXPLORER.BMP", "SHELL.BMP", "TASKMGR.BMP")
 HEADER = struct.Struct("<4sHH8I12H2I16s32s8s")
 ENTRY = struct.Struct("<64sIIIHHHH32s12s")
 VERSION_RE = re.compile(r"^([0-9]+)\.([0-9]+)\.([0-9]+)$")
+RELEASE_ID_RE = re.compile(r"^[A-Za-z0-9._-]{1,64}$")
+GIT_COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
 FAT_PATH_RE = re.compile(r"^[A-Z0-9_]{1,8}\.[A-Z0-9]{1,3}$")
 DEFINE_RE = re.compile(r"^#define\s+(ZEPHYROS_VERSION_[A-Z]+)\s+([0-9]+)U?\s*$")
 
@@ -315,6 +318,24 @@ class RemoteRecord:
     target_epoch: int
 
 
+@dataclass(frozen=True)
+class ReleaseBundle:
+    """Release host autenticada e coerente com sua origem Git."""
+
+    release_id: str
+    release_name: str
+    source_commit: str
+    tag: str | None
+    target_version: Version
+    minimum_version: Version
+    base_epoch: int
+    target_epoch: int
+    package_name: str
+    manifest_name: str
+    package_sha256: bytes
+    manifest_sha256: bytes
+
+
 def crypto_modules() -> tuple[Any, Any, Any]:
     """Carrega cryptography apenas nos comandos que realmente dependem dela."""
     try:
@@ -351,6 +372,16 @@ def require_new_file(path: Path, label: str) -> Path:
 def validate_private_output(path: Path) -> Path:
     """Impede que uma nova chave privada seja criada dentro do repositorio."""
     resolved = require_new_file(path, "chave privada")
+    if is_within(resolved, REPO_ROOT):
+        raise UpdateError("a chave privada deve ficar fora do repositorio")
+    return resolved
+
+
+def validate_private_input(path: Path) -> Path:
+    """Exige que uma chave privada existente permaneca fora do repositorio."""
+    resolved = path.expanduser().resolve()
+    if not resolved.is_file():
+        raise UpdateError(f"chave privada ausente: {resolved}")
     if is_within(resolved, REPO_ROOT):
         raise UpdateError("a chave privada deve ficar fora do repositorio")
     return resolved
@@ -1714,6 +1745,267 @@ def parse_remote_manifest(data: bytes, trusted: PublicKeyInfo) -> RemoteManifest
     )
 
 
+def resolve_git_commit(reference: str, repository: Path = REPO_ROOT) -> str:
+    """Resolve uma referencia Git para o commit completo correspondente."""
+    if not isinstance(reference, str) or not reference or any(
+        char.isspace() for char in reference
+    ):
+        raise UpdateError("referencia Git vazia ou invalida")
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--verify", f"{reference}^{{commit}}"],
+            cwd=repository,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except (OSError, subprocess.SubprocessError) as error:
+        raise UpdateError("nao foi possivel consultar o repositorio Git") from error
+    commit = result.stdout.strip().lower()
+    if result.returncode != 0 or not GIT_COMMIT_RE.fullmatch(commit):
+        raise UpdateError(f"referencia Git inexistente: {reference}")
+    return commit
+
+
+def validate_release_identity(release_id: Any, release_name: Any) -> tuple[str, str]:
+    """Valida identificador estavel e nome humano da Release."""
+    if not isinstance(release_id, str) or not RELEASE_ID_RE.fullmatch(release_id):
+        raise UpdateError("identificador da Release invalido")
+    if (
+        not isinstance(release_name, str)
+        or not release_name.strip()
+        or release_name != release_name.strip()
+        or len(release_name) > 100
+        or any(ord(char) < 0x20 for char in release_name)
+    ):
+        raise UpdateError("nome da Release invalido")
+    return release_id, release_name
+
+
+def release_asset_metadata(name: str, content: bytes) -> dict[str, Any]:
+    """Publica tamanho e hash de um asset sem atribuir confianca a eles."""
+    return {
+        "name": name,
+        "size": len(content),
+        "sha256": hashlib.sha256(content).hexdigest(),
+    }
+
+
+def release_descriptor(
+    release_id: str,
+    release_name: str,
+    source_commit: str,
+    tag: str | None,
+    artifact: ArtifactInfo,
+    package_name: str,
+    package: bytes,
+    manifest_name: str,
+    manifest: bytes,
+) -> str:
+    """Serializa o inventario publico; a confianca permanece no ZUPD/ZUM1."""
+    data = {
+        "format": "zephyros-release-v1",
+        "release_id": release_id,
+        "release_name": release_name,
+        "channel": "stable",
+        "source_commit": source_commit,
+        "tag": tag,
+        "version_lock": {
+            "minimum_version": str(artifact.base_version),
+            "target_version": str(artifact.target_version),
+            "base_epoch": artifact.base_epoch,
+            "target_epoch": artifact.target_epoch,
+        },
+        "assets": {
+            "package": release_asset_metadata(package_name, package),
+            "manifest": release_asset_metadata(manifest_name, manifest),
+        },
+    }
+    return json.dumps(data, indent=2, ensure_ascii=True) + "\n"
+
+
+def load_release_descriptor(path: Path) -> dict[str, Any]:
+    """Le o descritor EP5 exigindo campos e ordem canonicos."""
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise UpdateError(f"nao foi possivel ler a Release {path}") from error
+    if not isinstance(data, dict) or tuple(data) != (
+        "format", "release_id", "release_name", "channel", "source_commit",
+        "tag", "version_lock", "assets",
+    ):
+        raise UpdateError("descritor da Release possui campos invalidos")
+    if data["format"] != "zephyros-release-v1" or data["channel"] != "stable":
+        raise UpdateError("formato ou canal da Release invalido")
+    return data
+
+
+def load_release_asset(
+    directory: Path,
+    metadata: Any,
+    label: str,
+    suffix: str | tuple[str, ...],
+) -> tuple[str, bytes, bytes]:
+    """Carrega um asset co-localizado e confere seu inventario SHA-256."""
+    if not isinstance(metadata, dict) or tuple(metadata) != (
+        "name", "size", "sha256",
+    ):
+        raise UpdateError(f"metadados do {label} invalidos")
+    name = metadata["name"]
+    size = metadata["size"]
+    digest_text = metadata["sha256"]
+    if (
+        not isinstance(name, str)
+        or Path(name).name != name
+        or not name.lower().endswith(suffix)
+    ):
+        raise UpdateError(f"nome do {label} invalido")
+    if not isinstance(size, int) or size <= 0:
+        raise UpdateError(f"tamanho publicado do {label} invalido")
+    if not isinstance(digest_text, str) or not re.fullmatch(
+        r"[0-9a-f]{64}", digest_text
+    ):
+        raise UpdateError(f"SHA-256 publicado do {label} invalido")
+    try:
+        content = (directory / name).read_bytes()
+    except OSError as error:
+        raise UpdateError(f"asset da Release ausente: {name}") from error
+    digest = hashlib.sha256(content).digest()
+    if len(content) != size or digest.hex() != digest_text:
+        raise UpdateError(f"tamanho ou SHA-256 do {label} divergiu")
+    return name, content, digest
+
+
+def verify_release_bundle(
+    descriptor_path: Path,
+    trusted: PublicKeyInfo,
+    repository: Path = REPO_ROOT,
+    resolver: Any = resolve_git_commit,
+) -> ReleaseBundle:
+    """Valida origem, integridade e trava assinada antes da publicacao."""
+    data = load_release_descriptor(descriptor_path)
+    release_id, release_name = validate_release_identity(
+        data["release_id"], data["release_name"]
+    )
+    source_commit = data["source_commit"]
+    if (
+        not isinstance(source_commit, str)
+        or not GIT_COMMIT_RE.fullmatch(source_commit)
+    ):
+        raise UpdateError("commit de origem da Release invalido")
+    if resolver(source_commit, repository) != source_commit:
+        raise UpdateError("commit de origem da Release divergiu")
+    tag = data["tag"]
+    if tag is not None:
+        if not isinstance(tag, str) or not tag or len(tag) > 100:
+            raise UpdateError("tag auxiliar da Release invalida")
+        if resolver(f"refs/tags/{tag}", repository) != source_commit:
+            raise UpdateError("tag auxiliar nao aponta para o commit da Release")
+    lock = data["version_lock"]
+    if not isinstance(lock, dict) or tuple(lock) != (
+        "minimum_version", "target_version", "base_epoch", "target_epoch",
+    ):
+        raise UpdateError("trava de versao da Release invalida")
+    minimum_version = Version.parse(lock["minimum_version"])
+    target_version = Version.parse(lock["target_version"])
+    base_epoch = lock["base_epoch"]
+    target_epoch = lock["target_epoch"]
+    if (
+        not isinstance(base_epoch, int)
+        or not isinstance(target_epoch, int)
+        or not 0 <= base_epoch <= target_epoch <= 0xFFFFFFFF
+    ):
+        raise UpdateError("epochs da trava de versao invalidos")
+    assets = data["assets"]
+    if not isinstance(assets, dict) or tuple(assets) != ("package", "manifest"):
+        raise UpdateError("inventario de assets da Release invalido")
+    package_name, package, package_hash = load_release_asset(
+        descriptor_path.parent, assets["package"], "pacote",
+        (".zephyrosupd", ".zup"),
+    )
+    manifest_name, manifest, manifest_hash = load_release_asset(
+        descriptor_path.parent, assets["manifest"], "manifesto", ".zum"
+    )
+    try:
+        artifact = verify_artifact(package, trusted, minimum_version, base_epoch)
+    except Rejection as error:
+        raise UpdateError(f"ZUPD da Release foi recusado: {error.reason}") from error
+    remote = parse_remote_manifest(manifest, trusted)
+    if (
+        artifact.base_version != minimum_version
+        or artifact.target_version != target_version
+        or artifact.base_epoch != base_epoch
+        or artifact.target_epoch != target_epoch
+        or remote.base_version != minimum_version
+        or remote.target_version != target_version
+        or remote.base_epoch != base_epoch
+        or remote.target_epoch != target_epoch
+        or remote.package_size != len(package)
+        or remote.package_sha256 != package_hash
+        or Path(remote.package_path).name != package_name
+    ):
+        raise UpdateError("ZUPD, ZUM1 e trava de versao da Release divergem")
+    return ReleaseBundle(
+        release_id, release_name, source_commit, tag, target_version,
+        minimum_version, base_epoch, target_epoch, package_name, manifest_name,
+        package_hash, manifest_hash,
+    )
+
+
+def build_release_bundle(
+    release_id: str,
+    manifest_path: Path,
+    private_key: Any,
+    trusted: PublicKeyInfo,
+    generation: int,
+    source_reference: str,
+    tag: str | None,
+    output_dir: Path,
+) -> Path:
+    """Gera atomicamente os tres arquivos publicos de uma Release EP5."""
+    release_id, release_name = validate_release_identity(release_id, release_id)
+    if private_public_info(private_key) != trusted:
+        raise UpdateError("chave privada nao corresponde ao JSON publico")
+    source_commit = resolve_git_commit(source_reference)
+    if tag is not None and resolve_git_commit(f"refs/tags/{tag}") != source_commit:
+        raise UpdateError("tag auxiliar nao aponta para o commit selecionado")
+    package = build_artifact(manifest_path, private_key)
+    manifest_data_value = manifest_data(manifest_path)
+    base, target, base_epoch, target_epoch, _ = validate_manifest(
+        manifest_data_value, manifest_path.resolve().parent
+    )
+    artifact = verify_artifact(package, trusted, base, base_epoch)
+    package_name = "update.zephyrosupd"
+    manifest_name = "release.zum"
+    remote = build_remote_manifest(
+        private_key, trusted, generation, base, target, base_epoch,
+        target_epoch, package, f"/zephyros/{package_name}",
+    )
+    parse_remote_manifest(remote, trusted)
+    descriptor = release_descriptor(
+        release_id, release_name, source_commit, tag, artifact, package_name,
+        package, manifest_name, remote,
+    )
+    output = output_dir.expanduser().resolve()
+    if output.exists():
+        raise UpdateError(f"diretorio da Release ja existe: {output}")
+    if not output.parent.is_dir():
+        raise UpdateError(f"diretorio pai da Release nao existe: {output.parent}")
+    try:
+        with tempfile.TemporaryDirectory(
+            prefix=".zephyros-release-", dir=output.parent
+        ) as temporary_name:
+            temporary = Path(temporary_name)
+            write_new_bytes(temporary / package_name, package)
+            write_new_bytes(temporary / manifest_name, remote)
+            write_new_text(temporary / "release.json", descriptor)
+            temporary.replace(output)
+    except OSError as error:
+        raise UpdateError("nao foi possivel publicar o diretorio local") from error
+    return output / "release.json"
+
+
 def encode_remote_record(record: RemoteRecord) -> bytes:
     """Serializa o controle redundante ZUR1 usado pela auditoria."""
     raw = bytearray(REMOTE_RECORD_SIZE)
@@ -2508,6 +2800,31 @@ def selftest_generated() -> None:
         header_path = temp / "update_trust.h"
         sync_trust(public_path, header_path)
         check_trust(public_path, header_path)
+        payload_path = temp / "SHELL.BMP"
+        write_new_bytes(payload_path, SHELL_BMP.read_bytes())
+        manifest_path = temp / "manifest.json"
+        write_new_text(
+            manifest_path,
+            json.dumps(
+                {
+                    "format": "ZUPD v1",
+                    "architecture": "i386",
+                    "base_version": "0.1.0",
+                    "target_version": "0.1.1",
+                    "base_epoch": 0,
+                    "target_epoch": 0,
+                    "files": [{"path": "SHELL.BMP", "source": "SHELL.BMP"}],
+                },
+                indent=2,
+            ) + "\n",
+        )
+        descriptor_path = build_release_bundle(
+            "selftest-release", manifest_path, private_key, trusted, 1,
+            "HEAD", None, temp / "release-output",
+        )
+        bundle = verify_release_bundle(descriptor_path, trusted)
+        if bundle.target_version != Version(0, 1, 1) or bundle.tag is not None:
+            raise UpdateError("round-trip da Release EP5 divergiu")
     try:
         validate_private_output(REPO_ROOT / "release-test.pem")
     except UpdateError:
@@ -2799,6 +3116,97 @@ def selftest_u5_public() -> None:
         raise UpdateError("fixture U5 truncado possui tamanho completo")
 
 
+def selftest_ep5_release() -> None:
+    """Exercita Releases com trava assinada e tag apenas auxiliar."""
+    trusted = load_public_json(RELEASE_PUBLIC)
+    package = (U3_FIXTURES / "APPLY.ZUP").read_bytes()
+    manifest = (U5_FIXTURES / "stable.zum").read_bytes()
+    artifact = verify_artifact(package, trusted, Version(0, 1, 0), 0)
+    commit = "1" * 40
+
+    def resolver(reference: str, _repository: Path) -> str:
+        if reference in (commit, "refs/tags/ep5-fixture"):
+            return commit
+        raise UpdateError(f"referencia Git inexistente: {reference}")
+
+    with tempfile.TemporaryDirectory(prefix="zephyros-ep5-") as temp_name:
+        root = Path(temp_name)
+        (root / "APPLY.ZUP").write_bytes(package)
+        (root / "stable.zum").write_bytes(manifest)
+
+        def write_fixture(name: str, value: dict[str, Any]) -> Path:
+            path = root / name
+            path.write_text(
+                json.dumps(value, indent=2, ensure_ascii=True) + "\n",
+                encoding="utf-8",
+            )
+            return path
+
+        descriptor = json.loads(
+            release_descriptor(
+                "ep5-fixture", "EP5 fixture", commit, None, artifact,
+                "APPLY.ZUP", package, "stable.zum", manifest,
+            )
+        )
+        valid_without_tag = write_fixture("valid-without-tag.json", descriptor)
+        verify_release_bundle(valid_without_tag, trusted, resolver=resolver)
+
+        with_tag = json.loads(json.dumps(descriptor))
+        with_tag["tag"] = "ep5-fixture"
+        verify_release_bundle(
+            write_fixture("valid-with-tag.json", with_tag),
+            trusted,
+            resolver=resolver,
+        )
+
+        rejected: list[tuple[str, dict[str, Any]]] = []
+        missing = json.loads(json.dumps(descriptor))
+        missing["assets"]["manifest"]["name"] = "missing.zum"
+        rejected.append(("missing-asset.json", missing))
+
+        tampered_data = (U5_FIXTURES / "tampered.zum").read_bytes()
+        (root / "tampered.zum").write_bytes(tampered_data)
+        tampered = json.loads(json.dumps(descriptor))
+        tampered["assets"]["manifest"] = release_asset_metadata(
+            "tampered.zum", tampered_data
+        )
+        rejected.append(("tampered-manifest.json", tampered))
+
+        bad_package_data = (U2_FIXTURES / "BADHASH.ZUP").read_bytes()
+        bad_manifest_data = (U5_FIXTURES / "badpkg.zum").read_bytes()
+        (root / "BADHASH.ZUP").write_bytes(bad_package_data)
+        (root / "badpkg.zum").write_bytes(bad_manifest_data)
+        invalid_package = json.loads(json.dumps(descriptor))
+        invalid_package["assets"]["package"] = release_asset_metadata(
+            "BADHASH.ZUP", bad_package_data
+        )
+        invalid_package["assets"]["manifest"] = release_asset_metadata(
+            "badpkg.zum", bad_manifest_data
+        )
+        rejected.append(("invalid-package.json", invalid_package))
+
+        divergent_lock = json.loads(json.dumps(descriptor))
+        divergent_lock["version_lock"]["target_version"] = "0.1.2"
+        rejected.append(("divergent-version-lock.json", divergent_lock))
+
+        divergent_tag = json.loads(json.dumps(descriptor))
+        divergent_tag["tag"] = "wrong-tag"
+        rejected.append(("divergent-tag.json", divergent_tag))
+
+        divergent_commit = json.loads(json.dumps(descriptor))
+        divergent_commit["source_commit"] = "2" * 40
+        rejected.append(("divergent-commit.json", divergent_commit))
+
+        for name, value in rejected:
+            try:
+                verify_release_bundle(
+                    write_fixture(name, value), trusted, resolver=resolver
+                )
+            except UpdateError:
+                continue
+            raise UpdateError(f"fixture EP5 invalido foi aceito: {name}")
+
+
 def run_selftest() -> None:
     """Executa a suite host sem gravar no repositorio."""
     selftest_u1()
@@ -2809,6 +3217,7 @@ def run_selftest() -> None:
     selftest_generated()
     selftest_u5_remote()
     selftest_u5_public()
+    selftest_ep5_release()
     print(
         "Updater selftest: OK"
         if u3_ready
@@ -2866,6 +3275,45 @@ def command_verify(args: argparse.Namespace) -> None:
         print(str(error))
         raise
     print_artifact(info)
+
+
+def command_release_build(args: argparse.Namespace) -> None:
+    """Gera o conjunto local que sera anexado manualmente a uma Release."""
+    output = Path(args.output_dir).expanduser().resolve()
+    if output.exists():
+        raise UpdateError(f"diretorio da Release ja existe: {output}")
+    key = load_private_key(
+        validate_private_input(Path(args.private)), prompt_password()
+    )
+    descriptor = build_release_bundle(
+        args.release,
+        Path(args.manifest),
+        key,
+        load_public_json(Path(args.public)),
+        args.generation,
+        args.source_commit,
+        args.tag,
+        output,
+    )
+    bundle = verify_release_bundle(descriptor, load_public_json(Path(args.public)))
+    print(f"Release local criada: {descriptor.parent}")
+    print(f"Versao oficial: {bundle.target_version}")
+    print(f"Versao minima: {bundle.minimum_version}")
+    print("Publique manualmente somente os assets deste diretorio.")
+
+
+def command_release_check(args: argparse.Namespace) -> None:
+    """Confere uma Release local sem publicar ou acessar a rede."""
+    bundle = verify_release_bundle(
+        Path(args.release), load_public_json(Path(args.public))
+    )
+    print(f"Release: {bundle.release_id}")
+    print(f"Versao oficial: {bundle.target_version}")
+    print(f"Versao minima: {bundle.minimum_version}")
+    print(f"Epoch: {bundle.base_epoch} -> {bundle.target_epoch}")
+    print(f"Commit: {bundle.source_commit}")
+    print(f"Tag auxiliar: {bundle.tag or 'ausente'}")
+    print("Integridade: OK")
 
 
 def command_fixtures(args: argparse.Namespace) -> None:
@@ -2997,6 +3445,26 @@ def build_parser() -> argparse.ArgumentParser:
     verify.add_argument("--system-version")
     verify.add_argument("--system-epoch", type=int)
     verify.set_defaults(handler=command_verify)
+
+    release_build = subparsers.add_parser(
+        "release-build", help="gera os assets locais de uma Release EP5"
+    )
+    release_build.add_argument("--release", required=True)
+    release_build.add_argument("--manifest", required=True)
+    release_build.add_argument("--private", required=True)
+    release_build.add_argument("--public", required=True)
+    release_build.add_argument("--generation", type=int, required=True)
+    release_build.add_argument("--source-commit", required=True)
+    release_build.add_argument("--tag")
+    release_build.add_argument("--output-dir", required=True)
+    release_build.set_defaults(handler=command_release_build)
+
+    release_check = subparsers.add_parser(
+        "release-check", help="confere uma Release EP5 antes da publicacao"
+    )
+    release_check.add_argument("--release", required=True)
+    release_check.add_argument("--public", required=True)
+    release_check.set_defaults(handler=command_release_check)
 
     fixtures = subparsers.add_parser("fixtures", help="gera os vetores U2")
     fixtures.add_argument("--private", required=True)
