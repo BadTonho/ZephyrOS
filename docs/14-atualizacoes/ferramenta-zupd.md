@@ -208,6 +208,53 @@ Ele publica os manifestos e pacotes em `/zephyros/`. As rotas adicionais
 exercita truncamento. O servidor e apenas um fixture de desenvolvimento e
 deve ser encerrado com Ctrl+C.
 
+## Releases oficiais EP5
+
+A Release e a unidade de distribuicao no host. Seu nome, identificador e tag
+auxiliar nao definem a versao do ZephyrOS. A trava oficial permanece nos
+campos assinados `base_version`, `target_version`, `base_epoch` e
+`target_epoch` do ZUPD e do ZUM1.
+
+`release-build` recebe um manifesto ZUPD, a chave privada externa, a raiz
+publica, a geracao ZUM1 e o commit de origem. A saida deve ser um diretorio
+novo e recebe exatamente `update.zephyrosupd`, `release.zum` e `release.json`:
+
+```text
+python tools/updater.py release-build --release <identificador> --manifest <manifesto-zupd.json> --private <chave-fora-do-repositorio> --public config/update-release-public.json --generation <numero> --source-commit <sha-ou-ref> --output-dir <diretorio-novo>
+```
+
+Uma tag pode ser registrada somente como marcador auxiliar:
+
+```text
+python tools/updater.py release-build --release <identificador> --manifest <manifesto-zupd.json> --private <chave-fora-do-repositorio> --public config/update-release-public.json --generation <numero> --source-commit <sha-ou-ref> --tag <tag> --output-dir <diretorio-novo>
+```
+
+Quando `--tag` e usado, a tag deve existir localmente e apontar para o mesmo
+commit. Seu texto nao precisa conter uma versao. Sem `--tag`, a Release
+continua completa e verificavel.
+
+O descritor `zephyros-release-v1` registra identidade, canal Stable, commit,
+tag opcional, trava de versao e inventario SHA-256. Ele nao e uma nova raiz de
+confianca: `release-check` autentica novamente ZUPD e ZUM1 e exige que todos os
+campos redundantes coincidam com os dados assinados:
+
+```text
+python tools/updater.py release-check --release <diretorio/release.json> --public config/update-release-public.json
+```
+
+A verificacao e inteiramente offline. Ela recusa commit ou tag inexistente,
+tag apontando para outro commit, asset ausente, tamanho ou hash divergente,
+assinatura invalida e qualquer diferenca entre a trava, o ZUPD e o ZUM1.
+
+Depois de `release-check`, o mantenedor publica manualmente os tres arquivos
+sem altera-los. Uma Release publicada e imutavel; qualquer correcao gera uma
+nova Release. GitHub continua sendo somente origem de distribuicao e seus
+titulos, descricoes e tags nao substituem as assinaturas Ed25519.
+
+O `selftest` cobre Releases validas com e sem tag, asset ausente, manifesto
+adulterado, pacote invalido, trava divergente, commit divergente e tag
+divergente.
+
 ## Validacao no sistema
 
 O Makefile injeta os sete aliases U2 e `APPLY.ZUP` na imagem FAT. Depois do
