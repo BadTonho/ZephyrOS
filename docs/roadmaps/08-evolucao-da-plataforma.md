@@ -440,6 +440,8 @@ A versao oficial continua vindo dos campos assinados do ZUPD/ZUM1. Nao existe
   tag automaticamente.
 
 Implementacao concluida em: 2026-08-21 17:52 (America/Sao_Paulo).
+Correcao do hash publicado da fixture EP6 concluida em: 2026-08-21 18:10
+(America/Sao_Paulo).
 Validacao funcional pelo usuario pendente apos `make q3check` e
 `make clean && make`.
 
