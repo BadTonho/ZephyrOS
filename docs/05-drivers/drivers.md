@@ -143,7 +143,9 @@ O driver tambem expoe `keyboard_scancode_to_ascii_shifted(scancode, shifted)`
 para consumidores que precisam da mesma tabela com Shift. A funcao legada
 `keyboard_scancode_to_ascii()` permanece como atalho para a conversao sem
 Shift. As barras ISO/ABNT2 sao normalizadas pelo proprio driver: `/` sem Shift
-e `?` com Shift.
+e `?` com Shift. No adaptador HID, o Usage `Keyboard Slash and Question Mark`
+nao e enviado para o scancode `0x35`, pois esse scancode representa `;` na
+tabela ABNT2; ele e convertido para a tecla ISO aceita pela mesma rotina.
 
 ### Metricas
 

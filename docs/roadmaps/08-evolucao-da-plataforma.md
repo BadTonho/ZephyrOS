@@ -322,6 +322,9 @@ continuam fora do escopo.
 **Validação parcial registrada em:** 21/08/2026 12:31:49
 (America/Sao_Paulo).
 
+**Correção do mapeamento USB HID/ABNT2 implementada em:** 2026-08-21
+15:00:11 (America/Sao_Paulo). **Validação desta correção:** pendente.
+
 - [x] Implementar transferências Interrupt através do despachante assíncrono,
   sem bloqueios por espera ocupada na CPU, com QH/TD/buffer persistentes,
   deadlines, toggle, cancelamento e proteção contra callback atrasado.
