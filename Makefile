@@ -14,7 +14,7 @@ QEMU ?= qemu-system-i386
 QEMU_NET_ARGS ?= -nic user,model=e1000
 QEMU_USB_ARGS ?= -device piix3-usb-uhci,id=usb
 QEMU_USB_DEVICE_ARGS ?= -device usb-kbd,bus=usb.0
-QEMU_USB_HID_DEVICE_ARGS ?= -device usb-kbd,bus=usb.0 -device usb-mouse,bus=usb.0
+QEMU_USB_HID_DEVICE_ARGS ?= -device usb-kbd,bus=usb.0,port=1 -device usb-mouse,bus=usb.0,port=2
 QEMU_USB_MSC_ARGS ?= -drive if=none,id=usb-stick,format=raw,file=$(STORAGE_VALID_IMG),readonly=on -device usb-storage,bus=usb.0,drive=usb-stick
 
 # Flags
