@@ -191,6 +191,9 @@ somente artefatos publicos:
 | `tampered.zum` | `MANIFEST_SIGNATURE` |
 | `badpkg.zum` | manifesto valido para ZUPD com `HASH` invalido |
 | `truncated.zum` | `HTTP`, corpo com tamanho inexato |
+| `ep6-stable.json` | Release EP6.0 valida, tag `ep6-stable` |
+| `ep6-alt.json` | Release EP6.0 valida, tag distinta `ep6-alt` |
+| `ep6-*.json` | descritores EP6.0 invalidos para a matriz de falhas |
 | `fixtures.json` | chave publica, tamanhos e SHA-256 |
 
 `stable.zum` e `stable2.zum` reutilizam o `APPLY.ZUP` publico da U3.
@@ -207,6 +210,12 @@ Ele publica os manifestos e pacotes em `/zephyros/`. As rotas adicionais
 `error.zum` e `slow.zum` exercitam erro HTTP e timeout; `truncated.zum`
 exercita truncamento. O servidor e apenas um fixture de desenvolvimento e
 deve ser encerrado com Ctrl+C.
+
+As fixtures EP6.0 incluem `ep6-stable.json` e `ep6-alt.json`, duas Releases
+validas com tags distintas, alem de descritores determinísticos para JSON
+invalido, tag ausente/divergente, asset ausente, hash divergente e
+`version_lock` divergente. O servidor publica todas essas rotas para a matriz
+QEMU; nenhuma delas escolhe automaticamente a maior tag.
 
 ## Releases oficiais EP5
 
@@ -254,6 +263,9 @@ titulos, descricoes e tags nao substituem as assinaturas Ed25519.
 O `selftest` cobre Releases validas com e sem tag, asset ausente, manifesto
 adulterado, pacote invalido, trava divergente, commit divergente e tag
 divergente.
+
+O `selftest` tambem confere as duas fixtures EP6.0, seus hashes, assets,
+travas assinadas e o manifesto publico dos descritores invalidos.
 
 ## Validacao no sistema
 

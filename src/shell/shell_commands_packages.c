@@ -27,6 +27,7 @@
 #include "ui/filemanager.h"
 #include "ui/icons.h"
 #include "memory/paging.h"
+#include "core/crypto.h"
 #include "core/string.h"
 #include "core/errors.h"
 #include "core/log.h"
@@ -230,8 +231,8 @@ typedef struct {
     char operation[16];
     char first[FS_MAX_PATH];
     char second[UPDATE_REMOTE_URL_SIZE];
-    char third[32];
-    char extra[2];
+    char third[UPDATE_REMOTE_TAG_SIZE + 1U];
+    char extra[16];
     update_remote_status_t remote_status;
     update_remote_options_t remote_options;
     update_remote_result_t remote_result;
@@ -275,6 +276,12 @@ static void cmd_pkg_take_token(const char** cursor, char* output,
         (*cursor)++;
     }
     output[length] = '\0';
+}
+
+static int cmd_pkg_has_trailing_token(const char* cursor) {
+    if (!cursor) return 0;
+    while (*cursor == ' ' || *cursor == '\t') cursor++;
+    return *cursor != '\0';
 }
 
 static void cmd_update_print_version(const char* label,
@@ -640,6 +647,49 @@ static void cmd_update_print_remote_candidate(
     video_print("\n", 0x07);
 }
 
+static void cmd_update_print_hash(const uint8_t* hash) {
+    if (!hash) return;
+    for (uint32_t index = 0U; index < CRYPTO_SHA256_SIZE; index++) {
+        shell_command_print_hex(hash[index], 2U);
+    }
+}
+
+static void cmd_update_print_release_result(
+    const update_remote_result_t* result) {
+    update_remote_status_t status;
+
+    if (!result) return;
+    if (result->release.tag[0]) {
+        video_print("Release selecionada:\n  Tag: ", 0x0B);
+        video_print(result->release.tag, 0x0A);
+        video_print("\n  Release: ", 0x07);
+        video_print(result->release.release_id, 0x07);
+        video_print(" - ", 0x08);
+        video_print(result->release.release_name, 0x07);
+        video_print("\n  Commit: ", 0x08);
+        video_print(result->release.source_commit, 0x07);
+        video_print("\n  Tamanho: ", 0x07);
+        shell_command_print_num(result->release.package_size);
+        video_print(" bytes\n  SHA-256: ", 0x08);
+        cmd_update_print_hash(result->release.package_hash);
+        video_print("\n  Manifesto SHA-256: ", 0x08);
+        cmd_update_print_hash(result->release.manifest_hash);
+        video_print("\n", 0x07);
+    }
+    cmd_update_print_remote_candidate(&result->candidate);
+    if (update_remote_get_status(&status) == OK) {
+        video_print("  Cache: ", 0x07);
+        video_print(update_remote_store_name(status.cache_store),
+                    status.cache_store == UPDATE_REMOTE_STORE_INVALID ?
+                    0x0C : 0x0A);
+        if (status.package_cached) {
+            video_print(" alias=", 0x08);
+            video_print(status.cached_alias, 0x0B);
+        }
+        video_print("\n", 0x07);
+    }
+}
+
 static void cmd_update_remote_status(void) {
     update_remote_status_t* status =
         &shell_update_workspace.remote_status;
@@ -785,6 +835,59 @@ static void cmd_update_fetch(const char* url, int confirmed) {
     }
 }
 
+static void cmd_update_github(const char* operation, const char* tag,
+                              int confirmed) {
+    update_remote_options_t* options =
+        &shell_update_workspace.remote_options;
+    update_remote_result_t* result =
+        &shell_update_workspace.remote_result;
+    int operation_result;
+
+    kmemset(options, 0, sizeof(*options));
+    options->dry_run = confirmed ? 0U : 1U;
+    options->cancel_check = cmd_update_cancel_check;
+    if (confirmed) {
+        video_print("Baixando Release por tag; Esc/F12 cancela...\n",
+                    0x0E);
+        operation_result = update_remote_release_fetch(tag, options, result);
+    } else {
+        video_print("Consultando Release por tag; Esc/F12 cancela...\n",
+                    0x07);
+        operation_result = update_remote_release_check(tag, options, result);
+    }
+    video_print("Tag solicitada: ", 0x07);
+    video_print(tag, 0x0A);
+    video_print("\n", 0x07);
+    video_print("Resultado EP6.0: ", 0x07);
+    video_print(update_remote_reason_name(result->reason),
+                operation_result == OK ? 0x0A : 0x0C);
+    video_print(" http=", 0x08);
+    shell_command_print_num(result->http_status);
+    video_print(" bytes=", 0x08);
+    shell_command_print_num(result->bytes_received);
+    video_print("\n", 0x07);
+    cmd_update_print_release_result(result);
+    if (operation_result != OK) {
+        if (result->cache_preserved) {
+            video_print("O cache remoto anterior foi preservado.\n",
+                        0x0A);
+        }
+        return;
+    }
+    if (!confirmed) {
+        video_print("Preflight EP6.0 aprovado. Nenhuma gravacao realizada.\n",
+                    0x0A);
+        if (kstrcmp(operation, "check") == 0) return;
+        video_print("Para confirmar: update github fetch --tag ", 0x0E);
+        video_print(tag, 0x0E);
+        video_print(" --confirm\n", 0x0E);
+        return;
+    }
+    video_print("Release autenticada no cache: ", 0x0A);
+    video_print(result->cached_alias, 0x0B);
+    video_print("\nNenhuma instalacao foi iniciada.\n", 0x0A);
+}
+
 static void cmd_update(const char* args) {
     char* operation = shell_update_workspace.operation;
     char* first = shell_update_workspace.first;
@@ -843,6 +946,17 @@ static void cmd_update(const char* args) {
         cmd_update_remote_control(first, second[0] != '\0');
         return;
     }
+    if (kstrcmp(operation, "github") == 0 &&
+        (kstrcmp(first, "check") == 0 ||
+         kstrcmp(first, "fetch") == 0) &&
+        kstrcmp(second, "--tag") == 0 && third[0] &&
+        !cmd_pkg_has_trailing_token(cursor) &&
+        (extra[0] == '\0' || kstrcmp(extra, "--confirm") == 0) &&
+        ((kstrcmp(first, "check") == 0 && extra[0] == '\0') ||
+         kstrcmp(first, "fetch") == 0)) {
+        cmd_update_github(first, third, extra[0] != '\0');
+        return;
+    }
     if (kstrcmp(operation, "fetch") == 0 && extra[0] == '\0') {
         if (!first[0] && !second[0] && !third[0]) {
             cmd_update_fetch(0, 0);
@@ -868,6 +982,8 @@ static void cmd_update(const char* args) {
     video_print("     update remote clear [--confirm]\n", 0x0E);
     video_print("     update fetch [--url <manifesto>] [--confirm]\n",
                 0x0E);
+    video_print("     update github check --tag <tag>\n", 0x0E);
+    video_print("     update github fetch --tag <tag> [--confirm]\n", 0x0E);
     video_print("     update test fail-after <1-3>\n", 0x0E);
 }
 

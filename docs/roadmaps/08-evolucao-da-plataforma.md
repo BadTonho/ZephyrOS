@@ -414,7 +414,7 @@ qualidade; esta etapa nao exige QEMU.
 
 ## EP6 - Selecao por tag, TLS e canal GitHub opcional
 
-**Estado:** planejada; depende da EP5 validada.
+**Estado:** EP6.0 implementada; validacao funcional pelo usuario pendente.
 
 **Planejamento atualizado em:** 2026-08-21 16:39:48
 (America/Sao_Paulo).
@@ -426,18 +426,28 @@ A versao oficial continua vindo dos campos assinados do ZUPD/ZUM1. Nao existe
 
 ### EP6.0 - Contrato de selecao por tag
 
-- [ ] Definir `update github check --tag <tag>` e
+- [x] Definir `update github check --tag <tag>` e
   `update github fetch --tag <tag> [--confirm]` como operacoes explicitamente
   opt-in; a ausencia de tag, tag inexistente ou Release sem asset falha sem
   alterar o cache.
-- [ ] Resolver a tag para uma Release e seus assets usando um canal de origem
+- [x] Resolver a tag para uma Release e seus assets usando um canal de origem
   configuravel, exigindo um manifesto ZUM1 e um pacote ZUPD assinados; a
   metadata da Release, o titulo e a tag somente selecionam o candidato.
-- [ ] Reutilizar o cache, o download cooperativo e a aplicacao confirmada da
+- [x] Reutilizar o cache, o download cooperativo e a aplicacao confirmada da
   U5: baixar nao instala, e `update apply` continua separado e exige reboot.
-- [ ] Exibir antes da confirmacao a tag solicitada, a Release encontrada, a
+- [x] Exibir antes da confirmacao a tag solicitada, a Release encontrada, a
   versao/epoch assinados, o hash e o estado do cache; nunca escolher a maior
   tag automaticamente.
+
+Implementacao concluida em: 2026-08-21 17:52 (America/Sao_Paulo).
+Validacao funcional pelo usuario pendente apos `make q3check` e
+`make clean && make`.
+
+A matriz EP6.0 cobre duas tags validas, tag ausente/invalida/inexistente,
+argumentos extras, descritor invalido, asset ausente, hashes e
+`version_lock` divergentes, manifesto ZUM1 adulterado, ZUPD invalido,
+confirmacao sem preflight ou com tag diferente, cancelamento, rede ausente,
+preservacao do cache e regressao U5/Classic.
 
 ### EP6.1 - TLS e identidade do canal
 
@@ -449,8 +459,9 @@ A versao oficial continua vindo dos campos assinados do ZUPD/ZUM1. Nao existe
 
 ### EP6.2 - Canal GitHub configuravel
 
-- [ ] Adaptar U5 a um canal de Release configuravel e implementar a descoberta
-  da Release pelo valor exato de `--tag`, sem credenciais ou conta GitHub.
+- [ ] Integrar a API real de Releases do GitHub como origem configuravel e
+  implementar a descoberta pelo valor exato de `--tag`, sem credenciais ou
+  conta GitHub no kernel.
 - [ ] Limitar URL, redirecionamentos, tamanho de resposta, retries, memoria e
   tempo de operacao; nenhum token ou conta GitHub e necessario.
 

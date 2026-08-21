@@ -22,6 +22,7 @@ header derivado `src/include/core/update_remote_config.h` fixa:
 
 ```text
 http://10.0.2.2:8000/zephyros/stable.zum
+http://10.0.2.2:8000/zephyros/{tag}.json
 ```
 
 Um override existe somente para uma consulta ou download explicitamente
@@ -147,12 +148,14 @@ arquivos internos nao sao alvos permitidos de um pacote ZUPD.
 ## API publica
 
 `src/include/core/update_remote.h` define estados, motivos, candidato,
-progresso, estado do cache e:
+progresso, estado do cache, `update_remote_release_t` e:
 
 - `update_remote_init()`;
 - `update_remote_enable()` e `update_remote_disable()`;
 - `update_remote_check()`;
 - `update_remote_fetch()`;
+- `update_remote_release_check()`;
+- `update_remote_release_fetch()`;
 - `update_remote_clear()`;
 - `update_remote_get_status()`;
 - `update_remote_get_cached_alias()`;
@@ -186,6 +189,11 @@ Os motivos publicos preservam estes valores:
 | 14 | `PACKAGE_VERIFY` |
 | 15 | `PACKAGE_MISMATCH` |
 | 16 | `CACHE` |
+| 17 | `RELEASE_NOT_FOUND` |
+| 18 | `RELEASE_FORMAT` |
+| 19 | `RELEASE_TAG` |
+| 20 | `RELEASE_ASSET` |
+| 21 | `RELEASE_CHANGED` |
 
 As operacoes confirmadas aceitam callback cooperativo. Durante o download,
 somente Esc ou F12 e interpretado como cancelamento.
@@ -213,12 +221,74 @@ update fetch
 update fetch --confirm
 update fetch --url http://host:porta/caminho.zum
 update fetch --url http://host:porta/caminho.zum --confirm
+update github check --tag <tag>
+update github fetch --tag <tag>
+update github fetch --tag <tag> --confirm
 ```
 
 `update fetch` consulta e apresenta o candidato sem gravar. A confirmacao
 repete a consulta e exige exatamente o mesmo manifesto antes de iniciar a
 transferencia. O pacote armazenado aparece na aba Pacotes como `ZUR0.ZUP` ou
 `ZUR1.ZUP`, mas nunca e aplicado automaticamente.
+
+## EP6.0 - Release por tag exata
+
+EP6.0 adiciona uma camada de selecao sobre o transporte U5. A origem da fase
+e o servidor de fixtures U5; a API real do GitHub pertence a EP6.2. O template
+HTTP configuravel usa exatamente um marcador `{tag}` e somente o esquema
+`http://` nesta fase:
+
+```text
+http://10.0.2.2:8000/zephyros/{tag}.json
+```
+
+O Shell aceita tags de 1 a 64 caracteres usando somente
+`[A-Za-z0-9._-]`. A tag e substituida literalmente no template; nao existe
+`latest`, ordenacao, comparacao de tags ou escolha automatica de uma Release
+"maior".
+
+O descritor deve ser o schema canonico `zephyros-release-v1`, com campos na
+ordem abaixo:
+
+```json
+{
+  "format": "zephyros-release-v1",
+  "release_id": "...",
+  "release_name": "...",
+  "channel": "stable",
+  "source_commit": "40 hexadecimais",
+  "tag": "tag exata",
+  "version_lock": {
+    "minimum_version": "MAJOR.MINOR.PATCH",
+    "target_version": "MAJOR.MINOR.PATCH",
+    "base_epoch": 0,
+    "target_epoch": 0
+  },
+  "assets": {
+    "package": {"name": "...ZUP", "size": 0, "sha256": "..."},
+    "manifest": {"name": "...zum", "size": 256, "sha256": "..."}
+  }
+}
+```
+
+O resolver valida a tag solicitada, o schema, os nomes e limites dos assets,
+os hashes, o `version_lock` e a correspondencia exata da tag. Em seguida,
+monta a URL do manifesto, exige que o ZUM1 assinado corresponda aos metadados
+publicados e reutiliza o download/cache A/B da U5. O descritor, o nome da
+Release e o titulo nao sao uma raiz de confianca.
+
+`update github check` e somente leitura. `update github fetch --tag` executa
+o mesmo preflight sem gravar. A forma `--confirm` exige um preflight anterior
+para a mesma tag, baixa novamente o descritor e recusa qualquer alteracao
+antes de tocar no cache. O ZUPD autenticado e publicado no cache, mas nenhuma
+instalacao e iniciada; `update apply` continua sendo uma operacao separada.
+Falhas, cancelamento e rede indisponivel preservam o slot ativo anterior.
+O System Updater Classic continua sem campo de tag e permanece no canal U5,
+servindo como regressao do fluxo remoto existente.
+
+O resultado publico inclui `update_remote_release_t`, com tag, identificacao,
+URLs, asset, tamanho e hashes, alem do hash do manifesto ZUM1 em
+`update_remote_result_t`.
 
 ## Limites de seguranca
 
@@ -227,8 +297,9 @@ HTTP simples nao protege confidencialidade, disponibilidade, metadados ou
 observacao do trafego. Sem Secure Boot e armazenamento protegido, adulteracao
 offline do sistema ou rollback integral do disco permanecem fora do modelo.
 
-Nao existem TLS, atualizacao silenciosa, consulta remota no boot, telemetria,
-instalacao direta pelo download ou varios candidatos em um mesmo manifesto.
+Nao existem TLS, API real do GitHub, atualizacao silenciosa, consulta remota
+no boot, telemetria, instalacao direta pelo download ou varios candidatos em
+um mesmo manifesto. TLS e GitHub real permanecem fora da EP6.0.
 O DHCP automatico pertence ao Network Manager, usa somente RAM e nunca dispara
 HTTP ou habilita a distribuicao remota.
 

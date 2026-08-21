@@ -10,6 +10,10 @@
 #define UPDATE_REMOTE_URL_SIZE 512U
 #define UPDATE_REMOTE_ALIAS_SIZE 13U
 #define UPDATE_REMOTE_RECORD_SIZE 512U
+#define UPDATE_REMOTE_TAG_SIZE 65U
+#define UPDATE_REMOTE_RELEASE_ID_SIZE 65U
+#define UPDATE_REMOTE_RELEASE_NAME_SIZE 101U
+#define UPDATE_REMOTE_SOURCE_COMMIT_SIZE 41U
 
 typedef enum {
     UPDATE_REMOTE_STATE_DISABLED = 0,
@@ -39,7 +43,12 @@ typedef enum {
     UPDATE_REMOTE_REASON_PACKAGE_HASH,
     UPDATE_REMOTE_REASON_PACKAGE_VERIFY,
     UPDATE_REMOTE_REASON_PACKAGE_MISMATCH,
-    UPDATE_REMOTE_REASON_CACHE
+    UPDATE_REMOTE_REASON_CACHE,
+    UPDATE_REMOTE_REASON_RELEASE_NOT_FOUND,
+    UPDATE_REMOTE_REASON_RELEASE_FORMAT,
+    UPDATE_REMOTE_REASON_RELEASE_TAG,
+    UPDATE_REMOTE_REASON_RELEASE_ASSET,
+    UPDATE_REMOTE_REASON_RELEASE_CHANGED
 } update_remote_reason_t;
 
 typedef enum {
@@ -88,6 +97,19 @@ typedef struct {
 } update_remote_options_t;
 
 typedef struct {
+    char tag[UPDATE_REMOTE_TAG_SIZE];
+    char release_id[UPDATE_REMOTE_RELEASE_ID_SIZE];
+    char release_name[UPDATE_REMOTE_RELEASE_NAME_SIZE];
+    char source_commit[UPDATE_REMOTE_SOURCE_COMMIT_SIZE];
+    char descriptor_url[UPDATE_REMOTE_URL_SIZE];
+    char manifest_url[UPDATE_REMOTE_URL_SIZE];
+    char package_name[UPDATE_REMOTE_PATH_SIZE];
+    uint32_t package_size;
+    uint8_t package_hash[32];
+    uint8_t manifest_hash[32];
+} update_remote_release_t;
+
+typedef struct {
     update_remote_reason_t reason;
     uint16_t http_status;
     uint8_t retry_count;
@@ -97,6 +119,8 @@ typedef struct {
     char cached_alias[UPDATE_REMOTE_ALIAS_SIZE];
     update_remote_candidate_t candidate;
     zupd_reason_t verification_reason;
+    uint8_t manifest_hash[32];
+    update_remote_release_t release;
 } update_remote_result_t;
 
 int update_remote_init(void);
@@ -108,6 +132,12 @@ int update_remote_check(const char* manifest_url,
 int update_remote_fetch(const char* manifest_url,
                         const update_remote_options_t* options,
                         update_remote_result_t* result_out);
+int update_remote_release_check(const char* tag,
+                                const update_remote_options_t* options,
+                                update_remote_result_t* result_out);
+int update_remote_release_fetch(const char* tag,
+                                const update_remote_options_t* options,
+                                update_remote_result_t* result_out);
 int update_remote_clear(const update_remote_options_t* options,
                         update_remote_result_t* result_out);
 int update_remote_get_status(update_remote_status_t* status_out);
