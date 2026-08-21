@@ -375,6 +375,7 @@ static int update_release_json_asset(update_release_json_t* json,
                                      uint8_t hash[CRYPTO_SHA256_SIZE],
                                      int manifest) {
     char* hash_text = update_release_workspace.hash_text;
+    int validation_result;
     int result;
 
     if (!json || !name || !name_capacity || !size_out || !hash) {
@@ -398,11 +399,28 @@ static int update_release_json_asset(update_release_json_t* json,
             json, hash_text, sizeof(update_release_workspace.hash_text));
     }
     if (result == OK) result = update_release_json_expect(json, '}');
-    if (result != OK || update_release_validate_asset_name(
-            name, name_capacity, manifest) != OK ||
-        !*size_out || (manifest && *size_out != UPDATE_REMOTE_MANIFEST_SIZE) ||
-        (!manifest && *size_out > ZUPD_MAX_TOTAL_SIZE) ||
-        update_release_parse_hash(hash_text, hash) != OK) {
+    if (result != OK) {
+        LOG_ERROR_CODE("UPDATE", result,
+                       "Asset de Release possui JSON invalido");
+        return ERR_INVALID;
+    }
+    validation_result = update_release_validate_asset_name(
+        name, name_capacity, manifest);
+    if (validation_result != OK) {
+        LOG_ERROR_CODE("UPDATE", validation_result,
+                       "Nome de asset da Release invalido");
+        return ERR_INVALID;
+    }
+    if (!*size_out || (manifest && *size_out != UPDATE_REMOTE_MANIFEST_SIZE) ||
+        (!manifest && *size_out > ZUPD_MAX_TOTAL_SIZE)) {
+        LOG_ERROR_CODE("UPDATE", (int32_t)*size_out,
+                       "Tamanho de asset da Release invalido");
+        return ERR_INVALID;
+    }
+    validation_result = update_release_parse_hash(hash_text, hash);
+    if (validation_result != OK) {
+        LOG_ERROR_CODE("UPDATE", (int32_t)kstrlen(hash_text),
+                       "Hash de asset da Release invalido");
         return ERR_INVALID;
     }
     return OK;
@@ -583,6 +601,7 @@ static int update_release_parse_descriptor(
     if (descriptor->release.package_size > ZUPD_MAX_TOTAL_SIZE ||
         descriptor->release.package_size == 0U) {
         *reason_out = UPDATE_REMOTE_REASON_RELEASE_ASSET;
+        LOG_ERROR("UPDATE", "Tamanho do pacote da Release invalido");
         return ERR_INVALID;
     }
     if (update_release_copy_text(
@@ -594,6 +613,7 @@ static int update_release_parse_descriptor(
             descriptor_url, manifest_name, descriptor->release.manifest_url) !=
         OK) {
         *reason_out = UPDATE_REMOTE_REASON_RELEASE_ASSET;
+        LOG_ERROR("UPDATE", "URL do manifesto da Release invalida");
         return ERR_INVALID;
     }
     return OK;
