@@ -1,10 +1,10 @@
 {
   "format": "zephyros-release-v1",
-  "release_id": "ep6-stable",
-  "release_name": "EP6 fixture stable",
+  "release_id": "ep6-missing-asset",
+  "release_name": "EP6 fixture missing asset",
   "channel": "stable",
-  "source_commit": "1111111111111111111111111111111111111111",
-  "tag": "ep6-stable",
+  "source_commit": "5555555555555555555555555555555555555555",
+  "tag": "ep6-missing-asset",
   "version_lock": {
     "minimum_version": "0.1.0",
     "target_version": "0.1.1",
