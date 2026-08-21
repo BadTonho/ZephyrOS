@@ -22,7 +22,8 @@ funcionalidade entregue.
 
 - Desktop inicia como cena padrao; o terminal e aberto explicitamente pelo
   Desktop, Menu Iniciar ou taskbar.
-- Shell possui scrollback de 200 linhas e `clear` apaga tela e historico.
+- Shell possui scrollback de 500 linhas, com renderizacao agrupada de saída
+  longa; `clear` apaga tela e historico.
 - Desktop, Explorer, Settings e a janela do Task Manager oferecem modo Classic
   com fallback Simple. O comando `taskmgr` preserva a TUI de diagnostico.
 - App API 0.3, syscalls 0 a 9, `int 0x80` em DPL3, arquivos, IPC, loader ZAPP,

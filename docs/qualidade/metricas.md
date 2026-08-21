@@ -18,6 +18,28 @@ mudanca; nao crie uma entrada artificial.
 
 ## Registros
 
+### 2026-08-21 - Fase 5, saida longa do Shell
+
+- Cenario QEMU: usar a mesma resolucao e executar `kmetrics reset`, `net check`,
+  `job status` e `kmetrics`; repetir em `guimode simple` e em Classic com o
+  terminal hospedado. Em uma segunda passagem, cancelar com `F12` depois de
+  uma secao ja impressa e confirmar que o prompt retorna uma unica vez.
+- Metrica observavel: apresentacoes, bytes e `max_boot` de VESA no `kmetrics`,
+  alem de pendencias, falhas e filas cheias de IPC. A conclusao funcional e a
+  ausencia de tela preta tambem sao criterios obrigatorios.
+- Antes: `net check` podia recompor a superficie inteira do terminal para
+  cada linha que rolava. A sessao que revelou a tela preta nao reteve um
+  snapshot pareado de `kmetrics`; portanto, nenhum valor quantitativo e
+  inferido retroativamente.
+- Depois: cada `video_print()` agrupa a apresentacao de sua saida, e o
+  diagnostico padrao de rede agrupa cada secao antes de ceder o processador.
+  A validacao quantitativa e funcional no QEMU fica pendente do usuario.
+- Conclusao: pendente. A alteracao remove o caminho conhecido de redesenho
+  integral por linha, mas nao declara ganho ate a comparacao reproduzivel.
+- Impacto: o historico estatico cresce de 200 para 500 linhas, consumindo
+  mais 76800 bytes (75 KiB) de BSS para texto e cor. APIs publicas e
+  `boot.asm` permanecem inalterados.
+
 ### 2026-08-01 - MV4, aplicativos Classic Modern Dark
 
 - Cenario QEMU: manter a mesma resolucao, `guimode classic` e escala normal.

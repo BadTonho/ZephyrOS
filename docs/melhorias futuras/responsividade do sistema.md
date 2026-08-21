@@ -7,7 +7,7 @@
 - [x] Coalescer o arraste da janela grafica do Task Manager.
 - [x] Atualizar metricas do Task Manager a cada 100 ms.
 - [x] Ativar otimizacao segura na compilacao C.
-- [x] Adicionar historico rolavel de 200 linhas ao Shell.
+- [x] Adicionar historico rolavel de 500 linhas ao Shell.
 - [ ] Medir tempos de renderizacao em hardware real.
 
 ## Atalhos
@@ -42,7 +42,7 @@ modos `simple` e `classic`.
 
 ### Fase 4 - Terminal rolavel
 
-- O Shell armazena as ultimas 200 linhas de texto em memoria fixa, sem
+- O Shell armazena as ultimas 500 linhas de texto em memoria fixa, sem
   `kmalloc`.
 - `Seta para Cima`, `Seta para Baixo`, `Page Up`, `Page Down`, `Home` e `End`
   navegam pelo historico.

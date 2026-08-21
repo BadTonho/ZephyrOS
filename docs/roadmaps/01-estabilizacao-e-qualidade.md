@@ -12,7 +12,7 @@ transforma falhas observadas em testes repetiveis.
 - `health`, `appcheck`, `usertest`, `usertest fault` e `threadtest`.
 - Fallback Simple quando VESA ou backbuffer nao estao disponiveis.
 - Isolamento de falhas ring 3 e `KERNEL PANIC` reservado a falhas de kernel.
-- Scrollback de 200 linhas e `clear` no Shell.
+- Scrollback de 500 linhas e `clear` no Shell.
 
 ## Etapa Q1 - Matriz de regressao
 

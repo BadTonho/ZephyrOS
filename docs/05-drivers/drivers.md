@@ -265,11 +265,13 @@ boot. Entradas invalidas ou driver indisponivel preservam o estado anterior.
 
 ## Video e terminal hospedado (`video.c`)
 
-O buffer textual do Shell continua sendo um histórico circular de 200 linhas.
+O buffer textual do Shell continua sendo um histórico circular de 500 linhas.
 No modo Classic, ele também pode ser uma superfície do Window Manager: o
 driver mantém o buffer e a geometria da área interna da janela. Saídas longas
-continuam disponíveis para recomposição pelo WM; na digitação, o próprio
-terminal pode apresentar apenas as células alteradas e o cursor.
+continuam disponíveis para recomposição pelo WM; cada chamada `video_print()`
+agrupa a escrita e recompõe a cauda uma única vez, em vez de redesenhar a
+superfície a cada quebra de linha. Na digitação, o próprio terminal pode
+apresentar apenas as células alteradas e o cursor.
 
 ```c
 void video_terminal_set_hosted(int hosted);

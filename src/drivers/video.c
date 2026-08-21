@@ -47,6 +47,9 @@ static int terminal_hosted_dirty_y = 0;
 static int terminal_hosted_dirty_width = 0;
 static int terminal_hosted_dirty_height = 0;
 static uint32_t terminal_hosted_view_offset = 0;
+static uint32_t terminal_output_batch_depth = 0;
+static uint8_t terminal_output_batch_redraw = 0;
+static uint8_t terminal_output_batch_hosted_dirty = 0;
 
 static void terminal_append_number(char* text, int* pos, uint32_t value);
 
@@ -583,6 +586,37 @@ static void terminal_render_view_locked(void) {
     }
 }
 
+/* Relatorios extensos devem recompor o terminal apenas ao fim da escrita.
+   Recriar toda a superficie a cada quebra de linha torna o framebuffer lento
+   e pode impedir que o Shell processe eventos por tempo excessivo. */
+static void terminal_output_batch_begin(void) {
+    spinlock_acquire(&video_lock);
+    if (terminal_active) terminal_output_batch_depth++;
+    spinlock_release(&video_lock);
+}
+
+static void terminal_output_batch_end(void) {
+    spinlock_acquire(&video_lock);
+    if (terminal_output_batch_depth) {
+        terminal_output_batch_depth--;
+        if (!terminal_output_batch_depth) {
+            if (terminal_hosted) {
+                if (terminal_output_batch_hosted_dirty) {
+                    terminal_hosted_mark_full_locked();
+                }
+                terminal_output_batch_hosted_dirty = 0;
+            } else if (terminal_output_batch_redraw &&
+                       terminal_view_offset == 0) {
+                mouse_invalidate_cursor();
+                terminal_render_view_locked();
+                update_cursor();
+            }
+            terminal_output_batch_redraw = 0;
+        }
+    }
+    spinlock_release(&video_lock);
+}
+
 static int terminal_advance_line_locked(void) {
     int redraw_tail = 0;
 
@@ -686,6 +720,9 @@ void video_init(void) {
     terminal_hosted_height = 0;
     terminal_hosted_dirty_width = 0;
     terminal_hosted_dirty_height = 0;
+    terminal_output_batch_depth = 0;
+    terminal_output_batch_redraw = 0;
+    terminal_output_batch_hosted_dirty = 0;
     video_clear();
     current_color = 0x07;
     update_cursor();
@@ -724,6 +761,7 @@ void video_clear(void) {
 }
 
 void video_begin_update(void) {
+    terminal_output_batch_begin();
     if (terminal_hosted || !video_can_batch_updates()) return;
 
     vesa_frame_begin_region((uint32_t)(cursor_x * FONT_WIDTH),
@@ -733,6 +771,7 @@ void video_begin_update(void) {
 }
 
 void video_end_update(void) {
+    terminal_output_batch_end();
     if (video_update_depth == 0) return;
 
     video_update_depth--;
@@ -740,7 +779,9 @@ void video_end_update(void) {
 }
 
 void video_flush_updates(void) {
-    while (video_update_depth > 0) video_end_update();
+    while (video_update_depth > 0 || terminal_output_batch_depth > 0) {
+        video_end_update();
+    }
 }
 
 void video_put_char(char c, uint8_t color) {
@@ -754,10 +795,12 @@ void video_put_char(char c, uint8_t color) {
     int hosted_old_visible = 0;
     int hosted_new_visible = 0;
     uint32_t hosted_old_start = 0;
+    int terminal_output_batched = 0;
 
     spinlock_acquire(&video_lock);
     if (terminal_active) {
-        if (terminal_hosted) {
+        terminal_output_batched = terminal_output_batch_depth != 0U;
+        if (terminal_hosted && !terminal_output_batched) {
             hosted_old_visible = terminal_hosted_cursor_pixel_locked(
                 &hosted_old_x, &hosted_old_y);
             hosted_old_start = terminal_hosted_view_start_locked();
@@ -765,21 +808,29 @@ void video_put_char(char c, uint8_t color) {
         terminal_write_char_locked(c, color, &dirty_x, &dirty_y, &redraw_tail,
                                    !terminal_hosted);
         if (terminal_hosted) {
-            hosted_new_visible = terminal_hosted_cursor_pixel_locked(
-                &hosted_new_x, &hosted_new_y);
-            if (redraw_tail || hosted_old_start !=
-                terminal_hosted_view_start_locked() || !hosted_old_visible ||
-                !hosted_new_visible) {
-                terminal_hosted_mark_full_locked();
+            if (terminal_output_batched) {
+                terminal_output_batch_hosted_dirty = 1U;
             } else {
-                terminal_hosted_mark_region_locked(hosted_old_x, hosted_old_y,
-                                                   FONT_WIDTH, FONT_HEIGHT);
-                terminal_hosted_mark_region_locked(hosted_new_x, hosted_new_y,
-                                                   FONT_WIDTH, FONT_HEIGHT);
+                hosted_new_visible = terminal_hosted_cursor_pixel_locked(
+                    &hosted_new_x, &hosted_new_y);
+                if (redraw_tail || hosted_old_start !=
+                    terminal_hosted_view_start_locked() ||
+                    !hosted_old_visible || !hosted_new_visible) {
+                    terminal_hosted_mark_full_locked();
+                } else {
+                    terminal_hosted_mark_region_locked(
+                        hosted_old_x, hosted_old_y, FONT_WIDTH, FONT_HEIGHT);
+                    terminal_hosted_mark_region_locked(
+                        hosted_new_x, hosted_new_y, FONT_WIDTH, FONT_HEIGHT);
+                }
             }
         } else if (redraw_tail && terminal_view_offset == 0) {
-            mouse_invalidate_cursor();
-            terminal_render_view_locked();
+            if (terminal_output_batched) {
+                terminal_output_batch_redraw = 1U;
+            } else {
+                mouse_invalidate_cursor();
+                terminal_render_view_locked();
+            }
         }
         if (!terminal_hosted && terminal_view_offset == 0) {
             int rows = terminal_view_rows();
@@ -829,7 +880,7 @@ void video_put_char(char c, uint8_t color) {
     update_cursor();
     spinlock_release(&video_lock);
 
-    if (terminal_hosted) return;
+    if (terminal_hosted || terminal_output_batched) return;
     if (redraw_tail) {
         video_present_region(0, 0, terminal_columns() * FONT_WIDTH,
                              terminal_content_rows() * FONT_HEIGHT);
@@ -848,6 +899,11 @@ void video_print(const char* str, uint8_t color) {
     video_begin_update();
     for (int i = 0; str[i] != '\0'; i++) video_put_char(str[i], color);
     video_end_update();
+    if (!video_can_batch_updates() && video_terminal_is_active() &&
+        !video_terminal_is_hosted()) {
+        video_present_region(0, 0, terminal_columns() * FONT_WIDTH,
+                             terminal_content_rows() * FONT_HEIGHT);
+    }
 }
 
 void video_set_color(uint8_t fg, uint8_t bg) {

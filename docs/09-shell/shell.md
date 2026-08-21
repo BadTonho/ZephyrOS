@@ -92,11 +92,13 @@ O buffer armazena até 255 caracteres + null terminator.
 
 ### Scrollback
 
-O terminal mantém um histórico circular fixo de 200 linhas, sem `kmalloc`.
+O terminal mantém um histórico circular fixo de 500 linhas, sem `kmalloc`.
 `Shift+Seta para Cima/Abaixo`, `Page Up/Page Down`, `Home`, `End` e a roda do
 mouse navegam pela saída. A roda funciona tanto no Shell Simple quanto na
 janela Classic. Ao digitar, apagar ou confirmar um comando, o Shell retorna ao
 fim para preservar o prompt. `clear` remove a tela e o histórico de saída.
+Relatórios longos são renderizados em lote, evitando uma recomposição completa
+da tela a cada quebra de linha.
 
 ### Histórico de comandos
 

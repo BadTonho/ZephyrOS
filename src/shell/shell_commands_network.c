@@ -3538,17 +3538,27 @@ static void cmd_net_check(const char* args) {
         return;
     }
 
+    video_begin_update();
     video_print("=== Diagnostico de rede agrupado ===\n", 0x0B);
     video_print("\n[1] Estado geral\n", 0x0B);
     cmd_net_status();
+    video_end_update();
     if (shell_network_job_check_checkpoint()) return;
+
+    video_begin_update();
     video_print("\n[2] Controladores\n", 0x0B);
     cmd_net_devices();
+    video_end_update();
     if (shell_network_job_check_checkpoint()) return;
+
     if (has_interface) {
+        video_begin_update();
         video_print("\n[3] Interface\n", 0x0B);
         cmd_net_info(id);
+        video_end_update();
         if (shell_network_job_check_checkpoint()) return;
+
+        video_begin_update();
         video_print("\n[4] Ethernet\n", 0x0B);
         if (info.state == NETWORK_INTERFACE_ACTIVE &&
             network_status.ethernet_available) {
@@ -3556,45 +3566,73 @@ static void cmd_net_check(const char* args) {
         } else {
             video_print("Diagnostico Ethernet nao aplicavel.\n", 0x0E);
         }
+        video_end_update();
         if (shell_network_job_check_checkpoint()) return;
     }
+
+    video_begin_update();
     video_print(has_interface ? "\n[5] ARP\n" : "\n[3] ARP\n", 0x0B);
     cmd_net_arp_status();
     if (arp_get_status(&arp_status) == OK && arp_status.initialized) {
         cmd_net_arp_table();
     }
+    video_end_update();
     if (shell_network_job_check_checkpoint()) return;
+
+    video_begin_update();
     video_print(has_interface ? "\n[6] IPv4 e ICMP\n" :
                                 "\n[4] IPv4 e ICMP\n", 0x0B);
     cmd_net_ipv4_status();
+    video_end_update();
     if (shell_network_job_check_checkpoint()) return;
+
+    video_begin_update();
     video_print(has_interface ? "\n[7] UDP\n" : "\n[5] UDP\n", 0x0B);
     cmd_net_udp_status();
+    video_end_update();
     if (shell_network_job_check_checkpoint()) return;
+
+    video_begin_update();
     video_print(has_interface ? "\n[8] DHCP\n" : "\n[6] DHCP\n", 0x0B);
     cmd_net_dhcp_status();
+    video_end_update();
     if (shell_network_job_check_checkpoint()) return;
+
+    video_begin_update();
     video_print(has_interface ? "\n[9] DNS\n" : "\n[7] DNS\n", 0x0B);
     cmd_net_dns_status();
     cmd_net_dns_table();
+    video_end_update();
     if (shell_network_job_check_checkpoint()) return;
+
+    video_begin_update();
     video_print(has_interface ? "\n[10] TCP\n" : "\n[8] TCP\n", 0x0B);
     cmd_net_tcp_status();
+    video_end_update();
     if (shell_network_job_check_checkpoint()) return;
+
+    video_begin_update();
     video_print(has_interface ? "\n[11] Sockets\n" :
                                 "\n[9] Sockets\n", 0x0B);
     cmd_net_socket_status();
     cmd_net_socket_table();
+    video_end_update();
     if (shell_network_job_check_checkpoint()) return;
+
+    video_begin_update();
     video_print(has_interface ? "\n[12] HTTP\n" :
                                 "\n[10] HTTP\n", 0x0B);
     cmd_http_status();
+    video_end_update();
     if (shell_network_job_check_checkpoint()) return;
+
+    video_begin_update();
     video_print(has_interface ? "\n[13] Invariantes: " :
                                 "\n[11] Invariantes: ", 0x0B);
     result = shell_network_validate_for_checks();
     video_print(result == OK ? "OK\n" : "ERRO\n",
                 result == OK ? 0x0A : 0x0C);
+    video_end_update();
 }
 
 static void cmd_net(const char* args) {

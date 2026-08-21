@@ -110,7 +110,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 - **Home / End**: vai ao inicio ou ao fim do historico.
 - **Roda do mouse**: rola tres linhas no Shell Simple e Classic.
 - **Digitacao, Backspace ou Enter**: retorna ao fim para manter o prompt visivel.
-- **`clear`**: apaga as 200 linhas de saida, mas preserva os comandos da sessao.
+- **`clear`**: apaga as 500 linhas de saida, mas preserva os comandos da sessao.
 
 ---
 
