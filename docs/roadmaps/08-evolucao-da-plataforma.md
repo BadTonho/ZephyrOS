@@ -446,6 +446,8 @@ Selftest de fixtures EP6 concluido em: 2026-08-21 18:12
 (America/Sao_Paulo).
 Correcao do apagao no comando EP6.0 concluida em: 2026-08-21 18:19
 (America/Sao_Paulo).
+Correcao das capacidades dos buffers estaticos do descritor concluida em:
+2026-08-21 18:46 (America/Sao_Paulo).
 Validacao funcional pelo usuario pendente apos `make clean && make`.
 
 A matriz EP6.0 cobre duas tags validas, tag ausente/invalida/inexistente,
