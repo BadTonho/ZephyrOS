@@ -129,7 +129,7 @@ Objetivos:
 - finalizar APIs `start/poll/cancel/status` para `pkg`, `store`, `update`,
   atualizacao remota e operacoes de rede que ainda forem sincronicas;
 - preservar um unico job ativo, contexto estatico, `shell.h` intacto e os
-  modos Simple, Classic e terminal hospedado.
+  modos Classic e terminal hospedado.
 
 O modelo toma como referencia as garantias de `workqueue` e
 `cancel_work_sync()` do Linux, sem importar um pool de workers ou uma fila
@@ -142,8 +142,8 @@ loops de espera artificiais:
 
 A validacao executavel da Fase 5 continua sendo responsabilidade do usuario:
 ela deve cobrir cancelamento, timeout, falha, progresso, `job status`,
-ausencia de resultados tardios e funcionamento nos modos Simple, Classic e
-terminal hospedado.
+ausencia de resultados tardios e funcionamento nos modos Classic e terminal
+hospedado.
 
 ## Ordem recomendada
 
@@ -295,8 +295,8 @@ Resultados do App Loader, indice, rede e adaptadores de pacotes carregam a
 geracao que iniciou a operacao. Resultados antigos sao registrados e
 descartados. `job status` exibe estado, geracao, fase, progresso, erro,
 deadline, proximo despertar, acordadas, cancelamentos e eventos tardios. Os
-modos Simple, Classic e terminal hospedado continuam usando a mesma politica
-de prompt e as assinaturas publicas de `shell.h` permanecem intactas.
+modos Classic e terminal hospedado continuam usando a mesma politica de prompt
+e as assinaturas publicas de `shell.h` permanecem intactas.
 
 As APIs assincronas de DNS, ICMP, HTTP, DHCP e indice continuam sendo as
 fontes de `start/poll/status` dos jobs de rede e storage. Pacotes, Store,

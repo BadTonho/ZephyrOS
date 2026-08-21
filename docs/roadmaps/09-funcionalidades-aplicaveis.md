@@ -183,7 +183,8 @@ Toda fase que alterar código deve incluir:
 - comando Shell de consulta, teste ou execução;
 - autoteste determinístico quando possível;
 - cobertura de limite, timeout, cancelamento e recurso ausente;
-- regressão Simple e Classic;
+- regressão no modo Classic; o fallback Simple só entra quando a mudança o
+  afetar diretamente;
 - `health`, `memcheck` e `regcheck full` quando aplicável.
 
 A validação final será executada pelo usuário conforme `AGENTS.md`:

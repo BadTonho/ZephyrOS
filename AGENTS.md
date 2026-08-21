@@ -519,9 +519,9 @@ O agente de IA **NUNCA** deve executar comandos de build via terminal (`make`, `
   existir.
 
 Novos aplicativos e interfaces DEVEM priorizar o modo Classic gráfico. O modo
-Simple exige apenas um smoke test de fallback: entrar com `guimode simple`,
-confirmar vídeo, teclado e Shell, executar um comando básico e retornar com
-`guimode classic`.
+Simple permanece como fallback operacional e não é critério obrigatório de
+validação das fases. Ele só deve ser testado quando a alteração tocar
+diretamente o fallback Simple, o vídeo ou o teclado.
 
 ---
 
