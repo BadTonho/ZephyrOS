@@ -395,7 +395,7 @@ static int update_release_json_asset(update_release_json_t* json,
     if (result == OK) result = update_release_json_key(json, "sha256");
     if (result == OK) {
         result = update_release_json_string(
-            json, hash_text, sizeof(hash_text));
+            json, hash_text, sizeof(update_release_workspace.hash_text));
     }
     if (result == OK) result = update_release_json_expect(json, '}');
     if (result != OK || update_release_validate_asset_name(
