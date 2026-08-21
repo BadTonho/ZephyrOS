@@ -46,7 +46,22 @@ typedef struct {
     update_remote_release_t release;
 } update_release_selection_t;
 
+/* O processo Shell possui apenas 4 KiB de stack; o descritor e o estado
+ * HTTP sao grandes demais para permanecerem em frames durante o bloqueio. */
+typedef struct {
+    update_release_descriptor_t descriptor;
+    uint8_t descriptor_hash[CRYPTO_SHA256_SIZE];
+    http_status_t http_status;
+    char descriptor_url[UPDATE_REMOTE_URL_SIZE];
+    char text[UPDATE_REMOTE_RELEASE_NAME_SIZE];
+    char source_commit[UPDATE_REMOTE_SOURCE_COMMIT_SIZE];
+    char package_name[UPDATE_REMOTE_PATH_SIZE];
+    char manifest_name[UPDATE_REMOTE_PATH_SIZE];
+    char hash_text[UPDATE_RELEASE_HASH_TEXT_SIZE];
+} update_release_workspace_t;
+
 static update_release_selection_t update_release_selection;
+static update_release_workspace_t update_release_workspace;
 
 static int update_release_copy_text(char* output, uint32_t capacity,
                                     const char* input) {
@@ -359,7 +374,7 @@ static int update_release_json_asset(update_release_json_t* json,
                                      uint32_t* size_out,
                                      uint8_t hash[CRYPTO_SHA256_SIZE],
                                      int manifest) {
-    char hash_text[UPDATE_RELEASE_HASH_TEXT_SIZE];
+    char* hash_text = update_release_workspace.hash_text;
     int result;
 
     if (!json || !name || !name_capacity || !size_out || !hash) {
@@ -403,10 +418,10 @@ static int update_release_parse_descriptor(
     uint8_t descriptor_hash[CRYPTO_SHA256_SIZE],
     update_remote_reason_t* reason_out) {
     update_release_json_t json;
-    char text[UPDATE_REMOTE_RELEASE_NAME_SIZE];
-    char source_commit[UPDATE_RELEASE_SOURCE_COMMIT_SIZE];
-    char package_name[UPDATE_REMOTE_PATH_SIZE];
-    char manifest_name[UPDATE_REMOTE_PATH_SIZE];
+    char* text = update_release_workspace.text;
+    char* source_commit = update_release_workspace.source_commit;
+    char* package_name = update_release_workspace.package_name;
+    char* manifest_name = update_release_workspace.manifest_name;
     uint32_t manifest_size = 0U;
     int result;
 
@@ -678,7 +693,7 @@ static int update_release_fetch_descriptor(
     const char* descriptor_url, const update_remote_options_t* options,
     update_remote_result_t* result_out, const uint8_t** body_out,
     uint32_t* length_out, update_remote_reason_t* reason_out) {
-    http_status_t status;
+    http_status_t* status = &update_release_workspace.http_status;
     uint8_t cancelled = 0U;
     int result;
 
@@ -686,29 +701,29 @@ static int update_release_fetch_descriptor(
         !reason_out) return ERR_NULL;
     *body_out = 0;
     *length_out = 0U;
-    kmemset(&status, 0, sizeof(status));
+    kmemset(status, 0, sizeof(*status));
     *reason_out = UPDATE_REMOTE_REASON_HTTP;
     result = http_get_start(descriptor_url);
     if (result == OK) result = update_release_wait_http(
-        options, &status, &cancelled);
+        options, status, &cancelled);
     if (result != OK) {
         *reason_out = cancelled ? UPDATE_REMOTE_REASON_CANCELLED :
                      result == ERR_TIMEOUT ? UPDATE_REMOTE_REASON_TIMEOUT :
                      UPDATE_REMOTE_REASON_HTTP;
         return result;
     }
-    result_out->http_status = status.status_code;
-    result_out->bytes_received = status.body_length;
-    if (status.status_code != UPDATE_RELEASE_HTTP_OK) {
-        *reason_out = status.status_code == UPDATE_RELEASE_HTTP_NOT_FOUND ?
+    result_out->http_status = status->status_code;
+    result_out->bytes_received = status->body_length;
+    if (status->status_code != UPDATE_RELEASE_HTTP_OK) {
+        *reason_out = status->status_code == UPDATE_RELEASE_HTTP_NOT_FOUND ?
                       UPDATE_REMOTE_REASON_RELEASE_NOT_FOUND :
                       UPDATE_REMOTE_REASON_HTTP;
-        return status.status_code == UPDATE_RELEASE_HTTP_NOT_FOUND ?
+        return status->status_code == UPDATE_RELEASE_HTTP_NOT_FOUND ?
                ERR_NOT_FOUND : ERR_INVALID;
     }
-    if (!status.has_content_length ||
-        status.content_length != status.body_length ||
-        !status.body_length || http_get_body(body_out, length_out) != OK) {
+    if (!status->has_content_length ||
+        status->content_length != status->body_length ||
+        !status->body_length || http_get_body(body_out, length_out) != OK) {
         *reason_out = UPDATE_REMOTE_REASON_RELEASE_FORMAT;
         return ERR_INVALID;
     }
@@ -720,7 +735,7 @@ static int update_release_resolve_descriptor(
     update_remote_result_t* result_out,
     update_release_descriptor_t* descriptor_out,
     uint8_t descriptor_hash[CRYPTO_SHA256_SIZE]) {
-    char descriptor_url[UPDATE_REMOTE_URL_SIZE];
+    char* descriptor_url = update_release_workspace.descriptor_url;
     const uint8_t* body = 0;
     uint32_t body_length = 0U;
     update_remote_reason_t reason;
@@ -793,8 +808,6 @@ int update_remote_release_check(const char* tag,
                                 const update_remote_options_t* options,
                                 update_remote_result_t* result_out) {
     update_remote_options_t defaults = {1U, 0, 0};
-    update_release_descriptor_t descriptor;
-    uint8_t descriptor_hash[CRYPTO_SHA256_SIZE];
     int result;
 
     if (!result_out) {
@@ -813,21 +826,24 @@ int update_remote_release_check(const char* tag,
     result = update_release_channel_ready(result_out);
     if (result != OK) return result;
     result = update_release_resolve_descriptor(
-        tag, options, result_out, &descriptor, descriptor_hash);
+        tag, options, result_out, &update_release_workspace.descriptor,
+        update_release_workspace.descriptor_hash);
     if (result != OK) return result;
     result = update_remote_check(
-        descriptor.release.manifest_url, options, result_out);
+        update_release_workspace.descriptor.release.manifest_url,
+        options, result_out);
     if (result != OK) return result;
-    if (!update_release_candidate_matches(&descriptor, result_out)) {
+    if (!update_release_candidate_matches(
+            &update_release_workspace.descriptor, result_out)) {
         return update_release_reject(
             UPDATE_REMOTE_REASON_RELEASE_ASSET, ERR_INVALID,
             "Descritor e manifesto assinado divergem", result_out);
     }
     update_release_selection.valid = 1U;
     kmemcpy(update_release_selection.descriptor_hash,
-            descriptor_hash, CRYPTO_SHA256_SIZE);
-    update_release_selection.release = descriptor.release;
-    result_out->release = descriptor.release;
+            update_release_workspace.descriptor_hash, CRYPTO_SHA256_SIZE);
+    update_release_selection.release = update_release_workspace.descriptor.release;
+    result_out->release = update_release_workspace.descriptor.release;
     LOG_INFO("UPDATE", "Release selecionada por tag exata");
     return OK;
 }
@@ -836,8 +852,6 @@ int update_remote_release_fetch(const char* tag,
                                 const update_remote_options_t* options,
                                 update_remote_result_t* result_out) {
     update_remote_options_t defaults = {0U, 0, 0};
-    update_release_descriptor_t descriptor;
-    uint8_t descriptor_hash[CRYPTO_SHA256_SIZE];
     int result;
 
     if (!result_out) {
@@ -863,11 +877,13 @@ int update_remote_release_fetch(const char* tag,
     result = update_release_channel_ready(result_out);
     if (result != OK) return result;
     result = update_release_resolve_descriptor(
-        tag, options, result_out, &descriptor, descriptor_hash);
+        tag, options, result_out, &update_release_workspace.descriptor,
+        update_release_workspace.descriptor_hash);
     if (result != OK) return result;
-    if (!crypto_equal(descriptor_hash, update_release_selection.descriptor_hash,
+    if (!crypto_equal(update_release_workspace.descriptor_hash,
+                      update_release_selection.descriptor_hash,
                       CRYPTO_SHA256_SIZE) ||
-        kstrcmp(descriptor.release.manifest_url,
+        kstrcmp(update_release_workspace.descriptor.release.manifest_url,
                 update_release_selection.release.manifest_url) != 0) {
         return update_release_reject(
             UPDATE_REMOTE_REASON_RELEASE_CHANGED, ERR_STATE,
