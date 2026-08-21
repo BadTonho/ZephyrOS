@@ -189,12 +189,15 @@ static int update_release_parse_version(const char* text,
     return OK;
 }
 
+static void update_release_json_skip_space(update_release_json_t* json);
+
 static int update_release_parse_u32(update_release_json_t* json,
                                     uint32_t* output) {
     uint32_t value = 0U;
     uint8_t has_digit = 0U;
 
     if (!json || !output) return ERR_NULL;
+    update_release_json_skip_space(json);
     if (json->offset < json->length && json->data[json->offset] == '0') {
         json->offset++;
         has_digit = 1U;
