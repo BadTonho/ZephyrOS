@@ -315,18 +315,23 @@ continuam fora do escopo.
 
 ### EP4.4 - Interrupt e USB HID
 
-**Estado:** implementada no código; validação manual do usuário pendente.
+**Estado:** implementada e validada pelo usuário.
 
 **Implementação registrada em:** 21/08/2026 12:10:35 (America/Sao_Paulo).
 
 **Validação parcial registrada em:** 21/08/2026 12:31:49
 (America/Sao_Paulo).
 
+**Validação final concluída em:** 2026-08-21 16:13:14
+(America/Sao_Paulo).
+
 **Correção do mapeamento USB HID/ABNT2 implementada em:** 2026-08-21
-15:00:11 (America/Sao_Paulo). **Validação desta correção:** pendente.
+15:00:11 (America/Sao_Paulo). **Validação desta correção confirmada em:**
+2026-08-21 16:13:14 (America/Sao_Paulo).
 
 **Correção das posições ABNT2 `;/:` e `/ ?` implementada em:** 2026-08-21
-15:08:18 (America/Sao_Paulo). **Validação desta correção:** pendente.
+15:08:18 (America/Sao_Paulo). **Validação desta correção confirmada em:**
+2026-08-21 16:13:14 (America/Sao_Paulo).
 
 - [x] Implementar transferências Interrupt através do despachante assíncrono,
   sem bloqueios por espera ocupada na CPU, com QH/TD/buffer persistentes,
@@ -338,21 +343,21 @@ continuam fora do escopo.
   `health` e `regcheck full`, e o alvo `run-usb-hid`.
 - [x] Rejeitar rollover, tamanhos inválidos e relatórios malformados sem travar
   o kernel; cancelar requisições HID durante refresh ou ausência do dispositivo.
-- [ ] Validar desconexão, pacote inválido, timeout e dispositivo ausente sem
+- [x] Validar desconexão, pacote inválido, timeout e dispositivo ausente sem
   travar kernel, Shell ou interfaces gráficas.
 
 ### Matriz de validação pendente da EP4.4
 
-- [ ] `make q3check` e `make clean && make`.
+- [x] `make q3check` e `make clean && make`.
 - [x] `make run` sem USB, preservando PS/2; `usb hid status` mostrou zero
   registros, `usb hid check` retornou `OK`, `health` e `regcheck full` ficaram
   operacionais.
-- [ ] `make run-usb-hid` com teclado e mouse USB no Shell e no Desktop Classic.
-- [ ] F12/Esc cancelando `net check`, `ping` e HTTP; modificadores, Enter,
+- [x] `make run-usb-hid` com teclado e mouse USB no Shell e no Desktop Classic.
+- [x] F12/Esc cancelando `net check`, `ping` e HTTP; modificadores, Enter,
   Backspace, setas, teclas de função, clique, arrasto e roda.
-- [ ] USB ausente, endpoint inválido, relatório malformado, timeout,
+- [x] USB ausente, endpoint inválido, relatório malformado, timeout,
   cancelamento e refresh sem callback tardio ou evento de dispositivo removido.
-- [ ] Regressão de MSC, ATA, rede, `health summary`, `memcheck` e
+- [x] Regressão de MSC, ATA, rede, `health summary`, `memcheck` e
   `regcheck full`.
 
 ### Criterio de saida
