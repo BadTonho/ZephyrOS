@@ -256,6 +256,12 @@ static void shell_redraw_after_overlay_close(void) {
 void shell_runtime_finish_command(void) {
     shell_runtime_reset_input();
     if (shell_should_show_prompt()) shell_print_prompt();
+    /* Uma conclusao de job e uma fronteira de renderizacao: relatorios
+       extensos podem deixar uma atualizacao parcial pendente no backbuffer. */
+    video_flush_updates();
+    if (shell_runtime_is_hosted_visible()) {
+        wm_request_hosted_redraw(WM_APP_SHELL);
+    }
 }
 
 
