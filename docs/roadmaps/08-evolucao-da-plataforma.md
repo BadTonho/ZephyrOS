@@ -450,6 +450,10 @@ Correcao das capacidades dos buffers estaticos do descritor concluida em:
 2026-08-21 18:46 (America/Sao_Paulo).
 Correcao da capacidade do hash de asset concluida em: 2026-08-21 18:52
 (America/Sao_Paulo).
+Diagnostico granular da validacao de assets EP6.0 concluido em: 2026-08-21
+18:58 (America/Sao_Paulo).
+Instrumentacao dos submotivos de asset EP6.0 concluida em: 2026-08-21 19:00
+(America/Sao_Paulo).
 Validacao funcional pelo usuario pendente apos `make clean && make`.
 
 A matriz EP6.0 cobre duas tags validas, tag ausente/invalida/inexistente,
