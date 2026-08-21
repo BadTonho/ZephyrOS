@@ -2,20 +2,32 @@
 
 ## Supported Versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+ZephyrOS is an operating system under active development. Security updates, bug fixes, and stability improvements are applied directly to the main development branch.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+| Version / Branch | Supported          | Status |
+| ---------------- | ------------------ | ------ |
+| `main` (Latest)  | :white_check_mark: | Active development & security fixes |
+| Older releases   | :x:                | Not supported (please update to `main`) |
+
+---
+
+## Scope & Nature of the Project
+
+ZephyrOS is an educational and modular 32-bit x86 operating system written from scratch. While we prioritize memory safety, reliable bounds checking, and strict isolation between Ring 0 (Kernel) and Ring 3 (User Space), the system is experimental and intended for use in emulated environments (QEMU/Bochs).
+
+---
 
 ## Reporting a Vulnerability
 
-Use this section to tell people how to report a vulnerability.
+If you discover a security vulnerability, buffer overflow, privilege escalation issue at the syscall boundary, or any memory corruption flaw:
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+1. **Private Disclosure**: Please report the vulnerability through [GitHub Security Advisories](https://github.com/BadTonho/ZephyrOS/security/advisories/new) or contact the maintainers directly.
+2. **Details to Include**:
+   - A clear description of the vulnerability and affected subsystem (e.g. `src/core/syscall.c`, memory allocator, paging, filesystem drivers).
+   - Steps to reproduce the issue or minimal Proof-of-Concept (PoC) code/binary running under QEMU.
+   - Any suggested patch or remediation (if available).
+3. **Response Timeline**:
+   - **Acknowledgment**: Within 48–72 hours.
+   - **Fix & Disclosure**: We will triage the issue, develop a patch in a private branch, and release the fix directly to `main`.
+
+Thank you for helping keep ZephyrOS safe and reliable!
