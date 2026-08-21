@@ -319,6 +319,9 @@ continuam fora do escopo.
 
 **Implementação registrada em:** 21/08/2026 12:10:35 (America/Sao_Paulo).
 
+**Validação parcial registrada em:** 21/08/2026 12:31:49
+(America/Sao_Paulo).
+
 - [x] Implementar transferências Interrupt através do despachante assíncrono,
   sem bloqueios por espera ocupada na CPU, com QH/TD/buffer persistentes,
   deadlines, toggle, cancelamento e proteção contra callback atrasado.
@@ -335,7 +338,9 @@ continuam fora do escopo.
 ### Matriz de validação pendente da EP4.4
 
 - [ ] `make q3check` e `make clean && make`.
-- [ ] `make run` sem USB, preservando PS/2.
+- [x] `make run` sem USB, preservando PS/2; `usb hid status` mostrou zero
+  registros, `usb hid check` retornou `OK`, `health` e `regcheck full` ficaram
+  operacionais.
 - [ ] `make run-usb-hid` com teclado e mouse USB no Shell e no Desktop Classic.
 - [ ] F12/Esc cancelando `net check`, `ping` e HTTP; modificadores, Enter,
   Backspace, setas, teclas de função, clique, arrasto e roda.
