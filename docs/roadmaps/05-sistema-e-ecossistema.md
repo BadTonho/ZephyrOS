@@ -135,8 +135,12 @@ nao substitui esses contratos e esta concentrada no Roadmap 08:
   versao assinada e tag auxiliar opcional.
   Implementacao concluida em: 2026-08-21 16:33 (America/Sao_Paulo).
   Validacao concluida em: 2026-08-21 16:36 (America/Sao_Paulo).
-- [ ] EP6: selecao por tag exata, TLS e canal GitHub configuravel. A tag nao
-  define versao e baixar continua separado de aplicar.
+- [x] EP6.0: selecao por tag exata sobre fixtures HTTP, com descritor
+  `zephyros-release-v1`, cache U5 e confirmacao separada de aplicar.
+  Implementacao concluida em: 2026-08-21 17:52 (America/Sao_Paulo).
+  Validacao pelo usuario pendente apos `make q3check` e `make clean && make`.
+- [ ] EP6.1-EP6.3: TLS, canal GitHub configuravel e matriz ampliada de falhas.
+  A tag nao define versao e baixar continua separado de aplicar.
 - [ ] EP9: artefato `ZSYS` separado do `ZUPD`, slots A/B, ativacao no reboot e
   rollback de boot. Alteracoes em boot/stage2 dependem de aprovacao explicita.
 

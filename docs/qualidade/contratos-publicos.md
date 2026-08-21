@@ -203,10 +203,16 @@ inalterados.
 Desde a U5, `src/include/core/http.h` acrescenta GET por streaming com callback
 e limite definido pelo chamador. `src/include/fs/fat12.h` e
 `src/include/fs/fs.h` acrescentam escrita sequencial FAT12 de ate 128 KiB.
+Desde a EP6.0, `src/include/core/update_remote.h` acrescenta
+`update_remote_release_t`, o hash do manifesto no resultado e as consultas
+`update_remote_release_check()`/`update_remote_release_fetch()` para o
+descritor `zephyros-release-v1`; a confianca continua nos artefatos assinados
+ZUM1/ZUPD.
 
 `src/include/core/update_remote.h` define o transporte manual, estados,
-motivos, candidato e cache redundante; `update_remote_config.h` deriva o canal
-Stable versionado. Os contratos canonicos permanecem em
+motivos, candidato, metadados de Release e cache redundante;
+`update_remote_config.h` deriva o canal Stable versionado e o template HTTP
+`{tag}`. Os contratos canonicos permanecem em
 `docs/04-kernel/kernel.md`,
 `docs/08-sistema-arquivos/sistema-arquivos.md` e
 `docs/14-atualizacoes/distribuicao-remota.md`.

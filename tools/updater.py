@@ -1233,6 +1233,80 @@ def write_u5_fixtures(private_key: Any, output_dir: Path) -> None:
     )
     tampered = bytearray(stable)
     tampered[40] ^= 1
+    artifact = verify_artifact(
+        apply_package, public, Version(0, 1, 0), 0
+    )
+    releases = {
+        "ep6-stable.json": json.loads(
+            release_descriptor(
+                "ep6-stable",
+                "EP6 fixture stable",
+                "1" * 40,
+                "ep6-stable",
+                artifact,
+                "APPLY.ZUP",
+                apply_package,
+                "stable.zum",
+                stable,
+            )
+        ),
+        "ep6-alt.json": json.loads(
+            release_descriptor(
+                "ep6-alt",
+                "EP6 fixture alternate",
+                "2" * 40,
+                "ep6-alt",
+                artifact,
+                "APPLY.ZUP",
+                apply_package,
+                "stable2.zum",
+                stable2,
+            )
+        ),
+    }
+    invalid_releases = {"ep6-invalid-json.json": None}
+    missing_tag = json.loads(json.dumps(releases["ep6-stable.json"]))
+    missing_tag.pop("tag")
+    invalid_releases["ep6-no-tag.json"] = missing_tag
+    missing_asset = json.loads(json.dumps(releases["ep6-stable.json"]))
+    missing_asset["assets"].pop("manifest")
+    invalid_releases["ep6-missing-asset.json"] = missing_asset
+    invalid_releases["ep6-tampered-manifest.json"] = json.loads(
+        release_descriptor(
+            "ep6-tampered-manifest",
+            "EP6 fixture tampered manifest",
+            "3" * 40,
+            "ep6-tampered-manifest",
+            artifact,
+            "APPLY.ZUP",
+            apply_package,
+            "tampered.zum",
+            bytes(tampered),
+        )
+    )
+    invalid_releases["ep6-invalid-package.json"] = json.loads(
+        release_descriptor(
+            "ep6-invalid-package",
+            "EP6 fixture invalid package",
+            "4" * 40,
+            "ep6-invalid-package",
+            artifact,
+            "BADHASH.ZUP",
+            bad_package,
+            "badpkg.zum",
+            badpkg,
+        )
+    )
+    invalid_json = "{\n  \"format\": \"zephyros-release-v1\"\n"
+    divergent_hash = json.loads(json.dumps(releases["ep6-stable.json"]))
+    divergent_hash["assets"]["package"]["sha256"] = "0" * 64
+    invalid_releases["ep6-divergent-hash.json"] = divergent_hash
+    divergent_lock = json.loads(json.dumps(releases["ep6-stable.json"]))
+    divergent_lock["version_lock"]["target_version"] = "0.1.2"
+    invalid_releases["ep6-divergent-lock.json"] = divergent_lock
+    divergent_tag = json.loads(json.dumps(releases["ep6-stable.json"]))
+    divergent_tag["tag"] = "ep6-other"
+    invalid_releases["ep6-divergent-tag.json"] = divergent_tag
     fixtures = {
         "stable.zum": (stable, "OK"),
         "stable2.zum": (stable2, "OK"),
@@ -1259,6 +1333,8 @@ def write_u5_fixtures(private_key: Any, output_dir: Path) -> None:
             },
         },
         "fixtures": {},
+        "releases": {},
+        "invalid_releases": {},
     }
     for name, (data, expected) in fixtures.items():
         write_new_bytes(output / name, data)
@@ -1266,6 +1342,26 @@ def write_u5_fixtures(private_key: Any, output_dir: Path) -> None:
             "size": len(data),
             "sha256": hashlib.sha256(data).hexdigest(),
             "expected": expected,
+        }
+    for name, descriptor in releases.items():
+        data = json.dumps(descriptor, indent=2, ensure_ascii=True) + "\n"
+        write_new_text(output / name, data)
+        encoded = data.encode("utf-8")
+        published["releases"][name] = {
+            "tag": descriptor["tag"],
+            "size": len(encoded),
+            "sha256": hashlib.sha256(encoded).hexdigest(),
+        }
+    for name, descriptor in invalid_releases.items():
+        if name == "ep6-invalid-json.json":
+            data = invalid_json
+        else:
+            data = json.dumps(descriptor, indent=2, ensure_ascii=True) + "\n"
+        write_new_text(output / name, data)
+        encoded = data.encode("utf-8")
+        published["invalid_releases"][name] = {
+            "size": len(encoded),
+            "sha256": hashlib.sha256(encoded).hexdigest(),
         }
     write_new_text(
         output / "fixtures.json",
@@ -1283,14 +1379,23 @@ def load_remote_config(path: Path) -> dict[str, str]:
         "format",
         "channel",
         "manifest_url",
+        "release_url_template",
     ):
         raise UpdateError("campos da configuracao remota divergem")
+    release_url_template = config["release_url_template"]
     if (
         config["format"] != "zephyros-update-remote-v1"
         or config["channel"] != "stable"
         or not isinstance(config["manifest_url"], str)
         or not config["manifest_url"].startswith("http://")
         or len(config["manifest_url"]) > 511
+        or not isinstance(release_url_template, str)
+        or not release_url_template.startswith("http://")
+        or len(release_url_template) > 511
+        or release_url_template.count("{tag}") != 1
+        or "{" in release_url_template.replace("{tag}", "")
+        or "}" in release_url_template.replace("{tag}", "")
+        or len(release_url_template.replace("{tag}", "A" * 64)) > 511
     ):
         raise UpdateError("canal ou URL remota invalida")
     return config
@@ -1303,7 +1408,9 @@ def render_remote_config_header(config: dict[str, str]) -> str:
         "#define UPDATE_REMOTE_CONFIG_H\n\n"
         f'#define UPDATE_REMOTE_CHANNEL_NAME "{config["channel"]}"\n'
         "#define UPDATE_REMOTE_DEFAULT_MANIFEST_URL \\\n"
-        f'    "{config["manifest_url"]}"\n\n'
+        f'    "{config["manifest_url"]}"\n'
+        "#define UPDATE_REMOTE_RELEASE_URL_TEMPLATE \\\n"
+        f'    "{config["release_url_template"]}"\n\n'
         "#endif\n"
     )
 
@@ -3116,6 +3223,86 @@ def selftest_u5_public() -> None:
         raise UpdateError("fixture U5 truncado possui tamanho completo")
 
 
+def selftest_ep6_public() -> None:
+    """Valida as duas Releases e os descritores EP6.0 determinísticos."""
+    try:
+        published = json.loads(
+            (U5_FIXTURES / "fixtures.json").read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError) as error:
+        raise UpdateError("manifesto publico EP6 ausente ou invalido") from error
+    expected = {
+        "ep6-stable.json": ("ep6-stable", "1" * 40, "stable.zum"),
+        "ep6-alt.json": ("ep6-alt", "2" * 40, "stable2.zum"),
+    }
+    releases = published.get("releases", {})
+    if set(releases) != set(expected):
+        raise UpdateError("conjunto de Releases EP6 divergiu")
+    package = (U3_FIXTURES / "APPLY.ZUP").read_bytes()
+    trusted = load_public_json(RELEASE_PUBLIC)
+    artifact = verify_artifact(package, trusted, Version(0, 1, 0), 0)
+    for name, (tag, source_commit, manifest_name) in expected.items():
+        path = U5_FIXTURES / name
+        data = path.read_bytes()
+        metadata = releases[name]
+        if (
+            len(data) != metadata.get("size")
+            or hashlib.sha256(data).hexdigest() != metadata.get("sha256")
+        ):
+            raise UpdateError(f"hash publicado da Release EP6 divergiu: {name}")
+        descriptor = load_release_descriptor(path)
+        if (
+            descriptor["release_id"] != tag
+            or descriptor["tag"] != tag
+            or descriptor["source_commit"] != source_commit
+        ):
+            raise UpdateError(f"identidade da Release EP6 divergiu: {name}")
+        lock = descriptor["version_lock"]
+        if lock != {
+            "minimum_version": "0.1.0",
+            "target_version": "0.1.1",
+            "base_epoch": 0,
+            "target_epoch": 0,
+        }:
+            raise UpdateError(f"version_lock EP6 divergiu: {name}")
+        expected_package = release_asset_metadata("APPLY.ZUP", package)
+        expected_manifest = release_asset_metadata(
+            manifest_name, (U5_FIXTURES / manifest_name).read_bytes()
+        )
+        if descriptor["assets"] != {
+            "package": expected_package,
+            "manifest": expected_manifest,
+        }:
+            raise UpdateError(f"assets EP6 divergiram: {name}")
+        if (
+            artifact.base_version != Version(0, 1, 0)
+            or artifact.target_version != Version(0, 1, 1)
+            or artifact.base_epoch != 0
+            or artifact.target_epoch != 0
+        ):
+            raise UpdateError("artefato base das Releases EP6 divergiu")
+    invalid = published.get("invalid_releases", {})
+    expected_invalid = {
+        "ep6-invalid-json.json",
+        "ep6-no-tag.json",
+        "ep6-missing-asset.json",
+        "ep6-tampered-manifest.json",
+        "ep6-invalid-package.json",
+        "ep6-divergent-hash.json",
+        "ep6-divergent-lock.json",
+        "ep6-divergent-tag.json",
+    }
+    if set(invalid) != expected_invalid:
+        raise UpdateError("conjunto de descritores invalidos EP6 divergiu")
+    for name, metadata in invalid.items():
+        data = (U5_FIXTURES / name).read_bytes()
+        if (
+            len(data) != metadata.get("size")
+            or hashlib.sha256(data).hexdigest() != metadata.get("sha256")
+        ):
+            raise UpdateError(f"hash publicado do descritor EP6 divergiu: {name}")
+
+
 def selftest_ep5_release() -> None:
     """Exercita Releases com trava assinada e tag apenas auxiliar."""
     trusted = load_public_json(RELEASE_PUBLIC)
@@ -3217,6 +3404,7 @@ def run_selftest() -> None:
     selftest_generated()
     selftest_u5_remote()
     selftest_u5_public()
+    selftest_ep6_public()
     selftest_ep5_release()
     print(
         "Updater selftest: OK"
@@ -3360,6 +3548,19 @@ def command_serve_u5(args: argparse.Namespace) -> None:
         "/zephyros/APPLY.ZUP": U3_FIXTURES / "APPLY.ZUP",
         "/zephyros/BADHASH.ZUP": U2_FIXTURES / "BADHASH.ZUP",
     }
+    for name in (
+        "ep6-stable.json",
+        "ep6-alt.json",
+        "ep6-invalid-json.json",
+        "ep6-no-tag.json",
+        "ep6-missing-asset.json",
+        "ep6-tampered-manifest.json",
+        "ep6-invalid-package.json",
+        "ep6-divergent-hash.json",
+        "ep6-divergent-lock.json",
+        "ep6-divergent-tag.json",
+    ):
+        routes[f"/zephyros/{name}"] = root / name
     missing = [path for path in routes.values() if not path.is_file()]
     if missing:
         raise UpdateError(f"fixture U5 ausente: {missing[0]}")
@@ -3394,6 +3595,7 @@ def command_serve_u5(args: argparse.Namespace) -> None:
     print(
         f"Servidor U5 em http://{args.bind}:{args.port}/zephyros/stable.zum"
     )
+    print("Fixtures EP6: ep6-stable.json e ep6-alt.json (tag exata).")
     print("Pressione Ctrl+C para encerrar.")
     try:
         server.serve_forever()

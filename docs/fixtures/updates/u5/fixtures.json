@@ -42,5 +42,51 @@
       "sha256": "72ac66e540bddb4a4ef335d4014ee0158924d1e62baf9431ce2e1132d1b49b75",
       "expected": "HTTP"
     }
+  },
+  "releases": {
+    "ep6-stable.json": {
+      "tag": "ep6-stable",
+      "size": 675,
+      "sha256": "dc47347f5da7cb179e659f6e1df48995bad4ac6500957777cb58b6a4b58a945c"
+    },
+    "ep6-alt.json": {
+      "tag": "ep6-alt",
+      "size": 673,
+      "sha256": "320318ffd354e36ca56ac5440f2e6b4715e6e9e824bb651bb97620524a525eb2"
+    }
+  },
+  "invalid_releases": {
+    "ep6-invalid-json.json": {
+      "size": 36,
+      "sha256": "475ce0115a12f3cebd144ba29f3382422142a89918094a73003954ac2450c196"
+    },
+    "ep6-no-tag.json": {
+      "size": 652,
+      "sha256": "cc5be02e6c1942e9ba9a8ddada5c6f385891ca6404b8eccf49a99f1e4fc89a0b"
+    },
+    "ep6-missing-asset.json": {
+      "size": 520,
+      "sha256": "354a8e0338f9608898450f725d8ed099868d0e22171b3af3b8023ece92a6198e"
+    },
+    "ep6-tampered-manifest.json": {
+      "size": 710,
+      "sha256": "f58cb50c075f1128d4c3e3ac2a94d2072ba7382743c77ba2522df23d1b67a916"
+    },
+    "ep6-invalid-package.json": {
+      "size": 704,
+      "sha256": "73e8b322f364f16a0144549cbb3e1bb99cb2bb8742e4d4a08c1553be40b33c02"
+    },
+    "ep6-divergent-hash.json": {
+      "size": 675,
+      "sha256": "25d153936b626bc39832816a94c77f2029d642672794c61eabeafcbc8db47798d"
+    },
+    "ep6-divergent-lock.json": {
+      "size": 675,
+      "sha256": "6c2c45f34d4f59f330038cce090b09aaee702be9b84cd38ce8b97176a29be4cf"
+    },
+    "ep6-divergent-tag.json": {
+      "size": 674,
+      "sha256": "ac73ece59fde05938a19a11081cf4cf6ba086772c02579671741d1d98401d0d5"
+    }
   }
 }

@@ -100,8 +100,10 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   com Interrupt IN UHCI, `input core`, fila de conclusoes diferidas e driver
   USB HID Boot para teclado e mouse; a validacao manual foi concluida.
   A EP5 foi implementada e validada no host com Releases, trava de versao
-  assinada e tag auxiliar opcional. A EP6 esta planejada para selecao explicita
-  por tag, TLS e canal GitHub; a EP9 registra a futura imagem de sistema,
+  assinada e tag auxiliar opcional. A EP6.0 foi implementada sobre fixtures
+  HTTP, com selecao explicita por tag e cache U5, aguardando validacao do
+  usuario; EP6.1-EP6.3 cobrem TLS, GitHub e a matriz ampliada de falhas. A EP9
+  registra a futura imagem de sistema,
   slots A/B e recuperacao de boot, ainda sem autorizacao para alterar boot ou
   stage2.
 - Funcionalidades aplicaveis: R1 foi validada no QEMU com log circular,

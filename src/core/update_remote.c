@@ -132,6 +132,12 @@ static void update_remote_result_copy(update_remote_result_t* output) {
     output->retry_count = update_remote_status.retry_count;
     output->bytes_received = update_remote_status.bytes_received;
     output->candidate = update_remote_status.candidate;
+    if (update_remote_manifest_valid) {
+        kmemcpy(output->manifest_hash, update_remote_manifest_hash,
+                CRYPTO_SHA256_SIZE);
+    } else {
+        kmemset(output->manifest_hash, 0, sizeof(output->manifest_hash));
+    }
     update_remote_copy_text(
         output->cached_alias, sizeof(output->cached_alias),
         update_remote_status.cached_alias);
@@ -1294,7 +1300,9 @@ const char* update_remote_reason_name(update_remote_reason_t reason) {
         "NONE", "DISABLED", "NETWORK", "HTTP", "TIMEOUT",
         "MANIFEST_FORMAT", "UNKNOWN_KEY", "MANIFEST_SIGNATURE",
         "VERSION", "SIZE", "SPACE", "IO", "CANCELLED",
-        "PACKAGE_HASH", "PACKAGE_VERIFY", "PACKAGE_MISMATCH", "CACHE"
+        "PACKAGE_HASH", "PACKAGE_VERIFY", "PACKAGE_MISMATCH", "CACHE",
+        "RELEASE_NOT_FOUND", "RELEASE_FORMAT", "RELEASE_TAG",
+        "RELEASE_ASSET", "RELEASE_CHANGED"
     };
 
     if ((uint32_t)reason >= sizeof(names) / sizeof(names[0])) {

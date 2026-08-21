@@ -368,6 +368,8 @@ static void cmd_help(void) {
                 0x07);
     video_print("  update remote ...|fetch ... - Distribuicao U5\n",
                 0x07);
+    video_print("  update github check/fetch --tag <tag> - Release EP6.0\n",
+                0x07);
     video_print("  update apply <arquivo.ZUP> [--confirm] - Aplica U3\n",
                 0x07);
     video_print("  update rollback [--confirm] - Desfaz a ultima U3\n",
