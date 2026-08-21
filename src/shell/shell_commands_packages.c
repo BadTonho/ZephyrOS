@@ -2341,7 +2341,8 @@ static int shell_packages_should_start(const char* command,
                kstrcmp(first, "rollback") == 0 ||
                kstrcmp(first, "verify") == 0 ||
                kstrcmp(first, "fetch") == 0 ||
-               kstrcmp(first, "remote") == 0;
+               kstrcmp(first, "remote") == 0 ||
+               kstrcmp(first, "github") == 0;
     }
     if (kstrcmp(command, "store") != 0) return 0;
     return kstrcmp(first, "remote") == 0 ||
