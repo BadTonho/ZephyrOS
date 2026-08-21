@@ -50,35 +50,56 @@ BIOS → bootloader → Protected Mode → kernel_main() → Desktop/Shell
 
 ```
 vesa_init()         → Modo gráfico VESA configurado
-font_init()         → Fonte bitmap carregada
+font_init()         → Fontes bitmap carregadas (8x16, 10x20, 12x24)
 video_init()        → Tela pronta para mostrar mensagens
 log_init()          → Sistema de logging ativo
+recovery_init()     → Tabela de recuperação e saúde dos componentes
 idt_init()          → Interrupções funcionando
 keyboard_init()     → Teclado respondendo
-timer_init(50)      → Timer a 50 Hz
-memory_init()       → Memória detectada e alocável
+timer_init(50)      → Timer PIT a 50 Hz
+memory_init()       → Memória física detectada (E820) e alocável
+acpi_init()         → Descoberta de tabelas ACPI antes do paging
 app_api_init()      → Contrato público de aplicativos pronto
 syscall_init()      → Dispatcher int 0x80 registrado inicialmente em DPL 0
-paging_init()       → Paginação ativa
-tss_init()          → Kernel stack configurado
+paging_init()       → Paginação ativa e mapas identity-mapped
+vesa_init_backbuffer() → Backbuffer alocado para double-buffering
+tss_init()          → Kernel stack configurado no TSS
 process_init()      → Gerenciador de processos pronto
 process_bootstrap_idle() → Processo Idle disponível como fallback
 ipc_init()          → Filas de mensagens e foco prontos
 thread_init()       → Gerenciador de threads pronto
-ata_init()          → Disco detectado
+block_init()        → Registro de dispositivos de bloco (ATA e USB MSC)
+ata_init()          → Discos ATA detectados
 fs_init()           → Sistema de arquivos montado (FAT12/FAT32)
+storage_init()      → Volumes e partições adicionais montáveis
+file_index_init()   → Índice de busca global em RAM
+update_init()       → Serviço de verificação/aplicação de atualizações ZUPD
 speaker_init()      → PC Speaker pronto
-ac97_init()         → Driver de áudio ativo
+pci_init()          → Varredura do barramento PCI
+usb_manager_init()  → Controladores UHCI e portas raiz USB
+storage_refresh()   → Reconciliação de discos/volumes ATA e USB MSC
+ac97_init()         → Driver de áudio AC97 ativo
+device_manager_init() → Inventário central de dispositivos
+network_manager_init() → Controladores Ethernet (E1000/RTL8139) e pilha TCP/IP
+update_remote_init() → Transporte remoto de atualizações
+power_init()        → Diagnóstico de energia e desligamento ACPI S5
 icons_init()        → Registro de ícones carregado
+display_init()      → Escala gráfica Classic (pequena, normal, grande)
 taskbar_init()      → Barra de tarefas desenhada
-desktop_init()      → Desktop com ícones
+desktop_init()      → Desktop com ícones e suporte dual (Simple/Classic)
 settings_init()     → Configurações carregadas
 wm_init()           → Window Manager ativo
+updater_init()      → Aplicativo System Updater
 mouse_init()        → Mouse PS/2 configurado ou fallback por teclado
-ipc_init()          → Sistema de IPC ativo
-process_set_focus_fallback() → Shell configurado como foco seguro
+process_create("Zephyr System") → Processo cooperativo de tarefas de sistema
+process_create("Shell")         → Processo terminal
+process_create("Desktop")       → Processo da área de trabalho
 syscall_enable_user_mode() → Gate int 0x80 elevado a DPL 3
 app_loader_init()   → Loader ZAPP habilitado quando dependências existem
+app_package_init()  → Gestor de pacotes ZPKG
+app_remote_init()   → Repositório remoto de pacotes
+app_catalog_init()  → Catálogo de pacotes instalados e disponíveis
+appstore_init()     → Aplicativo nativo App Store
 desktop_draw()      → Cena padrão desenhada; Shell abre por solicitação
 ```
 
@@ -88,21 +109,23 @@ desktop_draw()      → Cena padrão desenhada; Shell abre por solicitação
 src/
 ├── boot/           → Bootloader (Assembly puro)
 ├── kernel/         → Código central do SO (entry, panic, switch)
-├── core/           → Serviços centrais (log)
-├── drivers/        → Drivers de hardware (video, vesa, font, idt, isr, irq, keyboard, timer, tss, ata, speaker, pci, ac97, mouse)
+├── core/           → Serviços centrais (log, string, devices, rede, crypto, update, usb, app)
+├── drivers/        → Drivers de hardware (video, vesa, font, idt, isr, irq, keyboard, timer, tss, ata, speaker, pci, ac97, mouse, e1000, rtl8139, uhci, usb_msc, acpi)
 ├── memory/         → Gerenciamento de memória (memory, paging, compress)
-├── fs/             → Sistema de arquivos (fat12, fat32, fs, wav, bmp)
+├── fs/             → Sistema de arquivos (block, fat12, fat32, fs, storage, file_index, wav, bmp)
 ├── process/        → Gerenciador de processos e IPC
 ├── thread/         → Gerenciador de threads
-├── shell/          → Apps do shell (editor, mediaplayer, taskmanager)
-├── filemanager/    → File Manager
-├── taskbar/        → Barra de tarefas
+├── shell/          → Shell e apps integrados (editor, mediaplayer, taskmanager, guitest, dispatchers)
+├── filemanager/    → File Manager (Explorer)
+├── taskbar/        → Barra de tarefas e menu Iniciar
 ├── desktop/        → Ambiente desktop
 ├── settings/       → Configurações do sistema
 ├── wm/             → Window Manager
 ├── icons/          → Sistema de ícones
-├── gui/            → Primitivas gráficas 2D (gui.c)
-└── include/        → Headers organizados por módulo
+├── gui/            → Primitivas gráficas 2D e métricas de Display
+├── updater/        → Aplicativo System Updater
+├── appstore/       → Aplicativo App Store
+└── include/        → Headers organizados por módulo (apps, core, drivers, fs, memory, process, ui)
 ```
 
 ## Convenções de Código

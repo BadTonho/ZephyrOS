@@ -834,4 +834,61 @@ ac97_get_device();        // Obtém estado do device
 | AC97_REG_PCM_FRONT_DAC_RATE | 0x2C | Sample rate |
 | AC97_REG_POWER | 0x26 | Power management |
 | AC97_REG_EXT_AUDIO | 0x28 | Audio estendido |
+
+---
+
+## UHCI (`uhci.c`)
+
+O driver USB UHCI (Universal Host Controller Interface) atende aos controladores
+PCI de classe `0x0C`, subclasse `0x03`, ProgIF `0x00` (ex: Intel PIIX3/PIIX4).
+
+### Estrutura e Recursos
+
+- **Frame List**: Pool DMA de 1024 entradas alinhadas a 4 KiB apontando para Queue Heads (QH).
+- **Queue Heads (QH) e Transfer Descriptors (TD)**: Alocador estático interno de TDs e QHs com alinhamento de 16 bytes.
+- **Portas Raiz**: Detecção de conexão, reset de porta com tempo mínimo de 50 ms via PIT, detecção de velocidade (Low Speed 1.5 Mbps / Full Speed 12 Mbps) e atribuição sequencial de endereço USB.
+- **Transferências de Controle**: SETUP, DATA-IN/OUT e STATUS com toggles automáticos e deadlines absolutos baseados em ticks do PIT.
+- **Transferências Bulk**: Fragmentação automática por `wMaxPacketSize`, alternância de data toggle por endpoint e recuperação Mass Storage Reset / Clear Feature.
+- **IRQ Compartilhada**: Handler PCI compatível com interrupções compartilhadas via `idt_register_shared_irq_handler()`.
+
+```c
+int uhci_init(const pci_device_t* pci, const char* controller_id);
+int uhci_poll(void);
+int uhci_control_transfer(uint8_t address, uint8_t speed,
+                          const usb_setup_packet_t* setup,
+                          void* buffer, uint16_t length,
+                          uint32_t timeout_ticks);
+int uhci_bulk_transfer(uint8_t address, uint8_t endpoint, uint8_t is_in,
+                       uint8_t* toggle, void* buffer, uint32_t length,
+                       uint32_t timeout_ticks, uint32_t* out_transferred);
+```
+
+---
+
+## USB Mass Storage (`usb_msc.c`)
+
+O driver Mass Storage implementa a especificação USB Mass Storage Class Bulk-Only
+Transport (BOT) e comandos SCSI primários (SPC/SBC) em modo somente-leitura.
+
+### Características
+
+- **Transporte**: BOT (Bulk-Only Transport) com Command Block Wrapper (CBW) de 31 bytes e Command Status Wrapper (CSW) de 13 bytes.
+- **Comandos SCSI Suportados**:
+  - `INQUIRY (0x12)`: Leitura de Vendor ID, Product ID e versão do firmware.
+  - `TEST UNIT READY (0x00)`: Confirmação de prontidão do drive.
+  - `READ CAPACITY 10 (0x25)`: Leitura de LBA máximo e tamanho do setor (512 bytes).
+  - `READ 10 (0x28)`: Leitura setorial LBA em blocos de 512 bytes.
+- **Integração de Bloco**: Cada LUN ativo é registrado como provedor em `block_device_t` com ID estável `usb-ms-BB:DD.F-pN-aN-l0`.
+- **Recusa de Escrita**: Qualquer tentativa de escrita em dispositivo MSC retorna `ERR_UNAVAILABLE`.
+- **Recuperação de Falhas**: Em timeout ou stall, executa Mass Storage Reset via pipe de controle seguido de `CLEAR_FEATURE(ENDPOINT_HALT)` nos endpoints Bulk IN e OUT.
+
+```c
+int usb_msc_init(uint8_t controller_index, uint8_t device_address,
+                 uint8_t speed, uint8_t endpoint_in, uint8_t endpoint_out,
+                 uint16_t max_packet_in, uint16_t max_packet_out,
+                 const char* device_id);
+int usb_msc_read_sectors(uint32_t msc_index, uint32_t lba, uint32_t count,
+                         uint8_t* buffer);
+uint32_t usb_msc_get_count(uint32_t* out_count);
+int usb_msc_get_at(uint32_t index, usb_msc_info_t* out_info);
 ```

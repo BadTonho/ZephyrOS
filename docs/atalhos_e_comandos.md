@@ -36,20 +36,24 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `stop` | - | Interrompe imediatamente qualquer reprodução de áudio. |
 | `edit` | `<arquivo>` | Abre o Editor de Texto integrado. |
 | `mouse` | `[speed 1-10|primary left/right|acceleration on/off]` | Inspeciona ou altera preferências do Mouse PS/2 em RAM. |
-| `storage` | `list|info <id>|mount <id>|unmount <id>` | Inspeciona e monta volumes ATA adicionais somente-leitura. |
+| `storage` | `list|info <id>|mount <id>|unmount <id>` | Inspeciona e monta volumes ATA/USB adicionais somente-leitura. |
 | `index` | `status|rebuild|cancel|check` | Inspeciona e controla o indice global em RAM. |
 | `search` | `<termo>` | Pesquisa nomes e caminhos em todos os volumes montados. |
 | `guitest` | `[modern]` | Testa a cena Classic ou a base visual Modern diagnóstica. |
+| `display` | `[pequena/normal/grande]` | Consulta ou aplica escala gráfica Classic em RAM. |
 | `health` | `[summary]` | Mostra o relatorio completo ou um resumo compacto para testes. |
 | `log` | `[status|tail [1-16]|clear|level|check]` | Consulta, limpa e testa o ring de logs. |
 | `log level` | `console|buffer <error|warn|info|debug>` | Altera os níveis independentes, mantendo o buffer tão detalhado quanto o console. |
 | `timer` | `[status|list|check]` | Inspeciona ocupação, prazos e contadores ou executa o autoteste privado. |
+| `wait` | `[status|list|check]` | Inspeciona canais de espera e executa o autoteste de esperas. |
+| `job` | `status` | Inspeciona o estado do executor cooperativo de jobs do Shell. |
 | `update remote` | `status/enable/disable/clear [--confirm]` | Controla o transporte remoto opcional da sessao. |
 | `update fetch` | `[--url <manifesto>] [--confirm]` | Consulta ou baixa um ZUPD autenticado sem aplicar. |
 | `kmetrics` | `[reset]` | Mostra ou inicia a janela manual de métricas K1. |
 | `devices` | `[-v]` | Lista o inventario nativo de hardware; `-v` inclui localizacao, IRQ e IDs PCI. |
 | `device-info` | `<id>` | Mostra os detalhes de um dispositivo listado por `devices`. |
 | `device-scan` | - | Refaz somente a varredura PCI e atualiza o inventario sem reinicializar drivers. |
+| `usb` | `status|list|device <id>|ports|devices|storage` | Inspeciona controladores UHCI/EHCI, portas raiz, dispositivos e MSC. |
 | `net` | `status` | Mostra inventario, drivers ativos, link, RX/TX e IPv4. |
 | `net` | `devices` | Lista os controladores PCI de rede observados. |
 | `net` | `info <id>` | Mostra MAC, contadores, erro, IDs, localizacao, IRQ e BARs de uma interface. |

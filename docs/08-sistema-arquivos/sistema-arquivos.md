@@ -15,10 +15,11 @@ internos facam pre-validacao de espaco antes de iniciar uma escrita composta.
 src/drivers/
 │   └── ata.c         → Driver de disco (leitura/escrita de setores)
 src/fs/
+│   ├── block.c       → Dispositivos de bloco unificados (ATA e USB MSC)
 │   ├── fat12.c       → Sistema de arquivos FAT12
 │   ├── fat32.c       → Sistema de arquivos FAT32
 │   ├── fs.c          → Interface unificada FAT12/FAT32
-│   ├── storage.c     → Volumes ATA adicionais somente-leitura
+│   ├── storage.c     → Volumes ATA/USB adicionais somente-leitura
 │   ├── file_index.c  → Indice global cooperativo em RAM
 │   ├── bmp.c         → Leitura de imagens BMP
 │   └── wav.c         → Leitura de áudio WAV

@@ -4,7 +4,7 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
-## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP4.2 validadas
+## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP4.3 validadas
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
@@ -111,19 +111,29 @@ Evolução da plataforma:      [████████████████
 | `stop` | Para player de mídia |
 | `edit` | Editor de texto (edit ARQUIVO.TXT) |
 | `mouse` | Mostra status ou altera preferências do mouse PS/2 em RAM |
-| `storage ...` | Lista, inspeciona e monta volumes ATA adicionais somente-leitura |
+| `storage ...` | Lista, inspeciona e monta volumes ATA/USB adicionais somente-leitura |
+| `index ...` | Inspeciona, reconstrói, cancela ou valida o índice global em RAM |
+| `search <termo>` | Pesquisa arquivos e caminhos em todos os volumes montados |
 | `guitest [modern]` | Testa primitivas GUI 2D e a base visual Modern |
 | `guimode` | Altera entre gui simple e classic |
+| `display [escala]` | Inspeciona ou aplica escala visual Classic (pequena, normal, grande) |
+| `updater` | Abre o aplicativo System Updater |
 | `health` | Exibe metricas e estado de recovery |
 | `log ...` | Consulta, configura, limpa e testa o log circular |
 | `timer [status|list|check]` | Inspeciona e testa o serviço de temporizadores |
+| `wait [status|list|check]` | Inspeciona canais de espera e executa autoteste de esperas |
+| `job [status]` | Inspeciona o executor cooperativo de jobs demorados do Shell |
+| `pkg ...` | Lista, inspeciona, valida, instala e remove pacotes locais ZPKG |
+| `pkgcheck` | Executa validações compactas do serviço de pacotes ZPKG |
 | `store` | Abre a App Store nativa; fallback TUI local no modo Simple |
 | `store status|list|info` | Consulta o catalogo local da App Store |
 | `store install|update|rollback|remove|run` | Planos locais, ciclo confirmado, rollback e execucao instalada |
 | `store remote ...` | Consulta, armazena e aplica planos remotos autenticados manualmente |
+| `update ...` | Verifica, aplica transações FAT12, executa rollback e inspeciona histórico ZUPD |
 | `devices [-v]` | Lista o inventario nativo de hardware |
 | `device-info <id>` | Mostra detalhes de um dispositivo inventariado |
 | `device-scan` | Refaz somente a varredura PCI e atualiza o inventario |
+| `usb status|list|device|ports|devices|storage` | Inspeciona controladores UHCI/EHCI, portas raiz, dispositivos e MSC |
 | `net status` | Mostra inventario e capacidades reais de rede |
 | `net devices` | Lista controladores PCI de rede |
 | `net info <id>` | Mostra metadados PCI de uma interface |
