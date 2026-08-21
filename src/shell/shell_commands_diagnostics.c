@@ -505,9 +505,13 @@ static void cmd_health_print_usb_hid(void) {
         video_print("DISABLED\n", 0x0C);
         return;
     }
-    video_print(usb_status.interrupt_transfer_available ? "READY" :
-                "DEGRADED", usb_status.interrupt_transfer_available ?
-                0x0A : 0x0E);
+    if (!usb_status.controller_count) {
+        video_print("DISABLED", 0x0C);
+    } else {
+        video_print(usb_status.interrupt_transfer_available ? "READY" :
+                    "DEGRADED", usb_status.interrupt_transfer_available ?
+                    0x0A : 0x0E);
+    }
     video_print("  ativos=", 0x08);
     shell_command_print_num(usb_status.hid_active_count);
     video_print("  registrados=", 0x08);
