@@ -42,7 +42,7 @@ antes de iniciar a proxima etapa.
 |------|-----------|-----------|
 | Boot e Shell | Inicie o sistema; execute `health`, use `PgUp`, `PgDn` e `End`, depois execute `threadtest`, `echo regressao q1`, `uptime` e `mem`. | Sem `KERNEL PANIC`; `health` permanece navegavel; cada comando conclui e o Shell aceita o proximo. |
 | Ring 3 e loader | Execute `appcheck` e aguarde sua conclusao, incluindo o demonstrativo do loader e as migracoes de `uptime` e `mem`. Execute `app inputtest`, envie uma tecla e termine com `Enter`; execute-o novamente e termine com `F12`. Execute `usertest` e `usertest fault`. | Os fluxos normais concluem, a falha isolada encerra somente o processo de usuario e o Shell continua utilizavel. |
-| Interfaces nativas | Em `guimode classic`, abra e feche Desktop, Explorer, Settings e Task Manager. Depois faça apenas o smoke test do fallback: `guimode simple`, confirme video, teclado e Shell, execute um comando basico e retorne com `guimode classic`. | A matriz completa passa no Classic; o Simple preserva o fallback operacional e devolve o controle ao Shell. |
+| Interfaces nativas | Em `guimode classic`, abra e feche Desktop, Explorer, Settings e Task Manager. O fallback Simple só entra nesta matriz quando a alteração tocar diretamente vídeo, teclado ou o próprio fallback. | A matriz completa passa no Classic; o Simple permanece disponível como fallback quando aplicável. |
 
 ### Foco, prompt e limpeza
 
@@ -151,5 +151,6 @@ ausencia de processos, zumbis ou diretorios de usuario residuais.
 ## Criterio de saida
 
 Uma etapa funcional so avanca quando o boot e os comandos de diagnostico
-continuam acessiveis, os modos Simple e Classic funcionam e uma falha de
-recurso opcional nao derruba o kernel.
+continuam acessiveis, o modo Classic funciona e uma falha de recurso opcional
+nao derruba o kernel. O Simple entra no criterio somente quando a etapa tocar
+diretamente o fallback, o video ou o teclado.
