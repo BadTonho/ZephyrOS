@@ -10,7 +10,7 @@
 #define KEYBOARD_DISPATCH_BUDGET (IPC_MSG_QUEUE_SIZE / 2U)
 #define KEYBOARD_SCANCODE_F12 0x58U
 #define KEYBOARD_SCANCODE_ABNT2_SEMICOLON 0x35U
-#define KEYBOARD_SCANCODE_ISO_SLASH 0x56U
+#define KEYBOARD_SCANCODE_ISO_EXTRA 0x56U
 #define KEYBOARD_SCANCODE_ABNT2_SLASH 0x73U
 
 static volatile uint8_t event_queue[KEYBOARD_QUEUE_SIZE];
@@ -68,10 +68,12 @@ static const char scancode_shift_table[128] = {
 };
 
 char keyboard_scancode_to_ascii_shifted(uint8_t scancode, uint8_t shifted) {
-    /* Hosts podem entregar a barra ABNT2 como a tecla ISO extra ou ABNT2. */
-    if (scancode == KEYBOARD_SCANCODE_ISO_SLASH ||
-        scancode == KEYBOARD_SCANCODE_ABNT2_SLASH) {
+    /* A tecla brasileira /? e distinta da tecla ISO extra \\|. */
+    if (scancode == KEYBOARD_SCANCODE_ABNT2_SLASH) {
         return shifted ? '?' : '/';
+    }
+    if (scancode == KEYBOARD_SCANCODE_ISO_EXTRA) {
+        return shifted ? '|' : '\\';
     }
     if (scancode >= 128) return 0;
     return shifted ? scancode_shift_table[scancode] : scancode_table[scancode];
@@ -152,9 +154,10 @@ static uint16_t keyboard_ps2_usage(uint8_t scancode, uint8_t extended) {
         case 0x2BU: return INPUT_USAGE_BACKSLASH;
         case KEYBOARD_SCANCODE_ABNT2_SEMICOLON:
             return INPUT_USAGE_SEMICOLON;
-        case KEYBOARD_SCANCODE_ISO_SLASH:
+        case KEYBOARD_SCANCODE_ISO_EXTRA:
+            return INPUT_USAGE_NON_US_BACKSLASH;
         case KEYBOARD_SCANCODE_ABNT2_SLASH:
-            return INPUT_USAGE_SLASH;
+            return INPUT_USAGE_INTERNATIONAL1;
         case 0x36U: return INPUT_USAGE_RIGHT_SHIFT;
         case 0x37U: return INPUT_USAGE_PRINT_SCREEN;
         case 0x38U: return INPUT_USAGE_LEFT_ALT;
@@ -224,9 +227,16 @@ static int keyboard_usage_scancode(uint16_t usage, uint8_t* out_scancode,
         case INPUT_USAGE_GRAVE: *out_scancode = 0x29U; return OK;
         case INPUT_USAGE_COMMA: *out_scancode = 0x33U; return OK;
         case INPUT_USAGE_DOT: *out_scancode = 0x34U; return OK;
-        /* A tabela ABNT2 reserva 0x35 para ';'; a barra usa a tecla ISO. */
+        case INPUT_USAGE_NON_US_BACKSLASH:
+            *out_scancode = KEYBOARD_SCANCODE_ISO_EXTRA;
+            return OK;
+        /* Em ABNT2, 0x38 ocupa fisicamente a tecla ;/:. */
         case INPUT_USAGE_SLASH:
-            *out_scancode = KEYBOARD_SCANCODE_ISO_SLASH;
+            *out_scancode = KEYBOARD_SCANCODE_ABNT2_SEMICOLON;
+            return OK;
+        /* A tecla brasileira /? usa o Usage International1 (0x87). */
+        case INPUT_USAGE_INTERNATIONAL1:
+            *out_scancode = KEYBOARD_SCANCODE_ABNT2_SLASH;
             return OK;
         case INPUT_USAGE_CAPS_LOCK: *out_scancode = 0x3AU; return OK;
         case INPUT_USAGE_NUM_LOCK: *out_scancode = 0x45U; return OK;

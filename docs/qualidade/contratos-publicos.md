@@ -291,9 +291,9 @@ somente-leitura.
 
 Desde a EP4.4, `src/include/core/input.h` define eventos HID Usage de teclado,
 eventos relativos de ponteiro, filas estaticas separadas, metricas e despacho
-para os consumidores PS/2 legados. O adaptador de teclado preserva o contrato
-ABNT2 de `;` e normaliza o Usage HID de `/` para a tecla ISO reconhecida pelo
-Shell. `src/include/core/irq_deferred.h` define a
+para os consumidores PS/2 legados. O adaptador de teclado preserva as posicoes
+ABNT2 `;/:` (Usage `0x38`) e `/ ?` (Usage `0x87`) antes de entregar os
+scancodes ao Shell. `src/include/core/irq_deferred.h` define a
 fila limitada de conclusoes fora de contexto de IRQ, com cancelamento por
 objeto de trabalho. `src/include/drivers/uhci.h` acrescenta o contrato de
 Interrupt IN persistente, callback diferido, cancelamento e diagnostico
