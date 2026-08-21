@@ -6,7 +6,9 @@ Leia este arquivo no início de toda sessão. Siga estas regras SEMPRE.
 
 ## Build e validação
 
-Os comandos abaixo são referências para execução pelo usuário:
+Os comandos abaixo são referências para execução pelo usuário. Eles são
+pré-requisitos operacionais para abrir/testar no QEMU qualquer alteração de
+código, header ou Makefile:
 
 ```bash
 # Gate de qualidade após alterar código
@@ -18,6 +20,12 @@ make clean && make
 # Execução no QEMU
 make run
 ```
+
+O usuário não consegue testar a versão alterada no QEMU sem executar primeiro
+`make q3check` e `make clean && make`. Depois que esses pré-requisitos forem
+confirmados para a mesma versão do código, o agente não deve reapresentá-los
+como testes funcionais pendentes da fase; deve listar apenas a matriz de
+validação específica da funcionalidade.
 
 As ferramentas devem ser encontradas pelo `PATH` ou configuradas em
 `Makefile.local`, que não é versionado. O agente pode revisar o Makefile e os
@@ -457,8 +465,10 @@ OBJS = ... $(NOVO_OBJ)
 ## Regra #12: Não Quebrar o Build
 
 - [ ] NUNCA commitar código que não compila
-- [ ] Para alterações de código, orientar o usuário a executar `make q3check` e
-      depois `make clean && make` antes de commitar
+- [ ] Para alterações de código, tratar `make q3check` e depois
+      `make clean && make` como pré-requisitos para abrir/testar a versão
+      alterada no QEMU e antes de commitar; não reapresentá-los como pendência
+      funcional depois de confirmados para a mesma versão
 - [ ] A validação executável pertence ao usuário; o agente não deve executar
       build, testes ou QEMU neste projeto
 - [ ] Warnings novos devem ser revisados; warnings existentes devem ser documentados quando não puderem ser corrigidos na etapa atual
