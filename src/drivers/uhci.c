@@ -5,11 +5,16 @@
 #include "core/string.h"
 #include "core/spinlock.h"
 #include "core/timer.h"
+#include "core/irq_deferred.h"
 #include "drivers/idt.h"
 
 #define UHCI_CONTROLLER_CAPACITY USB_MANAGER_MAX_CONTROLLERS
 #define UHCI_TD_SIZE 16U
-#define UHCI_QH_SIZE 8U
+#define UHCI_QH_STRIDE 16U
+#define UHCI_SYNC_TD_CAPACITY (USB_UHCI_TD_CAPACITY - \
+                               USB_UHCI_INTERRUPT_CAPACITY)
+#define UHCI_INTERRUPT_QH_BASE 1U
+#define UHCI_INTERRUPT_TD_BASE UHCI_SYNC_TD_CAPACITY
 #define UHCI_SETUP_SIZE 8U
 #define UHCI_DEVICE_DESCRIPTOR_LENGTH 18U
 #define UHCI_CONFIGURATION_HEADER_LENGTH 9U
@@ -89,6 +94,7 @@
 #define UHCI_INTERFACE_PROTOCOL_OFFSET 7U
 #define UHCI_ENDPOINT_ADDRESS_OFFSET 2U
 #define UHCI_ENDPOINT_MAX_PACKET_OFFSET 4U
+#define UHCI_ENDPOINT_INTERVAL_OFFSET 6U
 #define UHCI_ENDPOINT_DESCRIPTOR_LENGTH 7U
 #define UHCI_INTERFACE_DESCRIPTOR_LENGTH 9U
 #define UHCI_CONFIG_DESCRIPTOR_LENGTH 9U
@@ -110,7 +116,34 @@ typedef struct {
     uint32_t element;
 } uhci_qh_t __attribute__((aligned(16)));
 
+typedef struct uhci_controller uhci_controller_t;
+typedef struct uhci_device_record uhci_device_record_t;
+
 typedef struct {
+    uint8_t used;
+    uint8_t active;
+    uint8_t completion_pending;
+    uint8_t cancelled;
+    uint8_t endpoint_address;
+    uint8_t max_packet;
+    uint8_t interval;
+    uint8_t phase;
+    uint8_t td_index;
+    uint8_t qh_index;
+    uint8_t buffer_index;
+    uint8_t toggle;
+    uint32_t generation;
+    uint32_t deadline;
+    uint16_t actual_length;
+    int result;
+    uhci_controller_t* controller;
+    uhci_device_record_t* record;
+    uhci_interrupt_callback_t callback;
+    void* context;
+    irq_deferred_work_t completion_work;
+} uhci_interrupt_request_t;
+
+struct uhci_device_record {
     usb_device_info_t info;
     uint8_t device_descriptor[UHCI_DEVICE_DESCRIPTOR_LENGTH];
     uint8_t configuration_descriptor[USB_UHCI_DESCRIPTOR_BUFFER_SIZE];
@@ -118,9 +151,9 @@ typedef struct {
     uint8_t valid_descriptors;
     uint8_t bulk_in_toggle;
     uint8_t bulk_out_toggle;
-} uhci_device_record_t;
+};
 
-typedef struct {
+struct uhci_controller {
     uint8_t used;
     uint8_t initialized;
     uint8_t running;
@@ -142,20 +175,44 @@ typedef struct {
     uint32_t buffer_pool_phys;
     uint32_t td_in_use;
     uint32_t buffer_in_use;
+    uint32_t sync_td_in_use;
+    uint32_t sync_buffer_in_use;
     uint32_t irq_events;
     uint32_t timeout_count;
     uint32_t recovery_count;
     uint32_t bulk_transfer_count;
+    uint32_t interrupt_transfer_count;
+    uint32_t interrupt_timeout_count;
+    uint32_t interrupt_error_count;
+    uint32_t interrupt_cancel_count;
     uint8_t next_address;
     uint8_t port_errors;
+    uint8_t interrupt_active_count;
+    uint8_t frame_owner[USB_UHCI_FRAME_COUNT];
     spinlock_t transfer_lock;
     int last_error;
     usb_port_info_t ports[USB_UHCI_PORT_COUNT];
     uhci_device_record_t devices[USB_UHCI_PORT_COUNT];
     uint8_t device_count;
-} uhci_controller_t;
+    uhci_interrupt_request_t interrupt_requests[USB_UHCI_INTERRUPT_CAPACITY];
+};
 
 static uhci_controller_t uhci_controllers[UHCI_CONTROLLER_CAPACITY];
+
+static uhci_qh_t* uhci_queue_head_at(const uhci_controller_t* controller,
+                                     uint32_t index) {
+    if (!controller || !controller->queue_head) return 0;
+    return (uhci_qh_t*)((uint8_t*)controller->queue_head +
+                        index * UHCI_QH_STRIDE);
+}
+
+static void uhci_update_resource_usage(uhci_controller_t* controller) {
+    if (!controller) return;
+    controller->td_in_use = controller->sync_td_in_use +
+                            controller->interrupt_active_count;
+    controller->buffer_in_use = controller->sync_buffer_in_use +
+                                controller->interrupt_active_count;
+}
 
 static uint16_t uhci_in16(const uhci_controller_t* controller,
                           uint16_t offset) {
@@ -341,12 +398,14 @@ static int uhci_allocate_dma(uhci_controller_t* controller) {
     kmemset(controller->queue_head, 0, PAGE_SIZE);
     kmemset(controller->td_pool, 0, PAGE_SIZE);
     kmemset(controller->buffer_pool, 0, PAGE_SIZE);
+    kmemset(controller->frame_owner, 0xFF, sizeof(controller->frame_owner));
     for (uint32_t index = 0; index < USB_UHCI_FRAME_COUNT; index++) {
         controller->frame_list[index] = UHCI_PTR_QH |
                                          controller->queue_head_phys;
     }
     controller->queue_head->link = UHCI_PTR_TERM;
     controller->queue_head->element = UHCI_PTR_TERM;
+    uhci_update_resource_usage(controller);
     return OK;
 }
 
@@ -571,8 +630,9 @@ static int uhci_control_transfer(uhci_controller_t* controller,
         kmemcpy(transfer_data, data, length);
     }
     kmemset(controller->td_pool, 0, td_count * UHCI_TD_SIZE);
-    controller->td_in_use = td_count;
-    controller->buffer_in_use = length ? 2U : 1U;
+    controller->sync_td_in_use = td_count;
+    controller->sync_buffer_in_use = length ? 2U : 1U;
+    uhci_update_resource_usage(controller);
     for (uint32_t td = 0; td < td_count; td++) {
         uint32_t next = td + 1U < td_count ? controller->td_pool_phys +
                      (td + 1U) * UHCI_TD_SIZE : UHCI_PTR_TERM;
@@ -605,8 +665,9 @@ static int uhci_control_transfer(uhci_controller_t* controller,
     controller->queue_head->element = UHCI_PTR_TERM;
     if (result != OK) {
         uhci_recover_controller(controller);
-        controller->td_in_use = 0U;
-        controller->buffer_in_use = 0U;
+        controller->sync_td_in_use = 0U;
+        controller->sync_buffer_in_use = 0U;
+        uhci_update_resource_usage(controller);
         return result;
     }
     if (length && (request_type & UHCI_REQUEST_DEVICE_TO_HOST)) {
@@ -617,8 +678,9 @@ static int uhci_control_transfer(uhci_controller_t* controller,
     } else if (out_length) {
         *out_length = 0U;
     }
-    controller->td_in_use = 0U;
-    controller->buffer_in_use = 0U;
+    controller->sync_td_in_use = 0U;
+    controller->sync_buffer_in_use = 0U;
+    uhci_update_resource_usage(controller);
     return OK;
 }
 
@@ -721,6 +783,18 @@ static int uhci_parse_configuration(uhci_device_record_t* record) {
                     record->info.bulk_out_count++;
                     record->info.bulk_out_endpoint = endpoint_address;
                     record->info.bulk_out_max_packet = max_packet;
+                }
+            } else if (transfer_type == 3U && (endpoint_address & 0x80U)) {
+                if (!data[offset + UHCI_ENDPOINT_INTERVAL_OFFSET]) {
+                    LOG_ERROR("UHCI", "Intervalo Interrupt USB invalido");
+                    return ERR_INVALID;
+                }
+                record->info.interrupt_in_count++;
+                if (!record->info.interrupt_in_endpoint) {
+                    record->info.interrupt_in_endpoint = endpoint_address;
+                    record->info.interrupt_in_max_packet = max_packet;
+                    record->info.interrupt_interval =
+                        data[offset + UHCI_ENDPOINT_INTERVAL_OFFSET];
                 }
             }
         }
@@ -991,6 +1065,368 @@ int uhci_init(const pci_device_t* pci, const char* controller_id) {
     return OK;
 }
 
+static uhci_interrupt_request_t* uhci_find_interrupt_request(
+    uhci_controller_t* controller, const usb_device_info_t* device,
+    uint8_t endpoint_address) {
+    if (!controller || !device) return 0;
+    for (uint32_t index = 0U; index < USB_UHCI_INTERRUPT_CAPACITY; index++) {
+        uhci_interrupt_request_t* request =
+            &controller->interrupt_requests[index];
+
+        if (!request->used || request->endpoint_address != endpoint_address ||
+            !request->record || request->record->info.usb_address !=
+            device->usb_address || request->record->info.port_number !=
+            device->port_number) continue;
+        return request;
+    }
+    return 0;
+}
+
+static uhci_interrupt_request_t* uhci_find_free_interrupt_request(
+    uhci_controller_t* controller) {
+    if (!controller) return 0;
+    for (uint32_t index = 0U; index < USB_UHCI_INTERRUPT_CAPACITY; index++) {
+        if (!controller->interrupt_requests[index].used &&
+            !controller->interrupt_requests[index].completion_work.queued) {
+            return &controller->interrupt_requests[index];
+        }
+    }
+    return 0;
+}
+
+static void uhci_interrupt_release_frames(uhci_controller_t* controller,
+                                          const uhci_interrupt_request_t* request) {
+    if (!controller || !request || !request->interval) return;
+    for (uint32_t frame = request->phase; frame < USB_UHCI_FRAME_COUNT;
+         frame += request->interval) {
+        if (controller->frame_owner[frame] == request->qh_index) {
+            controller->frame_owner[frame] = 0xFFU;
+            controller->frame_list[frame] = UHCI_PTR_QH |
+                                             controller->queue_head_phys;
+        }
+    }
+}
+
+static int uhci_interrupt_reserve_frames(
+    uhci_controller_t* controller, uhci_interrupt_request_t* request) {
+    uint32_t phase;
+
+    if (!controller || !request || !request->interval ||
+        request->interval > USB_UHCI_FRAME_COUNT) return ERR_INVALID;
+    for (phase = 0U; phase < request->interval; phase++) {
+        uint8_t available = 1U;
+
+        for (uint32_t frame = phase; frame < USB_UHCI_FRAME_COUNT;
+             frame += request->interval) {
+            if (controller->frame_owner[frame] != 0xFFU) {
+                available = 0U;
+                break;
+            }
+        }
+        if (!available) continue;
+        request->phase = (uint8_t)phase;
+        for (uint32_t frame = phase; frame < USB_UHCI_FRAME_COUNT;
+             frame += request->interval) {
+            controller->frame_owner[frame] = request->qh_index;
+            controller->frame_list[frame] = UHCI_PTR_QH |
+                (controller->queue_head_phys +
+                 request->qh_index * UHCI_QH_STRIDE);
+        }
+        return OK;
+    }
+    LOG_WARN("UHCI", "Nao ha fase periodica para endpoint Interrupt");
+    return ERR_OVERFLOW;
+}
+
+static uint8_t* uhci_interrupt_buffer(uhci_controller_t* controller,
+                                      const uhci_interrupt_request_t* request) {
+    if (!controller || !request || request->buffer_index >=
+        USB_UHCI_INTERRUPT_CAPACITY) return 0;
+    return controller->buffer_pool + USB_UHCI_INTERRUPT_BUFFER_OFFSET +
+           request->buffer_index * USB_UHCI_INTERRUPT_BUFFER_SIZE;
+}
+
+static int uhci_interrupt_arm(uhci_interrupt_request_t* request) {
+    uhci_controller_t* controller;
+    uhci_qh_t* queue_head;
+    uhci_td_t* td;
+    uint8_t* buffer;
+
+    if (!request || !request->controller || !request->record) {
+        return ERR_NULL;
+    }
+    controller = request->controller;
+    queue_head = uhci_queue_head_at(controller, request->qh_index);
+    td = &controller->td_pool[request->td_index];
+    buffer = uhci_interrupt_buffer(controller, request);
+    if (!queue_head || !buffer || !controller->running || !request->used) {
+        return ERR_STATE;
+    }
+    kmemset(buffer, 0, request->max_packet);
+    td->link = UHCI_PTR_TERM;
+    td->status = uhci_td_status(
+        request->record->info.speed == USB_DEVICE_SPEED_LOW, 1U);
+    td->token = uhci_token(UHCI_PID_IN, request->record->info.usb_address,
+                           request->endpoint_address & 0x0FU,
+                           request->toggle, request->max_packet);
+    td->buffer = controller->buffer_pool_phys +
+                 USB_UHCI_INTERRUPT_BUFFER_OFFSET +
+                 request->buffer_index * USB_UHCI_INTERRUPT_BUFFER_SIZE;
+    queue_head->link = UHCI_PTR_QH | controller->queue_head_phys;
+    queue_head->element = controller->td_pool_phys +
+                          request->td_index * UHCI_TD_SIZE;
+    request->deadline = timer_get_ticks() +
+                        uhci_timeout_ticks(UHCI_INTERRUPT_TIMEOUT_MS);
+    request->active = 1U;
+    request->completion_pending = 0U;
+    request->cancelled = 0U;
+    uhci_update_resource_usage(controller);
+    asm volatile("" : : : "memory");
+    return OK;
+}
+
+static int uhci_interrupt_deadline_expired(uint32_t deadline) {
+    return (int32_t)(timer_get_ticks() - deadline) >= 0;
+}
+
+static void uhci_interrupt_completion(void* context) {
+    uhci_interrupt_request_t* request =
+        (uhci_interrupt_request_t*)context;
+    uhci_controller_t* controller;
+    uhci_interrupt_callback_t callback;
+    void* callback_context;
+    const uint8_t* data;
+    uint16_t length;
+    int result;
+    uint32_t generation;
+
+    if (!request || !request->controller) return;
+    controller = request->controller;
+    spinlock_acquire(&controller->transfer_lock);
+    if (!request->used || !request->completion_pending) {
+        spinlock_release(&controller->transfer_lock);
+        return;
+    }
+    callback = request->callback;
+    callback_context = request->context;
+    data = uhci_interrupt_buffer(controller, request);
+    length = request->actual_length;
+    result = request->result;
+    generation = request->generation;
+    request->completion_pending = 0U;
+    spinlock_release(&controller->transfer_lock);
+
+    if (callback) callback(callback_context, result, data, length);
+
+    spinlock_acquire(&controller->transfer_lock);
+    if (request->used && !request->cancelled &&
+        request->generation == generation && controller->running) {
+        if (uhci_interrupt_arm(request) != OK) {
+            request->used = 0U;
+            request->active = 0U;
+            uhci_interrupt_release_frames(controller, request);
+            controller->interrupt_error_count++;
+            controller->last_error = ERR_STATE;
+        } else {
+            controller->interrupt_active_count++;
+        }
+    }
+    uhci_update_resource_usage(controller);
+    spinlock_release(&controller->transfer_lock);
+}
+
+static void uhci_interrupt_try_schedule(
+    uhci_controller_t* controller, uhci_interrupt_request_t* request) {
+    int result;
+
+    if (!controller || !request || !request->completion_pending ||
+        request->completion_work.queued) return;
+    result = irq_deferred_schedule(&request->completion_work);
+    if (result != OK) {
+        controller->last_error = result;
+        return;
+    }
+}
+
+static void uhci_scan_interrupt_requests(uhci_controller_t* controller) {
+    if (!controller || !controller->running) return;
+    spinlock_acquire(&controller->transfer_lock);
+    for (uint32_t index = 0U; index < USB_UHCI_INTERRUPT_CAPACITY; index++) {
+        uhci_interrupt_request_t* request =
+            &controller->interrupt_requests[index];
+        uhci_td_t* td;
+        uhci_qh_t* queue_head;
+        uint32_t status;
+        uint32_t actual;
+
+        if (!request->used) continue;
+        if (request->completion_pending) {
+            uhci_interrupt_try_schedule(controller, request);
+            continue;
+        }
+        if (!request->active) continue;
+        td = &controller->td_pool[request->td_index];
+        queue_head = uhci_queue_head_at(controller, request->qh_index);
+        status = td->status;
+        if (status & UHCI_TD_ACTIVE) {
+            if (!uhci_interrupt_deadline_expired(request->deadline)) continue;
+            request->result = ERR_TIMEOUT;
+            request->actual_length = 0U;
+            controller->interrupt_timeout_count++;
+        } else if (status & UHCI_TD_NAK) {
+            /* NAK e' esperado quando o dispositivo ainda nao tem dados. */
+            (void)uhci_interrupt_arm(request);
+            continue;
+        } else if (status & UHCI_TD_ERROR_MASK) {
+            request->result = ERR_STATE;
+            request->actual_length = 0U;
+            request->toggle = 0U;
+            controller->interrupt_error_count++;
+        } else {
+            request->result = OK;
+            actual = uhci_td_actual(status);
+            if (actual > request->max_packet) actual = request->max_packet;
+            request->actual_length = (uint16_t)actual;
+            request->toggle ^= 1U;
+            controller->interrupt_transfer_count++;
+        }
+        if (queue_head) queue_head->element = UHCI_PTR_TERM;
+        if (controller->interrupt_active_count) {
+            controller->interrupt_active_count--;
+        }
+        request->active = 0U;
+        request->completion_pending = 1U;
+        uhci_update_resource_usage(controller);
+        uhci_interrupt_try_schedule(controller, request);
+    }
+    spinlock_release(&controller->transfer_lock);
+}
+
+int uhci_interrupt_submit(const usb_device_info_t* device,
+                          uint8_t endpoint_address, uint16_t max_packet,
+                          uint8_t interval,
+                          uhci_interrupt_callback_t callback,
+                          void* context) {
+    uhci_controller_t* controller;
+    uhci_device_record_t* record;
+    uhci_interrupt_request_t* request;
+    int result;
+
+    if (!device || !callback) {
+        LOG_ERROR("UHCI", "Argumento nulo ao registrar Interrupt IN");
+        return ERR_NULL;
+    }
+    if (!(endpoint_address & 0x80U) || !(endpoint_address & 0x0FU) ||
+        !max_packet || max_packet > USB_UHCI_INTERRUPT_BUFFER_SIZE ||
+        !interval) {
+        LOG_ERROR("UHCI", "Endpoint Interrupt IN invalido");
+        return ERR_INVALID;
+    }
+    controller = uhci_find(device->controller_bus, device->controller_device,
+                           device->controller_function);
+    record = uhci_find_device_record(controller, device);
+    if (!controller || !record || !controller->running) {
+        LOG_ERROR("UHCI", "Dispositivo ausente ao registrar Interrupt IN");
+        return ERR_NOT_FOUND;
+    }
+    spinlock_acquire(&controller->transfer_lock);
+    request = uhci_find_interrupt_request(controller, device,
+                                          endpoint_address);
+    if (request) {
+        request->callback = callback;
+        request->context = context;
+        spinlock_release(&controller->transfer_lock);
+        return OK;
+    }
+    request = uhci_find_free_interrupt_request(controller);
+    if (!request) {
+        spinlock_release(&controller->transfer_lock);
+        LOG_ERROR("UHCI", "Limite de requisicoes Interrupt IN atingido");
+        return ERR_OVERFLOW;
+    }
+    kmemset(request, 0, sizeof(*request));
+    request->used = 1U;
+    request->endpoint_address = endpoint_address;
+    request->max_packet = (uint8_t)max_packet;
+    request->interval = interval;
+    request->qh_index = UHCI_INTERRUPT_QH_BASE +
+                        (uint8_t)(request - controller->interrupt_requests);
+    request->td_index = UHCI_INTERRUPT_TD_BASE +
+                        (uint8_t)(request - controller->interrupt_requests);
+    request->buffer_index = (uint8_t)(request - controller->interrupt_requests);
+    request->controller = controller;
+    request->record = record;
+    request->callback = callback;
+    request->context = context;
+    request->generation = 1U;
+    request->completion_work.callback = uhci_interrupt_completion;
+    request->completion_work.context = request;
+    result = uhci_interrupt_reserve_frames(controller, request);
+    if (result == OK) {
+        uhci_qh_t* queue_head = uhci_queue_head_at(controller,
+                                                   request->qh_index);
+
+        if (!queue_head) result = ERR_STATE;
+        else {
+            queue_head->link = UHCI_PTR_QH | controller->queue_head_phys;
+            queue_head->element = UHCI_PTR_TERM;
+            result = uhci_interrupt_arm(request);
+        }
+    }
+    if (result != OK) {
+        uhci_interrupt_release_frames(controller, request);
+        kmemset(request, 0, sizeof(*request));
+        spinlock_release(&controller->transfer_lock);
+        return result;
+    }
+    controller->interrupt_active_count++;
+    uhci_update_resource_usage(controller);
+    spinlock_release(&controller->transfer_lock);
+    return OK;
+}
+
+int uhci_interrupt_cancel(const usb_device_info_t* device,
+                          uint8_t endpoint_address) {
+    uhci_controller_t* controller;
+    uhci_interrupt_request_t* request;
+
+    if (!device) {
+        LOG_ERROR("UHCI", "Dispositivo nulo ao cancelar Interrupt IN");
+        return ERR_NULL;
+    }
+    controller = uhci_find(device->controller_bus, device->controller_device,
+                           device->controller_function);
+    if (!controller) return ERR_NOT_FOUND;
+    spinlock_acquire(&controller->transfer_lock);
+    request = uhci_find_interrupt_request(controller, device,
+                                          endpoint_address);
+    if (!request) {
+        spinlock_release(&controller->transfer_lock);
+        return ERR_NOT_FOUND;
+    }
+    request->cancelled = 1U;
+    request->generation++;
+    if (request->completion_work.queued) {
+        (void)irq_deferred_cancel(&request->completion_work);
+    }
+    if (request->active && controller->interrupt_active_count) {
+        controller->interrupt_active_count--;
+    }
+    {
+        uhci_qh_t* queue_head = uhci_queue_head_at(controller,
+                                                   request->qh_index);
+        if (queue_head) queue_head->element = UHCI_PTR_TERM;
+    }
+    uhci_interrupt_release_frames(controller, request);
+    request->used = 0U;
+    request->active = 0U;
+    request->completion_pending = 0U;
+    controller->interrupt_cancel_count++;
+    uhci_update_resource_usage(controller);
+    spinlock_release(&controller->transfer_lock);
+    return OK;
+}
+
 int uhci_poll(uint32_t budget, uint32_t* out_processed) {
     uint32_t processed = 0;
 
@@ -998,12 +1434,12 @@ int uhci_poll(uint32_t budget, uint32_t* out_processed) {
         LOG_ERROR("UHCI", "Destino nulo no polling UHCI");
         return ERR_NULL;
     }
-    for (uint32_t index = 0; index < UHCI_CONTROLLER_CAPACITY &&
-         processed < budget; index++) {
+    for (uint32_t index = 0; index < UHCI_CONTROLLER_CAPACITY; index++) {
         uhci_controller_t* controller = &uhci_controllers[index];
         uint16_t status;
 
         if (!controller->used || !controller->running) continue;
+        uhci_scan_interrupt_requests(controller);
         status = uhci_in16(controller, UHCI_USBSTS);
         if (status == 0xFFFFU) {
             controller->last_error = ERR_UNAVAILABLE;
@@ -1017,7 +1453,7 @@ int uhci_poll(uint32_t budget, uint32_t* out_processed) {
             controller->running = 0U;
             LOG_ERROR("UHCI", "Controlador UHCI reportou halted");
         }
-        if (status & UHCI_USBSTS_RELEVANT) {
+        if ((status & UHCI_USBSTS_RELEVANT) && processed < budget) {
             uhci_out16(controller, UHCI_USBSTS,
                        (uint16_t)(status & UHCI_USBSTS_RELEVANT));
             controller->irq_pending = 0U;
@@ -1030,6 +1466,8 @@ int uhci_poll(uint32_t budget, uint32_t* out_processed) {
 
 static int uhci_copy_status(const uhci_controller_t* controller,
                             usb_uhci_status_t* out_status) {
+    uint8_t request_count = 0U;
+
     if (!controller || !out_status) {
         LOG_ERROR("UHCI", "Argumento nulo ao copiar status UHCI");
         return ERR_NULL;
@@ -1043,6 +1481,9 @@ static int uhci_copy_status(const uhci_controller_t* controller,
                             controller->td_pool && controller->buffer_pool;
     out_status->control_transfer_ready = controller->running;
     out_status->bulk_transfer_ready = controller->running;
+    out_status->interrupt_transfer_ready = controller->running &&
+                                           controller->frame_list &&
+                                           controller->queue_head;
     out_status->class_driver_active = 0U;
     out_status->hub_support_active = 0U;
     out_status->hotplug_active = 0U;
@@ -1062,6 +1503,15 @@ static int uhci_copy_status(const uhci_controller_t* controller,
     out_status->recovery_count = controller->recovery_count;
     out_status->bulk_transfer_count = controller->bulk_transfer_count;
     out_status->last_error = controller->last_error;
+    for (uint32_t index = 0U; index < USB_UHCI_INTERRUPT_CAPACITY; index++) {
+        if (controller->interrupt_requests[index].used) request_count++;
+    }
+    out_status->interrupt_request_count = request_count;
+    out_status->interrupt_active_count = controller->interrupt_active_count;
+    out_status->interrupt_transfer_count = controller->interrupt_transfer_count;
+    out_status->interrupt_timeout_count = controller->interrupt_timeout_count;
+    out_status->interrupt_error_count = controller->interrupt_error_count;
+    out_status->interrupt_cancel_count = controller->interrupt_cancel_count;
     return OK;
 }
 
@@ -1187,9 +1637,61 @@ int uhci_validate_state(uint8_t bus, uint8_t device, uint8_t function) {
         return ERR_STATE;
     }
     for (uint32_t frame = 0; frame < USB_UHCI_FRAME_COUNT; frame++) {
-        if (controller->frame_list[frame] !=
-            (UHCI_PTR_QH | controller->queue_head_phys)) {
+        uint8_t owner = controller->frame_owner[frame];
+        uint32_t expected = UHCI_PTR_QH | controller->queue_head_phys;
+
+        if (owner != 0xFFU && owner >= UHCI_INTERRUPT_QH_BASE &&
+            owner < UHCI_INTERRUPT_QH_BASE + USB_UHCI_INTERRUPT_CAPACITY) {
+            uhci_interrupt_request_t* request =
+                &controller->interrupt_requests[owner - UHCI_INTERRUPT_QH_BASE];
+
+            if (!request->used || !request->interval ||
+                frame < request->phase ||
+                (frame - request->phase) % request->interval) {
+                LOG_ERROR("UHCI", "Proprietario de frame UHCI invalido");
+                return ERR_STATE;
+            }
+            expected = UHCI_PTR_QH | (controller->queue_head_phys +
+                                      owner * UHCI_QH_STRIDE);
+        } else if (owner != 0xFFU) {
+            LOG_ERROR("UHCI", "Indice de frame UHCI invalido");
+            return ERR_STATE;
+        }
+        if (controller->frame_list[frame] != expected) {
             LOG_ERROR("UHCI", "Frame list UHCI inconsistente");
+            return ERR_STATE;
+        }
+    }
+    {
+        uint8_t active_count = 0U;
+
+        for (uint32_t index = 0U; index < USB_UHCI_INTERRUPT_CAPACITY;
+             index++) {
+            uhci_interrupt_request_t* request =
+                &controller->interrupt_requests[index];
+            uhci_qh_t* queue_head;
+
+            if (!request->used) continue;
+            if (!request->record || request->qh_index != UHCI_INTERRUPT_QH_BASE +
+                index || request->td_index != UHCI_INTERRUPT_TD_BASE + index ||
+                request->buffer_index != index || !request->interval ||
+                request->interval > USB_UHCI_FRAME_COUNT) {
+                LOG_ERROR("UHCI", "Requisicao Interrupt UHCI inconsistente");
+                return ERR_STATE;
+            }
+            queue_head = uhci_queue_head_at(controller, request->qh_index);
+            if (!queue_head || queue_head->link !=
+                (UHCI_PTR_QH | controller->queue_head_phys) ||
+                (request->active && queue_head->element !=
+                 controller->td_pool_phys + request->td_index * UHCI_TD_SIZE) ||
+                (!request->active && queue_head->element != UHCI_PTR_TERM)) {
+                LOG_ERROR("UHCI", "Queue head Interrupt UHCI inconsistente");
+                return ERR_STATE;
+            }
+            if (request->active) active_count++;
+        }
+        if (active_count != controller->interrupt_active_count) {
+            LOG_ERROR("UHCI", "Contagem Interrupt UHCI inconsistente");
             return ERR_STATE;
         }
     }
@@ -1218,10 +1720,16 @@ int uhci_validate_state(uint8_t bus, uint8_t device, uint8_t function) {
             controller->devices[index].info.endpoint_count ||
             controller->devices[index].info.bulk_out_count >
             controller->devices[index].info.endpoint_count ||
+            controller->devices[index].info.interrupt_in_count >
+            controller->devices[index].info.endpoint_count ||
             (controller->devices[index].info.bulk_in_count &&
              !controller->devices[index].info.bulk_in_max_packet) ||
             (controller->devices[index].info.bulk_out_count &&
-             !controller->devices[index].info.bulk_out_max_packet)) {
+             !controller->devices[index].info.bulk_out_max_packet) ||
+            (controller->devices[index].info.interrupt_in_count &&
+             (!controller->devices[index].info.interrupt_in_endpoint ||
+              !controller->devices[index].info.interrupt_in_max_packet ||
+              !controller->devices[index].info.interrupt_interval))) {
             LOG_ERROR("UHCI", "Dispositivo USB configurado invalido");
             return ERR_STATE;
         }
@@ -1290,7 +1798,7 @@ static int uhci_bulk_transfer_once(uhci_controller_t* controller,
     dma_buffer = controller->buffer_pool + UHCI_BULK_BUFFER_OFFSET;
     if (!direction_in) kmemcpy(dma_buffer, buffer, length);
     td_count = (length + max_packet - 1U) / max_packet;
-    if (!td_count || td_count > USB_UHCI_TD_CAPACITY) {
+    if (!td_count || td_count > UHCI_SYNC_TD_CAPACITY) {
         LOG_ERROR("UHCI", "Quantidade de TDs Bulk fora do limite");
         return ERR_OVERFLOW;
     }
@@ -1298,8 +1806,9 @@ static int uhci_bulk_transfer_once(uhci_controller_t* controller,
                    record->bulk_out_toggle;
     toggle = initial_toggle;
     kmemset(controller->td_pool, 0, td_count * UHCI_TD_SIZE);
-    controller->td_in_use = td_count;
-    controller->buffer_in_use = 1U;
+    controller->sync_td_in_use = td_count;
+    controller->sync_buffer_in_use = 1U;
+    uhci_update_resource_usage(controller);
     for (uint32_t td = 0U; td < td_count; td++) {
         uint32_t remaining = length - copied;
         uint16_t packet = remaining > max_packet ? max_packet :
@@ -1324,8 +1833,9 @@ static int uhci_bulk_transfer_once(uhci_controller_t* controller,
     controller->queue_head->element = UHCI_PTR_TERM;
     if (result != OK) {
         uhci_recover_controller(controller);
-        controller->td_in_use = 0U;
-        controller->buffer_in_use = 0U;
+        controller->sync_td_in_use = 0U;
+        controller->sync_buffer_in_use = 0U;
+        uhci_update_resource_usage(controller);
         return result;
     }
     copied = 0U;
@@ -1348,8 +1858,9 @@ static int uhci_bulk_transfer_once(uhci_controller_t* controller,
         if (direction_in) record->bulk_in_toggle = toggle;
         else record->bulk_out_toggle = toggle;
     }
-    controller->td_in_use = 0U;
-    controller->buffer_in_use = 0U;
+    controller->sync_td_in_use = 0U;
+    controller->sync_buffer_in_use = 0U;
+    uhci_update_resource_usage(controller);
     controller->bulk_transfer_count++;
     if (out_length) *out_length = direction_in ? (uint16_t)copied : length;
     return OK;

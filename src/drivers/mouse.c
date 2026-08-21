@@ -1,5 +1,6 @@
 #include "drivers/mouse.h"
 #include "drivers/idt.h"
+#include "core/input.h"
 #include "core/log.h"
 #include "core/video.h"
 #include "drivers/vesa.h"
@@ -68,6 +69,7 @@ static volatile int queue_tail = 0;
 
 static mouse_callback_t current_callback = 0;
 static int driver_initialized = 0;
+static int input_sink_ready = 0;
 static int last_error = OK;
 static volatile uint32_t dropped_packets = 0;
 static int queue_overflow_logged = 0;
@@ -467,7 +469,7 @@ static void mouse_report_queue_overflow(void) {
 
     queue_overflow_logged = 1;
     last_error = ERR_OVERFLOW;
-    LOG_ERROR("MOUSE", "Fila PS/2 cheia; pacotes foram descartados");
+    LOG_ERROR("MOUSE", "Fila de eventos do mouse cheia; pacotes descartados");
 }
 
 /* ========== Handler de interrupcao (IRQ12) ========== */
@@ -485,19 +487,18 @@ static void mouse_handler(registers_t* regs) {
         /* Valida pacote: bits 6-7 devem ser 0, bit 3 deve ser 1 */
         if ((packet[0] & 0xC0) || !(packet[0] & 0x08)) return;
 
-        int next_tail = (queue_tail + 1) % MOUSE_QUEUE_SIZE;
-        if (next_tail != queue_head) {
-            int32_t dx = packet[1] - ((packet[0] & 0x10) ? 256 : 0);
-            int32_t dy = packet[2] - ((packet[0] & 0x20) ? 256 : 0);
+        input_pointer_event_t event;
+        int result;
 
-            event_queue[queue_tail].dx = dx;
-            event_queue[queue_tail].dy = dy;
-            event_queue[queue_tail].wheel = wheel_supported ?
-                mouse_decode_wheel(packet[3]) : 0;
-            event_queue[queue_tail].buttons = packet[0] & MOUSE_BUTTON_MASK;
-            queue_tail = next_tail;
-        } else {
+        event.dx = packet[1] - ((packet[0] & 0x10) ? 256 : 0);
+        event.dy = packet[2] - ((packet[0] & 0x20) ? 256 : 0);
+        event.wheel = wheel_supported ? mouse_decode_wheel(packet[3]) : 0;
+        event.buttons = packet[0] & MOUSE_BUTTON_MASK;
+        event.source = INPUT_SOURCE_PS2;
+        result = input_publish_pointer(&event);
+        if (result != OK) {
             dropped_packets++;
+            last_error = result;
         }
     }
 }
@@ -517,6 +518,36 @@ static void mouse_restore_interrupts(uint32_t flags) {
     }
 }
 
+static int mouse_enqueue_packet(const mouse_packet_t* value) {
+    uint32_t flags;
+    int next_tail;
+
+    if (!value) return ERR_NULL;
+    flags = mouse_suspend_interrupts();
+    next_tail = (queue_tail + 1) % MOUSE_QUEUE_SIZE;
+    if (next_tail == queue_head) {
+        dropped_packets++;
+        last_error = ERR_OVERFLOW;
+        mouse_restore_interrupts(flags);
+        return ERR_OVERFLOW;
+    }
+    event_queue[queue_tail] = *value;
+    queue_tail = next_tail;
+    mouse_restore_interrupts(flags);
+    return OK;
+}
+
+static int mouse_input_sink(const input_pointer_event_t* event) {
+    mouse_packet_t packet_value;
+
+    if (!event) return ERR_NULL;
+    packet_value.dx = event->dx;
+    packet_value.dy = event->dy;
+    packet_value.wheel = event->wheel;
+    packet_value.buttons = event->buttons & MOUSE_BUTTON_MASK;
+    return mouse_enqueue_packet(&packet_value);
+}
+
 static int mouse_init_fail(int error, const char* message, uint32_t flags) {
     driver_initialized = 0;
     last_error = error;
@@ -527,6 +558,7 @@ static int mouse_init_fail(int error, const char* message, uint32_t flags) {
 
 static void mouse_reset_state(void) {
     driver_initialized = 0;
+    input_sink_ready = 0;
     current_callback = 0;
     packet_size = MOUSE_PACKET_STANDARD_SIZE;
     wheel_supported = 0;
@@ -556,6 +588,12 @@ int mouse_init(void) {
 
     LOG_INFO("MOUSE", "Inicializando driver PS/2...");
     mouse_reset_state();
+    result = input_register_pointer_sink(mouse_input_sink);
+    if (result != OK) {
+        LOG_ERROR("MOUSE", "Falha ao registrar consumidor de entrada");
+        return result;
+    }
+    input_sink_ready = 1;
     /* A IRQ1 nao pode consumir respostas da transacao compartilhada PS/2. */
     interrupt_flags = mouse_suspend_interrupts();
 
@@ -658,7 +696,7 @@ void mouse_process_events(void) {
     int old_y;
     int had_old_cursor;
 
-    if (!driver_initialized) return;
+    if (!input_sink_ready) return;
     mouse_report_queue_overflow();
     vesa_mode_t* mode = vesa_get_mode();
     if (!mode || !mode->initialized) return;
@@ -715,7 +753,7 @@ uint8_t mouse_get_buttons(void) {
 }
 
 int mouse_has_wheel(void) {
-    if (!driver_initialized) {
+    if (!input_sink_ready) {
         LOG_WARN("MOUSE", "Consulta de roda antes da inicializacao");
         return 0;
     }
@@ -749,7 +787,7 @@ int mouse_get_status(mouse_status_t* status) {
 }
 
 int mouse_set_speed(uint8_t speed) {
-    if (!driver_initialized) {
+    if (!input_sink_ready) {
         last_error = ERR_UNAVAILABLE;
         LOG_ERROR("MOUSE", "Velocidade recusada; driver indisponivel");
         return ERR_UNAVAILABLE;
@@ -764,7 +802,7 @@ int mouse_set_speed(uint8_t speed) {
 }
 
 int mouse_set_acceleration(int enabled) {
-    if (!driver_initialized) {
+    if (!input_sink_ready) {
         last_error = ERR_UNAVAILABLE;
         LOG_ERROR("MOUSE", "Aceleracao recusada; driver indisponivel");
         return ERR_UNAVAILABLE;
@@ -779,7 +817,7 @@ int mouse_set_acceleration(int enabled) {
 }
 
 int mouse_set_primary_button(mouse_primary_button_t primary_button) {
-    if (!driver_initialized) {
+    if (!input_sink_ready) {
         last_error = ERR_UNAVAILABLE;
         LOG_ERROR("MOUSE", "Botao principal recusado; driver indisponivel");
         return ERR_UNAVAILABLE;

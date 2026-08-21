@@ -5,6 +5,7 @@
 #include "core/string.h"
 #include "drivers/pci.h"
 #include "drivers/uhci.h"
+#include "drivers/usb_hid.h"
 #include "drivers/usb_msc.h"
 
 #define USB_HEX_DIGITS_BYTE 2U
@@ -270,6 +271,9 @@ static void usb_apply_runtime_controller(uint32_t index) {
     usb_status.irq_initialized = 1U;
     usb_status.transfer_available = 1U;
     if (runtime.bulk_transfer_ready) usb_status.bulk_transfer_available = 1U;
+    if (runtime.interrupt_transfer_ready) {
+        usb_status.interrupt_transfer_available = 1U;
+    }
     usb_status.dma_td_capacity += runtime.td_capacity;
     usb_status.dma_td_in_use += runtime.td_in_use;
     usb_status.port_count += runtime.port_count;
@@ -307,6 +311,9 @@ static void usb_collect_runtime(void) {
     usb_status.dma_td_in_use = 0U;
     usb_status.class_driver_active = 0U;
     usb_status.msc_device_count = 0U;
+    usb_status.hid_device_count = 0U;
+    usb_status.hid_active_count = 0U;
+    usb_status.interrupt_transfer_available = 0U;
     usb_status.bulk_transfer_available = 0U;
     usb_status.hub_support_active = 0U;
     usb_status.hotplug_active = 0U;
@@ -341,6 +348,27 @@ static void usb_sync_msc_runtime(void) {
         for (uint32_t device = 0U; device < usb_device_count; device++) {
             if (usb_id_matches(usb_devices[device].id, info.id)) {
                 usb_devices[device].class_driver_active = 1U;
+                break;
+            }
+        }
+    }
+}
+
+static void usb_sync_hid_runtime(void) {
+    uint32_t count = 0U;
+
+    usb_status.hid_device_count = 0U;
+    usb_status.hid_active_count = 0U;
+    if (usb_hid_get_count(&count) != OK) return;
+    usb_status.hid_device_count = count;
+    for (uint32_t index = 0U; index < count; index++) {
+        usb_hid_info_t info;
+
+        if (usb_hid_get_at(index, &info) != OK || !info.active) continue;
+        usb_status.hid_active_count++;
+        for (uint32_t device = 0U; device < usb_device_count; device++) {
+            if (usb_id_matches(usb_devices[device].id, info.id)) {
+                usb_devices[device].hid_driver_active = 1U;
                 break;
             }
         }
@@ -390,6 +418,7 @@ static int usb_start_controllers(void) {
 int usb_manager_init(void) {
     int result;
     int msc_result;
+    int hid_result;
 
     LOG_INFO("USB", "Inicializando inventario e runtime USB");
     usb_manager_initialized = 1;
@@ -408,6 +437,11 @@ int usb_manager_init(void) {
         LOG_WARN("USB", "Um ou mais dispositivos MSC ficaram degradados");
     }
     usb_sync_msc_runtime();
+    hid_result = usb_hid_init();
+    if (hid_result != OK) {
+        LOG_WARN("USB", "Um ou mais dispositivos HID ficaram degradados");
+    }
+    usb_sync_hid_runtime();
     usb_status.initialized = 1U;
     usb_sync_recovery(result);
     if (result == ERR_OVERFLOW) LOG_WARN("USB", "Inventario USB parcial");
@@ -418,6 +452,7 @@ int usb_manager_init(void) {
 int usb_manager_refresh(void) {
     int result;
     int msc_result;
+    int hid_result;
 
     if (!usb_manager_initialized) {
         LOG_ERROR("USB", "Atualizacao antes da inicializacao USB");
@@ -437,6 +472,11 @@ int usb_manager_refresh(void) {
         LOG_WARN("USB", "Atualizacao MSC encontrou dispositivo degradado");
     }
     usb_sync_msc_runtime();
+    hid_result = usb_hid_refresh();
+    if (hid_result != OK) {
+        LOG_WARN("USB", "Atualizacao HID encontrou dispositivo degradado");
+    }
+    usb_sync_hid_runtime();
     usb_status.initialized = 1U;
     usb_sync_recovery(result);
     if (result == ERR_OVERFLOW) LOG_WARN("USB", "Inventario USB atualizado parcialmente");
@@ -528,6 +568,7 @@ int usb_manager_poll(uint32_t budget, uint32_t* out_processed) {
     }
     usb_collect_runtime();
     usb_sync_msc_runtime();
+    usb_sync_hid_runtime();
     usb_sync_recovery(OK);
     return OK;
 }
@@ -640,7 +681,10 @@ int usb_manager_format_device_text(const usb_device_info_t* info,
     usb_set_text(out_text->controller_id, USB_CONTROLLER_ID_SIZE,
                  info->controller_id);
     usb_set_text(out_text->detail, USB_CONTROLLER_DETAIL_SIZE,
-                 info->class_driver_active ? "Driver de classe ativo" :
+                 info->class_driver_active && info->hid_driver_active ?
+                 "Drivers MSC e HID ativos" :
+                 info->class_driver_active ? "Driver MSC ativo" :
+                 info->hid_driver_active ? "Driver HID ativo" :
                  "Configurado; sem driver de classe USB");
     return OK;
 }
@@ -657,6 +701,8 @@ int usb_manager_validate_state(void) {
         usb_port_count > USB_MANAGER_MAX_PORTS ||
         usb_device_count > USB_MANAGER_MAX_DEVICES ||
         usb_status.msc_device_count > USB_MSC_MAX_DEVICES ||
+        usb_status.hid_device_count > USB_HID_MAX_DEVICES ||
+        usb_status.hid_active_count > usb_status.hid_device_count ||
         usb_status.class_driver_active !=
         (usb_status.msc_device_count != 0U) ||
         usb_status.hub_support_active ||
@@ -698,6 +744,10 @@ int usb_manager_validate_state(void) {
     }
     if (usb_msc_validate_state() != OK) {
         LOG_ERROR("USB", "Estado MSC inconsistente");
+        return ERR_STATE;
+    }
+    if (usb_hid_validate_state() != OK) {
+        LOG_ERROR("USB", "Estado HID inconsistente");
         return ERR_STATE;
     }
     for (uint32_t index = 0; index < usb_port_count; index++) {
@@ -748,6 +798,11 @@ int usb_manager_validate_state(void) {
                 LOG_ERROR("USB", "Driver de classe USB sem registro MSC");
                 return ERR_STATE;
             }
+        }
+        if (device->hid_driver_active &&
+            !usb_hid_is_active(device->id)) {
+            LOG_ERROR("USB", "Driver HID sem requisicao Interrupt ativa");
+            return ERR_STATE;
         }
     }
     return OK;

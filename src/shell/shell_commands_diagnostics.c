@@ -28,6 +28,8 @@
 #include "memory/paging.h"
 #include "core/string.h"
 #include "core/errors.h"
+#include "core/input.h"
+#include "core/irq_deferred.h"
 #include "core/log.h"
 #include "drivers/mouse.h"
 #include "ui/gui.h"
@@ -35,6 +37,7 @@
 #include "core/recovery.h"
 #include "core/device_manager.h"
 #include "core/usb_manager.h"
+#include "drivers/usb_hid.h"
 #include "drivers/usb_msc.h"
 #include "core/arp.h"
 #include "core/dhcp.h"
@@ -301,6 +304,8 @@ static void cmd_health_print_migrated_builtin(shell_builtin_app_t app) {
     video_print("\n", 0x07);
 }
 
+static void cmd_health_print_usb_hid(void);
+
 static void cmd_health_print_user_fault(void) {
     process_user_fault_summary_t fault;
     uint32_t fault_count = process_get_user_fault_count();
@@ -486,6 +491,39 @@ static void cmd_health_print_kernel(void) {
     shell_command_print_num(paging_user.directories_released);
     video_print(" rejeicoes=", 0x08);
     shell_command_print_num(paging_user.rejected_releases);
+    video_print("\n", 0x07);
+    cmd_health_print_usb_hid();
+}
+
+static void cmd_health_print_usb_hid(void) {
+    usb_manager_status_t usb_status;
+    input_metrics_t input_metrics;
+    irq_deferred_status_t deferred_status;
+
+    video_print("  USB HID: ", 0x07);
+    if (usb_manager_get_status(&usb_status) != OK) {
+        video_print("DISABLED\n", 0x0C);
+        return;
+    }
+    video_print(usb_status.interrupt_transfer_available ? "READY" :
+                "DEGRADED", usb_status.interrupt_transfer_available ?
+                0x0A : 0x0E);
+    video_print("  ativos=", 0x08);
+    shell_command_print_num(usb_status.hid_active_count);
+    video_print("  registrados=", 0x08);
+    shell_command_print_num(usb_status.hid_device_count);
+    if (input_get_metrics(&input_metrics) == OK) {
+        video_print("  fila_kbd=", 0x08);
+        shell_command_print_num(input_metrics.key_queued);
+        video_print("  fila_ptr=", 0x08);
+        shell_command_print_num(input_metrics.pointer_queued);
+    }
+    if (irq_deferred_get_status(&deferred_status) == OK) {
+        video_print("  diferidos=", 0x08);
+        shell_command_print_num(deferred_status.queued);
+        video_print("/", 0x08);
+        shell_command_print_num(deferred_status.capacity);
+    }
     video_print("\n", 0x07);
 }
 
@@ -764,6 +802,7 @@ static void cmd_health_print_summary_kernel(void) {
                     heap.valid ? 0x0A : 0x0E);
     }
     video_print("\n", 0x07);
+    cmd_health_print_usb_hid();
 }
 
 static void cmd_health_summary(void) {
@@ -1532,6 +1571,10 @@ static void cmd_usb_status(void) {
     video_print("  Bulk: ", 0x07);
     video_print(status.bulk_transfer_available ? "READY" : "INDISPONIVEL",
                 status.bulk_transfer_available ? 0x0A : 0x0E);
+    video_print("  Interrupt: ", 0x07);
+    video_print(status.interrupt_transfer_available ? "READY" :
+                "INDISPONIVEL", status.interrupt_transfer_available ?
+                0x0A : 0x0E);
     video_print("\n  Portas: ", 0x07);
     shell_command_print_num(status.port_count);
     video_print("  Dispositivos: ", 0x07);
@@ -1542,6 +1585,11 @@ static void cmd_usb_status(void) {
     shell_command_print_num(status.dma_td_capacity);
     video_print("\n  MSC ativos: ", 0x07);
     shell_command_print_num(status.msc_device_count);
+    video_print("  HID: ", 0x07);
+    shell_command_print_num(status.hid_active_count);
+    video_print(" ativos / ", 0x08);
+    shell_command_print_num(status.hid_device_count);
+    video_print(" registrados", 0x08);
     video_print("  Hubs: INDISPONIVEL  Hotplug: INDISPONIVEL", 0x08);
     video_print("\n  Ultimo erro: ", 0x07);
     shell_command_print_num((uint32_t)status.last_error);
@@ -1698,8 +1746,21 @@ static void cmd_usb_devices(const char* args) {
         video_print(device.configuration_descriptor_valid ? "OK" : "INVALID",
                     0x0A);
         video_print("\n    Classe: ", 0x08);
-        video_print(device.class_driver_active ? "MSC ativo" : "sem driver",
-                    device.class_driver_active ? 0x0A : 0x08);
+        if (device.class_driver_active && device.hid_driver_active) {
+            video_print("MSC e HID ativos", 0x0A);
+        } else if (device.class_driver_active) {
+            video_print("MSC ativo", 0x0A);
+        } else if (device.hid_driver_active) {
+            video_print("HID ativo", 0x0A);
+        } else {
+            video_print("sem driver", 0x08);
+        }
+        if (device.interrupt_in_endpoint) {
+            video_print("  Interrupt IN 0x", 0x07);
+            shell_command_print_hex(device.interrupt_in_endpoint, 2U);
+            video_print("/", 0x07);
+            shell_command_print_num(device.interrupt_in_max_packet);
+        }
         video_print("  Hub: nao  Estado: ", 0x08);
         video_print(device.state == USB_DEVICE_CONFIGURED ? "CONFIGURED" :
                     "DEGRADED", device.state == USB_DEVICE_CONFIGURED ?
@@ -1833,6 +1894,84 @@ static void cmd_usb_device(const char* args) {
     video_print("\n", 0x07);
 }
 
+static void cmd_usb_hid(const char* args) {
+    uint32_t count = 0U;
+
+    if (shell_command_args_equal(args, "check")) {
+        int hid_result = usb_hid_validate_state();
+        int input_result = input_validate_state();
+        int deferred_result = irq_deferred_validate_state();
+
+        if (hid_result == OK && input_result == OK &&
+            deferred_result == OK) {
+            video_print("USB HID check: OK\n", 0x0A);
+        } else {
+            LOG_ERROR("SHELL", "USB HID check detectou estado invalido");
+            video_print("USB HID check: FALHOU hid=", 0x0C);
+            shell_command_print_num((uint32_t)hid_result);
+            video_print(" input=", 0x0C);
+            shell_command_print_num((uint32_t)input_result);
+            video_print(" deferred=", 0x0C);
+            shell_command_print_num((uint32_t)deferred_result);
+            video_print("\n", 0x0C);
+        }
+        return;
+    }
+    if (!shell_command_args_equal(args, "") &&
+        !shell_command_args_equal(args, "status")) {
+        LOG_WARN("SHELL", "Uso invalido de usb hid");
+        video_print("Uso: usb hid status|check\n", 0x0C);
+        return;
+    }
+    if (usb_hid_get_count(&count) != OK) {
+        LOG_ERROR("SHELL", "Contagem HID indisponivel");
+        video_print("Erro: inventario USB HID indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("USB HID Boot: ", 0x0B);
+    shell_command_print_num(count);
+    video_print(" registro(s)\n", 0x07);
+    for (uint32_t index = 0U; index < count; index++) {
+        usb_hid_info_t info;
+
+        if (usb_hid_get_at(index, &info) != OK) {
+            LOG_ERROR("SHELL", "Falha ao consultar entrada HID");
+            video_print("Erro: entrada USB HID indisponivel.\n", 0x0C);
+            return;
+        }
+        video_print("  ID: ", 0x07);
+        video_print(info.id, 0x0A);
+        video_print("  ", 0x07);
+        video_print(usb_hid_kind_name(info.kind), 0x07);
+        video_print("  Estado: ", 0x07);
+        video_print(usb_hid_state_name(info.state),
+                    info.state == USB_HID_STATE_READY ? 0x0A : 0x0E);
+        video_print("  ativo=", 0x08);
+        shell_command_print_num(info.active);
+        video_print("\n    Endpoint IN 0x", 0x07);
+        shell_command_print_hex(info.interrupt_endpoint, 2U);
+        video_print(" packet=", 0x07);
+        shell_command_print_num(info.max_packet);
+        video_print(" interval=", 0x07);
+        shell_command_print_num(info.interval);
+        video_print("\n    Relatorios=", 0x07);
+        shell_command_print_num(info.report_count);
+        video_print(" malformed=", 0x08);
+        shell_command_print_num(info.malformed_count);
+        video_print(" timeout=", 0x08);
+        shell_command_print_num(info.timeout_count);
+        video_print(" erros=", 0x08);
+        shell_command_print_num(info.error_count);
+        video_print(" descartes=", 0x08);
+        shell_command_print_num(info.dropped_count);
+        video_print(" cancelamentos=", 0x08);
+        shell_command_print_num(info.cancel_count);
+        video_print(" erro=", 0x08);
+        shell_command_print_num((uint32_t)info.last_error);
+        video_print("\n", 0x07);
+    }
+}
+
 static void cmd_usb(const char* args) {
     const char* subargs;
 
@@ -1856,13 +1995,19 @@ static void cmd_usb(const char* args) {
         cmd_usb_storage("");
         return;
     }
+    subargs = shell_command_match_subcommand(args, "hid");
+    if (subargs) {
+        cmd_usb_hid(subargs);
+        return;
+    }
     subargs = shell_command_match_subcommand(args, "device");
     if (subargs) {
         cmd_usb_device(subargs);
         return;
     }
     LOG_WARN("SHELL", "Uso invalido do comando usb");
-    video_print("Uso: usb status|list|ports|devices|storage|device <id>\n", 0x0E);
+    video_print("Uso: usb status|list|ports|devices|storage|hid|device <id>\n",
+                0x0E);
 }
 
 int shell_diagnostics_run_device_scan(shell_device_scan_result_t* scan) {
@@ -2801,6 +2946,7 @@ void shell_diagnostics_print_usb_fixture_report(void) {
     cmd_usb_list("");
     cmd_usb_ports("");
     cmd_usb_devices("");
+    cmd_usb_hid("status");
     cmd_usb_storage("");
     for (uint32_t index = 0U; index < controller_count; index++) {
         usb_controller_info_t info;

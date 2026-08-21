@@ -253,14 +253,16 @@ forma controlada e aparecem no `health`; apenas `power_shutdown()` e terminal.
   classe `0x0C`, subclasse `0x03`. ProgIF `0x00` e UHCI, `0x20` e EHCI e os
   demais ficam fora do escopo. O servico copia vendor/device, classe, BDF, IRQ
   e seis BARs do snapshot PCI, limita-se a oito entradas e expoe `usb status`,
-  `usb list`, `usb device <id>`, `usb ports` e `usb devices`.
+  `usb list`, `usb device <id>`, `usb ports`, `usb devices`, `usb storage` e
+  `usb hid`.
 - `uhci`: inicializa somente controladores UHCI apos o inventario PCI. Valida
   BAR I/O e IRQ, habilita I/O e bus mastering apenas nesse ProgIF, aloca frame
   list de 1024 entradas, queue head, TDs e buffers DMA alinhados, registra IRQ
   compartilhada e executa controle USB com deadlines baseados em ticks. A
   enumeracao fica restrita a portas raiz, Device/Configuration, uma interface
-  e `SET_CONFIGURATION`; nao ha hubs, hot-plug, strings, HID ou driver de
-  classe. EHCI nunca acessa BAR, I/O, DMA ou IRQ.
+  e `SET_CONFIGURATION`; nao ha hubs, hot-plug ou strings. A EP4.4 acrescenta
+  somente endpoints Interrupt IN para HID Boot, sem parser generico de Report
+  Descriptor. EHCI nunca acessa BAR, I/O, DMA ou IRQ.
 - `usb_msc`: apos a enumeracao UHCI, reconhece somente interfaces MSC BOT
   SCSI com exatamente um Bulk IN e um Bulk OUT. Executa INQUIRY, TEST UNIT
   READY, READ CAPACITY(10) e READ(10), publica LUN 0 como provedor somente-
@@ -693,10 +695,14 @@ inventario parcial ou somente EHCI deixa USB `DEGRADED`. Sem PCI ou sem
 controlador USB, USB fica `DISABLED`. `device-scan` atualiza o inventario de
 forma idempotente e o polling UHCI roda nos loops normal e fallback do kernel.
 
-Na EP4.3, um teclado USB configurado continua sendo apenas um dispositivo USB
-sem driver de classe e nao degrada o health. Somente um MSC BOT validado conta
-como driver de classe ativo; falhas SCSI/BOT marcam o registro MSC como
-`DEGRADED`, preservando o controlador UHCI e os demais dispositivos.
+Na EP4.3, somente um MSC BOT validado conta como driver de classe ativo; falhas
+SCSI/BOT marcam o registro MSC como `DEGRADED`, preservando o controlador UHCI
+e os demais dispositivos. Na EP4.4, interfaces HID Boot de teclado e mouse
+publicam eventos no `input core` comum por transferencias Interrupt IN
+persistentes. `usb hid status` exibe relatorios, erros, timeouts, descartes e
+cancelamentos; `usb hid check` valida o driver HID, as filas de entrada e a
+fila de conclusoes diferidas. Hubs, hot-plug real e HID generico continuam
+fora do escopo.
 
 O contrato detalhado esta em
 [`app-store.md`](../13-aplicativos/app-store.md).

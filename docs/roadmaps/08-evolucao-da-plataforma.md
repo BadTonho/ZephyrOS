@@ -315,13 +315,34 @@ continuam fora do escopo.
 
 ### EP4.4 - Interrupt e USB HID
 
-- [ ] Implementar transferencias Interrupt através do despachante assíncrono,
-  sem bloqueios por espera ocupada na CPU.
-- [ ] Adicionar teclado e mouse HID somente como fontes adicionais de eventos de
-  entrada, roteando para a fila global de input sem alterar o foco nem
-  substituir os drivers PS/2 existentes.
-- [ ] Validar desconexao, pacote invalido, timeout e dispositivo ausente sem
+**Estado:** implementada no código; validação manual do usuário pendente.
+
+**Implementação registrada em:** 21/08/2026 12:10:35 (America/Sao_Paulo).
+
+- [x] Implementar transferências Interrupt através do despachante assíncrono,
+  sem bloqueios por espera ocupada na CPU, com QH/TD/buffer persistentes,
+  deadlines, toggle, cancelamento e proteção contra callback atrasado.
+- [x] Adicionar teclado e mouse HID somente como fontes adicionais de eventos de
+  entrada, roteando para o `input core` comum sem alterar o foco nem substituir
+  os drivers PS/2 existentes.
+- [x] Adicionar diagnósticos `usb hid status` e `usb hid check`, estado HID em
+  `health` e `regcheck full`, e o alvo `run-usb-hid`.
+- [x] Rejeitar rollover, tamanhos inválidos e relatórios malformados sem travar
+  o kernel; cancelar requisições HID durante refresh ou ausência do dispositivo.
+- [ ] Validar desconexão, pacote inválido, timeout e dispositivo ausente sem
   travar kernel, Shell ou interfaces gráficas.
+
+### Matriz de validação pendente da EP4.4
+
+- [ ] `make q3check` e `make clean && make`.
+- [ ] `make run` sem USB, preservando PS/2.
+- [ ] `make run-usb-hid` com teclado e mouse USB no Shell e no Desktop Classic.
+- [ ] F12/Esc cancelando `net check`, `ping` e HTTP; modificadores, Enter,
+  Backspace, setas, teclas de função, clique, arrasto e roda.
+- [ ] USB ausente, endpoint inválido, relatório malformado, timeout,
+  cancelamento e refresh sem callback tardio ou evento de dispositivo removido.
+- [ ] Regressão de MSC, ATA, rede, `health summary`, `memcheck` e
+  `regcheck full`.
 
 ### Criterio de saida
 

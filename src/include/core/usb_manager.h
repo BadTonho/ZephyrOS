@@ -19,6 +19,9 @@
 #define USB_UHCI_BUFFER_CAPACITY 8U
 #define USB_UHCI_DESCRIPTOR_BUFFER_SIZE 512U
 #define USB_UHCI_BULK_BUFFER_SIZE 1024U
+#define USB_UHCI_INTERRUPT_CAPACITY USB_UHCI_PORT_COUNT
+#define USB_UHCI_INTERRUPT_BUFFER_SIZE 64U
+#define USB_UHCI_INTERRUPT_BUFFER_OFFSET 2048U
 #define USB_CONTROLLER_IRQ_UNKNOWN 0xFFU
 #define USB_CONTROLLER_PCI_CLASS 0x0CU
 #define USB_CONTROLLER_PCI_SUBCLASS 0x03U
@@ -127,6 +130,9 @@ typedef struct {
     uint32_t msc_device_count;
     uint8_t bulk_transfer_available;
     int last_error;
+    uint32_t hid_device_count;
+    uint32_t hid_active_count;
+    uint8_t interrupt_transfer_available;
 } usb_manager_status_t;
 
 typedef struct {
@@ -156,6 +162,13 @@ typedef struct {
     uint32_t recovery_count;
     uint32_t bulk_transfer_count;
     int last_error;
+    uint8_t interrupt_transfer_ready;
+    uint8_t interrupt_request_count;
+    uint8_t interrupt_active_count;
+    uint32_t interrupt_transfer_count;
+    uint32_t interrupt_timeout_count;
+    uint32_t interrupt_error_count;
+    uint32_t interrupt_cancel_count;
 } usb_uhci_status_t;
 
 typedef struct {
@@ -207,6 +220,11 @@ typedef struct {
     uint8_t hub_present;
     uint8_t device_descriptor_valid;
     uint8_t configuration_descriptor_valid;
+    uint8_t interrupt_in_endpoint;
+    uint8_t interrupt_in_count;
+    uint16_t interrupt_in_max_packet;
+    uint8_t interrupt_interval;
+    uint8_t hid_driver_active;
 } usb_device_info_t;
 
 typedef struct {

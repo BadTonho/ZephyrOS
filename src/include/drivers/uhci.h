@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "core/usb_manager.h"
+#include "core/irq_deferred.h"
 #include "drivers/pci.h"
 
 #define UHCI_IO_SPACE_BYTES 0x20U
@@ -18,6 +19,11 @@
 #define UHCI_POLL_BUDGET 4U
 #define UHCI_BULK_TIMEOUT_MS 500U
 #define UHCI_BULK_BUFFER_OFFSET 1024U
+#define UHCI_INTERRUPT_TIMEOUT_MS 1000U
+
+typedef void (*uhci_interrupt_callback_t)(void* context, int result,
+                                           const uint8_t* data,
+                                           uint16_t length);
 
 int uhci_init(const pci_device_t* pci, const char* controller_id);
 int uhci_poll(uint32_t budget, uint32_t* out_processed);
@@ -41,5 +47,12 @@ int uhci_bulk_transfer(const usb_device_info_t* device,
                        uint8_t* buffer, uint16_t length,
                        uint16_t* out_length);
 int uhci_reset_bulk_toggles(const usb_device_info_t* device);
+int uhci_interrupt_submit(const usb_device_info_t* device,
+                          uint8_t endpoint_address, uint16_t max_packet,
+                          uint8_t interval,
+                          uhci_interrupt_callback_t callback,
+                          void* context);
+int uhci_interrupt_cancel(const usb_device_info_t* device,
+                          uint8_t endpoint_address);
 
 #endif

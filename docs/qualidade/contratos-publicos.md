@@ -46,6 +46,8 @@ sem alterar suas assinaturas públicas.
 | `src/include/core/http.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/icmp.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/ipv4.h` | `docs/04-kernel/kernel.md` |
+| `src/include/core/input.h` | `docs/05-drivers/drivers.md` |
+| `src/include/core/irq_deferred.h` | `docs/05-drivers/drivers.md` |
 | `src/include/core/keyboard.h` | `docs/05-drivers/drivers.md` |
 | `src/include/core/log.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/memory.h` | `docs/04-kernel/kernel.md` |
@@ -67,6 +69,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/core/update_trust.h` | `docs/14-atualizacoes/contrato-zupd-v1.md` |
 | `src/include/core/usb_manager.h` | `docs/04-kernel/kernel.md` |
 | `src/include/drivers/uhci.h` | `docs/05-drivers/drivers.md` |
+| `src/include/drivers/usb_hid.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/usb_msc.h` | `docs/05-drivers/drivers.md` |
 | `src/include/core/video.h` | `docs/05-drivers/drivers.md` |
 | `src/include/core/version.h` | `docs/04-kernel/kernel.md` |
@@ -285,3 +288,15 @@ endpoints Bulk, capacidade, contadores BOT e validacao. O ID USB preserva a
 sessao UHCI no formato `usb-ms-BB:DD.F-pN-aN-l0`; `run-usb` continua apenas
 com teclado e `run-usb-msc` acrescenta a fixture `storage-valid.img` em modo
 somente-leitura.
+
+Desde a EP4.4, `src/include/core/input.h` define eventos HID Usage de teclado,
+eventos relativos de ponteiro, filas estaticas separadas, metricas e despacho
+para os consumidores PS/2 legados. `src/include/core/irq_deferred.h` define a
+fila limitada de conclusoes fora de contexto de IRQ, com cancelamento por
+objeto de trabalho. `src/include/drivers/uhci.h` acrescenta o contrato de
+Interrupt IN persistente, callback diferido e cancelamento; o UHCI reserva
+TDs, buffers e fases periodicas sem alterar Control ou Bulk. `usb_hid.h`
+define o driver HID Boot para teclado/mouse, contadores, estados e validacao.
+`usb hid status` e `usb hid check` inspecionam os contratos; `run-usb-hid`
+conecta teclado e mouse USB ao QEMU. O parser completo de Report Descriptor,
+hubs, hot-plug real e EHCI continuam fora do escopo.

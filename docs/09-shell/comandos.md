@@ -430,9 +430,9 @@ do primeiro disco legado. IDs PCI sao exibidos como `pci-BB:DD.F`. O terminal in
 maiusculas e simbolos, incluindo `:` com `Shift+;`. A forma
 `pci-BB-DD.F` e letras minusculas continuam aceitas como alternativas.
 
-## `usb [status|list|device|ports|devices|storage]`
+## `usb [status|list|device|ports|devices|storage|hid]`
 
-Os comandos USB inspecionam o subsistema USB implementado nas fases EP4.1 a EP4.3:
+Os comandos USB inspecionam o subsistema USB implementado nas fases EP4.1 a EP4.4:
 
 ```text
 zephyr> usb status
@@ -441,14 +441,18 @@ zephyr> usb device usb-pci-00:04.0
 zephyr> usb ports
 zephyr> usb devices
 zephyr> usb storage
+zephyr> usb hid status
+zephyr> usb hid check
 ```
 
-- `usb status`: Exibe o estado consolidado do subsistema (serviço, integridade do inventário, contagem de controladores UHCI/EHCI/outros, disponibilidade de DMA, IRQ, transferências de Controle e Bulk, contagem de portas, dispositivos configurados, ocupação de TDs DMA e MSCs ativos).
+- `usb status`: Exibe o estado consolidado do subsistema (serviço, integridade do inventário, contagem de controladores UHCI/EHCI/outros, disponibilidade de DMA, IRQ, transferências de Controle, Bulk e Interrupt, contagem de portas, dispositivos configurados, ocupação de TDs DMA, MSCs e HID ativos).
 - `usb list`: Lista todos os controladores PCI USB detectados, exibindo ID estável (`usb-pci-BB:DD.F`), estado (`READY`, `DEGRADED`, `DISABLED`), modelo (UHCI, EHCI, Outro) e localização PCI.
 - `usb device <id>`: Exibe informações detalhadas do controlador especificado (BARs, IRQ, classe e recursos).
 - `usb ports`: Lista as portas raiz UHCI com estado (`CONFIGURED`, `DEGRADED`, `EMPTY`), velocidade (Low/Full speed), endereço atribuído e ID de sessão do dispositivo conectado.
 - `usb devices`: Lista os dispositivos USB configurados, detalhando ID (`usb-dev-BB:DD.F-pN-aN`), velocidade, endereço, Vendor/Product ID, Classe/Subclasse/Protocolo, configuração ativa, número de endpoints e validade dos descritores Device/Configuration.
 - `usb storage`: Inspeciona os dispositivos USB Mass Storage (BOT/SCSI) ativos registrados na camada de bloco, detalhando ID de sessão, ID de bloco associado (`usb-ms-BB:DD.F-pN-aN-l0`), LUN, tamanho de setor (512B) e capacidade em setores.
+- `usb hid status`: Lista teclados e mouses USB HID Boot, estado, endpoint Interrupt IN, intervalo, relatórios, erros, timeouts, descartes e cancelamentos.
+- `usb hid check`: Valida os registros HID, as filas do `input core` e a fila de conclusões diferidas.
 
 ## Rede: comandos individuais e diagnostico agrupado
 

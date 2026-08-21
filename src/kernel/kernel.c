@@ -7,6 +7,8 @@
 #include "core/device_manager.h"
 #include "core/network_manager.h"
 #include "core/usb_manager.h"
+#include "core/input.h"
+#include "core/irq_deferred.h"
 #include "core/power.h"
 #include "core/recovery.h"
 #include "core/app_api.h"
@@ -55,10 +57,12 @@
 
 #define SHELL_KEYBOARD_DISPATCH_BUDGET (IPC_MSG_QUEUE_SIZE / 2U)
 #define KERNEL_USB_POLL_BUDGET 4U
+#define KERNEL_DEFERRED_DISPATCH_BUDGET 8U
 
 static int kernel_service_fallback = 0;
 static int kernel_network_poll_enabled = 1;
 static int kernel_usb_poll_enabled = 1;
+static int kernel_deferred_enabled = 1;
 static uint32_t kernel_shell_pid = 0;
 static volatile uint32_t kernel_pending_shell_request = 0;
 static uint32_t kernel_last_process_event_generation = 0;
@@ -386,13 +390,22 @@ static void kernel_poll_usb(void) {
     }
 }
 
+static void kernel_dispatch_deferred_work(void) {
+    uint32_t processed = 0U;
+
+    if (!kernel_deferred_enabled) return;
+    if (irq_deferred_dispatch(KERNEL_DEFERRED_DISPATCH_BUDGET,
+                              &processed) != OK) {
+        kernel_deferred_enabled = 0;
+        LOG_ERROR("KERNEL", "Fila de conclusoes diferidas foi desabilitada");
+    }
+}
+
 void system_process_main(void) {
     while (1) {
         uint32_t network_processed = 0;
         uint32_t index_steps = 0;
 
-        keyboard_process_events();
-        mouse_process_events();
         if (kernel_network_poll_enabled &&
             network_manager_poll(&network_processed) != OK) {
             kernel_network_poll_enabled = 0;
@@ -401,6 +414,9 @@ void system_process_main(void) {
         }
         if (network_processed > 0U) kernel_wake_shell_for_event();
         kernel_poll_usb();
+        kernel_dispatch_deferred_work();
+        keyboard_process_events();
+        mouse_process_events();
         if (kernel_dispatch_timers() > 0U) kernel_wake_shell_for_event();
         if (file_index_poll(1U, &index_steps) != OK || index_steps > 0U) {
             kernel_wake_shell_for_event();
@@ -569,6 +585,13 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     idt_init();
     video_print("[OK] IDT configurada\n", 0x07);
 
+    video_print("[..] Iniciando nucleo de entrada...\n", 0x08);
+    if (input_init() != OK) {
+        LOG_ERROR("KERNEL", "Falha ao inicializar nucleo de entrada");
+        panic("INPUT: falha ao inicializar nucleo de entrada");
+    }
+    video_print("[OK] Nucleo de entrada HID/PS2\n", 0x07);
+
     video_print("[..] Iniciando teclado...\n", 0x08);
     keyboard_init();
     video_print("[OK] Driver de teclado PS/2\n", 0x07);
@@ -579,6 +602,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         mouse_set_callback(global_mouse_handler);
         video_print("[OK] Driver de mouse PS/2\n", 0x07);
     } else {
+        mouse_set_callback(global_mouse_handler);
         LOG_ERROR("KERNEL", "Mouse PS/2 indisponivel; mantendo teclado e Shell");
         video_print("[!!] Mouse PS/2 indisponivel; usando teclado\n", 0x0E);
     }
@@ -687,6 +711,11 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     video_print("[..] Iniciando threads...\n", 0x08);
     thread_init();
     video_print("[OK] Thread scheduler pronto\n", 0x07);
+    if (irq_deferred_init() != OK) {
+        kernel_deferred_enabled = 0;
+        LOG_ERROR("KERNEL", "Fila de conclusoes diferidas indisponivel");
+        video_print("[!!] Conclusoes USB diferidas indisponiveis\n", 0x0E);
+    }
 
     video_print("[..] Detectando disco...\n", 0x08);
     int ata_result = ata_init();
@@ -1061,8 +1090,6 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
             uint32_t network_processed = 0;
             uint32_t index_steps = 0;
 
-            keyboard_process_events();
-            mouse_process_events();
             if (kernel_network_poll_enabled &&
                 network_manager_poll(&network_processed) != OK) {
                 kernel_network_poll_enabled = 0;
@@ -1072,6 +1099,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
             }
             if (network_processed > 0U) kernel_wake_shell_for_event();
             kernel_poll_usb();
+            kernel_dispatch_deferred_work();
+            keyboard_process_events();
+            mouse_process_events();
             if (kernel_dispatch_timers() > 0U) kernel_wake_shell_for_event();
             if (file_index_poll(1U, &index_steps) != OK || index_steps > 0U) {
                 kernel_wake_shell_for_event();
