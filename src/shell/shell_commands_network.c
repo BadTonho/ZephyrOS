@@ -3963,11 +3963,12 @@ static shell_job_step_result_t shell_network_job_check_report_step(
 
 static shell_job_step_result_t shell_network_job_step(
     shell_job_context_t* context) {
-    dns_status_t dns_status;
-    icmp_status_t icmp_status;
-    http_status_t http_status;
-    dhcp_status_t dhcp_status;
-    uint8_t resolved;
+    /* O processo nativo possui uma pilha de 4 KiB. Esses snapshots sao
+       temporarios e nao podem competir com a pilha profunda dos diagnosticos. */
+    static dns_status_t dns_status;
+    static icmp_status_t icmp_status;
+    static http_status_t http_status;
+    static dhcp_status_t dhcp_status;
     int result;
 
     if (!context) return SHELL_JOB_STEP_FAILED;
