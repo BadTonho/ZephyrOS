@@ -115,7 +115,7 @@ When adding new source files, place them in the correct directory:
   selectable before it is implemented.
 
 ### 8. Shell Test Command Requirement
-Whenever implementing a new executable feature, driver, or hardware capability, you **MUST** register a corresponding interactive command in `src/shell/shell.c` so it can be tested and inspected from the command line.
+Whenever implementing a new executable feature, driver, or hardware capability, you **MUST** register a corresponding interactive command in `src/shell/shell_dispatch.c` (with its handler in the appropriate `src/shell/shell_commands_*.c` module) so it can be tested and inspected from the command line.
 
 ---
 
