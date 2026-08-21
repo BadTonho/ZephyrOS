@@ -1269,6 +1269,10 @@ def write_u5_fixtures(private_key: Any, output_dir: Path) -> None:
     missing_tag.pop("tag")
     invalid_releases["ep6-no-tag.json"] = missing_tag
     missing_asset = json.loads(json.dumps(releases["ep6-stable.json"]))
+    missing_asset["release_id"] = "ep6-missing-asset"
+    missing_asset["release_name"] = "EP6 fixture missing asset"
+    missing_asset["source_commit"] = "5" * 40
+    missing_asset["tag"] = "ep6-missing-asset"
     missing_asset["assets"].pop("manifest")
     invalid_releases["ep6-missing-asset.json"] = missing_asset
     invalid_releases["ep6-tampered-manifest.json"] = json.loads(
@@ -1299,9 +1303,17 @@ def write_u5_fixtures(private_key: Any, output_dir: Path) -> None:
     )
     invalid_json = "{\n  \"format\": \"zephyros-release-v1\"\n"
     divergent_hash = json.loads(json.dumps(releases["ep6-stable.json"]))
+    divergent_hash["release_id"] = "ep6-divergent-hash"
+    divergent_hash["release_name"] = "EP6 fixture divergent hash"
+    divergent_hash["source_commit"] = "6" * 40
+    divergent_hash["tag"] = "ep6-divergent-hash"
     divergent_hash["assets"]["package"]["sha256"] = "0" * 64
     invalid_releases["ep6-divergent-hash.json"] = divergent_hash
     divergent_lock = json.loads(json.dumps(releases["ep6-stable.json"]))
+    divergent_lock["release_id"] = "ep6-divergent-lock"
+    divergent_lock["release_name"] = "EP6 fixture divergent lock"
+    divergent_lock["source_commit"] = "7" * 40
+    divergent_lock["tag"] = "ep6-divergent-lock"
     divergent_lock["version_lock"]["target_version"] = "0.1.2"
     invalid_releases["ep6-divergent-lock.json"] = divergent_lock
     divergent_tag = json.loads(json.dumps(releases["ep6-stable.json"]))

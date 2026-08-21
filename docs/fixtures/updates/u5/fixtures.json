@@ -65,8 +65,8 @@
       "sha256": "cc5be02e6c1942e9ba9a8ddada5c6f385891ca6404b8eccf49a99f1e4fc89a0b"
     },
     "ep6-missing-asset.json": {
-      "size": 520,
-      "sha256": "354a8e0338f9608898450f725d8ed099868d0e22171b3af3b8023ece92a6198e"
+      "size": 541,
+      "sha256": "48040447327b8d1edac422ac10739f40af3c3169060a9d6ba095570ab3e64cb4"
     },
     "ep6-tampered-manifest.json": {
       "size": 710,
@@ -77,12 +77,12 @@
       "sha256": "73e8b322f364f16a0144549cbb3e1bb99cb2bb8742e4d4a08c1553be40b33c02"
     },
     "ep6-divergent-hash.json": {
-      "size": 675,
-      "sha256": "25d153936b626bc39832816a94c77f2029d642672794c61eabeafcbc8db47798"
+      "size": 699,
+      "sha256": "8e8869884ba6513da578d72a4d25c5fd81f8562cd1d71552df5c9b7a7b0cdd28"
     },
     "ep6-divergent-lock.json": {
-      "size": 675,
-      "sha256": "6c2c45f34d4f59f330038cce090b09aaee702be9b84cd38ce8b97176a29be4cf"
+      "size": 699,
+      "sha256": "ca98897acfa7d3f056c5e9416c0f9ea10df931fc8f71b4471150382a3e066b71"
     },
     "ep6-divergent-tag.json": {
       "size": 674,

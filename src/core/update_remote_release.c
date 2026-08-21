@@ -552,7 +552,7 @@ static int update_release_parse_descriptor(
     }
     if (result != OK) {
         LOG_ERROR_CODE("UPDATE", result,
-                       "Version lock da Release invalido");
+                       "Cabecalho ou version lock da Release invalido");
         return result;
     }
     result = update_release_json_expect(&json, ',');

@@ -1,10 +1,10 @@
 {
   "format": "zephyros-release-v1",
-  "release_id": "ep6-stable",
-  "release_name": "EP6 fixture stable",
+  "release_id": "ep6-divergent-lock",
+  "release_name": "EP6 fixture divergent lock",
   "channel": "stable",
-  "source_commit": "1111111111111111111111111111111111111111",
-  "tag": "ep6-stable",
+  "source_commit": "7777777777777777777777777777777777777777",
+  "tag": "ep6-divergent-lock",
   "version_lock": {
     "minimum_version": "0.1.0",
     "target_version": "0.1.2",
