@@ -855,9 +855,14 @@ static int uhci_parse_configuration(uhci_device_record_t* record) {
                 LOG_ERROR("UHCI", "Descritor Interface USB curto");
                 return ERR_INVALID;
             }
-            if (interface_seen ||
-                data[offset + UHCI_INTERFACE_ALTERNATE_OFFSET] != 0U) {
-                LOG_ERROR("UHCI", "Interface USB fora do escopo");
+            if (interface_seen) {
+                LOG_ERROR_CODE("UHCI", ERR_UNAVAILABLE,
+                               "Configuration USB possui mais de uma interface");
+                return ERR_UNAVAILABLE;
+            }
+            if (data[offset + UHCI_INTERFACE_ALTERNATE_OFFSET] != 0U) {
+                LOG_ERROR_CODE("UHCI", ERR_UNAVAILABLE,
+                               "Interface USB usa alternate setting");
                 return ERR_UNAVAILABLE;
             }
             interface_seen = 1U;
@@ -921,17 +926,32 @@ static int uhci_parse_configuration(uhci_device_record_t* record) {
         }
         offset += length;
     }
-    if (configuration_count != 1U || interface_count != UHCI_INTERFACE_COUNT_LIMIT ||
-        !interface_seen || endpoint_count > 16U ||
-        (!endpoint_count && record->info.interface_class != 0U)) {
-        LOG_ERROR("UHCI", "Layout Configuration USB nao suportado");
+    if (configuration_count != 1U) {
+        LOG_ERROR_CODE("UHCI", ERR_UNAVAILABLE,
+                       "Configuration USB sem descritor unico");
+        return ERR_UNAVAILABLE;
+    }
+    if (interface_count != UHCI_INTERFACE_COUNT_LIMIT || !interface_seen) {
+        LOG_ERROR_CODE("UHCI", ERR_UNAVAILABLE,
+                       "Configuration USB sem interface Boot unica");
+        return ERR_UNAVAILABLE;
+    }
+    if (endpoint_count > 16U) {
+        LOG_ERROR_CODE("UHCI", ERR_UNAVAILABLE,
+                       "Configuration USB excede o limite de endpoints");
+        return ERR_UNAVAILABLE;
+    }
+    if (!endpoint_count && record->info.interface_class != 0U) {
+        LOG_ERROR_CODE("UHCI", ERR_UNAVAILABLE,
+                       "Interface USB possui classe sem endpoint");
         return ERR_UNAVAILABLE;
     }
     record->info.endpoint_count = (uint8_t)endpoint_count;
     record->info.hub_present =
         record->info.interface_class == 0x09U ? 1U : 0U;
     if (record->info.hub_present) {
-        LOG_ERROR("UHCI", "Hubs USB nao sao suportados nesta etapa");
+        LOG_ERROR_CODE("UHCI", ERR_UNAVAILABLE,
+                       "Hubs USB nao sao suportados nesta etapa");
         return ERR_UNAVAILABLE;
     }
     record->valid_descriptors = 1U;
