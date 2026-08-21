@@ -7,7 +7,7 @@
 
 #define VGA_WIDTH  100
 #define VGA_HEIGHT 37
-#define VIDEO_SCROLLBACK_LINES 200
+#define VIDEO_SCROLLBACK_LINES 500U
 
 /* O modo VESA 0x118 usado pelo stage2 tem 1024x768 pixels. */
 #define SCREEN_COLS 128

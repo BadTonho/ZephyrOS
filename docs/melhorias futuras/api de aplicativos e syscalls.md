@@ -118,7 +118,7 @@ de `src/include/core/app_api.h` e `src/core/app_api.c`:
 ASCII e so retorna depois de encaminhar o texto ao terminal. Um aplicativo
 pode emitir blocos consecutivos em ordem, sem fila, quota total ou garantia de
 atomicidade entre chamadas; ele deve incluir as proprias quebras de linha e
-encerrar ao primeiro retorno de erro. O scrollback continua limitado a 200
+encerrar ao primeiro retorno de erro. O scrollback continua limitado a 500
 linhas e `F12` e a recuperacao para saida excessiva.
 
 `APP_EXIT_SUCCESS` vale `0`. Um `process_exit` normal com codigo nao-zero e

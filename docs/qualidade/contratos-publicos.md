@@ -9,6 +9,9 @@ geracao de execucao no Shell Job, App Loader, pacotes e operacoes remotas,
 estado de drenagem e deadline, geracao de operacao do indice e contador de
 eventos de processos.
 Nenhuma assinatura de `shell.h` ou ABI ring 3 foi alterada.
+O contrato de `core/video.h` mantém o scrollback textual estático e fixa sua
+capacidade em 500 linhas; `video_print()` agrupa a apresentação de saída longa
+sem alterar suas assinaturas públicas.
 
 | Header publico | Documento canonico |
 |---|---|

@@ -129,7 +129,7 @@ wrap de ticks, capacidade, erro de callback e invariantes.
 
 ## Historico rolavel do Shell
 
-O Shell preserva as ultimas 200 linhas de saida textual. A rolagem funciona
+O Shell preserva as ultimas 500 linhas de saida textual. A rolagem funciona
 somente quando nenhuma aplicacao esta com foco:
 
 - `Shift+Seta para cima` / `Shift+Seta para baixo`: navega uma linha;
@@ -567,6 +567,8 @@ configura IP, nao inicia uma resolucao nem cria transmissao de teste; ele
 consolida as consultas e valida o estado atual. A manutencao de uma resolucao
 ja pendente continua normalmente. Assim, depois de `net arp config` e
 `net arp resolve`, uma unica chamada a `net check <id>` mostra o resultado.
+As secoes sao apresentadas e cedem o processador entre si; a saida extensa nao
+deve bloquear o terminal nem a fila IPC.
 
 `net check qemu <id> <ip-local>` e a variante ativa para o backend de rede
 padrao do QEMU. Ela configura `/24` e gateway `10.0.2.2`, limpa o cache e
@@ -1105,7 +1107,7 @@ Cada chamada `console_write` aceita de 1 a 1024 bytes ASCII e conclui de forma
 sincrona. Um ZAPP pode enviar blocos consecutivos em ordem, mas deve tratar o
 primeiro erro como final e incluir suas proprias quebras de linha. Nao ha fila,
 quota total, historico de comandos ou entrada de linha para aplicativos nesta
-fase; o scrollback do Shell continua limitado a 200 linhas e `F12` cancela o
+fase; o scrollback do Shell continua limitado a 500 linhas e `F12` cancela o
 aplicativo em foco.
 
 O ciclo de vida diferencia falha ao iniciar (`ERRO`), falha isolada (`WARN`),

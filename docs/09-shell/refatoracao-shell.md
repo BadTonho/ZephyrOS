@@ -283,6 +283,11 @@ e conclusao de processo, sem inserir mensagens artificiais na fila IPC. O
 timeout da espera e calculado a partir do deadline do job; o polling fixo de
 um tick e `SHELL_NET_CHECK_BLOCK_TICKS` foram removidos.
 
+O terminal preserva 500 linhas em buffer circular estático. `video_print()`
+agrupa relatórios extensos e recompõe a cauda uma única vez por escrita, para
+que diagnósticos como `net check` não monopolizem o framebuffer durante a
+rolagem.
+
 Resultados do App Loader, indice, rede e adaptadores de pacotes carregam a
 geracao que iniciou a operacao. Resultados antigos sao registrados e
 descartados. `job status` exibe estado, geracao, fase, progresso, erro,
