@@ -462,6 +462,8 @@ Correcao da propagacao de motivos antes dos assets concluida em: 2026-08-21
 19:20 (America/Sao_Paulo).
 Correcao do diagnostico de cabecalho e das rotas das fixtures invalidas
 concluida em: 2026-08-21 19:27 (America/Sao_Paulo).
+Correcao do estado EMPTY apos falha de download sem pacote ativo concluida
+em: 2026-08-21 19:39 (America/Sao_Paulo).
 Validacao funcional pelo usuario pendente apos `make clean && make`.
 
 A matriz EP6.0 cobre duas tags validas, tag ausente/invalida/inexistente,
