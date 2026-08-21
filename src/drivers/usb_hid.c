@@ -221,7 +221,9 @@ static int hid_process_mouse(usb_hid_record_t* record,
         return ERR_INVALID;
     }
     event.dx = (int8_t)report[1];
-    event.dy = (int8_t)report[2];
+    /* HID usa Y positivo para baixo; o input comum segue o contrato PS/2,
+       no qual Y positivo representa movimento para cima. */
+    event.dy = -(int8_t)report[2];
     event.wheel = length >= USB_HID_MOUSE_REPORT_MAX_SIZE ?
                   (int8_t)report[3] : 0;
     event.buttons = report[0] & USB_HID_BUTTON_MASK;
