@@ -294,8 +294,9 @@ eventos relativos de ponteiro, filas estaticas separadas, metricas e despacho
 para os consumidores PS/2 legados. `src/include/core/irq_deferred.h` define a
 fila limitada de conclusoes fora de contexto de IRQ, com cancelamento por
 objeto de trabalho. `src/include/drivers/uhci.h` acrescenta o contrato de
-Interrupt IN persistente, callback diferido e cancelamento; o UHCI reserva
-TDs, buffers e fases periodicas sem alterar Control ou Bulk. `usb_hid.h`
+Interrupt IN persistente, callback diferido, cancelamento e diagnostico
+explicito de portas degradadas; o UHCI reserva TDs, buffers e fases periodicas
+sem alterar Control ou Bulk. `usb_hid.h`
 define o driver HID Boot para teclado/mouse, contadores, estados e validacao.
 `usb hid status` e `usb hid check` inspecionam os contratos; `run-usb-hid`
 conecta teclado e mouse USB ao QEMU. O parser completo de Report Descriptor,

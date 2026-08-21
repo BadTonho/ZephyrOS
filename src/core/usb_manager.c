@@ -467,6 +467,16 @@ int usb_manager_refresh(void) {
     }
     usb_start_controllers();
     usb_collect_runtime();
+    for (uint32_t index = 0U; index < usb_status.controller_count; index++) {
+        usb_controller_info_t* info = &usb_controllers[index];
+
+        if (info->model != USB_CONTROLLER_MODEL_UHCI ||
+            !info->uhci_initialized) continue;
+        if (uhci_log_port_diagnostics(info->bus, info->device,
+                                      info->function) != OK) {
+            LOG_WARN("USB", "Diagnostico de portas UHCI indisponivel");
+        }
+    }
     msc_result = usb_msc_refresh();
     if (msc_result != OK) {
         LOG_WARN("USB", "Atualizacao MSC encontrou dispositivo degradado");
