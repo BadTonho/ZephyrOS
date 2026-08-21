@@ -458,6 +458,8 @@ Instrumentacao das transicoes JSON de assets EP6.0 concluida em: 2026-08-21
 19:05 (America/Sao_Paulo).
 Correcao do parser numerico com espacos JSON concluida em: 2026-08-21 19:08
 (America/Sao_Paulo).
+Correcao da propagacao de motivos antes dos assets concluida em: 2026-08-21
+19:20 (America/Sao_Paulo).
 Validacao funcional pelo usuario pendente apos `make clean && make`.
 
 A matriz EP6.0 cobre duas tags validas, tag ausente/invalida/inexistente,

@@ -550,7 +550,12 @@ static int update_release_parse_descriptor(
             descriptor->lock.base_epoch) {
         result = ERR_INVALID;
     }
-    if (result == OK) result = update_release_json_expect(&json, ',');
+    if (result != OK) {
+        LOG_ERROR_CODE("UPDATE", result,
+                       "Version lock da Release invalido");
+        return result;
+    }
+    result = update_release_json_expect(&json, ',');
     if (result != OK) {
         *reason_out = UPDATE_REMOTE_REASON_RELEASE_ASSET;
         LOG_ERROR_CODE("UPDATE", result,
