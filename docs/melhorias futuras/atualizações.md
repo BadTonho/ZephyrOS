@@ -1,4 +1,12 @@
-# Atualizações do Sistema — Roadmap U1-U5
+# Atualizações do Sistema — Base U1-U5 concluída
+
+> Este documento registra a base U1-U5 concluída. A continuidade ativa para
+> Releases oficiais, seleção por tag, canal GitHub e imagem de sistema está no
+> [Roadmap 08](../roadmaps/08-evolucao-da-plataforma.md).
+>
+> O bloco **Backlog Legado (não executável)** ao final é apenas histórico. Seus
+> formatos, comandos e premissas antigas não definem o ZephyrOS atual e não
+> devem ser implementados sobre o contrato ZUPD/ZUM1.
 
 ## Resumo Atual
 
@@ -163,8 +171,9 @@ implementado como fallback, com validacao complementar.
 - U1-U5 nao alteram `src/boot/boot.asm`, stage2 ou o contrato de boot atual.
   Uma atualizacao de bootloader ou kernel exige uma etapa dedicada e aprovacao
   explicita antes de qualquer escrita nesses componentes.
-- Nao ha instalacao automatica, telemetria, conta online, dependencia de GitHub
-  ou atualizacao silenciosa.
+- U1-U5 nao dependem de GitHub, nao fazem instalacao automatica, telemetria,
+  conta online ou atualizacao silenciosa. A integracao opcional com GitHub esta
+  planejada no EP6 do Roadmap 08.
 - O ZPKG v1 de aplicativos nao e reutilizado como pacote de sistema; qualquer
   migracao futura precisara de formato e versao explicitamente compativeis.
 
@@ -180,15 +189,19 @@ implementado como fallback, com validacao complementar.
 - `docs/14-atualizacoes/distribuicao-remota.md` -- contrato ZUM1 e cache U5.
 - `docs/13-aplicativos/pacotes.md` -- contrato do ZPKG v1 de aplicativos.
 - `docs/roadmaps/05-sistema-e-ecossistema.md` -- ordem executavel de U1-U5.
+- `docs/roadmaps/08-evolucao-da-plataforma.md` -- EP5, EP6 e EP9, continuidade
+  de Releases, transporte e imagem do sistema.
 - `docs/regras.md` -- requisitos de qualidade, logs e validacao.
 
 ---
 
-## Backlog Legado (nao executavel)
+## Backlog Legado (não executável)
 
-O conteudo abaixo foi preservado como referencia historica. Ele antecede o
-ZPKG v1 e a rede S2.8, portanto nao define a ordem nem os contratos do roteiro
-U1-U5 acima.
+O conteúdo abaixo foi preservado como referência histórica. Ele antecede o
+ZPKG v1 e a rede S2.8, portanto não define a ordem nem os contratos do roteiro
+U1-U5 acima. As propostas de pacote, comparação de versões, GitHub API e
+instalação descritas nele estão substituídas pelos contratos ZUPD/ZUM1 e pelo
+Roadmap 08.
 
 ## Resumo de Progresso (Legado)
 
