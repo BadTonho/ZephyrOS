@@ -584,6 +584,29 @@ static void uhci_log_configuration_preview(
     LOG_WARN("UHCI", message);
 }
 
+static void uhci_log_device_preview(const uhci_device_record_t* record) {
+    static const char hex[] = "0123456789ABCDEF";
+    static const char prefix[] = "Device USB bytes:";
+    char message[LOG_MESSAGE_CAPACITY];
+    uint32_t offset = 0U;
+
+    if (!record || !record->info.device_descriptor_valid) return;
+    for (uint32_t index = 0U;
+         prefix[index] && offset + 1U < LOG_MESSAGE_CAPACITY; index++) {
+        message[offset++] = prefix[index];
+    }
+    for (uint32_t index = 0U; index < UHCI_DEVICE_DESCRIPTOR_LENGTH &&
+         offset + 3U < LOG_MESSAGE_CAPACITY; index++) {
+        uint8_t value = record->device_descriptor[index];
+
+        message[offset++] = ' ';
+        message[offset++] = hex[value >> 4U];
+        message[offset++] = hex[value & 0x0FU];
+    }
+    message[offset] = '\0';
+    LOG_WARN("UHCI", message);
+}
+
 static void uhci_set_port_empty(uhci_controller_t* controller,
                                 uint32_t port) {
     usb_port_info_t* info = &controller->ports[port];
@@ -1922,6 +1945,7 @@ int uhci_log_port_diagnostics(uint8_t bus, uint8_t device, uint8_t function) {
         if (controller->ports[port].state != USB_PORT_DEGRADED ||
             context->last_error == OK) continue;
         uhci_log_enumeration_failure(port, context, context->last_error);
+        uhci_log_device_preview(&controller->devices[port]);
         uhci_log_configuration_preview(&controller->devices[port]);
     }
     return OK;
