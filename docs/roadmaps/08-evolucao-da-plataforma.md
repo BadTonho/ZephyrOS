@@ -476,7 +476,8 @@ preservacao do cache e regressao U5/Classic.
 
 ### EP6.1 - TLS e identidade do canal
 
-**Estado:** fundacao implementada; validacao executavel pendente.
+**Estado:** fundacao implementada; sequencia host e parte da matriz QEMU
+validadas; `tls check` e a regressao EP6.0/U5 pendentes.
 
 - [x] Criar o RTC CMOS em UTC, com leitura estavel, BCD/binario, 12/24 horas,
   calendario validado de 2000 a 2099, estado, autoteste e logs.
@@ -487,12 +488,19 @@ preservacao do cache e regressao U5/Classic.
   versao assinada; `https://` continua recusado antes de DNS/socket.
 - [x] Expor `tls status|check`, `health` e `regcheck` sem habilitar handshake,
   parser X.509, armazenamento real de CA ou fallback HTTP.
+- [x] Validar a sequencia informada pelo usuario: `make q3check`, `make clean &&
+  make`, `make run` e `make update-test`; o updater terminou com `OK`.
+- [x] Validar no QEMU `clock status`, `clock check`, `tls status`, `health`,
+  `regcheck full` e `memcheck`; RTC/UTC, monotono e politica TLS ficaram
+  operacionais, com os checks de clock, RegCheck e MemCheck em `OK`.
 - [ ] Validar no QEMU `clock status`, `clock check`, `tls status`, `tls check`,
   `health`, `regcheck full`, `memcheck` e a regressao EP6.0/U5.
 
 Implementacao concluida em: 2026-08-21 23:40 (America/Sao_Paulo).
 Correcao do link freestanding concluida em: 2026-08-21 23:46 (America/Sao_Paulo).
-Validacao executavel pelo usuario: pendente.
+Validacao da sequencia host concluida em: 2026-08-21 23:52 (America/Sao_Paulo).
+Validacao QEMU parcial concluida em: 2026-08-21 23:56 (America/Sao_Paulo).
+Validacao funcional restante: `tls check` e regressao EP6.0/U5.
 
 ### EP6.2 - Canal GitHub configuravel
 
