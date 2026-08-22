@@ -244,6 +244,32 @@ repete a consulta e exige exatamente o mesmo manifesto antes de iniciar a
 transferencia. O pacote armazenado aparece na aba Pacotes como `ZUR0.ZUP` ou
 `ZUR1.ZUP`, mas nunca e aplicado automaticamente.
 
+### Regra operacional EP6.2: tag e ID antes do comando
+
+Antes de passar qualquer comando `update github`, consultar as Releases
+publicadas e confirmar o par real `tag_name` + `id`:
+
+```powershell
+$releases = Invoke-RestMethod -Uri 'https://api.github.com/repos/BadTonho/ZephyrOS/releases?per_page=20'
+$releases | Select-Object tag_name,id,name
+```
+
+Uma tag Git isolada nao basta: o kernel consulta
+`/releases/tags/{tag}`. Se a consulta retornar vazia, nao existe ID de
+Release para o caminho feliz e nenhum comando deve ser passado com uma tag
+inventada ou sem a identificacao confirmada. O `id` nao e argumento `--id` do
+Shell; ele e lido da resposta da API e deve acompanhar a tag informada.
+
+Somente depois da confirmacao, orientar:
+
+```text
+update remote enable
+update github check --tag <tag_name-confirmada>
+update github fetch --tag <tag_name-confirmada> --confirm
+```
+
+Concluida em: 2026-08-22 13:13 (America/Sao_Paulo).
+
 ## EP6.0 - Release por tag exata
 
 EP6.0 adiciona uma camada de selecao sobre o transporte U5. A origem da fase
