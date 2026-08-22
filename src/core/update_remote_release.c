@@ -888,7 +888,7 @@ static int update_release_resolve_descriptor(
           (crypto_sha256(body, body_length, update_release_workspace.descriptor_hash) != OK ||
             !crypto_equal(update_release_workspace.descriptor_hash,
                          github->descriptor.digest,
-                         CRYPTO_SHA256_SIZE)))) {
+                         CRYPTO_SHA256_SIZE))))) {
         return update_release_reject(
             UPDATE_REMOTE_REASON_RELEASE_API, ERR_INVALID,
             "Digest ou tamanho do release.json diverge da API GitHub", result_out);
