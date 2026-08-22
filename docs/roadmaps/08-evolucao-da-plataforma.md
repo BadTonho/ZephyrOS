@@ -556,6 +556,11 @@ Correção da condição de digest da EP6.2 e do fallback de `reason` concluída
 Diagnóstico host da falha QEMU concluído em: 2026-08-22 12:21
 (America/Sao_Paulo); payload concatenado e imagem FAT12 íntegros, com a falha
 restrita à leitura CHS do `stage2` ainda pendente de confirmação no QEMU.
+Correção da geometria IDE do QEMU concluída em: 2026-08-22 12:25
+(America/Sao_Paulo); `Makefile` passou a usar `-drive if=none` e `ide-hd` com
+geometria explícita 80/2/18, sem alterar o bootloader.
+Validação QEMU da imagem com geometria IDE 80/2/18 concluída em: 2026-08-22
+12:25 (America/Sao_Paulo); a imagem abriu e iniciou com sucesso.
 Validação host, gate `make q3check`, build completo e matriz QEMU permanecem
 pendentes do usuário; registrar cada horário real nesta seção após a execução.
 

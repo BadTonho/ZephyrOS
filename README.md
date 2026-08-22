@@ -209,7 +209,10 @@ make debug
 make clean
 ```
 
-`make run` creates an E1000 NIC explicitly with QEMU user networking.
+`make run` creates an IDE boot disk with the 80/2/18 geometry expected by the
+1.44 MiB FAT12 image, plus an E1000 NIC with QEMU user networking. The disk
+arguments can be overridden through `QEMU_BOOT_DISK_ARGS` when another layout
+is required.
 `QEMU_NET_ARGS` can be overridden for alternate scenarios without editing
 the Makefile, for example with `-nic none` or
 `-nic user,model=rtl8139`.
