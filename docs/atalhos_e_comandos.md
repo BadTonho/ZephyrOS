@@ -45,6 +45,8 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `log` | `[status|tail [1-16]|clear|level|check]` | Consulta, limpa e testa o ring de logs. |
 | `log level` | `console|buffer <error|warn|info|debug>` | Altera os níveis independentes, mantendo o buffer tão detalhado quanto o console. |
 | `timer` | `[status|list|check]` | Inspeciona ocupação, prazos e contadores ou executa o autoteste privado. |
+| `clock` | `[status|check]` | Inspeciona RTC/UTC ancorado no PIT e executa conversoes, calendario, rollover e invariantes. |
+| `tls` | `[status|check]` | Inspeciona a politica TLS policy-only e testa tempo, CA, SAN, validade e pin SPKI. |
 | `wait` | `[status|list|check]` | Inspeciona canais de espera e executa o autoteste de esperas. |
 | `job` | `status` | Inspeciona o estado do executor cooperativo de jobs do Shell. |
 | `update remote` | `status/enable/disable/clear [--confirm]` | Controla o transporte remoto opcional da sessao. |

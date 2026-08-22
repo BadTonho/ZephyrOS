@@ -38,6 +38,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/core/app_remote_trust.h` | `docs/13-aplicativos/app-store.md` |
 | `src/include/core/arp.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/crypto.h` | `docs/14-atualizacoes/contrato-zupd-v1.md` |
+| `src/include/core/clock.h` | `docs/14-atualizacoes/distribuicao-remota.md` |
 | `src/include/core/device_manager.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/dhcp.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/dns.h` | `docs/04-kernel/kernel.md` |
@@ -61,6 +62,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/core/syscall.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/tcp.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/timer.h` | `docs/05-drivers/drivers.md` |
+| `src/include/core/tls.h` | `docs/14-atualizacoes/distribuicao-remota.md` |
 | `src/include/core/wait.h` | `docs/07-processos/processos.md` |
 | `src/include/core/udp.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/update.h` | `docs/14-atualizacoes/contrato-zupd-v1.md` |
@@ -82,6 +84,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/drivers/mouse.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/pci.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/rtl8139.h` | `docs/05-drivers/drivers.md` |
+| `src/include/drivers/rtc.h` | `docs/14-atualizacoes/distribuicao-remota.md` |
 | `src/include/drivers/speaker.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/tss.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/vesa.h` | `docs/05-drivers/drivers.md` |
@@ -208,6 +211,15 @@ Desde a EP6.0, `src/include/core/update_remote.h` acrescenta
 `update_remote_release_check()`/`update_remote_release_fetch()` para o
 descritor `zephyros-release-v1`; a confianca continua nos artefatos assinados
 ZUM1/ZUPD.
+
+Desde a EP6.1, `src/include/drivers/rtc.h` define o snapshot UTC validado do
+CMOS, seu estado e autoteste; `src/include/core/clock.h` ancora esse UTC no
+monotono do PIT, expoe status, rollover, validacao e autoteste; e
+`src/include/core/tls.h` define a politica policy-only, identidade futura do
+peer, motivos de recusa, versoes de confianca atual/proxima, revogacao e
+autoteste. Esses headers nao habilitam parser X.509, armazenamento de CA,
+handshake ou HTTPS. A CA estatica e obrigatoria, SAN e validade temporal sao
+requisitos, pin SPKI e complementar e fallback HTTP e proibido.
 
 `src/include/core/update_remote.h` define o transporte manual, estados,
 motivos, candidato, metadados de Release e cache redundante;

@@ -39,6 +39,10 @@ funcionalidade entregue.
 - App Store (AS1 a AS5) suporta catálogo local, transações com resolução
   topológica de dependências, rollback, repositório remoto autenticado `ZAC1` e
   janela singleton Classic.
+- EP6.1 possui fundacao RTC/UTC ancorada no PIT e contrato TLS policy-only:
+  CA estatica, SAN, validade temporal, pin SPKI opcional, rotacao e revogacao
+  estao documentados; handshake, X.509 e HTTPS funcional permanecem pendentes
+  de etapa posterior e a validacao QEMU ainda nao foi registrada.
 - Evolução da plataforma (EP1 a EP4.3) suporta preferências de mouse PS/2 em RAM,
   volumes ATA/USB somente-leitura com até 4 montagens simultâneas, índice
   global em RAM com busca e suporte USB UHCI com Mass Storage BOT/SCSI integrado

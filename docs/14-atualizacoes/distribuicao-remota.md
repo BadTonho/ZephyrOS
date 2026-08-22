@@ -290,6 +290,35 @@ O resultado publico inclui `update_remote_release_t`, com tag, identificacao,
 URLs, asset, tamanho e hashes, alem do hash do manifesto ZUM1 em
 `update_remote_result_t`.
 
+## EP6.1 - Fundacao de tempo confiavel e contrato TLS
+
+A EP6.1 prepara a identidade do canal sem habilitar HTTPS. O RTC/CMOS e
+interpretado como UTC, lido somente quando duas amostras estaveis convergem e
+validado contra calendario, ano bissexto e a janela 2000-2099. O UTC aceito e
+ancorado no contador monotono do PIT; o rollover do tick de 32 bits e exposto
+como estado de diagnostico. Sem RTC presente ou com data invalida, o sistema
+preserva o monotono, mas recusa o UTC confiavel e falha fechado para qualquer
+politica que dependa de validade temporal.
+
+Os contratos publicos sao `rtc.h`, `clock.h` e `tls.h`. `clock status|check`
+mostra a fonte, a ancora, os ticks e os autotestes de conversao, calendario,
+rollover e invariantes. `tls status|check` mostra a politica e exercita
+identidade valida, tempo indisponivel, certificado futuro/expirado, cadeia nao
+confiavel, SAN divergente e pin SPKI ausente/correto/divergente.
+
+A politica TLS exige cadeia X.509 confiavel por uma CA estatica, SAN
+correspondente ao host e janela de validade baseada em UTC confiavel. Pinning
+SPKI e somente reforco opcional da CA. A politica reserva versoes de confianca
+atual/proxima e revogacao por uma nova versao assinada; pin ou tag nunca
+substituem ZUM1/ZUPD. O parser X.509, armazenamento efetivo de CAs, handshake,
+criptografia de sessao e verificacao HTTPS ficam para etapa posterior.
+
+O estado publicado nesta etapa e `POLICY_ONLY` quando o tempo e confiavel e
+`UNAVAILABLE` quando ele nao e. `handshake_available` e
+`x509_available` permanecem desabilitados, `tls_capability_available()` retorna
+falso e nao existe conversao silenciosa de `https://` para `http://`.
+A recusa do esquema ocorre antes de resolver DNS ou abrir um socket.
+
 ## Limites de seguranca
 
 Ed25519 e SHA-256 protegem autenticidade e integridade mesmo sobre HTTP.
@@ -297,9 +326,10 @@ HTTP simples nao protege confidencialidade, disponibilidade, metadados ou
 observacao do trafego. Sem Secure Boot e armazenamento protegido, adulteracao
 offline do sistema ou rollback integral do disco permanecem fora do modelo.
 
-Nao existem TLS, API real do GitHub, atualizacao silenciosa, consulta remota
-no boot, telemetria, instalacao direta pelo download ou varios candidatos em
-um mesmo manifesto. TLS e GitHub real permanecem fora da EP6.0.
+Nao existe handshake TLS, parser X.509, API real do GitHub, atualizacao
+silenciosa, consulta remota no boot, telemetria, instalacao direta pelo
+download ou varios candidatos em um mesmo manifesto. O contrato policy-only da
+EP6.1 existe, mas TLS funcional e GitHub real permanecem fora do dispositivo.
 O DHCP automatico pertence ao Network Manager, usa somente RAM e nunca dispara
 HTTP ou habilita a distribuicao remota.
 

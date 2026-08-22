@@ -476,11 +476,22 @@ preservacao do cache e regressao U5/Classic.
 
 ### EP6.1 - TLS e identidade do canal
 
-- [ ] Definir o contrato minimo de TLS, estrategia de tempo e politica de
-  validacao de certificados antes de abrir conexoes HTTPS no kernel.
-- [ ] Avaliar pinning de chave ou certificado somente como complemento de TLS,
-  com rotacao e revogacao documentadas; nunca como substituto da assinatura
-  ZUM1/ZUPD.
+**Estado:** fundacao implementada; validacao executavel pendente.
+
+- [x] Criar o RTC CMOS em UTC, com leitura estavel, BCD/binario, 12/24 horas,
+  calendario validado de 2000 a 2099, estado, autoteste e logs.
+- [x] Ancorar o UTC validado no tick monotono do PIT, com rollover de 32 bits,
+  estado fail-closed e comandos `clock status|check`.
+- [x] Definir a politica TLS policy-only: CA estatica obrigatoria, SAN do host,
+  janela temporal, pin SPKI opcional, rotacao atual/proxima e revogacao por
+  versao assinada; `https://` continua recusado antes de DNS/socket.
+- [x] Expor `tls status|check`, `health` e `regcheck` sem habilitar handshake,
+  parser X.509, armazenamento real de CA ou fallback HTTP.
+- [ ] Validar no QEMU `clock status`, `clock check`, `tls status`, `tls check`,
+  `health`, `regcheck full`, `memcheck` e a regressao EP6.0/U5.
+
+Implementacao concluida em: 2026-08-21 23:40 (America/Sao_Paulo).
+Validacao executavel pelo usuario: pendente.
 
 ### EP6.2 - Canal GitHub configuravel
 
