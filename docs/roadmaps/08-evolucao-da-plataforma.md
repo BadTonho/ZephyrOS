@@ -518,6 +518,13 @@ EP6.1 concluida em: 2026-08-22 08:55 (America/Sao_Paulo).
 - [ ] Cobrir falha de DNS, certificado invalido, hora indisponivel, tag
   inexistente, asset ausente, download interrompido, manifesto adulterado,
   cache preservado e rollback com fixtures e matriz QEMU.
+- [ ] Definir um pacote runtime completo por Release, com manifesto assinado,
+  hashes por arquivo e compatibilidade com as versoes instaladas suportadas,
+  para que uma atualizacao direta nao dependa de baixar uma cadeia de deltas.
+  Deltas podem ser uma otimizacao futura, mas nao devem ser obrigatorios.
+- [ ] Definir o novo contrato de pacote (por exemplo, ZUPD v2) sem alterar
+  silenciosamente o ZUPD v1, incluindo criacao/remocao controlada de arquivos,
+  staging atomico, rollback e politica de dados persistentes.
 
 EP6.0 pode ser exercitada com o servidor de fixtures U5 antes de habilitar
 GitHub real. EP6.2 so inicia depois de TLS, relogio confiavel e validacao de
@@ -594,8 +601,9 @@ crus.
 ### EP9.0 - Contratos e pacotes separados
 
 - [ ] Manter o pacote runtime baseado em ZUPD v1 para recursos e arquivos
-  regulares; download e staging podem ocorrer com o sistema em execucao, mas
-  arquivos ja carregados so mudam apos recarga ou reboot.
+  regulares enquanto o novo pacote completo nao for definido; download e
+  staging podem ocorrer com o sistema em execucao, mas arquivos ja carregados
+  so mudam apos recarga ou reboot.
 - [ ] Definir um contrato distinto `ZSYS v1` para a imagem de sistema,
   incluindo kernel, stage2 e metadados de compatibilidade, sem aceitar esse
   pacote no parser ZUPD v1.
