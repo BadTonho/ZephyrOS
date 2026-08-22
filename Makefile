@@ -76,6 +76,14 @@ BEARSSL_SRC = $(wildcard vendor/bearssl/src/*.c) \
               $(wildcard vendor/bearssl/src/ssl/*.c) \
               $(wildcard vendor/bearssl/src/symcipher/*.c) \
               $(wildcard vendor/bearssl/src/x509/*.c)
+# ZephyrOS usa o perfil TLS cliente restrito a ECDHE + AES-GCM. Os perfis
+# BearSSL full e os módulos DES/3DES não entram no artefato do sistema.
+BEARSSL_EXCLUDED_SRC = vendor/bearssl/src/ssl/ssl_client_full.c \
+                       vendor/bearssl/src/ssl/ssl_engine_default_descbc.c \
+                       vendor/bearssl/src/ssl/ssl_server_full_ec.c \
+                       vendor/bearssl/src/ssl/ssl_server_full_rsa.c \
+                       $(wildcard vendor/bearssl/src/symcipher/des_*.c)
+BEARSSL_SRC := $(filter-out $(BEARSSL_EXCLUDED_SRC),$(BEARSSL_SRC))
 BEARSSL_OBJ = $(patsubst vendor/bearssl/src/%.c,build/bearssl/%.o,$(BEARSSL_SRC))
 BEARSSL_CFLAGS = $(CFLAGS) -I vendor/bearssl/inc -I vendor/bearssl/src -include vendor/bearssl/inc/string.h
 
