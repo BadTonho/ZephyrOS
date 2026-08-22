@@ -1274,22 +1274,33 @@ static void cmd_timer(const char* arguments) {
 }
 
 static void cmd_diagnostics_print_u64(uint64_t value) {
-    char buffer[24];
-    uint32_t length = 0U;
+    static const uint64_t powers_of_ten[20] = {
+        10000000000000000000ULL, 1000000000000000000ULL,
+        100000000000000000ULL, 10000000000000000ULL,
+        1000000000000000ULL, 100000000000000ULL,
+        10000000000000ULL, 1000000000000ULL,
+        100000000000ULL, 10000000000ULL,
+        1000000000ULL, 100000000ULL,
+        10000000ULL, 1000000ULL,
+        100000ULL, 10000ULL,
+        1000ULL, 100ULL, 10ULL, 1ULL
+    };
+    uint8_t started = 0U;
 
-    if (!value) {
-        video_print("0", 0x07);
-        return;
-    }
-    while (value) {
-        buffer[length++] = (char)('0' + (value % 10ULL));
-        value /= 10ULL;
-    }
-    while (length) {
-        char digit[2];
-        digit[0] = buffer[--length];
-        digit[1] = '\0';
-        video_print(digit, 0x07);
+    for (uint32_t index = 0U; index < 20U; index++) {
+        uint8_t digit = 0U;
+
+        while (value >= powers_of_ten[index]) {
+            value -= powers_of_ten[index];
+            digit++;
+        }
+        if (digit || started || index == 19U) {
+            char digit_text[2];
+            digit_text[0] = (char)('0' + digit);
+            digit_text[1] = '\0';
+            video_print(digit_text, 0x07);
+            started = 1U;
+        }
     }
 }
 
