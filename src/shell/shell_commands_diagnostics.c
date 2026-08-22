@@ -94,6 +94,12 @@
 #define SHELL_HTTP_WAIT_SECONDS 50U
 #define SHELL_HTTP_SUITE_ATTEMPTS 3U
 #define SHELL_HTTP_PREVIEW_SIZE 512U
+#define SHELL_HEALTH_CHECK_TEXT_COLOR 0x07U
+#define SHELL_HEALTH_CHECK_LABEL_COLOR 0x0BU
+#define SHELL_HEALTH_CHECK_DETAIL_COLOR 0x08U
+#define SHELL_HEALTH_CHECK_ERROR_COLOR 0x0CU
+#define SHELL_HEALTH_CHECK_WARN_COLOR 0x0EU
+#define SHELL_HEALTH_CHECK_READY_COLOR 0x0AU
 #define SHELL_NETWORK_REQUIRED_IPV4_HANDLERS 3U
 #define SHELL_DNS_NAME_SIZE DNS_NAME_BUFFER_SIZE
 #define SHELL_MILLISECONDS_PER_SECOND 1000U
@@ -726,18 +732,24 @@ static recovery_state_t cmd_health_update_history_state(
     return RECOVERY_STATE_DISABLED;
 }
 
+static recovery_state_t cmd_health_remote_state_from_status(
+    const update_remote_status_t* remote) {
+    if (!remote || !remote->enabled) return RECOVERY_STATE_DISABLED;
+    if (!remote->network_ready ||
+        remote->state == UPDATE_REMOTE_STATE_FAILED ||
+        remote->cache_store == UPDATE_REMOTE_STORE_INVALID) {
+        return RECOVERY_STATE_DEGRADED;
+    }
+    return RECOVERY_STATE_READY;
+}
+
 static recovery_state_t cmd_health_update_remote_state(void) {
     update_remote_status_t remote;
 
     if (update_remote_get_status(&remote) != OK || !remote.enabled) {
         return RECOVERY_STATE_DISABLED;
     }
-    if (!remote.network_ready ||
-        remote.state == UPDATE_REMOTE_STATE_FAILED ||
-        remote.cache_store == UPDATE_REMOTE_STORE_INVALID) {
-        return RECOVERY_STATE_DEGRADED;
-    }
-    return RECOVERY_STATE_READY;
+    return cmd_health_remote_state_from_status(&remote);
 }
 
 static void cmd_health_print_inline_state(recovery_state_t state) {
@@ -853,6 +865,340 @@ static void cmd_health_print_summary_kernel(void) {
     cmd_health_print_usb_hid();
 }
 
+static void cmd_health_check_print_named_state(
+    const char* name, const char* state, uint8_t color,
+    const char* detail, int* issue_count) {
+    if (!name || !state || !issue_count) return;
+
+    video_print("\n  ", SHELL_HEALTH_CHECK_TEXT_COLOR);
+    video_print(name, SHELL_HEALTH_CHECK_LABEL_COLOR);
+    video_print(": ", SHELL_HEALTH_CHECK_TEXT_COLOR);
+    video_print(state, color);
+    if (detail && detail[0] != '\0') {
+        video_print(" motivo=", SHELL_HEALTH_CHECK_DETAIL_COLOR);
+        video_print(detail, SHELL_HEALTH_CHECK_DETAIL_COLOR);
+    }
+    (*issue_count)++;
+}
+
+static void cmd_health_check_print_query_failure(
+    const char* name, int result, int* issue_count) {
+    if (!name || !issue_count) return;
+
+    video_print("\n  ", SHELL_HEALTH_CHECK_TEXT_COLOR);
+    video_print(name, SHELL_HEALTH_CHECK_LABEL_COLOR);
+    video_print(": UNKNOWN erro=", SHELL_HEALTH_CHECK_ERROR_COLOR);
+    shell_command_print_num((uint32_t)result);
+    video_print(" motivo=consulta indisponivel",
+                SHELL_HEALTH_CHECK_DETAIL_COLOR);
+    (*issue_count)++;
+}
+
+static void cmd_health_check_print_component(
+    const recovery_component_t* entry, int* issue_count) {
+    if (!entry || !issue_count || entry->state == RECOVERY_STATE_READY) {
+        return;
+    }
+
+    video_print("\n  ", SHELL_HEALTH_CHECK_TEXT_COLOR);
+    video_print(entry->name, SHELL_HEALTH_CHECK_LABEL_COLOR);
+    video_print(": ", SHELL_HEALTH_CHECK_TEXT_COLOR);
+    video_print(recovery_state_name(entry->state),
+                shell_diagnostics_health_state_color(entry->state));
+    video_print(" erro=", SHELL_HEALTH_CHECK_DETAIL_COLOR);
+    shell_command_print_num((uint32_t)entry->last_error);
+    video_print(" falhas=", SHELL_HEALTH_CHECK_DETAIL_COLOR);
+    shell_command_print_num(entry->failures);
+    if (entry->last_message && entry->last_message[0] != '\0') {
+        video_print(" motivo=", SHELL_HEALTH_CHECK_DETAIL_COLOR);
+        video_print(entry->last_message, SHELL_HEALTH_CHECK_DETAIL_COLOR);
+    }
+    (*issue_count)++;
+}
+
+static void cmd_health_check_recovery(int* issue_count) {
+    uint32_t index;
+
+    if (!issue_count) return;
+    for (index = 0; index < recovery_get_count(); index++) {
+        const recovery_component_t* entry;
+
+        if (index == RECOVERY_COMPONENT_UPDATE ||
+            index == RECOVERY_COMPONENT_APP_STORE) {
+            continue;
+        }
+        entry = recovery_get((recovery_component_id_t)index);
+        if (!entry) {
+            LOG_ERROR("SHELL", "Componente ausente no health check");
+            cmd_health_check_print_named_state(
+                "Recovery", "UNKNOWN", SHELL_HEALTH_CHECK_ERROR_COLOR,
+                "consulta indisponivel", issue_count);
+            continue;
+        }
+        cmd_health_check_print_component(entry, issue_count);
+    }
+}
+
+static void cmd_health_check_update_capabilities(
+    const update_capabilities_t* capabilities,
+    const update_status_t* status, int status_ready, int* issue_count) {
+    recovery_state_t state;
+    const char* detail;
+
+    if (!capabilities || !issue_count) return;
+
+    state = cmd_health_update_local_state(capabilities);
+    detail = !capabilities->verifier_ready ? "verificador indisponivel" :
+             !capabilities->local_file_available ? "filesystem" : NULL;
+    cmd_health_check_print_named_state(
+        "Update/local", recovery_state_name(state),
+        shell_diagnostics_health_state_color(state), detail, issue_count);
+
+    state = cmd_health_update_apply_state(capabilities);
+    detail = capabilities->apply_available ? NULL :
+             capabilities->recovery_pending ? "recuperacao pendente" :
+             (fs_get_type() == FS_TYPE_FAT12 &&
+              !capabilities->persistent_state_ready) ?
+             "estado persistente" : "requer FAT12";
+    cmd_health_check_print_named_state(
+        "Update/aplicacao", recovery_state_name(state),
+        shell_diagnostics_health_state_color(state), detail, issue_count);
+
+    state = capabilities->rollback_available ?
+            RECOVERY_STATE_READY : RECOVERY_STATE_DISABLED;
+    detail = capabilities->rollback_available ? NULL : "sem backup";
+    cmd_health_check_print_named_state(
+        "Update/rollback", recovery_state_name(state),
+        shell_diagnostics_health_state_color(state), detail, issue_count);
+
+    if (!status_ready) {
+        cmd_health_check_print_named_state(
+            "Update/historico", "UNKNOWN", SHELL_HEALTH_CHECK_ERROR_COLOR,
+            "estado do update indisponivel", issue_count);
+    } else {
+        state = cmd_health_update_history_state(
+            capabilities, status, status_ready);
+        detail = state == RECOVERY_STATE_DEGRADED ? "integridade" :
+                 state == RECOVERY_STATE_DISABLED ? "requer FAT12" : NULL;
+        cmd_health_check_print_named_state(
+            "Update/historico", recovery_state_name(state),
+            shell_diagnostics_health_state_color(state), detail, issue_count);
+    }
+}
+
+static void cmd_health_check_update_remote(int* issue_count) {
+    update_remote_status_t remote;
+    recovery_state_t state;
+    const char* detail;
+    int result;
+
+    if (!issue_count) return;
+    result = update_remote_get_status(&remote);
+    if (result != OK) {
+        LOG_ERROR_CODE("SHELL", result,
+                       "Falha ao consultar estado remoto no health check");
+        cmd_health_check_print_query_failure(
+            "Update/remoto", result, issue_count);
+        return;
+    }
+
+    state = cmd_health_remote_state_from_status(&remote);
+    if (state == RECOVERY_STATE_READY) return;
+    detail = !remote.enabled ? "desabilitado" :
+             update_remote_reason_name(remote.reason);
+    cmd_health_check_print_named_state(
+        "Update/remoto", recovery_state_name(state),
+        shell_diagnostics_health_state_color(state), detail, issue_count);
+}
+
+static void cmd_health_check_update(int* issue_count) {
+    const recovery_component_t* component;
+    update_capabilities_t capabilities;
+    update_status_t status;
+    int capabilities_result;
+    int status_result;
+    int status_ready;
+
+    if (!issue_count) return;
+    component = recovery_get(RECOVERY_COMPONENT_UPDATE);
+    if (!component) {
+        LOG_ERROR("SHELL", "Componente Update ausente no health check");
+        cmd_health_check_print_named_state(
+            "Update", "UNKNOWN", SHELL_HEALTH_CHECK_ERROR_COLOR,
+            "consulta indisponivel", issue_count);
+    } else {
+        cmd_health_check_print_component(component, issue_count);
+    }
+
+    capabilities_result = update_get_capabilities(&capabilities);
+    if (capabilities_result != OK) {
+        LOG_ERROR_CODE("SHELL", capabilities_result,
+                       "Falha ao consultar capacidades no health check");
+        cmd_health_check_print_query_failure(
+            "Update/capacidades", capabilities_result, issue_count);
+    } else {
+        kmemset(&status, 0, sizeof(status));
+        status_result = update_get_status(&status);
+        status_ready = status_result == OK;
+        if (!status_ready) {
+            LOG_ERROR_CODE("SHELL", status_result,
+                           "Falha ao consultar status no health check");
+        }
+        cmd_health_check_update_capabilities(
+            &capabilities, &status, status_ready, issue_count);
+    }
+    cmd_health_check_update_remote(issue_count);
+}
+
+static void cmd_health_check_app_store(int* issue_count) {
+    const recovery_component_t* component;
+
+    if (!issue_count) return;
+    component = recovery_get(RECOVERY_COMPONENT_APP_STORE);
+    if (!component) {
+        LOG_ERROR("SHELL", "Componente App Store ausente no health check");
+        cmd_health_check_print_named_state(
+            "App Store", "UNKNOWN", SHELL_HEALTH_CHECK_ERROR_COLOR,
+            "consulta indisponivel", issue_count);
+        return;
+    }
+    cmd_health_check_print_component(component, issue_count);
+}
+
+static void cmd_health_check_clock(int* issue_count) {
+    clock_status_t status;
+    int result;
+
+    if (!issue_count) return;
+    result = clock_get_status(&status);
+    if (result != OK) {
+        LOG_ERROR_CODE("SHELL", result,
+                       "Falha ao consultar clock no health check");
+        cmd_health_check_print_query_failure("UTC", result, issue_count);
+        return;
+    }
+    if (!status.initialized) {
+        cmd_health_check_print_named_state(
+            "UTC", "DISABLED", SHELL_HEALTH_CHECK_ERROR_COLOR,
+            "clock nao inicializado", issue_count);
+    } else if (!status.utc_available) {
+        cmd_health_check_print_named_state(
+            "UTC", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
+            "monotono sem UTC", issue_count);
+    }
+}
+
+static const char* cmd_health_check_tls_detail(
+    const tls_status_t* status) {
+    if (!status->trusted_time_available) return "tempo nao confiavel";
+    if (!status->handshake_available) return "handshake indisponivel";
+    if (!status->certificate_validation_available) {
+        return "validacao X509 indisponivel";
+    }
+    if (!status->entropy_available) return "entropia indisponivel";
+    if (!tls_capability_available()) return "HTTPS indisponivel";
+    if (status->last_reason != TLS_REASON_NONE) {
+        return tls_reason_name(status->last_reason);
+    }
+    return "estado TLS nao pronto";
+}
+
+static void cmd_health_check_tls(int* issue_count) {
+    tls_status_t status;
+    const char* detail;
+    const char* state_name;
+    uint8_t color;
+    int result;
+
+    if (!issue_count) return;
+    result = tls_get_status(&status);
+    if (result != OK) {
+        LOG_ERROR_CODE("SHELL", result,
+                       "Falha ao consultar TLS no health check");
+        cmd_health_check_print_query_failure("TLS", result, issue_count);
+        return;
+    }
+    if (status.state == TLS_STATE_READY &&
+        status.trusted_time_available && status.handshake_available &&
+        status.certificate_validation_available && status.entropy_available &&
+        tls_capability_available()) {
+        return;
+    }
+    detail = cmd_health_check_tls_detail(&status);
+    state_name = status.state == TLS_STATE_READY ? "DEGRADED" :
+                 tls_state_name(status.state);
+    color = status.state == TLS_STATE_UNAVAILABLE ||
+            status.state == TLS_STATE_UNINITIALIZED ?
+            SHELL_HEALTH_CHECK_ERROR_COLOR : SHELL_HEALTH_CHECK_WARN_COLOR;
+    cmd_health_check_print_named_state(
+        "TLS", state_name, color, detail, issue_count);
+}
+
+static void cmd_health_check_kernel(int* issue_count) {
+    memory_heap_stats_t heap;
+
+    if (!issue_count) return;
+    if (!paging_is_ready()) {
+        cmd_health_check_print_named_state(
+            "Kernel/paging", "DISABLED", SHELL_HEALTH_CHECK_ERROR_COLOR,
+            "paging indisponivel", issue_count);
+    }
+    memory_get_heap_stats(&heap);
+    if (!heap.initialized) {
+        cmd_health_check_print_named_state(
+            "Kernel/heap", "DISABLED", SHELL_HEALTH_CHECK_ERROR_COLOR,
+            "heap nao inicializado", issue_count);
+    } else if (!heap.valid) {
+        cmd_health_check_print_named_state(
+            "Kernel/heap", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
+            "heap invalido", issue_count);
+    }
+}
+
+static void cmd_health_check_usb_hid(int* issue_count) {
+    usb_manager_status_t status;
+    int result;
+
+    if (!issue_count) return;
+    result = usb_manager_get_status(&status);
+    if (result != OK) {
+        LOG_ERROR_CODE("SHELL", result,
+                       "Falha ao consultar USB HID no health check");
+        cmd_health_check_print_query_failure(
+            "USB HID", result, issue_count);
+        return;
+    }
+    if (!status.controller_count) {
+        cmd_health_check_print_named_state(
+            "USB HID", "DISABLED", SHELL_HEALTH_CHECK_ERROR_COLOR,
+            "sem controlador", issue_count);
+    } else if (!status.interrupt_transfer_available) {
+        cmd_health_check_print_named_state(
+            "USB HID", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
+            "transferencia interrupt indisponivel", issue_count);
+    }
+}
+
+static void cmd_health_check(void) {
+    int issue_count = 0;
+
+    video_begin_update();
+    video_print("Health check:", SHELL_HEALTH_CHECK_LABEL_COLOR);
+    cmd_health_check_recovery(&issue_count);
+    cmd_health_check_update(&issue_count);
+    cmd_health_check_app_store(&issue_count);
+    cmd_health_check_clock(&issue_count);
+    cmd_health_check_tls(&issue_count);
+    cmd_health_check_kernel(&issue_count);
+    cmd_health_check_usb_hid(&issue_count);
+    if (!issue_count) {
+        video_print(" OK\n", SHELL_HEALTH_CHECK_READY_COLOR);
+    } else {
+        video_print("\n", SHELL_HEALTH_CHECK_TEXT_COLOR);
+    }
+    video_end_update();
+}
+
 static void cmd_health_summary(void) {
     video_begin_update();
     video_print("Resumo do health:\n", 0x0B);
@@ -887,8 +1233,12 @@ static void cmd_health(const char* args) {
         cmd_health_summary();
         return;
     }
+    if (shell_command_args_equal(args, "check")) {
+        cmd_health_check();
+        return;
+    }
     LOG_WARN("SHELL", "Uso invalido do comando health");
-    video_print("Uso: health [summary]\n", 0x0E);
+    video_print("Uso: health [summary|check]\n", 0x0E);
 }
 
 static const char* cmd_log_level_name(log_level_t level) {

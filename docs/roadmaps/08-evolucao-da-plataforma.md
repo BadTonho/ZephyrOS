@@ -529,7 +529,8 @@ EP6.1 concluida em: 2026-08-22 08:55 (America/Sao_Paulo).
   cancelamento, retry integral, rollback e nomes de motivos existentes; anexar
   `TLS`, `REDIRECT` e `RELEASE_API` ao fim dos enums públicos.
 - [x] Atualizar `tools/updater.py`, fixtures HTTPS GitHub, contratos públicos,
-  documentação de distribuição e diagnósticos `tls`/`health`/`update github`.
+  documentação de distribuição e diagnósticos `tls`/`health`/`health check`/
+  `update github`.
 
 Transporte BearSSL/HTTP concluído em: 2026-08-22 11:40 (America/Sao_Paulo).
 Configuração, parser GitHub e preflight concluídos em: 2026-08-22 11:40
@@ -563,6 +564,9 @@ Validação QEMU da imagem com geometria IDE 80/2/18 concluída em: 2026-08-22
 12:25 (America/Sao_Paulo); a imagem abriu e iniciou com sucesso.
 Validação host, gate `make q3check`, build completo e matriz QEMU permanecem
 pendentes do usuário; registrar cada horário real nesta seção após a execução.
+Implementação do comando `health check` concluída em: 2026-08-22 12:47
+(America/Sao_Paulo); o comando consolida estados não-`READY` sem executar
+diagnósticos ativos. A validação executável permanece pendente do usuário.
 
 ### Etapa futura — Leitura LBA no `stage2` (fora da EP6.2 e EP6.3)
 
