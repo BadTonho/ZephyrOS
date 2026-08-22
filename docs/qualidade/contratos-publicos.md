@@ -115,6 +115,10 @@ sem alterar suas assinaturas públicas.
 O contrato de `src/include/process/process.h` inclui, desde a K2, os
 contadores de motivo do scheduler, o quantum fixo de usuario e a validacao de
 invariantes descritos em `docs/07-processos/processos.md`.
+Desde a correção EP6.2, `process_create()` mantém a stack padrão e
+`process_create_with_stack_size()` permite criar processos nativos com stack
+personalizada, validada pelo kernel; a API de processos ring 3 permanece
+inalterada.
 
 Os contratos de `src/include/core/memory.h` e `src/include/memory/paging.h`
 incluem, desde a K3, estatisticas seguras do heap/PMM e do ciclo de vida de

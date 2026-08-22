@@ -577,7 +577,8 @@ publica `UNAVAILABLE`. Validação QEMU permanece pendente do usuário.
 Diagnóstico da tela preta no `update github check` concluído em: 2026-08-22
 13:49 (America/Sao_Paulo); a análise estática aponta esgotamento da stack de
 4 KiB no caminho HTTPS/BearSSL, sem evidência de aplicação de update. Correção
-de buffers/stack e validação QEMU permanecem pendentes.
+da stack dedicada do System e dos buffers temporários implementada em: 2026-08-22
+14:04 (America/Sao_Paulo). Validação executável permanece pendente do usuário.
 
 ### Evolução futura — Gerenciamento de stack para rede e TLS
 
@@ -593,9 +594,9 @@ de buffers/stack e validação QEMU permanecem pendentes.
   regressões de Simple/Classic antes de adotar um novo tamanho padrão.
 
 Registro da evolução futura concluído em: 2026-08-22 13:54
-(America/Sao_Paulo). Esta evolução não substitui a correção imediata da EP6.2:
-o caminho HTTPS atual ainda precisa retirar buffers temporários da stack e
-retornar erros de TLS/HTTP sem causar tela preta.
+(America/Sao_Paulo). A EP6.2 recebeu a aplicação inicial de stack dedicada ao
+System e workspaces estáticos; a generalização por processo, métricas e
+proteção contra overflow permanece pendente.
 
 ### Etapa futura — Leitura LBA no `stage2` (fora da EP6.2 e EP6.3)
 

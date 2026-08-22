@@ -83,6 +83,13 @@ Isso:
 5. Prepara o contexto inicial (pilha com EIP, EFLAGS, etc.)
 6. Marca como READY
 
+`process_create()` mantém a stack nativa padrão de 4 KiB. Processos que
+executam caminhos com maior consumo podem usar `process_create_with_stack_size()`
+com tamanho alinhado a 16 bytes e nunca menor que o padrão. Na EP6.2, somente
+o processo `Zephyr System`, responsável pelo polling HTTP/TLS e BearSSL, usa
+uma stack de 8 KiB; Shell, Desktop, Idle e processos ring 3 preservam seus
+contratos atuais.
+
 ### Context Inicial
 
 Quando um processo é criado, sua pilha é preparada assim:

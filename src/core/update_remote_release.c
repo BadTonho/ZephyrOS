@@ -54,6 +54,8 @@ typedef struct {
     uint8_t descriptor_hash[CRYPTO_SHA256_SIZE];
     http_status_t http_status;
     char descriptor_url[UPDATE_REMOTE_URL_SIZE];
+    char expected_manifest_url[UPDATE_REMOTE_URL_SIZE];
+    char expected_package_url[UPDATE_REMOTE_URL_SIZE];
     char text[UPDATE_REMOTE_RELEASE_NAME_SIZE];
     char source_commit[UPDATE_REMOTE_SOURCE_COMMIT_SIZE];
     char package_name[UPDATE_REMOTE_PATH_SIZE];
@@ -847,11 +849,14 @@ static int update_release_resolve_descriptor(
     update_remote_reason_t reason;
     http_request_options_t http_options;
     update_remote_github_release_t* github = &update_release_workspace.github;
-    char expected_manifest_url[UPDATE_REMOTE_URL_SIZE];
-    char expected_package_url[UPDATE_REMOTE_URL_SIZE];
+    char* expected_manifest_url =
+        update_release_workspace.expected_manifest_url;
+    char* expected_package_url = update_release_workspace.expected_package_url;
     int result;
 
     kmemset(github, 0, sizeof(*github));
+    expected_manifest_url[0] = '\0';
+    expected_package_url[0] = '\0';
     if (UPDATE_REMOTE_GITHUB_API_URL[0]) {
         result = update_release_http_options(options, &http_options);
         if (result == OK) result = update_remote_github_query(

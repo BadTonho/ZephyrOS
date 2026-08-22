@@ -389,6 +389,11 @@ ausente, host/porta inválidos, falha TLS ou resposta GitHub malformada recebem
 motivos públicos próprios (`TLS`, `REDIRECT`, `RELEASE_API`). O download
 continua streaming, usa o cache A/B U5, preserva cancelamento e rollback e
 nunca chama `update apply`.
+O polling HTTP/TLS da EP6.2 ocorre no processo `Zephyr System`, criado com
+stack nativa dedicada de 8 KiB para acomodar BearSSL; o Shell mantém sua stack
+padrão e recebe somente o resultado cooperativo da consulta. Os buffers
+temporários do parser GitHub e da validação do descritor permanecem em
+workspaces estáticos, sem alterar as assinaturas públicas do Update.
 
 Para gerar fixtures públicas, sem copiar chaves privadas:
 

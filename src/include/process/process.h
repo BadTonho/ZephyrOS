@@ -9,6 +9,7 @@
 
 #define MAX_PROCESSES 64
 #define KERNEL_STACK_SIZE 4096
+#define PROCESS_KERNEL_STACK_ALIGNMENT 16U
 #define PROCESS_NAME_LENGTH 32
 #define PROCESS_EXIT_CANCELLED APP_EXIT_CANCELLED
 
@@ -117,6 +118,9 @@ typedef struct {
 void process_init(void);
 void process_bootstrap_idle(void);
 process_t* process_create(const char* name, void (*entry_point)());
+process_t* process_create_with_stack_size(const char* name,
+                                          void (*entry_point)(),
+                                          uint32_t stack_size);
 int process_create_user_image(const char* name, const uint8_t* code,
                               uint32_t code_size, const uint8_t* data,
                               uint32_t data_size, uint32_t entry_offset,
