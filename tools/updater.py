@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Empacotador e verificador host para o contrato ZUPD v1."""
+"""Empacotador e verificador host para os contratos ZUPD v1 e v2."""
 
 from __future__ import annotations
 
@@ -127,6 +127,63 @@ REMOTE_PHASE_CLEAN = 0
 REMOTE_PHASE_DOWNLOADING = 1
 REMOTE_ATTRIBUTES = 0x26
 REMOTE_DEFAULT_URL = "http://10.0.2.2:8000/zephyros/stable.zum"
+
+RUNTIME_MAGIC = b"ZUM2"
+RUNTIME_PACKAGE_MAGIC = b"ZUPD"
+RUNTIME_FORMAT_VERSION = 2
+RUNTIME_ARCH_I386 = 1
+RUNTIME_MANIFEST_SIZE = 4096
+RUNTIME_MANIFEST_SIGNED_SIZE = 4032
+RUNTIME_MANIFEST_BASE_OFFSET = 256
+RUNTIME_MANIFEST_BASE_SIZE = 16
+RUNTIME_MANIFEST_MAX_BASES = 8
+RUNTIME_MANIFEST_ENTRY_OFFSET = 384
+RUNTIME_MANIFEST_ENTRY_SIZE = 224
+RUNTIME_MAX_ENTRIES = 16
+RUNTIME_PACKAGE_HEADER_SIZE = 128
+RUNTIME_PACKAGE_ENTRY_SIZE = 128
+RUNTIME_PACKAGE_MAX_SIZE = 128 * 1024
+RUNTIME_FILE_MAX_SIZE = 64 * 1024
+RUNTIME_PATH_SIZE = 64
+RUNTIME_ASSET_NAME_SIZE = 64
+RUNTIME_SIGNATURE_SIZE = 64
+RUNTIME_DOMAIN = b"ZEPHYROS-RUNTIME-MANIFEST-V2\0"
+RUNTIME_PACKAGE_DOMAIN = b"ZEPHYROS-RUNTIME-PACKAGE-V2\0"
+RUNTIME_OPERATION_REPLACE = 0x01
+RUNTIME_OPERATION_CREATE = 0x02
+RUNTIME_OPERATION_DELETE = 0x04
+RUNTIME_CATALOG = ("EXPLORER.BMP", "SHELL.BMP", "TASKMGR.BMP")
+RUNTIME_MANIFEST_ALIASES = ("ZRV0.MAN", "ZRV1.MAN")
+RUNTIME_PACKAGE_ALIASES = ("ZRV0.PKG", "ZRV1.PKG")
+RUNTIME_RECORD_ALIASES = ("ZRV0.STA", "ZRV1.STA")
+RUNTIME_ASSET_ATTRIBUTE = 0x26
+RUNTIME_RECORD_SIZE = 512
+RUNTIME_RECORD_HASH_OFFSET = 480
+RUNTIME_RECORD_MAGIC = b"ZRV2"
+RUNTIME_STATE_ALIASES = ("ZTV0.STA", "ZTV1.STA")
+RUNTIME_JOURNAL_ALIASES = ("ZTV0.JRN", "ZTV1.JRN")
+RUNTIME_STAGE_PREFIXES = ("ZTS0.", "ZTS1.")
+RUNTIME_BACKUP_PREFIXES = ("ZTB0.", "ZTB1.")
+RUNTIME_CONTROL_VERSION = 1
+RUNTIME_CONTROL_SIZE = 4096
+RUNTIME_CONTROL_HASH_OFFSET = 4064
+RUNTIME_STATE_CURRENT_OFFSET = 64
+RUNTIME_STATE_ROLLBACK_OFFSET = 704
+RUNTIME_FILE_STATE_SIZE = 40
+RUNTIME_JOURNAL_HEADER_SIZE = 64
+RUNTIME_JOURNAL_ENTRY_OFFSET = 64
+RUNTIME_JOURNAL_ENTRY_SIZE = 80
+RUNTIME_JOURNAL_ENTRY_OLD = 0
+RUNTIME_JOURNAL_ENTRY_NEW = 40
+RUNTIME_JOURNAL_NONE = 0
+RUNTIME_JOURNAL_APPLY = 1
+RUNTIME_JOURNAL_ROLLBACK = 2
+RUNTIME_PHASE_NONE = 0
+RUNTIME_PHASE_PREPARED = 1
+RUNTIME_PHASE_STAGING = 2
+RUNTIME_PHASE_REPLACING = 3
+RUNTIME_PHASE_COMMITTED = 4
+RUNTIME_SLOT_NONE = 0xFF
 
 REASON_NONE = "NONE"
 REASON_FORMAT = "FORMAT"
@@ -302,6 +359,60 @@ class RemoteManifest:
 
 
 @dataclass(frozen=True)
+class RuntimeEntry:
+    """Entrada autorizada do manifesto ZUM2."""
+
+    path: str
+    target_present: bool
+    operations: int
+    target_size: int
+    target_sha256: bytes
+    asset_name: str
+    asset_size: int
+    asset_sha256: bytes
+
+
+@dataclass(frozen=True)
+class RuntimeManifest:
+    """Manifesto ZUM2 validado, sem confiar no descritor de transporte."""
+
+    generation: int
+    target_version: Version
+    target_epoch: int
+    base_versions: tuple[tuple[Version, int], ...]
+    package_size: int
+    package_sha256: bytes
+    release_tag: str
+    release_id: str
+    entries: tuple[RuntimeEntry, ...]
+
+
+@dataclass(frozen=True)
+class RuntimePackage:
+    """Pacote ZUPD v2 validado estruturalmente e por assinatura."""
+
+    generation: int
+    base_version: Version
+    base_epoch: int
+    target_version: Version
+    target_epoch: int
+    entries: tuple["RuntimePackageEntry", ...]
+    total_size: int
+
+
+@dataclass(frozen=True)
+class RuntimePackageEntry:
+    """Entrada de payload do pacote ZUPD v2."""
+
+    path: str
+    present: bool
+    operation: int
+    payload_offset: int
+    payload_size: int
+    payload_sha256: bytes
+
+
+@dataclass(frozen=True)
 class RemoteRecord:
     """Estado redundante do cache remoto U5."""
 
@@ -317,6 +428,77 @@ class RemoteRecord:
     target_version: Version
     base_epoch: int
     target_epoch: int
+
+
+@dataclass(frozen=True)
+class RuntimeRemoteRecord:
+    """Estado redundante dos slots remotos ZRV2."""
+
+    sequence: int
+    phase: int
+    active_slot: int
+    pending_slot: int
+    mode: int
+    entry_count: int
+    asset_mask: int
+    manifest_sha256: bytes
+    package_sha256: bytes
+    package_size: int
+    target_version: Version
+    target_epoch: int
+
+
+@dataclass(frozen=True)
+class RuntimeStoredFileState:
+    """Estado de um arquivo no controle local ZRT2/ZRTJ."""
+
+    size: int
+    sha256: bytes
+    present: bool
+
+
+@dataclass(frozen=True)
+class RuntimeStoredState:
+    """Estado instalado e rollback decodificado do runtime v2."""
+
+    sequence: int
+    installed_version: Version
+    installed_epoch: int
+    rollback_available: bool
+    rollback_slot: int
+    entry_count: int
+    rollback_entry_count: int
+    previous_version: Version
+    previous_epoch: int
+    current: tuple[RuntimeStoredFileState, ...]
+    rollback: tuple[RuntimeStoredFileState, ...]
+
+
+@dataclass(frozen=True)
+class RuntimeStoredPlanEntry:
+    """Entrada de journal local com estados anterior e desejado."""
+
+    catalog_index: int
+    operation: int
+    old_state: RuntimeStoredFileState
+    new_state: RuntimeStoredFileState
+
+
+@dataclass(frozen=True)
+class RuntimeStoredJournal:
+    """Journal local ZRTJ decodificado para auditoria offline."""
+
+    sequence: int
+    phase: int
+    kind: int
+    slot: int
+    progress: int
+    entry_count: int
+    base_version: Version
+    base_epoch: int
+    target_version: Version
+    target_epoch: int
+    entries: tuple[RuntimeStoredPlanEntry, ...]
 
 
 @dataclass(frozen=True)
@@ -939,6 +1121,730 @@ def verify_artifact(
         header["total_size"],
         entries,
     )
+
+
+RUNTIME_OPERATION_NAMES = {
+    "replace": RUNTIME_OPERATION_REPLACE,
+    "create": RUNTIME_OPERATION_CREATE,
+    "replace_or_create": RUNTIME_OPERATION_REPLACE | RUNTIME_OPERATION_CREATE,
+    "delete": RUNTIME_OPERATION_DELETE,
+}
+
+
+def runtime_fixed_text(raw: bytes, label: str) -> str:
+    """Decodifica um texto ASCII terminado e preenchido com zeros."""
+    end = raw.find(b"\0")
+    if end <= 0 or any(raw[end + 1 :]):
+        raise UpdateError(f"campo {label} nao possui padding canonico")
+    try:
+        value = raw[:end].decode("ascii")
+    except UnicodeDecodeError as error:
+        raise UpdateError(f"campo {label} nao usa ASCII") from error
+    if not value or any(ord(char) < 0x20 for char in value):
+        raise UpdateError(f"campo {label} possui caracteres invalidos")
+    return value
+
+
+def runtime_fixed_bytes(value: str, capacity: int, label: str) -> bytes:
+    """Codifica texto ASCII nos campos fixos do contrato ZUM2."""
+    if not isinstance(value, str) or not value or any(
+        ord(char) < 0x20 for char in value
+    ):
+        raise UpdateError(f"campo {label} invalido")
+    try:
+        raw = value.encode("ascii")
+    except UnicodeEncodeError as error:
+        raise UpdateError(f"campo {label} nao usa ASCII") from error
+    if len(raw) >= capacity:
+        raise UpdateError(f"campo {label} excede {capacity - 1} bytes")
+    return raw + b"\0" * (capacity - len(raw))
+
+
+def runtime_version_is_newer(
+    target: Version, target_epoch: int, base: Version, base_epoch: int
+) -> bool:
+    """Compara epoch antes da versao semantica, como o kernel."""
+    return target_epoch > base_epoch or (
+        target_epoch == base_epoch and target > base
+    )
+
+
+def runtime_manifest_entry_from_bytes(
+    raw: bytes, index: int
+) -> RuntimeEntry:
+    """Decodifica uma entrada ZUM2 de 224 bytes."""
+    if len(raw) != RUNTIME_MANIFEST_ENTRY_SIZE:
+        raise UpdateError(f"entrada ZUM2 {index} truncada")
+    path = decode_path(raw[:RUNTIME_PATH_SIZE])
+    if raw[64] not in (0, 1):
+        raise UpdateError(f"entrada ZUM2 {path} possui presenca invalida")
+    target_present = bool(raw[64])
+    operations = raw[65]
+    flags = struct.unpack_from("<H", raw, 66)[0]
+    target_size = struct.unpack_from("<I", raw, 68)[0]
+    target_hash = raw[72:104]
+    asset_name = runtime_fixed_text(raw[104:168], f"asset {path}")
+    asset_size = struct.unpack_from("<I", raw, 168)[0]
+    asset_hash = raw[172:204]
+    if (
+        flags
+        or not operations
+        or operations & ~(
+            RUNTIME_OPERATION_REPLACE
+            | RUNTIME_OPERATION_CREATE
+            | RUNTIME_OPERATION_DELETE
+        )
+        or any(raw[204:])
+    ):
+        raise UpdateError(f"entrada ZUM2 {path} possui flags invalidas")
+    if target_present:
+        if (
+            not target_size
+            or target_size > RUNTIME_FILE_MAX_SIZE
+            or target_hash == bytes(32)
+            or asset_size != target_size
+            or asset_hash == bytes(32)
+            or asset_name != path
+            or not operations
+            & (RUNTIME_OPERATION_REPLACE | RUNTIME_OPERATION_CREATE)
+            or operations & RUNTIME_OPERATION_DELETE
+        ):
+            raise UpdateError(f"entrada ZUM2 {path} possui alvo invalido")
+    elif (
+        target_size
+        or target_hash != bytes(32)
+        or asset_size
+        or asset_hash != bytes(32)
+        or asset_name != path
+        or operations != RUNTIME_OPERATION_DELETE
+    ):
+        raise UpdateError(f"entrada ZUM2 {path} possui remocao invalida")
+    return RuntimeEntry(
+        path,
+        target_present,
+        operations,
+        target_size,
+        target_hash,
+        asset_name,
+        asset_size,
+        asset_hash,
+    )
+
+
+def parse_runtime_manifest(
+    data: bytes, trusted_key: PublicKeyInfo
+) -> RuntimeManifest:
+    """Valida estrutura, assinatura e politica do manifesto ZUM2."""
+    if len(data) != RUNTIME_MANIFEST_SIZE:
+        reject(REASON_SIZE, "manifesto ZUM2 possui tamanho invalido")
+    if data[:4] != RUNTIME_MAGIC:
+        reject(REASON_FORMAT, "magic ZUM2 invalido")
+    version, size, architecture, flags = struct.unpack_from("<HHHH", data, 4)
+    generation = struct.unpack_from("<I", data, 12)[0]
+    target = Version(*struct.unpack_from("<6H", data, 16)[:3])
+    target_epoch = struct.unpack_from("<I", data, 22)[0]
+    entry_count, entry_size, base_count = struct.unpack_from("<HHH", data, 26)
+    package_size = struct.unpack_from("<I", data, 32)[0]
+    if (
+        version != RUNTIME_FORMAT_VERSION
+        or size != RUNTIME_MANIFEST_SIZE
+        or architecture != RUNTIME_ARCH_I386
+        or flags
+        or entry_size != RUNTIME_MANIFEST_ENTRY_SIZE
+        or not 1 <= entry_count <= RUNTIME_MAX_ENTRIES
+        or not 1 <= base_count <= RUNTIME_MANIFEST_MAX_BASES
+        or not 1 <= package_size <= RUNTIME_PACKAGE_MAX_SIZE
+    ):
+        reject(REASON_FORMAT, "cabecalho ZUM2 invalido")
+    if data[68:84] != trusted_key.key_id:
+        reject(REASON_UNKNOWN_KEY, "key_id do ZUM2 nao corresponde a raiz")
+    ed25519, _, invalid_signature = crypto_modules()
+    public_key = ed25519.Ed25519PublicKey.from_public_bytes(
+        trusted_key.public_key
+    )
+    try:
+        public_key.verify(
+            data[RUNTIME_MANIFEST_SIGNED_SIZE:],
+            RUNTIME_DOMAIN + data[:RUNTIME_MANIFEST_SIGNED_SIZE],
+        )
+    except invalid_signature as error:
+        reject(REASON_SIGNATURE, "assinatura Ed25519 do ZUM2 invalida")
+    if any(data[3968:RUNTIME_MANIFEST_SIGNED_SIZE]):
+        reject(REASON_FORMAT, "padding assinado do ZUM2 nao esta zerado")
+    release_tag = runtime_fixed_text(data[84:148], "release_tag")
+    release_id = runtime_fixed_text(data[148:212], "release_id")
+    if not re.fullmatch(r"[A-Za-z0-9._-]{1,63}", release_tag):
+        reject(REASON_PATH_POLICY, "release_tag do ZUM2 invalido")
+    if not re.fullmatch(r"[A-Za-z0-9._-]{1,63}", release_id):
+        reject(REASON_PATH_POLICY, "release_id do ZUM2 invalido")
+    package_hash = data[36:68]
+    if package_hash == bytes(32):
+        reject(REASON_HASH, "hash do pacote ZUM2 esta zerado")
+    if any(data[212:RUNTIME_MANIFEST_BASE_OFFSET]):
+        reject(REASON_FORMAT, "reservado do cabecalho ZUM2 nao esta zerado")
+    bases: list[tuple[Version, int]] = []
+    seen_bases: set[tuple[Version, int]] = set()
+    for index in range(base_count):
+        offset = RUNTIME_MANIFEST_BASE_OFFSET + index * RUNTIME_MANIFEST_BASE_SIZE
+        base = Version(*struct.unpack_from("<3H", data, offset))
+        epoch = struct.unpack_from("<I", data, offset + 6)[0]
+        if any(data[offset + 10 : offset + RUNTIME_MANIFEST_BASE_SIZE]):
+            reject(REASON_FORMAT, "base_version ZUM2 possui padding invalido")
+        if (base, epoch) in seen_bases:
+            reject(REASON_DUPLICATE_TARGET, "base_version ZUM2 duplicada")
+        if not runtime_version_is_newer(target, target_epoch, base, epoch):
+            reject(REASON_DOWNGRADE, "alvo ZUM2 nao e superior a uma base")
+        seen_bases.add((base, epoch))
+        bases.append((base, epoch))
+    base_end = RUNTIME_MANIFEST_BASE_OFFSET + base_count * RUNTIME_MANIFEST_BASE_SIZE
+    if any(data[base_end:RUNTIME_MANIFEST_ENTRY_OFFSET]):
+        reject(REASON_FORMAT, "bases nao usadas do ZUM2 nao estao zeradas")
+    entries: list[RuntimeEntry] = []
+    seen_paths: set[str] = set()
+    for index in range(entry_count):
+        offset = RUNTIME_MANIFEST_ENTRY_OFFSET + index * RUNTIME_MANIFEST_ENTRY_SIZE
+        entry = runtime_manifest_entry_from_bytes(
+            data[offset : offset + RUNTIME_MANIFEST_ENTRY_SIZE], index
+        )
+        if entry.path not in RUNTIME_CATALOG:
+            reject(REASON_PATH_POLICY, f"path ZUM2 fora do catalogo: {entry.path}")
+        if entry.path in seen_paths:
+            reject(REASON_DUPLICATE_TARGET, f"target ZUM2 duplicado: {entry.path}")
+        seen_paths.add(entry.path)
+        entries.append(entry)
+    if seen_paths != set(RUNTIME_CATALOG):
+        reject(REASON_PATH_POLICY, "catalogo ZUM2 incompleto")
+    entry_end = RUNTIME_MANIFEST_ENTRY_OFFSET + entry_count * RUNTIME_MANIFEST_ENTRY_SIZE
+    if any(data[entry_end:RUNTIME_MANIFEST_SIGNED_SIZE]):
+        reject(REASON_FORMAT, "entradas nao usadas do ZUM2 nao estao zeradas")
+    return RuntimeManifest(
+        generation,
+        target,
+        target_epoch,
+        tuple(bases),
+        package_size,
+        package_hash,
+        release_tag,
+        release_id,
+        tuple(entries),
+    )
+
+
+def runtime_package_entry_from_bytes(
+    raw: bytes, index: int
+) -> RuntimePackageEntry:
+    """Decodifica uma entrada ZUPD v2 de 128 bytes."""
+    if len(raw) != RUNTIME_PACKAGE_ENTRY_SIZE:
+        raise UpdateError(f"entrada ZUPD v2 {index} truncada")
+    path = decode_path(raw[:RUNTIME_PATH_SIZE])
+    payload_offset, payload_size = struct.unpack_from("<II", raw, 64)
+    present = raw[72]
+    operation = raw[73]
+    payload_hash = raw[76:108]
+    if (
+        present not in (0, 1)
+        or not operation
+        or operation
+        & ~(RUNTIME_OPERATION_REPLACE | RUNTIME_OPERATION_CREATE | RUNTIME_OPERATION_DELETE)
+        or any(raw[74:76])
+        or any(raw[108:])
+    ):
+        raise UpdateError(f"entrada ZUPD v2 {path} possui flags invalidas")
+    if not present:
+        if (
+            operation != RUNTIME_OPERATION_DELETE
+            or payload_offset
+            or payload_size
+            or payload_hash != bytes(32)
+        ):
+            raise UpdateError(f"remocao ZUPD v2 {path} possui payload")
+    elif (
+        not payload_size
+        or payload_size > RUNTIME_FILE_MAX_SIZE
+        or payload_hash == bytes(32)
+        or not operation & (RUNTIME_OPERATION_REPLACE | RUNTIME_OPERATION_CREATE)
+        or operation & RUNTIME_OPERATION_DELETE
+    ):
+        raise UpdateError(f"payload ZUPD v2 {path} invalido")
+    return RuntimePackageEntry(
+        path, bool(present), operation, payload_offset, payload_size, payload_hash
+    )
+
+
+def parse_runtime_package(
+    data: bytes,
+    trusted_key: PublicKeyInfo,
+    manifest: RuntimeManifest | None = None,
+    system_version: Version | None = None,
+    system_epoch: int | None = None,
+) -> RuntimePackage:
+    """Valida pacote completo, assinatura, hashes e compatibilidade ZUPD v2."""
+    if not RUNTIME_PACKAGE_HEADER_SIZE + RUNTIME_PACKAGE_ENTRY_SIZE + RUNTIME_SIGNATURE_SIZE <= len(data) <= RUNTIME_PACKAGE_MAX_SIZE:
+        reject(REASON_SIZE, "pacote ZUPD v2 fora dos limites")
+    if data[:4] != RUNTIME_PACKAGE_MAGIC:
+        reject(REASON_FORMAT, "magic ZUPD v2 invalido")
+    version, header_size, architecture, reserved = struct.unpack_from(
+        "<HHHH", data, 4
+    )
+    flags = struct.unpack_from("<I", data, 12)[0]
+    total_size = struct.unpack_from("<I", data, 16)[0]
+    payload_offset, payload_size = struct.unpack_from("<II", data, 20)
+    signature_offset, signature_size = struct.unpack_from("<II", data, 28)
+    generation = struct.unpack_from("<I", data, 36)[0]
+    target = Version(*struct.unpack_from("<3H", data, 40))
+    target_epoch = struct.unpack_from("<I", data, 46)[0]
+    entry_count, entry_size, entry_reserved = struct.unpack_from(
+        "<HHH", data, 50
+    )
+    key_id = data[56:72]
+    base_reserved = data[72:74]
+    base = Version(*struct.unpack_from("<3H", data, 74))
+    base_epoch = struct.unpack_from("<I", data, 80)[0]
+    if (
+        version != RUNTIME_FORMAT_VERSION
+        or header_size != RUNTIME_PACKAGE_HEADER_SIZE
+        or architecture != RUNTIME_ARCH_I386
+        or reserved
+        or flags
+        or total_size != len(data)
+        or signature_size != RUNTIME_SIGNATURE_SIZE
+        or entry_size != RUNTIME_PACKAGE_ENTRY_SIZE
+        or entry_reserved
+        or base_reserved != bytes(2)
+        or any(data[84:RUNTIME_PACKAGE_HEADER_SIZE])
+        or not 1 <= entry_count <= RUNTIME_MAX_ENTRIES
+        or key_id != trusted_key.key_id
+    ):
+        reject(REASON_FORMAT if key_id == trusted_key.key_id else REASON_UNKNOWN_KEY,
+               "cabecalho ZUPD v2 invalido")
+    table_end = RUNTIME_PACKAGE_HEADER_SIZE + entry_count * RUNTIME_PACKAGE_ENTRY_SIZE
+    if (
+        payload_offset != table_end
+        or signature_offset != payload_offset + payload_size
+        or signature_offset + signature_size != total_size
+        or payload_size > RUNTIME_PACKAGE_MAX_SIZE
+    ):
+        reject(REASON_FORMAT, "regioes do pacote ZUPD v2 divergem")
+    ed25519, _, invalid_signature = crypto_modules()
+    public_key = ed25519.Ed25519PublicKey.from_public_bytes(
+        trusted_key.public_key
+    )
+    try:
+        public_key.verify(
+            data[signature_offset:],
+            RUNTIME_PACKAGE_DOMAIN + data[:signature_offset],
+        )
+    except invalid_signature as error:
+        reject(REASON_SIGNATURE, "assinatura Ed25519 do ZUPD v2 invalida")
+    entries: list[RuntimePackageEntry] = []
+    seen: set[str] = set()
+    next_payload = payload_offset
+    for index in range(entry_count):
+        offset = RUNTIME_PACKAGE_HEADER_SIZE + index * RUNTIME_PACKAGE_ENTRY_SIZE
+        entry = runtime_package_entry_from_bytes(
+            data[offset : offset + RUNTIME_PACKAGE_ENTRY_SIZE], index
+        )
+        if entry.path not in RUNTIME_CATALOG:
+            reject(REASON_PATH_POLICY, f"path ZUPD v2 fora do catalogo: {entry.path}")
+        if entry.path in seen:
+            reject(REASON_DUPLICATE_TARGET, f"target ZUPD v2 duplicado: {entry.path}")
+        if entry.present:
+            if entry.payload_offset != next_payload:
+                reject(REASON_FORMAT, "payloads ZUPD v2 nao sao contiguos")
+            payload = data[entry.payload_offset : entry.payload_offset + entry.payload_size]
+            if hashlib.sha256(payload).digest() != entry.payload_sha256:
+                reject(REASON_HASH, f"hash ZUPD v2 divergente: {entry.path}")
+            next_payload += entry.payload_size
+        elif entry.payload_offset or entry.payload_size:
+            reject(REASON_FORMAT, f"remocao ZUPD v2 possui regiao de payload")
+        seen.add(entry.path)
+        entries.append(entry)
+    if next_payload != signature_offset or seen != set(RUNTIME_CATALOG):
+        reject(REASON_FORMAT, "tabela ZUPD v2 incompleta")
+    if manifest is not None:
+        if (
+            generation != manifest.generation
+            or target != manifest.target_version
+            or target_epoch != manifest.target_epoch
+        ):
+            reject(REASON_PACKAGE_MISMATCH, "pacote nao corresponde ao ZUM2")
+        if (base, base_epoch) not in manifest.base_versions:
+            reject(REASON_PACKAGE_MISMATCH, "base do pacote nao esta no ZUM2")
+        manifest_by_path = {entry.path: entry for entry in manifest.entries}
+        for entry in entries:
+            desired = manifest_by_path[entry.path]
+            if (
+                entry.present != desired.target_present
+                or entry.payload_size != desired.target_size
+                or entry.payload_sha256 != desired.target_hash
+                or not desired.allowed_operations & entry.operation
+            ):
+                reject(REASON_PACKAGE_MISMATCH, f"entrada diverge do ZUM2: {entry.path}")
+        if len(data) != manifest.package_size or hashlib.sha256(data).digest() != manifest.package_sha256:
+            reject(REASON_PACKAGE_MISMATCH, "hash do pacote diverge do ZUM2")
+    if system_version is not None and system_epoch is not None:
+        compatible_base = (system_version, system_epoch)
+        if manifest is not None:
+            if compatible_base not in manifest.base_versions:
+                reject(REASON_BASE_VERSION, "base ZUPD v2 nao esta no ZUM2")
+        elif base != system_version or base_epoch != system_epoch:
+            reject(REASON_BASE_VERSION, "base ZUPD v2 nao coincide com o runtime")
+        if not runtime_version_is_newer(
+            target, target_epoch, system_version, system_epoch
+        ):
+            reject(REASON_DOWNGRADE, "alvo ZUPD v2 representa downgrade")
+    return RuntimePackage(
+        generation,
+        base,
+        base_epoch,
+        target,
+        target_epoch,
+        tuple(entries),
+        total_size,
+    )
+
+
+def runtime_operation_value(value: Any) -> int:
+    """Converte a politica textual de uma entrada para flags ZUM2."""
+    if not isinstance(value, str) or value not in RUNTIME_OPERATION_NAMES:
+        raise UpdateError(
+            "operation deve ser replace, create, replace_or_create ou delete"
+        )
+    return RUNTIME_OPERATION_NAMES[value]
+
+
+def runtime_manifest_spec(
+    path: Path,
+) -> tuple[int, str, str, Version, int, tuple[tuple[Version, int], ...], tuple[RuntimeEntry, ...], dict[str, bytes]]:
+    """Le o manifesto JSON de build v2 e carrega somente o catalogo permitido."""
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise UpdateError(f"nao foi possivel ler o manifesto runtime {path}") from error
+    if not isinstance(data, dict) or tuple(data) != (
+        "format",
+        "generation",
+        "release_tag",
+        "release_id",
+        "target_version",
+        "target_epoch",
+        "base_versions",
+        "files",
+    ):
+        raise UpdateError("manifesto runtime possui campos invalidos ou fora de ordem")
+    if data["format"] != "ZUM2 v2":
+        raise UpdateError("formato do manifesto runtime invalido")
+    generation = data["generation"]
+    if not isinstance(generation, int) or not 0 <= generation <= 0xFFFFFFFF:
+        raise UpdateError("generation runtime excede uint32")
+    release_tag = data["release_tag"]
+    release_id = data["release_id"]
+    if not isinstance(release_tag, str) or not re.fullmatch(
+        r"[A-Za-z0-9._-]{1,63}", release_tag
+    ):
+        raise UpdateError("release_tag runtime invalido")
+    if not isinstance(release_id, str) or not re.fullmatch(
+        r"[A-Za-z0-9._-]{1,63}", release_id
+    ):
+        raise UpdateError("release_id runtime invalido")
+    target = Version.parse(data["target_version"])
+    target_epoch = data["target_epoch"]
+    if not isinstance(target_epoch, int) or not 0 <= target_epoch <= 0xFFFFFFFF:
+        raise UpdateError("target_epoch runtime excede uint32")
+    raw_bases = data["base_versions"]
+    if not isinstance(raw_bases, list) or not 1 <= len(raw_bases) <= RUNTIME_MANIFEST_MAX_BASES:
+        raise UpdateError("runtime deve declarar de 1 a 8 versoes-base")
+    bases: list[tuple[Version, int]] = []
+    seen_bases: set[tuple[Version, int]] = set()
+    for item in raw_bases:
+        if not isinstance(item, dict) or tuple(item) != ("version", "epoch"):
+            raise UpdateError("base_versions runtime possui formato invalido")
+        base = Version.parse(item["version"])
+        epoch = item["epoch"]
+        if not isinstance(epoch, int) or not 0 <= epoch <= 0xFFFFFFFF:
+            raise UpdateError("epoch de base runtime excede uint32")
+        if (base, epoch) in seen_bases:
+            raise UpdateError("base_versions runtime possui duplicidade")
+        if not runtime_version_is_newer(target, target_epoch, base, epoch):
+            raise UpdateError("target runtime nao e superior a todas as bases")
+        seen_bases.add((base, epoch))
+        bases.append((base, epoch))
+    raw_files = data["files"]
+    if not isinstance(raw_files, list) or not 1 <= len(raw_files) <= RUNTIME_MAX_ENTRIES:
+        raise UpdateError("runtime deve conter de 1 a 16 entradas")
+    entries: list[RuntimeEntry] = []
+    payloads: dict[str, bytes] = {}
+    seen_paths: set[str] = set()
+    base_dir = path.resolve().parent
+    for item in raw_files:
+        if not isinstance(item, dict) or tuple(item) != (
+            "path", "operation", "source"
+        ):
+            raise UpdateError("entrada runtime deve conter path, operation e source")
+        target_path = item["path"]
+        encode_path(target_path)
+        if target_path not in RUNTIME_CATALOG:
+            raise UpdateError(f"path runtime fora do catalogo: {target_path}")
+        if target_path in seen_paths:
+            raise UpdateError(f"path runtime duplicado: {target_path}")
+        operations = runtime_operation_value(item["operation"])
+        source = item["source"]
+        if operations == RUNTIME_OPERATION_DELETE:
+            if source is not None:
+                raise UpdateError(f"source da remocao runtime deve ser null: {target_path}")
+            entry = RuntimeEntry(
+                target_path,
+                False,
+                operations,
+                0,
+                bytes(32),
+                target_path,
+                0,
+                bytes(32),
+            )
+        else:
+            if not isinstance(source, str) or not source:
+                raise UpdateError(f"source ausente para runtime: {target_path}")
+            source_path = (base_dir / source).resolve()
+            try:
+                payload = source_path.read_bytes()
+            except OSError as error:
+                raise UpdateError(f"payload runtime ausente: {source_path}") from error
+            if not 1 <= len(payload) <= RUNTIME_FILE_MAX_SIZE:
+                raise UpdateError(f"payload runtime fora dos limites: {target_path}")
+            digest = hashlib.sha256(payload).digest()
+            entry = RuntimeEntry(
+                target_path,
+                True,
+                operations,
+                len(payload),
+                digest,
+                target_path,
+                len(payload),
+                digest,
+            )
+            payloads[target_path] = payload
+        entries.append(entry)
+        seen_paths.add(target_path)
+    if seen_paths != set(RUNTIME_CATALOG):
+        raise UpdateError("manifesto runtime deve cobrir o catalogo completo")
+    entries.sort(key=lambda entry: entry.path.encode("ascii"))
+    return (
+        generation,
+        release_tag,
+        release_id,
+        target,
+        target_epoch,
+        tuple(bases),
+        tuple(entries),
+        payloads,
+    )
+
+
+def build_runtime_package(
+    private_key: Any,
+    public: PublicKeyInfo,
+    generation: int,
+    base: Version,
+    base_epoch: int,
+    target: Version,
+    target_epoch: int,
+    entries: tuple[RuntimeEntry, ...],
+    payloads: dict[str, bytes],
+) -> bytes:
+    """Monta e assina o pacote completo independente de deltas."""
+    if len(entries) != len(RUNTIME_CATALOG):
+        raise UpdateError("pacote runtime deve cobrir o catalogo completo")
+    table_end = RUNTIME_PACKAGE_HEADER_SIZE + len(entries) * RUNTIME_PACKAGE_ENTRY_SIZE
+    payload_offset = table_end
+    entry_bytes: list[bytes] = []
+    payload_blob = bytearray()
+    for entry in entries:
+        raw = bytearray(RUNTIME_PACKAGE_ENTRY_SIZE)
+        raw[:RUNTIME_PATH_SIZE] = encode_path(entry.path)
+        payload = payloads.get(entry.path, b"")
+        if entry.target_present:
+            if len(payload) != entry.target_size or hashlib.sha256(payload).digest() != entry.target_hash:
+                raise UpdateError(f"payload runtime divergiu: {entry.path}")
+            struct.pack_into("<II", raw, 64, payload_offset, len(payload))
+            raw[72] = 1
+            raw[73] = entry.operations
+            raw[76:108] = entry.target_hash
+            payload_blob.extend(payload)
+            payload_offset += len(payload)
+        else:
+            raw[73] = RUNTIME_OPERATION_DELETE
+        entry_bytes.append(bytes(raw))
+    signature_offset = payload_offset
+    total_size = signature_offset + RUNTIME_SIGNATURE_SIZE
+    if total_size > RUNTIME_PACKAGE_MAX_SIZE:
+        raise UpdateError("pacote runtime excede 128 KiB")
+    header = bytearray(RUNTIME_PACKAGE_HEADER_SIZE)
+    header[:4] = RUNTIME_PACKAGE_MAGIC
+    struct.pack_into("<HHHHI", header, 4, RUNTIME_FORMAT_VERSION,
+                     RUNTIME_PACKAGE_HEADER_SIZE, RUNTIME_ARCH_I386, 0, 0)
+    struct.pack_into("<IIII", header, 16, total_size, table_end,
+                     len(payload_blob), signature_offset)
+    struct.pack_into("<I", header, 32, RUNTIME_SIGNATURE_SIZE)
+    struct.pack_into("<I", header, 36, generation)
+    struct.pack_into("<3H", header, 40, target.major, target.minor, target.patch)
+    struct.pack_into("<I", header, 46, target_epoch)
+    struct.pack_into("<HH", header, 50, len(entries), RUNTIME_PACKAGE_ENTRY_SIZE)
+    header[56:72] = public.key_id
+    struct.pack_into("<3H", header, 74, base.major, base.minor, base.patch)
+    struct.pack_into("<I", header, 80, base_epoch)
+    unsigned = bytes(header) + b"".join(entry_bytes) + bytes(payload_blob)
+    return unsigned + private_key.sign(RUNTIME_PACKAGE_DOMAIN + unsigned)
+
+
+def build_runtime_manifest(
+    private_key: Any,
+    public: PublicKeyInfo,
+    generation: int,
+    release_tag: str,
+    release_id: str,
+    target: Version,
+    target_epoch: int,
+    bases: tuple[tuple[Version, int], ...],
+    entries: tuple[RuntimeEntry, ...],
+    package: bytes,
+) -> bytes:
+    """Monta e assina o manifesto ZUM2 de 4 KiB."""
+    raw = bytearray(RUNTIME_MANIFEST_SIZE)
+    raw[:4] = RUNTIME_MAGIC
+    struct.pack_into("<HHHHI", raw, 4, RUNTIME_FORMAT_VERSION,
+                     RUNTIME_MANIFEST_SIZE, RUNTIME_ARCH_I386, 0, generation)
+    struct.pack_into("<3H", raw, 16, target.major, target.minor, target.patch)
+    struct.pack_into("<I", raw, 22, target_epoch)
+    struct.pack_into("<HHH", raw, 26, len(entries), RUNTIME_MANIFEST_ENTRY_SIZE,
+                     len(bases))
+    struct.pack_into("<I", raw, 32, len(package))
+    raw[36:68] = hashlib.sha256(package).digest()
+    raw[68:84] = public.key_id
+    raw[84:148] = runtime_fixed_bytes(release_tag, 64, "release_tag")
+    raw[148:212] = runtime_fixed_bytes(release_id, 64, "release_id")
+    for index, (base, epoch) in enumerate(bases):
+        offset = RUNTIME_MANIFEST_BASE_OFFSET + index * RUNTIME_MANIFEST_BASE_SIZE
+        struct.pack_into("<3H", raw, offset, base.major, base.minor, base.patch)
+        struct.pack_into("<I", raw, offset + 6, epoch)
+    for index, entry in enumerate(entries):
+        offset = RUNTIME_MANIFEST_ENTRY_OFFSET + index * RUNTIME_MANIFEST_ENTRY_SIZE
+        target_raw = bytearray(RUNTIME_MANIFEST_ENTRY_SIZE)
+        target_raw[:RUNTIME_PATH_SIZE] = encode_path(entry.path)
+        target_raw[64] = 1 if entry.target_present else 0
+        target_raw[65] = entry.operations
+        struct.pack_into("<H", target_raw, 66, 0)
+        struct.pack_into("<I", target_raw, 68, entry.target_size)
+        target_raw[72:104] = entry.target_hash
+        target_raw[104:168] = runtime_fixed_bytes(entry.asset_name, 64, "asset_name")
+        struct.pack_into("<I", target_raw, 168, entry.asset_size)
+        target_raw[172:204] = entry.asset_hash
+        raw[offset : offset + RUNTIME_MANIFEST_ENTRY_SIZE] = target_raw
+    raw[RUNTIME_MANIFEST_SIGNED_SIZE:] = private_key.sign(
+        RUNTIME_DOMAIN + bytes(raw[:RUNTIME_MANIFEST_SIGNED_SIZE])
+    )
+    return bytes(raw)
+
+
+def runtime_release_descriptor(
+    release_id: str,
+    release_name: str,
+    tag: str,
+    manifest: bytes,
+    package: bytes,
+    entries: tuple[RuntimeEntry, ...],
+    payloads: dict[str, bytes],
+) -> str:
+    """Serializa metadados de transporte sem substituir a autoridade assinada."""
+    assets = [
+        release_asset_metadata(entry.asset_name, payloads[entry.path])
+        for entry in entries
+        if entry.target_present
+    ]
+    runtime = {
+        "zum2": release_asset_metadata("runtime.zum2", manifest),
+        "zephyrosupd": release_asset_metadata("runtime.zephyrosupd", package),
+        "assets": assets,
+    }
+    return json.dumps(
+        {
+            "format": "zephyros-runtime-release-v2",
+            "release_id": release_id,
+            "release_name": release_name,
+            "channel": "stable",
+            "tag": tag,
+            "runtime": runtime,
+        },
+        indent=2,
+        ensure_ascii=True,
+    ) + "\n"
+
+
+def build_runtime_bundle(
+    manifest_path: Path,
+    private_key: Any,
+    public: PublicKeyInfo,
+    output_dir: Path,
+) -> Path:
+    """Gera ZUM2, pacote completo, assets individuais e release.json v2."""
+    if output_dir.exists():
+        raise UpdateError(f"diretorio runtime ja existe: {output_dir}")
+    (
+        generation,
+        release_tag,
+        release_id,
+        target,
+        target_epoch,
+        bases,
+        entries,
+        payloads,
+    ) = runtime_manifest_spec(manifest_path)
+    base, base_epoch = bases[0]
+    package = build_runtime_package(
+        private_key,
+        public,
+        generation,
+        base,
+        base_epoch,
+        target,
+        target_epoch,
+        entries,
+        payloads,
+    )
+    manifest = build_runtime_manifest(
+        private_key,
+        public,
+        generation,
+        release_tag,
+        release_id,
+        target,
+        target_epoch,
+        bases,
+        entries,
+        package,
+    )
+    parse_manifest = parse_runtime_manifest(manifest, public)
+    parse_runtime_package(package, public, parse_manifest)
+    output_dir.mkdir(parents=True, exist_ok=False)
+    write_new_bytes(output_dir / "runtime.zum2", manifest)
+    write_new_bytes(output_dir / "runtime.zephyrosupd", package)
+    for entry in entries:
+        if entry.target_present:
+            write_new_bytes(output_dir / entry.asset_name, payloads[entry.path])
+    descriptor = runtime_release_descriptor(
+        release_id,
+        f"ZephyrOS Runtime {target}",
+        release_tag,
+        manifest,
+        package,
+        entries,
+        payloads,
+    )
+    write_new_text(
+        output_dir / "release.json",
+        descriptor,
+    )
+    return output_dir
 
 
 def current_system_version() -> tuple[Version, int]:
@@ -1583,6 +2489,11 @@ def load_remote_config(path: Path) -> dict[str, str]:
         "github_descriptor_name",
         "github_manifest_name",
         "github_package_name",
+        "runtime_release_url_template",
+        "runtime_manifest_url",
+        "runtime_package_name",
+        "github_runtime_manifest_name",
+        "github_runtime_package_name",
     ):
         raise UpdateError("campos da configuracao remota divergem")
     release_url_template = config["release_url_template"]
@@ -1591,6 +2502,8 @@ def load_remote_config(path: Path) -> dict[str, str]:
         config["github_descriptor_name"],
         config["github_manifest_name"],
         config["github_package_name"],
+        config["github_runtime_manifest_name"],
+        config["github_runtime_package_name"],
     )
     owner = config["github_owner"]
     repository = config["github_repository"]
@@ -1609,7 +2522,7 @@ def load_remote_config(path: Path) -> dict[str, str]:
         not isinstance(name, str)
         or not re.fullmatch(r"[A-Za-z0-9._-]{1,99}", name)
         for name in asset_names
-    ) or len(set(asset_names)) != 3:
+    ) or len(set(asset_names)) != len(asset_names):
         raise UpdateError("nomes de assets GitHub invalidos")
     if (
         config["format"] != "zephyros-update-remote-v2"
@@ -1646,6 +2559,17 @@ def load_remote_config(path: Path) -> dict[str, str]:
             .replace("{tag}", "A" * 64)
         ) > 511
         or not isinstance(api_version, str)
+        or not isinstance(config["runtime_release_url_template"], str)
+        or not config["runtime_release_url_template"].startswith("http://")
+        or config["runtime_release_url_template"].count("{tag}") != 1
+        or "{" in config["runtime_release_url_template"].replace("{tag}", "")
+        or "}" in config["runtime_release_url_template"].replace("{tag}", "")
+        or len(config["runtime_release_url_template"].replace("{tag}", "A" * 64)) > 511
+        or not isinstance(config["runtime_manifest_url"], str)
+        or not config["runtime_manifest_url"].startswith("http://")
+        or len(config["runtime_manifest_url"]) > 511
+        or not isinstance(config["runtime_package_name"], str)
+        or not re.fullmatch(r"[A-Za-z0-9._-]{1,99}", config["runtime_package_name"])
     ):
         raise UpdateError("canal ou URL remota invalida")
     return config
@@ -1672,6 +2596,13 @@ def render_remote_config_header(config: dict[str, str]) -> str:
         f'#define UPDATE_REMOTE_GITHUB_DESCRIPTOR_NAME "{config["github_descriptor_name"]}"\n'
         f'#define UPDATE_REMOTE_GITHUB_MANIFEST_NAME "{config["github_manifest_name"]}"\n'
         f'#define UPDATE_REMOTE_GITHUB_PACKAGE_NAME "{config["github_package_name"]}"\n\n'
+        f'#define UPDATE_REMOTE_RUNTIME_RELEASE_URL_TEMPLATE \\\n'
+        f'    "{config["runtime_release_url_template"]}"\n'
+        f'#define UPDATE_REMOTE_RUNTIME_MANIFEST_URL \\\n'
+        f'    "{config["runtime_manifest_url"]}"\n'
+        f'#define UPDATE_REMOTE_RUNTIME_PACKAGE_NAME "{config["runtime_package_name"]}"\n'
+        f'#define UPDATE_REMOTE_GITHUB_RUNTIME_MANIFEST_NAME "{config["github_runtime_manifest_name"]}"\n'
+        f'#define UPDATE_REMOTE_GITHUB_RUNTIME_PACKAGE_NAME "{config["github_runtime_package_name"]}"\n\n'
         "#endif\n"
     )
 
@@ -1765,8 +2696,6 @@ def decode_state_record(record: bytes) -> StoredUpdateState:
     rollback_count = record[26]
     previous = Version(*struct.unpack_from("<3H", record, 28))
     previous_epoch = struct.unpack_from("<I", record, 36)[0]
-    if not all(item.present for item in current):
-        raise UpdateError("estado U3 nao descreve todos os alvos")
     if rollback_available not in (0, 1) or rollback_slot not in (0, 1):
         raise UpdateError("flags de rollback U3 invalidas")
     if rollback_count != sum(item.present for item in rollback):
@@ -2454,6 +3383,282 @@ def decode_remote_record(data: bytes) -> RemoteRecord:
     return record
 
 
+def decode_runtime_remote_record(data: bytes) -> RuntimeRemoteRecord:
+    """Decodifica e valida um registro ZRV2 de 512 bytes."""
+    if len(data) != RUNTIME_RECORD_SIZE or data[:4] != RUNTIME_RECORD_MAGIC:
+        raise UpdateError("registro runtime remoto possui magic ou tamanho invalido")
+    version, size = struct.unpack_from("<HH", data, 4)
+    sequence = struct.unpack_from("<I", data, 8)[0]
+    phase, active, pending, mode = data[12:16]
+    entry_count, asset_mask = struct.unpack_from("<HH", data, 16)
+    package_size = struct.unpack_from("<I", data, 84)[0]
+    target = Version(*struct.unpack_from("<3H", data, 88))
+    target_epoch = struct.unpack_from("<I", data, 94)[0]
+    if (
+        version != 1
+        or size != RUNTIME_RECORD_SIZE
+        or phase not in (0, 1)
+        or active not in (0, 1, REMOTE_SLOT_NONE)
+        or pending not in (0, 1, REMOTE_SLOT_NONE)
+        or mode not in (0, 1)
+        or entry_count > RUNTIME_MAX_ENTRIES
+        or asset_mask & ~((1 << RUNTIME_MAX_ENTRIES) - 1)
+        or package_size > RUNTIME_PACKAGE_MAX_SIZE
+        or any(data[98:RUNTIME_RECORD_HASH_OFFSET])
+        or hashlib.sha256(data[:RUNTIME_RECORD_HASH_OFFSET]).digest()
+        != data[RUNTIME_RECORD_HASH_OFFSET:]
+    ):
+        raise UpdateError("registro runtime remoto estruturalmente invalido")
+    if phase == 1 and pending not in (0, 1):
+        raise UpdateError("download runtime remoto nao possui slot pendente")
+    if phase == 1 and pending == active:
+        raise UpdateError("download runtime remoto reutiliza slot ativo")
+    if phase == 0 and pending not in (REMOTE_SLOT_NONE, active):
+        raise UpdateError("slot runtime remoto limpo diverge do ativo")
+    if phase == 0 and active == REMOTE_SLOT_NONE and package_size:
+        raise UpdateError("cache runtime vazio declara pacote")
+    if phase == 0 and active == REMOTE_SLOT_NONE and (
+        entry_count
+        or asset_mask
+        or data[20:52] != bytes(32)
+        or data[52:84] != bytes(32)
+        or target != Version(0, 0, 0)
+        or target_epoch
+    ):
+        raise UpdateError("cache runtime vazio possui metadados ativos")
+    if phase == 0 and active in (0, 1) and (
+        not entry_count
+        or asset_mask & ~((1 << entry_count) - 1)
+        or data[20:52] == bytes(32)
+        or (mode == 1 and (
+            not package_size
+            or data[52:84] == bytes(32)
+            or asset_mask
+        ))
+        or (mode == 0 and (package_size or data[52:84] != bytes(32)))
+    ):
+        raise UpdateError("modo e tamanho do cache runtime divergem")
+    return RuntimeRemoteRecord(
+        sequence,
+        phase,
+        active,
+        pending,
+        mode,
+        entry_count,
+        asset_mask,
+        data[20:52],
+        data[52:84],
+        package_size,
+        target,
+        target_epoch,
+    )
+
+
+def decode_runtime_file_state(
+    raw: bytes, label: str, journal_old: bool = False
+) -> RuntimeStoredFileState:
+    """Decodifica uma entrada de estado ZRT2 ou de journal ZRTJ."""
+    if len(raw) != RUNTIME_FILE_STATE_SIZE:
+        raise UpdateError(f"estado runtime truncado: {label}")
+    present = raw[0]
+    if present not in (0, 1) or raw[3] != 0:
+        raise UpdateError(f"estado runtime possui flags invalidas: {label}")
+    if not journal_old and any(raw[1:3]):
+        raise UpdateError(f"estado runtime possui reservado invalido: {label}")
+    size = struct.unpack_from("<I", raw, 4)[0]
+    digest = raw[8:40]
+    if not present:
+        if size or digest != bytes(32):
+            raise UpdateError(f"estado runtime ausente possui dados: {label}")
+        return RuntimeStoredFileState(0, bytes(32), False)
+    if not 1 <= size <= RUNTIME_FILE_MAX_SIZE or digest == bytes(32):
+        raise UpdateError(f"estado runtime presente possui dados invalidos: {label}")
+    return RuntimeStoredFileState(size, digest, True)
+
+
+def decode_runtime_state_record(data: bytes) -> RuntimeStoredState:
+    """Decodifica e valida um controle ZRT2 de 4096 bytes."""
+    if len(data) != RUNTIME_CONTROL_SIZE or data[:4] != b"ZRT2":
+        raise UpdateError("estado runtime possui magic ou tamanho invalido")
+    version, size = struct.unpack_from("<HH", data, 4)
+    if (
+        version != RUNTIME_CONTROL_VERSION
+        or size != RUNTIME_CONTROL_SIZE
+        or any(data[38:64])
+        or any(data[RUNTIME_STATE_ROLLBACK_OFFSET + RUNTIME_MAX_ENTRIES * RUNTIME_FILE_STATE_SIZE : RUNTIME_CONTROL_HASH_OFFSET])
+        or hashlib.sha256(data[:RUNTIME_CONTROL_HASH_OFFSET]).digest()
+        != data[RUNTIME_CONTROL_HASH_OFFSET:]
+    ):
+        raise UpdateError("estado runtime estruturalmente invalido")
+    sequence = struct.unpack_from("<I", data, 8)[0]
+    installed = Version(*struct.unpack_from("<3H", data, 12))
+    installed_epoch = struct.unpack_from("<I", data, 18)[0]
+    rollback_available = data[22]
+    rollback_slot = data[23]
+    entry_count, rollback_count = struct.unpack_from("<HH", data, 24)
+    previous = Version(*struct.unpack_from("<3H", data, 28))
+    previous_epoch = struct.unpack_from("<I", data, 34)[0]
+    if (
+        rollback_available not in (0, 1)
+        or rollback_slot not in (0, 1, RUNTIME_SLOT_NONE)
+        or entry_count != len(RUNTIME_CATALOG)
+        or rollback_count > len(RUNTIME_CATALOG)
+    ):
+        raise UpdateError("estado runtime possui contadores invalidos")
+    current = tuple(
+        decode_runtime_file_state(
+            data[RUNTIME_STATE_CURRENT_OFFSET + index * RUNTIME_FILE_STATE_SIZE :
+                 RUNTIME_STATE_CURRENT_OFFSET + (index + 1) * RUNTIME_FILE_STATE_SIZE],
+            f"current[{index}]",
+        )
+        for index in range(RUNTIME_MAX_ENTRIES)
+    )
+    rollback = tuple(
+        decode_runtime_file_state(
+            data[RUNTIME_STATE_ROLLBACK_OFFSET + index * RUNTIME_FILE_STATE_SIZE :
+                 RUNTIME_STATE_ROLLBACK_OFFSET + (index + 1) * RUNTIME_FILE_STATE_SIZE],
+            f"rollback[{index}]",
+        )
+        for index in range(RUNTIME_MAX_ENTRIES)
+    )
+    if any(state.present for state in current[len(RUNTIME_CATALOG) :]) or any(
+        state.present for state in rollback[len(RUNTIME_CATALOG) :]
+    ):
+        raise UpdateError("estado runtime usa entradas fora do catalogo")
+    if (
+        (not rollback_available and (rollback_slot != RUNTIME_SLOT_NONE or rollback_count))
+        or (rollback_available and (rollback_slot == RUNTIME_SLOT_NONE or not rollback_count))
+    ):
+        raise UpdateError("estado runtime possui rollback inconsistente")
+    if sum(
+        current[index] != rollback[index]
+        for index in range(len(RUNTIME_CATALOG))
+    ) != rollback_count:
+        raise UpdateError("contagem de rollback runtime diverge")
+    return RuntimeStoredState(
+        sequence,
+        installed,
+        installed_epoch,
+        bool(rollback_available),
+        rollback_slot,
+        entry_count,
+        rollback_count,
+        previous,
+        previous_epoch,
+        current,
+        rollback,
+    )
+
+
+def decode_runtime_journal_record(data: bytes) -> RuntimeStoredJournal:
+    """Decodifica e valida um controle ZRTJ de 4096 bytes."""
+    if len(data) != RUNTIME_CONTROL_SIZE or data[:4] != b"ZRTJ":
+        raise UpdateError("journal runtime possui magic ou tamanho invalido")
+    version, size = struct.unpack_from("<HH", data, 4)
+    if (
+        version != RUNTIME_CONTROL_VERSION
+        or size != RUNTIME_CONTROL_SIZE
+        or any(data[40:RUNTIME_JOURNAL_HEADER_SIZE])
+        or hashlib.sha256(data[:RUNTIME_CONTROL_HASH_OFFSET]).digest()
+        != data[RUNTIME_CONTROL_HASH_OFFSET:]
+    ):
+        raise UpdateError("journal runtime estruturalmente invalido")
+    sequence = struct.unpack_from("<I", data, 8)[0]
+    phase, kind, slot, progress = data[12:16]
+    entry_count = struct.unpack_from("<H", data, 16)[0]
+    base = Version(*struct.unpack_from("<3H", data, 20))
+    base_epoch = struct.unpack_from("<I", data, 26)[0]
+    target = Version(*struct.unpack_from("<3H", data, 30))
+    target_epoch = struct.unpack_from("<I", data, 36)[0]
+    entries: list[RuntimeStoredPlanEntry] = []
+    for index in range(RUNTIME_MAX_ENTRIES):
+        offset = RUNTIME_JOURNAL_ENTRY_OFFSET + index * RUNTIME_JOURNAL_ENTRY_SIZE
+        raw = data[offset : offset + RUNTIME_JOURNAL_ENTRY_SIZE]
+        old = decode_runtime_file_state(
+            raw[RUNTIME_JOURNAL_ENTRY_OLD : RUNTIME_JOURNAL_ENTRY_NEW],
+            f"entries[{index}].old",
+            journal_old=True,
+        )
+        new = decode_runtime_file_state(
+            raw[RUNTIME_JOURNAL_ENTRY_NEW:], f"entries[{index}].new"
+        )
+        entries.append(RuntimeStoredPlanEntry(raw[1], raw[2], old, new))
+    if phase == RUNTIME_PHASE_NONE:
+        if (
+            kind != RUNTIME_JOURNAL_NONE
+            or slot != RUNTIME_SLOT_NONE
+            or progress
+            or entry_count
+            or any(data[20:40])
+            or any(data[RUNTIME_JOURNAL_ENTRY_OFFSET:RUNTIME_CONTROL_HASH_OFFSET])
+        ):
+            raise UpdateError("journal runtime limpo possui dados pendentes")
+        return RuntimeStoredJournal(
+            sequence,
+            phase,
+            kind,
+            slot,
+            progress,
+            entry_count,
+            base,
+            base_epoch,
+            target,
+            target_epoch,
+            (),
+        )
+    if (
+        phase not in (
+            RUNTIME_PHASE_PREPARED,
+            RUNTIME_PHASE_STAGING,
+            RUNTIME_PHASE_REPLACING,
+            RUNTIME_PHASE_COMMITTED,
+        )
+        or kind not in (RUNTIME_JOURNAL_APPLY, RUNTIME_JOURNAL_ROLLBACK)
+        or slot not in (0, 1)
+        or not 0 <= entry_count <= len(RUNTIME_CATALOG)
+        or progress > entry_count
+    ):
+        raise UpdateError("journal runtime possui fase ou contadores invalidos")
+    for index, entry in enumerate(entries[:entry_count]):
+        if (
+            entry.catalog_index >= len(RUNTIME_CATALOG)
+            or entry.operation == 0
+            or entry.operation & ~(
+                RUNTIME_OPERATION_REPLACE
+                | RUNTIME_OPERATION_CREATE
+                | RUNTIME_OPERATION_DELETE
+            )
+            or (entry.old_state.present and entry.new_state.present and
+                entry.operation != RUNTIME_OPERATION_REPLACE)
+            or (not entry.old_state.present and entry.new_state.present and
+                entry.operation != RUNTIME_OPERATION_CREATE)
+            or (entry.old_state.present and not entry.new_state.present and
+                entry.operation != RUNTIME_OPERATION_DELETE)
+            or (not entry.old_state.present and not entry.new_state.present)
+            or any(previous.catalog_index == entry.catalog_index
+                   for previous in entries[:index])
+        ):
+            raise UpdateError("journal runtime possui plano invalido")
+    if any(data[
+        RUNTIME_JOURNAL_ENTRY_OFFSET + entry_count * RUNTIME_JOURNAL_ENTRY_SIZE :
+        RUNTIME_CONTROL_HASH_OFFSET
+    ]):
+        raise UpdateError("journal runtime possui entradas nao usadas")
+    return RuntimeStoredJournal(
+        sequence,
+        phase,
+        kind,
+        slot,
+        progress,
+        entry_count,
+        base,
+        base_epoch,
+        target,
+        target_epoch,
+        tuple(entries[:entry_count]),
+    )
+
+
 def fat_name(raw: bytes) -> str:
     """Converte os 11 bytes de uma entrada FAT para nome 8.3 legivel."""
     stem = raw[:8].decode("ascii").rstrip()
@@ -2572,8 +3777,11 @@ def audit_image(
     expected_remote_cache: str = "any",
     expected_remote_alias: str | None = None,
     expected_remote_pending: str = "clean",
+    expected_runtime_cache: str = "any",
+    expected_runtime_alias: str | None = None,
+    expected_runtime_pending: str = "clean",
 ) -> None:
-    """Audita persistencia U3/U4/U5 e arquivos transacionais."""
+    """Audita persistencia U3/U4/U5/EP6.3 e arquivos transacionais."""
     root = inspect_fat12_image(image_path)
     state = select_redundant_record(
         tuple(root.get(name, (None, 0))[0] for name in UPDATE_STATE_ALIASES),
@@ -2598,6 +3806,30 @@ def audit_image(
         decode_remote_record,
         "cache remoto U5",
     )
+    runtime_remote = select_redundant_record(
+        tuple(
+            root.get(name, (None, 0))[0]
+            for name in RUNTIME_RECORD_ALIASES
+        ),
+        decode_runtime_remote_record,
+        "cache remoto runtime v2",
+    )
+    runtime_local_state = select_redundant_record(
+        tuple(
+            root.get(name, (None, 0))[0]
+            for name in RUNTIME_STATE_ALIASES
+        ),
+        decode_runtime_state_record,
+        "estado local runtime v2",
+    )
+    runtime_local_journal = select_redundant_record(
+        tuple(
+            root.get(name, (None, 0))[0]
+            for name in RUNTIME_JOURNAL_ALIASES
+        ),
+        decode_runtime_journal_record,
+        "journal local runtime v2",
+    )
     installed = state.installed_version if state else Version(0, 1, 0)
     rollback_available = state.rollback_available if state else False
     pending = journal is not None and journal.kind != UPDATE_JOURNAL_NONE
@@ -2611,6 +3843,21 @@ def audit_image(
         if remote and remote.active_slot in (0, 1)
         else None
     )
+    runtime_pending = bool(
+        runtime_remote and (
+            runtime_remote.phase == 1
+            or runtime_remote.pending_slot in (0, 1)
+        )
+    )
+    runtime_local_pending = bool(
+        runtime_local_journal and
+        runtime_local_journal.phase != RUNTIME_PHASE_NONE
+    )
+    runtime_alias = (
+        RUNTIME_MANIFEST_ALIASES[runtime_remote.active_slot]
+        if runtime_remote and runtime_remote.active_slot in (0, 1)
+        else None
+    )
     internal_aliases = (
         UPDATE_STATE_ALIASES
         + UPDATE_JOURNAL_ALIASES
@@ -2619,6 +3866,21 @@ def audit_image(
         + tuple(alias for slot in UPDATE_STAGE_ALIASES for alias in slot)
         + REMOTE_RECORD_ALIASES
         + REMOTE_PACKAGE_ALIASES
+        + RUNTIME_RECORD_ALIASES
+        + RUNTIME_MANIFEST_ALIASES
+        + RUNTIME_PACKAGE_ALIASES
+        + tuple(
+            f"ZRV{slot}.{index:02d}"
+            for slot in range(2)
+            for index in range(RUNTIME_MAX_ENTRIES)
+        )
+        + RUNTIME_STATE_ALIASES
+        + RUNTIME_JOURNAL_ALIASES
+        + tuple(
+            f"{prefix}{index:02d}"
+            for prefix in (*RUNTIME_STAGE_PREFIXES, *RUNTIME_BACKUP_PREFIXES)
+            for index in range(RUNTIME_MAX_ENTRIES)
+        )
     )
     for alias in internal_aliases:
         if alias in root and root[alias][1] != 0x26:
@@ -2672,6 +3934,21 @@ def audit_image(
             f"alias remoto e {remote_alias or 'none'}, "
             f"esperado {expected_remote_alias}"
         )
+    if expected_runtime_pending == "clean" and runtime_pending:
+        raise UpdateError("imagem possui transferencia runtime v2 pendente")
+    if expected_runtime_pending == "pending" and not runtime_pending:
+        raise UpdateError("transferencia runtime v2 pendente era esperada")
+    if expected_runtime_cache == "empty" and runtime_alias is not None:
+        raise UpdateError("cache runtime v2 deveria estar vazio")
+    if expected_runtime_cache == "valid" and runtime_alias is None:
+        raise UpdateError("cache runtime v2 valido esperado nao existe")
+    if expected_runtime_alias is not None and runtime_alias != expected_runtime_alias:
+        raise UpdateError(
+            f"alias runtime e {runtime_alias or 'none'}, "
+            f"esperado {expected_runtime_alias}"
+        )
+    if not allow_pending and runtime_local_pending:
+        raise UpdateError("imagem possui journal local runtime v2 pendente")
     if remote_alias is not None:
         if remote_alias not in root:
             raise UpdateError("slot ativo do cache remoto esta ausente")
@@ -2690,14 +3967,109 @@ def audit_image(
         for alias in REMOTE_PACKAGE_ALIASES:
             if (alias == remote_alias) != (alias in root):
                 raise UpdateError(f"slot remoto inativo permaneceu: {alias}")
+    if runtime_alias is not None:
+        if runtime_alias not in root:
+            raise UpdateError("slot ativo runtime v2 esta ausente")
+        trusted = load_public_json(RELEASE_PUBLIC)
+        runtime_manifest = parse_runtime_manifest(root[runtime_alias][0], trusted)
+        if runtime_remote is None:
+            raise UpdateError("manifesto runtime existe sem registro ativo")
+        if (
+            len(root[runtime_alias][0]) != RUNTIME_MANIFEST_SIZE
+            or hashlib.sha256(root[runtime_alias][0]).digest()
+            != runtime_remote.manifest_sha256
+        ):
+            raise UpdateError("hash do manifesto runtime diverge do registro")
+        if runtime_remote.mode == 1:
+            package_alias = RUNTIME_PACKAGE_ALIASES[runtime_remote.active_slot]
+            if package_alias not in root:
+                raise UpdateError("pacote runtime completo esta ausente")
+            package_data = root[package_alias][0]
+            if (
+                len(package_data) != runtime_remote.package_size
+                or hashlib.sha256(package_data).digest()
+                != runtime_remote.package_sha256
+            ):
+                raise UpdateError("hash do pacote runtime diverge do registro")
+            parse_runtime_package(package_data, trusted, runtime_manifest)
+        for index, entry in enumerate(runtime_manifest.entries):
+            asset_alias = f"ZRV{runtime_remote.active_slot}.{index:02d}"
+            if not entry.target_present or asset_alias not in root:
+                continue
+            asset_data = root[asset_alias][0]
+            if (
+                len(asset_data) != entry.asset_size
+                or hashlib.sha256(asset_data).digest() != entry.asset_sha256
+            ):
+                raise UpdateError(f"asset runtime diverge: {asset_alias}")
+    if not runtime_pending:
+        for alias in RUNTIME_MANIFEST_ALIASES + RUNTIME_PACKAGE_ALIASES:
+            if (alias == runtime_alias or (
+                runtime_remote and runtime_remote.mode == 1 and
+                alias == RUNTIME_PACKAGE_ALIASES[runtime_remote.active_slot]
+            )) != (alias in root):
+                raise UpdateError(f"slot runtime inativo permaneceu: {alias}")
+        for slot in range(2):
+            for index in range(RUNTIME_MAX_ENTRIES):
+                alias = f"ZRV{slot}.{index:02d}"
+                active_asset = (
+                    runtime_remote is not None
+                    and runtime_remote.active_slot == slot
+                    and runtime_remote.mode == 0
+                    and runtime_remote.asset_mask & (1 << index)
+                )
+                if (alias in root) != active_asset:
+                    raise UpdateError(f"asset runtime inativo permaneceu: {alias}")
     if state:
         for index, name in enumerate(UPDATE_TARGETS):
+            expected = state.current[index]
+            if not expected.present:
+                if name in root:
+                    raise UpdateError(f"arquivo U3 removido permaneceu: {name}")
+                continue
             if name not in root:
                 raise UpdateError(f"arquivo instalado ausente: {name}")
             data = root[name][0]
-            expected = state.current[index]
             if len(data) != expected.size or hashlib.sha256(data).digest() != expected.sha256:
                 raise UpdateError(f"arquivo instalado diverge do estado: {name}")
+    if runtime_local_state and not runtime_local_pending:
+        for index, name in enumerate(RUNTIME_CATALOG):
+            expected = runtime_local_state.current[index]
+            if expected.present:
+                if name not in root:
+                    raise UpdateError(f"arquivo runtime ausente: {name}")
+                data = root[name][0]
+                if len(data) != expected.size or hashlib.sha256(data).digest() != expected.sha256:
+                    raise UpdateError(f"arquivo runtime diverge do estado: {name}")
+            elif name in root:
+                raise UpdateError(f"arquivo runtime removido permaneceu: {name}")
+        for slot in range(2):
+            for index in range(RUNTIME_MAX_ENTRIES):
+                stage_alias = f"{RUNTIME_STAGE_PREFIXES[slot]}{index:02d}"
+                if stage_alias in root:
+                    raise UpdateError(f"staging runtime permaneceu: {stage_alias}")
+                backup_alias = f"{RUNTIME_BACKUP_PREFIXES[slot]}{index:02d}"
+                should_exist = bool(
+                    runtime_local_state.rollback_available
+                    and runtime_local_state.rollback_slot == slot
+                    and runtime_local_state.rollback[index].present
+                )
+                if should_exist != (backup_alias in root):
+                    raise UpdateError(f"estado local runtime diverge: {backup_alias}")
+                if should_exist:
+                    data = root[backup_alias][0]
+                    expected = runtime_local_state.rollback[index]
+                    if (
+                        len(data) != expected.size
+                        or hashlib.sha256(data).digest() != expected.sha256
+                    ):
+                        raise UpdateError(f"backup runtime diverge: {backup_alias}")
+    elif not runtime_local_pending:
+        for prefix in (*RUNTIME_STAGE_PREFIXES, *RUNTIME_BACKUP_PREFIXES):
+            for index in range(RUNTIME_MAX_ENTRIES):
+                alias = f"{prefix}{index:02d}"
+                if alias in root:
+                    raise UpdateError(f"artefato local runtime sem estado: {alias}")
     if not allow_pending:
         for aliases in UPDATE_STAGE_ALIASES:
             if any(alias in root for alias in aliases):
@@ -2735,6 +4107,17 @@ def audit_image(
         + ("READY" if remote_alias else "EMPTY")
         + f" alias={remote_alias or 'none'} "
         + ("pending=YES" if remote_pending else "pending=NO")
+    )
+    print(
+        "  runtime="
+        + ("READY" if runtime_alias else "EMPTY")
+        + f" alias={runtime_alias or 'none'} "
+        + ("pending=YES" if runtime_pending else "pending=NO")
+    )
+    print(
+        "  runtime_local="
+        + ("READY" if runtime_local_state else "EMPTY")
+        + f" journal={'PENDING' if runtime_local_pending else 'CLEAN'}"
     )
 
 
@@ -3564,6 +4947,81 @@ def selftest_ep6_public() -> None:
             raise UpdateError(f"hash publicado do descritor EP6 divergiu: {name}")
 
 
+def selftest_ep63_runtime() -> None:
+    """Exercita assinatura, cache seletivo e bases multiplas do ZUM2."""
+    ed25519, _, _ = crypto_modules()
+    private_key = ed25519.Ed25519PrivateKey.generate()
+    trusted = private_public_info(private_key)
+    with tempfile.TemporaryDirectory(prefix="zephyros-ep63-") as temp_name:
+        root = Path(temp_name)
+        input_dir = root / "input"
+        input_dir.mkdir()
+        for name, source in UPDATE_ASSETS.items():
+            write_new_bytes(input_dir / name, source.read_bytes())
+        manifest_path = input_dir / "runtime.json"
+        write_new_text(
+            manifest_path,
+            json.dumps(
+                {
+                    "format": "ZUM2 v2",
+                    "generation": 6301,
+                    "release_tag": "selftest-ep63",
+                    "release_id": "selftest-ep63",
+                    "target_version": "0.1.1",
+                    "target_epoch": 0,
+                    "base_versions": [
+                        {"version": "0.1.0", "epoch": 0},
+                        {"version": "0.0.9", "epoch": 0},
+                    ],
+                    "files": [
+                        {"path": "EXPLORER.BMP", "operation": "replace_or_create", "source": "EXPLORER.BMP"},
+                        {"path": "SHELL.BMP", "operation": "create", "source": "SHELL.BMP"},
+                        {"path": "TASKMGR.BMP", "operation": "delete", "source": None},
+                    ],
+                },
+                indent=2,
+            )
+            + "\n",
+        )
+        output = build_runtime_bundle(
+            manifest_path, private_key, trusted, root / "release"
+        )
+        manifest = parse_runtime_manifest(
+            (output / "runtime.zum2").read_bytes(), trusted
+        )
+        package_data = (output / "runtime.zephyrosupd").read_bytes()
+        package = parse_runtime_package(package_data, trusted, manifest)
+        if (
+            manifest.release_tag != "selftest-ep63"
+            or len(manifest.base_versions) != 2
+            or package.target_version != Version(0, 1, 1)
+            or any(entry.path == "TASKMGR.BMP" and entry.present for entry in package.entries)
+        ):
+            raise UpdateError("round-trip do runtime v2 divergiu")
+        for base, epoch in manifest.base_versions:
+            parse_runtime_package(
+                package_data, trusted, manifest, base, epoch
+            )
+        corrupted_manifest = bytearray((output / "runtime.zum2").read_bytes())
+        corrupted_manifest[16] ^= 1
+        try:
+            parse_runtime_manifest(bytes(corrupted_manifest), trusted)
+        except Rejection as error:
+            if error.reason != REASON_SIGNATURE:
+                raise UpdateError("manifesto ZUM2 corrompido produziu motivo errado")
+        else:
+            raise UpdateError("manifesto ZUM2 corrompido foi aceito")
+        corrupted_package = bytearray(package_data)
+        corrupted_package[-RUNTIME_SIGNATURE_SIZE - 1] ^= 1
+        try:
+            parse_runtime_package(bytes(corrupted_package), trusted, manifest)
+        except Rejection as error:
+            if error.reason not in (REASON_HASH, REASON_SIGNATURE):
+                raise UpdateError("pacote ZUPD v2 corrompido produziu motivo errado")
+        else:
+            raise UpdateError("pacote ZUPD v2 corrompido foi aceito")
+
+
 def selftest_ep5_release() -> None:
     """Exercita Releases com trava assinada e tag apenas auxiliar."""
     trusted = load_public_json(RELEASE_PUBLIC)
@@ -3666,6 +5124,7 @@ def run_selftest() -> None:
     selftest_u5_remote()
     selftest_u5_public()
     selftest_ep6_public()
+    selftest_ep63_runtime()
     selftest_ep5_release()
     print(
         "Updater selftest: OK"
@@ -3763,6 +5222,335 @@ def command_release_check(args: argparse.Namespace) -> None:
     print(f"Commit: {bundle.source_commit}")
     print(f"Tag auxiliar: {bundle.tag or 'ausente'}")
     print("Integridade: OK")
+
+
+def command_runtime_build(args: argparse.Namespace) -> None:
+    """Gera o manifesto assinado e o pacote completo do runtime v2."""
+    key = load_private_key(
+        validate_private_input(Path(args.private)), prompt_password()
+    )
+    public = load_public_json(Path(args.public))
+    if private_public_info(key) != public:
+        raise UpdateError("chave privada nao corresponde ao JSON publico")
+    output = build_runtime_bundle(
+        Path(args.manifest), key, public, Path(args.output_dir).resolve()
+    )
+    print(f"Runtime v2 criado: {output}")
+    print(f"manifest_sha256={hashlib.sha256((output / 'runtime.zum2').read_bytes()).hexdigest()}")
+    print(f"package_sha256={hashlib.sha256((output / 'runtime.zephyrosupd').read_bytes()).hexdigest()}")
+    print("Publique release.json e somente os assets deste diretorio.")
+
+
+def command_runtime_verify(args: argparse.Namespace) -> None:
+    """Valida ZUM2 e ZUPD v2 localmente, sem instalar nada."""
+    trusted = load_public_json(Path(args.public))
+    manifest_data = Path(args.manifest).read_bytes()
+    manifest = parse_runtime_manifest(manifest_data, trusted)
+    package_data = Path(args.package).read_bytes()
+    version, epoch = current_system_version()
+    if args.system_version is not None:
+        version = Version.parse(args.system_version)
+    if args.system_epoch is not None:
+        epoch = args.system_epoch
+    package = parse_runtime_package(
+        package_data, trusted, manifest, version, epoch
+    )
+    print("ZUM2/ZUPD v2 validos")
+    print(f"  release={manifest.release_id} tag={manifest.release_tag}")
+    print(f"  base_profiles={len(manifest.base_versions)}")
+    print(f"  target={package.target_version} epoch={package.target_epoch}")
+    print(f"  entries={len(package.entries)} total_size={package.total_size}")
+    print("  reason=NONE")
+
+
+def write_runtime_fixtures(
+    private_key: Any, public: PublicKeyInfo, output_dir: Path
+) -> None:
+    """Gera fixtures v2 validas e adulteradas para EP6.3."""
+    output = output_dir.resolve()
+    if output.exists() and any(output.iterdir()):
+        raise UpdateError(f"diretorio de fixtures runtime nao esta vazio: {output}")
+    output.mkdir(parents=True, exist_ok=True)
+    input_dir = output / "input"
+    input_dir.mkdir()
+    for name, source in UPDATE_ASSETS.items():
+        write_new_bytes(input_dir / name, source.read_bytes())
+    manifest_path = input_dir / "runtime.json"
+    manifest_spec = {
+        "format": "ZUM2 v2",
+        "generation": 63,
+        "release_tag": "ep63-runtime",
+        "release_id": "ep63-runtime",
+        "target_version": "0.1.1",
+        "target_epoch": 0,
+        "base_versions": [
+            {"version": "0.1.0", "epoch": 0},
+            {"version": "0.0.9", "epoch": 0},
+        ],
+        "files": [
+            {"path": name, "operation": "replace_or_create", "source": name}
+            for name in sorted(RUNTIME_CATALOG)
+        ],
+    }
+    write_new_text(
+        manifest_path,
+        json.dumps(manifest_spec, indent=2, ensure_ascii=True) + "\n",
+    )
+    valid_dir = output / "valid"
+    build_runtime_bundle(manifest_path, private_key, public, valid_dir)
+    manifest = (valid_dir / "runtime.zum2").read_bytes()
+    package = (valid_dir / "runtime.zephyrosupd").read_bytes()
+    tampered_manifest = bytearray(manifest)
+    tampered_manifest[16] ^= 1
+    write_new_bytes(output / "tampered.zum2", bytes(tampered_manifest))
+    tampered_package = bytearray(package)
+    tampered_package[-RUNTIME_SIGNATURE_SIZE - 1] ^= 1
+    write_new_bytes(output / "tampered.zephyrosupd", bytes(tampered_package))
+    missing_descriptor = json.loads((valid_dir / "release.json").read_text())
+    missing_descriptor["runtime"]["assets"].pop()
+    write_new_text(
+        output / "missing-asset.json",
+        json.dumps(missing_descriptor, indent=2, ensure_ascii=True) + "\n",
+    )
+    published = {
+        "format": "zephyros-runtime-fixtures-v2",
+        "release_public_key": {
+            "public_key_hex": public.public_key.hex(),
+            "key_id_hex": public.key_id.hex(),
+        },
+        "valid": {
+            name: {
+                "size": path.stat().st_size,
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            }
+            for name, path in (
+                ("runtime.zum2", valid_dir / "runtime.zum2"),
+                ("runtime.zephyrosupd", valid_dir / "runtime.zephyrosupd"),
+                ("release.json", valid_dir / "release.json"),
+            )
+        },
+        "invalid": {
+            name: {
+                "size": path.stat().st_size,
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            }
+            for name, path in (
+                ("tampered.zum2", output / "tampered.zum2"),
+                ("tampered.zephyrosupd", output / "tampered.zephyrosupd"),
+                ("missing-asset.json", output / "missing-asset.json"),
+            )
+        },
+    }
+    write_new_text(
+        output / "fixtures.json",
+        json.dumps(published, indent=2, ensure_ascii=True) + "\n",
+    )
+
+
+def command_fixtures_runtime(args: argparse.Namespace) -> None:
+    """Gera a matriz EP6.3 fora do repositorio de codigo."""
+    key = load_private_key(Path(args.private), prompt_password())
+    public = load_public_json(Path(args.public))
+    if private_public_info(key) != public:
+        raise UpdateError("chave privada nao corresponde ao JSON publico")
+    write_runtime_fixtures(key, public, Path(args.output_dir))
+    print(f"Fixtures runtime v2 criadas em {Path(args.output_dir).resolve()}")
+    print("Somente artefatos publicos foram gravados no diretorio indicado.")
+
+
+def runtime_server_files(root: Path, variant: str) -> dict[str, bytes]:
+    """Carrega os assets runtime publicados por um servidor de fixtures."""
+    valid = root / "valid" if (root / "valid").is_dir() else root
+    required = {
+        "runtime.zum2": valid / "runtime.zum2",
+        "runtime.zephyrosupd": valid / "runtime.zephyrosupd",
+        "release.json": valid / "release.json",
+    }
+    optional_assets = {
+        name: valid / name for name in RUNTIME_CATALOG if (valid / name).is_file()
+    }
+    missing = [path for path in required.values() if not path.is_file()]
+    if missing:
+        raise UpdateError(f"fixture runtime ausente: {missing[0]}")
+    files = {
+        name: path.read_bytes() for name, path in {**required, **optional_assets}.items()
+    }
+    if variant == "tampered-manifest":
+        data = bytearray(files["runtime.zum2"])
+        data[16] ^= 1
+        files["runtime.zum2"] = bytes(data)
+    elif variant == "tampered-package":
+        data = bytearray(files["runtime.zephyrosupd"])
+        data[-RUNTIME_SIGNATURE_SIZE - 1] ^= 1
+        files["runtime.zephyrosupd"] = bytes(data)
+    elif variant == "missing-asset":
+        descriptor = json.loads(files["release.json"].decode("utf-8"))
+        descriptor["runtime"]["assets"].pop()
+        files["release.json"] = (
+            json.dumps(descriptor, indent=2, ensure_ascii=True) + "\n"
+        ).encode("utf-8")
+    elif variant == "tag-divergent":
+        descriptor = json.loads(files["release.json"].decode("utf-8"))
+        descriptor["tag"] = f"{descriptor['tag']}-other"
+        files["release.json"] = (
+            json.dumps(descriptor, indent=2, ensure_ascii=True) + "\n"
+        ).encode("utf-8")
+    elif variant == "invalid-json":
+        files["release.json"] = b'{"format":"zephyros-runtime-release-v2"'
+    elif variant == "bad-digest":
+        descriptor = json.loads(files["release.json"].decode("utf-8"))
+        descriptor["runtime"]["zum2"]["sha256"] = "0" * 64
+        files["release.json"] = (
+            json.dumps(descriptor, indent=2, ensure_ascii=True) + "\n"
+        ).encode("utf-8")
+    return files
+
+
+def command_serve_runtime(args: argparse.Namespace) -> None:
+    """Serve a Release HTTP U5 do runtime v2 para o QEMU."""
+    files = runtime_server_files(Path(args.root).resolve(), args.variant)
+    tag = args.tag
+    descriptor_name = f"runtime-{tag}.json"
+    routes = {
+        "/zephyros/runtime.zum2": "runtime.zum2",
+        "/zephyros/runtime.zephyrosupd": "runtime.zephyrosupd",
+        f"/zephyros/{descriptor_name}": "release.json",
+        **{
+            f"/zephyros/{name}": name
+            for name in RUNTIME_CATALOG
+            if name in files
+        },
+    }
+
+    class RuntimeHandler(http.server.BaseHTTPRequestHandler):
+        def do_GET(self) -> None:
+            if self.path == "/zephyros/error-runtime":
+                self.send_error(500, "fixture runtime HTTP")
+                return
+            name = routes.get(self.path)
+            if name is None:
+                self.send_error(404, "fixture runtime inexistente")
+                return
+            data = files[name]
+            self.send_response(200)
+            self.send_header("Content-Type", "application/octet-stream")
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Connection", "close")
+            self.end_headers()
+            self.wfile.write(data)
+
+        def log_message(self, format: str, *values: object) -> None:
+            print(f"Runtime HTTP {self.address_string()} - {format % values}")
+
+    server = http.server.ThreadingHTTPServer((args.bind, args.port), RuntimeHandler)
+    print(f"Servidor runtime U5 em http://{args.bind}:{args.port}/zephyros/runtime.zum2")
+    print(f"Descriptor por tag: /zephyros/{descriptor_name}")
+    print(f"Variante da fixture: {args.variant}")
+    print("Pressione Ctrl+C para encerrar.")
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        server.server_close()
+
+
+def command_serve_github_runtime(args: argparse.Namespace) -> None:
+    """Serve Release API e assets runtime v2 por HTTPS com TLS externo."""
+    files = runtime_server_files(Path(args.root).resolve(), args.variant)
+    cert = Path(args.cert).resolve()
+    key = Path(args.key).resolve()
+    if not cert.is_file() or not key.is_file():
+        raise UpdateError("certificado ou chave TLS runtime ausente")
+    api_path = f"/repos/{args.owner}/{args.repository}/releases/tags/{args.tag}"
+    asset_prefix = f"/releases/download/{args.tag}"
+    public_base = f"https://{args.public_host}:{args.port}"
+    names = (
+        "runtime.zum2",
+        "runtime.zephyrosupd",
+        *(name for name in RUNTIME_CATALOG if name in files),
+    )
+
+    def api_payload() -> dict[str, Any]:
+        assets = [
+            {
+                "name": name,
+                "size": len(files[name]),
+                "browser_download_url": f"{public_base}{asset_prefix}/{name}",
+                "state": "uploaded",
+                "digest": f"sha256:{hashlib.sha256(files[name]).hexdigest()}",
+            }
+            for name in names
+        ]
+        payload: dict[str, Any] = {
+            "id": 63063,
+            "tag_name": args.tag,
+            "name": "EP6.3 Runtime fixture",
+            "draft": False,
+            "prerelease": False,
+            "published_at": "2026-08-22T12:00:00Z",
+            "assets": assets,
+        }
+        if args.variant == "missing-asset":
+            payload["assets"] = assets[:-1]
+        elif args.variant == "tag-divergent":
+            payload["tag_name"] = f"{args.tag}-other"
+        elif args.variant == "draft":
+            payload["draft"] = True
+        elif args.variant == "prerelease":
+            payload["prerelease"] = True
+        elif args.variant == "bad-digest":
+            payload["assets"][0]["digest"] = f"sha256:{'0' * 64}"
+        return payload
+
+    class RuntimeGitHubHandler(http.server.BaseHTTPRequestHandler):
+        def do_GET(self) -> None:
+            if self.path == api_path:
+                if args.variant == "invalid-json":
+                    data = b'{"tag_name":'
+                else:
+                    data = json.dumps(api_payload(), separators=(",", ":")).encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/vnd.github+json")
+                self.send_header("Content-Length", str(len(data)))
+                self.send_header("Connection", "close")
+                self.end_headers()
+                self.wfile.write(data)
+                return
+            for name in names:
+                if self.path == f"{asset_prefix}/{name}":
+                    data = files[name]
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/octet-stream")
+                    self.send_header("Content-Length", str(len(data)))
+                    self.send_header("Connection", "close")
+                    self.end_headers()
+                    self.wfile.write(data)
+                    return
+            self.send_error(404, "fixture GitHub runtime inexistente")
+
+        def log_message(self, format: str, *values: object) -> None:
+            print(f"GitHub Runtime HTTPS {self.address_string()} - {format % values}")
+
+    server = http.server.ThreadingHTTPServer((args.bind, args.port), RuntimeGitHubHandler)
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    context.minimum_version = ssl.TLSVersion.TLSv1_2
+    context.maximum_version = ssl.TLSVersion.TLSv1_2
+    try:
+        context.load_cert_chain(certfile=cert, keyfile=key)
+        server.socket = context.wrap_socket(server.socket, server_side=True)
+    except (OSError, ssl.SSLError) as error:
+        server.server_close()
+        raise UpdateError("certificado ou chave TLS runtime invalido") from error
+    print(f"Servidor GitHub runtime HTTPS em {public_base}{api_path}")
+    print(f"Variante da API: {args.variant}")
+    print("Pressione Ctrl+C para encerrar.")
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        server.server_close()
 
 
 def command_fixtures(args: argparse.Namespace) -> None:
@@ -3883,6 +5671,9 @@ def command_audit_image(args: argparse.Namespace) -> None:
         args.expect_remote_cache,
         args.expect_remote_alias,
         args.expect_remote_pending,
+        args.expect_runtime_cache,
+        args.expect_runtime_alias,
+        args.expect_runtime_pending,
     )
 
 
@@ -3908,6 +5699,25 @@ def build_parser() -> argparse.ArgumentParser:
     verify.add_argument("--system-version")
     verify.add_argument("--system-epoch", type=int)
     verify.set_defaults(handler=command_verify)
+
+    runtime_build = subparsers.add_parser(
+        "runtime-build", help="constroi ZUM2 e o pacote completo runtime v2"
+    )
+    runtime_build.add_argument("--manifest", required=True)
+    runtime_build.add_argument("--private", required=True)
+    runtime_build.add_argument("--public", required=True)
+    runtime_build.add_argument("--output-dir", required=True)
+    runtime_build.set_defaults(handler=command_runtime_build)
+
+    runtime_verify = subparsers.add_parser(
+        "runtime-verify", help="verifica manifesto e pacote runtime v2"
+    )
+    runtime_verify.add_argument("--manifest", required=True)
+    runtime_verify.add_argument("--package", required=True)
+    runtime_verify.add_argument("--public", required=True)
+    runtime_verify.add_argument("--system-version")
+    runtime_verify.add_argument("--system-epoch", type=int)
+    runtime_verify.set_defaults(handler=command_runtime_verify)
 
     release_build = subparsers.add_parser(
         "release-build", help="gera os assets locais de uma Release EP5"
@@ -3950,6 +5760,63 @@ def build_parser() -> argparse.ArgumentParser:
     fixtures_u5.add_argument("--public", required=True)
     fixtures_u5.add_argument("--output-dir", required=True)
     fixtures_u5.set_defaults(handler=command_fixtures_u5)
+
+    fixtures_runtime = subparsers.add_parser(
+        "fixtures-runtime", help="gera fixtures EP6.3 do runtime v2"
+    )
+    fixtures_runtime.add_argument("--private", required=True)
+    fixtures_runtime.add_argument("--public", required=True)
+    fixtures_runtime.add_argument("--output-dir", required=True)
+    fixtures_runtime.set_defaults(handler=command_fixtures_runtime)
+
+    serve_runtime = subparsers.add_parser(
+        "serve-runtime", help="serve fixtures HTTP do runtime v2"
+    )
+    serve_runtime.add_argument("--root", required=True)
+    serve_runtime.add_argument("--tag", default="ep63-runtime")
+    serve_runtime.add_argument("--bind", default="0.0.0.0")
+    serve_runtime.add_argument("--port", type=int, default=8000)
+    serve_runtime.add_argument(
+        "--variant",
+        choices=(
+            "valid",
+            "missing-asset",
+            "tag-divergent",
+            "invalid-json",
+            "bad-digest",
+            "tampered-manifest",
+            "tampered-package",
+        ),
+        default="valid",
+    )
+    serve_runtime.set_defaults(handler=command_serve_runtime)
+
+    serve_github_runtime = subparsers.add_parser(
+        "serve-github-runtime", help="serve API/HTTPS GitHub do runtime v2"
+    )
+    serve_github_runtime.add_argument("--root", required=True)
+    serve_github_runtime.add_argument("--cert", required=True)
+    serve_github_runtime.add_argument("--key", required=True)
+    serve_github_runtime.add_argument("--tag", required=True)
+    serve_github_runtime.add_argument("--bind", default="0.0.0.0")
+    serve_github_runtime.add_argument("--public-host", default="10.0.2.2")
+    serve_github_runtime.add_argument("--port", type=int, default=8443)
+    serve_github_runtime.add_argument("--owner", default="BadTonho")
+    serve_github_runtime.add_argument("--repository", default="ZephyrOS")
+    serve_github_runtime.add_argument(
+        "--variant",
+        choices=(
+            "valid",
+            "missing-asset",
+            "tag-divergent",
+            "invalid-json",
+            "bad-digest",
+            "draft",
+            "prerelease",
+        ),
+        default="valid",
+    )
+    serve_github_runtime.set_defaults(handler=command_serve_github_runtime)
 
     fixtures_github = subparsers.add_parser(
         "fixtures-github", help="gera assets para o servidor HTTPS GitHub"
@@ -4019,6 +5886,17 @@ def build_parser() -> argparse.ArgumentParser:
     audit.add_argument("--expect-remote-alias")
     audit.add_argument(
         "--expect-remote-pending",
+        choices=("any", "clean", "pending"),
+        default="clean",
+    )
+    audit.add_argument(
+        "--expect-runtime-cache",
+        choices=("any", "empty", "valid"),
+        default="any",
+    )
+    audit.add_argument("--expect-runtime-alias")
+    audit.add_argument(
+        "--expect-runtime-pending",
         choices=("any", "clean", "pending"),
         default="clean",
     )

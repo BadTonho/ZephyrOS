@@ -26,7 +26,8 @@ Para a U5, Shell e Classic formam a matriz obrigatoria de aceitacao. O Simple
 continua disponivel como fallback funcional, mas sua regressao e complementar
 e nao bloqueia a conclusao da distribuicao remota.
 
-Os dois modos mantem o mesmo estado e oferecem as abas:
+O modo Simple mantém as quatro abas legadas. O modo Classic oferece essas
+quatro abas e uma seção adicional `Runtime`:
 
 - `Pacotes`: aliases `.ZUP`, verificacao, preflight e aplicacao;
 - `Estado`: integridade separada dos controles e arquivos atuais, versoes,
@@ -34,6 +35,8 @@ Os dois modos mantem o mesmo estado e oferecem as abas:
 - `Historico`: ate oito eventos persistidos, mais recentes primeiro.
 - `Remoto`: opt-in da sessao, canal, rede, candidato, progresso, retry,
   motivo e pacote armazenado.
+- `Runtime` (somente Classic): estado ZTV, cache A/B ZRV, assets reutilizados,
+  progresso seletivo/completo, aplicação, rollback e limpeza.
 
 O modulo enumera no maximo 16 arquivos da raiz. Diretorios, arquivos hidden ou
 system e extensoes diferentes de `.ZUP` sao ignorados. A lista e ordenada por
@@ -64,11 +67,19 @@ deixando o processo de sistema continuar o polling da rede e a composicao do
 Window Manager. Enquanto o worker aguarda HTTP, a janela continua mostrando
 estado e progresso; `Esc` ou `F12` solicita cancelamento cooperativo.
 
+Na seção Runtime, `Consultar` e `Seletivo` executam preflight ou download
+somente após confirmação; `Completo` baixa o `runtime.zephyrosupd` como
+fallback independente de cadeia. `Aplicar` usa staging/journal e exige
+confirmação, enquanto `Rollback` restaura o backup local sem rede. `Limpar`
+remove apenas o cache runtime v2. O resultado informa cancelamento, slot
+preservado, recuperação pendente e a necessidade de reinicialização; o
+Updater nunca reinicia silenciosamente.
+
 ## Teclado e mouse
 
 | Entrada | Acao |
 |---|---|
-| `Tab` | alterna Pacotes, Estado, Historico e Remoto |
+| `Tab` | alterna as quatro abas legadas; no Classic inclui Runtime |
 | Setas | mudam aba ou pacote selecionado |
 | `F5` | atualiza lista, status e historico |
 | `V` | verifica o pacote selecionado |
@@ -78,6 +89,12 @@ estado e progresso; `Esc` ou `F12` solicita cancelamento cooperativo.
 | `C` | consulta o manifesto na aba Remoto |
 | `D` | prepara o download na aba Remoto |
 | `X` | prepara a limpeza do cache na aba Remoto |
+| `C` (Runtime) | consulta o manifesto ZUM2 |
+| `D` (Runtime) | prepara download seletivo |
+| `V` (Runtime) | prepara download completo ou verifica o pacote selecionado |
+| `A` (Runtime) | executa o preflight de aplicação |
+| `B` (Runtime) | executa o preflight de rollback |
+| `X` (Runtime) | prepara a limpeza do cache v2 |
 | `Enter` | confirma a acao pendente |
 | `Esc` | cancela confirmacao ou mutacao; fecha somente o Simple ocioso |
 | `F12` | cancela cooperativamente uma mutacao |
@@ -115,6 +132,8 @@ final. Os wrappers publicos de `update.h` permanecem compatíveis.
 - somente a ultima geracao de rollback pode ser restaurada;
 - remoto e desabilitado a cada boot e nunca configura rede automaticamente;
 - nao existe consulta, download ou instalacao silenciosa;
+- Runtime v2 usa somente o catalogo fixo dos tres BMPs e continua limitado ao
+  FAT12 para cache/aplicacao; o Simple nao recebe a aba Runtime;
 - o aplicativo nao altera boot, stage2, kernel em setores crus ou Desktop.
 
 ## Referencias
@@ -122,5 +141,6 @@ final. Os wrappers publicos de `update.h` permanecem compatíveis.
 - [Contrato ZUPD v1](contrato-zupd-v1.md)
 - [Ferramenta host](ferramenta-zupd.md)
 - [Distribuicao remota](distribuicao-remota.md)
+- [Contrato ZUM2/ZUPD v2](contrato-zupd-v2.md)
 - [Comandos do Shell](../09-shell/comandos.md)
 - [Desktop e Window Manager](../12-desktop/desktop.md)

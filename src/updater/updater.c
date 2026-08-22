@@ -6,7 +6,9 @@
 #include "core/string.h"
 #include "core/update.h"
 #include "core/update_remote.h"
+#include "core/update_remote_runtime.h"
 #include "core/update_remote_config.h"
+#include "core/update_runtime.h"
 #include "core/video.h"
 #include "core/wait.h"
 #include "drivers/vesa.h"
@@ -43,12 +45,14 @@
 #define UPDATER_SCANCODE_UP 0x48U
 #define UPDATER_SCANCODE_DOWN 0x50U
 #define UPDATER_SCANCODE_F12 0x58U
+#define UPDATER_SIMPLE_TAB_COUNT 4
 
 typedef enum {
     UPDATER_TAB_PACKAGES = 0,
     UPDATER_TAB_STATUS,
     UPDATER_TAB_HISTORY,
     UPDATER_TAB_REMOTE,
+    UPDATER_TAB_RUNTIME,
     UPDATER_TAB_COUNT
 } updater_tab_t;
 
@@ -57,7 +61,12 @@ typedef enum {
     UPDATER_CONFIRM_APPLY,
     UPDATER_CONFIRM_ROLLBACK,
     UPDATER_CONFIRM_REMOTE_FETCH,
-    UPDATER_CONFIRM_REMOTE_CLEAR
+    UPDATER_CONFIRM_REMOTE_CLEAR,
+    UPDATER_CONFIRM_RUNTIME_FETCH_SELECTIVE,
+    UPDATER_CONFIRM_RUNTIME_FETCH_FULL,
+    UPDATER_CONFIRM_RUNTIME_APPLY,
+    UPDATER_CONFIRM_RUNTIME_ROLLBACK,
+    UPDATER_CONFIRM_RUNTIME_CLEAR
 } updater_confirm_t;
 
 typedef enum {
@@ -71,7 +80,9 @@ typedef enum {
 typedef enum {
     UPDATER_REMOTE_JOB_NONE = 0,
     UPDATER_REMOTE_JOB_CHECK,
-    UPDATER_REMOTE_JOB_FETCH
+    UPDATER_REMOTE_JOB_FETCH,
+    UPDATER_REMOTE_JOB_RUNTIME_CHECK,
+    UPDATER_REMOTE_JOB_RUNTIME_FETCH
 } updater_remote_job_t;
 
 typedef struct {
@@ -95,11 +106,18 @@ static update_status_t updater_status;
 static int updater_status_ready = 0;
 static update_verification_t updater_verification;
 static update_action_result_t updater_action;
+static update_runtime_action_result_t updater_runtime_action;
 static updater_result_t updater_completed_action_kind = UPDATER_RESULT_NONE;
 static update_action_result_t updater_completed_action;
 static update_remote_status_t updater_remote_status;
 static update_remote_result_t updater_remote_result;
 static int updater_remote_status_ready = 0;
+static update_runtime_status_t updater_runtime_status;
+static update_remote_runtime_status_t updater_runtime_remote_status;
+static update_remote_runtime_result_t updater_runtime_remote_result;
+static update_runtime_cache_t updater_runtime_cache;
+static int updater_runtime_status_ready = 0;
+static int updater_runtime_remote_status_ready = 0;
 static int updater_last_result = OK;
 static int updater_gui_x = 0;
 static int updater_gui_y = 0;
@@ -112,6 +130,7 @@ static volatile updater_remote_job_t updater_remote_job_running =
 static volatile uint8_t updater_remote_job_busy = 0U;
 static volatile uint8_t updater_remote_cancel_requested = 0U;
 static uint8_t updater_remote_job_confirm = 0U;
+static uint8_t updater_runtime_fetch_full = 0U;
 static uint32_t updater_remote_progress_bytes = 0U;
 static update_remote_state_t updater_remote_progress_state =
     UPDATE_REMOTE_STATE_DISABLED;
@@ -239,6 +258,15 @@ static void updater_refresh_status(void) {
     updater_status_ready = update_get_status(&updater_status) == OK;
     updater_remote_status_ready =
         update_remote_get_status(&updater_remote_status) == OK;
+    updater_runtime_status_ready =
+        update_runtime_get_status(&updater_runtime_status) == OK;
+    updater_runtime_remote_status_ready =
+        update_remote_runtime_get_status(&updater_runtime_remote_status) == OK;
+    if (updater_runtime_status_ready) {
+        update_runtime_get_cache(&updater_runtime_cache);
+    } else {
+        kmemset(&updater_runtime_cache, 0, sizeof(updater_runtime_cache));
+    }
 }
 
 static void updater_refresh_component(void) {
@@ -383,8 +411,18 @@ static int updater_cancel_check(void* context) {
 
 static int updater_remote_job_cancel_check(void* context) {
     update_remote_status_t status;
+    update_remote_runtime_status_t runtime_status;
 
     (void)context;
+    if (updater_remote_job_running == UPDATER_REMOTE_JOB_RUNTIME_CHECK ||
+        updater_remote_job_running == UPDATER_REMOTE_JOB_RUNTIME_FETCH) {
+        if (update_remote_runtime_get_status(&runtime_status) == OK) {
+            updater_runtime_remote_status = runtime_status;
+            updater_runtime_remote_status_ready = 1;
+            updater_draw();
+        }
+        return updater_remote_cancel_requested ? 1 : 0;
+    }
     if (update_remote_get_status(&status) == OK) {
         if (status.bytes_received != updater_remote_progress_bytes ||
             status.state != updater_remote_progress_state) {
@@ -453,6 +491,54 @@ static void updater_preflight_rollback(void) {
     updater_result_kind = UPDATER_RESULT_ROLLBACK;
     updater_confirm = updater_last_result == OK ?
         UPDATER_CONFIRM_ROLLBACK : UPDATER_CONFIRM_NONE;
+    updater_refresh_status();
+    updater_refresh_component();
+}
+
+static void updater_runtime_preflight_apply(void) {
+    update_runtime_action_options_t options;
+
+    kmemset(&options, 0, sizeof(options));
+    options.dry_run = 1U;
+    options.cancel_check = updater_cancel_check;
+    kmemset(&updater_runtime_action, 0, sizeof(updater_runtime_action));
+    updater_last_result = update_runtime_apply_cached(&options,
+                                                      &updater_runtime_action);
+    updater_result_kind = UPDATER_RESULT_APPLY;
+    updater_confirm = updater_last_result == OK ?
+        UPDATER_CONFIRM_RUNTIME_APPLY : UPDATER_CONFIRM_NONE;
+    updater_refresh_status();
+    updater_refresh_component();
+}
+
+static void updater_runtime_preflight_rollback(void) {
+    update_runtime_action_options_t options;
+
+    kmemset(&options, 0, sizeof(options));
+    options.dry_run = 1U;
+    options.cancel_check = updater_cancel_check;
+    kmemset(&updater_runtime_action, 0, sizeof(updater_runtime_action));
+    updater_last_result = update_runtime_rollback(&options,
+                                                  &updater_runtime_action);
+    updater_result_kind = UPDATER_RESULT_ROLLBACK;
+    updater_confirm = updater_last_result == OK ?
+        UPDATER_CONFIRM_RUNTIME_ROLLBACK : UPDATER_CONFIRM_NONE;
+    updater_refresh_status();
+    updater_refresh_component();
+}
+
+static void updater_runtime_clear_preflight(void) {
+    update_remote_options_t options;
+
+    kmemset(&options, 0, sizeof(options));
+    options.dry_run = 1U;
+    kmemset(&updater_runtime_remote_result, 0,
+            sizeof(updater_runtime_remote_result));
+    updater_last_result = update_remote_runtime_clear(
+        &options, &updater_runtime_remote_result);
+    updater_result_kind = UPDATER_RESULT_REMOTE;
+    updater_confirm = updater_last_result == OK ?
+        UPDATER_CONFIRM_RUNTIME_CLEAR : UPDATER_CONFIRM_NONE;
     updater_refresh_status();
     updater_refresh_component();
 }
@@ -551,6 +637,47 @@ static int updater_remote_start_job(updater_remote_job_t job,
     return OK;
 }
 
+static void updater_runtime_run_check(int request_confirmation) {
+    update_remote_options_t options;
+    int result;
+
+    kmemset(&options, 0, sizeof(options));
+    options.dry_run = 1U;
+    options.cancel_check = updater_remote_job_cancel_check;
+    kmemset(&updater_runtime_remote_result, 0,
+            sizeof(updater_runtime_remote_result));
+    result = update_remote_runtime_check(
+        0, &options, &updater_runtime_remote_result);
+    updater_last_result = result;
+    updater_result_kind = UPDATER_RESULT_REMOTE;
+    updater_confirm = result == OK && request_confirmation ?
+        (updater_runtime_fetch_full ?
+         UPDATER_CONFIRM_RUNTIME_FETCH_FULL :
+         UPDATER_CONFIRM_RUNTIME_FETCH_SELECTIVE) :
+        UPDATER_CONFIRM_NONE;
+    updater_refresh_status();
+    updater_refresh_component();
+}
+
+static void updater_runtime_confirm_fetch(void) {
+    update_remote_options_t options;
+
+    kmemset(&options, 0, sizeof(options));
+    options.cancel_check = updater_remote_job_cancel_check;
+    kmemset(&updater_runtime_remote_result, 0,
+            sizeof(updater_runtime_remote_result));
+    updater_last_result = update_remote_runtime_fetch(
+        0, updater_runtime_fetch_full ? UPDATE_REMOTE_RUNTIME_FETCH_FULL :
+        UPDATE_REMOTE_RUNTIME_FETCH_SELECTIVE, &options,
+        &updater_runtime_remote_result);
+    updater_result_kind = UPDATER_RESULT_REMOTE;
+}
+
+static int updater_runtime_start_job(int full) {
+    updater_runtime_fetch_full = full ? 1U : 0U;
+    return updater_remote_start_job(UPDATER_REMOTE_JOB_RUNTIME_CHECK, 1);
+}
+
 static void updater_remote_finish_cache_refresh(void) {
     updater_result_t result_kind = updater_result_kind;
     int last_result = updater_last_result;
@@ -583,6 +710,11 @@ static void updater_remote_worker_main(void) {
         } else if (job == UPDATER_REMOTE_JOB_FETCH) {
             updater_remote_confirm_fetch();
             updater_remote_finish_cache_refresh();
+        } else if (job == UPDATER_REMOTE_JOB_RUNTIME_CHECK) {
+            updater_runtime_run_check(updater_remote_job_confirm);
+        } else if (job == UPDATER_REMOTE_JOB_RUNTIME_FETCH) {
+            updater_runtime_confirm_fetch();
+            updater_remote_finish_cache_refresh();
         } else {
             updater_last_result = ERR_INVALID;
             LOG_ERROR("UPDATER", "Worker recebeu job remoto desconhecido");
@@ -605,6 +737,34 @@ static void updater_remote_confirm_clear(void) {
     updater_last_result =
         update_remote_clear(&options, &updater_remote_result);
     updater_result_kind = UPDATER_RESULT_REMOTE;
+}
+
+static void updater_runtime_confirm_action(int rollback) {
+    update_runtime_action_options_t options;
+
+    kmemset(&options, 0, sizeof(options));
+    options.cancel_check = updater_cancel_check;
+    kmemset(&updater_runtime_action, 0, sizeof(updater_runtime_action));
+    updater_last_result = rollback ?
+        update_runtime_rollback(&options, &updater_runtime_action) :
+        update_runtime_apply_cached(&options, &updater_runtime_action);
+    updater_result_kind = rollback ? UPDATER_RESULT_ROLLBACK :
+                                     UPDATER_RESULT_APPLY;
+    updater_refresh_status();
+    updater_refresh_component();
+}
+
+static void updater_runtime_confirm_clear(void) {
+    update_remote_options_t options;
+
+    kmemset(&options, 0, sizeof(options));
+    kmemset(&updater_runtime_remote_result, 0,
+            sizeof(updater_runtime_remote_result));
+    updater_last_result = update_remote_runtime_clear(
+        &options, &updater_runtime_remote_result);
+    updater_result_kind = UPDATER_RESULT_REMOTE;
+    updater_refresh_status();
+    updater_refresh_component();
 }
 
 static void updater_confirm_action(void) {
@@ -642,6 +802,18 @@ static void updater_confirm_action(void) {
         return;
     } else if (confirmation == UPDATER_CONFIRM_REMOTE_CLEAR) {
         updater_remote_confirm_clear();
+    } else if (confirmation == UPDATER_CONFIRM_RUNTIME_FETCH_SELECTIVE ||
+               confirmation == UPDATER_CONFIRM_RUNTIME_FETCH_FULL) {
+        updater_runtime_fetch_full = confirmation ==
+            UPDATER_CONFIRM_RUNTIME_FETCH_FULL ? 1U : 0U;
+        (void)updater_remote_start_job(UPDATER_REMOTE_JOB_RUNTIME_FETCH, 0);
+        return;
+    } else if (confirmation == UPDATER_CONFIRM_RUNTIME_APPLY) {
+        updater_runtime_confirm_action(0);
+    } else if (confirmation == UPDATER_CONFIRM_RUNTIME_ROLLBACK) {
+        updater_runtime_confirm_action(1);
+    } else if (confirmation == UPDATER_CONFIRM_RUNTIME_CLEAR) {
+        updater_runtime_confirm_clear();
     }
     if (confirmation == UPDATER_CONFIRM_REMOTE_CLEAR) {
         updater_remote_finish_cache_refresh();
@@ -651,12 +823,12 @@ static void updater_confirm_action(void) {
 }
 
 static void updater_simple_draw_tabs(void) {
-    static const char* names[UPDATER_TAB_COUNT] = {
+    static const char* names[UPDATER_SIMPLE_TAB_COUNT] = {
         " Pacotes ", " Estado ", " Historico ", " Remoto "
     };
     int x = 2;
 
-    for (int index = 0; index < UPDATER_TAB_COUNT; index++) {
+    for (int index = 0; index < UPDATER_SIMPLE_TAB_COUNT; index++) {
         uint8_t color = updater_tab == index ? 0x1F : 0x07;
 
         video_print_at(x, 2, names[index], color);
@@ -852,6 +1024,8 @@ static const char* updater_remote_active_job_name(void) {
 
     if (job == UPDATER_REMOTE_JOB_CHECK) return "CONSULTANDO";
     if (job == UPDATER_REMOTE_JOB_FETCH) return "BAIXANDO";
+    if (job == UPDATER_REMOTE_JOB_RUNTIME_CHECK) return "RUNTIME CONSULTANDO";
+    if (job == UPDATER_REMOTE_JOB_RUNTIME_FETCH) return "RUNTIME BAIXANDO";
     return "AGUARDANDO";
 }
 
@@ -954,6 +1128,16 @@ static void updater_simple_draw_confirmation(void) {
             "Confirmar rollback validado?" :
             updater_confirm == UPDATER_CONFIRM_REMOTE_FETCH ?
             "Confirmar download remoto autenticado?" :
+            updater_confirm == UPDATER_CONFIRM_RUNTIME_FETCH_FULL ?
+            "Confirmar pacote completo runtime?" :
+            updater_confirm == UPDATER_CONFIRM_RUNTIME_FETCH_SELECTIVE ?
+            "Confirmar download seletivo runtime?" :
+            updater_confirm == UPDATER_CONFIRM_RUNTIME_APPLY ?
+            "Confirmar aplicacao runtime?" :
+            updater_confirm == UPDATER_CONFIRM_RUNTIME_ROLLBACK ?
+            "Confirmar rollback runtime?" :
+            updater_confirm == UPDATER_CONFIRM_RUNTIME_CLEAR ?
+            "Confirmar limpeza runtime?" :
             "Confirmar limpeza do cache remoto?";
 
         video_print_at(33, SCREEN_ROWS - 8, question, 0x1E);
@@ -1000,7 +1184,7 @@ static void updater_gui_line(int x, int y, const char* label,
 
 static void updater_gui_draw_tabs(int x, int y) {
     static const char* names[UPDATER_TAB_COUNT] = {
-        "Pacotes", "Estado", "Historico", "Remoto"
+        "Pacotes", "Estado", "Historico", "Remoto", "Runtime"
     };
 
     for (int index = 0; index < UPDATER_TAB_COUNT; index++) {
@@ -1280,6 +1464,67 @@ static void updater_gui_draw_remote(int x, int y) {
     }
 }
 
+static void updater_gui_draw_runtime(int x, int y) {
+    char value[96];
+
+    if (!updater_runtime_status_ready) {
+        gui_draw_text((uint32_t)x, (uint32_t)y,
+                      "Runtime v2 indisponivel", 0x00800000U);
+        return;
+    }
+    updater_version_text(value, sizeof(value),
+                         &updater_runtime_status.installed_version,
+                         updater_runtime_status.installed_epoch);
+    updater_gui_line(x, y, "Instalado", value, GUI_COLOR_TEXT);
+    updater_gui_line(x, y + 30, "Estado",
+                     updater_runtime_status.state_valid ? "READY" : "INVALID",
+                     updater_runtime_status.state_valid ?
+                     0x00008000U : 0x00800000U);
+    updater_gui_line(x, y + 60, "Journal",
+                     updater_runtime_status.recovery_pending ?
+                     "PENDING" : "CLEAN",
+                     updater_runtime_status.recovery_pending ?
+                     0x00808000U : 0x00008000U);
+    updater_gui_line(x, y + 90, "Rollback",
+                     updater_runtime_status.rollback_available ?
+                     "READY" : "DISABLED",
+                     updater_runtime_status.rollback_available ?
+                     0x00008000U : GUI_COLOR_BORDER_D);
+    if (updater_runtime_remote_status_ready) {
+        updater_gui_line(x, y + 120, "Remoto",
+                         update_remote_runtime_state_name(
+                             updater_runtime_remote_status.state),
+                         updater_runtime_remote_status.state ==
+                         UPDATE_REMOTE_RUNTIME_STATE_FAILED ?
+                         0x00800000U : GUI_COLOR_TEXT);
+        updater_gui_line(x, y + 150, "Motivo",
+                         update_remote_runtime_reason_name(
+                             updater_runtime_remote_status.reason),
+                         updater_runtime_remote_status.reason ==
+                         UPDATE_REMOTE_RUNTIME_REASON_NONE ?
+                         0x00008000U : 0x00808000U);
+        value[0] = '\0';
+        updater_text_append_u32(value, sizeof(value),
+                                updater_runtime_remote_status.bytes_received);
+        updater_text_append(value, sizeof(value), "/");
+        updater_text_append_u32(value, sizeof(value),
+                                updater_runtime_remote_status.total_bytes);
+        updater_gui_line(x, y + 180, "Progresso", value, GUI_COLOR_TEXT);
+    }
+    if (updater_runtime_cache.valid) {
+        updater_gui_line(x, y + 210, "Cache",
+                         updater_runtime_cache.full_package ?
+                         "FULL" : "SELECTIVE", 0x00008000U);
+        updater_gui_line(x, y + 240, "Manifesto",
+                         updater_runtime_cache.manifest_alias, GUI_COLOR_TEXT);
+        updater_gui_line(x, y + 270, "Faltantes", "", GUI_COLOR_TEXT);
+        value[0] = '\0';
+        updater_u32_text(updater_runtime_cache.missing_assets, value);
+        gui_draw_text((uint32_t)(x + 150), (uint32_t)(y + 270), value,
+                      GUI_COLOR_TEXT);
+    }
+}
+
 static void updater_gui_draw_confirmation(
     int x, int y, int width, int height) {
     int dialog_x;
@@ -1297,6 +1542,16 @@ static void updater_gui_draw_confirmation(
                "Confirmar rollback validado?" :
                updater_confirm == UPDATER_CONFIRM_REMOTE_FETCH ?
                "Confirmar download remoto?" :
+               updater_confirm == UPDATER_CONFIRM_RUNTIME_FETCH_FULL ?
+               "Confirmar pacote completo runtime?" :
+               updater_confirm == UPDATER_CONFIRM_RUNTIME_FETCH_SELECTIVE ?
+               "Confirmar download seletivo runtime?" :
+               updater_confirm == UPDATER_CONFIRM_RUNTIME_APPLY ?
+               "Confirmar aplicacao runtime?" :
+               updater_confirm == UPDATER_CONFIRM_RUNTIME_ROLLBACK ?
+               "Confirmar rollback runtime?" :
+               updater_confirm == UPDATER_CONFIRM_RUNTIME_CLEAR ?
+               "Confirmar limpeza runtime?" :
                "Confirmar limpeza do cache?";
     gui_draw_text(
         (uint32_t)(dialog_x + 24), (uint32_t)(dialog_y + 28),
@@ -1325,6 +1580,8 @@ static void updater_draw_classic(int x, int y, int width, int height) {
         updater_gui_draw_status(x + 32, content_y + 16);
     } else if (updater_tab == UPDATER_TAB_HISTORY) {
         updater_gui_draw_history(x + 32, content_y + 16);
+    } else if (updater_tab == UPDATER_TAB_RUNTIME) {
+        updater_gui_draw_runtime(x + 32, content_y + 16);
     } else {
         updater_gui_draw_remote(x + 32, content_y + 16);
     }
@@ -1339,6 +1596,19 @@ static void updater_draw_classic(int x, int y, int width, int height) {
                         112, 28, "Baixar", 0);
         gui_draw_button((uint32_t)(x + 388), (uint32_t)(y + height - 44),
                         112, 28, "Limpar", 0);
+    } else if (updater_tab == UPDATER_TAB_RUNTIME) {
+        gui_draw_button((uint32_t)(x + 16), (uint32_t)(y + height - 44),
+                        96, 28, "Consultar", 0);
+        gui_draw_button((uint32_t)(x + 120), (uint32_t)(y + height - 44),
+                        96, 28, "Seletivo", 0);
+        gui_draw_button((uint32_t)(x + 224), (uint32_t)(y + height - 44),
+                        96, 28, "Completo", 0);
+        gui_draw_button((uint32_t)(x + 328), (uint32_t)(y + height - 44),
+                        96, 28, "Aplicar", 0);
+        gui_draw_button((uint32_t)(x + 432), (uint32_t)(y + height - 44),
+                        96, 28, "Rollback", 0);
+        gui_draw_button((uint32_t)(x + 536), (uint32_t)(y + height - 44),
+                        96, 28, "Limpar", 0);
     } else {
         gui_draw_button((uint32_t)(x + 16), (uint32_t)(y + height - 44),
                         112, 28, "Atualizar", 0);
@@ -1388,11 +1658,16 @@ int updater_init(void) {
     updater_completed_action_kind = UPDATER_RESULT_NONE;
     kmemset(&updater_completed_action, 0,
             sizeof(updater_completed_action));
+    kmemset(&updater_runtime_action, 0, sizeof(updater_runtime_action));
+    kmemset(&updater_runtime_cache, 0, sizeof(updater_runtime_cache));
+    kmemset(&updater_runtime_remote_result, 0,
+            sizeof(updater_runtime_remote_result));
     updater_remote_job = UPDATER_REMOTE_JOB_NONE;
     updater_remote_job_running = UPDATER_REMOTE_JOB_NONE;
     updater_remote_worker_process = 0;
     updater_remote_job_busy = 0U;
     updater_remote_cancel_requested = 0U;
+    updater_runtime_fetch_full = 0U;
     if (!update_is_ready()) {
         recovery_mark_disabled(
             RECOVERY_COMPONENT_SYSTEM_UPDATER, ERR_STATE,
@@ -1504,7 +1779,9 @@ void updater_handle_key(uint8_t scancode) {
     }
     if (scancode == UPDATER_SCANCODE_TAB) {
         updater_tab = (updater_tab_t)((updater_tab + 1) %
-                                      UPDATER_TAB_COUNT);
+                                      (updater_mode == UPDATER_MODE_CLASSIC ?
+                                       UPDATER_TAB_COUNT :
+                                       UPDATER_SIMPLE_TAB_COUNT));
         updater_confirm = UPDATER_CONFIRM_NONE;
     } else if (scancode == UPDATER_SCANCODE_F5) {
         updater_completed_action_kind = UPDATER_RESULT_NONE;
@@ -1522,8 +1799,15 @@ void updater_handle_key(uint8_t scancode) {
                updater_tab == UPDATER_TAB_PACKAGES) {
         updater_preflight_apply();
     } else if (scancode == UPDATER_SCANCODE_B &&
-               updater_tab != UPDATER_TAB_REMOTE) {
+               updater_tab != UPDATER_TAB_REMOTE &&
+               updater_tab != UPDATER_TAB_RUNTIME) {
         updater_preflight_rollback();
+    } else if (updater_tab == UPDATER_TAB_RUNTIME &&
+               scancode == UPDATER_SCANCODE_A) {
+        updater_runtime_preflight_apply();
+    } else if (updater_tab == UPDATER_TAB_RUNTIME &&
+               scancode == UPDATER_SCANCODE_B) {
+        updater_runtime_preflight_rollback();
     } else if (updater_tab == UPDATER_TAB_REMOTE &&
                scancode == UPDATER_SCANCODE_H) {
         updater_remote_toggle();
@@ -1538,6 +1822,19 @@ void updater_handle_key(uint8_t scancode) {
     } else if (updater_tab == UPDATER_TAB_REMOTE &&
                scancode == UPDATER_SCANCODE_X) {
         updater_remote_clear_preflight();
+    } else if (updater_tab == UPDATER_TAB_RUNTIME &&
+               scancode == UPDATER_SCANCODE_C) {
+        (void)updater_remote_start_job(
+            UPDATER_REMOTE_JOB_RUNTIME_CHECK, 0);
+    } else if (updater_tab == UPDATER_TAB_RUNTIME &&
+               scancode == UPDATER_SCANCODE_D) {
+        (void)updater_runtime_start_job(0);
+    } else if (updater_tab == UPDATER_TAB_RUNTIME &&
+               scancode == UPDATER_SCANCODE_V) {
+        (void)updater_runtime_start_job(1);
+    } else if (updater_tab == UPDATER_TAB_RUNTIME &&
+               scancode == UPDATER_SCANCODE_X) {
+        updater_runtime_clear_preflight();
     }
     updater_draw();
 }
@@ -1616,6 +1913,28 @@ int updater_handle_mouse(mouse_event_t* event) {
         } else if (updater_point_in(
                        px, py, updater_gui_x + 388, bottom, 112, 28)) {
             updater_remote_clear_preflight();
+        }
+        return 1;
+    }
+    if (updater_tab == UPDATER_TAB_RUNTIME) {
+        if (updater_point_in(px, py, updater_gui_x + 16, bottom, 96, 28)) {
+            (void)updater_remote_start_job(
+                UPDATER_REMOTE_JOB_RUNTIME_CHECK, 0);
+        } else if (updater_point_in(
+                       px, py, updater_gui_x + 120, bottom, 96, 28)) {
+            (void)updater_runtime_start_job(0);
+        } else if (updater_point_in(
+                       px, py, updater_gui_x + 224, bottom, 96, 28)) {
+            (void)updater_runtime_start_job(1);
+        } else if (updater_point_in(
+                       px, py, updater_gui_x + 328, bottom, 96, 28)) {
+            updater_runtime_preflight_apply();
+        } else if (updater_point_in(
+                       px, py, updater_gui_x + 432, bottom, 96, 28)) {
+            updater_runtime_preflight_rollback();
+        } else if (updater_point_in(
+                       px, py, updater_gui_x + 536, bottom, 96, 28)) {
+            updater_runtime_clear_preflight();
         }
         return 1;
     }

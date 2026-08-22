@@ -10,5 +10,10 @@
   "github_api_version": "2022-11-28",
   "github_descriptor_name": "release.json",
   "github_manifest_name": "release.zum",
-  "github_package_name": "update.zephyrosupd"
+  "github_package_name": "update.zephyrosupd",
+  "runtime_release_url_template": "http://10.0.2.2:8000/zephyros/runtime-{tag}.json",
+  "runtime_manifest_url": "http://10.0.2.2:8000/zephyros/runtime.zum2",
+  "runtime_package_name": "runtime.zephyrosupd",
+  "github_runtime_manifest_name": "runtime.zum2",
+  "github_runtime_package_name": "runtime.zephyrosupd"
 }

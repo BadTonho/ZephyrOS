@@ -6,6 +6,7 @@
 #include "core/network_manager.h"
 #include "core/string.h"
 #include "core/update_remote_config.h"
+#include "core/update_remote_runtime.h"
 #include "core/update_trust.h"
 #include "fs/fs.h"
 #include "process/process.h"
@@ -1102,6 +1103,9 @@ int update_remote_init(void) {
         update_remote_status.manifest_url,
         sizeof(update_remote_status.manifest_url),
         UPDATE_REMOTE_DEFAULT_MANIFEST_URL);
+    if (update_remote_runtime_init() != OK) {
+        LOG_WARN("UPDATE", "Transporte remoto runtime v2 indisponivel");
+    }
     LOG_INFO("UPDATE", "Distribuicao remota inicializada e desabilitada");
     return OK;
 }
@@ -1120,6 +1124,9 @@ int update_remote_enable(void) {
     update_remote_refresh_network();
     if (update_remote_status.network_ready) {
         update_remote_status.state = UPDATE_REMOTE_STATE_READY;
+    }
+    if (update_remote_runtime_enable() != OK) {
+        LOG_WARN("UPDATE", "Runtime v2 remoto nao foi habilitado");
     }
     LOG_INFO("UPDATE", "Distribuicao remota habilitada nesta sessao");
     return OK;
@@ -1142,6 +1149,9 @@ int update_remote_disable(void) {
     update_remote_status.bytes_received = 0U;
     update_remote_status.total_bytes = 0U;
     http_reset();
+    if (update_remote_runtime_disable() != OK) {
+        LOG_WARN("UPDATE", "Runtime v2 remoto permaneceu ocupado ou indisponivel");
+    }
     LOG_INFO("UPDATE", "Distribuicao remota desabilitada");
     return OK;
 }

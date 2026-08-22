@@ -4,18 +4,17 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
-## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0 e sua regressao U5 validadas no QEMU; EP6.1 e EP6.2 concluidas; EP6.3 e EP9 planejadas
+## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0 e sua regressao U5 validadas no QEMU; EP6.1, EP6.2 e implementacao EP6.3 concluidas; validacao EP6.3 e EP9 pendentes
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
 Plataforma de aplicativos:   [██████████████████████████████████████████] Fase 7 validada
 Interface e experiência:     [██████████████████████████████████████████] UI1-UI7 validadas
 Sistema e ecossistema:       [██████████████████████████████████████████] S2.8 e U1-U5 concluídas
-Evolução da plataforma:      [██████████████████████████████--------------] EP1-EP6.2 concluídas; EP6.3 e EP9 futuras
+Evolução da plataforma:      [██████████████████████████████████----------] EP1-EP6.3 implementadas; validacao EP6.3 e EP9 futuras
 ```
 
-**Documentação de atualização sincronizada em:** 2026-08-22 15:23 (America/Sao_Paulo)
-(America/Sao_Paulo).
+**Documentação de atualização sincronizada em:** 2026-08-22 20:01 (America/Sao_Paulo).
 
 ---
 
@@ -731,8 +730,9 @@ Evolução da plataforma:      [████████████████
   preflight e preservacao do cache U5. O perfil local completo permanece como
   infraestrutura futura por depender de Release, certificados e entropia
   externos.
-- [ ] EP6.3 planejada: matriz ampliada de falhas, pacote runtime completo por
-  Release e download seletivo por manifesto, sem cadeia obrigatoria de deltas.
+- [x] EP6.3 implementada em 2026-08-22 20:01 (America/Sao_Paulo): contrato ZUM2/ZUPD v2, pacote completo,
+  cache seletivo A/B separado, staging/journal/rollback, HTTP U5, GitHub HTTPS,
+  Shell, Updater Classic e auditoria host. A validacao QEMU permanece pendente.
 - [ ] EP9 planejada: pacote `ZSYS` separado do runtime, staging em slots A/B,
   ativacao somente no reboot e rollback de boot. Nenhuma alteracao em boot ou
   stage2 e autorizada antes da etapa dedicada.
@@ -756,7 +756,7 @@ kernel, interface e novos serviços:
 | 5 | [`docs/roadmaps/05-sistema-e-ecossistema.md`](docs/roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e ecossistema. |
 | 6 | [`docs/roadmaps/06-app-store.md`](docs/roadmaps/06-app-store.md) | Catalogo local, ciclo de vida, App Store Modern e distribuicao futura. |
 | 7 | [`docs/roadmaps/07-modernizacao-visual.md`](docs/roadmaps/07-modernizacao-visual.md) | Escala acessivel, visual flat/dark e desempenho VESA mensuravel; MV4 funcionalmente validado, comparacao historica N/D. |
-| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.2 concluídas; EP6.2 entrega GitHub/HTTPS e preflight assinado; EP6.3 futura para pacote runtime completo, download seletivo por manifesto e matriz de falhas; EP9 futura para imagem do sistema. |
+| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.3 implementadas; EP6.3 entrega runtime v2, cache seletivo/completo, rollback e matriz host; validação QEMU EP6.3 e EP9 permanecem pendentes. |
 | 9 | [`docs/roadmaps/09-funcionalidades-aplicaveis.md`](docs/roadmaps/09-funcionalidades-aplicaveis.md) | Separação visual/funcional, perfil de distribuição, logs, timers, espera, work queue, dispositivos, I/O, cache e métricas do scheduler. |
 | 10 | [`docs/roadmaps/10-vfs-e-abstracao-io.md`](docs/roadmaps/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, pontos de montagem, dispositivos /dev/ e pipes. |
 | 11 | [`docs/roadmaps/11-gerenciamento-avancado-de-memoria.md`](docs/roadmaps/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging. |

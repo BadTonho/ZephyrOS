@@ -409,6 +409,54 @@ build de teste; para testar redirects, use como base da API o mesmo host com
 `/fixtures/redirect-http` ou `/fixtures/redirect-https`. Certificado e chave
 privada permanecem fora do repositório.
 
+## EP6.3 - Runtime v2, cache seletivo e matriz de falhas
+
+EP6.3 mantém o transporte e o cache U5 v1 intactos e acrescenta um canal
+runtime independente. A Release runtime publica `runtime.zum2`,
+`runtime.zephyrosupd` e os BMPs individuais. O `release.json` v2 é apenas
+metadado de transporte; a compatibilidade e os hashes confiáveis vêm do
+manifesto ZUM2 assinado.
+
+O fluxo HTTP por tag usa `runtime-<tag>.json`; a consulta sem tag usa o
+manifesto fixo do canal. Quando a origem HTTP por tag está indisponível, o
+runtime pode consultar a mesma tag pela API GitHub HTTPS configurada. A API
+GitHub exige tag exata, Release publicada, assets `runtime.zum2`,
+`runtime.zephyrosupd` e os arquivos do catálogo.
+
+O manifesto é baixado primeiro. Depois de autenticar o ZUM2 e comparar os
+hashes locais, o modo seletivo baixa somente os assets necessários; o modo
+`--full` baixa o pacote completo. Nenhum desses caminhos aplica arquivos.
+O cache usa aliases separados `ZRV0/ZRV1`, com manifesto, pacote, assets,
+estado A/B e publicação do slot inativo apenas após validação integral.
+
+Os arquivos controlados e os controles transacionais ficam em namespaces
+próprios: `ZTV` para estado/journal, `ZTS` para staging e `ZTB` para backups.
+Falhas de DNS, TLS/certificado, UTC, tag, asset, manifesto, assinatura, hash,
+cancelamento ou energia preservam o cache ativo e a instalação anterior.
+
+Comandos do Shell:
+
+```text
+update runtime status
+update runtime check [--tag TAG]
+update runtime fetch [--tag TAG] [--full] [--confirm]
+update runtime verify [ARQUIVO|--cached]
+update runtime apply --confirm
+update runtime rollback --confirm
+update runtime clear --confirm
+```
+
+Aplicar e rollback exigem confirmação explícita e não reiniciam o sistema. O
+Updater Classic possui uma aba `Runtime` com consulta, download seletivo ou
+completo, progresso, cancelamento, aplicação, rollback e limpeza. Simple não
+recebe funcionalidades novas.
+
+O procedimento host e a auditoria dos aliases estão em
+[contrato-zupd-v2.md](contrato-zupd-v2.md) e
+[ferramenta-zupd.md](ferramenta-zupd.md). A validação executável da EP6.3 ainda
+deve ser registrada após `make q3check`, `make clean && make` e a matriz QEMU
+do usuário.
+
 ## Limites de seguranca
 
 Ed25519 e SHA-256 protegem autenticidade e integridade mesmo sobre HTTP.
@@ -418,8 +466,9 @@ offline do sistema ou rollback integral do disco permanecem fora do modelo.
 
 Nao existe atualizacao silenciosa, consulta remota no boot, telemetria,
 instalacao direta pelo download ou varios candidatos em um mesmo manifesto.
-EP6.2 ainda nao implementa o pacote runtime completo, download seletivo por
-arquivo ou nova versao de ZUPD; esses itens pertencem a EP6.3. O DHCP
+EP6.3 implementa o pacote runtime completo, download seletivo por arquivo,
+staging, rollback e a nova versao ZUPD v2 em caches separados; a validacao
+executavel no QEMU ainda depende dos gates e da matriz do usuario. O DHCP
 automatico pertence ao Network Manager, usa somente RAM e nunca dispara HTTP
 ou habilita a distribuicao remota.
 

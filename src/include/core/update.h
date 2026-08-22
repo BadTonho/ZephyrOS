@@ -150,6 +150,9 @@ int update_verify_file(const char* path, update_verification_t* result_out);
 int update_get_capabilities(update_capabilities_t* capabilities_out);
 int update_get_installed_version(update_version_t* version_out,
                                  uint32_t* epoch_out);
+/* Sincroniza o estado U3 com uma transacao runtime v2 ja publicada. */
+int update_sync_runtime_state(const update_version_t* installed_version,
+                              uint32_t installed_epoch);
 int update_get_status(update_status_t* status_out);
 int update_get_history_count(uint32_t* count_out);
 int update_get_history_entry(uint32_t newest_index,

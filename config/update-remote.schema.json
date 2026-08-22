@@ -16,7 +16,12 @@
     "github_api_version",
     "github_descriptor_name",
     "github_manifest_name",
-    "github_package_name"
+    "github_package_name",
+    "runtime_release_url_template",
+    "runtime_manifest_url",
+    "runtime_package_name",
+    "github_runtime_manifest_name",
+    "github_runtime_package_name"
   ],
   "properties": {
     "format": {
@@ -80,6 +85,28 @@
       "pattern": "^[A-Za-z0-9._-]{1,99}$"
     },
     "github_package_name": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]{1,99}$"
+    },
+    "runtime_release_url_template": {
+      "type": "string",
+      "pattern": "^http://[^{}]*\\{tag\\}[^{}]*$",
+      "maxLength": 511
+    },
+    "runtime_manifest_url": {
+      "type": "string",
+      "pattern": "^http://",
+      "maxLength": 511
+    },
+    "runtime_package_name": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]{1,99}$"
+    },
+    "github_runtime_manifest_name": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]{1,99}$"
+    },
+    "github_runtime_package_name": {
       "type": "string",
       "pattern": "^[A-Za-z0-9._-]{1,99}$"
     }

@@ -67,6 +67,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [Gerenciador de Rede](melhorias%20futuras/gerenciador%20de%20rede.md) | Inventario PCI, Ethernet, ARP, IPv4, UDP, DHCP, DNS, TCP e HTTP |
 | [Atualizacoes do Sistema](melhorias%20futuras/atualiza%C3%A7%C3%B5es.md) | Base U1-U5 para integridade, rollback e distribuicao; continuidade EP5-EP9 no Roadmap 08 |
 | [Contrato ZUPD v1](14-atualizacoes/contrato-zupd-v1.md) | Formato autenticado, transacao FAT12 e historico redundante U4 |
+| [Contrato ZUM2/ZUPD v2](14-atualizacoes/contrato-zupd-v2.md) | Runtime v2, catálogo, cache seletivo/completo, staging, rollback e falhas EP6.3 |
 | [Distribuicao remota ZUPD v1](14-atualizacoes/distribuicao-remota.md) | Manifesto ZUM1, HTTP manual, cache U5 e selecao EP6.0 por tag exata |
 | [System Updater](14-atualizacoes/system-updater.md) | Aplicativo nativo Simple/Classic para pacotes, estado, historico e remoto |
 | [Ferramenta Host ZUPD v1](14-atualizacoes/ferramenta-zupd.md) | Chave, fixtures EP5/EP6.0 e auditoria offline dos controles U3/U4/U5 |
@@ -86,7 +87,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [05 - Sistema e Ecossistema](roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e apps |
 | [06 - App Store](roadmaps/06-app-store.md) | Catalogo local ZPKG, ciclo de vida e repositorio remoto autenticado |
 | [07 - Modernização Visual](roadmaps/07-modernizacao-visual.md) | Escala acessível, visual flat/dark e desempenho VESA mensurável |
-| [08 - Evolução da Plataforma](roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.0 validadas, EP6.1 concluída e EP6.2 implementada; EP6.3 e EP9 futuras |
+| [08 - Evolução da Plataforma](roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.3 implementadas; EP6.3 entrega runtime v2 e cache seletivo/completo; validação QEMU EP6.3 e EP9 permanecem pendentes |
 | [09 - Funcionalidades aplicáveis](roadmaps/09-funcionalidades-aplicaveis.md) | Logs, timers, espera, work queue, dispositivos, I/O, cache e scheduler |
 | [10 - VFS e Abstração de I/O](roadmaps/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, montagens, /dev/ e pipes |
 | [11 - Gerenciamento Avançado de Memória](roadmaps/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging |

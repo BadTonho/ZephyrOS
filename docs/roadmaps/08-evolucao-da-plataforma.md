@@ -630,34 +630,45 @@ Planejamento desta etapa futura concluído em: 2026-08-22 12:30
 (America/Sao_Paulo). Implementação e validação permanecem pendentes e deverão
 ser tratadas como uma etapa própria do bootloader.
 
-### EP6.3 - Falhas, cache e regressao
+### EP6.3 - Runtime v2, cache seletivo e matriz de falhas
 
-- [ ] Cobrir falha de DNS, certificado invalido, hora indisponivel, tag
-  inexistente, asset ausente, download interrompido, manifesto adulterado,
-  cache preservado e rollback com fixtures e matriz QEMU.
-- [ ] Definir um pacote runtime completo por Release, com manifesto assinado,
-  hashes por arquivo e compatibilidade com as versoes instaladas suportadas,
-  para que uma atualizacao direta nao dependa de baixar uma cadeia de deltas.
-  Deltas podem ser uma otimizacao futura, mas nao devem ser obrigatorios.
-- [ ] Publicar o manifesto antes dos payloads e permitir assets por arquivo:
-  comparar hashes locais, baixar somente arquivos novos/alterados, reutilizar
-  os demais e manter um pacote completo como fallback de recuperacao.
-- [ ] Definir o novo contrato de pacote (por exemplo, ZUPD v2) sem alterar
-  silenciosamente o ZUPD v1, incluindo criacao/remocao controlada de arquivos,
-  staging atomico, rollback e politica de dados persistentes.
+- [x] Contrato `ZUM2`/`ZUPD v2` assinado com Ed25519, hashes SHA-256 por
+  arquivo, bases multiplas, limites de 16 entradas/64 KiB/128 KiB, catalogo
+  fixo dos tres BMPs e operacoes controladas de substituir, criar e remover.
+- [x] Pacote completo independente de cadeia de deltas, cache remoto v2 A/B
+  separado do U5 (`ZRV`), manifesto publicado antes dos payloads e download
+  seletivo por hash local ou fallback `--full`.
+- [x] Estado local v2 em namespaces `ZTV`, `ZTS` e `ZTB`, journal redundante,
+  staging atomico, backups, rollback, recuperacao deterministica e preservacao
+  do slot ativo e dos dados persistentes do usuario.
+- [x] Fluxos HTTP U5 e GitHub HTTPS por tag exata, descritor `release.json`
+  v2 como metadado de transporte, Shell `update runtime ...` e aba Runtime
+  somente no Updater Classic; o modo Simple permanece congelado.
+- [x] Ferramenta host com geracao/verificacao, fixtures EP6.3, servidores HTTP
+  e GitHub runtime, auditoria offline de `ZRV/ZTV/ZTS/ZTB` e selftest.
+- [x] Compatibilidade operacional com o estado U3 existente: o layout e as
+  APIs v1 permanecem, e o estado de arquivos compartilhados e sincronizado
+  apos uma transacao runtime v2.
+- Implementação EP6.3 concluída em: 2026-08-22 20:01 (America/Sao_Paulo).
+- [ ] Executar a validacao do usuario no QEMU apos `make q3check` e
+  `make clean && make`, cobrindo Shell, Updater Classic, HTTP U5, GitHub HTTPS,
+  cancelamento, failpoints, rollback e auditoria offline.
 
-EP6.0 continua exercitável com o servidor de fixtures U5. EP6.2 usa o canal
-HTTPS BearSSL configurado para a API GitHub e mantém o transporte HTTP U5 para
-compatibilidade; a publicação de artefatos continua dependendo de ZUM1/ZUPD
-assinados e nenhuma consulta ocorre no boot.
+EP6.0 continua exercitável com o servidor de fixtures U5. EP6.2 mantém o
+transporte HTTPS BearSSL configurado para a API GitHub e a regressao HTTP U5;
+EP6.3 acrescenta o canal runtime v2 sem reinterpretar os caches `ZUR0/ZUR1`.
+Nenhuma consulta ocorre no boot e boot, stage2, kernel e imagem completa
+continuam reservados para a EP9.
 
 ### Criterio de saida
 
-Uma tag exata seleciona uma Release verificavel, mas somente ZUM1/ZUPD
-assinados autorizam o candidato. Baixar nao instala; somente `update apply`
-aplica uma atualizacao apos confirmacao e reboot. Rede ausente, origem
-maliciosa, tag inexistente e falha de download preservam cache, atualizacao
-local e rollback existentes.
+Uma tag exata seleciona uma Release verificavel, mas somente ZUM2/ZUPD v2
+assinados autorizam o runtime. Baixar nao instala; somente `update runtime
+apply --confirm` aplica uma atualizacao apos confirmacao e informa o reboot.
+Rede ausente, origem maliciosa, tag inexistente, falha de download ou
+interrupcao de journal preservam cache, instalacao anterior, rollback e dados
+persistentes. A validacao QEMU desta implementacao ainda aguarda a execucao do
+usuario.
 
 ## EP7 - Wi-Fi por hardware suportado
 
@@ -720,10 +731,10 @@ crus.
 
 ### EP9.0 - Contratos e pacotes separados
 
-- [ ] Manter o pacote runtime baseado em ZUPD v1 para recursos e arquivos
-  regulares enquanto o novo pacote completo nao for definido; download e
-  staging podem ocorrer com o sistema em execucao, mas arquivos ja carregados
-  so mudam apos recarga ou reboot.
+- [ ] Manter o ZUPD v1 e o runtime v2 separados para recursos e arquivos
+  regulares; a EP9 trata somente a imagem completa, boot, stage2 e kernel.
+  Arquivos ja carregados so mudam apos recarga ou reboot quando a funcionalidade
+  dependente exigir essa recarga.
 - [ ] Definir um contrato distinto `ZSYS v1` para a imagem de sistema,
   incluindo kernel, stage2 e metadados de compatibilidade, sem aceitar esse
   pacote no parser ZUPD v1.

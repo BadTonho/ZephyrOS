@@ -19,4 +19,12 @@
 #define UPDATE_REMOTE_GITHUB_MANIFEST_NAME "release.zum"
 #define UPDATE_REMOTE_GITHUB_PACKAGE_NAME "update.zephyrosupd"
 
+#define UPDATE_REMOTE_RUNTIME_RELEASE_URL_TEMPLATE \
+    "http://10.0.2.2:8000/zephyros/runtime-{tag}.json"
+#define UPDATE_REMOTE_RUNTIME_MANIFEST_URL \
+    "http://10.0.2.2:8000/zephyros/runtime.zum2"
+#define UPDATE_REMOTE_RUNTIME_PACKAGE_NAME "runtime.zephyrosupd"
+#define UPDATE_REMOTE_GITHUB_RUNTIME_MANIFEST_NAME "runtime.zum2"
+#define UPDATE_REMOTE_GITHUB_RUNTIME_PACKAGE_NAME "runtime.zephyrosupd"
+
 #endif

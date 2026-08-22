@@ -6,6 +6,7 @@
 #include "core/string.h"
 #include "core/update.h"
 #include "core/update_remote_config.h"
+#include "core/update_runtime.h"
 #include "process/process.h"
 
 #define UPDATE_GITHUB_HTTP_OK 200U
@@ -568,9 +569,13 @@ static int update_github_assign_asset(update_remote_github_release_t* release,
                                       const update_github_asset_parse_t* parsed,
                                       uint8_t* descriptor_found,
                                       uint8_t* manifest_found,
-                                      uint8_t* package_found) {
+                                      uint8_t* package_found,
+                                      uint8_t* runtime_manifest_found,
+                                      uint8_t* runtime_package_found,
+                                      uint8_t runtime_only) {
     if (!release || !parsed || !descriptor_found || !manifest_found ||
-        !package_found) return ERR_NULL;
+        !package_found || !runtime_manifest_found ||
+        !runtime_package_found) return ERR_NULL;
     if (kstrcmp(parsed->asset.name, UPDATE_REMOTE_GITHUB_DESCRIPTOR_NAME) == 0) {
         if (*descriptor_found) return ERR_INVALID;
         *descriptor_found = 1U;
@@ -586,6 +591,30 @@ static int update_github_assign_asset(update_remote_github_release_t* release,
         *package_found = 1U;
         return update_github_copy_asset(&release->package, parsed);
     }
+    if (runtime_only && kstrcmp(parsed->asset.name,
+                                UPDATE_REMOTE_GITHUB_RUNTIME_MANIFEST_NAME) == 0) {
+        if (*runtime_manifest_found) return ERR_INVALID;
+        *runtime_manifest_found = 1U;
+        return update_github_copy_asset(&release->runtime_manifest, parsed);
+    }
+    if (runtime_only && kstrcmp(parsed->asset.name,
+                                UPDATE_REMOTE_GITHUB_RUNTIME_PACKAGE_NAME) == 0) {
+        if (*runtime_package_found) return ERR_INVALID;
+        *runtime_package_found = 1U;
+        return update_github_copy_asset(&release->runtime_package, parsed);
+    }
+    if (!runtime_only ||
+        (kstrcmp(parsed->asset.name, "EXPLORER.BMP") != 0 &&
+         kstrcmp(parsed->asset.name, "SHELL.BMP") != 0 &&
+         kstrcmp(parsed->asset.name, "TASKMGR.BMP") != 0)) return OK;
+    if (release->runtime_asset_count >= UPDATE_REMOTE_GITHUB_RUNTIME_ASSET_MAX) {
+        return ERR_OVERFLOW;
+    }
+    for (uint32_t index = 0U; index < release->runtime_asset_count; index++) {
+        if (kstrcmp(release->runtime_assets[index].name,
+                    parsed->asset.name) == 0) return ERR_INVALID;
+    }
+    release->runtime_assets[release->runtime_asset_count++] = parsed->asset;
     return OK;
 }
 
@@ -593,7 +622,10 @@ static int update_github_parse_assets(update_github_json_t* json,
                                       update_remote_github_release_t* release,
                                       uint8_t* descriptor_found,
                                       uint8_t* manifest_found,
-                                      uint8_t* package_found) {
+                                      uint8_t* package_found,
+                                      uint8_t* runtime_manifest_found,
+                                      uint8_t* runtime_package_found,
+                                      uint8_t runtime_only) {
     update_github_asset_parse_t* parsed =
         &update_github_workspace.asset_parse;
     int result;
@@ -608,7 +640,8 @@ static int update_github_parse_assets(update_github_json_t* json,
     while (1) {
         result = update_github_parse_asset(json, parsed);
         if (result == OK) result = update_github_assign_asset(
-            release, parsed, descriptor_found, manifest_found, package_found);
+            release, parsed, descriptor_found, manifest_found, package_found,
+            runtime_manifest_found, runtime_package_found, runtime_only);
         if (result != OK) return result;
         update_github_skip_space(json);
         if (json->offset >= json->length) return ERR_INVALID;
@@ -648,6 +681,7 @@ static int update_github_validate_published_at(const char* text) {
 
 static int update_github_parse_release(const uint8_t* data, uint32_t length,
                                        const char* requested_tag,
+                                       uint8_t runtime_only,
                                        update_remote_github_release_t* release) {
     update_github_json_t json;
     char key[UPDATE_GITHUB_KEY_SIZE];
@@ -661,6 +695,8 @@ static int update_github_parse_release(const uint8_t* data, uint32_t length,
     uint8_t descriptor_found = 0U;
     uint8_t manifest_found = 0U;
     uint8_t package_found = 0U;
+    uint8_t runtime_manifest_found = 0U;
+    uint8_t runtime_package_found = 0U;
     uint8_t boolean;
     int result;
 
@@ -718,7 +754,8 @@ static int update_github_parse_release(const uint8_t* data, uint32_t length,
         } else if (kstrcmp(key, "assets") == 0) {
             if (assets_found || update_github_parse_assets(
                     &json, release, &descriptor_found, &manifest_found,
-                    &package_found) != OK) return ERR_INVALID;
+                    &package_found, &runtime_manifest_found,
+                    &runtime_package_found, runtime_only) != OK) return ERR_INVALID;
             assets_found = 1U;
         } else {
             result = update_github_skip_value(&json, 1U);
@@ -736,19 +773,27 @@ static int update_github_parse_release(const uint8_t* data, uint32_t length,
     if (json.offset != json.length || !tag_found || !id_found || !name_found ||
         !published_found || update_github_validate_published_at(
             release->published_at) != OK || !draft_found ||
-        !prerelease_found || !assets_found || !descriptor_found ||
-        !manifest_found || !package_found || kstrcmp(release->tag, requested_tag) != 0) {
+        !prerelease_found || !assets_found || kstrcmp(release->tag, requested_tag) != 0) {
         return ERR_INVALID;
     }
-    if (release->descriptor.size == 0U ||
-        release->descriptor.size > HTTP_BODY_CAPACITY ||
-        release->manifest.size != UPDATE_REMOTE_MANIFEST_SIZE ||
-        release->package.size == 0U || release->package.size > ZUPD_MAX_TOTAL_SIZE) {
-        return ERR_INVALID;
+    if (runtime_only) {
+        if (!runtime_manifest_found || !runtime_package_found ||
+            release->runtime_manifest.size != UPDATE_RUNTIME_MANIFEST_SIZE ||
+            release->runtime_package.size == 0U ||
+            release->runtime_package.size > UPDATE_RUNTIME_PACKAGE_MAX_SIZE ||
+            !release->runtime_manifest.url[0] ||
+            !release->runtime_package.url[0]) return ERR_INVALID;
+    } else {
+        if (!descriptor_found || !manifest_found || !package_found ||
+            release->descriptor.size == 0U ||
+            release->descriptor.size > HTTP_BODY_CAPACITY ||
+            release->manifest.size != UPDATE_REMOTE_MANIFEST_SIZE ||
+            release->package.size == 0U ||
+            release->package.size > ZUPD_MAX_TOTAL_SIZE ||
+            !release->descriptor.url[0] || !release->manifest.url[0] ||
+            !release->package.url[0]) return ERR_INVALID;
     }
-    if (!release->descriptor.url[0] || !release->manifest.url[0] ||
-        !release->package.url[0] ||
-        (release->release_id[0] == '0' && release->release_id[1] == '\0')) {
+    if (release->release_id[0] == '0' && release->release_id[1] == '\0') {
         return ERR_INVALID;
     }
     return OK;
@@ -987,6 +1032,79 @@ static int update_github_fingerprint(update_remote_github_release_t* release) {
                          release->metadata_hash);
 }
 
+static int update_github_runtime_fingerprint(
+    update_remote_github_release_t* release) {
+    const update_remote_github_asset_t* assets[
+        UPDATE_REMOTE_GITHUB_RUNTIME_ASSET_MAX + 2U];
+    uint32_t asset_count;
+    uint32_t length = 0U;
+
+    if (!release) {
+        return ERR_NULL;
+    }
+    asset_count = 2U + release->runtime_asset_count;
+    assets[0] = &release->runtime_manifest;
+    assets[1] = &release->runtime_package;
+    for (uint32_t index = 0U; index < release->runtime_asset_count; index++) {
+        assets[index + 2U] = &release->runtime_assets[index];
+    }
+    kmemset(update_github_workspace.fingerprint, 0,
+            sizeof(update_github_workspace.fingerprint));
+    if (update_github_append(update_github_workspace.fingerprint,
+                             sizeof(update_github_workspace.fingerprint),
+                             &length, release->tag) != OK ||
+        update_github_append(update_github_workspace.fingerprint,
+                             sizeof(update_github_workspace.fingerprint),
+                             &length, "\n") != OK ||
+        update_github_append(update_github_workspace.fingerprint,
+                             sizeof(update_github_workspace.fingerprint),
+                             &length, release->release_id) != OK ||
+        update_github_append(update_github_workspace.fingerprint,
+                             sizeof(update_github_workspace.fingerprint),
+                             &length, "\n") != OK ||
+        update_github_append(update_github_workspace.fingerprint,
+                             sizeof(update_github_workspace.fingerprint),
+                             &length, release->release_name) != OK ||
+        update_github_append(update_github_workspace.fingerprint,
+                             sizeof(update_github_workspace.fingerprint),
+                             &length, "\n") != OK ||
+        update_github_append(update_github_workspace.fingerprint,
+                             sizeof(update_github_workspace.fingerprint),
+                             &length, release->published_at) != OK) {
+        return ERR_OVERFLOW;
+    }
+    for (uint32_t index = 0U; index < asset_count; index++) {
+        if (update_github_append(update_github_workspace.fingerprint,
+                                 sizeof(update_github_workspace.fingerprint),
+                                 &length, "\n") != OK ||
+            update_github_append(update_github_workspace.fingerprint,
+                                 sizeof(update_github_workspace.fingerprint),
+                                 &length, assets[index]->name) != OK ||
+            update_github_append(update_github_workspace.fingerprint,
+                                 sizeof(update_github_workspace.fingerprint),
+                                 &length, "|") != OK ||
+            update_github_append_u32(update_github_workspace.fingerprint,
+                                     sizeof(update_github_workspace.fingerprint),
+                                     &length, assets[index]->size) != OK ||
+            update_github_append(update_github_workspace.fingerprint,
+                                 sizeof(update_github_workspace.fingerprint),
+                                 &length, "|") != OK ||
+            update_github_append(update_github_workspace.fingerprint,
+                                 sizeof(update_github_workspace.fingerprint),
+                                 &length, assets[index]->url) != OK ||
+            update_github_append(update_github_workspace.fingerprint,
+                                 sizeof(update_github_workspace.fingerprint),
+                                 &length, "|") != OK ||
+            update_github_append_digest(update_github_workspace.fingerprint,
+                                        sizeof(update_github_workspace.fingerprint),
+                                        &length, assets[index]) != OK) {
+            return ERR_OVERFLOW;
+        }
+    }
+    return crypto_sha256(update_github_workspace.fingerprint, length,
+                         release->metadata_hash);
+}
+
 static int update_github_build_url(const char* tag, char* output,
                                    uint32_t capacity) {
     const char* source = UPDATE_REMOTE_GITHUB_RELEASE_URL_TEMPLATE;
@@ -1123,10 +1241,10 @@ static int update_github_wait(const update_remote_options_t* options) {
     }
 }
 
-int update_remote_github_query(
+static int update_remote_github_query_mode(
     const char* tag, const update_remote_options_t* options,
     update_remote_github_release_t* release_out,
-    update_remote_result_t* result_out) {
+    update_remote_result_t* result_out, uint8_t runtime_only) {
     http_request_options_t http_options;
     int result;
 
@@ -1184,16 +1302,48 @@ int update_remote_github_query(
     }
     result = update_github_parse_release(
         update_github_workspace.response,
-        update_github_workspace.response_length, tag, release_out);
-    if (result != OK || update_github_validate_asset_url(release_out->descriptor.url) != OK ||
-        update_github_validate_asset_url(release_out->manifest.url) != OK ||
-        update_github_validate_asset_url(release_out->package.url) != OK ||
-        update_github_fingerprint(release_out) != OK) {
+        update_github_workspace.response_length, tag, runtime_only, release_out);
+    if (result == OK && runtime_only) {
+        result = update_github_validate_asset_url(
+            release_out->runtime_manifest.url);
+        if (result == OK) result = update_github_validate_asset_url(
+            release_out->runtime_package.url);
+        for (uint32_t index = 0U;
+             result == OK && index < release_out->runtime_asset_count; index++) {
+            result = update_github_validate_asset_url(
+                release_out->runtime_assets[index].url);
+        }
+        if (result == OK) result = update_github_runtime_fingerprint(release_out);
+    } else if (result == OK) {
+        result = update_github_validate_asset_url(release_out->descriptor.url);
+        if (result == OK) result = update_github_validate_asset_url(
+            release_out->manifest.url);
+        if (result == OK) result = update_github_validate_asset_url(
+            release_out->package.url);
+        if (result == OK) result = update_github_fingerprint(release_out);
+    }
+    if (result != OK) {
         result_out->reason = UPDATE_REMOTE_REASON_RELEASE_API;
         LOG_ERROR("UPDATE", "Resposta GitHub nao possui Release segura");
-        return result == OK ? ERR_INVALID : result;
+        return result;
     }
     result_out->reason = UPDATE_REMOTE_REASON_NONE;
     LOG_INFO("UPDATE", "Release GitHub descoberta por tag exata");
     return OK;
+}
+
+int update_remote_github_query(
+    const char* tag, const update_remote_options_t* options,
+    update_remote_github_release_t* release_out,
+    update_remote_result_t* result_out) {
+    return update_remote_github_query_mode(tag, options, release_out,
+                                           result_out, 0U);
+}
+
+int update_remote_github_runtime_query(
+    const char* tag, const update_remote_options_t* options,
+    update_remote_github_release_t* release_out,
+    update_remote_result_t* result_out) {
+    return update_remote_github_query_mode(tag, options, release_out,
+                                           result_out, 1U);
 }
