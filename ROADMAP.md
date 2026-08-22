@@ -4,17 +4,17 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
-## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0 validada no QEMU; EP6.1 implementada com validacao pendente; EP6.2-EP6.3 e EP9 planejadas
+## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0 validada no QEMU; EP6.1 implementada com sequencia host e matriz QEMU parcial validadas, pendente de tls check e regressao EP6.0/U5; EP6.2-EP6.3 e EP9 planejadas
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
 Plataforma de aplicativos:   [██████████████████████████████████████████] Fase 7 validada
 Interface e experiência:     [██████████████████████████████████████████] UI1-UI7 validadas
 Sistema e ecossistema:       [██████████████████████████████████████████] S2.8 e U1-U5 concluídas
-Evolução da plataforma:      [████████████████████████████------------------] EP1-EP6.0 validadas; EP6.1 implementada e pendente de validação; EP6.2-EP6.3 e EP9 futuras
+Evolução da plataforma:      [████████████████████████████------------------] EP1-EP6.0 validadas; EP6.1 implementada, sequencia host e matriz QEMU parcial validadas; tls check e regressao EP6.0/U5 pendentes; EP6.2-EP6.3 e EP9 futuras
 ```
 
-**Documentação de atualização sincronizada em:** 2026-08-21 23:40
+**Documentação de atualização sincronizada em:** 2026-08-21 23:56
 (America/Sao_Paulo).
 
 ---
@@ -751,7 +751,7 @@ kernel, interface e novos serviços:
 | 5 | [`docs/roadmaps/05-sistema-e-ecossistema.md`](docs/roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e ecossistema. |
 | 6 | [`docs/roadmaps/06-app-store.md`](docs/roadmaps/06-app-store.md) | Catalogo local, ciclo de vida, App Store Modern e distribuicao futura. |
 | 7 | [`docs/roadmaps/07-modernizacao-visual.md`](docs/roadmaps/07-modernizacao-visual.md) | Escala acessivel, visual flat/dark e desempenho VESA mensuravel; MV4 funcionalmente validado, comparacao historica N/D. |
-| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.0 validadas; EP6.1 implementada com validacao pendente; EP6.2-EP6.3 e EP9 futuras para TLS funcional, GitHub e imagem do sistema. |
+| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.0 validadas; EP6.1 implementada, sequencia host e matriz QEMU parcial validadas; `tls check` e regressao EP6.0/U5 pendentes; EP6.2-EP6.3 e EP9 futuras para TLS funcional, GitHub e imagem do sistema. |
 | 9 | [`docs/roadmaps/09-funcionalidades-aplicaveis.md`](docs/roadmaps/09-funcionalidades-aplicaveis.md) | Logs, timers, espera, work queue, dispositivos, I/O, cache e métricas do scheduler. |
 | 10 | [`docs/roadmaps/10-vfs-e-abstracao-io.md`](docs/roadmaps/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, pontos de montagem, dispositivos /dev/ e pipes. |
 | 11 | [`docs/roadmaps/11-gerenciamento-avancado-de-memoria.md`](docs/roadmaps/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging. |
