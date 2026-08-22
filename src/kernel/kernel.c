@@ -24,6 +24,8 @@
 #include "core/keyboard.h"
 #include "drivers/mouse.h"
 #include "core/timer.h"
+#include "core/clock.h"
+#include "core/tls.h"
 #include "core/wait.h"
 #include "core/memory.h"
 #include "memory/paging.h"
@@ -43,6 +45,7 @@
 #include "drivers/font.h"
 #include "drivers/ac97.h"
 #include "drivers/acpi.h"
+#include "drivers/rtc.h"
 #include "ui/taskbar.h"
 #include "ui/desktop.h"
 #include "ui/settings.h"
@@ -616,6 +619,38 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         panic("TIMER: falha ao inicializar PIT");
     }
     video_print("[OK] Timer PIT (50 Hz)\n", 0x07);
+
+    video_print("[..] Validando RTC CMOS UTC...\n", 0x08);
+    int rtc_result = rtc_init();
+    if (rtc_result == OK) {
+        video_print("[OK] RTC CMOS interpretado como UTC\n", 0x07);
+    } else {
+        LOG_WARN_CODE("KERNEL", rtc_result,
+                      "RTC ausente ou invalido; UTC sera recusado");
+        video_print("[!!] RTC UTC indisponivel; modo fail-closed\n", 0x0E);
+    }
+
+    video_print("[..] Ancorando relogio monotono...\n", 0x08);
+    int clock_result = clock_init();
+    if (clock_result == OK) {
+        video_print("[OK] Relogio UTC ancorado no PIT\n", 0x07);
+    } else {
+        LOG_WARN_CODE("KERNEL", clock_result,
+                      "Relogio UTC indisponivel; monotono preservado");
+        video_print("[!!] UTC indisponivel; atualizacoes seguras bloqueadas\n",
+                    0x0E);
+    }
+
+    video_print("[..] Registrando politica TLS...\n", 0x08);
+    int tls_result = tls_init();
+    if (tls_result == OK) {
+        video_print("[OK] Politica TLS registrada; HTTPS ainda desabilitado\n",
+                    0x07);
+    } else {
+        LOG_ERROR_CODE("KERNEL", tls_result,
+                       "Falha ao registrar politica TLS");
+        video_print("[!!] Politica TLS indisponivel\n", 0x0E);
+    }
 
     video_print("[..] Detectando memoria...\n", 0x08);
     memory_init(mmap_addr);

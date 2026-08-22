@@ -314,6 +314,9 @@ static void cmd_help(void) {
     video_print("  log      - Consulta, configura e testa o log circular\n",
                 0x07);
     video_print("  timer    - Inspeciona e testa temporizadores\n", 0x07);
+    video_print("  clock status|check - Inspeciona UTC e monotono\n", 0x07);
+    video_print("  tls status|check - Inspeciona contrato TLS (policy-only)\n",
+                0x07);
     video_print("  wait     - Inspeciona esperas e executa autoteste\n", 0x07);
     video_print("  devices  - Lista inventario de hardware (-v para detalhes)\n", 0x07);
     video_print("  device-info <id> - Mostra detalhes de um dispositivo\n", 0x07);

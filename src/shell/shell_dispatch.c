@@ -21,6 +21,8 @@ extern void shell_dispatch_cmd_uptime(const char* arguments);
 extern void shell_dispatch_cmd_health(const char* arguments);
 extern void shell_dispatch_cmd_log(const char* arguments);
 extern void shell_dispatch_cmd_timer(const char* arguments);
+extern void shell_dispatch_cmd_clock(const char* arguments);
+extern void shell_dispatch_cmd_tls(const char* arguments);
 extern void shell_dispatch_cmd_wait(const char* arguments);
 extern void shell_dispatch_cmd_devices(const char* arguments);
 extern void shell_dispatch_cmd_device_info(const char* arguments);
@@ -86,6 +88,8 @@ static const shell_dispatch_entry_t shell_dispatch_table[] = {
     {"health", shell_dispatch_cmd_health, SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"log", shell_dispatch_cmd_log, SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"timer", shell_dispatch_cmd_timer, SHELL_DISPATCH_FLAG_MAY_BLOCK},
+    {"clock", shell_dispatch_cmd_clock, SHELL_DISPATCH_FLAG_NONE},
+    {"tls", shell_dispatch_cmd_tls, SHELL_DISPATCH_FLAG_NONE},
     {"wait", shell_dispatch_cmd_wait, SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"devices", shell_dispatch_cmd_devices, SHELL_DISPATCH_FLAG_NONE},
     {"device-info", shell_dispatch_cmd_device_info,

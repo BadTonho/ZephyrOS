@@ -8,6 +8,8 @@
 #include "fs/file_index.h"
 #include "core/memory.h"
 #include "core/timer.h"
+#include "core/clock.h"
+#include "core/tls.h"
 #include "core/wait.h"
 #include "process/process.h"
 #include "drivers/ata.h"
@@ -65,6 +67,7 @@
 #include "drivers/vesa.h"
 #include "drivers/font.h"
 #include "drivers/acpi.h"
+#include "drivers/rtc.h"
 #include "ui/display.h"
 #include "apps/shell_command_utils.h"
 #include "apps/shell_runtime.h"
@@ -598,6 +601,35 @@ static void cmd_health_print_update_capabilities(void) {
     }
 }
 
+static void cmd_health_print_clock_tls(void) {
+    clock_status_t clock_status;
+    tls_status_t tls_status;
+
+    video_print("\nTempo confiavel e TLS:\n", 0x0B);
+    video_print("  UTC: ", 0x07);
+    if (clock_get_status(&clock_status) != OK ||
+        !clock_status.initialized) {
+        video_print("DISABLED\n", 0x0C);
+    } else if (clock_status.utc_available) {
+        video_print("READY (", 0x0A);
+        video_print(clock_source_name(clock_status.source), 0x0A);
+        video_print(") monotono=READY\n", 0x0A);
+    } else {
+        video_print("DEGRADED (monotono sem UTC)\n", 0x0E);
+    }
+    video_print("  TLS: ", 0x07);
+    if (tls_get_status(&tls_status) != OK) {
+        video_print("UNAVAILABLE\n", 0x0C);
+        return;
+    }
+    video_print(tls_state_name(tls_status.state),
+                tls_status.state == TLS_STATE_POLICY_ONLY ? 0x0A : 0x0E);
+    video_print(" tempo=", 0x07);
+    video_print(tls_status.trusted_time_available ? "TRUSTED" : "UNAVAILABLE",
+                tls_status.trusted_time_available ? 0x0A : 0x0E);
+    video_print(" handshake=DISABLED HTTPS=UNAVAILABLE\n", 0x07);
+}
+
 uint8_t shell_diagnostics_health_state_color(recovery_state_t state) {
     if (state == RECOVERY_STATE_READY) return 0x0A;
     if (state == RECOVERY_STATE_DEGRADED) return 0x0E;
@@ -815,6 +847,7 @@ static void cmd_health_summary(void) {
     cmd_health_print_summary_components();
     cmd_health_print_summary_update();
     cmd_health_print_summary_app_store();
+    cmd_health_print_clock_tls();
     cmd_health_print_summary_kernel();
     video_end_update();
 }
@@ -828,6 +861,7 @@ static void cmd_health_full(void) {
     }
 
     cmd_health_print_update_capabilities();
+    cmd_health_print_clock_tls();
     cmd_health_print_kernel();
     video_end_update();
 }
@@ -1237,6 +1271,230 @@ static void cmd_timer(const char* arguments) {
         return;
     }
     cmd_timer_invalid();
+}
+
+static void cmd_diagnostics_print_u64(uint64_t value) {
+    char buffer[24];
+    uint32_t length = 0U;
+
+    if (!value) {
+        video_print("0", 0x07);
+        return;
+    }
+    while (value) {
+        buffer[length++] = (char)('0' + (value % 10ULL));
+        value /= 10ULL;
+    }
+    while (length) {
+        char digit[2];
+        digit[0] = buffer[--length];
+        digit[1] = '\0';
+        video_print(digit, 0x07);
+    }
+}
+
+static void cmd_diagnostics_print_test(const char* name, uint8_t passed) {
+    video_print("  ", 0x07);
+    video_print(name, 0x07);
+    video_print(": ", 0x07);
+    video_print(passed ? "OK\n" : "ERRO\n", passed ? 0x0A : 0x0C);
+}
+
+static void cmd_clock_usage(void) {
+    video_print("Uso: clock [status|check]\n", 0x0E);
+}
+
+static void cmd_clock_status(void) {
+    clock_status_t status;
+    rtc_status_t rtc;
+    uint64_t ticks;
+    uint64_t utc;
+
+    if (clock_get_status(&status) != OK) {
+        video_print("Erro: estado do clock indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("Clock: inicializado=", 0x0B);
+    video_print(status.initialized ? "SIM" : "NAO", 0x07);
+    video_print(" fonte=", 0x07);
+    video_print(clock_source_name(status.source), 0x07);
+    video_print(" PIT=", 0x07);
+    shell_command_print_num(status.frequency);
+    video_print(" Hz UTC=", 0x07);
+    video_print(status.utc_available ? "READY" : "UNAVAILABLE",
+                status.utc_available ? 0x0A : 0x0E);
+    video_print(" wraps=", 0x07);
+    cmd_diagnostics_print_u64(status.monotonic_wraps);
+    video_print(" reads=", 0x07);
+    shell_command_print_num(status.reads);
+    video_print(" erro=", 0x07);
+    shell_command_print_num((uint32_t)status.last_error);
+    video_print("\n", 0x07);
+    video_print("  anchor_tick=", 0x07);
+    cmd_diagnostics_print_u64(status.anchor_monotonic_ticks);
+    video_print(" anchor_utc=", 0x07);
+    cmd_diagnostics_print_u64(status.anchor_unix_seconds);
+    video_print("\n", 0x07);
+    if (clock_get_monotonic_ticks(&ticks) == OK) {
+        video_print("  monotono_ticks=", 0x07);
+        cmd_diagnostics_print_u64(ticks);
+        video_print("\n", 0x07);
+    }
+    if (clock_get_utc(&utc) == OK) {
+        video_print("  utc_unix_seconds=", 0x07);
+        cmd_diagnostics_print_u64(utc);
+        video_print("\n", 0x07);
+    }
+    if (rtc_get_status(&rtc) == OK) {
+        video_print("  RTC=", 0x07);
+        video_print(rtc.valid ? "READY" : "UNAVAILABLE",
+                    rtc.valid ? 0x0A : 0x0E);
+        if (rtc.valid) {
+            video_print(" ", 0x07);
+            shell_command_print_num(rtc.utc.year);
+            video_print("-", 0x07);
+            shell_command_print_num(rtc.utc.month);
+            video_print("-", 0x07);
+            shell_command_print_num(rtc.utc.day);
+            video_print(" ", 0x07);
+            shell_command_print_num(rtc.utc.hour);
+            video_print(":", 0x07);
+            shell_command_print_num(rtc.utc.minute);
+            video_print(":", 0x07);
+            shell_command_print_num(rtc.utc.second);
+        }
+        video_print("\n", 0x07);
+    }
+}
+
+static void cmd_clock_check(void) {
+    rtc_self_test_result_t rtc_test;
+    clock_self_test_result_t clock_test;
+    int rtc_result = rtc_self_test(&rtc_test);
+    int clock_result = clock_self_test(&clock_test);
+
+    video_print("Autoteste RTC/clock:\n", 0x0B);
+    cmd_diagnostics_print_test("RTC BCD", rtc_test.bcd_conversion);
+    cmd_diagnostics_print_test("RTC binario", rtc_test.binary_conversion);
+    cmd_diagnostics_print_test("RTC 12/24 horas",
+                               rtc_test.twelve_hour_conversion);
+    cmd_diagnostics_print_test("RTC calendario",
+                               rtc_test.calendar_validation);
+    cmd_diagnostics_print_test("RTC datas invalidas",
+                               rtc_test.invalid_dates_rejected);
+    cmd_diagnostics_print_test("epoch Unix", clock_test.epoch_conversion);
+    cmd_diagnostics_print_test("ano bissexto", clock_test.leap_year_conversion);
+    cmd_diagnostics_print_test("data invalida",
+                               clock_test.invalid_date_rejected);
+    cmd_diagnostics_print_test("rollover monotono",
+                               clock_test.monotonic_rollover);
+    cmd_diagnostics_print_test("invariantes", clock_test.invariants);
+    video_print("Resultado: ", 0x0B);
+    video_print(rtc_result == OK && clock_result == OK ? "OK\n" : "ERRO\n",
+                rtc_result == OK && clock_result == OK ? 0x0A : 0x0C);
+}
+
+static void cmd_clock(const char* arguments) {
+    if (shell_command_args_equal(arguments, "") ||
+        shell_command_args_equal(arguments, "status")) {
+        cmd_clock_status();
+        return;
+    }
+    if (shell_command_args_equal(arguments, "check")) {
+        cmd_clock_check();
+        return;
+    }
+    LOG_WARN_CODE("SHELL", ERR_INVALID, "Argumentos invalidos para clock");
+    cmd_clock_usage();
+}
+
+static void cmd_tls_usage(void) {
+    video_print("Uso: tls [status|check]\n", 0x0E);
+}
+
+static void cmd_tls_status(void) {
+    tls_policy_t policy;
+    tls_status_t status;
+
+    if (tls_get_policy(&policy) != OK || tls_get_status(&status) != OK) {
+        video_print("Erro: politica TLS indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("TLS: estado=", 0x0B);
+    video_print(tls_state_name(status.state),
+                status.state == TLS_STATE_POLICY_ONLY ? 0x0A : 0x0E);
+    video_print(" tempo=", 0x07);
+    video_print(status.trusted_time_available ? "TRUSTED" : "UNAVAILABLE",
+                status.trusted_time_available ? 0x0A : 0x0E);
+    video_print(" capability=", 0x07);
+    video_print(tls_capability_available() ? "HTTPS_READY" :
+                "HTTPS_UNAVAILABLE", tls_capability_available() ? 0x0A : 0x0E);
+    video_print("\n  min_version=0x", 0x07);
+    shell_command_print_hex(policy.minimum_version, 4U);
+    video_print(" CA=", 0x07);
+    video_print(policy.require_static_ca ? "REQUIRED" : "OPTIONAL", 0x07);
+    video_print(" SAN=", 0x07);
+    video_print(policy.require_hostname_san ? "REQUIRED" : "OPTIONAL", 0x07);
+    video_print(" validity=", 0x07);
+    video_print(policy.require_validity_window ? "REQUIRED" : "OPTIONAL", 0x07);
+    video_print(" pin=", 0x07);
+    video_print(policy.allow_spki_pin ? "OPTIONAL" : "FORBIDDEN", 0x07);
+    video_print(" trust=current/next=", 0x07);
+    shell_command_print_num(policy.trust_current_version);
+    video_print("/", 0x07);
+    shell_command_print_num(policy.trust_next_version);
+    video_print(" revoked<", 0x07);
+    shell_command_print_num(policy.trust_revocation_version);
+    video_print(" fallback_http=", 0x07);
+    video_print(policy.allow_http_fallback ? "ALLOWED" : "FORBIDDEN", 0x07);
+    video_print("\n  handshake=", 0x07);
+    video_print(status.handshake_available ? "AVAILABLE" : "DISABLED", 0x07);
+    video_print(" x509=", 0x07);
+    video_print(status.x509_available ? "AVAILABLE" : "DEFERRED", 0x07);
+    video_print(" checks=", 0x07);
+    shell_command_print_num(status.policy_checks);
+    video_print(" rejects=", 0x07);
+    shell_command_print_num(status.policy_rejections);
+    video_print(" last_reason=", 0x07);
+    video_print(tls_reason_name(status.last_reason), 0x07);
+    video_print("\n", 0x07);
+}
+
+static void cmd_tls_check(void) {
+    tls_self_test_result_t test;
+    int result = tls_self_test(&test);
+
+    video_print("Autoteste da politica TLS:\n", 0x0B);
+    cmd_diagnostics_print_test("identidade valida", test.valid_identity);
+    cmd_diagnostics_print_test("tempo indisponivel", test.time_unavailable);
+    cmd_diagnostics_print_test("certificado futuro", test.certificate_future);
+    cmd_diagnostics_print_test("certificado expirado", test.certificate_expired);
+    cmd_diagnostics_print_test("cadeia nao confiavel", test.untrusted_chain);
+    cmd_diagnostics_print_test("SAN divergente", test.san_mismatch);
+    cmd_diagnostics_print_test("pin ausente", test.pin_absent);
+    cmd_diagnostics_print_test("pin correto", test.pin_match);
+    cmd_diagnostics_print_test("pin divergente", test.pin_mismatch);
+    cmd_diagnostics_print_test("rotacao atual/proxima",
+                               test.trust_rotation);
+    cmd_diagnostics_print_test("revogacao de confianca",
+                               test.trust_revocation);
+    cmd_diagnostics_print_test("invariantes", test.invariants);
+    video_print("Resultado: ", 0x0B);
+    video_print(result == OK ? "OK\n" : "ERRO\n", result == OK ? 0x0A : 0x0C);
+}
+
+static void cmd_tls(const char* arguments) {
+    if (shell_command_args_equal(arguments, "") ||
+        shell_command_args_equal(arguments, "status")) {
+        cmd_tls_status();
+        return;
+    }
+    if (shell_command_args_equal(arguments, "check")) {
+        cmd_tls_check();
+        return;
+    }
+    LOG_WARN_CODE("SHELL", ERR_INVALID, "Argumentos invalidos para tls");
+    cmd_tls_usage();
 }
 
 static void cmd_wait_usage(void) {
@@ -2971,6 +3229,8 @@ void shell_diagnostics_print_usb_fixture_report(void) {
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_health, cmd_health)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_log, cmd_log)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_timer, cmd_timer)
+SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_clock, cmd_clock)
+SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_tls, cmd_tls)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_wait, cmd_wait)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_devices, cmd_devices)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_device_info, cmd_device_info)

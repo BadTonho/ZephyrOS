@@ -8,6 +8,8 @@
 #include "fs/file_index.h"
 #include "core/memory.h"
 #include "core/timer.h"
+#include "core/clock.h"
+#include "core/tls.h"
 #include "core/wait.h"
 #include "process/process.h"
 #include "drivers/ata.h"
@@ -65,6 +67,7 @@
 #include "drivers/vesa.h"
 #include "drivers/font.h"
 #include "drivers/acpi.h"
+#include "drivers/rtc.h"
 #include "ui/display.h"
 #include "apps/shell_command_utils.h"
 #include "apps/shell_runtime.h"
@@ -801,7 +804,9 @@ static int shell_regcheck_validate_services(void) {
         !syscall_is_ready() || !syscall_user_mode_is_enabled() ||
         !idt_is_user_syscall_enabled() || !paging_is_ready() ||
         !app_loader_is_ready() || !app_package_is_ready() ||
-        !app_catalog_is_ready() || timer_validate_state() != OK) {
+        !app_catalog_is_ready() || timer_validate_state() != OK ||
+        rtc_validate_state() != OK || clock_validate_state() != OK ||
+        tls_validate_state() != OK) {
         LOG_ERROR("SHELL", "RegCheck encontrou servico obrigatorio indisponivel");
         return ERR_STATE;
     }
