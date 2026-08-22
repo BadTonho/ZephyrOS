@@ -574,6 +574,10 @@ Correção da rejeição antecipada de HTTPS sem capacidade TLS concluída em:
 2026-08-22 13:21 (America/Sao_Paulo); o cliente agora falha antes de DNS/socket,
 preservando o cache e evitando entrar no caminho de rede quando `tls status`
 publica `UNAVAILABLE`. Validação QEMU permanece pendente do usuário.
+Diagnóstico da tela preta no `update github check` concluído em: 2026-08-22
+13:49 (America/Sao_Paulo); a análise estática aponta esgotamento da stack de
+4 KiB no caminho HTTPS/BearSSL, sem evidência de aplicação de update. Correção
+de buffers/stack e validação QEMU permanecem pendentes.
 
 ### Etapa futura — Leitura LBA no `stage2` (fora da EP6.2 e EP6.3)
 
