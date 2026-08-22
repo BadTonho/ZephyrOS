@@ -24,6 +24,21 @@ forem necessárias.
 Diretriz transferida do Roadmap 04 e registrada aqui em:
 2026-08-22 09:18 (America/Sao_Paulo).
 
+## R9 - Perfil de distribuição e composição do sistema
+
+- [ ] Definir um manifesto versionado de distribuição com identidade, versão,
+  arquitetura base, perfil visual, configurações padrão, conjunto de pacotes e
+  políticas de atualização e confiança.
+- [ ] Permitir que uma distribuição componha temas, assets, aplicativos e
+  padrões por contratos públicos, sem duplicar ou modificar a lógica do kernel
+  e dos serviços de domínio.
+- [ ] Separar claramente a base ZephyrOS, o perfil da distribuição, pacotes
+  opcionais e dados do usuário, preservando rollback e compatibilidade.
+- [ ] Criar uma matriz de compatibilidade que valide o perfil em Classic,
+  Simple, Shell, updater, contratos públicos e serviços essenciais.
+
+Registro da frente futura: 2026-08-22 09:21 (America/Sao_Paulo).
+
 ## Resumo de progresso
 
 - [x] R0 - análise arquitetural e seleção das funcionalidades aplicáveis.
@@ -35,6 +50,7 @@ Diretriz transferida do Roadmap 04 e registrada aqui em:
 - [ ] R6 - fila de requisições de bloco.
 - [ ] R7 - cache de caminhos e resolução de nomes.
 - [ ] R8 - contabilidade e organização do scheduler.
+- [ ] R9 - perfil de distribuição e composição do sistema.
 
 ## Atalhos
 
@@ -65,6 +81,8 @@ filesystem, rede, atualização e interface. As fases EP1, EP2 e EP3 do Roadmap
 6. R6 - requisições de bloco para ATA e USB.
 7. R7 - cache de caminhos sobre os volumes existentes.
 8. R8 - contabilidade e organização do scheduler.
+9. R9 - perfil de distribuição, depois da estabilização dos contratos públicos
+   e da base de pacotes.
 
 R5 pode receber manutenção incremental durante as fases USB e conectividade do
 Roadmap 08. R6 só deve avançar depois de R2, R3 e R5 estarem estáveis.
@@ -227,4 +245,4 @@ make run
 
 Roadmap próprio do ZephyrOS, criado para orientar melhorias incrementais sem
 substituir a arquitetura existente. R0, R1, R2 e R3 estão concluídas e
-validadas; R4-R8 ainda não foram implementadas.
+validadas; R4-R9 ainda não foram implementadas.
