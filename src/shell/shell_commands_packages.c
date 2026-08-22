@@ -57,7 +57,9 @@
 #include "core/app_remote.h"
 #include "core/update.h"
 #include "core/update_remote.h"
+#include "core/update_remote_runtime.h"
 #include "core/update_remote_config.h"
+#include "core/update_runtime.h"
 #include "core/syscall.h"
 #include "drivers/idt.h"
 #include "drivers/pci.h"
@@ -236,6 +238,10 @@ typedef struct {
     update_remote_status_t remote_status;
     update_remote_options_t remote_options;
     update_remote_result_t remote_result;
+    update_runtime_status_t runtime_status;
+    update_remote_runtime_status_t runtime_remote_status;
+    update_remote_runtime_result_t runtime_remote_result;
+    update_runtime_cache_t runtime_cache;
 } shell_update_workspace_t;
 
 typedef struct {
@@ -898,6 +904,315 @@ static void cmd_update_github(const char* operation, const char* tag,
     video_print("\nNenhuma instalacao foi iniciada.\n", 0x0A);
 }
 
+static void cmd_update_print_runtime_result(
+    const update_remote_runtime_result_t* result, int operation_result) {
+    if (!result) return;
+    video_print("Resultado runtime v2: ", 0x07);
+    video_print(update_remote_runtime_reason_name(result->reason),
+                operation_result == OK ? 0x0A : 0x0C);
+    video_print(" http=", 0x08);
+    shell_command_print_num(result->http_status);
+    video_print(" bytes=", 0x08);
+    shell_command_print_num(result->bytes_received);
+    video_print(" baixados=", 0x08);
+    shell_command_print_num(result->assets_downloaded);
+    video_print(" reutilizados=", 0x08);
+    shell_command_print_num(result->assets_reused);
+    video_print("\n", 0x07);
+    if (result->manifest.target_version.major ||
+        result->manifest.target_version.minor ||
+        result->manifest.target_version.patch) {
+        cmd_update_print_version("  Alvo: ", &result->manifest.target_version,
+                                 result->manifest.target_epoch);
+        video_print("  Arquivos: ", 0x07);
+        shell_command_print_num(result->manifest.entry_count);
+        video_print("\n", 0x07);
+    }
+    if (result->cached_manifest_alias[0]) {
+        video_print("  Manifesto em: ", 0x08);
+        video_print(result->cached_manifest_alias, 0x0B);
+        video_print("\n", 0x07);
+    }
+    if (result->cached_package_alias[0]) {
+        video_print("  Pacote em: ", 0x08);
+        video_print(result->cached_package_alias, 0x0B);
+        video_print("\n", 0x07);
+    }
+}
+
+static void cmd_update_runtime_status(void) {
+    update_runtime_status_t* local = &shell_update_workspace.runtime_status;
+    update_remote_runtime_status_t* remote =
+        &shell_update_workspace.runtime_remote_status;
+    update_runtime_cache_t* cache = &shell_update_workspace.runtime_cache;
+
+    if (update_runtime_get_status(local) != OK) {
+        video_print("Runtime v2 indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("Runtime v2:\n  Instalado: ", 0x0B);
+    cmd_update_print_version_inline(&local->installed_version,
+                                    local->installed_epoch);
+    video_print("\n  Estado: ", 0x07);
+    video_print(local->state_valid ? "READY" : "INVALID",
+                local->state_valid ? 0x0A : 0x0C);
+    video_print(" journal=", 0x08);
+    video_print(local->recovery_pending ? "PENDING" : "CLEAN",
+                local->recovery_pending ? 0x0E : 0x0A);
+    video_print(" rollback=", 0x08);
+    video_print(local->rollback_available ? "READY" : "DISABLED",
+                local->rollback_available ? 0x0A : 0x08);
+    video_print("\n  Capacidades: apply=", 0x07);
+    video_print(local->capabilities.apply_available ? "READY" : "DISABLED",
+                local->capabilities.apply_available ? 0x0A : 0x08);
+    video_print(" cache=", 0x08);
+    video_print(local->capabilities.cache_available ? "READY" : "DISABLED",
+                local->capabilities.cache_available ? 0x0A : 0x08);
+    video_print("\n", 0x07);
+    if (update_remote_runtime_get_status(remote) == OK) {
+        video_print("  Remoto: ", 0x07);
+        video_print(update_remote_runtime_state_name(remote->state),
+                    remote->state == UPDATE_REMOTE_RUNTIME_STATE_FAILED ?
+                    0x0C : 0x0A);
+        video_print(" motivo=", 0x08);
+        video_print(update_remote_runtime_reason_name(remote->reason), 0x07);
+        video_print(" rede=", 0x08);
+        video_print(remote->network_ready ? "READY\n" : "UNAVAILABLE\n",
+                    remote->network_ready ? 0x0A : 0x0E);
+    }
+    if (update_runtime_get_cache(cache) == OK && cache->valid) {
+        video_print("  Cache: ", 0x07);
+        video_print(cache->full_package ? "FULL" : "SELECTIVE", 0x0A);
+        video_print(" manifesto=", 0x08);
+        video_print(cache->manifest_alias, 0x0B);
+        video_print(" faltantes=", 0x08);
+        shell_command_print_num(cache->missing_assets);
+        video_print("\n", 0x07);
+    }
+}
+
+static void cmd_update_runtime_check(const char* tag) {
+    update_remote_options_t* options = &shell_update_workspace.remote_options;
+    update_remote_runtime_result_t* result =
+        &shell_update_workspace.runtime_remote_result;
+    int operation_result;
+
+    kmemset(options, 0, sizeof(*options));
+    options->cancel_check = cmd_update_cancel_check;
+    operation_result = update_remote_runtime_check(tag, options, result);
+    cmd_update_print_runtime_result(result, operation_result);
+    if (operation_result == OK) {
+        video_print("Manifesto ZUM2 autenticado; nenhum download realizado.\n",
+                    0x0A);
+    }
+}
+
+static void cmd_update_runtime_fetch(const char* tag, int full, int confirmed) {
+    update_remote_options_t* options = &shell_update_workspace.remote_options;
+    update_remote_runtime_result_t* result =
+        &shell_update_workspace.runtime_remote_result;
+    update_remote_runtime_fetch_mode_t mode = full ?
+        UPDATE_REMOTE_RUNTIME_FETCH_FULL : UPDATE_REMOTE_RUNTIME_FETCH_SELECTIVE;
+    int operation_result;
+
+    kmemset(options, 0, sizeof(*options));
+    options->dry_run = confirmed ? 0U : 1U;
+    options->cancel_check = cmd_update_cancel_check;
+    operation_result = update_remote_runtime_fetch(tag, mode, options, result);
+    cmd_update_print_runtime_result(result, operation_result);
+    if (operation_result != OK) {
+        if (result->cache_preserved) {
+            video_print("O cache runtime anterior foi preservado.\n", 0x0A);
+        }
+        return;
+    }
+    if (!confirmed) {
+        video_print("Preflight runtime aprovado; nenhum cache foi alterado.\n",
+                    0x0A);
+        video_print("Repita com --confirm para baixar ", 0x0E);
+        video_print(full ? "o pacote completo.\n" : "somente os assets necessarios.\n",
+                    0x0E);
+        return;
+    }
+    video_print("Cache runtime publicado. Nenhuma instalacao foi iniciada.\n",
+                0x0A);
+}
+
+static void cmd_update_runtime_verify(const char* path) {
+    update_runtime_verification_t verification;
+    update_runtime_cache_t* cache = &shell_update_workspace.runtime_cache;
+    const update_runtime_manifest_t* cached_manifest = 0;
+    int result;
+
+    if (kstrcmp(path, "--cached") == 0) {
+        if (update_runtime_get_cache(cache) != OK || !cache->valid) {
+            video_print("Cache runtime ausente ou invalido.\n", 0x0C);
+            return;
+        }
+        if (!cache->full_package || !cache->package_alias[0]) {
+            video_print("Cache seletivo valido; assets faltantes=", 0x0A);
+            shell_command_print_num(cache->missing_assets);
+            video_print(".\n", 0x0A);
+            return;
+        }
+        path = cache->package_alias;
+        cached_manifest = &cache->manifest;
+    }
+    result = cached_manifest ? update_runtime_verify_file_for_manifest(
+        path, cached_manifest, &verification) :
+        update_runtime_verify_file(path, &verification);
+    video_print(result == OK ? "ZUPD v2 autenticado e compativel.\n" :
+                "ZUPD v2 recusado: ", result == OK ? 0x0A : 0x0C);
+    if (result != OK) {
+        video_print(update_runtime_reason_name(verification.reason), 0x0C);
+        video_print("\n", 0x0C);
+        return;
+    }
+    cmd_update_print_version("  Alvo: ", &verification.target_version,
+                             verification.target_epoch);
+    video_print("  Arquivos alterados: ", 0x07);
+    shell_command_print_num(verification.changed_entries);
+    video_print("\n", 0x07);
+}
+
+static void cmd_update_runtime_action(int rollback, int confirmed) {
+    update_runtime_action_options_t options;
+    update_runtime_action_result_t action;
+    int result;
+
+    kmemset(&options, 0, sizeof(options));
+    options.dry_run = confirmed ? 0U : 1U;
+    options.cancel_check = cmd_update_cancel_check;
+    result = rollback ? update_runtime_rollback(&options, &action) :
+                        update_runtime_apply_cached(&options, &action);
+    video_print(rollback ? "Rollback runtime: " : "Aplicacao runtime: ", 0x07);
+    video_print(update_runtime_reason_name(action.reason),
+                result == OK ? 0x0A : 0x0C);
+    video_print("\n", 0x07);
+    if (result != OK) {
+        if (action.recovery_pending) {
+            video_print("Recuperacao pendente; reinicie para concluir.\n", 0x0E);
+        }
+        return;
+    }
+    if (!confirmed) {
+        video_print("Preflight concluido sem gravacao. Use update runtime ", 0x0A);
+        video_print(rollback ? "rollback" : "apply", 0x0E);
+        video_print(" --confirm.\n", 0x0E);
+        return;
+    }
+    video_print("Operacao concluida; reinicie para recarregar o runtime.\n",
+                0x0A);
+}
+
+static void cmd_update_runtime_clear(int confirmed) {
+    update_remote_options_t* options = &shell_update_workspace.remote_options;
+    update_remote_runtime_result_t* result =
+        &shell_update_workspace.runtime_remote_result;
+    int operation_result;
+
+    kmemset(options, 0, sizeof(*options));
+    options->dry_run = confirmed ? 0U : 1U;
+    operation_result = update_remote_runtime_clear(options, result);
+    if (operation_result != OK) {
+        video_print("Falha ao limpar cache runtime: ", 0x0C);
+        video_print(update_remote_runtime_reason_name(result->reason), 0x0C);
+        video_print("\n", 0x0C);
+    } else if (!confirmed) {
+        video_print("Cache runtime inspecionado sem gravacao. Use ", 0x0A);
+        video_print("update runtime clear --confirm.\n", 0x0E);
+    } else {
+        video_print("Cache runtime removido.\n", 0x0A);
+    }
+}
+
+static void cmd_update_runtime(const char* args) {
+    char operation[16];
+    char command[16];
+    char first[FS_MAX_PATH];
+    char second[UPDATE_REMOTE_TAG_SIZE + 1U];
+    char third[16];
+    char fourth[16];
+    const char* tokens[4] = {first, second, third, fourth};
+    const char* cursor = args;
+    const char* tag = 0;
+    uint8_t full = 0U;
+    uint8_t confirmed = 0U;
+    uint8_t tag_pending = 0U;
+    uint8_t invalid = 0U;
+
+    cmd_pkg_take_token(&cursor, operation, sizeof(operation));
+    cmd_pkg_take_token(&cursor, command, sizeof(command));
+    cmd_pkg_take_token(&cursor, first, sizeof(first));
+    cmd_pkg_take_token(&cursor, second, sizeof(second));
+    cmd_pkg_take_token(&cursor, third, sizeof(third));
+    cmd_pkg_take_token(&cursor, fourth, sizeof(fourth));
+    if (kstrcmp(operation, "runtime") != 0 || command[0] == '\0' ||
+        cmd_pkg_has_trailing_token(cursor)) {
+        invalid = 1U;
+    } else if (kstrcmp(command, "status") == 0 && !first[0]) {
+        cmd_update_runtime_status();
+        return;
+    } else if (kstrcmp(command, "verify") == 0 && first[0] && !second[0]) {
+        cmd_update_runtime_verify(first);
+        return;
+    } else if ((kstrcmp(command, "apply") == 0 ||
+                kstrcmp(command, "rollback") == 0) &&
+               (!first[0] || kstrcmp(first, "--confirm") == 0) &&
+               !second[0]) {
+        cmd_update_runtime_action(kstrcmp(command, "rollback") == 0,
+                                  first[0] != '\0');
+        return;
+    } else if (kstrcmp(command, "clear") == 0 &&
+               (!first[0] || kstrcmp(first, "--confirm") == 0) &&
+               !second[0]) {
+        cmd_update_runtime_clear(first[0] != '\0');
+        return;
+    } else if (kstrcmp(command, "check") == 0) {
+        if (!first[0]) {
+            cmd_update_runtime_check(0);
+            return;
+        }
+        if (kstrcmp(first, "--tag") == 0 && second[0] && !third[0]) {
+            cmd_update_runtime_check(second);
+            return;
+        }
+        invalid = 1U;
+    } else if (kstrcmp(command, "fetch") == 0) {
+        for (uint32_t index = 0U; index < 4U; index++) {
+            const char* token = tokens[index];
+
+            if (!token[0]) continue;
+            if (tag_pending) {
+                tag = token;
+                tag_pending = 0U;
+            } else if (kstrcmp(token, "--tag") == 0 && !tag &&
+                       !tag_pending) {
+                tag_pending = 1U;
+            } else if (kstrcmp(token, "--full") == 0 && !full) {
+                full = 1U;
+            } else if (kstrcmp(token, "--confirm") == 0 && !confirmed) {
+                confirmed = 1U;
+            } else {
+                invalid = 1U;
+            }
+        }
+        if (tag_pending) invalid = 1U;
+        if (!invalid) {
+            cmd_update_runtime_fetch(tag, full, confirmed);
+            return;
+        }
+    }
+    if (invalid) LOG_WARN("SHELL", "Uso invalido do comando update runtime");
+    video_print("Uso: update runtime status\n", 0x0E);
+    video_print("     update runtime check [--tag TAG]\n", 0x0E);
+    video_print("     update runtime fetch [--tag TAG] [--full] [--confirm]\n",
+                0x0E);
+    video_print("     update runtime verify <ARQUIVO>|--cached\n", 0x0E);
+    video_print("     update runtime apply|rollback --confirm\n", 0x0E);
+    video_print("     update runtime clear --confirm\n", 0x0E);
+}
+
 static void cmd_update(const char* args) {
     char* operation = shell_update_workspace.operation;
     char* first = shell_update_workspace.first;
@@ -916,6 +1231,10 @@ static void cmd_update(const char* args) {
         &cursor, third, sizeof(shell_update_workspace.third));
     cmd_pkg_take_token(
         &cursor, extra, sizeof(shell_update_workspace.extra));
+    if (kstrcmp(operation, "runtime") == 0) {
+        cmd_update_runtime(args);
+        return;
+    }
     if (kstrcmp(operation, "status") == 0 && first[0] == '\0') {
         cmd_update_status();
         return;
@@ -994,6 +1313,8 @@ static void cmd_update(const char* args) {
                 0x0E);
     video_print("     update github check --tag <tag>\n", 0x0E);
     video_print("     update github fetch --tag <tag> [--confirm]\n", 0x0E);
+    video_print("     update runtime status|check|fetch|verify|apply|rollback|clear\n",
+                0x0E);
     video_print("     update test fail-after <1-3>\n", 0x0E);
 }
 

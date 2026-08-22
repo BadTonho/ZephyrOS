@@ -66,8 +66,11 @@ sem alterar suas assinaturas públicas.
 | `src/include/core/wait.h` | `docs/07-processos/processos.md` |
 | `src/include/core/udp.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/update.h` | `docs/14-atualizacoes/contrato-zupd-v1.md` |
+| `src/include/core/update_runtime.h` | `docs/14-atualizacoes/contrato-zupd-v2.md` |
 | `src/include/core/update_remote.h` | `docs/14-atualizacoes/distribuicao-remota.md` |
+| `src/include/core/update_remote_runtime.h` | `docs/14-atualizacoes/contrato-zupd-v2.md` |
 | `src/include/core/update_remote_config.h` | `docs/14-atualizacoes/distribuicao-remota.md` |
+| `src/include/core/update_remote_github.h` | `docs/14-atualizacoes/contrato-zupd-v2.md` |
 | `src/include/core/update_trust.h` | `docs/14-atualizacoes/contrato-zupd-v1.md` |
 | `src/include/core/usb_manager.h` | `docs/04-kernel/kernel.md` |
 | `src/include/drivers/uhci.h` | `docs/05-drivers/drivers.md` |
@@ -259,6 +262,18 @@ contrato canonico permanece em
 Desde o AS3, `src/include/ui/appstore.h` define o ciclo de vida, os modos
 Simple/Classic e a entrada da App Store nativa. O contrato canonico permanece
 em `docs/13-aplicativos/app-store.md`.
+
+Desde a EP6.3, `src/include/core/update_runtime.h` define o contrato ZUM2/
+ZUPD v2, catálogo explícito, verificação, cache, journal, staging, rollback e
+motivos próprios; `src/include/core/update_remote_runtime.h` define o transporte
+seletivo/completo e seus resultados. `src/include/core/update_remote_github.h`
+mantém as APIs v1 e acrescenta a consulta runtime sem renumerar enums ou
+reinterpretar os assets legados. Os aliases `ZRV`, `ZTV`, `ZTS` e `ZTB` são
+separados de `ZUR/ZUPD` e seus contratos canônicos estão em
+`docs/14-atualizacoes/contrato-zupd-v2.md`.
+`src/include/core/update.h` recebeu apenas o bridge append-only
+`update_sync_runtime_state`, usado para sincronizar o estado U3 após uma
+transação v2.
 
 Desde o AS5, `src/include/core/app_remote.h` define estados, motivos, entradas,
 planos, cache, procedencia e operacoes manuais do repositorio remoto.

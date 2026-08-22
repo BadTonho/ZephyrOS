@@ -382,11 +382,61 @@ digest divergente, draft/prerelease e redirects HTTP/HTTPS, confirmando que
 falha TLS ou redirect preserva o slot ativo. Um smoke separado pode consultar
 anonimamente uma tag existente de `BadTonho/ZephyrOS`.
 
+## EP6.3: runtime v2 e fixtures
+
+O manifesto de build `ZUM2 v2` usa os campos `generation`, `release_tag`,
+`release_id`, `target_version`, `target_epoch`, `base_versions` e `files`.
+Cada arquivo declara `replace`, `create`, `replace_or_create` ou `delete` e
+um `source` relativo; a remoção usa `source: null`. O catálogo deve conter
+exatamente `EXPLORER.BMP`, `SHELL.BMP` e `TASKMGR.BMP`.
+
+```text
+python tools/updater.py runtime-build --manifest <runtime.json> --private <chave-fora-do-repo> --public config/update-release-public.json --output-dir <diretorio-novo>
+python tools/updater.py runtime-verify --manifest <diretorio-novo>/runtime.zum2 --package <diretorio-novo>/runtime.zephyrosupd --public config/update-release-public.json
+```
+
+`runtime-build` recusa sobrescrita e publica `runtime.zum2`,
+`runtime.zephyrosupd`, assets individuais e `release.json`. `runtime-verify`
+não grava e pode receber `--system-version`/`--system-epoch` para verificar
+uma base específica. O manifesto assinado e o pacote completo são validados
+independentemente do descritor JSON.
+
+Fixtures EP6.3 e servidores locais:
+
+```text
+python tools/updater.py fixtures-runtime --private <chave-fora-do-repo> --public config/update-release-public.json --output-dir <diretorio-vazio>
+python tools/updater.py serve-runtime --root <diretorio-das-fixtures> --tag ep63-runtime --variant valid
+python tools/updater.py serve-github-runtime --root <diretorio-das-fixtures> --cert <certificado-fora-do-repo> --key <chave-tls-fora-do-repo> --tag ep63-runtime --variant valid
+```
+
+As variantes HTTP cobrem asset ausente, tag divergente, JSON inválido,
+digest divergente, manifesto adulterado e pacote adulterado. A API GitHub
+runtime acrescenta draft/prerelease e digest divergente. `selftest` cobre
+round-trip de assinatura, bases múltiplas, substituição, criação, remoção,
+hash e adulteração sem escrever no repositório.
+
+`audit-image` também confere `ZRV0/ZRV1`, manifesto, pacote, assets, atributos
+hidden/system/archive e slots inativos. Para o runtime instalado, decodifica
+os controles redundantes `ZTV0/ZTV1` (`ZRT2`), o journal `ZRTJ`, os três
+arquivos do catálogo e os aliases `ZTS/ZTB`, incluindo hashes dos backups de
+rollback. Exemplos:
+
+```text
+python tools/updater.py audit-image --image build/zephyros.img --expect-runtime-cache valid --expect-runtime-alias ZRV0.MAN --expect-runtime-pending clean
+python tools/updater.py audit-image --image build/zephyros.img --expect-runtime-cache empty
+```
+
+Depois de um `update runtime apply --confirm` ou rollback, a auditoria deve
+ser executada somente após o reboot solicitado pelo sistema. Uma imagem com
+transaction journal v2, staging ou backup inesperado falha na auditoria; use
+`--allow-pending` apenas para inspecionar deliberadamente uma interrupcao.
+
 ## Referencias
 
 - [cryptography 49.0.0](https://cryptography.io/_/downloads/en/49.0.0/pdf/)
 - [Ed25519 no cryptography](https://cryptography.io/en/49.0.0/hazmat/primitives/asymmetric/ed25519/)
 - [Serializacao de chaves](https://cryptography.io/en/49.0.0/hazmat/primitives/asymmetric/serialization/)
 - [Distribuicao remota ZUPD v1](distribuicao-remota.md)
+- [Contrato ZUM2/ZUPD v2](contrato-zupd-v2.md)
 - [BearSSL 0.6](https://bearssl.org/)
 - [GitHub Releases API](https://docs.github.com/en/rest/releases/releases?apiVersion=latest)

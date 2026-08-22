@@ -5,6 +5,7 @@
 #include "core/string.h"
 #include "core/update_trust.h"
 #include "core/update_remote.h"
+#include "core/update_runtime.h"
 #include "core/version.h"
 #include "fs/fs.h"
 
@@ -346,6 +347,22 @@ static int update_verify_root_file(const char* path,
     update_file_state_t actual;
     int result;
 
+    if (!path || !expected) {
+        LOG_ERROR("UPDATE", "Argumento nulo ao validar estado U3");
+        return ERR_NULL;
+    }
+    if (!expected->present) {
+        uint32_t ignored_size = 0U;
+
+        result = fs_get_root_file_info(path, &ignored_size, 0);
+        if (result == ERR_NOT_FOUND) return OK;
+        if (result == OK) {
+            LOG_ERROR("UPDATE", "Arquivo ausente do estado U3 permaneceu");
+            return ERR_INVALID;
+        }
+        LOG_ERROR("UPDATE", "Falha ao consultar arquivo ausente U3");
+        return result;
+    }
     kmemset(&actual, 0, sizeof(actual));
     result = update_hash_root_file(path, &actual);
     if (result != OK) return result;
@@ -459,15 +476,20 @@ static int update_decode_state_record(update_state_t* state,
         update_decode_file_state(
             &state->rollback[index], record,
             rollback_offset);
-        if (state->current[index].present != 1U ||
+        if (state->current[index].present > 1U ||
             state->rollback[index].present > 1U ||
             !update_bytes_zero(record + current_offset + 37U, 3U) ||
             !update_bytes_zero(record + rollback_offset + 37U, 3U)) {
             LOG_ERROR("UPDATE", "Estado de arquivo U3 invalido");
             return ERR_INVALID;
         }
-        if (state->current[index].size == 0U ||
-            state->current[index].size > ZUPD_MAX_PAYLOAD_SIZE ||
+        if ((state->current[index].present &&
+             (state->current[index].size == 0U ||
+              state->current[index].size > ZUPD_MAX_PAYLOAD_SIZE)) ||
+            (!state->current[index].present &&
+             (state->current[index].size != 0U ||
+              !update_bytes_zero(state->current[index].hash,
+                                 CRYPTO_SHA256_SIZE))) ||
             (state->rollback[index].present &&
              (state->rollback[index].size == 0U ||
               state->rollback[index].size > ZUPD_MAX_PAYLOAD_SIZE))) {
@@ -2257,6 +2279,9 @@ int update_init(void) {
     if (fs_get_type() != FS_TYPE_FAT12) {
         update_state_healthy = 1;
         update_refresh_capabilities();
+        if (update_runtime_init() != OK) {
+            LOG_WARN("UPDATE", "Runtime v2 indisponivel sem filesystem FAT12");
+        }
         LOG_INFO("UPDATE", "Verificador pronto; aplicacao FAT12 indisponivel");
         return OK;
     }
@@ -2266,6 +2291,9 @@ int update_init(void) {
     (void)update_load_history_records();
     if (state_result != OK || journal_result != OK) {
         update_refresh_capabilities();
+        if (update_runtime_init() != OK) {
+            LOG_WARN("UPDATE", "Runtime v2 nao iniciou apos falha do estado v1");
+        }
         LOG_ERROR("UPDATE", "Estado persistente U3 invalido");
         return OK;
     }
@@ -2282,11 +2310,17 @@ int update_init(void) {
     recovery_result = update_recover_pending();
     if (recovery_result != OK || update_validate_current_state() != OK) {
         update_refresh_capabilities();
+        if (update_runtime_init() != OK) {
+            LOG_WARN("UPDATE", "Runtime v2 nao iniciou apos recuperacao v1 degradada");
+        }
         LOG_ERROR("UPDATE", "Recuperacao ou estado instalado invalido");
         return OK;
     }
     update_state_healthy = 1;
     update_refresh_capabilities();
+    if (update_runtime_init() != OK) {
+        LOG_WARN("UPDATE", "Runtime v2 indisponivel; ZUPD v1 preservado");
+    }
     LOG_INFO("UPDATE", "Atualizacoes locais inicializadas com sucesso");
     return OK;
 }
@@ -2350,6 +2384,63 @@ int update_get_installed_version(update_version_t* version_out,
     *version_out = update_state.installed_version;
     *epoch_out = update_state.installed_epoch;
     return OK;
+}
+
+int update_sync_runtime_state(const update_version_t* installed_version,
+                              uint32_t installed_epoch) {
+    update_state_t next;
+    int result = OK;
+
+    if (!installed_version) {
+        LOG_ERROR("UPDATE", "Versao nula ao sincronizar estado runtime");
+        return ERR_NULL;
+    }
+    if (!update_initialized || fs_get_type() != FS_TYPE_FAT12 ||
+        update_journal.kind != UPDATE_JOURNAL_NONE) {
+        LOG_ERROR("UPDATE", "Estado U3 nao permite sincronizacao runtime");
+        return ERR_STATE;
+    }
+    if (update_begin_operation() != OK) {
+        LOG_ERROR("UPDATE", "Sincronizacao runtime concorrente recusada");
+        return ERR_STATE;
+    }
+    next = update_state;
+    for (uint32_t index = 0U; index < UPDATE_TARGET_COUNT; index++) {
+        uint32_t ignored_size = 0U;
+
+        result = fs_get_root_file_info(update_target_paths[index],
+                                       &ignored_size, 0);
+        if (result == ERR_NOT_FOUND) {
+            kmemset(&next.current[index], 0, sizeof(next.current[index]));
+            result = OK;
+        } else if (result == OK) {
+            result = update_hash_root_file(update_target_paths[index],
+                                           &next.current[index]);
+        }
+        if (result != OK) {
+            LOG_ERROR("UPDATE", "Falha ao atualizar estado U3 do runtime");
+            break;
+        }
+    }
+    if (result == OK) {
+        next.installed_version = *installed_version;
+        next.installed_epoch = installed_epoch;
+        kmemset(&next.previous_version, 0, sizeof(next.previous_version));
+        next.previous_epoch = 0U;
+        next.rollback_available = 0U;
+        next.rollback_slot = 0U;
+        next.rollback_entry_count = 0U;
+        kmemset(next.rollback, 0, sizeof(next.rollback));
+        result = update_write_state_record(&next);
+    }
+    if (result == OK) {
+        update_state = next;
+        update_state_healthy = 1;
+        update_refresh_capabilities();
+        LOG_INFO("UPDATE", "Estado U3 sincronizado com runtime v2");
+    }
+    update_end_operation();
+    return result;
 }
 
 static update_store_state_t update_effective_history_store(void) {
