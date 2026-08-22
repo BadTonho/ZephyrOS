@@ -1476,8 +1476,8 @@ def parse_runtime_package(
             if (
                 entry.present != desired.target_present
                 or entry.payload_size != desired.target_size
-                or entry.payload_sha256 != desired.target_hash
-                or not desired.allowed_operations & entry.operation
+                or entry.payload_sha256 != desired.target_sha256
+                or not desired.operations & entry.operation
             ):
                 reject(REASON_PACKAGE_MISMATCH, f"entrada diverge do ZUM2: {entry.path}")
         if len(data) != manifest.package_size or hashlib.sha256(data).digest() != manifest.package_sha256:
@@ -1664,12 +1664,12 @@ def build_runtime_package(
         raw[:RUNTIME_PATH_SIZE] = encode_path(entry.path)
         payload = payloads.get(entry.path, b"")
         if entry.target_present:
-            if len(payload) != entry.target_size or hashlib.sha256(payload).digest() != entry.target_hash:
+            if len(payload) != entry.target_size or hashlib.sha256(payload).digest() != entry.target_sha256:
                 raise UpdateError(f"payload runtime divergiu: {entry.path}")
             struct.pack_into("<II", raw, 64, payload_offset, len(payload))
             raw[72] = 1
             raw[73] = entry.operations
-            raw[76:108] = entry.target_hash
+            raw[76:108] = entry.target_sha256
             payload_blob.extend(payload)
             payload_offset += len(payload)
         else:
@@ -1735,10 +1735,10 @@ def build_runtime_manifest(
         target_raw[65] = entry.operations
         struct.pack_into("<H", target_raw, 66, 0)
         struct.pack_into("<I", target_raw, 68, entry.target_size)
-        target_raw[72:104] = entry.target_hash
+        target_raw[72:104] = entry.target_sha256
         target_raw[104:168] = runtime_fixed_bytes(entry.asset_name, 64, "asset_name")
         struct.pack_into("<I", target_raw, 168, entry.asset_size)
-        target_raw[172:204] = entry.asset_hash
+        target_raw[172:204] = entry.asset_sha256
         raw[offset : offset + RUNTIME_MANIFEST_ENTRY_SIZE] = target_raw
     raw[RUNTIME_MANIFEST_SIGNED_SIZE:] = private_key.sign(
         RUNTIME_DOMAIN + bytes(raw[:RUNTIME_MANIFEST_SIGNED_SIZE])
