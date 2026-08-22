@@ -14,7 +14,7 @@ Sistema e ecossistema:       [████████████████�
 Evolução da plataforma:      [████████████████████████████------------------] EP1-EP6.1 validadas; EP6.2-EP6.3 e EP9 futuras
 ```
 
-**Documentação de atualização sincronizada em:** 2026-08-22 09:14
+**Documentação de atualização sincronizada em:** 2026-08-22 09:18
 (America/Sao_Paulo).
 
 ---
@@ -360,7 +360,6 @@ Evolução da plataforma:      [████████████████
 - [x] **Integração Plena de Mouse**: Janelas suportam arraste e redimensionamento; ícones usam encaixe em grade.
 - [x] **Aplicativos hospedados**: Shell, Explorer, Settings e Task Manager usam janelas singleton no modo Classic.
 - [x] **Acessibilidade**: Roda PS/2 e atalhos `Alt+Tab`, `Alt+F4`, `Alt+F9` e `Alt+F10` integrados ao WM.
-
 ---
 
 ## Plataforma de Aplicativos — evolução em fases
@@ -754,7 +753,7 @@ kernel, interface e novos serviços:
 | 6 | [`docs/roadmaps/06-app-store.md`](docs/roadmaps/06-app-store.md) | Catalogo local, ciclo de vida, App Store Modern e distribuicao futura. |
 | 7 | [`docs/roadmaps/07-modernizacao-visual.md`](docs/roadmaps/07-modernizacao-visual.md) | Escala acessivel, visual flat/dark e desempenho VESA mensuravel; MV4 funcionalmente validado, comparacao historica N/D. |
 | 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.1 validadas; EP6.2-EP6.3 futuras para GitHub, pacote runtime completo, download seletivo por manifesto e matriz de falhas; EP9 futura para imagem do sistema. |
-| 9 | [`docs/roadmaps/09-funcionalidades-aplicaveis.md`](docs/roadmaps/09-funcionalidades-aplicaveis.md) | Logs, timers, espera, work queue, dispositivos, I/O, cache e métricas do scheduler. |
+| 9 | [`docs/roadmaps/09-funcionalidades-aplicaveis.md`](docs/roadmaps/09-funcionalidades-aplicaveis.md) | Separação visual/funcional, logs, timers, espera, work queue, dispositivos, I/O, cache e métricas do scheduler. |
 | 10 | [`docs/roadmaps/10-vfs-e-abstracao-io.md`](docs/roadmaps/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, pontos de montagem, dispositivos /dev/ e pipes. |
 | 11 | [`docs/roadmaps/11-gerenciamento-avancado-de-memoria.md`](docs/roadmaps/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging. |
 | 12 | [`docs/roadmaps/12-concorrencia-e-sincronizacao.md`](docs/roadmaps/12-concorrencia-e-sincronizacao.md) | Top-Half/Bottom-Half, wait queues, kernel workqueues e sinais assíncronos. |

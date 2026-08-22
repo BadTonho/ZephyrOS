@@ -10,6 +10,20 @@ externa e não autoriza copiar código, APIs, drivers ou estruturas de terceiros
 Ele registra ideias de engenharia que serão reimplementadas no ZephyrOS quando
 forem necessárias.
 
+## Separação entre apresentação e função
+
+- [x] Tratar Classic e Simple como superfícies de apresentação que consomem
+  serviços de domínio, sem tornar vídeo, GUI ou Shell a fonte de verdade das
+  capacidades do sistema.
+- [x] Permitir que diagnósticos do Shell e interfaces gráficas consultem as
+  mesmas APIs públicas, mantendo a validação funcional independente do modo
+  visual.
+- [ ] Continuar a migração incremental de handlers legados que ainda misturam
+  operação, formatação e entrada, sem quebrar os contratos públicos existentes.
+
+Diretriz transferida do Roadmap 04 e registrada aqui em:
+2026-08-22 09:18 (America/Sao_Paulo).
+
 ## Resumo de progresso
 
 - [x] R0 - análise arquitetural e seleção das funcionalidades aplicáveis.
