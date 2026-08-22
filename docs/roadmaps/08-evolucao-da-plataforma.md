@@ -567,6 +567,9 @@ pendentes do usuário; registrar cada horário real nesta seção após a execu�
 Implementação do comando `health check` concluída em: 2026-08-22 12:47
 (America/Sao_Paulo); o comando consolida estados não-`READY` sem executar
 diagnósticos ativos. A validação executável permanece pendente do usuário.
+Correção do filtro de estados `READY` do `health check` concluída em:
+2026-08-22 12:54 (America/Sao_Paulo); a saída agora omite estados prontos
+também nas subcapacidades do Update.
 
 ### Etapa futura — Leitura LBA no `stage2` (fora da EP6.2 e EP6.3)
 
