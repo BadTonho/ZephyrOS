@@ -487,7 +487,7 @@ $(BEARSSL_COMPAT_OBJ): $(BEARSSL_COMPAT_C)
 
 $(BEARSSL_OBJ): build/bearssl/%.o: vendor/bearssl/src/%.c
 	@if not exist build mkdir build
-	@if not exist $(@D) mkdir $(@D)
+	@if not exist "$(@D)" mkdir "$(@D)"
 	$(GCC) $(BEARSSL_CFLAGS) -c $< -o $@
 
 $(RECOVERY_OBJ): $(RECOVERY_C)
