@@ -131,6 +131,11 @@ static void update_remote_result_copy(update_remote_result_t* output) {
     output->http_status = update_remote_status.http_status;
     output->retry_count = update_remote_status.retry_count;
     output->bytes_received = update_remote_status.bytes_received;
+    output->secure = update_remote_http.secure;
+    output->tls_verified = update_remote_http.tls_verified;
+    output->redirect_count = update_remote_http.redirect_count;
+    output->tls_reason = update_remote_http.tls_reason;
+    output->tls_error = update_remote_http.tls_error;
     output->candidate = update_remote_status.candidate;
     if (update_remote_manifest_valid) {
         kmemcpy(output->manifest_hash, update_remote_manifest_hash,
@@ -349,15 +354,22 @@ static int update_remote_build_package_url(const char* manifest_url,
         LOG_ERROR("UPDATE", "Argumento nulo ao montar URL do pacote");
         return ERR_NULL;
     }
-    if (kstrlen(manifest_url) < 8U ||
-        manifest_url[0] != 'h' || manifest_url[1] != 't' ||
-        manifest_url[2] != 't' || manifest_url[3] != 'p' ||
-        manifest_url[4] != ':' || manifest_url[5] != '/' ||
-        manifest_url[6] != '/') {
-        LOG_ERROR("UPDATE", "URL do manifesto nao usa HTTP simples");
+    if (kstrlen(manifest_url) >= 8U &&
+        manifest_url[0] == 'h' && manifest_url[1] == 't' &&
+        manifest_url[2] == 't' && manifest_url[3] == 'p' &&
+        manifest_url[4] == 's' && manifest_url[5] == ':' &&
+        manifest_url[6] == '/' && manifest_url[7] == '/') {
+        prefix = 8U;
+    } else if (kstrlen(manifest_url) >= 7U &&
+               manifest_url[0] == 'h' && manifest_url[1] == 't' &&
+               manifest_url[2] == 't' && manifest_url[3] == 'p' &&
+               manifest_url[4] == ':' && manifest_url[5] == '/' &&
+               manifest_url[6] == '/') {
+        prefix = 7U;
+    } else {
+        LOG_ERROR("UPDATE", "URL do manifesto nao usa HTTP ou HTTPS");
         return ERR_INVALID;
     }
-    prefix = 7U;
     while (manifest_url[prefix] && manifest_url[prefix] != '/') {
         prefix++;
     }
@@ -405,6 +417,30 @@ static int update_remote_wait_http(const update_remote_options_t* options,
     }
 }
 
+static void update_remote_make_http_options(
+    const update_remote_options_t* options, http_request_options_t* output) {
+    if (!output) return;
+    kmemset(output, 0, sizeof(*output));
+    if (!options) return;
+    output->accept = options->http_accept;
+    output->api_version = options->http_api_version;
+    output->require_https = options->http_require_https;
+    output->follow_redirects = options->http_follow_redirects;
+    output->max_redirects = options->http_max_redirects;
+}
+
+static update_remote_reason_t update_remote_http_reason(void) {
+    if (update_remote_http.redirect_rejected) {
+        return UPDATE_REMOTE_REASON_REDIRECT;
+    }
+    if (update_remote_http.secure &&
+        (!update_remote_http.tls_verified ||
+         update_remote_http.tls_reason != TLS_REASON_NONE)) {
+        return UPDATE_REMOTE_REASON_TLS;
+    }
+    return UPDATE_REMOTE_REASON_HTTP;
+}
+
 static const char* update_remote_effective_url(const char* requested) {
     if (requested && requested[0]) return requested;
     if (update_remote_manifest_valid &&
@@ -421,6 +457,7 @@ static int update_remote_check_internal(
     const char* url = update_remote_effective_url(requested);
     uint32_t length;
     update_remote_reason_t reason;
+    http_request_options_t http_options;
     int result;
 
     update_remote_refresh_network();
@@ -438,11 +475,14 @@ static int update_remote_check_internal(
     update_remote_status.reason = UPDATE_REMOTE_REASON_NONE;
     update_remote_status.bytes_received = 0U;
     update_remote_status.total_bytes = UPDATE_REMOTE_MANIFEST_SIZE;
+    kmemset(&update_remote_http, 0, sizeof(update_remote_http));
+    update_remote_status.http_status = 0U;
+    update_remote_make_http_options(options, &http_options);
     for (uint8_t attempt = 0U;
          attempt <= UPDATE_REMOTE_MAX_RETRIES; attempt++) {
         update_remote_status.retry_count = attempt;
         update_remote_cancelled = 0U;
-        result = http_get_start(url);
+        result = http_get_start_ex(url, &http_options);
         if (result == OK) {
             result = update_remote_wait_http(
                 options, &update_remote_http);
@@ -455,8 +495,8 @@ static int update_remote_check_internal(
     if (result != OK) {
         reason = update_remote_cancelled ?
                  UPDATE_REMOTE_REASON_CANCELLED :
-                 result == ERR_TIMEOUT ?
-                 UPDATE_REMOTE_REASON_TIMEOUT : UPDATE_REMOTE_REASON_HTTP;
+                  result == ERR_TIMEOUT ?
+                  UPDATE_REMOTE_REASON_TIMEOUT : update_remote_http_reason();
         return update_remote_reject(
             reason, result, "Consulta do manifesto remoto falhou", output);
     }
@@ -835,9 +875,11 @@ static int update_remote_prepare_pending(uint8_t pending_slot) {
 static int update_remote_download_attempt(
     const char* package_url, const char* alias,
     const update_remote_options_t* options) {
+    http_request_options_t http_options;
     int result;
 
     kmemset(&update_remote_download, 0, sizeof(update_remote_download));
+    kmemset(&update_remote_http, 0, sizeof(update_remote_http));
     update_remote_cancelled = 0U;
     result = crypto_sha256_init(&update_remote_download.sha256);
     if (result == OK) {
@@ -846,9 +888,11 @@ static int update_remote_download_attempt(
             UPDATE_REMOTE_PACKAGE_ATTRIBUTES);
     }
     if (result == OK) {
-        result = http_get_stream_start(
+        update_remote_make_http_options(options, &http_options);
+        result = http_get_stream_start_ex(
             package_url, update_remote_status.candidate.package_size,
-            update_remote_stream_sink, &update_remote_download);
+            update_remote_stream_sink, &update_remote_download,
+            &http_options);
     }
     if (result == OK) {
         result = update_remote_wait_http(options, &update_remote_http);
@@ -996,7 +1040,7 @@ static int update_remote_receive_package(
             update_remote_cancelled ? UPDATE_REMOTE_REASON_CANCELLED :
             result == ERR_TIMEOUT ? UPDATE_REMOTE_REASON_TIMEOUT :
             update_remote_download.write_error ?
-            UPDATE_REMOTE_REASON_IO : UPDATE_REMOTE_REASON_HTTP;
+            UPDATE_REMOTE_REASON_IO : update_remote_http_reason();
         return update_remote_abort_pending(reason, result, output);
     }
     if (!crypto_equal(
@@ -1105,7 +1149,7 @@ int update_remote_disable(void) {
 int update_remote_check(const char* manifest_url,
                         const update_remote_options_t* options,
                         update_remote_result_t* result_out) {
-    update_remote_options_t defaults = {1U, 0, 0};
+    update_remote_options_t defaults = {1U, 0, 0, 0, 0, 0, 0, 0};
     int result;
 
     if (!result_out) {
@@ -1125,7 +1169,7 @@ int update_remote_check(const char* manifest_url,
 int update_remote_fetch(const char* manifest_url,
                         const update_remote_options_t* options,
                         update_remote_result_t* result_out) {
-    update_remote_options_t defaults = {0U, 0, 0};
+    update_remote_options_t defaults = {0U, 0, 0, 0, 0, 0, 0, 0};
     uint8_t expected_manifest_hash[32];
     const char* effective;
     uint8_t pending_slot;
@@ -1201,7 +1245,7 @@ int update_remote_fetch(const char* manifest_url,
 
 int update_remote_clear(const update_remote_options_t* options,
                         update_remote_result_t* result_out) {
-    update_remote_options_t defaults = {1U, 0, 0};
+    update_remote_options_t defaults = {1U, 0, 0, 0, 0, 0, 0, 0};
     int result = OK;
 
     if (!result_out) {
@@ -1306,7 +1350,8 @@ const char* update_remote_reason_name(update_remote_reason_t reason) {
         "VERSION", "SIZE", "SPACE", "IO", "CANCELLED",
         "PACKAGE_HASH", "PACKAGE_VERIFY", "PACKAGE_MISMATCH", "CACHE",
         "RELEASE_NOT_FOUND", "RELEASE_FORMAT", "RELEASE_TAG",
-        "RELEASE_ASSET", "RELEASE_CHANGED"
+        "RELEASE_ASSET", "RELEASE_CHANGED", "TLS", "REDIRECT",
+        "RELEASE_API"
     };
 
     if ((uint32_t)reason >= sizeof(names) / sizeof(names[0])) {

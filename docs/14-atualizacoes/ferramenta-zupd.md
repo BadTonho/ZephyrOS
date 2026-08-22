@@ -217,6 +217,30 @@ invalido, tag ausente/divergente, asset ausente, hash divergente e
 `version_lock` divergente. O servidor publica todas essas rotas para a matriz
 QEMU; nenhuma delas escolhe automaticamente a maior tag.
 
+Para a EP6.2, `fixtures-github` cria somente os tres assets publicos da
+Release (`release.json`, `release.zum` e `update.zephyrosupd`) e um manifesto
+de tamanhos/hashes. A chave Ed25519 privada continua sendo lida de um caminho
+externo e nao e copiada para a saida:
+
+```text
+python tools/updater.py fixtures-github --private <chave-fora-do-repo> --public config/update-release-public.json --tag ep62-fixture --output-dir <diretorio-vazio>
+```
+
+`serve-github` publica a rota compativel com a API oficial e os downloads em
+HTTPS usando certificado e chave TLS fornecidos externamente:
+
+```text
+python tools/updater.py serve-github --root <diretorio-vazio> --cert <cert-fora-do-repo> --key <chave-tls-fora-do-repo> --tag ep62-fixture --public-host 10.0.2.2 --port 8443
+```
+
+As variantes `missing-asset`, `tag-divergent`, `invalid-json`, `bad-digest`,
+`draft` e `prerelease` sao selecionadas com `--variant`. A fixture deve usar
+um certificado emitido para o host configurado e encadeado a um trust anchor
+presente no build de teste. Para testar redirects, configure temporariamente
+`github_api_url` para `https://<host>:8443/fixtures/redirect-http` ou
+`https://<host>:8443/fixtures/redirect-https`. Nenhum certificado ou chave
+privada de teste deve ser salvo no repositorio.
+
 ## Releases oficiais EP5
 
 A Release e a unidade de distribuicao no host. Seu nome, identificador e tag
@@ -330,9 +354,33 @@ permanece como fallback com cobertura complementar. Depois de encerrar o QEMU:
 python tools/updater.py audit-image --image build/zephyros.img --expect-remote-cache valid --expect-remote-alias ZUR0.ZUP --expect-remote-pending clean
 ```
 
+Para EP6.2, depois de `make q3check` e `make clean && make`, a matriz QEMU
+inclui:
+
+```text
+health
+clock status
+clock check
+tls status
+tls check
+regcheck full
+memcheck
+update remote enable
+update github check --tag <tag>
+update github fetch --tag <tag> --confirm
+```
+
+O check nao grava; o fetch publica somente no cache U5 e nao instala. A matriz
+de fixtures deve repetir assets ausentes, tag divergente, JSON invalido,
+digest divergente, draft/prerelease e redirects HTTP/HTTPS, confirmando que
+falha TLS ou redirect preserva o slot ativo. Um smoke separado pode consultar
+anonimamente uma tag existente de `BadTonho/ZephyrOS`.
+
 ## Referencias
 
 - [cryptography 49.0.0](https://cryptography.io/_/downloads/en/49.0.0/pdf/)
 - [Ed25519 no cryptography](https://cryptography.io/en/49.0.0/hazmat/primitives/asymmetric/ed25519/)
 - [Serializacao de chaves](https://cryptography.io/en/49.0.0/hazmat/primitives/asymmetric/serialization/)
 - [Distribuicao remota ZUPD v1](distribuicao-remota.md)
+- [BearSSL 0.6](https://bearssl.org/)
+- [GitHub Releases API](https://docs.github.com/en/rest/releases/releases?apiVersion=latest)

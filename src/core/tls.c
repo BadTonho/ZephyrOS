@@ -3,6 +3,8 @@
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/string.h"
+#include "core/tls_client.h"
+#include "drivers/rng.h"
 
 static tls_policy_t tls_policy;
 static tls_status_t tls_status;
@@ -90,10 +92,14 @@ static int tls_policy_validate_at(const tls_peer_identity_t* identity,
 
 int tls_init(void) {
     clock_status_t clock;
+    rng_status_t rng;
+    tls_client_status_t client;
+    int result;
 
     LOG_INFO("TLS", "Inicializando contrato de politica TLS");
     kmemset(&tls_policy, 0, sizeof(tls_policy));
     kmemset(&tls_status, 0, sizeof(tls_status));
+    kmemset(&client, 0, sizeof(client));
     tls_policy.minimum_version = TLS_VERSION_1_2;
     tls_policy.require_static_ca = 1U;
     tls_policy.require_hostname_san = 1U;
@@ -118,12 +124,56 @@ int tls_init(void) {
         return ERR_STATE;
     }
     tls_status.trusted_time_available = clock.utc_available;
-    tls_status.state = clock.utc_available ? TLS_STATE_POLICY_ONLY :
-                                              TLS_STATE_UNAVAILABLE;
-    tls_status.last_reason = clock.utc_available ? TLS_REASON_NONE :
-                                                   TLS_REASON_TIME_UNAVAILABLE;
-    tls_status.last_error = clock.utc_available ? OK : ERR_UNAVAILABLE;
-    LOG_INFO("TLS", "Politica TLS pronta; handshake HTTPS permanece desabilitado");
+    if (!clock.utc_available) {
+        tls_status.state = TLS_STATE_UNAVAILABLE;
+        tls_status.last_reason = TLS_REASON_TIME_UNAVAILABLE;
+        tls_status.last_error = ERR_UNAVAILABLE;
+        LOG_ERROR("TLS", "Tempo UTC indisponivel para validacao X.509");
+        return ERR_UNAVAILABLE;
+    }
+    if (rng_get_status(&rng) != OK || !rng.initialized) {
+        result = rng_init();
+        if (result != OK) {
+            tls_status.state = TLS_STATE_UNAVAILABLE;
+            tls_status.last_reason = TLS_REASON_ENTROPY_UNAVAILABLE;
+            tls_status.last_error = result;
+            LOG_ERROR("TLS", "Fonte RDRAND indisponivel para HTTPS");
+            return result;
+        }
+        if (rng_get_status(&rng) != OK) {
+            tls_status.state = TLS_STATE_UNAVAILABLE;
+            tls_status.last_reason = TLS_REASON_ENTROPY_UNAVAILABLE;
+            tls_status.last_error = ERR_STATE;
+            LOG_ERROR("TLS", "Nao foi possivel consultar estado RDRAND");
+            return ERR_STATE;
+        }
+    }
+    tls_status.entropy_available =
+        (uint8_t)(rng.initialized && rng.rdrand_available);
+    if (!tls_status.entropy_available) {
+        tls_status.state = TLS_STATE_UNAVAILABLE;
+        tls_status.last_reason = TLS_REASON_ENTROPY_UNAVAILABLE;
+        tls_status.last_error = ERR_UNAVAILABLE;
+        LOG_ERROR("TLS", "RDRAND nao atende a politica de entropia HTTPS");
+        return ERR_UNAVAILABLE;
+    }
+    result = tls_client_init();
+    if (result != OK || tls_client_get_status(&client) != OK ||
+        !client.initialized) {
+        tls_status.state = TLS_STATE_UNAVAILABLE;
+        tls_status.last_reason = client.reason == TLS_REASON_NONE ?
+                                  TLS_REASON_HANDSHAKE : client.reason;
+        tls_status.last_error = result == OK ? ERR_UNAVAILABLE : result;
+        LOG_ERROR("TLS", "Adaptador BearSSL nao ficou disponivel");
+        return tls_status.last_error;
+    }
+    tls_status.handshake_available = 1U;
+    tls_status.x509_available = 1U;
+    tls_status.certificate_validation_available = 1U;
+    tls_status.state = TLS_STATE_READY;
+    tls_status.last_reason = TLS_REASON_NONE;
+    tls_status.last_error = OK;
+    LOG_INFO("TLS", "BearSSL TLS 1.2 e validacao X.509 prontos");
     return OK;
 }
 
@@ -177,7 +227,11 @@ int tls_get_status(tls_status_t* out_status) {
 int tls_capability_available(void) {
     return tls_status.initialized && tls_status.policy_ready &&
            tls_status.handshake_available &&
-           tls_status.x509_available && tls_status.trusted_time_available;
+           tls_status.x509_available &&
+           tls_status.certificate_validation_available &&
+           tls_status.entropy_available &&
+           tls_status.trusted_time_available &&
+           tls_status.state == TLS_STATE_READY;
 }
 
 int tls_validate_state(void) {
@@ -190,7 +244,7 @@ int tls_validate_state(void) {
         !tls_policy.trust_current_version ||
         tls_policy.trust_next_version < tls_policy.trust_current_version ||
         tls_policy.trust_revocation_version > tls_policy.trust_next_version ||
-        tls_status.handshake_available || tls_status.x509_available ||
+        (!tls_status.handshake_available && tls_status.x509_available) ||
         !tls_status.static_ca_required ||
         !tls_status.spki_pinning_optional ||
         !tls_status.http_fallback_forbidden) {
@@ -198,18 +252,29 @@ int tls_validate_state(void) {
         return ERR_STATE;
     }
     if (tls_status.state != TLS_STATE_POLICY_ONLY &&
-        tls_status.state != TLS_STATE_UNAVAILABLE) {
+        tls_status.state != TLS_STATE_UNAVAILABLE &&
+        tls_status.state != TLS_STATE_READY) {
         LOG_ERROR("TLS", "Estado TLS desconhecido");
-        return ERR_STATE;
-    }
-    if (tls_status.trusted_time_available &&
-        tls_status.state != TLS_STATE_POLICY_ONLY) {
-        LOG_ERROR("TLS", "Estado TLS nao reflete tempo confiavel");
         return ERR_STATE;
     }
     if (!tls_status.trusted_time_available &&
         tls_status.state != TLS_STATE_UNAVAILABLE) {
         LOG_ERROR("TLS", "TLS aceitou tempo UTC indisponivel");
+        return ERR_STATE;
+    }
+    if (tls_status.state == TLS_STATE_READY) {
+        if (!tls_status.handshake_available || !tls_status.x509_available ||
+            !tls_status.certificate_validation_available ||
+            !tls_status.entropy_available ||
+            rng_validate_state() != OK ||
+            tls_client_validate_state() != OK) {
+            LOG_ERROR("TLS", "TLS pronto sem capacidades obrigatorias");
+            return ERR_STATE;
+        }
+    }
+    if (tls_status.state == TLS_STATE_POLICY_ONLY &&
+        (tls_status.handshake_available || tls_status.x509_available)) {
+        LOG_ERROR("TLS", "Politica TLS publicou capacidades indevidas");
         return ERR_STATE;
     }
     return OK;
@@ -218,6 +283,7 @@ int tls_validate_state(void) {
 const char* tls_state_name(tls_state_t state) {
     if (state == TLS_STATE_POLICY_ONLY) return "POLICY_ONLY";
     if (state == TLS_STATE_UNAVAILABLE) return "UNAVAILABLE";
+    if (state == TLS_STATE_READY) return "READY";
     return "UNINITIALIZED";
 }
 
@@ -234,6 +300,8 @@ const char* tls_reason_name(tls_reason_t reason) {
         case TLS_REASON_PIN_MISMATCH: return "PIN_MISMATCH";
         case TLS_REASON_POLICY: return "POLICY";
         case TLS_REASON_UNSUPPORTED: return "UNSUPPORTED";
+        case TLS_REASON_ENTROPY_UNAVAILABLE: return "ENTROPY_UNAVAILABLE";
+        case TLS_REASON_HANDSHAKE: return "HANDSHAKE";
         default: return "UNKNOWN";
     }
 }

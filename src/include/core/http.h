@@ -2,6 +2,7 @@
 #define HTTP_H
 
 #include "types.h"
+#include "core/tls.h"
 
 #define HTTP_URL_MAX_LENGTH 511U
 #define HTTP_URL_BUFFER_SIZE (HTTP_URL_MAX_LENGTH + 1U)
@@ -9,9 +10,13 @@
 #define HTTP_HOST_BUFFER_SIZE (HTTP_HOST_MAX_LENGTH + 1U)
 #define HTTP_PATH_MAX_LENGTH 255U
 #define HTTP_PATH_BUFFER_SIZE (HTTP_PATH_MAX_LENGTH + 1U)
+#define HTTP_HEADER_VALUE_MAX_LENGTH 511U
+#define HTTP_HEADER_VALUE_BUFFER_SIZE (HTTP_HEADER_VALUE_MAX_LENGTH + 1U)
 #define HTTP_HEADER_CAPACITY 4096U
 #define HTTP_BODY_CAPACITY 16384U
 #define HTTP_DEFAULT_PORT 80U
+#define HTTPS_DEFAULT_PORT 443U
+#define HTTP_MAX_REDIRECTS 3U
 #define HTTP_STATUS_MINIMUM 200U
 #define HTTP_STATUS_MAXIMUM 599U
 
@@ -23,8 +28,17 @@ typedef enum {
     HTTP_STATE_RECEIVING_HEADERS,
     HTTP_STATE_RECEIVING_BODY,
     HTTP_STATE_COMPLETE,
-    HTTP_STATE_FAILED
+    HTTP_STATE_FAILED,
+    HTTP_STATE_TLS_HANDSHAKING
 } http_state_t;
+
+typedef struct {
+    const char* accept;
+    const char* api_version;
+    uint8_t require_https;
+    uint8_t follow_redirects;
+    uint8_t max_redirects;
+} http_request_options_t;
 
 typedef int (*http_body_sink_t)(const uint8_t* data, uint32_t size,
                                 void* context);
@@ -55,12 +69,25 @@ typedef struct {
     uint32_t maintenance_cycles;
     uint32_t event_generation;
     int last_error;
+    uint8_t secure;
+    uint8_t tls_verified;
+    uint8_t follow_redirects;
+    uint8_t redirect_rejected;
+    uint8_t redirect_count;
+    uint8_t max_redirects;
+    tls_reason_t tls_reason;
+    uint16_t tls_error;
 } http_status_t;
 
 int http_init(void);
 int http_get_start(const char* url);
 int http_get_stream_start(const char* url, uint32_t body_limit,
                           http_body_sink_t sink, void* context);
+int http_get_start_ex(const char* url,
+                      const http_request_options_t* options);
+int http_get_stream_start_ex(const char* url, uint32_t body_limit,
+                             http_body_sink_t sink, void* context,
+                             const http_request_options_t* options);
 int http_maintain(void);
 int http_reset(void);
 int http_get_status(http_status_t* out_status);

@@ -25,6 +25,14 @@ http://10.0.2.2:8000/zephyros/stable.zum
 http://10.0.2.2:8000/zephyros/{tag}.json
 ```
 
+Desde a EP6.2, `config/update-remote.json` usa o formato
+`zephyros-update-remote-v2`. Alem do canal U5 HTTP, ele versiona a origem
+GitHub HTTPS, proprietario, repositorio, template
+`/repos/{owner}/{repo}/releases/tags/{tag}`, versao da API e os nomes exatos
+de `release.json`, `release.zum` e `update.zephyrosupd`. O header derivado
+contendo essas macros deve permanecer byte a byte sincronizado; o kernel nao
+aceita token, conta ou credencial GitHub.
+
 Um override existe somente para uma consulta ou download explicitamente
 solicitado por `update fetch --url`.
 
@@ -73,7 +81,7 @@ O pacote permanece obrigatoriamente no mesmo esquema, host e porta do
 manifesto. O servico monta a URL usando somente a origem do manifesto e o
 caminho relativo autenticado.
 
-Manifesto e pacote exigem:
+O canal U5 legado (`update fetch` e o servidor de fixtures) exige:
 
 - HTTP simples e status `200`;
 - `Content-Length` presente e exato;
@@ -81,8 +89,10 @@ Manifesto e pacote exigem:
 - `Connection: close`;
 - ausencia de `Transfer-Encoding`, chunked e compressao.
 
-HTTPS, redirects, URL absoluta interna, POST e troca de origem nao fazem parte
-do contrato. Timeout ou falha transitoria permitem uma unica repeticao
+HTTPS e redirects nao fazem parte do contrato legado U5. O fluxo GitHub da
+EP6.2 usa a camada HTTPS descrita adiante e nao altera o comportamento desse
+canal. URL absoluta interna, POST e troca de origem continuam proibidos.
+Timeout ou falha transitoria permitem uma unica repeticao
 integral do pacote desde o byte zero. Cancelamento, HTTP estruturalmente
 invalido, assinatura, hash, tamanho e pacote incompativel nao geram retry.
 
@@ -194,6 +204,9 @@ Os motivos publicos preservam estes valores:
 | 19 | `RELEASE_TAG` |
 | 20 | `RELEASE_ASSET` |
 | 21 | `RELEASE_CHANGED` |
+| 22 | `TLS` |
+| 23 | `REDIRECT` |
+| 24 | `RELEASE_API` |
 
 As operacoes confirmadas aceitam callback cooperativo. Durante o download,
 somente Esc ou F12 e interpretado como cancelamento.
@@ -292,7 +305,7 @@ URLs, asset, tamanho e hashes, alem do hash do manifesto ZUM1 em
 
 ## EP6.1 - Fundacao de tempo confiavel e contrato TLS
 
-A EP6.1 prepara a identidade do canal sem habilitar HTTPS. O RTC/CMOS e
+A EP6.1 preparou a identidade do canal que a EP6.2 usa. O RTC/CMOS e
 interpretado como UTC, lido somente quando duas amostras estaveis convergem e
 validado contra calendario, ano bissexto e a janela 2000-2099. O UTC aceito e
 ancorado no contador monotono do PIT; o rollover do tick de 32 bits e exposto
@@ -307,17 +320,63 @@ identidade valida, tempo indisponivel, certificado futuro/expirado, cadeia nao
 confiavel, SAN divergente e pin SPKI ausente/correto/divergente.
 
 A politica TLS exige cadeia X.509 confiavel por uma CA estatica, SAN
-correspondente ao host e janela de validade baseada em UTC confiavel. Pinning
-SPKI e somente reforco opcional da CA. A politica reserva versoes de confianca
-atual/proxima e revogacao por uma nova versao assinada; pin ou tag nunca
-substituem ZUM1/ZUPD. O parser X.509, armazenamento efetivo de CAs, handshake,
-criptografia de sessao e verificacao HTTPS ficam para etapa posterior.
+correspondente ao host e janela de validade baseada em UTC confiavel. A EP6.2
+implementa essa politica com BearSSL 0.6 vendorizado, TLS 1.2 apenas, suites
+ECDHE com AES-GCM, SNI, verificacao SAN e `br_x509_minimal` com trust anchor
+estatico. A entropia externa vem exclusivamente de RDRAND validado por CPUID;
+o tempo UTC vem de `clock` e e injetado no validador X.509. Sem qualquer uma
+dessas capacidades, o canal falha fechado e nao converte HTTPS para HTTP.
 
-O estado publicado nesta etapa e `POLICY_ONLY` quando o tempo e confiavel e
-`UNAVAILABLE` quando ele nao e. `handshake_available` e
-`x509_available` permanecem desabilitados, `tls_capability_available()` retorna
-falso e nao existe conversao silenciosa de `https://` para `http://`.
-A recusa do esquema ocorre antes de resolver DNS ou abrir um socket.
+Os trust anchors atualmente fixados sao o Sectigo Public Server Authentication
+CA DV E36, usado pela cadeia do endpoint GitHub, e o Let's Encrypt YR1, usado
+pelas rotas de assets GitHub observadas no momento da implementacao. A
+rotacao de CAs continua sendo uma mudanca versionada do adaptador TLS; pinning
+SPKI e reforco opcional e nunca substitui ZUM1/ZUPD.
+
+`tls status|check` continua exercitando a politica e agora informa
+`READY`, handshake, X.509, entropia e disponibilidade efetiva de HTTPS.
+
+## EP6.2 - Canal GitHub configuravel
+
+EP6.2 conecta o fluxo de Release por tag ao endpoint oficial do GitHub sem
+credenciais no kernel. A requisicao usa `Accept: application/vnd.github+json`,
+`X-GitHub-Api-Version` versionado e o template configurado. O parser JSON e
+limitado por tamanho, profundidade e buffers estaticos; ele exige `tag_name`
+igual a `--tag`, `published_at`, `draft=false`, `prerelease=false` e exatamente
+os tres assets configurados. Cada asset valida nome, tamanho, estado
+`uploaded`, URL HTTPS para o endpoint GitHub ou seus hosts de objetos e,
+quando presente, `digest` no formato `sha256:<64 hex>`.
+
+O fingerprint do preflight cobre tag, id, nome, publicação e os metadados
+selecionados dos três assets. O `--confirm` repete a consulta e recusa
+qualquer divergência antes de iniciar o download. A API GitHub somente
+descobre a Release: `release.json` continua sendo baixado e validado pelo
+parser EP6.0, e os hashes, versão, epoch, compatibilidade e assinatura vêm
+dos artefatos ZUM1/ZUPD. O manifesto assinado deve apontar, em seu caminho
+relativo, para o asset `update.zephyrosupd` publicado sob a mesma origem do
+`release.zum`; isso mantém o ZUM1 como autoridade da URL de pacote usada pelo
+cache U5.
+
+O HTTP agora aceita `https://`, SNI, headers configuráveis e redirects
+absolutos HTTPS limitados a três saltos. Redirect HTTP, downgrade, Location
+ausente, host/porta inválidos, falha TLS ou resposta GitHub malformada recebem
+motivos públicos próprios (`TLS`, `REDIRECT`, `RELEASE_API`). O download
+continua streaming, usa o cache A/B U5, preserva cancelamento e rollback e
+nunca chama `update apply`.
+
+Para gerar fixtures públicas, sem copiar chaves privadas:
+
+```text
+python tools/updater.py fixtures-github --private <chave-fora-do-repo> --public config/update-release-public.json --tag ep62-fixture --output-dir <diretorio-vazio>
+python tools/updater.py serve-github --root <diretorio-vazio> --cert <cert-fora-do-repo> --key <chave-tls-fora-do-repo> --tag ep62-fixture --public-host 10.0.2.2 --port 8443
+```
+
+As variantes `missing-asset`, `tag-divergent`, `invalid-json`, `bad-digest`,
+`draft` e `prerelease` exercitam o parser da API. O certificado da fixture
+deve ser emitido para o host configurado e encadear ao trust anchor usado no
+build de teste; para testar redirects, use como base da API o mesmo host com
+`/fixtures/redirect-http` ou `/fixtures/redirect-https`. Certificado e chave
+privada permanecem fora do repositório.
 
 ## Limites de seguranca
 
@@ -326,12 +385,12 @@ HTTP simples nao protege confidencialidade, disponibilidade, metadados ou
 observacao do trafego. Sem Secure Boot e armazenamento protegido, adulteracao
 offline do sistema ou rollback integral do disco permanecem fora do modelo.
 
-Nao existe handshake TLS, parser X.509, API real do GitHub, atualizacao
-silenciosa, consulta remota no boot, telemetria, instalacao direta pelo
-download ou varios candidatos em um mesmo manifesto. O contrato policy-only da
-EP6.1 existe, mas TLS funcional e GitHub real permanecem fora do dispositivo.
-O DHCP automatico pertence ao Network Manager, usa somente RAM e nunca dispara
-HTTP ou habilita a distribuicao remota.
+Nao existe atualizacao silenciosa, consulta remota no boot, telemetria,
+instalacao direta pelo download ou varios candidatos em um mesmo manifesto.
+EP6.2 ainda nao implementa o pacote runtime completo, download seletivo por
+arquivo ou nova versao de ZUPD; esses itens pertencem a EP6.3. O DHCP
+automatico pertence ao Network Manager, usa somente RAM e nunca dispara HTTP
+ou habilita a distribuicao remota.
 
 ## Referencias
 
@@ -339,3 +398,5 @@ HTTP ou habilita a distribuicao remota.
 - [System Updater](system-updater.md)
 - [Ferramenta host](ferramenta-zupd.md)
 - [Comandos do Shell](../09-shell/comandos.md)
+- [BearSSL 0.6](https://bearssl.org/)
+- [GitHub Releases API](https://docs.github.com/en/rest/releases/releases?apiVersion=latest)

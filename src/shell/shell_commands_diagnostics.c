@@ -623,11 +623,23 @@ static void cmd_health_print_clock_tls(void) {
         return;
     }
     video_print(tls_state_name(tls_status.state),
-                tls_status.state == TLS_STATE_POLICY_ONLY ? 0x0A : 0x0E);
+                tls_status.state == TLS_STATE_READY ? 0x0A : 0x0E);
     video_print(" tempo=", 0x07);
     video_print(tls_status.trusted_time_available ? "TRUSTED" : "UNAVAILABLE",
                 tls_status.trusted_time_available ? 0x0A : 0x0E);
-    video_print(" handshake=DISABLED HTTPS=UNAVAILABLE\n", 0x07);
+    video_print(" handshake=", 0x07);
+    video_print(tls_status.handshake_available ? "READY" : "UNAVAILABLE",
+                tls_status.handshake_available ? 0x0A : 0x0E);
+    video_print(" x509=", 0x07);
+    video_print(tls_status.certificate_validation_available ? "READY" :
+                "UNAVAILABLE",
+                tls_status.certificate_validation_available ? 0x0A : 0x0E);
+    video_print(" entropy=", 0x07);
+    video_print(tls_status.entropy_available ? "RDRAND" : "UNAVAILABLE",
+                tls_status.entropy_available ? 0x0A : 0x0E);
+    video_print(" HTTPS=", 0x07);
+    video_print(tls_capability_available() ? "READY\n" : "UNAVAILABLE\n",
+                tls_capability_available() ? 0x0A : 0x0E);
 }
 
 uint8_t shell_diagnostics_health_state_color(recovery_state_t state) {
@@ -1433,13 +1445,20 @@ static void cmd_tls_status(void) {
     }
     video_print("TLS: estado=", 0x0B);
     video_print(tls_state_name(status.state),
-                status.state == TLS_STATE_POLICY_ONLY ? 0x0A : 0x0E);
+                status.state == TLS_STATE_READY ? 0x0A : 0x0E);
     video_print(" tempo=", 0x07);
     video_print(status.trusted_time_available ? "TRUSTED" : "UNAVAILABLE",
                 status.trusted_time_available ? 0x0A : 0x0E);
     video_print(" capability=", 0x07);
     video_print(tls_capability_available() ? "HTTPS_READY" :
                 "HTTPS_UNAVAILABLE", tls_capability_available() ? 0x0A : 0x0E);
+    video_print(" entropy=", 0x07);
+    video_print(status.entropy_available ? "RDRAND" : "UNAVAILABLE",
+                status.entropy_available ? 0x0A : 0x0E);
+    video_print(" x509=", 0x07);
+    video_print(status.certificate_validation_available ? "READY" :
+                "UNAVAILABLE",
+                status.certificate_validation_available ? 0x0A : 0x0E);
     video_print("\n  min_version=0x", 0x07);
     shell_command_print_hex(policy.minimum_version, 4U);
     video_print(" CA=", 0x07);

@@ -46,12 +46,12 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `log level` | `console|buffer <error|warn|info|debug>` | Altera os níveis independentes, mantendo o buffer tão detalhado quanto o console. |
 | `timer` | `[status|list|check]` | Inspeciona ocupação, prazos e contadores ou executa o autoteste privado. |
 | `clock` | `[status|check]` | Inspeciona RTC/UTC ancorado no PIT e executa conversoes, calendario, rollover e invariantes. |
-| `tls` | `[status|check]` | Inspeciona a politica TLS policy-only e testa tempo, CA, SAN, validade e pin SPKI. |
+| `tls` | `[status|check]` | Inspeciona TLS 1.2/BearSSL, RDRAND, CA, SAN, validade e pin SPKI. |
 | `wait` | `[status|list|check]` | Inspeciona canais de espera e executa o autoteste de esperas. |
 | `job` | `status` | Inspeciona o estado do executor cooperativo de jobs do Shell. |
 | `update remote` | `status/enable/disable/clear [--confirm]` | Controla o transporte remoto opcional da sessao. |
 | `update fetch` | `[--url <manifesto>] [--confirm]` | Consulta ou baixa um ZUPD autenticado sem aplicar. |
-| `update github` | `check|fetch --tag <tag> [--confirm]` | Seleciona uma Release EP6.0 por tag exata, sem instalar. |
+| `update github` | `check|fetch --tag <tag> [--confirm]` | Consulta Releases GitHub por HTTPS e tag exata, sem instalar. |
 | `kmetrics` | `[reset]` | Mostra ou inicia a janela manual de métricas K1. |
 | `devices` | `[-v]` | Lista o inventario nativo de hardware; `-v` inclui localizacao, IRQ e IDs PCI. |
 | `device-info` | `<id>` | Mostra os detalhes de um dispositivo listado por `devices`. |

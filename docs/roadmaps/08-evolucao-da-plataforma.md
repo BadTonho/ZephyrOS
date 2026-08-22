@@ -507,11 +507,42 @@ EP6.1 concluida em: 2026-08-22 08:55 (America/Sao_Paulo).
 
 ### EP6.2 - Canal GitHub configuravel
 
-- [ ] Integrar a API real de Releases do GitHub como origem configuravel e
-  implementar a descoberta pelo valor exato de `--tag`, sem credenciais ou
-  conta GitHub no kernel.
-- [ ] Limitar URL, redirecionamentos, tamanho de resposta, retries, memoria e
-  tempo de operacao; nenhum token ou conta GitHub e necessario.
+- [x] Integrar BearSSL 0.6 vendorizado, com licença e versão fixadas, perfil
+  freestanding, trust anchor estático, TLS 1.2, SNI/SAN, validade temporal via
+  `clock`, RDRAND/CPUID e falha fechada sem segurança suficiente; `boot.asm`
+  permaneceu intocado.
+- [x] Estender HTTP para `https://`, `Accept`, `X-GitHub-Api-Version`, redirects
+  absolutos HTTPS limitados a três saltos, bloqueio de downgrade e status
+  público de TLS/segurança/redirects.
+- [x] Versionar `config/update-remote.json` e o header derivado com endpoint,
+  proprietário, repositório, template por `{owner}`, `{repo}` e `{tag}`, versão
+  da API e nomes de `release.json`, `release.zum` e `update.zephyrosupd`.
+- [x] Implementar parser JSON limitado da resposta de Releases: tag exata,
+  publicação, ausência de draft/prerelease, assets únicos, estado, tamanho,
+  URL HTTPS e digest SHA-256 opcional; registrar fingerprint dos metadados no
+  preflight e exigir igualdade na confirmação.
+- [x] Buscar `release.json` descoberto pela API e reutilizar o parser EP6.0;
+  hashes, versão, epoch, compatibilidade, ZUM1 e ZUPD continuam sendo a
+  autoridade assinada. O download publica somente no cache U5; `update apply`
+  permanece separado.
+- [x] Preservar `update_remote_release_check()`/`fetch()`, cache A/B,
+  cancelamento, retry integral, rollback e nomes de motivos existentes; anexar
+  `TLS`, `REDIRECT` e `RELEASE_API` ao fim dos enums públicos.
+- [x] Atualizar `tools/updater.py`, fixtures HTTPS GitHub, contratos públicos,
+  documentação de distribuição e diagnósticos `tls`/`health`/`update github`.
+
+Transporte BearSSL/HTTP concluído em: 2026-08-22 11:40 (America/Sao_Paulo).
+Configuração, parser GitHub e preflight concluídos em: 2026-08-22 11:40
+(America/Sao_Paulo).
+Fixtures, contratos e documentação concluídos em: 2026-08-22 11:40
+(America/Sao_Paulo).
+Implementação da EP6.2 concluída em: 2026-08-22 11:40 (America/Sao_Paulo).
+Correção dos inicializadores do contrato remoto concluída em: 2026-08-22 11:47
+(America/Sao_Paulo).
+Auditoria de versionamento, `.gitignore` e arquivos alterados/novos concluída
+em: 2026-08-22 11:52 (America/Sao_Paulo).
+Validação host, gate `make q3check`, build completo e matriz QEMU permanecem
+pendentes do usuário; registrar cada horário real nesta seção após a execução.
 
 ### EP6.3 - Falhas, cache e regressao
 
@@ -529,10 +560,10 @@ EP6.1 concluida em: 2026-08-22 08:55 (America/Sao_Paulo).
   silenciosamente o ZUPD v1, incluindo criacao/remocao controlada de arquivos,
   staging atomico, rollback e politica de dados persistentes.
 
-EP6.0 pode ser exercitada com o servidor de fixtures U5 antes de habilitar
-GitHub real. EP6.2 so inicia depois de TLS, relogio confiavel e validacao de
-certificados definidos; enquanto isso, conexao direta a `github.com` permanece
-fora do kernel e o transporte remoto HTTP atual continua opcional.
+EP6.0 continua exercitável com o servidor de fixtures U5. EP6.2 usa o canal
+HTTPS BearSSL configurado para a API GitHub e mantém o transporte HTTP U5 para
+compatibilidade; a publicação de artefatos continua dependendo de ZUM1/ZUPD
+assinados e nenhuma consulta ocorre no boot.
 
 ### Criterio de saida
 

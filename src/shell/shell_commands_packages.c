@@ -674,6 +674,10 @@ static void cmd_update_print_release_result(
         cmd_update_print_hash(result->release.package_hash);
         video_print("\n  Manifesto SHA-256: ", 0x08);
         cmd_update_print_hash(result->release.manifest_hash);
+        if (result->release.api_metadata_present) {
+            video_print("\n  API metadata SHA-256: ", 0x08);
+            cmd_update_print_hash(result->release.api_metadata_hash);
+        }
         video_print("\n", 0x07);
     }
     cmd_update_print_remote_candidate(&result->candidate);
@@ -858,13 +862,19 @@ static void cmd_update_github(const char* operation, const char* tag,
     video_print("Tag solicitada: ", 0x07);
     video_print(tag, 0x0A);
     video_print("\n", 0x07);
-    video_print("Resultado EP6.0: ", 0x07);
+    video_print("Resultado EP6.2: ", 0x07);
     video_print(update_remote_reason_name(result->reason),
                 operation_result == OK ? 0x0A : 0x0C);
     video_print(" http=", 0x08);
     shell_command_print_num(result->http_status);
     video_print(" bytes=", 0x08);
     shell_command_print_num(result->bytes_received);
+    video_print(" tls=", 0x08);
+    video_print(result->secure && result->tls_verified ? "VERIFIED" :
+                "UNAVAILABLE",
+                result->secure && result->tls_verified ? 0x0A : 0x0E);
+    video_print(" redirects=", 0x08);
+    shell_command_print_num(result->redirect_count);
     video_print("\n", 0x07);
     cmd_update_print_release_result(result);
     if (operation_result != OK) {
@@ -875,7 +885,7 @@ static void cmd_update_github(const char* operation, const char* tag,
         return;
     }
     if (!confirmed) {
-        video_print("Preflight EP6.0 aprovado. Nenhuma gravacao realizada.\n",
+        video_print("Preflight EP6.2 aprovado. Nenhuma gravacao realizada.\n",
                     0x0A);
         if (kstrcmp(operation, "check") == 0) return;
         video_print("Para confirmar: update github fetch --tag ", 0x0E);

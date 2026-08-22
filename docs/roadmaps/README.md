@@ -101,8 +101,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   USB HID Boot para teclado e mouse; a validacao manual foi concluida.
   A EP5 foi implementada e validada no host com Releases, trava de versao
   assinada e tag auxiliar opcional. A EP6.0 foi implementada sobre fixtures
-  HTTP, com selecao explicita por tag e cache U5, validada no QEMU; EP6.1-EP6.3
-  cobrem TLS, GitHub e a matriz ampliada de falhas. A EP9
+  HTTP, com selecao explicita por tag e cache U5, validada no QEMU; EP6.1 foi
+  concluida e EP6.2 implementa BearSSL, HTTPS GitHub e preflight por tag; EP6.3
+  cobre a matriz ampliada de falhas. A EP9
   registra a futura imagem de sistema,
   slots A/B e recuperacao de boot, ainda sem autorizacao para alterar boot ou
   stage2.

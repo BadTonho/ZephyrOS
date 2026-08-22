@@ -644,7 +644,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     video_print("[..] Registrando politica TLS...\n", 0x08);
     int tls_result = tls_init();
     if (tls_result == OK) {
-        video_print("[OK] Politica TLS registrada; HTTPS ainda desabilitado\n",
+        video_print("[OK] BearSSL TLS 1.2/X.509 pronto para HTTPS\n",
                     0x07);
     } else {
         LOG_ERROR_CODE("KERNEL", tls_result,

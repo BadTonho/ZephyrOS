@@ -1,0 +1,7 @@
+#ifndef ZEPHYROS_BEARSSL_LIMITS_H
+#define ZEPHYROS_BEARSSL_LIMITS_H
+
+#define CHAR_BIT 8
+#define ULONG_MAX 0xFFFFFFFFUL
+
+#endif

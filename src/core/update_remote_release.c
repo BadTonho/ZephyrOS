@@ -5,6 +5,7 @@
 #include "core/log.h"
 #include "core/string.h"
 #include "core/update_remote_config.h"
+#include "core/update_remote_github.h"
 #include "process/process.h"
 
 #define UPDATE_RELEASE_FORMAT "zephyros-release-v1"
@@ -58,6 +59,7 @@ typedef struct {
     char package_name[UPDATE_REMOTE_PATH_SIZE];
     char manifest_name[UPDATE_REMOTE_PATH_SIZE];
     char hash_text[UPDATE_RELEASE_HASH_TEXT_SIZE];
+    update_remote_github_release_t github;
 } update_release_workspace_t;
 
 static update_release_selection_t update_release_selection;
@@ -731,6 +733,31 @@ static int update_release_build_manifest_url(const char* descriptor_url,
     return OK;
 }
 
+static int update_release_http_options(
+    const update_remote_options_t* options, http_request_options_t* output) {
+    if (!output) return ERR_NULL;
+    kmemset(output, 0, sizeof(*output));
+    if (!options) return OK;
+    output->accept = options->http_accept;
+    output->api_version = options->http_api_version;
+    output->require_https = options->http_require_https;
+    output->follow_redirects = options->http_follow_redirects;
+    output->max_redirects = options->http_max_redirects;
+    return OK;
+}
+
+static void update_release_prepare_options(
+    const update_remote_options_t* input, update_remote_options_t* output) {
+    if (!output) return;
+    kmemset(output, 0, sizeof(*output));
+    if (input) *output = *input;
+    if (UPDATE_REMOTE_GITHUB_API_URL[0]) {
+        output->http_require_https = 1U;
+        output->http_follow_redirects = 1U;
+        output->http_max_redirects = HTTP_MAX_REDIRECTS;
+    }
+}
+
 static int update_release_wait_http(const update_remote_options_t* options,
                                     http_status_t* status_out,
                                     uint8_t* cancelled_out) {
@@ -759,6 +786,7 @@ static int update_release_wait_http(const update_remote_options_t* options,
 
 static int update_release_fetch_descriptor(
     const char* descriptor_url, const update_remote_options_t* options,
+    const http_request_options_t* http_options,
     update_remote_result_t* result_out, const uint8_t** body_out,
     uint32_t* length_out, update_remote_reason_t* reason_out) {
     http_status_t* status = &update_release_workspace.http_status;
@@ -771,20 +799,30 @@ static int update_release_fetch_descriptor(
     *length_out = 0U;
     kmemset(status, 0, sizeof(*status));
     *reason_out = UPDATE_REMOTE_REASON_HTTP;
-    result = http_get_start(descriptor_url);
+    result = http_get_start_ex(descriptor_url, http_options);
     if (result == OK) result = update_release_wait_http(
         options, status, &cancelled);
     if (result != OK) {
         *reason_out = cancelled ? UPDATE_REMOTE_REASON_CANCELLED :
                      result == ERR_TIMEOUT ? UPDATE_REMOTE_REASON_TIMEOUT :
-                     UPDATE_REMOTE_REASON_HTTP;
+                     status->redirect_rejected ? UPDATE_REMOTE_REASON_REDIRECT :
+                     status->secure && (!status->tls_verified ||
+                         status->tls_reason != TLS_REASON_NONE) ?
+                         UPDATE_REMOTE_REASON_TLS : UPDATE_REMOTE_REASON_HTTP;
         return result;
     }
     result_out->http_status = status->status_code;
     result_out->bytes_received = status->body_length;
+    result_out->secure = status->secure;
+    result_out->tls_verified = status->tls_verified;
+    result_out->redirect_count = status->redirect_count;
+    result_out->tls_reason = status->tls_reason;
+    result_out->tls_error = status->tls_error;
     if (status->status_code != UPDATE_RELEASE_HTTP_OK) {
         *reason_out = status->status_code == UPDATE_RELEASE_HTTP_NOT_FOUND ?
                       UPDATE_REMOTE_REASON_RELEASE_NOT_FOUND :
+                      UPDATE_REMOTE_GITHUB_API_URL[0] ?
+                      UPDATE_REMOTE_REASON_RELEASE_API :
                       UPDATE_REMOTE_REASON_HTTP;
         return status->status_code == UPDATE_RELEASE_HTTP_NOT_FOUND ?
                ERR_NOT_FOUND : ERR_INVALID;
@@ -807,19 +845,53 @@ static int update_release_resolve_descriptor(
     const uint8_t* body = 0;
     uint32_t body_length = 0U;
     update_remote_reason_t reason;
+    http_request_options_t http_options;
+    update_remote_github_release_t* github = &update_release_workspace.github;
+    char expected_manifest_url[UPDATE_REMOTE_URL_SIZE];
+    char expected_package_url[UPDATE_REMOTE_URL_SIZE];
     int result;
 
-    result = update_release_build_descriptor_url(tag, descriptor_url);
-    if (result != OK) {
-        return update_release_reject(
-            UPDATE_REMOTE_REASON_RELEASE_FORMAT, result,
-            "Template de Release invalido", result_out);
+    kmemset(github, 0, sizeof(*github));
+    if (UPDATE_REMOTE_GITHUB_API_URL[0]) {
+        result = update_release_http_options(options, &http_options);
+        if (result == OK) result = update_remote_github_query(
+            tag, options, github, result_out);
+        if (result != OK) return result;
+        if (update_release_copy_text(descriptor_url,
+                                     UPDATE_REMOTE_URL_SIZE,
+                                     github->descriptor.url) != OK) {
+            return update_release_reject(
+                UPDATE_REMOTE_REASON_RELEASE_API, ERR_OVERFLOW,
+                "URL do descritor GitHub excede o limite", result_out);
+        }
+    } else {
+        result = update_release_http_options(options, &http_options);
+        if (result == OK) result = update_release_build_descriptor_url(
+            tag, descriptor_url);
+        if (result != OK) {
+            return update_release_reject(
+                UPDATE_REMOTE_REASON_RELEASE_FORMAT, result,
+                "Template de Release invalido", result_out);
+        }
     }
     result = update_release_fetch_descriptor(
-        descriptor_url, options, result_out, &body, &body_length, &reason);
+        descriptor_url, options, &http_options, result_out,
+        &body, &body_length, &reason);
     if (result != OK) {
         return update_release_reject(
             reason, result, "Falha ao obter descritor de Release", result_out);
+    }
+    if (UPDATE_REMOTE_GITHUB_API_URL[0] &&
+        (!github->descriptor.size ||
+         body_length != github->descriptor.size ||
+         (github->descriptor.digest_present &&
+          (crypto_sha256(body, body_length, update_release_workspace.descriptor_hash) != OK ||
+            !crypto_equal(update_release_workspace.descriptor_hash,
+                         github->descriptor.digest,
+                         CRYPTO_SHA256_SIZE)))) {
+        return update_release_reject(
+            UPDATE_REMOTE_REASON_RELEASE_API, ERR_INVALID,
+            "Digest ou tamanho do release.json diverge da API GitHub", result_out);
     }
     result = update_release_parse_descriptor(
         body, body_length, tag, descriptor_url, descriptor_out,
@@ -827,6 +899,36 @@ static int update_release_resolve_descriptor(
     if (result != OK) {
         return update_release_reject(
             reason, result, "Descritor de Release recusado", result_out);
+    }
+    if (UPDATE_REMOTE_GITHUB_API_URL[0]) {
+        if (kstrcmp(descriptor_out->release.package_name,
+                    UPDATE_REMOTE_GITHUB_PACKAGE_NAME) != 0 ||
+            update_release_build_manifest_url(
+                descriptor_url, UPDATE_REMOTE_GITHUB_MANIFEST_NAME,
+                expected_manifest_url) != OK ||
+            kstrcmp(descriptor_out->release.manifest_url,
+                    github->manifest.url) != 0 ||
+            kstrcmp(expected_manifest_url,
+                    github->manifest.url) != 0 ||
+            update_release_build_manifest_url(
+                github->manifest.url,
+                UPDATE_REMOTE_GITHUB_PACKAGE_NAME, expected_package_url) != OK ||
+            kstrcmp(expected_package_url,
+                    github->package.url) != 0 ||
+            descriptor_out->release.package_size !=
+                github->package.size ||
+            (github->package.digest_present &&
+             !crypto_equal(descriptor_out->release.package_hash,
+                           github->package.digest,
+                           CRYPTO_SHA256_SIZE))) {
+            return update_release_reject(
+                UPDATE_REMOTE_REASON_RELEASE_API, ERR_INVALID,
+                "Assets GitHub divergem do descritor assinado", result_out);
+        }
+        descriptor_out->release.api_metadata_present = 1U;
+        kmemcpy(descriptor_out->release.api_metadata_hash,
+                github->metadata_hash,
+                CRYPTO_SHA256_SIZE);
     }
     return OK;
 }
@@ -875,7 +977,8 @@ static int update_release_candidate_matches(
 int update_remote_release_check(const char* tag,
                                 const update_remote_options_t* options,
                                 update_remote_result_t* result_out) {
-    update_remote_options_t defaults = {1U, 0, 0};
+    update_remote_options_t defaults = {1U, 0, 0, 0, 0, 0, 0, 0};
+    update_remote_options_t effective;
     int result;
 
     if (!result_out) {
@@ -885,6 +988,7 @@ int update_remote_release_check(const char* tag,
     kmemset(result_out, 0, sizeof(*result_out));
     update_release_selection.valid = 0U;
     if (!options) options = &defaults;
+    update_release_prepare_options(options, &effective);
     result = update_release_validate_tag(tag);
     if (result != OK) {
         return update_release_reject(
@@ -894,13 +998,22 @@ int update_remote_release_check(const char* tag,
     result = update_release_channel_ready(result_out);
     if (result != OK) return result;
     result = update_release_resolve_descriptor(
-        tag, options, result_out, &update_release_workspace.descriptor,
+        tag, &effective, result_out, &update_release_workspace.descriptor,
         update_release_workspace.descriptor_hash);
     if (result != OK) return result;
     result = update_remote_check(
         update_release_workspace.descriptor.release.manifest_url,
-        options, result_out);
+        &effective, result_out);
     if (result != OK) return result;
+    if (UPDATE_REMOTE_GITHUB_API_URL[0] &&
+        update_release_workspace.github.manifest.digest_present &&
+        !crypto_equal(result_out->manifest_hash,
+                      update_release_workspace.github.manifest.digest,
+                      CRYPTO_SHA256_SIZE)) {
+        return update_release_reject(
+            UPDATE_REMOTE_REASON_RELEASE_API, ERR_INVALID,
+            "Digest do release.zum diverge da API GitHub", result_out);
+    }
     if (!update_release_candidate_matches(
             &update_release_workspace.descriptor, result_out)) {
         return update_release_reject(
@@ -919,7 +1032,8 @@ int update_remote_release_check(const char* tag,
 int update_remote_release_fetch(const char* tag,
                                 const update_remote_options_t* options,
                                 update_remote_result_t* result_out) {
-    update_remote_options_t defaults = {0U, 0, 0};
+    update_remote_options_t defaults = {0U, 0, 0, 0, 0, 0, 0, 0};
+    update_remote_options_t effective;
     int result;
 
     if (!result_out) {
@@ -928,8 +1042,9 @@ int update_remote_release_fetch(const char* tag,
     }
     kmemset(result_out, 0, sizeof(*result_out));
     if (!options) options = &defaults;
-    if (options->dry_run) return update_remote_release_check(
-        tag, options, result_out);
+    update_release_prepare_options(options, &effective);
+    if (effective.dry_run) return update_remote_release_check(
+        tag, &effective, result_out);
     result = update_release_validate_tag(tag);
     if (result != OK) {
         return update_release_reject(
@@ -945,20 +1060,25 @@ int update_remote_release_fetch(const char* tag,
     result = update_release_channel_ready(result_out);
     if (result != OK) return result;
     result = update_release_resolve_descriptor(
-        tag, options, result_out, &update_release_workspace.descriptor,
+        tag, &effective, result_out, &update_release_workspace.descriptor,
         update_release_workspace.descriptor_hash);
     if (result != OK) return result;
     if (!crypto_equal(update_release_workspace.descriptor_hash,
                       update_release_selection.descriptor_hash,
                       CRYPTO_SHA256_SIZE) ||
         kstrcmp(update_release_workspace.descriptor.release.manifest_url,
-                update_release_selection.release.manifest_url) != 0) {
+                update_release_selection.release.manifest_url) != 0 ||
+        update_release_workspace.descriptor.release.api_metadata_present !=
+            update_release_selection.release.api_metadata_present ||
+        !crypto_equal(update_release_workspace.descriptor.release.api_metadata_hash,
+                      update_release_selection.release.api_metadata_hash,
+                      CRYPTO_SHA256_SIZE)) {
         return update_release_reject(
             UPDATE_REMOTE_REASON_RELEASE_CHANGED, ERR_STATE,
             "Descritor de Release mudou apos a consulta", result_out);
     }
     result = update_remote_fetch(
-        update_release_selection.release.manifest_url, options, result_out);
+        update_release_selection.release.manifest_url, &effective, result_out);
     result_out->release = update_release_selection.release;
     if (result != OK) return result;
     LOG_INFO("UPDATE", "Release por tag publicada no cache U5");

@@ -6,10 +6,16 @@
 #include "core/net_socket.h"
 #include "core/string.h"
 #include "core/timer.h"
+#include "core/tls.h"
+#include "core/tls_client.h"
 
 #define HTTP_SCHEME "http://"
 #define HTTP_SCHEME_LENGTH 7U
-#define HTTP_REQUEST_CAPACITY 1024U
+#define HTTPS_SCHEME "https://"
+#define HTTPS_SCHEME_LENGTH 8U
+#define HTTP_REDIRECT_URL_MAX_LENGTH 2047U
+#define HTTP_REDIRECT_PATH_BUFFER_SIZE (HTTP_REDIRECT_URL_MAX_LENGTH + 1U)
+#define HTTP_REQUEST_CAPACITY 4096U
 #define HTTP_READ_CHUNK 512U
 #define HTTP_TIMEOUT_SECONDS 45U
 #define HTTP_MAX_SAFE_TICKS 0x7FFFFFFFU
@@ -21,6 +27,8 @@ typedef struct {
     uint8_t has_content_length;
     uint8_t eof_framed;
     uint8_t no_body;
+    uint8_t has_location;
+    char location[HTTP_REDIRECT_PATH_BUFFER_SIZE];
 } http_header_result_t;
 
 static http_status_t http_status;
@@ -31,6 +39,11 @@ static uint8_t http_request_buffer[HTTP_REQUEST_CAPACITY];
 static uint8_t http_read_buffer[HTTP_READ_CHUNK];
 static char http_parse_host_buffer[HTTP_HOST_BUFFER_SIZE];
 static char http_parse_path_buffer[HTTP_PATH_BUFFER_SIZE];
+static char http_redirect_path_buffer[HTTP_REDIRECT_PATH_BUFFER_SIZE];
+static char http_request_path[HTTP_REDIRECT_PATH_BUFFER_SIZE];
+static http_header_result_t http_header_result;
+static char http_accept_buffer[HTTP_HEADER_VALUE_BUFFER_SIZE];
+static char http_api_version_buffer[64];
 static uint16_t http_request_length;
 static uint16_t http_request_offset;
 static uint32_t http_started_tick;
@@ -38,6 +51,9 @@ static http_body_sink_t http_body_sink;
 static void* http_body_sink_context;
 static uint32_t http_body_limit;
 static uint8_t http_streaming;
+static uint8_t http_require_https;
+static uint8_t http_follow_redirects;
+static uint8_t http_max_redirects;
 
 static void http_complete(void);
 
@@ -73,6 +89,16 @@ static int http_copy_text(char* destination, uint32_t capacity,
         destination[index] = source[index];
     }
     destination[length] = '\0';
+    return OK;
+}
+
+static int http_validate_header_value(const char* value) {
+    if (!value) return ERR_NULL;
+    for (uint32_t index = 0U; value[index]; index++) {
+        uint8_t raw = (uint8_t)value[index];
+
+        if (raw < 0x21U || raw > 0x7EU) return ERR_INVALID;
+    }
     return OK;
 }
 
@@ -171,9 +197,10 @@ static int http_validate_host(char* host) {
            OK : ERR_INVALID;
 }
 
-static int http_parse_url(const char* url, char* host, char* path,
-                          uint16_t* out_port, uint32_t* out_ip,
-                          uint8_t* out_numeric) {
+static int http_parse_url_ex(const char* url, char* host, char* path,
+                             uint16_t* out_port, uint32_t* out_ip,
+                             uint8_t* out_numeric, uint8_t* out_secure,
+                             uint32_t url_limit, uint32_t path_capacity) {
     const char* authority;
     const char* cursor;
     const char* colon = NULL;
@@ -182,13 +209,20 @@ static int http_parse_url(const char* url, char* host, char* path,
     uint32_t path_length;
 
     if (!url || !host || !path || !out_port ||
-        !out_ip || !out_numeric) {
+        !out_ip || !out_numeric || !out_secure) {
         LOG_ERROR("NET", "Argumento nulo ao interpretar URL");
         return ERR_NULL;
     }
-    if (kstrlen(url) > HTTP_URL_MAX_LENGTH ||
-        !http_text_prefix_equal(url, HTTP_SCHEME)) return ERR_INVALID;
-    authority = url + HTTP_SCHEME_LENGTH;
+    if (kstrlen(url) > url_limit || path_capacity < 2U) return ERR_INVALID;
+    if (http_text_prefix_equal(url, HTTPS_SCHEME)) {
+        *out_secure = 1U;
+        authority = url + HTTPS_SCHEME_LENGTH;
+    } else if (http_text_prefix_equal(url, HTTP_SCHEME)) {
+        *out_secure = 0U;
+        authority = url + HTTP_SCHEME_LENGTH;
+    } else {
+        return ERR_INVALID;
+    }
     cursor = authority;
     while (*cursor && *cursor != '/') {
         if (*cursor == ':' && !colon) colon = cursor;
@@ -205,19 +239,19 @@ static int http_parse_url(const char* url, char* host, char* path,
         http_copy_text(host, HTTP_HOST_BUFFER_SIZE,
                        authority, host_length) != OK ||
         http_validate_host(host) != OK) return ERR_INVALID;
-    *out_port = HTTP_DEFAULT_PORT;
+    *out_port = *out_secure ? HTTPS_DEFAULT_PORT : HTTP_DEFAULT_PORT;
     if (colon && http_parse_port(
             colon + 1, (uint32_t)(cursor - colon - 1),
             out_port) != OK) return ERR_INVALID;
     path_length = *cursor ? kstrlen(cursor) : 1U;
-    if (path_length > HTTP_PATH_MAX_LENGTH) return ERR_OVERFLOW;
+    if (path_length + 1U > path_capacity) return ERR_OVERFLOW;
     if (*cursor) {
         for (uint32_t index = 0; index < path_length; index++) {
             if ((uint8_t)cursor[index] <= 0x20U ||
                 (uint8_t)cursor[index] > 0x7EU ||
                 cursor[index] == '#') return ERR_INVALID;
         }
-        if (http_copy_text(path, HTTP_PATH_BUFFER_SIZE,
+        if (http_copy_text(path, path_capacity,
                            cursor, path_length) != OK) return ERR_OVERFLOW;
     } else {
         path[0] = '/';
@@ -229,6 +263,14 @@ static int http_parse_url(const char* url, char* host, char* path,
         return ERR_INVALID;
     }
     return OK;
+}
+
+static int http_parse_url(const char* url, char* host, char* path,
+                          uint16_t* out_port, uint32_t* out_ip,
+                          uint8_t* out_numeric, uint8_t* out_secure) {
+    return http_parse_url_ex(url, host, path, out_port, out_ip,
+                             out_numeric, out_secure,
+                             HTTP_URL_MAX_LENGTH, HTTP_PATH_BUFFER_SIZE);
 }
 
 static int http_append_bytes(const char* text, uint16_t length) {
@@ -274,17 +316,26 @@ static int http_build_request(void) {
     http_request_length = 0;
     http_request_offset = 0;
     result = http_append_text("GET ");
-    if (result == OK) result = http_append_text(http_status.path);
+    if (result == OK) result = http_append_text(http_request_path);
     if (result == OK) result = http_append_text(" HTTP/1.1\r\nHost: ");
     if (result == OK) result = http_append_text(http_status.host);
-    if (result == OK && http_status.port != HTTP_DEFAULT_PORT) {
+    if (result == OK &&
+        ((!http_status.secure && http_status.port != HTTP_DEFAULT_PORT) ||
+         (http_status.secure && http_status.port != HTTPS_DEFAULT_PORT))) {
         result = http_append_text(":");
         if (result == OK) result = http_append_port(http_status.port);
     }
     if (result == OK) {
+        result = http_append_text("\r\nUser-Agent: ZephyrOS/0.1\r\nAccept: ");
+    }
+    if (result == OK) result = http_append_text(http_accept_buffer);
+    if (result == OK && http_api_version_buffer[0]) {
+        result = http_append_text("\r\nX-GitHub-Api-Version: ");
+        if (result == OK) result = http_append_text(http_api_version_buffer);
+    }
+    if (result == OK) {
         result = http_append_text(
-            "\r\nUser-Agent: ZephyrOS/0.1\r\n"
-            "Accept: */*\r\nAccept-Encoding: identity\r\n"
+            "\r\nAccept-Encoding: identity\r\n"
             "Connection: close\r\n\r\n");
     }
     if (result != OK) {
@@ -397,6 +448,8 @@ static int http_parse_header_line(const uint8_t* data,
                                   http_header_result_t* result) {
     uint32_t colon = 0;
     uint32_t value;
+    uint32_t value_start;
+    uint32_t value_length;
 
     if (!data || !result) {
         LOG_ERROR("NET", "Linha de header HTTP nula");
@@ -413,6 +466,28 @@ static int http_parse_header_line(const uint8_t* data,
     if (http_range_equal(data, colon, "Transfer-Encoding") ||
         http_range_equal(data, colon, "Content-Encoding")) {
         return ERR_UNAVAILABLE;
+    }
+    if (http_range_equal(data, colon, "Location")) {
+        if (result->has_location) return ERR_INVALID;
+        value_start = colon + 1U;
+        while (value_start < length &&
+               (data[value_start] == ' ' || data[value_start] == '\t')) {
+            value_start++;
+        }
+        value_length = length - value_start;
+        while (value_length &&
+               (data[value_start + value_length - 1U] == ' ' ||
+                data[value_start + value_length - 1U] == '\t')) {
+            value_length--;
+        }
+        if (!value_length || value_length > HTTP_REDIRECT_URL_MAX_LENGTH ||
+            http_copy_text(result->location, sizeof(result->location),
+                           (const char*)data + value_start,
+                           value_length) != OK) {
+            return ERR_INVALID;
+        }
+        result->has_location = 1U;
+        return OK;
     }
     if (!http_range_equal(data, colon, "Content-Length")) return OK;
     if (http_parse_decimal(data + colon + 1U,
@@ -477,9 +552,12 @@ static uint8_t http_socket_exists(void) {
 }
 
 static void http_release_socket(void) {
+    tls_client_status_t tls;
+
     if (http_socket && http_socket_exists()) {
         net_socket_abort(http_socket);
     }
+    if (tls_client_get_status(&tls) == OK && tls.active) tls_client_close();
     http_socket = 0;
 }
 
@@ -498,6 +576,14 @@ static void http_clear_session(http_state_t state) {
     http_status.has_content_length = 0;
     http_status.eof_framed = 0;
     http_status.streaming = 0;
+    http_status.secure = 0;
+    http_status.tls_verified = 0;
+    http_status.follow_redirects = http_follow_redirects;
+    http_status.redirect_rejected = 0;
+    http_status.redirect_count = 0;
+    http_status.max_redirects = http_max_redirects;
+    http_status.tls_reason = TLS_REASON_NONE;
+    http_status.tls_error = 0;
     http_status.last_error = OK;
     http_request_length = 0;
     http_request_offset = 0;
@@ -506,6 +592,7 @@ static void http_clear_session(http_state_t state) {
     http_body_sink_context = 0;
     http_body_limit = 0;
     http_streaming = 0;
+    http_request_path[0] = '\0';
     kmemset(http_header_buffer, 0, sizeof(http_header_buffer));
     kmemset(http_body_buffer, 0, sizeof(http_body_buffer));
 }
@@ -524,9 +611,15 @@ static void http_cancel_resolution(void) {
 }
 
 static void http_fail(int error) {
+    tls_client_status_t tls;
+
     if (error == ERR_TIMEOUT) http_status.timeouts++;
     else if (error == ERR_OVERFLOW) http_status.overflows++;
     else http_status.parse_errors++;
+    if (http_status.secure && tls_client_get_status(&tls) == OK) {
+        http_status.tls_reason = tls.reason;
+        http_status.tls_error = tls.bearssl_error;
+    }
     http_cancel_resolution();
     http_release_socket();
     http_status.state = HTTP_STATE_FAILED;
@@ -562,10 +655,83 @@ static uint8_t http_headers_complete(void) {
            http_header_buffer[length - 1U] == '\n';
 }
 
+static uint8_t http_is_redirect_status(uint16_t status_code) {
+    return (uint8_t)(status_code == 301U || status_code == 302U ||
+                     status_code == 303U || status_code == 307U ||
+                     status_code == 308U);
+}
+
+static int http_follow_redirect(const char* location) {
+    uint32_t address = 0;
+    uint16_t port = 0;
+    uint8_t numeric = 0;
+    uint8_t secure = 0;
+    uint8_t next_redirect;
+    uint8_t was_streaming = http_streaming;
+    http_body_sink_t sink = http_body_sink;
+    void* sink_context = http_body_sink_context;
+    uint32_t body_limit = http_body_limit;
+    int result;
+
+    if (!location) return ERR_NULL;
+    if (http_status.redirect_count >= http_max_redirects) {
+        http_status.redirect_rejected = 1U;
+        LOG_WARN("NET", "Limite de redirects HTTPS excedido");
+        return ERR_OVERFLOW;
+    }
+    result = http_parse_url_ex(
+        location, http_parse_host_buffer, http_redirect_path_buffer,
+        &port, &address, &numeric, &secure, HTTP_REDIRECT_URL_MAX_LENGTH,
+        sizeof(http_redirect_path_buffer));
+    if (result != OK || !secure) {
+        http_status.redirect_rejected = 1U;
+        LOG_ERROR("NET", "Redirect HTTP nao e um destino HTTPS absoluto");
+        return ERR_INVALID;
+    }
+    next_redirect = (uint8_t)(http_status.redirect_count + 1U);
+    http_release_socket();
+    http_clear_session(HTTP_STATE_RESOLVING);
+    http_body_sink = sink;
+    http_body_sink_context = sink_context;
+    http_body_limit = body_limit;
+    http_streaming = was_streaming;
+    http_status.body_limit = body_limit;
+    http_status.streaming = was_streaming;
+    http_status.redirect_count = next_redirect;
+    http_status.follow_redirects = http_follow_redirects;
+    http_status.max_redirects = http_max_redirects;
+    http_status.secure = 1U;
+    http_status.requests_started++;
+    if (http_copy_text(http_status.url, sizeof(http_status.url),
+                       location, kstrlen(location)) != OK) {
+        http_status.url[0] = '\0';
+    }
+    http_copy_text(http_status.host, sizeof(http_status.host),
+                   http_parse_host_buffer, kstrlen(http_parse_host_buffer));
+    if (http_copy_text(http_status.path, sizeof(http_status.path),
+                       http_redirect_path_buffer,
+                       kstrlen(http_redirect_path_buffer)) != OK) {
+        http_status.path[0] = '\0';
+    }
+    if (http_copy_text(http_request_path, sizeof(http_request_path),
+                       http_redirect_path_buffer,
+                       kstrlen(http_redirect_path_buffer)) != OK) {
+        LOG_ERROR("NET", "Caminho de redirect excede o buffer interno");
+        return ERR_OVERFLOW;
+    }
+    http_status.port = port;
+    http_started_tick = timer_get_ticks();
+    if (numeric) return http_start_socket(address);
+    result = dns_resolve(http_parse_host_buffer, &address, &numeric);
+    if (result != OK) return result;
+    if (numeric) return http_start_socket(address);
+    return OK;
+}
+
 static int http_finish_headers(void) {
-    http_header_result_t result;
+    http_header_result_t* result = &http_header_result;
     int parse_result = http_parse_headers(
-        http_header_buffer, http_status.headers_length, &result);
+        http_header_buffer, http_status.headers_length, result);
 
     if (parse_result != OK) {
         if (parse_result == ERR_UNAVAILABLE) {
@@ -575,12 +741,21 @@ static int http_finish_headers(void) {
         }
         return parse_result;
     }
-    http_status.status_code = result.status_code;
-    http_status.content_length = result.content_length;
-    http_status.has_content_length = result.has_content_length;
-    http_status.eof_framed = result.eof_framed;
-    if (result.has_content_length &&
-        result.content_length > http_body_limit) {
+    http_status.status_code = result->status_code;
+    http_status.content_length = result->content_length;
+    http_status.has_content_length = result->has_content_length;
+    http_status.eof_framed = result->eof_framed;
+    if (http_is_redirect_status(result->status_code) &&
+        http_follow_redirects) {
+        if (!result->has_location) {
+            http_status.redirect_rejected = 1U;
+            LOG_ERROR("NET", "Resposta de redirect sem Location");
+            return ERR_INVALID;
+        }
+        return http_follow_redirect(result->location);
+    }
+    if (result->has_content_length &&
+        result->content_length > http_body_limit) {
         LOG_WARN("NET", "Corpo HTTP excede o limite da sessao");
         return ERR_OVERFLOW;
     }
@@ -592,6 +767,7 @@ static void http_complete(void) {
     if (http_socket && http_socket_exists()) {
         net_socket_close(http_socket);
     }
+    tls_client_close();
     http_status.state = HTTP_STATE_COMPLETE;
     http_status.responses_rx++;
     http_status.last_error = OK;
@@ -691,11 +867,49 @@ int http_init(void) {
     return OK;
 }
 
+static int http_prepare_options(const http_request_options_t* options) {
+    const char* accept = options && options->accept ? options->accept : "*/*";
+    const char* api_version = options && options->api_version ?
+                              options->api_version : "";
+    uint8_t max_redirects = options ? options->max_redirects : 0U;
+
+    if (kstrlen(accept) > HTTP_HEADER_VALUE_MAX_LENGTH ||
+        kstrlen(api_version) >= sizeof(http_api_version_buffer)) {
+        LOG_ERROR("NET", "Header HTTP excede limite configuravel");
+        return ERR_OVERFLOW;
+    }
+    if ((accept[0] && http_validate_header_value(accept) != OK) ||
+        (api_version[0] && http_validate_header_value(api_version) != OK)) {
+        LOG_ERROR("NET", "Header HTTP possui caracteres invalidos");
+        return ERR_INVALID;
+    }
+    if (max_redirects > HTTP_MAX_REDIRECTS) {
+        LOG_ERROR("NET", "Quantidade de redirects HTTP excede politica");
+        return ERR_INVALID;
+    }
+    http_require_https = options ? options->require_https : 0U;
+    http_follow_redirects = options ? options->follow_redirects : 0U;
+    http_max_redirects = http_follow_redirects ?
+                         (max_redirects ? max_redirects : HTTP_MAX_REDIRECTS) :
+                         0U;
+    if (http_copy_text(http_accept_buffer, sizeof(http_accept_buffer),
+                       accept, kstrlen(accept)) != OK ||
+        http_copy_text(http_api_version_buffer,
+                       sizeof(http_api_version_buffer), api_version,
+                       kstrlen(api_version)) != OK) {
+        LOG_ERROR("NET", "Falha ao copiar opcoes HTTP");
+        return ERR_OVERFLOW;
+    }
+    return OK;
+}
+
 static int http_get_start_internal(const char* url, uint32_t body_limit,
-                                   http_body_sink_t sink, void* context) {
+                                   http_body_sink_t sink, void* context,
+                                   const http_request_options_t* options) {
     uint32_t address = 0;
     uint16_t port = 0;
     uint8_t numeric = 0;
+    uint8_t secure = 0;
     uint8_t resolved = 0;
     int result;
 
@@ -717,12 +931,18 @@ static int http_get_start_internal(const char* url, uint32_t body_limit,
         LOG_ERROR("NET", "Outra requisicao HTTP esta ativa");
         return ERR_STATE;
     }
+    result = http_prepare_options(options);
+    if (result != OK) return result;
     result = http_parse_url(
         url, http_parse_host_buffer, http_parse_path_buffer, &port,
-        &address, &numeric);
+        &address, &numeric, &secure);
     if (result != OK) {
         LOG_ERROR("NET", "URL HTTP invalida");
         return result;
+    }
+    if (http_require_https && !secure) {
+        LOG_ERROR("NET", "Politica da requisicao exige HTTPS");
+        return ERR_UNAVAILABLE;
     }
     http_release_socket();
     http_clear_session(HTTP_STATE_RESOLVING);
@@ -740,7 +960,17 @@ static int http_get_start_internal(const char* url, uint32_t body_limit,
     http_copy_text(http_status.path, sizeof(http_status.path),
                    http_parse_path_buffer,
                    kstrlen(http_parse_path_buffer));
+    if (http_copy_text(http_request_path, sizeof(http_request_path),
+                       http_parse_path_buffer,
+                       kstrlen(http_parse_path_buffer)) != OK) {
+        LOG_ERROR("NET", "Caminho HTTP excede o buffer de requisicao");
+        http_fail(ERR_OVERFLOW);
+        return ERR_OVERFLOW;
+    }
     http_status.port = port;
+    http_status.secure = secure;
+    http_status.follow_redirects = http_follow_redirects;
+    http_status.max_redirects = http_max_redirects;
     http_status.requests_started++;
     http_started_tick = timer_get_ticks();
     if (numeric) {
@@ -765,7 +995,7 @@ static int http_get_start_internal(const char* url, uint32_t body_limit,
 
 int http_get_start(const char* url) {
     return http_get_start_internal(
-        url, HTTP_BODY_CAPACITY, 0, 0);
+        url, HTTP_BODY_CAPACITY, 0, 0, 0);
 }
 
 int http_get_stream_start(const char* url, uint32_t body_limit,
@@ -774,7 +1004,24 @@ int http_get_stream_start(const char* url, uint32_t body_limit,
         LOG_ERROR("NET", "Consumidor nulo no GET HTTP streaming");
         return ERR_NULL;
     }
-    return http_get_start_internal(url, body_limit, sink, context);
+    return http_get_start_internal(url, body_limit, sink, context, 0);
+}
+
+int http_get_start_ex(const char* url,
+                      const http_request_options_t* options) {
+    return http_get_start_internal(
+        url, HTTP_BODY_CAPACITY, 0, 0, options);
+}
+
+int http_get_stream_start_ex(const char* url, uint32_t body_limit,
+                             http_body_sink_t sink, void* context,
+                             const http_request_options_t* options) {
+    if (!sink) {
+        LOG_ERROR("NET", "Consumidor nulo no GET HTTP streaming");
+        return ERR_NULL;
+    }
+    return http_get_start_internal(
+        url, body_limit, sink, context, options);
 }
 
 static int http_maintain_resolving(void) {
@@ -803,8 +1050,40 @@ static int http_maintain_connecting(void) {
                                          socket.last_error;
     }
     if (socket.state != NET_SOCKET_STATE_CONNECTED) return OK;
+    if (http_status.secure) {
+        result = tls_client_start(http_socket, http_status.host);
+        if (result != OK) return result;
+        http_status.state = HTTP_STATE_TLS_HANDSHAKING;
+        return OK;
+    }
     result = http_build_request();
     if (result != OK) return result;
+    http_status.state = HTTP_STATE_SENDING;
+    return OK;
+}
+
+static int http_maintain_tls(void) {
+    tls_client_status_t tls;
+    int result = tls_client_maintain();
+
+    if (result != OK) {
+        if (tls_client_get_status(&tls) == OK) {
+            http_status.tls_reason = tls.reason;
+            http_status.tls_error = tls.bearssl_error;
+        }
+        return result;
+    }
+    if (tls_client_get_status(&tls) != OK) return ERR_STATE;
+    http_status.tls_reason = tls.reason;
+    http_status.tls_error = tls.bearssl_error;
+    if (!tls.handshake_complete) return OK;
+    http_status.tls_verified =
+        (uint8_t)(tls.x509_verified && tls.hostname_verified);
+    if (!http_status.tls_verified) {
+        LOG_ERROR("NET", "TLS terminou sem validacao X.509 completa");
+        return ERR_UNAVAILABLE;
+    }
+    if (http_build_request() != OK) return ERR_OVERFLOW;
     http_status.state = HTTP_STATE_SENDING;
     return OK;
 }
@@ -818,9 +1097,16 @@ static int http_maintain_sending(void) {
         http_status.state = HTTP_STATE_RECEIVING_HEADERS;
         return OK;
     }
-    result = net_socket_send(
-        http_socket, http_request_buffer + http_request_offset,
-        http_request_length - http_request_offset, &written);
+    if (http_status.secure) {
+        result = tls_client_send(
+            http_request_buffer + http_request_offset,
+            (uint16_t)(http_request_length - http_request_offset),
+            &written);
+    } else {
+        result = net_socket_send(
+            http_socket, http_request_buffer + http_request_offset,
+            http_request_length - http_request_offset, &written);
+    }
     if (result != OK) return result;
     http_request_offset = (uint16_t)(
         http_request_offset + written);
@@ -834,9 +1120,16 @@ static int http_maintain_sending(void) {
 static int http_maintain_receiving(void) {
     uint16_t read = 0;
     uint8_t eof = 0;
-    int result = net_socket_receive(
-        http_socket, http_read_buffer,
-        sizeof(http_read_buffer), &read, &eof);
+    int result;
+
+    if (http_status.secure) {
+        result = tls_client_receive(
+            http_read_buffer, sizeof(http_read_buffer), &read, &eof);
+    } else {
+        result = net_socket_receive(
+            http_socket, http_read_buffer,
+            sizeof(http_read_buffer), &read, &eof);
+    }
 
     if (result != OK) return result;
     http_status.bytes_rx += read;
@@ -891,6 +1184,8 @@ int http_maintain(void) {
         result = http_maintain_resolving();
     } else if (http_status.state == HTTP_STATE_CONNECTING) {
         result = http_maintain_connecting();
+    } else if (http_status.state == HTTP_STATE_TLS_HANDSHAKING) {
+        result = http_maintain_tls();
     } else if (http_status.state == HTTP_STATE_SENDING) {
         result = http_maintain_sending();
     } else {
@@ -948,12 +1243,20 @@ static int http_validate_url_vector(void) {
     uint16_t port;
     uint32_t address;
     uint8_t numeric;
+    uint8_t secure;
 
     if (http_parse_url("http://example.com:8080/a?b=1",
-                       host, path, &port, &address, &numeric) != OK ||
+                       host, path, &port, &address, &numeric, &secure) != OK ||
         kstrcmp(host, "example.com") != 0 ||
-        kstrcmp(path, "/a?b=1") != 0 || port != 8080U || numeric) {
+        kstrcmp(path, "/a?b=1") != 0 || port != 8080U || numeric || secure) {
         LOG_ERROR("NET", "Vetor de URL HTTP falhou");
+        return ERR_STATE;
+    }
+    if (http_parse_url("https://api.github.com/repos/a/b",
+                       host, path, &port, &address, &numeric, &secure) != OK ||
+        kstrcmp(host, "api.github.com") != 0 || port != HTTPS_DEFAULT_PORT ||
+        !secure) {
+        LOG_ERROR("NET", "Vetor de URL HTTPS falhou");
         return ERR_STATE;
     }
     return OK;
@@ -970,7 +1273,7 @@ static int http_validate_header_vectors(void) {
     static const uint8_t conflicting[] =
         "HTTP/1.1 200 OK\r\nContent-Length: 3\r\n"
         "Content-Length: 4\r\n\r\n";
-    http_header_result_t result;
+    static http_header_result_t result;
 
     if (http_parse_headers(valid, sizeof(valid) - 1U, &result) != OK ||
         result.status_code != 200U ||
@@ -997,6 +1300,9 @@ static int http_validate_header_vectors(void) {
 }
 
 int http_validate_state(void) {
+    tls_client_status_t tls;
+    uint8_t tls_status_valid = 0U;
+
     if (http_validate_url_vector() != OK ||
         http_validate_header_vectors() != OK) return ERR_STATE;
     if (!http_status.initialized) {
@@ -1006,14 +1312,19 @@ int http_validate_state(void) {
         }
         return OK;
     }
-    if (http_status.state > HTTP_STATE_FAILED ||
+    if (tls_client_get_status(&tls) == OK) tls_status_valid = 1U;
+    if (http_status.state > HTTP_STATE_TLS_HANDSHAKING ||
         http_status.url[HTTP_URL_MAX_LENGTH] != '\0' ||
         http_status.host[HTTP_HOST_MAX_LENGTH] != '\0' ||
         http_status.path[HTTP_PATH_MAX_LENGTH] != '\0' ||
+        http_request_path[HTTP_REDIRECT_URL_MAX_LENGTH] != '\0' ||
         http_status.headers_length > HTTP_HEADER_CAPACITY ||
         http_status.body_length > http_status.body_limit ||
         http_status.body_limit != http_body_limit ||
         (http_status.streaming != http_streaming) ||
+        (http_status.follow_redirects != http_follow_redirects) ||
+        (http_status.max_redirects != http_max_redirects) ||
+        (http_status.redirect_count > http_status.max_redirects) ||
         (http_streaming && !http_body_sink) ||
         (http_status.has_content_length &&
          (http_status.body_length > http_status.content_length ||
@@ -1022,10 +1333,26 @@ int http_validate_state(void) {
          (http_status.status_code < HTTP_STATUS_MINIMUM ||
           http_status.status_code > HTTP_STATUS_MAXIMUM)) ||
         ((http_status.state == HTTP_STATE_CONNECTING ||
+          http_status.state == HTTP_STATE_TLS_HANDSHAKING ||
           http_status.state == HTTP_STATE_SENDING ||
           http_status.state == HTTP_STATE_RECEIVING_HEADERS ||
           http_status.state == HTTP_STATE_RECEIVING_BODY) &&
-         !http_socket)) {
+         !http_socket) ||
+        (http_status.state == HTTP_STATE_TLS_HANDSHAKING &&
+         !http_status.secure) ||
+        (!http_status.secure && http_status.tls_verified) ||
+        (http_status.secure &&
+         (http_status.state == HTTP_STATE_TLS_HANDSHAKING ||
+          http_status.state == HTTP_STATE_SENDING ||
+          http_status.state == HTTP_STATE_RECEIVING_HEADERS ||
+          http_status.state == HTTP_STATE_RECEIVING_BODY) &&
+         (!tls_status_valid || !tls.active ||
+          (http_status.state == HTTP_STATE_TLS_HANDSHAKING &&
+           tls.state != TLS_CLIENT_STATE_HANDSHAKING) ||
+          (http_status.state != HTTP_STATE_TLS_HANDSHAKING &&
+           (!tls.handshake_complete || !http_status.tls_verified)))) ||
+        (http_status.secure && http_status.state == HTTP_STATE_COMPLETE &&
+         !http_status.tls_verified)) {
         LOG_ERROR("NET", "Estado HTTP inconsistente");
         return ERR_STATE;
     }
@@ -1043,5 +1370,6 @@ const char* http_state_name(http_state_t state) {
     if (state == HTTP_STATE_RECEIVING_BODY) return "RECEIVING_BODY";
     if (state == HTTP_STATE_COMPLETE) return "COMPLETE";
     if (state == HTTP_STATE_FAILED) return "FAILED";
+    if (state == HTTP_STATE_TLS_HANDSHAKING) return "TLS_HANDSHAKING";
     return "DESCONHECIDO";
 }

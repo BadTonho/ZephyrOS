@@ -2,6 +2,7 @@
 #define UPDATE_REMOTE_H
 
 #include "types.h"
+#include "core/tls.h"
 #include "core/update.h"
 
 #define UPDATE_REMOTE_MANIFEST_SIZE 256U
@@ -48,7 +49,10 @@ typedef enum {
     UPDATE_REMOTE_REASON_RELEASE_FORMAT,
     UPDATE_REMOTE_REASON_RELEASE_TAG,
     UPDATE_REMOTE_REASON_RELEASE_ASSET,
-    UPDATE_REMOTE_REASON_RELEASE_CHANGED
+    UPDATE_REMOTE_REASON_RELEASE_CHANGED,
+    UPDATE_REMOTE_REASON_TLS,
+    UPDATE_REMOTE_REASON_REDIRECT,
+    UPDATE_REMOTE_REASON_RELEASE_API
 } update_remote_reason_t;
 
 typedef enum {
@@ -94,6 +98,11 @@ typedef struct {
     uint8_t dry_run;
     update_cancel_check_t cancel_check;
     void* cancel_context;
+    const char* http_accept;
+    const char* http_api_version;
+    uint8_t http_require_https;
+    uint8_t http_follow_redirects;
+    uint8_t http_max_redirects;
 } update_remote_options_t;
 
 typedef struct {
@@ -107,6 +116,8 @@ typedef struct {
     uint32_t package_size;
     uint8_t package_hash[32];
     uint8_t manifest_hash[32];
+    uint8_t api_metadata_present;
+    uint8_t api_metadata_hash[32];
 } update_remote_release_t;
 
 typedef struct {
@@ -121,6 +132,11 @@ typedef struct {
     zupd_reason_t verification_reason;
     uint8_t manifest_hash[32];
     update_remote_release_t release;
+    uint8_t secure;
+    uint8_t tls_verified;
+    uint8_t redirect_count;
+    tls_reason_t tls_reason;
+    uint16_t tls_error;
 } update_remote_result_t;
 
 int update_remote_init(void);
