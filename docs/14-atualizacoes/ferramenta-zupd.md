@@ -4,8 +4,11 @@
 
 `tools/updater.py` gera chaves Ed25519, monta artefatos deterministas, verifica
 ZUPD v1, produz fixtures publicos e sincroniza a raiz publica usada pelo
-kernel. A ferramenta host usa `cryptography==49.0.0`, fixado em
+kernel. A ferramenta host usa `cryptography==50.0.0`, fixado em
 `tools/requirements-updater.txt`.
+
+A atualizacao da dependencia e a restricao explicita do servidor de fixtures
+ao TLS 1.2 foram implementadas em: 2026-08-22 15:03 (America/Sao_Paulo).
 
 O fluxo U2 apenas verifica. A U3 acrescenta geracao do fixture transacional e
 auditoria offline da imagem; a U4 estende essa auditoria ao historico
@@ -232,6 +235,9 @@ HTTPS usando certificado e chave TLS fornecidos externamente:
 ```text
 python tools/updater.py serve-github --root <diretorio-vazio> --cert <cert-fora-do-repo> --key <chave-tls-fora-do-repo> --tag ep62-fixture --public-host 10.0.2.2 --port 8443
 ```
+
+O servidor de fixture aceita somente TLS 1.2, alinhado ao cliente HTTPS do
+kernel; ele nao e um endpoint de producao.
 
 As variantes `missing-asset`, `tag-divergent`, `invalid-json`, `bad-digest`,
 `draft` e `prerelease` sao selecionadas com `--variant`. A fixture deve usar

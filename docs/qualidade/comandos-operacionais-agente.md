@@ -37,6 +37,12 @@ comando documentado enquanto nao estiver explicitamente configurada no
 
 ## Comandos host verificados
 
+Para instalar as dependencias Python fixadas pelo atualizador:
+
+```text
+python -m pip install -r tools/requirements-updater.txt
+```
+
 O autoteste do atualizador pode ser executado pelo usuario com:
 
 ```text

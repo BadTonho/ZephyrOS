@@ -7,6 +7,7 @@
     "http://10.0.2.2:8000/zephyros/stable.zum"
 #define UPDATE_REMOTE_RELEASE_URL_TEMPLATE \
     "http://10.0.2.2:8000/zephyros/{tag}.json"
+
 #define UPDATE_REMOTE_GITHUB_API_URL \
     "https://api.github.com"
 #define UPDATE_REMOTE_GITHUB_OWNER "BadTonho"
