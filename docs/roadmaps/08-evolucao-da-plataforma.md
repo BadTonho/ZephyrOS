@@ -549,6 +549,8 @@ Correção do wrapper freestanding `stddef.h`/`offsetof` do BearSSL concluída e
 2026-08-22 12:04 (America/Sao_Paulo).
 Dependência explícita de `stddef.h` no build BearSSL concluída em: 2026-08-22
 12:05 (America/Sao_Paulo).
+Correção do wrapper freestanding `stdint.h`/`uintptr_t` do BearSSL concluída
+em: 2026-08-22 12:07 (America/Sao_Paulo).
 Validação host, gate `make q3check`, build completo e matriz QEMU permanecem
 pendentes do usuário; registrar cada horário real nesta seção após a execução.
 
