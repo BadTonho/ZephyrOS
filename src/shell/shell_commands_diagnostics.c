@@ -868,7 +868,9 @@ static void cmd_health_print_summary_kernel(void) {
 static void cmd_health_check_print_named_state(
     const char* name, const char* state, uint8_t color,
     const char* detail, int* issue_count) {
-    if (!name || !state || !issue_count) return;
+    if (!name || !state || !issue_count || kstrcmp(state, "READY") == 0) {
+        return;
+    }
 
     video_print("\n  ", SHELL_HEALTH_CHECK_TEXT_COLOR);
     video_print(name, SHELL_HEALTH_CHECK_LABEL_COLOR);
