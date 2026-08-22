@@ -597,6 +597,24 @@ static void http_clear_session(http_state_t state) {
     kmemset(http_body_buffer, 0, sizeof(http_body_buffer));
 }
 
+static int http_reject_unavailable_tls(void) {
+    tls_status_t tls;
+
+    http_status.secure = 1U;
+    http_status.tls_verified = 0U;
+    http_status.tls_reason = TLS_REASON_NONE;
+    http_status.tls_error = 0U;
+    if (tls_get_status(&tls) == OK) {
+        http_status.tls_reason = tls.last_reason;
+        http_status.tls_error = (uint16_t)tls.last_error;
+    } else {
+        LOG_ERROR("NET", "Nao foi possivel consultar estado TLS");
+    }
+    http_status.last_error = ERR_UNAVAILABLE;
+    LOG_ERROR("NET", "HTTPS recusado: capacidade TLS indisponivel");
+    return ERR_UNAVAILABLE;
+}
+
 static void http_cancel_resolution(void) {
     dns_status_t dns;
 
@@ -687,6 +705,9 @@ static int http_follow_redirect(const char* location) {
         http_status.redirect_rejected = 1U;
         LOG_ERROR("NET", "Redirect HTTP nao e um destino HTTPS absoluto");
         return ERR_INVALID;
+    }
+    if (!tls_capability_available()) {
+        return http_reject_unavailable_tls();
     }
     next_redirect = (uint8_t)(http_status.redirect_count + 1U);
     http_release_socket();
@@ -943,6 +964,12 @@ static int http_get_start_internal(const char* url, uint32_t body_limit,
     if (http_require_https && !secure) {
         LOG_ERROR("NET", "Politica da requisicao exige HTTPS");
         return ERR_UNAVAILABLE;
+    }
+    if (secure && !tls_capability_available()) {
+        http_release_socket();
+        http_clear_session(HTTP_STATE_FAILED);
+        http_status.event_generation++;
+        return http_reject_unavailable_tls();
     }
     http_release_socket();
     http_clear_session(HTTP_STATE_RESOLVING);
