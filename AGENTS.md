@@ -141,6 +141,8 @@ deve publicar estado degradado ou indisponível quando aplicável.
 - Regras detalhadas: `docs/regras.md`
 - Roadmap principal: `ROADMAP.md`
 - Índice da docs: `docs/indice.md`
+- Memória operacional geral de comandos e validações: `docs/qualidade/comandos-operacionais-agente.md`
+  (consultar antes de orientar comandos; não armazenar segredos nesse arquivo).
 
 ---
 
