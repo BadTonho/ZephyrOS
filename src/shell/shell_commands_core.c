@@ -309,7 +309,7 @@ static void cmd_help(void) {
     video_print("  index status|rebuild|cancel|check - Controla o indice\n",
                 0x07);
     video_print("  search <termo> - Pesquisa nomes e caminhos globais\n", 0x07);
-    video_print("  health [summary] - Estado completo ou resumo compacto\n",
+    video_print("  health [summary|check] - Estado completo ou erros compactos\n",
                 0x07);
     video_print("  log      - Consulta, configura e testa o log circular\n",
                 0x07);

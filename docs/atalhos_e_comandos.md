@@ -41,7 +41,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `search` | `<termo>` | Pesquisa nomes e caminhos em todos os volumes montados. |
 | `guitest` | `[modern]` | Testa a cena Classic ou a base visual Modern diagnóstica. |
 | `display` | `[pequena/normal/grande]` | Consulta ou aplica escala gráfica Classic em RAM. |
-| `health` | `[summary]` | Mostra o relatorio completo ou um resumo compacto para testes. |
+| `health` | `[summary|check]` | Mostra o relatorio completo, resumo compacto ou apenas estados nao-READY. |
 | `log` | `[status|tail [1-16]|clear|level|check]` | Consulta, limpa e testa o ring de logs. |
 | `log level` | `console|buffer <error|warn|info|debug>` | Altera os níveis independentes, mantendo o buffer tão detalhado quanto o console. |
 | `timer` | `[status|list|check]` | Inspeciona ocupação, prazos e contadores ou executa o autoteste privado. |

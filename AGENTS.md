@@ -37,7 +37,7 @@ comandos, mas não executa build, testes ou QEMU neste projeto.
 
 NÃO edite, otimize, reduza ou modifique `src/boot/boot.asm` sem perguntar ao usuário primeiro. O boot sector tem limites rígidos (512 bytes) e o usuário é responsável por alterações nesse arquivo.
 
-caso for necessario mexer no boot, tem que ser comunicado ao usuario
+caso for necessario mexer no boot, tem que ser comunicado ao usuario, e é de extrema importancia avisar ao usuario que tem que ser mudado o bootloader, nao precisa pular nem ignorar isso
 
 ---
 
