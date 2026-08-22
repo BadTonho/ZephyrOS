@@ -522,6 +522,9 @@ EP6.1 concluida em: 2026-08-22 08:55 (America/Sao_Paulo).
   hashes por arquivo e compatibilidade com as versoes instaladas suportadas,
   para que uma atualizacao direta nao dependa de baixar uma cadeia de deltas.
   Deltas podem ser uma otimizacao futura, mas nao devem ser obrigatorios.
+- [ ] Publicar o manifesto antes dos payloads e permitir assets por arquivo:
+  comparar hashes locais, baixar somente arquivos novos/alterados, reutilizar
+  os demais e manter um pacote completo como fallback de recuperacao.
 - [ ] Definir o novo contrato de pacote (por exemplo, ZUPD v2) sem alterar
   silenciosamente o ZUPD v1, incluindo criacao/remocao controlada de arquivos,
   staging atomico, rollback e politica de dados persistentes.
