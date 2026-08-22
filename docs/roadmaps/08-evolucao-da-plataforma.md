@@ -491,6 +491,7 @@ preservacao do cache e regressao U5/Classic.
   `health`, `regcheck full`, `memcheck` e a regressao EP6.0/U5.
 
 Implementacao concluida em: 2026-08-21 23:40 (America/Sao_Paulo).
+Correcao do link freestanding concluida em: 2026-08-21 23:46 (America/Sao_Paulo).
 Validacao executavel pelo usuario: pendente.
 
 ### EP6.2 - Canal GitHub configuravel

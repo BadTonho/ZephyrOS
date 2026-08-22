@@ -19,6 +19,40 @@ static clock_status_t clock_status;
 static uint32_t clock_last_raw_tick;
 static uint64_t clock_tick_high;
 
+/* O link freestanding nao fornece __udivdi3; a divisao usa palavras de 32 bits. */
+static uint32_t clock_divide_word(uint32_t word, uint32_t divisor,
+                                  uint32_t* remainder) {
+    uint32_t quotient = 0U;
+
+    for (uint32_t bit = 32U; bit > 0U; bit--) {
+        uint32_t carry = *remainder >> 31U;
+        uint32_t shifted = (*remainder << 1U) |
+                           ((word >> (bit - 1U)) & 1U);
+        if (carry || shifted >= divisor) {
+            *remainder = shifted - divisor;
+            quotient |= 1U << (bit - 1U);
+        } else {
+            *remainder = shifted;
+        }
+    }
+    return quotient;
+}
+
+static uint64_t clock_divide_ticks(uint64_t dividend, uint32_t divisor) {
+    uint32_t dividend_high;
+    uint32_t dividend_low;
+    uint32_t quotient_high;
+    uint32_t quotient_low;
+    uint32_t remainder = 0U;
+
+    if (!divisor) return 0U;
+    dividend_high = (uint32_t)(dividend >> 32U);
+    dividend_low = (uint32_t)dividend;
+    quotient_high = clock_divide_word(dividend_high, divisor, &remainder);
+    quotient_low = clock_divide_word(dividend_low, divisor, &remainder);
+    return ((uint64_t)quotient_high << 32U) | quotient_low;
+}
+
 static uint64_t clock_extend_tick(uint32_t raw_tick,
                                   uint32_t* last_raw_tick,
                                   uint64_t* tick_high) {
@@ -150,7 +184,8 @@ int clock_get_utc(uint64_t* out_unix_seconds) {
     }
     if (clock_update_monotonic(&now_ticks) != OK) return ERR_STATE;
     elapsed_ticks = now_ticks - clock_status.anchor_monotonic_ticks;
-    elapsed_seconds = elapsed_ticks / clock_status.frequency;
+    elapsed_seconds = clock_divide_ticks(elapsed_ticks,
+                                         clock_status.frequency);
     *out_unix_seconds = clock_status.anchor_unix_seconds + elapsed_seconds;
     clock_status.reads++;
     return OK;
