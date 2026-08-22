@@ -570,6 +570,10 @@ diagnósticos ativos. A validação executável permanece pendente do usuário.
 Correção do filtro de estados `READY` do `health check` concluída em:
 2026-08-22 12:54 (America/Sao_Paulo); a saída agora omite estados prontos
 também nas subcapacidades do Update.
+Correção da rejeição antecipada de HTTPS sem capacidade TLS concluída em:
+2026-08-22 13:21 (America/Sao_Paulo); o cliente agora falha antes de DNS/socket,
+preservando o cache e evitando entrar no caminho de rede quando `tls status`
+publica `UNAVAILABLE`. Validação QEMU permanece pendente do usuário.
 
 ### Etapa futura — Leitura LBA no `stage2` (fora da EP6.2 e EP6.3)
 
