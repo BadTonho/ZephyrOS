@@ -212,19 +212,6 @@ static void runtime_write_u32(uint8_t* raw, uint32_t value) {
     raw[3] = (uint8_t)(value >> 24U);
 }
 
-static void runtime_copy_text(char* output, uint32_t capacity,
-                              const char* input) {
-    uint32_t index = 0U;
-
-    if (!output || !capacity) return;
-    if (!input) input = "";
-    while (input[index] && index + 1U < capacity) {
-        output[index] = input[index];
-        index++;
-    }
-    output[index] = '\0';
-}
-
 static int runtime_version_compare(const update_version_t* first,
                                    const update_version_t* second) {
     if (first->major != second->major) {
@@ -1122,13 +1109,15 @@ static int runtime_package_entry(const uint8_t* raw,
                              UPDATE_RUNTIME_OPERATION_CREATE |
                              UPDATE_RUNTIME_OPERATION_DELETE) ||
         !entry->operation ||
-        !entry->present && (entry->operation != UPDATE_RUNTIME_OPERATION_DELETE ||
-                            entry->payload_offset || entry->payload_size ||
-                            !crypto_equal(entry->hash, runtime_zero_hash, 32U)) ||
-        entry->present && (!entry->payload_size ||
-                           entry->payload_size > UPDATE_RUNTIME_FILE_MAX_SIZE ||
-                           crypto_equal(entry->hash, runtime_zero_hash, 32U) ||
-                           (entry->operation & UPDATE_RUNTIME_OPERATION_DELETE)) ||
+        (!entry->present &&
+         (entry->operation != UPDATE_RUNTIME_OPERATION_DELETE ||
+          entry->payload_offset || entry->payload_size ||
+          !crypto_equal(entry->hash, runtime_zero_hash, 32U))) ||
+        (entry->present &&
+         (!entry->payload_size ||
+          entry->payload_size > UPDATE_RUNTIME_FILE_MAX_SIZE ||
+          crypto_equal(entry->hash, runtime_zero_hash, 32U) ||
+          (entry->operation & UPDATE_RUNTIME_OPERATION_DELETE))) ||
         raw[74U] || raw[75U] ||
         raw[108U] || raw[109U] || raw[110U] || raw[111U] || raw[112U] ||
         raw[113U] || raw[114U] || raw[115U] || raw[116U] || raw[117U] ||
@@ -1791,6 +1780,14 @@ static int runtime_action_fail(update_runtime_action_result_t* output,
     return error;
 }
 
+static int runtime_verification_fail(update_runtime_verification_t* output,
+                                     update_runtime_reason_t reason, int error,
+                                     const char* message) {
+    if (output) output->reason = reason;
+    if (message) LOG_ERROR("UPDATE", message);
+    return error;
+}
+
 static int runtime_cancelled(const update_runtime_action_options_t* options) {
     return options && options->cancel_check &&
            options->cancel_check(options->cancel_context);
@@ -2111,20 +2108,20 @@ static int runtime_verify_package_file(
     }
     kmemset(result_out, 0, sizeof(*result_out));
     result_out->reason = UPDATE_RUNTIME_REASON_FORMAT;
-    if (!runtime_initialized || !path) return runtime_action_fail(
+    if (!runtime_initialized || !path) return runtime_verification_fail(
         result_out, UPDATE_RUNTIME_REASON_STATE, ERR_STATE,
         "Runtime v2 nao esta inicializado");
     result = runtime_parse_package_header(path, &package, &file_size);
-    if (result != OK) return runtime_action_fail(
+    if (result != OK) return runtime_verification_fail(
         result_out, UPDATE_RUNTIME_REASON_FORMAT, result,
         "Cabecalho ZUPD v2 invalido");
     result_out->package_size = file_size;
     result = runtime_package_signature(path, &package);
-    if (result != OK) return runtime_action_fail(
+    if (result != OK) return runtime_verification_fail(
         result_out, UPDATE_RUNTIME_REASON_SIGNATURE, result,
         "Assinatura ZUPD v2 invalida");
     result = runtime_verify_package_payloads(path, &package);
-    if (result != OK) return runtime_action_fail(
+    if (result != OK) return runtime_verification_fail(
         result_out, UPDATE_RUNTIME_REASON_HASH, result,
         "Hash de payload ZUPD v2 invalido");
     if (manifest) {
@@ -2132,13 +2129,13 @@ static int runtime_verify_package_file(
         if (result != OK || !crypto_equal(package_hash, manifest->package_hash,
                                           sizeof(package_hash)) ||
             file_size != manifest->package_size) {
-            return runtime_action_fail(
+            return runtime_verification_fail(
                 result_out, UPDATE_RUNTIME_REASON_PACKAGE_MISMATCH, ERR_INVALID,
                 "Hash do pacote diverge do manifesto runtime");
         }
     }
     result = runtime_package_plan(&package, manifest, plan, &plan_count);
-    if (result != OK) return runtime_action_fail(
+    if (result != OK) return runtime_verification_fail(
         result_out, result == ERR_INVALID ? UPDATE_RUNTIME_REASON_PATH_POLICY :
         UPDATE_RUNTIME_REASON_VERSION, result,
         "ZUPD v2 nao e aplicavel a este runtime");
@@ -2319,6 +2316,7 @@ int update_runtime_apply_cached(
     const update_runtime_action_options_t* options,
     update_runtime_action_result_t* result_out) {
     update_runtime_cache_t cache;
+    update_runtime_verification_t verification;
     runtime_plan_entry_t plan[UPDATE_RUNTIME_MAX_ENTRIES];
     uint16_t count;
     update_runtime_action_options_t defaults = {0U, 0, 0};
@@ -2342,9 +2340,10 @@ int update_runtime_apply_cached(
         uint32_t file_size;
 
         result = update_runtime_verify_file_for_manifest(
-            cache.package_alias, &cache.manifest,
-            result_out);
-        if (result != OK) return result;
+            cache.package_alias, &cache.manifest, &verification);
+        if (result != OK) return runtime_action_fail(
+            result_out, verification.reason, result,
+            "Pacote completo runtime nao passou na verificacao");
         result = runtime_parse_package_header(cache.package_alias, &package,
                                               &file_size);
         if (result != OK) return runtime_action_fail(
@@ -2583,6 +2582,7 @@ const char* update_runtime_reason_name(update_runtime_reason_t reason) {
         case UPDATE_RUNTIME_REASON_CANCELLED: return "CANCELLED";
         case UPDATE_RUNTIME_REASON_CACHE: return "CACHE";
         case UPDATE_RUNTIME_REASON_PACKAGE_MISMATCH: return "PACKAGE_MISMATCH";
+        case UPDATE_RUNTIME_REASON_VERSION: return "VERSION";
         default: return "INVALID_REASON";
     }
 }

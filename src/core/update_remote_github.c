@@ -61,17 +61,6 @@ static void update_github_skip_space(update_github_json_t* json) {
     }
 }
 
-static int update_github_copy_text(char* output, uint32_t capacity,
-                                   const char* input) {
-    uint32_t length;
-
-    if (!output || !capacity || !input) return ERR_NULL;
-    length = kstrlen(input);
-    if (length + 1U > capacity) return ERR_OVERFLOW;
-    kmemcpy(output, input, length + 1U);
-    return OK;
-}
-
 static int update_github_validate_tag(const char* tag) {
     uint32_t length;
 
