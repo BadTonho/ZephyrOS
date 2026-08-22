@@ -507,13 +507,16 @@ EP6.1 concluida em: 2026-08-22 08:55 (America/Sao_Paulo).
 
 ### EP6.2 - Canal GitHub configuravel
 
-**Estado:** concluida em: 2026-08-22 14:27 (America/Sao_Paulo).
+**Estado:** implementacao concluida; validacao local pendente. A fase foi
+reaberta para validacao local em: 2026-08-22 14:48 (America/Sao_Paulo).
 
 A validacao QEMU disponivel confirmou a correcao da tela preta no caminho
 HTTPS, o retorno ao prompt, a preservacao do cache e os diagnosticos da
 sessao. A cobertura do caminho feliz contra uma Release publicada ou fixture
-HTTPS depende de artefatos externos nao disponiveis nesta etapa; fica como
-cobertura futura e nao bloqueia a conclusao da EP6.2.
+HTTPS local ainda precisa ser executada com os artefatos de teste mantidos
+fora do repositorio. O procedimento operacional está em
+`docs/14-atualizacoes/distribuicao-remota.md`; os comandos gerais ficam em
+`docs/qualidade/comandos-operacionais-agente.md`.
 
 - [x] Integrar BearSSL 0.6 vendorizado, com licença e versão fixadas, perfil
   freestanding, trust anchor estático, TLS 1.2, SNI/SAN, validade temporal via
@@ -586,9 +589,9 @@ Diagnóstico da tela preta no `update github check` concluído em: 2026-08-22
 13:49 (America/Sao_Paulo); a análise estática aponta esgotamento da stack de
 4 KiB no caminho HTTPS/BearSSL, sem evidência de aplicação de update. Correção
 da stack dedicada do System e dos buffers temporários implementada em: 2026-08-22
-14:04 (America/Sao_Paulo). A EP6.2 foi encerrada conforme o escopo disponível;
-artefatos externos para o caminho feliz permanecem como cobertura futura e não
-bloqueiam esta fase.
+14:04 (America/Sao_Paulo). A EP6.2 foi reaberta para validacao local em:
+2026-08-22 14:48 (America/Sao_Paulo). A conclusao da fase permanece pendente
+ate a matriz local prevista nos procedimentos de distribuicao remota.
 
 ### Evolução futura — Gerenciamento de stack para rede e TLS
 
