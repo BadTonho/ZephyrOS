@@ -553,6 +553,9 @@ Correção do wrapper freestanding `stdint.h`/`uintptr_t` do BearSSL concluída
 em: 2026-08-22 12:07 (America/Sao_Paulo).
 Correção da condição de digest da EP6.2 e do fallback de `reason` concluída em:
 2026-08-22 12:10 (America/Sao_Paulo).
+Diagnóstico host da falha QEMU concluído em: 2026-08-22 12:21
+(America/Sao_Paulo); payload concatenado e imagem FAT12 íntegros, com a falha
+restrita à leitura CHS do `stage2` ainda pendente de confirmação no QEMU.
 Validação host, gate `make q3check`, build completo e matriz QEMU permanecem
 pendentes do usuário; registrar cada horário real nesta seção após a execução.
 
