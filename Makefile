@@ -477,7 +477,7 @@ $(TLS_OBJ): $(TLS_C) src/include/core/tls.h src/include/core/clock.h src/include
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(TLS_CLIENT_OBJ): $(TLS_CLIENT_C) src/include/core/tls_client.h src/include/core/tls.h src/include/core/clock.h src/include/core/net_socket.h src/include/core/string.h src/include/drivers/rng.h vendor/bearssl/inc/bearssl.h vendor/bearssl/inc/string.h
+$(TLS_CLIENT_OBJ): $(TLS_CLIENT_C) src/include/core/tls_client.h src/include/core/tls.h src/include/core/clock.h src/include/core/net_socket.h src/include/core/string.h src/include/drivers/rng.h vendor/bearssl/inc/bearssl.h vendor/bearssl/inc/string.h vendor/bearssl/inc/stddef.h
 	@if not exist build mkdir build
 	$(GCC) $(BEARSSL_CFLAGS) -c $< -o $@
 
@@ -485,7 +485,7 @@ $(BEARSSL_COMPAT_OBJ): $(BEARSSL_COMPAT_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(BEARSSL_OBJ): build/bearssl/%.o: vendor/bearssl/src/%.c vendor/bearssl/inc/string.h
+$(BEARSSL_OBJ): build/bearssl/%.o: vendor/bearssl/src/%.c vendor/bearssl/inc/string.h vendor/bearssl/inc/stddef.h
 	@if not exist build mkdir build
 	@if not exist "$(@D)" mkdir "$(@D)"
 	$(GCC) $(BEARSSL_CFLAGS) -c $< -o $@
