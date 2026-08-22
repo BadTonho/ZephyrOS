@@ -579,6 +579,24 @@ Diagnóstico da tela preta no `update github check` concluído em: 2026-08-22
 4 KiB no caminho HTTPS/BearSSL, sem evidência de aplicação de update. Correção
 de buffers/stack e validação QEMU permanecem pendentes.
 
+### Evolução futura — Gerenciamento de stack para rede e TLS
+
+- [ ] Medir o maior consumo real de stack do kernel usando canários e métricas
+  de high-water mark, incluindo a validação criptográfica do BearSSL.
+- [ ] Permitir tamanhos de stack configuráveis por processo, evitando aumentar
+  globalmente a memória reservada para processos que não precisam de TLS.
+- [ ] Reservar uma stack maior para o worker de rede/TLS e manter o Shell fora
+  das frames criptográficas de maior consumo.
+- [ ] Definir limites, falha controlada e diagnóstico para overflow de stack,
+  sem permitir que uma consulta de atualização derrube a interface ou o kernel.
+- [ ] Validar o custo de memória, a concorrência entre Shell e System e as
+  regressões de Simple/Classic antes de adotar um novo tamanho padrão.
+
+Registro da evolução futura concluído em: 2026-08-22 13:54
+(America/Sao_Paulo). Esta evolução não substitui a correção imediata da EP6.2:
+o caminho HTTPS atual ainda precisa retirar buffers temporários da stack e
+retornar erros de TLS/HTTP sem causar tela preta.
+
 ### Etapa futura — Leitura LBA no `stage2` (fora da EP6.2 e EP6.3)
 
 - [ ] Fazer o `stage2` preferir as extensões BIOS `INT 13h/AH=42` para carregar
