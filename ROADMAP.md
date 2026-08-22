@@ -14,7 +14,7 @@ Sistema e ecossistema:       [████████████████�
 Evolução da plataforma:      [████████████████████████████------------------] EP1-EP6.1 validadas; EP6.2-EP6.3 e EP9 futuras
 ```
 
-**Documentação de atualização sincronizada em:** 2026-08-22 09:08
+**Documentação de atualização sincronizada em:** 2026-08-22 09:14
 (America/Sao_Paulo).
 
 ---
@@ -728,8 +728,8 @@ Evolução da plataforma:      [████████████████
   validacao anterior da EP6.0. A tag continua sendo apenas descoberta e
   ZUPD/ZUM1 continuam sendo a autoridade de versao e integridade.
 - [ ] EP6.2-EP6.3 planejadas: canal GitHub configuravel, matriz ampliada de
-  falhas e pacote runtime completo por Release, sem cadeia obrigatoria de
-  deltas.
+  falhas, pacote runtime completo por Release e download seletivo por
+  manifesto, sem cadeia obrigatoria de deltas.
 - [ ] EP9 planejada: pacote `ZSYS` separado do runtime, staging em slots A/B,
   ativacao somente no reboot e rollback de boot. Nenhuma alteracao em boot ou
   stage2 e autorizada antes da etapa dedicada.
@@ -753,7 +753,7 @@ kernel, interface e novos serviços:
 | 5 | [`docs/roadmaps/05-sistema-e-ecossistema.md`](docs/roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e ecossistema. |
 | 6 | [`docs/roadmaps/06-app-store.md`](docs/roadmaps/06-app-store.md) | Catalogo local, ciclo de vida, App Store Modern e distribuicao futura. |
 | 7 | [`docs/roadmaps/07-modernizacao-visual.md`](docs/roadmaps/07-modernizacao-visual.md) | Escala acessivel, visual flat/dark e desempenho VESA mensuravel; MV4 funcionalmente validado, comparacao historica N/D. |
-| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.1 validadas; EP6.2-EP6.3 futuras para GitHub, pacote runtime completo e matriz de falhas; EP9 futura para imagem do sistema. |
+| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.1 validadas; EP6.2-EP6.3 futuras para GitHub, pacote runtime completo, download seletivo por manifesto e matriz de falhas; EP9 futura para imagem do sistema. |
 | 9 | [`docs/roadmaps/09-funcionalidades-aplicaveis.md`](docs/roadmaps/09-funcionalidades-aplicaveis.md) | Logs, timers, espera, work queue, dispositivos, I/O, cache e métricas do scheduler. |
 | 10 | [`docs/roadmaps/10-vfs-e-abstracao-io.md`](docs/roadmaps/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, pontos de montagem, dispositivos /dev/ e pipes. |
 | 11 | [`docs/roadmaps/11-gerenciamento-avancado-de-memoria.md`](docs/roadmaps/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging. |
