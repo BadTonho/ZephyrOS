@@ -1544,6 +1544,9 @@ def command_serve_github(args: argparse.Namespace) -> None:
 
     server = http.server.ThreadingHTTPServer((args.bind, args.port), GitHubHandler)
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    # A fixture must exercise the same TLS 1.2 contract as the kernel client.
+    context.minimum_version = ssl.TLSVersion.TLSv1_2
+    context.maximum_version = ssl.TLSVersion.TLSv1_2
     try:
         context.load_cert_chain(certfile=cert, keyfile=key)
         server.socket = context.wrap_socket(server.socket, server_side=True)
