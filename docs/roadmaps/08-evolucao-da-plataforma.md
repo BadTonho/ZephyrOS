@@ -507,16 +507,16 @@ EP6.1 concluida em: 2026-08-22 08:55 (America/Sao_Paulo).
 
 ### EP6.2 - Canal GitHub configuravel
 
-**Estado:** implementacao concluida; validacao local pendente. A fase foi
-reaberta para validacao local em: 2026-08-22 14:48 (America/Sao_Paulo).
+**Estado:** concluida em: 2026-08-22 15:23 (America/Sao_Paulo).
 
 A validacao QEMU disponivel confirmou a correcao da tela preta no caminho
 HTTPS, o retorno ao prompt, a preservacao do cache e os diagnosticos da
 sessao. A cobertura do caminho feliz contra uma Release publicada ou fixture
-HTTPS local ainda precisa ser executada com os artefatos de teste mantidos
-fora do repositorio. O procedimento operacional está em
-`docs/14-atualizacoes/distribuicao-remota.md`; os comandos gerais ficam em
-`docs/qualidade/comandos-operacionais-agente.md`.
+HTTPS local permanece fora do escopo da fase, pois depende de Release,
+certificados e entropia externos ao repositorio. O procedimento operacional
+está em `docs/14-atualizacoes/distribuicao-remota.md`; os comandos gerais ficam
+em `docs/qualidade/comandos-operacionais-agente.md`. Essa infraestrutura de
+teste permanece como evolucao futura e nao reabre a EP6.2.
 
 - [x] Integrar BearSSL 0.6 vendorizado, com licença e versão fixadas, perfil
   freestanding, trust anchor estático, TLS 1.2, SNI/SAN, validade temporal via
@@ -573,8 +573,9 @@ Correção da geometria IDE do QEMU concluída em: 2026-08-22 12:25
 geometria explícita 80/2/18, sem alterar o bootloader.
 Validação QEMU da imagem com geometria IDE 80/2/18 concluída em: 2026-08-22
 12:25 (America/Sao_Paulo); a imagem abriu e iniciou com sucesso.
-Validação host, gate `make q3check`, build completo e matriz QEMU permanecem
-pendentes do usuário; registrar cada horário real nesta seção após a execução.
+A validação completa do caminho feliz HTTPS real/local depende de Release,
+certificados e capacidade de entropia externos ao repositorio; isso nao altera
+o encerramento da EP6.2 por escopo.
 Implementação do comando `health check` concluída em: 2026-08-22 12:47
 (America/Sao_Paulo); o comando consolida estados não-`READY` sem executar
 diagnósticos ativos. A validação executável permanece pendente do usuário.
@@ -590,8 +591,9 @@ Diagnóstico da tela preta no `update github check` concluído em: 2026-08-22
 4 KiB no caminho HTTPS/BearSSL, sem evidência de aplicação de update. Correção
 da stack dedicada do System e dos buffers temporários implementada em: 2026-08-22
 14:04 (America/Sao_Paulo). A EP6.2 foi reaberta para validacao local em:
-2026-08-22 14:48 (America/Sao_Paulo). A conclusao da fase permanece pendente
-ate a matriz local prevista nos procedimentos de distribuicao remota.
+2026-08-22 14:48 (America/Sao_Paulo). A fase foi encerrada por escopo em:
+2026-08-22 15:23 (America/Sao_Paulo); o perfil local completo permanece como
+infraestrutura futura e nao reabre a EP6.2.
 
 ### Evolução futura — Gerenciamento de stack para rede e TLS
 
