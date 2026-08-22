@@ -543,6 +543,8 @@ Auditoria de versionamento, `.gitignore` e arquivos alterados/novos concluída
 em: 2026-08-22 11:52 (America/Sao_Paulo).
 Correção da regra de criação do subdiretório BearSSL concluída em: 2026-08-22
 11:58 (America/Sao_Paulo).
+Correção da inclusão do contrato de memória do BearSSL concluída em: 2026-08-22
+12:02 (America/Sao_Paulo).
 Validação host, gate `make q3check`, build completo e matriz QEMU permanecem
 pendentes do usuário; registrar cada horário real nesta seção após a execução.
 

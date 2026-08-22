@@ -76,7 +76,7 @@ BEARSSL_SRC = $(wildcard vendor/bearssl/src/*.c) \
               $(wildcard vendor/bearssl/src/symcipher/*.c) \
               $(wildcard vendor/bearssl/src/x509/*.c)
 BEARSSL_OBJ = $(patsubst vendor/bearssl/src/%.c,build/bearssl/%.o,$(BEARSSL_SRC))
-BEARSSL_CFLAGS = $(CFLAGS) -I vendor/bearssl/inc -I vendor/bearssl/src
+BEARSSL_CFLAGS = $(CFLAGS) -I vendor/bearssl/inc -I vendor/bearssl/src -include vendor/bearssl/inc/string.h
 
 RECOVERY_C = src/core/recovery.c
 RECOVERY_OBJ = build/recovery.o
@@ -477,7 +477,7 @@ $(TLS_OBJ): $(TLS_C) src/include/core/tls.h src/include/core/clock.h src/include
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(TLS_CLIENT_OBJ): $(TLS_CLIENT_C) src/include/core/tls_client.h src/include/core/tls.h src/include/core/clock.h src/include/core/net_socket.h src/include/core/string.h src/include/drivers/rng.h vendor/bearssl/inc/bearssl.h
+$(TLS_CLIENT_OBJ): $(TLS_CLIENT_C) src/include/core/tls_client.h src/include/core/tls.h src/include/core/clock.h src/include/core/net_socket.h src/include/core/string.h src/include/drivers/rng.h vendor/bearssl/inc/bearssl.h vendor/bearssl/inc/string.h
 	@if not exist build mkdir build
 	$(GCC) $(BEARSSL_CFLAGS) -c $< -o $@
 
@@ -485,7 +485,7 @@ $(BEARSSL_COMPAT_OBJ): $(BEARSSL_COMPAT_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(BEARSSL_OBJ): build/bearssl/%.o: vendor/bearssl/src/%.c
+$(BEARSSL_OBJ): build/bearssl/%.o: vendor/bearssl/src/%.c vendor/bearssl/inc/string.h
 	@if not exist build mkdir build
 	@if not exist "$(@D)" mkdir "$(@D)"
 	$(GCC) $(BEARSSL_CFLAGS) -c $< -o $@
