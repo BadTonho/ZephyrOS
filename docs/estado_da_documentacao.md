@@ -39,12 +39,12 @@ funcionalidade entregue.
 - App Store (AS1 a AS5) suporta catálogo local, transações com resolução
   topológica de dependências, rollback, repositório remoto autenticado `ZAC1` e
   janela singleton Classic.
-- EP6.1 possui fundacao RTC/UTC ancorada no PIT e contrato TLS policy-only:
-  CA estatica, SAN, validade temporal, pin SPKI opcional, rotacao e revogacao
-  estao documentados; handshake, X.509 e HTTPS funcional permanecem pendentes
-  de etapa posterior; a sequencia host e a matriz especifica da EP6.1 no QEMU
-  foram validadas, e a regressao EP6.0/U5 foi preservada conforme a validacao
-  anterior da EP6.0.
+- EP6.1 possui fundacao RTC/UTC ancorada no PIT e EP6.2 acrescenta BearSSL
+  0.6, TLS 1.2, X.509, SNI, SAN, trust anchor estatico, RDRAND e HTTPS GitHub
+  configuravel. A descoberta por tag, fingerprint de preflight, release.json,
+  cache U5 e separacao de `update apply` estao implementados; a validacao
+  executavel da EP6.2 ainda deve ser registrada depois do gate host e da matriz
+  QEMU pelo usuario.
 - Evolução da plataforma (EP1 a EP4.3) suporta preferências de mouse PS/2 em RAM,
   volumes ATA/USB somente-leitura com até 4 montagens simultâneas, índice
   global em RAM com busca e suporte USB UHCI com Mass Storage BOT/SCSI integrado

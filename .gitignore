@@ -25,6 +25,7 @@ lembrar.md
 *.rej
 *.dmp
 *.stackdump
+.tmp-bearssl/
 
 # Artefatos de build adicionais
 *.iso

@@ -4,17 +4,17 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
-## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0 e sua regressao U5 validadas no QEMU; EP6.1 implementada e concluida; EP6.2-EP6.3 e EP9 planejadas
+## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0 e sua regressao U5 validadas no QEMU; EP6.1 concluida; EP6.2 implementada e aguardando validacao executavel; EP6.3 e EP9 planejadas
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
 Plataforma de aplicativos:   [██████████████████████████████████████████] Fase 7 validada
 Interface e experiência:     [██████████████████████████████████████████] UI1-UI7 validadas
 Sistema e ecossistema:       [██████████████████████████████████████████] S2.8 e U1-U5 concluídas
-Evolução da plataforma:      [████████████████████████████------------------] EP1-EP6.1 validadas; EP6.2-EP6.3 e EP9 futuras
+Evolução da plataforma:      [██████████████████████████████--------------] EP1-EP6.1 validadas; EP6.2 implementada; EP6.3 e EP9 futuras
 ```
 
-**Documentação de atualização sincronizada em:** 2026-08-22 09:21
+**Documentação de atualização sincronizada em:** 2026-08-22 11:47
 (America/Sao_Paulo).
 
 ---
@@ -125,7 +125,7 @@ Evolução da plataforma:      [████████████████
 | `log ...` | Consulta, configura, limpa e testa o log circular |
 | `timer [status|list|check]` | Inspeciona e testa o serviço de temporizadores |
 | `clock [status|check]` | Inspeciona RTC/UTC ancorado no PIT e executa autotestes de calendario e rollover |
-| `tls [status|check]` | Inspeciona o contrato TLS policy-only e executa seus vetores de politica |
+| `tls [status|check]` | Inspeciona BearSSL TLS/X.509 e executa os vetores de politica |
 | `wait [status|list|check]` | Inspeciona canais de espera e executa autoteste de esperas |
 | `job [status]` | Inspeciona o executor cooperativo de jobs demorados do Shell |
 | `pkg ...` | Lista, inspeciona, valida, instala e remove pacotes locais ZPKG |
@@ -722,13 +722,15 @@ Evolução da plataforma:      [████████████████
   exata sobre fixtures HTTP, descritor `zephyros-release-v1`, cache U5,
   confirmacao separada de aplicar, falhas, cancelamento e regressao U5.
 - [x] EP6.1 implementada e concluida: fundacao RTC/UTC, ancora monotona e
-  contrato TLS policy-only, sem handshake, parser X.509 ou fallback HTTP.
-  Matriz especifica validada no QEMU; a regressao U5 foi preservada conforme
-  validacao anterior da EP6.0. A tag continua sendo apenas descoberta e
-  ZUPD/ZUM1 continuam sendo a autoridade de versao e integridade.
-- [ ] EP6.2-EP6.3 planejadas: canal GitHub configuravel, matriz ampliada de
-  falhas, pacote runtime completo por Release e download seletivo por
-  manifesto, sem cadeia obrigatoria de deltas.
+  contrato TLS policy-only, sem handshake, parser X.509 ou fallback HTTP na
+  etapa original. A matriz especifica foi validada no QEMU; a regressao U5 foi
+  preservada conforme validacao anterior da EP6.0. A tag continua sendo apenas
+  descoberta e ZUPD/ZUM1 continuam sendo a autoridade de versao e integridade.
+- [x] EP6.2 implementada: canal GitHub configuravel com BearSSL/HTTPS,
+  descoberta por tag exata, fingerprint de preflight e preservacao do cache
+  U5; a validacao executavel ainda depende do gate e da matriz do usuario.
+- [ ] EP6.3 planejada: matriz ampliada de falhas, pacote runtime completo por
+  Release e download seletivo por manifesto, sem cadeia obrigatoria de deltas.
 - [ ] EP9 planejada: pacote `ZSYS` separado do runtime, staging em slots A/B,
   ativacao somente no reboot e rollback de boot. Nenhuma alteracao em boot ou
   stage2 e autorizada antes da etapa dedicada.
@@ -752,7 +754,7 @@ kernel, interface e novos serviços:
 | 5 | [`docs/roadmaps/05-sistema-e-ecossistema.md`](docs/roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e ecossistema. |
 | 6 | [`docs/roadmaps/06-app-store.md`](docs/roadmaps/06-app-store.md) | Catalogo local, ciclo de vida, App Store Modern e distribuicao futura. |
 | 7 | [`docs/roadmaps/07-modernizacao-visual.md`](docs/roadmaps/07-modernizacao-visual.md) | Escala acessivel, visual flat/dark e desempenho VESA mensuravel; MV4 funcionalmente validado, comparacao historica N/D. |
-| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.1 validadas; EP6.2-EP6.3 futuras para GitHub, pacote runtime completo, download seletivo por manifesto e matriz de falhas; EP9 futura para imagem do sistema. |
+| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.1 validadas; EP6.2 implementada para GitHub/HTTPS e preflight assinado; EP6.3 futura para pacote runtime completo, download seletivo por manifesto e matriz de falhas; EP9 futura para imagem do sistema. |
 | 9 | [`docs/roadmaps/09-funcionalidades-aplicaveis.md`](docs/roadmaps/09-funcionalidades-aplicaveis.md) | Separação visual/funcional, perfil de distribuição, logs, timers, espera, work queue, dispositivos, I/O, cache e métricas do scheduler. |
 | 10 | [`docs/roadmaps/10-vfs-e-abstracao-io.md`](docs/roadmaps/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, pontos de montagem, dispositivos /dev/ e pipes. |
 | 11 | [`docs/roadmaps/11-gerenciamento-avancado-de-memoria.md`](docs/roadmaps/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging. |

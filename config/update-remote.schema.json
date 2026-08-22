@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:zephyros:update-remote-v2",
+  "title": "ZephyrOS update remote v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "channel",
+    "manifest_url",
+    "release_url_template",
+    "github_api_url",
+    "github_owner",
+    "github_repository",
+    "github_release_url_template",
+    "github_api_version",
+    "github_descriptor_name",
+    "github_manifest_name",
+    "github_package_name"
+  ],
+  "properties": {
+    "format": {
+      "const": "zephyros-update-remote-v2"
+    },
+    "channel": {
+      "const": "stable"
+    },
+    "manifest_url": {
+      "type": "string",
+      "pattern": "^http://",
+      "maxLength": 511
+    },
+    "release_url_template": {
+      "type": "string",
+      "pattern": "^http://[^{}]*\\{tag\\}[^{}]*$",
+      "maxLength": 511
+    },
+    "github_api_url": {
+      "type": "string",
+      "pattern": "^https://[^/{}]+(?:/[^{}]+)?$",
+      "maxLength": 511
+    },
+    "github_owner": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]{1,64}$"
+    },
+    "github_repository": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_.-]{1,100}$"
+    },
+    "github_release_url_template": {
+      "type": "string",
+      "pattern": "^/",
+      "maxLength": 511,
+      "allOf": [
+        {
+          "pattern": "\\{owner\\}"
+        },
+        {
+          "pattern": "\\{repo\\}"
+        },
+        {
+          "pattern": "\\{tag\\}"
+        },
+        {
+          "pattern": "^(?:[^{}]|\\{owner\\}|\\{repo\\}|\\{tag\\})*$"
+        }
+      ]
+    },
+    "github_api_version": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "github_descriptor_name": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]{1,99}$"
+    },
+    "github_manifest_name": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]{1,99}$"
+    },
+    "github_package_name": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]{1,99}$"
+    }
+  }
+}

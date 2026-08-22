@@ -56,6 +56,28 @@ CLOCK_OBJ = build/clock.o
 TLS_C = src/core/tls.c
 TLS_OBJ = build/tls.o
 
+TLS_CLIENT_C = src/core/tls_client.c
+TLS_CLIENT_OBJ = build/tls_client.o
+
+BEARSSL_COMPAT_C = src/core/bearssl_compat.c
+BEARSSL_COMPAT_OBJ = build/bearssl_compat.o
+
+BEARSSL_SRC = $(wildcard vendor/bearssl/src/*.c) \
+              $(wildcard vendor/bearssl/src/aead/*.c) \
+              $(wildcard vendor/bearssl/src/codec/*.c) \
+              $(wildcard vendor/bearssl/src/ec/*.c) \
+              $(wildcard vendor/bearssl/src/hash/*.c) \
+              $(wildcard vendor/bearssl/src/int/*.c) \
+              $(wildcard vendor/bearssl/src/kdf/*.c) \
+              $(wildcard vendor/bearssl/src/mac/*.c) \
+              $(wildcard vendor/bearssl/src/rand/*.c) \
+              $(wildcard vendor/bearssl/src/rsa/*.c) \
+              $(wildcard vendor/bearssl/src/ssl/*.c) \
+              $(wildcard vendor/bearssl/src/symcipher/*.c) \
+              $(wildcard vendor/bearssl/src/x509/*.c)
+BEARSSL_OBJ = $(patsubst vendor/bearssl/src/%.c,build/bearssl/%.o,$(BEARSSL_SRC))
+BEARSSL_CFLAGS = $(CFLAGS) -I vendor/bearssl/inc -I vendor/bearssl/src
+
 RECOVERY_C = src/core/recovery.c
 RECOVERY_OBJ = build/recovery.o
 
@@ -73,6 +95,9 @@ UPDATE_REMOTE_OBJ = build/update_remote.o
 
 UPDATE_REMOTE_RELEASE_C = src/core/update_remote_release.c
 UPDATE_REMOTE_RELEASE_OBJ = build/update_remote_release.o
+
+UPDATE_REMOTE_GITHUB_C = src/core/update_remote_github.c
+UPDATE_REMOTE_GITHUB_OBJ = build/update_remote_github.o
 
 DEVICE_MANAGER_C = src/core/device_manager.c
 DEVICE_MANAGER_OBJ = build/device_manager.o
@@ -185,6 +210,9 @@ TIMER_OBJ = build/timer.o
 
 RTC_C = src/drivers/rtc.c
 RTC_OBJ = build/rtc.o
+
+RNG_C = src/drivers/rng.c
+RNG_OBJ = build/rng.o
 
 TSS_C = src/drivers/tss.c
 TSS_OBJ = build/tss.o
@@ -396,11 +424,11 @@ STORE_AS5_FIXTURES_DIR = docs\fixtures\apps\store-as5
 STORE_AS5_PUBLIC = config\app-store-test-public.json
 
 # Todas as variáveis de objetos
-OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(INPUT_OBJ) $(IRQ_DEFERRED_OBJ) $(WAIT_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(UPDATE_OBJ) $(UPDATE_REMOTE_OBJ) $(UPDATE_REMOTE_RELEASE_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
+OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(INPUT_OBJ) $(IRQ_DEFERRED_OBJ) $(WAIT_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(BEARSSL_COMPAT_OBJ) $(BEARSSL_OBJ) $(UPDATE_OBJ) $(UPDATE_REMOTE_OBJ) $(UPDATE_REMOTE_RELEASE_OBJ) $(UPDATE_REMOTE_GITHUB_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
-       $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(UHCI_OBJ) $(USB_MSC_OBJ) $(USB_HID_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) \
+       $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(UHCI_OBJ) $(USB_MSC_OBJ) $(USB_HID_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) $(RNG_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(COMPRESS_OBJ) \
-       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(BLOCK_OBJ) $(STORAGE_OBJ) $(FILE_INDEX_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(UPDATER_OBJ) $(APPSTORE_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ) $(APP_REMOTE_OBJ) $(DEVICE_MANAGER_OBJ) $(USB_MANAGER_OBJ) $(NETWORK_MANAGER_OBJ) $(POWER_OBJ) $(ETHERNET_OBJ) $(ARP_OBJ) $(IPV4_OBJ) $(ICMP_OBJ) $(UDP_OBJ) $(DHCP_OBJ) $(DNS_OBJ) $(TCP_OBJ) $(NET_SOCKET_OBJ) $(HTTP_OBJ) $(APP_CATALOG_OBJ) $(DISPLAY_OBJ) $(SHELL_INPUT_OBJ) $(SHELL_DISPATCH_OBJ) $(SHELL_COMMAND_UTILS_OBJ) $(SHELL_COMMANDS_CORE_OBJ) $(SHELL_COMMANDS_STORAGE_OBJ) $(SHELL_COMMANDS_DIAGNOSTICS_OBJ) $(SHELL_COMMANDS_NETWORK_OBJ) $(SHELL_CHECKS_OBJ) $(SHELL_COMMANDS_PACKAGES_OBJ) $(SHELL_COMMANDS_APPS_OBJ) $(SHELL_HOSTED_OBJ) $(SHELL_JOB_OBJ) $(RTC_OBJ) $(CLOCK_OBJ) $(TLS_OBJ)
+       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(BLOCK_OBJ) $(STORAGE_OBJ) $(FILE_INDEX_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(UPDATER_OBJ) $(APPSTORE_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ) $(APP_REMOTE_OBJ) $(DEVICE_MANAGER_OBJ) $(USB_MANAGER_OBJ) $(NETWORK_MANAGER_OBJ) $(POWER_OBJ) $(ETHERNET_OBJ) $(ARP_OBJ) $(IPV4_OBJ) $(ICMP_OBJ) $(UDP_OBJ) $(DHCP_OBJ) $(DNS_OBJ) $(TCP_OBJ) $(NET_SOCKET_OBJ) $(HTTP_OBJ) $(APP_CATALOG_OBJ) $(DISPLAY_OBJ) $(SHELL_INPUT_OBJ) $(SHELL_DISPATCH_OBJ) $(SHELL_COMMAND_UTILS_OBJ) $(SHELL_COMMANDS_CORE_OBJ) $(SHELL_COMMANDS_STORAGE_OBJ) $(SHELL_COMMANDS_DIAGNOSTICS_OBJ) $(SHELL_COMMANDS_NETWORK_OBJ) $(SHELL_CHECKS_OBJ) $(SHELL_COMMANDS_PACKAGES_OBJ) $(SHELL_COMMANDS_APPS_OBJ) $(SHELL_HOSTED_OBJ) $(SHELL_JOB_OBJ) $(RTC_OBJ) $(CLOCK_OBJ) $(TLS_OBJ) $(TLS_CLIENT_OBJ)
 
 # Targets
 all: $(OS_IMG)
@@ -445,9 +473,22 @@ $(CLOCK_OBJ): $(CLOCK_C) src/include/core/clock.h src/include/drivers/rtc.h src/
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(TLS_OBJ): $(TLS_C) src/include/core/tls.h src/include/core/clock.h
+$(TLS_OBJ): $(TLS_C) src/include/core/tls.h src/include/core/clock.h src/include/core/tls_client.h src/include/drivers/rng.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(TLS_CLIENT_OBJ): $(TLS_CLIENT_C) src/include/core/tls_client.h src/include/core/tls.h src/include/core/clock.h src/include/core/net_socket.h src/include/core/string.h src/include/drivers/rng.h vendor/bearssl/inc/bearssl.h
+	@if not exist build mkdir build
+	$(GCC) $(BEARSSL_CFLAGS) -c $< -o $@
+
+$(BEARSSL_COMPAT_OBJ): $(BEARSSL_COMPAT_C)
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(BEARSSL_OBJ): build/bearssl/%.o: vendor/bearssl/src/%.c
+	@if not exist build mkdir build
+	@if not exist $(@D) mkdir $(@D)
+	$(GCC) $(BEARSSL_CFLAGS) -c $< -o $@
 
 $(RECOVERY_OBJ): $(RECOVERY_C)
 	@if not exist build mkdir build
@@ -465,11 +506,15 @@ $(UPDATE_OBJ): $(UPDATE_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(UPDATE_REMOTE_OBJ): $(UPDATE_REMOTE_C) src/include/core/update_remote.h
+$(UPDATE_REMOTE_OBJ): $(UPDATE_REMOTE_C) src/include/core/update_remote.h src/include/core/update_remote_config.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(UPDATE_REMOTE_RELEASE_OBJ): $(UPDATE_REMOTE_RELEASE_C) src/include/core/update_remote.h src/include/core/update_remote_config.h
+$(UPDATE_REMOTE_RELEASE_OBJ): $(UPDATE_REMOTE_RELEASE_C) src/include/core/update_remote.h src/include/core/update_remote_config.h src/include/core/update_remote_github.h src/include/core/http.h
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(UPDATE_REMOTE_GITHUB_OBJ): $(UPDATE_REMOTE_GITHUB_C) src/include/core/update_remote_github.h src/include/core/update_remote.h src/include/core/update_remote_config.h src/include/core/http.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -537,7 +582,7 @@ $(NET_SOCKET_OBJ): $(NET_SOCKET_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(HTTP_OBJ): $(HTTP_C)
+$(HTTP_OBJ): $(HTTP_C) src/include/core/http.h src/include/core/tls_client.h src/include/core/tls.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -618,6 +663,10 @@ $(TIMER_OBJ): $(TIMER_C)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(RTC_OBJ): $(RTC_C) src/include/drivers/rtc.h
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(RNG_OBJ): $(RNG_C) src/include/drivers/rng.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

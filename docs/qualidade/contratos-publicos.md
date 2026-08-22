@@ -215,19 +215,29 @@ ZUM1/ZUPD.
 Desde a EP6.1, `src/include/drivers/rtc.h` define o snapshot UTC validado do
 CMOS, seu estado e autoteste; `src/include/core/clock.h` ancora esse UTC no
 monotono do PIT, expoe status, rollover, validacao e autoteste; e
-`src/include/core/tls.h` define a politica policy-only, identidade futura do
-peer, motivos de recusa, versoes de confianca atual/proxima, revogacao e
-autoteste. Esses headers nao habilitam parser X.509, armazenamento de CA,
-handshake ou HTTPS. A CA estatica e obrigatoria, SAN e validade temporal sao
-requisitos, pin SPKI e complementar e fallback HTTP e proibido.
+`src/include/core/tls.h` define a politica, identidade de peer, motivos de
+recusa, versoes de confianca atual/proxima, revogacao e autoteste. A EP6.2
+acrescenta o adaptador BearSSL em `src/include/core/tls_client.h` e o estado
+RDRAND em `src/include/drivers/rng.h`; CA estatica, SAN, validade temporal,
+TLS 1.2 e fallback HTTP proibido sao requisitos efetivos do canal HTTPS.
 
 `src/include/core/update_remote.h` define o transporte manual, estados,
-motivos, candidato, metadados de Release e cache redundante;
-`update_remote_config.h` deriva o canal Stable versionado e o template HTTP
-`{tag}`. Os contratos canonicos permanecem em
+motivos, candidato, metadados de Release, fingerprint da API e cache
+redundante; `src/include/core/http.h` acrescenta HTTPS, headers configuráveis,
+redirects HTTPS limitados e status TLS; `update_remote_config.h` deriva o
+canal Stable versionado, o template HTTP `{tag}`, o endpoint GitHub, o
+template de consulta por `{owner}`, `{repo}` e `{tag}`, a versão da API e os
+três nomes de assets; `src/include/core/update_remote_github.h` mantém o
+parser limitado e a descoberta por tag exata. Os contratos canonicos permanecem em
 `docs/04-kernel/kernel.md`,
 `docs/08-sistema-arquivos/sistema-arquivos.md` e
 `docs/14-atualizacoes/distribuicao-remota.md`.
+
+Os campos novos de `http_status_t` e `update_remote_result_t` são append-only:
+segurança HTTPS, validação TLS, contador de redirects e motivo/erro BearSSL
+ficam disponíveis sem renumerar os campos anteriores. Os motivos públicos
+`UPDATE_REMOTE_REASON_TLS`, `UPDATE_REMOTE_REASON_REDIRECT` e
+`UPDATE_REMOTE_REASON_RELEASE_API` também foram anexados ao fim do enum.
 
 Desde o AS1/AS4, `src/include/core/app_catalog.h` define o snapshot local
 somente-leitura, estados, motivos, capacidades, consultas por copia e

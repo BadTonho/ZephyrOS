@@ -9,7 +9,8 @@
 typedef enum {
     TLS_STATE_UNINITIALIZED = 0,
     TLS_STATE_POLICY_ONLY,
-    TLS_STATE_UNAVAILABLE
+    TLS_STATE_UNAVAILABLE,
+    TLS_STATE_READY
 } tls_state_t;
 
 typedef enum {
@@ -23,7 +24,9 @@ typedef enum {
     TLS_REASON_HOSTNAME_MISMATCH,
     TLS_REASON_PIN_MISMATCH,
     TLS_REASON_POLICY,
-    TLS_REASON_UNSUPPORTED
+    TLS_REASON_UNSUPPORTED,
+    TLS_REASON_ENTROPY_UNAVAILABLE,
+    TLS_REASON_HANDSHAKE
 } tls_reason_t;
 
 typedef struct {
@@ -38,7 +41,8 @@ typedef struct {
     uint32_t trust_revocation_version;
 } tls_policy_t;
 
-/* O parser X.509 futuro preenchera estes campos antes da politica final. */
+/* A identidade permanece publica para os autotestes da politica; a sessao
+ * BearSSL preenche a validacao efetiva antes de liberar o socket HTTPS. */
 typedef struct {
     uint64_t not_before;
     uint64_t not_after;
@@ -64,6 +68,8 @@ typedef struct {
     uint32_t policy_checks;
     uint32_t policy_rejections;
     int last_error;
+    uint8_t entropy_available;
+    uint8_t certificate_validation_available;
 } tls_status_t;
 
 typedef struct {

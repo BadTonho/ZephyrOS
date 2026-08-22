@@ -9,6 +9,7 @@ import hashlib
 import http.server
 import json
 import re
+import ssl
 import subprocess
 import struct
 import sys
@@ -1381,6 +1382,185 @@ def write_u5_fixtures(private_key: Any, output_dir: Path) -> None:
     )
 
 
+def write_github_fixtures(
+    private_key: Any, public: PublicKeyInfo, output_dir: Path, tag: str
+) -> None:
+    """Gera os tres assets publicos usados pelo servidor HTTPS GitHub."""
+    if not RELEASE_ID_RE.fullmatch(tag):
+        raise UpdateError("tag GitHub de fixture invalida")
+    output = output_dir.resolve()
+    if output.exists() and any(output.iterdir()):
+        raise UpdateError(f"diretorio de fixtures GitHub nao esta vazio: {output}")
+    output.mkdir(parents=True, exist_ok=True)
+    package = (U3_FIXTURES / "APPLY.ZUP").read_bytes()
+    artifact = verify_artifact(package, public, Version(0, 1, 0), 0)
+    manifest = build_remote_manifest(
+        private_key,
+        public,
+        62,
+        Version(0, 1, 0),
+        Version(0, 1, 1),
+        0,
+        0,
+        package,
+        f"/releases/download/{tag}/update.zephyrosupd",
+    )
+    descriptor = release_descriptor(
+        "ep62-fixture",
+        "EP6.2 HTTPS fixture",
+        "8" * 40,
+        tag,
+        artifact,
+        "update.zephyrosupd",
+        package,
+        "release.zum",
+        manifest,
+    ).encode("utf-8")
+    write_new_text(output / "release.json", descriptor.decode("utf-8"))
+    write_new_bytes(output / "release.zum", manifest)
+    write_new_bytes(output / "update.zephyrosupd", package)
+    published = {
+        "format": "zephyros-update-github-fixtures-v1",
+        "tag": tag,
+        "assets": {
+            name: {
+                "size": len(data),
+                "sha256": hashlib.sha256(data).hexdigest(),
+            }
+            for name, data in (
+                ("release.json", descriptor),
+                ("release.zum", manifest),
+                ("update.zephyrosupd", package),
+            )
+        },
+    }
+    write_new_text(
+        output / "fixtures.json",
+        json.dumps(published, indent=2, sort_keys=False) + "\n",
+    )
+
+
+def command_fixtures_github(args: argparse.Namespace) -> None:
+    """Gera release.json, release.zum e update.zephyrosupd para HTTPS."""
+    key = load_private_key(Path(args.private), prompt_password())
+    public = load_public_json(Path(args.public))
+    if private_public_info(key) != public:
+        raise UpdateError("chave privada nao corresponde ao JSON publico")
+    write_github_fixtures(key, public, Path(args.output_dir), args.tag)
+    print(f"Fixtures GitHub criadas em {Path(args.output_dir).resolve()}")
+    print("Certificado e chave TLS devem permanecer fora do repositorio.")
+
+
+def command_serve_github(args: argparse.Namespace) -> None:
+    """Serve a API de Release e os assets por HTTPS com certificados externos."""
+    root = Path(args.root).resolve()
+    cert = Path(args.cert).resolve()
+    key = Path(args.key).resolve()
+    names = ("release.json", "release.zum", "update.zephyrosupd")
+    assets = {name: root / name for name in names}
+    missing = [path for path in (*assets.values(), cert, key) if not path.is_file()]
+    if missing:
+        raise UpdateError(f"fixture GitHub ou credencial TLS ausente: {missing[0]}")
+    api_path = (
+        f"/repos/{args.owner}/{args.repository}/releases/tags/{args.tag}"
+    )
+    asset_prefix = f"/releases/download/{args.tag}"
+    redirect_http_prefix = f"/fixtures/redirect-http{api_path}"
+    redirect_https_prefix = f"/fixtures/redirect-https{api_path}"
+    public_base = f"https://{args.public_host}:{args.port}"
+    asset_data = {name: path.read_bytes() for name, path in assets.items()}
+
+    def api_payload() -> dict[str, Any]:
+        entries = [
+            {
+                "name": name,
+                "size": len(data),
+                "browser_download_url": f"{public_base}{asset_prefix}/{name}",
+                "state": "uploaded",
+                "digest": f"sha256:{hashlib.sha256(data).hexdigest()}",
+            }
+            for name, data in asset_data.items()
+        ]
+        payload: dict[str, Any] = {
+            "id": 62062,
+            "tag_name": args.tag,
+            "name": "EP6.2 HTTPS fixture",
+            "draft": False,
+            "prerelease": False,
+            "published_at": "2026-08-22T12:00:00Z",
+            "assets": entries,
+        }
+        if args.variant == "missing-asset":
+            payload["assets"] = entries[:-1]
+        elif args.variant == "tag-divergent":
+            payload["tag_name"] = f"{args.tag}-other"
+        elif args.variant == "draft":
+            payload["draft"] = True
+        elif args.variant == "prerelease":
+            payload["prerelease"] = True
+        elif args.variant == "bad-digest":
+            payload["assets"][0]["digest"] = f"sha256:{'0' * 64}"
+        return payload
+
+    class GitHubHandler(http.server.BaseHTTPRequestHandler):
+        def do_GET(self) -> None:
+            if self.path == redirect_http_prefix:
+                self.send_response(302)
+                self.send_header("Location", f"http://{args.public_host}:{args.port}{api_path}")
+                self.send_header("Content-Length", "0")
+                self.end_headers()
+                return
+            if self.path == redirect_https_prefix:
+                self.send_response(302)
+                self.send_header("Location", f"{public_base}{api_path}")
+                self.send_header("Content-Length", "0")
+                self.end_headers()
+                return
+            if self.path == api_path:
+                if args.variant == "invalid-json":
+                    data = b'{"tag_name":'
+                else:
+                    data = json.dumps(api_payload(), separators=(",", ":")).encode("utf-8")
+                self.send_response(200)
+                self.send_header("Content-Type", "application/vnd.github+json")
+                self.send_header("Content-Length", str(len(data)))
+                self.send_header("Connection", "close")
+                self.end_headers()
+                self.wfile.write(data)
+                return
+            for name, data in asset_data.items():
+                if self.path == f"{asset_prefix}/{name}":
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/octet-stream")
+                    self.send_header("Content-Length", str(len(data)))
+                    self.send_header("Connection", "close")
+                    self.end_headers()
+                    self.wfile.write(data)
+                    return
+            self.send_error(404, "fixture GitHub inexistente")
+
+        def log_message(self, format: str, *values: object) -> None:
+            print(f"GitHub HTTPS {self.address_string()} - {format % values}")
+
+    server = http.server.ThreadingHTTPServer((args.bind, args.port), GitHubHandler)
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    try:
+        context.load_cert_chain(certfile=cert, keyfile=key)
+        server.socket = context.wrap_socket(server.socket, server_side=True)
+    except (OSError, ssl.SSLError) as error:
+        server.server_close()
+        raise UpdateError("certificado ou chave TLS de fixture invalido") from error
+    print(f"Servidor GitHub HTTPS em {public_base}{api_path}")
+    print(f"Variante da API: {args.variant}")
+    print("Pressione Ctrl+C para encerrar.")
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        server.server_close()
+
+
 def load_remote_config(path: Path) -> dict[str, str]:
     """Valida a configuracao publica do canal remoto."""
     try:
@@ -1392,11 +1572,44 @@ def load_remote_config(path: Path) -> dict[str, str]:
         "channel",
         "manifest_url",
         "release_url_template",
+        "github_api_url",
+        "github_owner",
+        "github_repository",
+        "github_release_url_template",
+        "github_api_version",
+        "github_descriptor_name",
+        "github_manifest_name",
+        "github_package_name",
     ):
         raise UpdateError("campos da configuracao remota divergem")
     release_url_template = config["release_url_template"]
+    github_release_url_template = config["github_release_url_template"]
+    asset_names = (
+        config["github_descriptor_name"],
+        config["github_manifest_name"],
+        config["github_package_name"],
+    )
+    owner = config["github_owner"]
+    repository = config["github_repository"]
+    api_version = config["github_api_version"]
+    if not isinstance(owner, str) or not re.fullmatch(r"[A-Za-z0-9_.-]{1,64}", owner):
+        raise UpdateError("proprietario GitHub invalido")
+    if not isinstance(repository, str) or not re.fullmatch(
+        r"[A-Za-z0-9_.-]{1,100}", repository
+    ):
+        raise UpdateError("repositorio GitHub invalido")
+    if not isinstance(api_version, str) or not re.fullmatch(
+        r"[0-9]{4}-[0-9]{2}-[0-9]{2}", api_version
+    ):
+        raise UpdateError("versao da API GitHub invalida")
+    if any(
+        not isinstance(name, str)
+        or not re.fullmatch(r"[A-Za-z0-9._-]{1,99}", name)
+        for name in asset_names
+    ) or len(set(asset_names)) != 3:
+        raise UpdateError("nomes de assets GitHub invalidos")
     if (
-        config["format"] != "zephyros-update-remote-v1"
+        config["format"] != "zephyros-update-remote-v2"
         or config["channel"] != "stable"
         or not isinstance(config["manifest_url"], str)
         or not config["manifest_url"].startswith("http://")
@@ -1408,6 +1621,28 @@ def load_remote_config(path: Path) -> dict[str, str]:
         or "{" in release_url_template.replace("{tag}", "")
         or "}" in release_url_template.replace("{tag}", "")
         or len(release_url_template.replace("{tag}", "A" * 64)) > 511
+        or not isinstance(config["github_api_url"], str)
+        or not config["github_api_url"].startswith("https://")
+        or len(config["github_api_url"]) > 511
+        or config["github_api_url"].endswith("/")
+        or not isinstance(github_release_url_template, str)
+        or not github_release_url_template.startswith("/")
+        or len(github_release_url_template) > 511
+        or github_release_url_template.count("{owner}") != 1
+        or github_release_url_template.count("{repo}") != 1
+        or github_release_url_template.count("{tag}") != 1
+        or "{" in github_release_url_template.replace("{owner}", "")
+        .replace("{repo}", "")
+        .replace("{tag}", "")
+        or "}" in github_release_url_template.replace("{owner}", "")
+        .replace("{repo}", "")
+        .replace("{tag}", "")
+        or len(
+            github_release_url_template.replace("{owner}", "A" * 64)
+            .replace("{repo}", "A" * 100)
+            .replace("{tag}", "A" * 64)
+        ) > 511
+        or not isinstance(api_version, str)
     ):
         raise UpdateError("canal ou URL remota invalida")
     return config
@@ -1418,11 +1653,22 @@ def render_remote_config_header(config: dict[str, str]) -> str:
     return (
         "#ifndef UPDATE_REMOTE_CONFIG_H\n"
         "#define UPDATE_REMOTE_CONFIG_H\n\n"
+        f'#define UPDATE_REMOTE_CONFIG_FORMAT "{config["format"]}"\n'
         f'#define UPDATE_REMOTE_CHANNEL_NAME "{config["channel"]}"\n'
         "#define UPDATE_REMOTE_DEFAULT_MANIFEST_URL \\\n"
         f'    "{config["manifest_url"]}"\n'
         "#define UPDATE_REMOTE_RELEASE_URL_TEMPLATE \\\n"
         f'    "{config["release_url_template"]}"\n\n'
+        "#define UPDATE_REMOTE_GITHUB_API_URL \\\n"
+        f'    "{config["github_api_url"]}"\n'
+        f'#define UPDATE_REMOTE_GITHUB_OWNER "{config["github_owner"]}"\n'
+        f'#define UPDATE_REMOTE_GITHUB_REPOSITORY "{config["github_repository"]}"\n'
+        "#define UPDATE_REMOTE_GITHUB_RELEASE_URL_TEMPLATE \\\n"
+        f'    "{config["github_release_url_template"]}"\n'
+        f'#define UPDATE_REMOTE_GITHUB_API_VERSION "{config["github_api_version"]}"\n'
+        f'#define UPDATE_REMOTE_GITHUB_DESCRIPTOR_NAME "{config["github_descriptor_name"]}"\n'
+        f'#define UPDATE_REMOTE_GITHUB_MANIFEST_NAME "{config["github_manifest_name"]}"\n'
+        f'#define UPDATE_REMOTE_GITHUB_PACKAGE_NAME "{config["github_package_name"]}"\n\n'
         "#endif\n"
     )
 
@@ -3702,6 +3948,15 @@ def build_parser() -> argparse.ArgumentParser:
     fixtures_u5.add_argument("--output-dir", required=True)
     fixtures_u5.set_defaults(handler=command_fixtures_u5)
 
+    fixtures_github = subparsers.add_parser(
+        "fixtures-github", help="gera assets para o servidor HTTPS GitHub"
+    )
+    fixtures_github.add_argument("--private", required=True)
+    fixtures_github.add_argument("--public", required=True)
+    fixtures_github.add_argument("--tag", required=True)
+    fixtures_github.add_argument("--output-dir", required=True)
+    fixtures_github.set_defaults(handler=command_fixtures_github)
+
     serve_u5 = subparsers.add_parser(
         "serve-u5", help="serve fixtures U5 para o QEMU"
     )
@@ -3709,6 +3964,33 @@ def build_parser() -> argparse.ArgumentParser:
     serve_u5.add_argument("--bind", default="0.0.0.0")
     serve_u5.add_argument("--port", type=int, default=8000)
     serve_u5.set_defaults(handler=command_serve_u5)
+
+    serve_github = subparsers.add_parser(
+        "serve-github", help="serve API e assets GitHub por HTTPS"
+    )
+    serve_github.add_argument("--root", required=True)
+    serve_github.add_argument("--cert", required=True)
+    serve_github.add_argument("--key", required=True)
+    serve_github.add_argument("--tag", required=True)
+    serve_github.add_argument("--bind", default="0.0.0.0")
+    serve_github.add_argument("--public-host", default="10.0.2.2")
+    serve_github.add_argument("--port", type=int, default=8443)
+    serve_github.add_argument("--owner", default="BadTonho")
+    serve_github.add_argument("--repository", default="ZephyrOS")
+    serve_github.add_argument(
+        "--variant",
+        choices=(
+            "valid",
+            "missing-asset",
+            "tag-divergent",
+            "invalid-json",
+            "bad-digest",
+            "draft",
+            "prerelease",
+        ),
+        default="valid",
+    )
+    serve_github.set_defaults(handler=command_serve_github)
 
     audit = subparsers.add_parser(
         "audit-image", help="audita estado U3/U4 em uma imagem FAT12"

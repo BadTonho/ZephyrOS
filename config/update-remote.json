@@ -1,6 +1,14 @@
 {
-  "format": "zephyros-update-remote-v1",
+  "format": "zephyros-update-remote-v2",
   "channel": "stable",
   "manifest_url": "http://10.0.2.2:8000/zephyros/stable.zum",
-  "release_url_template": "http://10.0.2.2:8000/zephyros/{tag}.json"
+  "release_url_template": "http://10.0.2.2:8000/zephyros/{tag}.json",
+  "github_api_url": "https://api.github.com",
+  "github_owner": "BadTonho",
+  "github_repository": "ZephyrOS",
+  "github_release_url_template": "/repos/{owner}/{repo}/releases/tags/{tag}",
+  "github_api_version": "2022-11-28",
+  "github_descriptor_name": "release.json",
+  "github_manifest_name": "release.zum",
+  "github_package_name": "update.zephyrosupd"
 }

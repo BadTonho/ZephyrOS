@@ -315,7 +315,7 @@ static void cmd_help(void) {
                 0x07);
     video_print("  timer    - Inspeciona e testa temporizadores\n", 0x07);
     video_print("  clock status|check - Inspeciona UTC e monotono\n", 0x07);
-    video_print("  tls status|check - Inspeciona contrato TLS (policy-only)\n",
+    video_print("  tls status|check - Inspeciona BearSSL TLS/X.509\n",
                 0x07);
     video_print("  wait     - Inspeciona esperas e executa autoteste\n", 0x07);
     video_print("  devices  - Lista inventario de hardware (-v para detalhes)\n", 0x07);
@@ -371,7 +371,7 @@ static void cmd_help(void) {
                 0x07);
     video_print("  update remote ...|fetch ... - Distribuicao U5\n",
                 0x07);
-    video_print("  update github check/fetch --tag <tag> - Release EP6.0\n",
+    video_print("  update github check/fetch --tag <tag> - Release EP6.2 HTTPS\n",
                 0x07);
     video_print("  update apply <arquivo.ZUP> [--confirm] - Aplica U3\n",
                 0x07);
