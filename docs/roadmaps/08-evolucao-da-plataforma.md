@@ -564,6 +564,23 @@ Validação QEMU da imagem com geometria IDE 80/2/18 concluída em: 2026-08-22
 Validação host, gate `make q3check`, build completo e matriz QEMU permanecem
 pendentes do usuário; registrar cada horário real nesta seção após a execução.
 
+### Etapa futura — Leitura LBA no `stage2` (fora da EP6.2 e EP6.3)
+
+- [ ] Fazer o `stage2` preferir as extensões BIOS `INT 13h/AH=42` para carregar
+  o kernel por LBA, sem depender da geometria CHS exposta pelo BIOS/QEMU.
+- [ ] Manter CHS como fallback explícito quando as extensões LBA não estiverem
+  disponíveis, com limites de memória, tamanho de lote, retry e diagnóstico
+  preservados.
+- [ ] Confirmar que `src/boot/boot.asm` permanece intocado e que o tamanho do
+  `stage2`, a reserva da imagem e o contrato de carregamento não são excedidos.
+- [ ] Validar com `make q3check`, build limpo, `make run`, geometria padrão e
+  geometria explícita, além da regressão de boot, `health`, `regcheck full` e
+  `memcheck`.
+
+Planejamento desta etapa futura concluído em: 2026-08-22 12:30
+(America/Sao_Paulo). Implementação e validação permanecem pendentes e deverão
+ser tratadas como uma etapa própria do bootloader.
+
 ### EP6.3 - Falhas, cache e regressao
 
 - [ ] Cobrir falha de DNS, certificado invalido, hora indisponivel, tag
