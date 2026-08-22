@@ -2287,6 +2287,7 @@ static void shell_packages_job_finish(shell_job_context_t* context,
         shell_command_print_num((uint32_t)result);
         video_print("\n", 0x0C);
     }
+    shell_hosted_present_progress();
 }
 
 static int shell_packages_job_cancel(shell_job_context_t* context) {

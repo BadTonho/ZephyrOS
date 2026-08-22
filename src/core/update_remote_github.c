@@ -26,14 +26,6 @@ typedef struct {
 } update_github_json_t;
 
 typedef struct {
-    uint8_t response[UPDATE_REMOTE_GITHUB_RESPONSE_CAPACITY];
-    uint32_t response_length;
-    uint8_t fingerprint[UPDATE_GITHUB_FINGERPRINT_SIZE];
-    http_status_t http;
-    uint8_t cancelled;
-} update_github_workspace_t;
-
-typedef struct {
     update_remote_github_asset_t asset;
     uint8_t name_found;
     uint8_t size_found;
@@ -42,6 +34,18 @@ typedef struct {
     uint8_t digest_found;
     char state[16];
 } update_github_asset_parse_t;
+
+typedef struct {
+    uint8_t response[UPDATE_REMOTE_GITHUB_RESPONSE_CAPACITY];
+    uint32_t response_length;
+    uint8_t fingerprint[UPDATE_GITHUB_FINGERPRINT_SIZE];
+    http_status_t http;
+    uint8_t cancelled;
+    char url[UPDATE_REMOTE_URL_SIZE];
+    char host[HTTP_HOST_BUFFER_SIZE];
+    char api_host[HTTP_HOST_BUFFER_SIZE];
+    update_github_asset_parse_t asset_parse;
+} update_github_workspace_t;
 
 static update_github_workspace_t update_github_workspace;
 
@@ -590,7 +594,8 @@ static int update_github_parse_assets(update_github_json_t* json,
                                       uint8_t* descriptor_found,
                                       uint8_t* manifest_found,
                                       uint8_t* package_found) {
-    update_github_asset_parse_t parsed;
+    update_github_asset_parse_t* parsed =
+        &update_github_workspace.asset_parse;
     int result;
 
     result = update_github_expect(json, '[');
@@ -601,9 +606,9 @@ static int update_github_parse_assets(update_github_json_t* json,
         return ERR_INVALID;
     }
     while (1) {
-        result = update_github_parse_asset(json, &parsed);
+        result = update_github_parse_asset(json, parsed);
         if (result == OK) result = update_github_assign_asset(
-            release, &parsed, descriptor_found, manifest_found, package_found);
+            release, parsed, descriptor_found, manifest_found, package_found);
         if (result != OK) return result;
         update_github_skip_space(json);
         if (json->offset >= json->length) return ERR_INVALID;
@@ -828,26 +833,32 @@ static uint8_t update_github_host_equal(const char* first, const char* second) {
 }
 
 static int update_github_validate_asset_url(const char* url) {
-    char host[HTTP_HOST_BUFFER_SIZE];
-    char api_host[HTTP_HOST_BUFFER_SIZE];
     uint16_t port;
     uint16_t api_port;
 
-    if (update_github_host(url, host, sizeof(host)) != OK ||
+    update_github_workspace.host[0] = '\0';
+    update_github_workspace.api_host[0] = '\0';
+    if (update_github_host(url, update_github_workspace.host,
+                           sizeof(update_github_workspace.host)) != OK ||
         update_github_host(UPDATE_REMOTE_GITHUB_API_URL,
-                           api_host, sizeof(api_host)) != OK ||
+                           update_github_workspace.api_host,
+                           sizeof(update_github_workspace.api_host)) != OK ||
         update_github_port(url, &port) != OK ||
         update_github_port(UPDATE_REMOTE_GITHUB_API_URL,
                            &api_port) != OK) return ERR_INVALID;
-    if (update_github_host_equal(host, api_host)) {
+    if (update_github_host_equal(update_github_workspace.host,
+                                 update_github_workspace.api_host)) {
         if (port != api_port) return ERR_INVALID;
     } else if (port != HTTPS_DEFAULT_PORT) {
         return ERR_INVALID;
     }
-    if (!update_github_host_equal(host, api_host) &&
-        !update_github_host_equal(host, "github.com") &&
-        !update_github_host_equal(host, "objects.githubusercontent.com") &&
-        !update_github_host_equal(host, "release-assets.githubusercontent.com")) {
+    if (!update_github_host_equal(update_github_workspace.host,
+                                  update_github_workspace.api_host) &&
+        !update_github_host_equal(update_github_workspace.host, "github.com") &&
+        !update_github_host_equal(update_github_workspace.host,
+                                  "objects.githubusercontent.com") &&
+        !update_github_host_equal(update_github_workspace.host,
+                                  "release-assets.githubusercontent.com")) {
         return ERR_INVALID;
     }
     return OK;
@@ -1117,7 +1128,6 @@ int update_remote_github_query(
     update_remote_github_release_t* release_out,
     update_remote_result_t* result_out) {
     http_request_options_t http_options;
-    char url[UPDATE_REMOTE_URL_SIZE];
     int result;
 
     if (!tag || !release_out || !result_out) {
@@ -1130,13 +1140,20 @@ int update_remote_github_query(
             sizeof(update_github_workspace.http));
     update_github_workspace.response_length = 0U;
     update_github_workspace.cancelled = 0U;
+    update_github_workspace.url[0] = '\0';
+    update_github_workspace.host[0] = '\0';
+    update_github_workspace.api_host[0] = '\0';
+    kmemset(&update_github_workspace.asset_parse, 0,
+            sizeof(update_github_workspace.asset_parse));
     result = update_github_validate_tag(tag);
     if (result != OK) {
         result_out->reason = UPDATE_REMOTE_REASON_RELEASE_TAG;
         LOG_ERROR("UPDATE", "Tag invalida na consulta GitHub");
         return result;
     }
-    result = update_github_build_url(tag, url, sizeof(url));
+    result = update_github_build_url(
+        tag, update_github_workspace.url,
+        sizeof(update_github_workspace.url));
     if (result != OK) {
         result_out->reason = UPDATE_REMOTE_REASON_RELEASE_API;
         LOG_ERROR("UPDATE", "Template da API GitHub invalido");
@@ -1148,8 +1165,8 @@ int update_remote_github_query(
     http_options.follow_redirects = 1U;
     http_options.max_redirects = HTTP_MAX_REDIRECTS;
     result = http_get_stream_start_ex(
-        url, UPDATE_REMOTE_GITHUB_RESPONSE_CAPACITY, update_github_sink, 0,
-        &http_options);
+        update_github_workspace.url, UPDATE_REMOTE_GITHUB_RESPONSE_CAPACITY,
+        update_github_sink, 0, &http_options);
     if (result == OK) result = update_github_wait(options);
     update_github_copy_http_result(result_out);
     if (result != OK) {

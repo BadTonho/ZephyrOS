@@ -227,11 +227,18 @@ void process_bootstrap_idle(void) {
     LOG_INFO("PROC", "Processo Idle inicializado");
 }
 
-process_t* process_create(const char* name, void (*entry_point)()) {
+static process_t* process_create_internal(const char* name,
+                                          void (*entry_point)(),
+                                          uint32_t stack_size) {
     process_t* proc = 0;
 
     if (!name || !entry_point) {
         LOG_ERROR("PROC", "Parametros invalidos ao criar processo");
+        return 0;
+    }
+    if (stack_size < KERNEL_STACK_SIZE ||
+        (stack_size % PROCESS_KERNEL_STACK_ALIGNMENT) != 0U) {
+        LOG_ERROR("PROC", "Tamanho ou alinhamento de stack invalido");
         return 0;
     }
     if (!paging_get_current_directory()) {
@@ -278,13 +285,13 @@ process_t* process_create(const char* name, void (*entry_point)()) {
     proc->total_ticks = 0;
     proc->wait_ticks = 0;
 
-    proc->kernel_stack = (uint32_t)kmalloc(KERNEL_STACK_SIZE);
+    proc->kernel_stack = (uint32_t)kmalloc(stack_size);
     if (!proc->kernel_stack) {
         LOG_ERROR("PROC", "Falha ao alocar stack do processo");
         process_discard_new_process(proc);
         return 0;
     }
-    proc->kernel_stack_top = proc->kernel_stack + KERNEL_STACK_SIZE;
+    proc->kernel_stack_top = proc->kernel_stack + stack_size;
 
     /* Os aplicativos nativos continuam compartilhando o espaco do kernel. */
     proc->page_directory = paging_get_current_directory();
@@ -345,6 +352,16 @@ process_t* process_create(const char* name, void (*entry_point)()) {
     process_count++;
     LOG_INFO("PROC", "Processo criado com sucesso");
     return proc;
+}
+
+process_t* process_create(const char* name, void (*entry_point)()) {
+    return process_create_internal(name, entry_point, KERNEL_STACK_SIZE);
+}
+
+process_t* process_create_with_stack_size(const char* name,
+                                          void (*entry_point)(),
+                                          uint32_t stack_size) {
+    return process_create_internal(name, entry_point, stack_size);
 }
 
 static int process_pointer_valid(const process_t* proc) {
