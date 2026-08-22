@@ -456,7 +456,7 @@ static int update_remote_check_internal(
     const uint8_t* body;
     const char* url = update_remote_effective_url(requested);
     uint32_t length;
-    update_remote_reason_t reason;
+    update_remote_reason_t reason = UPDATE_REMOTE_REASON_MANIFEST_FORMAT;
     http_request_options_t http_options;
     int result;
 
