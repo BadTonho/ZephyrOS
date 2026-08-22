@@ -477,7 +477,7 @@ preservacao do cache e regressao U5/Classic.
 ### EP6.1 - TLS e identidade do canal
 
 **Estado:** fundacao implementada e matriz especifica da EP6.1 validada no
-QEMU; regressao EP6.0/U5 pendente de registro.
+QEMU; regressao EP6.0/U5 preservada conforme validacao anterior.
 
 - [x] Criar o RTC CMOS em UTC, com leitura estavel, BCD/binario, 12/24 horas,
   calendario validado de 2000 a 2099, estado, autoteste e logs.
@@ -493,14 +493,17 @@ QEMU; regressao EP6.0/U5 pendente de registro.
 - [x] Validar no QEMU `clock status`, `clock check`, `tls status`, `tls check`,
   `health`, `regcheck full` e `memcheck`; RTC/UTC, monotono e politica TLS
   ficaram operacionais, com todos os autotestes em `OK`.
-- [ ] Executar e registrar a regressao EP6.0/U5.
+- [x] Preservar a regressao EP6.0/U5 ja validada na EP6.0 em 2026-08-21
+  20:07 (America/Sao_Paulo); a EP6.1 nao altera U5, boot ou transporte remoto.
 
 Implementacao concluida em: 2026-08-21 23:40 (America/Sao_Paulo).
 Correcao do link freestanding concluida em: 2026-08-21 23:46 (America/Sao_Paulo).
 Validacao da sequencia host concluida em: 2026-08-21 23:52 (America/Sao_Paulo).
 Validacao QEMU parcial concluida em: 2026-08-21 23:56 (America/Sao_Paulo).
 Validacao QEMU da EP6.1 concluida em: 2026-08-21 23:58 (America/Sao_Paulo).
-Validacao funcional restante: regressao EP6.0/U5.
+Regressao EP6.0/U5 reutilizada para o fechamento da EP6.1 em: 2026-08-22
+08:55 (America/Sao_Paulo); execucao original registrada em 2026-08-21 20:07.
+EP6.1 concluida em: 2026-08-22 08:55 (America/Sao_Paulo).
 
 ### EP6.2 - Canal GitHub configuravel
 

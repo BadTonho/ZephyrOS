@@ -43,7 +43,8 @@ funcionalidade entregue.
   CA estatica, SAN, validade temporal, pin SPKI opcional, rotacao e revogacao
   estao documentados; handshake, X.509 e HTTPS funcional permanecem pendentes
   de etapa posterior; a sequencia host e a matriz especifica da EP6.1 no QEMU
-  foram validadas, restando apenas o registro da regressao EP6.0/U5.
+  foram validadas, e a regressao EP6.0/U5 foi preservada conforme a validacao
+  anterior da EP6.0.
 - Evolução da plataforma (EP1 a EP4.3) suporta preferências de mouse PS/2 em RAM,
   volumes ATA/USB somente-leitura com até 4 montagens simultâneas, índice
   global em RAM com busca e suporte USB UHCI com Mass Storage BOT/SCSI integrado
