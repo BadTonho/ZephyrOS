@@ -652,6 +652,7 @@ ser tratadas como uma etapa própria do bootloader.
 - Implementação EP6.3 concluída em: 2026-08-22 20:01 (America/Sao_Paulo).
 - Correção de compilação da EP6.3B concluída em: 2026-08-22 20:25 (America/Sao_Paulo).
 - Correção do selftest host da EP6.3B concluída em: 2026-08-22 20:29 (America/Sao_Paulo).
+- Correção de inicialização independente do runtime v2 concluída em: 2026-08-22 20:52 (America/Sao_Paulo).
 - [ ] Executar a validacao do usuario no QEMU apos `make q3check` e
   `make clean && make`, cobrindo Shell, Updater Classic, HTTP U5, GitHub HTTPS,
   cancelamento, failpoints, rollback e auditoria offline.
