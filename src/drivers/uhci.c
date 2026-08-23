@@ -82,6 +82,7 @@
 #define UHCI_CONFIG_TOTAL_LENGTH_OFFSET 2U
 #define UHCI_DEVICE_VENDOR_OFFSET 8U
 #define UHCI_DEVICE_PRODUCT_OFFSET 10U
+#define UHCI_DEVICE_REVISION_OFFSET 12U
 #define UHCI_DEVICE_CLASS_OFFSET 4U
 #define UHCI_DEVICE_SUBCLASS_OFFSET 5U
 #define UHCI_DEVICE_PROTOCOL_OFFSET 6U
@@ -950,14 +951,29 @@ static int uhci_parse_configuration(uhci_device_record_t* record,
             max_packet = (uint16_t)(data[offset + UHCI_ENDPOINT_MAX_PACKET_OFFSET] |
                           ((uint16_t)data[offset + UHCI_ENDPOINT_MAX_PACKET_OFFSET +
                                             1U] << 8U));
-            if (!(endpoint_address & 0x0FU)) {
+            if (!(endpoint_address & USB_ENDPOINT_ADDRESS_NUMBER_MASK)) {
                 LOG_ERROR("UHCI", "Endpoint USB zero invalido");
                 return ERR_INVALID;
             }
-            if (!max_packet || max_packet > 64U) {
+            if (!max_packet || max_packet > USB_ENDPOINT_MAX_PACKET_SIZE) {
                 LOG_ERROR("UHCI", "Tamanho de pacote USB invalido");
                 return ERR_INVALID;
             }
+            if (endpoint_count >= USB_DEVICE_MAX_ENDPOINTS) {
+                if (context) {
+                    context->failure_detail =
+                        "Configuration USB excede a tabela de endpoints";
+                }
+                LOG_ERROR_CODE("UHCI", ERR_OVERFLOW,
+                               "Configuration USB excede a tabela de endpoints");
+                return ERR_OVERFLOW;
+            }
+            record->info.endpoints[endpoint_count].address = endpoint_address;
+            record->info.endpoints[endpoint_count].transfer_type =
+                transfer_type;
+            record->info.endpoints[endpoint_count].max_packet = max_packet;
+            record->info.endpoints[endpoint_count].interval =
+                data[offset + UHCI_ENDPOINT_INTERVAL_OFFSET];
             endpoint_count++;
             if (transfer_type == 2U &&
                 (max_packet == 8U || max_packet == 16U ||
@@ -1003,15 +1019,6 @@ static int uhci_parse_configuration(uhci_device_record_t* record,
         }
         LOG_ERROR_CODE("UHCI", ERR_UNAVAILABLE,
                        "Configuration USB sem interface Boot unica");
-        return ERR_UNAVAILABLE;
-    }
-    if (endpoint_count > 16U) {
-        if (context) {
-            context->failure_detail =
-                "Configuration USB excede o limite de endpoints";
-        }
-        LOG_ERROR_CODE("UHCI", ERR_UNAVAILABLE,
-                       "Configuration USB excede o limite de endpoints");
         return ERR_UNAVAILABLE;
     }
     if (!endpoint_count && record->info.interface_class != 0U) {
@@ -1186,6 +1193,10 @@ static int uhci_enumerate_port_once(uhci_controller_t* controller,
                                UHCI_DEVICE_PRODUCT_OFFSET] |
                                ((uint16_t)record->device_descriptor[
                                UHCI_DEVICE_PRODUCT_OFFSET + 1U] << 8U));
+    record->info.device_revision = (uint16_t)(record->device_descriptor[
+                                  UHCI_DEVICE_REVISION_OFFSET] |
+                                  ((uint16_t)record->device_descriptor[
+                                  UHCI_DEVICE_REVISION_OFFSET + 1U] << 8U));
     record->info.device_class = record->device_descriptor[
         UHCI_DEVICE_CLASS_OFFSET];
     record->info.device_subclass = record->device_descriptor[
@@ -2119,7 +2130,7 @@ int uhci_validate_state(uint8_t bus, uint8_t device, uint8_t function) {
             UHCI_CONFIGURATION_HEADER_LENGTH ||
             record->info.configuration_length >
             USB_UHCI_DESCRIPTOR_BUFFER_SIZE ||
-            record->info.endpoint_count > 16U ||
+            record->info.endpoint_count > USB_DEVICE_MAX_ENDPOINTS ||
             record->info.bulk_in_count > record->info.endpoint_count ||
             record->info.bulk_out_count > record->info.endpoint_count ||
             record->info.interrupt_in_count > record->info.endpoint_count ||
@@ -2133,6 +2144,19 @@ int uhci_validate_state(uint8_t bus, uint8_t device, uint8_t function) {
               !record->info.interrupt_interval))) {
             LOG_ERROR("UHCI", "Dispositivo USB configurado invalido");
             return ERR_STATE;
+        }
+        for (uint32_t endpoint = 0U;
+             endpoint < record->info.endpoint_count; endpoint++) {
+            usb_endpoint_info_t* descriptor =
+                &record->info.endpoints[endpoint];
+
+            if (!(descriptor->address & USB_ENDPOINT_ADDRESS_NUMBER_MASK) ||
+                descriptor->transfer_type > USB_ENDPOINT_TRANSFER_TYPE_MAX ||
+                !descriptor->max_packet ||
+                descriptor->max_packet > USB_ENDPOINT_MAX_PACKET_SIZE) {
+                LOG_ERROR("UHCI", "Tabela de endpoints USB invalida");
+                return ERR_STATE;
+            }
         }
     }
     return OK;

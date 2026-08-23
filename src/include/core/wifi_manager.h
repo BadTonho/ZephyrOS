@@ -2,6 +2,7 @@
 #define WIFI_MANAGER_H
 
 #include "types.h"
+#include "core/usb_manager.h"
 
 #define WIFI_MANAGER_MAX_INTERFACES 8U
 #define WIFI_PCI_BAR_COUNT 6U
@@ -9,6 +10,11 @@
 #define WIFI_INTERFACE_NAME_SIZE 32U
 #define WIFI_PCI_CLASS_NETWORK 0x02U
 #define WIFI_PCI_IRQ_UNKNOWN 0xFFU
+
+typedef enum {
+    WIFI_TRANSPORT_PCI = 0,
+    WIFI_TRANSPORT_USB
+} wifi_transport_t;
 
 typedef enum {
     WIFI_INTERFACE_INVENTORIED = 0,
@@ -20,6 +26,7 @@ typedef enum {
 typedef struct {
     char id[WIFI_INTERFACE_ID_SIZE];
     char name[WIFI_INTERFACE_NAME_SIZE];
+    wifi_transport_t transport;
     uint16_t vendor_id;
     uint16_t device_id;
     uint8_t class_code;
@@ -31,6 +38,11 @@ typedef struct {
     uint8_t function;
     uint8_t irq;
     uint32_t bars[WIFI_PCI_BAR_COUNT];
+    char usb_device_id[USB_DEVICE_ID_SIZE];
+    uint8_t usb_port;
+    uint8_t usb_address;
+    uint16_t usb_revision;
+    uint8_t usb_endpoint_count;
     wifi_interface_state_t state;
     int driver_error;
 } wifi_interface_info_t;

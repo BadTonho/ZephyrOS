@@ -2,6 +2,7 @@
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/string.h"
+#include "drivers/rtl8811cu.h"
 #include "drivers/pci.h"
 
 #define WIFI_VENDOR_INTEL 0x8086U
@@ -13,6 +14,7 @@
 #define WIFI_PCI_FUNCTION_MAX 7U
 
 static const char WIFI_CANDIDATE_NAME[] = "PCI network candidate";
+static const char WIFI_USB_CANDIDATE_NAME[] = "Realtek RTL8811CU USB";
 
 static wifi_interface_info_t wifi_interfaces[WIFI_MANAGER_MAX_INTERFACES];
 static wifi_manager_status_t wifi_status;
@@ -26,6 +28,15 @@ static void wifi_append_char(char* text, uint32_t capacity,
     text[*offset] = value;
     (*offset)++;
     text[*offset] = '\0';
+}
+
+static void wifi_append_text(char* text, uint32_t capacity,
+                             uint32_t* offset, const char* value) {
+    if (!value) return;
+    while (*value) {
+        wifi_append_char(text, capacity, offset, *value);
+        value++;
+    }
 }
 
 static void wifi_append_hex(char* text, uint32_t capacity,
@@ -79,6 +90,34 @@ static void wifi_format_id(const pci_device_t* pci, char* output,
     wifi_append_decimal(output, capacity, &offset, pci->function);
 }
 
+static void wifi_format_usb_id(const usb_device_info_t* device, char* output,
+                               uint32_t capacity) {
+    uint32_t offset = 0U;
+
+    if (!device || !output || capacity == 0U) return;
+    output[0] = '\0';
+    wifi_append_text(output, capacity, &offset, "wifi-usb-");
+    wifi_append_hex(output, capacity, &offset, device->controller_bus,
+                    WIFI_HEX_DIGITS_BYTE);
+    wifi_append_char(output, capacity, &offset, ':');
+    wifi_append_hex(output, capacity, &offset, device->controller_device,
+                    WIFI_HEX_DIGITS_BYTE);
+    wifi_append_char(output, capacity, &offset, '.');
+    wifi_append_hex(output, capacity, &offset, device->controller_function,
+                    1U);
+    wifi_append_text(output, capacity, &offset, "-p");
+    wifi_append_decimal(output, capacity, &offset, device->port_number);
+}
+
+static void wifi_copy_text(char* destination, uint32_t capacity,
+                           const char* source) {
+    uint32_t offset = 0U;
+
+    if (!destination || capacity == 0U) return;
+    destination[0] = '\0';
+    wifi_append_text(destination, capacity, &offset, source);
+}
+
 static int wifi_is_supported_ethernet(const pci_device_t* pci) {
     if (!pci) return 0;
     return (pci->vendor_id == WIFI_VENDOR_INTEL &&
@@ -90,6 +129,7 @@ static int wifi_is_supported_ethernet(const pci_device_t* pci) {
 static int wifi_info_is_supported_ethernet(
     const wifi_interface_info_t* info) {
     if (!info) return 0;
+    if (info->transport != WIFI_TRANSPORT_PCI) return 0;
     return (info->vendor_id == WIFI_VENDOR_INTEL &&
             info->device_id == WIFI_DEVICE_E1000) ||
            (info->vendor_id == WIFI_VENDOR_REALTEK &&
@@ -135,6 +175,7 @@ static int wifi_copy_pci(const pci_device_t* pci,
         return ERR_NULL;
     }
     kmemset(out_info, 0, sizeof(*out_info));
+    out_info->transport = WIFI_TRANSPORT_PCI;
     wifi_format_id(pci, out_info->id, sizeof(out_info->id));
     out_info->vendor_id = pci->vendor_id;
     out_info->device_id = pci->device_id;
@@ -156,6 +197,47 @@ static int wifi_copy_pci(const pci_device_t* pci,
             sizeof(WIFI_CANDIDATE_NAME));
     out_info->state = WIFI_INTERFACE_UNSUPPORTED;
     out_info->driver_error = ERR_UNAVAILABLE;
+    return OK;
+}
+
+static int wifi_copy_usb(const usb_device_info_t* device,
+                         wifi_interface_info_t* out_info) {
+    rtl8811cu_probe_info_t probe;
+    int result;
+
+    if (!device || !out_info) {
+        LOG_ERROR("WIFI", "Argumento nulo ao copiar dispositivo USB");
+        return ERR_NULL;
+    }
+    kmemset(out_info, 0, sizeof(*out_info));
+    out_info->transport = WIFI_TRANSPORT_USB;
+    wifi_format_usb_id(device, out_info->id, sizeof(out_info->id));
+    wifi_copy_text(out_info->name, sizeof(out_info->name),
+                   WIFI_USB_CANDIDATE_NAME);
+    out_info->vendor_id = device->vendor_id;
+    out_info->device_id = device->product_id;
+    out_info->class_code = device->interface_class;
+    out_info->subclass_code = device->interface_subclass;
+    out_info->prog_if = device->interface_protocol;
+    out_info->revision = (uint8_t)(device->device_revision & 0xFFU);
+    out_info->bus = device->controller_bus;
+    out_info->device = device->controller_device;
+    out_info->function = device->controller_function;
+    out_info->irq = WIFI_PCI_IRQ_UNKNOWN;
+    out_info->usb_port = device->port_number;
+    out_info->usb_address = device->usb_address;
+    out_info->usb_revision = device->device_revision;
+    out_info->usb_endpoint_count = device->endpoint_count;
+    wifi_copy_text(out_info->usb_device_id, sizeof(out_info->usb_device_id),
+                   device->id);
+    result = rtl8811cu_probe(device, &probe);
+    if (result == OK || result == ERR_UNAVAILABLE) {
+        out_info->state = WIFI_INTERFACE_UNSUPPORTED;
+        out_info->driver_error = ERR_UNAVAILABLE;
+    } else {
+        out_info->state = WIFI_INTERFACE_ERROR;
+        out_info->driver_error = result;
+    }
     return OK;
 }
 
@@ -202,21 +284,66 @@ static int wifi_collect_interfaces(void) {
     return OK;
 }
 
+static int wifi_collect_usb_interfaces(void) {
+    uint32_t device_count = 0U;
+    int result = usb_manager_get_device_count(&device_count);
+
+    if (result == ERR_STATE) {
+        LOG_WARN("WIFI", "Inventario USB ainda nao inicializado");
+        return OK;
+    }
+    if (result != OK) {
+        LOG_ERROR("WIFI", "Falha ao consultar inventario USB de Wi-Fi");
+        return result;
+    }
+    for (uint32_t index = 0U; index < device_count; index++) {
+        usb_device_info_t device;
+        wifi_interface_info_t* interface_info;
+
+        result = usb_manager_get_device(index, &device);
+        if (result != OK) {
+            LOG_ERROR("WIFI", "Falha ao consultar dispositivo USB de Wi-Fi");
+            return result;
+        }
+        if (device.vendor_id != RTL8811CU_VENDOR_ID ||
+            device.product_id != RTL8811CU_PRODUCT_ID) {
+            continue;
+        }
+        if (wifi_status.interface_count >= WIFI_MANAGER_MAX_INTERFACES) {
+            wifi_status.partial = 1U;
+            wifi_status.last_error = ERR_OVERFLOW;
+            LOG_WARN("WIFI", "Limite de interfaces Wi-Fi atingido");
+            return ERR_OVERFLOW;
+        }
+        interface_info = &wifi_interfaces[wifi_status.interface_count];
+        result = wifi_copy_usb(&device, interface_info);
+        if (result != OK) return result;
+        wifi_status.interface_count++;
+        wifi_status.candidate_count++;
+        if (interface_info->state == WIFI_INTERFACE_UNSUPPORTED) {
+            wifi_status.unsupported_count++;
+        } else if (interface_info->state == WIFI_INTERFACE_ERROR) {
+            wifi_status.error_count++;
+        }
+    }
+    return OK;
+}
+
 int wifi_manager_init(void) {
     int result;
 
-    LOG_INFO("WIFI", "Inicializando inventario PCI de Wi-Fi");
+    LOG_INFO("WIFI", "Inicializando inventario PCI e USB de Wi-Fi");
     wifi_manager_initialized = 1;
     result = wifi_manager_refresh();
     if (result != OK && result != ERR_OVERFLOW) {
         wifi_manager_initialized = 0;
-        LOG_ERROR("WIFI", "Falha ao inicializar inventario PCI de Wi-Fi");
+        LOG_ERROR("WIFI", "Falha ao inicializar inventario PCI e USB de Wi-Fi");
         return result;
     }
     if (result == ERR_OVERFLOW) {
-        LOG_WARN("WIFI", "Inventario PCI de Wi-Fi parcial");
+        LOG_WARN("WIFI", "Inventario PCI e USB de Wi-Fi parcial");
     }
-    LOG_INFO("WIFI", "Inventario PCI de Wi-Fi inicializado");
+    LOG_INFO("WIFI", "Inventario PCI e USB de Wi-Fi inicializado");
     return result;
 }
 
@@ -237,17 +364,28 @@ int wifi_manager_refresh(void) {
         return result;
     }
     if (result == ERR_OVERFLOW) {
-        LOG_WARN("WIFI", "Inventario PCI de Wi-Fi atualizado parcialmente");
+        wifi_status.partial = 1U;
+    }
+    result = wifi_collect_usb_interfaces();
+    if (result != OK && result != ERR_OVERFLOW) {
+        wifi_status.last_error = result;
+        LOG_ERROR("WIFI", "Falha ao atualizar inventario USB de Wi-Fi");
+        return result;
+    }
+    if (result == ERR_OVERFLOW) {
+        wifi_status.partial = 1U;
+    }
+    if (wifi_status.partial) {
+        wifi_status.last_error = ERR_OVERFLOW;
+        LOG_WARN("WIFI", "Inventario PCI e USB de Wi-Fi atualizado parcialmente");
     } else if (!wifi_status.candidate_count) {
-        LOG_WARN("WIFI", "Nenhum controlador PCI candidato Wi-Fi encontrado");
+        wifi_status.last_error = ERR_NOT_FOUND;
+        LOG_WARN("WIFI", "Nenhum candidato PCI ou USB de Wi-Fi encontrado");
     } else {
-        LOG_INFO("WIFI", "Inventario PCI de Wi-Fi atualizado");
+        wifi_status.last_error = ERR_UNAVAILABLE;
+        LOG_INFO("WIFI", "Inventario PCI e USB de Wi-Fi atualizado");
     }
-    if (result == OK) {
-        wifi_status.last_error = wifi_status.candidate_count ?
-            ERR_UNAVAILABLE : ERR_NOT_FOUND;
-    }
-    return result;
+    return wifi_status.partial ? ERR_OVERFLOW : OK;
 }
 
 int wifi_manager_get_status(wifi_manager_status_t* out_status) {
@@ -326,9 +464,21 @@ int wifi_manager_validate_state(void) {
     for (uint32_t index = 0U; index < wifi_status.interface_count; index++) {
         wifi_interface_info_t* info = &wifi_interfaces[index];
 
-        if (!info->id[0] || info->class_code != WIFI_PCI_CLASS_NETWORK ||
-            wifi_info_is_supported_ethernet(info)) {
+        if (!info->id[0] || info->transport > WIFI_TRANSPORT_USB) {
             LOG_ERROR("WIFI", "Entrada de inventario Wi-Fi invalida");
+            return ERR_STATE;
+        }
+        if (info->transport == WIFI_TRANSPORT_PCI &&
+            (info->class_code != WIFI_PCI_CLASS_NETWORK ||
+             wifi_info_is_supported_ethernet(info))) {
+            LOG_ERROR("WIFI", "Entrada PCI invalida no inventario Wi-Fi");
+            return ERR_STATE;
+        }
+        if (info->transport == WIFI_TRANSPORT_USB &&
+            (info->vendor_id != RTL8811CU_VENDOR_ID ||
+             info->device_id != RTL8811CU_PRODUCT_ID ||
+             !info->usb_device_id[0])) {
+            LOG_ERROR("WIFI", "Entrada USB invalida no inventario Wi-Fi");
             return ERR_STATE;
         }
         if (info->state == WIFI_INTERFACE_UNSUPPORTED) {

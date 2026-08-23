@@ -40,6 +40,19 @@ static void wifi_print_pci_location(const wifi_interface_info_t* info) {
     shell_command_print_num(info->function);
 }
 
+static void wifi_print_usb_location(const wifi_interface_info_t* info) {
+    video_print(" USB=", WIFI_SHELL_COLOR_INFO);
+    video_print(info->usb_device_id, WIFI_SHELL_COLOR_LABEL);
+    video_print(" porta=", WIFI_SHELL_COLOR_INFO);
+    shell_command_print_num(info->usb_port);
+    video_print(" endereco=", WIFI_SHELL_COLOR_INFO);
+    shell_command_print_num(info->usb_address);
+    video_print(" revisao=0x", WIFI_SHELL_COLOR_INFO);
+    shell_command_print_hex(info->usb_revision, 4U);
+    video_print(" endpoints=", WIFI_SHELL_COLOR_INFO);
+    shell_command_print_num(info->usb_endpoint_count);
+}
+
 static void wifi_print_interface(const wifi_interface_info_t* info) {
     if (!info) {
         LOG_ERROR("SHELL", "Entrada nula no diagnostico Wi-Fi");
@@ -60,14 +73,18 @@ static void wifi_print_interface(const wifi_interface_info_t* info) {
     shell_command_print_hex(info->subclass_code, 2U);
     video_print(" prog-if=0x", WIFI_SHELL_COLOR_INFO);
     shell_command_print_hex(info->prog_if, 2U);
-    video_print(" revisao=0x", WIFI_SHELL_COLOR_INFO);
-    shell_command_print_hex(info->revision, 2U);
-    wifi_print_pci_location(info);
-    video_print(" IRQ=", WIFI_SHELL_COLOR_INFO);
-    if (info->irq == WIFI_PCI_IRQ_UNKNOWN) {
-        video_print("N/D", WIFI_SHELL_COLOR_INFO);
+    if (info->transport == WIFI_TRANSPORT_USB) {
+        wifi_print_usb_location(info);
     } else {
-        shell_command_print_num(info->irq);
+        video_print(" revisao=0x", WIFI_SHELL_COLOR_INFO);
+        shell_command_print_hex(info->revision, 2U);
+        wifi_print_pci_location(info);
+        video_print(" IRQ=", WIFI_SHELL_COLOR_INFO);
+        if (info->irq == WIFI_PCI_IRQ_UNKNOWN) {
+            video_print("N/D", WIFI_SHELL_COLOR_INFO);
+        } else {
+            shell_command_print_num(info->irq);
+        }
     }
     video_print(" erro=", WIFI_SHELL_COLOR_INFO);
     shell_command_print_num((uint32_t)info->driver_error);
@@ -94,11 +111,11 @@ static int wifi_print_inventory(void) {
         return ERR_STATE;
     }
     if (!count) {
-        video_print("Nenhum candidato PCI de rede desconhecido detectado.\n",
+        video_print("Nenhum candidato PCI ou USB de rede desconhecido detectado.\n",
                     WIFI_SHELL_COLOR_INFO);
         return OK;
     }
-    video_print("Candidatos PCI de rede (Wi-Fi nao confirmado):\n",
+    video_print("Candidatos PCI/USB de rede (Wi-Fi nao confirmado):\n",
                 WIFI_SHELL_COLOR_LABEL);
     for (uint32_t index = 0U; index < count; index++) {
         wifi_interface_info_t info;
@@ -145,7 +162,7 @@ static void wifi_print_status(void) {
         state = "UNSUPPORTED";
         state_color = WIFI_SHELL_COLOR_WARN;
     }
-    video_print("Estado Wi-Fi EP7.0: ", WIFI_SHELL_COLOR_LABEL);
+    video_print("Estado Wi-Fi EP7.1: ", WIFI_SHELL_COLOR_LABEL);
     video_print(state, state_color);
     video_print("\n", WIFI_SHELL_COLOR_TEXT);
     video_print("  Interfaces inventariadas: ", WIFI_SHELL_COLOR_TEXT);
@@ -166,10 +183,10 @@ static void wifi_print_status(void) {
     if (status.error_count) {
         video_print("erro no inventario", WIFI_SHELL_COLOR_ERROR);
     } else if (status.candidate_count) {
-        video_print("nenhum chipset/driver Wi-Fi suportado",
+        video_print("nenhum backend Wi-Fi inicializado",
                     WIFI_SHELL_COLOR_WARN);
     } else {
-        video_print("nenhum controlador PCI classe 0x02 encontrado",
+        video_print("nenhum controlador PCI classe 0x02 ou USB RTL8811CU encontrado",
                     WIFI_SHELL_COLOR_INFO);
     }
     video_print("\n", WIFI_SHELL_COLOR_TEXT);
@@ -190,22 +207,21 @@ static void wifi_scan(void) {
     if (result == ERR_OVERFLOW) {
         video_print("Aviso: inventario Wi-Fi parcial.\n", WIFI_SHELL_COLOR_WARN);
     } else {
-        video_print("Varredura PCI Wi-Fi concluida; nenhum hardware foi inicializado.\n",
+        video_print("Inventario PCI/USB concluido; nenhuma varredura 802.11 ou inicializacao de radio foi executada.\n",
                     WIFI_SHELL_COLOR_READY);
     }
 }
 
 static void wifi_connect(const char* args) {
-    if (args && args[0] != '\0') {
-        LOG_WARN("WIFI", "Argumentos de conexao rejeitados nesta etapa");
-        video_print("Uso: wifi connect\n", WIFI_SHELL_COLOR_WARN);
+    if (!args || args[0] == '\0') {
+        video_print("Uso: wifi connect <ssid>\n", WIFI_SHELL_COLOR_WARN);
         return;
     }
     LOG_WARN("WIFI", "Associacao Wi-Fi indisponivel nesta etapa");
     video_print("wifi connect: ERR_UNAVAILABLE\n", WIFI_SHELL_COLOR_WARN);
-    video_print("Nenhum driver Wi-Fi suportado; conexao nao executada.\n",
+    video_print("Backend RTL8811CU ainda nao inicializado; conexao nao executada.\n",
                 WIFI_SHELL_COLOR_WARN);
-    video_print("Nenhuma credencial foi processada ou armazenada.\n",
+    video_print("Nenhuma senha foi aceita, processada, exibida ou armazenada.\n",
                 WIFI_SHELL_COLOR_INFO);
 }
 
@@ -227,7 +243,7 @@ static void wifi_command(const char* args) {
         return;
     }
     LOG_WARN("SHELL", "Uso invalido do comando wifi");
-    video_print("Uso: wifi status|scan|connect\n", WIFI_SHELL_COLOR_WARN);
+    video_print("Uso: wifi status|scan|connect <ssid>\n", WIFI_SHELL_COLOR_WARN);
 }
 
 void shell_dispatch_cmd_wifi(const char* arguments) {

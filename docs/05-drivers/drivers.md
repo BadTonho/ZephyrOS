@@ -24,6 +24,7 @@ src/drivers/
 ├── tss.c            → Task State Segment
 ├── uhci.c           → Controlador USB UHCI, portas raiz e transferencias USB
 ├── usb_hid.c        → Teclado e mouse USB HID Boot
+├── rtl8811cu.c      → Probe seguro do USB Realtek RTL8811CU
 ├── vesa.c           → VESA BIOS Extensions (modo gráfico)
 └── video.c          → VGA Text Mode
 ```
@@ -31,6 +32,13 @@ src/drivers/
 Na EP4.3, `src/drivers/usb_msc.c` complementa `uhci.c` com BOT/SCSI
 somente-leitura. Na EP4.4, `src/drivers/usb_hid.c` usa Interrupt IN Boot; os
 contratos publicos ficam em `usb_msc.h`, `usb_hid.h` e `uhci.h`.
+
+Na EP7.1A, `src/drivers/rtl8811cu.c` somente identifica
+`USB\VID_0BDA&PID_C811` com `bcdDevice` `0x0200`, verifica a presenca externa
+de `RTL8811.BIN` e publica estado/erros. Ele nao executa sequencia de radio,
+nao carrega firmware no dispositivo e nao fornece frames Ethernet enquanto a
+operacao do chipset nao estiver respaldada por uma referencia tecnica
+verificavel.
 
 ---
 

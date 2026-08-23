@@ -88,6 +88,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/drivers/mouse.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/pci.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/rtl8139.h` | `docs/05-drivers/drivers.md` |
+| `src/include/drivers/rtl8811cu.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/rtc.h` | `docs/14-atualizacoes/distribuicao-remota.md` |
 | `src/include/drivers/speaker.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/tss.h` | `docs/05-drivers/drivers.md` |
@@ -177,12 +178,15 @@ driver, interface L3, vinculo Ethernet e DHCP pendente. Os headers de E1000 e
 RTL8139 inicializam o dispositivo PCI exato; IDT oferece handlers
 compartilhados e PCI confirma I/O Space com Bus Mastering.
 
-Desde a EP7.0, `src/include/core/wifi_manager.h` define um inventario PCI
-somente-leitura para candidatos de rede que nao sejam E1000 ou RTL8139. O
-contrato preserva Vendor ID, Device ID, classe, subclasse, ProgIF, revisao,
-BDF, IRQ e BAR0-BAR5, mas nao inicializa hardware, DMA, IRQ, firmware ou
-associacao. O comando `wifi connect` permanece indisponivel ate a selecao de
-um chipset e de um driver reais.
+Desde a EP7.0, `src/include/core/wifi_manager.h` define um inventario somente-
+leitura para candidatos PCI de rede que nao sejam E1000 ou RTL8139. Na EP7.1A,
+o mesmo contrato tambem publica dispositivos USB Realtek `0x0BDA:0xC811`,
+transportes PCI/USB, ID da sessao USB, porta, endereco, `bcdDevice` e contagem
+de endpoints. O `rtl8811cu.h` aceita somente a revisao observada `0x0200` no
+probe; `rtl8811cu_init()` valida `RTL8811.BIN`, mas retorna
+`ERR_UNAVAILABLE` enquanto a sequencia de radio nao estiver confirmada. Nenhum
+hardware, DMA, IRQ, firmware ou associacao e inicializado por esse diagnostico.
+O comando `wifi connect <ssid>` permanece controlado e nao aceita senhas.
 
 Desde a U2, `src/include/core/crypto.h` define SHA-2 incremental, verificacao
 Ed25519 e autotestes; `src/include/core/update.h` fixa motivos, metadados e
@@ -329,7 +333,10 @@ internas ao kernel e nao alteram a ABI ring 3.
 
 Desde a EP4.2, `src/include/core/usb_manager.h` define o inventario limitado a
 oito controladores USB, runtime UHCI, estados/motivos por porta, velocidade,
-endereco, descritores principais e dispositivos configurados. Os IDs de
+endereco, descritores principais e dispositivos configurados. Na EP7.1A,
+`usb_device_info_t` tambem publica `device_revision` (`bcdDevice`) e uma tabela
+limitada de todos os endpoints descritos, sem remover os campos derivados de
+Bulk e Interrupt consumidos por MSC e HID. Os IDs de
 controlador usam `usb-pci-BB:DD.F`; dispositivos usam a sessao
 `usb-dev-BB:DD.F-pN-aN`. `src/include/drivers/uhci.h` fixa os limites de I/O,
 DMA, portas e deadlines do primeiro driver USB real. EHCI continua somente no

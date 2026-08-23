@@ -20,6 +20,7 @@ QEMU_USB_ARGS ?= -device piix3-usb-uhci,id=usb
 QEMU_USB_DEVICE_ARGS ?= -device usb-kbd,bus=usb.0
 QEMU_USB_HID_DEVICE_ARGS ?= -device usb-kbd,bus=usb.0,port=1 -device usb-mouse,bus=usb.0,port=2
 QEMU_USB_MSC_ARGS ?= -drive if=none,id=usb-stick,format=raw,file=$(STORAGE_VALID_IMG),readonly=on -device usb-storage,bus=usb.0,drive=usb-stick
+QEMU_USB_WIFI_ARGS ?= -device usb-host,vendorid=0x0BDA,productid=0xC811,bus=usb.0
 
 # Flags
 CFLAGS = -m32 -O2 -fno-strict-aliasing -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -I src/include -I src/include/core -I src/include/drivers -I src/include/fs -I src/include/memory -I src/include/process -I src/include/apps -I src/include/ui
@@ -131,6 +132,9 @@ USB_MSC_OBJ = build/usb_msc.o
 
 USB_HID_C = src/drivers/usb_hid.c
 USB_HID_OBJ = build/usb_hid.o
+
+RTL8811CU_C = src/drivers/rtl8811cu.c
+RTL8811CU_OBJ = build/rtl8811cu.o
 
 NETWORK_MANAGER_C = src/core/network_manager.c
 NETWORK_MANAGER_OBJ = build/network_manager.o
@@ -451,7 +455,7 @@ STORE_AS5_PUBLIC = config\app-store-test-public.json
 # Todas as variáveis de objetos
 OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(INPUT_OBJ) $(IRQ_DEFERRED_OBJ) $(WAIT_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(BEARSSL_COMPAT_OBJ) $(BEARSSL_OBJ) $(UPDATE_OBJ) $(UPDATE_REMOTE_OBJ) $(UPDATE_REMOTE_RELEASE_OBJ) $(UPDATE_REMOTE_GITHUB_OBJ) $(UPDATE_RUNTIME_OBJ) $(UPDATE_REMOTE_RUNTIME_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
-       $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(UHCI_OBJ) $(USB_MSC_OBJ) $(USB_HID_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) $(RNG_OBJ) \
+       $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(UHCI_OBJ) $(USB_MSC_OBJ) $(USB_HID_OBJ) $(RTL8811CU_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) $(RNG_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(COMPRESS_OBJ) \
        $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(BLOCK_OBJ) $(STORAGE_OBJ) $(FILE_INDEX_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(UPDATER_OBJ) $(APPSTORE_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ) $(APP_REMOTE_OBJ) $(DEVICE_MANAGER_OBJ) $(USB_MANAGER_OBJ) $(NETWORK_MANAGER_OBJ) $(WIFI_MANAGER_OBJ) $(POWER_OBJ) $(ETHERNET_OBJ) $(ARP_OBJ) $(IPV4_OBJ) $(ICMP_OBJ) $(UDP_OBJ) $(DHCP_OBJ) $(DNS_OBJ) $(TCP_OBJ) $(NET_SOCKET_OBJ) $(HTTP_OBJ) $(APP_CATALOG_OBJ) $(DISPLAY_OBJ) $(SHELL_INPUT_OBJ) $(SHELL_DISPATCH_OBJ) $(SHELL_COMMAND_UTILS_OBJ) $(SHELL_COMMANDS_CORE_OBJ) $(SHELL_COMMANDS_STORAGE_OBJ) $(SHELL_COMMANDS_DIAGNOSTICS_OBJ) $(SHELL_COMMANDS_NETWORK_OBJ) $(SHELL_COMMANDS_WIFI_OBJ) $(SHELL_CHECKS_OBJ) $(SHELL_COMMANDS_PACKAGES_OBJ) $(SHELL_COMMANDS_APPS_OBJ) $(SHELL_HOSTED_OBJ) $(SHELL_JOB_OBJ) $(RTC_OBJ) $(CLOCK_OBJ) $(TLS_OBJ) $(TLS_CLIENT_OBJ)
 
@@ -575,11 +579,15 @@ $(USB_HID_OBJ): $(USB_HID_C) src/include/drivers/usb_hid.h src/include/core/inpu
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
+$(RTL8811CU_OBJ): $(RTL8811CU_C) src/include/drivers/rtl8811cu.h src/include/core/usb_manager.h src/include/core/ethernet.h src/include/fs/fs.h
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
 $(NETWORK_MANAGER_OBJ): $(NETWORK_MANAGER_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(WIFI_MANAGER_OBJ): $(WIFI_MANAGER_C) src/include/core/wifi_manager.h src/include/drivers/pci.h
+$(WIFI_MANAGER_OBJ): $(WIFI_MANAGER_C) src/include/core/wifi_manager.h src/include/core/usb_manager.h src/include/drivers/pci.h src/include/drivers/rtl8811cu.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -969,6 +977,9 @@ run-usb-msc: $(OS_IMG) $(STORAGE_FIXTURES_STAMP)
 run-usb-hid: $(OS_IMG)
 	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS) $(QEMU_USB_ARGS) $(QEMU_USB_HID_DEVICE_ARGS)
 
+run-usb-wifi: $(OS_IMG)
+	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS) $(QEMU_USB_ARGS) $(QEMU_USB_WIFI_ARGS)
+
 $(STORAGE_FIXTURES_STAMP): $(STORAGE_FIXTURES_TOOL)
 	@if not exist build mkdir build
 	python $(STORAGE_FIXTURES_TOOL) generate --output-dir build
@@ -1061,4 +1072,4 @@ store-as5-serve: store-as5-test
 clean:
 	rmdir /s /q build
 
-.PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
+.PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
