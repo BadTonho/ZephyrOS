@@ -443,12 +443,18 @@ static int runtime_remote_wait_http(const update_remote_options_t* options) {
 static void runtime_remote_http_options(const update_remote_options_t* options,
                                         http_request_options_t* output) {
     kmemset(output, 0, sizeof(*output));
-    if (!options) return;
-    output->accept = options->http_accept;
-    output->api_version = options->http_api_version;
-    output->require_https = options->http_require_https;
-    output->follow_redirects = options->http_follow_redirects;
-    output->max_redirects = options->http_max_redirects;
+    if (options) {
+        output->accept = options->http_accept;
+        output->api_version = options->http_api_version;
+        output->require_https = options->http_require_https;
+        output->follow_redirects = options->http_follow_redirects;
+        output->max_redirects = options->http_max_redirects;
+    }
+    if (runtime_remote_source.github) {
+        output->require_https = 1U;
+        output->follow_redirects = 1U;
+        output->max_redirects = HTTP_MAX_REDIRECTS;
+    }
 }
 
 static update_remote_runtime_reason_t runtime_remote_http_reason(void) {
