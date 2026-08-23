@@ -51,6 +51,7 @@
 #include "core/tcp.h"
 #include "core/udp.h"
 #include "core/network_manager.h"
+#include "core/wifi_manager.h"
 #include "core/power.h"
 #include "core/app_api.h"
 #include "core/app_catalog.h"
@@ -171,6 +172,7 @@ typedef struct {
     int devices_result;
     int usb_result;
     int network_result;
+    int wifi_result;
     int acpi_result;
     int power_result;
     int index_result;
@@ -751,6 +753,7 @@ static void shell_regcheck_reset(void) {
     shell_regcheck.devices_result = ERR_STATE;
     shell_regcheck.usb_result = ERR_STATE;
     shell_regcheck.network_result = ERR_STATE;
+    shell_regcheck.wifi_result = ERR_STATE;
     shell_regcheck.acpi_result = ERR_STATE;
     shell_regcheck.power_result = ERR_STATE;
     shell_regcheck.index_result = ERR_STATE;
@@ -1278,6 +1281,11 @@ static void shell_regcheck_run_full_checks(void) {
     } else {
         shell_regcheck.devices_result = OK;
     }
+    if (scan.wifi_result == OK || scan.wifi_result == ERR_OVERFLOW) {
+        shell_regcheck.wifi_result = wifi_manager_validate_state();
+    } else {
+        shell_regcheck.wifi_result = scan.wifi_result;
+    }
     if (!usb_idempotent) {
         shell_regcheck.usb_result = ERR_STATE;
     } else if (scan.usb_result == OK || scan.usb_result == ERR_OVERFLOW) {
@@ -1411,6 +1419,7 @@ static int shell_regcheck_has_failures(void) {
          shell_regcheck.devices_result != OK ||
          shell_regcheck.usb_result != OK ||
          shell_regcheck.network_result != OK ||
+         shell_regcheck.wifi_result != OK ||
          shell_regcheck.acpi_result != OK ||
          shell_regcheck.power_result != OK ||
          shell_regcheck.index_result != OK)) {
@@ -1457,6 +1466,8 @@ static void shell_regcheck_finish(void) {
             shell_regcheck_print_failure("usb", shell_regcheck.usb_result);
             shell_regcheck_print_failure("network",
                                          shell_regcheck.network_result);
+            shell_regcheck_print_failure("wifi",
+                                         shell_regcheck.wifi_result);
             shell_regcheck_print_failure("acpi",
                                          shell_regcheck.acpi_result);
             shell_regcheck_print_failure("power",

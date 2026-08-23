@@ -587,9 +587,25 @@ e processos ring 3 não mudam sua ABI.
 
 ## EP7 - Wi-Fi por hardware suportado
 
+**Estado:** EP7.0 implementada; validacao executavel pendente do usuario.
+Driver de um chipset real, associacao, firmware e integracao L3 continuam
+fora desta subetapa ate que um adaptador PCI/PCIe seja identificado.
+
+### EP7.0 - Inventario e diagnostico seguro
+
+- [x] Criar `wifi_manager` com snapshot estatico de candidatos PCI classe
+  `0x02`, ignorando E1000 e RTL8139 sem habilitar hardware.
+- [x] Preservar Vendor ID, Device ID, classe, subclasse, ProgIF, revisao,
+  BDF, IRQ e BAR0-BAR5 com estados `INVENTORIED`, `UNSUPPORTED`, `READY` e
+  `ERROR`.
+- [x] Adicionar `wifi status`, `wifi scan` e `wifi connect`; a conexao falha
+  controladamente e nao processa credenciais nesta etapa.
+- [x] Integrar a atualizacao ao `device-scan` e a validacao ao `health` e
+  `regcheck full`.
+
 ### Implementacao
 
-- [ ] Inventariar controladores sem inicializar hardware e selecionar um
+- [ ] Selecionar um
   chipset Wi-Fi alvo, incluindo transporte (PCI/PCIe ou USB), DMA, IRQ,
   firmware e matriz de teste requeridos.
 - [ ] Se o chipset usar USB, exigir as transferencias necessarias da EP4 antes
@@ -599,7 +615,8 @@ e processos ring 3 não mudam sua ABI.
   IPv4, DHCP, DNS, TCP e HTTP em vez de duplicar a pilha IP.
 - [ ] Definir autenticacao e entrada de segredo sem eco antes de suportar rede
   protegida; rede aberta existe apenas como diagnostico controlado.
-- [ ] Adicionar `wifi status`, `wifi scan` e `wifi connect`, sem expor
+- [ ] Evoluir `wifi status`, `wifi scan` e `wifi connect` para o driver real,
+  sem expor
   credenciais em logs, fixtures, imagem ou historico do Shell.
 
 ### Criterio de saida

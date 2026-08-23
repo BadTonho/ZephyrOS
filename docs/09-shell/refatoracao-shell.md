@@ -97,6 +97,7 @@ Separar os handlers em módulos pequenos:
 - `shell_commands_diagnostics.c` — `health`, `log`, `timer`, `wait`,
   `memcheck`, `regcheck` e testes;
 - `shell_commands_network.c` — `net`, `ping`, `nslookup` e `http`;
+- `shell_commands_wifi.c` — `wifi status`, `wifi scan` e `wifi connect`;
 - `shell_commands_apps.c` — Desktop, Explorer, Task Manager, Settings,
   Updater, Media Player e Editor;
 - `shell_commands_storage.c` — `storage`, `index` e `search`;

@@ -103,7 +103,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   assinada e tag auxiliar opcional. A EP6.0 foi implementada sobre fixtures
   HTTP, com selecao explicita por tag e cache U5, validada no QEMU; EP6.1 foi
   concluida e EP6.2 implementa BearSSL, HTTPS GitHub e preflight por tag; EP6.3
-  cobre a matriz ampliada de falhas. A EP9
+  cobre a matriz ampliada de falhas. A EP7.0 adiciona inventario PCI
+  somente-leitura, comandos de diagnostico e validacao sem inicializar
+  hardware; a EP9
   registra a futura imagem de sistema,
   slots A/B e recuperacao de boot, ainda sem autorizacao para alterar boot ou
   stage2.
