@@ -294,6 +294,7 @@ static void cmd_help(void) {
     video_print("  echo     - Exibe texto\n", 0x07);
     video_print("  mem      - Mostra informacoes de memoria\n", 0x07);
     video_print("  procs    - Mostra processos ativos\n", 0x07);
+    video_print("  stack status|check - Diagnostica stacks dos processos\n", 0x07);
     video_print("  threads  - Mostra threads ativas\n", 0x07);
     video_print("  threadtest - Valida troca cooperativa de threads\n", 0x07);
     video_print("  uptime   - Mostra tempo ligado\n", 0x07);
@@ -540,6 +541,89 @@ static void cmd_procs(void) {
     video_print(" processos\n", 0x07);
 }
 
+static void shell_stack_print_info(const process_stack_info_t* info) {
+    uint8_t canaries_ok;
+
+    if (!info) return;
+    canaries_ok = info->lower_canary_ok && info->upper_canary_ok;
+    video_print("  PID ", 0x07);
+    shell_command_print_num(info->pid);
+    video_print(" ", 0x07);
+    video_print(info->name, 0x0B);
+    video_print(": tamanho=", 0x07);
+    shell_command_print_num(info->stack_size);
+    video_print(" uso=", 0x07);
+    shell_command_print_num(info->bytes_used);
+    video_print(" pico=", 0x07);
+    shell_command_print_num(info->peak_bytes_used);
+    video_print(" menor_folga=", 0x07);
+    shell_command_print_num(info->minimum_bytes_free);
+    video_print(" avisos=", 0x07);
+    shell_command_print_num(info->low_water_events);
+    video_print(" falhas=", 0x07);
+    shell_command_print_num(info->overflow_events);
+    video_print(" canarios=", 0x07);
+    video_print(canaries_ok ? "OK" : "FALHOU", canaries_ok ? 0x0A : 0x0C);
+    video_print(" margem=", 0x07);
+    video_print(info->low_water_active ? "BAIXA" : "OK",
+                info->low_water_active ? 0x0E : 0x0A);
+    video_print("\n", 0x07);
+}
+
+static void cmd_stack(const char* arguments) {
+    process_stack_validation_t validation;
+    int result;
+
+    if (!arguments || !*arguments ||
+        shell_command_args_equal(arguments, "status")) {
+        extern process_t processes[];
+
+        video_print("Stacks dos processos:\n", 0x0B);
+        for (uint32_t index = 0U; index < MAX_PROCESSES; index++) {
+            process_stack_info_t info;
+
+            if (processes[index].state == PROCESS_STATE_UNUSED) continue;
+            result = process_stack_get_info(processes[index].pid, &info);
+            if (result == OK || result == ERR_OVERFLOW) {
+                shell_stack_print_info(&info);
+            } else {
+                video_print("  PID ", 0x0C);
+                shell_command_print_num(processes[index].pid);
+                video_print(": diagnostico indisponivel (codigo ", 0x0C);
+                shell_command_print_num((uint32_t)result);
+                video_print(")\n", 0x0C);
+            }
+        }
+        return;
+    }
+
+    if (!shell_command_args_equal(arguments, "check")) {
+        video_print("Uso: stack status|check\n", 0x0E);
+        return;
+    }
+
+    result = process_stack_validate_all(&validation);
+    if (result == OK) result = process_stack_self_test();
+    if (result == OK) {
+        video_print("StackCheck: OK processos=", 0x0A);
+        shell_command_print_num(validation.checked);
+        video_print(" validos=", 0x0A);
+        shell_command_print_num(validation.valid);
+        video_print(" margem_baixa=0 canarios=0\n", 0x0A);
+        return;
+    }
+
+    video_print("StackCheck: FALHOU codigo=", 0x0C);
+    shell_command_print_num((uint32_t)result);
+    video_print(" processos=", 0x0C);
+    shell_command_print_num(validation.checked);
+    video_print(" margem_baixa=", 0x0C);
+    shell_command_print_num(validation.low_water);
+    video_print(" canarios=", 0x0C);
+    shell_command_print_num(validation.corrupted);
+    video_print("\n", 0x0C);
+}
+
 static void cmd_threads(void) {
     video_print("Threads ativas:\n", 0x0B);
 
@@ -736,6 +820,7 @@ SHELL_CORE_WRAP_ARGS(shell_dispatch_cmd_cat, cmd_cat)
 SHELL_CORE_WRAP_ARGS(shell_dispatch_cmd_echo, cmd_echo)
 SHELL_CORE_WRAP_NO_ARGS(shell_dispatch_cmd_mem, cmd_mem)
 SHELL_CORE_WRAP_NO_ARGS(shell_dispatch_cmd_procs, cmd_procs)
+SHELL_CORE_WRAP_ARGS(shell_dispatch_cmd_stack, cmd_stack)
 SHELL_CORE_WRAP_NO_ARGS(shell_dispatch_cmd_threads, cmd_threads)
 SHELL_CORE_WRAP_NO_ARGS(shell_dispatch_cmd_threadtest, cmd_threadtest)
 SHELL_CORE_WRAP_NO_ARGS(shell_dispatch_cmd_uptime, cmd_uptime)

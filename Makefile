@@ -606,7 +606,7 @@ $(NET_SOCKET_OBJ): $(NET_SOCKET_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(HTTP_OBJ): $(HTTP_C) src/include/core/http.h src/include/core/tls_client.h src/include/core/tls.h
+$(HTTP_OBJ): $(HTTP_C) src/include/core/http.h src/include/core/tls_client.h src/include/core/tls.h src/include/process/process.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -798,7 +798,7 @@ $(SHELL_COMMAND_UTILS_OBJ): $(SHELL_COMMAND_UTILS_C) src/include/apps/shell_comm
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(SHELL_COMMANDS_CORE_OBJ): $(SHELL_COMMANDS_CORE_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_runtime.h
+$(SHELL_COMMANDS_CORE_OBJ): $(SHELL_COMMANDS_CORE_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_runtime.h src/include/process/process.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -806,7 +806,7 @@ $(SHELL_COMMANDS_STORAGE_OBJ): $(SHELL_COMMANDS_STORAGE_C) src/include/apps/shel
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(SHELL_COMMANDS_DIAGNOSTICS_OBJ): $(SHELL_COMMANDS_DIAGNOSTICS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_runtime.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/clock.h src/include/core/tls.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h
+$(SHELL_COMMANDS_DIAGNOSTICS_OBJ): $(SHELL_COMMANDS_DIAGNOSTICS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_runtime.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/clock.h src/include/core/tls.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h src/include/process/process.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -814,7 +814,7 @@ $(SHELL_COMMANDS_NETWORK_OBJ): $(SHELL_COMMANDS_NETWORK_C) src/include/apps/shel
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(SHELL_CHECKS_OBJ): $(SHELL_CHECKS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/keyboard.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/clock.h src/include/core/tls.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h
+$(SHELL_CHECKS_OBJ): $(SHELL_CHECKS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/keyboard.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/clock.h src/include/core/tls.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h src/include/process/process.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

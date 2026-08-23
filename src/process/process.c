@@ -12,10 +12,22 @@
 #define PROCESS_DEFAULT_EFLAGS 0x202U
 #define PROCESS_PID_POOL_SIZE (MAX_PROCESSES - 1U)
 #define PROCESS_WAIT_EFLAGS_INTERRUPT_ENABLE (1U << 9U)
+#define PROCESS_STACK_CANARY_LOWER 0x53544B4CU
+#define PROCESS_STACK_CANARY_UPPER 0x53544B55U
+#define PROCESS_STACK_FILL_BYTE 0xA5U
+#define PROCESS_STACK_GUARD_WORDS \
+    (PROCESS_STACK_GUARD_BYTES / sizeof(uint32_t))
+#define PROCESS_STACK_TEST_STORAGE_SIZE \
+    (KERNEL_STACK_SIZE + (PROCESS_STACK_GUARD_BYTES * 2U) + \
+     PROCESS_KERNEL_STACK_ALIGNMENT)
 
 process_t processes[MAX_PROCESSES];
 static process_t* current_process = 0;
-static uint8_t idle_stack[KERNEL_STACK_SIZE] __attribute__((aligned(16)));
+static uint8_t idle_stack[PROCESS_STACK_TEST_STORAGE_SIZE]
+    __attribute__((aligned(16)));
+static uint8_t process_stack_test_storage[PROCESS_STACK_TEST_STORAGE_SIZE]
+    __attribute__((aligned(16)));
+static process_t process_stack_test_process;
 uint32_t process_count = 0;
 static uint32_t free_pids[PROCESS_PID_POOL_SIZE];
 static uint32_t free_pid_count = 0;
@@ -34,6 +46,317 @@ static uint32_t process_event_generation = 0;
 static const app_launch_info_t process_empty_launch = {
     .abi_version = APP_LAUNCH_ABI_VERSION
 };
+
+static uint32_t process_stack_align_up(uint32_t value) {
+    return (value + PROCESS_KERNEL_STACK_ALIGNMENT - 1U) &
+           ~(PROCESS_KERNEL_STACK_ALIGNMENT - 1U);
+}
+
+static int process_stack_size_valid(uint32_t stack_size) {
+    return stack_size >= PROCESS_KERNEL_STACK_MIN_SIZE &&
+           stack_size <= PROCESS_KERNEL_STACK_MAX_SIZE &&
+           (stack_size % PROCESS_KERNEL_STACK_ALIGNMENT) == 0U;
+}
+
+static int process_stack_bounds_valid(const process_t* proc) {
+    if (!proc || !proc->kernel_stack || !proc->kernel_stack_top ||
+        !process_stack_size_valid(proc->kernel_stack_size) ||
+        proc->kernel_stack_top != proc->kernel_stack + proc->kernel_stack_size ||
+        (proc->kernel_stack % PROCESS_KERNEL_STACK_ALIGNMENT) != 0U ||
+        proc->kernel_stack < PROCESS_STACK_GUARD_BYTES) {
+        return 0;
+    }
+    return 1;
+}
+
+static void process_stack_write_guard(uint32_t address, uint32_t value) {
+    uint32_t* words = (uint32_t*)address;
+
+    for (uint32_t index = 0U; index < PROCESS_STACK_GUARD_WORDS; index++) {
+        words[index] = value;
+    }
+}
+
+static uint8_t process_stack_guard_matches(uint32_t address,
+                                            uint32_t expected) {
+    const uint32_t* words = (const uint32_t*)address;
+
+    for (uint32_t index = 0U; index < PROCESS_STACK_GUARD_WORDS; index++) {
+        if (words[index] != expected) return 0U;
+    }
+    return 1U;
+}
+
+static int process_stack_attach(process_t* proc, uint32_t allocation,
+                                uint32_t stack_size, uint8_t owned) {
+    uint32_t stack;
+
+    if (!proc || !allocation || !process_stack_size_valid(stack_size)) {
+        LOG_ERROR("PROC", "Parametros invalidos para stack do processo");
+        return ERR_INVALID;
+    }
+    stack = process_stack_align_up(allocation + PROCESS_STACK_GUARD_BYTES);
+    if (stack < allocation || stack > 0xFFFFFFFFU - stack_size -
+                                    PROCESS_STACK_GUARD_BYTES) {
+        LOG_ERROR("PROC", "Endereco de stack fora dos limites");
+        return ERR_OVERFLOW;
+    }
+
+    proc->kernel_stack_allocation = allocation;
+    proc->kernel_stack = stack;
+    proc->kernel_stack_top = stack + stack_size;
+    proc->kernel_stack_size = stack_size;
+    proc->kernel_stack_peak_used = 0U;
+    proc->kernel_stack_min_free = stack_size;
+    proc->kernel_stack_low_water_events = 0U;
+    proc->kernel_stack_overflow_events = 0U;
+    proc->kernel_stack_owned = owned;
+    proc->kernel_stack_low_water_active = 0U;
+    proc->kernel_stack_corruption_reported = 0U;
+
+    process_stack_write_guard(stack - PROCESS_STACK_GUARD_BYTES,
+                              PROCESS_STACK_CANARY_LOWER);
+    process_stack_write_guard(proc->kernel_stack_top,
+                              PROCESS_STACK_CANARY_UPPER);
+    kmemset((void*)proc->kernel_stack, PROCESS_STACK_FILL_BYTE, stack_size);
+    return OK;
+}
+
+static int process_stack_allocate(process_t* proc, uint32_t stack_size) {
+    uint32_t allocation_size;
+    uint32_t allocation;
+
+    if (!process_stack_size_valid(stack_size)) {
+        LOG_ERROR("PROC", "Tamanho ou alinhamento de stack invalido");
+        return ERR_INVALID;
+    }
+    allocation_size = stack_size + (PROCESS_STACK_GUARD_BYTES * 2U) +
+                      PROCESS_KERNEL_STACK_ALIGNMENT;
+    allocation = (uint32_t)kmalloc(allocation_size);
+    if (!allocation) {
+        LOG_ERROR("PROC", "Falha ao alocar stack do processo");
+        return ERR_MEM;
+    }
+    if (process_stack_attach(proc, allocation, stack_size, 1U) != OK) {
+        kfree((void*)allocation);
+        return ERR_STATE;
+    }
+    return OK;
+}
+
+static void process_stack_release(process_t* proc) {
+    uint32_t allocation;
+
+    if (!proc) return;
+    allocation = proc->kernel_stack_allocation;
+    if (proc->kernel_stack_owned && allocation) kfree((void*)allocation);
+    proc->kernel_stack_allocation = 0U;
+    proc->kernel_stack = 0U;
+    proc->kernel_stack_top = 0U;
+    proc->kernel_stack_size = 0U;
+    proc->kernel_stack_owned = 0U;
+}
+
+static void process_stack_copy_name(char* output, const char* input) {
+    uint32_t index = 0U;
+
+    if (!output) return;
+    if (!input) input = "";
+    while (input[index] && index + 1U < PROCESS_NAME_LENGTH) {
+        output[index] = input[index];
+        index++;
+    }
+    output[index] = '\0';
+}
+
+static void process_stack_log_append_text(char* output, uint32_t* offset,
+                                          const char* text) {
+    if (!output || !offset || !text) return;
+    while (*text && *offset + 1U < LOG_MESSAGE_CAPACITY) {
+        output[(*offset)++] = *text++;
+    }
+    output[*offset] = '\0';
+}
+
+static void process_stack_log_append_number(char* output, uint32_t* offset,
+                                            uint32_t value) {
+    char digits[11];
+    uint32_t count = 0U;
+
+    if (!output || !offset) return;
+    if (value == 0U) {
+        process_stack_log_append_text(output, offset, "0");
+        return;
+    }
+    while (value && count < sizeof(digits)) {
+        digits[count++] = (char)('0' + (value % 10U));
+        value /= 10U;
+    }
+    while (count) {
+        char digit_text[2];
+
+        digit_text[0] = digits[--count];
+        digit_text[1] = '\0';
+        process_stack_log_append_text(output, offset, digit_text);
+    }
+}
+
+static uint32_t process_stack_recorded_usage(const process_t* proc) {
+    uint32_t usage;
+    uint32_t esp = 0U;
+
+    if (!process_stack_bounds_valid(proc)) return 0U;
+    usage = proc->kernel_stack_peak_used;
+    if (proc->context.esp >= proc->kernel_stack &&
+        proc->context.esp <= proc->kernel_stack_top) {
+        uint32_t context_usage = proc->kernel_stack_top - proc->context.esp;
+        if (context_usage > usage) usage = context_usage;
+    }
+    if (proc == current_process) {
+        asm volatile("mov %%esp, %0" : "=r"(esp));
+        if (esp >= proc->kernel_stack && esp <= proc->kernel_stack_top) {
+            uint32_t current_usage = proc->kernel_stack_top - esp;
+            if (current_usage > usage) usage = current_usage;
+        }
+    }
+    return usage;
+}
+
+static void process_stack_report_corruption(process_t* proc) {
+    char message[LOG_MESSAGE_CAPACITY];
+    uint32_t offset = 0U;
+
+    if (!proc || proc->kernel_stack_corruption_reported) return;
+    proc->kernel_stack_corruption_reported = 1U;
+    proc->kernel_stack_overflow_events++;
+    kmemset(message, 0, sizeof(message));
+    process_stack_log_append_text(message, &offset, "Canario PID=");
+    process_stack_log_append_number(message, &offset, proc->pid);
+    process_stack_log_append_text(message, &offset, " nome=");
+    process_stack_log_append_text(message, &offset, proc->name);
+    process_stack_log_append_text(message, &offset, " uso=");
+    process_stack_log_append_number(message, &offset,
+                                    process_stack_recorded_usage(proc));
+    LOG_ERROR_CODE("PROC", (int32_t)proc->pid, message);
+}
+
+static int process_stack_observe(process_t* proc, process_stack_info_t* info,
+                                 uint8_t panic_on_corruption,
+                                 uint8_t log_low_water) {
+    uint8_t lower_ok;
+    uint8_t upper_ok;
+    uint8_t* bytes;
+    uint32_t first_used;
+    uint32_t observed_used;
+    uint32_t bytes_used;
+    uint32_t bytes_free;
+    uint32_t observed_free;
+    uint32_t current_esp = 0U;
+
+    if (info) kmemset(info, 0, sizeof(process_stack_info_t));
+    if (!process_stack_bounds_valid(proc)) {
+        if (info && proc) {
+            info->pid = proc->pid;
+            process_stack_copy_name(info->name, proc->name);
+        }
+        LOG_ERROR("PROC", "Metadados de stack invalidos");
+        return ERR_STATE;
+    }
+    lower_ok = process_stack_guard_matches(
+        proc->kernel_stack - PROCESS_STACK_GUARD_BYTES,
+        PROCESS_STACK_CANARY_LOWER);
+    upper_ok = process_stack_guard_matches(proc->kernel_stack_top,
+                                            PROCESS_STACK_CANARY_UPPER);
+    if (!lower_ok || !upper_ok) {
+        process_stack_report_corruption(proc);
+        if (info) {
+            kmemset(info, 0, sizeof(process_stack_info_t));
+            info->pid = proc->pid;
+            process_stack_copy_name(info->name, proc->name);
+            info->stack_size = proc->kernel_stack_size;
+            info->lower_canary_ok = lower_ok;
+            info->upper_canary_ok = upper_ok;
+            info->overflow_events = proc->kernel_stack_overflow_events;
+        }
+        if (panic_on_corruption) panic("PROC: canario de stack corrompido");
+        return ERR_OVERFLOW;
+    }
+
+    bytes = (uint8_t*)proc->kernel_stack;
+    first_used = 0U;
+    while (first_used < proc->kernel_stack_size &&
+           bytes[first_used] == PROCESS_STACK_FILL_BYTE) {
+        first_used++;
+    }
+    observed_used = proc->kernel_stack_size - first_used;
+    bytes_used = 0U;
+    if (proc->context.esp >= proc->kernel_stack &&
+        proc->context.esp <= proc->kernel_stack_top) {
+        bytes_used = proc->kernel_stack_top - proc->context.esp;
+    }
+    if (proc == current_process) {
+        asm volatile("mov %%esp, %0" : "=r"(current_esp));
+        if (current_esp >= proc->kernel_stack &&
+            current_esp <= proc->kernel_stack_top) {
+            bytes_used = proc->kernel_stack_top - current_esp;
+        }
+    }
+    if (bytes_used > observed_used) observed_used = bytes_used;
+    bytes_free = proc->kernel_stack_size - bytes_used;
+    observed_free = proc->kernel_stack_size - observed_used;
+    if (observed_used > proc->kernel_stack_peak_used) {
+        proc->kernel_stack_peak_used = observed_used;
+    }
+    if (observed_free < proc->kernel_stack_min_free) {
+        proc->kernel_stack_min_free = observed_free;
+    }
+    if (observed_free <= PROCESS_STACK_LOW_WATER_BYTES) {
+        if (!proc->kernel_stack_low_water_active) {
+            proc->kernel_stack_low_water_active = 1U;
+            proc->kernel_stack_low_water_events++;
+            if (log_low_water) {
+                LOG_WARN_CODE("PROC", (int32_t)proc->pid,
+                              "Stack atingiu margem baixa");
+            }
+        }
+    } else {
+        proc->kernel_stack_low_water_active = 0U;
+    }
+
+    if (info) {
+        kmemset(info, 0, sizeof(process_stack_info_t));
+        info->pid = proc->pid;
+        process_stack_copy_name(info->name, proc->name);
+        info->stack_size = proc->kernel_stack_size;
+        info->bytes_used = bytes_used;
+        info->peak_bytes_used = proc->kernel_stack_peak_used;
+        info->bytes_free = bytes_free;
+        info->minimum_bytes_free = proc->kernel_stack_min_free;
+        info->low_water_events = proc->kernel_stack_low_water_events;
+        info->overflow_events = proc->kernel_stack_overflow_events;
+        info->lower_canary_ok = lower_ok;
+        info->upper_canary_ok = upper_ok;
+        info->low_water_active = proc->kernel_stack_low_water_active;
+    }
+    return observed_free <= PROCESS_STACK_LOW_WATER_BYTES ? ERR_OVERFLOW : OK;
+}
+
+/* A troca de contexto precisa ser constante: os canarios sao suficientes
+   aqui; a varredura completa do high-water fica para diagnostico e HTTP. */
+static void process_stack_verify_or_panic(process_t* proc) {
+    if (!process_stack_bounds_valid(proc)) {
+        LOG_ERROR("PROC", "Metadados de stack invalidos na troca de contexto");
+        panic("PROC: metadados de stack invalidos");
+    }
+    if (!process_stack_guard_matches(proc->kernel_stack -
+                                     PROCESS_STACK_GUARD_BYTES,
+                                     PROCESS_STACK_CANARY_LOWER) ||
+        !process_stack_guard_matches(proc->kernel_stack_top,
+                                     PROCESS_STACK_CANARY_UPPER)) {
+        process_stack_report_corruption(proc);
+        panic("PROC: canario de stack corrompido");
+    }
+}
 
 static uint32_t process_wait_irq_save(void) {
     uint32_t flags;
@@ -155,10 +478,7 @@ static void process_discard_new_process(process_t* proc) {
         wait_channel_reset(&proc->ipc_wait_channel);
     }
     if (proc->pid != 0) process_release_pid(proc->pid);
-    if (proc->kernel_stack) {
-        kfree((void*)proc->kernel_stack);
-        proc->kernel_stack = 0;
-    }
+    process_stack_release(proc);
     kmemset(proc, 0, sizeof(process_t));
     proc->state = PROCESS_STATE_UNUSED;
 }
@@ -208,8 +528,12 @@ void process_bootstrap_idle(void) {
     
     /* O Idle precisa de uma stack de retorno valida quando o scheduler
        precisar voltar a ele depois de trocar para outro processo. */
-    proc->kernel_stack = (uint32_t)idle_stack;
-    proc->kernel_stack_top = proc->kernel_stack + KERNEL_STACK_SIZE;
+    if (process_stack_attach(proc, (uint32_t)idle_stack,
+                             KERNEL_STACK_SIZE, 0U) != OK) {
+        LOG_ERROR("PROC", "Falha ao preparar stack do Idle");
+        proc->state = PROCESS_STATE_UNUSED;
+        return;
+    }
     proc->page_directory = paging_get_current_directory();
     proc->context.esp = proc->kernel_stack_top;
     proc->context.eip = (uint32_t)process_idle_main;
@@ -236,8 +560,7 @@ static process_t* process_create_internal(const char* name,
         LOG_ERROR("PROC", "Parametros invalidos ao criar processo");
         return 0;
     }
-    if (stack_size < KERNEL_STACK_SIZE ||
-        (stack_size % PROCESS_KERNEL_STACK_ALIGNMENT) != 0U) {
+    if (!process_stack_size_valid(stack_size)) {
         LOG_ERROR("PROC", "Tamanho ou alinhamento de stack invalido");
         return 0;
     }
@@ -285,13 +608,10 @@ static process_t* process_create_internal(const char* name,
     proc->total_ticks = 0;
     proc->wait_ticks = 0;
 
-    proc->kernel_stack = (uint32_t)kmalloc(stack_size);
-    if (!proc->kernel_stack) {
-        LOG_ERROR("PROC", "Falha ao alocar stack do processo");
+    if (process_stack_allocate(proc, stack_size) != OK) {
         process_discard_new_process(proc);
         return 0;
     }
-    proc->kernel_stack_top = proc->kernel_stack + stack_size;
 
     /* Os aplicativos nativos continuam compartilhando o espaco do kernel. */
     proc->page_directory = paging_get_current_directory();
@@ -347,6 +667,8 @@ static process_t* process_create_internal(const char* name,
     proc->context.user_entry = 0;
     proc->context.user_mode = 0;
     proc->user_test = 0;
+
+    (void)process_stack_observe(proc, 0, 0U, 0U);
 
     proc->state = PROCESS_STATE_READY;
     process_count++;
@@ -437,6 +759,7 @@ static void process_switch_after_termination(void) {
     process_t* previous = current_process;
     process_t* next = scheduler_schedule();
 
+    process_stack_verify_or_panic(previous);
     if (!next || next == previous) {
         next = &processes[0];
     }
@@ -444,6 +767,7 @@ static void process_switch_after_termination(void) {
         LOG_ERROR("PROC", "Nao foi possivel sair de processo encerrado");
         return;
     }
+    process_stack_verify_or_panic(next);
 
     current_process = next;
     next->state = PROCESS_STATE_RUNNING;
@@ -651,14 +975,15 @@ static int process_user_validate_launch(const app_launch_info_t* launch) {
 }
 
 static int process_user_initialize(process_t* proc, page_directory_t* dir,
-                                   uint32_t kernel_stack, const char* name,
+                                   const char* name,
                                    uint32_t entry_offset, int diagnostic_test,
                                    int start_suspended) {
     uint32_t stack_ptr;
     uint32_t entry_point;
+    int result;
     int i = 0;
 
-    if (!proc || !dir || !kernel_stack || !name ||
+    if (!proc || !dir || !name ||
         entry_offset >= PAGE_SIZE) {
         LOG_ERROR("PROC", "Parametros invalidos para processo ring 3");
         return ERR_NULL;
@@ -684,8 +1009,14 @@ static int process_user_initialize(process_t* proc, page_directory_t* dir,
         return ERR_STATE;
     }
     proc->page_directory = dir;
-    proc->kernel_stack = kernel_stack;
-    proc->kernel_stack_top = kernel_stack + KERNEL_STACK_SIZE;
+    result = process_stack_allocate(proc, KERNEL_STACK_SIZE);
+    if (result != OK) {
+        wait_channel_reset(&proc->ipc_wait_channel);
+        process_release_pid(proc->pid);
+        kmemset(proc, 0, sizeof(process_t));
+        proc->state = PROCESS_STATE_UNUSED;
+        return result;
+    }
     entry_point = USER_CODE_BASE + entry_offset;
     stack_ptr = proc->kernel_stack_top;
     stack_ptr -= 4; *(uint32_t*)stack_ptr = USER_DATA_SELECTOR;
@@ -707,6 +1038,7 @@ static int process_user_initialize(process_t* proc, page_directory_t* dir,
     proc->context.user_mode = 1;
     proc->user_test = diagnostic_test ? 1U : 0U;
     proc->state = start_suspended ? PROCESS_STATE_BLOCKED : PROCESS_STATE_READY;
+    (void)process_stack_observe(proc, 0, 0U, 0U);
     process_count++;
     return OK;
 }
@@ -725,7 +1057,6 @@ static int process_create_user_image_internal(const char* name,
     process_t* proc = 0;
     page_directory_t* dir;
     page_directory_t* kernel_dir;
-    uint32_t kernel_stack;
     int result;
 
     if (!paging_is_ready() || !tss_is_ready() ||
@@ -761,36 +1092,27 @@ static int process_create_user_image_internal(const char* name,
     }
 
     kernel_dir = paging_get_current_directory();
-    kernel_stack = (uint32_t)kmalloc(KERNEL_STACK_SIZE);
-    if (!kernel_stack) {
-        LOG_ERROR("PROC", "Falha ao alocar stack do teste ring 3");
-        return ERR_MEM;
-    }
     dir = paging_create_user_directory();
     if (!dir) {
-        kfree((void*)kernel_stack);
         LOG_ERROR("PROC", "Falha ao criar espaco do teste ring 3");
         return ERR_MEM;
     }
     result = process_user_map_image(dir);
     if (result != OK) {
         paging_free_user_directory(dir);
-        kfree((void*)kernel_stack);
         return result;
     }
     result = process_user_load_image(dir, kernel_dir, code, code_size,
                                      data, data_size, launch);
     if (result != OK) {
         paging_free_user_directory(dir);
-        kfree((void*)kernel_stack);
         return result;
     }
-    result = process_user_initialize(proc, dir, kernel_stack, name,
+    result = process_user_initialize(proc, dir, name,
                                      entry_offset, diagnostic_test,
                                      start_suspended);
     if (result != OK) {
         paging_free_user_directory(dir);
-        kfree((void*)kernel_stack);
         return result;
     }
     if (pid_out) *pid_out = proc->pid;
@@ -1049,10 +1371,7 @@ void process_destroy(process_t* proc) {
     }
     pid = proc->pid;
     proc->state = PROCESS_STATE_UNUSED;
-    if (proc->kernel_stack) {
-        kfree((void*)proc->kernel_stack);
-        proc->kernel_stack = 0;
-    }
+    process_stack_release(proc);
     if (proc->page_directory && proc->context.user_mode) {
         paging_free_user_directory(proc->page_directory);
     }
@@ -1065,6 +1384,151 @@ void process_destroy(process_t* proc) {
 
 process_t* process_get_current(void) {
     return current_process;
+}
+
+int process_stack_get_info(uint32_t pid, process_stack_info_t* output) {
+    process_t* proc;
+
+    if (!output) {
+        LOG_ERROR("PROC", "Destino nulo ao consultar stack do processo");
+        return ERR_NULL;
+    }
+    proc = process_get_by_pid(pid);
+    if (!proc) {
+        LOG_ERROR_CODE("PROC", (int32_t)pid,
+                       "PID inexistente ao consultar stack");
+        return ERR_NOT_FOUND;
+    }
+    return process_stack_observe(proc, output, 1U, 1U);
+}
+
+int process_stack_check_current(uint32_t* remaining_out) {
+    process_stack_info_t info;
+    int result;
+
+    if (!remaining_out) {
+        LOG_ERROR("PROC", "Destino nulo ao checar stack atual");
+        return ERR_NULL;
+    }
+    *remaining_out = 0U;
+    if (!current_process) {
+        LOG_ERROR("PROC", "Stack atual indisponivel");
+        return ERR_STATE;
+    }
+    result = process_stack_observe(current_process, &info, 1U, 1U);
+    *remaining_out = info.minimum_bytes_free;
+    return result;
+}
+
+int process_stack_validate_all(process_stack_validation_t* validation) {
+    process_stack_info_t info;
+    int result = OK;
+
+    if (!validation) {
+        LOG_ERROR("PROC", "Destino nulo ao validar stacks");
+        return ERR_NULL;
+    }
+    kmemset(validation, 0, sizeof(process_stack_validation_t));
+    for (uint32_t index = 0U; index < MAX_PROCESSES; index++) {
+        process_t* proc = &processes[index];
+        int observe_result;
+
+        if (proc->state == PROCESS_STATE_UNUSED) continue;
+        validation->checked++;
+        observe_result = process_stack_observe(proc, &info, 1U, 1U);
+        if (observe_result == OK || observe_result == ERR_OVERFLOW) {
+            validation->valid++;
+        }
+        if (!info.lower_canary_ok || !info.upper_canary_ok) {
+            validation->corrupted++;
+        }
+        if (observe_result == ERR_OVERFLOW &&
+            info.lower_canary_ok && info.upper_canary_ok) {
+            validation->low_water++;
+            result = ERR_OVERFLOW;
+        } else if (observe_result != OK) {
+            result = observe_result;
+        }
+    }
+    if (validation->corrupted) {
+        LOG_ERROR("PROC", "Validacao encontrou canario de stack invalido");
+        return ERR_OVERFLOW;
+    }
+    return result;
+}
+
+int process_stack_self_test(void) {
+    process_stack_info_t info;
+    uint32_t lower_guard;
+    int result;
+
+    if (!process_stack_size_valid(KERNEL_STACK_SIZE) ||
+        process_stack_size_valid(PROCESS_KERNEL_STACK_MIN_SIZE -
+                                 PROCESS_KERNEL_STACK_ALIGNMENT) ||
+        process_stack_size_valid(PROCESS_KERNEL_STACK_MAX_SIZE +
+                                 PROCESS_KERNEL_STACK_ALIGNMENT) ||
+        process_stack_size_valid(KERNEL_STACK_SIZE + 1U)) {
+        LOG_ERROR("PROC", "Autoteste de limites de stack falhou");
+        return ERR_STATE;
+    }
+
+    kmemset(&process_stack_test_process, 0, sizeof(process_stack_test_process));
+    process_stack_test_process.pid = MAX_PROCESSES;
+    process_stack_copy_name(process_stack_test_process.name, "stack-selftest");
+    result = process_stack_attach(&process_stack_test_process,
+                                  (uint32_t)process_stack_test_storage,
+                                  KERNEL_STACK_SIZE, 0U);
+    if (result != OK ||
+        (process_stack_test_process.kernel_stack %
+         PROCESS_KERNEL_STACK_ALIGNMENT) != 0U) {
+        LOG_ERROR("PROC", "Autoteste de alinhamento de stack falhou");
+        return ERR_STATE;
+    }
+    result = process_stack_observe(&process_stack_test_process, &info, 0U, 0U);
+    if (result != OK || info.bytes_used != 0U ||
+        info.bytes_free != KERNEL_STACK_SIZE) {
+        LOG_ERROR("PROC", "Autoteste de stack inicial falhou");
+        return ERR_STATE;
+    }
+
+    kmemset((void*)(process_stack_test_process.kernel_stack_top - 128U),
+            0, 128U);
+    result = process_stack_observe(&process_stack_test_process, &info, 0U, 0U);
+    if (result != OK || info.peak_bytes_used < 128U ||
+        info.minimum_bytes_free > KERNEL_STACK_SIZE - 128U) {
+        LOG_ERROR("PROC", "Autoteste de high-water de stack falhou");
+        return ERR_STATE;
+    }
+
+    if (process_stack_attach(&process_stack_test_process,
+                             (uint32_t)process_stack_test_storage,
+                             KERNEL_STACK_SIZE, 0U) != OK) {
+        LOG_ERROR("PROC", "Autoteste nao restaurou stack de teste");
+        return ERR_STATE;
+    }
+    kmemset((void*)(process_stack_test_process.kernel_stack +
+                     PROCESS_STACK_LOW_WATER_BYTES),
+            0, KERNEL_STACK_SIZE - PROCESS_STACK_LOW_WATER_BYTES);
+    result = process_stack_observe(&process_stack_test_process, &info, 0U, 0U);
+    if (result != ERR_OVERFLOW || !info.low_water_active ||
+        info.minimum_bytes_free != PROCESS_STACK_LOW_WATER_BYTES) {
+        LOG_ERROR("PROC", "Autoteste de margem baixa de stack falhou");
+        return ERR_STATE;
+    }
+
+    lower_guard = process_stack_test_process.kernel_stack -
+                  PROCESS_STACK_GUARD_BYTES;
+    if (!process_stack_guard_matches(lower_guard, PROCESS_STACK_CANARY_LOWER)) {
+        LOG_ERROR("PROC", "Autoteste de canario inferior falhou");
+        return ERR_STATE;
+    }
+    process_stack_write_guard(lower_guard, 0U);
+    if (process_stack_guard_matches(lower_guard, PROCESS_STACK_CANARY_LOWER)) {
+        LOG_ERROR("PROC", "Autoteste nao detectou canario corrompido");
+        return ERR_STATE;
+    }
+    kmemset(&process_stack_test_process, 0, sizeof(process_stack_test_process));
+    return OK;
 }
 
 uint32_t process_get_count(void) {
@@ -1163,6 +1627,8 @@ static void scheduler_yield_internal(void) {
     if (!next || next == current_process) return;
 
     process_t* prev = current_process;
+    process_stack_verify_or_panic(prev);
+    process_stack_verify_or_panic(next);
     current_process = next;
     current_process->state = PROCESS_STATE_RUNNING;
 
@@ -1522,6 +1988,8 @@ static uint32_t scheduler_validate_states(void) {
 
 int scheduler_validate_invariants(scheduler_validation_t* validation) {
     process_t* idle = &processes[0];
+    process_stack_validation_t stack_validation;
+    int stack_result;
 
     if (!validation) {
         LOG_ERROR("PROC", "Destino nulo ao validar scheduler");
@@ -1537,14 +2005,22 @@ int scheduler_validate_invariants(scheduler_validation_t* validation) {
                               idle->state == PROCESS_STATE_RUNNING);
     validation->pid_table_valid = scheduler_validate_pid_table();
     validation->state_table_valid = scheduler_validate_states();
+    stack_result = process_stack_validate_all(&stack_validation);
+    validation->stack_table_valid = stack_result == OK &&
+                                    stack_validation.checked == process_count &&
+                                    stack_validation.valid == process_count &&
+                                    stack_validation.low_water == 0U &&
+                                    stack_validation.corrupted == 0U;
 
     if (!validation->current_valid) LOG_ERROR("PROC", "Invariante do processo atual violada");
     if (!validation->idle_valid) LOG_ERROR("PROC", "Invariante do Idle violada");
     if (!validation->pid_table_valid) LOG_ERROR("PROC", "Invariante da tabela de PIDs violada");
     if (!validation->state_table_valid) LOG_ERROR("PROC", "Invariante dos estados violada");
+    if (!validation->stack_table_valid) LOG_ERROR("PROC", "Invariante das stacks violada");
     if (!validation->current_valid || !validation->idle_valid ||
-        !validation->pid_table_valid || !validation->state_table_valid) {
-        return ERR_STATE;
+        !validation->pid_table_valid || !validation->state_table_valid ||
+        !validation->stack_table_valid) {
+        return stack_result == OK ? ERR_STATE : stack_result;
     }
 
     return OK;

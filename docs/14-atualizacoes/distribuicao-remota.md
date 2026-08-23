@@ -434,6 +434,11 @@ próprios: `ZTV` para estado/journal, `ZTS` para staging e `ZTB` para backups.
 Falhas de DNS, TLS/certificado, UTC, tag, asset, manifesto, assinatura, hash,
 cancelamento ou energia preservam o cache ativo e a instalação anterior.
 
+Durante HTTP/TLS, o trabalho executa na stack de 16 KiB do `Zephyr System`.
+Ao medir folga de 1 KiB ou menos, o cliente fecha TLS/socket e marca a sessão
+como `FAILED` com `ERR_OVERFLOW`; o job remoto é então cancelado sem instalar
+nem alterar o cache. Canários de stack rompidos são falhas fatais do kernel.
+
 Comandos do Shell:
 
 ```text

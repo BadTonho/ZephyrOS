@@ -7,6 +7,19 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## EP6.4 — Gerenciamento de stack para rede e TLS
+
+Implementação concluída em: 2026-08-23 17:38:34 (America/Sao_Paulo)
+
+Foram adicionados canários, high-water, menor folga, limites de 4 KiB a
+16 KiB e diagnósticos por processo. O `Zephyr System`, que já executa
+HTTP/TLS, passou a 16 KiB; o Shell permaneceu em 16 KiB. A margem de 1 KiB
+fecha a sessão HTTP/TLS com `ERR_OVERFLOW`; corrupção real de canário registra
+PID, nome e uso antes do `panic`.
+
+Validação executável pendente do usuário: gates de código, QEMU e matriz
+`stack`/TLS/runtime definida no Roadmap 08.
+
 ## EP6.3 — GitHub runtime v2 via HTTPS
 
 Concluída em: 2026-08-23 16:47:47 (America/Sao_Paulo)

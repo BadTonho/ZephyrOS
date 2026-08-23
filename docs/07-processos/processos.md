@@ -85,10 +85,18 @@ Isso:
 
 `process_create()` mantém a stack nativa padrão de 4 KiB. Processos que
 executam caminhos com maior consumo podem usar `process_create_with_stack_size()`
-com tamanho alinhado a 16 bytes e nunca menor que o padrão. Na EP6.2, somente
-o processo `Zephyr System`, responsável pelo polling HTTP/TLS e BearSSL, usa
-uma stack de 8 KiB; Shell, Desktop, Idle e processos ring 3 preservam seus
-contratos atuais.
+entre 4 KiB e 16 KiB, sempre alinhada a 16 bytes. A EP6.4 reserva 16 KiB para
+o `Zephyr System`, responsável pelo polling HTTP/TLS e BearSSL, e preserva os
+16 KiB atuais do Shell; Desktop, Idle e demais processos nativos permanecem
+com 4 KiB. A ABI e a stack de processos ring 3 não mudam.
+
+Cada stack nativa tem canários inferior/superior e área útil preenchida para
+medir high-water. `process_stack_get_info()` consulta um PID,
+`process_stack_validate_all()` verifica a tabela inteira e
+`process_stack_check_current()` protege o worker HTTP/TLS. O Shell expõe
+`stack status` e `stack check`. A margem de 1 KiB no worker encerra a sessão
+HTTP com `ERR_OVERFLOW`; canário rompido registra PID/nome e interrompe o
+kernel com `panic`.
 
 ### Context Inicial
 

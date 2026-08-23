@@ -8,6 +8,7 @@
 #include "core/timer.h"
 #include "core/tls.h"
 #include "core/tls_client.h"
+#include "process/process.h"
 
 #define HTTP_SCHEME "http://"
 #define HTTP_SCHEME_LENGTH 7U
@@ -701,6 +702,24 @@ static void http_fail(int error) {
     http_status.event_generation++;
 }
 
+/* HTTP/TLS executa no Zephyr System. Antes de romper um canario, encerra a
+   sessao de forma controlada quando a margem configurada ja foi atingida. */
+static int http_enforce_worker_stack_margin(void) {
+    uint32_t remaining = 0U;
+    int result = process_stack_check_current(&remaining);
+
+    if (result == OK) return OK;
+    if (result == ERR_OVERFLOW) {
+        LOG_WARN_CODE("NET", (int32_t)remaining,
+                      "Stack do worker HTTP atingiu margem baixa");
+        http_fail(ERR_OVERFLOW);
+        return ERR_OVERFLOW;
+    }
+    LOG_ERROR("NET", "Nao foi possivel validar stack do worker HTTP");
+    http_fail(result);
+    return result;
+}
+
 static int http_start_socket(uint32_t address) {
     int result;
 
@@ -1382,6 +1401,8 @@ int http_maintain(void) {
     if (http_status.state == HTTP_STATE_IDLE ||
         http_status.state == HTTP_STATE_COMPLETE ||
         http_status.state == HTTP_STATE_FAILED) return OK;
+    result = http_enforce_worker_stack_margin();
+    if (result != OK) return OK;
     frequency = timer_get_frequency();
     if (!frequency ||
         HTTP_TIMEOUT_SECONDS > HTTP_MAX_SAFE_TICKS / frequency) {
@@ -1408,7 +1429,9 @@ int http_maintain(void) {
     if (result != OK) {
         http_fail(result);
         /* A falha pertence a sessao; o polling continua operacional. */
+        return OK;
     }
+    (void)http_enforce_worker_stack_margin();
     return OK;
 }
 

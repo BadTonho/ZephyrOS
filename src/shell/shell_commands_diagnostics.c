@@ -3413,6 +3413,7 @@ static void cmd_schedcheck(const char* args) {
     cmd_schedcheck_print_result("idle", validation.idle_valid);
     cmd_schedcheck_print_result("tabela_pid", validation.pid_table_valid);
     cmd_schedcheck_print_result("estados", validation.state_table_valid);
+    cmd_schedcheck_print_result("stacks", validation.stack_table_valid);
     cmd_schedcheck_print_result("resultado", result == OK);
     video_end_update();
 }

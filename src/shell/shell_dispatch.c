@@ -15,6 +15,7 @@ extern void shell_dispatch_cmd_cat(const char* arguments);
 extern void shell_dispatch_cmd_echo(const char* arguments);
 extern void shell_dispatch_cmd_mem(const char* arguments);
 extern void shell_dispatch_cmd_procs(const char* arguments);
+extern void shell_dispatch_cmd_stack(const char* arguments);
 extern void shell_dispatch_cmd_threads(const char* arguments);
 extern void shell_dispatch_cmd_threadtest(const char* arguments);
 extern void shell_dispatch_cmd_uptime(const char* arguments);
@@ -81,6 +82,7 @@ static const shell_dispatch_entry_t shell_dispatch_table[] = {
     {"echo", shell_dispatch_cmd_echo, SHELL_DISPATCH_FLAG_NONE},
     {"mem", shell_dispatch_cmd_mem, SHELL_DISPATCH_FLAG_NONE},
     {"procs", shell_dispatch_cmd_procs, SHELL_DISPATCH_FLAG_NONE},
+    {"stack", shell_dispatch_cmd_stack, SHELL_DISPATCH_FLAG_NONE},
     {"threads", shell_dispatch_cmd_threads, SHELL_DISPATCH_FLAG_NONE},
     {"threadtest", shell_dispatch_cmd_threadtest,
      SHELL_DISPATCH_FLAG_MAY_BLOCK},

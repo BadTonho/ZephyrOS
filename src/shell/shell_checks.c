@@ -826,7 +826,8 @@ static int shell_regcheck_validate_scheduler(void) {
     int result = scheduler_validate_invariants(&validation);
 
     if (result != OK || !validation.current_valid || !validation.idle_valid ||
-        !validation.pid_table_valid || !validation.state_table_valid) {
+        !validation.pid_table_valid || !validation.state_table_valid ||
+        !validation.stack_table_valid || process_stack_self_test() != OK) {
         LOG_ERROR("SHELL", "RegCheck detectou invariante do scheduler invalido");
         return result == OK ? ERR_STATE : result;
     }
