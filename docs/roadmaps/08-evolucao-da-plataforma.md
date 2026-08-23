@@ -665,10 +665,13 @@ ser tratadas como uma etapa própria do bootloader.
 - [x] Auditoria offline da imagem concluida apos os cenarios validos e de
   pacote adulterado, confirmando preservacao da instalacao anterior, estado
   runtime READY, journal CLEAN e ausencia de pending.
-- Horarios exatos das execucoes acima: pendentes de informacao do usuario.
-- [ ] Permanecem pendentes a validacao do Updater Classic, GitHub HTTPS,
-  cancelamento, failpoints e rollback real com arquivos alterados, criados e
-  removidos.
+- [x] Validacao do Updater Classic concluida com a aba Runtime, incluindo
+  exibicao de estado, journal, cache, manifesto e controles da operacao.
+- [x] Cancelamento do download runtime v2 concluido com `F12`, preservando o
+  cache anterior, a instalacao `0.1.0` e o journal `CLEAN`.
+- Horarios das validacoes registrados em: 2026-08-23 00:33 (America/Sao_Paulo).
+- [ ] Permanecem pendentes GitHub HTTPS, failpoints e rollback real com
+  arquivos alterados, criados e removidos.
 
 EP6.0 continua exercitável com o servidor de fixtures U5. EP6.2 mantém o
 transporte HTTPS BearSSL configurado para a API GitHub e a regressao HTTP U5;
