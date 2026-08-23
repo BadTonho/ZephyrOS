@@ -934,6 +934,12 @@ Após B, `EXPLORER.BMP` e `SHELL.BMP` devem estar presentes e
 `EXPLORER.BMP` e `TASKMGR.BMP` devem estar presentes, `SHELL.BMP` ausente,
 com `0.1.1/e0`, `journal=CLEAN` e `rollback=DISABLED`.
 
+Validação B após aplicação concluída em: 2026-08-23 12:55
+(America/Sao_Paulo). Resultado: `0.1.2/e0`, `journal=CLEAN`,
+`rollback=READY`, `EXPLORER.BMP` e `SHELL.BMP` presentes,
+`TASKMGR.BMP` ausente; `health check`, `memcheck` e `regcheck full`
+concluídos.
+
 #### Auditoria offline após o último reboot
 
 Encerrar o QEMU antes da auditoria:
