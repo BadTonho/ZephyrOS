@@ -889,7 +889,10 @@ anterior. A correção foi aplicada em `src/core/update_runtime.c`; ela também
 mantém o rollback vazio quando a operação concluída é um rollback.
 
 Correção implementada em: 2026-08-23 12:38 (America/Sao_Paulo).
-Validação da correção: pendente do gate de build e da repetição da matriz A/B.
+Validação A concluída em: 2026-08-23 12:51 (America/Sao_Paulo).
+Resultado: `0.1.1/e0`, `journal=CLEAN`, `rollback=READY`,
+`verify --cached` com `assets faltantes=0`, `EXPLORER.BMP` e `TASKMGR.BMP`
+presentes e `SHELL.BMP` ausente.
 
 #### Host: servidor da Release B
 
