@@ -683,7 +683,8 @@ ser tratadas como uma etapa própria do bootloader.
 - [x] Failpoint QEMU (`fail-after 1`), recuperação após reboot, aplicação da
   Release válida e rollback de arquivos substituídos foram validados pelo
   usuário; registro recebido em: 2026-08-23 12:15:07 (America/Sao_Paulo).
-- [ ] Permanecem pendentes somente o GitHub HTTPS e o rollback QEMU de uma
+- [ ] Permanecem pendentes o GitHub HTTPS, a auditoria/matriz QEMU após a
+  correção de reconciliação do cache e o fechamento do rollback QEMU de uma
   matriz que combine arquivo substituído, criado e removido.
 
 ### Roteiro operacional completo da EP6.3
@@ -946,6 +947,13 @@ Validação do rollback B concluída em: 2026-08-23 12:57
 `TASKMGR.BMP` presentes, `SHELL.BMP` ausente; `memcheck` e `regcheck full`
 concluídos com `OK`. `update history` permaneceu vazio, sem operações U3
 registradas, conforme o comportamento atual do fluxo runtime v2.
+
+A auditoria offline final encontrou o órfão `ZRV0.01` no cache runtime v2:
+o asset estava no slot ativo, mas fora do `asset_mask` esperado após o
+rollback. A correção para reconciliar slots inativos e extras do slot ativo
+durante a inicialização do transporte runtime foi implementada em:
+2026-08-23 13:04:57 (America/Sao_Paulo). A auditoria e a matriz QEMU após essa
+correção permanecem pendentes.
 
 #### Auditoria offline após o último reboot
 
