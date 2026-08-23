@@ -7,8 +7,8 @@
   "base_epoch": 0,
   "target_epoch": 0,
   "release_public_key": {
-    "public_key_hex": "4a8006ca82cca49ef482be6f554e393d176fbb8236f46bf4308c58bbd82a7808",
-    "key_id_hex": "d4926d816d8373a412e7458cc9f14379"
+    "public_key_hex": "3dd0697e7a167218300dfe96f100d562caa760b804818d2dabf09c10b1daeecd",
+    "key_id_hex": "dfecfa35485fde8ad61707947e5ae85b"
   },
   "payloads": {
     "EXPLORER.BMP": {
@@ -30,7 +30,7 @@
   "artifact": {
     "name": "APPLY.ZUP",
     "size": 9954,
-    "sha256": "a11b825cb0c68d972f3d4651ca04e97a4306cb5f266ef317f727c0eaea70fa86",
+    "sha256": "6c83badbf845547316676d3125a04e64d437c243abaec17a76653e9323e2f86c",
     "expected_reason": "ZUPD_REASON_NONE"
   }
 }

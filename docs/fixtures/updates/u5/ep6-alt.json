@@ -15,12 +15,12 @@
     "package": {
       "name": "APPLY.ZUP",
       "size": 9954,
-      "sha256": "a11b825cb0c68d972f3d4651ca04e97a4306cb5f266ef317f727c0eaea70fa86"
+      "sha256": "6c83badbf845547316676d3125a04e64d437c243abaec17a76653e9323e2f86c"
     },
     "manifest": {
       "name": "stable2.zum",
       "size": 256,
-      "sha256": "f4e44bf740c07f77a51b10447c288b63947a9a378289a3a91051d73ee42a2615"
+      "sha256": "5372eae22f29c9ceef2cf30d4d6fbb73efaa9ebe262b45cec35a10fe0ad0e50e"
     }
   }
 }
