@@ -473,7 +473,7 @@ QEMU; regressao EP6.0/U5 preservada conforme validacao anterior.
 
 ### Etapa LBA — Carregamento do kernel no `stage2`
 
-**Estado:** implementada; validação do usuário pendente.
+**Estado:** implementada e validada pelo usuário.
 
 #### Implementação
 
@@ -488,7 +488,7 @@ QEMU; regressao EP6.0/U5 preservada conforme validacao anterior.
   sem comandos QEMU manuais.
 - [x] Confirmar no build que `boot.bin` permanece com 512 bytes e que o tamanho
   alinhado do `stage2` não excede sua janela abaixo de `0x10000`.
-- [ ] Validar com `make q3check`, build limpo, `make run`, `make run-stage2-lba`
+- [x] Validar com `make q3check`, build limpo, `make run`, `make run-stage2-lba`
   e `make run-stage2-chs`, além de `health check`, `memcheck` e `regcheck full`.
 
 #### Critério de saída
