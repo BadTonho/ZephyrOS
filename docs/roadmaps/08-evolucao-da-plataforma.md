@@ -683,9 +683,11 @@ ser tratadas como uma etapa própria do bootloader.
 - [x] Failpoint QEMU (`fail-after 1`), recuperação após reboot, aplicação da
   Release válida e rollback de arquivos substituídos foram validados pelo
   usuário; registro recebido em: 2026-08-23 12:15:07 (America/Sao_Paulo).
-- [ ] Permanecem pendentes o GitHub HTTPS, a auditoria/matriz QEMU após a
-  correção de reconciliação do cache e o fechamento do rollback QEMU de uma
-  matriz que combine arquivo substituído, criado e removido.
+- [x] A matriz QEMU A/B com substituição, criação, remoção e rollback foi
+  repetida após as correções de auditoria e limpeza de backups. A imagem final
+  não reteve `ZTB*`, e a auditoria offline foi aprovada; validação recebida em:
+  2026-08-23 14:46:23 (America/Sao_Paulo).
+- [ ] Permanece pendente somente o GitHub HTTPS.
 
 ### Roteiro operacional completo da EP6.3
 
@@ -958,8 +960,13 @@ verificação e revelou o backup local obsoleto `ZTB0.01`: após o rollback, o
 estado declara `rollback=DISABLED`, mas o backup antigo da aplicação A ficava
 no slot que não foi usado pela aplicação B. A correção para podar todos os
 slots de staging/backup exceto o rollback vigente foi implementada em:
-2026-08-23 13:24:28 (America/Sao_Paulo). A auditoria final após essa correção
-permanece pendente.
+2026-08-23 13:24:28 (America/Sao_Paulo).
+
+Validação da auditoria final recebida em: 2026-08-23 14:46:23
+(America/Sao_Paulo). Resultado: `Audit image: OK`, com `installed=0.1.1`,
+`rollback=DISABLED`, journal local `CLEAN`, histórico vazio, cache U5 vazio,
+cache runtime `READY` em `ZRV0.MAN`, nenhuma transferência pendente e estado
+local runtime `READY` com journal `CLEAN`.
 
 #### Auditoria offline após o último reboot
 
