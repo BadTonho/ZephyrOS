@@ -515,9 +515,10 @@ O cliente HTTP mantem uma sessao GET. Ele aceita somente
 bytes de headers. `http_get_start()` preserva o corpo bufferizado de ate 16
 KiB. Desde a U5, `http_get_stream_start()` entrega o corpo incrementalmente a
 um callback e respeita o limite definido pelo chamador, de ate 128 KiB no
-transporte ZUPD. O framing aceito usa `Content-Length` ou EOF; a U5 exige
-`Content-Length` exato. `Transfer-Encoding`, chunked, headers conflitantes,
-mensagens malformadas e excesso de corpo falham de forma controlada. HTTPS,
+transporte ZUPD. O framing aceito usa `Content-Length`, `chunked` sem trailers
+ou EOF; `Content-Length` exige tamanho exato. Outras codificacoes de
+transferencia, headers conflitantes, mensagens malformadas e excesso de corpo
+falham de forma controlada. HTTPS,
 redirects, POST e compressao permanecem fora do contrato.
 
 O polling da S2.7 acrescenta manutencao TCP, sockets e HTTP, nessa ordem,
