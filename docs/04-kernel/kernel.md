@@ -359,6 +359,23 @@ impede o probe nem o polling das demais. A sincronizacao com recovery e
 idempotente para que `device-scan` repetido sem mudanca nao aumente o contador
 de falhas.
 
+### EP7.0: inventario PCI de candidatos Wi-Fi
+
+`wifi_manager` percorre o snapshot PCI somente depois de `pci_init()` e
+considera candidatos os controladores de classe `0x02` que nao sejam os
+modelos Ethernet ja suportados (`8086:100E` e `10EC:8139`). O servico copia
+Vendor ID, Device ID, classe, subclasse, ProgIF, revisao, BDF, IRQ e BAR0-BAR5
+para um inventario estatico de ate oito entradas. Os IDs publicos usam o
+formato `wifi-BB:DD.F`.
+
+Esta etapa nao habilita BARs ou Bus Mastering, nao mapeia MMIO, nao aloca DMA,
+nao registra IRQ e nao acessa firmware. Os candidatos ficam em
+`UNSUPPORTED`, com `ERR_UNAVAILABLE`; a ausencia de candidatos e um estado
+normal com `ERR_NOT_FOUND`. `wifi status` e `wifi scan` sao diagnosticos, e
+`wifi connect` falha de forma controlada sem ler, armazenar ou registrar
+credenciais. A futura interface Wi-Fi devera entregar frames 802.3 por
+`ethernet_interface_t` antes de ser anexada ao `network_manager`.
+
 `ethernet_interface_t` desacopla a camada L2 dos drivers por contexto opaco e
 callbacks de status, RX pendente, recepcao e transmissao. Um registro fixo
 aceita quatro interfaces e o polling usa round-robin com orcamento global de

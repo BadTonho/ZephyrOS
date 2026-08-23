@@ -24,6 +24,7 @@ typedef struct {
     int usb_result;
     int storage_result;
     int network_result;
+    int wifi_result;
 } shell_device_scan_result_t;
 
 void shell_runtime_reset_input(void);

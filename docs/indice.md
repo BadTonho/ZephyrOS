@@ -90,7 +90,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [05 - Sistema e Ecossistema](roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e apps |
 | [06 - App Store](roadmaps/06-app-store.md) | Catalogo local ZPKG, ciclo de vida e repositorio remoto autenticado |
 | [07 - Modernização Visual](roadmaps/07-modernizacao-visual.md) | Escala acessível, visual flat/dark e desempenho VESA mensurável |
-| [08 - Evolução da Plataforma](roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.3 implementadas; EP6.3 validada com runtime v2, cache seletivo/completo e GitHub HTTPS; EP9 permanece pendente |
+| [08 - Evolução da Plataforma](roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.4 implementadas; EP7.0 implementada para inventário PCI e diagnóstico seguro; driver Wi-Fi real e EP9 permanecem pendentes |
 | [09 - Funcionalidades aplicáveis](roadmaps/09-funcionalidades-aplicaveis.md) | Logs, timers, espera, work queue, dispositivos, I/O, cache e scheduler |
 | [10 - VFS e Abstração de I/O](roadmaps/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, montagens, /dev/ e pipes |
 | [11 - Gerenciamento Avançado de Memória](roadmaps/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging |

@@ -326,6 +326,8 @@ static void cmd_help(void) {
     video_print("  usb device <id> - Mostra detalhes de um controlador USB\n",
                 0x07);
     video_print("  net status - Mostra capacidades atuais de rede\n", 0x07);
+    video_print("  wifi status|scan|connect - Diagnostica candidatos Wi-Fi\n",
+                0x07);
     video_print("  net devices - Lista controladores de rede PCI\n", 0x07);
     video_print("  net info <id> - Mostra detalhes de uma interface\n", 0x07);
     video_print("  net ethernet <id> - Inspeciona recepcao Ethernet L2\n", 0x07);

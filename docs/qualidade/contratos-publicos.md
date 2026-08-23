@@ -54,6 +54,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/core/memory.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/net_socket.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/network_manager.h` | `docs/04-kernel/kernel.md` |
+| `src/include/core/wifi_manager.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/panic.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/power.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/recovery.h` | `docs/04-kernel/kernel.md` |
@@ -175,6 +176,13 @@ limitados exigem esse ID. `src/include/core/network_manager.h` expoe erros de
 driver, interface L3, vinculo Ethernet e DHCP pendente. Os headers de E1000 e
 RTL8139 inicializam o dispositivo PCI exato; IDT oferece handlers
 compartilhados e PCI confirma I/O Space com Bus Mastering.
+
+Desde a EP7.0, `src/include/core/wifi_manager.h` define um inventario PCI
+somente-leitura para candidatos de rede que nao sejam E1000 ou RTL8139. O
+contrato preserva Vendor ID, Device ID, classe, subclasse, ProgIF, revisao,
+BDF, IRQ e BAR0-BAR5, mas nao inicializa hardware, DMA, IRQ, firmware ou
+associacao. O comando `wifi connect` permanece indisponivel ate a selecao de
+um chipset e de um driver reais.
 
 Desde a U2, `src/include/core/crypto.h` define SHA-2 incremental, verificacao
 Ed25519 e autotestes; `src/include/core/update.h` fixa motivos, metadados e

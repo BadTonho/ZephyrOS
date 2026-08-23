@@ -51,6 +51,7 @@
 #include "core/tcp.h"
 #include "core/udp.h"
 #include "core/network_manager.h"
+#include "core/wifi_manager.h"
 #include "core/power.h"
 #include "core/app_api.h"
 #include "core/app_catalog.h"
@@ -1181,6 +1182,33 @@ static void cmd_health_check_usb_hid(int* issue_count) {
     }
 }
 
+static void cmd_health_check_wifi(int* issue_count) {
+    wifi_manager_status_t status;
+    int result;
+
+    if (!issue_count) {
+        LOG_ERROR("SHELL", "Contador nulo no health check Wi-Fi");
+        return;
+    }
+    result = wifi_manager_get_status(&status);
+    if (result == ERR_STATE) result = wifi_manager_init();
+    if (result == OK || result == ERR_OVERFLOW) {
+        result = wifi_manager_get_status(&status);
+    }
+    if (result == OK) result = wifi_manager_validate_state();
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Falha ao validar Wi-Fi no health check");
+        cmd_health_check_print_query_failure(
+            "Wi-Fi", result, issue_count);
+        return;
+    }
+    if (status.interface_count) {
+        video_print("\n  Wi-Fi: UNSUPPORTED motivo=nenhum driver selecionado",
+                    SHELL_HEALTH_CHECK_DETAIL_COLOR);
+        video_print("\n", SHELL_HEALTH_CHECK_TEXT_COLOR);
+    }
+}
+
 static void cmd_health_check(void) {
     int issue_count = 0;
 
@@ -1193,6 +1221,7 @@ static void cmd_health_check(void) {
     cmd_health_check_tls(&issue_count);
     cmd_health_check_kernel(&issue_count);
     cmd_health_check_usb_hid(&issue_count);
+    cmd_health_check_wifi(&issue_count);
     if (!issue_count) {
         video_print(" OK\n", SHELL_HEALTH_CHECK_READY_COLOR);
     } else {
@@ -2666,6 +2695,7 @@ int shell_diagnostics_run_device_scan(shell_device_scan_result_t* scan) {
     scan->usb_result = ERR_STATE;
     scan->storage_result = ERR_STATE;
     scan->network_result = ERR_STATE;
+    scan->wifi_result = ERR_STATE;
     if (scan->pci_result != OK && scan->pci_result != ERR_OVERFLOW) {
         recovery_result =
             recovery_mark_disabled(RECOVERY_COMPONENT_DEVICES,
@@ -2709,6 +2739,13 @@ int shell_diagnostics_run_device_scan(shell_device_scan_result_t* scan) {
         return scan->devices_result;
     }
     scan->network_result = network_manager_refresh();
+    scan->wifi_result = wifi_manager_refresh();
+    if (scan->wifi_result == ERR_STATE) {
+        scan->wifi_result = wifi_manager_init();
+    }
+    if (scan->wifi_result != OK && scan->wifi_result != ERR_OVERFLOW) {
+        LOG_WARN("SHELL", "Falha ao atualizar inventario Wi-Fi");
+    }
 
     if (scan->pci_result == ERR_OVERFLOW ||
         scan->devices_result == ERR_OVERFLOW) {
@@ -2755,6 +2792,11 @@ static void cmd_device_scan(const char* args) {
         scan.network_result != ERR_OVERFLOW) {
         LOG_WARN("SHELL", "Falha ao atualizar inventario de rede");
         video_print("Aviso: inventario de rede indisponivel.\n", 0x0E);
+    }
+    if (scan.wifi_result != OK && scan.wifi_result != ERR_OVERFLOW) {
+        video_print("Aviso: inventario Wi-Fi indisponivel.\n", 0x0E);
+    } else if (scan.wifi_result == ERR_OVERFLOW) {
+        video_print("Aviso: inventario Wi-Fi parcial.\n", 0x0E);
     }
     if (scan.storage_result != OK && scan.storage_result != ERR_NOT_FOUND &&
         scan.storage_result != ERR_STATE) {

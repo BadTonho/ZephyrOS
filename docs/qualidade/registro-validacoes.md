@@ -7,6 +7,25 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## EP7.0 — Inventário e diagnóstico seguro de candidatos Wi-Fi
+
+Implementação concluída em: 2026-08-23 18:41:57 (America/Sao_Paulo)
+
+Foi criado o `wifi_manager` com snapshot PCI somente-leitura para controladores
+de classe `0x02` que não sejam E1000 ou RTL8139. O inventário preserva Vendor
+ID, Device ID, classe, subclasse, ProgIF, revisão, BDF, IRQ e BAR0-BAR5, sem
+habilitar BARs, Bus Mastering, MMIO, DMA, IRQ ou firmware.
+
+Foram adicionados `wifi status`, `wifi scan` e `wifi connect`. A conexão
+permanece indisponível nesta etapa e não processa, armazena ou registra
+credenciais. `device-scan`, `health` e `regcheck full` validam o novo estado;
+Ethernet, Simple, Classic, kernel de boot, boot e stage2 permanecem fora da
+alteração.
+
+Validação executável pendente do usuário: `make q3check`, `make clean && make`,
+QEMU padrão e a matriz `wifi status`, `wifi scan`, `wifi connect`, `net check`,
+`health check`, `memcheck` e `regcheck full`.
+
 ## EP6.4 — Gerenciamento de stack para rede e TLS
 
 Implementação concluída em: 2026-08-23 17:38:34 (America/Sao_Paulo)

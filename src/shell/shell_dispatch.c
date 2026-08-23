@@ -30,6 +30,7 @@ extern void shell_dispatch_cmd_device_info(const char* arguments);
 extern void shell_dispatch_cmd_device_scan(const char* arguments);
 extern void shell_dispatch_cmd_usb(const char* arguments);
 extern void shell_dispatch_cmd_net(const char* arguments);
+extern void shell_dispatch_cmd_wifi(const char* arguments);
 extern void shell_dispatch_cmd_ping(const char* arguments);
 extern void shell_dispatch_cmd_nslookup(const char* arguments);
 extern void shell_dispatch_cmd_http(const char* arguments);
@@ -101,6 +102,7 @@ static const shell_dispatch_entry_t shell_dispatch_table[] = {
     {"usb", shell_dispatch_cmd_usb, SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"net", shell_dispatch_cmd_net,
      SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_COOPERATIVE},
+    {"wifi", shell_dispatch_cmd_wifi, SHELL_DISPATCH_FLAG_NONE},
     {"ping", shell_dispatch_cmd_ping,
      SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_COOPERATIVE},
     {"nslookup", shell_dispatch_cmd_nslookup,
