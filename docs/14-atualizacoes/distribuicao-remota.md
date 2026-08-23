@@ -444,12 +444,18 @@ update runtime verify [ARQUIVO|--cached]
 update runtime apply --confirm
 update runtime rollback --confirm
 update runtime clear --confirm
+update runtime test fail-after <1-16>
 ```
 
 Aplicar e rollback exigem confirmação explícita e não reiniciam o sistema. O
 Updater Classic possui uma aba `Runtime` com consulta, download seletivo ou
 completo, progresso, cancelamento, aplicação, rollback e limpeza. Simple não
 recebe funcionalidades novas.
+
+O comando `update runtime test fail-after <1-16>` existe somente para a matriz
+de recuperacao da EP6.3. Ele arma uma interrupcao one-shot apos o numero de
+arquivos indicado na proxima aplicacao confirmada; o boot seguinte deve
+restaurar o estado anterior e limpar journal, staging e backups temporarios.
 
 O procedimento host e a auditoria dos aliases estão em
 [contrato-zupd-v2.md](contrato-zupd-v2.md) e

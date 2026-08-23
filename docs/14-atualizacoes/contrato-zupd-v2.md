@@ -39,10 +39,16 @@ update runtime verify [ARQUIVO|--cached]
 update runtime apply --confirm
 update runtime rollback --confirm
 update runtime clear --confirm
+update runtime test fail-after <1-16>
 ```
 
 `fetch` nunca instala. `apply` e `rollback` exigem confirmação e informam a
 necessidade de reinicialização; nenhum caminho reinicia silenciosamente.
+
+`update runtime test fail-after <1-16>` e um failpoint one-shot exclusivo de
+diagnostico. Ele interrompe a proxima aplicacao depois do alvo indicado,
+deixando o journal deliberadamente pendente para validar a recuperacao no
+boot. Nao deve ser usado em uma atualizacao normal.
 
 ## Fases
 

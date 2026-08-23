@@ -1126,6 +1126,26 @@ static void cmd_update_runtime_clear(int confirmed) {
     }
 }
 
+static void cmd_update_runtime_test_fail_after(const char* value) {
+    uint32_t entries = shell_command_parse_number(value);
+    int result;
+
+    if (entries == 0U || entries > UPDATE_RUNTIME_MAX_ENTRIES) {
+        LOG_ERROR("SHELL", "Failpoint runtime fora do limite");
+        video_print("Uso: update runtime test fail-after <1-16>\n", 0x0E);
+        return;
+    }
+    result = update_runtime_test_fail_after((uint16_t)entries);
+    if (result != OK) {
+        video_print("Erro: failpoint runtime indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("TEST ONLY: a proxima aplicacao runtime sera interrompida apos ",
+                0x0E);
+    shell_command_print_num(entries);
+    video_print(" arquivo(s).\n", 0x0E);
+}
+
 static void cmd_update_runtime(const char* args) {
     char operation[16];
     char command[16];
@@ -1167,6 +1187,11 @@ static void cmd_update_runtime(const char* args) {
                (!first[0] || kstrcmp(first, "--confirm") == 0) &&
                !second[0]) {
         cmd_update_runtime_clear(first[0] != '\0');
+        return;
+    } else if (kstrcmp(command, "test") == 0 &&
+               kstrcmp(first, "fail-after") == 0 && second[0] &&
+               !third[0] && !fourth[0]) {
+        cmd_update_runtime_test_fail_after(second);
         return;
     } else if (kstrcmp(command, "check") == 0) {
         if (!first[0]) {
@@ -1211,6 +1236,7 @@ static void cmd_update_runtime(const char* args) {
     video_print("     update runtime verify <ARQUIVO>|--cached\n", 0x0E);
     video_print("     update runtime apply|rollback --confirm\n", 0x0E);
     video_print("     update runtime clear --confirm\n", 0x0E);
+    video_print("     update runtime test fail-after <1-16>\n", 0x0E);
 }
 
 static void cmd_update(const char* args) {

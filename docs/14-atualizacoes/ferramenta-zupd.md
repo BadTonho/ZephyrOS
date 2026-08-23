@@ -431,6 +431,64 @@ ser executada somente após o reboot solicitado pelo sistema. Uma imagem com
 transaction journal v2, staging ou backup inesperado falha na auditoria; use
 `--allow-pending` apenas para inspecionar deliberadamente uma interrupcao.
 
+### Matriz final de validacao EP6.3
+
+Os gates de codigo e a execucao QEMU desta matriz pertencem ao usuario:
+
+```text
+make q3check
+make clean && make
+make run
+```
+
+Para exercitar o fallback GitHub HTTPS com a fixture local, gere os artefatos
+runtime e inicie o servidor com um certificado cujo SAN corresponda a
+`10.0.2.2`:
+
+```text
+python tools/updater.py fixtures-runtime --private <chave-fora-do-repo> --public config/update-release-public.json --output-dir <diretorio-vazio>
+python tools/updater.py serve-github-runtime --root <diretorio-das-fixtures> --cert <certificado-fora-do-repo> --key <chave-tls-fora-do-repo> --tag ep63-runtime --public-host 10.0.2.2 --port 8443
+```
+
+Em uma configuracao de validacao temporaria, aponte `github_api_url` para
+`https://10.0.2.2:8443`, regenere `src/include/core/update_remote_config.h`
+com `sync-remote` e mantenha o endpoint HTTP runtime indisponivel. No QEMU:
+
+```text
+update runtime status
+update runtime check --tag ep63-runtime
+update runtime fetch --tag ep63-runtime --confirm
+update runtime verify --cached
+```
+
+O caminho deve consultar a API por HTTPS, validar a tag exata, o manifesto e
+os hashes, e publicar somente o cache. Depois, valide o failpoint:
+
+```text
+update runtime test fail-after 1
+update runtime apply --confirm
+reboot
+update runtime status
+```
+
+O reboot deve recuperar o estado anterior com `journal=CLEAN`, sem staging ou
+backup temporario pendente. Para o rollback real, aplique uma Release valida,
+reinicie, confirme `rollback=READY`, execute `update runtime rollback --confirm`
+e reinicie novamente. A verificacao final deve mostrar a versao anterior,
+`rollback=DISABLED`, `pending=NO` e os aliases `ZTS/ZTB` limpos.
+
+Para cobrir as tres operacoes em uma mesma transacao, use dois manifestos
+customizados: a Release A deve substituir `EXPLORER.BMP`, remover
+`SHELL.BMP` e manter/substituir `TASKMGR.BMP`; apos o reboot, a Release B deve
+substituir `EXPLORER.BMP`, criar `SHELL.BMP` e remover `TASKMGR.BMP`. O rollback
+da Release B deve restaurar simultaneamente replace, create e delete. Em cada
+fase, execute `health`, `memcheck`, `regcheck full` e `update runtime status`,
+e depois rode `audit-image` com `--expect-runtime-pending clean`.
+
+Ao terminar a fixture local, restaure os valores versionados de
+`config/update-remote.json` e regenere o header original com `sync-remote`
+antes de qualquer commit.
+
 ## Referencias
 
 - [cryptography 49.0.0](https://cryptography.io/_/downloads/en/49.0.0/pdf/)

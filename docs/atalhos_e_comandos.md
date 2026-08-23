@@ -52,6 +52,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `update remote` | `status/enable/disable/clear [--confirm]` | Controla o transporte remoto opcional da sessao. |
 | `update fetch` | `[--url <manifesto>] [--confirm]` | Consulta ou baixa um ZUPD autenticado sem aplicar. |
 | `update github` | `check|fetch --tag <tag> [--confirm]` | Consulta Releases GitHub por HTTPS e tag exata, sem instalar. |
+| `update runtime` | `test fail-after <1-16>` | Arma uma interrupcao one-shot para validar recuperacao do runtime v2. |
 | `kmetrics` | `[reset]` | Mostra ou inicia a janela manual de métricas K1. |
 | `devices` | `[-v]` | Lista o inventario nativo de hardware; `-v` inclui localizacao, IRQ e IDs PCI. |
 | `device-info` | `<id>` | Mostra os detalhes de um dispositivo listado por `devices`. |
