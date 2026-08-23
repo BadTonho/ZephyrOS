@@ -346,6 +346,43 @@ static int runtime_remote_delete_slot(uint8_t slot) {
     return result;
 }
 
+static int runtime_remote_cleanup_inactive_slots(void) {
+    int result = OK;
+
+    if (runtime_remote_record.active_slot <= 1U) {
+        uint8_t inactive_slot = runtime_remote_record.active_slot ^ 1U;
+
+        if (runtime_remote_delete_slot(inactive_slot) != OK) result = ERR_DISK;
+    } else {
+        for (uint8_t slot = 0U; slot < 2U; slot++) {
+            if (runtime_remote_delete_slot(slot) != OK) result = ERR_DISK;
+        }
+    }
+    return result;
+}
+
+static int runtime_remote_cleanup_active_extras(void) {
+    char alias[UPDATE_RUNTIME_CACHE_ALIAS_SIZE];
+    int result = OK;
+
+    if (runtime_remote_record.active_slot > 1U) return OK;
+    if (runtime_remote_record.mode == UPDATE_REMOTE_RUNTIME_FETCH_SELECTIVE &&
+        runtime_remote_delete_root(
+            runtime_remote_package_aliases[runtime_remote_record.active_slot]) != OK) {
+        result = ERR_DISK;
+    }
+    for (uint8_t index = 0U; index < UPDATE_RUNTIME_MAX_ENTRIES; index++) {
+        uint8_t expected =
+            runtime_remote_record.mode == UPDATE_REMOTE_RUNTIME_FETCH_SELECTIVE &&
+            (runtime_remote_record.asset_mask & (uint16_t)(1U << index));
+
+        if (expected) continue;
+        runtime_remote_asset_alias(alias, runtime_remote_record.active_slot, index);
+        if (runtime_remote_delete_root(alias) != OK) result = ERR_DISK;
+    }
+    return result;
+}
+
 static int runtime_remote_load_records(void) {
     runtime_remote_record_t selected;
     runtime_remote_record_t candidate;
@@ -1450,6 +1487,20 @@ int update_remote_runtime_init(void) {
             }
             runtime_remote_status.pending_recovery = 0U;
             runtime_remote_recovery_record_valid = 0U;
+        }
+        if (runtime_remote_cleanup_inactive_slots() != OK) {
+            runtime_remote_status.pending_recovery = 1U;
+            runtime_remote_status.reason = UPDATE_REMOTE_RUNTIME_REASON_IO;
+            runtime_remote_status.state = UPDATE_REMOTE_RUNTIME_STATE_FAILED;
+            LOG_ERROR("UPDATE", "Nao foi possivel limpar slots runtime v2 inativos");
+            return ERR_DISK;
+        }
+        if (runtime_remote_cleanup_active_extras() != OK) {
+            runtime_remote_status.pending_recovery = 1U;
+            runtime_remote_status.reason = UPDATE_REMOTE_RUNTIME_REASON_IO;
+            runtime_remote_status.state = UPDATE_REMOTE_RUNTIME_STATE_FAILED;
+            LOG_ERROR("UPDATE", "Nao foi possivel limpar extras do slot runtime v2 ativo");
+            return ERR_DISK;
         }
         runtime_remote_status.active_slot = runtime_remote_record.active_slot;
         if (runtime_remote_validate_active() != OK &&
