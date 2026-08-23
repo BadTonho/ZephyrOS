@@ -3530,11 +3530,14 @@ def decode_runtime_state_record(data: bytes) -> RuntimeStoredState:
         or (rollback_available and (rollback_slot == RUNTIME_SLOT_NONE or not rollback_count))
     ):
         raise UpdateError("estado runtime possui rollback inconsistente")
-    if sum(
-        current[index] != rollback[index]
-        for index in range(len(RUNTIME_CATALOG))
-    ) != rollback_count:
-        raise UpdateError("contagem de rollback runtime diverge")
+    if rollback_available:
+        if sum(
+            current[index] != rollback[index]
+            for index in range(len(RUNTIME_CATALOG))
+        ) != rollback_count:
+            raise UpdateError("contagem de rollback runtime diverge")
+    elif any(state.present for state in rollback):
+        raise UpdateError("estado runtime sem rollback possui backups")
     return RuntimeStoredState(
         sequence,
         installed,
