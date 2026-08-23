@@ -50,12 +50,20 @@ Implementar padrões modernos de concorrência, sincronização e tratamento ass
 
 - [ ] Definir a fila circular de eventos de hardware pendentes (`irq_deferred_queue_t`).
 - [ ] Refatorar os drivers de rede (E1000/RTL8139), disco (ATA) e mouse/teclado para registrar callbacks de Bottom-Half.
+- [ ] Corrigir o backpressure observado apos jobs cooperativos longos, como o
+  `regcheck full`: o despacho deve drenar eventos de entrada continuamente,
+  coalescer movimentos do mouse sem descartar transicoes de botoes e preservar
+  cliques/teclas mesmo quando a saida do Shell estiver intensa. O overflow deve
+  permanecer contabilizado e ter log limitado, sem inundar o console.
 - [ ] No fim do ciclo de cada IRQ, acionar a verificação de pendências diferidas (*SoftIRQ dispatch*) antes de devolver o controle ao código do usuário/kernel.
 - [ ] Executar o processamento pesado (montagem de pacotes TCP/IP, decodificação de scancodes, despacho de blocos) com interrupções de hardware habilitadas (`sti`).
 
 ### Critério de saída
 
-Alta carga de tráfego de rede ou leitura pesada de disco ATA não causa perda de movimentos de mouse ou cliques no teclado.
+Alta carga de tráfego de rede, leitura pesada de disco ATA ou jobs cooperativos
+longos não causa perda de movimentos de mouse, cliques no teclado ou eventos
+de entrada; `regcheck full` e saída intensa do Shell permanecem sem overflow
+não recuperado.
 
 ### Comandos Shell / Diagnóstico
 
