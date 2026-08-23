@@ -585,9 +585,9 @@ e repetir o valor literalmente.
 Toda etapa, subetapa, fase, implementação ou validação concluída DEVE registrar
 a data e a hora exatas em `docs/qualidade/registro-validacoes.md`.
 
-O roadmap mantém somente o estado, o escopo e um link para o registro; não
-duplicar nele comandos executados, saídas extensas, diagnósticos ou histórico
-de tentativas.
+O roadmap mantém escopo, requisitos, checklists, pendências e critérios de
+saída. Mover para o registro os relatos cronológicos de implementação,
+correção, diagnóstico, execução e validação, incluindo seus horários e saídas.
 
 O registro DEVE usar o formato ISO 8601 com fuso explícito:
 
