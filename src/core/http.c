@@ -779,17 +779,21 @@ static int http_follow_redirect(const char* location) {
     http_status.max_redirects = http_max_redirects;
     http_status.secure = 1U;
     http_status.requests_started++;
-    if (http_copy_text(http_status.url, sizeof(http_status.url),
-                       location, kstrlen(location)) != OK) {
+    if (kstrlen(location) >= sizeof(http_status.url)) {
         http_status.url[0] = '\0';
+    } else {
+        http_copy_text(http_status.url, sizeof(http_status.url),
+                       location, kstrlen(location));
+    }
+    if (kstrlen(http_redirect_path_buffer) >= sizeof(http_status.path)) {
+        http_status.path[0] = '\0';
+    } else {
+        http_copy_text(http_status.path, sizeof(http_status.path),
+                       http_redirect_path_buffer,
+                       kstrlen(http_redirect_path_buffer));
     }
     http_copy_text(http_status.host, sizeof(http_status.host),
                    http_parse_host_buffer, kstrlen(http_parse_host_buffer));
-    if (http_copy_text(http_status.path, sizeof(http_status.path),
-                       http_redirect_path_buffer,
-                       kstrlen(http_redirect_path_buffer)) != OK) {
-        http_status.path[0] = '\0';
-    }
     if (http_copy_text(http_request_path, sizeof(http_request_path),
                        http_redirect_path_buffer,
                        kstrlen(http_redirect_path_buffer)) != OK) {
