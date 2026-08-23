@@ -687,7 +687,12 @@ ser tratadas como uma etapa própria do bootloader.
   repetida após as correções de auditoria e limpeza de backups. A imagem final
   não reteve `ZTB*`, e a auditoria offline foi aprovada; validação recebida em:
   2026-08-23 14:46:23 (America/Sao_Paulo).
-- [ ] Permanece pendente somente o GitHub HTTPS.
+- [x] Validação final do GitHub HTTPS concluída em: 2026-08-23 16:47:47
+  (America/Sao_Paulo). A Release pública B foi descoberta por tag exata,
+  o ZUM2 assinado foi consultado e buscado, o cache seletivo foi verificado,
+  a aplicação chegou a `0.1.2/e0` e o rollback retornou a `0.1.0/e0`.
+  A auditoria offline final confirmou imagem persistida com `journal=CLEAN`,
+  rollback desabilitado, cache runtime válido e nenhuma operação pendente.
 
 ### Roteiro operacional completo da EP6.3
 
@@ -978,66 +983,52 @@ python tools/updater.py audit-image --image build/zephyros.img --expect-version 
 
 Esperado: `Audit image: OK`.
 
-#### GitHub Runtime HTTPS
+#### GitHub Runtime HTTPS — Release pública validada
 
-O teste HTTPS exige certificado externo com SAN para `10.0.2.2`, cadeia
-encadeada a uma CA confiável pelo build e a chave correspondente. Não usar
-certificado autoassinado. Conferir antes:
+Não repetir o roteiro de certificado local: o caminho real contra a API e os
+assets HTTPS públicos foi concluído. A Release B (`ep63-runtime-b`) foi usada
+porque aceita a base instalada `0.1.0` e exercita substituição, criação,
+remoção e rollback.
 
-```powershell
-Test-Path -LiteralPath "<SECRETS>\github-runtime-cert.pem"
-Test-Path -LiteralPath "<SECRETS>\github-runtime-key.pem"
-```
-
-Com os dois arquivos disponíveis, preparar configuração temporária fora do
-repositório:
-
-```powershell
-$S = "<SECRETS>"
-$HTTPS_CONFIG = "$S\ep63-github-runtime-config.json"
-$HTTPS_HEADER = "$S\ep63-update-remote-https.h"
-$HTTP_HEADER_BACKUP = "$S\update_remote_config.h.before-https"
-
-Copy-Item -LiteralPath "config/update-remote.json" -Destination $HTTPS_CONFIG -Force
-(Get-Content -Raw -LiteralPath $HTTPS_CONFIG).Replace('"github_api_url": "https://api.github.com"', '"github_api_url": "https://10.0.2.2:8443"') | Set-Content -LiteralPath $HTTPS_CONFIG -Encoding ascii
-python tools/updater.py sync-remote --config $HTTPS_CONFIG --output $HTTPS_HEADER
-Copy-Item -LiteralPath "src/include/core/update_remote_config.h" -Destination $HTTP_HEADER_BACKUP -Force
-Copy-Item -LiteralPath $HTTPS_HEADER -Destination "src/include/core/update_remote_config.h" -Force
-python tools/updater.py check-remote --config $HTTPS_CONFIG --header "src/include/core/update_remote_config.h"
-```
-
-Depois do header temporário, executar novamente o gate de código e iniciar:
-
-```text
-make q3check
-make clean && make
-make run
-```
-
-Com o servidor HTTP U5 parado, em outro terminal do host:
-
-```text
-python tools/updater.py serve-github-runtime --root "<SECRETS>\\ep63-runtime-fixtures-changed" --cert "<SECRETS>\\github-runtime-cert.pem" --key "<SECRETS>\\github-runtime-key.pem" --tag ep63-runtime --public-host 10.0.2.2 --port 8443
-```
-
-No QEMU:
+No QEMU, com a imagem em `0.1.0/e0`, a sequência executada foi:
 
 ```text
 update remote enable
 update runtime clear --confirm
-update runtime check --tag ep63-runtime
-update runtime fetch --tag ep63-runtime --confirm
+update runtime check --tag ep63-runtime-b
+update runtime fetch --tag ep63-runtime-b --confirm
 update runtime verify --cached
 update runtime status
+update runtime apply --confirm
+reboot
+update runtime status
+ls
+update runtime rollback --confirm
+reboot
+update runtime status
+ls
 ```
 
-O resultado deve ser `NONE`, com HTTP 200, cache publicado e nenhum acesso
-ao servidor HTTP U5. Ao terminar, restaurar o header versionado e conferir:
+Critérios comprovados: `check` descobriu a Release GitHub por tag exata;
+`fetch` publicou o cache assinado; `verify --cached` retornou `assets
+faltantes=0`; após a aplicação, o sistema estava em `0.1.2/e0`, com
+`rollback=READY`, `EXPLORER.BMP` e `SHELL.BMP` presentes e `TASKMGR.BMP`
+ausente. Após o rollback, retornou a `0.1.0/e0`, com `rollback=DISABLED`,
+`EXPLORER.BMP` e `TASKMGR.BMP` presentes e `SHELL.BMP` ausente.
 
-```powershell
-Copy-Item -LiteralPath "<SECRETS>\update_remote_config.h.before-https" -Destination "src/include/core/update_remote_config.h" -Force
-python tools/updater.py check-remote --config config/update-remote.json --header src/include/core/update_remote_config.h
+O aviso inicial de falha ao conectar no HTTP U5 local pode aparecer antes do
+fallback GitHub; ele não invalida o cenário quando a descoberta da Release
+GitHub e as operações seguintes concluem com `NONE`.
+
+Após encerrar o QEMU, a auditoria final executada foi:
+
+```text
+python tools/updater.py audit-image --image build/zephyros.img --expect-version 0.1.0 --expect-rollback unavailable --expect-runtime-cache valid --expect-runtime-pending clean
 ```
+
+Resultado registrado em 2026-08-23 16:47:47 (America/Sao_Paulo): `Audit
+image: OK`, `installed=0.1.0`, `rollback=DISABLED`, `journal=CLEAN`,
+`runtime=READY`, `runtime_local=READY` e nenhuma transferência pendente.
 
 EP6.0 continua exercitável com o servidor de fixtures U5. EP6.2 mantém o
 transporte HTTPS BearSSL configurado para a API GitHub e a regressao HTTP U5;
