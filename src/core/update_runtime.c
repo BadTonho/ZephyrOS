@@ -1724,6 +1724,8 @@ static int runtime_clear_journal(void) {
 
 static int runtime_commit_state_from_journal(void) {
     runtime_state_t next = runtime_state;
+    runtime_state_t previous = runtime_state;
+    int previous_slot = runtime_state_slot;
 
     next.installed_version = runtime_journal.target_version;
     next.installed_epoch = runtime_journal.target_epoch;
@@ -1752,7 +1754,12 @@ static int runtime_commit_state_from_journal(void) {
         }
     }
     if (runtime_refresh_current_files(next.current) != OK) return ERR_DISK;
-    if (runtime_write_state() != OK) return ERR_DISK;
+    runtime_state = next;
+    if (runtime_write_state() != OK) {
+        runtime_state = previous;
+        runtime_state_slot = previous_slot;
+        return ERR_DISK;
+    }
     return OK;
 }
 
