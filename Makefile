@@ -11,6 +11,7 @@ NASM ?= nasm
 GCC ?= i686-elf-gcc
 LD ?= i686-elf-ld
 QEMU ?= qemu-system-i386
+QEMU_CPU_ARGS ?= -cpu max
 QEMU_NET_ARGS ?= -nic user,model=e1000
 QEMU_BOOT_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=bootdisk -device ide-hd,drive=bootdisk,cyls=80,heads=2,secs=18,bootindex=1
 QEMU_USB_ARGS ?= -device piix3-usb-uhci,id=usb
@@ -931,16 +932,16 @@ $(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(KERNEL_BIN) tools\packager.py \
 	python tools\packager.py inject-file --file docs\fixtures\updates\u3\APPLY.ZUP --image $(OS_IMG) --fat-name APPLY.ZUP
 
 run: $(OS_IMG)
-	$(QEMU) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS)
+	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS)
 
 run-usb: $(OS_IMG)
-	$(QEMU) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS) $(QEMU_USB_ARGS) $(QEMU_USB_DEVICE_ARGS)
+	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS) $(QEMU_USB_ARGS) $(QEMU_USB_DEVICE_ARGS)
 
 run-usb-msc: $(OS_IMG) $(STORAGE_FIXTURES_STAMP)
-	$(QEMU) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS) $(QEMU_USB_ARGS) $(QEMU_USB_DEVICE_ARGS) $(QEMU_USB_MSC_ARGS)
+	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS) $(QEMU_USB_ARGS) $(QEMU_USB_DEVICE_ARGS) $(QEMU_USB_MSC_ARGS)
 
 run-usb-hid: $(OS_IMG)
-	$(QEMU) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS) $(QEMU_USB_ARGS) $(QEMU_USB_HID_DEVICE_ARGS)
+	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS) $(QEMU_USB_ARGS) $(QEMU_USB_HID_DEVICE_ARGS)
 
 $(STORAGE_FIXTURES_STAMP): $(STORAGE_FIXTURES_TOOL)
 	@if not exist build mkdir build
@@ -955,10 +956,10 @@ storage-fixtures-verify: $(STORAGE_FIXTURES_STAMP)
 	python $(STORAGE_FIXTURES_TOOL) verify --output-dir build
 
 run-storage: $(OS_IMG) $(STORAGE_FIXTURES_STAMP)
-	$(QEMU) $(QEMU_BOOT_DISK_ARGS) -drive format=raw,file=$(STORAGE_VALID_IMG),if=ide,index=1 -drive format=raw,file=$(STORAGE_CORRUPT_IMG),if=ide,index=2 -drive format=raw,file=$(STORAGE_UNKNOWN_IMG),if=ide,index=3 $(QEMU_NET_ARGS)
+	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) -drive format=raw,file=$(STORAGE_VALID_IMG),if=ide,index=1 -drive format=raw,file=$(STORAGE_CORRUPT_IMG),if=ide,index=2 -drive format=raw,file=$(STORAGE_UNKNOWN_IMG),if=ide,index=3 $(QEMU_NET_ARGS)
 
 debug: $(OS_IMG)
-	$(QEMU) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS) -s -S &
+	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS) -s -S &
 
 q3check:
 	python tools\q3check.py
