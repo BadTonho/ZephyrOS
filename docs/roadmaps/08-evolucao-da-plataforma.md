@@ -669,9 +669,9 @@ ser tratadas como uma etapa própria do bootloader.
   exibicao de estado, journal, cache, manifesto e controles da operacao.
 - [x] Cancelamento do download runtime v2 concluido com `F12`, preservando o
   cache anterior, a instalacao `0.1.0` e o journal `CLEAN`.
-- [x] Limpeza do cache runtime v2 concluida, mantendo a instalacao `0.1.1`,
-  o estado `READY` e o journal `CLEAN`, com o cache local ausente conforme
-  esperado. Concluida em: 2026-08-23 00:35 (America/Sao_Paulo).
+- [ ] Limpeza do cache runtime v2 ainda pendente: o comando informou sucesso e
+  manteve a instalacao `0.1.1`, mas a auditoria encontrou o slot inativo
+  `ZRV0.MAN`. Tentativa registrada em: 2026-08-23 00:35 (America/Sao_Paulo).
 - Horarios das validacoes registrados em: 2026-08-23 00:33 (America/Sao_Paulo).
 - [ ] Permanecem pendentes GitHub HTTPS, failpoints e rollback real com
   arquivos alterados, criados e removidos.
