@@ -486,7 +486,7 @@ QEMU; regressao EP6.0/U5 preservada conforme validacao anterior.
   bounce buffer e o contrato de carregamento do kernel.
 - [x] Adicionar `run-stage2-lba` e `run-stage2-chs` para validar os dois caminhos
   sem comandos QEMU manuais.
-- [ ] Confirmar no build que `boot.bin` permanece com 512 bytes e que o tamanho
+- [x] Confirmar no build que `boot.bin` permanece com 512 bytes e que o tamanho
   alinhado do `stage2` não excede sua janela abaixo de `0x10000`.
 - [ ] Validar com `make q3check`, build limpo, `make run`, `make run-stage2-lba`
   e `make run-stage2-chs`, além de `health check`, `memcheck` e `regcheck full`.

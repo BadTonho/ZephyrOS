@@ -208,6 +208,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Implementação da leitura EDD/LBA, fallback CHS, retries e alvos QEMU do
   `stage2` concluída em: 2026-08-23 17:56 (America/Sao_Paulo). Build e
   validação QEMU permanecem pendentes do usuário.
+- Validação estrutural concluída em: 2026-08-23 18:02 (America/Sao_Paulo);
+  `boot.bin` permaneceu com 512 bytes, `stage2.bin` ficou com 1536 bytes e
+  `src/boot/boot.asm` permaneceu sem diferenças.
 
 ### EP6.3 — Runtime v2, cache seletivo e matriz de falhas
 
