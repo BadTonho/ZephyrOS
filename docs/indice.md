@@ -80,6 +80,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [Contratos publicos](qualidade/contratos-publicos.md) | Mapa de headers publicos e documentos tecnicos canonicos |
 | [Metricas de otimizacao](qualidade/metricas.md) | Linhas-base K1, validacoes K2/K3 e ganho K4 registrado |
 | [Registro de validacoes](qualidade/registro-validacoes.md) | Evidencias cronologicas de implementacoes, testes e conclusoes de fase |
+| [Validação EP6.3 Runtime](qualidade/validacao-ep63-runtime.md) | Procedimento host e QEMU para fixtures, Releases A/B, rollback e auditoria do runtime v2 |
 | [Roadmaps por Etapa](roadmaps/README.md) | Ordem executável das próximas frentes do projeto |
 | [01 - Estabilização e Qualidade](roadmaps/01-estabilizacao-e-qualidade.md) | Regressão, diagnósticos e fallbacks |
 | [02 - Plataforma de Aplicativos](roadmaps/02-plataforma-de-aplicativos.md) | Migração gradual, ZAPP e pacotes |
