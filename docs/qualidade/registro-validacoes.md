@@ -199,12 +199,15 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Encerramento por escopo concluído em: 2026-08-22 15:23
   (America/Sao_Paulo).
 
-### Melhorias futuras relacionadas à EP6
+### Etapas relacionadas à EP6
 
 - Registro da evolução de stacks para rede/TLS concluído em: 2026-08-22 13:54
   (America/Sao_Paulo).
 - Planejamento da leitura LBA no `stage2` concluído em: 2026-08-22 12:30
-  (America/Sao_Paulo). A implementação e a validação permanecem pendentes.
+  (America/Sao_Paulo).
+- Implementação da leitura EDD/LBA, fallback CHS, retries e alvos QEMU do
+  `stage2` concluída em: 2026-08-23 17:56 (America/Sao_Paulo). Build e
+  validação QEMU permanecem pendentes do usuário.
 
 ### EP6.3 — Runtime v2, cache seletivo e matriz de falhas
 

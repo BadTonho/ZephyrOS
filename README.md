@@ -202,6 +202,12 @@ make
 # Build and launch inside QEMU emulator
 make run
 
+# Validate stage2 through IDE EDD/LBA without fixed CHS geometry
+make run-stage2-lba
+
+# Validate the stage2 CHS fallback by booting the image as a floppy
+make run-stage2-chs
+
 # Build with GDB debugging enabled
 make debug
 
@@ -213,6 +219,9 @@ make clean
 1.44 MiB FAT12 image, plus an E1000 NIC with QEMU user networking. The disk
 arguments can be overridden through `QEMU_BOOT_DISK_ARGS` when another layout
 is required.
+`make run-stage2-lba` uses an IDE disk without fixed CHS geometry, while
+`make run-stage2-chs` boots the image as a floppy to exercise the BIOS CHS
+fallback. The CHS scenario intentionally has no ATA system disk after boot.
 `QEMU_NET_ARGS` can be overridden for alternate scenarios without editing
 the Makefile, for example with `-nic none` or
 `-nic user,model=rtl8139`.
