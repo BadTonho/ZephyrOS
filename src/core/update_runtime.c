@@ -1291,6 +1291,32 @@ static int runtime_current_version(update_version_t* version,
     return update_get_installed_version(version, epoch);
 }
 
+static int runtime_legacy_transaction_pending(void) {
+    update_status_t legacy_status;
+
+    if (update_get_status(&legacy_status) != OK) {
+        LOG_ERROR("UPDATE", "Estado U3 nao pode ser consultado pelo runtime v2");
+        return 1;
+    }
+    return legacy_status.transaction_pending ? 1 : 0;
+}
+
+static int runtime_initial_version(update_version_t* version,
+                                   uint32_t* epoch) {
+    if (!version || !epoch) return ERR_NULL;
+    if (update_get_installed_version(version, epoch) == OK) return OK;
+    if (runtime_legacy_transaction_pending()) {
+        LOG_ERROR("UPDATE", "Runtime v2 recusado durante transacao U3 pendente");
+        return ERR_STATE;
+    }
+    version->major = ZEPHYROS_VERSION_MAJOR;
+    version->minor = ZEPHYROS_VERSION_MINOR;
+    version->patch = ZEPHYROS_VERSION_PATCH;
+    *epoch = ZEPHYROS_VERSION_EPOCH;
+    LOG_WARN("UPDATE", "Runtime v2 usando versao compilada; estado U3 degradado");
+    return OK;
+}
+
 static int runtime_refresh_current_files(runtime_file_state_t* output) {
     if (!output) return ERR_NULL;
     for (uint32_t index = 0U; index < UPDATE_RUNTIME_MAX_ENTRIES; index++) {
@@ -1311,7 +1337,7 @@ static int runtime_state_seed(void) {
     int result;
 
     kmemset(&runtime_state, 0, sizeof(runtime_state));
-    if (update_get_installed_version(&installed, &installed_epoch) != OK) {
+    if (runtime_initial_version(&installed, &installed_epoch) != OK) {
         LOG_ERROR("UPDATE", "Versao instalada indisponivel para runtime v2");
         return ERR_STATE;
     }
@@ -2485,12 +2511,13 @@ int update_runtime_init(void) {
         uint32_t system_epoch;
 
         if (update_get_installed_version(&system_version, &system_epoch) != OK) {
-            system_version = runtime_state.installed_version;
-            system_epoch = runtime_state.installed_epoch;
-            if (update_sync_runtime_state(&system_version, system_epoch) != OK) {
-                LOG_ERROR("UPDATE", "Estado U3 indisponivel para reconciliar runtime");
+            if (runtime_legacy_transaction_pending()) {
+                LOG_ERROR("UPDATE", "Estado U3 pendente impede reconciliacao runtime");
                 return ERR_STATE;
             }
+            system_version = runtime_state.installed_version;
+            system_epoch = runtime_state.installed_epoch;
+            LOG_WARN("UPDATE", "Runtime reconciliado sem reescrever estado U3 degradado");
         }
         runtime_state.installed_version = system_version;
         runtime_state.installed_epoch = system_epoch;
@@ -2515,11 +2542,11 @@ int update_runtime_init(void) {
         uint32_t legacy_epoch;
 
         if (update_get_installed_version(&legacy_version, &legacy_epoch) != OK) {
-            if (update_sync_runtime_state(&runtime_state.installed_version,
-                                          runtime_state.installed_epoch) != OK) {
-                LOG_ERROR("UPDATE", "Estado U3 nao foi recuperado pelo runtime v2");
+            if (runtime_legacy_transaction_pending()) {
+                LOG_ERROR("UPDATE", "Estado U3 pendente impede inicializacao runtime");
                 return ERR_STATE;
             }
+            LOG_WARN("UPDATE", "Estado U3 degradado preservado; runtime v2 segue independente");
         } else if (runtime_version_compare(&legacy_version,
                                            &runtime_state.installed_version) != 0 ||
                    legacy_epoch != runtime_state.installed_epoch) {
