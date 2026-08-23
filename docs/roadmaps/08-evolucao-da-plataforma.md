@@ -948,12 +948,13 @@ Validação do rollback B concluída em: 2026-08-23 12:57
 concluídos com `OK`. `update history` permaneceu vazio, sem operações U3
 registradas, conforme o comportamento atual do fluxo runtime v2.
 
-A auditoria offline final encontrou o órfão `ZRV0.01` no cache runtime v2:
-o asset estava no slot ativo, mas fora do `asset_mask` esperado após o
-rollback. A correção para reconciliar slots inativos e extras do slot ativo
-durante a inicialização do transporte runtime foi implementada em:
-2026-08-23 13:04:57 (America/Sao_Paulo). A auditoria e a matriz QEMU após essa
-correção permanecem pendentes.
+A auditoria offline final acusou `ZRV0.01`, mas a inspeção do registro
+`ZRV2` confirmou `active_slot=0`, modo seletivo e `asset_mask=2`; portanto,
+esse é o asset ativo esperado da Release B. A causa foi uma comparação
+booleana incorreta no `audit-image`: o bitmask inteiro `2` era comparado com
+`True`. A correção da ferramenta host foi implementada em:
+2026-08-23 13:21:30 (America/Sao_Paulo). A auditoria final após essa correção
+permanece pendente.
 
 #### Auditoria offline após o último reboot
 

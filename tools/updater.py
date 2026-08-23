@@ -4023,7 +4023,7 @@ def audit_image(
                     runtime_remote is not None
                     and runtime_remote.active_slot == slot
                     and runtime_remote.mode == 0
-                    and runtime_remote.asset_mask & (1 << index)
+                    and bool(runtime_remote.asset_mask & (1 << index))
                 )
                 if (alias in root) != active_asset:
                     raise UpdateError(f"asset runtime inativo permaneceu: {alias}")
