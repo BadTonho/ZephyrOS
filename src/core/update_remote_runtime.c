@@ -924,20 +924,19 @@ static int runtime_remote_source_for_tag(const char* tag,
 static int runtime_remote_descriptor_matches_manifest(void) {
     uint8_t hash[32];
     uint16_t expected_assets = 0U;
-    const char* release_id = runtime_remote_source.github ?
-        runtime_remote_source.release.release_id :
-        runtime_remote_source.release_id;
 
-    if ((runtime_remote_source.github ||
-         runtime_remote_source.descriptor_present) &&
-        (!release_id[0] ||
-         kstrcmp(release_id, runtime_remote_status.manifest.release_id) != 0)) {
+    if (runtime_remote_source.descriptor_present &&
+        (!runtime_remote_source.release_id[0] ||
+         kstrcmp(runtime_remote_source.release_id,
+                 runtime_remote_status.manifest.release_id) != 0)) {
         return ERR_INVALID;
     }
 
     if (runtime_remote_source.github) {
         const update_remote_github_asset_t* asset;
 
+        /* O ID numerico da API GitHub e metadado externo. A tag exata ja foi
+         * validada pela API e pelo campo release_tag assinado do ZUM2. */
         if (runtime_remote_source.release.runtime_manifest.size !=
                 UPDATE_RUNTIME_MANIFEST_SIZE ||
             crypto_sha256(runtime_remote_manifest_raw,
