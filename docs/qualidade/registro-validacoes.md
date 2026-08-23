@@ -211,6 +211,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Validação estrutural concluída em: 2026-08-23 18:02 (America/Sao_Paulo);
   `boot.bin` permaneceu com 512 bytes, `stage2.bin` ficou com 1536 bytes e
   `src/boot/boot.asm` permaneceu sem diferenças.
+- Cenário QEMU com geometria IDE explícita concluído em: 2026-08-23 18:03
+  (America/Sao_Paulo); o sistema alcançou o Shell, `memcheck` terminou em `OK`
+  e `regcheck full` terminou em `OK`.
 
 ### EP6.3 — Runtime v2, cache seletivo e matriz de falhas
 
