@@ -659,6 +659,7 @@ ser tratadas como uma etapa própria do bootloader.
 - Correção da persistência do estado instalado após aplicação runtime v2 concluída em: 2026-08-22 22:45 (America/Sao_Paulo).
 - Correção da validação no boot de estado runtime v2 sem rollback concluída em: 2026-08-22 23:09 (America/Sao_Paulo).
 - Correção da auditoria offline para estado runtime v2 sem rollback concluída em: 2026-08-22 23:27 (America/Sao_Paulo).
+- Correção do falso positivo da auditoria offline após limpeza do cache runtime v2 concluída em: 2026-08-23 00:51 (America/Sao_Paulo).
 - [x] Validacao do usuario no QEMU do HTTP U5 concluida para os fluxos
   seletivo e completo, incluindo manifestos assinados, rejeicoes de asset/tag/
   JSON/hash/assinatura/pacote e preservacao do cache anterior.
@@ -669,9 +670,9 @@ ser tratadas como uma etapa própria do bootloader.
   exibicao de estado, journal, cache, manifesto e controles da operacao.
 - [x] Cancelamento do download runtime v2 concluido com `F12`, preservando o
   cache anterior, a instalacao `0.1.0` e o journal `CLEAN`.
-- [ ] Limpeza do cache runtime v2 ainda pendente: o comando informou sucesso e
-  manteve a instalacao `0.1.1`, mas a auditoria encontrou o slot inativo
-  `ZRV0.MAN`. Tentativa registrada em: 2026-08-23 00:35 (America/Sao_Paulo).
+- [ ] Repetir a auditoria offline após a correção do falso positivo da limpeza
+  do cache runtime v2. A tentativa anterior foi registrada em: 2026-08-23
+  00:35 (America/Sao_Paulo).
 - Horarios das validacoes registrados em: 2026-08-23 00:33 (America/Sao_Paulo).
 - [ ] Permanecem pendentes GitHub HTTPS, failpoints e rollback real com
   arquivos alterados, criados e removidos.

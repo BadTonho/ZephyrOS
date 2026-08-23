@@ -4007,10 +4007,14 @@ def audit_image(
                 raise UpdateError(f"asset runtime diverge: {asset_alias}")
     if not runtime_pending:
         for alias in RUNTIME_MANIFEST_ALIASES + RUNTIME_PACKAGE_ALIASES:
-            if (alias == runtime_alias or (
-                runtime_remote and runtime_remote.mode == 1 and
-                alias == RUNTIME_PACKAGE_ALIASES[runtime_remote.active_slot]
-            )) != (alias in root):
+            expected_present = bool(
+                alias == runtime_alias or (
+                    runtime_remote is not None and
+                    runtime_remote.mode == 1 and
+                    alias == RUNTIME_PACKAGE_ALIASES[runtime_remote.active_slot]
+                )
+            )
+            if expected_present != (alias in root):
                 raise UpdateError(f"slot runtime inativo permaneceu: {alias}")
         for slot in range(2):
             for index in range(RUNTIME_MAX_ENTRIES):
