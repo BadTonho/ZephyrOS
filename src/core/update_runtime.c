@@ -499,14 +499,18 @@ static int runtime_decode_state(const uint8_t* raw, runtime_state_t* state) {
     {
         uint16_t rollback_count = 0U;
 
-        for (uint32_t index = 0U; index < sizeof(runtime_catalog) /
-             sizeof(runtime_catalog[0]); index++) {
+        for (uint32_t index = 0U; index < UPDATE_RUNTIME_MAX_ENTRIES; index++) {
+            if (!state->rollback_available) {
+                if (state->rollback[index].present) return ERR_INVALID;
+                continue;
+            }
             if (!runtime_states_equal(&state->current[index],
                                       &state->rollback[index])) {
                 rollback_count++;
             }
         }
-        if (rollback_count != state->rollback_entry_count) return ERR_INVALID;
+        if (state->rollback_available &&
+            rollback_count != state->rollback_entry_count) return ERR_INVALID;
     }
     return OK;
 }
