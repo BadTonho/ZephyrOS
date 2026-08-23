@@ -404,7 +404,7 @@ independentemente do descritor JSON.
 Fixtures EP6.3 e servidores locais:
 
 ```text
-python tools/updater.py fixtures-runtime --private <chave-fora-do-repo> --public config/update-release-public.json --output-dir <diretorio-vazio>
+python tools/updater.py fixtures-runtime --private <chave-fora-do-repo> --public config/update-release-public.json --output-dir <diretorio-vazio> --changed-assets
 python tools/updater.py serve-runtime --root <diretorio-das-fixtures> --tag ep63-runtime --variant valid
 python tools/updater.py serve-github-runtime --root <diretorio-das-fixtures> --cert <certificado-fora-do-repo> --key <chave-tls-fora-do-repo> --tag ep63-runtime --variant valid
 ```
@@ -463,6 +463,11 @@ update runtime verify --cached
 
 O caminho deve consultar a API por HTTPS, validar a tag exata, o manifesto e
 os hashes, e publicar somente o cache. Depois, valide o failpoint:
+
+O argumento `--changed-assets` faz a fixture inverter os pixels dos tres BMPs,
+garantindo que a aplicacao tenha tres substituicoes reais. Sem esse argumento,
+os assets sao iguais aos arquivos ja injetados na imagem base e o preflight
+normalmente mostra `reutilizados=3`.
 
 ```text
 update runtime test fail-after 1
