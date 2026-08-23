@@ -953,7 +953,12 @@ A auditoria offline final acusou `ZRV0.01`, mas a inspeção do registro
 esse é o asset ativo esperado da Release B. A causa foi uma comparação
 booleana incorreta no `audit-image`: o bitmask inteiro `2` era comparado com
 `True`. A correção da ferramenta host foi implementada em:
-2026-08-23 13:21:30 (America/Sao_Paulo). A auditoria final após essa correção
+2026-08-23 13:21:30 (America/Sao_Paulo). A nova execução ultrapassou essa
+verificação e revelou o backup local obsoleto `ZTB0.01`: após o rollback, o
+estado declara `rollback=DISABLED`, mas o backup antigo da aplicação A ficava
+no slot que não foi usado pela aplicação B. A correção para podar todos os
+slots de staging/backup exceto o rollback vigente foi implementada em:
+2026-08-23 13:24:28 (America/Sao_Paulo). A auditoria final após essa correção
 permanece pendente.
 
 #### Auditoria offline após o último reboot

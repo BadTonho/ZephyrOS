@@ -1610,6 +1610,16 @@ static int runtime_clear_slot(uint8_t slot) {
     return result;
 }
 
+static int runtime_prune_slots(uint8_t retained_slot) {
+    int result = OK;
+
+    for (uint8_t slot = 0U; slot < 2U; slot++) {
+        if (slot == retained_slot) continue;
+        if (runtime_clear_slot(slot) != OK) result = ERR_DISK;
+    }
+    return result;
+}
+
 static int runtime_clear_stage(uint8_t slot) {
     char alias[UPDATE_RUNTIME_CACHE_ALIAS_SIZE];
     int result = OK;
@@ -1807,9 +1817,14 @@ static int runtime_recover_pending(void) {
     }
     if (runtime_clear_journal() != OK) return ERR_DISK;
     if (runtime_clear_stage(slot) != OK) return ERR_DISK;
-    if (kind == RUNTIME_JOURNAL_ROLLBACK ||
-        (kind == RUNTIME_JOURNAL_APPLY && phase != RUNTIME_PHASE_COMMITTED)) {
+    if (kind == RUNTIME_JOURNAL_APPLY && phase != RUNTIME_PHASE_COMMITTED) {
         return runtime_clear_slot(slot);
+    }
+    if (kind == RUNTIME_JOURNAL_ROLLBACK) {
+        return runtime_prune_slots(RUNTIME_SLOT_NONE);
+    }
+    if (kind == RUNTIME_JOURNAL_APPLY) {
+        return runtime_prune_slots(runtime_state.rollback_slot);
     }
     return OK;
 }
@@ -2091,10 +2106,11 @@ static int runtime_apply_plan_locked(const char* package_path,
                                    ERR_DISK,
                                    "Journal runtime nao foi encerrado");
     }
-    if (kind == RUNTIME_JOURNAL_ROLLBACK && runtime_clear_slot(slot) != OK) {
+    if (runtime_prune_slots(runtime_state.rollback_available ?
+                            runtime_state.rollback_slot : RUNTIME_SLOT_NONE) != OK) {
         if (output) output->recovery_pending = 1U;
         return runtime_action_fail(output, UPDATE_RUNTIME_REASON_IO, ERR_DISK,
-                                   "Backups de rollback runtime nao foram limpos");
+                                   "Backups runtime obsoletos nao foram limpos");
     }
     if (output) output->reason = UPDATE_RUNTIME_REASON_NONE;
     return OK;
