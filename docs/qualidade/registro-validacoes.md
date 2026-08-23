@@ -224,6 +224,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Correção do alvo `run-stage2-chs` concluída em: 2026-08-23 18:06
   (America/Sao_Paulo); o boot usa uma cópia floppy e a imagem original fica
   anexada como disco IDE. A repetição somente desse cenário permanece pendente.
+- Correção da criação da cópia CHS concluída em: 2026-08-23 18:07
+  (America/Sao_Paulo); o `copy` aninhado do CMD foi substituído por
+  `Copy-Item` com origem e destino literais. Nenhum cenário anterior foi
+  invalidado.
 
 ### EP6.3 — Runtime v2, cache seletivo e matriz de falhas
 
