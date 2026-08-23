@@ -1,6 +1,6 @@
 {
   "format": "zephyros-ed25519-public-v1",
   "algorithm": "Ed25519",
-  "public_key_hex": "4a8006ca82cca49ef482be6f554e393d176fbb8236f46bf4308c58bbd82a7808",
-  "key_id_hex": "d4926d816d8373a412e7458cc9f14379"
+  "public_key_hex": "3dd0697e7a167218300dfe96f100d562caa760b804818d2dabf09c10b1daeecd",
+  "key_id_hex": "dfecfa35485fde8ad61707947e5ae85b"
 }

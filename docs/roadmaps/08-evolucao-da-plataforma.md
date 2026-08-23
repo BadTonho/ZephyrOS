@@ -654,6 +654,7 @@ ser tratadas como uma etapa própria do bootloader.
 - Correção do selftest host da EP6.3B concluída em: 2026-08-22 20:29 (America/Sao_Paulo).
 - Correção de inicialização independente do runtime v2 concluída em: 2026-08-22 20:52 (America/Sao_Paulo).
 - Correção da stack dedicada do processo Shell para os aplicativos hospedados concluída em: 2026-08-22 22:10 (America/Sao_Paulo).
+- Rotação da chave pública de trust para os artefatos de release concluída em: 2026-08-22 22:26 (America/Sao_Paulo).
 - [ ] Executar a validacao do usuario no QEMU apos `make q3check` e
   `make clean && make`, cobrindo Shell, Updater Classic, HTTP U5, GitHub HTTPS,
   cancelamento, failpoints, rollback e auditoria offline.
