@@ -23,10 +23,22 @@
 #define HTTP_MAX_SAFE_TICKS 0x7FFFFFFFU
 #define HTTP_MAX_BODY_LIMIT 0x7FFFFFFFU
 
+typedef enum {
+    HTTP_CHUNK_STATE_SIZE = 0,
+    HTTP_CHUNK_STATE_EXTENSION,
+    HTTP_CHUNK_STATE_SIZE_LF,
+    HTTP_CHUNK_STATE_DATA,
+    HTTP_CHUNK_STATE_DATA_CR,
+    HTTP_CHUNK_STATE_DATA_LF,
+    HTTP_CHUNK_STATE_TRAILER_CR,
+    HTTP_CHUNK_STATE_TRAILER_LF
+} http_chunk_state_t;
+
 typedef struct {
     uint16_t status_code;
     uint32_t content_length;
     uint8_t has_content_length;
+    uint8_t chunked;
     uint8_t eof_framed;
     uint8_t no_body;
     uint8_t has_location;
@@ -56,6 +68,10 @@ static uint8_t http_streaming;
 static uint8_t http_require_https;
 static uint8_t http_follow_redirects;
 static uint8_t http_max_redirects;
+static uint8_t http_chunked;
+static http_chunk_state_t http_chunk_state;
+static uint32_t http_chunk_remaining;
+static uint8_t http_chunk_size_seen;
 
 static void http_complete(void);
 
@@ -360,6 +376,29 @@ static uint8_t http_range_equal(const uint8_t* start,
     return 1;
 }
 
+static uint8_t http_header_value_equal(const uint8_t* data,
+                                       uint32_t length,
+                                       const char* expected) {
+    uint32_t expected_length;
+
+    if (!data || !expected) return 0U;
+    while (length && (*data == ' ' || *data == '\t')) {
+        data++;
+        length--;
+    }
+    while (length &&
+           (data[length - 1U] == ' ' || data[length - 1U] == '\t')) {
+        length--;
+    }
+    expected_length = kstrlen(expected);
+    if (length != expected_length) return 0U;
+    for (uint32_t index = 0U; index < length; index++) {
+        if (http_ascii_lower((char)data[index]) !=
+            http_ascii_lower(expected[index])) return 0U;
+    }
+    return 1U;
+}
+
 static uint8_t http_is_token_character(uint8_t value) {
     if ((value >= '0' && value <= '9') ||
         (value >= 'A' && value <= 'Z') ||
@@ -465,9 +504,18 @@ static int http_parse_header_line(const uint8_t* data,
         if ((data[index] < 0x20U && data[index] != '\t') ||
             data[index] == 0x7FU) return ERR_INVALID;
     }
-    if (http_range_equal(data, colon, "Transfer-Encoding") ||
-        http_range_equal(data, colon, "Content-Encoding")) {
-        return ERR_UNAVAILABLE;
+    if (http_range_equal(data, colon, "Transfer-Encoding")) {
+        if (result->chunked || !http_header_value_equal(
+                data + colon + 1U, length - colon - 1U, "chunked")) {
+            return ERR_UNAVAILABLE;
+        }
+        result->chunked = 1U;
+        return OK;
+    }
+    if (http_range_equal(data, colon, "Content-Encoding")) {
+        return http_header_value_equal(
+            data + colon + 1U, length - colon - 1U, "identity") ?
+            OK : ERR_UNAVAILABLE;
     }
     if (http_range_equal(data, colon, "Location")) {
         if (result->has_location) return ERR_INVALID;
@@ -532,12 +580,14 @@ static int http_parse_headers(const uint8_t* data, uint32_t length,
         line_start = line_end + 2U;
     }
     if (line_start + 2U != length) return ERR_INVALID;
+    if (result->chunked && result->has_content_length) return ERR_INVALID;
     result->no_body = result->status_code == 204U ||
                       result->status_code == 304U;
     if (result->no_body) {
+        if (result->chunked) return ERR_INVALID;
         result->has_content_length = 1;
         result->content_length = 0;
-    } else if (!result->has_content_length) {
+    } else if (!result->has_content_length && !result->chunked) {
         result->eof_framed = 1;
     }
     return OK;
@@ -595,6 +645,10 @@ static void http_clear_session(http_state_t state) {
     http_body_limit = 0;
     http_streaming = 0;
     http_request_path[0] = '\0';
+    http_chunked = 0U;
+    http_chunk_state = HTTP_CHUNK_STATE_SIZE;
+    http_chunk_remaining = 0U;
+    http_chunk_size_seen = 0U;
     kmemset(http_header_buffer, 0, sizeof(http_header_buffer));
     kmemset(http_body_buffer, 0, sizeof(http_body_buffer));
 }
@@ -768,6 +822,7 @@ static int http_finish_headers(void) {
     http_status.content_length = result->content_length;
     http_status.has_content_length = result->has_content_length;
     http_status.eof_framed = result->eof_framed;
+    http_chunked = result->chunked;
     if (http_is_redirect_status(result->status_code) &&
         http_follow_redirects) {
         if (!result->has_location) {
@@ -831,6 +886,123 @@ static int http_consume_body(const uint8_t* data, uint16_t length) {
     return OK;
 }
 
+static int http_chunk_error(int error, const char* message) {
+    LOG_ERROR("NET", message);
+    return error;
+}
+
+static int http_consume_chunked(const uint8_t* data, uint16_t length) {
+    uint16_t offset = 0U;
+
+    if (!data && length) {
+        return http_chunk_error(ERR_NULL, "Corpo HTTP chunked nulo");
+    }
+    while (offset < length && http_status.state != HTTP_STATE_COMPLETE) {
+        uint8_t value = data[offset];
+
+        if (http_chunk_state == HTTP_CHUNK_STATE_SIZE) {
+            uint8_t digit;
+
+            if (value >= '0' && value <= '9') digit = (uint8_t)(value - '0');
+            else if (value >= 'a' && value <= 'f') digit = (uint8_t)(value - 'a' + 10U);
+            else if (value >= 'A' && value <= 'F') digit = (uint8_t)(value - 'A' + 10U);
+            else digit = 16U;
+            if (digit < 16U) {
+                if (http_chunk_remaining >
+                    (HTTP_MAX_BODY_LIMIT - digit) / 16U) {
+                    return http_chunk_error(
+                        ERR_OVERFLOW, "Tamanho de chunk HTTP excede limite");
+                }
+                http_chunk_remaining = http_chunk_remaining * 16U + digit;
+                http_chunk_size_seen = 1U;
+                offset++;
+            } else if (value == ';' && http_chunk_size_seen) {
+                http_chunk_state = HTTP_CHUNK_STATE_EXTENSION;
+                offset++;
+            } else if (value == '\r' && http_chunk_size_seen) {
+                http_chunk_state = HTTP_CHUNK_STATE_SIZE_LF;
+                offset++;
+            } else {
+                return http_chunk_error(
+                    ERR_INVALID, "Tamanho de chunk HTTP invalido");
+            }
+        } else if (http_chunk_state == HTTP_CHUNK_STATE_EXTENSION) {
+            if (value == '\r') {
+                http_chunk_state = HTTP_CHUNK_STATE_SIZE_LF;
+                offset++;
+            } else if (value < 0x20U || value > 0x7EU) {
+                return http_chunk_error(
+                    ERR_INVALID, "Extensao de chunk HTTP invalida");
+            } else {
+                offset++;
+            }
+        } else if (http_chunk_state == HTTP_CHUNK_STATE_SIZE_LF) {
+            if (value != '\n') {
+                return http_chunk_error(
+                    ERR_INVALID, "Termino de chunk HTTP invalido");
+            }
+            offset++;
+            if (http_chunk_remaining >
+                http_body_limit - http_status.body_length) {
+                return http_chunk_error(
+                    ERR_OVERFLOW, "Corpo HTTP chunked excede limite");
+            }
+            http_chunk_state = http_chunk_remaining ? HTTP_CHUNK_STATE_DATA :
+                                                     HTTP_CHUNK_STATE_TRAILER_CR;
+        } else if (http_chunk_state == HTTP_CHUNK_STATE_DATA) {
+            uint16_t available = (uint16_t)(length - offset);
+            uint16_t take = http_chunk_remaining < available ?
+                            (uint16_t)http_chunk_remaining : available;
+            int result;
+
+            if (!take) {
+                http_chunk_state = HTTP_CHUNK_STATE_DATA_CR;
+                continue;
+            }
+            result = http_consume_body(data + offset, take);
+            if (result != OK) return result;
+            offset = (uint16_t)(offset + take);
+            http_chunk_remaining -= take;
+            if (!http_chunk_remaining) {
+                http_chunk_state = HTTP_CHUNK_STATE_DATA_CR;
+            }
+        } else if (http_chunk_state == HTTP_CHUNK_STATE_DATA_CR) {
+            if (value != '\r') {
+                return http_chunk_error(
+                    ERR_INVALID, "Separador de chunk HTTP invalido");
+            }
+            http_chunk_state = HTTP_CHUNK_STATE_DATA_LF;
+            offset++;
+        } else if (http_chunk_state == HTTP_CHUNK_STATE_DATA_LF) {
+            if (value != '\n') {
+                return http_chunk_error(
+                    ERR_INVALID, "Separador de chunk HTTP invalido");
+            }
+            http_chunk_remaining = 0U;
+            http_chunk_size_seen = 0U;
+            http_chunk_state = HTTP_CHUNK_STATE_SIZE;
+            offset++;
+        } else if (http_chunk_state == HTTP_CHUNK_STATE_TRAILER_CR) {
+            if (value != '\r') {
+                return http_chunk_error(
+                    ERR_UNAVAILABLE, "Trailers HTTP nao suportados");
+            }
+            http_chunk_state = HTTP_CHUNK_STATE_TRAILER_LF;
+            offset++;
+        } else if (http_chunk_state == HTTP_CHUNK_STATE_TRAILER_LF) {
+            if (value != '\n') {
+                return http_chunk_error(
+                    ERR_INVALID, "Termino de corpo HTTP invalido");
+            }
+            offset++;
+            http_complete();
+        } else {
+            return http_chunk_error(ERR_STATE, "Estado de chunk HTTP invalido");
+        }
+    }
+    return OK;
+}
+
 static int http_consume_bytes(const uint8_t* data, uint16_t length) {
     uint16_t offset = 0;
 
@@ -854,6 +1026,10 @@ static int http_consume_bytes(const uint8_t* data, uint16_t length) {
             }
         } else if (http_status.state ==
                    HTTP_STATE_RECEIVING_BODY) {
+            if (http_chunked) {
+                return http_consume_chunked(data + offset,
+                                            (uint16_t)(length - offset));
+            }
             return http_consume_body(data + offset,
                                      length - offset);
         } else {
@@ -1173,6 +1349,10 @@ static int http_maintain_receiving(void) {
         LOG_ERROR("NET", "Conexao encerrou durante headers HTTP");
         return ERR_INVALID;
     }
+    if (http_chunked) {
+        LOG_ERROR("NET", "Conexao encerrou antes do fim chunked HTTP");
+        return ERR_INVALID;
+    }
     if (http_status.has_content_length) {
         if (http_status.body_length != http_status.content_length) {
             LOG_ERROR("NET", "Conexao encerrou antes do corpo HTTP");
@@ -1303,6 +1483,9 @@ static int http_validate_header_vectors(void) {
     static const uint8_t conflicting[] =
         "HTTP/1.1 200 OK\r\nContent-Length: 3\r\n"
         "Content-Length: 4\r\n\r\n";
+    static const uint8_t conflicting_framing[] =
+        "HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n"
+        "Content-Length: 3\r\n\r\n";
     static http_header_result_t result;
 
     if (http_parse_headers(valid, sizeof(valid) - 1U, &result) != OK ||
@@ -1312,8 +1495,9 @@ static int http_validate_header_vectors(void) {
         return ERR_STATE;
     }
     if (http_parse_headers(chunked, sizeof(chunked) - 1U,
-                           &result) != ERR_UNAVAILABLE) {
-        LOG_ERROR("NET", "Chunked HTTP foi aceito");
+                           &result) != OK || !result.chunked ||
+        result.has_content_length || result.eof_framed) {
+        LOG_ERROR("NET", "Vetor chunked HTTP falhou");
         return ERR_STATE;
     }
     if (http_parse_headers(compressed, sizeof(compressed) - 1U,
@@ -1324,6 +1508,12 @@ static int http_validate_header_vectors(void) {
     if (http_parse_headers(conflicting, sizeof(conflicting) - 1U,
                            &result) != ERR_INVALID) {
         LOG_ERROR("NET", "Framing HTTP conflitante foi aceito");
+        return ERR_STATE;
+    }
+    if (http_parse_headers(conflicting_framing,
+                           sizeof(conflicting_framing) - 1U,
+                           &result) != ERR_INVALID) {
+        LOG_ERROR("NET", "Chunked HTTP com tamanho conflitou");
         return ERR_STATE;
     }
     return OK;
@@ -1349,6 +1539,8 @@ int http_validate_state(void) {
         http_status.path[HTTP_PATH_MAX_LENGTH] != '\0' ||
         http_request_path[HTTP_REDIRECT_URL_MAX_LENGTH] != '\0' ||
         http_status.headers_length > HTTP_HEADER_CAPACITY ||
+        http_chunk_state > HTTP_CHUNK_STATE_TRAILER_LF ||
+        (http_chunked && http_status.has_content_length) ||
         http_status.body_length > http_status.body_limit ||
         http_status.body_limit != http_body_limit ||
         (http_status.streaming != http_streaming) ||
