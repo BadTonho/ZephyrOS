@@ -840,6 +840,7 @@ static int http_consume_bytes(const uint8_t* data, uint16_t length) {
            http_status.state != HTTP_STATE_COMPLETE) {
         if (http_status.state == HTTP_STATE_RECEIVING_HEADERS) {
             if (http_status.headers_length >= HTTP_HEADER_CAPACITY) {
+                LOG_ERROR("NET", "Headers HTTP excederam limite");
                 return ERR_OVERFLOW;
             }
             http_header_buffer[http_status.headers_length++] =
