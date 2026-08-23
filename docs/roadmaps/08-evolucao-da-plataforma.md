@@ -664,6 +664,7 @@ ser tratadas como uma etapa própria do bootloader.
 - Correção da auditoria offline para estado runtime v2 sem rollback concluída em: 2026-08-22 23:27 (America/Sao_Paulo).
 - Correção do falso positivo da auditoria offline após limpeza do cache runtime v2 concluída em: 2026-08-23 00:51 (America/Sao_Paulo).
 - Implementação do comando `update runtime test fail-after <1-16>` concluída em: 2026-08-23 10:34:45 (America/Sao_Paulo); a validação QEMU do failpoint e da recuperação permanece pendente.
+- Implementação da opção `fixtures-runtime --changed-assets` concluída em: 2026-08-23 11:16:00 (America/Sao_Paulo); a validação QEMU com substituições reais permanece pendente.
 - [x] Validacao do usuario no QEMU do HTTP U5 concluida para os fluxos
   seletivo e completo, incluindo manifestos assinados, rejeicoes de asset/tag/
   JSON/hash/assinatura/pacote e preservacao do cache anterior.

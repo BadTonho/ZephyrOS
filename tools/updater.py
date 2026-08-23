@@ -5271,7 +5271,10 @@ def command_runtime_verify(args: argparse.Namespace) -> None:
 
 
 def write_runtime_fixtures(
-    private_key: Any, public: PublicKeyInfo, output_dir: Path
+    private_key: Any,
+    public: PublicKeyInfo,
+    output_dir: Path,
+    changed_assets: bool = False,
 ) -> None:
     """Gera fixtures v2 validas e adulteradas para EP6.3."""
     output = output_dir.resolve()
@@ -5281,7 +5284,10 @@ def write_runtime_fixtures(
     input_dir = output / "input"
     input_dir.mkdir()
     for name, source in UPDATE_ASSETS.items():
-        write_new_bytes(input_dir / name, source.read_bytes())
+        data = source.read_bytes()
+        if changed_assets:
+            data = invert_bmp_pixels(data)
+        write_new_bytes(input_dir / name, data)
     manifest_path = input_dir / "runtime.json"
     manifest_spec = {
         "format": "ZUM2 v2",
@@ -5360,7 +5366,9 @@ def command_fixtures_runtime(args: argparse.Namespace) -> None:
     public = load_public_json(Path(args.public))
     if private_public_info(key) != public:
         raise UpdateError("chave privada nao corresponde ao JSON publico")
-    write_runtime_fixtures(key, public, Path(args.output_dir))
+    write_runtime_fixtures(
+        key, public, Path(args.output_dir), args.changed_assets
+    )
     print(f"Fixtures runtime v2 criadas em {Path(args.output_dir).resolve()}")
     print("Somente artefatos publicos foram gravados no diretorio indicado.")
 
@@ -5774,6 +5782,11 @@ def build_parser() -> argparse.ArgumentParser:
     fixtures_runtime.add_argument("--private", required=True)
     fixtures_runtime.add_argument("--public", required=True)
     fixtures_runtime.add_argument("--output-dir", required=True)
+    fixtures_runtime.add_argument(
+        "--changed-assets",
+        action="store_true",
+        help="gera payloads BMP diferentes dos arquivos da imagem base",
+    )
     fixtures_runtime.set_defaults(handler=command_fixtures_runtime)
 
     serve_runtime = subparsers.add_parser(
