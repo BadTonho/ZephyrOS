@@ -62,7 +62,7 @@
 #define KERNEL_USB_POLL_BUDGET 4U
 #define KERNEL_DEFERRED_DISPATCH_BUDGET 8U
 #define SYSTEM_PROCESS_STACK_SIZE (KERNEL_STACK_SIZE * 2U)
-#define SHELL_PROCESS_STACK_SIZE (KERNEL_STACK_SIZE * 2U)
+#define SHELL_PROCESS_STACK_SIZE (KERNEL_STACK_SIZE * 4U)
 
 static int kernel_service_fallback = 0;
 static int kernel_network_poll_enabled = 1;
