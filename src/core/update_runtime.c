@@ -2072,7 +2072,9 @@ static int runtime_apply_plan_locked(const char* package_path,
             output, UPDATE_RUNTIME_REASON_STATE, ERR_DISK,
             "Estado runtime nao foi publicado");
     }
-    if (update_sync_runtime_state(target, target_epoch) != OK) {
+    /* O rollback pode passar um ponteiro para previous_version; o commit o zera. */
+    if (update_sync_runtime_state(&runtime_journal.target_version,
+                                  runtime_journal.target_epoch) != OK) {
         if (output) output->recovery_pending = 1U;
         return runtime_action_fail(
             output, UPDATE_RUNTIME_REASON_STATE, ERR_DISK,
