@@ -143,6 +143,8 @@ deve publicar estado degradado ou indisponível quando aplicável.
 - Índice da docs: `docs/indice.md`
 - Memória operacional geral de comandos e validações: `docs/qualidade/comandos-operacionais-agente.md`
   (consultar antes de orientar comandos; não armazenar segredos nesse arquivo).
+- Registro cronológico de implementações e validações:
+  `docs/qualidade/registro-validacoes.md`.
 
 ---
 
@@ -580,9 +582,12 @@ e repetir o valor literalmente.
 
 ## Regra #18: Registro de Etapas e Validações
 
-Toda etapa, subetapa, fase, apenas validação concluída DEVE registrar a
-data e a hora exatas em que foi concluída, no roadmap ou documento canônico da
-frente correspondente.
+Toda etapa, subetapa, fase, implementação ou validação concluída DEVE registrar
+a data e a hora exatas em `docs/qualidade/registro-validacoes.md`.
+
+O roadmap mantém somente o estado, o escopo e um link para o registro; não
+duplicar nele comandos executados, saídas extensas, diagnósticos ou histórico
+de tentativas.
 
 O registro DEVE usar o formato ISO 8601 com fuso explícito:
 

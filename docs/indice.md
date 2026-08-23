@@ -79,6 +79,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [Estado da Documentação](estado_da_documentacao.md) | Fonte de verdade, escopo da auditoria e como interpretar os roadmaps |
 | [Contratos publicos](qualidade/contratos-publicos.md) | Mapa de headers publicos e documentos tecnicos canonicos |
 | [Metricas de otimizacao](qualidade/metricas.md) | Linhas-base K1, validacoes K2/K3 e ganho K4 registrado |
+| [Registro de validacoes](qualidade/registro-validacoes.md) | Evidencias cronologicas de implementacoes, testes e conclusoes de fase |
 | [Roadmaps por Etapa](roadmaps/README.md) | Ordem executável das próximas frentes do projeto |
 | [01 - Estabilização e Qualidade](roadmaps/01-estabilizacao-e-qualidade.md) | Regressão, diagnósticos e fallbacks |
 | [02 - Plataforma de Aplicativos](roadmaps/02-plataforma-de-aplicativos.md) | Migração gradual, ZAPP e pacotes |
@@ -87,7 +88,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [05 - Sistema e Ecossistema](roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e apps |
 | [06 - App Store](roadmaps/06-app-store.md) | Catalogo local ZPKG, ciclo de vida e repositorio remoto autenticado |
 | [07 - Modernização Visual](roadmaps/07-modernizacao-visual.md) | Escala acessível, visual flat/dark e desempenho VESA mensurável |
-| [08 - Evolução da Plataforma](roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.3 implementadas; EP6.3 entrega runtime v2 e cache seletivo/completo; validação QEMU EP6.3 e EP9 permanecem pendentes |
+| [08 - Evolução da Plataforma](roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.3 implementadas; EP6.3 validada com runtime v2, cache seletivo/completo e GitHub HTTPS; EP9 permanece pendente |
 | [09 - Funcionalidades aplicáveis](roadmaps/09-funcionalidades-aplicaveis.md) | Logs, timers, espera, work queue, dispositivos, I/O, cache e scheduler |
 | [10 - VFS e Abstração de I/O](roadmaps/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, montagens, /dev/ e pipes |
 | [11 - Gerenciamento Avançado de Memória](roadmaps/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging |
