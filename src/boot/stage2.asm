@@ -17,6 +17,13 @@ KERNEL_BUFFER_SEG equ (KERNEL_BUFFER >> 4)
 KERNEL_BUFFER_SECTORS equ 63
 KERNEL_BUFFER_END equ (KERNEL_BUFFER + KERNEL_BUFFER_SECTORS * SECTOR_SIZE)
 LOW_BUFFER_LIMIT equ 0x00080000
+DISK_MODE_CHS    equ 0
+DISK_MODE_LBA    equ 1
+DISK_READ_ATTEMPTS equ 3
+EDD_PACKET_SIZE  equ 0x10
+EDD_SIGNATURE_IN equ 0x55AA
+EDD_SIGNATURE_OUT equ 0xAA55
+EDD_FIXED_DISK_ACCESS equ 0x0001
 KBC_TIMEOUT      equ 0xFFFF
 KBC_DATA_PORT    equ 0x60
 KBC_STATUS_PORT  equ 0x64
@@ -65,7 +72,7 @@ stage2_start:
     mov byte [VESA_INFO + 11], 0
 
     call detect_memory
-    call detect_geometry
+    call detect_disk_access
 
     call validate_kernel_memory
     jc memory_error
@@ -163,6 +170,25 @@ validate_kernel_memory:
 .fail:
     stc
     popa
+    ret
+
+detect_disk_access:
+    mov byte [DISK_MODE], DISK_MODE_CHS
+    mov bx, EDD_SIGNATURE_IN
+    mov ah, 0x41
+    mov dl, [BOOT_DRIVE]
+    int 0x13
+    jc .chs
+    cmp bx, EDD_SIGNATURE_OUT
+    jne .chs
+    test cx, EDD_FIXED_DISK_ACCESS
+    jz .chs
+
+    mov byte [DISK_MODE], DISK_MODE_LBA
+    ret
+
+.chs:
+    call detect_geometry
     ret
 
 detect_geometry:
@@ -379,6 +405,17 @@ load_kernel:
     cmp word [remaining], 0
     je .done
 
+    cmp byte [DISK_MODE], DISK_MODE_LBA
+    jne .prepare_chs
+
+    ; EDD nao depende de trilhas; o bounce buffer continua sendo o limite.
+    mov cx, KERNEL_BUFFER_SECTORS
+    cmp cx, [remaining]
+    jbe .batch_ready
+    mov cx, [remaining]
+    jmp .batch_ready
+
+.prepare_chs:
     ; Limita o lote ao fim da trilha, ao buffer e aos setores restantes.
     mov ax, [LBA]
     xor dx, dx
@@ -395,7 +432,66 @@ load_kernel:
 .batch_ready:
     mov [transfer_sectors], cx
 
+    cmp byte [DISK_MODE], DISK_MODE_LBA
+    jne .read_chs
+    call read_kernel_lba
+    jc lba_disk_error
+    jmp .read_complete
+
+.read_chs:
+    call read_kernel_chs
+    jc chs_disk_error
+
+.read_complete:
+    call copy_sector_high
+    mov ax, [transfer_sectors]
+    add [LBA], ax
+    sub [remaining], ax
+    jmp .read_loop
+
+.done:
+    ret
+
+read_kernel_lba:
+    mov byte [read_attempts], DISK_READ_ATTEMPTS
+
+.retry:
+    mov ax, [transfer_sectors]
+    mov [disk_address_packet + 2], ax
+    mov word [disk_address_packet + 4], 0
+    mov word [disk_address_packet + 6], KERNEL_BUFFER_SEG
+    mov ax, [LBA]
+    mov [disk_address_packet + 8], ax
+    mov word [disk_address_packet + 10], 0
+    mov dword [disk_address_packet + 12], 0
+
+    mov si, disk_address_packet
+    mov ah, 0x42
+    mov dl, [BOOT_DRIVE]
+    int 0x13
+    jnc .success
+
+    dec byte [read_attempts]
+    jz .fail
+    call reset_boot_disk
+    jmp .retry
+
+.success:
+    clc
+    ret
+
+.fail:
+    stc
+    ret
+
+read_kernel_chs:
+    mov byte [read_attempts], DISK_READ_ATTEMPTS
+
+.retry:
     ; Converte LBA para CHS usando a geometria informada pelo BIOS.
+    mov ax, [LBA]
+    xor dx, dx
+    div word [SPT]
     inc dx
     mov bl, dl
     xor dx, dx
@@ -413,15 +509,25 @@ load_kernel:
     mov ah, 0x02
     mov al, [transfer_sectors]
     int 0x13
-    jc disk_error
+    jnc .success
 
-    call copy_sector_high
-    mov ax, [transfer_sectors]
-    add [LBA], ax
-    sub [remaining], ax
-    jmp .read_loop
+    dec byte [read_attempts]
+    jz .fail
+    call reset_boot_disk
+    jmp .retry
 
-.done:
+.success:
+    clc
+    ret
+
+.fail:
+    stc
+    ret
+
+reset_boot_disk:
+    xor ax, ax
+    mov dl, [BOOT_DRIVE]
+    int 0x13
     ret
 
 copy_sector_high:
@@ -489,10 +595,16 @@ print16:
     popa
     ret
 
-disk_error:
+lba_disk_error:
     xor ax, ax
     mov ds, ax
-    mov si, msg_disk
+    mov si, msg_lba_disk
+    jmp fatal_error
+
+chs_disk_error:
+    xor ax, ax
+    mov ds, ax
+    mov si, msg_chs_disk
     jmp fatal_error
 
 memory_error:
@@ -553,6 +665,8 @@ gdt_descriptor:
     dd gdt_start
 
 BOOT_DRIVE: db 0
+DISK_MODE:  db DISK_MODE_CHS
+read_attempts: db 0
 mmap_count: dd 0
 SPT:        dw 0
 NUM_HEADS:  dw 0
@@ -560,7 +674,15 @@ LBA:        dw 0
 LOAD_DEST:  dd 0
 remaining:  dw 0
 transfer_sectors: dw 0
-msg_disk:     db "Kernel disk error!", 0
+align 4
+disk_address_packet:
+    db EDD_PACKET_SIZE, 0
+    dw 0
+    dw 0
+    dw KERNEL_BUFFER_SEG
+    dq 0
+msg_lba_disk: db "Kernel LBA read error!", 0
+msg_chs_disk: db "Kernel CHS read error!", 0
 msg_memory:   db "Kernel high memory unavailable!", 0
 msg_a20:      db "A20 enable error!", 0
 msg_overflow: db "Kernel load overflow!", 0

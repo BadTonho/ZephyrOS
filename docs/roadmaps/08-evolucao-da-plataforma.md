@@ -471,18 +471,31 @@ QEMU; regressao EP6.0/U5 preservada conforme validacao anterior.
   documentação de distribuição e diagnósticos `tls`/`health`/`health check`/
   `update github`.
 
-### Etapa futura — Leitura LBA no `stage2` (fora da EP6.2 e EP6.3)
+### Etapa LBA — Carregamento do kernel no `stage2`
 
-- [ ] Fazer o `stage2` preferir as extensões BIOS `INT 13h/AH=42` para carregar
+**Estado:** implementada; validação do usuário pendente.
+
+#### Implementação
+
+- [x] Fazer o `stage2` preferir as extensões BIOS `INT 13h/AH=42` para carregar
   o kernel por LBA, sem depender da geometria CHS exposta pelo BIOS/QEMU.
-- [ ] Manter CHS como fallback explícito quando as extensões LBA não estiverem
+- [x] Manter CHS como fallback explícito quando as extensões LBA não estiverem
   disponíveis, com limites de memória, tamanho de lote, retry e diagnóstico
   preservados.
-- [ ] Confirmar que `src/boot/boot.asm` permanece intocado e que o tamanho do
-  `stage2`, a reserva da imagem e o contrato de carregamento não são excedidos.
-- [ ] Validar com `make q3check`, build limpo, `make run`, geometria padrão e
-  geometria explícita, além da regressão de boot, `health`, `regcheck full` e
-  `memcheck`.
+- [x] Manter `src/boot/boot.asm` intocado e preservar a reserva da imagem, o
+  bounce buffer e o contrato de carregamento do kernel.
+- [x] Adicionar `run-stage2-lba` e `run-stage2-chs` para validar os dois caminhos
+  sem comandos QEMU manuais.
+- [ ] Confirmar no build que `boot.bin` permanece com 512 bytes e que o tamanho
+  alinhado do `stage2` não excede sua janela abaixo de `0x10000`.
+- [ ] Validar com `make q3check`, build limpo, `make run`, `make run-stage2-lba`
+  e `make run-stage2-chs`, além de `health check`, `memcheck` e `regcheck full`.
+
+#### Critério de saída
+
+O kernel inicia pelo caminho LBA sem depender da geometria IDE, continua
+iniciando pelo fallback CHS quando EDD não existe e mantém intactos o estágio
+1, os limites de memória e a ABI entregue ao kernel.
 
 ### EP6.3 - Runtime v2, cache seletivo e matriz de falhas
 

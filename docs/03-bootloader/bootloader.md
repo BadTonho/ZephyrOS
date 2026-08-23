@@ -58,21 +58,35 @@ O BIOS retorna uma tabela com as regiões de memória disponíveis:
 ### Etapa 4: Carregar Kernel do Disco
 
 ```nasm
-disk_load:
-    mov ax, 0x1000
-    mov es, ax             ; Bounce buffer em 0x10000
-    xor bx, bx
-    mov ah, 0x02           ; Função: ler setores
-    mov al, [lote]         ; Nunca cruza trilha ou limite de 64 KiB
-    int 0x13               ; BIOS grava o lote no buffer
-    ; Protected mode copia o lote para o destino alto.
+detect_disk_access:
+    mov ah, 0x41           ; Consulta extensões de disco EDD
+    mov bx, 0x55AA
+    int 0x13
+    ; Assinatura 0xAA55 e CX bit 0 selecionam o caminho LBA.
+
+read_kernel_lba:
+    mov si, disk_address_packet
+    mov ah, 0x42           ; Leitura estendida por LBA
+    int 0x13               ; DAP aponta para o bounce buffer em 0x10000
 ```
 
 O estágio 2 verifica o mapa E820, habilita a linha A20 e lê o kernel em lotes
-de até 63 setores para `0x10000`. Cada lote termina antes da próxima trilha e
-permanece dentro da mesma janela de 64 KiB exigida pela BIOS. Após cada
-leitura, entra temporariamente em protected mode e copia o lote com segmentos
-flat para a janela iniciada em
+de até 63 setores para `0x10000`. Em discos com EDD, `INT 13h/AH=41` valida a
+assinatura e o bit de acesso estendido, e `INT 13h/AH=42` lê o lote por LBA com
+um Disk Address Packet de 16 bytes. A leitura LBA não depende da geometria
+CHS. Se EDD não estiver disponível, o stage2 consulta a geometria e usa
+`INT 13h/AH=02`; nesse caminho cada lote também termina antes da próxima
+trilha. Os dois caminhos permanecem dentro da janela de 64 KiB exigida pela
+BIOS.
+
+Cada lote admite três tentativas totais, com reset `INT 13h/AH=00` entre
+falhas. Uma BIOS que não anuncia EDD seleciona CHS. Se EDD foi anunciado mas
+a leitura estendida esgotou as tentativas, o stage2 encerra com diagnóstico
+LBA específico, sem esconder a falha tentando CHS. Falhas do fallback também
+possuem diagnóstico CHS específico.
+
+Após cada leitura, o stage2 entra temporariamente em protected mode e copia o
+lote com segmentos flat para a janela iniciada em
 `0x00100000`. A saída passa por um descritor protegido de código 16-bit antes
 de limpar `CR0.PE` e retornar ao real mode para a próxima chamada da BIOS. A
 imagem completa nunca precisa caber na memória baixa.
@@ -80,6 +94,10 @@ imagem completa nunca precisa caber na memória baixa.
 A quantidade de setores continua calculada durante o build. O stage2 recusa
 imagens cujo conteúdo carregável ultrapasse `0x00800000`, enquanto o linker
 aplica o mesmo limite ao kernel, incluindo a BSS.
+
+O estágio 1 continua carregando apenas o stage2 por CHS e permanece limitado
+a 512 bytes. Os alvos `run-stage2-lba` e `run-stage2-chs` validam,
+respectivamente, o disco IDE sem geometria fixa e o fallback por floppy.
 
 ### Etapa 5: Configurar GDT
 

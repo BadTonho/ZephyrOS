@@ -14,6 +14,8 @@ QEMU ?= qemu-system-i386
 QEMU_CPU_ARGS ?= -cpu max
 QEMU_NET_ARGS ?= -nic user,model=e1000
 QEMU_BOOT_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=bootdisk -device ide-hd,drive=bootdisk,cyls=80,heads=2,secs=18,bootindex=1
+QEMU_STAGE2_LBA_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=stage2lbadisk -device ide-hd,drive=stage2lbadisk,bootindex=1
+QEMU_STAGE2_CHS_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=floppy,index=0 -boot order=a
 QEMU_USB_ARGS ?= -device piix3-usb-uhci,id=usb
 QEMU_USB_DEVICE_ARGS ?= -device usb-kbd,bus=usb.0
 QEMU_USB_HID_DEVICE_ARGS ?= -device usb-kbd,bus=usb.0,port=1 -device usb-mouse,bus=usb.0,port=2
@@ -934,6 +936,12 @@ $(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(KERNEL_BIN) tools\packager.py \
 run: $(OS_IMG)
 	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS)
 
+run-stage2-lba: $(OS_IMG)
+	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_STAGE2_LBA_DISK_ARGS) $(QEMU_NET_ARGS)
+
+run-stage2-chs: $(OS_IMG)
+	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_STAGE2_CHS_DISK_ARGS) $(QEMU_NET_ARGS)
+
 run-usb: $(OS_IMG)
 	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS) $(QEMU_USB_ARGS) $(QEMU_USB_DEVICE_ARGS)
 
@@ -1035,4 +1043,4 @@ store-as5-serve: store-as5-test
 clean:
 	rmdir /s /q build
 
-.PHONY: all run run-usb run-usb-msc run-usb-hid run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
+.PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
