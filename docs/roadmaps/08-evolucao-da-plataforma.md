@@ -940,6 +940,13 @@ Validação B após aplicação concluída em: 2026-08-23 12:55
 `TASKMGR.BMP` ausente; `health check`, `memcheck` e `regcheck full`
 concluídos.
 
+Validação do rollback B concluída em: 2026-08-23 12:57
+(America/Sao_Paulo). Resultado: `Rollback runtime: NONE`; após reboot,
+`0.1.1/e0`, `journal=CLEAN`, `rollback=DISABLED`, `EXPLORER.BMP` e
+`TASKMGR.BMP` presentes, `SHELL.BMP` ausente; `memcheck` e `regcheck full`
+concluídos com `OK`. `update history` permaneceu vazio, sem operações U3
+registradas, conforme o comportamento atual do fluxo runtime v2.
+
 #### Auditoria offline após o último reboot
 
 Encerrar o QEMU antes da auditoria:
