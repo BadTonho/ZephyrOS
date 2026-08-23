@@ -62,6 +62,7 @@
 #define KERNEL_USB_POLL_BUDGET 4U
 #define KERNEL_DEFERRED_DISPATCH_BUDGET 8U
 #define SYSTEM_PROCESS_STACK_SIZE (KERNEL_STACK_SIZE * 2U)
+#define SHELL_PROCESS_STACK_SIZE (KERNEL_STACK_SIZE * 2U)
 
 static int kernel_service_fallback = 0;
 static int kernel_network_poll_enabled = 1;
@@ -1069,7 +1070,8 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
                                "Processo System falhou; servicos no loop do kernel");
     }
 
-    process_t* shell_process = process_create("Shell", shell_process_main);
+    process_t* shell_process = process_create_with_stack_size(
+        "Shell", shell_process_main, SHELL_PROCESS_STACK_SIZE);
     if (shell_process) {
         kernel_shell_pid = shell_process->pid;
         if (process_set_focus_fallback(shell_process->pid) != OK ||
