@@ -10,6 +10,10 @@
 #define MAX_PROCESSES 64
 #define KERNEL_STACK_SIZE 4096
 #define PROCESS_KERNEL_STACK_ALIGNMENT 16U
+#define PROCESS_KERNEL_STACK_MIN_SIZE KERNEL_STACK_SIZE
+#define PROCESS_KERNEL_STACK_MAX_SIZE (KERNEL_STACK_SIZE * 4U)
+#define PROCESS_STACK_GUARD_BYTES PROCESS_KERNEL_STACK_ALIGNMENT
+#define PROCESS_STACK_LOW_WATER_BYTES 1024U
 #define PROCESS_NAME_LENGTH 32
 #define PROCESS_EXIT_CANCELLED APP_EXIT_CANCELLED
 
@@ -59,6 +63,7 @@ typedef struct {
     uint32_t idle_valid;
     uint32_t pid_table_valid;
     uint32_t state_table_valid;
+    uint32_t stack_table_valid;
 } scheduler_validation_t;
 
 typedef enum {
@@ -85,8 +90,14 @@ typedef struct {
     process_state_t state;
     process_context_t context;
     page_directory_t* page_directory;
+    uint32_t kernel_stack_allocation;
     uint32_t kernel_stack;
     uint32_t kernel_stack_top;
+    uint32_t kernel_stack_size;
+    uint32_t kernel_stack_peak_used;
+    uint32_t kernel_stack_min_free;
+    uint32_t kernel_stack_low_water_events;
+    uint32_t kernel_stack_overflow_events;
     uint32_t* kernel_stack_ptr;
     uint32_t wait_ticks;
     uint32_t total_ticks;
@@ -107,6 +118,9 @@ typedef struct {
     wait_reason_t wait_reason;
     uint8_t wait_deadline_active;
     uint8_t wait_active;
+    uint8_t kernel_stack_owned;
+    uint8_t kernel_stack_low_water_active;
+    uint8_t kernel_stack_corruption_reported;
 } process_t;
 
 typedef struct {
@@ -114,6 +128,28 @@ typedef struct {
     uint32_t vector;
     uint32_t error;
 } process_user_fault_summary_t;
+
+typedef struct {
+    uint32_t pid;
+    char name[PROCESS_NAME_LENGTH];
+    uint32_t stack_size;
+    uint32_t bytes_used;
+    uint32_t peak_bytes_used;
+    uint32_t bytes_free;
+    uint32_t minimum_bytes_free;
+    uint32_t low_water_events;
+    uint32_t overflow_events;
+    uint8_t lower_canary_ok;
+    uint8_t upper_canary_ok;
+    uint8_t low_water_active;
+} process_stack_info_t;
+
+typedef struct {
+    uint32_t checked;
+    uint32_t valid;
+    uint32_t low_water;
+    uint32_t corrupted;
+} process_stack_validation_t;
 
 void process_init(void);
 void process_bootstrap_idle(void);
@@ -154,6 +190,10 @@ uint32_t process_get_user_count(void);
 uint32_t process_get_user_fault_count(void);
 int process_get_last_user_fault(process_user_fault_summary_t* summary);
 int process_is_user(const process_t* proc);
+int process_stack_get_info(uint32_t pid, process_stack_info_t* output);
+int process_stack_validate_all(process_stack_validation_t* validation);
+int process_stack_check_current(uint32_t* remaining_out);
+int process_stack_self_test(void);
 int process_exit_current(uint32_t exit_code);
 int process_handle_user_exception(registers_t* regs);
 int process_prepare_user_termination(registers_t* regs);

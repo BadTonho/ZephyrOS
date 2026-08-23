@@ -471,19 +471,6 @@ QEMU; regressao EP6.0/U5 preservada conforme validacao anterior.
   documentação de distribuição e diagnósticos `tls`/`health`/`health check`/
   `update github`.
 
-### Evolução futura — Gerenciamento de stack para rede e TLS
-
-- [ ] Medir o maior consumo real de stack do kernel usando canários e métricas
-  de high-water mark, incluindo a validação criptográfica do BearSSL.
-- [ ] Permitir tamanhos de stack configuráveis por processo, evitando aumentar
-  globalmente a memória reservada para processos que não precisam de TLS.
-- [ ] Reservar uma stack maior para o worker de rede/TLS e manter o Shell fora
-  das frames criptográficas de maior consumo.
-- [ ] Definir limites, falha controlada e diagnóstico para overflow de stack,
-  sem permitir que uma consulta de atualização derrube a interface ou o kernel.
-- [ ] Validar o custo de memória, a concorrência entre Shell e System e as
-  regressões de Simple/Classic antes de adotar um novo tamanho padrão.
-
 ### Etapa futura — Leitura LBA no `stage2` (fora da EP6.2 e EP6.3)
 
 - [ ] Fazer o `stage2` preferir as extensões BIOS `INT 13h/AH=42` para carregar
@@ -547,6 +534,40 @@ Rede ausente, origem maliciosa, tag inexistente, falha de download ou
 interrupcao de journal preservam cache, instalacao anterior, rollback e dados
 persistentes. A validacao QEMU do HTTP U5 e a auditoria offline foram
 concluidas; a matriz restante continua registrada acima.
+
+### EP6.4 - Gerenciamento de stack para rede e TLS
+
+**Estado:** implementada; validação no QEMU pendente.
+
+### Implementacao
+
+- [x] Instrumentar stacks nativas com área útil preenchida, canários inferior
+  e superior, high-water, menor folga, contadores e alocação bruta preservada.
+- [x] Formalizar 4 KiB como padrão e mínimo, 16 KiB como máximo, alinhamento
+  de 16 bytes, `Zephyr System`/TLS com 16 KiB e Shell mantido em 16 KiB.
+- [x] Preservar a ABI ring 3 e expor consulta por PID, validação global e
+  autoteste determinístico de limites, alinhamento, canários e margem baixa.
+- [x] Adicionar `stack status` e `stack check`; integrar a validação ao
+  `regcheck full`.
+- [x] Encerrar HTTP/TLS com `ERR_OVERFLOW` ao atingir 1 KiB de folga e entrar
+  em `panic` somente se um canário real for corrompido.
+
+### Validacao pendente
+
+- [ ] Executar os gates de código e, no QEMU, `stack status`, `stack check`,
+  `tls status`, consulta/download runtime por tag, `health check`, `memcheck`
+  e `regcheck full`.
+- [ ] Confirmar no System/TLS ao menos 1 KiB de folga, canários íntegros,
+  HTTPS funcional e ausência de regressão em Shell, HTTP U5, App Store,
+  Simple e Classic.
+
+### Criterio de saida
+
+O worker `Zephyr System` mantém margem de stack segura durante HTTP/TLS. A
+margem baixa interrompe somente a operação remota de forma controlada; um
+canário rompido produz diagnóstico com PID/nome e `panic`, sem liberar a stack
+em execução. Processos nativos fora do worker preservam 4 KiB, salvo o Shell,
+e processos ring 3 não mudam sua ABI.
 
 ## EP7 - Wi-Fi por hardware suportado
 
