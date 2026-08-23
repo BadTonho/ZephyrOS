@@ -587,7 +587,8 @@ e processos ring 3 não mudam sua ABI.
 
 ## EP7 - Wi-Fi por hardware suportado
 
-**Estado:** EP7.0 implementada; validacao executavel pendente do usuario.
+**Estado:** EP7.0 implementada; QEMU apresentado pelo usuario; gates de
+qualidade executaveis pendentes de registro.
 Driver de um chipset real, associacao, firmware e integracao L3 continuam
 fora desta subetapa ate que um adaptador PCI/PCIe seja identificado.
 

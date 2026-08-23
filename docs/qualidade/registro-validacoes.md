@@ -22,9 +22,21 @@ credenciais. `device-scan`, `health` e `regcheck full` validam o novo estado;
 Ethernet, Simple, Classic, kernel de boot, boot e stage2 permanecem fora da
 alteração.
 
-Validação executável pendente do usuário: `make q3check`, `make clean && make`,
-QEMU padrão e a matriz `wifi status`, `wifi scan`, `wifi connect`, `net check`,
-`health check`, `memcheck` e `regcheck full`.
+Validação executável QEMU apresentada pelo usuário; horário da captura não
+informado:
+
+- `wifi status` mostrou `NOT_FOUND`, zero candidatos e `ERR_NOT_FOUND` sem
+  inicializar hardware;
+- `wifi scan` atualizou o inventário e confirmou que nenhuma varredura 802.11
+  foi executada;
+- `wifi connect` retornou `ERR_UNAVAILABLE` sem processar credenciais;
+- `net check` concluiu com invariantes `OK`, `memcheck` concluiu com resultado
+  `OK` e `regcheck full` concluiu com `RegCheck: OK`;
+- `health check` executou sem panic; os estados degradados exibidos são de
+  componentes opcionais já ausentes no QEMU, não do Wi-Fi.
+
+As capturas não comprovam os horários ou a execução dos gates `make q3check` e
+`make clean && make`; esses dados permanecem sem horário neste registro.
 
 ## EP6.4 — Gerenciamento de stack para rede e TLS
 
