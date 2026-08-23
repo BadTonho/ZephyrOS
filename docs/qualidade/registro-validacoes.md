@@ -48,6 +48,22 @@ O Makefile recebeu o alvo `run-usb-wifi` com passthrough literal
 make` e a matriz QEMU/hardware real permanecem pendentes de execução pelo
 usuário.
 
+Validação executável apresentada pelo usuário; horário da captura não
+informado.
+
+- `usb devices` não publicou dispositivos USB configurados;
+- `wifi status` e `wifi scan` permaneceram em `NOT_FOUND`, com zero candidatos
+  e `ERR_NOT_FOUND`, sem inicializar hardware Wi-Fi;
+- `wifi connect teste` retornou `ERR_UNAVAILABLE` sem aceitar ou registrar
+  senha;
+- `net check` manteve a E1000 em `net-pci-00:03.0`, com serviço `READY`, DHCP
+  `BOUND` e sem erros de driver;
+- `health check` executou sem panic, `memcheck` terminou com resultado `OK` e
+  `regcheck full` terminou com `RegCheck: OK`.
+
+Essa evidência valida a ausência segura do adaptador, mas não valida o
+passthrough USB nem a enumeração literal `USB\VID_0BDA&PID_C811`.
+
 Foi criado o `wifi_manager` com snapshot PCI somente-leitura para controladores
 de classe `0x02` que não sejam E1000 ou RTL8139. O inventário preserva Vendor
 ID, Device ID, classe, subclasse, ProgIF, revisão, BDF, IRQ e BAR0-BAR5, sem
