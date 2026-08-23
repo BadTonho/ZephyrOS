@@ -15,6 +15,17 @@ Encerramento documental da EP7.0 concluído em: 2026-08-23 19:04:32
 (America/Sao_Paulo). A EP7 geral permanece aberta para o driver de um chipset
 real, que depende de um adaptador identificado literalmente.
 
+## EP7.1 — Alvo USB Realtek RTL8811CU definido
+
+Definição documental registrada em: 2026-08-23 19:18:36
+(America/Sao_Paulo).
+
+O usuário forneceu o modelo `Realtek 8811CU Wireless LAN 802.11ac USB NIC` e
+os IDs literais `USB\VID_0BDA&PID_C811&REV_0200` e
+`USB\VID_0BDA&PID_C811`. A etapa permanece planejada: ainda não houve
+implementação, encaminhamento ao QEMU, build ou validação do driver no
+ZephyrOS.
+
 Foi criado o `wifi_manager` com snapshot PCI somente-leitura para controladores
 de classe `0x02` que não sejam E1000 ou RTL8139. O inventário preserva Vendor
 ID, Device ID, classe, subclasse, ProgIF, revisão, BDF, IRQ e BAR0-BAR5, sem
