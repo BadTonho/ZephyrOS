@@ -163,7 +163,8 @@ static int tls_client_fail(int error) {
     tls_client_status.bearssl_error = (uint16_t)error;
     tls_client_status.last_error = error == BR_ERR_NO_RANDOM ?
                                    ERR_UNAVAILABLE : ERR_INVALID;
-    LOG_ERROR("TLS", "Handshake TLS falhou; canal HTTPS encerrado");
+    LOG_ERROR_CODE("TLS", error,
+                   "Handshake TLS falhou; canal HTTPS encerrado");
     return tls_client_status.last_error;
 }
 
@@ -206,6 +207,8 @@ static int tls_client_configure(const char* hostname, uint64_t now) {
         &tls_client_context.eng, br_sha512_ID, &br_sha512_vtable);
     br_ssl_client_set_default_rsapub(&tls_client_context);
     br_ssl_engine_set_default_rsavrfy(&tls_client_context.eng);
+    /* As suites permitidas usam ECDHE e exigem curvas no engine. */
+    br_ssl_engine_set_default_ec(&tls_client_context.eng);
     br_ssl_engine_set_default_ecdsa(&tls_client_context.eng);
     br_x509_minimal_set_rsa(
         &tls_x509_context,
