@@ -67,13 +67,15 @@ make run-stage2-chs
 No Shell:
 
 ```text
+health check
 memcheck
 regcheck full
 ```
 
 Esse alvo inicia a imagem como floppy, caminho no qual EDD não é anunciado.
-O Shell deve abrir pelo fallback CHS. A ausência de um disco ATA nesse cenário
-é esperada e não representa falha do carregamento do kernel.
+O Shell deve abrir pelo fallback CHS. Uma cópia da imagem fornece o boot por
+floppy, enquanto a imagem original permanece anexada como disco ATA para que
+as regressões do kernel executem no mesmo ambiente dos outros cenários.
 
 ## 5. Aceite final
 

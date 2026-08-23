@@ -217,6 +217,13 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Cenário QEMU EDD/LBA sem geometria CHS fixa concluído em: 2026-08-23 18:05
   (America/Sao_Paulo); o sistema alcançou o Shell, `memcheck` terminou em `OK`
   e `regcheck full` terminou em `OK`.
+- Primeira execução do fallback CHS concluída em: 2026-08-23 18:06
+  (America/Sao_Paulo); o kernel alcançou o Shell e `memcheck` terminou em `OK`,
+  mas `regcheck full` encontrou os serviços de bloco indisponíveis porque o
+  alvo de teste não anexava um disco ATA.
+- Correção do alvo `run-stage2-chs` concluída em: 2026-08-23 18:06
+  (America/Sao_Paulo); o boot usa uma cópia floppy e a imagem original fica
+  anexada como disco IDE. A repetição somente desse cenário permanece pendente.
 
 ### EP6.3 — Runtime v2, cache seletivo e matriz de falhas
 

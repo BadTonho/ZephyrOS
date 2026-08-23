@@ -221,7 +221,7 @@ arguments can be overridden through `QEMU_BOOT_DISK_ARGS` when another layout
 is required.
 `make run-stage2-lba` uses an IDE disk without fixed CHS geometry, while
 `make run-stage2-chs` boots the image as a floppy to exercise the BIOS CHS
-fallback. The CHS scenario intentionally has no ATA system disk after boot.
+fallback and attaches the original image separately as the ATA system disk.
 `QEMU_NET_ARGS` can be overridden for alternate scenarios without editing
 the Makefile, for example with `-nic none` or
 `-nic user,model=rtl8139`.
