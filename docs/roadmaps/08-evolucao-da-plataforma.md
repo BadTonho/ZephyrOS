@@ -632,6 +632,9 @@ ser tratadas como uma etapa própria do bootloader.
 
 ### EP6.3 - Runtime v2, cache seletivo e matriz de falhas
 
+- [x] EP6.3B concluída em: 2026-08-23 00:53 (America/Sao_Paulo), com
+  implementação, validação no QEMU, fluxo HTTP U5, Updater Classic, auditoria
+  offline, cancelamento e limpeza do cache runtime v2.
 - [x] Contrato `ZUM2`/`ZUPD v2` assinado com Ed25519, hashes SHA-256 por
   arquivo, bases multiplas, limites de 16 entradas/64 KiB/128 KiB, catalogo
   fixo dos tres BMPs e operacoes controladas de substituir, criar e remover.
