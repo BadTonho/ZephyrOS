@@ -659,9 +659,16 @@ ser tratadas como uma etapa própria do bootloader.
 - Correção da persistência do estado instalado após aplicação runtime v2 concluída em: 2026-08-22 22:45 (America/Sao_Paulo).
 - Correção da validação no boot de estado runtime v2 sem rollback concluída em: 2026-08-22 23:09 (America/Sao_Paulo).
 - Correção da auditoria offline para estado runtime v2 sem rollback concluída em: 2026-08-22 23:27 (America/Sao_Paulo).
-- [ ] Executar a validacao do usuario no QEMU apos `make q3check` e
-  `make clean && make`, cobrindo Shell, Updater Classic, HTTP U5, GitHub HTTPS,
-  cancelamento, failpoints, rollback e auditoria offline.
+- [x] Validacao do usuario no QEMU do HTTP U5 concluida para os fluxos
+  seletivo e completo, incluindo manifestos assinados, rejeicoes de asset/tag/
+  JSON/hash/assinatura/pacote e preservacao do cache anterior.
+- [x] Auditoria offline da imagem concluida apos os cenarios validos e de
+  pacote adulterado, confirmando preservacao da instalacao anterior, estado
+  runtime READY, journal CLEAN e ausencia de pending.
+- Horarios exatos das execucoes acima: pendentes de informacao do usuario.
+- [ ] Permanecem pendentes a validacao do Updater Classic, GitHub HTTPS,
+  cancelamento, failpoints e rollback real com arquivos alterados, criados e
+  removidos.
 
 EP6.0 continua exercitável com o servidor de fixtures U5. EP6.2 mantém o
 transporte HTTPS BearSSL configurado para a API GitHub e a regressao HTTP U5;
@@ -676,8 +683,8 @@ assinados autorizam o runtime. Baixar nao instala; somente `update runtime
 apply --confirm` aplica uma atualizacao apos confirmacao e informa o reboot.
 Rede ausente, origem maliciosa, tag inexistente, falha de download ou
 interrupcao de journal preservam cache, instalacao anterior, rollback e dados
-persistentes. A validacao QEMU desta implementacao ainda aguarda a execucao do
-usuario.
+persistentes. A validacao QEMU do HTTP U5 e a auditoria offline foram
+concluidas; a matriz restante continua registrada acima.
 
 ## EP7 - Wi-Fi por hardware suportado
 
