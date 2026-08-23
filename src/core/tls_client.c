@@ -350,26 +350,25 @@ int tls_client_maintain(void) {
         }
         return OK;
     }
-    if ((state & BR_SSL_RECVAPP) || (state & BR_SSL_SENDAPP)) {
-        if (!tls_client_status.handshake_complete) {
-            br_ssl_session_parameters session;
+    if (((state & BR_SSL_RECVAPP) || (state & BR_SSL_SENDAPP)) &&
+        !tls_client_status.handshake_complete) {
+        br_ssl_session_parameters session;
 
-            /* BearSSL may expose SENDAPP together with RECVREC after the
-             * peer Finished. Prefer the ready application state so HTTP can
-             * send its request instead of waiting for another TLS record. */
-            tls_client_status.handshake_complete = 1U;
-            tls_client_status.x509_verified = 1U;
-            tls_client_status.hostname_verified = 1U;
-            tls_client_status.state = TLS_CLIENT_STATE_READY;
-            br_ssl_engine_get_session_parameters(engine, &session);
-            if (session.version != BR_TLS12) {
-                kmemset(&session, 0, sizeof(session));
-                return tls_client_fail(BR_ERR_BAD_VERSION);
-            }
-            tls_client_status.negotiated_version = session.version;
-            tls_client_status.negotiated_suite = session.cipher_suite;
+        /* BearSSL may expose SENDAPP together with RECVREC after the
+         * peer Finished. Prefer the ready application state once, so HTTP
+         * can send its request; subsequent calls must service RECVREC. */
+        tls_client_status.handshake_complete = 1U;
+        tls_client_status.x509_verified = 1U;
+        tls_client_status.hostname_verified = 1U;
+        tls_client_status.state = TLS_CLIENT_STATE_READY;
+        br_ssl_engine_get_session_parameters(engine, &session);
+        if (session.version != BR_TLS12) {
             kmemset(&session, 0, sizeof(session));
+            return tls_client_fail(BR_ERR_BAD_VERSION);
         }
+        tls_client_status.negotiated_version = session.version;
+        tls_client_status.negotiated_suite = session.cipher_suite;
+        kmemset(&session, 0, sizeof(session));
         return OK;
     }
     if (state & BR_SSL_RECVREC) {
@@ -394,6 +393,7 @@ int tls_client_maintain(void) {
         }
         return OK;
     }
+    if ((state & BR_SSL_RECVAPP) || (state & BR_SSL_SENDAPP)) return OK;
     return tls_client_fail(BR_ERR_BAD_STATE);
 }
 
