@@ -609,8 +609,10 @@ isso nao altera o escopo somente-PCI da EP7.0.
 
 ### EP7.1 - Driver USB Realtek RTL8811CU
 
-**Estado:** etapa planejada em 2026-08-23 19:18:36
-(America/Sao_Paulo); alvo identificado, sem driver ZephyrOS implementado.
+**Estado:** EP7.1A (enumeracao e diagnostico) implementada em 2026-08-23
+19:58:51 (America/Sao_Paulo); o backend de radio, a integracao L3 e a
+associacao continuam pendentes. A implementacao nao executa comandos USB de
+radio sem uma sequencia RTL8811CU verificavel.
 
 **Alvo de hardware literal:**
 
@@ -623,14 +625,23 @@ isso nao altera o escopo somente-PCI da EP7.0.
 
 - [x] Registrar o Vendor ID, Product ID, revisao, modelo e transporte fornecidos
   pelo usuario, sem presumir variantes do RTL8811CU.
+- [x] Expor `bcdDevice` e a tabela completa de endpoints USB inventariados,
+  preservando os campos derivados usados por MSC e HID.
+- [x] Criar probe somente-leitura para o ID USB e a revisao observada, sem
+  inicializar o radio.
+- [x] Adicionar `run-usb-wifi` com passthrough literal `vendorid=0x0BDA` e
+  `productid=0xC811`; a validacao no QEMU/hardware permanece pendente.
 - [ ] Confirmar a enumeracao do dispositivo no caminho USB disponivel no
   ZephyrOS e no QEMU com o dispositivo encaminhado para a maquina virtual.
 - [ ] Auditar e, se necessario, completar na EP4 as transferencias USB de
   controle, Bulk, Interrupt, timeouts, reset e recuperacao exigidas pelo alvo.
 - [ ] Documentar descritores, endpoints, buffers, sincronizacao, firmware,
   inicializacao, TX/RX e tratamento de falhas do `USB\VID_0BDA&PID_C811`.
-- [ ] Implementar o backend do RTL8811CU sem expor credenciais ou depender do
-  driver instalado no Windows hospedeiro.
+- [x] Criar o contrato e o backend seguro de diagnostico do RTL8811CU; quando
+  `RTL8811.BIN` estiver ausente/invalido ou a sequencia de radio nao estiver
+  confirmada, retornar erro controlado sem tocar no hardware.
+- [ ] Implementar o backend operacional do RTL8811CU sem expor credenciais ou
+  depender do driver instalado no Windows hospedeiro.
 - [ ] Entregar frames 802.3 por `ethernet_interface_t` ao `network_manager`,
   reutilizando IPv4, DHCP, DNS, TCP e HTTP existentes.
 - [ ] Evoluir `wifi status`, `wifi scan` e `wifi connect` para o driver real,

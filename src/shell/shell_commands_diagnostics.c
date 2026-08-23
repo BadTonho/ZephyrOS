@@ -2401,6 +2401,8 @@ static void cmd_usb_devices(const char* args) {
         shell_command_print_hex(device.vendor_id, 4U);
         video_print(" Product: 0x", 0x07);
         shell_command_print_hex(device.product_id, 4U);
+        video_print(" Revision: 0x", 0x07);
+        shell_command_print_hex(device.device_revision, 4U);
         video_print(" Class: 0x", 0x07);
         shell_command_print_hex(device.device_class, 2U);
         video_print(" Subclass: 0x", 0x07);
@@ -2413,6 +2415,25 @@ static void cmd_usb_devices(const char* args) {
         shell_command_print_num(device.interface_number);
         video_print(" Endpoints: ", 0x07);
         shell_command_print_num(device.endpoint_count);
+        if (device.endpoint_count) {
+            video_print(" [", 0x07);
+            for (uint32_t endpoint = 0U;
+                 endpoint < device.endpoint_count; endpoint++) {
+                if (endpoint) video_print(", ", 0x07);
+                shell_command_print_hex(
+                    device.endpoints[endpoint].address, 2U);
+                video_print("/", 0x07);
+                shell_command_print_num(
+                    device.endpoints[endpoint].transfer_type);
+                video_print("/", 0x07);
+                shell_command_print_num(
+                    device.endpoints[endpoint].max_packet);
+                video_print("/", 0x07);
+                shell_command_print_num(
+                    device.endpoints[endpoint].interval);
+            }
+            video_print("]", 0x07);
+        }
         video_print("  DeviceDesc: ", 0x07);
         video_print(device.device_descriptor_valid ? "OK" : "INVALID", 0x0A);
         video_print("  ConfigDesc: ", 0x07);

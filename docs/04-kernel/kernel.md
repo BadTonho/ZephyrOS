@@ -262,7 +262,9 @@ forma controlada e aparecem no `health`; apenas `power_shutdown()` e terminal.
   enumeracao fica restrita a portas raiz, Device/Configuration, uma interface
   e `SET_CONFIGURATION`; nao ha hubs, hot-plug ou strings. A EP4.4 acrescenta
   somente endpoints Interrupt IN para HID Boot, sem parser generico de Report
-  Descriptor. EHCI nunca acessa BAR, I/O, DMA ou IRQ.
+  Descriptor. O inventario tambem preserva `bcdDevice` e uma tabela limitada
+  de endpoints, sem remover os campos derivados de Bulk/Interrupt. EHCI nunca
+  acessa BAR, I/O, DMA ou IRQ.
 - `usb_msc`: apos a enumeracao UHCI, reconhece somente interfaces MSC BOT
   SCSI com exatamente um Bulk IN e um Bulk OUT. Executa INQUIRY, TEST UNIT
   READY, READ CAPACITY(10) e READ(10), publica LUN 0 como provedor somente-
@@ -375,6 +377,15 @@ normal com `ERR_NOT_FOUND`. `wifi status` e `wifi scan` sao diagnosticos, e
 `wifi connect` falha de forma controlada sem ler, armazenar ou registrar
 credenciais. A futura interface Wi-Fi devera entregar frames 802.3 por
 `ethernet_interface_t` antes de ser anexada ao `network_manager`.
+
+Na EP7.1A, o mesmo snapshot tambem consulta os dispositivos configurados pelo
+`usb_manager` e reconhece somente `0x0BDA:0xC811` com `bcdDevice 0x0200`. A
+entrada preserva o ID USB, controlador, porta, endereco, revisao e contagem de
+endpoints. `rtl8811cu_probe()` e somente-leitura; `rtl8811cu_init()` verifica
+`RTL8811.BIN` no filesystem, mas permanece em `ERR_UNAVAILABLE` enquanto a
+sequencia de radio nao tiver referencia tecnica verificavel. Portanto, a
+EP7.1A nao anexa interface ao `network_manager`, nao executa TX/RX e nao faz
+scan ou associacao.
 
 `ethernet_interface_t` desacopla a camada L2 dos drivers por contexto opaco e
 callbacks de status, RX pendente, recepcao e transmissao. Um registro fixo

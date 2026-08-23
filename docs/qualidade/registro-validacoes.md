@@ -22,9 +22,31 @@ Definição documental registrada em: 2026-08-23 19:18:36
 
 O usuário forneceu o modelo `Realtek 8811CU Wireless LAN 802.11ac USB NIC` e
 os IDs literais `USB\VID_0BDA&PID_C811&REV_0200` e
-`USB\VID_0BDA&PID_C811`. A etapa permanece planejada: ainda não houve
-implementação, encaminhamento ao QEMU, build ou validação do driver no
-ZephyrOS.
+`USB\VID_0BDA&PID_C811`. A etapa operacional permanece pendente; a subetapa
+de enumeração e diagnóstico foi implementada, mas ainda não houve
+encaminhamento ao QEMU, build ou validação executável do driver no ZephyrOS.
+
+### EP7.1A — Enumeração e diagnóstico USB
+
+Implementação concluída em: 2026-08-23 19:58:51 (America/Sao_Paulo)
+
+`usb_device_info_t` passou a publicar `bcdDevice` e uma tabela limitada de
+todos os endpoints descritos, mantendo os campos derivados de Bulk e Interrupt
+usados por MSC e HID. O probe `rtl8811cu_probe()` aceita somente Vendor
+`0x0BDA`, Product `0xC811` e revisão `0x0200`; o inventário USB é projetado
+no `wifi_manager` com transporte, sessão, porta, endereço e endpoints.
+
+Foi adicionado `src/drivers/rtl8811cu.c` como backend seguro de diagnóstico e
+`RTL8811.BIN` ficou definido apenas como arquivo externo. Sem firmware válido
+ou sem uma sequência de rádio verificável, a inicialização retorna erro
+controlado e não toca no dispositivo. `wifi status`, `wifi scan` e
+`wifi connect <ssid>` permanecem sem inicializar rádio, sem senha e sem
+integração com `network_manager`.
+
+O Makefile recebeu o alvo `run-usb-wifi` com passthrough literal
+`vendorid=0x0BDA,productid=0xC811`. Os gates `make q3check`, `make clean &&
+make` e a matriz QEMU/hardware real permanecem pendentes de execução pelo
+usuário.
 
 Foi criado o `wifi_manager` com snapshot PCI somente-leitura para controladores
 de classe `0x02` que não sejam E1000 ou RTL8139. O inventário preserva Vendor

@@ -14,6 +14,10 @@
 #define USB_UHCI_PORT_COUNT 2U
 #define USB_MANAGER_MAX_PORTS (USB_MANAGER_MAX_CONTROLLERS * USB_UHCI_PORT_COUNT)
 #define USB_MANAGER_MAX_DEVICES (USB_MANAGER_MAX_PORTS)
+#define USB_DEVICE_MAX_ENDPOINTS 16U
+#define USB_ENDPOINT_ADDRESS_NUMBER_MASK 0x0FU
+#define USB_ENDPOINT_TRANSFER_TYPE_MAX 3U
+#define USB_ENDPOINT_MAX_PACKET_SIZE 64U
 #define USB_UHCI_FRAME_COUNT 1024U
 #define USB_UHCI_TD_CAPACITY 64U
 #define USB_UHCI_BUFFER_CAPACITY 8U
@@ -187,6 +191,13 @@ typedef struct {
 } usb_port_info_t;
 
 typedef struct {
+    uint8_t address;
+    uint8_t transfer_type;
+    uint16_t max_packet;
+    uint8_t interval;
+} usb_endpoint_info_t;
+
+typedef struct {
     char id[USB_DEVICE_ID_SIZE];
     char controller_id[USB_PORT_CONTROLLER_ID_SIZE];
     uint8_t controller_bus;
@@ -198,6 +209,7 @@ typedef struct {
     uint8_t usb_address;
     uint16_t vendor_id;
     uint16_t product_id;
+    uint16_t device_revision;
     uint8_t device_class;
     uint8_t device_subclass;
     uint8_t device_protocol;
@@ -210,6 +222,7 @@ typedef struct {
     uint8_t interface_subclass;
     uint8_t interface_protocol;
     uint8_t endpoint_count;
+    usb_endpoint_info_t endpoints[USB_DEVICE_MAX_ENDPOINTS];
     uint8_t bulk_in_endpoint;
     uint8_t bulk_out_endpoint;
     uint8_t bulk_in_count;

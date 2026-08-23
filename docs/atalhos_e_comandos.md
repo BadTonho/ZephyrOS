@@ -73,7 +73,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `net` | `check qemu dhcp <id> <dominio>` | Executa a suite UDP, DHCP e DNS. |
 | `net` | `check qemu tcp <id> <dominio>` | Executa a suite TCP, sockets e HTTP. |
 | `net` | `check qemu multi <id-a> <id-b>` | Valida TX e contadores isolados em duas NICs. |
-| `wifi` | `status|scan|connect` | Diagnostica candidatos PCI sem inicializar hardware; conexao permanece indisponivel na EP7.0. |
+| `wifi` | `status|scan|connect <ssid>` | Diagnostica candidatos PCI e USB `0x0BDA:0xC811` sem inicializar radio; conexao permanece indisponivel ate o backend verificado. |
 | `http` | `get <url>|status` | Executa HTTP GET limitado ou inspeciona a sessao. |
 | `nslookup` | `<dominio>` | Resolve um registro DNS A cooperativamente. |
 | `ping` | `<ip> [1-10]` | Executa ICMP Echo e entrega eventos e resumo em uma chamada. |

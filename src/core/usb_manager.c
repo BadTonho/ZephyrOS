@@ -795,9 +795,22 @@ int usb_manager_validate_state(void) {
             device->hub_present ||
             !device->device_descriptor_valid ||
             !device->configuration_descriptor_valid ||
-            !device->max_packet_size0 || !device->configuration_length) {
+            !device->max_packet_size0 || !device->configuration_length ||
+            device->endpoint_count > USB_DEVICE_MAX_ENDPOINTS) {
             LOG_ERROR("USB", "Entrada de dispositivo USB invalida");
             return ERR_STATE;
+        }
+        for (uint32_t endpoint = 0U;
+             endpoint < device->endpoint_count; endpoint++) {
+            usb_endpoint_info_t* descriptor = &device->endpoints[endpoint];
+
+            if (!(descriptor->address & USB_ENDPOINT_ADDRESS_NUMBER_MASK) ||
+                descriptor->transfer_type > USB_ENDPOINT_TRANSFER_TYPE_MAX ||
+                !descriptor->max_packet ||
+                descriptor->max_packet > USB_ENDPOINT_MAX_PACKET_SIZE) {
+                LOG_ERROR("USB", "Tabela de endpoints USB invalida");
+                return ERR_STATE;
+            }
         }
         if (device->class_driver_active) {
             usb_msc_info_t msc;
