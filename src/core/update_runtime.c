@@ -1745,6 +1745,9 @@ static int runtime_commit_state_from_journal(void) {
     if (next.rollback_available) {
         next.previous_version = runtime_journal.base_version;
         next.previous_epoch = runtime_journal.base_epoch;
+        /* Entradas fora do plano continuam iguais na versao anterior. */
+        kmemcpy(next.rollback, runtime_state.current,
+                sizeof(next.rollback));
     } else {
         kmemset(&next.previous_version, 0, sizeof(next.previous_version));
         next.previous_epoch = 0U;
@@ -1753,8 +1756,10 @@ static int runtime_commit_state_from_journal(void) {
         if (index < runtime_journal.entry_count) {
             next.current[runtime_journal.entries[index].catalog_index] =
                 runtime_journal.entries[index].new_state;
-            next.rollback[runtime_journal.entries[index].catalog_index] =
-                runtime_journal.entries[index].old_state;
+            if (next.rollback_available) {
+                next.rollback[runtime_journal.entries[index].catalog_index] =
+                    runtime_journal.entries[index].old_state;
+            }
         }
     }
     if (runtime_refresh_current_files(next.current) != OK) return ERR_DISK;

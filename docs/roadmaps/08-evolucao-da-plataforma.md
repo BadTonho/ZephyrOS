@@ -795,7 +795,7 @@ repositório, ao lado dos payloads indicados.
 ```powershell
 $S = "<SECRETS>"
 $BASE = "$S\ep63-runtime-fixtures-qa-2\valid"
-$CHANGED = "$S\ep63-runtime-fixtures-changed\valid"
+$CHANGED = "$S\ep63-runtime-fixtures-qa\valid"
 $A = "$S\ep63-runtime-create-delete-A"
 $B = "$S\ep63-runtime-create-delete-B"
 
@@ -880,6 +880,16 @@ regcheck full
 
 Após A: `EXPLORER.BMP` e `TASKMGR.BMP` presentes, `SHELL.BMP` ausente,
 `0.1.1/e0`, `journal=CLEAN` e `rollback=READY`.
+
+Na primeira execução real de A, a aplicação chegou a `0.1.1/e0`, mas o
+reboot mostrou `rollback=DISABLED`. A causa encontrada foi a publicação do
+estado persistente: entradas do catálogo já compatíveis, portanto fora do
+plano, tinham o estado de rollback zerado em vez de preservar o estado
+anterior. A correção foi aplicada em `src/core/update_runtime.c`; ela também
+mantém o rollback vazio quando a operação concluída é um rollback.
+
+Correção implementada em: 2026-08-23 12:38 (America/Sao_Paulo).
+Validação da correção: pendente do gate de build e da repetição da matriz A/B.
 
 #### Host: servidor da Release B
 

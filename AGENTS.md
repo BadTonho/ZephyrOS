@@ -580,7 +580,7 @@ e repetir o valor literalmente.
 
 ## Regra #18: Registro de Etapas e Validações
 
-Toda etapa, subetapa, fase, correção ou validação concluída DEVE registrar a
+Toda etapa, subetapa, fase, apenas validação concluída DEVE registrar a
 data e a hora exatas em que foi concluída, no roadmap ou documento canônico da
 frente correspondente.
 
