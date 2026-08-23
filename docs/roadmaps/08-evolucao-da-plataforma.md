@@ -591,8 +591,9 @@ e processos ring 3 não mudam sua ABI.
 (America/Sao_Paulo); implementacao e matriz QEMU apresentadas pelo usuario.
 Os gates de qualidade sem horario registrado permanecem documentados como
 pendencia de evidencia, sem reabrir esta subetapa.
-Driver de um chipset real, associacao, firmware e integracao L3 continuam
-fora desta subetapa ate que um adaptador PCI/PCIe seja identificado.
+A EP7 geral permanece aberta para driver, associacao, firmware e integracao L3.
+O alvo da proxima subetapa foi identificado como USB Realtek RTL8811CU;
+isso nao altera o escopo somente-PCI da EP7.0.
 
 ### EP7.0 - Inventario e diagnostico seguro
 
@@ -606,21 +607,51 @@ fora desta subetapa ate que um adaptador PCI/PCIe seja identificado.
 - [x] Integrar a atualizacao ao `device-scan` e a validacao ao `health` e
   `regcheck full`.
 
-### Implementacao
+### EP7.1 - Driver USB Realtek RTL8811CU
 
-- [ ] Selecionar um
-  chipset Wi-Fi alvo, incluindo transporte (PCI/PCIe ou USB), DMA, IRQ,
-  firmware e matriz de teste requeridos.
-- [ ] Se o chipset usar USB, exigir as transferencias necessarias da EP4 antes
-  de iniciar associacao; se usar PCI/PCIe, documentar seu driver de barramento
-  e limites proprios.
-- [ ] Integrar uma interface Wi-Fi validada ao `network_manager`, reutilizando
-  IPv4, DHCP, DNS, TCP e HTTP em vez de duplicar a pilha IP.
-- [ ] Definir autenticacao e entrada de segredo sem eco antes de suportar rede
-  protegida; rede aberta existe apenas como diagnostico controlado.
+**Estado:** etapa planejada em 2026-08-23 19:18:36
+(America/Sao_Paulo); alvo identificado, sem driver ZephyrOS implementado.
+
+**Alvo de hardware literal:**
+
+- Modelo reportado pelo Windows: `Realtek 8811CU Wireless LAN 802.11ac USB NIC`.
+- ID base: `USB\VID_0BDA&PID_C811`.
+- Revisao observada: `USB\VID_0BDA&PID_C811&REV_0200`.
+- Transporte: USB; a implementacao nao deve trata-lo como PCI/PCIe.
+
+### Escopo da EP7.1
+
+- [x] Registrar o Vendor ID, Product ID, revisao, modelo e transporte fornecidos
+  pelo usuario, sem presumir variantes do RTL8811CU.
+- [ ] Confirmar a enumeracao do dispositivo no caminho USB disponivel no
+  ZephyrOS e no QEMU com o dispositivo encaminhado para a maquina virtual.
+- [ ] Auditar e, se necessario, completar na EP4 as transferencias USB de
+  controle, Bulk, Interrupt, timeouts, reset e recuperacao exigidas pelo alvo.
+- [ ] Documentar descritores, endpoints, buffers, sincronizacao, firmware,
+  inicializacao, TX/RX e tratamento de falhas do `USB\VID_0BDA&PID_C811`.
+- [ ] Implementar o backend do RTL8811CU sem expor credenciais ou depender do
+  driver instalado no Windows hospedeiro.
+- [ ] Entregar frames 802.3 por `ethernet_interface_t` ao `network_manager`,
+  reutilizando IPv4, DHCP, DNS, TCP e HTTP existentes.
 - [ ] Evoluir `wifi status`, `wifi scan` e `wifi connect` para o driver real,
-  sem expor
-  credenciais em logs, fixtures, imagem ou historico do Shell.
+  incluindo associacao e autenticacao somente depois da inicializacao segura.
+- [ ] Definir entrada de segredo sem eco e garantir que credenciais nao cheguem
+  a logs, fixtures, imagem ou historico do Shell.
+- [ ] Validar ausencia, dispositivo nao suportado, falhas USB, scan, conexao,
+  perda de link, Ethernet simultanea e interfaces Simple/Classic.
+
+### Criterio de saida da EP7.1
+
+O RTL8811CU e inicializado e recuperado de forma controlada no hardware real e
+no QEMU encaminhado, entrega frames a pilha existente e permite diagnostico de
+scan/conexao sem vazar segredos. Falhas de USB, firmware, transporte ou
+associacao permanecem observaveis e nao degradam Ethernet, Shell ou as
+interfaces Simple/Classic.
+
+### Implementacao futura adicional
+
+- [ ] Adicionar outros chipsets somente depois de seus IDs literais, transporte
+  e requisitos de firmware serem identificados.
 
 ### Criterio de saida
 
