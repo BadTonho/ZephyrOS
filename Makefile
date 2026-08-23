@@ -15,7 +15,7 @@ QEMU_CPU_ARGS ?= -cpu max
 QEMU_NET_ARGS ?= -nic user,model=e1000
 QEMU_BOOT_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=bootdisk -device ide-hd,drive=bootdisk,cyls=80,heads=2,secs=18,bootindex=1
 QEMU_STAGE2_LBA_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=stage2lbadisk -device ide-hd,drive=stage2lbadisk,bootindex=1
-QEMU_STAGE2_CHS_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=floppy,index=0 -boot order=a
+QEMU_STAGE2_CHS_DISK_ARGS ?= -drive file=$(STAGE2_CHS_IMG),format=raw,if=floppy,index=0 -drive file=$(OS_IMG),format=raw,if=none,id=stage2chssystem -device ide-hd,drive=stage2chssystem,cyls=80,heads=2,secs=18 -boot order=a
 QEMU_USB_ARGS ?= -device piix3-usb-uhci,id=usb
 QEMU_USB_DEVICE_ARGS ?= -device usb-kbd,bus=usb.0
 QEMU_USB_HID_DEVICE_ARGS ?= -device usb-kbd,bus=usb.0,port=1 -device usb-mouse,bus=usb.0,port=2
@@ -399,6 +399,7 @@ DISPLAY_OBJ = build/display.o
 # Output
 KERNEL_BIN = build/kernel.bin
 OS_IMG = build/zephyros.img
+STAGE2_CHS_IMG = build/zephyros-stage2-chs.img
 STORAGE_FIXTURES_TOOL = tools\storage_fixtures.py
 STORAGE_FIXTURES_STAMP = build\storage-fixtures.stamp
 STORAGE_VALID_IMG = build\storage-valid.img
@@ -939,7 +940,10 @@ run: $(OS_IMG)
 run-stage2-lba: $(OS_IMG)
 	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_STAGE2_LBA_DISK_ARGS) $(QEMU_NET_ARGS)
 
-run-stage2-chs: $(OS_IMG)
+$(STAGE2_CHS_IMG): $(OS_IMG)
+	cmd /c "copy /y $(OS_IMG) $(STAGE2_CHS_IMG)"
+
+run-stage2-chs: $(STAGE2_CHS_IMG)
 	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_STAGE2_CHS_DISK_ARGS) $(QEMU_NET_ARGS)
 
 run-usb: $(OS_IMG)
