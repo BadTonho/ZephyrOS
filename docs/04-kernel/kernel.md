@@ -511,7 +511,7 @@ segmentos limitados pelo MSS. A API nao e exposta como syscall de userspace.
 
 O cliente HTTP mantem uma sessao GET. Ele aceita somente
 `http://host[:porta]/caminho`, resolve nomes pelo DNS, envia HTTP/1.1 com
-`Host`, `User-Agent`, `Accept` e `Connection: close`, e armazena ate 4096
+`Host`, `User-Agent`, `Accept` e `Connection: close`, e armazena ate 8192
 bytes de headers. `http_get_start()` preserva o corpo bufferizado de ate 16
 KiB. Desde a U5, `http_get_stream_start()` entrega o corpo incrementalmente a
 um callback e respeita o limite definido pelo chamador, de ate 128 KiB no
