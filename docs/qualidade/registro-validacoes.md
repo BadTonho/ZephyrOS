@@ -214,6 +214,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Cenário QEMU com geometria IDE explícita concluído em: 2026-08-23 18:03
   (America/Sao_Paulo); o sistema alcançou o Shell, `memcheck` terminou em `OK`
   e `regcheck full` terminou em `OK`.
+- Cenário QEMU EDD/LBA sem geometria CHS fixa concluído em: 2026-08-23 18:05
+  (America/Sao_Paulo); o sistema alcançou o Shell, `memcheck` terminou em `OK`
+  e `regcheck full` terminou em `OK`.
 
 ### EP6.3 — Runtime v2, cache seletivo e matriz de falhas
 
