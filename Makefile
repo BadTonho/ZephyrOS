@@ -941,7 +941,7 @@ run-stage2-lba: $(OS_IMG)
 	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_STAGE2_LBA_DISK_ARGS) $(QEMU_NET_ARGS)
 
 $(STAGE2_CHS_IMG): $(OS_IMG)
-	cmd /c "copy /y $(OS_IMG) $(STAGE2_CHS_IMG)"
+	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(STAGE2_CHS_IMG)' -Force"
 
 run-stage2-chs: $(STAGE2_CHS_IMG)
 	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_STAGE2_CHS_DISK_ARGS) $(QEMU_NET_ARGS)
