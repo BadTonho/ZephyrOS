@@ -658,6 +658,7 @@ ser tratadas como uma etapa própria do bootloader.
 - Aumento da stack dedicada do processo Shell para 16 KiB concluído em: 2026-08-22 22:38 (America/Sao_Paulo).
 - Correção da persistência do estado instalado após aplicação runtime v2 concluída em: 2026-08-22 22:45 (America/Sao_Paulo).
 - Correção da validação no boot de estado runtime v2 sem rollback concluída em: 2026-08-22 23:09 (America/Sao_Paulo).
+- Correção da auditoria offline para estado runtime v2 sem rollback concluída em: 2026-08-22 23:27 (America/Sao_Paulo).
 - [ ] Executar a validacao do usuario no QEMU apos `make q3check` e
   `make clean && make`, cobrindo Shell, Updater Classic, HTTP U5, GitHub HTTPS,
   cancelamento, failpoints, rollback e auditoria offline.
