@@ -228,6 +228,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   (America/Sao_Paulo); o `copy` aninhado do CMD foi substituído por
   `Copy-Item` com origem e destino literais. Nenhum cenário anterior foi
   invalidado.
+- Validação final do fallback CHS concluída em: 2026-08-23 18:08
+  (America/Sao_Paulo); o sistema iniciou pelo floppy, manteve a imagem original
+  como disco IDE, alcançou o Shell e concluiu `memcheck` e `regcheck full` em
+  `OK`. A etapa LBA do `stage2` foi aprovada pelo usuário.
 
 ### EP6.3 — Runtime v2, cache seletivo e matriz de falhas
 
