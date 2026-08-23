@@ -4,17 +4,17 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
-## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 implementada; validação executável EP7.0 e EP9 pendentes
+## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 implementada e QEMU apresentado; gates de qualidade EP7.0 e EP9 pendentes
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
 Plataforma de aplicativos:   [██████████████████████████████████████████] Fase 7 validada
 Interface e experiência:     [██████████████████████████████████████████] UI1-UI7 validadas
 Sistema e ecossistema:       [██████████████████████████████████████████] S2.8 e U1-U5 concluídas
-Evolução da plataforma:      [████████████████████████████████████-------] EP1-EP6.4 e EP7.0 implementadas; validação EP7.0 e EP9 futuras
+Evolução da plataforma:      [████████████████████████████████████-------] EP1-EP6.4 e EP7.0 implementadas; gates EP7.0 e EP9 futuros
 ```
 
-**Documentação de atualização sincronizada em:** 2026-08-23 18:41:57 (America/Sao_Paulo).
+**Documentação de atualização sincronizada em:** 2026-08-23 18:50:52 (America/Sao_Paulo).
 
 ---
 
