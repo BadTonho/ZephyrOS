@@ -11,6 +11,9 @@ MV0 no roteiro visual; este documento cobre preferencias de mouse, volumes,
 indice, USB, releases por tags e radios sem fio. As etapas menores so avancam
 quando suas dependencias tecnicas estiverem validadas.
 
+O histórico de implementações, correções e validações concluídas está em
+[`registro-validacoes.md`](../qualidade/registro-validacoes.md).
+
 ## Base ja validada
 
 - [x] Mouse PS/2, cursor grafico, roda e roteamento global de eventos.
@@ -60,9 +63,7 @@ camadas de configuracao, descoberta, montagem e distribuicao sobre elas.
 
 ## EP1 - Preferencias de mouse
 
-**Estado:** implementada e validada pelo usuario em 01/08/2026. O gate Q3,
-build completo e matriz QEMU foram aprovados depois de proteger a transacao
-compartilhada PS/2 contra a IRQ do teclado.
+**Estado:** implementada e validada pelo usuario.
 
 ### Implementacao
 
@@ -103,9 +104,7 @@ fallback Simple.
 
 ## EP2 - Volumes ATA e montagem de particoes
 
-**Estado:** implementada em 01/08/2026 e validada pelo usuario em 02/08/2026.
-Q3, build completo, gerador deterministico, hashes antes/depois, boot normal e
-matriz QEMU com quatro slots IDE foram aprovados.
+**Estado:** implementada e validada pelo usuario.
 
 ### Implementacao
 
@@ -151,7 +150,7 @@ boot, Shell, filesystem atual ou outros volumes montados.
 
 ## EP3 - Indice e pesquisa de arquivos
 
-**Estado:** implementada em 02/08/2026 e validada pelo usuario em 05/08/2026.
+**Estado:** implementada e validada pelo usuario.
 
 ### Implementacao
 
@@ -177,7 +176,7 @@ Uma busca limitada encontra caminhos corretos sem travar a interface. Indice
 corrompido, cancelado ou sem memoria gera log e pode ser reconstruido, sem
 impedir navegacao normal do Explorer ou uso do filesystem.
 
-### Validacao concluida em 05/08/2026
+### Validacao
 
 1. `make q3check`, build limpo e execucao no QEMU passaram apos a revisao dos
    warnings encontrados durante a integracao.
@@ -201,7 +200,7 @@ impedir navegacao normal do Explorer ou uso do filesystem.
 
 ### EP4.1 - Inventario e contrato de controladores
 
-**Estado:** implementada e validada pelo usuario em 20/08/2026.
+**Estado:** implementada e validada pelo usuario.
 
 O escopo desta entrega e somente a descoberta por PCI. O `usb_manager` le o
 snapshot ja criado pelo PCI, copia BDF, IRQ e BARs e nao escreve configuracao,
@@ -237,7 +236,7 @@ QEMU para a validacao manual.
 
 ### EP4.2 - UHCI, portas e transferencias de controle
 
-**Estado:** implementada e validada pelo usuario em 20/08/2026.
+**Estado:** implementada e validada pelo usuario.
 
 - [x] Inicializar apenas UHCI, com portas I/O, frame list, queue head, pool
   limitado de TDs, buffers DMA alinhados, timeout absoluto, IRQ compartilhada
@@ -275,7 +274,7 @@ com DMA, IRQ, portas e transferencias indisponiveis, conforme o escopo.
 
 ### EP4.3 - Bulk e USB Mass Storage somente-leitura
 
-**Estado:** implementada e validada pelo usuario em 20/08/2026.
+**Estado:** implementada e validada pelo usuario.
 
 Nesta implementacao, UHCI fornece Bulk sincrono com TDs fragmentados por
 `wMaxPacketSize`, toggles por endpoint, timeout, buffers DMA fixos e
@@ -320,22 +319,6 @@ continuam fora do escopo.
 
 **Estado:** implementada e validada pelo usuário.
 
-**Implementação registrada em:** 21/08/2026 12:10:35 (America/Sao_Paulo).
-
-**Validação parcial registrada em:** 21/08/2026 12:31:49
-(America/Sao_Paulo).
-
-**Validação final concluída em:** 2026-08-21 16:13:14
-(America/Sao_Paulo).
-
-**Correção do mapeamento USB HID/ABNT2 implementada em:** 2026-08-21
-15:00:11 (America/Sao_Paulo). **Validação desta correção confirmada em:**
-2026-08-21 16:13:14 (America/Sao_Paulo).
-
-**Correção das posições ABNT2 `;/:` e `/ ?` implementada em:** 2026-08-21
-15:08:18 (America/Sao_Paulo). **Validação desta correção confirmada em:**
-2026-08-21 16:13:14 (America/Sao_Paulo).
-
 - [x] Implementar transferências Interrupt através do despachante assíncrono,
   sem bloqueios por espera ocupada na CPU, com QH/TD/buffer persistentes,
   deadlines, toggle, cancelamento e proteção contra callback atrasado.
@@ -374,12 +357,6 @@ restrito ao contrato BOT/SCSI somente-leitura descrito acima.
 
 **Estado:** implementada e validada pelo usuario.
 
-**Implementacao concluida em:** 2026-08-21 16:33:39
-(America/Sao_Paulo).
-
-**Validacao concluida em:** 2026-08-21 16:36:35
-(America/Sao_Paulo).
-
 ### Implementacao
 
 - [x] Definir uma politica host em que a Release agrupa ZUPD, manifesto ZUM1,
@@ -416,9 +393,6 @@ qualidade; esta etapa nao exige QEMU.
 
 **Estado:** EP6.0 implementada e validada pelo usuario.
 
-**Planejamento atualizado em:** 2026-08-21 16:39:48
-(America/Sao_Paulo).
-
 Esta frente implementa a ideia de escolher uma Release do sistema por uma tag
 especifica, sem transformar a tag em raiz de confianca ou em versao numerica.
 A versao oficial continua vindo dos campos assinados do ZUPD/ZUM1. Nao existe
@@ -438,34 +412,6 @@ A versao oficial continua vindo dos campos assinados do ZUPD/ZUM1. Nao existe
 - [x] Exibir antes da confirmacao a tag solicitada, a Release encontrada, a
   versao/epoch assinados, o hash e o estado do cache; nunca escolher a maior
   tag automaticamente.
-
-Implementacao concluida em: 2026-08-21 17:52 (America/Sao_Paulo).
-Correcao do hash publicado da fixture EP6 concluida em: 2026-08-21 18:10
-(America/Sao_Paulo).
-Selftest de fixtures EP6 concluido em: 2026-08-21 18:12
-(America/Sao_Paulo).
-Correcao do apagao no comando EP6.0 concluida em: 2026-08-21 18:19
-(America/Sao_Paulo).
-Correcao das capacidades dos buffers estaticos do descritor concluida em:
-2026-08-21 18:46 (America/Sao_Paulo).
-Correcao da capacidade do hash de asset concluida em: 2026-08-21 18:52
-(America/Sao_Paulo).
-Diagnostico granular da validacao de assets EP6.0 concluido em: 2026-08-21
-18:58 (America/Sao_Paulo).
-Instrumentacao dos submotivos de asset EP6.0 concluida em: 2026-08-21 19:00
-(America/Sao_Paulo).
-Instrumentacao das transicoes JSON de assets EP6.0 concluida em: 2026-08-21
-19:05 (America/Sao_Paulo).
-Correcao do parser numerico com espacos JSON concluida em: 2026-08-21 19:08
-(America/Sao_Paulo).
-Correcao da propagacao de motivos antes dos assets concluida em: 2026-08-21
-19:20 (America/Sao_Paulo).
-Correcao do diagnostico de cabecalho e das rotas das fixtures invalidas
-concluida em: 2026-08-21 19:27 (America/Sao_Paulo).
-Correcao do estado EMPTY apos falha de download sem pacote ativo concluida
-em: 2026-08-21 19:39 (America/Sao_Paulo).
-Validacao funcional da EP6.0 concluida em: 2026-08-21 20:07
-(America/Sao_Paulo).
 
 A matriz EP6.0 foi executada e concluida pelo usuario, cobrindo duas tags
 validas, tag ausente/invalida/inexistente,
@@ -493,30 +439,12 @@ QEMU; regressao EP6.0/U5 preservada conforme validacao anterior.
 - [x] Validar no QEMU `clock status`, `clock check`, `tls status`, `tls check`,
   `health`, `regcheck full` e `memcheck`; RTC/UTC, monotono e politica TLS
   ficaram operacionais, com todos os autotestes em `OK`.
-- [x] Preservar a regressao EP6.0/U5 ja validada na EP6.0 em 2026-08-21
-  20:07 (America/Sao_Paulo); a EP6.1 nao altera U5, boot ou transporte remoto.
-
-Implementacao concluida em: 2026-08-21 23:40 (America/Sao_Paulo).
-Correcao do link freestanding concluida em: 2026-08-21 23:46 (America/Sao_Paulo).
-Validacao da sequencia host concluida em: 2026-08-21 23:52 (America/Sao_Paulo).
-Validacao QEMU parcial concluida em: 2026-08-21 23:56 (America/Sao_Paulo).
-Validacao QEMU da EP6.1 concluida em: 2026-08-21 23:58 (America/Sao_Paulo).
-Regressao EP6.0/U5 reutilizada para o fechamento da EP6.1 em: 2026-08-22
-08:55 (America/Sao_Paulo); execucao original registrada em 2026-08-21 20:07.
-EP6.1 concluida em: 2026-08-22 08:55 (America/Sao_Paulo).
+- [x] Preservar a regressao EP6.0/U5; a EP6.1 nao altera U5, boot ou
+  transporte remoto.
 
 ### EP6.2 - Canal GitHub configuravel
 
-**Estado:** concluida em: 2026-08-22 15:23 (America/Sao_Paulo).
-
-A validacao QEMU disponivel confirmou a correcao da tela preta no caminho
-HTTPS, o retorno ao prompt, a preservacao do cache e os diagnosticos da
-sessao. A cobertura do caminho feliz contra uma Release publicada ou fixture
-HTTPS local permanece fora do escopo da fase, pois depende de Release,
-certificados e entropia externos ao repositorio. O procedimento operacional
-está em `docs/14-atualizacoes/distribuicao-remota.md`; os comandos gerais ficam
-em `docs/qualidade/comandos-operacionais-agente.md`. Essa infraestrutura de
-teste permanece como evolucao futura e nao reabre a EP6.2.
+**Estado:** concluida.
 
 - [x] Integrar BearSSL 0.6 vendorizado, com licença e versão fixadas, perfil
   freestanding, trust anchor estático, TLS 1.2, SNI/SAN, validade temporal via
@@ -543,58 +471,6 @@ teste permanece como evolucao futura e nao reabre a EP6.2.
   documentação de distribuição e diagnósticos `tls`/`health`/`health check`/
   `update github`.
 
-Transporte BearSSL/HTTP concluído em: 2026-08-22 11:40 (America/Sao_Paulo).
-Configuração, parser GitHub e preflight concluídos em: 2026-08-22 11:40
-(America/Sao_Paulo).
-Fixtures, contratos e documentação concluídos em: 2026-08-22 11:40
-(America/Sao_Paulo).
-Implementação da EP6.2 concluída em: 2026-08-22 11:40 (America/Sao_Paulo).
-Correção dos inicializadores do contrato remoto concluída em: 2026-08-22 11:47
-(America/Sao_Paulo).
-Auditoria de versionamento, `.gitignore` e arquivos alterados/novos concluída
-em: 2026-08-22 11:52 (America/Sao_Paulo).
-Correção da regra de criação do subdiretório BearSSL concluída em: 2026-08-22
-11:58 (America/Sao_Paulo).
-Correção da inclusão do contrato de memória do BearSSL concluída em: 2026-08-22
-12:02 (America/Sao_Paulo).
-Correção do wrapper freestanding `stddef.h`/`offsetof` do BearSSL concluída em:
-2026-08-22 12:04 (America/Sao_Paulo).
-Dependência explícita de `stddef.h` no build BearSSL concluída em: 2026-08-22
-12:05 (America/Sao_Paulo).
-Correção do wrapper freestanding `stdint.h`/`uintptr_t` do BearSSL concluída
-em: 2026-08-22 12:07 (America/Sao_Paulo).
-Correção da condição de digest da EP6.2 e do fallback de `reason` concluída em:
-2026-08-22 12:10 (America/Sao_Paulo).
-Diagnóstico host da falha QEMU concluído em: 2026-08-22 12:21
-(America/Sao_Paulo); payload concatenado e imagem FAT12 íntegros, com a falha
-restrita à leitura CHS do `stage2` ainda pendente de confirmação no QEMU.
-Correção da geometria IDE do QEMU concluída em: 2026-08-22 12:25
-(America/Sao_Paulo); `Makefile` passou a usar `-drive if=none` e `ide-hd` com
-geometria explícita 80/2/18, sem alterar o bootloader.
-Validação QEMU da imagem com geometria IDE 80/2/18 concluída em: 2026-08-22
-12:25 (America/Sao_Paulo); a imagem abriu e iniciou com sucesso.
-A validação completa do caminho feliz HTTPS real/local depende de Release,
-certificados e capacidade de entropia externos ao repositorio; isso nao altera
-o encerramento da EP6.2 por escopo.
-Implementação do comando `health check` concluída em: 2026-08-22 12:47
-(America/Sao_Paulo); o comando consolida estados não-`READY` sem executar
-diagnósticos ativos. A validação executável permanece pendente do usuário.
-Correção do filtro de estados `READY` do `health check` concluída em:
-2026-08-22 12:54 (America/Sao_Paulo); a saída agora omite estados prontos
-também nas subcapacidades do Update.
-Correção da rejeição antecipada de HTTPS sem capacidade TLS concluída em:
-2026-08-22 13:21 (America/Sao_Paulo); o cliente agora falha antes de DNS/socket,
-preservando o cache e evitando entrar no caminho de rede quando `tls status`
-publica `UNAVAILABLE`. Validação QEMU permanece pendente do usuário.
-Diagnóstico da tela preta no `update github check` concluído em: 2026-08-22
-13:49 (America/Sao_Paulo); a análise estática aponta esgotamento da stack de
-4 KiB no caminho HTTPS/BearSSL, sem evidência de aplicação de update. Correção
-da stack dedicada do System e dos buffers temporários implementada em: 2026-08-22
-14:04 (America/Sao_Paulo). A EP6.2 foi reaberta para validacao local em:
-2026-08-22 14:48 (America/Sao_Paulo). A fase foi encerrada por escopo em:
-2026-08-22 15:23 (America/Sao_Paulo); o perfil local completo permanece como
-infraestrutura futura e nao reabre a EP6.2.
-
 ### Evolução futura — Gerenciamento de stack para rede e TLS
 
 - [ ] Medir o maior consumo real de stack do kernel usando canários e métricas
@@ -607,11 +483,6 @@ infraestrutura futura e nao reabre a EP6.2.
   sem permitir que uma consulta de atualização derrube a interface ou o kernel.
 - [ ] Validar o custo de memória, a concorrência entre Shell e System e as
   regressões de Simple/Classic antes de adotar um novo tamanho padrão.
-
-Registro da evolução futura concluído em: 2026-08-22 13:54
-(America/Sao_Paulo). A EP6.2 recebeu a aplicação inicial de stack dedicada ao
-System e workspaces estáticos; a generalização por processo, métricas e
-proteção contra overflow permanece pendente.
 
 ### Etapa futura — Leitura LBA no `stage2` (fora da EP6.2 e EP6.3)
 
@@ -626,15 +497,8 @@ proteção contra overflow permanece pendente.
   geometria explícita, além da regressão de boot, `health`, `regcheck full` e
   `memcheck`.
 
-Planejamento desta etapa futura concluído em: 2026-08-22 12:30
-(America/Sao_Paulo). Implementação e validação permanecem pendentes e deverão
-ser tratadas como uma etapa própria do bootloader.
-
 ### EP6.3 - Runtime v2, cache seletivo e matriz de falhas
 
-- [x] EP6.3B concluída em: 2026-08-23 00:53 (America/Sao_Paulo), com
-  implementação, validação no QEMU, fluxo HTTP U5, Updater Classic, auditoria
-  offline, cancelamento e limpeza do cache runtime v2.
 - [x] Contrato `ZUM2`/`ZUPD v2` assinado com Ed25519, hashes SHA-256 por
   arquivo, bases multiplas, limites de 16 entradas/64 KiB/128 KiB, catalogo
   fixo dos tres BMPs e operacoes controladas de substituir, criar e remover.
@@ -652,20 +516,6 @@ ser tratadas como uma etapa própria do bootloader.
 - [x] Compatibilidade operacional com o estado U3 existente: o layout e as
   APIs v1 permanecem, e o estado de arquivos compartilhados e sincronizado
   apos uma transacao runtime v2.
-- Implementação EP6.3 concluída em: 2026-08-22 20:01 (America/Sao_Paulo).
-- Correção de compilação da EP6.3B concluída em: 2026-08-22 20:25 (America/Sao_Paulo).
-- Correção do selftest host da EP6.3B concluída em: 2026-08-22 20:29 (America/Sao_Paulo).
-- Correção de inicialização independente do runtime v2 concluída em: 2026-08-22 20:52 (America/Sao_Paulo).
-- Correção da stack dedicada do processo Shell para os aplicativos hospedados concluída em: 2026-08-22 22:10 (America/Sao_Paulo).
-- Rotação da chave pública de trust para os artefatos de release concluída em: 2026-08-22 22:26 (America/Sao_Paulo).
-- Aumento da stack dedicada do processo Shell para 16 KiB concluído em: 2026-08-22 22:38 (America/Sao_Paulo).
-- Correção da persistência do estado instalado após aplicação runtime v2 concluída em: 2026-08-22 22:45 (America/Sao_Paulo).
-- Correção da validação no boot de estado runtime v2 sem rollback concluída em: 2026-08-22 23:09 (America/Sao_Paulo).
-- Correção da auditoria offline para estado runtime v2 sem rollback concluída em: 2026-08-22 23:27 (America/Sao_Paulo).
-- Correção do falso positivo da auditoria offline após limpeza do cache runtime v2 concluída em: 2026-08-23 00:51 (America/Sao_Paulo).
-- Implementação do comando `update runtime test fail-after <1-16>` concluída em: 2026-08-23 10:34:45 (America/Sao_Paulo); a validação QEMU do failpoint e da recuperação permanece pendente.
-- Implementação da opção `fixtures-runtime --changed-assets` concluída em: 2026-08-23 11:16:00 (America/Sao_Paulo); a validação QEMU com substituições reais permanece pendente.
-- Correção da sincronização U3 após rollback runtime v2 concluída em: 2026-08-23 11:54:01 (America/Sao_Paulo); a repetição da matriz QEMU após rebuild permanece pendente.
 - [x] Validacao do usuario no QEMU do HTTP U5 concluida para os fluxos
   seletivo e completo, incluindo manifestos assinados, rejeicoes de asset/tag/
   JSON/hash/assinatura/pacote e preservacao do cache anterior.
@@ -678,15 +528,13 @@ ser tratadas como uma etapa própria do bootloader.
   cache anterior, a instalacao `0.1.0` e o journal `CLEAN`.
 - [x] Limpeza do cache runtime v2 e auditoria offline repetidas com sucesso,
   confirmando `runtime=EMPTY`, `alias=none`, `pending=NO` e journal local
-  `CLEAN`. Validação concluída em: 2026-08-23 00:52 (America/Sao_Paulo).
-- Horarios das validacoes registrados em: 2026-08-23 00:33 (America/Sao_Paulo).
+  `CLEAN`.
 - [x] Failpoint QEMU (`fail-after 1`), recuperação após reboot, aplicação da
   Release válida e rollback de arquivos substituídos foram validados pelo
-  usuário; registro recebido em: 2026-08-23 12:15:07 (America/Sao_Paulo).
+  usuário.
 - [x] A matriz QEMU A/B com substituição, criação, remoção e rollback foi
   repetida após as correções de auditoria e limpeza de backups. A imagem final
-  não reteve `ZTB*`, e a auditoria offline foi aprovada; validação recebida em:
-  2026-08-23 14:46:23 (America/Sao_Paulo).
+  não reteve `ZTB*`, e a auditoria offline foi aprovada.
 - [x] GitHub HTTPS validado. Evidências e horário em
   [`registro-validacoes.md`](../qualidade/registro-validacoes.md#ep63--github-runtime-v2-via-https).
 
@@ -751,10 +599,6 @@ O `fixtures-u5` deve ser executado somente depois de copiar U2 e U3 novos,
 porque ele incorpora `APPLY.ZUP` e `BADHASH.ZUP` desses diretórios. As
 fixtures regeneradas são públicas; a chave privada permanece fora do
 repositório.
-
-- [x] `python tools/updater.py selftest` aprovado após a regeneração dos
-  fixtures U2/U3/U5 com a raiz pública atual; validação registrada em:
-  2026-08-23 12:22:53 (America/Sao_Paulo).
 
 #### QEMU: matriz padrão já validada
 
@@ -885,19 +729,6 @@ regcheck full
 Após A: `EXPLORER.BMP` e `TASKMGR.BMP` presentes, `SHELL.BMP` ausente,
 `0.1.1/e0`, `journal=CLEAN` e `rollback=READY`.
 
-Na primeira execução real de A, a aplicação chegou a `0.1.1/e0`, mas o
-reboot mostrou `rollback=DISABLED`. A causa encontrada foi a publicação do
-estado persistente: entradas do catálogo já compatíveis, portanto fora do
-plano, tinham o estado de rollback zerado em vez de preservar o estado
-anterior. A correção foi aplicada em `src/core/update_runtime.c`; ela também
-mantém o rollback vazio quando a operação concluída é um rollback.
-
-Correção implementada em: 2026-08-23 12:38 (America/Sao_Paulo).
-Validação A concluída em: 2026-08-23 12:51 (America/Sao_Paulo).
-Resultado: `0.1.1/e0`, `journal=CLEAN`, `rollback=READY`,
-`verify --cached` com `assets faltantes=0`, `EXPLORER.BMP` e `TASKMGR.BMP`
-presentes e `SHELL.BMP` ausente.
-
 #### Host: servidor da Release B
 
 Parar o servidor A com `Ctrl+C` e iniciar:
@@ -937,37 +768,6 @@ Após B, `EXPLORER.BMP` e `SHELL.BMP` devem estar presentes e
 `TASKMGR.BMP` ausente, com `0.1.2/e0` e `rollback=READY`. Após o rollback,
 `EXPLORER.BMP` e `TASKMGR.BMP` devem estar presentes, `SHELL.BMP` ausente,
 com `0.1.1/e0`, `journal=CLEAN` e `rollback=DISABLED`.
-
-Validação B após aplicação concluída em: 2026-08-23 12:55
-(America/Sao_Paulo). Resultado: `0.1.2/e0`, `journal=CLEAN`,
-`rollback=READY`, `EXPLORER.BMP` e `SHELL.BMP` presentes,
-`TASKMGR.BMP` ausente; `health check`, `memcheck` e `regcheck full`
-concluídos.
-
-Validação do rollback B concluída em: 2026-08-23 12:57
-(America/Sao_Paulo). Resultado: `Rollback runtime: NONE`; após reboot,
-`0.1.1/e0`, `journal=CLEAN`, `rollback=DISABLED`, `EXPLORER.BMP` e
-`TASKMGR.BMP` presentes, `SHELL.BMP` ausente; `memcheck` e `regcheck full`
-concluídos com `OK`. `update history` permaneceu vazio, sem operações U3
-registradas, conforme o comportamento atual do fluxo runtime v2.
-
-A auditoria offline final acusou `ZRV0.01`, mas a inspeção do registro
-`ZRV2` confirmou `active_slot=0`, modo seletivo e `asset_mask=2`; portanto,
-esse é o asset ativo esperado da Release B. A causa foi uma comparação
-booleana incorreta no `audit-image`: o bitmask inteiro `2` era comparado com
-`True`. A correção da ferramenta host foi implementada em:
-2026-08-23 13:21:30 (America/Sao_Paulo). A nova execução ultrapassou essa
-verificação e revelou o backup local obsoleto `ZTB0.01`: após o rollback, o
-estado declara `rollback=DISABLED`, mas o backup antigo da aplicação A ficava
-no slot que não foi usado pela aplicação B. A correção para podar todos os
-slots de staging/backup exceto o rollback vigente foi implementada em:
-2026-08-23 13:24:28 (America/Sao_Paulo).
-
-Validação da auditoria final recebida em: 2026-08-23 14:46:23
-(America/Sao_Paulo). Resultado: `Audit image: OK`, com `installed=0.1.1`,
-`rollback=DISABLED`, journal local `CLEAN`, histórico vazio, cache U5 vazio,
-cache runtime `READY` em `ZRV0.MAN`, nenhuma transferência pendente e estado
-local runtime `READY` com journal `CLEAN`.
 
 #### Auditoria offline após o último reboot
 
@@ -1051,9 +851,6 @@ repositorio.
 
 **Estado:** planejada; nao iniciar antes de uma aprovacao explicita para
 alterar boot/stage2.
-
-**Planejamento registrado em:** 2026-08-21 16:45:17
-(America/Sao_Paulo).
 
 Esta fase separa a atualizacao de arquivos do sistema em execucao da
 atualizacao da imagem que o proximo boot carregara. O ZUPD v1 continua limitado

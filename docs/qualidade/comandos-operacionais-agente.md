@@ -88,8 +88,8 @@ ferramenta correspondente.
 
 Toda implementacao, validacao ou conclusao de fase deve registrar data e hora
 reais em `docs/qualidade/registro-validacoes.md`. O roadmap correspondente
-mantem apenas estado, escopo e link para a entrada; nao duplicar comandos,
-saidas ou tentativas no roadmap. Usar o formato:
+mantem escopo, requisitos, checklists, pendencias e criterios; relatos
+cronologicos, saidas e tentativas ficam no registro. Usar o formato:
 
 ```text
 Concluida em: YYYY-MM-DD HH:MM (America/Sao_Paulo)
