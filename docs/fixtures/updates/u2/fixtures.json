@@ -2,38 +2,38 @@
   "format": "ZUPD v1",
   "contract": "../../../14-atualizacoes/contrato-zupd-v1.md",
   "release_public_key": {
-    "public_key_hex": "4a8006ca82cca49ef482be6f554e393d176fbb8236f46bf4308c58bbd82a7808",
-    "key_id_hex": "d4926d816d8373a412e7458cc9f14379"
+    "public_key_hex": "3dd0697e7a167218300dfe96f100d562caa760b804818d2dabf09c10b1daeecd",
+    "key_id_hex": "dfecfa35485fde8ad61707947e5ae85b"
   },
   "fixtures": {
     "VALID.ZUP": {
       "size": 3446,
-      "sha256": "cf7e8454d9a40646f5f41efa66a82c43c566973795755fdacfa3654361813b63",
+      "sha256": "abd07d0a1d1b4e15ceab8a19b3a2260aba5fc949c109eee4365d3da57ff00c46",
       "expected_reason": "ZUPD_REASON_NONE"
     },
     "TRUNC.ZUP": {
       "size": 3445,
-      "sha256": "d832c9550d22cb0bbadd32f3746570def2127394dea1f807c7a551139e7eb2c8",
+      "sha256": "a5f95ce9d0fb6ae9312b2120b1edc2634344a89e22ed3741c89664372917424e",
       "expected_reason": "ZUPD_REASON_SIZE"
     },
     "BADHASH.ZUP": {
       "size": 3446,
-      "sha256": "f452496938043b84b1695228bf73a64ee5a3f4d0b4cec8844a9da4aa9594c0b9",
+      "sha256": "e64decc67376a4d5a231b80041f1d8cae09599aa4e4a752e56f0c163f2644dc7",
       "expected_reason": "ZUPD_REASON_HASH"
     },
     "BADSIG.ZUP": {
       "size": 3446,
-      "sha256": "4e00be9c2c1188fc7ee323a1090f3bfe1c49c60d71138d20e7887e27463961f0",
+      "sha256": "fd3c5b9b7efbf0ea843f5ff66e467c1f3822e849294db8fe5f9540fd624342ae",
       "expected_reason": "ZUPD_REASON_SIGNATURE"
     },
     "BADVER.ZUP": {
       "size": 3446,
-      "sha256": "d5c8cb835612363bb54fd8b58fd3178d2bc6c1fafd44049b7fd5c6848fc642c5",
+      "sha256": "246386c3d3cc1c5e72562a202a3ed4f3719bf5d8862f71809a00dc9a7c2dc44e",
       "expected_reason": "ZUPD_REASON_BASE_VERSION"
     },
     "BADFMT.ZUP": {
       "size": 3446,
-      "sha256": "7d2bab53903d67463a7a23abb8594e5d2af36801b14b6fb579437b2a1bb243a7",
+      "sha256": "04d2365c3aba3745974d6d7cf1158289de6b10e0d20c4ceffc5096e16a0a3859",
       "expected_reason": "ZUPD_REASON_FORMAT"
     },
     "UNKKEY.ZUP": {

@@ -1,45 +1,45 @@
 {
   "format": "zephyros-update-remote-fixtures-v1",
   "release_public_key": {
-    "public_key_hex": "4a8006ca82cca49ef482be6f554e393d176fbb8236f46bf4308c58bbd82a7808",
-    "key_id_hex": "d4926d816d8373a412e7458cc9f14379"
+    "public_key_hex": "3dd0697e7a167218300dfe96f100d562caa760b804818d2dabf09c10b1daeecd",
+    "key_id_hex": "dfecfa35485fde8ad61707947e5ae85b"
   },
   "packages": {
     "APPLY.ZUP": {
       "source": "../u3/APPLY.ZUP",
       "size": 9954,
-      "sha256": "a11b825cb0c68d972f3d4651ca04e97a4306cb5f266ef317f727c0eaea70fa86"
+      "sha256": "6c83badbf845547316676d3125a04e64d437c243abaec17a76653e9323e2f86c"
     },
     "BADHASH.ZUP": {
       "source": "../u2/BADHASH.ZUP",
       "size": 3446,
-      "sha256": "f452496938043b84b1695228bf73a64ee5a3f4d0b4cec8844a9da4aa9594c0b9"
+      "sha256": "e64decc67376a4d5a231b80041f1d8cae09599aa4e4a752e56f0c163f2644dc7"
     }
   },
   "fixtures": {
     "stable.zum": {
       "size": 256,
-      "sha256": "8577757d392ec1d551676b497a4025d7557f653e32d6acf13f5037d0248e9e79",
+      "sha256": "a19b54e5b74db645987f13cf0b8cafbf54f2f88fbe055ca32c2ae204ca45a025",
       "expected": "OK"
     },
     "stable2.zum": {
       "size": 256,
-      "sha256": "f4e44bf740c07f77a51b10447c288b63947a9a378289a3a91051d73ee42a2615",
+      "sha256": "5372eae22f29c9ceef2cf30d4d6fbb73efaa9ebe262b45cec35a10fe0ad0e50e",
       "expected": "OK"
     },
     "tampered.zum": {
       "size": 256,
-      "sha256": "8e6590929ebba43a25c5c75b0066b57350f7a907a13838a4b383f855cf102a28",
+      "sha256": "16a2bf2cbbfd8932017530fa4bd57c5cdb69d8bb10d91c5de8fe51b2698b0e21",
       "expected": "MANIFEST_SIGNATURE"
     },
     "badpkg.zum": {
       "size": 256,
-      "sha256": "6e7b3a3d0532145dd971c577f2857f6f11029985cb9a0805485d38d10bf00680",
+      "sha256": "a61e67fa1e689b8e9930be7983b10477d0e2dc81fd34b967846f314e22a1140d",
       "expected": "PACKAGE_VERIFY/HASH"
     },
     "truncated.zum": {
       "size": 255,
-      "sha256": "72ac66e540bddb4a4ef335d4014ee0158924d1e62baf9431ce2e1132d1b49b75",
+      "sha256": "62c639d8305cbe402f752bef903ed4276c7e7abdb0c6a187ea40af54ab4d6a03",
       "expected": "HTTP"
     }
   },
@@ -47,12 +47,12 @@
     "ep6-stable.json": {
       "tag": "ep6-stable",
       "size": 675,
-      "sha256": "dc47347f5da7cb179e659f6e1df48995bad4ac6500957777cb58b6a4b58a945c"
+      "sha256": "494df04590c418b670ed5c8c37a192063bc28da0cbe1a61be62acc653b30682c"
     },
     "ep6-alt.json": {
       "tag": "ep6-alt",
       "size": 673,
-      "sha256": "320318ffd354e36ca56ac5440f2e6b4715e6e9e824bb651bb97620524a525eb2"
+      "sha256": "264f4c6206f709f80fed03f91d045e7b5bdfbfc8bd36e28151db258cb7b63a7d"
     }
   },
   "invalid_releases": {
@@ -62,31 +62,31 @@
     },
     "ep6-no-tag.json": {
       "size": 652,
-      "sha256": "cc5be02e6c1942e9ba9a8ddada5c6f385891ca6404b8eccf49a99f1e4fc89a0b"
+      "sha256": "f9908a7c2e5927f0c2d2109242bb111556783360814606cfe15bded5dc3d8a4c"
     },
     "ep6-missing-asset.json": {
       "size": 541,
-      "sha256": "48040447327b8d1edac422ac10739f40af3c3169060a9d6ba095570ab3e64cb4"
+      "sha256": "2071a09c6357648e0c86542cd8552bd45886e7a738ac090b93f24e8eeb419e7c"
     },
     "ep6-tampered-manifest.json": {
       "size": 710,
-      "sha256": "f58cb50c075f1128d4c3e3ac2a94d2072ba7382743c77ba2522df23d1b67a916"
+      "sha256": "d5ad60876757f973b929f97a72508227f31ad0cba4aac185e4568c11f43bf401"
     },
     "ep6-invalid-package.json": {
       "size": 704,
-      "sha256": "73e8b322f364f16a0144549cbb3e1bb99cb2bb8742e4d4a08c1553be40b33c02"
+      "sha256": "78bd942161bd27f29abec6cb2104cb24546f66d3ad9714f89cdc9e1848de561d"
     },
     "ep6-divergent-hash.json": {
       "size": 699,
-      "sha256": "8e8869884ba6513da578d72a4d25c5fd81f8562cd1d71552df5c9b7a7b0cdd28"
+      "sha256": "794e549d900251ac1297db7a76b1ca06e72ea467555f57636e551846fef3cc58"
     },
     "ep6-divergent-lock.json": {
       "size": 699,
-      "sha256": "ca98897acfa7d3f056c5e9416c0f9ea10df931fc8f71b4471150382a3e066b71"
+      "sha256": "5c9def0904d64fdc5c9175cfd82585fbe9e26ffdbb404c0be97b4ed2112b4dee"
     },
     "ep6-divergent-tag.json": {
       "size": 674,
-      "sha256": "ac73ece59fde05938a19a11081cf4cf6ba086772c02579671741d1d98401d0d5"
+      "sha256": "7c8f2090c3b2e3150d7cc50e44f5ef3e971e77813c7e25c2bbb0ad15081c0bd5"
     }
   }
 }

@@ -748,6 +748,10 @@ porque ele incorpora `APPLY.ZUP` e `BADHASH.ZUP` desses diretórios. As
 fixtures regeneradas são públicas; a chave privada permanece fora do
 repositório.
 
+- [x] `python tools/updater.py selftest` aprovado após a regeneração dos
+  fixtures U2/U3/U5 com a raiz pública atual; validação registrada em:
+  2026-08-23 12:22:53 (America/Sao_Paulo).
+
 #### QEMU: matriz padrão já validada
 
 Não repetir esta sequência quando o resultado já estiver registrado acima.
