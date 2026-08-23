@@ -11,6 +11,10 @@ segredos.
 
 Implementação concluída em: 2026-08-23 18:41:57 (America/Sao_Paulo)
 
+Encerramento documental da EP7.0 concluído em: 2026-08-23 19:04:32
+(America/Sao_Paulo). A EP7 geral permanece aberta para o driver de um chipset
+real, que depende de um adaptador identificado literalmente.
+
 Foi criado o `wifi_manager` com snapshot PCI somente-leitura para controladores
 de classe `0x02` que não sejam E1000 ou RTL8139. O inventário preserva Vendor
 ID, Device ID, classe, subclasse, ProgIF, revisão, BDF, IRQ e BAR0-BAR5, sem
