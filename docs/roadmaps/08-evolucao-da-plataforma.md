@@ -716,6 +716,38 @@ python tools/updater.py serve-runtime --root "<SECRETS>\\ep63-runtime-fixtures-c
 
 O último comando fica em um terminal separado e deve permanecer aberto.
 
+Se o `selftest` retornar `manifesto U2 nao corresponde a raiz publica`, os
+fixtures legados U2/U3/U5 ainda estão assinados com uma chave anterior. Não
+ignorar esse erro e não repetir o QEMU: regenerar os três conjuntos na ordem
+abaixo com a mesma chave usada em `config/update-release-public.json`.
+
+```powershell
+$S = "<SECRETS>"
+$U2 = "$S\ep63-fixtures-regenerated-u2"
+$U3 = "$S\ep63-fixtures-regenerated-u3"
+$U5 = "$S\ep63-fixtures-regenerated-u5"
+
+if ((Test-Path -LiteralPath $U2) -or (Test-Path -LiteralPath $U3) -or (Test-Path -LiteralPath $U5)) {
+    throw "Um dos diretorios de regeneracao ja existe; use novos nomes."
+}
+
+python tools/updater.py fixtures --private "$S\release-private-ep63.pem" --public "$S\release-public-ep63.json" --output-dir $U2
+python tools/updater.py fixtures-u3 --private "$S\release-private-ep63.pem" --public "$S\release-public-ep63.json" --output-dir $U3
+
+Copy-Item -Path "$U2\*" -Destination "docs/fixtures/updates/u2" -Force
+Copy-Item -Path "$U3\*" -Destination "docs/fixtures/updates/u3" -Force
+
+python tools/updater.py fixtures-u5 --private "$S\release-private-ep63.pem" --public "$S\release-public-ep63.json" --output-dir $U5
+Copy-Item -Path "$U5\*" -Destination "docs/fixtures/updates/u5" -Force
+
+python tools/updater.py selftest
+```
+
+O `fixtures-u5` deve ser executado somente depois de copiar U2 e U3 novos,
+porque ele incorpora `APPLY.ZUP` e `BADHASH.ZUP` desses diretórios. As
+fixtures regeneradas são públicas; a chave privada permanece fora do
+repositório.
+
 #### QEMU: matriz padrão já validada
 
 Não repetir esta sequência quando o resultado já estiver registrado acima.
