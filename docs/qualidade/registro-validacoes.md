@@ -20,6 +20,23 @@ PID, nome e uso antes do `panic`.
 Validação executável pendente do usuário: gates de código, QEMU e matriz
 `stack`/TLS/runtime definida no Roadmap 08.
 
+Validação no QEMU concluída em: 2026-08-23 17:45:10 (America/Sao_Paulo)
+
+- `stack status` e `stack check` passaram antes e depois da operação remota:
+  6 processos verificados, 6 válidos, zero margens baixas e zero canários
+  corrompidos;
+- `tls check` terminou em `Resultado: OK`;
+- `update runtime check --tag ep63-runtime-b` e `fetch --confirm`
+  descobriram a Release GitHub por tag exata, autenticaram o ZUM2 e
+  publicaram o cache seletivo sem iniciar instalação;
+- após o fetch, `Zephyr System` registrou stack de 16384 bytes, pico de
+  4460 bytes e menor folga de 11924 bytes;
+- `health check`, `memcheck` e `regcheck full` terminaram em `OK`. A tentativa
+  `helath check` foi um erro de digitação e não substituiu o comando correto.
+
+Os gates de código e os smoke tests específicos de App Store, Simple e Classic
+ainda não foram apresentados nesta entrada.
+
 ## EP6.3 — GitHub runtime v2 via HTTPS
 
 Concluída em: 2026-08-23 16:47:47 (America/Sao_Paulo)

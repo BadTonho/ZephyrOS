@@ -537,7 +537,8 @@ concluidas; a matriz restante continua registrada acima.
 
 ### EP6.4 - Gerenciamento de stack para rede e TLS
 
-**Estado:** implementada; validação no QEMU pendente.
+**Estado:** implementada e validada no QEMU; gates de código e smoke tests de
+regressão visual pendentes de registro.
 
 ### Implementacao
 
@@ -552,14 +553,16 @@ concluidas; a matriz restante continua registrada acima.
 - [x] Encerrar HTTP/TLS com `ERR_OVERFLOW` ao atingir 1 KiB de folga e entrar
   em `panic` somente se um canário real for corrompido.
 
-### Validacao pendente
+### Validacao
 
-- [ ] Executar os gates de código e, no QEMU, `stack status`, `stack check`,
-  `tls status`, consulta/download runtime por tag, `health check`, `memcheck`
-  e `regcheck full`.
-- [ ] Confirmar no System/TLS ao menos 1 KiB de folga, canários íntegros,
-  HTTPS funcional e ausência de regressão em Shell, HTTP U5, App Store,
-  Simple e Classic.
+- [x] No QEMU, executar `stack status`, `stack check`, `tls check`, consulta e
+  download runtime GitHub por tag, `health check`, `memcheck` e `regcheck
+  full`. Evidência e horário em
+  [`registro-validacoes.md`](../qualidade/registro-validacoes.md#ep64--gerenciamento-de-stack-para-rede-e-tls).
+- [x] Confirmar no System/TLS 11924 bytes de menor folga após HTTPS, canários
+  íntegros, cache runtime publicado e validações estruturais em `OK`.
+- [ ] Registrar `make q3check` e `make clean && make` para esta revisão.
+- [ ] Executar os smoke tests específicos de App Store, Simple e Classic.
 
 ### Criterio de saida
 
