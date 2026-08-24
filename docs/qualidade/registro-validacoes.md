@@ -558,3 +558,13 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   (America/Sao_Paulo); inspeção do FSInfo de backup foi corrigida, o valor
   `STORAGE_FAT32_FREE` foi publicado internamente e as declarações antecipadas
   das funções auxiliares FAT32 foram adicionadas.
+- Correção da capacidade de escrita do provedor ATA implementada em:
+  2026-08-24 12:57 (America/Sao_Paulo); a API direcionada de escrita foi
+  acrescentada, o registro de bloco ATA passou a publicar callback de escrita
+  e o volume FAT32 do sistema deixou de ser marcado somente-leitura.
+- Mensagem do Shell para `storage list` corrigida em: 2026-08-24 13:00
+  (America/Sao_Paulo); a saída agora distingue volume FAT32 do sistema montado
+  de fallback FAT12 quando a detecção de disco falha.
+- Contratos do Shell, filesystem e driver ATA atualizados em: 2026-08-24
+  13:01 (America/Sao_Paulo); a documentação agora descreve a escrita ATA
+  direcionada e o estado gravável do volume FAT32 do sistema.

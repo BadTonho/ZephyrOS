@@ -57,6 +57,8 @@ int  ata_get_device_count(uint8_t* out_count);
 int  ata_get_device_at(uint8_t slot, ata_device_t* out_device);
 int  ata_read_device_sectors(uint8_t slot, uint32_t lba, uint8_t count,
                              uint8_t* buffer);
+int  ata_write_device_sectors(uint8_t slot, uint32_t lba, uint8_t count,
+                              const uint8_t* buffer);
 int  ata_get_device_counters(uint8_t slot, uint32_t* out_reads,
                              uint32_t* out_writes);
 
