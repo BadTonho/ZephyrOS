@@ -2750,9 +2750,11 @@ def verify_release_v2_bundle(
     descriptor_path: Path,
     trusted: PublicKeyInfo,
     repository: Path = REPO_ROOT,
-    resolver: Any = resolve_git_commit,
+    resolver: Any | None = None,
 ) -> SystemPackage:
     """Valida a Release v2 e exige coerencia com o ZSYS assinado."""
+    if resolver is None:
+        resolver = resolve_git_commit
     data = load_release_v2_descriptor(descriptor_path)
     release_id, release_name = validate_release_identity(data["release_id"], data["release_name"])
     source_commit = data["source_commit"]
