@@ -588,3 +588,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   (America/Sao_Paulo); o empacotador agora consome os slots livres finais
   antes de alocar o próximo cluster, preservando a continuidade observável
   pelo leitor do kernel, e o selftest cobre a passagem do limite do cluster.
+- Validação QEMU da fixture `VALID.img` confirmada pelo usuário, sem horário
+  exato informado: `storage list` mostrou o FAT12 legado e o FAT32 `ZEPHYROS`
+  montados em `READ-WRITE`, `storage check ata2p1` retornou `Volume FAT32
+  consistente.` e `update system verify system:/VALID.ZSYS` retornou `ZSYS
+  autenticado e compatível`, sem gravação.
