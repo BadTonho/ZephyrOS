@@ -524,3 +524,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   (America/Sao_Paulo); foi adicionado o alvo `system-fixtures`, com geração
   assinada compacta e aliases FAT12 8.3 `.ZSY`, mantendo a fixture host de
   imagem completa e a chave privada fora do repositorio.
+- Etapa futura EP9.4 para expansão de armazenamento e uso de FAT32 registrada
+  em: 2026-08-24 10:44 (America/Sao_Paulo); a etapa permanece sem
+  implementação e exige aprovação explícita antes de qualquer alteração em
+  boot/stage2.
