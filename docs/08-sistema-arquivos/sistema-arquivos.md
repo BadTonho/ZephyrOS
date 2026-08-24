@@ -174,8 +174,8 @@ protocolo BOT `0x50`, LUN 0, exatamente um Bulk IN e um Bulk OUT e setores de
 tag, residue e status. O subconjunto SCSI e `INQUIRY`, `TEST UNIT READY`,
 `READ CAPACITY(10)` e `READ(10)`. `storage list` detecta e lista os volumes;
 na imagem hibrida, exatamente um FAT32 com label `ZEPHYROS` e montado
-automaticamente. `storage mount <id>` continua disponivel para volumes
-adicionais e cria uma montagem manual somente em RAM.
+automaticamente e gravavel pelo provedor ATA. `storage mount <id>` continua
+disponivel para volumes adicionais e cria uma montagem manual somente em RAM.
 
 O caminho USB usa UHCI Bulk sincrono, TDs fragmentados por `wMaxPacketSize`,
 toggles por endpoint, buffers DMA fixos e timeout absoluto. Em falha, executa

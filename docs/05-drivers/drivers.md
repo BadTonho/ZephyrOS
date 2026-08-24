@@ -466,9 +466,10 @@ isolada e nao derruba o primario.
 
 `ata_get_device()` e as leituras/escritas legadas continuam apontando para o
 primeiro disco presente, usado pelo volume de boot. `ata_get_device_at()`
-retorna snapshot por copia; `ata_read_device_sectors()` seleciona um slot sem
-criar uma API de escrita direcionada; `ata_get_device_counters()` separa
-leituras e escritas por disco. Todo acesso e limitado a LBA28.
+retorna snapshot por copia; `ata_read_device_sectors()` e
+`ata_write_device_sectors()` selecionam um slot sem alterar o estado do
+chamador; `ata_get_device_counters()` separa leituras e escritas por disco.
+Todo acesso e limitado a LBA28.
 
 ### Portas
 

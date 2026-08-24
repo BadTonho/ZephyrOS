@@ -70,6 +70,17 @@ static int block_ata_read(void* context, uint32_t lba, uint8_t count,
     return ata_read_device_sectors(*slot, lba, count, buffer);
 }
 
+static int block_ata_write(void* context, uint32_t lba, uint8_t count,
+                           const uint8_t* buffer) {
+    uint8_t* slot = (uint8_t*)context;
+
+    if (!slot) {
+        LOG_ERROR("BLK", "Contexto ATA ausente na escrita de bloco");
+        return ERR_NULL;
+    }
+    return ata_write_device_sectors(*slot, lba, count, buffer);
+}
+
 static int block_ata_descriptor(const ata_device_t* ata,
                                 block_device_t* out_descriptor) {
     if (!ata || !out_descriptor) {
@@ -91,14 +102,14 @@ static int block_ata_descriptor(const ata_device_t* ata,
     out_descriptor->provider = BLOCK_PROVIDER_ATA;
     out_descriptor->sector_count = ata->sectors;
     out_descriptor->sector_size = BLOCK_SECTOR_SIZE;
-    out_descriptor->read_only = 1U;
+    out_descriptor->read_only = 0U;
     out_descriptor->online = 1U;
     out_descriptor->read_ops = ata->read_ops;
     out_descriptor->write_ops = ata->write_ops;
     out_descriptor->last_error = ata->last_error;
     out_descriptor->ops.context = &block_ata_slots[ata->slot];
     out_descriptor->ops.read = block_ata_read;
-    out_descriptor->ops.write = 0;
+    out_descriptor->ops.write = block_ata_write;
     block_ata_slots[ata->slot] = ata->slot;
     return OK;
 }

@@ -372,6 +372,7 @@ static void cmd_storage_print_volume(const storage_volume_t* volume) {
 
 static void cmd_storage_list(void) {
     storage_status_t status;
+    storage_volume_t system_volume;
 
     if (storage_get_status(&status) != OK || !status.initialized) {
         video_print("Storage indisponivel.\n", 0x0C);
@@ -394,8 +395,12 @@ static void cmd_storage_list(void) {
             cmd_storage_print_volume(&volume);
         }
     }
-    video_print("Montagens manuais nao persistem no reboot; sistema FAT32 e gravavel.\n",
-                0x0E);
+    if (storage_find_system_volume(&system_volume) == OK) {
+        video_print("Volume FAT32 do sistema montado e gravavel.\n", 0x0A);
+    } else {
+        video_print("Volume FAT32 do sistema nao montado; FAT12 legado em fallback.\n",
+                    0x0E);
+    }
 }
 
 static void cmd_storage_info(const char* id) {

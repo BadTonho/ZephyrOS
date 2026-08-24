@@ -311,9 +311,9 @@ contem somente a chave publica exclusiva da App Store e IDs revogados.
 plano a partir de um diretorio autenticado. Os contratos canonicos permanecem
 em `docs/13-aplicativos/app-store.md` e `docs/13-aplicativos/pacotes.md`.
 
-Desde a EP2, `src/include/drivers/ata.h` expoe quatro slots ATA, leitura
-direcionada e snapshots/contadores por dispositivo, preservando a API global
-do disco legado. `src/include/fs/storage.h` define o inventario estatico de
+Desde a EP2, `src/include/drivers/ata.h` expoe quatro slots ATA, leitura e
+escrita direcionadas e snapshots/contadores por dispositivo, preservando a
+API global do disco legado. `src/include/fs/storage.h` define o inventario estatico de
 discos e volumes, montagens, leitura direcionada, escrita FAT32 do volume de
 sistema, cursores LFN, aliases 8.3, transacoes atomicas, streaming,
 renomeacao, exclusao e `storage_check` somente leitura. Os tipos novos foram

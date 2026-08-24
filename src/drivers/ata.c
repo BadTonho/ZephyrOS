@@ -432,13 +432,12 @@ int ata_read_sectors(uint32_t lba, uint8_t count, uint8_t* buffer) {
     return ata_read_from_device(ata_get_device(), lba, count, buffer);
 }
 
-int ata_write_sectors(uint32_t lba, uint8_t count, const uint8_t* buffer) {
+static int ata_write_to_device(ata_device_t* dev, uint32_t lba,
+                               uint8_t count, const uint8_t* buffer) {
     if (!driver_initialized) {
         LOG_ERROR("ATA", "Driver nao inicializado");
         return ERR_NOT_FOUND;
     }
-
-    ata_device_t* dev = ata_get_device();
     if (!dev) {
         LOG_ERROR("ATA", "Escrita sem dispositivo ATA");
         return ERR_NOT_FOUND;
@@ -495,6 +494,23 @@ int ata_write_sectors(uint32_t lba, uint8_t count, const uint8_t* buffer) {
 
     dev->last_error = OK;
     return OK;
+}
+
+int ata_write_device_sectors(uint8_t slot, uint32_t lba, uint8_t count,
+                             const uint8_t* buffer) {
+    if (slot >= ATA_MAX_DEVICES) {
+        LOG_ERROR("ATA", "Slot invalido na escrita direcionada");
+        return ERR_INVALID;
+    }
+    if (!devices[slot].present) {
+        LOG_ERROR("ATA", "Dispositivo direcionado nao encontrado para escrita");
+        return ERR_NOT_FOUND;
+    }
+    return ata_write_to_device(&devices[slot], lba, count, buffer);
+}
+
+int ata_write_sectors(uint32_t lba, uint8_t count, const uint8_t* buffer) {
+    return ata_write_to_device(ata_get_device(), lba, count, buffer);
 }
 
 int ata_get_device_counters(uint8_t slot, uint32_t* out_reads,

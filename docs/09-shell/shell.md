@@ -322,12 +322,12 @@ Simple continua usando apenas o filesystem global de boot.
 
 ### Storage (`storage`)
 
-`storage list`, `storage info <ataN|volume-id>`,
+`storage list`, `storage info <ataN|volume-id>`, `storage check <volume-id>`,
 `storage mount <volume-id>` e `storage unmount <volume-id>` controlam o
-registro de volumes adicionais. As consultas mostram erros e contadores por
-disco; as montagens sao temporarias e nao oferecem qualquer operacao de
-escrita. O comando tambem permanece disponivel no fallback Simple para
-diagnostico.
+registro de volumes. As consultas mostram erros e contadores por disco; o
+volume FAT32 de sistema e montado automaticamente e permanece gravavel. As
+montagens adicionais sao temporarias e o comando tambem permanece disponivel
+no fallback Simple para diagnostico.
 
 ### Indice e pesquisa EP3 (`index`, `search`)
 
