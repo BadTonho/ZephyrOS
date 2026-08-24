@@ -738,7 +738,8 @@ repositorio.
 
 ## EP9 - Atualizacao da imagem do sistema e slots de boot
 
-**Estado:** EP9.0A implementada; validacao executavel do usuario pendente.
+**Estado:** EP9.0A e EP9.4A implementadas e validadas pelo usuario; EP9.1-EP9.3
+continuam futuras.
 Slots, staging, aplicacao, rollback pos-reboot e alteracoes no boot/stage2
 continuam fora do escopo atual.
 
@@ -787,6 +788,8 @@ crus.
 
 ### EP9.0A - Contrato ZSYS e preflight
 
+**Estado:** implementada e validada pelo usuario.
+
 - [x] Definir o envelope ZSYS v1 com cabecalho little-endian fixo de 1024
   bytes, payload de imagem completa, hashes dos componentes e assinatura
   Ed25519 sobre o dominio ZEPHYROS-SYSTEM-IMAGE-V1.
@@ -805,7 +808,7 @@ crus.
   repositorio e criar uma imagem hibrida FAT12/FAT32 por fixture, usando nomes
   `.ZSYS` no volume `ZEPHYROS` e sem versionar a chave privada; a imagem base
   nao recebe a matriz inteira.
-- [ ] Executar a validacao do usuario: make update-test, make q3check,
+- [x] Executar a validacao do usuario: make update-test, make q3check,
   make clean && make, make run e a matriz QEMU de fixtures/memcheck/regcheck.
 
 ### EP9.1 - Staging e slots de imagem
@@ -839,6 +842,8 @@ crus.
 
 ### EP9.4A - Volume de sistema FAT32
 
+**Estado:** implementada e validada pelo usuario.
+
 - [x] Definir imagem hibrida de 64 MiB, preservando o FAT12 bruto no inicio
   para boot, stage2, kernel e recuperacao.
 - [x] Formatar a particao MBR FAT32 tipo `0x0C` a partir do LBA 4096, com
@@ -851,7 +856,7 @@ crus.
 - [x] Implementar leitura/escrita FAT32 com aliases 8.3, LFN UTF-16LE,
   checksum, diretorios, escrita atomica, streaming, exclusao, renomeacao e
   diagnostico somente leitura `storage check`.
-- [ ] Executar a matriz do usuario: storage-fixtures-test, storage-fixtures,
+- [x] Executar a matriz do usuario: storage-fixtures-test, storage-fixtures,
   system-fixtures, q3check, build completo, QEMU, memcheck e regcheck full.
 
 Limites mantidos para etapas posteriores: journaling, filesystem nativo, boot

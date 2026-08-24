@@ -4,9 +4,9 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
-EP9.0A e EP9.4A implementadas; validação executável pendente: contrato ZSYS
-v1, preflight somente leitura, Release combinada v2 e volume híbrido FAT32
-de sistema.
+EP9.0A e EP9.4A implementadas e validadas pelo usuário: contrato ZSYS v1,
+preflight somente leitura, Release combinada v2 e volume híbrido FAT32 de
+sistema.
 Slots, staging, aplicação, rollback pós-reboot e alterações no boot/stage2
 continuam fora destas etapas.
 
@@ -17,10 +17,10 @@ Núcleo original (Fases 1–9): [███████████████�
 Plataforma de aplicativos:   [██████████████████████████████████████████] Fase 7 validada
 Interface e experiência:     [██████████████████████████████████████████] UI1-UI7 validadas
 Sistema e ecossistema:       [██████████████████████████████████████████] S2.8 e U1-U5 concluídas
-Evolução da plataforma:      [████████████████████████████████████-------] EP1-EP6.4 e EP7.0 encerradas; EP7.1B EHCI/transporte RTL8811CU implementada; EP9.0A concluída; EP9.4A em validação
+Evolução da plataforma:      [████████████████████████████████████-------] EP1-EP6.4 e EP7.0 encerradas; EP7.1B EHCI/transporte RTL8811CU implementada; EP9.0A e EP9.4A concluídas
 ```
 
-**Documentação de atualização sincronizada em:** 2026-08-24 12:38:57 (America/Sao_Paulo).
+**Documentação de atualização sincronizada em:** 2026-08-24 15:09 (America/Sao_Paulo).
 
 ---
 
@@ -740,11 +740,11 @@ Evolução da plataforma:      [████████████████
 - [x] EP6.3 implementada em 2026-08-22 20:01 (America/Sao_Paulo): contrato ZUM2/ZUPD v2, pacote completo,
   cache seletivo A/B separado, staging/journal/rollback, HTTP U5, GitHub HTTPS,
   Shell, Updater Classic e auditoria host. A validacao QEMU permanece pendente.
-- [x] EP9.0A implementada: pacote `ZSYS` separado do runtime, preflight
-  somente leitura, Release combinada v2 e nenhum uso de slots ou reboot.
-- [x] EP9.4A implementada: imagem híbrida FAT12/FAT32, volume `ZEPHYROS`
-  gravável, LFN, aliases 8.3, transações FAT32 e regressão FAT12; validação
-  executável do usuário pendente.
+- [x] EP9.0A implementada e validada: pacote `ZSYS` separado do runtime,
+  preflight somente leitura, Release combinada v2 e nenhum uso de slots ou
+  reboot.
+- [x] EP9.4A implementada e validada: imagem híbrida FAT12/FAT32, volume
+  `ZEPHYROS` gravável, LFN, aliases 8.3, transações FAT32 e regressão FAT12.
 - [ ] EP9.1-EP9.3 futuras: slots A/B, staging, aplicação, boot pendente,
   rollback pós-reboot e confirmação explícita de reboot.
 
@@ -767,7 +767,7 @@ kernel, interface e novos serviços:
 | 5 | [`docs/roadmaps/05-sistema-e-ecossistema.md`](docs/roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e ecossistema. |
 | 6 | [`docs/roadmaps/06-app-store.md`](docs/roadmaps/06-app-store.md) | Catalogo local, ciclo de vida, App Store Modern e distribuicao futura. |
 | 7 | [`docs/roadmaps/07-modernizacao-visual.md`](docs/roadmaps/07-modernizacao-visual.md) | Escala acessivel, visual flat/dark e desempenho VESA mensuravel; MV4 funcionalmente validado, comparacao historica N/D. |
-| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.4 implementadas; EP7.0 encerrada; EP7.1B de EHCI/transporte RTL8811CU implementada; firmware, driver operacional e EP9 permanecem pendentes. |
+| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.4 implementadas; EP7.0 encerrada; EP7.1B de EHCI/transporte RTL8811CU implementada; EP9.0A e EP9.4A concluídas; EP9.1-EP9.3 permanecem pendentes. |
 | 9 | [`docs/roadmaps/09-funcionalidades-aplicaveis.md`](docs/roadmaps/09-funcionalidades-aplicaveis.md) | Separação visual/funcional, perfil de distribuição, logs, timers, espera, work queue, dispositivos, I/O, cache e métricas do scheduler. |
 | 10 | [`docs/roadmaps/10-vfs-e-abstracao-io.md`](docs/roadmaps/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, pontos de montagem, dispositivos /dev/ e pipes. |
 | 11 | [`docs/roadmaps/11-gerenciamento-avancado-de-memoria.md`](docs/roadmaps/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging. |
