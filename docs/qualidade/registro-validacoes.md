@@ -647,3 +647,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   exato informado: `storage check ata2p1` permaneceu consistente e
   `update system verify system:/IMGHASH.ZSYS` recusou a divergência do hash da
   imagem com motivo `HASH`, sem gravação.
+- Validação QEMU da fixture `CMPHASH.img` confirmada pelo usuário, sem horário
+  exato informado: `storage check ata2p1` permaneceu consistente e
+  `update system verify system:/CMPHASH.ZSYS` recusou a divergência do hash de
+  componente com motivo `HASH`, sem gravação.
