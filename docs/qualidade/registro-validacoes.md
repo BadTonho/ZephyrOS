@@ -711,3 +711,14 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Estado após tentativa bloqueada validado pelo usuário em: 2026-08-24 17:21
   (America/Sao_Paulo); nova consulta confirmou sequência 2, A ativo, B
   pendente, journal limpo e recuperação limpa, sem alteração indevida.
+- `health` EP9.1 validado pelo usuário em: 2026-08-24 17:22
+  (America/Sao_Paulo); `System Updater`, `Storage`, Filesystem, Shell e kernel
+  permaneceram `READY`. Degradações pré-existentes de Media Player, App Store,
+  USB e AC97 não estão relacionadas ao EP9.1.
+- `memcheck` EP9.1 validado pelo usuário em: 2026-08-24 17:22
+  (America/Sao_Paulo); heap-integridade, coalescência, PMM, diretórios de
+  usuário e resultado geral reportaram `OK`.
+- `regcheck full` EP9.1 validado pelo usuário em: 2026-08-24 17:23
+  (America/Sao_Paulo); a execução terminou com `RegCheck: OK`. Avisos iniciais
+  de listagem de nomes longos, espaço e mutação concorrente do índice foram
+  controlados pela própria rotina e não alteraram o resultado final.
