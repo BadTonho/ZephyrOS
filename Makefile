@@ -13,7 +13,7 @@ LD ?= i686-elf-ld
 QEMU ?= qemu-system-i386
 QEMU_CPU_ARGS ?= -cpu max
 QEMU_NET_ARGS ?= -nic user,model=e1000
-QEMU_BOOT_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=bootdisk -device ide-hd,drive=bootdisk,cyls=80,heads=2,secs=18,bootindex=1
+QEMU_BOOT_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=bootdisk -device ide-hd,drive=bootdisk,bootindex=1
 QEMU_STAGE2_LBA_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=stage2lbadisk -device ide-hd,drive=stage2lbadisk,bootindex=1
 QEMU_STAGE2_CHS_DISK_ARGS ?= -drive file=$(STAGE2_CHS_IMG),format=raw,if=floppy,index=0 -drive file=$(OS_IMG),format=raw,if=none,id=stage2chssystem -device ide-hd,drive=stage2chssystem,cyls=80,heads=2,secs=18 -boot order=a
 QEMU_USB_ARGS ?= -device piix3-usb-uhci,id=usb
@@ -425,6 +425,10 @@ STORAGE_FIXTURES_STAMP = build\storage-fixtures.stamp
 STORAGE_VALID_IMG = build\storage-valid.img
 STORAGE_CORRUPT_IMG = build\storage-corrupt.img
 STORAGE_UNKNOWN_IMG = build\storage-unknown.img
+STORAGE_NO_SPACE_IMG = build\storage-fat32-no-space.img
+STORAGE_FAT_DIVERGENT_IMG = build\storage-fat32-fat-divergent.img
+STORAGE_CHAIN_CORRUPT_IMG = build\storage-fat32-chain-corrupt.img
+STORAGE_LFN_INVALID_IMG = build\storage-fat32-lfn-invalid.img
 SYSTEM_FIXTURES_DIR = build\system-fixtures
 SYSTEM_FIXTURE_IMAGES_DIR = build\system-fixture-images
 SYSTEM_FIXTURES_MANIFEST = docs\fixtures\updates\system\system.json
@@ -433,10 +437,11 @@ SYSTEM_FIXTURES_PUBLIC = config\update-release-public.json
 SYSTEM_PRIVATE_KEY ?=
 SYSTEM_FIXTURE_IMAGE ?=
 
-# A imagem de boot reserva os primeiros setores para o stage2 e o kernel.
-# O volume FAT12 fica depois dessa area para que o Explorer nunca sobrescreva
-# o codigo usado no proximo boot. A reserva e calculada pelo payload real.
-FAT12_DISK_BYTES = 1474560
+# A area FAT12 legada continua contendo o boot, stage2 e kernel. O restante
+# da imagem abriga a particao FAT32 de sistema sem alterar o bootloader.
+HYBRID_DISK_BYTES = 67108864
+FAT32_START_LBA = 4096
+FAT32_LABEL = ZEPHYROS
 STORE_FIXTURES_DIR = docs\fixtures\apps\store
 STORE_FIXTURES = $(STORE_FIXTURES_DIR)\VALID.ZPK \
                  $(STORE_FIXTURES_DIR)\BADCRC.ZPK \
@@ -957,33 +962,33 @@ $(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(KERNEL_BIN) tools\packager.py \
           docs\fixtures\updates\u2\BADVER.ZUP docs\fixtures\updates\u2\BADFMT.ZUP \
           docs\fixtures\updates\u2\UNKKEY.ZUP docs\fixtures\updates\u3\APPLY.ZUP
 	cmd /c "copy /b build\boot.bin+build\stage2.bin+build\kernel.bin build\zephyros.img"
-	python tools\packager.py prepare-image --image $(OS_IMG) --disk-bytes $(FAT12_DISK_BYTES)
-	python tools\packager.py inject-file --file assets\icons\SHELL.BMP --image $(OS_IMG) --fat-name SHELL.BMP
-	python tools\packager.py inject-file --file assets\icons\EXPLORER.BMP --image $(OS_IMG) --fat-name EXPLORER.BMP
-	python tools\packager.py inject-file --file assets\icons\TASKMGR.BMP --image $(OS_IMG) --fat-name TASKMGR.BMP
-	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\VALID.ZPK --image $(OS_IMG) --fat-name VALID.ZPK
-	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\BADCRC.ZPK --image $(OS_IMG) --fat-name BADCRC.ZPK
-	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\BADAPI.ZPK --image $(OS_IMG) --fat-name BADAPI.ZPK
-	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\BADALIAS.ZPK --image $(OS_IMG) --fat-name BADALIAS.ZPK
-	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\NEEDSDEP.ZPK --image $(OS_IMG) --fat-name NEEDSDEP.ZPK
-	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\SAMEVER.ZPK --image $(OS_IMG) --fat-name SAMEVER.ZPK
-	python tools\packager.py inject-file --file $(STORE_AS2_FIXTURES_DIR)\WAITAPP.ZPK --image $(OS_IMG) --fat-name WAITAPP.ZPK
-	python tools\packager.py inject-file --file $(STORE_AS2_FIXTURES_DIR)\BASE.ZPK --image $(OS_IMG) --fat-name BASE.ZPK
-	python tools\packager.py inject-file --file $(STORE_AS2_FIXTURES_DIR)\DEPEND.ZPK --image $(OS_IMG) --fat-name DEPEND.ZPK
-	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPTARGET.ZPK --image $(OS_IMG) --fat-name UPTARGET.ZPK
-	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPDEPA.ZPK --image $(OS_IMG) --fat-name UPDEPA.ZPK
-	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPDEPB.ZPK --image $(OS_IMG) --fat-name UPDEPB.ZPK
-	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\BROKEN.ZPK --image $(OS_IMG) --fat-name BROKEN.ZPK
-	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEA.ZPK --image $(OS_IMG) --fat-name CYCLEA.ZPK
-	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEB.ZPK --image $(OS_IMG) --fat-name CYCLEB.ZPK
-	python tools\packager.py inject-file --file docs\fixtures\updates\u2\VALID.ZUP --image $(OS_IMG) --fat-name VALID.ZUP
-	python tools\packager.py inject-file --file docs\fixtures\updates\u2\TRUNC.ZUP --image $(OS_IMG) --fat-name TRUNC.ZUP
-	python tools\packager.py inject-file --file docs\fixtures\updates\u2\BADHASH.ZUP --image $(OS_IMG) --fat-name BADHASH.ZUP
-	python tools\packager.py inject-file --file docs\fixtures\updates\u2\BADSIG.ZUP --image $(OS_IMG) --fat-name BADSIG.ZUP
-	python tools\packager.py inject-file --file docs\fixtures\updates\u2\BADVER.ZUP --image $(OS_IMG) --fat-name BADVER.ZUP
-	python tools\packager.py inject-file --file docs\fixtures\updates\u2\BADFMT.ZUP --image $(OS_IMG) --fat-name BADFMT.ZUP
-	python tools\packager.py inject-file --file docs\fixtures\updates\u2\UNKKEY.ZUP --image $(OS_IMG) --fat-name UNKKEY.ZUP
-	python tools\packager.py inject-file --file docs\fixtures\updates\u3\APPLY.ZUP --image $(OS_IMG) --fat-name APPLY.ZUP
+	python tools\packager.py prepare-hybrid-image --image $(OS_IMG) --disk-bytes $(HYBRID_DISK_BYTES) --fat32-start-lba $(FAT32_START_LBA) --label $(FAT32_LABEL)
+	python tools\packager.py inject-file-fat32 --file assets\icons\SHELL.BMP --image $(OS_IMG) --path SHELL.BMP --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file assets\icons\EXPLORER.BMP --image $(OS_IMG) --path EXPLORER.BMP --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file assets\icons\TASKMGR.BMP --image $(OS_IMG) --path TASKMGR.BMP --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)\VALID.ZPK --image $(OS_IMG) --path VALID.ZPK --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)\BADCRC.ZPK --image $(OS_IMG) --path BADCRC.ZPK --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)\BADAPI.ZPK --image $(OS_IMG) --path BADAPI.ZPK --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)\BADALIAS.ZPK --image $(OS_IMG) --path BADALIAS.ZPK --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)\NEEDSDEP.ZPK --image $(OS_IMG) --path NEEDSDEP.ZPK --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)\SAMEVER.ZPK --image $(OS_IMG) --path SAMEVER.ZPK --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS2_FIXTURES_DIR)\WAITAPP.ZPK --image $(OS_IMG) --path WAITAPP.ZPK --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS2_FIXTURES_DIR)\BASE.ZPK --image $(OS_IMG) --path BASE.ZPK --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS2_FIXTURES_DIR)\DEPEND.ZPK --image $(OS_IMG) --path DEPEND.ZPK --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPTARGET.ZPK --image $(OS_IMG) --path UPTARGET.ZPK --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPDEPA.ZPK --image $(OS_IMG) --path UPDEPA.ZPK --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPDEPB.ZPK --image $(OS_IMG) --path UPDEPB.ZPK --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\BROKEN.ZPK --image $(OS_IMG) --path BROKEN.ZPK --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEA.ZPK --image $(OS_IMG) --path CYCLEA.ZPK --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEB.ZPK --image $(OS_IMG) --path CYCLEB.ZPK --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file docs\fixtures\updates\u2\VALID.ZUP --image $(OS_IMG) --path VALID.ZUP --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file docs\fixtures\updates\u2\TRUNC.ZUP --image $(OS_IMG) --path TRUNC.ZUP --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file docs\fixtures\updates\u2\BADHASH.ZUP --image $(OS_IMG) --path BADHASH.ZUP --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file docs\fixtures\updates\u2\BADSIG.ZUP --image $(OS_IMG) --path BADSIG.ZUP --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file docs\fixtures\updates\u2\BADVER.ZUP --image $(OS_IMG) --path BADVER.ZUP --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file docs\fixtures\updates\u2\BADFMT.ZUP --image $(OS_IMG) --path BADFMT.ZUP --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file docs\fixtures\updates\u2\UNKKEY.ZUP --image $(OS_IMG) --path UNKKEY.ZUP --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-file-fat32 --file docs\fixtures\updates\u3\APPLY.ZUP --image $(OS_IMG) --path APPLY.ZUP --fat32-start-lba $(FAT32_START_LBA)
 
 system-fixtures: $(OS_IMG) $(SYSTEM_FIXTURES_MANIFEST) tools\updater.py tools\packager.py
 	@if "$(SYSTEM_PRIVATE_KEY)"=="" (echo SYSTEM_PRIVATE_KEY nao configurada em Makefile.local & exit /b 2)
@@ -992,36 +997,36 @@ system-fixtures: $(OS_IMG) $(SYSTEM_FIXTURES_MANIFEST) tools\updater.py tools\pa
 	@if not exist "$(SYSTEM_FIXTURE_IMAGES_DIR)" mkdir "$(SYSTEM_FIXTURE_IMAGES_DIR)"
 	python tools\updater.py fixtures-system-qemu --manifest $(SYSTEM_FIXTURES_MANIFEST) --boot $(BOOT_BIN) --stage2 $(STAGE2_BIN) --kernel $(KERNEL_BIN) --private "$(SYSTEM_PRIVATE_KEY)" --public $(SYSTEM_FIXTURES_PUBLIC) --output-dir $(SYSTEM_FIXTURES_DIR)
 	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\VALID.img' -Force"
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\valid.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\VALID.img --fat-name VALID.ZSY --replace
+	python tools\packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)\valid.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\VALID.img --path VALID.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\TRUNC.img' -Force"
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\truncated.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\TRUNC.img --fat-name TRUNC.ZSY --replace
+	python tools\packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)\truncated.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\TRUNC.img --path TRUNC.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\HDRBAD.img' -Force"
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\tampered-header.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\HDRBAD.img --fat-name HDRBAD.ZSY --replace
+	python tools\packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)\tampered-header.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\HDRBAD.img --path HDRBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\PAYBAD.img' -Force"
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\tampered-payload.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\PAYBAD.img --fat-name PAYBAD.ZSY --replace
+	python tools\packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)\tampered-payload.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\PAYBAD.img --path PAYBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\SIGBAD.img' -Force"
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\tampered-signature.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\SIGBAD.img --fat-name SIGBAD.ZSY --replace
+	python tools\packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)\tampered-signature.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\SIGBAD.img --path SIGBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\OVERSIZ.img' -Force"
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\oversized.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\OVERSIZ.img --fat-name OVERSIZ.ZSY --replace
+	python tools\packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)\oversized.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\OVERSIZ.img --path OVERSIZ.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\MISALGN.img' -Force"
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\misaligned.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\MISALGN.img --fat-name MISALGN.ZSY --replace
+	python tools\packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)\misaligned.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\MISALGN.img --path MISALGN.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\VERBAD.img' -Force"
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\incompatible-version.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\VERBAD.img --fat-name VERBAD.ZSY --replace
+	python tools\packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)\incompatible-version.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\VERBAD.img --path VERBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\EPCHBAD.img' -Force"
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\incompatible-epoch.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\EPCHBAD.img --fat-name EPCHBAD.ZSY --replace
+	python tools\packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)\incompatible-epoch.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\EPCHBAD.img --path EPCHBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\ABIBAD.img' -Force"
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\incompatible-abi.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\ABIBAD.img --fat-name ABIBAD.ZSY --replace
+	python tools\packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)\incompatible-abi.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\ABIBAD.img --path ABIBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\SCHBAD.img' -Force"
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\incompatible-schema.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\SCHBAD.img --fat-name SCHBAD.ZSY --replace
+	python tools\packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)\incompatible-schema.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\SCHBAD.img --path SCHBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\IMGHASH.img' -Force"
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\hash-divergent-image.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\IMGHASH.img --fat-name IMGHASH.ZSY --replace
+	python tools\packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)\hash-divergent-image.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\IMGHASH.img --path IMGHASH.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\CMPHASH.img' -Force"
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\hash-divergent-component.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\CMPHASH.img --fat-name CMPHASH.ZSY --replace
+	python tools\packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)\hash-divergent-component.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\CMPHASH.img --path CMPHASH.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 
 run-system-fixture:
 	@if "$(SYSTEM_FIXTURE_IMAGE)"=="" (echo SYSTEM_FIXTURE_IMAGE nao configurada & exit /b 2)
 	@if not exist "$(SYSTEM_FIXTURE_IMAGE)" (echo Imagem de fixture nao encontrada: $(SYSTEM_FIXTURE_IMAGE) & exit /b 2)
-	$(QEMU) $(QEMU_CPU_ARGS) -drive file=$(SYSTEM_FIXTURE_IMAGE),format=raw,if=none,id=systemfixture -device ide-hd,drive=systemfixture,cyls=80,heads=2,secs=18,bootindex=1 $(QEMU_NET_ARGS)
+	$(QEMU) $(QEMU_CPU_ARGS) -drive file=$(SYSTEM_FIXTURE_IMAGE),format=raw,if=none,id=systemfixture -device ide-hd,drive=systemfixture,bootindex=1 $(QEMU_NET_ARGS)
 
 run: $(OS_IMG)
 	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS)
@@ -1086,12 +1091,12 @@ store-test:
 	python tools\packager.py audit-store --fixtures-dir $(STORE_FIXTURES_DIR)
 
 store-demo: $(OS_IMG) $(STORE_FIXTURES)
-	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\VALID.ZPK --image $(OS_IMG) --fat-name VALID.ZPK --replace
-	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\BADCRC.ZPK --image $(OS_IMG) --fat-name BADCRC.ZPK --replace
-	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\BADAPI.ZPK --image $(OS_IMG) --fat-name BADAPI.ZPK --replace
-	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\BADALIAS.ZPK --image $(OS_IMG) --fat-name BADALIAS.ZPK --replace
-	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\NEEDSDEP.ZPK --image $(OS_IMG) --fat-name NEEDSDEP.ZPK --replace
-	python tools\packager.py inject-file --file $(STORE_FIXTURES_DIR)\SAMEVER.ZPK --image $(OS_IMG) --fat-name SAMEVER.ZPK --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)\VALID.ZPK --image $(OS_IMG) --path VALID.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)\BADCRC.ZPK --image $(OS_IMG) --path BADCRC.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)\BADAPI.ZPK --image $(OS_IMG) --path BADAPI.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)\BADALIAS.ZPK --image $(OS_IMG) --path BADALIAS.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)\NEEDSDEP.ZPK --image $(OS_IMG) --path NEEDSDEP.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)\SAMEVER.ZPK --image $(OS_IMG) --path SAMEVER.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
 	python tools\packager.py audit-store --fixtures-dir $(STORE_FIXTURES_DIR) --image $(OS_IMG)
 
 store-as2-test:
@@ -1099,9 +1104,9 @@ store-as2-test:
 	python tools\packager.py audit-store-as2 --fixtures-dir $(STORE_AS2_FIXTURES_DIR)
 
 store-as2-demo: $(OS_IMG) $(STORE_AS2_FIXTURES)
-	python tools\packager.py inject-file --file $(STORE_AS2_FIXTURES_DIR)\WAITAPP.ZPK --image $(OS_IMG) --fat-name WAITAPP.ZPK --replace
-	python tools\packager.py inject-file --file $(STORE_AS2_FIXTURES_DIR)\BASE.ZPK --image $(OS_IMG) --fat-name BASE.ZPK --replace
-	python tools\packager.py inject-file --file $(STORE_AS2_FIXTURES_DIR)\DEPEND.ZPK --image $(OS_IMG) --fat-name DEPEND.ZPK --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS2_FIXTURES_DIR)\WAITAPP.ZPK --image $(OS_IMG) --path WAITAPP.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS2_FIXTURES_DIR)\BASE.ZPK --image $(OS_IMG) --path BASE.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS2_FIXTURES_DIR)\DEPEND.ZPK --image $(OS_IMG) --path DEPEND.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
 	python tools\packager.py audit-store-as2 --fixtures-dir $(STORE_AS2_FIXTURES_DIR) --image $(OS_IMG)
 
 store-as4-test:
@@ -1110,21 +1115,21 @@ store-as4-test:
 	python tools\packager.py audit-store-as4 --fixtures-dir $(STORE_AS4_UPDATE_FIXTURES_DIR)
 
 store-as4-seed-demo: $(OS_IMG) $(STORE_AS4_SEED_FIXTURES)
-	python tools\packager.py inject-file --file $(STORE_AS4_SEED_FIXTURES_DIR)\UPTARGET.ZPK --image $(OS_IMG) --fat-name UPTARGET.ZPK --replace
-	python tools\packager.py inject-file --file $(STORE_AS4_SEED_FIXTURES_DIR)\UPDEPA.ZPK --image $(OS_IMG) --fat-name UPDEPA.ZPK --replace
-	python tools\packager.py inject-file --file $(STORE_AS4_SEED_FIXTURES_DIR)\UPDEPB.ZPK --image $(OS_IMG) --fat-name UPDEPB.ZPK --replace
-	python tools\packager.py inject-file --file $(STORE_AS4_SEED_FIXTURES_DIR)\BROKEN.ZPK --image $(OS_IMG) --fat-name BROKEN.ZPK --replace
-	python tools\packager.py inject-file --file $(STORE_AS4_SEED_FIXTURES_DIR)\CYCLEA.ZPK --image $(OS_IMG) --fat-name CYCLEA.ZPK --replace
-	python tools\packager.py inject-file --file $(STORE_AS4_SEED_FIXTURES_DIR)\CYCLEB.ZPK --image $(OS_IMG) --fat-name CYCLEB.ZPK --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)\UPTARGET.ZPK --image $(OS_IMG) --path UPTARGET.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)\UPDEPA.ZPK --image $(OS_IMG) --path UPDEPA.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)\UPDEPB.ZPK --image $(OS_IMG) --path UPDEPB.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)\BROKEN.ZPK --image $(OS_IMG) --path BROKEN.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)\CYCLEA.ZPK --image $(OS_IMG) --path CYCLEA.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)\CYCLEB.ZPK --image $(OS_IMG) --path CYCLEB.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
 	python tools\packager.py audit-store-as4 --fixtures-dir $(STORE_AS4_SEED_FIXTURES_DIR) --image $(OS_IMG)
 
 store-as4-update-demo: $(OS_IMG) $(STORE_AS4_UPDATE_FIXTURES)
-	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPTARGET.ZPK --image $(OS_IMG) --fat-name UPTARGET.ZPK --replace
-	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPDEPA.ZPK --image $(OS_IMG) --fat-name UPDEPA.ZPK --replace
-	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPDEPB.ZPK --image $(OS_IMG) --fat-name UPDEPB.ZPK --replace
-	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\BROKEN.ZPK --image $(OS_IMG) --fat-name BROKEN.ZPK --replace
-	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEA.ZPK --image $(OS_IMG) --fat-name CYCLEA.ZPK --replace
-	python tools\packager.py inject-file --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEB.ZPK --image $(OS_IMG) --fat-name CYCLEB.ZPK --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPTARGET.ZPK --image $(OS_IMG) --path UPTARGET.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPDEPA.ZPK --image $(OS_IMG) --path UPDEPA.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPDEPB.ZPK --image $(OS_IMG) --path UPDEPB.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\BROKEN.ZPK --image $(OS_IMG) --path BROKEN.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEA.ZPK --image $(OS_IMG) --path CYCLEA.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEB.ZPK --image $(OS_IMG) --path CYCLEB.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
 	python tools\packager.py audit-store-as4 --fixtures-dir $(STORE_AS4_UPDATE_FIXTURES_DIR) --image $(OS_IMG)
 
 store-as5-test:

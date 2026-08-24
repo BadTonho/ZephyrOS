@@ -485,7 +485,7 @@ deve coincidir com o envelope assinado.
 
 Os comandos somente leitura são:
 
-    update system verify <arquivo.ZSYS>
+    update system verify system:/<arquivo.ZSYS>
     update system check --tag <tag>
 
 Não há download para cache, staging, aplicação, reboot automático, slots,

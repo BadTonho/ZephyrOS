@@ -801,6 +801,12 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         video_print("[!!] Storage indisponivel\n", 0x0C);
     }
 
+    if (storage_result == OK && fs_use_system_volume() == OK) {
+        video_print("[OK] Volume FAT32 do sistema selecionado\n", 0x07);
+    } else {
+        LOG_WARN("KERNEL", "Volume FAT32 do sistema ausente; usando legado");
+    }
+
     video_print("[..] Iniciando indice de arquivos...\n", 0x08);
     if (file_index_init() == OK) {
         video_print("[OK] Indice cooperativo iniciado\n", 0x07);

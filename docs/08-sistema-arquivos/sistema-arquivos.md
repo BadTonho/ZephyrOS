@@ -19,7 +19,7 @@ src/fs/
 │   ├── fat12.c       → Sistema de arquivos FAT12
 │   ├── fat32.c       → Sistema de arquivos FAT32
 │   ├── fs.c          → Interface unificada FAT12/FAT32
-│   ├── storage.c     → Volumes ATA/USB adicionais somente-leitura
+│   ├── storage.c     → Inventário de volumes ATA/USB e volume de sistema
 │   ├── file_index.c  → Indice global cooperativo em RAM
 │   ├── bmp.c         → Leitura de imagens BMP
 │   └── wav.c         → Leitura de áudio WAV
@@ -84,18 +84,21 @@ int ata_read_sectors(uint32_t lba, uint8_t count, uint8_t* buffer) {
 
 ## Storage EP2 (`storage.c`)
 
-Storage e uma API paralela ao filesystem global. O volume de boot continua
-usando `fs_*`, FAT12/FAT32 legados e a unica rota de escrita ATA. O registro
-adicional suporta ate `BLOCK_MAX_DEVICES` discos, 16 volumes e quatro montagens
-simultaneas contando o boot, com uma operacao adicional serializada por vez.
-Getters retornam sempre copias.
+Storage e a camada orientada a volume sobre ATA/USB. O artefato principal
+`build\\zephyros.img` e hibrido: preserva o FAT12 bruto para boot e recuperacao
+e publica um volume FAT32 `ZEPHYROS` iniciado no LBA 4096. O FAT12 continua
+disponivel por `legacy:/`; caminhos sem prefixo usam o FAT32 do sistema quando
+ele estiver montado. O registro suporta ate `BLOCK_MAX_DEVICES` discos, 16
+volumes e quatro montagens simultaneas contando boot e sistema. Getters
+retornam sempre copias.
 
 Os discos ATA usam IDs `ata0` a `ata3`. Um superfloppy FAT reconhecido antes do
 MBR usa `ataNraw`; as quatro entradas primarias MBR usam `ataNp1` a
 `ataNp4`. Discos USB MSC usam os IDs estaveis `usb-ms-BB:DD.F-pN-aN-l0` e
-os mesmos sufixos de volume. O volume de boot e fixo, aparece montado como gravavel apenas pela
-API legada e nao pode ser desmontado. Todos os outros comecam desmontados,
-ficam somente-leitura e perdem a montagem no reboot.
+os mesmos sufixos de volume. O volume de boot e fixo e nao pode ser
+desmontado. O FAT32 com label `ZEPHYROS` e montado automaticamente, fixado e
+gravavel quando o provedor permite escrita. Volumes externos continuam
+desmontados e somente-leitura por padrao.
 
 ```c
 int storage_get_status(storage_status_t* out_status);
@@ -109,29 +112,48 @@ int storage_list_dir(const char* id, const char* path,
 int storage_read_file_range(const char* id, const char* path,
                             uint32_t offset, uint8_t* buffer,
                             uint32_t max_size, uint32_t* out_read);
+int storage_list_dir_long(const char* id, const char* path,
+                          storage_long_dir_entry_t* entries,
+                          uint32_t capacity, uint32_t* out_count);
+int storage_write_file(const char* id, const char* path,
+                       const uint8_t* data, uint32_t size,
+                       uint8_t attributes);
+int storage_atomic_write_file(const char* id, const char* path,
+                              const uint8_t* data, uint32_t size,
+                              uint8_t attributes, storage_atomic_mode_t mode);
+int storage_delete_file(const char* id, const char* path);
+int storage_rename_file(const char* id, const char* path,
+                        const char* new_name);
+int storage_check(const char* id);
 ```
 
-Nao existe funcao de escrita direcionada. A descoberta le somente quatro
+As escritas FAT32 reservam clusters, gravam dados, sincronizam as duas FATs e
+publicam a entrada LFN/8.3 por ultimo; em falha a cadeia nova e liberada. O
+streaming usa buffer limitado e nunca carrega a imagem inteira. A descoberta le
+somente quatro
 particoes MBR primarias e isola flag invalida, overflow, limite fora do disco
 e sobreposicao. No mount, o BPB e relido e valida assinatura `55AA`, setor de
 512 bytes, cluster em potencia de dois, FAT suficiente, geometria/raiz e
-limite da particao. FAT16 e formatos desconhecidos retornam
-`ERR_UNAVAILABLE`.
+limite da particao. A montagem automatica aceita exatamente um FAT32 com label
+`ZEPHYROS`; volumes ambiguos nao sao montados. FAT16 e formatos desconhecidos
+retornam `ERR_UNAVAILABLE`.
 
-O leitor usa buffers setoriais fixos, nomes 8.3, caminho de ate 256 bytes, 64
-entradas por listagem, ate 4095 bytes por visualizacao e 4096 passos por
-cadeia. GPT, EBR, LBA48, particoes logicas e hot-plug ficam fora da EP2.
-Formatar, criar, redimensionar ou excluir particoes exige uma fase separada
-com staging, journal e recuperacao.
+O backend FAT32 usa buffers setoriais fixos, nomes longos LFN em UTF-16LE,
+aliases 8.3, comparacao ASCII sem diferenciar maiusculas/minusculas e
+comparacao exata para UTF-8 nao ASCII. O limite de nome e 255 bytes, o caminho
+tem ate 256 bytes e cada listagem tem ate 64 entradas. GPT, EBR, LBA48,
+particoes logicas e hot-plug ficam fora desta etapa. Journaling, filesystem
+nativo e boot direto pelo FAT32 sao etapas posteriores.
 
 ### Fixtures e verificacao
 
 `tools/storage_fixtures.py` gera imagens deterministicas valida, corrompida e
-desconhecida. `make storage-fixtures-test` testa o gerador,
-`make storage-fixtures` cria imagens/hashes, `make run-storage` conecta boot e
-as tres fixtures nos quatro slots IDE, e `make storage-fixtures-verify`
-compara tamanho e SHA-256 depois do QEMU. `run-storage` nao usa modo
-somente-leitura: qualquer escrita auxiliar precisa aparecer na verificacao.
+desconhecida; a matriz FAT32 cobre LFN, alias, volume sem espaco, divergencia
+de FAT, cadeia corrompida e diretorio LFN invalido. `make storage-fixtures-test`
+testa o gerador, `make storage-fixtures` cria imagens/hashes, `make run-storage`
+conecta boot e as fixtures nos slots IDE, e `make storage-fixtures-verify`
+compara tamanho e SHA-256 depois do QEMU. `storage check <id>` e somente
+leitura e verifica BPB, backup, FSInfo, FATs, cadeias e LFNs.
 
 ## Camada de bloco e USB MSC (EP4.3)
 
@@ -150,9 +172,10 @@ O driver MSC aceita somente uma interface de classe `0x08`, subclass `0x06`,
 protocolo BOT `0x50`, LUN 0, exatamente um Bulk IN e um Bulk OUT e setores de
 512 bytes. O BOT implementa CBW, Data-In e CSW com validacao de assinatura,
 tag, residue e status. O subconjunto SCSI e `INQUIRY`, `TEST UNIT READY`,
-`READ CAPACITY(10)` e `READ(10)`. A montagem FAT12/FAT32 continua sob demanda:
-`storage list` detecta e lista o volume, enquanto `storage mount <id>` relê o
-BPB e cria a montagem somente em RAM.
+`READ CAPACITY(10)` e `READ(10)`. `storage list` detecta e lista os volumes;
+na imagem hibrida, exatamente um FAT32 com label `ZEPHYROS` e montado
+automaticamente. `storage mount <id>` continua disponivel para volumes
+adicionais e cria uma montagem manual somente em RAM.
 
 O caminho USB usa UHCI Bulk sincrono, TDs fragmentados por `wMaxPacketSize`,
 toggles por endpoint, buffers DMA fixos e timeout absoluto. Em falha, executa
@@ -162,8 +185,9 @@ e permite uma unica nova tentativa. Hubs, hot-plug, EHCI, multiplos LUNs,
 
 ## Indice global EP3 (`file_index.c`)
 
-O indice publica nomes e caminhos 8.3 de arquivos e diretorios de todos os
-volumes montados. A primeira versao existe somente em RAM e limita-se a 512
+O indice publica aliases 8.3 e caminhos de arquivos e diretorios de todos os
+volumes montados; o File Manager consulta a API LFN para exibir o nome longo.
+A primeira versao existe somente em RAM e limita-se a 512
 entradas, 128 diretorios percorridos, profundidade 16, quatro fontes, termos
 de 63 caracteres e 64 resultados. Pesquisa de conteudo, curingas, metadados
 ricos e persistencia ficam fora da EP3.
@@ -453,7 +477,9 @@ int  fat32_get_file_info(index, name, size, attr);
 
 ## FS Unificado (`fs.c`)
 
-Interface única que abstrai FAT12 e FAT32, detectando automaticamente o formato do disco.
+Interface unica que abstrai FAT12 e FAT32. Depois de `storage_init()`, o
+volume FAT32 `ZEPHYROS` e selecionado como sistema quando ha exatamente um
+candidato valido; o FAT12 bruto permanece como recuperacao explicita.
 
 ### Inicialização
 
@@ -473,14 +499,19 @@ int  fs_get_file_count(void);
 int  fs_get_file_info(index, name, size, attr);
 int  fs_get_info(fs_info_t* info);   // Obtém info do FS ativo
 uint8_t fs_get_type(void);           // FS_TYPE_FAT12 ou FS_TYPE_FAT32
+int  fs_use_system_volume(void);
+int  fs_has_system_volume(void);
 int  fs_rename_file_in_dir(dir_path, old_name, new_name);
 ```
 
-`fs_rename_file_in_dir()` renomeia arquivos FAT12 8.3 na propria entrada de
-diretorio, preservando atributos, tamanho e cadeia de clusters. A operacao
-recusa destino existente, incrementa a geracao do filesystem somente apos a
-persistencia e retorna `ERR_UNAVAILABLE` para FAT32. O Explorer usa essa rota
-em vez de simular renomeacao por exclusao e nova escrita.
+Os caminhos sem prefixo usam o volume FAT32 do sistema quando ele esta
+montado. `system:/arquivo` seleciona esse volume explicitamente;
+`<volume-id>:/arquivo` seleciona um volume montado e `legacy:/arquivo` força o
+FAT12 bruto. Um arquivo ausente no sistema nao cai silenciosamente no legado.
+`fs_rename_file_in_dir()` preserva atributos, tamanho e cadeia de clusters no
+FAT32, publicando uma nova entrada LFN/8.3 antes de remover a antiga; o
+Explorer usa essa rota em vez de simular renomeacao por exclusao e nova
+escrita.
 
 ### Operacoes atomicas FAT12 para U3 e AS4
 
@@ -512,10 +543,9 @@ entrada removida e libera os clusters em seguida. Assim, uma troca nunca
 publica uma cadeia parcialmente gravada.
 
 AS4 estende a mesma troca copy-on-write a um arquivo 8.3 dentro de um
-subdiretorio FAT12 existente. A nova cadeia e persistida antes da entrada do
-diretorio; a cadeia anterior so e liberada depois. FAT32 continua disponivel
-para leitura e para `update verify`, mas essas operacoes atomicas retornam
-`ERR_UNAVAILABLE` e nao escrevem.
+subdiretorio FAT12 existente. A EP9.4A acrescenta a mesma politica ao FAT32,
+com nomes longos UTF-8 convertidos para entradas LFN UTF-16LE, aliases 8.3,
+duas FATs sincronizadas, criacao de diretorios, exclusao e renomeacao.
 
 ### Escrita sequencial de raiz para U5
 
@@ -531,15 +561,16 @@ int fs_stream_abort_root(void);
 int fs_stream_is_active(void);
 ```
 
-`begin` exige nome 8.3 de raiz, tamanho conhecido e slot ainda inativo.
-`write` aceita blocos sequenciais e usa um buffer setorial de 512 bytes.
+`begin` exige tamanho conhecido e slot ainda inativo; no FAT32 o caminho pode
+usar LFN e subdiretorios. `write` aceita blocos sequenciais usando buffer
+limitado, sem carregar a imagem inteira.
 `finish` exige exatamente o tamanho anunciado antes de publicar o tamanho da
 entrada. `abort` remove primeiro a entrada parcial e depois libera a cadeia.
 Outras mutacoes publicas sao recusadas enquanto a sessao estiver ativa.
 
 O servico remoto usa apenas aliases internos hidden/system/archive
-`ZUR0.ZUP` e `ZUR1.ZUP`. FAT32, subdiretorios e tamanhos acima de 128 KiB
-retornam `ERR_UNAVAILABLE` ou `ERR_OVERFLOW`. O commit autenticado entre os
+`ZUR0.ZUP` e `ZUR1.ZUP`. FAT32 nao usa slots A/B nem journaling nesta etapa;
+tamanhos acima de 128 KiB retornam `ERR_OVERFLOW`. O commit autenticado entre os
 slots e responsabilidade de Update, nao do filesystem.
 
 ### Estrutura de Informação

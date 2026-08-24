@@ -66,10 +66,9 @@
 #define FM_SEARCH_SCANCODE_DOWN 0x50U
 #define FM_SEARCH_SCANCODE_PAGE_DOWN 0x51U
 #define FM_DIRECTORY_ATTRIBUTE 0x10U
-#define FM_FAT_BASE_LENGTH 8U
-#define FM_FAT_EXTENSION_LENGTH 3U
 
 static fm_state_t state;
+static storage_long_dir_entry_t fm_long_entries[STORAGE_MAX_DIR_ENTRIES];
 static char input_buffer[32];
 static int input_pos = 0;
 static int input_mode = 0;
@@ -220,31 +219,15 @@ static int str_equal(const char* a, const char* b) {
     return *a == *b;
 }
 
-static char fm_upper_ascii(char value) {
-    if (value >= 'a' && value <= 'z') return (char)(value - ('a' - 'A'));
-    return value;
-}
-
 static void fm_fat_display_name(const char* name, char* output) {
-    uint32_t input = 0;
-    uint32_t length = 0;
-    uint32_t base = 0;
-    uint32_t extension = 0;
+    uint32_t input = 0U;
 
-    while (name[input] && name[input] != '.' &&
-           base < FM_FAT_BASE_LENGTH) {
-        output[length++] = fm_upper_ascii(name[input++]);
-        base++;
-    }
-    if (name[input] == '.') {
+    if (!name || !output) return;
+    while (name[input] && input + 1U < FM_NAME_LEN) {
+        output[input] = name[input];
         input++;
-        output[length++] = '.';
-        while (name[input] && extension < FM_FAT_EXTENSION_LENGTH) {
-            output[length++] = fm_upper_ascii(name[input++]);
-            extension++;
-        }
     }
-    output[length] = '\0';
+    output[input] = '\0';
 }
 
 static int fm_rename_target_conflicts(const char* target) {
@@ -394,6 +377,18 @@ static int fm_select_boot_source(const char* path) {
     state.selected = 0;
     state.scroll_offset = 0;
     return OK;
+}
+
+static int fm_select_system_source(void) {
+    storage_volume_t volume;
+    int result;
+
+    result = storage_find_system_volume(&volume);
+    if (result != OK || !volume.mounted) {
+        LOG_WARN("FM", "Volume do sistema indisponivel no Explorer");
+        return result == OK ? ERR_STATE : result;
+    }
+    return fm_select_mounted_source(volume.id);
 }
 
 static int fm_select_mounted_source(const char* id) {
@@ -845,7 +840,7 @@ static void fm_select_mode(void) {
         LOG_INFO("FM", "Explorer usando modo Classic");
     } else {
         fm_search_close();
-        fm_select_boot_source("");
+        if (fm_select_system_source() != OK) fm_select_boot_source("");
         state.history_count = 0;
         state.history_pos = 0;
         fm_record_history();
@@ -1104,9 +1099,9 @@ static void fm_refresh_files(void) {
                 entry->is_dir = 1;
             }
         }
-    } else if (state.mode == FM_MODE_CLASSIC && !state.storage_boot) {
+    } else if (!state.storage_virtual && !state.storage_boot &&
+               state.storage_volume_id[0]) {
         storage_volume_t volume;
-        storage_dir_entry_t entries[STORAGE_MAX_DIR_ENTRIES];
         uint32_t count = 0;
         int result = storage_find_volume(state.storage_volume_id, &volume);
 
@@ -1120,14 +1115,15 @@ static void fm_refresh_files(void) {
             fm_refresh_files();
             return;
         }
-        result = storage_list_dir(state.storage_volume_id, state.current_path,
-                                  entries, STORAGE_MAX_DIR_ENTRIES, &count);
+        result = storage_list_dir_long(state.storage_volume_id,
+                                       state.current_path, fm_long_entries,
+                                       STORAGE_MAX_DIR_ENTRIES, &count);
         state.file_count = result == OK ? (int)count : 0;
         for (int i = 0; i < state.file_count; i++) {
-            str_copy(state.files[i].name, entries[i].name);
-            state.files[i].size = entries[i].size;
-            state.files[i].attributes = entries[i].attributes;
-            state.files[i].is_dir = entries[i].is_directory;
+            str_copy(state.files[i].name, fm_long_entries[i].name);
+            state.files[i].size = fm_long_entries[i].size;
+            state.files[i].attributes = fm_long_entries[i].attributes;
+            state.files[i].is_dir = fm_long_entries[i].is_directory;
         }
     } else {
         state.file_count = fs_get_file_count_at(state.current_path);
@@ -2392,7 +2388,7 @@ void fm_init(void) {
     fm_ensure_boot_directory("MUSICA");
     fm_ensure_boot_directory("VIDEOS");
 
-    fm_select_boot_source("");
+    if (fm_select_system_source() != OK) fm_select_boot_source("");
     state.history_count = 0;
     state.history_pos = 0;
     state.address_mode = 0;
@@ -2893,7 +2889,12 @@ void fm_handle_key(uint8_t scancode) {
             if (state.mode == FM_MODE_CLASSIC && state.side_selected == 0) {
                 fm_select_virtual_root();
             } else {
-                fm_select_boot_source(side_pane_paths[state.side_selected]);
+                if (fm_select_system_source() == OK) {
+                    str_copy(state.current_path,
+                             side_pane_paths[state.side_selected]);
+                } else {
+                    fm_select_boot_source(side_pane_paths[state.side_selected]);
+                }
             }
             fm_record_history();
             fm_refresh_files();

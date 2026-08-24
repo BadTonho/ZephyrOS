@@ -106,30 +106,29 @@ No host:
 
 No Shell:
 
-    update system verify <arquivo.ZSYS>
+    update system verify system:/<arquivo.ZSYS>
     update system check --tag <tag>
 
 As duas operações são somente leitura. A verificação local usa leitura em
 streaming e não aloca a imagem inteira; a consulta por tag valida o descritor
 v2, o asset system.zsys, a assinatura e os hashes durante o download.
 
-### Fixture local no FAT12
+### Fixture local no FAT32
 
-O contrato publicado continua usando o asset `system.zsys`. A imagem FAT12,
-porém, só aceita nomes 8.3 e não consegue armazenar a extensão de quatro
-caracteres `.ZSYS`. Para a validação local no QEMU, o alvo `system-fixtures`
-gera uma matriz compacta de parser e usa aliases físicos com extensão `.ZSY`;
-o conteúdo continua sendo um envelope ZSYS v1 e o comando Shell não depende da
-extensão do arquivo. Cada fixture é gravada em uma imagem FAT12 própria em
-`build\system-fixture-images`, porque a matriz inteira não cabe no volume
-FAT12 atual. A geração host `fixtures-system` continua cobrindo a imagem
-FAT/disco completa.
+O contrato publicado continua usando o asset `system.zsys`. Na EP9.4A, a
+imagem híbrida de 64 MiB preserva o FAT12 bruto no início e monta a partição
+FAT32 `ZEPHYROS` a partir do LBA 4096. O alvo `system-fixtures` injeta cada
+envelope na raiz FAT32 usando o nome físico `.ZSYS`; não há truncamento para
+`.ZSY` e o FAT12 legado permanece disponível somente por `legacy:/`.
 
-Os aliases da matriz EP9.0A são `VALID.ZSY`, `TRUNC.ZSY`, `HDRBAD.ZSY`,
-`PAYBAD.ZSY`, `SIGBAD.ZSY`, `OVERSIZ.ZSY`, `MISALGN.ZSY`, `VERBAD.ZSY`,
-`EPCHBAD.ZSY`, `ABIBAD.ZSY`, `SCHBAD.ZSY`, `IMGHASH.ZSY` e `CMPHASH.ZSY`.
-Essa geração exige uma chave privada Ed25519 configurada somente no
-`Makefile.local`; nenhum segredo é versionado. O alvo `run-system-fixture`,
-recebendo um dos caminhos gerados em `build\system-fixture-images`, inicia a
-imagem selecionada para o teste manual. A expansão do volume para FAT32
-permanece planejada na EP9.4; esta solução não altera boot ou stage2.
+Cada fixture é gravada em uma imagem própria em
+`build\system-fixture-images`. A geração exige uma chave privada Ed25519
+configurada somente no `Makefile.local`; nenhum segredo é versionado. O alvo
+`run-system-fixture`, recebendo um dos caminhos gerados, inicia a imagem
+selecionada para o teste manual sem alterar boot ou stage2.
+
+Os nomes da matriz EP9.0A são `VALID.ZSYS`, `TRUNC.ZSYS`, `HDRBAD.ZSYS`,
+`PAYBAD.ZSYS`, `SIGBAD.ZSYS`, `OVERSIZ.ZSYS`, `MISALGN.ZSYS`, `VERBAD.ZSYS`,
+`EPCHBAD.ZSYS`, `ABIBAD.ZSYS`, `SCHBAD.ZSYS`, `IMGHASH.ZSYS` e
+`CMPHASH.ZSYS`. No Shell, o caminho da fixture válida é
+`system:/VALID.ZSYS`.

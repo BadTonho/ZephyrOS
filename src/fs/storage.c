@@ -3,6 +3,7 @@
 #include "drivers/ata.h"
 #include "core/errors.h"
 #include "core/log.h"
+#include "core/memory.h"
 #include "core/spinlock.h"
 #include "core/string.h"
 
@@ -15,7 +16,8 @@
 #define STORAGE_MBR_START_LBA_OFFSET 8U
 #define STORAGE_MBR_SECTOR_COUNT_OFFSET 12U
 #define STORAGE_FAT12_MAX_CLUSTERS 4085U
-#define STORAGE_FAT32_MIN_CLUSTERS 65525U
+/* A imagem do sistema usa um FAT32 compacto de 64 MiB. */
+#define STORAGE_FAT32_MIN_CLUSTERS (STORAGE_FAT12_MAX_CLUSTERS + 1U)
 #define STORAGE_FAT12_END 0x0FF8U
 #define STORAGE_FAT12_BAD 0x0FF7U
 #define STORAGE_FAT32_END 0x0FFFFFF8U
@@ -73,6 +75,28 @@ typedef struct {
     uint32_t size;
 } storage_raw_entry_t;
 
+typedef struct {
+    char name[STORAGE_LONG_NAME_SIZE];
+    char short_name[STORAGE_NAME_SIZE];
+    uint8_t attributes;
+    uint32_t first_cluster;
+    uint32_t size;
+    uint32_t entry_offset;
+    uint32_t lfn_offset;
+} storage_long_raw_entry_t;
+
+typedef struct {
+    uint16_t units[STORAGE_LONG_NAME_SIZE];
+    uint8_t active;
+    uint8_t expected_sequence;
+    uint8_t checksum;
+    uint16_t highest_unit;
+    uint32_t offset;
+} storage_lfn_state_t;
+
+typedef int (*storage_long_entry_visitor_t)(
+    const storage_long_raw_entry_t* entry, void* context);
+
 typedef void (*storage_entry_visitor_t)(const storage_raw_entry_t* entry,
                                         void* context);
 
@@ -87,6 +111,18 @@ static int storage_last_error;
 static uint32_t storage_refresh_epoch;
 static spinlock_t storage_registry_lock;
 static spinlock_t storage_operation_lock;
+static storage_long_dir_entry_t storage_long_cursor_entries[
+    STORAGE_MAX_DIR_ENTRIES];
+typedef struct {
+    uint8_t active;
+    char volume_id[STORAGE_ID_SIZE];
+    char path[STORAGE_MAX_PATH];
+    uint32_t expected_size;
+    uint32_t written_size;
+    uint8_t attributes;
+    uint8_t* buffer;
+} storage_stream_state_t;
+static storage_stream_state_t storage_stream_state;
 
 static uint16_t storage_read_u16(const uint8_t* data) {
     return (uint16_t)data[0] | ((uint16_t)data[1] << 8);
@@ -573,6 +609,7 @@ static int storage_register_raw(const char* disk_id, uint32_t disk_sectors,
         mount->active = 1;
         mount->volume_index = (uint8_t)(volume - storage_volumes);
         volume->boot = 1;
+        volume->role = STORAGE_VOLUME_ROLE_BOOT;
         volume->pinned = 1;
         volume->read_only = 0;
         volume->mounted = 1;
@@ -618,6 +655,65 @@ static void storage_boot_disk_id(char* id, uint32_t capacity) {
     kmemset(id, 0, capacity);
     boot_device = ata_get_device();
     if (boot_device) storage_build_ata_id(boot_device->slot, id);
+}
+
+static int storage_auto_mount_system(void) {
+    int candidate = -1;
+    uint8_t candidates = 0;
+
+    for (uint8_t index = 0; index < storage_volume_count; index++) {
+        storage_volume_t* volume = &storage_volumes[index];
+        if (volume->fs_type != STORAGE_FS_FAT32 ||
+            !storage_text_equal(volume->label, "ZEPHYROS") ||
+            volume->state != STORAGE_VOLUME_DETECTED) continue;
+        candidate = index;
+        candidates++;
+    }
+    if (!candidates) return OK;
+    if (candidates != 1U) {
+        LOG_ERROR("FS", "Volume FAT32 ZEPHYROS ambiguo; montagem recusada");
+        storage_last_error = ERR_INVALID;
+        return ERR_INVALID;
+    }
+
+    storage_volume_t* volume = &storage_volumes[candidate];
+    storage_mount_t probe;
+    storage_mount_t* mount = storage_free_mount();
+    block_device_t block;
+    int result = storage_probe_volume(volume, &probe);
+
+    if (result != OK) {
+        storage_mark_volume_error(volume, result, STORAGE_VOLUME_INVALID,
+                                  "volume do sistema rejeitado");
+        return result;
+    }
+    if (!mount) {
+        storage_log_volume(LOG_LEVEL_ERROR, volume->id,
+                           "sem slot para montagem automatica");
+        return ERR_OVERFLOW;
+    }
+    result = block_find(volume->disk_id, &block);
+    if (result != OK) {
+        storage_log_volume(LOG_LEVEL_ERROR, volume->id,
+                           "disco do sistema indisponivel");
+        return result;
+    }
+    *mount = probe;
+    mount->active = 1;
+    mount->volume_index = (uint8_t)candidate;
+    volume->role = STORAGE_VOLUME_ROLE_SYSTEM;
+    volume->pinned = 1;
+    volume->mounted = 1;
+    volume->read_only = block.read_only ? 1U : 0U;
+    volume->generation = 1U;
+    volume->state = STORAGE_VOLUME_MOUNTED;
+    volume->last_error = OK;
+    storage_mounted_count++;
+    storage_log_volume(LOG_LEVEL_INFO, volume->id,
+                       volume->read_only ?
+                       "volume do sistema montado somente-leitura" :
+                       "volume do sistema montado gravavel");
+    return OK;
 }
 
 int storage_init(void) {
@@ -675,11 +771,10 @@ int storage_init(void) {
         }
         raw_result = storage_register_raw(block.id, block.sector_count,
                                           sector, boot_disk_id);
-        if (raw_result == OK) continue;
         if (sector[STORAGE_MBR_SIGNATURE_OFFSET] == 0x55U &&
             sector[STORAGE_MBR_SIGNATURE_OFFSET + 1U] == 0xAAU) {
             storage_scan_mbr(block.id, block.sector_count, sector);
-        } else {
+        } else if (raw_result != OK) {
             storage_disks[storage_disk_count - 1U].last_error = ERR_INVALID;
             storage_log_volume(
                 LOG_LEVEL_WARN,
@@ -689,6 +784,7 @@ int storage_init(void) {
     }
 
     storage_initialized = 1;
+    storage_auto_mount_system();
     if (!storage_disk_count) {
         storage_last_error = ERR_NOT_FOUND;
         LOG_ERROR("FS", "Nenhum disco inventariavel apos a leitura de bloco");
@@ -747,6 +843,186 @@ static int storage_read_fat_bytes(const storage_volume_t* volume,
         copied += amount;
     }
     return OK;
+}
+
+static int storage_write_relative(const storage_volume_t* volume,
+                                  uint32_t relative_lba,
+                                  const uint8_t* buffer) {
+    uint32_t absolute_lba;
+
+    if (!volume || !buffer) {
+        LOG_ERROR("FS", "Argumento invalido na escrita de volume");
+        return ERR_NULL;
+    }
+    if (volume->read_only || relative_lba >= volume->sector_count) {
+        storage_log_volume(LOG_LEVEL_ERROR, volume->id,
+                           volume->read_only ?
+                           "volume somente-leitura" :
+                           "escrita fora dos limites");
+        return volume->read_only ? ERR_UNAVAILABLE : ERR_DISK;
+    }
+    if (volume->start_lba > 0xFFFFFFFFU - relative_lba) {
+        storage_log_volume(LOG_LEVEL_ERROR, volume->id,
+                           "overflow no endereco de escrita");
+        return ERR_OVERFLOW;
+    }
+    absolute_lba = volume->start_lba + relative_lba;
+    return block_write(volume->disk_id, absolute_lba, 1, buffer);
+}
+
+static int storage_read_fat32_entry(const storage_volume_t* volume,
+                                    const storage_mount_t* mount,
+                                    uint32_t cluster, uint32_t* out_value) {
+    uint8_t bytes[4];
+    int result;
+
+    if (!volume || !mount || !out_value) {
+        LOG_ERROR("FS", "Argumento nulo na leitura de FAT32");
+        return ERR_NULL;
+    }
+    if (mount->fs_type != STORAGE_FS_FAT32 ||
+        cluster < STORAGE_FIRST_DATA_CLUSTER ||
+        cluster >= mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER) {
+        return ERR_INVALID;
+    }
+    result = storage_read_fat_bytes(volume, mount,
+                                    cluster * STORAGE_FAT32_ENTRY_SIZE,
+                                    bytes, sizeof(bytes));
+    if (result == OK) *out_value = storage_read_u32(bytes) & 0x0FFFFFFFU;
+    return result;
+}
+
+static int storage_write_fat32_entry(const storage_volume_t* volume,
+                                     const storage_mount_t* mount,
+                                     uint32_t cluster, uint32_t value) {
+    uint8_t sector[STORAGE_SECTOR_SIZE];
+    uint32_t offset;
+
+    if (!volume || !mount) {
+        LOG_ERROR("FS", "Argumento nulo na escrita de FAT32");
+        return ERR_NULL;
+    }
+    if (mount->fs_type != STORAGE_FS_FAT32 || volume->read_only ||
+        cluster < STORAGE_FIRST_DATA_CLUSTER ||
+        cluster >= mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER) {
+        storage_log_volume(LOG_LEVEL_ERROR, volume->id,
+                           "entrada FAT32 nao pode ser escrita");
+        return volume->read_only ? ERR_UNAVAILABLE : ERR_INVALID;
+    }
+    offset = cluster * STORAGE_FAT32_ENTRY_SIZE;
+    for (uint8_t copy = 0; copy < mount->fat_count; copy++) {
+        int result = storage_read_relative(
+            volume, mount->fat_start + copy * mount->sectors_per_fat +
+                offset / STORAGE_SECTOR_SIZE, 1, sector);
+        if (result != OK) return result;
+        uint32_t sector_offset = offset % STORAGE_SECTOR_SIZE;
+        uint32_t old = storage_read_u32(sector + sector_offset);
+        uint32_t next = (old & 0xF0000000U) | (value & 0x0FFFFFFFU);
+        sector[sector_offset] = (uint8_t)next;
+        sector[sector_offset + 1U] = (uint8_t)(next >> 8);
+        sector[sector_offset + 2U] = (uint8_t)(next >> 16);
+        sector[sector_offset + 3U] = (uint8_t)(next >> 24);
+        result = storage_write_relative(
+            volume, mount->fat_start + copy * mount->sectors_per_fat +
+                offset / STORAGE_SECTOR_SIZE, sector);
+        if (result != OK) return result;
+    }
+    return OK;
+}
+
+static int storage_allocate_fat32_cluster(const storage_volume_t* volume,
+                                          storage_mount_t* mount,
+                                          uint32_t* out_cluster) {
+    uint32_t start = mount->root_cluster;
+    uint32_t count = mount->total_clusters;
+
+    if (!volume || !mount || !out_cluster) {
+        LOG_ERROR("FS", "Argumento nulo na reserva de cluster");
+        return ERR_NULL;
+    }
+    if (start < STORAGE_FIRST_DATA_CLUSTER ||
+        start >= mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER) {
+        start = STORAGE_FIRST_DATA_CLUSTER;
+    }
+    for (uint32_t pass = 0; pass < 2U; pass++) {
+        uint32_t first = pass ? STORAGE_FIRST_DATA_CLUSTER : start;
+        uint32_t last = pass ? start : mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER;
+        for (uint32_t cluster = first; cluster < last && count; cluster++, count--) {
+            uint32_t value;
+            int result = storage_read_fat32_entry(volume, mount, cluster, &value);
+            if (result != OK) return result;
+            if (value == 0U) {
+                result = storage_write_fat32_entry(volume, mount, cluster,
+                                                   STORAGE_FAT32_END);
+                if (result == OK) *out_cluster = cluster;
+                return result;
+            }
+        }
+    }
+    storage_log_volume(LOG_LEVEL_ERROR, volume->id,
+                       "espaco insuficiente na FAT32");
+    return ERR_OVERFLOW;
+}
+
+static int storage_release_fat32_chain(const storage_volume_t* volume,
+                                       const storage_mount_t* mount,
+                                       uint32_t first_cluster) {
+    uint32_t cluster = first_cluster;
+
+    if (!first_cluster) return OK;
+    for (uint32_t step = 0; step < STORAGE_MAX_CHAIN_STEPS; step++) {
+        uint32_t next;
+        int result = storage_read_fat32_entry(volume, mount, cluster, &next);
+        if (result != OK) return result;
+        result = storage_write_fat32_entry(volume, mount, cluster,
+                                           STORAGE_FAT32_FREE);
+        if (result != OK) return result;
+        if (storage_cluster_is_end(mount, next)) return OK;
+        if (storage_cluster_is_bad(mount, next) ||
+            next < STORAGE_FIRST_DATA_CLUSTER) return ERR_DISK;
+        cluster = next;
+    }
+    return ERR_OVERFLOW;
+}
+
+static int storage_write_cluster(const storage_volume_t* volume,
+                                 const storage_mount_t* mount,
+                                 uint32_t cluster, const uint8_t* data,
+                                 uint32_t size) {
+    uint8_t sector[STORAGE_SECTOR_SIZE];
+    uint32_t base;
+
+    if (!volume || !mount || !data || size > mount->sectors_per_cluster *
+        STORAGE_SECTOR_SIZE) {
+        LOG_ERROR("FS", "Argumento invalido na escrita de cluster");
+        return ERR_NULL;
+    }
+    base = mount->data_start + (cluster - STORAGE_FIRST_DATA_CLUSTER) *
+           mount->sectors_per_cluster;
+    for (uint32_t index = 0; index < mount->sectors_per_cluster; index++) {
+        kmemset(sector, 0, sizeof(sector));
+        if (index * STORAGE_SECTOR_SIZE < size) {
+            uint32_t amount = size - index * STORAGE_SECTOR_SIZE;
+            if (amount > STORAGE_SECTOR_SIZE) amount = STORAGE_SECTOR_SIZE;
+            kmemcpy(sector, data + index * STORAGE_SECTOR_SIZE, amount);
+        }
+        int result = storage_write_relative(volume, base + index, sector);
+        if (result != OK) return result;
+    }
+    return OK;
+}
+
+static void storage_build_directory_marker(uint8_t entry[STORAGE_DIR_ENTRY_SIZE],
+                                           const char* name,
+                                           uint32_t cluster) {
+    kmemset(entry, 0, STORAGE_DIR_ENTRY_SIZE);
+    kmemcpy(entry, name, 11U);
+    entry[STORAGE_DIR_ATTRIBUTE_OFFSET] = STORAGE_ATTR_DIRECTORY;
+    entry[STORAGE_DIR_CLUSTER_HIGH_OFFSET] = (uint8_t)(cluster >> 16);
+    entry[STORAGE_DIR_CLUSTER_HIGH_OFFSET + 1U] =
+        (uint8_t)(cluster >> 24);
+    entry[STORAGE_DIR_CLUSTER_LOW_OFFSET] = (uint8_t)cluster;
+    entry[STORAGE_DIR_CLUSTER_LOW_OFFSET + 1U] = (uint8_t)(cluster >> 8);
 }
 
 static int storage_next_cluster(const storage_volume_t* volume,
@@ -809,6 +1085,216 @@ static void storage_parse_raw_entry(const storage_mount_t* mount,
             source + STORAGE_DIR_CLUSTER_HIGH_OFFSET) << 16;
     }
     entry->size = storage_read_u32(source + STORAGE_DIR_SIZE_OFFSET);
+}
+
+static uint8_t storage_lfn_checksum(const uint8_t alias[11]) {
+    uint8_t checksum = 0;
+
+    for (uint32_t index = 0; index < 11U; index++) {
+        checksum = (uint8_t)(((checksum & 1U) << 7) +
+                             (checksum >> 1) + alias[index]);
+    }
+    return checksum;
+}
+
+static void storage_lfn_reset(storage_lfn_state_t* state) {
+    if (!state) return;
+    kmemset(state, 0, sizeof(*state));
+}
+
+static void storage_lfn_copy_units(storage_lfn_state_t* state,
+                                   const uint8_t* source) {
+    static const uint8_t positions[] = { 1U, 14U, 28U };
+    static const uint8_t counts[] = { 5U, 6U, 2U };
+    uint32_t output = ((source[0] & 0x1FU) - 1U) * 13U;
+
+    for (uint32_t group = 0; group < 3U; group++) {
+        for (uint32_t index = 0; index < counts[group]; index++) {
+            uint32_t target = output++;
+            if (target < STORAGE_LONG_NAME_SIZE) {
+                state->units[target] = storage_read_u16(
+                    source + positions[group] + index * 2U);
+                if (target + 1U > state->highest_unit) {
+                    state->highest_unit = (uint16_t)(target + 1U);
+                }
+            }
+        }
+    }
+}
+
+static int storage_lfn_append_utf8(char* output, uint32_t capacity,
+                                   uint32_t* offset, uint32_t codepoint) {
+    uint8_t bytes[4];
+    uint32_t count;
+
+    if (!output || !offset || !capacity || codepoint > 0x10FFFFU ||
+        (codepoint >= 0xD800U && codepoint <= 0xDFFFU)) {
+        return ERR_INVALID;
+    }
+    if (codepoint <= 0x7FU) {
+        bytes[0] = (uint8_t)codepoint;
+        count = 1U;
+    } else if (codepoint <= 0x7FFU) {
+        bytes[0] = (uint8_t)(0xC0U | (codepoint >> 6));
+        bytes[1] = (uint8_t)(0x80U | (codepoint & 0x3FU));
+        count = 2U;
+    } else if (codepoint <= 0xFFFFU) {
+        bytes[0] = (uint8_t)(0xE0U | (codepoint >> 12));
+        bytes[1] = (uint8_t)(0x80U | ((codepoint >> 6) & 0x3FU));
+        bytes[2] = (uint8_t)(0x80U | (codepoint & 0x3FU));
+        count = 3U;
+    } else {
+        bytes[0] = (uint8_t)(0xF0U | (codepoint >> 18));
+        bytes[1] = (uint8_t)(0x80U | ((codepoint >> 12) & 0x3FU));
+        bytes[2] = (uint8_t)(0x80U | ((codepoint >> 6) & 0x3FU));
+        bytes[3] = (uint8_t)(0x80U | (codepoint & 0x3FU));
+        count = 4U;
+    }
+    if (*offset + count + 1U > capacity) return ERR_OVERFLOW;
+    for (uint32_t index = 0; index < count; index++) {
+        output[(*offset)++] = (char)bytes[index];
+    }
+    output[*offset] = '\0';
+    return OK;
+}
+
+static int storage_lfn_to_utf8(const storage_lfn_state_t* state,
+                               char* output, uint32_t capacity) {
+    uint32_t offset = 0U;
+
+    if (!state || !output || capacity < 2U) return ERR_NULL;
+    output[0] = '\0';
+    for (uint32_t index = 0; index < state->highest_unit; index++) {
+        uint32_t codepoint = state->units[index];
+        if (codepoint == 0U || codepoint == 0xFFFFU) break;
+        if (codepoint >= 0xD800U && codepoint <= 0xDBFFU) {
+            uint32_t next = index + 1U;
+            if (next >= state->highest_unit ||
+                state->units[next] < 0xDC00U ||
+                state->units[next] > 0xDFFFU) return ERR_INVALID;
+            codepoint = 0x10000U + ((codepoint - 0xD800U) << 10) +
+                        (state->units[next] - 0xDC00U);
+            index = next;
+        }
+        if (storage_lfn_append_utf8(output, capacity, &offset, codepoint) != OK) {
+            return ERR_INVALID;
+        }
+    }
+    return offset ? OK : ERR_INVALID;
+}
+
+static int storage_utf8_to_utf16(const char* input, uint16_t* units,
+                                 uint32_t capacity, uint32_t* out_count) {
+    uint32_t offset = 0U;
+    uint32_t index = 0U;
+
+    if (!input || !units || !out_count) return ERR_NULL;
+    while (input[index]) {
+        uint32_t codepoint;
+        uint8_t first = (uint8_t)input[index++];
+        uint32_t extra;
+
+        if (first < 0x80U) {
+            codepoint = first;
+            extra = 0U;
+        } else if (first >= 0xC2U && first <= 0xDFU) {
+            codepoint = first & 0x1FU;
+            extra = 1U;
+        } else if (first >= 0xE0U && first <= 0xEFU) {
+            codepoint = first & 0x0FU;
+            extra = 2U;
+        } else if (first >= 0xF0U && first <= 0xF4U) {
+            codepoint = first & 0x07U;
+            extra = 3U;
+        } else {
+            return ERR_INVALID;
+        }
+        for (uint32_t count = 0; count < extra; count++) {
+            uint8_t next = (uint8_t)input[index++];
+            if ((next & 0xC0U) != 0x80U) return ERR_INVALID;
+            codepoint = (codepoint << 6) | (next & 0x3FU);
+        }
+        if ((codepoint > 0x10FFFFU) ||
+            (codepoint >= 0xD800U && codepoint <= 0xDFFFU)) return ERR_INVALID;
+        if (codepoint <= 0xFFFFU) {
+            if (offset >= capacity) return ERR_OVERFLOW;
+            units[offset++] = (uint16_t)codepoint;
+        } else {
+            if (offset + 1U >= capacity) return ERR_OVERFLOW;
+            codepoint -= 0x10000U;
+            units[offset++] = (uint16_t)(0xD800U | (codepoint >> 10));
+            units[offset++] = (uint16_t)(0xDC00U | (codepoint & 0x3FFU));
+        }
+    }
+    *out_count = offset;
+    return OK;
+}
+
+static void storage_build_lfn_entry(uint8_t output[STORAGE_DIR_ENTRY_SIZE],
+                                    uint8_t sequence,
+                                    const uint16_t* units, uint32_t count,
+                                    uint8_t checksum) {
+    static const uint8_t positions[] = { 1U, 14U, 28U };
+    static const uint8_t lengths[] = { 5U, 6U, 2U };
+    uint32_t offset = ((uint32_t)(sequence & 0x1FU) - 1U) * 13U;
+
+    kmemset(output, 0xFF, STORAGE_DIR_ENTRY_SIZE);
+    output[0] = sequence;
+    output[11] = STORAGE_ATTR_LFN;
+    output[13] = checksum;
+    for (uint32_t group = 0; group < 3U; group++) {
+        for (uint32_t index = 0; index < lengths[group]; index++) {
+            uint16_t value = 0xFFFFU;
+            uint32_t unit = offset++;
+            if (unit < count) value = units[unit];
+            else if (unit == count) value = 0U;
+            output[positions[group] + index * 2U] = (uint8_t)value;
+            output[positions[group] + index * 2U + 1U] =
+                (uint8_t)(value >> 8);
+        }
+    }
+}
+
+static void storage_long_parse_entry(const storage_mount_t* mount,
+                                     const uint8_t* source, uint32_t offset,
+                                     const storage_lfn_state_t* lfn,
+                                     storage_long_raw_entry_t* entry) {
+    storage_raw_entry_t raw;
+
+    storage_parse_raw_entry(mount, source, &raw);
+    kmemset(entry, 0, sizeof(*entry));
+    storage_copy_text(entry->short_name, STORAGE_NAME_SIZE, "");
+    for (uint32_t index = 0; index < 8U && raw.name[index] != ' '; index++) {
+        uint32_t length = kstrlen(entry->short_name);
+        if (length + 1U < STORAGE_NAME_SIZE) {
+            entry->short_name[length] = (char)raw.name[index];
+            entry->short_name[length + 1U] = '\0';
+        }
+    }
+    if (raw.name[8] != ' ') {
+        uint32_t length = kstrlen(entry->short_name);
+        if (length + 1U < STORAGE_NAME_SIZE) {
+            entry->short_name[length++] = '.';
+            entry->short_name[length] = '\0';
+        }
+        for (uint32_t index = 8U; index < 11U && raw.name[index] != ' '; index++) {
+            length = kstrlen(entry->short_name);
+            if (length + 1U < STORAGE_NAME_SIZE) {
+                entry->short_name[length] = (char)raw.name[index];
+                entry->short_name[length + 1U] = '\0';
+            }
+        }
+    }
+    if (!lfn || storage_lfn_to_utf8(lfn, entry->name,
+                                    STORAGE_LONG_NAME_SIZE) != OK) {
+        storage_copy_text(entry->name, STORAGE_LONG_NAME_SIZE,
+                          entry->short_name);
+    }
+    entry->attributes = raw.attributes;
+    entry->first_cluster = raw.first_cluster;
+    entry->size = raw.size;
+    entry->entry_offset = offset;
+    entry->lfn_offset = lfn && lfn->active ? lfn->offset : offset;
 }
 
 static int storage_visit_sector(const storage_mount_t* mount,
@@ -895,6 +1381,143 @@ static int storage_walk_directory(const storage_volume_t* volume,
     return ERR_OVERFLOW;
 }
 
+static int storage_visit_long_sector(const storage_mount_t* mount,
+                                     const uint8_t* sector, uint32_t base_offset,
+                                     storage_lfn_state_t* lfn,
+                                     storage_long_entry_visitor_t visitor,
+                                     void* context, int* out_end) {
+    if (!mount || !sector || !lfn || !visitor || !out_end) {
+        LOG_ERROR("FS", "Argumento invalido no leitor LFN");
+        return ERR_NULL;
+    }
+    for (uint32_t offset = 0; offset < STORAGE_SECTOR_SIZE;
+         offset += STORAGE_DIR_ENTRY_SIZE) {
+        const uint8_t* source = sector + offset;
+        uint8_t attributes = source[STORAGE_DIR_ATTRIBUTE_OFFSET];
+
+        if (source[0] == 0x00U) {
+            *out_end = 1;
+            return OK;
+        }
+        if (source[0] == 0xE5U) {
+            storage_lfn_reset(lfn);
+            continue;
+        }
+        if (attributes == STORAGE_ATTR_LFN) {
+            uint8_t sequence = source[0] & 0x1FU;
+            if (!sequence || sequence > 20U ||
+                (!(source[0] & 0x40U) &&
+                 (!lfn->active || lfn->expected_sequence != sequence ||
+                  lfn->checksum != source[13]))) {
+                storage_lfn_reset(lfn);
+                LOG_ERROR("FS", "Sequencia LFN FAT32 invalida");
+                return ERR_INVALID;
+            }
+            if (source[0] & 0x40U) {
+                storage_lfn_reset(lfn);
+                lfn->active = 1U;
+                lfn->expected_sequence = sequence;
+                lfn->checksum = source[13];
+                lfn->offset = base_offset + offset;
+            }
+            storage_lfn_copy_units(lfn, source);
+            if (lfn->expected_sequence > 0U) lfn->expected_sequence--;
+            continue;
+        }
+        if (attributes & STORAGE_ATTR_VOLUME) {
+            storage_lfn_reset(lfn);
+            continue;
+        }
+        storage_long_raw_entry_t entry;
+        storage_lfn_state_t valid_lfn = *lfn;
+        uint8_t alias[11];
+        kmemcpy(alias, source, sizeof(alias));
+        if (!valid_lfn.active || valid_lfn.expected_sequence != 0U ||
+            valid_lfn.checksum != storage_lfn_checksum(alias)) {
+            if (valid_lfn.active) {
+                LOG_ERROR("FS", "Checksum LFN FAT32 invalido");
+                return ERR_INVALID;
+            }
+            storage_lfn_reset(&valid_lfn);
+        }
+        if (valid_lfn.active) {
+            char validated_name[STORAGE_LONG_NAME_SIZE];
+            if (storage_lfn_to_utf8(&valid_lfn, validated_name,
+                                    sizeof(validated_name)) != OK) {
+                LOG_ERROR("FS", "Conteudo LFN FAT32 invalido");
+                return ERR_INVALID;
+            }
+        }
+        storage_long_parse_entry(mount, source, base_offset + offset,
+                                 &valid_lfn, &entry);
+        storage_lfn_reset(lfn);
+        int result = visitor(&entry, context);
+        if (result != OK) return result;
+    }
+    return OK;
+}
+
+static int storage_walk_directory_long(
+    const storage_volume_t* volume, const storage_mount_t* mount,
+    uint32_t cluster, uint8_t fixed_root,
+    storage_long_entry_visitor_t visitor, void* context) {
+    uint8_t sector[STORAGE_SECTOR_SIZE];
+    storage_lfn_state_t lfn;
+    int end = 0;
+
+    if (!volume || !mount || !visitor) {
+        LOG_ERROR("FS", "Argumento nulo ao percorrer diretorio LFN");
+        return ERR_NULL;
+    }
+    storage_lfn_reset(&lfn);
+    if (fixed_root) {
+        for (uint32_t index = 0; index < mount->root_sectors && !end; index++) {
+            int result = storage_read_relative(volume, mount->root_start + index,
+                                               1, sector);
+            if (result != OK) return result;
+            result = storage_visit_long_sector(
+                mount, sector,
+                (volume->start_lba + mount->root_start + index) *
+                    STORAGE_SECTOR_SIZE,
+                &lfn, visitor, context, &end);
+            if (result != OK) return result;
+        }
+        return OK;
+    }
+    for (uint32_t step = 0; step < STORAGE_MAX_CHAIN_STEPS && !end; step++) {
+        uint32_t relative_lba;
+        uint32_t next;
+        if (cluster < STORAGE_FIRST_DATA_CLUSTER ||
+            cluster >= mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER) {
+            return ERR_INVALID;
+        }
+        relative_lba = mount->data_start +
+                       (cluster - STORAGE_FIRST_DATA_CLUSTER) *
+                       mount->sectors_per_cluster;
+        for (uint32_t sector_index = 0;
+             sector_index < mount->sectors_per_cluster && !end; sector_index++) {
+            int result = storage_read_relative(volume,
+                                               relative_lba + sector_index,
+                                               1, sector);
+            if (result != OK) return result;
+            result = storage_visit_long_sector(
+                mount, sector,
+                (volume->start_lba + relative_lba + sector_index) *
+                    STORAGE_SECTOR_SIZE,
+                &lfn, visitor, context, &end);
+            if (result != OK) return result;
+        }
+        if (end) return OK;
+        if (storage_next_cluster(volume, mount, cluster, &next) != OK) {
+            return ERR_DISK;
+        }
+        if (storage_cluster_is_bad(mount, next)) return ERR_DISK;
+        if (storage_cluster_is_end(mount, next)) return OK;
+        cluster = next;
+    }
+    return end ? OK : ERR_OVERFLOW;
+}
+
 static char storage_upper(char value) {
     if (value >= 'a' && value <= 'z') return (char)(value - ('a' - 'A'));
     return value;
@@ -931,41 +1554,158 @@ static int storage_name_to_fat(const char* name, uint8_t output[11]) {
 }
 
 typedef struct {
-    uint8_t wanted[11];
-    storage_raw_entry_t entry;
+    uint8_t alias[11];
     uint8_t found;
-} storage_find_context_t;
+} storage_alias_context_t;
 
-static void storage_find_visitor(const storage_raw_entry_t* entry,
+static int storage_alias_visitor(const storage_long_raw_entry_t* entry,
                                  void* context) {
-    storage_find_context_t* find = (storage_find_context_t*)context;
+    storage_alias_context_t* aliases = (storage_alias_context_t*)context;
+    uint8_t current[11];
 
-    if (find->found) return;
-    for (uint32_t index = 0; index < 11U; index++) {
-        if (entry->name[index] != find->wanted[index]) return;
+    if (!entry || !aliases) return ERR_NULL;
+    if (storage_name_to_fat(entry->short_name, current) == OK) {
+        for (uint32_t index = 0; index < sizeof(current); index++) {
+            if (current[index] != aliases->alias[index]) return OK;
+        }
+        aliases->found = 1U;
     }
-    find->entry = *entry;
-    find->found = 1;
+    return OK;
 }
 
-static int storage_find_entry(const storage_volume_t* volume,
-                              const storage_mount_t* mount,
-                              uint32_t directory_cluster, uint8_t fixed_root,
-                              const char* name, storage_raw_entry_t* output) {
-    storage_find_context_t context;
-    int result;
+static int storage_alias_is_used(const storage_volume_t* volume,
+                                 const storage_mount_t* mount,
+                                 uint32_t cluster, uint8_t fixed_root,
+                                 const uint8_t alias[11]) {
+    storage_alias_context_t context;
 
     kmemset(&context, 0, sizeof(context));
-    result = storage_name_to_fat(name, context.wanted);
-    if (result != OK) return result;
-    result = storage_walk_directory(volume, mount, directory_cluster,
-                                    fixed_root, storage_find_visitor, &context);
-    if (result != OK) return result;
-    if (!context.found) {
-        LOG_WARN("FS", "Entrada 8.3 nao encontrada");
-        return ERR_NOT_FOUND;
+    kmemcpy(context.alias, alias, sizeof(context.alias));
+    if (storage_walk_directory_long(volume, mount, cluster, fixed_root,
+                                    storage_alias_visitor, &context) != OK) {
+        return -1;
     }
-    if (output) *output = context.entry;
+    return context.found ? 1 : 0;
+}
+
+static int storage_generate_alias(const storage_volume_t* volume,
+                                  const storage_mount_t* mount,
+                                  uint32_t cluster, uint8_t fixed_root,
+                                  const char* name, uint8_t alias[11]) {
+    uint8_t candidate[11];
+    char stem[64];
+    char extension[4];
+    uint32_t stem_length = 0U;
+    uint32_t extension_length = 0U;
+    const char* dot = 0;
+
+    if (!name || !alias) return ERR_NULL;
+    if (storage_name_to_fat(name, candidate) == OK &&
+        storage_alias_is_used(volume, mount, cluster, fixed_root, candidate) == 0) {
+        kmemcpy(alias, candidate, sizeof(candidate));
+        return OK;
+    }
+    for (const char* cursor = name; *cursor; cursor++) {
+        if (*cursor == '.') dot = cursor;
+    }
+    for (const char* cursor = name; *cursor && cursor != dot &&
+         stem_length + 1U < sizeof(stem); cursor++) {
+        char value = storage_upper(*cursor);
+        if (value >= 'A' && value <= 'Z') stem[stem_length++] = value;
+        else if (value >= '0' && value <= '9') stem[stem_length++] = value;
+    }
+    if (!stem_length) {
+        stem[0] = 'F'; stem[1] = 'I'; stem[2] = 'L'; stem[3] = 'E';
+        stem_length = 4U;
+    }
+    stem[stem_length] = '\0';
+    if (dot) {
+        for (const char* cursor = dot + 1; *cursor &&
+             extension_length < sizeof(extension) - 1U; cursor++) {
+            char value = storage_upper(*cursor);
+            if ((value >= 'A' && value <= 'Z') ||
+                (value >= '0' && value <= '9')) {
+                extension[extension_length++] = value;
+            }
+        }
+    }
+    extension[extension_length] = '\0';
+    for (uint32_t number = 1U; number < 10000U; number++) {
+        char digits[6];
+        char suffix[8];
+        uint32_t value = number;
+        uint32_t digit_count = 0U;
+        uint32_t suffix_length;
+        kmemset(candidate, ' ', sizeof(candidate));
+        suffix[0] = '~';
+        do {
+            digits[digit_count++] = (char)('0' + (value % 10U));
+            value /= 10U;
+        } while (value && digit_count < sizeof(digits));
+        suffix_length = digit_count + 1U;
+        for (uint32_t index = 0; index < digit_count; index++) {
+            suffix[suffix_length - index - 1U] = digits[index];
+        }
+        if (suffix_length > sizeof(suffix)) continue;
+        uint32_t prefix = 8U - suffix_length;
+        if (prefix > stem_length) prefix = stem_length;
+        for (uint32_t index = 0; index < prefix; index++) candidate[index] = (uint8_t)stem[index];
+        for (uint32_t index = 0; index < suffix_length; index++) {
+            candidate[prefix + index] = (uint8_t)suffix[index];
+        }
+        for (uint32_t index = 0; index < extension_length; index++) {
+            candidate[8U + index] = (uint8_t)extension[index];
+        }
+        if (storage_alias_is_used(volume, mount, cluster, fixed_root,
+                                  candidate) == 0) {
+            kmemcpy(alias, candidate, sizeof(candidate));
+            return OK;
+        }
+    }
+    return ERR_OVERFLOW;
+}
+
+typedef struct {
+    char wanted[STORAGE_LONG_NAME_SIZE];
+    storage_long_raw_entry_t entry;
+    uint8_t found;
+} storage_long_find_context_t;
+
+static int storage_find_long_visitor(const storage_long_raw_entry_t* entry,
+                                     void* context) {
+    storage_long_find_context_t* find = (storage_long_find_context_t*)context;
+
+    if (!entry || !find) return ERR_NULL;
+    if (!find->found &&
+        (storage_text_equal(entry->name, find->wanted) ||
+         storage_text_equal(entry->short_name, find->wanted))) {
+        find->entry = *entry;
+        find->found = 1U;
+    }
+    return OK;
+}
+
+static int storage_find_entry_long(const storage_volume_t* volume,
+                                   const storage_mount_t* mount,
+                                   uint32_t directory_cluster,
+                                   uint8_t fixed_root, const char* name,
+                                   storage_long_raw_entry_t* output) {
+    storage_long_find_context_t context;
+    int result;
+
+    if (!volume || !mount || !name || !output) {
+        LOG_ERROR("FS", "Argumento nulo na busca LFN");
+        return ERR_NULL;
+    }
+    if (kstrlen(name) >= STORAGE_LONG_NAME_SIZE) return ERR_OVERFLOW;
+    kmemset(&context, 0, sizeof(context));
+    storage_copy_text(context.wanted, STORAGE_LONG_NAME_SIZE, name);
+    result = storage_walk_directory_long(volume, mount, directory_cluster,
+                                         fixed_root, storage_find_long_visitor,
+                                         &context);
+    if (result != OK) return result;
+    if (!context.found) return ERR_NOT_FOUND;
+    *output = context.entry;
     return OK;
 }
 
@@ -1010,8 +1750,8 @@ static int storage_resolve_directory(const storage_volume_t* volume,
     fixed_root = mount->fs_type == STORAGE_FS_FAT12;
 
     while (1) {
-        char component[STORAGE_NAME_SIZE];
-        storage_raw_entry_t entry;
+        char component[STORAGE_LONG_NAME_SIZE];
+        storage_long_raw_entry_t entry;
         int result = storage_next_component(&cursor, component,
                                             sizeof(component));
 
@@ -1020,8 +1760,8 @@ static int storage_resolve_directory(const storage_volume_t* volume,
         if (component[0] == '.' && component[1] == '\0') continue;
         if (component[0] == '.' && component[1] == '.' &&
             component[2] == '\0') return ERR_INVALID;
-        result = storage_find_entry(volume, mount, cluster, fixed_root,
-                                    component, &entry);
+        result = storage_find_entry_long(volume, mount, cluster, fixed_root,
+                                         component, &entry);
         if (result != OK) return result;
         if (!(entry.attributes & STORAGE_ATTR_DIRECTORY) ||
             entry.first_cluster < STORAGE_FIRST_DATA_CLUSTER) {
@@ -1094,12 +1834,12 @@ static int storage_split_file_path(const char* path, char* directory,
     if ((uint32_t)(separator + 1) >= length) return ERR_INVALID;
     if (separator < 0) {
         directory[0] = '\0';
-        storage_copy_text(filename, STORAGE_NAME_SIZE, path);
+        storage_copy_text(filename, STORAGE_LONG_NAME_SIZE, path);
         return OK;
     }
     for (int index = 0; index < separator; index++) directory[index] = path[index];
     directory[separator] = '\0';
-    storage_copy_text(filename, STORAGE_NAME_SIZE, path + separator + 1);
+    storage_copy_text(filename, STORAGE_LONG_NAME_SIZE, path + separator + 1);
     return OK;
 }
 
@@ -1107,7 +1847,8 @@ static int storage_find_file(const storage_volume_t* volume,
                              const storage_mount_t* mount, const char* path,
                              storage_raw_entry_t* out_entry) {
     char directory[STORAGE_MAX_PATH];
-    char filename[STORAGE_NAME_SIZE];
+    char filename[STORAGE_LONG_NAME_SIZE];
+    storage_long_raw_entry_t long_entry;
     uint32_t cluster;
     uint8_t fixed_root;
     int result;
@@ -1122,10 +1863,47 @@ static int storage_find_file(const storage_volume_t* volume,
     result = storage_resolve_directory(volume, mount, directory,
                                        &cluster, &fixed_root);
     if (result != OK) return result;
-    result = storage_find_entry(volume, mount, cluster, fixed_root,
-                                filename, out_entry);
+    result = storage_find_entry_long(volume, mount, cluster, fixed_root,
+                                     filename, &long_entry);
+    if (result != OK) return result;
+    if (long_entry.attributes & STORAGE_ATTR_DIRECTORY) return ERR_INVALID;
+    if (storage_name_to_fat(long_entry.short_name, out_entry->name) != OK) {
+        return ERR_INVALID;
+    }
+    out_entry->attributes = long_entry.attributes;
+    out_entry->first_cluster = long_entry.first_cluster;
+    out_entry->size = long_entry.size;
+    return OK;
+}
+
+static int storage_find_file_long(const storage_volume_t* volume,
+                                  const storage_mount_t* mount,
+                                  const char* path,
+                                  storage_long_raw_entry_t* out_entry,
+                                  uint32_t* out_directory_cluster,
+                                  uint8_t* out_fixed_root) {
+    char directory[STORAGE_MAX_PATH];
+    char filename[STORAGE_LONG_NAME_SIZE];
+    uint32_t cluster;
+    uint8_t fixed_root;
+    int result;
+
+    if (!volume || !mount || !path || !out_entry ||
+        !out_directory_cluster || !out_fixed_root) {
+        LOG_ERROR("FS", "Argumento nulo na localizacao LFN");
+        return ERR_NULL;
+    }
+    result = storage_split_file_path(path, directory, filename);
+    if (result != OK) return result;
+    result = storage_resolve_directory(volume, mount, directory,
+                                       &cluster, &fixed_root);
+    if (result != OK) return result;
+    result = storage_find_entry_long(volume, mount, cluster, fixed_root,
+                                     filename, out_entry);
     if (result != OK) return result;
     if (out_entry->attributes & STORAGE_ATTR_DIRECTORY) return ERR_INVALID;
+    *out_directory_cluster = cluster;
+    *out_fixed_root = fixed_root;
     return OK;
 }
 
@@ -1202,6 +1980,372 @@ static int storage_read_entry_range(const storage_volume_t* volume,
     }
     *out_read = copied;
     return copied == wanted ? OK : ERR_OVERFLOW;
+}
+
+static int storage_find_free_directory_slots(const storage_volume_t* volume,
+                                             storage_mount_t* mount,
+                                             uint32_t directory_cluster,
+                                             uint32_t required,
+                                             uint32_t* out_offset) {
+    uint8_t sector[STORAGE_SECTOR_SIZE];
+    uint32_t run_start = 0U;
+    uint32_t run_count = 0U;
+    uint32_t cluster = directory_cluster;
+    uint32_t last = directory_cluster;
+
+    if (!volume || !mount || !required || !out_offset) {
+        LOG_ERROR("FS", "Argumento invalido ao reservar entradas FAT32");
+        return ERR_NULL;
+    }
+    for (uint32_t step = 0; step < STORAGE_MAX_CHAIN_STEPS; step++) {
+        uint32_t relative_lba;
+        uint32_t next;
+
+        if (cluster < STORAGE_FIRST_DATA_CLUSTER ||
+            cluster >= mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER) {
+            return ERR_INVALID;
+        }
+        last = cluster;
+        relative_lba = mount->data_start +
+                       (cluster - STORAGE_FIRST_DATA_CLUSTER) *
+                       mount->sectors_per_cluster;
+        for (uint32_t sector_index = 0;
+             sector_index < mount->sectors_per_cluster; sector_index++) {
+            int result = storage_read_relative(volume,
+                                               relative_lba + sector_index,
+                                               1, sector);
+            if (result != OK) return result;
+            for (uint32_t offset = 0; offset < STORAGE_SECTOR_SIZE;
+                 offset += STORAGE_DIR_ENTRY_SIZE) {
+                uint32_t absolute = (volume->start_lba + relative_lba +
+                                     sector_index) * STORAGE_SECTOR_SIZE + offset;
+                if (sector[offset] == 0x00U || sector[offset] == 0xE5U) {
+                    if (!run_count) run_start = absolute;
+                    run_count++;
+                    if (run_count >= required) {
+                        *out_offset = run_start;
+                        return OK;
+                    }
+                } else {
+                    run_count = 0U;
+                }
+            }
+        }
+        if (storage_next_cluster(volume, mount, cluster, &next) != OK) {
+            return ERR_DISK;
+        }
+        if (storage_cluster_is_end(mount, next)) break;
+        if (storage_cluster_is_bad(mount, next)) return ERR_DISK;
+        cluster = next;
+    }
+
+    uint32_t entries_per_cluster = mount->sectors_per_cluster *
+                                   (STORAGE_SECTOR_SIZE /
+                                    STORAGE_DIR_ENTRY_SIZE);
+    uint32_t clusters_needed = (required + entries_per_cluster - 1U) /
+                               entries_per_cluster;
+    uint32_t first_new = 0U;
+    uint32_t previous_new = last;
+    uint32_t orphan_cluster = 0U;
+    int result = OK;
+
+    for (uint32_t created = 0; created < clusters_needed; created++) {
+        uint32_t new_cluster;
+        result = storage_allocate_fat32_cluster(volume, mount, &new_cluster);
+        if (result != OK) break;
+        orphan_cluster = new_cluster;
+        if (!first_new) first_new = new_cluster;
+        result = storage_write_fat32_entry(volume, mount, previous_new,
+                                           new_cluster);
+        if (result != OK) break;
+        orphan_cluster = 0U;
+        previous_new = new_cluster;
+        for (uint32_t index = 0; index < mount->sectors_per_cluster; index++) {
+            uint8_t empty[STORAGE_SECTOR_SIZE];
+            kmemset(empty, 0, sizeof(empty));
+            result = storage_write_relative(
+                volume, mount->data_start +
+                    (new_cluster - STORAGE_FIRST_DATA_CLUSTER) *
+                    mount->sectors_per_cluster + index, empty);
+            if (result != OK) break;
+        }
+        if (result != OK) break;
+    }
+    if (result != OK) {
+        storage_write_fat32_entry(volume, mount, last, STORAGE_FAT32_END);
+        if (first_new) storage_release_fat32_chain(volume, mount, first_new);
+        if (orphan_cluster && orphan_cluster != first_new) {
+            storage_write_fat32_entry(
+                volume, mount, orphan_cluster, STORAGE_FAT32_FREE);
+        }
+        return result;
+    }
+    *out_offset = (volume->start_lba + mount->data_start +
+                   (first_new - STORAGE_FIRST_DATA_CLUSTER) *
+                   mount->sectors_per_cluster) * STORAGE_SECTOR_SIZE;
+    return OK;
+}
+
+static int storage_write_directory_entry(const storage_volume_t* volume,
+                                         uint32_t absolute_offset,
+                                         const uint8_t entry[STORAGE_DIR_ENTRY_SIZE]) {
+    uint8_t sector[STORAGE_SECTOR_SIZE];
+    uint32_t absolute_lba = absolute_offset / STORAGE_SECTOR_SIZE;
+    uint32_t offset = absolute_offset % STORAGE_SECTOR_SIZE;
+    int result;
+
+    if (!volume || !entry || offset + STORAGE_DIR_ENTRY_SIZE >
+        STORAGE_SECTOR_SIZE || absolute_lba < volume->start_lba) {
+        LOG_ERROR("FS", "Entrada de diretorio FAT32 invalida");
+        return ERR_INVALID;
+    }
+    result = storage_read_relative(volume,
+                                   absolute_lba - volume->start_lba,
+                                   1, sector);
+    if (result != OK) return result;
+    kmemcpy(sector + offset, entry, STORAGE_DIR_ENTRY_SIZE);
+    return storage_write_relative(volume, absolute_lba - volume->start_lba,
+                                  sector);
+}
+
+static int storage_mark_directory_range_deleted(const storage_volume_t* volume,
+                                                uint32_t start,
+                                                uint32_t end) {
+    uint8_t entry[STORAGE_DIR_ENTRY_SIZE];
+
+    if (!volume || start > end) return ERR_INVALID;
+    kmemset(entry, 0xE5, sizeof(entry));
+    for (uint32_t offset = start; offset <= end;
+         offset += STORAGE_DIR_ENTRY_SIZE) {
+        int result = storage_write_directory_entry(volume, offset, entry);
+        if (result != OK) return result;
+        if (end - offset < STORAGE_DIR_ENTRY_SIZE) break;
+    }
+    return OK;
+}
+
+static int storage_get_mounted_fat32(const char* id,
+                                     storage_volume_t** out_volume,
+                                     storage_mount_t** out_mount,
+                                     int* out_index) {
+    int index;
+
+    if (!id || !out_volume || !out_mount || !out_index) {
+        LOG_ERROR("FS", "Argumento nulo ao obter montagem FAT32");
+        return ERR_NULL;
+    }
+    index = storage_initialized ? storage_volume_index(id) : -1;
+    if (index < 0) return storage_initialized ? ERR_NOT_FOUND : ERR_STATE;
+    if (!storage_volumes[index].mounted) return ERR_STATE;
+    if (storage_volumes[index].fs_type != STORAGE_FS_FAT32) return ERR_UNAVAILABLE;
+    *out_volume = &storage_volumes[index];
+    *out_mount = storage_mount_for_volume((uint8_t)index);
+    *out_index = index;
+    if (!*out_mount) return ERR_STATE;
+    if ((*out_volume)->read_only) return ERR_UNAVAILABLE;
+    return OK;
+}
+
+static int storage_publish_fat32_entry(
+    const storage_volume_t* volume, const storage_long_raw_entry_t* old_entry,
+    uint32_t slot_start, const char* name, const uint8_t alias[11],
+    uint32_t first_cluster, uint32_t size, uint8_t attributes,
+    uint32_t slot_count) {
+    uint16_t units[STORAGE_LONG_NAME_SIZE];
+    uint32_t unit_count;
+    uint8_t short_entry[STORAGE_DIR_ENTRY_SIZE];
+    uint8_t checksum;
+    int result;
+
+    if (!volume || !name || !alias || !slot_count) {
+        LOG_ERROR("FS", "Argumento nulo na publicacao FAT32");
+        return ERR_NULL;
+    }
+    result = storage_utf8_to_utf16(name, units, STORAGE_LONG_NAME_SIZE,
+                                   &unit_count);
+    if (result != OK) return result;
+    uint32_t lfn_count = (unit_count + 12U) / 13U;
+    if (lfn_count + 1U != slot_count) return ERR_INVALID;
+    if (old_entry && old_entry->lfn_offset <= old_entry->entry_offset) {
+        result = storage_mark_directory_range_deleted(
+            volume, old_entry->lfn_offset, old_entry->entry_offset);
+        if (result != OK) return result;
+    }
+    checksum = storage_lfn_checksum(alias);
+    for (uint32_t index = 0; index < lfn_count; index++) {
+        uint8_t entry[STORAGE_DIR_ENTRY_SIZE];
+        uint8_t sequence = (uint8_t)(lfn_count - index);
+        if (sequence == lfn_count) sequence |= 0x40U;
+        storage_build_lfn_entry(entry, sequence, units, unit_count, checksum);
+        result = storage_write_directory_entry(
+            volume, slot_start + index * STORAGE_DIR_ENTRY_SIZE, entry);
+        if (result != OK) return result;
+    }
+    kmemset(short_entry, 0, sizeof(short_entry));
+    kmemcpy(short_entry, alias, 11U);
+    short_entry[11] = attributes;
+    short_entry[20] = (uint8_t)(first_cluster >> 16);
+    short_entry[21] = (uint8_t)(first_cluster >> 24);
+    short_entry[26] = (uint8_t)first_cluster;
+    short_entry[27] = (uint8_t)(first_cluster >> 8);
+    short_entry[28] = (uint8_t)size;
+    short_entry[29] = (uint8_t)(size >> 8);
+    short_entry[30] = (uint8_t)(size >> 16);
+    short_entry[31] = (uint8_t)(size >> 24);
+    return storage_write_directory_entry(
+        volume, slot_start + lfn_count * STORAGE_DIR_ENTRY_SIZE, short_entry);
+}
+
+static int storage_write_fat32_file_unlocked(const char* id, const char* path,
+                                             const uint8_t* data, uint32_t size,
+                                             uint8_t attributes,
+                                             storage_atomic_mode_t mode) {
+    storage_volume_t* volume;
+    storage_mount_t* mount;
+    storage_long_raw_entry_t old_entry;
+    char directory[STORAGE_MAX_PATH];
+    char filename[STORAGE_LONG_NAME_SIZE];
+    uint32_t directory_cluster;
+    uint8_t fixed_root;
+    uint32_t slot_start;
+    uint32_t cluster_bytes;
+    uint32_t needed;
+    uint32_t first_cluster = 0U;
+    uint32_t previous_cluster = 0U;
+    uint32_t orphan_cluster = 0U;
+    uint8_t alias[11];
+    int index;
+    int result;
+
+    if (!id || !path || (size && !data)) {
+        LOG_ERROR("FS", "Argumento invalido na escrita FAT32");
+        return ERR_NULL;
+    }
+    result = storage_get_mounted_fat32(id, &volume, &mount, &index);
+    if (result != OK) return result;
+    (void)index;
+    result = storage_split_file_path(path, directory, filename);
+    if (result != OK) return result;
+    result = storage_resolve_directory(volume, mount, directory,
+                                       &directory_cluster, &fixed_root);
+    if (result != OK) return result;
+    result = storage_find_entry_long(volume, mount, directory_cluster,
+                                     fixed_root, filename, &old_entry);
+    uint8_t replacing = result == OK ? 1U : 0U;
+    if (result != OK && result != ERR_NOT_FOUND) return result;
+    if (replacing && (old_entry.attributes & STORAGE_ATTR_DIRECTORY)) {
+        return ERR_INVALID;
+    }
+    if (mode == STORAGE_ATOMIC_REPLACE_ONLY && !replacing) return ERR_NOT_FOUND;
+    if (replacing) {
+        result = storage_name_to_fat(old_entry.short_name, alias);
+        if (result != OK) return result;
+    } else {
+        result = storage_generate_alias(volume, mount, directory_cluster,
+                                        fixed_root, filename, alias);
+        if (result != OK) return result;
+    }
+    cluster_bytes = mount->sectors_per_cluster * STORAGE_SECTOR_SIZE;
+    if (size > 0U && size > 0xFFFFFFFFU - cluster_bytes + 1U) {
+        result = ERR_OVERFLOW;
+        goto rollback_clusters;
+    }
+    needed = size ? (size + cluster_bytes - 1U) / cluster_bytes : 0U;
+    if (attributes & STORAGE_ATTR_DIRECTORY) needed = 1U;
+    for (uint32_t count = 0; count < needed; count++) {
+        uint32_t cluster;
+        result = storage_allocate_fat32_cluster(volume, mount, &cluster);
+        if (result != OK) goto rollback_clusters;
+        orphan_cluster = cluster;
+        if (!first_cluster) first_cluster = cluster;
+        if (previous_cluster) {
+            result = storage_write_fat32_entry(volume, mount,
+                                               previous_cluster, cluster);
+            if (result != OK) goto rollback_clusters;
+        }
+        orphan_cluster = 0U;
+        previous_cluster = cluster;
+        if (!(attributes & STORAGE_ATTR_DIRECTORY)) {
+            uint32_t offset = count * cluster_bytes;
+            uint32_t amount = size - offset;
+            if (amount > cluster_bytes) amount = cluster_bytes;
+            result = storage_write_cluster(volume, mount, cluster,
+                                           data + offset, amount);
+            if (result != OK) goto rollback_clusters;
+        } else {
+            uint8_t empty[STORAGE_SECTOR_SIZE];
+            kmemset(empty, 0, sizeof(empty));
+            for (uint32_t sector = 0; sector < mount->sectors_per_cluster;
+                 sector++) {
+                result = storage_write_relative(
+                    volume, mount->data_start +
+                    (cluster - STORAGE_FIRST_DATA_CLUSTER) *
+                    mount->sectors_per_cluster + sector, empty);
+                if (result != OK) goto rollback_clusters;
+            }
+        }
+    }
+    if (attributes & STORAGE_ATTR_DIRECTORY) {
+        /* O marcador de diretorio vazio fica consistente antes da entrada. */
+        uint8_t dot[STORAGE_DIR_ENTRY_SIZE];
+        uint8_t dot_dot[STORAGE_DIR_ENTRY_SIZE];
+        uint32_t parent_cluster = fixed_root ? mount->root_cluster :
+                                  directory_cluster;
+
+        storage_build_directory_marker(dot, ".          ", first_cluster);
+        result = storage_write_directory_entry(
+            volume, (volume->start_lba + mount->data_start +
+                     (first_cluster - STORAGE_FIRST_DATA_CLUSTER) *
+                     mount->sectors_per_cluster) * STORAGE_SECTOR_SIZE, dot);
+        if (result != OK) goto rollback_clusters;
+        storage_build_directory_marker(dot_dot, "..         ", parent_cluster);
+        result = storage_write_directory_entry(
+            volume, (volume->start_lba + mount->data_start +
+                     (first_cluster - STORAGE_FIRST_DATA_CLUSTER) *
+                     mount->sectors_per_cluster) * STORAGE_SECTOR_SIZE +
+                    STORAGE_DIR_ENTRY_SIZE, dot_dot);
+        if (result != OK) goto rollback_clusters;
+    }
+    uint16_t units[STORAGE_LONG_NAME_SIZE];
+    uint32_t unit_count;
+    result = storage_utf8_to_utf16(filename, units, STORAGE_LONG_NAME_SIZE,
+                                   &unit_count);
+    if (result != OK) goto rollback_clusters;
+    uint32_t required_slots = (unit_count + 12U) / 13U + 1U;
+    result = storage_find_free_directory_slots(
+        volume, mount, directory_cluster, required_slots, &slot_start);
+    if (result == OK) {
+        /* A entrada antiga permanece intacta ate a nova estar publicada. */
+        result = storage_publish_fat32_entry(
+            volume, 0, slot_start, filename, alias, first_cluster,
+            size, attributes, required_slots);
+    }
+    if (result == OK && replacing) {
+        result = storage_mark_directory_range_deleted(
+            volume, old_entry.lfn_offset, old_entry.entry_offset);
+    }
+    if (result != OK) goto rollback_clusters;
+    if (replacing && old_entry.first_cluster &&
+        old_entry.first_cluster != first_cluster) {
+        result = storage_release_fat32_chain(volume, mount,
+                                              old_entry.first_cluster);
+        if (result != OK) {
+            storage_log_volume(LOG_LEVEL_ERROR, volume->id,
+                               "arquivo publicado, mas cadeia antiga nao foi liberada");
+            return result;
+        }
+    }
+    return OK;
+
+rollback_clusters:
+    if (first_cluster) storage_release_fat32_chain(volume, mount, first_cluster);
+    if (orphan_cluster && orphan_cluster != first_cluster) {
+        storage_write_fat32_entry(volume, mount, orphan_cluster,
+                                  STORAGE_FAT32_FREE);
+    }
+    storage_log_volume(LOG_LEVEL_ERROR, volume->id,
+                       "transacao de escrita FAT32 revertida");
+    return result;
 }
 
 static void storage_refresh_disk(storage_disk_t* disk) {
@@ -1675,6 +2819,127 @@ int storage_dir_cursor_next(storage_dir_cursor_t* cursor,
     return OK;
 }
 
+typedef struct {
+    storage_long_dir_entry_t* entries;
+    uint32_t capacity;
+    uint32_t count;
+} storage_long_list_context_t;
+
+static int storage_long_list_visitor(const storage_long_raw_entry_t* entry,
+                                     void* context) {
+    storage_long_list_context_t* list =
+        (storage_long_list_context_t*)context;
+    storage_long_dir_entry_t* output;
+
+    if (!entry || !list) return ERR_NULL;
+    if (entry->name[0] == '.' &&
+        (entry->name[1] == '\0' ||
+         (entry->name[1] == '.' && entry->name[2] == '\0'))) return OK;
+    if (list->count >= list->capacity) return OK;
+    output = &list->entries[list->count++];
+    kmemset(output, 0, sizeof(*output));
+    storage_copy_text(output->name, STORAGE_LONG_NAME_SIZE, entry->name);
+    storage_copy_text(output->short_name, STORAGE_NAME_SIZE,
+                      entry->short_name);
+    output->size = entry->size;
+    output->cluster = entry->first_cluster;
+    output->attributes = entry->attributes;
+    output->is_directory = (entry->attributes & STORAGE_ATTR_DIRECTORY) ? 1U : 0U;
+    return OK;
+}
+
+int storage_list_dir_long(const char* id, const char* path,
+                          storage_long_dir_entry_t* entries,
+                          uint32_t capacity, uint32_t* out_count) {
+    storage_long_list_context_t list;
+    storage_mount_t* mount;
+    storage_volume_t* volume;
+    uint32_t cluster;
+    uint8_t fixed_root;
+    int index;
+    int result;
+
+    if (!id || !path || !entries || !out_count) {
+        LOG_ERROR("FS", "Argumento nulo na listagem LFN");
+        return ERR_NULL;
+    }
+    if (!capacity || capacity > STORAGE_MAX_DIR_ENTRIES) {
+        LOG_ERROR("FS", "Capacidade invalida na listagem LFN");
+        return ERR_INVALID;
+    }
+    if (kstrlen(path) >= STORAGE_MAX_PATH) {
+        LOG_ERROR("FS", "Caminho excede limite na listagem LFN");
+        return ERR_OVERFLOW;
+    }
+    *out_count = 0U;
+    spinlock_acquire(&storage_operation_lock);
+    index = storage_initialized ? storage_volume_index(id) : -1;
+    if (index < 0 || !storage_volumes[index].mounted) {
+        spinlock_release(&storage_operation_lock);
+        storage_log_volume(LOG_LEVEL_ERROR, id,
+                           index < 0 ? "volume nao encontrado" :
+                           "volume nao esta montado");
+        return index < 0 ? ERR_NOT_FOUND : ERR_STATE;
+    }
+    volume = &storage_volumes[index];
+    mount = storage_mount_for_volume((uint8_t)index);
+    if (!mount) {
+        spinlock_release(&storage_operation_lock);
+        storage_log_volume(LOG_LEVEL_ERROR, id,
+                           "registro interno LFN ausente");
+        return ERR_STATE;
+    }
+    result = storage_resolve_directory(volume, mount, path,
+                                       &cluster, &fixed_root);
+    if (result == OK) {
+        list.entries = entries;
+        list.capacity = capacity;
+        list.count = 0U;
+        result = storage_walk_directory_long(
+            volume, mount, cluster, fixed_root,
+            storage_long_list_visitor, &list);
+        *out_count = list.count;
+    }
+    spinlock_release(&storage_operation_lock);
+    if (result != OK) storage_log_volume(LOG_LEVEL_ERROR, id,
+                                         "falha ao listar nomes longos");
+    return result;
+}
+
+int storage_dir_cursor_open_long(const char* id, const char* path,
+                                 storage_long_dir_cursor_t* cursor) {
+    int result = storage_dir_cursor_open(id, path, cursor);
+    if (result == OK) storage_copy_text(cursor->lfn_path, STORAGE_MAX_PATH, path);
+    return result;
+}
+
+int storage_dir_cursor_next_long(storage_long_dir_cursor_t* cursor,
+                                 storage_long_dir_entry_t* out_entry,
+                                 uint8_t* out_found, uint8_t* out_done) {
+    uint32_t count = 0U;
+    int result;
+
+    if (!cursor || !out_entry || !out_found || !out_done) {
+        LOG_ERROR("FS", "Argumento nulo no cursor LFN");
+        return ERR_NULL;
+    }
+    *out_found = 0U;
+    *out_done = cursor->done;
+    if (cursor->done || !cursor->active) return cursor->active ? OK : ERR_STATE;
+    result = storage_list_dir_long(cursor->volume_id, cursor->lfn_path,
+                                   storage_long_cursor_entries,
+                                   STORAGE_MAX_DIR_ENTRIES, &count);
+    if (result != OK) return result;
+    if (cursor->lfn_result_index >= count) {
+        cursor->done = 1U;
+        *out_done = 1U;
+        return OK;
+    }
+    *out_entry = storage_long_cursor_entries[cursor->lfn_result_index++];
+    *out_found = 1U;
+    return OK;
+}
+
 int storage_read_file_range(const char* id, const char* path,
                             uint32_t offset, uint8_t* buffer,
                             uint32_t max_size, uint32_t* out_read) {
@@ -1687,10 +2952,6 @@ int storage_read_file_range(const char* id, const char* path,
     if (!id || !path || !out_read || (max_size && !buffer)) {
         LOG_ERROR("FS", "Argumento nulo na leitura de arquivo");
         return ERR_NULL;
-    }
-    if (max_size > STORAGE_MAX_VIEW_BYTES) {
-        LOG_ERROR("FS", "Faixa de visualizacao excede o limite");
-        return ERR_OVERFLOW;
     }
     if (kstrlen(path) >= STORAGE_MAX_PATH) {
         LOG_ERROR("FS", "Caminho excede limite na leitura");
@@ -1723,6 +2984,517 @@ int storage_read_file_range(const char* id, const char* path,
                                          "falha ao ler arquivo");
     spinlock_release(&storage_operation_lock);
     return result;
+}
+
+int storage_get_file_info(const char* id, const char* path,
+                          uint32_t* out_size, uint8_t* out_attributes) {
+    storage_volume_t* volume;
+    storage_mount_t* mount;
+    storage_raw_entry_t entry;
+    int index;
+    int result;
+
+    if (!id || !path || !out_size) {
+        LOG_ERROR("FS", "Argumento nulo na consulta de arquivo de volume");
+        return ERR_NULL;
+    }
+    spinlock_acquire(&storage_operation_lock);
+    index = storage_initialized ? storage_volume_index(id) : -1;
+    if (index < 0 || !storage_volumes[index].mounted) {
+        spinlock_release(&storage_operation_lock);
+        return index < 0 ? ERR_NOT_FOUND : ERR_STATE;
+    }
+    volume = &storage_volumes[index];
+    mount = storage_mount_for_volume((uint8_t)index);
+    result = mount ? storage_find_file(volume, mount, path, &entry) : ERR_STATE;
+    if (result == OK) {
+        *out_size = entry.size;
+        if (out_attributes) *out_attributes = entry.attributes;
+    }
+    spinlock_release(&storage_operation_lock);
+    if (result != OK) LOG_ERROR("FS", "Consulta de arquivo de volume falhou");
+    return result;
+}
+
+int storage_find_system_volume(storage_volume_t* out_volume) {
+    if (!out_volume) {
+        LOG_ERROR("FS", "Destino nulo na busca do volume do sistema");
+        return ERR_NULL;
+    }
+    spinlock_acquire(&storage_registry_lock);
+    for (uint8_t index = 0; index < storage_volume_count; index++) {
+        storage_volume_t* volume = &storage_volumes[index];
+        if (volume->role == STORAGE_VOLUME_ROLE_SYSTEM && volume->mounted) {
+            *out_volume = *volume;
+            spinlock_release(&storage_registry_lock);
+            return OK;
+        }
+    }
+    spinlock_release(&storage_registry_lock);
+    LOG_WARN("FS", "Volume do sistema FAT32 nao esta montado");
+    return storage_initialized ? ERR_NOT_FOUND : ERR_STATE;
+}
+
+typedef struct {
+    const storage_volume_t* volume;
+    const storage_mount_t* mount;
+    uint32_t depth;
+} storage_check_context_t;
+
+static int storage_buffers_equal(const uint8_t* left, const uint8_t* right,
+                                 uint32_t size) {
+    if (!left || !right) return 0;
+    for (uint32_t index = 0; index < size; index++) {
+        if (left[index] != right[index]) return 0;
+    }
+    return 1;
+}
+
+static int storage_check_chain(const storage_volume_t* volume,
+                               const storage_mount_t* mount,
+                               uint32_t first_cluster, uint32_t size) {
+    uint32_t cluster_bytes;
+    uint32_t required_clusters = 0U;
+    uint32_t cluster;
+
+    if (!volume || !mount) {
+        LOG_ERROR("FS", "Contexto nulo na verificacao de cadeia FAT32");
+        return ERR_NULL;
+    }
+    if (!first_cluster) return size ? ERR_INVALID : OK;
+    cluster_bytes = mount->sectors_per_cluster * STORAGE_SECTOR_SIZE;
+    if (size) {
+        required_clusters = size / cluster_bytes;
+        if (size % cluster_bytes) required_clusters++;
+    }
+    cluster = first_cluster;
+    for (uint32_t step = 0; step < STORAGE_MAX_CHAIN_STEPS; step++) {
+        uint32_t next;
+
+        if (cluster < STORAGE_FIRST_DATA_CLUSTER ||
+            cluster >= mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER) {
+            LOG_ERROR("FS", "Cadeia FAT32 aponta para cluster invalido");
+            return ERR_INVALID;
+        }
+        if (storage_next_cluster(volume, mount, cluster, &next) != OK) {
+            LOG_ERROR("FS", "Falha ao ler cadeia FAT32");
+            return ERR_DISK;
+        }
+        if (storage_cluster_is_bad(mount, next)) {
+            LOG_ERROR("FS", "Cadeia FAT32 aponta para cluster ruim");
+            return ERR_DISK;
+        }
+        if (storage_cluster_is_end(mount, next)) {
+            if (required_clusters && step + 1U < required_clusters) {
+                LOG_ERROR("FS", "Cadeia FAT32 menor que o arquivo");
+                return ERR_INVALID;
+            }
+            return OK;
+        }
+        cluster = next;
+    }
+    LOG_ERROR("FS", "Cadeia FAT32 excedeu o limite de passos");
+    return ERR_OVERFLOW;
+}
+
+static int storage_check_directory_visitor(
+    const storage_long_raw_entry_t* entry, void* context) {
+    storage_check_context_t* check = (storage_check_context_t*)context;
+    storage_check_context_t child;
+    int chain_result;
+
+    if (!entry || !check || !check->volume || !check->mount) {
+        LOG_ERROR("FS", "Contexto invalido na verificacao de diretorio");
+        return ERR_NULL;
+    }
+    chain_result = storage_check_chain(check->volume, check->mount,
+                                       entry->first_cluster, entry->size);
+    if (chain_result != OK) {
+        LOG_ERROR("FS", "Cadeia de entrada FAT32 inconsistente");
+        return chain_result;
+    }
+    if (!(entry->attributes & STORAGE_ATTR_DIRECTORY) ||
+        (entry->name[0] == '.' &&
+         (entry->name[1] == '\0' ||
+          (entry->name[1] == '.' && entry->name[2] == '\0')))) return OK;
+    if (entry->first_cluster < STORAGE_FIRST_DATA_CLUSTER) {
+        LOG_ERROR("FS", "Diretorio FAT32 sem cluster valido");
+        return ERR_INVALID;
+    }
+    if (check->depth >= STORAGE_MAX_CHAIN_STEPS) {
+        LOG_ERROR("FS", "Profundidade de diretorios FAT32 excedida");
+        return ERR_OVERFLOW;
+    }
+    child = *check;
+    child.depth++;
+    return storage_walk_directory_long(
+        check->volume, check->mount, entry->first_cluster, 0,
+        storage_check_directory_visitor, &child);
+}
+
+static int storage_check_metadata(const storage_volume_t* volume,
+                                  const storage_mount_t* mount) {
+    uint8_t boot[STORAGE_SECTOR_SIZE];
+    uint8_t backup_boot[STORAGE_SECTOR_SIZE];
+    uint8_t fsinfo[STORAGE_SECTOR_SIZE];
+    uint8_t backup_fsinfo[STORAGE_SECTOR_SIZE];
+    uint16_t fsinfo_sector;
+    uint16_t backup_sector;
+
+    if (storage_read_relative(volume, 0, 1, boot) != OK) {
+        return ERR_DISK;
+    }
+    fsinfo_sector = storage_read_u16(boot + 48U);
+    backup_sector = storage_read_u16(boot + 50U);
+    if (!fsinfo_sector || !backup_sector ||
+        fsinfo_sector >= mount->total_sectors ||
+        backup_sector >= mount->total_sectors ||
+        storage_read_relative(volume, backup_sector, 1, backup_boot) != OK ||
+        storage_read_relative(volume, fsinfo_sector, 1, fsinfo) != OK ||
+        storage_read_relative(volume, backup_sector + 1U, 1,
+                              backup_fsinfo) != OK) {
+        return ERR_DISK;
+    }
+    if (!storage_buffers_equal(boot, backup_boot, STORAGE_SECTOR_SIZE) ||
+        !storage_buffers_equal(fsinfo, backup_fsinfo, STORAGE_SECTOR_SIZE) ||
+        storage_read_u32(fsinfo) != 0x41615252U ||
+        storage_read_u32(fsinfo + 484U) != 0x61417272U ||
+        storage_read_u32(fsinfo + 508U) != 0xAA550000U) {
+        LOG_ERROR("FS", "BPB, backup ou FSInfo FAT32 divergente");
+        return ERR_INVALID;
+    }
+    (void)mount;
+    return OK;
+}
+
+int storage_check(const char* id) {
+    storage_volume_t* volume;
+    storage_mount_t* mount;
+    uint8_t first[STORAGE_SECTOR_SIZE];
+    uint8_t second[STORAGE_SECTOR_SIZE];
+    storage_check_context_t check_context;
+    int index;
+    int result;
+
+    if (!id) {
+        LOG_ERROR("FS", "ID nulo na verificacao de volume");
+        return ERR_NULL;
+    }
+    spinlock_acquire(&storage_operation_lock);
+    index = storage_initialized ? storage_volume_index(id) : -1;
+    if (index < 0 || !storage_volumes[index].mounted) {
+        spinlock_release(&storage_operation_lock);
+        LOG_ERROR("FS", "Volume nao encontrado ou desmontado na verificacao");
+        return index < 0 ? ERR_NOT_FOUND : ERR_STATE;
+    }
+    volume = &storage_volumes[index];
+    mount = storage_mount_for_volume((uint8_t)index);
+    if (!mount || mount->fs_type != STORAGE_FS_FAT32) {
+        spinlock_release(&storage_operation_lock);
+        LOG_ERROR("FS", "Verificacao exige volume FAT32 montado");
+        return ERR_UNAVAILABLE;
+    }
+    result = storage_check_metadata(volume, mount);
+    for (uint32_t sector = 0; sector < mount->sectors_per_fat; sector++) {
+        if (result != OK) break;
+        result = storage_read_relative(volume, mount->fat_start + sector, 1,
+                                       first);
+        if (result != OK) break;
+        result = storage_read_relative(
+            volume, mount->fat_start + mount->sectors_per_fat + sector, 1,
+            second);
+        if (result != OK) break;
+        for (uint32_t byte = 0; byte < STORAGE_SECTOR_SIZE; byte++) {
+            if (first[byte] != second[byte]) {
+                result = ERR_INVALID;
+                break;
+            }
+        }
+        if (result != OK) break;
+    }
+    if (result == OK) {
+        check_context.volume = volume;
+        check_context.mount = mount;
+        check_context.depth = 0U;
+        result = storage_walk_directory_long(
+            volume, mount, mount->root_cluster, 0,
+            storage_check_directory_visitor, &check_context);
+    }
+    spinlock_release(&storage_operation_lock);
+    if (result != OK) {
+        storage_log_volume(LOG_LEVEL_ERROR, id,
+                           "verificacao FAT32 encontrou inconsistencias");
+        return result;
+    }
+    storage_log_volume(LOG_LEVEL_INFO, id, "verificacao FAT32 concluida");
+    return OK;
+}
+
+int storage_write_file(const char* id, const char* path,
+                       const uint8_t* data, uint32_t size,
+                       uint8_t attributes) {
+    return storage_atomic_write_file(id, path, data, size, attributes,
+                                     STORAGE_ATOMIC_CREATE_OR_REPLACE);
+}
+
+int storage_atomic_write_file(const char* id, const char* path,
+                              const uint8_t* data, uint32_t size,
+                              uint8_t attributes, storage_atomic_mode_t mode) {
+    int result;
+
+    if (!id || !path || (size && !data)) {
+        LOG_ERROR("FS", "Argumento nulo na escrita atomica FAT32");
+        return ERR_NULL;
+    }
+    if (mode != STORAGE_ATOMIC_CREATE_OR_REPLACE &&
+        mode != STORAGE_ATOMIC_REPLACE_ONLY) {
+        LOG_ERROR("FS", "Modo invalido na escrita atomica FAT32");
+        return ERR_INVALID;
+    }
+    spinlock_acquire(&storage_operation_lock);
+    result = storage_write_fat32_file_unlocked(id, path, data, size,
+                                               attributes, mode);
+    spinlock_release(&storage_operation_lock);
+    if (result != OK) LOG_ERROR("FS", "Escrita atomica FAT32 falhou");
+    return result;
+}
+
+int storage_delete_file(const char* id, const char* path) {
+    storage_volume_t* volume;
+    storage_mount_t* mount;
+    storage_long_raw_entry_t entry;
+    uint32_t directory_cluster;
+    uint8_t fixed_root;
+    int index;
+    int result;
+
+    if (!id || !path) {
+        LOG_ERROR("FS", "Argumento nulo na exclusao FAT32");
+        return ERR_NULL;
+    }
+    spinlock_acquire(&storage_operation_lock);
+    result = storage_get_mounted_fat32(id, &volume, &mount, &index);
+    if (result == OK) {
+        (void)index;
+        result = storage_find_file_long(volume, mount, path, &entry,
+                                        &directory_cluster, &fixed_root);
+        (void)directory_cluster;
+        (void)fixed_root;
+    }
+    if (result == OK) {
+        if (entry.attributes & STORAGE_ATTR_DIRECTORY) {
+            result = ERR_INVALID;
+        } else {
+            result = storage_mark_directory_range_deleted(
+                volume, entry.lfn_offset, entry.entry_offset);
+            if (result == OK && entry.first_cluster) {
+                result = storage_release_fat32_chain(volume, mount,
+                                                     entry.first_cluster);
+            }
+        }
+    }
+    spinlock_release(&storage_operation_lock);
+    if (result != OK) LOG_ERROR("FS", "Exclusao FAT32 falhou");
+    return result;
+}
+
+int storage_create_dir(const char* id, const char* path) {
+    return storage_atomic_write_file(id, path, 0, 0,
+                                     STORAGE_ATTR_DIRECTORY,
+                                     STORAGE_ATOMIC_CREATE_OR_REPLACE);
+}
+
+int storage_rename_file(const char* id, const char* path,
+                        const char* new_name) {
+    storage_volume_t* volume;
+    storage_mount_t* mount;
+    storage_long_raw_entry_t old_entry;
+    storage_long_raw_entry_t new_entry;
+    char directory[STORAGE_MAX_PATH];
+    char old_name[STORAGE_LONG_NAME_SIZE];
+    uint32_t directory_cluster;
+    uint8_t fixed_root;
+    uint8_t alias[11];
+    uint16_t units[STORAGE_LONG_NAME_SIZE];
+    uint32_t unit_count;
+    uint32_t slot_start;
+    int index;
+    int result;
+
+    if (!id || !path || !new_name) {
+        LOG_ERROR("FS", "Argumento nulo na renomeacao FAT32");
+        return ERR_NULL;
+    }
+    if (!new_name[0] || kstrlen(new_name) >= STORAGE_LONG_NAME_SIZE) {
+        LOG_ERROR("FS", "Nome de destino FAT32 invalido");
+        return ERR_INVALID;
+    }
+    for (uint32_t name_index = 0; new_name[name_index]; name_index++) {
+        if (new_name[name_index] == '/' || new_name[name_index] == '\\') {
+            LOG_ERROR("FS", "Nome de destino FAT32 contem separador");
+            return ERR_INVALID;
+        }
+    }
+    spinlock_acquire(&storage_operation_lock);
+    result = storage_get_mounted_fat32(id, &volume, &mount, &index);
+    if (result != OK) goto rename_done;
+    (void)index;
+    result = storage_split_file_path(path, directory, old_name);
+    if (result != OK) goto rename_done;
+    result = storage_resolve_directory(volume, mount, directory,
+                                       &directory_cluster, &fixed_root);
+    if (result != OK) goto rename_done;
+    result = storage_find_entry_long(volume, mount, directory_cluster,
+                                     fixed_root, old_name, &old_entry);
+    if (result != OK) goto rename_done;
+    if (storage_find_entry_long(volume, mount, directory_cluster, fixed_root,
+                                new_name, &new_entry) == OK) {
+        result = ERR_INVALID;
+        goto rename_done;
+    }
+    result = storage_name_to_fat(old_entry.short_name, alias);
+    if (result != OK) goto rename_done;
+    result = storage_utf8_to_utf16(new_name, units, STORAGE_LONG_NAME_SIZE,
+                                   &unit_count);
+    if (result != OK) goto rename_done;
+    uint32_t required = (unit_count + 12U) / 13U + 1U;
+    result = storage_find_free_directory_slots(
+        volume, mount, directory_cluster, required, &slot_start);
+    if (result == OK) {
+        result = storage_publish_fat32_entry(
+            volume, 0, slot_start,
+            new_name, alias, old_entry.first_cluster, old_entry.size,
+            old_entry.attributes, required);
+    }
+    if (result == OK) {
+        result = storage_mark_directory_range_deleted(
+            volume, old_entry.lfn_offset, old_entry.entry_offset);
+    }
+rename_done:
+    spinlock_release(&storage_operation_lock);
+    if (result != OK) LOG_ERROR("FS", "Renomeacao FAT32 falhou");
+    return result;
+}
+
+int storage_stream_begin(const char* id, const char* path,
+                         uint32_t expected_size, uint8_t attributes) {
+    storage_volume_t* volume;
+    storage_mount_t* mount;
+    int index;
+    int result;
+
+    if (!id || !path) {
+        LOG_ERROR("FS", "Argumento nulo no inicio streaming FAT32");
+        return ERR_NULL;
+    }
+    if (!expected_size || expected_size > FS_MAX_STREAM_FILE_SIZE) {
+        LOG_ERROR("FS", "Tamanho invalido no inicio streaming FAT32");
+        return ERR_OVERFLOW;
+    }
+    spinlock_acquire(&storage_operation_lock);
+    if (storage_stream_state.active) {
+        spinlock_release(&storage_operation_lock);
+        LOG_ERROR("FS", "Ja existe escrita streaming FAT32 ativa");
+        return ERR_STATE;
+    }
+    result = storage_get_mounted_fat32(id, &volume, &mount, &index);
+    (void)volume;
+    (void)mount;
+    (void)index;
+    if (result == OK) {
+        kmemset(&storage_stream_state, 0, sizeof(storage_stream_state));
+        storage_stream_state.buffer = (uint8_t*)kmalloc(expected_size);
+        if (!storage_stream_state.buffer) {
+            result = ERR_MEM;
+            LOG_ERROR("FS", "Memoria insuficiente para buffer FAT32");
+        } else {
+            storage_stream_state.active = 1U;
+            storage_stream_state.expected_size = expected_size;
+            storage_stream_state.attributes = attributes;
+            storage_copy_text(storage_stream_state.volume_id,
+                              STORAGE_ID_SIZE, id);
+            storage_copy_text(storage_stream_state.path,
+                              STORAGE_MAX_PATH, path);
+        }
+    }
+    spinlock_release(&storage_operation_lock);
+    if (result != OK) LOG_ERROR("FS", "Inicio streaming FAT32 falhou");
+    return result;
+}
+
+int storage_stream_write(const uint8_t* data, uint32_t size) {
+    if (!data && size) {
+        LOG_ERROR("FS", "Dados nulos na escrita streaming FAT32");
+        return ERR_NULL;
+    }
+    spinlock_acquire(&storage_operation_lock);
+    if (!storage_stream_state.active) {
+        spinlock_release(&storage_operation_lock);
+        LOG_ERROR("FS", "Streaming FAT32 nao esta ativo");
+        return ERR_STATE;
+    }
+    if (size > storage_stream_state.expected_size -
+        storage_stream_state.written_size) {
+        spinlock_release(&storage_operation_lock);
+        LOG_ERROR("FS", "Streaming FAT32 excedeu o tamanho esperado");
+        return ERR_OVERFLOW;
+    }
+    kmemcpy(storage_stream_state.buffer + storage_stream_state.written_size,
+            data, size);
+    storage_stream_state.written_size += size;
+    spinlock_release(&storage_operation_lock);
+    return OK;
+}
+
+int storage_stream_finish(void) {
+    storage_stream_state_t state;
+    int result;
+
+    spinlock_acquire(&storage_operation_lock);
+    if (!storage_stream_state.active) {
+        spinlock_release(&storage_operation_lock);
+        LOG_ERROR("FS", "Finalizacao sem streaming FAT32 ativo");
+        return ERR_STATE;
+    }
+    if (storage_stream_state.written_size !=
+        storage_stream_state.expected_size) {
+        spinlock_release(&storage_operation_lock);
+        LOG_ERROR("FS", "Streaming FAT32 incompleto");
+        return ERR_INVALID;
+    }
+    state = storage_stream_state;
+    kmemset(&storage_stream_state, 0, sizeof(storage_stream_state));
+    spinlock_release(&storage_operation_lock);
+    result = storage_atomic_write_file(
+        state.volume_id, state.path, state.buffer, state.expected_size,
+        state.attributes, STORAGE_ATOMIC_CREATE_OR_REPLACE);
+    kfree(state.buffer);
+    state.buffer = 0;
+    if (result != OK) LOG_ERROR("FS", "Finalizacao streaming FAT32 falhou");
+    return result;
+}
+
+int storage_stream_abort(void) {
+    spinlock_acquire(&storage_operation_lock);
+    if (!storage_stream_state.active) {
+        spinlock_release(&storage_operation_lock);
+        LOG_ERROR("FS", "Cancelamento sem streaming FAT32 ativo");
+        return ERR_STATE;
+    }
+    kfree(storage_stream_state.buffer);
+    storage_stream_state.buffer = 0;
+    kmemset(&storage_stream_state, 0, sizeof(storage_stream_state));
+    spinlock_release(&storage_operation_lock);
+    return OK;
+}
+
+int storage_stream_is_active(void) {
+    int active;
+
+    spinlock_acquire(&storage_operation_lock);
+    active = storage_stream_state.active ? 1 : 0;
+    spinlock_release(&storage_operation_lock);
+    return active;
 }
 
 const char* storage_fs_name(storage_fs_type_t type) {

@@ -43,7 +43,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [05 - Drivers](05-drivers/drivers.md) | Comunicação com hardware (VGA, VESA, PCI, AC97) |
 | [06 - Memória](06-memoria/memoria.md) | Gerenciamento de memória + compressão LZSS |
 | [07 - Processos](07-processos/processos.md) | Processos e threads |
-| [08 - Sistema de Arquivos](08-sistema-arquivos/sistema-arquivos.md) | FAT12, FAT32, Storage e indice global EP3 |
+| [08 - Sistema de Arquivos](08-sistema-arquivos/sistema-arquivos.md) | FAT12 legado, volume híbrido FAT32, Storage, LFN e índice global |
 | [09 - Shell](09-shell/shell.md) | Terminal interativo, comandos e aplicativos |
 | [Refatoração do Shell](09-shell/refatoracao-shell.md) | Diagnóstico e plano incremental para separar entrada, dispatcher e comandos |
 | [10 - Extras](10-extras/extras.md) | PC Speaker, syscalls |
@@ -71,7 +71,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [Contrato ZUM2/ZUPD v2](14-atualizacoes/contrato-zupd-v2.md) | Runtime v2, catálogo, cache seletivo/completo, staging, rollback e falhas EP6.3 |
 | [Distribuicao remota ZUPD v1](14-atualizacoes/distribuicao-remota.md) | Manifesto ZUM1, HTTP manual, cache U5 e selecao EP6.0 por tag exata |
 | [System Updater](14-atualizacoes/system-updater.md) | Aplicativo nativo Simple/Classic para pacotes, estado, historico e remoto |
-| [Ferramenta Host ZUPD v1](14-atualizacoes/ferramenta-zupd.md) | Chave, fixtures EP5/EP6.0 e auditoria offline dos controles U3/U4/U5 |
+| [Ferramenta Host ZUPD v1](14-atualizacoes/ferramenta-zupd.md) | Chave, fixtures EP5/EP6, ZSYS e formatador híbrido FAT32 |
 | [Avisos de terceiros](../THIRD_PARTY_NOTICES.md) | Proveniencia e licencas de codigo adaptado |
 | [GUI Classic](melhorias%20futuras/gui_moderna.md) | Histórico da transição para primitivas gráficas 2D e VESA |
 | [Formatação Inteligente](melhorias%20futuras/formatacao%20inteligente.md) | Sistema de reset e reinstalação preservando arquivos |
@@ -91,7 +91,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [05 - Sistema e Ecossistema](roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e apps |
 | [06 - App Store](roadmaps/06-app-store.md) | Catalogo local ZPKG, ciclo de vida e repositorio remoto autenticado |
 | [07 - Modernização Visual](roadmaps/07-modernizacao-visual.md) | Escala acessível, visual flat/dark e desempenho VESA mensurável |
-| [08 - Evolução da Plataforma](roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.4 implementadas; EP7.0 encerrada; EP7.1B de EHCI/transporte RTL8811CU implementada; firmware, driver operacional e EP9 permanecem pendentes |
+| [08 - Evolução da Plataforma](roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.4 implementadas; EP7.0 encerrada; EP7.1B implementada; EP9.0A concluída e EP9.4A em implementação |
 | [09 - Funcionalidades aplicáveis](roadmaps/09-funcionalidades-aplicaveis.md) | Logs, timers, espera, work queue, dispositivos, I/O, cache e scheduler |
 | [10 - VFS e Abstração de I/O](roadmaps/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, montagens, /dev/ e pipes |
 | [11 - Gerenciamento Avançado de Memória](roadmaps/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging |

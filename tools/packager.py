@@ -36,6 +36,16 @@ ZAPP_MAX_SIZE = ZAPP_HEADER.size + ZAPP_MAX_CODE + ZAPP_MAX_DATA
 FAT12_EOF = 0xFFF
 FAT12_FREE = 0x000
 FAT12_ATTR_ARCHIVE = 0x20
+FAT32_EOF = 0x0FFFFFFF
+FAT32_FREE = 0x00000000
+FAT32_MIN_CLUSTERS = 4086
+FAT32_ATTR_DIRECTORY = 0x10
+FAT32_ATTR_ARCHIVE = 0x20
+FAT32_ATTR_LFN = 0x0F
+FAT32_SECTOR_SIZE = 512
+HYBRID_DISK_BYTES = 64 * 1024 * 1024
+HYBRID_FAT32_START_LBA = 4096
+HYBRID_FAT32_LABEL = "ZEPHYROS"
 ID_RE = re.compile(r"^[A-Z0-9_]{1,8}$")
 VERSION_RE = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
 REQUIRED_MANIFEST_KEYS = ("id", "name", "version", "api", "entry", "dependencies")
@@ -326,6 +336,525 @@ def prepare_boot_image(image_path: Path, disk_bytes: int) -> int:
     return reserved
 
 
+def _fat32_u32(image: bytearray, offset: int) -> int:
+    return struct.unpack_from("<I", image, offset)[0]
+
+
+def _fat32_put_u32(image: bytearray, offset: int, value: int) -> None:
+    struct.pack_into("<I", image, offset, value & 0x0FFFFFFF)
+
+
+def fat32_geometry(image: bytearray, start_lba: int) -> tuple[int, int, int, int, int, int, int]:
+    """Valida a geometria FAT32 de uma particao dentro de uma imagem hibrida."""
+    base = start_lba * FAT32_SECTOR_SIZE
+    if start_lba < 1 or base + FAT32_SECTOR_SIZE > len(image):
+        raise PackageError("inicio da particao FAT32 fora da imagem")
+    sector = image[base:base + FAT32_SECTOR_SIZE]
+    if sector[510:512] != b"\x55\xAA":
+        raise PackageError("boot sector FAT32 sem assinatura valida")
+    bps = struct.unpack_from("<H", sector, 11)[0]
+    spc = sector[13]
+    reserved = struct.unpack_from("<H", sector, 14)[0]
+    fat_count = sector[16]
+    total = struct.unpack_from("<I", sector, 32)[0]
+    spf = struct.unpack_from("<I", sector, 36)[0]
+    root_cluster = struct.unpack_from("<I", sector, 44)[0]
+    if bps != FAT32_SECTOR_SIZE or spc == 0 or reserved == 0:
+        raise PackageError("BPB FAT32 invalido")
+    if fat_count == 0 or spf == 0 or total == 0:
+        raise PackageError("geometria FAT32 invalida")
+    if start_lba + total > len(image) // FAT32_SECTOR_SIZE:
+        raise PackageError("particao FAT32 excede a imagem")
+    data_start = reserved + fat_count * spf
+    if data_start >= total:
+        raise PackageError("area de dados FAT32 invalida")
+    clusters = (total - data_start) // spc
+    if clusters < FAT32_MIN_CLUSTERS or root_cluster < 2 or root_cluster >= clusters + 2:
+        raise PackageError("volume nao e FAT32 compativel")
+    if spf * (bps // 4) < clusters + 2:
+        raise PackageError("FAT32 nao comporta a quantidade de clusters")
+    return bps, spc, reserved, fat_count, spf, data_start, clusters
+
+
+def _fat32_get(fat: bytearray, cluster: int) -> int:
+    return struct.unpack_from("<I", fat, cluster * 4)[0] & 0x0FFFFFFF
+
+
+def _fat32_set(fat: bytearray, cluster: int, value: int) -> None:
+    struct.pack_into("<I", fat, cluster * 4, value & 0x0FFFFFFF)
+
+
+def _fat32_allocate(fat: bytearray, count: int, clusters: int) -> list[int]:
+    selected = [
+        index for index in range(2, clusters + 2)
+        if _fat32_get(fat, index) == FAT32_FREE
+    ]
+    if len(selected) < count:
+        raise PackageError("espaco insuficiente na particao FAT32")
+    return selected[:count]
+
+
+def _fat32_chain(fat: bytearray, first: int, clusters: int) -> list[int]:
+    if first < 2:
+        return []
+    result: list[int] = []
+    cluster = first
+    while 2 <= cluster < FAT32_EOF:
+        if cluster >= clusters + 2 or cluster in result:
+            raise PackageError("cadeia FAT32 invalida")
+        result.append(cluster)
+        cluster = _fat32_get(fat, cluster)
+    if cluster != 0 and cluster < FAT32_EOF:
+        raise PackageError("fim de cadeia FAT32 invalido")
+    return result
+
+
+def _fat32_cluster_offset(data_start: int, spc: int, cluster: int) -> int:
+    return (data_start + (cluster - 2) * spc) * FAT32_SECTOR_SIZE
+
+
+def _fat32_write_fats(image: bytearray, start_lba: int, reserved: int,
+                      fat_count: int, spf: int, fat: bytearray) -> None:
+    for index in range(fat_count):
+        offset = (start_lba + reserved + index * spf) * FAT32_SECTOR_SIZE
+        image[offset:offset + len(fat)] = fat
+
+
+def _fat32_format_partition(image: bytearray, start_lba: int,
+                            total_sectors: int, label: str) -> None:
+    reserved = 32
+    fat_count = 2
+    spc = 1
+    spf = 1
+    for _ in range(8):
+        clusters = (total_sectors - reserved - fat_count * spf) // spc
+        next_spf = (4 * (clusters + 2) + FAT32_SECTOR_SIZE - 1) // FAT32_SECTOR_SIZE
+        if next_spf == spf:
+            break
+        spf = next_spf
+    data_start = reserved + fat_count * spf
+    clusters = (total_sectors - data_start) // spc
+    if clusters < FAT32_MIN_CLUSTERS:
+        raise PackageError("particao FAT32 pequena demais")
+    if len(label) > 11 or not label or any(ord(c) < 0x20 or ord(c) > 0x7E for c in label):
+        raise PackageError("rotulo FAT32 invalido")
+
+    base = start_lba * FAT32_SECTOR_SIZE
+    boot = bytearray(FAT32_SECTOR_SIZE)
+    boot[0:3] = b"\xEB\x58\x90"
+    boot[3:11] = b"ZEPHYR2 "
+    struct.pack_into("<H", boot, 11, FAT32_SECTOR_SIZE)
+    boot[13] = spc
+    struct.pack_into("<H", boot, 14, reserved)
+    boot[16] = fat_count
+    boot[21] = 0xF8
+    struct.pack_into("<I", boot, 28, start_lba)
+    struct.pack_into("<I", boot, 32, total_sectors)
+    struct.pack_into("<I", boot, 36, spf)
+    struct.pack_into("<I", boot, 44, 2)
+    struct.pack_into("<H", boot, 48, 1)
+    struct.pack_into("<H", boot, 50, 6)
+    boot[64] = 0x80
+    boot[66] = 0x29
+    struct.pack_into("<I", boot, 67, 0x45503934)
+    boot[71:82] = label.upper().ljust(11).encode("ascii")
+    boot[82:90] = b"FAT32   "
+    boot[510:512] = b"\x55\xAA"
+    image[base:base + FAT32_SECTOR_SIZE] = boot
+    image[(start_lba + 6) * FAT32_SECTOR_SIZE:(start_lba + 7) * FAT32_SECTOR_SIZE] = boot
+
+    fsinfo = bytearray(FAT32_SECTOR_SIZE)
+    struct.pack_into("<I", fsinfo, 0, 0x41615252)
+    struct.pack_into("<I", fsinfo, 484, 0x61417272)
+    struct.pack_into("<I", fsinfo, 488, clusters - 1)
+    struct.pack_into("<I", fsinfo, 492, 3)
+    struct.pack_into("<I", fsinfo, 508, 0xAA550000)
+    image[(start_lba + 1) * FAT32_SECTOR_SIZE:(start_lba + 2) * FAT32_SECTOR_SIZE] = fsinfo
+    image[(start_lba + 7) * FAT32_SECTOR_SIZE:(start_lba + 8) * FAT32_SECTOR_SIZE] = fsinfo
+
+    fat = bytearray(spf * FAT32_SECTOR_SIZE)
+    _fat32_set(fat, 0, 0x0FFFFFF8)
+    _fat32_set(fat, 1, 0x0FFFFFFF)
+    _fat32_set(fat, 2, FAT32_EOF)
+    _fat32_write_fats(image, start_lba, reserved, fat_count, spf, fat)
+    root_offset = (start_lba + data_start) * FAT32_SECTOR_SIZE
+    root = bytearray(FAT32_SECTOR_SIZE)
+    root[0:11] = label.upper().ljust(11).encode("ascii")
+    root[11] = 0x08
+    image[root_offset:root_offset + FAT32_SECTOR_SIZE] = root
+
+
+def _fat32_alias(name: str, existing: set[bytes]) -> bytes:
+    """Gera alias 8.3 deterministico para um nome LFN."""
+    upper = name.upper()
+    if all(char in "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_." for char in upper):
+        try:
+            alias = name_to_83(upper)
+            if alias not in existing:
+                return alias
+        except PackageError:
+            pass
+    stem, dot, extension = upper.rpartition(".")
+    if not dot:
+        stem, extension = upper, ""
+    stem = "".join(char for char in stem if char in "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") or "FILE"
+    extension = "".join(char for char in extension if char in "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")[:3]
+    for number in range(1, 10000):
+        suffix = "~" + str(number)
+        prefix = (stem or "FILE")[:8 - len(suffix)]
+        alias = (prefix + suffix).ljust(8)[:8]
+        alias = (alias + extension.ljust(3)).encode("ascii")
+        if alias not in existing:
+            return alias
+    raise PackageError("nao foi possivel gerar alias 8.3")
+
+
+def _fat32_lfn_checksum(alias: bytes) -> int:
+    checksum = 0
+    for value in alias:
+        checksum = ((checksum & 1) << 7) + (checksum >> 1) + value
+        checksum &= 0xFF
+    return checksum
+
+
+def _fat32_lfn_units(name: str) -> list[int]:
+    if not name or "/" in name or "\\" in name or len(name.encode("utf-8")) > 255:
+        raise PackageError("nome LFN invalido")
+    encoded = name.encode("utf-16le")
+    units = list(struct.unpack("<%dH" % (len(encoded) // 2), encoded))
+    if len(units) > 255:
+        raise PackageError("nome LFN excede 255 caracteres")
+    return units
+
+
+def _fat32_lfn_entry(sequence: int, units: list[int], checksum: int) -> bytes:
+    entry = bytearray(32)
+    entry[0] = sequence
+    entry[11] = FAT32_ATTR_LFN
+    entry[13] = checksum
+    positions = (1, 14, 28)
+    unit_index = (sequence & 0x1F) - 1
+    start = unit_index * 13
+    values = units[start:start + 13]
+    if len(values) < 13:
+        values.append(0)
+    while len(values) < 13:
+        values.append(0xFFFF)
+    for position, count in zip(positions, (5, 6, 2)):
+        for index in range(count):
+            struct.pack_into("<H", entry, position + index * 2,
+                             values.pop(0))
+    return bytes(entry)
+
+
+def _fat32_decode_lfn(entry: bytes) -> list[int]:
+    values: list[int] = []
+    for position, count in ((1, 5), (14, 6), (28, 2)):
+        for index in range(count):
+            values.append(struct.unpack_from("<H", entry, position + index * 2)[0])
+    return values
+
+
+def _fat32_short_name(alias: bytes) -> str:
+    stem = alias[:8].decode("ascii", errors="replace").rstrip(" ")
+    extension = alias[8:11].decode("ascii", errors="replace").rstrip(" ")
+    return stem + (("." + extension) if extension else "")
+
+
+def _fat32_name_equal(left: str, right: str) -> bool:
+    """Compara ASCII sem caixa e preserva igualdade exata para UTF-8."""
+    if len(left) != len(right):
+        return False
+    for left_value, right_value in zip(left, right):
+        if ord(left_value) < 0x80 and ord(right_value) < 0x80:
+            if left_value.lower() != right_value.lower():
+                return False
+        elif left_value != right_value:
+            return False
+    return True
+
+
+def _fat32_directory_chain(image: bytearray, start_lba: int, fat: bytearray,
+                            data_start: int, spc: int, clusters: int,
+                            first_cluster: int) -> list[int]:
+    del start_lba
+    chain = _fat32_chain(fat, first_cluster, clusters)
+    if not chain:
+        raise PackageError("diretorio FAT32 sem cadeia")
+    return chain
+
+
+def _fat32_records(image: bytearray, start_lba: int, fat: bytearray,
+                   data_start: int, spc: int, clusters: int,
+                   first_cluster: int) -> list[dict[str, Any]]:
+    records: list[dict[str, Any]] = []
+    lfn_units: list[int] = []
+    lfn_checksum: int | None = None
+    lfn_start: int | None = None
+    chain = _fat32_directory_chain(image, start_lba, fat, data_start, spc,
+                                    clusters, first_cluster)
+    for cluster in chain:
+        base = start_lba * FAT32_SECTOR_SIZE + _fat32_cluster_offset(
+            data_start, spc, cluster
+        )
+        for offset in range(0, spc * FAT32_SECTOR_SIZE, 32):
+            entry_offset = base + offset
+            raw = bytes(image[entry_offset:entry_offset + 32])
+            first = raw[0]
+            if first == 0:
+                return records
+            if first == 0xE5:
+                lfn_units = []
+                lfn_checksum = None
+                lfn_start = None
+                continue
+            if raw[11] == FAT32_ATTR_LFN:
+                sequence = raw[0] & 0x1F
+                if raw[0] & 0x40:
+                    lfn_units = _fat32_decode_lfn(raw)
+                    lfn_checksum = raw[13]
+                    lfn_start = entry_offset
+                elif lfn_units and sequence:
+                    lfn_units = _fat32_decode_lfn(raw) + lfn_units
+                continue
+            if raw[11] & 0x08:
+                lfn_units = []
+                lfn_checksum = None
+                lfn_start = None
+                continue
+            alias = raw[:11]
+            units = lfn_units
+            if lfn_checksum != _fat32_lfn_checksum(alias):
+                units = []
+            while units and units[-1] in (0, 0xFFFF):
+                units.pop()
+            try:
+                long_name = bytes(struct.pack("<%dH" % len(units), *units)).decode("utf-16le") if units else _fat32_short_name(alias)
+            except (UnicodeDecodeError, struct.error):
+                long_name = _fat32_short_name(alias)
+                units = []
+            high = struct.unpack_from("<H", raw, 20)[0]
+            low = struct.unpack_from("<H", raw, 26)[0]
+            records.append({
+                "name": long_name,
+                "alias": alias,
+                "offset": entry_offset,
+                "lfn_start": lfn_start if units else entry_offset,
+                "raw": raw,
+                "cluster": (high << 16) | low,
+                "size": struct.unpack_from("<I", raw, 28)[0],
+                "attributes": raw[11],
+            })
+            lfn_units = []
+            lfn_checksum = None
+            lfn_start = None
+    return records
+
+
+def _fat32_resolve_directory(image: bytearray, start_lba: int, fat: bytearray,
+                              data_start: int, spc: int, clusters: int,
+                              path: str) -> int:
+    cluster = 2
+    normalized = path.replace("\\", "/").strip("/")
+    if not normalized:
+        return cluster
+    for component in normalized.split("/"):
+        if not component or component in (".", ".."):
+            raise PackageError("caminho FAT32 invalido")
+        record = next((item for item in _fat32_records(
+            image, start_lba, fat, data_start, spc, clusters, cluster)
+            if _fat32_name_equal(item["name"], component) or
+            _fat32_name_equal(_fat32_short_name(item["alias"]), component)), None)
+        if not record or not record["attributes"] & FAT32_ATTR_DIRECTORY:
+            raise PackageError("diretorio FAT32 nao encontrado")
+        cluster = record["cluster"]
+    return cluster
+
+
+def _fat32_write_fat_chain(image: bytearray, start_lba: int, reserved: int,
+                            fat_count: int, spf: int, fat: bytearray) -> None:
+    _fat32_write_fats(image, start_lba, reserved, fat_count, spf, fat)
+
+
+def inject_fat32_file(data: bytes, image_path: Path, path: str,
+                      replace: bool = False, fat32_start_lba: int = HYBRID_FAT32_START_LBA,
+                      fat_name: str | None = None) -> None:
+    """Injeta arquivo FAT32 com LFN e alias 8.3, usando escrita host atomica."""
+    if not path or path.endswith(("/", "\\")):
+        raise PackageError("caminho de arquivo FAT32 invalido")
+    try:
+        image = bytearray(image_path.read_bytes())
+    except OSError as error:
+        raise PackageError("nao foi possivel ler imagem hibrida") from error
+    bps, spc, reserved, fat_count, spf, data_start, clusters = fat32_geometry(
+        image, fat32_start_lba
+    )
+    fat_offset = (fat32_start_lba + reserved) * bps
+    fat = bytearray(image[fat_offset:fat_offset + spf * bps])
+    normalized = path.replace("\\", "/").strip("/")
+    components = normalized.split("/")
+    filename = components[-1]
+    directory_path = "/".join(components[:-1])
+    directory_cluster = _fat32_resolve_directory(
+        image, fat32_start_lba, fat, data_start, spc, clusters, directory_path
+    )
+    records = _fat32_records(image, fat32_start_lba, fat, data_start, spc,
+                             clusters, directory_cluster)
+    existing_aliases = {record["alias"] for record in records}
+    requested_alias = name_to_83(fat_name) if fat_name else None
+    existing = next((record for record in records
+                     if (requested_alias is not None and
+                         record["alias"] == requested_alias) or
+                     _fat32_name_equal(record["name"], filename)), None)
+    if existing and not replace:
+        raise PackageError("arquivo FAT32 ja existe; use --replace")
+    alias = (existing["alias"] if existing else
+             requested_alias if requested_alias is not None else
+             _fat32_alias(filename, existing_aliases))
+    if existing:
+        old_chain = _fat32_chain(fat, existing["cluster"], clusters)
+        for cluster in old_chain:
+            _fat32_set(fat, cluster, FAT32_FREE)
+        image[existing["lfn_start"]:existing["offset"] + 32] = bytes(
+            [0xE5] * (existing["offset"] + 32 - existing["lfn_start"])
+        )
+    units = _fat32_lfn_units(filename)
+    lfn_count = (len(units) + 12) // 13
+    required_slots = lfn_count + 1
+    chain = _fat32_directory_chain(image, fat32_start_lba, fat, data_start,
+                                    spc, clusters, directory_cluster)
+    slots: list[int] = []
+    for cluster in chain:
+        base = fat32_start_lba * bps + _fat32_cluster_offset(data_start, spc, cluster)
+        for offset in range(0, spc * bps, 32):
+            slot = base + offset
+            if image[slot] in (0x00, 0xE5):
+                slots.append(slot)
+            else:
+                slots = []
+            if len(slots) == required_slots:
+                break
+        if len(slots) == required_slots:
+            break
+    if len(slots) < required_slots:
+        last = chain[-1]
+        new_cluster = _fat32_allocate(fat, 1, clusters)[0]
+        _fat32_set(fat, last, new_cluster)
+        _fat32_set(fat, new_cluster, FAT32_EOF)
+        new_base = fat32_start_lba * bps + _fat32_cluster_offset(data_start, spc, new_cluster)
+        image[new_base:new_base + spc * bps] = bytes(spc * bps)
+        slots = [new_base + offset for offset in range(0, spc * bps, 32)]
+    needed = (len(data) + bps * spc - 1) // (bps * spc)
+    data_clusters = _fat32_allocate(fat, needed, clusters) if needed else []
+    for index, cluster in enumerate(data_clusters):
+        _fat32_set(fat, cluster, data_clusters[index + 1] if index + 1 < len(data_clusters) else FAT32_EOF)
+        offset = fat32_start_lba * bps + _fat32_cluster_offset(data_start, spc, cluster)
+        block = data[index * bps * spc:(index + 1) * bps * spc]
+        image[offset:offset + bps * spc] = block.ljust(bps * spc, b"\0")
+    checksum = _fat32_lfn_checksum(alias)
+    lfn_entries = [_fat32_lfn_entry(index, units, checksum)
+                   for index in range(lfn_count, 0, -1)]
+    short = bytearray(32)
+    short[:11] = alias
+    short[11] = FAT32_ATTR_ARCHIVE
+    if data_clusters:
+        struct.pack_into("<H", short, 20, (data_clusters[0] >> 16) & 0xFFFF)
+        struct.pack_into("<H", short, 26, data_clusters[0] & 0xFFFF)
+    struct.pack_into("<I", short, 28, len(data))
+    for slot, entry in zip(slots, lfn_entries + [bytes(short)]):
+        image[slot:slot + 32] = entry
+    _fat32_write_fat_chain(image, fat32_start_lba, reserved, fat_count, spf, fat)
+    try:
+        image_path.write_bytes(image)
+    except OSError as error:
+        raise PackageError("nao foi possivel gravar arquivo FAT32") from error
+
+
+def read_fat32_file(image_path: Path, path: str,
+                    fat32_start_lba: int = HYBRID_FAT32_START_LBA) -> bytes:
+    """Le um arquivo FAT32 para auditorias host sem depender do kernel."""
+    try:
+        image = bytearray(image_path.read_bytes())
+    except OSError as error:
+        raise PackageError("nao foi possivel ler imagem FAT32") from error
+    bps, spc, reserved, _, spf, data_start, clusters = fat32_geometry(
+        image, fat32_start_lba
+    )
+    fat_offset = (fat32_start_lba + reserved) * bps
+    fat = bytearray(image[fat_offset:fat_offset + spf * bps])
+    normalized = path.replace("\\", "/").strip("/")
+    components = normalized.split("/")
+    directory = "/".join(components[:-1])
+    cluster = _fat32_resolve_directory(
+        image, fat32_start_lba, fat, data_start, spc, clusters, directory
+    )
+    records = _fat32_records(image, fat32_start_lba, fat, data_start, spc,
+                             clusters, cluster)
+    record = next((item for item in records
+                   if _fat32_name_equal(item["name"], components[-1]) or
+                   _fat32_name_equal(_fat32_short_name(item["alias"]),
+                                     components[-1])), None)
+    if not record or record["attributes"] & FAT32_ATTR_DIRECTORY:
+        raise PackageError("arquivo FAT32 nao encontrado")
+    result = bytearray()
+    for cluster in _fat32_chain(fat, record["cluster"], clusters):
+        offset = fat32_start_lba * bps + _fat32_cluster_offset(
+            data_start, spc, cluster)
+        result.extend(image[offset:offset + bps * spc])
+    if len(result) < record["size"]:
+        raise PackageError("cadeia FAT32 do arquivo esta incompleta")
+    return bytes(result[:record["size"]])
+
+
+def read_image_file(image_path: Path, name: str) -> bytes:
+    """Le tanto imagens FAT12 legadas quanto imagens hibridas."""
+    image = bytearray(image_path.read_bytes())
+    try:
+        fat32_geometry(image, HYBRID_FAT32_START_LBA)
+    except PackageError:
+        return read_root_file(image_path, name)
+    return read_fat32_file(image_path, name)
+
+
+def prepare_hybrid_image(image_path: Path, disk_bytes: int,
+                         fat32_start_lba: int, label: str) -> None:
+    """Cria a imagem hibrida sem alterar o codigo do boot gerado."""
+    try:
+        payload = bytearray(image_path.read_bytes())
+    except OSError as error:
+        raise PackageError("nao foi possivel ler o payload de boot") from error
+    if len(payload) < FAT32_SECTOR_SIZE or payload[510:512] != b"\x55\xAA":
+        raise PackageError("payload de boot sem assinatura valida")
+    if disk_bytes <= 0 or disk_bytes % FAT32_SECTOR_SIZE:
+        raise PackageError("tamanho da imagem hibrida invalido")
+    if (fat32_start_lba < 4096 or fat32_start_lba % 4096 or
+            fat32_start_lba * FAT32_SECTOR_SIZE >= disk_bytes):
+        raise PackageError("inicio FAT32 invalido")
+    legacy_total = (struct.unpack_from("<H", payload, 19)[0] or
+                    struct.unpack_from("<I", payload, 32)[0])
+    if legacy_total == 0 or len(payload) > legacy_total * FAT32_SECTOR_SIZE:
+        raise PackageError("payload excede a area FAT12 legada")
+    reserved = (len(payload) + FAT32_SECTOR_SIZE - 1) // FAT32_SECTOR_SIZE
+    struct.pack_into("<H", payload, 14, reserved)
+    image = payload + bytearray(disk_bytes - len(payload))
+    fat12_geometry(image)
+    format_legacy_fat12(image)
+    image[446:510] = b"\0" * 64
+    entry = 446
+    image[entry + 4] = 0x0C
+    struct.pack_into("<I", image, entry + 8, fat32_start_lba)
+    struct.pack_into("<I", image, entry + 12,
+                     disk_bytes // FAT32_SECTOR_SIZE - fat32_start_lba)
+    _fat32_format_partition(
+        image, fat32_start_lba,
+        disk_bytes // FAT32_SECTOR_SIZE - fat32_start_lba, label,
+    )
+    try:
+        image_path.write_bytes(image)
+    except OSError as error:
+        raise PackageError("nao foi possivel gravar a imagem hibrida") from error
+
+
 def fat12_get(fat: bytearray, index: int) -> int:
     """Le uma entrada de 12 bits da FAT."""
     offset = index + index // 2
@@ -344,6 +873,16 @@ def fat12_set(fat: bytearray, index: int, value: int) -> None:
     else:
         fat[offset] = value & 0xFF
         fat[offset + 1] = (fat[offset + 1] & 0xF0) | ((value >> 8) & 0x0F)
+
+
+def format_legacy_fat12(image: bytearray) -> None:
+    """Inicializa as cópias FAT12 sem tocar na área reservada do boot."""
+    bps, _, reserved, fat_count, spf, _, _ = fat12_geometry(image)
+    for index in range(fat_count):
+        start = (reserved + index * spf) * bps
+        fat = bytearray(spf * bps)
+        fat[0:3] = bytes((image[21], 0xFF, 0xFF))
+        image[start:start + len(fat)] = fat
 
 
 def name_to_83(name: str) -> bytes:
@@ -718,7 +1257,7 @@ def audit_store_fixtures(
             )
         ):
             raise PackageError(f"fixture dessincronizado: {alias}")
-        if image_path is not None and read_root_file(image_path, alias) != data:
+        if image_path is not None and read_image_file(image_path, alias) != data:
             raise PackageError(f"fixture divergiu na imagem: {alias}")
         fixtures[alias] = data
         print(f"store_fixture_{alias} OK")
@@ -863,7 +1402,7 @@ def audit_store_as2_fixtures(
             )
         ):
             raise PackageError(f"fixture AS2 dessincronizado: {alias}")
-        if image_path is not None and read_root_file(image_path, alias) != data:
+        if image_path is not None and read_image_file(image_path, alias) != data:
             raise PackageError(f"fixture AS2 divergiu na imagem: {alias}")
         fixtures[alias] = data
         print(f"store_as2_fixture_{alias} OK")
@@ -982,7 +1521,7 @@ def audit_store_as4_fixtures(
         if any(parsed.manifest.get(field) != value
                for field, value in expectations[alias].items()):
             raise PackageError(f"semantica AS4 divergiu: {alias}")
-        if image_path is not None and read_root_file(image_path, alias) != data:
+        if image_path is not None and read_image_file(image_path, alias) != data:
             raise PackageError(f"fixture AS4 divergiu na imagem: {alias}")
         print(f"store_as4_fixture_{profile}_{alias} OK")
     print(f"App Store AS4 fixtures ({profile}): OK")
@@ -1450,6 +1989,10 @@ def run_selftest() -> int:
         "store_fixtures": False,
         "store_as2_fixtures": False,
         "store_as4_fixtures": False,
+        "hybrid_image": False,
+        "hybrid_lfn": False,
+        "hybrid_alias": False,
+        "hybrid_replace": False,
     }
     try:
         parse_package(package)
@@ -1495,6 +2038,47 @@ def run_selftest() -> int:
                 )
             audit_store_as4_fixtures(store_as4_dir, image_path)
             checks["store_as4_fixtures"] = True
+
+            hybrid_path = Path(temp_dir) / "hybrid.img"
+            create_fixture_boot_payload(hybrid_path, 1300)
+            prepare_hybrid_image(
+                hybrid_path, HYBRID_DISK_BYTES,
+                HYBRID_FAT32_START_LBA, HYBRID_FAT32_LABEL,
+            )
+            hybrid = bytearray(hybrid_path.read_bytes())
+            partition = 446
+            checks["hybrid_image"] = (
+                len(hybrid) == HYBRID_DISK_BYTES and
+                hybrid[partition + 4] == 0x0C and
+                struct.unpack_from("<I", hybrid, partition + 8)[0] ==
+                HYBRID_FAT32_START_LBA
+            )
+            long_name = "Dados de Sistema.txt"
+            long_data = b"hybrid fat32 payload"
+            inject_fat32_file(long_data, hybrid_path, long_name)
+            checks["hybrid_lfn"] = (
+                read_fat32_file(hybrid_path, long_name) == long_data
+            )
+            records_image = bytearray(hybrid_path.read_bytes())
+            _, spc, reserved, _, spf, data_start, clusters = \
+                fat32_geometry(records_image, HYBRID_FAT32_START_LBA)
+            fat_offset = (HYBRID_FAT32_START_LBA + reserved) * 512
+            fat = records_image[fat_offset:fat_offset + spf * 512]
+            records = _fat32_records(
+                records_image, HYBRID_FAT32_START_LBA, fat, data_start,
+                spc, clusters, 2,
+            )
+            checks["hybrid_alias"] = any(
+                item["name"] == long_name and
+                _fat32_short_name(item["alias"]) == "DADOSD~1.TXT"
+                for item in records
+            )
+            replaced_data = b"hybrid fat32 replacement"
+            inject_fat32_file(replaced_data, hybrid_path, long_name,
+                               replace=True)
+            checks["hybrid_replace"] = (
+                read_fat32_file(hybrid_path, long_name) == replaced_data
+            )
 
             boot_path = Path(temp_dir) / "boot-payload.img"
             create_fixture_boot_payload(boot_path, 1300)
@@ -1590,13 +2174,45 @@ def command_prepare_image(arguments: argparse.Namespace) -> int:
     return 0
 
 
+def command_prepare_hybrid_image(arguments: argparse.Namespace) -> int:
+    """Prepara a imagem FAT12 legada e formata a particao FAT32 do sistema."""
+    prepare_hybrid_image(
+        Path(arguments.image), arguments.disk_bytes,
+        arguments.fat32_start_lba, arguments.label,
+    )
+    print("Imagem hibrida FAT12/FAT32 preparada")
+    return 0
+
+
+def command_inject_file_fat32(arguments: argparse.Namespace) -> int:
+    """Injeta um arquivo comum no volume FAT32 com LFN."""
+    try:
+        data = Path(arguments.file).read_bytes()
+    except OSError as error:
+        raise PackageError("nao foi possivel ler arquivo para injecao FAT32") from error
+    inject_fat32_file(
+        data, Path(arguments.image), arguments.path,
+        arguments.replace, arguments.fat32_start_lba, arguments.fat_name,
+    )
+    print(f"Arquivo FAT32 injetado em {arguments.path}")
+    return 0
+
+
 def command_demo(arguments: argparse.Namespace) -> int:
     """Cria e injeta o demo usado na validacao manual da Fase 7."""
     manifest = {"id": "DEMO", "name": "Demo", "version": "1.0.0", "api": "0.3", "entry": "APP.ZAP", "dependencies": ""}
     package = build_package(manifest, build_demo_zapp())
     output = Path(arguments.output)
     output.write_bytes(package)
-    inject_package(package, Path(arguments.image), "DEMO.ZPK")
+    image_path = Path(arguments.image)
+    try:
+        fat32_geometry(bytearray(image_path.read_bytes()),
+                       HYBRID_FAT32_START_LBA)
+    except (OSError, PackageError):
+        inject_package(package, image_path, "DEMO.ZPK")
+    else:
+        inject_fat32_file(package, image_path, "DEMO.ZPK", replace=True,
+                          fat_name="DEMO.ZPK")
     print(f"Pacote demo criado: {output}")
     print("Pacote demo injetado como DEMO.ZPK")
     return 0
@@ -1755,6 +2371,23 @@ def build_parser() -> argparse.ArgumentParser:
     prepare_image.add_argument("--image", required=True)
     prepare_image.add_argument("--disk-bytes", required=True, type=int)
     prepare_image.set_defaults(handler=command_prepare_image)
+    prepare_hybrid = commands.add_parser("prepare-hybrid-image")
+    prepare_hybrid.add_argument("--image", required=True)
+    prepare_hybrid.add_argument("--disk-bytes", type=int,
+                                default=HYBRID_DISK_BYTES)
+    prepare_hybrid.add_argument("--fat32-start-lba", type=int,
+                                default=HYBRID_FAT32_START_LBA)
+    prepare_hybrid.add_argument("--label", default=HYBRID_FAT32_LABEL)
+    prepare_hybrid.set_defaults(handler=command_prepare_hybrid_image)
+    inject_file_fat32 = commands.add_parser("inject-file-fat32")
+    inject_file_fat32.add_argument("--file", required=True)
+    inject_file_fat32.add_argument("--image", required=True)
+    inject_file_fat32.add_argument("--path", required=True)
+    inject_file_fat32.add_argument("--fat-name")
+    inject_file_fat32.add_argument("--fat32-start-lba", type=int,
+                                   default=HYBRID_FAT32_START_LBA)
+    inject_file_fat32.add_argument("--replace", action="store_true")
+    inject_file_fat32.set_defaults(handler=command_inject_file_fat32)
     demo = commands.add_parser("demo")
     demo.add_argument("--output", required=True)
     demo.add_argument("--image", required=True)

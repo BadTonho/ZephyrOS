@@ -2,6 +2,7 @@
 #define FS_H
 
 #include "types.h"
+#include "fs/storage.h"
 
 #define FS_TYPE_NONE   0
 #define FS_TYPE_FAT12  1
@@ -53,6 +54,10 @@ typedef struct {
     uint8_t  active;
     uint8_t  done;
     uint8_t  sector[FS_DIR_SECTOR_SIZE];
+    uint8_t  storage_mode;
+    char     storage_volume_id[STORAGE_ID_SIZE];
+    char     storage_path[FS_MAX_PATH];
+    uint32_t storage_result_index;
 } fs_dir_cursor_t;
 
 typedef struct {
@@ -67,6 +72,8 @@ typedef struct {
 } fs_info_t;
 
 int      fs_init(void);
+int      fs_use_system_volume(void);
+int      fs_has_system_volume(void);
 int      fs_read_file(const char* filename, uint8_t* buffer, uint32_t max_size);
 int      fs_write_file(const char* filename, const uint8_t* data, uint32_t size);
 int      fs_delete_file(const char* filename);

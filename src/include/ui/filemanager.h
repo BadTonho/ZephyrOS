@@ -4,7 +4,8 @@
 #include "types.h"
 
 #define FM_MAX_FILES 64
-#define FM_NAME_LEN 13
+#define FM_SHORT_NAME_LEN 13
+#define FM_NAME_LEN 256
 #define FM_MAX_PATH 256
 #define FM_MAX_HISTORY 16
 #define FM_VOLUME_ID_LEN 12

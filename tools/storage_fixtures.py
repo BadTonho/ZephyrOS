@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import shutil
 import struct
 import tempfile
 from pathlib import Path
@@ -20,7 +21,18 @@ FIXTURES = (
     "storage-valid.img",
     "storage-corrupt.img",
     "storage-unknown.img",
+    "storage-fat32-no-space.img",
+    "storage-fat32-fat-divergent.img",
+    "storage-fat32-chain-corrupt.img",
+    "storage-fat32-lfn-invalid.img",
 )
+
+FAT32_START_LBA = 16_384
+FAT32_RESERVED = 32
+FAT32_SECTORS_PER_FAT = 800
+FAT32_DATA_START = FAT32_RESERVED + 2 * FAT32_SECTORS_PER_FAT
+FAT32_ROOT_LBA = FAT32_START_LBA + FAT32_DATA_START
+FAT32_CLUSTER_COUNT = 100_000 - FAT32_DATA_START
 
 
 def put_u16(buffer: bytearray, offset: int, value: int) -> None:
@@ -134,6 +146,33 @@ def set_fat32_entry(fat: bytearray, cluster: int, value: int) -> None:
     put_u32(fat, cluster * 4, value)
 
 
+def lfn_checksum(alias: bytes) -> int:
+    checksum = 0
+    for value in alias:
+        checksum = (((checksum & 1) << 7) + (checksum >> 1) + value) & 0xFF
+    return checksum
+
+
+def lfn_entry(sequence: int, name: str, checksum: int) -> bytes:
+    units = list(struct.unpack("<%dH" % len(name),
+                               name.encode("utf-16le")))
+    entry = bytearray(32)
+    entry[0] = sequence
+    entry[11] = 0x0F
+    entry[13] = checksum
+    positions = ((1, 5), (14, 6), (28, 2))
+    start = ((sequence & 0x1F) - 1) * 13
+    values = units[start:start + 13]
+    if len(values) < 13:
+        values.append(0)
+    while len(values) < 13:
+        values.append(0xFFFF)
+    for position, count in positions:
+        for index in range(count):
+            put_u16(entry, position + index * 2, values.pop(0))
+    return bytes(entry)
+
+
 def write_fat32(image, start_lba: int, total_sectors: int,
                 label: str) -> None:
     reserved = 32
@@ -180,14 +219,20 @@ def write_fat32(image, start_lba: int, total_sectors: int,
     fat = bytearray(sectors_per_fat * SECTOR_SIZE)
     set_fat32_entry(fat, 0, 0x0FFFFFF8)
     set_fat32_entry(fat, 1, 0x0FFFFFFF)
-    for cluster in (2, 3, 4, 5):
+    for cluster in (2, 3, 4, 5, 6):
         set_fat32_entry(fat, cluster, 0x0FFFFFFF)
 
     root = bytearray(SECTOR_SIZE)
+    long_name = "Dados de Sistema.txt"
+    long_alias = b"DADOSD~1TXT"
+    checksum = lfn_checksum(long_alias)
     root[0:32] = directory_entry(label.upper().ljust(11)[:11].encode("ascii"),
                                  0x08, 0)
-    root[32:64] = directory_entry(b"README  TXT", 0x20, 4, len(readme))
-    root[64:96] = directory_entry(b"DOCS       ", 0x10, 3)
+    root[32:64] = lfn_entry(0x42, long_name, checksum)
+    root[64:96] = lfn_entry(1, long_name, checksum)
+    root[96:128] = directory_entry(long_alias, 0x20, 6, len(sample))
+    root[128:160] = directory_entry(b"README  TXT", 0x20, 4, len(readme))
+    root[160:192] = directory_entry(b"DOCS       ", 0x10, 3)
     docs = bytearray(SECTOR_SIZE)
     docs[0:32] = directory_entry(b".          ", 0x10, 3)
     docs[32:64] = directory_entry(b"..         ", 0x10, 2)
@@ -196,6 +241,7 @@ def write_fat32(image, start_lba: int, total_sectors: int,
     write_sector(image, start_lba, boot)
     write_sector(image, start_lba + 1, fsinfo)
     write_sector(image, start_lba + 6, boot)
+    write_sector(image, start_lba + 7, fsinfo)
     write_at(image, (start_lba + reserved) * SECTOR_SIZE, fat)
     write_at(image, (start_lba + reserved + sectors_per_fat) * SECTOR_SIZE,
              fat)
@@ -203,6 +249,7 @@ def write_fat32(image, start_lba: int, total_sectors: int,
     write_sector(image, start_lba + data_start + 1, docs)
     write_at(image, (start_lba + data_start + 2) * SECTOR_SIZE, readme)
     write_at(image, (start_lba + data_start + 3) * SECTOR_SIZE, sample)
+    write_at(image, (start_lba + data_start + 4) * SECTOR_SIZE, sample)
 
 
 def mbr_entry(bootable: bool, partition_type: int, start_lba: int,
@@ -273,6 +320,52 @@ def generate_unknown(path: Path) -> None:
         write_mbr(image, [mbr_entry(False, 0x83, 2_048, 4_096)])
 
 
+def copy_valid_fixture(valid: Path, target: Path) -> None:
+    shutil.copyfile(valid, target)
+
+
+def mutate_fat32_fixtures(output_dir: Path) -> None:
+    valid = output_dir / FIXTURES[0]
+    no_space = output_dir / FIXTURES[3]
+    fat_divergent = output_dir / FIXTURES[4]
+    chain_corrupt = output_dir / FIXTURES[5]
+    lfn_invalid = output_dir / FIXTURES[6]
+
+    copy_valid_fixture(valid, no_space)
+    with no_space.open("r+b") as image:
+        fat = bytearray(FAT32_SECTORS_PER_FAT * SECTOR_SIZE)
+        image.seek((FAT32_START_LBA + FAT32_RESERVED) * SECTOR_SIZE)
+        fat[:] = image.read(len(fat))
+        for cluster in range(2, FAT32_CLUSTER_COUNT + 2):
+            set_fat32_entry(fat, cluster, 0x0FFFFFFF)
+        for copy in range(2):
+            image.seek((FAT32_START_LBA + FAT32_RESERVED +
+                        copy * FAT32_SECTORS_PER_FAT) * SECTOR_SIZE)
+            image.write(fat)
+
+    copy_valid_fixture(valid, fat_divergent)
+    with fat_divergent.open("r+b") as image:
+        offset = ((FAT32_START_LBA + FAT32_RESERVED +
+                   FAT32_SECTORS_PER_FAT) * SECTOR_SIZE) + 6 * 4
+        image.seek(offset)
+        image.write(struct.pack("<I", 0x0FFFFFF6))
+
+    copy_valid_fixture(valid, chain_corrupt)
+    with chain_corrupt.open("r+b") as image:
+        for copy in range(2):
+            offset = ((FAT32_START_LBA + FAT32_RESERVED +
+                       copy * FAT32_SECTORS_PER_FAT) * SECTOR_SIZE) + 6 * 4
+            image.seek(offset)
+            image.write(struct.pack("<I", 0x0FFFFFF7))
+
+    copy_valid_fixture(valid, lfn_invalid)
+    with lfn_invalid.open("r+b") as image:
+        image.seek(FAT32_ROOT_LBA * SECTOR_SIZE + 32 + 13)
+        checksum = image.read(1)
+        image.seek(FAT32_ROOT_LBA * SECTOR_SIZE + 32 + 13)
+        image.write(bytes([checksum[0] ^ 0x01]))
+
+
 def sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as source:
@@ -306,6 +399,16 @@ def inspect_layout(output_dir: Path) -> None:
         bpb = read_sector_file(valid, start)
         if bpb[510:512] != b"\x55\xAA" or bpb[13] != 1:
             raise RuntimeError(f"BPB valido {index + 1} divergente")
+    fat32_boot = read_sector_file(valid, 16_384)
+    fat32_fsinfo = read_sector_file(valid, 16_391)
+    if fat32_boot[71:82].rstrip(b" ") != b"EP2FAT32":
+        raise RuntimeError("label FAT32 da fixture divergente")
+    if fat32_fsinfo != read_sector_file(valid, 16_390):
+        raise RuntimeError("FSInfo FAT32 de backup divergente")
+    fat32_root = read_sector_file(valid, 18_016)
+    if (fat32_root[32 + 11] != 0x0F or fat32_root[64 + 11] != 0x0F or
+            fat32_root[96:107] != b"DADOSD~1TXT"):
+        raise RuntimeError("LFN FAT32 da fixture ausente")
     corrupt = output_dir / FIXTURES[1]
     corrupt_bpb = read_sector_file(corrupt, 2_048)
     if struct.unpack_from("<H", corrupt_bpb, 11)[0] != 1_024:
@@ -320,11 +423,16 @@ def generate(output_dir: Path) -> dict[str, object]:
     generate_valid(output_dir / FIXTURES[0])
     generate_corrupt(output_dir / FIXTURES[1])
     generate_unknown(output_dir / FIXTURES[2])
+    mutate_fat32_fixtures(output_dir)
     records = {}
     purposes = (
         "MBR com tres FAT12 e uma FAT32 validas",
         "BPB invalido, sobreposicao e limite fora do disco",
         "particao com filesystem desconhecido",
+        "FAT32 sem clusters livres para escrita",
+        "copias FAT32 divergentes",
+        "cadeia FAT32 apontando para cluster ruim",
+        "checksum de entrada LFN FAT32 invalido",
     )
     for name, purpose in zip(FIXTURES, purposes):
         path = output_dir / name
