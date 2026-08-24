@@ -147,6 +147,14 @@ Validacao apresentada pelo usuario; horario nao informado.
 
 Atualizacao da validacao apresentada pelo usuario; horario nao informado.
 
+Nova validacao de passthrough apresentada pelo usuario; horario nao informado.
+
+- O QEMU `11.0.50` confirmou suporte ao dispositivo `usb-host`.
+- `info usbhost` encontrou o adaptador literal `0bda:c811` no host, em `Bus 2,
+  Addr 12, Port 8, Speed 480 Mb/s`.
+- O passthrough do host agora esta disponivel; falta reiniciar a VM com o
+  adaptador conectado e confirmar a enumeracao dentro do ZephyrOS.
+
 - `usb status` confirmou um controlador EHCI `READY`, com DMA, IRQ, controle,
   Bulk, Interrupt e high-speed disponiveis.
 - `usb list` confirmou `usb-pci-00:03.0` como EHCI ativo.
