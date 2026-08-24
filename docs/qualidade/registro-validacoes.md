@@ -593,3 +593,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   montados em `READ-WRITE`, `storage check ata2p1` retornou `Volume FAT32
   consistente.` e `update system verify system:/VALID.ZSYS` retornou `ZSYS
   autenticado e compatível`, sem gravação.
+- Validação QEMU da fixture `TRUNC.img` confirmada pelo usuário, sem horário
+  exato informado: `storage check ata2p1` permaneceu consistente e
+  `update system verify system:/TRUNC.ZSYS` recusou a divergência de regiões
+  com motivo `SIZE`, sem gravação.
