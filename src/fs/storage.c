@@ -20,6 +20,7 @@
 #define STORAGE_FAT32_MIN_CLUSTERS (STORAGE_FAT12_MAX_CLUSTERS + 1U)
 #define STORAGE_FAT12_END 0x0FF8U
 #define STORAGE_FAT12_BAD 0x0FF7U
+#define STORAGE_FAT32_FREE 0x00000000U
 #define STORAGE_FAT32_END 0x0FFFFFF8U
 #define STORAGE_FAT32_BAD 0x0FFFFFF7U
 #define STORAGE_DIR_ENTRY_SIZE 32U
@@ -123,6 +124,11 @@ typedef struct {
     uint8_t* buffer;
 } storage_stream_state_t;
 static storage_stream_state_t storage_stream_state;
+
+static int storage_cluster_is_end(const storage_mount_t* mount,
+                                  uint32_t cluster);
+static int storage_cluster_is_bad(const storage_mount_t* mount,
+                                  uint32_t cluster);
 
 static uint16_t storage_read_u16(const uint8_t* data) {
     return (uint16_t)data[0] | ((uint16_t)data[1] << 8);

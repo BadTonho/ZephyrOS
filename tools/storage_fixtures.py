@@ -400,10 +400,13 @@ def inspect_layout(output_dir: Path) -> None:
         if bpb[510:512] != b"\x55\xAA" or bpb[13] != 1:
             raise RuntimeError(f"BPB valido {index + 1} divergente")
     fat32_boot = read_sector_file(valid, 16_384)
-    fat32_fsinfo = read_sector_file(valid, 16_391)
+    fat32_backup_boot = read_sector_file(valid, 16_390)
+    fat32_fsinfo = read_sector_file(valid, 16_385)
     if fat32_boot[71:82].rstrip(b" ") != b"EP2FAT32":
         raise RuntimeError("label FAT32 da fixture divergente")
-    if fat32_fsinfo != read_sector_file(valid, 16_390):
+    if fat32_boot != fat32_backup_boot:
+        raise RuntimeError("boot sector FAT32 de backup divergente")
+    if fat32_fsinfo != read_sector_file(valid, 16_391):
         raise RuntimeError("FSInfo FAT32 de backup divergente")
     fat32_root = read_sector_file(valid, 18_016)
     if (fat32_root[32 + 11] != 0x0F or fat32_root[64 + 11] != 0x0F or
