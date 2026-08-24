@@ -131,6 +131,29 @@ Validacao executavel ainda pendente do usuario: `make q3check`,
 `memcheck` e `regcheck full`. Esta entrada registra implementacao, nao uma
 aprovacao funcional em QEMU ou hardware real.
 
+Validacao apresentada pelo usuario; horario nao informado.
+
+- `usb devices` nao publicou dispositivo USB configurado; portanto o
+  passthrough `0x0BDA:0xC811` ainda nao foi confirmado dentro da VM.
+- `wifi status` permaneceu `NOT_FOUND` e `wifi scan` nao executou varredura
+  802.11, comportamento esperado quando nenhum dispositivo chega ao inventario.
+- `net check` preservou a E1000 PCI ativa (`net-pci-00:02.0`), sem regressao
+  observada na Ethernet.
+- `health check` mostrou ATA e Filesystem indisponiveis no perfil q35; isso
+  impede considerar a validacao de base aprovada e pode estar relacionado ao
+  uso dos argumentos legados `ide-hd` nesse alvo.
+- `regcheck full` terminou com `ERR_STATE`; a causa detalhada do componente USB
+  ainda exige `usb status`, `usb list` e `usb ports`.
+
+Atualizacao da validacao apresentada pelo usuario; horario nao informado.
+
+- `usb status` confirmou um controlador EHCI `READY`, com DMA, IRQ, controle,
+  Bulk, Interrupt e high-speed disponiveis.
+- `usb list` confirmou `usb-pci-00:03.0` como EHCI ativo.
+- `usb ports` mostrou seis portas EHCI `EMPTY`/`NO_DEVICE`; o RTL8811CU ainda
+  nao foi encaminhado para a VM. A enumeracao do dispositivo Wi-Fi permanece
+  pendente e nenhuma etapa de firmware/radio foi executada.
+
 ## EP6.4 — Gerenciamento de stack para rede e TLS
 
 Implementação concluída em: 2026-08-23 17:38:34 (America/Sao_Paulo)
