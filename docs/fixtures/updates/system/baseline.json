@@ -1,0 +1,27 @@
+{
+  "format": "ZSYS v1",
+  "release_id": "ep91-baseline",
+  "release_tag": "ep91-baseline",
+  "target_version": "0.1.0",
+  "target_epoch": 0,
+  "supported_from": [
+    {
+      "version": "0.0.0",
+      "epoch": 0
+    }
+  ],
+  "min_updater": {
+    "version": "0.0.0",
+    "epoch": 0
+  },
+  "boot_abi": 1,
+  "data_schema_from": 1,
+  "data_schema_to": 1,
+  "requires_reboot": true,
+  "channel": "stable",
+  "upgrade_route": {
+    "kind": "direct",
+    "checkpoints": [],
+    "bridge_required": false
+  }
+}

@@ -107,6 +107,9 @@ UPDATE_OBJ = build/update.o
 UPDATE_SYSTEM_C = src/core/update_system.c
 UPDATE_SYSTEM_OBJ = build/update_system.o
 
+UPDATE_SYSTEM_SLOTS_C = src/core/update_system_slots.c
+UPDATE_SYSTEM_SLOTS_OBJ = build/update_system_slots.o
+
 UPDATE_REMOTE_C = src/core/update_remote.c
 UPDATE_REMOTE_OBJ = build/update_remote.o
 
@@ -433,6 +436,10 @@ SYSTEM_FIXTURES_DIR = build\system-fixtures
 SYSTEM_FIXTURE_IMAGES_DIR = build\system-fixture-images
 SYSTEM_FIXTURES_MANIFEST = docs\fixtures\updates\system\system.json
 SYSTEM_FIXTURES_PUBLIC = config\update-release-public.json
+SYSTEM_SLOTS_FIXTURES_DIR = build\system-slots-fixtures
+SYSTEM_SLOTS_BASELINE_DIR = $(SYSTEM_SLOTS_FIXTURES_DIR)\baseline
+SYSTEM_SLOTS_BASELINE_MANIFEST = docs\fixtures\updates\system\baseline.json
+SYSTEM_SLOTS_FIXTURE_IMAGE = $(SYSTEM_SLOTS_FIXTURES_DIR)\SLOTS.img
 # Defina somente em Makefile.local; a chave privada nunca entra no repositorio.
 SYSTEM_PRIVATE_KEY ?=
 SYSTEM_FIXTURE_IMAGE ?=
@@ -475,7 +482,7 @@ STORE_AS5_FIXTURES_DIR = docs\fixtures\apps\store-as5
 STORE_AS5_PUBLIC = config\app-store-test-public.json
 
 # Todas as variáveis de objetos
-OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(INPUT_OBJ) $(IRQ_DEFERRED_OBJ) $(WAIT_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(BEARSSL_COMPAT_OBJ) $(BEARSSL_OBJ) $(UPDATE_OBJ) $(UPDATE_SYSTEM_OBJ) $(UPDATE_REMOTE_OBJ) $(UPDATE_REMOTE_RELEASE_OBJ) $(UPDATE_REMOTE_GITHUB_OBJ) $(UPDATE_RUNTIME_OBJ) $(UPDATE_REMOTE_RUNTIME_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
+OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(INPUT_OBJ) $(IRQ_DEFERRED_OBJ) $(WAIT_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(BEARSSL_COMPAT_OBJ) $(BEARSSL_OBJ) $(UPDATE_OBJ) $(UPDATE_SYSTEM_OBJ) $(UPDATE_SYSTEM_SLOTS_OBJ) $(UPDATE_REMOTE_OBJ) $(UPDATE_REMOTE_RELEASE_OBJ) $(UPDATE_REMOTE_GITHUB_OBJ) $(UPDATE_RUNTIME_OBJ) $(UPDATE_REMOTE_RUNTIME_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(UHCI_OBJ) $(EHCI_OBJ) $(USB_TRANSPORT_OBJ) $(USB_MSC_OBJ) $(USB_HID_OBJ) $(RTL8811CU_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) $(RNG_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(COMPRESS_OBJ) \
@@ -496,7 +503,7 @@ $(ENTRY_OBJ): $(ENTRY_SRC)
 	@if not exist build mkdir build
 	$(NASM) -f elf32 $< -o $@
 
-$(KERNEL_OBJ): $(KERNEL_C) src/include/apps/shell_job.h src/include/core/keyboard.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/clock.h src/include/core/tls.h src/include/core/update_system.h src/include/drivers/rtc.h
+$(KERNEL_OBJ): $(KERNEL_C) src/include/apps/shell_job.h src/include/core/keyboard.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/clock.h src/include/core/tls.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/drivers/rtc.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -558,6 +565,10 @@ $(UPDATE_OBJ): $(UPDATE_C)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(UPDATE_SYSTEM_OBJ): $(UPDATE_SYSTEM_C) src/include/core/update_system.h src/include/core/update_trust.h src/include/core/update.h src/include/core/update_remote_github.h src/include/core/update_remote_config.h src/include/core/http.h src/include/fs/fs.h
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(UPDATE_SYSTEM_SLOTS_OBJ): $(UPDATE_SYSTEM_SLOTS_C) src/include/core/update_system_slots.h src/include/core/update_system.h src/include/core/update.h src/include/fs/fs.h src/include/fs/storage.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -809,7 +820,7 @@ $(BLOCK_OBJ): $(BLOCK_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(STORAGE_OBJ): $(STORAGE_C)
+$(STORAGE_OBJ): $(STORAGE_C) src/include/fs/storage.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -877,7 +888,7 @@ $(SHELL_CHECKS_OBJ): $(SHELL_CHECKS_C) src/include/apps/shell.h src/include/apps
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(SHELL_COMMANDS_PACKAGES_OBJ): $(SHELL_COMMANDS_PACKAGES_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/update_system.h
+$(SHELL_COMMANDS_PACKAGES_OBJ): $(SHELL_COMMANDS_PACKAGES_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/update_system.h src/include/core/update_system_slots.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1028,6 +1039,21 @@ run-system-fixture:
 	@if not exist "$(SYSTEM_FIXTURE_IMAGE)" (echo Imagem de fixture nao encontrada: $(SYSTEM_FIXTURE_IMAGE) & exit /b 2)
 	$(QEMU) $(QEMU_CPU_ARGS) -drive file=$(SYSTEM_FIXTURE_IMAGE),format=raw,if=none,id=systemfixture -device ide-hd,drive=systemfixture,bootindex=1 $(QEMU_NET_ARGS)
 
+system-slots-fixtures: system-fixtures $(SYSTEM_SLOTS_BASELINE_MANIFEST) tools\updater.py tools\system_slots_fixtures.py tools\packager.py
+	@if "$(SYSTEM_PRIVATE_KEY)"=="" (echo SYSTEM_PRIVATE_KEY nao configurada em Makefile.local & exit /b 2)
+	@if exist "$(SYSTEM_SLOTS_FIXTURES_DIR)" rmdir /s /q "$(SYSTEM_SLOTS_FIXTURES_DIR)"
+	@if not exist "$(SYSTEM_SLOTS_BASELINE_DIR)" mkdir "$(SYSTEM_SLOTS_BASELINE_DIR)"
+	python tools\updater.py fixtures-system-qemu --manifest $(SYSTEM_SLOTS_BASELINE_MANIFEST) --boot $(BOOT_BIN) --stage2 $(STAGE2_BIN) --kernel $(KERNEL_BIN) --private "$(SYSTEM_PRIVATE_KEY)" --public $(SYSTEM_FIXTURES_PUBLIC) --output-dir $(SYSTEM_SLOTS_BASELINE_DIR)
+	python tools\system_slots_fixtures.py --package $(SYSTEM_SLOTS_BASELINE_DIR)\valid.zsys --output-dir $(SYSTEM_SLOTS_FIXTURES_DIR)
+	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_SLOTS_FIXTURE_IMAGE)' -Force"
+	python tools\packager.py inject-file-fat32 --file $(SYSTEM_SLOTS_BASELINE_DIR)\valid.zsys --image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --path ZSA0.ZSY --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools\packager.py inject-file-fat32 --file $(SYSTEM_SLOTS_FIXTURES_DIR)\ZSI0.STA --image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --path ZSI0.STA --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools\packager.py inject-file-fat32 --file $(SYSTEM_SLOTS_FIXTURES_DIR)\ZSI1.STA --image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --path ZSI1.STA --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools\packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)\valid.zsys --image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --path VALID.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+
+run-system-slots-fixture: system-slots-fixtures
+	$(QEMU) $(QEMU_CPU_ARGS) -drive file=$(SYSTEM_SLOTS_FIXTURE_IMAGE),format=raw,if=none,id=systemslots -device ide-hd,drive=systemslots,bootindex=1 $(QEMU_NET_ARGS)
+
 run: $(OS_IMG)
 	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS)
 
@@ -1144,4 +1170,4 @@ store-as5-serve: store-as5-test
 clean:
 	rmdir /s /q build
 
-.PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-system-fixture run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
+.PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-system-fixture run-system-slots-fixture run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures system-slots-fixtures debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean

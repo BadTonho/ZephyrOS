@@ -18,6 +18,7 @@
 #include "core/app_remote.h"
 #include "core/update.h"
 #include "core/update_system.h"
+#include "core/update_system_slots.h"
 #include "core/update_remote.h"
 #include "core/version.h"
 #include "core/syscall.h"
@@ -817,6 +818,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     update_capabilities_t update_capabilities;
     int update_result = update_init();
     int update_system_result = update_system_init();
+    int update_system_slots_result = update_system_slots_init();
     if (update_result != OK || update_system_result != OK) {
         if (update_system_result != OK) {
             LOG_ERROR("KERNEL", "Verificador ZSYS indisponivel");
@@ -828,6 +830,10 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     } else if (update_get_capabilities(&update_capabilities) != OK) {
         recovery_mark_disabled(RECOVERY_COMPONENT_UPDATE, ERR_STATE,
                                "Capacidades de Update indisponiveis");
+    } else if (update_system_slots_result != OK) {
+        recovery_mark_degraded(RECOVERY_COMPONENT_UPDATE,
+                               update_system_slots_result,
+                               "Slots ZSYS indisponiveis ou degradados");
     } else if (!update_capabilities.local_file_available) {
         recovery_mark_degraded(RECOVERY_COMPONENT_UPDATE, ERR_UNAVAILABLE,
                                "Verificador pronto; filesystem indisponivel");

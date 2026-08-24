@@ -738,10 +738,9 @@ repositorio.
 
 ## EP9 - Atualizacao da imagem do sistema e slots de boot
 
-**Estado:** EP9.0A e EP9.4A implementadas e validadas pelo usuario; EP9.1-EP9.3
-continuam futuras.
-Slots, staging, aplicacao, rollback pos-reboot e alteracoes no boot/stage2
-continuam fora do escopo atual.
+**Estado:** EP9.0A e EP9.4A implementadas e validadas pelo usuario; EP9.1
+implementada, aguardando a validacao executavel do usuario. Aplicacao,
+rollback pos-reboot e alteracoes no boot/stage2 continuam fora do escopo atual.
 
 Esta fase separa a atualizacao de arquivos do sistema em execucao da
 atualizacao da imagem que o proximo boot carregara. O ZUPD v1 continua limitado
@@ -813,12 +812,22 @@ crus.
 
 ### EP9.1 - Staging e slots de imagem
 
-- [ ] Criar dois slots de imagem do sistema, com estado redundante, sequencia,
-  tamanho, hash e marcador de slot pendente, sem sobrescrever a imagem em uso.
-- [ ] Gravar e verificar a imagem nova em staging antes de publicar o slot
-  pendente; interrupcao deve preservar o slot ativo anterior.
-- [ ] Definir limites de tamanho, memoria, espaco, timeout, cancelamento,
-  recuperacao e politica anti-downgrade para a imagem completa.
+- [x] Criar dois slots de imagem do sistema, com estado redundante, sequencia,
+  tamanho, hash, identidade da Release e marcador de slot pendente, sem
+  sobrescrever a imagem em uso.
+- [x] Gravar e verificar a imagem nova em staging antes de publicar o slot
+  pendente; interrupcao preserva o slot ativo anterior e o staging temporario
+  e controlado pelo journal.
+- [x] Definir limites de tamanho, memoria, espaco, cancelamento cooperativo,
+  recuperacao, fases PREPARED/STAGING/VERIFIED/COMMITTED e politica
+  anti-downgrade para a imagem completa.
+- [x] Adicionar `update system slots` e `update system stage` com preflight,
+  `--confirm`, origem exclusivamente local em `system:/` e resultado detalhado.
+- [x] Criar fixtures FAT32 com baseline assinado em `ZSA0.ZSY`, `ZSB0.ZSY`
+  vazio, estado redundante e candidato `VALID.ZSYS`, sem chave privada no
+  build normal.
+- [ ] Executar a matriz EP9.1 no QEMU e confirmar a regressao Simple/Classic,
+  `health`, `memcheck` e `regcheck full`.
 
 ### EP9.2 - Boot, tentativa e rollback
 
@@ -859,8 +868,8 @@ crus.
 - [x] Executar a matriz do usuario: storage-fixtures-test, storage-fixtures,
   system-fixtures, q3check, build completo, QEMU, memcheck e regcheck full.
 
-Limites mantidos para etapas posteriores: journaling, filesystem nativo, boot
-direto pelo FAT32, slots A/B, staging, aplicacao ZSYS e reboot automatico.
+Limites mantidos para etapas posteriores: filesystem nativo, boot direto pelo
+FAT32, aplicacao ZSYS, selecao de slot no boot e reboot automatico.
 
 ### EP9.4B - Expansão posterior de armazenamento
 

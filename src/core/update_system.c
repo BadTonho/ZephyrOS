@@ -888,8 +888,9 @@ int update_system_is_ready(void) {
     return update_system_initialized;
 }
 
-int update_system_verify_file(const char* path,
-                              update_system_verification_t* result_out) {
+static int update_system_verify_file_internal(
+    const char* path, update_system_verification_t* result_out,
+    uint8_t allow_current_slot) {
     update_version_t current_version;
     update_system_base_t current_base;
     uint32_t file_size = 0U;
@@ -1147,6 +1148,12 @@ int update_system_verify_file(const char* path,
             break;
         }
     }
+    if (!result_out->compatible && allow_current_slot &&
+        update_system_version_compare(&result_out->target_version,
+                                      &current_version) == 0 &&
+        target_epoch == current_base.epoch) {
+        result_out->compatible = 1U;
+    }
     if (!result_out->compatible ||
         update_system_version_compare(
             &current_version,
@@ -1212,6 +1219,16 @@ int update_system_verify_file(const char* path,
     result_out->reason = UPDATE_SYSTEM_REASON_NONE;
     LOG_INFO("UPDATE", "ZSYS validado sem gravacao");
     return OK;
+}
+
+int update_system_verify_file(const char* path,
+                              update_system_verification_t* result_out) {
+    return update_system_verify_file_internal(path, result_out, 0U);
+}
+
+int update_system_verify_file_for_slot(
+    const char* path, update_system_verification_t* result_out) {
+    return update_system_verify_file_internal(path, result_out, 1U);
 }
 
 const char* update_system_reason_name(update_system_reason_t reason) {

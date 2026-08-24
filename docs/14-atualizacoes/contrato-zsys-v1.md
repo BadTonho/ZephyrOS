@@ -91,8 +91,42 @@ descritor e ao tag selecionado.
 - bridge_required: false.
 
 O preflight rejeita downgrade, origem não suportada, ABI/schema incompatíveis e
-identidade divergente. Não existe staging, cache de imagem, slots A/B,
-aplicação, rollback pós-reboot ou alteração de boot/stage2 nesta etapa.
+identidade divergente. A validação de um slot persistido também aceita a
+imagem da versão atualmente instalada, sem transformar essa imagem em
+candidato de atualização.
+
+## EP9.1 — Slots e staging
+
+O serviço `update_system_slots` usa aliases 8.3 na raiz do volume FAT32
+`system:/`:
+
+| Alias | Função |
+|---|---|
+| `ZSA0.ZSY` | envelope completo do slot A |
+| `ZSB0.ZSY` | envelope completo do slot B |
+| `ZSI0.STA`, `ZSI1.STA` | cópias do estado redundante |
+| `ZSI0.JRN`, `ZSI1.JRN` | cópias do journal redundante |
+| `ZSTG.ZSY` | entrada temporária única de staging |
+
+Os dois arquivos de slot armazenam o envelope ZSYS completo, não somente a
+imagem. O estado de 512 bytes tem magic `ZSI1`, sequência monotônica, slot
+ativo, slot pendente, flags de recuperação e metadados de A/B. Cada metadado
+contém versão, epoch, tamanho total do envelope, SHA-256, `release_id` e
+`release_tag`; os últimos 32 bytes do estado são o SHA-256 dos primeiros 480
+bytes.
+
+O journal de 512 bytes usa magic `ZSJ1` e as fases `PREPARED`, `STAGING`,
+`VERIFIED` e `COMMITTED`. Na inicialização, a cópia válida de maior sequência
+é escolhida. Uma cópia corrompida pode ser tolerada quando a outra é válida;
+duas cópias inválidas deixam o serviço `DEGRADED`, sem reparo silencioso.
+Interrupções preservam o slot ativo. Staging incompleto é descartado quando
+o journal ainda está em `PREPARED`/`STAGING`; um staging verificado pode ser
+republicado como slot pendente durante a recuperação.
+
+O escritor FAT32 de slots usa buffer fixo de 64 KiB e grava clusters em chunks;
+nenhuma operação aloca a imagem de até 8 MiB inteira. O arquivo temporário é
+controlado pelo journal e removido depois do aborto ou da publicação. O slot
+ativo nunca é substituído nesta etapa.
 
 ## Ferramentas e comandos
 
@@ -108,10 +142,17 @@ No Shell:
 
     update system verify system:/<arquivo.ZSYS>
     update system check --tag <tag>
+    update system slots
+    update system stage system:/VALID.ZSYS
+    update system stage system:/VALID.ZSYS --confirm
 
-As duas operações são somente leitura. A verificação local usa leitura em
-streaming e não aloca a imagem inteira; a consulta por tag valida o descritor
-v2, o asset system.zsys, a assinatura e os hashes durante o download.
+`update system slots` somente consulta o estado. `stage` sem `--confirm` faz o
+preflight completo sem gravar; com `--confirm`, repete a validação, copia o
+envelope local para o slot inativo, verifica tamanho/hash/assinatura e publica
+o slot como pendente. O comando aceita somente arquivos locais no volume
+`system:/`; download, aplicação, cancelamento de slot pendente e reboot ficam
+reservados para EP9.3. A verificação local usa leitura em streaming e não
+aloca a imagem inteira.
 
 ### Fixture local no FAT32
 
@@ -132,3 +173,8 @@ Os nomes da matriz EP9.0A são `VALID.ZSYS`, `TRUNC.ZSYS`, `HDRBAD.ZSYS`,
 `EPCHBAD.ZSYS`, `ABIBAD.ZSYS`, `SCHBAD.ZSYS`, `IMGHASH.ZSYS` e
 `CMPHASH.ZSYS`. No Shell, o caminho da fixture válida é
 `system:/VALID.ZSYS`.
+
+O alvo `system-slots-fixtures` acrescenta uma imagem com `ZSA0.ZSY` semeado
+por um baseline assinado da versão atual, `ZSB0.ZSY` ausente, as duas cópias
+iniciais `ZSI*.STA` e `VALID.ZSYS` como candidato. A chave privada continua
+exclusiva de `Makefile.local`; a imagem normal não depende dela.
