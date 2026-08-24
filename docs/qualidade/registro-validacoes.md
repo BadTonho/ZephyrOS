@@ -515,3 +515,6 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Correção do campo append-only `system_present` em
   `update_remote_github_release_t`, identificada na compilação, concluída em:
   2026-08-24 10:14 (America/Sao_Paulo).
+- Regra de comandos completos adicionada ao `AGENTS.md` em: 2026-08-24 10:21
+  (America/Sao_Paulo); comandos futuros devem ser enviados prontos para copiar
+  e executar, sem placeholders ou argumentos ausentes.
