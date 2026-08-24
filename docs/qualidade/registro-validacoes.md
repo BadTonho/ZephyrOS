@@ -621,3 +621,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   exato informado: `storage check ata2p1` retornou `Volume FAT32 consistente.`
   e `update system verify system:/MISALGN.ZSYS` recusou a divergência de
   regiões com motivo `SIZE`, sem gravação.
+- Validação QEMU da fixture `VERBAD.img` confirmada pelo usuário, sem horário
+  exato informado: `storage check ata2p1` permaneceu consistente e
+  `update system verify system:/VERBAD.ZSYS` recusou a versão incompatível com
+  motivo `COMPATIBILITY`, sem gravação.
