@@ -696,3 +696,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Preflight EP9.1 validado pelo usuário em: 2026-08-24 17:13
   (America/Sao_Paulo); `update system stage system:/VALID.ZSYS` aceitou o
   envelope com motivo `NONE` e confirmou que nenhuma gravação foi realizada.
+- Staging EP9.1 validado pelo usuário em: 2026-08-24 17:16
+  (America/Sao_Paulo); `update system stage system:/VALID.ZSYS --confirm`
+  verificou o envelope, gravou o slot inativo e publicou-o como pendente.
+  As mensagens de exclusão FAT32 referiam-se a entradas ausentes toleradas
+  durante a limpeza preparatória; a operação terminou com motivo `NONE`.
