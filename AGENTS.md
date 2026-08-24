@@ -580,6 +580,21 @@ e repetir o valor literalmente.
 
 ---
 
+## Regra #19: Comandos Completos e Executáveis
+
+Ao orientar o usuário, o agente NUNCA deve enviar um comando incompleto,
+genérico ou contendo placeholders como `<tag>`, `<arquivo>`, `...` ou IDs
+presumidos. Todo comando deve estar pronto para copiar e executar no shell
+indicado, com todos os argumentos obrigatórios, caminhos e valores dinâmicos
+preenchidos exatamente.
+
+Se faltar qualquer valor necessário, o agente DEVE primeiro obtê-lo da saída
+mais recente do sistema ou pedir ao usuário essa saída. Enquanto o valor não
+estiver disponível, deve fornecer apenas a instrução para obtê-lo, não o
+comando final incompleto.
+
+---
+
 ## Regra #18: Registro de Etapas e Validações
 
 Toda etapa, subetapa, fase, implementação ou validação concluída DEVE registrar
