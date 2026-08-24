@@ -772,13 +772,13 @@ static void execute_about_action(int option) {
     video_clear();
     if (option == 0) {
         video_print_at(10, 8, ZEPHYROS_DISPLAY_NAME, 0x0F);
-        video_print_at(10, 10, "Sistema Operacional Educacional", 0x07);
+        video_print_at(10, 10, "Sistema Operacional ZephyrOS", 0x07);
         video_print_at(10, 12, "Desenvolvido em C e Assembly x86", 0x07);
         video_print_at(10, 14, "VGA Text Mode 80x25", 0x07);
     } else {
         video_print_at(10, 8, "Creditos:", 0x0F);
         video_print_at(10, 10, "Kernel e Drivers", 0x0B);
-        video_print_at(12, 11, "Desenvolvido para fins educacionais", 0x07);
+        video_print_at(12, 11, "Desenvolvido para uso real", 0x07);
         video_print_at(10, 13, "Sistema de Arquivos", 0x0B);
         video_print_at(12, 14, "FAT12 implementation", 0x07);
         video_print_at(10, 16, "Interface", 0x0B);
@@ -1127,7 +1127,7 @@ static void settings_gui_draw_dialog_content(int x, int y, int width) {
             gui_draw_text((uint32_t)x, (uint32_t)(y + 34),
                           "Computador: ZephyrOS-PC", GUI_MODERN_COLOR_TEXT);
             gui_draw_text((uint32_t)x, (uint32_t)(y + 68),
-                          "Sistema operacional educacional", GUI_MODERN_COLOR_TEXT);
+                          "Sistema operacional ZephyrOS", GUI_MODERN_COLOR_TEXT);
             break;
         case SETTINGS_DIALOG_MEMORY:
             total = memory_get_total() / 1024;

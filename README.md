@@ -8,10 +8,10 @@ Operating system built from scratch in C + x86 Assembly, aiming to be a real, fu
 
 ## Project Status
 
-ZephyrOS is an experimental operating system under active development. It runs primarily on **QEMU** and maintains dual user interfaces: a **Simple Mode** utilizing VGA text mode and a **Classic Mode** leveraging VESA VBE graphic resolutions when hardware or emulators support it.
+ZephyrOS is an operating system under active development, built toward reliable use on real hardware and emulated platforms. It runs primarily on **QEMU** during validation and maintains dual user interfaces: a **Simple Mode** utilizing VGA text mode and a **Classic Mode** leveraging VESA VBE graphic resolutions when hardware or emulators support it.
 The `modern` name is reserved for a future interface and is not selectable yet.
 
-The project is currently intended for educational and experimental purposes and is not yet ready for production on real hardware. Refer to [`ROADMAP.md`](ROADMAP.md) and [`docs/`](docs/) for progress logs, known limitations, and upcoming milestones.
+The project is being developed as a real operating system for users. The current build is not yet a general production release: hardware coverage, security review, compatibility, and recovery workflows remain under development. Refer to [`ROADMAP.md`](ROADMAP.md) and [`docs/`](docs/) for progress logs, known limitations, and upcoming milestones.
 
 ---
 

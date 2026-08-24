@@ -13,7 +13,7 @@ ZephyrOS is an operating system under active development. Security updates, bug 
 
 ## Scope & Nature of the Project
 
-ZephyrOS is an educational and modular 32-bit x86 operating system written from scratch. While we prioritize memory safety, reliable bounds checking, and strict isolation between Ring 0 (Kernel) and Ring 3 (User Space), the system is experimental and intended for use in emulated environments (QEMU/Bochs).
+ZephyrOS is a modular 32-bit x86 operating system written from scratch and under active development toward real hardware and user deployments. We prioritize memory safety, reliable bounds checking, and strict isolation between Ring 0 (Kernel) and Ring 3 (User Space). QEMU and Bochs are the current validation environments while hardware support, security review, and recovery procedures continue to mature.
 
 ---
 

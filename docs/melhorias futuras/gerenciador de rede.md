@@ -865,7 +865,7 @@ persistencia, IPv6, VLAN, promiscuidade, multicast e modo RTL8139 C+.
 
 2. **Sem WiFi** — O ZephyrOS não suporta WiFi. Seria necessário driver para chip WiFi (RTL8188, Intel Wireless, etc.) que é muito mais complexo que Ethernet.
 
-3. **TCP/IP simplificado** — O stack TCP/IP é educacional. Não suporta todas as opções RFC (window scaling, SACK, ECN, etc.). É suficiente para HTTP básico e downloads.
+3. **TCP/IP simplificado** — O stack TCP/IP atual não suporta todas as opções RFC (window scaling, SACK, ECN, etc.). Ele atende HTTP básico e downloads, mas precisa evoluir para oferecer interoperabilidade ampla e uso de produção.
 
 4. **Sem criptografia** — Não há SSL/TLS. O HTTP é plaintext. Downloads e uploads não são criptografados. Para uso real, seria necessário AES/SHA/RSA.
 

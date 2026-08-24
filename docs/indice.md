@@ -6,7 +6,7 @@ Sistema operacional desenvolvido do zero em C + Assembly (x86).
 
 ## O que é o ZephyrOS?
 
-O ZephyrOS é um sistema operacional funcional, construído desde o bootloader até um ambiente desktop completo. O projeto tem o objetivo de ser um OS real e utilizável, não apenas educacional.
+O ZephyrOS é um sistema operacional funcional, construído desde o bootloader até um ambiente desktop completo. O projeto tem o objetivo de ser real, confiável e utilizável por pessoas.
 
 ## O que ele faz?
 

@@ -592,7 +592,7 @@
 
 1. **Sem rede** — O ZephyrOS não possui stack de rede. Atualizações de assinaturas devem ser manuais (usuário baixa no PC e copia para pendrive).
 
-2. **MD5 em vez de SHA-256** — SHA-256 é mais seguro mas requer mais computação. MD5 é suficiente para um anti-vírus educacional. Para uso real, SHA-256 seria necessário.
+2. **MD5 em vez de SHA-256** — SHA-256 é mais seguro mas requer mais computação. A implementação atual usa MD5 por custo computacional; para uso real, a verificação deve migrar para SHA-256 ou assinatura digital.
 
 3. **Sem Ring 3** — Todos os processos rodam em Ring 0 (kernel mode). Não há separação real de privilégios. O sandbox é apenas lógico, não enforced pelo hardware.
 
@@ -608,7 +608,7 @@
 
 9. **Integração existente** — O filesystem já suporta operações completas (read/write/delete/list). O scanner precisa apenas usar essas APIs.
 
-10. **Educacional** — Este anti-vírus é para fins educacionais. Não deve ser usado em produção sem melhorias significativas de segurança.
+10. **Prontidão para produção** — Este anti-vírus ainda exige melhorias significativas de segurança, isolamento, atualização de assinaturas e análise antes de ser habilitado em uma instalação de produção.
 
 ---
 

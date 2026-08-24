@@ -8,14 +8,16 @@ Sistema operacional do zero em C + Assembly (x86), com o objetivo de ser um OS r
 
 ## Status do projeto
 
-O ZephyrOS é um sistema operacional experimental em desenvolvimento ativo. Ele é executado
-principalmente no QEMU e mantém duas interfaces: modo simple em VGA text mode e modo
+O ZephyrOS é um sistema operacional em desenvolvimento ativo, construído para evoluir
+do QEMU para hardware real e uso por pessoas. Ele é executado principalmente no QEMU
+durante a validação e mantém duas interfaces: modo simple em VGA text mode e modo
 classic com VESA quando o hardware ou emulador oferece suporte.
 O nome `modern` está reservado para uma futura interface, ainda não
 selecionável.
 
-O projeto ainda não deve ser considerado pronto para uso em hardware real. Consulte o
-[`ROADMAP.md`](ROADMAP.md) e a documentação em [`docs/`](docs/) para acompanhar as etapas
+O projeto está sendo desenvolvido como um sistema real e utilizável. A versão atual ainda
+possui limitações de suporte a hardware, compatibilidade, segurança e recuperação; consulte
+o [`ROADMAP.md`](ROADMAP.md) e a documentação em [`docs/`](docs/) para acompanhar as etapas
 concluídas, limitações conhecidas e próximos objetivos.
 
 ---

@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-O ZephyrOS é um sistema operacional desenvolvido do zero em C + Assembly (x86), com o objetivo de ser funcional e completo o suficiente para uso real. O projeto começou como exercício educacional e evoluiu para um OS com ambições de produção.
+O ZephyrOS é um sistema operacional desenvolvido do zero em C + Assembly (x86), com o objetivo de ser funcional, confiável e utilizável por pessoas. O projeto está sendo estruturado para evoluir de um ambiente de validação em QEMU para hardware real, com requisitos de produção acompanhados no roadmap.
 
 ## O que o ZephyrOS faz
 
