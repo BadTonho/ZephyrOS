@@ -632,3 +632,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Validação QEMU da fixture `EPCHBAD.img` confirmada pelo usuário, sem horário
   exato informado: `update system verify system:/EPCHBAD.ZSYS` recusou a base
   de versão/epoch incompatível com motivo `BASE_VERSION`, sem gravação.
+- Tentativa de validação QEMU da fixture `ABIBAD.img` registrada sem horário
+  exato informado: `storage check ata2p1` permaneceu consistente, mas a busca
+  retornou `ERR_NOT_FOUND`; a validação de ABI permanece pendente com o nome
+  exato `ABIBAD.ZSYS`.
+- Validação QEMU da fixture `ABIBAD.img` confirmada pelo usuário, sem horário
+  exato informado: `update system verify system:/ABIBAD.ZSYS` recusou a
+  compatibilidade de `boot_abi` com motivo `COMPATIBILITY`, sem gravação.
