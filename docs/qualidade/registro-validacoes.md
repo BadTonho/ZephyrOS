@@ -665,3 +665,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   diagnósticos negativos do App Store ao consultar o diretório opcional
   `APPS`, ausente na fixture sem pacotes instalados; não houve erro de cursor
   FAT32 nem falha de publicação do índice nesta validação.
+- EP9.4A encerrada em: 2026-08-24 15:09 (America/Sao_Paulo); implementação e
+  matriz executável do usuário foram concluídas, mantendo journaling,
+  filesystem nativo, boot direto pelo FAT32, slots A/B, staging, aplicação
+  ZSYS e reboot automático para etapas posteriores.
