@@ -579,3 +579,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   marcador FAT32 de último segmento e o selftest verifica a sequência.
 - Validação do comando `storage check ata2p1` confirmada pelo usuário com
   `Volume FAT32 consistente.`; horário exato da execução não foi informado.
+- Diagnóstico de `update system verify system:/VALID.ZSYS` registrado sem
+  horário exato informado: o Shell retornou `ERR_NOT_FOUND` antes da
+  verificação criptográfica; a imagem de fixture `VALID.img` foi conferida
+  no host e contém o arquivo, portanto a inicialização deve usar
+  `run-system-fixture` com essa imagem específica.
