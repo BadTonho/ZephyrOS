@@ -510,3 +510,5 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Correção do `NameError` no carregamento do callback de Release v2 concluída
   em: 2026-08-24 10:09 (America/Sao_Paulo); o resolver agora é associado em
   tempo de execução, após a definição de `resolve_git_commit`.
+- Correção da sincronização do header remoto com a configuração do asset
+  `system.zsys` concluída em: 2026-08-24 10:11 (America/Sao_Paulo).

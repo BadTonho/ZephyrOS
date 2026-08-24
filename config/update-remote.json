@@ -11,6 +11,7 @@
   "github_descriptor_name": "release.json",
   "github_manifest_name": "release.zum",
   "github_package_name": "update.zephyrosupd",
+  "github_system_name": "system.zsys",
   "runtime_release_url_template": "http://10.0.2.2:8000/zephyros/runtime-{tag}.json",
   "runtime_manifest_url": "http://10.0.2.2:8000/zephyros/runtime.zum2",
   "runtime_package_name": "runtime.zephyrosupd",
