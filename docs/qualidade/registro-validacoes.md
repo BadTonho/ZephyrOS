@@ -597,3 +597,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   exato informado: `storage check ata2p1` permaneceu consistente e
   `update system verify system:/TRUNC.ZSYS` recusou a divergência de regiões
   com motivo `SIZE`, sem gravação.
+- Validação QEMU da fixture `HDRBAD.img` confirmada pelo usuário, sem horário
+  exato informado: `storage check ata2p1` permaneceu consistente e
+  `update system verify system:/HDRBAD.ZSYS` recusou a assinatura Ed25519
+  adulterada com motivo `SIGNATURE`, sem gravação.
