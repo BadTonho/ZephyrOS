@@ -836,6 +836,17 @@ crus.
   falta de espaco, falha durante staging, falha no primeiro boot, rollback,
   energia interrompida, cache corrompido e regressao Simple/Classic.
 
+### EP9.4 - Volume de sistema FAT32 e expansão de armazenamento
+
+- [ ] Definir se o volume de boot permanece FAT12 e o sistema usa um volume
+  FAT32 separado, ou se haverá migração controlada do volume de boot.
+- [ ] Projetar a nova geometria de disco, BPB, partições e compatibilidade com
+  o FS unificado sem reduzir o fallback FAT12 existente.
+- [ ] Alterar boot/stage2 somente após aprovação explícita, com recuperação
+  offline e preservação do caminho de boot atual durante a transição.
+- [ ] Validar no host e no QEMU imagens maiores, nomes, espaço, montagem,
+  leitura do ZSYS e regressão dos volumes FAT12/FAT32.
+
 ### Criterio de saida
 
 Uma imagem nova pode ser baixada e preparada enquanto o sistema antigo segue

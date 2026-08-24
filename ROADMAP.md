@@ -741,6 +741,8 @@ Evolução da plataforma:      [████████████████
 - [ ] EP9 planejada: pacote `ZSYS` separado do runtime, staging em slots A/B,
   ativacao somente no reboot e rollback de boot. Nenhuma alteracao em boot ou
   stage2 e autorizada antes da etapa dedicada.
+- [ ] EP9.4 futura: definir a expansão do armazenamento e o uso de FAT32 no
+  volume de sistema ou em volume separado, preservando o fallback FAT12.
 
 Para atualizacoes do sistema, U1-U5 continuam sendo a base executavel no
 dispositivo; EP5-EP9 sao a continuidade de Release, transporte e imagem do
