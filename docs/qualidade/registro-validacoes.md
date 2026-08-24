@@ -533,3 +533,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   na imagem FAT12. A matriz completa de fixtures nao cabe no volume atual;
   isso confirma a necessidade futura de expansao FAT32, sem alterar o escopo
   de boot/stage2 da EP9.0A.
+- Ajuste da estrategia QEMU da EP9.0A implementado em: 2026-08-24 11:02
+  (America/Sao_Paulo); `system-fixtures` agora gera uma imagem FAT12 separada
+  para cada fixture e `run-system-fixture` inicia a imagem selecionada. A
+  imagem base nao recebe mais a matriz inteira e boot/stage2 permanecem sem
+  alteracoes.

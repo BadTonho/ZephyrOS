@@ -426,10 +426,12 @@ STORAGE_VALID_IMG = build\storage-valid.img
 STORAGE_CORRUPT_IMG = build\storage-corrupt.img
 STORAGE_UNKNOWN_IMG = build\storage-unknown.img
 SYSTEM_FIXTURES_DIR = build\system-fixtures
+SYSTEM_FIXTURE_IMAGES_DIR = build\system-fixture-images
 SYSTEM_FIXTURES_MANIFEST = docs\fixtures\updates\system\system.json
 SYSTEM_FIXTURES_PUBLIC = config\update-release-public.json
 # Defina somente em Makefile.local; a chave privada nunca entra no repositorio.
 SYSTEM_PRIVATE_KEY ?=
+SYSTEM_FIXTURE_IMAGE ?=
 
 # A imagem de boot reserva os primeiros setores para o stage2 e o kernel.
 # O volume FAT12 fica depois dessa area para que o Explorer nunca sobrescreva
@@ -986,20 +988,40 @@ $(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(KERNEL_BIN) tools\packager.py \
 system-fixtures: $(OS_IMG) $(SYSTEM_FIXTURES_MANIFEST) tools\updater.py tools\packager.py
 	@if "$(SYSTEM_PRIVATE_KEY)"=="" (echo SYSTEM_PRIVATE_KEY nao configurada em Makefile.local & exit /b 2)
 	@if exist "$(SYSTEM_FIXTURES_DIR)" rmdir /s /q "$(SYSTEM_FIXTURES_DIR)"
+	@if exist "$(SYSTEM_FIXTURE_IMAGES_DIR)" rmdir /s /q "$(SYSTEM_FIXTURE_IMAGES_DIR)"
+	@if not exist "$(SYSTEM_FIXTURE_IMAGES_DIR)" mkdir "$(SYSTEM_FIXTURE_IMAGES_DIR)"
 	python tools\updater.py fixtures-system-qemu --manifest $(SYSTEM_FIXTURES_MANIFEST) --boot $(BOOT_BIN) --stage2 $(STAGE2_BIN) --kernel $(KERNEL_BIN) --private "$(SYSTEM_PRIVATE_KEY)" --public $(SYSTEM_FIXTURES_PUBLIC) --output-dir $(SYSTEM_FIXTURES_DIR)
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\valid.zsys --image $(OS_IMG) --fat-name VALID.ZSY --replace
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\truncated.zsys --image $(OS_IMG) --fat-name TRUNC.ZSY --replace
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\tampered-header.zsys --image $(OS_IMG) --fat-name HDRBAD.ZSY --replace
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\tampered-payload.zsys --image $(OS_IMG) --fat-name PAYBAD.ZSY --replace
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\tampered-signature.zsys --image $(OS_IMG) --fat-name SIGBAD.ZSY --replace
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\oversized.zsys --image $(OS_IMG) --fat-name OVERSIZ.ZSY --replace
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\misaligned.zsys --image $(OS_IMG) --fat-name MISALGN.ZSY --replace
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\incompatible-version.zsys --image $(OS_IMG) --fat-name VERBAD.ZSY --replace
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\incompatible-epoch.zsys --image $(OS_IMG) --fat-name EPCHBAD.ZSY --replace
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\incompatible-abi.zsys --image $(OS_IMG) --fat-name ABIBAD.ZSY --replace
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\incompatible-schema.zsys --image $(OS_IMG) --fat-name SCHBAD.ZSY --replace
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\hash-divergent-image.zsys --image $(OS_IMG) --fat-name IMGHASH.ZSY --replace
-	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\hash-divergent-component.zsys --image $(OS_IMG) --fat-name CMPHASH.ZSY --replace
+	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\VALID.img' -Force"
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\valid.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\VALID.img --fat-name VALID.ZSY --replace
+	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\TRUNC.img' -Force"
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\truncated.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\TRUNC.img --fat-name TRUNC.ZSY --replace
+	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\HDRBAD.img' -Force"
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\tampered-header.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\HDRBAD.img --fat-name HDRBAD.ZSY --replace
+	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\PAYBAD.img' -Force"
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\tampered-payload.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\PAYBAD.img --fat-name PAYBAD.ZSY --replace
+	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\SIGBAD.img' -Force"
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\tampered-signature.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\SIGBAD.img --fat-name SIGBAD.ZSY --replace
+	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\OVERSIZ.img' -Force"
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\oversized.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\OVERSIZ.img --fat-name OVERSIZ.ZSY --replace
+	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\MISALGN.img' -Force"
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\misaligned.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\MISALGN.img --fat-name MISALGN.ZSY --replace
+	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\VERBAD.img' -Force"
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\incompatible-version.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\VERBAD.img --fat-name VERBAD.ZSY --replace
+	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\EPCHBAD.img' -Force"
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\incompatible-epoch.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\EPCHBAD.img --fat-name EPCHBAD.ZSY --replace
+	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\ABIBAD.img' -Force"
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\incompatible-abi.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\ABIBAD.img --fat-name ABIBAD.ZSY --replace
+	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\SCHBAD.img' -Force"
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\incompatible-schema.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\SCHBAD.img --fat-name SCHBAD.ZSY --replace
+	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\IMGHASH.img' -Force"
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\hash-divergent-image.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\IMGHASH.img --fat-name IMGHASH.ZSY --replace
+	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\CMPHASH.img' -Force"
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\hash-divergent-component.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\CMPHASH.img --fat-name CMPHASH.ZSY --replace
+
+run-system-fixture:
+	@if "$(SYSTEM_FIXTURE_IMAGE)"=="" (echo SYSTEM_FIXTURE_IMAGE nao configurada & exit /b 2)
+	@if not exist "$(SYSTEM_FIXTURE_IMAGE)" (echo Imagem de fixture nao encontrada: $(SYSTEM_FIXTURE_IMAGE) & exit /b 2)
+	$(QEMU) $(QEMU_CPU_ARGS) -drive file=$(SYSTEM_FIXTURE_IMAGE),format=raw,if=none,id=systemfixture -device ide-hd,drive=systemfixture,cyls=80,heads=2,secs=18,bootindex=1 $(QEMU_NET_ARGS)
 
 run: $(OS_IMG)
 	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS)
@@ -1117,4 +1139,4 @@ store-as5-serve: store-as5-test
 clean:
 	rmdir /s /q build
 
-.PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
+.PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-system-fixture run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean

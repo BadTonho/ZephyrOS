@@ -73,13 +73,36 @@ canonica da funcionalidade, nao nesta memoria geral.
 ## EP9.0A: fixtures ZSYS para QEMU
 
 O alvo `system-fixtures` gera uma matriz compacta assinada usando a chave
-privada indicada por `SYSTEM_PRIVATE_KEY` em `Makefile.local` e injeta os
-arquivos na imagem `build\zephyros.img`. A chave privada permanece fora do
-repositorio. Como o FAT12 aceita somente nomes 8.3, os arquivos locais usam a
-extensao `.ZSY`. A matriz host `fixtures-system` continua reservada para a
-imagem FAT/disco completa.
+privada indicada por `SYSTEM_PRIVATE_KEY` em `Makefile.local`. A chave privada
+permanece fora do repositorio. Como o FAT12 aceita somente nomes 8.3, os
+arquivos locais usam a extensao `.ZSY`.
 
-Depois de gerar as fixtures, os comandos completos no Shell são:
+Cada fixture e gravada em uma imagem FAT12 propria dentro de
+`build\system-fixture-images`. O alvo nao injeta a matriz inteira em
+`build\zephyros.img`; assim, cada imagem precisa armazenar somente um envelope
+ZSYS. Antes da primeira geracao apos uma tentativa antiga, recrie a imagem
+base com `make clean` e `make`.
+
+Depois de gerar as fixtures, inicie uma imagem por vez com estes comandos
+completos:
+
+```text
+make run-system-fixture SYSTEM_FIXTURE_IMAGE=build\system-fixture-images\VALID.img
+make run-system-fixture SYSTEM_FIXTURE_IMAGE=build\system-fixture-images\TRUNC.img
+make run-system-fixture SYSTEM_FIXTURE_IMAGE=build\system-fixture-images\HDRBAD.img
+make run-system-fixture SYSTEM_FIXTURE_IMAGE=build\system-fixture-images\PAYBAD.img
+make run-system-fixture SYSTEM_FIXTURE_IMAGE=build\system-fixture-images\SIGBAD.img
+make run-system-fixture SYSTEM_FIXTURE_IMAGE=build\system-fixture-images\OVERSIZ.img
+make run-system-fixture SYSTEM_FIXTURE_IMAGE=build\system-fixture-images\MISALGN.img
+make run-system-fixture SYSTEM_FIXTURE_IMAGE=build\system-fixture-images\VERBAD.img
+make run-system-fixture SYSTEM_FIXTURE_IMAGE=build\system-fixture-images\EPCHBAD.img
+make run-system-fixture SYSTEM_FIXTURE_IMAGE=build\system-fixture-images\ABIBAD.img
+make run-system-fixture SYSTEM_FIXTURE_IMAGE=build\system-fixture-images\SCHBAD.img
+make run-system-fixture SYSTEM_FIXTURE_IMAGE=build\system-fixture-images\IMGHASH.img
+make run-system-fixture SYSTEM_FIXTURE_IMAGE=build\system-fixture-images\CMPHASH.img
+```
+
+Dentro de cada QEMU, execute o comando correspondente ao alias da imagem:
 
 ```text
 update system verify VALID.ZSY
