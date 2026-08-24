@@ -584,3 +584,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   verificação criptográfica; a imagem de fixture `VALID.img` foi conferida
   no host e contém o arquivo, portanto a inicialização deve usar
   `run-system-fixture` com essa imagem específica.
+- Correção da extensão de diretórios FAT32 concluída em: 2026-08-24 13:39
+  (America/Sao_Paulo); o empacotador agora consome os slots livres finais
+  antes de alocar o próximo cluster, preservando a continuidade observável
+  pelo leitor do kernel, e o selftest cobre a passagem do limite do cluster.
