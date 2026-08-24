@@ -613,3 +613,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   exato informado: `storage check ata2p1` permaneceu consistente e
   `update system verify system:/OVERSIZ.ZSYS` recusou a divergência de regiões
   com motivo `SIZE`, sem gravação.
+- Tentativa de validação QEMU da fixture `MISALGN.img` registrada sem horário
+  exato informado: `storage check ata2p1` permaneceu consistente, mas a busca
+  do arquivo retornou `ERR_NOT_FOUND`; a matriz considera o nome exato
+  `MISALGN.ZSYS`, portanto a validação de alinhamento permanece pendente.
