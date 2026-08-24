@@ -520,3 +520,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   e executar, sem placeholders ou argumentos ausentes.
 - Validação host da EP9.0A confirmada pelo usuário em: 2026-08-24 10:30
   (America/Sao_Paulo); `make update-test` concluiu com `Updater selftest: OK`.
+- Correção da matriz QEMU EP9.0A implementada em: 2026-08-24 10:42
+  (America/Sao_Paulo); foi adicionado o alvo `system-fixtures`, com geração
+  assinada compacta e aliases FAT12 8.3 `.ZSY`, mantendo a fixture host de
+  imagem completa e a chave privada fora do repositorio.
