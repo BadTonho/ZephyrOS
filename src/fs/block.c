@@ -122,13 +122,23 @@ static int block_register_ata_devices(void) {
         LOG_WARN("BLK", "Nenhum dispositivo ATA disponivel para o bloco");
         return result == ERR_NOT_FOUND ? OK : result;
     }
-    for (uint8_t slot = 0U; slot < count; slot++) {
+    if (!count) {
+        LOG_WARN("BLK", "ATA inicializado sem discos presentes");
+        return OK;
+    }
+    for (uint8_t slot = 0U; slot < ATA_MAX_DEVICES; slot++) {
         ata_device_t ata;
         block_device_t descriptor;
+        int device_result;
 
-        if (ata_get_device_at(slot, &ata) != OK) {
-            LOG_WARN("BLK", "Slot ATA ausente durante o registro de bloco");
+        device_result = ata_get_device_at(slot, &ata);
+        if (device_result == ERR_NOT_FOUND) {
+            LOG_DEBUG("BLK", "Slot ATA vazio durante o registro de bloco");
             continue;
+        }
+        if (device_result != OK) {
+            LOG_ERROR("BLK", "Falha ao consultar slot ATA no registro de bloco");
+            return device_result;
         }
         result = block_ata_descriptor(&ata, &descriptor);
         if (result != OK) return result;

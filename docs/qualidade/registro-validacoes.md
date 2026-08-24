@@ -568,3 +568,6 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Contratos do Shell, filesystem e driver ATA atualizados em: 2026-08-24
   13:01 (America/Sao_Paulo); a documentação agora descreve a escrita ATA
   direcionada e o estado gravável do volume FAT32 do sistema.
+- Correção da enumeração ATA na camada de bloco implementada em: 2026-08-24
+  13:06 (America/Sao_Paulo); o registro agora percorre os slots físicos ATA
+  em vez de confundir a contagem de dispositivos com o índice do slot.
