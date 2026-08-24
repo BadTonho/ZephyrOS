@@ -376,8 +376,8 @@ int fs_get_info(fs_info_t* info) {
             info->total_sectors = volume.sector_count;
             info->total_clusters = info->sectors_per_cluster ?
                 info->total_sectors / info->sectors_per_cluster : 0U;
-            info->free_clusters = 0U;
-            info->free_sectors = 0U;
+            result = storage_get_free_space(volume.id, &info->free_sectors,
+                                            &info->free_clusters);
             kmemcpy(info->label, volume.label, STORAGE_LABEL_SIZE - 1U);
             info->label[STORAGE_LABEL_SIZE - 1U] = '\0';
         }

@@ -124,6 +124,8 @@ int storage_atomic_write_file(const char* id, const char* path,
 int storage_delete_file(const char* id, const char* path);
 int storage_rename_file(const char* id, const char* path,
                         const char* new_name);
+int storage_get_free_space(const char* id, uint32_t* out_free_sectors,
+                           uint32_t* out_free_clusters);
 int storage_check(const char* id);
 ```
 

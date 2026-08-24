@@ -167,6 +167,8 @@ int storage_read_file_range(const char* id, const char* path,
 int storage_get_file_info(const char* id, const char* path,
                           uint32_t* out_size, uint8_t* out_attributes);
 int storage_find_system_volume(storage_volume_t* out_volume);
+int storage_get_free_space(const char* id, uint32_t* out_free_sectors,
+                           uint32_t* out_free_clusters);
 int storage_check(const char* id);
 int storage_list_dir_long(const char* id, const char* path,
                           storage_long_dir_entry_t* entries,
