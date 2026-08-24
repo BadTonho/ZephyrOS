@@ -693,3 +693,6 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   (America/Sao_Paulo); `update system slots` reportou `READY`, slot A ativo
   válido, slot B vazio, sequência 1, journal limpo e espaço livre de
   63930880 bytes.
+- Preflight EP9.1 validado pelo usuário em: 2026-08-24 17:13
+  (America/Sao_Paulo); `update system stage system:/VALID.ZSYS` aceitou o
+  envelope com motivo `NONE` e confirmou que nenhuma gravação foi realizada.
