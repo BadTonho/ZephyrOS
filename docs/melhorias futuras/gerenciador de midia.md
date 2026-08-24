@@ -351,7 +351,7 @@
   - [ ] Parser de atoms (moov, mdat, etc.)
   - [ ] Suporte a H.264
   - [ ] Suporte a AAC
-- [ ] Nota: Decoders de vídeo H.264/VP8 são complexos. Para versão educacional, usar apenas codecs simples (RAW, RLE, MJPEG).
+- [ ] Nota: Decoders de vídeo H.264/VP8 são complexos. A primeira implementação deve priorizar codecs simples (RAW, RLE, MJPEG) e evoluir gradualmente para formatos amplamente usados.
 
 ---
 
@@ -421,7 +421,7 @@
 - [ ] Criar função `jpeg_load(filename, image)` para carregar
 - [ ] Criar função `jpeg_draw(image, x, y)` para renderizar
 - [ ] Criar função `jpeg_free(image)` para liberar
-- [ ] Nota: JPEG decoding é complexo. Para versão educacional, suportar apenas baseline JPEG sem progressive.
+- [ ] Nota: JPEG decoding é complexo. A primeira implementação pode suportar baseline JPEG antes de adicionar progressive e demais variantes.
 
 ### 4.4 GIF Loader
 

@@ -538,3 +538,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   para cada fixture e `run-system-fixture` inicia a imagem selecionada. A
   imagem base nao recebe mais a matriz inteira e boot/stage2 permanecem sem
   alteracoes.
+- Reposicionamento do ZephyrOS para uso real implementado em: 2026-08-24 11:11
+  (America/Sao_Paulo); referencias explicitas a finalidade educacional foram
+  removidas dos READMEs, da politica de seguranca, da introducao, das notas de
+  componentes e da tela de Configuracoes. As limitacoes atuais continuam
+  descritas como requisitos de maturidade, seguranca e suporte.
