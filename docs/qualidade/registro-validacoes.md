@@ -155,6 +155,15 @@ Nova validacao de passthrough apresentada pelo usuario; horario nao informado.
 - O passthrough do host agora esta disponivel; falta reiniciar a VM com o
   adaptador conectado e confirmar a enumeracao dentro do ZephyrOS.
 
+Nova validacao apresentada pelo usuario; horario nao informado.
+
+- Mesmo com `0bda:c811` listado por `info usbhost` a `480 Mb/s`, o ZephyrOS
+  continuou com as seis portas EHCI `EMPTY`/`NO_DEVICE`.
+- O QEMU enumera o dispositivo no host, mas o passthrough nao o anexou ao
+  barramento do convidado; a causa provavel e o driver Microsoft do adaptador
+  nao fornecer acesso compativel com libusb/WinUSB.
+- Nenhum driver, firmware, radio ou pilha de rede Wi-Fi foi inicializado.
+
 - `usb status` confirmou um controlador EHCI `READY`, com DMA, IRQ, controle,
   Bulk, Interrupt e high-speed disponiveis.
 - `usb list` confirmou `usb-pci-00:03.0` como EHCI ativo.
