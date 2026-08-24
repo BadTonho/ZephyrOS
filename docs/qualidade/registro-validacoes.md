@@ -187,6 +187,21 @@ Decisao de escopo apresentada pelo usuario; horario nao informado.
 - Nenhuma troca de driver hospedeiro sera feita agora; Ethernet, USB legado,
   EHCI, Shell e interfaces Simple/Classic permanecem preservados.
 
+Decisao de arquitetura da EP9 apresentada pelo usuario; horario nao informado.
+
+- O modelo de atualizacao por Releases GitHub foi incorporado ao planejamento:
+  `release.json` continuara sendo o descritor assinado e os assets atuais
+  `release.zum`/`update.zephyrosupd` serao preservados.
+- A EP9 devera acrescentar `ZSYS` para a imagem completa e campos assinados de
+  compatibilidade, incluindo versao minima do updater, ABI de boot, schema de
+  dados, versoes de origem suportadas e rota de upgrade.
+- A rota para sistemas antigos podera ser direta, por checkpoint ou por
+  updater bridge; nao sera obrigatorio baixar todas as Releases intermediarias
+  quando uma imagem cumulativa e migracoes ordenadas forem suficientes.
+- GitHub sera transporte e hospedagem de assets; tag, titulo e ordem da
+  Release nao serao raiz de confianca. A verificacao continuara baseada em
+  assinatura, hash e compatibilidade antes de qualquer aplicacao.
+
 ## EP6.4 — Gerenciamento de stack para rede e TLS
 
 Implementação concluída em: 2026-08-23 17:38:34 (America/Sao_Paulo)
