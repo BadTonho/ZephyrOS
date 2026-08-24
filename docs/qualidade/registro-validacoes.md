@@ -512,3 +512,6 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   tempo de execução, após a definição de `resolve_git_commit`.
 - Correção da sincronização do header remoto com a configuração do asset
   `system.zsys` concluída em: 2026-08-24 10:11 (America/Sao_Paulo).
+- Correção do campo append-only `system_present` em
+  `update_remote_github_release_t`, identificada na compilação, concluída em:
+  2026-08-24 10:14 (America/Sao_Paulo).
