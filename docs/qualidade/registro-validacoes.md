@@ -708,3 +708,6 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Bloqueio de staging pendente validado pelo usuário em: 2026-08-24 17:19
   (America/Sao_Paulo); nova execução confirmada foi recusada com motivo
   `STATE` porque já havia slot ZSYS pendente, sem iniciar gravação.
+- Estado após tentativa bloqueada validado pelo usuário em: 2026-08-24 17:21
+  (America/Sao_Paulo); nova consulta confirmou sequência 2, A ativo, B
+  pendente, journal limpo e recuperação limpa, sem alteração indevida.
