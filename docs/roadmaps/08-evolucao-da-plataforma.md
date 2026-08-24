@@ -761,6 +761,27 @@ crus.
   entrega permite somente um tipo selecionado por vez; o U5 atual possui um
   unico candidato/cache remoto.
 
+#### EP9.0 — Compatibilidade entre versões e publicacao no GitHub
+
+- [ ] Reutilizar `release.json` como descritor assinado da Release, mantendo
+  `release.zum`, `update.zephyrosupd`, ZUM1/ZUM2 e ZUPD para os fluxos ja
+  existentes; a EP9 acrescentara o artefato `ZSYS` sem criar um canal paralelo.
+- [ ] Acrescentar ao descritor campos assinados para `supported_from`,
+  `min_updater`, `boot_abi`, `data_schema_from`, `data_schema_to`,
+  `requires_reboot`, canal e rota de upgrade.
+- [ ] Definir rotas de atualizacao direta e por checkpoint, sem obrigar o
+  download de todas as Releases intermediarias quando uma imagem cumulativa e
+  uma cadeia de migracoes forem suficientes.
+- [ ] Definir um updater bridge para sistemas cujo atualizador ou contrato de
+  boot ainda nao consiga ler o formato novo; quando nao houver rota segura,
+  oferecer recuperacao ou instalacao completa assinada.
+- [ ] Publicar no GitHub Release os assets runtime, system, manifesto e
+  assinatura como arquivos binarios imutaveis apos a publicacao; tags e
+  titulos apenas localizam a Release e nunca substituem a verificacao assinada.
+- [ ] Manter a chave privada fora do repositorio e verificar no ZephyrOS a
+  assinatura do manifesto, os hashes e a compatibilidade antes de baixar ou
+  aplicar qualquer imagem.
+
 ### EP9.1 - Staging e slots de imagem
 
 - [ ] Criar dois slots de imagem do sistema, com estado redundante, sequencia,
