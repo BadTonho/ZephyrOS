@@ -419,7 +419,7 @@ static int file_index_open_source(void) {
     kmemset(frame, 0, sizeof(*frame));
     frame->boot = source->boot;
     result = source->boot ?
-             fs_dir_cursor_open("", &frame->cursor.boot_cursor) :
+             fs_dir_cursor_open("legacy:/", &frame->cursor.boot_cursor) :
              storage_dir_cursor_open(source->volume_id, "",
                                      &frame->cursor.storage_cursor);
     if (result != OK) {

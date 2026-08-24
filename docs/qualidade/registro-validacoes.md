@@ -651,3 +651,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   exato informado: `storage check ata2p1` permaneceu consistente e
   `update system verify system:/CMPHASH.ZSYS` recusou a divergência do hash de
   componente com motivo `HASH`, sem gravação.
+- Correção da reconstrução do índice de arquivos implementada em: 2026-08-24
+  14:55 (America/Sao_Paulo); a fonte FAT12 de boot agora abre explicitamente
+  `legacy:/`, preservando o contrato de caminho do volume de sistema e
+  eliminando a tentativa indevida de resolver a raiz como FAT32.
