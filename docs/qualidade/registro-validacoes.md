@@ -574,3 +574,6 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Validação parcial confirmada pelo usuário, com disco `ata2`, FAT12 legado e
   volume FAT32 `ata2p1` `ZEPHYROS` montado em modo `READ-WRITE`; horário exato
   da execução não foi informado.
+- Correção das entradas LFN geradas pelo empacotador implementada em:
+  2026-08-24 13:16 (America/Sao_Paulo); o segmento inicial agora recebe o
+  marcador FAT32 de último segmento e o selftest verifica a sequência.
