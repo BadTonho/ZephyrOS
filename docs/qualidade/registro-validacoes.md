@@ -639,3 +639,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Validação QEMU da fixture `ABIBAD.img` confirmada pelo usuário, sem horário
   exato informado: `update system verify system:/ABIBAD.ZSYS` recusou a
   compatibilidade de `boot_abi` com motivo `COMPATIBILITY`, sem gravação.
+- Validação QEMU da fixture `SCHBAD.img` confirmada pelo usuário, sem horário
+  exato informado: `storage check ata2p1` permaneceu consistente e
+  `update system verify system:/SCHBAD.ZSYS` recusou o schema incompatível com
+  motivo `COMPATIBILITY`, sem gravação.
