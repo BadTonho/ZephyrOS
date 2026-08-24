@@ -507,3 +507,6 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   do Shell, campos remotos append-only e a documentação correspondente.
 - A validação executável permanece pendente do usuário; o agente não executou
   `make update-test`, `make q3check`, build, QEMU ou testes funcionais.
+- Correção do `NameError` no carregamento do callback de Release v2 concluída
+  em: 2026-08-24 10:09 (America/Sao_Paulo); o resolver agora é associado em
+  tempo de execução, após a definição de `resolve_git_commit`.
