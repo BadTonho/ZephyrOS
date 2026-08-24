@@ -281,14 +281,20 @@ static http_status_t shell_http_wait_status;
 static int shell_regcheck_same_network(
     const network_interface_info_t* left,
     const network_interface_info_t* right) {
-    if (left->model != right->model || left->state != right->state ||
+    if (left->transport != right->transport ||
+        left->model != right->model || left->state != right->state ||
         left->link != right->link || left->vendor_id != right->vendor_id ||
         left->device_id != right->device_id ||
         left->class_code != right->class_code ||
         left->subclass_code != right->subclass_code ||
         left->prog_if != right->prog_if || left->revision != right->revision ||
         left->bus != right->bus || left->device != right->device ||
-        left->function != right->function || left->irq != right->irq) {
+        left->function != right->function || left->irq != right->irq ||
+        left->usb_port != right->usb_port ||
+        left->usb_address != right->usb_address ||
+        left->usb_revision != right->usb_revision ||
+        left->usb_endpoint_count != right->usb_endpoint_count ||
+        kstrcmp(left->usb_device_id, right->usb_device_id) != 0) {
         return 0;
     }
     for (uint32_t bar = 0; bar < NETWORK_PCI_BAR_COUNT; bar++) {
@@ -310,8 +316,13 @@ static int shell_regcheck_validate_network_entry(
         LOG_ERROR("SHELL", "RegCheck Full recebeu entrada Network nula");
         return ERR_NULL;
     }
-    if (info->class_code != SHELL_REGCHECK_PCI_NETWORK_CLASS ||
-        info->model > NETWORK_ADAPTER_RTL8139 ||
+    if (info->transport > NETWORK_TRANSPORT_USB ||
+        (info->transport == NETWORK_TRANSPORT_PCI &&
+         info->class_code != SHELL_REGCHECK_PCI_NETWORK_CLASS) ||
+        (info->transport == NETWORK_TRANSPORT_USB &&
+         (info->model != NETWORK_ADAPTER_RTL8811CU ||
+          !info->usb_device_id[0])) ||
+        info->model > NETWORK_ADAPTER_RTL8811CU ||
         info->state > NETWORK_INTERFACE_DRIVER_ERROR ||
         info->link > NETWORK_LINK_UP ||
         (info->state != NETWORK_INTERFACE_ACTIVE &&
@@ -850,12 +861,17 @@ static int cmd_net_print_interface(const network_interface_info_t* info) {
                 cmd_network_state_color(info->state));
     video_print("  ", 0x07);
     video_print(network_manager_model_name(info->model), 0x07);
-    video_print("  PCI ", 0x08);
+    video_print(info->transport == NETWORK_TRANSPORT_USB ?
+                "  USB " : "  PCI ", 0x08);
     shell_command_print_hex(info->bus, 2U);
     video_print(":", 0x08);
     shell_command_print_hex(info->device, 2U);
     video_print(".", 0x08);
     shell_command_print_num(info->function);
+    if (info->transport == NETWORK_TRANSPORT_USB) {
+        video_print("-p", 0x08);
+        shell_command_print_num(info->usb_port);
+    }
     video_print("  ", 0x07);
     video_print(text.driver, 0x08);
     if (info->l3_active) video_print("  [L3]", 0x0A);
@@ -972,12 +988,23 @@ static void cmd_net_info(const char* args) {
     shell_command_print_hex(info.prog_if, 2U);
     video_print("  Revisao: 0x", 0x07);
     shell_command_print_hex(info.revision, 2U);
-    video_print("\n  PCI: ", 0x07);
+    video_print(info.transport == NETWORK_TRANSPORT_USB ?
+                "\n  USB: " : "\n  PCI: ", 0x07);
     shell_command_print_hex(info.bus, 2U);
     video_print(":", 0x07);
     shell_command_print_hex(info.device, 2U);
     video_print(".", 0x07);
     shell_command_print_num(info.function);
+    if (info.transport == NETWORK_TRANSPORT_USB) {
+        video_print("-p", 0x07);
+        shell_command_print_num(info.usb_port);
+        video_print("  USB ID: ", 0x07);
+        video_print(info.usb_device_id, 0x08);
+        video_print("  Revisao USB: 0x", 0x07);
+        shell_command_print_hex(info.usb_revision, 4U);
+        video_print("  Endpoints: ", 0x07);
+        shell_command_print_num(info.usb_endpoint_count);
+    }
     video_print("  IRQ: ", 0x07);
     if (info.irq == NETWORK_IRQ_UNKNOWN) {
         video_print("N/D", 0x08);

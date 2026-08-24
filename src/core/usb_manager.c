@@ -3,6 +3,7 @@
 #include "core/log.h"
 #include "core/recovery.h"
 #include "core/string.h"
+#include "drivers/ehci.h"
 #include "drivers/pci.h"
 #include "drivers/uhci.h"
 #include "drivers/usb_hid.h"
@@ -106,11 +107,9 @@ static int usb_copy_pci(const pci_device_t* pci,
     }
     kmemset(controller, 0, sizeof(*controller));
     controller->model = usb_classify(pci->prog_if);
-    controller->state = controller->model == USB_CONTROLLER_MODEL_OTHER ||
-                        controller->model == USB_CONTROLLER_MODEL_EHCI ?
+    controller->state = controller->model == USB_CONTROLLER_MODEL_OTHER ?
                         USB_CONTROLLER_DEGRADED : USB_CONTROLLER_DISABLED;
-    controller->reason = controller->model == USB_CONTROLLER_MODEL_OTHER ||
-                         controller->model == USB_CONTROLLER_MODEL_EHCI ?
+    controller->reason = controller->model == USB_CONTROLLER_MODEL_OTHER ?
                          USB_CONTROLLER_REASON_OUT_OF_SCOPE :
                          USB_CONTROLLER_REASON_DRIVER_NOT_INITIALIZED;
     controller->vendor_id = pci->vendor_id;
@@ -156,15 +155,16 @@ static void usb_sync_recovery(int result) {
         error = ERR_NOT_FOUND;
         message = "Nenhum controlador USB detectado";
     } else if (usb_runtime_failures || usb_status.other_count ||
-               usb_status.ehci_count == usb_status.controller_count) {
+               (!usb_status.uhci_ready_count &&
+                !usb_status.ehci_ready_count)) {
         state = RECOVERY_STATE_DEGRADED;
         error = usb_status.last_error == OK ? ERR_UNAVAILABLE :
                 usb_status.last_error;
-        message = "Driver UHCI ou porta USB degradado";
+        message = "Driver USB UHCI/EHCI ou porta USB degradado";
     } else {
         state = RECOVERY_STATE_READY;
         error = OK;
-        message = "USB UHCI operacional";
+        message = "USB UHCI/EHCI operacional";
     }
     if (current->state == state && current->last_error == error) return;
     if (state == RECOVERY_STATE_READY) {
@@ -299,11 +299,84 @@ static void usb_apply_runtime_controller(uint32_t index) {
     }
 }
 
+static void usb_apply_ehci_runtime_controller(uint32_t index) {
+    usb_controller_info_t* info = &usb_controllers[index];
+    usb_ehci_status_t runtime;
+    uint32_t ports = 0U;
+    uint32_t devices = 0U;
+
+    if (info->model != USB_CONTROLLER_MODEL_EHCI) return;
+    if (!info->ehci_initialized && info->ehci_last_error != OK) {
+        usb_runtime_failures++;
+        return;
+    }
+    if (ehci_get_status(info->bus, info->device, info->function,
+                        &runtime) != OK) {
+        info->state = USB_CONTROLLER_DISABLED;
+        info->reason = USB_CONTROLLER_REASON_DRIVER_FAILURE;
+        info->ehci_last_error = ERR_UNAVAILABLE;
+        usb_runtime_failures++;
+        return;
+    }
+    info->ehci_initialized = runtime.initialized;
+    info->ehci_irq_registered = runtime.irq_registered;
+    info->ehci_dma_ready = runtime.dma_ready;
+    info->ehci_transfer_ready = runtime.control_transfer_ready;
+    info->ehci_port_count = runtime.port_count;
+    info->ehci_device_count = runtime.device_count;
+    info->ehci_port_errors = runtime.port_errors;
+    info->ehci_last_error = runtime.last_error;
+    if (!runtime.initialized || !runtime.running || !runtime.dma_ready ||
+        !runtime.irq_registered) {
+        info->state = USB_CONTROLLER_DISABLED;
+        info->reason = USB_CONTROLLER_REASON_DRIVER_FAILURE;
+        usb_runtime_failures++;
+        return;
+    }
+    info->state = runtime.port_errors ? USB_CONTROLLER_DEGRADED :
+                  USB_CONTROLLER_READY;
+    info->reason = runtime.port_errors ? USB_CONTROLLER_REASON_PORT_FAILURE :
+                  USB_CONTROLLER_REASON_DRIVER_READY;
+    usb_status.ehci_ready_count++;
+    usb_status.dma_initialized = 1U;
+    usb_status.irq_initialized = 1U;
+    usb_status.transfer_available = 1U;
+    usb_status.high_speed_transfer_available = 1U;
+    if (runtime.bulk_transfer_ready) usb_status.bulk_transfer_available = 1U;
+    if (runtime.interrupt_transfer_ready) {
+        usb_status.interrupt_transfer_available = 1U;
+    }
+    usb_status.dma_td_capacity += runtime.qtd_capacity;
+    usb_status.dma_td_in_use += runtime.qtd_in_use;
+    usb_status.port_count += runtime.port_count;
+    usb_status.degraded_port_count += runtime.port_errors;
+    if (runtime.port_errors) usb_runtime_failures++;
+    if (ehci_get_port_count(info->bus, info->device, info->function,
+                            &ports) != OK) return;
+    for (uint32_t port = 0U; port < ports && usb_port_count <
+         USB_MANAGER_MAX_PORTS; port++) {
+        if (ehci_get_port(info->bus, info->device, info->function, port,
+                          &usb_ports[usb_port_count]) == OK) {
+            usb_port_count++;
+        }
+    }
+    if (ehci_get_device_count(info->bus, info->device, info->function,
+                              &devices) != OK) return;
+    for (uint32_t device = 0U; device < devices && usb_device_count <
+         USB_MANAGER_MAX_DEVICES; device++) {
+        if (ehci_get_device(info->bus, info->device, info->function, device,
+                            &usb_devices[usb_device_count]) == OK) {
+            usb_device_count++;
+        }
+    }
+}
+
 static void usb_collect_runtime(void) {
     usb_status.dma_initialized = 0U;
     usb_status.irq_initialized = 0U;
     usb_status.transfer_available = 0U;
     usb_status.uhci_ready_count = 0U;
+    usb_status.ehci_ready_count = 0U;
     usb_status.port_count = 0U;
     usb_status.configured_device_count = 0U;
     usb_status.degraded_port_count = 0U;
@@ -315,6 +388,7 @@ static void usb_collect_runtime(void) {
     usb_status.hid_active_count = 0U;
     usb_status.interrupt_transfer_available = 0U;
     usb_status.bulk_transfer_available = 0U;
+    usb_status.high_speed_transfer_available = 0U;
     usb_status.hub_support_active = 0U;
     usb_status.hotplug_active = 0U;
     usb_port_count = 0U;
@@ -322,12 +396,13 @@ static void usb_collect_runtime(void) {
     usb_runtime_failures = 0U;
     for (uint32_t index = 0; index < usb_status.controller_count; index++) {
         usb_apply_runtime_controller(index);
+        usb_apply_ehci_runtime_controller(index);
     }
     usb_status.configured_device_count = usb_device_count;
     if (usb_status.partial) usb_status.last_error = ERR_OVERFLOW;
     else if (!usb_status.controller_count) usb_status.last_error = ERR_NOT_FOUND;
-    else if (usb_status.other_count || usb_status.ehci_count ==
-             usb_status.controller_count || usb_runtime_failures) {
+    else if (usb_status.other_count || usb_runtime_failures ||
+             (!usb_status.uhci_ready_count && !usb_status.ehci_ready_count)) {
         usb_status.last_error = ERR_UNAVAILABLE;
     } else usb_status.last_error = OK;
 }
@@ -386,7 +461,8 @@ static int usb_start_controllers(void) {
         char id[USB_CONTROLLER_ID_SIZE];
         int found = 0;
 
-        if (info->model != USB_CONTROLLER_MODEL_UHCI) continue;
+        if (info->model != USB_CONTROLLER_MODEL_UHCI &&
+            info->model != USB_CONTROLLER_MODEL_EHCI) continue;
         for (uint8_t pci_index = 0; pci_index < pci_count; pci_index++) {
             if (pci_get_device_at(pci_index, &pci) == OK &&
                 pci.bus == info->bus && pci.device == info->device &&
@@ -398,18 +474,27 @@ static int usb_start_controllers(void) {
         if (!found) {
             info->state = USB_CONTROLLER_DEGRADED;
             info->reason = USB_CONTROLLER_REASON_DRIVER_FAILURE;
-            info->uhci_last_error = ERR_NOT_FOUND;
+            if (info->model == USB_CONTROLLER_MODEL_EHCI) {
+                info->ehci_last_error = ERR_NOT_FOUND;
+            } else {
+                info->uhci_last_error = ERR_NOT_FOUND;
+            }
             continue;
         }
         usb_format_controller_id(info, id, sizeof(id));
         {
-            int init_result = uhci_init(&pci, id);
+            int init_result = info->model == USB_CONTROLLER_MODEL_EHCI ?
+                ehci_init(&pci, id) : uhci_init(&pci, id);
 
             if (init_result == OK) continue;
             info->state = USB_CONTROLLER_DEGRADED;
             info->reason = USB_CONTROLLER_REASON_DRIVER_FAILURE;
-            info->uhci_last_error = init_result;
-            LOG_ERROR("USB", "Falha ao inicializar driver UHCI");
+            if (info->model == USB_CONTROLLER_MODEL_EHCI) {
+                info->ehci_last_error = init_result;
+            } else {
+                info->uhci_last_error = init_result;
+            }
+            LOG_ERROR("USB", "Falha ao inicializar controlador UHCI/EHCI");
         }
     }
     return OK;
@@ -561,6 +646,8 @@ int usb_manager_find(const char* id, usb_controller_info_t* out_info) {
 }
 
 int usb_manager_poll(uint32_t budget, uint32_t* out_processed) {
+    uint32_t uhci_processed = 0U;
+    uint32_t ehci_processed = 0U;
     int result;
 
     if (!out_processed) {
@@ -571,11 +658,18 @@ int usb_manager_poll(uint32_t budget, uint32_t* out_processed) {
         LOG_ERROR("USB", "Polling antes da inicializacao USB");
         return ERR_STATE;
     }
-    result = uhci_poll(budget, out_processed);
+    result = uhci_poll(budget, &uhci_processed);
     if (result != OK) {
         LOG_ERROR("USB", "Polling UHCI falhou");
         return result;
     }
+    result = ehci_poll(budget > uhci_processed ? budget - uhci_processed : 0U,
+                       &ehci_processed);
+    if (result != OK) {
+        LOG_ERROR("USB", "Polling EHCI falhou");
+        return result;
+    }
+    *out_processed = uhci_processed + ehci_processed;
     usb_collect_runtime();
     usb_sync_msc_runtime();
     usb_sync_hid_runtime();
@@ -739,9 +833,26 @@ int usb_manager_validate_state(void) {
                 calculated_ports += status.port_count;
                 calculated_devices += status.device_count;
             }
+        } else if (info->model == USB_CONTROLLER_MODEL_EHCI) {
+            usb_ehci_status_t status;
+
+            if (ehci_get_status(info->bus, info->device, info->function,
+                                &status) == OK) {
+                if (ehci_validate_state(info->bus, info->device,
+                                        info->function) != OK ||
+                    status.qtd_in_use > status.qtd_capacity ||
+                    status.buffer_in_use > status.buffer_capacity) {
+                    LOG_ERROR("USB", "Runtime EHCI invalido");
+                    return ERR_STATE;
+                }
+                calculated_ports += status.port_count;
+                calculated_devices += status.device_count;
+            }
         } else if (info->uhci_initialized || info->uhci_irq_registered ||
-                   info->uhci_dma_ready || info->uhci_transfer_ready) {
-            LOG_ERROR("USB", "EHCI recebeu estado de runtime UHCI");
+                   info->uhci_dma_ready || info->uhci_transfer_ready ||
+                   info->ehci_initialized || info->ehci_irq_registered ||
+                   info->ehci_dma_ready || info->ehci_transfer_ready) {
+            LOG_ERROR("USB", "Controlador USB fora do modelo recebeu runtime");
             return ERR_STATE;
         }
     }
@@ -765,7 +876,11 @@ int usb_manager_validate_state(void) {
         uint8_t matched_device = 0U;
 
         if (!port->controller_id[0] || port->port_number == 0U ||
-            port->port_number > USB_UHCI_PORT_COUNT ||
+            (port->controller_model == USB_CONTROLLER_MODEL_UHCI &&
+             port->port_number > USB_UHCI_PORT_COUNT) ||
+            (port->controller_model == USB_CONTROLLER_MODEL_EHCI &&
+             port->port_number > USB_EHCI_PORT_COUNT) ||
+            port->controller_model > USB_CONTROLLER_MODEL_EHCI ||
             port->state > USB_PORT_DEGRADED) {
             LOG_ERROR("USB", "Entrada de porta USB invalida");
             return ERR_STATE;
@@ -791,6 +906,7 @@ int usb_manager_validate_state(void) {
 
         if (!device->id[0] || !device->controller_id[0] ||
             device->usb_address == 0U || device->usb_address > 127U ||
+            device->controller_model > USB_CONTROLLER_MODEL_EHCI ||
             device->state != USB_DEVICE_CONFIGURED ||
             device->hub_present ||
             !device->device_descriptor_valid ||
@@ -807,7 +923,9 @@ int usb_manager_validate_state(void) {
             if (!(descriptor->address & USB_ENDPOINT_ADDRESS_NUMBER_MASK) ||
                 descriptor->transfer_type > USB_ENDPOINT_TRANSFER_TYPE_MAX ||
                 !descriptor->max_packet ||
-                descriptor->max_packet > USB_ENDPOINT_MAX_PACKET_SIZE) {
+                descriptor->max_packet > (device->speed == USB_DEVICE_SPEED_HIGH ?
+                                          USB_ENDPOINT_MAX_PACKET_SIZE_HIGH :
+                                          USB_ENDPOINT_MAX_PACKET_SIZE_FULL)) {
                 LOG_ERROR("USB", "Tabela de endpoints USB invalida");
                 return ERR_STATE;
             }
@@ -860,7 +978,9 @@ int usb_manager_format_text(const usb_controller_info_t* info,
     } else if (info->model == USB_CONTROLLER_MODEL_EHCI) {
         usb_set_text(out_text->name, USB_CONTROLLER_NAME_SIZE, "EHCI USB Controller");
         usb_set_text(out_text->detail, USB_CONTROLLER_DETAIL_SIZE,
-                     "Inventariado; driver EHCI fora do escopo");
+                     info->ehci_initialized ?
+                     "Driver EHCI ativo; USB high-speed configurado" :
+                     "Driver EHCI nao inicializado");
     } else {
         usb_set_text(out_text->name, USB_CONTROLLER_NAME_SIZE,
                      "USB Controller desconhecido");
@@ -920,5 +1040,7 @@ const char* usb_manager_port_reason_name(usb_port_reason_t reason) {
 }
 
 const char* usb_manager_speed_name(usb_device_speed_t speed) {
-    return speed == USB_DEVICE_SPEED_LOW ? "LOW" : "FULL";
+    if (speed == USB_DEVICE_SPEED_LOW) return "LOW";
+    if (speed == USB_DEVICE_SPEED_HIGH) return "HIGH";
+    return "FULL";
 }

@@ -14,8 +14,10 @@
 #include "core/tcp.h"
 #include "core/timer.h"
 #include "core/udp.h"
+#include "core/usb_manager.h"
 #include "drivers/e1000.h"
 #include "drivers/pci.h"
+#include "drivers/rtl8811cu.h"
 #include "drivers/rtl8139.h"
 
 #define NETWORK_PCI_CLASS 0x02U
@@ -43,6 +45,8 @@ typedef struct {
     uint8_t bus;
     uint8_t device;
     uint8_t function;
+    uint8_t port;
+    network_transport_t transport;
     int result;
 } network_driver_record_t;
 
@@ -112,15 +116,17 @@ static void network_copy_bars(network_interface_info_t* entry,
 }
 
 static network_driver_record_t* network_find_driver_record(
-    uint8_t bus, uint8_t device, uint8_t function) {
+    network_transport_t transport, uint8_t bus, uint8_t device,
+    uint8_t function, uint8_t port) {
     for (uint32_t index = 0;
          index < NETWORK_MANAGER_MAX_INTERFACES; index++) {
         network_driver_record_t* record =
             &network_driver_records[index];
 
-        if (record->used && record->bus == bus &&
+        if (record->used && record->transport == transport &&
+            record->bus == bus &&
             record->device == device &&
-            record->function == function) {
+            record->function == function && record->port == port) {
             return record;
         }
     }
@@ -136,7 +142,8 @@ static int network_record_driver_result(
         return ERR_NULL;
     }
     record = network_find_driver_record(
-        entry->bus, entry->device, entry->function);
+        entry->transport, entry->bus, entry->device,
+        entry->function, entry->usb_port);
     if (!record) {
         for (uint32_t index = 0;
              index < NETWORK_MANAGER_MAX_INTERFACES; index++) {
@@ -154,6 +161,8 @@ static int network_record_driver_result(
     record->bus = entry->bus;
     record->device = entry->device;
     record->function = entry->function;
+    record->port = entry->usb_port;
+    record->transport = entry->transport;
     record->result = result;
     return OK;
 }
@@ -166,7 +175,8 @@ static void network_apply_ethernet_status(
 
     if (!entry || entry->model == NETWORK_ADAPTER_UNKNOWN) return;
     record = network_find_driver_record(
-        entry->bus, entry->device, entry->function);
+        entry->transport, entry->bus, entry->device,
+        entry->function, entry->usb_port);
     if (!record) return;
     entry->driver_error = record->result;
     if (record->result != OK) {
@@ -203,6 +213,7 @@ static void network_apply_ethernet_status(
 static void network_copy_interface(network_interface_info_t* entry,
                                    const pci_device_t* pci) {
     kmemset(entry, 0, sizeof(*entry));
+    entry->transport = NETWORK_TRANSPORT_PCI;
     entry->model = network_detect_model(pci);
     entry->state = entry->model == NETWORK_ADAPTER_UNKNOWN ?
                    NETWORK_INTERFACE_UNSUPPORTED :
@@ -219,6 +230,29 @@ static void network_copy_interface(network_interface_info_t* entry,
     entry->function = pci->function;
     entry->irq = pci->irq;
     network_copy_bars(entry, pci);
+    entry->driver_error = ERR_UNAVAILABLE;
+    network_apply_ethernet_status(entry);
+}
+
+static void network_copy_usb_interface(network_interface_info_t* entry,
+                                       const usb_device_info_t* device) {
+    kmemset(entry, 0, sizeof(*entry));
+    entry->transport = NETWORK_TRANSPORT_USB;
+    entry->model = NETWORK_ADAPTER_RTL8811CU;
+    entry->state = NETWORK_INTERFACE_DRIVER_MISSING;
+    entry->link = NETWORK_LINK_UNKNOWN;
+    entry->vendor_id = device->vendor_id;
+    entry->device_id = device->product_id;
+    entry->revision = (uint8_t)(device->device_revision & 0xFFU);
+    entry->bus = device->controller_bus;
+    entry->device = device->controller_device;
+    entry->function = device->controller_function;
+    entry->usb_port = device->port_number;
+    entry->usb_address = device->usb_address;
+    entry->usb_revision = device->device_revision;
+    entry->usb_endpoint_count = device->endpoint_count;
+    network_set_text(entry->usb_device_id, sizeof(entry->usb_device_id),
+                     device->id);
     entry->driver_error = ERR_UNAVAILABLE;
     network_apply_ethernet_status(entry);
 }
@@ -324,7 +358,9 @@ static void network_apply_protocol_status(
 
 static int network_collect_interfaces(void) {
     uint8_t pci_count = 0;
+    uint32_t usb_count = 0U;
     int pci_result;
+    int usb_result;
     int result = OK;
 
     pci_result = pci_get_device_count(&pci_count);
@@ -358,6 +394,46 @@ static int network_collect_interfaces(void) {
             NETWORK_ADAPTER_UNKNOWN) {
             network_status.recognized_count++;
         }
+        if (network_interfaces[network_status.interface_count].state ==
+            NETWORK_INTERFACE_ACTIVE) {
+            network_status.active_count++;
+        }
+        if (network_interfaces[network_status.interface_count].state ==
+            NETWORK_INTERFACE_DRIVER_ERROR) {
+            network_status.driver_error_count++;
+        }
+        network_status.interface_count++;
+    }
+    usb_result = usb_manager_get_device_count(&usb_count);
+    if (usb_result != OK) {
+        if (usb_result != ERR_NOT_FOUND && usb_result != ERR_STATE) {
+            LOG_WARN("NET", "Inventario USB indisponivel para Wi-Fi");
+            network_status.partial = 1U;
+            network_status.last_error = usb_result;
+            result = result == OK ? usb_result : result;
+        }
+        return result;
+    }
+    for (uint32_t index = 0U; index < usb_count; index++) {
+        usb_device_info_t device;
+        int entry_result = usb_manager_get_device(index, &device);
+
+        if (entry_result != OK) {
+            LOG_WARN("NET", "Falha ao consultar dispositivo USB de rede");
+            continue;
+        }
+        if (device.vendor_id != RTL8811CU_VENDOR_ID ||
+            device.product_id != RTL8811CU_PRODUCT_ID) continue;
+        if (network_status.interface_count >=
+            NETWORK_MANAGER_MAX_INTERFACES) {
+            network_status.partial = 1U;
+            network_status.last_error = ERR_OVERFLOW;
+            LOG_WARN("NET", "Limite do inventario de rede atingido");
+            return ERR_OVERFLOW;
+        }
+        network_copy_usb_interface(
+            &network_interfaces[network_status.interface_count], &device);
+        network_status.recognized_count++;
         if (network_interfaces[network_status.interface_count].state ==
             NETWORK_INTERFACE_ACTIVE) {
             network_status.active_count++;
@@ -504,18 +580,26 @@ static int network_probe_drivers(void) {
         network_interface_text_t text;
         ethernet_interface_t interface;
         pci_device_t pci;
+        usb_device_info_t usb_device;
         int result;
 
         if (entry->model == NETWORK_ADAPTER_UNKNOWN) continue;
-        result = network_find_pci_device(entry, &pci);
-        if (result == OK) {
-            result = network_manager_format_text(entry, &text);
-        }
-        if (result == OK) {
-            kmemset(&interface, 0, sizeof(interface));
-            result = entry->model == NETWORK_ADAPTER_E1000 ?
-                e1000_init(&pci, text.id, &interface) :
-                rtl8139_init(&pci, text.id, &interface);
+        result = network_manager_format_text(entry, &text);
+        if (result == OK && entry->transport == NETWORK_TRANSPORT_PCI) {
+            result = network_find_pci_device(entry, &pci);
+            if (result == OK) {
+                kmemset(&interface, 0, sizeof(interface));
+                result = entry->model == NETWORK_ADAPTER_E1000 ?
+                    e1000_init(&pci, text.id, &interface) :
+                    rtl8139_init(&pci, text.id, &interface);
+            }
+        } else if (result == OK && entry->transport == NETWORK_TRANSPORT_USB) {
+            result = usb_manager_find_device(entry->usb_device_id,
+                                              &usb_device);
+            if (result == OK) {
+                kmemset(&interface, 0, sizeof(interface));
+                result = rtl8811cu_init(&usb_device, &interface);
+            }
         }
         if (result == OK) {
             result = ethernet_attach_interface(&interface);
@@ -543,7 +627,9 @@ static int network_start_ethernet(void) {
     }
     if (layer_status.initialized) {
         network_status.ethernet_available = 1;
-        if (!network_status.partial) network_status.last_error = OK;
+        if (!network_status.partial && !network_status.driver_error_count) {
+            network_status.last_error = OK;
+        }
         return OK;
     }
     LOG_ERROR("NET", "Registro Ethernet incoerente com inventario");
@@ -1458,7 +1544,8 @@ int network_manager_format_text(const network_interface_info_t* info,
     }
     kmemset(out_text, 0, sizeof(*out_text));
     network_append_text(out_text->id, NETWORK_INTERFACE_ID_SIZE,
-                        &offset, "net-pci-");
+                        &offset, info->transport == NETWORK_TRANSPORT_USB ?
+                        "net-usb-" : "net-pci-");
     network_append_hex(out_text->id, NETWORK_INTERFACE_ID_SIZE,
                        &offset, info->bus, NETWORK_HEX_BYTE_DIGITS);
     network_append_char(out_text->id, NETWORK_INTERFACE_ID_SIZE,
@@ -1469,6 +1556,12 @@ int network_manager_format_text(const network_interface_info_t* info,
                         &offset, '.');
     network_append_hex(out_text->id, NETWORK_INTERFACE_ID_SIZE,
                        &offset, info->function, 1U);
+    if (info->transport == NETWORK_TRANSPORT_USB) {
+        network_append_text(out_text->id, NETWORK_INTERFACE_ID_SIZE,
+                            &offset, "-p");
+        network_append_hex(out_text->id, NETWORK_INTERFACE_ID_SIZE,
+                           &offset, info->usb_port, 1U);
+    }
 
     if (info->model == NETWORK_ADAPTER_E1000) {
         network_set_text(out_text->name, NETWORK_INTERFACE_NAME_SIZE,
@@ -1486,8 +1579,18 @@ int network_manager_format_text(const network_interface_info_t* info,
                          "rtl8139 (ativo)" :
                          info->state == NETWORK_INTERFACE_DRIVER_ERROR ?
                          "rtl8139 (erro)" : "rtl8139 (pendente)");
+    } else if (info->model == NETWORK_ADAPTER_RTL8811CU) {
+        network_set_text(out_text->name, NETWORK_INTERFACE_NAME_SIZE,
+                         "Realtek RTL8811CU (USB)");
+        network_set_text(out_text->driver, NETWORK_DRIVER_NAME_SIZE,
+                         info->state == NETWORK_INTERFACE_ACTIVE ?
+                         "rtl8811cu (ativo)" :
+                         info->state == NETWORK_INTERFACE_DRIVER_ERROR ?
+                         "rtl8811cu (erro)" : "rtl8811cu (pendente)");
     } else {
         network_set_text(out_text->name, NETWORK_INTERFACE_NAME_SIZE,
+                         info->transport == NETWORK_TRANSPORT_USB ?
+                         "Controlador de rede USB" :
                          "Controlador de rede PCI");
         network_set_text(out_text->driver, NETWORK_DRIVER_NAME_SIZE,
                          "nao suportado");
@@ -1916,6 +2019,7 @@ int network_manager_get_ethernet_diagnostic(
 const char* network_manager_model_name(network_adapter_model_t model) {
     if (model == NETWORK_ADAPTER_E1000) return "E1000";
     if (model == NETWORK_ADAPTER_RTL8139) return "RTL8139";
+    if (model == NETWORK_ADAPTER_RTL8811CU) return "RTL8811CU";
     return "DESCONHECIDO";
 }
 

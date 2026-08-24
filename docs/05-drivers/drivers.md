@@ -23,6 +23,7 @@ src/drivers/
 ├── timer.c          → Timer (PIT)
 ├── tss.c            → Task State Segment
 ├── uhci.c           → Controlador USB UHCI, portas raiz e transferencias USB
+├── ehci.c           → Controlador USB EHCI high-speed e transferencias USB
 ├── usb_hid.c        → Teclado e mouse USB HID Boot
 ├── rtl8811cu.c      → Probe seguro do USB Realtek RTL8811CU
 ├── vesa.c           → VESA BIOS Extensions (modo gráfico)
@@ -33,7 +34,13 @@ Na EP4.3, `src/drivers/usb_msc.c` complementa `uhci.c` com BOT/SCSI
 somente-leitura. Na EP4.4, `src/drivers/usb_hid.c` usa Interrupt IN Boot; os
 contratos publicos ficam em `usb_msc.h`, `usb_hid.h` e `uhci.h`.
 
-Na EP7.1A, `src/drivers/rtl8811cu.c` somente identifica
+Na EP7.1B, `src/drivers/ehci.c` fornece o caminho PCI high-speed separado do
+UHCI: DMA estatico para queue heads/qTDs, IRQ compartilhada, enumeracao de
+portas raiz, descritores, controle, Bulk, Interrupt, timeout e recuperacao.
+`src/core/usb_transport.c` seleciona o backend por `controller_model`. HID e
+MSC continuam usando UHCI e nao sao redirecionados para EHCI nesta etapa.
+
+Na EP7.1B, `src/drivers/rtl8811cu.c` somente identifica
 `USB\VID_0BDA&PID_C811` com `bcdDevice` `0x0200`, verifica a presenca externa
 de `RTL8811.BIN` e publica estado/erros. Ele nao executa sequencia de radio,
 nao carrega firmware no dispositivo e nao fornece frames Ethernet enquanto a
@@ -347,9 +354,13 @@ reset, controle, `SET_ADDRESS` e recuperação. Cada porta raiz pode ficar
 
 A enumeração aceita apenas uma configuração, uma interface e seus endpoints,
 lê os descritores Device/Configuration, atribui um endereço e executa
-`SET_CONFIGURATION`. Não existem hubs, strings, hot-plug ou HID; o driver EHCI
-não é inicializado. A EP4.3 acrescenta Bulk síncrono e MSC somente-leitura
-conforme o contrato acima.
+`SET_CONFIGURATION`. Não existem hubs, strings, hot-plug ou HID no UHCI. A
+EP4.3 acrescenta Bulk síncrono e MSC somente-leitura conforme o contrato acima.
+
+Na EP7.1B, o EHCI separado aceita apenas portas raiz high-speed e uma
+configuração simples, usando queue heads/qTDs para controle, Bulk e Interrupt.
+Ele também não implementa hubs, strings ou hot-plug; HID/MSC continuam
+restritos ao caminho UHCI.
 
 ---
 

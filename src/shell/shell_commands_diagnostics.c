@@ -2230,6 +2230,8 @@ static void cmd_usb_status(void) {
     shell_command_print_num(status.uhci_count);
     video_print("  EHCI: ", 0x07);
     shell_command_print_num(status.ehci_count);
+    video_print("  EHCI prontos: ", 0x07);
+    shell_command_print_num(status.ehci_ready_count);
     video_print("  Outros: ", 0x07);
     shell_command_print_num(status.other_count);
     video_print("\n  DMA: ", 0x07);
@@ -2247,6 +2249,10 @@ static void cmd_usb_status(void) {
     video_print("  Interrupt: ", 0x07);
     video_print(status.interrupt_transfer_available ? "READY" :
                 "INDISPONIVEL", status.interrupt_transfer_available ?
+                0x0A : 0x0E);
+    video_print("  High-speed: ", 0x07);
+    video_print(status.high_speed_transfer_available ? "READY" :
+                "INDISPONIVEL", status.high_speed_transfer_available ?
                 0x0A : 0x0E);
     video_print("\n  Portas: ", 0x07);
     shell_command_print_num(status.port_count);
@@ -2335,7 +2341,7 @@ static void cmd_usb_ports(const char* args) {
         video_print("Erro: portas USB indisponiveis.\n", 0x0C);
         return;
     }
-    video_print("Portas USB UHCI:\n", 0x0B);
+    video_print("Portas USB:\n", 0x0B);
     for (uint32_t index = 0; index < count; index++) {
         usb_port_info_t port;
 

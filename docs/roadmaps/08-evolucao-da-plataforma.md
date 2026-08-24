@@ -38,8 +38,9 @@ camadas de configuracao, descoberta, montagem e distribuicao sobre elas.
 - A primeira entrega de particoes e somente-leitura. Criar, formatar,
   redimensionar e apagar particoes sao trabalhos posteriores.
 - A primeira busca indexa nomes e caminhos, nao conteudo de arquivos.
-- USB comeca por um unico controlador UHCI. EHCI e apenas inventariado nesta
-  frente; seu agendamento proprio fica fora do primeiro driver.
+- USB legado continua usando UHCI para HID/MSC; a EP7.1B acrescenta EHCI
+  isolado para o transporte high-speed do Wi-Fi. Hubs, xHCI e hot-plug seguem
+  fora do escopo.
 - Tags do GitHub selecionam a release, mas nao sao raiz de confianca: somente
   ZUM1 e ZUPD assinados podem ser aceitos pelo sistema.
 - Wi-Fi e Bluetooth sao fases independentes e exigem chipset, transporte e
@@ -609,10 +610,11 @@ isso nao altera o escopo somente-PCI da EP7.0.
 
 ### EP7.1 - Driver USB Realtek RTL8811CU
 
-**Estado:** EP7.1A (enumeracao e diagnostico) implementada em 2026-08-23
-19:58:51 (America/Sao_Paulo); o backend de radio, a integracao L3 e a
-associacao continuam pendentes. A implementacao nao executa comandos USB de
-radio sem uma sequencia RTL8811CU verificavel.
+**Estado:** EP7.1B (EHCI, transporte comum e integracao de inventario)
+implementada em 2026-08-23 20:54:34 (America/Sao_Paulo). A inicializacao do
+radio, a validacao completa de firmware, TX/RX, scan, associacao e DHCP
+continuam pendentes. A implementacao nao executa comandos USB de radio sem
+uma sequencia RTL8811CU verificavel.
 
 **Alvo de hardware literal:**
 
@@ -640,6 +642,15 @@ radio sem uma sequencia RTL8811CU verificavel.
 - [x] Criar o contrato e o backend seguro de diagnostico do RTL8811CU; quando
   `RTL8811.BIN` estiver ausente/invalido ou a sequencia de radio nao estiver
   confirmada, retornar erro controlado sem tocar no hardware.
+- [x] Implementar o controlador EHCI PCI high-speed, enumeracao limitada de
+  portas raiz, controle/Bulk/Interrupt, timeout, reset e recuperacao isolada.
+- [x] Criar transporte USB comum que seleciona UHCI ou EHCI pelo inventario,
+  preservando as APIs UHCI e mantendo HID/MSC legados no caminho UHCI.
+- [x] Publicar o RTL8811CU no `network_manager` como candidato USB e reservar
+  o ID `net-usb-BB:DD.F-pN`; anexar `ethernet_interface_t` somente quando o
+  backend atingir `READY`.
+- [x] Ajustar `run-usb-wifi` para `q35`, controlador EHCI e passthrough literal
+  `0x0BDA:0xC811`, sem incluir firmware binario.
 - [ ] Implementar o backend operacional do RTL8811CU sem expor credenciais ou
   depender do driver instalado no Windows hospedeiro.
 - [ ] Entregar frames 802.3 por `ethernet_interface_t` ao `network_manager`,
@@ -650,6 +661,25 @@ radio sem uma sequencia RTL8811CU verificavel.
   a logs, fixtures, imagem ou historico do Shell.
 - [ ] Validar ausencia, dispositivo nao suportado, falhas USB, scan, conexao,
   perda de link, Ethernet simultanea e interfaces Simple/Classic.
+
+### Subetapas EP7.1
+
+- [x] EP7.1A — inventario USB, `bcdDevice`, endpoints e probe literal.
+- [x] EP7.1B — EHCI high-speed, transporte comum e identificacao no Network.
+- [ ] EP7.1C — firmware validado, inicializacao RTL8821C/RTL8811CU e MAC/link.
+- [ ] EP7.1D — TX/RX, scan e associacao em rede aberta.
+- [ ] EP7.1E — DHCP/IPv4, operacao simultanea com E1000 e validacao QEMU/hardware.
+
+### Referencia arquitetural e licenca
+
+O desenho de camadas usa como referencia arquitetural o `rtw88` do Linux,
+especialmente a tabela USB do
+[`rtw8821cu.c`](https://github.com/torvalds/linux/blob/master/drivers/net/wireless/realtek/rtw88/rtw8821cu.c)
+e a separacao de transporte e chipset do
+[`rtw8821c.c`](https://github.com/torvalds/linux/blob/master/drivers/net/wireless/realtek/rtw88/rtw8821c.c).
+Nenhum trecho GPL-only, firmware binario ou sequencia de registradores foi
+copiado para o repositorio; a implementacao permanece bloqueada quando a
+operacao nao pode ser confirmada por fonte tecnica.
 
 ### Criterio de saida da EP7.1
 

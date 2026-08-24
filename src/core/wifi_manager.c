@@ -203,6 +203,7 @@ static int wifi_copy_pci(const pci_device_t* pci,
 static int wifi_copy_usb(const usb_device_info_t* device,
                          wifi_interface_info_t* out_info) {
     rtl8811cu_probe_info_t probe;
+    rtl8811cu_status_t driver_status;
     int result;
 
     if (!device || !out_info) {
@@ -231,12 +232,22 @@ static int wifi_copy_usb(const usb_device_info_t* device,
     wifi_copy_text(out_info->usb_device_id, sizeof(out_info->usb_device_id),
                    device->id);
     result = rtl8811cu_probe(device, &probe);
-    if (result == OK || result == ERR_UNAVAILABLE) {
+    if (result != OK) {
+        out_info->state = probe.revision_supported ?
+                          WIFI_INTERFACE_ERROR : WIFI_INTERFACE_UNSUPPORTED;
+        out_info->driver_error = result;
+        return OK;
+    }
+    result = rtl8811cu_get_status(&driver_status);
+    if (result == OK && driver_status.state == RTL8811CU_STATE_READY) {
+        out_info->state = WIFI_INTERFACE_READY;
+        out_info->driver_error = OK;
+    } else if (result == OK && driver_status.state == RTL8811CU_STATE_ERROR) {
+        out_info->state = WIFI_INTERFACE_ERROR;
+        out_info->driver_error = driver_status.last_error;
+    } else {
         out_info->state = WIFI_INTERFACE_UNSUPPORTED;
         out_info->driver_error = ERR_UNAVAILABLE;
-    } else {
-        out_info->state = WIFI_INTERFACE_ERROR;
-        out_info->driver_error = result;
     }
     return OK;
 }
@@ -320,10 +331,13 @@ static int wifi_collect_usb_interfaces(void) {
         if (result != OK) return result;
         wifi_status.interface_count++;
         wifi_status.candidate_count++;
-        if (interface_info->state == WIFI_INTERFACE_UNSUPPORTED) {
+        if (interface_info->state == WIFI_INTERFACE_READY) {
+            wifi_status.ready_count++;
+        } else if (interface_info->state == WIFI_INTERFACE_UNSUPPORTED) {
             wifi_status.unsupported_count++;
         } else if (interface_info->state == WIFI_INTERFACE_ERROR) {
             wifi_status.error_count++;
+            wifi_status.last_error = interface_info->driver_error;
         }
     }
     return OK;
@@ -381,6 +395,11 @@ int wifi_manager_refresh(void) {
     } else if (!wifi_status.candidate_count) {
         wifi_status.last_error = ERR_NOT_FOUND;
         LOG_WARN("WIFI", "Nenhum candidato PCI ou USB de Wi-Fi encontrado");
+    } else if (wifi_status.error_count) {
+        LOG_WARN("WIFI", "Inventario Wi-Fi atualizado com falha isolada");
+    } else if (wifi_status.ready_count) {
+        wifi_status.last_error = OK;
+        LOG_INFO("WIFI", "Inventario Wi-Fi atualizado com backend pronto");
     } else {
         wifi_status.last_error = ERR_UNAVAILABLE;
         LOG_INFO("WIFI", "Inventario PCI e USB de Wi-Fi atualizado");
@@ -463,6 +482,7 @@ int wifi_manager_validate_state(void) {
     }
     for (uint32_t index = 0U; index < wifi_status.interface_count; index++) {
         wifi_interface_info_t* info = &wifi_interfaces[index];
+        rtl8811cu_status_t driver_status;
 
         if (!info->id[0] || info->transport > WIFI_TRANSPORT_USB) {
             LOG_ERROR("WIFI", "Entrada de inventario Wi-Fi invalida");
@@ -499,6 +519,14 @@ int wifi_manager_validate_state(void) {
             LOG_ERROR("WIFI", "Estado de interface Wi-Fi invalido");
             return ERR_STATE;
         }
+        if (info->transport == WIFI_TRANSPORT_USB &&
+            (info->state == WIFI_INTERFACE_READY ||
+             info->state == WIFI_INTERFACE_ERROR) &&
+            (rtl8811cu_get_status(&driver_status) != OK ||
+             rtl8811cu_validate_state() != OK)) {
+            LOG_ERROR("WIFI", "Estado do backend RTL8811CU invalido");
+            return ERR_STATE;
+        }
     }
     if (wifi_status.candidate_count != wifi_status.interface_count ||
         wifi_status.unsupported_count != unsupported_count ||
@@ -517,11 +545,81 @@ int wifi_manager_validate_state(void) {
         return ERR_STATE;
     }
     if (!wifi_status.partial && wifi_status.interface_count &&
+        !wifi_status.ready_count && !wifi_status.error_count &&
         wifi_status.last_error != ERR_UNAVAILABLE) {
         LOG_ERROR("WIFI", "Candidato sem estado de indisponibilidade");
         return ERR_STATE;
     }
+    if (wifi_status.ready_count && wifi_status.last_error != OK &&
+        !wifi_status.error_count) {
+        LOG_ERROR("WIFI", "Backend pronto com codigo de erro Wi-Fi");
+        return ERR_STATE;
+    }
     return OK;
+}
+
+int wifi_manager_scan(wifi_scan_result_t* results, uint32_t capacity,
+                      uint32_t* out_count) {
+    rtl8811cu_scan_result_t driver_results[WIFI_SCAN_RESULT_CAPACITY];
+    int result = ERR_UNAVAILABLE;
+
+    if (!results || !out_count) {
+        LOG_ERROR("WIFI", "Destino nulo no scan Wi-Fi");
+        return ERR_NULL;
+    }
+    if (!capacity || capacity > WIFI_SCAN_RESULT_CAPACITY) {
+        LOG_ERROR("WIFI", "Capacidade invalida no scan Wi-Fi");
+        return ERR_INVALID;
+    }
+    if (!wifi_manager_initialized) {
+        LOG_ERROR("WIFI", "Scan Wi-Fi antes da inicializacao");
+        return ERR_STATE;
+    }
+    *out_count = 0U;
+    kmemset(results, 0, sizeof(*results) * capacity);
+    for (uint32_t index = 0U; index < wifi_status.interface_count; index++) {
+        wifi_interface_info_t* info = &wifi_interfaces[index];
+        uint32_t driver_count = 0U;
+
+        if (info->transport != WIFI_TRANSPORT_USB ||
+            info->state != WIFI_INTERFACE_READY) continue;
+        result = rtl8811cu_scan(driver_results, capacity, &driver_count);
+        if (result != OK) return result;
+        for (uint32_t item = 0U; item < driver_count; item++) {
+            results[item].ssid_length = driver_results[item].ssid_length;
+            kmemcpy(results[item].ssid, driver_results[item].ssid,
+                    sizeof(results[item].ssid));
+            kmemcpy(results[item].bssid, driver_results[item].bssid,
+                    WIFI_BSSID_LENGTH);
+            results[item].channel = driver_results[item].channel;
+            results[item].open_security = driver_results[item].open_security;
+        }
+        *out_count = driver_count;
+        return OK;
+    }
+    LOG_WARN("WIFI", "Nenhum backend USB Wi-Fi pronto para scan");
+    return result;
+}
+
+int wifi_manager_connect_open(const char* ssid) {
+    if (!ssid) {
+        LOG_ERROR("WIFI", "SSID nulo na conexao aberta");
+        return ERR_NULL;
+    }
+    if (!wifi_manager_initialized) {
+        LOG_ERROR("WIFI", "Conexao Wi-Fi antes da inicializacao");
+        return ERR_STATE;
+    }
+    for (uint32_t index = 0U; index < wifi_status.interface_count; index++) {
+        wifi_interface_info_t* info = &wifi_interfaces[index];
+
+        if (info->transport == WIFI_TRANSPORT_USB &&
+            info->state == WIFI_INTERFACE_READY) {
+            return rtl8811cu_connect_open(ssid);
+        }
+    }
+    LOG_WARN("WIFI", "Nenhum backend USB Wi-Fi pronto para associacao");
+    return ERR_UNAVAILABLE;
 }
 
 const char* wifi_manager_state_name(wifi_interface_state_t state) {

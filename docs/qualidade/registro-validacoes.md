@@ -91,6 +91,41 @@ informado:
 As capturas não comprovam os horários ou a execução dos gates `make q3check` e
 `make clean && make`; esses dados permanecem sem horário neste registro.
 
+### EP7.1B — EHCI high-speed, transporte comum e integracao de rede
+
+Implementacao concluida em: 2026-08-23 20:54:34 (America/Sao_Paulo)
+
+Foi adicionado o controlador EHCI PCI para `ProgIF 0x20`, com DMA estatico,
+IRQ compartilhada, portas raiz high-speed, descritores, controle, Bulk,
+Interrupt, timeout, reset e recuperacao controlada. O transporte comum escolhe
+UHCI ou EHCI pelo inventario sem alterar as APIs UHCI. HID e MSC legados
+continuam restritos ao caminho UHCI.
+
+O `network_manager` passou a inventariar o RTL8811CU como USB e reservar IDs
+`net-usb-BB:DD.F-pN`; a interface Ethernet so e anexada quando o driver
+publicar `READY`. O backend valida o cabecalho externo de `RTL8811.BIN`, mas
+mantem o radio nao inicializado porque o checksum e a sequencia de firmware e
+registradores ainda nao estao confirmados. Nenhum firmware binario ou segredo
+foi adicionado.
+
+Ajuste de revisao concluido em: 2026-08-23 21:08:20 (America/Sao_Paulo)
+
+O calculo de pacotes do endpoint de controle EHCI passou a usar o tamanho
+observado no descritor, e a documentacao foi alinhada para distinguir o
+caminho EHCI novo do caminho UHCI legado. Nenhuma operacao de radio foi
+adicionada.
+
+Ajuste adicional concluido em: 2026-08-23 21:09:05 (America/Sao_Paulo)
+
+Falhas de localizacao PCI durante o inicio agora registram o codigo no campo
+do controlador correto, EHCI ou UHCI, preservando o diagnostico do transporte.
+
+Validacao executavel ainda pendente do usuario: `make q3check`,
+`make clean && make`, `make run-usb` e `make run-usb-wifi`, incluindo
+`usb devices`, `wifi status`, `wifi scan`, `net check`, `health check`,
+`memcheck` e `regcheck full`. Esta entrada registra implementacao, nao uma
+aprovacao funcional em QEMU ou hardware real.
+
 ## EP6.4 — Gerenciamento de stack para rede e TLS
 
 Implementação concluída em: 2026-08-23 17:38:34 (America/Sao_Paulo)

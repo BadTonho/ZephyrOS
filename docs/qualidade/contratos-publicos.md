@@ -74,6 +74,8 @@ sem alterar suas assinaturas públicas.
 | `src/include/core/update_remote_github.h` | `docs/14-atualizacoes/contrato-zupd-v2.md` |
 | `src/include/core/update_trust.h` | `docs/14-atualizacoes/contrato-zupd-v1.md` |
 | `src/include/core/usb_manager.h` | `docs/04-kernel/kernel.md` |
+| `src/include/core/usb_transport.h` | `docs/04-kernel/kernel.md` |
+| `src/include/drivers/ehci.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/uhci.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/usb_hid.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/usb_msc.h` | `docs/05-drivers/drivers.md` |
@@ -141,7 +143,9 @@ contratos canonicos permanecem, respectivamente, em
 
 Desde a S2.5, `src/include/core/network_manager.h` preserva o snapshot PCI e
 os IDs estaveis de rede, acrescentando a disponibilidade e configuracao das
-camadas Ethernet, ARP, IPv4 e ICMP. `src/include/core/ethernet.h` define a
+camadas Ethernet, ARP, IPv4 e ICMP. Na EP7.1B, o contrato acrescenta
+transporte USB, metadados do RTL8811CU e IDs `net-usb-BB:DD.F-pN` sem alterar
+os IDs PCI. `src/include/core/ethernet.h` define a
 abstracao de interface, montagem, polling, contadores L2 e despacho sincrono
 por EtherType.
 `src/include/core/arp.h` define IPv4 canonico, configuracao local em RAM,
@@ -179,14 +183,23 @@ RTL8139 inicializam o dispositivo PCI exato; IDT oferece handlers
 compartilhados e PCI confirma I/O Space com Bus Mastering.
 
 Desde a EP7.0, `src/include/core/wifi_manager.h` define um inventario somente-
-leitura para candidatos PCI de rede que nao sejam E1000 ou RTL8139. Na EP7.1A,
+leitura para candidatos PCI de rede que nao sejam E1000 ou RTL8139. Na EP7.1B,
 o mesmo contrato tambem publica dispositivos USB Realtek `0x0BDA:0xC811`,
 transportes PCI/USB, ID da sessao USB, porta, endereco, `bcdDevice` e contagem
 de endpoints. O `rtl8811cu.h` aceita somente a revisao observada `0x0200` no
-probe; `rtl8811cu_init()` valida `RTL8811.BIN`, mas retorna
-`ERR_UNAVAILABLE` enquanto a sequencia de radio nao estiver confirmada. Nenhum
-hardware, DMA, IRQ, firmware ou associacao e inicializado por esse diagnostico.
-O comando `wifi connect <ssid>` permanece controlado e nao aceita senhas.
+probe; `rtl8811cu_init()` valida presenca, tamanho e cabecalho de
+`RTL8811.BIN`, mas retorna `ERR_UNAVAILABLE` enquanto o checksum e a sequencia
+de radio nao estiverem confirmados. Nenhum firmware binario e versionado e
+nenhum comando de radio, associacao ou credencial e executado. O
+`network_manager.h` preserva as interfaces PCI e acrescenta transporte USB,
+metadados USB e IDs `net-usb-BB:DD.F-pN`; `ethernet_interface_t` somente e
+anexada para um driver em `READY`. O comando `wifi connect <ssid>` permanece
+controlado e nao aceita senhas.
+
+`wifi_manager_scan()` e `wifi_manager_connect_open()` aceitam somente a tabela
+limitada de resultados e SSIDs abertos; nao ha argumento, armazenamento ou
+log de senha. Enquanto o backend nao estiver `READY`, ambos retornam erro
+controlado e nao executam radio.
 
 Desde a U2, `src/include/core/crypto.h` define SHA-2 incremental, verificacao
 Ed25519 e autotestes; `src/include/core/update.h` fixa motivos, metadados e
@@ -332,17 +345,19 @@ estatisticas e autoteste privado. O contrato canonico fica em
 internas ao kernel e nao alteram a ABI ring 3.
 
 Desde a EP4.2, `src/include/core/usb_manager.h` define o inventario limitado a
-oito controladores USB, runtime UHCI, estados/motivos por porta, velocidade,
-endereco, descritores principais e dispositivos configurados. Na EP7.1A,
-`usb_device_info_t` tambem publica `device_revision` (`bcdDevice`) e uma tabela
-limitada de todos os endpoints descritos, sem remover os campos derivados de
-Bulk e Interrupt consumidos por MSC e HID. Os IDs de
-controlador usam `usb-pci-BB:DD.F`; dispositivos usam a sessao
-`usb-dev-BB:DD.F-pN-aN`. `src/include/drivers/uhci.h` fixa os limites de I/O,
-DMA, portas e deadlines do primeiro driver USB real. EHCI continua somente no
-inventario: nunca recebe BAR, I/O, DMA, IRQ ou transferencias. O componente
-`RECOVERY_COMPONENT_USB` preserva os valores numericos anteriores e
-`run-usb` oferece UHCI com `usb-kbd`, alem de fixtures sem dispositivo e EHCI.
+oito controladores USB, runtime UHCI/EHCI, estados/motivos por porta,
+velocidade, endereco, descritores principais e dispositivos configurados. Na
+EP7.1B, `usb_device_info_t` tambem publica `device_revision` (`bcdDevice`),
+modelo do controlador e uma tabela limitada de todos os endpoints descritos,
+sem remover os campos derivados de Bulk e Interrupt consumidos por MSC e HID.
+Os IDs de controlador usam `usb-pci-BB:DD.F`; dispositivos usam a sessao
+`usb-dev-BB:DD.F-pN-aN`. `src/include/drivers/uhci.h` preserva os limites de
+I/O e as APIs legadas; `src/include/drivers/ehci.h` acrescenta o transporte
+high-speed PCI com DMA, IRQ, controle, Bulk, Interrupt, timeout e recuperacao
+controlados. `src/include/core/usb_transport.h` seleciona UHCI ou EHCI sem
+alterar os chamadores legados. HID e MSC continuam restritos ao UHCI nesta
+etapa. O componente `RECOVERY_COMPONENT_USB` preserva os valores numericos
+anteriores e `run-usb-wifi` usa `q35`/EHCI com passthrough literal do alvo.
 
 Desde a EP4.3, `src/include/fs/block.h` define o registro estatico unificado
 de provedores ATA e USB MSC, capacidades, setor de 512 bytes, leitura
