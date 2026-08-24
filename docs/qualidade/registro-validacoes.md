@@ -528,3 +528,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   em: 2026-08-24 10:44 (America/Sao_Paulo); a etapa permanece sem
   implementação e exige aprovação explícita antes de qualquer alteração em
   boot/stage2.
+- Diagnostico da validacao QEMU de fixtures registrado em: 2026-08-24 10:56
+  (America/Sao_Paulo); `make system-fixtures` falhou por espaco insuficiente
+  na imagem FAT12. A matriz completa de fixtures nao cabe no volume atual;
+  isso confirma a necessidade futura de expansao FAT32, sem alterar o escopo
+  de boot/stage2 da EP9.0A.
