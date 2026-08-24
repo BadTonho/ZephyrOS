@@ -1159,7 +1159,7 @@ static void cmd_update_system(const char* args) {
         return;
     }
     LOG_WARN("SHELL", "Uso invalido do comando update system");
-    video_print("Uso: update system verify <arquivo.ZSYS>\n", 0x0E);
+    video_print("Uso: update system verify system:/<arquivo.ZSYS>\n", 0x0E);
     video_print("     update system check --tag <tag>\n", 0x0E);
 }
 
@@ -1433,7 +1433,7 @@ static void cmd_update(const char* args) {
     video_print("     update github fetch --tag <tag> [--confirm]\n", 0x0E);
     video_print("     update runtime status|check|fetch|verify|apply|rollback|clear\n",
                 0x0E);
-    video_print("     update system verify <arquivo.ZSYS>\n", 0x0E);
+    video_print("     update system verify system:/<arquivo.ZSYS>\n", 0x0E);
     video_print("     update system check --tag <tag>\n", 0x0E);
     video_print("     update test fail-after <1-3>\n", 0x0E);
 }

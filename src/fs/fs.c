@@ -1,6 +1,7 @@
 #include "fs/fs.h"
 #include "fs/fat12.h"
 #include "fs/fat32.h"
+#include "fs/storage.h"
 #include "core/video.h"
 #include "core/log.h"
 #include "core/errors.h"
@@ -21,6 +22,10 @@
 #define FS_FAT32_ENTRY_SIZE 4U
 
 static uint8_t current_fs_type = FS_TYPE_NONE;
+static uint8_t fs_system_active;
+static char fs_system_volume[STORAGE_ID_SIZE];
+/* O processo do kernel tem uma pilha pequena; a listagem LFN fica no BSS. */
+static storage_long_dir_entry_t fs_system_entries[STORAGE_MAX_DIR_ENTRIES];
 static uint32_t fs_generation;
 static spinlock_t fs_operation_lock;
 
@@ -31,10 +36,109 @@ static void fs_advance_generation_unlocked(void) {
     if (fs_generation == 0U) fs_generation = 1U;
 }
 
+static void fs_copy_text(char* destination, uint32_t capacity,
+                         const char* source) {
+    uint32_t index = 0U;
+
+    if (!destination || !capacity) return;
+    while (source && source[index] && index + 1U < capacity) {
+        destination[index] = source[index];
+        index++;
+    }
+    destination[index] = '\0';
+}
+
+static int fs_storage_path(const char* path, char* volume_id,
+                           char* relative_path) {
+    uint32_t length;
+    uint32_t separator = 0U;
+
+    if (!path || !volume_id || !relative_path) return ERR_NULL;
+    length = kstrlen(path);
+    if (!length || length >= FS_MAX_PATH) return ERR_INVALID;
+    while (path[separator] && path[separator] != ':' &&
+           separator + 1U < length) separator++;
+    if (path[separator] == ':') {
+        if (separator == 6U && path[0] == 's' && path[1] == 'y' &&
+            path[2] == 's' && path[3] == 't' && path[4] == 'e' &&
+            path[5] == 'm') {
+            if (fs_system_active) {
+                fs_copy_text(volume_id, STORAGE_ID_SIZE, fs_system_volume);
+            } else {
+                /* Preserva o erro explicito sem cair silenciosamente no FAT12. */
+                fs_copy_text(volume_id, STORAGE_ID_SIZE, "system");
+            }
+        } else {
+            if (separator >= STORAGE_ID_SIZE) return ERR_OVERFLOW;
+            for (uint32_t index = 0; index < separator; index++) {
+                volume_id[index] = path[index];
+            }
+            volume_id[separator] = '\0';
+        }
+        const char* cursor = path + separator + 1U;
+        while (*cursor == '/' || *cursor == '\\') cursor++;
+        fs_copy_text(relative_path, FS_MAX_PATH, cursor);
+        return volume_id[0] ? OK : ERR_STATE;
+    }
+    if (!fs_system_active) return ERR_NOT_FOUND;
+    fs_copy_text(volume_id, STORAGE_ID_SIZE, fs_system_volume);
+    fs_copy_text(relative_path, FS_MAX_PATH, path);
+    return OK;
+}
+
+static int fs_is_legacy_path(const char* path) {
+    return path && path[0] == 'l' && path[1] == 'e' && path[2] == 'g' &&
+           path[3] == 'a' && path[4] == 'c' && path[5] == 'y' &&
+           path[6] == ':';
+}
+
+static const char* fs_legacy_relative_path(const char* path) {
+    const char* relative;
+
+    if (!fs_is_legacy_path(path)) return path;
+    relative = path + 7U;
+    while (*relative == '/' || *relative == '\\') relative++;
+    return relative;
+}
+
+static int fs_storage_join(const char* dir_path, const char* filename,
+                           char* volume_id, char* relative_path) {
+    char directory[FS_MAX_PATH];
+
+    if (!filename || !volume_id || !relative_path) return ERR_NULL;
+    if (!dir_path || !dir_path[0]) {
+        if (!fs_system_active) return ERR_NOT_FOUND;
+        fs_copy_text(volume_id, STORAGE_ID_SIZE, fs_system_volume);
+        directory[0] = '\0';
+    } else {
+        int result = fs_storage_path(dir_path, volume_id, directory);
+        if (result != OK) return result;
+    }
+    if (!directory[0]) {
+        fs_copy_text(relative_path, FS_MAX_PATH, filename);
+        return OK;
+    }
+    uint32_t length = kstrlen(directory);
+    uint32_t name_length = kstrlen(filename);
+    if (length + name_length + 2U > FS_MAX_PATH) return ERR_OVERFLOW;
+    for (uint32_t index = 0; index < length; index++) {
+        relative_path[index] = directory[index];
+    }
+    relative_path[length] = '/';
+    for (uint32_t index = 0; index <= name_length; index++) {
+        relative_path[length + 1U + index] = filename[index];
+    }
+    return OK;
+}
+
 static int fs_stream_blocks_mutation_unlocked(void) {
     if (current_fs_type == FS_TYPE_FAT12 &&
         fat12_stream_is_active()) {
         LOG_WARN("FS", "Mutacao recusada durante escrita streaming");
+        return 1;
+    }
+    if (fs_system_active && storage_stream_is_active()) {
+        LOG_WARN("FS", "Mutacao recusada durante escrita streaming FAT32");
         return 1;
     }
     return 0;
@@ -49,6 +153,8 @@ int fs_init(void) {
     LOG_INFO("FS", "Inicializando interface unificada de filesystem");
     spinlock_init(&fs_operation_lock);
     current_fs_type = FS_TYPE_NONE;
+    fs_system_active = 0U;
+    fs_system_volume[0] = '\0';
 
     int fat12_result = fat12_init();
     if (fat12_result == OK && fat12_get_fs()->initialized) {
@@ -77,12 +183,27 @@ int fs_init(void) {
 
 int fs_read_file(const char* filename, uint8_t* buffer, uint32_t max_size) {
     int result;
+    char volume_id[STORAGE_ID_SIZE];
+    char relative_path[FS_MAX_PATH];
+
+    if (!filename || (max_size && !buffer)) {
+        LOG_ERROR("FS", "Argumento invalido na leitura de arquivo");
+        return ERR_NULL;
+    }
 
     spinlock_acquire(&fs_operation_lock);
-    if (current_fs_type == FS_TYPE_FAT12) {
-        result = fat12_read_file(filename, buffer, max_size);
+    if (!fs_is_legacy_path(filename) &&
+        fs_storage_path(filename, volume_id, relative_path) == OK) {
+        uint32_t bytes_read = 0U;
+        result = storage_read_file_range(volume_id, relative_path, 0U,
+                                         buffer, max_size, &bytes_read);
+        if (result == OK) result = (int)bytes_read;
+    } else if (current_fs_type == FS_TYPE_FAT12) {
+        result = fat12_read_file(fs_legacy_relative_path(filename),
+                                 buffer, max_size);
     } else if (current_fs_type == FS_TYPE_FAT32) {
-        result = fat32_read_file(filename, buffer, max_size);
+        result = fat32_read_file(fs_legacy_relative_path(filename),
+                                 buffer, max_size);
     } else {
         result = ERR_NOT_FOUND;
     }
@@ -93,12 +214,24 @@ int fs_read_file(const char* filename, uint8_t* buffer, uint32_t max_size) {
 int fs_write_file(const char* filename, const uint8_t* data, uint32_t size) {
     int result;
     int mutated = 0;
+    char volume_id[STORAGE_ID_SIZE];
+    char relative_path[FS_MAX_PATH];
+
+    if (!filename || (size && !data)) {
+        LOG_ERROR("FS", "Argumento invalido na escrita de arquivo");
+        return ERR_NULL;
+    }
 
     spinlock_acquire(&fs_operation_lock);
     if (fs_stream_blocks_mutation_unlocked()) {
         result = ERR_STATE;
+    } else if (!fs_is_legacy_path(filename) &&
+               fs_storage_path(filename, volume_id, relative_path) == OK) {
+        result = storage_write_file(volume_id, relative_path, data, size,
+                                     FS_ATTRIBUTE_ARCHIVE);
+        mutated = result == OK;
     } else if (current_fs_type == FS_TYPE_FAT12) {
-        result = fat12_write_file(filename, data, size);
+        result = fat12_write_file(fs_legacy_relative_path(filename), data, size);
         mutated = result >= 0;
     } else if (current_fs_type == FS_TYPE_FAT32) {
         result = fat32_write_file(filename, data, size);
@@ -117,12 +250,23 @@ int fs_write_file(const char* filename, const uint8_t* data, uint32_t size) {
 int fs_delete_file(const char* filename) {
     int result;
     int mutated = 0;
+    char volume_id[STORAGE_ID_SIZE];
+    char relative_path[FS_MAX_PATH];
+
+    if (!filename) {
+        LOG_ERROR("FS", "Nome nulo na exclusao de arquivo");
+        return ERR_NULL;
+    }
 
     spinlock_acquire(&fs_operation_lock);
     if (fs_stream_blocks_mutation_unlocked()) {
         result = ERR_STATE;
+    } else if (!fs_is_legacy_path(filename) &&
+               fs_storage_path(filename, volume_id, relative_path) == OK) {
+        result = storage_delete_file(volume_id, relative_path);
+        mutated = result == OK;
     } else if (current_fs_type == FS_TYPE_FAT12) {
-        result = fat12_delete_file(filename);
+        result = fat12_delete_file(fs_legacy_relative_path(filename));
         mutated = result >= 0;
     } else if (current_fs_type == FS_TYPE_FAT32) {
         result = fat32_delete_file(filename);
@@ -139,7 +283,20 @@ int fs_list_dir(void) {
     int result;
 
     spinlock_acquire(&fs_operation_lock);
-    if (current_fs_type == FS_TYPE_FAT12) {
+    if (fs_system_active) {
+        uint32_t count = 0U;
+
+        result = storage_list_dir_long(fs_system_volume, "",
+                                       fs_system_entries,
+                                       STORAGE_MAX_DIR_ENTRIES, &count);
+        if (result == OK) {
+            for (uint32_t index = 0U; index < count; index++) {
+                video_print(fs_system_entries[index].name, 0x07);
+                video_print("\n", 0x07);
+            }
+            result = (int)count;
+        }
+    } else if (current_fs_type == FS_TYPE_FAT12) {
         result = fat12_list_dir();
     } else if (current_fs_type == FS_TYPE_FAT32) {
         result = fat32_list_dir();
@@ -152,9 +309,14 @@ int fs_list_dir(void) {
 
 int fs_get_file_count(void) {
     int result;
+    uint32_t count = 0U;
 
     spinlock_acquire(&fs_operation_lock);
-    if (current_fs_type == FS_TYPE_FAT12) {
+    if (fs_system_active) {
+        result = storage_list_dir_long(fs_system_volume, "", fs_system_entries,
+                                       STORAGE_MAX_DIR_ENTRIES, &count);
+        if (result == OK) result = (int)count;
+    } else if (current_fs_type == FS_TYPE_FAT12) {
         result = fat12_get_file_count();
     } else if (current_fs_type == FS_TYPE_FAT32) {
         result = fat32_get_file_count();
@@ -167,9 +329,23 @@ int fs_get_file_count(void) {
 
 int fs_get_file_info(int index, char* name_out, uint32_t* size_out, uint8_t* attr_out) {
     int result;
+    uint32_t count = 0U;
 
     spinlock_acquire(&fs_operation_lock);
-    if (current_fs_type == FS_TYPE_FAT12) {
+    if (fs_system_active) {
+        result = storage_list_dir_long(fs_system_volume, "", fs_system_entries,
+                                       STORAGE_MAX_DIR_ENTRIES, &count);
+        if (result == OK && (index < 0 || (uint32_t)index >= count)) {
+            result = ERR_NOT_FOUND;
+        } else if (result == OK) {
+            if (name_out) {
+                fs_copy_text(name_out, 13U,
+                             fs_system_entries[index].short_name);
+            }
+            if (size_out) *size_out = fs_system_entries[index].size;
+            if (attr_out) *attr_out = fs_system_entries[index].attributes;
+        }
+    } else if (current_fs_type == FS_TYPE_FAT12) {
         result = fat12_get_file_info(index, name_out, size_out, attr_out);
     } else if (current_fs_type == FS_TYPE_FAT32) {
         result = fat32_get_file_info(index, name_out, size_out, attr_out);
@@ -189,9 +365,23 @@ int fs_get_info(fs_info_t* info) {
     }
     spinlock_acquire(&fs_operation_lock);
 
-    info->type = current_fs_type;
+    info->type = fs_system_active ? FS_TYPE_FAT32 : current_fs_type;
 
-    if (current_fs_type == FS_TYPE_FAT12) {
+    if (fs_system_active) {
+        storage_volume_t volume;
+        result = storage_find_system_volume(&volume);
+        if (result == OK) {
+            info->bytes_per_sector = volume.bytes_per_sector;
+            info->sectors_per_cluster = volume.sectors_per_cluster;
+            info->total_sectors = volume.sector_count;
+            info->total_clusters = info->sectors_per_cluster ?
+                info->total_sectors / info->sectors_per_cluster : 0U;
+            info->free_clusters = 0U;
+            info->free_sectors = 0U;
+            kmemcpy(info->label, volume.label, STORAGE_LABEL_SIZE - 1U);
+            info->label[STORAGE_LABEL_SIZE - 1U] = '\0';
+        }
+    } else if (current_fs_type == FS_TYPE_FAT12) {
         fat12_fs_t* fs = fat12_get_fs();
         info->bytes_per_sector = fs->bpb.bytes_per_sector;
         info->sectors_per_cluster = fs->bpb.sectors_per_cluster;
@@ -222,7 +412,7 @@ int fs_get_info(fs_info_t* info) {
 }
 
 uint8_t fs_get_type(void) {
-    return current_fs_type;
+    return fs_system_active ? FS_TYPE_FAT32 : current_fs_type;
 }
 
 uint32_t fs_get_generation(void) {
@@ -421,6 +611,36 @@ int fs_dir_cursor_open(const char* path, fs_dir_cursor_t* cursor) {
         LOG_ERROR("FS", "Cursor solicitado sem filesystem montado");
         return ERR_UNAVAILABLE;
     }
+    if (!fs_is_legacy_path(path)) {
+        char volume_id[STORAGE_ID_SIZE];
+        char relative_path[FS_MAX_PATH];
+        uint32_t count = 0U;
+        int storage_result = fs_storage_path(path, volume_id,
+                                             relative_path);
+
+        if (storage_result != OK) {
+            spinlock_release(&fs_operation_lock);
+            LOG_ERROR("FS", "Falha ao resolver cursor FAT32");
+            return storage_result;
+        }
+        storage_result = storage_list_dir_long(
+            volume_id, relative_path, fs_system_entries,
+            STORAGE_MAX_DIR_ENTRIES, &count);
+        if (storage_result != OK) {
+            spinlock_release(&fs_operation_lock);
+            LOG_ERROR("FS", "Diretorio FAT32 do cursor nao foi encontrado");
+            return storage_result;
+        }
+        kmemset(cursor, 0, sizeof(*cursor));
+        cursor->generation = fs_generation;
+        cursor->fs_type = FS_TYPE_FAT32;
+        cursor->storage_mode = 1U;
+        fs_copy_text(cursor->storage_volume_id, STORAGE_ID_SIZE, volume_id);
+        fs_copy_text(cursor->storage_path, FS_MAX_PATH, relative_path);
+        cursor->active = 1U;
+        spinlock_release(&fs_operation_lock);
+        return OK;
+    }
     cluster = fs_resolve_dir_cluster(path);
     if ((current_fs_type == FS_TYPE_FAT12 && cluster == FS_INVALID_CLUSTER) ||
         (current_fs_type == FS_TYPE_FAT32 &&
@@ -451,11 +671,42 @@ int fs_dir_cursor_next(fs_dir_cursor_t* cursor, fs_dir_entry_t* out_entry,
     *out_found = 0;
     *out_done = cursor->done;
     spinlock_acquire(&fs_operation_lock);
-    if (!cursor->active || cursor->fs_type != current_fs_type ||
+    if (!cursor->active || (!cursor->storage_mode &&
+        cursor->fs_type != current_fs_type) ||
         cursor->generation != fs_generation) {
         spinlock_release(&fs_operation_lock);
         LOG_ERROR("FS", "Cursor de diretorio ficou desatualizado");
         return ERR_STATE;
+    }
+    if (cursor->storage_mode) {
+        uint32_t count = 0U;
+
+        result = storage_list_dir_long(
+            cursor->storage_volume_id, cursor->storage_path,
+            fs_system_entries, STORAGE_MAX_DIR_ENTRIES, &count);
+        if (result != OK) {
+            spinlock_release(&fs_operation_lock);
+            LOG_ERROR("FS", "Falha ao carregar cursor FAT32");
+            return result;
+        }
+        if (cursor->storage_result_index >= count) {
+            cursor->done = 1U;
+            *out_done = 1U;
+            spinlock_release(&fs_operation_lock);
+            return OK;
+        }
+        storage_long_dir_entry_t* entry =
+            &fs_system_entries[cursor->storage_result_index++];
+        kmemset(out_entry, 0, sizeof(*out_entry));
+        fs_copy_text(out_entry->name, sizeof(out_entry->name),
+                     entry->short_name);
+        out_entry->size = entry->size;
+        out_entry->cluster = entry->cluster;
+        out_entry->attributes = entry->attributes;
+        out_entry->is_directory = entry->is_directory;
+        *out_found = 1U;
+        spinlock_release(&fs_operation_lock);
+        return OK;
     }
     if (cursor->done) {
         spinlock_release(&fs_operation_lock);
@@ -513,30 +764,47 @@ int fs_dir_cursor_next(fs_dir_cursor_t* cursor, fs_dir_entry_t* out_entry,
 }
 
 static uint32_t fs_resolve_dir_cluster(const char* dir_path) {
-    if (!dir_path || dir_path[0] == '\0') {
+    const char* resolved_path = fs_legacy_relative_path(dir_path);
+
+    if (!resolved_path || resolved_path[0] == '\0') {
         if (current_fs_type == FS_TYPE_FAT12) return 0;
         if (current_fs_type == FS_TYPE_FAT32) return fat32_get_fs()->root_cluster;
         return 0;
     }
 
     if (current_fs_type == FS_TYPE_FAT12) {
-        uint16_t c = fat12_resolve_path(dir_path);
+        uint16_t c = fat12_resolve_path(resolved_path);
         if (c == 0xFFFF) return 0xFFFFFFFF;
         return (uint32_t)c;
     } else if (current_fs_type == FS_TYPE_FAT32) {
-        return fat32_resolve_path(dir_path);
+        return fat32_resolve_path(resolved_path);
     }
     return 0;
 }
 
 int fs_read_file_at(const char* path, uint8_t* buffer, uint32_t max_size) {
     int result;
+    char volume_id[STORAGE_ID_SIZE];
+    char relative_path[FS_MAX_PATH];
+
+    if (!path || (max_size && !buffer)) {
+        LOG_ERROR("FS", "Argumento invalido na leitura por caminho");
+        return ERR_NULL;
+    }
 
     spinlock_acquire(&fs_operation_lock);
-    if (current_fs_type == FS_TYPE_FAT12) {
-        result = fat12_read_file_at(path, buffer, max_size);
+    if (!fs_is_legacy_path(path) &&
+        fs_storage_path(path, volume_id, relative_path) == OK) {
+        uint32_t bytes_read = 0U;
+        result = storage_read_file_range(volume_id, relative_path, 0U,
+                                         buffer, max_size, &bytes_read);
+        if (result == OK) result = (int)bytes_read;
+    } else if (current_fs_type == FS_TYPE_FAT12) {
+        result = fat12_read_file_at(fs_legacy_relative_path(path),
+                                    buffer, max_size);
     } else if (current_fs_type == FS_TYPE_FAT32) {
-        result = fat32_read_file_at(path, buffer, max_size);
+        result = fat32_read_file_at(fs_legacy_relative_path(path),
+                                    buffer, max_size);
     } else {
         result = ERR_NOT_FOUND;
     }
@@ -548,6 +816,8 @@ int fs_read_file_range_at(const char* path, uint32_t offset,
                           uint8_t* buffer, uint32_t max_size,
                           uint32_t* bytes_read) {
     int result;
+    char volume_id[STORAGE_ID_SIZE];
+    char relative_path[FS_MAX_PATH];
 
     if (!path || !bytes_read) {
         LOG_ERROR("FS", "Argumento nulo na leitura por faixa");
@@ -560,10 +830,18 @@ int fs_read_file_range_at(const char* path, uint32_t offset,
     *bytes_read = 0;
 
     spinlock_acquire(&fs_operation_lock);
-    if (current_fs_type == FS_TYPE_FAT12) {
-        result = fat12_read_file_range_at(path, offset, buffer, max_size);
+    if (!fs_is_legacy_path(path) &&
+        fs_storage_path(path, volume_id, relative_path) == OK) {
+        result = storage_read_file_range(volume_id, relative_path, offset,
+                                         buffer, max_size, bytes_read);
+        spinlock_release(&fs_operation_lock);
+        return result;
+    } else if (current_fs_type == FS_TYPE_FAT12) {
+        result = fat12_read_file_range_at(fs_legacy_relative_path(path),
+                                          offset, buffer, max_size);
     } else if (current_fs_type == FS_TYPE_FAT32) {
-        result = fat32_read_file_range_at(path, offset, buffer, max_size);
+        result = fat32_read_file_range_at(fs_legacy_relative_path(path),
+                                          offset, buffer, max_size);
     } else {
         spinlock_release(&fs_operation_lock);
         LOG_WARN("FS", "Leitura por faixa sem filesystem montado");
@@ -584,6 +862,9 @@ static int fs_write_file_at_unlocked(const char* path, const uint8_t* data,
                                      uint32_t size) {
     char dir_path[FS_MAX_PATH];
     char filename[FS_MAX_PATH];
+    char volume_id[STORAGE_ID_SIZE];
+    char relative_path[FS_MAX_PATH];
+    const char* resolved_path = fs_legacy_relative_path(path);
     uint32_t length;
     int last_slash = -1;
     int result;
@@ -596,12 +877,17 @@ static int fs_write_file_at_unlocked(const char* path, const uint8_t* data,
         LOG_ERROR("FS", "Dados nulos na escrita por caminho");
         return ERR_NULL;
     }
+    if (!fs_is_legacy_path(path) &&
+        fs_storage_path(path, volume_id, relative_path) == OK) {
+        return storage_write_file(volume_id, relative_path, data, size,
+                                  FS_ATTRIBUTE_ARCHIVE);
+    }
     if (current_fs_type == FS_TYPE_NONE) {
         LOG_WARN("FS", "Escrita por caminho sem filesystem montado");
         return ERR_UNAVAILABLE;
     }
 
-    length = kstrlen(path);
+    length = kstrlen(resolved_path);
     if (length == 0) {
         LOG_ERROR("FS", "Caminho vazio na escrita por caminho");
         return ERR_INVALID;
@@ -612,11 +898,11 @@ static int fs_write_file_at_unlocked(const char* path, const uint8_t* data,
     }
 
     for (uint32_t i = 0; i < length; i++) {
-        if (path[i] == '/') last_slash = (int)i;
+        if (resolved_path[i] == '/') last_slash = (int)i;
     }
 
     if (last_slash < 0) {
-        result = fs_write_file_in_dir_unlocked("", path, data, size);
+        result = fs_write_file_in_dir_unlocked("", resolved_path, data, size);
     } else {
         uint32_t dir_length = (uint32_t)last_slash;
         uint32_t filename_length = length - (uint32_t)last_slash - 1;
@@ -627,9 +913,9 @@ static int fs_write_file_at_unlocked(const char* path, const uint8_t* data,
             return ERR_INVALID;
         }
 
-        kmemcpy(dir_path, path, dir_length);
+        kmemcpy(dir_path, resolved_path, dir_length);
         dir_path[dir_length] = '\0';
-        kmemcpy(filename, path + last_slash + 1, filename_length);
+        kmemcpy(filename, resolved_path + last_slash + 1, filename_length);
         filename[filename_length] = '\0';
         result = fs_write_file_in_dir_unlocked(
             dir_path, filename, data, size);
@@ -657,8 +943,27 @@ int fs_write_file_at(const char* path, const uint8_t* data, uint32_t size) {
 
 int fs_get_file_count_at(const char* dir_path) {
     int result;
+    char volume_id[STORAGE_ID_SIZE];
+    char relative_path[FS_MAX_PATH];
+    storage_long_dir_entry_t* entries = fs_system_entries;
+    uint32_t count = 0U;
 
     spinlock_acquire(&fs_operation_lock);
+    if ((!dir_path || !dir_path[0]) && fs_system_active) {
+        fs_copy_text(volume_id, STORAGE_ID_SIZE, fs_system_volume);
+        relative_path[0] = '\0';
+        result = storage_list_dir_long(volume_id, relative_path, entries,
+                                       STORAGE_MAX_DIR_ENTRIES, &count);
+        spinlock_release(&fs_operation_lock);
+        return result == OK ? (int)count : result;
+    }
+    if (dir_path && dir_path[0] && !fs_is_legacy_path(dir_path) &&
+        fs_storage_path(dir_path, volume_id, relative_path) == OK) {
+        result = storage_list_dir_long(volume_id, relative_path, entries,
+                                       STORAGE_MAX_DIR_ENTRIES, &count);
+        spinlock_release(&fs_operation_lock);
+        return result == OK ? (int)count : result;
+    }
     uint32_t cluster = fs_resolve_dir_cluster(dir_path);
     if (cluster == 0xFFFFFFFF) {
         spinlock_release(&fs_operation_lock);
@@ -678,8 +983,43 @@ int fs_get_file_count_at(const char* dir_path) {
 
 int fs_get_file_info_at(const char* dir_path, int index, char* name_out, uint32_t* size_out, uint8_t* attr_out) {
     int result;
+    char volume_id[STORAGE_ID_SIZE];
+    char relative_path[FS_MAX_PATH];
+    storage_long_dir_entry_t* entries = fs_system_entries;
+    uint32_t count = 0U;
 
     spinlock_acquire(&fs_operation_lock);
+    if ((!dir_path || !dir_path[0]) && fs_system_active) {
+        fs_copy_text(volume_id, STORAGE_ID_SIZE, fs_system_volume);
+        relative_path[0] = '\0';
+        result = storage_list_dir_long(volume_id, relative_path, entries,
+                                       STORAGE_MAX_DIR_ENTRIES, &count);
+        if (result == OK && (index < 0 || (uint32_t)index >= count)) {
+            result = ERR_NOT_FOUND;
+        } else if (result == OK) {
+            if (name_out) fs_copy_text(name_out, 13U,
+                                       entries[index].short_name);
+            if (size_out) *size_out = entries[index].size;
+            if (attr_out) *attr_out = entries[index].attributes;
+        }
+        spinlock_release(&fs_operation_lock);
+        return result;
+    }
+    if (dir_path && dir_path[0] && !fs_is_legacy_path(dir_path) &&
+        fs_storage_path(dir_path, volume_id, relative_path) == OK) {
+        result = storage_list_dir_long(volume_id, relative_path, entries,
+                                       STORAGE_MAX_DIR_ENTRIES, &count);
+        if (result == OK && (index < 0 || (uint32_t)index >= count)) {
+            result = ERR_NOT_FOUND;
+        } else if (result == OK) {
+            if (name_out) fs_copy_text(name_out, 13U,
+                                       entries[index].short_name);
+            if (size_out) *size_out = entries[index].size;
+            if (attr_out) *attr_out = entries[index].attributes;
+        }
+        spinlock_release(&fs_operation_lock);
+        return result;
+    }
     uint32_t cluster = fs_resolve_dir_cluster(dir_path);
     if (cluster == 0xFFFFFFFF) {
         spinlock_release(&fs_operation_lock);
@@ -702,11 +1042,29 @@ int fs_get_file_info_at(const char* dir_path, int index, char* name_out, uint32_
 int fs_create_dir_entry(const char* dir_path, const char* name, uint8_t attributes) {
     int result;
     int mutated = 0;
+    char volume_id[STORAGE_ID_SIZE];
+    char relative_path[FS_MAX_PATH];
+
+    if (!dir_path || !name) {
+        LOG_ERROR("FS", "Argumento nulo na criacao de entrada");
+        return ERR_NULL;
+    }
 
     spinlock_acquire(&fs_operation_lock);
     if (fs_stream_blocks_mutation_unlocked()) {
         spinlock_release(&fs_operation_lock);
         return ERR_STATE;
+    }
+    if (!fs_is_legacy_path(dir_path) &&
+        fs_storage_join(dir_path, name, volume_id, relative_path) == OK) {
+        result = (attributes & FS_DIR_DIRECTORY_ATTRIBUTE) ?
+                 storage_create_dir(volume_id, relative_path) :
+                 storage_write_file(volume_id, relative_path, 0U, 0U,
+                                    attributes);
+        mutated = result == OK;
+        if (mutated) fs_advance_generation_unlocked();
+        spinlock_release(&fs_operation_lock);
+        return result;
     }
     uint32_t cluster = fs_resolve_dir_cluster(dir_path);
     if (cluster == 0xFFFFFFFF) {
@@ -748,15 +1106,51 @@ static int fs_write_file_in_dir_unlocked(const char* dir_path,
     return ERR_NOT_FOUND;
 }
 
+int fs_use_system_volume(void) {
+    storage_volume_t volume;
+    int result;
+
+    LOG_INFO("FS", "Procurando volume FAT32 do sistema");
+    result = storage_find_system_volume(&volume);
+    if (result != OK) {
+        fs_system_active = 0U;
+        fs_system_volume[0] = '\0';
+        LOG_ERROR("FS", "Volume FAT32 do sistema indisponivel");
+        return result;
+    }
+    fs_copy_text(fs_system_volume, STORAGE_ID_SIZE, volume.id);
+    fs_system_active = 1U;
+    fs_advance_generation_unlocked();
+    LOG_INFO("FS", "Volume FAT32 do sistema selecionado");
+    return OK;
+}
+
+int fs_has_system_volume(void) {
+    return fs_system_active ? 1 : 0;
+}
+
 int fs_write_file_in_dir(const char* dir_path, const char* filename,
                          const uint8_t* data, uint32_t size) {
     uint32_t cluster;
     int result;
     int mutated = 0;
+    char volume_id[STORAGE_ID_SIZE];
+    char relative_path[FS_MAX_PATH];
+
+    if (!dir_path || !filename || (size && !data)) {
+        LOG_ERROR("FS", "Argumento invalido na escrita em diretorio");
+        return ERR_NULL;
+    }
 
     spinlock_acquire(&fs_operation_lock);
     if (fs_stream_blocks_mutation_unlocked()) {
         result = ERR_STATE;
+    } else if (!fs_is_legacy_path(dir_path) &&
+               fs_storage_join(dir_path, filename, volume_id,
+                               relative_path) == OK) {
+        result = storage_write_file(volume_id, relative_path, data, size,
+                                    FS_ATTRIBUTE_ARCHIVE);
+        mutated = result == OK;
     } else if (current_fs_type == FS_TYPE_NONE) {
         result = ERR_NOT_FOUND;
     } else {
@@ -786,11 +1180,26 @@ int fs_write_file_in_dir(const char* dir_path, const char* filename,
 int fs_delete_file_in_dir(const char* dir_path, const char* filename) {
     int result;
     int mutated = 0;
+    char volume_id[STORAGE_ID_SIZE];
+    char relative_path[FS_MAX_PATH];
+
+    if (!dir_path || !filename) {
+        LOG_ERROR("FS", "Argumento nulo na exclusao em diretorio");
+        return ERR_NULL;
+    }
 
     spinlock_acquire(&fs_operation_lock);
     if (fs_stream_blocks_mutation_unlocked()) {
         spinlock_release(&fs_operation_lock);
         return ERR_STATE;
+    }
+    if (!fs_is_legacy_path(dir_path) &&
+        fs_storage_join(dir_path, filename, volume_id, relative_path) == OK) {
+        result = storage_delete_file(volume_id, relative_path);
+        mutated = result == OK;
+        if (mutated) fs_advance_generation_unlocked();
+        spinlock_release(&fs_operation_lock);
+        return result;
     }
     uint32_t cluster = fs_resolve_dir_cluster(dir_path);
     if (cluster == 0xFFFFFFFF) {
@@ -816,6 +1225,8 @@ int fs_rename_file_in_dir(const char* dir_path, const char* old_name,
                           const char* new_name) {
     uint32_t cluster;
     int result;
+    char volume_id[STORAGE_ID_SIZE];
+    char old_path[FS_MAX_PATH];
 
     if (!dir_path || !old_name || !new_name) {
         LOG_ERROR("FS", "Argumento nulo na renomeacao");
@@ -824,6 +1235,9 @@ int fs_rename_file_in_dir(const char* dir_path, const char* old_name,
     spinlock_acquire(&fs_operation_lock);
     if (fs_stream_blocks_mutation_unlocked()) {
         result = ERR_STATE;
+    } else if (!fs_is_legacy_path(dir_path) &&
+               fs_storage_join(dir_path, old_name, volume_id, old_path) == OK) {
+        result = storage_rename_file(volume_id, old_path, new_name);
     } else {
         cluster = fs_resolve_dir_cluster(dir_path);
         if (cluster == FS_INVALID_CLUSTER) {
@@ -850,9 +1264,17 @@ int fs_get_root_file_info(const char* filename, uint32_t* size_out,
         return ERR_NULL;
     }
     spinlock_acquire(&fs_operation_lock);
-    if (current_fs_type == FS_TYPE_FAT12) {
+    if (!fs_is_legacy_path(filename)) {
+        char volume_id[STORAGE_ID_SIZE];
+        char relative_path[FS_MAX_PATH];
+        result = fs_storage_path(filename, volume_id, relative_path);
+        if (result == OK) {
+            result = storage_get_file_info(volume_id, relative_path, size_out,
+                                           attributes_out);
+        }
+    } else if (current_fs_type == FS_TYPE_FAT12) {
         result = fat12_get_root_file_info(
-            filename, size_out, attributes_out);
+            fs_legacy_relative_path(filename), size_out, attributes_out);
     } else {
         result = ERR_UNAVAILABLE;
     }
@@ -882,9 +1304,19 @@ int fs_atomic_write_root(const char* filename, const uint8_t* data,
     spinlock_acquire(&fs_operation_lock);
     if (fs_stream_blocks_mutation_unlocked()) {
         result = ERR_STATE;
+    } else if (!fs_is_legacy_path(filename)) {
+        char volume_id[STORAGE_ID_SIZE];
+        char relative_path[FS_MAX_PATH];
+        result = fs_storage_path(filename, volume_id, relative_path);
+        if (result == OK) {
+            result = storage_atomic_write_file(
+                volume_id, relative_path, data, size, attributes,
+                mode == FS_ATOMIC_REPLACE_ONLY ?
+                STORAGE_ATOMIC_REPLACE_ONLY : STORAGE_ATOMIC_CREATE_OR_REPLACE);
+        }
     } else if (current_fs_type == FS_TYPE_FAT12) {
         result = fat12_atomic_write_root(
-            filename, data, size, attributes,
+            fs_legacy_relative_path(filename), data, size, attributes,
             mode == FS_ATOMIC_REPLACE_ONLY);
     } else {
         result = ERR_UNAVAILABLE;
@@ -905,8 +1337,13 @@ int fs_atomic_delete_root(const char* filename) {
     spinlock_acquire(&fs_operation_lock);
     if (fs_stream_blocks_mutation_unlocked()) {
         result = ERR_STATE;
+    } else if (!fs_is_legacy_path(filename)) {
+        char volume_id[STORAGE_ID_SIZE];
+        char relative_path[FS_MAX_PATH];
+        result = fs_storage_path(filename, volume_id, relative_path);
+        if (result == OK) result = storage_delete_file(volume_id, relative_path);
     } else if (current_fs_type == FS_TYPE_FAT12) {
-        result = fat12_atomic_delete_root(filename);
+        result = fat12_atomic_delete_root(fs_legacy_relative_path(filename));
     } else {
         result = ERR_UNAVAILABLE;
     }
@@ -941,6 +1378,16 @@ int fs_atomic_write_file_in_dir(const char* dir_path, const char* filename,
     cluster = fs_resolve_dir_cluster(dir_path);
     if (fs_stream_blocks_mutation_unlocked()) {
         result = ERR_STATE;
+    } else if (!fs_is_legacy_path(dir_path)) {
+        char volume_id[STORAGE_ID_SIZE];
+        char relative_path[FS_MAX_PATH];
+        result = fs_storage_join(dir_path, filename, volume_id, relative_path);
+        if (result == OK) {
+            result = storage_atomic_write_file(
+                volume_id, relative_path, data, size, attributes,
+                mode == FS_ATOMIC_REPLACE_ONLY ?
+                STORAGE_ATOMIC_REPLACE_ONLY : STORAGE_ATOMIC_CREATE_OR_REPLACE);
+        }
     } else if (cluster == 0xFFFFFFFFU) {
         result = ERR_NOT_FOUND;
     } else if (current_fs_type == FS_TYPE_FAT12) {
@@ -968,6 +1415,11 @@ int fs_atomic_delete_file_in_dir(const char* dir_path, const char* filename) {
     cluster = fs_resolve_dir_cluster(dir_path);
     if (fs_stream_blocks_mutation_unlocked()) {
         result = ERR_STATE;
+    } else if (!fs_is_legacy_path(dir_path)) {
+        char volume_id[STORAGE_ID_SIZE];
+        char relative_path[FS_MAX_PATH];
+        result = fs_storage_join(dir_path, filename, volume_id, relative_path);
+        if (result == OK) result = storage_delete_file(volume_id, relative_path);
     } else if (cluster == 0xFFFFFFFFU) {
         result = ERR_NOT_FOUND;
     } else if (current_fs_type == FS_TYPE_FAT12 && cluster == 0U) {
@@ -998,10 +1450,21 @@ int fs_stream_begin_root(const char* filename, uint32_t expected_size,
         return ERR_OVERFLOW;
     }
     spinlock_acquire(&fs_operation_lock);
-    result = current_fs_type == FS_TYPE_FAT12 ?
+    if (fs_system_active) {
+        char volume_id[STORAGE_ID_SIZE];
+        char relative_path[FS_MAX_PATH];
+        result = fs_storage_path(filename, volume_id, relative_path);
+        if (result == OK) {
+            result = storage_stream_begin(volume_id, relative_path,
+                                          expected_size, attributes);
+        }
+    } else {
+        result =
+             current_fs_type == FS_TYPE_FAT12 ?
              fat12_stream_begin_root(
-                 filename, expected_size, attributes) :
+                 fs_legacy_relative_path(filename), expected_size, attributes) :
              ERR_UNAVAILABLE;
+    }
     spinlock_release(&fs_operation_lock);
     if (result != OK) LOG_ERROR("FS", "Inicio streaming FAT12 falhou");
     return result;
@@ -1015,7 +1478,8 @@ int fs_stream_write_root(const uint8_t* data, uint32_t size) {
         return ERR_NULL;
     }
     spinlock_acquire(&fs_operation_lock);
-    result = current_fs_type == FS_TYPE_FAT12 ?
+    result = fs_system_active ? storage_stream_write(data, size) :
+             current_fs_type == FS_TYPE_FAT12 ?
              fat12_stream_write_root(data, size) : ERR_UNAVAILABLE;
     spinlock_release(&fs_operation_lock);
     if (result != OK) LOG_ERROR("FS", "Escrita streaming FAT12 falhou");
@@ -1026,7 +1490,8 @@ int fs_stream_finish_root(void) {
     int result;
 
     spinlock_acquire(&fs_operation_lock);
-    result = current_fs_type == FS_TYPE_FAT12 ?
+    result = fs_system_active ? storage_stream_finish() :
+             current_fs_type == FS_TYPE_FAT12 ?
              fat12_stream_finish_root() : ERR_UNAVAILABLE;
     if (result == OK) fs_advance_generation_unlocked();
     spinlock_release(&fs_operation_lock);
@@ -1038,7 +1503,8 @@ int fs_stream_abort_root(void) {
     int result;
 
     spinlock_acquire(&fs_operation_lock);
-    result = current_fs_type == FS_TYPE_FAT12 ?
+    result = fs_system_active ? storage_stream_abort() :
+             current_fs_type == FS_TYPE_FAT12 ?
              fat12_stream_abort_root() : ERR_UNAVAILABLE;
     spinlock_release(&fs_operation_lock);
     if (result != OK) LOG_ERROR("FS", "Cancelamento streaming FAT12 falhou");
@@ -1049,7 +1515,8 @@ int fs_stream_is_active(void) {
     int active;
 
     spinlock_acquire(&fs_operation_lock);
-    active = current_fs_type == FS_TYPE_FAT12 ?
+    active = fs_system_active ? storage_stream_is_active() :
+             current_fs_type == FS_TYPE_FAT12 ?
              fat12_stream_is_active() : 0;
     spinlock_release(&fs_operation_lock);
     return active;

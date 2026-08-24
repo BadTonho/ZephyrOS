@@ -12,6 +12,7 @@
 #define STORAGE_LABEL_SIZE 12U
 #define STORAGE_MODEL_SIZE 41U
 #define STORAGE_NAME_SIZE 13U
+#define STORAGE_LONG_NAME_SIZE 256U
 #define STORAGE_MAX_PATH 256U
 #define STORAGE_MAX_DIR_ENTRIES 64U
 #define STORAGE_MAX_CHAIN_STEPS 4096U
@@ -35,6 +36,17 @@ typedef enum {
     STORAGE_VOLUME_UNSUPPORTED,
     STORAGE_VOLUME_MOUNTED
 } storage_volume_state_t;
+
+typedef enum {
+    STORAGE_VOLUME_ROLE_NONE = 0,
+    STORAGE_VOLUME_ROLE_BOOT,
+    STORAGE_VOLUME_ROLE_SYSTEM
+} storage_volume_role_t;
+
+typedef enum {
+    STORAGE_ATOMIC_CREATE_OR_REPLACE = 0,
+    STORAGE_ATOMIC_REPLACE_ONLY = 1
+} storage_atomic_mode_t;
 
 typedef enum {
     STORAGE_DISK_ATA = 0,
@@ -76,6 +88,7 @@ typedef struct {
     uint32_t sector_count;
     uint32_t generation;
     int last_error;
+    storage_volume_role_t role;
 } storage_volume_t;
 
 typedef struct {
@@ -85,6 +98,15 @@ typedef struct {
     uint8_t attributes;
     uint8_t is_directory;
 } storage_dir_entry_t;
+
+typedef struct {
+    char name[STORAGE_LONG_NAME_SIZE];
+    char short_name[STORAGE_NAME_SIZE];
+    uint32_t size;
+    uint32_t cluster;
+    uint8_t attributes;
+    uint8_t is_directory;
+} storage_long_dir_entry_t;
 
 typedef struct {
     char volume_id[STORAGE_ID_SIZE];
@@ -100,7 +122,16 @@ typedef struct {
     uint8_t active;
     uint8_t done;
     uint8_t sector[STORAGE_SECTOR_SIZE];
+    uint8_t lfn_active;
+    uint8_t lfn_count;
+    uint8_t lfn_checksum;
+    uint8_t lfn_sequence;
+    char lfn_name[STORAGE_LONG_NAME_SIZE];
+    char lfn_path[STORAGE_MAX_PATH];
+    uint32_t lfn_result_index;
 } storage_dir_cursor_t;
+
+typedef storage_dir_cursor_t storage_long_dir_cursor_t;
 
 typedef struct {
     uint8_t initialized;
@@ -131,6 +162,34 @@ int storage_dir_cursor_next(storage_dir_cursor_t* cursor,
 int storage_read_file_range(const char* id, const char* path,
                             uint32_t offset, uint8_t* buffer,
                             uint32_t max_size, uint32_t* out_read);
+int storage_get_file_info(const char* id, const char* path,
+                          uint32_t* out_size, uint8_t* out_attributes);
+int storage_find_system_volume(storage_volume_t* out_volume);
+int storage_check(const char* id);
+int storage_list_dir_long(const char* id, const char* path,
+                          storage_long_dir_entry_t* entries,
+                          uint32_t capacity, uint32_t* out_count);
+int storage_dir_cursor_open_long(const char* id, const char* path,
+                                 storage_long_dir_cursor_t* cursor);
+int storage_dir_cursor_next_long(storage_long_dir_cursor_t* cursor,
+                                 storage_long_dir_entry_t* out_entry,
+                                 uint8_t* out_found, uint8_t* out_done);
+int storage_write_file(const char* id, const char* path,
+                       const uint8_t* data, uint32_t size,
+                       uint8_t attributes);
+int storage_atomic_write_file(const char* id, const char* path,
+                              const uint8_t* data, uint32_t size,
+                              uint8_t attributes, storage_atomic_mode_t mode);
+int storage_delete_file(const char* id, const char* path);
+int storage_create_dir(const char* id, const char* path);
+int storage_rename_file(const char* id, const char* path,
+                        const char* new_name);
+int storage_stream_begin(const char* id, const char* path,
+                         uint32_t expected_size, uint8_t attributes);
+int storage_stream_write(const uint8_t* data, uint32_t size);
+int storage_stream_finish(void);
+int storage_stream_abort(void);
+int storage_stream_is_active(void);
 const char* storage_fs_name(storage_fs_type_t type);
 const char* storage_volume_state_name(storage_volume_state_t state);
 

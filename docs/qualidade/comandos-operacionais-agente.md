@@ -74,13 +74,14 @@ canonica da funcionalidade, nao nesta memoria geral.
 
 O alvo `system-fixtures` gera uma matriz compacta assinada usando a chave
 privada indicada por `SYSTEM_PRIVATE_KEY` em `Makefile.local`. A chave privada
-permanece fora do repositorio. Como o FAT12 aceita somente nomes 8.3, os
-arquivos locais usam a extensao `.ZSY`.
+permanece fora do repositorio. A imagem de fixture e hibrida: FAT12 legado no
+inicio e FAT32 `ZEPHYROS` a partir do LBA 4096. Os arquivos usam a extensao
+`.ZSYS` no FAT32.
 
-Cada fixture e gravada em uma imagem FAT12 propria dentro de
+Cada fixture e gravada em uma imagem propria dentro de
 `build\system-fixture-images`. O alvo nao injeta a matriz inteira em
-`build\zephyros.img`; assim, cada imagem precisa armazenar somente um envelope
-ZSYS. Antes da primeira geracao apos uma tentativa antiga, recrie a imagem
+`build\zephyros.img`; cada imagem armazena somente um envelope ZSYS na raiz
+FAT32. Antes da primeira geracao apos uma tentativa antiga, recrie a imagem
 base com `make clean` e `make`.
 
 Depois de gerar as fixtures, inicie uma imagem por vez com estes comandos
@@ -105,23 +106,30 @@ make run-system-fixture SYSTEM_FIXTURE_IMAGE=build\system-fixture-images\CMPHASH
 Dentro de cada QEMU, execute o comando correspondente ao alias da imagem:
 
 ```text
-update system verify VALID.ZSY
-update system verify TRUNC.ZSY
-update system verify HDRBAD.ZSY
-update system verify PAYBAD.ZSY
-update system verify SIGBAD.ZSY
-update system verify OVERSIZ.ZSY
-update system verify MISALGN.ZSY
-update system verify VERBAD.ZSY
-update system verify EPCHBAD.ZSY
-update system verify ABIBAD.ZSY
-update system verify SCHBAD.ZSY
-update system verify IMGHASH.ZSY
-update system verify CMPHASH.ZSY
+update system verify system:/VALID.ZSYS
+update system verify system:/TRUNC.ZSYS
+update system verify system:/HDRBAD.ZSYS
+update system verify system:/PAYBAD.ZSYS
+update system verify system:/SIGBAD.ZSYS
+update system verify system:/OVERSIZ.ZSYS
+update system verify system:/MISALGN.ZSYS
+update system verify system:/VERBAD.ZSYS
+update system verify system:/EPCHBAD.ZSYS
+update system verify system:/ABIBAD.ZSYS
+update system verify system:/SCHBAD.ZSYS
+update system verify system:/IMGHASH.ZSYS
+update system verify system:/CMPHASH.ZSYS
 ```
 
-Somente `VALID.ZSY` deve ser aceito; os demais devem ser recusados sem
-alterar imagem, cache ou estado persistente.
+Somente `system:/VALID.ZSYS` deve ser aceito; os demais devem ser recusados
+sem alterar imagem, cache, FAT12 legado ou estado persistente.
+
+Para o diagnostico somente leitura do volume FAT32, primeiro copie o ID exato
+mostrado por `storage list` e execute:
+
+```text
+storage check <id-exato-do-volume-fat32>
+```
 
 ## Comandos no Shell
 

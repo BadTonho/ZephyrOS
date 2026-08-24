@@ -543,3 +543,14 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   removidas dos READMEs, da politica de seguranca, da introducao, das notas de
   componentes e da tela de Configuracoes. As limitacoes atuais continuam
   descritas como requisitos de maturidade, seguranca e suporte.
+
+### EP9.4A — Volume de sistema FAT32
+
+- Implementação concluída em: 2026-08-24 12:38 (America/Sao_Paulo); imagem
+  híbrida de 64 MiB, partição FAT32 `ZEPHYROS` em LBA 4096, montagem automática,
+  leitura/escrita, LFN UTF-16LE, aliases 8.3, operações atômicas, streaming,
+  diagnóstico `storage check`, fixtures e migração do empacotador foram
+  integrados sem alterar boot ou stage2.
+- A validação executável permanece pendente do usuário; o agente não executou
+  `make storage-fixtures-test`, `make storage-fixtures`, `make system-fixtures`,
+  `make q3check`, build ou QEMU.

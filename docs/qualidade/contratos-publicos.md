@@ -314,13 +314,15 @@ em `docs/13-aplicativos/app-store.md` e `docs/13-aplicativos/pacotes.md`.
 Desde a EP2, `src/include/drivers/ata.h` expoe quatro slots ATA, leitura
 direcionada e snapshots/contadores por dispositivo, preservando a API global
 do disco legado. `src/include/fs/storage.h` define o inventario estatico de
-discos e volumes, montagens FAT12/FAT32 adicionais somente-leitura, geracao e
-leitura direcionada. `RECOVERY_COMPONENT_STORAGE` foi anexado ao enum de
-Recovery. `filemanager.h` passa a guardar volume/geracao no historico Classic
-e `settings.h` anexa a categoria de status Storage. Os contratos canonicos
-ficam em `docs/05-drivers/drivers.md`,
-`docs/08-sistema-arquivos/sistema-arquivos.md`, `docs/04-kernel/kernel.md` e
-`docs/12-desktop/desktop.md`.
+discos e volumes, montagens, leitura direcionada, escrita FAT32 do volume de
+sistema, cursores LFN, aliases 8.3, transacoes atomicas, streaming,
+renomeacao, exclusao e `storage_check` somente leitura. Os tipos novos foram
+anexados ao final das estruturas publicas existentes. `RECOVERY_COMPONENT_STORAGE`
+foi anexado ao enum de Recovery. `filemanager.h` passa a guardar volume,
+geracao e nomes longos no historico Classic e `settings.h` anexa a categoria
+de status Storage. Os contratos canonicos ficam em
+`docs/05-drivers/drivers.md`, `docs/08-sistema-arquivos/sistema-arquivos.md`,
+`docs/04-kernel/kernel.md` e `docs/12-desktop/desktop.md`.
 
 Desde a EP3, `src/include/fs/fs.h` e `src/include/fs/storage.h` expoem cursores
 retomaveis de diretorio, incluindo cluster nas entradas. `fs.h` tambem expoe a
@@ -391,3 +393,10 @@ update_remote_github.h acrescentam, ao final dos registros existentes, o
 asset system.zsys e seus metadados, preservando as APIs e campos legados.
 ZSYS não introduz escrita de imagem, staging, slots ou alteração de boot nesta
 etapa.
+
+Desde a EP9.4A, `build\zephyros.img` usa uma imagem híbrida de 64 MiB: o FAT12
+bruto continua no início para boot e recuperação e o FAT32 `ZEPHYROS` começa
+no LBA 4096. `fs.h` roteia caminhos sem prefixo e `system:/` para o volume de
+sistema quando montado, preserva `legacy:/` para o FAT12 e não faz fallback
+silencioso. Nenhuma API altera `boot.asm`, `stage2`, slots, staging, reboot ou
+journaling nesta etapa.

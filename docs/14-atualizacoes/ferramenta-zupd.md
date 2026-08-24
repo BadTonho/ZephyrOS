@@ -521,6 +521,28 @@ descritores legados e runtime.
 
     python tools/updater.py fixtures-system --manifest system.json --image build/zephyros.img --boot build/boot.bin --stage2 build/stage2.bin --kernel build/kernel.bin --private <chave-fora-do-repo> --public config/update-release-public.json --output-dir <diretorio-vazio>
 
+### EP9.4A — volume híbrido FAT32
+
+O empacotador prepara `build\zephyros.img` como uma imagem híbrida de 64 MiB:
+o payload FAT12 legado permanece no início e a partição FAT32 `ZEPHYROS`
+começa no LBA 4096. O MBR é alterado somente no artefato gerado; `boot.asm`
+e `stage2` não são modificados.
+
+    python tools/packager.py prepare-hybrid-image --image build\zephyros.img --disk-bytes 67108864 --fat32-start-lba 4096 --label ZEPHYROS
+    python tools/packager.py inject-file-fat32 --file build\system-fixtures\valid.zsys --image build\system-fixture-images\VALID.img --path VALID.ZSYS --fat32-start-lba 4096 --replace
+
+Os alvos de imagem principal, pacotes, ícones, atualizações e fixtures usam
+`inject-file-fat32`. `inject-file` continua preservado para regressão explícita
+das imagens FAT12 antigas. O runtime monta automaticamente exatamente um
+volume FAT32 rotulado `ZEPHYROS`, com leitura/escrita para o volume de sistema;
+volumes externos continuam somente leitura por padrão.
+
+O backend FAT32 valida BPB, FSInfo, backup, cópias da FAT, cadeias, diretórios,
+LFN UTF-16LE e checksum antes de expor a leitura. As escritas reservam
+clusters, sincronizam as duas FATs e publicam a entrada LFN/8.3 por último.
+`storage check <id>` é somente leitura. Journaling, filesystem nativo e boot
+direto pelo FAT32 permanecem etapas posteriores.
+
 ## Referencias
 
 - [cryptography 49.0.0](https://cryptography.io/_/downloads/en/49.0.0/pdf/)

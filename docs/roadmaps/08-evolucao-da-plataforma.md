@@ -802,9 +802,9 @@ crus.
   preservando APIs remotas existentes por campos append-only.
 - [x] Atualizar contrato publico, indice, ferramenta e distribuicao remota.
 - [x] Preparar o alvo `system-fixtures` para gerar a matriz assinada fora do
-  repositorio e criar uma imagem FAT12 QEMU por fixture, usando aliases 8.3
-  (`.ZSY`) e sem versionar a chave privada; a imagem base nao recebe a matriz
-  inteira.
+  repositorio e criar uma imagem hibrida FAT12/FAT32 por fixture, usando nomes
+  `.ZSYS` no volume `ZEPHYROS` e sem versionar a chave privada; a imagem base
+  nao recebe a matriz inteira.
 - [ ] Executar a validacao do usuario: make update-test, make q3check,
   make clean && make, make run e a matriz QEMU de fixtures/memcheck/regcheck.
 
@@ -837,7 +837,27 @@ crus.
   falta de espaco, falha durante staging, falha no primeiro boot, rollback,
   energia interrompida, cache corrompido e regressao Simple/Classic.
 
-### EP9.4 - Volume de sistema FAT32 e expansão de armazenamento
+### EP9.4A - Volume de sistema FAT32
+
+- [x] Definir imagem hibrida de 64 MiB, preservando o FAT12 bruto no inicio
+  para boot, stage2, kernel e recuperacao.
+- [x] Formatar a particao MBR FAT32 tipo `0x0C` a partir do LBA 4096, com
+  alinhamento de 2 MiB, duas FATs, FSInfo, backup do boot sector e label
+  `ZEPHYROS`, sem editar boot.asm ou stage2.
+- [x] Migrar icones, pacotes, atualizacoes e fixtures ZSYS para o volume FAT32;
+  manter `inject-file` e as fixtures FAT12 para regressao.
+- [x] Montar automaticamente exatamente um volume FAT32 `ZEPHYROS`, expor
+  `system:/`, `legacy:/` e volume-id, e manter o fallback FAT12 explicito.
+- [x] Implementar leitura/escrita FAT32 com aliases 8.3, LFN UTF-16LE,
+  checksum, diretorios, escrita atomica, streaming, exclusao, renomeacao e
+  diagnostico somente leitura `storage check`.
+- [ ] Executar a matriz do usuario: storage-fixtures-test, storage-fixtures,
+  system-fixtures, q3check, build completo, QEMU, memcheck e regcheck full.
+
+Limites mantidos para etapas posteriores: journaling, filesystem nativo, boot
+direto pelo FAT32, slots A/B, staging, aplicacao ZSYS e reboot automatico.
+
+### EP9.4B - Expansão posterior de armazenamento
 
 - [ ] Definir se o volume de boot permanece FAT12 e o sistema usa um volume
   FAT32 separado, ou se haverá migração controlada do volume de boot.

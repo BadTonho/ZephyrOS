@@ -265,7 +265,7 @@ static shell_index_workspace_t shell_index_workspace;
 
 static void cmd_storage_print_usage(void) {
     video_print("Uso: storage list | storage info <id> | ", 0x0C);
-    video_print("storage mount <id> | storage unmount <id>\n", 0x0C);
+    video_print("storage mount <id> | storage unmount <id> | storage check <id>\n", 0x0C);
 }
 
 static int cmd_storage_read_token(const char** cursor, char* token,
@@ -348,7 +348,7 @@ static void cmd_storage_print_volume(const storage_volume_t* volume) {
     video_print("  FS: ", 0x07);
     video_print(storage_fs_name(volume->fs_type), 0x0B);
     video_print("  Acesso: ", 0x07);
-    video_print(volume->boot ? "BOOT/LEGACY-RW" : "READ-ONLY", 0x0B);
+    video_print(volume->read_only ? "READ-ONLY" : "READ-WRITE", 0x0B);
     video_print("\n  LBA inicial: ", 0x07);
     shell_command_print_num(volume->start_lba);
     video_print("  Setores: ", 0x07);
@@ -394,7 +394,8 @@ static void cmd_storage_list(void) {
             cmd_storage_print_volume(&volume);
         }
     }
-    video_print("Montagens adicionais permanecem somente em RAM.\n", 0x0E);
+    video_print("Montagens manuais nao persistem no reboot; sistema FAT32 e gravavel.\n",
+                0x0E);
 }
 
 static void cmd_storage_info(const char* id) {
@@ -454,6 +455,12 @@ static void cmd_storage(const char* args) {
     }
     if (kstrcmp(action, "info") == 0) {
         cmd_storage_info(id);
+        return;
+    }
+    if (kstrcmp(action, "check") == 0) {
+        result = storage_check(id);
+        if (result == OK) video_print("Volume FAT32 consistente.\n", 0x0A);
+        else video_print("Erro: verificacao FAT32 recusada.\n", 0x0C);
         return;
     }
     if (kstrcmp(action, "mount") == 0) result = storage_mount(id);
