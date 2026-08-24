@@ -619,6 +619,7 @@ static void uhci_set_port_empty(uhci_controller_t* controller,
     info->controller_device = controller->device;
     info->controller_function = controller->function;
     info->port_number = (uint8_t)(port + 1U);
+    info->controller_model = USB_CONTROLLER_MODEL_UHCI;
     info->state = USB_PORT_EMPTY;
     info->reason = USB_PORT_REASON_NO_DEVICE;
     info->speed = USB_DEVICE_SPEED_FULL;
@@ -955,7 +956,7 @@ static int uhci_parse_configuration(uhci_device_record_t* record,
                 LOG_ERROR("UHCI", "Endpoint USB zero invalido");
                 return ERR_INVALID;
             }
-            if (!max_packet || max_packet > USB_ENDPOINT_MAX_PACKET_SIZE) {
+            if (!max_packet || max_packet > USB_ENDPOINT_MAX_PACKET_SIZE_FULL) {
                 LOG_ERROR("UHCI", "Tamanho de pacote USB invalido");
                 return ERR_INVALID;
             }
@@ -1260,6 +1261,7 @@ static int uhci_enumerate_port_once(uhci_controller_t* controller,
     record->info.controller_bus = controller->bus;
     record->info.controller_device = controller->device;
     record->info.controller_function = controller->function;
+    record->info.controller_model = USB_CONTROLLER_MODEL_UHCI;
     record->info.port_number = (uint8_t)(port + 1U);
     kmemcpy(record->info.controller_id, controller->controller_id,
             USB_CONTROLLER_ID_SIZE);
@@ -2153,7 +2155,7 @@ int uhci_validate_state(uint8_t bus, uint8_t device, uint8_t function) {
             if (!(descriptor->address & USB_ENDPOINT_ADDRESS_NUMBER_MASK) ||
                 descriptor->transfer_type > USB_ENDPOINT_TRANSFER_TYPE_MAX ||
                 !descriptor->max_packet ||
-                descriptor->max_packet > USB_ENDPOINT_MAX_PACKET_SIZE) {
+                descriptor->max_packet > USB_ENDPOINT_MAX_PACKET_SIZE_FULL) {
                 LOG_ERROR("UHCI", "Tabela de endpoints USB invalida");
                 return ERR_STATE;
             }

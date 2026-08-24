@@ -55,6 +55,7 @@ static usb_hid_kind_t hid_kind_from_device(const usb_device_info_t* device) {
 
 static int hid_is_candidate(const usb_device_info_t* device) {
     if (!device || device->state != USB_DEVICE_CONFIGURED ||
+        device->controller_model != USB_CONTROLLER_MODEL_UHCI ||
         device->interface_class != USB_HID_CLASS ||
         device->interface_subclass != USB_HID_SUBCLASS_BOOT ||
         (device->interface_protocol != USB_HID_PROTOCOL_KEYBOARD &&

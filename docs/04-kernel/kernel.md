@@ -254,7 +254,8 @@ forma controlada e aparecem no `health`; apenas `power_shutdown()` e terminal.
   demais ficam fora do escopo. O servico copia vendor/device, classe, BDF, IRQ
   e seis BARs do snapshot PCI, limita-se a oito entradas e expoe `usb status`,
   `usb list`, `usb device <id>`, `usb ports`, `usb devices`, `usb storage` e
-  `usb hid`.
+  `usb hid`. A EP7.1B inicializa EHCI somente para USB high-speed e mantem
+  UHCI como caminho dos drivers HID/MSC legados.
 - `uhci`: inicializa somente controladores UHCI apos o inventario PCI. Valida
   BAR I/O e IRQ, habilita I/O e bus mastering apenas nesse ProgIF, aloca frame
   list de 1024 entradas, queue head, TDs e buffers DMA alinhados, registra IRQ
@@ -263,8 +264,9 @@ forma controlada e aparecem no `health`; apenas `power_shutdown()` e terminal.
   e `SET_CONFIGURATION`; nao ha hubs, hot-plug ou strings. A EP4.4 acrescenta
   somente endpoints Interrupt IN para HID Boot, sem parser generico de Report
   Descriptor. O inventario tambem preserva `bcdDevice` e uma tabela limitada
-  de endpoints, sem remover os campos derivados de Bulk/Interrupt. EHCI nunca
-  acessa BAR, I/O, DMA ou IRQ.
+  de endpoints, sem remover os campos derivados de Bulk/Interrupt. EHCI usa
+  contrato proprio em `drivers/ehci.h`; o transporte comum em
+  `core/usb_transport.h` seleciona UHCI/EHCI sem alterar estes chamadores.
 - `usb_msc`: apos a enumeracao UHCI, reconhece somente interfaces MSC BOT
   SCSI com exatamente um Bulk IN e um Bulk OUT. Executa INQUIRY, TEST UNIT
   READY, READ CAPACITY(10) e READ(10), publica LUN 0 como provedor somente-
@@ -386,6 +388,14 @@ endpoints. `rtl8811cu_probe()` e somente-leitura; `rtl8811cu_init()` verifica
 sequencia de radio nao tiver referencia tecnica verificavel. Portanto, a
 EP7.1A nao anexa interface ao `network_manager`, nao executa TX/RX e nao faz
 scan ou associacao.
+
+Na EP7.1B, o EHCI high-speed e inicializado de forma isolada, com transporte
+comum para controle, Bulk e Interrupt, mantendo HID/MSC legados no UHCI. O
+`network_manager` reconhece o candidato USB e publica
+`net-usb-BB:DD.F-pN`, mas somente anexa `ethernet_interface_t` depois de um
+driver `READY`. O backend RTL8811CU valida o arquivo externo
+`RTL8811.BIN`, porem mantem o radio desligado enquanto checksum, firmware e
+sequencia de registradores nao forem confirmados.
 
 `ethernet_interface_t` desacopla a camada L2 dos drivers por contexto opaco e
 callbacks de status, RX pendente, recepcao e transmissao. Um registro fixo

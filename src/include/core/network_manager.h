@@ -11,11 +11,18 @@
 #define NETWORK_DRIVER_NAME_SIZE 24U
 #define NETWORK_IRQ_UNKNOWN 0xFFU
 #define NETWORK_MAC_ADDRESS_SIZE 6U
+#define NETWORK_USB_DEVICE_ID_SIZE 40U
+
+typedef enum {
+    NETWORK_TRANSPORT_PCI = 0,
+    NETWORK_TRANSPORT_USB
+} network_transport_t;
 
 typedef enum {
     NETWORK_ADAPTER_UNKNOWN = 0,
     NETWORK_ADAPTER_E1000,
-    NETWORK_ADAPTER_RTL8139
+    NETWORK_ADAPTER_RTL8139,
+    NETWORK_ADAPTER_RTL8811CU
 } network_adapter_model_t;
 
 typedef enum {
@@ -38,6 +45,7 @@ typedef enum {
 } network_ipv4_source_t;
 
 typedef struct {
+    network_transport_t transport;
     network_adapter_model_t model;
     network_interface_state_t state;
     network_link_state_t link;
@@ -52,6 +60,11 @@ typedef struct {
     uint8_t function;
     uint8_t irq;
     uint32_t bars[NETWORK_PCI_BAR_COUNT];
+    char usb_device_id[NETWORK_USB_DEVICE_ID_SIZE];
+    uint8_t usb_port;
+    uint8_t usb_address;
+    uint16_t usb_revision;
+    uint8_t usb_endpoint_count;
     uint8_t mac_address[NETWORK_MAC_ADDRESS_SIZE];
     uint8_t ethernet_attached;
     uint8_t l3_active;

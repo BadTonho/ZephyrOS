@@ -64,6 +64,7 @@
 #include "core/update_remote_config.h"
 #include "core/syscall.h"
 #include "drivers/idt.h"
+#include "drivers/ehci.h"
 #include "drivers/pci.h"
 #include "drivers/vesa.h"
 #include "drivers/font.h"
@@ -929,7 +930,15 @@ static int shell_regcheck_same_usb(const usb_controller_info_t* left,
         left->uhci_port_count != right->uhci_port_count ||
         left->uhci_device_count != right->uhci_device_count ||
         left->uhci_port_errors != right->uhci_port_errors ||
-        left->uhci_last_error != right->uhci_last_error) {
+        left->uhci_last_error != right->uhci_last_error ||
+        left->ehci_initialized != right->ehci_initialized ||
+        left->ehci_irq_registered != right->ehci_irq_registered ||
+        left->ehci_dma_ready != right->ehci_dma_ready ||
+        left->ehci_transfer_ready != right->ehci_transfer_ready ||
+        left->ehci_port_count != right->ehci_port_count ||
+        left->ehci_device_count != right->ehci_device_count ||
+        left->ehci_port_errors != right->ehci_port_errors ||
+        left->ehci_last_error != right->ehci_last_error) {
         return 0;
     }
     for (uint32_t bar = 0; bar < USB_CONTROLLER_BAR_COUNT; bar++) {
@@ -957,8 +966,12 @@ static int shell_regcheck_validate_usb_entry(
          (info->state != USB_CONTROLLER_DEGRADED ||
           info->reason != USB_CONTROLLER_REASON_OUT_OF_SCOPE)) ||
         (info->model == USB_CONTROLLER_MODEL_EHCI &&
-         (info->state != USB_CONTROLLER_DEGRADED ||
-          info->reason != USB_CONTROLLER_REASON_OUT_OF_SCOPE)) ||
+         ((!info->ehci_initialized && info->state != USB_CONTROLLER_DEGRADED &&
+           info->state != USB_CONTROLLER_DISABLED) ||
+          (info->ehci_initialized && info->reason !=
+           USB_CONTROLLER_REASON_DRIVER_READY &&
+           info->reason != USB_CONTROLLER_REASON_PORT_FAILURE &&
+           info->reason != USB_CONTROLLER_REASON_DRIVER_FAILURE))) ||
         (info->model == USB_CONTROLLER_MODEL_UHCI &&
          ((!info->uhci_initialized && info->state != USB_CONTROLLER_DEGRADED &&
            info->state != USB_CONTROLLER_DISABLED) ||
@@ -998,6 +1011,7 @@ static int shell_regcheck_validate_usb(void) {
         count > USB_MANAGER_MAX_CONTROLLERS ||
         status.uhci_count + status.ehci_count + status.other_count != count ||
         status.uhci_ready_count > status.uhci_count ||
+        status.ehci_ready_count > status.ehci_count ||
         status.port_count > USB_MANAGER_MAX_PORTS ||
         status.configured_device_count > USB_MANAGER_MAX_DEVICES ||
         status.dma_td_in_use > status.dma_td_capacity ||
@@ -1037,6 +1051,26 @@ static int shell_regcheck_validate_usb(void) {
                 runtime.port_count != USB_UHCI_PORT_COUNT ||
                 runtime.timeout_count > 0xFFFFFFFFU - runtime.recovery_count) {
                 LOG_ERROR("SHELL", "RegCheck detectou runtime UHCI invalido");
+                return result == OK ? ERR_STATE : result;
+            }
+        } else if (info.model == USB_CONTROLLER_MODEL_EHCI &&
+                   info.ehci_initialized) {
+            usb_ehci_status_t runtime;
+
+            result = ehci_get_status(info.bus, info.device, info.function,
+                                     &runtime);
+            if (result != OK || !runtime.initialized ||
+                !runtime.running || !runtime.irq_registered ||
+                !runtime.dma_ready || !runtime.control_transfer_ready ||
+                !runtime.bulk_transfer_ready ||
+                !runtime.interrupt_transfer_ready ||
+                runtime.qtd_in_use > runtime.qtd_capacity ||
+                runtime.buffer_in_use > runtime.buffer_capacity ||
+                runtime.port_count == 0U ||
+                runtime.port_count > USB_EHCI_PORT_COUNT ||
+                runtime.timeout_count >
+                0xFFFFFFFFU - runtime.recovery_count) {
+                LOG_ERROR("SHELL", "RegCheck detectou runtime EHCI invalido");
                 return result == OK ? ERR_STATE : result;
             }
         }

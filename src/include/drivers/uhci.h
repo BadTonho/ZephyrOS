@@ -21,9 +21,7 @@
 #define UHCI_BULK_BUFFER_OFFSET 1024U
 #define UHCI_INTERRUPT_TIMEOUT_MS 1000U
 
-typedef void (*uhci_interrupt_callback_t)(void* context, int result,
-                                           const uint8_t* data,
-                                           uint16_t length);
+typedef usb_interrupt_callback_t uhci_interrupt_callback_t;
 
 int uhci_init(const pci_device_t* pci, const char* controller_id);
 int uhci_poll(uint32_t budget, uint32_t* out_processed);

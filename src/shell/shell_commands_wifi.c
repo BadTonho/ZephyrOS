@@ -97,6 +97,27 @@ static void wifi_print_interface(const wifi_interface_info_t* info) {
     video_print("\n", WIFI_SHELL_COLOR_TEXT);
 }
 
+static void wifi_print_scan_result(const wifi_scan_result_t* result) {
+    if (!result) {
+        LOG_ERROR("SHELL", "Resultado nulo no scan Wi-Fi");
+        return;
+    }
+    video_print("  SSID=", WIFI_SHELL_COLOR_TEXT);
+    video_print(result->ssid, WIFI_SHELL_COLOR_LABEL);
+    video_print(" BSSID=", WIFI_SHELL_COLOR_TEXT);
+    for (uint32_t index = 0U; index < WIFI_BSSID_LENGTH; index++) {
+        if (index) video_print(":", WIFI_SHELL_COLOR_TEXT);
+        shell_command_print_hex(result->bssid[index], 2U);
+    }
+    video_print(" canal=", WIFI_SHELL_COLOR_TEXT);
+    shell_command_print_num(result->channel);
+    video_print(" seguranca=", WIFI_SHELL_COLOR_TEXT);
+    video_print(result->open_security ? "ABERTA" : "NAO CONFIRMADA",
+                result->open_security ? WIFI_SHELL_COLOR_READY :
+                WIFI_SHELL_COLOR_WARN);
+    video_print("\n", WIFI_SHELL_COLOR_TEXT);
+}
+
 static int wifi_print_inventory(void) {
     uint32_t count = 0U;
 
@@ -182,6 +203,8 @@ static void wifi_print_status(void) {
     video_print("\n  Motivo: ", WIFI_SHELL_COLOR_TEXT);
     if (status.error_count) {
         video_print("erro no inventario", WIFI_SHELL_COLOR_ERROR);
+    } else if (status.ready_count) {
+        video_print("backend RTL8811CU pronto", WIFI_SHELL_COLOR_READY);
     } else if (status.candidate_count) {
         video_print("nenhum backend Wi-Fi inicializado",
                     WIFI_SHELL_COLOR_WARN);
@@ -194,32 +217,67 @@ static void wifi_print_status(void) {
 }
 
 static void wifi_scan(void) {
-    int result = wifi_manager_refresh();
+    wifi_scan_result_t results[WIFI_SCAN_RESULT_CAPACITY];
+    uint32_t result_count = 0U;
+    int inventory_result = wifi_manager_refresh();
+    int result = inventory_result;
 
-    if (result == ERR_STATE) result = wifi_manager_init();
+    if (inventory_result == ERR_STATE) {
+        inventory_result = wifi_manager_init();
+        result = inventory_result;
+    }
 
-    if (result != OK && result != ERR_OVERFLOW) {
+    if (inventory_result != OK && inventory_result != ERR_OVERFLOW) {
         LOG_ERROR("SHELL", "Falha ao atualizar inventario Wi-Fi");
         video_print("Erro: varredura Wi-Fi indisponivel.\n", WIFI_SHELL_COLOR_ERROR);
         return;
     }
     wifi_print_status();
-    if (result == ERR_OVERFLOW) {
-        video_print("Aviso: inventario Wi-Fi parcial.\n", WIFI_SHELL_COLOR_WARN);
+    result = wifi_manager_scan(results, WIFI_SCAN_RESULT_CAPACITY,
+                               &result_count);
+    if (result == OK) {
+        video_print("Redes abertas detectadas:\n", WIFI_SHELL_COLOR_LABEL);
+        for (uint32_t index = 0U; index < result_count; index++) {
+            wifi_print_scan_result(&results[index]);
+        }
+    } else if (result == ERR_UNAVAILABLE) {
+        video_print("Nenhuma varredura 802.11 executada: radio indisponivel.\n",
+                    WIFI_SHELL_COLOR_WARN);
     } else {
+        LOG_ERROR("SHELL", "Falha controlada no scan 802.11");
+        video_print("Erro: scan Wi-Fi indisponivel.\n",
+                    WIFI_SHELL_COLOR_ERROR);
+    }
+    if (inventory_result == ERR_OVERFLOW) {
+        video_print("Aviso: inventario Wi-Fi parcial.\n", WIFI_SHELL_COLOR_WARN);
+    } else if (result == ERR_UNAVAILABLE) {
         video_print("Inventario PCI/USB concluido; nenhuma varredura 802.11 ou inicializacao de radio foi executada.\n",
-                    WIFI_SHELL_COLOR_READY);
+                    WIFI_SHELL_COLOR_WARN);
     }
 }
 
 static void wifi_connect(const char* args) {
+    int result;
+
     if (!args || args[0] == '\0') {
         video_print("Uso: wifi connect <ssid>\n", WIFI_SHELL_COLOR_WARN);
         return;
     }
-    LOG_WARN("WIFI", "Associacao Wi-Fi indisponivel nesta etapa");
-    video_print("wifi connect: ERR_UNAVAILABLE\n", WIFI_SHELL_COLOR_WARN);
-    video_print("Backend RTL8811CU ainda nao inicializado; conexao nao executada.\n",
+    if (wifi_ensure_initialized() != OK) {
+        LOG_ERROR("SHELL", "Backend Wi-Fi indisponivel para connect");
+        video_print("wifi connect: ERR_STATE\n", WIFI_SHELL_COLOR_ERROR);
+        return;
+    }
+    result = wifi_manager_connect_open(args);
+    if (result == OK) {
+        video_print("wifi connect: OK\n", WIFI_SHELL_COLOR_READY);
+        return;
+    }
+    LOG_WARN("WIFI", "Associacao Wi-Fi recusada de forma controlada");
+    video_print("wifi connect: ", WIFI_SHELL_COLOR_WARN);
+    video_print(result == ERR_UNAVAILABLE ? "ERR_UNAVAILABLE\n" :
+                "erro controlado\n", WIFI_SHELL_COLOR_WARN);
+    video_print("Backend RTL8811CU nao confirmou radio pronto; conexao nao executada.\n",
                 WIFI_SHELL_COLOR_WARN);
     video_print("Nenhuma senha foi aceita, processada, exibida ou armazenada.\n",
                 WIFI_SHELL_COLOR_INFO);

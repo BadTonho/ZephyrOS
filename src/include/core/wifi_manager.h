@@ -10,6 +10,9 @@
 #define WIFI_INTERFACE_NAME_SIZE 32U
 #define WIFI_PCI_CLASS_NETWORK 0x02U
 #define WIFI_PCI_IRQ_UNKNOWN 0xFFU
+#define WIFI_SCAN_RESULT_CAPACITY 8U
+#define WIFI_SSID_MAX_LENGTH 32U
+#define WIFI_BSSID_LENGTH 6U
 
 typedef enum {
     WIFI_TRANSPORT_PCI = 0,
@@ -58,6 +61,14 @@ typedef struct {
     int last_error;
 } wifi_manager_status_t;
 
+typedef struct {
+    uint8_t ssid_length;
+    char ssid[WIFI_SSID_MAX_LENGTH + 1U];
+    uint8_t bssid[WIFI_BSSID_LENGTH];
+    uint8_t channel;
+    uint8_t open_security;
+} wifi_scan_result_t;
+
 int wifi_manager_init(void);
 int wifi_manager_refresh(void);
 int wifi_manager_get_status(wifi_manager_status_t* out_status);
@@ -66,6 +77,9 @@ int wifi_manager_get_interface(wifi_interface_info_t* out_info,
                                uint32_t index);
 int wifi_manager_find(const char* id, wifi_interface_info_t* out_info);
 int wifi_manager_validate_state(void);
+int wifi_manager_scan(wifi_scan_result_t* results, uint32_t capacity,
+                      uint32_t* out_count);
+int wifi_manager_connect_open(const char* ssid);
 const char* wifi_manager_state_name(wifi_interface_state_t state);
 
 #endif

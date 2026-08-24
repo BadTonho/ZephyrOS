@@ -12,12 +12,16 @@
 #define USB_PORT_CONTROLLER_ID_SIZE USB_CONTROLLER_ID_SIZE
 #define USB_DEVICE_ID_SIZE 40U
 #define USB_UHCI_PORT_COUNT 2U
-#define USB_MANAGER_MAX_PORTS (USB_MANAGER_MAX_CONTROLLERS * USB_UHCI_PORT_COUNT)
+#define USB_EHCI_PORT_COUNT 8U
+#define USB_MAX_PORTS_PER_CONTROLLER USB_EHCI_PORT_COUNT
+#define USB_MANAGER_MAX_PORTS (USB_MANAGER_MAX_CONTROLLERS * USB_MAX_PORTS_PER_CONTROLLER)
 #define USB_MANAGER_MAX_DEVICES (USB_MANAGER_MAX_PORTS)
 #define USB_DEVICE_MAX_ENDPOINTS 16U
 #define USB_ENDPOINT_ADDRESS_NUMBER_MASK 0x0FU
 #define USB_ENDPOINT_TRANSFER_TYPE_MAX 3U
-#define USB_ENDPOINT_MAX_PACKET_SIZE 64U
+#define USB_ENDPOINT_MAX_PACKET_SIZE_FULL 64U
+#define USB_ENDPOINT_MAX_PACKET_SIZE_HIGH 512U
+#define USB_ENDPOINT_MAX_PACKET_SIZE USB_ENDPOINT_MAX_PACKET_SIZE_HIGH
 #define USB_UHCI_FRAME_COUNT 1024U
 #define USB_UHCI_TD_CAPACITY 64U
 #define USB_UHCI_BUFFER_CAPACITY 8U
@@ -79,7 +83,8 @@ typedef enum {
 
 typedef enum {
     USB_DEVICE_SPEED_LOW = 0,
-    USB_DEVICE_SPEED_FULL
+    USB_DEVICE_SPEED_FULL,
+    USB_DEVICE_SPEED_HIGH
 } usb_device_speed_t;
 
 typedef enum {
@@ -110,6 +115,14 @@ typedef struct {
     uint8_t uhci_device_count;
     uint8_t uhci_port_errors;
     int uhci_last_error;
+    uint8_t ehci_initialized;
+    uint8_t ehci_irq_registered;
+    uint8_t ehci_dma_ready;
+    uint8_t ehci_transfer_ready;
+    uint8_t ehci_port_count;
+    uint8_t ehci_device_count;
+    uint8_t ehci_port_errors;
+    int ehci_last_error;
 } usb_controller_info_t;
 
 typedef struct {
@@ -123,6 +136,7 @@ typedef struct {
     uint8_t irq_initialized;
     uint8_t transfer_available;
     uint32_t uhci_ready_count;
+    uint32_t ehci_ready_count;
     uint32_t port_count;
     uint32_t configured_device_count;
     uint32_t degraded_port_count;
@@ -133,6 +147,7 @@ typedef struct {
     uint8_t hotplug_active;
     uint32_t msc_device_count;
     uint8_t bulk_transfer_available;
+    uint8_t high_speed_transfer_available;
     int last_error;
     uint32_t hid_device_count;
     uint32_t hid_active_count;
@@ -180,6 +195,7 @@ typedef struct {
     uint8_t controller_bus;
     uint8_t controller_device;
     uint8_t controller_function;
+    usb_controller_model_t controller_model;
     uint8_t port_number;
     usb_port_state_t state;
     usb_port_reason_t reason;
@@ -207,6 +223,7 @@ typedef struct {
     usb_device_state_t state;
     usb_device_speed_t speed;
     uint8_t usb_address;
+    usb_controller_model_t controller_model;
     uint16_t vendor_id;
     uint16_t product_id;
     uint16_t device_revision;
@@ -239,6 +256,10 @@ typedef struct {
     uint8_t interrupt_interval;
     uint8_t hid_driver_active;
 } usb_device_info_t;
+
+typedef void (*usb_interrupt_callback_t)(void* context, int result,
+                                         const uint8_t* data,
+                                         uint16_t length);
 
 typedef struct {
     char id[USB_DEVICE_ID_SIZE];
