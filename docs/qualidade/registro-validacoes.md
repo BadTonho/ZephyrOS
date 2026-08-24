@@ -498,3 +498,12 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 ### EP9 — Atualização da imagem do sistema
 
 - Planejamento registrado em: 2026-08-21 16:45:17 (America/Sao_Paulo).
+
+### EP9.0A — Contrato ZSYS e preflight
+
+- Implementação concluída em: 2026-08-24 00:22 (America/Sao_Paulo).
+- Foram integrados o envelope ZSYS v1, a Release combinada v2, fixtures host,
+  verificação local em streaming, preflight remoto somente leitura, comandos
+  do Shell, campos remotos append-only e a documentação correspondente.
+- A validação executável permanece pendente do usuário; o agente não executou
+  `make update-test`, `make q3check`, build, QEMU ou testes funcionais.

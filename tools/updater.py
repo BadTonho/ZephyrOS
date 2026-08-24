@@ -185,6 +185,57 @@ RUNTIME_PHASE_REPLACING = 3
 RUNTIME_PHASE_COMMITTED = 4
 RUNTIME_SLOT_NONE = 0xFF
 
+SYSTEM_MAGIC = b"ZSYS"
+SYSTEM_FORMAT_VERSION = 1
+SYSTEM_ARCH_I386 = 1
+SYSTEM_HEADER_SIZE = 1024
+SYSTEM_SIGNATURE_SIZE = 64
+SYSTEM_KEY_ID_SIZE = 16
+SYSTEM_MAX_IMAGE_SIZE = 8 * 1024 * 1024
+SYSTEM_PAYLOAD_OFFSET = SYSTEM_HEADER_SIZE
+SYSTEM_DOMAIN = b"ZEPHYROS-SYSTEM-IMAGE-V1\0"
+SYSTEM_COMPONENT_ENTRY_SIZE = 64
+SYSTEM_COMPONENT_COUNT = 3
+SYSTEM_COMPONENT_BOOT = 1
+SYSTEM_COMPONENT_STAGE2 = 2
+SYSTEM_COMPONENT_KERNEL = 3
+SYSTEM_COMPONENT_HASH_OFFSET = 12
+SYSTEM_BASE_ENTRY_SIZE = 12
+SYSTEM_MAX_BASES = 8
+SYSTEM_CHECKPOINT_SIZE = 64
+SYSTEM_MAX_CHECKPOINTS = 4
+SYSTEM_ROUTE_DIRECT = 1
+SYSTEM_ROUTE_CHECKPOINT = 2
+SYSTEM_FLAG_REQUIRES_REBOOT = 0x0001
+SYSTEM_FLAG_BRIDGE_REQUIRED = 0x0002
+SYSTEM_CHANNEL_SIZE = 16
+SYSTEM_IDENTIFIER_SIZE = 64
+SYSTEM_HEADER_IMAGE_HASH_OFFSET = 28
+SYSTEM_HEADER_TARGET_VERSION_OFFSET = 60
+SYSTEM_HEADER_TARGET_EPOCH_OFFSET = 66
+SYSTEM_HEADER_BASE_COUNT_OFFSET = 70
+SYSTEM_HEADER_BASE_ENTRY_SIZE_OFFSET = 72
+SYSTEM_HEADER_BASES_OFFSET = 76
+SYSTEM_HEADER_MIN_UPDATER_OFFSET = SYSTEM_HEADER_BASES_OFFSET + SYSTEM_MAX_BASES * SYSTEM_BASE_ENTRY_SIZE
+SYSTEM_HEADER_BOOT_ABI_OFFSET = SYSTEM_HEADER_MIN_UPDATER_OFFSET + SYSTEM_BASE_ENTRY_SIZE
+SYSTEM_HEADER_SCHEMA_FROM_OFFSET = SYSTEM_HEADER_BOOT_ABI_OFFSET + 4
+SYSTEM_HEADER_SCHEMA_TO_OFFSET = SYSTEM_HEADER_SCHEMA_FROM_OFFSET + 4
+SYSTEM_HEADER_ROUTE_OFFSET = SYSTEM_HEADER_SCHEMA_TO_OFFSET + 4
+SYSTEM_HEADER_CHECKPOINT_COUNT_OFFSET = SYSTEM_HEADER_ROUTE_OFFSET + 1
+SYSTEM_HEADER_CHANNEL_OFFSET = SYSTEM_HEADER_CHECKPOINT_COUNT_OFFSET + 1
+SYSTEM_HEADER_RELEASE_ID_OFFSET = SYSTEM_HEADER_CHANNEL_OFFSET + SYSTEM_CHANNEL_SIZE
+SYSTEM_HEADER_RELEASE_TAG_OFFSET = SYSTEM_HEADER_RELEASE_ID_OFFSET + SYSTEM_IDENTIFIER_SIZE
+SYSTEM_HEADER_COMPONENT_COUNT_OFFSET = SYSTEM_HEADER_RELEASE_TAG_OFFSET + SYSTEM_IDENTIFIER_SIZE
+SYSTEM_HEADER_COMPONENT_ENTRY_SIZE_OFFSET = SYSTEM_HEADER_COMPONENT_COUNT_OFFSET + 2
+SYSTEM_HEADER_COMPONENTS_OFFSET = SYSTEM_HEADER_COMPONENT_ENTRY_SIZE_OFFSET + 2
+SYSTEM_HEADER_CHECKPOINT_ENTRY_SIZE_OFFSET = SYSTEM_HEADER_COMPONENTS_OFFSET + SYSTEM_COMPONENT_COUNT * SYSTEM_COMPONENT_ENTRY_SIZE
+SYSTEM_HEADER_CHECKPOINTS_OFFSET = SYSTEM_HEADER_CHECKPOINT_ENTRY_SIZE_OFFSET + 2
+SYSTEM_HEADER_KEY_ID_OFFSET = SYSTEM_HEADER_CHECKPOINTS_OFFSET + SYSTEM_MAX_CHECKPOINTS * SYSTEM_CHECKPOINT_SIZE
+SYSTEM_HEADER_SIGNATURE_OFFSET = SYSTEM_HEADER_KEY_ID_OFFSET + SYSTEM_KEY_ID_SIZE
+SYSTEM_HEADER_SIGNATURE_SIZE_OFFSET = SYSTEM_HEADER_SIGNATURE_OFFSET + SYSTEM_SIGNATURE_SIZE
+SYSTEM_HEADER_SIGNATURE_OFFSET_FIELD = SYSTEM_HEADER_SIGNATURE_SIZE_OFFSET + 4
+SYSTEM_HEADER_RESERVED_OFFSET = SYSTEM_HEADER_SIGNATURE_OFFSET_FIELD + 4
+
 REASON_NONE = "NONE"
 REASON_FORMAT = "FORMAT"
 REASON_SIZE = "SIZE"
@@ -195,6 +246,7 @@ REASON_ARCHITECTURE = "ARCHITECTURE"
 REASON_BASE_VERSION = "BASE_VERSION"
 REASON_DOWNGRADE = "DOWNGRADE"
 REASON_PATH_POLICY = "PATH_POLICY"
+REASON_COMPATIBILITY = "COMPATIBILITY"
 REASON_DUPLICATE_TARGET = "DUPLICATE_TARGET"
 REASON_UNSUPPORTED = "UNSUPPORTED"
 
@@ -211,6 +263,7 @@ REASON_VALUES = {
     REASON_PATH_POLICY: 9,
     REASON_DUPLICATE_TARGET: 10,
     REASON_UNSUPPORTED: 11,
+    REASON_COMPATIBILITY: 12,
 }
 
 
@@ -385,6 +438,65 @@ class RuntimeManifest:
     release_tag: str
     release_id: str
     entries: tuple[RuntimeEntry, ...]
+
+
+@dataclass(frozen=True)
+class SystemBase:
+    """Versao/epoch aceitos como origem da imagem ZSYS."""
+
+    version: Version
+    epoch: int
+
+
+@dataclass(frozen=True)
+class SystemComponent:
+    """Componente autenticado dentro da imagem completa."""
+
+    kind: int
+    offset: int
+    size: int
+    sha256: bytes
+
+
+@dataclass(frozen=True)
+class SystemCompatibility:
+    """Metadados assinados que condicionam a ativacao futura."""
+
+    supported_from: tuple[SystemBase, ...]
+    minimum_updater: SystemBase
+    boot_abi: int
+    data_schema_from: int
+    data_schema_to: int
+    requires_reboot: bool
+    channel: str
+    route_kind: int
+    checkpoints: tuple[str, ...]
+    bridge_required: bool
+
+
+@dataclass(frozen=True)
+class SystemManifest:
+    """Especificacao host usada para construir um ZSYS v1."""
+
+    release_id: str
+    release_tag: str
+    target_version: Version
+    target_epoch: int
+    compatibility: SystemCompatibility
+
+
+@dataclass(frozen=True)
+class SystemPackage:
+    """ZSYS v1 validado por estrutura, hash e assinatura."""
+
+    release_id: str
+    release_tag: str
+    target_version: Version
+    target_epoch: int
+    image_size: int
+    image_sha256: bytes
+    components: tuple[SystemComponent, ...]
+    compatibility: SystemCompatibility
 
 
 @dataclass(frozen=True)
@@ -1845,6 +1957,871 @@ def build_runtime_bundle(
         descriptor,
     )
     return output_dir
+
+
+def system_fixed_text(raw: bytes, label: str) -> str:
+    """Decodifica texto ASCII fixo do cabecalho ZSYS."""
+    nul = raw.find(b"\0")
+    if nul <= 0 or any(raw[nul + 1 :]):
+        raise UpdateError(f"{label} ZSYS possui padding invalido")
+    try:
+        value = raw[:nul].decode("ascii")
+    except UnicodeDecodeError as error:
+        raise UpdateError(f"{label} ZSYS nao usa ASCII") from error
+    if any(ord(char) < 0x20 for char in value):
+        raise UpdateError(f"{label} ZSYS possui caractere invalido")
+    return value
+
+
+def system_fixed_bytes(value: str, capacity: int, label: str) -> bytes:
+    """Codifica identificador ASCII sem permitir truncamento silencioso."""
+    if not isinstance(value, str) or not value or len(value) >= capacity:
+        raise UpdateError(f"{label} ZSYS invalido")
+    try:
+        encoded = value.encode("ascii")
+    except UnicodeEncodeError as error:
+        raise UpdateError(f"{label} ZSYS deve usar ASCII") from error
+    if any(byte < 0x20 for byte in encoded):
+        raise UpdateError(f"{label} ZSYS possui caractere invalido")
+    return encoded + bytes(capacity - len(encoded))
+
+
+def system_identifier(value: object, label: str) -> str:
+    """Valida identificadores usados para correlacionar um ZSYS."""
+    if not isinstance(value, str) or not re.fullmatch(
+        r"[A-Za-z0-9._-]{1,63}", value
+    ):
+        raise UpdateError(f"{label} ZSYS invalido")
+    return value
+
+
+def system_version_compare(first: Version, second: Version) -> int:
+    """Compara versões sem depender da ordenação da classe compartilhada."""
+    first_value = (first.major, first.minor, first.patch)
+    second_value = (second.major, second.minor, second.patch)
+    return (first_value > second_value) - (first_value < second_value)
+
+
+def system_base_spec(value: object, label: str) -> SystemBase:
+    """Valida uma origem versionada do pacote de sistema."""
+    if not isinstance(value, dict) or tuple(value) != ("version", "epoch"):
+        raise UpdateError(f"{label} ZSYS invalido")
+    version = Version.parse(value["version"])
+    epoch = value["epoch"]
+    if not isinstance(epoch, int) or not 0 <= epoch <= 0xFFFFFFFF:
+        raise UpdateError(f"epoch de {label} ZSYS invalido")
+    return SystemBase(version, epoch)
+
+
+def system_manifest_spec(path: Path) -> SystemManifest:
+    """Le e valida a especificacao JSON de um pacote ZSYS v1."""
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise UpdateError(f"nao foi possivel ler manifesto ZSYS: {path}") from error
+    if not isinstance(data, dict) or tuple(data) != (
+        "format", "release_id", "release_tag", "target_version",
+        "target_epoch", "supported_from", "min_updater", "boot_abi",
+        "data_schema_from", "data_schema_to", "requires_reboot", "channel",
+        "upgrade_route",
+    ):
+        raise UpdateError("manifesto ZSYS possui campos invalidos")
+    if data["format"] != "ZSYS v1":
+        raise UpdateError("formato do manifesto ZSYS invalido")
+    release_id = system_identifier(data["release_id"], "release_id")
+    release_tag = system_identifier(data["release_tag"], "release_tag")
+    target_version = Version.parse(data["target_version"])
+    target_epoch = data["target_epoch"]
+    if not isinstance(target_epoch, int) or not 0 <= target_epoch <= 0xFFFFFFFF:
+        raise UpdateError("target_epoch ZSYS invalido")
+    raw_supported = data["supported_from"]
+    if not isinstance(raw_supported, list) or not 1 <= len(raw_supported) <= SYSTEM_MAX_BASES:
+        raise UpdateError("supported_from ZSYS deve conter de 1 a 8 origens")
+    supported = tuple(
+        system_base_spec(item, "supported_from") for item in raw_supported
+    )
+    if len({(item.version, item.epoch) for item in supported}) != len(supported):
+        raise UpdateError("supported_from ZSYS possui duplicatas")
+    minimum_updater = system_base_spec(data["min_updater"], "min_updater")
+    if any(
+        system_version_compare(target_version, item.version) < 0
+        or (
+            system_version_compare(target_version, item.version) == 0
+            and target_epoch <= item.epoch
+        )
+        for item in supported
+    ):
+        raise UpdateError("target_version ZSYS deve ser superior a supported_from")
+    integer_fields = (
+        "boot_abi", "data_schema_from", "data_schema_to",
+    )
+    for field in integer_fields:
+        value = data[field]
+        if not isinstance(value, int) or not 0 <= value <= 0xFFFFFFFF:
+            raise UpdateError(f"{field} ZSYS invalido")
+    if data["data_schema_from"] > data["data_schema_to"]:
+        raise UpdateError("intervalo de schema ZSYS invertido")
+    if data["requires_reboot"] is not True:
+        raise UpdateError("ZSYS v1 exige requires_reboot=true")
+    channel = data["channel"]
+    if channel != "stable":
+        raise UpdateError("canal ZSYS invalido")
+    route = data["upgrade_route"]
+    if not isinstance(route, dict) or tuple(route) != (
+        "kind", "checkpoints", "bridge_required",
+    ):
+        raise UpdateError("upgrade_route ZSYS invalido")
+    route_kind_text = route["kind"]
+    route_kind = {
+        "direct": SYSTEM_ROUTE_DIRECT,
+        "checkpoint": SYSTEM_ROUTE_CHECKPOINT,
+    }.get(route_kind_text)
+    if route_kind is None:
+        raise UpdateError("tipo de rota ZSYS invalido")
+    checkpoints = route["checkpoints"]
+    if not isinstance(checkpoints, list) or len(checkpoints) > SYSTEM_MAX_CHECKPOINTS:
+        raise UpdateError("checkpoints ZSYS excedem o limite")
+    checkpoint_values = tuple(
+        system_identifier(item, "checkpoint") for item in checkpoints
+    )
+    if len(set(checkpoint_values)) != len(checkpoint_values):
+        raise UpdateError("checkpoints ZSYS possuem duplicatas")
+    if route_kind == SYSTEM_ROUTE_DIRECT and checkpoint_values:
+        raise UpdateError("rota direta ZSYS nao pode possuir checkpoints")
+    bridge_required = route["bridge_required"]
+    if bridge_required is not False:
+        raise UpdateError("bridge_required deve ser false na EP9.0A")
+    compatibility = SystemCompatibility(
+        supported, minimum_updater, data["boot_abi"],
+        data["data_schema_from"], data["data_schema_to"], True, channel,
+        route_kind, checkpoint_values, False,
+    )
+    return SystemManifest(
+        release_id, release_tag, target_version, target_epoch, compatibility
+    )
+
+
+def system_pack_version(raw: bytearray, offset: int, version: Version,
+                        epoch: int) -> None:
+    """Serializa version/epoch no layout fixo do ZSYS."""
+    struct.pack_into("<HHH", raw, offset, version.major, version.minor, version.patch)
+    struct.pack_into("<I", raw, offset + 6, epoch)
+    struct.pack_into("<H", raw, offset + 10, 0)
+
+
+def system_unpack_version(raw: bytes, offset: int, label: str) -> SystemBase:
+    """Decodifica version/epoch e confere o padding do registro."""
+    major, minor, patch = struct.unpack_from("<HHH", raw, offset)
+    epoch = struct.unpack_from("<I", raw, offset + 6)[0]
+    if any(raw[offset + 10 : offset + SYSTEM_BASE_ENTRY_SIZE]):
+        raise UpdateError(f"padding de {label} ZSYS nao e zero")
+    return SystemBase(Version(major, minor, patch), epoch)
+
+
+def system_component_header(kind: int, offset: int, data: bytes) -> bytes:
+    """Serializa uma entrada de componente autenticado."""
+    raw = bytearray(SYSTEM_COMPONENT_ENTRY_SIZE)
+    struct.pack_into("<HHII", raw, 0, kind, 0, offset, len(data))
+    raw[SYSTEM_COMPONENT_HASH_OFFSET : SYSTEM_COMPONENT_HASH_OFFSET + 32] = hashlib.sha256(data).digest()
+    return bytes(raw)
+
+
+def system_header(
+    manifest: SystemManifest,
+    image: bytes,
+    components: tuple[SystemComponent, ...],
+    public: PublicKeyInfo,
+) -> bytearray:
+    """Monta o cabeçalho ZSYS com a área de assinatura zerada."""
+    raw = bytearray(SYSTEM_HEADER_SIZE)
+    raw[:4] = SYSTEM_MAGIC
+    struct.pack_into(
+        "<HHHHIIII", raw, 4, SYSTEM_FORMAT_VERSION, SYSTEM_HEADER_SIZE,
+        SYSTEM_ARCH_I386, SYSTEM_FLAG_REQUIRES_REBOOT |
+        (SYSTEM_FLAG_BRIDGE_REQUIRED if manifest.compatibility.bridge_required else 0),
+        SYSTEM_HEADER_SIZE + len(image),
+        SYSTEM_PAYLOAD_OFFSET, len(image), len(image),
+    )
+    raw[SYSTEM_HEADER_IMAGE_HASH_OFFSET : SYSTEM_HEADER_IMAGE_HASH_OFFSET + 32] = hashlib.sha256(image).digest()
+    struct.pack_into(
+        "<HHHI",
+        raw,
+        SYSTEM_HEADER_TARGET_VERSION_OFFSET,
+        manifest.target_version.major,
+        manifest.target_version.minor,
+        manifest.target_version.patch,
+        manifest.target_epoch,
+    )
+    struct.pack_into("<HH", raw, SYSTEM_HEADER_BASE_COUNT_OFFSET,
+                     len(manifest.compatibility.supported_from),
+                     SYSTEM_BASE_ENTRY_SIZE)
+    for index, base in enumerate(manifest.compatibility.supported_from):
+        system_pack_version(
+            raw, SYSTEM_HEADER_BASES_OFFSET + index * SYSTEM_BASE_ENTRY_SIZE,
+            base.version, base.epoch,
+        )
+    system_pack_version(raw, SYSTEM_HEADER_MIN_UPDATER_OFFSET,
+                        manifest.compatibility.minimum_updater.version,
+                        manifest.compatibility.minimum_updater.epoch)
+    struct.pack_into("<III", raw, SYSTEM_HEADER_BOOT_ABI_OFFSET,
+                     manifest.compatibility.boot_abi,
+                     manifest.compatibility.data_schema_from,
+                     manifest.compatibility.data_schema_to)
+    raw[SYSTEM_HEADER_ROUTE_OFFSET] = manifest.compatibility.route_kind
+    raw[SYSTEM_HEADER_CHECKPOINT_COUNT_OFFSET] = len(manifest.compatibility.checkpoints)
+    raw[SYSTEM_HEADER_CHANNEL_OFFSET : SYSTEM_HEADER_CHANNEL_OFFSET + SYSTEM_CHANNEL_SIZE] = system_fixed_bytes(
+        manifest.compatibility.channel, SYSTEM_CHANNEL_SIZE, "channel"
+    )
+    raw[SYSTEM_HEADER_RELEASE_ID_OFFSET : SYSTEM_HEADER_RELEASE_ID_OFFSET + SYSTEM_IDENTIFIER_SIZE] = system_fixed_bytes(
+        manifest.release_id, SYSTEM_IDENTIFIER_SIZE, "release_id"
+    )
+    raw[SYSTEM_HEADER_RELEASE_TAG_OFFSET : SYSTEM_HEADER_RELEASE_TAG_OFFSET + SYSTEM_IDENTIFIER_SIZE] = system_fixed_bytes(
+        manifest.release_tag, SYSTEM_IDENTIFIER_SIZE, "release_tag"
+    )
+    struct.pack_into("<HH", raw, SYSTEM_HEADER_COMPONENT_COUNT_OFFSET,
+                     len(components), SYSTEM_COMPONENT_ENTRY_SIZE)
+    for index, component in enumerate(components):
+        offset = SYSTEM_HEADER_COMPONENTS_OFFSET + index * SYSTEM_COMPONENT_ENTRY_SIZE
+        raw[offset : offset + SYSTEM_COMPONENT_ENTRY_SIZE] = system_component_header(
+            component.kind, component.offset, image[component.offset : component.offset + component.size]
+        )
+    struct.pack_into("<H", raw, SYSTEM_HEADER_CHECKPOINT_ENTRY_SIZE_OFFSET,
+                     SYSTEM_CHECKPOINT_SIZE)
+    for index, checkpoint in enumerate(manifest.compatibility.checkpoints):
+        offset = SYSTEM_HEADER_CHECKPOINTS_OFFSET + index * SYSTEM_CHECKPOINT_SIZE
+        raw[offset : offset + SYSTEM_CHECKPOINT_SIZE] = system_fixed_bytes(
+            checkpoint, SYSTEM_CHECKPOINT_SIZE, "checkpoint"
+        )
+    raw[SYSTEM_HEADER_KEY_ID_OFFSET : SYSTEM_HEADER_KEY_ID_OFFSET + SYSTEM_KEY_ID_SIZE] = public.key_id
+    struct.pack_into("<II", raw, SYSTEM_HEADER_SIGNATURE_SIZE_OFFSET,
+                     SYSTEM_SIGNATURE_SIZE, SYSTEM_HEADER_SIGNATURE_OFFSET)
+    return raw
+
+
+def system_build_package(
+    manifest: SystemManifest,
+    image: bytes,
+    boot: bytes,
+    stage2: bytes,
+    kernel: bytes,
+    private_key: Any,
+    public: PublicKeyInfo,
+) -> bytes:
+    """Constroi e assina um envelope ZSYS v1."""
+    if not image or len(image) > SYSTEM_MAX_IMAGE_SIZE or len(image) % 512:
+        raise UpdateError("imagem ZSYS deve ser alinhada e ter no maximo 8 MiB")
+    if len(boot) != 512 or not stage2 or not kernel:
+        raise UpdateError("componentes ZSYS possuem tamanho invalido")
+    stage2_offset = len(boot)
+    kernel_offset = stage2_offset + len(stage2)
+    if len(stage2) % 512 or kernel_offset + len(kernel) > len(image):
+        raise UpdateError("layout dos componentes ZSYS excede a imagem")
+    if image[: len(boot)] != boot or image[stage2_offset:kernel_offset] != stage2:
+        raise UpdateError("boot ou stage2 divergem da imagem ZSYS")
+    if image[kernel_offset : kernel_offset + len(kernel)] != kernel:
+        raise UpdateError("kernel diverge da imagem ZSYS")
+    components = (
+        SystemComponent(SYSTEM_COMPONENT_BOOT, 0, len(boot), hashlib.sha256(boot).digest()),
+        SystemComponent(SYSTEM_COMPONENT_STAGE2, stage2_offset, len(stage2), hashlib.sha256(stage2).digest()),
+        SystemComponent(SYSTEM_COMPONENT_KERNEL, kernel_offset, len(kernel), hashlib.sha256(kernel).digest()),
+    )
+    raw = system_header(manifest, image, components, public)
+    signature_input = SYSTEM_DOMAIN + bytes(raw) + image
+    signature = private_key.sign(signature_input)
+    raw[SYSTEM_HEADER_SIGNATURE_OFFSET : SYSTEM_HEADER_SIGNATURE_OFFSET + SYSTEM_SIGNATURE_SIZE] = signature
+    return bytes(raw) + image
+
+
+def system_parse_header(raw: bytes, trusted: PublicKeyInfo) -> tuple[SystemPackage, bytes]:
+    """Valida o cabeçalho e retorna metadados mais o cabeçalho sem assinatura."""
+    if len(raw) < SYSTEM_HEADER_SIZE or raw[:4] != SYSTEM_MAGIC:
+        raise Rejection(REASON_FORMAT, "cabecalho ZSYS invalido")
+    version, header_size, arch, flags = struct.unpack_from("<HHHH", raw, 4)
+    total_size, payload_offset, payload_size, image_size = struct.unpack_from("<IIII", raw, 12)
+    if version != SYSTEM_FORMAT_VERSION or header_size != SYSTEM_HEADER_SIZE or arch != SYSTEM_ARCH_I386:
+        raise Rejection(REASON_FORMAT, "versao ou arquitetura ZSYS invalida")
+    if flags & ~(SYSTEM_FLAG_REQUIRES_REBOOT | SYSTEM_FLAG_BRIDGE_REQUIRED):
+        raise Rejection(REASON_FORMAT, "flags ZSYS invalidas")
+    signature_size, signature_offset = struct.unpack_from("<II", raw, SYSTEM_HEADER_SIGNATURE_SIZE_OFFSET)
+    if payload_offset != SYSTEM_PAYLOAD_OFFSET or payload_size != image_size or not image_size or image_size > SYSTEM_MAX_IMAGE_SIZE or image_size % 512:
+        raise Rejection(REASON_SIZE, "tamanho ou alinhamento da imagem ZSYS invalido")
+    if signature_size != SYSTEM_SIGNATURE_SIZE or signature_offset != SYSTEM_HEADER_SIGNATURE_OFFSET or total_size != SYSTEM_HEADER_SIZE + image_size:
+        raise Rejection(REASON_SIZE, "layout da assinatura ZSYS invalido")
+    if any(raw[SYSTEM_HEADER_RESERVED_OFFSET:]):
+        raise Rejection(REASON_FORMAT, "reservado ZSYS nao zero")
+    release_id = system_identifier(system_fixed_text(raw[SYSTEM_HEADER_RELEASE_ID_OFFSET : SYSTEM_HEADER_RELEASE_ID_OFFSET + SYSTEM_IDENTIFIER_SIZE], "release_id"), "release_id")
+    release_tag = system_identifier(system_fixed_text(raw[SYSTEM_HEADER_RELEASE_TAG_OFFSET : SYSTEM_HEADER_RELEASE_TAG_OFFSET + SYSTEM_IDENTIFIER_SIZE], "release_tag"), "release_tag")
+    channel = system_fixed_text(raw[SYSTEM_HEADER_CHANNEL_OFFSET : SYSTEM_HEADER_CHANNEL_OFFSET + SYSTEM_CHANNEL_SIZE], "channel")
+    if channel != "stable":
+        raise Rejection(REASON_UNSUPPORTED, "canal ZSYS nao suportado")
+    target = SystemBase(
+        Version(
+            *struct.unpack_from(
+                "<HHH", raw, SYSTEM_HEADER_TARGET_VERSION_OFFSET
+            )
+        ),
+        struct.unpack_from("<I", raw, SYSTEM_HEADER_TARGET_EPOCH_OFFSET)[0],
+    )
+    base_count, base_size = struct.unpack_from("<HH", raw, SYSTEM_HEADER_BASE_COUNT_OFFSET)
+    if not 1 <= base_count <= SYSTEM_MAX_BASES or base_size != SYSTEM_BASE_ENTRY_SIZE:
+        raise Rejection(REASON_FORMAT, "origens ZSYS invalidas")
+    bases = tuple(
+        system_unpack_version(raw, SYSTEM_HEADER_BASES_OFFSET + index * SYSTEM_BASE_ENTRY_SIZE, "supported_from")
+        for index in range(base_count)
+    )
+    if any(
+        system_version_compare(target.version, base.version) < 0
+        or (
+            system_version_compare(target.version, base.version) == 0
+            and target.epoch <= base.epoch
+        )
+        for base in bases
+    ):
+        raise Rejection(REASON_COMPATIBILITY, "alvo ZSYS nao supera uma origem")
+    base_end = SYSTEM_HEADER_BASES_OFFSET + base_count * SYSTEM_BASE_ENTRY_SIZE
+    if any(raw[base_end:SYSTEM_HEADER_MIN_UPDATER_OFFSET]):
+        raise Rejection(REASON_FORMAT, "origens ZSYS nao usadas nao estao zeradas")
+    minimum_updater = system_unpack_version(raw, SYSTEM_HEADER_MIN_UPDATER_OFFSET, "min_updater")
+    boot_abi, schema_from, schema_to = struct.unpack_from("<III", raw, SYSTEM_HEADER_BOOT_ABI_OFFSET)
+    route_kind = raw[SYSTEM_HEADER_ROUTE_OFFSET]
+    checkpoint_count = raw[SYSTEM_HEADER_CHECKPOINT_COUNT_OFFSET]
+    if route_kind not in (SYSTEM_ROUTE_DIRECT, SYSTEM_ROUTE_CHECKPOINT) or checkpoint_count > SYSTEM_MAX_CHECKPOINTS:
+        raise Rejection(REASON_UNSUPPORTED, "rota ZSYS invalida")
+    checkpoints = tuple(
+        system_fixed_text(raw[SYSTEM_HEADER_CHECKPOINTS_OFFSET + index * SYSTEM_CHECKPOINT_SIZE : SYSTEM_HEADER_CHECKPOINTS_OFFSET + (index + 1) * SYSTEM_CHECKPOINT_SIZE], "checkpoint")
+        for index in range(checkpoint_count)
+    )
+    if route_kind == SYSTEM_ROUTE_DIRECT and checkpoints:
+        raise Rejection(REASON_UNSUPPORTED, "rota direta ZSYS possui checkpoints")
+    if (
+        boot_abi != 1
+        or schema_from > schema_to
+        or not (flags & SYSTEM_FLAG_REQUIRES_REBOOT)
+        or flags & SYSTEM_FLAG_BRIDGE_REQUIRED
+    ):
+        raise Rejection(REASON_UNSUPPORTED, "compatibilidade ZSYS nao suportada")
+    checkpoint_end = (
+        SYSTEM_HEADER_CHECKPOINTS_OFFSET + checkpoint_count * SYSTEM_CHECKPOINT_SIZE
+    )
+    if any(raw[checkpoint_end:SYSTEM_HEADER_KEY_ID_OFFSET]):
+        raise Rejection(REASON_FORMAT, "checkpoints ZSYS nao usados nao estao zerados")
+    component_count, component_size = struct.unpack_from("<HH", raw, SYSTEM_HEADER_COMPONENT_COUNT_OFFSET)
+    checkpoint_size = struct.unpack_from("<H", raw, SYSTEM_HEADER_CHECKPOINT_ENTRY_SIZE_OFFSET)[0]
+    if component_count != SYSTEM_COMPONENT_COUNT or component_size != SYSTEM_COMPONENT_ENTRY_SIZE or checkpoint_size != SYSTEM_CHECKPOINT_SIZE:
+        raise Rejection(REASON_FORMAT, "tabelas ZSYS invalidas")
+    components: list[SystemComponent] = []
+    expected_kinds = (SYSTEM_COMPONENT_BOOT, SYSTEM_COMPONENT_STAGE2, SYSTEM_COMPONENT_KERNEL)
+    previous_end = 0
+    for index, kind in enumerate(expected_kinds):
+        offset = SYSTEM_HEADER_COMPONENTS_OFFSET + index * SYSTEM_COMPONENT_ENTRY_SIZE
+        actual_kind, flags_value, component_offset, component_length = struct.unpack_from("<HHII", raw, offset)
+        digest = raw[offset + SYSTEM_COMPONENT_HASH_OFFSET : offset + SYSTEM_COMPONENT_HASH_OFFSET + 32]
+        if (
+            actual_kind != kind
+            or flags_value
+            or not component_length
+            or component_offset + component_length > image_size
+            or component_offset != previous_end
+            or (index == 0 and (component_offset != 0 or component_length != 512))
+            or (index == 1 and (component_offset != 512 or component_length % 512))
+        ):
+            raise Rejection(REASON_FORMAT, "componente ZSYS invalido")
+        if any(raw[offset + 44 : offset + SYSTEM_COMPONENT_ENTRY_SIZE]):
+            raise Rejection(REASON_FORMAT, "padding de componente ZSYS nao zero")
+        previous_end = component_offset + component_length
+        components.append(SystemComponent(kind, component_offset, component_length, digest))
+    compatibility = SystemCompatibility(
+        bases, minimum_updater, boot_abi, schema_from, schema_to,
+        bool(flags & SYSTEM_FLAG_REQUIRES_REBOOT), channel, route_kind,
+        checkpoints, bool(flags & SYSTEM_FLAG_BRIDGE_REQUIRED),
+    )
+    package = SystemPackage(
+        release_id, release_tag, target.version, target.epoch, image_size,
+        raw[SYSTEM_HEADER_IMAGE_HASH_OFFSET : SYSTEM_HEADER_IMAGE_HASH_OFFSET + 32],
+        tuple(components), compatibility,
+    )
+    unsigned = bytearray(raw[:SYSTEM_HEADER_SIZE])
+    unsigned[SYSTEM_HEADER_SIGNATURE_OFFSET : SYSTEM_HEADER_SIGNATURE_OFFSET + SYSTEM_SIGNATURE_SIZE] = bytes(SYSTEM_SIGNATURE_SIZE)
+    signature = raw[SYSTEM_HEADER_SIGNATURE_OFFSET : SYSTEM_HEADER_SIGNATURE_OFFSET + SYSTEM_SIGNATURE_SIZE]
+    if raw[SYSTEM_HEADER_KEY_ID_OFFSET : SYSTEM_HEADER_KEY_ID_OFFSET + SYSTEM_KEY_ID_SIZE] != trusted.key_id:
+        raise Rejection(REASON_UNKNOWN_KEY, "key id ZSYS desconhecido")
+    return package, bytes(unsigned) + signature
+
+
+def parse_system_package(
+    data: bytes,
+    trusted: PublicKeyInfo,
+    current_version: Version | None = None,
+    current_epoch: int = 0,
+) -> SystemPackage:
+    """Valida completamente um ZSYS, inclusive assinatura e hashes."""
+    if len(data) < SYSTEM_HEADER_SIZE:
+        raise Rejection(REASON_SIZE, "ZSYS menor que o cabecalho")
+    package, _ = system_parse_header(data[:SYSTEM_HEADER_SIZE], trusted)
+    if len(data) != SYSTEM_HEADER_SIZE + package.image_size:
+        raise Rejection(REASON_SIZE, "tamanho total ZSYS diverge")
+    signature = data[SYSTEM_HEADER_SIGNATURE_OFFSET : SYSTEM_HEADER_SIGNATURE_OFFSET + SYSTEM_SIGNATURE_SIZE]
+    unsigned = bytearray(data[:SYSTEM_HEADER_SIZE])
+    unsigned[SYSTEM_HEADER_SIGNATURE_OFFSET : SYSTEM_HEADER_SIGNATURE_OFFSET + SYSTEM_SIGNATURE_SIZE] = bytes(SYSTEM_SIGNATURE_SIZE)
+    ed25519, _, invalid_signature = crypto_modules()
+    try:
+        ed25519.Ed25519PublicKey.from_public_bytes(trusted.public_key).verify(
+            signature, SYSTEM_DOMAIN + bytes(unsigned) + data[SYSTEM_PAYLOAD_OFFSET:]
+        )
+    except invalid_signature as error:
+        raise Rejection(REASON_SIGNATURE, "assinatura ZSYS invalida") from error
+    image = data[SYSTEM_PAYLOAD_OFFSET : SYSTEM_PAYLOAD_OFFSET + package.image_size]
+    if hashlib.sha256(image).digest() != package.image_sha256:
+        raise Rejection(REASON_HASH, "hash da imagem ZSYS diverge")
+    for component in package.components:
+        if hashlib.sha256(image[component.offset : component.offset + component.size]).digest() != component.sha256:
+            raise Rejection(REASON_HASH, "hash de componente ZSYS diverge")
+    if current_version is not None:
+        if SystemBase(current_version, current_epoch) not in package.compatibility.supported_from:
+            raise Rejection(REASON_BASE_VERSION, "versao atual nao e suportada pelo ZSYS")
+        if (
+            system_version_compare(
+                current_version, package.compatibility.minimum_updater.version
+            ) < 0
+            or (
+                system_version_compare(
+                    current_version,
+                    package.compatibility.minimum_updater.version,
+                )
+                == 0
+                and current_epoch < package.compatibility.minimum_updater.epoch
+            )
+        ):
+            raise Rejection(REASON_UNSUPPORTED, "updater abaixo do minimo do ZSYS")
+        if (
+            system_version_compare(package.target_version, current_version) < 0
+            or (
+                system_version_compare(package.target_version, current_version)
+                == 0
+                and package.target_epoch < current_epoch
+            )
+        ):
+            raise Rejection(REASON_DOWNGRADE, "ZSYS representa downgrade")
+    return package
+
+
+def system_compatibility_json(compatibility: SystemCompatibility) -> dict[str, Any]:
+    """Converte compatibilidade assinada para o descritor JSON redundante."""
+    return {
+        "supported_from": [
+            {"version": str(item.version), "epoch": item.epoch}
+            for item in compatibility.supported_from
+        ],
+        "min_updater": {
+            "version": str(compatibility.minimum_updater.version),
+            "epoch": compatibility.minimum_updater.epoch,
+        },
+        "boot_abi": compatibility.boot_abi,
+        "data_schema_from": compatibility.data_schema_from,
+        "data_schema_to": compatibility.data_schema_to,
+        "requires_reboot": compatibility.requires_reboot,
+        "channel": compatibility.channel,
+        "upgrade_route": {
+            "kind": "direct" if compatibility.route_kind == SYSTEM_ROUTE_DIRECT else "checkpoint",
+            "checkpoints": list(compatibility.checkpoints),
+            "bridge_required": compatibility.bridge_required,
+        },
+    }
+
+
+def system_compatibility_equal(first: SystemCompatibility,
+                               second: SystemCompatibility) -> bool:
+    """Compara todos os campos de compatibilidade autenticados."""
+    return first == second
+
+
+def system_load_file(path: Path, label: str) -> bytes:
+    """Carrega um asset local sem aceitar caminho ausente ou vazio."""
+    try:
+        data = path.read_bytes()
+    except OSError as error:
+        raise UpdateError(f"asset {label} ausente: {path}") from error
+    if not data:
+        raise UpdateError(f"asset {label} vazio: {path}")
+    return data
+
+
+def build_system_bundle(
+    manifest_path: Path,
+    image_path: Path,
+    boot_path: Path,
+    stage2_path: Path,
+    kernel_path: Path,
+    private_key: Any,
+    public: PublicKeyInfo,
+    output_path: Path,
+) -> Path:
+    """Gera um arquivo ZSYS v1 sem sobrescrever artefatos existentes."""
+    manifest = system_manifest_spec(manifest_path)
+    if private_public_info(private_key) != public:
+        raise UpdateError("chave privada nao corresponde ao JSON publico")
+    package = system_build_package(
+        manifest,
+        system_load_file(image_path, "imagem"),
+        system_load_file(boot_path, "boot"),
+        system_load_file(stage2_path, "stage2"),
+        system_load_file(kernel_path, "kernel"),
+        private_key,
+        public,
+    )
+    parse_system_package(package, public)
+    output = output_path.expanduser().resolve()
+    if output.exists():
+        raise UpdateError(f"arquivo ZSYS ja existe: {output}")
+    if not output.parent.is_dir():
+        raise UpdateError(f"diretorio pai do ZSYS nao existe: {output.parent}")
+    write_new_bytes(output, package)
+    return output
+
+
+def system_descriptor_asset(name: str, data: bytes) -> dict[str, Any]:
+    """Cria metadados de transporte para um asset ZSYS."""
+    if not name or Path(name).name != name:
+        raise UpdateError("nome de asset ZSYS invalido")
+    return release_asset_metadata(name, data)
+
+
+def release_v2_descriptor(
+    release_id: str,
+    release_name: str,
+    source_commit: str,
+    tag: str,
+    compatibility: SystemCompatibility,
+    legacy: dict[str, dict[str, Any]],
+    runtime: dict[str, Any],
+    system: dict[str, dict[str, Any]],
+) -> str:
+    """Serializa a Release combinada sem atribuir confianca ao JSON."""
+    return json.dumps(
+        {
+            "format": "zephyros-release-v2",
+            "release_id": release_id,
+            "release_name": release_name,
+            "channel": "stable",
+            "source_commit": source_commit,
+            "tag": tag,
+            "compatibility": system_compatibility_json(compatibility),
+            "legacy": legacy,
+            "runtime": runtime,
+            "system": system,
+        },
+        indent=2,
+        ensure_ascii=True,
+    ) + "\n"
+
+
+def release_v2_asset(
+    directory: Path, metadata: object, label: str, suffix: str | tuple[str, ...]
+) -> tuple[str, bytes]:
+    """Carrega e confere um asset de namespace da Release v2."""
+    name, data, _ = load_release_asset(directory, metadata, label, suffix)
+    return name, data
+
+
+def load_release_v2_descriptor(path: Path) -> dict[str, Any]:
+    """Le o descritor combinado com ordem e namespaces canonicos."""
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise UpdateError(f"nao foi possivel ler Release v2: {path}") from error
+    if not isinstance(data, dict) or tuple(data) != (
+        "format", "release_id", "release_name", "channel", "source_commit",
+        "tag", "compatibility", "legacy", "runtime", "system",
+    ):
+        raise UpdateError("descritor da Release v2 possui campos invalidos")
+    if data["format"] != "zephyros-release-v2" or data["channel"] != "stable":
+        raise UpdateError("formato ou canal da Release v2 invalido")
+    return data
+
+
+def release_v2_compatibility(data: object) -> SystemCompatibility:
+    """Valida e converte a compatibilidade redundante do descritor v2."""
+    if not isinstance(data, dict) or tuple(data) != (
+        "supported_from", "min_updater", "boot_abi", "data_schema_from",
+        "data_schema_to", "requires_reboot", "channel", "upgrade_route",
+    ):
+        raise UpdateError("compatibilidade da Release v2 invalida")
+    value = {
+        "format": "ZSYS v1",
+        "release_id": "release",
+        "release_tag": "release",
+        "target_version": "0.0.0",
+        "target_epoch": 0,
+        "supported_from": data["supported_from"],
+        "min_updater": data["min_updater"],
+        "boot_abi": data["boot_abi"],
+        "data_schema_from": data["data_schema_from"],
+        "data_schema_to": data["data_schema_to"],
+        "requires_reboot": data["requires_reboot"],
+        "channel": data["channel"],
+        "upgrade_route": data["upgrade_route"],
+    }
+    return system_manifest_spec_from_data(value).compatibility
+
+
+def system_manifest_spec_from_data(data: dict[str, Any]) -> SystemManifest:
+    """Valida uma especificacao ZSYS ja decodificada."""
+    supported = data["supported_from"]
+    minimum = data["min_updater"]
+    route = data["upgrade_route"]
+    if not isinstance(route, dict):
+        raise UpdateError("upgrade_route ZSYS invalido")
+    normalized = {
+        "format": "ZSYS v1",
+        "release_id": data["release_id"],
+        "release_tag": data["release_tag"],
+        "target_version": data["target_version"],
+        "target_epoch": data["target_epoch"],
+        "supported_from": supported,
+        "min_updater": minimum,
+        "boot_abi": data["boot_abi"],
+        "data_schema_from": data["data_schema_from"],
+        "data_schema_to": data["data_schema_to"],
+        "requires_reboot": data["requires_reboot"],
+        "channel": data["channel"],
+        "upgrade_route": route,
+    }
+    return SystemManifest(
+        system_identifier(normalized["release_id"], "release_id"),
+        system_identifier(normalized["release_tag"], "release_tag"),
+        Version.parse(normalized["target_version"]),
+        normalized["target_epoch"],
+        system_compatibility_from_values(normalized),
+    )
+
+
+def system_compatibility_from_values(data: dict[str, Any]) -> SystemCompatibility:
+    """Valida os campos de compatibilidade sem depender de arquivo temporario."""
+    raw_supported = data["supported_from"]
+    if not isinstance(raw_supported, list) or not 1 <= len(raw_supported) <= SYSTEM_MAX_BASES:
+        raise UpdateError("supported_from ZSYS invalido")
+    supported = tuple(system_base_spec(item, "supported_from") for item in raw_supported)
+    if len({(item.version, item.epoch) for item in supported}) != len(supported):
+        raise UpdateError("supported_from ZSYS possui duplicatas")
+    minimum = system_base_spec(data["min_updater"], "min_updater")
+    if not isinstance(data["boot_abi"], int) or data["boot_abi"] != 1:
+        raise UpdateError("boot_abi ZSYS invalido")
+    if not isinstance(data["data_schema_from"], int) or not isinstance(data["data_schema_to"], int) or data["data_schema_from"] > data["data_schema_to"]:
+        raise UpdateError("schema ZSYS invalido")
+    if data["requires_reboot"] is not True or data["channel"] != "stable":
+        raise UpdateError("politica ZSYS invalida")
+    route = data["upgrade_route"]
+    if not isinstance(route, dict) or tuple(route) != ("kind", "checkpoints", "bridge_required"):
+        raise UpdateError("upgrade_route ZSYS invalido")
+    route_kind = {"direct": SYSTEM_ROUTE_DIRECT, "checkpoint": SYSTEM_ROUTE_CHECKPOINT}.get(route["kind"])
+    checkpoints = route["checkpoints"]
+    if route_kind is None or not isinstance(checkpoints, list) or len(checkpoints) > SYSTEM_MAX_CHECKPOINTS:
+        raise UpdateError("rota ZSYS invalida")
+    checkpoint_values = tuple(system_identifier(item, "checkpoint") for item in checkpoints)
+    if len(set(checkpoint_values)) != len(checkpoint_values):
+        raise UpdateError("checkpoints ZSYS possuem duplicatas")
+    if route_kind == SYSTEM_ROUTE_DIRECT and checkpoint_values:
+        raise UpdateError("rota direta nao pode possuir checkpoints")
+    if route["bridge_required"] is not False:
+        raise UpdateError("bridge_required ZSYS invalido")
+    return SystemCompatibility(
+        supported, minimum, data["boot_abi"], data["data_schema_from"],
+        data["data_schema_to"], True, data["channel"], route_kind,
+        checkpoint_values, False,
+    )
+
+
+def release_v2_runtime_namespace(directory: Path, trusted: PublicKeyInfo) -> dict[str, Any]:
+    """Monta o namespace runtime a partir de uma Release EP6.3."""
+    manifest_data = system_load_file(directory / "runtime.zum2", "runtime.zum2")
+    package_data = system_load_file(directory / "runtime.zephyrosupd", "runtime.zephyrosupd")
+    manifest = parse_runtime_manifest(manifest_data, trusted)
+    parse_runtime_package(package_data, trusted, manifest)
+    assets = []
+    for entry in manifest.entries:
+        if not entry.target_present:
+            continue
+        asset = system_load_file(directory / entry.asset_name, entry.asset_name)
+        assets.append(release_asset_metadata(entry.asset_name, asset))
+    return {
+        "zum2": release_asset_metadata("runtime.zum2", manifest_data),
+        "zephyrosupd": release_asset_metadata("runtime.zephyrosupd", package_data),
+        "assets": assets,
+    }
+
+
+def release_v2_legacy_namespace(directory: Path, trusted: PublicKeyInfo) -> dict[str, Any]:
+    """Monta o namespace legado e valida ZUPD v1/ZUM1."""
+    package_candidates = sorted(
+        path for path in directory.iterdir()
+        if path.is_file() and path.suffix.lower() in (".zup", ".zephyrosupd")
+    )
+    manifest_candidates = sorted(
+        path for path in directory.iterdir()
+        if path.is_file() and path.suffix.lower() == ".zum"
+    )
+    if len(package_candidates) != 1 or len(manifest_candidates) != 1:
+        raise UpdateError("namespace legacy deve conter um ZUPD e um ZUM1")
+    package_path = package_candidates[0]
+    manifest_path = manifest_candidates[0]
+    package = system_load_file(package_path, package_path.name)
+    manifest = system_load_file(manifest_path, manifest_path.name)
+    header, _ = parse_structure(package)
+    verify_artifact(package, trusted, header["base"], header["base_epoch"])
+    remote = parse_remote_manifest(manifest, trusted)
+    if (
+        remote.package_size != len(package)
+        or remote.package_sha256 != hashlib.sha256(package).digest()
+        or Path(remote.package_path).name != package_path.name
+    ):
+        raise UpdateError("namespace legacy diverge entre ZUPD e ZUM1")
+    return {
+        "package": release_asset_metadata(package_path.name, package),
+        "manifest": release_asset_metadata(manifest_path.name, manifest),
+    }
+
+
+def release_v2_system_namespace(
+    directory: Path, trusted: PublicKeyInfo
+) -> tuple[dict[str, Any], SystemPackage]:
+    """Monta o namespace system e valida o ZSYS assinado."""
+    package = system_load_file(directory / "system.zsys", "system.zsys")
+    parsed = parse_system_package(package, trusted)
+    return {"zsys": system_descriptor_asset("system.zsys", package)}, parsed
+
+
+def build_release_v2_bundle(
+    release_id: str,
+    release_name: str,
+    legacy_dir: Path,
+    runtime_dir: Path,
+    system_dir: Path,
+    private_key: Any,
+    trusted: PublicKeyInfo,
+    source_reference: str,
+    tag: str,
+    output_dir: Path,
+) -> Path:
+    """Gera atomicamente a Release combinada v2."""
+    release_id, release_name = validate_release_identity(release_id, release_name)
+    if not isinstance(tag, str) or not RELEASE_ID_RE.fullmatch(tag):
+        raise UpdateError("tag da Release v2 invalida")
+    if private_public_info(private_key) != trusted:
+        raise UpdateError("chave privada nao corresponde ao JSON publico")
+    source_commit = resolve_git_commit(source_reference)
+    if resolve_git_commit(f"refs/tags/{tag}") != source_commit:
+        raise UpdateError("tag nao aponta para o commit selecionado")
+    legacy = release_v2_legacy_namespace(legacy_dir, trusted)
+    runtime = release_v2_runtime_namespace(runtime_dir, trusted)
+    system, system_package = release_v2_system_namespace(system_dir, trusted)
+    if system_package.release_id != release_id or system_package.release_tag != tag:
+        raise UpdateError("identidade do ZSYS diverge da Release v2")
+    descriptor = release_v2_descriptor(
+        release_id, release_name, source_commit, tag,
+        system_package.compatibility, legacy, runtime, system,
+    )
+    output = output_dir.expanduser().resolve()
+    if output.exists() or not output.parent.is_dir():
+        raise UpdateError(f"diretorio de Release v2 indisponivel: {output}")
+    try:
+        with tempfile.TemporaryDirectory(prefix=".zephyros-release-v2-", dir=output.parent) as temp_name:
+            temporary = Path(temp_name)
+            for source_dir, names in (
+                (
+                    legacy_dir,
+                    (legacy["package"]["name"], legacy["manifest"]["name"]),
+                ),
+                (runtime_dir, ("runtime.zum2", "runtime.zephyrosupd")),
+                (system_dir, ("system.zsys",)),
+            ):
+                for name in names:
+                    write_new_bytes(temporary / name, system_load_file(source_dir / name, name))
+            for metadata in runtime["assets"]:
+                name = metadata["name"]
+                write_new_bytes(temporary / name, system_load_file(runtime_dir / name, name))
+            write_new_text(temporary / "release.json", descriptor)
+            temporary.replace(output)
+    except OSError as error:
+        raise UpdateError("nao foi possivel publicar a Release v2") from error
+    return output / "release.json"
+
+
+def verify_release_v2_bundle(
+    descriptor_path: Path,
+    trusted: PublicKeyInfo,
+    repository: Path = REPO_ROOT,
+    resolver: Any = resolve_git_commit,
+) -> SystemPackage:
+    """Valida a Release v2 e exige coerencia com o ZSYS assinado."""
+    data = load_release_v2_descriptor(descriptor_path)
+    release_id, release_name = validate_release_identity(data["release_id"], data["release_name"])
+    source_commit = data["source_commit"]
+    if not isinstance(source_commit, str) or not GIT_COMMIT_RE.fullmatch(source_commit):
+        raise UpdateError("source_commit da Release v2 invalido")
+    if resolver(source_commit, repository) != source_commit:
+        raise UpdateError("source_commit da Release v2 divergiu")
+    tag = data["tag"]
+    if not isinstance(tag, str) or resolver(f"refs/tags/{tag}", repository) != source_commit:
+        raise UpdateError("tag da Release v2 divergiu")
+    descriptor_compat = release_v2_compatibility(data["compatibility"])
+    root = descriptor_path.parent
+    legacy = data["legacy"]
+    runtime = data["runtime"]
+    system = data["system"]
+    if not isinstance(legacy, dict) or tuple(legacy) != ("package", "manifest"):
+        raise UpdateError("namespace legacy da Release v2 invalido")
+    if not isinstance(runtime, dict) or tuple(runtime) != ("zum2", "zephyrosupd", "assets"):
+        raise UpdateError("namespace runtime da Release v2 invalido")
+    if not isinstance(system, dict) or tuple(system) != ("zsys",):
+        raise UpdateError("namespace system da Release v2 invalido")
+    package_name, package = release_v2_asset(root, legacy["package"], "ZUPD legado", (".zephyrosupd", ".zup"))
+    manifest_name, manifest = release_v2_asset(root, legacy["manifest"], "ZUM1 legado", ".zum")
+    header, _ = parse_structure(package)
+    verify_artifact(package, trusted, header["base"], header["base_epoch"])
+    remote = parse_remote_manifest(manifest, trusted)
+    if remote.package_size != len(package) or remote.package_sha256 != hashlib.sha256(package).digest() or Path(remote.package_path).name != package_name:
+        raise UpdateError("namespace legacy da Release v2 diverge")
+    runtime_manifest_name, runtime_manifest_data = release_v2_asset(root, runtime["zum2"], "ZUM2", ".zum2")
+    del runtime_manifest_name
+    runtime_package_name, runtime_package_data = release_v2_asset(root, runtime["zephyrosupd"], "ZUPD v2", (".zephyrosupd", ".zup"))
+    del runtime_package_name
+    runtime_manifest = parse_runtime_manifest(runtime_manifest_data, trusted)
+    parse_runtime_package(runtime_package_data, trusted, runtime_manifest)
+    assets = runtime["assets"]
+    if not isinstance(assets, list):
+        raise UpdateError("assets runtime da Release v2 invalidos")
+    expected_assets = {
+        entry.asset_name for entry in runtime_manifest.entries if entry.target_present
+    }
+    if len(assets) != len(expected_assets):
+        raise UpdateError("catalogo de assets runtime da Release v2 incompleto")
+    seen_assets: set[str] = set()
+    for metadata in assets:
+        name, data_asset = release_v2_asset(root, metadata, "asset runtime", ".bmp")
+        if name in seen_assets:
+            raise UpdateError("asset runtime duplicado na Release v2")
+        seen_assets.add(name)
+        expected = next((entry for entry in runtime_manifest.entries if entry.asset_name == name), None)
+        if expected is None or len(data_asset) != expected.asset_size or hashlib.sha256(data_asset).digest() != expected.asset_sha256:
+            raise UpdateError("asset runtime nao corresponde ao ZUM2")
+    if seen_assets != expected_assets:
+        raise UpdateError("catalogo de assets runtime da Release v2 diverge")
+    zsys_name, zsys_data = release_v2_asset(root, system["zsys"], "ZSYS", ".zsys")
+    if zsys_name != "system.zsys":
+        raise UpdateError("nome do ZSYS da Release v2 invalido")
+    system_package = parse_system_package(zsys_data, trusted)
+    if system_package.release_id != release_id or system_package.release_tag != tag:
+        raise UpdateError("identidade do ZSYS diverge da Release v2")
+    if (
+        runtime_manifest.release_id != release_id
+        or runtime_manifest.release_tag != tag
+        or runtime_manifest.target_version != system_package.target_version
+        or runtime_manifest.target_epoch != system_package.target_epoch
+    ):
+        raise UpdateError("identidade ou alvo runtime diverge do ZSYS")
+    if not system_compatibility_equal(system_package.compatibility, descriptor_compat):
+        raise UpdateError("compatibilidade da Release v2 diverge do ZSYS")
+    return system_package
 
 
 def current_system_version() -> tuple[Version, int]:
@@ -5120,6 +6097,248 @@ def selftest_ep5_release() -> None:
             raise UpdateError(f"fixture EP5 invalido foi aceito: {name}")
 
 
+def selftest_ep90a_system() -> None:
+    """Exercita ZSYS v1 e a Release combinada v2."""
+    ed25519, _, invalid_signature = crypto_modules()
+    private_key = ed25519.Ed25519PrivateKey.generate()
+    trusted = private_public_info(private_key)
+    commit = "9" * 40
+
+    def resolver(reference: str, _repository: Path) -> str:
+        if reference in (commit, "refs/tags/selftest-ep90a"):
+            return commit
+        raise UpdateError(f"referencia Git inexistente: {reference}")
+
+    with tempfile.TemporaryDirectory(prefix="zephyros-ep90a-") as temp_name:
+        root = Path(temp_name)
+        boot = bytes((index * 3) & 0xFF for index in range(512))
+        stage2 = bytes((index * 5 + 1) & 0xFF for index in range(512))
+        kernel = bytes((index * 7 + 2) & 0xFF for index in range(1536))
+        image = boot + stage2 + kernel + bytes(512 * 2877)
+        write_new_bytes(root / "boot.bin", boot)
+        write_new_bytes(root / "stage2.bin", stage2)
+        write_new_bytes(root / "kernel.bin", kernel)
+        write_new_bytes(root / "zephyros.img", image)
+        manifest_path = root / "system.json"
+        write_new_text(
+            manifest_path,
+            json.dumps(
+                {
+                    "format": "ZSYS v1",
+                    "release_id": "selftest-ep90a",
+                    "release_tag": "selftest-ep90a",
+                    "target_version": "0.1.1",
+                    "target_epoch": 0,
+                    "supported_from": [{"version": "0.1.0", "epoch": 0}],
+                    "min_updater": {"version": "0.1.0", "epoch": 0},
+                    "boot_abi": 1,
+                    "data_schema_from": 1,
+                    "data_schema_to": 1,
+                    "requires_reboot": True,
+                    "channel": "stable",
+                    "upgrade_route": {
+                        "kind": "direct",
+                        "checkpoints": [],
+                        "bridge_required": False,
+                    },
+                },
+                indent=2,
+            ) + "\n",
+        )
+        package = system_build_package(
+            system_manifest_spec(manifest_path), image, boot, stage2, kernel,
+            private_key, trusted,
+        )
+        parsed = parse_system_package(
+            package, trusted, Version(0, 1, 0), 0
+        )
+        if parsed.image_size != len(image) or parsed.release_id != "selftest-ep90a":
+            raise UpdateError("round-trip ZSYS divergiu")
+        try:
+            parse_system_package(package, private_public_info(ed25519.Ed25519PrivateKey.generate()))
+        except Rejection as error:
+            if error.reason != REASON_UNKNOWN_KEY:
+                raise UpdateError("chave ZSYS desconhecida produziu motivo errado")
+        else:
+            raise UpdateError("chave ZSYS desconhecida foi aceita")
+        for label, mutate in (
+            ("header", SYSTEM_HEADER_TARGET_VERSION_OFFSET),
+            ("payload", SYSTEM_HEADER_SIZE + 3),
+            ("signature", SYSTEM_HEADER_SIGNATURE_OFFSET),
+        ):
+            corrupted = bytearray(package)
+            corrupted[mutate] ^= 1
+            try:
+                parse_system_package(corrupted, trusted)
+            except (Rejection, UpdateError) as error:
+                if isinstance(error, Rejection) and error.reason not in (REASON_HASH, REASON_SIGNATURE, REASON_FORMAT, REASON_DOWNGRADE):
+                    raise UpdateError(f"corrupcao ZSYS {label} produziu motivo errado")
+            else:
+                raise UpdateError(f"corrupcao ZSYS {label} foi aceita")
+        try:
+            parse_system_package(package[:-1], trusted)
+        except Rejection as error:
+            if error.reason != REASON_SIZE:
+                raise UpdateError("ZSYS truncado produziu motivo errado")
+        else:
+            raise UpdateError("ZSYS truncado foi aceito")
+
+        oversized = bytearray(package)
+        struct.pack_into("<I", oversized, 24, SYSTEM_MAX_IMAGE_SIZE + 512)
+        try:
+            parse_system_package(oversized, trusted)
+        except Rejection as error:
+            if error.reason != REASON_SIZE:
+                raise UpdateError("ZSYS excessivo produziu motivo errado")
+        else:
+            raise UpdateError("ZSYS excessivo foi aceito")
+        misaligned = bytearray(package)
+        struct.pack_into("<I", misaligned, 24, len(image) - 1)
+        try:
+            parse_system_package(misaligned, trusted)
+        except Rejection as error:
+            if error.reason != REASON_SIZE:
+                raise UpdateError("ZSYS desalinhado produziu motivo errado")
+        else:
+            raise UpdateError("ZSYS desalinhado foi aceito")
+
+        try:
+            parse_system_package(package, trusted, Version(0, 1, 0), 1)
+        except Rejection as error:
+            if error.reason != REASON_BASE_VERSION:
+                raise UpdateError("epoch-base ZSYS incompativel produziu motivo errado")
+        else:
+            raise UpdateError("epoch-base ZSYS incompativel foi aceita")
+
+        for label, field_offset, value, expected_reason in (
+            ("abi", SYSTEM_HEADER_BOOT_ABI_OFFSET, 2, REASON_UNSUPPORTED),
+            ("schema", SYSTEM_HEADER_SCHEMA_FROM_OFFSET, 2, REASON_UNSUPPORTED),
+        ):
+            incompatible = bytearray(package)
+            struct.pack_into("<I", incompatible, field_offset, value)
+            try:
+                parse_system_package(
+                    resign_system_package(bytes(incompatible), private_key),
+                    trusted,
+                )
+            except Rejection as error:
+                if error.reason != expected_reason:
+                    raise UpdateError(
+                        f"incompatibilidade {label} ZSYS produziu motivo errado"
+                    )
+            else:
+                raise UpdateError(f"incompatibilidade {label} ZSYS foi aceita")
+
+        for label, offset in (
+            ("imagem", SYSTEM_HEADER_IMAGE_HASH_OFFSET),
+            (
+                "componente",
+                SYSTEM_HEADER_COMPONENTS_OFFSET + SYSTEM_COMPONENT_HASH_OFFSET,
+            ),
+        ):
+            divergent = bytearray(package)
+            divergent[offset] ^= 1
+            try:
+                parse_system_package(
+                    resign_system_package(bytes(divergent), private_key),
+                    trusted,
+                )
+            except Rejection as error:
+                if error.reason != REASON_HASH:
+                    raise UpdateError(
+                        f"divergencia de hash {label} produziu motivo errado"
+                    )
+            else:
+                raise UpdateError(f"divergencia de hash {label} foi aceita")
+        try:
+            parse_system_package(package, trusted, Version(0, 2, 0), 0)
+        except Rejection as error:
+            if error.reason != REASON_BASE_VERSION:
+                raise UpdateError("versao-base ZSYS incompativel produziu motivo errado")
+        else:
+            raise UpdateError("versao-base ZSYS incompativel foi aceita")
+
+        legacy_dir = root / "legacy"
+        runtime_dir = root / "runtime"
+        system_dir = root / "system"
+        for directory in (legacy_dir, runtime_dir, system_dir):
+            directory.mkdir()
+        legacy_package = build_from_parts(
+            private_key, Version(0, 1, 0), Version(0, 1, 1), 0, 0,
+            [("EXPLORER.BMP", b"legacy-ep90a")],
+        )
+        legacy_manifest = build_remote_manifest(
+            private_key, trusted, 9001, Version(0, 1, 0), Version(0, 1, 1),
+            0, 0, legacy_package, "/zephyros/APPLY.ZUP",
+        )
+        write_new_bytes(legacy_dir / "APPLY.ZUP", legacy_package)
+        write_new_bytes(legacy_dir / "release.zum", legacy_manifest)
+        runtime_input = runtime_dir / "input"
+        runtime_input.mkdir()
+        for name, source in UPDATE_ASSETS.items():
+            write_new_bytes(runtime_input / name, source.read_bytes())
+        runtime_manifest_path = runtime_input / "runtime.json"
+        write_new_text(
+            runtime_manifest_path,
+            json.dumps(
+                {
+                    "format": "ZUM2 v2",
+                    "generation": 9001,
+                    "release_tag": "selftest-ep90a",
+                    "release_id": "selftest-ep90a",
+                    "target_version": "0.1.1",
+                    "target_epoch": 0,
+                    "base_versions": [{"version": "0.1.0", "epoch": 0}],
+                    "files": [
+                        {"path": name, "operation": "replace", "source": name}
+                        for name in UPDATE_ASSETS
+                    ],
+                },
+                indent=2,
+            ) + "\n",
+        )
+        runtime_output = build_runtime_bundle(
+            runtime_manifest_path, private_key, trusted, runtime_dir / "built"
+        )
+        for source in runtime_output.iterdir():
+            write_new_bytes(runtime_dir / source.name, source.read_bytes())
+        write_new_bytes(system_dir / "system.zsys", package)
+        legacy = release_v2_legacy_namespace(legacy_dir, trusted)
+        runtime = release_v2_runtime_namespace(runtime_dir, trusted)
+        system = {"zsys": release_asset_metadata("system.zsys", package)}
+        descriptor = json.loads(
+            release_v2_descriptor(
+                "selftest-ep90a", "EP9.0A fixture", commit,
+                "selftest-ep90a", parsed.compatibility, legacy, runtime, system,
+            )
+        )
+        descriptor_path = root / "release.json"
+        for source in (
+            legacy_dir / legacy["package"]["name"],
+            legacy_dir / legacy["manifest"]["name"],
+        ):
+            write_new_bytes(root / source.name, source.read_bytes())
+        for source in runtime_dir.iterdir():
+            if source.is_file() and source.name != "release.json":
+                write_new_bytes(root / source.name, source.read_bytes())
+        write_new_bytes(root / "system.zsys", package)
+        write_new_text(descriptor_path, json.dumps(descriptor, indent=2) + "\n")
+        checked = verify_release_v2_bundle(
+            descriptor_path, trusted, resolver=resolver
+        )
+        if checked.release_id != "selftest-ep90a":
+            raise UpdateError("Release v2 nao correlacionou o ZSYS")
+        bad = json.loads(json.dumps(descriptor))
+        bad["compatibility"]["boot_abi"] = 2
+        write_new_text(root / "bad-release.json", json.dumps(bad) + "\n")
+        try:
+            verify_release_v2_bundle(root / "bad-release.json", trusted, resolver=resolver)
+        except UpdateError:
+            pass
+        else:
+            raise UpdateError("Release v2 divergente foi aceita")
+
+
 def run_selftest() -> None:
     """Executa a suite host sem gravar no repositorio."""
     selftest_u1()
@@ -5133,6 +6352,7 @@ def run_selftest() -> None:
     selftest_ep6_public()
     selftest_ep63_runtime()
     selftest_ep5_release()
+    selftest_ep90a_system()
     print(
         "Updater selftest: OK"
         if u3_ready
@@ -5268,6 +6488,216 @@ def command_runtime_verify(args: argparse.Namespace) -> None:
     print(f"  target={package.target_version} epoch={package.target_epoch}")
     print(f"  entries={len(package.entries)} total_size={package.total_size}")
     print("  reason=NONE")
+
+
+def command_system_build(args: argparse.Namespace) -> None:
+    """Gera um envelope ZSYS v1 assinado."""
+    key = load_private_key(
+        validate_private_input(Path(args.private)), prompt_password()
+    )
+    public = load_public_json(Path(args.public))
+    output = build_system_bundle(
+        Path(args.manifest), Path(args.image), Path(args.boot),
+        Path(args.stage2), Path(args.kernel), key, public, Path(args.output),
+    )
+    parsed = parse_system_package(output.read_bytes(), public)
+    print(f"ZSYS v1 criado: {output}")
+    print(f"release={parsed.release_id} tag={parsed.release_tag}")
+    print(f"image_size={parsed.image_size}")
+    print(f"image_sha256={parsed.image_sha256.hex()}")
+    print("Integridade: OK")
+
+
+def command_system_verify(args: argparse.Namespace) -> None:
+    """Valida um ZSYS sem instalar ou escrever qualquer imagem."""
+    trusted = load_public_json(Path(args.public))
+    version, epoch = current_system_version()
+    if args.system_version is not None:
+        version = Version.parse(args.system_version)
+    if args.system_epoch is not None:
+        epoch = args.system_epoch
+    try:
+        data = Path(args.package).read_bytes()
+    except OSError as error:
+        raise UpdateError(f"nao foi possivel ler {args.package}") from error
+    package = parse_system_package(data, trusted, version, epoch)
+    print("ZSYS v1 valido")
+    print(f"  release={package.release_id} tag={package.release_tag}")
+    print(f"  target={package.target_version} epoch={package.target_epoch}")
+    print(f"  image_size={package.image_size}")
+    print(f"  boot_abi={package.compatibility.boot_abi}")
+    print(f"  schema={package.compatibility.data_schema_from}->{package.compatibility.data_schema_to}")
+    print("  requires_reboot=true")
+    print("  reason=NONE")
+
+
+def command_release_v2_build(args: argparse.Namespace) -> None:
+    """Combina namespaces legacy/runtime/system numa Release v2."""
+    key = load_private_key(
+        validate_private_input(Path(args.private)), prompt_password()
+    )
+    public = load_public_json(Path(args.public))
+    descriptor = build_release_v2_bundle(
+        args.release, args.release_name, Path(args.legacy_dir),
+        Path(args.runtime_dir), Path(args.system_dir), key, public,
+        args.source_commit, args.tag, Path(args.output_dir),
+    )
+    verify_release_v2_bundle(descriptor, public)
+    print(f"Release v2 criada: {descriptor.parent}")
+    print("Integridade: OK")
+    print("Publique manualmente somente os assets deste diretorio.")
+
+
+def command_release_v2_check(args: argparse.Namespace) -> None:
+    """Confere uma Release v2 local antes da publicacao."""
+    package = verify_release_v2_bundle(
+        Path(args.release), load_public_json(Path(args.public))
+    )
+    print(f"Release v2: {package.release_id}")
+    print(f"Versao do sistema: {package.target_version}")
+    print(f"Imagem: {package.image_size} bytes")
+    print("Integridade: OK")
+
+
+def resign_system_package(data: bytes, private_key: Any) -> bytes:
+    """Reassina somente para produzir uma fixture estruturalmente adulterada."""
+    if len(data) < SYSTEM_HEADER_SIZE:
+        raise UpdateError("ZSYS fixture menor que o cabecalho")
+    unsigned = bytearray(data[:SYSTEM_HEADER_SIZE])
+    unsigned[
+        SYSTEM_HEADER_SIGNATURE_OFFSET :
+        SYSTEM_HEADER_SIGNATURE_OFFSET + SYSTEM_SIGNATURE_SIZE
+    ] = bytes(SYSTEM_SIGNATURE_SIZE)
+    signature = private_key.sign(
+        SYSTEM_DOMAIN + bytes(unsigned) + data[SYSTEM_PAYLOAD_OFFSET:]
+    )
+    return bytes(unsigned[:SYSTEM_HEADER_SIGNATURE_OFFSET]) + signature + bytes(
+        unsigned[SYSTEM_HEADER_SIGNATURE_OFFSET + SYSTEM_SIGNATURE_SIZE :]
+    ) + data[SYSTEM_PAYLOAD_OFFSET:]
+
+
+def write_system_fixtures(
+    private_key: Any,
+    public: PublicKeyInfo,
+    manifest_path: Path,
+    image_path: Path,
+    boot_path: Path,
+    stage2_path: Path,
+    kernel_path: Path,
+    output_dir: Path,
+) -> None:
+    """Gera vetores ZSYS válidos, truncados, adulterados e incompatíveis."""
+    output = output_dir.expanduser().resolve()
+    if output.exists() and any(output.iterdir()):
+        raise UpdateError(f"diretorio de fixtures ZSYS nao esta vazio: {output}")
+    output.mkdir(parents=True, exist_ok=True)
+    package = system_build_package(
+        system_manifest_spec(manifest_path),
+        system_load_file(image_path, "imagem"),
+        system_load_file(boot_path, "boot"),
+        system_load_file(stage2_path, "stage2"),
+        system_load_file(kernel_path, "kernel"),
+        private_key,
+        public,
+    )
+    write_new_bytes(output / "valid.zsys", package)
+    write_new_bytes(output / "truncated.zsys", package[:-1])
+
+    header_tampered = bytearray(package)
+    header_tampered[SYSTEM_HEADER_TARGET_VERSION_OFFSET] ^= 1
+    write_new_bytes(output / "tampered-header.zsys", bytes(header_tampered))
+    payload_tampered = bytearray(package)
+    payload_tampered[SYSTEM_HEADER_SIZE + 7] ^= 1
+    write_new_bytes(output / "tampered-payload.zsys", bytes(payload_tampered))
+    signature_tampered = bytearray(package)
+    signature_tampered[SYSTEM_HEADER_SIGNATURE_OFFSET] ^= 1
+    write_new_bytes(output / "tampered-signature.zsys", bytes(signature_tampered))
+
+    oversized = bytearray(package)
+    struct.pack_into("<I", oversized, 24, SYSTEM_MAX_IMAGE_SIZE + 512)
+    write_new_bytes(output / "oversized.zsys", bytes(oversized))
+    misaligned = bytearray(package)
+    struct.pack_into("<I", misaligned, 24, len(package) - SYSTEM_HEADER_SIZE - 1)
+    write_new_bytes(output / "misaligned.zsys", bytes(misaligned))
+
+    incompatible_version = bytearray(package)
+    struct.pack_into(
+        "<HHH", incompatible_version, SYSTEM_HEADER_TARGET_VERSION_OFFSET,
+        0, 1, 0,
+    )
+    write_new_bytes(
+        output / "incompatible-version.zsys",
+        resign_system_package(bytes(incompatible_version), private_key),
+    )
+    incompatible_epoch = bytearray(package)
+    struct.pack_into(
+        "<I", incompatible_epoch, SYSTEM_HEADER_BASES_OFFSET + 6, 1
+    )
+    write_new_bytes(
+        output / "incompatible-epoch.zsys",
+        resign_system_package(bytes(incompatible_epoch), private_key),
+    )
+
+    incompatible = bytearray(package)
+    struct.pack_into("<I", incompatible, SYSTEM_HEADER_BOOT_ABI_OFFSET, 2)
+    write_new_bytes(
+        output / "incompatible-abi.zsys",
+        resign_system_package(bytes(incompatible), private_key),
+    )
+    schema_incompatible = bytearray(package)
+    struct.pack_into(
+        "<I", schema_incompatible, SYSTEM_HEADER_SCHEMA_FROM_OFFSET, 2
+    )
+    write_new_bytes(
+        output / "incompatible-schema.zsys",
+        resign_system_package(bytes(schema_incompatible), private_key),
+    )
+    image_hash_divergent = bytearray(package)
+    image_hash_divergent[SYSTEM_HEADER_IMAGE_HASH_OFFSET] ^= 1
+    write_new_bytes(
+        output / "hash-divergent-image.zsys",
+        resign_system_package(bytes(image_hash_divergent), private_key),
+    )
+    component_hash_divergent = bytearray(package)
+    component_hash_divergent[
+        SYSTEM_HEADER_COMPONENTS_OFFSET + SYSTEM_COMPONENT_HASH_OFFSET
+    ] ^= 1
+    write_new_bytes(
+        output / "hash-divergent-component.zsys",
+        resign_system_package(bytes(component_hash_divergent), private_key),
+    )
+
+    metadata = {
+        "format": "zephyros-system-fixtures-v1",
+        "valid": "valid.zsys",
+        "invalid": [
+            path.name
+            for path in sorted(output.iterdir())
+            if path.name != "valid.zsys"
+        ],
+    }
+    write_new_text(output / "fixtures.json", json.dumps(metadata, indent=2) + "\n")
+
+
+def command_fixtures_system(args: argparse.Namespace) -> None:
+    """Gera fixtures EP9.0A para verificacao offline."""
+    key = load_private_key(
+        validate_private_input(Path(args.private)), prompt_password()
+    )
+    public = load_public_json(Path(args.public))
+    if private_public_info(key) != public:
+        raise UpdateError("chave privada nao corresponde ao JSON publico")
+    write_system_fixtures(
+        key,
+        public,
+        Path(args.manifest),
+        Path(args.image),
+        Path(args.boot),
+        Path(args.stage2),
+        Path(args.kernel),
+        Path(args.output_dir),
+    )
+    print(f"Fixtures ZSYS criadas: {Path(args.output_dir).resolve()}")
 
 
 def write_runtime_fixtures(
@@ -5734,6 +7164,28 @@ def build_parser() -> argparse.ArgumentParser:
     runtime_verify.add_argument("--system-epoch", type=int)
     runtime_verify.set_defaults(handler=command_runtime_verify)
 
+    system_build = subparsers.add_parser(
+        "system-build", help="constroi um envelope ZSYS v1 assinado"
+    )
+    system_build.add_argument("--manifest", required=True)
+    system_build.add_argument("--image", required=True)
+    system_build.add_argument("--boot", required=True)
+    system_build.add_argument("--stage2", required=True)
+    system_build.add_argument("--kernel", required=True)
+    system_build.add_argument("--private", required=True)
+    system_build.add_argument("--public", required=True)
+    system_build.add_argument("--output", required=True)
+    system_build.set_defaults(handler=command_system_build)
+
+    system_verify = subparsers.add_parser(
+        "system-verify", help="verifica um envelope ZSYS v1"
+    )
+    system_verify.add_argument("--package", required=True)
+    system_verify.add_argument("--public", required=True)
+    system_verify.add_argument("--system-version")
+    system_verify.add_argument("--system-epoch", type=int)
+    system_verify.set_defaults(handler=command_system_verify)
+
     release_build = subparsers.add_parser(
         "release-build", help="gera os assets locais de uma Release EP5"
     )
@@ -5753,6 +7205,28 @@ def build_parser() -> argparse.ArgumentParser:
     release_check.add_argument("--release", required=True)
     release_check.add_argument("--public", required=True)
     release_check.set_defaults(handler=command_release_check)
+
+    release_v2_build = subparsers.add_parser(
+        "release-v2-build", help="gera uma Release combinada v2"
+    )
+    release_v2_build.add_argument("--release", required=True)
+    release_v2_build.add_argument("--release-name", required=True)
+    release_v2_build.add_argument("--legacy-dir", required=True)
+    release_v2_build.add_argument("--runtime-dir", required=True)
+    release_v2_build.add_argument("--system-dir", required=True)
+    release_v2_build.add_argument("--private", required=True)
+    release_v2_build.add_argument("--public", required=True)
+    release_v2_build.add_argument("--source-commit", required=True)
+    release_v2_build.add_argument("--tag", required=True)
+    release_v2_build.add_argument("--output-dir", required=True)
+    release_v2_build.set_defaults(handler=command_release_v2_build)
+
+    release_v2_check = subparsers.add_parser(
+        "release-v2-check", help="confere uma Release combinada v2"
+    )
+    release_v2_check.add_argument("--release", required=True)
+    release_v2_check.add_argument("--public", required=True)
+    release_v2_check.set_defaults(handler=command_release_v2_check)
 
     fixtures = subparsers.add_parser("fixtures", help="gera os vetores U2")
     fixtures.add_argument("--private", required=True)
@@ -5788,6 +7262,19 @@ def build_parser() -> argparse.ArgumentParser:
         help="gera payloads BMP diferentes dos arquivos da imagem base",
     )
     fixtures_runtime.set_defaults(handler=command_fixtures_runtime)
+
+    fixtures_system = subparsers.add_parser(
+        "fixtures-system", help="gera fixtures de verificacao ZSYS v1"
+    )
+    fixtures_system.add_argument("--manifest", required=True)
+    fixtures_system.add_argument("--image", required=True)
+    fixtures_system.add_argument("--boot", required=True)
+    fixtures_system.add_argument("--stage2", required=True)
+    fixtures_system.add_argument("--kernel", required=True)
+    fixtures_system.add_argument("--private", required=True)
+    fixtures_system.add_argument("--public", required=True)
+    fixtures_system.add_argument("--output-dir", required=True)
+    fixtures_system.set_defaults(handler=command_fixtures_system)
 
     serve_runtime = subparsers.add_parser(
         "serve-runtime", help="serve fixtures HTTP do runtime v2"

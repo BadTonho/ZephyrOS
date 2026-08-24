@@ -67,6 +67,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [Gerenciador de Rede](melhorias%20futuras/gerenciador%20de%20rede.md) | Inventario PCI, Ethernet, ARP, IPv4, UDP, DHCP, DNS, TCP e HTTP |
 | [Atualizacoes do Sistema](melhorias%20futuras/atualiza%C3%A7%C3%B5es.md) | Base U1-U5 para integridade, rollback e distribuicao; continuidade EP5-EP9 no Roadmap 08 |
 | [Contrato ZUPD v1](14-atualizacoes/contrato-zupd-v1.md) | Formato autenticado, transacao FAT12 e historico redundante U4 |
+| [Contrato ZSYS v1](14-atualizacoes/contrato-zsys-v1.md) | Envelope da imagem completa, compatibilidade assinada e preflight EP9.0A |
 | [Contrato ZUM2/ZUPD v2](14-atualizacoes/contrato-zupd-v2.md) | Runtime v2, catálogo, cache seletivo/completo, staging, rollback e falhas EP6.3 |
 | [Distribuicao remota ZUPD v1](14-atualizacoes/distribuicao-remota.md) | Manifesto ZUM1, HTTP manual, cache U5 e selecao EP6.0 por tag exata |
 | [System Updater](14-atualizacoes/system-updater.md) | Aplicativo nativo Simple/Classic para pacotes, estado, historico e remoto |

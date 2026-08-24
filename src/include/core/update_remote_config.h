@@ -18,6 +18,7 @@
 #define UPDATE_REMOTE_GITHUB_DESCRIPTOR_NAME "release.json"
 #define UPDATE_REMOTE_GITHUB_MANIFEST_NAME "release.zum"
 #define UPDATE_REMOTE_GITHUB_PACKAGE_NAME "update.zephyrosupd"
+#define UPDATE_REMOTE_GITHUB_SYSTEM_NAME "system.zsys"
 
 #define UPDATE_REMOTE_RUNTIME_RELEASE_URL_TEMPLATE \
     "http://10.0.2.2:8000/zephyros/runtime-{tag}.json"

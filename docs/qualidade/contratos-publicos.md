@@ -68,6 +68,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/core/udp.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/update.h` | `docs/14-atualizacoes/contrato-zupd-v1.md` |
 | `src/include/core/update_runtime.h` | `docs/14-atualizacoes/contrato-zupd-v2.md` |
+| `src/include/core/update_system.h` | `docs/14-atualizacoes/contrato-zsys-v1.md` |
 | `src/include/core/update_remote.h` | `docs/14-atualizacoes/distribuicao-remota.md` |
 | `src/include/core/update_remote_runtime.h` | `docs/14-atualizacoes/contrato-zupd-v2.md` |
 | `src/include/core/update_remote_config.h` | `docs/14-atualizacoes/distribuicao-remota.md` |
@@ -383,3 +384,10 @@ define o driver HID Boot para teclado/mouse, contadores, estados e validacao.
 conecta teclado e mouse USB ao QEMU nas portas raiz 1 e 2, respectivamente. O
 parser completo de Report Descriptor,
 hubs, hot-plug real e EHCI continuam fora do escopo.
+
+Desde a EP9.0A, update_system.h define o envelope ZSYS v1, motivos de recusa,
+verificação local em streaming e preflight remoto por tag. update_remote.h e
+update_remote_github.h acrescentam, ao final dos registros existentes, o
+asset system.zsys e seus metadados, preservando as APIs e campos legados.
+ZSYS não introduz escrita de imagem, staging, slots ou alteração de boot nesta
+etapa.

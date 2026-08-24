@@ -376,6 +376,8 @@ static void cmd_help(void) {
                 0x07);
     video_print("  update github check/fetch --tag <tag> - Release EP6.2 HTTPS\n",
                 0x07);
+    video_print("  update system verify/check --tag - Preflight ZSYS somente leitura\n",
+                0x07);
     video_print("  update apply <arquivo.ZUP> [--confirm] - Aplica U3\n",
                 0x07);
     video_print("  update rollback [--confirm] - Desfaz a ultima U3\n",
