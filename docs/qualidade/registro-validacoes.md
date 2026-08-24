@@ -571,3 +571,6 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Correção da enumeração ATA na camada de bloco implementada em: 2026-08-24
   13:06 (America/Sao_Paulo); o registro agora percorre os slots físicos ATA
   em vez de confundir a contagem de dispositivos com o índice do slot.
+- Validação parcial confirmada pelo usuário, com disco `ata2`, FAT12 legado e
+  volume FAT32 `ata2p1` `ZEPHYROS` montado em modo `READ-WRITE`; horário exato
+  da execução não foi informado.
