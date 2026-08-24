@@ -1099,6 +1099,58 @@ static int storage_cluster_is_bad(const storage_mount_t* mount,
     return cluster == STORAGE_FAT32_BAD;
 }
 
+int storage_get_free_space(const char* id, uint32_t* out_free_sectors,
+                           uint32_t* out_free_clusters) {
+    storage_volume_t* volume;
+    storage_mount_t* mount;
+    uint32_t free_clusters = 0U;
+    uint32_t free_sectors;
+    int index;
+    int result = OK;
+
+    if (!id || !out_free_sectors || !out_free_clusters) {
+        LOG_ERROR("FS", "Argumento nulo na consulta de espaco livre");
+        return ERR_NULL;
+    }
+    spinlock_acquire(&storage_operation_lock);
+    index = storage_initialized ? storage_volume_index(id) : -1;
+    if (index < 0 || !storage_volumes[index].mounted) {
+        result = index < 0 ? ERR_NOT_FOUND : ERR_STATE;
+    }
+    volume = index >= 0 ? &storage_volumes[index] : 0;
+    mount = index >= 0 ? storage_mount_for_volume((uint8_t)index) : 0;
+    if (result == OK && !mount) result = ERR_STATE;
+    if (result == OK && mount->fs_type != STORAGE_FS_FAT12 &&
+        mount->fs_type != STORAGE_FS_FAT32) result = ERR_UNAVAILABLE;
+    if (result == OK) {
+        for (uint32_t cluster = STORAGE_FIRST_DATA_CLUSTER;
+             cluster < mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER;
+             cluster++) {
+            uint32_t value;
+
+            result = storage_next_cluster(volume, mount, cluster, &value);
+            if (result != OK) break;
+            if (value == 0U) free_clusters++;
+        }
+    }
+    if (result == OK) {
+        if (free_clusters > 0xFFFFFFFFU / mount->sectors_per_cluster) {
+            result = ERR_OVERFLOW;
+        } else {
+            free_sectors = free_clusters * mount->sectors_per_cluster;
+            *out_free_clusters = free_clusters;
+            *out_free_sectors = free_sectors;
+        }
+    }
+    spinlock_release(&storage_operation_lock);
+    if (result != OK) {
+        storage_log_volume(LOG_LEVEL_ERROR, id,
+                           "falha ao consultar espaco livre");
+        return result;
+    }
+    return OK;
+}
+
 static void storage_parse_raw_entry(const storage_mount_t* mount,
                                     const uint8_t* source,
                                     storage_raw_entry_t* entry) {

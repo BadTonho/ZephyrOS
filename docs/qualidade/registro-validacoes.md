@@ -678,3 +678,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   (America/Sao_Paulo); `make q3check`, `make clean && make` e `make run`
   concluídos com sucesso. A matriz específica de fixtures e staging no QEMU
   permanece pendente.
+- Correção de preflight EP9.1 implementada em: 2026-08-24 17:01
+  (America/Sao_Paulo); a consulta de espaço livre do volume FAT32 de sistema
+  deixou de retornar zero artificialmente quando montada pelo Storage. Foi
+  adicionada a API `storage_get_free_space`, integrada ao `fs_get_info`, e a
+  checagem estática `git diff --check` foi concluída sem erros.
