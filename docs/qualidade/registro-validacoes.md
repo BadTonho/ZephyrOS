@@ -683,3 +683,6 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   deixou de retornar zero artificialmente quando montada pelo Storage. Foi
   adicionada a API `storage_get_free_space`, integrada ao `fs_get_info`, e a
   checagem estática `git diff --check` foi concluída sem erros.
+- Gates após a correção confirmados pelo usuário em: 2026-08-24 17:07
+  (America/Sao_Paulo); `make q3check`, `make clean && make` e `make run`
+  concluídos com sucesso.
