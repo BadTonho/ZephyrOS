@@ -59,7 +59,8 @@ camadas de configuracao, descoberta, montagem e distribuicao sobre elas.
 7. EP6.1: TLS, certificados e estrategia de tempo.
 8. EP6.2/6.3: canal GitHub, recuperacao e matriz de validacao.
 9. Wi-Fi para um chipset e transporte escolhidos.
-10. Bluetooth HCI para um controlador e transporte escolhidos.
+10. Bluetooth HCI para um controlador e transporte escolhidos, quando houver
+    hardware real disponivel para validacao.
 11. EP9: imagem do sistema, slots de boot e recuperacao pos-reboot.
 
 ## EP1 - Preferencias de mouse
@@ -708,6 +709,11 @@ controlado. Ethernet, atualizacoes locais, Shell e interfaces Simple/Classic
 permanecem funcionais, e nenhum segredo de Wi-Fi chega ao repositorio.
 
 ## EP8 - Bluetooth por hardware suportado
+
+**Estado:** adiada por decisao de escopo. Assim como a continuidade da EP7.1,
+a EP8 sera retomada somente quando houver um computador real e um controlador
+Bluetooth identificado. Nenhum driver, firmware, HCI, radio ou emparelhamento
+sera implementado enquanto essa validacao nao for priorizada.
 
 ### Implementacao
 

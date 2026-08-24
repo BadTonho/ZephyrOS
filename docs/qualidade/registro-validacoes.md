@@ -164,6 +164,14 @@ Nova validacao apresentada pelo usuario; horario nao informado.
   nao fornecer acesso compativel com libusb/WinUSB.
 - Nenhum driver, firmware, radio ou pilha de rede Wi-Fi foi inicializado.
 
+Decisao de escopo sobre Bluetooth apresentada pelo usuario; horario nao
+informado.
+
+- A EP8 Bluetooth foi adiada pelo mesmo motivo da EP7.1: depende de hardware
+  real, controlador identificado, transporte confirmado e validacao no alvo.
+- Inventario HCI, firmware, scan, emparelhamento e perfis Bluetooth permanecem
+  planejados, mas nao serao iniciados agora.
+
 - `usb status` confirmou um controlador EHCI `READY`, com DMA, IRQ, controle,
   Bulk, Interrupt e high-speed disponiveis.
 - `usb list` confirmou `usb-pci-00:03.0` como EHCI ativo.
