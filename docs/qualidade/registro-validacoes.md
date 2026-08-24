@@ -554,3 +554,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - A validação executável permanece pendente do usuário; o agente não executou
   `make storage-fixtures-test`, `make storage-fixtures`, `make system-fixtures`,
   `make q3check`, build ou QEMU.
+- Correções pós-primeira compilação implementadas em: 2026-08-24 12:50
+  (America/Sao_Paulo); inspeção do FSInfo de backup foi corrigida, o valor
+  `STORAGE_FAT32_FREE` foi publicado internamente e as declarações antecipadas
+  das funções auxiliares FAT32 foram adicionadas.
