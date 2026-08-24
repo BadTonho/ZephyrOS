@@ -629,3 +629,6 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   exato informado: `storage check ata2p1` permaneceu consistente, mas a busca
   do arquivo retornou `ERR_NOT_FOUND`; a validação de epoch permanece pendente
   com o nome exato `EPCHBAD.ZSYS`.
+- Validação QEMU da fixture `EPCHBAD.img` confirmada pelo usuário, sem horário
+  exato informado: `update system verify system:/EPCHBAD.ZSYS` recusou a base
+  de versão/epoch incompatível com motivo `BASE_VERSION`, sem gravação.
