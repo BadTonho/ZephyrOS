@@ -673,5 +673,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `update_system_slots`, estado/journal redundantes, escritor FAT32 em chunks,
   staging local com preflight/confirm/cancelamento cooperativo, Shell,
   fixtures de slots A/B e documentação foram adicionados. A validação
-  executável `make q3check`, `make clean && make`, `make run` e a matriz EP9.1
-  no QEMU permanecem pendentes do usuário.
+  executável e a matriz EP9.1 no QEMU permanecem pendentes do usuário.
+- Gates EP9.1 confirmados pelo usuário em: 2026-08-24 16:52
+  (America/Sao_Paulo); `make q3check`, `make clean && make` e `make run`
+  concluídos com sucesso. A matriz específica de fixtures e staging no QEMU
+  permanece pendente.
