@@ -120,6 +120,11 @@ Ajuste adicional concluido em: 2026-08-23 21:09:05 (America/Sao_Paulo)
 Falhas de localizacao PCI durante o inicio agora registram o codigo no campo
 do controlador correto, EHCI ou UHCI, preservando o diagnostico do transporte.
 
+Ajuste de link concluido em: 2026-08-23 21:18:44 (America/Sao_Paulo)
+
+O EHCI deixou de usar aritmetica e divisao de 64 bits para calcular deadlines,
+eliminando a dependencia de `__udivdi3` incompatível com o kernel freestanding.
+
 Validacao executavel ainda pendente do usuario: `make q3check`,
 `make clean && make`, `make run-usb` e `make run-usb-wifi`, incluindo
 `usb devices`, `wifi status`, `wifi scan`, `net check`, `health check`,

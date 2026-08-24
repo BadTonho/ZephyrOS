@@ -14,7 +14,7 @@ Sistema e ecossistema:       [████████████████�
 Evolução da plataforma:      [████████████████████████████████████-------] EP1-EP6.4 e EP7.0 encerradas; EP7.1B EHCI/transporte RTL8811CU implementada; driver Wi-Fi real e EP9 futuros
 ```
 
-**Documentação de atualização sincronizada em:** 2026-08-23 21:09:05 (America/Sao_Paulo).
+**Documentação de atualização sincronizada em:** 2026-08-23 21:18:44 (America/Sao_Paulo).
 
 ---
 
