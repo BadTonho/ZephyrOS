@@ -70,6 +70,36 @@ python tools/updater.py serve-u5 --root docs/fixtures/updates/u5 --port 8000
 Procedimentos especificos de distribuicao remota ficam na documentacao
 canonica da funcionalidade, nao nesta memoria geral.
 
+## EP9.0A: fixtures ZSYS para QEMU
+
+O alvo `system-fixtures` gera uma matriz compacta assinada usando a chave
+privada indicada por `SYSTEM_PRIVATE_KEY` em `Makefile.local` e injeta os
+arquivos na imagem `build\zephyros.img`. A chave privada permanece fora do
+repositorio. Como o FAT12 aceita somente nomes 8.3, os arquivos locais usam a
+extensao `.ZSY`. A matriz host `fixtures-system` continua reservada para a
+imagem FAT/disco completa.
+
+Depois de gerar as fixtures, os comandos completos no Shell são:
+
+```text
+update system verify VALID.ZSY
+update system verify TRUNC.ZSY
+update system verify HDRBAD.ZSY
+update system verify PAYBAD.ZSY
+update system verify SIGBAD.ZSY
+update system verify OVERSIZ.ZSY
+update system verify MISALGN.ZSY
+update system verify VERBAD.ZSY
+update system verify EPCHBAD.ZSY
+update system verify ABIBAD.ZSY
+update system verify SCHBAD.ZSY
+update system verify IMGHASH.ZSY
+update system verify CMPHASH.ZSY
+```
+
+Somente `VALID.ZSY` deve ser aceito; os demais devem ser recusados sem
+alterar imagem, cache ou estado persistente.
+
 ## Comandos no Shell
 
 Para orientar comandos do sistema, consultar primeiro `comandos.md` e os

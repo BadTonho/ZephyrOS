@@ -801,6 +801,9 @@ crus.
 - [x] Adicionar update system verify e update system check --tag ao Shell,
   preservando APIs remotas existentes por campos append-only.
 - [x] Atualizar contrato publico, indice, ferramenta e distribuicao remota.
+- [x] Preparar o alvo `system-fixtures` para gerar a matriz assinada fora do
+  repositorio e injetar aliases FAT12 8.3 (`.ZSY`) na imagem de teste, sem
+  versionar a chave privada.
 - [ ] Executar a validacao do usuario: make update-test, make q3check,
   make clean && make, make run e a matriz QEMU de fixtures/memcheck/regcheck.
 

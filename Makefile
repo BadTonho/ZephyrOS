@@ -425,6 +425,11 @@ STORAGE_FIXTURES_STAMP = build\storage-fixtures.stamp
 STORAGE_VALID_IMG = build\storage-valid.img
 STORAGE_CORRUPT_IMG = build\storage-corrupt.img
 STORAGE_UNKNOWN_IMG = build\storage-unknown.img
+SYSTEM_FIXTURES_DIR = build\system-fixtures
+SYSTEM_FIXTURES_MANIFEST = docs\fixtures\updates\system\system.json
+SYSTEM_FIXTURES_PUBLIC = config\update-release-public.json
+# Defina somente em Makefile.local; a chave privada nunca entra no repositorio.
+SYSTEM_PRIVATE_KEY ?=
 
 # A imagem de boot reserva os primeiros setores para o stage2 e o kernel.
 # O volume FAT12 fica depois dessa area para que o Explorer nunca sobrescreva
@@ -978,6 +983,24 @@ $(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(KERNEL_BIN) tools\packager.py \
 	python tools\packager.py inject-file --file docs\fixtures\updates\u2\UNKKEY.ZUP --image $(OS_IMG) --fat-name UNKKEY.ZUP
 	python tools\packager.py inject-file --file docs\fixtures\updates\u3\APPLY.ZUP --image $(OS_IMG) --fat-name APPLY.ZUP
 
+system-fixtures: $(OS_IMG) $(SYSTEM_FIXTURES_MANIFEST) tools\updater.py tools\packager.py
+	@if "$(SYSTEM_PRIVATE_KEY)"=="" (echo SYSTEM_PRIVATE_KEY nao configurada em Makefile.local & exit /b 2)
+	@if exist "$(SYSTEM_FIXTURES_DIR)" rmdir /s /q "$(SYSTEM_FIXTURES_DIR)"
+	python tools\updater.py fixtures-system-qemu --manifest $(SYSTEM_FIXTURES_MANIFEST) --boot $(BOOT_BIN) --stage2 $(STAGE2_BIN) --kernel $(KERNEL_BIN) --private "$(SYSTEM_PRIVATE_KEY)" --public $(SYSTEM_FIXTURES_PUBLIC) --output-dir $(SYSTEM_FIXTURES_DIR)
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\valid.zsys --image $(OS_IMG) --fat-name VALID.ZSY --replace
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\truncated.zsys --image $(OS_IMG) --fat-name TRUNC.ZSY --replace
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\tampered-header.zsys --image $(OS_IMG) --fat-name HDRBAD.ZSY --replace
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\tampered-payload.zsys --image $(OS_IMG) --fat-name PAYBAD.ZSY --replace
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\tampered-signature.zsys --image $(OS_IMG) --fat-name SIGBAD.ZSY --replace
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\oversized.zsys --image $(OS_IMG) --fat-name OVERSIZ.ZSY --replace
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\misaligned.zsys --image $(OS_IMG) --fat-name MISALGN.ZSY --replace
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\incompatible-version.zsys --image $(OS_IMG) --fat-name VERBAD.ZSY --replace
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\incompatible-epoch.zsys --image $(OS_IMG) --fat-name EPCHBAD.ZSY --replace
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\incompatible-abi.zsys --image $(OS_IMG) --fat-name ABIBAD.ZSY --replace
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\incompatible-schema.zsys --image $(OS_IMG) --fat-name SCHBAD.ZSY --replace
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\hash-divergent-image.zsys --image $(OS_IMG) --fat-name IMGHASH.ZSY --replace
+	python tools\packager.py inject-file --file $(SYSTEM_FIXTURES_DIR)\hash-divergent-component.zsys --image $(OS_IMG) --fat-name CMPHASH.ZSY --replace
+
 run: $(OS_IMG)
 	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS)
 
@@ -1094,4 +1117,4 @@ store-as5-serve: store-as5-test
 clean:
 	rmdir /s /q build
 
-.PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
+.PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
