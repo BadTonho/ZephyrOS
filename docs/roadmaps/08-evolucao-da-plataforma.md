@@ -738,8 +738,9 @@ repositorio.
 
 ## EP9 - Atualizacao da imagem do sistema e slots de boot
 
-**Estado:** planejada; nao iniciar antes de uma aprovacao explicita para
-alterar boot/stage2.
+**Estado:** EP9.0A implementada; validacao executavel do usuario pendente.
+Slots, staging, aplicacao, rollback pos-reboot e alteracoes no boot/stage2
+continuam fora do escopo atual.
 
 Esta fase separa a atualizacao de arquivos do sistema em execucao da
 atualizacao da imagem que o proximo boot carregara. O ZUPD v1 continua limitado
@@ -748,28 +749,30 @@ crus.
 
 ### EP9.0 - Contratos e pacotes separados
 
-- [ ] Manter o ZUPD v1 e o runtime v2 separados para recursos e arquivos
+- [x] Manter o ZUPD v1 e o runtime v2 separados para recursos e arquivos
   regulares; a EP9 trata somente a imagem completa, boot, stage2 e kernel.
   Arquivos ja carregados so mudam apos recarga ou reboot quando a funcionalidade
   dependente exigir essa recarga.
-- [ ] Definir um contrato distinto `ZSYS v1` para a imagem de sistema,
+- [x] Definir um contrato distinto `ZSYS v1` para a imagem de sistema,
   incluindo kernel, stage2 e metadados de compatibilidade, sem aceitar esse
   pacote no parser ZUPD v1.
-- [ ] Publicar no descritor da Release os artefatos runtime e system
+- [x] Publicar no descritor da Release os artefatos runtime e system
   separadamente, com hashes e assinaturas coerentes com a mesma versao/epoch.
-- [ ] Definir se os dois artefatos usam caches independentes ou se a primeira
+- [x] Definir se os dois artefatos usam caches independentes ou se a primeira
   entrega permite somente um tipo selecionado por vez; o U5 atual possui um
   unico candidato/cache remoto.
 
 #### EP9.0 — Compatibilidade entre versões e publicacao no GitHub
 
-- [ ] Reutilizar `release.json` como descritor assinado da Release, mantendo
-  `release.zum`, `update.zephyrosupd`, ZUM1/ZUM2 e ZUPD para os fluxos ja
-  existentes; a EP9 acrescentara o artefato `ZSYS` sem criar um canal paralelo.
-- [ ] Acrescentar ao descritor campos assinados para `supported_from`,
+- [x] Reutilizar `release.json` como descritor de descoberta e transporte,
+  mantendo `release.zum`, `update.zephyrosupd`, ZUM1/ZUM2 e ZUPD para os
+  fluxos ja existentes; a EP9 acrescenta o artefato `ZSYS` sem criar um canal
+  paralelo. A autoridade dos campos continua sendo o ZSYS assinado.
+- [x] Acrescentar ao descritor campos de transporte conferidos contra o ZSYS
+  assinado para `supported_from`,
   `min_updater`, `boot_abi`, `data_schema_from`, `data_schema_to`,
   `requires_reboot`, canal e rota de upgrade.
-- [ ] Definir rotas de atualizacao direta e por checkpoint, sem obrigar o
+- [x] Definir rotas de atualizacao direta e por checkpoint, sem obrigar o
   download de todas as Releases intermediarias quando uma imagem cumulativa e
   uma cadeia de migracoes forem suficientes.
 - [ ] Definir um updater bridge para sistemas cujo atualizador ou contrato de
@@ -781,6 +784,25 @@ crus.
 - [ ] Manter a chave privada fora do repositorio e verificar no ZephyrOS a
   assinatura do manifesto, os hashes e a compatibilidade antes de baixar ou
   aplicar qualquer imagem.
+
+### EP9.0A - Contrato ZSYS e preflight
+
+- [x] Definir o envelope ZSYS v1 com cabecalho little-endian fixo de 1024
+  bytes, payload de imagem completa, hashes dos componentes e assinatura
+  Ed25519 sobre o dominio ZEPHYROS-SYSTEM-IMAGE-V1.
+- [x] Validar limite de 8 MiB, alinhamento setorial, identidade, chave,
+  assinatura, hashes, versao, epoch, ABI, schema, reboot e rota.
+- [x] Criar system-build/system-verify e fixtures validas, truncadas,
+  adulteradas, incompativeis e com divergencia de hash.
+- [x] Publicar release-v2-build/release-v2-check com namespaces legacy,
+  runtime e system, mantendo os fluxos ZUPD v1 e runtime v2.
+- [x] Implementar update_system com verificacao local em streaming e preflight
+  remoto somente leitura por tag.
+- [x] Adicionar update system verify e update system check --tag ao Shell,
+  preservando APIs remotas existentes por campos append-only.
+- [x] Atualizar contrato publico, indice, ferramenta e distribuicao remota.
+- [ ] Executar a validacao do usuario: make update-test, make q3check,
+  make clean && make, make run e a matriz QEMU de fixtures/memcheck/regcheck.
 
 ### EP9.1 - Staging e slots de imagem
 

@@ -494,6 +494,33 @@ Ao terminar a fixture local, restaure os valores versionados de
 `config/update-remote.json` e regenere o header original com `sync-remote`
 antes de qualquer commit.
 
+## EP9.0A — ZSYS v1 e Release combinada
+
+A ferramenta também constrói e verifica o envelope da imagem completa do
+sistema. O manifesto de entrada declara identidade, versão/epoch alvo,
+origens suportadas, updater mínimo, ABI de boot, schema de dados, canal e rota.
+O comando system-build recebe build/zephyros.img, build/boot.bin,
+build/stage2.bin e build/kernel.bin e recusa componentes que não sejam o
+prefixo correspondente da imagem.
+
+    python tools/updater.py system-build --manifest system.json --image build/zephyros.img --boot build/boot.bin --stage2 build/stage2.bin --kernel build/kernel.bin --private <chave-fora-do-repo> --public config/update-release-public.json --output system.zsys
+    python tools/updater.py system-verify --package system.zsys --public config/update-release-public.json
+
+release-v2-build publica um release.json de transporte com os namespaces
+legacy, runtime e system. A verificação revalida ZUPD v1/ZUM1, ZUM2/ZUPD v2 e
+ZSYS e compara a compatibilidade redundante do JSON com a compatibilidade
+autenticada do ZSYS.
+
+    python tools/updater.py release-v2-build --release <id> --release-name <nome> --legacy-dir <legacy> --runtime-dir <runtime> --system-dir <system> --private <chave-fora-do-repo> --public config/update-release-public.json --source-commit HEAD --tag <tag> --output-dir <diretorio-novo>
+    python tools/updater.py release-v2-check --release <diretorio>/release.json --public config/update-release-public.json
+
+fixtures-system gera vetores válidos, truncados, desalinhados, excessivos,
+adulterados, incompatíveis e com divergência de hash. O selftest host também
+cobre a correlação entre os namespaces da Release v2 e regressões dos
+descritores legados e runtime.
+
+    python tools/updater.py fixtures-system --manifest system.json --image build/zephyros.img --boot build/boot.bin --stage2 build/stage2.bin --kernel build/kernel.bin --private <chave-fora-do-repo> --public config/update-release-public.json --output-dir <diretorio-vazio>
+
 ## Referencias
 
 - [cryptography 49.0.0](https://cryptography.io/_/downloads/en/49.0.0/pdf/)

@@ -30,6 +30,7 @@ typedef struct {
         UPDATE_REMOTE_GITHUB_RUNTIME_ASSET_MAX];
     uint16_t runtime_asset_count;
     uint8_t metadata_hash[32];
+    update_remote_github_asset_t system;
 } update_remote_github_release_t;
 
 int update_remote_github_query(

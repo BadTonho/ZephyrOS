@@ -5,6 +5,7 @@
 #include "core/log.h"
 #include "core/string.h"
 #include "core/update.h"
+#include "core/update_system.h"
 #include "core/update_remote_config.h"
 #include "core/update_runtime.h"
 #include "process/process.h"
@@ -559,11 +560,12 @@ static int update_github_assign_asset(update_remote_github_release_t* release,
                                       uint8_t* descriptor_found,
                                       uint8_t* manifest_found,
                                       uint8_t* package_found,
+                                      uint8_t* system_found,
                                       uint8_t* runtime_manifest_found,
                                       uint8_t* runtime_package_found,
                                       uint8_t runtime_only) {
     if (!release || !parsed || !descriptor_found || !manifest_found ||
-        !package_found || !runtime_manifest_found ||
+        !package_found || !system_found || !runtime_manifest_found ||
         !runtime_package_found) return ERR_NULL;
     if (kstrcmp(parsed->asset.name, UPDATE_REMOTE_GITHUB_DESCRIPTOR_NAME) == 0) {
         if (*descriptor_found) return ERR_INVALID;
@@ -579,6 +581,13 @@ static int update_github_assign_asset(update_remote_github_release_t* release,
         if (*package_found) return ERR_INVALID;
         *package_found = 1U;
         return update_github_copy_asset(&release->package, parsed);
+    }
+    if (!runtime_only &&
+        kstrcmp(parsed->asset.name, UPDATE_REMOTE_GITHUB_SYSTEM_NAME) == 0) {
+        if (*system_found) return ERR_INVALID;
+        *system_found = 1U;
+        release->system_present = 1U;
+        return update_github_copy_asset(&release->system, parsed);
     }
     if (runtime_only && kstrcmp(parsed->asset.name,
                                 UPDATE_REMOTE_GITHUB_RUNTIME_MANIFEST_NAME) == 0) {
@@ -612,6 +621,7 @@ static int update_github_parse_assets(update_github_json_t* json,
                                       uint8_t* descriptor_found,
                                       uint8_t* manifest_found,
                                       uint8_t* package_found,
+                                      uint8_t* system_found,
                                       uint8_t* runtime_manifest_found,
                                       uint8_t* runtime_package_found,
                                       uint8_t runtime_only) {
@@ -630,7 +640,8 @@ static int update_github_parse_assets(update_github_json_t* json,
         result = update_github_parse_asset(json, parsed);
         if (result == OK) result = update_github_assign_asset(
             release, parsed, descriptor_found, manifest_found, package_found,
-            runtime_manifest_found, runtime_package_found, runtime_only);
+            system_found, runtime_manifest_found, runtime_package_found,
+            runtime_only);
         if (result != OK) return result;
         update_github_skip_space(json);
         if (json->offset >= json->length) return ERR_INVALID;
@@ -684,6 +695,7 @@ static int update_github_parse_release(const uint8_t* data, uint32_t length,
     uint8_t descriptor_found = 0U;
     uint8_t manifest_found = 0U;
     uint8_t package_found = 0U;
+    uint8_t system_found = 0U;
     uint8_t runtime_manifest_found = 0U;
     uint8_t runtime_package_found = 0U;
     uint8_t boolean;
@@ -743,7 +755,7 @@ static int update_github_parse_release(const uint8_t* data, uint32_t length,
         } else if (kstrcmp(key, "assets") == 0) {
             if (assets_found || update_github_parse_assets(
                     &json, release, &descriptor_found, &manifest_found,
-                    &package_found, &runtime_manifest_found,
+                    &package_found, &system_found, &runtime_manifest_found,
                     &runtime_package_found, runtime_only) != OK) return ERR_INVALID;
             assets_found = 1U;
         } else {
@@ -781,6 +793,11 @@ static int update_github_parse_release(const uint8_t* data, uint32_t length,
             release->package.size > ZUPD_MAX_TOTAL_SIZE ||
             !release->descriptor.url[0] || !release->manifest.url[0] ||
             !release->package.url[0]) return ERR_INVALID;
+        if (release->system_present &&
+            (release->system.size < UPDATE_SYSTEM_HEADER_SIZE ||
+             release->system.size > UPDATE_SYSTEM_HEADER_SIZE +
+                 UPDATE_SYSTEM_MAX_IMAGE_SIZE ||
+             !release->system.url[0])) return ERR_INVALID;
     }
     if (release->release_id[0] == '0' && release->release_id[1] == '\0') {
         return ERR_INVALID;
@@ -963,11 +980,15 @@ static uint8_t update_github_marker_match(const char* source,
 
 static int update_github_fingerprint(update_remote_github_release_t* release) {
     uint32_t length = 0U;
-    const update_remote_github_asset_t* assets[] = {
-        &release->descriptor, &release->manifest, &release->package
-    };
+    const update_remote_github_asset_t* assets[4];
+    uint32_t asset_count;
 
     if (!release) return ERR_NULL;
+    assets[0] = &release->descriptor;
+    assets[1] = &release->manifest;
+    assets[2] = &release->package;
+    asset_count = 3U;
+    if (release->system_present) assets[asset_count++] = &release->system;
     kmemset(update_github_workspace.fingerprint, 0,
             sizeof(update_github_workspace.fingerprint));
     if (update_github_append(update_github_workspace.fingerprint,
@@ -991,7 +1012,7 @@ static int update_github_fingerprint(update_remote_github_release_t* release) {
         update_github_append(update_github_workspace.fingerprint,
                              sizeof(update_github_workspace.fingerprint),
                              &length, release->published_at) != OK) return ERR_OVERFLOW;
-    for (uint32_t index = 0U; index < sizeof(assets) / sizeof(assets[0]); index++) {
+    for (uint32_t index = 0U; index < asset_count; index++) {
         if (update_github_append(update_github_workspace.fingerprint,
                                  sizeof(update_github_workspace.fingerprint),
                                  &length, "\n") != OK ||

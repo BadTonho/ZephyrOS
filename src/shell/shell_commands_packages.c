@@ -56,6 +56,7 @@
 #include "core/app_package.h"
 #include "core/app_remote.h"
 #include "core/update.h"
+#include "core/update_system.h"
 #include "core/update_remote.h"
 #include "core/update_remote_runtime.h"
 #include "core/update_remote_config.h"
@@ -242,6 +243,7 @@ typedef struct {
     update_remote_runtime_status_t runtime_remote_status;
     update_remote_runtime_result_t runtime_remote_result;
     update_runtime_cache_t runtime_cache;
+    update_system_verification_t system_verification;
 } shell_update_workspace_t;
 
 typedef struct {
@@ -1075,6 +1077,92 @@ static void cmd_update_runtime_verify(const char* path) {
     video_print("\n", 0x07);
 }
 
+static void cmd_update_system_print_result(int operation_result) {
+    update_system_verification_t* verification =
+        &shell_update_workspace.system_verification;
+
+    video_print(operation_result == OK ? "ZSYS autenticado e compativel.\n" :
+                "ZSYS recusado: ",
+                operation_result == OK ? 0x0A : 0x0C);
+    if (operation_result != OK) {
+        video_print(update_system_reason_name(verification->reason), 0x0C);
+        video_print(" (erro=", 0x08);
+        shell_command_print_num((uint32_t)operation_result);
+        video_print(").\n", 0x0C);
+    }
+    if (!verification->header_valid) return;
+    cmd_update_print_version("  Alvo: ", &verification->target_version,
+                             verification->target_epoch);
+    video_print("  Imagem: ", 0x07);
+    shell_command_print_num(verification->image_size);
+    video_print(" bytes componentes=", 0x08);
+    shell_command_print_num(verification->component_count);
+    video_print("\n  boot_abi=", 0x07);
+    shell_command_print_num(verification->compatibility.boot_abi);
+    video_print(" schema=", 0x08);
+    shell_command_print_num(verification->compatibility.data_schema_from);
+    video_print("->", 0x08);
+    shell_command_print_num(verification->compatibility.data_schema_to);
+    video_print(" reboot=", 0x08);
+    video_print(verification->compatibility.requires_reboot ? "true\n" : "false\n",
+                verification->compatibility.requires_reboot ? 0x0A : 0x0C);
+}
+
+static void cmd_update_system_verify(const char* path) {
+    int result;
+
+    result = update_system_verify_file(
+        path, &shell_update_workspace.system_verification);
+    cmd_update_system_print_result(result);
+    video_print("Nenhuma gravacao foi realizada.\n", result == OK ? 0x0A : 0x0C);
+}
+
+static void cmd_update_system_check(const char* tag) {
+    update_remote_options_t* options = &shell_update_workspace.remote_options;
+    int result;
+
+    kmemset(options, 0, sizeof(*options));
+    options->cancel_check = cmd_update_cancel_check;
+    result = update_system_check_tag(
+        tag, options, &shell_update_workspace.system_verification);
+    cmd_update_system_print_result(result);
+    if (result == OK) {
+        video_print("Preflight remoto concluido; nenhum download ou cache foi alterado.\n",
+                    0x0A);
+    }
+}
+
+static void cmd_update_system(const char* args) {
+    char operation[16];
+    char command[16];
+    char first[FS_MAX_PATH];
+    char second[UPDATE_REMOTE_TAG_SIZE + 1U];
+    char third[16];
+    const char* cursor = args;
+
+    cmd_pkg_take_token(&cursor, operation, sizeof(operation));
+    cmd_pkg_take_token(&cursor, command, sizeof(command));
+    cmd_pkg_take_token(&cursor, first, sizeof(first));
+    cmd_pkg_take_token(&cursor, second, sizeof(second));
+    cmd_pkg_take_token(&cursor, third, sizeof(third));
+    if (kstrcmp(operation, "system") == 0 &&
+        kstrcmp(command, "verify") == 0 && first[0] && !second[0] &&
+        !third[0] && !cmd_pkg_has_trailing_token(cursor)) {
+        cmd_update_system_verify(first);
+        return;
+    }
+    if (kstrcmp(operation, "system") == 0 &&
+        kstrcmp(command, "check") == 0 &&
+        kstrcmp(first, "--tag") == 0 && second[0] && !third[0] &&
+        !cmd_pkg_has_trailing_token(cursor)) {
+        cmd_update_system_check(second);
+        return;
+    }
+    LOG_WARN("SHELL", "Uso invalido do comando update system");
+    video_print("Uso: update system verify <arquivo.ZSYS>\n", 0x0E);
+    video_print("     update system check --tag <tag>\n", 0x0E);
+}
+
 static void cmd_update_runtime_action(int rollback, int confirmed) {
     update_runtime_action_options_t options;
     update_runtime_action_result_t action;
@@ -1257,6 +1345,10 @@ static void cmd_update(const char* args) {
         &cursor, third, sizeof(shell_update_workspace.third));
     cmd_pkg_take_token(
         &cursor, extra, sizeof(shell_update_workspace.extra));
+    if (kstrcmp(operation, "system") == 0) {
+        cmd_update_system(args);
+        return;
+    }
     if (kstrcmp(operation, "runtime") == 0) {
         cmd_update_runtime(args);
         return;
@@ -1341,6 +1433,8 @@ static void cmd_update(const char* args) {
     video_print("     update github fetch --tag <tag> [--confirm]\n", 0x0E);
     video_print("     update runtime status|check|fetch|verify|apply|rollback|clear\n",
                 0x0E);
+    video_print("     update system verify <arquivo.ZSYS>\n", 0x0E);
+    video_print("     update system check --tag <tag>\n", 0x0E);
     video_print("     update test fail-after <1-3>\n", 0x0E);
 }
 
@@ -2700,7 +2794,8 @@ static int shell_packages_should_start(const char* command,
                kstrcmp(first, "verify") == 0 ||
                kstrcmp(first, "fetch") == 0 ||
                kstrcmp(first, "remote") == 0 ||
-               kstrcmp(first, "github") == 0;
+               kstrcmp(first, "github") == 0 ||
+               kstrcmp(first, "system") == 0;
     }
     if (kstrcmp(command, "store") != 0) return 0;
     return kstrcmp(first, "remote") == 0 ||

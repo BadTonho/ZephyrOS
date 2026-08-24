@@ -468,6 +468,29 @@ O procedimento host e a auditoria dos aliases estão em
 deve ser registrada após `make q3check`, `make clean && make` e a matriz QEMU
 do usuário.
 
+## EP9.0A — namespace system e preflight ZSYS
+
+A Release combinada v2 mantém os fluxos legados e runtime e acrescenta o
+namespace system:
+
+    legacy:  release.zum + update.zephyrosupd
+    runtime: runtime.zum2 + runtime.zephyrosupd + assets do catálogo
+    system:  system.zsys
+
+O GitHub continua sendo somente transporte. A API deve localizar
+system.zsys, mas o ZephyrOS baixa o descritor v2 e o asset em modo streaming,
+confere o tamanho e o digest publicado e valida novamente a assinatura,
+compatibilidade e hashes do ZSYS. A compatibilidade do JSON é redundante e
+deve coincidir com o envelope assinado.
+
+Os comandos somente leitura são:
+
+    update system verify <arquivo.ZSYS>
+    update system check --tag <tag>
+
+Não há download para cache, staging, aplicação, reboot automático, slots,
+rollback pós-reboot ou escrita de setores crus na EP9.0A.
+
 ## Limites de seguranca
 
 Ed25519 e SHA-256 protegem autenticidade e integridade mesmo sobre HTTP.

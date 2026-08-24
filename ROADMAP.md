@@ -4,6 +4,10 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
+EP9.0A em implementação: contrato ZSYS v1, preflight somente leitura e
+Release combinada v2. Slots, staging, aplicação, rollback pós-reboot e
+alterações no boot/stage2 continuam fora desta etapa.
+
 ## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; firmware, driver operacional, integração L3 e EP9 pendentes
 
 ```

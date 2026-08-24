@@ -15,6 +15,7 @@
 #define UPDATE_REMOTE_RELEASE_ID_SIZE 65U
 #define UPDATE_REMOTE_RELEASE_NAME_SIZE 101U
 #define UPDATE_REMOTE_SOURCE_COMMIT_SIZE 41U
+#define UPDATE_REMOTE_SYSTEM_NAME_SIZE 32U
 
 typedef enum {
     UPDATE_REMOTE_STATE_DISABLED = 0,
@@ -118,6 +119,10 @@ typedef struct {
     uint8_t manifest_hash[32];
     uint8_t api_metadata_present;
     uint8_t api_metadata_hash[32];
+    char system_name[UPDATE_REMOTE_SYSTEM_NAME_SIZE];
+    uint32_t system_size;
+    uint8_t system_hash[32];
+    uint8_t system_present;
 } update_remote_release_t;
 
 typedef struct {

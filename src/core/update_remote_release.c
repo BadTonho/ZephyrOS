@@ -934,6 +934,22 @@ static int update_release_resolve_descriptor(
         kmemcpy(descriptor_out->release.api_metadata_hash,
                 github->metadata_hash,
                 CRYPTO_SHA256_SIZE);
+        if (github->system_present) {
+            if (update_release_copy_text(
+                    descriptor_out->release.system_name,
+                    sizeof(descriptor_out->release.system_name),
+                    github->system.name) != OK) {
+                return update_release_reject(
+                    UPDATE_REMOTE_REASON_RELEASE_API, ERR_OVERFLOW,
+                    "Nome do asset system.zsys excede o contrato", result_out);
+            }
+            descriptor_out->release.system_size = github->system.size;
+            descriptor_out->release.system_present = 1U;
+            if (github->system.digest_present) {
+                kmemcpy(descriptor_out->release.system_hash,
+                        github->system.digest, CRYPTO_SHA256_SIZE);
+            }
+        }
     }
     return OK;
 }
