@@ -701,3 +701,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   verificou o envelope, gravou o slot inativo e publicou-o como pendente.
   As mensagens de exclusão FAT32 referiam-se a entradas ausentes toleradas
   durante a limpeza preparatória; a operação terminou com motivo `NONE`.
+- Estado pós-staging validado pelo usuário em: 2026-08-24 17:18
+  (America/Sao_Paulo); `update system slots` reportou sequência 2, slot A
+  ativo e preservado, slot B `VALID` pendente, journal limpo e recuperação
+  limpa.
+- Bloqueio de staging pendente validado pelo usuário em: 2026-08-24 17:19
+  (America/Sao_Paulo); nova execução confirmada foi recusada com motivo
+  `STATE` porque já havia slot ZSYS pendente, sem iniciar gravação.
