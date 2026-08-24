@@ -752,8 +752,12 @@ def inject_fat32_file(data: bytes, image_path: Path, path: str,
         block = data[index * bps * spc:(index + 1) * bps * spc]
         image[offset:offset + bps * spc] = block.ljust(bps * spc, b"\0")
     checksum = _fat32_lfn_checksum(alias)
-    lfn_entries = [_fat32_lfn_entry(index, units, checksum)
-                   for index in range(lfn_count, 0, -1)]
+    lfn_entries = [
+        _fat32_lfn_entry(
+            index | (0x40 if index == lfn_count else 0), units, checksum
+        )
+        for index in range(lfn_count, 0, -1)
+    ]
     short = bytearray(32)
     short[:11] = alias
     short[11] = FAT32_ATTR_ARCHIVE
@@ -2056,12 +2060,16 @@ def run_selftest() -> int:
             long_name = "Dados de Sistema.txt"
             long_data = b"hybrid fat32 payload"
             inject_fat32_file(long_data, hybrid_path, long_name)
-            checks["hybrid_lfn"] = (
-                read_fat32_file(hybrid_path, long_name) == long_data
-            )
             records_image = bytearray(hybrid_path.read_bytes())
             _, spc, reserved, _, spf, data_start, clusters = \
                 fat32_geometry(records_image, HYBRID_FAT32_START_LBA)
+            checks["hybrid_lfn"] = (
+                read_fat32_file(hybrid_path, long_name) == long_data and
+                records_image[HYBRID_FAT32_START_LBA * 512 +
+                             data_start * 512 + 32] == 0x42 and
+                records_image[HYBRID_FAT32_START_LBA * 512 +
+                             data_start * 512 + 64] == 0x01
+            )
             fat_offset = (HYBRID_FAT32_START_LBA + reserved) * 512
             fat = records_image[fat_offset:fat_offset + spf * 512]
             records = _fat32_records(
