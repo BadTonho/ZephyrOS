@@ -655,3 +655,13 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   14:55 (America/Sao_Paulo); a fonte FAT12 de boot agora abre explicitamente
   `legacy:/`, preservando o contrato de caminho do volume de sistema e
   eliminando a tentativa indevida de resolver a raiz como FAT32.
+- Validação QEMU da fixture `VALID.img` confirmada pelo usuário, sem horário
+  exato informado: `storage list` mostrou `ata2raw` FAT12 e `ata2p1` FAT32
+  `ZEPHYROS` montados e graváveis; `storage check ata2p1` retornou volume
+  consistente; `update system verify system:/VALID.ZSYS` autenticou e não
+  gravou; `regcheck full` retornou `RegCheck: OK`, o índice foi publicado com
+  sucesso e `memcheck` retornou todos os itens `OK`.
+- Os avisos repetidos de `falha ao listar nomes longos` ocorreram durante os
+  diagnósticos negativos do App Store ao consultar o diretório opcional
+  `APPS`, ausente na fixture sem pacotes instalados; não houve erro de cursor
+  FAT32 nem falha de publicação do índice nesta validação.
