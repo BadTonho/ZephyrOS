@@ -146,6 +146,8 @@ int update_system_init(void);
 int update_system_is_ready(void);
 int update_system_verify_file(const char* path,
                               update_system_verification_t* result_out);
+int update_system_verify_file_for_slot(
+    const char* path, update_system_verification_t* result_out);
 int update_system_check_tag(const char* tag,
                             const update_remote_options_t* options,
                             update_system_verification_t* result_out);

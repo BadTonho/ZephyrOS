@@ -57,6 +57,7 @@
 #include "core/app_remote.h"
 #include "core/update.h"
 #include "core/update_system.h"
+#include "core/update_system_slots.h"
 #include "core/update_remote.h"
 #include "core/update_remote_runtime.h"
 #include "core/update_remote_config.h"
@@ -244,6 +245,7 @@ typedef struct {
     update_remote_runtime_result_t runtime_remote_result;
     update_runtime_cache_t runtime_cache;
     update_system_verification_t system_verification;
+    update_system_slots_status_t system_slots_status;
 } shell_update_workspace_t;
 
 typedef struct {
@@ -1132,6 +1134,82 @@ static void cmd_update_system_check(const char* tag) {
     }
 }
 
+static void cmd_update_system_slots_print_slot(
+    uint8_t index, const update_system_slot_info_t* slot) {
+    if (!slot) return;
+    video_print(index == 0U ? "  Slot A: " : "  Slot B: ", 0x07);
+    video_print(update_system_slot_file_state_name(slot->state),
+                slot->state == UPDATE_SYSTEM_SLOT_FILE_VALID ? 0x0A : 0x0E);
+    if (slot->state == UPDATE_SYSTEM_SLOT_FILE_VALID) {
+        video_print(" ", 0x07);
+        cmd_update_print_version_inline(&slot->version, slot->epoch);
+        video_print(" bytes=", 0x08);
+        shell_command_print_num(slot->size);
+    }
+    video_print("\n", 0x07);
+}
+
+static void cmd_update_system_slots(void) {
+    update_system_slots_status_t* status =
+        &shell_update_workspace.system_slots_status;
+    int result = update_system_slots_get_status(status);
+
+    if (result != OK) {
+        video_print("Slots ZSYS indisponiveis.\n", 0x0C);
+        return;
+    }
+    video_print("Slots ZSYS: ", 0x07);
+    video_print(update_system_slots_state_name(status->state),
+                status->state == UPDATE_SYSTEM_SLOTS_STATE_READY ? 0x0A : 0x0E);
+    video_print(" seq=", 0x08);
+    shell_command_print_num(status->sequence);
+    video_print(" ativo=", 0x08);
+    video_print(status->active_slot == 0U ? "A" :
+                status->active_slot == 1U ? "B" : "NONE", 0x07);
+    video_print(" pendente=", 0x08);
+    video_print(status->pending_slot == 0U ? "A" :
+                status->pending_slot == 1U ? "B" : "NONE", 0x07);
+    video_print(" journal=", 0x08);
+    video_print(status->journal_pending ? "pending" : "clean", 0x07);
+    video_print(" phase=", 0x08);
+    video_print(update_system_slots_journal_phase_name(status->journal_phase),
+                0x07);
+    video_print(" recovery=", 0x08);
+    video_print(status->recovery_pending ? "pending\n" : "clean\n", 0x07);
+    video_print("  Espaco livre: ", 0x07);
+    shell_command_print_num(status->free_bytes);
+    video_print(" bytes\n", 0x07);
+    cmd_update_system_slots_print_slot(0U, &status->slots[0]);
+    cmd_update_system_slots_print_slot(1U, &status->slots[1]);
+}
+
+static void cmd_update_system_stage(const char* path, int confirmed) {
+    update_system_slots_action_options_t options;
+    update_system_slots_action_result_t action;
+    int result;
+
+    kmemset(&options, 0, sizeof(options));
+    options.dry_run = confirmed ? 0U : 1U;
+    options.cancel_check = cmd_update_cancel_check;
+    result = update_system_slots_stage_file(path, &options, &action);
+    video_print(confirmed ? "Staging ZSYS: " : "Preflight ZSYS: ", 0x07);
+    video_print(update_system_slots_reason_name(action.reason),
+                result == OK ? 0x0A : 0x0C);
+    video_print("\n", 0x07);
+    if (result != OK) {
+        if (action.verification_reason != UPDATE_SYSTEM_REASON_NONE) {
+            video_print("Motivo verificador: ", 0x0C);
+            video_print(update_system_reason_name(action.verification_reason),
+                        0x0C);
+            video_print("\n", 0x0C);
+        }
+        return;
+    }
+    video_print(confirmed ?
+                "Slot inativo gravado e publicado como pendente.\n" :
+                "Nenhuma gravacao foi realizada.\n", 0x0A);
+}
+
 static void cmd_update_system(const char* args) {
     char operation[16];
     char command[16];
@@ -1158,9 +1236,25 @@ static void cmd_update_system(const char* args) {
         cmd_update_system_check(second);
         return;
     }
+    if (kstrcmp(operation, "system") == 0 &&
+        kstrcmp(command, "slots") == 0 && !first[0] && !second[0] &&
+        !third[0] && !cmd_pkg_has_trailing_token(cursor)) {
+        cmd_update_system_slots();
+        return;
+    }
+    if (kstrcmp(operation, "system") == 0 &&
+        kstrcmp(command, "stage") == 0 && first[0] && !third[0] &&
+        (second[0] == '\0' || kstrcmp(second, "--confirm") == 0) &&
+        !cmd_pkg_has_trailing_token(cursor)) {
+        cmd_update_system_stage(first, second[0] != '\0');
+        return;
+    }
     LOG_WARN("SHELL", "Uso invalido do comando update system");
     video_print("Uso: update system verify system:/<arquivo.ZSYS>\n", 0x0E);
     video_print("     update system check --tag <tag>\n", 0x0E);
+    video_print("     update system slots\n", 0x0E);
+    video_print("     update system stage system:/<arquivo.ZSYS> [--confirm]\n",
+                0x0E);
 }
 
 static void cmd_update_runtime_action(int rollback, int confirmed) {
@@ -1435,6 +1529,9 @@ static void cmd_update(const char* args) {
                 0x0E);
     video_print("     update system verify system:/<arquivo.ZSYS>\n", 0x0E);
     video_print("     update system check --tag <tag>\n", 0x0E);
+    video_print("     update system slots\n", 0x0E);
+    video_print("     update system stage system:/<arquivo.ZSYS> [--confirm]\n",
+                0x0E);
     video_print("     update test fail-after <1-3>\n", 0x0E);
 }
 

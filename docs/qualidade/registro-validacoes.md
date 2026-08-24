@@ -669,3 +669,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   matriz executável do usuário foram concluídas, mantendo journaling,
   filesystem nativo, boot direto pelo FAT32, slots A/B, staging, aplicação
   ZSYS e reboot automático para etapas posteriores.
+- EP9.1 implementada em: 2026-08-24 16:43 (America/Sao_Paulo); serviço
+  `update_system_slots`, estado/journal redundantes, escritor FAT32 em chunks,
+  staging local com preflight/confirm/cancelamento cooperativo, Shell,
+  fixtures de slots A/B e documentação foram adicionados. A validação
+  executável `make q3check`, `make clean && make`, `make run` e a matriz EP9.1
+  no QEMU permanecem pendentes do usuário.

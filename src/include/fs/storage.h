@@ -18,6 +18,8 @@
 #define STORAGE_MAX_CHAIN_STEPS 4096U
 #define STORAGE_MAX_VIEW_BYTES 4095U
 #define STORAGE_SECTOR_SIZE 512U
+#define STORAGE_SLOT_MAX_FILE_SIZE ((8U * 1024U * 1024U) + 1024U)
+#define STORAGE_SLOT_WRITE_BUFFER_SIZE (64U * 1024U)
 
 typedef enum {
     STORAGE_LAYOUT_RAW = 0,
@@ -190,6 +192,12 @@ int storage_stream_write(const uint8_t* data, uint32_t size);
 int storage_stream_finish(void);
 int storage_stream_abort(void);
 int storage_stream_is_active(void);
+int storage_slot_writer_begin(const char* id, const char* path,
+                              uint32_t expected_size, uint8_t attributes);
+int storage_slot_writer_write(const uint8_t* data, uint32_t size);
+int storage_slot_writer_finish(void);
+int storage_slot_writer_abort(void);
+int storage_slot_writer_is_active(void);
 const char* storage_fs_name(storage_fs_type_t type);
 const char* storage_volume_state_name(storage_volume_state_t state);
 

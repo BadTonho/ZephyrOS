@@ -69,6 +69,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/core/update.h` | `docs/14-atualizacoes/contrato-zupd-v1.md` |
 | `src/include/core/update_runtime.h` | `docs/14-atualizacoes/contrato-zupd-v2.md` |
 | `src/include/core/update_system.h` | `docs/14-atualizacoes/contrato-zsys-v1.md` |
+| `src/include/core/update_system_slots.h` | `docs/14-atualizacoes/contrato-zsys-v1.md` |
 | `src/include/core/update_remote.h` | `docs/14-atualizacoes/distribuicao-remota.md` |
 | `src/include/core/update_remote_runtime.h` | `docs/14-atualizacoes/contrato-zupd-v2.md` |
 | `src/include/core/update_remote_config.h` | `docs/14-atualizacoes/distribuicao-remota.md` |
@@ -388,11 +389,13 @@ parser completo de Report Descriptor,
 hubs, hot-plug real e EHCI continuam fora do escopo.
 
 Desde a EP9.0A, update_system.h define o envelope ZSYS v1, motivos de recusa,
-verificação local em streaming e preflight remoto por tag. update_remote.h e
+verificação local em streaming e preflight remoto por tag. Desde a EP9.1,
+update_system_slots.h define o estado A/B, journal, status, staging dry-run e
+resultado detalhado; storage.h acrescenta o escritor FAT32 limitado por buffer.
+update_remote.h e
 update_remote_github.h acrescentam, ao final dos registros existentes, o
 asset system.zsys e seus metadados, preservando as APIs e campos legados.
-ZSYS não introduz escrita de imagem, staging, slots ou alteração de boot nesta
-etapa.
+EP9.1 não aplica o slot, seleciona boot, reinicia ou altera boot.asm/stage2.
 
 Desde a EP9.4A, `build\zephyros.img` usa uma imagem híbrida de 64 MiB: o FAT12
 bruto continua no início para boot e recuperação e o FAT32 `ZEPHYROS` começa

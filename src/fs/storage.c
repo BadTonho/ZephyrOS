@@ -125,6 +125,26 @@ typedef struct {
 } storage_stream_state_t;
 static storage_stream_state_t storage_stream_state;
 
+typedef struct {
+    uint8_t active;
+    char volume_id[STORAGE_ID_SIZE];
+    char target_path[STORAGE_MAX_PATH];
+    char temp_path[STORAGE_MAX_PATH];
+    uint32_t expected_size;
+    uint32_t received_size;
+    uint32_t flushed_size;
+    uint8_t attributes;
+    uint8_t volume_index;
+    uint32_t entry_offset;
+    uint32_t first_cluster;
+    uint32_t last_cluster;
+    uint32_t cluster_bytes;
+    uint32_t buffered_size;
+    uint8_t buffer[STORAGE_SLOT_WRITE_BUFFER_SIZE];
+} storage_slot_writer_state_t;
+
+static storage_slot_writer_state_t storage_slot_writer_state;
+
 static int storage_cluster_is_end(const storage_mount_t* mount,
                                   uint32_t cluster);
 static int storage_cluster_is_bad(const storage_mount_t* mount,
@@ -3380,6 +3400,304 @@ rename_done:
     spinlock_release(&storage_operation_lock);
     if (result != OK) LOG_ERROR("FS", "Renomeacao FAT32 falhou");
     return result;
+}
+
+static void storage_slot_writer_build_entry(
+    const storage_slot_writer_state_t* state, uint8_t entry[STORAGE_DIR_ENTRY_SIZE],
+    uint32_t size) {
+    uint8_t alias[11];
+
+    kmemset(entry, 0, STORAGE_DIR_ENTRY_SIZE);
+    if (!state || storage_name_to_fat("ZSTG.ZSY", alias) != OK) return;
+    kmemcpy(entry, alias, sizeof(alias));
+    entry[STORAGE_DIR_ATTRIBUTE_OFFSET] = state->attributes;
+    entry[STORAGE_DIR_CLUSTER_HIGH_OFFSET] =
+        (uint8_t)(state->first_cluster >> 16U);
+    entry[STORAGE_DIR_CLUSTER_HIGH_OFFSET + 1U] =
+        (uint8_t)(state->first_cluster >> 24U);
+    entry[STORAGE_DIR_CLUSTER_LOW_OFFSET] = (uint8_t)state->first_cluster;
+    entry[STORAGE_DIR_CLUSTER_LOW_OFFSET + 1U] =
+        (uint8_t)(state->first_cluster >> 8U);
+    entry[STORAGE_DIR_SIZE_OFFSET] = (uint8_t)size;
+    entry[STORAGE_DIR_SIZE_OFFSET + 1U] = (uint8_t)(size >> 8U);
+    entry[STORAGE_DIR_SIZE_OFFSET + 2U] = (uint8_t)(size >> 16U);
+    entry[STORAGE_DIR_SIZE_OFFSET + 3U] = (uint8_t)(size >> 24U);
+}
+
+static int storage_slot_writer_update_entry_locked(
+    const storage_slot_writer_state_t* state, uint32_t size) {
+    storage_volume_t* volume;
+    uint8_t entry[STORAGE_DIR_ENTRY_SIZE];
+
+    if (!state || !state->active || state->volume_index >= storage_volume_count) {
+        LOG_ERROR("FS", "Estado invalido ao atualizar slot FAT32");
+        return ERR_STATE;
+    }
+    volume = &storage_volumes[state->volume_index];
+    storage_slot_writer_build_entry(state, entry, size);
+    return storage_write_directory_entry(volume, state->entry_offset, entry);
+}
+
+static int storage_slot_writer_flush_locked(void) {
+    storage_slot_writer_state_t* state = &storage_slot_writer_state;
+    storage_volume_t* volume;
+    storage_mount_t* mount;
+    uint32_t cluster;
+    uint8_t linked = 0U;
+    int result;
+
+    if (!state->active || !state->buffered_size ||
+        state->volume_index >= storage_volume_count) {
+        return state->active ? OK : ERR_STATE;
+    }
+    volume = &storage_volumes[state->volume_index];
+    mount = storage_mount_for_volume(state->volume_index);
+    if (!mount || mount->fs_type != STORAGE_FS_FAT32) {
+        LOG_ERROR("FS", "Montagem FAT32 ausente para slot");
+        return ERR_UNAVAILABLE;
+    }
+    result = storage_allocate_fat32_cluster(volume, mount, &cluster);
+    if (result != OK) {
+        LOG_ERROR("FS", "Falha ao reservar cluster para slot");
+        return result;
+    }
+    if (state->last_cluster) {
+        result = storage_write_fat32_entry(volume, mount,
+                                           state->last_cluster, cluster);
+        if (result == OK) linked = 1U;
+    } else {
+        state->first_cluster = cluster;
+        result = storage_slot_writer_update_entry_locked(
+            state, state->flushed_size);
+        if (result != OK) {
+            storage_write_fat32_entry(volume, mount, cluster,
+                                      STORAGE_FAT32_FREE);
+            state->first_cluster = 0U;
+            LOG_ERROR("FS", "Falha ao publicar primeiro cluster de slot");
+            return result;
+        }
+    }
+    if (result != OK && !linked) {
+        storage_write_fat32_entry(volume, mount, cluster,
+                                  STORAGE_FAT32_FREE);
+        LOG_ERROR("FS", "Falha ao encadear cluster de slot");
+        return result;
+    }
+    if (result == OK) {
+        result = storage_write_cluster(volume, mount, cluster,
+                                       state->buffer, state->buffered_size);
+    }
+    if (result != OK) {
+        LOG_ERROR("FS", "Falha ao gravar cluster de slot");
+        return result;
+    }
+    state->last_cluster = cluster;
+    state->flushed_size += state->buffered_size;
+    state->buffered_size = 0U;
+    result = storage_slot_writer_update_entry_locked(
+        state, state->flushed_size);
+    if (result != OK) LOG_ERROR("FS", "Falha ao atualizar tamanho de slot");
+    return result;
+}
+
+int storage_slot_writer_begin(const char* id, const char* path,
+                              uint32_t expected_size, uint8_t attributes) {
+    storage_volume_t* volume;
+    storage_mount_t* mount;
+    storage_long_raw_entry_t existing;
+    char directory[STORAGE_MAX_PATH];
+    char filename[STORAGE_LONG_NAME_SIZE];
+    uint32_t entry_offset;
+    uint32_t cluster_bytes;
+    uint8_t entry[STORAGE_DIR_ENTRY_SIZE];
+    int index;
+    int result;
+
+    if (!id || !path || !expected_size ||
+        expected_size > STORAGE_SLOT_MAX_FILE_SIZE) {
+        LOG_ERROR("FS", "Argumento invalido ao iniciar escritor de slot");
+        return ERR_INVALID;
+    }
+    spinlock_acquire(&storage_operation_lock);
+    if (storage_slot_writer_state.active) {
+        spinlock_release(&storage_operation_lock);
+        LOG_ERROR("FS", "Ja existe escritor de slot ativo");
+        return ERR_STATE;
+    }
+    result = storage_get_mounted_fat32(id, &volume, &mount, &index);
+    if (result != OK) goto slot_writer_begin_done;
+    result = storage_split_file_path(path, directory, filename);
+    if (result != OK || directory[0] ||
+        storage_name_to_fat(filename, entry) != OK) {
+        result = ERR_INVALID;
+        goto slot_writer_begin_done;
+    }
+    result = storage_find_entry_long(volume, mount, mount->root_cluster, 0,
+                                     "ZSTG.ZSY", &existing);
+    if (result == OK) {
+        result = ERR_STATE;
+        goto slot_writer_begin_done;
+    }
+    if (result != ERR_NOT_FOUND) goto slot_writer_begin_done;
+    result = storage_find_entry_long(volume, mount, mount->root_cluster, 0,
+                                     filename, &existing);
+    if (result == OK && (existing.attributes & STORAGE_ATTR_DIRECTORY)) {
+        result = ERR_INVALID;
+        goto slot_writer_begin_done;
+    }
+    if (result != OK && result != ERR_NOT_FOUND) goto slot_writer_begin_done;
+    cluster_bytes = mount->sectors_per_cluster * STORAGE_SECTOR_SIZE;
+    if (!cluster_bytes || cluster_bytes > STORAGE_SLOT_WRITE_BUFFER_SIZE) {
+        result = ERR_OVERFLOW;
+        goto slot_writer_begin_done;
+    }
+    result = storage_find_free_directory_slots(
+        volume, mount, mount->root_cluster, 1U, &entry_offset);
+    if (result != OK) goto slot_writer_begin_done;
+
+    kmemset(&storage_slot_writer_state, 0,
+            sizeof(storage_slot_writer_state));
+    storage_slot_writer_state.active = 1U;
+    storage_slot_writer_state.expected_size = expected_size;
+    storage_slot_writer_state.attributes = attributes;
+    storage_slot_writer_state.volume_index = (uint8_t)index;
+    storage_slot_writer_state.entry_offset = entry_offset;
+    storage_slot_writer_state.cluster_bytes = cluster_bytes;
+    storage_copy_text(storage_slot_writer_state.volume_id,
+                      STORAGE_ID_SIZE, id);
+    storage_copy_text(storage_slot_writer_state.target_path,
+                      STORAGE_MAX_PATH, filename);
+    storage_copy_text(storage_slot_writer_state.temp_path,
+                      STORAGE_MAX_PATH, "ZSTG.ZSY");
+    storage_slot_writer_build_entry(&storage_slot_writer_state, entry, 0U);
+    result = storage_write_directory_entry(volume, entry_offset, entry);
+    if (result != OK) goto slot_writer_begin_cleanup;
+    spinlock_release(&storage_operation_lock);
+    return OK;
+
+slot_writer_begin_cleanup:
+    kmemset(&storage_slot_writer_state, 0,
+            sizeof(storage_slot_writer_state));
+slot_writer_begin_done:
+    spinlock_release(&storage_operation_lock);
+    if (result != OK) LOG_ERROR("FS", "Inicio do escritor de slot falhou");
+    return result;
+}
+
+int storage_slot_writer_write(const uint8_t* data, uint32_t size) {
+    storage_slot_writer_state_t* state = &storage_slot_writer_state;
+    int result = OK;
+
+    if (!data && size) {
+        LOG_ERROR("FS", "Dados nulos na escrita do slot");
+        return ERR_NULL;
+    }
+    spinlock_acquire(&storage_operation_lock);
+    if (!state->active) {
+        spinlock_release(&storage_operation_lock);
+        LOG_ERROR("FS", "Escritor de slot nao esta ativo");
+        return ERR_STATE;
+    }
+    if (size > state->expected_size - state->received_size) {
+        spinlock_release(&storage_operation_lock);
+        LOG_ERROR("FS", "Escrita do slot excedeu o tamanho esperado");
+        return ERR_OVERFLOW;
+    }
+    while (size && result == OK) {
+        uint32_t amount = state->cluster_bytes - state->buffered_size;
+        if (amount > size) amount = size;
+        kmemcpy(state->buffer + state->buffered_size, data, amount);
+        state->buffered_size += amount;
+        state->received_size += amount;
+        data += amount;
+        size -= amount;
+        if (state->buffered_size == state->cluster_bytes) {
+            result = storage_slot_writer_flush_locked();
+        }
+    }
+    spinlock_release(&storage_operation_lock);
+    if (result != OK) LOG_ERROR("FS", "Escrita do slot falhou");
+    return result;
+}
+
+int storage_slot_writer_finish(void) {
+    char volume_id[STORAGE_ID_SIZE];
+    char target_path[STORAGE_MAX_PATH];
+    char temp_path[STORAGE_MAX_PATH];
+    int result;
+
+    spinlock_acquire(&storage_operation_lock);
+    if (!storage_slot_writer_state.active) {
+        spinlock_release(&storage_operation_lock);
+        LOG_ERROR("FS", "Finalizacao sem escritor de slot ativo");
+        return ERR_STATE;
+    }
+    if (storage_slot_writer_state.received_size !=
+        storage_slot_writer_state.expected_size) {
+        spinlock_release(&storage_operation_lock);
+        LOG_ERROR("FS", "Escrita de slot incompleta");
+        return ERR_INVALID;
+    }
+    result = storage_slot_writer_flush_locked();
+    if (result == OK) {
+        result = storage_slot_writer_update_entry_locked(
+            &storage_slot_writer_state,
+            storage_slot_writer_state.expected_size);
+    }
+    storage_copy_text(volume_id, sizeof(volume_id),
+                      storage_slot_writer_state.volume_id);
+    storage_copy_text(target_path, sizeof(target_path),
+                      storage_slot_writer_state.target_path);
+    storage_copy_text(temp_path, sizeof(temp_path),
+                      storage_slot_writer_state.temp_path);
+    kmemset(&storage_slot_writer_state, 0,
+            sizeof(storage_slot_writer_state));
+    spinlock_release(&storage_operation_lock);
+    if (result != OK) {
+        LOG_ERROR("FS", "Finalizacao do slot falhou antes da publicacao");
+        return result;
+    }
+    result = storage_delete_file(volume_id, target_path);
+    if (result != OK && result != ERR_NOT_FOUND) {
+        LOG_ERROR("FS", "Falha ao substituir slot anterior");
+        return result;
+    }
+    result = storage_rename_file(volume_id, temp_path, target_path);
+    if (result != OK) LOG_ERROR("FS", "Falha ao publicar slot FAT32");
+    return result;
+}
+
+int storage_slot_writer_abort(void) {
+    char volume_id[STORAGE_ID_SIZE];
+    char temp_path[STORAGE_MAX_PATH];
+    int result;
+
+    spinlock_acquire(&storage_operation_lock);
+    if (!storage_slot_writer_state.active) {
+        spinlock_release(&storage_operation_lock);
+        LOG_ERROR("FS", "Cancelamento sem escritor de slot ativo");
+        return ERR_STATE;
+    }
+    storage_copy_text(volume_id, sizeof(volume_id),
+                      storage_slot_writer_state.volume_id);
+    storage_copy_text(temp_path, sizeof(temp_path),
+                      storage_slot_writer_state.temp_path);
+    kmemset(&storage_slot_writer_state, 0,
+            sizeof(storage_slot_writer_state));
+    spinlock_release(&storage_operation_lock);
+    result = storage_delete_file(volume_id, temp_path);
+    if (result == ERR_NOT_FOUND) result = OK;
+    if (result != OK) LOG_ERROR("FS", "Falha ao abortar escritor de slot");
+    return result;
+}
+
+int storage_slot_writer_is_active(void) {
+    int active;
+
+    spinlock_acquire(&storage_operation_lock);
+    active = storage_slot_writer_state.active ? 1 : 0;
+    spinlock_release(&storage_operation_lock);
+    return active;
 }
 
 int storage_stream_begin(const char* id, const char* path,

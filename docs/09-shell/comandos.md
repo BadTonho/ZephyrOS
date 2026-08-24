@@ -908,6 +908,34 @@ so verificacao, aplicacao ou rollback. Desde a U5, a linha `remoto` mostra
 `DISABLED`, `READY` ou `DEGRADED` sem confundir falhas de transporte com o
 servico local.
 
+## `update system slots` e `update system stage`
+
+`update system slots` consulta o estado dos slots ZSYS, o ativo, o pendente, a
+sequencia, o journal e os metadados de A/B sem gravar:
+
+```text
+zephyr> update system slots
+```
+
+O preflight local aceita somente um envelope no volume FAT32 `system:/`:
+
+```text
+zephyr> update system stage system:/VALID.ZSYS
+```
+
+Sem `--confirm`, a operacao verifica assinatura, hash, tamanho, alinhamento,
+compatibilidade, anti-downgrade e espaco sem criar staging. Com confirmacao,
+repete o preflight, grava em chunks no slot inativo, verifica o arquivo
+publicado e marca esse slot como pendente:
+
+```text
+zephyr> update system stage system:/VALID.ZSYS --confirm
+```
+
+Esc ou F12 solicita cancelamento cooperativo durante a copia. O cancelamento
+remove o staging temporario e preserva o slot ativo; aplicacao, cancelamento
+de slot pendente, selecao no boot e reboot pertencem a EP9.3.
+
 ## `update history`
 
 Lista ate oito eventos do mais recente para o mais antigo. Cada linha informa
