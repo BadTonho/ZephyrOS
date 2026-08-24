@@ -689,3 +689,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Fixture EP9.1 gerada e `VALID.ZSYS` injetada em: 2026-08-24 17:09
   (America/Sao_Paulo); o alvo `make system-slots-fixtures` foi concluído com
   sucesso.
+- Estado inicial dos slots validado pelo usuário em: 2026-08-24 17:12
+  (America/Sao_Paulo); `update system slots` reportou `READY`, slot A ativo
+  válido, slot B vazio, sequência 1, journal limpo e espaço livre de
+  63930880 bytes.
