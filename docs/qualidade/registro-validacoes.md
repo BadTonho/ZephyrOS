@@ -577,3 +577,5 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Correção das entradas LFN geradas pelo empacotador implementada em:
   2026-08-24 13:16 (America/Sao_Paulo); o segmento inicial agora recebe o
   marcador FAT32 de último segmento e o selftest verifica a sequência.
+- Validação do comando `storage check ata2p1` confirmada pelo usuário com
+  `Volume FAT32 consistente.`; horário exato da execução não foi informado.
