@@ -617,3 +617,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   exato informado: `storage check ata2p1` permaneceu consistente, mas a busca
   do arquivo retornou `ERR_NOT_FOUND`; a matriz considera o nome exato
   `MISALGN.ZSYS`, portanto a validação de alinhamento permanece pendente.
+- Validação QEMU da fixture `MISALGN.img` confirmada pelo usuário, sem horário
+  exato informado: `storage check ata2p1` retornou `Volume FAT32 consistente.`
+  e `update system verify system:/MISALGN.ZSYS` recusou a divergência de
+  regiões com motivo `SIZE`, sem gravação.
