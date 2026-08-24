@@ -610,11 +610,18 @@ isso nao altera o escopo somente-PCI da EP7.0.
 
 ### EP7.1 - Driver USB Realtek RTL8811CU
 
-**Estado:** EP7.1B (EHCI, transporte comum e integracao de inventario)
-implementada em 2026-08-23 20:54:34 (America/Sao_Paulo). A inicializacao do
-radio, a validacao completa de firmware, TX/RX, scan, associacao e DHCP
-continuam pendentes. A implementacao nao executa comandos USB de radio sem
-uma sequencia RTL8811CU verificavel.
+**Estado:** EP7.1 pausada por decisao de escopo. EP7.1A e EP7.1B (EHCI,
+transporte comum e integracao de inventario) foram implementadas; a
+inicializacao do radio, a validacao completa de firmware, TX/RX, scan,
+associacao e DHCP ficam adiadas para a validacao em computador real. A
+implementacao nao executa comandos USB de radio sem uma sequencia RTL8811CU
+verificavel.
+
+**Decisao de escopo:** o Wi-Fi nao e prioridade imediata. O passthrough do
+RTL8811CU no Windows fica pendente e nao sera desbloqueado nesta fase com a
+troca do driver hospedeiro para WinUSB. A EP7.1 sera retomada quando o
+ZephyrOS for executado em hardware real; ate la, Ethernet, USB legado, EHCI,
+Shell e Simple/Classic permanecem como escopo ativo.
 
 **Alvo de hardware literal:**
 

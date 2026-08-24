@@ -171,6 +171,14 @@ Nova validacao apresentada pelo usuario; horario nao informado.
   nao foi encaminhado para a VM. A enumeracao do dispositivo Wi-Fi permanece
   pendente e nenhuma etapa de firmware/radio foi executada.
 
+Decisao de escopo apresentada pelo usuario; horario nao informado.
+
+- A continuidade da EP7.1 foi pausada porque o Wi-Fi nao e prioridade imediata.
+- O passthrough Windows/WinUSB, o firmware, o radio, TX/RX, scan, associacao e
+  DHCP do RTL8811CU serao retomados somente na validacao em computador real.
+- Nenhuma troca de driver hospedeiro sera feita agora; Ethernet, USB legado,
+  EHCI, Shell e interfaces Simple/Classic permanecem preservados.
+
 ## EP6.4 — Gerenciamento de stack para rede e TLS
 
 Implementação concluída em: 2026-08-23 17:38:34 (America/Sao_Paulo)
