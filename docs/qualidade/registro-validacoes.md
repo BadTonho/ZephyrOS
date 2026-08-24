@@ -518,3 +518,5 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Regra de comandos completos adicionada ao `AGENTS.md` em: 2026-08-24 10:21
   (America/Sao_Paulo); comandos futuros devem ser enviados prontos para copiar
   e executar, sem placeholders ou argumentos ausentes.
+- Validação host da EP9.0A confirmada pelo usuário em: 2026-08-24 10:30
+  (America/Sao_Paulo); `make update-test` concluiu com `Updater selftest: OK`.
