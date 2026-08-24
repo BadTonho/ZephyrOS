@@ -686,3 +686,6 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Gates após a correção confirmados pelo usuário em: 2026-08-24 17:07
   (America/Sao_Paulo); `make q3check`, `make clean && make` e `make run`
   concluídos com sucesso.
+- Fixture EP9.1 gerada e `VALID.ZSYS` injetada em: 2026-08-24 17:09
+  (America/Sao_Paulo); o alvo `make system-slots-fixtures` foi concluído com
+  sucesso.
