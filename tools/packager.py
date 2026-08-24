@@ -42,6 +42,7 @@ FAT32_MIN_CLUSTERS = 4086
 FAT32_ATTR_DIRECTORY = 0x10
 FAT32_ATTR_ARCHIVE = 0x20
 FAT32_ATTR_LFN = 0x0F
+FAT32_DIR_ENTRY_SIZE = 32
 FAT32_SECTOR_SIZE = 512
 HYBRID_DISK_BYTES = 64 * 1024 * 1024
 HYBRID_FAT32_START_LBA = 4096
@@ -584,6 +585,40 @@ def _fat32_directory_chain(image: bytearray, start_lba: int, fat: bytearray,
     return chain
 
 
+def _fat32_directory_slots(image: bytearray, start_lba: int, bps: int,
+                            data_start: int, spc: int, fat: bytearray,
+                            clusters: int, chain: list[int],
+                            required: int) -> list[int]:
+    """Reserva slots contiguos, atravessando a extensao do diretorio."""
+    slots: list[int] = []
+    for cluster in chain:
+        base = start_lba * bps + _fat32_cluster_offset(data_start, spc, cluster)
+        for offset in range(0, spc * bps, FAT32_DIR_ENTRY_SIZE):
+            slot = base + offset
+            if image[slot] in (0x00, 0xE5):
+                slots.append(slot)
+            else:
+                slots = []
+            if len(slots) >= required:
+                return slots[:required]
+
+    while len(slots) < required:
+        previous = chain[-1]
+        new_cluster = _fat32_allocate(fat, 1, clusters)[0]
+        _fat32_set(fat, previous, new_cluster)
+        _fat32_set(fat, new_cluster, FAT32_EOF)
+        new_base = start_lba * bps + _fat32_cluster_offset(
+            data_start, spc, new_cluster
+        )
+        image[new_base:new_base + spc * bps] = bytes(spc * bps)
+        chain.append(new_cluster)
+        for offset in range(0, spc * bps, FAT32_DIR_ENTRY_SIZE):
+            slots.append(new_base + offset)
+            if len(slots) >= required:
+                return slots[:required]
+    return slots[:required]
+
+
 def _fat32_records(image: bytearray, start_lba: int, fat: bytearray,
                    data_start: int, spc: int, clusters: int,
                    first_cluster: int) -> list[dict[str, Any]]:
@@ -723,27 +758,10 @@ def inject_fat32_file(data: bytes, image_path: Path, path: str,
     required_slots = lfn_count + 1
     chain = _fat32_directory_chain(image, fat32_start_lba, fat, data_start,
                                     spc, clusters, directory_cluster)
-    slots: list[int] = []
-    for cluster in chain:
-        base = fat32_start_lba * bps + _fat32_cluster_offset(data_start, spc, cluster)
-        for offset in range(0, spc * bps, 32):
-            slot = base + offset
-            if image[slot] in (0x00, 0xE5):
-                slots.append(slot)
-            else:
-                slots = []
-            if len(slots) == required_slots:
-                break
-        if len(slots) == required_slots:
-            break
-    if len(slots) < required_slots:
-        last = chain[-1]
-        new_cluster = _fat32_allocate(fat, 1, clusters)[0]
-        _fat32_set(fat, last, new_cluster)
-        _fat32_set(fat, new_cluster, FAT32_EOF)
-        new_base = fat32_start_lba * bps + _fat32_cluster_offset(data_start, spc, new_cluster)
-        image[new_base:new_base + spc * bps] = bytes(spc * bps)
-        slots = [new_base + offset for offset in range(0, spc * bps, 32)]
+    slots = _fat32_directory_slots(
+        image, fat32_start_lba, bps, data_start, spc, fat, clusters, chain,
+        required_slots,
+    )
     needed = (len(data) + bps * spc - 1) // (bps * spc)
     data_clusters = _fat32_allocate(fat, needed, clusters) if needed else []
     for index, cluster in enumerate(data_clusters):
@@ -2059,22 +2077,31 @@ def run_selftest() -> int:
             )
             long_name = "Dados de Sistema.txt"
             long_data = b"hybrid fat32 payload"
+            for index in range(7):
+                inject_fat32_file(
+                    b"directory boundary",
+                    hybrid_path,
+                    f"FILL{index}.TXT",
+                )
             inject_fat32_file(long_data, hybrid_path, long_name)
             records_image = bytearray(hybrid_path.read_bytes())
             _, spc, reserved, _, spf, data_start, clusters = \
                 fat32_geometry(records_image, HYBRID_FAT32_START_LBA)
-            checks["hybrid_lfn"] = (
-                read_fat32_file(hybrid_path, long_name) == long_data and
-                records_image[HYBRID_FAT32_START_LBA * 512 +
-                             data_start * 512 + 32] == 0x42 and
-                records_image[HYBRID_FAT32_START_LBA * 512 +
-                             data_start * 512 + 64] == 0x01
-            )
             fat_offset = (HYBRID_FAT32_START_LBA + reserved) * 512
             fat = records_image[fat_offset:fat_offset + spf * 512]
             records = _fat32_records(
                 records_image, HYBRID_FAT32_START_LBA, fat, data_start,
                 spc, clusters, 2,
+            )
+            long_record = next(
+                (item for item in records if item["name"] == long_name), None
+            )
+            checks["hybrid_lfn"] = (
+                read_fat32_file(hybrid_path, long_name) == long_data and
+                long_record is not None and
+                records_image[long_record["lfn_start"]] == 0x42 and
+                records_image[long_record["offset"]] == 0x01 and
+                len(_fat32_chain(fat, 2, clusters)) > 1
             )
             checks["hybrid_alias"] = any(
                 item["name"] == long_name and
