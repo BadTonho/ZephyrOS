@@ -120,11 +120,16 @@ porém, só aceita nomes 8.3 e não consegue armazenar a extensão de quatro
 caracteres `.ZSYS`. Para a validação local no QEMU, o alvo `system-fixtures`
 gera uma matriz compacta de parser e usa aliases físicos com extensão `.ZSY`;
 o conteúdo continua sendo um envelope ZSYS v1 e o comando Shell não depende da
-extensão do arquivo. A geração host `fixtures-system` continua cobrindo a
-imagem FAT/disco completa.
+extensão do arquivo. Cada fixture é gravada em uma imagem FAT12 própria em
+`build\system-fixture-images`, porque a matriz inteira não cabe no volume
+FAT12 atual. A geração host `fixtures-system` continua cobrindo a imagem
+FAT/disco completa.
 
 Os aliases da matriz EP9.0A são `VALID.ZSY`, `TRUNC.ZSY`, `HDRBAD.ZSY`,
 `PAYBAD.ZSY`, `SIGBAD.ZSY`, `OVERSIZ.ZSY`, `MISALGN.ZSY`, `VERBAD.ZSY`,
 `EPCHBAD.ZSY`, `ABIBAD.ZSY`, `SCHBAD.ZSY`, `IMGHASH.ZSY` e `CMPHASH.ZSY`.
 Essa geração exige uma chave privada Ed25519 configurada somente no
-`Makefile.local`; nenhum segredo é versionado.
+`Makefile.local`; nenhum segredo é versionado. O alvo `run-system-fixture`,
+recebendo um dos caminhos gerados em `build\system-fixture-images`, inicia a
+imagem selecionada para o teste manual. A expansão do volume para FAT32
+permanece planejada na EP9.4; esta solução não altera boot ou stage2.
