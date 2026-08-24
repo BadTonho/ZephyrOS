@@ -3468,6 +3468,7 @@ def load_remote_config(path: Path) -> dict[str, str]:
         "github_descriptor_name",
         "github_manifest_name",
         "github_package_name",
+        "github_system_name",
         "runtime_release_url_template",
         "runtime_manifest_url",
         "runtime_package_name",
@@ -3481,6 +3482,7 @@ def load_remote_config(path: Path) -> dict[str, str]:
         config["github_descriptor_name"],
         config["github_manifest_name"],
         config["github_package_name"],
+        config["github_system_name"],
         config["github_runtime_manifest_name"],
         config["github_runtime_package_name"],
     )
@@ -3574,7 +3576,8 @@ def render_remote_config_header(config: dict[str, str]) -> str:
         f'#define UPDATE_REMOTE_GITHUB_API_VERSION "{config["github_api_version"]}"\n'
         f'#define UPDATE_REMOTE_GITHUB_DESCRIPTOR_NAME "{config["github_descriptor_name"]}"\n'
         f'#define UPDATE_REMOTE_GITHUB_MANIFEST_NAME "{config["github_manifest_name"]}"\n'
-        f'#define UPDATE_REMOTE_GITHUB_PACKAGE_NAME "{config["github_package_name"]}"\n\n'
+        f'#define UPDATE_REMOTE_GITHUB_PACKAGE_NAME "{config["github_package_name"]}"\n'
+        f'#define UPDATE_REMOTE_GITHUB_SYSTEM_NAME "{config["github_system_name"]}"\n\n'
         f'#define UPDATE_REMOTE_RUNTIME_RELEASE_URL_TEMPLATE \\\n'
         f'    "{config["runtime_release_url_template"]}"\n'
         f'#define UPDATE_REMOTE_RUNTIME_MANIFEST_URL \\\n'
