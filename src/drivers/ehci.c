@@ -204,12 +204,30 @@ static ehci_controller_t ehci_controllers[EHCI_CONTROLLER_CAPACITY];
 
 static uint32_t ehci_timeout_ticks(uint32_t milliseconds) {
     uint32_t frequency = timer_get_frequency();
-    uint64_t ticks;
+    uint32_t whole_seconds;
+    uint32_t remainder_ms;
+    uint32_t whole_ticks;
+    uint32_t fractional_ticks;
+    uint32_t frequency_whole;
+    uint32_t frequency_remainder;
 
     if (!frequency) return milliseconds ? milliseconds : 1U;
-    ticks = ((uint64_t)frequency * milliseconds + 999U) / 1000U;
-    if (!ticks) ticks = 1U;
-    return ticks > 0xFFFFFFFFULL ? 0xFFFFFFFFU : (uint32_t)ticks;
+    whole_seconds = milliseconds / 1000U;
+    remainder_ms = milliseconds % 1000U;
+    if (whole_seconds && frequency > 0xFFFFFFFFU / whole_seconds) {
+        return 0xFFFFFFFFU;
+    }
+    whole_ticks = frequency * whole_seconds;
+    frequency_whole = frequency / 1000U;
+    frequency_remainder = frequency % 1000U;
+    fractional_ticks = frequency_whole * remainder_ms;
+    fractional_ticks += (frequency_remainder * remainder_ms + 999U) /
+                        1000U;
+    if (whole_ticks > 0xFFFFFFFFU - fractional_ticks) {
+        return 0xFFFFFFFFU;
+    }
+    whole_ticks += fractional_ticks;
+    return whole_ticks ? whole_ticks : 1U;
 }
 
 static int ehci_deadline_expired(uint32_t start, uint32_t milliseconds) {
