@@ -837,6 +837,29 @@ crus.
 
 ### EP9.2 - Boot, tentativa e rollback
 
+As entregas de recuperacao da EP9.2 ficam divididas em duas subetapas:
+
+#### EP9.2A - Recovery loader confiavel
+
+- [ ] Adicionar o loader imutavel na area FAT12 legada, mantendo `boot.asm`
+  intacto e usando o `stage2` apenas como shim de carregamento.
+- [ ] Ler o FAT32 `ZEPHYROS`, escolher o estado redundante valido de maior
+  sequencia e registrar a tentativa antes de carregar um slot pendente.
+- [ ] Validar Ed25519, hash da imagem e hashes dos componentes do ZSYS antes
+  de transferir controle ao kernel autenticado.
+- [ ] Manter kernel de recuperacao legado autenticado e fallback local quando
+  volume, estado, journal ou candidato nao puderem ser usados.
+
+#### EP9.2B - Menu pre-kernel e recuperacao interativa
+
+- [ ] Exibir menu BIOS em falha de boot ou com F8, sem depender do kernel novo
+  ou de rede.
+- [ ] Mostrar slots ativo, pendente, anterior, tentativa e motivo da falha.
+- [ ] Permitir iniciar o slot anterior e tentar explicitamente um candidato
+  preservado, com confirmacao adicional e sem ciclos automaticos.
+- [ ] Cobrir interrupcao antes do acknowledge, rollback, estado corrompido,
+  assinatura/hash invalidos e ausencia do volume FAT32.
+
 - [~] Base de confirmação do kernel implementada: estado v2 compatível com v1,
   handoff reservado e confirmação vinculada ao registro persistido. O loader
   FAT32/Ed25519 e o menu pré-kernel ainda pertencem à implementação desta etapa.
