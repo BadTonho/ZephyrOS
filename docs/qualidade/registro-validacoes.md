@@ -750,3 +750,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   (America/Sao_Paulo); foram acrescentados casos que comprovam a escolha da
   maior sequência válida para estado e journal (`STATE_NEWER` e
   `JOURNAL_NEWER`). A validação QEMU permanece pendente do usuário.
+- Caso `STATE_ONE_BAD` validado pelo usuário em: 2026-08-25 13:02
+  (America/Sao_Paulo); uma cópia de estado corrompida foi tolerada, o serviço
+  permaneceu `READY`, o slot A continuou ativo e o slot B permaneceu vazio.
+  A mensagem de fila de eventos do mouse cheia foi observada como ocorrência
+  independente da matriz EP9.1.
