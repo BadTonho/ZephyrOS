@@ -440,6 +440,8 @@ SYSTEM_SLOTS_FIXTURES_DIR = build\system-slots-fixtures
 SYSTEM_SLOTS_BASELINE_DIR = $(SYSTEM_SLOTS_FIXTURES_DIR)\baseline
 SYSTEM_SLOTS_BASELINE_MANIFEST = docs\fixtures\updates\system\baseline.json
 SYSTEM_SLOTS_FIXTURE_IMAGE = $(SYSTEM_SLOTS_FIXTURES_DIR)\SLOTS.img
+SYSTEM_SLOTS_MATRIX_DIR = build\system-slots-matrix
+SYSTEM_SLOTS_MATRIX_IMAGE ?=
 # Defina somente em Makefile.local; a chave privada nunca entra no repositorio.
 SYSTEM_PRIVATE_KEY ?=
 SYSTEM_FIXTURE_IMAGE ?=
@@ -1054,6 +1056,16 @@ system-slots-fixtures: system-fixtures $(SYSTEM_SLOTS_BASELINE_MANIFEST) tools\u
 run-system-slots-fixture: system-slots-fixtures
 	$(QEMU) $(QEMU_CPU_ARGS) -drive file=$(SYSTEM_SLOTS_FIXTURE_IMAGE),format=raw,if=none,id=systemslots -device ide-hd,drive=systemslots,bootindex=1 $(QEMU_NET_ARGS)
 
+system-slots-matrix: system-slots-fixtures tools\system_slots_matrix.py tools\packager.py
+	@if exist "$(SYSTEM_SLOTS_MATRIX_DIR)" rmdir /s /q "$(SYSTEM_SLOTS_MATRIX_DIR)"
+	@if not exist "$(SYSTEM_SLOTS_MATRIX_DIR)" mkdir "$(SYSTEM_SLOTS_MATRIX_DIR)"
+	python tools\system_slots_matrix.py --base-image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --baseline $(SYSTEM_SLOTS_BASELINE_DIR)\valid.zsys --candidate $(SYSTEM_FIXTURES_DIR)\valid.zsys --output-dir $(SYSTEM_SLOTS_MATRIX_DIR) --fat32-start-lba $(FAT32_START_LBA)
+
+run-system-slots-matrix: system-slots-matrix
+	@if "$(SYSTEM_SLOTS_MATRIX_IMAGE)"=="" (echo SYSTEM_SLOTS_MATRIX_IMAGE nao configurada & exit /b 2)
+	@if not exist "$(SYSTEM_SLOTS_MATRIX_IMAGE)" (echo Imagem de matriz nao encontrada: $(SYSTEM_SLOTS_MATRIX_IMAGE) & exit /b 2)
+	$(QEMU) $(QEMU_CPU_ARGS) -drive file=$(SYSTEM_SLOTS_MATRIX_IMAGE),format=raw,if=none,id=systemslotsmatrix -device ide-hd,drive=systemslotsmatrix,bootindex=1 $(QEMU_NET_ARGS)
+
 run: $(OS_IMG)
 	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS)
 
@@ -1170,4 +1182,4 @@ store-as5-serve: store-as5-test
 clean:
 	rmdir /s /q build
 
-.PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-system-fixture run-system-slots-fixture run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures system-slots-fixtures debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
+.PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-system-fixture run-system-slots-fixture run-system-slots-matrix run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures system-slots-fixtures system-slots-matrix debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean

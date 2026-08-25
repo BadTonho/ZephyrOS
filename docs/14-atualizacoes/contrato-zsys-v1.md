@@ -128,6 +128,18 @@ nenhuma operação aloca a imagem de até 8 MiB inteira. O arquivo temporário �
 controlado pelo journal e removido depois do aborto ou da publicação. O slot
 ativo nunca é substituído nesta etapa.
 
+### Matriz de recuperacao
+
+O alvo `system-slots-matrix` deriva imagens de recuperacao sem re-assinar o
+envelope. Os casos `STATE_ONE_BAD`, `STATE_BOTH_BAD`, `STATE_NEWER`,
+`JOURNAL_PREPARED`, `JOURNAL_STAGING`, `JOURNAL_VERIFIED`,
+`JOURNAL_COMMITTED`, `JOURNAL_NEWER`, `JOURNAL_ONE_BAD`,
+`JOURNAL_BOTH_BAD`, `NO_SPACE` e `NO_VOLUME` alteram apenas os aliases de
+controle da fixture. A validacao
+manual inicia um caso por vez com `run-system-slots-matrix` e confirma que o
+slot A permanece preservado, que o journal e escolhido pela maior sequencia
+valida e que duas copias invalidas deixam o servico degradado.
+
 ## Ferramentas e comandos
 
 No host:
