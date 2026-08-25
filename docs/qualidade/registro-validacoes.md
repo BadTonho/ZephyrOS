@@ -783,3 +783,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   (America/Sao_Paulo); a recuperação em `STAGING` preservou o slot A, removeu
   o staging incompleto, limpou o journal e manteve o serviço `READY` com B
   vazio.
+- Caso `JOURNAL_VERIFIED` validado pelo usuário em: 2026-08-25 14:36
+  (America/Sao_Paulo); a recuperação publicou o slot B como `VALID` e
+  pendente, preservou A como ativo e válido, avançou para `seq=2` e limpou o
+  journal.
