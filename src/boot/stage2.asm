@@ -3,6 +3,8 @@
 
 KERNEL_OFFSET    equ 0x00100000
 KERNEL_LIMIT     equ 0x00800000
+RECOVERY_LOADER_OFFSET equ 0x00900000
+RECOVERY_LOADER_LIMIT equ 0x00A00000
 KERNEL_STACK_TOP equ 0x0009F000
 STAGE2_LOAD      equ 0x5000
 STAGE2_INFO      equ 0x4FFE
@@ -46,12 +48,28 @@ GDT_DATA16_SEL   equ 0x20
 %define KERNEL_SECTORS ((KERNEL_LIMIT - KERNEL_OFFSET) / SECTOR_SIZE)
 %endif
 
-%if KERNEL_SECTORS <= 0
+%ifndef RECOVERY_LOADER_SECTORS
+%define RECOVERY_LOADER_SECTORS 1
+%endif
+
+%ifndef KERNEL_BYTES
+%define KERNEL_BYTES (KERNEL_SECTORS * SECTOR_SIZE)
+%endif
+
+%if KERNEL_SECTORS <= 0 || RECOVERY_LOADER_SECTORS <= 0
     %error "kernel nao possui setores para carregar"
 %endif
 
 %if KERNEL_SECTORS > ((KERNEL_LIMIT - KERNEL_OFFSET) / SECTOR_SIZE)
-    %error "kernel excede a reserva de memoria alta"
+    %error "kernel legado excede a janela reservada"
+%endif
+
+%if KERNEL_BYTES <= 0 || KERNEL_BYTES > (KERNEL_SECTORS * SECTOR_SIZE)
+    %error "tamanho do kernel legado invalido"
+%endif
+
+%if RECOVERY_LOADER_SECTORS > ((RECOVERY_LOADER_LIMIT - RECOVERY_LOADER_OFFSET) / SECTOR_SIZE)
+    %error "recovery loader excede a janela reservada"
 %endif
 
 %if (KERNEL_BUFFER & 0x0F) != 0
@@ -81,19 +99,30 @@ stage2_start:
     call detect_memory
     call detect_disk_access
 
-    call validate_kernel_memory
+    ; Reserva tanto o fallback em 1 MiB quanto o loader acima dele antes de
+    ; qualquer leitura do disco; nenhum artefato pode invadir o FAT32.
+    mov dword [LOAD_DEST], KERNEL_OFFSET
+    mov dword [LOAD_LIMIT], KERNEL_LIMIT
+    call validate_load_memory
+    jc memory_error
+
+    mov dword [LOAD_DEST], RECOVERY_LOADER_OFFSET
+    mov dword [LOAD_LIMIT], RECOVERY_LOADER_LIMIT
+    call validate_load_memory
     jc memory_error
 
     call enable_a20
     jc a20_error
 
-    ; O stage1 gravou a quantidade de setores do proprio stage2.
+    ; O stage1 gravou a quantidade de setores do proprio stage2. O loader
+    ; confiavel ocupa os setores seguintes; o kernel legado permanece depois.
     mov ax, [STAGE2_INFO]
     inc ax
     mov [LBA], ax
-    mov dword [LOAD_DEST], KERNEL_OFFSET
-    mov word [remaining], KERNEL_SECTORS
+    mov word [remaining], RECOVERY_LOADER_SECTORS
     call load_kernel
+    movzx eax, word [LBA]
+    mov [LEGACY_KERNEL_LBA], eax
 
     ; Mantem o modo texto durante o carregamento para tornar erros visiveis.
     call set_vesa_mode
@@ -137,7 +166,7 @@ detect_memory:
     mov [MEMORY_MAP - 4], eax
     ret
 
-validate_kernel_memory:
+validate_load_memory:
     pusha
     mov si, MEMORY_MAP
     mov bp, [mmap_count]
@@ -152,7 +181,7 @@ validate_kernel_memory:
     mov edx, [si + 4]
     test edx, edx
     jnz .advance
-    cmp eax, KERNEL_OFFSET
+    cmp eax, [LOAD_DEST]
     ja .advance
 
     mov ebx, [si + 8]
@@ -161,7 +190,7 @@ validate_kernel_memory:
     adc ecx, edx
     test ecx, ecx
     jnz .success
-    cmp ebx, KERNEL_LIMIT
+    cmp ebx, [LOAD_LIMIT]
     jae .success
 
 .advance:
@@ -405,7 +434,7 @@ load_kernel:
     shl eax, 9
     add eax, [LOAD_DEST]
     jc load_overflow
-    cmp eax, KERNEL_LIMIT
+    cmp eax, [LOAD_LIMIT]
     ja load_overflow
 
 .read_loop:
@@ -647,9 +676,12 @@ protected_mode:
     mov gs, ax
     mov ss, ax
     mov esp, KERNEL_STACK_TOP
-    mov esi, MEMORY_MAP
-    mov edi, VESA_INFO
-    call KERNEL_OFFSET
+    push dword KERNEL_BYTES
+    push dword KERNEL_SECTORS
+    push dword [LEGACY_KERNEL_LBA]
+    push dword VESA_INFO
+    push dword MEMORY_MAP
+    call RECOVERY_LOADER_OFFSET
     jmp $
 
 gdt_start:
@@ -679,6 +711,8 @@ SPT:        dw 0
 NUM_HEADS:  dw 0
 LBA:        dw 0
 LOAD_DEST:  dd 0
+LOAD_LIMIT: dd KERNEL_LIMIT
+LEGACY_KERNEL_LBA: dd 0
 remaining:  dw 0
 transfer_sectors: dw 0
 align 4

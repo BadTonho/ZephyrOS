@@ -33,6 +33,18 @@ BOOT_SRC = src/boot/boot.asm
 BOOT_BIN = build/boot.bin
 STAGE2_SRC = src/boot/stage2.asm
 STAGE2_BIN = build/stage2.bin
+RECOVERY_LOADER_C = src/boot/recovery_loader.c
+RECOVERY_LOADER_OBJ = build/recovery_loader.o
+RECOVERY_RUNTIME_C = src/boot/recovery_runtime.c
+RECOVERY_RUNTIME_OBJ = build/recovery_runtime.o
+RECOVERY_ENTRY_ASM = src/boot/recovery_entry.asm
+RECOVERY_ENTRY_OBJ = build/recovery_entry.o
+RECOVERY_LOADER_LD = src/boot/recovery_loader.ld
+RECOVERY_LOADER_BIN = build/recovery_loader.bin
+RECOVERY_LOADER_PADDED_BIN = build/recovery_loader_padded.bin
+RECOVERY_LOADER_PAD_TOOL = tools/pad_boot_payload.py
+RECOVERY_LAYOUT_TOOL = tools/recovery_layout.py
+RECOVERY_LAYOUT_HEADER = build/recovery_layout.h
 
 # Arquivos - Kernel
 ENTRY_SRC = src/kernel/entry.asm
@@ -497,9 +509,31 @@ $(BOOT_BIN): $(BOOT_SRC) $(STAGE2_BIN)
 	@if not exist build mkdir build
 	for /f %%S in ('powershell -NoProfile -Command "$$size = (Get-Item '$(STAGE2_BIN)').Length; [math]::Ceiling($$size / 512)"') do $(NASM) $(NASMFLAGS) -dSTAGE2_SECTORS=%%S $< -o $@
 
-$(STAGE2_BIN): $(STAGE2_SRC) $(KERNEL_BIN)
+$(STAGE2_BIN): $(STAGE2_SRC) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN)
 	@if not exist build mkdir build
-	for /f %%S in ('powershell -NoProfile -Command "$$size = (Get-Item '$(KERNEL_BIN)').Length; [math]::Ceiling($$size / 512)"') do $(NASM) $(NASMFLAGS) -dKERNEL_SECTORS=%%S $< -o $@
+	for /f %%S in ('powershell -NoProfile -Command "$$size = (Get-Item '$(KERNEL_BIN)').Length; [math]::Ceiling($$size / 512)"') do for /f %%K in ('powershell -NoProfile -Command "(Get-Item '$(KERNEL_BIN)').Length"') do for /f %%R in ('powershell -NoProfile -Command "(Get-Item '$(RECOVERY_LOADER_PADDED_BIN)').Length / 512"') do $(NASM) $(NASMFLAGS) -dKERNEL_SECTORS=%%S -dKERNEL_BYTES=%%K -dRECOVERY_LOADER_SECTORS=%%R $< -o $@
+
+$(RECOVERY_ENTRY_OBJ): $(RECOVERY_ENTRY_ASM)
+	@if not exist build mkdir build
+	$(NASM) -f elf32 $< -o $@
+
+$(RECOVERY_LAYOUT_HEADER): $(KERNEL_BIN) $(RECOVERY_LAYOUT_TOOL)
+	@if not exist build mkdir build
+	python $(RECOVERY_LAYOUT_TOOL) --kernel $(KERNEL_BIN) --output $@
+
+$(RECOVERY_LOADER_OBJ): $(RECOVERY_LOADER_C) $(RECOVERY_LAYOUT_HEADER) src/include/core/crypto.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/core/update_trust.h
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -I build -c $< -o $@
+
+$(RECOVERY_RUNTIME_OBJ): $(RECOVERY_RUNTIME_C)
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(RECOVERY_LOADER_BIN): $(RECOVERY_ENTRY_OBJ) $(RECOVERY_LOADER_OBJ) $(RECOVERY_RUNTIME_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(RECOVERY_LOADER_LD)
+	$(LD) -m elf_i386 -T $(RECOVERY_LOADER_LD) $(RECOVERY_ENTRY_OBJ) $(RECOVERY_LOADER_OBJ) $(RECOVERY_RUNTIME_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) -o $@
+
+$(RECOVERY_LOADER_PADDED_BIN): $(RECOVERY_LOADER_BIN) $(RECOVERY_LOADER_PAD_TOOL)
+	python $(RECOVERY_LOADER_PAD_TOOL) --input $(RECOVERY_LOADER_BIN) --output $@
 
 $(ENTRY_OBJ): $(ENTRY_SRC)
 	@if not exist build mkdir build
@@ -967,14 +1001,14 @@ $(DISPLAY_OBJ): $(DISPLAY_C)
 $(KERNEL_BIN): $(OBJS) src/linker.ld
 	$(LD) $(LDFLAGS) $(OBJS) -o $@
 
-$(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(KERNEL_BIN) tools\packager.py \
+$(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN) tools\packager.py \
           assets\icons\SHELL.BMP assets\icons\EXPLORER.BMP assets\icons\TASKMGR.BMP \
           $(STORE_FIXTURES) $(STORE_AS2_FIXTURES) $(STORE_AS4_UPDATE_FIXTURES) \
           docs\fixtures\updates\u2\VALID.ZUP docs\fixtures\updates\u2\TRUNC.ZUP \
           docs\fixtures\updates\u2\BADHASH.ZUP docs\fixtures\updates\u2\BADSIG.ZUP \
           docs\fixtures\updates\u2\BADVER.ZUP docs\fixtures\updates\u2\BADFMT.ZUP \
           docs\fixtures\updates\u2\UNKKEY.ZUP docs\fixtures\updates\u3\APPLY.ZUP
-	cmd /c "copy /b build\boot.bin+build\stage2.bin+build\kernel.bin build\zephyros.img"
+	cmd /c "copy /b build\boot.bin+build\stage2.bin+build\recovery_loader_padded.bin+build\kernel.bin build\zephyros.img"
 	python tools\packager.py prepare-hybrid-image --image $(OS_IMG) --disk-bytes $(HYBRID_DISK_BYTES) --fat32-start-lba $(FAT32_START_LBA) --label $(FAT32_LABEL)
 	python tools\packager.py inject-file-fat32 --file assets\icons\SHELL.BMP --image $(OS_IMG) --path SHELL.BMP --fat32-start-lba $(FAT32_START_LBA)
 	python tools\packager.py inject-file-fat32 --file assets\icons\EXPLORER.BMP --image $(OS_IMG) --path EXPLORER.BMP --fat32-start-lba $(FAT32_START_LBA)
@@ -1059,7 +1093,7 @@ run-system-slots-fixture: system-slots-fixtures
 system-slots-matrix: system-slots-fixtures tools\system_slots_matrix.py tools\packager.py
 	@if exist "$(SYSTEM_SLOTS_MATRIX_DIR)" rmdir /s /q "$(SYSTEM_SLOTS_MATRIX_DIR)"
 	@if not exist "$(SYSTEM_SLOTS_MATRIX_DIR)" mkdir "$(SYSTEM_SLOTS_MATRIX_DIR)"
-	python tools\system_slots_matrix.py --base-image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --baseline $(SYSTEM_SLOTS_BASELINE_DIR)\valid.zsys --candidate $(SYSTEM_FIXTURES_DIR)\valid.zsys --output-dir $(SYSTEM_SLOTS_MATRIX_DIR) --fat32-start-lba $(FAT32_START_LBA)
+	python tools\system_slots_matrix.py --base-image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --baseline $(SYSTEM_SLOTS_BASELINE_DIR)\valid.zsys --candidate $(SYSTEM_FIXTURES_DIR)\valid.zsys --bad-signature $(SYSTEM_FIXTURES_DIR)\tampered-signature.zsys --bad-image-hash $(SYSTEM_FIXTURES_DIR)\hash-divergent-image.zsys --bad-component-hash $(SYSTEM_FIXTURES_DIR)\hash-divergent-component.zsys --output-dir $(SYSTEM_SLOTS_MATRIX_DIR) --fat32-start-lba $(FAT32_START_LBA)
 
 run-system-slots-matrix: system-slots-matrix
 	@if "$(SYSTEM_SLOTS_MATRIX_IMAGE)"=="" (echo SYSTEM_SLOTS_MATRIX_IMAGE nao configurada & exit /b 2)

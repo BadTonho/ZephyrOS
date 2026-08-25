@@ -409,3 +409,9 @@ no LBA 4096. `fs.h` roteia caminhos sem prefixo e `system:/` para o volume de
 sistema quando montado, preserva `legacy:/` para o FAT12 e não faz fallback
 silencioso. Nenhuma API altera `boot.asm`, `stage2`, slots, staging, reboot ou
 journaling nesta etapa.
+
+EP9.2A adiciona somente contratos privados de boot: o recovery loader fixo
+seleciona `ZSI*.STA`, grava tentativa/rollback in-place na copia redundante ja
+prealocada e autentica o ZSYS em streaming antes de executar o kernel. Nao ha
+API publica nova de Shell; `update_system_slots_boot_confirm()` e `ZSBH`
+permanecem o contrato entre loader e kernel. `boot.asm` continua inalterado.

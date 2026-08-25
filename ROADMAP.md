@@ -749,8 +749,9 @@ Evolução da plataforma:      [████████████████
   específica concluída.
 - [x] Matriz reproduzivel EP9.1 validada para corrupcao de estado/journal,
   fases de recuperacao, falta de espaco e volume FAT32 ausente.
-- [ ] EP9.2A-EP9.2B e EP9.3 futuras: recovery loader, menu pre-kernel, boot
-  pendente, aplicacao, rollback pos-reboot e confirmacao explicita de reboot.
+- [~] EP9.2A implementada, aguardando matriz QEMU: recovery loader fixo,
+  boot pendente autenticado, tentativa/rollback e fallback legado; EP9.2B e
+  EP9.3 futuras: menu pre-kernel, aplicacao e comandos pos-reboot.
 - [ ] EP9.3 futura: aplicação, comandos, rollback pós-reboot e confirmação
   explícita de reboot.
 

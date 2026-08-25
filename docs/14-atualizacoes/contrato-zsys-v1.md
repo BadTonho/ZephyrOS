@@ -204,3 +204,27 @@ aceita o handoff somente se slot, anterior, sequência de estado e sequência da
 tentativa coincidirem com o estado persistido; então promove o slot e limpa o
 pendente. O `stage2` legado limpa essa área antes de carregar o kernel, para
 que um boot sem loader nunca confirme uma tentativa antiga.
+
+### EP9.2A - Recovery loader fixo
+
+O layout legado e `boot -> stage2 -> recovery loader -> kernel legado`.
+`boot.asm` permanece inalterado. O `stage2` carrega o loader para a janela
+0x00900000..0x00A00000 e entrega mapa de memoria, VESA, LBA e tamanho do
+fallback. O build recusa loader maior que a janela, kernel maior que
+0x00100000..0x00800000 ou payload que alcance o FAT32 no LBA 4096.
+
+O loader usa ATA PIO em modo protegido e somente o subconjunto FAT32 da raiz e
+dos aliases 8.3 de slots/controles. Ele escolhe o maior `ZSI*.STA` valido,
+recusa journal pendente e verifica em streaming SHA-256 do envelope, `key_id`,
+Ed25519, hash da imagem e os tres hashes de componentes contiguos. Somente o
+kernel e copiado para 0x00100000; boot e stage2 sao autenticados, nao
+executados.
+
+Antes de iniciar um pendente, o loader grava e rele a outra copia de estado
+como v2 com `ATTEMPTED`, slot anterior e sequencias novas, e publica `ZSBH`.
+Uma tentativa sem confirmacao, ou um pendente que falha na validacao, vira
+`FAILED`, limpa `pending` e preserva o envelope. Qualquer recusa apresenta
+diagnostico VGA local e tenta o kernel legado apenas apos conferir seu SHA-256
+incorporado pelo build. As copias de estado precisam existir com 512 bytes;
+o loader nunca cria, realoca ou remove arquivos FAT32. Menu, F8 e retry manual
+ficam para EP9.2B.
