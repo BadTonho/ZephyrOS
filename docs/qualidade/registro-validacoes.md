@@ -790,3 +790,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Caso `JOURNAL_COMMITTED` validado pelo usuário em: 2026-08-25 14:38
   (America/Sao_Paulo); a recuperação manteve A ativo e válido, publicou B como
   `VALID`/pendente, avançou para `seq=2` e limpou o journal.
+- Caso `JOURNAL_NEWER` validado pelo usuário em: 2026-08-25 14:40
+  (America/Sao_Paulo); entre journals válidos com sequências 2 e 3, a
+  recuperação terminou `READY`, preservou A, descartou o staging conforme a
+  fase de maior sequência e limpou o journal.
