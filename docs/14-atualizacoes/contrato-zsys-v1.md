@@ -215,8 +215,12 @@ permanece inalterado. O `stage2` carrega o loader para a janela
 fallback. O build recusa loader maior que a janela, kernel maior que
 0x00100000..0x00800000 ou payload que alcance o FAT32 no LBA 4096.
 
-O loader usa ATA PIO em modo protegido e somente o subconjunto FAT32 da raiz e
-dos aliases 8.3 de slots/controles. Ele escolhe o maior `ZSI*.STA` valido,
+O loader permanece em modo protegido e usa um gateway fixo do `stage2` para
+leituras e escritas BIOS EDD (`INT 13h/AH=42` e `AH=43`) de um setor por vez,
+mantendo CHS como fallback quando EDD nao estiver disponivel. DAP, estado do
+gateway e bounce buffer ficam reservados em memoria baixa. Ele implementa somente o
+subconjunto FAT32 da raiz e dos aliases 8.3 de slots/controles, escolhe o maior
+`ZSI*.STA` valido,
 recusa journal pendente e verifica em streaming SHA-256 do envelope, `key_id`,
 Ed25519, hash da imagem e os tres hashes de componentes contiguos. Somente o
 kernel e copiado para 0x00100000; boot e stage2 sao autenticados, nao

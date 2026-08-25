@@ -18,6 +18,13 @@ VESA_MODE_INFO   equ 0x2400
 VESA_MODE_SIZE   equ 256
 SYSTEM_BOOT_HANDOFF equ 0x2800
 SYSTEM_BOOT_HANDOFF_SIZE equ 64
+BIOS_GATEWAY_OFFSET equ 0x5F00
+BIOS_GATEWAY_DAP equ 0x2A00
+BIOS_GATEWAY_RETURN equ 0x2A10
+BIOS_GATEWAY_STATUS equ 0x2A20
+BIOS_GATEWAY_OPERATION equ 0x2A21
+BIOS_GATEWAY_ATTEMPTS equ 0x2A22
+BIOS_GATEWAY_CHS_SECTOR equ 0x2A23
 SECTOR_SIZE      equ 512
 KERNEL_BUFFER    equ 0x00010000
 KERNEL_BUFFER_SEG equ (KERNEL_BUFFER >> 4)
@@ -726,6 +733,114 @@ msg_chs_disk: db "Kernel CHS read error!", 0
 msg_memory:   db "Kernel high memory unavailable!", 0
 msg_a20:      db "A20 enable error!", 0
 msg_overflow: db "Kernel load overflow!", 0
+
+; O recovery loader chama este ponto por um descritor protegido de 16 bits.
+; O endereco e fixo para que o binario independente possa usa-lo sem linkar
+; contra o stage2. A area 0x2A00 guarda o DAP e o retorno protegido.
+%if ($-$$) > (BIOS_GATEWAY_OFFSET - STAGE2_LOAD)
+    %error "stage2 invade o endereco fixo do gateway BIOS"
+%endif
+times ((BIOS_GATEWAY_OFFSET - STAGE2_LOAD) - ($-$$)) db 0
+
+[BITS 16]
+bios_gateway_16:
+    mov ax, GDT_DATA16_SEL
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+
+    mov eax, cr0
+    and eax, 0xFFFFFFFE
+    mov cr0, eax
+    jmp 0x0000:bios_gateway_real
+
+bios_gateway_real:
+    xor ax, ax
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+    mov sp, STAGE2_STACK
+    sti
+    mov byte [BIOS_GATEWAY_STATUS], 1
+    mov byte [BIOS_GATEWAY_ATTEMPTS], DISK_READ_ATTEMPTS
+
+.retry:
+    cmp byte [DISK_MODE], DISK_MODE_LBA
+    jne .chs
+    mov word [BIOS_GATEWAY_DAP + 2], 1
+    mov si, BIOS_GATEWAY_DAP
+    mov dl, [BOOT_DRIVE]
+    cmp byte [BIOS_GATEWAY_OPERATION], 1
+    je .write
+    mov ah, 0x42
+    int 0x13
+    jmp .result
+
+.write:
+    mov ax, 0x4300
+    int 0x13
+    jmp .result
+
+.chs:
+    cmp dword [BIOS_GATEWAY_DAP + 12], 0
+    jne .return_protected
+    mov eax, [BIOS_GATEWAY_DAP + 8]
+    xor edx, edx
+    movzx ecx, word [SPT]
+    test ecx, ecx
+    jz .return_protected
+    div ecx
+    inc dl
+    mov [BIOS_GATEWAY_CHS_SECTOR], dl
+    xor edx, edx
+    movzx ecx, word [NUM_HEADS]
+    test ecx, ecx
+    jz .return_protected
+    div ecx
+    cmp eax, 1023
+    ja .return_protected
+    mov ch, al
+    mov cl, [BIOS_GATEWAY_CHS_SECTOR]
+    mov bl, ah
+    shl bl, 6
+    or cl, bl
+    mov dh, dl
+    mov dl, [BOOT_DRIVE]
+    mov ax, KERNEL_BUFFER_SEG
+    mov es, ax
+    xor bx, bx
+    cmp byte [BIOS_GATEWAY_OPERATION], 1
+    je .write_chs
+    mov ax, 0x0201
+    int 0x13
+    jmp .result
+
+.write_chs:
+    mov ax, 0x0301
+    int 0x13
+
+.result:
+    jnc .success
+    dec byte [BIOS_GATEWAY_ATTEMPTS]
+    jz .return_protected
+    xor ax, ax
+    mov dl, [BOOT_DRIVE]
+    int 0x13
+    jmp .retry
+
+.success:
+    mov byte [BIOS_GATEWAY_STATUS], 0
+
+.return_protected:
+    cli
+    lgdt [gdt_descriptor]
+    mov eax, cr0
+    or eax, 0x00000001
+    mov cr0, eax
+    jmp dword far [BIOS_GATEWAY_RETURN]
 
 %if ($-$$) > ((0x10000 - STAGE2_LOAD) - (SECTOR_SIZE - 1))
     %error "stage2 excede o limite de memoria reservado"

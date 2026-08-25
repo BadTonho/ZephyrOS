@@ -829,3 +829,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   tentativa persistida com rollback e fallback SHA-256 do kernel legado.
   `boot.asm` permaneceu inalterado. Gates e matriz QEMU da EP9.2A aguardam a
   validacao do usuario.
+- Gateway de disco da EP9.2A corrigido em: 2026-08-25 16:52
+  (America/Sao_Paulo); o diagnostico QEMU `LEGACY ATA READ FAIL` confirmou que
+  o acesso PIO direto do loader nao alcançava a imagem. O backend foi trocado
+  por um trampoline BIOS EDD de leitura/escrita no `stage2`, mantendo
+  `boot.asm` inalterado. A correcao aguarda novos gates e validacao QEMU.
