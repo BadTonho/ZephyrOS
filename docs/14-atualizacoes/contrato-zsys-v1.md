@@ -236,7 +236,9 @@ antes da transferência de controle. Até esse ponto os diagnósticos permanecem
 no modo texto. Uma falha na configuração VESA não autoriza outro payload nem
 interrompe o boot autenticado: o handoff informa VESA indisponível e o kernel
 usa o fallback Simple. A entrada do kernel recria a pilha e os registradores de
-handoff usados pelo fluxo legado do `stage2`.
+handoff usados pelo fluxo legado do `stage2`: `ESP=0x9F000`, mapa E820 em
+`ESI` e bloco VESA em `EDI`. Nenhum argumento e empilhado pela ponte, pois a
+propria entrada do kernel converte esses registradores para a chamada C.
 
 Antes de iniciar um pendente, o loader grava e rele a outra copia de estado
 como v2 com `ATTEMPTED`, slot anterior e sequencias novas, e publica `ZSBH`.

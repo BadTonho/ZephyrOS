@@ -167,8 +167,6 @@ recovery_boot_kernel_entry:
     mov esi, [esp + 4]
     mov edi, [esp + 8]
     mov esp, KERNEL_STACK_TOP
-    push edi
-    push esi
     cli
     call KERNEL_OFFSET
 .halt:
