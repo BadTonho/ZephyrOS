@@ -8,7 +8,6 @@ section .text
 global _start
 global recovery_bios_read_sector
 global recovery_bios_write_sector
-global recovery_bios_set_vesa_mode
 global recovery_boot_kernel_entry
 
 BIOS_GATEWAY_OFFSET equ 0x00005F00
@@ -128,39 +127,6 @@ recovery_bios_prepare:
     mov word [BIOS_GATEWAY_DAP + 6], (BIOS_BOUNCE_BUFFER >> 4)
     mov [BIOS_GATEWAY_DAP + 8], eax
     mov dword [BIOS_GATEWAY_DAP + 12], 0
-    ret
-
-recovery_bios_set_vesa_mode:
-    push ebp
-    mov ebp, esp
-    push ebx
-    push esi
-    push edi
-    mov byte [BIOS_GATEWAY_OPERATION], 2
-    mov dword [BIOS_GATEWAY_RETURN], .resume
-    mov word [BIOS_GATEWAY_RETURN + 4], GDT_CODE32_SEL
-    mov [BIOS_GATEWAY_SAVED_ESP], esp
-    cli
-    jmp GDT_CODE16_SEL:BIOS_GATEWAY_OFFSET
-.resume:
-    mov ax, GDT_DATA32_SEL
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    mov ss, ax
-    mov esp, [BIOS_GATEWAY_SAVED_ESP]
-    cmp byte [BIOS_GATEWAY_STATUS], 0
-    jne .fail
-    mov eax, 1
-    jmp .done
-.fail:
-    xor eax, eax
-.done:
-    pop edi
-    pop esi
-    pop ebx
-    pop ebp
     ret
 
 recovery_boot_kernel_entry:

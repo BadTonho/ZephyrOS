@@ -45,12 +45,12 @@ detect_memory:
     int 0x15               ; Chama BIOS
 ```
 
-O estágio 2 coleta o mapa E820 antes de carregar o kernel. No fluxo com o
-recovery loader, o modo texto permanece ativo durante a seleção e a validação
-do slot. Somente depois de autenticar e copiar o kernel o loader solicita ao
-gateway fixo do `stage2` a configuração do modo VESA. Assim, falhas anteriores
-continuam visíveis localmente. Se VESA falhar, o kernel recebe o estado como
-indisponível e mantém o fallback Simple.
+O estágio 2 coleta o mapa E820 e carrega o recovery loader ainda em modo real.
+Antes de transferir controle ao loader protegido, configura VESA pelo caminho
+BIOS já usado pelo boot legado. O loader fixo desenha seus diagnósticos no
+framebuffer em 24 ou 32 bpp; quando VESA não está disponível, mantém a saída
+VGA em texto. O mesmo bloco de informações segue intacto para o kernel. Se a
+configuração falhar, o kernel mantém o fallback Simple.
 
 O BIOS retorna uma tabela com as regiões de memória disponíveis:
 - Endereço base

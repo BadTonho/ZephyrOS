@@ -86,7 +86,6 @@ static const uint8_t* recovery_vesa;
 
 extern int recovery_bios_read_sector(uint32_t lba, void* output);
 extern int recovery_bios_write_sector(uint32_t lba, const void* input);
-extern int recovery_bios_set_vesa_mode(void);
 extern void recovery_boot_kernel_entry(uint32_t mmap, uint32_t vesa);
 
 static const uint8_t recovery_font[26][5] = {
@@ -138,6 +137,37 @@ static int recovery_write_sector(uint32_t lba, const void* input) {
     return recovery_bios_write_sector(lba, input);
 }
 
+static void recovery_framebuffer_pixel(uint32_t framebuffer, uint16_t pitch,
+                                       uint8_t bpp, uint32_t x, uint32_t y) {
+    uint8_t* pixel = (uint8_t*)(framebuffer + y * pitch + x * (bpp / 8U));
+    pixel[0] = 0xFFU;
+    pixel[1] = 0xFFU;
+    pixel[2] = 0xFFU;
+    if (bpp == 32U) pixel[3] = 0U;
+}
+
+static void recovery_framebuffer_glyph(uint32_t framebuffer, uint16_t pitch,
+                                       uint8_t bpp, uint32_t x, uint32_t y,
+                                       const uint8_t* glyph) {
+    for (uint32_t row = 0U; row < 5U; row++) {
+        for (uint32_t column = 0U; column < 5U; column++) {
+            uint32_t pixel_x;
+            uint32_t pixel_y;
+            if (!(glyph[row] & (1U << (4U - column)))) continue;
+            pixel_x = x + column * 2U;
+            pixel_y = y + row * 2U;
+            recovery_framebuffer_pixel(framebuffer, pitch, bpp,
+                                       pixel_x, pixel_y);
+            recovery_framebuffer_pixel(framebuffer, pitch, bpp,
+                                       pixel_x + 1U, pixel_y);
+            recovery_framebuffer_pixel(framebuffer, pitch, bpp,
+                                       pixel_x, pixel_y + 1U);
+            recovery_framebuffer_pixel(framebuffer, pitch, bpp,
+                                       pixel_x + 1U, pixel_y + 1U);
+        }
+    }
+}
+
 static void recovery_message(const char* message) {
     uint32_t framebuffer = recovery_vesa ? recovery_u32(recovery_vesa) : 0U;
     uint16_t pitch = recovery_vesa ? recovery_u16(recovery_vesa + 4U) : 0U;
@@ -150,18 +180,18 @@ static void recovery_message(const char* message) {
         } else {
             uint32_t x = (recovery_vga_cursor % RECOVERY_VGA_WIDTH) * 12U;
             uint32_t y = (recovery_vga_cursor / RECOVERY_VGA_WIDTH) * 16U;
-            if (framebuffer && recovery_vesa[10U] == 32U && recovery_vesa[11U] &&
+            uint8_t bpp = recovery_vesa ? recovery_vesa[10U] : 0U;
+            if (framebuffer && (bpp == 24U || bpp == 32U) &&
+                recovery_vesa[11U] &&
                 x + 10U <= width && y + 14U <= height) {
                 const uint8_t* glyph = *message >= 'A' && *message <= 'Z' ?
                     recovery_font[*message - 'A'] : 0;
-                if (glyph) for (uint32_t row = 0U; row < 5U; row++) for (uint32_t column = 0U; column < 5U; column++) {
-                    if (glyph[row] & (1U << (4U - column))) {
-                        uint32_t* pixel = (uint32_t*)(framebuffer + (y + row * 2U) * pitch + (x + column * 2U) * 4U);
-                        pixel[0] = 0x00FFFFFFU; pixel[1] = 0x00FFFFFFU;
-                        pixel[pitch / 4U] = 0x00FFFFFFU; pixel[pitch / 4U + 1U] = 0x00FFFFFFU;
-                    }
-                }
-            } else RECOVERY_VGA_TEXT[recovery_vga_cursor] = RECOVERY_VGA_ATTRIBUTE | (uint8_t)*message;
+                if (glyph) recovery_framebuffer_glyph(
+                    framebuffer, pitch, bpp, x, y, glyph);
+            } else {
+                RECOVERY_VGA_TEXT[recovery_vga_cursor] =
+                    RECOVERY_VGA_ATTRIBUTE | (uint8_t)*message;
+            }
             recovery_vga_cursor++;
         }
         message++;
@@ -517,7 +547,7 @@ static int recovery_verify_package(const recovery_fat32_t* fs, const recovery_fi
 }
 
 static void recovery_boot_kernel(uint32_t mmap, uint32_t vesa) {
-    int vesa_ready = recovery_bios_set_vesa_mode();
+    int vesa_ready = recovery_vesa && recovery_vesa[11U];
     recovery_message(vesa_ready ? "START KERNEL VESA\n" :
                                   "START KERNEL SIMPLE\n");
     recovery_boot_kernel_entry(mmap, vesa);

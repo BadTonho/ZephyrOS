@@ -101,7 +101,6 @@ stage2_start:
     mov sp, STAGE2_STACK
     mov [BOOT_DRIVE], dl
     mov byte [VESA_INFO + 11], 0
-    ; O boot legado nunca confirma uma tentativa ZSYS deixada na RAM.
     mov di, SYSTEM_BOOT_HANDOFF
     mov cx, SYSTEM_BOOT_HANDOFF_SIZE
     xor al, al
@@ -110,8 +109,6 @@ stage2_start:
     call detect_memory
     call detect_disk_access
 
-    ; Reserva tanto o fallback em 1 MiB quanto o loader acima dele antes de
-    ; qualquer leitura do disco; nenhum artefato pode invadir o FAT32.
     mov dword [LOAD_DEST], KERNEL_OFFSET
     mov dword [LOAD_LIMIT], KERNEL_LIMIT
     call validate_load_memory
@@ -125,18 +122,11 @@ stage2_start:
     call enable_a20
     jc a20_error
 
-    ; Ambos os artefatos usam LBAs fixos, independentes do tamanho do stage2.
-    ; Isso remove ambiguidade do handoff e preserva a particao FAT32.
     mov word [LBA], RECOVERY_LOADER_LBA
     mov word [remaining], RECOVERY_LOADER_SECTORS
     call load_kernel
 
-    ; O loader e o fallback precisam diagnosticar em VGA texto. VESA so pode
-    ; ser ativado por BIOS em real mode, portanto este caminho entrega o
-    ; kernel no fallback Simple em vez de ocultar uma falha pre-kernel.
-    mov dword [VESA_INFO], 0
-    mov dword [VESA_INFO + 4], 0
-    mov dword [VESA_INFO + 8], 0
+    call set_vesa_mode
 
     lgdt [gdt_descriptor]
     mov eax, cr0
@@ -766,8 +756,6 @@ bios_gateway_real:
     mov byte [BIOS_GATEWAY_ATTEMPTS], DISK_READ_ATTEMPTS
 
 .retry:
-    cmp byte [BIOS_GATEWAY_OPERATION], 2
-    je .vesa
     cmp byte [DISK_MODE], DISK_MODE_LBA
     jne .chs
     mov word [BIOS_GATEWAY_DAP + 2], 1
@@ -822,12 +810,6 @@ bios_gateway_real:
     mov ax, 0x0301
     int 0x13
     jmp .result
-
-.vesa:
-    call set_vesa_mode
-    cmp byte [VESA_INFO + 11], 1
-    je .success
-    jmp .return_protected
 
 .result:
     jnc .success

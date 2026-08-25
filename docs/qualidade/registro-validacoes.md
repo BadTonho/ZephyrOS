@@ -883,3 +883,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   O leitor privado do bloco VESA tambem passou a respeitar a ordem
   `pitch/width/height`, e o loader publica o diagnostico final `START KERNEL`.
   A validacao QEMU aguarda o usuario.
+- Handoff VESA do recovery loader revisado em: 2026-08-25 18:12
+  (America/Sao_Paulo); o QEMU confirmou entrada no modo 1024x768, mas a troca
+  tardia deixou a tela preta. A configuracao voltou ao caminho real-mode
+  comprovado do `stage2`, antes do loader protegido, eliminando a segunda
+  transicao. O renderer fixo agora publica diagnosticos em framebuffers de 24
+  ou 32 bpp e conserva VGA texto como fallback. A validacao aguarda o usuario.
