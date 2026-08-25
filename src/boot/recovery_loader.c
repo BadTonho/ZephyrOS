@@ -99,19 +99,23 @@ static const uint8_t recovery_font[26][5] = {
 };
 
 static inline void recovery_out8(uint16_t port, uint8_t value) {
-    asm volatile("outb %0, %1" : : "a"(value), "Nd"(port));
+    asm volatile("outb %0, %w1" : : "a"(value), "d"(port));
 }
 
 static inline uint8_t recovery_in8(uint16_t port) {
     uint8_t value;
-    asm volatile("inb %1, %0" : "=a"(value) : "Nd"(port));
+    asm volatile("inb %w1, %0" : "=a"(value) : "d"(port));
     return value;
 }
 
 static inline uint16_t recovery_in16(uint16_t port) {
     uint16_t value;
-    asm volatile("inw %1, %0" : "=a"(value) : "Nd"(port));
+    asm volatile("inw %w1, %0" : "=a"(value) : "d"(port));
     return value;
+}
+
+static inline void recovery_out16(uint16_t port, uint16_t value) {
+    asm volatile("outw %0, %w1" : : "a"(value), "d"(port));
 }
 
 static uint16_t recovery_u16(const uint8_t* value) {
@@ -170,9 +174,8 @@ static int recovery_write_sector(uint32_t lba, const void* input) {
     recovery_out8(RECOVERY_ATA_LBA2, (uint8_t)(lba >> 16U));
     recovery_out8(RECOVERY_ATA_COMMAND, RECOVERY_ATA_WRITE);
     if (!recovery_wait(1U)) return 0;
-    for (uint32_t index = 0U; index < 256U; index++) {
-        asm volatile("outw %0, %1" : : "a"(words[index]), "Nd"(RECOVERY_ATA_DATA));
-    }
+    for (uint32_t index = 0U; index < 256U; index++)
+        recovery_out16(RECOVERY_ATA_DATA, words[index]);
     if (!recovery_wait(0U)) return 0;
     recovery_out8(RECOVERY_ATA_COMMAND, RECOVERY_ATA_FLUSH);
     return recovery_wait(0U);
