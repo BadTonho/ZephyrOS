@@ -802,3 +802,6 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   (America/Sao_Paulo); entre journals válidos com sequências 2 e 3, a
   recuperação terminou `READY`, preservou A, descartou o staging conforme a
   fase de maior sequência e limpou o journal.
+- Caso `NO_SPACE` validado pelo usuário em: 2026-08-25 14:52
+  (America/Sao_Paulo); o candidato foi validado, o staging foi recusado com
+  `SPACE` por falta de espaço e nenhuma gravação foi realizada.
