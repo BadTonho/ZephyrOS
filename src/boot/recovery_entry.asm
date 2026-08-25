@@ -8,6 +8,7 @@ section .text
 global _start
 global recovery_bios_read_sector
 global recovery_bios_write_sector
+global recovery_boot_kernel_entry
 
 BIOS_GATEWAY_OFFSET equ 0x00005F00
 BIOS_GATEWAY_DAP equ 0x00002A00
@@ -20,6 +21,8 @@ BIOS_BOUNCE_BUFFER equ 0x00010000
 GDT_CODE32_SEL equ 0x08
 GDT_DATA32_SEL equ 0x10
 GDT_CODE16_SEL equ 0x18
+KERNEL_OFFSET equ 0x00100000
+KERNEL_STACK_TOP equ 0x0009F000
 
 _start:
     cld
@@ -128,3 +131,16 @@ recovery_bios_prepare:
     mov [BIOS_GATEWAY_DAP + 8], eax
     mov dword [BIOS_GATEWAY_DAP + 12], 0
     ret
+
+; Recria exatamente a ABI que o stage2 usava antes do recovery loader:
+; ESI/EDI carregam os ponteiros de boot e o kernel recebe a pilha limpa.
+recovery_boot_kernel_entry:
+    mov esi, [esp + 4]
+    mov edi, [esp + 8]
+    mov esp, KERNEL_STACK_TOP
+    cli
+    call KERNEL_OFFSET
+.halt:
+    cli
+    hlt
+    jmp .halt

@@ -840,3 +840,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   adicionado cursor persistente de cluster para streaming linear e o retorno
   BIOS agora passa por um stub protegido fixo do `stage2`. A tela publica os
   marcos `VERIFY SLOT` e `LOAD KERNEL`; a correcao aguarda novos gates e QEMU.
+- Handoff final do kernel da EP9.2A corrigido em: 2026-08-25 17:10
+  (America/Sao_Paulo); apos `LOAD KERNEL`, a entrada Assembly passou a
+  restaurar `ESP=0x9F000` e a publicar ESI/EDI conforme a ABI original do
+  `stage2`, antes de chamar o kernel em `0x00100000`. O marco `KERNEL READY`
+  diferencia copia concluida de falha na entrada; a correcao aguarda QEMU.
