@@ -527,24 +527,36 @@ static void recovery_boot_kernel(uint32_t mmap, uint32_t vesa) {
         : "esi", "edi", "memory");
 }
 
-static void recovery_boot_legacy(uint32_t mmap, uint32_t vesa, uint32_t lba,
-                                 uint32_t sectors, uint32_t bytes) {
+static int recovery_boot_legacy(uint32_t mmap, uint32_t vesa, uint32_t lba,
+                                uint32_t sectors, uint32_t bytes) {
     uint8_t* destination = (uint8_t*)RECOVERY_KERNEL_OFFSET;
     crypto_sha256_ctx_t hash;
     uint8_t actual_hash[CRYPTO_SHA256_SIZE];
     if (!lba || !sectors || bytes != RECOVERY_LEGACY_KERNEL_SIZE ||
         sectors != (bytes + RECOVERY_SECTOR_SIZE - 1U) / RECOVERY_SECTOR_SIZE ||
-        crypto_sha256_init(&hash) != 0) return;
+        crypto_sha256_init(&hash) != 0) {
+        recovery_message("LEGACY METADATA FAIL\n");
+        return 0;
+    }
     for (uint32_t index = 0U; index < sectors; index++) {
         uint8_t* sector = destination + index * RECOVERY_SECTOR_SIZE;
         uint32_t amount = bytes - index * RECOVERY_SECTOR_SIZE;
         if (amount > RECOVERY_SECTOR_SIZE) amount = RECOVERY_SECTOR_SIZE;
         if (!recovery_read_sector(lba + index, sector) ||
-            crypto_sha256_update(&hash, sector, amount) != 0) return;
+            crypto_sha256_update(&hash, sector, amount) != 0) {
+            recovery_message("LEGACY ATA READ FAIL\n");
+            return 0;
+        }
     }
     if (crypto_sha256_final(&hash, actual_hash) != 0 ||
-        !recovery_equal(actual_hash, recovery_legacy_kernel_sha256, CRYPTO_SHA256_SIZE)) return;
+        !recovery_equal(actual_hash, recovery_legacy_kernel_sha256, CRYPTO_SHA256_SIZE)) {
+        recovery_message("LEGACY SHA FAIL\n");
+        return 0;
+    }
+    recovery_message("LEGACY KERNEL START\n");
     recovery_boot_kernel(mmap, vesa);
+    recovery_message("LEGACY KERNEL RETURN\n");
+    return 0;
 }
 
 void recovery_loader_main(uint32_t mmap, uint32_t vesa, uint32_t legacy_lba,
