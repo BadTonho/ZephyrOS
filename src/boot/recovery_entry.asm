@@ -139,6 +139,11 @@ recovery_boot_kernel_entry:
     mov edi, [esp + 8]
     mov esp, KERNEL_STACK_TOP
     mov word [0x000B8280], 0x0F4A
+    ; O stage2 original deixa estes dois argumentos abaixo do endereco de
+    ; retorno do kernel. Alem do conteudo, isso preserva o alinhamento cdecl
+    ; observado pela entrada e por kernel_main.
+    push edi
+    push esi
     cli
     call KERNEL_OFFSET
 .halt:

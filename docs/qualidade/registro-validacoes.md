@@ -855,3 +855,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   transferencia para a funcao C, embora a entrada Assembly estivesse integra.
   O loader passou a comparar o SHA-256 do kernel ja copiado em `0x00100000`
   com o hash autenticado do componente antes de executar a imagem.
+- Causa da entrada incompleta identificada em: 2026-08-25 17:38
+  (America/Sao_Paulo); `fixtures-system-qemu` incluia somente os primeiros
+  512 bytes do kernel, gerando `valid.zsys` de 6.656 bytes. `_start` existia,
+  mas `kernel_main` ficava fora da imagem. As fixtures FAT32 da matriz A/B
+  agora usam `--full-kernel`, preservando o modo compacto apenas como opcao do
+  gerador, e o loader aceita o padding final autenticado do payload alinhado.
