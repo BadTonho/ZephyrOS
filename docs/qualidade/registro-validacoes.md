@@ -755,3 +755,6 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   permaneceu `READY`, o slot A continuou ativo e o slot B permaneceu vazio.
   A mensagem de fila de eventos do mouse cheia foi observada como ocorrência
   independente da matriz EP9.1.
+- Caso `STATE_BOTH_BAD` validado pelo usuário em: 2026-08-25 13:05
+  (America/Sao_Paulo); as duas cópias de estado inválidas deixaram o serviço
+  `DEGRADED`, sem slot ativo selecionado e sem reparo silencioso.
