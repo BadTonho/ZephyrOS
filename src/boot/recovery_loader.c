@@ -5,18 +5,6 @@
 #include "core/update_trust.h"
 #include "recovery_layout.h"
 
-#define RECOVERY_ATA_DATA 0x1F0U
-#define RECOVERY_ATA_SECTORS 0x1F2U
-#define RECOVERY_ATA_LBA0 0x1F3U
-#define RECOVERY_ATA_LBA1 0x1F4U
-#define RECOVERY_ATA_LBA2 0x1F5U
-#define RECOVERY_ATA_DRIVE 0x1F6U
-#define RECOVERY_ATA_STATUS 0x1F7U
-#define RECOVERY_ATA_COMMAND 0x1F7U
-#define RECOVERY_ATA_READ 0x20U
-#define RECOVERY_ATA_WRITE 0x30U
-#define RECOVERY_ATA_FLUSH 0xE7U
-#define RECOVERY_ATA_TIMEOUT 1000000U
 #define RECOVERY_SECTOR_SIZE 512U
 #define RECOVERY_MBR_PARTITIONS 4U
 #define RECOVERY_MBR_PARTITION_OFFSET 446U
@@ -85,6 +73,9 @@ static uint8_t recovery_signed_header[UPDATE_SYSTEM_HEADER_SIZE];
 static uint32_t recovery_vga_cursor;
 static const uint8_t* recovery_vesa;
 
+extern int recovery_bios_read_sector(uint32_t lba, void* output);
+extern int recovery_bios_write_sector(uint32_t lba, const void* input);
+
 static const uint8_t recovery_font[26][5] = {
     {0x1EU,0x05U,0x05U,0x1EU,0x00U},{0x1FU,0x15U,0x15U,0x0AU,0x00U},
     {0x0EU,0x11U,0x11U,0x0AU,0x00U},{0x1FU,0x11U,0x11U,0x0EU,0x00U},
@@ -100,26 +91,6 @@ static const uint8_t recovery_font[26][5] = {
     {0x1FU,0x08U,0x04U,0x08U,0x1FU},{0x1BU,0x04U,0x04U,0x1BU,0x00U},
     {0x03U,0x04U,0x18U,0x04U,0x03U},{0x19U,0x15U,0x13U,0x00U,0x00U},
 };
-
-static inline void recovery_out8(uint16_t port, uint8_t value) {
-    asm volatile("outb %0, %w1" : : "a"(value), "d"(port));
-}
-
-static inline uint8_t recovery_in8(uint16_t port) {
-    uint8_t value;
-    asm volatile("inb %w1, %0" : "=a"(value) : "d"(port));
-    return value;
-}
-
-static inline uint16_t recovery_in16(uint16_t port) {
-    uint16_t value;
-    asm volatile("inw %w1, %0" : "=a"(value) : "d"(port));
-    return value;
-}
-
-static inline void recovery_out16(uint16_t port, uint16_t value) {
-    asm volatile("outw %0, %w1" : : "a"(value), "d"(port));
-}
 
 static uint16_t recovery_u16(const uint8_t* value) {
     return (uint16_t)value[0] | ((uint16_t)value[1] << 8U);
@@ -144,44 +115,14 @@ static int recovery_zero(const uint8_t* value, uint32_t size) {
     return combined == 0U;
 }
 
-static int recovery_wait(uint8_t require_drq) {
-    for (uint32_t attempt = 0U; attempt < RECOVERY_ATA_TIMEOUT; attempt++) {
-        uint8_t status = recovery_in8(RECOVERY_ATA_STATUS);
-        if (status & 0x01U || status & 0x20U) return 0;
-        if (!(status & 0x80U) && (!require_drq || (status & 0x08U))) return 1;
-    }
-    return 0;
-}
-
 static int recovery_read_sector(uint32_t lba, void* output) {
-    uint16_t* words = (uint16_t*)output;
-    if (!output || lba & 0xF0000000U || !recovery_wait(0U)) return 0;
-    recovery_out8(RECOVERY_ATA_DRIVE, (uint8_t)(0xE0U | ((lba >> 24U) & 0x0FU)));
-    recovery_out8(RECOVERY_ATA_SECTORS, 1U);
-    recovery_out8(RECOVERY_ATA_LBA0, (uint8_t)lba);
-    recovery_out8(RECOVERY_ATA_LBA1, (uint8_t)(lba >> 8U));
-    recovery_out8(RECOVERY_ATA_LBA2, (uint8_t)(lba >> 16U));
-    recovery_out8(RECOVERY_ATA_COMMAND, RECOVERY_ATA_READ);
-    if (!recovery_wait(1U)) return 0;
-    for (uint32_t index = 0U; index < 256U; index++) words[index] = recovery_in16(RECOVERY_ATA_DATA);
-    return 1;
+    if (!output) return 0;
+    return recovery_bios_read_sector(lba, output);
 }
 
 static int recovery_write_sector(uint32_t lba, const void* input) {
-    const uint16_t* words = (const uint16_t*)input;
-    if (!input || lba & 0xF0000000U || !recovery_wait(0U)) return 0;
-    recovery_out8(RECOVERY_ATA_DRIVE, (uint8_t)(0xE0U | ((lba >> 24U) & 0x0FU)));
-    recovery_out8(RECOVERY_ATA_SECTORS, 1U);
-    recovery_out8(RECOVERY_ATA_LBA0, (uint8_t)lba);
-    recovery_out8(RECOVERY_ATA_LBA1, (uint8_t)(lba >> 8U));
-    recovery_out8(RECOVERY_ATA_LBA2, (uint8_t)(lba >> 16U));
-    recovery_out8(RECOVERY_ATA_COMMAND, RECOVERY_ATA_WRITE);
-    if (!recovery_wait(1U)) return 0;
-    for (uint32_t index = 0U; index < 256U; index++)
-        recovery_out16(RECOVERY_ATA_DATA, words[index]);
-    if (!recovery_wait(0U)) return 0;
-    recovery_out8(RECOVERY_ATA_COMMAND, RECOVERY_ATA_FLUSH);
-    return recovery_wait(0U);
+    if (!input) return 0;
+    return recovery_bios_write_sector(lba, input);
 }
 
 static void recovery_message(const char* message) {
@@ -544,7 +485,7 @@ static int recovery_boot_legacy(uint32_t mmap, uint32_t vesa) {
         if (amount > RECOVERY_SECTOR_SIZE) amount = RECOVERY_SECTOR_SIZE;
         if (!recovery_read_sector(RECOVERY_LEGACY_KERNEL_LBA + index, sector) ||
             crypto_sha256_update(&hash, sector, amount) != 0) {
-            recovery_message("LEGACY ATA READ FAIL\n");
+            recovery_message("LEGACY DISK READ FAIL\n");
             return 0;
         }
     }

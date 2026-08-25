@@ -856,6 +856,9 @@ As entregas de recuperacao da EP9.2 ficam divididas em duas subetapas:
   pendente, e verificar no build os limites de tamanho, memoria e FAT12.
 - [x] Fixar o kernel legado no LBA 64 e o loader no LBA 3000, com o
   empacotador recusando qualquer sobreposicao antes do FAT32 no LBA 4096.
+- [x] Encaminhar I/O do loader protegido por um gateway BIOS EDD fixo no
+  `stage2`, com fallback CHS, DAP, bounce buffer, retry e retorno protegido
+  reservados em memoria baixa, sem modificar `boot.asm`.
 - [ ] Executar a matriz QEMU EP9.2A: ativo, pendente confirmado, hashes e
   assinatura invalidos, estado/journal corrompido, tentativa interrompida e
   FAT32 ausente. Os gates de compilacao e esta matriz aguardam o usuario.
