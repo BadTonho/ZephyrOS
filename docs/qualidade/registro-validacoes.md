@@ -731,3 +731,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Fixture negativa de tamanho validada pelo usuário em: 2026-08-25 12:37
   (America/Sao_Paulo); `OVERSIZ.ZSYS` foi recusado por `SIZE` e confirmou que
   nenhuma gravação foi realizada.
+- Fixture negativa de alinhamento/regiões validada pelo usuário em:
+  2026-08-25 12:38 (America/Sao_Paulo); `MISALGN.ZSYS` foi recusado por
+  `SIZE` e confirmou que nenhuma gravação foi realizada.
+- Fixture negativa de compatibilidade de versão validada pelo usuário em:
+  2026-08-25 12:39 (America/Sao_Paulo); `VERBAD.ZSYS` foi recusado por
+  `COMPATIBILITY` e confirmou que nenhuma gravação foi realizada.
