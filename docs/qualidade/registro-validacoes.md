@@ -787,6 +787,14 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   (America/Sao_Paulo); a recuperação publicou o slot B como `VALID` e
   pendente, preservou A como ativo e válido, avançou para `seq=2` e limpou o
   journal.
+- Caso `JOURNAL_ONE_BAD` validado pelo usuário em: 2026-08-25 14:44
+  (America/Sao_Paulo); uma cópia inválida do journal foi ignorada, a cópia
+  válida foi usada, A permaneceu ativo e válido, B permaneceu vazio e o
+  journal foi limpo.
+- Caso `JOURNAL_BOTH_BAD` validado pelo usuário em: 2026-08-25 14:47
+  (America/Sao_Paulo); as duas cópias inválidas deixaram o serviço
+  `DEGRADED` com `recovery=pending`, sem reparo silencioso; A permaneceu
+  válido e ativo, B permaneceu vazio e o journal ficou limpo.
 - Caso `JOURNAL_COMMITTED` validado pelo usuário em: 2026-08-25 14:38
   (America/Sao_Paulo); a recuperação manteve A ativo e válido, publicou B como
   `VALID`/pendente, avançou para `seq=2` e limpou o journal.
