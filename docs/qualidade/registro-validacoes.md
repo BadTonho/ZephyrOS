@@ -758,3 +758,6 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Caso `STATE_BOTH_BAD` validado pelo usuário em: 2026-08-25 13:05
   (America/Sao_Paulo); as duas cópias de estado inválidas deixaram o serviço
   `DEGRADED`, sem slot ativo selecionado e sem reparo silencioso.
+- Caso `STATE_NEWER` validado pelo usuário em: 2026-08-25 13:07
+  (America/Sao_Paulo); a cópia válida de maior sequência foi selecionada
+  (`seq=2`), mantendo o slot A ativo e o slot B vazio.
