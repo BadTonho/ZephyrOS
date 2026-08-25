@@ -168,37 +168,19 @@ void module_init(void) {
 
 ## 5. Comentários
 
-- [ ] Funções DEVE ter comentário de uma linha explicando o que faz
-- [ ] Parâmetros DEVE serem documentados se não óbvios
-- [ ] Código complexo DEVE ter comentários explicando a lógica
-- [ ] NÃO adicionar comentários óbvios (ex: `i++ // incrementa i`)
+- [ ] NÃO adicionar comentários explicativos em arquivos de código
+- [ ] Funções e parâmetros DEVEM ser compreensíveis por nomes, tipos,
+      constantes e divisão de responsabilidades
+- [ ] Decisões, invariantes, ABI, layouts, limitações e justificativas DEVEM
+      ficar no documento técnico canônico do módulo
+- [ ] Ao alterar um trecho com comentários explicativos existentes, migrar o
+      conteúdo relevante para a documentação e remover os comentários tocados
+- [ ] NÃO fazer remoção massiva de comentários fora do escopo da alteração
+- [ ] Exceções: avisos legais e marcações exigidas por ferramenta, formato,
+      código gerado ou dependência externa
 
-```c
-// Lê setores do disco via PIO
-// Retorna OK ou código de erro
-int ata_read_sector(uint32_t lba, uint8_t* buffer) {
-    if (!buffer) return ERR_NULL;
-
-    // Seleciona drive master
-    outb(ATA_PORT_DRIVE, 0xE0 | ((lba >> 24) & 0x0F));
-
-    // Envia LBA
-    outb(ATA_PORT_LBA_LOW,  lba & 0xFF);
-    outb(ATA_PORT_LBA_MID,  (lba >> 8) & 0xFF);
-    outb(ATA_PORT_LBA_HIGH, (lba >> 16) & 0xFF);
-    outb(ATA_PORT_COMMAND,  ATA_CMD_READ);
-
-    // Aguarda disco ficar pronto
-    if (ata_wait_ready() != OK) {
-        LOG_ERROR("ATA", "Timeout aguardando disco");
-        return ERR_DISK;
-    }
-
-    // Lê 256 words (512 bytes)
-    insw(ATA_PORT_DATA, buffer, 256);
-    return OK;
-}
-```
+O destino e o formato dessas explicações estão definidos em
+[`politica-documentacao-codigo.md`](qualidade/politica-documentacao-codigo.md).
 
 ---
 
@@ -307,6 +289,7 @@ Antes de commitar, verificar:
 - [ ] Toda inicialização bem-sucedida tem `LOG_INFO`?
 - [ ] Não há magic numbers no código?
 - [ ] Funções têm no máximo 100 linhas?
-- [ ] Comentários explicam o "porquê", não o "o quê"?
+- [ ] As justificativas do código alterado estão na documentação técnica, sem
+      novos comentários explicativos no fonte?
 - [ ] Não há variáveis não utilizadas?
 - [ ] Não há memória leak (malloc sem free)?

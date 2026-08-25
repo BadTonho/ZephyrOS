@@ -121,7 +121,13 @@ deve publicar estado degradado ou indisponível quando aplicável.
 - **Aninhamento novo**: preferencialmente até 4 níveis; exceções devem ser
   simplificadas quando possível, sem criar refatorações artificiais.
 - **Sem magic numbers**: usar `#define`
-- **Comentários**: explicar o "porquê", não o "o quê"
+- **Comentários e justificativas**: não adicionar explicações no código-fonte.
+  Registrar decisões, invariantes, ABI, layouts, limitações e o "porquê" nos
+  documentos técnicos canônicos do módulo. No código, preferir nomes,
+  constantes, tipos e funções autoexplicativos. Comentários existentes devem
+  ser migrados quando o trecho for alterado, sem limpeza massiva fora do
+  escopo. Exceções ficam limitadas a avisos legais ou marcações exigidas pela
+  ferramenta, formato ou gerador.
 
 ---
 
@@ -143,6 +149,8 @@ deve publicar estado degradado ou indisponível quando aplicável.
 - Índice da docs: `docs/indice.md`
 - Memória operacional geral de comandos e validações: `docs/qualidade/comandos-operacionais-agente.md`
   (consultar antes de orientar comandos; não armazenar segredos nesse arquivo).
+- Política para justificativas fora do código:
+  `docs/qualidade/politica-documentacao-codigo.md`.
 - Registro cronológico de implementações e validações:
   `docs/qualidade/registro-validacoes.md`.
 

@@ -866,3 +866,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   declarava 100x37 sobre o modo texto BIOS 80x25, deslocando linhas e gravando
   a continuacao fora da area visivel. A geometria Simple foi corrigida para
   80x25 e os breadcrumbs temporarios de entrada foram removidos.
+- Politica de comentarios revisada em: 2026-08-25 17:47
+  (America/Sao_Paulo); justificativas, invariantes, ABI e layouts passam a ser
+  registrados nos documentos tecnicos canonicos, sem novos comentarios
+  explicativos no codigo. A migracao dos comentarios existentes sera gradual
+  quando cada trecho for alterado.
