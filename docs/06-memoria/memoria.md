@@ -266,6 +266,13 @@ as PTEs diretamente por Page Table, sem executar a validacao de diretorios de
 usuario para cada pagina. O caminho publico `paging_map_page()` permanece
 reservado aos mapeamentos normais e de ring 3.
 
+A pagina `0x2000–0x2FFF` permanece mapeada por identidade somente como
+supervisora enquanto o kernel consome o contexto fixo de boot. Ela contem o
+bloco VESA e o handoff `ZSBH` em `0x2800`, usado depois da inicializacao
+essencial para confirmar o slot. A pagina zero, a pagina do mapa E820 em
+`0x3000` e as demais lacunas baixas continuam ausentes; diretorios de usuario
+nao recebem a flag `USER` para essa pagina.
+
 `paging_boot_stats_t`, consultado por `paging_get_boot_stats()`, registra o
 numero de paginas identity-mapped, Page Tables criadas e ticks consumidos pela
 inicializacao. A consulta e somente diagnostica e aparece em `kmetrics`.
@@ -288,7 +295,7 @@ void paging_switch_directory(page_directory_t* dir) {
 
 ```
 0x00000 - 0x2000   Bootloader e buffers reutilizados
-0x2000  - 0x3000   Informacoes VESA
+0x2000  - 0x3000   Contexto VESA e ZSBH, supervisor-only
 0x3000  - 0x5000   Mapa E820 e contador
 0x5000  - 0x10000  Segundo estagio do bootloader
 0x88000 - 0x98000  Bitmaps PMM (tamanho varia com a RAM)

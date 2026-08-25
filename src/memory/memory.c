@@ -35,7 +35,8 @@ static uint32_t heap_double_frees = 0;
 #error "Inicio do mapa fisico deve coincidir com o fim do heap"
 #endif
 
-#if BOOT_TRANSITION_END > PMM_BITMAP_STORAGE_START || \
+#if BOOT_CONTEXT_PAGE_END > BOOT_TRANSITION_START || \
+    BOOT_TRANSITION_END > PMM_BITMAP_STORAGE_START || \
     PMM_BITMAP_STORAGE_END != KERNEL_STACK_START || \
     KERNEL_STACK_TOP >= LOW_MEMORY_END
 #error "Mapa de memoria baixa invalido"

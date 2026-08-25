@@ -135,6 +135,8 @@ Os contratos de `src/include/core/memory.h` e `src/include/memory/paging.h`
 incluem, desde a K3, estatisticas seguras do heap/PMM e do ciclo de vida de
 diretorios de usuario. Seus detalhes tecnicos permanecem em
 `docs/04-kernel/kernel.md` e `docs/06-memoria/memoria.md`, respectivamente.
+Desde a EP9.2A, `memory.h` tambem delimita a pagina supervisor-only do contexto
+de boot em `0x2000–0x2FFF`; nenhuma assinatura publica foi alterada.
 
 Desde a S1.4, `src/include/drivers/acpi.h` inclui os indicadores
 `mode_enable_available` e `s5_transition_ready`, alem da operacao terminal

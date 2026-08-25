@@ -865,6 +865,9 @@ As entregas de recuperacao da EP9.2 ficam divididas em duas subetapas:
 - [x] Preservar e repassar explicitamente E820 e VESA pela entrada Assembly do
   loader antes da limpeza da BSS e restaurar o contrato em registradores na
   entrada do kernel.
+- [x] Manter a pagina fisica do contexto `0x2000–0x2FFF` mapeada somente para
+  supervisor apos ativar paging, permitindo consumir e limpar `ZSBH` sem
+  expor a memoria baixa a processos de usuario.
 - [x] Gerar as fixtures executaveis da matriz A/B com o kernel completo no
   FAT32; as fixtures compactas de parser nao podem ser usadas para boot.
 - [ ] Executar a matriz QEMU EP9.2A: ativo, pendente confirmado, hashes e

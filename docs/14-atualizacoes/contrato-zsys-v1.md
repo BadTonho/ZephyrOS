@@ -207,6 +207,11 @@ tentativa coincidirem com o estado persistido; então promove o slot e limpa o
 pendente. O `stage2` legado limpa essa área antes de carregar o kernel, para
 que um boot sem loader nunca confirme uma tentativa antiga.
 
+Depois da ativacao da paginacao, a pagina fisica `0x2000–0x2FFF` permanece
+identity-mapped como supervisor-only ate o consumo do handoff. Esse mapeamento
+inclui o bloco VESA e `ZSBH`, mas nao concede acesso ring 3 nem amplia o mapa
+para a pagina zero ou para as demais lacunas de memoria baixa.
+
 ### EP9.2A - Recovery loader fixo
 
 O layout legado usa LBAs fixos: `boot` em 0, `stage2` a partir de 1, kernel
