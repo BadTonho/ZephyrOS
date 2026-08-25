@@ -573,11 +573,6 @@ void recovery_loader_main(uint32_t mmap, uint32_t vesa, uint32_t legacy_lba,
     }
 
     recovery_message("ZEPHYROS RECOVERY LOADER\n");
-    if (crypto_self_test() != 0) {
-        recovery_message("CRYPTO FAIL LEGACY KERNEL\n");
-        recovery_boot_legacy(mmap, vesa, legacy_lba, legacy_sectors, legacy_bytes);
-        return;
-    }
     if (!recovery_fat32_open(&fs)) {
         recovery_message("FAT STATE LEGACY KERNEL\n");
         recovery_boot_legacy(mmap, vesa, legacy_lba, legacy_sectors, legacy_bytes);
