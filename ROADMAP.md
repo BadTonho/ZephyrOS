@@ -4,13 +4,12 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
-EP9.0A e EP9.4A implementadas e validadas pelo usuário; EP9.1 implementada,
-aguardando validação executável: contrato ZSYS v1, slots A/B, staging local e
-volume híbrido FAT32 de sistema.
-Aplicação, rollback pós-reboot e alterações no boot/stage2 continuam fora
-desta etapa.
+EP9.0A, EP9.1 e EP9.4A implementadas e validadas pelo usuário; a EP9.1 passou
+pela matriz QEMU de slots, staging e recuperação, além de `health`, `memcheck`
+e `regcheck full`. Aplicação, rollback pós-reboot e alterações no boot/stage2
+continuam fora desta etapa.
 
-## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; firmware, driver operacional, integração L3 e EP9 pendentes
+## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; firmware, driver operacional, integração L3 e EP9.2-EP9.3 pendentes
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
@@ -745,11 +744,11 @@ Evolução da plataforma:      [████████████████
   reboot.
 - [x] EP9.4A implementada e validada: imagem híbrida FAT12/FAT32, volume
   `ZEPHYROS` gravável, LFN, aliases 8.3, transações FAT32 e regressão FAT12.
-- [x] EP9.1 implementada: slots A/B, estado/journal redundantes, staging local
-  em chunks, marcador pendente e fixtures FAT32; validação executável pendente.
-- [x] Matriz reproduzivel EP9.1 adicionada para corrupcao de estado/journal,
-  fases de recuperacao, falta de espaco e volume FAT32 ausente; execucao no
-  QEMU permanece pendente.
+- [x] EP9.1 implementada e validada: slots A/B, estado/journal redundantes,
+  staging local em chunks, marcador pendente, fixtures FAT32 e matriz QEMU
+  específica concluída.
+- [x] Matriz reproduzivel EP9.1 validada para corrupcao de estado/journal,
+  fases de recuperacao, falta de espaco e volume FAT32 ausente.
 - [ ] EP9.2-EP9.3 futuras: boot pendente, aplicação, rollback pós-reboot e
   confirmação explícita de reboot.
 
@@ -772,7 +771,7 @@ kernel, interface e novos serviços:
 | 5 | [`docs/roadmaps/05-sistema-e-ecossistema.md`](docs/roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e ecossistema. |
 | 6 | [`docs/roadmaps/06-app-store.md`](docs/roadmaps/06-app-store.md) | Catalogo local, ciclo de vida, App Store Modern e distribuicao futura. |
 | 7 | [`docs/roadmaps/07-modernizacao-visual.md`](docs/roadmaps/07-modernizacao-visual.md) | Escala acessivel, visual flat/dark e desempenho VESA mensuravel; MV4 funcionalmente validado, comparacao historica N/D. |
-| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.4 implementadas; EP7.0 encerrada; EP7.1B de EHCI/transporte RTL8811CU implementada; EP9.0A, EP9.1 e EP9.4A concluídas em implementação; validação EP9.1 pendente. |
+| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.4 implementadas; EP7.0 encerrada; EP7.1B de EHCI/transporte RTL8811CU implementada; EP9.0A, EP9.1 e EP9.4A implementadas e validadas. |
 | 9 | [`docs/roadmaps/09-funcionalidades-aplicaveis.md`](docs/roadmaps/09-funcionalidades-aplicaveis.md) | Separação visual/funcional, perfil de distribuição, logs, timers, espera, work queue, dispositivos, I/O, cache e métricas do scheduler. |
 | 10 | [`docs/roadmaps/10-vfs-e-abstracao-io.md`](docs/roadmaps/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, pontos de montagem, dispositivos /dev/ e pipes. |
 | 11 | [`docs/roadmaps/11-gerenciamento-avancado-de-memoria.md`](docs/roadmaps/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging. |
