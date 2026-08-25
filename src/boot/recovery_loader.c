@@ -536,8 +536,12 @@ static int recovery_boot_legacy(uint32_t mmap, uint32_t vesa, uint32_t lba,
         recovery_message("LEGACY LBA ZERO\n");
         return 0;
     }
-    if (!sectors || bytes != RECOVERY_LEGACY_KERNEL_SIZE) {
-        recovery_message("LEGACY SIZE FAIL\n");
+    if (!sectors) {
+        recovery_message("LEGACY SECTOR ZERO\n");
+        return 0;
+    }
+    if (bytes != RECOVERY_LEGACY_KERNEL_SIZE) {
+        recovery_message("LEGACY BYTE SIZE FAIL\n");
         return 0;
     }
     if (sectors != (bytes + RECOVERY_SECTOR_SIZE - 1U) / RECOVERY_SECTOR_SIZE) {
