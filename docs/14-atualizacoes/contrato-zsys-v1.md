@@ -241,6 +241,12 @@ kernel recria `ESP=0x9F000`, entrega o mapa E820 em `ESI` e o bloco VESA em
 `EDI`. Nenhum argumento e empilhado pela ponte, pois a propria entrada do
 kernel converte esses registradores para a chamada C.
 
+Na entrada do recovery loader, os argumentos cdecl recebidos do `stage2` são
+preservados antes da limpeza da BSS e repassados explicitamente para
+`recovery_loader_main(mmap, vesa)`. O endereço de retorno do shim nunca integra
+o contexto de boot. Na saída, a ponte para o kernel converte novamente esses
+dois endereços para o contrato em registradores descrito acima.
+
 Antes de iniciar um pendente, o loader grava e rele a outra copia de estado
 como v2 com `ATTEMPTED`, slot anterior e sequencias novas, e publica `ZSBH`.
 Uma tentativa sem confirmacao, ou um pendente que falha na validacao, vira

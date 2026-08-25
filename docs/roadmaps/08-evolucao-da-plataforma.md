@@ -862,6 +862,9 @@ As entregas de recuperacao da EP9.2 ficam divididas em duas subetapas:
 - [x] Configurar VESA no caminho real-mode comprovado do `stage2` e publicar
   diagnosticos do loader no framebuffer 24/32 bpp, preservando VGA texto e o
   fallback Simple quando o modo grafico estiver indisponivel.
+- [x] Preservar e repassar explicitamente E820 e VESA pela entrada Assembly do
+  loader antes da limpeza da BSS e restaurar o contrato em registradores na
+  entrada do kernel.
 - [x] Gerar as fixtures executaveis da matriz A/B com o kernel completo no
   FAT32; as fixtures compactas de parser nao podem ser usadas para boot.
 - [ ] Executar a matriz QEMU EP9.2A: ativo, pendente confirmado, hashes e

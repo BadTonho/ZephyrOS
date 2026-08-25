@@ -25,13 +25,18 @@ KERNEL_OFFSET equ 0x00100000
 KERNEL_STACK_TOP equ 0x0009F000
 
 _start:
+    mov ebx, [esp + 4]
+    mov edx, [esp + 8]
     cld
     xor eax, eax
     mov edi, __recovery_bss_start
     mov ecx, __recovery_bss_end
     sub ecx, edi
     rep stosb
+    push edx
+    push ebx
     call recovery_loader_main
+    add esp, 8
 .halt:
     cli
     hlt
