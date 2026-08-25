@@ -407,6 +407,20 @@ static int system_slots_load_control(const char* alias, uint8_t* raw) {
            OK : (result == OK ? ERR_DISK : result);
 }
 
+/* O recovery loader so pode regravar o primeiro setor de controles ja
+ * existentes; staging nao pode publicar um pendente que exija criar arquivos. */
+static int system_slots_controls_preallocated_locked(void) {
+    uint32_t size = 0U;
+
+    for (uint32_t index = 0U; index < UPDATE_SYSTEM_SLOT_COUNT; index++) {
+        if (fs_get_root_file_info(system_slots_state_aliases[index], &size, 0) !=
+                OK || size != UPDATE_SYSTEM_SLOT_CONTROL_SIZE) {
+            return ERR_STATE;
+        }
+    }
+    return OK;
+}
+
 static int system_slots_write_control(const char* alias, const uint8_t* raw) {
     return fs_atomic_write_root(alias, raw, UPDATE_SYSTEM_SLOT_CONTROL_SIZE,
                                 SYSTEM_SLOTS_CONTROL_ATTRIBUTES,
@@ -968,6 +982,13 @@ int update_system_slots_stage_file(
         spinlock_release(&system_slots_lock);
         LOG_ERROR("UPDATE", "Ja existe staging ou slot pendente ZSYS");
         return ERR_STATE;
+    }
+    result = system_slots_controls_preallocated_locked();
+    if (result != OK) {
+        result_out->reason = UPDATE_SYSTEM_SLOTS_REASON_STATE;
+        spinlock_release(&system_slots_lock);
+        LOG_ERROR("UPDATE", "Controles redundantes nao estao prealocados");
+        return result;
     }
     result = update_system_verify_file(path, &verification);
     result_out->verification_reason = verification.reason;

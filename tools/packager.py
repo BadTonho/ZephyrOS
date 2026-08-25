@@ -852,6 +852,8 @@ def prepare_hybrid_image(image_path: Path, disk_bytes: int,
     if (fat32_start_lba < 4096 or fat32_start_lba % 4096 or
             fat32_start_lba * FAT32_SECTOR_SIZE >= disk_bytes):
         raise PackageError("inicio FAT32 invalido")
+    if len(payload) > fat32_start_lba * FAT32_SECTOR_SIZE:
+        raise PackageError("boot legado invadiria a particao FAT32")
     legacy_total = (struct.unpack_from("<H", payload, 19)[0] or
                     struct.unpack_from("<I", payload, 32)[0])
     if legacy_total == 0 or len(payload) > legacy_total * FAT32_SECTOR_SIZE:

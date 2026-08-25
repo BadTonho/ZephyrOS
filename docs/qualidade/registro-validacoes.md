@@ -824,3 +824,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   de tentativa vinculada ao handoff `ZSBH` e o `stage2` legado limpa o handoff
   antes de carregar o kernel. Loader FAT32/Ed25519, menu pré-kernel e a
   validação executável permanecem pendentes.
+- EP9.2A implementada em: 2026-08-25 15:36 (America/Sao_Paulo); foi adicionado
+  recovery loader fixo, shim no stage2, verificacao FAT32/ZSYS em streaming,
+  tentativa persistida com rollback e fallback SHA-256 do kernel legado.
+  `boot.asm` permaneceu inalterado. Gates e matriz QEMU da EP9.2A aguardam a
+  validacao do usuario.

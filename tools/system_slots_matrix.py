@@ -27,6 +27,7 @@ STATE_SEQUENCE = 1
 JOURNAL_SEQUENCE = 2
 ACTIVE_SLOT = 0
 PENDING_NONE = 0xFF
+PENDING_SLOT_B = 1
 FILE_EMPTY = 0
 FILE_VALID = 1
 SLOT_OFFSET = 32
@@ -42,6 +43,7 @@ PHASE_PREPARED = 1
 PHASE_STAGING = 2
 PHASE_VERIFIED = 3
 PHASE_COMMITTED = 4
+BOOT_ATTEMPTED = 1
 STATE_A = "ZSI0.STA"
 STATE_B = "ZSI1.STA"
 JOURNAL_A = "ZSI0.JRN"
@@ -98,6 +100,23 @@ def state_record(active: bytes, sequence: int = STATE_SEQUENCE) -> bytes:
     raw[15] = ACTIVE_SLOT
     raw[16] = PENDING_NONE
     raw[SLOT_OFFSET : SLOT_OFFSET + SLOT_SIZE] = active
+    raw[CONTROL_HASH_OFFSET:] = hashlib.sha256(raw[:CONTROL_HASH_OFFSET]).digest()
+    return bytes(raw)
+
+
+def pending_state(active: bytes, candidate: bytes, sequence: int = 2) -> bytes:
+    raw = bytearray(state_record(active, sequence))
+    raw[13] = PENDING_SLOT_B
+    raw[SLOT_OFFSET + SLOT_SIZE : SLOT_OFFSET + 2 * SLOT_SIZE] = candidate
+    raw[CONTROL_HASH_OFFSET:] = hashlib.sha256(raw[:CONTROL_HASH_OFFSET]).digest()
+    return bytes(raw)
+
+
+def attempted_state(active: bytes, candidate: bytes) -> bytes:
+    raw = bytearray(pending_state(active, candidate, sequence=3))
+    raw[16] = PENDING_SLOT_B
+    raw[17] = BOOT_ATTEMPTED
+    struct.pack_into("<I", raw, 20, 1)
     raw[CONTROL_HASH_OFFSET:] = hashlib.sha256(raw[:CONTROL_HASH_OFFSET]).digest()
     return bytes(raw)
 
@@ -162,7 +181,6 @@ def make_case(
     name: str,
     state_a: bytes,
     state_b: bytes,
-    candidate: bytes,
     candidate_package: bytes,
     journal: tuple[bytes, bytes] | None = None,
     staging: bool = False,
@@ -195,6 +213,9 @@ def main() -> int:
     parser.add_argument("--base-image", required=True)
     parser.add_argument("--baseline", required=True)
     parser.add_argument("--candidate", required=True)
+    parser.add_argument("--bad-signature", required=True)
+    parser.add_argument("--bad-image-hash", required=True)
+    parser.add_argument("--bad-component-hash", required=True)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--fat32-start-lba", type=int, default=HYBRID_FAT32_START_LBA)
     args = parser.parse_args()
@@ -206,18 +227,23 @@ def main() -> int:
     output_dir.mkdir(parents=True, exist_ok=True)
     active = slot_record(baseline)
     candidate = slot_record(candidate_package)
+    bad_signature = Path(args.bad_signature).read_bytes()
+    bad_image_hash = Path(args.bad_image_hash).read_bytes()
+    bad_component_hash = Path(args.bad_component_hash).read_bytes()
     valid_state = state_record(active)
     empty_slot_state = valid_state
     valid_journal = journal_record(candidate, PHASE_PREPARED)
     cases: dict[str, dict[str, str]] = {}
 
-    def add(name: str, expected: str, **kwargs: object) -> None:
+    def add(name: str, expected: str, package: bytes = candidate_package,
+            **kwargs: object) -> None:
+        kwargs.pop("candidate", None)
         make_case(
             base_image,
             output_dir,
             name,
             start_lba=args.fat32_start_lba,
-            candidate_package=candidate_package,
+            candidate_package=package,
             **kwargs,
         )
         cases[name] = {"image": f"{name}.img", "expected": expected}
@@ -265,6 +291,26 @@ def main() -> int:
     add("NO_VOLUME", "DEGRADED ou indisponivel",
         state_a=valid_state, state_b=empty_slot_state,
         candidate=candidate, no_volume=True)
+    pending = pending_state(active, candidate)
+    add("BOOT_ACTIVE_VALID", "A autenticado inicia automaticamente",
+        state_a=valid_state, state_b=valid_state, candidate=candidate)
+    add("BOOT_PENDING_VALID", "B e tentado e aguarda confirmacao",
+        state_a=pending, state_b=pending, candidate=candidate, target=True)
+    add("BOOT_BAD_SIGNATURE", "Fallback legado autenticado",
+        package=bad_signature,
+        state_a=pending_state(active, slot_record(bad_signature)),
+        state_b=pending_state(active, slot_record(bad_signature)), target=True)
+    add("BOOT_BAD_IMAGE_HASH", "Fallback legado autenticado",
+        package=bad_image_hash,
+        state_a=pending_state(active, slot_record(bad_image_hash)),
+        state_b=pending_state(active, slot_record(bad_image_hash)), target=True)
+    add("BOOT_BAD_COMPONENT_HASH", "Fallback legado autenticado",
+        package=bad_component_hash,
+        state_a=pending_state(active, slot_record(bad_component_hash)),
+        state_b=pending_state(active, slot_record(bad_component_hash)), target=True)
+    interrupted = attempted_state(active, candidate)
+    add("BOOT_ATTEMPT_INTERRUPTED", "B marcado FAILED; A preservado",
+        state_a=interrupted, state_b=interrupted, candidate=candidate, target=True)
     (output_dir / "matrix.json").write_text(
         json.dumps(
             {

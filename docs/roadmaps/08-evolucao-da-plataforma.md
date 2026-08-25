@@ -841,14 +841,22 @@ As entregas de recuperacao da EP9.2 ficam divididas em duas subetapas:
 
 #### EP9.2A - Recovery loader confiavel
 
-- [ ] Adicionar o loader imutavel na area FAT12 legada, mantendo `boot.asm`
+- [x] Adicionar o loader imutavel na area FAT12 legada, mantendo `boot.asm`
   intacto e usando o `stage2` apenas como shim de carregamento.
-- [ ] Ler o FAT32 `ZEPHYROS`, escolher o estado redundante valido de maior
+- [x] Ler o FAT32 `ZEPHYROS`, escolher o estado redundante valido de maior
   sequencia e registrar a tentativa antes de carregar um slot pendente.
-- [ ] Validar Ed25519, hash da imagem e hashes dos componentes do ZSYS antes
+- [x] Validar Ed25519, hash da imagem e hashes dos componentes do ZSYS antes
   de transferir controle ao kernel autenticado.
-- [ ] Manter kernel de recuperacao legado autenticado e fallback local quando
+- [x] Manter kernel de recuperacao legado autenticado e fallback local quando
   volume, estado, journal ou candidato nao puderem ser usados.
+- [x] Persistir `FAILED` e limpar o pendente quando uma tentativa nao for
+  confirmada ou quando um candidato pendente falhar na validacao, preservando
+  o arquivo do slot para diagnostico futuro.
+- [x] Exigir os dois controles `ZSI*.STA` prealocados antes de publicar um
+  pendente, e verificar no build os limites de tamanho, memoria e FAT12.
+- [ ] Executar a matriz QEMU EP9.2A: ativo, pendente confirmado, hashes e
+  assinatura invalidos, estado/journal corrompido, tentativa interrompida e
+  FAT32 ausente. Os gates de compilacao e esta matriz aguardam o usuario.
 
 #### EP9.2B - Menu pre-kernel e recuperacao interativa
 

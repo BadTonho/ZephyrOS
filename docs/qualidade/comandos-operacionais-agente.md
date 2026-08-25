@@ -188,6 +188,29 @@ O resultado esperado e cancelamento sem slot pendente, com A preservado e
 journal limpo. A aplicacao, a selecao no boot e o reboot continuam fora da
 EP9.1.
 
+## EP9.2A: matriz do recovery loader
+
+Depois de gerar a matriz, os casos de boot devem ser iniciados um por vez:
+
+```text
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\BOOT_ACTIVE_VALID.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\BOOT_PENDING_VALID.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\BOOT_BAD_SIGNATURE.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\BOOT_BAD_IMAGE_HASH.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\BOOT_BAD_COMPONENT_HASH.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\BOOT_ATTEMPT_INTERRUPTED.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\STATE_ONE_BAD.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\STATE_BOTH_BAD.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\JOURNAL_PREPARED.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\NO_VOLUME.img
+```
+
+`BOOT_ACTIVE_VALID` deve iniciar A autenticado. `BOOT_PENDING_VALID` deve
+iniciar B, persistir a tentativa e permitir que o kernel a confirme. Os tres
+casos de hash/assinatura, journal e FAT32 ausente devem exibir o diagnostico
+do loader e iniciar somente o fallback legado autenticado. No caso interrompido,
+o boot seguinte deve marcar B como `FAILED`, limpar o pendente e preservar A.
+
 ## Comandos no Shell
 
 Para orientar comandos do sistema, consultar primeiro `comandos.md` e os
