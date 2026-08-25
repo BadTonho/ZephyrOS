@@ -129,19 +129,26 @@ A GDT define os segmentos de memória para o Protected Mode.
     jmp 0x08:protected_mode  ; Jump para código 32-bit
 ```
 
-### Etapa 7: Entry Point do Kernel
+### Etapa 7: Recovery loader e entrada do kernel
 
 ```nasm
 [BITS 32]
 protected_mode:
-    mov ax, 0x10           ; Segmento de dados
+    mov ax, 0x10
     mov ds, ax
     mov ss, ax
-    mov esp, 0x9F000       ; Kernel stack
+    mov esp, 0x9F000
 
-    mov esi, 0x3000        ; Passa mapa de memória
-    call 0x00100000        ; Chama kernel_main()
+    push dword 0x2000
+    push dword 0x3000
+    call 0x00900000
 ```
+
+O recovery loader preserva os dois argumentos antes de limpar sua BSS e os
+repassa para a função C que valida e carrega o slot. Depois da autenticação, a
+ponte final restaura a pilha em `0x9F000`, publica E820 em `ESI`, VESA em `EDI`
+e chama o kernel em `0x00100000`. A entrada do próprio kernel converte esses
+registradores para `kernel_main(mmap, vesa)`.
 
 ## Layout da Memória
 

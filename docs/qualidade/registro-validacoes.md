@@ -889,3 +889,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   comprovado do `stage2`, antes do loader protegido, eliminando a segunda
   transicao. O renderer fixo agora publica diagnosticos em framebuffers de 24
   ou 32 bpp e conserva VGA texto como fallback. A validacao aguarda o usuario.
+- Causa raiz do handoff pre-kernel corrigida em: 2026-08-25 18:18
+  (America/Sao_Paulo); a entrada Assembly recebia E820 e VESA do `stage2`, mas
+  chamava `recovery_loader_main` sem repassar os argumentos depois de limpar a
+  BSS. O C recebia o endereco de retorno como mapa e o mapa como bloco VESA.
+  Os dois enderecos agora sao preservados e empilhados explicitamente antes da
+  chamada C. A validacao QEMU aguarda o usuario.
