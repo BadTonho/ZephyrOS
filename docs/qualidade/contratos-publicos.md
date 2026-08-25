@@ -397,6 +397,11 @@ update_remote.h e
 update_remote_github.h acrescentam, ao final dos registros existentes, o
 asset system.zsys e seus metadados, preservando as APIs e campos legados.
 EP9.1 não aplica o slot, seleciona boot, reinicia ou altera boot.asm/stage2.
+Na base da EP9.2, `update_system_slots.h` mantém compatibilidade de leitura
+com o estado v1 e publica estado/slot/sequência de tentativa e o handoff
+`ZSBH`; `update_system_slots_boot_confirm()` só promove um slot após a
+inicialização essencial confirmar o mesmo registro persistido. `boot.asm`
+permanece inalterado.
 
 Desde a EP9.4A, `build\zephyros.img` usa uma imagem híbrida de 64 MiB: o FAT12
 bruto continua no início para boot e recuperação e o FAT32 `ZEPHYROS` começa

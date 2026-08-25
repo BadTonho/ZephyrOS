@@ -816,3 +816,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - EP9.1 marcada como validada nos roadmaps em: 2026-08-25 14:56
   (America/Sao_Paulo); o status foi atualizado após a conclusão da matriz
   QEMU e das verificações `health`, `memcheck` e `regcheck full`.
+- Base da EP9.2 implementada em: 2026-08-25 15:15 (America/Sao_Paulo); o
+  estado de slots passou a v2 mantendo leitura v1, o kernel ganhou confirmação
+  de tentativa vinculada ao handoff `ZSBH` e o `stage2` legado limpa o handoff
+  antes de carregar o kernel. Loader FAT32/Ed25519, menu pré-kernel e a
+  validação executável permanecem pendentes.

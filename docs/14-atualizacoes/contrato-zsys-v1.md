@@ -190,3 +190,17 @@ O alvo `system-slots-fixtures` acrescenta uma imagem com `ZSA0.ZSY` semeado
 por um baseline assinado da versão atual, `ZSB0.ZSY` ausente, as duas cópias
 iniciais `ZSI*.STA` e `VALID.ZSYS` como candidato. A chave privada continua
 exclusiva de `Makefile.local`; a imagem normal não depende dela.
+
+## EP9.2 — Confirmação de tentativa pelo kernel
+
+O estado de slots v2 preserva a leitura de registros v1 e acrescenta o slot
+anterior, slot em tentativa, estado de boot (`NONE`, `ATTEMPTED` ou `FAILED`),
+motivo e sequência da tentativa. Os bytes reservados permanecem zero e o
+SHA-256 continua protegendo os primeiros 480 bytes do registro.
+
+O endereço físico `0x2800` é reservado para o handoff `ZSBH` de 64 bytes entre
+o loader pré-kernel e o kernel. Quando presente, `update_system_slots_boot_confirm()`
+aceita o handoff somente se slot, anterior, sequência de estado e sequência da
+tentativa coincidirem com o estado persistido; então promove o slot e limpa o
+pendente. O `stage2` legado limpa essa área antes de carregar o kernel, para
+que um boot sem loader nunca confirme uma tentativa antiga.

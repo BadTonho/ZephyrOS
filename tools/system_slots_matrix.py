@@ -22,7 +22,7 @@ CONTROL_SIZE = 512
 CONTROL_HASH_OFFSET = 480
 STATE_MAGIC = b"ZSI1"
 JOURNAL_MAGIC = b"ZSJ1"
-FORMAT_VERSION = 1
+FORMAT_VERSION = 2
 STATE_SEQUENCE = 1
 JOURNAL_SEQUENCE = 2
 ACTIVE_SLOT = 0
@@ -95,6 +95,8 @@ def state_record(active: bytes, sequence: int = STATE_SEQUENCE) -> bytes:
     struct.pack_into("<HHI", raw, 4, FORMAT_VERSION, CONTROL_SIZE, sequence)
     raw[12] = ACTIVE_SLOT
     raw[13] = PENDING_NONE
+    raw[15] = ACTIVE_SLOT
+    raw[16] = PENDING_NONE
     raw[SLOT_OFFSET : SLOT_OFFSET + SLOT_SIZE] = active
     raw[CONTROL_HASH_OFFSET:] = hashlib.sha256(raw[:CONTROL_HASH_OFFSET]).digest()
     return bytes(raw)
