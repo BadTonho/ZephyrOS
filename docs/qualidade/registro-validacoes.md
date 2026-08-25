@@ -728,3 +728,6 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Fixture negativa de hash validada pelo usuário em: 2026-08-25 12:35
   (America/Sao_Paulo); `IMGHASH.ZSYS` foi recusado por `HASH` e confirmou que
   nenhuma gravação foi realizada.
+- Fixture negativa de tamanho validada pelo usuário em: 2026-08-25 12:37
+  (America/Sao_Paulo); `OVERSIZ.ZSYS` foi recusado por `SIZE` e confirmou que
+  nenhuma gravação foi realizada.
