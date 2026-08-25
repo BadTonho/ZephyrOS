@@ -749,8 +749,10 @@ Evolução da plataforma:      [████████████████
   específica concluída.
 - [x] Matriz reproduzivel EP9.1 validada para corrupcao de estado/journal,
   fases de recuperacao, falta de espaco e volume FAT32 ausente.
-- [ ] EP9.2-EP9.3 futuras: boot pendente, aplicação, rollback pós-reboot e
-  confirmação explícita de reboot.
+- [ ] EP9.2A-EP9.2B e EP9.3 futuras: recovery loader, menu pre-kernel, boot
+  pendente, aplicacao, rollback pos-reboot e confirmacao explicita de reboot.
+- [ ] EP9.3 futura: aplicação, comandos, rollback pós-reboot e confirmação
+  explícita de reboot.
 
 Para atualizacoes do sistema, U1-U5 continuam sendo a base executavel no
 dispositivo; EP5-EP9 sao a continuidade de Release, transporte e imagem do
