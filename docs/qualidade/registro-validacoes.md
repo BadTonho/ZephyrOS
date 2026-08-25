@@ -773,3 +773,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   físico inteiro e podia sobrescrever os dados de `ZSA0.ZSY` com `0xE5`.
   `git diff --check` permaneceu sem erros; gates e QEMU precisam ser repetidos
   pelo usuário antes de continuar a matriz.
+- Gates após a correção confirmados pelo usuário em: 2026-08-25 14:27
+  (America/Sao_Paulo); `make q3check`, `make clean && make` e `make run`
+  foram concluídos com sucesso.
+- Caso `JOURNAL_PREPARED` validado pelo usuário em: 2026-08-25 14:27
+  (America/Sao_Paulo); a recuperação descartou o staging incompleto, limpou o
+  journal, preservou o slot A como `VALID`/ativo e deixou o slot B vazio.
