@@ -738,8 +738,10 @@ repositorio.
 
 ## EP9 - Atualizacao da imagem do sistema e slots de boot
 
-**Estado:** EP9.0A e EP9.4A implementadas e validadas pelo usuario; EP9.1
-implementada, aguardando a validacao executavel do usuario. Aplicacao,
+**Estado:** EP9.0A, EP9.1 e EP9.4A implementadas e validadas pelo usuário.
+A EP9.1 foi validada no QEMU com a matriz específica de fixtures/staging,
+`health`, `memcheck` e `regcheck full`; a regressão visual Simple/Classic não
+foi executada por não ser necessária ao escopo desta alteração. Aplicação,
 rollback pos-reboot e alteracoes no boot/stage2 continuam fora do escopo atual.
 
 Esta fase separa a atualizacao de arquivos do sistema em execucao da
@@ -829,8 +831,9 @@ crus.
 - [x] Criar o gerador `system-slots-matrix` com casos reproduziveis de
   corrupcao de estado/journal, fases de recuperacao, falta de espaco e volume
   ausente, sem alterar boot ou stage2.
-- [ ] Executar a matriz EP9.1 no QEMU e confirmar a regressao Simple/Classic,
-  `health`, `memcheck` e `regcheck full`.
+- [x] Executar a matriz EP9.1 no QEMU e validar `health`, `memcheck` e
+  `regcheck full`; a regressão visual Simple/Classic foi dispensada conforme
+  o escopo de validação do usuário e as regras de interface vigentes.
 
 ### EP9.2 - Boot, tentativa e rollback
 

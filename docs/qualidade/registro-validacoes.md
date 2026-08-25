@@ -813,3 +813,6 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   2026-08-25 14:55 (America/Sao_Paulo); os 12 casos previstos foram
   validados, incluindo seleção redundante de estado/journal, recuperação por
   fase, cópias inválidas, falta de espaço e ausência do volume FAT32.
+- EP9.1 marcada como validada nos roadmaps em: 2026-08-25 14:56
+  (America/Sao_Paulo); o status foi atualizado após a conclusão da matriz
+  QEMU e das verificações `health`, `memcheck` e `regcheck full`.
