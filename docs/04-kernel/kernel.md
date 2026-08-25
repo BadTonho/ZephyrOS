@@ -20,11 +20,16 @@ O bootloader chama o kernel em Assembly, que por sua vez chama `kernel_main()` e
 
 ```nasm
 _start:
-    push esi              ; Passa endereço do mapa de memória
-    call kernel_main      ; Chama função C
-    add esp, 4
-    jmp $                 ; Loop infinito se retornar
+    push edi
+    push esi
+    call kernel_main
+    add esp, 8
+    jmp $
 ```
+
+O recovery loader entrega o mapa E820 em `ESI` e o bloco VESA em `EDI`. A
+entrada Assembly converte os dois registradores para
+`kernel_main(mmap_addr, vesa_info_addr)`.
 
 ## Kernel Principal (`kernel.c`)
 
@@ -817,6 +822,12 @@ stack inicial em `0x98000–0x9F000`, mas posiciona kernel e BSS em
 `0x00100000–0x00800000`. A ABI ZAPP continua em `0x00800000–0x01000000`, o
 heap ocupa `0x01000000–0x01400000` e o PMM entrega páginas mapeadas por
 identidade somente a partir de `0x01400000`.
+
+O contexto fixo recebido do boot ocupa a página `0x2000–0x2FFF`, incluindo
+VESA e o handoff `ZSBH` em `0x2800`. O diretório do kernel preserva somente
+essa página baixa como identity-mapped e supervisor-only até a confirmação do
+slot. Diretórios ring 3 compartilham a tabela sem a flag `USER`; página zero,
+E820 em `0x3000` e as demais lacunas baixas permanecem não mapeadas.
 
 A inicialização exige 32 MiB de RAM e confirma no E820 que as áreas baixas,
 o kernel e o heap são utilizáveis. Páginas abaixo de `0x01400000` permanecem
