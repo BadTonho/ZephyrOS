@@ -834,3 +834,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   o acesso PIO direto do loader nao alcançava a imagem. O backend foi trocado
   por um trampoline BIOS EDD de leitura/escrita no `stage2`, mantendo
   `boot.asm` inalterado. A correcao aguarda novos gates e validacao QEMU.
+- Travamento aparente na validacao do slot diagnosticado e corrigido em:
+  2026-08-25 17:02 (America/Sao_Paulo); o leitor reiniciava a caminhada FAT a
+  cada bloco de 512 bytes, tornando as passagens sobre o ZSYS quadraticas. Foi
+  adicionado cursor persistente de cluster para streaming linear e o retorno
+  BIOS agora passa por um stub protegido fixo do `stage2`. A tela publica os
+  marcos `VERIFY SLOT` e `LOAD KERNEL`; a correcao aguarda novos gates e QEMU.

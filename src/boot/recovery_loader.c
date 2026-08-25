@@ -59,6 +59,14 @@ typedef struct {
 } recovery_file_t;
 
 typedef struct {
+    const recovery_fat32_t* fs;
+    uint32_t cluster;
+    uint32_t cluster_offset;
+    uint32_t remaining;
+    uint32_t hops;
+} recovery_file_reader_t;
+
+typedef struct {
     uint32_t sequence;
     uint8_t active;
     uint8_t pending;
@@ -68,9 +76,12 @@ typedef struct {
 } recovery_state_t;
 
 static uint8_t recovery_sector[RECOVERY_SECTOR_SIZE];
+static uint8_t recovery_fat_sector[RECOVERY_SECTOR_SIZE];
 static uint8_t recovery_header[UPDATE_SYSTEM_HEADER_SIZE];
 static uint8_t recovery_signed_header[UPDATE_SYSTEM_HEADER_SIZE];
 static uint32_t recovery_vga_cursor;
+static uint32_t recovery_fat_cached_lba;
+static uint8_t recovery_fat_cache_valid;
 static const uint8_t* recovery_vesa;
 
 extern int recovery_bios_read_sector(uint32_t lba, void* output);
@@ -176,8 +187,71 @@ static int recovery_fat32_open(recovery_fat32_t* fs) {
 
 static uint32_t recovery_next_cluster(const recovery_fat32_t* fs, uint32_t cluster) {
     uint32_t offset = cluster * 4U;
-    if (!recovery_read_sector(fs->fat_lba + offset / RECOVERY_SECTOR_SIZE, recovery_sector)) return 0U;
-    return recovery_u32(recovery_sector + offset % RECOVERY_SECTOR_SIZE) & 0x0FFFFFFFU;
+    uint32_t lba = fs->fat_lba + offset / RECOVERY_SECTOR_SIZE;
+    if ((!recovery_fat_cache_valid || recovery_fat_cached_lba != lba) &&
+        !recovery_read_sector(lba, recovery_fat_sector)) return 0U;
+    recovery_fat_cached_lba = lba;
+    recovery_fat_cache_valid = 1U;
+    return recovery_u32(recovery_fat_sector + offset % RECOVERY_SECTOR_SIZE) &
+           0x0FFFFFFFU;
+}
+
+static int recovery_reader_init(recovery_file_reader_t* reader,
+                                const recovery_fat32_t* fs,
+                                const recovery_file_t* file,
+                                uint32_t offset) {
+    uint32_t cluster_bytes;
+    if (!reader || !fs || !file || offset > file->size) return 0;
+    cluster_bytes = fs->sectors_per_cluster * RECOVERY_SECTOR_SIZE;
+    if (!cluster_bytes || file->cluster < 2U) return 0;
+    reader->fs = fs;
+    reader->cluster = file->cluster;
+    reader->cluster_offset = offset;
+    reader->remaining = file->size - offset;
+    reader->hops = 0U;
+    while (reader->cluster_offset >= cluster_bytes && reader->remaining) {
+        if (reader->hops++ >= RECOVERY_FAT32_MAX_HOPS) return 0;
+        reader->cluster = recovery_next_cluster(fs, reader->cluster);
+        if (reader->cluster < 2U || reader->cluster >= RECOVERY_FAT32_EOC) return 0;
+        reader->cluster_offset -= cluster_bytes;
+    }
+    return 1;
+}
+
+static int recovery_reader_read(recovery_file_reader_t* reader, void* output,
+                                uint32_t size) {
+    uint8_t* destination = (uint8_t*)output;
+    uint32_t cluster_bytes;
+    if (!reader || !reader->fs || !output || size > reader->remaining) return 0;
+    cluster_bytes = reader->fs->sectors_per_cluster * RECOVERY_SECTOR_SIZE;
+    if (reader->cluster_offset == cluster_bytes && reader->remaining) {
+        if (reader->hops++ >= RECOVERY_FAT32_MAX_HOPS) return 0;
+        reader->cluster = recovery_next_cluster(reader->fs, reader->cluster);
+        reader->cluster_offset = 0U;
+        if (reader->cluster < 2U || reader->cluster >= RECOVERY_FAT32_EOC) return 0;
+    }
+    while (size) {
+        uint32_t sector_index = reader->cluster_offset / RECOVERY_SECTOR_SIZE;
+        uint32_t sector_offset = reader->cluster_offset % RECOVERY_SECTOR_SIZE;
+        uint32_t amount = RECOVERY_SECTOR_SIZE - sector_offset;
+        uint32_t lba = reader->fs->data_lba +
+            (reader->cluster - 2U) * reader->fs->sectors_per_cluster + sector_index;
+        if (amount > size) amount = size;
+        if (!recovery_read_sector(lba, recovery_sector)) return 0;
+        for (uint32_t index = 0U; index < amount; index++)
+            destination[index] = recovery_sector[sector_offset + index];
+        destination += amount;
+        size -= amount;
+        reader->remaining -= amount;
+        reader->cluster_offset += amount;
+        if (reader->cluster_offset == cluster_bytes && reader->remaining && size) {
+            if (reader->hops++ >= RECOVERY_FAT32_MAX_HOPS) return 0;
+            reader->cluster = recovery_next_cluster(reader->fs, reader->cluster);
+            reader->cluster_offset = 0U;
+            if (reader->cluster < 2U || reader->cluster >= RECOVERY_FAT32_EOC) return 0;
+        }
+    }
+    return 1;
 }
 
 static int recovery_find_file(const recovery_fat32_t* fs, const char name[RECOVERY_FILE_NAME_SIZE], recovery_file_t* file) {
@@ -203,33 +277,9 @@ static int recovery_find_file(const recovery_fat32_t* fs, const char name[RECOVE
 
 static int recovery_read_file(const recovery_fat32_t* fs, const recovery_file_t* file,
                               uint32_t offset, void* output, uint32_t size) {
-    uint32_t cluster_bytes = fs->sectors_per_cluster * RECOVERY_SECTOR_SIZE;
-    uint32_t cluster = file->cluster;
-    uint32_t hops = 0U;
-    uint8_t* destination = (uint8_t*)output;
-    if (!output || offset > file->size || size > file->size - offset) return 0;
-    while (offset >= cluster_bytes) {
-        if (hops++ >= RECOVERY_FAT32_MAX_HOPS) return 0;
-        cluster = recovery_next_cluster(fs, cluster);
-        if (cluster < 2U || cluster >= RECOVERY_FAT32_EOC) return 0;
-        offset -= cluster_bytes;
-    }
-    while (size) {
-        uint32_t sector_index = offset / RECOVERY_SECTOR_SIZE;
-        uint32_t sector_offset = offset % RECOVERY_SECTOR_SIZE;
-        uint32_t amount = RECOVERY_SECTOR_SIZE - sector_offset;
-        if (amount > size) amount = size;
-        if (!recovery_read_sector(fs->data_lba + (cluster - 2U) * fs->sectors_per_cluster + sector_index, recovery_sector)) return 0;
-        for (uint32_t index = 0U; index < amount; index++) destination[index] = recovery_sector[sector_offset + index];
-        destination += amount; size -= amount; offset += amount;
-        if (offset == cluster_bytes && size) {
-            if (hops++ >= RECOVERY_FAT32_MAX_HOPS) return 0;
-            cluster = recovery_next_cluster(fs, cluster);
-            offset = 0U;
-            if (cluster < 2U || cluster >= RECOVERY_FAT32_EOC) return 0;
-        }
-    }
-    return 1;
+    recovery_file_reader_t reader;
+    return recovery_reader_init(&reader, fs, file, offset) &&
+           recovery_reader_read(&reader, output, size);
 }
 
 static int recovery_load_state(const recovery_fat32_t* fs, const char name[RECOVERY_FILE_NAME_SIZE], recovery_state_t* state) {
@@ -357,12 +407,14 @@ static int recovery_mark_attempt_failed(const recovery_fat32_t* fs,
 static int recovery_hash_file(const recovery_fat32_t* fs, const recovery_file_t* file,
                               uint8_t output[CRYPTO_SHA256_SIZE]) {
     crypto_sha256_ctx_t hash;
+    recovery_file_reader_t reader;
     uint32_t offset = 0U;
-    if (crypto_sha256_init(&hash) != 0) return 0;
+    if (crypto_sha256_init(&hash) != 0 ||
+        !recovery_reader_init(&reader, fs, file, 0U)) return 0;
     while (offset < file->size) {
         uint32_t amount = file->size - offset;
         if (amount > sizeof(recovery_sector)) amount = sizeof(recovery_sector);
-        if (!recovery_read_file(fs, file, offset, recovery_sector, amount) ||
+        if (!recovery_reader_read(&reader, recovery_sector, amount) ||
             crypto_sha256_update(&hash, recovery_sector, amount) != 0) return 0;
         offset += amount;
     }
@@ -373,12 +425,14 @@ static int recovery_hash_range(const recovery_fat32_t* fs, const recovery_file_t
                                uint32_t offset, uint32_t size,
                                uint8_t output[CRYPTO_SHA256_SIZE]) {
     crypto_sha256_ctx_t hash;
+    recovery_file_reader_t reader;
     uint32_t consumed = 0U;
-    if (crypto_sha256_init(&hash) != 0) return 0;
+    if (crypto_sha256_init(&hash) != 0 ||
+        !recovery_reader_init(&reader, fs, file, offset)) return 0;
     while (consumed < size) {
         uint32_t amount = size - consumed;
         if (amount > sizeof(recovery_sector)) amount = sizeof(recovery_sector);
-        if (!recovery_read_file(fs, file, offset + consumed, recovery_sector, amount) ||
+        if (!recovery_reader_read(&reader, recovery_sector, amount) ||
             crypto_sha256_update(&hash, recovery_sector, amount) != 0) return 0;
         consumed += amount;
     }
@@ -390,6 +444,7 @@ static int recovery_verify_package(const recovery_fat32_t* fs, const recovery_fi
                                    uint32_t* kernel_size) {
     crypto_ed25519_verify_ctx_t signature;
     crypto_sha256_ctx_t image_hash;
+    recovery_file_reader_t image_reader;
     uint8_t actual_hash[32];
     uint8_t actual_image_hash[32];
     uint32_t image_size;
@@ -420,11 +475,12 @@ static int recovery_verify_package(const recovery_fat32_t* fs, const recovery_fi
     if (crypto_ed25519_verify_init(&signature, recovery_header + RECOVERY_ZSYS_SIGNATURE_OFFSET, UPDATE_TRUST_PUBLIC_KEY) != 0 ||
         crypto_ed25519_verify_update(&signature, domain, sizeof(domain) - 1U) != 0 ||
         crypto_ed25519_verify_update(&signature, recovery_signed_header, sizeof(recovery_signed_header)) != 0 ||
-        crypto_sha256_init(&image_hash) != 0) return 0;
+        crypto_sha256_init(&image_hash) != 0 ||
+        !recovery_reader_init(&image_reader, fs, file, UPDATE_SYSTEM_HEADER_SIZE)) return 0;
     while (offset < image_size) {
         uint32_t amount = image_size - offset;
         if (amount > sizeof(recovery_sector)) amount = sizeof(recovery_sector);
-        if (!recovery_read_file(fs, file, UPDATE_SYSTEM_HEADER_SIZE + offset, recovery_sector, amount) ||
+        if (!recovery_reader_read(&image_reader, recovery_sector, amount) ||
             crypto_ed25519_verify_update(&signature, recovery_sector, amount) != 0 ||
             crypto_sha256_update(&image_hash, recovery_sector, amount) != 0) return 0;
         offset += amount;
@@ -512,6 +568,7 @@ void recovery_loader_main(uint32_t mmap, uint32_t vesa) {
     uint8_t slot_index;
     int first_valid;
     int second_valid;
+    int slot_valid;
     uint32_t kernel_offset = 0U;
     uint32_t kernel_size = 0U;
     static const char state_a[] = "ZSI0    STA";
@@ -570,12 +627,24 @@ void recovery_loader_main(uint32_t mmap, uint32_t vesa) {
     }
     if (selected->pending != UPDATE_SYSTEM_SLOT_NONE) slot_index = selected->pending;
     else slot_index = selected->active;
-    if (!recovery_find_file(&fs, slots[slot_index], &slot) ||
-        slot.size != recovery_u32(selected->raw + RECOVERY_STATE_SLOT_OFFSET + slot_index * RECOVERY_STATE_SLOT_SIZE + 12U) ||
-        !recovery_verify_package(&fs, &slot, selected->raw + RECOVERY_STATE_SLOT_OFFSET + slot_index * RECOVERY_STATE_SLOT_SIZE + 16U,
-                                 &kernel_offset, &kernel_size) ||
-        !recovery_read_file(&fs, &slot, UPDATE_SYSTEM_HEADER_SIZE + kernel_offset,
-                            (void*)RECOVERY_KERNEL_OFFSET, kernel_size)) {
+    slot_valid = recovery_find_file(&fs, slots[slot_index], &slot) &&
+        slot.size == recovery_u32(selected->raw + RECOVERY_STATE_SLOT_OFFSET +
+                                  slot_index * RECOVERY_STATE_SLOT_SIZE + 12U);
+    if (slot_valid) {
+        recovery_message("VERIFY SLOT\n");
+        slot_valid = recovery_verify_package(
+            &fs, &slot,
+            selected->raw + RECOVERY_STATE_SLOT_OFFSET +
+                slot_index * RECOVERY_STATE_SLOT_SIZE + 16U,
+            &kernel_offset, &kernel_size);
+    }
+    if (slot_valid) {
+        recovery_message("LOAD KERNEL\n");
+        slot_valid = recovery_read_file(
+            &fs, &slot, UPDATE_SYSTEM_HEADER_SIZE + kernel_offset,
+            (void*)RECOVERY_KERNEL_OFFSET, kernel_size);
+    }
+    if (!slot_valid) {
         if (selected->pending != UPDATE_SYSTEM_SLOT_NONE) {
             const char* alternate_name = alternate == &first ? state_a : state_b;
             recovery_mark_attempt_failed(&fs, selected, alternate, alternate_name);
