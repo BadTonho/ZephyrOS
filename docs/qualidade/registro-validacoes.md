@@ -850,3 +850,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   limpeza de BSS e chamada de `kernel_main`. Foram adicionados os marcos
   temporarios `1` a `5` ao redor de VESA, fonte, video, log e recovery para
   localizar a primeira inicializacao que falha antes da saida normal.
+- Salto para `kernel_main` isolado em: 2026-08-25 17:30
+  (America/Sao_Paulo); a ausencia do marco `1` apos `ECBM` mostrou falha na
+  transferencia para a funcao C, embora a entrada Assembly estivesse integra.
+  O loader passou a comparar o SHA-256 do kernel ja copiado em `0x00100000`
+  com o hash autenticado do componente antes de executar a imagem.

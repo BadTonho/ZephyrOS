@@ -519,6 +519,15 @@ static void recovery_boot_kernel(uint32_t mmap, uint32_t vesa) {
     recovery_boot_kernel_entry(mmap, vesa);
 }
 
+static int recovery_verify_loaded_kernel(
+    uint32_t kernel_size, const uint8_t expected_hash[CRYPTO_SHA256_SIZE]) {
+    uint8_t actual_hash[CRYPTO_SHA256_SIZE];
+    return expected_hash &&
+           crypto_sha256((const void*)RECOVERY_KERNEL_OFFSET, kernel_size,
+                         actual_hash) == 0 &&
+           recovery_equal(actual_hash, expected_hash, CRYPTO_SHA256_SIZE);
+}
+
 static int recovery_boot_legacy(uint32_t mmap, uint32_t vesa) {
     uint8_t* destination = (uint8_t*)RECOVERY_KERNEL_OFFSET;
     crypto_sha256_ctx_t hash;
@@ -635,7 +644,14 @@ void recovery_loader_main(uint32_t mmap, uint32_t vesa) {
         slot_valid = recovery_read_file(
             &fs, &slot, UPDATE_SYSTEM_HEADER_SIZE + kernel_offset,
             (void*)RECOVERY_KERNEL_OFFSET, kernel_size);
-        if (slot_valid) recovery_message("KERNEL READY\n");
+        if (slot_valid) {
+            const uint8_t* kernel_hash = recovery_header +
+                RECOVERY_ZSYS_COMPONENTS_OFFSET +
+                2U * RECOVERY_ZSYS_COMPONENT_SIZE + 12U;
+            slot_valid = recovery_verify_loaded_kernel(kernel_size, kernel_hash);
+            recovery_message(slot_valid ? "KERNEL MEMORY OK\n" :
+                                           "KERNEL MEMORY HASH FAIL\n");
+        }
     }
     if (!slot_valid) {
         if (selected->pending != UPDATE_SYSTEM_SLOT_NONE) {
