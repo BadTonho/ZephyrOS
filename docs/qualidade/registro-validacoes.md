@@ -845,3 +845,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   restaurar `ESP=0x9F000` e a publicar ESI/EDI conforme a ABI original do
   `stage2`, antes de chamar o kernel em `0x00100000`. O marco `KERNEL READY`
   diferencia copia concluida de falha na entrada; a correcao aguarda QEMU.
+- Entrada C do kernel alcançada no QEMU em: 2026-08-25 17:22
+  (America/Sao_Paulo); os breadcrumbs `ECBM` confirmaram entrada, argumentos,
+  limpeza de BSS e chamada de `kernel_main`. Foram adicionados os marcos
+  temporarios `1` a `5` ao redor de VESA, fonte, video, log e recovery para
+  localizar a primeira inicializacao que falha antes da saida normal.
