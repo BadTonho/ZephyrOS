@@ -230,6 +230,14 @@ Ed25519, hash da imagem e os tres hashes de componentes contiguos. Somente o
 kernel e copiado para 0x00100000; boot e stage2 sao autenticados, nao
 executados.
 
+O gateway também oferece ao loader a transição BIOS para VESA. Ela ocorre
+somente depois da autenticação e da cópia integral do kernel, imediatamente
+antes da transferência de controle. Até esse ponto os diagnósticos permanecem
+no modo texto. Uma falha na configuração VESA não autoriza outro payload nem
+interrompe o boot autenticado: o handoff informa VESA indisponível e o kernel
+usa o fallback Simple. A entrada do kernel recria a pilha e os registradores de
+handoff usados pelo fluxo legado do `stage2`.
+
 Antes de iniciar um pendente, o loader grava e rele a outra copia de estado
 como v2 com `ATTEMPTED`, slot anterior e sequencias novas, e publica `ZSBH`.
 Uma tentativa sem confirmacao, ou um pendente que falha na validacao, vira

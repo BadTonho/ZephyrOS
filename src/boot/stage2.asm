@@ -735,9 +735,6 @@ msg_memory:   db "Kernel high memory unavailable!", 0
 msg_a20:      db "A20 enable error!", 0
 msg_overflow: db "Kernel load overflow!", 0
 
-; O recovery loader chama este ponto por um descritor protegido de 16 bits.
-; O endereco e fixo para que o binario independente possa usa-lo sem linkar
-; contra o stage2. A area 0x2A00 guarda o DAP e o retorno protegido.
 %if ($-$$) > (BIOS_GATEWAY_OFFSET - STAGE2_LOAD)
     %error "stage2 invade o endereco fixo do gateway BIOS"
 %endif
@@ -769,6 +766,8 @@ bios_gateway_real:
     mov byte [BIOS_GATEWAY_ATTEMPTS], DISK_READ_ATTEMPTS
 
 .retry:
+    cmp byte [BIOS_GATEWAY_OPERATION], 2
+    je .vesa
     cmp byte [DISK_MODE], DISK_MODE_LBA
     jne .chs
     mov word [BIOS_GATEWAY_DAP + 2], 1
@@ -822,6 +821,13 @@ bios_gateway_real:
 .write_chs:
     mov ax, 0x0301
     int 0x13
+    jmp .result
+
+.vesa:
+    call set_vesa_mode
+    cmp byte [VESA_INFO + 11], 1
+    je .success
+    jmp .return_protected
 
 .result:
     jnc .success
@@ -841,8 +847,6 @@ bios_gateway_real:
     mov eax, cr0
     or eax, 0x00000001
     mov cr0, eax
-    ; Primeiro retorna para um alvo imediato dentro do stage2. O salto alto
-    ; para o loader ocorre somente depois de restaurar descritores e pilha.
     jmp dword GDT_CODE32_SEL:bios_gateway_protected_return
 
 [BITS 32]

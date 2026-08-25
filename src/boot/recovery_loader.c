@@ -86,6 +86,7 @@ static const uint8_t* recovery_vesa;
 
 extern int recovery_bios_read_sector(uint32_t lba, void* output);
 extern int recovery_bios_write_sector(uint32_t lba, const void* input);
+extern int recovery_bios_set_vesa_mode(void);
 extern void recovery_boot_kernel_entry(uint32_t mmap, uint32_t vesa);
 
 static const uint8_t recovery_font[26][5] = {
@@ -516,6 +517,7 @@ static int recovery_verify_package(const recovery_fat32_t* fs, const recovery_fi
 }
 
 static void recovery_boot_kernel(uint32_t mmap, uint32_t vesa) {
+    recovery_bios_set_vesa_mode();
     recovery_boot_kernel_entry(mmap, vesa);
 }
 
