@@ -737,3 +737,6 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Fixture negativa de compatibilidade de versão validada pelo usuário em:
   2026-08-25 12:39 (America/Sao_Paulo); `VERBAD.ZSYS` foi recusado por
   `COMPATIBILITY` e confirmou que nenhuma gravação foi realizada.
+- Fixture negativa de epoch/base validada pelo usuário em: 2026-08-25 12:41
+  (America/Sao_Paulo); `EPCHBAD.ZSYS` foi recusado por `BASE_VERSION` e
+  confirmou que nenhuma gravação foi realizada.
