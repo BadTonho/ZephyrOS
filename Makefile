@@ -1009,7 +1009,7 @@ $(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN)
           docs\fixtures\updates\u2\BADHASH.ZUP docs\fixtures\updates\u2\BADSIG.ZUP \
           docs\fixtures\updates\u2\BADVER.ZUP docs\fixtures\updates\u2\BADFMT.ZUP \
           docs\fixtures\updates\u2\UNKKEY.ZUP docs\fixtures\updates\u3\APPLY.ZUP
-	python $(RECOVERY_IMAGE_COMPOSE_TOOL) --boot $(BOOT_BIN) --stage2 $(STAGE2_BIN) --kernel $(KERNEL_BIN) --loader $(RECOVERY_LOADER_PADDED_BIN) --loader-lba 2880 --fat32-start-lba $(FAT32_START_LBA) --output $(OS_IMG)
+	python $(RECOVERY_IMAGE_COMPOSE_TOOL) --boot $(BOOT_BIN) --stage2 $(STAGE2_BIN) --kernel $(KERNEL_BIN) --loader $(RECOVERY_LOADER_PADDED_BIN) --kernel-lba 64 --loader-lba 3000 --fat32-start-lba $(FAT32_START_LBA) --output $(OS_IMG)
 	python tools\packager.py prepare-hybrid-image --image $(OS_IMG) --disk-bytes $(HYBRID_DISK_BYTES) --fat32-start-lba $(FAT32_START_LBA) --label $(FAT32_LABEL)
 	python tools\packager.py inject-file-fat32 --file assets\icons\SHELL.BMP --image $(OS_IMG) --path SHELL.BMP --fat32-start-lba $(FAT32_START_LBA)
 	python tools\packager.py inject-file-fat32 --file assets\icons\EXPLORER.BMP --image $(OS_IMG) --path EXPLORER.BMP --fat32-start-lba $(FAT32_START_LBA)

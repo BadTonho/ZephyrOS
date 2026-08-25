@@ -854,6 +854,8 @@ As entregas de recuperacao da EP9.2 ficam divididas em duas subetapas:
   o arquivo do slot para diagnostico futuro.
 - [x] Exigir os dois controles `ZSI*.STA` prealocados antes de publicar um
   pendente, e verificar no build os limites de tamanho, memoria e FAT12.
+- [x] Fixar o kernel legado no LBA 64 e o loader no LBA 3000, com o
+  empacotador recusando qualquer sobreposicao antes do FAT32 no LBA 4096.
 - [ ] Executar a matriz QEMU EP9.2A: ativo, pendente confirmado, hashes e
   assinatura invalidos, estado/journal corrompido, tentativa interrompida e
   FAT32 ausente. Os gates de compilacao e esta matriz aguardam o usuario.

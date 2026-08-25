@@ -5,7 +5,8 @@ KERNEL_OFFSET    equ 0x00100000
 KERNEL_LIMIT     equ 0x00800000
 RECOVERY_LOADER_OFFSET equ 0x00900000
 RECOVERY_LOADER_LIMIT equ 0x00A00000
-RECOVERY_LOADER_LBA equ 2880
+LEGACY_KERNEL_LBA equ 64
+RECOVERY_LOADER_LBA equ 3000
 FAT32_START_LBA equ 4096
 KERNEL_STACK_TOP equ 0x0009F000
 STAGE2_LOAD      equ 0x5000
@@ -116,12 +117,8 @@ stage2_start:
     call enable_a20
     jc a20_error
 
-    ; O kernel legado permanece apos stage2. O loader fixo usa a janela livre
-    ; entre FAT12 e FAT32, para nao deslocar o volume de sistema.
-    mov ax, [STAGE2_INFO]
-    inc ax
-    movzx eax, ax
-    mov [LEGACY_KERNEL_LBA], eax
+    ; Ambos os artefatos usam LBAs fixos, independentes do tamanho do stage2.
+    ; Isso remove ambiguidade do handoff e preserva a particao FAT32.
     mov word [LBA], RECOVERY_LOADER_LBA
     mov word [remaining], RECOVERY_LOADER_SECTORS
     call load_kernel
@@ -682,9 +679,6 @@ protected_mode:
     mov gs, ax
     mov ss, ax
     mov esp, KERNEL_STACK_TOP
-    push dword KERNEL_BYTES
-    push dword KERNEL_SECTORS
-    push dword [LEGACY_KERNEL_LBA]
     push dword VESA_INFO
     push dword MEMORY_MAP
     call RECOVERY_LOADER_OFFSET
@@ -718,7 +712,6 @@ NUM_HEADS:  dw 0
 LBA:        dw 0
 LOAD_DEST:  dd 0
 LOAD_LIMIT: dd KERNEL_LIMIT
-LEGACY_KERNEL_LBA: dd 0
 remaining:  dw 0
 transfer_sectors: dw 0
 align 4
