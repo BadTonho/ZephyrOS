@@ -861,3 +861,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   mas `kernel_main` ficava fora da imagem. As fixtures FAT32 da matriz A/B
   agora usam `--full-kernel`, preservando o modo compacto apenas como opcao do
   gerador, e o loader aceita o padding final autenticado do payload alinhado.
+- Saida VGA apos o boot autenticado corrigida em: 2026-08-25 17:45
+  (America/Sao_Paulo); o kernel alcançou sua inicializacao, mas o fallback
+  declarava 100x37 sobre o modo texto BIOS 80x25, deslocando linhas e gravando
+  a continuacao fora da area visivel. A geometria Simple foi corrigida para
+  80x25 e os breadcrumbs temporarios de entrada foram removidos.
