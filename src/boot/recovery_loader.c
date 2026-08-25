@@ -511,7 +511,7 @@ static int recovery_verify_package(const recovery_fat32_t* fs, const recovery_fi
         if (kind == RECOVERY_ZSYS_COMPONENT_KERNEL) { *kernel_offset = component_offset; *kernel_size = component_size; found_kernel = 1U; }
         previous_end = component_offset + component_size;
     }
-    return found_kernel && previous_end == image_size &&
+    return found_kernel && previous_end <= image_size &&
            *kernel_size <= RECOVERY_KERNEL_LIMIT - RECOVERY_KERNEL_OFFSET;
 }
 

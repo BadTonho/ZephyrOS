@@ -51,7 +51,9 @@ imagem alinhada a setores. O tamanho máximo da imagem é 8 MiB e o tamanho tota
 Cada componente contém kind, flags reservadas, offset relativo ao payload,
 tamanho, SHA-256 e padding zero. A EP9.0A exige os três componentes contíguos:
 boot no offset zero com 512 bytes, stage2 a partir do setor seguinte e kernel
-imediatamente depois.
+imediatamente depois. A imagem permanece alinhada a 512 bytes; portanto pode
+existir padding final autenticado depois do componente kernel, que não é
+executado pelo recovery loader.
 
 ## Assinatura e confiança
 

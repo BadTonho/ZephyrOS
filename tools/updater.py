@@ -6713,8 +6713,9 @@ def write_system_qemu_fixtures(
     stage2_path: Path,
     kernel_path: Path,
     output_dir: Path,
+    full_kernel: bool = False,
 ) -> None:
-    """Gera fixtures compactas para o parser local do QEMU."""
+    """Gera fixtures compactas ou executaveis para validacao no QEMU."""
     with tempfile.TemporaryDirectory(prefix="zephyros-zsys-qemu-") as temp_name:
         root = Path(temp_name)
         boot = system_load_file(boot_path, "boot")
@@ -6722,14 +6723,15 @@ def write_system_qemu_fixtures(
         kernel = system_load_file(kernel_path, "kernel")
         if len(kernel) < 512:
             raise UpdateError("kernel insuficiente para fixture ZSYS do QEMU")
-        compact_kernel = kernel[:512]
-        compact_image = boot + stage2 + compact_kernel
+        fixture_kernel = kernel if full_kernel else kernel[:512]
+        compact_image = boot + stage2 + fixture_kernel
+        compact_image += bytes((-len(compact_image)) % 512)
         image_path = root / "fixture.img"
         compact_kernel_path = root / "kernel.bin"
         write_new_bytes(image_path, compact_image)
         write_new_bytes(root / "boot.bin", boot)
         write_new_bytes(root / "stage2.bin", stage2)
-        write_new_bytes(compact_kernel_path, compact_kernel)
+        write_new_bytes(compact_kernel_path, fixture_kernel)
         write_system_fixtures(
             private_key,
             public,
@@ -6743,7 +6745,7 @@ def write_system_qemu_fixtures(
 
 
 def command_fixtures_system_qemu(args: argparse.Namespace) -> None:
-    """Gera a matriz compacta que cabe na imagem FAT12 do QEMU."""
+    """Gera a matriz QEMU compacta ou executavel com kernel completo."""
     key = load_private_key(
         validate_private_input(Path(args.private)), prompt_password()
     )
@@ -6758,6 +6760,7 @@ def command_fixtures_system_qemu(args: argparse.Namespace) -> None:
         Path(args.stage2),
         Path(args.kernel),
         Path(args.output_dir),
+        args.full_kernel,
     )
     print(f"Fixtures ZSYS QEMU criadas: {Path(args.output_dir).resolve()}")
 
@@ -7340,7 +7343,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     fixtures_system_qemu = subparsers.add_parser(
         "fixtures-system-qemu",
-        help="gera fixtures ZSYS compactas para a imagem FAT12 do QEMU",
+        help="gera fixtures ZSYS para validacao no QEMU",
     )
     fixtures_system_qemu.add_argument("--manifest", required=True)
     fixtures_system_qemu.add_argument("--boot", required=True)
@@ -7349,6 +7352,11 @@ def build_parser() -> argparse.ArgumentParser:
     fixtures_system_qemu.add_argument("--private", required=True)
     fixtures_system_qemu.add_argument("--public", required=True)
     fixtures_system_qemu.add_argument("--output-dir", required=True)
+    fixtures_system_qemu.add_argument(
+        "--full-kernel",
+        action="store_true",
+        help="inclui o kernel completo para fixtures de boot pre-kernel",
+    )
     fixtures_system_qemu.set_defaults(handler=command_fixtures_system_qemu)
 
     serve_runtime = subparsers.add_parser(
