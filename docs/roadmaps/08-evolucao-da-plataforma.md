@@ -859,8 +859,9 @@ As entregas de recuperacao da EP9.2 ficam divididas em duas subetapas:
 - [x] Encaminhar I/O do loader protegido por um gateway BIOS EDD fixo no
   `stage2`, com fallback CHS, DAP, bounce buffer, retry e retorno protegido
   reservados em memoria baixa, sem modificar `boot.asm`.
-- [x] Manter diagnosticos pre-kernel em texto e ativar VESA pelo mesmo gateway
-  apenas depois da autenticacao do kernel, preservando o fallback Simple.
+- [x] Configurar VESA no caminho real-mode comprovado do `stage2` e publicar
+  diagnosticos do loader no framebuffer 24/32 bpp, preservando VGA texto e o
+  fallback Simple quando o modo grafico estiver indisponivel.
 - [x] Gerar as fixtures executaveis da matriz A/B com o kernel completo no
   FAT32; as fixtures compactas de parser nao podem ser usadas para boot.
 - [ ] Executar a matriz QEMU EP9.2A: ativo, pendente confirmado, hashes e

@@ -230,15 +230,16 @@ Ed25519, hash da imagem e os tres hashes de componentes contiguos. Somente o
 kernel e copiado para 0x00100000; boot e stage2 sao autenticados, nao
 executados.
 
-O gateway também oferece ao loader a transição BIOS para VESA. Ela ocorre
-somente depois da autenticação e da cópia integral do kernel, imediatamente
-antes da transferência de controle. Até esse ponto os diagnósticos permanecem
-no modo texto. Uma falha na configuração VESA não autoriza outro payload nem
-interrompe o boot autenticado: o handoff informa VESA indisponível e o kernel
-usa o fallback Simple. A entrada do kernel recria a pilha e os registradores de
-handoff usados pelo fluxo legado do `stage2`: `ESP=0x9F000`, mapa E820 em
-`ESI` e bloco VESA em `EDI`. Nenhum argumento e empilhado pela ponte, pois a
-propria entrada do kernel converte esses registradores para a chamada C.
+O `stage2` configura VESA em modo real depois de carregar o loader fixo e antes
+de transferir controle para seu runtime protegido. O loader desenha os
+diagnósticos confiáveis diretamente no framebuffer de 24 ou 32 bpp e preserva
+VGA texto quando VESA não estiver disponível. Não há uma segunda troca de modo
+depois da autenticação, e o bloco VESA entregue ao kernel é o mesmo produzido
+pelo caminho legado comprovado. Uma falha VESA não autoriza outro payload nem
+interrompe o boot autenticado: o kernel usa o fallback Simple. A entrada do
+kernel recria `ESP=0x9F000`, entrega o mapa E820 em `ESI` e o bloco VESA em
+`EDI`. Nenhum argumento e empilhado pela ponte, pois a propria entrada do
+kernel converte esses registradores para a chamada C.
 
 Antes de iniciar um pendente, o loader grava e rele a outra copia de estado
 como v2 com `ATTEMPTED`, slot anterior e sequencias novas, e publica `ZSBH`.
