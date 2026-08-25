@@ -86,6 +86,7 @@ static const uint8_t* recovery_vesa;
 
 extern int recovery_bios_read_sector(uint32_t lba, void* output);
 extern int recovery_bios_write_sector(uint32_t lba, const void* input);
+extern void recovery_boot_kernel_entry(uint32_t mmap, uint32_t vesa);
 
 static const uint8_t recovery_font[26][5] = {
     {0x1EU,0x05U,0x05U,0x1EU,0x00U},{0x1FU,0x15U,0x15U,0x0AU,0x00U},
@@ -515,16 +516,7 @@ static int recovery_verify_package(const recovery_fat32_t* fs, const recovery_fi
 }
 
 static void recovery_boot_kernel(uint32_t mmap, uint32_t vesa) {
-    uint32_t kernel = RECOVERY_KERNEL_OFFSET;
-    /* A entrada legada recebe estes ponteiros em ESI/EDI antes de montar a
-     * propria pilha C; preservar essa ABI evita tocar no kernel de fallback. */
-    asm volatile(
-        "movl %0, %%esi\n\t"
-        "movl %1, %%edi\n\t"
-        "call *%2"
-        :
-        : "r"(mmap), "r"(vesa), "r"(kernel)
-        : "esi", "edi", "memory");
+    recovery_boot_kernel_entry(mmap, vesa);
 }
 
 static int recovery_boot_legacy(uint32_t mmap, uint32_t vesa) {
@@ -643,6 +635,7 @@ void recovery_loader_main(uint32_t mmap, uint32_t vesa) {
         slot_valid = recovery_read_file(
             &fs, &slot, UPDATE_SYSTEM_HEADER_SIZE + kernel_offset,
             (void*)RECOVERY_KERNEL_OFFSET, kernel_size);
+        if (slot_valid) recovery_message("KERNEL READY\n");
     }
     if (!slot_valid) {
         if (selected->pending != UPDATE_SYSTEM_SLOT_NONE) {
