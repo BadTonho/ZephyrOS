@@ -24,6 +24,7 @@
 #define STORAGE_FAT32_END 0x0FFFFFF8U
 #define STORAGE_FAT32_BAD 0x0FFFFFF7U
 #define STORAGE_DIR_ENTRY_SIZE 32U
+#define STORAGE_MAX_LFN_ENTRIES ((STORAGE_LONG_NAME_SIZE + 12U) / 13U)
 #define STORAGE_ATTR_DIRECTORY 0x10U
 #define STORAGE_ATTR_VOLUME 0x08U
 #define STORAGE_ATTR_LFN 0x0FU
@@ -84,6 +85,8 @@ typedef struct {
     uint32_t size;
     uint32_t entry_offset;
     uint32_t lfn_offset;
+    uint8_t lfn_count;
+    uint32_t lfn_offsets[STORAGE_MAX_LFN_ENTRIES];
 } storage_long_raw_entry_t;
 
 typedef struct {
@@ -93,6 +96,8 @@ typedef struct {
     uint8_t checksum;
     uint16_t highest_unit;
     uint32_t offset;
+    uint8_t offset_count;
+    uint32_t offsets[STORAGE_MAX_LFN_ENTRIES];
 } storage_lfn_state_t;
 
 typedef int (*storage_long_entry_visitor_t)(
@@ -1373,6 +1378,11 @@ static void storage_long_parse_entry(const storage_mount_t* mount,
     entry->size = raw.size;
     entry->entry_offset = offset;
     entry->lfn_offset = lfn && lfn->active ? lfn->offset : offset;
+    if (lfn && lfn->active) {
+        entry->lfn_count = lfn->offset_count;
+        kmemcpy(entry->lfn_offsets, lfn->offsets,
+                sizeof(entry->lfn_offsets));
+    }
 }
 
 static int storage_visit_sector(const storage_mount_t* mount,
@@ -1483,7 +1493,7 @@ static int storage_visit_long_sector(const storage_mount_t* mount,
         }
         if (attributes == STORAGE_ATTR_LFN) {
             uint8_t sequence = source[0] & 0x1FU;
-            if (!sequence || sequence > 20U ||
+            if (!sequence || sequence > STORAGE_MAX_LFN_ENTRIES ||
                 (!(source[0] & 0x40U) &&
                  (!lfn->active || lfn->expected_sequence != sequence ||
                   lfn->checksum != source[13]))) {
@@ -1498,6 +1508,12 @@ static int storage_visit_long_sector(const storage_mount_t* mount,
                 lfn->checksum = source[13];
                 lfn->offset = base_offset + offset;
             }
+            if (lfn->offset_count >= STORAGE_MAX_LFN_ENTRIES) {
+                storage_lfn_reset(lfn);
+                LOG_ERROR("FS", "Quantidade de entradas LFN FAT32 excedida");
+                return ERR_OVERFLOW;
+            }
+            lfn->offsets[lfn->offset_count++] = base_offset + offset;
             storage_lfn_copy_units(lfn, source);
             if (lfn->expected_sequence > 0U) lfn->expected_sequence--;
             continue;
@@ -2186,20 +2202,18 @@ static int storage_write_directory_entry(const storage_volume_t* volume,
                                   sector);
 }
 
-static int storage_mark_directory_range_deleted(const storage_volume_t* volume,
-                                                uint32_t start,
-                                                uint32_t end) {
+static int storage_mark_directory_entries_deleted(
+    const storage_volume_t* volume, const storage_long_raw_entry_t* source) {
     uint8_t entry[STORAGE_DIR_ENTRY_SIZE];
 
-    if (!volume || start > end) return ERR_INVALID;
+    if (!volume || !source) return ERR_NULL;
     kmemset(entry, 0xE5, sizeof(entry));
-    for (uint32_t offset = start; offset <= end;
-         offset += STORAGE_DIR_ENTRY_SIZE) {
-        int result = storage_write_directory_entry(volume, offset, entry);
+    for (uint32_t index = 0U; index < source->lfn_count; index++) {
+        int result = storage_write_directory_entry(
+            volume, source->lfn_offsets[index], entry);
         if (result != OK) return result;
-        if (end - offset < STORAGE_DIR_ENTRY_SIZE) break;
     }
-    return OK;
+    return storage_write_directory_entry(volume, source->entry_offset, entry);
 }
 
 static int storage_get_mounted_fat32(const char* id,
@@ -2244,9 +2258,8 @@ static int storage_publish_fat32_entry(
     if (result != OK) return result;
     uint32_t lfn_count = (unit_count + 12U) / 13U;
     if (lfn_count + 1U != slot_count) return ERR_INVALID;
-    if (old_entry && old_entry->lfn_offset <= old_entry->entry_offset) {
-        result = storage_mark_directory_range_deleted(
-            volume, old_entry->lfn_offset, old_entry->entry_offset);
+    if (old_entry) {
+        result = storage_mark_directory_entries_deleted(volume, old_entry);
         if (result != OK) return result;
     }
     checksum = storage_lfn_checksum(alias);
@@ -2399,8 +2412,7 @@ static int storage_write_fat32_file_unlocked(const char* id, const char* path,
             size, attributes, required_slots);
     }
     if (result == OK && replacing) {
-        result = storage_mark_directory_range_deleted(
-            volume, old_entry.lfn_offset, old_entry.entry_offset);
+        result = storage_mark_directory_entries_deleted(volume, &old_entry);
     }
     if (result != OK) goto rollback_clusters;
     if (replacing && old_entry.first_cluster &&
@@ -3363,8 +3375,7 @@ int storage_delete_file(const char* id, const char* path) {
         if (entry.attributes & STORAGE_ATTR_DIRECTORY) {
             result = ERR_INVALID;
         } else {
-            result = storage_mark_directory_range_deleted(
-                volume, entry.lfn_offset, entry.entry_offset);
+            result = storage_mark_directory_entries_deleted(volume, &entry);
             if (result == OK && entry.first_cluster) {
                 result = storage_release_fat32_chain(volume, mount,
                                                      entry.first_cluster);
@@ -3445,8 +3456,7 @@ int storage_rename_file(const char* id, const char* path,
             old_entry.attributes, required);
     }
     if (result == OK) {
-        result = storage_mark_directory_range_deleted(
-            volume, old_entry.lfn_offset, old_entry.entry_offset);
+        result = storage_mark_directory_entries_deleted(volume, &old_entry);
     }
 rename_done:
     spinlock_release(&storage_operation_lock);

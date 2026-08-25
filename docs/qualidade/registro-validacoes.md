@@ -766,3 +766,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   registro de metadados de 176 bytes do envelope ZSYS completo usado em
   `ZSTG.ZSY` e `ZSB0.ZSY`. O caso `JOURNAL_PREPARED` observado antes desta
   correção foi invalidado e deverá ser repetido após a regeneração.
+- Diagnóstico e correção da exclusão FAT32 em recuperação implementados em:
+  2026-08-25 13:22 (America/Sao_Paulo); entradas LFN e entradas curtas podem
+  atravessar clusters físicos diferentes, portanto a exclusão passou a apagar
+  cada offset de entrada individualmente. A rotina anterior apagava o intervalo
+  físico inteiro e podia sobrescrever os dados de `ZSA0.ZSY` com `0xE5`.
+  `git diff --check` permaneceu sem erros; gates e QEMU precisam ser repetidos
+  pelo usuário antes de continuar a matriz.
