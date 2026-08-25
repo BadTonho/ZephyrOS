@@ -11,6 +11,8 @@ MEMORY_MAP       equ 0x3000
 VESA_INFO        equ 0x2000
 VESA_MODE_INFO   equ 0x2400
 VESA_MODE_SIZE   equ 256
+SYSTEM_BOOT_HANDOFF equ 0x2800
+SYSTEM_BOOT_HANDOFF_SIZE equ 64
 SECTOR_SIZE      equ 512
 KERNEL_BUFFER    equ 0x00010000
 KERNEL_BUFFER_SEG equ (KERNEL_BUFFER >> 4)
@@ -70,6 +72,11 @@ stage2_start:
     mov sp, STAGE2_STACK
     mov [BOOT_DRIVE], dl
     mov byte [VESA_INFO + 11], 0
+    ; O boot legado nunca confirma uma tentativa ZSYS deixada na RAM.
+    mov di, SYSTEM_BOOT_HANDOFF
+    mov cx, SYSTEM_BOOT_HANDOFF_SIZE
+    xor al, al
+    rep stosb
 
     call detect_memory
     call detect_disk_access

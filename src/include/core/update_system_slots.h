@@ -21,6 +21,8 @@
 #define UPDATE_SYSTEM_SLOT_JOURNAL_A_ALIAS "ZSI0.JRN"
 #define UPDATE_SYSTEM_SLOT_JOURNAL_B_ALIAS "ZSI1.JRN"
 #define UPDATE_SYSTEM_SLOT_STAGING_ALIAS "ZSTG.ZSY"
+#define UPDATE_SYSTEM_BOOT_HANDOFF_ADDRESS 0x00002800U
+#define UPDATE_SYSTEM_BOOT_HANDOFF_SIZE 64U
 
 typedef enum {
     UPDATE_SYSTEM_SLOTS_STATE_EMPTY = 0,
@@ -57,8 +59,29 @@ typedef enum {
     UPDATE_SYSTEM_SLOTS_REASON_JOURNAL,
     UPDATE_SYSTEM_SLOTS_REASON_CANCELLED,
     UPDATE_SYSTEM_SLOTS_REASON_RECOVERY,
+    UPDATE_SYSTEM_SLOTS_REASON_BOOT_FAILED,
     UPDATE_SYSTEM_SLOTS_REASON_UNSUPPORTED
 } update_system_slots_reason_t;
+
+typedef enum {
+    UPDATE_SYSTEM_SLOTS_BOOT_NONE = 0,
+    UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPTED,
+    UPDATE_SYSTEM_SLOTS_BOOT_FAILED
+} update_system_slots_boot_state_t;
+
+typedef struct __attribute__((packed)) {
+    uint8_t magic[4];
+    uint16_t version;
+    uint16_t size;
+    uint32_t state_sequence;
+    uint32_t attempt_sequence;
+    uint8_t boot_slot;
+    uint8_t previous_slot;
+    uint8_t boot_state;
+    uint8_t reserved;
+    uint32_t reason;
+    uint8_t reserved_tail[40];
+} update_system_boot_handoff_t;
 
 typedef struct {
     update_system_slot_file_state_t state;
@@ -75,6 +98,11 @@ typedef struct {
     uint32_t sequence;
     uint8_t active_slot;
     uint8_t pending_slot;
+    uint8_t previous_slot;
+    uint8_t attempt_slot;
+    update_system_slots_boot_state_t boot_state;
+    update_system_slots_reason_t last_boot_reason;
+    uint32_t boot_attempt_sequence;
     uint8_t journal_pending;
     uint8_t recovery_pending;
     update_system_slots_journal_phase_t journal_phase;
@@ -107,7 +135,10 @@ int update_system_slots_stage_file(
     const char* path,
     const update_system_slots_action_options_t* options,
     update_system_slots_action_result_t* result_out);
+int update_system_slots_boot_confirm(void);
 const char* update_system_slots_state_name(update_system_slots_state_t state);
+const char* update_system_slots_boot_state_name(
+    update_system_slots_boot_state_t state);
 const char* update_system_slots_journal_phase_name(
     update_system_slots_journal_phase_t phase);
 const char* update_system_slot_file_state_name(

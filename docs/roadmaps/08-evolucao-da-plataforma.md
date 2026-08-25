@@ -837,6 +837,9 @@ crus.
 
 ### EP9.2 - Boot, tentativa e rollback
 
+- [~] Base de confirmação do kernel implementada: estado v2 compatível com v1,
+  handoff reservado e confirmação vinculada ao registro persistido. O loader
+  FAT32/Ed25519 e o menu pré-kernel ainda pertencem à implementação desta etapa.
 - [ ] Alterar o contrato de boot/stage2 somente depois de aprovacao explicita,
   para selecionar o slot pendente e validar sua assinatura/hash antes de
   transferir o controle ao kernel.

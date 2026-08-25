@@ -1169,6 +1169,19 @@ static void cmd_update_system_slots(void) {
     video_print(" pendente=", 0x08);
     video_print(status->pending_slot == 0U ? "A" :
                 status->pending_slot == 1U ? "B" : "NONE", 0x07);
+    video_print(" anterior=", 0x08);
+    video_print(status->previous_slot == 0U ? "A" :
+                status->previous_slot == 1U ? "B" : "NONE", 0x07);
+    video_print(" tentativa=", 0x08);
+    video_print(status->attempt_slot == 0U ? "A" :
+                status->attempt_slot == 1U ? "B" : "NONE", 0x07);
+    video_print(" boot=", 0x08);
+    video_print(update_system_slots_boot_state_name(status->boot_state), 0x07);
+    video_print(" motivo=", 0x08);
+    video_print(update_system_slots_reason_name(status->last_boot_reason),
+                0x07);
+    video_print(" tentativa_seq=", 0x08);
+    shell_command_print_num(status->boot_attempt_sequence);
     video_print(" journal=", 0x08);
     video_print(status->journal_pending ? "pending" : "clean", 0x07);
     video_print(" phase=", 0x08);

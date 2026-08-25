@@ -9,7 +9,8 @@
 
 #define SYSTEM_SLOTS_STATE_MAGIC "ZSI1"
 #define SYSTEM_SLOTS_JOURNAL_MAGIC "ZSJ1"
-#define SYSTEM_SLOTS_FORMAT_VERSION 1U
+#define SYSTEM_SLOTS_FORMAT_VERSION 2U
+#define SYSTEM_SLOTS_LEGACY_FORMAT_VERSION 1U
 #define SYSTEM_SLOTS_STATE_SLOT_OFFSET 32U
 #define SYSTEM_SLOTS_STATE_SLOT_SIZE 176U
 #define SYSTEM_SLOTS_JOURNAL_TARGET_OFFSET 32U
@@ -25,6 +26,15 @@
 #define SYSTEM_SLOTS_PHASE_VERIFIED UPDATE_SYSTEM_SLOTS_JOURNAL_VERIFIED
 #define SYSTEM_SLOTS_PHASE_COMMITTED UPDATE_SYSTEM_SLOTS_JOURNAL_COMMITTED
 #define SYSTEM_SLOTS_STATE_FLAG_RECOVERY 1U
+#define SYSTEM_SLOTS_STATE_PREVIOUS_OFFSET 15U
+#define SYSTEM_SLOTS_STATE_ATTEMPT_OFFSET 16U
+#define SYSTEM_SLOTS_STATE_BOOT_STATE_OFFSET 17U
+#define SYSTEM_SLOTS_STATE_BOOT_REASON_OFFSET 18U
+#define SYSTEM_SLOTS_STATE_ATTEMPT_SEQUENCE_OFFSET 20U
+#define SYSTEM_SLOTS_STATE_RESERVED_OFFSET 24U
+#define SYSTEM_SLOTS_STATE_RESERVED_SIZE 8U
+#define SYSTEM_SLOTS_BOOT_HANDOFF_MAGIC "ZSBH"
+#define SYSTEM_SLOTS_BOOT_HANDOFF_VERSION 1U
 #define SYSTEM_SLOTS_ID_SIZE UPDATE_SYSTEM_SLOT_IDENTIFIER_SIZE
 #define SYSTEM_SLOTS_IO_SIZE (64U * 1024U)
 
@@ -33,6 +43,11 @@ typedef struct {
     uint8_t active_slot;
     uint8_t pending_slot;
     uint8_t flags;
+    uint8_t previous_slot;
+    uint8_t attempt_slot;
+    uint8_t boot_state;
+    update_system_slots_reason_t boot_reason;
+    uint32_t boot_attempt_sequence;
     update_system_slot_info_t slots[UPDATE_SYSTEM_SLOT_COUNT];
 } system_slots_state_t;
 
@@ -222,6 +237,13 @@ static int system_slots_encode_state(const system_slots_state_t* state,
     raw[12] = state->active_slot;
     raw[13] = state->pending_slot;
     raw[14] = state->flags;
+    raw[SYSTEM_SLOTS_STATE_PREVIOUS_OFFSET] = state->previous_slot;
+    raw[SYSTEM_SLOTS_STATE_ATTEMPT_OFFSET] = state->attempt_slot;
+    raw[SYSTEM_SLOTS_STATE_BOOT_STATE_OFFSET] = state->boot_state;
+    system_slots_write_u16(raw + SYSTEM_SLOTS_STATE_BOOT_REASON_OFFSET,
+                           (uint16_t)state->boot_reason);
+    system_slots_write_u32(raw + SYSTEM_SLOTS_STATE_ATTEMPT_SEQUENCE_OFFSET,
+                           state->boot_attempt_sequence);
     for (uint32_t index = 0U; index < UPDATE_SYSTEM_SLOT_COUNT; index++) {
         system_slots_encode_info(
             raw + SYSTEM_SLOTS_STATE_SLOT_OFFSET +
@@ -242,8 +264,9 @@ static int system_slots_decode_state(const uint8_t* raw,
     int result;
 
     if (!raw || !state) return ERR_NULL;
+    uint16_t format_version;
+
     if (!system_slots_magic_equal(raw, SYSTEM_SLOTS_STATE_MAGIC) ||
-        system_slots_read_u16(raw + 4U) != SYSTEM_SLOTS_FORMAT_VERSION ||
         system_slots_read_u16(raw + 6U) != UPDATE_SYSTEM_SLOT_CONTROL_SIZE ||
         system_slots_read_u32(raw + 8U) == 0U ||
         raw[12] >= UPDATE_SYSTEM_SLOT_COUNT ||
@@ -252,11 +275,25 @@ static int system_slots_decode_state(const uint8_t* raw,
         (raw[14] & ~SYSTEM_SLOTS_STATE_FLAG_RECOVERY)) {
         return ERR_INVALID;
     }
+    format_version = system_slots_read_u16(raw + 4U);
+    if (format_version != SYSTEM_SLOTS_LEGACY_FORMAT_VERSION &&
+        format_version != SYSTEM_SLOTS_FORMAT_VERSION) return ERR_INVALID;
     result = crypto_sha256(raw, SYSTEM_SLOTS_STATE_HASH_OFFSET, hash);
     if (result != OK || !crypto_equal(hash + 0U,
                                       raw + SYSTEM_SLOTS_STATE_HASH_OFFSET,
                                       sizeof(hash))) return ERR_INVALID;
-    if (!system_slots_bytes_zero(raw + 15U, 17U) ||
+    if ((format_version == SYSTEM_SLOTS_LEGACY_FORMAT_VERSION &&
+         !system_slots_bytes_zero(raw + 15U, 17U)) ||
+        (format_version == SYSTEM_SLOTS_FORMAT_VERSION &&
+         (!system_slots_bytes_zero(raw + SYSTEM_SLOTS_STATE_RESERVED_OFFSET,
+                                   SYSTEM_SLOTS_STATE_RESERVED_SIZE) ||
+          raw[SYSTEM_SLOTS_STATE_PREVIOUS_OFFSET] >= UPDATE_SYSTEM_SLOT_COUNT ||
+          (raw[SYSTEM_SLOTS_STATE_ATTEMPT_OFFSET] != UPDATE_SYSTEM_SLOT_NONE &&
+           raw[SYSTEM_SLOTS_STATE_ATTEMPT_OFFSET] >= UPDATE_SYSTEM_SLOT_COUNT) ||
+          raw[SYSTEM_SLOTS_STATE_BOOT_STATE_OFFSET] >
+              UPDATE_SYSTEM_SLOTS_BOOT_FAILED ||
+          system_slots_read_u16(raw + SYSTEM_SLOTS_STATE_BOOT_REASON_OFFSET) >
+              UPDATE_SYSTEM_SLOTS_REASON_UNSUPPORTED)) ||
         !system_slots_bytes_zero(raw + 384U,
                                  SYSTEM_SLOTS_STATE_HASH_OFFSET - 384U)) {
         return ERR_INVALID;
@@ -266,6 +303,19 @@ static int system_slots_decode_state(const uint8_t* raw,
     state->active_slot = raw[12];
     state->pending_slot = raw[13];
     state->flags = raw[14];
+    state->previous_slot = format_version == SYSTEM_SLOTS_FORMAT_VERSION ?
+        raw[SYSTEM_SLOTS_STATE_PREVIOUS_OFFSET] : state->active_slot;
+    state->attempt_slot = format_version == SYSTEM_SLOTS_FORMAT_VERSION ?
+        raw[SYSTEM_SLOTS_STATE_ATTEMPT_OFFSET] : UPDATE_SYSTEM_SLOT_NONE;
+    state->boot_state = format_version == SYSTEM_SLOTS_FORMAT_VERSION ?
+        raw[SYSTEM_SLOTS_STATE_BOOT_STATE_OFFSET] : UPDATE_SYSTEM_SLOTS_BOOT_NONE;
+    state->boot_reason = format_version == SYSTEM_SLOTS_FORMAT_VERSION ?
+        (update_system_slots_reason_t)system_slots_read_u16(
+            raw + SYSTEM_SLOTS_STATE_BOOT_REASON_OFFSET) :
+        UPDATE_SYSTEM_SLOTS_REASON_NONE;
+    state->boot_attempt_sequence = format_version == SYSTEM_SLOTS_FORMAT_VERSION ?
+        system_slots_read_u32(raw + SYSTEM_SLOTS_STATE_ATTEMPT_SEQUENCE_OFFSET) :
+        0U;
     for (uint32_t index = 0U; index < UPDATE_SYSTEM_SLOT_COUNT; index++) {
         result = system_slots_decode_info(
             raw + SYSTEM_SLOTS_STATE_SLOT_OFFSET +
@@ -278,6 +328,13 @@ static int system_slots_decode_state(const uint8_t* raw,
          state->slots[state->pending_slot].state !=
              UPDATE_SYSTEM_SLOT_FILE_VALID) ||
         (state->pending_slot == state->active_slot)) return ERR_INVALID;
+    if (state->boot_state == UPDATE_SYSTEM_SLOTS_BOOT_NONE &&
+        (state->attempt_slot != UPDATE_SYSTEM_SLOT_NONE ||
+         state->boot_attempt_sequence != 0U)) return ERR_INVALID;
+    if (state->boot_state != UPDATE_SYSTEM_SLOTS_BOOT_NONE &&
+        (state->attempt_slot >= UPDATE_SYSTEM_SLOT_COUNT ||
+         state->boot_attempt_sequence == 0U ||
+         state->previous_slot >= UPDATE_SYSTEM_SLOT_COUNT)) return ERR_INVALID;
     return OK;
 }
 
@@ -313,7 +370,8 @@ static int system_slots_decode_journal(const uint8_t* raw,
 
     if (!raw || !journal) return ERR_NULL;
     if (!system_slots_magic_equal(raw, SYSTEM_SLOTS_JOURNAL_MAGIC) ||
-        system_slots_read_u16(raw + 4U) != SYSTEM_SLOTS_FORMAT_VERSION ||
+        (system_slots_read_u16(raw + 4U) != SYSTEM_SLOTS_LEGACY_FORMAT_VERSION &&
+         system_slots_read_u16(raw + 4U) != SYSTEM_SLOTS_FORMAT_VERSION) ||
         system_slots_read_u16(raw + 6U) != UPDATE_SYSTEM_SLOT_CONTROL_SIZE ||
         system_slots_read_u32(raw + 8U) == 0U || raw[12] < SYSTEM_SLOTS_PHASE_PREPARED ||
         raw[12] > SYSTEM_SLOTS_PHASE_COMMITTED ||
@@ -475,6 +533,7 @@ static int system_slots_file_info(const char* path,
 
 static int system_slots_write_state_locked(void) {
     uint8_t slot;
+    system_slots_state_t persisted;
     int result;
 
     if (system_slots_state.sequence == 0xFFFFFFFFU) {
@@ -488,7 +547,16 @@ static int system_slots_write_state_locked(void) {
     slot = (uint8_t)(system_slots_state.sequence & 1U);
     result = system_slots_write_control(system_slots_state_aliases[slot],
                                         system_slots_control);
-    return result;
+    if (result != OK) return result;
+    result = system_slots_load_control(system_slots_state_aliases[slot],
+                                       system_slots_control);
+    if (result != OK ||
+        system_slots_decode_state(system_slots_control, &persisted) != OK ||
+        persisted.sequence != system_slots_state.sequence) {
+        LOG_ERROR("UPDATE", "Estado de slots nao confirmou apos gravacao");
+        return ERR_DISK;
+    }
+    return OK;
 }
 
 static int system_slots_write_journal_locked(void) {
@@ -550,6 +618,14 @@ static void system_slots_refresh_status_locked(void) {
     system_slots_status.active_slot = system_slots_state.sequence == 0U ?
         UPDATE_SYSTEM_SLOT_NONE : system_slots_state.active_slot;
     system_slots_status.pending_slot = system_slots_state.pending_slot;
+    system_slots_status.previous_slot = system_slots_state.sequence == 0U ?
+        UPDATE_SYSTEM_SLOT_NONE : system_slots_state.previous_slot;
+    system_slots_status.attempt_slot = system_slots_state.attempt_slot;
+    system_slots_status.boot_state =
+        (update_system_slots_boot_state_t)system_slots_state.boot_state;
+    system_slots_status.last_boot_reason = system_slots_state.boot_reason;
+    system_slots_status.boot_attempt_sequence =
+        system_slots_state.boot_attempt_sequence;
     system_slots_status.journal_pending =
         system_slots_journal.phase != SYSTEM_SLOTS_PHASE_NONE;
     system_slots_status.journal_phase =
@@ -683,6 +759,11 @@ static int system_slots_recover_journal_locked(void) {
                  system_slots_journal.target_slot)) {
             system_slots_state.slots[system_slots_journal.target_slot] = actual;
             system_slots_state.pending_slot = system_slots_journal.target_slot;
+            system_slots_state.previous_slot = system_slots_state.active_slot;
+            system_slots_state.attempt_slot = UPDATE_SYSTEM_SLOT_NONE;
+            system_slots_state.boot_state = UPDATE_SYSTEM_SLOTS_BOOT_NONE;
+            system_slots_state.boot_reason = UPDATE_SYSTEM_SLOTS_REASON_NONE;
+            system_slots_state.boot_attempt_sequence = 0U;
             system_slots_state.flags &=
                 (uint8_t)~SYSTEM_SLOTS_STATE_FLAG_RECOVERY;
             if (system_slots_write_state_locked() != OK) return ERR_DISK;
@@ -757,6 +838,10 @@ int update_system_slots_init(void) {
     kmemset(&system_slots_journal, 0, sizeof(system_slots_journal));
     kmemset(&system_slots_status, 0, sizeof(system_slots_status));
     system_slots_state.pending_slot = UPDATE_SYSTEM_SLOT_NONE;
+    system_slots_state.previous_slot = UPDATE_SYSTEM_SLOT_NONE;
+    system_slots_state.attempt_slot = UPDATE_SYSTEM_SLOT_NONE;
+    system_slots_state.boot_state = UPDATE_SYSTEM_SLOTS_BOOT_NONE;
+    system_slots_state.boot_reason = UPDATE_SYSTEM_SLOTS_REASON_NONE;
     system_slots_state_degraded = 0U;
     system_slots_journal_degraded = 0U;
     system_slots_initialized = 1U;
@@ -1056,6 +1141,11 @@ int update_system_slots_stage_file(
     }
     system_slots_state.slots[target_slot] = target_info;
     system_slots_state.pending_slot = target_slot;
+    system_slots_state.previous_slot = system_slots_state.active_slot;
+    system_slots_state.attempt_slot = UPDATE_SYSTEM_SLOT_NONE;
+    system_slots_state.boot_state = UPDATE_SYSTEM_SLOTS_BOOT_NONE;
+    system_slots_state.boot_reason = UPDATE_SYSTEM_SLOTS_REASON_NONE;
+    system_slots_state.boot_attempt_sequence = 0U;
     system_slots_state.flags &= (uint8_t)~SYSTEM_SLOTS_STATE_FLAG_RECOVERY;
     result = system_slots_write_state_locked();
     result_out->pending_published = result == OK ? 1U : 0U;
@@ -1084,6 +1174,67 @@ int update_system_slots_stage_file(
     return OK;
 }
 
+static int system_slots_handoff_valid(const update_system_boot_handoff_t* handoff) {
+    if (!handoff) return 0;
+    if (handoff->magic[0] != (uint8_t)SYSTEM_SLOTS_BOOT_HANDOFF_MAGIC[0] ||
+        handoff->magic[1] != (uint8_t)SYSTEM_SLOTS_BOOT_HANDOFF_MAGIC[1] ||
+        handoff->magic[2] != (uint8_t)SYSTEM_SLOTS_BOOT_HANDOFF_MAGIC[2] ||
+        handoff->magic[3] != (uint8_t)SYSTEM_SLOTS_BOOT_HANDOFF_MAGIC[3] ||
+        handoff->version != SYSTEM_SLOTS_BOOT_HANDOFF_VERSION ||
+        handoff->size != UPDATE_SYSTEM_BOOT_HANDOFF_SIZE ||
+        handoff->boot_slot >= UPDATE_SYSTEM_SLOT_COUNT ||
+        handoff->previous_slot >= UPDATE_SYSTEM_SLOT_COUNT ||
+        handoff->boot_state != UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPTED ||
+        handoff->attempt_sequence == 0U) return 0;
+    return 1;
+}
+
+int update_system_slots_boot_confirm(void) {
+    volatile const update_system_boot_handoff_t* handoff =
+        (volatile const update_system_boot_handoff_t*)
+            UPDATE_SYSTEM_BOOT_HANDOFF_ADDRESS;
+    update_system_boot_handoff_t snapshot;
+    int result;
+
+    kmemcpy(&snapshot, (const void*)handoff, sizeof(snapshot));
+    if (!system_slots_handoff_valid(&snapshot)) return OK;
+
+    spinlock_acquire(&system_slots_lock);
+    if (!system_slots_initialized || !system_slots_volume_ready) {
+        spinlock_release(&system_slots_lock);
+        LOG_ERROR("UPDATE", "Confirmacao de boot sem slots prontos");
+        return ERR_UNAVAILABLE;
+    }
+    if (system_slots_state.boot_state != UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPTED ||
+        system_slots_state.attempt_slot != snapshot.boot_slot ||
+        system_slots_state.previous_slot != snapshot.previous_slot ||
+        system_slots_state.boot_attempt_sequence != snapshot.attempt_sequence ||
+        system_slots_state.sequence != snapshot.state_sequence) {
+        spinlock_release(&system_slots_lock);
+        LOG_ERROR("UPDATE", "Confirmacao de boot nao corresponde ao estado");
+        return ERR_STATE;
+    }
+    system_slots_state.active_slot = snapshot.boot_slot;
+    system_slots_state.pending_slot = UPDATE_SYSTEM_SLOT_NONE;
+    system_slots_state.previous_slot = snapshot.previous_slot;
+    system_slots_state.attempt_slot = UPDATE_SYSTEM_SLOT_NONE;
+    system_slots_state.boot_state = UPDATE_SYSTEM_SLOTS_BOOT_NONE;
+    system_slots_state.boot_reason = UPDATE_SYSTEM_SLOTS_REASON_NONE;
+    system_slots_state.boot_attempt_sequence = 0U;
+    result = system_slots_write_state_locked();
+    if (result == OK) {
+        system_slots_publish_status_locked();
+        ((volatile update_system_boot_handoff_t*)handoff)->magic[0] = 0U;
+    }
+    spinlock_release(&system_slots_lock);
+    if (result != OK) {
+        LOG_ERROR("UPDATE", "Falha ao confirmar slot ZSYS inicializado");
+        return result;
+    }
+    LOG_INFO("UPDATE", "Slot ZSYS confirmado apos inicializacao essencial");
+    return OK;
+}
+
 const char* update_system_slots_state_name(update_system_slots_state_t state) {
     switch (state) {
         case UPDATE_SYSTEM_SLOTS_STATE_EMPTY: return "EMPTY";
@@ -1091,6 +1242,16 @@ const char* update_system_slots_state_name(update_system_slots_state_t state) {
         case UPDATE_SYSTEM_SLOTS_STATE_DEGRADED: return "DEGRADED";
         case UPDATE_SYSTEM_SLOTS_STATE_RECOVERY_PENDING:
             return "RECOVERY_PENDING";
+        default: return "UNKNOWN";
+    }
+}
+
+const char* update_system_slots_boot_state_name(
+    update_system_slots_boot_state_t state) {
+    switch (state) {
+        case UPDATE_SYSTEM_SLOTS_BOOT_NONE: return "NONE";
+        case UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPTED: return "ATTEMPTED";
+        case UPDATE_SYSTEM_SLOTS_BOOT_FAILED: return "FAILED";
         default: return "UNKNOWN";
     }
 }
@@ -1133,6 +1294,7 @@ const char* update_system_slots_reason_name(
         case UPDATE_SYSTEM_SLOTS_REASON_JOURNAL: return "JOURNAL";
         case UPDATE_SYSTEM_SLOTS_REASON_CANCELLED: return "CANCELLED";
         case UPDATE_SYSTEM_SLOTS_REASON_RECOVERY: return "RECOVERY";
+        case UPDATE_SYSTEM_SLOTS_REASON_BOOT_FAILED: return "BOOT_FAILED";
         case UPDATE_SYSTEM_SLOTS_REASON_UNSUPPORTED: return "UNSUPPORTED";
         default: return "UNKNOWN";
     }

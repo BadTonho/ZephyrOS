@@ -848,6 +848,20 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         recovery_mark_ready(RECOVERY_COMPONENT_UPDATE);
     }
 
+    /* EP9.2 so confirma o slot depois dos servicos essenciais estarem prontos.
+       A ausencia de handoff e normal no boot legado e nao altera o estado. */
+    if (ata_result == OK && fs_result == OK && storage_result == OK &&
+        update_result == OK && update_system_result == OK &&
+        update_system_slots_result == OK) {
+        int boot_confirm_result = update_system_slots_boot_confirm();
+        if (boot_confirm_result != OK) {
+            recovery_mark_degraded(
+                RECOVERY_COMPONENT_UPDATE, boot_confirm_result,
+                "Confirmacao do slot de boot falhou");
+            LOG_ERROR("KERNEL", "Falha ao confirmar tentativa ZSYS no boot");
+        }
+    }
+
     video_print("[..] Iniciando PC Speaker...\n", 0x08);
     speaker_init();
     video_print("[OK] PC Speaker pronto\n", 0x07);

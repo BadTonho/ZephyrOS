@@ -11,7 +11,7 @@ from pathlib import Path
 CONTROL_SIZE = 512
 CONTROL_HASH_OFFSET = 480
 STATE_MAGIC = b"ZSI1"
-STATE_VERSION = 1
+STATE_VERSION = 2
 STATE_SEQUENCE = 1
 STATE_ACTIVE_SLOT = 0
 STATE_PENDING_NONE = 0xFF
@@ -87,6 +87,8 @@ def state_record(valid_slot: bytes) -> bytes:
     struct.pack_into("<HHI", raw, 4, STATE_VERSION, CONTROL_SIZE, STATE_SEQUENCE)
     raw[12] = STATE_ACTIVE_SLOT
     raw[13] = STATE_PENDING_NONE
+    raw[15] = STATE_ACTIVE_SLOT
+    raw[16] = STATE_PENDING_NONE
     raw[STATE_SLOT_OFFSET : STATE_SLOT_OFFSET + STATE_SLOT_SIZE] = valid_slot
     raw[STATE_SLOT_OFFSET + STATE_SLOT_SIZE :
         STATE_SLOT_OFFSET + 2 * STATE_SLOT_SIZE] = empty_slot_record()
@@ -110,7 +112,7 @@ def main() -> int:
     (output_dir / "ZSI1.STA").write_bytes(state)
     (output_dir / "fixture.json").write_text(
         '{\n'
-        '  "format": "zephyros-system-slots-fixtures-v1",\n'
+        '  "format": "zephyros-system-slots-fixtures-v2",\n'
         '  "active_slot": "ZSA0.ZSY",\n'
         '  "pending_slot": null,\n'
         '  "state": ["ZSI0.STA", "ZSI1.STA"]\n'
