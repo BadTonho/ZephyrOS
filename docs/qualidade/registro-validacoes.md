@@ -876,3 +876,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   BIOS somente depois de validar e copiar o kernel. Os diagnosticos anteriores
   permanecem em texto, a ABI legada de entrada foi preservada e falha de VESA
   continua encaminhada ao fallback Simple. A validacao QEMU aguarda o usuario.
+- ABI final do kernel corrigida em: 2026-08-25 17:59
+  (America/Sao_Paulo); a comparacao com o fluxo original mostrou que a ponte
+  empilhava E820 e VESA antes de a propria entrada do kernel fazer essa
+  conversao. A ponte voltou a entregar somente `ESI`, `EDI` e a pilha limpa.
+  O leitor privado do bloco VESA tambem passou a respeitar a ordem
+  `pitch/width/height`, e o loader publica o diagnostico final `START KERNEL`.
+  A validacao QEMU aguarda o usuario.

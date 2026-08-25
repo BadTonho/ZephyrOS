@@ -140,9 +140,9 @@ static int recovery_write_sector(uint32_t lba, const void* input) {
 
 static void recovery_message(const char* message) {
     uint32_t framebuffer = recovery_vesa ? recovery_u32(recovery_vesa) : 0U;
-    uint16_t width = recovery_vesa ? recovery_u16(recovery_vesa + 4U) : 0U;
-    uint16_t height = recovery_vesa ? recovery_u16(recovery_vesa + 6U) : 0U;
-    uint16_t pitch = recovery_vesa ? recovery_u16(recovery_vesa + 8U) : 0U;
+    uint16_t pitch = recovery_vesa ? recovery_u16(recovery_vesa + 4U) : 0U;
+    uint16_t width = recovery_vesa ? recovery_u16(recovery_vesa + 6U) : 0U;
+    uint16_t height = recovery_vesa ? recovery_u16(recovery_vesa + 8U) : 0U;
     if (!message) return;
     while (*message && recovery_vga_cursor < RECOVERY_VGA_WIDTH * 25U) {
         if (*message == '\n') {
@@ -517,7 +517,9 @@ static int recovery_verify_package(const recovery_fat32_t* fs, const recovery_fi
 }
 
 static void recovery_boot_kernel(uint32_t mmap, uint32_t vesa) {
-    recovery_bios_set_vesa_mode();
+    int vesa_ready = recovery_bios_set_vesa_mode();
+    recovery_message(vesa_ready ? "START KERNEL VESA\n" :
+                                  "START KERNEL SIMPLE\n");
     recovery_boot_kernel_entry(mmap, vesa);
 }
 
