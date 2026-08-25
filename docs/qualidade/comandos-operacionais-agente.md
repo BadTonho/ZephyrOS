@@ -131,6 +131,63 @@ mostrado por `storage list` e execute:
 storage check <id-exato-do-volume-fat32>
 ```
 
+## EP9.1: matriz de recuperacao dos slots
+
+O alvo `system-slots-matrix` gera imagens independentes em
+`build\system-slots-matrix`, a partir da fixture base. O gerador nao precisa
+de uma chave privada: ele copia o envelope ja assinado e altera somente os
+controles FAT32 da fixture. A matriz cobre uma copia de estado invalida, as
+duas copias de estado invalidas, cada fase do journal, journal redundante
+parcial ou totalmente invalido, falta de espaco e volume FAT32 ausente.
+
+Gere todas as imagens com:
+
+```text
+make system-slots-matrix
+```
+
+Inicie cada caso com o comando completo correspondente:
+
+```text
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\STATE_ONE_BAD.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\STATE_BOTH_BAD.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\STATE_NEWER.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\JOURNAL_PREPARED.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\JOURNAL_STAGING.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\JOURNAL_VERIFIED.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\JOURNAL_COMMITTED.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\JOURNAL_NEWER.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\JOURNAL_ONE_BAD.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\JOURNAL_BOTH_BAD.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\NO_SPACE.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\NO_VOLUME.img
+```
+
+Expectativas: `STATE_ONE_BAD` deve continuar `READY`; `STATE_NEWER` deve
+selecionar a sequencia 2; `STATE_BOTH_BAD` e `JOURNAL_BOTH_BAD` devem
+aparecer `DEGRADED`; `JOURNAL_PREPARED`, `JOURNAL_STAGING` e
+`JOURNAL_NEWER` devem preservar A, remover o staging e limpar o journal;
+`JOURNAL_VERIFIED` e `JOURNAL_COMMITTED` devem publicar B como pendente;
+`JOURNAL_ONE_BAD` deve recuperar usando a copia valida; `NO_SPACE` deve
+recusar o preflight com `SPACE`; e `NO_VOLUME` deve deixar os slots
+indisponiveis/degradados.
+
+Para cancelamento cooperativo, use uma fixture nova e pressione F12 durante
+a copia, antes de consultar novamente o estado:
+
+```text
+make run-system-slots-fixture
+```
+
+```text
+update system stage system:/VALID.ZSYS --confirm
+update system slots
+```
+
+O resultado esperado e cancelamento sem slot pendente, com A preservado e
+journal limpo. A aplicacao, a selecao no boot e o reboot continuam fora da
+EP9.1.
+
 ## Comandos no Shell
 
 Para orientar comandos do sistema, consultar primeiro `comandos.md` e os

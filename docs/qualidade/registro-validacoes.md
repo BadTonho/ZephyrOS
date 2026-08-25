@@ -740,3 +740,13 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Fixture negativa de epoch/base validada pelo usuário em: 2026-08-25 12:41
   (America/Sao_Paulo); `EPCHBAD.ZSYS` foi recusado por `BASE_VERSION` e
   confirmou que nenhuma gravação foi realizada.
+- Gerador da matriz EP9.1 implementado em: 2026-08-25 12:51
+  (America/Sao_Paulo); foi adicionado `tools/system_slots_matrix.py` com
+  casos reproduzíveis de estado/journal corrompido, fases de recuperação,
+  falta de espaço e volume FAT32 ausente, além dos alvos
+  `system-slots-matrix` e `run-system-slots-matrix`. A validação QEMU desses
+  casos permanece pendente do usuário.
+- Matriz EP9.1 ampliada em: 2026-08-25 12:54
+  (America/Sao_Paulo); foram acrescentados casos que comprovam a escolha da
+  maior sequência válida para estado e journal (`STATE_NEWER` e
+  `JOURNAL_NEWER`). A validação QEMU permanece pendente do usuário.

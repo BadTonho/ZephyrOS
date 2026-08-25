@@ -826,6 +826,9 @@ crus.
 - [x] Criar fixtures FAT32 com baseline assinado em `ZSA0.ZSY`, `ZSB0.ZSY`
   vazio, estado redundante e candidato `VALID.ZSYS`, sem chave privada no
   build normal.
+- [x] Criar o gerador `system-slots-matrix` com casos reproduziveis de
+  corrupcao de estado/journal, fases de recuperacao, falta de espaco e volume
+  ausente, sem alterar boot ou stage2.
 - [ ] Executar a matriz EP9.1 no QEMU e confirmar a regressao Simple/Classic,
   `health`, `memcheck` e `regcheck full`.
 

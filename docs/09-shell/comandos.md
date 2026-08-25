@@ -936,6 +936,12 @@ Esc ou F12 solicita cancelamento cooperativo durante a copia. O cancelamento
 remove o staging temporario e preserva o slot ativo; aplicacao, cancelamento
 de slot pendente, selecao no boot e reboot pertencem a EP9.3.
 
+Para testar a recuperacao dos controles, o host gera imagens independentes com
+`make system-slots-matrix`. Cada uma e iniciada com
+`make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\STATE_ONE_BAD.img`; os nomes dos
+casos e as expectativas estao no contrato ZSYS e na memoria operacional de
+comandos. O teste de cancelamento usa uma fixture nova e F12 durante a copia.
+
 ## `update history`
 
 Lista ate oito eventos do mais recente para o mais antigo. Cada linha informa

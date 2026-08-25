@@ -747,6 +747,9 @@ Evolução da plataforma:      [████████████████
   `ZEPHYROS` gravável, LFN, aliases 8.3, transações FAT32 e regressão FAT12.
 - [x] EP9.1 implementada: slots A/B, estado/journal redundantes, staging local
   em chunks, marcador pendente e fixtures FAT32; validação executável pendente.
+- [x] Matriz reproduzivel EP9.1 adicionada para corrupcao de estado/journal,
+  fases de recuperacao, falta de espaco e volume FAT32 ausente; execucao no
+  QEMU permanece pendente.
 - [ ] EP9.2-EP9.3 futuras: boot pendente, aplicação, rollback pós-reboot e
   confirmação explícita de reboot.
 
