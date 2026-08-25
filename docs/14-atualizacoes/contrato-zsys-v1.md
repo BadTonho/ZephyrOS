@@ -207,8 +207,9 @@ que um boot sem loader nunca confirme uma tentativa antiga.
 
 ### EP9.2A - Recovery loader fixo
 
-O layout legado e `boot -> stage2 -> recovery loader -> kernel legado`.
-`boot.asm` permanece inalterado. O `stage2` carrega o loader para a janela
+O layout legado preserva `boot -> stage2 -> kernel legado`; o recovery loader
+fica na janela fixa LBA 2880..4095, entre o fim do FAT12 e o FAT32. `boot.asm`
+permanece inalterado. O `stage2` carrega o loader para a janela
 0x00900000..0x00A00000 e entrega mapa de memoria, VESA, LBA e tamanho do
 fallback. O build recusa loader maior que a janela, kernel maior que
 0x00100000..0x00800000 ou payload que alcance o FAT32 no LBA 4096.

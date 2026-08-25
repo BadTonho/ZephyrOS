@@ -856,10 +856,9 @@ def prepare_hybrid_image(image_path: Path, disk_bytes: int,
         raise PackageError("boot legado invadiria a particao FAT32")
     legacy_total = (struct.unpack_from("<H", payload, 19)[0] or
                     struct.unpack_from("<I", payload, 32)[0])
-    if legacy_total == 0 or len(payload) > legacy_total * FAT32_SECTOR_SIZE:
-        raise PackageError("payload excede a area FAT12 legada")
-    reserved = (len(payload) + FAT32_SECTOR_SIZE - 1) // FAT32_SECTOR_SIZE
-    struct.pack_into("<H", payload, 14, reserved)
+    reserved = struct.unpack_from("<H", payload, 14)[0]
+    if legacy_total == 0 or reserved == 0 or reserved >= legacy_total:
+        raise PackageError("reserva FAT12 legada invalida")
     image = payload + bytearray(disk_bytes - len(payload))
     fat12_geometry(image)
     format_legacy_fat12(image)

@@ -841,8 +841,8 @@ As entregas de recuperacao da EP9.2 ficam divididas em duas subetapas:
 
 #### EP9.2A - Recovery loader confiavel
 
-- [x] Adicionar o loader imutavel na area FAT12 legada, mantendo `boot.asm`
-  intacto e usando o `stage2` apenas como shim de carregamento.
+- [x] Adicionar o loader imutavel na janela legada fixa antes do FAT32,
+  mantendo `boot.asm` intacto e usando o `stage2` apenas como shim.
 - [x] Ler o FAT32 `ZEPHYROS`, escolher o estado redundante valido de maior
   sequencia e registrar a tentativa antes de carregar um slot pendente.
 - [x] Validar Ed25519, hash da imagem e hashes dos componentes do ZSYS antes
