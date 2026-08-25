@@ -722,3 +722,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   (America/Sao_Paulo); a execução terminou com `RegCheck: OK`. Avisos iniciais
   de listagem de nomes longos, espaço e mutação concorrente do índice foram
   controlados pela própria rotina e não alteraram o resultado final.
+- Fixture negativa de assinatura validada pelo usuário em: 2026-08-25 12:30
+  (America/Sao_Paulo); `SIGBAD.ZSYS` foi recusado por `SIGNATURE` e confirmou
+  que nenhuma gravação foi realizada.
+- Fixture negativa de hash validada pelo usuário em: 2026-08-25 12:35
+  (America/Sao_Paulo); `IMGHASH.ZSYS` foi recusado por `HASH` e confirmou que
+  nenhuma gravação foi realizada.
