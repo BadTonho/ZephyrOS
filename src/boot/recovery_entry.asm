@@ -8,6 +8,7 @@ section .text
 global _start
 global recovery_bios_read_sector
 global recovery_bios_write_sector
+global recovery_bios_set_vesa_mode
 global recovery_boot_kernel_entry
 
 BIOS_GATEWAY_OFFSET equ 0x00005F00
@@ -37,9 +38,6 @@ _start:
     hlt
     jmp .halt
 
-; O loader permanece em modo protegido. Estas duas pontes usam o trampoline
-; fixo do stage2 para executar INT 13h EDD em real mode, sem depender de um
-; controlador ATA especifico.
 recovery_bios_read_sector:
     push ebp
     mov ebp, esp
@@ -132,15 +130,43 @@ recovery_bios_prepare:
     mov dword [BIOS_GATEWAY_DAP + 12], 0
     ret
 
-; Recria exatamente a ABI que o stage2 usava antes do recovery loader:
-; ESI/EDI carregam os ponteiros de boot e o kernel recebe a pilha limpa.
+recovery_bios_set_vesa_mode:
+    push ebp
+    mov ebp, esp
+    push ebx
+    push esi
+    push edi
+    mov byte [BIOS_GATEWAY_OPERATION], 2
+    mov dword [BIOS_GATEWAY_RETURN], .resume
+    mov word [BIOS_GATEWAY_RETURN + 4], GDT_CODE32_SEL
+    mov [BIOS_GATEWAY_SAVED_ESP], esp
+    cli
+    jmp GDT_CODE16_SEL:BIOS_GATEWAY_OFFSET
+.resume:
+    mov ax, GDT_DATA32_SEL
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+    mov esp, [BIOS_GATEWAY_SAVED_ESP]
+    cmp byte [BIOS_GATEWAY_STATUS], 0
+    jne .fail
+    mov eax, 1
+    jmp .done
+.fail:
+    xor eax, eax
+.done:
+    pop edi
+    pop esi
+    pop ebx
+    pop ebp
+    ret
+
 recovery_boot_kernel_entry:
     mov esi, [esp + 4]
     mov edi, [esp + 8]
     mov esp, KERNEL_STACK_TOP
-    ; O stage2 original deixa estes dois argumentos abaixo do endereco de
-    ; retorno do kernel. Alem do conteudo, isso preserva o alinhamento cdecl
-    ; observado pela entrada e por kernel_main.
     push edi
     push esi
     cli

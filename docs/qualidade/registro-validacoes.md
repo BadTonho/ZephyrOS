@@ -871,3 +871,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   registrados nos documentos tecnicos canonicos, sem novos comentarios
   explicativos no codigo. A migracao dos comentarios existentes sera gradual
   quando cada trecho for alterado.
+- Transicao grafica pos-autenticacao corrigida em: 2026-08-25 17:51
+  (America/Sao_Paulo); o recovery loader passou a solicitar VESA pelo gateway
+  BIOS somente depois de validar e copiar o kernel. Os diagnosticos anteriores
+  permanecem em texto, a ABI legada de entrada foi preservada e falha de VESA
+  continua encaminhada ao fallback Simple. A validacao QEMU aguarda o usuario.
