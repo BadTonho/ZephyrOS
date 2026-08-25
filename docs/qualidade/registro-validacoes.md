@@ -787,3 +787,6 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   (America/Sao_Paulo); a recuperação publicou o slot B como `VALID` e
   pendente, preservou A como ativo e válido, avançou para `seq=2` e limpou o
   journal.
+- Caso `JOURNAL_COMMITTED` validado pelo usuário em: 2026-08-25 14:38
+  (America/Sao_Paulo); a recuperação manteve A ativo e válido, publicou B como
+  `VALID`/pendente, avançou para `seq=2` e limpou o journal.
