@@ -532,10 +532,20 @@ static int recovery_boot_legacy(uint32_t mmap, uint32_t vesa, uint32_t lba,
     uint8_t* destination = (uint8_t*)RECOVERY_KERNEL_OFFSET;
     crypto_sha256_ctx_t hash;
     uint8_t actual_hash[CRYPTO_SHA256_SIZE];
-    if (!lba || !sectors || bytes != RECOVERY_LEGACY_KERNEL_SIZE ||
-        sectors != (bytes + RECOVERY_SECTOR_SIZE - 1U) / RECOVERY_SECTOR_SIZE ||
-        crypto_sha256_init(&hash) != 0) {
-        recovery_message("LEGACY METADATA FAIL\n");
+    if (!lba) {
+        recovery_message("LEGACY LBA ZERO\n");
+        return 0;
+    }
+    if (!sectors || bytes != RECOVERY_LEGACY_KERNEL_SIZE) {
+        recovery_message("LEGACY SIZE FAIL\n");
+        return 0;
+    }
+    if (sectors != (bytes + RECOVERY_SECTOR_SIZE - 1U) / RECOVERY_SECTOR_SIZE) {
+        recovery_message("LEGACY SECTORS FAIL\n");
+        return 0;
+    }
+    if (crypto_sha256_init(&hash) != 0) {
+        recovery_message("LEGACY HASH INIT FAIL\n");
         return 0;
     }
     for (uint32_t index = 0U; index < sectors; index++) {
