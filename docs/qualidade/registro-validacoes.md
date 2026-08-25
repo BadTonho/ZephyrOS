@@ -761,3 +761,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Caso `STATE_NEWER` validado pelo usuário em: 2026-08-25 13:07
   (America/Sao_Paulo); a cópia válida de maior sequência foi selecionada
   (`seq=2`), mantendo o slot A ativo e o slot B vazio.
+- Correção do gerador da matriz EP9.1 implementada em: 2026-08-25 13:13
+  (America/Sao_Paulo); os casos de journal/staging passaram a separar o
+  registro de metadados de 176 bytes do envelope ZSYS completo usado em
+  `ZSTG.ZSY` e `ZSB0.ZSY`. O caso `JOURNAL_PREPARED` observado antes desta
+  correção foi invalidado e deverá ser repetido após a regeneração.

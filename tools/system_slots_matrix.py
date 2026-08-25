@@ -161,6 +161,7 @@ def make_case(
     state_a: bytes,
     state_b: bytes,
     candidate: bytes,
+    candidate_package: bytes,
     journal: tuple[bytes, bytes] | None = None,
     staging: bool = False,
     target: bool = False,
@@ -176,9 +177,9 @@ def make_case(
         inject(image, JOURNAL_A, journal[0], start_lba)
         inject(image, JOURNAL_B, journal[1], start_lba)
     if staging:
-        inject(image, "ZSTG.ZSY", candidate, start_lba)
+        inject(image, "ZSTG.ZSY", candidate_package, start_lba)
     if target:
-        inject(image, "ZSB0.ZSY", candidate, start_lba)
+        inject(image, "ZSB0.ZSY", candidate_package, start_lba)
     if fill_space:
         fill_free_clusters(image, start_lba)
     if no_volume:
@@ -214,6 +215,7 @@ def main() -> int:
             output_dir,
             name,
             start_lba=args.fat32_start_lba,
+            candidate_package=candidate_package,
             **kwargs,
         )
         cases[name] = {"image": f"{name}.img", "expected": expected}
