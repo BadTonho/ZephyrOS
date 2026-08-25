@@ -805,3 +805,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Caso `NO_SPACE` validado pelo usuário em: 2026-08-25 14:52
   (America/Sao_Paulo); o candidato foi validado, o staging foi recusado com
   `SPACE` por falta de espaço e nenhuma gravação foi realizada.
+  `SPACE` por falta de espaço e nenhuma gravação foi realizada.
+- Caso `NO_VOLUME` validado pelo usuário em: 2026-08-25 14:54
+  (America/Sao_Paulo); sem volume FAT32 disponível, o serviço ficou
+  `DEGRADED`, sem slot ativo, sem slots válidos e sem reparo silencioso.
+- Matriz específica de fixtures e staging do EP9.1 concluída pelo usuário em:
+  2026-08-25 14:55 (America/Sao_Paulo); os 12 casos previstos foram
+  validados, incluindo seleção redundante de estado/journal, recuperação por
+  fase, cópias inválidas, falta de espaço e ausência do volume FAT32.
