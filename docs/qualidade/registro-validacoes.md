@@ -779,3 +779,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - Caso `JOURNAL_PREPARED` validado pelo usuário em: 2026-08-25 14:27
   (America/Sao_Paulo); a recuperação descartou o staging incompleto, limpou o
   journal, preservou o slot A como `VALID`/ativo e deixou o slot B vazio.
+- Caso `JOURNAL_STAGING` validado pelo usuário em: 2026-08-25 14:33
+  (America/Sao_Paulo); a recuperação em `STAGING` preservou o slot A, removeu
+  o staging incompleto, limpou o journal e manteve o serviço `READY` com B
+  vazio.
