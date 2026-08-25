@@ -527,15 +527,10 @@ static int kernel_start_automatic_dhcp(void) {
 }
 
 void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
-    ((volatile uint16_t*)0xB8000U)[324U] = 0x0F31U;
     vesa_init(vesa_info_addr);
-    ((volatile uint16_t*)0xB8000U)[325U] = 0x0F32U;
     font_init();
-    ((volatile uint16_t*)0xB8000U)[326U] = 0x0F33U;
     video_init();
-    ((volatile uint16_t*)0xB8000U)[327U] = 0x0F34U;
     log_init();
-    ((volatile uint16_t*)0xB8000U)[328U] = 0x0F35U;
     recovery_init();
 
     vesa_mode_t* vmode = vesa_get_mode();
