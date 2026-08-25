@@ -21,6 +21,7 @@ SYSTEM_BOOT_HANDOFF_SIZE equ 64
 BIOS_GATEWAY_OFFSET equ 0x5F00
 BIOS_GATEWAY_DAP equ 0x2A00
 BIOS_GATEWAY_RETURN equ 0x2A10
+BIOS_GATEWAY_SAVED_ESP equ 0x2A18
 BIOS_GATEWAY_STATUS equ 0x2A20
 BIOS_GATEWAY_OPERATION equ 0x2A21
 BIOS_GATEWAY_ATTEMPTS equ 0x2A22
@@ -840,7 +841,20 @@ bios_gateway_real:
     mov eax, cr0
     or eax, 0x00000001
     mov cr0, eax
-    jmp dword far [BIOS_GATEWAY_RETURN]
+    ; Primeiro retorna para um alvo imediato dentro do stage2. O salto alto
+    ; para o loader ocorre somente depois de restaurar descritores e pilha.
+    jmp dword GDT_CODE32_SEL:bios_gateway_protected_return
+
+[BITS 32]
+bios_gateway_protected_return:
+    mov ax, GDT_DATA32_SEL
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+    mov esp, [BIOS_GATEWAY_SAVED_ESP]
+    jmp dword [BIOS_GATEWAY_RETURN]
 
 %if ($-$$) > ((0x10000 - STAGE2_LOAD) - (SECTOR_SIZE - 1))
     %error "stage2 excede o limite de memoria reservado"
