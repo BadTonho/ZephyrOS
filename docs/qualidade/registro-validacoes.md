@@ -912,3 +912,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   faltava atualizar `docs/04-kernel/kernel.md`. O contrato do kernel agora
   registra a pagina supervisora do contexto de boot e a ABI E820/VESA. O gate
   precisa ser repetido pelo usuario.
+- Boot autenticado do slot A validado em: 2026-08-25 18:37
+  (America/Sao_Paulo); o usuario confirmou que `BOOT_ACTIVE_VALID.img` abriu o
+  ZephyrOS depois dos gates da mesma revisao. O handoff E820/VESA, paging do
+  contexto supervisor e entrada do kernel funcionaram sem novo panic. Os
+  demais casos da matriz EP9.2A permanecem pendentes.
