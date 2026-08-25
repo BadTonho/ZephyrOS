@@ -895,3 +895,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   BSS. O C recebia o endereco de retorno como mapa e o mapa como bloco VESA.
   Os dois enderecos agora sao preservados e empilhados explicitamente antes da
   chamada C. A validacao QEMU aguarda o usuario.
+- Excecao do kernel tornada diagnosticavel em: 2026-08-25 18:24
+  (America/Sao_Paulo); o QEMU passou do handoff e alcancou o panic de excecao
+  fatal. Os vetores registrados agora exibem nome, numero, codigo, EIP e CR2
+  para page fault, usando o mesmo renderer dos vetores sem handler. A fonte
+  minima do loader tambem passou a interpretar corretamente seus glifos por
+  colunas. A identificacao do endereco faltoso aguarda nova captura do usuario.

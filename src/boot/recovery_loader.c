@@ -149,11 +149,11 @@ static void recovery_framebuffer_pixel(uint32_t framebuffer, uint16_t pitch,
 static void recovery_framebuffer_glyph(uint32_t framebuffer, uint16_t pitch,
                                        uint8_t bpp, uint32_t x, uint32_t y,
                                        const uint8_t* glyph) {
-    for (uint32_t row = 0U; row < 5U; row++) {
-        for (uint32_t column = 0U; column < 5U; column++) {
+    for (uint32_t column = 0U; column < 5U; column++) {
+        for (uint32_t row = 0U; row < 5U; row++) {
             uint32_t pixel_x;
             uint32_t pixel_y;
-            if (!(glyph[row] & (1U << (4U - column)))) continue;
+            if (!(glyph[column] & (1U << row))) continue;
             pixel_x = x + column * 2U;
             pixel_y = y + row * 2U;
             recovery_framebuffer_pixel(framebuffer, pitch, bpp,

@@ -18,6 +18,7 @@ static isr_handler_t
 static uint8_t shared_irq_handler_counts[IDT_IRQ_LINE_COUNT];
 static int idt_ready = 0;
 static int user_syscall_enabled = 0;
+static void idt_panic_exception(registers_t* regs);
 
 static void idt_user_exception_handler(registers_t* regs) {
     if (regs && ((regs->cs & 0x03U) == 0x03U) &&
@@ -27,7 +28,7 @@ static void idt_user_exception_handler(registers_t* regs) {
     }
 
     LOG_ERROR("IDT", "Excecao fatal originada no kernel");
-    panic("Excecao fatal em modo kernel");
+    idt_panic_exception(regs);
 }
 
 extern void isr0(void);
@@ -317,6 +318,50 @@ static const char* exception_messages[] = {
     "Reserved", "Reserved", "Reserved", "Reserved", "Reserved"
 };
 
+static void idt_print_uint32(uint32_t value) {
+    char reversed[11];
+    char output[11];
+    uint32_t length = 0U;
+
+    if (value == 0U) reversed[length++] = '0';
+    while (value > 0U && length < sizeof(reversed) - 1U) {
+        reversed[length++] = (char)('0' + value % 10U);
+        value /= 10U;
+    }
+    for (uint32_t index = 0U; index < length; index++) {
+        output[index] = reversed[length - index - 1U];
+    }
+    output[length] = '\0';
+    video_print(output, 0x4E);
+}
+
+static void idt_panic_exception(registers_t* regs) {
+    uint32_t fault_address = 0U;
+
+    video_clear();
+    video_set_color(VGA_COLOR_WHITE, VGA_COLOR_RED);
+    video_print("========================================\n", 0x4F);
+    video_print("           KERNEL PANIC                 \n", 0x4F);
+    video_print("========================================\n", 0x4F);
+    video_print("\nExcecao: ", 0x4F);
+    if (regs->int_no < 32U) video_print(exception_messages[regs->int_no], 0x4E);
+    else video_print("Vetor invalido", 0x4E);
+    video_print("\nInterrupcao: ", 0x4F);
+    idt_print_uint32(regs->int_no);
+    video_print("\nCodigo de erro: 0x", 0x4F);
+    idt_print_hex32(regs->err_code);
+    if (regs->int_no == 14U) {
+        asm volatile("mov %%cr2, %0" : "=r"(fault_address));
+        video_print("\nEndereco acessado: 0x", 0x4F);
+        idt_print_hex32(fault_address);
+    }
+    video_print("\nEIP: 0x", 0x4F);
+    idt_print_hex32(regs->eip);
+    video_print("\n", 0x4F);
+    video_flush_updates();
+    panic_halt();
+}
+
 void isr_handler(registers_t* regs) {
     if (!regs) {
         LOG_ERROR("IDT", "Registro de excecao nulo");
@@ -332,53 +377,7 @@ void isr_handler(registers_t* regs) {
         } else {
             LOG_ERROR("IDT", "Excecao sem handler registrada");
         }
-        video_clear();
-        video_set_color(VGA_COLOR_WHITE, VGA_COLOR_RED);
-        video_print("========================================\n", 0x4F);
-        video_print("           KERNEL PANIC                 \n", 0x4F);
-        video_print("========================================\n", 0x4F);
-        video_print("\nExcecao: ", 0x4F);
-
-        if (regs->int_no < 32) {
-            video_print(exception_messages[regs->int_no], 0x4E);
-        }
-
-        video_print("\n", 0x4F);
-        video_print("Interrupcao: ", 0x4F);
-
-        char buf[4];
-        int num = regs->int_no;
-        if (num == 0) {
-            buf[0] = '0'; buf[1] = '\0';
-        } else {
-            int i = 0;
-            while (num > 0) {
-                buf[i++] = '0' + (num % 10);
-                num /= 10;
-            }
-            buf[i] = '\0';
-            for (int j = 0; j < i / 2; j++) {
-                char tmp = buf[j];
-                buf[j] = buf[i - j - 1];
-                buf[i - j - 1] = tmp;
-            }
-        }
-        video_print(buf, 0x4E);
-        video_print("\nCodigo de erro: 0x", 0x4F);
-        idt_print_hex32(regs->err_code);
-
-        if (regs->int_no == 14) {
-            uint32_t fault_address;
-            asm volatile("mov %%cr2, %0" : "=r"(fault_address));
-            video_print("\nEndereco acessado: 0x", 0x4F);
-            idt_print_hex32(fault_address);
-        }
-
-        video_print("\nEIP: 0x", 0x4F);
-        idt_print_hex32(regs->eip);
-        video_print("\n", 0x4F);
-
-        panic_halt();
+        idt_panic_exception(regs);
     }
 }
 
