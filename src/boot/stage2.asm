@@ -126,8 +126,12 @@ stage2_start:
     mov word [remaining], RECOVERY_LOADER_SECTORS
     call load_kernel
 
-    ; Mantem o modo texto durante o carregamento para tornar erros visiveis.
-    call set_vesa_mode
+    ; O loader e o fallback precisam diagnosticar em VGA texto. VESA so pode
+    ; ser ativado por BIOS em real mode, portanto este caminho entrega o
+    ; kernel no fallback Simple em vez de ocultar uma falha pre-kernel.
+    mov dword [VESA_INFO], 0
+    mov dword [VESA_INFO + 4], 0
+    mov dword [VESA_INFO + 8], 0
 
     lgdt [gdt_descriptor]
     mov eax, cr0
