@@ -901,3 +901,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   para page fault, usando o mesmo renderer dos vetores sem handler. A fonte
   minima do loader tambem passou a interpretar corretamente seus glifos por
   colunas. A identificacao do endereco faltoso aguarda nova captura do usuario.
+- Page fault do handoff identificado e corrigido em: 2026-08-25 18:31
+  (America/Sao_Paulo); o QEMU registrou vetor 14, codigo zero, leitura de
+  `0x00002800` e EIP `0x0015D010`, dentro de `kmemcpy`. A pagina que contem o
+  `ZSBH` nao sobrevivia a ativacao do paging. O bootstrap passou a mapear por
+  identidade somente `0x2000–0x2FFF` como supervisor, mantendo ring 3, pagina
+  zero e as demais lacunas baixas sem acesso. A validacao aguarda o usuario.

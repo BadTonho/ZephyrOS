@@ -349,7 +349,11 @@ int paging_init(void) {
     current_directory = dir;
     kernel_directory = dir;
 
-    /* A GDT do stage2 continua ativa ate o tss_init instalar a GDT do kernel. */
+    if (paging_map_identity_range_fast(BOOT_CONTEXT_PAGE_START,
+                                       BOOT_CONTEXT_PAGE_END) != OK) {
+        LOG_ERROR("MEM", "Falha ao mapear contexto reservado do boot");
+        return paging_abort_init(dir, ERR_MEM);
+    }
     if (paging_map_identity_range_fast(BOOT_TRANSITION_START,
                                        BOOT_TRANSITION_END) != OK) {
         LOG_ERROR("MEM", "Falha ao mapear transicao do boot");

@@ -156,7 +156,7 @@ registradores para `kernel_main(mmap, vesa)`.
 0x7C00   → Boot sector (estágio 1, 512 bytes)
 0x5000   → Segundo estágio do bootloader
 0x3000   → Mapa de memória E820 e contador
-0x2000   → Informações do modo VESA
+0x2000–0x2FFF → Página supervisora do contexto VESA e do handoff ZSBH em 0x2800
 0x10000–0x17E00 → Bounce buffer para lotes de até 63 setores
 0x88000–0x98000  → Bitmaps do PMM
 0x98000–0x9F000  → Stack inicial do kernel
