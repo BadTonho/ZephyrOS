@@ -5,6 +5,8 @@ KERNEL_OFFSET    equ 0x00100000
 KERNEL_LIMIT     equ 0x00800000
 RECOVERY_LOADER_OFFSET equ 0x00900000
 RECOVERY_LOADER_LIMIT equ 0x00A00000
+RECOVERY_LOADER_LBA equ 2880
+FAT32_START_LBA equ 4096
 KERNEL_STACK_TOP equ 0x0009F000
 STAGE2_LOAD      equ 0x5000
 STAGE2_INFO      equ 0x4FFE
@@ -68,7 +70,7 @@ GDT_DATA16_SEL   equ 0x20
     %error "tamanho do kernel legado invalido"
 %endif
 
-%if RECOVERY_LOADER_SECTORS > ((RECOVERY_LOADER_LIMIT - RECOVERY_LOADER_OFFSET) / SECTOR_SIZE)
+%if RECOVERY_LOADER_SECTORS > ((RECOVERY_LOADER_LIMIT - RECOVERY_LOADER_OFFSET) / SECTOR_SIZE) || RECOVERY_LOADER_SECTORS > (FAT32_START_LBA - RECOVERY_LOADER_LBA)
     %error "recovery loader excede a janela reservada"
 %endif
 
@@ -114,15 +116,15 @@ stage2_start:
     call enable_a20
     jc a20_error
 
-    ; O stage1 gravou a quantidade de setores do proprio stage2. O loader
-    ; confiavel ocupa os setores seguintes; o kernel legado permanece depois.
+    ; O kernel legado permanece apos stage2. O loader fixo usa a janela livre
+    ; entre FAT12 e FAT32, para nao deslocar o volume de sistema.
     mov ax, [STAGE2_INFO]
     inc ax
-    mov [LBA], ax
+    movzx eax, ax
+    mov [LEGACY_KERNEL_LBA], eax
+    mov word [LBA], RECOVERY_LOADER_LBA
     mov word [remaining], RECOVERY_LOADER_SECTORS
     call load_kernel
-    movzx eax, word [LBA]
-    mov [LEGACY_KERNEL_LBA], eax
 
     ; Mantem o modo texto durante o carregamento para tornar erros visiveis.
     call set_vesa_mode

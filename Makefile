@@ -43,6 +43,7 @@ RECOVERY_LOADER_LD = src/boot/recovery_loader.ld
 RECOVERY_LOADER_BIN = build/recovery_loader.bin
 RECOVERY_LOADER_PADDED_BIN = build/recovery_loader_padded.bin
 RECOVERY_LOADER_PAD_TOOL = tools/pad_boot_payload.py
+RECOVERY_IMAGE_COMPOSE_TOOL = tools/compose_recovery_image.py
 RECOVERY_LAYOUT_TOOL = tools/recovery_layout.py
 RECOVERY_LAYOUT_HEADER = build/recovery_layout.h
 
@@ -1001,14 +1002,14 @@ $(DISPLAY_OBJ): $(DISPLAY_C)
 $(KERNEL_BIN): $(OBJS) src/linker.ld
 	$(LD) $(LDFLAGS) $(OBJS) -o $@
 
-$(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN) tools\packager.py \
+$(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN) tools\packager.py $(RECOVERY_IMAGE_COMPOSE_TOOL) \
           assets\icons\SHELL.BMP assets\icons\EXPLORER.BMP assets\icons\TASKMGR.BMP \
           $(STORE_FIXTURES) $(STORE_AS2_FIXTURES) $(STORE_AS4_UPDATE_FIXTURES) \
           docs\fixtures\updates\u2\VALID.ZUP docs\fixtures\updates\u2\TRUNC.ZUP \
           docs\fixtures\updates\u2\BADHASH.ZUP docs\fixtures\updates\u2\BADSIG.ZUP \
           docs\fixtures\updates\u2\BADVER.ZUP docs\fixtures\updates\u2\BADFMT.ZUP \
           docs\fixtures\updates\u2\UNKKEY.ZUP docs\fixtures\updates\u3\APPLY.ZUP
-	cmd /c "copy /b build\boot.bin+build\stage2.bin+build\recovery_loader_padded.bin+build\kernel.bin build\zephyros.img"
+	python $(RECOVERY_IMAGE_COMPOSE_TOOL) --boot $(BOOT_BIN) --stage2 $(STAGE2_BIN) --kernel $(KERNEL_BIN) --loader $(RECOVERY_LOADER_PADDED_BIN) --loader-lba 2880 --fat32-start-lba $(FAT32_START_LBA) --output $(OS_IMG)
 	python tools\packager.py prepare-hybrid-image --image $(OS_IMG) --disk-bytes $(HYBRID_DISK_BYTES) --fat32-start-lba $(FAT32_START_LBA) --label $(FAT32_LABEL)
 	python tools\packager.py inject-file-fat32 --file assets\icons\SHELL.BMP --image $(OS_IMG) --path SHELL.BMP --fat32-start-lba $(FAT32_START_LBA)
 	python tools\packager.py inject-file-fat32 --file assets\icons\EXPLORER.BMP --image $(OS_IMG) --path EXPLORER.BMP --fat32-start-lba $(FAT32_START_LBA)
