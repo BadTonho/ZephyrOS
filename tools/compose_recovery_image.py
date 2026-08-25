@@ -17,6 +17,7 @@ def main() -> int:
     parser.add_argument("--stage2", required=True)
     parser.add_argument("--kernel", required=True)
     parser.add_argument("--loader", required=True)
+    parser.add_argument("--kernel-lba", type=int, required=True)
     parser.add_argument("--loader-lba", type=int, required=True)
     parser.add_argument("--fat32-start-lba", type=int, required=True)
     parser.add_argument("--output", required=True)
@@ -28,14 +29,19 @@ def main() -> int:
     loader = Path(args.loader).read_bytes()
     if len(boot) != SECTOR_SIZE or not stage2 or not kernel or not loader:
         raise ValueError("artefato legado invalido")
-    legacy = boot + stage2 + kernel
-    reserved = math.ceil(len(legacy) / SECTOR_SIZE)
-    if reserved >= args.loader_lba:
+    pre_kernel = boot + stage2
+    if math.ceil(len(pre_kernel) / SECTOR_SIZE) > args.kernel_lba:
+        raise ValueError("stage2 invade o LBA fixo do kernel legado")
+    kernel_end_lba = args.kernel_lba + math.ceil(len(kernel) / SECTOR_SIZE)
+    if kernel_end_lba > args.loader_lba:
         raise ValueError("kernel legado invade a janela do recovery loader")
     if args.loader_lba + math.ceil(len(loader) / SECTOR_SIZE) > args.fat32_start_lba:
         raise ValueError("recovery loader invade o FAT32")
-    struct.pack_into("<H", legacy, 14, reserved)
-    image = legacy + bytes(args.loader_lba * SECTOR_SIZE - len(legacy)) + loader
+    reserved = math.ceil(len(pre_kernel) / SECTOR_SIZE)
+    struct.pack_into("<H", pre_kernel, 14, reserved)
+    image = (pre_kernel + bytes(args.kernel_lba * SECTOR_SIZE - len(pre_kernel)) +
+             kernel + bytes(args.loader_lba * SECTOR_SIZE -
+                            (args.kernel_lba * SECTOR_SIZE + len(kernel))) + loader)
     Path(args.output).write_bytes(image)
     return 0
 

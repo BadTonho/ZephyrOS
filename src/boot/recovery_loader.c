@@ -49,6 +49,9 @@
 #define RECOVERY_ZSYS_COMPONENT_KERNEL 3U
 #define RECOVERY_KERNEL_OFFSET 0x00100000U
 #define RECOVERY_KERNEL_LIMIT 0x00800000U
+#define RECOVERY_LEGACY_KERNEL_LBA 64U
+#define RECOVERY_LEGACY_KERNEL_SECTORS \
+    ((RECOVERY_LEGACY_KERNEL_SIZE + RECOVERY_SECTOR_SIZE - 1U) / RECOVERY_SECTOR_SIZE)
 #define RECOVERY_VGA_TEXT ((volatile uint16_t*)0xB8000U)
 #define RECOVERY_VGA_WIDTH 80U
 #define RECOVERY_VGA_ATTRIBUTE 0x0F00U
@@ -527,36 +530,19 @@ static void recovery_boot_kernel(uint32_t mmap, uint32_t vesa) {
         : "esi", "edi", "memory");
 }
 
-static int recovery_boot_legacy(uint32_t mmap, uint32_t vesa, uint32_t lba,
-                                uint32_t sectors, uint32_t bytes) {
+static int recovery_boot_legacy(uint32_t mmap, uint32_t vesa) {
     uint8_t* destination = (uint8_t*)RECOVERY_KERNEL_OFFSET;
     crypto_sha256_ctx_t hash;
     uint8_t actual_hash[CRYPTO_SHA256_SIZE];
-    if (!lba) {
-        recovery_message("LEGACY LBA ZERO\n");
-        return 0;
-    }
-    if (!sectors) {
-        recovery_message("LEGACY SECTOR ZERO\n");
-        return 0;
-    }
-    if (bytes != RECOVERY_LEGACY_KERNEL_SIZE) {
-        recovery_message("LEGACY BYTE SIZE FAIL\n");
-        return 0;
-    }
-    if (sectors != (bytes + RECOVERY_SECTOR_SIZE - 1U) / RECOVERY_SECTOR_SIZE) {
-        recovery_message("LEGACY SECTORS FAIL\n");
-        return 0;
-    }
     if (crypto_sha256_init(&hash) != 0) {
         recovery_message("LEGACY HASH INIT FAIL\n");
         return 0;
     }
-    for (uint32_t index = 0U; index < sectors; index++) {
+    for (uint32_t index = 0U; index < RECOVERY_LEGACY_KERNEL_SECTORS; index++) {
         uint8_t* sector = destination + index * RECOVERY_SECTOR_SIZE;
-        uint32_t amount = bytes - index * RECOVERY_SECTOR_SIZE;
+        uint32_t amount = RECOVERY_LEGACY_KERNEL_SIZE - index * RECOVERY_SECTOR_SIZE;
         if (amount > RECOVERY_SECTOR_SIZE) amount = RECOVERY_SECTOR_SIZE;
-        if (!recovery_read_sector(lba + index, sector) ||
+        if (!recovery_read_sector(RECOVERY_LEGACY_KERNEL_LBA + index, sector) ||
             crypto_sha256_update(&hash, sector, amount) != 0) {
             recovery_message("LEGACY ATA READ FAIL\n");
             return 0;
@@ -573,8 +559,7 @@ static int recovery_boot_legacy(uint32_t mmap, uint32_t vesa, uint32_t lba,
     return 0;
 }
 
-void recovery_loader_main(uint32_t mmap, uint32_t vesa, uint32_t legacy_lba,
-                          uint32_t legacy_sectors, uint32_t legacy_bytes) {
+void recovery_loader_main(uint32_t mmap, uint32_t vesa) {
     recovery_fat32_t fs;
     recovery_file_t slot;
     recovery_state_t first;
@@ -601,30 +586,30 @@ void recovery_loader_main(uint32_t mmap, uint32_t vesa, uint32_t legacy_lba,
     recovery_message("ZEPHYROS RECOVERY LOADER\n");
     if (!recovery_fat32_open(&fs)) {
         recovery_message("FAT STATE LEGACY KERNEL\n");
-        recovery_boot_legacy(mmap, vesa, legacy_lba, legacy_sectors, legacy_bytes);
+        recovery_boot_legacy(mmap, vesa);
         return;
     }
     first_valid = recovery_load_state(&fs, state_a, &first);
     second_valid = recovery_load_state(&fs, state_b, &second);
     if (!first_valid && !second_valid) {
         recovery_message("NO VALID STATE LEGACY KERNEL\n");
-        recovery_boot_legacy(mmap, vesa, legacy_lba, legacy_sectors, legacy_bytes);
+        recovery_boot_legacy(mmap, vesa);
         return;
     }
     if (!first_valid && !recovery_locate_control(&fs, state_a, &first)) {
         recovery_message("STATE COPY LEGACY KERNEL\n");
-        recovery_boot_legacy(mmap, vesa, legacy_lba, legacy_sectors, legacy_bytes);
+        recovery_boot_legacy(mmap, vesa);
         return;
     }
     if (!second_valid && !recovery_locate_control(&fs, state_b, &second)) {
         recovery_message("STATE COPY LEGACY KERNEL\n");
-        recovery_boot_legacy(mmap, vesa, legacy_lba, legacy_sectors, legacy_bytes);
+        recovery_boot_legacy(mmap, vesa);
         return;
     }
     if (first_valid && second_valid && first.sequence == second.sequence &&
         !recovery_equal(first.raw, second.raw, UPDATE_SYSTEM_SLOT_CONTROL_SIZE)) {
         recovery_message("DIVERGENT STATE LEGACY KERNEL\n");
-        recovery_boot_legacy(mmap, vesa, legacy_lba, legacy_sectors, legacy_bytes);
+        recovery_boot_legacy(mmap, vesa);
         return;
     }
     selected = first_valid && (!second_valid || first.sequence >= second.sequence) ? &first : &second;
@@ -633,13 +618,13 @@ void recovery_loader_main(uint32_t mmap, uint32_t vesa, uint32_t legacy_lba,
         const char* alternate_name = alternate == &first ? state_a : state_b;
         recovery_mark_attempt_failed(&fs, selected, alternate, alternate_name);
         recovery_message("UNCONFIRMED ATTEMPT LEGACY KERNEL\n");
-        recovery_boot_legacy(mmap, vesa, legacy_lba, legacy_sectors, legacy_bytes);
+        recovery_boot_legacy(mmap, vesa);
         return;
     }
     if (recovery_find_file(&fs, "ZSI0    JRN", &slot) ||
         recovery_find_file(&fs, "ZSI1    JRN", &slot)) {
         recovery_message("PENDING JOURNAL LEGACY KERNEL\n");
-        recovery_boot_legacy(mmap, vesa, legacy_lba, legacy_sectors, legacy_bytes);
+        recovery_boot_legacy(mmap, vesa);
         return;
     }
     if (selected->pending != UPDATE_SYSTEM_SLOT_NONE) slot_index = selected->pending;
@@ -655,7 +640,7 @@ void recovery_loader_main(uint32_t mmap, uint32_t vesa, uint32_t legacy_lba,
             recovery_mark_attempt_failed(&fs, selected, alternate, alternate_name);
         }
         recovery_message("SLOT VALIDATION LEGACY KERNEL\n");
-        recovery_boot_legacy(mmap, vesa, legacy_lba, legacy_sectors, legacy_bytes);
+        recovery_boot_legacy(mmap, vesa);
         return;
     }
     if (selected->pending != UPDATE_SYSTEM_SLOT_NONE) {
@@ -665,7 +650,7 @@ void recovery_loader_main(uint32_t mmap, uint32_t vesa, uint32_t legacy_lba,
         if (!recovery_publish_attempt(&fs, selected, alternate, alternate_name,
                                       slot_index, &state_sequence, &attempt_sequence)) {
             recovery_message("ATTEMPT WRITE LEGACY KERNEL\n");
-            recovery_boot_legacy(mmap, vesa, legacy_lba, legacy_sectors, legacy_bytes);
+            recovery_boot_legacy(mmap, vesa);
             return;
         }
         handoff->magic[0] = 'Z'; handoff->magic[1] = 'S';
