@@ -1267,3 +1267,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   O preflight abriu a confirmacao de publicacao e o usuario selecionou
   `Cancelar`. A interface retornou sem gravacao, mantendo `ativo=A`,
   `pendente=NONE` e o slot B vazio.
+
+- EP9.4C: aplicacao confirmada e reinicio adiado validados.
+  Validada em: 2026-08-26 18:08 (America/Sao_Paulo).
+  O Updater publicou o slot B valido como pendente, preservou A como ativo e
+  anterior, e a escolha `Depois` manteve o estado sem reiniciar. A aba Sistema
+  exibiu o aviso persistente para usar `Reiniciar` quando oportuno.
