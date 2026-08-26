@@ -1254,3 +1254,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   caminho combinado FAT32, SHA-256 e Ed25519. O worker passou a usar 16 KiB,
   mesmo limite ja empregado pelos processos principais, sem alterar outras
   pilhas. A validacao no QEMU aguarda a nova execucao pelo usuario.
+
+- EP9.4C: verificacao ZSYS no System Updater Classic validada.
+  Validada em: 2026-08-26 18:02 (America/Sao_Paulo).
+  O usuario abriu a aba `Sistema` na imagem guiada, executou `Verificar` e o
+  worker concluiu com motivo `NONE`. A janela permaneceu visivel, sem tela
+  preta e sem panic de canario, confirmando a correcao da pilha e do redesenho
+  cooperativo.
