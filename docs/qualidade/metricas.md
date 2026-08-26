@@ -26,15 +26,18 @@ mudanca; nao crie uma entrada artificial.
   job cooperativo.
 - Antes: mais de 10 minutos ate o cancelamento; a reconstrucao do indice foi
   iniciada, mas a aplicacao nao publicou o pendente.
-- Depois: N/D; foi introduzida uma dica de alocacao FAT32 por volume para
+- Depois: conclusao em tempo normal observada pelo usuario, sem medicao em
+  segundos (valor quantitativo N/D); foi introduzida uma dica de alocacao FAT32 por volume para
   eliminar a varredura desde o primeiro cluster a cada reserva, e a atualizacao
   do diretorio passou a ocorrer em checkpoints. A geometria das imagens tambem
   passa a usar clusters de 8 setores para reduzir operacoes FAT repetidas. Nova
   medicao depende dos gates e da matriz do usuario.
-- Conclusao: pendente ate a comparacao reproduzivel.
+- Conclusao: melhora funcional confirmada; comparacao quantitativa permanece
+  pendente ate uma medicao reproduzivel.
 - Impacto: a ordem de alocacao e os contratos FAT32 permanecem inalterados;
   a dica e reinicializada junto com o inventario de storage.
   Registrado em: 2026-08-26 11:37 (America/Sao_Paulo).
+  Confirmacao qualitativa registrada em: 2026-08-26 11:48 (America/Sao_Paulo).
 
 ### 2026-08-21 - Fase 5, saida longa do Shell
 
