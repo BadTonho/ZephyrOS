@@ -1095,3 +1095,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   O job avancou para `Reconstrucao cooperativa do indice iniciada`, confirmando
   que a operacao nao estava parada; a lentidao permanece como pendencia de
   desempenho.
+
+- EP9.3: cancelamento da aplicacao apos mais de dez minutos.
+  Registrado em: 2026-08-26 11:30 (America/Sao_Paulo).
+  F12/Esc cancelou o job com `Aplicacao ZSYS: CANCELLED`; o slot pendente nao
+  foi publicado. A reconstrucao do indice e a exclusao FAT32 reportaram falhas
+  repetidas, mantendo a investigacao de desempenho e I/O pendente.
