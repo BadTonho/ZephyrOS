@@ -60,6 +60,7 @@
 #define UPDATER_CLASSIC_TAB_GAP 8
 #define UPDATER_CLASSIC_SYSTEM_BUTTON_WIDTH 96
 #define UPDATER_CLASSIC_SYSTEM_BUTTON_STEP 104
+#define UPDATER_WORKER_STACK_SIZE (KERNEL_STACK_SIZE * 4U)
 
 typedef enum {
     UPDATER_TAB_PACKAGES = 0,
@@ -2148,8 +2149,9 @@ int updater_init(void) {
         LOG_ERROR("UPDATER", "Servico Update nao inicializado");
         return ERR_STATE;
     }
-    updater_remote_worker_process = process_create(
-        "Updater Worker", updater_remote_worker_main);
+    updater_remote_worker_process = process_create_with_stack_size(
+        "Updater Worker", updater_remote_worker_main,
+        UPDATER_WORKER_STACK_SIZE);
     if (!updater_remote_worker_process) {
         recovery_mark_disabled(
             RECOVERY_COMPONENT_SYSTEM_UPDATER, ERR_MEM,
