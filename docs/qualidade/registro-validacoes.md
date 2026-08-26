@@ -1040,3 +1040,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   Em `BOOT_ACTIVE_VALID`, o usuario confirmou que a expiracao da janela inicia
   A automaticamente e que F8 abre o menu sem timeout; Esc retomou o fluxo e A
   iniciou normalmente, sem alteracao persistente observada.
+- Boot anterior one-shot da EP9.2B validado.
+  Concluida em: 2026-08-26 09:57 (America/Sao_Paulo).
+  Em `MENU_PREVIOUS_VALID`, o usuario confirmou a inicializacao do slot
+  anterior A pelo menu, enquanto `update system slots` continuou exibindo B
+  como ativo persistido. O retorno automatico a B apos reset ainda precisa ser
+  confirmado.
