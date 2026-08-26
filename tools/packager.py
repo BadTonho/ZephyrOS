@@ -39,12 +39,13 @@ FAT12_ATTR_ARCHIVE = 0x20
 FAT32_EOF = 0x0FFFFFFF
 FAT32_FREE = 0x00000000
 FAT32_MIN_CLUSTERS = 4086
+FAT32_STANDARD_MIN_CLUSTERS = 65525
 FAT32_ATTR_DIRECTORY = 0x10
 FAT32_ATTR_ARCHIVE = 0x20
 FAT32_ATTR_LFN = 0x0F
 FAT32_DIR_ENTRY_SIZE = 32
 FAT32_SECTOR_SIZE = 512
-HYBRID_DISK_BYTES = 64 * 1024 * 1024
+HYBRID_DISK_BYTES = 256 * 1024 * 1024
 HYBRID_FAT32_START_LBA = 4096
 HYBRID_FAT32_LABEL = "ZEPHYROS"
 ID_RE = re.compile(r"^[A-Z0-9_]{1,8}$")
@@ -425,7 +426,7 @@ def _fat32_format_partition(image: bytearray, start_lba: int,
                             total_sectors: int, label: str) -> None:
     reserved = 32
     fat_count = 2
-    spc = 8
+    spc = 4
     spf = 1
     for _ in range(8):
         clusters = (total_sectors - reserved - fat_count * spf) // spc
@@ -435,7 +436,7 @@ def _fat32_format_partition(image: bytearray, start_lba: int,
         spf = next_spf
     data_start = reserved + fat_count * spf
     clusters = (total_sectors - data_start) // spc
-    if clusters < FAT32_MIN_CLUSTERS:
+    if clusters < FAT32_STANDARD_MIN_CLUSTERS:
         raise PackageError("particao FAT32 pequena demais")
     if len(label) > 11 or not label or any(ord(c) < 0x20 or ord(c) > 0x7E for c in label):
         raise PackageError("rotulo FAT32 invalido")
@@ -711,16 +712,12 @@ def _fat32_write_fat_chain(image: bytearray, start_lba: int, reserved: int,
     _fat32_write_fats(image, start_lba, reserved, fat_count, spf, fat)
 
 
-def inject_fat32_file(data: bytes, image_path: Path, path: str,
-                      replace: bool = False, fat32_start_lba: int = HYBRID_FAT32_START_LBA,
-                      fat_name: str | None = None) -> None:
-    """Injeta arquivo FAT32 com LFN e alias 8.3, usando escrita host atomica."""
+def inject_fat32_bytes(data: bytes, image: bytearray, path: str,
+                       replace: bool = False,
+                       fat32_start_lba: int = HYBRID_FAT32_START_LBA,
+                       fat_name: str | None = None) -> None:
     if not path or path.endswith(("/", "\\")):
         raise PackageError("caminho de arquivo FAT32 invalido")
-    try:
-        image = bytearray(image_path.read_bytes())
-    except OSError as error:
-        raise PackageError("nao foi possivel ler imagem hibrida") from error
     bps, spc, reserved, fat_count, spf, data_start, clusters = fat32_geometry(
         image, fat32_start_lba
     )
@@ -786,6 +783,18 @@ def inject_fat32_file(data: bytes, image_path: Path, path: str,
     for slot, entry in zip(slots, lfn_entries + [bytes(short)]):
         image[slot:slot + 32] = entry
     _fat32_write_fat_chain(image, fat32_start_lba, reserved, fat_count, spf, fat)
+
+
+def inject_fat32_file(data: bytes, image_path: Path, path: str,
+                      replace: bool = False,
+                      fat32_start_lba: int = HYBRID_FAT32_START_LBA,
+                      fat_name: str | None = None) -> None:
+    """Injeta arquivo FAT32 com LFN e alias 8.3, usando escrita host atomica."""
+    try:
+        image = bytearray(image_path.read_bytes())
+    except OSError as error:
+        raise PackageError("nao foi possivel ler imagem hibrida") from error
+    inject_fat32_bytes(data, image, path, replace, fat32_start_lba, fat_name)
     try:
         image_path.write_bytes(image)
     except OSError as error:
@@ -2234,6 +2243,32 @@ def command_inject_file_fat32(arguments: argparse.Namespace) -> int:
     return 0
 
 
+def command_inject_files_fat32(arguments: argparse.Namespace) -> int:
+    image_path = Path(arguments.image)
+    try:
+        image = bytearray(image_path.read_bytes())
+    except OSError as error:
+        raise PackageError("nao foi possivel ler imagem hibrida") from error
+    for value in arguments.entry:
+        source, separator, target = value.partition("=")
+        if not separator or not source or not target:
+            raise PackageError("entrada FAT32 em lote invalida")
+        try:
+            data = Path(source).read_bytes()
+        except OSError as error:
+            raise PackageError("nao foi possivel ler entrada FAT32") from error
+        inject_fat32_bytes(
+            data, image, target, arguments.replace,
+            arguments.fat32_start_lba,
+        )
+    try:
+        image_path.write_bytes(image)
+    except OSError as error:
+        raise PackageError("nao foi possivel gravar imagem FAT32") from error
+    print(f"Arquivos FAT32 injetados: {len(arguments.entry)}")
+    return 0
+
+
 def command_demo(arguments: argparse.Namespace) -> int:
     """Cria e injeta o demo usado na validacao manual da Fase 7."""
     manifest = {"id": "DEMO", "name": "Demo", "version": "1.0.0", "api": "0.3", "entry": "APP.ZAP", "dependencies": ""}
@@ -2424,6 +2459,13 @@ def build_parser() -> argparse.ArgumentParser:
                                    default=HYBRID_FAT32_START_LBA)
     inject_file_fat32.add_argument("--replace", action="store_true")
     inject_file_fat32.set_defaults(handler=command_inject_file_fat32)
+    inject_files_fat32 = commands.add_parser("inject-files-fat32")
+    inject_files_fat32.add_argument("--image", required=True)
+    inject_files_fat32.add_argument("--entry", action="append", required=True)
+    inject_files_fat32.add_argument("--fat32-start-lba", type=int,
+                                    default=HYBRID_FAT32_START_LBA)
+    inject_files_fat32.add_argument("--replace", action="store_true")
+    inject_files_fat32.set_defaults(handler=command_inject_files_fat32)
     demo = commands.add_parser("demo")
     demo.add_argument("--output", required=True)
     demo.add_argument("--image", required=True)

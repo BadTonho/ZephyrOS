@@ -4,6 +4,7 @@
 #include "core/update_system_slots.h"
 #include "core/update_trust.h"
 #include "recovery_layout.h"
+#include "recovery_chain.h"
 #include "recovery_menu.h"
 
 #define RECOVERY_SECTOR_SIZE 512U
@@ -104,6 +105,18 @@ typedef struct {
 } recovery_controls_t;
 
 typedef struct {
+    uint32_t offset;
+    uint32_t size;
+    uint8_t hash[CRYPTO_SHA256_SIZE];
+} recovery_component_t;
+
+typedef struct {
+    uint32_t boot_abi;
+    uint32_t image_size;
+    recovery_component_t components[UPDATE_SYSTEM_COMPONENT_COUNT];
+} recovery_package_t;
+
+typedef struct {
     recovery_fat32_t fs;
     recovery_controls_t controls;
     uint32_t mmap;
@@ -115,6 +128,10 @@ typedef struct {
     uint8_t retry_disabled;
     uint8_t invalid_slot;
     uint8_t automatic_timeout;
+    uint32_t boot_abi;
+    uint32_t boot_size;
+    uint32_t stage2_size;
+    uint32_t kernel_size;
 } recovery_boot_context_t;
 
 static uint8_t recovery_sector[RECOVERY_SECTOR_SIZE];
@@ -137,6 +154,7 @@ static const char recovery_slot_names[2][12] = {
 extern int recovery_bios_read_sector(uint32_t lba, void* output);
 extern int recovery_bios_write_sector(uint32_t lba, const void* input);
 extern void recovery_boot_kernel_entry(uint32_t mmap, uint32_t vesa);
+extern void recovery_boot_system_entry(void);
 
 static uint16_t recovery_u16(const uint8_t* value) {
     return (uint16_t)value[0] | ((uint16_t)value[1] << 8U);
@@ -482,6 +500,7 @@ static int recovery_target_exceeds_base(const uint8_t* header,
 static int recovery_header_policy_valid(const uint8_t* header) {
     uint16_t base_count;
     uint16_t flags;
+    uint32_t boot_abi;
     uint8_t route;
     uint8_t checkpoint_count;
     if (!header ||
@@ -513,10 +532,12 @@ static int recovery_header_policy_valid(const uint8_t* header) {
         !recovery_zero(header + UPDATE_SYSTEM_MIN_UPDATER_OFFSET + 10U, 2U))
         return 0;
     flags = recovery_u16(header + RECOVERY_ZSYS_FLAGS_OFFSET);
+    boot_abi = recovery_u32(header + UPDATE_SYSTEM_BOOT_ABI_OFFSET);
     route = header[UPDATE_SYSTEM_ROUTE_OFFSET];
     checkpoint_count = header[UPDATE_SYSTEM_CHECKPOINT_COUNT_OFFSET];
     if (flags != UPDATE_SYSTEM_FLAG_REQUIRES_REBOOT ||
-        recovery_u32(header + UPDATE_SYSTEM_BOOT_ABI_OFFSET) != 1U ||
+        (boot_abi != UPDATE_SYSTEM_BOOT_ABI_LEGACY &&
+         boot_abi != UPDATE_SYSTEM_BOOT_ABI_CHAIN) ||
         recovery_u32(header + UPDATE_SYSTEM_SCHEMA_FROM_OFFSET) >
             recovery_u32(header + UPDATE_SYSTEM_SCHEMA_TO_OFFSET) ||
         (route != UPDATE_SYSTEM_ROUTE_DIRECT &&
@@ -841,9 +862,9 @@ static update_system_slots_reason_t recovery_verify_signed_image(
 
 static update_system_slots_reason_t recovery_verify_components(
     const recovery_fat32_t* fs, const recovery_file_t* file,
-    uint32_t image_size, uint32_t* kernel_offset, uint32_t* kernel_size) {
+    recovery_package_t* package) {
     uint32_t previous_end = 0U;
-    if (!kernel_offset || !kernel_size ||
+    if (!package ||
         recovery_u16(recovery_header + UPDATE_SYSTEM_COMPONENT_COUNT_OFFSET) !=
             UPDATE_SYSTEM_COMPONENT_COUNT ||
         recovery_u16(recovery_header +
@@ -858,11 +879,13 @@ static update_system_slots_reason_t recovery_verify_components(
         uint16_t kind = recovery_u16(entry);
         uint32_t offset = recovery_u32(entry + 4U);
         uint32_t size = recovery_u32(entry + 8U);
+        recovery_component_t* output = &package->components[component];
         if (kind != component + RECOVERY_ZSYS_COMPONENT_BOOT ||
             recovery_u16(entry + 2U) != 0U || offset != previous_end ||
             !recovery_zero(entry + 44U, RECOVERY_ZSYS_COMPONENT_SIZE - 44U))
             return UPDATE_SYSTEM_SLOTS_REASON_FORMAT;
-        if (!size || offset >= image_size || size > image_size - offset)
+        if (!size || offset >= package->image_size ||
+            size > package->image_size - offset)
             return UPDATE_SYSTEM_SLOTS_REASON_SIZE;
         if ((component == 0U && (offset || size != RECOVERY_SECTOR_SIZE)) ||
             (component == 1U &&
@@ -874,34 +897,39 @@ static update_system_slots_reason_t recovery_verify_components(
             return UPDATE_SYSTEM_SLOTS_REASON_IO;
         if (!recovery_equal(actual_hash, entry + 12U, CRYPTO_SHA256_SIZE))
             return UPDATE_SYSTEM_SLOTS_REASON_HASH;
-        if (kind == RECOVERY_ZSYS_COMPONENT_KERNEL) {
-            *kernel_offset = offset;
-            *kernel_size = size;
-        }
+        output->offset = offset;
+        output->size = size;
+        for (uint32_t index = 0U; index < CRYPTO_SHA256_SIZE; index++)
+            output->hash[index] = entry[12U + index];
         previous_end = offset + size;
     }
-    if (!*kernel_size ||
-        *kernel_size > RECOVERY_KERNEL_LIMIT - RECOVERY_KERNEL_OFFSET)
+    if (package->components[2].size >
+            RECOVERY_KERNEL_LIMIT - RECOVERY_KERNEL_OFFSET ||
+        (package->boot_abi == UPDATE_SYSTEM_BOOT_ABI_CHAIN &&
+         (package->components[0].size != RECOVERY_CHAIN_BOOT_SIZE ||
+          package->components[1].size >
+              RECOVERY_CHAIN_STAGE2_LIMIT - RECOVERY_CHAIN_STAGE2_ADDRESS)))
         return UPDATE_SYSTEM_SLOTS_REASON_SIZE;
     return UPDATE_SYSTEM_SLOTS_REASON_NONE;
 }
 
 static update_system_slots_reason_t recovery_verify_package(
     const recovery_fat32_t* fs, const recovery_file_t* file,
-    const uint8_t expected_hash[CRYPTO_SHA256_SIZE], uint32_t* kernel_offset,
-    uint32_t* kernel_size) {
+    const uint8_t expected_hash[CRYPTO_SHA256_SIZE],
+    recovery_package_t* package) {
     update_system_slots_reason_t reason;
     uint32_t image_size = 0U;
-    if (!kernel_offset || !kernel_size)
+    if (!package)
         return UPDATE_SYSTEM_SLOTS_REASON_FORMAT;
-    *kernel_offset = 0U;
-    *kernel_size = 0U;
+    recovery_clear(package, sizeof(*package));
     reason = recovery_verify_header(fs, file, expected_hash, &image_size);
     if (reason != UPDATE_SYSTEM_SLOTS_REASON_NONE) return reason;
     reason = recovery_verify_signed_image(fs, file, image_size);
     if (reason != UPDATE_SYSTEM_SLOTS_REASON_NONE) return reason;
-    return recovery_verify_components(fs, file, image_size, kernel_offset,
-                                      kernel_size);
+    package->boot_abi = recovery_u32(
+        recovery_header + UPDATE_SYSTEM_BOOT_ABI_OFFSET);
+    package->image_size = image_size;
+    return recovery_verify_components(fs, file, package);
 }
 
 static void recovery_boot_kernel(uint32_t mmap, uint32_t vesa) {
@@ -912,13 +940,113 @@ static void recovery_boot_kernel(uint32_t mmap, uint32_t vesa) {
     recovery_boot_kernel_entry(mmap, vesa);
 }
 
-static int recovery_verify_loaded_kernel(
-    uint32_t kernel_size, const uint8_t expected_hash[CRYPTO_SHA256_SIZE]) {
+static void recovery_clear_chain_handoff(void) {
+    recovery_clear((void*)RECOVERY_CHAIN_HANDOFF_ADDRESS,
+                   RECOVERY_CHAIN_HANDOFF_SIZE);
+}
+
+static void recovery_clear_handoff(void) {
+    recovery_clear((void*)UPDATE_SYSTEM_BOOT_HANDOFF_ADDRESS,
+                   UPDATE_SYSTEM_BOOT_HANDOFF_SIZE);
+    recovery_clear_chain_handoff();
+}
+
+static int recovery_publish_chain_handoff(
+    const recovery_boot_context_t* context) {
+    recovery_chain_handoff_t* handoff =
+        (recovery_chain_handoff_t*)RECOVERY_CHAIN_HANDOFF_ADDRESS;
+    uint32_t sum = 0U;
+    uint32_t* words = (uint32_t*)handoff;
+    if (!context || sizeof(*handoff) != RECOVERY_CHAIN_HANDOFF_SIZE ||
+        context->boot_abi != UPDATE_SYSTEM_BOOT_ABI_CHAIN ||
+        context->boot_size != RECOVERY_CHAIN_BOOT_SIZE ||
+        !context->stage2_size ||
+        context->stage2_size >
+            RECOVERY_CHAIN_STAGE2_LIMIT - RECOVERY_CHAIN_STAGE2_ADDRESS ||
+        !context->kernel_size ||
+        context->kernel_size >
+            RECOVERY_CHAIN_KERNEL_LIMIT - RECOVERY_CHAIN_KERNEL_ADDRESS)
+        return 0;
+    recovery_clear_chain_handoff();
+    handoff->magic[0] = 'Z';
+    handoff->magic[1] = 'S';
+    handoff->magic[2] = 'B';
+    handoff->magic[3] = 'C';
+    handoff->version = RECOVERY_CHAIN_HANDOFF_VERSION;
+    handoff->size = RECOVERY_CHAIN_HANDOFF_SIZE;
+    handoff->boot_abi = UPDATE_SYSTEM_BOOT_ABI_CHAIN;
+    handoff->boot_address = RECOVERY_CHAIN_BOOT_ADDRESS;
+    handoff->boot_size = context->boot_size;
+    handoff->stage2_address = RECOVERY_CHAIN_STAGE2_ADDRESS;
+    handoff->stage2_size = context->stage2_size;
+    handoff->kernel_address = RECOVERY_CHAIN_KERNEL_ADDRESS;
+    handoff->kernel_size = context->kernel_size;
+    handoff->mmap_address = context->mmap;
+    handoff->vesa_address = context->vesa;
+    handoff->boot_handoff_address = UPDATE_SYSTEM_BOOT_HANDOFF_ADDRESS;
+    for (uint32_t index = 0U; index < 12U; index++) sum += words[index];
+    handoff->checksum = ~sum;
+    return 1;
+}
+
+static int recovery_boot_prepared(recovery_boot_context_t* context) {
+    if (!context) return 0;
+    if (context->boot_abi == UPDATE_SYSTEM_BOOT_ABI_LEGACY) {
+        recovery_boot_kernel(context->mmap, context->vesa);
+        return 1;
+    }
+    if (!recovery_publish_chain_handoff(context)) {
+        recovery_clear_handoff();
+        return 0;
+    }
+    recovery_message("START AUTH BOOT CHAIN\n");
+    recovery_boot_system_entry();
+    recovery_clear_handoff();
+    recovery_message("AUTH BOOT CHAIN RETURN\n");
+    return 0;
+}
+
+static int recovery_verify_loaded_component(
+    uint32_t address, uint32_t size,
+    const uint8_t expected_hash[CRYPTO_SHA256_SIZE]) {
     uint8_t actual_hash[CRYPTO_SHA256_SIZE];
     return expected_hash &&
-           crypto_sha256((const void*)RECOVERY_KERNEL_OFFSET, kernel_size,
+           crypto_sha256((const void*)address, size,
                          actual_hash) == 0 &&
            recovery_equal(actual_hash, expected_hash, CRYPTO_SHA256_SIZE);
+}
+
+static update_system_slots_reason_t recovery_load_component(
+    const recovery_fat32_t* fs, const recovery_file_t* file,
+    const recovery_component_t* component, uint32_t address) {
+    if (!fs || !file || !component || !component->size)
+        return UPDATE_SYSTEM_SLOTS_REASON_FORMAT;
+    if (!recovery_read_file(fs, file,
+                            UPDATE_SYSTEM_HEADER_SIZE + component->offset,
+                            (void*)address, component->size))
+        return UPDATE_SYSTEM_SLOTS_REASON_IO;
+    return recovery_verify_loaded_component(address, component->size,
+                                            component->hash) ?
+        UPDATE_SYSTEM_SLOTS_REASON_NONE : UPDATE_SYSTEM_SLOTS_REASON_HASH;
+}
+
+static update_system_slots_reason_t recovery_load_package(
+    const recovery_fat32_t* fs, const recovery_file_t* file,
+    const recovery_package_t* package) {
+    update_system_slots_reason_t reason;
+    if (!fs || !file || !package) return UPDATE_SYSTEM_SLOTS_REASON_FORMAT;
+    reason = recovery_load_component(fs, file, &package->components[2],
+                                     RECOVERY_CHAIN_KERNEL_ADDRESS);
+    if (reason != UPDATE_SYSTEM_SLOTS_REASON_NONE) return reason;
+    if (package->boot_abi == UPDATE_SYSTEM_BOOT_ABI_LEGACY)
+        return UPDATE_SYSTEM_SLOTS_REASON_NONE;
+    if (package->boot_abi != UPDATE_SYSTEM_BOOT_ABI_CHAIN)
+        return UPDATE_SYSTEM_SLOTS_REASON_COMPATIBILITY;
+    reason = recovery_load_component(fs, file, &package->components[1],
+                                     RECOVERY_CHAIN_STAGE2_ADDRESS);
+    if (reason != UPDATE_SYSTEM_SLOTS_REASON_NONE) return reason;
+    return recovery_load_component(fs, file, &package->components[0],
+                                   RECOVERY_CHAIN_BOOT_ADDRESS);
 }
 
 static int recovery_boot_legacy(uint32_t mmap, uint32_t vesa) {
@@ -1030,10 +1158,8 @@ static int recovery_slot_metadata_matches(const uint8_t* record) {
 static update_system_slots_reason_t recovery_prepare_slot(
     recovery_boot_context_t* context, uint8_t slot) {
     const uint8_t* record;
-    const uint8_t* kernel_hash;
     recovery_file_t file;
-    uint32_t kernel_offset;
-    uint32_t kernel_size;
+    recovery_package_t package;
     update_system_slots_reason_t reason;
     if (!context || !context->controls.selected || slot >= 2U)
         return UPDATE_SYSTEM_SLOTS_REASON_FORMAT;
@@ -1047,19 +1173,18 @@ static update_system_slots_reason_t recovery_prepare_slot(
         return UPDATE_SYSTEM_SLOTS_REASON_SIZE;
     recovery_message("VERIFY SLOT\n");
     reason = recovery_verify_package(&context->fs, &file, record + 16U,
-                                     &kernel_offset, &kernel_size);
+                                     &package);
     if (reason != UPDATE_SYSTEM_SLOTS_REASON_NONE) return reason;
     if (!recovery_slot_metadata_matches(record))
         return UPDATE_SYSTEM_SLOTS_REASON_FORMAT;
-    recovery_message("LOAD KERNEL\n");
-    if (!recovery_read_file(&context->fs, &file,
-                            UPDATE_SYSTEM_HEADER_SIZE + kernel_offset,
-                            (void*)RECOVERY_KERNEL_OFFSET, kernel_size))
-        return UPDATE_SYSTEM_SLOTS_REASON_IO;
-    kernel_hash = recovery_header + RECOVERY_ZSYS_COMPONENTS_OFFSET +
-                  2U * RECOVERY_ZSYS_COMPONENT_SIZE + 12U;
-    if (!recovery_verify_loaded_kernel(kernel_size, kernel_hash))
-        return UPDATE_SYSTEM_SLOTS_REASON_HASH;
+    recovery_message(package.boot_abi == UPDATE_SYSTEM_BOOT_ABI_CHAIN ?
+                         "LOAD BOOT CHAIN\n" : "LOAD KERNEL\n");
+    reason = recovery_load_package(&context->fs, &file, &package);
+    if (reason != UPDATE_SYSTEM_SLOTS_REASON_NONE) return reason;
+    context->boot_abi = package.boot_abi;
+    context->boot_size = package.components[0].size;
+    context->stage2_size = package.components[1].size;
+    context->kernel_size = package.components[2].size;
     recovery_message("KERNEL MEMORY OK\n");
     return UPDATE_SYSTEM_SLOTS_REASON_NONE;
 }
@@ -1230,8 +1355,8 @@ static int recovery_boot_previous(recovery_boot_context_t* context) {
     uint8_t slot = context->controls.selected->previous;
     update_system_slots_reason_t reason = recovery_prepare_slot(context, slot);
     if (reason == UPDATE_SYSTEM_SLOTS_REASON_NONE) {
-        recovery_boot_kernel(context->mmap, context->vesa);
-        return 1;
+        if (recovery_boot_prepared(context)) return 1;
+        reason = UPDATE_SYSTEM_SLOTS_REASON_BOOT_FAILED;
     }
     context->diagnostic = "ANTERIOR RECUSADO";
     context->reason = reason;
@@ -1261,8 +1386,18 @@ static int recovery_retry_candidate(recovery_boot_context_t* context) {
         return 0;
     }
     recovery_publish_handoff(context->controls.selected);
-    recovery_boot_kernel(context->mmap, context->vesa);
-    return 1;
+    if (recovery_boot_prepared(context)) return 1;
+    if (!recovery_context_mark_failed(
+            context, slot, UPDATE_SYSTEM_SLOTS_REASON_BOOT_FAILED))
+        recovery_restrict_legacy(context, "FALHA REGISTRAR RETORNO",
+                                 UPDATE_SYSTEM_SLOTS_REASON_IO);
+    else {
+        context->diagnostic = "CADEIA RETORNOU";
+        context->reason = UPDATE_SYSTEM_SLOTS_REASON_BOOT_FAILED;
+        context->invalid_slot = slot;
+    }
+    context->retry_disabled = 1U;
+    return 0;
 }
 
 static int recovery_run_menu(recovery_boot_context_t* context,
@@ -1320,11 +1455,6 @@ static int recovery_state_sequence_safe(const recovery_state_t* state) {
     if (!state || state->sequence == 0xFFFFFFFFU) return 0;
     return state->boot_state == UPDATE_SYSTEM_SLOTS_BOOT_NONE ||
            state->attempt_sequence != 0xFFFFFFFFU;
-}
-
-static void recovery_clear_handoff(void) {
-    recovery_clear((void*)UPDATE_SYSTEM_BOOT_HANDOFF_ADDRESS,
-                   UPDATE_SYSTEM_BOOT_HANDOFF_SIZE);
 }
 
 void recovery_loader_main(uint32_t mmap, uint32_t vesa) {
@@ -1431,5 +1561,18 @@ void recovery_loader_main(uint32_t mmap, uint32_t vesa) {
         }
         recovery_publish_handoff(context.controls.selected);
     }
-    recovery_boot_kernel(mmap, vesa);
+    if (!recovery_boot_prepared(&context)) {
+        context.diagnostic = "CADEIA RETORNOU";
+        context.reason = UPDATE_SYSTEM_SLOTS_REASON_BOOT_FAILED;
+        context.invalid_slot = slot;
+        if (context.controls.selected &&
+            context.controls.selected->boot_state ==
+                UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPTED &&
+            !recovery_context_mark_failed(
+                &context, slot, UPDATE_SYSTEM_SLOTS_REASON_BOOT_FAILED))
+            recovery_restrict_legacy(&context, "FALHA REGISTRAR RETORNO",
+                                     UPDATE_SYSTEM_SLOTS_REASON_IO);
+        context.automatic_timeout = voluntary ? 0U : 1U;
+        recovery_run_menu(&context, 0);
+    }
 }

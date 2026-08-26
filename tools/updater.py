@@ -199,6 +199,10 @@ SYSTEM_COMPONENT_COUNT = 3
 SYSTEM_COMPONENT_BOOT = 1
 SYSTEM_COMPONENT_STAGE2 = 2
 SYSTEM_COMPONENT_KERNEL = 3
+SYSTEM_BOOT_ABI_LEGACY = 1
+SYSTEM_BOOT_ABI_CHAIN = 2
+SYSTEM_CHAIN_BOOT_SIZE = 512
+SYSTEM_CHAIN_STAGE2_MAX_SIZE = 0x0F00
 SYSTEM_COMPONENT_HASH_OFFSET = 12
 SYSTEM_BASE_ENTRY_SIZE = 12
 SYSTEM_MAX_BASES = 8
@@ -2059,6 +2063,10 @@ def system_manifest_spec(path: Path) -> SystemManifest:
         value = data[field]
         if not isinstance(value, int) or not 0 <= value <= 0xFFFFFFFF:
             raise UpdateError(f"{field} ZSYS invalido")
+    if data["boot_abi"] not in (
+        SYSTEM_BOOT_ABI_LEGACY, SYSTEM_BOOT_ABI_CHAIN,
+    ):
+        raise UpdateError("boot_abi ZSYS nao suportada")
     if data["data_schema_from"] > data["data_schema_to"]:
         raise UpdateError("intervalo de schema ZSYS invertido")
     if data["requires_reboot"] is not True:
@@ -2212,6 +2220,12 @@ def system_build_package(
         raise UpdateError("imagem ZSYS deve ser alinhada e ter no maximo 8 MiB")
     if len(boot) != 512 or not stage2 or not kernel:
         raise UpdateError("componentes ZSYS possuem tamanho invalido")
+    if (
+        manifest.compatibility.boot_abi == SYSTEM_BOOT_ABI_CHAIN
+        and (len(boot) != SYSTEM_CHAIN_BOOT_SIZE or
+             len(stage2) > SYSTEM_CHAIN_STAGE2_MAX_SIZE)
+    ):
+        raise UpdateError("componentes de boot ABI 2 excedem os limites")
     stage2_offset = len(boot)
     kernel_offset = stage2_offset + len(stage2)
     if len(stage2) % 512 or kernel_offset + len(kernel) > len(image):
@@ -2294,7 +2308,7 @@ def system_parse_header(raw: bytes, trusted: PublicKeyInfo) -> tuple[SystemPacka
     if route_kind == SYSTEM_ROUTE_DIRECT and checkpoints:
         raise Rejection(REASON_UNSUPPORTED, "rota direta ZSYS possui checkpoints")
     if (
-        boot_abi != 1
+        boot_abi not in (SYSTEM_BOOT_ABI_LEGACY, SYSTEM_BOOT_ABI_CHAIN)
         or schema_from > schema_to
         or not (flags & SYSTEM_FLAG_REQUIRES_REBOOT)
         or flags & SYSTEM_FLAG_BRIDGE_REQUIRED
@@ -2330,6 +2344,12 @@ def system_parse_header(raw: bytes, trusted: PublicKeyInfo) -> tuple[SystemPacka
             raise Rejection(REASON_FORMAT, "padding de componente ZSYS nao zero")
         previous_end = component_offset + component_length
         components.append(SystemComponent(kind, component_offset, component_length, digest))
+    if (
+        boot_abi == SYSTEM_BOOT_ABI_CHAIN
+        and (components[0].size != SYSTEM_CHAIN_BOOT_SIZE or
+             components[1].size > SYSTEM_CHAIN_STAGE2_MAX_SIZE)
+    ):
+        raise Rejection(REASON_SIZE, "componentes de boot ABI 2 excedem os limites")
     compatibility = SystemCompatibility(
         bases, minimum_updater, boot_abi, schema_from, schema_to,
         bool(flags & SYSTEM_FLAG_REQUIRES_REBOOT), channel, route_kind,
@@ -2604,7 +2624,9 @@ def system_compatibility_from_values(data: dict[str, Any]) -> SystemCompatibilit
     if len({(item.version, item.epoch) for item in supported}) != len(supported):
         raise UpdateError("supported_from ZSYS possui duplicatas")
     minimum = system_base_spec(data["min_updater"], "min_updater")
-    if not isinstance(data["boot_abi"], int) or data["boot_abi"] != 1:
+    if (not isinstance(data["boot_abi"], int) or
+            data["boot_abi"] not in
+            (SYSTEM_BOOT_ABI_LEGACY, SYSTEM_BOOT_ABI_CHAIN)):
         raise UpdateError("boot_abi ZSYS invalido")
     if not isinstance(data["data_schema_from"], int) or not isinstance(data["data_schema_to"], int) or data["data_schema_from"] > data["data_schema_to"]:
         raise UpdateError("schema ZSYS invalido")
@@ -6216,7 +6238,7 @@ def selftest_ep90a_system() -> None:
             raise UpdateError("epoch-base ZSYS incompativel foi aceita")
 
         for label, field_offset, value, expected_reason in (
-            ("abi", SYSTEM_HEADER_BOOT_ABI_OFFSET, 2, REASON_UNSUPPORTED),
+            ("abi", SYSTEM_HEADER_BOOT_ABI_OFFSET, 3, REASON_UNSUPPORTED),
             ("schema", SYSTEM_HEADER_SCHEMA_FROM_OFFSET, 2, REASON_UNSUPPORTED),
         ):
             incompatible = bytearray(package)
@@ -6644,7 +6666,7 @@ def write_system_fixtures(
     )
 
     incompatible = bytearray(package)
-    struct.pack_into("<I", incompatible, SYSTEM_HEADER_BOOT_ABI_OFFSET, 2)
+    struct.pack_into("<I", incompatible, SYSTEM_HEADER_BOOT_ABI_OFFSET, 3)
     write_new_bytes(
         output / "incompatible-abi.zsys",
         resign_system_package(bytes(incompatible), private_key),
@@ -6671,6 +6693,19 @@ def write_system_fixtures(
         output / "hash-divergent-component.zsys",
         resign_system_package(bytes(component_hash_divergent), private_key),
     )
+    for name, component in (
+        ("boot", 0), ("stage2", 1), ("kernel", 2),
+    ):
+        divergent = bytearray(package)
+        divergent[
+            SYSTEM_HEADER_COMPONENTS_OFFSET +
+            component * SYSTEM_COMPONENT_ENTRY_SIZE +
+            SYSTEM_COMPONENT_HASH_OFFSET
+        ] ^= 1
+        write_new_bytes(
+            output / f"hash-divergent-{name}.zsys",
+            resign_system_package(bytes(divergent), private_key),
+        )
 
     metadata = {
         "format": "zephyros-system-fixtures-v1",
@@ -6714,6 +6749,8 @@ def write_system_qemu_fixtures(
     kernel_path: Path,
     output_dir: Path,
     full_kernel: bool = False,
+    handoff_invalid_boot_path: Path | None = None,
+    returning_boot_path: Path | None = None,
 ) -> None:
     """Gera fixtures compactas ou executaveis para validacao no QEMU."""
     with tempfile.TemporaryDirectory(prefix="zephyros-zsys-qemu-") as temp_name:
@@ -6742,6 +6779,21 @@ def write_system_qemu_fixtures(
             compact_kernel_path,
             output_dir,
         )
+        extras = (
+            ("handoff-invalid.zsys", handoff_invalid_boot_path),
+            ("returning-boot.zsys", returning_boot_path),
+        )
+        for name, alternative_path in extras:
+            if alternative_path is None:
+                continue
+            alternative_boot = system_load_file(alternative_path, "boot ABI 2")
+            alternative_image = alternative_boot + stage2 + fixture_kernel
+            alternative_image += bytes((-len(alternative_image)) % 512)
+            alternative_package = system_build_package(
+                system_manifest_spec(manifest_path), alternative_image,
+                alternative_boot, stage2, fixture_kernel, private_key, public,
+            )
+            write_new_bytes(output_dir / name, alternative_package)
 
 
 def command_fixtures_system_qemu(args: argparse.Namespace) -> None:
@@ -6752,6 +6804,18 @@ def command_fixtures_system_qemu(args: argparse.Namespace) -> None:
     public = load_public_json(Path(args.public))
     if private_public_info(key) != public:
         raise UpdateError("chave privada nao corresponde ao JSON publico")
+    legacy_values = (
+        args.legacy_manifest, args.legacy_boot, args.legacy_stage2,
+        args.legacy_output_dir,
+    )
+    if any(legacy_values) and not all(legacy_values):
+        raise UpdateError("fixture ABI 1 exige todos os caminhos legados")
+    if all(legacy_values):
+        write_system_qemu_fixtures(
+            key, public, Path(args.legacy_manifest), Path(args.legacy_boot),
+            Path(args.legacy_stage2), Path(args.kernel),
+            Path(args.legacy_output_dir), args.full_kernel,
+        )
     write_system_qemu_fixtures(
         key,
         public,
@@ -6761,6 +6825,8 @@ def command_fixtures_system_qemu(args: argparse.Namespace) -> None:
         Path(args.kernel),
         Path(args.output_dir),
         args.full_kernel,
+        Path(args.handoff_invalid_boot) if args.handoff_invalid_boot else None,
+        Path(args.returning_boot) if args.returning_boot else None,
     )
     print(f"Fixtures ZSYS QEMU criadas: {Path(args.output_dir).resolve()}")
 
@@ -7352,6 +7418,12 @@ def build_parser() -> argparse.ArgumentParser:
     fixtures_system_qemu.add_argument("--private", required=True)
     fixtures_system_qemu.add_argument("--public", required=True)
     fixtures_system_qemu.add_argument("--output-dir", required=True)
+    fixtures_system_qemu.add_argument("--handoff-invalid-boot")
+    fixtures_system_qemu.add_argument("--returning-boot")
+    fixtures_system_qemu.add_argument("--legacy-manifest")
+    fixtures_system_qemu.add_argument("--legacy-boot")
+    fixtures_system_qemu.add_argument("--legacy-stage2")
+    fixtures_system_qemu.add_argument("--legacy-output-dir")
     fixtures_system_qemu.add_argument(
         "--full-kernel",
         action="store_true",

@@ -1145,3 +1145,14 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   sequencia de comandos de verificacao terminaram em menos de um minuto. O
   tempo exato nao foi cronometrado, portanto a metrica quantitativa permanece
   sem valor em segundos.
+
+- EP9.4B: boot operacional autenticado no FAT32 implementado.
+  Implementada em: 2026-08-26 12:30 (America/Sao_Paulo).
+  A imagem padrao passou a 256 MiB com FAT32 iniciado no LBA 4096 e quatro
+  setores por cluster. O recovery verifier ganhou compatibilidade com ABI 2,
+  releitura e hash dos tres componentes, handoff privado `ZSBC` e execucao das
+  continuacoes protegidas de boot, stage2 e kernel. ABI 1, estado v2, `ZSBH`,
+  confirmacao A/B e fallback pelo kernel legado foram preservados. Foi criada
+  uma unica matriz QEMU guiada, com uma solicitacao de chave, vetores de
+  componente, handoff, retorno e corrupcao MBR/BPB; os gates e a validacao do
+  usuario permanecem pendentes.

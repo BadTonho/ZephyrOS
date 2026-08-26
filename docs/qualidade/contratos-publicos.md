@@ -406,7 +406,7 @@ com o estado v1 e publica estado/slot/sequência de tentativa e o handoff
 inicialização essencial confirmar o mesmo registro persistido. `boot.asm`
 permanece inalterado.
 
-Desde a EP9.4A, `build\zephyros.img` usa uma imagem híbrida de 64 MiB: o FAT12
+Desde a EP9.4B, `build\zephyros.img` usa uma imagem híbrida de 256 MiB: o FAT12
 bruto continua no início para boot e recuperação e o FAT32 `ZEPHYROS` começa
 no LBA 4096. `fs.h` roteia caminhos sem prefixo e `system:/` para o volume de
 sistema quando montado, preserva `legacy:/` para o FAT12 e não faz fallback
@@ -426,3 +426,8 @@ motivos, fetch confirmado, limpeza e resolução do pacote publicado.
 `storage.h` generaliza o escritor FAT32 transacional preservando os wrappers
 de slot. Os contratos canônicos permanecem no contrato ZSYS e na documentação
 do filesystem.
+
+Na EP9.4B, `update_system.h` nomeia as ABI de boot 1 e 2. ABI 1 preserva a
+execucao direta do kernel; ABI 2 executa boot e stage2 protegidos somente
+depois da autenticacao e da releitura dos tres componentes. O handoff `ZSBC`
+e privado do loader e nao amplia a API publica, o estado dos slots ou `ZSBH`.
