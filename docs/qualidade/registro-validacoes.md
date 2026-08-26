@@ -1082,3 +1082,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   uma ou duas copias corrompidas, transferencia interrompida e uma imagem
   guiada unica com snapshot QEMU. `boot.asm`, `stage2` e o recovery loader nao
   foram alterados. Gates e QEMU aguardam execucao do usuario.
+
+- EP9.3: observacao de desempenho durante `update system apply --confirm`.
+  Registrada em: 2026-08-26 11:19 (America/Sao_Paulo).
+  Na matriz guiada, a operacao permaneceu sem conclusao visivel por cerca de
+  cinco minutos, com o Shell bloqueado e entradas ignoradas. A validacao da
+  aplicacao permanece pendente; investigar o tempo de escrita FAT32 e publicar
+  progresso observavel antes de considerar o fluxo concluido.
