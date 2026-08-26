@@ -983,3 +983,12 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   ativo, pendente, anterior e tentativa `NONE`, boot e motivo `NONE`, journal
   e recovery limpos e os slots A e B como `EMPTY`. O fallback legado e a
   representacao publica sem indice de slot espurio ficaram validados.
+- Recuperacao de journal em `PREPARED` validada.
+  Concluida em: 2026-08-25 23:18 (America/Sao_Paulo).
+  `JOURNAL_PREPARED.img` iniciou somente o kernel legado autenticado e a
+  recuperacao do kernel descartou o staging incompleto. O comando
+  `update system slots` registrou `READY`, sequencia 1, ativo A, pendente
+  `NONE`, anterior A, tentativa, boot e motivo `NONE`, journal e recovery
+  limpos, slot A `VALID` e slot B `EMPTY`. Uma entrada recebida durante o job
+  cooperativo foi ignorada conforme a politica do Shell e nao invalidou o
+  caso.
