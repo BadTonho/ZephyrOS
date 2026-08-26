@@ -1261,3 +1261,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   worker concluiu com motivo `NONE`. A janela permaneceu visivel, sem tela
   preta e sem panic de canario, confirmando a correcao da pilha e do redesenho
   cooperativo.
+
+- EP9.4C: cancelamento da confirmacao de aplicacao validado.
+  Validada em: 2026-08-26 18:04 (America/Sao_Paulo).
+  O preflight abriu a confirmacao de publicacao e o usuario selecionou
+  `Cancelar`. A interface retornou sem gravacao, mantendo `ativo=A`,
+  `pendente=NONE` e o slot B vazio.
