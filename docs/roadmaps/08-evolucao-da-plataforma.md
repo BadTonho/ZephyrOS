@@ -738,9 +738,8 @@ repositorio.
 
 ## EP9 - Atualizacao da imagem do sistema e slots de boot
 
-**Estado:** EP9.0A, EP9.1, EP9.2A e EP9.4A implementadas e validadas pelo
-usuário. A EP9.2B está implementada e aguarda os gates e a matriz QEMU
-específica. A regressão visual Simple/Classic não integra esta matriz porque a
+**Estado:** EP9.0A, EP9.1, EP9.2A, EP9.2B e EP9.4A implementadas e validadas
+pelo usuário. A regressão visual Simple/Classic não integra esta matriz porque a
 mudança ocorre antes do kernel; o fallback VGA texto possui alvo dedicado.
 Aplicação e comandos pós-reboot continuam reservados para a EP9.3.
 
@@ -891,14 +890,13 @@ As entregas de recuperacao da EP9.2 ficam divididas em duas subetapas:
   confiaveis.
 - [x] Gerar fixtures do anterior, retry e controle ausente, alem do alvo VGA
   dedicado para a navegacao sem VESA.
-- [ ] Executar a matriz QEMU EP9.2B para F8, timeout, cancelamento, one-shot,
+- [x] Executar a matriz QEMU EP9.2B para F8, timeout, cancelamento, one-shot,
   retry confirmado/interrompido, controles corrompidos, assinatura/hash,
   journal, FAT32 ausente e fallback VGA.
 
-- [~] EP9.2 parcialmente concluida: estado v2, handoff, confirmacao, loader
-  FAT32/Ed25519 e rollback automatico foram validados na EP9.2A; menu,
-  inspecao interativa, F8 e retry manual foram implementados na EP9.2B e
-  aguardam a matriz QEMU especifica.
+- [x] EP9.2 concluida: estado v2, handoff, confirmacao, loader FAT32/Ed25519,
+  rollback automatico, menu, inspecao interativa, F8 e retry manual foram
+  implementados e validados nas EP9.2A e EP9.2B.
 - [x] Preservar `boot.asm` e ajustar o `stage2`, com autorizacao explicita,
   para carregar o loader que seleciona e autentica o slot antes do kernel.
 - [x] Registrar tentativa de boot, sucesso confirmado pelo kernel e falha de
