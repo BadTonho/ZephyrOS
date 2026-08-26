@@ -1284,3 +1284,25 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   O usuario abriu a confirmacao pelo botao `Reiniciar` e selecionou
   `Cancelar`. A maquina permaneceu ligada e o estado continuou com A ativo e
   B pendente, sem escrita ou promocao antecipada.
+
+- EP9.4C: reinicio controlado e promocao do slot B validados.
+  Validada em: 2026-08-26 18:14 (America/Sao_Paulo).
+  A confirmacao final reiniciou a maquina, a cadeia ABI 2 iniciou o sistema e
+  o acknowledge do kernel promoveu B. Depois do boot, a aba Sistema mostrou
+  `ativo=B`, `pendente=NONE`, nenhuma tentativa ou falha e os slots A e B
+  validos, sem aviso de reinicio pendente.
+
+- EP9.4C: diagnosticos finais da sessao guiada validados.
+  Validada em: 2026-08-26 18:15 (America/Sao_Paulo).
+  `health check` mostrou somente indisponibilidades e degradacoes esperadas do
+  ambiente QEMU e dos servicos legados dependentes de FAT12. `regcheck full`
+  concluiu com `RegCheck: OK`, sem regressao detectada depois do reinicio e da
+  promocao do slot B.
+
+- EP9.4C: criterio de saida encerrado.
+  Concluida em: 2026-08-26 18:15 (America/Sao_Paulo).
+  Os tres gates acordados foram executados pelo usuario, a sessao guiada
+  validou o fluxo Classic completo e as recusas possuem fixtures
+  deterministicas geradas pelo alvo unico. A evidencia da EP9.4B foi
+  reutilizada para rollback conforme o plano. Nao ha comando adicional
+  pendente para a EP9.4C.

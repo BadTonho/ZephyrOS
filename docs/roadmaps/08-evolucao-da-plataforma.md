@@ -963,7 +963,7 @@ dessas migracoes sem substituir a raiz fixa de recuperacao.
 
 ### EP9.4C - Reinicio controlado pelo System Updater
 
-**Estado:** implementada; validacao do usuario pendente.
+**Estado:** concluida.
 
 Esta subetapa integra a ativacao ao System Updater Classic sem transformar o
 reboot em efeito implicito da aplicacao. Depois de publicar e reler um slot
@@ -992,9 +992,11 @@ confirmacao explicita do usuario pode iniciar o reboot.
   ZSYS, o estado v2 dos slots ou os handoffs existentes.
 - [x] Criar fixtures deterministicas do preflight e o alvo unico
   `make run-ep94c-matrix`, sem repetir as imagens autenticadas da EP9.4B.
-- [ ] Validar em uma unica sessao QEMU guiada: reiniciar depois, cancelamento
-  da confirmacao, estado alterado antes do reboot, falha da solicitacao,
-  reinicio confirmado, promocao ABI 2 e rollback antes do acknowledge.
+- [x] Validar pelos gates acordados, fixtures deterministicas e uma unica
+  sessao QEMU guiada: verificacao, reinicio adiado, persistencia do aviso,
+  cancelamento das confirmacoes, reinicio confirmado, promocao ABI 2,
+  `health check` e `regcheck full`; reutilizar a evidencia de rollback da
+  EP9.4B conforme o plano da subetapa.
 
 ### Criterio de saida da EP9.4C
 
