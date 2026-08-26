@@ -346,6 +346,11 @@ aplicativo permanecer focado. Se o callback abrir ou focalizar outra janela, a
 composição completa preserva o Z-order; o aplicativo pode consultar essa
 condição com `wm_is_hosted_app_focused()`.
 
+`wm_request_hosted_redraw()` agenda a recomposição no ciclo do Window Manager.
+Workers cooperativos podem atualizar seu estado e solicitar a apresentação sem
+executar diretamente o compositor VESA em sua própria pilha. Solicitações
+repetidas antes do ciclo seguinte são consolidadas em uma única recomposição.
+
 `WM_HOSTED_MIN_WIDTH` e `WM_HOSTED_MIN_HEIGHT` definem o mínimo estrutural
 comum de 180x128 px para as janelas hospedadas. Explorer, Settings e Task
 Manager publicam mínimos funcionais maiores. As constantes

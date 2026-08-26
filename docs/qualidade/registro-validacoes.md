@@ -1238,3 +1238,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   Shell, Settings e Task Manager passaram a reutilizar o mesmo servico. Foram adicionadas
   fixtures compactas do preflight e uma unica imagem guiada pelo alvo
   `make run-ep94c-matrix`; os gates e a validacao QEMU aguardam o usuario.
+
+- EP9.4C: tela preta ao concluir verificacao no Updater corrigida.
+  Concluida em: 2026-08-26 17:48 (America/Sao_Paulo).
+  A verificacao do cache concluiu dentro do worker cooperativo, que solicitava
+  uma recomposicao VESA completa usando sua propria pilha. O Window Manager
+  passou a consolidar essas solicitacoes e executar a recomposicao em seu ciclo
+  periodico, preservando a interface Classic durante e depois do job. A
+  validacao no QEMU aguarda a nova execucao pelo usuario.
