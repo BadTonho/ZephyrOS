@@ -1101,3 +1101,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   F12/Esc cancelou o job com `Aplicacao ZSYS: CANCELLED`; o slot pendente nao
   foi publicado. A reconstrucao do indice e a exclusao FAT32 reportaram falhas
   repetidas, mantendo a investigacao de desempenho e I/O pendente.
+
+- EP9.3: estado pos-cancelamento confirmado.
+  Registrado em: 2026-08-26 11:32 (America/Sao_Paulo).
+  `update system status` e `update system slots` reportaram cache `READY`,
+  controles 2, slot A ativo, slot B `EMPTY`, pendente `NONE` e journal limpo.
