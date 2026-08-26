@@ -1220,3 +1220,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   host, a cadeia ABI 1/ABI 2, promocao, rollback, recusas autenticadas, falhas
   de handoff/retorno e os fallbacks MBR/BPB foram validados; a EP9.4B atende ao
   criterio de saida.
+
+- EP9.4C: reinicio controlado pelo System Updater formalizado no roadmap.
+  Planejada em: 2026-08-26 16:53 (America/Sao_Paulo).
+  A subetapa foi definida para oferecer reinicio imediato ou posterior no
+  Updater Classic depois da publicacao confirmada do pendente. O reinicio
+  imediato exige confirmacao explicita e releitura do estado redundante; nao
+  promove slots nem altera os contratos de boot. Falhas preservam o candidato,
+  e o comando `reboot` continua disponivel como fluxo separado.
