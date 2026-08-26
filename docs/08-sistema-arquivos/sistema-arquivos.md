@@ -157,6 +157,9 @@ O alias final so e substituido depois que o tamanho completo foi persistido.
 Os wrappers `storage_slot_writer_*` preservam `ZSTG.ZSY` e a API usada pelos
 slots ZSYS. O cache EP9.3 usa o mesmo mecanismo com `ZSCT.ZSY`, sem reservar o
 pacote inteiro em RAM.
+Quando o destino da renomeacao transacional e um nome 8.3 valido, a entrada
+publicada usa exatamente esse alias final. Consumidores pre-kernel encontram
+`ZSA0.ZSY`, `ZSB0.ZSY` e os controles fixos sem depender do alias temporario.
 
 ### Fixtures e verificacao
 

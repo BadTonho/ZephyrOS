@@ -3458,7 +3458,10 @@ int storage_rename_file(const char* id, const char* path,
         result = ERR_INVALID;
         goto rename_done;
     }
-    result = storage_name_to_fat(old_entry.short_name, alias);
+    result = storage_name_to_fat(new_name, alias);
+    if (result != OK) {
+        result = storage_name_to_fat(old_entry.short_name, alias);
+    }
     if (result != OK) goto rename_done;
     result = storage_utf8_to_utf16(new_name, units, STORAGE_LONG_NAME_SIZE,
                                    &unit_count);
