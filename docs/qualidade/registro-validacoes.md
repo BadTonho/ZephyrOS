@@ -1089,3 +1089,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   cinco minutos, com o Shell bloqueado e entradas ignoradas. A validacao da
   aplicacao permanece pendente; investigar o tempo de escrita FAT32 e publicar
   progresso observavel antes de considerar o fluxo concluido.
+
+- EP9.3: progresso observado apos a escrita do candidato.
+  Registrado em: 2026-08-26 11:22 (America/Sao_Paulo).
+  O job avancou para `Reconstrucao cooperativa do indice iniciada`, confirmando
+  que a operacao nao estava parada; a lentidao permanece como pendencia de
+  desempenho.
