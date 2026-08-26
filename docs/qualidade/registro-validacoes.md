@@ -1055,3 +1055,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   Em `MENU_FAILED_VALID`, sem F8, o menu expirou e iniciou o anterior A. O
   estado persistido permaneceu com `ativo=A`, `tentativa=B`, `boot=FAILED` e
   `motivo=BOOT_FAILED`, preservando B para diagnostico ou retry explicito.
+- Cancelamento e retry manual da EP9.2B validados.
+  Concluida em: 2026-08-26 10:07 (America/Sao_Paulo).
+  Na mesma fixture, o usuario cancelou a confirmacao com Esc sem escrita e
+  depois confirmou o retry de B. O sistema iniciou B e exibiu `ativo=B`,
+  `pendente=NONE`, `tentativa=NONE`, `boot=NONE`, `motivo=NONE` e sequencia 6.
