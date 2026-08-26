@@ -870,9 +870,9 @@ As entregas de recuperacao da EP9.2 ficam divididas em duas subetapas:
   expor a memoria baixa a processos de usuario.
 - [x] Gerar as fixtures executaveis da matriz A/B com o kernel completo no
   FAT32; as fixtures compactas de parser nao podem ser usadas para boot.
-- [ ] Executar a matriz QEMU EP9.2A: ativo, pendente confirmado, hashes e
+- [x] Executar a matriz QEMU EP9.2A: ativo, pendente confirmado, hashes e
   assinatura invalidos, estado/journal corrompido, tentativa interrompida e
-  FAT32 ausente. Os gates de compilacao e esta matriz aguardam o usuario.
+  FAT32 ausente. Os dez casos foram validados pelo usuario.
 
 #### EP9.2B - Menu pre-kernel e recuperacao interativa
 
@@ -884,16 +884,16 @@ As entregas de recuperacao da EP9.2 ficam divididas em duas subetapas:
 - [ ] Cobrir interrupcao antes do acknowledge, rollback, estado corrompido,
   assinatura/hash invalidos e ausencia do volume FAT32.
 
-- [~] Base de confirmação do kernel implementada: estado v2 compatível com v1,
-  handoff reservado e confirmação vinculada ao registro persistido. O loader
-  FAT32/Ed25519 e o menu pré-kernel ainda pertencem à implementação desta etapa.
-- [ ] Alterar o contrato de boot/stage2 somente depois de aprovacao explicita,
-  para selecionar o slot pendente e validar sua assinatura/hash antes de
-  transferir o controle ao kernel.
-- [ ] Registrar tentativa de boot, sucesso confirmado pelo kernel e falha de
-  inicializacao; uma tentativa interrompida deve voltar ao slot anterior.
-- [ ] Manter uma via de recuperacao que funcione sem rede e sem depender do
-  kernel novo, incluindo diagnostico do slot ativo, pendente e anterior.
+- [~] EP9.2 parcialmente concluida: estado v2, handoff, confirmacao, loader
+  FAT32/Ed25519 e rollback automatico foram entregues na EP9.2A; menu,
+  inspecao interativa, F8 e retry manual permanecem na EP9.2B.
+- [x] Preservar `boot.asm` e ajustar o `stage2`, com autorizacao explicita,
+  para carregar o loader que seleciona e autentica o slot antes do kernel.
+- [x] Registrar tentativa de boot, sucesso confirmado pelo kernel e falha de
+  inicializacao; uma tentativa interrompida volta ao slot anterior.
+- [~] Manter recuperacao independente de rede e do kernel candidato: o
+  fallback legado autenticado foi entregue; a inspecao interativa de slots
+  permanece na EP9.2B.
 
 ### EP9.3 - Comandos e validacao
 

@@ -992,3 +992,16 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   limpos, slot A `VALID` e slot B `EMPTY`. Uma entrada recebida durante o job
   cooperativo foi ignorada conforme a politica do Shell e nao invalidou o
   caso.
+- Fallback sem volume FAT32 validado.
+  Concluida em: 2026-08-25 23:20 (America/Sao_Paulo).
+  `NO_VOLUME.img` iniciou somente o kernel legado autenticado. O comando
+  `update system slots` registrou `DEGRADED`, sequencia zero, ativo, pendente,
+  anterior e tentativa `NONE`, boot e motivo `NONE`, journal e recovery
+  limpos, espaco livre zero e os slots A e B como `EMPTY`.
+- Matriz QEMU e EP9.2A concluidas.
+  Concluida em: 2026-08-25 23:20 (America/Sao_Paulo).
+  O usuario validou os dez casos previstos: A ativo autenticado, B pendente
+  confirmado, assinatura invalida, hash de imagem invalido, hash de componente
+  invalido, tentativa interrompida, uma ou duas copias de estado corrompidas,
+  journal `PREPARED` e volume FAT32 ausente. O `boot.asm` permaneceu
+  inalterado; menu, F8 e retry manual continuam exclusivos da EP9.2B.
