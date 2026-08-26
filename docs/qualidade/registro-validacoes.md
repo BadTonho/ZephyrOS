@@ -958,3 +958,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `BOOT_FAILED`, sequencia de tentativa 1, journal e recovery limpos e os
   slots A e B preservados como `VALID`. O descarte observado na fila de
   eventos do mouse permanece externo ao fluxo EP9.2A e nao invalidou o caso.
+- Tolerancia a uma copia de estado corrompida validada.
+  Concluida em: 2026-08-25 23:04 (America/Sao_Paulo).
+  `STATE_ONE_BAD.img` iniciou A autenticado usando a unica copia valida do
+  controle redundante. O comando `update system slots` registrou `READY`,
+  sequencia 1, ativo A, pendente `NONE`, anterior A, tentativa `NONE`, boot e
+  motivo `NONE`, journal e recovery limpos, slot A `VALID` e slot B `EMPTY`.
