@@ -263,6 +263,33 @@ A EP9.2B somente pode ser marcada validada depois de confirmar todos esses
 fluxos, incluindo ausencia de payload nao autenticado, retry automatico ou
 alteracao persistente durante boot one-shot/cancelamento.
 
+## EP9.3: fluxo ZSYS em uma matriz guiada
+
+Depois da implementacao, executar apenas estes comandos, uma vez para a mesma
+revisao:
+
+```text
+make q3check
+make clean && make
+make run-system-update-matrix
+```
+
+O ultimo alvo regenera as fixtures e abre `SYSTEM_UPDATE_GUIDED.img` com disco
+temporario `-snapshot` e monitor QEMU no mesmo terminal. A imagem ja contem um
+cache ZSYS autenticado; use `update system status`, `update system verify
+--cached`, `update system apply`, `update system apply --confirm`, `update
+system cancel` e `update system cancel --confirm`. `apply --confirm` deve
+publicar somente o pendente e solicitar `reboot`; `cancel --confirm` deve
+preservar os arquivos dos slots.
+
+O monitor permite salvar e restaurar o ponto inicial dentro da mesma execucao
+com `savevm ep93` e `loadvm ep93`, evitando regenerar imagens ou repetir a
+senha da chave. O preflight remoto e o fetch usam a tag exata publicada na
+Release v2 configurada; nao inventar outra tag nem repetir a matriz local para
+cada fixture. As imagens `SYSTEM_CACHE_ONE_BAD`, `SYSTEM_CACHE_BOTH_BAD` e
+`SYSTEM_CACHE_INTERRUPTED` ficam reservadas para diagnostico dirigido quando
+o caso guiado apontar divergencia.
+
 ## Comandos no Shell
 
 Para orientar comandos do sistema, consultar primeiro `comandos.md` e os

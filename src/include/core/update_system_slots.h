@@ -125,6 +125,7 @@ typedef struct {
     update_version_t target_version;
     uint32_t target_epoch;
     uint8_t pending_published;
+    uint8_t pending_cancelled;
     uint8_t recovery_pending;
 } update_system_slots_action_result_t;
 
@@ -133,6 +134,9 @@ int update_system_slots_is_ready(void);
 int update_system_slots_get_status(update_system_slots_status_t* status_out);
 int update_system_slots_stage_file(
     const char* path,
+    const update_system_slots_action_options_t* options,
+    update_system_slots_action_result_t* result_out);
+int update_system_slots_cancel_pending(
     const update_system_slots_action_options_t* options,
     update_system_slots_action_result_t* result_out);
 int update_system_slots_boot_confirm(void);

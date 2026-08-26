@@ -142,6 +142,28 @@ typedef struct {
     uint8_t compatible;
 } update_system_verification_t;
 
+typedef struct {
+    uint32_t package_size;
+    uint8_t package_hash[32];
+    char tag[UPDATE_REMOTE_TAG_SIZE];
+    char release_id[UPDATE_REMOTE_RELEASE_ID_SIZE];
+} update_system_remote_asset_t;
+
+typedef int (*update_system_transfer_begin_t)(
+    const update_system_remote_asset_t* asset, void* context);
+typedef int (*update_system_transfer_write_t)(
+    const uint8_t* data, uint32_t size, void* context);
+typedef int (*update_system_transfer_finish_t)(void* context);
+typedef void (*update_system_transfer_abort_t)(void* context);
+
+typedef struct {
+    update_system_transfer_begin_t begin;
+    update_system_transfer_write_t write;
+    update_system_transfer_finish_t finish;
+    update_system_transfer_abort_t abort;
+    void* context;
+} update_system_transfer_t;
+
 int update_system_init(void);
 int update_system_is_ready(void);
 int update_system_verify_file(const char* path,
@@ -151,6 +173,11 @@ int update_system_verify_file_for_slot(
 int update_system_check_tag(const char* tag,
                             const update_remote_options_t* options,
                             update_system_verification_t* result_out);
+int update_system_transfer_tag(
+    const char* tag, const update_remote_options_t* options,
+    const update_system_transfer_t* transfer,
+    update_system_verification_t* result_out,
+    update_system_remote_asset_t* asset_out);
 const char* update_system_reason_name(update_system_reason_t reason);
 
 #endif

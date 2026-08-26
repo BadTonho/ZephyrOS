@@ -71,6 +71,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/core/update_system.h` | `docs/14-atualizacoes/contrato-zsys-v1.md` |
 | `src/include/core/update_system_slots.h` | `docs/14-atualizacoes/contrato-zsys-v1.md` |
 | `src/include/core/update_remote.h` | `docs/14-atualizacoes/distribuicao-remota.md` |
+| `src/include/core/update_remote_system.h` | `docs/14-atualizacoes/contrato-zsys-v1.md` |
 | `src/include/core/update_remote_runtime.h` | `docs/14-atualizacoes/contrato-zupd-v2.md` |
 | `src/include/core/update_remote_config.h` | `docs/14-atualizacoes/distribuicao-remota.md` |
 | `src/include/core/update_remote_github.h` | `docs/14-atualizacoes/contrato-zupd-v2.md` |
@@ -417,3 +418,11 @@ seleciona `ZSI*.STA`, grava tentativa/rollback in-place na copia redundante ja
 prealocada e autentica o ZSYS em streaming antes de executar o kernel. Nao ha
 API publica nova de Shell; `update_system_slots_boot_confirm()` e `ZSBH`
 permanecem o contrato entre loader e kernel. `boot.asm` continua inalterado.
+
+Desde a EP9.3, `update_remote_system.h` define cache remoto ZSYS A/B, status,
+motivos, fetch confirmado, limpeza e resolução do pacote publicado.
+`update_system.h` acrescenta transferência autenticada por callbacks;
+`update_system_slots.h` acrescenta cancelamento confirmado do pendente; e
+`storage.h` generaliza o escritor FAT32 transacional preservando os wrappers
+de slot. Os contratos canônicos permanecem no contrato ZSYS e na documentação
+do filesystem.

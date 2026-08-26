@@ -1072,3 +1072,13 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   de falha, o cancelamento/retry e a ausencia de controle ja confirmados, a
   matriz funcional especifica da EP9.2B foi concluida pelo usuario. O
   `boot.asm` permaneceu inalterado.
+- EP9.3 implementada e entregue para validacao.
+  Concluida em: 2026-08-26 10:42 (America/Sao_Paulo).
+  Foram adicionados cache remoto ZSYS A/B no FAT32, transferencia autenticada
+  em streaming, releitura final, aplicacao pelo staging existente,
+  cancelamento confirmado do pendente e comandos `status`, `fetch`,
+  `verify --cached`, `apply` e `cancel`. O escritor FAT32 incremental foi
+  generalizado mantendo os wrappers dos slots. A matriz ganhou cache valido,
+  uma ou duas copias corrompidas, transferencia interrompida e uma imagem
+  guiada unica com snapshot QEMU. `boot.asm`, `stage2` e o recovery loader nao
+  foram alterados. Gates e QEMU aguardam execucao do usuario.

@@ -167,9 +167,9 @@ No Shell:
 preflight completo sem gravar; com `--confirm`, repete a validação, copia o
 envelope local para o slot inativo, verifica tamanho/hash/assinatura e publica
 o slot como pendente. O comando aceita somente arquivos locais no volume
-`system:/`; download, aplicação, cancelamento de slot pendente e reboot ficam
-reservados para EP9.3. A verificação local usa leitura em streaming e não
-aloca a imagem inteira.
+`system:/`; a EP9.3 acrescenta download, aplicação e cancelamento sem remover
+esse caminho local. A verificação usa leitura em streaming e não aloca a
+imagem inteira.
 
 ### Fixture local no FAT32
 
@@ -321,3 +321,33 @@ o controle persistente continua seguro. Falha de escrita ou releitura,
 sequencia esgotada ou divergencia entre controles restringe a sessao ao kernel
 legado autenticado. O loader continua sem criar, realocar ou remover arquivos
 FAT32 e nenhum caminho interativo autoriza um payload nao autenticado.
+
+### EP9.3 - Cache, aplicacao e cancelamento
+
+O cache remoto ZSYS e independente dos caches ZUPD v1 e runtime v2. Ele usa
+`ZSC0.ZSY`/`ZSC1.ZSY` para pacotes, `ZSC0.STA`/`ZSC1.STA` para controles de
+512 bytes e `ZSCT.ZSY` como nome temporario transacional. Cada controle v1
+inclui sequencia, copia ativa, tamanho e SHA-256 do pacote, versao, epoch, tag,
+release ID, alias e SHA-256 do proprio registro. A copia valida de maior
+sequencia vence; duas copias invalidas deixam somente o cache degradado.
+
+O download escreve no cache inativo em blocos limitados. A Release v2, o
+asset, Ed25519, imagem e componentes sao validados durante a transferencia; o
+arquivo publicado e reaberto e verificado novamente antes do commit do
+controle. Cancelamento, falta de espaco, I/O ou queda de energia preservam o
+cache ativo anterior. O temporario orfao e ignorado e removido na proxima
+inicializacao.
+
+Os comandos publicos sao `update system status`, `check --tag`, `fetch --tag
+[--confirm]`, `verify <arquivo>|--cached`, `apply [--confirm]`, `cancel
+[--confirm]`, `slots` e o diagnostico local compativel `stage`. Fetch sem
+confirmacao faz somente preflight; fetch confirmado publica apenas o cache.
+Apply revalida o cache e reutiliza a transacao dos slots para marcar o slot
+inativo como pendente. A ativacao nunca e imediata: o usuario executa `reboot`
+separadamente.
+
+Cancel sem confirmacao nao grava. A operacao confirmada recusa journal,
+tentativa em andamento, estado divergente ou sequencia esgotada; depois limpa
+o pendente com releitura confirmada e somente entao despublica o cache. O
+arquivo do slot candidato nunca e removido. Estado `FAILED` e seus metadados
+permanecem disponiveis para diagnostico e retry pelo menu pre-kernel.

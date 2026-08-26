@@ -491,6 +491,13 @@ Os comandos somente leitura são:
 Não há download para cache, staging, aplicação, reboot automático, slots,
 rollback pós-reboot ou escrita de setores crus na EP9.0A.
 
+Na EP9.3, o canal `system` continua usando a Release GitHub v2 e o asset
+`system.zsys`, mas publica em cache FAT32 proprio `ZSC`, separado de `ZUR` e
+`ZRV`. O download confirmado autentica em streaming e nunca instala. Aplicar
+revalida o cache e publica somente um slot pendente; ativacao exige o comando
+`reboot`. F12/Esc cancela a operacao corrente preservando o cache anteriormente
+confirmado.
+
 ## Limites de seguranca
 
 Ed25519 e SHA-256 protegem autenticidade e integridade mesmo sobre HTTP.

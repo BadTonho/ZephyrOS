@@ -19,6 +19,7 @@
 #include "core/update.h"
 #include "core/update_system.h"
 #include "core/update_system_slots.h"
+#include "core/update_remote_system.h"
 #include "core/update_remote.h"
 #include "core/version.h"
 #include "core/syscall.h"
@@ -859,6 +860,13 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
                 RECOVERY_COMPONENT_UPDATE, boot_confirm_result,
                 "Confirmacao do slot de boot falhou");
             LOG_ERROR("KERNEL", "Falha ao confirmar tentativa ZSYS no boot");
+        }
+    }
+
+    if (update_system_result == OK) {
+        int system_cache_result = update_remote_system_init();
+        if (system_cache_result != OK) {
+            LOG_WARN("KERNEL", "Cache remoto ZSYS iniciou degradado");
         }
     }
 

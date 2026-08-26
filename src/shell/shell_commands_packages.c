@@ -58,6 +58,7 @@
 #include "core/update.h"
 #include "core/update_system.h"
 #include "core/update_system_slots.h"
+#include "core/update_remote_system.h"
 #include "core/update_remote.h"
 #include "core/update_remote_runtime.h"
 #include "core/update_remote_config.h"
@@ -246,6 +247,8 @@ typedef struct {
     update_runtime_cache_t runtime_cache;
     update_system_verification_t system_verification;
     update_system_slots_status_t system_slots_status;
+    update_remote_system_status_t system_remote_status;
+    update_remote_system_result_t system_remote_result;
 } shell_update_workspace_t;
 
 typedef struct {
@@ -1110,13 +1113,164 @@ static void cmd_update_system_print_result(int operation_result) {
                 verification->compatibility.requires_reboot ? 0x0A : 0x0C);
 }
 
+static void cmd_update_system_slots(void);
+
 static void cmd_update_system_verify(const char* path) {
+    char cached_path[FS_MAX_PATH];
     int result;
 
+    if (kstrcmp(path, "--cached") == 0) {
+        result = update_remote_system_get_cached_path(
+            cached_path, sizeof(cached_path));
+        if (result != OK) {
+            LOG_ERROR("SHELL", "Cache ZSYS ausente para verificacao");
+            video_print("Cache ZSYS ausente ou invalido.\n", 0x0C);
+            return;
+        }
+        path = cached_path;
+    }
     result = update_system_verify_file(
         path, &shell_update_workspace.system_verification);
     cmd_update_system_print_result(result);
     video_print("Nenhuma gravacao foi realizada.\n", result == OK ? 0x0A : 0x0C);
+}
+
+static void cmd_update_system_status(void) {
+    update_remote_system_status_t* status =
+        &shell_update_workspace.system_remote_status;
+    int result = update_remote_system_get_status(status);
+
+    video_print("Cache ZSYS: ", 0x07);
+    if (result != OK) {
+        video_print("UNAVAILABLE\n", 0x0C);
+    } else {
+        video_print(update_remote_system_state_name(status->state),
+                    status->state == UPDATE_REMOTE_SYSTEM_STATE_READY ?
+                    0x0A : 0x0E);
+        video_print(" motivo=", 0x08);
+        video_print(update_remote_system_reason_name(status->reason), 0x07);
+        video_print(" seq=", 0x08);
+        shell_command_print_num(status->sequence);
+        video_print(" copia=", 0x08);
+        video_print(status->cache_slot == 0U ? "A" :
+                    status->cache_slot == 1U ? "B" : "NONE", 0x07);
+        video_print(" controles=", 0x08);
+        shell_command_print_num(status->copies_valid);
+        video_print("\n", 0x07);
+        if (status->cache_slot < UPDATE_REMOTE_SYSTEM_CACHE_COUNT) {
+            video_print("  Tag: ", 0x07);
+            video_print(status->tag, 0x0B);
+            video_print(" release=", 0x08);
+            video_print(status->release_id, 0x07);
+            video_print(" arquivo=", 0x08);
+            video_print(status->cached_alias, 0x07);
+            video_print("\n", 0x07);
+            cmd_update_print_version("  Alvo: ", &status->version,
+                                     status->epoch);
+            video_print("  Tamanho: ", 0x07);
+            shell_command_print_num(status->package_size);
+            video_print(" bytes progresso=", 0x08);
+            shell_command_print_num(status->bytes_received);
+            video_print("/", 0x08);
+            shell_command_print_num(status->total_bytes);
+            video_print("\n", 0x07);
+        }
+    }
+    cmd_update_system_slots();
+}
+
+static void cmd_update_system_fetch(const char* tag, int confirmed) {
+    update_remote_options_t* options = &shell_update_workspace.remote_options;
+    update_remote_system_result_t* operation =
+        &shell_update_workspace.system_remote_result;
+    int result;
+
+    kmemset(options, 0, sizeof(*options));
+    options->dry_run = confirmed ? 0U : 1U;
+    options->cancel_check = cmd_update_cancel_check;
+    result = update_remote_system_fetch(tag, options, operation);
+    shell_update_workspace.system_verification = operation->verification;
+    cmd_update_system_print_result(result);
+    if (result != OK) {
+        video_print("Cache ZSYS: ", 0x0C);
+        video_print(update_remote_system_reason_name(operation->reason), 0x0C);
+        video_print(operation->cache_preserved ? "; anterior preservado.\n" :
+                    ".\n", 0x0C);
+        return;
+    }
+    if (!confirmed) {
+        video_print("Preflight aprovado; nenhum cache foi alterado.\n", 0x0A);
+    } else {
+        video_print("Cache ZSYS publicado. Nenhum slot foi alterado.\n", 0x0A);
+    }
+}
+
+static void cmd_update_system_apply(int confirmed) {
+    update_system_slots_action_options_t options;
+    update_system_slots_action_result_t action;
+    char path[FS_MAX_PATH];
+    int result;
+
+    result = update_remote_system_get_cached_path(path, sizeof(path));
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Aplicacao ZSYS solicitada sem cache valido");
+        video_print("Cache ZSYS ausente ou invalido.\n", 0x0C);
+        return;
+    }
+    kmemset(&options, 0, sizeof(options));
+    options.dry_run = confirmed ? 0U : 1U;
+    options.cancel_check = cmd_update_cancel_check;
+    result = update_system_slots_stage_file(path, &options, &action);
+    video_print(confirmed ? "Aplicacao ZSYS: " : "Preflight ZSYS: ", 0x07);
+    video_print(update_system_slots_reason_name(action.reason),
+                result == OK ? 0x0A : 0x0C);
+    video_print("\n", 0x07);
+    if (result != OK) return;
+    if (!confirmed) {
+        video_print("Nenhuma gravacao foi realizada. Use update system apply --confirm.\n",
+                    0x0A);
+    } else {
+        video_print("Slot pendente publicado. Execute reboot para ativar.\n",
+                    0x0A);
+    }
+}
+
+static void cmd_update_system_cancel(int confirmed) {
+    update_system_slots_action_options_t slot_options;
+    update_system_slots_action_result_t slot_action;
+    update_remote_options_t cache_options;
+    update_remote_system_result_t* cache_result =
+        &shell_update_workspace.system_remote_result;
+    int result;
+
+    kmemset(&slot_options, 0, sizeof(slot_options));
+    slot_options.dry_run = confirmed ? 0U : 1U;
+    slot_options.cancel_check = cmd_update_cancel_check;
+    result = update_system_slots_cancel_pending(&slot_options, &slot_action);
+    if (result != OK) {
+        video_print("Cancelamento ZSYS recusado: ", 0x0C);
+        video_print(update_system_slots_reason_name(slot_action.reason), 0x0C);
+        video_print(". Cache preservado.\n", 0x0C);
+        return;
+    }
+    kmemset(&cache_options, 0, sizeof(cache_options));
+    cache_options.dry_run = confirmed ? 0U : 1U;
+    cache_options.cancel_check = cmd_update_cancel_check;
+    result = update_remote_system_clear(&cache_options, cache_result);
+    if (result != OK) {
+        video_print("Slot seguro, mas limpeza do cache falhou: ", 0x0C);
+        video_print(update_remote_system_reason_name(cache_result->reason),
+                    0x0C);
+        video_print(".\n", 0x0C);
+        return;
+    }
+    if (!confirmed) {
+        video_print("Cancelamento aprovado sem gravacao. Use update system cancel --confirm.\n",
+                    0x0A);
+    } else {
+        video_print("Pendente cancelado e cache ZSYS removido; slots preservados.\n",
+                    0x0A);
+    }
 }
 
 static void cmd_update_system_check(const char* tag) {
@@ -1237,9 +1391,37 @@ static void cmd_update_system(const char* args) {
     cmd_pkg_take_token(&cursor, second, sizeof(second));
     cmd_pkg_take_token(&cursor, third, sizeof(third));
     if (kstrcmp(operation, "system") == 0 &&
+        kstrcmp(command, "status") == 0 && !first[0] && !second[0] &&
+        !third[0] && !cmd_pkg_has_trailing_token(cursor)) {
+        cmd_update_system_status();
+        return;
+    }
+    if (kstrcmp(operation, "system") == 0 &&
         kstrcmp(command, "verify") == 0 && first[0] && !second[0] &&
         !third[0] && !cmd_pkg_has_trailing_token(cursor)) {
         cmd_update_system_verify(first);
+        return;
+    }
+    if (kstrcmp(operation, "system") == 0 &&
+        kstrcmp(command, "fetch") == 0 &&
+        kstrcmp(first, "--tag") == 0 && second[0] &&
+        (!third[0] || kstrcmp(third, "--confirm") == 0) &&
+        !cmd_pkg_has_trailing_token(cursor)) {
+        cmd_update_system_fetch(second, third[0] != '\0');
+        return;
+    }
+    if (kstrcmp(operation, "system") == 0 &&
+        kstrcmp(command, "apply") == 0 &&
+        (!first[0] || kstrcmp(first, "--confirm") == 0) && !second[0] &&
+        !third[0] && !cmd_pkg_has_trailing_token(cursor)) {
+        cmd_update_system_apply(first[0] != '\0');
+        return;
+    }
+    if (kstrcmp(operation, "system") == 0 &&
+        kstrcmp(command, "cancel") == 0 &&
+        (!first[0] || kstrcmp(first, "--confirm") == 0) && !second[0] &&
+        !third[0] && !cmd_pkg_has_trailing_token(cursor)) {
+        cmd_update_system_cancel(first[0] != '\0');
         return;
     }
     if (kstrcmp(operation, "system") == 0 &&
@@ -1263,8 +1445,12 @@ static void cmd_update_system(const char* args) {
         return;
     }
     LOG_WARN("SHELL", "Uso invalido do comando update system");
-    video_print("Uso: update system verify system:/<arquivo.ZSYS>\n", 0x0E);
+    video_print("Uso: update system status\n", 0x0E);
+    video_print("     update system verify system:/<arquivo.ZSYS>|--cached\n", 0x0E);
     video_print("     update system check --tag <tag>\n", 0x0E);
+    video_print("     update system fetch --tag <tag> [--confirm]\n", 0x0E);
+    video_print("     update system apply [--confirm]\n", 0x0E);
+    video_print("     update system cancel [--confirm]\n", 0x0E);
     video_print("     update system slots\n", 0x0E);
     video_print("     update system stage system:/<arquivo.ZSYS> [--confirm]\n",
                 0x0E);
@@ -1540,10 +1726,7 @@ static void cmd_update(const char* args) {
     video_print("     update github fetch --tag <tag> [--confirm]\n", 0x0E);
     video_print("     update runtime status|check|fetch|verify|apply|rollback|clear\n",
                 0x0E);
-    video_print("     update system verify system:/<arquivo.ZSYS>\n", 0x0E);
-    video_print("     update system check --tag <tag>\n", 0x0E);
-    video_print("     update system slots\n", 0x0E);
-    video_print("     update system stage system:/<arquivo.ZSYS> [--confirm]\n",
+    video_print("     update system status|check|fetch|verify|apply|cancel|slots\n",
                 0x0E);
     video_print("     update test fail-after <1-3>\n", 0x0E);
 }
