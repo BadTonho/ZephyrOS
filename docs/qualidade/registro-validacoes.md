@@ -950,3 +950,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `BOOT_FAILED`, sequencia de tentativa 1, journal e recovery limpos, slot A
   `VALID` e slot B preservado como `INVALID`. O descarte observado na fila de
   eventos do mouse permanece externo ao fluxo EP9.2A e nao invalidou o caso.
+- Rollback de tentativa interrompida validado.
+  Concluida em: 2026-08-25 23:01 (America/Sao_Paulo).
+  `BOOT_ATTEMPT_INTERRUPTED.img` iniciou somente o kernel legado autenticado.
+  O comando `update system slots` registrou `READY`, sequencia 4, ativo A,
+  pendente `NONE`, anterior A, tentativa B, boot `FAILED`, motivo
+  `BOOT_FAILED`, sequencia de tentativa 1, journal e recovery limpos e os
+  slots A e B preservados como `VALID`. O descarte observado na fila de
+  eventos do mouse permanece externo ao fluxo EP9.2A e nao invalidou o caso.
