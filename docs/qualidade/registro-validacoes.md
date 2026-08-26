@@ -968,5 +968,6 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   Concluida em: 2026-08-25 23:06 (America/Sao_Paulo).
   `STATE_BOTH_BAD.img` iniciou somente o kernel legado autenticado. O comando
   `update system slots` registrou `DEGRADED`, sequencia zero, ativo, pendente,
-  anterior, tentativa, boot e motivo `NONE`, journal e recovery limpos e os
-  slots A e B como `EMPTY`, sem promover metadados nao confiaveis.
+  anterior, boot e motivo `NONE`, tentativa exibida como A com sequencia zero,
+  journal e recovery limpos e os slots A e B como `EMPTY`, sem promover
+  metadados nao confiaveis.
