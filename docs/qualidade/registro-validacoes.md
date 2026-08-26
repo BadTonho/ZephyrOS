@@ -1194,3 +1194,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   continuacao de boot retornou deliberadamente. O verifier limpou os handoffs,
   recusou a tentativa e voltou ao slot A. B permaneceu `VALID`, sem pendente,
   com tentativa `FAILED` e motivo `BOOT_FAILED`, sem ciclo automatico.
+
+- EP9.4B: fallback legado com MBR FAT32 indisponivel validado.
+  Validada em: 2026-08-26 16:44 (America/Sao_Paulo).
+  Na overlay descartavel da matriz, a entrada de particao do MBR foi zerada e
+  a maquina reiniciada. O recovery exibiu `FAT32 INDISPONIVEL`, restringiu o
+  menu ao kernel legado e, apos o timeout de dez segundos, iniciou o ZephyrOS
+  normalmente pela raiz fixa autenticada.
