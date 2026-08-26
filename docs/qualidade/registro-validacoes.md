@@ -1246,3 +1246,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   passou a consolidar essas solicitacoes e executar a recomposicao em seu ciclo
   periodico, preservando a interface Classic durante e depois do job. A
   validacao no QEMU aguarda a nova execucao pelo usuario.
+
+- EP9.4C: estouro da pilha do worker de verificacao ZSYS corrigido.
+  Concluida em: 2026-08-26 17:56 (America/Sao_Paulo).
+  O redesenho adiado tornou observavel o panic de canario que estava oculto
+  pela tela preta. O `Updater Worker` usava a pilha nativa padrao de 4 KiB no
+  caminho combinado FAT32, SHA-256 e Ed25519. O worker passou a usar 16 KiB,
+  mesmo limite ja empregado pelos processos principais, sem alterar outras
+  pilhas. A validacao no QEMU aguarda a nova execucao pelo usuario.

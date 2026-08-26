@@ -124,6 +124,11 @@ rollback exibem geracao, progresso e deadline; cancelamento espera o ponto
 seguro da etapa atomica e drena journal/recovery antes de publicar o estado
 final. Os wrappers publicos de `update.h` permanecem compatíveis.
 
+A pilha privada do worker possui 16 KiB para comportar os caminhos combinados
+de FAT32, SHA-256 e Ed25519 usados pela verificacao ZSYS. O tamanho permanece
+dentro do limite publico dos processos nativos e nao altera as pilhas dos
+demais aplicativos.
+
 ## Limitacoes
 
 - apenas arquivos `.ZUP` presentes na raiz podem ser selecionados;
