@@ -977,3 +977,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   A carga sem qualquer copia de estado valida agora inicializa slot anterior e
   slot em tentativa com `UPDATE_SYSTEM_SLOT_NONE`, coerente com o estado de
   boot `NONE` e com o contrato publico. A validacao QEMU aguarda o usuario.
+- Sentinelas do estado ZSYS ausente revalidados.
+  Concluida em: 2026-08-25 23:14 (America/Sao_Paulo).
+  A repeticao de `STATE_BOTH_BAD.img` registrou `DEGRADED`, sequencia zero,
+  ativo, pendente, anterior e tentativa `NONE`, boot e motivo `NONE`, journal
+  e recovery limpos e os slots A e B como `EMPTY`. O fallback legado e a
+  representacao publica sem indice de slot espurio ficaram validados.
