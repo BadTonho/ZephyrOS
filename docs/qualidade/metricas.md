@@ -20,8 +20,8 @@ mudanca; nao crie uma entrada artificial.
 
 ### 2026-08-26 - EP9.4B, publicacao FAT32 da imagem de 256 MiB
 
-- Cenario host: construcao da imagem padrao e publicacao dos arquivos fixos do
-  sistema no volume FAT32.
+- Cenario QEMU: preparacao host da imagem usada pela matriz QEMU, incluindo a
+  publicacao dos arquivos fixos no volume FAT32 antes da inicializacao.
 - Metrica observavel: quantidade de ciclos completos de leitura e regravacao
   da imagem durante a injecao dos arquivos.
 - Antes: 26 ciclos completos, um para cada invocacao individual do injetor.
