@@ -738,9 +738,9 @@ repositorio.
 
 ## EP9 - Atualizacao da imagem do sistema e slots de boot
 
-**Estado:** EP9.0A, EP9.1, EP9.2A, EP9.2B e EP9.4A implementadas e validadas
-pelo usuário. A EP9.3 esta implementada e aguarda validacao dos fluxos
-pós-kernel de cache, aplicacao e cancelamento.
+**Estado:** EP9.0A, EP9.1, EP9.2A, EP9.2B, EP9.3, EP9.4A e EP9.4B
+implementadas e validadas pelo usuario. A EP9.4C e a proxima subetapa
+planejada.
 
 Esta fase separa a atualizacao de arquivos do sistema em execucao da
 atualizacao da imagem que o proximo boot carregara. O ZUPD v1 continua limitado
@@ -960,6 +960,44 @@ dessas migracoes sem substituir a raiz fixa de recuperacao.
   `make run-ep94b-matrix`.
 - [x] Validar no host e no QEMU geometria, ABI 1, ABI 2, promocao, rollback,
   componentes adulterados, FAT32 ausente e fallback legado.
+
+### EP9.4C - Reinicio controlado pelo System Updater
+
+**Estado:** planejada.
+
+Esta subetapa integra a ativacao ao System Updater Classic sem transformar o
+reboot em efeito implicito da aplicacao. Depois de publicar e reler um slot
+pendente, a interface oferece reinicio imediato ou posterior; somente uma
+confirmacao explicita do usuario pode iniciar o reboot.
+
+- [ ] Exibir no System Updater Classic as opcoes `Reiniciar agora` e
+  `Reiniciar depois` somente depois que a aplicacao confirmar um slot
+  pendente persistido e integro.
+- [ ] Exigir uma confirmacao final para `Reiniciar agora`, sem timeout,
+  contagem regressiva ou selecao automatica da opcao destrutiva.
+- [ ] Antes do reboot, reler o estado redundante e recusar a operacao quando
+  nao houver pendente, houver journal, tentativa em andamento, divergencia ou
+  falha de I/O.
+- [ ] Reutilizar o caminho de reboot ja existente sem promover slots, limpar
+  tentativas ou alterar `ZSBH`; a promocao continua exclusiva do acknowledge
+  do kernel depois do boot autenticado.
+- [ ] Em falha ao solicitar o reboot, retornar ao Updater com diagnostico e
+  preservar integralmente o slot pendente para nova tentativa ou cancelamento.
+- [ ] Manter o comando `reboot` como alternativa separada e preservar os
+  comandos `update system status`, `slots`, `cancel` e `apply` sem mudanca de
+  semantica.
+- [ ] Nao modificar `boot.asm`, o shim fixo, o recovery verifier, o formato
+  ZSYS, o estado v2 dos slots ou os handoffs existentes.
+- [ ] Validar em uma unica sessao QEMU guiada: reiniciar depois, cancelamento
+  da confirmacao, estado alterado antes do reboot, falha da solicitacao,
+  reinicio confirmado, promocao ABI 2 e rollback antes do acknowledge.
+
+### Criterio de saida da EP9.4C
+
+O Updater pode conduzir o usuario da aplicacao ate o reboot sem comandos
+adicionais, mas nenhuma maquina reinicia sem confirmacao explicita. Qualquer
+falha anterior ao reboot preserva o pendente; qualquer falha posterior segue
+a politica A/B autenticada, com confirmacao pelo kernel ou rollback.
 
 ### Criterio de saida
 
