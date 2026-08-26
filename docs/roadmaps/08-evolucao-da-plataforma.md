@@ -915,10 +915,11 @@ As entregas de recuperacao da EP9.2 ficam divididas em duas subetapas:
   corrompidas, transferencia interrompida, staging, tentativa, confirmacao e
   rollback, reutilizando a matriz ZSYS para assinatura, hashes,
   incompatibilidade, espaco e volume ausente.
-- [ ] Validar no alvo guiado o Shell hospedado Classic, o fallback Simple,
-  `health`, `regcheck full`, aplicacao, cancelamento, reboot e rollback.
-- [ ] Repetir a medicao do `apply --confirm` apos a otimizacao de alocacao e da
-  geometria FAT32; o layout das imagens passou a usar clusters de 8 setores.
+- [x] Validar no alvo guiado o Shell hospedado Classic, o diagnostico compacto
+  `health check`, `regcheck full`, aplicacao, cancelamento, reboot e rollback.
+- [x] Repetir a medicao observacional do `apply --confirm` apos a otimizacao de
+  alocacao e da geometria FAT32; concluiu em menos de um minuto, sem cronometro
+  exato em segundos. O layout das imagens passou a usar clusters de 8 setores.
 
 ### EP9.4A - Volume de sistema FAT32
 
