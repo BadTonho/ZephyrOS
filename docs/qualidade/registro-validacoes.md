@@ -1023,10 +1023,15 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   A/B, anterior one-shot, retry manual com dupla confirmacao e fallback legado
   autenticado. O fluxo valida limites FAT32/VESA, estado redundante, journal,
   metadados assinados do slot e o ZSYS integral antes da execucao; tentativas
-  sao gravadas e relidas antes de publicar `ZSBH`. Os gates e a matriz QEMU
-  ainda aguardam confirmacao pelo usuario.
+  sao gravadas e relidas antes de publicar `ZSBH`. A matriz QEMU ainda aguarda
+  confirmacao pelo usuario.
 - Geracao da matriz EP9.2B validada.
   Concluida em: 2026-08-26 09:41 (America/Sao_Paulo).
   O usuario confirmou que `make system-slots-matrix` terminou normalmente,
   gerando as fixtures e imagens da revisao atual. Essa validacao confirma o
   pipeline da matriz, mas ainda nao confirma os fluxos interativos no QEMU.
+- Gates de qualidade e build da EP9.2B validados.
+  Concluida em: 2026-08-26 09:45 (America/Sao_Paulo).
+  O usuario confirmou que `make q3check` e `make clean && make` terminaram sem
+  erros na mesma revisao usada para gerar a matriz. Permanecem pendentes apenas
+  os casos funcionais especificos no QEMU.
