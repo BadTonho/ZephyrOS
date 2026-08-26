@@ -1273,3 +1273,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   O Updater publicou o slot B valido como pendente, preservou A como ativo e
   anterior, e a escolha `Depois` manteve o estado sem reiniciar. A aba Sistema
   exibiu o aviso persistente para usar `Reiniciar` quando oportuno.
+
+- EP9.4C: persistencia do aviso de reinicio validada.
+  Validada em: 2026-08-26 18:09 (America/Sao_Paulo).
+  Depois de fechar e reabrir o aplicativo, a aba Sistema releu o estado e
+  continuou exibindo o aviso, com A ativo e B valido e pendente.
