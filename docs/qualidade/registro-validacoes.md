@@ -1125,3 +1125,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   executar `reboot` para ativar, sem reinicio automatico. Nao houve medicao
   em segundos; a comparacao quantitativa continua N/D. Permaneceram dois
   avisos de exclusao FAT32, sem impedir a publicacao do pendente.
+
+- EP9.3: rollback automatico apos reboot sem confirmacao.
+  Validado em: 2026-08-26 11:51 (America/Sao_Paulo).
+  Apos o `reboot`, o sistema voltou ao slot A com `pendente=NONE` e
+  `anterior=A`. O candidato B ficou `INVALID` e a tentativa foi marcada como
+  `BOOT_FAILED` com motivo `IO`, confirmando que a falha nao ativou o candidato
+  nem entrou em ciclo automatico.
