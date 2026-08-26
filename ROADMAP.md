@@ -749,9 +749,10 @@ Evolução da plataforma:      [████████████████
   específica concluída.
 - [x] Matriz reproduzivel EP9.1 validada para corrupcao de estado/journal,
   fases de recuperacao, falta de espaco e volume FAT32 ausente.
-- [~] EP9.2A implementada, aguardando matriz QEMU: recovery loader fixo,
-  boot pendente autenticado, tentativa/rollback e fallback legado; EP9.2B e
-  EP9.3 futuras: menu pre-kernel, aplicacao e comandos pos-reboot.
+- [x] EP9.2A implementada e validada: recovery loader fixo, boot pendente
+  autenticado, tentativa/rollback, fallback legado e matriz QEMU completa;
+  EP9.2B e EP9.3 permanecem futuras para menu pre-kernel, aplicacao e comandos
+  pos-reboot.
 - [ ] EP9.3 futura: aplicação, comandos, rollback pós-reboot e confirmação
   explícita de reboot.
 
@@ -774,7 +775,7 @@ kernel, interface e novos serviços:
 | 5 | [`docs/roadmaps/05-sistema-e-ecossistema.md`](docs/roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e ecossistema. |
 | 6 | [`docs/roadmaps/06-app-store.md`](docs/roadmaps/06-app-store.md) | Catalogo local, ciclo de vida, App Store Modern e distribuicao futura. |
 | 7 | [`docs/roadmaps/07-modernizacao-visual.md`](docs/roadmaps/07-modernizacao-visual.md) | Escala acessivel, visual flat/dark e desempenho VESA mensuravel; MV4 funcionalmente validado, comparacao historica N/D. |
-| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.4 implementadas; EP7.0 encerrada; EP7.1B de EHCI/transporte RTL8811CU implementada; EP9.0A, EP9.1 e EP9.4A implementadas e validadas. |
+| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.4 implementadas; EP7.0 encerrada; EP7.1B de EHCI/transporte RTL8811CU implementada; EP9.0A, EP9.1, EP9.2A e EP9.4A implementadas e validadas. |
 | 9 | [`docs/roadmaps/09-funcionalidades-aplicaveis.md`](docs/roadmaps/09-funcionalidades-aplicaveis.md) | Separação visual/funcional, perfil de distribuição, logs, timers, espera, work queue, dispositivos, I/O, cache e métricas do scheduler. |
 | 10 | [`docs/roadmaps/10-vfs-e-abstracao-io.md`](docs/roadmaps/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, pontos de montagem, dispositivos /dev/ e pipes. |
 | 11 | [`docs/roadmaps/11-gerenciamento-avancado-de-memoria.md`](docs/roadmaps/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging. |
