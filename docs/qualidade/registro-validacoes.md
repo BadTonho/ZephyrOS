@@ -1179,3 +1179,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `BADBOOT.ZSY`, `BADSTG2.ZSY` e `BADKERN.ZSY` foram verificados na mesma
   sessao guiada. Os tres retornaram `ZSYS recusado: HASH`, identificaram
   `boot_abi=2` e nao realizaram gravacao.
+
+- EP9.4B: handoff privado invalido recusado com rollback.
+  Validada em: 2026-08-26 16:34 (America/Sao_Paulo).
+  O pacote autenticado `BADHAND.ZSY` foi publicado como B pendente. No reboot,
+  a continuacao invalidou `ZSBC`, retornou ao verifier e nao executou o kernel
+  candidato. O sistema voltou a A com `pendente=NONE`; B permaneceu `VALID`
+  para diagnostico e a tentativa ficou `FAILED` com motivo `BOOT_FAILED`, sem
+  repeticao automatica.
