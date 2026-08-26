@@ -738,9 +738,8 @@ repositorio.
 
 ## EP9 - Atualizacao da imagem do sistema e slots de boot
 
-**Estado:** EP9.0A, EP9.1, EP9.2A, EP9.2B, EP9.3, EP9.4A e EP9.4B
-implementadas e validadas pelo usuario. A EP9.4C esta implementada e aguarda
-validacao do usuario.
+**Estado:** EP9.0A, EP9.1, EP9.2A, EP9.2B, EP9.3, EP9.4A, EP9.4B e EP9.4C
+implementadas e validadas pelo usuario.
 
 Esta fase separa a atualizacao de arquivos do sistema em execucao da
 atualizacao da imagem que o proximo boot carregara. O ZUPD v1 continua limitado
