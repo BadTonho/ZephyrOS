@@ -14,7 +14,7 @@
     "version": "0.1.0",
     "epoch": 0
   },
-  "boot_abi": 1,
+  "boot_abi": 2,
   "data_schema_from": 1,
   "data_schema_to": 1,
   "requires_reboot": true,

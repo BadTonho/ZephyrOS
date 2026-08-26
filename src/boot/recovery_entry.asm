@@ -10,6 +10,7 @@ global recovery_bios_read_sector
 global recovery_bios_write_sector
 global recovery_bios_wait_key
 global recovery_boot_kernel_entry
+global recovery_boot_system_entry
 
 BIOS_GATEWAY_OFFSET equ 0x00005F00
 BIOS_GATEWAY_DAP equ 0x00002A00
@@ -28,6 +29,7 @@ GDT_CODE32_SEL equ 0x08
 GDT_DATA32_SEL equ 0x10
 GDT_CODE16_SEL equ 0x18
 KERNEL_OFFSET equ 0x00100000
+SYSTEM_BOOT_OFFSET equ 0x00007C00
 KERNEL_STACK_TOP equ 0x0009F000
 
 _start:
@@ -188,3 +190,16 @@ recovery_boot_kernel_entry:
     cli
     hlt
     jmp .halt
+
+recovery_boot_system_entry:
+    push ebp
+    push ebx
+    push esi
+    push edi
+    cli
+    call SYSTEM_BOOT_OFFSET
+    pop edi
+    pop esi
+    pop ebx
+    pop ebp
+    ret

@@ -905,7 +905,7 @@ As entregas de recuperacao da EP9.2 ficam divididas em duas subetapas:
 
 ### EP9.3 - Comandos e validacao
 
-**Estado:** implementada; validação do usuário pendente.
+**Estado:** implementada e validada pelo usuario.
 
 - [x] Adicionar comandos separados para consultar, baixar, aplicar e cancelar
   uma imagem `system`, sem misturar o fluxo `runtime` do ZUPD v1.
@@ -940,19 +940,26 @@ As entregas de recuperacao da EP9.2 ficam divididas em duas subetapas:
 - [x] Executar a matriz do usuario: storage-fixtures-test, storage-fixtures,
   system-fixtures, q3check, build completo, QEMU, memcheck e regcheck full.
 
-Limites mantidos para etapas posteriores: filesystem nativo, boot direto pelo
-FAT32 e reboot automatico disparado pelo atualizador.
+Na EP9.4A, o boot operacional pelo FAT32 e o reboot automatico disparado pelo
+atualizador ainda permaneciam posteriores. A EP9.4B implementa a primeira
+dessas migracoes sem substituir a raiz fixa de recuperacao.
 
-### EP9.4B - Expansão posterior de armazenamento
+### EP9.4B - Boot operacional autenticado no FAT32
 
-- [ ] Definir se o volume de boot permanece FAT12 e o sistema usa um volume
-  FAT32 separado, ou se haverá migração controlada do volume de boot.
-- [ ] Projetar a nova geometria de disco, BPB, partições e compatibilidade com
-  o FS unificado sem reduzir o fallback FAT12 existente.
-- [ ] Alterar boot/stage2 somente após aprovação explícita, com recuperação
-  offline e preservação do caminho de boot atual durante a transição.
-- [ ] Validar no host e no QEMU imagens maiores, nomes, espaço, montagem,
-  leitura do ZSYS e regressão dos volumes FAT12/FAT32.
+**Estado:** implementada; validacao do usuario pendente.
+
+- [x] Manter o bootstrap BIOS, shim, verifier e kernel legado na area fixa;
+  executar boot, stage2 e kernel operacionais autenticados do ZSYS FAT32.
+- [x] Expandir a imagem para 256 MiB, manter o FAT32 no LBA 4096 e usar quatro
+  setores por cluster, duas FATs, FSInfo e backup do BPB.
+- [x] Adicionar `boot_abi=2` com handoff privado para a cadeia protegida e
+  preservar leitura e boot de slots `boot_abi=1`.
+- [x] Preservar estado v2, `ZSBH`, confirmacao pelo kernel, rollback e fallback
+  legado autenticado sem atualizar o verifier fixo por ZSYS.
+- [x] Criar fixtures compactas e uma unica imagem guiada de 256 MiB pelo alvo
+  `make run-ep94b-matrix`.
+- [ ] Validar no host e no QEMU geometria, ABI 1, ABI 2, promocao, rollback,
+  componentes adulterados, FAT32 ausente e fallback legado.
 
 ### Criterio de saida
 

@@ -570,7 +570,10 @@ static int update_system_remote_begin(update_system_remote_stream_t* stream) {
         (uint8_t)((flags & UPDATE_SYSTEM_FLAG_REQUIRES_REBOOT) != 0U);
     stream->result.compatibility.bridge_required =
         (uint8_t)((flags & UPDATE_SYSTEM_FLAG_BRIDGE_REQUIRED) != 0U);
-    if (stream->result.compatibility.boot_abi != 1U ||
+    if ((stream->result.compatibility.boot_abi !=
+             UPDATE_SYSTEM_BOOT_ABI_LEGACY &&
+         stream->result.compatibility.boot_abi !=
+             UPDATE_SYSTEM_BOOT_ABI_CHAIN) ||
         stream->result.compatibility.data_schema_from >
             stream->result.compatibility.data_schema_to ||
         !stream->result.compatibility.requires_reboot ||
@@ -1167,7 +1170,10 @@ static int update_system_verify_file_internal(
     if (update_system_read_u16(update_system_header, 10U) &
             ~(UPDATE_SYSTEM_FLAG_REQUIRES_REBOOT |
               UPDATE_SYSTEM_FLAG_BRIDGE_REQUIRED) ||
-        result_out->compatibility.boot_abi != 1U ||
+        (result_out->compatibility.boot_abi !=
+             UPDATE_SYSTEM_BOOT_ABI_LEGACY &&
+         result_out->compatibility.boot_abi !=
+             UPDATE_SYSTEM_BOOT_ABI_CHAIN) ||
         result_out->compatibility.data_schema_from >
             result_out->compatibility.data_schema_to ||
         !result_out->compatibility.requires_reboot ||

@@ -290,6 +290,80 @@ cada fixture. As imagens `SYSTEM_CACHE_ONE_BAD`, `SYSTEM_CACHE_BOTH_BAD` e
 `SYSTEM_CACHE_INTERRUPTED` ficam reservadas para diagnostico dirigido quando
 o caso guiado apontar divergencia.
 
+## EP9.4B: cadeia autenticada em uma imagem guiada
+
+Para a mesma revisao, o usuario executa somente:
+
+```text
+make q3check
+make clean && make
+make run-ep94b-matrix
+```
+
+O alvo solicita a chave privada uma unica vez e gera uma imagem de 256 MiB com
+slot A ABI 1, cache ABI 2 e os vetores `BADBOOT.ZSY`, `BADSTG2.ZSY`,
+`BADKERN.ZSY`, `BADHAND.ZSY` e `RETURN.ZSY`. Assim que o QEMU abrir, salve o
+estado inicial no monitor:
+
+```text
+savevm ep94b
+```
+
+No primeiro boot, use:
+
+```text
+update system status
+update system slots
+update system verify system:/BADBOOT.ZSY
+update system verify system:/BADSTG2.ZSY
+update system verify system:/BADKERN.ZSY
+update system apply --confirm
+reboot
+update system slots
+health check
+regcheck full
+```
+
+Os tres vetores devem ser recusados com `HASH`. A aplicacao publica B como
+pendente sem reinicio automatico; depois de `reboot`, a cadeia ABI 2 deve abrir
+o kernel e confirmar B. Para validar rollback, restaure o snapshot inicial no
+monitor QEMU, aplique novamente e reinicie a maquina antes do acknowledge. O
+boot seguinte deve manter A e preservar B como `FAILED`, sem repeticao
+automatica.
+
+Os retornos protegidos usam o mesmo snapshot, sem reconstruir a imagem:
+
+```text
+loadvm ep94b
+```
+
+```text
+update system stage system:/BADHAND.ZSY --confirm
+reboot
+```
+
+Repita o `loadvm ep94b` e use `RETURN.ZSY` no lugar de `BADHAND.ZSY`. Ambos
+devem limpar `ZSBC` e `ZSBH`, recusar a cadeia e retornar ao slot A ou ao
+kernel legado sem confirmar B.
+
+Para as duas corrupcoes de disco, restaure `ep94b`, execute uma linha no
+monitor e reinicie:
+
+```text
+qemu-io ep94bmatrix "write -P 0 446 64"
+system_reset
+```
+
+```text
+qemu-io ep94bmatrix "write -P 0 2097152 512"
+system_reset
+```
+
+A primeira remove a entrada MBR da particao; a segunda invalida o BPB do LBA
+4096. Em ambos os casos, a raiz fixa deve iniciar o kernel legado autenticado.
+Execute primeiro `storage volumes` quando o diagnostico de volume for
+necessario; o ID de `storage check` deve ser copiado literalmente dessa saida.
+
 ## Comandos no Shell
 
 Para orientar comandos do sistema, consultar primeiro `comandos.md` e os

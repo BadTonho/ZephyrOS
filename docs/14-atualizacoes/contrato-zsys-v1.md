@@ -85,7 +85,7 @@ descritor e ao tag selecionado.
 - supported_from: lista de versões/epochs aceitos; a imagem atual é a primeira
   origem publicada.
 - min_updater: versão/epoch mínimo do updater.
-- boot_abi: 1.
+- boot_abi: 1 para o carregamento legado ou 2 para a cadeia protegida.
 - data_schema_from e data_schema_to: 1 e 1.
 - requires_reboot: true.
 - upgrade_route.kind: direct.
@@ -351,3 +351,32 @@ tentativa em andamento, estado divergente ou sequencia esgotada; depois limpa
 o pendente com releitura confirmada e somente entao despublica o cache. O
 arquivo do slot candidato nunca e removido. Estado `FAILED` e seus metadados
 permanecem disponiveis para diagnostico e retry pelo menu pre-kernel.
+
+### EP9.4B - Cadeia operacional autenticada
+
+O formato ZSYS v1 permanece inalterado. `boot_abi=1` conserva a semantica
+anterior: boot e stage2 sao autenticados, mas somente o kernel e carregado e
+executado. `boot_abi=2` define boot e stage2 como continuacoes de modo
+protegido. Depois de validar assinatura, imagem e os tres componentes, o
+recovery loader reabre o arquivo, copia cada componente para seu endereco
+final e recalcula seu SHA-256 antes de executar qualquer byte.
+
+Na ABI 2, boot ocupa exatamente 512 bytes em `0x7C00`, stage2 ocupa a janela
+`0x5000..0x5F00` e o kernel permanece em `0x00100000..0x00800000`. O loader
+publica o handoff privado `ZSBC` v1 de 64 bytes em `0x2B00`, contendo ABI,
+enderecos, tamanhos, E820, VESA, endereco do `ZSBH` e checksum. O boot valida
+o registro e transfere ao stage2; o stage2 valida novamente, prepara
+`ESP=0x9F000`, `ESI=E820` e `EDI=VESA` e chama o kernel. O retorno inesperado
+da cadeia e tratado como `BOOT_FAILED`.
+
+`ZSBC` e privado e nao altera `ZSBH`, o estado v2 ou
+`update_system_slots_boot_confirm()`. Um pendente continua sendo promovido
+somente depois da confirmacao do kernel. Reset antes disso continua gerando
+rollback. Slots ABI 1 e ABI 2 podem coexistir e ser usados como ativo,
+anterior ou candidato.
+
+O setor BIOS, o stage2 shim, o verifier e o kernel legado permanecem na area
+fixa anterior ao LBA 4096. A cadeia operacional vem do FAT32, mas essa area
+imutavel continua sendo a raiz de confianca e o fallback offline. Atualizar o
+verifier exige reconstruucao ou reinstalacao controlada da imagem; ZSYS nunca
+o substitui.

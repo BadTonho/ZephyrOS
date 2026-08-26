@@ -33,10 +33,17 @@ BOOT_SRC = src/boot/boot.asm
 BOOT_BIN = build/boot.bin
 STAGE2_SRC = src/boot/stage2.asm
 STAGE2_BIN = build/stage2.bin
+SYSTEM_BOOT_SRC = src/boot/system_boot.asm
+SYSTEM_BOOT_BIN = build/system_boot.bin
+SYSTEM_BOOT_HANDOFF_INVALID_BIN = build/system_boot_handoff_invalid.bin
+SYSTEM_BOOT_RETURN_BIN = build/system_boot_return.bin
+SYSTEM_STAGE2_SRC = src/boot/system_stage2.asm
+SYSTEM_STAGE2_BIN = build/system_stage2.bin
 RECOVERY_LOADER_C = src/boot/recovery_loader.c
 RECOVERY_LOADER_OBJ = build/recovery_loader.o
 RECOVERY_MENU_C = src/boot/recovery_menu.c
 RECOVERY_MENU_HEADER = src/boot/recovery_menu.h
+RECOVERY_CHAIN_HEADER = src/boot/recovery_chain.h
 RECOVERY_MENU_OBJ = build/recovery_menu.o
 RECOVERY_RUNTIME_C = src/boot/recovery_runtime.c
 RECOVERY_RUNTIME_OBJ = build/recovery_runtime.o
@@ -465,13 +472,18 @@ SYSTEM_SLOTS_FIXTURE_IMAGE = $(SYSTEM_SLOTS_FIXTURES_DIR)\SLOTS.img
 SYSTEM_SLOTS_MATRIX_DIR = build\system-slots-matrix
 SYSTEM_SLOTS_MATRIX_IMAGE ?=
 SYSTEM_UPDATE_MATRIX_IMAGE = $(SYSTEM_SLOTS_MATRIX_DIR)\SYSTEM_UPDATE_GUIDED.img
+EP94B_FIXTURES_DIR = build\ep94b-fixtures
+EP94B_ABI1_DIR = $(EP94B_FIXTURES_DIR)\abi1
+EP94B_ABI2_DIR = $(EP94B_FIXTURES_DIR)\abi2
+EP94B_MATRIX_DIR = build\ep94b-matrix
+EP94B_MATRIX_IMAGE = $(EP94B_MATRIX_DIR)\EP94B_GUIDED.img
 # Defina somente em Makefile.local; a chave privada nunca entra no repositorio.
 SYSTEM_PRIVATE_KEY ?=
 SYSTEM_FIXTURE_IMAGE ?=
 
 # A area FAT12 legada continua contendo o boot, stage2 e kernel. O restante
 # da imagem abriga a particao FAT32 de sistema sem alterar o bootloader.
-HYBRID_DISK_BYTES = 67108864
+HYBRID_DISK_BYTES = 268435456
 FAT32_START_LBA = 4096
 FAT32_LABEL = ZEPHYROS
 STORE_FIXTURES_DIR = docs\fixtures\apps\store
@@ -524,6 +536,22 @@ $(STAGE2_BIN): $(STAGE2_SRC) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN)
 	@if not exist build mkdir build
 	for /f %%S in ('powershell -NoProfile -Command "$$size = (Get-Item '$(KERNEL_BIN)').Length; [math]::Ceiling($$size / 512)"') do for /f %%K in ('powershell -NoProfile -Command "(Get-Item '$(KERNEL_BIN)').Length"') do for /f %%R in ('powershell -NoProfile -Command "(Get-Item '$(RECOVERY_LOADER_PADDED_BIN)').Length / 512"') do $(NASM) $(NASMFLAGS) -dKERNEL_SECTORS=%%S -dKERNEL_BYTES=%%K -dRECOVERY_LOADER_SECTORS=%%R $< -o $@
 
+$(SYSTEM_BOOT_BIN): $(SYSTEM_BOOT_SRC)
+	@if not exist build mkdir build
+	$(NASM) $(NASMFLAGS) $< -o $@
+
+$(SYSTEM_BOOT_HANDOFF_INVALID_BIN): $(SYSTEM_BOOT_SRC)
+	@if not exist build mkdir build
+	$(NASM) $(NASMFLAGS) -dSYSTEM_BOOT_CORRUPT_HANDOFF=1 $< -o $@
+
+$(SYSTEM_BOOT_RETURN_BIN): $(SYSTEM_BOOT_SRC)
+	@if not exist build mkdir build
+	$(NASM) $(NASMFLAGS) -dSYSTEM_BOOT_FORCE_RETURN=1 $< -o $@
+
+$(SYSTEM_STAGE2_BIN): $(SYSTEM_STAGE2_SRC)
+	@if not exist build mkdir build
+	$(NASM) $(NASMFLAGS) $< -o $@
+
 $(RECOVERY_STAGE2_VGA_BIN): $(STAGE2_SRC) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN)
 	@if not exist build mkdir build
 	for /f %%S in ('powershell -NoProfile -Command "$$size = (Get-Item '$(KERNEL_BIN)').Length; [math]::Ceiling($$size / 512)"') do for /f %%K in ('powershell -NoProfile -Command "(Get-Item '$(KERNEL_BIN)').Length"') do for /f %%R in ('powershell -NoProfile -Command "(Get-Item '$(RECOVERY_LOADER_PADDED_BIN)').Length / 512"') do $(NASM) $(NASMFLAGS) -dKERNEL_SECTORS=%%S -dKERNEL_BYTES=%%K -dRECOVERY_LOADER_SECTORS=%%R -dRECOVERY_FORCE_VGA_TEXT=1 $< -o $@
@@ -536,7 +564,7 @@ $(RECOVERY_LAYOUT_HEADER): $(KERNEL_BIN) $(RECOVERY_LAYOUT_TOOL)
 	@if not exist build mkdir build
 	python $(RECOVERY_LAYOUT_TOOL) --kernel $(KERNEL_BIN) --output $@
 
-$(RECOVERY_LOADER_OBJ): $(RECOVERY_LOADER_C) $(RECOVERY_MENU_HEADER) $(RECOVERY_LAYOUT_HEADER) src/include/core/crypto.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/core/update_trust.h
+$(RECOVERY_LOADER_OBJ): $(RECOVERY_LOADER_C) $(RECOVERY_MENU_HEADER) $(RECOVERY_CHAIN_HEADER) $(RECOVERY_LAYOUT_HEADER) src/include/core/crypto.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/core/update_trust.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -I build -c $< -o $@
 
@@ -1033,39 +1061,14 @@ $(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN)
           docs\fixtures\updates\u2\UNKKEY.ZUP docs\fixtures\updates\u3\APPLY.ZUP
 	python $(RECOVERY_IMAGE_COMPOSE_TOOL) --boot $(BOOT_BIN) --stage2 $(STAGE2_BIN) --kernel $(KERNEL_BIN) --loader $(RECOVERY_LOADER_PADDED_BIN) --kernel-lba 64 --loader-lba 3000 --fat32-start-lba $(FAT32_START_LBA) --output $(OS_IMG)
 	python tools\packager.py prepare-hybrid-image --image $(OS_IMG) --disk-bytes $(HYBRID_DISK_BYTES) --fat32-start-lba $(FAT32_START_LBA) --label $(FAT32_LABEL)
-	python tools\packager.py inject-file-fat32 --file assets\icons\SHELL.BMP --image $(OS_IMG) --path SHELL.BMP --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file assets\icons\EXPLORER.BMP --image $(OS_IMG) --path EXPLORER.BMP --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file assets\icons\TASKMGR.BMP --image $(OS_IMG) --path TASKMGR.BMP --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)\VALID.ZPK --image $(OS_IMG) --path VALID.ZPK --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)\BADCRC.ZPK --image $(OS_IMG) --path BADCRC.ZPK --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)\BADAPI.ZPK --image $(OS_IMG) --path BADAPI.ZPK --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)\BADALIAS.ZPK --image $(OS_IMG) --path BADALIAS.ZPK --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)\NEEDSDEP.ZPK --image $(OS_IMG) --path NEEDSDEP.ZPK --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)\SAMEVER.ZPK --image $(OS_IMG) --path SAMEVER.ZPK --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file $(STORE_AS2_FIXTURES_DIR)\WAITAPP.ZPK --image $(OS_IMG) --path WAITAPP.ZPK --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file $(STORE_AS2_FIXTURES_DIR)\BASE.ZPK --image $(OS_IMG) --path BASE.ZPK --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file $(STORE_AS2_FIXTURES_DIR)\DEPEND.ZPK --image $(OS_IMG) --path DEPEND.ZPK --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPTARGET.ZPK --image $(OS_IMG) --path UPTARGET.ZPK --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPDEPA.ZPK --image $(OS_IMG) --path UPDEPA.ZPK --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPDEPB.ZPK --image $(OS_IMG) --path UPDEPB.ZPK --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\BROKEN.ZPK --image $(OS_IMG) --path BROKEN.ZPK --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEA.ZPK --image $(OS_IMG) --path CYCLEA.ZPK --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEB.ZPK --image $(OS_IMG) --path CYCLEB.ZPK --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file docs\fixtures\updates\u2\VALID.ZUP --image $(OS_IMG) --path VALID.ZUP --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file docs\fixtures\updates\u2\TRUNC.ZUP --image $(OS_IMG) --path TRUNC.ZUP --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file docs\fixtures\updates\u2\BADHASH.ZUP --image $(OS_IMG) --path BADHASH.ZUP --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file docs\fixtures\updates\u2\BADSIG.ZUP --image $(OS_IMG) --path BADSIG.ZUP --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file docs\fixtures\updates\u2\BADVER.ZUP --image $(OS_IMG) --path BADVER.ZUP --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file docs\fixtures\updates\u2\BADFMT.ZUP --image $(OS_IMG) --path BADFMT.ZUP --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file docs\fixtures\updates\u2\UNKKEY.ZUP --image $(OS_IMG) --path UNKKEY.ZUP --fat32-start-lba $(FAT32_START_LBA)
-	python tools\packager.py inject-file-fat32 --file docs\fixtures\updates\u3\APPLY.ZUP --image $(OS_IMG) --path APPLY.ZUP --fat32-start-lba $(FAT32_START_LBA)
+	python tools\packager.py inject-files-fat32 --image $(OS_IMG) --fat32-start-lba $(FAT32_START_LBA) --entry assets\icons\SHELL.BMP=SHELL.BMP --entry assets\icons\EXPLORER.BMP=EXPLORER.BMP --entry assets\icons\TASKMGR.BMP=TASKMGR.BMP --entry $(STORE_FIXTURES_DIR)\VALID.ZPK=VALID.ZPK --entry $(STORE_FIXTURES_DIR)\BADCRC.ZPK=BADCRC.ZPK --entry $(STORE_FIXTURES_DIR)\BADAPI.ZPK=BADAPI.ZPK --entry $(STORE_FIXTURES_DIR)\BADALIAS.ZPK=BADALIAS.ZPK --entry $(STORE_FIXTURES_DIR)\NEEDSDEP.ZPK=NEEDSDEP.ZPK --entry $(STORE_FIXTURES_DIR)\SAMEVER.ZPK=SAMEVER.ZPK --entry $(STORE_AS2_FIXTURES_DIR)\WAITAPP.ZPK=WAITAPP.ZPK --entry $(STORE_AS2_FIXTURES_DIR)\BASE.ZPK=BASE.ZPK --entry $(STORE_AS2_FIXTURES_DIR)\DEPEND.ZPK=DEPEND.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPTARGET.ZPK=UPTARGET.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPDEPA.ZPK=UPDEPA.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPDEPB.ZPK=UPDEPB.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)\BROKEN.ZPK=BROKEN.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEA.ZPK=CYCLEA.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEB.ZPK=CYCLEB.ZPK --entry docs\fixtures\updates\u2\VALID.ZUP=VALID.ZUP --entry docs\fixtures\updates\u2\TRUNC.ZUP=TRUNC.ZUP --entry docs\fixtures\updates\u2\BADHASH.ZUP=BADHASH.ZUP --entry docs\fixtures\updates\u2\BADSIG.ZUP=BADSIG.ZUP --entry docs\fixtures\updates\u2\BADVER.ZUP=BADVER.ZUP --entry docs\fixtures\updates\u2\BADFMT.ZUP=BADFMT.ZUP --entry docs\fixtures\updates\u2\UNKKEY.ZUP=UNKKEY.ZUP --entry docs\fixtures\updates\u3\APPLY.ZUP=APPLY.ZUP
 
-system-fixtures: $(OS_IMG) $(SYSTEM_FIXTURES_MANIFEST) tools\updater.py tools\packager.py
+system-fixtures: $(OS_IMG) $(SYSTEM_BOOT_BIN) $(SYSTEM_STAGE2_BIN) $(SYSTEM_FIXTURES_MANIFEST) tools\updater.py tools\packager.py
 	@if "$(SYSTEM_PRIVATE_KEY)"=="" (echo SYSTEM_PRIVATE_KEY nao configurada em Makefile.local & exit /b 2)
 	@if exist "$(SYSTEM_FIXTURES_DIR)" rmdir /s /q "$(SYSTEM_FIXTURES_DIR)"
 	@if exist "$(SYSTEM_FIXTURE_IMAGES_DIR)" rmdir /s /q "$(SYSTEM_FIXTURE_IMAGES_DIR)"
 	@if not exist "$(SYSTEM_FIXTURE_IMAGES_DIR)" mkdir "$(SYSTEM_FIXTURE_IMAGES_DIR)"
-	python tools\updater.py fixtures-system-qemu --full-kernel --manifest $(SYSTEM_FIXTURES_MANIFEST) --boot $(BOOT_BIN) --stage2 $(STAGE2_BIN) --kernel $(KERNEL_BIN) --private "$(SYSTEM_PRIVATE_KEY)" --public $(SYSTEM_FIXTURES_PUBLIC) --output-dir $(SYSTEM_FIXTURES_DIR)
+	python tools\updater.py fixtures-system-qemu --full-kernel --manifest $(SYSTEM_FIXTURES_MANIFEST) --boot $(SYSTEM_BOOT_BIN) --stage2 $(SYSTEM_STAGE2_BIN) --kernel $(KERNEL_BIN) --private "$(SYSTEM_PRIVATE_KEY)" --public $(SYSTEM_FIXTURES_PUBLIC) --output-dir $(SYSTEM_FIXTURES_DIR)
 	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\VALID.img' -Force"
 	python tools\packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)\valid.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)\VALID.img --path VALID.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	powershell -NoProfile -Command "Copy-Item -LiteralPath '$(OS_IMG)' -Destination '$(SYSTEM_FIXTURE_IMAGES_DIR)\TRUNC.img' -Force"
@@ -1126,6 +1129,22 @@ run-system-slots-matrix: system-slots-matrix
 run-system-update-matrix: system-slots-matrix
 	@if not exist "$(SYSTEM_UPDATE_MATRIX_IMAGE)" (echo Imagem guiada EP9.3 nao encontrada: $(SYSTEM_UPDATE_MATRIX_IMAGE) & exit /b 2)
 	$(QEMU) $(QEMU_CPU_ARGS) -snapshot -monitor stdio -drive file=$(SYSTEM_UPDATE_MATRIX_IMAGE),format=raw,if=none,id=systemupdatematrix -device ide-hd,drive=systemupdatematrix,bootindex=1 $(QEMU_NET_ARGS)
+
+ep94b-fixtures: $(OS_IMG) $(SYSTEM_BOOT_BIN) $(SYSTEM_BOOT_HANDOFF_INVALID_BIN) $(SYSTEM_BOOT_RETURN_BIN) $(SYSTEM_STAGE2_BIN) $(SYSTEM_FIXTURES_MANIFEST) $(SYSTEM_SLOTS_BASELINE_MANIFEST) tools\updater.py
+	@if "$(SYSTEM_PRIVATE_KEY)"=="" (echo SYSTEM_PRIVATE_KEY nao configurada em Makefile.local & exit /b 2)
+	@if exist "$(EP94B_FIXTURES_DIR)" rmdir /s /q "$(EP94B_FIXTURES_DIR)"
+	@if not exist "$(EP94B_ABI1_DIR)" mkdir "$(EP94B_ABI1_DIR)"
+	@if not exist "$(EP94B_ABI2_DIR)" mkdir "$(EP94B_ABI2_DIR)"
+	python tools\updater.py fixtures-system-qemu --full-kernel --manifest $(SYSTEM_FIXTURES_MANIFEST) --boot $(SYSTEM_BOOT_BIN) --stage2 $(SYSTEM_STAGE2_BIN) --kernel $(KERNEL_BIN) --private "$(SYSTEM_PRIVATE_KEY)" --public $(SYSTEM_FIXTURES_PUBLIC) --output-dir $(EP94B_ABI2_DIR) --handoff-invalid-boot $(SYSTEM_BOOT_HANDOFF_INVALID_BIN) --returning-boot $(SYSTEM_BOOT_RETURN_BIN) --legacy-manifest $(SYSTEM_SLOTS_BASELINE_MANIFEST) --legacy-boot $(BOOT_BIN) --legacy-stage2 $(STAGE2_BIN) --legacy-output-dir $(EP94B_ABI1_DIR)
+
+ep94b-matrix: ep94b-fixtures tools\ep94b_matrix.py tools\system_slots_matrix.py tools\packager.py
+	@if exist "$(EP94B_MATRIX_DIR)" rmdir /s /q "$(EP94B_MATRIX_DIR)"
+	@if not exist "$(EP94B_MATRIX_DIR)" mkdir "$(EP94B_MATRIX_DIR)"
+	python tools\ep94b_matrix.py --base-image $(OS_IMG) --abi1 $(EP94B_ABI1_DIR)\valid.zsys --abi2 $(EP94B_ABI2_DIR)\valid.zsys --bad-boot $(EP94B_ABI2_DIR)\hash-divergent-boot.zsys --bad-stage2 $(EP94B_ABI2_DIR)\hash-divergent-stage2.zsys --bad-kernel $(EP94B_ABI2_DIR)\hash-divergent-kernel.zsys --handoff-invalid $(EP94B_ABI2_DIR)\handoff-invalid.zsys --returning-boot $(EP94B_ABI2_DIR)\returning-boot.zsys --output $(EP94B_MATRIX_IMAGE) --fat32-start-lba $(FAT32_START_LBA)
+
+run-ep94b-matrix: ep94b-matrix
+	@if not exist "$(EP94B_MATRIX_IMAGE)" (echo Imagem guiada EP9.4B nao encontrada: $(EP94B_MATRIX_IMAGE) & exit /b 2)
+	$(QEMU) $(QEMU_CPU_ARGS) -snapshot -monitor stdio -drive file=$(EP94B_MATRIX_IMAGE),format=raw,if=none,id=ep94bmatrix -device ide-hd,drive=ep94bmatrix,bootindex=1 $(QEMU_NET_ARGS)
 
 $(RECOVERY_MENU_VGA_IMAGE): system-slots-matrix $(RECOVERY_STAGE2_VGA_BIN) $(STAGE2_BIN) $(RECOVERY_STAGE2_PATCH_TOOL)
 	python $(RECOVERY_STAGE2_PATCH_TOOL) --base $(SYSTEM_SLOTS_MATRIX_DIR)\MENU_FAILED_VALID.img --stage2 $(RECOVERY_STAGE2_VGA_BIN) --reference-stage2 $(STAGE2_BIN) --output $@ --stage2-lba 1 --kernel-lba 64
@@ -1249,4 +1268,4 @@ store-as5-serve: store-as5-test
 clean:
 	rmdir /s /q build
 
-.PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-system-fixture run-system-slots-fixture run-system-slots-matrix run-system-update-matrix run-recovery-menu-vga run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures system-slots-fixtures system-slots-matrix debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
+.PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-system-fixture run-system-slots-fixture run-system-slots-matrix run-system-update-matrix ep94b-fixtures ep94b-matrix run-ep94b-matrix run-recovery-menu-vga run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures system-slots-fixtures system-slots-matrix debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean

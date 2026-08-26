@@ -18,6 +18,20 @@ mudanca; nao crie uma entrada artificial.
 
 ## Registros
 
+### 2026-08-26 - EP9.4B, publicacao FAT32 da imagem de 256 MiB
+
+- Cenario host: construcao da imagem padrao e publicacao dos arquivos fixos do
+  sistema no volume FAT32.
+- Metrica observavel: quantidade de ciclos completos de leitura e regravacao
+  da imagem durante a injecao dos arquivos.
+- Antes: 26 ciclos completos, um para cada invocacao individual do injetor.
+- Depois: 1 ciclo completo com a operacao em lote `inject-files-fat32`.
+- Conclusao: reducao deterministica de 26 para 1 passagem pela imagem; o tempo
+  de parede depende da validacao do usuario e permanece N/D.
+- Impacto: aliases, conteudo e transacoes FAT32 permanecem inalterados; o
+  injetor individual continua disponivel como wrapper compativel.
+  Registrado em: 2026-08-26 12:30 (America/Sao_Paulo).
+
 ### 2026-08-26 - EP9.3, alocacao FAT32 durante aplicacao ZSYS
 
 - Cenario QEMU: `SYSTEM_UPDATE_GUIDED.img`, `update system apply --confirm`,
