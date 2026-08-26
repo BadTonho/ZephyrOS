@@ -1005,3 +1005,23 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   invalido, tentativa interrompida, uma ou duas copias de estado corrompidas,
   journal `PREPARED` e volume FAT32 ausente. O `boot.asm` permaneceu
   inalterado; menu, F8 e retry manual continuam exclusivos da EP9.2B.
+- Fixtures interativas da EP9.2B implementadas.
+  Concluida em: 2026-08-25 23:40 (America/Sao_Paulo).
+  A matriz ganhou `MENU_PREVIOUS_VALID`, `MENU_FAILED_VALID` e
+  `MENU_RETRY_NO_CONTROL`, cobrindo anterior one-shot, candidato preservado em
+  `FAILED` e retry sem controle redundante utilizavel. A execucao da matriz
+  permanece reservada ao usuario.
+- Integracao de build do menu pre-kernel implementada.
+  Concluida em: 2026-08-25 23:50 (America/Sao_Paulo).
+  O loader passou a vincular seu console privado e ganhou a variante
+  deterministica VGA texto, o patch seguro de `stage2` sobre uma fixture e o
+  alvo `make run-recovery-menu-vga`, preservando o layout anterior ao kernel e
+  sem alterar `boot.asm`.
+- EP9.2B implementada e entregue para validacao.
+  Concluida em: 2026-08-26 09:36 (America/Sao_Paulo).
+  O recovery loader agora oferece F8 temporizado, menu de falha, diagnostico
+  A/B, anterior one-shot, retry manual com dupla confirmacao e fallback legado
+  autenticado. O fluxo valida limites FAT32/VESA, estado redundante, journal,
+  metadados assinados do slot e o ZSYS integral antes da execucao; tentativas
+  sao gravadas e relidas antes de publicar `ZSBH`. Os gates, fixtures e a
+  matriz QEMU ainda aguardam execucao pelo usuario.

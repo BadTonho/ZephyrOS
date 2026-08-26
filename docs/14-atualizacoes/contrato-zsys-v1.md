@@ -261,5 +261,63 @@ Uma tentativa sem confirmacao, ou um pendente que falha na validacao, vira
 `FAILED`, limpa `pending` e preserva o envelope. Qualquer recusa apresenta
 diagnostico VGA local e tenta o kernel legado apenas apos conferir seu SHA-256
 incorporado pelo build. As copias de estado precisam existir com 512 bytes;
-o loader nunca cria, realoca ou remove arquivos FAT32. Menu, F8 e retry manual
-ficam para EP9.2B.
+o loader nunca cria, realoca ou remove arquivos FAT32.
+
+### EP9.2B - Menu pre-kernel e recuperacao interativa
+
+O `stage2` oferece ao loader o gateway privado
+`recovery_bios_wait_key(timeout_ticks)`. O gateway retorna temporariamente ao
+modo real, consulta o teclado com `INT 16h` e mede o timeout pelos ticks BIOS,
+incluindo o wrap diario. Antes de devolver o controle, restaura segmentos,
+pilha, interrupcoes desabilitadas e modo protegido. O loader nao consulta
+diretamente as portas PS/2 e a ABI publica `recovery_loader_main(mmap, vesa)`
+permanece inalterada.
+
+No fluxo normal existe uma janela de dois segundos para F8. Quando F8 abre o
+menu voluntariamente, ele nao expira; setas mudam a selecao, Enter executa a
+acao e Esc continua a selecao automatica sem gravar estado. Uma recusa de
+estado, FAT32, journal, assinatura, hash ou metadados abre o mesmo menu por dez
+segundos. Nesse caso, timeout ou Esc tenta o slot anterior autenticado e usa o
+kernel legado autenticado quando o anterior nao estiver disponivel ou valido.
+
+O menu exibe sequencia, ativo, pendente, anterior, tentativa, sequencia da
+tentativa, estado de boot, ultimo motivo e validade/versao dos slots A e B. As
+acoes sao habilitadas conforme o estado confiavel disponivel: continuar o boot
+automatico, iniciar o anterior uma unica vez, tentar novamente o candidato ou
+iniciar o kernel legado. Sem FAT32 utilizavel, sem ao menos uma copia de estado
+confiavel ou com journal pendente, somente o legado fica habilitado. O retry,
+por sua vez, exige tambem a copia alternativa prealocada com 512 bytes.
+Os dois aliases de controle nao podem apontar para o mesmo cluster, e o
+controle alternativo nao pode compartilhar cluster com as cadeias de A ou B.
+Erro de leitura ao procurar journal nao equivale a journal ausente e restringe
+o fluxo ao legado.
+
+O boot one-shot do anterior revalida integralmente cabecalho, chave,
+assinatura, imagem e componentes do ZSYS. Ele nao altera o estado persistido e
+nao publica `ZSBH`; portanto `update system slots` continua mostrando o ativo
+persistido e o proximo boot automatico volta a esse slot.
+Essa revalidacao tambem exige alinhamento da imagem e os campos estruturais de
+canal, bases, politica de reboot, ABI, schemas, rota, checkpoints e padding. O
+loader aceita somente a geometria limitada da particao FAT32 `ZEPHYROS`; um
+alias de diretorio ou LBA fora dos limites declarados nunca habilita escrita ou
+execucao. A versao, o epoch, o release ID e a release tag do registro de slot
+devem coincidir byte a byte com os campos assinados do cabecalho ZSYS; qualquer
+divergencia resulta em `FORMAT`.
+
+O retry manual so fica disponivel para estado v2 `FAILED`, candidato diferente
+do ativo, alias presente, metadados coerentes e a copia redundante alternativa
+de 512 bytes prealocada. A primeira confirmacao seleciona a acao e a segunda
+confirmacao com Enter autoriza a tentativa. Esc retorna ao menu sem escrita.
+Depois da revalidacao integral, o loader grava e rele `ATTEMPTED`, incrementa
+as sequencias de estado e tentativa, publica `ZSBH` e inicia o kernel
+candidato. A confirmacao pelo kernel continua exclusiva de
+`update_system_slots_boot_confirm()`.
+
+Um reset antes do acknowledge transforma a tentativa em `FAILED` no boot
+seguinte e nao produz retry automatico. Uma revalidacao recusada volta ao menu,
+desabilita novo retry durante aquela sessao e registra o motivo especifico
+`SIGNATURE`, `HASH`, `FORMAT`, `SIZE`, `IO`, `JOURNAL` ou `BOOT_FAILED` quando
+o controle persistente continua seguro. Falha de escrita ou releitura,
+sequencia esgotada ou divergencia entre controles restringe a sessao ao kernel
+legado autenticado. O loader continua sem criar, realocar ou remover arquivos
+FAT32 e nenhum caminho interativo autoriza um payload nao autenticado.

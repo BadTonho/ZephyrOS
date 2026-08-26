@@ -35,6 +35,9 @@ STAGE2_SRC = src/boot/stage2.asm
 STAGE2_BIN = build/stage2.bin
 RECOVERY_LOADER_C = src/boot/recovery_loader.c
 RECOVERY_LOADER_OBJ = build/recovery_loader.o
+RECOVERY_MENU_C = src/boot/recovery_menu.c
+RECOVERY_MENU_HEADER = src/boot/recovery_menu.h
+RECOVERY_MENU_OBJ = build/recovery_menu.o
 RECOVERY_RUNTIME_C = src/boot/recovery_runtime.c
 RECOVERY_RUNTIME_OBJ = build/recovery_runtime.o
 RECOVERY_ENTRY_ASM = src/boot/recovery_entry.asm
@@ -46,6 +49,9 @@ RECOVERY_LOADER_PAD_TOOL = tools/pad_boot_payload.py
 RECOVERY_IMAGE_COMPOSE_TOOL = tools/compose_recovery_image.py
 RECOVERY_LAYOUT_TOOL = tools/recovery_layout.py
 RECOVERY_LAYOUT_HEADER = build/recovery_layout.h
+RECOVERY_STAGE2_VGA_BIN = build/stage2-recovery-menu-vga.bin
+RECOVERY_MENU_VGA_IMAGE = build/recovery-menu-vga.img
+RECOVERY_STAGE2_PATCH_TOOL = tools/patch_stage2_image.py
 
 # Arquivos - Kernel
 ENTRY_SRC = src/kernel/entry.asm
@@ -514,6 +520,10 @@ $(STAGE2_BIN): $(STAGE2_SRC) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN)
 	@if not exist build mkdir build
 	for /f %%S in ('powershell -NoProfile -Command "$$size = (Get-Item '$(KERNEL_BIN)').Length; [math]::Ceiling($$size / 512)"') do for /f %%K in ('powershell -NoProfile -Command "(Get-Item '$(KERNEL_BIN)').Length"') do for /f %%R in ('powershell -NoProfile -Command "(Get-Item '$(RECOVERY_LOADER_PADDED_BIN)').Length / 512"') do $(NASM) $(NASMFLAGS) -dKERNEL_SECTORS=%%S -dKERNEL_BYTES=%%K -dRECOVERY_LOADER_SECTORS=%%R $< -o $@
 
+$(RECOVERY_STAGE2_VGA_BIN): $(STAGE2_SRC) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN)
+	@if not exist build mkdir build
+	for /f %%S in ('powershell -NoProfile -Command "$$size = (Get-Item '$(KERNEL_BIN)').Length; [math]::Ceiling($$size / 512)"') do for /f %%K in ('powershell -NoProfile -Command "(Get-Item '$(KERNEL_BIN)').Length"') do for /f %%R in ('powershell -NoProfile -Command "(Get-Item '$(RECOVERY_LOADER_PADDED_BIN)').Length / 512"') do $(NASM) $(NASMFLAGS) -dKERNEL_SECTORS=%%S -dKERNEL_BYTES=%%K -dRECOVERY_LOADER_SECTORS=%%R -dRECOVERY_FORCE_VGA_TEXT=1 $< -o $@
+
 $(RECOVERY_ENTRY_OBJ): $(RECOVERY_ENTRY_ASM)
 	@if not exist build mkdir build
 	$(NASM) -f elf32 $< -o $@
@@ -522,16 +532,20 @@ $(RECOVERY_LAYOUT_HEADER): $(KERNEL_BIN) $(RECOVERY_LAYOUT_TOOL)
 	@if not exist build mkdir build
 	python $(RECOVERY_LAYOUT_TOOL) --kernel $(KERNEL_BIN) --output $@
 
-$(RECOVERY_LOADER_OBJ): $(RECOVERY_LOADER_C) $(RECOVERY_LAYOUT_HEADER) src/include/core/crypto.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/core/update_trust.h
+$(RECOVERY_LOADER_OBJ): $(RECOVERY_LOADER_C) $(RECOVERY_MENU_HEADER) $(RECOVERY_LAYOUT_HEADER) src/include/core/crypto.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/core/update_trust.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -I build -c $< -o $@
+
+$(RECOVERY_MENU_OBJ): $(RECOVERY_MENU_C) $(RECOVERY_MENU_HEADER)
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(RECOVERY_RUNTIME_OBJ): $(RECOVERY_RUNTIME_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(RECOVERY_LOADER_BIN): $(RECOVERY_ENTRY_OBJ) $(RECOVERY_LOADER_OBJ) $(RECOVERY_RUNTIME_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(RECOVERY_LOADER_LD)
-	$(LD) -m elf_i386 -T $(RECOVERY_LOADER_LD) $(RECOVERY_ENTRY_OBJ) $(RECOVERY_LOADER_OBJ) $(RECOVERY_RUNTIME_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) -o $@
+$(RECOVERY_LOADER_BIN): $(RECOVERY_ENTRY_OBJ) $(RECOVERY_LOADER_OBJ) $(RECOVERY_MENU_OBJ) $(RECOVERY_RUNTIME_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(RECOVERY_LOADER_LD)
+	$(LD) -m elf_i386 -T $(RECOVERY_LOADER_LD) $(RECOVERY_ENTRY_OBJ) $(RECOVERY_LOADER_OBJ) $(RECOVERY_MENU_OBJ) $(RECOVERY_RUNTIME_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) -o $@
 
 $(RECOVERY_LOADER_PADDED_BIN): $(RECOVERY_LOADER_BIN) $(RECOVERY_LOADER_PAD_TOOL)
 	python $(RECOVERY_LOADER_PAD_TOOL) --input $(RECOVERY_LOADER_BIN) --output $@
@@ -1101,6 +1115,12 @@ run-system-slots-matrix: system-slots-matrix
 	@if not exist "$(SYSTEM_SLOTS_MATRIX_IMAGE)" (echo Imagem de matriz nao encontrada: $(SYSTEM_SLOTS_MATRIX_IMAGE) & exit /b 2)
 	$(QEMU) $(QEMU_CPU_ARGS) -drive file=$(SYSTEM_SLOTS_MATRIX_IMAGE),format=raw,if=none,id=systemslotsmatrix -device ide-hd,drive=systemslotsmatrix,bootindex=1 $(QEMU_NET_ARGS)
 
+$(RECOVERY_MENU_VGA_IMAGE): system-slots-matrix $(RECOVERY_STAGE2_VGA_BIN) $(STAGE2_BIN) $(RECOVERY_STAGE2_PATCH_TOOL)
+	python $(RECOVERY_STAGE2_PATCH_TOOL) --base $(SYSTEM_SLOTS_MATRIX_DIR)\MENU_FAILED_VALID.img --stage2 $(RECOVERY_STAGE2_VGA_BIN) --reference-stage2 $(STAGE2_BIN) --output $@ --stage2-lba 1 --kernel-lba 64
+
+run-recovery-menu-vga: $(RECOVERY_MENU_VGA_IMAGE)
+	$(QEMU) $(QEMU_CPU_ARGS) -drive file=$(RECOVERY_MENU_VGA_IMAGE),format=raw,if=none,id=recoverymenuvga -device ide-hd,drive=recoverymenuvga,bootindex=1 $(QEMU_NET_ARGS)
+
 run: $(OS_IMG)
 	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS)
 
@@ -1217,4 +1237,4 @@ store-as5-serve: store-as5-test
 clean:
 	rmdir /s /q build
 
-.PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-system-fixture run-system-slots-fixture run-system-slots-matrix run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures system-slots-fixtures system-slots-matrix debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
+.PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-system-fixture run-system-slots-fixture run-system-slots-matrix run-recovery-menu-vga run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures system-slots-fixtures system-slots-matrix debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean

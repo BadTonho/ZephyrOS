@@ -26,6 +26,14 @@ BIOS_GATEWAY_STATUS equ 0x2A20
 BIOS_GATEWAY_OPERATION equ 0x2A21
 BIOS_GATEWAY_ATTEMPTS equ 0x2A22
 BIOS_GATEWAY_CHS_SECTOR equ 0x2A23
+BIOS_GATEWAY_KEY_RESULT equ 0x2A24
+BIOS_GATEWAY_TIMEOUT equ 0x2A28
+BIOS_GATEWAY_TICK_START equ 0x2A2C
+BIOS_GATEWAY_OPERATION_READ equ 0
+BIOS_GATEWAY_OPERATION_WRITE equ 1
+BIOS_GATEWAY_OPERATION_KEY equ 2
+BIOS_TICKS_PER_DAY equ 0x1800B0
+BIOS_WAIT_FOREVER equ 0xFFFFFFFF
 SECTOR_SIZE      equ 512
 KERNEL_BUFFER    equ 0x00010000
 KERNEL_BUFFER_SEG equ (KERNEL_BUFFER >> 4)
@@ -126,7 +134,11 @@ stage2_start:
     mov word [remaining], RECOVERY_LOADER_SECTORS
     call load_kernel
 
+%ifdef RECOVERY_FORCE_VGA_TEXT
+    mov byte [VESA_INFO + 11], 0
+%else
     call set_vesa_mode
+%endif
 
     lgdt [gdt_descriptor]
     mov eax, cr0
@@ -753,6 +765,8 @@ bios_gateway_real:
     mov sp, STAGE2_STACK
     sti
     mov byte [BIOS_GATEWAY_STATUS], 1
+    cmp byte [BIOS_GATEWAY_OPERATION], BIOS_GATEWAY_OPERATION_KEY
+    je .key_wait
     mov byte [BIOS_GATEWAY_ATTEMPTS], DISK_READ_ATTEMPTS
 
 .retry:
@@ -761,7 +775,7 @@ bios_gateway_real:
     mov word [BIOS_GATEWAY_DAP + 2], 1
     mov si, BIOS_GATEWAY_DAP
     mov dl, [BOOT_DRIVE]
-    cmp byte [BIOS_GATEWAY_OPERATION], 1
+    cmp byte [BIOS_GATEWAY_OPERATION], BIOS_GATEWAY_OPERATION_WRITE
     je .write
     mov ah, 0x42
     int 0x13
@@ -800,7 +814,7 @@ bios_gateway_real:
     mov ax, KERNEL_BUFFER_SEG
     mov es, ax
     xor bx, bx
-    cmp byte [BIOS_GATEWAY_OPERATION], 1
+    cmp byte [BIOS_GATEWAY_OPERATION], BIOS_GATEWAY_OPERATION_WRITE
     je .write_chs
     mov ax, 0x0201
     int 0x13
@@ -822,6 +836,52 @@ bios_gateway_real:
 
 .success:
     mov byte [BIOS_GATEWAY_STATUS], 0
+    jmp .return_protected
+
+.key_wait:
+    mov word [BIOS_GATEWAY_KEY_RESULT], 0
+    call .read_ticks
+    mov [BIOS_GATEWAY_TICK_START], eax
+
+.key_poll:
+    mov ah, 0x01
+    int 0x16
+    jnz .key_ready
+    cmp dword [BIOS_GATEWAY_TIMEOUT], 0
+    je .key_timeout
+    cmp dword [BIOS_GATEWAY_TIMEOUT], BIOS_WAIT_FOREVER
+    je .key_idle
+    call .read_ticks
+    mov ebx, eax
+    mov eax, [BIOS_GATEWAY_TICK_START]
+    cmp ebx, eax
+    jae .key_elapsed
+    add ebx, BIOS_TICKS_PER_DAY
+.key_elapsed:
+    sub ebx, eax
+    cmp ebx, [BIOS_GATEWAY_TIMEOUT]
+    jae .key_timeout
+.key_idle:
+    sti
+    hlt
+    jmp .key_poll
+
+.key_ready:
+    xor ax, ax
+    int 0x16
+    mov [BIOS_GATEWAY_KEY_RESULT], ax
+.key_timeout:
+    mov byte [BIOS_GATEWAY_STATUS], 0
+    jmp .return_protected
+
+.read_ticks:
+    xor eax, eax
+    mov ah, 0x00
+    int 0x1A
+    movzx eax, cx
+    shl eax, 16
+    mov ax, dx
+    ret
 
 .return_protected:
     cli
@@ -840,11 +900,11 @@ bios_gateway_protected_return:
     mov gs, ax
     mov ss, ax
     mov esp, [BIOS_GATEWAY_SAVED_ESP]
+    cld
     jmp dword [BIOS_GATEWAY_RETURN]
 
 %if ($-$$) > ((0x10000 - STAGE2_LOAD) - (SECTOR_SIZE - 1))
     %error "stage2 excede o limite de memoria reservado"
 %endif
 
-; O kernel comeca no setor seguinte, por isso o stage2 precisa ser alinhado.
 times (((($-$$ + SECTOR_SIZE - 1) / SECTOR_SIZE) * SECTOR_SIZE) - ($-$$)) db 0
