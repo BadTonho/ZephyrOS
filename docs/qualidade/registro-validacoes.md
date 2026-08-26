@@ -1064,3 +1064,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   Concluida em: 2026-08-26 10:09 (America/Sao_Paulo).
   Em `MENU_RETRY_NO_CONTROL`, o menu exibiu somente `INICIAR ANTERIOR` e
   `KERNEL LEGADO`; `TENTAR CANDIDATO` permaneceu desabilitado como exigido.
+- Fallback VGA e matriz funcional da EP9.2B validados.
+  Concluida em: 2026-08-26 10:11 (America/Sao_Paulo).
+  O alvo `make run-recovery-menu-vga` exibiu o menu pre-kernel em VGA texto
+  com diagnostico, estado A/B e acoes de anterior, retry e legado. Com os
+  gates, a geracao da matriz, o boot ativo/F8, o anterior one-shot, o timeout
+  de falha, o cancelamento/retry e a ausencia de controle ja confirmados, a
+  matriz funcional especifica da EP9.2B foi concluida pelo usuario. O
+  `boot.asm` permaneceu inalterado.
