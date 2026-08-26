@@ -425,7 +425,7 @@ def _fat32_format_partition(image: bytearray, start_lba: int,
                             total_sectors: int, label: str) -> None:
     reserved = 32
     fat_count = 2
-    spc = 1
+    spc = 8
     spf = 1
     for _ in range(8):
         clusters = (total_sectors - reserved - fat_count * spf) // spc

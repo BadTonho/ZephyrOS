@@ -917,6 +917,8 @@ As entregas de recuperacao da EP9.2 ficam divididas em duas subetapas:
   incompatibilidade, espaco e volume ausente.
 - [ ] Validar no alvo guiado o Shell hospedado Classic, o fallback Simple,
   `health`, `regcheck full`, aplicacao, cancelamento, reboot e rollback.
+- [ ] Repetir a medicao do `apply --confirm` apos a otimizacao de alocacao e da
+  geometria FAT32; o layout das imagens passou a usar clusters de 8 setores.
 
 ### EP9.4A - Volume de sistema FAT32
 

@@ -140,7 +140,8 @@ limite da particao. A montagem automatica aceita exatamente um FAT32 com label
 `ZEPHYROS`; volumes ambiguos nao sao montados. FAT16 e formatos desconhecidos
 retornam `ERR_UNAVAILABLE`.
 
-O backend FAT32 usa buffers setoriais fixos, nomes longos LFN em UTF-16LE,
+O backend FAT32 usa buffers setoriais fixos, clusters de 8 setores na imagem
+hibrida de 64 MiB, nomes longos LFN em UTF-16LE,
 aliases 8.3, comparacao ASCII sem diferenciar maiusculas/minusculas e
 comparacao exata para UTF-8 nao ASCII. O limite de nome e 255 bytes, o caminho
 tem ate 256 bytes e cada listagem tem ate 64 entradas. GPT, EBR, LBA48,

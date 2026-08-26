@@ -52,6 +52,7 @@
 #define STORAGE_DIR_CLUSTER_HIGH_OFFSET 20U
 #define STORAGE_DIR_CLUSTER_LOW_OFFSET 26U
 #define STORAGE_DIR_SIZE_OFFSET 28U
+#define STORAGE_SLOT_WRITER_METADATA_INTERVAL 64U
 
 typedef struct {
     uint8_t active;
@@ -119,6 +120,7 @@ static spinlock_t storage_registry_lock;
 static spinlock_t storage_operation_lock;
 static storage_long_dir_entry_t storage_long_cursor_entries[
     STORAGE_MAX_DIR_ENTRIES];
+static uint32_t storage_fat32_allocation_hint[STORAGE_MAX_VOLUMES];
 typedef struct {
     uint8_t active;
     char volume_id[STORAGE_ID_SIZE];
@@ -758,6 +760,8 @@ int storage_init(void) {
     kmemset(storage_disks, 0, sizeof(storage_disks));
     kmemset(storage_volumes, 0, sizeof(storage_volumes));
     kmemset(storage_mounts, 0, sizeof(storage_mounts));
+    kmemset(storage_fat32_allocation_hint, 0,
+            sizeof(storage_fat32_allocation_hint));
     storage_disk_count = 0;
     storage_volume_count = 0;
     storage_mounted_count = 0;
@@ -964,13 +968,18 @@ static int storage_write_fat32_entry(const storage_volume_t* volume,
 static int storage_allocate_fat32_cluster(const storage_volume_t* volume,
                                           storage_mount_t* mount,
                                           uint32_t* out_cluster) {
-    uint32_t start = mount->root_cluster;
+    int volume_index;
+    uint32_t start;
     uint32_t count = mount->total_clusters;
 
     if (!volume || !mount || !out_cluster) {
         LOG_ERROR("FS", "Argumento nulo na reserva de cluster");
         return ERR_NULL;
     }
+    volume_index = storage_volume_index(volume->id);
+    start = volume_index >= 0 &&
+            storage_fat32_allocation_hint[volume_index] ?
+            storage_fat32_allocation_hint[volume_index] : mount->root_cluster;
     if (start < STORAGE_FIRST_DATA_CLUSTER ||
         start >= mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER) {
         start = STORAGE_FIRST_DATA_CLUSTER;
@@ -985,7 +994,15 @@ static int storage_allocate_fat32_cluster(const storage_volume_t* volume,
             if (value == 0U) {
                 result = storage_write_fat32_entry(volume, mount, cluster,
                                                    STORAGE_FAT32_END);
-                if (result == OK) *out_cluster = cluster;
+                if (result == OK) {
+                    *out_cluster = cluster;
+                    if (volume_index >= 0) {
+                        storage_fat32_allocation_hint[volume_index] =
+                            cluster + 1U < mount->total_clusters +
+                            STORAGE_FIRST_DATA_CLUSTER ? cluster + 1U :
+                            STORAGE_FIRST_DATA_CLUSTER;
+                    }
+                }
                 return result;
             }
         }
@@ -3470,7 +3487,7 @@ static void storage_slot_writer_build_entry(
     uint8_t alias[11];
 
     kmemset(entry, 0, STORAGE_DIR_ENTRY_SIZE);
-    if (!state || storage_name_to_fat("ZSTG.ZSY", alias) != OK) return;
+    if (!state || storage_name_to_fat(state->temp_path, alias) != OK) return;
     kmemcpy(entry, alias, sizeof(alias));
     entry[STORAGE_DIR_ATTRIBUTE_OFFSET] = state->attributes;
     entry[STORAGE_DIR_CLUSTER_HIGH_OFFSET] =
@@ -3556,8 +3573,13 @@ static int storage_slot_writer_flush_locked(void) {
     state->last_cluster = cluster;
     state->flushed_size += state->buffered_size;
     state->buffered_size = 0U;
-    result = storage_slot_writer_update_entry_locked(
-        state, state->flushed_size);
+    result = OK;
+    if (state->cluster_bytes &&
+        ((state->flushed_size / state->cluster_bytes) %
+         STORAGE_SLOT_WRITER_METADATA_INTERVAL) == 0U) {
+        result = storage_slot_writer_update_entry_locked(
+            state, state->flushed_size);
+    }
     if (result != OK) LOG_ERROR("FS", "Falha ao atualizar tamanho de slot");
     return result;
 }
