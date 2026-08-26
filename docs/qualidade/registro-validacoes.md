@@ -1106,3 +1106,13 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   Registrado em: 2026-08-26 11:32 (America/Sao_Paulo).
   `update system status` e `update system slots` reportaram cache `READY`,
   controles 2, slot A ativo, slot B `EMPTY`, pendente `NONE` e journal limpo.
+
+- EP9.3: causa da lentidao identificada e correcao implementada.
+  Implementada em: 2026-08-26 11:37 (America/Sao_Paulo).
+  A reserva de cada cluster FAT32 reiniciava a busca no primeiro cluster,
+  produzindo custo quadratico durante a escrita do ZSYS; a dica de alocacao
+  agora avanca por volume, e a atualizacao do diretorio ocorre em checkpoints
+  durante a escrita, com tamanho final confirmado no fechamento. O escritor
+  transacional tambem passou a usar o alias temporario recebido, corrigindo o
+  caminho de cache remoto.
+  Apos a alteracao, a medicao QEMU permanece pendente.

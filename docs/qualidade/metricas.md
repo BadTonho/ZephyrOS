@@ -18,6 +18,24 @@ mudanca; nao crie uma entrada artificial.
 
 ## Registros
 
+### 2026-08-26 - EP9.3, alocacao FAT32 durante aplicacao ZSYS
+
+- Cenario QEMU: `SYSTEM_UPDATE_GUIDED.img`, `update system apply --confirm`,
+  cancelamento com F12/Esc apos observar a reconstrucao do indice.
+- Metrica observavel: tempo ate a publicacao do slot pendente e progresso do
+  job cooperativo.
+- Antes: mais de 10 minutos ate o cancelamento; a reconstrucao do indice foi
+  iniciada, mas a aplicacao nao publicou o pendente.
+- Depois: N/D; foi introduzida uma dica de alocacao FAT32 por volume para
+  eliminar a varredura desde o primeiro cluster a cada reserva, e a atualizacao
+  do diretorio passou a ocorrer em checkpoints. A geometria das imagens tambem
+  passa a usar clusters de 8 setores para reduzir operacoes FAT repetidas. Nova
+  medicao depende dos gates e da matriz do usuario.
+- Conclusao: pendente ate a comparacao reproduzivel.
+- Impacto: a ordem de alocacao e os contratos FAT32 permanecem inalterados;
+  a dica e reinicializada junto com o inventario de storage.
+  Registrado em: 2026-08-26 11:37 (America/Sao_Paulo).
+
 ### 2026-08-21 - Fase 5, saida longa do Shell
 
 - Cenario QEMU: usar a mesma resolucao e executar `kmetrics reset`, `net check`,
