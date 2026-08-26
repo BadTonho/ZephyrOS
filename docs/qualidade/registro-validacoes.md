@@ -1046,3 +1046,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   anterior A pelo menu, enquanto `update system slots` continuou exibindo B
   como ativo persistido. O retorno automatico a B apos reset ainda precisa ser
   confirmado.
+- Retorno automatico ao slot ativo apos anterior one-shot validado.
+  Concluida em: 2026-08-26 10:00 (America/Sao_Paulo).
+  Apos reset sem F8 na mesma fixture, o usuario confirmou `READY`, `ativo=B`,
+  `pendente=NONE`, `anterior=A`, `tentativa=NONE`, `boot=NONE` e `motivo=NONE`.
