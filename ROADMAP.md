@@ -8,9 +8,9 @@ EP9.0A, EP9.1, EP9.2A e EP9.4A implementadas e validadas pelo usuário; a
 EP9.2B de menu pre-kernel, F8, boot anterior one-shot e retry manual esta
 validada com a matriz QEMU especifica. A EP9.3 de cache, aplicacao e
 cancelamento ZSYS esta validada. A EP9.4B de boot operacional autenticado no
-FAT32 esta implementada e aguarda validacao do usuario.
+FAT32 esta implementada e validada.
 
-## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A, EP9.2B e EP9.3 validadas, EP9.4B pendente
+## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A, EP9.2B, EP9.3 e EP9.4B validadas
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
@@ -756,7 +756,7 @@ Evolução da plataforma:      [████████████████
   diagnostico A/B, anterior one-shot, retry manual v2 e fallback VGA.
 - [x] EP9.3 implementada e validada: cache ZSYS A/B, aplicacao, cancelamento,
   confirmacao explicita de reboot e rollback sem ciclo automatico.
-- [ ] EP9.4B implementada, com validacao pendente: imagem de 256 MiB, ABI 2
+- [x] EP9.4B implementada e validada: imagem de 256 MiB, ABI 2
   com cadeia boot/stage2/kernel autenticada no FAT32, compatibilidade ABI 1 e
   fallback legado pela raiz fixa.
 

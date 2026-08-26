@@ -946,7 +946,7 @@ dessas migracoes sem substituir a raiz fixa de recuperacao.
 
 ### EP9.4B - Boot operacional autenticado no FAT32
 
-**Estado:** implementada; validacao do usuario pendente.
+**Estado:** implementada e validada.
 
 - [x] Manter o bootstrap BIOS, shim, verifier e kernel legado na area fixa;
   executar boot, stage2 e kernel operacionais autenticados do ZSYS FAT32.
@@ -958,7 +958,7 @@ dessas migracoes sem substituir a raiz fixa de recuperacao.
   legado autenticado sem atualizar o verifier fixo por ZSYS.
 - [x] Criar fixtures compactas e uma unica imagem guiada de 256 MiB pelo alvo
   `make run-ep94b-matrix`.
-- [ ] Validar no host e no QEMU geometria, ABI 1, ABI 2, promocao, rollback,
+- [x] Validar no host e no QEMU geometria, ABI 1, ABI 2, promocao, rollback,
   componentes adulterados, FAT32 ausente e fallback legado.
 
 ### Criterio de saida
