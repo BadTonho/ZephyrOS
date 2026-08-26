@@ -1132,3 +1132,16 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `anterior=A`. O candidato B ficou `INVALID` e a tentativa foi marcada como
   `BOOT_FAILED` com motivo `IO`, confirmando que a falha nao ativou o candidato
   nem entrou em ciclo automatico.
+
+- EP9.3: diagnostico compacto e regcheck validados.
+  Validado em: 2026-08-26 11:54 (America/Sao_Paulo).
+  `health check` exibiu somente componentes degradados ou desabilitados, e
+  `regcheck full` concluiu com `RegCheck: OK`; os avisos de nomes longos e
+  espaco insuficiente foram reportados sem falha do verificador.
+
+- EP9.3: tempo de aplicacao observado abaixo de um minuto.
+  Validado em: 2026-08-26 11:55 (America/Sao_Paulo).
+  O usuario informou que a execucao do `update system apply --confirm` e a
+  sequencia de comandos de verificacao terminaram em menos de um minuto. O
+  tempo exato nao foi cronometrado, portanto a metrica quantitativa permanece
+  sem valor em segundos.
