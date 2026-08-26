@@ -1116,3 +1116,12 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   transacional tambem passou a usar o alias temporario recebido, corrigindo o
   caminho de cache remoto.
   Apos a alteracao, a medicao QEMU permanece pendente.
+
+- EP9.3: aplicacao confirmada apos a otimizacao de desempenho.
+  Concluida em: 2026-08-26 11:48 (America/Sao_Paulo).
+  O usuario repetiu `update system apply --confirm` na matriz guiada; a
+  operacao terminou em tempo normal observado, o indice foi publicado e o
+  slot ZSYS foi preparado e marcado como pendente. O loader informou para
+  executar `reboot` para ativar, sem reinicio automatico. Nao houve medicao
+  em segundos; a comparacao quantitativa continua N/D. Permaneceram dois
+  avisos de exclusao FAT32, sem impedir a publicacao do pendente.
