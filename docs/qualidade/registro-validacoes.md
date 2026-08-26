@@ -964,3 +964,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   controle redundante. O comando `update system slots` registrou `READY`,
   sequencia 1, ativo A, pendente `NONE`, anterior A, tentativa `NONE`, boot e
   motivo `NONE`, journal e recovery limpos, slot A `VALID` e slot B `EMPTY`.
+- Fallback com as duas copias de estado corrompidas validado.
+  Concluida em: 2026-08-25 23:06 (America/Sao_Paulo).
+  `STATE_BOTH_BAD.img` iniciou somente o kernel legado autenticado. O comando
+  `update system slots` registrou `DEGRADED`, sequencia zero, ativo, pendente,
+  anterior, tentativa, boot e motivo `NONE`, journal e recovery limpos e os
+  slots A e B como `EMPTY`, sem promover metadados nao confiaveis.
