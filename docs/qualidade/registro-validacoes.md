@@ -934,3 +934,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `BOOT_FAILED`, sequencia de tentativa 1, journal e recovery limpos, slot A
   `VALID` e slot B preservado como `INVALID`. O descarte observado na fila de
   eventos do mouse permanece externo ao fluxo EP9.2A e nao invalidou o caso.
+- Hash de imagem invalido no slot pendente validado.
+  Concluida em: 2026-08-25 22:56 (America/Sao_Paulo).
+  `BOOT_BAD_IMAGE_HASH.img` iniciou somente o kernel legado autenticado. O
+  comando `update system slots` registrou `DEGRADED`, sequencia 3, ativo A,
+  pendente `NONE`, anterior A, tentativa B, boot `FAILED`, motivo
+  `BOOT_FAILED`, sequencia de tentativa 1, journal e recovery limpos, slot A
+  `VALID` e slot B preservado como `INVALID`. O descarte observado na fila de
+  eventos do mouse permanece externo ao fluxo EP9.2A e nao invalidou o caso.
