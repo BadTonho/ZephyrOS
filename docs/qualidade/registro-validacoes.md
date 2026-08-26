@@ -1035,3 +1035,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   O usuario confirmou que `make q3check` e `make clean && make` terminaram sem
   erros na mesma revisao usada para gerar a matriz. Permanecem pendentes apenas
   os casos funcionais especificos no QEMU.
+- Boot automatico e menu voluntario da EP9.2B validados.
+  Concluida em: 2026-08-26 09:53 (America/Sao_Paulo).
+  Em `BOOT_ACTIVE_VALID`, o usuario confirmou que a expiracao da janela inicia
+  A automaticamente e que F8 abre o menu sem timeout; Esc retomou o fluxo e A
+  iniciou normalmente, sem alteracao persistente observada.
