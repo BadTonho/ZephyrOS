@@ -107,6 +107,7 @@ static int wm_gui_drag_offset_y = 0;
 static int wm_gui_resize_edges = 0;
 static int wm_gui_dispatching_input = 0;
 static int wm_gui_reflow_pending = 0;
+static volatile int wm_gui_redraw_pending = 0;
 static uint8_t wm_gui_alt_down = 0;
 static uint8_t wm_gui_shift_mask = 0;
 static uint8_t wm_gui_extended_scancode = 0;
@@ -272,6 +273,7 @@ static void wm_gui_reset(void) {
     wm_gui_clear_interaction();
     wm_gui_dispatching_input = 0;
     wm_gui_reflow_pending = 0;
+    wm_gui_redraw_pending = 0;
     for (int i = 0; i < WM_GUI_WINDOW_COUNT; i++) {
         taskbar_remove_window(wm_gui_windows[i].id);
         wm_gui_windows[i].app = 0;
@@ -534,6 +536,7 @@ static void wm_gui_draw_all(void) {
     vesa_color_t background = wm_gui_color(GUI_MODERN_COLOR_BG);
 
     wm_gui_reflow_pending = 0;
+    wm_gui_redraw_pending = 0;
     vesa_frame_begin();
     mouse_invalidate_cursor();
     if (desktop_is_active()) desktop_draw_workspace();
@@ -987,7 +990,7 @@ void wm_request_hosted_redraw(wm_app_type_t app_type) {
     if (wm_gui_dispatching_input) {
         return;
     }
-    wm_gui_draw_all();
+    wm_gui_redraw_pending = 1;
 }
 
 int wm_reflow_display(void) {
@@ -1648,6 +1651,9 @@ void wm_update_cpu_stats(void) {
             wm.windows[i].cpu_ticks += delta;
             wm.windows[i].last_cpu_sample = current_ticks;
         }
+    }
+    if (wm_gui_redraw_pending && wm_active && wm_gui_enabled()) {
+        wm_gui_draw_all();
     }
 }
 
