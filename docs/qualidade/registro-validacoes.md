@@ -1201,3 +1201,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   a maquina reiniciada. O recovery exibiu `FAT32 INDISPONIVEL`, restringiu o
   menu ao kernel legado e, apos o timeout de dez segundos, iniciou o ZephyrOS
   normalmente pela raiz fixa autenticada.
+
+- EP9.4B: fallback legado com BPB FAT32 indisponivel validado.
+  Validada em: 2026-08-26 16:48 (America/Sao_Paulo).
+  A overlay foi restaurada e o setor do BPB no LBA 4096 foi zerado. O recovery
+  voltou a exibir `FAT32 INDISPONIVEL`, manteve somente o kernel legado
+  habilitado e iniciou normalmente o ZephyrOS depois do timeout, confirmando
+  que a raiz fixa nao depende do BPB ou do volume operacional.
