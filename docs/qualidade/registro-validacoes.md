@@ -1208,3 +1208,15 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   voltou a exibir `FAT32 INDISPONIVEL`, manteve somente o kernel legado
   habilitado e iniciou normalmente o ZephyrOS depois do timeout, confirmando
   que a raiz fixa nao depende do BPB ou do volume operacional.
+
+- EP9.4B: diagnosticos finais e consistencia FAT32 validados.
+  Concluida em: 2026-08-26 16:51 (America/Sao_Paulo).
+  Apos restaurar a imagem guiada, `health check` apresentou somente os estados
+  degradados ou indisponiveis esperados do ambiente, e `regcheck full`
+  concluiu com `RegCheck: OK`. `storage list` confirmou o volume operacional
+  `ata2p1` montado em leitura e escrita, iniciado no LBA 4096, com particao
+  tipo `0x0C`, setores de 512 bytes e quatro setores por cluster. A verificacao
+  `storage check ata2p1` terminou com `Volume FAT32 consistente.` Os gates do
+  host, a cadeia ABI 1/ABI 2, promocao, rollback, recusas autenticadas, falhas
+  de handoff/retorno e os fallbacks MBR/BPB foram validados; a EP9.4B atende ao
+  criterio de saida.
