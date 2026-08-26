@@ -1050,3 +1050,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   Concluida em: 2026-08-26 10:00 (America/Sao_Paulo).
   Apos reset sem F8 na mesma fixture, o usuario confirmou `READY`, `ativo=B`,
   `pendente=NONE`, `anterior=A`, `tentativa=NONE`, `boot=NONE` e `motivo=NONE`.
+- Timeout de falha e preservacao do candidato EP9.2B validados.
+  Concluida em: 2026-08-26 10:05 (America/Sao_Paulo).
+  Em `MENU_FAILED_VALID`, sem F8, o menu expirou e iniciou o anterior A. O
+  estado persistido permaneceu com `ativo=A`, `tentativa=B`, `boot=FAILED` e
+  `motivo=BOOT_FAILED`, preservando B para diagnostico ou retry explicito.
