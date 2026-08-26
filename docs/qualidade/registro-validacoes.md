@@ -1187,3 +1187,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   candidato. O sistema voltou a A com `pendente=NONE`; B permaneceu `VALID`
   para diagnostico e a tentativa ficou `FAILED` com motivo `BOOT_FAILED`, sem
   repeticao automatica.
+
+- EP9.4B: retorno inesperado da cadeia autenticada tratado com rollback.
+  Validada em: 2026-08-26 16:42 (America/Sao_Paulo).
+  O pacote autenticado `RETURN.ZSY` foi publicado como B pendente e sua
+  continuacao de boot retornou deliberadamente. O verifier limpou os handoffs,
+  recusou a tentativa e voltou ao slot A. B permaneceu `VALID`, sem pendente,
+  com tentativa `FAILED` e motivo `BOOT_FAILED`, sem ciclo automatico.
