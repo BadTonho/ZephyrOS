@@ -917,3 +917,12 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   ZephyrOS depois dos gates da mesma revisao. O handoff E820/VESA, paging do
   contexto supervisor e entrada do kernel funcionaram sem novo panic. Os
   demais casos da matriz EP9.2A permanecem pendentes.
+- Tentativa e confirmacao do slot B validadas em: 2026-08-25 18:40
+  (America/Sao_Paulo); `BOOT_PENDING_VALID.img` abriu o ZephyrOS e o comando
+  `update system slots` registrou `READY`, sequencia 4, ativo B, pendente
+  `NONE`, anterior A, tentativa `NONE`, boot `NONE`, motivo `NONE`, sequencia
+  de tentativa zero e journal limpo. Os slots A e B permaneceram `VALID`,
+  confirmando a persistencia pre-kernel da tentativa e sua promocao pelo
+  acknowledge do kernel. Durante a inspecao ocorreu descarte por fila de
+  eventos do mouse cheia; a observacao e externa ao fluxo EP9.2A e nao
+  invalidou este caso da matriz.
