@@ -1173,3 +1173,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   autenticada ABI 2. A confirmacao do kernel promoveu B para ativo, limpou o
   pendente e a tentativa e preservou A e B como `VALID`. O status final ficou
   `seq=4`, `ativo=B`, `anterior=A`, `boot=NONE` e `motivo=NONE`.
+
+- EP9.4B: hashes individuais dos componentes recusados.
+  Validada em: 2026-08-26 16:28 (America/Sao_Paulo).
+  `BADBOOT.ZSY`, `BADSTG2.ZSY` e `BADKERN.ZSY` foram verificados na mesma
+  sessao guiada. Os tres retornaram `ZSYS recusado: HASH`, identificaram
+  `boot_abi=2` e nao realizaram gravacao.
