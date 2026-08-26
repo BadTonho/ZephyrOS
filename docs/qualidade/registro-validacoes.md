@@ -970,4 +970,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `update system slots` registrou `DEGRADED`, sequencia zero, ativo, pendente,
   anterior, boot e motivo `NONE`, tentativa exibida como A com sequencia zero,
   journal e recovery limpos e os slots A e B como `EMPTY`, sem promover
-  metadados nao confiaveis.
+  metadados nao confiaveis. O fallback foi validado, mas a exibicao incorreta
+  do slot de tentativa exige a repeticao deste caso apos a correcao.
+- Sentinelas do estado ZSYS ausente corrigidos.
+  Concluida em: 2026-08-25 23:08 (America/Sao_Paulo).
+  A carga sem qualquer copia de estado valida agora inicializa slot anterior e
+  slot em tentativa com `UPDATE_SYSTEM_SLOT_NONE`, coerente com o estado de
+  boot `NONE` e com o contrato publico. A validacao QEMU aguarda o usuario.

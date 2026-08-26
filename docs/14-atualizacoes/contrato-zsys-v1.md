@@ -121,6 +121,9 @@ O journal de 512 bytes usa magic `ZSJ1` e as fases `PREPARED`, `STAGING`,
 `VERIFIED` e `COMMITTED`. Na inicialização, a cópia válida de maior sequência
 é escolhida. Uma cópia corrompida pode ser tolerada quando a outra é válida;
 duas cópias inválidas deixam o serviço `DEGRADED`, sem reparo silencioso.
+Sem estado válido, os campos públicos de slot ativo, pendente, anterior e em
+tentativa usam o sentinela `NONE`; nenhum índice de slot pode ser inferido de
+uma estrutura zerada.
 Interrupções preservam o slot ativo. Staging incompleto é descartado quando
 o journal ainda está em `PREPARED`/`STAGING`; um staging verificado pode ser
 republicado como slot pendente durante a recuperação.
