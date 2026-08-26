@@ -6,8 +6,8 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 EP9.0A, EP9.1, EP9.2A e EP9.4A implementadas e validadas pelo usuário; a
 EP9.2B de menu pre-kernel, F8, boot anterior one-shot e retry manual esta
-validada com a matriz QEMU especifica. Aplicacao e comandos pos-reboot
-continuam reservados para a EP9.3.
+validada com a matriz QEMU especifica. A EP9.3 de cache, aplicacao e
+cancelamento ZSYS esta implementada e aguarda validacao do usuario.
 
 ## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A e EP9.2B validadas, EP9.3 pendente
 
@@ -753,8 +753,8 @@ Evolução da plataforma:      [████████████████
   autenticado, tentativa/rollback, fallback legado e matriz QEMU completa.
 - [x] EP9.2B implementada e validada: menu pre-kernel por F8 ou falha,
   diagnostico A/B, anterior one-shot, retry manual v2 e fallback VGA.
-- [ ] EP9.3 futura: aplicação, comandos, rollback pós-reboot e confirmação
-  explícita de reboot.
+- [ ] EP9.3 implementada, com validacao pendente: cache ZSYS A/B, aplicacao,
+  cancelamento e confirmacao explicita de reboot.
 
 Para atualizacoes do sistema, U1-U5 continuam sendo a base executavel no
 dispositivo; EP5-EP9 sao a continuidade de Release, transporte e imagem do

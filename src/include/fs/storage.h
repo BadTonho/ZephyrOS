@@ -200,6 +200,14 @@ int storage_slot_writer_write(const uint8_t* data, uint32_t size);
 int storage_slot_writer_finish(void);
 int storage_slot_writer_abort(void);
 int storage_slot_writer_is_active(void);
+int storage_transaction_writer_begin(const char* id, const char* path,
+                                     const char* temporary_path,
+                                     uint32_t expected_size,
+                                     uint8_t attributes);
+int storage_transaction_writer_write(const uint8_t* data, uint32_t size);
+int storage_transaction_writer_finish(void);
+int storage_transaction_writer_abort(void);
+int storage_transaction_writer_is_active(void);
 const char* storage_fs_name(storage_fs_type_t type);
 const char* storage_volume_state_name(storage_volume_state_t state);
 

@@ -134,7 +134,13 @@ final. Os wrappers publicos de `update.h` permanecem compatíveis.
 - nao existe consulta, download ou instalacao silenciosa;
 - Runtime v2 usa somente o catalogo fixo dos tres BMPs e continua limitado ao
   FAT12 para cache/aplicacao; o Simple nao recebe a aba Runtime;
+
 - o aplicativo nao altera boot, stage2, kernel em setores crus ou Desktop.
+
+A EP9.3 acrescenta o fluxo ZSYS somente aos comandos Shell. O System Updater
+Classic nao recebe controles novos nesta etapa; sua regressao confirma apenas
+que abrir, navegar e fechar o aplicativo continua funcional enquanto o cache
+ZSYS e os slots sao inspecionados pelo Shell hospedado.
 
 ## Referencias
 

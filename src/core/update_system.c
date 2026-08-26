@@ -36,6 +36,8 @@ typedef struct {
     uint8_t component_active[UPDATE_SYSTEM_COMPONENT_COUNT];
     uint8_t crypto_ready;
     char tag[UPDATE_REMOTE_TAG_SIZE];
+    update_system_transfer_write_t write;
+    void* write_context;
     update_system_verification_t result;
 } update_system_remote_stream_t;
 
@@ -697,6 +699,10 @@ static int update_system_remote_sink(const uint8_t* data, uint32_t size,
     if (crypto_sha256_update(&stream->package_sha, data, size) != OK) {
         return ERR_STATE;
     }
+    if (stream->write &&
+        stream->write(data, size, stream->write_context) != OK) {
+        return ERR_DISK;
+    }
     while (consumed < size) {
         if (stream->received < UPDATE_SYSTEM_HEADER_SIZE) {
             uint32_t copy_size = UPDATE_SYSTEM_HEADER_SIZE - stream->received;
@@ -728,10 +734,21 @@ static int update_system_remote_finish(update_system_remote_stream_t* stream) {
         stream->received != stream->expected_size ||
         stream->payload_received != stream->image_size) return ERR_INVALID;
     result = crypto_sha256_final(&stream->package_sha, stream->package_hash);
-    if (result == OK) result = crypto_ed25519_verify_final(&stream->signature);
-    if (result == OK) result = crypto_sha256_final(&stream->image_sha, hash);
-    if (result == OK && !crypto_equal(hash, stream->result.image_hash,
-                                     CRYPTO_SHA256_SIZE)) result = ERR_INVALID;
+    if (result != OK) {
+        stream->result.reason = UPDATE_SYSTEM_REASON_HASH;
+        return result;
+    }
+    result = crypto_ed25519_verify_final(&stream->signature);
+    if (result != OK) {
+        stream->result.reason = UPDATE_SYSTEM_REASON_SIGNATURE;
+        return result;
+    }
+    result = crypto_sha256_final(&stream->image_sha, hash);
+    if (result != OK || !crypto_equal(hash, stream->result.image_hash,
+                                      CRYPTO_SHA256_SIZE)) {
+        stream->result.reason = UPDATE_SYSTEM_REASON_HASH;
+        return result == OK ? ERR_INVALID : result;
+    }
     for (uint32_t index = 0U;
          result == OK && index < stream->result.component_count; index++) {
         result = crypto_sha256_final(&stream->component_sha[index], hash);
@@ -740,8 +757,7 @@ static int update_system_remote_finish(update_system_remote_stream_t* stream) {
                 CRYPTO_SHA256_SIZE)) result = ERR_INVALID;
     }
     if (result != OK) {
-        stream->result.reason = result == ERR_INVALID ?
-            UPDATE_SYSTEM_REASON_HASH : UPDATE_SYSTEM_REASON_SIGNATURE;
+        stream->result.reason = UPDATE_SYSTEM_REASON_HASH;
         return result;
     }
     stream->result.signature_valid = 1U;
@@ -756,14 +772,17 @@ static update_system_remote_stream_t update_system_remote_stream;
 static update_remote_github_release_t update_system_remote_release;
 static update_remote_result_t update_system_remote_result;
 
-int update_system_check_tag(const char* tag,
-                            const update_remote_options_t* options,
-                            update_system_verification_t* result_out) {
+int update_system_transfer_tag(
+    const char* tag, const update_remote_options_t* options,
+    const update_system_transfer_t* transfer,
+    update_system_verification_t* result_out,
+    update_system_remote_asset_t* asset_out) {
     http_request_options_t http_options;
     http_status_t http_status;
     const uint8_t* descriptor = 0;
     uint32_t descriptor_size = 0U;
     uint8_t descriptor_hash[CRYPTO_SHA256_SIZE];
+    uint8_t transfer_started = 0U;
     int result;
 
     if (!tag || !result_out) {
@@ -771,6 +790,7 @@ int update_system_check_tag(const char* tag,
         return ERR_NULL;
     }
     kmemset(result_out, 0, sizeof(*result_out));
+    if (asset_out) kmemset(asset_out, 0, sizeof(*asset_out));
     kmemset(&update_system_remote_release, 0,
             sizeof(update_system_remote_release));
     kmemset(&update_system_remote_result, 0,
@@ -821,6 +841,22 @@ int update_system_check_tag(const char* tag,
         LOG_ERROR("UPDATE", "release.json v2 diverge do asset system.zsys");
         return ERR_INVALID;
     }
+    if (asset_out) {
+        asset_out->package_size = update_system_remote_release.system.size;
+        kmemcpy(asset_out->package_hash,
+                update_system_remote_release.system.digest,
+                CRYPTO_SHA256_SIZE);
+        if (update_system_remote_copy_text(
+                asset_out->tag, sizeof(asset_out->tag),
+                update_system_remote_release.tag) != OK ||
+            update_system_remote_copy_text(
+                asset_out->release_id, sizeof(asset_out->release_id),
+                update_system_remote_release.release_id) != OK) {
+            result_out->reason = UPDATE_SYSTEM_REASON_PATH_POLICY;
+            LOG_ERROR("UPDATE", "Metadados da Release ZSYS excedem contrato");
+            return ERR_OVERFLOW;
+        }
+    }
     kmemset(&update_system_remote_stream, 0,
             sizeof(update_system_remote_stream));
     if (update_system_remote_copy_text(
@@ -832,9 +868,30 @@ int update_system_check_tag(const char* tag,
     }
     update_system_remote_stream.expected_size =
         update_system_remote_release.system.size;
+    update_system_remote_stream.write = transfer ? transfer->write : 0;
+    update_system_remote_stream.write_context = transfer ? transfer->context : 0;
     kmemcpy(update_system_remote_stream.expected_package_hash,
             update_system_remote_release.system.digest, CRYPTO_SHA256_SIZE);
     result = crypto_sha256_init(&update_system_remote_stream.package_sha);
+    if (result == OK && transfer && transfer->begin) {
+        update_system_remote_asset_t local_asset;
+        update_system_remote_asset_t* begin_asset = asset_out;
+        if (!begin_asset) {
+            kmemset(&local_asset, 0, sizeof(local_asset));
+            local_asset.package_size = update_system_remote_release.system.size;
+            kmemcpy(local_asset.package_hash,
+                    update_system_remote_release.system.digest,
+                    CRYPTO_SHA256_SIZE);
+            update_system_remote_copy_text(local_asset.tag,
+                                           sizeof(local_asset.tag), tag);
+            update_system_remote_copy_text(
+                local_asset.release_id, sizeof(local_asset.release_id),
+                update_system_remote_release.release_id);
+            begin_asset = &local_asset;
+        }
+        result = transfer->begin(begin_asset, transfer->context);
+        transfer_started = result == OK ? 1U : 0U;
+    }
     if (result == OK) result = update_system_remote_http_options(
         options, &http_options);
     if (result == OK) result = http_get_stream_start_ex(
@@ -844,6 +901,9 @@ int update_system_check_tag(const char* tag,
     if (result == OK) result = update_system_remote_wait_http(
         options, &http_status);
     if (result != OK) {
+        if (transfer_started && transfer && transfer->abort) {
+            transfer->abort(transfer->context);
+        }
         *result_out = update_system_remote_stream.result;
         if (result_out->reason == UPDATE_SYSTEM_REASON_NONE) {
             result_out->reason = UPDATE_SYSTEM_REASON_IO;
@@ -856,6 +916,9 @@ int update_system_check_tag(const char* tag,
         http_status.content_length != update_system_remote_release.system.size ||
         http_status.body_length != update_system_remote_release.system.size) {
         result_out->reason = UPDATE_SYSTEM_REASON_SIZE;
+        if (transfer_started && transfer && transfer->abort) {
+            transfer->abort(transfer->context);
+        }
         LOG_ERROR("UPDATE", "Tamanho de system.zsys remoto diverge da API");
         return ERR_INVALID;
     }
@@ -871,10 +934,30 @@ int update_system_check_tag(const char* tag,
             result_out->reason = UPDATE_SYSTEM_REASON_HASH;
         }
         LOG_ERROR("UPDATE", "system.zsys remoto falhou na verificacao");
+        if (transfer_started && transfer && transfer->abort) {
+            transfer->abort(transfer->context);
+        }
         return result == OK ? ERR_INVALID : result;
     }
-    LOG_INFO("UPDATE", "system.zsys remoto verificado sem gravacao");
+    if (transfer_started && transfer && transfer->finish) {
+        result = transfer->finish(transfer->context);
+        if (result != OK) {
+            if (transfer->abort) transfer->abort(transfer->context);
+            result_out->reason = UPDATE_SYSTEM_REASON_IO;
+            LOG_ERROR("UPDATE", "Falha ao publicar transferencia ZSYS");
+            return result;
+        }
+    }
+    LOG_INFO("UPDATE", transfer ?
+             "system.zsys remoto transferido e verificado" :
+             "system.zsys remoto verificado sem gravacao");
     return OK;
+}
+
+int update_system_check_tag(const char* tag,
+                            const update_remote_options_t* options,
+                            update_system_verification_t* result_out) {
+    return update_system_transfer_tag(tag, options, 0, result_out, 0);
 }
 
 int update_system_init(void) {

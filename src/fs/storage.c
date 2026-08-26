@@ -3562,8 +3562,10 @@ static int storage_slot_writer_flush_locked(void) {
     return result;
 }
 
-int storage_slot_writer_begin(const char* id, const char* path,
-                              uint32_t expected_size, uint8_t attributes) {
+int storage_transaction_writer_begin(const char* id, const char* path,
+                                     const char* temporary_path,
+                                     uint32_t expected_size,
+                                     uint8_t attributes) {
     storage_volume_t* volume;
     storage_mount_t* mount;
     storage_long_raw_entry_t existing;
@@ -3575,7 +3577,7 @@ int storage_slot_writer_begin(const char* id, const char* path,
     int index;
     int result;
 
-    if (!id || !path || !expected_size ||
+    if (!id || !path || !temporary_path || !expected_size ||
         expected_size > STORAGE_SLOT_MAX_FILE_SIZE) {
         LOG_ERROR("FS", "Argumento invalido ao iniciar escritor de slot");
         return ERR_INVALID;
@@ -3594,8 +3596,13 @@ int storage_slot_writer_begin(const char* id, const char* path,
         result = ERR_INVALID;
         goto slot_writer_begin_done;
     }
+    if (kstrcmp(filename, temporary_path) == 0 ||
+        storage_name_to_fat(temporary_path, entry) != OK) {
+        result = ERR_INVALID;
+        goto slot_writer_begin_done;
+    }
     result = storage_find_entry_long(volume, mount, mount->root_cluster, 0,
-                                     "ZSTG.ZSY", &existing);
+                                     temporary_path, &existing);
     if (result == OK) {
         result = ERR_STATE;
         goto slot_writer_begin_done;
@@ -3630,7 +3637,7 @@ int storage_slot_writer_begin(const char* id, const char* path,
     storage_copy_text(storage_slot_writer_state.target_path,
                       STORAGE_MAX_PATH, filename);
     storage_copy_text(storage_slot_writer_state.temp_path,
-                      STORAGE_MAX_PATH, "ZSTG.ZSY");
+                      STORAGE_MAX_PATH, temporary_path);
     storage_slot_writer_build_entry(&storage_slot_writer_state, entry, 0U);
     result = storage_write_directory_entry(volume, entry_offset, entry);
     if (result != OK) goto slot_writer_begin_cleanup;
@@ -3646,7 +3653,7 @@ slot_writer_begin_done:
     return result;
 }
 
-int storage_slot_writer_write(const uint8_t* data, uint32_t size) {
+int storage_transaction_writer_write(const uint8_t* data, uint32_t size) {
     storage_slot_writer_state_t* state = &storage_slot_writer_state;
     int result = OK;
 
@@ -3682,7 +3689,7 @@ int storage_slot_writer_write(const uint8_t* data, uint32_t size) {
     return result;
 }
 
-int storage_slot_writer_finish(void) {
+int storage_transaction_writer_finish(void) {
     char volume_id[STORAGE_ID_SIZE];
     char target_path[STORAGE_MAX_PATH];
     char temp_path[STORAGE_MAX_PATH];
@@ -3729,7 +3736,7 @@ int storage_slot_writer_finish(void) {
     return result;
 }
 
-int storage_slot_writer_abort(void) {
+int storage_transaction_writer_abort(void) {
     char volume_id[STORAGE_ID_SIZE];
     char temp_path[STORAGE_MAX_PATH];
     int result;
@@ -3753,13 +3760,35 @@ int storage_slot_writer_abort(void) {
     return result;
 }
 
-int storage_slot_writer_is_active(void) {
+int storage_transaction_writer_is_active(void) {
     int active;
 
     spinlock_acquire(&storage_operation_lock);
     active = storage_slot_writer_state.active ? 1 : 0;
     spinlock_release(&storage_operation_lock);
     return active;
+}
+
+int storage_slot_writer_begin(const char* id, const char* path,
+                              uint32_t expected_size, uint8_t attributes) {
+    return storage_transaction_writer_begin(id, path, "ZSTG.ZSY",
+                                            expected_size, attributes);
+}
+
+int storage_slot_writer_write(const uint8_t* data, uint32_t size) {
+    return storage_transaction_writer_write(data, size);
+}
+
+int storage_slot_writer_finish(void) {
+    return storage_transaction_writer_finish();
+}
+
+int storage_slot_writer_abort(void) {
+    return storage_transaction_writer_abort();
+}
+
+int storage_slot_writer_is_active(void) {
+    return storage_transaction_writer_is_active();
 }
 
 int storage_stream_begin(const char* id, const char* path,

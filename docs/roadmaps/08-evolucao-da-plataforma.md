@@ -739,9 +739,8 @@ repositorio.
 ## EP9 - Atualizacao da imagem do sistema e slots de boot
 
 **Estado:** EP9.0A, EP9.1, EP9.2A, EP9.2B e EP9.4A implementadas e validadas
-pelo usuário. A regressão visual Simple/Classic não integra esta matriz porque a
-mudança ocorre antes do kernel; o fallback VGA texto possui alvo dedicado.
-Aplicação e comandos pós-reboot continuam reservados para a EP9.3.
+pelo usuário. A EP9.3 esta implementada e aguarda validacao dos fluxos
+pós-kernel de cache, aplicacao e cancelamento.
 
 Esta fase separa a atualizacao de arquivos do sistema em execucao da
 atualizacao da imagem que o proximo boot carregara. O ZUPD v1 continua limitado
@@ -906,13 +905,18 @@ As entregas de recuperacao da EP9.2 ficam divididas em duas subetapas:
 
 ### EP9.3 - Comandos e validacao
 
-- [ ] Adicionar comandos separados para consultar, baixar, aplicar e cancelar
+**Estado:** implementada; validação do usuário pendente.
+
+- [x] Adicionar comandos separados para consultar, baixar, aplicar e cancelar
   uma imagem `system`, sem misturar o fluxo `runtime` do ZUPD v1.
-- [ ] Exigir confirmacao explicita e reboot para ativar `ZSYS`; baixar nunca
+- [x] Exigir confirmacao explicita e reboot para ativar `ZSYS`; baixar nunca
   instala nem altera a imagem em uso.
-- [ ] Cobrir imagem ausente, assinatura/hash invalidos, versao incompatível,
-  falta de espaco, falha durante staging, falha no primeiro boot, rollback,
-  energia interrompida, cache corrompido e regressao Simple/Classic.
+- [x] Preparar fixtures deterministicas para cache valido, uma ou duas copias
+  corrompidas, transferencia interrompida, staging, tentativa, confirmacao e
+  rollback, reutilizando a matriz ZSYS para assinatura, hashes,
+  incompatibilidade, espaco e volume ausente.
+- [ ] Validar no alvo guiado o Shell hospedado Classic, o fallback Simple,
+  `health`, `regcheck full`, aplicacao, cancelamento, reboot e rollback.
 
 ### EP9.4A - Volume de sistema FAT32
 
@@ -934,7 +938,7 @@ As entregas de recuperacao da EP9.2 ficam divididas em duas subetapas:
   system-fixtures, q3check, build completo, QEMU, memcheck e regcheck full.
 
 Limites mantidos para etapas posteriores: filesystem nativo, boot direto pelo
-FAT32, aplicacao ZSYS, selecao de slot no boot e reboot automatico.
+FAT32 e reboot automatico disparado pelo atualizador.
 
 ### EP9.4B - Expansão posterior de armazenamento
 

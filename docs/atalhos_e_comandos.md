@@ -52,7 +52,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `update remote` | `status/enable/disable/clear [--confirm]` | Controla o transporte remoto opcional da sessao. |
 | `update fetch` | `[--url <manifesto>] [--confirm]` | Consulta ou baixa um ZUPD autenticado sem aplicar. |
 | `update github` | `check|fetch --tag <tag> [--confirm]` | Consulta Releases GitHub por HTTPS e tag exata, sem instalar. |
-| `update system` | `verify system:/<arquivo.ZSYS>` ou `check --tag <tag>` | Valida a imagem completa e a Release v2 sem baixar para cache ou aplicar. |
+| `update system` | `status|check|fetch|verify|apply|cancel|slots` | Consulta, baixa em cache próprio, prepara ou cancela uma imagem ZSYS; a ativação exige `reboot`. |
 | `update runtime` | `test fail-after <1-16>` | Arma uma interrupcao one-shot para validar recuperacao do runtime v2. |
 | `kmetrics` | `[reset]` | Mostra ou inicia a janela manual de métricas K1. |
 | `devices` | `[-v]` | Lista o inventario nativo de hardware; `-v` inclui localizacao, IRQ e IDs PCI. |

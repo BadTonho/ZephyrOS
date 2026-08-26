@@ -573,6 +573,29 @@ static int system_slots_write_state_locked(void) {
     return OK;
 }
 
+static int system_slots_replicate_state_locked(void) {
+    system_slots_state_t persisted;
+    uint8_t slot = (uint8_t)((system_slots_state.sequence & 1U) ^ 1U);
+    int result = system_slots_encode_state(&system_slots_state,
+                                           system_slots_control);
+
+    if (result == OK) {
+        result = system_slots_write_control(system_slots_state_aliases[slot],
+                                            system_slots_control);
+    }
+    if (result == OK) {
+        result = system_slots_load_control(system_slots_state_aliases[slot],
+                                           system_slots_control);
+    }
+    if (result != OK ||
+        system_slots_decode_state(system_slots_control, &persisted) != OK ||
+        persisted.sequence != system_slots_state.sequence) {
+        LOG_ERROR("UPDATE", "Redundancia de slots nao confirmou gravacao");
+        return ERR_DISK;
+    }
+    return OK;
+}
+
 static int system_slots_write_journal_locked(void) {
     uint8_t slot;
     int result;
@@ -1194,6 +1217,93 @@ int update_system_slots_stage_file(
     system_slots_publish_status_locked();
     spinlock_release(&system_slots_lock);
     LOG_INFO("UPDATE", "Slot ZSYS preparado e marcado como pendente");
+    return OK;
+}
+
+int update_system_slots_cancel_pending(
+    const update_system_slots_action_options_t* options,
+    update_system_slots_action_result_t* result_out) {
+    system_slots_state_t previous;
+    uint8_t target;
+    int result;
+
+    if (!result_out) {
+        LOG_ERROR("UPDATE", "Resultado nulo ao cancelar slot ZSYS");
+        return ERR_NULL;
+    }
+    kmemset(result_out, 0, sizeof(*result_out));
+    result_out->target_slot = UPDATE_SYSTEM_SLOT_NONE;
+    spinlock_acquire(&system_slots_lock);
+    if (!system_slots_initialized || !system_slots_volume_ready) {
+        result_out->reason = UPDATE_SYSTEM_SLOTS_REASON_UNSUPPORTED;
+        spinlock_release(&system_slots_lock);
+        LOG_ERROR("UPDATE", "Cancelamento ZSYS sem slots prontos");
+        return ERR_UNAVAILABLE;
+    }
+    if (system_slots_state_degraded || system_slots_journal_degraded) {
+        result_out->reason = UPDATE_SYSTEM_SLOTS_REASON_STATE;
+        spinlock_release(&system_slots_lock);
+        LOG_ERROR("UPDATE", "Cancelamento ZSYS recusado em estado degradado");
+        return ERR_INVALID;
+    }
+    if (system_slots_journal.phase != SYSTEM_SLOTS_PHASE_NONE) {
+        result_out->reason = UPDATE_SYSTEM_SLOTS_REASON_JOURNAL;
+        spinlock_release(&system_slots_lock);
+        LOG_ERROR("UPDATE", "Cancelamento ZSYS recusado com journal pendente");
+        return ERR_STATE;
+    }
+    if (system_slots_state.boot_state ==
+            UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPTED ||
+        system_slots_state.attempt_slot != UPDATE_SYSTEM_SLOT_NONE) {
+        result_out->reason = UPDATE_SYSTEM_SLOTS_REASON_STATE;
+        spinlock_release(&system_slots_lock);
+        LOG_ERROR("UPDATE", "Cancelamento ZSYS recusado durante tentativa");
+        return ERR_STATE;
+    }
+    target = system_slots_state.pending_slot;
+    result_out->target_slot = target;
+    if (target == UPDATE_SYSTEM_SLOT_NONE) {
+        result_out->reason = UPDATE_SYSTEM_SLOTS_REASON_NONE;
+        spinlock_release(&system_slots_lock);
+        return OK;
+    }
+    if (target >= UPDATE_SYSTEM_SLOT_COUNT ||
+        target == system_slots_state.active_slot ||
+        system_slots_state.sequence == 0xFFFFFFFFU) {
+        result_out->reason = UPDATE_SYSTEM_SLOTS_REASON_STATE;
+        spinlock_release(&system_slots_lock);
+        LOG_ERROR("UPDATE", "Slot pendente invalido para cancelamento");
+        return ERR_INVALID;
+    }
+    if (options && options->dry_run) {
+        result_out->reason = UPDATE_SYSTEM_SLOTS_REASON_NONE;
+        spinlock_release(&system_slots_lock);
+        return OK;
+    }
+    previous = system_slots_state;
+    system_slots_state.pending_slot = UPDATE_SYSTEM_SLOT_NONE;
+    system_slots_state.previous_slot = system_slots_state.active_slot;
+    system_slots_state.attempt_slot = UPDATE_SYSTEM_SLOT_NONE;
+    system_slots_state.boot_state = UPDATE_SYSTEM_SLOTS_BOOT_NONE;
+    system_slots_state.boot_reason = UPDATE_SYSTEM_SLOTS_REASON_NONE;
+    system_slots_state.boot_attempt_sequence = 0U;
+    result = system_slots_write_state_locked();
+    if (result == OK) result = system_slots_replicate_state_locked();
+    if (result != OK) {
+        system_slots_state = previous;
+        system_slots_state_degraded = 1U;
+        system_slots_load_state_locked();
+        result_out->reason = UPDATE_SYSTEM_SLOTS_REASON_STATE;
+        result_out->recovery_pending = 1U;
+        spinlock_release(&system_slots_lock);
+        LOG_ERROR("UPDATE", "Cancelamento do slot pendente nao confirmou");
+        return result;
+    }
+    result_out->pending_cancelled = 1U;
+    result_out->reason = UPDATE_SYSTEM_SLOTS_REASON_NONE;
+    system_slots_publish_status_locked();
+    spinlock_release(&system_slots_lock);
+    LOG_INFO("UPDATE", "Slot ZSYS pendente cancelado");
     return OK;
 }
 

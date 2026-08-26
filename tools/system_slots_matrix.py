@@ -51,6 +51,13 @@ STATE_A = "ZSI0.STA"
 STATE_B = "ZSI1.STA"
 JOURNAL_A = "ZSI0.JRN"
 JOURNAL_B = "ZSI1.JRN"
+CACHE_DATA_A = "ZSC0.ZSY"
+CACHE_DATA_B = "ZSC1.ZSY"
+CACHE_STATE_A = "ZSC0.STA"
+CACHE_STATE_B = "ZSC1.STA"
+CACHE_TEMP = "ZSCT.ZSY"
+CACHE_MAGIC = b"ZSC1"
+CACHE_NONE = 0xFF
 
 
 def fixed_text(raw: bytes, label: str) -> bytes:
@@ -91,6 +98,35 @@ def slot_record(package: bytes) -> bytes:
     raw[16:48] = hashlib.sha256(package).digest()
     raw[48:112] = release_id + bytes(IDENTIFIER_SIZE - len(release_id))
     raw[112:176] = release_tag + bytes(IDENTIFIER_SIZE - len(release_tag))
+    return bytes(raw)
+
+
+def cache_record(package: bytes, sequence: int = 1, slot: int = 0) -> bytes:
+    version = struct.unpack_from("<HHH", package, VERSION_OFFSET)
+    epoch = struct.unpack_from("<I", package, EPOCH_OFFSET)[0]
+    release_id = fixed_text(
+        package[RELEASE_ID_OFFSET : RELEASE_ID_OFFSET + IDENTIFIER_SIZE],
+        "release_id",
+    )
+    release_tag = fixed_text(
+        package[RELEASE_TAG_OFFSET : RELEASE_TAG_OFFSET + IDENTIFIER_SIZE],
+        "release_tag",
+    )
+    alias = (CACHE_DATA_A if slot == 0 else CACHE_DATA_B).encode("ascii")
+    raw = bytearray(CONTROL_SIZE)
+    raw[:4] = CACHE_MAGIC
+    struct.pack_into("<HHI", raw, 4, 1, CONTROL_SIZE, sequence)
+    raw[12] = slot
+    struct.pack_into("<I", raw, 16, len(package))
+    raw[20:52] = hashlib.sha256(package).digest()
+    struct.pack_into("<HHH", raw, 52, *version)
+    struct.pack_into("<I", raw, 60, epoch)
+    raw[64 : 64 + len(release_tag)] = release_tag
+    raw[129 : 129 + len(release_id)] = release_id
+    raw[194 : 194 + len(alias)] = alias
+    raw[CONTROL_HASH_OFFSET:] = hashlib.sha256(
+        raw[:CONTROL_HASH_OFFSET]
+    ).digest()
     return bytes(raw)
 
 
@@ -211,6 +247,9 @@ def make_case(
     target: bool = False,
     fill_space: bool = False,
     no_volume: bool = False,
+    cache: tuple[bytes, bytes] | None = None,
+    cache_package: bytes | None = None,
+    cache_temp: bool = False,
     start_lba: int = HYBRID_FAT32_START_LBA,
 ) -> None:
     image = output_dir / f"{name}.img"
@@ -224,6 +263,13 @@ def make_case(
         inject(image, "ZSTG.ZSY", candidate_package, start_lba)
     if target:
         inject(image, "ZSB0.ZSY", candidate_package, start_lba)
+    if cache:
+        inject(image, CACHE_STATE_A, cache[0], start_lba)
+        inject(image, CACHE_STATE_B, cache[1], start_lba)
+    if cache_package is not None:
+        inject(image, CACHE_DATA_A, cache_package, start_lba)
+    if cache_temp:
+        inject(image, CACHE_TEMP, candidate_package, start_lba)
     if fill_space:
         fill_free_clusters(image, start_lba)
     if no_volume:
@@ -257,6 +303,7 @@ def main() -> int:
     valid_state = state_record(active)
     empty_slot_state = valid_state
     valid_journal = journal_record(candidate, PHASE_PREPARED)
+    valid_cache = cache_record(candidate_package)
     cases: dict[str, dict[str, str]] = {}
 
     def add(name: str, expected: str, package: bytes = candidate_package,
@@ -347,6 +394,25 @@ def main() -> int:
         "Menu: retry B desabilitado; controle alternado sem 512 bytes",
         state_a=failed_candidate, state_b=bytes(),
         candidate=candidate, target=True)
+    add("SYSTEM_CACHE_VALID", "Cache READY; slots READY",
+        state_a=valid_state, state_b=valid_state, candidate=candidate,
+        cache=(valid_cache, valid_cache), cache_package=candidate_package)
+    add("SYSTEM_CACHE_ONE_BAD", "Cache READY pela copia valida",
+        state_a=valid_state, state_b=valid_state, candidate=candidate,
+        cache=(corrupt(valid_cache), valid_cache),
+        cache_package=candidate_package)
+    add("SYSTEM_CACHE_BOTH_BAD", "Cache DEGRADED; slots READY",
+        state_a=valid_state, state_b=valid_state, candidate=candidate,
+        cache=(corrupt(valid_cache), corrupt(valid_cache)),
+        cache_package=candidate_package)
+    add("SYSTEM_CACHE_INTERRUPTED", "Cache anterior READY; temporario limpo",
+        state_a=valid_state, state_b=valid_state, candidate=candidate,
+        cache=(valid_cache, valid_cache), cache_package=candidate_package,
+        cache_temp=True)
+    add("SYSTEM_UPDATE_GUIDED",
+        "Fluxo unico: status, verify, cancel, apply, reboot e rollback",
+        state_a=valid_state, state_b=valid_state, candidate=candidate,
+        cache=(valid_cache, valid_cache), cache_package=candidate_package)
     (output_dir / "matrix.json").write_text(
         json.dumps(
             {
