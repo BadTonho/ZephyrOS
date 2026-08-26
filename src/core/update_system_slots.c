@@ -699,6 +699,8 @@ static int system_slots_load_state_locked(void) {
     if (!found) {
         kmemset(&system_slots_state, 0, sizeof(system_slots_state));
         system_slots_state.pending_slot = UPDATE_SYSTEM_SLOT_NONE;
+        system_slots_state.previous_slot = UPDATE_SYSTEM_SLOT_NONE;
+        system_slots_state.attempt_slot = UPDATE_SYSTEM_SLOT_NONE;
         if (invalid_count >= UPDATE_SYSTEM_SLOT_COUNT) {
             system_slots_state_degraded = 1U;
             return ERR_INVALID;
