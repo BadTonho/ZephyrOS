@@ -1060,3 +1060,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   Na mesma fixture, o usuario cancelou a confirmacao com Esc sem escrita e
   depois confirmou o retry de B. O sistema iniciou B e exibiu `ativo=B`,
   `pendente=NONE`, `tentativa=NONE`, `boot=NONE`, `motivo=NONE` e sequencia 6.
+- Retry sem controle redundante da EP9.2B validado.
+  Concluida em: 2026-08-26 10:09 (America/Sao_Paulo).
+  Em `MENU_RETRY_NO_CONTROL`, o menu exibiu somente `INICIAR ANTERIOR` e
+  `KERNEL LEGADO`; `TENTAR CANDIDATO` permaneceu desabilitado como exigido.
