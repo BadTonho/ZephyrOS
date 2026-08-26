@@ -26,6 +26,7 @@ FORMAT_VERSION = 2
 STATE_SEQUENCE = 1
 JOURNAL_SEQUENCE = 2
 ACTIVE_SLOT = 0
+ACTIVE_SLOT_B = 1
 PENDING_NONE = 0xFF
 PENDING_SLOT_B = 1
 FILE_EMPTY = 0
@@ -44,6 +45,8 @@ PHASE_STAGING = 2
 PHASE_VERIFIED = 3
 PHASE_COMMITTED = 4
 BOOT_ATTEMPTED = 1
+BOOT_FAILED = 2
+REASON_BOOT_FAILED = 13
 STATE_A = "ZSI0.STA"
 STATE_B = "ZSI1.STA"
 JOURNAL_A = "ZSI0.JRN"
@@ -116,6 +119,27 @@ def attempted_state(active: bytes, candidate: bytes) -> bytes:
     raw = bytearray(pending_state(active, candidate, sequence=3))
     raw[16] = PENDING_SLOT_B
     raw[17] = BOOT_ATTEMPTED
+    struct.pack_into("<I", raw, 20, 1)
+    raw[CONTROL_HASH_OFFSET:] = hashlib.sha256(raw[:CONTROL_HASH_OFFSET]).digest()
+    return bytes(raw)
+
+
+def confirmed_candidate_state(active: bytes, candidate: bytes) -> bytes:
+    raw = bytearray(state_record(active, sequence=4))
+    raw[12] = ACTIVE_SLOT_B
+    raw[15] = ACTIVE_SLOT
+    raw[SLOT_OFFSET + SLOT_SIZE : SLOT_OFFSET + 2 * SLOT_SIZE] = candidate
+    raw[CONTROL_HASH_OFFSET:] = hashlib.sha256(raw[:CONTROL_HASH_OFFSET]).digest()
+    return bytes(raw)
+
+
+def failed_candidate_state(active: bytes, candidate: bytes) -> bytes:
+    raw = bytearray(pending_state(active, candidate, sequence=4))
+    raw[13] = PENDING_NONE
+    raw[15] = ACTIVE_SLOT
+    raw[16] = PENDING_SLOT_B
+    raw[17] = BOOT_FAILED
+    struct.pack_into("<H", raw, 18, REASON_BOOT_FAILED)
     struct.pack_into("<I", raw, 20, 1)
     raw[CONTROL_HASH_OFFSET:] = hashlib.sha256(raw[:CONTROL_HASH_OFFSET]).digest()
     return bytes(raw)
@@ -254,7 +278,7 @@ def main() -> int:
         state_b=corrupt(valid_state), candidate=candidate)
     add("STATE_NEWER", "READY; sequencia 2", state_a=valid_state,
         state_b=state_record(active, sequence=2), candidate=candidate)
-    add("JOURNAL_PREPARED", "READY; A preservado; journal limpo",
+    add("JOURNAL_PREPARED", "Menu somente legado; journal limpo pelo kernel legado",
         state_a=valid_state, state_b=empty_slot_state,
         candidate=candidate, journal=(valid_journal, valid_journal), staging=True)
     add("JOURNAL_STAGING", "READY; A preservado; journal limpo",
@@ -288,7 +312,7 @@ def main() -> int:
     add("NO_SPACE", "READY; preflight SPACE",
         state_a=valid_state, state_b=empty_slot_state,
         candidate=candidate, fill_space=True)
-    add("NO_VOLUME", "DEGRADED ou indisponivel",
+    add("NO_VOLUME", "Menu somente legado; slots indisponiveis",
         state_a=valid_state, state_b=empty_slot_state,
         candidate=candidate, no_volume=True)
     pending = pending_state(active, candidate)
@@ -296,21 +320,33 @@ def main() -> int:
         state_a=valid_state, state_b=valid_state, candidate=candidate)
     add("BOOT_PENDING_VALID", "B e tentado e aguarda confirmacao",
         state_a=pending, state_b=pending, candidate=candidate, target=True)
-    add("BOOT_BAD_SIGNATURE", "Fallback legado autenticado",
+    add("BOOT_BAD_SIGNATURE", "Menu SIGNATURE; retry recusado; anterior autenticado",
         package=bad_signature,
         state_a=pending_state(active, slot_record(bad_signature)),
         state_b=pending_state(active, slot_record(bad_signature)), target=True)
-    add("BOOT_BAD_IMAGE_HASH", "Fallback legado autenticado",
+    add("BOOT_BAD_IMAGE_HASH", "Menu HASH; retry recusado; anterior autenticado",
         package=bad_image_hash,
         state_a=pending_state(active, slot_record(bad_image_hash)),
         state_b=pending_state(active, slot_record(bad_image_hash)), target=True)
-    add("BOOT_BAD_COMPONENT_HASH", "Fallback legado autenticado",
+    add("BOOT_BAD_COMPONENT_HASH", "Menu HASH; retry recusado; anterior autenticado",
         package=bad_component_hash,
         state_a=pending_state(active, slot_record(bad_component_hash)),
         state_b=pending_state(active, slot_record(bad_component_hash)), target=True)
     interrupted = attempted_state(active, candidate)
-    add("BOOT_ATTEMPT_INTERRUPTED", "B marcado FAILED; A preservado",
+    add("BOOT_ATTEMPT_INTERRUPTED", "Menu FAILED; A anterior autenticado",
         state_a=interrupted, state_b=interrupted, candidate=candidate, target=True)
+    confirmed_candidate = confirmed_candidate_state(active, candidate)
+    failed_candidate = failed_candidate_state(active, candidate)
+    add("MENU_PREVIOUS_VALID", "Menu: B ativo; A anterior one-shot",
+        state_a=confirmed_candidate, state_b=interrupted,
+        candidate=candidate, target=True)
+    add("MENU_FAILED_VALID", "Menu: retry B disponivel; confirmacao promove B",
+        state_a=failed_candidate, state_b=interrupted,
+        candidate=candidate, target=True)
+    add("MENU_RETRY_NO_CONTROL",
+        "Menu: retry B desabilitado; controle alternado sem 512 bytes",
+        state_a=failed_candidate, state_b=bytes(),
+        candidate=candidate, target=True)
     (output_dir / "matrix.json").write_text(
         json.dumps(
             {

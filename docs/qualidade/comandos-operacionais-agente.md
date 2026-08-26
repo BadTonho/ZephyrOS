@@ -211,6 +211,58 @@ casos de hash/assinatura, journal e FAT32 ausente devem exibir o diagnostico
 do loader e iniciar somente o fallback legado autenticado. No caso interrompido,
 o boot seguinte deve marcar B como `FAILED`, limpar o pendente e preservar A.
 
+## EP9.2B: matriz do menu pre-kernel
+
+Depois de qualquer alteracao de codigo, header ou Makefile da EP9.2B, o
+usuario executa os gates e regenera as fixtures da mesma revisao:
+
+```text
+make q3check
+make clean && make
+make system-slots-matrix
+```
+
+Inicie cada caso com o comando completo correspondente:
+
+```text
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\BOOT_ACTIVE_VALID.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\MENU_PREVIOUS_VALID.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\MENU_FAILED_VALID.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\MENU_RETRY_NO_CONTROL.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\BOOT_BAD_SIGNATURE.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\BOOT_BAD_IMAGE_HASH.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\BOOT_BAD_COMPONENT_HASH.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\STATE_ONE_BAD.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\STATE_BOTH_BAD.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\JOURNAL_PREPARED.img
+make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\NO_VOLUME.img
+make run-recovery-menu-vga
+```
+
+Em `BOOT_ACTIVE_VALID`, deixar a janela de dois segundos expirar deve iniciar
+A; F8 abre o menu sem timeout e Esc continua A sem escrita. Em
+`MENU_PREVIOUS_VALID`, escolha o anterior one-shot, confirme que
+`update system slots` ainda mostra B como ativo e reinicie sem F8 para voltar
+a B. Em `MENU_FAILED_VALID`, deixe primeiro os dez segundos expirarem para
+confirmar que A anterior inicia por padrao. Em outra execucao, cancele uma vez
+para confirmar estado inalterado; depois regenere a fixture, escolha retry,
+confirme duas vezes e consulte `update system slots` para verificar a promocao
+de B. Uma execucao separada deve ser reiniciada antes do acknowledge e voltar
+a `FAILED` sem loop.
+
+`MENU_RETRY_NO_CONTROL` deve manter retry desabilitado. Nos tres casos
+`BOOT_BAD_*`, o primeiro boot transforma o pendente em `FAILED` com
+`SIGNATURE` ou `HASH`. Antes do timeout, selecione o retry nessa mesma
+instancia; a segunda confirmacao deve revalidar, recusar o candidato e voltar
+ao menu com o anterior ainda disponivel. `STATE_ONE_BAD` deve operar pela copia
+valida. `STATE_BOTH_BAD`, `JOURNAL_PREPARED` e `NO_VOLUME` devem restringir as
+acoes ao legado autenticado. `run-recovery-menu-vga` valida a mesma navegacao
+e os diagnosticos sem VESA.
+
+A EP9.2B somente pode ser marcada validada depois de confirmar todos esses
+fluxos, incluindo ausencia de payload nao autenticado, retry automatico ou
+alteracao persistente durante boot one-shot/cancelamento.
+
 ## Comandos no Shell
 
 Para orientar comandos do sistema, consultar primeiro `comandos.md` e os

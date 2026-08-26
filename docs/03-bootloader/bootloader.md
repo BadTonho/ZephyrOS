@@ -150,6 +150,49 @@ ponte final restaura a pilha em `0x9F000`, publica E820 em `ESI`, VESA em `EDI`
 e chama o kernel em `0x00100000`. A entrada do próprio kernel converte esses
 registradores para `kernel_main(mmap, vesa)`.
 
+### Menu pre-kernel
+
+Antes da selecao automatica, o loader aguarda F8 por dois segundos. O menu
+aberto por F8 permanece ativo ate uma escolha; em uma falha de boot ele abre
+automaticamente por dez segundos. Setas navegam e Enter confirma. No menu
+voluntario, Esc retoma o fluxo automatico sem alterar o estado; no menu de
+falha, Esc segue o padrao seguro do timeout e inicia o anterior autenticado ou
+o legado. O diagnostico usa o framebuffer VESA 24/32 bpp ja configurado ou VGA
+texto quando VESA nao estiver disponivel.
+
+O framebuffer so e usado quando endereco, pitch, largura, altura, bpp e
+tamanho total cabem nos limites do console; geometria inconsistente desativa o
+bloco VESA entregue ao kernel e conserva VGA texto. O volume pre-kernel precisa
+ser a particao FAT32 rotulada `ZEPHYROS`, com MBR/BPB, FAT, raiz, clusters e
+LBAs inteiramente dentro da particao declarada. Alias de diretorio nao e
+tratado como arquivo. Antes de qualquer escrita, a copia alternativa de estado
+deve ocupar um cluster proprio, de um unico cluster, distinto do controle
+selecionado e das cadeias dos slots A/B.
+
+O teclado passa pelo gateway privado `recovery_bios_wait_key(timeout_ticks)`
+do `stage2`. Cada consulta volta controladamente ao modo real, usa `INT 16h` e
+os ticks BIOS com tratamento do wrap diario, e restaura segmentos, pilha,
+`CLI` e modo protegido antes de retornar ao loader. Nao existe polling direto
+das portas PS/2 e `boot.asm` permanece inalterado.
+
+O menu mostra o estado A/B e oferece somente acoes seguras para o contexto:
+continuar o boot automatico, iniciar o anterior one-shot, repetir manualmente
+um candidato preservado ou iniciar o kernel legado. O anterior e sempre
+reautenticado, nao grava estado e nao publica `ZSBH`. O retry exige estado v2
+`FAILED`, controles redundantes prealocados e dupla confirmacao; depois de
+revalidar o ZSYS, persiste e rele `ATTEMPTED` antes de publicar `ZSBH`.
+Cabecalho, alinhamento, politica de boot, canal, bases, rota, checkpoints,
+componentes, chave, assinatura e hashes seguem as mesmas invariantes estaticas
+do verificador ZSYS do kernel. A versao, o epoch, o release ID e a release tag
+assinados no cabecalho devem coincidir byte a byte com os metadados do registro
+de slot selecionado.
+
+Falhas de assinatura, hash, formato, tamanho, I/O ou journal permanecem
+visiveis no menu e nunca liberam o candidato. Sem estado confiavel, journal
+limpo ou FAT32 disponivel, somente o kernel legado com SHA-256 incorporado no
+build pode ser iniciado. Reset antes do acknowledge volta a `FAILED` no boot
+seguinte, sem ciclo automatico.
+
 ## Layout da Memória
 
 ```

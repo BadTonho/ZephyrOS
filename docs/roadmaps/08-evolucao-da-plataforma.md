@@ -738,11 +738,11 @@ repositorio.
 
 ## EP9 - Atualizacao da imagem do sistema e slots de boot
 
-**Estado:** EP9.0A, EP9.1 e EP9.4A implementadas e validadas pelo usuário.
-A EP9.1 foi validada no QEMU com a matriz específica de fixtures/staging,
-`health`, `memcheck` e `regcheck full`; a regressão visual Simple/Classic não
-foi executada por não ser necessária ao escopo desta alteração. Aplicação,
-rollback pos-reboot e alteracoes no boot/stage2 continuam fora do escopo atual.
+**Estado:** EP9.0A, EP9.1, EP9.2A e EP9.4A implementadas e validadas pelo
+usuário. A EP9.2B está implementada e aguarda os gates e a matriz QEMU
+específica. A regressão visual Simple/Classic não integra esta matriz porque a
+mudança ocorre antes do kernel; o fallback VGA texto possui alvo dedicado.
+Aplicação e comandos pós-reboot continuam reservados para a EP9.3.
 
 Esta fase separa a atualizacao de arquivos do sistema em execucao da
 atualizacao da imagem que o proximo boot carregara. O ZUPD v1 continua limitado
@@ -876,24 +876,35 @@ As entregas de recuperacao da EP9.2 ficam divididas em duas subetapas:
 
 #### EP9.2B - Menu pre-kernel e recuperacao interativa
 
-- [ ] Exibir menu BIOS em falha de boot ou com F8, sem depender do kernel novo
-  ou de rede.
-- [ ] Mostrar slots ativo, pendente, anterior, tentativa e motivo da falha.
-- [ ] Permitir iniciar o slot anterior e tentar explicitamente um candidato
-  preservado, com confirmacao adicional e sem ciclos automaticos.
-- [ ] Cobrir interrupcao antes do acknowledge, rollback, estado corrompido,
-  assinatura/hash invalidos e ausencia do volume FAT32.
+- [x] Exibir menu BIOS com F8 durante dois segundos ou automaticamente por dez
+  segundos em falha, sem depender do kernel novo ou de rede.
+- [x] Implementar teclado pelo gateway protegido do `stage2`, usando `INT 16h`
+  e ticks BIOS com wrap diario, sem polling PS/2 e sem alterar `boot.asm`.
+- [x] Mostrar sequencia, slots ativo, pendente, anterior, tentativa, estado de
+  boot, motivo da falha e validade/versao de A e B em VESA ou VGA texto.
+- [x] Permitir iniciar o anterior one-shot sem escrita nem `ZSBH`, sempre com
+  revalidacao integral do ZSYS.
+- [x] Permitir retry explicito apenas para candidato v2 `FAILED`, com dupla
+  confirmacao, revalidacao, persistencia/releitura de `ATTEMPTED` e `ZSBH`.
+- [x] Impedir ciclos automaticos, desabilitar retry recusado durante a sessao
+  e restringir ao legado autenticado quando estado, journal ou FAT32 nao forem
+  confiaveis.
+- [x] Gerar fixtures do anterior, retry e controle ausente, alem do alvo VGA
+  dedicado para a navegacao sem VESA.
+- [ ] Executar a matriz QEMU EP9.2B para F8, timeout, cancelamento, one-shot,
+  retry confirmado/interrompido, controles corrompidos, assinatura/hash,
+  journal, FAT32 ausente e fallback VGA.
 
 - [~] EP9.2 parcialmente concluida: estado v2, handoff, confirmacao, loader
-  FAT32/Ed25519 e rollback automatico foram entregues na EP9.2A; menu,
-  inspecao interativa, F8 e retry manual permanecem na EP9.2B.
+  FAT32/Ed25519 e rollback automatico foram validados na EP9.2A; menu,
+  inspecao interativa, F8 e retry manual foram implementados na EP9.2B e
+  aguardam a matriz QEMU especifica.
 - [x] Preservar `boot.asm` e ajustar o `stage2`, com autorizacao explicita,
   para carregar o loader que seleciona e autentica o slot antes do kernel.
 - [x] Registrar tentativa de boot, sucesso confirmado pelo kernel e falha de
   inicializacao; uma tentativa interrompida volta ao slot anterior.
-- [~] Manter recuperacao independente de rede e do kernel candidato: o
-  fallback legado autenticado foi entregue; a inspecao interativa de slots
-  permanece na EP9.2B.
+- [x] Manter recuperacao independente de rede e do kernel candidato, incluindo
+  fallback legado autenticado e inspecao interativa dos slots.
 
 ### EP9.3 - Comandos e validacao
 

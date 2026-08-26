@@ -8,6 +8,7 @@ section .text
 global _start
 global recovery_bios_read_sector
 global recovery_bios_write_sector
+global recovery_bios_wait_key
 global recovery_boot_kernel_entry
 
 BIOS_GATEWAY_OFFSET equ 0x00005F00
@@ -17,7 +18,12 @@ BIOS_GATEWAY_SAVED_ESP equ 0x00002A18
 BIOS_GATEWAY_BUFFER equ 0x00002A1C
 BIOS_GATEWAY_STATUS equ 0x00002A20
 BIOS_GATEWAY_OPERATION equ 0x00002A21
+BIOS_GATEWAY_KEY_RESULT equ 0x00002A24
+BIOS_GATEWAY_TIMEOUT equ 0x00002A28
 BIOS_BOUNCE_BUFFER equ 0x00010000
+BIOS_GATEWAY_OPERATION_READ equ 0
+BIOS_GATEWAY_OPERATION_WRITE equ 1
+BIOS_GATEWAY_OPERATION_KEY equ 2
 GDT_CODE32_SEL equ 0x08
 GDT_DATA32_SEL equ 0x10
 GDT_CODE16_SEL equ 0x18
@@ -52,7 +58,7 @@ recovery_bios_read_sector:
     call recovery_bios_prepare
     mov eax, [ebp + 12]
     mov [BIOS_GATEWAY_BUFFER], eax
-    mov byte [BIOS_GATEWAY_OPERATION], 0
+    mov byte [BIOS_GATEWAY_OPERATION], BIOS_GATEWAY_OPERATION_READ
     mov dword [BIOS_GATEWAY_RETURN], .resume
     mov word [BIOS_GATEWAY_RETURN + 4], GDT_CODE32_SEL
     mov [BIOS_GATEWAY_SAVED_ESP], esp
@@ -66,6 +72,7 @@ recovery_bios_read_sector:
     mov gs, ax
     mov ss, ax
     mov esp, [BIOS_GATEWAY_SAVED_ESP]
+    cld
     cmp byte [BIOS_GATEWAY_STATUS], 0
     jne .fail
     mov esi, BIOS_BOUNCE_BUFFER
@@ -97,7 +104,7 @@ recovery_bios_write_sector:
     mov ecx, 128
     cld
     rep movsd
-    mov byte [BIOS_GATEWAY_OPERATION], 1
+    mov byte [BIOS_GATEWAY_OPERATION], BIOS_GATEWAY_OPERATION_WRITE
     mov dword [BIOS_GATEWAY_RETURN], .resume
     mov word [BIOS_GATEWAY_RETURN + 4], GDT_CODE32_SEL
     mov [BIOS_GATEWAY_SAVED_ESP], esp
@@ -111,9 +118,46 @@ recovery_bios_write_sector:
     mov gs, ax
     mov ss, ax
     mov esp, [BIOS_GATEWAY_SAVED_ESP]
+    cld
     cmp byte [BIOS_GATEWAY_STATUS], 0
     jne .fail
     mov eax, 1
+    jmp .done
+.fail:
+    xor eax, eax
+.done:
+    pop edi
+    pop esi
+    pop ebx
+    pop ebp
+    ret
+
+recovery_bios_wait_key:
+    push ebp
+    mov ebp, esp
+    push ebx
+    push esi
+    push edi
+    mov eax, [ebp + 8]
+    mov [BIOS_GATEWAY_TIMEOUT], eax
+    mov byte [BIOS_GATEWAY_OPERATION], BIOS_GATEWAY_OPERATION_KEY
+    mov dword [BIOS_GATEWAY_RETURN], .resume
+    mov word [BIOS_GATEWAY_RETURN + 4], GDT_CODE32_SEL
+    mov [BIOS_GATEWAY_SAVED_ESP], esp
+    cli
+    jmp GDT_CODE16_SEL:BIOS_GATEWAY_OFFSET
+.resume:
+    mov ax, GDT_DATA32_SEL
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
+    mov esp, [BIOS_GATEWAY_SAVED_ESP]
+    cld
+    cmp byte [BIOS_GATEWAY_STATUS], 0
+    jne .fail
+    movzx eax, word [BIOS_GATEWAY_KEY_RESULT]
     jmp .done
 .fail:
     xor eax, eax

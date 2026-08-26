@@ -4,12 +4,12 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 ---
 
-EP9.0A, EP9.1 e EP9.4A implementadas e validadas pelo usuário; a EP9.1 passou
-pela matriz QEMU de slots, staging e recuperação, além de `health`, `memcheck`
-e `regcheck full`. Aplicação, rollback pós-reboot e alterações no boot/stage2
-continuam fora desta etapa.
+EP9.0A, EP9.1, EP9.2A e EP9.4A implementadas e validadas pelo usuário; a
+EP9.2B de menu pre-kernel, F8, boot anterior one-shot e retry manual esta
+implementada e aguarda a matriz QEMU especifica. Aplicacao e comandos
+pos-reboot continuam reservados para a EP9.3.
 
-## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; firmware, driver operacional, integração L3 e EP9.2-EP9.3 pendentes
+## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A validada, EP9.2B aguardando validação e EP9.3 pendente
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
@@ -750,9 +750,10 @@ Evolução da plataforma:      [████████████████
 - [x] Matriz reproduzivel EP9.1 validada para corrupcao de estado/journal,
   fases de recuperacao, falta de espaco e volume FAT32 ausente.
 - [x] EP9.2A implementada e validada: recovery loader fixo, boot pendente
-  autenticado, tentativa/rollback, fallback legado e matriz QEMU completa;
-  EP9.2B e EP9.3 permanecem futuras para menu pre-kernel, aplicacao e comandos
-  pos-reboot.
+  autenticado, tentativa/rollback, fallback legado e matriz QEMU completa.
+- [~] EP9.2B implementada e aguardando validacao: menu pre-kernel por F8 ou
+  falha, diagnostico A/B, anterior one-shot, retry manual v2 e fallback VGA;
+  nenhuma validacao QEMU desta subetapa foi registrada ainda.
 - [ ] EP9.3 futura: aplicação, comandos, rollback pós-reboot e confirmação
   explícita de reboot.
 
@@ -775,7 +776,7 @@ kernel, interface e novos serviços:
 | 5 | [`docs/roadmaps/05-sistema-e-ecossistema.md`](docs/roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e ecossistema. |
 | 6 | [`docs/roadmaps/06-app-store.md`](docs/roadmaps/06-app-store.md) | Catalogo local, ciclo de vida, App Store Modern e distribuicao futura. |
 | 7 | [`docs/roadmaps/07-modernizacao-visual.md`](docs/roadmaps/07-modernizacao-visual.md) | Escala acessivel, visual flat/dark e desempenho VESA mensuravel; MV4 funcionalmente validado, comparacao historica N/D. |
-| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.4 implementadas; EP7.0 encerrada; EP7.1B de EHCI/transporte RTL8811CU implementada; EP9.0A, EP9.1, EP9.2A e EP9.4A implementadas e validadas. |
+| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.4 implementadas; EP7.0 encerrada; EP7.1B de EHCI/transporte RTL8811CU implementada; EP9.0A, EP9.1, EP9.2A e EP9.4A validadas; EP9.2B implementada e aguardando validacao. |
 | 9 | [`docs/roadmaps/09-funcionalidades-aplicaveis.md`](docs/roadmaps/09-funcionalidades-aplicaveis.md) | Separação visual/funcional, perfil de distribuição, logs, timers, espera, work queue, dispositivos, I/O, cache e métricas do scheduler. |
 | 10 | [`docs/roadmaps/10-vfs-e-abstracao-io.md`](docs/roadmaps/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, pontos de montagem, dispositivos /dev/ e pipes. |
 | 11 | [`docs/roadmaps/11-gerenciamento-avancado-de-memoria.md`](docs/roadmaps/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging. |
