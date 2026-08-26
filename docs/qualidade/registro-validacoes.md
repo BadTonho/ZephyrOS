@@ -1278,3 +1278,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   Validada em: 2026-08-26 18:09 (America/Sao_Paulo).
   Depois de fechar e reabrir o aplicativo, a aba Sistema releu o estado e
   continuou exibindo o aviso, com A ativo e B valido e pendente.
+
+- EP9.4C: cancelamento da confirmacao final de reinicio validado.
+  Validada em: 2026-08-26 18:11 (America/Sao_Paulo).
+  O usuario abriu a confirmacao pelo botao `Reiniciar` e selecionou
+  `Cancelar`. A maquina permaneceu ligada e o estado continuou com A ativo e
+  B pendente, sem escrita ou promocao antecipada.
