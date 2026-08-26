@@ -745,9 +745,9 @@ static void cmd_melody(void) {
 
 void shell_core_reboot(void) {
     video_print("Reiniciando...\n", 0x0E);
-    asm volatile("cli");
-    asm volatile("outb %0, %1" : : "a"((uint8_t)0xFE), "Nd"((uint16_t)0x64));
-    for (;;) asm volatile("hlt");
+    if (power_reboot() != OK) {
+        video_print("Falha ao solicitar reinicio.\n", 0x0C);
+    }
 }
 
 void shell_core_shutdown(const char* args) {

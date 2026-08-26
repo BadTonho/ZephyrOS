@@ -135,12 +135,28 @@ final. Os wrappers publicos de `update.h` permanecem compatíveis.
 - Runtime v2 usa somente o catalogo fixo dos tres BMPs e continua limitado ao
   FAT12 para cache/aplicacao; o Simple nao recebe a aba Runtime;
 
-- o aplicativo nao altera boot, stage2, kernel em setores crus ou Desktop.
+- o aplicativo nao altera boot, stage2, kernel em setores crus ou Desktop;
+- o modo Simple permanece congelado e nao recebe a aba Sistema.
 
-A EP9.3 acrescenta o fluxo ZSYS somente aos comandos Shell. O System Updater
-Classic nao recebe controles novos nesta etapa; sua regressao confirma apenas
-que abrir, navegar e fechar o aplicativo continua funcional enquanto o cache
-ZSYS e os slots sao inspecionados pelo Shell hospedado.
+A EP9.3 acrescentou inicialmente o fluxo ZSYS aos comandos Shell. A EP9.4C
+adiciona a sexta aba `Sistema` exclusivamente ao Classic. Ela mostra cache,
+tag, versao, progresso, sequencia e o estado A/B; permite consultar, baixar,
+verificar, aplicar e cancelar usando o mesmo worker cooperativo e os mesmos
+servicos autenticados do Shell.
+
+A tag aceita somente letras ASCII, numeros, ponto, sublinhado e hifen, limitada
+por `UPDATE_REMOTE_TAG_SIZE`. Clique ou `T` inicia a edicao, Backspace remove,
+Enter aceita e Esc restaura o valor anterior. Download, aplicacao e
+cancelamento fazem preflight antes da confirmacao e repetem a validacao no
+worker confirmado. Esc ou F12 solicita cancelamento do job sem bloquear a
+janela.
+
+Depois da publicacao do pendente, a interface oferece `Reiniciar agora` e
+`Reiniciar depois`. A segunda opcao fecha apenas a oferta; um banner e o botao
+de reinicio permanecem em novas aberturas enquanto o estado possuir pendente.
+Reiniciar agora abre uma confirmacao final, verifica se a sequencia apresentada
+nao mudou e chama o preflight redundante dos slots imediatamente antes de
+`power_reboot()`. Nenhum retorno cancela o pendente ou promove o candidato.
 
 ## Referencias
 

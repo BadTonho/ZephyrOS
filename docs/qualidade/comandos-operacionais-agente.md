@@ -290,6 +290,23 @@ cada fixture. As imagens `SYSTEM_CACHE_ONE_BAD`, `SYSTEM_CACHE_BOTH_BAD` e
 `SYSTEM_CACHE_INTERRUPTED` ficam reservadas para diagnostico dirigido quando
 o caso guiado apontar divergencia.
 
+## EP9.4C: reinicio controlado pelo Updater Classic
+
+Para a mesma revisao, o usuario executa somente:
+
+```text
+make q3check
+make clean && make
+make run-ep94c-matrix
+```
+
+O ultimo alvo gera uma unica imagem guiada de 256 MiB com slot A ativo e cache
+ABI 2 autenticado. Na aba `Sistema`, validar edicao da tag, verificacao,
+aplicacao, `Reiniciar depois`, banner persistente e o reinicio com confirmacao
+final. As fixtures compactas de preflight ficam em
+`build\ep94c-matrix\preflight-fixtures`; nao executar imagens separadas nem
+repetir a matriz EP9.4B.
+
 ## EP9.4B: cadeia autenticada em uma imagem guiada
 
 Para a mesma revisao, o usuario executa somente:

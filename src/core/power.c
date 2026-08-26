@@ -5,6 +5,12 @@
 #include "drivers/ac97.h"
 #include "drivers/speaker.h"
 
+#define POWER_KBC_STATUS_PORT 0x64U
+#define POWER_KBC_INPUT_FULL 0x02U
+#define POWER_KBC_RESET_COMMAND 0xFEU
+#define POWER_KBC_WAIT_LIMIT 1000000U
+#define POWER_RESET_RETURN_WAIT 1000000U
+
 static power_status_t power_status;
 static int power_initialized = 0;
 
@@ -87,6 +93,40 @@ int power_get_status(power_status_t* out_status) {
     }
     *out_status = power_status;
     return OK;
+}
+
+int power_reboot(void) {
+    uint32_t flags;
+
+    if (!power_initialized) {
+        LOG_ERROR("POWER", "Reinicio solicitado antes da inicializacao");
+        return ERR_STATE;
+    }
+    if (power_status.reboot != POWER_CAPABILITY_AVAILABLE) {
+        LOG_ERROR("POWER", "Controlador de reinicio indisponivel");
+        return ERR_UNAVAILABLE;
+    }
+    LOG_INFO("POWER", "Solicitando reinicio pelo controlador 8042");
+    for (uint32_t count = 0U; count < POWER_KBC_WAIT_LIMIT; count++) {
+        uint8_t status;
+        asm volatile("inb %1, %0" : "=a"(status) :
+                     "Nd"((uint16_t)POWER_KBC_STATUS_PORT));
+        if (!(status & POWER_KBC_INPUT_FULL)) {
+            asm volatile("pushfl; popl %0" : "=r"(flags));
+            asm volatile("cli");
+            asm volatile("outb %0, %1" : :
+                         "a"((uint8_t)POWER_KBC_RESET_COMMAND),
+                         "Nd"((uint16_t)POWER_KBC_STATUS_PORT));
+            for (uint32_t wait = 0U; wait < POWER_RESET_RETURN_WAIT; wait++) {
+                asm volatile("pause");
+            }
+            if (flags & (1U << 9U)) asm volatile("sti");
+            LOG_ERROR("POWER", "Controlador retornou apos solicitar reinicio");
+            return ERR_TIMEOUT;
+        }
+    }
+    LOG_ERROR("POWER", "Controlador ocupado ao solicitar reinicio");
+    return ERR_TIMEOUT;
 }
 
 void power_shutdown(void) {

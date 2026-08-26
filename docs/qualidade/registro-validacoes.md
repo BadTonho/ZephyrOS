@@ -1228,3 +1228,13 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   imediato exige confirmacao explicita e releitura do estado redundante; nao
   promove slots nem altera os contratos de boot. Falhas preservam o candidato,
   e o comando `reboot` continua disponivel como fluxo separado.
+
+- EP9.4C: aba Sistema e reinicio controlado implementados.
+  Concluida em: 2026-08-26 17:25 (America/Sao_Paulo).
+  O System Updater Classic recebeu a sexta aba para operar o cache e os slots
+  ZSYS pelo worker cooperativo, com tag validada, preflights e confirmacoes. A
+  oferta de reinicio permite adiar sem limpar o pendente e exige confirmacao
+  final, sequencia inalterada e releitura redundante antes de `power_reboot()`.
+  Shell, Settings e Task Manager passaram a reutilizar o mesmo servico. Foram adicionadas
+  fixtures compactas do preflight e uma unica imagem guiada pelo alvo
+  `make run-ep94c-matrix`; os gates e a validacao QEMU aguardam o usuario.

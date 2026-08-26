@@ -139,6 +139,8 @@ int update_system_slots_stage_file(
 int update_system_slots_cancel_pending(
     const update_system_slots_action_options_t* options,
     update_system_slots_action_result_t* result_out);
+int update_system_slots_reboot_preflight(
+    update_system_slots_action_result_t* result_out);
 int update_system_slots_boot_confirm(void);
 const char* update_system_slots_state_name(update_system_slots_state_t state);
 const char* update_system_slots_boot_state_name(

@@ -431,3 +431,9 @@ Na EP9.4B, `update_system.h` nomeia as ABI de boot 1 e 2. ABI 1 preserva a
 execucao direta do kernel; ABI 2 executa boot e stage2 protegidos somente
 depois da autenticacao e da releitura dos tres componentes. O handoff `ZSBC`
 e privado do loader e nao amplia a API publica, o estado dos slots ou `ZSBH`.
+
+Na EP9.4C, `update_system_slots.h` acrescenta o preflight somente leitura que
+exige controles v2 redundantes e equivalentes imediatamente antes do reboot.
+`power.h` acrescenta `power_reboot()`, usado por Shell, Settings, Task Manager
+e System Updater. `updater.h` preserva sua API; a aba Sistema e seus estados
+continuam privados ao aplicativo Classic.

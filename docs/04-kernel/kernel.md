@@ -333,9 +333,16 @@ mesmo servico; nao existem mais loops locais de shutdown nem escrita na porta
 privada `0xB004` do QEMU.
 
 O servico nao altera processos ou filesystem e nao implementa flush,
-desmontagem, suspensao, hibernacao ou reboot. `power_shutdown()` nunca retorna;
+desmontagem, suspensao ou hibernacao. `power_shutdown()` nunca retorna;
 `acpi_enter_s5()` retorna apenas quando sua pre-validacao impede qualquer
 escrita no hardware.
+
+`power_reboot()` centraliza o reset antes duplicado no Shell, Settings e no
+Task Manager.
+A operacao exige o servico inicializado e a capacidade de reboot disponivel,
+espera de forma limitada o controlador 8042 aceitar comandos e envia `0xFE`.
+Timeout ou retorno inesperado sao registrados e devolvidos ao chamador, que
+permanece responsavel por preservar seu estado e apresentar o diagnostico.
 
 ## Servicos S2.1-S2.8: Multi-NIC, Ethernet e pilha TCP/IP
 

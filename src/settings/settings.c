@@ -5,6 +5,7 @@
 #include "ui/desktop.h"
 #include "drivers/speaker.h"
 #include "core/memory.h"
+#include "core/power.h"
 #include "core/timer.h"
 #include "process/process.h"
 #include "process/thread.h"
@@ -700,9 +701,7 @@ static void execute_system_action(int option) {
             background.raw = GUI_COLOR_BG;
             vesa_clear(background);
             gui_draw_text(0, 0, "Reiniciando...", GUI_COLOR_TEXT);
-            asm volatile("cli");
-            asm volatile("outb %0, %1" : : "a"((uint8_t)0xFE), "Nd"((uint16_t)0x64));
-            for (;;) asm volatile("hlt");
+            power_reboot();
         }
         settings_draw();
         return;
@@ -755,9 +754,7 @@ static void execute_system_action(int option) {
         case 3:
             video_clear();
             video_print_at(25, 11, "Reiniciando...", 0x0E);
-            asm volatile("cli");
-            asm volatile("outb %0, %1" : : "a"((uint8_t)0xFE), "Nd"((uint16_t)0x64));
-            for (;;) asm volatile("hlt");
+            power_reboot();
             break;
     }
 }
