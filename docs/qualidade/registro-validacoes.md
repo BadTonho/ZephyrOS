@@ -1156,3 +1156,12 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   uma unica matriz QEMU guiada, com uma solicitacao de chave, vetores de
   componente, handoff, retorno e corrupcao MBR/BPB; os gates e a validacao do
   usuario permanecem pendentes.
+
+- EP9.4B: corrigida publicacao do alias final dos slots FAT32.
+  Corrigida em: 2026-08-26 16:10 (America/Sao_Paulo).
+  A primeira validacao ABI 2 publicou B como pendente, mas o recovery loader
+  recusou o candidato com `IO` e fez rollback para A. O escritor havia
+  renomeado `ZSTG.ZSY` para o nome longo `ZSB0.ZSY` preservando o alias curto
+  temporario; como o loader pre-kernel consulta somente aliases 8.3, ele nao
+  encontrava B. A renomeacao agora publica exatamente o alias 8.3 do destino.
+  A repeticao dos gates e do caminho ABI 2 permanece pendente.
