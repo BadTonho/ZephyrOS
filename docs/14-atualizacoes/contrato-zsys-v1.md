@@ -380,3 +380,18 @@ fixa anterior ao LBA 4096. A cadeia operacional vem do FAT32, mas essa area
 imutavel continua sendo a raiz de confianca e o fallback offline. Atualizar o
 verifier exige reconstruucao ou reinstalacao controlada da imagem; ZSYS nunca
 o substitui.
+
+### EP9.4C - Preflight de reinicio
+
+`update_system_slots_reboot_preflight()` e uma operacao somente leitura usada
+imediatamente antes do reboot solicitado pelo Updater. Ela exige duas copias
+v2 validas, byte a byte equivalentes e iguais ao estado em memoria, ausencia
+dos dois aliases de journal, estado sem recovery ou tentativa e candidato
+pendente valido, diferente do ativo. A publicacao normal de um pendente replica
+o estado nas duas copias antes de limpar o journal.
+
+O preflight nao promove slots, nao grava controles e nao publica handoffs. A
+interface tambem compara a sequencia relida com a apresentada na confirmacao
+final. Qualquer divergencia mantem o pendente e devolve diagnostico; a promocao
+continua exclusiva de `update_system_slots_boot_confirm()` apos o novo kernel
+completar sua inicializacao essencial.

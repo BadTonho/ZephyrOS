@@ -9,7 +9,7 @@ EP9.2B de menu pre-kernel, F8, boot anterior one-shot e retry manual esta
 validada com a matriz QEMU especifica. A EP9.3 de cache, aplicacao e
 cancelamento ZSYS esta validada. A EP9.4B de boot operacional autenticado no
 FAT32 esta implementada e validada. A EP9.4C de reinicio controlado pelo
-System Updater e a proxima subetapa planejada.
+System Updater esta implementada e aguarda validacao no QEMU.
 
 ## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A, EP9.2B, EP9.3 e EP9.4B validadas
 
@@ -760,9 +760,9 @@ Evolução da plataforma:      [████████████████
 - [x] EP9.4B implementada e validada: imagem de 256 MiB, ABI 2
   com cadeia boot/stage2/kernel autenticada no FAT32, compatibilidade ABI 1 e
   fallback legado pela raiz fixa.
-- [ ] EP9.4C planejada: oferecer reinicio imediato ou posterior no System
-  Updater Classic, sempre com confirmacao explicita e releitura do estado
-  pendente antes de reutilizar o caminho de reboot existente.
+- [x] EP9.4C implementada: aba Sistema no Updater Classic, oferta de reinicio
+  imediato ou posterior, confirmacao final, releitura redundante e reboot
+  centralizado; matriz QEMU guiada aguarda validacao do usuario.
 
 Para atualizacoes do sistema, U1-U5 continuam sendo a base executavel no
 dispositivo; EP5-EP9 sao a continuidade de Release, transporte e imagem do
@@ -783,7 +783,7 @@ kernel, interface e novos serviços:
 | 5 | [`docs/roadmaps/05-sistema-e-ecossistema.md`](docs/roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e ecossistema. |
 | 6 | [`docs/roadmaps/06-app-store.md`](docs/roadmaps/06-app-store.md) | Catalogo local, ciclo de vida, App Store Modern e distribuicao futura. |
 | 7 | [`docs/roadmaps/07-modernizacao-visual.md`](docs/roadmaps/07-modernizacao-visual.md) | Escala acessivel, visual flat/dark e desempenho VESA mensuravel; MV4 funcionalmente validado, comparacao historica N/D. |
-| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.4 implementadas; EP7.0 encerrada; EP7.1B de EHCI/transporte RTL8811CU implementada; EP9.0A-EP9.4B validadas e EP9.4C planejada. |
+| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.4 implementadas; EP7.0 encerrada; EP7.1B de EHCI/transporte RTL8811CU implementada; EP9.0A-EP9.4B validadas e EP9.4C implementada, com validacao pendente. |
 | 9 | [`docs/roadmaps/09-funcionalidades-aplicaveis.md`](docs/roadmaps/09-funcionalidades-aplicaveis.md) | Separação visual/funcional, perfil de distribuição, logs, timers, espera, work queue, dispositivos, I/O, cache e métricas do scheduler. |
 | 10 | [`docs/roadmaps/10-vfs-e-abstracao-io.md`](docs/roadmaps/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, pontos de montagem, dispositivos /dev/ e pipes. |
 | 11 | [`docs/roadmaps/11-gerenciamento-avancado-de-memoria.md`](docs/roadmaps/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging. |

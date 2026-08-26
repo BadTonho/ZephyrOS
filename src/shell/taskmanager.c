@@ -920,9 +920,7 @@ static void taskmgr_handle_taskbar_action(int result) {
             break;
         case 5:
             taskmgr_close();
-            asm volatile("cli");
-            asm volatile("outb %0, %1" : : "a"((uint8_t)0xFE), "Nd"((uint16_t)0x64));
-            for (;;) asm volatile("hlt");
+            power_reboot();
             break;
         case 6:
             taskmgr_close();
@@ -2068,7 +2066,7 @@ static void taskmgr_gui_handle_taskbar_action(int result) {
         case 4: taskmgr_gui_restore(); break;
         case 5:
             taskmgr_close();
-            asm volatile("outb %0, %1" : : "a"((uint8_t)0xFE), "Nd"((uint16_t)0x64));
+            power_reboot();
             break;
         case 6:
             taskmgr_close();

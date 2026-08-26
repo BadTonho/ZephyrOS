@@ -2,13 +2,17 @@
 #include "core/errors.h"
 #include "core/keyboard.h"
 #include "core/log.h"
+#include "core/power.h"
 #include "core/recovery.h"
 #include "core/string.h"
 #include "core/update.h"
 #include "core/update_remote.h"
 #include "core/update_remote_runtime.h"
+#include "core/update_remote_system.h"
 #include "core/update_remote_config.h"
 #include "core/update_runtime.h"
+#include "core/update_system.h"
+#include "core/update_system_slots.h"
 #include "core/video.h"
 #include "core/wait.h"
 #include "drivers/vesa.h"
@@ -26,7 +30,7 @@
 #define UPDATER_SIMPLE_LIST_Y 6
 #define UPDATER_SIMPLE_LIST_WIDTH 28
 #define UPDATER_CLASSIC_MIN_WIDTH 640
-#define UPDATER_CLASSIC_MIN_HEIGHT 420
+#define UPDATER_CLASSIC_MIN_HEIGHT 500
 #define UPDATER_CLASSIC_DEFAULT_WIDTH 780
 #define UPDATER_CLASSIC_DEFAULT_HEIGHT 560
 #define UPDATER_CLASSIC_MARGIN 12
@@ -34,18 +38,28 @@
 #define UPDATER_SCANCODE_ESC 0x01U
 #define UPDATER_SCANCODE_TAB 0x0FU
 #define UPDATER_SCANCODE_ENTER 0x1CU
+#define UPDATER_SCANCODE_BACKSPACE 0x0EU
 #define UPDATER_SCANCODE_A 0x1EU
 #define UPDATER_SCANCODE_B 0x30U
 #define UPDATER_SCANCODE_C 0x2EU
 #define UPDATER_SCANCODE_D 0x20U
 #define UPDATER_SCANCODE_H 0x23U
+#define UPDATER_SCANCODE_R 0x13U
+#define UPDATER_SCANCODE_T 0x14U
 #define UPDATER_SCANCODE_V 0x2FU
 #define UPDATER_SCANCODE_X 0x2DU
 #define UPDATER_SCANCODE_F5 0x3FU
 #define UPDATER_SCANCODE_UP 0x48U
 #define UPDATER_SCANCODE_DOWN 0x50U
 #define UPDATER_SCANCODE_F12 0x58U
+#define UPDATER_SCANCODE_LEFT_SHIFT 0x2AU
+#define UPDATER_SCANCODE_RIGHT_SHIFT 0x36U
+#define UPDATER_SCANCODE_LEFT_SHIFT_RELEASE 0xAAU
+#define UPDATER_SCANCODE_RIGHT_SHIFT_RELEASE 0xB6U
 #define UPDATER_SIMPLE_TAB_COUNT 4
+#define UPDATER_CLASSIC_TAB_GAP 8
+#define UPDATER_CLASSIC_SYSTEM_BUTTON_WIDTH 96
+#define UPDATER_CLASSIC_SYSTEM_BUTTON_STEP 104
 
 typedef enum {
     UPDATER_TAB_PACKAGES = 0,
@@ -53,6 +67,7 @@ typedef enum {
     UPDATER_TAB_HISTORY,
     UPDATER_TAB_REMOTE,
     UPDATER_TAB_RUNTIME,
+    UPDATER_TAB_SYSTEM,
     UPDATER_TAB_COUNT
 } updater_tab_t;
 
@@ -66,7 +81,12 @@ typedef enum {
     UPDATER_CONFIRM_RUNTIME_FETCH_FULL,
     UPDATER_CONFIRM_RUNTIME_APPLY,
     UPDATER_CONFIRM_RUNTIME_ROLLBACK,
-    UPDATER_CONFIRM_RUNTIME_CLEAR
+    UPDATER_CONFIRM_RUNTIME_CLEAR,
+    UPDATER_CONFIRM_SYSTEM_FETCH,
+    UPDATER_CONFIRM_SYSTEM_APPLY,
+    UPDATER_CONFIRM_SYSTEM_CANCEL,
+    UPDATER_CONFIRM_SYSTEM_REBOOT_OFFER,
+    UPDATER_CONFIRM_SYSTEM_REBOOT_FINAL
 } updater_confirm_t;
 
 typedef enum {
@@ -74,7 +94,8 @@ typedef enum {
     UPDATER_RESULT_VERIFY,
     UPDATER_RESULT_APPLY,
     UPDATER_RESULT_ROLLBACK,
-    UPDATER_RESULT_REMOTE
+    UPDATER_RESULT_REMOTE,
+    UPDATER_RESULT_SYSTEM
 } updater_result_t;
 
 typedef enum {
@@ -82,7 +103,14 @@ typedef enum {
     UPDATER_REMOTE_JOB_CHECK,
     UPDATER_REMOTE_JOB_FETCH,
     UPDATER_REMOTE_JOB_RUNTIME_CHECK,
-    UPDATER_REMOTE_JOB_RUNTIME_FETCH
+    UPDATER_REMOTE_JOB_RUNTIME_FETCH,
+    UPDATER_REMOTE_JOB_SYSTEM_CHECK,
+    UPDATER_REMOTE_JOB_SYSTEM_FETCH,
+    UPDATER_REMOTE_JOB_SYSTEM_VERIFY,
+    UPDATER_REMOTE_JOB_SYSTEM_APPLY_PREFLIGHT,
+    UPDATER_REMOTE_JOB_SYSTEM_APPLY,
+    UPDATER_REMOTE_JOB_SYSTEM_CANCEL_PREFLIGHT,
+    UPDATER_REMOTE_JOB_SYSTEM_CANCEL
 } updater_remote_job_t;
 
 typedef struct {
@@ -118,6 +146,21 @@ static update_remote_runtime_result_t updater_runtime_remote_result;
 static update_runtime_cache_t updater_runtime_cache;
 static int updater_runtime_status_ready = 0;
 static int updater_runtime_remote_status_ready = 0;
+static update_remote_system_status_t updater_system_remote_status;
+static update_remote_system_result_t updater_system_remote_result;
+static update_system_slots_status_t updater_system_slots_status;
+static update_system_slots_action_result_t updater_system_slot_action;
+static update_system_verification_t updater_system_verification;
+static int updater_system_remote_status_ready = 0;
+static int updater_system_slots_status_ready = 0;
+static char updater_system_tag[UPDATE_REMOTE_TAG_SIZE];
+static char updater_system_tag_saved[UPDATE_REMOTE_TAG_SIZE];
+static uint32_t updater_system_tag_length = 0U;
+static uint8_t updater_system_tag_editing = 0U;
+static uint8_t updater_system_tag_dirty = 0U;
+static uint8_t updater_system_shift = 0U;
+static uint32_t updater_system_reboot_sequence = 0U;
+static const char* updater_system_result_reason = "NONE";
 static int updater_last_result = OK;
 static int updater_gui_x = 0;
 static int updater_gui_y = 0;
@@ -262,6 +305,23 @@ static void updater_refresh_status(void) {
         update_runtime_get_status(&updater_runtime_status) == OK;
     updater_runtime_remote_status_ready =
         update_remote_runtime_get_status(&updater_runtime_remote_status) == OK;
+    updater_system_remote_status_ready =
+        update_remote_system_get_status(&updater_system_remote_status) == OK;
+    updater_system_slots_status_ready =
+        update_system_slots_get_status(&updater_system_slots_status) == OK;
+    if (!updater_system_tag_dirty && !updater_system_tag_editing &&
+        updater_system_remote_status_ready &&
+        updater_system_remote_status.tag[0]) {
+        uint32_t length = kstrlen(updater_system_remote_status.tag);
+
+        if (length < sizeof(updater_system_tag)) {
+            kmemcpy(updater_system_tag, updater_system_remote_status.tag,
+                    length + 1U);
+            kmemcpy(updater_system_tag_saved, updater_system_tag,
+                    length + 1U);
+            updater_system_tag_length = length;
+        }
+    }
     if (updater_runtime_status_ready) {
         update_runtime_get_cache(&updater_runtime_cache);
     } else {
@@ -412,6 +472,7 @@ static int updater_cancel_check(void* context) {
 static int updater_remote_job_cancel_check(void* context) {
     update_remote_status_t status;
     update_remote_runtime_status_t runtime_status;
+    update_remote_system_status_t system_status;
 
     (void)context;
     if (updater_remote_job_running == UPDATER_REMOTE_JOB_RUNTIME_CHECK ||
@@ -419,6 +480,14 @@ static int updater_remote_job_cancel_check(void* context) {
         if (update_remote_runtime_get_status(&runtime_status) == OK) {
             updater_runtime_remote_status = runtime_status;
             updater_runtime_remote_status_ready = 1;
+            updater_draw();
+        }
+        return updater_remote_cancel_requested ? 1 : 0;
+    }
+    if (updater_remote_job_running >= UPDATER_REMOTE_JOB_SYSTEM_CHECK) {
+        if (update_remote_system_get_status(&system_status) == OK) {
+            updater_system_remote_status = system_status;
+            updater_system_remote_status_ready = 1;
             updater_draw();
         }
         return updater_remote_cancel_requested ? 1 : 0;
@@ -434,6 +503,46 @@ static int updater_remote_job_cancel_check(void* context) {
         }
     }
     return updater_remote_cancel_requested ? 1 : 0;
+}
+
+static int updater_system_tag_valid(void) {
+    if (!updater_system_tag_length ||
+        updater_system_tag_length >= UPDATE_REMOTE_TAG_SIZE) return 0;
+    for (uint32_t index = 0U; index < updater_system_tag_length; index++) {
+        char value = updater_system_tag[index];
+
+        if (!((value >= 'A' && value <= 'Z') ||
+              (value >= 'a' && value <= 'z') ||
+              (value >= '0' && value <= '9') || value == '.' ||
+              value == '_' || value == '-')) return 0;
+    }
+    return 1;
+}
+
+static void updater_system_tag_begin(void) {
+    kmemcpy(updater_system_tag_saved, updater_system_tag,
+            sizeof(updater_system_tag_saved));
+    updater_system_tag_editing = 1U;
+    updater_confirm = UPDATER_CONFIRM_NONE;
+}
+
+static void updater_system_tag_finish(int accept) {
+    if (!accept) {
+        kmemcpy(updater_system_tag, updater_system_tag_saved,
+                sizeof(updater_system_tag));
+        updater_system_tag_length = kstrlen(updater_system_tag);
+    } else if (updater_system_tag_valid()) {
+        kmemcpy(updater_system_tag_saved, updater_system_tag,
+                sizeof(updater_system_tag_saved));
+        updater_system_tag_dirty = 1U;
+    } else {
+        updater_last_result = ERR_INVALID;
+        updater_result_kind = UPDATER_RESULT_SYSTEM;
+        updater_system_result_reason = "TAG_INVALID";
+        LOG_ERROR("UPDATER", "Tag ZSYS invalida na interface");
+        return;
+    }
+    updater_system_tag_editing = 0U;
 }
 
 static const char* updater_selected_package(void) {
@@ -613,6 +722,19 @@ static int updater_remote_start_job(updater_remote_job_t job,
         LOG_ERROR("UPDATER", "Job remoto invalido");
         return ERR_INVALID;
     }
+    if (job >= UPDATER_REMOTE_JOB_SYSTEM_CHECK &&
+        !updater_system_tag_valid() &&
+        job != UPDATER_REMOTE_JOB_SYSTEM_VERIFY &&
+        job != UPDATER_REMOTE_JOB_SYSTEM_APPLY_PREFLIGHT &&
+        job != UPDATER_REMOTE_JOB_SYSTEM_APPLY &&
+        job != UPDATER_REMOTE_JOB_SYSTEM_CANCEL_PREFLIGHT &&
+        job != UPDATER_REMOTE_JOB_SYSTEM_CANCEL) {
+        updater_last_result = ERR_INVALID;
+        updater_result_kind = UPDATER_RESULT_SYSTEM;
+        updater_system_result_reason = "TAG_INVALID";
+        LOG_ERROR("UPDATER", "Operacao ZSYS recusada por tag invalida");
+        return ERR_INVALID;
+    }
     if (updater_remote_job_busy ||
         updater_remote_job != UPDATER_REMOTE_JOB_NONE) {
         LOG_WARN("UPDATER", "Operacao remota da interface ja esta ativa");
@@ -625,7 +747,8 @@ static int updater_remote_start_job(updater_remote_job_t job,
     updater_remote_job_busy = 1U;
     updater_remote_job = job;
     updater_confirm = UPDATER_CONFIRM_NONE;
-    updater_result_kind = UPDATER_RESULT_REMOTE;
+    updater_result_kind = job >= UPDATER_REMOTE_JOB_SYSTEM_CHECK ?
+        UPDATER_RESULT_SYSTEM : UPDATER_RESULT_REMOTE;
     kmemset(&updater_remote_result, 0, sizeof(updater_remote_result));
     if (updater_remote_worker_process &&
         process_wake_channel(&updater_remote_worker_process->ipc_wait_channel,
@@ -690,6 +813,114 @@ static void updater_remote_finish_cache_refresh(void) {
     updater_confirm = UPDATER_CONFIRM_NONE;
 }
 
+static int updater_system_cached_path(char* path) {
+    int result = update_remote_system_get_cached_path(path, FS_MAX_PATH);
+
+    if (result != OK) {
+        updater_last_result = result;
+        updater_result_kind = UPDATER_RESULT_SYSTEM;
+        updater_system_result_reason = "CACHE";
+        LOG_ERROR("UPDATER", "Cache ZSYS indisponivel na interface");
+    }
+    return result;
+}
+
+static void updater_system_run_check(int request_confirmation) {
+    update_remote_options_t options;
+
+    kmemset(&options, 0, sizeof(options));
+    options.dry_run = 1U;
+    options.cancel_check = updater_remote_job_cancel_check;
+    kmemset(&updater_system_verification, 0,
+            sizeof(updater_system_verification));
+    updater_last_result = update_system_check_tag(
+        updater_system_tag, &options, &updater_system_verification);
+    updater_system_result_reason = update_system_reason_name(
+        updater_system_verification.reason);
+    updater_result_kind = UPDATER_RESULT_SYSTEM;
+    updater_confirm = updater_last_result == OK && request_confirmation ?
+        UPDATER_CONFIRM_SYSTEM_FETCH : UPDATER_CONFIRM_NONE;
+}
+
+static void updater_system_run_fetch(void) {
+    update_remote_options_t options;
+
+    kmemset(&options, 0, sizeof(options));
+    options.cancel_check = updater_remote_job_cancel_check;
+    kmemset(&updater_system_remote_result, 0,
+            sizeof(updater_system_remote_result));
+    updater_last_result = update_remote_system_fetch(
+        updater_system_tag, &options, &updater_system_remote_result);
+    updater_system_verification = updater_system_remote_result.verification;
+    updater_system_result_reason = update_remote_system_reason_name(
+        updater_system_remote_result.reason);
+    updater_result_kind = UPDATER_RESULT_SYSTEM;
+}
+
+static void updater_system_run_verify(void) {
+    char path[FS_MAX_PATH];
+
+    kmemset(&updater_system_verification, 0,
+            sizeof(updater_system_verification));
+    if (updater_system_cached_path(path) != OK) return;
+    updater_last_result = update_system_verify_file(
+        path, &updater_system_verification);
+    updater_system_result_reason = update_system_reason_name(
+        updater_system_verification.reason);
+    updater_result_kind = UPDATER_RESULT_SYSTEM;
+}
+
+static void updater_system_run_apply(int dry_run) {
+    update_system_slots_action_options_t options;
+    char path[FS_MAX_PATH];
+
+    if (updater_system_cached_path(path) != OK) return;
+    kmemset(&options, 0, sizeof(options));
+    options.dry_run = dry_run ? 1U : 0U;
+    options.cancel_check = updater_remote_job_cancel_check;
+    kmemset(&updater_system_slot_action, 0,
+            sizeof(updater_system_slot_action));
+    updater_last_result = update_system_slots_stage_file(
+        path, &options, &updater_system_slot_action);
+    updater_system_result_reason = update_system_slots_reason_name(
+        updater_system_slot_action.reason);
+    updater_result_kind = UPDATER_RESULT_SYSTEM;
+    if (updater_last_result == OK) {
+        updater_confirm = dry_run ? UPDATER_CONFIRM_SYSTEM_APPLY :
+            (updater_system_slot_action.pending_published ?
+             UPDATER_CONFIRM_SYSTEM_REBOOT_OFFER : UPDATER_CONFIRM_NONE);
+    }
+}
+
+static void updater_system_run_cancel(int dry_run) {
+    update_system_slots_action_options_t slot_options;
+    update_remote_options_t cache_options;
+
+    kmemset(&slot_options, 0, sizeof(slot_options));
+    slot_options.dry_run = dry_run ? 1U : 0U;
+    slot_options.cancel_check = updater_remote_job_cancel_check;
+    kmemset(&updater_system_slot_action, 0,
+            sizeof(updater_system_slot_action));
+    updater_last_result = update_system_slots_cancel_pending(
+        &slot_options, &updater_system_slot_action);
+    updater_system_result_reason = update_system_slots_reason_name(
+        updater_system_slot_action.reason);
+    if (updater_last_result == OK) {
+        kmemset(&cache_options, 0, sizeof(cache_options));
+        cache_options.dry_run = dry_run ? 1U : 0U;
+        cache_options.cancel_check = updater_remote_job_cancel_check;
+        kmemset(&updater_system_remote_result, 0,
+                sizeof(updater_system_remote_result));
+        updater_last_result = update_remote_system_clear(
+            &cache_options, &updater_system_remote_result);
+        updater_system_result_reason = update_remote_system_reason_name(
+            updater_system_remote_result.reason);
+    }
+    updater_result_kind = UPDATER_RESULT_SYSTEM;
+    updater_confirm = updater_last_result == OK && dry_run ?
+        UPDATER_CONFIRM_SYSTEM_CANCEL : UPDATER_CONFIRM_NONE;
+}
+
 static void updater_remote_worker_main(void) {
     while (1) {
         updater_remote_job_t job = updater_remote_job;
@@ -715,6 +946,20 @@ static void updater_remote_worker_main(void) {
         } else if (job == UPDATER_REMOTE_JOB_RUNTIME_FETCH) {
             updater_runtime_confirm_fetch();
             updater_remote_finish_cache_refresh();
+        } else if (job == UPDATER_REMOTE_JOB_SYSTEM_CHECK) {
+            updater_system_run_check(updater_remote_job_confirm);
+        } else if (job == UPDATER_REMOTE_JOB_SYSTEM_FETCH) {
+            updater_system_run_fetch();
+        } else if (job == UPDATER_REMOTE_JOB_SYSTEM_VERIFY) {
+            updater_system_run_verify();
+        } else if (job == UPDATER_REMOTE_JOB_SYSTEM_APPLY_PREFLIGHT) {
+            updater_system_run_apply(1);
+        } else if (job == UPDATER_REMOTE_JOB_SYSTEM_APPLY) {
+            updater_system_run_apply(0);
+        } else if (job == UPDATER_REMOTE_JOB_SYSTEM_CANCEL_PREFLIGHT) {
+            updater_system_run_cancel(1);
+        } else if (job == UPDATER_REMOTE_JOB_SYSTEM_CANCEL) {
+            updater_system_run_cancel(0);
         } else {
             updater_last_result = ERR_INVALID;
             LOG_ERROR("UPDATER", "Worker recebeu job remoto desconhecido");
@@ -767,6 +1012,20 @@ static void updater_runtime_confirm_clear(void) {
     updater_refresh_component();
 }
 
+static int updater_system_offer_final_reboot(void) {
+    if (update_system_slots_get_status(&updater_system_slots_status) != OK ||
+        updater_system_slots_status.pending_slot == UPDATE_SYSTEM_SLOT_NONE) {
+        updater_last_result = ERR_STATE;
+        updater_result_kind = UPDATER_RESULT_SYSTEM;
+        LOG_ERROR("UPDATER", "Confirmacao de reinicio sem slot pendente");
+        return ERR_STATE;
+    }
+    updater_system_slots_status_ready = 1;
+    updater_system_reboot_sequence = updater_system_slots_status.sequence;
+    updater_confirm = UPDATER_CONFIRM_SYSTEM_REBOOT_FINAL;
+    return OK;
+}
+
 static void updater_confirm_action(void) {
     update_action_options_t options;
     updater_confirm_t confirmation = updater_confirm;
@@ -814,6 +1073,42 @@ static void updater_confirm_action(void) {
         updater_runtime_confirm_action(1);
     } else if (confirmation == UPDATER_CONFIRM_RUNTIME_CLEAR) {
         updater_runtime_confirm_clear();
+    } else if (confirmation == UPDATER_CONFIRM_SYSTEM_FETCH) {
+        (void)updater_remote_start_job(
+            UPDATER_REMOTE_JOB_SYSTEM_FETCH, 0);
+        return;
+    } else if (confirmation == UPDATER_CONFIRM_SYSTEM_APPLY) {
+        (void)updater_remote_start_job(
+            UPDATER_REMOTE_JOB_SYSTEM_APPLY, 0);
+        return;
+    } else if (confirmation == UPDATER_CONFIRM_SYSTEM_CANCEL) {
+        (void)updater_remote_start_job(
+            UPDATER_REMOTE_JOB_SYSTEM_CANCEL, 0);
+        return;
+    } else if (confirmation == UPDATER_CONFIRM_SYSTEM_REBOOT_OFFER) {
+        (void)updater_system_offer_final_reboot();
+        updater_draw();
+        return;
+    } else if (confirmation == UPDATER_CONFIRM_SYSTEM_REBOOT_FINAL) {
+        kmemset(&updater_system_slot_action, 0,
+                sizeof(updater_system_slot_action));
+        if (update_system_slots_get_status(&updater_system_slots_status) != OK ||
+            updater_system_slots_status.sequence !=
+                updater_system_reboot_sequence) {
+            updater_last_result = ERR_STATE;
+            updater_system_result_reason = "STATE_CHANGED";
+            LOG_ERROR("UPDATER", "Estado ZSYS mudou durante confirmacao");
+        } else {
+            updater_last_result = update_system_slots_reboot_preflight(
+                &updater_system_slot_action);
+            updater_system_result_reason = update_system_slots_reason_name(
+                updater_system_slot_action.reason);
+        }
+        updater_result_kind = UPDATER_RESULT_SYSTEM;
+        if (updater_last_result == OK) {
+            updater_last_result = power_reboot();
+            updater_system_result_reason = "REBOOT_FAILED";
+        }
     }
     if (confirmation == UPDATER_CONFIRM_REMOTE_CLEAR) {
         updater_remote_finish_cache_refresh();
@@ -1026,6 +1321,13 @@ static const char* updater_remote_active_job_name(void) {
     if (job == UPDATER_REMOTE_JOB_FETCH) return "BAIXANDO";
     if (job == UPDATER_REMOTE_JOB_RUNTIME_CHECK) return "RUNTIME CONSULTANDO";
     if (job == UPDATER_REMOTE_JOB_RUNTIME_FETCH) return "RUNTIME BAIXANDO";
+    if (job == UPDATER_REMOTE_JOB_SYSTEM_CHECK) return "ZSYS CONSULTANDO";
+    if (job == UPDATER_REMOTE_JOB_SYSTEM_FETCH) return "ZSYS BAIXANDO";
+    if (job == UPDATER_REMOTE_JOB_SYSTEM_VERIFY) return "ZSYS VERIFICANDO";
+    if (job == UPDATER_REMOTE_JOB_SYSTEM_APPLY_PREFLIGHT ||
+        job == UPDATER_REMOTE_JOB_SYSTEM_APPLY) return "ZSYS APLICANDO";
+    if (job == UPDATER_REMOTE_JOB_SYSTEM_CANCEL_PREFLIGHT ||
+        job == UPDATER_REMOTE_JOB_SYSTEM_CANCEL) return "ZSYS CANCELANDO";
     return "AGUARDANDO";
 }
 
@@ -1182,14 +1484,22 @@ static void updater_gui_line(int x, int y, const char* label,
     gui_draw_text((uint32_t)(x + 150), (uint32_t)y, value, color);
 }
 
-static void updater_gui_draw_tabs(int x, int y) {
+static int updater_gui_tab_width(int width) {
+    return (width - (UPDATER_TAB_COUNT - 1) * UPDATER_CLASSIC_TAB_GAP) /
+           UPDATER_TAB_COUNT;
+}
+
+static void updater_gui_draw_tabs(int x, int y, int width) {
     static const char* names[UPDATER_TAB_COUNT] = {
-        "Pacotes", "Estado", "Historico", "Remoto", "Runtime"
+        "Pacotes", "Estado", "Historico", "Remoto", "Runtime", "Sistema"
     };
+    int tab_width = updater_gui_tab_width(width);
 
     for (int index = 0; index < UPDATER_TAB_COUNT; index++) {
-        gui_draw_button((uint32_t)(x + index * 116), (uint32_t)y,
-                        108, 28, names[index], updater_tab == index);
+        gui_draw_button(
+            (uint32_t)(x + index * (tab_width + UPDATER_CLASSIC_TAB_GAP)),
+            (uint32_t)y, (uint32_t)tab_width, 28, names[index],
+            updater_tab == index);
     }
 }
 
@@ -1525,6 +1835,131 @@ static void updater_gui_draw_runtime(int x, int y) {
     }
 }
 
+static const char* updater_system_slot_name(uint8_t slot) {
+    if (slot == 0U) return "A";
+    if (slot == 1U) return "B";
+    return "NONE";
+}
+
+static void updater_gui_draw_system(int x, int y) {
+    char value[128];
+
+    gui_draw_text((uint32_t)x, (uint32_t)y, "Tag", GUI_COLOR_TEXT);
+    gui_draw_panel((uint32_t)(x + 150), (uint32_t)(y - 6), 360, 26,
+                   updater_system_tag_editing ? GUI_COLOR_TITLE_BG :
+                   GUI_COLOR_BG, updater_system_tag_editing ? 1 : 0);
+    gui_draw_text((uint32_t)(x + 158), (uint32_t)y,
+                  updater_system_tag[0] ? updater_system_tag : "T para editar",
+                  updater_system_tag[0] ? GUI_COLOR_TEXT : GUI_COLOR_BORDER_D);
+    if (updater_system_remote_status_ready) {
+        value[0] = '\0';
+        updater_text_append(value, sizeof(value),
+            update_remote_system_state_name(
+                updater_system_remote_status.state));
+        if (updater_system_remote_status.tag[0]) {
+            updater_text_append(value, sizeof(value), " tag=");
+            updater_text_append(value, sizeof(value),
+                                updater_system_remote_status.tag);
+        }
+        updater_gui_line(x, y + 30, "Cache", value,
+                         updater_system_remote_status.state ==
+                             UPDATE_REMOTE_SYSTEM_STATE_READY ?
+                         0x00008000U : 0x00808000U);
+        updater_gui_line(x, y + 60, "Motivo cache",
+                         update_remote_system_reason_name(
+                             updater_system_remote_status.reason),
+                         updater_system_remote_status.reason ==
+                             UPDATE_REMOTE_SYSTEM_REASON_NONE ?
+                         GUI_COLOR_TEXT : 0x00808000U);
+        value[0] = '\0';
+        updater_text_append_u32(value, sizeof(value),
+                                updater_system_remote_status.bytes_received);
+        updater_text_append(value, sizeof(value), "/");
+        updater_text_append_u32(value, sizeof(value),
+                                updater_system_remote_status.total_bytes);
+        updater_text_append(value, sizeof(value), " seq=");
+        updater_text_append_u32(value, sizeof(value),
+                                updater_system_remote_status.sequence);
+        updater_gui_line(x, y + 90, "Progresso", value, GUI_COLOR_TEXT);
+        updater_version_text(value, sizeof(value),
+                             &updater_system_remote_status.version,
+                             updater_system_remote_status.epoch);
+        updater_gui_line(x, y + 120, "Versao cache", value, GUI_COLOR_TEXT);
+    } else {
+        updater_gui_line(x, y + 30, "Cache", "INDISPONIVEL",
+                         0x00800000U);
+    }
+    if (updater_system_slots_status_ready) {
+        value[0] = '\0';
+        updater_text_append(value, sizeof(value), "seq=");
+        updater_text_append_u32(value, sizeof(value),
+                                updater_system_slots_status.sequence);
+        updater_text_append(value, sizeof(value), " ativo=");
+        updater_text_append(value, sizeof(value), updater_system_slot_name(
+            updater_system_slots_status.active_slot));
+        updater_text_append(value, sizeof(value), " pendente=");
+        updater_text_append(value, sizeof(value), updater_system_slot_name(
+            updater_system_slots_status.pending_slot));
+        updater_text_append(value, sizeof(value), " anterior=");
+        updater_text_append(value, sizeof(value), updater_system_slot_name(
+            updater_system_slots_status.previous_slot));
+        updater_gui_line(x, y + 150, "Slots", value, GUI_COLOR_TEXT);
+        value[0] = '\0';
+        updater_text_append(value, sizeof(value), "tentativa=");
+        updater_text_append(value, sizeof(value), updater_system_slot_name(
+            updater_system_slots_status.attempt_slot));
+        updater_text_append(value, sizeof(value), " boot=");
+        updater_text_append(value, sizeof(value),
+            update_system_slots_boot_state_name(
+                updater_system_slots_status.boot_state));
+        updater_text_append(value, sizeof(value), " seq=");
+        updater_text_append_u32(value, sizeof(value),
+            updater_system_slots_status.boot_attempt_sequence);
+        updater_gui_line(x, y + 180, "Inicializacao", value, GUI_COLOR_TEXT);
+        updater_gui_line(x, y + 210, "Motivo boot",
+                         update_system_slots_reason_name(
+                             updater_system_slots_status.last_boot_reason),
+                         updater_system_slots_status.last_boot_reason ==
+                             UPDATE_SYSTEM_SLOTS_REASON_NONE ?
+                         GUI_COLOR_TEXT : 0x00808000U);
+        for (uint32_t index = 0U; index < UPDATE_SYSTEM_SLOT_COUNT; index++) {
+            value[0] = '\0';
+            updater_text_append(value, sizeof(value),
+                update_system_slot_file_state_name(
+                    updater_system_slots_status.slots[index].state));
+            if (updater_system_slots_status.slots[index].state ==
+                    UPDATE_SYSTEM_SLOT_FILE_VALID) {
+                updater_text_append(value, sizeof(value), " ");
+                updater_text_append_version(
+                    value, sizeof(value),
+                    &updater_system_slots_status.slots[index].version,
+                    updater_system_slots_status.slots[index].epoch);
+            }
+            updater_gui_line(x, y + 240 + (int)index * 30,
+                             index == 0U ? "Slot A" : "Slot B", value,
+                             updater_system_slots_status.slots[index].state ==
+                                 UPDATE_SYSTEM_SLOT_FILE_VALID ?
+                             0x00008000U : 0x00808000U);
+        }
+        if (updater_system_slots_status.pending_slot !=
+                UPDATE_SYSTEM_SLOT_NONE) {
+            updater_gui_line(x, y + 310, "Reinicio pendente",
+                             "Use Reiniciar quando estiver pronto",
+                             0x00808000U);
+        }
+    }
+    if (updater_result_kind == UPDATER_RESULT_SYSTEM) {
+        updater_gui_line(x, y + 340, "Resultado",
+                         updater_system_result_reason,
+                         updater_last_result == OK ? 0x00008000U :
+                         0x00800000U);
+    }
+    if (updater_remote_job_busy) {
+        updater_gui_line(x, y + 370, "Operacao",
+                         updater_remote_active_job_name(), 0x00808000U);
+    }
+}
+
 static void updater_gui_draw_confirmation(
     int x, int y, int width, int height) {
     int dialog_x;
@@ -1552,16 +1987,30 @@ static void updater_gui_draw_confirmation(
                "Confirmar rollback runtime?" :
                updater_confirm == UPDATER_CONFIRM_RUNTIME_CLEAR ?
                "Confirmar limpeza runtime?" :
+               updater_confirm == UPDATER_CONFIRM_SYSTEM_FETCH ?
+               "Confirmar download ZSYS autenticado?" :
+               updater_confirm == UPDATER_CONFIRM_SYSTEM_APPLY ?
+               "Confirmar publicacao do slot pendente?" :
+               updater_confirm == UPDATER_CONFIRM_SYSTEM_CANCEL ?
+               "Cancelar pendente e limpar cache?" :
+               updater_confirm == UPDATER_CONFIRM_SYSTEM_REBOOT_OFFER ?
+               "Slot pendente publicado." :
+               updater_confirm == UPDATER_CONFIRM_SYSTEM_REBOOT_FINAL ?
+               "Confirmar reinicio agora?" :
                "Confirmar limpeza do cache?";
     gui_draw_text(
         (uint32_t)(dialog_x + 24), (uint32_t)(dialog_y + 28),
         question, GUI_COLOR_TEXT);
     gui_draw_button((uint32_t)(dialog_x + 82),
                     (uint32_t)(dialog_y + 92),
-                    112, 30, "Confirmar", 1);
+                    112, 30,
+                    updater_confirm == UPDATER_CONFIRM_SYSTEM_REBOOT_OFFER ?
+                    "Agora" : "Confirmar", 1);
     gui_draw_button((uint32_t)(dialog_x + 226),
                     (uint32_t)(dialog_y + 92),
-                    112, 30, "Cancelar", 0);
+                    112, 30,
+                    updater_confirm == UPDATER_CONFIRM_SYSTEM_REBOOT_OFFER ?
+                    "Depois" : "Cancelar", 0);
 }
 
 static void updater_draw_classic(int x, int y, int width, int height) {
@@ -1571,7 +2020,8 @@ static void updater_draw_classic(int x, int y, int width, int height) {
     gui_draw_panel((uint32_t)x, (uint32_t)y, (uint32_t)width,
                    (uint32_t)height, GUI_COLOR_BG, 0);
     updater_gui_draw_tabs(x + UPDATER_CLASSIC_MARGIN,
-                          y + UPDATER_CLASSIC_MARGIN);
+                          y + UPDATER_CLASSIC_MARGIN,
+                          width - 2 * UPDATER_CLASSIC_MARGIN);
     if (updater_tab == UPDATER_TAB_PACKAGES) {
         updater_gui_draw_packages(
             x + UPDATER_CLASSIC_MARGIN, content_y,
@@ -1582,6 +2032,8 @@ static void updater_draw_classic(int x, int y, int width, int height) {
         updater_gui_draw_history(x + 32, content_y + 16);
     } else if (updater_tab == UPDATER_TAB_RUNTIME) {
         updater_gui_draw_runtime(x + 32, content_y + 16);
+    } else if (updater_tab == UPDATER_TAB_SYSTEM) {
+        updater_gui_draw_system(x + 32, content_y + 16);
     } else {
         updater_gui_draw_remote(x + 32, content_y + 16);
     }
@@ -1609,6 +2061,19 @@ static void updater_draw_classic(int x, int y, int width, int height) {
                         96, 28, "Rollback", 0);
         gui_draw_button((uint32_t)(x + 536), (uint32_t)(y + height - 44),
                         96, 28, "Limpar", 0);
+    } else if (updater_tab == UPDATER_TAB_SYSTEM) {
+        static const char* labels[6] = {
+            "Consultar", "Baixar", "Verificar", "Aplicar", "Cancelar",
+            "Reiniciar"
+        };
+
+        for (int index = 0; index < 6; index++) {
+            gui_draw_button(
+                (uint32_t)(x + 16 + index *
+                           UPDATER_CLASSIC_SYSTEM_BUTTON_STEP),
+                (uint32_t)(y + height - 44),
+                UPDATER_CLASSIC_SYSTEM_BUTTON_WIDTH, 28, labels[index], 0);
+        }
     } else {
         gui_draw_button((uint32_t)(x + 16), (uint32_t)(y + height - 44),
                         112, 28, "Atualizar", 0);
@@ -1668,6 +2133,14 @@ int updater_init(void) {
     updater_remote_job_busy = 0U;
     updater_remote_cancel_requested = 0U;
     updater_runtime_fetch_full = 0U;
+    kmemset(updater_system_tag, 0, sizeof(updater_system_tag));
+    kmemset(updater_system_tag_saved, 0, sizeof(updater_system_tag_saved));
+    updater_system_tag_length = 0U;
+    updater_system_tag_editing = 0U;
+    updater_system_tag_dirty = 0U;
+    updater_system_shift = 0U;
+    updater_system_reboot_sequence = 0U;
+    updater_system_result_reason = "NONE";
     if (!update_is_ready()) {
         recovery_mark_disabled(
             RECOVERY_COMPONENT_SYSTEM_UPDATER, ERR_STATE,
@@ -1754,14 +2227,98 @@ void updater_draw(void) {
     updater_draw_simple();
 }
 
+static void updater_system_action(uint8_t scancode) {
+    if (scancode == UPDATER_SCANCODE_T) {
+        updater_system_tag_begin();
+    } else if (scancode == UPDATER_SCANCODE_C) {
+        (void)updater_remote_start_job(
+            UPDATER_REMOTE_JOB_SYSTEM_CHECK, 0);
+    } else if (scancode == UPDATER_SCANCODE_D) {
+        (void)updater_remote_start_job(
+            UPDATER_REMOTE_JOB_SYSTEM_CHECK, 1);
+    } else if (scancode == UPDATER_SCANCODE_V) {
+        (void)updater_remote_start_job(
+            UPDATER_REMOTE_JOB_SYSTEM_VERIFY, 0);
+    } else if (scancode == UPDATER_SCANCODE_A) {
+        (void)updater_remote_start_job(
+            UPDATER_REMOTE_JOB_SYSTEM_APPLY_PREFLIGHT, 0);
+    } else if (scancode == UPDATER_SCANCODE_X) {
+        (void)updater_remote_start_job(
+            UPDATER_REMOTE_JOB_SYSTEM_CANCEL_PREFLIGHT, 0);
+    } else if (scancode == UPDATER_SCANCODE_R) {
+        if (updater_system_slots_status_ready &&
+            updater_system_slots_status.pending_slot !=
+                UPDATE_SYSTEM_SLOT_NONE) {
+            (void)updater_system_offer_final_reboot();
+        } else {
+            updater_last_result = ERR_STATE;
+            updater_result_kind = UPDATER_RESULT_SYSTEM;
+            updater_system_result_reason = "STATE";
+            LOG_ERROR("UPDATER", "Reinicio solicitado sem slot pendente");
+        }
+    }
+}
+
+static void updater_system_tag_key(uint8_t scancode) {
+    char value;
+
+    if (scancode == UPDATER_SCANCODE_ESC ||
+        scancode == UPDATER_SCANCODE_F12) {
+        updater_system_tag_finish(0);
+        return;
+    }
+    if (scancode == UPDATER_SCANCODE_ENTER) {
+        updater_system_tag_finish(1);
+        return;
+    }
+    if (scancode == UPDATER_SCANCODE_BACKSPACE) {
+        if (updater_system_tag_length) {
+            updater_system_tag[--updater_system_tag_length] = '\0';
+        }
+        return;
+    }
+    value = keyboard_scancode_to_ascii_shifted(
+        scancode, updater_system_shift);
+    if (!value || updater_system_tag_length + 1U >=
+            UPDATE_REMOTE_TAG_SIZE) return;
+    if (!((value >= 'A' && value <= 'Z') ||
+          (value >= 'a' && value <= 'z') ||
+          (value >= '0' && value <= '9') || value == '.' ||
+          value == '_' || value == '-')) {
+        updater_last_result = ERR_INVALID;
+        updater_result_kind = UPDATER_RESULT_SYSTEM;
+        updater_system_result_reason = "TAG_INVALID";
+        LOG_ERROR("UPDATER", "Caractere invalido na tag ZSYS");
+        return;
+    }
+    updater_system_tag[updater_system_tag_length++] = value;
+    updater_system_tag[updater_system_tag_length] = '\0';
+}
+
 void updater_handle_key(uint8_t scancode) {
-    if (!updater_active || (scancode & 0x80U)) return;
+    if (!updater_active) return;
+    if (scancode == UPDATER_SCANCODE_LEFT_SHIFT ||
+        scancode == UPDATER_SCANCODE_RIGHT_SHIFT) {
+        updater_system_shift = 1U;
+        return;
+    }
+    if (scancode == UPDATER_SCANCODE_LEFT_SHIFT_RELEASE ||
+        scancode == UPDATER_SCANCODE_RIGHT_SHIFT_RELEASE) {
+        updater_system_shift = 0U;
+        return;
+    }
+    if (scancode & 0x80U) return;
     if (updater_remote_job_busy) {
         if (scancode == UPDATER_SCANCODE_ESC ||
             scancode == UPDATER_SCANCODE_F12) {
             updater_remote_cancel_requested = 1U;
             updater_draw();
         }
+        return;
+    }
+    if (updater_system_tag_editing) {
+        updater_system_tag_key(scancode);
+        updater_draw();
         return;
     }
     if (updater_confirm != UPDATER_CONFIRM_NONE) {
@@ -1800,7 +2357,8 @@ void updater_handle_key(uint8_t scancode) {
         updater_preflight_apply();
     } else if (scancode == UPDATER_SCANCODE_B &&
                updater_tab != UPDATER_TAB_REMOTE &&
-               updater_tab != UPDATER_TAB_RUNTIME) {
+               updater_tab != UPDATER_TAB_RUNTIME &&
+               updater_tab != UPDATER_TAB_SYSTEM) {
         updater_preflight_rollback();
     } else if (updater_tab == UPDATER_TAB_RUNTIME &&
                scancode == UPDATER_SCANCODE_A) {
@@ -1835,6 +2393,8 @@ void updater_handle_key(uint8_t scancode) {
     } else if (updater_tab == UPDATER_TAB_RUNTIME &&
                scancode == UPDATER_SCANCODE_X) {
         updater_runtime_clear_preflight();
+    } else if (updater_tab == UPDATER_TAB_SYSTEM) {
+        updater_system_action(scancode);
     }
     updater_draw();
 }
@@ -1873,9 +2433,13 @@ int updater_handle_mouse(mouse_event_t* event) {
         return updater_handle_confirmation_click(px, py);
     }
     for (int index = 0; index < UPDATER_TAB_COUNT; index++) {
+        int tab_width = updater_gui_tab_width(
+            updater_gui_width - 2 * UPDATER_CLASSIC_MARGIN);
+
         if (updater_point_in(
-                px, py, updater_gui_x + UPDATER_CLASSIC_MARGIN + index * 116,
-                updater_gui_y + UPDATER_CLASSIC_MARGIN, 108, 28)) {
+                px, py, updater_gui_x + UPDATER_CLASSIC_MARGIN +
+                index * (tab_width + UPDATER_CLASSIC_TAB_GAP),
+                updater_gui_y + UPDATER_CLASSIC_MARGIN, tab_width, 28)) {
             updater_tab = (updater_tab_t)index;
             updater_confirm = UPDATER_CONFIRM_NONE;
             return 1;
@@ -1898,6 +2462,29 @@ int updater_handle_mouse(mouse_event_t* event) {
         return 1;
     }
     bottom = updater_gui_y + updater_gui_height - 44;
+    if (updater_tab == UPDATER_TAB_SYSTEM) {
+        if (updater_point_in(px, py, updater_gui_x + 182,
+                             updater_gui_y + 58, 360, 26)) {
+            updater_system_tag_begin();
+            return 1;
+        }
+        for (int index = 0; index < 6; index++) {
+            if (updater_point_in(
+                    px, py, updater_gui_x + 16 +
+                    index * UPDATER_CLASSIC_SYSTEM_BUTTON_STEP, bottom,
+                    UPDATER_CLASSIC_SYSTEM_BUTTON_WIDTH, 28)) {
+                static const uint8_t actions[6] = {
+                    UPDATER_SCANCODE_C, UPDATER_SCANCODE_D,
+                    UPDATER_SCANCODE_V, UPDATER_SCANCODE_A,
+                    UPDATER_SCANCODE_X, UPDATER_SCANCODE_R
+                };
+
+                updater_system_action(actions[index]);
+                return 1;
+            }
+        }
+        return 1;
+    }
     if (updater_tab == UPDATER_TAB_REMOTE) {
         if (updater_point_in(
                 px, py, updater_gui_x + 16, bottom, 112, 28)) {

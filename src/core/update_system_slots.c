@@ -77,6 +77,7 @@ static system_slots_state_t system_slots_state;
 static system_slots_journal_t system_slots_journal;
 static update_system_slots_status_t system_slots_status;
 static uint8_t system_slots_control[UPDATE_SYSTEM_SLOT_CONTROL_SIZE];
+static uint8_t system_slots_verify_control[UPDATE_SYSTEM_SLOT_CONTROL_SIZE];
 static uint8_t system_slots_io[SYSTEM_SLOTS_IO_SIZE];
 
 static uint16_t system_slots_read_u16(const uint8_t* data) {
@@ -103,6 +104,15 @@ static void system_slots_write_u32(uint8_t* data, uint32_t value) {
 static int system_slots_bytes_zero(const uint8_t* data, uint32_t size) {
     for (uint32_t index = 0U; index < size; index++) {
         if (data[index]) return 0;
+    }
+    return 1;
+}
+
+static int system_slots_bytes_equal(const uint8_t* first,
+                                    const uint8_t* second, uint32_t size) {
+    if (!first || !second) return 0;
+    for (uint32_t index = 0U; index < size; index++) {
+        if (first[index] != second[index]) return 0;
     }
     return 1;
 }
@@ -1204,6 +1214,7 @@ int update_system_slots_stage_file(
     }
     system_slots_journal.phase = SYSTEM_SLOTS_PHASE_COMMITTED;
     result = system_slots_write_journal_locked();
+    if (result == OK) result = system_slots_replicate_state_locked();
     if (result == OK) result = system_slots_clear_journal_locked();
     if (result != OK) {
         result_out->reason = UPDATE_SYSTEM_SLOTS_REASON_RECOVERY;
@@ -1304,6 +1315,110 @@ int update_system_slots_cancel_pending(
     system_slots_publish_status_locked();
     spinlock_release(&system_slots_lock);
     LOG_INFO("UPDATE", "Slot ZSYS pendente cancelado");
+    return OK;
+}
+
+int update_system_slots_reboot_preflight(
+    update_system_slots_action_result_t* result_out) {
+    system_slots_state_t persisted;
+    uint32_t size = 0U;
+    int result;
+
+    if (!result_out) {
+        LOG_ERROR("UPDATE", "Resultado nulo no preflight de reinicio");
+        return ERR_NULL;
+    }
+    kmemset(result_out, 0, sizeof(*result_out));
+    result_out->target_slot = UPDATE_SYSTEM_SLOT_NONE;
+    spinlock_acquire(&system_slots_lock);
+    if (!system_slots_initialized || !system_slots_volume_ready) {
+        result_out->reason = UPDATE_SYSTEM_SLOTS_REASON_UNSUPPORTED;
+        result = ERR_UNAVAILABLE;
+    } else if (system_slots_state_degraded || system_slots_journal_degraded) {
+        result_out->reason = UPDATE_SYSTEM_SLOTS_REASON_STATE;
+        result = ERR_INVALID;
+    } else {
+        result = system_slots_load_control(system_slots_state_aliases[0],
+                                           system_slots_control);
+        if (result == OK &&
+            system_slots_read_u16(system_slots_control + 4U) ==
+                SYSTEM_SLOTS_FORMAT_VERSION &&
+            system_slots_decode_state(system_slots_control, &persisted) == OK) {
+            kmemcpy(system_slots_verify_control, system_slots_control,
+                    UPDATE_SYSTEM_SLOT_CONTROL_SIZE);
+        } else {
+            result_out->reason = UPDATE_SYSTEM_SLOTS_REASON_STATE;
+            result = ERR_INVALID;
+        }
+    }
+    if (result == OK) {
+        result = system_slots_load_control(system_slots_state_aliases[1],
+                                           system_slots_control);
+        if (result != OK ||
+            system_slots_read_u16(system_slots_control + 4U) !=
+                SYSTEM_SLOTS_FORMAT_VERSION ||
+            system_slots_decode_state(system_slots_control, &persisted) != OK ||
+            !system_slots_bytes_equal(system_slots_control,
+                                      system_slots_verify_control,
+                                      UPDATE_SYSTEM_SLOT_CONTROL_SIZE)) {
+            result_out->reason = UPDATE_SYSTEM_SLOTS_REASON_STATE;
+            result = ERR_INVALID;
+        }
+    }
+    if (result == OK) {
+        result = system_slots_encode_state(&system_slots_state,
+                                           system_slots_control);
+        if (result != OK ||
+            !system_slots_bytes_equal(system_slots_control,
+                                      system_slots_verify_control,
+                                      UPDATE_SYSTEM_SLOT_CONTROL_SIZE)) {
+            result_out->reason = UPDATE_SYSTEM_SLOTS_REASON_STATE;
+            result = ERR_STATE;
+        }
+    }
+    for (uint32_t index = 0U;
+         result == OK && index < UPDATE_SYSTEM_SLOT_COUNT; index++) {
+        result = fs_get_root_file_info(system_slots_journal_aliases[index],
+                                       &size, 0);
+        if (result == ERR_NOT_FOUND) result = OK;
+        else {
+            result_out->reason = result == OK ?
+                UPDATE_SYSTEM_SLOTS_REASON_JOURNAL :
+                UPDATE_SYSTEM_SLOTS_REASON_IO;
+            result = result == OK ? ERR_STATE : result;
+        }
+    }
+    if (result == OK) {
+        uint8_t target = system_slots_state.pending_slot;
+        if (target >= UPDATE_SYSTEM_SLOT_COUNT ||
+            target == system_slots_state.active_slot ||
+            system_slots_state.previous_slot != system_slots_state.active_slot ||
+            system_slots_state.attempt_slot != UPDATE_SYSTEM_SLOT_NONE ||
+            system_slots_state.boot_state != UPDATE_SYSTEM_SLOTS_BOOT_NONE ||
+            system_slots_state.boot_reason !=
+                UPDATE_SYSTEM_SLOTS_REASON_NONE ||
+            system_slots_state.boot_attempt_sequence != 0U ||
+            system_slots_journal.phase != SYSTEM_SLOTS_PHASE_NONE ||
+            (system_slots_state.flags & SYSTEM_SLOTS_STATE_FLAG_RECOVERY) ||
+            system_slots_state.slots[target].state !=
+                UPDATE_SYSTEM_SLOT_FILE_VALID) {
+            result_out->reason = UPDATE_SYSTEM_SLOTS_REASON_STATE;
+            result = ERR_STATE;
+        } else {
+            result_out->target_slot = target;
+            result_out->target_version =
+                system_slots_state.slots[target].version;
+            result_out->target_epoch = system_slots_state.slots[target].epoch;
+            result_out->pending_published = 1U;
+            result_out->reason = UPDATE_SYSTEM_SLOTS_REASON_NONE;
+        }
+    }
+    spinlock_release(&system_slots_lock);
+    if (result != OK) {
+        LOG_ERROR("UPDATE", "Preflight de reinicio ZSYS recusado");
+        return result;
+    }
+    LOG_INFO("UPDATE", "Preflight de reinicio ZSYS aprovado");
     return OK;
 }
 

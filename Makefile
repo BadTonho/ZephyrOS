@@ -477,6 +477,9 @@ EP94B_ABI1_DIR = $(EP94B_FIXTURES_DIR)\abi1
 EP94B_ABI2_DIR = $(EP94B_FIXTURES_DIR)\abi2
 EP94B_MATRIX_DIR = build\ep94b-matrix
 EP94B_MATRIX_IMAGE = $(EP94B_MATRIX_DIR)\EP94B_GUIDED.img
+EP94C_MATRIX_DIR = build\ep94c-matrix
+EP94C_MATRIX_IMAGE = $(EP94C_MATRIX_DIR)\EP94C_GUIDED.img
+EP94C_FIXTURES_DIR = $(EP94C_MATRIX_DIR)\preflight-fixtures
 # Defina somente em Makefile.local; a chave privada nunca entra no repositorio.
 SYSTEM_PRIVATE_KEY ?=
 SYSTEM_FIXTURE_IMAGE ?=
@@ -1146,6 +1149,15 @@ run-ep94b-matrix: ep94b-matrix
 	@if not exist "$(EP94B_MATRIX_IMAGE)" (echo Imagem guiada EP9.4B nao encontrada: $(EP94B_MATRIX_IMAGE) & exit /b 2)
 	$(QEMU) $(QEMU_CPU_ARGS) -snapshot -monitor stdio -drive file=$(EP94B_MATRIX_IMAGE),format=raw,if=none,id=ep94bmatrix -device ide-hd,drive=ep94bmatrix,bootindex=1 $(QEMU_NET_ARGS)
 
+ep94c-matrix: ep94b-fixtures tools\ep94c_matrix.py tools\ep94b_matrix.py tools\system_slots_matrix.py tools\packager.py
+	@if exist "$(EP94C_MATRIX_DIR)" rmdir /s /q "$(EP94C_MATRIX_DIR)"
+	@if not exist "$(EP94C_MATRIX_DIR)" mkdir "$(EP94C_MATRIX_DIR)"
+	python tools\ep94c_matrix.py --base-image $(OS_IMG) --active $(EP94B_ABI1_DIR)\valid.zsys --candidate $(EP94B_ABI2_DIR)\valid.zsys --output $(EP94C_MATRIX_IMAGE) --fixtures-dir $(EP94C_FIXTURES_DIR) --fat32-start-lba $(FAT32_START_LBA)
+
+run-ep94c-matrix: ep94c-matrix
+	@if not exist "$(EP94C_MATRIX_IMAGE)" (echo Imagem guiada EP9.4C nao encontrada: $(EP94C_MATRIX_IMAGE) & exit /b 2)
+	$(QEMU) $(QEMU_CPU_ARGS) -snapshot -monitor stdio -drive file=$(EP94C_MATRIX_IMAGE),format=raw,if=none,id=ep94cmatrix -device ide-hd,drive=ep94cmatrix,bootindex=1 $(QEMU_NET_ARGS)
+
 $(RECOVERY_MENU_VGA_IMAGE): system-slots-matrix $(RECOVERY_STAGE2_VGA_BIN) $(STAGE2_BIN) $(RECOVERY_STAGE2_PATCH_TOOL)
 	python $(RECOVERY_STAGE2_PATCH_TOOL) --base $(SYSTEM_SLOTS_MATRIX_DIR)\MENU_FAILED_VALID.img --stage2 $(RECOVERY_STAGE2_VGA_BIN) --reference-stage2 $(STAGE2_BIN) --output $@ --stage2-lba 1 --kernel-lba 64
 
@@ -1268,4 +1280,4 @@ store-as5-serve: store-as5-test
 clean:
 	rmdir /s /q build
 
-.PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-system-fixture run-system-slots-fixture run-system-slots-matrix run-system-update-matrix ep94b-fixtures ep94b-matrix run-ep94b-matrix run-recovery-menu-vga run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures system-slots-fixtures system-slots-matrix debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
+.PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-system-fixture run-system-slots-fixture run-system-slots-matrix run-system-update-matrix ep94b-fixtures ep94b-matrix run-ep94b-matrix ep94c-matrix run-ep94c-matrix run-recovery-menu-vga run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures system-slots-fixtures system-slots-matrix debug q3check q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
