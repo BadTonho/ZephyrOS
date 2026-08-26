@@ -1165,3 +1165,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   temporario; como o loader pre-kernel consulta somente aliases 8.3, ele nao
   encontrava B. A renomeacao agora publica exatamente o alias 8.3 do destino.
   A repeticao dos gates e do caminho ABI 2 permanece pendente.
+
+- EP9.4B: cadeia ABI 2 e promocao do slot B validadas.
+  Validada em: 2026-08-26 16:22 (America/Sao_Paulo).
+  Na imagem guiada de 256 MiB, o sistema iniciou pelo slot A ABI 1, publicou B
+  como pendente com `update system apply --confirm` e reiniciou pela cadeia
+  autenticada ABI 2. A confirmacao do kernel promoveu B para ativo, limpou o
+  pendente e a tentativa e preservou A e B como `VALID`. O status final ficou
+  `seq=4`, `ativo=B`, `anterior=A`, `boot=NONE` e `motivo=NONE`.
