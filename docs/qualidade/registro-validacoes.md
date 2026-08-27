@@ -1665,3 +1665,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `regcheck full`, `memcheck` e `log check` terminaram em `OK`. `health check`
   publicou Network como `DISABLED` pelo motivo esperado. O perfil multi-NIC e
   a confirmacao explicita de responsividade da entrada permanecem pendentes.
+
+- SYNC3/R4: inventario multi-NIC confirmado pelo usuario.
+  Registrada em: 2026-08-27 19:30 (America/Sao_Paulo).
+  O perfil publicou `net-pci-00:03.0` E1000 e `net-pci-00:04.0` RTL8139 como
+  controladores ativos. A `Zephyr kworker` iniciou no PID 2, em contexto
+  KWORKER, com cinco trabalhos registrados, fallback inativo e zero rejeicoes,
+  erros de callback, contexto invalido ou falhas de wake. A suite multi-NIC,
+  TCP e os diagnosticos finais do perfil permanecem pendentes.
