@@ -1564,3 +1564,34 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   de 282 KiB livres para crescimento do kernel. Stage 2, Makefile e contratos
   foram sincronizados; `src/boot/boot.asm` permaneceu inalterado. A repeticao
   dos gates pelo usuario permanece pendente.
+
+- SYNC3/R4: gates e inicializacao do QEMU validados pelo usuario.
+  Concluida em: 2026-08-27 19:02 (America/Sao_Paulo).
+  `make q3check` e `make clean && make` terminaram corretamente depois do
+  reposicionamento do recovery loader. `make run` iniciou a imagem resultante
+  no QEMU. A matriz funcional da workqueue e dos servicos migrados permanece
+  pendente antes de marcar SYNC3/R4 como concluida.
+
+- SYNC3/R4: nucleo da workqueue validado no QEMU padrao pelo usuario.
+  Concluida em: 2026-08-27 19:04 (America/Sao_Paulo).
+  `workq status` mostrou a `Zephyr kworker` ativa no PID 2, contexto KWORKER,
+  fallback inativo, cinco trabalhos registrados e zero rejeicoes, erros de
+  callback ou contexto invalido. `workq check` aprovou ciclo, FIFO,
+  prioridades sem starvation, atrasos, rollover, promocao, coalescencia,
+  reexecucao, cancelamento, capacidade, interrupcoes, wake real e invariantes.
+  `irqstat check`, `timer check` e as 14 invariantes de `wait check` terminaram
+  em `OK`. `wqinfo` mostrou as filas KWORKER e WORKQ_PROBE disponiveis, sem
+  waiter orfao, e o inventario publicou `net-pci-00:03.0` E1000 ativa. A rede,
+  indexacao, RegCheck e diagnosticos finais do perfil permanecem pendentes.
+
+- SYNC3/R4: servicos migrados validados no QEMU padrao pelo usuario.
+  Concluida em: 2026-08-27 19:07 (America/Sao_Paulo).
+  A reconstrucao cooperativa do indice publicou 26 itens e terminou com
+  `index check` valido. A fixture de sockets passou e a conexao TCP com
+  `example.com:80` foi estabelecida. `net check qemu tcp
+  net-pci-00:03.0 example.com` aprovou DHCP, DNS, TCP, checksum, RX/TX,
+  resposta HTTP, fechamento, polling e invariantes. `regcheck full`,
+  `memcheck` e `log check` terminaram em `OK`; `health check` preservou apenas
+  componentes degradados ou indisponiveis esperados do ambiente. `workq foo`
+  foi rejeitado com o uso correto. A confirmacao explicita de responsividade
+  da entrada durante a carga e os perfis complementares permanecem pendentes.
