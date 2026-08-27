@@ -37,18 +37,48 @@ static void thread_wait_irq_restore(uint32_t flags) {
     }
 }
 
-static int thread_wait_reason_valid(wait_reason_t reason) {
-    return reason == WAIT_REASON_EVENT ||
-           reason == WAIT_REASON_CANCELLED ||
-           reason == WAIT_REASON_DEVICE_UNAVAILABLE;
+static void thread_wait_block_transition(void* target,
+                                         wait_queue_entry_t* entry) {
+    thread_t* thread = (thread_t*)target;
+
+    thread->wait_channel = entry->queue;
+    thread->wait_condition = entry->observed_condition;
+    thread->wait_deadline = entry->deadline_tick;
+    thread->wait_reason = WAIT_REASON_NONE;
+    thread->wait_deadline_active = entry->deadline_active;
+    thread->wait_active = 1U;
+    thread->wait_ticks = entry->deadline_active ?
+                         entry->deadline_tick - timer_get_ticks() : 0U;
+    thread->state = THREAD_BLOCKED;
+}
+
+static void thread_wait_wake_transition(void* target,
+                                        wait_queue_entry_t* entry) {
+    thread_t* thread = (thread_t*)target;
+
+    thread->wait_active = 0U;
+    thread->wait_channel = 0;
+    thread->wait_condition = 0U;
+    thread->wait_deadline = WAIT_TIMEOUT_INFINITE;
+    thread->wait_reason = entry->reason;
+    thread->wait_deadline_active = 0U;
+    thread->wait_ticks = 0U;
+    if (thread->state == THREAD_BLOCKED) thread->state = THREAD_RUNNING;
+}
+
+static void thread_wait_yield_transition(void* target) {
+    (void)target;
+    thread_yield();
 }
 
 static void thread_wait_clear(thread_t* thread, wait_reason_t reason) {
-    wait_channel_t* channel;
-
     if (!thread) return;
-    channel = thread->wait_channel;
-    if (thread->wait_active && channel) wait_note_wake(channel, reason);
+    if (thread->wait_entry.linked) {
+        if (wait_queue_remove(&thread->wait_entry, reason) != OK) {
+            LOG_ERROR("THRD", "Falha ao remover thread da fila de espera");
+        }
+        return;
+    }
     thread->wait_active = 0U;
     thread->wait_channel = 0;
     thread->wait_condition = 0U;
@@ -423,8 +453,7 @@ void thread_unblock(thread_t* thread) {
 
 int thread_wait(wait_channel_t* channel, uint32_t observed_condition,
                 uint32_t timeout_ticks, wait_reason_t* out_reason) {
-    uint32_t flags;
-    uint32_t now;
+    int result;
 
     if (!out_reason) {
         LOG_ERROR("THRD", "Destino nulo para resultado da espera");
@@ -435,7 +464,8 @@ int thread_wait(wait_channel_t* channel, uint32_t observed_condition,
         LOG_ERROR("THRD", "Espera sem thread executavel");
         return ERR_STATE;
     }
-    if (!channel || !channel->initialized || current_thread->wait_active) {
+    if (!channel || !channel->initialized || current_thread->wait_active ||
+        current_thread->wait_entry.linked) {
         LOG_ERROR("THRD", "Canal ou estado invalido para espera");
         return ERR_INVALID;
     }
@@ -445,97 +475,35 @@ int thread_wait(wait_channel_t* channel, uint32_t observed_condition,
         return ERR_INVALID;
     }
 
-    flags = thread_wait_irq_save();
-    if (!channel->available) {
-        current_thread->wait_reason = WAIT_REASON_DEVICE_UNAVAILABLE;
-        *out_reason = current_thread->wait_reason;
-        thread_wait_irq_restore(flags);
-        return OK;
-    }
-    if (channel->condition != observed_condition) {
-        current_thread->wait_reason = WAIT_REASON_EVENT;
-        *out_reason = current_thread->wait_reason;
-        thread_wait_irq_restore(flags);
-        return OK;
-    }
-    if (timeout_ticks == WAIT_TIMEOUT_IMMEDIATE) {
-        current_thread->wait_reason = WAIT_REASON_TIMEOUT;
-        *out_reason = current_thread->wait_reason;
-        thread_wait_irq_restore(flags);
-        return OK;
-    }
-
-    now = timer_get_ticks();
-    current_thread->wait_channel = channel;
-    current_thread->wait_condition = observed_condition;
-    current_thread->wait_deadline_active = timeout_ticks == WAIT_TIMEOUT_INFINITE ?
-                                           0U : 1U;
-    current_thread->wait_deadline = current_thread->wait_deadline_active ?
-                                    now + timeout_ticks : WAIT_TIMEOUT_INFINITE;
-    current_thread->wait_reason = WAIT_REASON_NONE;
-    current_thread->wait_active = 1U;
-    current_thread->wait_ticks = timeout_ticks == WAIT_TIMEOUT_INFINITE ?
-                                  0U : timeout_ticks;
-    wait_note_waiter(channel);
-    current_thread->state = THREAD_BLOCKED;
-    thread_wait_irq_restore(flags);
-    thread_yield();
-    *out_reason = current_thread->wait_reason;
-    return OK;
+    result = wait_queue_entry_init(
+        &current_thread->wait_entry, current_thread, current_thread->name,
+        WAIT_TARGET_THREAD, current_thread->id,
+        thread_wait_block_transition, thread_wait_wake_transition,
+        thread_wait_yield_transition);
+    if (result != OK) return result;
+    result = wait_queue_block(channel, &current_thread->wait_entry,
+                              observed_condition, timeout_ticks, out_reason);
+    current_thread->wait_reason = *out_reason;
+    return result;
 }
 
 int thread_wake_channel(wait_channel_t* channel, wait_wake_mode_t mode,
                         wait_reason_t reason, uint32_t* out_woken) {
-    uint32_t flags;
-    uint32_t woken = 0U;
-
-    if (!out_woken) {
-        LOG_ERROR("THRD", "Destino nulo para contagem de wake");
-        return ERR_NULL;
-    }
-    *out_woken = 0U;
-    if (!channel || !channel->initialized ||
-        (mode != WAIT_WAKE_ONE && mode != WAIT_WAKE_ALL) ||
-        !thread_wait_reason_valid(reason)) {
-        LOG_ERROR("THRD", "Parametros invalidos ao acordar canal");
-        return ERR_INVALID;
-    }
-
-    flags = thread_wait_irq_save();
-    if (reason == WAIT_REASON_EVENT || reason == WAIT_REASON_DEVICE_UNAVAILABLE) {
-        wait_channel_signal(channel);
-    }
-    if (reason == WAIT_REASON_DEVICE_UNAVAILABLE) channel->available = 0U;
-    for (uint32_t index = 0U; index < MAX_THREADS; index++) {
-        thread_t* thread = &threads[index];
-
-        if (thread->state != THREAD_BLOCKED || !thread->wait_active ||
-            thread->wait_channel != channel) continue;
-        thread_wait_clear(thread, reason);
-        woken++;
-        if (mode == WAIT_WAKE_ONE) break;
-    }
-    thread_wait_irq_restore(flags);
-    *out_woken = woken;
-    return OK;
+    return wait_queue_wake_target(channel, WAIT_TARGET_THREAD, mode,
+                                  reason, out_woken);
 }
 
 int thread_cancel_wait(thread_t* thread) {
-    uint32_t flags;
-
     if (!thread || thread_index(thread) < 0) {
         LOG_ERROR("THRD", "Ponteiro invalido ao cancelar espera");
         return ERR_NULL;
     }
-    flags = thread_wait_irq_save();
-    if (!thread->wait_active || thread->state != THREAD_BLOCKED) {
-        thread_wait_irq_restore(flags);
+    if (!thread->wait_active || thread->state != THREAD_BLOCKED ||
+        !thread->wait_entry.linked) {
         LOG_WARN("THRD", "Thread nao possui espera cancelavel");
         return ERR_STATE;
     }
-    thread_wait_clear(thread, WAIT_REASON_CANCELLED);
-    thread_wait_irq_restore(flags);
-    return OK;
+    return wait_queue_remove(&thread->wait_entry, WAIT_REASON_CANCELLED);
 }
 
 int thread_copy_waiters(wait_info_t* output, uint32_t max_entries,

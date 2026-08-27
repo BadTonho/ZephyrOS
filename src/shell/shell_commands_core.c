@@ -319,6 +319,7 @@ static void cmd_help(void) {
     video_print("  tls status|check - Inspeciona BearSSL TLS/X.509\n",
                 0x07);
     video_print("  wait     - Inspeciona esperas e executa autoteste\n", 0x07);
+    video_print("  wqinfo   - Lista filas de espera e ordem FIFO\n", 0x07);
     video_print("  devices  - Lista inventario de hardware (-v para detalhes)\n", 0x07);
     video_print("  device-info <id> - Mostra detalhes de um dispositivo\n", 0x07);
     video_print("  device-scan - Refaz varredura PCI, USB e rede\n", 0x07);

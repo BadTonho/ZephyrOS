@@ -11,6 +11,9 @@ cancelamento ZSYS esta validada. A EP9.4B de boot operacional autenticado no
 FAT32 esta implementada e validada. A EP9.4C de reinicio controlado pelo
 System Updater esta implementada e validada.
 
+SYNC2 esta implementada com wait queues FIFO para IPC e sockets e aguarda a
+matriz funcional do usuario. SYNC3/R4 e a `kworker` continuam pendentes.
+
 ## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A-EP9.4C validadas; SYNC1 concluída com a dívida técnica [DT100-001](docs/qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2) aceita para K5/v1.0.0
 
 ```
@@ -21,7 +24,7 @@ Sistema e ecossistema:       [████████████████�
 Evolução da plataforma:      [████████████████████████████████████-------] EP1-EP6.4 e EP7.0 encerradas; EP7.1B EHCI/transporte RTL8811CU implementada; EP9.0A e EP9.4A concluídas
 ```
 
-**Documentação de atualização sincronizada em:** 2026-08-27 00:28 (America/Sao_Paulo).
+**Documentação de atualização sincronizada em:** 2026-08-27 10:30 (America/Sao_Paulo).
 
 ---
 
@@ -134,6 +137,7 @@ Evolução da plataforma:      [████████████████
 | `clock [status|check]` | Inspeciona RTC/UTC ancorado no PIT e executa autotestes de calendario e rollover |
 | `tls [status|check]` | Inspeciona BearSSL TLS/X.509 e executa os vetores de politica |
 | `wait [status|list|check]` | Inspeciona canais de espera e executa autoteste de esperas |
+| `wqinfo` | Lista wait queues registradas e a ordem FIFO dos waiters |
 | `job [status]` | Inspeciona o executor cooperativo de jobs demorados do Shell |
 | `pkg ...` | Lista, inspeciona, valida, instala e remove pacotes locais ZPKG |
 | `pkgcheck` | Executa validações compactas do serviço de pacotes ZPKG |
@@ -163,7 +167,7 @@ Evolução da plataforma:      [████████████████
 | `net dhcp acquire/status/renew/release` | Gerencia configuracao dinamica |
 | `net dns config/status/table/clear` | Configura DNS e inspeciona o cache |
 | `net tcp status/connect` | Inspeciona TCP ou testa uma abertura ativa |
-| `net socket status/table` | Inspeciona sockets nativos e filas |
+| `net socket status/table/check` | Inspeciona sockets nativos, waiters e a fixture privada de eventos |
 | `net check qemu multi <id-a> <id-b>` | Valida isolamento de duas NICs |
 | `http get <url>/status` | Executa HTTP GET limitado e mostra a sessao |
 | `nslookup <dominio>` | Resolve registro DNS A cooperativamente |

@@ -26,6 +26,7 @@ extern void shell_dispatch_cmd_timer(const char* arguments);
 extern void shell_dispatch_cmd_clock(const char* arguments);
 extern void shell_dispatch_cmd_tls(const char* arguments);
 extern void shell_dispatch_cmd_wait(const char* arguments);
+extern void shell_dispatch_cmd_wqinfo(const char* arguments);
 extern void shell_dispatch_cmd_devices(const char* arguments);
 extern void shell_dispatch_cmd_device_info(const char* arguments);
 extern void shell_dispatch_cmd_device_scan(const char* arguments);
@@ -96,6 +97,7 @@ static const shell_dispatch_entry_t shell_dispatch_table[] = {
     {"clock", shell_dispatch_cmd_clock, SHELL_DISPATCH_FLAG_NONE},
     {"tls", shell_dispatch_cmd_tls, SHELL_DISPATCH_FLAG_NONE},
     {"wait", shell_dispatch_cmd_wait, SHELL_DISPATCH_FLAG_MAY_BLOCK},
+    {"wqinfo", shell_dispatch_cmd_wqinfo, SHELL_DISPATCH_FLAG_NONE},
     {"devices", shell_dispatch_cmd_devices, SHELL_DISPATCH_FLAG_NONE},
     {"device-info", shell_dispatch_cmd_device_info,
      SHELL_DISPATCH_FLAG_NONE},

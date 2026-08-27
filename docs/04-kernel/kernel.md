@@ -562,6 +562,14 @@ nativos. Cada entrada possui fila TX de 2048 bytes e ring RX de 4096 bytes;
 imediatamente. A camada ajusta a janela TCP pelo espaco do ring e drena TX em
 segmentos limitados pelo MSS. A API nao e exposta como syscall de userspace.
 
+Desde a SYNC2, cada slot ativo tambem possui uma wait queue FIFO. A API
+`net_socket_wait()` bloqueia a tarefa ate `CONNECTED`, `READABLE`, `EOF`,
+`ERROR`, `CLOSED` ou timeout, sem mudar a semantica nao bloqueante de
+`net_socket_receive()`. Dados acordam um consumidor; transicoes terminais
+acordam todos. Fechamento, abort e reset tornam a fila indisponivel e removem
+os waiters antes de reciclar o handle geracional. O processo System continua
+executando o polling TCP/sockets e nunca bloqueia nessas filas.
+
 O cliente HTTP mantem uma sessao GET. Ele aceita somente
 `http://host[:porta]/caminho`, resolve nomes pelo DNS, envia HTTP/1.1 com
 `Host`, `User-Agent`, `Accept` e `Connection: close`, e armazena ate 8192
