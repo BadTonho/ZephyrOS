@@ -1629,3 +1629,27 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   a `Zephyr kworker` permaneceu ativa no PID 2, sem fallback, rejeicoes ou
   erros. Montagem, leitura, indexacao e diagnosticos finais do perfil ainda
   permanecem pendentes.
+
+- SYNC3/R4: leitura e montagem ATA validadas pelo usuario.
+  Concluida em: 2026-08-27 19:22 (America/Sao_Paulo).
+  Os volumes exatos `ata1p1` FAT12 e `ata1p4` FAT32 foram montados em modo
+  somente-leitura. `storage check ata1p4` concluiu a verificacao FAT32 sem
+  inconsistencias e as montagens dispararam reconstrucao cooperativa seguida
+  de publicacao do indice. `storage list` mostrou quatro montagens e confirmou
+  zero escritas em `ata1`, `ata2` e `ata3`, inclusive depois de 1.040 leituras
+  na fixture valida. Cancelamento, rebuild completo e diagnosticos finais do
+  perfil permanecem pendentes.
+
+- SYNC3/R4: perfil storage concluido pelo usuario.
+  Concluida em: 2026-08-27 19:24 (America/Sao_Paulo).
+  F12 cancelou o primeiro rebuild depois de um passo, preservando 33 entradas
+  ativas e suspendendo a indexacao automatica. O rebuild seguinte retomou e
+  publicou 33 entradas de quatro fontes, com seis diretorios e 42 passos;
+  `index check` terminou valido. A `Zephyr kworker` permaneceu ativa no PID 2,
+  sem fallback, rejeicoes, erros de callback, contexto invalido ou falha de
+  wake mesmo depois de mais de 35 mil execucoes. IRQ14 registrou tres
+  ocorrencias e nenhum Bottom-Half, preservando o ATA sincrono. `regcheck full`
+  terminou em `OK`, incluindo as rejeicoes esperadas das fixtures `ata2*`, e
+  `health check` manteve somente estados esperados do ambiente. A confirmacao
+  explicita de responsividade da entrada e os perfis sem NIC e multi-NIC
+  permanecem pendentes.
