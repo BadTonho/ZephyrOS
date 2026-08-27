@@ -1555,3 +1555,12 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   contratos, Roadmaps 03/09/12, diagnosticos, RegCheck e Health foram
   atualizados. Os gates e a matriz QEMU permanecem pendentes do usuario; a
   SYNC3/R4 ainda nao foi marcada como concluida.
+
+- SYNC3/R4: janela da imagem de recovery ajustada apos o primeiro build.
+  Concluida em: 2026-08-27 18:57 (America/Sao_Paulo).
+  O kernel passou a ocupar 2.956 setores e excedeu em 9.934 bytes a janela
+  antiga entre os LBAs 64 e 3000. O recovery loader foi reposicionado para o
+  LBA 3584, mantendo o FAT32 no LBA 4096, 256 KiB reservados ao loader e cerca
+  de 282 KiB livres para crescimento do kernel. Stage 2, Makefile e contratos
+  foram sincronizados; `src/boot/boot.asm` permaneceu inalterado. A repeticao
+  dos gates pelo usuario permanece pendente.

@@ -491,6 +491,7 @@ SYSTEM_FIXTURE_IMAGE ?=
 # da imagem abriga a particao FAT32 de sistema sem alterar o bootloader.
 HYBRID_DISK_BYTES = 268435456
 FAT32_START_LBA = 4096
+RECOVERY_LOADER_LBA = 3584
 FAT32_LABEL = ZEPHYROS
 STORE_FIXTURES_DIR = docs\fixtures\apps\store
 STORE_FIXTURES = $(STORE_FIXTURES_DIR)\VALID.ZPK \
@@ -540,7 +541,7 @@ $(BOOT_BIN): $(BOOT_SRC) $(STAGE2_BIN)
 
 $(STAGE2_BIN): $(STAGE2_SRC) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN)
 	@if not exist build mkdir build
-	for /f %%S in ('powershell -NoProfile -Command "$$size = (Get-Item '$(KERNEL_BIN)').Length; [math]::Ceiling($$size / 512)"') do for /f %%K in ('powershell -NoProfile -Command "(Get-Item '$(KERNEL_BIN)').Length"') do for /f %%R in ('powershell -NoProfile -Command "(Get-Item '$(RECOVERY_LOADER_PADDED_BIN)').Length / 512"') do $(NASM) $(NASMFLAGS) -dKERNEL_SECTORS=%%S -dKERNEL_BYTES=%%K -dRECOVERY_LOADER_SECTORS=%%R $< -o $@
+	for /f %%S in ('powershell -NoProfile -Command "$$size = (Get-Item '$(KERNEL_BIN)').Length; [math]::Ceiling($$size / 512)"') do for /f %%K in ('powershell -NoProfile -Command "(Get-Item '$(KERNEL_BIN)').Length"') do for /f %%R in ('powershell -NoProfile -Command "(Get-Item '$(RECOVERY_LOADER_PADDED_BIN)').Length / 512"') do $(NASM) $(NASMFLAGS) -dKERNEL_SECTORS=%%S -dKERNEL_BYTES=%%K -dRECOVERY_LOADER_SECTORS=%%R -dRECOVERY_LOADER_LBA=$(RECOVERY_LOADER_LBA) $< -o $@
 
 $(SYSTEM_BOOT_BIN): $(SYSTEM_BOOT_SRC)
 	@if not exist build mkdir build
@@ -560,7 +561,7 @@ $(SYSTEM_STAGE2_BIN): $(SYSTEM_STAGE2_SRC)
 
 $(RECOVERY_STAGE2_VGA_BIN): $(STAGE2_SRC) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN)
 	@if not exist build mkdir build
-	for /f %%S in ('powershell -NoProfile -Command "$$size = (Get-Item '$(KERNEL_BIN)').Length; [math]::Ceiling($$size / 512)"') do for /f %%K in ('powershell -NoProfile -Command "(Get-Item '$(KERNEL_BIN)').Length"') do for /f %%R in ('powershell -NoProfile -Command "(Get-Item '$(RECOVERY_LOADER_PADDED_BIN)').Length / 512"') do $(NASM) $(NASMFLAGS) -dKERNEL_SECTORS=%%S -dKERNEL_BYTES=%%K -dRECOVERY_LOADER_SECTORS=%%R -dRECOVERY_FORCE_VGA_TEXT=1 $< -o $@
+	for /f %%S in ('powershell -NoProfile -Command "$$size = (Get-Item '$(KERNEL_BIN)').Length; [math]::Ceiling($$size / 512)"') do for /f %%K in ('powershell -NoProfile -Command "(Get-Item '$(KERNEL_BIN)').Length"') do for /f %%R in ('powershell -NoProfile -Command "(Get-Item '$(RECOVERY_LOADER_PADDED_BIN)').Length / 512"') do $(NASM) $(NASMFLAGS) -dKERNEL_SECTORS=%%S -dKERNEL_BYTES=%%K -dRECOVERY_LOADER_SECTORS=%%R -dRECOVERY_LOADER_LBA=$(RECOVERY_LOADER_LBA) -dRECOVERY_FORCE_VGA_TEXT=1 $< -o $@
 
 $(RECOVERY_ENTRY_OBJ): $(RECOVERY_ENTRY_ASM)
 	@if not exist build mkdir build
@@ -1069,7 +1070,7 @@ $(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN)
           docs\fixtures\updates\u2\BADHASH.ZUP docs\fixtures\updates\u2\BADSIG.ZUP \
           docs\fixtures\updates\u2\BADVER.ZUP docs\fixtures\updates\u2\BADFMT.ZUP \
           docs\fixtures\updates\u2\UNKKEY.ZUP docs\fixtures\updates\u3\APPLY.ZUP
-	python $(RECOVERY_IMAGE_COMPOSE_TOOL) --boot $(BOOT_BIN) --stage2 $(STAGE2_BIN) --kernel $(KERNEL_BIN) --loader $(RECOVERY_LOADER_PADDED_BIN) --kernel-lba 64 --loader-lba 3000 --fat32-start-lba $(FAT32_START_LBA) --output $(OS_IMG)
+	python $(RECOVERY_IMAGE_COMPOSE_TOOL) --boot $(BOOT_BIN) --stage2 $(STAGE2_BIN) --kernel $(KERNEL_BIN) --loader $(RECOVERY_LOADER_PADDED_BIN) --kernel-lba 64 --loader-lba $(RECOVERY_LOADER_LBA) --fat32-start-lba $(FAT32_START_LBA) --output $(OS_IMG)
 	python tools\packager.py prepare-hybrid-image --image $(OS_IMG) --disk-bytes $(HYBRID_DISK_BYTES) --fat32-start-lba $(FAT32_START_LBA) --label $(FAT32_LABEL)
 	python tools\packager.py inject-files-fat32 --image $(OS_IMG) --fat32-start-lba $(FAT32_START_LBA) --entry assets\icons\SHELL.BMP=SHELL.BMP --entry assets\icons\EXPLORER.BMP=EXPLORER.BMP --entry assets\icons\TASKMGR.BMP=TASKMGR.BMP --entry $(STORE_FIXTURES_DIR)\VALID.ZPK=VALID.ZPK --entry $(STORE_FIXTURES_DIR)\BADCRC.ZPK=BADCRC.ZPK --entry $(STORE_FIXTURES_DIR)\BADAPI.ZPK=BADAPI.ZPK --entry $(STORE_FIXTURES_DIR)\BADALIAS.ZPK=BADALIAS.ZPK --entry $(STORE_FIXTURES_DIR)\NEEDSDEP.ZPK=NEEDSDEP.ZPK --entry $(STORE_FIXTURES_DIR)\SAMEVER.ZPK=SAMEVER.ZPK --entry $(STORE_AS2_FIXTURES_DIR)\WAITAPP.ZPK=WAITAPP.ZPK --entry $(STORE_AS2_FIXTURES_DIR)\BASE.ZPK=BASE.ZPK --entry $(STORE_AS2_FIXTURES_DIR)\DEPEND.ZPK=DEPEND.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPTARGET.ZPK=UPTARGET.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPDEPA.ZPK=UPDEPA.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)\UPDEPB.ZPK=UPDEPB.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)\BROKEN.ZPK=BROKEN.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEA.ZPK=CYCLEA.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)\CYCLEB.ZPK=CYCLEB.ZPK --entry docs\fixtures\updates\u2\VALID.ZUP=VALID.ZUP --entry docs\fixtures\updates\u2\TRUNC.ZUP=TRUNC.ZUP --entry docs\fixtures\updates\u2\BADHASH.ZUP=BADHASH.ZUP --entry docs\fixtures\updates\u2\BADSIG.ZUP=BADSIG.ZUP --entry docs\fixtures\updates\u2\BADVER.ZUP=BADVER.ZUP --entry docs\fixtures\updates\u2\BADFMT.ZUP=BADFMT.ZUP --entry docs\fixtures\updates\u2\UNKKEY.ZUP=UNKKEY.ZUP --entry docs\fixtures\updates\u3\APPLY.ZUP=APPLY.ZUP
 
