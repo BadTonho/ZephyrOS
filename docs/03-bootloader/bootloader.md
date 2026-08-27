@@ -209,7 +209,7 @@ existir uma tentativa persistida e oferece anterior ou kernel legado. ABI 1
 continua usando a ponte direta ao kernel.
 
 A imagem tem 256 MiB, mas os LBAs fixos permanecem: kernel legado em 64,
-verifier em 3000 e FAT32 em 4096. O setor `boot.asm` nao e substituido pelo
+verifier em 3584 e FAT32 em 4096. O setor `boot.asm` nao e substituido pelo
 componente boot do ZSYS; ele continua sendo parte da raiz fixa.
 
 ## Layout da Memória

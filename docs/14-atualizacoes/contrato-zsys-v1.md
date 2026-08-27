@@ -218,7 +218,7 @@ para a pagina zero ou para as demais lacunas de memoria baixa.
 ### EP9.2A - Recovery loader fixo
 
 O layout legado usa LBAs fixos: `boot` em 0, `stage2` a partir de 1, kernel
-legado no LBA 64 e recovery loader na janela LBA 3000..4095, antes do FAT32.
+legado no LBA 64 e recovery loader na janela LBA 3584..4095, antes do FAT32.
 `boot.asm`
 permanece inalterado. O `stage2` carrega o loader para a janela
 0x00900000..0x00A00000 e entrega mapa de memoria, VESA, LBA e tamanho do
