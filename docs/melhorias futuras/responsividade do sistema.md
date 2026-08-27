@@ -9,6 +9,8 @@
 - [x] Ativar otimizacao segura na compilacao C.
 - [x] Adicionar historico rolavel de 500 linhas ao Shell.
 - [ ] Medir tempos de renderizacao em hardware real.
+- [ ] Na v1.0.0, otimizar `regcheck full` e o ciclo System com métricas por
+  fase, eliminando o overflow PS/2 observado sob entrada intensa.
 
 ## Atalhos
 
@@ -50,11 +52,22 @@ modos `simple` e `classic`.
 - A captura e suspensa enquanto Desktop e aplicativos desenham suas interfaces,
   evitando poluir o terminal.
 
+### Fase 5 - Responsividade sistemica da v1.0.0
+
+- Medir o tempo de cada fase de `regcheck full` antes de alterar orcamentos.
+- Correlacionar ticks, ciclos do processo System, IRQ1/IRQ12 e picos das filas
+  de entrada.
+- Preservar roda, teclas e transicoes de botoes; somente movimento equivalente
+  pode ser coalescido.
+- Exigir zero descarte no cenario reproduzivel de entrada intensa.
+
 ## Limitacoes
 
 - O custo de cada cena completa ainda depende da resolucao VESA.
 - A frequencia maxima continua limitada pelo timer de 50 Hz.
 - Nao ha medicao persistente de FPS ou tempo de renderizacao nesta etapa.
+- Ate a v1.0.0, `regcheck full` pode ficar lento e saturar a entrada PS/2 sob
+  estresse manual extremo; a SYNC1 permanece aberta por esse motivo.
 
 ## Referencias
 

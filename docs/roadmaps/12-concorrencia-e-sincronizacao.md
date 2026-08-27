@@ -6,7 +6,9 @@ Implementar padrões modernos de concorrência, sincronização e tratamento ass
 
 ## Resumo de progresso
 
-- [ ] SYNC1 - Divisão de Interrupções: implementação concluída; matriz QEMU pendente.
+- [ ] SYNC1 - Divisão de Interrupções: infraestrutura e diagnósticos
+  implementados; otimização de `regcheck full` e eliminação do overflow sob
+  estresse adiadas para a v1.0.0.
 - [ ] SYNC2 - Primitivas de Espera sem Espera Ocupada (Wait Queues / `wait_queue_t`).
 - [ ] SYNC3 - Filas de Trabalho do Kernel (Kernel Workqueues).
 - [ ] SYNC4 - Sistema de Sinais Assíncronos para Processos e Shell (`SIGINT`, `SIGTERM`, `SIGSEGV`).
@@ -80,6 +82,19 @@ Implementar padrões modernos de concorrência, sincronização e tratamento ass
 O EOI e o reconhecimento do dispositivo permanecem no Top-Half. Nenhum
 callback diferido roda antes do `iret` ou na pilha da IRQ. A SYNC1 não cria a
 `kworker` prevista para SYNC3 e não altera o bootloader.
+
+### Limitação aceita até a v1.0.0
+
+`irqstat check` e `regcheck full` terminam em `OK`, os trabalhos de IRQ12 são
+executados sem rejeições e o mouse recupera o funcionamento ao fim do job.
+Entretanto, a carga manual intensa durante `regcheck full` ainda pode saturar
+o pipeline PS/2, deixar o cursor temporariamente sem atualização e descartar
+pacotes. A execução mais recente registrou 25.421 ocorrências de IRQ12, 397
+Bottom-Halfs, 2.548 coalescências, zero rejeições e 22.537 descartes.
+
+Por decisão do usuario, a investigação de desempenho fica suspensa até a
+v1.0.0 e passa ao Roadmap 03. Esse adiamento não converte a perda observada em
+aprovação: a SYNC1 permanece aberta perante seu critério original de saída.
 
 ### Critério de saída
 

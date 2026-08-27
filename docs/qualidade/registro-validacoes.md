@@ -1398,3 +1398,21 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   reexecução enquanto há capacidade e backpressure recuperável deixou de ser
   contado como descarte definitivo. A validação funcional permanece pendente
   do usuario.
+
+- SYNC1: quarta execução de `regcheck full` registrada pelo usuario.
+  `irqstat check` e `regcheck full` terminaram em `OK`, sem rejeições
+  diferidas, e o mouse iniciou a execução com zero descartes. Sob entrada
+  manual intensa, a IRQ12 passou de 305 ocorrências, 86 Bottom-Halfs e 230
+  coalescências para 25.421 ocorrências, 397 Bottom-Halfs e 2.548
+  coalescências. O mouse terminou com 22.537 pacotes descartados e
+  `ERR_OVERFLOW`, acompanhado do log de saturação do pipeline. O horário exato
+  desta execução não foi informado pelo usuario.
+
+- SYNC1: otimização de `regcheck full` adiada para a v1.0.0 por decisão do
+  usuario.
+  Registrada em: 2026-08-27 00:17 (America/Sao_Paulo).
+  A lentidão, a atualização temporariamente interrompida do cursor e o
+  overflow PS/2 sob estresse permanecem limitações conhecidas. O Roadmap 03
+  recebeu a futura etapa de medição e otimização; a SYNC1 permanece aberta
+  perante o critério de zero descarte. Nenhuma alteração de código foi feita
+  nesta decisão.

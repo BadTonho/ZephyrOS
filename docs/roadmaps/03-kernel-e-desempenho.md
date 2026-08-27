@@ -69,6 +69,23 @@ Validado no QEMU: a comparacao manual confirmou menos bytes VESA no mesmo
 cenario; a apresentacao do cursor novo antes da regiao antiga eliminou o
 piscar sem deixar rastro. `regcheck` e `kmetrics` permaneceram operacionais.
 
+## Etapa K5 - Otimizacao sistemica para a v1.0.0
+
+- [ ] Medir por fase o custo de `regcheck full`, incluindo varredura PCI,
+  inventarios, filesystem, pacotes, Ring 3 e apresentacao de logs.
+- [ ] Registrar taxa e pico de IRQ1/IRQ12, ocupacao das filas bruta,
+  normalizada e do `input core`, execucoes diferidas e ciclos do processo
+  System no mesmo cenario reproduzivel.
+- [ ] Ajustar orcamentos, pontos de yield e coalescencia com comparacao
+  antes/depois, sem ocultar descartes nem fundir teclas, roda ou transicoes de
+  botoes.
+- [ ] Validar `regcheck full` sob movimento, clique, arraste e roda intensos,
+  com zero descarte e interfaces Classic/Shell responsivas.
+
+Esta etapa foi reservada para a v1.0.0 por decisao do usuario. Ate la, a
+lentidao e o overflow de entrada sob esse estresse permanecem limitacoes
+conhecidas, sem reivindicacao de ganho de desempenho.
+
 ## Criterio de saida
 
 Toda alteracao de kernel precisa manter boot, `health`, Shell, aplicativos
