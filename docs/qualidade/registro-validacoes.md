@@ -1653,3 +1653,15 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `health check` manteve somente estados esperados do ambiente. A confirmacao
   explicita de responsividade da entrada e os perfis sem NIC e multi-NIC
   permanecem pendentes.
+
+- SYNC3/R4: perfil sem NIC concluido pelo usuario.
+  Concluida em: 2026-08-27 19:28 (America/Sao_Paulo).
+  QEMU iniciado com `-nic none` nao publicou controlador de rede. Sockets
+  ficaram `INDISPONIVEL`, a fixture privada terminou em `OK` e a conexao TCP
+  falhou controladamente com codigo 7 antes da configuracao DNS. A `Zephyr
+  kworker` permaneceu ativa no PID 2, sem fallback, rejeicoes, erros de
+  callback, contexto invalido ou falha de wake; o trabalho periodico de rede
+  nao foi registrado. `workq check`, as 14 invariantes de `wait check`,
+  `regcheck full`, `memcheck` e `log check` terminaram em `OK`. `health check`
+  publicou Network como `DISABLED` pelo motivo esperado. O perfil multi-NIC e
+  a confirmacao explicita de responsividade da entrada permanecem pendentes.
