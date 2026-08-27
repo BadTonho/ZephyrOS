@@ -10,8 +10,8 @@ Implementar padrões modernos de concorrência, sincronização e tratamento ass
   otimização de `regcheck full` e eliminação do overflow sob estresse adiadas
   para a v1.0.0 em
   [`DT100-001`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2).
-- [ ] SYNC2 - Primitivas de Espera sem Espera Ocupada: QEMU padrao aprovado;
-  perfis USB HID, sem NIC e multi-NIC pendentes.
+- [ ] SYNC2 - Primitivas de Espera sem Espera Ocupada: QEMU padrao e USB HID
+  aprovados; perfis sem NIC e multi-NIC pendentes.
 - [ ] SYNC3 - Filas de Trabalho do Kernel (Kernel Workqueues).
 - [ ] SYNC4 - Sistema de Sinais Assíncronos para Processos e Shell (`SIGINT`, `SIGTERM`, `SIGSEGV`).
 
@@ -204,8 +204,9 @@ continuar responsivos, sem waiters orfaos.
 A matriz QEMU padrao aprovou filas, sockets, rede, memoria, log e uso invalido.
 A corrida inicialmente observada no cancelamento F11 do `regcheck full` foi
 corrigida e o reteste terminou em `OK`, sem waiters orfaos. A SYNC2 permanece
-aberta para os perfis USB HID, sem NIC e multi-NIC. SYNC3, R4 e a `kworker`
-continuam pendentes; o bootloader permanece inalterado.
+aberta para os perfis sem NIC e multi-NIC; o perfil USB HID foi aprovado com
+cancelamento F12. SYNC3, R4 e a `kworker` continuam pendentes; o bootloader
+permanece inalterado.
 
 ---
 

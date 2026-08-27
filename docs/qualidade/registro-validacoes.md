@@ -1482,3 +1482,21 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   sem entrada orfa. `health check` preservou somente os estados degradados ou
   indisponiveis esperados do ambiente. Os perfis USB HID, sem NIC e multi-NIC
   permanecem pendentes antes do encerramento da SYNC2.
+
+- SYNC2: perfil USB HID parcialmente validado pelo usuario.
+  Registrada em: 2026-08-27 16:34 (America/Sao_Paulo).
+  Teclado e mouse USB Boot apareceram `READY`, `usb hid check`, `wait check`
+  com 14 invariantes, `net socket check`, `regcheck full`, `memcheck` e
+  `log check` terminaram em `OK`. `wqinfo` mostrou somente os workers do
+  Updater e da App Store bloqueados normalmente, sem waiter orfao. A tentativa
+  inicial de cancelamento usou quantidade 100, rejeitada corretamente pelo
+  limite documentado de 1 a 10 do `ping`; o cancelamento F12 e o `health check`
+  deste perfil permanecem pendentes.
+
+- SYNC2: perfil USB HID concluido pelo usuario.
+  Concluida em: 2026-08-27 16:35 (America/Sao_Paulo).
+  `ping 10.0.2.2 10` foi cancelado por F12 depois da primeira resposta; o job
+  encerrou como cancelado e restaurou ICMP, ARP e DNS. Teclado e mouse USB
+  permaneceram `READY`, com crescimento dos relatorios, zero malformados,
+  erros e descartes. `health check` mostrou apenas componentes degradados ou
+  indisponiveis esperados do ambiente. Restam os perfis sem NIC e multi-NIC.
