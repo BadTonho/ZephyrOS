@@ -1353,3 +1353,25 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   Uma recusa inesperada do `input core` encerra o lote imediatamente para não
   consumir bytes adicionais enquanto o consumidor normal se recupera. A
   validação funcional permanece pendente do usuario.
+
+- SYNC1: segunda execução de `regcheck full` diagnosticada pelo usuario.
+  O comando terminou com `RegCheck: OK`, mas demorou para apresentar o início
+  da operação e o mouse ficou preso no canto. `irqstat list` mostrou 4.393
+  ocorrências de IRQ12 para 124 execuções do Bottom-Half, evidenciando que a
+  preparação síncrona do diagnóstico impediu a drenagem normal. O horário
+  exato desta execução não foi informado pelo usuario.
+
+- SYNC1: rescan PCI cooperativo implementado.
+  Concluida em: 2026-08-26 23:53 (America/Sao_Paulo).
+  A enumeração PCI passou a ceder CPU a cada oito barramentos quando executada
+  em contexto de processo, mantendo o comportamento do bootstrap e permitindo
+  que o processo System drene entrada durante `regcheck full`. A validação
+  funcional permanece pendente do usuario.
+
+- SYNC1: preparação cooperativa do RegCheck e recuperação PS/2 implementadas.
+  Concluida em: 2026-08-26 23:56 (America/Sao_Paulo).
+  `regcheck full` passou a iniciar o job antes das verificações, dividir a
+  preparação em fases e aguardar ao menos um tick após cada uma. O inventário
+  também cede CPU entre subsistemas. O mouse passou a marcar lacunas da fila
+  bruta, reiniciar a montagem depois delas e procurar o próximo cabeçalho PS/2
+  plausível. A validação funcional permanece pendente do usuario.

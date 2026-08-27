@@ -73,6 +73,8 @@ static volatile int queue_tail = 0;
 static volatile uint8_t mouse_raw_queue[MOUSE_RAW_QUEUE_SIZE];
 static volatile uint16_t mouse_raw_head;
 static volatile uint16_t mouse_raw_tail;
+static volatile uint16_t mouse_raw_gap_index;
+static volatile uint8_t mouse_raw_gap_pending;
 static irq_deferred_work_t mouse_bottom_half_work;
 
 static mouse_callback_t current_callback = 0;
@@ -496,6 +498,10 @@ static void mouse_handler(registers_t* regs) {
     next = (uint16_t)((mouse_raw_head + 1U) % MOUSE_RAW_QUEUE_SIZE);
     if (next == mouse_raw_tail) {
         (void)inb(MOUSE_DATA_PORT);
+        if (!mouse_raw_gap_pending) {
+            mouse_raw_gap_index = mouse_raw_head;
+            mouse_raw_gap_pending = 1U;
+        }
         dropped_packets++;
         last_error = ERR_OVERFLOW;
         return;
@@ -509,6 +515,9 @@ static int mouse_process_raw_byte(uint8_t value) {
     input_pointer_event_t event;
     int result;
 
+    if (cycle == 0U && ((value & 0x08U) == 0U || (value & 0xC0U) != 0U)) {
+        return 0;
+    }
     packet[cycle++] = value;
     if (cycle == packet_size) {
         cycle = 0;
@@ -548,6 +557,11 @@ static void mouse_bottom_half(void* context) {
         int result;
 
         flags = mouse_suspend_interrupts();
+        if (mouse_raw_gap_pending &&
+            mouse_raw_tail == mouse_raw_gap_index) {
+            cycle = 0U;
+            mouse_raw_gap_pending = 0U;
+        }
         if (mouse_raw_tail == mouse_raw_head) {
             mouse_restore_interrupts(flags);
             break;
@@ -626,6 +640,8 @@ static void mouse_reset_state(void) {
     queue_tail = 0;
     mouse_raw_head = 0U;
     mouse_raw_tail = 0U;
+    mouse_raw_gap_index = 0U;
+    mouse_raw_gap_pending = 0U;
     mouse_bottom_half_work.queued = 0U;
     mouse_bottom_half_work.running = 0U;
     dropped_packets = 0;

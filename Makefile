@@ -862,7 +862,7 @@ $(SPEAKER_OBJ): $(SPEAKER_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(PCI_OBJ): $(PCI_C)
+$(PCI_OBJ): $(PCI_C) src/include/process/process.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

@@ -2866,6 +2866,7 @@ int shell_diagnostics_run_device_scan(shell_device_scan_result_t* scan) {
         return ERR_NULL;
     }
     scan->pci_result = pci_init();
+    process_yield();
     scan->devices_result = ERR_STATE;
     scan->usb_result = ERR_STATE;
     scan->storage_result = ERR_STATE;
@@ -2886,6 +2887,7 @@ int shell_diagnostics_run_device_scan(shell_device_scan_result_t* scan) {
     if (scan->usb_result == ERR_STATE) {
         scan->usb_result = usb_manager_init();
     }
+    process_yield();
     if (scan->usb_result != OK && scan->usb_result != ERR_OVERFLOW) {
         LOG_ERROR("SHELL", "Falha ao atualizar inventario USB");
         return scan->usb_result;
@@ -2894,6 +2896,7 @@ int shell_diagnostics_run_device_scan(shell_device_scan_result_t* scan) {
     if (file_index_rebuild() != OK) {
         LOG_WARN("SHELL", "Indice aguardara a nova geracao de Storage");
     }
+    process_yield();
     if (scan->storage_result != OK &&
         scan->storage_result != ERR_NOT_FOUND &&
         scan->storage_result != ERR_STATE) {
@@ -2901,6 +2904,7 @@ int shell_diagnostics_run_device_scan(shell_device_scan_result_t* scan) {
     }
 
     scan->devices_result = device_manager_refresh();
+    process_yield();
     if (scan->devices_result != OK &&
         scan->devices_result != ERR_OVERFLOW) {
         recovery_result =
@@ -2914,6 +2918,7 @@ int shell_diagnostics_run_device_scan(shell_device_scan_result_t* scan) {
         return scan->devices_result;
     }
     scan->network_result = network_manager_refresh();
+    process_yield();
     scan->wifi_result = wifi_manager_refresh();
     if (scan->wifi_result == ERR_STATE) {
         scan->wifi_result = wifi_manager_init();
@@ -2921,6 +2926,7 @@ int shell_diagnostics_run_device_scan(shell_device_scan_result_t* scan) {
     if (scan->wifi_result != OK && scan->wifi_result != ERR_OVERFLOW) {
         LOG_WARN("SHELL", "Falha ao atualizar inventario Wi-Fi");
     }
+    process_yield();
 
     if (scan->pci_result == ERR_OVERFLOW ||
         scan->devices_result == ERR_OVERFLOW) {

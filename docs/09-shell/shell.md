@@ -411,6 +411,11 @@ Rede usa os estados assincronos existentes de DNS, ICMP, HTTP e DHCP;
 `index rebuild` usa `file_index_poll`; e os adaptadores de pacotes, Store e
 Update preservam as APIs sincronas publicas, bombeando eventos nos pontos de
 cancelamento e drenando journals, rollback e recovery antes de publicar o
-estado final. Os testes Q2, RegCheck e AppCheck associam resultados do App
-Loader a geracao do job. Cenas interativas como Editor, Player, Task Manager e
-Window Manager permanecem fora deste executor.
+estado final. O RegCheck registra o job antes de iniciar sua preparacao e
+divide inventario, invariantes, memoria, pacotes, threads e Ring 3 em passos
+separados por uma espera cooperativa. No modo `full`, o inventario tambem cede
+CPU entre subsistemas e durante a varredura dos barramentos PCI, mantendo o
+processo System disponivel para drenar entrada. Os testes Q2, RegCheck e
+AppCheck associam resultados do App Loader a geracao do job. Cenas interativas
+como Editor, Player, Task Manager e Window Manager permanecem fora deste
+executor.
