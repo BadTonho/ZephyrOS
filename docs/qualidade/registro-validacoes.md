@@ -1454,3 +1454,21 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `net socket check`, metricas e invariantes em `health check` e
   `regcheck full`. A validacao de build e a matriz QEMU permanecem pendentes
   do usuario e devem ser registradas separadamente antes de concluir a etapa.
+
+- SYNC2: primeira matriz funcional executada pelo usuario.
+  `wait check` aprovou 14 invariantes, `net socket check` aprovou a fixture de
+  eventos, e conexao TCP, suite QEMU, `memcheck` e `log check` terminaram em
+  `OK`. `wqinfo foo` e `net socket foo` registraram o uso invalido esperado.
+  `regcheck full` revelou uma regressao no cancelamento F11: o segundo ZAPP foi
+  cancelado ainda pendente, antes de adquirir foco, e a validacao terminou com
+  `cancelamento_f11 codigo=7`. O horario exato desta execucao nao foi informado
+  pelo usuario.
+
+- SYNC2: geracao de sinais IPC e ativacao pendente do App Loader corrigidas.
+  Concluida em: 2026-08-27 11:48 (America/Sao_Paulo).
+  `ipc_wait()` passou a consumir a geracao persistente do canal alem de
+  mensagens, preservando wakes internos do Shell e dos workers do Updater e
+  da App Store sem polling. O ciclo do Shell recebeu uma segunda passagem do
+  App Loader depois do job, garantindo que um ZAPP criado pelo tratamento de
+  resultado adquira foco antes da proxima espera. A nova validacao de build e
+  o reteste funcional permanecem sob responsabilidade do usuario.

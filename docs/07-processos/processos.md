@@ -181,7 +181,10 @@ sua propria `wait_queue_entry_t`, portanto bloquear nao aloca memoria.
 
 Cada processo possui uma fila IPC embutida; sockets mantem filas por slot. O
 armazenamento da fila deve iniciar zerado, e o servico recusa reinicializacao
-ou destruicao enquanto houver waiters.
+ou destruicao enquanto houver waiters. O processo tambem conserva a ultima
+geracao IPC consumida. Assim, a condicao de `ipc_wait()` aceita tanto uma
+mensagem publicada quanto um novo sinal do canal, inclusive quando o produtor
+nao precisa criar uma mensagem artificial.
 
 ```c
 typedef enum {
@@ -237,7 +240,9 @@ legados; esperas R3 usam deadline e metadados de canal.
 
 O Shell expoe `wait status`, `wait list`, `wait check` e `wqinfo`. IPC, Editor,
 Explorer e Task Manager dormem quando a fila de mensagens esta vazia e sao
-acordados por `ipc_send()` depois da publicacao. `wqinfo` usa snapshots
+acordados por `ipc_send()` depois da publicacao. Workers que publicam seu
+proprio estado acordam pelo incremento da geracao do mesmo canal; a geracao
+permanece pendente ate ser observada pelo consumidor. `wqinfo` usa snapshots
 somente-leitura do registro e preserva a ordem FIFO dos waiters.
 Na Fase 5, o mesmo canal funciona como agregador de eventos: o processo de
 sistema o sinaliza para progresso de rede, indice, timer e conclusao de

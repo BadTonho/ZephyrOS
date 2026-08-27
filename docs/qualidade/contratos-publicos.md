@@ -357,6 +357,11 @@ interrupcoes desabilitadas, antes do encadeamento atomico. O contrato canonico
 fica em `docs/07-processos/processos.md`; as APIs de processo/thread
 permanecem internas ao kernel e nao alteram a ABI ring 3.
 
+Na integracao IPC da SYNC2, `process_t` conserva a ultima geracao consumida do
+seu canal. `ipc_wait()` considera pronta uma mensagem ou uma geracao nova, de
+modo que notificacoes internas e workers sem payload nao sejam perdidos pela
+revalidacao da condicao.
+
 Desde a SYNC2, `src/include/core/net_socket.h` acrescenta mascaras de eventos,
 `net_socket_wait()`, waiters por socket e metricas/autoteste de espera sem
 alterar `net_socket_receive()`. O contrato canonico permanece em

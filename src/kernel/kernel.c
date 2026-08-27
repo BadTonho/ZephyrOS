@@ -482,6 +482,7 @@ void shell_process_main(void) {
         shell_report_user_test_result();
         shell_report_app_loader_result();
         shell_job_poll();
+        app_loader_reap_finished();
         taskmgr_gui_update();
         shell_update_hosted_terminal();
     }

@@ -416,6 +416,7 @@ static int process_wait_state_init(process_t* proc) {
         LOG_ERROR("PROC", "Falha ao inicializar canal IPC do processo");
         return ERR_STATE;
     }
+    proc->ipc_wait_generation = proc->ipc_wait_channel.condition;
     proc->wait_channel = 0;
     proc->wait_condition = 0U;
     proc->wait_deadline = WAIT_TIMEOUT_INFINITE;
