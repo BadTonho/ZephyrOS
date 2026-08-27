@@ -113,8 +113,10 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   diagnosticos e regressao. R2 e R3 foram validadas manualmente no QEMU, com
   timers, espera, rede, cancelamento, `q2check`, `regcheck full`, `memcheck`,
   `log check` e regressao Simple/Classic aprovados. A SYNC1 do Roadmap 12 foi
-  implementada como primeiro pre-requisito de R4, mas sua matriz QEMU ainda
-  esta pendente; R4/SYNC3 e a `kworker` nao foram iniciadas.
+  implementada como primeiro pre-requisito de R4. Seus diagnosticos concluem
+  em `OK`, mas o estresse de entrada durante `regcheck full` ainda causa
+  lentidao e overflow PS/2; a otimizacao foi adiada para a v1.0.0 e a SYNC1
+  permanece aberta. R4/SYNC3 e a `kworker` nao foram iniciadas.
 
 ## K4 validada
 

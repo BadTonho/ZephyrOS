@@ -181,8 +181,10 @@ a validação de integração no QEMU também foi concluída.
 A infraestrutura de fila de trabalho do kernel foi consolidada no [Roadmap 12 - Concorrencia e Sincronizacao](12-concorrencia-e-sincronizacao.md#sync3---filas-de-trabalho-do-kernel-kernel-workqueues), onde atua em conjunto com a divisão de interrupções Top-Half/Bottom-Half e o despachante de tarefas assíncronas do kernel (`kworker`).
 
 A SYNC1 implementa apenas o primeiro pré-requisito: Bottom-Halfs limitados
-executados pelo processo System. R4 permanece pendente porque a `kworker`, a
-fila cooperativa genérica e os trabalhos atrasados pertencem à SYNC3.
+executados pelo processo System. Sua otimização sob `regcheck full` e a
+eliminação do overflow PS/2 em estresse foram adiadas para a v1.0.0. R4
+permanece pendente porque a `kworker`, a fila cooperativa genérica e os
+trabalhos atrasados pertencem à SYNC3.
 
 ## R5 - Modelo unificado de dispositivos (Mapeado para Roadmap 15)
 
