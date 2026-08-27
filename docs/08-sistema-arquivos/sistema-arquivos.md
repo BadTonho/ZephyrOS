@@ -211,9 +211,11 @@ ricos e persistencia ficam fora da EP3.
 `fs_dir_cursor_t` e `storage_dir_cursor_t` preservam cluster, setor e entrada
 entre chamadas. Um avanco carrega no maximo um setor de diretorio e, quando a
 cadeia termina o cluster atual, somente a consulta FAT necessaria. O indexador
-usa DFS deterministico na ordem das montagens e das entradas em disco; um
-passo e executado por iteracao do processo de sistema e tambem no fallback do
-kernel.
+usa DFS deterministico na ordem das montagens e das entradas em disco. Desde
+a SYNC3, um trabalho `NORMAL` da `Zephyr kworker` executa um passo por callback,
+reexecuta imediatamente enquanto estiver `BUILDING` e verifica novas geracoes
+com atraso de um tick quando estiver ocioso. System e o loop principal drenam
+a mesma workqueue somente como fallback.
 
 ```c
 uint32_t fs_get_generation(void);

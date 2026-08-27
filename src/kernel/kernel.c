@@ -6,9 +6,11 @@
 #include "core/string.h"
 #include "core/device_manager.h"
 #include "core/network_manager.h"
+#include "core/ethernet.h"
 #include "core/usb_manager.h"
 #include "core/input.h"
 #include "core/irq_deferred.h"
+#include "core/workqueue.h"
 #include "core/power.h"
 #include "core/recovery.h"
 #include "core/app_api.h"
@@ -64,6 +66,7 @@
 #define SHELL_KEYBOARD_DISPATCH_BUDGET (IPC_MSG_QUEUE_SIZE / 2U)
 #define KERNEL_USB_POLL_BUDGET 4U
 #define KERNEL_DEFERRED_DISPATCH_BUDGET 8U
+#define KWORKER_PROCESS_STACK_SIZE (KERNEL_STACK_SIZE * 4U)
 #define SYSTEM_PROCESS_STACK_SIZE (KERNEL_STACK_SIZE * 4U)
 #define SHELL_PROCESS_STACK_SIZE (KERNEL_STACK_SIZE * 4U)
 
@@ -71,9 +74,14 @@ static int kernel_service_fallback = 0;
 static int kernel_network_poll_enabled = 1;
 static int kernel_usb_poll_enabled = 1;
 static int kernel_deferred_enabled = 1;
+static int kernel_workqueue_enabled = 0;
 static uint32_t kernel_shell_pid = 0;
 static volatile uint32_t kernel_pending_shell_request = 0;
 static uint32_t kernel_last_process_event_generation = 0;
+static work_struct_t kernel_irq_work;
+static work_struct_t kernel_timer_work;
+static work_struct_t kernel_network_work;
+static work_struct_t kernel_index_work;
 
 static void kernel_wake_shell_for_event(void) {
     process_t* shell_process;
@@ -388,6 +396,132 @@ static uint32_t kernel_dispatch_timers(void) {
     return dispatched;
 }
 
+static int kernel_irq_work_callback(void* context) {
+    irq_deferred_status_t status;
+    uint32_t processed = 0U;
+
+    if (irq_deferred_dispatch(KERNEL_DEFERRED_DISPATCH_BUDGET,
+                              &processed) != OK) {
+        kernel_deferred_enabled = 0;
+        LOG_ERROR("KERNEL", "Fila de conclusoes diferidas foi desabilitada");
+        return ERR_STATE;
+    }
+    if (irq_deferred_get_status(&status) == OK && status.queued) {
+        return schedule_work((work_struct_t*)context);
+    }
+    return OK;
+}
+
+static int kernel_timer_work_callback(void* context) {
+    uint32_t dispatched = 0U;
+    int result = timer_dispatch_pending(TIMER_DISPATCH_BUDGET, &dispatched);
+
+    if (dispatched) kernel_wake_shell_for_event();
+    if (dispatched == TIMER_DISPATCH_BUDGET) {
+        int schedule_result = schedule_work((work_struct_t*)context);
+
+        if (schedule_result != OK) return schedule_result;
+    }
+    if (result != OK) {
+        LOG_WARN_CODE("KERNEL", result,
+                      "Despacho de callback de timer terminou com erro");
+    }
+    return result;
+}
+
+static int kernel_network_work_callback(void* context) {
+    uint32_t processed = 0U;
+    int result;
+
+    if (!kernel_network_poll_enabled) return OK;
+    result = network_manager_poll(&processed);
+    if (result != OK) {
+        kernel_network_poll_enabled = 0;
+        LOG_ERROR("KERNEL", "Processamento Ethernet foi desabilitado");
+        kernel_wake_shell_for_event();
+        return result;
+    }
+    if (processed) kernel_wake_shell_for_event();
+    if (processed == ETHERNET_RX_POLL_BUDGET) {
+        return schedule_work((work_struct_t*)context);
+    }
+    return schedule_delayed_work((work_struct_t*)context, 1U);
+}
+
+static int kernel_index_work_callback(void* context) {
+    file_index_status_t status;
+    uint32_t steps = 0U;
+    int result = file_index_poll(1U, &steps);
+
+    if (result != OK) {
+        kernel_wake_shell_for_event();
+        return result;
+    }
+    if (steps) kernel_wake_shell_for_event();
+    if (file_index_get_status(&status) != OK) {
+        kernel_wake_shell_for_event();
+        LOG_ERROR("KERNEL", "Status do indice indisponivel na kworker");
+        return ERR_STATE;
+    }
+    if (status.state == FILE_INDEX_STATE_BUILDING) {
+        return schedule_work((work_struct_t*)context);
+    }
+    return schedule_delayed_work((work_struct_t*)context, 1U);
+}
+
+static void kernel_irq_work_notify(void* context) {
+    if (schedule_work((work_struct_t*)context) != OK) {
+        kernel_deferred_enabled = 0;
+    }
+}
+
+static void kernel_timer_work_notify(void* context) {
+    (void)schedule_work((work_struct_t*)context);
+}
+
+static int kernel_workqueue_init(void) {
+    int result;
+
+    result = workqueue_init();
+    if (result != OK) return result;
+    result = work_init(&kernel_irq_work, "IRQ deferred",
+                       WORK_PRIORITY_HIGH,
+                       kernel_irq_work_callback, &kernel_irq_work);
+    if (result == OK) {
+        result = work_init(&kernel_timer_work, "Timer callbacks",
+                           WORK_PRIORITY_HIGH,
+                           kernel_timer_work_callback, &kernel_timer_work);
+    }
+    if (result == OK) {
+        result = work_init(&kernel_network_work, "Network maintain",
+                           WORK_PRIORITY_NORMAL,
+                           kernel_network_work_callback,
+                           &kernel_network_work);
+    }
+    if (result == OK) {
+        result = work_init(&kernel_index_work, "File index",
+                           WORK_PRIORITY_NORMAL,
+                           kernel_index_work_callback, &kernel_index_work);
+    }
+    if (result == OK) {
+        result = irq_deferred_set_notifier(kernel_irq_work_notify,
+                                           &kernel_irq_work);
+    }
+    if (result == OK) {
+        result = timer_set_pending_notifier(kernel_timer_work_notify,
+                                            &kernel_timer_work);
+    }
+    if (result != OK) {
+        (void)irq_deferred_set_notifier(0, 0);
+        (void)timer_set_pending_notifier(0, 0);
+        LOG_ERROR_CODE("KERNEL", result,
+                       "Integracao da workqueue ficou indisponivel");
+        return result;
+    }
+    kernel_workqueue_enabled = 1;
+    return OK;
+}
+
 static void kernel_poll_usb(void) {
     uint32_t processed = 0U;
 
@@ -410,30 +544,52 @@ static void kernel_dispatch_deferred_work(void) {
 }
 
 static void kernel_dispatch_input_work(void) {
-    kernel_dispatch_deferred_work();
     keyboard_process_events();
     mouse_process_events();
 }
 
+static void kernel_dispatch_legacy_async(void) {
+    uint32_t network_processed = 0U;
+    uint32_t index_steps = 0U;
+
+    kernel_dispatch_deferred_work();
+    if (kernel_network_poll_enabled &&
+        network_manager_poll(&network_processed) != OK) {
+        kernel_network_poll_enabled = 0;
+        LOG_ERROR("KERNEL", "Processamento Ethernet fallback desabilitado");
+        kernel_wake_shell_for_event();
+    }
+    if (network_processed) kernel_wake_shell_for_event();
+    if (kernel_dispatch_timers()) kernel_wake_shell_for_event();
+    if (file_index_poll(1U, &index_steps) != OK || index_steps) {
+        kernel_wake_shell_for_event();
+    }
+}
+
+static void kernel_dispatch_async_work(void) {
+    uint8_t fallback = 0U;
+    uint32_t executed = 0U;
+
+    if (!kernel_workqueue_enabled) {
+        kernel_dispatch_legacy_async();
+        return;
+    }
+    if (workqueue_needs_fallback(&fallback) != OK || !fallback) return;
+    (void)workqueue_set_fallback(1U);
+    if (workqueue_dispatch(WORKQUEUE_HIGH_BUDGET,
+                           WORKQUEUE_NORMAL_BUDGET,
+                           &executed) != OK) {
+        LOG_ERROR("KERNEL", "Fallback da workqueue falhou");
+    }
+}
+
 void system_process_main(void) {
     while (1) {
-        uint32_t network_processed = 0;
-        uint32_t index_steps = 0;
-
+        kernel_dispatch_async_work();
         kernel_dispatch_input_work();
-        if (kernel_network_poll_enabled &&
-            network_manager_poll(&network_processed) != OK) {
-            kernel_network_poll_enabled = 0;
-            LOG_ERROR("KERNEL", "Processamento Ethernet foi desabilitado");
-            kernel_wake_shell_for_event();
-        }
-        if (network_processed > 0U) kernel_wake_shell_for_event();
         kernel_poll_usb();
+        kernel_dispatch_async_work();
         kernel_dispatch_input_work();
-        if (kernel_dispatch_timers() > 0U) kernel_wake_shell_for_event();
-        if (file_index_poll(1U, &index_steps) != OK || index_steps > 0U) {
-            kernel_wake_shell_for_event();
-        }
         kernel_wake_shell_for_process_event();
         fm_update();
         shell_update_hosted_terminal();
@@ -761,6 +917,12 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     process_init();
     process_bootstrap_idle();
     ipc_init();
+    if (kernel_workqueue_init() != OK) {
+        kernel_workqueue_enabled = 0;
+        video_print("[!!] Workqueue indisponivel; usando System\n", 0x0E);
+    } else {
+        video_print("[OK] Workqueue do kernel pronta\n", 0x07);
+    }
     video_print("[OK] TSS configurado\n", 0x07);
 
     video_print("[..] Iniciando threads...\n", 0x08);
@@ -822,6 +984,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     video_print("[..] Iniciando indice de arquivos...\n", 0x08);
     if (file_index_init() == OK) {
         video_print("[OK] Indice cooperativo iniciado\n", 0x07);
+        if (kernel_workqueue_enabled) {
+            (void)schedule_work(&kernel_index_work);
+        }
     } else {
         video_print("[!!] Indice indisponivel; filesystem preservado\n", 0x0E);
     }
@@ -1001,6 +1166,11 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         } else {
             video_print("[!!] DHCP automatico indisponivel\n", 0x0E);
         }
+        if (kernel_workqueue_enabled &&
+            network_manager_get_status(&network_status) == OK &&
+            network_status.ethernet_available) {
+            (void)schedule_work(&kernel_network_work);
+        }
     }
 
     video_print("[..] Iniciando distribuicao remota de Update...\n", 0x08);
@@ -1111,6 +1281,18 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     taskbar_draw();
 
+    process_t* kworker_process = 0;
+    if (kernel_workqueue_enabled) {
+        kworker_process = process_create_with_stack_size(
+            "Zephyr kworker", workqueue_worker_main,
+            KWORKER_PROCESS_STACK_SIZE);
+        if (!kworker_process ||
+            workqueue_bind_worker(kworker_process->pid) != OK) {
+            LOG_ERROR("KERNEL", "Processo kworker indisponivel");
+            (void)workqueue_set_fallback(1U);
+        }
+    }
+
     process_t* system_process = process_create_with_stack_size(
         "Zephyr System", system_process_main, SYSTEM_PROCESS_STACK_SIZE);
     if (system_process) {
@@ -1177,24 +1359,11 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     while (1) {
         if (kernel_service_fallback) {
-            uint32_t network_processed = 0;
-            uint32_t index_steps = 0;
-
+            kernel_dispatch_async_work();
             kernel_dispatch_input_work();
-            if (kernel_network_poll_enabled &&
-                network_manager_poll(&network_processed) != OK) {
-                kernel_network_poll_enabled = 0;
-                LOG_ERROR("KERNEL",
-                          "Processamento Ethernet fallback desabilitado");
-                kernel_wake_shell_for_event();
-            }
-            if (network_processed > 0U) kernel_wake_shell_for_event();
             kernel_poll_usb();
+            kernel_dispatch_async_work();
             kernel_dispatch_input_work();
-            if (kernel_dispatch_timers() > 0U) kernel_wake_shell_for_event();
-            if (file_index_poll(1U, &index_steps) != OK || index_steps > 0U) {
-                kernel_wake_shell_for_event();
-            }
             kernel_wake_shell_for_process_event();
             fm_update();
             shell_update_hosted_terminal();

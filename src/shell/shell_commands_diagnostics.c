@@ -33,6 +33,7 @@
 #include "core/errors.h"
 #include "core/input.h"
 #include "core/irq_deferred.h"
+#include "core/workqueue.h"
 #include "core/log.h"
 #include "drivers/mouse.h"
 #include "ui/gui.h"
@@ -279,6 +280,7 @@ static log_record_t shell_log_records[SHELL_LOG_TAIL_MAXIMUM];
 static timer_info_t shell_timer_records[TIMER_CAPACITY];
 static wait_info_t shell_wait_records[MAX_PROCESSES + MAX_THREADS];
 static wait_queue_info_t shell_wait_queues[WAIT_QUEUE_REGISTRY_CAPACITY];
+static work_info_t shell_work_records[WORKQUEUE_CAPACITY];
 static shell_kmetrics_baseline_t shell_kmetrics_baseline;
 
 static void cmd_health_print_component(recovery_component_id_t component) {
@@ -1239,6 +1241,33 @@ static void cmd_health_check_irq(int* issue_count) {
     }
 }
 
+static void cmd_health_check_workqueue(int* issue_count) {
+    workqueue_stats_t stats;
+    int result;
+
+    if (!issue_count) return;
+    result = workqueue_get_stats(&stats);
+    if (result != OK || workqueue_validate_state() != OK) {
+        cmd_health_check_print_query_failure(
+            "Kernel Workqueue", result == OK ? ERR_STATE : result,
+            issue_count);
+        return;
+    }
+    if (!stats.worker_bound || !stats.worker_active ||
+        stats.fallback_active) {
+        cmd_health_check_print_named_state(
+            "Kernel Workqueue", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
+            "kworker ausente ou System em fallback", issue_count);
+    } else if (stats.registered >= stats.capacity || stats.rejected ||
+               stats.wake_errors ||
+               stats.callback_errors || stats.context_errors ||
+               stats.invariant_errors) {
+        cmd_health_check_print_named_state(
+            "Kernel Workqueue", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
+            "saturacao, rejeicao, callback ou contexto invalido", issue_count);
+    }
+}
+
 static void cmd_health_check_wait(int* issue_count) {
     wait_stats_t wait_stats;
     net_socket_status_t socket_stats;
@@ -1276,6 +1305,7 @@ static void cmd_health_check(void) {
     cmd_health_check_tls(&issue_count);
     cmd_health_check_kernel(&issue_count);
     cmd_health_check_irq(&issue_count);
+    cmd_health_check_workqueue(&issue_count);
     cmd_health_check_wait(&issue_count);
     cmd_health_check_usb_hid(&issue_count);
     cmd_health_check_wifi(&issue_count);
@@ -1687,6 +1717,178 @@ static void cmd_irqstat(const char* arguments) {
     }
     LOG_WARN_CODE("SHELL", ERR_INVALID, "Argumentos invalidos para irqstat");
     cmd_irqstat_usage();
+}
+
+static void cmd_workq_usage(void) {
+    video_print("Uso: workq [status|list|check]\n", 0x0E);
+}
+
+static void cmd_workq_status(void) {
+    workqueue_stats_t stats;
+    uint32_t average = 0U;
+
+    if (workqueue_get_stats(&stats) != OK) {
+        video_print("Erro: workqueue indisponivel.\n", 0x0C);
+        return;
+    }
+    if (stats.executed) average = stats.total_callback_ticks / stats.executed;
+    video_print("Workqueue: contexto=", 0x0B);
+    video_print(workqueue_context_name(stats.execution_context),
+                stats.execution_context == WORK_CONTEXT_KWORKER ?
+                0x0A : 0x0E);
+    video_print(" worker_pid=", 0x07);
+    shell_command_print_num(stats.worker_pid);
+    video_print(" ativo=", 0x07);
+    shell_command_print_num(stats.worker_active);
+    video_print(" fallback=", stats.fallback_active ? 0x0E : 0x07);
+    shell_command_print_num(stats.fallback_active);
+    video_print("\nRegistro=", 0x07);
+    shell_command_print_num(stats.registered);
+    video_print("/", 0x07);
+    shell_command_print_num(stats.capacity);
+    video_print(" prontos H/N=", 0x07);
+    shell_command_print_num(stats.ready_high);
+    video_print("/", 0x07);
+    shell_command_print_num(stats.ready_normal);
+    video_print(" atrasados=", 0x07);
+    shell_command_print_num(stats.delayed);
+    video_print(" executando=", 0x07);
+    shell_command_print_num(stats.running);
+    video_print(" pico=", 0x07);
+    shell_command_print_num(stats.peak_pending);
+    video_print("\nAgendados/executados=", 0x07);
+    shell_command_print_num(stats.scheduled);
+    video_print("/", 0x07);
+    shell_command_print_num(stats.executed);
+    video_print(" coalescidos=", 0x07);
+    shell_command_print_num(stats.coalesced);
+    video_print(" reexecucoes=", 0x07);
+    shell_command_print_num(stats.reruns);
+    video_print(" cancelados=", 0x07);
+    shell_command_print_num(stats.cancelled);
+    video_print("\nRejeitados=", stats.rejected ? 0x0E : 0x07);
+    shell_command_print_num(stats.rejected);
+    video_print(" erros_callback=", stats.callback_errors ? 0x0E : 0x07);
+    shell_command_print_num(stats.callback_errors);
+    video_print(" contexto_invalido=", stats.context_errors ? 0x0C : 0x07);
+    shell_command_print_num(stats.context_errors);
+    video_print(" falhas_wake=", stats.wake_errors ? 0x0C : 0x07);
+    shell_command_print_num(stats.wake_errors);
+    video_print(" wakes/esperas=", 0x07);
+    shell_command_print_num(stats.wakeups);
+    video_print("/", 0x07);
+    shell_command_print_num(stats.sleeps);
+    video_print("\nDuracao ticks media/max=", 0x07);
+    shell_command_print_num(average);
+    video_print("/", 0x07);
+    shell_command_print_num(stats.max_callback_ticks);
+    video_print(" sub-tick=N/D\n", 0x08);
+}
+
+static void cmd_workq_list(void) {
+    uint32_t count = 0U;
+
+    if (workqueue_copy_info(shell_work_records, WORKQUEUE_CAPACITY,
+                            &count) != OK) {
+        video_print("Erro: snapshot da workqueue indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("Trabalhos registrados:\n", 0x0B);
+    for (uint32_t index = 0U; index < count; index++) {
+        work_info_t* info = &shell_work_records[index];
+
+        video_print("  #", 0x07);
+        shell_command_print_num(info->id);
+        video_print(" ", 0x07);
+        video_print(info->owner, 0x0B);
+        video_print(" geracao=", 0x08);
+        shell_command_print_num(info->generation);
+        video_print(" prioridade=", 0x08);
+        video_print(workqueue_priority_name(info->priority), 0x07);
+        video_print(" estado=", 0x08);
+        video_print(workqueue_state_name(info->state),
+                    info->state == WORK_STATE_RUNNING ? 0x0A : 0x07);
+        video_print(" restante=", 0x08);
+        shell_command_print_num(info->remaining_ticks);
+        video_print(" prazo=", 0x08);
+        shell_command_print_num(info->deadline_tick);
+        video_print(" exec/agend=", 0x08);
+        shell_command_print_num(info->executed);
+        video_print("/", 0x08);
+        shell_command_print_num(info->scheduled);
+        video_print(" coalesc=", 0x08);
+        shell_command_print_num(info->coalesced);
+        video_print(" erro=", info->last_error ? 0x0E : 0x08);
+        shell_command_print_num((uint32_t)info->last_error);
+        video_print("\n", 0x07);
+        video_print("     reexec/cancel=", 0x08);
+        shell_command_print_num(info->reruns);
+        video_print("/", 0x08);
+        shell_command_print_num(info->cancellations);
+        video_print(" ticks total/max=", 0x08);
+        shell_command_print_num(info->callback_ticks);
+        video_print("/", 0x08);
+        shell_command_print_num(info->max_callback_ticks);
+        video_print("\n", 0x07);
+    }
+}
+
+static void cmd_workq_print_test(const char* name, uint8_t passed) {
+    video_print("  ", 0x07);
+    video_print(name, 0x07);
+    video_print(": ", 0x07);
+    video_print(passed ? "OK\n" : "ERRO\n", passed ? 0x0A : 0x0C);
+}
+
+static void cmd_workq_check(void) {
+    workqueue_self_test_result_t test;
+    int result = workqueue_self_test(&test);
+    uint32_t frequency = timer_get_frequency();
+    uint8_t worker_context;
+
+    if (!frequency) frequency = 1U;
+    worker_context = workqueue_probe_worker(frequency) == OK;
+    if (workqueue_validate_state() != OK || !worker_context) {
+        result = ERR_STATE;
+        test.invariants = 0U;
+    }
+    video_print("Autoteste da workqueue (fixture privada):\n", 0x0B);
+    cmd_workq_print_test("ciclo", test.lifecycle);
+    cmd_workq_print_test("ordem FIFO", test.fifo);
+    cmd_workq_print_test("prioridades sem starvation", test.priority);
+    cmd_workq_print_test("trabalho atrasado", test.delayed);
+    cmd_workq_print_test("rollover", test.rollover);
+    cmd_workq_print_test("promocao", test.promotion);
+    cmd_workq_print_test("coalescencia", test.coalescing);
+    cmd_workq_print_test("reexecucao", test.rerun);
+    cmd_workq_print_test("cancelamento", test.cancellation);
+    cmd_workq_print_test("capacidade", test.capacity);
+    cmd_workq_print_test("interrupcoes habilitadas",
+                         test.interrupt_context);
+    cmd_workq_print_test("wake Shell/kworker sem perda", worker_context);
+    cmd_workq_print_test("contexto kworker", worker_context);
+    cmd_workq_print_test("invariantes", test.invariants);
+    video_print("Resultado: ", 0x0B);
+    video_print(result == OK ? "OK\n" : "ERRO\n",
+                result == OK ? 0x0A : 0x0C);
+}
+
+static void cmd_workq(const char* arguments) {
+    if (shell_command_args_equal(arguments, "") ||
+        shell_command_args_equal(arguments, "status")) {
+        cmd_workq_status();
+        return;
+    }
+    if (shell_command_args_equal(arguments, "list")) {
+        cmd_workq_list();
+        return;
+    }
+    if (shell_command_args_equal(arguments, "check")) {
+        cmd_workq_check();
+        return;
+    }
+    LOG_WARN_CODE("SHELL", ERR_INVALID, "Argumentos invalidos para workq");
+    cmd_workq_usage();
 }
 
 static void cmd_timer_usage(void) {
@@ -3936,6 +4138,7 @@ SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_clock, cmd_clock)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_tls, cmd_tls)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_wait, cmd_wait)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_wqinfo, cmd_wqinfo)
+SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_workq, cmd_workq)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_devices, cmd_devices)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_device_info, cmd_device_info)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_device_scan, cmd_device_scan)

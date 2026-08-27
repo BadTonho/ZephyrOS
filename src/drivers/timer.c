@@ -87,6 +87,8 @@ static timer_entry_t timer_entries[TIMER_CAPACITY];
 static uint32_t timer_owner_generations[TIMER_OWNER_CAPACITY];
 static uint32_t timer_generations[TIMER_CAPACITY];
 static timer_service_t timer_service;
+static timer_pending_notifier_t timer_pending_notifier;
+static void* timer_pending_notifier_context;
 
 static void outb(uint16_t port, uint8_t value) {
     asm volatile("outb %0, %1" : : "a"(value), "Nd"(port));
@@ -439,10 +441,11 @@ static int timer_deadline_reached(uint32_t now, uint32_t deadline) {
     return (int32_t)(now - deadline) >= 0;
 }
 
-static void timer_service_mark_expired(timer_service_t* service) {
+static uint32_t timer_service_mark_expired(timer_service_t* service) {
     uint32_t now;
+    uint32_t expired = 0U;
 
-    if (!service || !service->initialized) return;
+    if (!service || !service->initialized) return 0U;
     now = service->current_tick;
 
     for (uint32_t index = 0U; index < service->timer_capacity; index++) {
@@ -452,7 +455,9 @@ static void timer_service_mark_expired(timer_service_t* service) {
             !timer_deadline_reached(now, timer->deadline_tick)) continue;
         timer->state = TIMER_STATE_PENDING;
         service->stats.expirations++;
+        expired++;
     }
+    return expired;
 }
 
 static int timer_service_prepare_dispatch(timer_service_t* service,
@@ -620,6 +625,8 @@ int timer_init(uint32_t frequency) {
                              timer_owner_generations, TIMER_OWNER_CAPACITY,
                              timer_entries, timer_generations, TIMER_CAPACITY,
                              frequency);
+    timer_pending_notifier = 0;
+    timer_pending_notifier_context = 0;
     outb(TIMER_PIT_COMMAND_PORT, TIMER_PIT_MODE_COMMAND);
     outb(TIMER_PIT_CHANNEL_ZERO_PORT, (uint8_t)(divisor & 0xFFU));
     outb(TIMER_PIT_CHANNEL_ZERO_PORT,
@@ -631,16 +638,18 @@ int timer_init(uint32_t frequency) {
 
 void timer_handler(registers_t* regs) {
     int interrupted_user = regs && ((regs->cs & 0x03U) == 0x03U);
+    uint32_t expired;
 
     timer_service.current_tick++;
-    timer_service_mark_expired(&timer_service);
+    expired = timer_service_mark_expired(&timer_service);
+    if (expired && timer_pending_notifier) {
+        timer_pending_notifier(timer_pending_notifier_context);
+    }
     scheduler_tick();
     thread_scheduler_tick();
 
-    /* Confirma a IRQ antes de uma possivel troca de contexto sem retorno. */
     outb(TIMER_PIC_COMMAND_PORT, TIMER_PIC_EOI);
 
-    /* Ring 0 permanece cooperativo; somente ring 3 e preemptado pela IRQ. */
     if (process_get_current() && interrupted_user) {
         scheduler_preempt_user();
     }
@@ -652,6 +661,21 @@ uint32_t timer_get_ticks(void) {
 
 uint32_t timer_get_frequency(void) {
     return timer_service.frequency;
+}
+
+int timer_set_pending_notifier(timer_pending_notifier_t notifier,
+                               void* context) {
+    uint32_t flags;
+
+    if (!timer_service.initialized) {
+        LOG_ERROR("TIMER", "Notificador antes da inicializacao do timer");
+        return ERR_STATE;
+    }
+    flags = timer_suspend_interrupts();
+    timer_pending_notifier = notifier;
+    timer_pending_notifier_context = context;
+    timer_restore_interrupts(flags);
+    return OK;
 }
 
 int timer_owner_create(const char* name, timer_owner_handle_t* out_owner) {

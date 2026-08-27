@@ -65,6 +65,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/core/timer.h` | `docs/05-drivers/drivers.md` |
 | `src/include/core/tls.h` | `docs/14-atualizacoes/distribuicao-remota.md` |
 | `src/include/core/wait.h` | `docs/07-processos/processos.md` |
+| `src/include/core/workqueue.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/udp.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/update.h` | `docs/14-atualizacoes/contrato-zupd-v1.md` |
 | `src/include/core/update_runtime.h` | `docs/14-atualizacoes/contrato-zupd-v2.md` |
@@ -345,7 +346,17 @@ indice. Os contratos canonicos ficam em
 Desde a R2, `src/include/core/timer.h` define proprietarios e timers por handles
 geracionais, modos one-shot/periodico, estados `IDLE`, `ARMED` e `PENDING`,
 inicio em milissegundos, cancelamento, consultas, estatisticas, invariantes e
-autoteste privado. O contrato canonico fica em `docs/05-drivers/drivers.md`.
+autoteste privado. Na SYNC3, acrescenta o notificador append-only de callbacks
+pendentes para a workqueue. O contrato canonico fica em
+`docs/05-drivers/drivers.md`.
+
+Desde a SYNC3, `src/include/core/workqueue.h` define trabalhos estaticos com
+registro geracional, prioridades `HIGH`/`NORMAL`, estados `IDLE`, `READY`,
+`DELAYED` e `RUNNING`, prazos absolutos, coalescencia, reexecucao,
+cancelamento, snapshots com geracao/falhas de wake e fixture privada. A
+`Zephyr kworker` usa Wait Queue, `workqueue_probe_worker()` valida o percurso de wake real e System
+permanece como fallback. O contrato canonico fica em
+`docs/04-kernel/kernel.md`.
 
 Desde a R3, `src/include/core/wait.h` define canais estaticos com sequencia de
 condicao, disponibilidade, motivos de desbloqueio e deadlines absolutos. A
@@ -398,7 +409,9 @@ ABNT2 `;/:` (Usage `0x38`) e `/ ?` (Usage `0x87`) antes de entregar os
 scancodes ao Shell. `src/include/core/irq_deferred.h` define a fila limitada
 de conclusoes fora de contexto de IRQ, inicializacao por proprietario/IRQ,
 coalescencia, reexecucao, cancelamento seguro, snapshots globais/por IRQ e
-autoteste privado. `src/include/drivers/idt.h` publica ocorrencias e quantidade
+autoteste privado. Na SYNC3, acrescenta um notificador append-only que agenda
+a drenagem pela `Zephyr kworker`. `src/include/drivers/idt.h` publica
+ocorrencias e quantidade
 de handlers das 16 linhas PIC por snapshot somente-leitura.
 `src/include/drivers/uhci.h` acrescenta o contrato de
 Interrupt IN persistente, callback diferido, cancelamento e diagnostico

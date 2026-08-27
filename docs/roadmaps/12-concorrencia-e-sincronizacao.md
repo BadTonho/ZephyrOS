@@ -11,7 +11,7 @@ Implementar padrões modernos de concorrência, sincronização e tratamento ass
   para a v1.0.0 em
   [`DT100-001`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2).
 - [x] SYNC2 - Primitivas de Espera sem Espera Ocupada: concluida e validada.
-- [ ] SYNC3 - Filas de Trabalho do Kernel (Kernel Workqueues).
+- [ ] SYNC3 - Filas de Trabalho do Kernel (implementada; matriz QEMU pendente).
 - [ ] SYNC4 - Sistema de Sinais Assíncronos para Processos e Shell (`SIGINT`, `SIGTERM`, `SIGSEGV`).
 
 ## Atalhos
@@ -52,8 +52,8 @@ Implementar padrões modernos de concorrência, sincronização e tratamento ass
 ### Implementação
 
 - [x] Consolidar `irq_deferred` como fila estática limitada, inicializada antes
-  dos drivers de IRQ e drenada pelo processo System com interrupções
-  habilitadas.
+  dos drivers de IRQ e drenada em contexto normal com interrupções
+  habilitadas. A SYNC3 migrou o executor normal de System para a kworker.
 - [x] Identificar trabalhos por proprietário e IRQ, coalescer agendamentos,
   solicitar reexecução durante callback e contabilizar agendamento, execução,
   cancelamento, rejeição e pico global e por linha.
@@ -77,12 +77,13 @@ Implementar padrões modernos de concorrência, sincronização e tratamento ass
   ceder CPU entre as fases de inventario e validacao. A vazao do consumidor
   deve acompanhar o despacho intermediario; somente movimentos consecutivos
   equivalentes podem ser acumulados, nunca roda ou transicoes de botoes.
-- [x] Priorizar uma passagem diferida no início do ciclo System e executar uma
-  segunda passagem limitada depois do polling USB.
+- [x] Priorizar o trabalho diferido; desde a SYNC3, a notificação agenda um
+  trabalho `HIGH`, enquanto System preserva as recuperações de entrada e USB.
 
 O EOI e o reconhecimento do dispositivo permanecem no Top-Half. Nenhum
-callback diferido roda antes do `iret` ou na pilha da IRQ. A SYNC1 não cria a
-`kworker` prevista para SYNC3 e não altera o bootloader.
+callback diferido roda antes do `iret` ou na pilha da IRQ. A entrega original
+da SYNC1 não criou a kworker; a migração posterior da SYNC3 também não altera
+o bootloader.
 
 ### Dívida técnica aceita até a v1.0.0
 
@@ -146,8 +147,8 @@ a v1.0.0.
 - [x] Adicionar fila e eventos `CONNECTED`, `READABLE`, `EOF`, `ERROR` e
   `CLOSED` a cada socket nativo, preservando `net_socket_receive()` como API
   nao bloqueante e acrescentando `net_socket_wait()`.
-- [x] Migrar `net tcp connect` para a espera do socket. O processo System
-  continua executando o polling da rede e nunca bloqueia nessa fila.
+- [x] Migrar `net tcp connect` para a espera do socket. O executor de rede
+  nunca bloqueia nessa fila; desde a SYNC3, ele roda na kworker.
 - [x] Integrar invariantes a `regcheck full` e saturacao, contexto, vinculos e
   falhas de wake a `health check`.
 
@@ -205,8 +206,8 @@ A corrida inicialmente observada no cancelamento F11 do `regcheck full` foi
 corrigida e o reteste terminou em `OK`, sem waiters orfaos. USB HID foi
 aprovado com cancelamento F12, a ausencia de NIC falhou de forma controlada e
 o perfil E1000 + RTL8139 aprovou TX isolado, invariantes, Bottom-Halfs sem
-rejeicoes e TCP. A SYNC2 esta concluida. SYNC3, R4 e a `kworker` continuam
-pendentes; o bootloader permanece inalterado.
+rejeicoes e TCP. A SYNC2 esta concluida. SYNC3/R4 estao implementadas e
+aguardam sua propria matriz funcional; o bootloader permanece inalterado.
 
 ---
 
@@ -214,20 +215,75 @@ pendentes; o bootloader permanece inalterado.
 
 ### Implementação
 
-- [ ] Criar uma thread especial do kernel dedicada ao despacho de tarefas diferidas (`kworker`).
-- [ ] Implementar a estrutura `work_struct_t` com ponteiro para função de callback e dados:
-  `void schedule_work(work_struct_t* work);`
-  `void schedule_delayed_work(work_struct_t* work, uint32_t delay_ticks);`
-  `int cancel_work(work_struct_t* work);`
-- [ ] Migrar tarefas periódicas (flush de cache, reconciliação de conexões inativas, verificação de integridade) para a fila de trabalho unificada.
+- [x] Criar a `Zephyr kworker` como processo ring0 dedicado, bloqueado na Wait
+  Queue `KWORKER` quando não há trabalho.
+- [x] Implementar `work_struct_t` estática, registro geracional de 64 entradas,
+  filas FIFO `HIGH`/`NORMAL`, trabalhos atrasados ordenados, coalescência,
+  reexecução, promoção e cancelamento.
+- [x] Migrar Bottom-Halves, callbacks de timer, manutenção de rede/sockets e
+  indexação cooperativa para a fila unificada, preservando System e o loop do
+  kernel somente como fallback.
+- [x] Manter flush de buffer cache fora desta etapa, pois essa infraestrutura
+  pertence à BLK2. Invariantes continuam sob diagnóstico, sem polling novo.
+- [x] Integrar `workq`, `health check` e `regcheck full` aos snapshots e à
+  validação estrutural somente-leitura.
+
+### Arquitetura implementada
+
+`schedule_work()` promove trabalhos atrasados, coalesce duplicatas e solicita
+uma única reexecução quando o callback já está ativo. Prazos usam ticks
+absolutos com rollover seguro; reagendamentos atrasados mantêm o prazo mais
+próximo. Callbacks executam com interrupções habilitadas e nunca na pilha da
+IRQ. As classes têm orçamentos independentes para impedir starvation.
+
+A implementação está pronta para validação. A SYNC3 permanece aberta até a
+matriz QEMU ser executada pelo usuário. A limitação aceita de usar um processo
+ring0 em vez do scheduler isolado de `thread_t` está registrada como
+[`DT100-002`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-002---kworker-como-processo-ring0).
 
 ### Critério de saída
 
-O kernel executa tarefas assíncronas em contexto de thread normal sem poluir o tratador de interrupção do temporizador.
+O kernel executa tarefas assíncronas na `Zephyr kworker`, sem callbacks na IRQ,
+com filas e fallbacks consistentes, diagnósticos em `OK` e Classic/Shell
+responsivos. A etapa só será marcada como concluída depois da matriz funcional.
 
 ### Comandos Shell / Diagnóstico
 
-- `workq status`: exibe a fila de trabalhos pendentes, trabalhos executados e tempo médio de execução.
+- `workq status`: exibe contexto, filas, métricas e duração em ticks.
+- `workq list`: lista trabalhos registrados, prioridade, estado e prazo.
+- `workq check`: executa a fixture privada e o percurso real
+  Shell -> Wait Queue -> kworker -> wake.
+
+### Validacao pendente do usuario
+
+Depois dos gates desta versao, o perfil QEMU padrao deve executar:
+
+```text
+workq status
+workq list
+workq check
+irqstat check
+irqstat list
+timer check
+wait check
+wqinfo
+index rebuild
+index status
+index check
+net socket check
+net tcp connect example.com 80
+net check qemu tcp net-pci-00:03.0 example.com
+regcheck full
+health check
+memcheck
+log check
+workq foo
+```
+
+Tambem permanecem pendentes os perfis USB HID, Storage, sem NIC com
+`QEMU_NET_ARGS="-nic none"` e multi-NIC com E1000 `net-pci-00:03.0` e
+RTL8139 `net-pci-00:04.0`. Durante rede, indice e `regcheck full`, teclado,
+mouse, roda, cancelamento F12, Classic e Shell devem continuar responsivos.
 
 ---
 

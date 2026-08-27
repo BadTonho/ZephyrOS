@@ -9,6 +9,8 @@ typedef struct {
     uint32_t count;
     irq_deferred_status_t status;
     irq_deferred_irq_status_t irq[IRQ_DEFERRED_IRQ_COUNT];
+    irq_deferred_notifier_t notifier;
+    void* notifier_context;
 } irq_deferred_service_t;
 
 typedef struct {
@@ -77,6 +79,8 @@ static void irq_deferred_service_init(irq_deferred_service_t* target) {
     target->status.peak_queued = 0U;
     target->status.context_errors = 0U;
     target->status.last_error = OK;
+    target->notifier = 0;
+    target->notifier_context = 0;
     for (uint32_t irq = 0U; irq < IRQ_DEFERRED_IRQ_COUNT; irq++) {
         target->irq[irq].scheduled = 0U;
         target->irq[irq].dispatched = 0U;
@@ -342,10 +346,28 @@ int irq_deferred_work_init(irq_deferred_work_t* work, const char* owner,
 int irq_deferred_schedule(irq_deferred_work_t* work) {
     int result = irq_deferred_schedule_on(&service, work);
 
+    if (result == OK && service.notifier) {
+        service.notifier(service.notifier_context);
+    }
     if (result == ERR_NULL || result == ERR_STATE) {
         LOG_ERROR_CODE("IDT", result, "Falha ao agendar Bottom-Half");
     }
     return result;
+}
+
+int irq_deferred_set_notifier(irq_deferred_notifier_t notifier,
+                              void* context) {
+    uint32_t flags;
+
+    if (!service.status.initialized) {
+        LOG_ERROR("IDT", "Notificador Bottom-Half antes da inicializacao");
+        return ERR_STATE;
+    }
+    flags = irq_deferred_irq_save();
+    service.notifier = notifier;
+    service.notifier_context = context;
+    irq_deferred_irq_restore(flags);
+    return OK;
 }
 
 int irq_deferred_cancel(irq_deferred_work_t* work) {

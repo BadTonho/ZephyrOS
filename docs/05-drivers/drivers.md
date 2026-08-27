@@ -174,9 +174,9 @@ renderizacao sem alterar o despacho por IPC. A fila fisica comporta 255
 eventos e o processo System encaminha lotes de ate 16; o Shell tambem consome
 ate 16 eventos por rodada, abaixo da capacidade util de 31 mensagens IPC.
 Na SYNC1, o Top-Half da IRQ1 apenas le a porta e preserva o byte bruto. A
-montagem de prefixos e a publicacao ocorrem no processo System; a chamada
-normal de `keyboard_process_events()` tambem drena os bytes como fallback se a
-fila diferida estiver cheia.
+montagem de prefixos e a publicacao ocorrem na `Zephyr kworker`; a chamada
+normal de `keyboard_process_events()` no processo System tambem drena os bytes
+como fallback se a fila diferida estiver cheia.
 
 ---
 
@@ -423,9 +423,9 @@ períodos perdidos, sem deriva nem tempestade de callbacks.
 1. Configura o canal 0 do PIT para gerar IRQ0
 2. A cada tick, `timer_handler()` é chamado
 3. A IRQ incrementa o contador, marca timers vencidos e atualiza os schedulers
-4. O processo de sistema faz o polling de rede
-5. `timer_dispatch_pending()` executa até oito callbacks fora da IRQ e fora da
-   seção crítica
+4. A IRQ notifica a workqueue quando cria callbacks pendentes
+5. A `Zephyr kworker` chama `timer_dispatch_pending()` e executa até oito
+   callbacks fora da IRQ; System assume somente no fallback
 
 O prazo periódico seguinte é atualizado antes do callback. Assim, o callback
 pode cancelar ou destruir seu próprio timer com segurança. Erros retornados
@@ -782,7 +782,7 @@ causas pendentes, RX e TX; nao existe mais busca interna pelo primeiro
 `8086:100E` nem estado singleton.
 
 A IRQ compartilhada le e limpa ICR, acumula as causas e agenda o Bottom-Half.
-Link, erros e descritores RX sao tratados no processo System. O callback
+Link, erros e descritores RX sao tratados na `Zephyr kworker`. O callback
 `service_pending` executado pelo polling Ethernet preserva a recuperacao se o
 agendamento for rejeitado. Os protocolos continuam fora da IRQ.
 
@@ -799,9 +799,9 @@ int rtl8139_init(const pci_device_t* pci, const char* interface_id,
 
 Reset, MAC, RBSTART, TSAD0-3, RCR/TCR e mascaras de interrupcao sao
 configurados por instancia. A IRQ le e limpa ISR, acumula causas e agenda o
-Bottom-Half; RX, link, erros e recuperacao do receptor ocorrem no processo
-System. `service_pending` preserva as causas no polling quando o agendamento
-for rejeitado. Parsing do cabecalho RX, retirada do FCS, avanco de CAPR e
+Bottom-Half; RX, link, erros e recuperacao do receptor ocorrem na
+`Zephyr kworker`. `service_pending` preserva as causas no polling quando o
+agendamento for rejeitado. Parsing do cabecalho RX, retirada do FCS, avanco de CAPR e
 protocolos permanecem fora da IRQ.
 
 O desenho segue o
@@ -934,9 +934,10 @@ coalescidos; um evento durante o callback solicita uma reexecucao. A fila
 publica snapshots globais e por IRQ de agendamentos, execucoes, coalescencia,
 cancelamentos, rejeicoes e pico.
 
-O handler de IRQ nao executa o callback: ele reconhece o dispositivo, e o
-processo System chama `irq_deferred_dispatch()` com interrupcoes habilitadas
-no inicio do ciclo e novamente depois do polling USB. O cancelamento remove
+O handler de IRQ nao executa o callback: ele reconhece o dispositivo e agenda
+um trabalho `HIGH`. A `Zephyr kworker` chama `irq_deferred_dispatch()` com
+interrupcoes habilitadas; System e o loop principal assumem apenas se a
+kworker estiver indisponivel. O cancelamento remove
 trabalho pendente da fila ou impede reexecucao, permitindo reutilizacao segura
 do proprietario. Capacidade, atribuicao, contexto e invariantes sao exercitados
 por fixture privada em `irqstat check`; duracao permanece `N/D`.
