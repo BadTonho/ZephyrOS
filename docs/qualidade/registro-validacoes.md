@@ -1608,3 +1608,12 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   preservou somente estados esperados do ambiente. A confirmacao explicita de
   clique, arraste e roda e os demais perfis complementares permanecem
   pendentes.
+
+- SYNC3/R4: primeira inicializacao do perfil storage diagnosticada.
+  Registrada em: 2026-08-27 19:13 (America/Sao_Paulo).
+  As sete imagens de fixture foram geradas, mas o QEMU recusou a topologia com
+  `IDE unit 1 is in use`: o disco principal usava selecao automatica enquanto
+  as fixtures reservavam os indices IDE 1, 2 e 3. O argumento canonico do
+  disco de boot passou a fixa-lo em `ide.0`, unidade 0, preservando as tres
+  unidades restantes para as fixtures. O perfil storage ainda nao iniciou e
+  sua validacao permanece pendente.

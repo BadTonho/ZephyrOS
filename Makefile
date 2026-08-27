@@ -13,7 +13,7 @@ LD ?= i686-elf-ld
 QEMU ?= qemu-system-i386
 QEMU_CPU_ARGS ?= -cpu max
 QEMU_NET_ARGS ?= -nic user,model=e1000
-QEMU_BOOT_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=bootdisk -device ide-hd,drive=bootdisk,bootindex=1
+QEMU_BOOT_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=bootdisk -device ide-hd,drive=bootdisk,bus=ide.0,unit=0,bootindex=1
 QEMU_STAGE2_LBA_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=stage2lbadisk -device ide-hd,drive=stage2lbadisk,bootindex=1
 QEMU_STAGE2_CHS_DISK_ARGS ?= -drive file=$(STAGE2_CHS_IMG),format=raw,if=floppy,index=0 -drive file=$(OS_IMG),format=raw,if=none,id=stage2chssystem -device ide-hd,drive=stage2chssystem,cyls=80,heads=2,secs=18 -boot order=a
 QEMU_USB_ARGS ?= -device piix3-usb-uhci,id=usb
