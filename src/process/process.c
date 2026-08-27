@@ -371,6 +371,42 @@ static void process_wait_irq_restore(uint32_t flags) {
     }
 }
 
+static void process_wait_block_transition(void* target,
+                                          wait_queue_entry_t* entry) {
+    process_t* proc = (process_t*)target;
+
+    proc->wait_channel = entry->queue;
+    proc->wait_condition = entry->observed_condition;
+    proc->wait_deadline = entry->deadline_tick;
+    proc->wait_reason = WAIT_REASON_NONE;
+    proc->wait_deadline_active = entry->deadline_active;
+    proc->wait_active = 1U;
+    proc->wait_ticks = entry->deadline_active ?
+                       entry->deadline_tick - timer_get_ticks() : 0U;
+    proc->state = PROCESS_STATE_BLOCKED;
+}
+
+static void process_wait_wake_transition(void* target,
+                                         wait_queue_entry_t* entry) {
+    process_t* proc = (process_t*)target;
+
+    proc->wait_active = 0U;
+    proc->wait_channel = 0;
+    proc->wait_condition = 0U;
+    proc->wait_deadline = WAIT_TIMEOUT_INFINITE;
+    proc->wait_reason = entry->reason;
+    proc->wait_deadline_active = 0U;
+    proc->wait_ticks = 0U;
+    if (proc->state == PROCESS_STATE_BLOCKED) {
+        proc->state = PROCESS_STATE_READY;
+    }
+}
+
+static void process_wait_yield_transition(void* target) {
+    (void)target;
+    process_yield();
+}
+
 static int process_wait_state_init(process_t* proc) {
     if (!proc) {
         LOG_ERROR("PROC", "Processo nulo ao inicializar espera");
@@ -386,15 +422,18 @@ static int process_wait_state_init(process_t* proc) {
     proc->wait_reason = WAIT_REASON_NONE;
     proc->wait_deadline_active = 0U;
     proc->wait_active = 0U;
+    kmemset(&proc->wait_entry, 0, sizeof(proc->wait_entry));
     return OK;
 }
 
 static void process_wait_clear(process_t* proc, wait_reason_t reason) {
-    wait_channel_t* channel;
-
     if (!proc) return;
-    channel = proc->wait_channel;
-    if (proc->wait_active && channel) wait_note_wake(channel, reason);
+    if (proc->wait_entry.linked) {
+        if (wait_queue_remove(&proc->wait_entry, reason) != OK) {
+            LOG_ERROR("PROC", "Falha ao remover processo da fila de espera");
+        }
+        return;
+    }
     proc->wait_active = 0U;
     proc->wait_channel = 0;
     proc->wait_condition = 0U;
@@ -411,12 +450,6 @@ static int process_wait_deadline_reached(const process_t* proc,
                                          uint32_t now) {
     if (!proc || !proc->wait_deadline_active) return 0;
     return (int32_t)(now - proc->wait_deadline) >= 0;
-}
-
-static int process_wait_reason_valid(wait_reason_t reason) {
-    return reason == WAIT_REASON_EVENT ||
-           reason == WAIT_REASON_CANCELLED ||
-           reason == WAIT_REASON_DEVICE_UNAVAILABLE;
 }
 
 static void process_copy_wait_text(char* destination, uint32_t capacity,
@@ -531,6 +564,9 @@ void process_bootstrap_idle(void) {
     if (process_stack_attach(proc, (uint32_t)idle_stack,
                              KERNEL_STACK_SIZE, 0U) != OK) {
         LOG_ERROR("PROC", "Falha ao preparar stack do Idle");
+        if (wait_channel_reset(&proc->ipc_wait_channel) != OK) {
+            LOG_ERROR("PROC", "Falha ao liberar fila IPC do Idle");
+        }
         proc->state = PROCESS_STATE_UNUSED;
         return;
     }
@@ -1728,8 +1764,7 @@ void process_unblock(process_t* proc) {
 int process_wait(wait_channel_t* channel, uint32_t observed_condition,
                  uint32_t timeout_ticks, wait_reason_t* out_reason) {
     process_t* current = process_get_current();
-    uint32_t flags;
-    uint32_t now;
+    int result;
 
     if (!out_reason) {
         LOG_ERROR("PROC", "Destino nulo para resultado da espera");
@@ -1741,7 +1776,8 @@ int process_wait(wait_channel_t* channel, uint32_t observed_condition,
         LOG_ERROR("PROC", "Espera sem processo executavel");
         return ERR_STATE;
     }
-    if (!channel || !channel->initialized || current->wait_active) {
+    if (!channel || !channel->initialized || current->wait_active ||
+        current->wait_entry.linked) {
         LOG_ERROR("PROC", "Canal ou estado invalido para espera");
         return ERR_INVALID;
     }
@@ -1751,97 +1787,34 @@ int process_wait(wait_channel_t* channel, uint32_t observed_condition,
         return ERR_INVALID;
     }
 
-    flags = process_wait_irq_save();
-    if (!channel->available) {
-        current->wait_reason = WAIT_REASON_DEVICE_UNAVAILABLE;
-        *out_reason = current->wait_reason;
-        process_wait_irq_restore(flags);
-        return OK;
-    }
-    if (channel->condition != observed_condition) {
-        current->wait_reason = WAIT_REASON_EVENT;
-        *out_reason = current->wait_reason;
-        process_wait_irq_restore(flags);
-        return OK;
-    }
-    if (timeout_ticks == WAIT_TIMEOUT_IMMEDIATE) {
-        current->wait_reason = WAIT_REASON_TIMEOUT;
-        *out_reason = current->wait_reason;
-        process_wait_irq_restore(flags);
-        return OK;
-    }
-
-    now = timer_get_ticks();
-    current->wait_channel = channel;
-    current->wait_condition = observed_condition;
-    current->wait_deadline_active = timeout_ticks == WAIT_TIMEOUT_INFINITE ?
-                                    0U : 1U;
-    current->wait_deadline = current->wait_deadline_active ?
-                             now + timeout_ticks : WAIT_TIMEOUT_INFINITE;
-    current->wait_reason = WAIT_REASON_NONE;
-    current->wait_active = 1U;
-    current->wait_ticks = timeout_ticks == WAIT_TIMEOUT_INFINITE ?
-                          0U : timeout_ticks;
-    wait_note_waiter(channel);
-    current->state = PROCESS_STATE_BLOCKED;
-    process_wait_irq_restore(flags);
-    process_yield();
-    *out_reason = current->wait_reason;
-    return OK;
+    result = wait_queue_entry_init(
+        &current->wait_entry, current, current->name, WAIT_TARGET_PROCESS,
+        current->pid, process_wait_block_transition,
+        process_wait_wake_transition, process_wait_yield_transition);
+    if (result != OK) return result;
+    result = wait_queue_block(channel, &current->wait_entry,
+                              observed_condition, timeout_ticks, out_reason);
+    current->wait_reason = *out_reason;
+    return result;
 }
 
 int process_wake_channel(wait_channel_t* channel, wait_wake_mode_t mode,
                          wait_reason_t reason, uint32_t* out_woken) {
-    uint32_t flags;
-    uint32_t woken = 0U;
-
-    if (!out_woken) {
-        LOG_ERROR("PROC", "Destino nulo para contagem de wake");
-        return ERR_NULL;
-    }
-    *out_woken = 0U;
-    if (!channel || !channel->initialized ||
-        (mode != WAIT_WAKE_ONE && mode != WAIT_WAKE_ALL) ||
-        !process_wait_reason_valid(reason)) {
-        LOG_ERROR("PROC", "Parametros invalidos ao acordar canal");
-        return ERR_INVALID;
-    }
-
-    flags = process_wait_irq_save();
-    if (reason == WAIT_REASON_EVENT || reason == WAIT_REASON_DEVICE_UNAVAILABLE) {
-        wait_channel_signal(channel);
-    }
-    if (reason == WAIT_REASON_DEVICE_UNAVAILABLE) channel->available = 0U;
-    for (uint32_t index = 0U; index < MAX_PROCESSES; index++) {
-        process_t* proc = &processes[index];
-
-        if (proc->state != PROCESS_STATE_BLOCKED || !proc->wait_active ||
-            proc->wait_channel != channel) continue;
-        process_wait_clear(proc, reason);
-        woken++;
-        if (mode == WAIT_WAKE_ONE) break;
-    }
-    process_wait_irq_restore(flags);
-    *out_woken = woken;
-    return OK;
+    return wait_queue_wake_target(channel, WAIT_TARGET_PROCESS, mode,
+                                  reason, out_woken);
 }
 
 int process_cancel_wait(process_t* proc) {
-    uint32_t flags;
-
     if (!process_pointer_valid(proc)) {
         LOG_ERROR("PROC", "Ponteiro invalido ao cancelar espera");
         return ERR_NULL;
     }
-    flags = process_wait_irq_save();
-    if (!proc->wait_active || proc->state != PROCESS_STATE_BLOCKED) {
-        process_wait_irq_restore(flags);
+    if (!proc->wait_active || proc->state != PROCESS_STATE_BLOCKED ||
+        !proc->wait_entry.linked) {
         LOG_WARN("PROC", "Processo nao possui espera cancelavel");
         return ERR_STATE;
     }
-    process_wait_clear(proc, WAIT_REASON_CANCELLED);
-    process_wait_irq_restore(flags);
-    return OK;
+    return wait_queue_remove(&proc->wait_entry, WAIT_REASON_CANCELLED);
 }
 
 int process_copy_waiters(wait_info_t* output, uint32_t max_entries,

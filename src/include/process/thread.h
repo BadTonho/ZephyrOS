@@ -24,6 +24,7 @@ typedef struct {
     uint32_t eip;
     void (*entry)(void);
     uint32_t wait_ticks;
+    wait_queue_entry_t wait_entry;
     wait_channel_t* wait_channel;
     uint32_t wait_condition;
     uint32_t wait_deadline;

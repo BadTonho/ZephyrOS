@@ -168,6 +168,11 @@ list`, `wait check`, `q2check`, `regcheck full`, `memcheck` e `log check`
 concluíram sem falhas, e o smoke test Simple/Classic preservou o retorno ao
 Shell.
 
+A SYNC2 do Roadmap 12 preserva esse contrato e o amplia com filas FIFO,
+registro geracional, IPC e sockets bloqueantes. Essa ampliacao esta
+implementada, mas permanece pendente da propria matriz QEMU; ela nao reabre a
+validacao historica da R3 nem conclui R4.
+
 ### Critério de saída
 
 Uma tarefa bloqueada acorda somente por sua condição, timeout, cancelamento ou

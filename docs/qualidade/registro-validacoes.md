@@ -1442,3 +1442,15 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   etapas ainda nao iniciadas nao possuem aceite explicito como divida da
   v1.0.0. A triagem e a regra para eventual aceite futuro foram registradas em
   `docs/qualidade/dividas-tecnicas-v1.0.0.md`.
+
+- SYNC2: implementacao das wait queues FIFO concluida.
+  Concluida em: 2026-08-27 10:30 (America/Sao_Paulo).
+  O servico R3 foi consolidado em um registro estatico geracional com entradas
+  intrusivas de processo/thread, wake-one/all FIFO, condicao revalidada
+  atomicamente, timeout absoluto, cancelamento e indisponibilidade. IPC,
+  Editor, Explorer e Task Manager passaram a dormir nas filas; sockets nativos
+  receberam eventos e espera bloqueante, e `net tcp connect` deixou de usar
+  polling por `process_yield`. Foram acrescentados `wqinfo`, a fixture
+  `net socket check`, metricas e invariantes em `health check` e
+  `regcheck full`. A validacao de build e a matriz QEMU permanecem pendentes
+  do usuario e devem ser registradas separadamente antes de concluir a etapa.

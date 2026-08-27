@@ -348,10 +348,19 @@ inicio em milissegundos, cancelamento, consultas, estatisticas, invariantes e
 autoteste privado. O contrato canonico fica em `docs/05-drivers/drivers.md`.
 
 Desde a R3, `src/include/core/wait.h` define canais estaticos com sequencia de
-condicao, disponibilidade, motivos de desbloqueio, deadlines absolutos,
-estatisticas e autoteste privado. O contrato canonico fica em
-`docs/07-processos/processos.md`; as APIs de processo/thread permanecem
-internas ao kernel e nao alteram a ABI ring 3.
+condicao, disponibilidade, motivos de desbloqueio e deadlines absolutos. A
+SYNC2 torna `wait_queue_head_t` o tipo canonico, preserva `wait_channel_t` como
+alias e acrescenta entradas intrusivas FIFO, registro limitado por IDs
+geracionais, `wait_event`, wake-one/all, snapshots e invariantes. O contrato
+de `wait_event` avalia a condicao e captura sua geracao na mesma regiao com
+interrupcoes desabilitadas, antes do encadeamento atomico. O contrato canonico
+fica em `docs/07-processos/processos.md`; as APIs de processo/thread
+permanecem internas ao kernel e nao alteram a ABI ring 3.
+
+Desde a SYNC2, `src/include/core/net_socket.h` acrescenta mascaras de eventos,
+`net_socket_wait()`, waiters por socket e metricas/autoteste de espera sem
+alterar `net_socket_receive()`. O contrato canonico permanece em
+`docs/04-kernel/kernel.md`.
 
 Desde a EP4.2, `src/include/core/usb_manager.h` define o inventario limitado a
 oito controladores USB, runtime UHCI/EHCI, estados/motivos por porta,

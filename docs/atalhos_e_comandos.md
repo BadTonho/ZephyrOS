@@ -49,6 +49,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `clock` | `[status|check]` | Inspeciona RTC/UTC ancorado no PIT e executa conversoes, calendario, rollover e invariantes. |
 | `tls` | `[status|check]` | Inspeciona TLS 1.2/BearSSL, RDRAND, CA, SAN, validade e pin SPKI. |
 | `wait` | `[status|list|check]` | Inspeciona canais de espera e executa o autoteste de esperas. |
+| `wqinfo` | - | Lista wait queues registradas, geracao, ocupacao e ordem FIFO dos waiters. |
 | `job` | `status` | Inspeciona o estado do executor cooperativo de jobs do Shell. |
 | `update remote` | `status/enable/disable/clear [--confirm]` | Controla o transporte remoto opcional da sessao. |
 | `update fetch` | `[--url <manifesto>] [--confirm]` | Consulta ou baixa um ZUPD autenticado sem aplicar. |
@@ -69,7 +70,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `net` | `ipv4 status` | Mostra configuracao, rotas, IPv4, ICMP, perdas e RTT. |
 | `net` | `tcp status` | Mostra conexoes, retransmissoes e descartes TCP. |
 | `net` | `tcp connect <host> <porta>` | Testa uma abertura TCP cooperativa. |
-| `net` | `socket status|table` | Inspeciona os sockets nativos e suas filas. |
+| `net` | `socket status|table|check` | Inspeciona sockets, waiters e executa a fixture privada de eventos. |
 | `net` | `check [id]` | Agrupa os diagnosticos de rede sem remover os comandos individuais. |
 | `net` | `check qemu <id> <ip>` | Executa a suite ARP, IPv4 e ICMP do QEMU. |
 | `net` | `check qemu dhcp <id> <dominio>` | Executa a suite UDP, DHCP e DNS. |

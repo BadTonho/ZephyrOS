@@ -10,6 +10,19 @@ static uint32_t focus_fallback_pid = 0;
 static ipc_stats_t ipc_stats;
 static int ipc_ready = 0;
 
+static int ipc_wait_condition(void* context, uint8_t* out_ready) {
+    process_t* process = (process_t*)context;
+
+    if (!process || !out_ready) {
+        LOG_ERROR("IPC", "Contexto nulo na condicao de espera");
+        return ERR_NULL;
+    }
+    spinlock_acquire(&ipc_lock);
+    *out_ready = process->msg_head != process->msg_tail;
+    spinlock_release(&ipc_lock);
+    return OK;
+}
+
 void ipc_init(void) {
     spinlock_init(&ipc_lock);
     focused_pid = 0;
@@ -71,8 +84,7 @@ int ipc_send(uint32_t pid, ipc_msg_t* msg) {
     ipc_stats.sent++;
 
     spinlock_release(&ipc_lock);
-    if (process_wake_channel(&target->ipc_wait_channel, WAIT_WAKE_ONE,
-                             WAIT_REASON_EVENT, &woken) != OK) {
+    if (wake_up(&target->ipc_wait_channel, &woken) != OK) {
         LOG_WARN("IPC", "Falha ao acordar consumidor IPC");
     }
     return 1;
@@ -113,8 +125,6 @@ int ipc_receive(ipc_msg_t* msg) {
 
 int ipc_wait(uint32_t timeout_ticks, wait_reason_t* out_reason) {
     process_t* current = process_get_current();
-    uint32_t condition;
-    uint8_t has_message = 0U;
 
     if (!out_reason) {
         LOG_ERROR("IPC", "Destino nulo para resultado da espera IPC");
@@ -129,22 +139,9 @@ int ipc_wait(uint32_t timeout_ticks, wait_reason_t* out_reason) {
         LOG_ERROR("IPC", "Espera IPC sem processo atual");
         return ERR_STATE;
     }
-    if (wait_channel_get_condition(&current->ipc_wait_channel,
-                                   &condition) != OK) {
-        LOG_ERROR("IPC", "Canal IPC do processo indisponivel");
-        return ERR_STATE;
-    }
-
-    spinlock_acquire(&ipc_lock);
-    has_message = current->msg_head != current->msg_tail;
-    spinlock_release(&ipc_lock);
-    if (has_message) {
-        *out_reason = WAIT_REASON_EVENT;
-        return OK;
-    }
-
-    return process_wait(&current->ipc_wait_channel, condition,
-                        timeout_ticks, out_reason);
+    return wait_event_timeout(&current->ipc_wait_channel,
+                              ipc_wait_condition, current,
+                              timeout_ticks, out_reason);
 }
 
 void ipc_get_stats(ipc_stats_t* stats) {

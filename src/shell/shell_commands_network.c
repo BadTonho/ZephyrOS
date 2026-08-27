@@ -88,6 +88,7 @@
 #define SHELL_TCP_WAIT_SECONDS 45U
 #define SHELL_HTTP_WAIT_SECONDS 50U
 #define SHELL_HTTP_SUITE_ATTEMPTS 3U
+#define SHELL_SOCKET_WAIT_SLICE_TICKS 1U
 #define SHELL_HTTP_PREVIEW_SIZE 512U
 #define SHELL_NETWORK_REQUIRED_IPV4_HANDLERS 3U
 #define SHELL_DNS_NAME_SIZE DNS_NAME_BUFFER_SIZE
@@ -2358,6 +2359,8 @@ static int cmd_net_wait_socket_connected(
     uint32_t frequency = timer_get_frequency();
     uint32_t start_tick = timer_get_ticks();
     uint32_t wait_ticks;
+    net_socket_event_mask_t events = 0U;
+    wait_reason_t reason = WAIT_REASON_NONE;
     net_socket_info_t info;
     int result;
 
@@ -2372,26 +2375,42 @@ static int cmd_net_wait_socket_connected(
     }
     wait_ticks = frequency * SHELL_TCP_WAIT_SECONDS;
     do {
-        result = net_socket_get_handle_info(handle, &info);
+        uint32_t elapsed = timer_get_ticks() - start_tick;
+        uint32_t remaining;
+        uint32_t slice;
+
+        if (elapsed >= wait_ticks) {
+            reason = WAIT_REASON_TIMEOUT;
+            break;
+        }
+        remaining = wait_ticks - elapsed;
+        slice = remaining < SHELL_SOCKET_WAIT_SLICE_TICKS ?
+                remaining : SHELL_SOCKET_WAIT_SLICE_TICKS;
+
+        result = net_socket_wait(handle, NET_SOCKET_EVENT_CONNECTED,
+                                 slice, &events, &reason);
         if (result != OK) return result;
-        if (info.state == NET_SOCKET_STATE_CONNECTED) {
-            *out_info = info;
-            return OK;
+        if (reason != WAIT_REASON_TIMEOUT) break;
+        if (shell_job_is_active()) {
+            shell_job_pump_events();
+            if (shell_job_cancel_requested()) return ERR_TIMEOUT;
         }
-        if (info.state == NET_SOCKET_STATE_ERROR ||
-            info.state == NET_SOCKET_STATE_EOF) {
-            *out_info = info;
-            return info.last_error == OK ? ERR_STATE :
-                                           info.last_error;
-        }
-        if (shell_network_job_block_tick()) {
-            shell_network_job_inner_failed = 1U;
-            return ERR_TIMEOUT;
-        }
-    } while ((uint32_t)(timer_get_ticks() - start_tick) <= wait_ticks);
-    LOG_WARN("SHELL", "Guarda de tempo TCP expirou");
-    shell_network_job_inner_failed = 1U;
-    return ERR_TIMEOUT;
+    } while ((uint32_t)(timer_get_ticks() - start_tick) < wait_ticks);
+    if (reason == WAIT_REASON_TIMEOUT) {
+        LOG_WARN("SHELL", "Guarda de tempo TCP expirou");
+        shell_network_job_inner_failed = 1U;
+        return ERR_TIMEOUT;
+    }
+    result = net_socket_get_handle_info(handle, &info);
+    if (result != OK) return result;
+    *out_info = info;
+    if ((events & NET_SOCKET_EVENT_CONNECTED) != 0U &&
+        info.state == NET_SOCKET_STATE_CONNECTED) return OK;
+    if ((events & NET_SOCKET_EVENT_ERROR) != 0U ||
+        info.state == NET_SOCKET_STATE_ERROR) {
+        return info.last_error == OK ? ERR_STATE : info.last_error;
+    }
+    return ERR_STATE;
 }
 
 static void cmd_net_tcp_connect(const char* args) {
@@ -2489,6 +2508,16 @@ static void cmd_net_socket_status(void) {
     shell_command_print_num(status.rx_overflows);
     video_print("/", 0x07);
     shell_command_print_num(status.stale_handles);
+    video_print("\n  Waits/eventos/timeouts/cancelamentos/falhas: ", 0x07);
+    shell_command_print_num(status.wait_calls);
+    video_print("/", 0x07);
+    shell_command_print_num(status.wait_events);
+    video_print("/", 0x07);
+    shell_command_print_num(status.wait_timeouts);
+    video_print("/", 0x07);
+    shell_command_print_num(status.wait_cancellations);
+    video_print("/", 0x07);
+    shell_command_print_num(status.wait_failures);
     video_print("\n  Ultimo erro: ", 0x07);
     shell_command_print_num((uint32_t)status.last_error);
     video_print("\n", 0x07);
@@ -2521,9 +2550,36 @@ static void cmd_net_socket_table(void) {
         shell_command_print_num(info.tx_queued);
         video_print("/", 0x07);
         shell_command_print_num(info.rx_queued);
+        video_print(" waiters=", 0x07);
+        shell_command_print_num(info.waiters);
         video_print("\n", 0x07);
     }
     if (!any) video_print("  Vazia.\n", 0x08);
+}
+
+static void cmd_net_socket_check_case(const char* name, uint8_t passed) {
+    video_print("  ", 0x07);
+    video_print(name, 0x07);
+    video_print(": ", 0x07);
+    video_print(passed ? "OK\n" : "ERRO\n", passed ? 0x0A : 0x0C);
+}
+
+static void cmd_net_socket_check(void) {
+    net_socket_self_test_result_t test;
+    int result = net_socket_self_test(&test);
+
+    video_print("Autoteste de sockets e filas privadas:\n", 0x0B);
+    cmd_net_socket_check_case("ciclo", test.lifecycle);
+    cmd_net_socket_check_case("mapeamento de eventos", test.event_mapping);
+    cmd_net_socket_check_case("READABLE acorda um", test.readable_wake_one);
+    cmd_net_socket_check_case("terminais acordam todos",
+                              test.terminal_wake_all);
+    cmd_net_socket_check_case("timeout", test.timeout);
+    cmd_net_socket_check_case("cancelamento", test.cancellation);
+    cmd_net_socket_check_case("invariantes", test.invariants);
+    video_print("Resultado: ", 0x0B);
+    video_print(result == OK ? "OK\n" : "ERRO\n",
+                result == OK ? 0x0A : 0x0C);
 }
 
 static void cmd_net_socket(const char* args) {
@@ -2535,8 +2591,13 @@ static void cmd_net_socket(const char* args) {
         cmd_net_socket_table();
         return;
     }
+    if (shell_command_args_equal(args, "check")) {
+        cmd_net_socket_check();
+        return;
+    }
     LOG_WARN("SHELL", "Uso invalido de net socket");
-    video_print("Uso: net socket status | net socket table\n", 0x0C);
+    video_print("Uso: net socket status | net socket table | "
+                "net socket check\n", 0x0C);
 }
 
 static int cmd_http_wait(http_status_t* out_status) {

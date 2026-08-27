@@ -112,6 +112,7 @@ typedef struct {
     uint32_t msg_head;
     uint32_t msg_tail;
     wait_channel_t ipc_wait_channel;
+    wait_queue_entry_t wait_entry;
     wait_channel_t* wait_channel;
     uint32_t wait_condition;
     uint32_t wait_deadline;

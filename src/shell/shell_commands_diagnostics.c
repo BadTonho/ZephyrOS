@@ -278,6 +278,7 @@ typedef struct {
 static log_record_t shell_log_records[SHELL_LOG_TAIL_MAXIMUM];
 static timer_info_t shell_timer_records[TIMER_CAPACITY];
 static wait_info_t shell_wait_records[MAX_PROCESSES + MAX_THREADS];
+static wait_queue_info_t shell_wait_queues[WAIT_QUEUE_REGISTRY_CAPACITY];
 static shell_kmetrics_baseline_t shell_kmetrics_baseline;
 
 static void cmd_health_print_component(recovery_component_id_t component) {
@@ -1238,6 +1239,31 @@ static void cmd_health_check_irq(int* issue_count) {
     }
 }
 
+static void cmd_health_check_wait(int* issue_count) {
+    wait_stats_t wait_stats;
+    net_socket_status_t socket_stats;
+
+    if (!issue_count) return;
+    if (wait_get_stats(&wait_stats) != OK || wait_validate_state() != OK) {
+        cmd_health_check_print_query_failure("Wait Queues", ERR_STATE,
+                                             issue_count);
+        return;
+    }
+    if (wait_stats.channels_active >= wait_stats.registry_capacity ||
+        wait_stats.registration_rejections || wait_stats.context_errors ||
+        wait_stats.orphan_errors) {
+        cmd_health_check_print_named_state(
+            "Wait Queues", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
+            "registro, contexto ou vinculo invalido", issue_count);
+    }
+    if (net_socket_get_status(&socket_stats) == OK &&
+        socket_stats.initialized && socket_stats.wait_failures) {
+        cmd_health_check_print_named_state(
+            "Socket Wait", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
+            "falha permanente de wake", issue_count);
+    }
+}
+
 static void cmd_health_check(void) {
     int issue_count = 0;
 
@@ -1250,6 +1276,7 @@ static void cmd_health_check(void) {
     cmd_health_check_tls(&issue_count);
     cmd_health_check_kernel(&issue_count);
     cmd_health_check_irq(&issue_count);
+    cmd_health_check_wait(&issue_count);
     cmd_health_check_usb_hid(&issue_count);
     cmd_health_check_wifi(&issue_count);
     if (!issue_count) {
@@ -2090,6 +2117,22 @@ static void cmd_wait_status(void) {
     shell_command_print_num(stats.unavailable_wakes);
     video_print("\nOperacoes invalidas=", 0x07);
     shell_command_print_num(stats.invalid_operations);
+    video_print(" registro=", 0x07);
+    shell_command_print_num(stats.channels_active);
+    video_print("/", 0x07);
+    shell_command_print_num(stats.registry_capacity);
+    video_print(" pico=", 0x07);
+    shell_command_print_num(stats.registry_peak);
+    video_print(" rejeicoes=", 0x07);
+    shell_command_print_num(stats.registration_rejections);
+    video_print("\nWake um/todos=", 0x07);
+    shell_command_print_num(stats.wake_one_calls);
+    video_print("/", 0x07);
+    shell_command_print_num(stats.wake_all_calls);
+    video_print(" contexto/orfaos=", 0x07);
+    shell_command_print_num(stats.context_errors);
+    video_print("/", 0x07);
+    shell_command_print_num(stats.orphan_errors);
     video_print("\n", 0x07);
 }
 
@@ -2097,6 +2140,10 @@ static void cmd_wait_print_info(const wait_info_t* info) {
     video_print(info->target == WAIT_TARGET_PROCESS ? "processo=" : "thread=",
                 0x08);
     shell_command_print_num(info->id);
+    video_print(" fila=", 0x08);
+    shell_command_print_num(info->queue_id);
+    video_print(" pos=", 0x08);
+    shell_command_print_num(info->queue_position);
     video_print(" nome=", 0x08);
     video_print(info->name, 0x07);
     video_print(" canal=", 0x08);
@@ -2113,18 +2160,14 @@ static void cmd_wait_print_info(const wait_info_t* info) {
 }
 
 static void cmd_wait_list(void) {
-    uint32_t process_count = 0U;
-    uint32_t thread_count = 0U;
-    uint32_t total;
+    uint32_t total = 0U;
 
-    if (process_copy_waiters(shell_wait_records, MAX_PROCESSES,
-                             &process_count) != OK ||
-        thread_copy_waiters(shell_wait_records + process_count, MAX_THREADS,
-                            &thread_count) != OK) {
+    if (wait_queue_copy_waiters(shell_wait_records,
+                                MAX_PROCESSES + MAX_THREADS,
+                                &total) != OK) {
         video_print("Erro: lista de esperas indisponivel.\n", 0x0C);
         return;
     }
-    total = process_count + thread_count;
     if (!total) {
         video_print("Nenhuma tarefa bloqueada por canal.\n", 0x08);
         return;
@@ -2154,6 +2197,12 @@ static void cmd_wait_check(void) {
     cmd_wait_print_test("motivos/recurso ausente", test.reasons);
     cmd_wait_print_test("limites", test.limits);
     cmd_wait_print_test("reset seguro", test.reset);
+    cmd_wait_print_test("ordem FIFO", test.fifo);
+    cmd_wait_print_test("wake all", test.wake_all);
+    cmd_wait_print_test("lost wakeup", test.lost_wakeup);
+    cmd_wait_print_test("reexecucao da condicao", test.condition_recheck);
+    cmd_wait_print_test("processo/thread", test.process_thread);
+    cmd_wait_print_test("contexto de interrupcoes", test.interrupt_context);
     cmd_wait_print_test("invariantes", test.invariants);
     video_print("Resultado: ", 0x0B);
     video_print(result == OK ? "OK" : "ERRO", result == OK ? 0x0A : 0x0C);
@@ -2179,6 +2228,53 @@ static void cmd_wait(const char* arguments) {
         return;
     }
     cmd_wait_invalid();
+}
+
+static void cmd_wqinfo(const char* arguments) {
+    uint32_t queue_count = 0U;
+    uint32_t waiter_count = 0U;
+
+    if (!shell_command_args_equal(arguments, "")) {
+        LOG_WARN_CODE("SHELL", ERR_INVALID, "Argumentos invalidos para wqinfo");
+        video_print("Uso: wqinfo\n", 0x0C);
+        return;
+    }
+    if (wait_queue_copy_info(shell_wait_queues,
+                             WAIT_QUEUE_REGISTRY_CAPACITY,
+                             &queue_count) != OK ||
+        wait_queue_copy_waiters(shell_wait_records,
+                                MAX_PROCESSES + MAX_THREADS,
+                                &waiter_count) != OK) {
+        video_print("Erro: filas de espera indisponiveis.\n", 0x0C);
+        return;
+    }
+    video_print("Filas de espera registradas:\n", 0x0B);
+    for (uint32_t index = 0U; index < queue_count; index++) {
+        wait_queue_info_t* info = &shell_wait_queues[index];
+
+        video_print("  #", 0x07);
+        shell_command_print_num(info->id);
+        video_print(" ", 0x07);
+        video_print(info->owner, 0x0B);
+        video_print(" estado=", 0x08);
+        video_print(info->available ? "DISPONIVEL" : "INDISPONIVEL",
+                    info->available ? 0x0A : 0x0E);
+        video_print(" geracao=", 0x08);
+        shell_command_print_num(info->condition);
+        video_print(" waiters/pico=", 0x08);
+        shell_command_print_num(info->waiters);
+        video_print("/", 0x07);
+        shell_command_print_num(info->peak_waiters);
+        video_print("\n", 0x07);
+    }
+    if (!waiter_count) {
+        video_print("Nenhum waiter bloqueado.\n", 0x08);
+        return;
+    }
+    video_print("Ordem FIFO dos waiters:\n", 0x0B);
+    for (uint32_t index = 0U; index < waiter_count; index++) {
+        cmd_wait_print_info(&shell_wait_records[index]);
+    }
 }
 
 static uint8_t cmd_device_status_color(device_status_t status) {
@@ -3839,6 +3935,7 @@ SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_timer, cmd_timer)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_clock, cmd_clock)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_tls, cmd_tls)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_wait, cmd_wait)
+SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_wqinfo, cmd_wqinfo)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_devices, cmd_devices)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_device_info, cmd_device_info)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_device_scan, cmd_device_scan)

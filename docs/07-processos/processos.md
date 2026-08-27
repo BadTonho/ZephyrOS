@@ -171,13 +171,17 @@ politica simples atual.
 
 ---
 
-## Espera por eventos (R3)
+## Espera por eventos e filas FIFO (R3 / SYNC2)
 
-O contrato R3 adiciona espera cooperativa por canal sem alterar a ABI dos
-aplicativos ring 3. Cada processo possui um canal IPC embutido; outros
-subsistemas podem manter canais estaticos proprios.
-O armazenamento do canal deve iniciar zerado; o servico rejeita reinicializacao
-de um canal ainda ativo para preservar a contabilidade.
+O contrato R3 adicionou espera cooperativa por canal sem alterar a ABI dos
+aplicativos ring 3. A SYNC2 consolidou esse contrato como
+`wait_queue_head_t`: uma fila intrusiva FIFO registrada por ID geracional.
+`wait_channel_t` permanece como alias compativel. Cada processo/thread embute
+sua propria `wait_queue_entry_t`, portanto bloquear nao aloca memoria.
+
+Cada processo possui uma fila IPC embutida; sockets mantem filas por slot. O
+armazenamento da fila deve iniciar zerado, e o servico recusa reinicializacao
+ou destruicao enquanto houver waiters.
 
 ```c
 typedef enum {
@@ -187,6 +191,17 @@ typedef enum {
     WAIT_REASON_CANCELLED,
     WAIT_REASON_DEVICE_UNAVAILABLE
 } wait_reason_t;
+
+typedef int (*wait_condition_fn_t)(void* context, uint8_t* out_ready);
+
+int init_waitqueue_head(wait_queue_head_t* queue, const char* owner);
+int wait_event(wait_queue_head_t* queue, wait_condition_fn_t condition,
+               void* context, wait_reason_t* out_reason);
+int wait_event_timeout(wait_queue_head_t* queue,
+                       wait_condition_fn_t condition, void* context,
+                       uint32_t timeout_ticks, wait_reason_t* out_reason);
+int wake_up(wait_queue_head_t* queue, uint32_t* out_woken);
+int wake_up_all(wait_queue_head_t* queue, uint32_t* out_woken);
 
 int process_wait(wait_channel_t* channel, uint32_t observed_condition,
                  uint32_t timeout_ticks, wait_reason_t* out_reason);
@@ -204,22 +219,26 @@ int thread_cancel_wait(thread_t* thread);
 `WAIT_TIMEOUT_IMMEDIATE` retorna `TIMEOUT` sem bloquear e
 `WAIT_TIMEOUT_INFINITE` usa espera sem deadline. Demais prazos sao convertidos
 para um tick absoluto e comparados com aritmetica segura de wraparound. A
-transicao para `BLOCKED` e a verificacao da sequencia do canal ocorrem na mesma
-regiao critica, evitando perder um evento entre o teste da condicao e o
-bloqueio.
+transicao para `BLOCKED`, a verificacao da geracao e o encadeamento FIFO
+ocorrem na mesma regiao critica, evitando perder um evento entre o teste da
+condicao e o bloqueio. Um wake apenas move a tarefa para o estado executavel;
+a troca de contexto continua pertencendo ao scheduler.
 
-O produtor deve incrementar a condicao e acordar um ou todos os waiters. O
-consumidor deve testar novamente sua condicao depois de acordar, pois o evento
-e uma notificacao e nao uma garantia de que o recurso ainda esta disponivel.
+O produtor deve publicar os dados antes de acordar um ou todos os waiters.
+`wake_up` remove o primeiro waiter FIFO; `wake_up_all` remove todos. A
+condicao e reavaliada depois de cada evento, usando o mesmo deadline absoluto,
+pois uma notificacao nao garante que outro consumidor ainda nao retirou o
+recurso.
 Cancelamento individual, cancelamento coletivo e indisponibilidade registram
 motivos distintos. Processos e threads mantem o mesmo contrato de metadados,
 mas os canais continuam estaticos e fornecidos pelo consumidor. O scheduler
 continua aceitando `process_block()` e `thread_block()` para os consumidores
 legados; esperas R3 usam deadline e metadados de canal.
 
-O Shell expoe `wait status`, `wait list` e `wait check`. O primeiro consumidor
-real e o processo Shell, que dorme no canal IPC quando a fila esta vazia e e
-acordado por `ipc_send()` apos uma mensagem de teclado ou solicitacao nativa.
+O Shell expoe `wait status`, `wait list`, `wait check` e `wqinfo`. IPC, Editor,
+Explorer e Task Manager dormem quando a fila de mensagens esta vazia e sao
+acordados por `ipc_send()` depois da publicacao. `wqinfo` usa snapshots
+somente-leitura do registro e preserva a ordem FIFO dos waiters.
 Na Fase 5, o mesmo canal funciona como agregador de eventos: o processo de
 sistema o sinaliza para progresso de rede, indice, timer e conclusao de
 processo, sem criar mensagens artificiais. `process_get_event_generation()`
@@ -433,55 +452,3 @@ cancelar explicitamente o processo ring 3 reservado ao `usertest`, mantendo o
 resultado no mesmo canal de coleta usado pelo encerramento normal. A rotina
 recusa PIDs que nao pertencem a um UserTest e nao altera a API publica de
 `shell.h`.
-
----
-
-## Serviço de Espera Cooperativa R3 (`wait.c` / `wait.h`)
-
-O subsistema de espera cooperativa (R3) fornece canais de sincronização estáticos
-com suporte a timeouts baseados em ticks absolutos do PIT, motivos de acordada
-explícitos, cancelamento assíncrono e rastreamento de contadores.
-
-### Canais e Estrutura
-
-Cada canal de espera (`wait_channel_t`) possui:
-- Proprietário textual (ex: `"IPC"`, `"TIMER"`, `"NET"`);
-- Sequência de condição monotônica (`condition_sequence`) para evitar acordadas perdidas (*lost wakeups*);
-- Flag de disponibilidade de recurso (`resource_available`).
-
-```c
-typedef struct {
-    char owner[WAIT_CHANNEL_OWNER_SIZE];
-    uint32_t condition_sequence;
-    uint8_t resource_available;
-    uint8_t initialized;
-} wait_channel_t;
-```
-
-### Motivos de Bloqueio e Acordada (`wait_reason_t`)
-
-- `WAIT_REASON_EVENT`: Desbloqueio normal por evento entregue;
-- `WAIT_REASON_TIMEOUT`: Prazo absoluto expirado pelo PIT;
-- `WAIT_REASON_CANCELLED`: Cancelamento solicitado pelo chamador ou por interrupção do Shell;
-- `WAIT_REASON_UNAVAILABLE`: Recurso fechado ou destruído enquanto aguardava.
-
-### API do Subsistema
-
-```c
-void wait_channel_init(wait_channel_t* channel, const char* owner);
-void wait_channel_signal(wait_channel_t* channel);
-int  wait_get_stats(wait_stats_t* out_stats);
-int  wait_self_test(wait_self_test_result_t* out_result);
-
-/* Integração com Processos e Threads */
-int process_wait_channel(wait_channel_t* channel, uint32_t timeout_ticks,
-                         uint32_t expected_sequence, wait_reason_t* out_reason);
-int process_wake_channel(wait_channel_t* channel, wait_wake_mode_t mode,
-                         wait_reason_t reason, uint32_t* out_woken);
-```
-
-O Shell conecta sua fila IPC ao canal de espera do processo: quando não há
-mensagens, o processo Shell passa a `BLOCKED` e é acordado imediatamente quando
-o teclado ou outro produtor envia uma mensagem IPC. O autoteste privado
-(`wait_self_test`) valida sinais, limites, cancelamento coletivo/individual e
-wrap de ticks sem interferir nas filas reais do sistema.

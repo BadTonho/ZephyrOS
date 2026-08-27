@@ -119,7 +119,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   aceita, registrada como
   [`DT100-001`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2),
   e a otimizacao foi transferida para K5/v1.0.0. R4/SYNC3 e a `kworker` nao
-  foram iniciadas.
+  foram iniciadas. A SYNC2 esta implementada sobre as filas FIFO da R3, com
+  IPC e sockets bloqueantes e diagnosticos proprios; permanece aberta ate a
+  matriz funcional ser executada pelo usuario.
 
 ## K4 validada
 

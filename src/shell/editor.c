@@ -960,6 +960,15 @@ void editor_handle_key(uint8_t scancode) {
     }
 }
 
+static void editor_wait_for_ipc(void) {
+    wait_reason_t reason = WAIT_REASON_NONE;
+
+    if (ipc_wait(WAIT_TIMEOUT_INFINITE, &reason) != OK) {
+        LOG_WARN("EDITOR", "Falha ao aguardar entrada por IPC");
+        process_yield();
+    }
+}
+
 void editor_run(void) {
     if (!recovery_is_enabled(RECOVERY_COMPONENT_EDITOR)) {
         LOG_WARN("EDITOR", "Editor indisponivel; abertura ignorada");
@@ -983,7 +992,7 @@ void editor_run(void) {
                 editor_handle_key((uint8_t)msg.data1);
             }
         } else {
-            process_yield();
+            editor_wait_for_ipc();
         }
     }
 }
@@ -1010,7 +1019,7 @@ void editor_run_file(const char* filename) {
                 editor_handle_key((uint8_t)msg.data1);
             }
         } else {
-            process_yield();
+            editor_wait_for_ipc();
         }
     }
 }

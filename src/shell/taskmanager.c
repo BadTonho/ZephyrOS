@@ -2409,11 +2409,19 @@ void taskmgr_run(void) {
             }
         } else {
             uint32_t current_tick = timer_get_ticks();
+            uint32_t elapsed = current_tick - last_tick;
             if (current_tick - last_tick >= TSKMGR_METRICS_TICKS) {
                 taskmgr_refresh();
                 last_tick = current_tick;
+            } else {
+                wait_reason_t reason = WAIT_REASON_NONE;
+                uint32_t remaining = TSKMGR_METRICS_TICKS - elapsed;
+
+                if (ipc_wait(remaining, &reason) != OK) {
+                    LOG_WARN("TSKMGR", "Falha ao aguardar entrada por IPC");
+                    process_yield();
+                }
             }
-            process_yield();
         }
     }
 }

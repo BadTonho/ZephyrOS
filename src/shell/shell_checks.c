@@ -827,6 +827,7 @@ static int shell_regcheck_validate_services(void) {
     app_api_version_t version;
     app_uptime_info_t uptime;
     app_memory_info_t memory;
+    net_socket_status_t sockets;
 
     if (log_get_level() != LOG_LEVEL_INFO || !app_api_is_ready() ||
         !app_api_file_is_ready() || !app_api_ipc_is_ready() ||
@@ -836,9 +837,15 @@ static int shell_regcheck_validate_services(void) {
         !app_catalog_is_ready() || timer_validate_state() != OK ||
         idt_validate_irq_state() != OK ||
         irq_deferred_validate_state() != OK ||
+        wait_validate_state() != OK ||
         rtc_validate_state() != OK || clock_validate_state() != OK ||
         tls_validate_state() != OK) {
         LOG_ERROR("SHELL", "RegCheck encontrou servico obrigatorio indisponivel");
+        return ERR_STATE;
+    }
+    if (net_socket_get_status(&sockets) != OK ||
+        (sockets.initialized && net_socket_validate_state() != OK)) {
+        LOG_ERROR("SHELL", "RegCheck encontrou filas de socket invalidas");
         return ERR_STATE;
     }
     if (app_api_get_version(&version) != OK ||

@@ -10,7 +10,8 @@ Implementar padrões modernos de concorrência, sincronização e tratamento ass
   otimização de `regcheck full` e eliminação do overflow sob estresse adiadas
   para a v1.0.0 em
   [`DT100-001`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2).
-- [ ] SYNC2 - Primitivas de Espera sem Espera Ocupada (Wait Queues / `wait_queue_t`).
+- [ ] SYNC2 - Primitivas de Espera sem Espera Ocupada: implementada; matriz
+  funcional do usuario pendente.
 - [ ] SYNC3 - Filas de Trabalho do Kernel (Kernel Workqueues).
 - [ ] SYNC4 - Sistema de Sinais Assíncronos para Processos e Shell (`SIGINT`, `SIGTERM`, `SIGSEGV`).
 
@@ -126,23 +127,82 @@ a v1.0.0.
 
 ### Implementação
 
-- [ ] Implementar a estrutura `wait_queue_head_t` contendo uma lista ligada de threads adormecidas.
-- [ ] Criar as primitivas:
-  `void init_waitqueue_head(wait_queue_head_t* wq);`
-  `void wait_event(wait_queue_head_t* wq, int (*condition)(void*), void* arg);`
-  `int wait_event_timeout(wait_queue_head_t* wq, int (*condition)(void*), void* arg, uint32_t timeout_ticks);`
-  `void wake_up(wait_queue_head_t* wq);`
-  `void wake_up_all(wait_queue_head_t* wq);`
-- [ ] Ao invocar `wait_event`, a thread tem seu estado alterado para `BLOCKED` e o scheduler é acionado imediatamente (`schedule()`).
-- [ ] Quando o evento ocorre (ex: pacote recebido na ISR), `wake_up` move as threads para `READY`.
+- [x] Consolidar `wait_queue_head_t` como fila intrusiva FIFO e manter
+  `wait_channel_t` como alias compativel com a R3.
+- [x] Embutir uma entrada estatica em cada processo/thread e registrar ate 128
+  filas por IDs geracionais, sem alocacao dinamica.
+- [x] Implementar `init_waitqueue_head`, `wait_event`,
+  `wait_event_timeout`, `wake_up` e `wake_up_all` com retorno de erro,
+  revalidacao atomica da condicao com interrupcoes desabilitadas e prazo
+  absoluto unico.
+- [x] Fazer `wake_up` percorrer somente a fila alvo, em ordem FIFO, sem
+  varrer as tabelas completas de processos e threads.
+- [x] Remover a entrada exatamente uma vez em evento, timeout, cancelamento,
+  indisponibilidade ou destruicao; filas ocupadas recusam reset.
+- [x] Preservar os checks temporizados limitados dos schedulers e impedir
+  bloqueio fora de contexto executavel ou com interrupcoes desabilitadas.
+- [x] Migrar IPC, Editor, Explorer e Task Manager para espera real quando a
+  fila de mensagens esta vazia.
+- [x] Adicionar fila e eventos `CONNECTED`, `READABLE`, `EOF`, `ERROR` e
+  `CLOSED` a cada socket nativo, preservando `net_socket_receive()` como API
+  nao bloqueante e acrescentando `net_socket_wait()`.
+- [x] Migrar `net tcp connect` para a espera do socket. O processo System
+  continua executando o polling da rede e nunca bloqueia nessa fila.
+- [x] Integrar invariantes a `regcheck full` e saturacao, contexto, vinculos e
+  falhas de wake a `health check`.
+
+As APIs R3 de processo/thread e o comando `wait` permanecem compativeis.
+ATA PIO continua sincrono: a espera de disco depende da fila assincrona de
+requisicoes prevista para BLK1/R6 e nao recebe um Bottom-Half artificial.
 
 ### Critério de saída
 
-Syscalls de leitura de teclado, recepção de sockets e leitura de disco bloqueiam a thread consumidora sem utilizar ciclos de CPU até que os dados cheguem.
+IPC/teclado e sockets bloqueiam a tarefa consumidora sem polling de
+`process_yield`, wake-one respeita FIFO, wake-all nao deixa entradas orfas e
+timeout/cancelamento/fechamento preservam os motivos. `wait check`,
+`net socket check`, `regcheck full`, `health check`, `memcheck` e `log check`
+devem concluir sem falhas antes de marcar a etapa como concluida.
 
 ### Comandos Shell / Diagnóstico
 
-- `wqinfo`: lista todas as filas de espera registradas no kernel e as threads atualmente bloqueadas em cada uma.
+- `wait status|list|check`: apresenta metricas, waiters FIFO e autoteste
+  privado ampliado.
+- `wqinfo`: lista filas registradas, geracao, disponibilidade, ocupacao e
+  ordem dos processos/threads bloqueados.
+- `net socket status|table|check`: apresenta metricas de espera, waiters por
+  socket e fixture privada de eventos.
+
+### Validacao pendente do usuario
+
+Os gates desta versao sao `make q3check`, `make clean && make` e `make run`.
+No QEMU padrao, a matriz funcional e:
+
+```text
+wait status
+wait list
+wait check
+wqinfo
+net socket check
+net tcp connect example.com 80
+net check qemu tcp net-pci-00:03.0 example.com
+regcheck full
+health check
+memcheck
+log check
+```
+
+As coberturas adicionais usam `make run-usb-hid`,
+`make run QEMU_NET_ARGS=` e
+`make run QEMU_NET_ARGS="-netdev user,id=net0 -device e1000,netdev=net0 -netdev user,id=net1 -device rtl8139,netdev=net1"`.
+`wqinfo foo` e `net socket foo` devem apenas registrar uso invalido. Durante
+esperas e `regcheck full`, teclado, mouse PS/2/USB, Classic e Shell devem
+continuar responsivos, sem waiters orfaos.
+
+### Estado da entrega
+
+A implementacao esta pronta, mas a SYNC2 permanece aberta ate a matriz QEMU
+ser executada pelo usuario e registrada separadamente. SYNC3, R4 e a
+`kworker` continuam pendentes; o bootloader permanece inalterado.
 
 ---
 

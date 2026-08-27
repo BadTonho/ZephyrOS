@@ -3164,7 +3164,12 @@ void fm_run(void) {
                 shell_handle_app_request(msg.data1);
             }
         } else {
-            process_yield();
+            wait_reason_t reason = WAIT_REASON_NONE;
+
+            if (ipc_wait(WAIT_TIMEOUT_INFINITE, &reason) != OK) {
+                LOG_WARN("FM", "Falha ao aguardar entrada por IPC");
+                process_yield();
+            }
         }
     }
 }
