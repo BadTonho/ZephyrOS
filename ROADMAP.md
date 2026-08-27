@@ -11,12 +11,11 @@ cancelamento ZSYS esta validada. A EP9.4B de boot operacional autenticado no
 FAT32 esta implementada e validada. A EP9.4C de reinicio controlado pelo
 System Updater esta implementada e validada.
 
-SYNC2 esta implementada com wait queues FIFO para IPC e sockets. A matriz QEMU
-padrao, a correcao F11 e os perfis USB HID e sem NIC foram aprovados; somente
-o perfil multi-NIC permanece pendente. SYNC3/R4 e a `kworker` continuam
-pendentes.
+SYNC2 esta concluida e validada com wait queues FIFO para IPC e sockets nos
+perfis QEMU padrao, USB HID, sem NIC e multi-NIC. SYNC3/R4 e a `kworker`
+continuam pendentes.
 
-## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A-EP9.4C validadas; SYNC1 concluída com a dívida técnica [DT100-001](docs/qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2) aceita para K5/v1.0.0
+## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A-EP9.4C validadas; SYNC1 concluída com a dívida técnica [DT100-001](docs/qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2) aceita para K5/v1.0.0; SYNC2 concluida e validada
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
@@ -26,7 +25,7 @@ Sistema e ecossistema:       [████████████████�
 Evolução da plataforma:      [████████████████████████████████████-------] EP1-EP6.4 e EP7.0 encerradas; EP7.1B EHCI/transporte RTL8811CU implementada; EP9.0A e EP9.4A concluídas
 ```
 
-**Documentação de atualização sincronizada em:** 2026-08-27 10:30 (America/Sao_Paulo).
+**Documentação de atualização sincronizada em:** 2026-08-27 16:49 (America/Sao_Paulo).
 
 ---
 

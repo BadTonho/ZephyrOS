@@ -1518,3 +1518,23 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   esperados, e `regcheck full`, `memcheck` e `log check` terminaram em `OK`.
   `health check` publicou Network como `DISABLED` pelo motivo esperado. Resta
   somente o perfil multi-NIC antes do encerramento da SYNC2.
+
+- SYNC2: perfil multi-NIC concluido pelo usuario.
+  Concluida em: 2026-08-27 16:49 (America/Sao_Paulo).
+  Os IDs `net-pci-00:03.0` E1000 e `net-pci-00:04.0` RTL8139 foram copiados do
+  inventario da execucao. `net check qemu multi` aprovou TX isolado em ambas e
+  invariantes Multi-NIC. IRQ11 publicou dois handlers, quatro agendamentos e
+  quatro execucoes de Bottom-Half, sem rejeicoes. A conexao TCP foi
+  estabelecida; `net socket check` e as 14 invariantes de `wait check`
+  terminaram em `OK`. `regcheck full`, `memcheck` e `log check` tambem foram
+  aprovados, e `health check` preservou somente limitacoes esperadas do
+  ambiente.
+
+- SYNC2: etapa concluida e validada pelo usuario.
+  Concluida em: 2026-08-27 16:49 (America/Sao_Paulo).
+  A matriz completa aprovou QEMU padrao, cancelamento F11 corrigido, USB HID
+  com cancelamento F12, ausencia controlada de NIC e E1000 + RTL8139. Filas
+  FIFO, wake-one/all, timeouts, cancelamento, geracoes IPC e eventos de sockets
+  permaneceram consistentes, sem espera ocupada, waiter orfao ou rejeicao
+  permanente. Nenhuma nova divida tecnica foi aceita. SYNC3/R4 e a `kworker`
+  continuam pendentes.
