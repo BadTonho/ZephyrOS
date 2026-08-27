@@ -240,6 +240,13 @@ roda, preservando as transicoes. `mouse_process_events()` conserva a drenagem
 normal como fallback para rejeicao da fila diferida. Se a fila bruta saturar,
 o driver registra a lacuna, reinicia a montagem depois dela e procura o
 proximo cabecalho PS/2 plausivel, evitando manter o ponteiro desalinhado.
+Enquanto ainda houver bytes brutos e capacidade no `input core`, o trabalho
+solicita reexecucao. Movimentos consecutivos sem roda e com os mesmos botoes
+sao acumulados antes de ocupar novas entradas; o `input core` tambem exige a
+mesma origem. Roda e mudancas de botoes permanecem entradas distintas. O
+consumidor processa ate 32 limites de lote por passagem, acompanhando a vazao
+maxima do despacho intermediario sem contabilizar a recusa temporaria do
+consumidor como descarte definitivo.
 
 A aceleracao usa somente inteiros: movimento bruto abaixo de 4 conserva `1x`,
 entre 4 e 7 usa `1,5x` e a partir de 8 usa `2x`. A velocidade e aplicada depois
@@ -916,6 +923,10 @@ converte seus dados para HID Usage; o driver USB publica o mesmo formato. O
 metricas de ocupacao, descartes e ultimo erro, e encaminha eventos em lotes no
 contexto normal do processo System. O Shell, IPC, Window Manager e GUI
 continuam recebendo os scancodes Set 1 e `mouse_event_t` ja existentes.
+Eventos relativos de movimento consecutivos sao acumulados somente quando
+origem, botoes e ausencia de roda coincidem. Transicoes de botoes, roda e
+eventos de origens diferentes preservam sua ordem e nunca participam dessa
+coalescencia.
 
 `src/core/irq_deferred.c` recebe somente trabalhos estaticos inicializados com
 proprietario, linha IRQ, callback e contexto opaco. Agendamentos repetidos sao
