@@ -121,8 +121,8 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   e a otimizacao foi transferida para K5/v1.0.0. R4/SYNC3 e a `kworker` nao
   foram iniciadas. A SYNC2 esta implementada sobre as filas FIFO da R3, com
   IPC e sockets bloqueantes e diagnosticos proprios. A matriz QEMU padrao e a
-  correcao do cancelamento F11 e o perfil USB HID foram aprovados; a etapa
-  permanece aberta para os perfis sem NIC e multi-NIC.
+  correcao do cancelamento F11 e os perfis USB HID e sem NIC foram aprovados;
+  a etapa permanece aberta somente para o perfil multi-NIC.
 
 ## K4 validada
 

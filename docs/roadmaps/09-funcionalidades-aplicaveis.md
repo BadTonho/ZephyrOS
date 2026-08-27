@@ -171,8 +171,8 @@ Shell.
 A SYNC2 do Roadmap 12 preserva esse contrato e o amplia com filas FIFO,
 registro geracional, IPC e sockets bloqueantes. Essa ampliacao esta
 implementada e aprovada no QEMU padrao, mas permanece pendente dos perfis
-complementares sem NIC e multi-NIC; o perfil USB HID tambem foi aprovado. Ela
-nao reabre a validacao historica da R3 nem conclui R4.
+complementares; USB HID e sem NIC foram aprovados, restando somente multi-NIC.
+Ela nao reabre a validacao historica da R3 nem conclui R4.
 
 ### Critério de saída
 
