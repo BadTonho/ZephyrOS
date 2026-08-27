@@ -44,6 +44,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `health` | `[summary|check]` | Mostra o relatorio completo, resumo compacto ou apenas estados nao-READY. |
 | `log` | `[status|tail [1-16]|clear|level|check]` | Consulta, limpa e testa o ring de logs. |
 | `log level` | `console|buffer <error|warn|info|debug>` | Altera os níveis independentes, mantendo o buffer tão detalhado quanto o console. |
+| `irqstat` | `[status|list|check]` | Resume a fila de Bottom-Half, lista IRQs PIC ativas ou executa o autoteste privado. |
 | `timer` | `[status|list|check]` | Inspeciona ocupação, prazos e contadores ou executa o autoteste privado. |
 | `clock` | `[status|check]` | Inspeciona RTC/UTC ancorado no PIT e executa conversoes, calendario, rollover e invariantes. |
 | `tls` | `[status|check]` | Inspeciona TLS 1.2/BearSSL, RDRAND, CA, SAN, validade e pin SPKI. |

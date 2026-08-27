@@ -259,7 +259,8 @@ int ethernet_attach_interface(const ethernet_interface_t* interface) {
     }
     if (!interface || !interface->initialized ||
         !interface->driver_context || !interface->get_driver_status ||
-        !interface->rx_pending || !interface->receive_frame ||
+        !interface->service_pending || !interface->rx_pending ||
+        !interface->receive_frame ||
         !interface->send_frame) {
         LOG_ERROR("NET", "Interface invalida para camada Ethernet");
         return interface ? ERR_INVALID : ERR_NULL;
@@ -336,6 +337,8 @@ static int ethernet_poll_slot(ethernet_slot_t* slot,
     int result;
 
     *out_received = 0;
+    result = slot->interface.service_pending(slot->interface.driver_context);
+    if (result != OK) goto failed;
     result = slot->interface.rx_pending(
         slot->interface.driver_context, &pending);
     if (result != OK) goto failed;

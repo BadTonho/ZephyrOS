@@ -134,6 +134,15 @@ static int rtl8811cu_get_driver_status(
     return OK;
 }
 
+static int rtl8811cu_service_pending(void* driver_context) {
+    (void)driver_context;
+    if (!rtl8811cu_initialized) {
+        LOG_ERROR("RTL8811CU", "Servico antes da inicializacao");
+        return ERR_STATE;
+    }
+    return OK;
+}
+
 static int rtl8811cu_rx_pending(void* driver_context, uint8_t* out_pending) {
     (void)driver_context;
     if (!out_pending) {
@@ -199,6 +208,7 @@ static void rtl8811cu_prepare_interface(ethernet_interface_t* out_interface) {
     if (!out_interface) return;
     out_interface->driver_context = 0;
     out_interface->get_driver_status = rtl8811cu_get_driver_status;
+    out_interface->service_pending = rtl8811cu_service_pending;
     out_interface->rx_pending = rtl8811cu_rx_pending;
     out_interface->receive_frame = rtl8811cu_receive_frame;
     out_interface->send_frame = rtl8811cu_send_frame;

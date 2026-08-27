@@ -355,6 +355,8 @@ static void cmd_help(void) {
                 0x07);
     video_print("  acpi status - Mostra tabelas e energia ACPI observadas\n", 0x07);
     video_print("  power status - Mostra capacidades reais de energia\n", 0x07);
+    video_print("  irqstat [status|list|check] - Inspeciona IRQs e Bottom-Halves\n",
+                0x07);
     video_print("  kmetrics - Mostra linha-base de metricas do kernel\n", 0x07);
     video_print("  memcheck - Valida heap, PMM e diretorios de usuario\n", 0x07);
     video_print("  schedcheck - Valida invariantes do scheduler\n", 0x07);

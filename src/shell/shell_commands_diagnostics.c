@@ -13,6 +13,7 @@
 #include "core/wait.h"
 #include "process/process.h"
 #include "drivers/ata.h"
+#include "drivers/idt.h"
 #include "drivers/speaker.h"
 #include "process/thread.h"
 #include "apps/taskmanager.h"
@@ -537,6 +538,10 @@ static void cmd_health_print_usb_hid(void) {
         shell_command_print_num(deferred_status.queued);
         video_print("/", 0x08);
         shell_command_print_num(deferred_status.capacity);
+        video_print(" rejeitados=", 0x08);
+        shell_command_print_num(deferred_status.rejected);
+        video_print(" contexto=", 0x08);
+        shell_command_print_num(deferred_status.context_errors);
     }
     video_print("\n", 0x07);
 }
@@ -1209,6 +1214,30 @@ static void cmd_health_check_wifi(int* issue_count) {
     }
 }
 
+static void cmd_health_check_irq(int* issue_count) {
+    irq_deferred_status_t status;
+    int result;
+
+    if (!issue_count) return;
+    result = irq_deferred_get_status(&status);
+    if (result != OK || irq_deferred_validate_state() != OK ||
+        idt_validate_irq_state() != OK) {
+        cmd_health_check_print_query_failure("IRQ/Bottom-Half",
+                                             result == OK ? ERR_STATE : result,
+                                             issue_count);
+        return;
+    }
+    if (status.context_errors) {
+        cmd_health_check_print_named_state(
+            "IRQ/Bottom-Half", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
+            "despacho em contexto invalido", issue_count);
+    } else if (status.rejected) {
+        cmd_health_check_print_named_state(
+            "IRQ/Bottom-Half", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
+            "fila atingiu capacidade", issue_count);
+    }
+}
+
 static void cmd_health_check(void) {
     int issue_count = 0;
 
@@ -1220,6 +1249,7 @@ static void cmd_health_check(void) {
     cmd_health_check_clock(&issue_count);
     cmd_health_check_tls(&issue_count);
     cmd_health_check_kernel(&issue_count);
+    cmd_health_check_irq(&issue_count);
     cmd_health_check_usb_hid(&issue_count);
     cmd_health_check_wifi(&issue_count);
     if (!issue_count) {
@@ -1512,6 +1542,124 @@ static void cmd_log(const char* arguments) {
         return;
     }
     cmd_log_invalid();
+}
+
+static void cmd_irqstat_usage(void) {
+    video_print("Uso: irqstat [status|list|check]\n", 0x0E);
+}
+
+static void cmd_irqstat_status(void) {
+    irq_deferred_status_t status;
+
+    if (irq_deferred_get_status(&status) != OK) {
+        video_print("Erro: fila Bottom-Half indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("Bottom-Half: fila=", 0x0B);
+    shell_command_print_num(status.queued);
+    video_print("/", 0x07);
+    shell_command_print_num(status.capacity);
+    video_print(" executando=", 0x07);
+    shell_command_print_num(status.running);
+    video_print(" pico=", 0x07);
+    shell_command_print_num(status.peak_queued);
+    video_print("\nAgendados=", 0x07);
+    shell_command_print_num(status.scheduled);
+    video_print(" executados=", 0x07);
+    shell_command_print_num(status.dispatched);
+    video_print(" coalescidos=", 0x07);
+    shell_command_print_num(status.coalesced);
+    video_print(" reexecucoes=", 0x07);
+    shell_command_print_num(status.reruns);
+    video_print("\nCancelados=", 0x07);
+    shell_command_print_num(status.cancelled);
+    video_print(" rejeitados=", status.rejected ? 0x0E : 0x07);
+    shell_command_print_num(status.rejected);
+    video_print(" contexto_invalido=", status.context_errors ? 0x0C : 0x07);
+    shell_command_print_num(status.context_errors);
+    video_print("\nDuracao Top-Half: N/D (RDTSC/PMU adiados)\n", 0x08);
+}
+
+static void cmd_irqstat_list(void) {
+    video_print("IRQs PIC ativas:\n", 0x0B);
+    for (uint8_t irq = 0U; irq < IDT_IRQ_LINE_COUNT; irq++) {
+        idt_irq_status_t idt_status;
+        irq_deferred_irq_status_t deferred_status;
+
+        if (idt_get_irq_status(irq, &idt_status) != OK ||
+            irq_deferred_get_irq_status(irq, &deferred_status) != OK) {
+            video_print("Erro ao consultar linha IRQ.\n", 0x0C);
+            return;
+        }
+        if (!idt_status.registered_handlers && !idt_status.occurrences &&
+            !deferred_status.scheduled && !deferred_status.rejected) {
+            continue;
+        }
+        video_print("  IRQ", 0x07);
+        shell_command_print_num(irq);
+        video_print(" ocorrencias=", 0x08);
+        shell_command_print_num(idt_status.occurrences);
+        video_print(" handlers=", 0x08);
+        shell_command_print_num(idt_status.registered_handlers);
+        video_print(" BH=", 0x08);
+        shell_command_print_num(deferred_status.dispatched);
+        video_print("/", 0x08);
+        shell_command_print_num(deferred_status.scheduled);
+        video_print(" coalescidos=", 0x08);
+        shell_command_print_num(deferred_status.coalesced);
+        video_print(" rejeitados=", deferred_status.rejected ? 0x0E : 0x08);
+        shell_command_print_num(deferred_status.rejected);
+        video_print("\n", 0x07);
+    }
+}
+
+static void cmd_irqstat_print_test(const char* name, uint8_t passed) {
+    video_print("  ", 0x07);
+    video_print(name, 0x07);
+    video_print(": ", 0x07);
+    video_print(passed ? "OK\n" : "ERRO\n", passed ? 0x0A : 0x0C);
+}
+
+static void cmd_irqstat_check(void) {
+    irq_deferred_self_test_result_t test;
+    int result = irq_deferred_self_test(&test);
+
+    if (idt_validate_irq_state() != OK ||
+        irq_deferred_validate_state() != OK) {
+        result = ERR_STATE;
+        test.invariants = 0U;
+    }
+    video_print("Autoteste de Bottom-Half (fila privada):\n", 0x0B);
+    cmd_irqstat_print_test("ciclo", test.lifecycle);
+    cmd_irqstat_print_test("coalescencia", test.coalescing);
+    cmd_irqstat_print_test("reexecucao", test.rerun);
+    cmd_irqstat_print_test("cancelamento", test.cancellation);
+    cmd_irqstat_print_test("capacidade", test.capacity);
+    cmd_irqstat_print_test("atribuicao por IRQ", test.attribution);
+    cmd_irqstat_print_test("interrupcoes habilitadas",
+                           test.interrupt_context);
+    cmd_irqstat_print_test("invariantes", test.invariants);
+    video_print("Resultado: ", 0x0B);
+    video_print(result == OK ? "OK\n" : "ERRO\n",
+                result == OK ? 0x0A : 0x0C);
+}
+
+static void cmd_irqstat(const char* arguments) {
+    if (shell_command_args_equal(arguments, "") ||
+        shell_command_args_equal(arguments, "status")) {
+        cmd_irqstat_status();
+        return;
+    }
+    if (shell_command_args_equal(arguments, "list")) {
+        cmd_irqstat_list();
+        return;
+    }
+    if (shell_command_args_equal(arguments, "check")) {
+        cmd_irqstat_check();
+        return;
+    }
+    LOG_WARN_CODE("SHELL", ERR_INVALID, "Argumentos invalidos para irqstat");
+    cmd_irqstat_usage();
 }
 
 static void cmd_timer_usage(void) {
@@ -3680,6 +3828,7 @@ void shell_diagnostics_print_usb_fixture_report(void) {
 
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_health, cmd_health)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_log, cmd_log)
+SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_irqstat, cmd_irqstat)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_timer, cmd_timer)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_clock, cmd_clock)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_tls, cmd_tls)

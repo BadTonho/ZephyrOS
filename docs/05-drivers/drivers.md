@@ -87,7 +87,9 @@ o vetor. `idt_register_shared_irq_handler(irq_line, handler)` mantem, em
 paralelo, ate quatro handlers por linha IRQ legada. O dispatcher chama
 primeiro o handler exclusivo, depois todos os compartilhados e envia um unico
 EOI ao PIC. E1000 e RTL8139 usam essa tabela e cada handler percorre as suas
-instancias associadas a linha.
+instancias associadas a linha. `idt_get_irq_status()` fornece snapshot
+somente-leitura das ocorrencias e da quantidade total de handlers por linha;
+`idt_validate_irq_state()` verifica os limites da tabela compartilhada.
 
 ---
 
@@ -139,7 +141,7 @@ Lê scancodes da porta `0x60` e converte para ASCII.
 ### Fluxo
 
 ```
-Tecla → IRQ1 → ring buffer → processo System → IPC → processo em foco
+Tecla → IRQ1 → bytes brutos → Bottom-Half → input core → processo em foco
 ```
 
 ### Scancode Table
@@ -171,6 +173,10 @@ aparecem em `kmetrics` e permitem separar atraso de entrada de custo de
 renderizacao sem alterar o despacho por IPC. A fila fisica comporta 255
 eventos e o processo System encaminha lotes de ate 16; o Shell tambem consome
 ate 16 eventos por rodada, abaixo da capacidade util de 31 mensagens IPC.
+Na SYNC1, o Top-Half da IRQ1 apenas le a porta e preserva o byte bruto. A
+montagem de prefixos e a publicacao ocorrem no processo System; a chamada
+normal de `keyboard_process_events()` tambem drena os bytes como fallback se a
+fila diferida estiver cheia.
 
 ---
 
@@ -197,7 +203,7 @@ driver indisponivel e nao bloqueiam o restante da inicializacao.
 ### Fluxo de Dados
 
 ```
-Mouse move/clica → IRQ12 → ring buffer → escala/remapeamento → callback
+Mouse move/clica → IRQ12 → bytes brutos → Bottom-Half → input core → callback
 ```
 
 ### API
@@ -227,6 +233,11 @@ direito como principal, esquerda e direita sao trocados antes do callback;
 `mouse_get_buttons()` e `mouse_event_t` continuam expondo a mascara efetiva.
 `mouse_status_t` acrescenta a mascara bruta, disponibilidade, configuracao,
 ultimo erro e total de pacotes descartados para diagnostico.
+
+O Top-Half da IRQ12 somente le o byte auxiliar e agenda trabalho coalescido.
+O Bottom-Half monta o pacote completo antes de publicar movimento, botoes e
+roda, preservando as transicoes. `mouse_process_events()` conserva a drenagem
+normal como fallback para rejeicao da fila diferida.
 
 A aceleracao usa somente inteiros: movimento bruto abaixo de 4 conserva `1x`,
 entre 4 e 7 usa `1,5x` e a partir de 8 usa `2x`. A velocidade e aplicada depois
@@ -496,7 +507,9 @@ Todo acesso e limitado a LBA28.
 
 As IRQs 14 e 15 sao registradas para reconhecer e limpar o status dos dois
 canais. A transferencia PIO permanece sincronizada por polling com limites e
-tentativas finitas; ela nao promete I/O assincrono nem bloqueio de thread.
+tentativas finitas; ela nao promete I/O assincrono nem bloqueio de thread. A
+SYNC1 nao cria um Bottom-Half artificial para ATA; a fila assincrona pertence
+a BLK1/R6.
 
 ---
 
@@ -753,14 +766,14 @@ int e1000_init(const pci_device_t* pci, const char* interface_id,
 
 Cada instancia possui BAR0 MMIO de 32 bits, IRQ, MAC RAL/RAH, filas DMA de
 oito descritores RX/TX, buffers e contadores proprios. O resultado e uma
-`ethernet_interface_t` com contexto opaco e callbacks de status, RX, TX e
-polling; nao existe mais busca interna pelo primeiro `8086:100E` nem estado
-singleton.
+`ethernet_interface_t` com contexto opaco e callbacks de status, servico de
+causas pendentes, RX e TX; nao existe mais busca interna pelo primeiro
+`8086:100E` nem estado singleton.
 
-A IRQ compartilhada apenas reconhece, contabiliza e marca RX. A copia dos
-descritores para a fila estatica e a execucao dos protocolos ocorrem no
-polling normal. Ponteiros nulos, instancia inativa, frame invalido, falta de
-memoria e timeout retornam erro controlado e nao desativam outras instancias.
+A IRQ compartilhada le e limpa ICR, acumula as causas e agenda o Bottom-Half.
+Link, erros e descritores RX sao tratados no processo System. O callback
+`service_pending` executado pelo polling Ethernet preserva a recuperacao se o
+agendamento for rejeitado. Os protocolos continuam fora da IRQ.
 
 ## RTL8139 (`rtl8139.c`)
 
@@ -774,10 +787,11 @@ int rtl8139_init(const pci_device_t* pci, const char* interface_id,
 ```
 
 Reset, MAC, RBSTART, TSAD0-3, RCR/TCR e mascaras de interrupcao sao
-configurados por instancia. A IRQ reconhece ISR, contabiliza eventos e marca
-RX/overflow; parsing do cabecalho RX, retirada do FCS, avanco de CAPR e
-protocolos permanecem fora da IRQ. Erro de ring reinicia somente o receptor
-da instancia afetada.
+configurados por instancia. A IRQ le e limpa ISR, acumula causas e agenda o
+Bottom-Half; RX, link, erros e recuperacao do receptor ocorrem no processo
+System. `service_pending` preserva as causas no polling quando o agendamento
+for rejeitado. Parsing do cabecalho RX, retirada do FCS, avanco de CAPR e
+protocolos permanecem fora da IRQ.
 
 O desenho segue o
 [datasheet RTL8139C(L)+](https://people.freebsd.org/~wpaul/RealTek/spec-8139cp%28160%29.pdf)
@@ -899,11 +913,18 @@ metricas de ocupacao, descartes e ultimo erro, e encaminha eventos em lotes no
 contexto normal do processo System. O Shell, IPC, Window Manager e GUI
 continuam recebendo os scancodes Set 1 e `mouse_event_t` ja existentes.
 
-`src/core/irq_deferred.c` recebe somente trabalhos estaticos com callback e
-contexto opaco. O handler de IRQ nao executa o callback: ele reconhece a
-interrupcao, e `irq_deferred_dispatch()` executa conclusoes em contexto normal.
-Cancelamento marca o trabalho e impede que uma conclusao antiga seja
-reutilizada depois que o dispositivo desapareceu.
+`src/core/irq_deferred.c` recebe somente trabalhos estaticos inicializados com
+proprietario, linha IRQ, callback e contexto opaco. Agendamentos repetidos sao
+coalescidos; um evento durante o callback solicita uma reexecucao. A fila
+publica snapshots globais e por IRQ de agendamentos, execucoes, coalescencia,
+cancelamentos, rejeicoes e pico.
+
+O handler de IRQ nao executa o callback: ele reconhece o dispositivo, e o
+processo System chama `irq_deferred_dispatch()` com interrupcoes habilitadas
+no inicio do ciclo e novamente depois do polling USB. O cancelamento remove
+trabalho pendente da fila ou impede reexecucao, permitindo reutilizacao segura
+do proprietario. Capacidade, atribuicao, contexto e invariantes sao exercitados
+por fixture privada em `irqstat check`; duracao permanece `N/D`.
 
 ---
 

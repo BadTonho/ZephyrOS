@@ -6,7 +6,7 @@ Implementar padrões modernos de concorrência, sincronização e tratamento ass
 
 ## Resumo de progresso
 
-- [ ] SYNC1 - Divisão de Interrupções: Top-Half (ISR rígida) e Bottom-Half (Deferred Work).
+- [ ] SYNC1 - Divisão de Interrupções: implementação concluída; matriz QEMU pendente.
 - [ ] SYNC2 - Primitivas de Espera sem Espera Ocupada (Wait Queues / `wait_queue_t`).
 - [ ] SYNC3 - Filas de Trabalho do Kernel (Kernel Workqueues).
 - [ ] SYNC4 - Sistema de Sinais Assíncronos para Processos e Shell (`SIGINT`, `SIGTERM`, `SIGSEGV`).
@@ -48,15 +48,34 @@ Implementar padrões modernos de concorrência, sincronização e tratamento ass
 
 ### Implementação
 
-- [ ] Definir a fila circular de eventos de hardware pendentes (`irq_deferred_queue_t`).
-- [ ] Refatorar os drivers de rede (E1000/RTL8139), disco (ATA) e mouse/teclado para registrar callbacks de Bottom-Half.
-- [ ] Corrigir o backpressure observado apos jobs cooperativos longos, como o
+- [x] Consolidar `irq_deferred` como fila estática limitada, inicializada antes
+  dos drivers de IRQ e drenada pelo processo System com interrupções
+  habilitadas.
+- [x] Identificar trabalhos por proprietário e IRQ, coalescer agendamentos,
+  solicitar reexecução durante callback e contabilizar agendamento, execução,
+  cancelamento, rejeição e pico global e por linha.
+- [x] Contabilizar ocorrências e handlers registrados nas 16 linhas da PIC;
+  duração permanece `N/D`, sem RDTSC ou PMU nesta etapa.
+- [x] Refatorar teclado e mouse PS/2: a IRQ armazena bytes brutos, e o
+  Bottom-Half monta scancodes/pacotes e publica no `input core`.
+- [x] Preservar `keyboard_process_events()` e `mouse_process_events()` como
+  recuperação em contexto normal quando o agendamento diferido for rejeitado.
+- [x] Refatorar E1000 e RTL8139: o Top-Half reconhece a causa e acumula bits; o
+  Bottom-Half atualiza link/erros, drena RX e recupera o receptor. O polling
+  Ethernet chama `service_pending` como fallback.
+- [x] Manter ATA PIO síncrono com Top-Half mínimo, limitado à leitura de status
+  nas IRQ14/IRQ15; a fila assíncrona de blocos continua pertencendo à BLK1/R6.
+- [x] Corrigir o backpressure observado apos jobs cooperativos longos, como o
   `regcheck full`: o despacho deve drenar eventos de entrada continuamente,
   coalescer movimentos do mouse sem descartar transicoes de botoes e preservar
   cliques/teclas mesmo quando a saida do Shell estiver intensa. O overflow deve
   permanecer contabilizado e ter log limitado, sem inundar o console.
-- [ ] No fim do ciclo de cada IRQ, acionar a verificação de pendências diferidas (*SoftIRQ dispatch*) antes de devolver o controle ao código do usuário/kernel.
-- [ ] Executar o processamento pesado (montagem de pacotes TCP/IP, decodificação de scancodes, despacho de blocos) com interrupções de hardware habilitadas (`sti`).
+- [x] Priorizar uma passagem diferida no início do ciclo System e executar uma
+  segunda passagem limitada depois do polling USB.
+
+O EOI e o reconhecimento do dispositivo permanecem no Top-Half. Nenhum
+callback diferido roda antes do `iret` ou na pilha da IRQ. A SYNC1 não cria a
+`kworker` prevista para SYNC3 e não altera o bootloader.
 
 ### Critério de saída
 
@@ -67,7 +86,14 @@ não recuperado.
 
 ### Comandos Shell / Diagnóstico
 
-- `irqstat`: exibe o número de ocorrências de cada IRQ, tempo médio gasto no Top-Half e contagem de Bottom-Halfs executados.
+- `irqstat` ou `irqstat status`: resume fila, métricas e duração `N/D`.
+- `irqstat list`: lista IRQ0-IRQ15 ativas, ocorrências, handlers e Bottom-Halfs.
+- `irqstat check`: valida ciclo, coalescência, reexecução, cancelamento,
+  capacidade, atribuição por IRQ, contexto e invariantes em fixture privada.
+
+`health check` apresenta rejeições/contexto inválido e `regcheck full` inclui
+as invariantes somente-leitura. A SYNC1 só será marcada como concluída depois
+dos gates e da matriz funcional executados pelo usuário.
 
 ---
 

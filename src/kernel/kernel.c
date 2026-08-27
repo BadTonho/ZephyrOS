@@ -409,11 +409,18 @@ static void kernel_dispatch_deferred_work(void) {
     }
 }
 
+static void kernel_dispatch_input_work(void) {
+    kernel_dispatch_deferred_work();
+    keyboard_process_events();
+    mouse_process_events();
+}
+
 void system_process_main(void) {
     while (1) {
         uint32_t network_processed = 0;
         uint32_t index_steps = 0;
 
+        kernel_dispatch_input_work();
         if (kernel_network_poll_enabled &&
             network_manager_poll(&network_processed) != OK) {
             kernel_network_poll_enabled = 0;
@@ -422,9 +429,7 @@ void system_process_main(void) {
         }
         if (network_processed > 0U) kernel_wake_shell_for_event();
         kernel_poll_usb();
-        kernel_dispatch_deferred_work();
-        keyboard_process_events();
-        mouse_process_events();
+        kernel_dispatch_input_work();
         if (kernel_dispatch_timers() > 0U) kernel_wake_shell_for_event();
         if (file_index_poll(1U, &index_steps) != OK || index_steps > 0U) {
             kernel_wake_shell_for_event();
@@ -589,6 +594,15 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     video_print("[OK] VGA Text Mode inicializado\n", 0x07);
     video_print("[OK] Panic handler pronto\n", 0x07);
 
+    video_print("[..] Preparando Bottom-Halves...\n", 0x08);
+    if (irq_deferred_init() != OK) {
+        kernel_deferred_enabled = 0;
+        LOG_ERROR("KERNEL", "Fila de Bottom-Half indisponivel");
+        video_print("[!!] Bottom-Halves em fallback por polling\n", 0x0E);
+    } else {
+        video_print("[OK] Fila de Bottom-Half pronta\n", 0x07);
+    }
+
     video_print("[..] Carregando interrupcoes...\n", 0x08);
     idt_init();
     video_print("[OK] IDT configurada\n", 0x07);
@@ -751,11 +765,6 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     video_print("[..] Iniciando threads...\n", 0x08);
     thread_init();
     video_print("[OK] Thread scheduler pronto\n", 0x07);
-    if (irq_deferred_init() != OK) {
-        kernel_deferred_enabled = 0;
-        LOG_ERROR("KERNEL", "Fila de conclusoes diferidas indisponivel");
-        video_print("[!!] Conclusoes USB diferidas indisponiveis\n", 0x0E);
-    }
 
     video_print("[..] Detectando disco...\n", 0x08);
     int ata_result = ata_init();
@@ -1170,6 +1179,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
             uint32_t network_processed = 0;
             uint32_t index_steps = 0;
 
+            kernel_dispatch_input_work();
             if (kernel_network_poll_enabled &&
                 network_manager_poll(&network_processed) != OK) {
                 kernel_network_poll_enabled = 0;
@@ -1179,9 +1189,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
             }
             if (network_processed > 0U) kernel_wake_shell_for_event();
             kernel_poll_usb();
-            kernel_dispatch_deferred_work();
-            keyboard_process_events();
-            mouse_process_events();
+            kernel_dispatch_input_work();
             if (kernel_dispatch_timers() > 0U) kernel_wake_shell_for_event();
             if (file_index_poll(1U, &index_steps) != OK || index_steps > 0U) {
                 kernel_wake_shell_for_event();
