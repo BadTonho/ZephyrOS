@@ -622,3 +622,27 @@ Se faltar qualquer valor necessário, o agente DEVE primeiro obtê-lo da saída
 mais recente do sistema ou pedir ao usuário essa saída. Enquanto o valor não
 estiver disponível, deve fornecer apenas a instrução para obtê-lo, não o
 comando final incompleto.
+
+---
+
+## Regra #20: Dividas Tecnicas da v1.0.0
+
+Toda limitacao conhecida aceita para permitir o encerramento de uma etapa e
+adiada para a v1.0.0 DEVE ser registrada no documento canonico
+`docs/qualidade/dividas-tecnicas-v1.0.0.md` antes de marcar a etapa como
+concluida.
+
+Cada divida DEVE usar um identificador imutavel e sequencial `DT100-NNN` e
+registrar estado, origem, data de aceitacao, impacto, evidencia, roadmap
+responsavel, versao limite e criterio reproduzivel de quitacao. O roadmap de
+origem e o roadmap responsavel DEVEM referenciar o mesmo identificador.
+
+Uma divida NUNCA deve ser removida, ocultada ou marcada como `QUITADA` apenas
+porque o sintoma nao apareceu em uma execucao isolada. A quitacao exige o
+criterio de saida atendido e a validacao final registrada, com horario exato,
+em `docs/qualidade/registro-validacoes.md`. Dividas quitadas permanecem no
+documento como historico.
+
+Funcionalidades ainda planejadas, ideias futuras e itens fora de escopo nao
+devem ser classificados como divida tecnica sem aceitacao explicita do
+usuario.

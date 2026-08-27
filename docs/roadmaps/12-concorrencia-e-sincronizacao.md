@@ -8,7 +8,8 @@ Implementar padrões modernos de concorrência, sincronização e tratamento ass
 
 - [x] SYNC1 - Divisão de Interrupções: concluída com dívida técnica aceita;
   otimização de `regcheck full` e eliminação do overflow sob estresse adiadas
-  para a v1.0.0.
+  para a v1.0.0 em
+  [`DT100-001`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2).
 - [ ] SYNC2 - Primitivas de Espera sem Espera Ocupada (Wait Queues / `wait_queue_t`).
 - [ ] SYNC3 - Filas de Trabalho do Kernel (Kernel Workqueues).
 - [ ] SYNC4 - Sistema de Sinais Assíncronos para Processos e Shell (`SIGINT`, `SIGTERM`, `SIGSEGV`).
@@ -85,6 +86,9 @@ callback diferido roda antes do `iret` ou na pilha da IRQ. A SYNC1 não cria a
 
 ### Dívida técnica aceita até a v1.0.0
 
+Identificador canônico:
+[`DT100-001`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2).
+
 `irqstat check` e `regcheck full` terminam em `OK`, os trabalhos de IRQ12 são
 executados sem rejeições e o mouse recupera o funcionamento ao fim do job.
 Entretanto, a carga manual intensa durante `regcheck full` ainda pode saturar
@@ -95,14 +99,14 @@ Bottom-Halfs, 2.548 coalescências, zero rejeições e 22.537 descartes.
 Por decisão do usuario, a investigação de desempenho fica suspensa até a
 v1.0.0 e passa ao Roadmap 03. A perda observada foi aceita explicitamente como
 dívida técnica e não reabre a SYNC1; a etapa K5 passa a ser responsável por
-eliminá-la antes do fechamento da v1.0.0.
+eliminar `DT100-001` antes do fechamento da v1.0.0.
 
 ### Critério de saída desta entrega
 
 Top-Halves permanecem mínimos, callbacks diferidos executam somente no processo
 System, filas e diagnósticos estruturais terminam em `OK`, e o sistema recupera
 o mouse depois de `regcheck full`. O requisito de zero descarte sob estresse
-manual extremo foi transferido, como dívida aceita, para K5/v1.0.0.
+manual extremo foi transferido, como `DT100-001`, para K5/v1.0.0.
 
 ### Comandos Shell / Diagnóstico
 
