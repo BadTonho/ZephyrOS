@@ -69,7 +69,9 @@ Implementar padrões modernos de concorrência, sincronização e tratamento ass
   `regcheck full`: o despacho deve drenar eventos de entrada continuamente,
   coalescer movimentos do mouse sem descartar transicoes de botoes e preservar
   cliques/teclas mesmo quando a saida do Shell estiver intensa. O overflow deve
-  permanecer contabilizado e ter log limitado, sem inundar o console.
+  permanecer contabilizado e ter log limitado, sem inundar o console. A
+  preparacao do `regcheck full` deve iniciar o job antes das verificacoes e
+  ceder CPU entre as fases de inventario e validacao.
 - [x] Priorizar uma passagem diferida no início do ciclo System e executar uma
   segunda passagem limitada depois do polling USB.
 

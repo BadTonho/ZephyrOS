@@ -1,6 +1,7 @@
 #include "drivers/pci.h"
 #include "core/errors.h"
 #include "core/log.h"
+#include "process/process.h"
 
 static pci_device_t devices[PCI_MAX_DEVICES];
 static uint8_t device_count = 0;
@@ -13,6 +14,7 @@ static int pci_scan_result = ERR_STATE;
 #define PCI_BUS_COUNT 256U
 #define PCI_DEVICES_PER_BUS 32U
 #define PCI_FUNCTIONS_PER_DEVICE 8U
+#define PCI_COOPERATIVE_BUS_INTERVAL 8U
 #define PCI_COMMAND_IO_SPACE 0x01U
 #define PCI_COMMAND_MEMORY_SPACE 0x02U
 #define PCI_COMMAND_BUS_MASTER 0x04U
@@ -117,6 +119,9 @@ int pci_init(void) {
         for (uint8_t device = 0; device < PCI_DEVICES_PER_BUS; device++) {
             result = pci_scan_device((uint8_t)bus, device);
             if (result != OK) goto done;
+        }
+        if ((bus + 1U) % PCI_COOPERATIVE_BUS_INTERVAL == 0U) {
+            process_yield();
         }
     }
 

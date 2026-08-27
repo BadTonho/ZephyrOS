@@ -237,7 +237,9 @@ ultimo erro e total de pacotes descartados para diagnostico.
 O Top-Half da IRQ12 somente le o byte auxiliar e agenda trabalho coalescido.
 O Bottom-Half monta o pacote completo antes de publicar movimento, botoes e
 roda, preservando as transicoes. `mouse_process_events()` conserva a drenagem
-normal como fallback para rejeicao da fila diferida.
+normal como fallback para rejeicao da fila diferida. Se a fila bruta saturar,
+o driver registra a lacuna, reinicia a montagem depois dela e procura o
+proximo cabecalho PS/2 plausivel, evitando manter o ponteiro desalinhado.
 
 A aceleracao usa somente inteiros: movimento bruto abaixo de 4 conserva `1x`,
 entre 4 e 7 usa `1,5x` e a partir de 8 usa `2x`. A velocidade e aplicada depois
@@ -744,6 +746,8 @@ ja lidas e permite que o inventario de dispositivos continue de forma parcial.
 Cada funcao PCI e lida uma unica vez. `pci_get_device_count()` e
 `pci_get_device_at()` devolvem copias seguras para consumidores; um novo scan
 somente consulta a configuracao PCI, sem reinicializar ATA, AC97 ou PS/2.
+Durante rescans em contexto de processo, a enumeracao cede CPU a cada oito
+barramentos; no bootstrap, a mesma chamada permanece efetivamente sincrona.
 
 `pci_enable_memory_and_bus_mastering()` habilita explicitamente os bits de
 Memory Space e Bus Master para um dispositivo ja enumerado e confirma a leitura

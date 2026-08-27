@@ -138,6 +138,12 @@ typedef enum {
 
 typedef enum {
     SHELL_REGCHECK_IDLE = 0,
+    SHELL_REGCHECK_PREPARE_FULL,
+    SHELL_REGCHECK_PREPARE_BASE,
+    SHELL_REGCHECK_PREPARE_MEMORY,
+    SHELL_REGCHECK_PREPARE_PACKAGES,
+    SHELL_REGCHECK_PREPARE_THREADS,
+    SHELL_REGCHECK_PREPARE_LOADER,
     SHELL_REGCHECK_WAIT_DEMO,
     SHELL_REGCHECK_WAIT_CANCEL
 } shell_regcheck_state_t;
@@ -293,6 +299,15 @@ static app_launch_info_t appcheck_launch_info;
 static shell_q2check_t shell_q2check;
 static shell_regcheck_t shell_regcheck;
 
+static void shell_regcheck_reset(void);
+static shell_job_step_result_t shell_regcheck_prepare_step(
+    shell_job_context_t* context);
+
+static int shell_regcheck_is_preparing(void) {
+    return shell_regcheck.state >= SHELL_REGCHECK_PREPARE_FULL &&
+           shell_regcheck.state <= SHELL_REGCHECK_PREPARE_LOADER;
+}
+
 static shell_job_step_result_t shell_checks_job_step(
     shell_job_context_t* context) {
     int active;
@@ -300,6 +315,12 @@ static shell_job_step_result_t shell_checks_job_step(
 
     if (!context) return SHELL_JOB_STEP_FAILED;
     if (context->cancel_requested) {
+        if (shell_regcheck_is_preparing()) {
+            shell_regcheck_reset();
+            shell_runtime_reset_input();
+            context->last_error = ERR_TIMEOUT;
+            return SHELL_JOB_STEP_CANCELLED;
+        }
         if (!shell_checks_cancel_started) {
             shell_checks_cancel_started = 1;
             shell_checks_cancel_requested = 1;
@@ -325,6 +346,9 @@ static shell_job_step_result_t shell_checks_job_step(
         if (active) return SHELL_JOB_STEP_PENDING;
         context->last_error = ERR_TIMEOUT;
         return SHELL_JOB_STEP_CANCELLED;
+    }
+    if (shell_regcheck_is_preparing()) {
+        return shell_regcheck_prepare_step(context);
     }
     active = shell_q2check.state != SHELL_Q2CHECK_IDLE ||
              shell_regcheck.state != SHELL_REGCHECK_IDLE ||
@@ -1546,6 +1570,84 @@ static void shell_regcheck_finish_after_ring3(void) {
     shell_regcheck_finish();
 }
 
+static void shell_regcheck_prepare_progress(shell_job_context_t* context,
+                                            const char* phase,
+                                            uint32_t progress) {
+    uint32_t total = shell_regcheck.full_mode ? 6U : 5U;
+
+    shell_job_set_phase(context, phase);
+    shell_job_set_progress(context, progress, total);
+}
+
+static shell_job_step_result_t shell_regcheck_prepare_pending(
+    shell_job_context_t* context) {
+    shell_job_set_next_wake(context, timer_get_ticks() + 1U);
+    return SHELL_JOB_STEP_PENDING;
+}
+
+static shell_job_step_result_t shell_regcheck_prepare_step(
+    shell_job_context_t* context) {
+    shell_memcheck_result_t memory;
+    uint32_t offset = shell_regcheck.full_mode ? 1U : 0U;
+    int result;
+
+    if (!context) return SHELL_JOB_STEP_FAILED;
+    if (shell_regcheck.state == SHELL_REGCHECK_PREPARE_FULL) {
+        shell_regcheck_prepare_progress(context, "dispositivos", 0U);
+        shell_regcheck_run_full_checks();
+        shell_regcheck.state = SHELL_REGCHECK_PREPARE_BASE;
+        shell_regcheck_prepare_progress(context, "dispositivos", 1U);
+        return shell_regcheck_prepare_pending(context);
+    }
+    if (shell_regcheck.state == SHELL_REGCHECK_PREPARE_BASE) {
+        shell_regcheck_prepare_progress(context, "invariantes", offset);
+        shell_regcheck.health_result = shell_regcheck_validate_health();
+        shell_regcheck.services_result = shell_regcheck_validate_services();
+        shell_regcheck.scheduler_result = shell_regcheck_validate_scheduler();
+        shell_regcheck.state = SHELL_REGCHECK_PREPARE_MEMORY;
+        return shell_regcheck_prepare_pending(context);
+    }
+    if (shell_regcheck.state == SHELL_REGCHECK_PREPARE_MEMORY) {
+        shell_regcheck_prepare_progress(context, "memoria", offset + 1U);
+        kmemset(&memory, 0, sizeof(memory));
+        shell_regcheck.memory_result = shell_diagnostics_run_memcheck(&memory);
+        shell_regcheck.state = SHELL_REGCHECK_PREPARE_PACKAGES;
+        return shell_regcheck_prepare_pending(context);
+    }
+    if (shell_regcheck.state == SHELL_REGCHECK_PREPARE_PACKAGES) {
+        shell_regcheck_prepare_progress(context, "pacotes", offset + 2U);
+        shell_regcheck.package_result = shell_regcheck_validate_packages();
+        shell_regcheck.state = SHELL_REGCHECK_PREPARE_THREADS;
+        return shell_regcheck_prepare_pending(context);
+    }
+    if (shell_regcheck.state == SHELL_REGCHECK_PREPARE_THREADS) {
+        shell_regcheck_prepare_progress(context, "threads", offset + 3U);
+        shell_regcheck.thread_result = thread_run_self_test();
+        shell_regcheck.processes_result = shell_regcheck_validate_processes();
+        shell_regcheck.cleanup_result = shell_regcheck_validate_cleanup();
+        if (shell_regcheck_has_failures()) {
+            shell_regcheck_finish();
+            return shell_regcheck_prepare_pending(context);
+        }
+        shell_regcheck.state = SHELL_REGCHECK_PREPARE_LOADER;
+        return shell_regcheck_prepare_pending(context);
+    }
+    if (shell_regcheck.state == SHELL_REGCHECK_PREPARE_LOADER) {
+        shell_regcheck_prepare_progress(context, "ring3", offset + 4U);
+        shell_regcheck.loader_started = 1;
+        result = shell_regcheck_start_image(SHELL_REGCHECK_WAIT_DEMO);
+        if (result == OK) return SHELL_JOB_STEP_PENDING;
+        shell_regcheck.loader_result = result;
+        shell_regcheck.processes_result = shell_regcheck_validate_processes();
+        shell_regcheck.cleanup_result = shell_regcheck_validate_cleanup();
+        shell_regcheck_finish();
+        return shell_regcheck_prepare_pending(context);
+    }
+    LOG_ERROR("SHELL", "RegCheck recebeu preparacao invalida");
+    context->last_error = ERR_STATE;
+    return SHELL_JOB_STEP_FAILED;
+}
+
 static void shell_regcheck_handle_loader_result(const app_loader_result_t* result) {
     int launch_result;
 
@@ -2013,9 +2115,7 @@ static void cmd_q2check(void) {
 
 static void cmd_regcheck(const char* args) {
     paging_user_stats_t paging;
-    shell_memcheck_result_t memory;
     int full_mode = shell_command_args_equal(args, "full");
-    int result;
 
     if (*args && !full_mode) {
         LOG_WARN("SHELL", "Uso invalido de regcheck");
@@ -2042,31 +2142,9 @@ static void cmd_regcheck(const char* args) {
     paging_get_user_stats(&paging);
     shell_regcheck.initial_user_directories = paging.active_directories;
     shell_regcheck.initial_user_pages = paging.active_pages;
-
-    if (shell_regcheck.full_mode) shell_regcheck_run_full_checks();
-    shell_regcheck.health_result = shell_regcheck_validate_health();
-    shell_regcheck.services_result = shell_regcheck_validate_services();
-    shell_regcheck.scheduler_result = shell_regcheck_validate_scheduler();
-    kmemset(&memory, 0, sizeof(memory));
-    shell_regcheck.memory_result = shell_diagnostics_run_memcheck(&memory);
-    shell_regcheck.package_result = shell_regcheck_validate_packages();
-    shell_regcheck.thread_result = thread_run_self_test();
-    shell_regcheck.processes_result = shell_regcheck_validate_processes();
-    shell_regcheck.cleanup_result = shell_regcheck_validate_cleanup();
-
-    if (shell_regcheck_has_failures()) {
-        shell_regcheck_finish();
-        return;
-    }
-
-    shell_regcheck.loader_started = 1;
-    result = shell_regcheck_start_image(SHELL_REGCHECK_WAIT_DEMO);
-    if (result == OK) return;
-
-    shell_regcheck.loader_result = result;
-    shell_regcheck.processes_result = shell_regcheck_validate_processes();
-    shell_regcheck.cleanup_result = shell_regcheck_validate_cleanup();
-    shell_regcheck_finish();
+    shell_regcheck.state = shell_regcheck.full_mode ?
+                           SHELL_REGCHECK_PREPARE_FULL :
+                           SHELL_REGCHECK_PREPARE_BASE;
 }
 
 void shell_checks_report_user_test_result(void) {
@@ -2235,6 +2313,11 @@ int shell_checks_start_job(const char* command) {
     keyboard_set_focus_cancel_filter(shell_checks_should_cancel_focused_user);
     if (shell_job_start(&shell_checks_job_definition, command) != OK) {
         LOG_WARN("SHELL", "Job de diagnostico nao foi registrado");
+        keyboard_set_focus_cancel_filter(0);
+        if (shell_regcheck_is_preparing()) {
+            shell_regcheck_reset();
+            shell_runtime_reset_input();
+        }
     } else {
         shell_checks_job_generation = shell_job_get_generation();
         app_loader_set_operation_generation(shell_checks_job_generation);
