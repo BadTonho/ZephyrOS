@@ -15,7 +15,8 @@
 #define MOUSE_RAW_QUEUE_SIZE 512U
 #define MOUSE_BOTTOM_HALF_MAX_EVENTS 8U
 #define MOUSE_BOTTOM_HALF_MAX_BYTES 32U
-#define MOUSE_EVENT_BATCH_BUDGET 8U
+#define MOUSE_EVENT_BATCH_BUDGET 32U
+#define MOUSE_COALESCED_DELTA_LIMIT 32767
 #define MOUSE_PACKET_STANDARD_SIZE 3
 #define MOUSE_PACKET_WHEEL_SIZE 4
 #define MOUSE_CMD_SET_DEFAULTS 0xF6
@@ -110,6 +111,18 @@ static int wheel_fallback_logged = 0;
 static void mouse_bottom_half(void* context);
 static uint32_t mouse_suspend_interrupts(void);
 static void mouse_restore_interrupts(uint32_t flags);
+
+static int32_t mouse_accumulate_delta(int32_t current, int32_t delta) {
+    int64_t total = (int64_t)current + (int64_t)delta;
+
+    if (total > MOUSE_COALESCED_DELTA_LIMIT) {
+        return MOUSE_COALESCED_DELTA_LIMIT;
+    }
+    if (total < -MOUSE_COALESCED_DELTA_LIMIT) {
+        return -MOUSE_COALESCED_DELTA_LIMIT;
+    }
+    return (int32_t)total;
+}
 
 static uint8_t inb(uint16_t port) {
     uint8_t result;
@@ -483,7 +496,7 @@ static void mouse_report_queue_overflow(void) {
 
     queue_overflow_logged = 1;
     last_error = ERR_OVERFLOW;
-    LOG_ERROR("MOUSE", "Fila de eventos do mouse cheia; pacotes descartados");
+    LOG_ERROR("MOUSE", "Pipeline de entrada do mouse saturado; pacotes descartados");
 }
 
 /* ========== Handler de interrupcao (IRQ12) ========== */
@@ -574,6 +587,17 @@ static void mouse_bottom_half(void* context) {
         if (result > 0) events++;
         bytes++;
     }
+    if (input_get_metrics(&metrics) == OK &&
+        metrics.pointer_queued < metrics.pointer_capacity) {
+        uint8_t raw_pending;
+
+        flags = mouse_suspend_interrupts();
+        raw_pending = mouse_raw_tail != mouse_raw_head;
+        mouse_restore_interrupts(flags);
+        if (raw_pending) {
+            (void)irq_deferred_schedule(&mouse_bottom_half_work);
+        }
+    }
 }
 
 /* ========== Inicializacao ========== */
@@ -597,10 +621,19 @@ static int mouse_enqueue_packet(const mouse_packet_t* value) {
 
     if (!value) return ERR_NULL;
     flags = mouse_suspend_interrupts();
+    if (value->wheel == 0 && queue_tail != queue_head) {
+        int last = queue_tail == 0 ? MOUSE_QUEUE_SIZE - 1 : queue_tail - 1;
+        mouse_packet_t* queued = &event_queue[last];
+
+        if (queued->wheel == 0 && queued->buttons == value->buttons) {
+            queued->dx = mouse_accumulate_delta(queued->dx, value->dx);
+            queued->dy = mouse_accumulate_delta(queued->dy, value->dy);
+            mouse_restore_interrupts(flags);
+            return OK;
+        }
+    }
     next_tail = (queue_tail + 1) % MOUSE_QUEUE_SIZE;
     if (next_tail == queue_head) {
-        dropped_packets++;
-        last_error = ERR_OVERFLOW;
         mouse_restore_interrupts(flags);
         return ERR_OVERFLOW;
     }

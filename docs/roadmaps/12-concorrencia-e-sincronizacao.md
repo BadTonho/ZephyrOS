@@ -71,7 +71,9 @@ Implementar padrões modernos de concorrência, sincronização e tratamento ass
   cliques/teclas mesmo quando a saida do Shell estiver intensa. O overflow deve
   permanecer contabilizado e ter log limitado, sem inundar o console. A
   preparacao do `regcheck full` deve iniciar o job antes das verificacoes e
-  ceder CPU entre as fases de inventario e validacao.
+  ceder CPU entre as fases de inventario e validacao. A vazao do consumidor
+  deve acompanhar o despacho intermediario; somente movimentos consecutivos
+  equivalentes podem ser acumulados, nunca roda ou transicoes de botoes.
 - [x] Priorizar uma passagem diferida no início do ciclo System e executar uma
   segunda passagem limitada depois do polling USB.
 

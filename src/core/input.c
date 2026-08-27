@@ -2,6 +2,8 @@
 #include "core/errors.h"
 #include "core/log.h"
 
+#define INPUT_POINTER_DELTA_LIMIT 32767
+
 typedef struct {
     input_key_event_t key_queue[INPUT_KEY_QUEUE_CAPACITY];
     input_pointer_event_t pointer_queue[INPUT_POINTER_QUEUE_CAPACITY];
@@ -46,6 +48,15 @@ static uint32_t input_pointer_count(void) {
     }
     return INPUT_POINTER_QUEUE_CAPACITY - input_service.pointer_tail +
            input_service.pointer_head;
+}
+
+static int32_t input_pointer_accumulate_delta(int32_t current,
+                                              int32_t delta) {
+    int64_t total = (int64_t)current + (int64_t)delta;
+
+    if (total > INPUT_POINTER_DELTA_LIMIT) return INPUT_POINTER_DELTA_LIMIT;
+    if (total < -INPUT_POINTER_DELTA_LIMIT) return -INPUT_POINTER_DELTA_LIMIT;
+    return (int32_t)total;
 }
 
 int input_init(void) {
@@ -141,6 +152,24 @@ int input_publish_pointer(const input_pointer_event_t* event) {
     if (!event) return ERR_NULL;
     if (!input_service.metrics.initialized) return ERR_STATE;
     flags = input_irq_save();
+    if (event->wheel == 0 &&
+        input_service.pointer_head != input_service.pointer_tail) {
+        uint32_t last = input_service.pointer_head == 0U ?
+                        INPUT_POINTER_QUEUE_CAPACITY - 1U :
+                        input_service.pointer_head - 1U;
+        input_pointer_event_t* queued = &input_service.pointer_queue[last];
+
+        if (queued->wheel == 0 && queued->buttons == event->buttons &&
+            queued->source == event->source) {
+            queued->dx = input_pointer_accumulate_delta(queued->dx,
+                                                        event->dx);
+            queued->dy = input_pointer_accumulate_delta(queued->dy,
+                                                        event->dy);
+            input_service.metrics.pointer_published++;
+            input_irq_restore(flags);
+            return OK;
+        }
+    }
     next = input_next(input_service.pointer_head,
                       INPUT_POINTER_QUEUE_CAPACITY);
     if (next == input_service.pointer_tail) {

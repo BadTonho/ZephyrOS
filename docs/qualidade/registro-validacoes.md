@@ -1375,3 +1375,26 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   também cede CPU entre subsistemas. O mouse passou a marcar lacunas da fila
   bruta, reiniciar a montagem depois delas e procurar o próximo cabeçalho PS/2
   plausível. A validação funcional permanece pendente do usuario.
+
+- SYNC1: terceira execução de `regcheck full` diagnosticada pelo usuario.
+  A operação iniciou mais rápido, terminou com `RegCheck: OK` e o mouse não
+  permaneceu preso, mas ainda houve travamento temporário. A IRQ12 passou de
+  353 ocorrências e 80 Bottom-Halfs para 17.049 ocorrências e 710
+  Bottom-Halfs, sem rejeições diferidas; o mouse passou de zero para 13.153
+  pacotes contabilizados como descartados, com `ERR_OVERFLOW`. A revisão do
+  pipeline e a correlação dos contadores identificaram saturação da fila bruta:
+  o Bottom-Half processava oito eventos por execução, não solicitava nova
+  execução apenas por ainda existir backlog e a coalescência acontecia tarde.
+  O consumidor final também processava somente oito limites de lote para até
+  32 entregas intermediárias, e backpressure recuperável podia ser contado
+  como descarte. O horário exato desta execução não foi informado pelo usuario.
+
+- SYNC1: vazão e coalescência antecipada do ponteiro corrigidas.
+  Concluida em: 2026-08-27 00:09 (America/Sao_Paulo).
+  O `input core` passou a acumular somente movimentos consecutivos com mesma
+  origem e estado de botões; a fila normalizada exige o mesmo estado de botões.
+  Ambas preservam roda e transições em entradas próprias. O consumidor passou
+  a processar 32 limites de lote por passagem, a fila bruta solicita
+  reexecução enquanto há capacidade e backpressure recuperável deixou de ser
+  contado como descarte definitivo. A validação funcional permanece pendente
+  do usuario.
