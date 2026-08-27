@@ -45,7 +45,7 @@ Registro da frente futura: 2026-08-22 09:21 (America/Sao_Paulo).
 - [x] R1 - observabilidade e log circular (implementada e validada).
 - [x] R2 - serviço de temporizadores canceláveis (implementado e validado).
 - [x] R3 - espera por eventos, timeout e cancelamento (implementada e validada).
-- [ ] R4 - fila de trabalho cooperativa (implementada; matriz QEMU pendente).
+- [x] R4 - fila de trabalho cooperativa (implementada e validada).
 - [ ] R5 - modelo unificado de dispositivos.
 - [ ] R6 - fila de requisições de bloco.
 - [ ] R7 - cache de caminhos e resolução de nomes.
@@ -193,8 +193,9 @@ registrada como
 [`DT100-001`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2).
 A `Zephyr kworker`, a fila cooperativa genérica e os trabalhos atrasados foram
 implementados na SYNC3. Bottom-Halves, callbacks de timer, rede/sockets e
-índice agora usam a fila unificada; System permanece como fallback. R4 segue
-aberta somente até a matriz QEMU da SYNC3 ser validada pelo usuário.
+índice agora usam a fila unificada; System permanece como fallback. R4 está
+concluída após a matriz QEMU da SYNC3 validar os perfis padrão, USB HID,
+Storage, sem NIC e multi-NIC, incluindo entrada responsiva sob carga.
 
 A `kworker` usa temporariamente um processo ring0 em vez de `thread_t`. Essa
 limitação foi aceita como
@@ -265,5 +266,5 @@ make run
 ## Estado
 
 Roadmap próprio do ZephyrOS, criado para orientar melhorias incrementais sem
-substituir a arquitetura existente. R0, R1, R2 e R3 estão concluídas e
-validadas; R4-R9 ainda não foram implementadas.
+substituir a arquitetura existente. R0, R1, R2, R3 e R4 estão concluídas e
+validadas; R5-R9 ainda não foram implementadas.

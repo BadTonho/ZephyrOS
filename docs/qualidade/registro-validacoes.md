@@ -1673,3 +1673,30 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   KWORKER, com cinco trabalhos registrados, fallback inativo e zero rejeicoes,
   erros de callback, contexto invalido ou falhas de wake. A suite multi-NIC,
   TCP e os diagnosticos finais do perfil permanecem pendentes.
+
+- SYNC3/R4: diagnosticos do perfil multi-NIC concluidos pelo usuario.
+  Concluida em: 2026-08-27 19:34 (America/Sao_Paulo).
+  `net check qemu multi net-pci-00:03.0 net-pci-00:04.0` aprovou TX isolado
+  na E1000 e na RTL8139 e as invariantes Multi-NIC. IRQ11 publicou dois
+  handlers e quatro agendamentos e execucoes de Bottom-Half, sem rejeicoes.
+  A fixture de sockets passou e a conexao TCP com `example.com:80` foi
+  estabelecida. A `Zephyr kworker` permaneceu ativa no PID 2, sem fallback,
+  rejeicoes, erros de callback, contexto invalido ou falhas de wake; seus
+  cinco trabalhos e prazos permaneceram consistentes. `workq check`, as 14
+  invariantes de `wait check`, `regcheck full`, `memcheck` e `log check`
+  terminaram em `OK`; `health check` manteve somente estados esperados do
+  ambiente. Resta apenas a confirmacao manual de responsividade da entrada
+  antes do encerramento da SYNC3/R4.
+
+- SYNC3/R4: etapa concluida e validada pelo usuario.
+  Concluida em: 2026-08-27 19:34 (America/Sao_Paulo).
+  O usuario confirmou que teclado, movimento, clique, arraste e roda
+  permaneceram responsivos durante rede, indexacao e `regcheck full`, sem
+  travamento ou perda perceptivel de transicoes. A matriz completa aprovou os
+  gates, QEMU padrao, USB HID, Storage, ausencia controlada de NIC e E1000 +
+  RTL8139. Callbacks executaram na `Zephyr kworker` com interrupcoes
+  habilitadas, sem espera ocupada, rejeicao permanente, fila orfa ou fallback
+  indevido. SYNC3 e R4 foram marcadas como concluidas; SYNC4 permanece
+  pendente. Nenhuma nova divida foi criada: a eventual regressao de entrada
+  sob carga permanece coberta pela `DT100-001`, ainda `ACEITA`, e o uso da
+  kworker como processo ring0 permanece coberto pela `DT100-002`.
