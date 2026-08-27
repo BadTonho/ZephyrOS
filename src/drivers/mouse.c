@@ -1,6 +1,7 @@
 #include "drivers/mouse.h"
 #include "drivers/idt.h"
 #include "core/input.h"
+#include "core/irq_deferred.h"
 #include "core/log.h"
 #include "core/video.h"
 #include "drivers/vesa.h"
@@ -10,8 +11,8 @@
 #define CURSOR_W 12
 #define CURSOR_H 16
 
-/* Tamanho da fila circular de pacotes brutos */
 #define MOUSE_QUEUE_SIZE 128
+#define MOUSE_RAW_QUEUE_SIZE 128U
 #define MOUSE_PACKET_STANDARD_SIZE 3
 #define MOUSE_PACKET_WHEEL_SIZE 4
 #define MOUSE_CMD_SET_DEFAULTS 0xF6
@@ -66,6 +67,10 @@ typedef struct {
 static mouse_packet_t event_queue[MOUSE_QUEUE_SIZE];
 static volatile int queue_head = 0;
 static volatile int queue_tail = 0;
+static volatile uint8_t mouse_raw_queue[MOUSE_RAW_QUEUE_SIZE];
+static volatile uint8_t mouse_raw_head;
+static volatile uint8_t mouse_raw_tail;
+static irq_deferred_work_t mouse_bottom_half_work;
 
 static mouse_callback_t current_callback = 0;
 static int driver_initialized = 0;
@@ -97,6 +102,9 @@ static uint8_t packet[MOUSE_PACKET_WHEEL_SIZE];
 static uint8_t packet_size = MOUSE_PACKET_STANDARD_SIZE;
 static int wheel_supported = 0;
 static int wheel_fallback_logged = 0;
+static void mouse_bottom_half(void* context);
+static uint32_t mouse_suspend_interrupts(void);
+static void mouse_restore_interrupts(uint32_t flags);
 
 static uint8_t inb(uint16_t port) {
     uint8_t result;
@@ -475,21 +483,32 @@ static void mouse_report_queue_overflow(void) {
 /* ========== Handler de interrupcao (IRQ12) ========== */
 
 static void mouse_handler(registers_t* regs) {
-    (void)regs;
     uint8_t status = inb(MOUSE_CONTROLLER_PORT);
+    uint8_t next;
+
+    (void)regs;
     if (!(status & MOUSE_STATUS_OUTPUT_FULL)) return;
     if (!(status & MOUSE_STATUS_AUX_DATA)) return;
+    next = (uint8_t)((mouse_raw_head + 1U) % MOUSE_RAW_QUEUE_SIZE);
+    if (next == mouse_raw_tail) {
+        (void)inb(MOUSE_DATA_PORT);
+        dropped_packets++;
+        last_error = ERR_OVERFLOW;
+        return;
+    }
+    mouse_raw_queue[mouse_raw_head] = inb(MOUSE_DATA_PORT);
+    mouse_raw_head = next;
+    (void)irq_deferred_schedule(&mouse_bottom_half_work);
+}
 
-    packet[cycle++] = inb(MOUSE_DATA_PORT);
+static void mouse_process_raw_byte(uint8_t value) {
+    input_pointer_event_t event;
+    int result;
+
+    packet[cycle++] = value;
     if (cycle == packet_size) {
         cycle = 0;
-
-        /* Valida pacote: bits 6-7 devem ser 0, bit 3 deve ser 1 */
         if ((packet[0] & 0xC0) || !(packet[0] & 0x08)) return;
-
-        input_pointer_event_t event;
-        int result;
-
         event.dx = packet[1] - ((packet[0] & 0x10) ? 256 : 0);
         event.dy = packet[2] - ((packet[0] & 0x20) ? 256 : 0);
         event.wheel = wheel_supported ? mouse_decode_wheel(packet[3]) : 0;
@@ -500,6 +519,26 @@ static void mouse_handler(registers_t* regs) {
             dropped_packets++;
             last_error = result;
         }
+    }
+}
+
+static void mouse_bottom_half(void* context) {
+    uint32_t flags;
+
+    (void)context;
+    while (1) {
+        uint8_t value;
+
+        flags = mouse_suspend_interrupts();
+        if (mouse_raw_tail == mouse_raw_head) {
+            mouse_restore_interrupts(flags);
+            break;
+        }
+        value = mouse_raw_queue[mouse_raw_tail];
+        mouse_raw_tail =
+            (uint8_t)((mouse_raw_tail + 1U) % MOUSE_RAW_QUEUE_SIZE);
+        mouse_restore_interrupts(flags);
+        mouse_process_raw_byte(value);
     }
 }
 
@@ -565,6 +604,10 @@ static void mouse_reset_state(void) {
     cycle = 0;
     queue_head = 0;
     queue_tail = 0;
+    mouse_raw_head = 0U;
+    mouse_raw_tail = 0U;
+    mouse_bottom_half_work.queued = 0U;
+    mouse_bottom_half_work.running = 0U;
     dropped_packets = 0;
     queue_overflow_logged = 0;
     prev_buttons = 0;
@@ -594,6 +637,12 @@ int mouse_init(void) {
         return result;
     }
     input_sink_ready = 1;
+    result = irq_deferred_work_init(&mouse_bottom_half_work, "Mouse", 12U,
+                                    mouse_bottom_half, 0);
+    if (result != OK) {
+        LOG_ERROR("MOUSE", "Falha ao preparar Bottom-Half do mouse");
+        return result;
+    }
     /* A IRQ1 nao pode consumir respostas da transacao compartilhada PS/2. */
     interrupt_flags = mouse_suspend_interrupts();
 
@@ -697,6 +746,7 @@ void mouse_process_events(void) {
     int had_old_cursor;
 
     if (!input_sink_ready) return;
+    mouse_bottom_half(0);
     mouse_report_queue_overflow();
     vesa_mode_t* mode = vesa_get_mode();
     if (!mode || !mode->initialized) return;

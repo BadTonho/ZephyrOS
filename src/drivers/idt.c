@@ -16,6 +16,7 @@ static isr_handler_t
     shared_irq_handlers[IDT_IRQ_LINE_COUNT]
                        [IDT_SHARED_IRQ_HANDLER_CAPACITY];
 static uint8_t shared_irq_handler_counts[IDT_IRQ_LINE_COUNT];
+static volatile uint32_t irq_occurrences[IDT_IRQ_LINE_COUNT];
 static int idt_ready = 0;
 static int user_syscall_enabled = 0;
 static void idt_panic_exception(registers_t* regs);
@@ -146,6 +147,7 @@ void idt_init(void) {
     }
     for (uint32_t irq = 0; irq < IDT_IRQ_LINE_COUNT; irq++) {
         shared_irq_handler_counts[irq] = 0;
+        irq_occurrences[irq] = 0U;
         for (uint32_t slot = 0;
              slot < IDT_SHARED_IRQ_HANDLER_CAPACITY; slot++) {
             shared_irq_handlers[irq][slot] = 0;
@@ -270,6 +272,55 @@ int idt_get_shared_irq_handler_count(uint8_t irq_line,
     return OK;
 }
 
+int idt_get_irq_status(uint8_t irq_line, idt_irq_status_t* out_status) {
+    uint32_t flags;
+
+    if (!out_status) {
+        LOG_ERROR("IDT", "Destino nulo ao consultar estatistica de IRQ");
+        return ERR_NULL;
+    }
+    if (!idt_ready) {
+        LOG_ERROR("IDT", "Consulta de IRQ antes da inicializacao da IDT");
+        return ERR_STATE;
+    }
+    if (irq_line >= IDT_IRQ_LINE_COUNT) {
+        LOG_ERROR("IDT", "Linha invalida na consulta de estatistica IRQ");
+        return ERR_INVALID;
+    }
+    asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
+    out_status->irq_line = irq_line;
+    out_status->registered_handlers = shared_irq_handler_counts[irq_line];
+    if (interrupt_handlers[IRQ_VECTOR_BASE + irq_line]) {
+        out_status->registered_handlers++;
+    }
+    out_status->occurrences = irq_occurrences[irq_line];
+    if (flags & (1U << 9U)) asm volatile("sti" : : : "memory");
+    return OK;
+}
+
+int idt_validate_irq_state(void) {
+    uint32_t flags;
+    int result = OK;
+
+    if (!idt_ready) {
+        LOG_ERROR("IDT", "Validacao de IRQ antes da inicializacao da IDT");
+        return ERR_STATE;
+    }
+    asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
+    for (uint32_t irq = 0U; irq < IDT_IRQ_LINE_COUNT; irq++) {
+        if (shared_irq_handler_counts[irq] >
+            IDT_SHARED_IRQ_HANDLER_CAPACITY) {
+            result = ERR_STATE;
+            break;
+        }
+    }
+    if (flags & (1U << 9U)) asm volatile("sti" : : : "memory");
+    if (result != OK) {
+        LOG_ERROR("IDT", "Quantidade de handlers IRQ inconsistente");
+    }
+    return result;
+}
+
 int idt_enable_user_syscall(void) {
     if (!idt_ready) {
         LOG_ERROR("IDT", "IDT nao esta pronta para habilitar syscalls de usuario");
@@ -384,16 +435,19 @@ void isr_handler(registers_t* regs) {
 void irq_handler(registers_t* regs) {
     uint8_t irq_line;
 
+    if (!regs || regs->int_no < IRQ_VECTOR_BASE ||
+        regs->int_no >= IRQ_VECTOR_BASE + IDT_IRQ_LINE_COUNT) {
+        LOG_ERROR("IDT", "Contexto invalido no handler de IRQ");
+        return;
+    }
+    irq_line = (uint8_t)(regs->int_no - IRQ_VECTOR_BASE);
+    irq_occurrences[irq_line]++;
     if (interrupt_handlers[regs->int_no]) {
         interrupt_handlers[regs->int_no](regs);
     }
-    if (regs->int_no >= IRQ_VECTOR_BASE &&
-        regs->int_no < IRQ_VECTOR_BASE + IDT_IRQ_LINE_COUNT) {
-        irq_line = (uint8_t)(regs->int_no - IRQ_VECTOR_BASE);
-        for (uint8_t index = 0;
-             index < shared_irq_handler_counts[irq_line]; index++) {
-            shared_irq_handlers[irq_line][index](regs);
-        }
+    for (uint8_t index = 0;
+         index < shared_irq_handler_counts[irq_line]; index++) {
+        shared_irq_handlers[irq_line][index](regs);
     }
 
     if (regs->int_no >= 40) {

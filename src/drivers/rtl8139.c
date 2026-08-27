@@ -4,6 +4,7 @@
 #include "core/memory.h"
 #include "core/string.h"
 #include "core/timer.h"
+#include "core/irq_deferred.h"
 
 #define RTL8139_VENDOR_ID 0x10ECU
 #define RTL8139_DEVICE_ID 0x8139U
@@ -32,6 +33,8 @@
 #define RTL8139_MAX_FRAME_SIZE 1518U
 #define RTL8139_FCS_SIZE 4U
 #define RTL8139_RX_HEADER_SIZE 4U
+#define RTL8139_RX_QUEUE_SLOT_COUNT 8U
+#define RTL8139_RX_DRAIN_BUDGET 32U
 #define RTL8139_MIN_WIRE_SIZE \
     (RTL8139_MIN_FRAME_SIZE + RTL8139_FCS_SIZE)
 #define RTL8139_MAX_WIRE_SIZE \
@@ -91,6 +94,11 @@
 #define RTL8139_CAPR_INITIAL 0xFFF0U
 
 typedef struct {
+    uint16_t length;
+    uint8_t data[RTL8139_MAX_FRAME_SIZE];
+} rtl8139_rx_slot_t;
+
+typedef struct {
     uint8_t used;
     uint8_t bus;
     uint8_t device;
@@ -103,8 +111,14 @@ typedef struct {
     uint8_t* tx_buffers;
     uint16_t rx_offset;
     uint8_t tx_next;
+    rtl8139_rx_slot_t rx_queue[RTL8139_RX_QUEUE_SLOT_COUNT];
+    volatile uint8_t rx_queue_head;
+    volatile uint8_t rx_queue_tail;
     volatile uint8_t rx_pending;
     volatile uint8_t rx_needs_reset;
+    volatile uint16_t pending_irq_status;
+    volatile uint32_t pending_rx_interrupts;
+    irq_deferred_work_t bottom_half_work;
 } rtl8139_device_t;
 
 static rtl8139_device_t rtl8139_devices[RTL8139_DEVICE_CAPACITY];
@@ -125,6 +139,17 @@ static uint16_t rtl8139_in16(const rtl8139_device_t* device,
 
     asm volatile("inw %1, %0" : "=a"(value) : "Nd"(port));
     return value;
+}
+
+static uint32_t rtl8139_irq_save(void) {
+    uint32_t flags;
+
+    asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
+    return flags;
+}
+
+static void rtl8139_irq_restore(uint32_t flags) {
+    if (flags & (1U << 9U)) asm volatile("sti" : : : "memory");
 }
 
 static uint32_t rtl8139_in32(const rtl8139_device_t* device,
@@ -342,7 +367,13 @@ static void rtl8139_reset_receiver(rtl8139_device_t* device) {
     rtl8139_out32(device, RTL8139_REG_RCR, RTL8139_RCR_DEFAULT);
     rtl8139_out8(device, RTL8139_REG_CR,
                  RTL8139_CR_RE | RTL8139_CR_TE);
-    device->rx_pending = 0;
+    device->rx_pending =
+        device->rx_queue_head != device->rx_queue_tail;
+    device->status.rx_queue_depth =
+        device->rx_queue_tail >= device->rx_queue_head ?
+        device->rx_queue_tail - device->rx_queue_head :
+        RTL8139_RX_QUEUE_SLOT_COUNT - device->rx_queue_head +
+        device->rx_queue_tail;
     device->rx_needs_reset = 0;
 }
 
@@ -361,9 +392,10 @@ static int rtl8139_get_driver_status(
     }
     rtl8139_update_link(device);
     device->status.rx_queue_depth =
-        (device->rx_pending ||
-         !(rtl8139_in8(device, RTL8139_REG_CR) &
-           RTL8139_CR_BUFE)) ? 1U : 0U;
+        device->rx_queue_tail >= device->rx_queue_head ?
+        device->rx_queue_tail - device->rx_queue_head :
+        RTL8139_RX_QUEUE_SLOT_COUNT - device->rx_queue_head +
+        device->rx_queue_tail;
     if (device->status.rx_queue_depth >
         device->status.rx_queue_high_water) {
         device->status.rx_queue_high_water =
@@ -381,6 +413,8 @@ static int rtl8139_receive_frame(void* driver_context, uint8_t* data,
                                  uint16_t capacity,
                                  uint16_t* out_length,
                                  uint8_t* out_received);
+static int rtl8139_service_pending(void* driver_context);
+static void rtl8139_bottom_half(void* context);
 
 static int rtl8139_fill_interface(
     rtl8139_device_t* device, const char* interface_id,
@@ -396,6 +430,7 @@ static int rtl8139_fill_interface(
             RTL8139_MAC_ADDRESS_SIZE);
     out_interface->driver_context = device;
     out_interface->get_driver_status = rtl8139_get_driver_status;
+    out_interface->service_pending = rtl8139_service_pending;
     out_interface->rx_pending = rtl8139_has_pending_rx;
     out_interface->receive_frame = rtl8139_receive_frame;
     out_interface->send_frame = rtl8139_send_frame;
@@ -450,6 +485,9 @@ int rtl8139_init(const pci_device_t* pci, const char* interface_id,
     if (result != OK) goto failed;
     rtl8139_configure_dma(device);
     rtl8139_out16(device, RTL8139_REG_ISR, 0xFFFFU);
+    result = irq_deferred_work_init(&device->bottom_half_work, "RTL8139",
+                                    pci->irq, rtl8139_bottom_half, device);
+    if (result != OK) goto failed;
     result = idt_register_shared_irq_handler(
         pci->irq, rtl8139_handler);
     if (result != OK) {
@@ -552,8 +590,7 @@ static int rtl8139_has_pending_rx(void* driver_context,
         LOG_ERROR("RTL8139", "Consulta RX sem instancia ativa");
         return ERR_STATE;
     }
-    *out_pending = device->rx_pending || device->rx_needs_reset ||
-        !(rtl8139_in8(device, RTL8139_REG_CR) & RTL8139_CR_BUFE);
+    *out_pending = device->rx_queue_head != device->rx_queue_tail;
     return OK;
 }
 
@@ -570,15 +607,73 @@ static void rtl8139_advance_rx(rtl8139_device_t* device,
                   (uint16_t)(device->rx_offset - 16U));
 }
 
+static void rtl8139_drain_rx(rtl8139_device_t* device) {
+    for (uint32_t processed = 0U;
+         processed < RTL8139_RX_DRAIN_BUDGET; processed++) {
+        const uint8_t* header;
+        uint16_t rx_status;
+        uint16_t wire_length;
+        uint16_t frame_length;
+        uint8_t next;
+
+        if (rtl8139_in8(device, RTL8139_REG_CR) & RTL8139_CR_BUFE) break;
+        header = device->rx_buffer + device->rx_offset;
+        rx_status = rtl8139_read_u16(header);
+        wire_length = rtl8139_read_u16(header + 2U);
+        if (wire_length < RTL8139_MIN_WIRE_SIZE ||
+            wire_length > RTL8139_MAX_WIRE_SIZE) {
+            device->status.rx_errors++;
+            device->status.rx_dropped++;
+            device->status.last_error = ERR_INVALID;
+            rtl8139_reset_receiver(device);
+            LOG_WARN("RTL8139", "Ring RX continha comprimento invalido");
+            break;
+        }
+        frame_length = wire_length - RTL8139_FCS_SIZE;
+        if (!(rx_status & RTL8139_RX_STATUS_ROK) ||
+            (rx_status & RTL8139_RX_STATUS_ERROR_MASK)) {
+            device->status.rx_errors++;
+            device->status.rx_dropped++;
+            rtl8139_advance_rx(device, wire_length);
+            continue;
+        }
+        next = (uint8_t)((device->rx_queue_tail + 1U) %
+                         RTL8139_RX_QUEUE_SLOT_COUNT);
+        if (next == device->rx_queue_head) {
+            device->status.rx_queue_dropped++;
+            device->status.rx_dropped++;
+            rtl8139_advance_rx(device, wire_length);
+            continue;
+        }
+        device->rx_queue[device->rx_queue_tail].length = frame_length;
+        kmemcpy(device->rx_queue[device->rx_queue_tail].data,
+                header + RTL8139_RX_HEADER_SIZE, frame_length);
+        rtl8139_memory_barrier();
+        device->rx_queue_tail = next;
+        device->status.rx_packets++;
+        rtl8139_advance_rx(device, wire_length);
+    }
+    device->rx_pending =
+        device->rx_queue_head != device->rx_queue_tail;
+    device->status.rx_queue_depth =
+        device->rx_queue_tail >= device->rx_queue_head ?
+        device->rx_queue_tail - device->rx_queue_head :
+        RTL8139_RX_QUEUE_SLOT_COUNT - device->rx_queue_head +
+        device->rx_queue_tail;
+    if (device->status.rx_queue_depth >
+        device->status.rx_queue_high_water) {
+        device->status.rx_queue_high_water =
+            device->status.rx_queue_depth;
+    }
+}
+
 static int rtl8139_receive_frame(void* driver_context, uint8_t* data,
                                  uint16_t capacity,
                                  uint16_t* out_length,
                                  uint8_t* out_received) {
     rtl8139_device_t* device =
         (rtl8139_device_t*)driver_context;
-    const uint8_t* header;
-    uint16_t rx_status;
-    uint16_t wire_length;
+    uint8_t head;
     uint16_t frame_length;
 
     if (!device || !data || !out_length || !out_received) {
@@ -591,54 +686,50 @@ static int rtl8139_receive_frame(void* driver_context, uint8_t* data,
         LOG_ERROR("RTL8139", "Recepcao sem instancia ativa");
         return ERR_STATE;
     }
-    if (device->rx_needs_reset) rtl8139_reset_receiver(device);
-    if (rtl8139_in8(device, RTL8139_REG_CR) & RTL8139_CR_BUFE) {
-        device->rx_pending = 0;
-        return OK;
-    }
-    header = device->rx_buffer + device->rx_offset;
-    rx_status = rtl8139_read_u16(header);
-    wire_length = rtl8139_read_u16(header + 2U);
-    if (wire_length < RTL8139_MIN_WIRE_SIZE ||
-        wire_length > RTL8139_MAX_WIRE_SIZE) {
-        device->status.rx_errors++;
-        device->status.rx_dropped++;
-        device->status.last_error = ERR_INVALID;
-        rtl8139_reset_receiver(device);
-        LOG_WARN("RTL8139", "Ring RX continha comprimento invalido");
-        return OK;
-    }
-    frame_length = wire_length - RTL8139_FCS_SIZE;
-    if (!(rx_status & RTL8139_RX_STATUS_ROK) ||
-        (rx_status & RTL8139_RX_STATUS_ERROR_MASK)) {
-        device->status.rx_errors++;
-        device->status.rx_dropped++;
-        rtl8139_advance_rx(device, wire_length);
-        return OK;
-    }
+    head = device->rx_queue_head;
+    if (head == device->rx_queue_tail) return OK;
+    frame_length = device->rx_queue[head].length;
     if (capacity < frame_length) {
         LOG_ERROR("RTL8139", "Buffer insuficiente para frame recebido");
         return ERR_OVERFLOW;
     }
-    kmemcpy(data, header + RTL8139_RX_HEADER_SIZE, frame_length);
-    rtl8139_advance_rx(device, wire_length);
-    device->status.rx_packets++;
+    kmemcpy(data, device->rx_queue[head].data, frame_length);
+    device->rx_queue_head =
+        (uint8_t)((head + 1U) % RTL8139_RX_QUEUE_SLOT_COUNT);
+    device->rx_pending =
+        device->rx_queue_head != device->rx_queue_tail;
+    device->status.rx_queue_depth =
+        device->rx_queue_tail >= device->rx_queue_head ?
+        device->rx_queue_tail - device->rx_queue_head :
+        RTL8139_RX_QUEUE_SLOT_COUNT - device->rx_queue_head +
+        device->rx_queue_tail;
     device->status.last_error = OK;
     *out_length = frame_length;
     *out_received = 1;
-    if (rtl8139_in8(device, RTL8139_REG_CR) & RTL8139_CR_BUFE) {
-        device->rx_pending = 0;
-    }
     return OK;
 }
 
-static void rtl8139_handle_device_irq(rtl8139_device_t* device) {
-    uint16_t status = rtl8139_in16(device, RTL8139_REG_ISR);
+static int rtl8139_service_pending(void* driver_context) {
+    rtl8139_device_t* device = (rtl8139_device_t*)driver_context;
+    uint16_t status;
+    uint32_t rx_interrupts;
+    uint32_t flags;
 
-    if (!status || status == 0xFFFFU) return;
-    rtl8139_out16(device, RTL8139_REG_ISR, status);
+    if (!device || !device->used || !device->status.initialized) {
+        return ERR_STATE;
+    }
+    flags = rtl8139_irq_save();
+    status = device->pending_irq_status;
+    rx_interrupts = device->pending_rx_interrupts;
+    device->pending_irq_status = 0U;
+    device->pending_rx_interrupts = 0U;
+    rtl8139_irq_restore(flags);
+    if (!status &&
+        (rtl8139_in8(device, RTL8139_REG_CR) & RTL8139_CR_BUFE)) {
+        return OK;
+    }
+    device->status.rx_interrupts += rx_interrupts;
     if (status & RTL8139_INT_ROK) {
-        device->status.rx_interrupts++;
         device->rx_pending = 1;
     }
     if (status & (RTL8139_INT_RER | RTL8139_INT_ROVW |
@@ -649,9 +740,24 @@ static void rtl8139_handle_device_irq(rtl8139_device_t* device) {
     if (status & (RTL8139_INT_ROVW | RTL8139_INT_FOVW)) {
         device->rx_needs_reset = 1;
         device->status.rx_queue_dropped++;
+        rtl8139_reset_receiver(device);
     }
     if (status & RTL8139_INT_TER) device->status.tx_errors++;
     if (status & RTL8139_INT_PUN_LINK) rtl8139_update_link(device);
+    if (!(rtl8139_in8(device, RTL8139_REG_CR) & RTL8139_CR_BUFE)) {
+        rtl8139_drain_rx(device);
+    }
+    return OK;
+}
+
+static void rtl8139_bottom_half(void* context) {
+    rtl8139_device_t* device = (rtl8139_device_t*)context;
+    int result = rtl8139_service_pending(device);
+
+    if (result != OK) {
+        if (device) device->status.last_error = result;
+        LOG_ERROR_CODE("RTL8139", result, "Bottom-Half RTL8139 falhou");
+    }
 }
 
 void rtl8139_handler(registers_t* regs) {
@@ -664,7 +770,13 @@ void rtl8139_handler(registers_t* regs) {
 
         if (device->used && device->status.initialized &&
             device->io_base && device->irq == irq_line) {
-            rtl8139_handle_device_irq(device);
+            uint16_t status = rtl8139_in16(device, RTL8139_REG_ISR);
+
+            if (!status || status == 0xFFFFU) continue;
+            rtl8139_out16(device, RTL8139_REG_ISR, status);
+            device->pending_irq_status |= status;
+            if (status & RTL8139_INT_ROK) device->pending_rx_interrupts++;
+            (void)irq_deferred_schedule(&device->bottom_half_work);
         }
     }
 }

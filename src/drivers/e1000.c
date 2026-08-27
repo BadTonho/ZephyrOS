@@ -4,6 +4,7 @@
 #include "core/memory.h"
 #include "core/string.h"
 #include "core/timer.h"
+#include "core/irq_deferred.h"
 #include "memory/paging.h"
 
 #define E1000_VENDOR_ID 0x8086U
@@ -118,6 +119,9 @@ typedef struct {
     volatile uint8_t rx_queue_head;
     volatile uint8_t rx_queue_tail;
     volatile uint8_t rx_pending;
+    volatile uint32_t pending_irq_causes;
+    volatile uint32_t pending_rx_interrupts;
+    irq_deferred_work_t bottom_half_work;
 } e1000_device_t;
 
 static e1000_device_t e1000_devices[E1000_DEVICE_CAPACITY];
@@ -133,6 +137,17 @@ static void e1000_write(e1000_device_t* device, uint32_t offset,
 
 static void e1000_memory_barrier(void) {
     asm volatile("" : : : "memory");
+}
+
+static uint32_t e1000_irq_save(void) {
+    uint32_t flags;
+
+    asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
+    return flags;
+}
+
+static void e1000_irq_restore(uint32_t flags) {
+    if (flags & (1U << 9U)) asm volatile("sti" : : : "memory");
 }
 
 static void e1000_update_link(e1000_device_t* device) {
@@ -387,6 +402,9 @@ static int e1000_has_pending_rx(void* driver_context,
 static int e1000_receive_frame(void* driver_context, uint8_t* data,
                                uint16_t capacity, uint16_t* out_length,
                                uint8_t* out_received);
+static int e1000_service_pending(void* driver_context);
+static void e1000_poll_rx_descriptors(e1000_device_t* device);
+static void e1000_bottom_half(void* context);
 
 static int e1000_fill_interface(
     e1000_device_t* device, const char* interface_id,
@@ -402,6 +420,7 @@ static int e1000_fill_interface(
             E1000_MAC_ADDRESS_SIZE);
     out_interface->driver_context = device;
     out_interface->get_driver_status = e1000_get_driver_status;
+    out_interface->service_pending = e1000_service_pending;
     out_interface->rx_pending = e1000_has_pending_rx;
     out_interface->receive_frame = e1000_receive_frame;
     out_interface->send_frame = e1000_send_frame;
@@ -456,6 +475,9 @@ int e1000_init(const pci_device_t* pci, const char* interface_id,
     if (result != OK) goto failed;
     e1000_setup_rx(device);
     e1000_setup_tx(device);
+    result = irq_deferred_work_init(&device->bottom_half_work, "E1000",
+                                    pci->irq, e1000_bottom_half, device);
+    if (result != OK) goto failed;
     result = idt_register_shared_irq_handler(pci->irq, e1000_handler);
     if (result != OK) {
         LOG_ERROR("E1000", "Falha ao registrar IRQ compartilhada");
@@ -646,20 +668,44 @@ static int e1000_receive_frame(void* driver_context, uint8_t* data,
     return OK;
 }
 
-static void e1000_handle_device_irq(e1000_device_t* device) {
-    uint32_t cause = e1000_read(device, E1000_REG_ICR);
+static int e1000_service_pending(void* driver_context) {
+    e1000_device_t* device = (e1000_device_t*)driver_context;
+    uint32_t causes;
+    uint32_t rx_interrupts;
+    uint32_t flags;
 
-    if (!cause) return;
-    if (cause & (E1000_INT_RXT0 | E1000_INT_RXO)) {
-        device->status.rx_interrupts++;
-        device->rx_pending = 1;
+    if (!device || !device->used || !device->status.initialized) {
+        return ERR_STATE;
     }
-    if (cause & E1000_INT_LSC) e1000_update_link(device);
-    if (cause & E1000_INT_RXO) {
+    flags = e1000_irq_save();
+    causes = device->pending_irq_causes;
+    rx_interrupts = device->pending_rx_interrupts;
+    device->pending_irq_causes = 0U;
+    device->pending_rx_interrupts = 0U;
+    e1000_irq_restore(flags);
+    if (!causes) return OK;
+    device->status.rx_interrupts += rx_interrupts;
+    if (causes & (E1000_INT_RXT0 | E1000_INT_RXO)) {
+        device->rx_pending = 1U;
+        e1000_poll_rx_descriptors(device);
+    }
+    if (causes & E1000_INT_LSC) e1000_update_link(device);
+    if (causes & E1000_INT_RXO) {
         device->status.rx_errors++;
         device->status.rx_dropped++;
     }
-    if (cause & E1000_INT_RXSEQ) device->status.rx_errors++;
+    if (causes & E1000_INT_RXSEQ) device->status.rx_errors++;
+    return OK;
+}
+
+static void e1000_bottom_half(void* context) {
+    e1000_device_t* device = (e1000_device_t*)context;
+    int result = e1000_service_pending(device);
+
+    if (result != OK) {
+        if (device) device->status.last_error = result;
+        LOG_ERROR_CODE("E1000", result, "Bottom-Half E1000 falhou");
+    }
 }
 
 void e1000_handler(registers_t* regs) {
@@ -672,7 +718,14 @@ void e1000_handler(registers_t* regs) {
 
         if (device->used && device->status.initialized &&
             device->mmio && device->irq == irq_line) {
-            e1000_handle_device_irq(device);
+            uint32_t cause = e1000_read(device, E1000_REG_ICR);
+
+            if (!cause) continue;
+            device->pending_irq_causes |= cause;
+            if (cause & (E1000_INT_RXT0 | E1000_INT_RXO)) {
+                device->pending_rx_interrupts++;
+            }
+            (void)irq_deferred_schedule(&device->bottom_half_work);
         }
     }
 }

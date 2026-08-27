@@ -9,9 +9,9 @@ EP9.2B de menu pre-kernel, F8, boot anterior one-shot e retry manual esta
 validada com a matriz QEMU especifica. A EP9.3 de cache, aplicacao e
 cancelamento ZSYS esta validada. A EP9.4B de boot operacional autenticado no
 FAT32 esta implementada e validada. A EP9.4C de reinicio controlado pelo
-System Updater esta implementada e aguarda validacao no QEMU.
+System Updater esta implementada e validada.
 
-## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A, EP9.2B, EP9.3 e EP9.4B validadas
+## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A-EP9.4C validadas; SYNC1 implementada e aguardando matriz QEMU
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
@@ -129,6 +129,7 @@ Evolução da plataforma:      [████████████████
 | `updater` | Abre o aplicativo System Updater |
 | `health` | Exibe metricas e estado de recovery |
 | `log ...` | Consulta, configura, limpa e testa o log circular |
+| `irqstat [status|list|check]` | Inspeciona ocorrencias da PIC, handlers e Bottom-Halfs e executa o autoteste privado |
 | `timer [status|list|check]` | Inspeciona e testa o serviço de temporizadores |
 | `clock [status|check]` | Inspeciona RTC/UTC ancorado no PIT e executa autotestes de calendario e rollover |
 | `tls [status|check]` | Inspeciona BearSSL TLS/X.509 e executa os vetores de politica |

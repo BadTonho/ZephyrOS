@@ -1,12 +1,14 @@
 #include "core/keyboard.h"
 #include "drivers/idt.h"
 #include "core/input.h"
+#include "core/irq_deferred.h"
 #include "core/log.h"
 #include "core/errors.h"
 #include "process/process.h"
 
 
 #define KEYBOARD_QUEUE_SIZE 256U
+#define KEYBOARD_RAW_QUEUE_SIZE 64U
 #define KEYBOARD_DISPATCH_BUDGET (IPC_MSG_QUEUE_SIZE / 2U)
 #define KEYBOARD_SCANCODE_F12 0x58U
 #define KEYBOARD_SCANCODE_ABNT2_SEMICOLON 0x35U
@@ -25,6 +27,11 @@ static uint8_t forward_warning_active;
 static keyboard_focus_cancel_filter_t focus_cancel_filter;
 static uint8_t keyboard_initialized;
 static uint8_t keyboard_ps2_extended;
+static volatile uint8_t keyboard_raw_queue[KEYBOARD_RAW_QUEUE_SIZE];
+static volatile uint8_t keyboard_raw_head;
+static volatile uint8_t keyboard_raw_tail;
+static irq_deferred_work_t keyboard_bottom_half_work;
+static void keyboard_bottom_half(void* context);
 
 static uint32_t keyboard_irq_save(void) {
     uint32_t flags;
@@ -77,6 +84,20 @@ char keyboard_scancode_to_ascii_shifted(uint8_t scancode, uint8_t shifted) {
     }
     if (scancode >= 128) return 0;
     return shifted ? scancode_shift_table[scancode] : scancode_table[scancode];
+}
+
+static int keyboard_raw_enqueue(uint8_t scancode) {
+    uint8_t next =
+        (uint8_t)((keyboard_raw_head + 1U) % KEYBOARD_RAW_QUEUE_SIZE);
+
+    if (next == keyboard_raw_tail) {
+        dropped_events++;
+        dropped_total++;
+        return ERR_OVERFLOW;
+    }
+    keyboard_raw_queue[keyboard_raw_head] = scancode;
+    keyboard_raw_head = next;
+    return OK;
 }
 
 char keyboard_scancode_to_ascii(uint8_t scancode) {
@@ -332,6 +353,15 @@ void keyboard_init(void) {
     forward_warning_active = 0;
     focus_cancel_filter = 0;
     keyboard_ps2_extended = 0U;
+    keyboard_raw_head = 0U;
+    keyboard_raw_tail = 0U;
+    keyboard_bottom_half_work.queued = 0U;
+    keyboard_bottom_half_work.running = 0U;
+    if (irq_deferred_work_init(&keyboard_bottom_half_work, "Keyboard", 1U,
+                               keyboard_bottom_half, 0) != OK) {
+        LOG_ERROR("KBD", "Falha ao preparar Bottom-Half do teclado");
+        return;
+    }
     if (input_register_key_sink(keyboard_input_sink) != OK) {
         LOG_ERROR("KBD", "Falha ao registrar consumidor de entrada");
         return;
@@ -354,12 +384,18 @@ void keyboard_set_focus_cancel_filter(keyboard_focus_cancel_filter_t filter) {
 
 void keyboard_handler(registers_t* regs) {
     uint8_t scancode;
+
+    (void)regs;
+    scancode = inb(0x60);
+    if (keyboard_raw_enqueue(scancode) != OK) return;
+    (void)irq_deferred_schedule(&keyboard_bottom_half_work);
+}
+
+static void keyboard_process_raw_byte(uint8_t scancode) {
     uint8_t released;
     uint16_t usage;
     input_key_event_t event;
 
-    (void)regs;
-    scancode = inb(0x60);
     if (scancode == 0xE0U) {
         keyboard_ps2_extended = 1U;
         return;
@@ -379,10 +415,31 @@ void keyboard_handler(registers_t* regs) {
     (void)input_publish_key(&event);
 }
 
+static void keyboard_bottom_half(void* context) {
+    uint32_t flags;
+
+    (void)context;
+    while (1) {
+        uint8_t scancode;
+
+        flags = keyboard_irq_save();
+        if (keyboard_raw_tail == keyboard_raw_head) {
+            keyboard_irq_restore(flags);
+            break;
+        }
+        scancode = keyboard_raw_queue[keyboard_raw_tail];
+        keyboard_raw_tail =
+            (uint8_t)((keyboard_raw_tail + 1U) % KEYBOARD_RAW_QUEUE_SIZE);
+        keyboard_irq_restore(flags);
+        keyboard_process_raw_byte(scancode);
+    }
+}
+
 void keyboard_process_events(void) {
     uint32_t dispatched = 0;
     uint32_t input_processed = 0U;
 
+    keyboard_bottom_half(0);
     if (input_dispatch(KEYBOARD_DISPATCH_BUDGET, &input_processed) != OK) {
         LOG_WARN("KBD", "Despacho do nucleo de entrada indisponivel");
     }

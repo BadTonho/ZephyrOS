@@ -1306,3 +1306,15 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   deterministicas geradas pelo alvo unico. A evidencia da EP9.4B foi
   reutilizada para rollback conforme o plano. Nao ha comando adicional
   pendente para a EP9.4C.
+
+- SYNC1: Top-Half e Bottom-Half de interrupcoes implementados.
+  Concluida em: 2026-08-26 23:12 (America/Sao_Paulo).
+  `irq_deferred` foi consolidado como fila estatica limitada executada pelo
+  processo System, com identidade por proprietario/IRQ, coalescencia,
+  reexecucao, cancelamento seguro, metricas e fixture privada. IDT passou a
+  contabilizar ocorrencias e handlers; teclado, mouse, E1000 e RTL8139 foram
+  migrados para Top-Halves minimos com recuperacao por polling normal. ATA
+  permanece PIO sincrono e nenhuma `kworker` ou alteracao de boot foi criada.
+  `irqstat`, `health check` e `regcheck full` receberam os diagnosticos e
+  invariantes. Gates, QEMU e a matriz funcional aguardam execucao do usuario;
+  por isso a SYNC1 ainda nao esta marcada como concluida no resumo do roadmap.

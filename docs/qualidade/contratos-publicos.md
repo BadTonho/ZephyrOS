@@ -151,8 +151,8 @@ os IDs estaveis de rede, acrescentando a disponibilidade e configuracao das
 camadas Ethernet, ARP, IPv4 e ICMP. Na EP7.1B, o contrato acrescenta
 transporte USB, metadados do RTL8811CU e IDs `net-usb-BB:DD.F-pN` sem alterar
 os IDs PCI. `src/include/core/ethernet.h` define a
-abstracao de interface, montagem, polling, contadores L2 e despacho sincrono
-por EtherType.
+abstracao de interface, montagem, servico de causas pendentes, polling,
+contadores L2 e despacho sincrono por EtherType.
 `src/include/core/arp.h` define IPv4 canonico, configuracao local em RAM,
 resolucao assincrona, cache limitado e consultas por copia.
 `src/include/core/ipv4.h` define configuracao estatica, visao sincrona de
@@ -185,7 +185,8 @@ As visoes Ethernet, IPv4 e UDP carregam o ID da interface e broadcasts
 limitados exigem esse ID. `src/include/core/network_manager.h` expoe erros de
 driver, interface L3, vinculo Ethernet e DHCP pendente. Os headers de E1000 e
 RTL8139 inicializam o dispositivo PCI exato; IDT oferece handlers
-compartilhados e PCI confirma I/O Space com Bus Mastering.
+compartilhados, ocorrencias e quantidade de handlers por linha, e PCI confirma
+I/O Space com Bus Mastering.
 
 Desde a EP7.0, `src/include/core/wifi_manager.h` define um inventario somente-
 leitura para candidatos PCI de rede que nao sejam E1000 ou RTL8139. Na EP7.1B,
@@ -380,9 +381,12 @@ Desde a EP4.4, `src/include/core/input.h` define eventos HID Usage de teclado,
 eventos relativos de ponteiro, filas estaticas separadas, metricas e despacho
 para os consumidores PS/2 legados. O adaptador de teclado preserva as posicoes
 ABNT2 `;/:` (Usage `0x38`) e `/ ?` (Usage `0x87`) antes de entregar os
-scancodes ao Shell. `src/include/core/irq_deferred.h` define a
-fila limitada de conclusoes fora de contexto de IRQ, com cancelamento por
-objeto de trabalho. `src/include/drivers/uhci.h` acrescenta o contrato de
+scancodes ao Shell. `src/include/core/irq_deferred.h` define a fila limitada
+de conclusoes fora de contexto de IRQ, inicializacao por proprietario/IRQ,
+coalescencia, reexecucao, cancelamento seguro, snapshots globais/por IRQ e
+autoteste privado. `src/include/drivers/idt.h` publica ocorrencias e quantidade
+de handlers das 16 linhas PIC por snapshot somente-leitura.
+`src/include/drivers/uhci.h` acrescenta o contrato de
 Interrupt IN persistente, callback diferido, cancelamento e diagnostico
 explicito de portas degradadas; o UHCI reserva TDs, buffers e fases periodicas
 sem alterar Control ou Bulk. `usb_hid.h`

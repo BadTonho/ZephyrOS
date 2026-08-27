@@ -37,6 +37,7 @@ typedef int (*ethernet_send_frame_fn)(
     void* driver_context, const uint8_t* data, uint16_t length);
 typedef int (*ethernet_rx_pending_fn)(
     void* driver_context, uint8_t* out_pending);
+typedef int (*ethernet_service_pending_fn)(void* driver_context);
 
 typedef enum {
     ETHERNET_DESTINATION_UNKNOWN = 0,
@@ -63,6 +64,7 @@ typedef struct {
     uint8_t mac_address[ETHERNET_MAC_ADDRESS_SIZE];
     void* driver_context;
     ethernet_get_driver_status_fn get_driver_status;
+    ethernet_service_pending_fn service_pending;
     ethernet_rx_pending_fn rx_pending;
     ethernet_receive_frame_fn receive_frame;
     ethernet_send_frame_fn send_frame;

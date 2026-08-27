@@ -410,11 +410,12 @@ driver `READY`. O backend RTL8811CU valida o arquivo externo
 sequencia de registradores nao forem confirmados.
 
 `ethernet_interface_t` desacopla a camada L2 dos drivers por contexto opaco e
-callbacks de status, RX pendente, recepcao e transmissao. Um registro fixo
-aceita quatro interfaces e o polling usa round-robin com orcamento global de
-oito frames. A IRQ somente reconhece, contabiliza e marca o evento RX. O
-processo de sistema chama `network_manager_poll()`, mas a camada so consulta
-o driver quando ele informa trabalho pendente.
+callbacks de status, servico de causas pendentes, RX pendente, recepcao e
+transmissao. Um registro fixo aceita quatro interfaces e o polling usa
+round-robin com orcamento global de oito frames. A IRQ somente reconhece o
+dispositivo, acumula a causa e agenda o Bottom-Half. O processo System drena o
+trabalho com interrupcoes habilitadas; `service_pending` repete esse servico no
+polling como fallback antes de consultar RX.
 Nesse contexto o driver copia frames validos para uma fila estatica de oito
 entradas, recicla o DMA e a camada Ethernet valida tamanho, destino, origem e
 EtherType. Broadcast e unicast para a MAC local sao aceitos; outros destinos,
@@ -482,8 +483,10 @@ falha ou mudança de configuração cancelam tanto timers armados quanto
 vencimentos pendentes; a comparação manual de ticks não faz mais parte da
 manutenção ICMP.
 
-O processo de sistema executa Ethernet, manutencao ARP e manutencao ICMP nessa
-ordem, no maximo uma vez por tick para os protocolos. O Shell nao usa mais um
+O processo de sistema prioriza Bottom-Halfs e entrada, executa Ethernet,
+manutencao ARP e manutencao ICMP, faz polling USB e realiza uma segunda
+passagem limitada de Bottom-Halfs/entrada. Os protocolos permanecem limitados
+a uma manutencao por tick. O Shell nao usa mais um
 polling fixo de um tick: o processo de sistema sinaliza o canal IPC do Shell
 quando ha progresso, e o job recalcula o timeout ate o deadline. Os campos
 `event_generation` de DNS, ICMP e HTTP continuam identificando eventos

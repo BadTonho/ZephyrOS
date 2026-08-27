@@ -1738,9 +1738,12 @@ int uhci_interrupt_submit(const usb_device_info_t* device,
     request->callback = callback;
     request->context = context;
     request->generation = 1U;
-    request->completion_work.callback = uhci_interrupt_completion;
-    request->completion_work.context = request;
-    result = uhci_interrupt_reserve_frames(controller, request);
+    result = irq_deferred_work_init(&request->completion_work, "UHCI",
+                                    controller->irq,
+                                    uhci_interrupt_completion, request);
+    if (result == OK) {
+        result = uhci_interrupt_reserve_frames(controller, request);
+    }
     if (result == OK) {
         uhci_qh_t* queue_head = uhci_queue_head_at(controller,
                                                    request->qh_index);

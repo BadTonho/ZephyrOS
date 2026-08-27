@@ -112,7 +112,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
 - Funcionalidades aplicaveis: R1 foi validada no QEMU com log circular,
   diagnosticos e regressao. R2 e R3 foram validadas manualmente no QEMU, com
   timers, espera, rede, cancelamento, `q2check`, `regcheck full`, `memcheck`,
-  `log check` e regressao Simple/Classic aprovados.
+  `log check` e regressao Simple/Classic aprovados. A SYNC1 do Roadmap 12 foi
+  implementada como primeiro pre-requisito de R4, mas sua matriz QEMU ainda
+  esta pendente; R4/SYNC3 e a `kworker` nao foram iniciadas.
 
 ## K4 validada
 

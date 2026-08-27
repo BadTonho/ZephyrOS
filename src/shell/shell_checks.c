@@ -13,6 +13,7 @@
 #include "core/wait.h"
 #include "process/process.h"
 #include "drivers/ata.h"
+#include "drivers/idt.h"
 #include "drivers/speaker.h"
 #include "process/thread.h"
 #include "apps/taskmanager.h"
@@ -809,6 +810,8 @@ static int shell_regcheck_validate_services(void) {
         !idt_is_user_syscall_enabled() || !paging_is_ready() ||
         !app_loader_is_ready() || !app_package_is_ready() ||
         !app_catalog_is_ready() || timer_validate_state() != OK ||
+        idt_validate_irq_state() != OK ||
+        irq_deferred_validate_state() != OK ||
         rtc_validate_state() != OK || clock_validate_state() != OK ||
         tls_validate_state() != OK) {
         LOG_ERROR("SHELL", "RegCheck encontrou servico obrigatorio indisponivel");
