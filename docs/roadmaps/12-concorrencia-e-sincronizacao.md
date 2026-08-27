@@ -142,7 +142,8 @@ a v1.0.0.
 - [x] Preservar os checks temporizados limitados dos schedulers e impedir
   bloqueio fora de contexto executavel ou com interrupcoes desabilitadas.
 - [x] Migrar IPC, Editor, Explorer e Task Manager para espera real quando a
-  fila de mensagens esta vazia.
+  fila de mensagens esta vazia, preservando sinais diretos por uma geracao
+  consumida pelo processo.
 - [x] Adicionar fila e eventos `CONNECTED`, `READABLE`, `EOF`, `ERROR` e
   `CLOSED` a cada socket nativo, preservando `net_socket_receive()` como API
   nao bloqueante e acrescentando `net_socket_wait()`.
@@ -200,9 +201,11 @@ continuar responsivos, sem waiters orfaos.
 
 ### Estado da entrega
 
-A implementacao esta pronta, mas a SYNC2 permanece aberta ate a matriz QEMU
-ser executada pelo usuario e registrada separadamente. SYNC3, R4 e a
-`kworker` continuam pendentes; o bootloader permanece inalterado.
+A primeira matriz QEMU aprovou filas, sockets, rede, memoria, log e uso
+invalido, mas revelou uma corrida no cancelamento F11 do `regcheck full`. A
+correcao esta implementada e aguarda nova validacao do usuario; a SYNC2
+permanece aberta. SYNC3, R4 e a `kworker` continuam pendentes; o bootloader
+permanece inalterado.
 
 ---
 

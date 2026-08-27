@@ -10,15 +10,24 @@ static uint32_t focus_fallback_pid = 0;
 static ipc_stats_t ipc_stats;
 static int ipc_ready = 0;
 
-static int ipc_wait_condition(void* context, uint8_t* out_ready) {
-    process_t* process = (process_t*)context;
+typedef struct {
+    process_t* process;
+    uint32_t observed_generation;
+} ipc_wait_context_t;
 
-    if (!process || !out_ready) {
+static int ipc_wait_condition(void* context, uint8_t* out_ready) {
+    ipc_wait_context_t* wait_context = (ipc_wait_context_t*)context;
+    process_t* process;
+
+    if (!wait_context || !wait_context->process || !out_ready) {
         LOG_ERROR("IPC", "Contexto nulo na condicao de espera");
         return ERR_NULL;
     }
+    process = wait_context->process;
     spinlock_acquire(&ipc_lock);
-    *out_ready = process->msg_head != process->msg_tail;
+    *out_ready = process->msg_head != process->msg_tail ||
+                 process->ipc_wait_channel.condition !=
+                     wait_context->observed_generation;
     spinlock_release(&ipc_lock);
     return OK;
 }
@@ -125,6 +134,9 @@ int ipc_receive(ipc_msg_t* msg) {
 
 int ipc_wait(uint32_t timeout_ticks, wait_reason_t* out_reason) {
     process_t* current = process_get_current();
+    ipc_wait_context_t context;
+    uint32_t generation;
+    int result;
 
     if (!out_reason) {
         LOG_ERROR("IPC", "Destino nulo para resultado da espera IPC");
@@ -139,9 +151,19 @@ int ipc_wait(uint32_t timeout_ticks, wait_reason_t* out_reason) {
         LOG_ERROR("IPC", "Espera IPC sem processo atual");
         return ERR_STATE;
     }
-    return wait_event_timeout(&current->ipc_wait_channel,
-                              ipc_wait_condition, current,
-                              timeout_ticks, out_reason);
+    context.process = current;
+    context.observed_generation = current->ipc_wait_generation;
+    result = wait_event_timeout(&current->ipc_wait_channel,
+                                ipc_wait_condition, &context,
+                                timeout_ticks, out_reason);
+    if (result != OK || *out_reason != WAIT_REASON_EVENT) return result;
+    if (wait_channel_get_condition(&current->ipc_wait_channel,
+                                   &generation) != OK) {
+        LOG_ERROR("IPC", "Falha ao confirmar geracao da espera IPC");
+        return ERR_STATE;
+    }
+    current->ipc_wait_generation = generation;
+    return OK;
 }
 
 void ipc_get_stats(ipc_stats_t* stats) {
