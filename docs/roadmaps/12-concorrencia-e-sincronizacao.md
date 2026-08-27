@@ -10,8 +10,8 @@ Implementar padrões modernos de concorrência, sincronização e tratamento ass
   otimização de `regcheck full` e eliminação do overflow sob estresse adiadas
   para a v1.0.0 em
   [`DT100-001`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2).
-- [ ] SYNC2 - Primitivas de Espera sem Espera Ocupada: QEMU padrao e USB HID
-  aprovados; perfis sem NIC e multi-NIC pendentes.
+- [ ] SYNC2 - Primitivas de Espera sem Espera Ocupada: QEMU padrao, USB HID e
+  sem NIC aprovados; perfil multi-NIC pendente.
 - [ ] SYNC3 - Filas de Trabalho do Kernel (Kernel Workqueues).
 - [ ] SYNC4 - Sistema de Sinais Assíncronos para Processos e Shell (`SIGINT`, `SIGTERM`, `SIGSEGV`).
 
@@ -193,7 +193,7 @@ log check
 ```
 
 As coberturas adicionais usam `make run-usb-hid`,
-`make run QEMU_NET_ARGS=` e
+`make run QEMU_NET_ARGS="-nic none"` e
 `make run QEMU_NET_ARGS="-netdev user,id=net0 -device e1000,netdev=net0 -netdev user,id=net1 -device rtl8139,netdev=net1"`.
 `wqinfo foo` e `net socket foo` devem apenas registrar uso invalido. Durante
 esperas e `regcheck full`, teclado, mouse PS/2/USB, Classic e Shell devem
@@ -204,9 +204,9 @@ continuar responsivos, sem waiters orfaos.
 A matriz QEMU padrao aprovou filas, sockets, rede, memoria, log e uso invalido.
 A corrida inicialmente observada no cancelamento F11 do `regcheck full` foi
 corrigida e o reteste terminou em `OK`, sem waiters orfaos. A SYNC2 permanece
-aberta para os perfis sem NIC e multi-NIC; o perfil USB HID foi aprovado com
-cancelamento F12. SYNC3, R4 e a `kworker` continuam pendentes; o bootloader
-permanece inalterado.
+aberta somente para o perfil multi-NIC; USB HID foi aprovado com cancelamento
+F12 e a ausencia de NIC falhou de forma controlada. SYNC3, R4 e a `kworker`
+continuam pendentes; o bootloader permanece inalterado.
 
 ---
 

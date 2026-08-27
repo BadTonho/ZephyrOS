@@ -1500,3 +1500,21 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   permaneceram `READY`, com crescimento dos relatorios, zero malformados,
   erros e descartes. `health check` mostrou apenas componentes degradados ou
   indisponiveis esperados do ambiente. Restam os perfis sem NIC e multi-NIC.
+
+- SYNC2: primeira tentativa do perfil sem NIC diagnosticada.
+  Registrada em: 2026-08-27 16:39 (America/Sao_Paulo).
+  A execucao com `QEMU_NET_ARGS` vazio iniciou a E1000 padrao do QEMU; `net
+  devices` mostrou `net-pci-00:03.0` ativa e a conexao TCP foi estabelecida.
+  Os checks de espera, sockets, RegCheck, memoria e log passaram, mas essa
+  evidencia pertence novamente ao perfil padrao. A matriz foi corrigida para
+  usar `QEMU_NET_ARGS="-nic none"`; o perfil sem NIC permanece pendente.
+
+- SYNC2: perfil sem NIC concluido pelo usuario.
+  Concluida em: 2026-08-27 16:44 (America/Sao_Paulo).
+  QEMU iniciado com `-nic none` nao publicou controladores. Sockets ficaram
+  `INDISPONIVEL`, a fixture privada terminou em `OK` e a tentativa TCP falhou
+  controladamente antes da configuracao DNS, sem socket ou waiter residual.
+  `wait check` aprovou 14 invariantes, `wqinfo` mostrou somente os dois workers
+  esperados, e `regcheck full`, `memcheck` e `log check` terminaram em `OK`.
+  `health check` publicou Network como `DISABLED` pelo motivo esperado. Resta
+  somente o perfil multi-NIC antes do encerramento da SYNC2.
