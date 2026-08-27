@@ -1424,3 +1424,12 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   estresse extremo de `regcheck full` permanecem registrados e passaram a ser
   critério pendente de K5/v1.0.0. R4/SYNC3 e a `kworker` continuam pendentes.
   Nenhuma alteração de código foi feita neste encerramento.
+
+- Governanca de dividas tecnicas da v1.0.0 documentada.
+  Concluida em: 2026-08-27 00:24 (America/Sao_Paulo).
+  Foi criado `docs/qualidade/dividas-tecnicas-v1.0.0.md` como fonte canonica,
+  com identificadores `DT100-NNN`, estados, evidencia e criterios de quitacao.
+  A limitacao aceita da SYNC1 foi cadastrada como `DT100-001`, ligada a K5 e
+  referenciada pelos roadmaps relacionados. `docs/regras.md` e `AGENTS.md`
+  passaram a exigir cadastro, rastreabilidade e validacao antes da quitacao.
+  Mudanca exclusivamente documental; build e QEMU nao se aplicam.

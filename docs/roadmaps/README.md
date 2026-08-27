@@ -116,8 +116,10 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   implementada como primeiro pre-requisito de R4. Seus diagnosticos concluem
   em `OK`, mas o estresse de entrada durante `regcheck full` ainda causa
   lentidao e overflow PS/2. A SYNC1 foi concluida com essa divida tecnica
-  aceita e a otimizacao foi transferida para K5/v1.0.0. R4/SYNC3 e a `kworker`
-  nao foram iniciadas.
+  aceita, registrada como
+  [`DT100-001`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2),
+  e a otimizacao foi transferida para K5/v1.0.0. R4/SYNC3 e a `kworker` nao
+  foram iniciadas.
 
 ## K4 validada
 

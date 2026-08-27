@@ -71,6 +71,9 @@ piscar sem deixar rastro. `regcheck` e `kmetrics` permaneceram operacionais.
 
 ## Etapa K5 - Otimizacao sistemica para a v1.0.0
 
+Esta etapa e responsavel por quitar a divida tecnica
+[`DT100-001`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2).
+
 - [ ] Medir por fase o custo de `regcheck full`, incluindo varredura PCI,
   inventarios, filesystem, pacotes, Ring 3 e apresentacao de logs.
 - [ ] Registrar taxa e pico de IRQ1/IRQ12, ocupacao das filas bruta,
@@ -84,7 +87,8 @@ piscar sem deixar rastro. `regcheck` e `kmetrics` permaneceram operacionais.
 
 Esta etapa foi reservada para a v1.0.0 por decisao do usuario. Ate la, a
 lentidao e o overflow de entrada sob esse estresse permanecem limitacoes
-conhecidas, sem reivindicacao de ganho de desempenho.
+conhecidas registradas em `DT100-001`, sem reivindicacao de ganho de
+desempenho.
 
 ## Criterio de saida
 

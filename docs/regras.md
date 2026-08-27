@@ -280,6 +280,26 @@ forneça a informação.
 
 ---
 
+## 11. Dividas Tecnicas da v1.0.0
+
+Toda limitacao conhecida aceita para permitir o encerramento de uma etapa e
+adiada para a v1.0.0 DEVE ser cadastrada em
+[`docs/qualidade/dividas-tecnicas-v1.0.0.md`](qualidade/dividas-tecnicas-v1.0.0.md)
+antes de marcar a etapa como concluida.
+
+Cada divida deve ter identificador imutavel `DT100-NNN`, estado, origem, data
+de aceitacao, impacto, evidencia, roadmap responsavel, versao limite e criterio
+reproduzivel de quitacao. O roadmap de origem e o roadmap responsavel devem
+referenciar o mesmo identificador.
+
+Uma divida nao pode ser removida ou marcada como `QUITADA` sem satisfazer seu
+criterio de saida e registrar a validacao final, com horario exato, em
+`docs/qualidade/registro-validacoes.md`. Itens quitados permanecem no documento
+como historico. Funcionalidades apenas planejadas, ideias futuras e itens fora
+de escopo nao devem ser cadastrados como divida sem aceitacao explicita.
+
+---
+
 ## Checklist de Revisão
 
 Antes de commitar, verificar:
@@ -293,3 +313,5 @@ Antes de commitar, verificar:
       novos comentários explicativos no fonte?
 - [ ] Não há variáveis não utilizadas?
 - [ ] Não há memória leak (malloc sem free)?
+- [ ] Toda divida tecnica aceita para a v1.0.0 esta cadastrada e ligada ao
+      roadmap pelo identificador `DT100-NNN`?

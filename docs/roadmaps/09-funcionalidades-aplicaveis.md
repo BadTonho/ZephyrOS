@@ -182,8 +182,10 @@ A infraestrutura de fila de trabalho do kernel foi consolidada no [Roadmap 12 - 
 
 A SYNC1 concluiu o primeiro pré-requisito: Bottom-Halfs limitados executados
 pelo processo System. A otimização sob `regcheck full` e a eliminação do
-overflow PS/2 em estresse foram aceitas como dívida técnica da v1.0.0. R4
-permanece pendente porque a `kworker`, a fila cooperativa genérica e os
+overflow PS/2 em estresse foram aceitas como dívida técnica da v1.0.0,
+registrada como
+[`DT100-001`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2).
+R4 permanece pendente porque a `kworker`, a fila cooperativa genérica e os
 trabalhos atrasados pertencem à SYNC3.
 
 ## R5 - Modelo unificado de dispositivos (Mapeado para Roadmap 15)

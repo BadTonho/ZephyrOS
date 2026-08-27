@@ -10,7 +10,9 @@
 - [x] Adicionar historico rolavel de 500 linhas ao Shell.
 - [ ] Medir tempos de renderizacao em hardware real.
 - [ ] Na v1.0.0, otimizar `regcheck full` e o ciclo System com métricas por
-  fase, eliminando o overflow PS/2 observado sob entrada intensa.
+  fase, quitando
+  [`DT100-001`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2)
+  com a eliminacao do overflow PS/2 observado sob entrada intensa.
 
 ## Atalhos
 
@@ -67,7 +69,8 @@ modos `simple` e `classic`.
 - A frequencia maxima continua limitada pelo timer de 50 Hz.
 - Nao ha medicao persistente de FPS ou tempo de renderizacao nesta etapa.
 - Ate a v1.0.0, `regcheck full` pode ficar lento e saturar a entrada PS/2 sob
-  estresse manual extremo; a SYNC1 foi concluida com essa divida tecnica aceita.
+  estresse manual extremo; a SYNC1 foi concluida com a divida tecnica aceita
+  `DT100-001`.
 
 ## Referencias
 
