@@ -33,6 +33,7 @@
 #include "core/errors.h"
 #include "core/input.h"
 #include "core/irq_deferred.h"
+#include "core/workqueue.h"
 #include "core/log.h"
 #include "drivers/mouse.h"
 #include "ui/gui.h"
@@ -837,6 +838,7 @@ static int shell_regcheck_validate_services(void) {
         !app_catalog_is_ready() || timer_validate_state() != OK ||
         idt_validate_irq_state() != OK ||
         irq_deferred_validate_state() != OK ||
+        workqueue_validate_state() != OK ||
         wait_validate_state() != OK ||
         rtc_validate_state() != OK || clock_validate_state() != OK ||
         tls_validate_state() != OK) {

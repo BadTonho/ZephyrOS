@@ -118,11 +118,14 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   lentidao e overflow PS/2. A SYNC1 foi concluida com essa divida tecnica
   aceita, registrada como
   [`DT100-001`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2),
-  e a otimizacao foi transferida para K5/v1.0.0. R4/SYNC3 e a `kworker` nao
-  foram iniciadas. A SYNC2 esta implementada sobre as filas FIFO da R3, com
+  e a otimizacao foi transferida para K5/v1.0.0. A SYNC2 esta implementada
+  sobre as filas FIFO da R3, com
   IPC e sockets bloqueantes e diagnosticos proprios. A etapa foi concluida e
   validada nos perfis QEMU padrao, USB HID, sem NIC e multi-NIC, incluindo a
-  correcao do cancelamento F11.
+  correcao do cancelamento F11. R4/SYNC3 e a `Zephyr kworker` estao
+  implementadas e aguardam a matriz QEMU. O uso temporario de um processo
+  ring0 esta aceito em
+  [`DT100-002`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-002---kworker-como-processo-ring0).
 
 ## K4 validada
 

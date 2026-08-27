@@ -413,9 +413,9 @@ sequencia de registradores nao forem confirmados.
 callbacks de status, servico de causas pendentes, RX pendente, recepcao e
 transmissao. Um registro fixo aceita quatro interfaces e o polling usa
 round-robin com orcamento global de oito frames. A IRQ somente reconhece o
-dispositivo, acumula a causa e agenda o Bottom-Half. O processo System drena o
-trabalho com interrupcoes habilitadas; `service_pending` repete esse servico no
-polling como fallback antes de consultar RX.
+dispositivo, acumula a causa e agenda o Bottom-Half. A `Zephyr kworker` drena
+o trabalho com interrupcoes habilitadas; `service_pending` repete esse servico
+no polling como fallback antes de consultar RX.
 Nesse contexto o driver copia frames validos para uma fila estatica de oito
 entradas, recicla o DMA e a camada Ethernet valida tamanho, destino, origem e
 EtherType. Broadcast e unicast para a MAC local sao aceitos; outros destinos,
@@ -483,20 +483,20 @@ falha ou mudança de configuração cancelam tanto timers armados quanto
 vencimentos pendentes; a comparação manual de ticks não faz mais parte da
 manutenção ICMP.
 
-O processo de sistema prioriza Bottom-Halfs e entrada, executa Ethernet,
-manutencao ARP e manutencao ICMP, faz polling USB e realiza uma segunda
-passagem limitada de Bottom-Halfs/entrada. Os protocolos permanecem limitados
-a uma manutencao por tick. O Shell nao usa mais um
-polling fixo de um tick: o processo de sistema sinaliza o canal IPC do Shell
-quando ha progresso, e o job recalcula o timeout ate o deadline. Os campos
+Um trabalho `NORMAL` da kworker executa Ethernet e as manutencoes de ARP e
+ICMP. O processo System conserva polling USB, entrega de entrada e UI. Os
+protocolos permanecem limitados a uma manutencao por tick. O Shell nao usa
+mais um polling fixo de um tick: o executor do trabalho sinaliza o canal IPC
+do Shell quando ha progresso, e o job recalcula o timeout ate o deadline. Os
+campos
 `event_generation` de DNS, ICMP e HTTP continuam identificando eventos
 observaveis; a geracao do Shell rejeita resultados de outra execucao.
 `ipv4_validate_state()` e
 `icmp_validate_state()` incluem vetores puros de checksum e nao configuram,
 transmitem, limpam cache nem avancam sessoes.
-Depois do polling de rede, o mesmo processo despacha até oito callbacks de
-timer. Essa ordem permite que um Echo Reply recebido no tick limite cancele o
-timeout `PENDING` antes da execução do callback.
+Expiracoes de timer agendam um trabalho `HIGH`, que despacha ate oito
+callbacks fora da IRQ e se reagenda ao esgotar o orcamento. A manutencao de
+rede continua podendo cancelar um timeout `PENDING` antes de seu callback.
 
 Na S2.6, `udp_init()` registra o protocolo IPv4 `17`. Uma tabela fixa de 16
 endpoints entrega `udp_datagram_view_t` apenas durante o callback. O modulo
@@ -524,8 +524,8 @@ encerra clientes HTTP, sockets e conexoes TCP anteriores.
 Depois de inicializar o Network Manager, o kernel inicia uma aquisicao DHCP
 na primeira interface ativa, vinculada ao Ethernet e com link, seguindo a
 ordem PCI. A chamada envia o primeiro Discover e retorna imediatamente: o
-boot nao espera o lease, e as retentativas continuam no polling do processo
-de sistema. Ausencia de NIC, link ou servidor DHCP permanece somente como
+boot nao espera o lease, e as retentativas continuam no trabalho periodico de
+rede. Ausencia de NIC, link ou servidor DHCP permanece somente como
 diagnostico e nao impede Desktop ou Shell. A tentativa automatica ocorre uma
 vez por boot; `net dhcp acquire <id>` continua disponivel para nova tentativa
 ou para selecionar outra interface.
@@ -538,8 +538,8 @@ O cache possui 16 entradas, respeita TTL, ignora TTL zero e substitui a
 entrada expirada ou mais antiga. Servidor manual e configuracao entregue por
 DHCP permanecem somente em RAM.
 
-O polling executa Ethernet e, no maximo uma vez por tick, ARP, ICMP, DHCP e
-DNS. UDP e os callbacks de DHCP/DNS rodam nesse contexto, nunca na IRQ.
+O trabalho de rede executa Ethernet e, no maximo uma vez por tick, ARP, ICMP,
+DHCP e DNS. UDP e os callbacks de DHCP/DNS rodam nesse contexto, nunca na IRQ.
 `udp_validate_state()`, `dhcp_validate_state()` e `dns_validate_state()`
 incluem vetores puros de checksum, opcoes, truncamento, compressao e CNAME.
 
@@ -567,8 +567,8 @@ Desde a SYNC2, cada slot ativo tambem possui uma wait queue FIFO. A API
 `ERROR`, `CLOSED` ou timeout, sem mudar a semantica nao bloqueante de
 `net_socket_receive()`. Dados acordam um consumidor; transicoes terminais
 acordam todos. Fechamento, abort e reset tornam a fila indisponivel e removem
-os waiters antes de reciclar o handle geracional. O processo System continua
-executando o polling TCP/sockets e nunca bloqueia nessas filas.
+os waiters antes de reciclar o handle geracional. A kworker executa o polling
+TCP/sockets e nunca bloqueia nessas filas.
 
 O cliente HTTP mantem uma sessao GET. Ele aceita somente
 `http://host[:porta]/caminho`, resolve nomes pelo DNS, envia HTTP/1.1 com
@@ -783,14 +783,36 @@ integralmente o pacote antes do commit do cache. Timeout transitorio permite
 uma repeticao do byte zero. Cancelamento, assinatura, hash ou politica
 invalidos nao repetem. Consulta e download iniciados pelo System Updater rodam
 no processo nativo `Updater Worker`: enquanto ele bloqueia cooperativamente
-entre ciclos HTTP, `Zephyr System` continua atendendo o polling da rede,
-teclado, mouse e composicao do Window Manager.
+entre ciclos HTTP, o trabalho de rede continua na kworker, enquanto
+`Zephyr System` atende teclado, mouse e composicao do Window Manager.
 
 Os registros `ZUR0.STA` e `ZUR1.STA` recuperam download interrompido sem
 rede. Os slots `ZUR0.ZUP` e `ZUR1.ZUP` alternam somente depois da autenticacao,
 preservando o pacote anterior em toda falha. FAT32 permite consulta do
 manifesto, mas nao download. O contrato binario completo esta em
 [`distribuicao-remota.md`](../14-atualizacoes/distribuicao-remota.md).
+
+## SYNC3: Kernel Workqueues
+
+`src/core/workqueue.c` mantem um registro estatico geracional de 64 trabalhos,
+duas filas FIFO `HIGH`/`NORMAL` e uma fila ordenada por prazo absoluto. O
+contrato publico esta em `src/include/core/workqueue.h`; nao ha alocacao por
+agendamento nem execucao de callbacks dentro de IRQ.
+
+`schedule_work()` promove um trabalho atrasado e coalesce duplicatas.
+Agendamento durante `RUNNING` solicita uma unica reexecucao;
+`schedule_delayed_work()` preserva o prazo mais proximo. `cancel_work()` remove
+entradas prontas/atrasadas e cancela a reexecucao de callback ja iniciado.
+
+A `Zephyr kworker` e um processo ring0 bloqueado na Wait Queue `KWORKER`. Ela
+despacha Bottom-Halves e timers com prioridade alta e rede/sockets e indice com
+prioridade normal. System e o loop principal usam a mesma API somente como
+fallback. A migracao futura para `thread_t` esta registrada em `DT100-002`.
+
+`workq status|list|check`, `health check` e `regcheck full` expoem metricas,
+contexto, saturacao, falhas de wake e invariantes. Duracao sub-tick permanece
+`N/D`, pois nao ha RDTSC/PMU nesta etapa. `workq check` tambem bloqueia o Shell numa fila
+privada e exige que a kworker execute o trabalho de prova e acorde o waiter.
 
 ## Struct `registers_t`
 

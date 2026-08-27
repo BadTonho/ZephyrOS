@@ -71,8 +71,10 @@ piscar sem deixar rastro. `regcheck` e `kmetrics` permaneceram operacionais.
 
 ## Etapa K5 - Otimizacao sistemica para a v1.0.0
 
-Esta etapa e responsavel por quitar a divida tecnica
-[`DT100-001`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2).
+Esta etapa e responsavel por quitar as dividas tecnicas
+[`DT100-001`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2)
+e
+[`DT100-002`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-002---kworker-como-processo-ring0).
 
 - [ ] Medir por fase o custo de `regcheck full`, incluindo varredura PCI,
   inventarios, filesystem, pacotes, Ring 3 e apresentacao de logs.
@@ -84,11 +86,15 @@ Esta etapa e responsavel por quitar a divida tecnica
   botoes.
 - [ ] Validar `regcheck full` sob movimento, clique, arraste e roda intensos,
   com zero descarte e interfaces Classic/Shell responsivas.
+- [ ] Unificar o agendamento nativo de processos e `thread_t`, migrar a
+  `Zephyr kworker` para uma thread real e preservar Wait Queues, prioridades,
+  cancelamento, fallbacks e diagnósticos da SYNC3.
 
 Esta etapa foi reservada para a v1.0.0 por decisao do usuario. Ate la, a
 lentidao e o overflow de entrada sob esse estresse permanecem limitacoes
 conhecidas registradas em `DT100-001`, sem reivindicacao de ganho de
-desempenho.
+desempenho. Até a mesma etapa, a `kworker` consome um slot e uma stack de
+processo ring0 conforme `DT100-002`.
 
 ## Criterio de saida
 

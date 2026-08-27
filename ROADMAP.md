@@ -12,10 +12,11 @@ FAT32 esta implementada e validada. A EP9.4C de reinicio controlado pelo
 System Updater esta implementada e validada.
 
 SYNC2 esta concluida e validada com wait queues FIFO para IPC e sockets nos
-perfis QEMU padrao, USB HID, sem NIC e multi-NIC. SYNC3/R4 e a `kworker`
-continuam pendentes.
+perfis QEMU padrao, USB HID, sem NIC e multi-NIC. SYNC3/R4 e a `Zephyr
+kworker` estao implementadas e aguardam a matriz QEMU; `DT100-002` registra o
+uso temporario de um processo ring0 ate a K5/v1.0.0.
 
-## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A-EP9.4C validadas; SYNC1 concluída com a dívida técnica [DT100-001](docs/qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2) aceita para K5/v1.0.0; SYNC2 concluida e validada
+## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A-EP9.4C validadas; SYNC1 concluída com a dívida técnica [DT100-001](docs/qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2) aceita para K5/v1.0.0; SYNC2 concluida e validada; SYNC3/R4 implementadas e aguardando validacao
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
@@ -138,6 +139,7 @@ Evolução da plataforma:      [████████████████
 | `clock [status|check]` | Inspeciona RTC/UTC ancorado no PIT e executa autotestes de calendario e rollover |
 | `tls [status|check]` | Inspeciona BearSSL TLS/X.509 e executa os vetores de politica |
 | `wait [status|list|check]` | Inspeciona canais de espera e executa autoteste de esperas |
+| `workq [status|list|check]` | Inspeciona trabalhos, prazos e contexto; valida fixture e wake real da kworker |
 | `wqinfo` | Lista wait queues registradas e a ordem FIFO dos waiters |
 | `job [status]` | Inspeciona o executor cooperativo de jobs demorados do Shell |
 | `pkg ...` | Lista, inspeciona, valida, instala e remove pacotes locais ZPKG |

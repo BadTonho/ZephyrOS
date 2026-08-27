@@ -10,6 +10,7 @@
 #define IRQ_DEFERRED_IRQ_NONE 0xFFU
 
 typedef void (*irq_deferred_callback_t)(void* context);
+typedef void (*irq_deferred_notifier_t)(void* context);
 
 typedef struct {
     irq_deferred_callback_t callback;
@@ -70,6 +71,8 @@ int irq_deferred_work_init(irq_deferred_work_t* work, const char* owner,
                            irq_deferred_callback_t callback, void* context);
 int irq_deferred_schedule(irq_deferred_work_t* work);
 int irq_deferred_cancel(irq_deferred_work_t* work);
+int irq_deferred_set_notifier(irq_deferred_notifier_t notifier,
+                              void* context);
 int irq_deferred_dispatch(uint32_t budget, uint32_t* out_processed);
 int irq_deferred_get_status(irq_deferred_status_t* out_status);
 int irq_deferred_get_irq_status(uint8_t irq_line,

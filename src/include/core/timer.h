@@ -25,6 +25,7 @@ typedef enum {
 } timer_mode_t;
 
 typedef int (*timer_callback_fn)(timer_handle_t handle, void* context);
+typedef void (*timer_pending_notifier_t)(void* context);
 
 typedef struct {
     timer_handle_t handle;
@@ -88,6 +89,8 @@ int timer_init(uint32_t freq);
 void timer_handler(registers_t* regs);
 uint32_t timer_get_ticks(void);
 uint32_t timer_get_frequency(void);
+int timer_set_pending_notifier(timer_pending_notifier_t notifier,
+                               void* context);
 int timer_owner_create(const char* name, timer_owner_handle_t* out_owner);
 int timer_owner_destroy(timer_owner_handle_t owner);
 int timer_create(timer_owner_handle_t owner, const char* name,

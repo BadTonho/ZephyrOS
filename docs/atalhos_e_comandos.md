@@ -50,6 +50,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `tls` | `[status|check]` | Inspeciona TLS 1.2/BearSSL, RDRAND, CA, SAN, validade e pin SPKI. |
 | `wait` | `[status|list|check]` | Inspeciona canais de espera e executa o autoteste de esperas. |
 | `wqinfo` | - | Lista wait queues registradas, geracao, ocupacao e ordem FIFO dos waiters. |
+| `workq` | `[status|list|check]` | Inspeciona filas, prazos e contexto; `check` inclui fixture e wake real da kworker. |
 | `job` | `status` | Inspeciona o estado do executor cooperativo de jobs do Shell. |
 | `update remote` | `status/enable/disable/clear [--confirm]` | Controla o transporte remoto opcional da sessao. |
 | `update fetch` | `[--url <manifesto>] [--confirm]` | Consulta ou baixa um ZUPD autenticado sem aplicar. |

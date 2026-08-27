@@ -86,9 +86,10 @@ Isso:
 `process_create()` mantém a stack nativa padrão de 4 KiB. Processos que
 executam caminhos com maior consumo podem usar `process_create_with_stack_size()`
 entre 4 KiB e 16 KiB, sempre alinhada a 16 bytes. A EP6.4 reserva 16 KiB para
-o `Zephyr System`, responsável pelo polling HTTP/TLS e BearSSL, e preserva os
-16 KiB atuais do Shell; Desktop, Idle e demais processos nativos permanecem
-com 4 KiB. A ABI e a stack de processos ring 3 não mudam.
+o `Zephyr System`, e a SYNC3 reserva o mesmo para o processo ring0
+`Zephyr kworker`; o Shell tambem conserva 16 KiB. Desktop, Idle e demais
+processos nativos permanecem com 4 KiB. A ABI e a stack de processos ring 3
+não mudam.
 
 Cada stack nativa tem canários inferior/superior e área útil preenchida para
 medir high-water. `process_stack_get_info()` consulta um PID,
@@ -249,6 +250,28 @@ sistema o sinaliza para progresso de rede, indice, timer e conclusao de
 processo, sem criar mensagens artificiais. `process_get_event_generation()`
 permite ao Shell rejeitar conclusoes de processos que pertencem a uma geracao
 anterior do job.
+
+---
+
+## Trabalho assincrono do kernel (R4 / SYNC3)
+
+A `Zephyr kworker` e um processo ring0 dedicado que usa a Wait Queue
+`KWORKER`. Quando as filas `HIGH` e `NORMAL` estao vazias, ele permanece
+bloqueado ate um novo agendamento ou o prazo absoluto mais proximo. Um wake
+somente o torna `READY`; a troca de contexto continua pertencendo ao
+scheduler cooperativo.
+
+Bottom-Halves e timers usam prioridade alta. Rede, sockets e indexacao usam
+prioridade normal. Cada ciclo possui orcamento para as duas classes, e todos
+os callbacks executam fora de IRQ com interrupcoes habilitadas. System e o
+loop principal drenam a mesma fila apenas se a kworker estiver ausente ou
+morta.
+
+Nesta etapa a kworker ainda consome um slot e uma stack de processo e nao
+participa do scheduler independente de `thread_t`. Essa limitacao aceita esta
+registrada como `DT100-002` e deve ser quitada pela K5 antes da v1.0.0.
+O comando `workq check` inclui um percurso real Shell -> Wait Queue -> kworker
+-> wake, alem da fixture privada das filas.
 
 ---
 

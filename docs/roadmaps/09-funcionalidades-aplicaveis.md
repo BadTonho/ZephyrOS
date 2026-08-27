@@ -45,7 +45,7 @@ Registro da frente futura: 2026-08-22 09:21 (America/Sao_Paulo).
 - [x] R1 - observabilidade e log circular (implementada e validada).
 - [x] R2 - serviço de temporizadores canceláveis (implementado e validado).
 - [x] R3 - espera por eventos, timeout e cancelamento (implementada e validada).
-- [ ] R4 - fila de trabalho cooperativa.
+- [ ] R4 - fila de trabalho cooperativa (implementada; matriz QEMU pendente).
 - [ ] R5 - modelo unificado de dispositivos.
 - [ ] R6 - fila de requisições de bloco.
 - [ ] R7 - cache de caminhos e resolução de nomes.
@@ -132,9 +132,9 @@ Shell. Falhas de inicialização e recuperação continuam registradas.
 
 R2 está implementada no código e na documentação, com validação manual
 concluída no QEMU. O PIT permanece em 50 Hz; a IRQ somente marca vencimentos e
-o processo System despacha até oito callbacks depois do polling de rede. O
-autoteste usa tabelas privadas e o `regcheck` inclui apenas a validação
-estrutural somente-leitura.
+a `Zephyr kworker` despacha até oito callbacks por trabalho `HIGH`, com System
+somente como fallback. O autoteste usa tabelas privadas e o `regcheck` inclui
+apenas a validação estrutural somente-leitura.
 
 No QEMU foram validados `timer status`, `timer list`, `timer check`, ping com
 reply e timeout, `net check qemu`, `q2check`, `regcheck full`, `memcheck`,
@@ -185,13 +185,21 @@ a validação de integração no QEMU também foi concluída.
 
 A infraestrutura de fila de trabalho do kernel foi consolidada no [Roadmap 12 - Concorrencia e Sincronizacao](12-concorrencia-e-sincronizacao.md#sync3---filas-de-trabalho-do-kernel-kernel-workqueues), onde atua em conjunto com a divisão de interrupções Top-Half/Bottom-Half e o despachante de tarefas assíncronas do kernel (`kworker`).
 
-A SYNC1 concluiu o primeiro pré-requisito: Bottom-Halfs limitados executados
-pelo processo System. A otimização sob `regcheck full` e a eliminação do
+A SYNC1 concluiu o primeiro pré-requisito: Bottom-Halfs limitados,
+originalmente executados pelo processo System e agora migrados para a kworker.
+A otimização sob `regcheck full` e a eliminação do
 overflow PS/2 em estresse foram aceitas como dívida técnica da v1.0.0,
 registrada como
 [`DT100-001`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2).
-R4 permanece pendente porque a `kworker`, a fila cooperativa genérica e os
-trabalhos atrasados pertencem à SYNC3.
+A `Zephyr kworker`, a fila cooperativa genérica e os trabalhos atrasados foram
+implementados na SYNC3. Bottom-Halves, callbacks de timer, rede/sockets e
+índice agora usam a fila unificada; System permanece como fallback. R4 segue
+aberta somente até a matriz QEMU da SYNC3 ser validada pelo usuário.
+
+A `kworker` usa temporariamente um processo ring0 em vez de `thread_t`. Essa
+limitação foi aceita como
+[`DT100-002`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-002---kworker-como-processo-ring0)
+e será quitada pela K5 antes da v1.0.0.
 
 ## R5 - Modelo unificado de dispositivos (Mapeado para Roadmap 15)
 

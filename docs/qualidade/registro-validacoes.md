@@ -1538,3 +1538,20 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   permaneceram consistentes, sem espera ocupada, waiter orfao ou rejeicao
   permanente. Nenhuma nova divida tecnica foi aceita. SYNC3/R4 e a `kworker`
   continuam pendentes.
+
+- SYNC3/R4: divida tecnica `DT100-002` aceita pelo usuario.
+  Aceita em: 2026-08-27 17:09 (America/Sao_Paulo).
+  A `Zephyr kworker` pode encerrar a etapa como processo ring0 dedicado. O
+  consumo de um slot e uma stack de processo, sem participacao produtiva no
+  scheduler isolado de `thread_t`, deve ser quitado pela K5 antes da v1.0.0.
+
+- SYNC3/R4: implementacao de Kernel Workqueues concluida.
+  Concluida em: 2026-08-27 18:51 (America/Sao_Paulo).
+  Foi criada a fila estatica geracional com prioridades `HIGH`/`NORMAL`,
+  prazos absolutos, coalescencia, reexecucao, cancelamento, snapshots e
+  fallback. A `Zephyr kworker` bloqueia numa Wait Queue e assumiu
+  Bottom-Halves, timers, rede/sockets e indexacao. `workq check` inclui fixture
+  privada e o percurso real Shell -> Wait Queue -> kworker -> wake. Os
+  contratos, Roadmaps 03/09/12, diagnosticos, RegCheck e Health foram
+  atualizados. Os gates e a matriz QEMU permanecem pendentes do usuario; a
+  SYNC3/R4 ainda nao foi marcada como concluida.
