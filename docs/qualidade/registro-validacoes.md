@@ -1595,3 +1595,16 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   componentes degradados ou indisponiveis esperados do ambiente. `workq foo`
   foi rejeitado com o uso correto. A confirmacao explicita de responsividade
   da entrada durante a carga e os perfis complementares permanecem pendentes.
+
+- SYNC3/R4: perfil USB HID validado pelo usuario.
+  Concluida em: 2026-08-27 19:11 (America/Sao_Paulo).
+  Teclado e mouse USB Boot apareceram `READY`, com zero relatorios malformados,
+  erros e descartes; `usb hid check` terminou em `OK`. A `Zephyr kworker`
+  permaneceu ativa no PID 2, em contexto KWORKER e sem fallback, rejeicoes,
+  erros de callback ou contexto invalido. `workq check` aprovou todas as
+  invariantes e IRQ11 publicou 227 agendamentos e execucoes de Bottom-Half,
+  sem rejeicao. O ping foi cancelado por F12 depois de quatro respostas e
+  restaurou ICMP, ARP e DNS. `regcheck full` terminou em `OK` e `health check`
+  preservou somente estados esperados do ambiente. A confirmacao explicita de
+  clique, arraste e roda e os demais perfis complementares permanecem
+  pendentes.
