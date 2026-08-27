@@ -1433,3 +1433,12 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   referenciada pelos roadmaps relacionados. `docs/regras.md` e `AGENTS.md`
   passaram a exigir cadastro, rastreabilidade e validacao antes da quitacao.
   Mudanca exclusivamente documental; build e QEMU nao se aplicam.
+
+- Auditoria das demais etapas para dividas tecnicas da v1.0.0 concluida.
+  Concluida em: 2026-08-27 00:28 (America/Sao_Paulo).
+  Foram revisados os roadmaps 01 a 16, `ROADMAP.md` e as metricas de qualidade.
+  Nenhum novo item recebeu identificador: coberturas complementares nao
+  bloqueantes, medicoes `N/D`, dependencias de hardware, lacunas de evidencia e
+  etapas ainda nao iniciadas nao possuem aceite explicito como divida da
+  v1.0.0. A triagem e a regra para eventual aceite futuro foram registradas em
+  `docs/qualidade/dividas-tecnicas-v1.0.0.md`.

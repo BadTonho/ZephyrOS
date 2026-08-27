@@ -96,6 +96,27 @@ Durante `regcheck full`, mover o ponteiro, clicar, arrastar e usar a roda. A
 validacao final e seu horario devem ser registrados em
 `registro-validacoes.md` antes da mudanca do estado para `QUITADA`.
 
+## Auditoria das demais etapas
+
+Auditoria documental concluida em: 2026-08-27 00:28 (America/Sao_Paulo).
+
+Nenhum novo identificador foi criado. As ocorrencias abaixo foram encontradas,
+mas nao atendem ao criterio de divida tecnica aceita para a v1.0.0:
+
+| Fonte | Ocorrencia | Classificacao |
+|---|---|---|
+| [Roadmap 03](../roadmaps/03-kernel-e-desempenho.md) | CPU real por RDTSC/PMU e memoria por processo ainda sem fonte de medicao confiavel | Instrumentacao futura, sem aceite ou prazo da v1.0.0 |
+| [Roadmap 05](../roadmaps/05-sistema-e-ecossistema.md) e [`ROADMAP.md`](../../ROADMAP.md) | Coberturas complementares de ACPI, rede, RTL8139, peer externo e Simple/Classic | Backlog de validacao explicitamente nao bloqueante |
+| [Roadmap 07](../roadmaps/07-modernizacao-visual.md) / [`metricas.md`](metricas.md) | Comparacao numerica MV4 em `N/D` por falta da linha-base AS3 | Excecao documental ja declarada, sem reivindicacao de ganho |
+| [Roadmap 08](../roadmaps/08-evolucao-da-plataforma.md) | Gates sem horario da EP7.0 e registros de smoke/gates da EP6.4 pendentes | Lacuna de evidencia; requer validacao ou aceite proprio |
+| [Roadmap 08](../roadmaps/08-evolucao-da-plataforma.md) | EP7.1 e EP8 adiadas por dependencia de hardware real | Decisao de escopo e dependencia externa, nao divida aceita |
+| [Roadmaps 09](../roadmaps/09-funcionalidades-aplicaveis.md), [10](../roadmaps/10-vfs-e-abstracao-io.md), [11](../roadmaps/11-gerenciamento-avancado-de-memoria.md), [12](../roadmaps/12-concorrencia-e-sincronizacao.md) e [13](../roadmaps/13-armazenamento-e-buffer-cache.md) | R4-R9, VFS, MM, SYNC2-SYNC4 e BLK1-BLK4 ainda nao iniciados | Trabalho planejado, nao divida tecnica |
+
+Esses itens permanecem nos seus roadmaps de origem. Caso algum seja aceito
+como limitacao a ser quitada antes da v1.0.0, ele deve receber o proximo ID
+`DT100-NNN`, criterio reproduzivel, responsavel e registro de aceitacao antes
+de entrar neste resumo.
+
 ## Dividas quitadas
 
 Nenhuma ate o momento.
