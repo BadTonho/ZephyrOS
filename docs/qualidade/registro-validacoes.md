@@ -1472,3 +1472,13 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   App Loader depois do job, garantindo que um ZAPP criado pelo tratamento de
   resultado adquira foco antes da proxima espera. A nova validacao de build e
   o reteste funcional permanecem sob responsabilidade do usuario.
+
+- SYNC2: correcao F11 revalidada no QEMU padrao pelo usuario.
+  Concluida em: 2026-08-27 11:54 (America/Sao_Paulo).
+  `regcheck full` terminou em `OK` depois do cancelamento F11. `wait check`
+  aprovou 14 invariantes, `net socket check` aprovou toda a fixture e
+  `memcheck` e `log check` terminaram sem falhas. `wqinfo` mostrou apenas os
+  workers do Updater e da App Store bloqueados normalmente, em filas FIFO,
+  sem entrada orfa. `health check` preservou somente os estados degradados ou
+  indisponiveis esperados do ambiente. Os perfis USB HID, sem NIC e multi-NIC
+  permanecem pendentes antes do encerramento da SYNC2.
