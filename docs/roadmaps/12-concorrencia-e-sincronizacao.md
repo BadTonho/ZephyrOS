@@ -11,7 +11,7 @@ Implementar padrões modernos de concorrência, sincronização e tratamento ass
   para a v1.0.0 em
   [`DT100-001`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2).
 - [x] SYNC2 - Primitivas de Espera sem Espera Ocupada: concluida e validada.
-- [ ] SYNC3 - Filas de Trabalho do Kernel (implementada; matriz QEMU pendente).
+- [x] SYNC3 - Filas de Trabalho do Kernel (concluida e validada).
 - [ ] SYNC4 - Sistema de Sinais Assíncronos para Processos e Shell (`SIGINT`, `SIGTERM`, `SIGSEGV`).
 
 ## Atalhos
@@ -82,8 +82,10 @@ Implementar padrões modernos de concorrência, sincronização e tratamento ass
 
 O EOI e o reconhecimento do dispositivo permanecem no Top-Half. Nenhum
 callback diferido roda antes do `iret` ou na pilha da IRQ. A entrega original
-da SYNC1 não criou a kworker; a migração posterior da SYNC3 também não altera
-o bootloader.
+da SYNC1 não criou a kworker; a migração posterior da SYNC3 não depende de
+alteração no boot. `src/boot/boot.asm` permaneceu inalterado; o Stage 2 recebeu
+somente o ajuste documentado do LBA do recovery loader exigido pelo tamanho do
+kernel.
 
 ### Dívida técnica aceita até a v1.0.0
 
@@ -206,8 +208,8 @@ A corrida inicialmente observada no cancelamento F11 do `regcheck full` foi
 corrigida e o reteste terminou em `OK`, sem waiters orfaos. USB HID foi
 aprovado com cancelamento F12, a ausencia de NIC falhou de forma controlada e
 o perfil E1000 + RTL8139 aprovou TX isolado, invariantes, Bottom-Halfs sem
-rejeicoes e TCP. A SYNC2 esta concluida. SYNC3/R4 estao implementadas e
-aguardam sua propria matriz funcional; o bootloader permanece inalterado.
+rejeicoes e TCP. A SYNC2 esta concluida. SYNC3/R4 tambem foram concluidas e
+validadas em sua propria matriz funcional.
 
 ---
 
@@ -236,16 +238,16 @@ absolutos com rollover seguro; reagendamentos atrasados mantêm o prazo mais
 próximo. Callbacks executam com interrupções habilitadas e nunca na pilha da
 IRQ. As classes têm orçamentos independentes para impedir starvation.
 
-A implementação está pronta para validação. A SYNC3 permanece aberta até a
-matriz QEMU ser executada pelo usuário. A limitação aceita de usar um processo
-ring0 em vez do scheduler isolado de `thread_t` está registrada como
+A implementação e sua matriz funcional estão concluídas. A limitação aceita
+de usar um processo ring0 em vez do scheduler isolado de `thread_t` está
+registrada como
 [`DT100-002`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-002---kworker-como-processo-ring0).
 
 ### Critério de saída
 
 O kernel executa tarefas assíncronas na `Zephyr kworker`, sem callbacks na IRQ,
 com filas e fallbacks consistentes, diagnósticos em `OK` e Classic/Shell
-responsivos. A etapa só será marcada como concluída depois da matriz funcional.
+responsivos. A matriz funcional confirmou integralmente esse critério.
 
 ### Comandos Shell / Diagnóstico
 
@@ -254,36 +256,20 @@ responsivos. A etapa só será marcada como concluída depois da matriz funciona
 - `workq check`: executa a fixture privada e o percurso real
   Shell -> Wait Queue -> kworker -> wake.
 
-### Validacao pendente do usuario
+### Validacao concluida pelo usuario
 
-Depois dos gates desta versao, o perfil QEMU padrao deve executar:
+Os gates e os perfis QEMU padrao, USB HID, Storage, sem NIC e multi-NIC foram
+aprovados. `workq check` validou filas, prioridades, prazos, rollover,
+coalescencia, reexecucao, cancelamento, capacidade, contexto KWORKER e o wake
+real Shell -> Wait Queue -> kworker. Bottom-Halves, timers, sockets, rede,
+indice e ATA permaneceram consistentes, sem rejeicoes ou callbacks na IRQ.
 
-```text
-workq status
-workq list
-workq check
-irqstat check
-irqstat list
-timer check
-wait check
-wqinfo
-index rebuild
-index status
-index check
-net socket check
-net tcp connect example.com 80
-net check qemu tcp net-pci-00:03.0 example.com
-regcheck full
-health check
-memcheck
-log check
-workq foo
-```
-
-Tambem permanecem pendentes os perfis USB HID, Storage, sem NIC com
-`QEMU_NET_ARGS="-nic none"` e multi-NIC com E1000 `net-pci-00:03.0` e
-RTL8139 `net-pci-00:04.0`. Durante rede, indice e `regcheck full`, teclado,
-mouse, roda, cancelamento F12, Classic e Shell devem continuar responsivos.
+E1000 `net-pci-00:03.0` e RTL8139 `net-pci-00:04.0` passaram na suite
+multi-NIC; ausencia de NIC falhou de forma controlada. Cancelamentos F12,
+`regcheck full`, `health check`, `memcheck` e `log check` terminaram conforme o
+contrato. Teclado, movimento, clique, arraste e roda permaneceram responsivos
+durante rede, indexacao e RegCheck. A `DT100-001` continua aceita para a K5 e
+nao e quitada por esta execucao isolada sem o sintoma.
 
 ---
 

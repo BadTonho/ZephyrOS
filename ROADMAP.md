@@ -13,10 +13,10 @@ System Updater esta implementada e validada.
 
 SYNC2 esta concluida e validada com wait queues FIFO para IPC e sockets nos
 perfis QEMU padrao, USB HID, sem NIC e multi-NIC. SYNC3/R4 e a `Zephyr
-kworker` estao implementadas e aguardam a matriz QEMU; `DT100-002` registra o
-uso temporario de um processo ring0 ate a K5/v1.0.0.
+kworker` tambem estao concluidas e validadas; `DT100-002` registra o uso
+temporario de um processo ring0 ate a K5/v1.0.0.
 
-## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A-EP9.4C validadas; SYNC1 concluída com a dívida técnica [DT100-001](docs/qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2) aceita para K5/v1.0.0; SYNC2 concluida e validada; SYNC3/R4 implementadas e aguardando validacao
+## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A-EP9.4C validadas; SYNC1 concluída com a dívida técnica [DT100-001](docs/qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2) aceita para K5/v1.0.0; SYNC2 e SYNC3/R4 concluidas e validadas
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
@@ -770,7 +770,7 @@ Evolução da plataforma:      [████████████████
   fallback legado pela raiz fixa.
 - [x] EP9.4C implementada: aba Sistema no Updater Classic, oferta de reinicio
   imediato ou posterior, confirmacao final, releitura redundante e reboot
-  centralizado; matriz QEMU guiada aguarda validacao do usuario.
+  centralizado; matriz QEMU guiada validada pelo usuario.
 
 Para atualizacoes do sistema, U1-U5 continuam sendo a base executavel no
 dispositivo; EP5-EP9 sao a continuidade de Release, transporte e imagem do

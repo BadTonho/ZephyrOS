@@ -61,6 +61,14 @@ Bottom-Halfs e 230 coalescencias para 25.421 ocorrencias, 397 Bottom-Halfs e
 2.548 coalescencias. Nao houve rejeicao diferida, mas o mouse terminou com
 22.537 pacotes descartados e `ERR_OVERFLOW`.
 
+### Observacao apos a SYNC3
+
+A matriz final da SYNC3 manteve teclado, movimento, clique, arraste e roda
+responsivos sob rede, indexacao e `regcheck full`. Essa execucao nao quita a
+divida porque nao substitui o procedimento reproduzivel com contadores antes e
+depois. Qualquer recorrencia nesse cenario continua atribuida a `DT100-001`,
+sem necessidade de criar um identificador duplicado.
+
 ### Escopo da quitacao
 
 - Medir separadamente as fases de `regcheck full` e os ciclos do processo
@@ -177,7 +185,7 @@ mas nao atendem ao criterio de divida tecnica aceita para a v1.0.0:
 | [Roadmap 07](../roadmaps/07-modernizacao-visual.md) / [`metricas.md`](metricas.md) | Comparacao numerica MV4 em `N/D` por falta da linha-base AS3 | Excecao documental ja declarada, sem reivindicacao de ganho |
 | [Roadmap 08](../roadmaps/08-evolucao-da-plataforma.md) | Gates sem horario da EP7.0 e registros de smoke/gates da EP6.4 pendentes | Lacuna de evidencia; requer validacao ou aceite proprio |
 | [Roadmap 08](../roadmaps/08-evolucao-da-plataforma.md) | EP7.1 e EP8 adiadas por dependencia de hardware real | Decisao de escopo e dependencia externa, nao divida aceita |
-| [Roadmaps 09](../roadmaps/09-funcionalidades-aplicaveis.md), [10](../roadmaps/10-vfs-e-abstracao-io.md), [11](../roadmaps/11-gerenciamento-avancado-de-memoria.md), [12](../roadmaps/12-concorrencia-e-sincronizacao.md) e [13](../roadmaps/13-armazenamento-e-buffer-cache.md) | R5-R9, VFS, MM, SYNC4 e BLK1-BLK4 ainda nao iniciados; SYNC3/R4 aguardam validacao | Trabalho planejado, nao divida tecnica, exceto `DT100-002` explicitamente aceita |
+| [Roadmaps 09](../roadmaps/09-funcionalidades-aplicaveis.md), [10](../roadmaps/10-vfs-e-abstracao-io.md), [11](../roadmaps/11-gerenciamento-avancado-de-memoria.md), [12](../roadmaps/12-concorrencia-e-sincronizacao.md) e [13](../roadmaps/13-armazenamento-e-buffer-cache.md) | R5-R9, VFS, MM, SYNC4 e BLK1-BLK4 ainda nao iniciados | Trabalho planejado, nao divida tecnica |
 
 Esses itens permanecem nos seus roadmaps de origem. Caso algum seja aceito
 como limitacao a ser quitada antes da v1.0.0, ele deve receber o proximo ID

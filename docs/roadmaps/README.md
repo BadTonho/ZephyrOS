@@ -122,9 +122,10 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   sobre as filas FIFO da R3, com
   IPC e sockets bloqueantes e diagnosticos proprios. A etapa foi concluida e
   validada nos perfis QEMU padrao, USB HID, sem NIC e multi-NIC, incluindo a
-  correcao do cancelamento F11. R4/SYNC3 e a `Zephyr kworker` estao
-  implementadas e aguardam a matriz QEMU. O uso temporario de um processo
-  ring0 esta aceito em
+  correcao do cancelamento F11. R4/SYNC3 e a `Zephyr kworker` foram concluidas
+  e validadas nos perfis QEMU padrao, USB HID, Storage, sem NIC e multi-NIC,
+  com entrada responsiva sob carga. O uso temporario de um processo ring0
+  esta aceito em
   [`DT100-002`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-002---kworker-como-processo-ring0).
 
 ## K4 validada
