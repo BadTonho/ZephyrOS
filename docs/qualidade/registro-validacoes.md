@@ -1617,3 +1617,15 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   disco de boot passou a fixa-lo em `ide.0`, unidade 0, preservando as tres
   unidades restantes para as fixtures. O perfil storage ainda nao iniciou e
   sua validacao permanece pendente.
+
+- SYNC3/R4: topologia do perfil storage revalidada pelo usuario.
+  Concluida em: 2026-08-27 19:18 (America/Sao_Paulo).
+  Os gates terminaram corretamente e `make run-storage` iniciou o QEMU depois
+  da fixacao do disco principal em `ide.0`, unidade 0. `storage list` publicou
+  `ata0` como sistema, `ata1` como fixture valida, `ata2` com quatro volumes
+  invalidos controlados e `ata3p1` como formato nao suportado, totalizando
+  quatro discos e onze volumes. Todos os discos auxiliares permaneceram com
+  zero escritas. IRQ14 cresceu para 3 ocorrencias e continuou sem Bottom-Half;
+  a `Zephyr kworker` permaneceu ativa no PID 2, sem fallback, rejeicoes ou
+  erros. Montagem, leitura, indexacao e diagnosticos finais do perfil ainda
+  permanecem pendentes.
