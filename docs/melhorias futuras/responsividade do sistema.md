@@ -67,7 +67,7 @@ modos `simple` e `classic`.
 - A frequencia maxima continua limitada pelo timer de 50 Hz.
 - Nao ha medicao persistente de FPS ou tempo de renderizacao nesta etapa.
 - Ate a v1.0.0, `regcheck full` pode ficar lento e saturar a entrada PS/2 sob
-  estresse manual extremo; a SYNC1 permanece aberta por esse motivo.
+  estresse manual extremo; a SYNC1 foi concluida com essa divida tecnica aceita.
 
 ## Referencias
 

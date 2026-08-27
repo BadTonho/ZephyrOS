@@ -6,9 +6,9 @@ Implementar padrões modernos de concorrência, sincronização e tratamento ass
 
 ## Resumo de progresso
 
-- [ ] SYNC1 - Divisão de Interrupções: infraestrutura e diagnósticos
-  implementados; otimização de `regcheck full` e eliminação do overflow sob
-  estresse adiadas para a v1.0.0.
+- [x] SYNC1 - Divisão de Interrupções: concluída com dívida técnica aceita;
+  otimização de `regcheck full` e eliminação do overflow sob estresse adiadas
+  para a v1.0.0.
 - [ ] SYNC2 - Primitivas de Espera sem Espera Ocupada (Wait Queues / `wait_queue_t`).
 - [ ] SYNC3 - Filas de Trabalho do Kernel (Kernel Workqueues).
 - [ ] SYNC4 - Sistema de Sinais Assíncronos para Processos e Shell (`SIGINT`, `SIGTERM`, `SIGSEGV`).
@@ -83,7 +83,7 @@ O EOI e o reconhecimento do dispositivo permanecem no Top-Half. Nenhum
 callback diferido roda antes do `iret` ou na pilha da IRQ. A SYNC1 não cria a
 `kworker` prevista para SYNC3 e não altera o bootloader.
 
-### Limitação aceita até a v1.0.0
+### Dívida técnica aceita até a v1.0.0
 
 `irqstat check` e `regcheck full` terminam em `OK`, os trabalhos de IRQ12 são
 executados sem rejeições e o mouse recupera o funcionamento ao fim do job.
@@ -93,15 +93,16 @@ pacotes. A execução mais recente registrou 25.421 ocorrências de IRQ12, 397
 Bottom-Halfs, 2.548 coalescências, zero rejeições e 22.537 descartes.
 
 Por decisão do usuario, a investigação de desempenho fica suspensa até a
-v1.0.0 e passa ao Roadmap 03. Esse adiamento não converte a perda observada em
-aprovação: a SYNC1 permanece aberta perante seu critério original de saída.
+v1.0.0 e passa ao Roadmap 03. A perda observada foi aceita explicitamente como
+dívida técnica e não reabre a SYNC1; a etapa K5 passa a ser responsável por
+eliminá-la antes do fechamento da v1.0.0.
 
-### Critério de saída
+### Critério de saída desta entrega
 
-Alta carga de tráfego de rede, leitura pesada de disco ATA ou jobs cooperativos
-longos não causa perda de movimentos de mouse, cliques no teclado ou eventos
-de entrada; `regcheck full` e saída intensa do Shell permanecem sem overflow
-não recuperado.
+Top-Halves permanecem mínimos, callbacks diferidos executam somente no processo
+System, filas e diagnósticos estruturais terminam em `OK`, e o sistema recupera
+o mouse depois de `regcheck full`. O requisito de zero descarte sob estresse
+manual extremo foi transferido, como dívida aceita, para K5/v1.0.0.
 
 ### Comandos Shell / Diagnóstico
 
@@ -111,8 +112,9 @@ não recuperado.
   capacidade, atribuição por IRQ, contexto e invariantes em fixture privada.
 
 `health check` apresenta rejeições/contexto inválido e `regcheck full` inclui
-as invariantes somente-leitura. A SYNC1 só será marcada como concluída depois
-dos gates e da matriz funcional executados pelo usuário.
+as invariantes somente-leitura. A matriz funcional foi executada pelo usuário;
+a limitação de desempenho e overflow permanece registrada separadamente para
+a v1.0.0.
 
 ---
 

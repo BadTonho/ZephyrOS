@@ -1416,3 +1416,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   recebeu a futura etapa de medição e otimização; a SYNC1 permanece aberta
   perante o critério de zero descarte. Nenhuma alteração de código foi feita
   nesta decisão.
+
+- SYNC1: etapa concluída com dívida técnica aceita por decisão do usuario.
+  Concluida em: 2026-08-27 00:19 (America/Sao_Paulo).
+  A infraestrutura Top-Half/Bottom-Half, os diagnósticos e a recuperação do
+  mouse foram aceitos como entrega da SYNC1. Lentidão e overflow PS/2 durante
+  estresse extremo de `regcheck full` permanecem registrados e passaram a ser
+  critério pendente de K5/v1.0.0. R4/SYNC3 e a `kworker` continuam pendentes.
+  Nenhuma alteração de código foi feita neste encerramento.

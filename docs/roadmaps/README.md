@@ -115,8 +115,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   `log check` e regressao Simple/Classic aprovados. A SYNC1 do Roadmap 12 foi
   implementada como primeiro pre-requisito de R4. Seus diagnosticos concluem
   em `OK`, mas o estresse de entrada durante `regcheck full` ainda causa
-  lentidao e overflow PS/2; a otimizacao foi adiada para a v1.0.0 e a SYNC1
-  permanece aberta. R4/SYNC3 e a `kworker` nao foram iniciadas.
+  lentidao e overflow PS/2. A SYNC1 foi concluida com essa divida tecnica
+  aceita e a otimizacao foi transferida para K5/v1.0.0. R4/SYNC3 e a `kworker`
+  nao foram iniciadas.
 
 ## K4 validada
 
