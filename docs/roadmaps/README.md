@@ -120,9 +120,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   [`DT100-001`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2),
   e a otimizacao foi transferida para K5/v1.0.0. R4/SYNC3 e a `kworker` nao
   foram iniciadas. A SYNC2 esta implementada sobre as filas FIFO da R3, com
-  IPC e sockets bloqueantes e diagnosticos proprios. A matriz QEMU padrao e a
-  correcao do cancelamento F11 e os perfis USB HID e sem NIC foram aprovados;
-  a etapa permanece aberta somente para o perfil multi-NIC.
+  IPC e sockets bloqueantes e diagnosticos proprios. A etapa foi concluida e
+  validada nos perfis QEMU padrao, USB HID, sem NIC e multi-NIC, incluindo a
+  correcao do cancelamento F11.
 
 ## K4 validada
 
