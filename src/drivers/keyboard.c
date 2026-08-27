@@ -8,7 +8,8 @@
 
 
 #define KEYBOARD_QUEUE_SIZE 256U
-#define KEYBOARD_RAW_QUEUE_SIZE 64U
+#define KEYBOARD_RAW_QUEUE_SIZE 256U
+#define KEYBOARD_BOTTOM_HALF_RAW_BUDGET 8U
 #define KEYBOARD_DISPATCH_BUDGET (IPC_MSG_QUEUE_SIZE / 2U)
 #define KEYBOARD_SCANCODE_F12 0x58U
 #define KEYBOARD_SCANCODE_ABNT2_SEMICOLON 0x35U
@@ -24,6 +25,7 @@ static volatile uint32_t processed_total;
 static volatile uint32_t peak_queued;
 static uint8_t drop_warning_active;
 static uint8_t forward_warning_active;
+static uint8_t input_warning_active;
 static keyboard_focus_cancel_filter_t focus_cancel_filter;
 static uint8_t keyboard_initialized;
 static uint8_t keyboard_ps2_extended;
@@ -351,6 +353,7 @@ void keyboard_init(void) {
     peak_queued = 0;
     drop_warning_active = 0;
     forward_warning_active = 0;
+    input_warning_active = 0;
     focus_cancel_filter = 0;
     keyboard_ps2_extended = 0U;
     keyboard_raw_head = 0U;
@@ -391,36 +394,47 @@ void keyboard_handler(registers_t* regs) {
     (void)irq_deferred_schedule(&keyboard_bottom_half_work);
 }
 
-static void keyboard_process_raw_byte(uint8_t scancode) {
+static int keyboard_process_raw_byte(uint8_t scancode) {
     uint8_t released;
     uint16_t usage;
     input_key_event_t event;
 
     if (scancode == 0xE0U) {
         keyboard_ps2_extended = 1U;
-        return;
+        return 0;
     }
     if (scancode == 0xE1U) {
         keyboard_ps2_extended = 0U;
-        return;
+        return 0;
     }
     released = (scancode & 0x80U) ? 1U : 0U;
     usage = keyboard_ps2_usage(scancode & 0x7FU, keyboard_ps2_extended);
     keyboard_ps2_extended = 0U;
-    if (!usage) return;
+    if (!usage) return 0;
     event.usage = usage;
     event.pressed = released ? 0U : 1U;
     event.modifiers = 0U;
     event.source = INPUT_SOURCE_PS2;
-    (void)input_publish_key(&event);
+    return input_publish_key(&event) == OK ? 1 : -1;
 }
 
 static void keyboard_bottom_half(void* context) {
     uint32_t flags;
+    uint32_t bytes = 0U;
+    uint32_t events = 0U;
+    uint32_t event_budget = KEYBOARD_BOTTOM_HALF_RAW_BUDGET;
+    input_metrics_t metrics;
 
     (void)context;
-    while (1) {
+    if (input_get_metrics(&metrics) != OK ||
+        metrics.key_queued >= metrics.key_capacity) return;
+    if (event_budget > metrics.key_capacity - metrics.key_queued) {
+        event_budget = metrics.key_capacity - metrics.key_queued;
+    }
+    while (bytes < KEYBOARD_BOTTOM_HALF_RAW_BUDGET &&
+           events < event_budget) {
         uint8_t scancode;
+        int result;
 
         flags = keyboard_irq_save();
         if (keyboard_raw_tail == keyboard_raw_head) {
@@ -431,7 +445,19 @@ static void keyboard_bottom_half(void* context) {
         keyboard_raw_tail =
             (uint8_t)((keyboard_raw_tail + 1U) % KEYBOARD_RAW_QUEUE_SIZE);
         keyboard_irq_restore(flags);
-        keyboard_process_raw_byte(scancode);
+        result = keyboard_process_raw_byte(scancode);
+        if (result > 0) {
+            events++;
+            input_warning_active = 0;
+        } else if (result < 0) {
+            if (!input_warning_active) {
+                LOG_WARN("KBD",
+                         "Nucleo de entrada recusou scancode; aguardando drenagem");
+            }
+            input_warning_active = 1;
+            break;
+        }
+        bytes++;
     }
 }
 
@@ -439,6 +465,9 @@ void keyboard_process_events(void) {
     uint32_t dispatched = 0;
     uint32_t input_processed = 0U;
 
+    if (input_dispatch(KEYBOARD_DISPATCH_BUDGET, &input_processed) != OK) {
+        LOG_WARN("KBD", "Despacho do nucleo de entrada indisponivel");
+    }
     keyboard_bottom_half(0);
     if (input_dispatch(KEYBOARD_DISPATCH_BUDGET, &input_processed) != OK) {
         LOG_WARN("KBD", "Despacho do nucleo de entrada indisponivel");
