@@ -11,8 +11,11 @@
 #define CURSOR_W 12
 #define CURSOR_H 16
 
-#define MOUSE_QUEUE_SIZE 128
-#define MOUSE_RAW_QUEUE_SIZE 128U
+#define MOUSE_QUEUE_SIZE 256
+#define MOUSE_RAW_QUEUE_SIZE 512U
+#define MOUSE_BOTTOM_HALF_MAX_EVENTS 8U
+#define MOUSE_BOTTOM_HALF_MAX_BYTES 32U
+#define MOUSE_EVENT_BATCH_BUDGET 8U
 #define MOUSE_PACKET_STANDARD_SIZE 3
 #define MOUSE_PACKET_WHEEL_SIZE 4
 #define MOUSE_CMD_SET_DEFAULTS 0xF6
@@ -68,8 +71,8 @@ static mouse_packet_t event_queue[MOUSE_QUEUE_SIZE];
 static volatile int queue_head = 0;
 static volatile int queue_tail = 0;
 static volatile uint8_t mouse_raw_queue[MOUSE_RAW_QUEUE_SIZE];
-static volatile uint8_t mouse_raw_head;
-static volatile uint8_t mouse_raw_tail;
+static volatile uint16_t mouse_raw_head;
+static volatile uint16_t mouse_raw_tail;
 static irq_deferred_work_t mouse_bottom_half_work;
 
 static mouse_callback_t current_callback = 0;
@@ -454,7 +457,6 @@ static void mouse_dispatch_event(const mouse_event_batch_t* batch,
         event.event = (current_buttons & changed) ?
                       MOUSE_EVENT_PRESS : MOUSE_EVENT_RELEASE;
         current_callback(&event);
-        return;
     }
     if (batch->wheel != 0) {
         int32_t wheel = batch->wheel;
@@ -462,12 +464,14 @@ static void mouse_dispatch_event(const mouse_event_batch_t* batch,
         if (wheel > MOUSE_WHEEL_DELTA_MAX) wheel = MOUSE_WHEEL_DELTA_MAX;
         if (wheel < MOUSE_WHEEL_DELTA_MIN) wheel = MOUSE_WHEEL_DELTA_MIN;
         event.event = MOUSE_EVENT_WHEEL;
+        event.changed = 0;
         event.wheel = (int8_t)wheel;
         current_callback(&event);
-        return;
     }
     if (batch->dx != 0 || batch->dy != 0) {
         event.event = MOUSE_EVENT_MOVE;
+        event.changed = 0;
+        event.wheel = 0;
         current_callback(&event);
     }
 }
@@ -484,12 +488,12 @@ static void mouse_report_queue_overflow(void) {
 
 static void mouse_handler(registers_t* regs) {
     uint8_t status = inb(MOUSE_CONTROLLER_PORT);
-    uint8_t next;
+    uint16_t next;
 
     (void)regs;
     if (!(status & MOUSE_STATUS_OUTPUT_FULL)) return;
     if (!(status & MOUSE_STATUS_AUX_DATA)) return;
-    next = (uint8_t)((mouse_raw_head + 1U) % MOUSE_RAW_QUEUE_SIZE);
+    next = (uint16_t)((mouse_raw_head + 1U) % MOUSE_RAW_QUEUE_SIZE);
     if (next == mouse_raw_tail) {
         (void)inb(MOUSE_DATA_PORT);
         dropped_packets++;
@@ -501,14 +505,14 @@ static void mouse_handler(registers_t* regs) {
     (void)irq_deferred_schedule(&mouse_bottom_half_work);
 }
 
-static void mouse_process_raw_byte(uint8_t value) {
+static int mouse_process_raw_byte(uint8_t value) {
     input_pointer_event_t event;
     int result;
 
     packet[cycle++] = value;
     if (cycle == packet_size) {
         cycle = 0;
-        if ((packet[0] & 0xC0) || !(packet[0] & 0x08)) return;
+        if ((packet[0] & 0xC0) || !(packet[0] & 0x08)) return 0;
         event.dx = packet[1] - ((packet[0] & 0x10) ? 256 : 0);
         event.dy = packet[2] - ((packet[0] & 0x20) ? 256 : 0);
         event.wheel = wheel_supported ? mouse_decode_wheel(packet[3]) : 0;
@@ -518,16 +522,30 @@ static void mouse_process_raw_byte(uint8_t value) {
         if (result != OK) {
             dropped_packets++;
             last_error = result;
+            return -1;
         }
+        return 1;
     }
+    return 0;
 }
 
 static void mouse_bottom_half(void* context) {
     uint32_t flags;
+    uint32_t bytes = 0U;
+    uint32_t events = 0U;
+    uint32_t event_budget = MOUSE_BOTTOM_HALF_MAX_EVENTS;
+    input_metrics_t metrics;
 
     (void)context;
-    while (1) {
+    if (input_get_metrics(&metrics) != OK ||
+        metrics.pointer_queued >= metrics.pointer_capacity) return;
+    if (event_budget > metrics.pointer_capacity - metrics.pointer_queued) {
+        event_budget = metrics.pointer_capacity - metrics.pointer_queued;
+    }
+    while (bytes < MOUSE_BOTTOM_HALF_MAX_BYTES &&
+           events < event_budget) {
         uint8_t value;
+        int result;
 
         flags = mouse_suspend_interrupts();
         if (mouse_raw_tail == mouse_raw_head) {
@@ -536,9 +554,11 @@ static void mouse_bottom_half(void* context) {
         }
         value = mouse_raw_queue[mouse_raw_tail];
         mouse_raw_tail =
-            (uint8_t)((mouse_raw_tail + 1U) % MOUSE_RAW_QUEUE_SIZE);
+            (uint16_t)((mouse_raw_tail + 1U) % MOUSE_RAW_QUEUE_SIZE);
         mouse_restore_interrupts(flags);
-        mouse_process_raw_byte(value);
+        result = mouse_process_raw_byte(value);
+        if (result > 0) events++;
+        bytes++;
     }
 }
 
@@ -739,11 +759,11 @@ int mouse_init(void) {
 /* ========== Processamento de eventos ========== */
 
 void mouse_process_events(void) {
-    mouse_event_batch_t batch;
-    uint8_t changed;
     int old_x;
     int old_y;
     int had_old_cursor;
+    uint8_t frame_open = 0U;
+    uint32_t batches = 0U;
 
     if (!input_sink_ready) return;
     mouse_bottom_half(0);
@@ -766,23 +786,28 @@ void mouse_process_events(void) {
     had_old_cursor = cursor_drawn;
     erase_cursor();
 
-    mouse_collect_event_batch(&batch);
-    mouse_apply_movement(mode, &batch);
+    while (queue_head != queue_tail && batches < MOUSE_EVENT_BATCH_BUDGET) {
+        mouse_event_batch_t batch;
+        uint8_t changed;
 
-    /* Detecta press/release comparando com estado anterior */
-    prev_buttons = current_buttons;
-    if (batch.raw_buttons_changed) {
-        raw_buttons = batch.next_raw_buttons;
-        current_buttons = mouse_map_buttons(raw_buttons);
+        mouse_collect_event_batch(&batch);
+        mouse_apply_movement(mode, &batch);
+        prev_buttons = current_buttons;
+        if (batch.raw_buttons_changed) {
+            raw_buttons = batch.next_raw_buttons;
+            current_buttons = mouse_map_buttons(raw_buttons);
+        }
+        changed = prev_buttons ^ current_buttons;
+        if (changed && !frame_open) {
+            vesa_frame_begin();
+            frame_open = 1U;
+        }
+        mouse_dispatch_event(&batch, changed);
+        batches++;
     }
-    changed = prev_buttons ^ current_buttons;
 
-    if (changed) vesa_frame_begin();
-    mouse_dispatch_event(&batch, changed);
-
-    /* Redesenha o cursor UMA VEZ na posicao final */
     draw_cursor();
-    if (changed) {
+    if (frame_open) {
         vesa_frame_end();
     } else {
         mouse_present_cursor(old_x, old_y, had_old_cursor);

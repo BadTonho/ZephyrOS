@@ -1318,3 +1318,38 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `irqstat`, `health check` e `regcheck full` receberam os diagnosticos e
   invariantes. Gates, QEMU e a matriz funcional aguardam execucao do usuario;
   por isso a SYNC1 ainda nao esta marcada como concluida no resumo do roadmap.
+
+- SYNC1: primeira matriz QEMU executada pelo usuario.
+  O autoteste `irqstat check`, a lista de IRQs, a suite `net check qemu
+  net-pci-00:03.0 10.0.2.15`, `regcheck full`, `memcheck`, `log check` e o
+  `ping 10.0.2.2` terminaram com `OK`; a NIC E1000 mostrou Bottom-Halfs sem
+  rejeicoes. A carga de entrada durante o job, entretanto, observou descarte
+  na fila de eventos do mouse/teclado e saturacao temporaria da fila IPC do
+  foco. O horario exato desta execucao nao foi informado pelo usuario e fica
+  pendente de complementacao.
+
+- SYNC1: correcao de backpressure de entrada implementada.
+  Concluida em: 2026-08-26 23:30 (America/Sao_Paulo).
+  Os Bottom-Halfs PS/2 passaram a processar lotes limitados, drenando o
+  `input core` entre lotes; o mouse passou a processar varios lotes por ciclo,
+  coalescendo apenas movimento e preservando transicoes. A nova validacao deve
+  confirmar zero overflow residual sob `regcheck full` e saida intensa.
+
+- SYNC1: ajuste adicional de capacidade e contagem dos lotes de entrada.
+  Concluida em: 2026-08-26 23:34 (America/Sao_Paulo).
+  As filas brutas do teclado e do mouse foram ampliadas, a fila normalizada do
+  mouse passou a absorver rajadas maiores e o Bottom-Half passou a contar
+  publicacoes com sucesso para respeitar o limite de eventos. A validacao
+  funcional permanece pendente do usuario.
+
+- SYNC1: preservacao de roda junto com transicoes e movimento coalescido.
+  Concluida em: 2026-08-26 23:36 (America/Sao_Paulo).
+  O callback do mouse agora entrega separadamente uma transicao de botao, a
+  roda e o movimento agregado quando um mesmo lote contem mais de uma dessas
+  categorias. A validacao funcional permanece pendente do usuario.
+
+- SYNC1: contenção de falha de publicação no Bottom-Half do teclado.
+  Concluida em: 2026-08-26 23:38 (America/Sao_Paulo).
+  Uma recusa inesperada do `input core` encerra o lote imediatamente para não
+  consumir bytes adicionais enquanto o consumidor normal se recupera. A
+  validação funcional permanece pendente do usuario.
