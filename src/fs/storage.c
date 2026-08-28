@@ -834,6 +834,8 @@ int storage_init(void) {
 }
 
 int storage_refresh(void) {
+    char mounted_ids[STORAGE_MAX_MOUNTS][STORAGE_ID_SIZE];
+    uint8_t mounted_before = 0U;
     int result;
 
     if (!storage_initialized) {
@@ -841,9 +843,32 @@ int storage_refresh(void) {
         return ERR_STATE;
     }
     LOG_INFO("FS", "Atualizando inventario de armazenamento");
+    for (uint8_t index = 0U; index < storage_volume_count &&
+         mounted_before < STORAGE_MAX_MOUNTS; index++) {
+        if (!storage_volumes[index].mounted) continue;
+        storage_copy_text(mounted_ids[mounted_before], STORAGE_ID_SIZE,
+                          storage_volumes[index].id);
+        mounted_before++;
+    }
     storage_refresh_epoch++;
     if (!storage_refresh_epoch) storage_refresh_epoch = 1U;
     result = storage_init();
+    if (result == OK) {
+        for (uint8_t index = 0U; index < mounted_before; index++) {
+            storage_volume_t volume;
+            int restore_result = storage_find_volume(mounted_ids[index],
+                                                     &volume);
+
+            if (restore_result == OK && !volume.mounted) {
+                restore_result = storage_mount(mounted_ids[index]);
+            }
+            if (restore_result != OK) {
+                storage_log_volume(LOG_LEVEL_WARN, mounted_ids[index],
+                                   "montagem anterior nao foi restaurada");
+                result = restore_result;
+            }
+        }
+    }
     for (uint8_t index = 0U; index < storage_volume_count; index++) {
         storage_volumes[index].generation += storage_refresh_epoch;
     }

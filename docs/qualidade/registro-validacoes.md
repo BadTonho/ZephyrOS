@@ -2152,3 +2152,53 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   real entre contagem e inventario retorna erro estrutural com log; o fim
   normal nao chama mais `storage_get_mounted_at()` com indice inexistente. A
   correcao aguarda gates e repeticao da matriz USB MSC.
+
+- VFS2: refresh corrigido e montagem USB FAT12 revalidados.
+  Validada em: 2026-08-28 13:29 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. Na imagem reconstruida,
+  `storage mount usb-ms-00:04.0-p1-a1-l0p1` montou o volume somente leitura e
+  `mount` publicou `/mnt/usb-ms-00:04.0-p1-a1-l0p1` como FAT12 `RO`, geracao 2
+  e zero referencias. O aviso `Indice de montagem nao encontrado` nao voltou
+  a ocorrer. A correcao do snapshot e a primeira montagem USB ficam aprovadas;
+  restam FAT32, navegacao, ocupacao, limpeza e invariantes deste perfil.
+
+- VFS2: montagem USB FAT32 e capacidade total da tabela aprovadas.
+  Validada em: 2026-08-28 13:30 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. `storage mount
+  usb-ms-00:04.0-p1-a1-l0p4` montou `EP2FAT32` somente leitura, e `mount`
+  publicou os dois volumes USB em `/mnt` com geracao 2, zero referencias e sem
+  avisos. A tabela atingiu quatro de quatro entradas, preservando `/` e
+  `/mnt/boot`. Montagem FAT32 e limite da tabela ficam aprovados; restam
+  navegacao, ocupacao, limpeza e invariantes finais.
+
+- VFS2: navegacao universal USB, referencias de cwd e ocupacao aprovadas.
+  Validada em: 2026-08-28 13:47 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. O Shell navegou ate os
+  diretorios reais `DOCS` dos volumes `usb-ms-00:04.0-p1-a1-l0p1` FAT12 e
+  `usb-ms-00:04.0-p1-a1-l0p4` FAT32. `pwd` preservou os caminhos canonicos com
+  `:`, e `mount` mostrou `refs=1` somente no volume que continha o `cwd`. A
+  desmontagem do FAT12 ocupado foi recusada com codigo 7, e a referencia
+  migrou para o FAT32 depois do segundo `cd`. Resolucao, normalizacao,
+  referencias e protecao de volume ocupado ficam aprovadas neste perfil.
+
+- VFS2: refresh durante a matriz USB deixou aliases obsoletos na VFS.
+  Registrada em: 2026-08-28 14:02 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. `app pathtest`, `stack check`
+  e `regcheck full` permaneceram em `OK`, mas o refresh associado aos
+  diagnosticos reconstruiu Storage com apenas as duas montagens automaticas.
+  Os volumes USB voltaram a `DETECTED`, enquanto `mount` e `vfs status`
+  conservaram quatro aliases. As tentativas de unmount encontraram o alias na
+  VFS e receberam codigo 7 do Storage porque os volumes ja nao estavam
+  montados. USB MSC terminou `READY`, com zero resets, escritas e erros, e
+  `memcheck` terminou em `OK`; a etapa nao pode ser encerrada com namespace
+  divergente.
+
+- VFS2: montagens manuais preservadas e VFS sincronizada em todo refresh.
+  Corrigida em: 2026-08-28 14:02 (America/Sao_Paulo).
+  `storage_refresh()` agora salva ate quatro IDs montados, reenumera e restaura
+  os volumes ainda presentes antes de publicar a nova geracao. Os refreshes do
+  kernel e do diagnostico sincronizam a VFS mesmo em resultado degradado e
+  antes da reconstrucao do indice. `vfs_unmount_volume()` tambem remove alias
+  obsoleto quando o volume ja estiver ausente ou desmontado no Storage. A
+  correcao aguarda gates e repeticao final do perfil USB MSC. Bootloader,
+  Stage 2 e assembly de interrupcoes permanecem inalterados.

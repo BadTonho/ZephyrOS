@@ -138,7 +138,10 @@ kernel stack ring 3 para 8 KiB; a falha anterior de tela preta esta encerrada.
 O primeiro teste de caminhos USB revelou colisao entre `:` do ID de volume e
 o alias legado; a correcao esta implementada e aguarda repeticao do perfil. A
 primeira montagem FAT12 foi publicada, mas revelou uma consulta sentinela que
-gerava aviso espurio no refresh; essa consulta tambem foi removida.
+gerava aviso espurio no refresh; essa consulta tambem foi removida. A matriz
+final revelou que o refresh descartava montagens manuais e deixava aliases
+obsoletos; preservacao, sincronizacao e reconciliacao foram implementadas e
+aguardam a repeticao final.
 
 ### Critério de saída
 
