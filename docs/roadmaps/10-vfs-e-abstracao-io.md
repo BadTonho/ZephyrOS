@@ -8,7 +8,7 @@ Este roadmap estabelece uma arquitetura própria, modular, segura e limpa para o
 
 ## Resumo de progresso
 
-- [ ] VFS1 - Tabela de descritores de arquivos (`file_desc_t` / `fd`) e contratos de I/O.
+- [ ] VFS1 - Descritores e operacoes unificadas de I/O (implementada; validacao pendente).
 - [ ] VFS2 - Tabela de montagem de volumes e resolução uniforme de caminhos.
 - [ ] VFS3 - Abstração de nós de dispositivos (`/dev/`) de caractere e bloco.
 - [ ] VFS4 - Pipes anônimos e redirecionamento de streams no Shell.
@@ -49,17 +49,27 @@ Este roadmap estabelece uma arquitetura própria, modular, segura e limpa para o
 
 ### Implementação
 
-- [ ] Definir a estrutura `file_operations_t` contendo ponteiros:
+- [x] Definir a estrutura `file_operations_t` contendo ponteiros:
   `int (*open)(vnode_t*, file_t*);`
-  `int (*read)(file_t*, void*, uint32_t);`
-  `int (*write)(file_t*, const void*, uint32_t);`
+  `int (*read)(file_t*, void*, uint32_t, uint32_t*);`
+  `int (*write)(file_t*, const void*, uint32_t, uint32_t*);`
   `int (*close)(file_t*);`
-  `int (*lseek)(file_t*, int32_t, int);`
+  `int (*lseek)(file_t*, int32_t, uint32_t, uint32_t*);`
   `int (*ioctl)(file_t*, uint32_t, void*);`
-- [ ] Criar a estrutura central `vnode_t` (nó virtual em memória) representando arquivos, diretórios e dispositivos.
-- [ ] Implementar a tabela de arquivos abertos do processo (`fd_table`) com capacidade inicial de 16 a 32 descritores por processo.
-- [ ] Implementar as syscalls unificadas: `sys_open`, `sys_read`, `sys_write`, `sys_close`, `sys_lseek`.
-- [ ] Mapear `stdin` (fd 0) para o buffer de teclado e `stdout`/`stderr` (fd 1 e 2) para a saída de vídeo ativa (Simple/Classic).
+- [x] Criar as estruturas centrais `vnode_t` e `file_t` para arquivos e streams padrao.
+- [x] Implementar 32 descritores por processo e pool global de 32 arquivos regulares.
+- [x] Preservar as syscalls 4-7 e acrescentar `file_lseek` como syscall 14.
+- [x] Mapear `stdin` (fd 0) para scancodes via IPC e `stdout`/`stderr` (fd 1 e 2) para o console ativo.
+- [x] Integrar criacao, descarte, encerramento e destruicao de processos.
+- [x] Publicar a App API 0.5 e manter pacotes 0.3 e 0.4 compativeis.
+- [x] Integrar `vfs status`, `vfs test`, `appcheck`, `regcheck full` e `health check`.
+
+### Estado da entrega
+
+A implementacao esta pronta e aguarda a matriz executavel do usuario. O item
+VFS1 permanece aberto ate a validacao no QEMU padrao e no perfil USB HID.
+VFS2, montagens, escrita parcial, `/dev`, pipes e pseudo-filesystems nao fazem
+parte desta entrega.
 
 ### Critério de saída
 
@@ -68,7 +78,24 @@ Processos em ring 3 conseguem abrir, ler, escrever e fechar descritores de arqui
 ### Comandos Shell / Diagnóstico
 
 - `vfs status`: exibe descritores abertos no processo atual e arquivos globais em uso.
-- `vfs test`: executa suite de testes de abertura, escrita, leitura e fechamento de descritores.
+- `vfs test`: executa autoteste de stdio, ciclo de arquivo, permissoes, EOF,
+  limites, isolamento, limpeza e invariantes.
+- `vfs test foo`: valida a rejeicao de argumentos excedentes.
+
+### Matriz pendente do usuario
+
+No host, para a mesma versao: `make package-test`, `make q3check`,
+`make clean && make` e `make run`. No QEMU padrao: `vfs status`, `vfs test`,
+`vfs test foo`, `appcheck`, `app inputtest`, `usertest fault`,
+`regcheck full`, `health check`, `memcheck`, `log check`, `guimode simple`,
+`vfs status` e `guimode classic`. Em `app inputtest`, validar Enter, Ctrl+C e
+F12 separadamente, retorno do foco, ausencia de descritores residuais e Shell
+responsivo.
+
+Como a entrega toca teclado e stdin, executar depois `make run-usb-hid` e,
+nesse perfil, `usb hid status`, `app inputtest`, `vfs status`, `regcheck full`
+e `health check`, confirmando teclado USB, Ctrl+C, retorno ao Shell e
+teclado/mouse em `READY`.
 
 ---
 

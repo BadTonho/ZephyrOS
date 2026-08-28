@@ -4,11 +4,15 @@
 #include "types.h"
 
 #define APP_API_VERSION_MAJOR 0
-#define APP_API_VERSION_MINOR 4
+#define APP_API_VERSION_MINOR 5
 #define APP_API_MAX_TEXT_SIZE 1024
 #define APP_API_MAX_FILE_IO_SIZE 4096
 #define APP_API_TICKS_PER_SECOND 50
-#define APP_HANDLE_INVALID 0
+#define APP_FD_STDIN  0U
+#define APP_FD_STDOUT 1U
+#define APP_FD_STDERR 2U
+#define APP_FD_INVALID 0xFFFFFFFFU
+#define APP_HANDLE_INVALID APP_FD_INVALID
 #define APP_EXIT_SUCCESS 0U
 /* Reservado ao runtime para cancelamentos controlados, como F11 e F12. */
 #define APP_EXIT_CANCELLED 0x0000F120U
@@ -47,6 +51,13 @@
 #define APP_FILE_MODE_READ       1
 #define APP_FILE_MODE_WRITE      2
 #define APP_FILE_MODE_READ_WRITE 3
+
+#define APP_SEEK_SET 0U
+#define APP_SEEK_CUR 1U
+#define APP_SEEK_END 2U
+#define APP_FILE_SEEK_SET APP_SEEK_SET
+#define APP_FILE_SEEK_CUR APP_SEEK_CUR
+#define APP_FILE_SEEK_END APP_SEEK_END
 
 #define APP_MESSAGE_KEYBOARD    1 /* data1 contem scancode PS/2 bruto */
 #define APP_MESSAGE_APP_REQUEST 2
@@ -115,6 +126,8 @@ int app_api_file_read(app_handle_t handle, uint8_t* buffer,
 int app_api_file_write(app_handle_t handle, const uint8_t* buffer,
                        uint32_t size, uint32_t* bytes_written);
 int app_api_file_close(app_handle_t handle);
+int app_api_file_lseek(app_handle_t handle, int32_t offset, uint32_t whence,
+                       uint32_t* position);
 int app_api_message_send(uint32_t pid, const app_message_t* message);
 int app_api_message_receive(app_message_t* message);
 int app_api_file_is_ready(void);

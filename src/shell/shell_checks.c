@@ -4,6 +4,7 @@
 #include "core/video.h"
 #include "core/keyboard.h"
 #include "fs/fs.h"
+#include "fs/vfs.h"
 #include "fs/storage.h"
 #include "fs/file_index.h"
 #include "core/memory.h"
@@ -117,6 +118,7 @@
 #define APP_INPUT_TEST_PATH "INPUT.ZAP"
 #define APP_INPUT_EVENT_OFFSET 128U
 #define APP_INPUT_EVENT_DATA1_OFFSET (APP_INPUT_EVENT_OFFSET + 4U)
+#define APP_INPUT_READ_COUNT_OFFSET (APP_INPUT_EVENT_OFFSET + 4U)
 #define SHELL_APP_OUTPUTTEST_FAILURE_CODE 1U
 #define SHELL_Q2CHECK_FIRST_FAULT_INDEX 0U
 #define SHELL_Q2CHECK_SECOND_FAULT_INDEX 1U
@@ -399,7 +401,7 @@ static void cmd_appcheck_print_expected_result(const char* label, int actual,
                                                int expected);
 
 static const char app_input_test_message[] =
-    "Entrada ZAPP ativa: Enter encerra; F12 cancela.\n";
+    "Entrada ZAPP ativa: Enter encerra; Ctrl+C interrompe; F12 cancela.\n";
 static void shell_demo_patch_u32(uint8_t* code, uint32_t offset,
                                  uint32_t value) {
     code[offset + 0] = (uint8_t)(value & 0xFFU);
@@ -506,27 +508,36 @@ static uint32_t shell_build_input_test_image(void) {
     uint8_t* code = appcheck_demo_image + APP_IMAGE_HEADER_SIZE;
     uint32_t loop_offset;
     uint32_t offset = 0;
-    uint32_t data_size = APP_INPUT_EVENT_OFFSET + sizeof(app_message_t);
+    uint32_t data_size = APP_INPUT_EVENT_OFFSET + sizeof(uint32_t) * 2U;
 
     kmemset(appcheck_demo_image, 0, sizeof(appcheck_demo_image));
-    shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_CONSOLE_WRITE);
-    shell_demo_emit_mov(code, &offset, 3, USER_DATA_BASE);
-    shell_demo_emit_mov(code, &offset, 1, kstrlen(app_input_test_message));
+    shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_FILE_WRITE);
+    shell_demo_emit_mov(code, &offset, 3, APP_FD_STDOUT);
+    shell_demo_emit_mov(code, &offset, 1, USER_DATA_BASE);
+    shell_demo_emit_mov(code, &offset, 2, kstrlen(app_input_test_message));
+    shell_demo_emit_mov(code, &offset, 6,
+                        USER_DATA_BASE + APP_INPUT_READ_COUNT_OFFSET);
     code[offset++] = 0xCD;
     code[offset++] = 0x80;
 
     loop_offset = offset;
-    shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_MESSAGE_RECEIVE);
-    shell_demo_emit_mov(code, &offset, 3, USER_DATA_BASE + APP_INPUT_EVENT_OFFSET);
+    shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_FILE_READ);
+    shell_demo_emit_mov(code, &offset, 3, APP_FD_STDIN);
+    shell_demo_emit_mov(code, &offset, 1,
+                        USER_DATA_BASE + APP_INPUT_EVENT_OFFSET);
+    shell_demo_emit_mov(code, &offset, 2, 1U);
+    shell_demo_emit_mov(code, &offset, 6,
+                        USER_DATA_BASE + APP_INPUT_READ_COUNT_OFFSET);
     code[offset++] = 0xCD;
     code[offset++] = 0x80;
     code[offset++] = 0x85;
     code[offset++] = 0xC0;
     if (shell_demo_emit_jne(code, &offset, loop_offset) != OK) return 0;
 
-    code[offset++] = 0xA1;
-    shell_demo_patch_u32(code, offset,
-                         USER_DATA_BASE + APP_INPUT_EVENT_DATA1_OFFSET);
+    code[offset++] = 0x0F;
+    code[offset++] = 0xB6;
+    code[offset++] = 0x05;
+    shell_demo_patch_u32(code, offset, USER_DATA_BASE + APP_INPUT_EVENT_OFFSET);
     offset += 4;
     code[offset++] = 0x3D;
     shell_demo_patch_u32(code, offset, 0x1CU);
@@ -840,6 +851,7 @@ static int shell_regcheck_validate_services(void) {
         irq_deferred_validate_state() != OK ||
         workqueue_validate_state() != OK ||
         wait_validate_state() != OK ||
+        vfs_validate_state() != OK ||
         process_signal_validate_state() != OK ||
         rtc_validate_state() != OK || clock_validate_state() != OK ||
         tls_validate_state() != OK) {
@@ -1784,6 +1796,7 @@ static void cmd_appcheck_files(void) {
     uint32_t bytes_read = 0;
     uint32_t second_read = 0;
     uint32_t written = 0;
+    uint32_t position = 0;
     uint8_t attributes = 0;
     app_handle_t handle = APP_HANDLE_INVALID;
     int result = ERR_NOT_FOUND;
@@ -1827,6 +1840,11 @@ static void cmd_appcheck_files(void) {
                                             sizeof(buffer),
                                             (uint32_t)&second_read, 0);
             cmd_appcheck_print_result("file_read_sequencial", result);
+            result = syscall_invoke_kernel(APP_SYSCALL_FILE_LSEEK,
+                                            handle, 0,
+                                            APP_SEEK_SET,
+                                            (uint32_t)&position, 0);
+            cmd_appcheck_print_result("file_lseek", result);
             result = syscall_invoke_kernel(APP_SYSCALL_FILE_CLOSE,
                                             handle, 0, 0, 0, 0);
             cmd_appcheck_print_result("file_close", result);

@@ -1783,3 +1783,15 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   ausência de um PID fornecido; nenhum PID foi presumido, e a fixture `sigtest`
   cobriu as regras de envio e sinais fatais. SYNC4 foi marcada como concluída;
   R5 permanece pendente no Roadmap 09. Nenhuma dívida técnica nova foi criada.
+
+- VFS1: descritores e operacoes unificadas de I/O implementados.
+  Implementada em: 2026-08-28 00:35 (America/Sao_Paulo).
+  Foram adicionados o nucleo VFS, 32 descritores por processo, pool global de
+  32 arquivos regulares, stdin/stdout/stderr, `lseek`, App API 0.5, syscall 14,
+  compatibilidade de pacotes 0.3/0.4/0.5, integracao ao ciclo de vida dos
+  processos e diagnosticos `vfs`, `appcheck`, `regcheck full` e `health check`.
+  `app inputtest` passou a exercer os fds 0 e 1 em ring3. Boot, Stage 2 e
+  assembly de interrupcoes nao foram alterados. Conforme a politica do
+  projeto, o agente nao executou build, testes ou QEMU. VFS1 permanece
+  implementada e aguardando a matriz do usuario; nenhuma divida tecnica foi
+  criada.

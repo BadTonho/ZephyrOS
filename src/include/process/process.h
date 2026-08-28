@@ -7,6 +7,7 @@
 #include "memory/paging.h"
 #include "drivers/idt.h"
 #include "process/signal.h"
+#include "fs/vfs.h"
 
 #define MAX_PROCESSES 64
 #define KERNEL_STACK_SIZE 4096
@@ -140,6 +141,7 @@ typedef struct {
     uint32_t user_code_size;
     uint8_t signal_context_valid;
     uint8_t signal_exit_notified;
+    vfs_fd_table_t fd_table;
 } process_t;
 
 typedef struct {

@@ -4,6 +4,7 @@
 #include "core/video.h"
 #include "core/keyboard.h"
 #include "fs/fs.h"
+#include "fs/vfs.h"
 #include "fs/storage.h"
 #include "fs/file_index.h"
 #include "core/memory.h"
@@ -283,6 +284,7 @@ static wait_info_t shell_wait_records[MAX_PROCESSES + MAX_THREADS];
 static wait_queue_info_t shell_wait_queues[WAIT_QUEUE_REGISTRY_CAPACITY];
 static work_info_t shell_work_records[WORKQUEUE_CAPACITY];
 static shell_kmetrics_baseline_t shell_kmetrics_baseline;
+static vfs_descriptor_info_t shell_vfs_descriptors[VFS_MAX_FDS];
 
 static void cmd_health_print_component(recovery_component_id_t component) {
     const recovery_component_t* entry = recovery_get(component);
@@ -357,6 +359,7 @@ static void cmd_health_print_kernel(void) {
     process_t* current = process_get_current();
     ipc_stats_t ipc;
     app_api_version_t app_version;
+    int vfs_healthy = vfs_is_ready() && vfs_validate_state() == OK;
     memory_heap_stats_t heap;
     memory_pmm_stats_t pmm;
     paging_user_stats_t paging_user;
@@ -457,6 +460,10 @@ static void cmd_health_print_kernel(void) {
     video_print((app_api_file_is_ready() &&
                  recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM)) ?
                 "READY" : "DISABLED", 0x0F);
+    video_print("\n", 0x07);
+    video_print("  VFS: ", 0x07);
+    video_print(vfs_healthy ? "READY" : "DEGRADED",
+                vfs_healthy ? 0x0A : 0x0E);
     video_print("\n", 0x07);
     video_print("  IPC API: ", 0x07);
     video_print(app_api_ipc_is_ready() ? "READY" : "DISABLED", 0x0F);
@@ -1330,6 +1337,25 @@ static void cmd_health_check_signals(int* issue_count) {
     }
 }
 
+static void cmd_health_check_vfs(int* issue_count) {
+    vfs_status_t status;
+    int result;
+
+    if (!issue_count) return;
+    result = vfs_get_status(&status);
+    if (result != OK || vfs_validate_state() != OK) {
+        cmd_health_check_print_query_failure(
+            "VFS", result == OK ? ERR_STATE : result, issue_count);
+        return;
+    }
+    if (!status.initialized ||
+        status.global_files_used > status.global_file_capacity) {
+        cmd_health_check_print_named_state(
+            "VFS", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
+            "capacidade ou estado inconsistente", issue_count);
+    }
+}
+
 static void cmd_health_check(void) {
     int issue_count = 0;
 
@@ -1345,6 +1371,7 @@ static void cmd_health_check(void) {
     cmd_health_check_workqueue(&issue_count);
     cmd_health_check_wait(&issue_count);
     cmd_health_check_signals(&issue_count);
+    cmd_health_check_vfs(&issue_count);
     cmd_health_check_usb_hid(&issue_count);
     cmd_health_check_wifi(&issue_count);
     if (!issue_count) {
@@ -4252,6 +4279,93 @@ static void cmd_mouse(const char* args) {
     cmd_mouse_print_status();
 }
 
+static const char* cmd_vfs_node_name(vfs_node_type_t type) {
+    if (type == VFS_NODE_REGULAR) return "FILE";
+    if (type == VFS_NODE_STDIN) return "STDIN";
+    if (type == VFS_NODE_STDOUT) return "STDOUT";
+    if (type == VFS_NODE_STDERR) return "STDERR";
+    if (type == VFS_NODE_TEST) return "TEST";
+    return "NONE";
+}
+
+static void cmd_vfs_status(void) {
+    vfs_status_t status;
+    uint32_t count = 0U;
+
+    if (vfs_get_status(&status) != OK ||
+        vfs_copy_descriptors(shell_vfs_descriptors, VFS_MAX_FDS,
+                             &count) != OK) {
+        LOG_ERROR("SHELL", "Falha ao consultar VFS");
+        video_print("Erro: estado VFS indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("VFS:\n  Estado: ", 0x07);
+    video_print(status.initialized ? "READY\n" : "DISABLED\n",
+                status.initialized ? 0x0A : 0x0C);
+    video_print("  Arquivos globais: ", 0x07);
+    shell_command_print_num(status.global_files_used);
+    video_print("/", 0x08);
+    shell_command_print_num(status.global_file_capacity);
+    video_print("  processos: ", 0x07);
+    shell_command_print_num(status.processes_with_tables);
+    video_print("  descritores: ", 0x07);
+    shell_command_print_num(status.descriptors_open);
+    video_print("\n  open/read/write/seek/close/falhas: ", 0x07);
+    shell_command_print_num(status.opens);
+    video_print("/", 0x08);
+    shell_command_print_num(status.reads);
+    video_print("/", 0x08);
+    shell_command_print_num(status.writes);
+    video_print("/", 0x08);
+    shell_command_print_num(status.seeks);
+    video_print("/", 0x08);
+    shell_command_print_num(status.closes);
+    video_print("/", 0x08);
+    shell_command_print_num(status.failures);
+    video_print("\nDescritores do processo atual:\n", 0x0B);
+    for (uint32_t index = 0U; index < count; index++) {
+        video_print("  fd=", 0x07);
+        shell_command_print_num((uint32_t)shell_vfs_descriptors[index].fd);
+        video_print(" tipo=", 0x08);
+        video_print(cmd_vfs_node_name(shell_vfs_descriptors[index].type),
+                    0x0B);
+        video_print(" modo=", 0x08);
+        shell_command_print_num(shell_vfs_descriptors[index].mode);
+        video_print(" offset=", 0x08);
+        shell_command_print_num(shell_vfs_descriptors[index].offset);
+        video_print(" path=", 0x08);
+        video_print(shell_vfs_descriptors[index].path, 0x07);
+        video_print("\n", 0x07);
+    }
+}
+
+static void cmd_vfs_test(void) {
+    vfs_test_result_t result;
+    int test_result = vfs_self_test(&result);
+
+    video_print("VFS Test: ", 0x07);
+    video_print(test_result == OK ? "OK\n" : "ERRO\n",
+                test_result == OK ? 0x0A : 0x0C);
+    video_print("  Casos aprovados: ", 0x07);
+    shell_command_print_num(result.passed);
+    video_print("/", 0x08);
+    shell_command_print_num(result.total);
+    video_print("\n", 0x07);
+}
+
+static void cmd_vfs(const char* args) {
+    if (!args || !*args || kstrcmp(args, "status") == 0) {
+        cmd_vfs_status();
+        return;
+    }
+    if (kstrcmp(args, "test") == 0) {
+        cmd_vfs_test();
+        return;
+    }
+    LOG_ERROR("SHELL", "Uso invalido do comando vfs");
+    video_print("Uso: vfs status|test\n", 0x0C);
+}
+
 void shell_diagnostics_reset(void) {
     kmemset(&shell_kmetrics_baseline, 0, sizeof(shell_kmetrics_baseline));
 }
@@ -4306,6 +4420,7 @@ SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_wqinfo, cmd_wqinfo)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_workq, cmd_workq)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_kill, cmd_kill)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_sigtest, cmd_sigtest)
+SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_vfs, cmd_vfs)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_devices, cmd_devices)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_device_info, cmd_device_info)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_device_scan, cmd_device_scan)
