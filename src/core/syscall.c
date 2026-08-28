@@ -239,6 +239,7 @@ static int syscall_user_message_send(const registers_t* regs) {
 static int syscall_user_message_receive(const registers_t* regs) {
     app_message_t message;
     int result;
+    wait_reason_t wait_reason = WAIT_REASON_NONE;
 
     if (!regs->ebx) {
         LOG_ERROR("SYSCALL", "message_receive recebeu destino nulo");
@@ -246,8 +247,16 @@ static int syscall_user_message_receive(const registers_t* regs) {
     }
     result = paging_validate_user_range(regs->ebx, sizeof(message), 1);
     if (result != OK) return result;
-    result = app_api_message_receive(&message);
-    if (result != OK) return result;
+    while (1) {
+        result = app_api_message_receive(&message);
+        if (result == OK) break;
+        if (result != ERR_NOT_FOUND) return result;
+        asm volatile("sti" : : : "memory");
+        result = ipc_wait(WAIT_TIMEOUT_INFINITE, &wait_reason);
+        if (result != OK) return result;
+        if (wait_reason == WAIT_REASON_SIGNAL) return ERR_NOT_FOUND;
+        if (wait_reason != WAIT_REASON_EVENT) return ERR_STATE;
+    }
     return paging_copy_to_user((void*)regs->ebx, &message, sizeof(message));
 }
 

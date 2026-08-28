@@ -27,7 +27,8 @@ static int ipc_wait_condition(void* context, uint8_t* out_ready) {
     spinlock_acquire(&ipc_lock);
     *out_ready = process->msg_head != process->msg_tail ||
                  process->ipc_wait_channel.condition !=
-                     wait_context->observed_generation;
+                     wait_context->observed_generation ||
+                 (process->pending_signals & ~process->blocked_signals) != 0U;
     spinlock_release(&ipc_lock);
     return OK;
 }
@@ -157,6 +158,10 @@ int ipc_wait(uint32_t timeout_ticks, wait_reason_t* out_reason) {
                                 ipc_wait_condition, &context,
                                 timeout_ticks, out_reason);
     if (result != OK || *out_reason != WAIT_REASON_EVENT) return result;
+    if (current->pending_signals & ~current->blocked_signals) {
+        *out_reason = WAIT_REASON_SIGNAL;
+        return OK;
+    }
     if (wait_channel_get_condition(&current->ipc_wait_channel,
                                    &generation) != OK) {
         LOG_ERROR("IPC", "Falha ao confirmar geracao da espera IPC");
