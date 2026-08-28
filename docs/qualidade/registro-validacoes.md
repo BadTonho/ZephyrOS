@@ -1822,3 +1822,16 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   agora e derivada da geometria FAT32 para forcar o LFN a atravessar a
   fronteira. O agente nao reexecutou testes; `make package-test` aguarda nova
   repeticao pelo usuario.
+
+- VFS1: terceira execucao de `make package-test` reportada pelo usuario.
+  O horario exato da execucao nao foi informado. `packager_hybrid_lfn`
+  permaneceu como unica falha, com os demais casos em `OK`.
+
+- VFS1: travessia nao contigua da cadeia LFN corrigida no autoteste.
+  Corrigida em: 2026-08-28 09:24 (America/Sao_Paulo).
+  A segunda entrada LFN foi gravada no proximo cluster logico do diretorio,
+  enquanto o teste ainda a procurava no proximo endereco fisico. Como os
+  clusters intermediarios pertencem aos arquivos de preenchimento, a
+  verificacao agora segue a cadeia FAT, calcula o cluster de continuacao e
+  confirma nele a segunda entrada e o alias curto. O agente nao reexecutou
+  testes; `make package-test` aguarda nova repeticao pelo usuario.
