@@ -2308,3 +2308,12 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `src/fs/vfs.c` passou a incluir `core/memory.h`, tornando explícitas as
   declarações de `kmalloc` e `kfree` usadas pelo redirecionamento VFS.
   A compilação deve ser repetida pelo usuário.
+- VFS4: `make q3check` e verificação do Terminus validados pelo usuário.
+  Concluída em: 2026-08-28 18:09 (America/Sao_Paulo).
+  `funcoes_falhaveis`, `contratos_publicos`, `registro_metricas`,
+  `confianca_zupd`, `confianca_as5`, `whitespace`, `boot_protegido` e o
+  `Terminus Font --check` retornaram OK.
+- VFS4: build completo e `make run` abertos pelo usuário.
+  Concluída em: 2026-08-28 18:13 (America/Sao_Paulo).
+  Os gates prévios foram concluídos e o sistema iniciou no QEMU; a matriz
+  funcional de pipes, pipeline e redirecionamento permanece em validação.
