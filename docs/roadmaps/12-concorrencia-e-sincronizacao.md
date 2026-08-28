@@ -12,8 +12,8 @@ Implementar padrões modernos de concorrência, sincronização e tratamento ass
   [`DT100-001`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2).
 - [x] SYNC2 - Primitivas de Espera sem Espera Ocupada: concluida e validada.
 - [x] SYNC3 - Filas de Trabalho do Kernel (concluida e validada).
-- [ ] SYNC4 - Sistema de Sinais Assíncronos implementado; matriz funcional
-  do usuário pendente antes do encerramento.
+- [x] SYNC4 - Sistema de Sinais Assíncronos implementado e validado pelo
+  usuário; R5 permanece pendente no Roadmap 09.
 
 ## Atalhos
 
@@ -314,9 +314,9 @@ interrupção permanecem inalteradas. R5 continua pendente no Roadmap 09.
 Handlers devem executar em ring3 com interrupções habilitadas, retornar pelo
 trampoline e nunca deixar contexto salvo órfão. `Ctrl+C`, ações padrão,
 bloqueio, captura, coalescência, `SIGCHLD`, falhas ring3, foco e Wait Queues
-devem permanecer consistentes, com `RegCheck: OK`. A implementação está
-pronta, mas a etapa permanece aberta até a matriz QEMU ser executada pelo
-usuário.
+devem permanecer consistentes, com `RegCheck: OK`. A implementação e a matriz
+QEMU fornecida pelo usuário estão concluídas; a etapa pode ser encerrada sem
+criar nova dívida técnica.
 
 ### Comandos Shell / Diagnóstico
 
@@ -326,7 +326,7 @@ usuário.
   regras fatais, vínculo pai/filho, frame, trampoline e invariantes.
 - Entradas inválidas registram uso incorreto sem alterar processos.
 
-### Validação pendente do usuário
+### Validação concluída pelo usuário
 
 Depois dos gates e do `make run`, executar no QEMU padrão:
 
@@ -352,4 +352,11 @@ Em `app inputtest`, `Ctrl+C` deve encerrar por `SIGINT` e devolver o foco. No
 prompt, uma linha parcial deve ser limpa por `Ctrl+C`. O perfil USB HID deve
 repetir os dois acordes com teclados PS/2 e USB. Para testar `kill`, o PID deve
 ser copiado literalmente da saída recente de `procs`; nenhum PID é presumido
-neste roadmap. Nenhuma dívida técnica nova foi criada nesta implementação.
+neste roadmap. A matriz foi concluída com `sigtest` em `OK`, entrada ZAPP
+encerrada por `Enter` e por `SIGINT`, falha ring3 isolada, diagnósticos de
+IRQ/timer/wait/workqueue/sockets, `regcheck full`, `health check`, `memcheck` e
+`log check` em `OK`. O perfil USB HID confirmou teclado e mouse `READY`, e o
+teste final de linha parcial confirmou a limpeza por `Ctrl+C` com o prompt
+responsivo. O teste `kill` com PID ring3 não foi necessário para o encerramento,
+pois a fixture `sigtest` e o fluxo real de `SIGINT` cobriram a entrega; nenhum
+PID foi presumido. Nenhuma dívida técnica nova foi criada nesta implementação.
