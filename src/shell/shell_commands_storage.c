@@ -404,6 +404,83 @@ static void cmd_storage_list(void) {
     }
 }
 
+static char cmd_storage_id_lower(char value) {
+    if (value >= 'A' && value <= 'Z') return (char)(value + ('a' - 'A'));
+    return value;
+}
+
+static uint32_t cmd_storage_id_prefix(const char* left, const char* right) {
+    uint32_t length = 0U;
+
+    if (!left || !right) return 0U;
+    while (left[length] && right[length] &&
+           cmd_storage_id_lower(left[length]) ==
+           cmd_storage_id_lower(right[length])) length++;
+    return length;
+}
+
+static void cmd_storage_id_copy(char* output, const char* input) {
+    uint32_t index = 0U;
+
+    if (!output) return;
+    if (!input) input = "";
+    while (input[index] && index + 1U < STORAGE_ID_SIZE) {
+        output[index] = input[index];
+        index++;
+    }
+    output[index] = '\0';
+}
+
+static void cmd_storage_print_id_diagnostic(const char* id) {
+    storage_status_t status;
+    char closest[STORAGE_ID_SIZE];
+    uint32_t best_prefix = 0U;
+
+    closest[0] = '\0';
+    if (!id || storage_get_status(&status) != OK) return;
+    for (uint8_t index = 0U; index < status.disk_count; index++) {
+        storage_disk_t disk;
+        uint32_t prefix;
+
+        if (storage_get_disk_at(index, &disk) != OK) continue;
+        prefix = cmd_storage_id_prefix(id, disk.id);
+        if (prefix > best_prefix) {
+            best_prefix = prefix;
+            cmd_storage_id_copy(closest, disk.id);
+        }
+    }
+    for (uint8_t index = 0U; index < status.volume_count; index++) {
+        storage_volume_t volume;
+        uint32_t prefix;
+
+        if (storage_get_volume_at(index, &volume) != OK) continue;
+        prefix = cmd_storage_id_prefix(id, volume.id);
+        if (prefix > best_prefix) {
+            best_prefix = prefix;
+            cmd_storage_id_copy(closest, volume.id);
+        }
+    }
+    video_print("ID recebido: ", 0x0E);
+    video_print(id, 0x07);
+    video_print(" tamanho=", 0x08);
+    shell_command_print_num(kstrlen(id));
+    if (closest[0]) {
+        video_print("\nMais proximo: ", 0x0E);
+        video_print(closest, 0x07);
+        video_print(" tamanho=", 0x08);
+        shell_command_print_num(kstrlen(closest));
+        video_print(" prefixo=", 0x08);
+        shell_command_print_num(best_prefix);
+        video_print("\nDivergencia byte=", 0x08);
+        shell_command_print_num(best_prefix);
+        video_print(" recebido=0x", 0x08);
+        shell_command_print_hex((uint8_t)id[best_prefix], 2U);
+        video_print(" catalogo=0x", 0x08);
+        shell_command_print_hex((uint8_t)closest[best_prefix], 2U);
+    }
+    video_print("\n", 0x07);
+}
+
 static void cmd_storage_info(const char* id) {
     storage_disk_t disk;
     storage_volume_t volume;
@@ -421,6 +498,7 @@ static void cmd_storage_info(const char* id) {
     }
     LOG_WARN("SHELL", "ID storage nao encontrado");
     video_print("Erro: disco ou volume nao encontrado.\n", 0x0C);
+    cmd_storage_print_id_diagnostic(id);
 }
 
 static void cmd_storage(const char* args) {

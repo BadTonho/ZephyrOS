@@ -2107,3 +2107,21 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   comparar um ponto USB completo. A recusa de montagem sera repetida
   separadamente com os IDs copiados do inventario. Bootloader, Stage 2 e
   assembly de interrupcoes permanecem inalterados.
+
+- VFS2: enumeracao USB MSC repetida na imagem com o resolvedor corrigido.
+  Registrada em: 2026-08-28 13:11 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. `storage list` voltou a
+  publicar dois discos, seis volumes e duas montagens, sem erro no disco
+  somente leitura `usb-ms-00:04.0-p1-a1-l0`. O volume FAT12 selecionado para
+  isolar a montagem conserva o ID literal `usb-ms-00:04.0-p1-a1-l0p1` e o
+  estado `DETECTED`. A consulta individual desse registro permanece pendente.
+
+- VFS2: consulta individual do volume USB continuou sem localizar o ID.
+  Registrada em: 2026-08-28 13:12 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. `storage info` recebeu a
+  representacao visual `usb-ms-00:04.0-p1-a1-l0p1`, mas `storage_find_volume`
+  retornou `ERR_NOT_FOUND`. Os limites do input, dispatcher e parser comportam
+  integralmente esse valor, sem truncamento estrutural. O caminho de erro foi
+  instrumentado para publicar comprimento, registro mais proximo e tamanho do
+  prefixo coincidente, permitindo localizar uma divergencia de byte sem
+  aceitar aliases ambiguos ou montar outro volume.
