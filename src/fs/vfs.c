@@ -6,6 +6,7 @@
 #include "core/app_api.h"
 #include "core/errors.h"
 #include "core/log.h"
+#include "core/memory.h"
 #include "core/spinlock.h"
 #include "core/string.h"
 #include "core/wait.h"
