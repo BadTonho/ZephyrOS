@@ -135,6 +135,8 @@ matriz. Nenhuma divida tecnica foi
 criada. A abertura relativa ring 3 de `app pathtest`, a limpeza VFS, as
 guardas de stack e o `regcheck full` foram aprovados depois da ampliacao da
 kernel stack ring 3 para 8 KiB; a falha anterior de tela preta esta encerrada.
+O primeiro teste de caminhos USB revelou colisao entre `:` do ID de volume e
+o alias legado; a correcao esta implementada e aguarda repeticao do perfil.
 
 ### Critério de saída
 
