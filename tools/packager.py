@@ -2127,7 +2127,9 @@ def run_selftest() -> int:
                 read_fat32_file(hybrid_path, long_name) == long_data and
                 long_record is not None and
                 records_image[long_record["lfn_start"]] == 0x42 and
-                records_image[long_record["offset"]] == 0x01 and
+                records_image[long_record["lfn_start"] + 32] == 0x01 and
+                records_image[long_record["offset"]] ==
+                long_record["alias"][0] and
                 len(_fat32_chain(fat, 2, clusters)) > 1
             )
             checks["hybrid_alias"] = any(

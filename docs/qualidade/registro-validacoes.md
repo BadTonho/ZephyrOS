@@ -1795,3 +1795,16 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   projeto, o agente nao executou build, testes ou QEMU. VFS1 permanece
   implementada e aguardando a matriz do usuario; nenhuma divida tecnica foi
   criada.
+
+- VFS1: primeira execucao de `make package-test` reportada pelo usuario.
+  O horario exato da execucao nao foi informado. Todas as verificacoes
+  passaram, exceto `packager_hybrid_lfn`; o alvo terminou com codigo 1 e a
+  validacao da VFS1 permaneceu aberta.
+
+- VFS1: criterio da fixture FAT32 LFN corrigido.
+  Corrigida em: 2026-08-28 09:19 (America/Sao_Paulo).
+  O autoteste consultava o primeiro byte da entrada curta esperando `0x01`,
+  embora esse byte pertença ao alias 8.3. A verificacao agora confere `0x01`
+  na segunda entrada LFN e valida separadamente o primeiro byte do alias. O
+  agente nao reexecutou testes; `make package-test` aguarda repeticao pelo
+  usuario.
