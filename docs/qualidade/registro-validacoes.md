@@ -1917,3 +1917,36 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   processo sem log nem metrica espurios de falha VFS. Boot, Stage 2 e assembly
   de interrupcoes permaneceram inalterados. Como houve alteracao de codigo,
   esta nova versao aguarda os gates e a repeticao do Ctrl+C pelo usuario.
+
+- VFS1: repeticao de Ctrl+C sem falha espuria aprovada no QEMU padrao.
+  Registrada em: 2026-08-28 10:26 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. `app inputtest` encerrou o
+  PID 7 por `SIGINT` e devolveu o foco ao Shell sem registrar `Falha em leitura
+  VFS`. `vfs status` confirmou estado `READY`, pool regular `0/32`, sete
+  processos, 21 descritores, somente os fds 0-2 no Shell e zero falhas. Pelo
+  fluxo operacional ja confirmado pelo usuario, os gates foram executados
+  antes da abertura desta versao corrigida no QEMU e nao permanecem como
+  pendencia funcional. Enter, Ctrl+C e F12 ficam aprovados separadamente.
+
+- VFS1: matriz complementar do QEMU padrao aprovada pelo usuario.
+  Registrada em: 2026-08-28 10:29 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. `usertest fault` isolou e
+  encerrou o PID 7; `regcheck full` terminou em `OK`; `memcheck` aprovou
+  integridade do heap, coalescencia, guardas PMM e diretorios de usuario; e
+  `log check` aprovou os oito casos sem falhas. `health check` nao publicou
+  falha da VFS; os estados exibidos pertencem a AC97, Media Player, USB,
+  Update, App Store e USB HID indisponiveis ou degradados neste perfil.
+
+- VFS1: validacao do modo Simple excluida pelo usuario.
+  Registrada em: 2026-08-28 10:29 (America/Sao_Paulo).
+  O usuario informou que nao testa `guimode simple`. O modo Classic ja estava
+  ativo nas capturas e permanece a interface principal. Como a entrega nao
+  modifica a implementacao visual do fallback Simple, essa exclusao nao
+  representa defeito conhecido nem divida tecnica da VFS1.
+
+- VFS1: matriz do QEMU padrao concluida pelo usuario.
+  Registrada em: 2026-08-28 10:31 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. O `vfs status` final exibiu
+  estado `READY`, pool regular `0/32`, sete processos, 21 descritores, somente
+  stdin, stdout e stderr no Shell e contadores de falha zerados. A matriz do
+  perfil padrao fica concluida sem residuos; resta a validacao USB HID.
