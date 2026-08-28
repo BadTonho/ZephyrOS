@@ -398,7 +398,7 @@ montagens de `storage.h`; descritores conservam volume, caminho relativo e
 geracao por contexto privado. `process.h` herda o `cwd` na criacao e o valida
 no ciclo de vida. `app_api.h` publica a versao 0.6 e `app_api_chdir()` /
 `app_api_getcwd()`; `syscall.h` acrescenta os numeros 15 e 16 sem renumerar os
-anteriores. Pacotes 0.3, 0.4 e 0.5 permanecem aceitos.
+anteriores. Pacotes 0.3, 0.4, 0.5 e 0.6 permanecem aceitos.
 
 Desde a VFS3, `devfs.h` publica o registro fixo, snapshots, métricas,
 invariantes e autoteste de `/dev/null`, `/dev/zero`, `/dev/tty`,

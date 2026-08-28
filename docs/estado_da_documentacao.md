@@ -29,8 +29,8 @@ funcionalidade entregue.
 - Desktop, Explorer, Settings, System Updater e App Store oferecem modo Classic
   Modern Dark com fallback Simple. O comando `taskmgr` preserva a TUI de diagnostico.
 - A base App API 0.4, VFS1/App API 0.5 e VFS2/App API 0.6 foram validadas. A
-  VFS3 publica a App API 0.7, devfs, listagem universal e syscall 17; aguarda
-  a matriz do usuário no QEMU padrão, USB HID e USB MSC compacto.
+  VFS3 publica a App API 0.7, devfs, listagem universal e syscall 17; foi
+  validada no QEMU padrão, USB HID e USB MSC compacto.
 - `echo`, `uptime` e `mem` executam em ring 3 com fallback nativo controlado.
 - O subsistema de rede (S2.1 a S2.8) suporta Multi-NIC (E1000 e RTL8139), ARP,
   IPv4, ICMP Echo, UDP, DHCP, DNS, TCP cliente, sockets nativos e HTTP GET.

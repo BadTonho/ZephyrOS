@@ -2257,3 +2257,24 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   devolveram o foco ao Shell. O estado final apresentou pool `0/32`, somente
   os descritores 0-2, cinco dispositivos, RegCheck em `OK` e nenhuma falha
   VFS no `health check`.
+
+- VFS3: perfil USB MSC compacto aprovado.
+  Validada em: 2026-08-28 17:12 (America/Sao_Paulo).
+  O `storage list` publicou literalmente os volumes
+  `usb-ms-00:04.0-p1-a1-l0p1`, `usb-ms-00:04.0-p1-a1-l0p2`,
+  `usb-ms-00:04.0-p1-a1-l0p3` e `usb-ms-00:04.0-p1-a1-l0p4`. Os volumes
+  `usb-ms-00:04.0-p1-a1-l0p1` (FAT12) e
+  `usb-ms-00:04.0-p1-a1-l0p4` (FAT32) foram montados em modo somente leitura;
+  `mount`, listagens dos volumes e `/dev` permaneceram corretos após os
+  refreshes. As duas desmontagens foram aprovadas e o estado final voltou a
+  duas montagens automáticas mais `/dev`, pool `0/32`, somente os descritores
+  0-2 e Storage com duas montagens. Não houve escrita ou erro no disco USB.
+
+- VFS3: entrega concluída e validada.
+  Concluída em: 2026-08-28 17:12 (America/Sao_Paulo).
+  Os gates de host e build da mesma versão foram confirmados pelo usuário, e
+  as matrizes QEMU padrão, USB HID e USB MSC compacto atenderam ao critério de
+  saída. DevFS, nós `null`, `zero`, `tty`, `speaker` e `hda`, listagem
+  universal, `ioctl`, App API 0.7, syscall 17, sinais/cancelamento e limpeza
+  de descritores foram validados sem alteração do bootloader, Stage 2 ou
+  assembly de interrupções. VFS3 foi encerrada sem criar dívida técnica.

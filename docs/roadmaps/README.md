@@ -132,8 +132,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   USB HID permaneceu responsivo. R5 continua pendente no Roadmap 09.
   A VFS1 esta concluida e validada com App API 0.5, descritores por processo,
   stdio e syscall 14 nos perfis QEMU padrao e USB HID. A VFS2 esta validada
-  com App API 0.6, montagens e cwd. A VFS3 esta implementada com App API 0.7 e
-  devfs, aguardando validacao nos perfis QEMU padrao, USB HID e USB MSC.
+  com App API 0.6, montagens e cwd. A VFS3 esta concluida e validada com App API
+  0.7, devfs, listagem universal e dispositivos nos perfis QEMU padrao, USB HID
+  e USB MSC compacto.
 
 ## K4 validada
 
