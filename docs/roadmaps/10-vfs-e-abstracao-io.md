@@ -102,10 +102,12 @@ entrega permanece no modo Classic e nao alterou a implementacao visual do
 fallback, esse modo nao integra o criterio de saida. O `vfs status` final
 confirmou ausencia de residuos e concluiu a matriz do QEMU padrao.
 
-Como a entrega toca teclado e stdin, resta executar `make run-usb-hid` e,
-nesse perfil, `usb hid status`, `app inputtest`, `vfs status`, `regcheck full`
-e `health check`, confirmando teclado USB, Ctrl+C, retorno ao Shell e
-teclado/mouse em `READY`.
+No perfil USB HID, teclado e mouse `READY`, `app inputtest`, Ctrl+C, retorno do
+foco, limpeza VFS e `health check` foram aprovados. `regcheck full` revelou que
+a invariante UHCI rejeitava o estado transitivo valido entre a conclusao do TD
+Interrupt IN pelo hardware e sua coleta pelo polling. A correcao aguarda os
+gates de codigo e a repeticao de `usb hid status`, `app inputtest`,
+`vfs status`, `regcheck full` e `health check` nesse perfil.
 
 ---
 

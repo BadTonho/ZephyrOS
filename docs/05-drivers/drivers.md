@@ -969,7 +969,9 @@ O handler UHCI compartilhado apenas limpa o status e marca pendencia. O
 polling verifica TDs, distingue NAK esperado, timeout e erro, e agenda a
 conclusao pela fila diferida. O callback recebe o buffer somente durante a
 chamada; uma transferencia bem-sucedida e rearmada automaticamente depois do
-callback.
+callback. A validacao aceita o intervalo entre a conclusao do TD pelo hardware
+e sua coleta pelo polling, quando o QH ja terminou mas a requisicao ainda
+mantem o estado ativo.
 
 ### USB HID Boot (`usb_hid.c`)
 
