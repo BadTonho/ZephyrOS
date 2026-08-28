@@ -387,6 +387,11 @@ liberar descritores. `app_files.h` permanece como fachada compativel;
 `app_api_file_lseek()`. `syscall.h` preserva os numeros 4-7 e acrescenta a
 syscall 14.
 
+O cancelamento F12 de um ZAPP bloqueado em stdin usa os campos append-only
+`cancel_exit_code` e `cancel_pending` de `process_t`. `process_cancel_user()`
+acorda a wait queue e `process_apply_pending_cancel()` conclui o encerramento
+no retorno da syscall, depois que a VFS libera a operacao ativa.
+
 Na integracao IPC da SYNC2, `process_t` conserva a ultima geracao consumida do
 seu canal. `ipc_wait()` considera pronta uma mensagem ou uma geracao nova, de
 modo que notificacoes internas e workers sem payload nao sejam perdidos pela

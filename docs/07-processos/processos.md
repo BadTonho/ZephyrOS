@@ -71,6 +71,8 @@ typedef struct {
     uint32_t pending_signals;         // Bitmap coalescido
     uint32_t blocked_signals;         // Máscara bloqueada
     app_signal_action_t signal_actions[18];
+    uint32_t cancel_exit_code;
+    uint8_t cancel_pending;
     vfs_fd_table_t fd_table;
 } process_t;
 ```
@@ -95,6 +97,12 @@ toda criacao e liberada nos caminhos de descarte, encerramento e destruicao;
 assim, a limpeza de arquivos nao depende exclusivamente do App Loader. O lock
 da VFS protege tabelas e contadores, mas e liberado antes de callbacks de
 filesystem, console ou espera IPC.
+
+O cancelamento externo de um processo ring 3 bloqueado e dividido em duas
+etapas. O solicitante registra o codigo e acorda a espera; o proprio processo
+desempilha a syscall, encerra a operacao VFS e aplica o cancelamento antes do
+retorno a ring 3. Isso impede que a destruicao libere descritores ou a stack
+enquanto uma leitura bloqueante ainda esta ativa.
 
 `process_create()` mantém a stack nativa padrão de 4 KiB. Processos que
 executam caminhos com maior consumo podem usar `process_create_with_stack_size()`

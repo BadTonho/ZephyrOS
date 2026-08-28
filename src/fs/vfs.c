@@ -344,6 +344,7 @@ static int vfs_stdin_read(file_t* file, void* buffer, uint32_t size,
         result = ipc_wait(WAIT_TIMEOUT_INFINITE, &reason);
         if (result != OK) return result;
         if (reason == WAIT_REASON_SIGNAL) return ERR_NOT_FOUND;
+        if (reason == WAIT_REASON_CANCELLED) return OK;
         if (reason != WAIT_REASON_EVENT) return ERR_STATE;
     }
     return OK;

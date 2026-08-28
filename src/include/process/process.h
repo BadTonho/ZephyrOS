@@ -141,6 +141,8 @@ typedef struct {
     uint32_t user_code_size;
     uint8_t signal_context_valid;
     uint8_t signal_exit_notified;
+    uint32_t cancel_exit_code;
+    uint8_t cancel_pending;
     vfs_fd_table_t fd_table;
 } process_t;
 
@@ -220,6 +222,7 @@ int process_handle_user_exception(registers_t* regs);
 int process_terminate_user_signal(uint32_t pid, uint32_t signal_number,
                                   int faulted);
 int process_prepare_user_termination(registers_t* regs);
+int process_apply_pending_cancel(registers_t* regs);
 void process_finish_user_termination(void);
 int process_take_user_test_result(uint32_t* pid, uint32_t* faulted);
 

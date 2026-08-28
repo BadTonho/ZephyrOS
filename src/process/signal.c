@@ -137,9 +137,15 @@ static int signal_validate_process(const process_t* process) {
         return ERR_STATE;
     }
     if (process->signal_context_valid > 1U ||
-        process->signal_exit_notified > 1U) {
+        process->signal_exit_notified > 1U ||
+        process->cancel_pending > 1U) {
         LOG_ERROR_CODE("PROC", (int32_t)process->pid,
-                       "Flags de ciclo de vida de sinal invalidas");
+                       "Flags de ciclo de vida do processo invalidas");
+        return ERR_STATE;
+    }
+    if (!process->cancel_pending && process->cancel_exit_code) {
+        LOG_ERROR_CODE("PROC", (int32_t)process->pid,
+                       "Codigo de cancelamento pendente orfao");
         return ERR_STATE;
     }
     if (process->state != PROCESS_STATE_ZOMBIE &&
@@ -158,7 +164,8 @@ static int signal_validate_process(const process_t* process) {
     }
     if (process->state == PROCESS_STATE_ZOMBIE &&
         (process->pending_signals || process->blocked_signals ||
-         process->active_signal || process->signal_context_valid)) {
+         process->active_signal || process->signal_context_valid ||
+         process->cancel_pending || process->cancel_exit_code)) {
         LOG_ERROR_CODE("PROC", (int32_t)process->pid,
                        "Zombie reteve estado de sinal");
         return ERR_STATE;
@@ -231,6 +238,8 @@ void process_signal_process_created(uint32_t pid, uint32_t parent_pid) {
     process->last_child_pid = 0U;
     process->signal_context_valid = 0U;
     process->signal_exit_notified = 0U;
+    process->cancel_exit_code = 0U;
+    process->cancel_pending = 0U;
     for (uint32_t index = 0U;
          index < PROCESS_SIGNAL_ACTION_COUNT; index++) {
         process->signal_actions[index].disposition =
@@ -503,6 +512,9 @@ int process_signal_prepare_user_return(registers_t* regs) {
     }
     if (!current || !process_is_user(current) ||
         (regs->cs & 0x03U) != 0x03U) return OK;
+    if (current->cancel_pending) {
+        return process_apply_pending_cancel(regs);
+    }
     if (current->state == PROCESS_STATE_ZOMBIE) {
         return process_prepare_user_termination(regs);
     }

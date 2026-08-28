@@ -867,6 +867,8 @@ static int process_mark_user_zombie(process_t* proc, uint32_t exit_code,
     proc->active_signal = 0U;
     proc->signal_saved_mask = 0U;
     proc->signal_context_valid = 0U;
+    proc->cancel_exit_code = 0U;
+    proc->cancel_pending = 0U;
     kmemset(&proc->signal_saved_context, 0,
             sizeof(proc->signal_saved_context));
     if (vfs_fd_table_release(&proc->fd_table) != OK) {
@@ -1330,8 +1332,22 @@ int process_cancel_user(uint32_t pid, uint32_t exit_code) {
         LOG_WARN("PROC", "Cancelamento do processo atual requer trampoline");
         return ERR_STATE;
     }
+    if (proc->cancel_pending) return OK;
 
     proc->termination_signal = 0U;
+    if (proc->state == PROCESS_STATE_BLOCKED && proc->wait_active) {
+        proc->cancel_exit_code = exit_code;
+        proc->cancel_pending = 1U;
+        result = process_cancel_wait(proc);
+        if (result != OK) {
+            proc->cancel_exit_code = 0U;
+            proc->cancel_pending = 0U;
+            LOG_ERROR("PROC", "Falha ao acordar processo para cancelamento");
+            return result;
+        }
+        LOG_DEBUG("PROC", "Cancelamento pendente aguardando retorno ring3");
+        return OK;
+    }
     result = process_mark_user_zombie(proc, exit_code, 0);
     if (result != OK) return result;
 
@@ -1426,6 +1442,29 @@ int process_prepare_user_termination(registers_t* regs) {
        troca de contexto. O contexto seguinte restaura seus proprios flags. */
     regs->eflags &= ~0x200U;
     return OK;
+}
+
+int process_apply_pending_cancel(registers_t* regs) {
+    uint32_t exit_code;
+    int result;
+
+    if (!regs) {
+        LOG_ERROR("PROC", "Registradores nulos ao aplicar cancelamento");
+        return ERR_NULL;
+    }
+    if (!current_process || !process_is_user(current_process) ||
+        !current_process->cancel_pending ||
+        (regs->cs & 0x03U) != 0x03U) {
+        LOG_ERROR("PROC", "Cancelamento pendente sem retorno ring3 valido");
+        return ERR_STATE;
+    }
+    exit_code = current_process->cancel_exit_code;
+    result = process_mark_current_user_zombie(exit_code, 0);
+    if (result != OK) {
+        LOG_ERROR("PROC", "Falha ao concluir cancelamento pendente");
+        return result;
+    }
+    return process_prepare_user_termination(regs);
 }
 
 void process_finish_user_termination(void) {
