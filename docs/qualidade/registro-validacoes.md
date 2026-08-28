@@ -1884,3 +1884,36 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   stdin sem registrar falha espuria. Boot, Stage 2 e assembly de interrupcoes
   permaneceram inalterados. A correcao aguarda repeticao dos gates pelo
   usuario.
+
+- VFS1: cancelamento F12 de stdin aprovado pelo usuario no QEMU padrao.
+  Registrada em: 2026-08-28 09:51 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. `app inputtest` publicou o
+  cancelamento do PID 7 e devolveu o foco ao Shell. `vfs status` confirmou
+  estado `READY`, pool regular `0/32`, sete processos, 21 descritores, somente
+  os fds 0-2 no Shell e zero falhas VFS. O deadlock de limpeza e a repeticao
+  de erros nao reapareceram. A confirmacao textual dos gates da versao
+  corrigida ainda permanece pendente.
+
+- VFS1: gates da versao corrigida confirmados pelo usuario.
+  Registrada em: 2026-08-28 09:52 (America/Sao_Paulo).
+  O usuario confirmou que `make package-test`, `make q3check` e
+  `make clean && make` foram executados antes do teste da correcao no QEMU,
+  conforme o fluxo operacional obrigatorio do projeto. Esses gates nao devem
+  ser reapresentados como pendencias funcionais desta versao.
+
+- VFS1: Enter e Ctrl+C repetidos no QEMU padrao apos a correcao de F12.
+  Registrada em: 2026-08-28 09:57 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. Enter encerrou o PID 7 com
+  codigo 0; Ctrl+C encerrou o PID 7 por `SIGINT`. Nos dois casos o foco voltou
+  ao Shell, a VFS permaneceu `READY`, o pool regular ficou em `0/32`, sete
+  processos mantiveram 21 descritores e somente os fds 0-2 permaneceram no
+  Shell. O caso Ctrl+C, apesar da limpeza correta, registrou `Falha em leitura
+  VFS` e elevou a metrica de falhas para um.
+
+- VFS1: interrupcao controlada de stdin por sinal corrigida.
+  Corrigida em: 2026-08-28 09:57 (America/Sao_Paulo).
+  `WAIT_REASON_SIGNAL` agora conclui a leitura bloqueada com `OK` e zero bytes,
+  permitindo que o hook de retorno entregue o sinal e encerre ou retome o
+  processo sem log nem metrica espurios de falha VFS. Boot, Stage 2 e assembly
+  de interrupcoes permaneceram inalterados. Como houve alteracao de codigo,
+  esta nova versao aguarda os gates e a repeticao do Ctrl+C pelo usuario.
