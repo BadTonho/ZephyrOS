@@ -71,6 +71,11 @@ VFS1 permanece aberto ate a validacao no QEMU padrao e no perfil USB HID.
 VFS2, montagens, escrita parcial, `/dev`, pipes e pseudo-filesystems nao fazem
 parte desta entrega.
 
+Durante a matriz, Enter e Ctrl+C em `app inputtest` foram aprovados. O primeiro
+teste com F12 revelou liberacao prematura do fd 0 bloqueado; a correcao passou
+a concluir o cancelamento somente depois do retorno da espera e aguarda nova
+validacao e repeticao dos gates de codigo.
+
 ### Critério de saída
 
 Processos em ring 3 conseguem abrir, ler, escrever e fechar descritores de arquivo padronizados sem invocar diretamente funções do FAT ou do driver de vídeo.

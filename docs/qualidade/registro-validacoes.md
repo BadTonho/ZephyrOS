@@ -1856,3 +1856,31 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   o usuario confirmou que o build limpo terminou sem pendencias. Os gates
   `make package-test`, `make q3check` e `make clean && make` ficam confirmados
   para esta versao antes da abertura no QEMU.
+
+- VFS1: diagnosticos iniciais no QEMU padrao aprovados pelo usuario.
+  Registrada em: 2026-08-28 09:35 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. `vfs status` exibiu VFS em
+  `READY`, pool regular `0/32`, sete processos e 21 descritores, correspondendo
+  aos tres fds padrao por processo. `vfs test` aprovou `12/12` e devolveu o
+  pool a zero; `vfs test foo` foi rejeitado com o uso correto. `appcheck`
+  confirmou App API 0.5, abertura, leitura sequencial, `file_lseek`, fechamento
+  e as rejeicoes esperadas, terminando o job cooperativo e devolvendo o prompt
+  responsivo.
+
+- VFS1: Enter e Ctrl+C aprovados; F12 revelou limpeza prematura de stdin.
+  Registrada em: 2026-08-28 09:44 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. Enter encerrou o ZAPP com
+  codigo 0 e Ctrl+C encerrou por `SIGINT`; em ambos os casos o foco retornou,
+  a VFS permaneceu `READY`, o pool ficou em `0/32` e o Shell reteve somente os
+  fds 0-2. No caso F12, a liberacao encontrou o fd 0 ainda ativo, o zombie nao
+  foi removido e o Shell ficou preso repetindo a falha.
+
+- VFS1: cancelamento diferido de leitura stdin implementado.
+  Corrigida em: 2026-08-28 09:44 (America/Sao_Paulo).
+  O cancelamento de processo ring3 bloqueado agora registra estado pendente,
+  acorda a wait queue e deixa a syscall desempilhar a operacao VFS. No retorno
+  de usuario, o processo aplica o cancelamento, libera os descritores e entra
+  na trampoline de termino seguro. `WAIT_REASON_CANCELLED` encerra a leitura
+  stdin sem registrar falha espuria. Boot, Stage 2 e assembly de interrupcoes
+  permaneceram inalterados. A correcao aguarda repeticao dos gates pelo
+  usuario.
