@@ -128,9 +128,9 @@ divida tecnica.
 
 ### Estado da entrega
 
-VFS2 esta implementada e aguarda os testes de host e a matriz USB MSC do
-usuario. A matriz funcional do QEMU padrao foi aprovada. Bootloader, Stage 2 e
-assembly de interrupcoes permanecem inalterados. O modo Simple nao integra a
+VFS2 esta implementada e aguarda somente a matriz USB MSC do usuario. Os
+testes de host e a matriz funcional do QEMU padrao foram aprovados. Bootloader,
+Stage 2 e assembly de interrupcoes permanecem inalterados. O modo Simple nao integra a
 matriz. Nenhuma divida tecnica foi
 criada. A abertura relativa ring 3 de `app pathtest`, a limpeza VFS, as
 guardas de stack e o `regcheck full` foram aprovados depois da ampliacao da
@@ -149,11 +149,11 @@ requisicao ao volume correto e mantem um `cwd` isolado e herdavel por processo.
 
 ### Validacao pendente do usuario
 
-Host: `make package-test` e `make storage-fixtures-test`. Os gates de qualidade
-e o build usados para abrir esta versao no QEMU ja foram confirmados pelo fluxo
-operacional e nao constituem pendencia funcional. O perfil USB MSC sera
-formado somente depois de o usuario fornecer a saida textual de `storage list`,
-para preservar o ID exato.
+O perfil USB MSC deve ser aberto com
+`make run-usb-msc QEMU_USB_DEVICE_ARGS=`. Depois, a matriz sera formada somente
+quando o usuario fornecer a saida textual de `storage list`, para preservar o
+ID exato. Testes de host, gates, build e matriz do QEMU padrao ja estao
+aprovados e nao constituem pendencia.
 
 ---
 
