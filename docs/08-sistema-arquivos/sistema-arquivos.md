@@ -642,6 +642,11 @@ quatro entradas: o volume `SYSTEM` ocupa `/`; o volume de boot distinto ocupa
 de boot ou o primeiro volume legado torna-se a raiz. `/mnt` existe como
 diretorio virtual e nao pode ser aberto como arquivo.
 
+A sincronizacao consulta primeiro o `mounted_count` do snapshot de Storage e
+le exatamente essa quantidade de registros. Divergencia entre a contagem e o
+inventario e erro estrutural; o fim normal da lista nao e usado como sentinela
+falha e nao gera aviso espurio.
+
 A resolucao aceita caminhos absolutos e relativos, `/` ou `\`, separadores
 repetidos, `.` e `..`. Caminho vazio, caminho com 256 bytes ou mais e escape
 acima de `/` sao recusados. A selecao usa o maior prefixo terminado em limite

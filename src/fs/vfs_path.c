@@ -304,6 +304,7 @@ int vfs_path_init(void) {
 }
 
 int vfs_refresh_mounts(void) {
+    storage_status_t storage_status;
     storage_volume_t volumes[VFS_MAX_MOUNTS];
     vfs_mount_info_t desired[VFS_MAX_MOUNTS];
     vfs_mount_entry_t updated[VFS_MAX_MOUNTS];
@@ -314,13 +315,28 @@ int vfs_refresh_mounts(void) {
     int boot_index = -1;
 
     if (!vfs_path_ready) return ERR_STATE;
+    if (storage_get_status(&storage_status) != OK) {
+        return vfs_path_fail(ERR_STATE,
+                             "Status Storage indisponivel no refresh VFS");
+    }
+    if (!storage_status.initialized) {
+        return vfs_path_fail(ERR_STATE,
+                             "Storage nao inicializado no refresh VFS");
+    }
+    if (storage_status.mounted_count > VFS_MAX_MOUNTS) {
+        return vfs_path_fail(ERR_OVERFLOW,
+                             "Montagens Storage excedem capacidade VFS");
+    }
     kmemset(volumes, 0, sizeof(volumes));
     kmemset(desired, 0, sizeof(desired));
     kmemset(updated, 0, sizeof(updated));
     kmemset(placed, 0, sizeof(placed));
-    while (volume_count < VFS_MAX_MOUNTS &&
-           storage_get_mounted_at((uint8_t)volume_count,
-                                  &volumes[volume_count]) == OK) {
+    while (volume_count < storage_status.mounted_count) {
+        if (storage_get_mounted_at((uint8_t)volume_count,
+                                   &volumes[volume_count]) != OK) {
+            return vfs_path_fail(ERR_STATE,
+                                 "Snapshot de montagem Storage inconsistente");
+        }
         if (volumes[volume_count].role == STORAGE_VOLUME_ROLE_SYSTEM) {
             root_index = (int)volume_count;
         }

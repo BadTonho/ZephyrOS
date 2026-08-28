@@ -2125,3 +2125,30 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   instrumentado para publicar comprimento, registro mais proximo e tamanho do
   prefixo coincidente, permitindo localizar uma divergencia de byte sem
   aceitar aliases ambiguos ou montar outro volume.
+
+- VFS2: consulta individual do volume USB aprovada na imagem instrumentada.
+  Validada em: 2026-08-28 13:21 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. `storage info
+  usb-ms-00:04.0-p1-a1-l0p1` localizou o volume FAT12 `EP2FAT12A` em estado
+  `DETECTED`, acesso somente leitura, geracao 1 e erro 0, alem do disco pai
+  `usb-ms-00:04.0-p1-a1-l0` sem erros. O diagnostico de divergencia nao foi
+  acionado porque o ID coincidiu integralmente. A falha anterior de consulta
+  nao foi reproduzida; a montagem isolada desse mesmo registro e o proximo
+  passo da matriz.
+
+- VFS2: primeira montagem USB FAT12 publicada no namespace.
+  Validada em: 2026-08-28 13:22 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. `storage mount
+  usb-ms-00:04.0-p1-a1-l0p1` montou `EP2FAT12A` somente leitura em RAM, e
+  `mount` publicou `/mnt/usb-ms-00:04.0-p1-a1-l0p1` como FAT12 `RO`, geracao 2
+  e zero referencias. O resultado funcional foi aprovado, mas o refresh
+  registrou o aviso espurio `Indice de montagem nao encontrado` ao consultar
+  uma posicao alem do ultimo registro como sentinela.
+
+- VFS2: refresh de montagens deixou de consultar sentinela invalida.
+  Corrigida em: 2026-08-28 13:22 (America/Sao_Paulo).
+  `vfs_refresh_mounts()` agora obtem `mounted_count`, rejeita capacidade acima
+  de quatro e consulta exatamente os registros publicados. Uma divergencia
+  real entre contagem e inventario retorna erro estrutural com log; o fim
+  normal nao chama mais `storage_get_mounted_at()` com indice inexistente. A
+  correcao aguarda gates e repeticao da matriz USB MSC.
