@@ -38,7 +38,7 @@ Sistema e ecossistema:       [████████████████�
 Evolução da plataforma:      [████████████████████████████████████-------] EP1-EP6.4 e EP7.0 encerradas; EP7.1B EHCI/transporte RTL8811CU implementada; EP9.0A e EP9.4A concluídas
 ```
 
-**Documentação de atualização sincronizada em:** 2026-08-28 12:09 (America/Sao_Paulo).
+**Documentação de atualização sincronizada em:** 2026-08-28 12:21 (America/Sao_Paulo).
 
 ---
 

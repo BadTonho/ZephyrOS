@@ -2020,3 +2020,20 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   subdiretorios reais. Reservas transitivas do pool possuem estado explicito
   para que as invariantes continuem validas durante a resolucao sem lock. A
   correcao aguarda gates e repeticao funcional pelo usuario.
+
+- VFS2: repeticao de `app pathtest` revelou falha fatal persistente.
+  Registrada em: 2026-08-28 12:21 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. Na versao com os snapshots
+  VFS reduzidos, a execucao apagou integralmente a tela do QEMU e nao devolveu
+  o Shell. O comportamento confirma falha no caminho ring 3, sem evidencias de
+  vazamento ou erro dos autotestes anteriores.
+
+- VFS2: margem da kernel stack ring 3 ampliada e `pathtest` instrumentado.
+  Corrigida em: 2026-08-28 12:21 (America/Sao_Paulo).
+  Processos ring 3 agora reservam 8 KiB de kernel stack, dentro do intervalo de
+  4 a 16 KiB ja suportado pelas guardas e metricas de processo. A margem cobre
+  a cadeia aninhada syscall, VFS, Storage e FAT/LFN sem alterar a stack de
+  usuario ou a ABI. O builtin publica marcos apos `chdir`, `getcwd`, abertura
+  relativa e fechamento, permitindo identificar a ultima etapa concluida se
+  houver nova falha. Bootloader, Stage 2 e assembly de interrupcoes permanecem
+  inalterados. A correcao aguarda gates e repeticao funcional pelo usuario.

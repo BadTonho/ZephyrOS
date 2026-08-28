@@ -134,7 +134,9 @@ Desde a EP6.4, `process_create()` mantém a stack padrão de 4 KiB e
 alinhadas a 16 bytes. `process_stack_get_info()`,
 `process_stack_validate_all()`, `process_stack_check_current()` e
 `process_stack_self_test()` expõem diagnóstico e validação sem alterar
-assinaturas existentes nem a API de processos ring 3.
+assinaturas existentes nem a API de processos ring 3. Desde a VFS2, processos
+ring 3 reservam 8 KiB de kernel stack para o caminho de syscall VFS/Storage;
+essa pilha não pertence ao espaço de usuário e não modifica a ABI.
 
 Os contratos de `src/include/core/memory.h` e `src/include/memory/paging.h`
 incluem, desde a K3, estatisticas seguras do heap/PMM e do ciclo de vida de

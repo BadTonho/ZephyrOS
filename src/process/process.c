@@ -1114,7 +1114,7 @@ static int process_user_initialize(process_t* proc, page_directory_t* dir,
         return ERR_STATE;
     }
     proc->page_directory = dir;
-    result = process_stack_allocate(proc, KERNEL_STACK_SIZE);
+    result = process_stack_allocate(proc, PROCESS_USER_KERNEL_STACK_SIZE);
     if (result != OK) {
         wait_channel_reset(&proc->ipc_wait_channel);
         vfs_fd_table_release(&proc->fd_table);
@@ -1648,6 +1648,7 @@ int process_stack_self_test(void) {
     int result;
 
     if (!process_stack_size_valid(KERNEL_STACK_SIZE) ||
+        !process_stack_size_valid(PROCESS_USER_KERNEL_STACK_SIZE) ||
         process_stack_size_valid(PROCESS_KERNEL_STACK_MIN_SIZE -
                                  PROCESS_KERNEL_STACK_ALIGNMENT) ||
         process_stack_size_valid(PROCESS_KERNEL_STACK_MAX_SIZE +
