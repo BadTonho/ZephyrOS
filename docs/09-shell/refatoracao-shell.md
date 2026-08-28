@@ -52,6 +52,9 @@ O contrato de `src/include/apps/shell_input.h` mantém a fronteira explícita:
 `shell_input_handle_key()` altera a linha e retorna
 `SHELL_INPUT_EVENT_COMMAND_READY` no Enter; `shell.c` consulta o buffer, chama
 `shell_process_command()` e decide se deve exibir o próximo prompt.
+Na SYNC4, `SHELL_INPUT_EVENT_CANCELLED` representa `Ctrl+C` no Shell ocioso:
+a linha parcial é descartada depois de imprimir `^C`, e `shell.c` reapresenta
+um único prompt. O evento não é usado durante jobs cooperativos.
 
 A implementação de `src/shell/shell_input.c` e seu header concentram:
 

@@ -15,7 +15,8 @@ typedef enum {
     WAIT_REASON_EVENT,
     WAIT_REASON_TIMEOUT,
     WAIT_REASON_CANCELLED,
-    WAIT_REASON_DEVICE_UNAVAILABLE
+    WAIT_REASON_DEVICE_UNAVAILABLE,
+    WAIT_REASON_SIGNAL
 } wait_reason_t;
 
 typedef enum {
@@ -88,6 +89,7 @@ typedef struct {
     uint32_t wake_all_calls;
     uint32_t context_errors;
     uint32_t orphan_errors;
+    uint32_t signal_wakes;
 } wait_stats_t;
 
 typedef struct {

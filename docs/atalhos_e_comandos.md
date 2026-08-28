@@ -51,6 +51,8 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `wait` | `[status|list|check]` | Inspeciona canais de espera e executa o autoteste de esperas. |
 | `wqinfo` | - | Lista wait queues registradas, geracao, ocupacao e ordem FIFO dos waiters. |
 | `workq` | `[status|list|check]` | Inspeciona filas, prazos e contexto; `check` inclui fixture e wake real da kworker. |
+| `kill` | `-2|-9|-11|-15|-17 PID` ou nome | Envia um sinal somente a processo ring3 ativo. |
+| `sigtest` | - | Valida ações, bloqueio, coalescência, frame, trampoline e invariantes de sinais. |
 | `job` | `status` | Inspeciona o estado do executor cooperativo de jobs do Shell. |
 | `update remote` | `status/enable/disable/clear [--confirm]` | Controla o transporte remoto opcional da sessao. |
 | `update fetch` | `[--url <manifesto>] [--confirm]` | Consulta ou baixa um ZUPD autenticado sem aplicar. |
@@ -125,6 +127,9 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 - **Roda do mouse**: rola tres linhas no Shell Simple e Classic.
 - **Digitacao, Backspace ou Enter**: retorna ao fim para manter o prompt visivel.
 - **`clear`**: apaga as 500 linhas de saida, mas preserva os comandos da sessao.
+- **Ctrl esquerdo/direito + C**: no prompt, imprime `^C` e limpa a linha;
+  em ZAPP focado, envia `SIGINT`; jobs cooperativos continuam usando
+  F11/F12/Esc.
 
 ---
 
@@ -140,6 +145,8 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 
 ### 2.1.1. Aplicativos `.ZAP` em primeiro plano
 - **Scancodes PS/2**: sao entregues ao aplicativo por `APP_MESSAGE_KEYBOARD`.
+- **Ctrl esquerdo/direito + C, por PS/2 ou USB**: envia `SIGINT` e consome o
+  acorde quando o ZAPP possui o foco.
 - **Esc**: pertence ao aplicativo em primeiro plano.
 - **F12**: cancela somente o `.ZAP` externo em foco e restaura o Shell.
 - **Menu Iniciar e taskbar**: ao abrir uma interface nativa, cancelam primeiro

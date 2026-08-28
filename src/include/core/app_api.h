@@ -4,7 +4,7 @@
 #include "types.h"
 
 #define APP_API_VERSION_MAJOR 0
-#define APP_API_VERSION_MINOR 3
+#define APP_API_VERSION_MINOR 4
 #define APP_API_MAX_TEXT_SIZE 1024
 #define APP_API_MAX_FILE_IO_SIZE 4096
 #define APP_API_TICKS_PER_SECOND 50
@@ -12,6 +12,32 @@
 #define APP_EXIT_SUCCESS 0U
 /* Reservado ao runtime para cancelamentos controlados, como F11 e F12. */
 #define APP_EXIT_CANCELLED 0x0000F120U
+#define APP_EXIT_SIGNAL_BASE 0x00010000U
+#define APP_EXIT_FROM_SIGNAL(signal_number) \
+    (APP_EXIT_SIGNAL_BASE | ((signal_number) & 0xFFU))
+
+#define APP_SIGNAL_INT  2U
+#define APP_SIGNAL_KILL 9U
+#define APP_SIGNAL_SEGV 11U
+#define APP_SIGNAL_TERM 15U
+#define APP_SIGNAL_CHLD 17U
+
+#define APP_SIGNAL_DISPOSITION_DEFAULT 0U
+#define APP_SIGNAL_DISPOSITION_IGNORE  1U
+#define APP_SIGNAL_DISPOSITION_HANDLER 2U
+
+#define APP_SIGNAL_MASK_BLOCK   0U
+#define APP_SIGNAL_MASK_UNBLOCK 1U
+#define APP_SIGNAL_MASK_SET     2U
+
+#define APP_SIGNAL_BIT(signal_number) \
+    (1U << ((signal_number) - 1U))
+#define APP_SIGNAL_SUPPORTED_MASK \
+    (APP_SIGNAL_BIT(APP_SIGNAL_INT) | APP_SIGNAL_BIT(APP_SIGNAL_KILL) | \
+     APP_SIGNAL_BIT(APP_SIGNAL_SEGV) | APP_SIGNAL_BIT(APP_SIGNAL_TERM) | \
+     APP_SIGNAL_BIT(APP_SIGNAL_CHLD))
+#define APP_SIGNAL_UNBLOCKABLE_MASK \
+    (APP_SIGNAL_BIT(APP_SIGNAL_KILL) | APP_SIGNAL_BIT(APP_SIGNAL_SEGV))
 
 #define APP_LAUNCH_ABI_VERSION 1U
 #define APP_LAUNCH_MAX_ARGS    8U
@@ -50,6 +76,12 @@ typedef struct {
     uint32_t data1;
     uint32_t data2;
 } app_message_t;
+
+typedef struct {
+    uint32_t disposition;
+    uint32_t handler;
+    uint32_t mask;
+} app_signal_action_t;
 
 typedef struct __attribute__((packed)) {
     uint32_t offset;

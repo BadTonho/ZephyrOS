@@ -1700,3 +1700,17 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   pendente. Nenhuma nova divida foi criada: a eventual regressao de entrada
   sob carga permanece coberta pela `DT100-001`, ainda `ACEITA`, e o uso da
   kworker como processo ring0 permanece coberto pela `DT100-002`.
+
+- SYNC4: implementação do sistema de sinais assíncronos concluída.
+  Concluída em: 2026-08-27 22:52 (America/Sao_Paulo).
+  Foi criado o núcleo de sinais para processos ring3 com bitmap coalescido,
+  máscaras, ações, contexto salvo, vínculo pai/filho, `SIGCHLD`, snapshots e
+  invariantes. A App API passou para 0.4 com as syscalls 10-13, frame ring3 e
+  trampoline de `signal_return`. Exceções de usuário geram `SIGSEGV`; IRQs e
+  syscalls preparam uma entrega antes do `iret`. Ctrl esquerdo/direito de PS/2
+  e USB, Shell, Task Manager, App Loader, Wait Queues, `kill`, `sigtest`,
+  RegCheck e Health foram integrados. Pacotes novos usam App API 0.4 e o
+  contrato append-only mantém pacotes 0.3 aceitos. `src/boot/boot.asm`,
+  `stage2.asm` e as rotinas Assembly de interrupção permaneceram inalterados.
+  Os gates e a matriz funcional pertencem ao usuário; SYNC4 continua aberta
+  e nenhuma dívida técnica nova foi criada.

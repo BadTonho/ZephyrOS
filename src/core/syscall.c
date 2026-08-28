@@ -5,6 +5,7 @@
 #include "core/string.h"
 #include "core/memory.h"
 #include "process/process.h"
+#include "process/signal.h"
 #include "memory/paging.h"
 #include "drivers/tss.h"
 #include "fs/fs.h"
@@ -250,6 +251,49 @@ static int syscall_user_message_receive(const registers_t* regs) {
     return paging_copy_to_user((void*)regs->ebx, &message, sizeof(message));
 }
 
+static int syscall_user_signal_action(const registers_t* regs) {
+    app_signal_action_t action;
+    app_signal_action_t old_action;
+    const app_signal_action_t* action_ptr = 0;
+    app_signal_action_t* old_ptr = 0;
+    int result;
+
+    if (!regs->ecx && !regs->edx) {
+        LOG_ERROR("SYSCALL", "signal_action sem acao ou destino");
+        return ERR_NULL;
+    }
+    if (regs->ecx) {
+        result = paging_copy_from_user(&action, (const void*)regs->ecx,
+                                       sizeof(action));
+        if (result != OK) return result;
+        action_ptr = &action;
+    }
+    if (regs->edx) {
+        result = paging_validate_user_range(regs->edx, sizeof(old_action), 1);
+        if (result != OK) return result;
+        old_ptr = &old_action;
+    }
+    result = process_signal_action(regs->ebx, action_ptr, old_ptr);
+    if (result != OK || !regs->edx) return result;
+    return paging_copy_to_user((void*)regs->edx, &old_action,
+                               sizeof(old_action));
+}
+
+static int syscall_user_signal_mask(const registers_t* regs) {
+    uint32_t old_mask = 0U;
+    int result;
+
+    if (regs->edx) {
+        result = paging_validate_user_range(regs->edx, sizeof(old_mask), 1);
+        if (result != OK) return result;
+    }
+    result = process_signal_mask(regs->ebx, regs->ecx,
+                                 regs->edx ? &old_mask : 0);
+    if (result != OK || !regs->edx) return result;
+    return paging_copy_to_user((void*)regs->edx, &old_mask,
+                               sizeof(old_mask));
+}
+
 static int syscall_dispatch_user(registers_t* regs) {
     int result = syscall_validate_user_caller(regs);
 
@@ -277,6 +321,14 @@ static int syscall_dispatch_user(registers_t* regs) {
             return syscall_user_message_send(regs);
         case APP_SYSCALL_MESSAGE_RECEIVE:
             return syscall_user_message_receive(regs);
+        case APP_SYSCALL_SIGNAL_ACTION:
+            return syscall_user_signal_action(regs);
+        case APP_SYSCALL_SIGNAL_MASK:
+            return syscall_user_signal_mask(regs);
+        case APP_SYSCALL_SIGNAL_RAISE:
+            return process_signal_raise(regs->ebx);
+        case APP_SYSCALL_SIGNAL_RETURN:
+            return process_signal_return(regs);
         default:
             LOG_WARN("SYSCALL", "Numero de syscall ring 3 desconhecido");
             return ERR_INVALID;
@@ -323,6 +375,12 @@ static int syscall_dispatch(registers_t* regs) {
                                          (const app_message_t*)regs->ecx);
         case APP_SYSCALL_MESSAGE_RECEIVE:
             return app_api_message_receive((app_message_t*)regs->ebx);
+        case APP_SYSCALL_SIGNAL_ACTION:
+        case APP_SYSCALL_SIGNAL_MASK:
+        case APP_SYSCALL_SIGNAL_RAISE:
+        case APP_SYSCALL_SIGNAL_RETURN:
+            LOG_WARN("SYSCALL", "Syscall de sinal recusada para ring0");
+            return ERR_UNAVAILABLE;
         default:
             LOG_WARN("SYSCALL", "Numero de syscall desconhecido");
             return ERR_INVALID;
@@ -395,6 +453,10 @@ void syscall_handler(registers_t* regs) {
 
     number = regs->eax;
     result = syscall_dispatch(regs);
+    if (number == APP_SYSCALL_SIGNAL_RETURN && result == OK &&
+        syscall_is_user_caller(regs)) {
+        return;
+    }
     if (number == APP_SYSCALL_PROCESS_EXIT && result == OK &&
         syscall_is_user_caller(regs)) {
         result = process_prepare_user_termination(regs);

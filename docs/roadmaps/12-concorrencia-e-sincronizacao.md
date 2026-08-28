@@ -12,7 +12,8 @@ Implementar padrões modernos de concorrência, sincronização e tratamento ass
   [`DT100-001`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2).
 - [x] SYNC2 - Primitivas de Espera sem Espera Ocupada: concluida e validada.
 - [x] SYNC3 - Filas de Trabalho do Kernel (concluida e validada).
-- [ ] SYNC4 - Sistema de Sinais Assíncronos para Processos e Shell (`SIGINT`, `SIGTERM`, `SIGSEGV`).
+- [ ] SYNC4 - Sistema de Sinais Assíncronos implementado; matriz funcional
+  do usuário pendente antes do encerramento.
 
 ## Atalhos
 
@@ -277,21 +278,78 @@ nao e quitada por esta execucao isolada sem o sintoma.
 
 ### Implementação
 
-- [ ] Definir mapa de bits de sinais pendentes (`pending_signals`) e tabela de ações (`signal_actions`) em cada `process_t`.
-- [ ] Definir os sinais essenciais:
-  - `SIGINT` (2): interrupção pelo teclado (`Ctrl+C`).
-  - `SIGKILL` (9): encerramento imediato incondicional.
-  - `SIGSEGV` (11): violação de memória / Page Fault inválido.
-  - `SIGTERM` (15): solicitação de encerramento amigável.
-  - `SIGCHLD` (17): notificação de término de processo filho.
-- [ ] Na saída de interrupções e syscalls, verificar e entregar sinais pendentes antes de retornar para ring 3.
-- [ ] Implementar tratador padrão do Shell para `Ctrl+C` cancelando processos em primeiro plano sem fechar o terminal.
+- [x] Acrescentar PID pai, bitmap de pendências e bloqueios, tabela de ações,
+  contexto salvo, sinal ativo, término, último filho e métricas a `process_t`.
+- [x] Implementar `SIGINT` (2), `SIGKILL` (9), `SIGSEGV` (11), `SIGTERM`
+  (15) e `SIGCHLD` (17), com coalescência por bitmap. `SIGKILL` e `SIGSEGV`
+  são fatais, não bloqueáveis e não capturáveis.
+- [x] Registrar o pai na criação, notificar `SIGCHLD` exatamente uma vez ao
+  entrar em `ZOMBIE` e reparentar para PID 0 quando o pai for destruído.
+- [x] Acordar uma Wait Queue interrompida por sinal entregável com o motivo
+  `WAIT_REASON_SIGNAL`; sinais bloqueados permanecem pendentes.
+- [x] Elevar a App API para `0.4` e acrescentar, de forma append-only, ações,
+  máscaras, envio ao próprio processo e `signal_return` nas syscalls 10-13.
+- [x] Validar handlers dentro do código carregado do ZAPP, salvar o contexto
+  no kernel e montar um frame de usuário com trampoline reservado no fim da
+  página de lançamento. Handlers não são aninhados.
+- [x] Preparar no máximo um sinal no fim de exceções, syscalls e IRQs, depois
+  do EOI e antes do `iret`, com prioridade para sinais fatais.
+- [x] Converter divisão por zero, Invalid Opcode, General Protection, Page
+  Fault e as exceções ring3 isoladas para `SIGSEGV`, preservando vetor, código
+  e endereço. Falhas ring0 continuam fatais para o kernel.
+- [x] Integrar Ctrl esquerdo/direito de PS/2 e USB: em ZAPP focado, `Ctrl+C`
+  envia `SIGINT`; no Shell ocioso, imprime `^C`, limpa a linha e reapresenta
+  o prompt; jobs cooperativos preservam F11/F12/Esc.
+- [x] Fazer o Task Manager usar `SIGKILL` somente para processos ring3 e
+  recusar processos nativos.
+- [x] Adicionar snapshots somente-leitura, invariantes em `regcheck full`,
+  estado em `health check` e os comandos `kill` e `sigtest`.
+
+O App Loader continua sendo o coletor de processos ring3; SYNC4 não cria
+`waitpid`. `src/boot/boot.asm`, `src/boot/stage2.asm` e as rotinas Assembly de
+interrupção permanecem inalteradas. R5 continua pendente no Roadmap 09.
 
 ### Critério de saída
 
-O usuário consegue interromper programas longos via `Ctrl+C` e o sistema trata falhas de memória de programas ring 3 finalizando o processo de forma limpa.
+Handlers devem executar em ring3 com interrupções habilitadas, retornar pelo
+trampoline e nunca deixar contexto salvo órfão. `Ctrl+C`, ações padrão,
+bloqueio, captura, coalescência, `SIGCHLD`, falhas ring3, foco e Wait Queues
+devem permanecer consistentes, com `RegCheck: OK`. A implementação está
+pronta, mas a etapa permanece aberta até a matriz QEMU ser executada pelo
+usuário.
 
 ### Comandos Shell / Diagnóstico
 
-- `kill -<sinal> <pid>`: envia um sinal para o processo especificado.
-- `sigtest`: dispara bateria de testes de entrega, bloqueio e captura de sinais.
+- `kill -2|-9|-11|-15|-17 PID`: envia sinal somente a processo ring3; também
+  aceita `INT`, `KILL`, `SEGV`, `TERM`, `CHLD` e nomes com prefixo `SIG`.
+- `sigtest`: executa a fixture privada de ações, bloqueio, coalescência,
+  regras fatais, vínculo pai/filho, frame, trampoline e invariantes.
+- Entradas inválidas registram uso incorreto sem alterar processos.
+
+### Validação pendente do usuário
+
+Depois dos gates e do `make run`, executar no QEMU padrão:
+
+```text
+sigtest
+app inputtest
+usertest fault
+irqstat check
+timer check
+wait check
+workq check
+schedcheck
+net socket check
+net check qemu tcp net-pci-00:03.0 example.com
+regcheck full
+health check
+memcheck
+log check
+sigtest foo
+```
+
+Em `app inputtest`, `Ctrl+C` deve encerrar por `SIGINT` e devolver o foco. No
+prompt, uma linha parcial deve ser limpa por `Ctrl+C`. O perfil USB HID deve
+repetir os dois acordes com teclados PS/2 e USB. Para testar `kill`, o PID deve
+ser copiado literalmente da saída recente de `procs`; nenhum PID é presumido
+neste roadmap. Nenhuma dívida técnica nova foi criada nesta implementação.

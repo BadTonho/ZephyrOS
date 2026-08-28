@@ -19,6 +19,7 @@ typedef struct {
     uint32_t start_failed;
     uint32_t focus_acquired;
     uint32_t generation;
+    uint32_t termination_signal;
 } app_loader_result_t;
 
 typedef struct __attribute__((packed)) {

@@ -518,6 +518,7 @@ static void process_discard_new_process(process_t* proc) {
 }
 
 void process_init(void) {
+    LOG_INFO("PROC", "Inicializando gerenciador de processos");
     current_process = 0;
     process_count = 0;
     process_initialize_pid_pool();
@@ -533,6 +534,9 @@ void process_init(void) {
     for (int i = 0; i < MAX_PROCESSES; i++) {
         kmemset(&processes[i], 0, sizeof(process_t));
         processes[i].state = PROCESS_STATE_UNUSED;
+    }
+    if (process_signal_init() != OK) {
+        LOG_ERROR("PROC", "Falha ao inicializar sinais de processos");
     }
     scheduler_init();
     LOG_INFO("PROC", "Gerenciador de processos inicializado");
@@ -585,6 +589,7 @@ void process_bootstrap_idle(void) {
     
     current_process = proc;
     process_count = 1;
+    process_signal_process_created(proc->pid, 0U);
     LOG_INFO("PROC", "Processo Idle inicializado");
 }
 
@@ -709,6 +714,8 @@ static process_t* process_create_internal(const char* name,
 
     proc->state = PROCESS_STATE_READY;
     process_count++;
+    process_signal_process_created(
+        proc->pid, current_process ? current_process->pid : 0U);
     LOG_INFO("PROC", "Processo criado com sucesso");
     return proc;
 }
@@ -835,6 +842,14 @@ static int process_mark_user_zombie(process_t* proc, uint32_t exit_code,
     if (proc->wait_active) process_cancel_wait(proc);
 
     proc->exit_code = exit_code;
+    proc->faulted = faulted ? 1U : proc->faulted;
+    proc->pending_signals = 0U;
+    proc->blocked_signals = 0U;
+    proc->active_signal = 0U;
+    proc->signal_saved_mask = 0U;
+    proc->signal_context_valid = 0U;
+    kmemset(&proc->signal_saved_context, 0,
+            sizeof(proc->signal_saved_context));
     proc->state = PROCESS_STATE_ZOMBIE;
     process_event_generation++;
     if (!process_event_generation) process_event_generation = 1U;
@@ -849,6 +864,7 @@ static int process_mark_user_zombie(process_t* proc, uint32_t exit_code,
             LOG_WARN("PROC", "Falha ao restaurar foco apos encerrar usuario");
         }
     }
+    process_signal_process_exited(proc->pid);
     return OK;
 }
 
@@ -1013,7 +1029,9 @@ static int process_user_validate_launch(const app_launch_info_t* launch) {
 
 static int process_user_initialize(process_t* proc, page_directory_t* dir,
                                    const char* name,
-                                   uint32_t entry_offset, int diagnostic_test,
+                                   uint32_t entry_offset,
+                                   uint32_t code_size,
+                                   int diagnostic_test,
                                    int start_suspended) {
     uint32_t stack_ptr;
     uint32_t entry_point;
@@ -1073,10 +1091,13 @@ static int process_user_initialize(process_t* proc, page_directory_t* dir,
     proc->context.cr3 = (uint32_t)dir;
     proc->context.user_entry = entry_point;
     proc->context.user_mode = 1;
+    proc->user_code_size = code_size;
     proc->user_test = diagnostic_test ? 1U : 0U;
     proc->state = start_suspended ? PROCESS_STATE_BLOCKED : PROCESS_STATE_READY;
     (void)process_stack_observe(proc, 0, 0U, 0U);
     process_count++;
+    process_signal_process_created(
+        proc->pid, current_process ? current_process->pid : 0U);
     return OK;
 }
 
@@ -1146,7 +1167,7 @@ static int process_create_user_image_internal(const char* name,
         return result;
     }
     result = process_user_initialize(proc, dir, name,
-                                     entry_offset, diagnostic_test,
+                                     entry_offset, code_size, diagnostic_test,
                                      start_suspended);
     if (result != OK) {
         paging_free_user_directory(dir);
@@ -1261,6 +1282,7 @@ int process_exit_current(uint32_t exit_code) {
         return ERR_INVALID;
     }
 
+    current_process->termination_signal = 0U;
     result = process_mark_current_user_zombie(exit_code, 0);
 
     if (result != OK) return result;
@@ -1279,6 +1301,7 @@ int process_cancel_user(uint32_t pid, uint32_t exit_code) {
         return ERR_STATE;
     }
 
+    proc->termination_signal = 0U;
     result = process_mark_user_zombie(proc, exit_code, 0);
     if (result != OK) return result;
 
@@ -1288,6 +1311,38 @@ int process_cancel_user(uint32_t pid, uint32_t exit_code) {
 
 int process_cancel_focused_user(uint32_t exit_code) {
     return process_cancel_user(process_get_focus(), exit_code);
+}
+
+int process_terminate_user_signal(uint32_t pid, uint32_t signal_number,
+                                  int faulted) {
+    process_t* proc = process_get_by_pid(pid);
+    int result;
+
+    if (!proc || !process_is_user(proc)) {
+        LOG_WARN("PROC", "Destino invalido para encerramento por sinal");
+        return ERR_NOT_FOUND;
+    }
+    if (signal_number != APP_SIGNAL_INT &&
+        signal_number != APP_SIGNAL_KILL &&
+        signal_number != APP_SIGNAL_SEGV &&
+        signal_number != APP_SIGNAL_TERM) {
+        LOG_WARN("PROC", "Sinal invalido para encerramento de processo");
+        return ERR_INVALID;
+    }
+    if (proc->state == PROCESS_STATE_ZOMBIE) return OK;
+
+    proc->termination_signal = signal_number;
+    proc->last_signal = signal_number;
+    proc->signal_delivered++;
+    result = process_mark_user_zombie(
+        proc, APP_EXIT_FROM_SIGNAL(signal_number), faulted);
+    if (result != OK) {
+        LOG_ERROR_CODE("PROC", result,
+                       "Falha ao encerrar processo por sinal");
+        return result;
+    }
+    LOG_DEBUG("PROC", "Processo ring3 encerrado por sinal");
+    return OK;
 }
 
 int process_handle_user_exception(registers_t* regs) {
@@ -1307,7 +1362,7 @@ int process_handle_user_exception(registers_t* regs) {
     current_process->fault_error = regs->err_code;
     current_process->fault_address = fault_address;
     current_process->faulted = 1;
-    result = process_mark_current_user_zombie(ERR_STATE, 1);
+    result = process_signal_record_user_fault(regs);
     if (result != OK) {
         LOG_ERROR("PROC", "Falha ao encerrar processo apos excecao de usuario");
         return ERR_STATE;
@@ -1407,6 +1462,7 @@ void process_destroy(process_t* proc) {
         LOG_WARN("PROC", "Processo destruido sem fallback de foco valido");
     }
     pid = proc->pid;
+    process_signal_process_destroyed(pid);
     proc->state = PROCESS_STATE_UNUSED;
     process_stack_release(proc);
     if (proc->page_directory && proc->context.user_mode) {

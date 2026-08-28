@@ -7,6 +7,9 @@
 #include "core/string.h"
 #include "fs/fs.h"
 
+#define APP_PACKAGE_API_LEGACY "0.3"
+#define APP_PACKAGE_API_CURRENT "0.4"
+
 #define APP_PACKAGE_HEADER_SIZE ((uint32_t)sizeof(app_package_header_t))
 #define APP_PACKAGE_MAX_FILE_SIZE \
     (APP_PACKAGE_HEADER_SIZE + APP_PACKAGE_MAX_MANIFEST_SIZE + \
@@ -433,9 +436,14 @@ static int app_package_parse_manifest(const uint8_t* manifest,
                                            manifest + equals + 1U,
                                            line_end - equals - 1U);
         } else if (field == 3U) {
-            result = app_package_text_equals(manifest + equals + 1U,
-                                             line_end - equals - 1U, "0.3") ?
-                     OK : ERR_INVALID;
+            result =
+                app_package_text_equals(manifest + equals + 1U,
+                                        line_end - equals - 1U,
+                                        APP_PACKAGE_API_LEGACY) ||
+                app_package_text_equals(manifest + equals + 1U,
+                                        line_end - equals - 1U,
+                                        APP_PACKAGE_API_CURRENT) ?
+                OK : ERR_INVALID;
         } else if (field == 4U) {
             result = app_package_text_equals(manifest + equals + 1U,
                                              line_end - equals - 1U,

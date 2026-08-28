@@ -14,6 +14,11 @@
 #define SHELL_INPUT_SCANCODE_RIGHT_SHIFT_RELEASE 0xB6U
 #define SHELL_INPUT_SHIFT_LEFT_MASK 0x01U
 #define SHELL_INPUT_SHIFT_RIGHT_MASK 0x02U
+#define SHELL_INPUT_CTRL_LEFT_MASK 0x01U
+#define SHELL_INPUT_CTRL_RIGHT_MASK 0x02U
+#define SHELL_INPUT_SCANCODE_CTRL 0x1DU
+#define SHELL_INPUT_SCANCODE_CTRL_RELEASE 0x9DU
+#define SHELL_INPUT_SCANCODE_C 0x2EU
 #define SHELL_INPUT_SCANCODE_BACKSPACE 0x0EU
 #define SHELL_INPUT_SCANCODE_ENTER 0x1CU
 #define SHELL_INPUT_SCANCODE_UP 0x48U
@@ -36,6 +41,7 @@ static uint32_t shell_history_next = 0;
 static uint32_t shell_history_depth = 0;
 static uint8_t shell_extended_scancode = 0;
 static uint8_t shell_shift_mask = 0;
+static uint8_t shell_ctrl_mask = 0;
 static uint8_t shell_prompt_visible = 0;
 static uint8_t shell_input_overflow_warned = 0;
 
@@ -192,6 +198,7 @@ void shell_input_cancel_extended(void) {
 void shell_input_reset_modifiers(void) {
     shell_extended_scancode = 0;
     shell_shift_mask = 0;
+    shell_ctrl_mask = 0;
 }
 
 const char* shell_input_get_buffer(void) {
@@ -226,13 +233,35 @@ shell_input_event_t shell_input_handle_key(uint8_t scancode,
         shell_shift_mask &= (uint8_t)~SHELL_INPUT_SHIFT_RIGHT_MASK;
         return SHELL_INPUT_EVENT_NONE;
     }
+    if (scancode == SHELL_INPUT_SCANCODE_EXTENDED) {
+        shell_extended_scancode = 1;
+        return SHELL_INPUT_EVENT_NONE;
+    }
+    if (scancode == SHELL_INPUT_SCANCODE_CTRL) {
+        shell_ctrl_mask |= shell_extended_scancode ?
+                           SHELL_INPUT_CTRL_RIGHT_MASK :
+                           SHELL_INPUT_CTRL_LEFT_MASK;
+        shell_extended_scancode = 0;
+        return SHELL_INPUT_EVENT_NONE;
+    }
+    if (scancode == SHELL_INPUT_SCANCODE_CTRL_RELEASE) {
+        shell_ctrl_mask &= (uint8_t)~(shell_extended_scancode ?
+                           SHELL_INPUT_CTRL_RIGHT_MASK :
+                           SHELL_INPUT_CTRL_LEFT_MASK);
+        shell_extended_scancode = 0;
+        return SHELL_INPUT_EVENT_NONE;
+    }
     if (input_blocked) return SHELL_INPUT_EVENT_NONE;
 
     shell_input_resume_terminal(window_manager_active);
 
-    if (scancode == SHELL_INPUT_SCANCODE_EXTENDED) {
-        shell_extended_scancode = 1;
-        return SHELL_INPUT_EVENT_NONE;
+    if (scancode == SHELL_INPUT_SCANCODE_C && shell_ctrl_mask) {
+        video_print("^C\n", SHELL_INPUT_COLOR_TEXT);
+        input_buffer[0] = '\0';
+        input_pos = 0;
+        shell_prompt_visible = 0U;
+        shell_input_history_reset_navigation();
+        return SHELL_INPUT_EVENT_CANCELLED;
     }
 
     if (scancode & 0x80U) {

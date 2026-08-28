@@ -28,6 +28,8 @@ extern void shell_dispatch_cmd_tls(const char* arguments);
 extern void shell_dispatch_cmd_wait(const char* arguments);
 extern void shell_dispatch_cmd_wqinfo(const char* arguments);
 extern void shell_dispatch_cmd_workq(const char* arguments);
+extern void shell_dispatch_cmd_kill(const char* arguments);
+extern void shell_dispatch_cmd_sigtest(const char* arguments);
 extern void shell_dispatch_cmd_devices(const char* arguments);
 extern void shell_dispatch_cmd_device_info(const char* arguments);
 extern void shell_dispatch_cmd_device_scan(const char* arguments);
@@ -100,6 +102,8 @@ static const shell_dispatch_entry_t shell_dispatch_table[] = {
     {"wait", shell_dispatch_cmd_wait, SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"wqinfo", shell_dispatch_cmd_wqinfo, SHELL_DISPATCH_FLAG_NONE},
     {"workq", shell_dispatch_cmd_workq, SHELL_DISPATCH_FLAG_MAY_BLOCK},
+    {"kill", shell_dispatch_cmd_kill, SHELL_DISPATCH_FLAG_NONE},
+    {"sigtest", shell_dispatch_cmd_sigtest, SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"devices", shell_dispatch_cmd_devices, SHELL_DISPATCH_FLAG_NONE},
     {"device-info", shell_dispatch_cmd_device_info,
      SHELL_DISPATCH_FLAG_NONE},

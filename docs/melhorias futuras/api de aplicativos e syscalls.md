@@ -2,8 +2,9 @@
 
 ## Resumo de Progresso
 
-Status: Fases 1 a 6D validadas no QEMU. A App API permanece na versao `0.3`,
-com as syscalls `0-9`.
+Status: Fases 1 a 6D validadas no QEMU. A SYNC4 elevou a App API para `0.4`
+e acrescentou as syscalls `10-13`; a validação QEMU dessa ampliação permanece
+pendente do usuário.
 
 Esta etapa preparara o ZephyrOS para executar aplicativos independentes do
 kernel. O objetivo nao e apenas criar mais comandos, mas definir uma fronteira
@@ -61,6 +62,10 @@ Os numeros atuais sao:
 | `7` | `file_close` | `EBX`: handle |
 | `8` | `message_send` | `EBX`: PID; `ECX`: `app_message_t*` |
 | `9` | `message_receive` | `EBX`: `app_message_t*` |
+| `10` | `signal_action` | `EBX`: sinal; `ECX`: nova ação ou zero; `EDX`: ação anterior ou zero |
+| `11` | `signal_mask` | `EBX`: operação; `ECX`: máscara; `EDX`: máscara anterior ou zero |
+| `12` | `signal_raise` | `EBX`: sinal enviado ao próprio processo |
+| `13` | `signal_return` | sem argumentos; uso reservado ao trampoline |
 
 O vetor `int 0x80` inicia com gate `0x8E` (DPL 0) e passa para `0xEE` (DPL 3)
 depois que paging, TSS, Idle e os processos essenciais estao prontos. A ponte
@@ -90,6 +95,8 @@ executam em ring 0.
 | Sistema | `uptime` | Consultar ticks e tempo ligado |
 | Memoria | `memory_info` | Consultar total, usada e livre |
 | Processo | `process_exit` | Encerrar o aplicativo atual |
+| Sinais | `signal_action` / `signal_mask` | Configurar captura e bloqueio |
+| Sinais | `signal_raise` / `signal_return` | Gerar sinal próprio e restaurar handler |
 | Arquivo | `file_open` | Abrir um arquivo por handle |
 | Arquivo | `file_read` | Ler dados para buffer validado |
 | Arquivo | `file_write` | Salvar dados com permissao valida |
@@ -106,7 +113,7 @@ e permissao.
 O contrato inicial esta disponivel para os modulos nativos do kernel por meio
 de `src/include/core/app_api.h` e `src/core/app_api.c`:
 
-- `app_api_get_version()` retorna a versao publica `0.3`;
+- `app_api_get_version()` retorna a versao publica `0.4`;
 - `app_api_console_write()` aceita texto ASCII validado de ate 1024 bytes;
 - `app_api_get_uptime()` retorna ticks e segundos desde o boot;
 - `app_api_get_memory_info()` retorna memoria e paginas disponiveis;
@@ -129,8 +136,30 @@ Falha de inicializacao, falha isolada e cancelamento continuam identificados
 pelos campos proprios do resultado, e nao apenas pelo codigo de saida.
 
 Historico de comandos e entrada de linha para ZAPP permanecem fora da App API
-ate que um aplicativo migrado apresente um caso de uso concreto. A versao
-publica continua `0.3` e nao ha syscall nova nesta fase.
+ate que um aplicativo migrado apresente um caso de uso concreto. O valor
+`APP_EXIT_CANCELLED` continua reservado a F11/F12/Esc; encerramento por sinal
+usa o namespace separado `APP_EXIT_FROM_SIGNAL` e o campo explícito do
+resultado do App Loader.
+
+### Sinais da App API 0.4
+
+`app_signal_action_t` acrescenta, de forma append-only, disposição, endereço
+do handler e máscara temporária. As disposições são padrão, ignorar ou
+handler. O endereço de captura deve pertencer à página de código efetivamente
+carregada do ZAPP; dados, stack, página de lançamento e endereços do kernel
+são recusados.
+
+As máscaras aceitam bloquear, desbloquear ou substituir. `SIGKILL` e
+`SIGSEGV` são sempre removidos da máscara e não aceitam ação customizada.
+`SIGINT`, `SIGTERM` e `SIGCHLD` podem ser capturados; `SIGCHLD` é ignorado por
+padrão. Pendências iguais são coalescidas em um único bit.
+
+O kernel reserva os 16 bytes finais da página de lançamento para o trampoline
+de `signal_return`. Na entrega, grava `{endereço_do_trampoline, sinal}` na
+stack de usuário. Assim, um handler i386 compatível com a chamada C recebe o
+número na stack e pode terminar com `ret`. O contexto original e a máscara
+anterior ficam exclusivamente no kernel; uma stack ou frame inválido encerra
+o processo por `SIGSEGV`.
 
 ### Servicos implementados na Fase 3
 

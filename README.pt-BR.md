@@ -50,7 +50,7 @@ concluídas, limitações conhecidas e próximos objetivos.
 | AC97 | ✅ | Driver de áudio AC97 (play, stop, volume) |
 | PC Speaker | ✅ | Beep, melodias |
 | Shell | ✅ | Terminal com scrollback, diagnósticos e comandos nativos/ring 3 |
-| App API | ✅ | API 0.3, syscalls `int 0x80`, IPC, arquivos e loader ZAPP |
+| App API | 🚧 | API 0.4 com sinais ring 3 e syscalls 0-13; validação da SYNC4 pendente |
 | Editor | ✅ | Editor de texto com syntax highlight, word wrap |
 | Media Player | ✅ | Player de áudio WAV com visualização |
 | Task Manager | ✅ | Monitor de processos/threads/CPU/memória |
@@ -310,7 +310,7 @@ taskbar/Menu Iniciar ou pelo ícone do Desktop.
 
 ### Plataforma de aplicativos
 
-- App API pública `0.3`, sem expor endereços internos do kernel.
+- App API pública `0.4`, sem expor endereços internos do kernel.
 - Syscalls `0–9` no vetor `int 0x80`, com validação de ponteiros e tamanhos.
 - Imagens flat i386 `ZAPP` carregadas de arquivos `.ZAP` ou de imagens internas.
 - Argumentos simples em página de lançamento dedicada; até 8 argumentos e 511 caracteres.
