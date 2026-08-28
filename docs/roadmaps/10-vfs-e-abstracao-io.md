@@ -9,7 +9,7 @@ Este roadmap estabelece uma arquitetura própria, modular, segura e limpa para o
 ## Resumo de progresso
 
 - [x] VFS1 - Descritores e operacoes unificadas de I/O (concluida e validada).
-- [x] VFS2 - Montagens, caminhos universais e cwd (implementada, aguardando validacao).
+- [x] VFS2 - Montagens, caminhos universais e cwd (concluida e validada).
 - [ ] VFS3 - Abstração de nós de dispositivos (`/dev/`) de caractere e bloco.
 - [ ] VFS4 - Pipes anônimos e redirecionamento de streams no Shell.
 
@@ -128,20 +128,15 @@ divida tecnica.
 
 ### Estado da entrega
 
-VFS2 esta implementada e aguarda somente a matriz USB MSC do usuario. Os
-testes de host e a matriz funcional do QEMU padrao foram aprovados. Bootloader,
-Stage 2 e assembly de interrupcoes permanecem inalterados. O modo Simple nao integra a
-matriz. Nenhuma divida tecnica foi
+VFS2 esta concluida e validada nos testes de host, no QEMU padrao e no perfil
+USB MSC. Bootloader, Stage 2 e assembly de interrupcoes permaneceram
+inalterados. O modo Simple nao integrou a matriz. Nenhuma divida tecnica foi
 criada. A abertura relativa ring 3 de `app pathtest`, a limpeza VFS, as
 guardas de stack e o `regcheck full` foram aprovados depois da ampliacao da
-kernel stack ring 3 para 8 KiB; a falha anterior de tela preta esta encerrada.
-O primeiro teste de caminhos USB revelou colisao entre `:` do ID de volume e
-o alias legado; a correcao esta implementada e aguarda repeticao do perfil. A
-primeira montagem FAT12 foi publicada, mas revelou uma consulta sentinela que
-gerava aviso espurio no refresh; essa consulta tambem foi removida. A matriz
-final revelou que o refresh descartava montagens manuais e deixava aliases
-obsoletos; preservacao, sincronizacao e reconciliacao foram implementadas e
-aguardam a repeticao final.
+kernel stack ring 3 para 8 KiB; a falha anterior de tela preta foi encerrada.
+IDs USB com `:`, montagens FAT12/FAT32 somente leitura, referencias de `cwd`,
+recusa de desmontagem ocupada, persistencia durante refresh e reconciliacao
+do namespace foram aprovados na matriz final.
 
 ### Critério de saída
 
@@ -154,13 +149,15 @@ requisicao ao volume correto e mantem um `cwd` isolado e herdavel por processo.
 - `pwd`: exibe o diretório de trabalho atual do processo.
 - `cd <caminho>`: navega pela árvore de diretórios unificada.
 
-### Validacao pendente do usuario
+### Validacao concluida
 
-O perfil USB MSC deve ser aberto com
-`make run-usb-msc QEMU_USB_DEVICE_ARGS=`. Depois, a matriz sera formada somente
-quando o usuario fornecer a saida textual de `storage list`, para preservar o
-ID exato. Testes de host, gates, build e matriz do QEMU padrao ja estao
-aprovados e nao constituem pendencia.
+Os gates de host, o build e a matriz do QEMU padrao foram aprovados. No perfil
+USB MSC, os volumes FAT12 `usb-ms-00:04.0-p1-a1-l0p1` e FAT32
+`usb-ms-00:04.0-p1-a1-l0p4` foram montados, resolvidos por caminhos universais
+e preservados durante `health check`. As desmontagens foram aprovadas e o
+estado final confirmou duas montagens automaticas, pool global `0/32`, zero
+falhas VFS e somente os descritores padrao. VFS2 foi concluida sem divida
+tecnica.
 
 ---
 
