@@ -380,6 +380,11 @@ typedef struct {
 thread_t* t = thread_create("minha_thread", thread_function);
 ```
 
+`thread_create()` reserva uma stack cooperativa de quatro paginas (16 KiB).
+Esse limite cobre workers que atravessam VFS, Storage e FAT/LFN, como os
+estagios do pipeline do Shell, sem alterar a ABI dos processos ou das
+aplicacoes ring 3.
+
 ---
 
 ## Context Switch
