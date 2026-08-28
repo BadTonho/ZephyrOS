@@ -2202,3 +2202,23 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   obsoleto quando o volume ja estiver ausente ou desmontado no Storage. A
   correcao aguarda gates e repeticao final do perfil USB MSC. Bootloader,
   Stage 2 e assembly de interrupcoes permanecem inalterados.
+
+- VFS2: repeticao final do perfil USB MSC aprovada.
+  Validada em: 2026-08-28 14:13 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. Os volumes FAT12
+  `usb-ms-00:04.0-p1-a1-l0p1` e FAT32 `usb-ms-00:04.0-p1-a1-l0p4` foram
+  montados somente leitura e permaneceram `MOUNTED` no Storage e publicados
+  na VFS depois de `health check`, totalizando quatro montagens. As duas
+  desmontagens foram aprovadas, com reconstrucao do indice, e o estado final
+  apresentou duas montagens automaticas, pool global `0/32`, sete processos,
+  21 descritores, somente os fds 0-2 no processo atual e zero falhas VFS. O
+  disco USB permaneceu somente leitura, sem escritas ou erros.
+
+- VFS2: montagens, caminhos universais e diretorio de trabalho concluidos.
+  Concluida em: 2026-08-28 14:13 (America/Sao_Paulo).
+  Gates de host, build, QEMU padrao e perfil USB MSC foram aprovados. A App
+  API 0.6, as syscalls 15/16, `cwd` por processo, caminhos absolutos e
+  relativos, aliases legados, montagens FAT12/FAT32, referencias, refresh e
+  limpeza do namespace atenderam ao criterio de saida. VFS2 foi encerrada sem
+  divida tecnica. Bootloader, Stage 2 e assembly de interrupcoes permaneceram
+  inalterados.
