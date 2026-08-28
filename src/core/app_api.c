@@ -154,6 +154,14 @@ int app_api_file_close(app_handle_t handle) {
     return app_files_close(handle);
 }
 
+int app_api_file_lseek(app_handle_t handle, int32_t offset, uint32_t whence,
+                       uint32_t* position) {
+    int result = app_api_require_ready();
+
+    if (result != OK) return result;
+    return app_files_lseek(handle, offset, whence, position);
+}
+
 static int app_api_validate_message(const app_message_t* message) {
     if (!message) {
         LOG_ERROR("APP_API", "Mensagem nula rejeitada");

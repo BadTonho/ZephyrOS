@@ -610,17 +610,26 @@ typedef struct {
 
 ## Arquivos para aplicativos (`app_files.c`)
 
-A App API não expõe estruturas FAT nem ponteiros internos. Aplicativos usam
-handles opacos vinculados ao PID que abriu o arquivo. Cada chamada valida
-filesystem disponível, caminho, modo, proprietário, tamanho e buffer.
+A App API não expõe estruturas FAT nem ponteiros internos. Desde a VFS1,
+`app_files.c` e uma fachada compativel sobre `vfs.c`: cada processo possui
+uma tabela de 32 descritores, `0`, `1` e `2` representam stdin, stdout e
+stderr, e arquivos regulares usam `3` a `31`. O pool global comporta 32
+arquivos regulares abertos. Cada chamada valida filesystem disponível,
+caminho, modo, processo atual, tamanho e buffer.
 
 - Leitura: sequencial, até 4096 bytes por chamada; EOF retorna `OK` com zero
   bytes lidos.
 - Escrita: substitui o conteúdo inteiro do arquivo nesta primeira versão.
-- Fechamento: invalida o handle; handles de apps encerradas são liberados.
+- Seek: `SET`, `CUR` e `END` somente em descritor exclusivamente de leitura;
+  posicoes fora do arquivo e seek em descritor gravavel sao recusados.
+- Fechamento: invalida o descritor; todos os descritores sao liberados pelo
+  ciclo de vida do processo, inclusive em descarte e destruicao. Os fds
+  padrao `0-2` sao reservados e nao aceitam fechamento pela App API.
 - Falhas: retornam códigos de `errors.h`, sem `panic()`.
 
-Esses serviços também são exercitados pelo `appcheck`.
+`app_handle_t` e as funcoes historicas permanecem como aliases e fachadas
+compativeis. Esses serviços também são exercitados por `vfs test`, `appcheck`,
+`regcheck full` e `health check`.
 
 ---
 

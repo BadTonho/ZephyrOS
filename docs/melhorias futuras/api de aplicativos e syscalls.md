@@ -2,9 +2,9 @@
 
 ## Resumo de Progresso
 
-Status: Fases 1 a 6D validadas no QEMU. A SYNC4 elevou a App API para `0.4`
-e acrescentou as syscalls `10-13`; a validação QEMU dessa ampliação permanece
-pendente do usuário.
+Status: Fases 1 a 6D e SYNC4 validadas no QEMU. A VFS1 elevou a App API para
+`0.5`, preservou as syscalls `4-7` e acrescentou `file_lseek` como syscall
+`14`; essa ampliacao esta implementada e aguarda validacao do usuario.
 
 Esta etapa preparara o ZephyrOS para executar aplicativos independentes do
 kernel. O objetivo nao e apenas criar mais comandos, mas definir uma fronteira
@@ -66,6 +66,7 @@ Os numeros atuais sao:
 | `11` | `signal_mask` | `EBX`: operação; `ECX`: máscara; `EDX`: máscara anterior ou zero |
 | `12` | `signal_raise` | `EBX`: sinal enviado ao próprio processo |
 | `13` | `signal_return` | sem argumentos; uso reservado ao trampoline |
+| `14` | `file_lseek` | `EBX`: fd; `ECX`: offset; `EDX`: origem; `ESI`: posicao |
 
 O vetor `int 0x80` inicia com gate `0x8E` (DPL 0) e passa para `0xEE` (DPL 3)
 depois que paging, TSS, Idle e os processos essenciais estao prontos. A ponte
@@ -100,6 +101,7 @@ executam em ring 0.
 | Arquivo | `file_open` | Abrir um arquivo por handle |
 | Arquivo | `file_read` | Ler dados para buffer validado |
 | Arquivo | `file_write` | Salvar dados com permissao valida |
+| Arquivo | `file_lseek` | Reposicionar descritor exclusivamente de leitura |
 | IPC | `message_send` | Enviar mensagem por PID ou handle |
 | Entrada | `input_read` | Receber eventos do aplicativo |
 | GUI | `window_create` | Solicitar uma janela ao sistema |
@@ -113,11 +115,29 @@ e permissao.
 O contrato inicial esta disponivel para os modulos nativos do kernel por meio
 de `src/include/core/app_api.h` e `src/core/app_api.c`:
 
-- `app_api_get_version()` retorna a versao publica `0.4`;
+- `app_api_get_version()` retorna a versao publica `0.5`;
 - `app_api_console_write()` aceita texto ASCII validado de ate 1024 bytes;
 - `app_api_get_uptime()` retorna ticks e segundos desde o boot;
 - `app_api_get_memory_info()` retorna memoria e paginas disponiveis;
-- `app_handle_t` e um handle opaco de 32 bits, com zero reservado como invalido.
+- `app_handle_t` permanece um alias de compatibilidade de 32 bits para fd;
+- `APP_FD_STDIN`, `APP_FD_STDOUT` e `APP_FD_STDERR` valem `0`, `1` e `2`, e
+  `APP_FD_INVALID` vale `0xFFFFFFFF`.
+
+### Descritores da App API 0.5
+
+A VFS1 substitui a tabela global de handles por uma tabela de 32 descritores
+em cada `process_t`. Arquivos regulares recebem fds de `3` a `31`, com pool
+global limitado a 32 arquivos. `file_open`, `file_read`, `file_write` e
+`file_close` mantem os numeros `4-7`; `file_lseek` e append-only no numero
+`14` e aceita `APP_SEEK_SET`, `APP_SEEK_CUR` e `APP_SEEK_END`.
+
+Leitura regular e sequencial, EOF retorna sucesso com zero bytes e a escrita
+continua integral. Seek e permitido somente em descritores exclusivamente de
+leitura e nao ultrapassa o tamanho do arquivo. Stdin bloqueia aguardando bytes
+de scancode encaminhados por IPC ao processo focado; um sinal interrompe essa
+espera. Stdout e stderr escrevem no console ativo. O ciclo de vida do processo
+instala stdio e libera todos os descritores em descarte, encerramento ou
+destruicao.
 
 ### Contrato de console e ciclo de vida da Fase 6D
 
@@ -161,9 +181,9 @@ número na stack e pode terminar com `ret`. O contexto original e a máscara
 anterior ficam exclusivamente no kernel; uma stack ou frame inválido encerra
 o processo por `SIGSEGV`.
 
-### Servicos implementados na Fase 3
+### Servicos implementados na Fase 3 e adaptados pela VFS1
 
-- handles de arquivo em tabela fixa, com geracao e ownership por PID;
+- descritores de arquivo em tabela fixa por processo;
 - leitura sequencial por offset, com limite de 4096 bytes por chamada;
 - escrita integral por caminho, sem append ou escrita parcial nesta fase;
 - mensagens IPC por PID usando os tipos internos de teclado e solicitacao;
@@ -196,10 +216,10 @@ de um aplicativo completo:
 appcheck
 ```
 
-O comando testa o dispatcher para `console_write`, `uptime` e `memory_info`,
-alem de numero desconhecido, argumentos nulos, texto vazio, texto acima do
-limite e `process_exit`. Cada chamada exibe seu codigo de retorno e uma falha
-de validacao nao interrompe o Shell.
+O comando testa o dispatcher para `console_write`, `uptime`, `memory_info`,
+descritores e `file_lseek`, alem de numero desconhecido, argumentos nulos,
+texto vazio, texto acima do limite e `process_exit`. Cada chamada exibe seu
+codigo de retorno e uma falha de validacao nao interrompe o Shell.
 
 ## Fases
 

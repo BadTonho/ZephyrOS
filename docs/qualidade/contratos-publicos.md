@@ -106,6 +106,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/fs/file_index.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/fs.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/storage.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
+| `src/include/fs/vfs.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/wav.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/memory/compress.h` | `docs/06-memoria/memoria.md` |
 | `src/include/memory/paging.h` | `docs/06-memoria/memoria.md` |
@@ -376,6 +377,15 @@ contexto salvo e contadores. `wait.h` acrescenta, ao fim dos contratos, o
 motivo e a métrica `WAIT_REASON_SIGNAL`. A App API 0.4 acrescenta as syscalls
 10-13 e `app_signal_action_t`; o App Loader publica o sinal de término sem
 alterar os campos anteriores.
+
+Desde a VFS1, `src/include/fs/vfs.h` publica `file_operations_t`, `vnode_t`,
+`file_t`, a tabela de 32 descritores por processo, o pool global de 32 arquivos
+regulares, stdio, snapshots, metricas, invariantes e autoteste. `process_t`
+acrescenta `fd_table` ao fim do contrato e seu ciclo de vida passa a instalar e
+liberar descritores. `app_files.h` permanece como fachada compativel;
+`app_api.h` publica a versao 0.5, fds padrao, origens de seek e
+`app_api_file_lseek()`. `syscall.h` preserva os numeros 4-7 e acrescenta a
+syscall 14.
 
 Na integracao IPC da SYNC2, `process_t` conserva a ultima geracao consumida do
 seu canal. `ipc_wait()` considera pronta uma mensagem ou uma geracao nova, de

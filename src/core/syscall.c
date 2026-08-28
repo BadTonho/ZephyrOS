@@ -222,6 +222,22 @@ static int syscall_user_file_write(const registers_t* regs) {
     return result;
 }
 
+static int syscall_user_file_lseek(const registers_t* regs) {
+    uint32_t position = 0U;
+    int result;
+
+    if (!regs->esi) {
+        LOG_ERROR("SYSCALL", "file_lseek recebeu destino nulo");
+        return ERR_NULL;
+    }
+    result = paging_validate_user_range(regs->esi, sizeof(position), 1);
+    if (result != OK) return result;
+    result = app_api_file_lseek((app_handle_t)regs->ebx,
+                                (int32_t)regs->ecx, regs->edx, &position);
+    if (result != OK) return result;
+    return paging_copy_to_user((void*)regs->esi, &position, sizeof(position));
+}
+
 static int syscall_user_message_send(const registers_t* regs) {
     app_message_t message;
     int result;
@@ -326,6 +342,8 @@ static int syscall_dispatch_user(registers_t* regs) {
             return syscall_user_file_write(regs);
         case APP_SYSCALL_FILE_CLOSE:
             return app_api_file_close((app_handle_t)regs->ebx);
+        case APP_SYSCALL_FILE_LSEEK:
+            return syscall_user_file_lseek(regs);
         case APP_SYSCALL_MESSAGE_SEND:
             return syscall_user_message_send(regs);
         case APP_SYSCALL_MESSAGE_RECEIVE:
@@ -379,6 +397,10 @@ static int syscall_dispatch(registers_t* regs) {
                                       (uint32_t*)regs->esi);
         case APP_SYSCALL_FILE_CLOSE:
             return app_api_file_close((app_handle_t)regs->ebx);
+        case APP_SYSCALL_FILE_LSEEK:
+            return app_api_file_lseek((app_handle_t)regs->ebx,
+                                      (int32_t)regs->ecx, regs->edx,
+                                      (uint32_t*)regs->esi);
         case APP_SYSCALL_MESSAGE_SEND:
             return app_api_message_send(regs->ebx,
                                          (const app_message_t*)regs->ecx);

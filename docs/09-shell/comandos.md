@@ -78,6 +78,7 @@ Comandos disponiveis:
   q2check   - Executa diagnostico compacto da Q2
   regcheck [full] - F11 cancela nos modos normal e full
   appcheck  - Testa API, arquivos, IPC e carregador ZAPP
+  vfs [status|test] - Inspeciona descritores e operacoes unificadas de I/O
   pkg       - Gerencia pacotes .ZPK locais
   store     - Abre e gerencia a App Store local/remota
   pkgcheck  - Testa validacoes de pacote sem gravar
@@ -719,6 +720,20 @@ zephyr> schedcheck
 ```
 
 Argumentos adicionais sao recusados com `Uso: schedcheck`.
+
+## `vfs [status|test]`
+
+`vfs status` exibe capacidade e uso global, metricas e os descritores do
+processo atual. `vfs test` executa o autoteste de stdio, ciclo de arquivo,
+seek, permissoes, EOF, limites, tabela cheia, isolamento, limpeza e
+invariantes. Argumentos excedentes, como `vfs test foo`, sao rejeitados com o
+uso correto. A etapa tambem e integrada a `appcheck`, `regcheck full` e
+`health check`.
+
+```text
+zephyr> vfs status
+zephyr> vfs test
+```
 
 ## `appcheck`
 Testa a fachada segura da API de aplicativos, incluindo versão, console,

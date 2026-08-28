@@ -361,6 +361,8 @@ static void cmd_help(void) {
     video_print("  workq [status|list|check] - Inspeciona a kworker\n", 0x07);
     video_print("  kill -SINAL PID - Envia sinal a processo ring3\n", 0x07);
     video_print("  sigtest - Valida sinais assincronos\n", 0x07);
+    video_print("  vfs [status|test] - Inspeciona descritores e operacoes de I/O\n",
+                0x07);
     video_print("  kmetrics - Mostra linha-base de metricas do kernel\n", 0x07);
     video_print("  memcheck - Valida heap, PMM e diretorios de usuario\n", 0x07);
     video_print("  schedcheck - Valida invariantes do scheduler\n", 0x07);

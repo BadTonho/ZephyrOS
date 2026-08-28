@@ -234,8 +234,9 @@ Depois de memória, paging, TSS e processos essenciais, o kernel inicializa a
 App API e o dispatcher `int 0x80`. O gate começa restrito a DPL 0 e é elevado
 para DPL 3 somente quando a fronteira de modo usuário está pronta. A plataforma
 atual inclui arquivos, IPC, imagens `.ZAP`/`ZAPP`, foco de aplicativo externo
-e uma página de lançamento com argumentos. A App API 0.4 também oferece ações,
-máscaras, geração e retorno de sinais pelas syscalls 10-13. O Shell continua
+e uma página de lançamento com argumentos. A App API 0.5 oferece descritores
+VFS por processo, `file_lseek` na syscall 14 e as ações, máscaras, geração e
+retorno de sinais introduzidas nas syscalls 10-13. O Shell continua
 nativo; `echo` é a primeira migração ring 3 e mantém fallback nativo.
 
 Consulte [API de Aplicativos e Syscalls](../melhorias%20futuras/api%20de%20aplicativos%20e%20syscalls.md)

@@ -508,6 +508,9 @@ static void process_initialize_pid_pool(void) {
 static void process_discard_new_process(process_t* proc) {
     if (!proc) return;
 
+    if (vfs_fd_table_release(&proc->fd_table) != OK) {
+        LOG_ERROR("PROC", "Falha ao liberar descritores de processo descartado");
+    }
     if (proc->ipc_wait_channel.initialized) {
         wait_channel_reset(&proc->ipc_wait_channel);
     }
@@ -559,6 +562,11 @@ void process_bootstrap_idle(void) {
         LOG_ERROR("PROC", "Falha ao inicializar espera do Idle");
         return;
     }
+    if (vfs_fd_table_init(&proc->fd_table) != OK) {
+        LOG_ERROR("PROC", "Falha ao inicializar descritores do Idle");
+        wait_channel_reset(&proc->ipc_wait_channel);
+        return;
+    }
     
     proc->state = PROCESS_STATE_RUNNING;
     proc->total_ticks = 0;
@@ -571,6 +579,9 @@ void process_bootstrap_idle(void) {
         LOG_ERROR("PROC", "Falha ao preparar stack do Idle");
         if (wait_channel_reset(&proc->ipc_wait_channel) != OK) {
             LOG_ERROR("PROC", "Falha ao liberar fila IPC do Idle");
+        }
+        if (vfs_fd_table_release(&proc->fd_table) != OK) {
+            LOG_ERROR("PROC", "Falha ao liberar descritores do Idle");
         }
         proc->state = PROCESS_STATE_UNUSED;
         return;
@@ -637,11 +648,19 @@ static process_t* process_create_internal(const char* name,
         proc->state = PROCESS_STATE_UNUSED;
         return 0;
     }
+    if (vfs_fd_table_init(&proc->fd_table) != OK) {
+        LOG_ERROR("PROC", "Falha ao inicializar descritores do processo");
+        wait_channel_reset(&proc->ipc_wait_channel);
+        kmemset(proc, 0, sizeof(process_t));
+        proc->state = PROCESS_STATE_UNUSED;
+        return 0;
+    }
 
     proc->pid = process_allocate_pid();
     if (!proc->pid) {
         LOG_ERROR("PROC", "Falha ao reservar PID do processo");
         wait_channel_reset(&proc->ipc_wait_channel);
+        vfs_fd_table_release(&proc->fd_table);
         kmemset(proc, 0, sizeof(process_t));
         proc->state = PROCESS_STATE_UNUSED;
         return 0;
@@ -850,6 +869,9 @@ static int process_mark_user_zombie(process_t* proc, uint32_t exit_code,
     proc->signal_context_valid = 0U;
     kmemset(&proc->signal_saved_context, 0,
             sizeof(proc->signal_saved_context));
+    if (vfs_fd_table_release(&proc->fd_table) != OK) {
+        LOG_ERROR("PROC", "Falha ao liberar descritores no encerramento");
+    }
     proc->state = PROCESS_STATE_ZOMBIE;
     process_event_generation++;
     if (!process_event_generation) process_event_generation = 1U;
@@ -1063,10 +1085,18 @@ static int process_user_initialize(process_t* proc, page_directory_t* dir,
         LOG_ERROR("PROC", "Falha ao inicializar espera do processo ring 3");
         return ERR_STATE;
     }
+    if (vfs_fd_table_init(&proc->fd_table) != OK) {
+        LOG_ERROR("PROC", "Falha ao inicializar descritores ring 3");
+        wait_channel_reset(&proc->ipc_wait_channel);
+        process_release_pid(proc->pid);
+        kmemset(proc, 0, sizeof(process_t));
+        return ERR_STATE;
+    }
     proc->page_directory = dir;
     result = process_stack_allocate(proc, KERNEL_STACK_SIZE);
     if (result != OK) {
         wait_channel_reset(&proc->ipc_wait_channel);
+        vfs_fd_table_release(&proc->fd_table);
         process_release_pid(proc->pid);
         kmemset(proc, 0, sizeof(process_t));
         proc->state = PROCESS_STATE_UNUSED;
@@ -1454,6 +1484,10 @@ void process_destroy(process_t* proc) {
     if (proc->ipc_wait_channel.initialized &&
         wait_channel_reset(&proc->ipc_wait_channel) != OK) {
         LOG_ERROR("PROC", "Falha ao destruir canal IPC do processo");
+        return;
+    }
+    if (vfs_fd_table_release(&proc->fd_table) != OK) {
+        LOG_ERROR("PROC", "Falha ao liberar descritores do processo");
         return;
     }
 

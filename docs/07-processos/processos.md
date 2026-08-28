@@ -71,6 +71,7 @@ typedef struct {
     uint32_t pending_signals;         // Bitmap coalescido
     uint32_t blocked_signals;         // Máscara bloqueada
     app_signal_action_t signal_actions[18];
+    vfs_fd_table_t fd_table;
 } process_t;
 ```
 
@@ -86,7 +87,14 @@ Isso:
 3. Aloca kernel stack (4 KB)
 4. Cria page directory próprio
 5. Prepara o contexto inicial (pilha com EIP, EFLAGS, etc.)
-6. Marca como READY
+6. Instala stdin, stdout e stderr na tabela de descritores
+7. Marca como READY
+
+Desde a VFS1, cada processo possui 32 descritores. A tabela e instalada em
+toda criacao e liberada nos caminhos de descarte, encerramento e destruicao;
+assim, a limpeza de arquivos nao depende exclusivamente do App Loader. O lock
+da VFS protege tabelas e contadores, mas e liberado antes de callbacks de
+filesystem, console ou espera IPC.
 
 `process_create()` mantém a stack nativa padrão de 4 KiB. Processos que
 executam caminhos com maior consumo podem usar `process_create_with_stack_size()`
