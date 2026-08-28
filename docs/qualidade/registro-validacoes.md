@@ -1714,3 +1714,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `stage2.asm` e as rotinas Assembly de interrupção permaneceram inalterados.
   Os gates e a matriz funcional pertencem ao usuário; SYNC4 continua aberta
   e nenhuma dívida técnica nova foi criada.
+
+- SYNC4: correção de compilação após o primeiro gate do usuário.
+  Concluída em: 2026-08-27 23:07 (America/Sao_Paulo).
+  `signal.c` passou a incluir o contrato de syscalls que declara
+  `APP_SYSCALL_SIGNAL_RETURN`; `process_create_user_test()` passou a fornecer
+  a mensagem de dados com o tipo `const uint8_t*`, eliminando o warning de
+  signedness observado em `process.c`. Nenhum arquivo de boot ou Assembly foi
+  alterado.

@@ -3,6 +3,7 @@
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/string.h"
+#include "core/syscall.h"
 #include "memory/paging.h"
 
 #define SIGNAL_EFLAGS_INTERRUPT_ENABLE (1U << 9U)
