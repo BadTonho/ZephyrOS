@@ -15,8 +15,8 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `desktop` | - | Abre a Área de Trabalho (Desktop). |
 | `settings`| - | Abre o Painel de Configurações (Settings). |
 | `wm` | - | Abre o Gerenciador de Janelas (Window Manager). |
-| `ls` | - | Lista os arquivos e pastas do disco atual. |
-| `cat` | `<arquivo>` | Exibe o conteúdo de um arquivo de texto. |
+| `ls` | `[caminho]` | Lista um diretório do namespace VFS; sem caminho usa o cwd. |
+| `cat` | `<caminho>` | Exibe até 4095 bytes de arquivo pela VFS. |
 | `echo` | `<texto>` | Imprime texto por ZAPP ring 3, com fallback nativo seguro. |
 | `mem` | - | Exibe o uso da memória RAM (total, livre, usada). |
 | `procs` | - | Lista os processos ativos no sistema. |
@@ -91,6 +91,8 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `regcheck` | - | Valida health, processos, scheduler e memoria como job cooperativo; `F11`/`Esc` cancela. |
 | `regcheck` | `full` | Soma varredura PCI, Devices, Network, ACPI, Power e indice em fases cooperativas; mostra somente falhas e o resultado final. |
 | `appcheck` | - | Testa API, arquivos, IPC e carregador ZAPP. |
+| `vfs` | `status|test` | Inspeciona descritores, montagens, devfs e operações de I/O. |
+| `devcheck` | - | Valida os cinco nós do devfs sem escrever no disco. |
 | `pkg` | `list` | Lista os pacotes locais instalados. |
 | `pkg` | `info <ID|arquivo.ZPK>` | Mostra metadados instalados ou do pacote fonte validado. |
 | `pkg` | `verify <arquivo.ZPK>` | Valida formato, manifesto, CRC32 e ZAPP sem gravar. |
@@ -108,7 +110,8 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `update` | `history` | Lista os oito eventos persistidos mais recentes sem gravar. |
 | `update` | `test fail-after <1-3>` | Arma uma interrupcao diagnostica para validar recuperacao no boot. |
 | `app` | `run <arquivo.ZAP> [args]` | Executa uma imagem flat i386 em ring 3, em primeiro plano. |
-| `app` | `inputtest` | Cria e executa um teste temporario de teclado para `.ZAP`. |
+| `app` | `inputtest [tty]` | Testa entrada pelo fd 0 ou por `/dev/tty`. |
+| `app` | `devtest` | Exercita dispositivos e `ioctl` em ring 3. |
 | `app` | `outputtest [fail]` | Emite 1152 bytes em blocos ZAPP e testa saida com codigo 0 ou 1. |
 | `app` | `argtest <texto>` | Exibe argumentos recebidos por uma imagem ZAPP interna. |
 | `usertest` | `fault` opcional | Executa e valida o primeiro processo isolado em ring 3. |

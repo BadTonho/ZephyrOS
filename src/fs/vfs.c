@@ -2,6 +2,7 @@
 #include "fs/vfs_internal.h"
 #include "fs/fs.h"
 #include "fs/storage.h"
+#include "fs/devfs.h"
 #include "core/app_api.h"
 #include "core/errors.h"
 #include "core/log.h"
@@ -20,13 +21,15 @@ typedef struct {
 
 typedef struct {
     vfs_lookup_result_t lookup;
-} vfs_regular_context_t;
+    devfs_file_context_t device;
+} vfs_file_context_t;
 
 static file_t vfs_file_pool[VFS_MAX_OPEN_FILES];
 static vnode_t vfs_vnode_pool[VFS_MAX_OPEN_FILES];
-static vfs_regular_context_t vfs_regular_contexts[VFS_MAX_OPEN_FILES];
+static vfs_file_context_t vfs_file_contexts[VFS_MAX_OPEN_FILES];
 static vfs_lookup_result_t vfs_test_root_lookup;
 static vfs_lookup_result_t vfs_test_virtual_lookup;
+static vfs_dir_entry_t vfs_test_dir_entries[VFS_MAX_DIR_ENTRIES];
 static vnode_t vfs_stdio_nodes[3];
 static spinlock_t vfs_lock;
 static vfs_status_t vfs_metrics;
@@ -40,10 +43,6 @@ static int vfs_regular_write(file_t* file, const void* buffer, uint32_t size,
 static int vfs_regular_close(file_t* file);
 static int vfs_regular_lseek(file_t* file, int32_t offset, uint32_t whence,
                              uint32_t* position);
-static int vfs_stdin_read(file_t* file, void* buffer, uint32_t size,
-                          uint32_t* bytes_read);
-static int vfs_console_write(file_t* file, const void* buffer, uint32_t size,
-                             uint32_t* bytes_written);
 static int vfs_unsupported_open(vnode_t* vnode, file_t* file);
 static int vfs_unsupported_read(file_t* file, void* buffer, uint32_t size,
                                 uint32_t* bytes_read);
@@ -61,12 +60,12 @@ static const file_operations_t vfs_regular_operations = {
 };
 
 static const file_operations_t vfs_stdin_operations = {
-    vfs_unsupported_open, vfs_stdin_read, vfs_unsupported_write,
+    vfs_unsupported_open, vfs_stream_read, vfs_unsupported_write,
     vfs_unsupported_close, vfs_unsupported_lseek, vfs_unsupported_ioctl
 };
 
 static const file_operations_t vfs_stdout_operations = {
-    vfs_unsupported_open, vfs_unsupported_read, vfs_console_write,
+    vfs_unsupported_open, vfs_unsupported_read, vfs_stream_write,
     vfs_unsupported_close, vfs_unsupported_lseek, vfs_unsupported_ioctl
 };
 
@@ -130,8 +129,8 @@ static int vfs_allocate_file(file_t** file_out, vnode_t** vnode_out,
         if (!vfs_file_pool[index].used) {
             kmemset(&vfs_file_pool[index], 0, sizeof(file_t));
             kmemset(&vfs_vnode_pool[index], 0, sizeof(vnode_t));
-            kmemset(&vfs_regular_contexts[index], 0,
-                    sizeof(vfs_regular_context_t));
+            kmemset(&vfs_file_contexts[index], 0,
+                    sizeof(vfs_file_context_t));
             vfs_file_pool[index].used = state;
             vfs_file_pool[index].slot = index;
             vfs_file_pool[index].vnode = &vfs_vnode_pool[index];
@@ -156,8 +155,8 @@ static void vfs_release_file(file_t* file) {
     spinlock_acquire(&vfs_lock);
     kmemset(&vfs_file_pool[slot], 0, sizeof(file_t));
     kmemset(&vfs_vnode_pool[slot], 0, sizeof(vnode_t));
-    kmemset(&vfs_regular_contexts[slot], 0,
-            sizeof(vfs_regular_context_t));
+    kmemset(&vfs_file_contexts[slot], 0,
+            sizeof(vfs_file_context_t));
     spinlock_release(&vfs_lock);
 }
 
@@ -254,10 +253,10 @@ static int vfs_unsupported_ioctl(file_t* file, uint32_t request,
 }
 
 static int vfs_regular_open(vnode_t* vnode, file_t* file) {
-    vfs_regular_context_t* context;
+    vfs_file_context_t* context;
 
     if (!vnode || !file) return ERR_NULL;
-    context = (vfs_regular_context_t*)vnode->private_data;
+    context = (vfs_file_context_t*)vnode->private_data;
     if (!context || context->lookup.type != VFS_NODE_REGULAR) return ERR_STATE;
     vnode->size = context->lookup.size;
     file->offset = 0U;
@@ -266,13 +265,13 @@ static int vfs_regular_open(vnode_t* vnode, file_t* file) {
 
 static int vfs_regular_read(file_t* file, void* buffer, uint32_t size,
                             uint32_t* bytes_read) {
-    vfs_regular_context_t* context;
+    vfs_file_context_t* context;
     int result;
 
     if (!file || !file->vnode || !bytes_read) return ERR_NULL;
     *bytes_read = 0U;
     if (!(file->mode & VFS_MODE_READ)) return ERR_UNAVAILABLE;
-    context = (vfs_regular_context_t*)file->vnode->private_data;
+    context = (vfs_file_context_t*)file->vnode->private_data;
     if (!context || vfs_mount_validate_reference(
             context->lookup.mount_slot,
             context->lookup.mount_generation) != OK) return ERR_STATE;
@@ -288,13 +287,13 @@ static int vfs_regular_read(file_t* file, void* buffer, uint32_t size,
 
 static int vfs_regular_write(file_t* file, const void* buffer, uint32_t size,
                              uint32_t* bytes_written) {
-    vfs_regular_context_t* context;
+    vfs_file_context_t* context;
     int result;
 
     if (!file || !file->vnode || !bytes_written) return ERR_NULL;
     *bytes_written = 0U;
     if (!(file->mode & VFS_MODE_WRITE)) return ERR_UNAVAILABLE;
-    context = (vfs_regular_context_t*)file->vnode->private_data;
+    context = (vfs_file_context_t*)file->vnode->private_data;
     if (!context || vfs_mount_validate_reference(
             context->lookup.mount_slot,
             context->lookup.mount_generation) != OK) return ERR_STATE;
@@ -312,10 +311,10 @@ static int vfs_regular_write(file_t* file, const void* buffer, uint32_t size,
 }
 
 static int vfs_regular_close(file_t* file) {
-    vfs_regular_context_t* context;
+    vfs_file_context_t* context;
 
     if (!file || !file->vnode) return ERR_NULL;
-    context = (vfs_regular_context_t*)file->vnode->private_data;
+    context = (vfs_file_context_t*)file->vnode->private_data;
     if (context) {
         vfs_mount_release(context->lookup.mount_slot,
                           context->lookup.mount_generation);
@@ -357,15 +356,18 @@ static int vfs_regular_lseek(file_t* file, int32_t offset, uint32_t whence,
     return OK;
 }
 
-static int vfs_stdin_read(file_t* file, void* buffer, uint32_t size,
-                          uint32_t* bytes_read) {
+int vfs_stream_read(file_t* file, void* buffer, uint32_t size,
+                    uint32_t* bytes_read) {
     uint8_t* output = (uint8_t*)buffer;
     wait_reason_t reason = WAIT_REASON_NONE;
     ipc_msg_t message;
     int result;
 
     (void)file;
-    if (!bytes_read) return ERR_NULL;
+    if (!bytes_read) {
+        LOG_ERROR("FS", "Contador de leitura de fluxo nulo");
+        return ERR_NULL;
+    }
     *bytes_read = 0U;
     while (*bytes_read < size) {
         if (ipc_receive(&message)) {
@@ -381,17 +383,23 @@ static int vfs_stdin_read(file_t* file, void* buffer, uint32_t size,
         if (result != OK) return result;
         if (reason == WAIT_REASON_SIGNAL) return OK;
         if (reason == WAIT_REASON_CANCELLED) return OK;
-        if (reason != WAIT_REASON_EVENT) return ERR_STATE;
+        if (reason != WAIT_REASON_EVENT) {
+            LOG_ERROR("FS", "Motivo de despertar invalido no fluxo");
+            return ERR_STATE;
+        }
     }
     return OK;
 }
 
-static int vfs_console_write(file_t* file, const void* buffer, uint32_t size,
-                             uint32_t* bytes_written) {
+int vfs_stream_write(file_t* file, const void* buffer, uint32_t size,
+                     uint32_t* bytes_written) {
     int result;
 
     (void)file;
-    if (!bytes_written) return ERR_NULL;
+    if (!bytes_written) {
+        LOG_ERROR("FS", "Contador de escrita de fluxo nulo");
+        return ERR_NULL;
+    }
     *bytes_written = 0U;
     result = app_api_console_write((const char*)buffer, size);
     if (result == OK) *bytes_written = size;
@@ -410,11 +418,15 @@ int vfs_init(void) {
     spinlock_init(&vfs_lock);
     kmemset(vfs_file_pool, 0, sizeof(vfs_file_pool));
     kmemset(vfs_vnode_pool, 0, sizeof(vfs_vnode_pool));
-    kmemset(vfs_regular_contexts, 0, sizeof(vfs_regular_contexts));
+    kmemset(vfs_file_contexts, 0, sizeof(vfs_file_contexts));
     kmemset(vfs_stdio_nodes, 0, sizeof(vfs_stdio_nodes));
     kmemset(&vfs_metrics, 0, sizeof(vfs_metrics));
     if (vfs_path_init() != OK) {
         LOG_ERROR("FS", "Falha ao inicializar caminhos VFS");
+        return ERR_STATE;
+    }
+    if (devfs_init() != OK) {
+        LOG_ERROR("FS", "Falha ao inicializar devfs");
         return ERR_STATE;
     }
     for (index = 0U; index < 3U; index++) {
@@ -534,7 +546,7 @@ int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
     vfs_fd_table_t* table;
     file_t* file = 0;
     vnode_t* vnode = 0;
-    vfs_regular_context_t* context;
+    vfs_file_context_t* context;
     uint32_t length;
     int fd;
     int result;
@@ -570,7 +582,7 @@ int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
     }
     result = vfs_allocate_file(&file, &vnode, VFS_FILE_RESERVED);
     if (result != OK) return result;
-    context = &vfs_regular_contexts[file->slot];
+    context = &vfs_file_contexts[file->slot];
     result = vfs_resolve_open_path(path, mode, &context->lookup);
     if (result != OK) {
         vfs_release_file(file);
@@ -580,7 +592,7 @@ int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
         LOG_ERROR("FS", "Falha ao resolver caminho na abertura VFS");
         return result;
     }
-    if (context->lookup.type != VFS_NODE_REGULAR) {
+    if (context->lookup.type == VFS_NODE_DIRECTORY) {
         vfs_release_file(file);
         LOG_ERROR("FS", "Diretorio nao pode ser aberto como arquivo");
         return ERR_INVALID;
@@ -592,13 +604,21 @@ int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
         LOG_ERROR("FS", "Montagem mudou durante abertura VFS");
         return result;
     }
-    vnode->type = VFS_NODE_REGULAR;
-    vnode->operations = &vfs_regular_operations;
-    vfs_copy_text(vnode->path, VFS_MAX_PATH,
-                  context->lookup.canonical_path);
-    vnode->private_data = context;
-    file->mode = mode;
-    result = vnode->operations->open(vnode, file);
+    if (context->lookup.type == VFS_NODE_REGULAR) {
+        vnode->type = VFS_NODE_REGULAR;
+        vnode->operations = &vfs_regular_operations;
+        vfs_copy_text(vnode->path, VFS_MAX_PATH,
+                      context->lookup.canonical_path);
+        vnode->private_data = context;
+        file->mode = mode;
+        result = vnode->operations->open(vnode, file);
+    } else if (context->lookup.type == VFS_NODE_CHAR_DEVICE ||
+               context->lookup.type == VFS_NODE_BLOCK_DEVICE) {
+        result = devfs_open_file(&context->lookup, mode, vnode, file,
+                                 &context->device);
+    } else {
+        result = ERR_INVALID;
+    }
     if (result != OK) {
         vfs_mount_release(context->lookup.mount_slot,
                           context->lookup.mount_generation);
@@ -645,7 +665,8 @@ int vfs_read(int32_t fd, void* buffer, uint32_t size,
     }
     result = vfs_begin_operation(fd, &file);
     if (result != OK) return result;
-    result = file->vnode->operations->read(file, buffer, size, bytes_read);
+    if (!(file->mode & VFS_MODE_READ)) result = ERR_UNAVAILABLE;
+    else result = file->vnode->operations->read(file, buffer, size, bytes_read);
     vfs_end_operation(file);
     spinlock_acquire(&vfs_lock);
     if (result == OK) vfs_metrics.reads++;
@@ -675,7 +696,9 @@ int vfs_write(int32_t fd, const void* buffer, uint32_t size,
     }
     result = vfs_begin_operation(fd, &file);
     if (result != OK) return result;
-    result = file->vnode->operations->write(file, buffer, size, bytes_written);
+    if (!(file->mode & VFS_MODE_WRITE)) result = ERR_UNAVAILABLE;
+    else result = file->vnode->operations->write(file, buffer, size,
+                                                  bytes_written);
     vfs_end_operation(file);
     spinlock_acquire(&vfs_lock);
     if (result == OK) vfs_metrics.writes++;
@@ -742,6 +765,24 @@ int vfs_lseek(int32_t fd, int32_t offset, uint32_t whence,
     return result;
 }
 
+int vfs_ioctl(int32_t fd, uint32_t request, void* argument) {
+    file_t* file;
+    int result = vfs_begin_operation(fd, &file);
+
+    if (result != OK) return result;
+    result = file->vnode->operations->ioctl(file, request, argument);
+    vfs_end_operation(file);
+    spinlock_acquire(&vfs_lock);
+    if (result == OK) {
+        vfs_metrics.ioctls++;
+    } else {
+        vfs_metrics.failures++;
+    }
+    spinlock_release(&vfs_lock);
+    if (result != OK) LOG_ERROR("FS", "Falha em ioctl VFS");
+    return result;
+}
+
 int vfs_get_status(vfs_status_t* status) {
     uint32_t process_index;
     uint32_t fd;
@@ -771,6 +812,13 @@ int vfs_get_status(vfs_status_t* status) {
     spinlock_release(&vfs_lock);
     vfs_path_get_metrics(&status->mount_capacity, &status->mounts_active,
                          &status->lookups, &status->chdirs);
+    {
+        devfs_status_t devfs_status;
+        if (devfs_get_status(&devfs_status) == OK) {
+            status->device_capacity = devfs_status.capacity;
+            status->devices_active = devfs_status.active;
+        }
+    }
     return OK;
 }
 
@@ -860,7 +908,14 @@ int vfs_validate_state(void) {
             }
             if (file->vnode->type == VFS_NODE_REGULAR &&
                 file->vnode->private_data !=
-                    &vfs_regular_contexts[pool_index]) {
+                    &vfs_file_contexts[pool_index]) {
+                spinlock_release(&vfs_lock);
+                return ERR_STATE;
+            }
+            if ((file->vnode->type == VFS_NODE_CHAR_DEVICE ||
+                 file->vnode->type == VFS_NODE_BLOCK_DEVICE) &&
+                file->vnode->private_data !=
+                    &vfs_file_contexts[pool_index].device) {
                 spinlock_release(&vfs_lock);
                 return ERR_STATE;
             }
@@ -898,7 +953,7 @@ int vfs_validate_state(void) {
         }
     }
     spinlock_release(&vfs_lock);
-    return OK;
+    return devfs_validate_state();
 }
 
 static int vfs_test_read(file_t* file, void* buffer, uint32_t size,
@@ -937,6 +992,26 @@ static void vfs_test_count(vfs_test_result_t* result, uint8_t passed) {
     if (passed) result->passed++;
 }
 
+static int vfs_test_dir_has(const char* name) {
+    for (uint32_t index = 0U; index < VFS_MAX_DIR_ENTRIES; index++) {
+        uint32_t offset = 0U;
+
+        while (vfs_test_dir_entries[index].name[offset] && name[offset]) {
+            char actual = vfs_test_dir_entries[index].name[offset];
+            char expected = name[offset];
+
+            if (actual >= 'a' && actual <= 'z') actual -= (char)('a' - 'A');
+            if (expected >= 'a' && expected <= 'z') {
+                expected -= (char)('a' - 'A');
+            }
+            if (actual != expected) break;
+            offset++;
+        }
+        if (vfs_test_dir_entries[index].name[offset] == name[offset]) return 1;
+    }
+    return 0;
+}
+
 int vfs_self_test(vfs_test_result_t* result) {
     static const uint8_t test_data[VFS_TEST_DATA_SIZE] =
         {'Z', 'E', 'P', 'H', 'Y', 'R', 'O', 'S'};
@@ -958,6 +1033,8 @@ int vfs_self_test(vfs_test_result_t* result) {
     char saved_cwd[VFS_MAX_PATH];
     char cwd[VFS_MAX_PATH];
     char alias[VFS_MAX_PATH];
+    uint32_t dir_count = 0U;
+    devfs_test_result_t device_result;
 
     if (!result) {
         LOG_ERROR("FS", "Destino de autoteste VFS nulo");
@@ -1117,6 +1194,31 @@ int vfs_self_test(vfs_test_result_t* result) {
                           vfs_test_root_lookup.mount_generation);
     }
     vfs_test_count(result, result->mount_busy);
+    result->directory_listing =
+        vfs_list_dir("/dev", vfs_test_dir_entries, VFS_MAX_DIR_ENTRIES,
+                     &dir_count) == OK &&
+        dir_count == DEVFS_MAX_NODES;
+    if (result->directory_listing) {
+        kmemset(vfs_test_dir_entries, 0, sizeof(vfs_test_dir_entries));
+        result->directory_listing =
+            vfs_list_dir("/", vfs_test_dir_entries, VFS_MAX_DIR_ENTRIES,
+                         &dir_count) == OK &&
+            vfs_test_dir_has("mnt") && vfs_test_dir_has("dev");
+    }
+    vfs_test_count(result, result->directory_listing);
+    result->devices = devfs_self_test(&device_result) == OK;
+    vfs_test_count(result, result->devices);
+    {
+        int32_t speaker_fd = VFS_FD_INVALID;
+        int ioctl_result = vfs_open("/dev/speaker", VFS_MODE_WRITE,
+                                    &speaker_fd);
+        if (ioctl_result == OK) {
+            ioctl_result = vfs_ioctl(speaker_fd, APP_IOCTL_SPEAKER_STOP, 0);
+            if (vfs_close(speaker_fd) != OK) ioctl_result = ERR_STATE;
+        }
+        result->ioctl = ioctl_result == OK;
+    }
+    vfs_test_count(result, result->ioctl);
     result->invariants = vfs_validate_state() == OK;
     vfs_test_count(result, result->invariants);
     return result->passed == result->total ? OK : ERR_STATE;

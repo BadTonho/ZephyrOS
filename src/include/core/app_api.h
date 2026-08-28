@@ -4,7 +4,7 @@
 #include "types.h"
 
 #define APP_API_VERSION_MAJOR 0
-#define APP_API_VERSION_MINOR 6
+#define APP_API_VERSION_MINOR 7
 #define APP_API_MAX_TEXT_SIZE 1024
 #define APP_API_MAX_FILE_IO_SIZE 4096
 #define APP_API_TICKS_PER_SECOND 50
@@ -59,6 +59,9 @@
 #define APP_FILE_SEEK_CUR APP_SEEK_CUR
 #define APP_FILE_SEEK_END APP_SEEK_END
 
+#define APP_IOCTL_SPEAKER_BEEP 1U
+#define APP_IOCTL_SPEAKER_STOP 2U
+
 #define APP_MESSAGE_KEYBOARD    1 /* data1 contem scancode PS/2 bruto */
 #define APP_MESSAGE_APP_REQUEST 2
 
@@ -81,6 +84,11 @@ typedef struct {
     uint32_t total_pages;
     uint32_t free_pages;
 } app_memory_info_t;
+
+typedef struct {
+    uint32_t frequency_hz;
+    uint32_t duration_ms;
+} app_speaker_tone_t;
 
 typedef struct {
     uint32_t type;
@@ -128,6 +136,7 @@ int app_api_file_write(app_handle_t handle, const uint8_t* buffer,
 int app_api_file_close(app_handle_t handle);
 int app_api_file_lseek(app_handle_t handle, int32_t offset, uint32_t whence,
                        uint32_t* position);
+int app_api_file_ioctl(app_handle_t handle, uint32_t request, void* argument);
 int app_api_chdir(const char* path);
 int app_api_getcwd(char* path, uint32_t capacity);
 int app_api_message_send(uint32_t pid, const app_message_t* message);

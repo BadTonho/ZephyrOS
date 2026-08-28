@@ -101,6 +101,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/drivers/vesa.h` | `docs/05-drivers/drivers.md` |
 | `src/include/fs/bmp.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/block.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
+| `src/include/fs/devfs.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/fat12.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/fat32.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/file_index.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
@@ -398,6 +399,15 @@ geracao por contexto privado. `process.h` herda o `cwd` na criacao e o valida
 no ciclo de vida. `app_api.h` publica a versao 0.6 e `app_api_chdir()` /
 `app_api_getcwd()`; `syscall.h` acrescenta os numeros 15 e 16 sem renumerar os
 anteriores. Pacotes 0.3, 0.4 e 0.5 permanecem aceitos.
+
+Desde a VFS3, `devfs.h` publica o registro fixo, snapshots, métricas,
+invariantes e autoteste de `/dev/null`, `/dev/zero`, `/dev/tty`,
+`/dev/speaker` e `/dev/hda`. `vfs.h` acrescenta nós de caractere e bloco,
+quinta montagem virtual independente das quatro vagas do Storage,
+`vfs_dir_entry_t`, `vfs_list_dir()` e `vfs_ioctl()`. `app_api.h` publica a
+versão 0.7, `app_speaker_tone_t`, requests do speaker e
+`app_api_file_ioctl()`; `syscall.h` acrescenta o número 17 sem renumerar os
+anteriores. Pacotes 0.3 a 0.7 permanecem aceitos.
 
 O cancelamento F12 de um ZAPP bloqueado em stdin usa os campos append-only
 `cancel_exit_code` e `cancel_pending` de `process_t`. `process_cancel_user()`

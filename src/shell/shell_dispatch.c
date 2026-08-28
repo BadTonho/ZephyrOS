@@ -31,6 +31,7 @@ extern void shell_dispatch_cmd_workq(const char* arguments);
 extern void shell_dispatch_cmd_kill(const char* arguments);
 extern void shell_dispatch_cmd_sigtest(const char* arguments);
 extern void shell_dispatch_cmd_vfs(const char* arguments);
+extern void shell_dispatch_cmd_devcheck(const char* arguments);
 extern void shell_dispatch_cmd_mount(const char* arguments);
 extern void shell_dispatch_cmd_pwd(const char* arguments);
 extern void shell_dispatch_cmd_cd(const char* arguments);
@@ -87,7 +88,7 @@ static const shell_dispatch_entry_t shell_dispatch_table[] = {
     {"job", shell_dispatch_cmd_job, SHELL_DISPATCH_FLAG_NONE},
     {"help", shell_dispatch_cmd_help, SHELL_DISPATCH_FLAG_NONE},
     {"clear", shell_dispatch_cmd_clear, SHELL_DISPATCH_FLAG_NONE},
-    {"ls", shell_dispatch_cmd_ls, SHELL_DISPATCH_FLAG_NONE},
+    {"ls", shell_dispatch_cmd_ls, SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"cat", shell_dispatch_cmd_cat, SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"echo", shell_dispatch_cmd_echo, SHELL_DISPATCH_FLAG_NONE},
     {"mem", shell_dispatch_cmd_mem, SHELL_DISPATCH_FLAG_NONE},
@@ -109,6 +110,7 @@ static const shell_dispatch_entry_t shell_dispatch_table[] = {
     {"kill", shell_dispatch_cmd_kill, SHELL_DISPATCH_FLAG_NONE},
     {"sigtest", shell_dispatch_cmd_sigtest, SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"vfs", shell_dispatch_cmd_vfs, SHELL_DISPATCH_FLAG_MAY_BLOCK},
+    {"devcheck", shell_dispatch_cmd_devcheck, SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"mount", shell_dispatch_cmd_mount, SHELL_DISPATCH_FLAG_NONE},
     {"pwd", shell_dispatch_cmd_pwd, SHELL_DISPATCH_FLAG_NONE},
     {"cd", shell_dispatch_cmd_cd, SHELL_DISPATCH_FLAG_MAY_BLOCK},

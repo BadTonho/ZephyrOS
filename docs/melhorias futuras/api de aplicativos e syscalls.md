@@ -2,9 +2,10 @@
 
 ## Resumo de Progresso
 
-Status: Fases 1 a 6D, SYNC4 e VFS1 validadas no QEMU. A VFS2 eleva a App API
-para `0.6`, preserva as syscalls anteriores e acrescenta `chdir/getcwd` nos
-numeros `15` e `16`; essa ampliacao esta implementada e aguarda validacao.
+Status: Fases 1 a 6D, SYNC4, VFS1 e VFS2 validadas no QEMU. A VFS3 eleva a
+App API para `0.7`, preserva as syscalls anteriores e acrescenta
+`file_ioctl` no numero `17`; essa ampliacao esta implementada e aguarda
+validacao.
 
 Esta etapa preparara o ZephyrOS para executar aplicativos independentes do
 kernel. O objetivo nao e apenas criar mais comandos, mas definir uma fronteira
@@ -69,6 +70,7 @@ Os numeros atuais sao:
 | `14` | `file_lseek` | `EBX`: fd; `ECX`: offset; `EDX`: origem; `ESI`: posicao |
 | `15` | `chdir` | `EBX`: caminho terminado em NUL |
 | `16` | `getcwd` | `EBX`: buffer; `ECX`: capacidade |
+| `17` | `file_ioctl` | `EBX`: fd; `ECX`: request; `EDX`: argumento |
 
 O vetor `int 0x80` inicia com gate `0x8E` (DPL 0) e passa para `0xEE` (DPL 3)
 depois que paging, TSS, Idle e os processos essenciais estao prontos. A ponte
@@ -104,6 +106,7 @@ executam em ring 0.
 | Arquivo | `file_read` | Ler dados para buffer validado |
 | Arquivo | `file_write` | Salvar dados com permissao valida |
 | Arquivo | `file_lseek` | Reposicionar descritor exclusivamente de leitura |
+| Arquivo | `file_ioctl` | Controlar dispositivo por request validado |
 | Caminho | `chdir` | Alterar o diretorio de trabalho do processo |
 | Caminho | `getcwd` | Copiar o caminho canonico do diretorio atual |
 | IPC | `message_send` | Enviar mensagem por PID ou handle |
@@ -119,7 +122,7 @@ e permissao.
 O contrato inicial esta disponivel para os modulos nativos do kernel por meio
 de `src/include/core/app_api.h` e `src/core/app_api.c`:
 
-- `app_api_get_version()` retorna a versao publica `0.6`;
+- `app_api_get_version()` retorna a versao publica `0.7`;
 - `app_api_console_write()` aceita texto ASCII validado de ate 1024 bytes;
 - `app_api_get_uptime()` retorna ticks e segundos desde o boot;
 - `app_api_get_memory_info()` retorna memoria e paginas disponiveis;
@@ -152,7 +155,22 @@ canonico terminado em NUL para um buffer validado. Cada processo inicia em
 
 Os caminhos universais `/`, `/mnt/boot` e `/mnt/<volume-id>` sao o formato
 preferencial. `system:`, `legacy:` e `<volume-id>:` permanecem compativeis.
-Pacotes novos declaram API 0.6; o loader continua aceitando 0.3, 0.4 e 0.5.
+Pacotes novos declaram API 0.7; o loader continua aceitando 0.3, 0.4, 0.5 e
+0.6.
+
+### Dispositivos da App API 0.7
+
+`app_api_file_ioctl()` é append-only na syscall 17: `EBX` contém o fd, `ECX`
+o request e `EDX` o argumento. Para `APP_IOCTL_SPEAKER_BEEP`, o dispatcher
+valida e copia um `app_speaker_tone_t` do espaço de usuário antes de chamar o
+driver; `APP_IOCTL_SPEAKER_STOP` exige argumento nulo. Requests desconhecidos
+retornam `ERR_INVALID`, sem expor ponteiros ring 3 ao kernel ou ao driver.
+
+Aplicativos abrem `/dev/null`, `/dev/zero`, `/dev/tty`, `/dev/speaker` e
+`/dev/hda` com as mesmas funções de arquivo. `app devtest` exercita
+`open/read/write/ioctl/close` em ring 3, e `app inputtest tty` valida espera,
+sinais e cancelamento por `/dev/tty`. Montagem de volumes e listagem de
+diretórios continuam restritas ao kernel nesta versão.
 
 ### Contrato de console e ciclo de vida da Fase 6D
 

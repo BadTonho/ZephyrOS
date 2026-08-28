@@ -41,7 +41,7 @@ int shell_checks_should_cancel_focused_user(uint8_t scancode);
 int shell_checks_handle_job_key(uint8_t scancode);
 int shell_checks_handle_loader_result(const app_loader_result_t* result);
 void shell_checks_report_user_test_result(void);
-void shell_checks_run_app_inputtest(void);
+void shell_checks_run_app_inputtest(uint8_t use_tty);
 
 const char* shell_core_builtin_app_name(shell_builtin_app_t app);
 int shell_core_migrated_builtin_is_ready(void);

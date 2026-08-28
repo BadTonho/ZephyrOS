@@ -2222,3 +2222,15 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   limpeza do namespace atenderam ao criterio de saida. VFS2 foi encerrada sem
   divida tecnica. Bootloader, Stage 2 e assembly de interrupcoes permaneceram
   inalterados.
+
+- VFS3: devfs, dispositivos unificados e App API 0.7 implementados.
+  Implementada em: 2026-08-28 15:01 (America/Sao_Paulo).
+  A VFS recebeu uma quinta montagem virtual fixa em `/dev`, independente das
+  quatro vagas do Storage, e os nós `null`, `zero`, `tty`, `speaker` e `hda`.
+  Foram implementados listagem universal, `ls [caminho]`, `cat` pela VFS,
+  leitura bruta ATA somente leitura, `ioctl`, syscall 17, pacotes 0.3-0.7,
+  `devcheck`, `app devtest` e `app inputtest tty`. Os diagnósticos VFS,
+  App API, RegCheck e Health foram ampliados. A etapa permanece implementada,
+  aguardando os gates e as matrizes QEMU padrão, USB HID e USB MSC compacto.
+  Nenhuma dívida técnica foi criada. Bootloader, Stage 2 e assembly de
+  interrupções permaneceram inalterados.

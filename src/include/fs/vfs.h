@@ -7,7 +7,9 @@
 #define VFS_MAX_FDS 32U
 #define VFS_MAX_OPEN_FILES 32U
 #define VFS_MAX_PATH 256U
-#define VFS_MAX_MOUNTS STORAGE_MAX_MOUNTS
+#define VFS_MAX_STORAGE_MOUNTS STORAGE_MAX_MOUNTS
+#define VFS_MAX_MOUNTS (VFS_MAX_STORAGE_MOUNTS + 1U)
+#define VFS_MAX_DIR_ENTRIES (STORAGE_MAX_DIR_ENTRIES + 2U)
 
 #define VFS_FD_STDIN  0
 #define VFS_FD_STDOUT 1
@@ -30,8 +32,15 @@ typedef enum {
     VFS_NODE_STDOUT,
     VFS_NODE_STDERR,
     VFS_NODE_DIRECTORY,
-    VFS_NODE_TEST
+    VFS_NODE_TEST,
+    VFS_NODE_CHAR_DEVICE,
+    VFS_NODE_BLOCK_DEVICE
 } vfs_node_type_t;
+
+typedef enum {
+    VFS_MOUNT_STORAGE = 0,
+    VFS_MOUNT_DEVFS
+} vfs_mount_kind_t;
 
 typedef struct vfs_vnode vnode_t;
 typedef struct vfs_file file_t;
@@ -84,6 +93,7 @@ typedef struct {
     uint8_t read_only;
     char mount_point[VFS_MAX_PATH];
     char volume_id[STORAGE_ID_SIZE];
+    vfs_mount_kind_t kind;
 } vfs_mount_info_t;
 
 typedef struct {
@@ -98,7 +108,14 @@ typedef struct {
     char mount_point[VFS_MAX_PATH];
     char volume_id[STORAGE_ID_SIZE];
     char relative_path[VFS_MAX_PATH];
+    vfs_mount_kind_t mount_kind;
 } vfs_lookup_result_t;
+
+typedef struct {
+    char name[STORAGE_LONG_NAME_SIZE];
+    vfs_node_type_t type;
+    uint32_t size;
+} vfs_dir_entry_t;
 
 typedef struct {
     uint32_t initialized;
@@ -117,6 +134,9 @@ typedef struct {
     uint32_t mounts_active;
     uint32_t lookups;
     uint32_t chdirs;
+    uint32_t ioctls;
+    uint32_t device_capacity;
+    uint32_t devices_active;
 } vfs_status_t;
 
 typedef struct {
@@ -148,6 +168,9 @@ typedef struct {
     uint8_t invariants;
     uint32_t passed;
     uint32_t total;
+    uint8_t directory_listing;
+    uint8_t devices;
+    uint8_t ioctl;
 } vfs_test_result_t;
 
 int vfs_init(void);
@@ -165,6 +188,9 @@ int vfs_write(int32_t fd, const void* buffer, uint32_t size,
 int vfs_close(int32_t fd);
 int vfs_lseek(int32_t fd, int32_t offset, uint32_t whence,
               uint32_t* position);
+int vfs_ioctl(int32_t fd, uint32_t request, void* argument);
+int vfs_list_dir(const char* path, vfs_dir_entry_t* entries,
+                 uint32_t capacity, uint32_t* out_count);
 int vfs_refresh_mounts(void);
 int vfs_lookup(const char* path, vfs_lookup_result_t* result);
 int vfs_chdir(const char* path);

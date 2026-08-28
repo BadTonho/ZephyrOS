@@ -234,9 +234,10 @@ Depois de memória, paging, TSS e processos essenciais, o kernel inicializa a
 App API e o dispatcher `int 0x80`. O gate começa restrito a DPL 0 e é elevado
 para DPL 3 somente quando a fronteira de modo usuário está pronta. A plataforma
 atual inclui arquivos, IPC, imagens `.ZAP`/`ZAPP`, foco de aplicativo externo
-e uma página de lançamento com argumentos. A App API 0.6 oferece descritores
+e uma página de lançamento com argumentos. A App API 0.7 oferece descritores
 VFS por processo, `file_lseek` na syscall 14, `chdir/getcwd` nas syscalls
-15-16 e as ações, máscaras, geração e retorno de sinais introduzidas nas
+15-16, `file_ioctl` na syscall 17, dispositivos em `/dev` e as ações,
+máscaras, geração e retorno de sinais introduzidas nas
 syscalls 10-13. O Shell continua
 nativo; `echo` é a primeira migração ring 3 e mantém fallback nativo.
 

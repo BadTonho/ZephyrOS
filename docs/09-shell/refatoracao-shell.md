@@ -307,3 +307,13 @@ fontes de `start/poll/status` dos jobs de rede e storage. Pacotes, Store,
 Update e operacoes remotas mantem seus wrappers sincronos publicos e usam os
 pontos de cancelamento, journal, rollback e recovery existentes; o executor
 os envolve com geracao e drenagem sem alterar a ABI publica.
+
+## Integracao VFS3
+
+O bridge interno de checks recebe a selecao entre stdin e `/dev/tty` em
+`shell_checks_run_app_inputtest()`. O dispatcher valida somente o argumento
+opcional `tty`; montagem da imagem ring 3, foco, encerramento por Enter,
+interrupcao por sinal e cancelamento continuam pertencendo a
+`shell_checks.c`, sem mover politica de prompt ou input para o handler de
+comandos. `devcheck` permanece no modulo de diagnosticos, enquanto
+`app devtest` permanece no modulo de aplicativos.

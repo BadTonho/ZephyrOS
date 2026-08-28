@@ -1,4 +1,5 @@
 #include "fs/vfs_internal.h"
+#include "fs/devfs.h"
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/spinlock.h"
@@ -277,8 +278,20 @@ static void vfs_mount_fill(vfs_mount_info_t* info,
                    vfs_path_equal(mount_point, "/");
     info->read_only = volume->read_only;
     info->fs_type = volume->fs_type;
+    info->kind = VFS_MOUNT_STORAGE;
     vfs_path_copy(info->mount_point, VFS_MAX_PATH, mount_point);
     vfs_path_copy(info->volume_id, STORAGE_ID_SIZE, volume->id);
+}
+
+static void vfs_devfs_mount_fill(vfs_mount_info_t* info) {
+    kmemset(info, 0, sizeof(*info));
+    info->used = 1U;
+    info->slot = VFS_MAX_STORAGE_MOUNTS;
+    info->generation = 1U;
+    info->pinned = 1U;
+    info->kind = VFS_MOUNT_DEVFS;
+    vfs_path_copy(info->mount_point, VFS_MAX_PATH, "/dev");
+    vfs_path_copy(info->volume_id, STORAGE_ID_SIZE, "devfs");
 }
 
 static int vfs_desired_add(vfs_mount_info_t* desired, uint32_t* count,
@@ -296,6 +309,8 @@ int vfs_path_init(void) {
     LOG_INFO("FS", "Inicializando namespace de caminhos VFS");
     spinlock_init(&vfs_mount_lock);
     kmemset(vfs_mount_table, 0, sizeof(vfs_mount_table));
+    vfs_devfs_mount_fill(
+        &vfs_mount_table[VFS_MAX_STORAGE_MOUNTS].info);
     vfs_lookup_count = 0U;
     vfs_chdir_count = 0U;
     vfs_path_ready = 1U;
@@ -305,7 +320,7 @@ int vfs_path_init(void) {
 
 int vfs_refresh_mounts(void) {
     storage_status_t storage_status;
-    storage_volume_t volumes[VFS_MAX_MOUNTS];
+    storage_volume_t volumes[VFS_MAX_STORAGE_MOUNTS];
     vfs_mount_info_t desired[VFS_MAX_MOUNTS];
     vfs_mount_entry_t updated[VFS_MAX_MOUNTS];
     uint8_t placed[VFS_MAX_MOUNTS];
@@ -323,7 +338,7 @@ int vfs_refresh_mounts(void) {
         return vfs_path_fail(ERR_STATE,
                              "Storage nao inicializado no refresh VFS");
     }
-    if (storage_status.mounted_count > VFS_MAX_MOUNTS) {
+    if (storage_status.mounted_count > VFS_MAX_STORAGE_MOUNTS) {
         return vfs_path_fail(ERR_OVERFLOW,
                              "Montagens Storage excedem capacidade VFS");
     }
@@ -331,6 +346,7 @@ int vfs_refresh_mounts(void) {
     kmemset(desired, 0, sizeof(desired));
     kmemset(updated, 0, sizeof(updated));
     kmemset(placed, 0, sizeof(placed));
+    vfs_devfs_mount_fill(&desired[desired_count++]);
     while (volume_count < storage_status.mounted_count) {
         if (storage_get_mounted_at((uint8_t)volume_count,
                                    &volumes[volume_count]) != OK) {
@@ -438,6 +454,7 @@ static int vfs_resolve_canonical(const char* canonical, uint32_t mode,
         result->mount_slot = mount->slot;
         result->mount_generation = mount->generation;
         result->fs_type = mount->fs_type;
+        result->mount_kind = mount->kind;
         result->read_only = mount->read_only;
         vfs_path_copy(result->mount_point, VFS_MAX_PATH,
                       mount->mount_point);
@@ -447,6 +464,9 @@ static int vfs_resolve_canonical(const char* canonical, uint32_t mode,
     spinlock_release(&vfs_mount_lock);
     if (mount_index < 0) {
         return vfs_path_fail(ERR_NOT_FOUND, "Montagem para caminho ausente");
+    }
+    if (result->mount_kind == VFS_MOUNT_DEVFS) {
+        return devfs_lookup(canonical, result);
     }
     mount_length = kstrlen(result->mount_point);
     if (vfs_path_equal(canonical, result->mount_point)) {
@@ -525,6 +545,11 @@ static int vfs_resolve_directory(const char* path, char* canonical,
             spinlock_release(&vfs_mount_lock);
             return OK;
         }
+        if (mount->kind == VFS_MOUNT_DEVFS) {
+            spinlock_release(&vfs_mount_lock);
+            return vfs_path_fail(ERR_INVALID,
+                                 "No devfs nao e diretorio");
+        }
     }
     spinlock_release(&vfs_mount_lock);
     if (mount_index < 0) {
@@ -587,6 +612,137 @@ int vfs_getcwd(char* path, uint32_t capacity) {
         return vfs_path_fail(ERR_OVERFLOW, "Buffer de getcwd insuficiente");
     }
     vfs_path_copy(path, capacity, current->fd_table.cwd);
+    return OK;
+}
+
+static int vfs_dir_name_equal(const char* first, const char* second) {
+    uint32_t index = 0U;
+
+    if (!first || !second) return 0;
+    while (first[index] && second[index]) {
+        char a = first[index];
+        char b = second[index];
+        if (a >= 'a' && a <= 'z') a = (char)(a - ('a' - 'A'));
+        if (b >= 'a' && b <= 'z') b = (char)(b - ('a' - 'A'));
+        if (a != b) return 0;
+        index++;
+    }
+    return first[index] == second[index];
+}
+
+static int vfs_dir_add_virtual(vfs_dir_entry_t* entries, uint32_t capacity,
+                               uint32_t* count, const char* name) {
+    if (!entries || !count || !name) {
+        LOG_ERROR("FS", "Entrada virtual VFS recebeu destino nulo");
+        return ERR_NULL;
+    }
+    for (uint32_t index = 0U; index < *count; index++) {
+        if (vfs_dir_name_equal(entries[index].name, name)) {
+            entries[index].type = VFS_NODE_DIRECTORY;
+            entries[index].size = 0U;
+            return OK;
+        }
+    }
+    if (*count >= capacity) {
+        LOG_ERROR("FS", "Entrada virtual excedeu capacidade da listagem");
+        return ERR_OVERFLOW;
+    }
+    kmemset(&entries[*count], 0, sizeof(entries[*count]));
+    vfs_path_copy(entries[*count].name, sizeof(entries[*count].name), name);
+    entries[*count].type = VFS_NODE_DIRECTORY;
+    (*count)++;
+    return OK;
+}
+
+static int vfs_list_mnt(vfs_dir_entry_t* entries, uint32_t capacity,
+                        uint32_t* out_count) {
+    uint32_t count = 0U;
+
+    spinlock_acquire(&vfs_mount_lock);
+    for (uint32_t index = 0U; index < VFS_MAX_MOUNTS; index++) {
+        const char* point;
+
+        if (!vfs_mount_table[index].info.used ||
+            vfs_mount_table[index].info.kind != VFS_MOUNT_STORAGE ||
+            vfs_path_equal(vfs_mount_table[index].info.mount_point, "/")) {
+            continue;
+        }
+        point = vfs_mount_table[index].info.mount_point;
+        if (!vfs_path_prefix(point, "/mnt") || !point[4]) continue;
+        if (count >= capacity) {
+            spinlock_release(&vfs_mount_lock);
+            LOG_ERROR("FS", "Listagem de montagens excedeu capacidade");
+            return ERR_OVERFLOW;
+        }
+        kmemset(&entries[count], 0, sizeof(entries[count]));
+        vfs_path_copy(entries[count].name, sizeof(entries[count].name),
+                      point + 5U);
+        entries[count].type = VFS_NODE_DIRECTORY;
+        count++;
+    }
+    spinlock_release(&vfs_mount_lock);
+    *out_count = count;
+    return OK;
+}
+
+int vfs_list_dir(const char* path, vfs_dir_entry_t* entries,
+                 uint32_t capacity, uint32_t* out_count) {
+    storage_long_dir_cursor_t cursor;
+    storage_long_dir_entry_t storage_entry;
+    vfs_lookup_result_t lookup;
+    uint32_t count = 0U;
+    uint8_t found = 0U;
+    uint8_t done = 0U;
+    int result;
+
+    if (!path || !entries || !out_count) {
+        LOG_ERROR("FS", "Listagem VFS recebeu argumento nulo");
+        return ERR_NULL;
+    }
+    *out_count = 0U;
+    if (!capacity || capacity > VFS_MAX_DIR_ENTRIES) {
+        return vfs_path_fail(ERR_OVERFLOW, "Capacidade de listagem invalida");
+    }
+    result = vfs_lookup(path, &lookup);
+    if (result != OK) return result;
+    if (lookup.type != VFS_NODE_DIRECTORY) {
+        return vfs_path_fail(ERR_INVALID,
+                             "Listagem VFS recebeu no que nao e diretorio");
+    }
+    if (vfs_path_equal(lookup.canonical_path, "/dev")) {
+        return devfs_list(entries, capacity, out_count);
+    }
+    if (vfs_path_equal(lookup.canonical_path, "/mnt")) {
+        return vfs_list_mnt(entries, capacity, out_count);
+    }
+    result = storage_dir_cursor_open_long(lookup.volume_id,
+                                          lookup.relative_path, &cursor);
+    if (result != OK) return result;
+    while (!done) {
+        result = storage_dir_cursor_next_long(&cursor, &storage_entry,
+                                              &found, &done);
+        if (result != OK) return result;
+        if (!found) continue;
+        if (count >= capacity) {
+            return vfs_path_fail(ERR_OVERFLOW,
+                                 "Diretorio excedeu capacidade de listagem");
+        }
+        kmemset(&entries[count], 0, sizeof(entries[count]));
+        vfs_path_copy(entries[count].name, sizeof(entries[count].name),
+                      storage_entry.name);
+        entries[count].type = storage_entry.is_directory ?
+                              VFS_NODE_DIRECTORY : VFS_NODE_REGULAR;
+        entries[count].size = storage_entry.size;
+        count++;
+    }
+    if (vfs_path_equal(lookup.canonical_path, "/")) {
+        result = vfs_dir_add_virtual(entries, capacity, &count, "mnt");
+        if (result == OK) {
+            result = vfs_dir_add_virtual(entries, capacity, &count, "dev");
+        }
+        if (result != OK) return result;
+    }
+    *out_count = count;
     return OK;
 }
 
@@ -738,6 +894,7 @@ void vfs_path_get_metrics(uint32_t* capacity, uint32_t* active,
 
 int vfs_path_validate_state(void) {
     uint8_t root_found = 0U;
+    uint8_t devfs_found = 0U;
     char normalized[VFS_MAX_PATH];
 
     if (!vfs_path_ready) {
@@ -756,10 +913,22 @@ int vfs_path_validate_state(void) {
 
         if (!info->used) continue;
         if (info->slot != index || !info->mount_point[0] ||
-            !info->volume_id[0] || info->mount_point[0] != '/' ||
-            info->fs_type == STORAGE_FS_NONE) {
+            !info->volume_id[0] || info->mount_point[0] != '/') {
             spinlock_release(&vfs_mount_lock);
             return vfs_path_fail(ERR_STATE, "Montagem VFS inconsistente");
+        }
+        if (info->kind == VFS_MOUNT_DEVFS) {
+            if (info->fs_type != STORAGE_FS_NONE || !info->pinned ||
+                !vfs_path_equal(info->mount_point, "/dev") ||
+                !vfs_path_equal(info->volume_id, "devfs")) {
+                spinlock_release(&vfs_mount_lock);
+                return vfs_path_fail(ERR_STATE, "Montagem devfs inconsistente");
+            }
+            devfs_found = 1U;
+        } else if (info->kind != VFS_MOUNT_STORAGE ||
+                   info->fs_type == STORAGE_FS_NONE) {
+            spinlock_release(&vfs_mount_lock);
+            return vfs_path_fail(ERR_STATE, "Montagem Storage inconsistente");
         }
         if (vfs_path_equal(info->mount_point, "/")) root_found = 1U;
         for (uint32_t other = index + 1U; other < VFS_MAX_MOUNTS; other++) {
@@ -773,18 +942,25 @@ int vfs_path_validate_state(void) {
         }
     }
     for (uint32_t index = 0U; index < MAX_PROCESSES; index++) {
+        int cwd_mount;
+
         if (!processes[index].fd_table.initialized) continue;
+        cwd_mount = vfs_find_mount_for_path_unlocked(
+            processes[index].fd_table.cwd);
         if (!processes[index].fd_table.cwd[0] ||
             processes[index].fd_table.cwd[0] != '/' ||
             vfs_normalize_from(processes[index].fd_table.cwd, "/",
                                normalized) != OK ||
             !vfs_path_equal(processes[index].fd_table.cwd, normalized) ||
             (!vfs_path_equal(normalized, "/mnt") &&
-             vfs_find_mount_for_path_unlocked(normalized) < 0)) {
+             cwd_mount < 0) ||
+            (cwd_mount >= 0 &&
+             vfs_mount_table[cwd_mount].info.kind == VFS_MOUNT_DEVFS &&
+             !vfs_path_equal(normalized, "/dev"))) {
             spinlock_release(&vfs_mount_lock);
             return vfs_path_fail(ERR_STATE, "Cwd de processo inconsistente");
         }
     }
     spinlock_release(&vfs_mount_lock);
-    return root_found ? OK : ERR_NOT_FOUND;
+    return root_found && devfs_found ? OK : ERR_NOT_FOUND;
 }

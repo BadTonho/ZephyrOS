@@ -9,6 +9,7 @@
 #define APP_BUILTIN_MAX_CODE_SIZE    1024U
 #define APP_BUILTIN_DATA_SIZE        128U
 #define APP_BUILTIN_PATHTEST_DATA_SIZE 256U
+#define APP_BUILTIN_DEVTEST_DATA_SIZE 256U
 #define APP_BUILTIN_OUTPUT_OFFSET    32U
 #define APP_BUILTIN_OUTPUTTEST_CHUNK_COUNT 9U
 
@@ -52,6 +53,7 @@
 #define APP_BUILTIN_REG_ECX 1U
 #define APP_BUILTIN_REG_EDX 2U
 #define APP_BUILTIN_REG_EBX 3U
+#define APP_BUILTIN_REG_ESI 6U
 #define APP_BUILTIN_REG_EDI 7U
 
 #define APP_BUILTIN_ECX_ABSOLUTE_MODRM 0x0DU
@@ -74,6 +76,11 @@
 #define APP_BUILTIN_PATHTEST_GETCWD_STATUS_OFFSET 148U
 #define APP_BUILTIN_PATHTEST_OPEN_STATUS_OFFSET 169U
 #define APP_BUILTIN_PATHTEST_CLOSE_STATUS_OFFSET 188U
+#define APP_BUILTIN_DEVTEST_FD_OFFSET 96U
+#define APP_BUILTIN_DEVTEST_BUFFER_OFFSET 112U
+#define APP_BUILTIN_DEVTEST_COUNT_OFFSET 120U
+#define APP_BUILTIN_DEVTEST_TONE_OFFSET 128U
+#define APP_BUILTIN_DEVTEST_STATUS_OFFSET 160U
 
 static uint8_t app_builtin_image[APP_IMAGE_MAX_FILE_SIZE];
 static const char app_builtin_argtest_data[] = "Argumentos ZAPP: \n";
@@ -816,6 +823,108 @@ static int app_builtin_build_pathtest(uint32_t* image_size) {
                                       sizeof(data), image_size);
 }
 
+static int app_builtin_emit_dev_open(uint8_t* code, uint32_t* code_size,
+                                     uint32_t path_offset, uint32_t mode) {
+    int result = app_builtin_emit_mov(code, code_size, APP_BUILTIN_REG_EBX,
+                                      USER_DATA_BASE + path_offset);
+
+    if (result == OK) result = app_builtin_emit_mov(
+        code, code_size, APP_BUILTIN_REG_ECX, mode);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, code_size, APP_BUILTIN_REG_EDX,
+        USER_DATA_BASE + APP_BUILTIN_DEVTEST_FD_OFFSET);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, code_size, APP_BUILTIN_REG_EAX, APP_SYSCALL_FILE_OPEN);
+    if (result == OK) result = app_builtin_emit_int80(code, code_size);
+    if (result == OK) result = app_builtin_emit_exit_on_error(code, code_size);
+    return result;
+}
+
+static int app_builtin_emit_dev_close(uint8_t* code, uint32_t* code_size) {
+    int result = app_builtin_emit_load_ebx(
+        code, code_size, USER_DATA_BASE + APP_BUILTIN_DEVTEST_FD_OFFSET);
+
+    if (result == OK) result = app_builtin_emit_mov(
+        code, code_size, APP_BUILTIN_REG_EAX, APP_SYSCALL_FILE_CLOSE);
+    if (result == OK) result = app_builtin_emit_int80(code, code_size);
+    if (result == OK) result = app_builtin_emit_exit_on_error(code, code_size);
+    return result;
+}
+
+static int app_builtin_build_devtest(uint32_t* image_size) {
+    uint8_t code[APP_BUILTIN_MAX_CODE_SIZE];
+    uint8_t data[APP_BUILTIN_DEVTEST_DATA_SIZE];
+    app_speaker_tone_t tone = {440U, 1U};
+    uint32_t code_size = 0U;
+    int result;
+
+    kmemset(code, 0, sizeof(code));
+    kmemset(data, 0, sizeof(data));
+    kmemcpy(data, "/dev/null", 10U);
+    kmemcpy(data + 16U, "/dev/zero", 10U);
+    kmemcpy(data + 32U, "/dev/speaker", 13U);
+    kmemcpy(data + APP_BUILTIN_DEVTEST_BUFFER_OFFSET, "VFS3", 4U);
+    kmemcpy(data + APP_BUILTIN_DEVTEST_TONE_OFFSET, &tone, sizeof(tone));
+    kmemcpy(data + APP_BUILTIN_DEVTEST_STATUS_OFFSET,
+            "devtest open/read/write/ioctl/close OK\n", 39U);
+    result = app_builtin_emit_dev_open(code, &code_size, 0U,
+                                       APP_FILE_MODE_READ_WRITE);
+    if (result == OK) result = app_builtin_emit_load_ebx(
+        code, &code_size, USER_DATA_BASE + APP_BUILTIN_DEVTEST_FD_OFFSET);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_ECX,
+        USER_DATA_BASE + APP_BUILTIN_DEVTEST_BUFFER_OFFSET);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EDX, 4U);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_ESI,
+        USER_DATA_BASE + APP_BUILTIN_DEVTEST_COUNT_OFFSET);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EAX, APP_SYSCALL_FILE_WRITE);
+    if (result == OK) result = app_builtin_emit_int80(code, &code_size);
+    if (result == OK) result = app_builtin_emit_exit_on_error(code, &code_size);
+    if (result == OK) result = app_builtin_emit_dev_close(code, &code_size);
+    if (result == OK) result = app_builtin_emit_dev_open(
+        code, &code_size, 16U, APP_FILE_MODE_READ);
+    if (result == OK) result = app_builtin_emit_load_ebx(
+        code, &code_size, USER_DATA_BASE + APP_BUILTIN_DEVTEST_FD_OFFSET);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_ECX,
+        USER_DATA_BASE + APP_BUILTIN_DEVTEST_BUFFER_OFFSET);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EDX, 4U);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_ESI,
+        USER_DATA_BASE + APP_BUILTIN_DEVTEST_COUNT_OFFSET);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EAX, APP_SYSCALL_FILE_READ);
+    if (result == OK) result = app_builtin_emit_int80(code, &code_size);
+    if (result == OK) result = app_builtin_emit_exit_on_error(code, &code_size);
+    if (result == OK) result = app_builtin_emit_dev_close(code, &code_size);
+    if (result == OK) result = app_builtin_emit_dev_open(
+        code, &code_size, 32U, APP_FILE_MODE_WRITE);
+    if (result == OK) result = app_builtin_emit_load_ebx(
+        code, &code_size, USER_DATA_BASE + APP_BUILTIN_DEVTEST_FD_OFFSET);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_ECX, APP_IOCTL_SPEAKER_BEEP);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EDX,
+        USER_DATA_BASE + APP_BUILTIN_DEVTEST_TONE_OFFSET);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EAX, APP_SYSCALL_FILE_IOCTL);
+    if (result == OK) result = app_builtin_emit_int80(code, &code_size);
+    if (result == OK) result = app_builtin_emit_exit_on_error(code, &code_size);
+    if (result == OK) result = app_builtin_emit_dev_close(code, &code_size);
+    if (result == OK) result = app_builtin_emit_console_write(
+        code, &code_size, USER_DATA_BASE + APP_BUILTIN_DEVTEST_STATUS_OFFSET,
+        39U);
+    if (result == OK) result = app_builtin_emit_exit_code(
+        code, &code_size, APP_EXIT_SUCCESS);
+    if (result != OK) return result;
+    return app_builtin_finalize_image(code, code_size, 0U, (const char*)data,
+                                      sizeof(data), image_size);
+}
+
 int app_builtin_run_echo(const app_launch_info_t* launch, uint32_t* pid_out) {
     uint32_t image_size;
     int result = app_builtin_build_echo(&image_size);
@@ -912,5 +1021,21 @@ int app_builtin_run_pathtest(uint32_t* pid_out) {
     result = app_loader_run_image("PathTest", app_builtin_image, image_size,
                                   0, pid_out);
     if (result != OK) LOG_ERROR("APP_BUILTIN", "Falha ao iniciar PathTest");
+    return result;
+}
+
+int app_builtin_run_devtest(uint32_t* pid_out) {
+    uint32_t image_size;
+    int result = app_builtin_preflight_loader();
+
+    if (result != OK) return result;
+    result = app_builtin_build_devtest(&image_size);
+    if (result != OK) {
+        LOG_ERROR("APP_BUILTIN", "Falha ao montar ZAPP de dispositivos");
+        return result;
+    }
+    result = app_loader_run_image("DevTest", app_builtin_image, image_size,
+                                  0, pid_out);
+    if (result != OK) LOG_ERROR("APP_BUILTIN", "Falha ao iniciar DevTest");
     return result;
 }

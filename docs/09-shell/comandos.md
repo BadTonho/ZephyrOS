@@ -16,8 +16,8 @@ Comandos disponiveis:
   desktop   - Abre a area de trabalho
   settings  - Abre o painel de configuracoes
   wm        - Abre gerenciador de janelas
-  ls        - Lista arquivos
-  cat       - Exibe conteudo de arquivo
+  ls [caminho] - Lista um diretorio pelo namespace VFS
+  cat <caminho> - Exibe ate 4095 bytes pela VFS
   echo      - Exibe texto
   mem       - Mostra informacoes de memoria
   procs     - Mostra processos ativos
@@ -79,6 +79,7 @@ Comandos disponiveis:
   regcheck [full] - F11 cancela nos modos normal e full
   appcheck  - Testa API, arquivos, IPC e carregador ZAPP
   vfs [status|test] - Inspeciona descritores e operacoes unificadas de I/O
+  devcheck  - Valida os dispositivos registrados no devfs
   mount     - Lista o namespace e as montagens VFS
   pwd       - Exibe o diretorio de trabalho atual
   cd [caminho] - Altera o cwd; sem caminho retorna a raiz
@@ -87,7 +88,8 @@ Comandos disponiveis:
   pkgcheck  - Testa validacoes de pacote sem gravar
   update verify <arquivo.ZUP> - Verifica atualizacao sem gravar
   app run <arquivo.ZAP> [args] - Executa aplicativo ring 3 de forma assincrona
-  app inputtest - Testa entrada de teclado em aplicativo ring 3
+  app inputtest [tty] - Testa stdin ou `/dev/tty` em ring 3
+  app devtest - Testa open/read/write/ioctl/close em ring 3
   app outputtest [fail] - Testa saida ZAPP em blocos e codigos de saida
   app pathtest - Testa chdir, getcwd e abertura relativa em ring 3
   app argtest <texto> - Testa argumentos em aplicativo ring 3
@@ -153,18 +155,24 @@ comandos anteriores e `Seta para baixo` avanca ate restaurar o texto que estava
 sendo digitado. Comandos consecutivos identicos nao sao duplicados. O comando
 `clear` nao remove o historico de comandos.
 
-## `ls`
-Lista todos os arquivos no disco FAT12.
+## `ls [caminho]`
+Lista um diretório do namespace VFS. Sem argumento, usa o `cwd`. A raiz combina
+o volume real com `mnt` e `dev`; `/mnt` lista montagens e `/dev` lista os nós
+do devfs. Diretórios FAT12/FAT32 preservam nomes longos.
 
 ```
-zephyr> ls
-Arquivos no disco:
-  ARQUIVO.TXT  128 bytes
-  DADOS.DAT    256 bytes
+zephyr> ls /dev
+  null
+  zero
+  tty
+  speaker
+  hda
 ```
 
-## `cat <arquivo>`
-Exibe o conteúdo de um arquivo de texto.
+## `cat <caminho>`
+Abre o caminho pela VFS, lê no máximo 4095 bytes e fecha o descritor. O comando
+aceita arquivos regulares e dispositivos finitos; dispositivos infinitos são
+validados por `devcheck` para evitar streaming nesta etapa.
 
 ```
 zephyr> cat ARQUIVO.TXT
@@ -728,15 +736,27 @@ Argumentos adicionais sao recusados com `Uso: schedcheck`.
 ## `vfs [status|test]`
 
 `vfs status` exibe capacidade e uso global, montagens, resolucoes, mudancas de
-`cwd`, metricas e descritores do processo atual. `vfs test` cobre tambem
+`cwd`, dispositivos, `ioctl`, metricas e descritores do processo atual.
+`vfs test` cobre tambem
 normalizacao, escape da raiz, aliases, diretorio virtual, lookup, cwd,
-heranca, montagem ocupada, geracao e invariantes. Argumentos excedentes, como
+heranca, montagem ocupada, geração, listagem, devfs e invariantes. Argumentos excedentes, como
 `vfs test foo`, sao rejeitados. A etapa integra `appcheck`, `regcheck full` e
 `health check`.
 
 ```text
 zephyr> vfs status
 zephyr> vfs test
+```
+
+## `devcheck`
+
+Valida o registro do devfs, permissões, `/dev/null`, `/dev/zero`, abertura de
+`/dev/tty`, escrita e `ioctl` do speaker, leitura alinhada e desalinhada de
+`/dev/hda`, seek, EOF, fechamento, limpeza e invariantes. O teste do disco é
+somente leitura.
+
+```text
+zephyr> devcheck
 ```
 
 ## `mount`, `pwd` e `cd`
@@ -770,6 +790,9 @@ de IPC validam o PID, o estado do processo, o tipo da mensagem e a fila.
 Na App API 0.6, o comando valida tambem as syscalls 15 e 16, caminho canonico,
 diretorio virtual, restauracao do `cwd` e rejeicao de diretorio inexistente.
 `app pathtest` executa `chdir`, `getcwd` e abertura relativa real em ring 3.
+Na App API 0.7, valida abertura de dispositivo, syscall 17, request inválido e
+fechamento. `app devtest` exerce `open/read/write/ioctl/close` realmente em
+ring 3; `app inputtest tty` usa `/dev/tty` em vez do fd 0.
 
 O comando usa a ponte interna do dispatcher e testa números inválidos,
 argumentos nulos e `process_exit`. O vetor `int 0x80` também está disponível

@@ -10,7 +10,8 @@ Este roadmap estabelece uma arquitetura própria, modular, segura e limpa para o
 
 - [x] VFS1 - Descritores e operacoes unificadas de I/O (concluida e validada).
 - [x] VFS2 - Montagens, caminhos universais e cwd (concluida e validada).
-- [ ] VFS3 - Abstração de nós de dispositivos (`/dev/`) de caractere e bloco.
+- [ ] VFS3 - Abstração de nós de dispositivos (`/dev/`) de caractere e bloco
+  (implementada, aguardando validação).
 - [ ] VFS4 - Pipes anônimos e redirecionamento de streams no Shell.
 
 ## Atalhos
@@ -165,23 +166,45 @@ tecnica.
 
 ### Implementação
 
-- [ ] Criar o provedor de pseudo-filesystem `devfs` montado em `/dev`.
-- [ ] Registrar dispositivos padrão de caractere:
+- [x] Criar o provedor de pseudo-filesystem `devfs` montado em `/dev`, como
+  quinta montagem virtual fixa, sem consumir as quatro vagas do Storage.
+- [x] Registrar dispositivos padrão de caractere:
   - `/dev/null`: descarta escritas e retorna EOF na leitura.
   - `/dev/zero`: retorna bytes zero continuamente na leitura.
   - `/dev/tty`: entrada e saída direta do console ativo.
   - `/dev/speaker`: controle do PC Speaker via `write` ou `ioctl`.
-- [ ] Registrar nós de blocos brutos para diagnóstico:
+- [x] Registrar nós de blocos brutos para diagnóstico:
   - `/dev/hda`: acesso direto aos setores do disco primário ATA.
+- [x] Generalizar descritores e operações para nós de caractere e bloco, com
+  `ioctl`, métricas, snapshots, invariantes e callbacks fora dos locks.
+- [x] Implementar listagem universal de diretórios, incluindo raiz, `/mnt`,
+  `/dev` e diretórios FAT12/FAT32 com nomes longos; migrar `ls` e `cat`.
+- [x] Publicar App API 0.7 e syscall 17 para `file_ioctl`, preservando pacotes
+  0.3 a 0.7 e todas as syscalls anteriores.
+- [x] Integrar `devcheck`, `app devtest`, `app inputtest tty`, `vfs status`,
+  `vfs test`, `appcheck`, `regcheck full` e `health check`.
+
+### Estado da entrega
+
+VFS3 está implementada e aguarda os gates e a matriz executável do usuário.
+O `devfs` publica `null`, `zero`, `tty`, `speaker` e `hda`; `/dev/hda` é
+somente leitura e os autotestes não escrevem em disco. Bootloader, Stage 2 e
+assembly de interrupções permaneceram inalterados. VFS4, pipes,
+redirecionamento, descritores de diretório e dispositivos USB brutos não
+integram esta entrega. Nenhuma dívida técnica foi criada.
 
 ### Critério de saída
 
-Comandos como `cat /dev/zero` ou redirecionamento para `/dev/null` funcionam através das mesmas chamadas de leitura e escrita do VFS.
+Os cinco nós são resolvidos, abertos, operados e fechados pelas mesmas chamadas
+da VFS, inclusive a partir de ring 3, sem descritores residuais nem escrita no
+disco durante os diagnósticos.
 
 ### Comandos Shell / Diagnóstico
 
 - `ls /dev`: lista todos os dispositivos de caractere e bloco registrados.
 - `devcheck`: valida as operações de leitura/escrita nos nós padrão de `/dev`.
+- `app devtest`: exercita `open/read/write/ioctl/close` em ring 3.
+- `app inputtest tty`: valida espera, sinais e cancelamento por `/dev/tty`.
 
 ---
 
