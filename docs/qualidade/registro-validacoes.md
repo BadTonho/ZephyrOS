@@ -2323,3 +2323,30 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   VFS, Storage e FAT/LFN em uma thread com stack de 4 KiB. `thread_create()`
   passou a reservar quatro páginas (16 KiB), com o contrato técnico atualizado.
   A matriz funcional deve ser repetida após `make q3check` e `make clean && make`.
+- VFS4: pipelines e redirecionamentos principais validados no QEMU pelo usuário.
+  Concluída em: 2026-08-28 18:33 (America/Sao_Paulo).
+  `vfs test` retornou `20/20` e `Pipes: OK`; `pipetest`, `appcheck` com
+  syscall 18, `procs | grep shell`, `echo texto | grep texto`,
+  `ls > lista.txt`, `cat lista.txt` e `echo segundo >> lista.txt` funcionaram.
+  O conteúdo anexado foi confirmado com `cat`; permanecem pendentes as
+  sintaxes inválidas, destinos recusados e a confirmação final de limpeza.
+- VFS4: sintaxes inválidas e destinos não graváveis validados no QEMU pelo usuário.
+  Concluída em: 2026-08-28 18:36 (America/Sao_Paulo).
+  `echo | grep texto`, `echo texto > a > b`, `ls >`, `date | grep shell`,
+  `cat arquivo-inexistente-vfs4.txt`, `ls > /` e `ls > /dev/null` retornaram
+  rejeções controladas, sem corrupção do heap ou erro de limpeza observado.
+  Permanecem pendentes apenas o destino FAT somente leitura, o destino FAT
+  inválido e a confirmação final explícita de descritores e filas residuais.
+- VFS4: montagens, estado VFS e filas residuais inspecionados no QEMU pelo usuário.
+  Concluída em: 2026-08-28 18:39 (America/Sao_Paulo).
+  A montagem `/mnt/boot` foi confirmada como FAT12 somente leitura; o estado
+  VFS mostrou `pipes ativos/capacidade: 0/8` e o processo atual manteve apenas
+  `fd=0..2`. `wqinfo` não mostrou filas `VFS-pipe` nem waiters residuais.
+  O teste de escrita no volume somente leitura permanece pendente.
+- VFS4: matriz funcional completa validada no QEMU pelo usuário.
+  Concluída em: 2026-08-28 18:40 (America/Sao_Paulo).
+  `ls > /mnt/boot/vfs4-readonly.txt` foi recusado corretamente com
+  `ERR_UNAVAILABLE` (código 9) no volume FAT12 somente leitura. Com os gates,
+  build, pipelines, redirecionamentos, recusas controladas e inspeções de
+  `vfs status`/`wqinfo` já registrados, a matriz VFS4 foi encerrada sem
+  descritores, pipes ou waiters residuais observados e sem alterar o bootloader.
