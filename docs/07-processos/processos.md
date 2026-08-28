@@ -93,7 +93,7 @@ process_t* proc = process_create("minha_task", entry_function);
 Isso:
 1. Aloca um slot livre no array de processos
 2. Gera um PID único
-3. Aloca kernel stack (4 KB)
+3. Aloca kernel stack (4 KiB nativo ou 8 KiB para ring 3)
 4. Cria page directory próprio
 5. Prepara o contexto inicial (pilha com EIP, EFLAGS, etc.)
 6. Instala stdin, stdout e stderr na tabela de descritores
@@ -116,8 +116,9 @@ executam caminhos com maior consumo podem usar `process_create_with_stack_size()
 entre 4 KiB e 16 KiB, sempre alinhada a 16 bytes. A EP6.4 reserva 16 KiB para
 o `Zephyr System`, e a SYNC3 reserva o mesmo para o processo ring0
 `Zephyr kworker`; o Shell tambem conserva 16 KiB. Desktop, Idle e demais
-processos nativos permanecem com 4 KiB. A ABI e a stack de processos ring 3
-não mudam.
+processos nativos permanecem com 4 KiB. Processos ring 3 usam 8 KiB de kernel
+stack para acomodar syscalls que atravessam VFS, Storage e FAT/LFN; a stack é
+privada do kernel e essa reserva não altera a ABI nem a stack de usuário.
 
 Cada stack nativa tem canários inferior/superior e área útil preenchida para
 medir high-water. `process_stack_get_info()` consulta um PID,

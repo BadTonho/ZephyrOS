@@ -8,6 +8,7 @@
 
 #define APP_BUILTIN_MAX_CODE_SIZE    1024U
 #define APP_BUILTIN_DATA_SIZE        128U
+#define APP_BUILTIN_PATHTEST_DATA_SIZE 256U
 #define APP_BUILTIN_OUTPUT_OFFSET    32U
 #define APP_BUILTIN_OUTPUTTEST_CHUNK_COUNT 9U
 
@@ -69,6 +70,10 @@
 
 #define APP_BUILTIN_EXIT_FROM_EAX_SIZE 10U
 #define APP_BUILTIN_OUTPUT_BASE (USER_DATA_BASE + APP_BUILTIN_OUTPUT_OFFSET)
+#define APP_BUILTIN_PATHTEST_CHDIR_STATUS_OFFSET 128U
+#define APP_BUILTIN_PATHTEST_GETCWD_STATUS_OFFSET 148U
+#define APP_BUILTIN_PATHTEST_OPEN_STATUS_OFFSET 169U
+#define APP_BUILTIN_PATHTEST_CLOSE_STATUS_OFFSET 188U
 
 static uint8_t app_builtin_image[APP_IMAGE_MAX_FILE_SIZE];
 static const char app_builtin_argtest_data[] = "Argumentos ZAPP: \n";
@@ -746,7 +751,7 @@ static int app_builtin_build_outputtest(uint32_t exit_code,
 
 static int app_builtin_build_pathtest(uint32_t* image_size) {
     uint8_t code[APP_BUILTIN_MAX_CODE_SIZE];
-    uint8_t data[APP_BUILTIN_DATA_SIZE];
+    uint8_t data[APP_BUILTIN_PATHTEST_DATA_SIZE];
     uint32_t code_size = 0U;
     int result;
 
@@ -754,12 +759,23 @@ static int app_builtin_build_pathtest(uint32_t* image_size) {
     kmemset(data, 0, sizeof(data));
     data[0] = '/';
     kmemcpy(data + 80U, "SHELL.BMP", 10U);
+    kmemcpy(data + APP_BUILTIN_PATHTEST_CHDIR_STATUS_OFFSET,
+            "pathtest chdir OK\n", 18U);
+    kmemcpy(data + APP_BUILTIN_PATHTEST_GETCWD_STATUS_OFFSET,
+            "pathtest getcwd OK\n", 19U);
+    kmemcpy(data + APP_BUILTIN_PATHTEST_OPEN_STATUS_OFFSET,
+            "pathtest open OK\n", 17U);
+    kmemcpy(data + APP_BUILTIN_PATHTEST_CLOSE_STATUS_OFFSET,
+            "pathtest close OK\n", 18U);
     result = app_builtin_emit_mov(code, &code_size, APP_BUILTIN_REG_EBX,
                                   USER_DATA_BASE);
     if (result == OK) result = app_builtin_emit_mov(
         code, &code_size, APP_BUILTIN_REG_EAX, APP_SYSCALL_CHDIR);
     if (result == OK) result = app_builtin_emit_int80(code, &code_size);
     if (result == OK) result = app_builtin_emit_exit_on_error(code, &code_size);
+    if (result == OK) result = app_builtin_emit_console_write(
+        code, &code_size,
+        USER_DATA_BASE + APP_BUILTIN_PATHTEST_CHDIR_STATUS_OFFSET, 18U);
     if (result == OK) result = app_builtin_emit_mov(
         code, &code_size, APP_BUILTIN_REG_EBX, USER_DATA_BASE + 16U);
     if (result == OK) result = app_builtin_emit_mov(
@@ -768,6 +784,9 @@ static int app_builtin_build_pathtest(uint32_t* image_size) {
         code, &code_size, APP_BUILTIN_REG_EAX, APP_SYSCALL_GETCWD);
     if (result == OK) result = app_builtin_emit_int80(code, &code_size);
     if (result == OK) result = app_builtin_emit_exit_on_error(code, &code_size);
+    if (result == OK) result = app_builtin_emit_console_write(
+        code, &code_size,
+        USER_DATA_BASE + APP_BUILTIN_PATHTEST_GETCWD_STATUS_OFFSET, 19U);
     if (result == OK) result = app_builtin_emit_mov(
         code, &code_size, APP_BUILTIN_REG_EBX, USER_DATA_BASE + 80U);
     if (result == OK) result = app_builtin_emit_mov(
@@ -778,12 +797,18 @@ static int app_builtin_build_pathtest(uint32_t* image_size) {
         code, &code_size, APP_BUILTIN_REG_EAX, APP_SYSCALL_FILE_OPEN);
     if (result == OK) result = app_builtin_emit_int80(code, &code_size);
     if (result == OK) result = app_builtin_emit_exit_on_error(code, &code_size);
+    if (result == OK) result = app_builtin_emit_console_write(
+        code, &code_size,
+        USER_DATA_BASE + APP_BUILTIN_PATHTEST_OPEN_STATUS_OFFSET, 17U);
     if (result == OK) result = app_builtin_emit_load_ebx(
         code, &code_size, USER_DATA_BASE + 96U);
     if (result == OK) result = app_builtin_emit_mov(
         code, &code_size, APP_BUILTIN_REG_EAX, APP_SYSCALL_FILE_CLOSE);
     if (result == OK) result = app_builtin_emit_int80(code, &code_size);
     if (result == OK) result = app_builtin_emit_exit_on_error(code, &code_size);
+    if (result == OK) result = app_builtin_emit_console_write(
+        code, &code_size,
+        USER_DATA_BASE + APP_BUILTIN_PATHTEST_CLOSE_STATUS_OFFSET, 18U);
     if (result == OK) result = app_builtin_emit_exit_code(
         code, &code_size, APP_EXIT_SUCCESS);
     if (result != OK) return result;
