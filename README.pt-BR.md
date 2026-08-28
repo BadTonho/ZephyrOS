@@ -50,7 +50,7 @@ concluídas, limitações conhecidas e próximos objetivos.
 | AC97 | ✅ | Driver de áudio AC97 (play, stop, volume) |
 | PC Speaker | ✅ | Beep, melodias |
 | Shell | ✅ | Terminal com scrollback, diagnósticos e comandos nativos/ring 3 |
-| App API | 🚧 | API 0.4 com sinais ring 3 e syscalls 0-13; validação da SYNC4 pendente |
+| App API | ✅ | API 0.4 com sinais ring 3, syscalls 0-13 e SYNC4 validada |
 | Editor | ✅ | Editor de texto com syntax highlight, word wrap |
 | Media Player | ✅ | Player de áudio WAV com visualização |
 | Task Manager | ✅ | Monitor de processos/threads/CPU/memória |

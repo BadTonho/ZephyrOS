@@ -127,8 +127,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   com entrada responsiva sob carga. O uso temporario de um processo ring0
   esta aceito em
   [`DT100-002`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-002---kworker-como-processo-ring0).
-  A SYNC4 esta implementada com sinais ring3, App API 0.4, Ctrl+C, `kill` e
-  `sigtest`; sua matriz QEMU permanece pendente antes do encerramento.
+  A SYNC4 esta implementada e validada com sinais ring3, App API 0.4, Ctrl+C,
+  `kill` e `sigtest`; a linha parcial do Shell foi limpa por Ctrl+C e o perfil
+  USB HID permaneceu responsivo. R5 continua pendente no Roadmap 09.
 
 ## K4 validada
 

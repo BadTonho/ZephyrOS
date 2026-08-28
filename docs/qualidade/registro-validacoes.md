@@ -1771,3 +1771,15 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   relatórios malformados, descartes ou cancelamentos. A confirmação de Ctrl+C
   no perfil USB fica associada ao teste anterior; permanece apenas a limpeza
   de uma linha parcial por Ctrl+C no prompt.
+
+- SYNC4: encerramento formal após a matriz funcional do usuário.
+  Concluída em: 2026-08-27 23:53 (America/Sao_Paulo).
+  A captura final confirma que uma linha parcial no Shell foi limpa por
+  `Ctrl+C` e que o prompt reapareceu responsivo. Com as capturas anteriores,
+  ficam confirmados `sigtest` em `OK`, entrega de `SIGINT` ao ZAPP, falha ring3
+  isolada, diagnósticos de IRQ/timer/wait/workqueue/sockets, `regcheck full`,
+  `health check`, `memcheck` e `log check` em `OK`, além de teclado e mouse USB
+  em `READY`. O teste específico de `kill` com PID ring3 não foi executado por
+  ausência de um PID fornecido; nenhum PID foi presumido, e a fixture `sigtest`
+  cobriu as regras de envio e sinais fatais. SYNC4 foi marcada como concluída;
+  R5 permanece pendente no Roadmap 09. Nenhuma dívida técnica nova foi criada.

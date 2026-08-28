@@ -43,7 +43,7 @@ The project is being developed as a real operating system for users. The current
 | AC97 Driver | ✅ | AC97 audio controller driver (Play, Stop, Volume control via DMA) |
 | PC Speaker | ✅ | Frequency tones, beeps, and square-wave melodies |
 | Shell | ✅ | Interactive terminal, scrollback history, diagnostics, Ring 3 executable launcher |
-| App API | 🚧 | Public API 0.4 with Ring 3 signals and syscalls 0-13; SYNC4 validation pending |
+| App API | ✅ | Public API 0.4 with Ring 3 signals, syscalls 0-13, and validated SYNC4 |
 | Text Editor | ✅ | Built-in editor with syntax highlighting and word wrap |
 | Media Player | ✅ | WAV audio player with visual playback indicators |
 | Task Manager | ✅ | Real-time monitoring of processes, threads, CPU, and memory |
