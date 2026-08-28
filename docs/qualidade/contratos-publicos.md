@@ -140,6 +140,11 @@ assinaturas existentes nem a API de processos ring 3. Desde a VFS2, processos
 ring 3 reservam 8 KiB de kernel stack para o caminho de syscall VFS/Storage;
 essa pilha não pertence ao espaço de usuário e não modifica a ABI.
 
+O contrato de `src/include/process/thread.h` reserva quatro paginas (16 KiB)
+para cada stack de `thread_create()`. A capacidade cobre workers cooperativos
+que percorrem VFS, Storage e FAT/LFN, inclusive o pipeline do Shell, sem
+alterar a ABI dos processos ou das aplicações ring 3.
+
 Os contratos de `src/include/core/memory.h` e `src/include/memory/paging.h`
 incluem, desde a K3, estatisticas seguras do heap/PMM e do ciclo de vida de
 diretorios de usuario. Seus detalhes tecnicos permanecem em

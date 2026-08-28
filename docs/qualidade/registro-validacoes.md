@@ -2317,3 +2317,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   Concluída em: 2026-08-28 18:13 (America/Sao_Paulo).
   Os gates prévios foram concluídos e o sistema iniciou no QEMU; a matriz
   funcional de pipes, pipeline e redirecionamento permanece em validação.
+- VFS4: correção preventiva da stack dos workers do pipeline concluída.
+  Concluída em: 2026-08-28 18:20 (America/Sao_Paulo).
+  A execução de `ls > lista.txt` revelou corrupção do heap após percorrer
+  VFS, Storage e FAT/LFN em uma thread com stack de 4 KiB. `thread_create()`
+  passou a reservar quatro páginas (16 KiB), com o contrato técnico atualizado.
+  A matriz funcional deve ser repetida após `make q3check` e `make clean && make`.

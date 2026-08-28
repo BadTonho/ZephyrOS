@@ -235,6 +235,10 @@ mantendo pacotes 0.3 a 0.8 e as syscalls anteriores. A escrita regular da VFS
 permanece integral; somente o sink de redirecionamento usa a operacao atomica
 com limite de 64 KiB.
 
+Os workers cooperativos do pipeline usam a stack de quatro paginas definida
+em `thread.h`, suficiente para os caminhos VFS, Storage e FAT/LFN percorridos
+por `ls`, `cat` e pelo sink de redirecionamento.
+
 A matriz executavel de gates e QEMU permanece pendente da validacao do usuario.
 O criterio de saida somente deve ser marcado apos validar `pipetest`, os
 pipelines, redirecionamentos, recusas de destino e a ausencia de descritores e

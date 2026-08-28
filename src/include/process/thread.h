@@ -2,10 +2,12 @@
 #define THREAD_H
 
 #include "types.h"
+#include "core/memory.h"
 #include "core/wait.h"
 
 #define MAX_THREADS 32
-#define THREAD_STACK_SIZE 4096
+#define THREAD_STACK_PAGES 4U
+#define THREAD_STACK_SIZE (THREAD_STACK_PAGES * PAGE_SIZE)
 #define THREAD_NAME_LENGTH 32
 
 typedef enum {
