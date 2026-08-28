@@ -610,9 +610,8 @@ void process_signal_process_exited(uint32_t pid) {
 
 void process_signal_process_destroyed(uint32_t pid) {
     for (uint32_t index = 0U; index < MAX_PROCESSES; index++) {
-        if (processes[index].state != PROCESS_STATE_UNUSED &&
-            processes[index].parent_pid == pid) {
-            processes[index].parent_pid = 0U;
+        if (processes[index] && processes[index]->parent_pid == pid) {
+            processes[index]->parent_pid = 0U;
         }
     }
 }
@@ -629,10 +628,10 @@ int process_signal_copy_info(process_signal_info_t* output,
     flags = signal_irq_save();
     for (uint32_t index = 0U;
          index < MAX_PROCESSES && count < max_entries; index++) {
-        process_t* process = &processes[index];
+        process_t* process = processes[index];
         process_signal_info_t* info;
 
-        if (process->state == PROCESS_STATE_UNUSED) continue;
+        if (!process) continue;
         info = &output[count++];
         info->pid = process->pid;
         info->parent_pid = process->parent_pid;
@@ -671,9 +670,9 @@ int process_signal_validate_state(void) {
     if (!signal_stats.initialized) return ERR_STATE;
     flags = signal_irq_save();
     for (uint32_t index = 0U; index < MAX_PROCESSES; index++) {
-        process_t* process = &processes[index];
+        process_t* process = processes[index];
 
-        if (process->state == PROCESS_STATE_UNUSED) continue;
+        if (!process) continue;
         result = signal_validate_process(process);
         if (result != OK) break;
     }

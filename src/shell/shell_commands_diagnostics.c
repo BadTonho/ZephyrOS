@@ -32,6 +32,7 @@
 #include "ui/filemanager.h"
 #include "ui/icons.h"
 #include "memory/paging.h"
+#include "memory/slab.h"
 #include "core/string.h"
 #include "core/errors.h"
 #include "core/input.h"
@@ -365,11 +366,13 @@ static void cmd_health_print_kernel(void) {
     memory_heap_stats_t heap;
     memory_pmm_stats_t pmm;
     paging_user_stats_t paging_user;
+    kmem_slab_stats_t slab;
 
     ipc_get_stats(&ipc);
     memory_get_heap_stats(&heap);
     memory_get_pmm_stats(&pmm);
     paging_get_user_stats(&paging_user);
+    kmem_cache_get_stats(&slab);
     video_print("\nEstado do kernel:\n", 0x0B);
     video_print("  Processo atual: PID ", 0x07);
     shell_command_print_num(process_get_current_pid());
@@ -393,6 +396,18 @@ static void cmd_health_print_kernel(void) {
     shell_command_print_num(thread_get_count());
     video_print("  ticks=", 0x08);
     shell_command_print_num(timer_get_ticks());
+    video_print("\n", 0x07);
+
+    video_print("  SLAB: caches=", 0x07);
+    shell_command_print_num(slab.caches);
+    video_print(" slabs=", 0x08);
+    shell_command_print_num(slab.slabs);
+    video_print(" objetos=", 0x08);
+    shell_command_print_num(slab.active_objects);
+    video_print("/", 0x08);
+    shell_command_print_num(slab.capacity);
+    video_print(" estado=", 0x08);
+    video_print(slab.valid ? "READY" : "DEGRADED", slab.valid ? 0x0A : 0x0E);
     video_print("\n", 0x07);
 
     video_print("  IPC: foco=", 0x07);
@@ -432,11 +447,10 @@ static void cmd_health_print_kernel(void) {
     video_print("  UserTest: ", 0x07);
     int user_test_found = 0;
     for (int user_index = 0; user_index < MAX_PROCESSES; user_index++) {
-        if (processes[user_index].user_test &&
-            processes[user_index].state != PROCESS_STATE_UNUSED) {
-            shell_command_print_num(processes[user_index].pid);
+        if (processes[user_index] && processes[user_index]->user_test) {
+            shell_command_print_num(processes[user_index]->pid);
             video_print(" ", 0x08);
-            video_print(shell_process_state_name(processes[user_index].state), 0x0F);
+            video_print(shell_process_state_name(processes[user_index]->state), 0x0F);
             user_test_found = 1;
             break;
         }
@@ -854,9 +868,11 @@ static void cmd_health_print_summary_app_store(void) {
 
 static void cmd_health_print_summary_kernel(void) {
     memory_heap_stats_t heap;
+    kmem_slab_stats_t slab;
     process_signal_stats_t signals;
 
     memory_get_heap_stats(&heap);
+    kmem_cache_get_stats(&slab);
     video_print("  Kernel: proc=", 0x07);
     shell_command_print_num(process_get_count());
     video_print(" READY=", 0x08);
@@ -881,6 +897,14 @@ static void cmd_health_print_summary_kernel(void) {
         video_print(heap.valid ? "READY" : "DEGRADED",
                     heap.valid ? 0x0A : 0x0E);
     }
+    video_print("\n  SLAB: caches=", 0x07);
+    shell_command_print_num(slab.caches);
+    video_print(" objetos=", 0x08);
+    shell_command_print_num(slab.active_objects);
+    video_print("/", 0x08);
+    shell_command_print_num(slab.capacity);
+    video_print(" estado=", 0x08);
+    video_print(slab.valid ? "READY" : "DEGRADED", slab.valid ? 0x0A : 0x0E);
     video_print("\n", 0x07);
     if (process_signal_get_stats(&signals) == OK) {
         video_print("  Sinais: enviados=", 0x07);
@@ -1175,6 +1199,7 @@ static void cmd_health_check_tls(int* issue_count) {
 
 static void cmd_health_check_kernel(int* issue_count) {
     memory_heap_stats_t heap;
+    kmem_slab_stats_t slab;
 
     if (!issue_count) return;
     if (!paging_is_ready()) {
@@ -1191,6 +1216,16 @@ static void cmd_health_check_kernel(int* issue_count) {
         cmd_health_check_print_named_state(
             "Kernel/heap", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
             "heap invalido", issue_count);
+    }
+    kmem_cache_get_stats(&slab);
+    if (!slab.initialized) {
+        cmd_health_check_print_named_state(
+            "Kernel/slab", "DISABLED", SHELL_HEALTH_CHECK_ERROR_COLOR,
+            "slab nao inicializado", issue_count);
+    } else if (!slab.valid) {
+        cmd_health_check_print_named_state(
+            "Kernel/slab", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
+            "slab invalido", issue_count);
     }
 }
 
@@ -4030,6 +4065,53 @@ static void cmd_memcheck_print_result(const char* label, int passed) {
     video_print(passed ? " OK\n" : " ERRO\n", passed ? 0x0A : 0x0C);
 }
 
+static void cmd_slabinfo(const char* args) {
+    kmem_cache_info_t info;
+    uint32_t index;
+
+    if (args && *args) {
+        LOG_WARN("SHELL", "Argumentos ignorados no slabinfo");
+        video_print("Uso: slabinfo\n", 0x0C);
+        return;
+    }
+    video_print("Caches SLAB:\n", 0x0B);
+    for (index = 0U; index < KMEM_CACHE_MAX; index++) {
+        if (kmem_cache_get_info_at(index, &info) != OK || !info.initialized) {
+            continue;
+        }
+        video_print("  ", 0x07);
+        video_print(info.name, 0x0F);
+        video_print(" obj=", 0x08);
+        shell_command_print_num(info.object_size);
+        video_print(" alinh=", 0x08);
+        shell_command_print_num(info.alignment);
+        video_print(" ativos=", 0x08);
+        shell_command_print_num(info.active_objects);
+        video_print("/", 0x08);
+        shell_command_print_num(info.capacity);
+        video_print(" slabs=", 0x08);
+        shell_command_print_num(info.slabs);
+        video_print(" paginas=", 0x08);
+        shell_command_print_num(info.pages);
+        video_print(" falhas=", 0x08);
+        shell_command_print_num(info.allocation_failures);
+        video_print("\n", 0x07);
+    }
+}
+
+static void cmd_slabtest(const char* args) {
+    int result;
+
+    if (args && *args) {
+        LOG_WARN("SHELL", "Argumentos invalidos no slabtest");
+        video_print("Uso: slabtest\n", 0x0C);
+        return;
+    }
+    result = kmem_cache_self_test();
+    video_print("SLABTest: ", 0x0B);
+    video_print(result == OK ? "OK\n" : "ERRO\n", result == OK ? 0x0A : 0x0C);
+}
+
 int shell_diagnostics_run_memcheck(shell_memcheck_result_t* result_out) {
     memory_heap_stats_t heap_before;
     memory_heap_stats_t heap_after;
@@ -4075,9 +4157,11 @@ int shell_diagnostics_run_memcheck(shell_memcheck_result_t* result_out) {
                                    paging_before.active_pages == 0 &&
                                    paging_after.active_directories == 0 &&
                                    paging_after.active_pages == 0;
+    result_out->slab_integrity = kmem_cache_validate() == OK;
 
     if (!result_out->heap_integrity || !result_out->coalescence ||
-        !result_out->pmm_guards || !result_out->user_directories) {
+        !result_out->pmm_guards || !result_out->user_directories ||
+        !result_out->slab_integrity) {
         LOG_ERROR("SHELL", "MemCheck detectou falha de integridade");
         return ERR_STATE;
     }
@@ -4110,6 +4194,7 @@ static void cmd_memcheck(const char* args) {
     cmd_memcheck_print_result("coalescencia", result.coalescence);
     cmd_memcheck_print_result("pmm_guardas", result.pmm_guards);
     cmd_memcheck_print_result("diretorios_user", result.user_directories);
+    cmd_memcheck_print_result("slab_integridade", result.slab_integrity);
     cmd_memcheck_print_result("resultado", run_result == OK);
     video_end_update();
 }
@@ -4136,6 +4221,7 @@ static void cmd_schedcheck(const char* args) {
     cmd_schedcheck_print_result("idle", validation.idle_valid);
     cmd_schedcheck_print_result("tabela_pid", validation.pid_table_valid);
     cmd_schedcheck_print_result("estados", validation.state_table_valid);
+    cmd_schedcheck_print_result("tabela_slab", validation.slab_table_valid);
     cmd_schedcheck_print_result("stacks", validation.stack_table_valid);
     cmd_schedcheck_print_result("resultado", result == OK);
     video_end_update();
@@ -4557,6 +4643,8 @@ SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_acpi, cmd_acpi)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_power, cmd_power)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_kmetrics, cmd_kmetrics)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_memcheck, cmd_memcheck)
+SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_slabinfo, cmd_slabinfo)
+SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_slabtest, cmd_slabtest)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_schedcheck, cmd_schedcheck)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_mouse, cmd_mouse)
 

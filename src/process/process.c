@@ -21,7 +21,9 @@
     (KERNEL_STACK_SIZE + (PROCESS_STACK_GUARD_BYTES * 2U) + \
      PROCESS_KERNEL_STACK_ALIGNMENT)
 
-process_t processes[MAX_PROCESSES];
+process_t* processes[MAX_PROCESSES];
+static kmem_cache_t* process_cache = 0;
+static uint8_t process_available = 0U;
 static process_t* current_process = 0;
 static uint8_t idle_stack[PROCESS_STACK_TEST_STORAGE_SIZE]
     __attribute__((aligned(16)));
@@ -46,6 +48,13 @@ static uint32_t process_event_generation = 0;
 static const app_launch_info_t process_empty_launch = {
     .abi_version = APP_LAUNCH_ABI_VERSION
 };
+
+static int process_slot_index(const process_t* proc) {
+    for (uint32_t index = 0U; index < MAX_PROCESSES; index++) {
+        if (processes[index] == proc) return (int)index;
+    }
+    return -1;
+}
 
 static uint32_t process_stack_align_up(uint32_t value) {
     return (value + PROCESS_KERNEL_STACK_ALIGNMENT - 1U) &
@@ -506,9 +515,11 @@ static void process_initialize_pid_pool(void) {
 }
 
 static void process_discard_new_process(process_t* proc) {
+    int slot;
+
     if (!proc) return;
 
-    if (vfs_fd_table_release(&proc->fd_table) != OK) {
+    if (proc->fd_table.initialized && vfs_fd_table_release(&proc->fd_table) != OK) {
         LOG_ERROR("PROC", "Falha ao liberar descritores de processo descartado");
     }
     if (proc->ipc_wait_channel.initialized) {
@@ -517,7 +528,9 @@ static void process_discard_new_process(process_t* proc) {
     if (proc->pid != 0) process_release_pid(proc->pid);
     process_stack_release(proc);
     kmemset(proc, 0, sizeof(process_t));
-    proc->state = PROCESS_STATE_UNUSED;
+    slot = process_slot_index(proc);
+    if (slot >= 0) processes[slot] = 0;
+    kmem_cache_free(process_cache, proc);
 }
 
 void process_init(void) {
@@ -534,10 +547,15 @@ void process_init(void) {
     user_test_result_pid = 0;
     user_test_result_faulted = 0;
     process_event_generation = 0;
-    for (int i = 0; i < MAX_PROCESSES; i++) {
-        kmemset(&processes[i], 0, sizeof(process_t));
-        processes[i].state = PROCESS_STATE_UNUSED;
+    for (int i = 0; i < MAX_PROCESSES; i++) processes[i] = 0;
+    process_cache = kmem_cache_create("process", sizeof(process_t), 16U);
+    if (!process_cache) {
+        LOG_ERROR("PROC", "Falha ao criar cache de processos");
+        process_available = 0U;
+        scheduler_init();
+        return;
     }
+    process_available = 1U;
     if (process_signal_init() != OK) {
         LOG_ERROR("PROC", "Falha ao inicializar sinais de processos");
     }
@@ -547,7 +565,18 @@ void process_init(void) {
 
 /* A funcao permanece separada do bootstrap para o Idle nao consumir PID. */
 void process_bootstrap_idle(void) {
-    process_t* proc = &processes[0];
+    process_t* proc;
+
+    if (!process_available || !process_cache) {
+        LOG_ERROR("PROC", "Cache de processos indisponivel para o Idle");
+        return;
+    }
+    proc = (process_t*)kmem_cache_alloc(process_cache);
+    if (!proc) {
+        LOG_ERROR("PROC", "Falha ao alocar processo Idle");
+        return;
+    }
+    processes[0] = proc;
     kmemset(proc, 0, sizeof(process_t));
     proc->pid = 0;
     
@@ -560,11 +589,15 @@ void process_bootstrap_idle(void) {
     proc->name[i] = '\0';
     if (process_wait_state_init(proc) != OK) {
         LOG_ERROR("PROC", "Falha ao inicializar espera do Idle");
+        processes[0] = 0;
+        kmem_cache_free(process_cache, proc);
         return;
     }
     if (vfs_fd_table_init(&proc->fd_table) != OK) {
         LOG_ERROR("PROC", "Falha ao inicializar descritores do Idle");
         wait_channel_reset(&proc->ipc_wait_channel);
+        processes[0] = 0;
+        kmem_cache_free(process_cache, proc);
         return;
     }
     
@@ -584,6 +617,8 @@ void process_bootstrap_idle(void) {
             LOG_ERROR("PROC", "Falha ao liberar descritores do Idle");
         }
         proc->state = PROCESS_STATE_UNUSED;
+        processes[0] = 0;
+        kmem_cache_free(process_cache, proc);
         return;
     }
     proc->page_directory = paging_get_current_directory();
@@ -609,6 +644,10 @@ static process_t* process_create_internal(const char* name,
                                           uint32_t stack_size) {
     process_t* proc = 0;
 
+    if (!process_available || !process_cache) {
+        LOG_ERROR("PROC", "Cache de processos indisponivel");
+        return 0;
+    }
     if (!name || !entry_point) {
         LOG_ERROR("PROC", "Parametros invalidos ao criar processo");
         return 0;
@@ -622,9 +661,10 @@ static process_t* process_create_internal(const char* name,
         return 0;
     }
 
-    for (int i = 0; i < MAX_PROCESSES; i++) {
-        if (processes[i].state == PROCESS_STATE_UNUSED) {
-            proc = &processes[i];
+    for (int i = 1; i < MAX_PROCESSES; i++) {
+        if (!processes[i]) {
+            proc = (process_t*)kmem_cache_alloc(process_cache);
+            if (proc) processes[i] = proc;
             break;
         }
     }
@@ -644,15 +684,13 @@ static process_t* process_create_internal(const char* name,
     proc->name[i] = '\0';
     if (process_wait_state_init(proc) != OK) {
         LOG_ERROR("PROC", "Falha ao inicializar espera do processo");
-        kmemset(proc, 0, sizeof(process_t));
-        proc->state = PROCESS_STATE_UNUSED;
+        process_discard_new_process(proc);
         return 0;
     }
     if (vfs_fd_table_init(&proc->fd_table) != OK) {
         LOG_ERROR("PROC", "Falha ao inicializar descritores do processo");
         wait_channel_reset(&proc->ipc_wait_channel);
-        kmemset(proc, 0, sizeof(process_t));
-        proc->state = PROCESS_STATE_UNUSED;
+        process_discard_new_process(proc);
         return 0;
     }
     if (vfs_fd_table_inherit_cwd(&proc->fd_table,
@@ -661,8 +699,7 @@ static process_t* process_create_internal(const char* name,
         LOG_ERROR("PROC", "Falha ao herdar diretorio do processo");
         wait_channel_reset(&proc->ipc_wait_channel);
         vfs_fd_table_release(&proc->fd_table);
-        kmemset(proc, 0, sizeof(process_t));
-        proc->state = PROCESS_STATE_UNUSED;
+        process_discard_new_process(proc);
         return 0;
     }
 
@@ -671,8 +708,7 @@ static process_t* process_create_internal(const char* name,
         LOG_ERROR("PROC", "Falha ao reservar PID do processo");
         wait_channel_reset(&proc->ipc_wait_channel);
         vfs_fd_table_release(&proc->fd_table);
-        kmemset(proc, 0, sizeof(process_t));
-        proc->state = PROCESS_STATE_UNUSED;
+        process_discard_new_process(proc);
         return 0;
     }
     /* O processo permanece invisivel ao scheduler ate o contexto estar pronto. */
@@ -760,16 +796,8 @@ process_t* process_create_with_stack_size(const char* name,
 }
 
 static int process_pointer_valid(const process_t* proc) {
-    uint32_t address;
-    uint32_t start;
-    uint32_t end;
-
-    if (!proc) return 0;
-    address = (uint32_t)proc;
-    start = (uint32_t)&processes[0];
-    end = start + sizeof(processes);
-    return address >= start && address < end &&
-           ((address - start) % sizeof(process_t)) == 0;
+    return proc && process_slot_index(proc) >= 0 &&
+           kmem_cache_owns(process_cache, proc);
 }
 
 static const char user_test_message[] = "Zephyr ring3 OK\n";
@@ -834,7 +862,7 @@ static void process_switch_after_termination(void) {
 
     process_stack_verify_or_panic(previous);
     if (!next || next == previous) {
-        next = &processes[0];
+        next = processes[0];
     }
     if (next == previous) {
         LOG_ERROR("PROC", "Nao foi possivel sair de processo encerrado");
@@ -913,9 +941,9 @@ int process_reap_finished_user(void) {
     }
 
     for (int i = 0; i < MAX_PROCESSES; i++) {
-        process_t* proc = &processes[i];
+        process_t* proc = processes[i];
 
-        if (!proc->context.user_mode ||
+        if (!proc || !proc->context.user_mode ||
             proc->state != PROCESS_STATE_ZOMBIE) continue;
         if (proc->user_test && user_test_result_pending) {
             continue;
@@ -932,9 +960,8 @@ static int process_user_reap_previous_test(void) {
     if (result != OK) return result;
 
     for (int i = 0; i < MAX_PROCESSES; i++) {
-        if (!processes[i].user_test ||
-            processes[i].state == PROCESS_STATE_UNUSED) continue;
-        if (processes[i].state != PROCESS_STATE_ZOMBIE) {
+        if (!processes[i] || !processes[i]->user_test) continue;
+        if (processes[i]->state != PROCESS_STATE_ZOMBIE) {
             LOG_WARN("PROC", "Teste ring 3 ja esta em execucao");
             return ERR_STATE;
         }
@@ -1074,12 +1101,14 @@ static int process_user_initialize(process_t* proc, page_directory_t* dir,
     if (!proc || !dir || !name ||
         entry_offset >= PAGE_SIZE) {
         LOG_ERROR("PROC", "Parametros invalidos para processo ring 3");
+        if (proc) process_discard_new_process(proc);
         return ERR_NULL;
     }
     kmemset(proc, 0, sizeof(process_t));
     proc->pid = process_allocate_pid();
     if (!proc->pid) {
         LOG_ERROR("PROC", "Falha ao reservar PID do processo ring 3");
+        process_discard_new_process(proc);
         return ERR_MEM;
     }
     while (name[i] && i < PROCESS_NAME_LENGTH - 1) {
@@ -1088,39 +1117,26 @@ static int process_user_initialize(process_t* proc, page_directory_t* dir,
     }
     proc->name[i] = '\0';
     if (process_wait_state_init(proc) != OK) {
-        if (proc->ipc_wait_channel.initialized) {
-            wait_channel_reset(&proc->ipc_wait_channel);
-        }
-        process_release_pid(proc->pid);
-        kmemset(proc, 0, sizeof(process_t));
+        process_discard_new_process(proc);
         LOG_ERROR("PROC", "Falha ao inicializar espera do processo ring 3");
         return ERR_STATE;
     }
     if (vfs_fd_table_init(&proc->fd_table) != OK) {
         LOG_ERROR("PROC", "Falha ao inicializar descritores ring 3");
-        wait_channel_reset(&proc->ipc_wait_channel);
-        process_release_pid(proc->pid);
-        kmemset(proc, 0, sizeof(process_t));
+        process_discard_new_process(proc);
         return ERR_STATE;
     }
     if (vfs_fd_table_inherit_cwd(&proc->fd_table,
                                  current_process ?
                                  &current_process->fd_table : 0) != OK) {
         LOG_ERROR("PROC", "Falha ao herdar diretorio ring 3");
-        wait_channel_reset(&proc->ipc_wait_channel);
-        vfs_fd_table_release(&proc->fd_table);
-        process_release_pid(proc->pid);
-        kmemset(proc, 0, sizeof(process_t));
+        process_discard_new_process(proc);
         return ERR_STATE;
     }
     proc->page_directory = dir;
     result = process_stack_allocate(proc, PROCESS_USER_KERNEL_STACK_SIZE);
     if (result != OK) {
-        wait_channel_reset(&proc->ipc_wait_channel);
-        vfs_fd_table_release(&proc->fd_table);
-        process_release_pid(proc->pid);
-        kmemset(proc, 0, sizeof(process_t));
-        proc->state = PROCESS_STATE_UNUSED;
+        process_discard_new_process(proc);
         return result;
     }
     entry_point = USER_CODE_BASE + entry_offset;
@@ -1168,6 +1184,10 @@ static int process_create_user_image_internal(const char* name,
     page_directory_t* kernel_dir;
     int result;
 
+    if (!process_available || !process_cache) {
+        LOG_ERROR("PROC", "Cache de processos indisponivel para ring 3");
+        return ERR_UNAVAILABLE;
+    }
     if (!paging_is_ready() || !tss_is_ready() ||
         !syscall_user_mode_is_enabled()) {
         LOG_WARN("PROC", "Modo usuario indisponivel para processo");
@@ -1189,9 +1209,10 @@ static int process_create_user_image_internal(const char* name,
         if (result != OK) return result;
     }
 
-    for (int i = 0; i < MAX_PROCESSES; i++) {
-        if (processes[i].state == PROCESS_STATE_UNUSED) {
-            proc = &processes[i];
+    for (int i = 1; i < MAX_PROCESSES; i++) {
+        if (!processes[i]) {
+            proc = (process_t*)kmem_cache_alloc(process_cache);
+            if (proc) processes[i] = proc;
             break;
         }
     }
@@ -1204,17 +1225,20 @@ static int process_create_user_image_internal(const char* name,
     dir = paging_create_user_directory();
     if (!dir) {
         LOG_ERROR("PROC", "Falha ao criar espaco do teste ring 3");
+        process_discard_new_process(proc);
         return ERR_MEM;
     }
     result = process_user_map_image(dir);
     if (result != OK) {
         paging_free_user_directory(dir);
+        process_discard_new_process(proc);
         return result;
     }
     result = process_user_load_image(dir, kernel_dir, code, code_size,
                                      data, data_size, launch);
     if (result != OK) {
         paging_free_user_directory(dir);
+        process_discard_new_process(proc);
         return result;
     }
     result = process_user_initialize(proc, dir, name,
@@ -1298,8 +1322,7 @@ int process_cancel_user_test(uint32_t pid, uint32_t exit_code) {
 uint32_t process_get_user_count(void) {
     uint32_t count = 0;
     for (int i = 0; i < MAX_PROCESSES; i++) {
-        if (processes[i].state != PROCESS_STATE_UNUSED &&
-            processes[i].context.user_mode) count++;
+        if (processes[i] && processes[i]->context.user_mode) count++;
     }
     return count;
 }
@@ -1562,7 +1585,11 @@ void process_destroy(process_t* proc) {
     }
     if (process_count > 0) process_count--;
     kmemset(proc, 0, sizeof(process_t));
-    proc->state = PROCESS_STATE_UNUSED;
+    {
+        int slot = process_slot_index(proc);
+        if (slot >= 0) processes[slot] = 0;
+    }
+    kmem_cache_free(process_cache, proc);
     process_release_pid(pid);
     LOG_DEBUG("PROC", "Processo destruido");
 }
@@ -1615,9 +1642,10 @@ int process_stack_validate_all(process_stack_validation_t* validation) {
     }
     kmemset(validation, 0, sizeof(process_stack_validation_t));
     for (uint32_t index = 0U; index < MAX_PROCESSES; index++) {
-        process_t* proc = &processes[index];
+        process_t* proc = processes[index];
         int observe_result;
 
+        if (!proc) continue;
         if (proc->state == PROCESS_STATE_UNUSED) continue;
         validation->checked++;
         observe_result = process_stack_observe(proc, &info, 1U, 1U);
@@ -1738,9 +1766,8 @@ int process_get_last_user_fault(process_user_fault_summary_t* summary) {
 
 process_t* process_get_by_pid(uint32_t pid) {
     for (int i = 0; i < MAX_PROCESSES; i++) {
-        if (processes[i].state != PROCESS_STATE_UNUSED &&
-            processes[i].pid == pid) {
-            return &processes[i];
+        if (processes[i] && processes[i]->pid == pid) {
+            return processes[i];
         }
     }
 
@@ -1769,7 +1796,7 @@ uint32_t process_get_state_count(process_state_t state) {
     }
 
     for (int i = 0; i < MAX_PROCESSES; i++) {
-        if (processes[i].state == state) count++;
+        if (processes[i] && processes[i]->state == state) count++;
     }
     return count;
 }
@@ -1783,9 +1810,9 @@ static process_t* scheduler_find_next_ready(void) {
 
     for (int step = 1; step < MAX_PROCESSES; step++) {
         int idx = 1 + ((start_idx - 1 + step) % (MAX_PROCESSES - 1));
-        if (processes[idx].state == PROCESS_STATE_READY) {
+        if (processes[idx] && processes[idx]->state == PROCESS_STATE_READY) {
             last_scheduled_idx = idx;
-            return &processes[idx];
+            return processes[idx];
         }
     }
 
@@ -1794,11 +1821,11 @@ static process_t* scheduler_find_next_ready(void) {
 
 process_t* scheduler_schedule(void) {
     process_t* next = scheduler_find_next_ready();
-    process_t* idle = &processes[0];
+    process_t* idle = processes[0];
 
     if (next) return next;
-    if (idle->state == PROCESS_STATE_READY ||
-        idle->state == PROCESS_STATE_RUNNING) {
+    if (idle && (idle->state == PROCESS_STATE_READY ||
+        idle->state == PROCESS_STATE_RUNNING)) {
         scheduler_idle_fallbacks++;
         return idle;
     }
@@ -1979,10 +2006,11 @@ int process_copy_waiters(wait_info_t* output, uint32_t max_entries,
     flags = process_wait_irq_save();
     for (uint32_t index = 0U; index < MAX_PROCESSES && count < max_entries;
          index++) {
-        process_t* proc = &processes[index];
+        process_t* proc = processes[index];
         wait_info_t* info;
 
-        if (!proc->wait_active || proc->state != PROCESS_STATE_BLOCKED) {
+        if (!proc || !proc->wait_active ||
+            proc->state != PROCESS_STATE_BLOCKED) {
             continue;
         }
         info = &output[count++];
@@ -2026,22 +2054,24 @@ void scheduler_tick(void) {
     now = timer_get_ticks();
 
     for (int i = 0; i < MAX_PROCESSES; i++) {
-        if (processes[i].state == PROCESS_STATE_BLOCKED) {
-            if (processes[i].wait_active) {
-                if (!processes[i].wait_channel ||
-                    !processes[i].wait_channel->available) {
-                    process_wait_clear(&processes[i],
+        process_t* proc = processes[i];
+
+        if (!proc) continue;
+        if (proc->state == PROCESS_STATE_BLOCKED) {
+            if (proc->wait_active) {
+                if (!proc->wait_channel || !proc->wait_channel->available) {
+                    process_wait_clear(proc,
                                        WAIT_REASON_DEVICE_UNAVAILABLE);
-                } else if (process_wait_deadline_reached(&processes[i], now)) {
-                    process_wait_clear(&processes[i], WAIT_REASON_TIMEOUT);
-                } else if (processes[i].wait_deadline_active) {
-                    processes[i].wait_ticks = processes[i].wait_deadline - now;
+                } else if (process_wait_deadline_reached(proc, now)) {
+                    process_wait_clear(proc, WAIT_REASON_TIMEOUT);
+                } else if (proc->wait_deadline_active) {
+                    proc->wait_ticks = proc->wait_deadline - now;
                 }
-            } else if (processes[i].wait_ticks > 0) {
-                processes[i].wait_ticks--;
-                if (processes[i].wait_ticks == 0) {
-                    processes[i].state = PROCESS_STATE_READY;
-                    processes[i].wait_reason = WAIT_REASON_TIMEOUT;
+            } else if (proc->wait_ticks > 0) {
+                proc->wait_ticks--;
+                if (proc->wait_ticks == 0) {
+                    proc->state = PROCESS_STATE_READY;
+                    proc->wait_reason = WAIT_REASON_TIMEOUT;
                 }
             }
         }
@@ -2068,10 +2098,9 @@ static uint32_t scheduler_validate_pid_table(void) {
     uint32_t valid = 1;
 
     for (int i = 0; i < MAX_PROCESSES; i++) {
-        process_t* proc = &processes[i];
+        process_t* proc = processes[i];
 
-        if (proc->state == PROCESS_STATE_UNUSED) {
-            if (proc->pid != 0) valid = 0;
+        if (!proc) {
             continue;
         }
 
@@ -2080,8 +2109,8 @@ static uint32_t scheduler_validate_pid_table(void) {
             valid = 0;
         }
         for (int previous = 0; previous < i; previous++) {
-            if (processes[previous].state != PROCESS_STATE_UNUSED &&
-                processes[previous].pid == proc->pid) {
+            if (processes[previous] &&
+                processes[previous]->pid == proc->pid) {
                 valid = 0;
             }
         }
@@ -2094,8 +2123,9 @@ static uint32_t scheduler_validate_states(void) {
     uint32_t valid = 1;
 
     for (int i = 0; i < MAX_PROCESSES; i++) {
-        process_t* proc = &processes[i];
+        process_t* proc = processes[i];
 
+        if (!proc) continue;
         if (proc->state > PROCESS_STATE_ZOMBIE) valid = 0;
         if (proc->state == PROCESS_STATE_BLOCKED && proc->wait_ticks == 0 &&
             !proc->context.user_mode && !proc->wait_active) {
@@ -2110,7 +2140,7 @@ static uint32_t scheduler_validate_states(void) {
 }
 
 int scheduler_validate_invariants(scheduler_validation_t* validation) {
-    process_t* idle = &processes[0];
+    process_t* idle = processes[0];
     process_stack_validation_t stack_validation;
     int stack_result;
 
@@ -2123,11 +2153,12 @@ int scheduler_validate_invariants(scheduler_validation_t* validation) {
     validation->current_valid = process_pointer_valid(current_process) &&
                                 current_process->state == PROCESS_STATE_RUNNING &&
                                 process_get_state_count(PROCESS_STATE_RUNNING) == 1;
-    validation->idle_valid = idle->pid == 0 && !idle->context.user_mode &&
+    validation->idle_valid = idle && idle->pid == 0 && !idle->context.user_mode &&
                              (idle->state == PROCESS_STATE_READY ||
                               idle->state == PROCESS_STATE_RUNNING);
     validation->pid_table_valid = scheduler_validate_pid_table();
     validation->state_table_valid = scheduler_validate_states();
+    validation->slab_table_valid = kmem_cache_validate() == OK;
     stack_result = process_stack_validate_all(&stack_validation);
     validation->stack_table_valid = stack_result == OK &&
                                     stack_validation.checked == process_count &&
@@ -2139,10 +2170,11 @@ int scheduler_validate_invariants(scheduler_validation_t* validation) {
     if (!validation->idle_valid) LOG_ERROR("PROC", "Invariante do Idle violada");
     if (!validation->pid_table_valid) LOG_ERROR("PROC", "Invariante da tabela de PIDs violada");
     if (!validation->state_table_valid) LOG_ERROR("PROC", "Invariante dos estados violada");
+    if (!validation->slab_table_valid) LOG_ERROR("PROC", "Invariante dos caches SLAB violada");
     if (!validation->stack_table_valid) LOG_ERROR("PROC", "Invariante das stacks violada");
     if (!validation->current_valid || !validation->idle_valid ||
         !validation->pid_table_valid || !validation->state_table_valid ||
-        !validation->stack_table_valid) {
+        !validation->slab_table_valid || !validation->stack_table_valid) {
         return stack_result == OK ? ERR_STATE : stack_result;
     }
 

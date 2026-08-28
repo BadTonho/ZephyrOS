@@ -12,6 +12,7 @@ O ZephyrOS gerencia memória em duas camadas:
 ```
 src/memory/
 ├── memory.c         → Alocador de memória física + heap
+├── slab.c           → Caches SLAB/SLUB de objetos fixos
 ├── paging.c         → Page tables (memória virtual)
 └── compress.c       → Compressão LZSS (compactação de RAM)
 ```
@@ -208,6 +209,29 @@ espaco livre, o resultado e `0`. A leitura das estatisticas e limitada por
 faixa e por encadeamento fisico esperado: metadata ou links invalidos deixam
 o estado de integridade invalido e retornam controle ao chamador sem percorrer
 um ciclo corrompido.
+
+---
+
+## Alocador SLAB/SLUB (MM1)
+
+`kmem_cache_init()` registra os metadados estáticos dos caches. Cada cache pode
+usar até 128 slabs globais, com páginas de 4 KiB obtidas por
+`pmm_alloc_pages()` somente depois de `paging_init()`. O registro suporta até
+16 caches e cada slab comporta pelo menos oito e no máximo 128 objetos.
+
+`kmem_cache_create()` valida tamanho e alinhamento potência de dois até
+`PAGE_SIZE`. A capacidade usa páginas arredondadas e os objetos são mantidos
+em listas `full`, `partial` e `empty`, com bitmap de ocupação e freelist.
+Slabs vazios permanecem reservados para reutilização até
+`kmem_cache_destroy()`; destruição com objetos ativos, ponteiros externos e
+double free são recusados, contabilizados e registrados.
+
+`process_t`, `thread_t`, `file_t`, `vnode_t` e os pacotes internos RX/TX da
+Ethernet usam caches dedicados. Stacks continuam em `kmalloc` por possuírem
+tamanho variável, canários e limites próprios. `slabinfo`, `slabtest`,
+`health`, `memcheck`, `schedcheck`, `regcheck full` e `vfs_validate_state()`
+expõem ou validam o estado do alocador. A ABI ring 3 e as assinaturas
+funcionais existentes permanecem compatíveis.
 
 ---
 

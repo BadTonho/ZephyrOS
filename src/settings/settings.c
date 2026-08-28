@@ -739,12 +739,12 @@ static void execute_system_action(int option) {
         case 2: {
             video_clear();
             video_print_at(10, 8, "Processos Ativos:", 0x0F);
-            extern process_t processes[];
+            extern process_t* processes[];
             extern uint32_t process_count;
             int y = 10;
             for (int i = 0; i < 64 && y < 20; i++) {
-                if (processes[i].state != 0) {
-                    video_print_at(12, y, processes[i].name, 0x0B);
+                if (processes[i] && processes[i]->state != 0) {
+                    video_print_at(12, y, processes[i]->name, 0x0B);
                     y++;
                 }
             }
@@ -1096,14 +1096,14 @@ static void settings_gui_draw_icon_editor(void) {
 
 static void settings_gui_draw_process_list(int x, int y, int width) {
     int row = 0;
-    extern process_t processes[];
+    extern process_t* processes[];
 
     for (int i = 0; i < 64 && row < 8; i++) {
-        if (processes[i].state == PROCESS_STATE_UNUSED) continue;
+        if (!processes[i]) continue;
         gui_draw_text((uint32_t)x, (uint32_t)(y + row * 24),
-                      processes[i].name, GUI_MODERN_COLOR_TEXT);
+                      processes[i]->name, GUI_MODERN_COLOR_TEXT);
         settings_gui_draw_num(x + width - 80, y + row * 24,
-                              processes[i].pid, GUI_MODERN_COLOR_TEXT);
+                              processes[i]->pid, GUI_MODERN_COLOR_TEXT);
         row++;
     }
     if (row == 0) {

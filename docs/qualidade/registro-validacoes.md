@@ -2350,3 +2350,49 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   build, pipelines, redirecionamentos, recusas controladas e inspeções de
   `vfs status`/`wqinfo` já registrados, a matriz VFS4 foi encerrada sem
   descritores, pipes ou waiters residuais observados e sem alterar o bootloader.
+
+- MM1: alocador SLAB/SLUB e contratos implementados.
+  Concluída em: 2026-08-28 19:17 (America/Sao_Paulo).
+  Foram criados `slab.h` e `slab.c` com metadados estaticos, limites de caches
+  e slabs, listas `full`/`partial`/`empty`, bitmap, freelist, estatisticas,
+  validacao de posse, deteccao de ponteiro invalido e double free, destruicao
+  protegida e autoteste. A inicializacao foi posicionada depois de
+  `memory_init()` e antes da App API, sem alterar `src/boot/boot.asm`.
+
+- MM1: migracao estrutural e diagnosticos implementados.
+  Concluída em: 2026-08-28 19:17 (America/Sao_Paulo).
+  `process_t`, `thread_t`, `file_t`, `vnode_t` e `net_packet_t` passaram a usar
+  caches dedicados; stacks continuam no `kmalloc`. `health`, `memcheck`,
+  `schedcheck`, `regcheck`, `vfs_validate_state()`, `slabinfo` e `slabtest`
+  foram integrados, com liberacao dos objetos nos caminhos de erro e de
+  destruicao.
+
+- MM1: revisao estatica e documentacao atualizadas.
+  Concluída em: 2026-08-28 19:17 (America/Sao_Paulo).
+  Makefile, contratos publicos, documentacao de memoria, kernel, processos,
+  VFS, Shell, Roadmap 11 e roadmap geral foram atualizados. A revisao
+  `git diff --check` nao encontrou erros de whitespace. Nenhum build, teste ou
+  QEMU foi executado pelo agente; gates e matriz funcional permanecem sob
+  responsabilidade do usuario.
+
+- MM1: estado de falha de inicializacao publicado no kernel.
+  Concluída em: 2026-08-28 19:20 (America/Sao_Paulo).
+  O kernel passou a interromper o boot quando o processo Idle nao pode ser
+  criado e a publicar o scheduler de threads como indisponivel quando o cache
+  `thread` falha. `thread_is_ready()` preserva a assinatura legada de
+  `thread_init()` e torna o estado observavel sem confundir tabela vazia com
+  falha de inicializacao.
+
+- MM1: auditoria final do alocador e caminhos de liberacao concluida.
+  Concluída em: 2026-08-28 19:28 (America/Sao_Paulo).
+  A validacao estrutural das listas `full`/`partial`/`empty` foi reforcada e
+  a transicao parcial-para-parcial deixou de duplicar slabs nas listas. O
+  `slabtest` passou a verificar a devolucao das paginas do PMM apos destruir
+  o cache. A revisao estatica permanece sem erros de whitespace; nenhum build,
+  teste executavel ou QEMU foi realizado pelo agente.
+
+- MM1: caminho de erro de processo ring 3 corrigido.
+  Concluída em: 2026-08-28 19:29 (America/Sao_Paulo).
+  A falha na reserva de PID durante a inicializacao agora descarta o objeto
+  `process_t` do cache e libera seus recursos parciais, preservando a limpeza
+  completa da migracao estrutural.

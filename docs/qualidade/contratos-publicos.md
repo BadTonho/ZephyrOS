@@ -113,6 +113,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/fs/wav.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/memory/compress.h` | `docs/06-memoria/memoria.md` |
 | `src/include/memory/paging.h` | `docs/06-memoria/memoria.md` |
+| `src/include/memory/slab.h` | `docs/06-memoria/memoria.md` |
 | `src/include/process/process.h` | `docs/07-processos/processos.md` |
 | `src/include/process/signal.h` | `docs/07-processos/processos.md` |
 | `src/include/process/thread.h` | `docs/07-processos/processos.md` |
@@ -423,6 +424,18 @@ a versao 0.8 e `syscall.h` acrescenta o numero 18 sem renumerar os anteriores.
 Pacotes 0.3 a 0.8 permanecem aceitos. `shell_pipeline.h` publica o bridge
 interno de I/O, `grep` e o autoteste `pipetest`, sem alterar as assinaturas de
 `shell.h`.
+
+Desde a MM1, `slab.h` publica o ciclo de vida de caches de objetos fixos,
+consultas de estatisticas, verificacao de posse, validacao global e autoteste.
+`kmem_cache_destroy()` retorna erro quando o cache e invalido ou ainda possui
+objetos ativos. Os metadados dos caches sao estaticos; as paginas dos slabs
+sao obtidas e devolvidas ao PMM. A migracao das tabelas internas para ponteiros
+nao altera a ABI ring 3 nem as assinaturas publicas de processo, thread ou VFS.
+`net_packet_t` permanece interno a Ethernet. `shell_runtime.h` acrescenta
+`slab_integrity` ao resultado interno de `memcheck`.
+`thread.h` acrescenta `thread_is_ready()` para publicar o estado de
+inicializacao do scheduler cooperativo; a assinatura legada de `thread_init()`
+permanece intacta.
 
 O cancelamento F12 de um ZAPP bloqueado em stdin usa os campos append-only
 `cancel_exit_code` e `cancel_pending` de `process_t`. `process_cancel_user()`

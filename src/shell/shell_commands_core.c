@@ -301,6 +301,8 @@ static void cmd_help(void) {
     video_print("  cd       - Altera o diretorio atual\n", 0x07);
     video_print("  echo     - Exibe texto\n", 0x07);
     video_print("  mem      - Mostra informacoes de memoria\n", 0x07);
+    video_print("  slabinfo - Mostra caches SLAB\n", 0x07);
+    video_print("  slabtest - Valida alocador SLAB\n", 0x07);
     video_print("  procs    - Mostra processos ativos\n", 0x07);
     video_print("  stack status|check - Diagnostica stacks dos processos\n", 0x07);
     video_print("  threads  - Mostra threads ativas\n", 0x07);
@@ -555,19 +557,19 @@ static void cmd_mem_native(void) {
 static void cmd_procs(void) {
     shell_pipeline_write("Processos ativos:\n", 0x0B);
 
-    extern process_t processes[];
+    extern process_t* processes[];
     extern uint32_t process_count;
 
     const char* state_names[] = {"UNUSED", "READY", "RUNNING", "BLOCKED", "ZOMBIE"};
 
     for (int i = 0; i < 64; i++) {
-        if (processes[i].state != 0) {
+        if (processes[i] && processes[i]->state != 0) {
             shell_pipeline_write("  PID ", 0x07);
-            shell_pipeline_print_num(processes[i].pid);
+            shell_pipeline_print_num(processes[i]->pid);
             shell_pipeline_write("  ", 0x07);
-            shell_pipeline_write(processes[i].name, 0x0B);
+            shell_pipeline_write(processes[i]->name, 0x0B);
             shell_pipeline_write("  ", 0x07);
-            shell_pipeline_write(state_names[processes[i].state], 0x08);
+            shell_pipeline_write(state_names[processes[i]->state], 0x08);
             shell_pipeline_write("\n", 0x07);
         }
     }
@@ -612,19 +614,19 @@ static void cmd_stack(const char* arguments) {
 
     if (!arguments || !*arguments ||
         shell_command_args_equal(arguments, "status")) {
-        extern process_t processes[];
+        extern process_t* processes[];
 
         video_print("Stacks dos processos:\n", 0x0B);
         for (uint32_t index = 0U; index < MAX_PROCESSES; index++) {
             process_stack_info_t info;
 
-            if (processes[index].state == PROCESS_STATE_UNUSED) continue;
-            result = process_stack_get_info(processes[index].pid, &info);
+            if (!processes[index]) continue;
+            result = process_stack_get_info(processes[index]->pid, &info);
             if (result == OK || result == ERR_OVERFLOW) {
                 shell_stack_print_info(&info);
             } else {
                 video_print("  PID ", 0x0C);
-                shell_command_print_num(processes[index].pid);
+                shell_command_print_num(processes[index]->pid);
                 video_print(": diagnostico indisponivel (codigo ", 0x0C);
                 shell_command_print_num((uint32_t)result);
                 video_print(")\n", 0x0C);

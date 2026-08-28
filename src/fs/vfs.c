@@ -10,6 +10,7 @@
 #include "core/spinlock.h"
 #include "core/string.h"
 #include "core/wait.h"
+#include "memory/slab.h"
 #include "process/process.h"
 
 #define VFS_TEST_DATA_SIZE 8U
@@ -43,14 +44,16 @@ typedef struct vfs_pipe {
     uint8_t used;
 } pipe_t;
 
-static file_t vfs_file_pool[VFS_MAX_OPEN_FILES];
-static vnode_t vfs_vnode_pool[VFS_MAX_OPEN_FILES];
+static file_t* vfs_file_pool[VFS_MAX_OPEN_FILES];
+static vnode_t* vfs_vnode_pool[VFS_MAX_OPEN_FILES];
 static vfs_file_context_t vfs_file_contexts[VFS_MAX_OPEN_FILES];
 static pipe_t vfs_pipe_pool[VFS_MAX_PIPES];
 static vfs_lookup_result_t vfs_test_root_lookup;
 static vfs_lookup_result_t vfs_test_virtual_lookup;
 static vfs_dir_entry_t vfs_test_dir_entries[VFS_MAX_DIR_ENTRIES];
-static vnode_t vfs_stdio_nodes[3];
+static vnode_t* vfs_stdio_nodes[3];
+static kmem_cache_t* vfs_file_cache = 0;
+static kmem_cache_t* vfs_vnode_cache = 0;
 static spinlock_t vfs_lock;
 static vfs_status_t vfs_metrics;
 static int vfs_ready;
@@ -119,6 +122,39 @@ static int vfs_mode_valid(uint32_t mode) {
            mode == VFS_MODE_READ_WRITE;
 }
 
+static int vfs_initialize_stdio_nodes(void) {
+    static const char* names[3] = {"stdin", "stdout", "stderr"};
+    uint32_t index;
+
+    for (index = 0U; index < 3U; index++) {
+        vnode_t* vnode;
+
+        spinlock_acquire(&vfs_lock);
+        vnode = vfs_stdio_nodes[index];
+        spinlock_release(&vfs_lock);
+        if (vnode) continue;
+        vnode = (vnode_t*)kmem_cache_alloc(vfs_vnode_cache);
+        if (!vnode) {
+            LOG_ERROR("FS", "Falha ao alocar vnode padrao VFS");
+            return ERR_MEM;
+        }
+        vnode->type = index == 0U ? VFS_NODE_STDIN :
+                      index == 1U ? VFS_NODE_STDOUT : VFS_NODE_STDERR;
+        vnode->operations = index == 0U ?
+            &vfs_stdin_operations : &vfs_stdout_operations;
+        vfs_copy_text(vnode->path, VFS_MAX_PATH, names[index]);
+        spinlock_acquire(&vfs_lock);
+        if (!vfs_stdio_nodes[index]) vfs_stdio_nodes[index] = vnode;
+        else {
+            spinlock_release(&vfs_lock);
+            kmem_cache_free(vfs_vnode_cache, vnode);
+            continue;
+        }
+        spinlock_release(&vfs_lock);
+    }
+    return OK;
+}
+
 static int vfs_get_current_table(vfs_fd_table_t** table_out) {
     process_t* current;
 
@@ -155,42 +191,74 @@ static int vfs_find_free_fd(vfs_fd_table_t* table) {
 static int vfs_allocate_file(file_t** file_out, vnode_t** vnode_out,
                              uint8_t state) {
     uint32_t index;
+    file_t* file;
+    vnode_t* vnode;
 
-    if (!file_out || !vnode_out) return ERR_NULL;
-    spinlock_acquire(&vfs_lock);
+    if (!file_out || !vnode_out) {
+        LOG_ERROR("FS", "Destinos nulos ao alocar arquivo VFS");
+        return ERR_NULL;
+    }
     for (index = 0U; index < VFS_MAX_OPEN_FILES; index++) {
-        if (!vfs_file_pool[index].used) {
-            kmemset(&vfs_file_pool[index], 0, sizeof(file_t));
-            kmemset(&vfs_vnode_pool[index], 0, sizeof(vnode_t));
-            kmemset(&vfs_file_contexts[index], 0,
-                    sizeof(vfs_file_context_t));
-            vfs_file_pool[index].used = state;
-            vfs_file_pool[index].slot = index;
-            vfs_file_pool[index].vnode = &vfs_vnode_pool[index];
-            *file_out = &vfs_file_pool[index];
-            *vnode_out = &vfs_vnode_pool[index];
+        spinlock_acquire(&vfs_lock);
+        if (vfs_file_pool[index] || vfs_vnode_pool[index]) {
             spinlock_release(&vfs_lock);
-            return OK;
+            continue;
         }
+        spinlock_release(&vfs_lock);
+        file = (file_t*)kmem_cache_alloc(vfs_file_cache);
+        vnode = (vnode_t*)kmem_cache_alloc(vfs_vnode_cache);
+        if (!file || !vnode) {
+            if (file) kmem_cache_free(vfs_file_cache, file);
+            if (vnode) kmem_cache_free(vfs_vnode_cache, vnode);
+            vfs_metrics.failures++;
+            LOG_ERROR("FS", "Falha ao alocar objetos VFS");
+            return ERR_MEM;
+        }
+        file->used = state;
+        file->slot = index;
+        file->vnode = vnode;
+        spinlock_acquire(&vfs_lock);
+        if (vfs_file_pool[index] || vfs_vnode_pool[index]) {
+            spinlock_release(&vfs_lock);
+            kmem_cache_free(vfs_file_cache, file);
+            kmem_cache_free(vfs_vnode_cache, vnode);
+            continue;
+        }
+        kmemset(&vfs_file_contexts[index], 0,
+                sizeof(vfs_file_context_t));
+        vfs_file_pool[index] = file;
+        vfs_vnode_pool[index] = vnode;
+        *file_out = file;
+        *vnode_out = vnode;
+        spinlock_release(&vfs_lock);
+        return OK;
     }
     vfs_metrics.failures++;
-    spinlock_release(&vfs_lock);
     LOG_WARN("FS", "Pool global de arquivos VFS cheio");
     return ERR_UNAVAILABLE;
 }
 
 static void vfs_release_file(file_t* file) {
     uint32_t slot;
+    vnode_t* vnode;
 
     if (!file || file->persistent || !file->used) return;
     slot = file->slot;
     if (slot >= VFS_MAX_OPEN_FILES) return;
     spinlock_acquire(&vfs_lock);
-    kmemset(&vfs_file_pool[slot], 0, sizeof(file_t));
-    kmemset(&vfs_vnode_pool[slot], 0, sizeof(vnode_t));
+    if (vfs_file_pool[slot] != file) {
+        spinlock_release(&vfs_lock);
+        LOG_ERROR("FS", "Arquivo VFS nao pertence ao slot informado");
+        return;
+    }
+    vnode = vfs_vnode_pool[slot];
+    vfs_file_pool[slot] = 0;
+    vfs_vnode_pool[slot] = 0;
     kmemset(&vfs_file_contexts[slot], 0,
             sizeof(vfs_file_context_t));
     spinlock_release(&vfs_lock);
+    kmem_cache_free(vfs_file_cache, file);
+    if (vnode) kmem_cache_free(vfs_vnode_cache, vnode);
 }
 
 static int vfs_find_free_fd_pair(vfs_fd_table_t* table, int* read_fd,
@@ -764,9 +832,6 @@ int vfs_stream_write(file_t* file, const void* buffer, uint32_t size,
 }
 
 int vfs_init(void) {
-    static const char* names[3] = {"stdin", "stdout", "stderr"};
-    uint32_t index;
-
     LOG_INFO("FS", "Inicializando VFS");
     if (vfs_ready) {
         LOG_WARN("FS", "VFS ja estava inicializada");
@@ -779,21 +844,31 @@ int vfs_init(void) {
     kmemset(vfs_pipe_pool, 0, sizeof(vfs_pipe_pool));
     kmemset(vfs_stdio_nodes, 0, sizeof(vfs_stdio_nodes));
     kmemset(&vfs_metrics, 0, sizeof(vfs_metrics));
+    vfs_file_cache = kmem_cache_create("vfs_file", sizeof(file_t), 8U);
+    vfs_vnode_cache = kmem_cache_create("vfs_vnode", sizeof(vnode_t), 8U);
+    if (!vfs_file_cache || !vfs_vnode_cache) {
+        LOG_ERROR("FS", "Falha ao criar caches de objetos VFS");
+        if (vfs_file_cache) kmem_cache_destroy(vfs_file_cache);
+        vfs_file_cache = 0;
+        if (vfs_vnode_cache) kmem_cache_destroy(vfs_vnode_cache);
+        vfs_vnode_cache = 0;
+        return ERR_MEM;
+    }
     if (vfs_path_init() != OK) {
         LOG_ERROR("FS", "Falha ao inicializar caminhos VFS");
+        kmem_cache_destroy(vfs_file_cache);
+        kmem_cache_destroy(vfs_vnode_cache);
+        vfs_file_cache = 0;
+        vfs_vnode_cache = 0;
         return ERR_STATE;
     }
     if (devfs_init() != OK) {
         LOG_ERROR("FS", "Falha ao inicializar devfs");
+        kmem_cache_destroy(vfs_file_cache);
+        kmem_cache_destroy(vfs_vnode_cache);
+        vfs_file_cache = 0;
+        vfs_vnode_cache = 0;
         return ERR_STATE;
-    }
-    for (index = 0U; index < 3U; index++) {
-        vfs_stdio_nodes[index].type = index == 0U ? VFS_NODE_STDIN :
-                                      index == 1U ? VFS_NODE_STDOUT :
-                                                    VFS_NODE_STDERR;
-        vfs_stdio_nodes[index].operations = index == 0U ?
-            &vfs_stdin_operations : &vfs_stdout_operations;
-        vfs_copy_text(vfs_stdio_nodes[index].path, VFS_MAX_PATH, names[index]);
     }
     vfs_ready = 1;
     vfs_metrics.initialized = 1U;
@@ -810,25 +885,43 @@ int vfs_is_ready(void) {
 
 int vfs_fd_table_init(vfs_fd_table_t* table) {
     uint32_t index;
+    file_t* standard[3] = {0, 0, 0};
 
     if (!table) {
         LOG_ERROR("FS", "Tabela de descritores nula na inicializacao");
         return ERR_NULL;
+    }
+    if (table->initialized) {
+        LOG_ERROR("FS", "Tabela de descritores ja inicializada");
+        return ERR_STATE;
     }
     kmemset(table, 0, sizeof(vfs_fd_table_t));
     if (!vfs_ready) {
         LOG_ERROR("FS", "Tabela de descritores criada antes da VFS");
         return ERR_UNAVAILABLE;
     }
+    if (vfs_initialize_stdio_nodes() != OK) return ERR_MEM;
+    for (index = 0U; index < 3U; index++) {
+        standard[index] = (file_t*)kmem_cache_alloc(vfs_file_cache);
+        if (!standard[index]) {
+            while (index > 0U) {
+                index--;
+                kmem_cache_free(vfs_file_cache, standard[index]);
+            }
+            LOG_ERROR("FS", "Falha ao alocar descritor padrao VFS");
+            return ERR_MEM;
+        }
+    }
     spinlock_acquire(&vfs_lock);
     for (index = 0U; index < 3U; index++) {
-        table->standard_files[index].used = 1U;
-        table->standard_files[index].persistent = 1U;
-        table->standard_files[index].slot = index;
-        table->standard_files[index].vnode = &vfs_stdio_nodes[index];
-        table->standard_files[index].mode = index == VFS_FD_STDIN ?
+        standard[index]->used = 1U;
+        standard[index]->persistent = 1U;
+        standard[index]->slot = VFS_MAX_OPEN_FILES + index;
+        standard[index]->vnode = vfs_stdio_nodes[index];
+        standard[index]->mode = index == VFS_FD_STDIN ?
             VFS_MODE_READ : VFS_MODE_WRITE;
-        table->entries[index] = &table->standard_files[index];
+        table->standard_files[index] = standard[index];
+        table->entries[index] = standard[index];
     }
     table->initialized = 1U;
     vfs_copy_text(table->cwd, VFS_MAX_PATH, "/");
@@ -838,19 +931,25 @@ int vfs_fd_table_init(vfs_fd_table_t* table) {
 
 int vfs_fd_table_release(vfs_fd_table_t* table) {
     uint32_t index;
+    file_t* standard[3];
 
     if (!table) {
         LOG_ERROR("FS", "Tabela de descritores nula na liberacao");
         return ERR_NULL;
     }
     if (!table->initialized) return OK;
+    for (index = 0U; index < 3U; index++) standard[index] = 0;
     spinlock_acquire(&vfs_lock);
     for (index = 0U; index < VFS_FD_FIRST_FILE; index++) {
-        if (table->standard_files[index].active_operations != 0U) {
+        if (table->standard_files[index] &&
+            table->standard_files[index]->active_operations != 0U) {
             spinlock_release(&vfs_lock);
             LOG_ERROR("FS", "Descritor padrao ativo durante liberacao");
             return ERR_STATE;
         }
+    }
+    for (index = 0U; index < 3U; index++) {
+        standard[index] = table->standard_files[index];
     }
     spinlock_release(&vfs_lock);
     for (index = VFS_FD_FIRST_FILE; index < VFS_MAX_FDS; index++) {
@@ -876,13 +975,16 @@ int vfs_fd_table_release(vfs_fd_table_t* table) {
         vfs_release_file(file);
     }
     spinlock_acquire(&vfs_lock);
-    table->entries[VFS_FD_STDIN] = 0;
-    table->entries[VFS_FD_STDOUT] = 0;
-    table->entries[VFS_FD_STDERR] = 0;
-    kmemset(table->standard_files, 0, sizeof(table->standard_files));
+    for (index = 0U; index < 3U; index++) {
+        table->standard_files[index] = 0;
+        table->entries[index] = 0;
+    }
     kmemset(table->cwd, 0, sizeof(table->cwd));
     table->initialized = 0U;
     spinlock_release(&vfs_lock);
+    for (index = 0U; index < 3U; index++) {
+        if (standard[index]) kmem_cache_free(vfs_file_cache, standard[index]);
+    }
     return OK;
 }
 
@@ -1375,13 +1477,14 @@ int vfs_get_status(vfs_status_t* status) {
         if (vfs_pipe_pool[fd].used) status->pipes_active++;
     }
     for (fd = 0U; fd < VFS_MAX_OPEN_FILES; fd++) {
-        if (vfs_file_pool[fd].used) status->global_files_used++;
+        if (vfs_file_pool[fd]) status->global_files_used++;
     }
     for (process_index = 0U; process_index < MAX_PROCESSES; process_index++) {
-        if (!processes[process_index].fd_table.initialized) continue;
+        if (!processes[process_index] ||
+            !processes[process_index]->fd_table.initialized) continue;
         status->processes_with_tables++;
         for (fd = 0U; fd < VFS_MAX_FDS; fd++) {
-            if (processes[process_index].fd_table.entries[fd]) {
+            if (processes[process_index]->fd_table.entries[fd]) {
                 status->descriptors_open++;
             }
         }
@@ -1443,19 +1546,29 @@ int vfs_validate_state(void) {
     uint32_t process_index;
     uint32_t fd;
 
-    if (!vfs_ready) return ERR_UNAVAILABLE;
-    if (vfs_path_validate_state() != OK) return ERR_STATE;
+    if (!vfs_ready) {
+        LOG_ERROR("FS", "Validacao VFS solicitada antes da inicializacao");
+        return ERR_UNAVAILABLE;
+    }
+    if (kmem_cache_validate() != OK || vfs_path_validate_state() != OK) {
+        LOG_ERROR("FS", "Invariantes dos objetos VFS invalidas");
+        return ERR_STATE;
+    }
     spinlock_acquire(&vfs_lock);
     for (process_index = 0U; process_index < MAX_PROCESSES; process_index++) {
-        process_t* process = &processes[process_index];
-        if (!process->fd_table.initialized) continue;
+        process_t* process = processes[process_index];
+        if (!process || !process->fd_table.initialized) continue;
         for (fd = 0U; fd < VFS_FD_FIRST_FILE; fd++) {
             if (process->fd_table.entries[fd] !=
-                    &process->fd_table.standard_files[fd] ||
-                !process->fd_table.standard_files[fd].used ||
-                !process->fd_table.standard_files[fd].persistent ||
-                process->fd_table.standard_files[fd].vnode !=
-                    &vfs_stdio_nodes[fd]) {
+                    process->fd_table.standard_files[fd] ||
+                !process->fd_table.standard_files[fd] ||
+                !process->fd_table.standard_files[fd]->used ||
+                !process->fd_table.standard_files[fd]->persistent ||
+                process->fd_table.standard_files[fd]->vnode !=
+                    vfs_stdio_nodes[fd] ||
+                !kmem_cache_owns(vfs_file_cache,
+                                 process->fd_table.standard_files[fd]) ||
+                !kmem_cache_owns(vfs_vnode_cache, vfs_stdio_nodes[fd])) {
                 spinlock_release(&vfs_lock);
                 return ERR_STATE;
             }
@@ -1463,7 +1576,6 @@ int vfs_validate_state(void) {
         for (fd = 0U; fd < VFS_MAX_FDS; fd++) {
             file_t* file = process->fd_table.entries[fd];
             uint32_t pool_index;
-            uint8_t pool_member = 0U;
 
             if (!file) continue;
             if (!file->used || !file->vnode || !file->vnode->operations ||
@@ -1472,14 +1584,12 @@ int vfs_validate_state(void) {
                 return ERR_STATE;
             }
             if (fd < VFS_FD_FIRST_FILE) continue;
-            for (pool_index = 0U; pool_index < VFS_MAX_OPEN_FILES;
-                 pool_index++) {
-                if (file == &vfs_file_pool[pool_index]) {
-                    pool_member = 1U;
-                    break;
-                }
-            }
-            if (!pool_member) {
+            pool_index = file->slot;
+            if (pool_index >= VFS_MAX_OPEN_FILES ||
+                vfs_file_pool[pool_index] != file ||
+                vfs_vnode_pool[pool_index] != file->vnode ||
+                !kmem_cache_owns(vfs_file_cache, file) ||
+                !kmem_cache_owns(vfs_vnode_cache, file->vnode)) {
                 spinlock_release(&vfs_lock);
                 return ERR_STATE;
             }
@@ -1513,20 +1623,27 @@ int vfs_validate_state(void) {
         }
     }
     for (fd = 0U; fd < VFS_MAX_OPEN_FILES; fd++) {
-        file_t* file = &vfs_file_pool[fd];
+        file_t* file = vfs_file_pool[fd];
         uint32_t references = 0U;
 
-        if (file->used && (file->slot != fd || !file->vnode ||
-                          file->vnode != &vfs_vnode_pool[fd])) {
+        if (!file) {
+            if (vfs_vnode_pool[fd]) {
+                spinlock_release(&vfs_lock);
+                return ERR_STATE;
+            }
+            continue;
+        }
+        if (!file->used || file->slot != fd || !file->vnode ||
+            file->vnode != vfs_vnode_pool[fd]) {
             spinlock_release(&vfs_lock);
             return ERR_STATE;
         }
         for (process_index = 0U; process_index < MAX_PROCESSES;
              process_index++) {
-            process_t* process = &processes[process_index];
+            process_t* process = processes[process_index];
             uint32_t descriptor;
 
-            if (!process->fd_table.initialized) continue;
+            if (!process || !process->fd_table.initialized) continue;
             for (descriptor = VFS_FD_FIRST_FILE;
                  descriptor < VFS_MAX_FDS; descriptor++) {
                 if (process->fd_table.entries[descriptor] == file) {
@@ -1551,10 +1668,10 @@ int vfs_validate_state(void) {
         if (!pipe->used) continue;
         for (process_index = 0U; process_index < MAX_PROCESSES;
              process_index++) {
-            process_t* process = &processes[process_index];
+            process_t* process = processes[process_index];
             uint32_t descriptor;
 
-            if (!process->fd_table.initialized) continue;
+            if (!process || !process->fd_table.initialized) continue;
             for (descriptor = VFS_FD_FIRST_FILE;
                  descriptor < VFS_MAX_FDS; descriptor++) {
                 file_t* file = process->fd_table.entries[descriptor];
@@ -1671,15 +1788,15 @@ int vfs_self_test(vfs_test_result_t* result) {
     kmemset(result, 0, sizeof(vfs_test_result_t));
     result_code = vfs_get_current_table(&table);
     if (result_code != OK) return result_code;
-    result->stdio = table->entries[0] == &table->standard_files[0] &&
-                    table->entries[1] == &table->standard_files[1] &&
-                    table->entries[2] == &table->standard_files[2] &&
-                    table->standard_files[0].mode == VFS_MODE_READ &&
-                    table->standard_files[1].mode == VFS_MODE_WRITE &&
-                    table->standard_files[2].mode == VFS_MODE_WRITE &&
-                    table->standard_files[0].vnode->type == VFS_NODE_STDIN &&
-                    table->standard_files[1].vnode->type == VFS_NODE_STDOUT &&
-                    table->standard_files[2].vnode->type == VFS_NODE_STDERR;
+    result->stdio = table->entries[0] == table->standard_files[0] &&
+                    table->entries[1] == table->standard_files[1] &&
+                    table->entries[2] == table->standard_files[2] &&
+                    table->standard_files[0]->mode == VFS_MODE_READ &&
+                    table->standard_files[1]->mode == VFS_MODE_WRITE &&
+                    table->standard_files[2]->mode == VFS_MODE_WRITE &&
+                    table->standard_files[0]->vnode->type == VFS_NODE_STDIN &&
+                    table->standard_files[1]->vnode->type == VFS_NODE_STDOUT &&
+                    table->standard_files[2]->vnode->type == VFS_NODE_STDERR;
     vfs_test_count(result, result->stdio);
     fd = vfs_find_free_fd(table);
     if (fd == VFS_FD_INVALID ||
@@ -1757,7 +1874,7 @@ int vfs_self_test(vfs_test_result_t* result) {
         result_code = vfs_fd_table_inherit_cwd(&isolated, table);
     }
     result->isolation = result_code == OK && isolated.entries[3] == 0 &&
-                        isolated.entries[0] == &isolated.standard_files[0] &&
+                        isolated.entries[0] == isolated.standard_files[0] &&
                         isolated.entries[0] != table->entries[0] &&
                         kstrcmp(isolated.cwd, table->cwd) == 0;
     vfs_test_count(result, result->isolation);
@@ -1779,8 +1896,7 @@ int vfs_self_test(vfs_test_result_t* result) {
     }
     result_code = vfs_fd_table_release(&isolated);
     result->cleanup = fill_cleanup && result_code == OK &&
-                      !isolated.initialized && !isolated.cwd[0] &&
-                      file && !file->used;
+                      !isolated.initialized && !isolated.cwd[0];
     vfs_test_count(result, result->cleanup);
     result_code = vfs_getcwd(saved_cwd, sizeof(saved_cwd));
     result->normalization = result_code == OK &&

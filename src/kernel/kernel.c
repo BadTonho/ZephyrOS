@@ -34,6 +34,7 @@
 #include "core/wait.h"
 #include "core/memory.h"
 #include "memory/paging.h"
+#include "memory/slab.h"
 #include "process/process.h"
 #include "drivers/tss.h"
 #include "drivers/ata.h"
@@ -831,6 +832,13 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Detectando memoria...\n", 0x08);
     memory_init(mmap_addr);
+    if (kmem_cache_init() != OK) {
+        LOG_ERROR("KERNEL", "Falha ao inicializar caches SLAB");
+        panic_memory("Falha ao inicializar SLAB", memory_get_mmap_entries(),
+                     memory_get_total(), memory_get_free(),
+                     memory_get_free_pages());
+        return;
+    }
     video_print("[OK] Memoria detectada\n", 0x07);
 
     int acpi_result = acpi_init((const mmap_entry_t*)mmap_addr,
@@ -917,6 +925,13 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     wait_init();
     process_init();
     process_bootstrap_idle();
+    if (!process_get_current()) {
+        LOG_ERROR("KERNEL", "Processo Idle indisponivel apos inicializacao");
+        panic_memory("Falha ao iniciar processo Idle",
+                     memory_get_mmap_entries(), memory_get_total(),
+                     memory_get_free(), memory_get_free_pages());
+        return;
+    }
     ipc_init();
     if (kernel_workqueue_init() != OK) {
         kernel_workqueue_enabled = 0;
@@ -928,7 +943,12 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Iniciando threads...\n", 0x08);
     thread_init();
-    video_print("[OK] Thread scheduler pronto\n", 0x07);
+    if (thread_is_ready()) {
+        video_print("[OK] Thread scheduler pronto\n", 0x07);
+    } else {
+        LOG_ERROR("KERNEL", "Scheduler de threads indisponivel");
+        video_print("[!!] Scheduler de threads indisponivel\n", 0x0E);
+    }
 
     video_print("[..] Detectando disco...\n", 0x08);
     int ata_result = ata_init();
