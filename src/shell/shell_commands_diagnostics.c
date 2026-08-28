@@ -4297,6 +4297,7 @@ static const char* cmd_vfs_node_name(vfs_node_type_t type) {
     if (type == VFS_NODE_DIRECTORY) return "DIR";
     if (type == VFS_NODE_CHAR_DEVICE) return "CHAR";
     if (type == VFS_NODE_BLOCK_DEVICE) return "BLOCK";
+    if (type == VFS_NODE_PIPE) return "PIPE";
     if (type == VFS_NODE_TEST) return "TEST";
     return "NONE";
 }
@@ -4345,6 +4346,14 @@ static void cmd_vfs_status(void) {
     shell_command_print_num(status.chdirs);
     video_print("  ioctl: ", 0x07);
     shell_command_print_num(status.ioctls);
+    video_print("\n  pipes ativos/capacidade: ", 0x07);
+    shell_command_print_num(status.pipes_active);
+    video_print("/", 0x08);
+    shell_command_print_num(status.pipe_capacity);
+    video_print("  reads/writes: ", 0x07);
+    shell_command_print_num(status.pipe_reads);
+    video_print("/", 0x08);
+    shell_command_print_num(status.pipe_writes);
     video_print("\n  dispositivos: ", 0x07);
     shell_command_print_num(status.devices_active);
     video_print("/", 0x08);
@@ -4431,6 +4440,7 @@ static void cmd_cd(const char* args) {
 
 static void cmd_vfs_test(void) {
     vfs_test_result_t result;
+    kmemset(&result, 0, sizeof(result));
     int test_result = vfs_self_test(&result);
 
     video_print("VFS Test: ", 0x07);
@@ -4440,6 +4450,8 @@ static void cmd_vfs_test(void) {
     shell_command_print_num(result.passed);
     video_print("/", 0x08);
     shell_command_print_num(result.total);
+    video_print("\n  Pipes: ", 0x07);
+    video_print(result.pipes ? "OK" : "ERRO", result.pipes ? 0x0A : 0x0C);
     video_print("\n", 0x07);
 }
 

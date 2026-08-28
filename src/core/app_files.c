@@ -88,6 +88,30 @@ int app_files_ioctl(app_handle_t handle, uint32_t request, void* argument) {
     return vfs_ioctl((int32_t)handle, request, argument);
 }
 
+int app_files_pipe(app_handle_t fds[2]) {
+    int32_t raw_fds[2];
+    int result;
+
+    if (!app_files_is_ready()) {
+        LOG_ERROR("APP_FILES", "Pipe antes da inicializacao");
+        return ERR_STATE;
+    }
+    if (!fds) {
+        LOG_ERROR("APP_FILES", "Destino de pipe nulo");
+        return ERR_NULL;
+    }
+    fds[0] = APP_HANDLE_INVALID;
+    fds[1] = APP_HANDLE_INVALID;
+    result = vfs_pipe(raw_fds);
+    if (result != OK) {
+        LOG_ERROR("APP_FILES", "Falha ao criar pipe VFS");
+        return result;
+    }
+    fds[0] = (app_handle_t)raw_fds[0];
+    fds[1] = (app_handle_t)raw_fds[1];
+    return OK;
+}
+
 int app_files_chdir(const char* path) {
     if (!app_files_is_ready()) {
         LOG_ERROR("APP_FILES", "Chdir antes da inicializacao");

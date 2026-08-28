@@ -8,6 +8,7 @@
 #include "core/log.h"
 #include "core/spinlock.h"
 #include "core/string.h"
+#include "core/wait.h"
 #include "process/process.h"
 
 #define VFS_TEST_DATA_SIZE 8U
@@ -22,11 +23,29 @@ typedef struct {
 typedef struct {
     vfs_lookup_result_t lookup;
     devfs_file_context_t device;
+    struct vfs_pipe* pipe;
+    uint8_t pipe_reader;
+    uint8_t pipe_writer;
 } vfs_file_context_t;
+
+typedef struct vfs_pipe {
+    spinlock_t lock;
+    wait_channel_t read_channel;
+    wait_channel_t write_channel;
+    uint8_t buffer[VFS_PIPE_BUFFER_SIZE];
+    uint32_t read_offset;
+    uint32_t write_offset;
+    uint32_t bytes;
+    uint32_t readers;
+    uint32_t writers;
+    uint32_t slot;
+    uint8_t used;
+} pipe_t;
 
 static file_t vfs_file_pool[VFS_MAX_OPEN_FILES];
 static vnode_t vfs_vnode_pool[VFS_MAX_OPEN_FILES];
 static vfs_file_context_t vfs_file_contexts[VFS_MAX_OPEN_FILES];
+static pipe_t vfs_pipe_pool[VFS_MAX_PIPES];
 static vfs_lookup_result_t vfs_test_root_lookup;
 static vfs_lookup_result_t vfs_test_virtual_lookup;
 static vfs_dir_entry_t vfs_test_dir_entries[VFS_MAX_DIR_ENTRIES];
@@ -43,6 +62,14 @@ static int vfs_regular_write(file_t* file, const void* buffer, uint32_t size,
 static int vfs_regular_close(file_t* file);
 static int vfs_regular_lseek(file_t* file, int32_t offset, uint32_t whence,
                              uint32_t* position);
+static int vfs_pipe_open(vnode_t* vnode, file_t* file);
+static int vfs_pipe_read(file_t* file, void* buffer, uint32_t size,
+                         uint32_t* bytes_read);
+static int vfs_pipe_write(file_t* file, const void* buffer, uint32_t size,
+                          uint32_t* bytes_written);
+static int vfs_pipe_close(file_t* file);
+static int vfs_pipe_lseek(file_t* file, int32_t offset, uint32_t whence,
+                          uint32_t* position);
 static int vfs_unsupported_open(vnode_t* vnode, file_t* file);
 static int vfs_unsupported_read(file_t* file, void* buffer, uint32_t size,
                                 uint32_t* bytes_read);
@@ -67,6 +94,11 @@ static const file_operations_t vfs_stdin_operations = {
 static const file_operations_t vfs_stdout_operations = {
     vfs_unsupported_open, vfs_unsupported_read, vfs_stream_write,
     vfs_unsupported_close, vfs_unsupported_lseek, vfs_unsupported_ioctl
+};
+
+static const file_operations_t vfs_pipe_operations = {
+    vfs_pipe_open, vfs_pipe_read, vfs_pipe_write, vfs_pipe_close,
+    vfs_pipe_lseek, vfs_unsupported_ioctl
 };
 
 static void vfs_copy_text(char* destination, uint32_t capacity,
@@ -158,6 +190,311 @@ static void vfs_release_file(file_t* file) {
     kmemset(&vfs_file_contexts[slot], 0,
             sizeof(vfs_file_context_t));
     spinlock_release(&vfs_lock);
+}
+
+static int vfs_find_free_fd_pair(vfs_fd_table_t* table, int* read_fd,
+                                 int* write_fd) {
+    uint32_t index;
+
+    if (!table || !read_fd || !write_fd) return ERR_NULL;
+    *read_fd = VFS_FD_INVALID;
+    *write_fd = VFS_FD_INVALID;
+    spinlock_acquire(&vfs_lock);
+    for (index = VFS_FD_FIRST_FILE; index < VFS_MAX_FDS; index++) {
+        if (table->entries[index]) continue;
+        if (*read_fd == VFS_FD_INVALID) *read_fd = (int)index;
+        else {
+            *write_fd = (int)index;
+            break;
+        }
+    }
+    spinlock_release(&vfs_lock);
+    if (*read_fd == VFS_FD_INVALID || *write_fd == VFS_FD_INVALID) {
+        *read_fd = VFS_FD_INVALID;
+        *write_fd = VFS_FD_INVALID;
+        return ERR_UNAVAILABLE;
+    }
+    return OK;
+}
+
+static int vfs_pipe_allocate(pipe_t** pipe_out) {
+    uint32_t index;
+    int result;
+
+    if (!pipe_out) return ERR_NULL;
+    *pipe_out = 0;
+    spinlock_acquire(&vfs_lock);
+    for (index = 0U; index < VFS_MAX_PIPES; index++) {
+        if (!vfs_pipe_pool[index].used) {
+            kmemset(&vfs_pipe_pool[index], 0, sizeof(pipe_t));
+            vfs_pipe_pool[index].slot = index;
+            vfs_pipe_pool[index].used = 1U;
+            spinlock_init(&vfs_pipe_pool[index].lock);
+            *pipe_out = &vfs_pipe_pool[index];
+            break;
+        }
+    }
+    spinlock_release(&vfs_lock);
+    if (!*pipe_out) {
+        LOG_WARN("FS", "Pool global de pipes VFS cheio");
+        return ERR_UNAVAILABLE;
+    }
+
+    result = wait_channel_init(&(*pipe_out)->read_channel, "VFS-pipe-r");
+    if (result == OK) {
+        result = wait_channel_init(&(*pipe_out)->write_channel,
+                                   "VFS-pipe-w");
+    }
+    if (result != OK) {
+        if ((*pipe_out)->read_channel.initialized) {
+            if (wait_channel_reset(&(*pipe_out)->read_channel) != OK) {
+                LOG_ERROR("FS", "Falha ao liberar espera de leitura do pipe");
+            }
+        }
+        if ((*pipe_out)->write_channel.initialized) {
+            if (wait_channel_reset(&(*pipe_out)->write_channel) != OK) {
+                LOG_ERROR("FS", "Falha ao liberar espera de escrita do pipe");
+            }
+        }
+        spinlock_acquire(&vfs_lock);
+        kmemset(*pipe_out, 0, sizeof(pipe_t));
+        spinlock_release(&vfs_lock);
+        *pipe_out = 0;
+        LOG_ERROR("FS", "Falha ao inicializar canais de espera do pipe");
+        return result;
+    }
+    return OK;
+}
+
+static void vfs_pipe_release(pipe_t* pipe) {
+    if (!pipe || !pipe->used) return;
+    if (pipe->read_channel.initialized &&
+        wait_channel_reset(&pipe->read_channel) != OK) {
+        LOG_ERROR("FS", "Falha ao liberar canal de leitura do pipe");
+    }
+    if (pipe->write_channel.initialized &&
+        wait_channel_reset(&pipe->write_channel) != OK) {
+        LOG_ERROR("FS", "Falha ao liberar canal de escrita do pipe");
+    }
+    spinlock_acquire(&vfs_lock);
+    kmemset(pipe, 0, sizeof(pipe_t));
+    spinlock_release(&vfs_lock);
+}
+
+static pipe_t* vfs_pipe_from_file(file_t* file,
+                                  vfs_file_context_t** context_out) {
+    vfs_file_context_t* context;
+
+    if (context_out) *context_out = 0;
+    if (!file || !file->vnode || file->vnode->type != VFS_NODE_PIPE) {
+        return 0;
+    }
+    context = (vfs_file_context_t*)file->vnode->private_data;
+    if (!context || !context->pipe || !context->pipe->used) return 0;
+    if (context_out) *context_out = context;
+    return context->pipe;
+}
+
+static int vfs_pipe_read_ready(void* context, uint8_t* out_ready) {
+    pipe_t* pipe = (pipe_t*)context;
+
+    if (!pipe || !out_ready) return ERR_NULL;
+    spinlock_acquire(&pipe->lock);
+    *out_ready = pipe->bytes != 0U || pipe->writers == 0U;
+    spinlock_release(&pipe->lock);
+    return OK;
+}
+
+static int vfs_pipe_write_ready(void* context, uint8_t* out_ready) {
+    pipe_t* pipe = (pipe_t*)context;
+
+    if (!pipe || !out_ready) return ERR_NULL;
+    spinlock_acquire(&pipe->lock);
+    *out_ready = pipe->bytes < VFS_PIPE_BUFFER_SIZE || pipe->readers == 0U;
+    spinlock_release(&pipe->lock);
+    return OK;
+}
+
+static uint32_t vfs_pipe_copy_in(pipe_t* pipe, const uint8_t* data,
+                                 uint32_t size) {
+    uint32_t first;
+
+    first = VFS_PIPE_BUFFER_SIZE - pipe->write_offset;
+    if (first > size) first = size;
+    kmemcpy(pipe->buffer + pipe->write_offset, data, first);
+    if (first < size) kmemcpy(pipe->buffer, data + first, size - first);
+    pipe->write_offset = (pipe->write_offset + size) % VFS_PIPE_BUFFER_SIZE;
+    pipe->bytes += size;
+    return size;
+}
+
+static uint32_t vfs_pipe_copy_out(pipe_t* pipe, uint8_t* data,
+                                  uint32_t size) {
+    uint32_t first;
+
+    first = VFS_PIPE_BUFFER_SIZE - pipe->read_offset;
+    if (first > size) first = size;
+    kmemcpy(data, pipe->buffer + pipe->read_offset, first);
+    if (first < size) kmemcpy(data + first, pipe->buffer, size - first);
+    pipe->read_offset = (pipe->read_offset + size) % VFS_PIPE_BUFFER_SIZE;
+    pipe->bytes -= size;
+    return size;
+}
+
+static void vfs_pipe_wake_readers(pipe_t* pipe) {
+    uint32_t woken = 0U;
+
+    if (!pipe || wake_up_all(&pipe->read_channel, &woken) != OK) {
+        LOG_ERROR("FS", "Falha ao acordar leitores do pipe");
+    }
+}
+
+static void vfs_pipe_wake_writers(pipe_t* pipe) {
+    uint32_t woken = 0U;
+
+    if (!pipe || wake_up_all(&pipe->write_channel, &woken) != OK) {
+        LOG_ERROR("FS", "Falha ao acordar escritores do pipe");
+    }
+}
+
+static int vfs_pipe_open(vnode_t* vnode, file_t* file) {
+    if (!vnode || !file || vnode->type != VFS_NODE_PIPE) return ERR_NULL;
+    file->offset = 0U;
+    return OK;
+}
+
+static int vfs_pipe_read(file_t* file, void* buffer, uint32_t size,
+                         uint32_t* bytes_read) {
+    vfs_file_context_t* context;
+    pipe_t* pipe;
+    wait_reason_t reason;
+    uint32_t available;
+    int result;
+
+    if (!bytes_read) return ERR_NULL;
+    *bytes_read = 0U;
+    if (size && !buffer) return ERR_NULL;
+    pipe = vfs_pipe_from_file(file, &context);
+    if (!pipe || !context || !context->pipe_reader) return ERR_UNAVAILABLE;
+    if (!size) return OK;
+    while (*bytes_read == 0U) {
+        spinlock_acquire(&pipe->lock);
+        available = pipe->bytes;
+        if (available) {
+            if (available > size) available = size;
+            vfs_pipe_copy_out(pipe, (uint8_t*)buffer, available);
+            *bytes_read = available;
+            spinlock_release(&pipe->lock);
+            vfs_pipe_wake_writers(pipe);
+            break;
+        }
+        if (pipe->writers == 0U) {
+            spinlock_release(&pipe->lock);
+            break;
+        }
+        spinlock_release(&pipe->lock);
+        reason = WAIT_REASON_NONE;
+        result = wait_event(&pipe->read_channel, vfs_pipe_read_ready,
+                            pipe, &reason);
+        if (result != OK) return result;
+        if (reason == WAIT_REASON_SIGNAL || reason == WAIT_REASON_CANCELLED) {
+            return OK;
+        }
+        if (reason != WAIT_REASON_EVENT) {
+            LOG_ERROR("FS", "Motivo invalido na espera de leitura do pipe");
+            return ERR_STATE;
+        }
+    }
+    return OK;
+}
+
+static int vfs_pipe_write(file_t* file, const void* buffer, uint32_t size,
+                          uint32_t* bytes_written) {
+    vfs_file_context_t* context;
+    pipe_t* pipe;
+    wait_reason_t reason;
+    uint32_t available;
+    uint32_t remaining;
+    int result;
+
+    if (!bytes_written) return ERR_NULL;
+    *bytes_written = 0U;
+    if (size && !buffer) return ERR_NULL;
+    pipe = vfs_pipe_from_file(file, &context);
+    if (!pipe || !context || !context->pipe_writer) return ERR_UNAVAILABLE;
+    while (*bytes_written < size) {
+        spinlock_acquire(&pipe->lock);
+        if (pipe->readers == 0U) {
+            spinlock_release(&pipe->lock);
+            LOG_WARN("FS", "Escrita recusada sem leitores no pipe");
+            return ERR_UNAVAILABLE;
+        }
+        available = VFS_PIPE_BUFFER_SIZE - pipe->bytes;
+        if (available) {
+            remaining = size - *bytes_written;
+            if (available > remaining) available = remaining;
+            vfs_pipe_copy_in(pipe, (const uint8_t*)buffer + *bytes_written,
+                             available);
+            *bytes_written += available;
+            spinlock_release(&pipe->lock);
+            vfs_pipe_wake_readers(pipe);
+            continue;
+        }
+        spinlock_release(&pipe->lock);
+        reason = WAIT_REASON_NONE;
+        result = wait_event(&pipe->write_channel, vfs_pipe_write_ready,
+                            pipe, &reason);
+        if (result != OK) return result;
+        if (reason == WAIT_REASON_SIGNAL || reason == WAIT_REASON_CANCELLED) {
+            return OK;
+        }
+        if (reason != WAIT_REASON_EVENT) {
+            LOG_ERROR("FS", "Motivo invalido na espera de escrita do pipe");
+            return ERR_STATE;
+        }
+    }
+    return OK;
+}
+
+static int vfs_pipe_close(file_t* file) {
+    vfs_file_context_t* context;
+    pipe_t* pipe;
+    uint8_t release = 0U;
+
+    pipe = vfs_pipe_from_file(file, &context);
+    if (!pipe || !context) return ERR_STATE;
+    spinlock_acquire(&pipe->lock);
+    if (context->pipe_reader) {
+        if (!pipe->readers) {
+            spinlock_release(&pipe->lock);
+            return ERR_STATE;
+        }
+        pipe->readers--;
+        context->pipe_reader = 0U;
+    }
+    if (context->pipe_writer) {
+        if (!pipe->writers) {
+            spinlock_release(&pipe->lock);
+            return ERR_STATE;
+        }
+        pipe->writers--;
+        context->pipe_writer = 0U;
+    }
+    release = pipe->readers == 0U && pipe->writers == 0U;
+    spinlock_release(&pipe->lock);
+    vfs_pipe_wake_readers(pipe);
+    vfs_pipe_wake_writers(pipe);
+    if (release) vfs_pipe_release(pipe);
+    return OK;
+}
+
+static int vfs_pipe_lseek(file_t* file, int32_t offset, uint32_t whence,
+                          uint32_t* position) {
+    (void)file;
+    (void)offset;
+    (void)whence;
+    if (position) *position = 0U;
+    return ERR_UNAVAILABLE;
 }
 
 static int vfs_begin_operation(int32_t fd, file_t** file_out) {
@@ -419,6 +756,7 @@ int vfs_init(void) {
     kmemset(vfs_file_pool, 0, sizeof(vfs_file_pool));
     kmemset(vfs_vnode_pool, 0, sizeof(vfs_vnode_pool));
     kmemset(vfs_file_contexts, 0, sizeof(vfs_file_contexts));
+    kmemset(vfs_pipe_pool, 0, sizeof(vfs_pipe_pool));
     kmemset(vfs_stdio_nodes, 0, sizeof(vfs_stdio_nodes));
     kmemset(&vfs_metrics, 0, sizeof(vfs_metrics));
     if (vfs_path_init() != OK) {
@@ -441,6 +779,7 @@ int vfs_init(void) {
     vfs_metrics.initialized = 1U;
     vfs_metrics.descriptor_capacity = VFS_MAX_FDS;
     vfs_metrics.global_file_capacity = VFS_MAX_OPEN_FILES;
+    vfs_metrics.pipe_capacity = VFS_MAX_PIPES;
     LOG_INFO("FS", "VFS inicializada com sucesso");
     return OK;
 }
@@ -645,6 +984,214 @@ int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
     return OK;
 }
 
+int vfs_pipe(int32_t fds[2]) {
+    vfs_fd_table_t* table;
+    pipe_t* pipe = 0;
+    file_t* read_file = 0;
+    file_t* write_file = 0;
+    vnode_t* read_vnode = 0;
+    vnode_t* write_vnode = 0;
+    vfs_file_context_t* read_context;
+    vfs_file_context_t* write_context;
+    int read_fd;
+    int write_fd;
+    int result;
+
+    if (!fds) {
+        LOG_ERROR("FS", "Destino nulo na criacao de pipe VFS");
+        return ERR_NULL;
+    }
+    fds[0] = VFS_FD_INVALID;
+    fds[1] = VFS_FD_INVALID;
+    if (!vfs_ready) {
+        LOG_ERROR("FS", "Pipe solicitado com VFS indisponivel");
+        return ERR_UNAVAILABLE;
+    }
+    result = vfs_get_current_table(&table);
+    if (result != OK) return result;
+    result = vfs_find_free_fd_pair(table, &read_fd, &write_fd);
+    if (result != OK) {
+        LOG_WARN("FS", "Tabela sem dois descritores para pipe");
+        return result;
+    }
+    result = vfs_pipe_allocate(&pipe);
+    if (result != OK) return result;
+    result = vfs_allocate_file(&read_file, &read_vnode, VFS_FILE_RESERVED);
+    if (result == OK) {
+        result = vfs_allocate_file(&write_file, &write_vnode,
+                                   VFS_FILE_RESERVED);
+    }
+    if (result != OK) {
+        if (read_file) vfs_release_file(read_file);
+        if (write_file) vfs_release_file(write_file);
+        vfs_pipe_release(pipe);
+        LOG_ERROR("FS", "Pool sem arquivos para endpoints de pipe");
+        return result;
+    }
+
+    read_context = &vfs_file_contexts[read_file->slot];
+    write_context = &vfs_file_contexts[write_file->slot];
+    read_context->pipe = pipe;
+    read_context->pipe_reader = 1U;
+    write_context->pipe = pipe;
+    write_context->pipe_writer = 1U;
+
+    read_vnode->type = VFS_NODE_PIPE;
+    read_vnode->operations = &vfs_pipe_operations;
+    read_vnode->private_data = read_context;
+    vfs_copy_text(read_vnode->path, VFS_MAX_PATH, "pipe:read");
+    write_vnode->type = VFS_NODE_PIPE;
+    write_vnode->operations = &vfs_pipe_operations;
+    write_vnode->private_data = write_context;
+    vfs_copy_text(write_vnode->path, VFS_MAX_PATH, "pipe:write");
+    read_file->mode = VFS_MODE_READ;
+    write_file->mode = VFS_MODE_WRITE;
+    if (read_vnode->operations->open(read_vnode, read_file) != OK ||
+        write_vnode->operations->open(write_vnode, write_file) != OK) {
+        vfs_release_file(read_file);
+        vfs_release_file(write_file);
+        vfs_pipe_release(pipe);
+        LOG_ERROR("FS", "Falha ao abrir endpoints de pipe");
+        return ERR_STATE;
+    }
+
+    spinlock_acquire(&pipe->lock);
+    pipe->readers = 1U;
+    pipe->writers = 1U;
+    spinlock_release(&pipe->lock);
+    spinlock_acquire(&vfs_lock);
+    if (table->entries[read_fd] || table->entries[write_fd]) {
+        spinlock_release(&vfs_lock);
+        vfs_pipe_close(read_file);
+        vfs_pipe_close(write_file);
+        vfs_release_file(read_file);
+        vfs_release_file(write_file);
+        LOG_ERROR("FS", "Descritores escolhidos para pipe foram ocupados");
+        return ERR_STATE;
+    }
+    read_file->used = VFS_FILE_ACTIVE;
+    write_file->used = VFS_FILE_ACTIVE;
+    table->entries[read_fd] = read_file;
+    table->entries[write_fd] = write_file;
+    vfs_metrics.opens += 2U;
+    spinlock_release(&vfs_lock);
+    fds[0] = read_fd;
+    fds[1] = write_fd;
+    return OK;
+}
+
+int vfs_write_redirect(const char* path, const uint8_t* data, uint32_t size,
+                       uint8_t append) {
+    vfs_lookup_result_t lookup;
+    uint8_t* file_data = 0;
+    uint32_t existing_size = 0U;
+    uint32_t total_size = size;
+    uint32_t offset = 0U;
+    uint32_t chunk_size;
+    uint32_t read_size;
+    uint8_t attributes = FS_ATTRIBUTE_ARCHIVE;
+    uint8_t is_directory = 0U;
+    uint8_t mount_acquired = 0U;
+    int result;
+
+    if (!vfs_ready) {
+        LOG_ERROR("FS", "Redirecionamento solicitado com VFS indisponivel");
+        return ERR_UNAVAILABLE;
+    }
+    if (!path || (size > 0U && !data)) {
+        LOG_ERROR("FS", "Argumento nulo no redirecionamento VFS");
+        return ERR_NULL;
+    }
+    if (size > VFS_REDIRECT_MAX_SIZE) {
+        LOG_ERROR("FS", "Saida redirecionada excede o limite");
+        return ERR_OVERFLOW;
+    }
+    if (append > 1U) {
+        LOG_ERROR("FS", "Modo de redirecionamento VFS invalido");
+        return ERR_INVALID;
+    }
+    result = vfs_resolve_open_path(path, VFS_MODE_WRITE, &lookup);
+    if (result != OK) {
+        LOG_ERROR("FS", "Destino invalido no redirecionamento VFS");
+        return result;
+    }
+    if (lookup.type == VFS_NODE_DIRECTORY) {
+        LOG_ERROR("FS", "Destino e diretorio no redirecionamento VFS");
+        return ERR_INVALID;
+    }
+    if (lookup.type != VFS_NODE_REGULAR ||
+        lookup.mount_kind != VFS_MOUNT_STORAGE ||
+        lookup.fs_type != STORAGE_FS_FAT32 || lookup.read_only) {
+        LOG_ERROR("FS", "Destino nao gravavel no redirecionamento VFS");
+        return ERR_UNAVAILABLE;
+    }
+    result = vfs_mount_acquire(lookup.mount_slot, lookup.mount_generation);
+    if (result != OK) {
+        LOG_ERROR("FS", "Montagem indisponivel no redirecionamento VFS");
+        return result;
+    }
+    mount_acquired = 1U;
+    if (append) {
+        result = storage_get_path_info(lookup.volume_id,
+                                       lookup.relative_path,
+                                       &existing_size, &attributes,
+                                       &is_directory);
+        if (result == ERR_NOT_FOUND) existing_size = 0U;
+        else if (result != OK) goto cleanup;
+        if (is_directory || existing_size > VFS_REDIRECT_MAX_SIZE - size) {
+            result = is_directory ? ERR_INVALID : ERR_OVERFLOW;
+            goto cleanup;
+        }
+        total_size = existing_size + size;
+    }
+    if (total_size > 0U) {
+        file_data = (uint8_t*)kmalloc(total_size);
+        if (!file_data) {
+            result = ERR_MEM;
+            goto cleanup;
+        }
+    }
+    if (append && existing_size > 0U) {
+        while (offset < existing_size) {
+            chunk_size = existing_size - offset;
+            if (chunk_size > APP_API_MAX_FILE_IO_SIZE) {
+                chunk_size = APP_API_MAX_FILE_IO_SIZE;
+            }
+            read_size = 0U;
+            result = storage_read_file_range(lookup.volume_id,
+                                             lookup.relative_path, offset,
+                                             file_data + offset, chunk_size,
+                                             &read_size);
+            if (result != OK || read_size != chunk_size) {
+                if (result == OK) result = ERR_DISK;
+                goto cleanup;
+            }
+            offset += read_size;
+        }
+    }
+    if (size > 0U) kmemcpy(file_data + existing_size, data, size);
+    result = storage_atomic_write_file(lookup.volume_id,
+                                       lookup.relative_path, file_data,
+                                       total_size, attributes,
+                                       STORAGE_ATOMIC_CREATE_OR_REPLACE);
+    if (result == OK) {
+        spinlock_acquire(&vfs_lock);
+        vfs_metrics.writes++;
+        spinlock_release(&vfs_lock);
+    }
+
+cleanup:
+    if (file_data) {
+        kfree(file_data);
+        file_data = 0;
+    }
+    if (mount_acquired) {
+        vfs_mount_release(lookup.mount_slot, lookup.mount_generation);
+    }
+    if (result != OK) LOG_ERROR("FS", "Falha no redirecionamento VFS");
+    return result;
+}
+
 int vfs_read(int32_t fd, void* buffer, uint32_t size,
              uint32_t* bytes_read) {
     file_t* file;
@@ -669,7 +1216,10 @@ int vfs_read(int32_t fd, void* buffer, uint32_t size,
     else result = file->vnode->operations->read(file, buffer, size, bytes_read);
     vfs_end_operation(file);
     spinlock_acquire(&vfs_lock);
-    if (result == OK) vfs_metrics.reads++;
+    if (result == OK) {
+        vfs_metrics.reads++;
+        if (file->vnode->type == VFS_NODE_PIPE) vfs_metrics.pipe_reads++;
+    }
     else vfs_metrics.failures++;
     spinlock_release(&vfs_lock);
     if (result != OK) LOG_ERROR("FS", "Falha em leitura VFS");
@@ -701,7 +1251,10 @@ int vfs_write(int32_t fd, const void* buffer, uint32_t size,
                                                   bytes_written);
     vfs_end_operation(file);
     spinlock_acquire(&vfs_lock);
-    if (result == OK) vfs_metrics.writes++;
+    if (result == OK) {
+        vfs_metrics.writes++;
+        if (file->vnode->type == VFS_NODE_PIPE) vfs_metrics.pipe_writes++;
+    }
     else vfs_metrics.failures++;
     spinlock_release(&vfs_lock);
     if (result != OK) LOG_ERROR("FS", "Falha em escrita VFS");
@@ -797,6 +1350,10 @@ int vfs_get_status(vfs_status_t* status) {
     }
     spinlock_acquire(&vfs_lock);
     *status = vfs_metrics;
+    status->pipes_active = 0U;
+    for (fd = 0U; fd < VFS_MAX_PIPES; fd++) {
+        if (vfs_pipe_pool[fd].used) status->pipes_active++;
+    }
     for (fd = 0U; fd < VFS_MAX_OPEN_FILES; fd++) {
         if (vfs_file_pool[fd].used) status->global_files_used++;
     }
@@ -919,6 +1476,20 @@ int vfs_validate_state(void) {
                 spinlock_release(&vfs_lock);
                 return ERR_STATE;
             }
+            if (file->vnode->type == VFS_NODE_PIPE) {
+                vfs_file_context_t* context =
+                    (vfs_file_context_t*)file->vnode->private_data;
+
+                if (context != &vfs_file_contexts[pool_index] ||
+                    !context->pipe || !context->pipe->used ||
+                    (context->pipe_reader && context->pipe_writer) ||
+                    (!context->pipe_reader && !context->pipe_writer) ||
+                    (context->pipe_reader && file->mode != VFS_MODE_READ) ||
+                    (context->pipe_writer && file->mode != VFS_MODE_WRITE)) {
+                    spinlock_release(&vfs_lock);
+                    return ERR_STATE;
+                }
+            }
         }
     }
     for (fd = 0U; fd < VFS_MAX_OPEN_FILES; fd++) {
@@ -948,6 +1519,39 @@ int vfs_validate_state(void) {
             (!file->used && references != 0U) ||
             (file->used != VFS_FILE_ACTIVE &&
              file->used != VFS_FILE_RESERVED && file->used != 0U)) {
+            spinlock_release(&vfs_lock);
+            return ERR_STATE;
+        }
+    }
+    for (fd = 0U; fd < VFS_MAX_PIPES; fd++) {
+        pipe_t* pipe = &vfs_pipe_pool[fd];
+        uint32_t readers = 0U;
+        uint32_t writers = 0U;
+
+        if (!pipe->used) continue;
+        for (process_index = 0U; process_index < MAX_PROCESSES;
+             process_index++) {
+            process_t* process = &processes[process_index];
+            uint32_t descriptor;
+
+            if (!process->fd_table.initialized) continue;
+            for (descriptor = VFS_FD_FIRST_FILE;
+                 descriptor < VFS_MAX_FDS; descriptor++) {
+                file_t* file = process->fd_table.entries[descriptor];
+                vfs_file_context_t* context;
+
+                if (!file || !file->vnode ||
+                    file->vnode->type != VFS_NODE_PIPE) continue;
+                context = (vfs_file_context_t*)file->vnode->private_data;
+                if (!context || context->pipe != pipe) continue;
+                if (context->pipe_reader) readers++;
+                if (context->pipe_writer) writers++;
+            }
+        }
+        if (pipe->readers != readers || pipe->writers != writers ||
+            !pipe->read_channel.initialized ||
+            !pipe->write_channel.initialized ||
+            pipe->bytes > VFS_PIPE_BUFFER_SIZE) {
             spinlock_release(&vfs_lock);
             return ERR_STATE;
         }
@@ -1208,6 +1812,69 @@ int vfs_self_test(vfs_test_result_t* result) {
     vfs_test_count(result, result->directory_listing);
     result->devices = devfs_self_test(&device_result) == OK;
     vfs_test_count(result, result->devices);
+    {
+        int32_t pipe_fds[2] = {VFS_FD_INVALID, VFS_FD_INVALID};
+        uint8_t pipe_buffer[VFS_TEST_DATA_SIZE];
+        uint32_t pipe_bytes = 0U;
+        int pipe_result = vfs_pipe(pipe_fds);
+
+        if (pipe_result == OK) {
+            pipe_result = vfs_write(pipe_fds[1], test_data,
+                                    sizeof(test_data), &pipe_bytes);
+            if (pipe_result == OK && pipe_bytes == sizeof(test_data)) {
+                pipe_result = vfs_close(pipe_fds[1]);
+                pipe_fds[1] = VFS_FD_INVALID;
+            }
+            if (pipe_result == OK) {
+                pipe_result = vfs_read(pipe_fds[0], pipe_buffer,
+                                       sizeof(pipe_buffer), &pipe_bytes);
+            }
+            if (pipe_result == OK && pipe_bytes == sizeof(pipe_buffer)) {
+                for (uint32_t index = 0U; index < sizeof(pipe_buffer); index++) {
+                    if (pipe_buffer[index] != test_data[index]) {
+                        pipe_result = ERR_STATE;
+                        break;
+                    }
+                }
+            } else if (pipe_result == OK) {
+                pipe_result = ERR_STATE;
+            }
+            if (pipe_result == OK) {
+                pipe_result = vfs_read(pipe_fds[0], pipe_buffer,
+                                       sizeof(pipe_buffer), &pipe_bytes);
+                if (pipe_result == OK && pipe_bytes != 0U) {
+                    pipe_result = ERR_STATE;
+                }
+            }
+            if (vfs_close(pipe_fds[0]) != OK) pipe_result = ERR_STATE;
+            pipe_fds[0] = VFS_FD_INVALID;
+        }
+        if (pipe_fds[0] != VFS_FD_INVALID) (void)vfs_close(pipe_fds[0]);
+        if (pipe_fds[1] != VFS_FD_INVALID) (void)vfs_close(pipe_fds[1]);
+        if (pipe_result == OK) {
+            int32_t no_reader_fds[2] = {VFS_FD_INVALID, VFS_FD_INVALID};
+            uint32_t no_reader_bytes = 0U;
+
+            pipe_result = vfs_pipe(no_reader_fds);
+            if (pipe_result == OK) {
+                if (vfs_close(no_reader_fds[0]) != OK) {
+                    pipe_result = ERR_STATE;
+                }
+                no_reader_fds[0] = VFS_FD_INVALID;
+            }
+            if (pipe_result == OK) {
+                pipe_result = vfs_write(no_reader_fds[1], test_data, 1U,
+                                        &no_reader_bytes) == ERR_UNAVAILABLE ?
+                              OK : ERR_STATE;
+            }
+            if (no_reader_fds[1] != VFS_FD_INVALID) {
+                if (vfs_close(no_reader_fds[1]) != OK) pipe_result = ERR_STATE;
+                no_reader_fds[1] = VFS_FD_INVALID;
+            }
+        }
+        result->pipes = pipe_result == OK;
+    }
+    vfs_test_count(result, result->pipes);
     {
         int32_t speaker_fd = VFS_FD_INVALID;
         int ioctl_result = vfs_open("/dev/speaker", VFS_MODE_WRITE,

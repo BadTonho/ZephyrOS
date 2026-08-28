@@ -51,8 +51,8 @@ HYBRID_FAT32_LABEL = "ZEPHYROS"
 ID_RE = re.compile(r"^[A-Z0-9_]{1,8}$")
 VERSION_RE = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
 REQUIRED_MANIFEST_KEYS = ("id", "name", "version", "api", "entry", "dependencies")
-SUPPORTED_APP_APIS = ("0.3", "0.4", "0.5", "0.6", "0.7")
-CURRENT_APP_API = "0.7"
+SUPPORTED_APP_APIS = ("0.3", "0.4", "0.5", "0.6", "0.7", "0.8")
+CURRENT_APP_API = "0.8"
 STORE_FIXTURE_FORMAT = "zephyros-app-store-fixtures-v1"
 STORE_FIXTURE_ALIASES = (
     "VALID.ZPK",
@@ -151,7 +151,7 @@ def manifest_from_json(path: Path) -> dict[str, str]:
         raise PackageError("version deve usar MAJOR.MINOR.PATCH")
     api = ensure_ascii(data.get("api", CURRENT_APP_API), "api", 7)
     if api not in SUPPORTED_APP_APIS:
-        raise PackageError("api deve ser 0.3, 0.4, 0.5, 0.6 ou 0.7")
+        raise PackageError("api deve ser 0.3, 0.4, 0.5, 0.6, 0.7 ou 0.8")
     dependencies = validate_dependencies(data.get("dependencies", []), package_id)
     return {
         "id": package_id,

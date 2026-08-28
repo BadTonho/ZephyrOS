@@ -2278,3 +2278,21 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   universal, `ioctl`, App API 0.7, syscall 17, sinais/cancelamento e limpeza
   de descritores foram validados sem alteração do bootloader, Stage 2 ou
   assembly de interrupções. VFS3 foi encerrada sem criar dívida técnica.
+
+- VFS4: implementação concluída.
+  Concluída em: 2026-08-28 17:58 (America/Sao_Paulo).
+  Foram implementados pipes anônimos com buffer circular de 4096 bytes,
+  pool de oito entradas, Wait Queues, EOF, backpressure e limpeza de
+  endpoints; App API 0.8, syscall 18, compatibilidade de pacotes 0.3 a 0.8,
+  pipeline cooperativo de até quatro estágios, `grep`, `>`, `>>`, sink de
+  stdout e escrita atômica de redirecionamento. `vfs test`, `pipetest`, os
+  pipelines, os destinos FAT e a matriz ring 3 permanecem aguardando os gates
+  e a validação QEMU pelo usuário. Não houve alteração em
+  `src/boot/boot.asm` e nenhuma dívida técnica foi criada.
+
+- VFS4: revisão estática da implementação concluída.
+  Concluída em: 2026-08-28 18:01 (America/Sao_Paulo).
+  `git diff --check` não encontrou erros; os objetos e dependências dos novos
+  módulos estão presentes no Makefile, os símbolos da App API 0.8 e syscall 18
+  estão integrados e `src/boot/boot.asm` permaneceu sem alterações. Nenhum
+  build, teste ou execução QEMU foi realizado pelo agente.

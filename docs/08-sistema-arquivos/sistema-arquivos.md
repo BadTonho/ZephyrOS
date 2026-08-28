@@ -703,6 +703,28 @@ as entradas reais com `mnt` e `dev` sem duplicatas; `/mnt` lista os pontos de
 montagem e `/dev` lista o registro do devfs. O Shell usa essa API em
 `ls [caminho]`; `cat` abre, lê até 4095 bytes e fecha pela VFS.
 
+## Pipes anonimos e redirecionamento VFS4
+
+`vfs_pipe()` cria dois descritores no processo atual: `fds[0]` somente para
+leitura e `fds[1]` somente para escrita. Cada pipe usa um buffer circular
+estatico de 4096 bytes e ocupa uma das oito entradas do pool global. Leitura
+com buffer vazio e escrita com buffer cheio dormem em Wait Queues; a leitura
+retorna EOF depois que todos os escritores fecham e a escrita retorna
+`ERR_UNAVAILABLE` depois que todos os leitores fecham. Sinal e cancelamento
+retornam `OK` com zero ou com os bytes ja transferidos.
+
+`app_files_pipe()`, `app_api_pipe()` e a syscall 18 publicam a mesma operacao
+para aplicativos. O caminho ring 3 valida o vetor de dois handles como uma
+faixa gravavel antes de criar o pipe. As syscalls anteriores permanecem
+inalteradas e a App API publica a versao 0.8.
+
+O sink de redirecionamento usa `vfs_write_redirect()`, sem alterar a semantica
+integral de `vfs_write()`. `>` cria ou substitui o destino; `>>` le o conteudo
+existente e anexa antes de publicar uma escrita atomica. A operacao e aceita
+somente em FAT32 gravavel e limita a saida acumulada a 64 KiB. FAT12, volume
+somente leitura, diretorio, caminho invalido e excedente retornam erro sem
+alterar o destino.
+
 ---
 
 ## BMP (`bmp.c`)

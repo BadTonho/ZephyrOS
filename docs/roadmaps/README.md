@@ -134,7 +134,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   stdio e syscall 14 nos perfis QEMU padrao e USB HID. A VFS2 esta validada
   com App API 0.6, montagens e cwd. A VFS3 esta concluida e validada com App API
   0.7, devfs, listagem universal e dispositivos nos perfis QEMU padrao, USB HID
-  e USB MSC compacto.
+  e USB MSC compacto. A VFS4 esta implementada com App API 0.8, syscall 18,
+  pipes anonimos, pipeline do Shell, `grep` e redirecionamento; a validacao
+  QEMU especifica permanece pendente.
 
 ## K4 validada
 

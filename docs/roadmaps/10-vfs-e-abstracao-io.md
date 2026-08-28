@@ -12,7 +12,7 @@ Este roadmap estabelece uma arquitetura própria, modular, segura e limpa para o
 - [x] VFS2 - Montagens, caminhos universais e cwd (concluida e validada).
 - [x] VFS3 - Abstração de nós de dispositivos (`/dev/`) de caractere e bloco
   (concluída e validada).
-- [ ] VFS4 - Pipes anônimos e redirecionamento de streams no Shell.
+- [x] VFS4 - Pipes anônimos e redirecionamento de streams no Shell.
 
 ## Atalhos
 
@@ -213,15 +213,50 @@ disco durante os diagnósticos.
 
 ### Implementação
 
-- [ ] Implementar a estrutura de buffer circular `pipe_t` com semântica de leitor/escritor.
-- [ ] Implementar a syscall `sys_pipe(int fds[2])`, retornando um descritor de leitura (`fds[0]`) e um de escrita (`fds[1]`).
-- [ ] Implementar bloqueio suave da leitura quando o pipe estiver vazio e bloqueio de escrita quando estiver cheio (integrando com as Wait Queues do Roadmap 12).
-- [ ] Adaptar o parser do Shell para suportar pipes (`|`) e redirecionamento de saída (`>` e `>>`).
+- [x] Implementar a estrutura de buffer circular `pipe_t` com buffer de 4096
+  bytes, pool estatico de oito pipes, endpoints e contagem de leitores e
+  escritores.
+- [x] Implementar `vfs_pipe()`, `app_files_pipe()`, `app_api_pipe()` e a
+  syscall 18 com validacao do ponteiro de saida no caminho ring 3.
+- [x] Implementar bloqueio da leitura quando o pipe estiver vazio e da escrita
+  quando estiver cheio, integrando as Wait Queues, EOF apos o ultimo escritor
+  e `ERR_UNAVAILABLE` apos o ultimo leitor.
+- [x] Adaptar o parser e o executor cooperativo do Shell para ate quatro
+  estagios, `grep` literal, `>` e `>>` somente no ultimo estagio.
+- [x] Roteirizar `ls`, `cat`, `procs` e `echo` pelo sink de stdout do pipeline
+  e persistir redirecionamentos por escrita atomica da VFS.
+- [x] Adicionar `pipetest`, cobertura do autoteste VFS e metricas de pipes.
+
+### Estado da entrega
+
+A implementacao da VFS4 foi concluida sem alterar `src/boot/boot.asm`. O pool
+de pipes e seus canais de espera sao estaticos; a API publica passou para 0.8,
+mantendo pacotes 0.3 a 0.8 e as syscalls anteriores. A escrita regular da VFS
+permanece integral; somente o sink de redirecionamento usa a operacao atomica
+com limite de 64 KiB.
+
+A matriz executavel de gates e QEMU permanece pendente da validacao do usuario.
+O criterio de saida somente deve ser marcado apos validar `pipetest`, os
+pipelines, redirecionamentos, recusas de destino e a ausencia de descritores e
+filas residuais.
 
 ### Critério de saída
 
-Comandos encadeados no Shell como `procs | grep shell` ou `ls > lista.txt` executam com sucesso utilizando pipes e descritores redirecionados.
+Comandos encadeados no Shell como `procs | grep shell`, `echo texto | grep
+texto`, `ls > lista.txt` e `echo segundo >> lista.txt` executam com sucesso
+utilizando pipes, Wait Queues e descritores redirecionados.
 
 ### Comandos Shell / Diagnóstico
 
 - `pipetest`: validação automatizada de comunicação unidirecional entre duas threads via pipe.
+
+### Validação específica pendente
+
+- `vfs test` e `pipetest`: wrap-around, backpressure, EOF, fechamento,
+  cancelamento, payload maior que o buffer e invariantes de VFS/Wait Queues.
+- `procs | grep shell`, `echo texto | grep texto`, `ls > lista.txt` e
+  `echo segundo >> lista.txt`.
+- Sintaxes invalidas, comandos nao adaptados, multiplos redirecionamentos,
+  arquivo inexistente, volume somente leitura e destino FAT invalido.
+- Syscall 18 valida, ponteiro invalido no caminho ring 3 e compatibilidade da
+  App API 0.3 a 0.8.

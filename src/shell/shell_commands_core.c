@@ -65,6 +65,7 @@
 #include "drivers/acpi.h"
 #include "ui/display.h"
 #include "apps/shell_command_utils.h"
+#include "apps/shell_pipeline.h"
 #include "apps/shell_runtime.h"
 
 #define SHELL_Q2CHECK_FAULT_RUNS 2U
@@ -293,6 +294,8 @@ static void cmd_help(void) {
     cmd_help_core();
     video_print("  ls       - Lista arquivos\n", 0x07);
     video_print("  cat      - Exibe conteudo de arquivo\n", 0x07);
+    video_print("  grep <texto> - Filtra linhas de um pipeline\n", 0x07);
+    video_print("  pipetest - Testa pipes e backpressure\n", 0x07);
     video_print("  mount    - Lista montagens VFS\n", 0x07);
     video_print("  pwd      - Exibe o diretorio atual\n", 0x07);
     video_print("  cd       - Altera o diretorio atual\n", 0x07);
@@ -444,18 +447,18 @@ static void cmd_ls(const char* path) {
         return;
     }
     if (!count) {
-        video_print("  (vazio)\n", 0x08);
+        shell_pipeline_write("  (vazio)\n", 0x08);
         return;
     }
     for (uint32_t index = 0U; index < count; index++) {
-        video_print("  ", 0x07);
-        video_print(shell_vfs_dir_entries[index].name,
-                    shell_vfs_dir_entries[index].type == VFS_NODE_DIRECTORY ?
-                    0x0B : 0x07);
+        shell_pipeline_write("  ", 0x07);
+        shell_pipeline_write(shell_vfs_dir_entries[index].name,
+                             shell_vfs_dir_entries[index].type ==
+                             VFS_NODE_DIRECTORY ? 0x0B : 0x07);
         if (shell_vfs_dir_entries[index].type == VFS_NODE_DIRECTORY) {
-            video_print("/", 0x0B);
+            shell_pipeline_write("/", 0x0B);
         }
-        video_print("\n", 0x07);
+        shell_pipeline_write("\n", 0x07);
     }
 }
 
@@ -484,11 +487,11 @@ static void cmd_cat(const char* filename) {
         shell_command_print_num(result);
         video_print(").\n", 0x0C);
     } else if (bytes == 0U) {
-        video_print("(arquivo vazio)\n", 0x08);
+        shell_pipeline_write("(arquivo vazio)\n", 0x08);
     } else {
         buffer[bytes] = '\0';
-        video_print((char*)buffer, 0x07);
-        video_print("\n", 0x07);
+        shell_pipeline_write((char*)buffer, 0x07);
+        shell_pipeline_write("\n", 0x07);
     }
     kfree(buffer);
     buffer = 0;
@@ -496,9 +499,9 @@ static void cmd_cat(const char* filename) {
 
 static void cmd_echo_native(const char* text) {
     if (text && *text) {
-        video_print(text, 0x07);
+        shell_pipeline_write(text, 0x07);
     }
-    video_print("\n", 0x07);
+    shell_pipeline_write("\n", 0x07);
 }
 
 static void cmd_echo(const char* text) {
@@ -507,6 +510,10 @@ static void cmd_echo(const char* text) {
     int result;
 
     if (!text) text = "";
+    if (shell_pipeline_is_active()) {
+        cmd_echo_native(text);
+        return;
+    }
     result = app_loader_build_launch_info(text, &launch);
     if (result != OK) {
         LOG_WARN("SHELL", "Argumentos do echo rejeitados; usando fallback nativo");
@@ -546,7 +553,7 @@ static void cmd_mem_native(void) {
 }
 
 static void cmd_procs(void) {
-    video_print("Processos ativos:\n", 0x0B);
+    shell_pipeline_write("Processos ativos:\n", 0x0B);
 
     extern process_t processes[];
     extern uint32_t process_count;
@@ -555,19 +562,19 @@ static void cmd_procs(void) {
 
     for (int i = 0; i < 64; i++) {
         if (processes[i].state != 0) {
-            video_print("  PID ", 0x07);
-            shell_command_print_num(processes[i].pid);
-            video_print("  ", 0x07);
-            video_print(processes[i].name, 0x0B);
-            video_print("  ", 0x07);
-            video_print(state_names[processes[i].state], 0x08);
-            video_print("\n", 0x07);
+            shell_pipeline_write("  PID ", 0x07);
+            shell_pipeline_print_num(processes[i].pid);
+            shell_pipeline_write("  ", 0x07);
+            shell_pipeline_write(processes[i].name, 0x0B);
+            shell_pipeline_write("  ", 0x07);
+            shell_pipeline_write(state_names[processes[i].state], 0x08);
+            shell_pipeline_write("\n", 0x07);
         }
     }
 
-    video_print("Total: ", 0x07);
-    shell_command_print_num(process_count);
-    video_print(" processos\n", 0x07);
+    shell_pipeline_write("Total: ", 0x07);
+    shell_pipeline_print_num(process_count);
+    shell_pipeline_write(" processos\n", 0x07);
 }
 
 static void shell_stack_print_info(const process_stack_info_t* info) {

@@ -67,6 +67,7 @@
 #define APP_BUILTIN_DIV_EBX_MODRM       0xF3U
 #define APP_BUILTIN_ADD_DL_IMM_MODRM    0xC2U
 #define APP_BUILTIN_SUB_ECX_IMM_MODRM   0xE9U
+#define APP_BUILTIN_SUB_EAX_IMM_MODRM   0xE8U
 #define APP_BUILTIN_MOV_EBX_EAX_MODRM   0xC3U
 #define APP_BUILTIN_MOV_ECX_EDI_MODRM   0xF9U
 
@@ -77,10 +78,14 @@
 #define APP_BUILTIN_PATHTEST_OPEN_STATUS_OFFSET 169U
 #define APP_BUILTIN_PATHTEST_CLOSE_STATUS_OFFSET 188U
 #define APP_BUILTIN_DEVTEST_FD_OFFSET 96U
+#define APP_BUILTIN_DEVTEST_WRITE_FD_OFFSET \
+    (APP_BUILTIN_DEVTEST_FD_OFFSET + sizeof(uint32_t))
 #define APP_BUILTIN_DEVTEST_BUFFER_OFFSET 112U
 #define APP_BUILTIN_DEVTEST_COUNT_OFFSET 120U
+#define APP_BUILTIN_DEVTEST_PIPE_SIZE 4U
 #define APP_BUILTIN_DEVTEST_TONE_OFFSET 128U
 #define APP_BUILTIN_DEVTEST_STATUS_OFFSET 160U
+#define APP_BUILTIN_DEVTEST_STATUS_SIZE 44U
 
 static uint8_t app_builtin_image[APP_IMAGE_MAX_FILE_SIZE];
 static const char app_builtin_argtest_data[] = "Argumentos ZAPP: \n";
@@ -217,6 +222,22 @@ static int app_builtin_emit_exit_on_error(uint8_t* code, uint32_t* offset) {
                                        sizeof(test_result));
 
     if (result != OK) return result;
+    return app_builtin_emit_exit_from_eax(code, offset);
+}
+
+static int app_builtin_emit_expect_error(uint8_t* code, uint32_t* offset,
+                                         uint32_t expected) {
+    const uint8_t compare_result[] = {
+        APP_BUILTIN_OPCODE_SUB, APP_BUILTIN_SUB_EAX_IMM_MODRM,
+        0, 0, 0, 0, APP_BUILTIN_OPCODE_TEST_REG,
+        APP_BUILTIN_TEST_EAX_EAX, APP_BUILTIN_OPCODE_JZ,
+        APP_BUILTIN_EXIT_FROM_EAX_SIZE
+    };
+    int result = app_builtin_emit_data(code, offset, compare_result,
+                                       sizeof(compare_result));
+
+    if (result != OK) return result;
+    app_builtin_write_u32(code, *offset - 8U, expected);
     return app_builtin_emit_exit_from_eax(code, offset);
 }
 
@@ -863,10 +884,11 @@ static int app_builtin_build_devtest(uint32_t* image_size) {
     kmemcpy(data, "/dev/null", 10U);
     kmemcpy(data + 16U, "/dev/zero", 10U);
     kmemcpy(data + 32U, "/dev/speaker", 13U);
-    kmemcpy(data + APP_BUILTIN_DEVTEST_BUFFER_OFFSET, "VFS3", 4U);
+    kmemcpy(data + APP_BUILTIN_DEVTEST_BUFFER_OFFSET, "VFS4", 4U);
     kmemcpy(data + APP_BUILTIN_DEVTEST_TONE_OFFSET, &tone, sizeof(tone));
     kmemcpy(data + APP_BUILTIN_DEVTEST_STATUS_OFFSET,
-            "devtest open/read/write/ioctl/close OK\n", 39U);
+            "devtest open/read/write/ioctl/pipe/close OK\n",
+            APP_BUILTIN_DEVTEST_STATUS_SIZE);
     result = app_builtin_emit_dev_open(code, &code_size, 0U,
                                        APP_FILE_MODE_READ_WRITE);
     if (result == OK) result = app_builtin_emit_load_ebx(
@@ -915,9 +937,61 @@ static int app_builtin_build_devtest(uint32_t* image_size) {
     if (result == OK) result = app_builtin_emit_int80(code, &code_size);
     if (result == OK) result = app_builtin_emit_exit_on_error(code, &code_size);
     if (result == OK) result = app_builtin_emit_dev_close(code, &code_size);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EBX,
+        USER_DATA_BASE + APP_BUILTIN_DEVTEST_FD_OFFSET);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EAX, APP_SYSCALL_PIPE);
+    if (result == OK) result = app_builtin_emit_int80(code, &code_size);
+    if (result == OK) result = app_builtin_emit_exit_on_error(code, &code_size);
+    if (result == OK) result = app_builtin_emit_load_ebx(
+        code, &code_size, USER_DATA_BASE +
+        APP_BUILTIN_DEVTEST_WRITE_FD_OFFSET);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_ECX,
+        USER_DATA_BASE + APP_BUILTIN_DEVTEST_BUFFER_OFFSET);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EDX,
+        APP_BUILTIN_DEVTEST_PIPE_SIZE);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_ESI,
+        USER_DATA_BASE + APP_BUILTIN_DEVTEST_COUNT_OFFSET);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EAX, APP_SYSCALL_FILE_WRITE);
+    if (result == OK) result = app_builtin_emit_int80(code, &code_size);
+    if (result == OK) result = app_builtin_emit_exit_on_error(code, &code_size);
+    if (result == OK) result = app_builtin_emit_load_ebx(
+        code, &code_size, USER_DATA_BASE + APP_BUILTIN_DEVTEST_WRITE_FD_OFFSET);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EAX, APP_SYSCALL_FILE_CLOSE);
+    if (result == OK) result = app_builtin_emit_int80(code, &code_size);
+    if (result == OK) result = app_builtin_emit_exit_on_error(code, &code_size);
+    if (result == OK) result = app_builtin_emit_load_ebx(
+        code, &code_size, USER_DATA_BASE + APP_BUILTIN_DEVTEST_FD_OFFSET);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_ECX,
+        USER_DATA_BASE + APP_BUILTIN_DEVTEST_BUFFER_OFFSET);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EDX,
+        APP_BUILTIN_DEVTEST_PIPE_SIZE);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_ESI,
+        USER_DATA_BASE + APP_BUILTIN_DEVTEST_COUNT_OFFSET);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EAX, APP_SYSCALL_FILE_READ);
+    if (result == OK) result = app_builtin_emit_int80(code, &code_size);
+    if (result == OK) result = app_builtin_emit_exit_on_error(code, &code_size);
+    if (result == OK) result = app_builtin_emit_dev_close(code, &code_size);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EBX, 0xFFFFFFFFU);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EAX, APP_SYSCALL_PIPE);
+    if (result == OK) result = app_builtin_emit_int80(code, &code_size);
+    if (result == OK) result = app_builtin_emit_expect_error(
+        code, &code_size, ERR_INVALID);
     if (result == OK) result = app_builtin_emit_console_write(
         code, &code_size, USER_DATA_BASE + APP_BUILTIN_DEVTEST_STATUS_OFFSET,
-        39U);
+        APP_BUILTIN_DEVTEST_STATUS_SIZE);
     if (result == OK) result = app_builtin_emit_exit_code(
         code, &code_size, APP_EXIT_SUCCESS);
     if (result != OK) return result;

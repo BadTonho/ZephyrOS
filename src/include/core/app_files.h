@@ -18,6 +18,7 @@ int app_files_close_owner(uint32_t pid);
 int app_files_lseek(app_handle_t handle, int32_t offset, uint32_t whence,
                     uint32_t* position);
 int app_files_ioctl(app_handle_t handle, uint32_t request, void* argument);
+int app_files_pipe(app_handle_t fds[2]);
 int app_files_chdir(const char* path);
 int app_files_getcwd(char* path, uint32_t capacity);
 

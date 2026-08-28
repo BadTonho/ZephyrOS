@@ -24,7 +24,7 @@ O ZephyrOS é um sistema operacional funcional, construído desde o bootloader a
 - Sistema de IPC (comunicação entre processos)
 - Primitivas GUI 2D (gui.c)
 - Media player e gerenciador de tarefas
-- App API 0.7, descritores VFS, devfs, caminhos universais, cwd, ioctl, syscalls, sinais, loader ZAPP e IPC
+- App API 0.8, descritores VFS, devfs, pipes, redirecionamento, caminhos universais, cwd, ioctl, syscalls, sinais, loader ZAPP e IPC
 
 ## Por que existe?
 
@@ -60,7 +60,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [Responsividade do sistema](melhorias%20futuras/responsividade%20do%20sistema.md) | Frames parciais, atualizacao responsiva e otimizacao grafica |
 | [Fundacao do Kernel](melhorias%20futuras/fundacao%20do%20kernel.md) | APIs, modulos, memoria, processos e diagnostico |
 | [Atualizacao e Otimizacao do Kernel](melhorias%20futuras/atualizacao%20do%20kernel.md) | Evolucao segura do kernel baseada em metricas |
-| [API de Aplicativos e Syscalls](melhorias%20futuras/api%20de%20aplicativos%20e%20syscalls.md) | Contrato 0.7, devfs, ioctl, caminhos VFS, cwd, sinais, argumentos e loader ZAPP ring 3 |
+| [API de Aplicativos e Syscalls](melhorias%20futuras/api%20de%20aplicativos%20e%20syscalls.md) | Contrato 0.8, devfs, pipes, redirecionamento, ioctl, caminhos VFS, cwd, sinais, argumentos e loader ZAPP ring 3 |
 | [Gerenciador de Aplicativos](melhorias%20futuras/gerenciador%20de%20aplicativos.md) | Inventario detalhado e referencia ao roadmap AS1-AS5 |
 | [Gerenciador de Dispositivos](melhorias%20futuras/gerenciador%20de%20dispositivos.md) | Inventario nativo seguro e evolucao do gerenciamento de hardware |
 | [Gerenciador de Energia](melhorias%20futuras/gerenciador%20de%20energia.md) | Diagnostico de energia, ACPI, PM1 e desligamento fisico S5 com fallback |

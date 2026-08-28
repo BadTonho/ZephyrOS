@@ -378,6 +378,12 @@ SHELL_DISPATCH_OBJ = build/shell_dispatch.o
 SHELL_COMMAND_UTILS_C = src/shell/shell_command_utils.c
 SHELL_COMMAND_UTILS_OBJ = build/shell_command_utils.o
 
+SHELL_PIPELINE_C = src/shell/shell_pipeline.c
+SHELL_PIPELINE_OBJ = build/shell_pipeline.o
+
+SHELL_COMMANDS_VFS_C = src/shell/shell_commands_vfs.c
+SHELL_COMMANDS_VFS_OBJ = build/shell_commands_vfs.o
+
 SHELL_COMMANDS_CORE_C = src/shell/shell_commands_core.c
 SHELL_COMMANDS_CORE_OBJ = build/shell_commands_core.o
 
@@ -541,7 +547,7 @@ OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(INPUT_OBJ) $(IRQ_DEF
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(UHCI_OBJ) $(EHCI_OBJ) $(USB_TRANSPORT_OBJ) $(USB_MSC_OBJ) $(USB_HID_OBJ) $(RTL8811CU_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) $(RNG_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(COMPRESS_OBJ) \
-       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(VFS_OBJ) $(VFS_PATH_OBJ) $(DEVFS_OBJ) $(BLOCK_OBJ) $(STORAGE_OBJ) $(FILE_INDEX_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(SIGNAL_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(UPDATER_OBJ) $(APPSTORE_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ) $(APP_REMOTE_OBJ) $(DEVICE_MANAGER_OBJ) $(USB_MANAGER_OBJ) $(NETWORK_MANAGER_OBJ) $(WIFI_MANAGER_OBJ) $(POWER_OBJ) $(ETHERNET_OBJ) $(ARP_OBJ) $(IPV4_OBJ) $(ICMP_OBJ) $(UDP_OBJ) $(DHCP_OBJ) $(DNS_OBJ) $(TCP_OBJ) $(NET_SOCKET_OBJ) $(HTTP_OBJ) $(APP_CATALOG_OBJ) $(DISPLAY_OBJ) $(SHELL_INPUT_OBJ) $(SHELL_DISPATCH_OBJ) $(SHELL_COMMAND_UTILS_OBJ) $(SHELL_COMMANDS_CORE_OBJ) $(SHELL_COMMANDS_STORAGE_OBJ) $(SHELL_COMMANDS_DIAGNOSTICS_OBJ) $(SHELL_COMMANDS_NETWORK_OBJ) $(SHELL_COMMANDS_WIFI_OBJ) $(SHELL_CHECKS_OBJ) $(SHELL_COMMANDS_PACKAGES_OBJ) $(SHELL_COMMANDS_APPS_OBJ) $(SHELL_HOSTED_OBJ) $(SHELL_JOB_OBJ) $(RTC_OBJ) $(CLOCK_OBJ) $(TLS_OBJ) $(TLS_CLIENT_OBJ)
+       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(VFS_OBJ) $(VFS_PATH_OBJ) $(DEVFS_OBJ) $(BLOCK_OBJ) $(STORAGE_OBJ) $(FILE_INDEX_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(SIGNAL_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(UPDATER_OBJ) $(APPSTORE_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ) $(APP_REMOTE_OBJ) $(DEVICE_MANAGER_OBJ) $(USB_MANAGER_OBJ) $(NETWORK_MANAGER_OBJ) $(WIFI_MANAGER_OBJ) $(POWER_OBJ) $(ETHERNET_OBJ) $(ARP_OBJ) $(IPV4_OBJ) $(ICMP_OBJ) $(UDP_OBJ) $(DHCP_OBJ) $(DNS_OBJ) $(TCP_OBJ) $(NET_SOCKET_OBJ) $(HTTP_OBJ) $(APP_CATALOG_OBJ) $(DISPLAY_OBJ) $(SHELL_INPUT_OBJ) $(SHELL_DISPATCH_OBJ) $(SHELL_COMMAND_UTILS_OBJ) $(SHELL_PIPELINE_OBJ) $(SHELL_COMMANDS_VFS_OBJ) $(SHELL_COMMANDS_CORE_OBJ) $(SHELL_COMMANDS_STORAGE_OBJ) $(SHELL_COMMANDS_DIAGNOSTICS_OBJ) $(SHELL_COMMANDS_NETWORK_OBJ) $(SHELL_COMMANDS_WIFI_OBJ) $(SHELL_CHECKS_OBJ) $(SHELL_COMMANDS_PACKAGES_OBJ) $(SHELL_COMMANDS_APPS_OBJ) $(SHELL_HOSTED_OBJ) $(SHELL_JOB_OBJ) $(RTC_OBJ) $(CLOCK_OBJ) $(TLS_OBJ) $(TLS_CLIENT_OBJ)
 
 # Targets
 all: $(OS_IMG)
@@ -793,11 +799,11 @@ $(STRING_OBJ): $(STRING_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(APP_API_OBJ): $(APP_API_C)
+$(APP_API_OBJ): $(APP_API_C) src/include/core/app_api.h src/include/core/app_files.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(APP_FILES_OBJ): $(APP_FILES_C)
+$(APP_FILES_OBJ): $(APP_FILES_C) src/include/core/app_files.h src/include/core/app_api.h src/include/fs/vfs.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -805,11 +811,11 @@ $(APP_LOADER_OBJ): $(APP_LOADER_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(APP_BUILTIN_OBJ): $(APP_BUILTIN_C)
+$(APP_BUILTIN_OBJ): $(APP_BUILTIN_C) src/include/core/syscall.h src/include/core/app_api.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(APP_PACKAGE_OBJ): $(APP_PACKAGE_C)
+$(APP_PACKAGE_OBJ): $(APP_PACKAGE_C) src/include/core/app_package.h src/include/core/app_loader.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -817,7 +823,7 @@ $(APP_CATALOG_OBJ): $(APP_CATALOG_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(SYSCALL_OBJ): $(SYSCALL_C)
+$(SYSCALL_OBJ): $(SYSCALL_C) src/include/core/syscall.h src/include/core/app_api.h src/include/core/app_files.h src/include/memory/paging.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -925,7 +931,7 @@ $(FS_OBJ): $(FS_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(VFS_OBJ): $(VFS_C) src/include/fs/vfs.h src/include/fs/devfs.h src/include/process/process.h
+$(VFS_OBJ): $(VFS_C) src/include/fs/vfs.h src/include/fs/vfs_internal.h src/include/fs/devfs.h src/include/fs/storage.h src/include/process/process.h src/include/core/app_api.h src/include/core/wait.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -981,7 +987,7 @@ $(SHELL_INPUT_OBJ): $(SHELL_INPUT_C) src/include/apps/shell_input.h src/include/
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(SHELL_DISPATCH_OBJ): $(SHELL_DISPATCH_C) src/include/apps/shell_dispatch.h src/include/apps/shell_job.h
+$(SHELL_DISPATCH_OBJ): $(SHELL_DISPATCH_C) src/include/apps/shell_dispatch.h src/include/apps/shell_job.h src/include/apps/shell_pipeline.h src/include/core/log.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -989,7 +995,15 @@ $(SHELL_COMMAND_UTILS_OBJ): $(SHELL_COMMAND_UTILS_C) src/include/apps/shell_comm
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(SHELL_COMMANDS_CORE_OBJ): $(SHELL_COMMANDS_CORE_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_runtime.h src/include/process/process.h
+$(SHELL_PIPELINE_OBJ): $(SHELL_PIPELINE_C) src/include/apps/shell_pipeline.h src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/core/app_api.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/string.h src/include/core/video.h src/include/core/wait.h src/include/fs/vfs.h src/include/process/thread.h
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_COMMANDS_VFS_OBJ): $(SHELL_COMMANDS_VFS_C) src/include/apps/shell_command_utils.h src/include/apps/shell_pipeline.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/video.h
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_COMMANDS_CORE_OBJ): $(SHELL_COMMANDS_CORE_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_pipeline.h src/include/apps/shell_runtime.h src/include/process/process.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

@@ -317,3 +317,18 @@ interrupcao por sinal e cancelamento continuam pertencendo a
 `shell_checks.c`, sem mover politica de prompt ou input para o handler de
 comandos. `devcheck` permanece no modulo de diagnosticos, enquanto
 `app devtest` permanece no modulo de aplicativos.
+
+## Integracao VFS4
+
+`shell_pipeline.c` possui o contexto interno de I/O do Shell. Cada estagio
+recebe um worker cooperativo e pipes intermediarios; a saida normal sem
+redirecionamento continua no console, enquanto `ls`, `cat`, `procs` e `echo`
+escrevem pelo sink do estagio. Mensagens de uso e erro continuam no console.
+
+O parser aceita de um a quatro estagios com `|`, e `>` ou `>>` somente no
+ultimo estagio. O redirecionamento usa o consumidor final do pipe e a escrita
+atomica da VFS. Comandos fora do conjunto adaptado, operadores duplicados,
+destino ausente e multiplos redirecionamentos sao recusados com erro
+controlado. `grep` faz busca literal por linhas sem diferenciar maiusculas e
+minusculas, e `pipetest` exercita
+backpressure, ordem dos bytes e limpeza das filas.
