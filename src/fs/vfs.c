@@ -10,6 +10,8 @@
 #include "process/process.h"
 
 #define VFS_TEST_DATA_SIZE 8U
+#define VFS_FILE_ACTIVE 1U
+#define VFS_FILE_RESERVED 2U
 
 typedef struct {
     const uint8_t* data;
@@ -23,6 +25,8 @@ typedef struct {
 static file_t vfs_file_pool[VFS_MAX_OPEN_FILES];
 static vnode_t vfs_vnode_pool[VFS_MAX_OPEN_FILES];
 static vfs_regular_context_t vfs_regular_contexts[VFS_MAX_OPEN_FILES];
+static vfs_lookup_result_t vfs_test_root_lookup;
+static vfs_lookup_result_t vfs_test_virtual_lookup;
 static vnode_t vfs_stdio_nodes[3];
 static spinlock_t vfs_lock;
 static vfs_status_t vfs_metrics;
@@ -116,7 +120,8 @@ static int vfs_find_free_fd(vfs_fd_table_t* table) {
     return fd;
 }
 
-static int vfs_allocate_file(file_t** file_out, vnode_t** vnode_out) {
+static int vfs_allocate_file(file_t** file_out, vnode_t** vnode_out,
+                             uint8_t state) {
     uint32_t index;
 
     if (!file_out || !vnode_out) return ERR_NULL;
@@ -127,7 +132,7 @@ static int vfs_allocate_file(file_t** file_out, vnode_t** vnode_out) {
             kmemset(&vfs_vnode_pool[index], 0, sizeof(vnode_t));
             kmemset(&vfs_regular_contexts[index], 0,
                     sizeof(vfs_regular_context_t));
-            vfs_file_pool[index].used = 1U;
+            vfs_file_pool[index].used = state;
             vfs_file_pool[index].slot = index;
             vfs_file_pool[index].vnode = &vfs_vnode_pool[index];
             *file_out = &vfs_file_pool[index];
@@ -529,10 +534,10 @@ int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
     vfs_fd_table_t* table;
     file_t* file = 0;
     vnode_t* vnode = 0;
+    vfs_regular_context_t* context;
     uint32_t length;
     int fd;
     int result;
-    vfs_lookup_result_t lookup;
 
     if (!vfs_ready) {
         LOG_ERROR("FS", "Abertura solicitada com VFS indisponivel");
@@ -556,18 +561,6 @@ int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
         LOG_ERROR("FS", "Modo invalido na abertura VFS");
         return ERR_INVALID;
     }
-    result = vfs_resolve_open_path(path, mode, &lookup);
-    if (result != OK) {
-        spinlock_acquire(&vfs_lock);
-        vfs_metrics.failures++;
-        spinlock_release(&vfs_lock);
-        LOG_ERROR("FS", "Falha ao resolver caminho na abertura VFS");
-        return result;
-    }
-    if (lookup.type != VFS_NODE_REGULAR) {
-        LOG_ERROR("FS", "Diretorio nao pode ser aberto como arquivo");
-        return ERR_INVALID;
-    }
     result = vfs_get_current_table(&table);
     if (result != OK) return result;
     fd = vfs_find_free_fd(table);
@@ -575,9 +568,25 @@ int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
         LOG_WARN("FS", "Tabela de descritores do processo cheia");
         return ERR_UNAVAILABLE;
     }
-    result = vfs_allocate_file(&file, &vnode);
+    result = vfs_allocate_file(&file, &vnode, VFS_FILE_RESERVED);
     if (result != OK) return result;
-    result = vfs_mount_acquire(lookup.mount_slot, lookup.mount_generation);
+    context = &vfs_regular_contexts[file->slot];
+    result = vfs_resolve_open_path(path, mode, &context->lookup);
+    if (result != OK) {
+        vfs_release_file(file);
+        spinlock_acquire(&vfs_lock);
+        vfs_metrics.failures++;
+        spinlock_release(&vfs_lock);
+        LOG_ERROR("FS", "Falha ao resolver caminho na abertura VFS");
+        return result;
+    }
+    if (context->lookup.type != VFS_NODE_REGULAR) {
+        vfs_release_file(file);
+        LOG_ERROR("FS", "Diretorio nao pode ser aberto como arquivo");
+        return ERR_INVALID;
+    }
+    result = vfs_mount_acquire(context->lookup.mount_slot,
+                               context->lookup.mount_generation);
     if (result != OK) {
         vfs_release_file(file);
         LOG_ERROR("FS", "Montagem mudou durante abertura VFS");
@@ -585,13 +594,14 @@ int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
     }
     vnode->type = VFS_NODE_REGULAR;
     vnode->operations = &vfs_regular_operations;
-    vfs_copy_text(vnode->path, VFS_MAX_PATH, lookup.canonical_path);
-    vfs_regular_contexts[file->slot].lookup = lookup;
-    vnode->private_data = &vfs_regular_contexts[file->slot];
+    vfs_copy_text(vnode->path, VFS_MAX_PATH,
+                  context->lookup.canonical_path);
+    vnode->private_data = context;
     file->mode = mode;
     result = vnode->operations->open(vnode, file);
     if (result != OK) {
-        vfs_mount_release(lookup.mount_slot, lookup.mount_generation);
+        vfs_mount_release(context->lookup.mount_slot,
+                          context->lookup.mount_generation);
         vfs_release_file(file);
         spinlock_acquire(&vfs_lock);
         vfs_metrics.failures++;
@@ -607,6 +617,7 @@ int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
         LOG_ERROR("FS", "Descritor VFS deixou de estar disponivel");
         return ERR_STATE;
     }
+    file->used = VFS_FILE_ACTIVE;
     table->entries[fd] = file;
     vfs_metrics.opens++;
     spinlock_release(&vfs_lock);
@@ -877,8 +888,11 @@ int vfs_validate_state(void) {
                 }
             }
         }
-        if ((file->used && references != 1U) ||
-            (!file->used && references != 0U)) {
+        if ((file->used == VFS_FILE_ACTIVE && references != 1U) ||
+            (file->used == VFS_FILE_RESERVED && references != 0U) ||
+            (!file->used && references != 0U) ||
+            (file->used != VFS_FILE_ACTIVE &&
+             file->used != VFS_FILE_RESERVED && file->used != 0U)) {
             spinlock_release(&vfs_lock);
             return ERR_STATE;
         }
@@ -944,8 +958,6 @@ int vfs_self_test(vfs_test_result_t* result) {
     char saved_cwd[VFS_MAX_PATH];
     char cwd[VFS_MAX_PATH];
     char alias[VFS_MAX_PATH];
-    vfs_lookup_result_t root_lookup;
-    vfs_lookup_result_t virtual_lookup;
 
     if (!result) {
         LOG_ERROR("FS", "Destino de autoteste VFS nulo");
@@ -970,7 +982,9 @@ int vfs_self_test(vfs_test_result_t* result) {
     vfs_test_count(result, result->stdio);
     fd = vfs_find_free_fd(table);
     if (fd == VFS_FD_INVALID ||
-        vfs_allocate_file(&file, &vnode) != OK) return ERR_UNAVAILABLE;
+        vfs_allocate_file(&file, &vnode, VFS_FILE_ACTIVE) != OK) {
+        return ERR_UNAVAILABLE;
+    }
     vnode->type = VFS_NODE_TEST;
     vnode->operations = &vfs_test_operations;
     vnode->private_data = &context;
@@ -1012,7 +1026,7 @@ int vfs_self_test(vfs_test_result_t* result) {
     while ((fd = vfs_find_free_fd(table)) != VFS_FD_INVALID) {
         file = 0;
         vnode = 0;
-        if (vfs_allocate_file(&file, &vnode) != OK) {
+        if (vfs_allocate_file(&file, &vnode, VFS_FILE_ACTIVE) != OK) {
             capacity_ready = 0U;
             break;
         }
@@ -1048,7 +1062,8 @@ int vfs_self_test(vfs_test_result_t* result) {
     vfs_test_count(result, result->isolation);
     file = 0;
     vnode = 0;
-    if (result_code == OK && vfs_allocate_file(&file, &vnode) == OK) {
+    if (result_code == OK &&
+        vfs_allocate_file(&file, &vnode, VFS_FILE_ACTIVE) == OK) {
         vnode->type = VFS_NODE_TEST;
         vnode->operations = &vfs_test_operations;
         vnode->private_data = &context;
@@ -1068,37 +1083,38 @@ int vfs_self_test(vfs_test_result_t* result) {
     vfs_test_count(result, result->cleanup);
     result_code = vfs_getcwd(saved_cwd, sizeof(saved_cwd));
     result->normalization = result_code == OK &&
-        vfs_lookup("/mnt/../", &root_lookup) == OK &&
-        root_lookup.type == VFS_NODE_DIRECTORY &&
-        kstrcmp(root_lookup.canonical_path, "/") == 0 &&
-        vfs_lookup("//mnt/./", &virtual_lookup) == OK &&
-        kstrcmp(virtual_lookup.canonical_path, "/mnt") == 0 &&
-        vfs_lookup("/..", &virtual_lookup) == ERR_INVALID;
+        vfs_lookup("/mnt/../", &vfs_test_root_lookup) == OK &&
+        vfs_test_root_lookup.type == VFS_NODE_DIRECTORY &&
+        kstrcmp(vfs_test_root_lookup.canonical_path, "/") == 0 &&
+        vfs_lookup("//mnt/./", &vfs_test_virtual_lookup) == OK &&
+        kstrcmp(vfs_test_virtual_lookup.canonical_path, "/mnt") == 0 &&
+        vfs_lookup("/..", &vfs_test_virtual_lookup) == ERR_INVALID;
     vfs_test_count(result, result->normalization);
     vfs_copy_text(alias, sizeof(alias), "system:");
-    result->lookup = vfs_lookup("/mnt", &virtual_lookup) == OK &&
-                     virtual_lookup.type == VFS_NODE_DIRECTORY &&
-                     vfs_lookup(alias, &virtual_lookup) == OK &&
-                     kstrcmp(virtual_lookup.canonical_path, "/") == 0 &&
+    result->lookup = vfs_lookup("/mnt", &vfs_test_virtual_lookup) == OK &&
+                     vfs_test_virtual_lookup.type == VFS_NODE_DIRECTORY &&
+                     vfs_lookup(alias, &vfs_test_virtual_lookup) == OK &&
+                     kstrcmp(vfs_test_virtual_lookup.canonical_path,
+                             "/") == 0 &&
                      vfs_lookup("/diretorio-vfs-inexistente",
-                                &virtual_lookup) == ERR_NOT_FOUND;
+                                &vfs_test_virtual_lookup) == ERR_NOT_FOUND;
     vfs_test_count(result, result->lookup);
     result->cwd = vfs_chdir("/mnt") == OK &&
                   vfs_getcwd(cwd, sizeof(cwd)) == OK &&
                   kstrcmp(cwd, "/mnt") == 0 &&
                   vfs_chdir(saved_cwd) == OK;
     vfs_test_count(result, result->cwd);
-    result->mount_busy = root_lookup.volume_id[0] &&
-        vfs_mount_acquire(root_lookup.mount_slot,
-                          root_lookup.mount_generation) == OK;
+    result->mount_busy = vfs_test_root_lookup.volume_id[0] &&
+        vfs_mount_acquire(vfs_test_root_lookup.mount_slot,
+                          vfs_test_root_lookup.mount_generation) == OK;
     if (result->mount_busy) {
         result->mount_busy =
-            vfs_unmount_volume(root_lookup.volume_id) == ERR_STATE &&
+            vfs_unmount_volume(vfs_test_root_lookup.volume_id) == ERR_STATE &&
             vfs_mount_validate_reference(
-                root_lookup.mount_slot,
-                root_lookup.mount_generation + 1U) == ERR_STATE;
-        vfs_mount_release(root_lookup.mount_slot,
-                          root_lookup.mount_generation);
+                vfs_test_root_lookup.mount_slot,
+                vfs_test_root_lookup.mount_generation + 1U) == ERR_STATE;
+        vfs_mount_release(vfs_test_root_lookup.mount_slot,
+                          vfs_test_root_lookup.mount_generation);
     }
     vfs_test_count(result, result->mount_busy);
     result->invariants = vfs_validate_state() == OK;

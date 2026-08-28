@@ -5,8 +5,6 @@
 #include "core/string.h"
 #include "process/process.h"
 
-#define VFS_DIRECTORY_ATTRIBUTE 0x10U
-
 typedef struct {
     vfs_mount_info_t info;
 } vfs_mount_entry_t;
@@ -411,32 +409,35 @@ int vfs_refresh_mounts(void) {
 
 static int vfs_resolve_canonical(const char* canonical, uint32_t mode,
                                  vfs_lookup_result_t* result) {
-    vfs_mount_info_t mount;
     uint32_t mount_length;
     int mount_index;
     int query_result;
+    uint8_t is_directory;
 
-    kmemset(result, 0, sizeof(*result));
-    vfs_path_copy(result->canonical_path, VFS_MAX_PATH, canonical);
     if (vfs_path_equal(canonical, "/mnt")) {
         result->type = VFS_NODE_DIRECTORY;
         return OK;
     }
     spinlock_acquire(&vfs_mount_lock);
     mount_index = vfs_find_mount_for_path_unlocked(canonical);
-    if (mount_index >= 0) mount = vfs_mount_table[mount_index].info;
+    if (mount_index >= 0) {
+        vfs_mount_info_t* mount = &vfs_mount_table[mount_index].info;
+
+        result->mount_slot = mount->slot;
+        result->mount_generation = mount->generation;
+        result->fs_type = mount->fs_type;
+        result->read_only = mount->read_only;
+        vfs_path_copy(result->mount_point, VFS_MAX_PATH,
+                      mount->mount_point);
+        vfs_path_copy(result->volume_id, STORAGE_ID_SIZE,
+                      mount->volume_id);
+    }
     spinlock_release(&vfs_mount_lock);
     if (mount_index < 0) {
         return vfs_path_fail(ERR_NOT_FOUND, "Montagem para caminho ausente");
     }
-    result->mount_slot = mount.slot;
-    result->mount_generation = mount.generation;
-    result->fs_type = mount.fs_type;
-    result->read_only = mount.read_only;
-    vfs_path_copy(result->mount_point, VFS_MAX_PATH, mount.mount_point);
-    vfs_path_copy(result->volume_id, STORAGE_ID_SIZE, mount.volume_id);
-    mount_length = kstrlen(mount.mount_point);
-    if (vfs_path_equal(canonical, mount.mount_point)) {
+    mount_length = kstrlen(result->mount_point);
+    if (vfs_path_equal(canonical, result->mount_point)) {
         result->type = VFS_NODE_DIRECTORY;
         return OK;
     }
@@ -444,13 +445,13 @@ static int vfs_resolve_canonical(const char* canonical, uint32_t mode,
     while (canonical[mount_length] == '/') mount_length++;
     vfs_path_copy(result->relative_path, VFS_MAX_PATH,
                   canonical + mount_length);
-    query_result = storage_get_file_info(result->volume_id,
+    query_result = storage_get_path_info(result->volume_id,
                                          result->relative_path,
                                          &result->size,
-                                         &result->attributes);
+                                         &result->attributes,
+                                         &is_directory);
     if (query_result == OK) {
-        result->type = (result->attributes & VFS_DIRECTORY_ATTRIBUTE) ?
-                       VFS_NODE_DIRECTORY : VFS_NODE_REGULAR;
+        result->type = is_directory ? VFS_NODE_DIRECTORY : VFS_NODE_REGULAR;
         return OK;
     }
     if (query_result == ERR_NOT_FOUND && mode == VFS_MODE_WRITE) {
@@ -462,27 +463,79 @@ static int vfs_resolve_canonical(const char* canonical, uint32_t mode,
 
 int vfs_resolve_open_path(const char* path, uint32_t mode,
                           vfs_lookup_result_t* result) {
-    char canonical[VFS_MAX_PATH];
     int status;
 
     if (!path || !result) {
         return vfs_path_fail(ERR_NULL, "Lookup VFS recebeu argumento nulo");
     }
-    status = vfs_canonicalize(path, canonical);
+    kmemset(result, 0, sizeof(*result));
+    status = vfs_canonicalize(path, result->canonical_path);
     if (status != OK) return status;
     spinlock_acquire(&vfs_mount_lock);
     vfs_lookup_count++;
     spinlock_release(&vfs_mount_lock);
-    return vfs_resolve_canonical(canonical, mode, result);
+    return vfs_resolve_canonical(result->canonical_path, mode, result);
 }
 
 int vfs_lookup(const char* path, vfs_lookup_result_t* result) {
     return vfs_resolve_open_path(path, VFS_MODE_READ, result);
 }
 
+static int vfs_resolve_directory(const char* path, char* canonical,
+                                 uint32_t* mount_slot,
+                                 uint32_t* mount_generation) {
+    char volume_id[STORAGE_ID_SIZE];
+    char relative[VFS_MAX_PATH];
+    uint32_t mount_length;
+    uint32_t size;
+    uint8_t attributes;
+    uint8_t is_directory;
+    int mount_index;
+    int result;
+
+    result = vfs_canonicalize(path, canonical);
+    if (result != OK) return result;
+    if (vfs_path_equal(canonical, "/mnt")) {
+        *mount_slot = VFS_MAX_MOUNTS;
+        *mount_generation = 0U;
+        return OK;
+    }
+    spinlock_acquire(&vfs_mount_lock);
+    mount_index = vfs_find_mount_for_path_unlocked(canonical);
+    if (mount_index >= 0) {
+        vfs_mount_info_t* mount = &vfs_mount_table[mount_index].info;
+
+        *mount_slot = mount->slot;
+        *mount_generation = mount->generation;
+        mount_length = kstrlen(mount->mount_point);
+        vfs_path_copy(volume_id, sizeof(volume_id), mount->volume_id);
+        if (vfs_path_equal(canonical, mount->mount_point)) {
+            spinlock_release(&vfs_mount_lock);
+            return OK;
+        }
+    }
+    spinlock_release(&vfs_mount_lock);
+    if (mount_index < 0) {
+        return vfs_path_fail(ERR_NOT_FOUND,
+                             "Diretorio sem montagem correspondente");
+    }
+    if (mount_length == 1U) mount_length = 0U;
+    while (canonical[mount_length] == '/') mount_length++;
+    vfs_path_copy(relative, sizeof(relative), canonical + mount_length);
+    result = storage_get_path_info(volume_id, relative, &size, &attributes,
+                                   &is_directory);
+    if (result != OK) return result;
+    if (!is_directory) {
+        return vfs_path_fail(ERR_INVALID, "Chdir recebeu arquivo regular");
+    }
+    return OK;
+}
+
 int vfs_chdir(const char* path) {
     process_t* current;
-    vfs_lookup_result_t lookup;
+    char canonical[VFS_MAX_PATH];
+    uint32_t mount_slot;
+    uint32_t mount_generation;
     int result;
 
     if (!path) {
@@ -491,20 +544,18 @@ int vfs_chdir(const char* path) {
     }
     current = process_get_current();
     if (!current || !current->fd_table.initialized) return ERR_STATE;
-    result = vfs_lookup(path, &lookup);
+    result = vfs_resolve_directory(path, canonical, &mount_slot,
+                                   &mount_generation);
     if (result != OK) return result;
-    if (lookup.type != VFS_NODE_DIRECTORY) return ERR_INVALID;
     spinlock_acquire(&vfs_mount_lock);
-    if (!vfs_path_equal(lookup.canonical_path, "/mnt") &&
-        (lookup.mount_slot >= VFS_MAX_MOUNTS ||
-         !vfs_mount_table[lookup.mount_slot].info.used ||
-         vfs_mount_table[lookup.mount_slot].info.generation !=
-             lookup.mount_generation)) {
+    if (!vfs_path_equal(canonical, "/mnt") &&
+        (mount_slot >= VFS_MAX_MOUNTS ||
+         !vfs_mount_table[mount_slot].info.used ||
+         vfs_mount_table[mount_slot].info.generation != mount_generation)) {
         spinlock_release(&vfs_mount_lock);
         return ERR_STATE;
     }
-    vfs_path_copy(current->fd_table.cwd, VFS_MAX_PATH,
-                  lookup.canonical_path);
+    vfs_path_copy(current->fd_table.cwd, VFS_MAX_PATH, canonical);
     vfs_chdir_count++;
     spinlock_release(&vfs_mount_lock);
     return OK;

@@ -655,6 +655,11 @@ fixo ou de volume referenciado por arquivo aberto ou `cwd` e recusada. FAT12 e
 FAT32 permitem leitura; escrita integral continua restrita a FAT32 gravavel.
 Descritores de diretorio e `readdir` permanecem fora do escopo.
 
+`storage_get_path_info()` e a consulta comum usada pela VFS para distinguir
+arquivo regular e diretorio sem criar descritor. Ela preserva
+`storage_get_file_info()` para os chamadores que exigem exclusivamente um
+arquivo regular.
+
 ---
 
 ## BMP (`bmp.c`)

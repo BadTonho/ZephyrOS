@@ -1999,3 +1999,24 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   implementacao aguarda os gates e as matrizes QEMU padrao e USB MSC do
   usuario; nenhuma validacao executavel foi registrada nesta entrada e nenhuma
   divida tecnica foi criada.
+
+- VFS2: primeira execucao funcional revelou bloqueio em `app pathtest`.
+  Registrada em: 2026-08-28 12:03 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. A captura confirmou duas
+  montagens, navegacao ate `/mnt/boot`, retorno relativo a `/mnt`, `vfs status`
+  em `READY` e `vfs test` com 16/16 casos. Ao executar `app pathtest`, o
+  sistema deixou de responder e nao devolveu o prompt.
+
+- VFS2: consumo de stack na abertura ring 3 reduzido.
+  Corrigida em: 2026-08-28 12:09 (America/Sao_Paulo).
+  `file_open` mantinha um snapshot de lookup com tres caminhos de 256 bytes na
+  stack da syscall enquanto Storage percorria FAT/LFN. O resultado agora e
+  escrito diretamente no contexto global do arquivo; a resolucao deixou de
+  duplicar caminho canonico e snapshot de montagem, e `chdir` usa um contexto
+  compacto. O autoteste tambem moveu snapshots grandes para armazenamento
+  estatico. `app pathtest` abre relativamente o fixture permanente
+  `SHELL.BMP`. Storage passou a publicar uma consulta comum de caminho para
+  distinguir arquivos e diretorios sem descritor, permitindo `cd` em
+  subdiretorios reais. Reservas transitivas do pool possuem estado explicito
+  para que as invariantes continuem validas durante a resolucao sem lock. A
+  correcao aguarda gates e repeticao funcional pelo usuario.
