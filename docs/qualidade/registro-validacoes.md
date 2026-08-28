@@ -2059,3 +2059,30 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `log check` aprovou os oito casos sem falhas. Com os resultados anteriores de
   namespace, `vfs test`, `app pathtest`, stack e `regcheck full`, a matriz do
   QEMU padrao fica concluida. Restam os testes de host e o perfil USB MSC.
+
+- VFS2: matriz de testes do host aprovada pelo usuario.
+  Validada em: 2026-08-28 12:39 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. `make package-test` concluiu
+  o autoteste do empacotador, fixtures da App Store, compatibilidade de API,
+  validacoes de CRC/BPB/imagem e casos de imagem hibrida, LFN, alias e
+  substituicao integralmente em `OK`. `make storage-fixtures-test` concluiu o
+  autoteste das fixtures de Storage em `OK`. Resta somente a matriz USB MSC.
+
+- VFS2: primeira abertura do perfil USB MSC nao enumerou o dispositivo.
+  Registrada em: 2026-08-28 12:43 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. `storage list` exibiu somente
+  o disco ATA `ata0`, com os volumes `ata0raw` FAT12 e `ata0p1` FAT32; nenhum
+  disco ou volume USB foi publicado. A execucao usou o alvo sem limpar o
+  argumento padrao de teclado USB. A matriz historica e o contrato do perfil
+  exigem `QEMU_USB_DEVICE_ARGS=` para deixar somente a fixture MSC no UHCI. A
+  tentativa e inconclusiva e sera repetida com o comando canonico.
+
+- VFS2: perfil USB MSC enumerado com o comando canonico.
+  Registrada em: 2026-08-28 12:46 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. `storage list` exibiu dois
+  discos, seis volumes e duas montagens. O disco somente leitura
+  `usb-ms-00:04.0-p1-a1-l0` publicou quatro volumes sem erro. A matriz VFS2
+  usara literalmente `usb-ms-00:04.0-p1-a1-l0p1` FAT12 e
+  `usb-ms-00:04.0-p1-a1-l0p4` FAT32, preservando os IDs fornecidos pelo
+  inventario. A enumeracao esta aprovada; montagem, namespace e invariantes
+  permanecem pendentes neste perfil.
