@@ -2396,3 +2396,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   A falha na reserva de PID durante a inicializacao agora descarta o objeto
   `process_t` do cache e libera seus recursos parciais, preservando a limpeza
   completa da migracao estrutural.
+
+- MM1: correcao de compilacao do Task Manager concluida.
+  Concluída em: 2026-08-28 20:03 (America/Sao_Paulo).
+  Os indices de uso de CPU passaram a ser resolvidos pela tabela de ponteiros
+  de processos, removendo aritmetica invalida entre `process_t*` e
+  `process_t**`. O loop de ordenacao recebeu tipos sem signedness conflitante
+  e o helper grafico nao utilizado foi removido. A revisao estatica nao foi
+  substituida por novo build; a compilacao deve ser repetida pelo usuario.
