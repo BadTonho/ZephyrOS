@@ -619,6 +619,9 @@ caminho, modo, processo atual, tamanho e buffer.
 
 - Leitura: sequencial, até 4096 bytes por chamada; EOF retorna `OK` com zero
   bytes lidos.
+- Stdin: bloqueia pela fila IPC do processo focado. Cancelamento e sinal
+  entregavel concluem a leitura pendente com zero bytes, permitindo aplicar a
+  terminacao no retorno seguro ao ring 3 sem contabilizar falha de I/O.
 - Escrita: substitui o conteúdo inteiro do arquivo nesta primeira versão.
 - Seek: `SET`, `CUR` e `END` somente em descritor exclusivamente de leitura;
   posicoes fora do arquivo e seek em descritor gravavel sao recusados.

@@ -73,8 +73,13 @@ parte desta entrega.
 
 Durante a matriz, Enter e Ctrl+C em `app inputtest` foram aprovados. O primeiro
 teste com F12 revelou liberacao prematura do fd 0 bloqueado; a correcao passou
-a concluir o cancelamento somente depois do retorno da espera e aguarda nova
-validacao e repeticao dos gates de codigo.
+a concluir o cancelamento somente depois do retorno da espera. O novo teste
+com F12 foi aprovado, sem descritores residuais. Os gates da versao corrigida
+foram confirmados. Uma repeticao de Ctrl+C confirmou o encerramento e a
+limpeza, mas revelou contabilizacao espuria de falha VFS; a leitura stdin foi
+ajustada para concluir a interrupcao por sinal com zero bytes e aguarda os
+gates desta nova versao e a repeticao desse caso. Permanece o restante da
+matriz funcional.
 
 ### Critério de saída
 
