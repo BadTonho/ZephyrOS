@@ -118,6 +118,9 @@
 #define APP_INPUT_TEST_PATH "INPUT.ZAP"
 #define APP_INPUT_EVENT_OFFSET 128U
 #define APP_INPUT_EVENT_DATA1_OFFSET (APP_INPUT_EVENT_OFFSET + 4U)
+#define APP_INPUT_TTY_PATH_OFFSET 80U
+#define APP_INPUT_TTY_FD_OFFSET 96U
+#define APP_CHECK_INVALID_IOCTL 0xFFFFFFFFU
 #define APP_INPUT_READ_COUNT_OFFSET (APP_INPUT_EVENT_OFFSET + 4U)
 #define SHELL_APP_OUTPUTTEST_FAILURE_CODE 1U
 #define SHELL_Q2CHECK_FIRST_FAULT_INDEX 0U
@@ -430,6 +433,27 @@ static int shell_demo_emit_jne(uint8_t* code, uint32_t* offset,
     return OK;
 }
 
+static void shell_demo_emit_load_ebx(uint8_t* code, uint32_t* offset,
+                                     uint32_t address) {
+    code[(*offset)++] = 0x8BU;
+    code[(*offset)++] = 0x1DU;
+    shell_demo_patch_u32(code, *offset, address);
+    *offset += 4U;
+}
+
+static void shell_demo_emit_exit_on_error(uint8_t* code, uint32_t* offset) {
+    code[(*offset)++] = 0x85U;
+    code[(*offset)++] = 0xC0U;
+    code[(*offset)++] = 0x74U;
+    code[(*offset)++] = 10U;
+    code[(*offset)++] = 0x89U;
+    code[(*offset)++] = 0xC3U;
+    shell_demo_emit_mov(code, offset, 0U, APP_SYSCALL_PROCESS_EXIT);
+    code[(*offset)++] = 0xCDU;
+    code[(*offset)++] = 0x80U;
+    code[(*offset)++] = 0xF4U;
+}
+
 static void shell_remove_image(const char* path) {
     uint32_t attempts = 0;
 
@@ -503,7 +527,7 @@ static uint32_t shell_build_demo_image(void) {
     return header.data_offset;
 }
 
-static uint32_t shell_build_input_test_image(void) {
+static uint32_t shell_build_input_test_image(uint8_t use_tty) {
     app_image_header_t header;
     uint8_t* code = appcheck_demo_image + APP_IMAGE_HEADER_SIZE;
     uint32_t loop_offset;
@@ -511,18 +535,41 @@ static uint32_t shell_build_input_test_image(void) {
     uint32_t data_size = APP_INPUT_EVENT_OFFSET + sizeof(uint32_t) * 2U;
 
     kmemset(appcheck_demo_image, 0, sizeof(appcheck_demo_image));
+    if (use_tty) {
+        shell_demo_emit_mov(code, &offset, 0U, APP_SYSCALL_FILE_OPEN);
+        shell_demo_emit_mov(code, &offset, 3U,
+                            USER_DATA_BASE + APP_INPUT_TTY_PATH_OFFSET);
+        shell_demo_emit_mov(code, &offset, 1U, APP_FILE_MODE_READ_WRITE);
+        shell_demo_emit_mov(code, &offset, 2U,
+                            USER_DATA_BASE + APP_INPUT_TTY_FD_OFFSET);
+        code[offset++] = 0xCDU;
+        code[offset++] = 0x80U;
+        shell_demo_emit_exit_on_error(code, &offset);
+    }
+
     shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_FILE_WRITE);
-    shell_demo_emit_mov(code, &offset, 3, APP_FD_STDOUT);
+    if (use_tty) {
+        shell_demo_emit_load_ebx(code, &offset,
+                                 USER_DATA_BASE + APP_INPUT_TTY_FD_OFFSET);
+    } else {
+        shell_demo_emit_mov(code, &offset, 3, APP_FD_STDOUT);
+    }
     shell_demo_emit_mov(code, &offset, 1, USER_DATA_BASE);
     shell_demo_emit_mov(code, &offset, 2, kstrlen(app_input_test_message));
     shell_demo_emit_mov(code, &offset, 6,
                         USER_DATA_BASE + APP_INPUT_READ_COUNT_OFFSET);
     code[offset++] = 0xCD;
     code[offset++] = 0x80;
+    shell_demo_emit_exit_on_error(code, &offset);
 
     loop_offset = offset;
     shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_FILE_READ);
-    shell_demo_emit_mov(code, &offset, 3, APP_FD_STDIN);
+    if (use_tty) {
+        shell_demo_emit_load_ebx(code, &offset,
+                                 USER_DATA_BASE + APP_INPUT_TTY_FD_OFFSET);
+    } else {
+        shell_demo_emit_mov(code, &offset, 3, APP_FD_STDIN);
+    }
     shell_demo_emit_mov(code, &offset, 1,
                         USER_DATA_BASE + APP_INPUT_EVENT_OFFSET);
     shell_demo_emit_mov(code, &offset, 2, 1U);
@@ -544,6 +591,15 @@ static uint32_t shell_build_input_test_image(void) {
     offset += 4;
     if (shell_demo_emit_jne(code, &offset, loop_offset) != OK) return 0;
 
+    if (use_tty) {
+        shell_demo_emit_mov(code, &offset, 0U, APP_SYSCALL_FILE_CLOSE);
+        shell_demo_emit_load_ebx(code, &offset,
+                                 USER_DATA_BASE + APP_INPUT_TTY_FD_OFFSET);
+        code[offset++] = 0xCDU;
+        code[offset++] = 0x80U;
+        shell_demo_emit_exit_on_error(code, &offset);
+    }
+
     shell_demo_emit_mov(code, &offset, 0, APP_SYSCALL_PROCESS_EXIT);
     code[offset++] = 0x31;
     code[offset++] = 0xDB;
@@ -564,11 +620,15 @@ static uint32_t shell_build_input_test_image(void) {
     header.flags = APP_IMAGE_FLAGS_NONE;
     kmemcpy(appcheck_demo_image + header.data_offset, app_input_test_message,
             kstrlen(app_input_test_message));
+    if (use_tty) {
+        kmemcpy(appcheck_demo_image + header.data_offset +
+                APP_INPUT_TTY_PATH_OFFSET, "/dev/tty", 9U);
+    }
     kmemcpy(appcheck_demo_image, &header, APP_IMAGE_HEADER_SIZE);
     return header.data_offset + header.data_size;
 }
 
-void shell_checks_run_app_inputtest(void) {
+void shell_checks_run_app_inputtest(uint8_t use_tty) {
     uint32_t image_size;
     uint32_t pid = 0;
     int result;
@@ -578,7 +638,7 @@ void shell_checks_run_app_inputtest(void) {
         return;
     }
 
-    image_size = shell_build_input_test_image();
+    image_size = shell_build_input_test_image(use_tty);
     if (image_size == 0) {
         video_print("Erro: nao foi possivel montar o teste de entrada.\n", 0x0C);
         return;
@@ -1909,6 +1969,26 @@ static void cmd_appcheck_paths(void) {
                                        ERR_NOT_FOUND);
 }
 
+static void cmd_appcheck_devices(void) {
+    app_handle_t handle = APP_HANDLE_INVALID;
+    int result = syscall_invoke_kernel(
+        APP_SYSCALL_FILE_OPEN, (uint32_t)"/dev/speaker",
+        APP_FILE_MODE_WRITE, (uint32_t)&handle, 0U, 0U);
+
+    cmd_appcheck_print_result("device_open", result);
+    if (result != OK) return;
+    result = syscall_invoke_kernel(APP_SYSCALL_FILE_IOCTL, handle,
+                                   APP_IOCTL_SPEAKER_STOP, 0U, 0U, 0U);
+    cmd_appcheck_print_result("file_ioctl", result);
+    result = syscall_invoke_kernel(APP_SYSCALL_FILE_IOCTL, handle,
+                                   APP_CHECK_INVALID_IOCTL, 0U, 0U, 0U);
+    cmd_appcheck_print_expected_result("file_ioctl_invalido", result,
+                                       ERR_INVALID);
+    result = syscall_invoke_kernel(APP_SYSCALL_FILE_CLOSE, handle,
+                                   0U, 0U, 0U, 0U);
+    cmd_appcheck_print_result("device_close", result);
+}
+
 static void cmd_appcheck_ipc(void) {
     app_message_t message;
     app_message_t received;
@@ -2133,6 +2213,7 @@ static void cmd_appcheck(void) {
     cmd_appcheck_print_result("process_exit", result);
     cmd_appcheck_files();
     cmd_appcheck_paths();
+    cmd_appcheck_devices();
     cmd_appcheck_ipc();
     cmd_appcheck_launch();
     cmd_appcheck_loader();

@@ -5,6 +5,7 @@
 #include "core/keyboard.h"
 #include "fs/fs.h"
 #include "fs/vfs.h"
+#include "fs/devfs.h"
 #include "fs/storage.h"
 #include "fs/file_index.h"
 #include "core/memory.h"
@@ -1352,7 +1353,9 @@ static void cmd_health_check_vfs(int* issue_count) {
     if (!status.initialized ||
         status.global_files_used > status.global_file_capacity ||
         !status.mounts_active ||
-        status.mounts_active > status.mount_capacity) {
+        status.mounts_active > status.mount_capacity ||
+        status.device_capacity != DEVFS_MAX_NODES ||
+        status.devices_active != status.device_capacity) {
         cmd_health_check_print_named_state(
             "VFS", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
             "capacidade ou estado inconsistente", issue_count);
@@ -4292,6 +4295,8 @@ static const char* cmd_vfs_node_name(vfs_node_type_t type) {
     if (type == VFS_NODE_STDOUT) return "STDOUT";
     if (type == VFS_NODE_STDERR) return "STDERR";
     if (type == VFS_NODE_DIRECTORY) return "DIR";
+    if (type == VFS_NODE_CHAR_DEVICE) return "CHAR";
+    if (type == VFS_NODE_BLOCK_DEVICE) return "BLOCK";
     if (type == VFS_NODE_TEST) return "TEST";
     return "NONE";
 }
@@ -4338,6 +4343,12 @@ static void cmd_vfs_status(void) {
     shell_command_print_num(status.lookups);
     video_print("/", 0x08);
     shell_command_print_num(status.chdirs);
+    video_print("  ioctl: ", 0x07);
+    shell_command_print_num(status.ioctls);
+    video_print("\n  dispositivos: ", 0x07);
+    shell_command_print_num(status.devices_active);
+    video_print("/", 0x08);
+    shell_command_print_num(status.device_capacity);
     video_print("\nDescritores do processo atual:\n", 0x0B);
     for (uint32_t index = 0U; index < count; index++) {
         video_print("  fd=", 0x07);
@@ -4377,7 +4388,8 @@ static void cmd_mount(const char* args) {
         video_print(" -> ", 0x08);
         video_print(mount->volume_id, 0x07);
         video_print(" tipo=", 0x08);
-        video_print(storage_fs_name(mount->fs_type), 0x07);
+        video_print(mount->kind == VFS_MOUNT_DEVFS ? "DEVFS" :
+                    storage_fs_name(mount->fs_type), 0x07);
         video_print(" acesso=", 0x08);
         video_print(mount->read_only ? "RO" : "RW", 0x07);
         video_print(" geracao=", 0x08);
@@ -4422,6 +4434,28 @@ static void cmd_vfs_test(void) {
     int test_result = vfs_self_test(&result);
 
     video_print("VFS Test: ", 0x07);
+    video_print(test_result == OK ? "OK\n" : "ERRO\n",
+                test_result == OK ? 0x0A : 0x0C);
+    video_print("  Casos aprovados: ", 0x07);
+    shell_command_print_num(result.passed);
+    video_print("/", 0x08);
+    shell_command_print_num(result.total);
+    video_print("\n", 0x07);
+}
+
+static void cmd_devcheck(const char* args) {
+    devfs_test_result_t result;
+    int test_result;
+
+    if (args && *args) {
+        LOG_ERROR("SHELL", "Comando devcheck recebeu argumentos");
+        video_print("Uso: devcheck\n", 0x0C);
+        return;
+    }
+    video_print("DevCheck: recusas de permissao abaixo sao esperadas.\n",
+                0x0E);
+    test_result = devfs_self_test(&result);
+    video_print("DevCheck: ", 0x07);
     video_print(test_result == OK ? "OK\n" : "ERRO\n",
                 test_result == OK ? 0x0A : 0x0C);
     video_print("  Casos aprovados: ", 0x07);
@@ -4499,6 +4533,7 @@ SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_workq, cmd_workq)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_kill, cmd_kill)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_sigtest, cmd_sigtest)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_vfs, cmd_vfs)
+SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_devcheck, cmd_devcheck)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_mount, cmd_mount)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_pwd, cmd_pwd)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_cd, cmd_cd)

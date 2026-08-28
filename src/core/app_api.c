@@ -162,6 +162,13 @@ int app_api_file_lseek(app_handle_t handle, int32_t offset, uint32_t whence,
     return app_files_lseek(handle, offset, whence, position);
 }
 
+int app_api_file_ioctl(app_handle_t handle, uint32_t request, void* argument) {
+    int result = app_api_require_ready();
+
+    if (result != OK) return result;
+    return app_files_ioctl(handle, request, argument);
+}
+
 int app_api_chdir(const char* path) {
     int result = app_api_require_ready();
 

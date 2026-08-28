@@ -28,7 +28,12 @@ universal, quatro montagens sincronizadas com Storage e `cwd` por processo.
 As matrizes do QEMU padrao e do perfil USB MSC foram aprovadas sem residuos
 VFS, sem alterar bootloader, Stage 2 ou assembly de interrupcoes.
 
-## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A-EP9.4C validadas; SYNC1 concluída com a dívida técnica [DT100-001](docs/qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2) aceita para K5/v1.0.0; SYNC2, SYNC3/R4, SYNC4, VFS1 e VFS2 concluidas e validadas; R5 permanece pendente no Roadmap 09
+VFS3 esta implementada e aguarda validacao com App API 0.7, `devfs` fixo em
+`/dev`, dispositivos de caractere e bloco, listagem universal e syscall 17
+para `ioctl`. As quatro vagas do Storage permanecem independentes da quinta
+montagem virtual.
+
+## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A-EP9.4C validadas; SYNC1 concluída com a dívida técnica [DT100-001](docs/qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2) aceita para K5/v1.0.0; SYNC2, SYNC3/R4, SYNC4, VFS1 e VFS2 concluidas e validadas; VFS3 implementada e aguardando validacao; R5 permanece pendente no Roadmap 09
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
@@ -38,7 +43,7 @@ Sistema e ecossistema:       [████████████████�
 Evolução da plataforma:      [████████████████████████████████████-------] EP1-EP6.4 e EP7.0 encerradas; EP7.1B EHCI/transporte RTL8811CU implementada; EP9.0A e EP9.4A concluídas
 ```
 
-**Documentação de atualização sincronizada em:** 2026-08-28 14:13 (America/Sao_Paulo).
+**Documentação de atualização sincronizada em:** 2026-08-28 15:01 (America/Sao_Paulo).
 
 ---
 
@@ -200,7 +205,8 @@ Evolução da plataforma:      [████████████████
 | `regcheck [full]` | Valida a regressao compacta; `full` soma PCI, Devices, Network, Wi-Fi, ACPI e Power |
 | `appcheck` | Testa API, arquivos, IPC e carregador |
 | `app run <arq> [args]` | Executa aplicativo ring 3 com argumentos simples |
-| `app inputtest` | Testa teclado e foco de aplicativo ring 3 |
+| `app inputtest [tty]` | Testa stdin ou `/dev/tty`, teclado e foco ring 3 |
+| `app devtest` | Testa dispositivos e `ioctl` em ring 3 |
 | `app outputtest [fail]` | Testa saida ZAPP acima de 1 KiB e codigos de saida |
 | `app argtest <texto>` | Testa argumentos de aplicativo ring 3 |
 | `reboot` | Reinicia o sistema |

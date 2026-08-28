@@ -675,6 +675,34 @@ arquivo regular e diretorio sem criar descritor. Ela preserva
 `storage_get_file_info()` para os chamadores que exigem exclusivamente um
 arquivo regular.
 
+## DevFS e listagem universal VFS3
+
+A VFS3 reserva uma quinta montagem virtual fixa em `/dev`. Ela não ocupa uma
+das quatro vagas de volumes do Storage, não é removida por refresh e não pode
+ser desmontada. A resolução pelo maior prefixo seleciona `/dev` antes da raiz,
+mesmo quando o volume FAT contém uma entrada de mesmo nome. Processos podem
+usar `/dev` como `cwd`, e referências de diretório continuam contabilizadas.
+
+O registro estático expõe cinco nós no mesmo pool global de arquivos abertos:
+
+- `/dev/null`: leitura em EOF e escrita integral descartada;
+- `/dev/zero`: leitura preenchida com zeros e escrita descartada;
+- `/dev/tty`: leitura bloqueante pelo fluxo de stdin e escrita no console;
+- `/dev/speaker`: escrita de um `app_speaker_tone_t` ou `ioctl` BEEP/STOP;
+- `/dev/hda`: primeiro bloco ATA online, somente leitura, com capacidade
+  congelada no `open`, acesso por bytes e `lseek` dentro da capacidade.
+
+O speaker aceita 20 a 20.000 Hz e duração de 1 a 2.000 ms. `/dev/hda` usa um
+buffer de setor por arquivo para bordas desalinhadas e envia setores completos
+diretamente à camada de blocos. EOF retorna zero bytes e nenhum autoteste
+escreve no disco. Esperas IPC, console, speaker e I/O de bloco sempre ocorrem
+fora dos locks VFS/devfs.
+
+`vfs_list_dir()` lista diretórios FAT12/FAT32 com nomes longos. A raiz combina
+as entradas reais com `mnt` e `dev` sem duplicatas; `/mnt` lista os pontos de
+montagem e `/dev` lista o registro do devfs. O Shell usa essa API em
+`ls [caminho]`; `cat` abre, lê até 4095 bytes e fecha pela VFS.
+
 ---
 
 ## BMP (`bmp.c`)

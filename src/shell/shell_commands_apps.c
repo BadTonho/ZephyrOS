@@ -260,8 +260,13 @@ typedef struct {
     file_index_search_status_t status;
 } shell_index_workspace_t;
 
-static void cmd_app_inputtest(void) {
-    shell_checks_run_app_inputtest();
+static void cmd_app_inputtest(const char* args) {
+    if (args && *args && kstrcmp(args, "tty") != 0) {
+        LOG_ERROR("SHELL", "Argumento invalido no teste de entrada ZAPP");
+        video_print("Uso: app inputtest [tty]\n", 0x0E);
+        return;
+    }
+    shell_checks_run_app_inputtest(args && *args);
 }
 
 static void cmd_app_argtest(const char* text) {
@@ -339,6 +344,22 @@ static void cmd_app_pathtest(void) {
     video_print(".\n", 0x0A);
 }
 
+static void cmd_app_devtest(void) {
+    uint32_t pid = 0U;
+    int result = app_builtin_run_devtest(&pid);
+
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Falha ao iniciar teste ring3 de dispositivos");
+        video_print("Erro: teste de dispositivos indisponivel (codigo ", 0x0C);
+        shell_command_print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+    video_print("Teste de dispositivos iniciado, PID ", 0x0A);
+    shell_command_print_num(pid);
+    video_print(".\n", 0x0A);
+}
+
 static void cmd_app(const char* args) {
     char subcommand[16];
     char path[FS_MAX_PATH];
@@ -349,7 +370,7 @@ static void cmd_app(const char* args) {
     int result;
 
     if (!args) {
-        video_print("Uso: app run <arquivo.ZAP> [args] | app inputtest | app outputtest [fail] | app pathtest | app argtest <texto>\n", 0x0E);
+        video_print("Uso: app run <arquivo.ZAP> [args] | app inputtest [tty] | app devtest | app outputtest [fail] | app pathtest | app argtest <texto>\n", 0x0E);
         return;
     }
     while (args[sub_length] && args[sub_length] != ' ' &&
@@ -361,11 +382,17 @@ static void cmd_app(const char* args) {
     while (args[sub_length] == ' ' || args[sub_length] == '\t') sub_length++;
 
     if (kstrcmp(subcommand, "inputtest") == 0) {
+        cmd_app_inputtest(args + sub_length);
+        return;
+    }
+
+    if (kstrcmp(subcommand, "devtest") == 0) {
         if (args[sub_length] != '\0') {
-            video_print("Uso: app inputtest\n", 0x0E);
+            LOG_ERROR("SHELL", "Argumento invalido no DevTest ring3");
+            video_print("Uso: app devtest\n", 0x0E);
             return;
         }
-        cmd_app_inputtest();
+        cmd_app_devtest();
         return;
     }
 
@@ -389,7 +416,7 @@ static void cmd_app(const char* args) {
     }
 
     if (kstrcmp(subcommand, "run") != 0) {
-        video_print("Uso: app run <arquivo.ZAP> [args] | app inputtest | app outputtest [fail] | app pathtest | app argtest <texto>\n", 0x0E);
+        video_print("Uso: app run <arquivo.ZAP> [args] | app inputtest [tty] | app devtest | app outputtest [fail] | app pathtest | app argtest <texto>\n", 0x0E);
         return;
     }
     while (args[sub_length] && args[sub_length] != ' ' &&

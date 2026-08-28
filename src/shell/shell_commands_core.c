@@ -4,6 +4,7 @@
 #include "core/video.h"
 #include "core/keyboard.h"
 #include "fs/fs.h"
+#include "fs/vfs.h"
 #include "fs/storage.h"
 #include "fs/file_index.h"
 #include "core/memory.h"
@@ -264,6 +265,7 @@ typedef struct {
 static uint32_t shell_echo_loader_pid = 0;
 static uint32_t shell_builtin_loader_pid = 0;
 static shell_builtin_app_t shell_builtin_loader_app = SHELL_BUILTIN_APP_NONE;
+static vfs_dir_entry_t shell_vfs_dir_entries[VFS_MAX_DIR_ENTRIES];
 
 const char* shell_core_builtin_app_name(shell_builtin_app_t app) {
     if (app == SHELL_BUILTIN_APP_UPTIME) return "uptime";
@@ -366,6 +368,7 @@ static void cmd_help(void) {
     video_print("  sigtest - Valida sinais assincronos\n", 0x07);
     video_print("  vfs [status|test] - Inspeciona descritores e operacoes de I/O\n",
                 0x07);
+    video_print("  devcheck - Valida dispositivos do devfs\n", 0x07);
     video_print("  kmetrics - Mostra linha-base de metricas do kernel\n", 0x07);
     video_print("  memcheck - Valida heap, PMM e diretorios de usuario\n", 0x07);
     video_print("  schedcheck - Valida invariantes do scheduler\n", 0x07);
@@ -395,7 +398,8 @@ static void cmd_help(void) {
                 0x07);
     video_print("  pkgcheck - Testa validacoes de pacote sem gravar\n", 0x07);
     video_print("  app run <arquivo.ZAP> [args] - Executa aplicativo ring 3\n", 0x07);
-    video_print("  app inputtest - Testa teclado de aplicativo ring 3\n", 0x07);
+    video_print("  app inputtest [tty] - Testa entrada ring 3\n", 0x07);
+    video_print("  app devtest - Testa dispositivos em ring 3\n", 0x07);
     video_print("  app outputtest [fail] - Testa saida ZAPP em blocos\n", 0x07);
     video_print("  app pathtest - Testa caminhos VFS em ring 3\n", 0x07);
     video_print("  app argtest <texto> - Testa argumentos em aplicativo ring 3\n", 0x07);
@@ -418,65 +422,74 @@ static void cmd_clear(void) {
     if (!shell_runtime_is_hosted_visible()) taskbar_draw();
 }
 
-static void cmd_ls(void) {
-    if (!recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM)) {
-        video_print("Erro: filesystem indisponivel.\n", 0x0C);
+static void cmd_ls(const char* path) {
+    char cwd[VFS_MAX_PATH];
+    uint32_t count = 0U;
+    int result;
+
+    if (!path || !*path) {
+        result = vfs_getcwd(cwd, sizeof(cwd));
+        if (result != OK) {
+            video_print("Erro: diretorio atual indisponivel.\n", 0x0C);
+            return;
+        }
+        path = cwd;
+    }
+    result = vfs_list_dir(path, shell_vfs_dir_entries,
+                          VFS_MAX_DIR_ENTRIES, &count);
+    if (result != OK) {
+        video_print("Erro: diretorio VFS indisponivel (codigo ", 0x0C);
+        shell_command_print_num(result);
+        video_print(").\n", 0x0C);
         return;
     }
-
-    video_print("Arquivos no disco:\n", 0x0B);
-    int count = fs_list_dir();
-    if (count == 0) {
+    if (!count) {
         video_print("  (vazio)\n", 0x08);
+        return;
+    }
+    for (uint32_t index = 0U; index < count; index++) {
+        video_print("  ", 0x07);
+        video_print(shell_vfs_dir_entries[index].name,
+                    shell_vfs_dir_entries[index].type == VFS_NODE_DIRECTORY ?
+                    0x0B : 0x07);
+        if (shell_vfs_dir_entries[index].type == VFS_NODE_DIRECTORY) {
+            video_print("/", 0x0B);
+        }
+        video_print("\n", 0x07);
     }
 }
 
 static void cmd_cat(const char* filename) {
-    if (!recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM)) {
-        video_print("Erro: filesystem indisponivel.\n", 0x0C);
-        return;
-    }
+    int32_t fd = VFS_FD_INVALID;
+    uint32_t bytes = 0U;
+    int result;
 
     if (!filename || !*filename) {
         video_print("Uso: cat <arquivo>\n", 0x0C);
         return;
     }
-
-    char name[12];
-    int i = 0;
-    while (filename[i] && i < 11) {
-        name[i] = filename[i];
-        i++;
-    }
-    name[i] = '\0';
-    shell_command_uppercase(name);
-
     uint8_t* buffer = (uint8_t*)kmalloc(4096);
     if (!buffer) {
+        LOG_ERROR("SHELL", "Falha ao alocar buffer do cat VFS");
         video_print("Erro: sem memoria!\n", 0x0C);
         return;
     }
-
-    int bytes = fs_read_file(name, buffer, 4095);
-    if (bytes < 0) {
-        video_print("Erro: arquivo nao encontrado: ", 0x0C);
-        video_print(filename, 0x0C);
-        video_print("\n", 0x0C);
-        kfree(buffer);
-        buffer = 0;
-        return;
+    result = vfs_open(filename, VFS_MODE_READ, &fd);
+    if (result == OK) result = vfs_read(fd, buffer, 4095U, &bytes);
+    if (fd != VFS_FD_INVALID && vfs_close(fd) != OK && result == OK) {
+        result = ERR_STATE;
     }
-
-    if (bytes == 0) {
+    if (result != OK) {
+        video_print("Erro: leitura VFS recusada (codigo ", 0x0C);
+        shell_command_print_num(result);
+        video_print(").\n", 0x0C);
+    } else if (bytes == 0U) {
         video_print("(arquivo vazio)\n", 0x08);
-        kfree(buffer);
-        buffer = 0;
-        return;
+    } else {
+        buffer[bytes] = '\0';
+        video_print((char*)buffer, 0x07);
+        video_print("\n", 0x07);
     }
-
-    buffer[bytes] = '\0';
-    video_print((char*)buffer, 0x07);
-    video_print("\n", 0x07);
     kfree(buffer);
     buffer = 0;
 }
@@ -831,7 +844,7 @@ int shell_core_handle_loader_result(const app_loader_result_t* result) {
 
 SHELL_CORE_WRAP_NO_ARGS(shell_dispatch_cmd_help, cmd_help)
 SHELL_CORE_WRAP_NO_ARGS(shell_dispatch_cmd_clear, cmd_clear)
-SHELL_CORE_WRAP_NO_ARGS(shell_dispatch_cmd_ls, cmd_ls)
+SHELL_CORE_WRAP_ARGS(shell_dispatch_cmd_ls, cmd_ls)
 SHELL_CORE_WRAP_ARGS(shell_dispatch_cmd_cat, cmd_cat)
 SHELL_CORE_WRAP_ARGS(shell_dispatch_cmd_echo, cmd_echo)
 SHELL_CORE_WRAP_NO_ARGS(shell_dispatch_cmd_mem, cmd_mem)

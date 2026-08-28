@@ -11,5 +11,6 @@ int app_builtin_run_uptime(uint32_t* pid_out);
 int app_builtin_run_mem(uint32_t* pid_out);
 int app_builtin_run_outputtest(uint32_t exit_code, uint32_t* pid_out);
 int app_builtin_run_pathtest(uint32_t* pid_out);
+int app_builtin_run_devtest(uint32_t* pid_out);
 
 #endif

@@ -80,6 +80,14 @@ int app_files_lseek(app_handle_t handle, int32_t offset, uint32_t whence,
     return vfs_lseek((int32_t)handle, offset, whence, position);
 }
 
+int app_files_ioctl(app_handle_t handle, uint32_t request, void* argument) {
+    if (!app_files_is_ready()) {
+        LOG_ERROR("APP_FILES", "Ioctl antes da inicializacao");
+        return ERR_STATE;
+    }
+    return vfs_ioctl((int32_t)handle, request, argument);
+}
+
 int app_files_chdir(const char* path) {
     if (!app_files_is_ready()) {
         LOG_ERROR("APP_FILES", "Chdir antes da inicializacao");

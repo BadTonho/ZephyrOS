@@ -270,6 +270,33 @@ static int syscall_user_file_lseek(const registers_t* regs) {
     return paging_copy_to_user((void*)regs->esi, &position, sizeof(position));
 }
 
+static int syscall_user_file_ioctl(const registers_t* regs) {
+    app_speaker_tone_t tone;
+    int result;
+
+    if (regs->ecx == APP_IOCTL_SPEAKER_BEEP) {
+        if (!regs->edx) {
+            LOG_ERROR("SYSCALL", "file_ioctl BEEP sem argumento");
+            return ERR_NULL;
+        }
+        result = paging_validate_user_range(regs->edx, sizeof(tone), 0);
+        if (result != OK) return result;
+        result = paging_copy_from_user(&tone, (const void*)regs->edx,
+                                       sizeof(tone));
+        if (result != OK) return result;
+        return app_api_file_ioctl((app_handle_t)regs->ebx, regs->ecx, &tone);
+    }
+    if (regs->ecx == APP_IOCTL_SPEAKER_STOP) {
+        if (regs->edx) {
+            LOG_ERROR("SYSCALL", "file_ioctl STOP recebeu argumento");
+            return ERR_INVALID;
+        }
+        return app_api_file_ioctl((app_handle_t)regs->ebx, regs->ecx, 0);
+    }
+    LOG_ERROR("SYSCALL", "Request de file_ioctl desconhecido");
+    return ERR_INVALID;
+}
+
 static int syscall_user_message_send(const registers_t* regs) {
     app_message_t message;
     int result;
@@ -380,6 +407,8 @@ static int syscall_dispatch_user(registers_t* regs) {
             return syscall_user_chdir(regs);
         case APP_SYSCALL_GETCWD:
             return syscall_user_getcwd(regs);
+        case APP_SYSCALL_FILE_IOCTL:
+            return syscall_user_file_ioctl(regs);
         case APP_SYSCALL_MESSAGE_SEND:
             return syscall_user_message_send(regs);
         case APP_SYSCALL_MESSAGE_RECEIVE:
@@ -441,6 +470,9 @@ static int syscall_dispatch(registers_t* regs) {
             return app_api_chdir((const char*)regs->ebx);
         case APP_SYSCALL_GETCWD:
             return app_api_getcwd((char*)regs->ebx, regs->ecx);
+        case APP_SYSCALL_FILE_IOCTL:
+            return app_api_file_ioctl((app_handle_t)regs->ebx, regs->ecx,
+                                      (void*)regs->edx);
         case APP_SYSCALL_MESSAGE_SEND:
             return app_api_message_send(regs->ebx,
                                          (const app_message_t*)regs->ecx);
