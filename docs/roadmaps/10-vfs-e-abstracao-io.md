@@ -75,11 +75,11 @@ Durante a matriz, Enter e Ctrl+C em `app inputtest` foram aprovados. O primeiro
 teste com F12 revelou liberacao prematura do fd 0 bloqueado; a correcao passou
 a concluir o cancelamento somente depois do retorno da espera. O novo teste
 com F12 foi aprovado, sem descritores residuais. Os gates da versao corrigida
-foram confirmados. Uma repeticao de Ctrl+C confirmou o encerramento e a
-limpeza, mas revelou contabilizacao espuria de falha VFS; a leitura stdin foi
-ajustada para concluir a interrupcao por sinal com zero bytes e aguarda os
-gates desta nova versao e a repeticao desse caso. Permanece o restante da
-matriz funcional.
+foram confirmados. Uma repeticao de Ctrl+C revelou contabilizacao espuria de
+falha VFS; a leitura stdin foi ajustada para concluir a interrupcao por sinal
+com zero bytes. O novo teste foi aprovado sem log de erro, sem falhas VFS e
+sem descritores residuais. Enter, Ctrl+C e F12 estao aprovados; permanece o
+restante da matriz funcional.
 
 ### Critério de saída
 
@@ -94,15 +94,15 @@ Processos em ring 3 conseguem abrir, ler, escrever e fechar descritores de arqui
 
 ### Matriz pendente do usuario
 
-No host, para a mesma versao: `make package-test`, `make q3check`,
-`make clean && make` e `make run`. No QEMU padrao: `vfs status`, `vfs test`,
-`vfs test foo`, `appcheck`, `app inputtest`, `usertest fault`,
-`regcheck full`, `health check`, `memcheck`, `log check`, `guimode simple`,
-`vfs status` e `guimode classic`. Em `app inputtest`, validar Enter, Ctrl+C e
-F12 separadamente, retorno do foco, ausencia de descritores residuais e Shell
-responsivo.
+Os gates de host, os diagnosticos VFS/App API e os tres fluxos de
+`app inputtest` ja foram aprovados para esta versao. `usertest fault`,
+`regcheck full`, `health check`, `memcheck` e `log check` tambem foram
+aprovados no QEMU padrao. O usuario nao valida o fallback Simple; como a
+entrega permanece no modo Classic e nao alterou a implementacao visual do
+fallback, esse modo nao integra o criterio de saida. O `vfs status` final
+confirmou ausencia de residuos e concluiu a matriz do QEMU padrao.
 
-Como a entrega toca teclado e stdin, executar depois `make run-usb-hid` e,
+Como a entrega toca teclado e stdin, resta executar `make run-usb-hid` e,
 nesse perfil, `usb hid status`, `app inputtest`, `vfs status`, `regcheck full`
 e `health check`, confirmando teclado USB, Ctrl+C, retorno ao Shell e
 teclado/mouse em `READY`.
