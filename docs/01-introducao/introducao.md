@@ -15,7 +15,7 @@ O ZephyrOS é um sistema operacional desenvolvido do zero em C + Assembly (x86),
 - Interface Dual Completa: Fallback simple TUI e GUI Classic (VESA/Pixel-Level)
 - Editor de texto, media player, file manager, task manager e gerenciador de janelas
 - Suporte a mouse PS/2 com integração à UI
-- App API 0.5 com VFS, syscalls, processos ring 3, sinais, loader ZAPP e argumentos
+- App API 0.6 com VFS, caminhos universais, cwd, syscalls, processos ring 3, sinais e loader ZAPP
 
 ## Stack Técnica
 

@@ -285,6 +285,7 @@ static wait_queue_info_t shell_wait_queues[WAIT_QUEUE_REGISTRY_CAPACITY];
 static work_info_t shell_work_records[WORKQUEUE_CAPACITY];
 static shell_kmetrics_baseline_t shell_kmetrics_baseline;
 static vfs_descriptor_info_t shell_vfs_descriptors[VFS_MAX_FDS];
+static vfs_mount_info_t shell_vfs_mounts[VFS_MAX_MOUNTS];
 
 static void cmd_health_print_component(recovery_component_id_t component) {
     const recovery_component_t* entry = recovery_get(component);
@@ -1349,7 +1350,9 @@ static void cmd_health_check_vfs(int* issue_count) {
         return;
     }
     if (!status.initialized ||
-        status.global_files_used > status.global_file_capacity) {
+        status.global_files_used > status.global_file_capacity ||
+        !status.mounts_active ||
+        status.mounts_active > status.mount_capacity) {
         cmd_health_check_print_named_state(
             "VFS", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
             "capacidade ou estado inconsistente", issue_count);
@@ -4284,6 +4287,7 @@ static const char* cmd_vfs_node_name(vfs_node_type_t type) {
     if (type == VFS_NODE_STDIN) return "STDIN";
     if (type == VFS_NODE_STDOUT) return "STDOUT";
     if (type == VFS_NODE_STDERR) return "STDERR";
+    if (type == VFS_NODE_DIRECTORY) return "DIR";
     if (type == VFS_NODE_TEST) return "TEST";
     return "NONE";
 }
@@ -4322,6 +4326,14 @@ static void cmd_vfs_status(void) {
     shell_command_print_num(status.closes);
     video_print("/", 0x08);
     shell_command_print_num(status.failures);
+    video_print("\n  montagens: ", 0x07);
+    shell_command_print_num(status.mounts_active);
+    video_print("/", 0x08);
+    shell_command_print_num(status.mount_capacity);
+    video_print("  lookups/chdir: ", 0x07);
+    shell_command_print_num(status.lookups);
+    video_print("/", 0x08);
+    shell_command_print_num(status.chdirs);
     video_print("\nDescritores do processo atual:\n", 0x0B);
     for (uint32_t index = 0U; index < count; index++) {
         video_print("  fd=", 0x07);
@@ -4336,6 +4348,68 @@ static void cmd_vfs_status(void) {
         video_print(" path=", 0x08);
         video_print(shell_vfs_descriptors[index].path, 0x07);
         video_print("\n", 0x07);
+    }
+}
+
+static void cmd_mount(const char* args) {
+    uint32_t count = 0U;
+
+    if (args && *args) {
+        LOG_ERROR("SHELL", "Comando mount recebeu argumentos");
+        video_print("Uso: mount\n", 0x0C);
+        return;
+    }
+    if (vfs_copy_mounts(shell_vfs_mounts, VFS_MAX_MOUNTS, &count) != OK) {
+        LOG_ERROR("SHELL", "Falha ao listar montagens VFS");
+        video_print("Erro: montagens VFS indisponiveis.\n", 0x0C);
+        return;
+    }
+    video_print("Montagens VFS:\n", 0x0B);
+    for (uint32_t index = 0U; index < count; index++) {
+        vfs_mount_info_t* mount = &shell_vfs_mounts[index];
+
+        video_print("  ", 0x07);
+        video_print(mount->mount_point, 0x0B);
+        video_print(" -> ", 0x08);
+        video_print(mount->volume_id, 0x07);
+        video_print(" tipo=", 0x08);
+        video_print(storage_fs_name(mount->fs_type), 0x07);
+        video_print(" acesso=", 0x08);
+        video_print(mount->read_only ? "RO" : "RW", 0x07);
+        video_print(" geracao=", 0x08);
+        shell_command_print_num(mount->generation);
+        video_print(" refs=", 0x08);
+        shell_command_print_num(mount->open_files + mount->cwd_references);
+        video_print("\n", 0x07);
+    }
+}
+
+static void cmd_pwd(const char* args) {
+    char cwd[VFS_MAX_PATH];
+
+    if (args && *args) {
+        LOG_ERROR("SHELL", "Comando pwd recebeu argumentos");
+        video_print("Uso: pwd\n", 0x0C);
+        return;
+    }
+    if (vfs_getcwd(cwd, sizeof(cwd)) != OK) {
+        LOG_ERROR("SHELL", "Falha ao consultar cwd");
+        video_print("Erro: diretorio atual indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print(cwd, 0x07);
+    video_print("\n", 0x07);
+}
+
+static void cmd_cd(const char* args) {
+    const char* path = args && *args ? args : "/";
+    int result = vfs_chdir(path);
+
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Falha ao alterar diretorio VFS");
+        video_print("Erro: cd recusado (codigo ", 0x0C);
+        shell_command_print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
     }
 }
 
@@ -4421,6 +4495,9 @@ SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_workq, cmd_workq)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_kill, cmd_kill)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_sigtest, cmd_sigtest)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_vfs, cmd_vfs)
+SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_mount, cmd_mount)
+SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_pwd, cmd_pwd)
+SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_cd, cmd_cd)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_devices, cmd_devices)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_device_info, cmd_device_info)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_device_scan, cmd_device_scan)

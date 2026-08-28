@@ -77,6 +77,13 @@ typedef struct {
 } process_t;
 ```
 
+Desde a VFS2, `fd_table` tambem armazena o diretorio de trabalho canonico do
+processo. O Idle e processos sem pai iniciam em `/`; novos processos nativos e
+ring 3 herdam o `cwd` do processo criador. A copia e independente: `chdir` em
+um processo nao altera o pai nem os irmaos. Descarte, encerramento e destruicao
+invalidam a tabela, e as invariantes globais recusam `cwd` vazio, nao absoluto
+ou pertencente a uma montagem removida.
+
 ### Criando um Processo
 
 ```c

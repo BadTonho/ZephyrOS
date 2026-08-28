@@ -23,6 +23,11 @@ VFS1 esta concluida e validada com App API 0.5, descritores por processo,
 stdio e `file_lseek` na syscall 14. As matrizes do QEMU padrao e do perfil USB
 HID foram aprovadas sem descritores residuais ou falhas VFS.
 
+VFS2 esta implementada e aguarda validacao. A App API 0.6 acrescenta
+`chdir/getcwd`, namespace universal, quatro montagens sincronizadas com
+Storage e `cwd` por processo, sem alterar bootloader, Stage 2 ou assembly de
+interrupcoes.
+
 ## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A-EP9.4C validadas; SYNC1 concluída com a dívida técnica [DT100-001](docs/qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2) aceita para K5/v1.0.0; SYNC2, SYNC3/R4, SYNC4 e VFS1 concluidas e validadas; R5 permanece pendente no Roadmap 09
 
 ```
@@ -33,7 +38,7 @@ Sistema e ecossistema:       [████████████████�
 Evolução da plataforma:      [████████████████████████████████████-------] EP1-EP6.4 e EP7.0 encerradas; EP7.1B EHCI/transporte RTL8811CU implementada; EP9.0A e EP9.4A concluídas
 ```
 
-**Documentação de atualização sincronizada em:** 2026-08-28 10:42 (America/Sao_Paulo).
+**Documentação de atualização sincronizada em:** 2026-08-28 11:48 (America/Sao_Paulo).
 
 ---
 

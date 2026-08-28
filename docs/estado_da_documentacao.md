@@ -18,7 +18,7 @@ funcionalidade entregue.
 | Desktop e aplicativos nativos | Capitulos 12 e 13 | Interfaces Simple e Classic atuais; Modern reservado. |
 | Atualizacoes do sistema | [14 - Atualizacoes](14-atualizacoes/contrato-zupd-v1.md) | Contratos ZUPD v1, U1 a U5 e System Updater. |
 | App Store e pacotes | [App Store](13-aplicativos/app-store.md) e [Pacotes](13-aplicativos/pacotes.md) | Contratos AS1 a AS5 e pacotes ZPKG v1. |
-| App API e apps ring 3 | [API de Aplicativos e Syscalls](melhorias%20futuras/api%20de%20aplicativos%20e%20syscalls.md) | ABI 0.5, VFS, ZAPP, sinais, foco e limites. |
+| App API e apps ring 3 | [API de Aplicativos e Syscalls](melhorias%20futuras/api%20de%20aplicativos%20e%20syscalls.md) | ABI 0.6, VFS, cwd, ZAPP, sinais, foco e limites. |
 
 ## Estado tecnico documentado
 
@@ -28,9 +28,9 @@ funcionalidade entregue.
   longa; `clear` apaga tela e historico.
 - Desktop, Explorer, Settings, System Updater e App Store oferecem modo Classic
   Modern Dark com fallback Simple. O comando `taskmgr` preserva a TUI de diagnostico.
-- A base App API 0.4, sinais e syscalls 0 a 13 foi validada. A VFS1 publica a
-  App API 0.5, descritores por processo e a syscall 14; a implementacao aguarda
-  a matriz do usuario no QEMU padrao e USB HID.
+- A base App API 0.4 e a VFS1/App API 0.5 foram validadas. A VFS2 publica a
+  App API 0.6, caminhos universais, cwd e syscalls 15-16; aguarda a matriz do
+  usuario no QEMU padrao e no perfil USB MSC.
 - `echo`, `uptime` e `mem` executam em ring 3 com fallback nativo controlado.
 - O subsistema de rede (S2.1 a S2.8) suporta Multi-NIC (E1000 e RTL8139), ARP,
   IPv4, ICMP Echo, UDP, DHCP, DNS, TCP cliente, sockets nativos e HTTP GET.

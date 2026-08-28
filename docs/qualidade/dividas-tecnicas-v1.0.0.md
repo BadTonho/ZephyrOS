@@ -203,3 +203,5 @@ Nenhuma ate o momento.
 - [Responsividade do sistema](../melhorias%20futuras/responsividade%20do%20sistema.md)
 - [Metricas de otimizacao](metricas.md)
 - [Registro de validacoes](registro-validacoes.md)
+
+tem um problema do shell, algumas execuções nao me retornam o zephyros>, ele só fica em branco

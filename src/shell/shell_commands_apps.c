@@ -323,6 +323,22 @@ static void cmd_app_outputtest(const char* args) {
     video_print(".\n", 0x0A);
 }
 
+static void cmd_app_pathtest(void) {
+    uint32_t pid = 0U;
+    int result = app_builtin_run_pathtest(&pid);
+
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Falha ao iniciar teste ring3 de caminhos");
+        video_print("Erro: teste de caminhos indisponivel (codigo ", 0x0C);
+        shell_command_print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+    video_print("Teste de caminhos iniciado, PID ", 0x0A);
+    shell_command_print_num(pid);
+    video_print(".\n", 0x0A);
+}
+
 static void cmd_app(const char* args) {
     char subcommand[16];
     char path[FS_MAX_PATH];
@@ -333,7 +349,7 @@ static void cmd_app(const char* args) {
     int result;
 
     if (!args) {
-        video_print("Uso: app run <arquivo.ZAP> [args] | app inputtest | app outputtest [fail] | app argtest <texto>\n", 0x0E);
+        video_print("Uso: app run <arquivo.ZAP> [args] | app inputtest | app outputtest [fail] | app pathtest | app argtest <texto>\n", 0x0E);
         return;
     }
     while (args[sub_length] && args[sub_length] != ' ' &&
@@ -363,8 +379,17 @@ static void cmd_app(const char* args) {
         return;
     }
 
+    if (kstrcmp(subcommand, "pathtest") == 0) {
+        if (args[sub_length] != '\0') {
+            video_print("Uso: app pathtest\n", 0x0E);
+            return;
+        }
+        cmd_app_pathtest();
+        return;
+    }
+
     if (kstrcmp(subcommand, "run") != 0) {
-        video_print("Uso: app run <arquivo.ZAP> [args] | app inputtest | app outputtest [fail] | app argtest <texto>\n", 0x0E);
+        video_print("Uso: app run <arquivo.ZAP> [args] | app inputtest | app outputtest [fail] | app pathtest | app argtest <texto>\n", 0x0E);
         return;
     }
     while (args[sub_length] && args[sub_length] != ' ' &&

@@ -136,6 +136,38 @@ static int syscall_user_file_open(const registers_t* regs) {
     return paging_copy_to_user((void*)regs->edx, &handle, sizeof(handle));
 }
 
+static int syscall_user_chdir(const registers_t* regs) {
+    char path[FS_MAX_PATH];
+    int result;
+
+    result = syscall_copy_user_string(path, sizeof(path),
+                                      (const char*)regs->ebx);
+    if (result != OK) return result;
+    return app_api_chdir(path);
+}
+
+static int syscall_user_getcwd(const registers_t* regs) {
+    char path[FS_MAX_PATH];
+    uint32_t length;
+    int result;
+
+    if (!regs->ebx) {
+        LOG_ERROR("SYSCALL", "getcwd recebeu destino nulo");
+        return ERR_NULL;
+    }
+    if (!regs->ecx || regs->ecx > FS_MAX_PATH) {
+        LOG_ERROR("SYSCALL", "getcwd recebeu capacidade invalida");
+        return ERR_OVERFLOW;
+    }
+    result = paging_validate_user_range(regs->ebx, regs->ecx, 1);
+    if (result != OK) return result;
+    result = app_api_getcwd(path, sizeof(path));
+    if (result != OK) return result;
+    length = kstrlen(path) + 1U;
+    if (length > regs->ecx) return ERR_OVERFLOW;
+    return paging_copy_to_user((void*)regs->ebx, path, length);
+}
+
 static int syscall_user_file_read(const registers_t* regs) {
     uint8_t* buffer;
     uint32_t bytes_read = 0;
@@ -344,6 +376,10 @@ static int syscall_dispatch_user(registers_t* regs) {
             return app_api_file_close((app_handle_t)regs->ebx);
         case APP_SYSCALL_FILE_LSEEK:
             return syscall_user_file_lseek(regs);
+        case APP_SYSCALL_CHDIR:
+            return syscall_user_chdir(regs);
+        case APP_SYSCALL_GETCWD:
+            return syscall_user_getcwd(regs);
         case APP_SYSCALL_MESSAGE_SEND:
             return syscall_user_message_send(regs);
         case APP_SYSCALL_MESSAGE_RECEIVE:
@@ -401,6 +437,10 @@ static int syscall_dispatch(registers_t* regs) {
             return app_api_file_lseek((app_handle_t)regs->ebx,
                                       (int32_t)regs->ecx, regs->edx,
                                       (uint32_t*)regs->esi);
+        case APP_SYSCALL_CHDIR:
+            return app_api_chdir((const char*)regs->ebx);
+        case APP_SYSCALL_GETCWD:
+            return app_api_getcwd((char*)regs->ebx, regs->ecx);
         case APP_SYSCALL_MESSAGE_SEND:
             return app_api_message_send(regs->ebx,
                                          (const app_message_t*)regs->ecx);

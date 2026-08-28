@@ -131,7 +131,9 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   `kill` e `sigtest`; a linha parcial do Shell foi limpa por Ctrl+C e o perfil
   USB HID permaneceu responsivo. R5 continua pendente no Roadmap 09.
   A VFS1 esta concluida e validada com App API 0.5, descritores por processo,
-  stdio e syscall 14 nos perfis QEMU padrao e USB HID.
+  stdio e syscall 14 nos perfis QEMU padrao e USB HID. A VFS2 esta
+  implementada com App API 0.6, montagens e cwd, aguardando validacao no QEMU
+  padrao e USB MSC.
 
 ## K4 validada
 

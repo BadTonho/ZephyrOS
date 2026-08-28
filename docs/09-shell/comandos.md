@@ -79,6 +79,9 @@ Comandos disponiveis:
   regcheck [full] - F11 cancela nos modos normal e full
   appcheck  - Testa API, arquivos, IPC e carregador ZAPP
   vfs [status|test] - Inspeciona descritores e operacoes unificadas de I/O
+  mount     - Lista o namespace e as montagens VFS
+  pwd       - Exibe o diretorio de trabalho atual
+  cd [caminho] - Altera o cwd; sem caminho retorna a raiz
   pkg       - Gerencia pacotes .ZPK locais
   store     - Abre e gerencia a App Store local/remota
   pkgcheck  - Testa validacoes de pacote sem gravar
@@ -86,6 +89,7 @@ Comandos disponiveis:
   app run <arquivo.ZAP> [args] - Executa aplicativo ring 3 de forma assincrona
   app inputtest - Testa entrada de teclado em aplicativo ring 3
   app outputtest [fail] - Testa saida ZAPP em blocos e codigos de saida
+  app pathtest - Testa chdir, getcwd e abertura relativa em ring 3
   app argtest <texto> - Testa argumentos em aplicativo ring 3
   usertest  - Executa teste isolado em ring 3
   reboot    - Reinicia o sistema
@@ -723,16 +727,29 @@ Argumentos adicionais sao recusados com `Uso: schedcheck`.
 
 ## `vfs [status|test]`
 
-`vfs status` exibe capacidade e uso global, metricas e os descritores do
-processo atual. `vfs test` executa o autoteste de stdio, ciclo de arquivo,
-seek, permissoes, EOF, limites, tabela cheia, isolamento, limpeza e
-invariantes. Argumentos excedentes, como `vfs test foo`, sao rejeitados com o
-uso correto. A etapa tambem e integrada a `appcheck`, `regcheck full` e
+`vfs status` exibe capacidade e uso global, montagens, resolucoes, mudancas de
+`cwd`, metricas e descritores do processo atual. `vfs test` cobre tambem
+normalizacao, escape da raiz, aliases, diretorio virtual, lookup, cwd,
+heranca, montagem ocupada, geracao e invariantes. Argumentos excedentes, como
+`vfs test foo`, sao rejeitados. A etapa integra `appcheck`, `regcheck full` e
 `health check`.
 
 ```text
 zephyr> vfs status
 zephyr> vfs test
+```
+
+## `mount`, `pwd` e `cd`
+
+`mount` lista ponto, volume, tipo FAT, acesso, geracao e referencias. `pwd`
+mostra o caminho canonico atual. `cd <caminho>` aceita caminho absoluto,
+relativo ou alias compativel; `cd` sem argumento retorna a `/`.
+
+```text
+zephyr> mount
+zephyr> pwd
+zephyr> cd /mnt/boot
+zephyr> cd ..
 ```
 
 ## `appcheck`
@@ -749,6 +766,10 @@ tipos de mensagem invalidos. A ponte continua restrita ao ring 0.
 
 As chamadas de arquivo usam handles opacos e leitura sequencial. As chamadas
 de IPC validam o PID, o estado do processo, o tipo da mensagem e a fila.
+
+Na App API 0.6, o comando valida tambem as syscalls 15 e 16, caminho canonico,
+diretorio virtual, restauracao do `cwd` e rejeicao de diretorio inexistente.
+`app pathtest` executa `chdir`, `getcwd` e abertura relativa real em ring 3.
 
 O comando usa a ponte interna do dispatcher e testa números inválidos,
 argumentos nulos e `process_exit`. O vetor `int 0x80` também está disponível

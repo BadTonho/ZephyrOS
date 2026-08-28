@@ -9,7 +9,8 @@
 
 #define APP_PACKAGE_API_LEGACY "0.3"
 #define APP_PACKAGE_API_COMPAT "0.4"
-#define APP_PACKAGE_API_CURRENT "0.5"
+#define APP_PACKAGE_API_VFS1 "0.5"
+#define APP_PACKAGE_API_CURRENT "0.6"
 
 #define APP_PACKAGE_HEADER_SIZE ((uint32_t)sizeof(app_package_header_t))
 #define APP_PACKAGE_MAX_FILE_SIZE \
@@ -444,6 +445,9 @@ static int app_package_parse_manifest(const uint8_t* manifest,
                 app_package_text_equals(manifest + equals + 1U,
                                         line_end - equals - 1U,
                                         APP_PACKAGE_API_COMPAT) ||
+                app_package_text_equals(manifest + equals + 1U,
+                                        line_end - equals - 1U,
+                                        APP_PACKAGE_API_VFS1) ||
                 app_package_text_equals(manifest + equals + 1U,
                                         line_end - equals - 1U,
                                         APP_PACKAGE_API_CURRENT) ?

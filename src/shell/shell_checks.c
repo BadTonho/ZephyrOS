@@ -1879,6 +1879,36 @@ static void cmd_appcheck_files(void) {
     cmd_appcheck_print_result("file_write_nulo", result);
 }
 
+static void cmd_appcheck_paths(void) {
+    char original[VFS_MAX_PATH];
+    char current[VFS_MAX_PATH];
+    int result;
+
+    original[0] = '/';
+    original[1] = '\0';
+    current[0] = '\0';
+    result = syscall_invoke_kernel(APP_SYSCALL_GETCWD,
+                                   (uint32_t)original, sizeof(original),
+                                   0, 0, 0);
+    cmd_appcheck_print_result("getcwd", result);
+    result = syscall_invoke_kernel(APP_SYSCALL_CHDIR,
+                                   (uint32_t)"/mnt", 0, 0, 0, 0);
+    cmd_appcheck_print_result("chdir", result);
+    result = syscall_invoke_kernel(APP_SYSCALL_GETCWD,
+                                   (uint32_t)current, sizeof(current),
+                                   0, 0, 0);
+    if (result == OK && kstrcmp(current, "/mnt") != 0) result = ERR_STATE;
+    cmd_appcheck_print_result("getcwd_relativo", result);
+    result = syscall_invoke_kernel(APP_SYSCALL_CHDIR,
+                                   (uint32_t)original, 0, 0, 0, 0);
+    cmd_appcheck_print_result("chdir_restauracao", result);
+    result = syscall_invoke_kernel(APP_SYSCALL_CHDIR,
+                                   (uint32_t)"/arquivo-inexistente", 0,
+                                   0, 0, 0);
+    cmd_appcheck_print_expected_result("chdir_inexistente", result,
+                                       ERR_NOT_FOUND);
+}
+
 static void cmd_appcheck_ipc(void) {
     app_message_t message;
     app_message_t received;
@@ -2102,6 +2132,7 @@ static void cmd_appcheck(void) {
                                     0, 0, 0, 0, 0);
     cmd_appcheck_print_result("process_exit", result);
     cmd_appcheck_files();
+    cmd_appcheck_paths();
     cmd_appcheck_ipc();
     cmd_appcheck_launch();
     cmd_appcheck_loader();

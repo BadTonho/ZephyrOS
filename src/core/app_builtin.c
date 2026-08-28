@@ -54,6 +54,7 @@
 #define APP_BUILTIN_REG_EDI 7U
 
 #define APP_BUILTIN_ECX_ABSOLUTE_MODRM 0x0DU
+#define APP_BUILTIN_EBX_ABSOLUTE_MODRM 0x1DU
 #define APP_BUILTIN_EAX_ABSOLUTE_MODRM 0x05U
 #define APP_BUILTIN_EDI_AL_MODRM        0x07U
 #define APP_BUILTIN_EDI_DL_MODRM        0x17U
@@ -129,6 +130,21 @@ static int app_builtin_emit_load_eax(uint8_t* code, uint32_t* offset,
         0, 0, 0, 0
     };
 
+    int result = app_builtin_emit_data(code, offset, instruction,
+                                       sizeof(instruction));
+
+    if (result != OK) return result;
+    app_builtin_write_u32(code, *offset - 4U, address);
+    return OK;
+}
+
+static int app_builtin_emit_load_ebx(uint8_t* code, uint32_t* offset,
+                                     uint32_t address) {
+    uint8_t instruction[] = {
+        APP_BUILTIN_OPCODE_MOV_REG_MEM,
+        APP_BUILTIN_EBX_ABSOLUTE_MODRM,
+        0, 0, 0, 0
+    };
     int result = app_builtin_emit_data(code, offset, instruction,
                                        sizeof(instruction));
 
@@ -728,6 +744,53 @@ static int app_builtin_build_outputtest(uint32_t exit_code,
                                       sizeof(data), image_size);
 }
 
+static int app_builtin_build_pathtest(uint32_t* image_size) {
+    uint8_t code[APP_BUILTIN_MAX_CODE_SIZE];
+    uint8_t data[APP_BUILTIN_DATA_SIZE];
+    uint32_t code_size = 0U;
+    int result;
+
+    kmemset(code, 0, sizeof(code));
+    kmemset(data, 0, sizeof(data));
+    data[0] = '/';
+    kmemcpy(data + 80U, "SHELL.BMP", 10U);
+    result = app_builtin_emit_mov(code, &code_size, APP_BUILTIN_REG_EBX,
+                                  USER_DATA_BASE);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EAX, APP_SYSCALL_CHDIR);
+    if (result == OK) result = app_builtin_emit_int80(code, &code_size);
+    if (result == OK) result = app_builtin_emit_exit_on_error(code, &code_size);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EBX, USER_DATA_BASE + 16U);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_ECX, 64U);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EAX, APP_SYSCALL_GETCWD);
+    if (result == OK) result = app_builtin_emit_int80(code, &code_size);
+    if (result == OK) result = app_builtin_emit_exit_on_error(code, &code_size);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EBX, USER_DATA_BASE + 80U);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_ECX, APP_FILE_MODE_READ);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EDX, USER_DATA_BASE + 96U);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EAX, APP_SYSCALL_FILE_OPEN);
+    if (result == OK) result = app_builtin_emit_int80(code, &code_size);
+    if (result == OK) result = app_builtin_emit_exit_on_error(code, &code_size);
+    if (result == OK) result = app_builtin_emit_load_ebx(
+        code, &code_size, USER_DATA_BASE + 96U);
+    if (result == OK) result = app_builtin_emit_mov(
+        code, &code_size, APP_BUILTIN_REG_EAX, APP_SYSCALL_FILE_CLOSE);
+    if (result == OK) result = app_builtin_emit_int80(code, &code_size);
+    if (result == OK) result = app_builtin_emit_exit_on_error(code, &code_size);
+    if (result == OK) result = app_builtin_emit_exit_code(
+        code, &code_size, APP_EXIT_SUCCESS);
+    if (result != OK) return result;
+    return app_builtin_finalize_image(code, code_size, 0U, (const char*)data,
+                                      sizeof(data), image_size);
+}
+
 int app_builtin_run_echo(const app_launch_info_t* launch, uint32_t* pid_out) {
     uint32_t image_size;
     int result = app_builtin_build_echo(&image_size);
@@ -808,5 +871,21 @@ int app_builtin_run_outputtest(uint32_t exit_code, uint32_t* pid_out) {
     if (result != OK) {
         LOG_ERROR("APP_BUILTIN", "Falha ao iniciar ZAPP de teste de saida");
     }
+    return result;
+}
+
+int app_builtin_run_pathtest(uint32_t* pid_out) {
+    uint32_t image_size;
+    int result = app_builtin_preflight_loader();
+
+    if (result != OK) return result;
+    result = app_builtin_build_pathtest(&image_size);
+    if (result != OK) {
+        LOG_ERROR("APP_BUILTIN", "Falha ao montar ZAPP de caminhos");
+        return result;
+    }
+    result = app_loader_run_image("PathTest", app_builtin_image, image_size,
+                                  0, pid_out);
+    if (result != OK) LOG_ERROR("APP_BUILTIN", "Falha ao iniciar PathTest");
     return result;
 }

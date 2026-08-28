@@ -80,6 +80,22 @@ int app_files_lseek(app_handle_t handle, int32_t offset, uint32_t whence,
     return vfs_lseek((int32_t)handle, offset, whence, position);
 }
 
+int app_files_chdir(const char* path) {
+    if (!app_files_is_ready()) {
+        LOG_ERROR("APP_FILES", "Chdir antes da inicializacao");
+        return ERR_STATE;
+    }
+    return vfs_chdir(path);
+}
+
+int app_files_getcwd(char* path, uint32_t capacity) {
+    if (!app_files_is_ready()) {
+        LOG_ERROR("APP_FILES", "Getcwd antes da inicializacao");
+        return ERR_STATE;
+    }
+    return vfs_getcwd(path, capacity);
+}
+
 int app_files_close_owner(uint32_t pid) {
     if (!app_files_is_ready()) {
         LOG_ERROR("APP_FILES", "Limpeza antes da inicializacao");

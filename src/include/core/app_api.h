@@ -4,7 +4,7 @@
 #include "types.h"
 
 #define APP_API_VERSION_MAJOR 0
-#define APP_API_VERSION_MINOR 5
+#define APP_API_VERSION_MINOR 6
 #define APP_API_MAX_TEXT_SIZE 1024
 #define APP_API_MAX_FILE_IO_SIZE 4096
 #define APP_API_TICKS_PER_SECOND 50
@@ -128,6 +128,8 @@ int app_api_file_write(app_handle_t handle, const uint8_t* buffer,
 int app_api_file_close(app_handle_t handle);
 int app_api_file_lseek(app_handle_t handle, int32_t offset, uint32_t whence,
                        uint32_t* position);
+int app_api_chdir(const char* path);
+int app_api_getcwd(char* path, uint32_t capacity);
 int app_api_message_send(uint32_t pid, const app_message_t* message);
 int app_api_message_receive(app_message_t* message);
 int app_api_file_is_ready(void);

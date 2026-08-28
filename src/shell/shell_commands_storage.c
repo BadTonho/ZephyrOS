@@ -6,6 +6,7 @@
 #include "core/keyboard.h"
 #include "fs/fs.h"
 #include "fs/storage.h"
+#include "fs/vfs.h"
 #include "fs/file_index.h"
 #include "core/memory.h"
 #include "core/timer.h"
@@ -468,8 +469,8 @@ static void cmd_storage(const char* args) {
         else video_print("Erro: verificacao FAT32 recusada.\n", 0x0C);
         return;
     }
-    if (kstrcmp(action, "mount") == 0) result = storage_mount(id);
-    else if (kstrcmp(action, "unmount") == 0) result = storage_unmount(id);
+    if (kstrcmp(action, "mount") == 0) result = vfs_mount_volume(id);
+    else if (kstrcmp(action, "unmount") == 0) result = vfs_unmount_volume(id);
     else {
         LOG_ERROR("SHELL", "Subcomando storage desconhecido");
         cmd_storage_print_usage();
