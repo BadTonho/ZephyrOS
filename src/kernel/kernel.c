@@ -39,6 +39,7 @@
 #include "drivers/ata.h"
 #include "drivers/pci.h"
 #include "fs/fs.h"
+#include "fs/vfs.h"
 #include "fs/block.h"
 #include "fs/storage.h"
 #include "fs/file_index.h"
@@ -980,6 +981,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     } else {
         LOG_WARN("KERNEL", "Volume FAT32 do sistema ausente; usando legado");
     }
+    if (storage_result == OK && vfs_refresh_mounts() != OK) {
+        LOG_ERROR("KERNEL", "Falha ao publicar montagens iniciais na VFS");
+    }
 
     video_print("[..] Iniciando indice de arquivos...\n", 0x08);
     if (file_index_init() == OK) {
@@ -1085,6 +1089,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         int refreshed_storage = storage_refresh();
 
         if (refreshed_storage != OK) storage_result = refreshed_storage;
+        if (refreshed_storage == OK && vfs_refresh_mounts() != OK) {
+            LOG_ERROR("KERNEL", "Falha ao atualizar montagens VFS apos USB");
+        }
         if (file_index_rebuild() != OK) {
             LOG_WARN("KERNEL", "Indice aguardara a nova geracao de Storage");
         }

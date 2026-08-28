@@ -291,6 +291,9 @@ static void cmd_help(void) {
     cmd_help_core();
     video_print("  ls       - Lista arquivos\n", 0x07);
     video_print("  cat      - Exibe conteudo de arquivo\n", 0x07);
+    video_print("  mount    - Lista montagens VFS\n", 0x07);
+    video_print("  pwd      - Exibe o diretorio atual\n", 0x07);
+    video_print("  cd       - Altera o diretorio atual\n", 0x07);
     video_print("  echo     - Exibe texto\n", 0x07);
     video_print("  mem      - Mostra informacoes de memoria\n", 0x07);
     video_print("  procs    - Mostra processos ativos\n", 0x07);
@@ -394,6 +397,7 @@ static void cmd_help(void) {
     video_print("  app run <arquivo.ZAP> [args] - Executa aplicativo ring 3\n", 0x07);
     video_print("  app inputtest - Testa teclado de aplicativo ring 3\n", 0x07);
     video_print("  app outputtest [fail] - Testa saida ZAPP em blocos\n", 0x07);
+    video_print("  app pathtest - Testa caminhos VFS em ring 3\n", 0x07);
     video_print("  app argtest <texto> - Testa argumentos em aplicativo ring 3\n", 0x07);
     video_print("  usertest - Executa teste isolado em ring 3\n", 0x07);
     video_print("             usertest fault | falha controlada\n", 0x08);

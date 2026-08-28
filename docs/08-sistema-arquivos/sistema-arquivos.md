@@ -634,6 +634,27 @@ caminho, modo, processo atual, tamanho e buffer.
 compativeis. Esses serviços também são exercitados por `vfs test`, `appcheck`,
 `regcheck full` e `health check`.
 
+## Namespace e montagens VFS2
+
+A VFS2 publica um namespace unico sobre Storage. A tabela global possui
+quatro entradas: o volume `SYSTEM` ocupa `/`; o volume de boot distinto ocupa
+`/mnt/boot`; os demais volumes usam `/mnt/<volume-id>`. Sem `SYSTEM`, o volume
+de boot ou o primeiro volume legado torna-se a raiz. `/mnt` existe como
+diretorio virtual e nao pode ser aberto como arquivo.
+
+A resolucao aceita caminhos absolutos e relativos, `/` ou `\`, separadores
+repetidos, `.` e `..`. Caminho vazio, caminho com 256 bytes ou mais e escape
+acima de `/` sao recusados. A selecao usa o maior prefixo terminado em limite
+de componente. `system:`, `legacy:` e `<volume-id>:` continuam aceitos, mas
+caminhos universais sao o formato preferencial da App API 0.6.
+
+Arquivos abertos conservam caminho canonico, volume, caminho relativo e
+geracao da montagem. O lock da VFS protege somente tabelas e contadores; as
+chamadas FAT/Storage ocorrem sem esse lock. Desmontagem da raiz, de volume
+fixo ou de volume referenciado por arquivo aberto ou `cwd` e recusada. FAT12 e
+FAT32 permitem leitura; escrita integral continua restrita a FAT32 gravavel.
+Descritores de diretorio e `readdir` permanecem fora do escopo.
+
 ---
 
 ## BMP (`bmp.c`)

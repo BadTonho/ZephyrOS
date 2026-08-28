@@ -655,6 +655,16 @@ static process_t* process_create_internal(const char* name,
         proc->state = PROCESS_STATE_UNUSED;
         return 0;
     }
+    if (vfs_fd_table_inherit_cwd(&proc->fd_table,
+                                 current_process ?
+                                 &current_process->fd_table : 0) != OK) {
+        LOG_ERROR("PROC", "Falha ao herdar diretorio do processo");
+        wait_channel_reset(&proc->ipc_wait_channel);
+        vfs_fd_table_release(&proc->fd_table);
+        kmemset(proc, 0, sizeof(process_t));
+        proc->state = PROCESS_STATE_UNUSED;
+        return 0;
+    }
 
     proc->pid = process_allocate_pid();
     if (!proc->pid) {
@@ -857,7 +867,6 @@ static int process_mark_user_zombie(process_t* proc, uint32_t exit_code,
         LOG_WARN("PROC", "Estado invalido ao encerrar processo ring 3");
         return ERR_STATE;
     }
-
     if (proc->wait_active) process_cancel_wait(proc);
 
     proc->exit_code = exit_code;
@@ -1090,6 +1099,16 @@ static int process_user_initialize(process_t* proc, page_directory_t* dir,
     if (vfs_fd_table_init(&proc->fd_table) != OK) {
         LOG_ERROR("PROC", "Falha ao inicializar descritores ring 3");
         wait_channel_reset(&proc->ipc_wait_channel);
+        process_release_pid(proc->pid);
+        kmemset(proc, 0, sizeof(process_t));
+        return ERR_STATE;
+    }
+    if (vfs_fd_table_inherit_cwd(&proc->fd_table,
+                                 current_process ?
+                                 &current_process->fd_table : 0) != OK) {
+        LOG_ERROR("PROC", "Falha ao herdar diretorio ring 3");
+        wait_channel_reset(&proc->ipc_wait_channel);
+        vfs_fd_table_release(&proc->fd_table);
         process_release_pid(proc->pid);
         kmemset(proc, 0, sizeof(process_t));
         return ERR_STATE;

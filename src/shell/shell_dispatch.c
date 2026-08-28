@@ -31,6 +31,9 @@ extern void shell_dispatch_cmd_workq(const char* arguments);
 extern void shell_dispatch_cmd_kill(const char* arguments);
 extern void shell_dispatch_cmd_sigtest(const char* arguments);
 extern void shell_dispatch_cmd_vfs(const char* arguments);
+extern void shell_dispatch_cmd_mount(const char* arguments);
+extern void shell_dispatch_cmd_pwd(const char* arguments);
+extern void shell_dispatch_cmd_cd(const char* arguments);
 extern void shell_dispatch_cmd_devices(const char* arguments);
 extern void shell_dispatch_cmd_device_info(const char* arguments);
 extern void shell_dispatch_cmd_device_scan(const char* arguments);
@@ -106,6 +109,9 @@ static const shell_dispatch_entry_t shell_dispatch_table[] = {
     {"kill", shell_dispatch_cmd_kill, SHELL_DISPATCH_FLAG_NONE},
     {"sigtest", shell_dispatch_cmd_sigtest, SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"vfs", shell_dispatch_cmd_vfs, SHELL_DISPATCH_FLAG_MAY_BLOCK},
+    {"mount", shell_dispatch_cmd_mount, SHELL_DISPATCH_FLAG_NONE},
+    {"pwd", shell_dispatch_cmd_pwd, SHELL_DISPATCH_FLAG_NONE},
+    {"cd", shell_dispatch_cmd_cd, SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"devices", shell_dispatch_cmd_devices, SHELL_DISPATCH_FLAG_NONE},
     {"device-info", shell_dispatch_cmd_device_info,
      SHELL_DISPATCH_FLAG_NONE},

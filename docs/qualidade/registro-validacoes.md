@@ -1987,3 +1987,15 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   invariantes e diagnosticos ficam validados. O modo Simple foi excluido pelo
   usuario e nao integra o criterio de saida. Nenhuma divida tecnica foi aceita
   ou criada para concluir VFS1.
+
+- VFS2: montagens, caminhos universais e diretorio de trabalho implementados.
+  Concluída em: 2026-08-28 11:48 (America/Sao_Paulo).
+  Foram implementados namespace limitado a quatro montagens sincronizadas com
+  Storage, `/mnt` virtual, maior prefixo por componente, normalizacao absoluta
+  e relativa, aliases legados, `cwd` isolado e herdavel, referencias e geracao
+  de montagem, FAT12/FAT32 por Storage, App API 0.6, syscalls 15-16, pacotes
+  0.3-0.6, comandos `mount`/`pwd`/`cd`, `app pathtest` ring 3 e diagnosticos.
+  Bootloader, Stage 2 e assembly de interrupcoes permaneceram inalterados. A
+  implementacao aguarda os gates e as matrizes QEMU padrao e USB MSC do
+  usuario; nenhuma validacao executavel foi registrada nesta entrada e nenhuma
+  divida tecnica foi criada.

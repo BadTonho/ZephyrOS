@@ -2,9 +2,9 @@
 
 ## Resumo de Progresso
 
-Status: Fases 1 a 6D e SYNC4 validadas no QEMU. A VFS1 elevou a App API para
-`0.5`, preservou as syscalls `4-7` e acrescentou `file_lseek` como syscall
-`14`; essa ampliacao esta implementada e aguarda validacao do usuario.
+Status: Fases 1 a 6D, SYNC4 e VFS1 validadas no QEMU. A VFS2 eleva a App API
+para `0.6`, preserva as syscalls anteriores e acrescenta `chdir/getcwd` nos
+numeros `15` e `16`; essa ampliacao esta implementada e aguarda validacao.
 
 Esta etapa preparara o ZephyrOS para executar aplicativos independentes do
 kernel. O objetivo nao e apenas criar mais comandos, mas definir uma fronteira
@@ -67,6 +67,8 @@ Os numeros atuais sao:
 | `12` | `signal_raise` | `EBX`: sinal enviado ao próprio processo |
 | `13` | `signal_return` | sem argumentos; uso reservado ao trampoline |
 | `14` | `file_lseek` | `EBX`: fd; `ECX`: offset; `EDX`: origem; `ESI`: posicao |
+| `15` | `chdir` | `EBX`: caminho terminado em NUL |
+| `16` | `getcwd` | `EBX`: buffer; `ECX`: capacidade |
 
 O vetor `int 0x80` inicia com gate `0x8E` (DPL 0) e passa para `0xEE` (DPL 3)
 depois que paging, TSS, Idle e os processos essenciais estao prontos. A ponte
@@ -102,6 +104,8 @@ executam em ring 0.
 | Arquivo | `file_read` | Ler dados para buffer validado |
 | Arquivo | `file_write` | Salvar dados com permissao valida |
 | Arquivo | `file_lseek` | Reposicionar descritor exclusivamente de leitura |
+| Caminho | `chdir` | Alterar o diretorio de trabalho do processo |
+| Caminho | `getcwd` | Copiar o caminho canonico do diretorio atual |
 | IPC | `message_send` | Enviar mensagem por PID ou handle |
 | Entrada | `input_read` | Receber eventos do aplicativo |
 | GUI | `window_create` | Solicitar uma janela ao sistema |
@@ -115,7 +119,7 @@ e permissao.
 O contrato inicial esta disponivel para os modulos nativos do kernel por meio
 de `src/include/core/app_api.h` e `src/core/app_api.c`:
 
-- `app_api_get_version()` retorna a versao publica `0.5`;
+- `app_api_get_version()` retorna a versao publica `0.6`;
 - `app_api_console_write()` aceita texto ASCII validado de ate 1024 bytes;
 - `app_api_get_uptime()` retorna ticks e segundos desde o boot;
 - `app_api_get_memory_info()` retorna memoria e paginas disponiveis;
@@ -138,6 +142,17 @@ de scancode encaminhados por IPC ao processo focado; um sinal interrompe essa
 espera. Stdout e stderr escrevem no console ativo. O ciclo de vida do processo
 instala stdio e libera todos os descritores em descarte, encerramento ou
 destruicao.
+
+### Caminhos da App API 0.6
+
+`app_api_chdir()` e a syscall 15 recebem um caminho absoluto, relativo ou um
+alias legado. `app_api_getcwd()` e a syscall 16 copiam o caminho universal
+canonico terminado em NUL para um buffer validado. Cada processo inicia em
+`/` ou herda o `cwd` do pai, mantendo isolamento depois da criacao.
+
+Os caminhos universais `/`, `/mnt/boot` e `/mnt/<volume-id>` sao o formato
+preferencial. `system:`, `legacy:` e `<volume-id>:` permanecem compativeis.
+Pacotes novos declaram API 0.6; o loader continua aceitando 0.3, 0.4 e 0.5.
 
 ### Contrato de console e ciclo de vida da Fase 6D
 

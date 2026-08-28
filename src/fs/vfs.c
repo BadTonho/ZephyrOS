@@ -1,5 +1,7 @@
 #include "fs/vfs.h"
+#include "fs/vfs_internal.h"
 #include "fs/fs.h"
+#include "fs/storage.h"
 #include "core/app_api.h"
 #include "core/errors.h"
 #include "core/log.h"
@@ -14,8 +16,13 @@ typedef struct {
     uint32_t size;
 } vfs_test_context_t;
 
+typedef struct {
+    vfs_lookup_result_t lookup;
+} vfs_regular_context_t;
+
 static file_t vfs_file_pool[VFS_MAX_OPEN_FILES];
 static vnode_t vfs_vnode_pool[VFS_MAX_OPEN_FILES];
+static vfs_regular_context_t vfs_regular_contexts[VFS_MAX_OPEN_FILES];
 static vnode_t vfs_stdio_nodes[3];
 static spinlock_t vfs_lock;
 static vfs_status_t vfs_metrics;
@@ -118,6 +125,8 @@ static int vfs_allocate_file(file_t** file_out, vnode_t** vnode_out) {
         if (!vfs_file_pool[index].used) {
             kmemset(&vfs_file_pool[index], 0, sizeof(file_t));
             kmemset(&vfs_vnode_pool[index], 0, sizeof(vnode_t));
+            kmemset(&vfs_regular_contexts[index], 0,
+                    sizeof(vfs_regular_context_t));
             vfs_file_pool[index].used = 1U;
             vfs_file_pool[index].slot = index;
             vfs_file_pool[index].vnode = &vfs_vnode_pool[index];
@@ -142,6 +151,8 @@ static void vfs_release_file(file_t* file) {
     spinlock_acquire(&vfs_lock);
     kmemset(&vfs_file_pool[slot], 0, sizeof(file_t));
     kmemset(&vfs_vnode_pool[slot], 0, sizeof(vnode_t));
+    kmemset(&vfs_regular_contexts[slot], 0,
+            sizeof(vfs_regular_context_t));
     spinlock_release(&vfs_lock);
 }
 
@@ -238,29 +249,32 @@ static int vfs_unsupported_ioctl(file_t* file, uint32_t request,
 }
 
 static int vfs_regular_open(vnode_t* vnode, file_t* file) {
-    uint32_t size = 0U;
-    int result;
+    vfs_regular_context_t* context;
 
     if (!vnode || !file) return ERR_NULL;
-    if (fs_get_type() == FS_TYPE_NONE) return ERR_UNAVAILABLE;
-    if (file->mode & VFS_MODE_READ) {
-        result = fs_read_file_range_at(vnode->path, 0U, 0, 0U, &size);
-        if (result != OK) return result;
-    }
-    vnode->size = size;
+    context = (vfs_regular_context_t*)vnode->private_data;
+    if (!context || context->lookup.type != VFS_NODE_REGULAR) return ERR_STATE;
+    vnode->size = context->lookup.size;
     file->offset = 0U;
     return OK;
 }
 
 static int vfs_regular_read(file_t* file, void* buffer, uint32_t size,
                             uint32_t* bytes_read) {
+    vfs_regular_context_t* context;
     int result;
 
     if (!file || !file->vnode || !bytes_read) return ERR_NULL;
     *bytes_read = 0U;
     if (!(file->mode & VFS_MODE_READ)) return ERR_UNAVAILABLE;
-    result = fs_read_file_range_at(file->vnode->path, file->offset,
-                                   (uint8_t*)buffer, size, bytes_read);
+    context = (vfs_regular_context_t*)file->vnode->private_data;
+    if (!context || vfs_mount_validate_reference(
+            context->lookup.mount_slot,
+            context->lookup.mount_generation) != OK) return ERR_STATE;
+    result = storage_read_file_range(context->lookup.volume_id,
+                                     context->lookup.relative_path,
+                                     file->offset, (uint8_t*)buffer,
+                                     size, bytes_read);
     if (result != OK) return result;
     if (file->offset > 0xFFFFFFFFU - *bytes_read) return ERR_OVERFLOW;
     file->offset += *bytes_read;
@@ -269,12 +283,22 @@ static int vfs_regular_read(file_t* file, void* buffer, uint32_t size,
 
 static int vfs_regular_write(file_t* file, const void* buffer, uint32_t size,
                              uint32_t* bytes_written) {
+    vfs_regular_context_t* context;
     int result;
 
     if (!file || !file->vnode || !bytes_written) return ERR_NULL;
     *bytes_written = 0U;
     if (!(file->mode & VFS_MODE_WRITE)) return ERR_UNAVAILABLE;
-    result = fs_write_file_at(file->vnode->path, (const uint8_t*)buffer, size);
+    context = (vfs_regular_context_t*)file->vnode->private_data;
+    if (!context || vfs_mount_validate_reference(
+            context->lookup.mount_slot,
+            context->lookup.mount_generation) != OK) return ERR_STATE;
+    if (context->lookup.fs_type != STORAGE_FS_FAT32 ||
+        context->lookup.read_only) return ERR_UNAVAILABLE;
+    result = storage_write_file(context->lookup.volume_id,
+                                context->lookup.relative_path,
+                                (const uint8_t*)buffer, size,
+                                FS_ATTRIBUTE_ARCHIVE);
     if (result != OK) return result;
     file->vnode->size = size;
     file->offset = 0U;
@@ -283,7 +307,14 @@ static int vfs_regular_write(file_t* file, const void* buffer, uint32_t size,
 }
 
 static int vfs_regular_close(file_t* file) {
-    if (!file) return ERR_NULL;
+    vfs_regular_context_t* context;
+
+    if (!file || !file->vnode) return ERR_NULL;
+    context = (vfs_regular_context_t*)file->vnode->private_data;
+    if (context) {
+        vfs_mount_release(context->lookup.mount_slot,
+                          context->lookup.mount_generation);
+    }
     return OK;
 }
 
@@ -374,8 +405,13 @@ int vfs_init(void) {
     spinlock_init(&vfs_lock);
     kmemset(vfs_file_pool, 0, sizeof(vfs_file_pool));
     kmemset(vfs_vnode_pool, 0, sizeof(vfs_vnode_pool));
+    kmemset(vfs_regular_contexts, 0, sizeof(vfs_regular_contexts));
     kmemset(vfs_stdio_nodes, 0, sizeof(vfs_stdio_nodes));
     kmemset(&vfs_metrics, 0, sizeof(vfs_metrics));
+    if (vfs_path_init() != OK) {
+        LOG_ERROR("FS", "Falha ao inicializar caminhos VFS");
+        return ERR_STATE;
+    }
     for (index = 0U; index < 3U; index++) {
         vfs_stdio_nodes[index].type = index == 0U ? VFS_NODE_STDIN :
                                       index == 1U ? VFS_NODE_STDOUT :
@@ -419,6 +455,7 @@ int vfs_fd_table_init(vfs_fd_table_t* table) {
         table->entries[index] = &table->standard_files[index];
     }
     table->initialized = 1U;
+    vfs_copy_text(table->cwd, VFS_MAX_PATH, "/");
     spinlock_release(&vfs_lock);
     return OK;
 }
@@ -467,6 +504,7 @@ int vfs_fd_table_release(vfs_fd_table_t* table) {
     table->entries[VFS_FD_STDOUT] = 0;
     table->entries[VFS_FD_STDERR] = 0;
     kmemset(table->standard_files, 0, sizeof(table->standard_files));
+    kmemset(table->cwd, 0, sizeof(table->cwd));
     table->initialized = 0U;
     spinlock_release(&vfs_lock);
     return OK;
@@ -494,6 +532,7 @@ int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
     uint32_t length;
     int fd;
     int result;
+    vfs_lookup_result_t lookup;
 
     if (!vfs_ready) {
         LOG_ERROR("FS", "Abertura solicitada com VFS indisponivel");
@@ -517,6 +556,18 @@ int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
         LOG_ERROR("FS", "Modo invalido na abertura VFS");
         return ERR_INVALID;
     }
+    result = vfs_resolve_open_path(path, mode, &lookup);
+    if (result != OK) {
+        spinlock_acquire(&vfs_lock);
+        vfs_metrics.failures++;
+        spinlock_release(&vfs_lock);
+        LOG_ERROR("FS", "Falha ao resolver caminho na abertura VFS");
+        return result;
+    }
+    if (lookup.type != VFS_NODE_REGULAR) {
+        LOG_ERROR("FS", "Diretorio nao pode ser aberto como arquivo");
+        return ERR_INVALID;
+    }
     result = vfs_get_current_table(&table);
     if (result != OK) return result;
     fd = vfs_find_free_fd(table);
@@ -526,12 +577,21 @@ int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
     }
     result = vfs_allocate_file(&file, &vnode);
     if (result != OK) return result;
+    result = vfs_mount_acquire(lookup.mount_slot, lookup.mount_generation);
+    if (result != OK) {
+        vfs_release_file(file);
+        LOG_ERROR("FS", "Montagem mudou durante abertura VFS");
+        return result;
+    }
     vnode->type = VFS_NODE_REGULAR;
     vnode->operations = &vfs_regular_operations;
-    vfs_copy_text(vnode->path, VFS_MAX_PATH, path);
+    vfs_copy_text(vnode->path, VFS_MAX_PATH, lookup.canonical_path);
+    vfs_regular_contexts[file->slot].lookup = lookup;
+    vnode->private_data = &vfs_regular_contexts[file->slot];
     file->mode = mode;
     result = vnode->operations->open(vnode, file);
     if (result != OK) {
+        vfs_mount_release(lookup.mount_slot, lookup.mount_generation);
         vfs_release_file(file);
         spinlock_acquire(&vfs_lock);
         vfs_metrics.failures++;
@@ -542,6 +602,7 @@ int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
     spinlock_acquire(&vfs_lock);
     if (table->entries[fd]) {
         spinlock_release(&vfs_lock);
+        (void)vnode->operations->close(file);
         vfs_release_file(file);
         LOG_ERROR("FS", "Descritor VFS deixou de estar disponivel");
         return ERR_STATE;
@@ -697,6 +758,8 @@ int vfs_get_status(vfs_status_t* status) {
         }
     }
     spinlock_release(&vfs_lock);
+    vfs_path_get_metrics(&status->mount_capacity, &status->mounts_active,
+                         &status->lookups, &status->chdirs);
     return OK;
 }
 
@@ -745,6 +808,7 @@ int vfs_validate_state(void) {
     uint32_t fd;
 
     if (!vfs_ready) return ERR_UNAVAILABLE;
+    if (vfs_path_validate_state() != OK) return ERR_STATE;
     spinlock_acquire(&vfs_lock);
     for (process_index = 0U; process_index < MAX_PROCESSES; process_index++) {
         process_t* process = &processes[process_index];
@@ -780,6 +844,12 @@ int vfs_validate_state(void) {
                 }
             }
             if (!pool_member) {
+                spinlock_release(&vfs_lock);
+                return ERR_STATE;
+            }
+            if (file->vnode->type == VFS_NODE_REGULAR &&
+                file->vnode->private_data !=
+                    &vfs_regular_contexts[pool_index]) {
                 spinlock_release(&vfs_lock);
                 return ERR_STATE;
             }
@@ -871,6 +941,11 @@ int vfs_self_test(vfs_test_result_t* result) {
     int fd;
     int close_result;
     int result_code;
+    char saved_cwd[VFS_MAX_PATH];
+    char cwd[VFS_MAX_PATH];
+    char alias[VFS_MAX_PATH];
+    vfs_lookup_result_t root_lookup;
+    vfs_lookup_result_t virtual_lookup;
 
     if (!result) {
         LOG_ERROR("FS", "Destino de autoteste VFS nulo");
@@ -963,9 +1038,13 @@ int vfs_self_test(vfs_test_result_t* result) {
         if (vfs_close(filled_fds[filled_count]) != OK) fill_cleanup = 0U;
     }
     result_code = vfs_fd_table_init(&isolated);
+    if (result_code == OK) {
+        result_code = vfs_fd_table_inherit_cwd(&isolated, table);
+    }
     result->isolation = result_code == OK && isolated.entries[3] == 0 &&
                         isolated.entries[0] == &isolated.standard_files[0] &&
-                        isolated.entries[0] != table->entries[0];
+                        isolated.entries[0] != table->entries[0] &&
+                        kstrcmp(isolated.cwd, table->cwd) == 0;
     vfs_test_count(result, result->isolation);
     file = 0;
     vnode = 0;
@@ -984,8 +1063,44 @@ int vfs_self_test(vfs_test_result_t* result) {
     }
     result_code = vfs_fd_table_release(&isolated);
     result->cleanup = fill_cleanup && result_code == OK &&
-                      !isolated.initialized && file && !file->used;
+                      !isolated.initialized && !isolated.cwd[0] &&
+                      file && !file->used;
     vfs_test_count(result, result->cleanup);
+    result_code = vfs_getcwd(saved_cwd, sizeof(saved_cwd));
+    result->normalization = result_code == OK &&
+        vfs_lookup("/mnt/../", &root_lookup) == OK &&
+        root_lookup.type == VFS_NODE_DIRECTORY &&
+        kstrcmp(root_lookup.canonical_path, "/") == 0 &&
+        vfs_lookup("//mnt/./", &virtual_lookup) == OK &&
+        kstrcmp(virtual_lookup.canonical_path, "/mnt") == 0 &&
+        vfs_lookup("/..", &virtual_lookup) == ERR_INVALID;
+    vfs_test_count(result, result->normalization);
+    vfs_copy_text(alias, sizeof(alias), "system:");
+    result->lookup = vfs_lookup("/mnt", &virtual_lookup) == OK &&
+                     virtual_lookup.type == VFS_NODE_DIRECTORY &&
+                     vfs_lookup(alias, &virtual_lookup) == OK &&
+                     kstrcmp(virtual_lookup.canonical_path, "/") == 0 &&
+                     vfs_lookup("/diretorio-vfs-inexistente",
+                                &virtual_lookup) == ERR_NOT_FOUND;
+    vfs_test_count(result, result->lookup);
+    result->cwd = vfs_chdir("/mnt") == OK &&
+                  vfs_getcwd(cwd, sizeof(cwd)) == OK &&
+                  kstrcmp(cwd, "/mnt") == 0 &&
+                  vfs_chdir(saved_cwd) == OK;
+    vfs_test_count(result, result->cwd);
+    result->mount_busy = root_lookup.volume_id[0] &&
+        vfs_mount_acquire(root_lookup.mount_slot,
+                          root_lookup.mount_generation) == OK;
+    if (result->mount_busy) {
+        result->mount_busy =
+            vfs_unmount_volume(root_lookup.volume_id) == ERR_STATE &&
+            vfs_mount_validate_reference(
+                root_lookup.mount_slot,
+                root_lookup.mount_generation + 1U) == ERR_STATE;
+        vfs_mount_release(root_lookup.mount_slot,
+                          root_lookup.mount_generation);
+    }
+    vfs_test_count(result, result->mount_busy);
     result->invariants = vfs_validate_state() == OK;
     vfs_test_count(result, result->invariants);
     return result->passed == result->total ? OK : ERR_STATE;

@@ -107,6 +107,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/fs/fs.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/storage.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/vfs.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
+| `src/include/fs/vfs_internal.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/wav.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/memory/compress.h` | `docs/06-memoria/memoria.md` |
 | `src/include/memory/paging.h` | `docs/06-memoria/memoria.md` |
@@ -386,6 +387,15 @@ liberar descritores. `app_files.h` permanece como fachada compativel;
 `app_api.h` publica a versao 0.5, fds padrao, origens de seek e
 `app_api_file_lseek()`. `syscall.h` preserva os numeros 4-7 e acrescenta a
 syscall 14.
+
+Desde a VFS2, `vfs.h` acrescenta snapshots de montagem e lookup, diretorio
+virtual, `cwd` na tabela por processo e as APIs de refresh, resolucao,
+`chdir/getcwd`, montagem e desmontagem. A tabela acompanha o limite de quatro
+montagens de `storage.h`; descritores conservam volume, caminho relativo e
+geracao por contexto privado. `process.h` herda o `cwd` na criacao e o valida
+no ciclo de vida. `app_api.h` publica a versao 0.6 e `app_api_chdir()` /
+`app_api_getcwd()`; `syscall.h` acrescenta os numeros 15 e 16 sem renumerar os
+anteriores. Pacotes 0.3, 0.4 e 0.5 permanecem aceitos.
 
 O cancelamento F12 de um ZAPP bloqueado em stdin usa os campos append-only
 `cancel_exit_code` e `cancel_pending` de `process_t`. `process_cancel_user()`

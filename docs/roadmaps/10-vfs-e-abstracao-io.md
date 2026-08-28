@@ -9,7 +9,7 @@ Este roadmap estabelece uma arquitetura própria, modular, segura e limpa para o
 ## Resumo de progresso
 
 - [x] VFS1 - Descritores e operacoes unificadas de I/O (concluida e validada).
-- [ ] VFS2 - Tabela de montagem de volumes e resolução uniforme de caminhos.
+- [x] VFS2 - Montagens, caminhos universais e cwd (implementada, aguardando validacao).
 - [ ] VFS3 - Abstração de nós de dispositivos (`/dev/`) de caractere e bloco.
 - [ ] VFS4 - Pipes anônimos e redirecionamento de streams no Shell.
 
@@ -111,20 +111,47 @@ divida tecnica.
 
 ### Implementação
 
-- [ ] Criar a tabela de montagem global (`mount_table_t`) com suporte a múltiplos pontos de montagem (`/`, `/mnt/fat12`, `/mnt/fat32`, etc.).
-- [ ] Implementar o algoritmo de resolução de caminhos absolutos e relativos (`vfs_lookup`), resolvendo diretórios `.` e `..` de forma determinística.
-- [ ] Integrar os drivers existentes de FAT12 e FAT32 como provedores do contrato `file_operations_t`.
-- [ ] Adicionar suporte a diretório de trabalho atual (`cwd`) por processo.
+- [x] Criar tabela global limitada a quatro montagens, com raiz automatica,
+  `/mnt/boot` e `/mnt/<volume-id>` sincronizados com Storage.
+- [x] Implementar `vfs_lookup()` para caminhos absolutos, relativos, aliases
+  legados, barras equivalentes, separadores repetidos, `.` e `..`.
+- [x] Tratar `/mnt` como diretorio virtual e selecionar a montagem pelo maior
+  prefixo com limite de componente.
+- [x] Usar Storage como adaptador comum para FAT12 e FAT32, preservando escrita
+  integral somente em FAT32 gravavel.
+- [x] Adicionar `cwd` por processo, inicializacao em `/`, heranca, isolamento e
+  validacao no ciclo de vida.
+- [x] Publicar App API 0.6, syscalls 15/16, `chdir/getcwd` e compatibilidade de
+  pacotes 0.3, 0.4, 0.5 e 0.6.
+- [x] Integrar `mount`, `pwd`, `cd`, `app pathtest`, `vfs status`, `vfs test`,
+  `appcheck`, `regcheck full` e `health check`.
+
+### Estado da entrega
+
+VFS2 esta implementada e aguarda os gates de host e a matriz funcional do
+usuario. Bootloader, Stage 2 e assembly de interrupcoes permanecem
+inalterados. O modo Simple nao integra a matriz. Nenhuma divida tecnica foi
+criada.
 
 ### Critério de saída
 
-O sistema resolve caminhos completos no formato `/mnt/c/arquivo.txt` de forma transparente, direcionando as requisições para o driver de filesystem correspondente.
+O sistema resolve caminhos universais de forma transparente, direciona cada
+requisicao ao volume correto e mantem um `cwd` isolado e herdavel por processo.
 
 ### Comandos Shell / Diagnóstico
 
 - `mount`: lista todos os volumes e pontos de montagem ativos com suas capacidades e tipo de sistema de arquivos.
 - `pwd`: exibe o diretório de trabalho atual do processo.
 - `cd <caminho>`: navega pela árvore de diretórios unificada.
+
+### Validacao pendente do usuario
+
+Host: `make package-test`, `make storage-fixtures-test`, `make q3check` e
+`make clean && make`. Depois, no QEMU padrao: `mount`, `pwd`, `cd /`,
+`cd /mnt/boot`, `pwd`, `cd ..`, `pwd`, `vfs status`, `vfs test`,
+`vfs test foo`, `appcheck`, `app pathtest`, `regcheck full`, `health check`,
+`memcheck` e `log check`. O perfil USB MSC sera formado somente depois de o
+usuario fornecer a saida textual de `storage list`, para preservar o ID exato.
 
 ---
 

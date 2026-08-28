@@ -162,6 +162,28 @@ int app_api_file_lseek(app_handle_t handle, int32_t offset, uint32_t whence,
     return app_files_lseek(handle, offset, whence, position);
 }
 
+int app_api_chdir(const char* path) {
+    int result = app_api_require_ready();
+
+    if (result != OK) return result;
+    if (!path) {
+        LOG_ERROR("APP_API", "Caminho nulo em chdir");
+        return ERR_NULL;
+    }
+    return app_files_chdir(path);
+}
+
+int app_api_getcwd(char* path, uint32_t capacity) {
+    int result = app_api_require_ready();
+
+    if (result != OK) return result;
+    if (!path) {
+        LOG_ERROR("APP_API", "Destino nulo em getcwd");
+        return ERR_NULL;
+    }
+    return app_files_getcwd(path, capacity);
+}
+
 static int app_api_validate_message(const app_message_t* message) {
     if (!message) {
         LOG_ERROR("APP_API", "Mensagem nula rejeitada");
