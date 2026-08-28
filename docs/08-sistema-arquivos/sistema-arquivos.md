@@ -646,7 +646,10 @@ A resolucao aceita caminhos absolutos e relativos, `/` ou `\`, separadores
 repetidos, `.` e `..`. Caminho vazio, caminho com 256 bytes ou mais e escape
 acima de `/` sao recusados. A selecao usa o maior prefixo terminado em limite
 de componente. `system:`, `legacy:` e `<volume-id>:` continuam aceitos, mas
-caminhos universais sao o formato preferencial da App API 0.6.
+caminhos universais sao o formato preferencial da App API 0.6. O separador de
+alias `:` so e interpretado no inicio de um caminho nao absoluto. Em caminhos
+absolutos ele pode integrar o componente do volume, como em
+`/mnt/usb-ms-00:04.0-p1-a1-l0p1`.
 
 Arquivos abertos conservam caminho canonico, volume, caminho relativo e
 geracao da montagem. O lock da VFS protege somente tabelas e contadores; as

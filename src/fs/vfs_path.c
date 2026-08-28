@@ -126,12 +126,6 @@ static int vfs_normalize_from(const char* path, const char* cwd,
             output[output_length] = '\0';
             continue;
         }
-        for (uint32_t index = 0U; index < length; index++) {
-            if (combined[start + index] == ':') {
-                return vfs_path_fail(ERR_INVALID,
-                                     "Separador de alias invalido no caminho");
-            }
-        }
         if (segment_count >= VFS_MAX_PATH / 2U) {
             return vfs_path_fail(ERR_OVERFLOW, "Caminho possui segmentos demais");
         }
@@ -262,8 +256,10 @@ static int vfs_canonicalize(const char* path, char* canonical) {
     if (!path || !canonical) {
         return vfs_path_fail(ERR_NULL, "Destino canonico nulo");
     }
-    result = vfs_legacy_prefix(path, canonical);
-    if (result != ERR_NOT_FOUND) return result;
+    if (path[0] != '/' && path[0] != '\\') {
+        result = vfs_legacy_prefix(path, canonical);
+        if (result != ERR_NOT_FOUND) return result;
+    }
     if (vfs_current_cwd(cwd) != OK) {
         return vfs_path_fail(ERR_STATE, "Cwd atual invalido");
     }
@@ -722,6 +718,13 @@ int vfs_path_validate_state(void) {
 
     if (!vfs_path_ready) {
         return vfs_path_fail(ERR_STATE, "Namespace VFS nao inicializado");
+    }
+    if (vfs_normalize_from(
+            "/mnt/usb-ms-00:04.0-p1-a1-l0p1/DOCS", "/", normalized) != OK ||
+        !vfs_path_equal(normalized,
+                        "/mnt/usb-ms-00:04.0-p1-a1-l0p1/DOCS")) {
+        return vfs_path_fail(ERR_STATE,
+                             "Caminho universal com volume USB invalido");
     }
     spinlock_acquire(&vfs_mount_lock);
     for (uint32_t index = 0U; index < VFS_MAX_MOUNTS; index++) {

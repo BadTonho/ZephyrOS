@@ -2086,3 +2086,24 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `usb-ms-00:04.0-p1-a1-l0p4` FAT32, preservando os IDs fornecidos pelo
   inventario. A enumeracao esta aprovada; montagem, namespace e invariantes
   permanecem pendentes neste perfil.
+
+- VFS2: primeira matriz de namespace USB revelou montagem recusada e colisao
+  de separador.
+  Registrada em: 2026-08-28 13:03 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. `usb storage` permaneceu
+  `READY`, sem resets ou erros. As solicitacoes de montagem dos IDs `p1` e
+  `p4` retornaram `ERR_NOT_FOUND`, mantendo a VFS em duas montagens. A tentativa
+  de navegar ao ponto USB registrou alias ausente e rejeitou o `:` do ID como
+  separador invalido. `app pathtest`, `vfs status` e `regcheck full`
+  permaneceram em `OK`; o inventario final conservou os quatro volumes USB em
+  `DETECTED`, sem montagem ou residuo. A matriz USB MSC permanece aberta.
+
+- VFS2: caminhos universais absolutos com `:` corrigidos.
+  Corrigida em: 2026-08-28 13:03 (America/Sao_Paulo).
+  O resolvedor agora interpreta aliases `system:`, `legacy:` e
+  `<volume-id>:` somente quando a entrada nao comeca por `/` ou `\\`.
+  Componentes de caminhos absolutos podem preservar o `:` presente nos IDs
+  USB publicados por Storage. A invariante global passou a normalizar e
+  comparar um ponto USB completo. A recusa de montagem sera repetida
+  separadamente com os IDs copiados do inventario. Bootloader, Stage 2 e
+  assembly de interrupcoes permanecem inalterados.
