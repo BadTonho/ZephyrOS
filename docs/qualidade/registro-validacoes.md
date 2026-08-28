@@ -1757,3 +1757,17 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   ao Shell e prompt responsivo. O horário exato da execução não foi informado
   na captura. Permanece pendente a repetição no perfil USB HID e a limpeza de
   uma linha parcial por Ctrl+C no prompt.
+
+- SYNC4: novo encerramento por Ctrl+C reportado pelo usuário.
+  Registrada em: 2026-08-27 23:49 (America/Sao_Paulo).
+  A captura confirma outro `app inputtest` encerrado por `SIGINT`, com foco
+  devolvido ao Shell e prompt responsivo. A origem PS/2 ou USB não pode ser
+  identificada nesta captura; a confirmação do dispositivo USB permanece
+  pendente.
+
+- SYNC4: dispositivos USB HID confirmados pelo usuário.
+  Registrada em: 2026-08-27 23:50 (America/Sao_Paulo).
+  `usb hid status` listou teclado e mouse USB em `READY`, ambos ativos, sem
+  relatórios malformados, descartes ou cancelamentos. A confirmação de Ctrl+C
+  no perfil USB fica associada ao teste anterior; permanece apenas a limpeza
+  de uma linha parcial por Ctrl+C no prompt.
