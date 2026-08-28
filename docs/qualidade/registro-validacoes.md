@@ -2234,3 +2234,26 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   aguardando os gates e as matrizes QEMU padrão, USB HID e USB MSC compacto.
   Nenhuma dívida técnica foi criada. Bootloader, Stage 2 e assembly de
   interrupções permaneceram inalterados.
+
+- VFS3: matriz funcional no QEMU padrao aprovada.
+  Validada em: 2026-08-28 16:58 (America/Sao_Paulo).
+  `mount`, `pwd`, listagens da raiz e de `/dev`, `cwd` em `/dev` e
+  `cat /dev/null` foram aprovados. `devcheck` terminou com 9/9 casos e
+  `vfs test` com 19/19; `vfs test foo` recusou corretamente o argumento.
+  AppCheck confirmou App API 0.7 e syscall 17, e `app devtest` concluiu em
+  ring 3. As tres execucoes de `app inputtest tty` terminaram por Enter,
+  Ctrl+C/SIGINT e F12, sempre devolvendo o foco ao Shell. O estado final
+  mostrou pool `0/32`, cinco dispositivos, somente os descritores padrao,
+  RegCheck e MemCheck em `OK` e LogCheck com 8/8 casos. `health check` nao
+  publicou falha VFS; estados degradados de hardware e servicos opcionais
+  permaneceram os fallbacks esperados do perfil padrao.
+
+- VFS3: perfil USB HID aprovado.
+  Validada em: 2026-08-28 17:01 (America/Sao_Paulo).
+  O teclado `usb-dev-00:04.0-p1-a1` e o mouse
+  `usb-dev-00:04.0-p2-a2` permaneceram `READY`, ativos e sem erros ou
+  descartes. `/dev` publicou os cinco nos e `devcheck` terminou com 9/9
+  casos. As execucoes de `app inputtest tty` por Enter, Ctrl+C/SIGINT e F12
+  devolveram o foco ao Shell. O estado final apresentou pool `0/32`, somente
+  os descritores 0-2, cinco dispositivos, RegCheck em `OK` e nenhuma falha
+  VFS no `health check`.
