@@ -332,3 +332,12 @@ destino ausente e multiplos redirecionamentos sao recusados com erro
 controlado. `grep` faz busca literal por linhas sem diferenciar maiusculas e
 minusculas, e `pipetest` exercita
 backpressure, ordem dos bytes e limpeza das filas.
+
+## Integracao MM1
+
+Os workers cooperativos do pipeline continuam usando stacks do `kmalloc`, mas
+os objetos `thread_t` do scheduler interno sao obtidos do cache `thread`.
+`slabinfo` lista caches, capacidade, slabs, paginas e falhas; `slabtest`
+verifica alinhamento, reutilizacao, transicoes de estado, liberacoes invalidas
+e devolucao de paginas ao PMM. `health`, `memcheck` e `schedcheck` publicam a
+integridade do alocador sem alterar a ABI do Shell.

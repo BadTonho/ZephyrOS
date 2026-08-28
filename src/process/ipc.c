@@ -192,9 +192,9 @@ uint32_t ipc_get_pending_count(void) {
 
     spinlock_acquire(&ipc_lock);
     for (uint32_t i = 0; i < MAX_PROCESSES; i++) {
-        process_t* process = &processes[i];
+        process_t* process = processes[i];
 
-        if (process->state == PROCESS_STATE_UNUSED) continue;
+        if (!process) continue;
         if (process->msg_head >= process->msg_tail) {
             pending += process->msg_head - process->msg_tail;
         } else {

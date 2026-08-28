@@ -863,6 +863,26 @@ rejeicoes do PMM e diretorios/paginas de usuario ativos. Esses campos sao
 diagnosticos internos; `mem` e a App API continuam mostrando apenas memoria
 global.
 
+## MM1: caches SLAB/SLUB
+
+O kernel inicializa `kmem_cache_init()` depois de `memory_init()` e antes da
+App API. A criacao de caches registra metadados estaticos; a primeira pagina de
+um slab so e solicitada ao PMM depois que o paging esta pronto. O alocador
+mantem ate 16 caches, 128 slabs globais e 128 objetos por slab, com listas
+`full`, `partial` e `empty`, bitmap e freelist.
+
+Processos, threads, arquivos e vnodes usam caches dedicados. A Ethernet usa
+`net_packet_t` interno para os frames RX/TX; buffers especificos dos protocolos
+nao fazem parte da migracao. Stacks continuam em `kmalloc` por exigirem tamanho
+e guardas proprios. Falhas de criacao de cache desabilitam o consumidor e sao
+registradas; liberacoes invalidas, double free e destruicao ocupada sao
+recusadas e contabilizadas.
+
+`health`, `memcheck`, `schedcheck`, `regcheck full` e `vfs_validate_state()`
+validam a integridade do alocador. `slabinfo` expoe as estatisticas por cache e
+`slabtest` verifica alinhamento, reutilizacao, estados, erros de posse e
+devolucao das paginas ao PMM.
+
 O contrato de `memory.h` mantém os bitmaps do PMM em `0x88000–0x98000` e a
 stack inicial em `0x98000–0x9F000`, mas posiciona kernel e BSS em
 `0x00100000–0x00800000`. A ABI ZAPP continua em `0x00800000–0x01000000`, o

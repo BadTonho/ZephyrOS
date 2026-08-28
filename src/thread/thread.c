@@ -4,13 +4,15 @@
 #include "core/errors.h"
 #include "core/string.h"
 #include "core/timer.h"
+#include "memory/slab.h"
 
 #define THREAD_WAIT_EFLAGS_INTERRUPT_ENABLE (1U << 9U)
 
 #define THREAD_TEST_ITERATIONS 3U
 #define THREAD_TEST_TRACE_SIZE (THREAD_TEST_ITERATIONS * 2U)
 
-static thread_t threads[MAX_THREADS];
+static thread_t* threads[MAX_THREADS];
+static kmem_cache_t* thread_cache = 0;
 static thread_t* current_thread = 0;
 static uint32_t thread_count = 0;
 static uint32_t next_thread_id = 1;
@@ -110,7 +112,7 @@ static void thread_copy_wait_text(char* destination, uint32_t capacity,
 
 static int thread_index(const thread_t* thread) {
     for (int i = 0; i < MAX_THREADS; i++) {
-        if (&threads[i] == thread) return i;
+        if (threads[i] == thread) return i;
     }
     return -1;
 }
@@ -188,8 +190,7 @@ void thread_init(void) {
     thread_initialized = 0;
 
     for (int i = 0; i < MAX_THREADS; i++) {
-        kmemset(&threads[i], 0, sizeof(thread_t));
-        threads[i].state = THREAD_UNUSED;
+        threads[i] = 0;
     }
 
     current_thread = 0;
@@ -199,8 +200,17 @@ void thread_init(void) {
     scheduler_active = 0;
     last_scheduled_idx = -1;
     thread_self_test_active = 0;
+    thread_cache = kmem_cache_create("thread", sizeof(thread_t), 16U);
+    if (!thread_cache) {
+        LOG_ERROR("THRD", "Falha ao criar cache de threads");
+        return;
+    }
     thread_initialized = 1;
     LOG_INFO("THRD", "Scheduler cooperativo inicializado com sucesso");
+}
+
+int thread_is_ready(void) {
+    return thread_initialized;
 }
 
 thread_t* thread_create(const char* name, void (*entry)(void)) {
@@ -217,8 +227,9 @@ thread_t* thread_create(const char* name, void (*entry)(void)) {
     }
 
     for (int i = 0; i < MAX_THREADS; i++) {
-        if (threads[i].state == THREAD_UNUSED) {
-            thread = &threads[i];
+        if (!threads[i]) {
+            thread = (thread_t*)kmem_cache_alloc(thread_cache);
+            if (thread) threads[i] = thread;
             break;
         }
     }
@@ -242,8 +253,8 @@ thread_t* thread_create(const char* name, void (*entry)(void)) {
     thread->stack = (uint32_t*)kmalloc(THREAD_STACK_SIZE);
     if (!thread->stack) {
         LOG_ERROR("THRD", "Falha ao alocar stack da thread");
-        kmemset(thread, 0, sizeof(thread_t));
-        thread->state = THREAD_UNUSED;
+        threads[thread_index(thread)] = 0;
+        kmem_cache_free(thread_cache, thread);
         return 0;
     }
 
@@ -251,8 +262,9 @@ thread_t* thread_create(const char* name, void (*entry)(void)) {
     if (!thread->esp) {
         LOG_ERROR("THRD", "Falha ao preparar contexto da thread");
         kfree(thread->stack);
-        kmemset(thread, 0, sizeof(thread_t));
-        thread->state = THREAD_UNUSED;
+        thread->stack = 0;
+        threads[thread_index(thread)] = 0;
+        kmem_cache_free(thread_cache, thread);
         return 0;
     }
 
@@ -289,16 +301,19 @@ void thread_destroy(thread_t* thread) {
         kfree(thread->stack);
         thread->stack = 0;
     }
-    kmemset(thread, 0, sizeof(thread_t));
-    thread->state = THREAD_UNUSED;
+    {
+        int index = thread_index(thread);
+        if (index >= 0) threads[index] = 0;
+    }
+    kmem_cache_free(thread_cache, thread);
     if (thread_count > 0) thread_count--;
 }
 
 thread_t* thread_schedule_next(void) {
     for (int step = 1; step <= MAX_THREADS; step++) {
         int index = (last_scheduled_idx + step) % MAX_THREADS;
-        if (threads[index].state == THREAD_RUNNING) {
-            return &threads[index];
+        if (threads[index] && threads[index]->state == THREAD_RUNNING) {
+            return threads[index];
         }
     }
 
@@ -518,10 +533,11 @@ int thread_copy_waiters(wait_info_t* output, uint32_t max_entries,
     flags = thread_wait_irq_save();
     for (uint32_t index = 0U; index < MAX_THREADS && count < max_entries;
          index++) {
-        thread_t* thread = &threads[index];
+        thread_t* thread = threads[index];
         wait_info_t* info;
 
-        if (!thread->wait_active || thread->state != THREAD_BLOCKED) continue;
+        if (!thread || !thread->wait_active ||
+            thread->state != THREAD_BLOCKED) continue;
         info = &output[count++];
         kmemset(info, 0, sizeof(*info));
         info->id = thread->id;
@@ -552,8 +568,8 @@ thread_t* thread_get_current(void) {
 
 thread_t* thread_get_by_id(uint32_t id) {
     for (int i = 0; i < MAX_THREADS; i++) {
-        if (threads[i].id == id && threads[i].state != THREAD_UNUSED) {
-            return &threads[i];
+        if (threads[i] && threads[i]->id == id) {
+            return threads[i];
         }
     }
     return 0;
@@ -570,22 +586,23 @@ void thread_scheduler_tick(void) {
     now = timer_get_ticks();
 
     for (int i = 0; i < MAX_THREADS; i++) {
-        if (threads[i].state == THREAD_BLOCKED && threads[i].wait_active) {
-            if (!threads[i].wait_channel ||
-                !threads[i].wait_channel->available) {
-                thread_wait_clear(&threads[i],
+        thread_t* thread = threads[i];
+
+        if (!thread) continue;
+        if (thread->state == THREAD_BLOCKED && thread->wait_active) {
+            if (!thread->wait_channel || !thread->wait_channel->available) {
+                thread_wait_clear(thread,
                                   WAIT_REASON_DEVICE_UNAVAILABLE);
-            } else if (thread_wait_deadline_reached(&threads[i], now)) {
-                thread_wait_clear(&threads[i], WAIT_REASON_TIMEOUT);
-            } else if (threads[i].wait_deadline_active) {
-                threads[i].wait_ticks = threads[i].wait_deadline - now;
+            } else if (thread_wait_deadline_reached(thread, now)) {
+                thread_wait_clear(thread, WAIT_REASON_TIMEOUT);
+            } else if (thread->wait_deadline_active) {
+                thread->wait_ticks = thread->wait_deadline - now;
             }
-        } else if (threads[i].state == THREAD_BLOCKED &&
-                   threads[i].wait_ticks > 0) {
-            threads[i].wait_ticks--;
-            if (threads[i].wait_ticks == 0) {
-                threads[i].state = THREAD_RUNNING;
-                threads[i].wait_reason = WAIT_REASON_TIMEOUT;
+        } else if (thread->state == THREAD_BLOCKED && thread->wait_ticks > 0) {
+            thread->wait_ticks--;
+            if (thread->wait_ticks == 0) {
+                thread->state = THREAD_RUNNING;
+                thread->wait_reason = WAIT_REASON_TIMEOUT;
             }
         }
     }

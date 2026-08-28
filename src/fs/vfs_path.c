@@ -800,8 +800,8 @@ static uint32_t vfs_mount_cwd_references(const char* mount_point) {
     uint32_t references = 0U;
 
     for (uint32_t index = 0U; index < MAX_PROCESSES; index++) {
-        if (processes[index].fd_table.initialized &&
-            vfs_path_prefix(processes[index].fd_table.cwd, mount_point)) {
+        if (processes[index] && processes[index]->fd_table.initialized &&
+            vfs_path_prefix(processes[index]->fd_table.cwd, mount_point)) {
             references++;
         }
     }
@@ -944,14 +944,14 @@ int vfs_path_validate_state(void) {
     for (uint32_t index = 0U; index < MAX_PROCESSES; index++) {
         int cwd_mount;
 
-        if (!processes[index].fd_table.initialized) continue;
+        if (!processes[index] || !processes[index]->fd_table.initialized) continue;
         cwd_mount = vfs_find_mount_for_path_unlocked(
-            processes[index].fd_table.cwd);
-        if (!processes[index].fd_table.cwd[0] ||
-            processes[index].fd_table.cwd[0] != '/' ||
-            vfs_normalize_from(processes[index].fd_table.cwd, "/",
+            processes[index]->fd_table.cwd);
+        if (!processes[index]->fd_table.cwd[0] ||
+            processes[index]->fd_table.cwd[0] != '/' ||
+            vfs_normalize_from(processes[index]->fd_table.cwd, "/",
                                normalized) != OK ||
-            !vfs_path_equal(processes[index].fd_table.cwd, normalized) ||
+            !vfs_path_equal(processes[index]->fd_table.cwd, normalized) ||
             (!vfs_path_equal(normalized, "/mnt") &&
              cwd_mount < 0) ||
             (cwd_mount >= 0 &&

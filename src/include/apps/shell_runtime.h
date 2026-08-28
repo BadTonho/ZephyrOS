@@ -16,6 +16,7 @@ typedef struct {
     int coalescence;
     int pmm_guards;
     int user_directories;
+    int slab_integrity;
 } shell_memcheck_result_t;
 
 typedef struct {

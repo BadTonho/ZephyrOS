@@ -35,6 +35,11 @@ montagem virtual. VFS4 esta implementada com App API 0.8, syscall 18, pipes
 anonimos, pipeline cooperativo do Shell, `grep` e redirecionamento; a
 validacao QEMU especifica permanece pendente.
 
+MM1 do Roadmap 11 esta implementada com caches SLAB/SLUB estaticos, migracao
+de processos, threads, objetos VFS e pacotes Ethernet, alem dos diagnosticos
+`slabinfo` e `slabtest`. A matriz executavel e a validacao QEMU permanecem
+pendentes dos gates e da execucao pelo usuario.
+
 ## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A-EP9.4C validadas; SYNC1 concluída com a dívida técnica [DT100-001](docs/qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2) aceita para K5/v1.0.0; SYNC2, SYNC3/R4, SYNC4, VFS1, VFS2 e VFS3 concluídas e validadas; R5 permanece pendente no Roadmap 09
 
 ```

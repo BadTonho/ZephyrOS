@@ -36,6 +36,7 @@ typedef struct {
 } thread_t;
 
 void thread_init(void);
+int thread_is_ready(void);
 thread_t* thread_create(const char* name, void (*entry)(void));
 void thread_destroy(thread_t* thread);
 void thread_yield(void);

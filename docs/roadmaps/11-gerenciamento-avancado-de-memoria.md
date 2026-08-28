@@ -8,7 +8,7 @@ Este roadmap preserva a compatibilidade total com o Bitmap Allocator físico e o
 
 ## Resumo de progresso
 
-- [ ] MM1 - Alocador SLAB/SLUB de objetos de tamanho fixo (`kmem_cache_t`).
+- [x] MM1 - Alocador SLAB/SLUB de objetos de tamanho fixo (`kmem_cache_t`).
 - [ ] MM2 - Áreas de Memória Virtual do Processo (VMA - *Virtual Memory Areas*).
 - [ ] MM3 - Alocação sob Demanda (*Demand Paging*) e tratamento de Page Faults.
 - [ ] MM4 - Métricas de fragmentação, zonas de memória e monitoramento em tempo real.
@@ -49,14 +49,27 @@ Este roadmap preserva a compatibilidade total com o Bitmap Allocator físico e o
 
 ### Implementação
 
-- [ ] Implementar a estrutura `kmem_cache_t` representando um pool de objetos de tamanho homogêneo.
-- [ ] Criar as funções públicas:
+- [x] Implementar a estrutura `kmem_cache_t` representando um pool de objetos de tamanho homogêneo.
+- [x] Criar as funções públicas:
   `kmem_cache_t* kmem_cache_create(const char* name, uint32_t obj_size, uint32_t align);`
   `void* kmem_cache_alloc(kmem_cache_t* cache);`
   `void kmem_cache_free(kmem_cache_t* cache, void* obj);`
-  `void kmem_cache_destroy(kmem_cache_t* cache);`
-- [ ] Organizar cada cache em slabs divididos em três listas: `full` (cheios), `partial` (parciais) e `empty` (vazios), ou lista simples no estilo SLUB com bitmap/freelist interno.
-- [ ] Migrar estruturas essenciais para caches dedicados: `process_t`, `thread_t`, `file_t`, `vnode_t` e `net_packet_t`.
+  `int kmem_cache_destroy(kmem_cache_t* cache);`
+- [x] Organizar cada cache em slabs divididos em três listas: `full` (cheios), `partial` (parciais) e `empty` (vazios), ou lista simples no estilo SLUB com bitmap/freelist interno.
+- [x] Migrar estruturas essenciais para caches dedicados: `process_t`, `thread_t`, `file_t`, `vnode_t` e `net_packet_t`.
+- [x] Publicar estatísticas, posse de objetos, validação global e autoteste por `slabinfo` e `slabtest`.
+- [x] Integrar a validação aos diagnósticos `health`, `memcheck`, `schedcheck`, `regcheck` e `vfs_validate_state()`.
+
+### Status da entrega
+
+A implementação usa metadados estáticos para até 16 caches, 128 slabs globais
+e 128 objetos por slab. As páginas dos slabs são obtidas do PMM somente após o
+paging e permanecem reutilizáveis enquanto o cache existir. Processos, threads,
+arquivos, vnodes e pacotes Ethernet usam caches dedicados; stacks de processos e
+threads continuam no `kmalloc` por exigirem tamanho e guardas próprios.
+
+A validação executável da matriz MM1, dos perfis de rede e da regressão VFS4
+continua pendente dos gates e da execução no QEMU pelo usuário.
 
 ### Critério de saída
 

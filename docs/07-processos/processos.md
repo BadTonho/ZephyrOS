@@ -91,7 +91,7 @@ process_t* proc = process_create("minha_task", entry_function);
 ```
 
 Isso:
-1. Aloca um slot livre no array de processos
+1. Aloca um objeto `process_t` do cache de processos e o associa a um slot livre
 2. Gera um PID único
 3. Aloca kernel stack (4 KiB nativo ou 8 KiB para ring 3)
 4. Cria page directory próprio
@@ -180,11 +180,11 @@ O desbloqueio temporizado continua no tick:
 void scheduler_tick(void) {
     // Desbloqueia processos
     for (int i = 0; i < MAX_PROCESSES; i++) {
-        if (processes[i].state == PROCESS_STATE_BLOCKED) {
-            if (processes[i].wait_ticks > 0) {
-                processes[i].wait_ticks--;
-                if (processes[i].wait_ticks == 0) {
-                    processes[i].state = PROCESS_STATE_READY;
+        if (processes[i] && processes[i]->state == PROCESS_STATE_BLOCKED) {
+            if (processes[i]->wait_ticks > 0) {
+                processes[i]->wait_ticks--;
+                if (processes[i]->wait_ticks == 0) {
+                    processes[i]->state = PROCESS_STATE_READY;
                 }
             }
         }
@@ -384,6 +384,14 @@ thread_t* t = thread_create("minha_thread", thread_function);
 Esse limite cobre workers que atravessam VFS, Storage e FAT/LFN, como os
 estagios do pipeline do Shell, sem alterar a ABI dos processos ou das
 aplicacoes ring 3.
+
+Desde a MM1, a tabela interna de processos armazena ponteiros para objetos
+obtidos do cache `process`; a tabela interna de threads usa o cache `thread`.
+Os objetos sao devolvidos ao cache em todos os caminhos de descarte e
+destruicao. As stacks continuam no `kmalloc`, com canarios e limites proprios.
+`schedcheck` e `regcheck full` tambem validam a integridade global dos caches.
+`thread_is_ready()` permite ao kernel publicar falha de criacao do cache sem
+confundir scheduler vazio com scheduler indisponivel.
 
 ---
 

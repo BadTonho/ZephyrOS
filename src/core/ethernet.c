@@ -2,6 +2,7 @@
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/string.h"
+#include "memory/slab.h"
 
 #define ETHERNET_DESTINATION_OFFSET 0U
 #define ETHERNET_SOURCE_OFFSET 6U
@@ -20,12 +21,16 @@ typedef struct {
     ethernet_interface_status_t status;
 } ethernet_slot_t;
 
+typedef struct {
+    uint16_t length;
+    uint8_t data[ETHERNET_MAX_FRAME_SIZE];
+} net_packet_t;
+
 static ethernet_slot_t ethernet_slots[ETHERNET_INTERFACE_CAPACITY];
 static ethernet_status_t ethernet_status;
 static ethernet_protocol_entry_t
     ethernet_handlers[ETHERNET_PROTOCOL_HANDLER_CAPACITY];
-static uint8_t ethernet_rx_buffer[ETHERNET_MAX_FRAME_SIZE];
-static uint8_t ethernet_tx_buffer[ETHERNET_MAX_FRAME_SIZE];
+static kmem_cache_t* ethernet_packet_cache;
 static uint8_t ethernet_poll_cursor;
 
 static uint8_t ethernet_text_equal(const char* first,
@@ -211,24 +216,30 @@ static void ethernet_process_frame(ethernet_slot_t* slot,
 }
 
 static uint16_t ethernet_build_frame(
-    const ethernet_slot_t* slot, const uint8_t* destination,
+    net_packet_t* packet, const ethernet_slot_t* slot,
+    const uint8_t* destination,
     uint16_t ethertype, const uint8_t* payload, uint16_t payload_length) {
     uint16_t frame_length = ETHERNET_HEADER_SIZE + payload_length;
 
+    if (!packet || !slot || !destination) {
+        LOG_ERROR("NET", "Parametros invalidos ao montar frame Ethernet");
+        return 0U;
+    }
     if (frame_length < ETHERNET_MIN_FRAME_SIZE) {
         frame_length = ETHERNET_MIN_FRAME_SIZE;
     }
-    kmemset(ethernet_tx_buffer, 0, frame_length);
-    kmemcpy(ethernet_tx_buffer + ETHERNET_DESTINATION_OFFSET,
+    kmemset(packet->data, 0, frame_length);
+    kmemcpy(packet->data + ETHERNET_DESTINATION_OFFSET,
             destination, ETHERNET_MAC_ADDRESS_SIZE);
-    kmemcpy(ethernet_tx_buffer + ETHERNET_SOURCE_OFFSET,
+    kmemcpy(packet->data + ETHERNET_SOURCE_OFFSET,
             slot->interface.mac_address, ETHERNET_MAC_ADDRESS_SIZE);
-    ethernet_tx_buffer[ETHERNET_TYPE_OFFSET] = (uint8_t)(ethertype >> 8U);
-    ethernet_tx_buffer[ETHERNET_TYPE_OFFSET + 1U] = (uint8_t)ethertype;
+    packet->data[ETHERNET_TYPE_OFFSET] = (uint8_t)(ethertype >> 8U);
+    packet->data[ETHERNET_TYPE_OFFSET + 1U] = (uint8_t)ethertype;
     if (payload_length) {
-        kmemcpy(ethernet_tx_buffer + ETHERNET_HEADER_SIZE,
+        kmemcpy(packet->data + ETHERNET_HEADER_SIZE,
                 payload, payload_length);
     }
+    packet->length = frame_length;
     return frame_length;
 }
 
@@ -242,6 +253,12 @@ int ethernet_init(void) {
     kmemset(ethernet_slots, 0, sizeof(ethernet_slots));
     kmemset(&ethernet_status, 0, sizeof(ethernet_status));
     kmemset(ethernet_handlers, 0, sizeof(ethernet_handlers));
+    ethernet_packet_cache = kmem_cache_create("net_packet",
+                                               sizeof(net_packet_t), 16U);
+    if (!ethernet_packet_cache) {
+        LOG_ERROR("NET", "Falha ao criar cache de pacotes Ethernet");
+        return ERR_MEM;
+    }
     ethernet_poll_cursor = 0;
     ethernet_status.initialized = 1;
     ethernet_status.last_error = OK;
@@ -332,6 +349,7 @@ int ethernet_register_handler(uint16_t ethertype,
 
 static int ethernet_poll_slot(ethernet_slot_t* slot,
                               uint8_t* out_received) {
+    net_packet_t* packet;
     uint8_t pending = 0;
     uint16_t length = 0;
     int result;
@@ -343,13 +361,25 @@ static int ethernet_poll_slot(ethernet_slot_t* slot,
         slot->interface.driver_context, &pending);
     if (result != OK) goto failed;
     if (!pending) return OK;
+    packet = (net_packet_t*)kmem_cache_alloc(ethernet_packet_cache);
+    if (!packet) {
+        LOG_ERROR("NET", "Falha ao alocar pacote RX Ethernet");
+        result = ERR_MEM;
+        goto failed;
+    }
     slot->status.polls++;
     result = slot->interface.receive_frame(
-        slot->interface.driver_context, ethernet_rx_buffer,
-        sizeof(ethernet_rx_buffer), &length, out_received);
-    if (result != OK) goto failed;
-    if (*out_received) ethernet_process_frame(slot, ethernet_rx_buffer,
-                                              length);
+        slot->interface.driver_context, packet->data,
+        sizeof(packet->data), &length, out_received);
+    if (result != OK) {
+        kmem_cache_free(ethernet_packet_cache, packet);
+        goto failed;
+    }
+    if (*out_received) {
+        packet->length = length;
+        ethernet_process_frame(slot, packet->data, packet->length);
+    }
+    kmem_cache_free(ethernet_packet_cache, packet);
     slot->status.last_error = OK;
     return OK;
 
@@ -407,6 +437,7 @@ int ethernet_send(const char* interface_id, const uint8_t* destination,
                   uint16_t ethertype, const uint8_t* payload,
                   uint16_t payload_length) {
     ethernet_slot_t* slot;
+    net_packet_t* packet;
     uint16_t frame_length;
     int result;
 
@@ -429,10 +460,20 @@ int ethernet_send(const char* interface_id, const uint8_t* destination,
         LOG_ERROR("NET", "Interface Ethernet de transmissao ausente");
         return ERR_NOT_FOUND;
     }
-    frame_length = ethernet_build_frame(slot, destination, ethertype,
+    packet = (net_packet_t*)kmem_cache_alloc(ethernet_packet_cache);
+    if (!packet) {
+        LOG_ERROR("NET", "Falha ao alocar pacote TX Ethernet");
+        return ERR_MEM;
+    }
+    frame_length = ethernet_build_frame(packet, slot, destination, ethertype,
                                         payload, payload_length);
+    if (!frame_length) {
+        kmem_cache_free(ethernet_packet_cache, packet);
+        return ERR_INVALID;
+    }
     result = slot->interface.send_frame(
-        slot->interface.driver_context, ethernet_tx_buffer, frame_length);
+        slot->interface.driver_context, packet->data, frame_length);
+    kmem_cache_free(ethernet_packet_cache, packet);
     if (result != OK) {
         slot->status.last_error = result;
         LOG_ERROR("NET", "Falha ao transmitir pela interface Ethernet");

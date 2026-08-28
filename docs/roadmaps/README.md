@@ -138,6 +138,11 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   pipes anonimos, pipeline do Shell, `grep` e redirecionamento; a validacao
   QEMU especifica permanece pendente.
 
+MM1 do Roadmap 11 esta implementada com caches SLAB/SLUB, migracao de
+processos, threads, objetos VFS e pacotes Ethernet, e os diagnosticos
+`slabinfo`/`slabtest`. A matriz executavel e a validacao QEMU permanecem
+pendentes dos gates e da execucao pelo usuario.
+
 ## K4 validada
 
 A K4 compara a copia VESA do cursor por regioes minimas, sem abrir mudancas

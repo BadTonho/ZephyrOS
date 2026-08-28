@@ -81,7 +81,7 @@ struct vfs_file {
 
 typedef struct {
     file_t* entries[VFS_MAX_FDS];
-    file_t standard_files[3];
+    file_t* standard_files[3];
     char cwd[VFS_MAX_PATH];
     uint8_t initialized;
 } vfs_fd_table_t;

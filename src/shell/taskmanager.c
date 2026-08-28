@@ -123,7 +123,7 @@ static uint32_t gui_last_metrics_tick = 0;
 static int gui_redraw_pending = 0;
 static int taskmgr_hosted = 0;
 
-extern process_t processes[];
+extern process_t* processes[];
 extern uint32_t process_count;
 
 static void taskmgr_gui_draw(void);
@@ -203,7 +203,7 @@ static uint32_t taskmgr_gui_aggregate_load(void) {
     uint32_t total = 0;
 
     for (int index = 0; index < MAX_PROCESSES; index++) {
-        if (processes[index].state != PROCESS_STATE_UNUSED) {
+        if (processes[index]) {
             total += tick_usage[index];
         }
     }
@@ -416,7 +416,8 @@ static void taskmgr_count_process_states(uint32_t* ready, uint32_t* running,
     *zombie = 0;
 
     for (int i = 0; i < MAX_PROCESSES; i++) {
-        switch (processes[i].state) {
+        if (!processes[i]) continue;
+        switch (processes[i]->state) {
             case PROCESS_STATE_READY: (*ready)++; break;
             case PROCESS_STATE_RUNNING: (*running)++; break;
             case PROCESS_STATE_BLOCKED: (*blocked)++; break;
@@ -489,7 +490,8 @@ static void taskmgr_update_cpu_metrics(void) {
     if (current_ticks > last_tick_sample) {
         uint32_t delta_total = current_ticks - last_tick_sample;
         for (int i = 0; i < 64; i++) {
-            uint32_t delta_proc = processes[i].total_ticks - last_process_ticks[i];
+            uint32_t delta_proc = processes[i] ?
+                processes[i]->total_ticks - last_process_ticks[i] : 0U;
             tick_usage[i] = delta_total ? (delta_proc * 100) / delta_total : 0;
             if (tick_usage[i] > 100) tick_usage[i] = 100;
         }
@@ -497,7 +499,7 @@ static void taskmgr_update_cpu_metrics(void) {
 
     last_tick_sample = current_ticks;
     for (int i = 0; i < 64; i++) {
-        last_process_ticks[i] = processes[i].total_ticks;
+        last_process_ticks[i] = processes[i] ? processes[i]->total_ticks : 0U;
     }
 }
 
@@ -527,7 +529,7 @@ static void draw_processes(void) {
     // Collect active processes
     int active_pids[64];
     for (int i = 0; i < 64; i++) {
-        if (processes[i].state != PROCESS_STATE_UNUSED) {
+        if (processes[i]) {
             
             active_pids[total_active++] = i;
         }
@@ -544,13 +546,13 @@ static void draw_processes(void) {
             int swap = 0;
             
             if (sort_column == 0) {
-                swap = (processes[p1].pid > processes[p2].pid);
+                swap = (processes[p1]->pid > processes[p2]->pid);
             } else if (sort_column == 1) {
                 int k = 0;
-                while (processes[p1].name[k] && processes[p2].name[k] && processes[p1].name[k] == processes[p2].name[k]) k++;
-                swap = (processes[p1].name[k] > processes[p2].name[k]);
+                while (processes[p1]->name[k] && processes[p2]->name[k] && processes[p1]->name[k] == processes[p2]->name[k]) k++;
+                swap = (processes[p1]->name[k] > processes[p2]->name[k]);
             } else if (sort_column == 2) {
-                swap = (processes[p1].state > processes[p2].state);
+                swap = (processes[p1]->state > processes[p2]->state);
             } else if (sort_column == 3) {
                 swap = (tick_usage[p1] < tick_usage[p2]); // Estimativa por ticks.
             }
@@ -583,15 +585,15 @@ static void draw_processes(void) {
                     video_put_char_at(0x20, COLOR_SELECTION, start_x + x, y);
                 }
                 row_color = COLOR_SELECTION;
-                prop_pid = processes[i].pid;
+                prop_pid = processes[i]->pid;
             }
 
-            print_num_at(start_x, y, processes[i].pid, row_color);
+            print_num_at(start_x, y, processes[i]->pid, row_color);
 
             char name[13];
             int n = 0;
-            while (processes[i].name[n] && n < 12) {
-                name[n] = processes[i].name[n];
+            while (processes[i]->name[n] && n < 12) {
+                name[n] = processes[i]->name[n];
                 n++;
             }
             name[n] = 0;
@@ -599,7 +601,7 @@ static void draw_processes(void) {
 
             const char* state_str = "?";
             uint8_t state_color = COLOR_TEXT;
-            switch (processes[i].state) {
+            switch (processes[i]->state) {
                 case PROCESS_STATE_READY:    state_str = "Pronto";    state_color = COLOR_BAR_FG; break;
                 case PROCESS_STATE_RUNNING:  state_str = "Rodando";   state_color = COLOR_HIGHLIGHT; break;
                 case PROCESS_STATE_BLOCKED:  state_str = "Bloqueado"; state_color = COLOR_BAR_WARN; break;
@@ -616,13 +618,13 @@ static void draw_processes(void) {
             if (selected_row == row) cpu_color = COLOR_SELECTION;
             print_num_at(start_x + 30, y, tick_usage[i], cpu_color);
             print_at(start_x + 33, y, "%", cpu_color);
-            print_at(start_x + 37, y, taskmgr_process_type(&processes[i]), row_color);
+            print_at(start_x + 37, y, taskmgr_process_type(processes[i]), row_color);
 
-            uint32_t ticks = processes[i].total_ticks;
+            uint32_t ticks = processes[i]->total_ticks;
             uint32_t secs = ticks / TSKMGR_TICKS_PER_SECOND;
             print_num_at(start_x + 46, y, secs, row_color);
             print_at(start_x + 46 + num_digits(secs), y, "s", row_color);
-            print_num_at(start_x + 56, y, processes[i].wait_ticks, row_color);
+            print_num_at(start_x + 56, y, processes[i]->wait_ticks, row_color);
             visible_row++;
         }
         row++;
@@ -647,7 +649,7 @@ static void draw_processes(void) {
     if (show_properties && prop_pid > 0) {
         process_t* p = 0;
         for (uint32_t i = 0; i < 64; i++) {
-            if (processes[i].pid == (uint32_t)prop_pid) p = &processes[i];
+            if (processes[i] && processes[i]->pid == (uint32_t)prop_pid) p = processes[i];
         }
         if (p) {
             int px = TSKMGR_START_X + 10;
@@ -990,15 +992,15 @@ void taskmgr_handle_key(uint8_t scancode) {
     if (scancode == 0x13 && selected_tab == 0 && prop_pid > 2) {
         // Find process and if it's explorer/taskmgr, restart it
         for (uint32_t i = 0; i < 64; i++) {
-            if (processes[i].pid == (uint32_t)prop_pid) {
+            if (processes[i] && processes[i]->pid == (uint32_t)prop_pid) {
                 int is_explorer = 0;
                 int is_taskmgr = 0;
-                char* n = processes[i].name;
+                char* n = processes[i]->name;
                 if (n[0]=='E' && n[1]=='x' && n[2]=='p') is_explorer = 1;
                 if (n[0]=='T' && n[1]=='a' && n[2]=='s' && n[3]=='k') is_taskmgr = 1;
                 
                 if (is_explorer || is_taskmgr) {
-                    process_destroy(&processes[i]);
+                    process_destroy(processes[i]);
                     // Process creation logic should be implemented properly
                     // e.g. shell_run(cmd) or similar.
                     LOG_INFO("TSKMGR", "Processo critico destruido (restart)");
@@ -1048,7 +1050,7 @@ void taskmgr_handle_key(uint8_t scancode) {
         if (selected_tab == 0) {
             count = 0;
             for (int i = 0; i < MAX_PROCESSES; i++) {
-                if (processes[i].state != PROCESS_STATE_UNUSED) count++;
+                if (processes[i]) count++;
             }
         } else if (selected_tab == 2) {
             count = (int)thread_get_count();
@@ -1071,10 +1073,10 @@ void taskmgr_handle_key(uint8_t scancode) {
     if (scancode == 0x53 && selected_tab == 0) {
         int row = 0;
         for (int i = 0; i < 64; i++) {
-            if (processes[i].state != PROCESS_STATE_UNUSED) {
+            if (processes[i]) {
                 if (row == selected_row) {
-                    if (process_is_user(&processes[i])) {
-                        if (process_signal_send(processes[i].pid,
+                    if (process_is_user(processes[i])) {
+                        if (process_signal_send(processes[i]->pid,
                                                 APP_SIGNAL_KILL) != OK) {
                             LOG_WARN("SHELL", "SIGKILL recusado pelo Task Manager");
                         }
@@ -1208,7 +1210,7 @@ static int taskmgr_collect_processes(int* process_indexes) {
     int count = 0;
 
     for (int i = 0; i < MAX_PROCESSES; i++) {
-        if (processes[i].state != PROCESS_STATE_UNUSED) {
+        if (processes[i]) {
             process_indexes[count++] = i;
         }
     }
@@ -1219,14 +1221,14 @@ static int taskmgr_collect_processes(int* process_indexes) {
         while (j >= 0) {
             int left = process_indexes[j];
             int swap = 0;
-            if (sort_column == 0) swap = processes[left].pid > processes[key].pid;
+            if (sort_column == 0) swap = processes[left]->pid > processes[key]->pid;
             if (sort_column == 1) {
                 int k = 0;
-                while (processes[left].name[k] && processes[key].name[k] &&
-                       processes[left].name[k] == processes[key].name[k]) k++;
-                swap = processes[left].name[k] > processes[key].name[k];
+                while (processes[left]->name[k] && processes[key]->name[k] &&
+                       processes[left]->name[k] == processes[key]->name[k]) k++;
+                swap = processes[left]->name[k] > processes[key]->name[k];
             }
-            if (sort_column == 2) swap = processes[left].state > processes[key].state;
+            if (sort_column == 2) swap = processes[left]->state > processes[key]->state;
             if (sort_column == 3) swap = tick_usage[left] < tick_usage[key];
             if (!swap) break;
             process_indexes[j + 1] = process_indexes[j];
@@ -1241,13 +1243,14 @@ static process_t* taskmgr_find_process_by_row(int row) {
     int indexes[MAX_PROCESSES];
     int count = taskmgr_collect_processes(indexes);
     if (row < 0 || row >= count) return 0;
-    return &processes[indexes[row]];
+    return processes[indexes[row]];
 }
 
 static process_t* taskmgr_find_process_by_pid(int pid) {
     for (int i = 0; i < MAX_PROCESSES; i++) {
-        if (processes[i].state != PROCESS_STATE_UNUSED &&
-            processes[i].pid == (uint32_t)pid) return &processes[i];
+        if (processes[i] && processes[i]->pid == (uint32_t)pid) {
+            return processes[i];
+        }
     }
     return 0;
 }
@@ -1486,7 +1489,7 @@ static void taskmgr_gui_draw_processes(void) {
     for (int row = 0; row < taskmgr_gui_process_visible_rows() &&
          scroll_offset + row < count; row++) {
         int absolute_row = scroll_offset + row;
-        process_t* process = &processes[indexes[absolute_row]];
+        process_t* process = processes[indexes[absolute_row]];
         int row_y = list_y + TSKMGR_GUI_LIST_HEADER_HEIGHT +
                     row * TSKMGR_GUI_ROW_HEIGHT;
         uint32_t text_color = absolute_row == selected_row ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;

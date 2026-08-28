@@ -5,6 +5,7 @@
 #include "core/app_api.h"
 #include "core/wait.h"
 #include "memory/paging.h"
+#include "memory/slab.h"
 #include "drivers/idt.h"
 #include "process/signal.h"
 #include "fs/vfs.h"
@@ -67,6 +68,7 @@ typedef struct {
     uint32_t pid_table_valid;
     uint32_t state_table_valid;
     uint32_t stack_table_valid;
+    uint32_t slab_table_valid;
 } scheduler_validation_t;
 
 typedef enum {
@@ -264,7 +266,7 @@ extern void process_context_switch(process_context_t* prev, process_context_t* n
 extern void process_user_enter(void);
 extern void process_user_termination_enter(void);
 
-extern process_t processes[MAX_PROCESSES];
+extern process_t* processes[MAX_PROCESSES];
 extern uint32_t process_count;
 
 #endif

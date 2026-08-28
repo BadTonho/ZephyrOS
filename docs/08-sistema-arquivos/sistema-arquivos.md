@@ -675,6 +675,15 @@ arquivo regular e diretorio sem criar descritor. Ela preserva
 `storage_get_file_info()` para os chamadores que exigem exclusivamente um
 arquivo regular.
 
+## Objetos VFS e MM1
+
+`file_t` e `vnode_t` sao obtidos dos caches `vfs_file` e `vfs_vnode`, enquanto
+as tabelas de descritores por processo mantem ponteiros para esses objetos.
+Os vnodes de stdin, stdout e stderr sao compartilhados e persistentes; os
+objetos de arquivos dinamicos retornam ao cache quando o ultimo descritor e
+fechado. `vfs_validate_state()` verifica posse, associacao entre tabelas e
+vnode, referencias por processo e a integridade global do SLAB.
+
 ## DevFS e listagem universal VFS3
 
 A VFS3 reserva uma quinta montagem virtual fixa em `/dev`. Ela não ocupa uma
