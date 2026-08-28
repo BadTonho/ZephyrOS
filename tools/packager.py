@@ -2104,7 +2104,14 @@ def run_selftest() -> int:
             )
             long_name = "Dados de Sistema.txt"
             long_data = b"hybrid fat32 payload"
-            for index in range(7):
+            _, root_spc, _, _, _, _, _ = fat32_geometry(
+                hybrid, HYBRID_FAT32_START_LBA
+            )
+            root_entries = (
+                root_spc * FAT32_SECTOR_SIZE // FAT32_DIR_ENTRY_SIZE
+            )
+            boundary_fillers = (root_entries - 1) // 2
+            for index in range(boundary_fillers):
                 inject_fat32_file(
                     b"directory boundary",
                     hybrid_path,
