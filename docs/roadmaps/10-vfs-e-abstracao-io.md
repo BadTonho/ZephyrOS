@@ -8,7 +8,7 @@ Este roadmap estabelece uma arquitetura própria, modular, segura e limpa para o
 
 ## Resumo de progresso
 
-- [ ] VFS1 - Descritores e operacoes unificadas de I/O (implementada; validacao pendente).
+- [x] VFS1 - Descritores e operacoes unificadas de I/O (concluida e validada).
 - [ ] VFS2 - Tabela de montagem de volumes e resolução uniforme de caminhos.
 - [ ] VFS3 - Abstração de nós de dispositivos (`/dev/`) de caractere e bloco.
 - [ ] VFS4 - Pipes anônimos e redirecionamento de streams no Shell.
@@ -66,10 +66,9 @@ Este roadmap estabelece uma arquitetura própria, modular, segura e limpa para o
 
 ### Estado da entrega
 
-A implementacao esta pronta e aguarda a matriz executavel do usuario. O item
-VFS1 permanece aberto ate a validacao no QEMU padrao e no perfil USB HID.
-VFS2, montagens, escrita parcial, `/dev`, pipes e pseudo-filesystems nao fazem
-parte desta entrega.
+A implementacao e a matriz executavel foram concluidas no QEMU padrao e no
+perfil USB HID. VFS2, montagens, escrita parcial, `/dev`, pipes e
+pseudo-filesystems nao fazem parte desta entrega.
 
 Durante a matriz, Enter e Ctrl+C em `app inputtest` foram aprovados. O primeiro
 teste com F12 revelou liberacao prematura do fd 0 bloqueado; a correcao passou
@@ -78,8 +77,7 @@ com F12 foi aprovado, sem descritores residuais. Os gates da versao corrigida
 foram confirmados. Uma repeticao de Ctrl+C revelou contabilizacao espuria de
 falha VFS; a leitura stdin foi ajustada para concluir a interrupcao por sinal
 com zero bytes. O novo teste foi aprovado sem log de erro, sem falhas VFS e
-sem descritores residuais. Enter, Ctrl+C e F12 estao aprovados; permanece o
-restante da matriz funcional.
+sem descritores residuais. Enter, Ctrl+C e F12 estao aprovados.
 
 ### Critério de saída
 
@@ -92,7 +90,7 @@ Processos em ring 3 conseguem abrir, ler, escrever e fechar descritores de arqui
   limites, isolamento, limpeza e invariantes.
 - `vfs test foo`: valida a rejeicao de argumentos excedentes.
 
-### Matriz pendente do usuario
+### Validacao concluida
 
 Os gates de host, os diagnosticos VFS/App API e os tres fluxos de
 `app inputtest` ja foram aprovados para esta versao. `usertest fault`,
@@ -103,11 +101,9 @@ fallback, esse modo nao integra o criterio de saida. O `vfs status` final
 confirmou ausencia de residuos e concluiu a matriz do QEMU padrao.
 
 No perfil USB HID, teclado e mouse `READY`, `app inputtest`, Ctrl+C, retorno do
-foco, limpeza VFS e `health check` foram aprovados. `regcheck full` revelou que
-a invariante UHCI rejeitava o estado transitivo valido entre a conclusao do TD
-Interrupt IN pelo hardware e sua coleta pelo polling. A correcao aguarda os
-gates de codigo e a repeticao de `usb hid status`, `app inputtest`,
-`vfs status`, `regcheck full` e `health check` nesse perfil.
+foco, limpeza VFS, `regcheck full` e `health check` foram aprovados depois da
+correcao da invariante transitiva do QH Interrupt. VFS1 foi concluida sem
+divida tecnica.
 
 ---
 

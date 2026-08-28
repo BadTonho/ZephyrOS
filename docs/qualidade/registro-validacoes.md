@@ -1969,3 +1969,21 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   somente quando o TD ja nao possui `UHCI_TD_ACTIVE`; as demais combinacoes
   continuam rejeitadas. Boot, Stage 2 e assembly de interrupcoes permaneceram
   inalterados. A correcao aguarda gates e repeticao da matriz USB HID.
+
+- VFS1: matriz final do perfil USB HID aprovada pelo usuario.
+  Validada em: 2026-08-28 10:42 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. Os gates da versao corrigida
+  precederam a abertura no perfil USB conforme o fluxo operacional confirmado
+  pelo usuario. `usb hid status` exibiu teclado e mouse em `READY`;
+  `app inputtest` recebeu entrada USB, encerrou o PID 7 por `SIGINT` e devolveu
+  o foco ao Shell; `vfs status` confirmou `READY`, pool `0/32`, sete processos,
+  21 descritores, somente os fds 0-2 e zero falhas. `regcheck full` terminou em
+  `OK` e `health check` nao publicou falha VFS, USB ou USB HID.
+
+- VFS1: descritores e operacoes unificadas de I/O concluidos.
+  Concluída em: 2026-08-28 10:42 (America/Sao_Paulo).
+  As matrizes de host, QEMU padrao e USB HID foram aprovadas. App API 0.5,
+  syscalls 4-7 e 14, isolamento por processo, stdio, `lseek`, limpeza,
+  invariantes e diagnosticos ficam validados. O modo Simple foi excluido pelo
+  usuario e nao integra o criterio de saida. Nenhuma divida tecnica foi aceita
+  ou criada para concluir VFS1.
