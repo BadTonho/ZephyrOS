@@ -239,10 +239,9 @@ Os workers cooperativos do pipeline usam a stack de quatro paginas definida
 em `thread.h`, suficiente para os caminhos VFS, Storage e FAT/LFN percorridos
 por `ls`, `cat` e pelo sink de redirecionamento.
 
-A matriz executavel de gates e QEMU permanece pendente da validacao do usuario.
-O criterio de saida somente deve ser marcado apos validar `pipetest`, os
-pipelines, redirecionamentos, recusas de destino e a ausencia de descritores e
-filas residuais.
+A matriz executavel de gates e QEMU foi validada pelo usuario.
+O criterio de saida foi atendido com os testes funcionais, recusas
+controladas e a confirmacao final de descritores e filas residuais.
 
 ### Critério de saída
 
@@ -254,13 +253,15 @@ utilizando pipes, Wait Queues e descritores redirecionados.
 
 - `pipetest`: validação automatizada de comunicação unidirecional entre duas threads via pipe.
 
-### Validação específica pendente
+### Validação específica concluída
 
-- `vfs test` e `pipetest`: wrap-around, backpressure, EOF, fechamento,
-  cancelamento, payload maior que o buffer e invariantes de VFS/Wait Queues.
-- `procs | grep shell`, `echo texto | grep texto`, `ls > lista.txt` e
-  `echo segundo >> lista.txt`.
-- Sintaxes invalidas, comandos nao adaptados, multiplos redirecionamentos,
-  arquivo inexistente, volume somente leitura e destino FAT invalido.
-- Syscall 18 valida, ponteiro invalido no caminho ring 3 e compatibilidade da
-  App API 0.3 a 0.8.
+- Validados pelo usuario: `vfs test` (20/20, `Pipes: OK`), `pipetest`,
+  `appcheck` com syscall 18, `procs | grep shell`, `echo texto | grep texto`,
+  `ls > lista.txt`, `cat lista.txt` e `echo segundo >> lista.txt`.
+- Tambem validados: `echo | grep texto`, `echo texto > a > b`, `ls >`,
+  `date | grep shell`, `cat arquivo-inexistente-vfs4.txt`, `ls > /` e
+  `ls > /dev/null`, todos com rejeicao controlada.
+- `ls > /mnt/boot/vfs4-readonly.txt` foi recusado com `ERR_UNAVAILABLE`
+  (código 9) no volume FAT12 somente leitura.
+- A confirmacao final mostrou pipes ativos `0/8`, apenas `fd=0..2` no processo
+  atual e nenhuma fila `VFS-pipe` ou waiter residual em `wqinfo`.
