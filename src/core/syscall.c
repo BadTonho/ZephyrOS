@@ -297,6 +297,27 @@ static int syscall_user_file_ioctl(const registers_t* regs) {
     return ERR_INVALID;
 }
 
+static int syscall_user_pipe(const registers_t* regs) {
+    app_handle_t fds[2];
+    int result;
+
+    if (!regs->ebx) {
+        LOG_ERROR("SYSCALL", "pipe recebeu destino nulo");
+        return ERR_NULL;
+    }
+    result = paging_validate_user_range(regs->ebx, sizeof(fds), 1);
+    if (result != OK) return result;
+    result = app_api_pipe(fds);
+    if (result != OK) return result;
+    result = paging_copy_to_user((void*)regs->ebx, fds, sizeof(fds));
+    if (result != OK) {
+        (void)app_api_file_close(fds[0]);
+        (void)app_api_file_close(fds[1]);
+        LOG_ERROR("SYSCALL", "Falha ao publicar handles do pipe no usuario");
+    }
+    return result;
+}
+
 static int syscall_user_message_send(const registers_t* regs) {
     app_message_t message;
     int result;
@@ -409,6 +430,8 @@ static int syscall_dispatch_user(registers_t* regs) {
             return syscall_user_getcwd(regs);
         case APP_SYSCALL_FILE_IOCTL:
             return syscall_user_file_ioctl(regs);
+        case APP_SYSCALL_PIPE:
+            return syscall_user_pipe(regs);
         case APP_SYSCALL_MESSAGE_SEND:
             return syscall_user_message_send(regs);
         case APP_SYSCALL_MESSAGE_RECEIVE:
@@ -473,6 +496,8 @@ static int syscall_dispatch(registers_t* regs) {
         case APP_SYSCALL_FILE_IOCTL:
             return app_api_file_ioctl((app_handle_t)regs->ebx, regs->ecx,
                                       (void*)regs->edx);
+        case APP_SYSCALL_PIPE:
+            return app_api_pipe((app_handle_t*)regs->ebx);
         case APP_SYSCALL_MESSAGE_SEND:
             return app_api_message_send(regs->ebx,
                                          (const app_message_t*)regs->ecx);

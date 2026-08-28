@@ -10,6 +10,9 @@
 #define VFS_MAX_STORAGE_MOUNTS STORAGE_MAX_MOUNTS
 #define VFS_MAX_MOUNTS (VFS_MAX_STORAGE_MOUNTS + 1U)
 #define VFS_MAX_DIR_ENTRIES (STORAGE_MAX_DIR_ENTRIES + 2U)
+#define VFS_MAX_PIPES 8U
+#define VFS_PIPE_BUFFER_SIZE 4096U
+#define VFS_REDIRECT_MAX_SIZE (64U * 1024U)
 
 #define VFS_FD_STDIN  0
 #define VFS_FD_STDOUT 1
@@ -34,7 +37,8 @@ typedef enum {
     VFS_NODE_DIRECTORY,
     VFS_NODE_TEST,
     VFS_NODE_CHAR_DEVICE,
-    VFS_NODE_BLOCK_DEVICE
+    VFS_NODE_BLOCK_DEVICE,
+    VFS_NODE_PIPE
 } vfs_node_type_t;
 
 typedef enum {
@@ -137,6 +141,10 @@ typedef struct {
     uint32_t ioctls;
     uint32_t device_capacity;
     uint32_t devices_active;
+    uint32_t pipe_capacity;
+    uint32_t pipes_active;
+    uint32_t pipe_reads;
+    uint32_t pipe_writes;
 } vfs_status_t;
 
 typedef struct {
@@ -171,6 +179,7 @@ typedef struct {
     uint8_t directory_listing;
     uint8_t devices;
     uint8_t ioctl;
+    uint8_t pipes;
 } vfs_test_result_t;
 
 int vfs_init(void);
@@ -189,6 +198,9 @@ int vfs_close(int32_t fd);
 int vfs_lseek(int32_t fd, int32_t offset, uint32_t whence,
               uint32_t* position);
 int vfs_ioctl(int32_t fd, uint32_t request, void* argument);
+int vfs_pipe(int32_t fds[2]);
+int vfs_write_redirect(const char* path, const uint8_t* data, uint32_t size,
+                       uint8_t append);
 int vfs_list_dir(const char* path, vfs_dir_entry_t* entries,
                  uint32_t capacity, uint32_t* out_count);
 int vfs_refresh_mounts(void);

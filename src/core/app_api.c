@@ -169,6 +169,19 @@ int app_api_file_ioctl(app_handle_t handle, uint32_t request, void* argument) {
     return app_files_ioctl(handle, request, argument);
 }
 
+int app_api_pipe(app_handle_t fds[2]) {
+    int result = app_api_require_ready();
+
+    if (result != OK) return result;
+    if (!fds) {
+        LOG_ERROR("APP_API", "Destino de pipe nulo");
+        return ERR_NULL;
+    }
+    result = app_files_pipe(fds);
+    if (result != OK) LOG_ERROR("APP_API", "Falha ao criar pipe");
+    return result;
+}
+
 int app_api_chdir(const char* path) {
     int result = app_api_require_ready();
 

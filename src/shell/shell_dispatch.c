@@ -1,6 +1,8 @@
 #include "apps/shell_dispatch.h"
 #include "apps/shell_job.h"
+#include "apps/shell_pipeline.h"
 #include "core/errors.h"
+#include "core/log.h"
 #include "core/string.h"
 #include "core/video.h"
 
@@ -83,6 +85,8 @@ extern void shell_dispatch_cmd_storage(const char* arguments);
 extern void shell_dispatch_cmd_index(const char* arguments);
 extern void shell_dispatch_cmd_search(const char* arguments);
 extern void shell_dispatch_cmd_mouse(const char* arguments);
+extern void shell_dispatch_cmd_grep(const char* arguments);
+extern void shell_dispatch_cmd_pipetest(const char* arguments);
 
 static const shell_dispatch_entry_t shell_dispatch_table[] = {
     {"job", shell_dispatch_cmd_job, SHELL_DISPATCH_FLAG_NONE},
@@ -91,6 +95,9 @@ static const shell_dispatch_entry_t shell_dispatch_table[] = {
     {"ls", shell_dispatch_cmd_ls, SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"cat", shell_dispatch_cmd_cat, SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"echo", shell_dispatch_cmd_echo, SHELL_DISPATCH_FLAG_NONE},
+    {"grep", shell_dispatch_cmd_grep, SHELL_DISPATCH_FLAG_MAY_BLOCK},
+    {"pipetest", shell_dispatch_cmd_pipetest,
+     SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"mem", shell_dispatch_cmd_mem, SHELL_DISPATCH_FLAG_NONE},
     {"procs", shell_dispatch_cmd_procs, SHELL_DISPATCH_FLAG_NONE},
     {"stack", shell_dispatch_cmd_stack, SHELL_DISPATCH_FLAG_NONE},
@@ -205,11 +212,18 @@ static void shell_dispatch_print_unknown(const char* command) {
 int shell_dispatch_execute(const char* input) {
     char command[SHELL_DISPATCH_COMMAND_SIZE];
     const char* cursor = input;
+    uint8_t pipeline_handled;
+    int pipeline_result;
     uint32_t command_length = 0U;
     uint32_t command_count =
         sizeof(shell_dispatch_table) / sizeof(shell_dispatch_table[0]);
 
-    if (!input) return ERR_NULL;
+    if (!input) {
+        LOG_ERROR("SHELL", "Entrada nula no dispatcher");
+        return ERR_NULL;
+    }
+    pipeline_result = shell_pipeline_try_execute(input, &pipeline_handled);
+    if (pipeline_handled) return pipeline_result;
 
     while (*cursor == ' ' || *cursor == '\t' || *cursor == '\r' ||
            *cursor == '\n' || *cursor == 27) {

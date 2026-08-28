@@ -1939,6 +1939,26 @@ static void cmd_appcheck_files(void) {
     cmd_appcheck_print_result("file_write_nulo", result);
 }
 
+static void cmd_appcheck_pipes(void) {
+    app_handle_t fds[2] = {APP_HANDLE_INVALID, APP_HANDLE_INVALID};
+    int result;
+
+    result = syscall_invoke_kernel(APP_SYSCALL_PIPE, (uint32_t)fds,
+                                    0U, 0U, 0U, 0U);
+    cmd_appcheck_print_result("pipe_syscall", result);
+    if (result == OK) {
+        int read_close = syscall_invoke_kernel(APP_SYSCALL_FILE_CLOSE,
+                                                fds[0], 0U, 0U, 0U, 0U);
+        int write_close = syscall_invoke_kernel(APP_SYSCALL_FILE_CLOSE,
+                                                 fds[1], 0U, 0U, 0U, 0U);
+        result = read_close != OK ? read_close : write_close;
+        cmd_appcheck_print_result("pipe_syscall_cleanup", result);
+    }
+    result = syscall_invoke_kernel(APP_SYSCALL_PIPE, 0U, 0U, 0U, 0U, 0U);
+    cmd_appcheck_print_expected_result("pipe_pointer_nulo", result, ERR_NULL);
+    cmd_appcheck_print_result("pipe_state", vfs_validate_state());
+}
+
 static void cmd_appcheck_paths(void) {
     char original[VFS_MAX_PATH];
     char current[VFS_MAX_PATH];
@@ -2212,6 +2232,7 @@ static void cmd_appcheck(void) {
                                     0, 0, 0, 0, 0);
     cmd_appcheck_print_result("process_exit", result);
     cmd_appcheck_files();
+    cmd_appcheck_pipes();
     cmd_appcheck_paths();
     cmd_appcheck_devices();
     cmd_appcheck_ipc();

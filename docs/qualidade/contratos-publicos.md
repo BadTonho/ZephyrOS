@@ -26,6 +26,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/apps/shell_input.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/apps/shell_runtime.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/apps/shell_job.h` | `docs/09-shell/refatoracao-shell.md` |
+| `src/include/apps/shell_pipeline.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/apps/taskmanager.h` | `docs/13-aplicativos/aplicativos.md` |
 | `src/include/core/app_api.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/app_catalog.h` | `docs/13-aplicativos/app-store.md` |
@@ -408,6 +409,15 @@ quinta montagem virtual independente das quatro vagas do Storage,
 versão 0.7, `app_speaker_tone_t`, requests do speaker e
 `app_api_file_ioctl()`; `syscall.h` acrescenta o número 17 sem renumerar os
 anteriores. Pacotes 0.3 a 0.7 permanecem aceitos.
+
+Desde a VFS4, `vfs.h` acrescenta `VFS_NODE_PIPE`, `vfs_pipe()` e
+`vfs_write_redirect()`, com buffer circular de 4096 bytes, pool de oito pipes,
+EOF, backpressure por Wait Queues e metricas de pipes. `app_files.h` e
+`app_api.h` acrescentam `app_files_pipe()` e `app_api_pipe()`; a App API passa
+a versao 0.8 e `syscall.h` acrescenta o numero 18 sem renumerar os anteriores.
+Pacotes 0.3 a 0.8 permanecem aceitos. `shell_pipeline.h` publica o bridge
+interno de I/O, `grep` e o autoteste `pipetest`, sem alterar as assinaturas de
+`shell.h`.
 
 O cancelamento F12 de um ZAPP bloqueado em stdin usa os campos append-only
 `cancel_exit_code` e `cancel_pending` de `process_t`. `process_cancel_user()`
