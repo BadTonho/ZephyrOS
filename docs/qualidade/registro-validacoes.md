@@ -1808,3 +1808,17 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   na segunda entrada LFN e valida separadamente o primeiro byte do alias. O
   agente nao reexecutou testes; `make package-test` aguarda repeticao pelo
   usuario.
+
+- VFS1: segunda execucao de `make package-test` reportada pelo usuario.
+  O horario exato da execucao nao foi informado. `packager_hybrid_lfn`
+  permaneceu como unica falha; leitura, alias e substituicao FAT32 continuaram
+  em `OK`.
+
+- VFS1: fixture de fronteira do diretorio FAT32 corrigida.
+  Corrigida em: 2026-08-28 09:21 (America/Sao_Paulo).
+  O volume de teste usa quatro setores por cluster e comporta 64 entradas no
+  diretorio raiz, mas a fixture criava somente sete arquivos e nao alcancava a
+  extensao de cadeia que pretendia validar. A quantidade de preenchimento
+  agora e derivada da geometria FAT32 para forcar o LFN a atravessar a
+  fronteira. O agente nao reexecutou testes; `make package-test` aguarda nova
+  repeticao pelo usuario.
