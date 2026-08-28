@@ -2130,14 +2130,21 @@ def run_selftest() -> int:
             long_record = next(
                 (item for item in records if item["name"] == long_name), None
             )
+            root_chain = _fat32_chain(fat, 2, clusters)
+            continuation_offset = (
+                HYBRID_FAT32_START_LBA * FAT32_SECTOR_SIZE +
+                _fat32_cluster_offset(data_start, spc, root_chain[-1])
+            )
             checks["hybrid_lfn"] = (
                 read_fat32_file(hybrid_path, long_name) == long_data and
                 long_record is not None and
                 records_image[long_record["lfn_start"]] == 0x42 and
-                records_image[long_record["lfn_start"] + 32] == 0x01 and
+                len(root_chain) > 1 and
+                records_image[continuation_offset] == 0x01 and
+                long_record["offset"] ==
+                continuation_offset + FAT32_DIR_ENTRY_SIZE and
                 records_image[long_record["offset"]] ==
-                long_record["alias"][0] and
-                len(_fat32_chain(fat, 2, clusters)) > 1
+                long_record["alias"][0]
             )
             checks["hybrid_alias"] = any(
                 item["name"] == long_name and
