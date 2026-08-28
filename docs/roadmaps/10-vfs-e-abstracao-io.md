@@ -128,10 +128,13 @@ divida tecnica.
 
 ### Estado da entrega
 
-VFS2 esta implementada e aguarda os gates de host e a matriz funcional do
-usuario. Bootloader, Stage 2 e assembly de interrupcoes permanecem
-inalterados. O modo Simple nao integra a matriz. Nenhuma divida tecnica foi
-criada.
+VFS2 esta implementada e aguarda os testes de host e a matriz USB MSC do
+usuario. A matriz funcional do QEMU padrao foi aprovada. Bootloader, Stage 2 e
+assembly de interrupcoes permanecem inalterados. O modo Simple nao integra a
+matriz. Nenhuma divida tecnica foi
+criada. A abertura relativa ring 3 de `app pathtest`, a limpeza VFS, as
+guardas de stack e o `regcheck full` foram aprovados depois da ampliacao da
+kernel stack ring 3 para 8 KiB; a falha anterior de tela preta esta encerrada.
 
 ### Critério de saída
 
@@ -146,12 +149,11 @@ requisicao ao volume correto e mantem um `cwd` isolado e herdavel por processo.
 
 ### Validacao pendente do usuario
 
-Host: `make package-test`, `make storage-fixtures-test`, `make q3check` e
-`make clean && make`. Depois, no QEMU padrao: `mount`, `pwd`, `cd /`,
-`cd /mnt/boot`, `pwd`, `cd ..`, `pwd`, `vfs status`, `vfs test`,
-`vfs test foo`, `appcheck`, `app pathtest`, `regcheck full`, `health check`,
-`memcheck` e `log check`. O perfil USB MSC sera formado somente depois de o
-usuario fornecer a saida textual de `storage list`, para preservar o ID exato.
+Host: `make package-test` e `make storage-fixtures-test`. Os gates de qualidade
+e o build usados para abrir esta versao no QEMU ja foram confirmados pelo fluxo
+operacional e nao constituem pendencia funcional. O perfil USB MSC sera
+formado somente depois de o usuario fornecer a saida textual de `storage list`,
+para preservar o ID exato.
 
 ---
 
