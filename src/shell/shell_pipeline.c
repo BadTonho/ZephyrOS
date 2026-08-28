@@ -83,9 +83,15 @@ static int shell_pipeline_copy_segment(const char* input, uint32_t start,
 
     while (start < end && shell_pipeline_is_space(input[start])) start++;
     while (end > start && shell_pipeline_is_space(input[end - 1U])) end--;
-    if (start == end) return ERR_INVALID;
+    if (start == end) {
+        LOG_WARN("SHELL", "Segmento vazio no pipeline");
+        return ERR_INVALID;
+    }
     length = end - start;
-    if (length >= SHELL_BUFFER_SIZE) return ERR_OVERFLOW;
+    if (length >= SHELL_BUFFER_SIZE) {
+        LOG_WARN("SHELL", "Segmento do pipeline excede o limite");
+        return ERR_OVERFLOW;
+    }
     for (uint32_t index = 0U; index < length; index++) {
         output[index] = input[start + index];
     }
@@ -99,12 +105,21 @@ static int shell_pipeline_copy_target(const char* input, uint32_t start,
 
     while (start < end && shell_pipeline_is_space(input[start])) start++;
     while (end > start && shell_pipeline_is_space(input[end - 1U])) end--;
-    if (start == end) return ERR_INVALID;
+    if (start == end) {
+        LOG_WARN("SHELL", "Destino vazio no redirecionamento");
+        return ERR_INVALID;
+    }
     for (uint32_t index = start; index < end; index++) {
-        if (shell_pipeline_is_space(input[index])) return ERR_INVALID;
+        if (shell_pipeline_is_space(input[index])) {
+            LOG_WARN("SHELL", "Destino do redirecionamento contem espacos");
+            return ERR_INVALID;
+        }
     }
     length = end - start;
-    if (length >= VFS_MAX_PATH) return ERR_OVERFLOW;
+    if (length >= VFS_MAX_PATH) {
+        LOG_WARN("SHELL", "Destino do redirecionamento excede o limite");
+        return ERR_OVERFLOW;
+    }
     for (uint32_t index = 0U; index < length; index++) {
         output[index] = input[start + index];
     }
@@ -126,11 +141,15 @@ static int shell_pipeline_parse(const char* input) {
         if (input[index] == '|') {
             if (shell_pipeline_context.redirect ||
                 shell_pipeline_context.stage_count >=
-                    SHELL_PIPELINE_MAX_COMMANDS) return ERR_INVALID;
+                    SHELL_PIPELINE_MAX_COMMANDS) {
+                LOG_WARN("SHELL", "Operador de pipeline invalido");
+                return ERR_INVALID;
+            }
             if (shell_pipeline_copy_segment(
                     input, start, index,
                     shell_pipeline_context.commands[
                         shell_pipeline_context.stage_count]) != OK) {
+                LOG_WARN("SHELL", "Estagio de pipeline invalido");
                 return ERR_INVALID;
             }
             shell_pipeline_context.stage_count++;
@@ -141,11 +160,15 @@ static int shell_pipeline_parse(const char* input) {
         if (input[index] == '>') {
             if (shell_pipeline_context.redirect ||
                 shell_pipeline_context.stage_count >=
-                    SHELL_PIPELINE_MAX_COMMANDS) return ERR_INVALID;
+                    SHELL_PIPELINE_MAX_COMMANDS) {
+                LOG_WARN("SHELL", "Redirecionamento duplicado ou estagio invalido");
+                return ERR_INVALID;
+            }
             if (shell_pipeline_copy_segment(
                     input, start, index,
                     shell_pipeline_context.commands[
                         shell_pipeline_context.stage_count]) != OK) {
+                LOG_WARN("SHELL", "Estagio final do redirecionamento invalido");
                 return ERR_INVALID;
             }
             shell_pipeline_context.stage_count++;
@@ -158,9 +181,13 @@ static int shell_pipeline_parse(const char* input) {
             target_start = index;
             while (index < length && input[index] != '|' &&
                    input[index] != '>') index++;
-            if (index < length) return ERR_INVALID;
+            if (index < length) {
+                LOG_WARN("SHELL", "Operador apos destino de redirecionamento");
+                return ERR_INVALID;
+            }
             if (shell_pipeline_copy_target(input, target_start, length,
                                            shell_pipeline_context.redirect_path) != OK) {
+                LOG_WARN("SHELL", "Destino de redirecionamento invalido");
                 return ERR_INVALID;
             }
             break;
@@ -169,11 +196,15 @@ static int shell_pipeline_parse(const char* input) {
     }
     if (!shell_pipeline_context.redirect) {
         if (shell_pipeline_context.stage_count >=
-            SHELL_PIPELINE_MAX_COMMANDS) return ERR_INVALID;
+            SHELL_PIPELINE_MAX_COMMANDS) {
+            LOG_WARN("SHELL", "Quantidade de estagios invalida no pipeline");
+            return ERR_INVALID;
+        }
         if (shell_pipeline_copy_segment(
                 input, start, length,
                 shell_pipeline_context.commands[
                     shell_pipeline_context.stage_count]) != OK) {
+            LOG_WARN("SHELL", "Ultimo estagio de pipeline invalido");
             return ERR_INVALID;
         }
         shell_pipeline_context.stage_count++;
@@ -187,19 +218,30 @@ static int shell_pipeline_command_supported(const char* command,
     uint32_t length = 0U;
 
     while (command[length] && !shell_pipeline_is_space(command[length])) {
-        if (length + 1U >= sizeof(name)) return ERR_OVERFLOW;
+        if (length + 1U >= sizeof(name)) {
+            LOG_WARN("SHELL", "Nome de comando do pipeline excede o limite");
+            return ERR_OVERFLOW;
+        }
         name[length] = command[length];
         length++;
     }
-    if (!length) return ERR_INVALID;
+    if (!length) {
+        LOG_WARN("SHELL", "Comando vazio no pipeline");
+        return ERR_INVALID;
+    }
     name[length] = '\0';
     if (kstrcmp(name, "grep") == 0) {
-        return stage_index == 0U ? ERR_INVALID : OK;
+        if (stage_index == 0U) {
+            LOG_WARN("SHELL", "grep precisa consumir a saida de outro estagio");
+            return ERR_INVALID;
+        }
+        return OK;
     }
     if (kstrcmp(name, "echo") == 0 || kstrcmp(name, "ls") == 0 ||
         kstrcmp(name, "cat") == 0 || kstrcmp(name, "procs") == 0) {
         return OK;
     }
+    LOG_WARN("SHELL", "Comando nao suportado no pipeline");
     return ERR_NOT_FOUND;
 }
 
