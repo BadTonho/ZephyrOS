@@ -1216,7 +1216,7 @@ int process_create_user_test(int trigger_fault, uint32_t* pid_out) {
     uint32_t code_size = process_user_build_code(code, trigger_fault);
 
     return process_create_user_image("UserTest", code, code_size,
-                                     user_test_message,
+                                     (const uint8_t*)user_test_message,
                                      kstrlen(user_test_message), 0,
                                      PAGE_SIZE, 1, pid_out);
 }
