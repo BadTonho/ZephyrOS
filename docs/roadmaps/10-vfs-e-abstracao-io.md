@@ -10,8 +10,8 @@ Este roadmap estabelece uma arquitetura própria, modular, segura e limpa para o
 
 - [x] VFS1 - Descritores e operacoes unificadas de I/O (concluida e validada).
 - [x] VFS2 - Montagens, caminhos universais e cwd (concluida e validada).
-- [ ] VFS3 - Abstração de nós de dispositivos (`/dev/`) de caractere e bloco
-  (implementada, aguardando validação).
+- [x] VFS3 - Abstração de nós de dispositivos (`/dev/`) de caractere e bloco
+  (concluída e validada).
 - [ ] VFS4 - Pipes anônimos e redirecionamento de streams no Shell.
 
 ## Atalhos
@@ -186,7 +186,8 @@ tecnica.
 
 ### Estado da entrega
 
-VFS3 está implementada e aguarda os gates e a matriz executável do usuário.
+VFS3 está concluída e validada nos gates de host e nas matrizes QEMU padrão,
+USB HID e USB MSC compacto, conforme o registro cronológico.
 O `devfs` publica `null`, `zero`, `tty`, `speaker` e `hda`; `/dev/hda` é
 somente leitura e os autotestes não escrevem em disco. Bootloader, Stage 2 e
 assembly de interrupções permaneceram inalterados. VFS4, pipes,
