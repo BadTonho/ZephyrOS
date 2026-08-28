@@ -1849,3 +1849,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   funcoes falhaveis, contratos publicos, registro de metricas e cadeias de
   confianca ZUPD/AS5 terminaram em `OK`; as fontes Terminus geradas tambem
   foram confirmadas.
+
+- VFS1: `make clean && make` aprovado pelo usuario.
+  Registrada em: 2026-08-28 09:32 (America/Sao_Paulo).
+  O horario exato da execucao e a saida textual completa nao foram informados;
+  o usuario confirmou que o build limpo terminou sem pendencias. Os gates
+  `make package-test`, `make q3check` e `make clean && make` ficam confirmados
+  para esta versao antes da abertura no QEMU.
