@@ -647,6 +647,13 @@ le exatamente essa quantidade de registros. Divergencia entre a contagem e o
 inventario e erro estrutural; o fim normal da lista nao e usado como sentinela
 falha e nao gera aviso espurio.
 
+O refresh preserva os IDs dos volumes montados que continuam presentes depois
+da nova enumeracao e restaura essas montagens antes de publicar a nova geracao.
+Todos os chamadores de refresh sincronizam a VFS antes de reconstruir o indice,
+inclusive quando o inventario termina degradado. Se um alias obsoleto ainda for
+encontrado durante unmount, a VFS o reconcilia sem exigir uma desmontagem que o
+Storage ja realizou.
+
 A resolucao aceita caminhos absolutos e relativos, `/` ou `\`, separadores
 repetidos, `.` e `..`. Caminho vazio, caminho com 256 bytes ou mais e escape
 acima de `/` sao recusados. A selecao usa o maior prefixo terminado em limite

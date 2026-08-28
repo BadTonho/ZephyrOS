@@ -1089,7 +1089,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         int refreshed_storage = storage_refresh();
 
         if (refreshed_storage != OK) storage_result = refreshed_storage;
-        if (refreshed_storage == OK && vfs_refresh_mounts() != OK) {
+        if (vfs_refresh_mounts() != OK) {
             LOG_ERROR("KERNEL", "Falha ao atualizar montagens VFS apos USB");
         }
         if (file_index_rebuild() != OK) {

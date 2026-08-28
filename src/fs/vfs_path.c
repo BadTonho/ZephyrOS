@@ -693,6 +693,7 @@ int vfs_mount_volume(const char* volume_id) {
 
 int vfs_unmount_volume(const char* volume_id) {
     vfs_mount_info_t mount;
+    storage_volume_t volume;
     int index;
     int result;
 
@@ -707,6 +708,13 @@ int vfs_unmount_volume(const char* volume_id) {
         LOG_WARN("FS", "Desmontagem VFS recusada para volume ocupado");
         return ERR_STATE;
     }
+    result = storage_find_volume(volume_id, &volume);
+    if (result == ERR_NOT_FOUND || (result == OK && !volume.mounted)) {
+        LOG_WARN("FS", "Alias VFS obsoleto reconciliado na desmontagem");
+        result = vfs_refresh_mounts();
+        return result == ERR_NOT_FOUND ? OK : result;
+    }
+    if (result != OK) return result;
     result = storage_unmount(volume_id);
     if (result != OK) return result;
     result = vfs_refresh_mounts();

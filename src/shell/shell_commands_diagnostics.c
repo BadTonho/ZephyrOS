@@ -3386,6 +3386,10 @@ int shell_diagnostics_run_device_scan(shell_device_scan_result_t* scan) {
         return scan->usb_result;
     }
     scan->storage_result = storage_refresh();
+    if (vfs_refresh_mounts() != OK) {
+        LOG_ERROR("SHELL", "Falha ao sincronizar VFS apos refresh Storage");
+        if (scan->storage_result == OK) scan->storage_result = ERR_STATE;
+    }
     if (file_index_rebuild() != OK) {
         LOG_WARN("SHELL", "Indice aguardara a nova geracao de Storage");
     }
