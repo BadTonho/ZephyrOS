@@ -2037,3 +2037,25 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   relativa e fechamento, permitindo identificar a ultima etapa concluida se
   houver nova falha. Bootloader, Stage 2 e assembly de interrupcoes permanecem
   inalterados. A correcao aguarda gates e repeticao funcional pelo usuario.
+
+- VFS2: correcao de `app pathtest` validada pelo usuario.
+  Validada em: 2026-08-28 12:32 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. Os quatro marcos de `chdir`,
+  `getcwd`, abertura relativa e fechamento terminaram em `OK`, e o PID 7
+  encerrou com codigo 0. `vfs status` permaneceu `READY`, com pool `0/32`, sete
+  processos, 21 descritores, somente os fds 0-2 no Shell e zero falhas. O
+  `stack check` aprovou os sete processos sem margem baixa ou canario rompido,
+  e `regcheck full` terminou em `OK`. A falha de tela preta fica corrigida e
+  validada; VFS2 permanece aberta somente para o restante da matriz prevista.
+
+- VFS2: matriz funcional do QEMU padrao aprovada pelo usuario.
+  Validada em: 2026-08-28 12:35 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. `appcheck` confirmou App API
+  0.6, `getcwd`, `chdir`, restauracao do cwd, abertura relativa, leitura,
+  `lseek`, fechamento e rejeicoes esperadas. `health check` nao publicou falha
+  da VFS; os estados indisponiveis ou degradados exibidos pertencem a AC97,
+  Media Player, USB, Update, App Store e USB HID ausentes neste perfil.
+  `memcheck` aprovou heap, coalescencia, guardas PMM e diretorios de usuario, e
+  `log check` aprovou os oito casos sem falhas. Com os resultados anteriores de
+  namespace, `vfs test`, `app pathtest`, stack e `regcheck full`, a matriz do
+  QEMU padrao fica concluida. Restam os testes de host e o perfil USB MSC.
