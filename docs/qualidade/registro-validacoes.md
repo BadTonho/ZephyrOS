@@ -1835,3 +1835,17 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   verificacao agora segue a cadeia FAT, calcula o cluster de continuacao e
   confirma nele a segunda entrada e o alias curto. O agente nao reexecutou
   testes; `make package-test` aguarda nova repeticao pelo usuario.
+
+- VFS1: `make package-test` aprovado pelo usuario.
+  Registrada em: 2026-08-28 09:27 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. Todos os casos do empacotador
+  terminaram em `OK`, incluindo compatibilidade de API, fixtures da App Store,
+  imagem hibrida, LFN FAT32, alias e substituicao. O alvo encerrou com
+  `Packager self-test OK`.
+
+- VFS1: `make q3check` aprovado pelo usuario.
+  Registrada em: 2026-08-28 09:29 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. Whitespace, protecao do boot,
+  funcoes falhaveis, contratos publicos, registro de metricas e cadeias de
+  confianca ZUPD/AS5 terminaram em `OK`; as fontes Terminus geradas tambem
+  foram confirmadas.
