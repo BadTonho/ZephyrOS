@@ -3123,6 +3123,51 @@ int storage_get_file_info(const char* id, const char* path,
     return result;
 }
 
+int storage_get_path_info(const char* id, const char* path,
+                          uint32_t* out_size, uint8_t* out_attributes,
+                          uint8_t* out_is_directory) {
+    storage_volume_t* volume;
+    storage_mount_t* mount;
+    storage_raw_entry_t entry;
+    uint32_t cluster;
+    uint8_t fixed_root;
+    int index;
+    int result;
+
+    if (!id || !path || !out_size || !out_is_directory) {
+        LOG_ERROR("FS", "Argumento nulo na consulta de caminho");
+        return ERR_NULL;
+    }
+    spinlock_acquire(&storage_operation_lock);
+    index = storage_initialized ? storage_volume_index(id) : -1;
+    volume = index >= 0 ? &storage_volumes[index] : 0;
+    mount = index >= 0 ? storage_mount_for_volume((uint8_t)index) : 0;
+    if (!volume || !volume->mounted || !mount) {
+        result = index < 0 ? ERR_NOT_FOUND : ERR_STATE;
+    } else if (!path[0]) {
+        *out_size = 0U;
+        if (out_attributes) *out_attributes = STORAGE_ATTR_DIRECTORY;
+        *out_is_directory = 1U;
+        result = OK;
+    } else {
+        result = storage_find_file(volume, mount, path, &entry);
+        if (result == OK) {
+            *out_size = entry.size;
+            if (out_attributes) *out_attributes = entry.attributes;
+            *out_is_directory = 0U;
+        } else if (storage_resolve_directory(volume, mount, path,
+                                             &cluster, &fixed_root) == OK) {
+            *out_size = 0U;
+            if (out_attributes) *out_attributes = STORAGE_ATTR_DIRECTORY;
+            *out_is_directory = 1U;
+            result = OK;
+        }
+    }
+    spinlock_release(&storage_operation_lock);
+    if (result != OK) LOG_ERROR("FS", "Consulta de caminho de volume falhou");
+    return result;
+}
+
 int storage_find_system_volume(storage_volume_t* out_volume) {
     if (!out_volume) {
         LOG_ERROR("FS", "Destino nulo na busca do volume do sistema");

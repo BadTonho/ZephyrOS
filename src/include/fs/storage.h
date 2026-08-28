@@ -166,6 +166,9 @@ int storage_read_file_range(const char* id, const char* path,
                             uint32_t max_size, uint32_t* out_read);
 int storage_get_file_info(const char* id, const char* path,
                           uint32_t* out_size, uint8_t* out_attributes);
+int storage_get_path_info(const char* id, const char* path,
+                          uint32_t* out_size, uint8_t* out_attributes,
+                          uint8_t* out_is_directory);
 int storage_find_system_volume(storage_volume_t* out_volume);
 int storage_get_free_space(const char* id, uint32_t* out_free_sectors,
                            uint32_t* out_free_clusters);
