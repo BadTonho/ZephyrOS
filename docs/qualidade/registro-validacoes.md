@@ -1740,3 +1740,20 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   0, como processo auto-parentado. O `sigtest` passa a validar o Idle sem
   relaxar a regra para processos ring3. A validação executável permanece sob
   responsabilidade do usuário.
+
+- SYNC4: validação parcial reportada pelo usuário.
+  Registrada em: 2026-08-27 23:45 (America/Sao_Paulo).
+  A captura fornecida mostra `sigtest`, `usertest fault`, `irqstat check`,
+  `timer check`, `wait check`, `workq check`, `schedcheck`, `net socket check`,
+  `net check qemu`, `regcheck full`, `memcheck` e `log check` em `OK`. O
+  `app inputtest` recebeu Enter e encerrou o ZAPP com código 0; `sigtest foo`
+  registrou uso inválido sem alterar o estado. O horário exato da execução
+  não foi informado na captura. Permanecem pendentes os cenários de Ctrl+C
+  no `app inputtest` e a matriz USB HID antes de encerrar SYNC4.
+
+- SYNC4: Ctrl+C em aplicativo ring3 validado pelo usuário.
+  Registrada em: 2026-08-27 23:47 (America/Sao_Paulo).
+  A captura mostra `app inputtest` encerrado por `SIGINT`, com foco devolvido
+  ao Shell e prompt responsivo. O horário exato da execução não foi informado
+  na captura. Permanece pendente a repetição no perfil USB HID e a limpeza de
+  uma linha parcial por Ctrl+C no prompt.
