@@ -196,7 +196,10 @@ static int vfs_find_free_fd_pair(vfs_fd_table_t* table, int* read_fd,
                                  int* write_fd) {
     uint32_t index;
 
-    if (!table || !read_fd || !write_fd) return ERR_NULL;
+    if (!table || !read_fd || !write_fd) {
+        LOG_ERROR("FS", "Parametros invalidos ao buscar par de descritores");
+        return ERR_NULL;
+    }
     *read_fd = VFS_FD_INVALID;
     *write_fd = VFS_FD_INVALID;
     spinlock_acquire(&vfs_lock);
@@ -212,6 +215,7 @@ static int vfs_find_free_fd_pair(vfs_fd_table_t* table, int* read_fd,
     if (*read_fd == VFS_FD_INVALID || *write_fd == VFS_FD_INVALID) {
         *read_fd = VFS_FD_INVALID;
         *write_fd = VFS_FD_INVALID;
+        LOG_WARN("FS", "Nao ha par de descritores livre para pipe");
         return ERR_UNAVAILABLE;
     }
     return OK;
@@ -298,7 +302,10 @@ static pipe_t* vfs_pipe_from_file(file_t* file,
 static int vfs_pipe_read_ready(void* context, uint8_t* out_ready) {
     pipe_t* pipe = (pipe_t*)context;
 
-    if (!pipe || !out_ready) return ERR_NULL;
+    if (!pipe || !out_ready) {
+        LOG_ERROR("FS", "Parametros invalidos ao consultar leitura de pipe");
+        return ERR_NULL;
+    }
     spinlock_acquire(&pipe->lock);
     *out_ready = pipe->bytes != 0U || pipe->writers == 0U;
     spinlock_release(&pipe->lock);
@@ -308,7 +315,10 @@ static int vfs_pipe_read_ready(void* context, uint8_t* out_ready) {
 static int vfs_pipe_write_ready(void* context, uint8_t* out_ready) {
     pipe_t* pipe = (pipe_t*)context;
 
-    if (!pipe || !out_ready) return ERR_NULL;
+    if (!pipe || !out_ready) {
+        LOG_ERROR("FS", "Parametros invalidos ao consultar escrita de pipe");
+        return ERR_NULL;
+    }
     spinlock_acquire(&pipe->lock);
     *out_ready = pipe->bytes < VFS_PIPE_BUFFER_SIZE || pipe->readers == 0U;
     spinlock_release(&pipe->lock);
@@ -358,7 +368,10 @@ static void vfs_pipe_wake_writers(pipe_t* pipe) {
 }
 
 static int vfs_pipe_open(vnode_t* vnode, file_t* file) {
-    if (!vnode || !file || vnode->type != VFS_NODE_PIPE) return ERR_NULL;
+    if (!vnode || !file || vnode->type != VFS_NODE_PIPE) {
+        LOG_ERROR("FS", "Endpoint de pipe invalido na abertura");
+        return ERR_NULL;
+    }
     file->offset = 0U;
     return OK;
 }
@@ -462,11 +475,15 @@ static int vfs_pipe_close(file_t* file) {
     uint8_t release = 0U;
 
     pipe = vfs_pipe_from_file(file, &context);
-    if (!pipe || !context) return ERR_STATE;
+    if (!pipe || !context) {
+        LOG_ERROR("FS", "Endpoint de pipe invalido no fechamento");
+        return ERR_STATE;
+    }
     spinlock_acquire(&pipe->lock);
     if (context->pipe_reader) {
         if (!pipe->readers) {
             spinlock_release(&pipe->lock);
+            LOG_ERROR("FS", "Contagem de leitores do pipe inconsistente");
             return ERR_STATE;
         }
         pipe->readers--;
@@ -475,6 +492,7 @@ static int vfs_pipe_close(file_t* file) {
     if (context->pipe_writer) {
         if (!pipe->writers) {
             spinlock_release(&pipe->lock);
+            LOG_ERROR("FS", "Contagem de escritores do pipe inconsistente");
             return ERR_STATE;
         }
         pipe->writers--;
@@ -494,6 +512,7 @@ static int vfs_pipe_lseek(file_t* file, int32_t offset, uint32_t whence,
     (void)offset;
     (void)whence;
     if (position) *position = 0U;
+    LOG_WARN("FS", "Seek indisponivel em pipe");
     return ERR_UNAVAILABLE;
 }
 

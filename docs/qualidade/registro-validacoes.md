@@ -2296,3 +2296,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   módulos estão presentes no Makefile, os símbolos da App API 0.8 e syscall 18
   estão integrados e `src/boot/boot.asm` permaneceu sem alterações. Nenhum
   build, teste ou execução QEMU foi realizado pelo agente.
+
+- VFS4: correção de conformidade do `q3check` concluída.
+  Concluída em: 2026-08-28 18:05 (America/Sao_Paulo).
+  Foram adicionados logs de erro e aviso às funções novas do VFS e do parser
+  de pipeline apontadas pelo gate. A revisão estática do diff permaneceu limpa;
+  o `q3check` deve ser repetido pelo usuário.
