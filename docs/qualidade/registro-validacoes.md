@@ -1722,3 +1722,21 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   a mensagem de dados com o tipo `const uint8_t*`, eliminando o warning de
   signedness observado em `process.c`. Nenhum arquivo de boot ou Assembly foi
   alterado.
+
+- SYNC4: correção do bloqueio de entrada ring3 e diagnóstico de invariantes.
+  Concluída em: 2026-08-27 23:32 (America/Sao_Paulo).
+  `message_receive` de processos ring3 passou a esperar pela fila IPC com
+  interrupções habilitadas, acordando por mensagem, timeout ou sinal sem
+  manter o processo em loop ocupado. A condição IPC também revalida sinais
+  entregáveis para evitar perda de wakeup quando o sinal chega durante a
+  transição para a fila. `process_signal_validate_state()` passou a registrar
+  o PID e a classe da invariante que falhar, preservando o estado para o
+  diagnóstico do `sigtest`. A validação executável desta correção permanece
+  sob responsabilidade do usuário.
+
+- SYNC4: correção da falsa invariante do processo Idle.
+  Concluída em: 2026-08-27 23:33 (America/Sao_Paulo).
+  A validação de sinais deixou de tratar o PID 0, cujo pai legítimo também é
+  0, como processo auto-parentado. O `sigtest` passa a validar o Idle sem
+  relaxar a regra para processos ring3. A validação executável permanece sob
+  responsabilidade do usuário.

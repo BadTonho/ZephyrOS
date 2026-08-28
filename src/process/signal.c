@@ -83,6 +83,115 @@ static int signal_context_empty(const registers_t* regs) {
     return 1;
 }
 
+static int signal_validate_process(const process_t* process) {
+    if ((process->pending_signals & ~APP_SIGNAL_SUPPORTED_MASK) ||
+        (process->blocked_signals & ~APP_SIGNAL_SUPPORTED_MASK)) {
+        LOG_ERROR_CODE("PROC", (int32_t)process->pid,
+                       "Bitmap de sinais contem bits desconhecidos");
+        return ERR_STATE;
+    }
+    if (process->blocked_signals & APP_SIGNAL_UNBLOCKABLE_MASK) {
+        LOG_ERROR_CODE("PROC", (int32_t)process->pid,
+                       "Processo bloqueou sinal fatal");
+        return ERR_STATE;
+    }
+    if (process->active_signal >= PROCESS_SIGNAL_ACTION_COUNT ||
+        (process->active_signal &&
+         !signal_supported(process->active_signal)) ||
+        (process->last_signal && !signal_supported(process->last_signal)) ||
+        (process->termination_signal &&
+         !signal_terminating(process->termination_signal))) {
+        LOG_ERROR_CODE("PROC", (int32_t)process->pid,
+                       "Sinal ativo, entregue ou terminal invalido");
+        return ERR_STATE;
+    }
+    if (process->signal_context_valid !=
+        (process->active_signal != 0U)) {
+        LOG_ERROR_CODE("PROC", (int32_t)process->pid,
+                       "Contexto salvo diverge do sinal ativo");
+        return ERR_STATE;
+    }
+    if (process->signal_context_valid && !process_is_user(process)) {
+        LOG_ERROR_CODE("PROC", (int32_t)process->pid,
+                       "Contexto de sinal pertence a processo ring0");
+        return ERR_STATE;
+    }
+    if (!process->signal_context_valid &&
+        (process->signal_saved_mask ||
+         !signal_context_empty(&process->signal_saved_context))) {
+        LOG_ERROR_CODE("PROC", (int32_t)process->pid,
+                       "Contexto salvo orfao");
+        return ERR_STATE;
+    }
+    if (process->signal_context_valid &&
+        (((process->signal_saved_context.cs & 0x03U) != 0x03U) ||
+         !(process->signal_saved_context.eflags &
+           SIGNAL_EFLAGS_INTERRUPT_ENABLE))) {
+        LOG_ERROR_CODE("PROC", (int32_t)process->pid,
+                       "Contexto salvo sem retorno ring3 habilitado");
+        return ERR_STATE;
+    }
+    if (process->pid != 0U && process->parent_pid == process->pid) {
+        LOG_ERROR_CODE("PROC", (int32_t)process->pid,
+                       "Processo e seu proprio pai");
+        return ERR_STATE;
+    }
+    if (process->signal_context_valid > 1U ||
+        process->signal_exit_notified > 1U) {
+        LOG_ERROR_CODE("PROC", (int32_t)process->pid,
+                       "Flags de ciclo de vida de sinal invalidas");
+        return ERR_STATE;
+    }
+    if (process->state != PROCESS_STATE_ZOMBIE &&
+        (process->termination_signal || process->signal_exit_notified)) {
+        LOG_ERROR_CODE("PROC", (int32_t)process->pid,
+                       "Estado vivo possui termino ou notificacao de saida");
+        return ERR_STATE;
+    }
+    if (process->signal_actions[0].disposition !=
+            APP_SIGNAL_DISPOSITION_DEFAULT ||
+        process->signal_actions[0].handler ||
+        process->signal_actions[0].mask) {
+        LOG_ERROR_CODE("PROC", (int32_t)process->pid,
+                       "Acao reservada de sinal nao esta vazia");
+        return ERR_STATE;
+    }
+    if (process->state == PROCESS_STATE_ZOMBIE &&
+        (process->pending_signals || process->blocked_signals ||
+         process->active_signal || process->signal_context_valid)) {
+        LOG_ERROR_CODE("PROC", (int32_t)process->pid,
+                       "Zombie reteve estado de sinal");
+        return ERR_STATE;
+    }
+    if (process->parent_pid && !process_get_by_pid(process->parent_pid)) {
+        LOG_ERROR_CODE("PROC", (int32_t)process->pid,
+                       "Processo possui pai inexistente");
+        return ERR_STATE;
+    }
+    for (uint32_t signal_number = 1U;
+         signal_number < PROCESS_SIGNAL_ACTION_COUNT; signal_number++) {
+        const app_signal_action_t* action =
+            &process->signal_actions[signal_number];
+
+        if ((!signal_supported(signal_number) &&
+             (action->disposition != APP_SIGNAL_DISPOSITION_DEFAULT ||
+              action->handler || action->mask)) ||
+            action->disposition > APP_SIGNAL_DISPOSITION_HANDLER ||
+            (action->mask & ~APP_SIGNAL_SUPPORTED_MASK) ||
+            (signal_unblockable(signal_number) &&
+             action->disposition != APP_SIGNAL_DISPOSITION_DEFAULT) ||
+            (action->disposition == APP_SIGNAL_DISPOSITION_HANDLER &&
+             !signal_handler_valid(process, action->handler)) ||
+            (action->disposition != APP_SIGNAL_DISPOSITION_HANDLER &&
+             action->handler != 0U)) {
+            LOG_ERROR_CODE("PROC", (int32_t)process->pid,
+                           "Tabela de acoes de sinais invalida");
+            return ERR_STATE;
+        }
+    }
+    return OK;
+}
+
 const char* process_signal_name(uint32_t signal_number) {
     switch (signal_number) {
         case APP_SIGNAL_INT: return "SIGINT";
@@ -553,65 +662,7 @@ int process_signal_validate_state(void) {
         process_t* process = &processes[index];
 
         if (process->state == PROCESS_STATE_UNUSED) continue;
-        if ((process->pending_signals & ~APP_SIGNAL_SUPPORTED_MASK) ||
-            (process->blocked_signals & ~APP_SIGNAL_SUPPORTED_MASK) ||
-            (process->blocked_signals & APP_SIGNAL_UNBLOCKABLE_MASK) ||
-            process->active_signal >= PROCESS_SIGNAL_ACTION_COUNT ||
-            (process->active_signal &&
-             !signal_supported(process->active_signal)) ||
-            (process->last_signal &&
-             !signal_supported(process->last_signal)) ||
-            (process->termination_signal &&
-             !signal_terminating(process->termination_signal)) ||
-            (process->signal_context_valid !=
-             (process->active_signal != 0U)) ||
-            (process->signal_context_valid && !process_is_user(process)) ||
-            (!process->signal_context_valid &&
-             (process->signal_saved_mask ||
-              !signal_context_empty(&process->signal_saved_context))) ||
-            (process->signal_context_valid &&
-             (((process->signal_saved_context.cs & 0x03U) != 0x03U) ||
-              !(process->signal_saved_context.eflags &
-                SIGNAL_EFLAGS_INTERRUPT_ENABLE))) ||
-            process->parent_pid == process->pid ||
-            process->signal_context_valid > 1U ||
-            process->signal_exit_notified > 1U ||
-            (process->state != PROCESS_STATE_ZOMBIE &&
-             (process->termination_signal ||
-              process->signal_exit_notified)) ||
-            process->signal_actions[0].disposition !=
-                APP_SIGNAL_DISPOSITION_DEFAULT ||
-            process->signal_actions[0].handler ||
-            process->signal_actions[0].mask ||
-            (process->state == PROCESS_STATE_ZOMBIE &&
-             (process->pending_signals || process->blocked_signals ||
-              process->active_signal || process->signal_context_valid))) {
-            result = ERR_STATE;
-            break;
-        }
-        if (process->parent_pid && !process_get_by_pid(process->parent_pid)) {
-            result = ERR_STATE;
-            break;
-        }
-        for (uint32_t signal_number = 1U;
-             signal_number < PROCESS_SIGNAL_ACTION_COUNT; signal_number++) {
-            app_signal_action_t* action =
-                &process->signal_actions[signal_number];
-            if ((!signal_supported(signal_number) &&
-                 (action->disposition != APP_SIGNAL_DISPOSITION_DEFAULT ||
-                  action->handler || action->mask)) ||
-                action->disposition > APP_SIGNAL_DISPOSITION_HANDLER ||
-                (action->mask & ~APP_SIGNAL_SUPPORTED_MASK) ||
-                (signal_unblockable(signal_number) &&
-                 action->disposition != APP_SIGNAL_DISPOSITION_DEFAULT) ||
-                (action->disposition == APP_SIGNAL_DISPOSITION_HANDLER &&
-                 !signal_handler_valid(process, action->handler)) ||
-                (action->disposition != APP_SIGNAL_DISPOSITION_HANDLER &&
-                 action->handler != 0U)) {
-                result = ERR_STATE;
-                break;
-            }
-        }
+        result = signal_validate_process(process);
         if (result != OK) break;
     }
     signal_irq_restore(flags);
