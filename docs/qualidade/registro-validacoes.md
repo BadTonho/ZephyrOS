@@ -1950,3 +1950,22 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   estado `READY`, pool regular `0/32`, sete processos, 21 descritores, somente
   stdin, stdout e stderr no Shell e contadores de falha zerados. A matriz do
   perfil padrao fica concluida sem residuos; resta a validacao USB HID.
+
+- VFS1: primeira matriz no perfil USB HID executada pelo usuario.
+  Registrada em: 2026-08-28 10:36 (America/Sao_Paulo).
+  O horario exato da execucao nao foi informado. `usb hid status` confirmou
+  teclado e mouse em `READY`; `app inputtest` recebeu entrada USB, encerrou o
+  PID 7 por `SIGINT` e devolveu o foco; `vfs status` confirmou `READY`, pool
+  `0/32`, sete processos, 21 descritores e zero falhas. `health check` nao
+  publicou falha VFS. A matriz permaneceu aberta porque `regcheck full`
+  terminou em erro `usb codigo=7`, com QH Interrupt e runtime UHCI reportados
+  como invalidos.
+
+- VFS1: invariante transitiva do QH Interrupt UHCI corrigida.
+  Corrigida em: 2026-08-28 10:36 (America/Sao_Paulo).
+  O validador exigia que toda requisicao marcada ativa ainda apontasse para o
+  TD. O hardware pode concluir o TD e terminar o QH antes de o polling coletar
+  a conclusao e baixar o estado ativo. A validacao agora aceita esse intervalo
+  somente quando o TD ja nao possui `UHCI_TD_ACTIVE`; as demais combinacoes
+  continuam rejeitadas. Boot, Stage 2 e assembly de interrupcoes permaneceram
+  inalterados. A correcao aguarda gates e repeticao da matriz USB HID.

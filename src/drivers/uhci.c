@@ -2081,6 +2081,9 @@ int uhci_validate_state(uint8_t bus, uint8_t device, uint8_t function) {
             uhci_interrupt_request_t* request =
                 &controller->interrupt_requests[index];
             uhci_qh_t* queue_head;
+            uhci_td_t* td;
+            uint32_t expected_element;
+            uint8_t element_valid;
 
             if (!request->used) continue;
             if (!request->record || request->qh_index != UHCI_INTERRUPT_QH_BASE +
@@ -2091,11 +2094,18 @@ int uhci_validate_state(uint8_t bus, uint8_t device, uint8_t function) {
                 return ERR_STATE;
             }
             queue_head = uhci_queue_head_at(controller, request->qh_index);
+            td = &controller->td_pool[request->td_index];
+            expected_element = controller->td_pool_phys +
+                               request->td_index * UHCI_TD_SIZE;
+            element_valid = request->active ?
+                (queue_head &&
+                 (queue_head->element == expected_element ||
+                  (queue_head->element == UHCI_PTR_TERM &&
+                   !(td->status & UHCI_TD_ACTIVE)))) :
+                (queue_head && queue_head->element == UHCI_PTR_TERM);
             if (!queue_head || queue_head->link !=
                 (UHCI_PTR_QH | controller->queue_head_phys) ||
-                (request->active && queue_head->element !=
-                 controller->td_pool_phys + request->td_index * UHCI_TD_SIZE) ||
-                (!request->active && queue_head->element != UHCI_PTR_TERM)) {
+                !element_valid) {
                 LOG_ERROR("UHCI", "Queue head Interrupt UHCI inconsistente");
                 return ERR_STATE;
             }
