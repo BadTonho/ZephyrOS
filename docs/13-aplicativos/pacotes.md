@@ -43,7 +43,7 @@ O manifesto e ASCII, com uma linha `chave=valor` por campo, nesta ordem:
 id=DEMO
 name=Demo local
 version=1.0.0
-api=0.3
+api=0.4
 entry=APP.ZAP
 dependencies=
 ```
@@ -51,7 +51,8 @@ dependencies=
 Os campos obrigatorios sao `id`, `name`, `version`, `api`, `entry` e
 `dependencies`. O `id` tem 1 a 8 caracteres em `A-Z`, `0-9` ou `_`; ele define
 o diretorio instalado e o alias FAT. `version` usa `MAJOR.MINOR.PATCH`,
-`api` e sempre `0.3`, e `entry` e sempre `APP.ZAP`. `dependencies` e vazio ou
+`api` usa `0.4` em pacotes novos; `0.3` continua aceito por compatibilidade
+append-only. `entry` e sempre `APP.ZAP`. `dependencies` e vazio ou
 lista ate quatro IDs separados por virgula, sem versoes, repeticoes ou
 auto-dependencia.
 
@@ -69,7 +70,8 @@ python tools\packager.py inject --package DEMO.zephyrosapp --image build\zephyro
 python tools\packager.py inject --package DEMO.zephyrosapp --image build\zephyros.img --replace
 ```
 
-O `app.json` precisa de `id`, `name` e `version`; `api` assume `0.3` e
+O `app.json` precisa de `id`, `name` e `version`; `api` assume `0.4`, aceita
+explicitamente `0.3` para pacotes legados e
 `dependencies` assume lista vazia quando omitidos. O `inject` deriva o alias
 `ID.ZPK`, recusa alias invalido, arquivo ja existente, diretorio raiz cheio,
 imagem FAT12 invalida e falta de clusters. Ele somente inicializa os bytes FAT
@@ -84,8 +86,9 @@ make package-test
 make package-demo
 ```
 
-`package-test` executa o autoteste com criacao, corrupcao de CRC32 e injecao
-em uma imagem temporaria. `package-demo` depende da imagem ja construida,
+`package-test` executa o autoteste com criacao, compatibilidade das APIs 0.3 e
+0.4, corrupcao de CRC32 e injecao em uma imagem temporaria. `package-demo`
+depende da imagem ja construida,
 gera `build\DEMO.zephyrosapp` e injeta `DEMO.ZPK`; ele nao faz parte de
 `make` normal.
 

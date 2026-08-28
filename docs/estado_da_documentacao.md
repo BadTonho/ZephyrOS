@@ -2,7 +2,7 @@
 
 ## Auditoria atual
 
-**Revisado em 21 de agosto de 2026.** Este documento define como interpretar a
+**Revisado em 27 de agosto de 2026.** Este documento define como interpretar a
 documentacao do ZephyrOS e evita que um plano antigo seja confundido com uma
 funcionalidade entregue.
 
@@ -18,7 +18,7 @@ funcionalidade entregue.
 | Desktop e aplicativos nativos | Capitulos 12 e 13 | Interfaces Simple e Classic atuais; Modern reservado. |
 | Atualizacoes do sistema | [14 - Atualizacoes](14-atualizacoes/contrato-zupd-v1.md) | Contratos ZUPD v1, U1 a U5 e System Updater. |
 | App Store e pacotes | [App Store](13-aplicativos/app-store.md) e [Pacotes](13-aplicativos/pacotes.md) | Contratos AS1 a AS5 e pacotes ZPKG v1. |
-| App API e apps ring 3 | [API de Aplicativos e Syscalls](melhorias%20futuras/api%20de%20aplicativos%20e%20syscalls.md) | ABI 0.3, ZAPP, foco e limites. |
+| App API e apps ring 3 | [API de Aplicativos e Syscalls](melhorias%20futuras/api%20de%20aplicativos%20e%20syscalls.md) | ABI 0.4, ZAPP, sinais, foco e limites. |
 
 ## Estado tecnico documentado
 
@@ -28,8 +28,9 @@ funcionalidade entregue.
   longa; `clear` apaga tela e historico.
 - Desktop, Explorer, Settings, System Updater e App Store oferecem modo Classic
   Modern Dark com fallback Simple. O comando `taskmgr` preserva a TUI de diagnostico.
-- App API 0.3, syscalls 0 a 9, `int 0x80` em DPL3, arquivos, IPC, loader ZAPP,
-  argumentos simples, pacotes `ZPKG` v1 e foco seguro foram validados no QEMU.
+- A base App API 0.4, syscalls 0 a 13, `int 0x80` em DPL3, arquivos, IPC,
+  loader ZAPP, argumentos, pacotes `ZPKG` v1 e foco seguro foi validada. A
+  ampliação 0.4 com sinais e syscalls 10 a 13 aguarda a matriz da SYNC4.
 - `echo`, `uptime` e `mem` executam em ring 3 com fallback nativo controlado.
 - O subsistema de rede (S2.1 a S2.8) suporta Multi-NIC (E1000 e RTL8139), ARP,
   IPv4, ICMP Echo, UDP, DHCP, DNS, TCP cliente, sockets nativos e HTTP GET.

@@ -4,6 +4,7 @@
 #include "core/timer.h"
 #include "core/memory.h"
 #include "process/process.h"
+#include "process/signal.h"
 #include "process/thread.h"
 #include "core/panic.h"
 #include "apps/shell.h"
@@ -1072,9 +1073,14 @@ void taskmgr_handle_key(uint8_t scancode) {
         for (int i = 0; i < 64; i++) {
             if (processes[i].state != PROCESS_STATE_UNUSED) {
                 if (row == selected_row) {
-                    if (processes[i].pid != 1) {
-                        process_destroy(&processes[i]);
+                    if (process_is_user(&processes[i])) {
+                        if (process_signal_send(processes[i].pid,
+                                                APP_SIGNAL_KILL) != OK) {
+                            LOG_WARN("SHELL", "SIGKILL recusado pelo Task Manager");
+                        }
                         if (selected_row > 0) selected_row--;
+                    } else {
+                        LOG_WARN("SHELL", "Task Manager protegeu processo nativo");
                     }
                     break;
                 }
@@ -2099,8 +2105,15 @@ static void taskmgr_gui_restart_selected(void) {
 
 static void taskmgr_gui_delete_selected(void) {
     process_t* process = taskmgr_find_process_by_row(selected_row);
-    if (!process || process->pid == 1) return;
-    process_destroy(process);
+    if (!process) return;
+    if (!process_is_user(process)) {
+        LOG_WARN("SHELL", "Task Manager protegeu processo nativo");
+        return;
+    }
+    if (process_signal_send(process->pid, APP_SIGNAL_KILL) != OK) {
+        LOG_WARN("SHELL", "SIGKILL recusado pelo Task Manager");
+        return;
+    }
     if (selected_row > 0) selected_row--;
 }
 

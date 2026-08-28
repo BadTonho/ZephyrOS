@@ -5,7 +5,8 @@
 
 typedef enum {
     SHELL_INPUT_EVENT_NONE = 0,
-    SHELL_INPUT_EVENT_COMMAND_READY = 1
+    SHELL_INPUT_EVENT_COMMAND_READY = 1,
+    SHELL_INPUT_EVENT_CANCELLED = 2
 } shell_input_event_t;
 
 void shell_input_init(void);

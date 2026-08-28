@@ -51,6 +51,8 @@ HYBRID_FAT32_LABEL = "ZEPHYROS"
 ID_RE = re.compile(r"^[A-Z0-9_]{1,8}$")
 VERSION_RE = re.compile(r"^[0-9]+\.[0-9]+\.[0-9]+$")
 REQUIRED_MANIFEST_KEYS = ("id", "name", "version", "api", "entry", "dependencies")
+SUPPORTED_APP_APIS = ("0.3", "0.4")
+CURRENT_APP_API = "0.4"
 STORE_FIXTURE_FORMAT = "zephyros-app-store-fixtures-v1"
 STORE_FIXTURE_ALIASES = (
     "VALID.ZPK",
@@ -147,9 +149,9 @@ def manifest_from_json(path: Path) -> dict[str, str]:
     version = ensure_ascii(data.get("version"), "version", 15)
     if not VERSION_RE.fullmatch(version):
         raise PackageError("version deve usar MAJOR.MINOR.PATCH")
-    api = ensure_ascii(data.get("api", "0.3"), "api", 7)
-    if api != "0.3":
-        raise PackageError("api deve ser 0.3")
+    api = ensure_ascii(data.get("api", CURRENT_APP_API), "api", 7)
+    if api not in SUPPORTED_APP_APIS:
+        raise PackageError("api deve ser 0.3 ou 0.4")
     dependencies = validate_dependencies(data.get("dependencies", []), package_id)
     return {
         "id": package_id,
@@ -195,7 +197,7 @@ def parse_manifest(raw: bytes) -> dict[str, str]:
     values["version"] = ensure_ascii(values["version"], "version", 15)
     if not VERSION_RE.fullmatch(values["version"]):
         raise PackageError("version invalida")
-    if values["api"] != "0.3" or values["entry"] != "APP.ZAP":
+    if values["api"] not in SUPPORTED_APP_APIS or values["entry"] != "APP.ZAP":
         raise PackageError("API ou entry do manifesto invalida")
     dependencies = [] if not values["dependencies"] else values["dependencies"].split(",")
     validate_dependencies(dependencies, package_id)
@@ -1111,7 +1113,7 @@ def store_fixture_manifest(
     package_id: str,
     name: str,
     version: str = "1.0.0",
-    api: str = "0.3",
+    api: str = CURRENT_APP_API,
     dependencies: str = "",
 ) -> dict[str, str]:
     """Monta um manifesto na ordem canonica para os fixtures da App Store."""
@@ -2007,10 +2009,18 @@ def create_fixture_boot_payload(path: Path, size: int) -> None:
 
 def run_selftest() -> int:
     """Executa os cenarios host sem modificar arquivos do repositorio."""
-    manifest = {"id": "DEMO", "name": "Demo", "version": "1.0.0", "api": "0.3", "entry": "APP.ZAP", "dependencies": ""}
+    manifest = {
+        "id": "DEMO",
+        "name": "Demo",
+        "version": "1.0.0",
+        "api": CURRENT_APP_API,
+        "entry": "APP.ZAP",
+        "dependencies": "",
+    }
     package = build_package(manifest, build_demo_zapp())
     checks = {
         "criar": True,
+        "api_legada": False,
         "crc_invalido": False,
         "injecao": False,
         "substituicao": False,
@@ -2028,6 +2038,10 @@ def run_selftest() -> int:
     }
     try:
         parse_package(package)
+        legacy_manifest = dict(manifest)
+        legacy_manifest["api"] = "0.3"
+        parse_package(build_package(legacy_manifest, build_demo_zapp()))
+        checks["api_legada"] = True
         broken = bytearray(package)
         broken[-1] ^= 0xFF
         try:
@@ -2271,7 +2285,14 @@ def command_inject_files_fat32(arguments: argparse.Namespace) -> int:
 
 def command_demo(arguments: argparse.Namespace) -> int:
     """Cria e injeta o demo usado na validacao manual da Fase 7."""
-    manifest = {"id": "DEMO", "name": "Demo", "version": "1.0.0", "api": "0.3", "entry": "APP.ZAP", "dependencies": ""}
+    manifest = {
+        "id": "DEMO",
+        "name": "Demo",
+        "version": "1.0.0",
+        "api": CURRENT_APP_API,
+        "entry": "APP.ZAP",
+        "dependencies": "",
+    }
     package = build_package(manifest, build_demo_zapp())
     output = Path(arguments.output)
     output.write_bytes(package)

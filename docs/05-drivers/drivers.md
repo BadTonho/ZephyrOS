@@ -112,9 +112,15 @@ somente-leitura das ocorrencias e da quantidade total de handlers por linha;
 CPU detecta exceção → ISR salva registradores → isr_handler() em C
 ```
 
-Exceções vindas de ring 3 registram o vetor, código e PID, encerram somente o
-processo de usuário e devolvem a execução ao scheduler. Exceções de ring 0
-continuam seguindo para `KERNEL PANIC`.
+Exceções vindas de ring 3 registram vetor, código, endereço e PID e são
+convertidas em `SIGSEGV`. O processo afetado entra em `ZOMBIE` e o retorno é
+redirecionado à trampoline segura do scheduler. Exceções de ring 0 continuam
+seguindo para `KERNEL PANIC`.
+
+Desde a SYNC4, os handlers C de exceção, syscall e IRQ chamam a preparação de
+sinais no fim do percurso. Na IRQ isso ocorre somente depois do ACK/EOI. O
+kernel entrega no máximo um sinal antes do `iret`; nenhuma rotina Assembly de
+interrupção foi alterada.
 
 ---
 
@@ -621,6 +627,12 @@ ficou abaixo da resolucao, nao que nao teve custo.
 contextual para cancelar o aplicativo ring 3 em foco. O driver preserva o F12
 como cancelamento geral e usa esse filtro somente para teclas especiais de um
 fluxo ativo, como o F11 do RegCheck.
+
+O adaptador do `input core` mantém separadamente Ctrl esquerdo/direito das
+origens PS/2 e USB. Quando `C` é pressionado com Ctrl e o foco pertence a um
+ZAPP ring3, o acorde é consumido e gera `SIGINT`. No Shell, os scancodes seguem
+para `shell_input`, que limpa a linha. Durante job cooperativo, Ctrl+C não
+substitui F11/F12/Esc.
 
 ---
 

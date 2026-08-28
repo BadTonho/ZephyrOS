@@ -5,6 +5,7 @@
 #include "core/errors.h"
 #include "drivers/tss.h"
 #include "process/process.h"
+#include "process/signal.h"
 
 #define SYSCALL_VECTOR 0x80
 #define IRQ_VECTOR_BASE 32U
@@ -207,6 +208,7 @@ void idt_init(void) {
     idt_set_gate(46, (uint32_t)irq14, 0x08, 0x8E);
     idt_set_gate(47, (uint32_t)irq15, 0x08, 0x8E);
 
+    idt_register_handler(0, idt_user_exception_handler);
     idt_register_handler(6, idt_user_exception_handler);
     idt_register_handler(10, idt_user_exception_handler);
     idt_register_handler(11, idt_user_exception_handler);
@@ -430,6 +432,9 @@ void isr_handler(registers_t* regs) {
         }
         idt_panic_exception(regs);
     }
+    if (process_signal_prepare_user_return(regs) != OK) {
+        LOG_ERROR("IDT", "Falha ao preparar sinal no retorno de excecao");
+    }
 }
 
 void irq_handler(registers_t* regs) {
@@ -454,4 +459,7 @@ void irq_handler(registers_t* regs) {
         outb(0xA0, 0x20);
     }
     outb(0x20, 0x20);
+    if (process_signal_prepare_user_return(regs) != OK) {
+        LOG_ERROR("IDT", "Falha ao preparar sinal no retorno de IRQ");
+    }
 }

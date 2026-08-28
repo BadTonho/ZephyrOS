@@ -6,6 +6,7 @@
 #include "core/wait.h"
 #include "memory/paging.h"
 #include "drivers/idt.h"
+#include "process/signal.h"
 
 #define MAX_PROCESSES 64
 #define KERNEL_STACK_SIZE 4096
@@ -123,6 +124,22 @@ typedef struct {
     uint8_t kernel_stack_owned;
     uint8_t kernel_stack_low_water_active;
     uint8_t kernel_stack_corruption_reported;
+    uint32_t parent_pid;
+    uint32_t pending_signals;
+    uint32_t blocked_signals;
+    app_signal_action_t signal_actions[PROCESS_SIGNAL_ACTION_COUNT];
+    registers_t signal_saved_context;
+    uint32_t signal_saved_mask;
+    uint32_t active_signal;
+    uint32_t last_signal;
+    uint32_t termination_signal;
+    uint32_t last_child_pid;
+    uint32_t signal_delivered;
+    uint32_t signal_caught;
+    uint32_t signal_ignored;
+    uint32_t user_code_size;
+    uint8_t signal_context_valid;
+    uint8_t signal_exit_notified;
 } process_t;
 
 typedef struct {
@@ -198,6 +215,8 @@ int process_stack_check_current(uint32_t* remaining_out);
 int process_stack_self_test(void);
 int process_exit_current(uint32_t exit_code);
 int process_handle_user_exception(registers_t* regs);
+int process_terminate_user_signal(uint32_t pid, uint32_t signal_number,
+                                  int faulted);
 int process_prepare_user_termination(registers_t* regs);
 void process_finish_user_termination(void);
 int process_take_user_test_result(uint32_t* pid, uint32_t* faulted);

@@ -143,6 +143,10 @@ int 0x80        ; Chama o dispatcher
 | 7 | file_close | Libera handle de arquivo |
 | 8 | message_send | Envia mensagem para PID validado |
 | 9 | message_receive | Recebe mensagem sem bloqueio |
+| 10 | signal_action | Consulta ou altera a ação de um sinal |
+| 11 | signal_mask | Bloqueia, desbloqueia ou substitui a máscara |
+| 12 | signal_raise | Envia sinal ao próprio processo ring 3 |
+| 13 | signal_return | Restaura o contexto salvo pelo trampoline |
 
 ### Handlers
 
@@ -154,7 +158,8 @@ void syscall_handler(registers_t* regs) {
 
 O comando `appcheck` usa `syscall_invoke_kernel()` para testar o mesmo
 dispatcher sem precisar de um aplicativo ring 3. Ele também valida arquivos,
-IPC, loader ZAPP e argumentos da App API `0.3`. Chamadas inválidas são
+IPC, loader ZAPP e argumentos da App API. A versão `0.4` acrescenta sinais
+assíncronos, com validação própria por `sigtest`. Chamadas inválidas são
 registradas e retornam códigos de `errors.h`, sem `panic()`.
 
 Aplicativos externos usam o formato flat `ZAPP` dentro de arquivos `.ZAP` e

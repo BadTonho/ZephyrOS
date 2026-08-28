@@ -329,7 +329,12 @@ de usuário é fixa e usada apenas pelo carregador:
 0x00C00000  stack de usuário, uma página gravável
 ```
 
-A página de lançamento contém `app_launch_info_t` da App API `0.3`, com até
+Na SYNC4, os 16 bytes finais da página de lançamento, em `0x00802FF0`, são
+reservados ao trampoline de `signal_return`. O kernel restaura esses bytes em
+cada entrega antes de montar o frame na stack ring3; o restante da estrutura
+de argumentos e seus offsets permanece inalterado.
+
+A página de lançamento contém `app_launch_info_t` da App API `0.4`, com até
 oito argumentos representados por offsets e comprimentos relativos ao texto
 bruto. Ela evita expor ponteiros do kernel e preserva a página de dados das
 imagens ZAPP antigas.

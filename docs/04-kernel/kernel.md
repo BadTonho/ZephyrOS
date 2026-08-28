@@ -222,9 +222,11 @@ faixas de memoria antes de copiar dados para as APIs internas. O comando
 `usertest` exercita `console_write`, `uptime`, `memory_info` e `process_exit`.
 `usertest fault` valida o encerramento controlado de uma page fault de usuario.
 
-Excecoes de ring 3 encerram somente o processo afetado. Excecoes de ring 0,
-falhas estruturais de paging e corrupcao do kernel continuam encaminhadas ao
-`panic`.
+Na SYNC4, exceções ring3 são registradas como `SIGSEGV` e encerram somente o
+processo afetado. Exceções ring0, falhas estruturais de paging e corrupção do
+kernel continuam encaminhadas ao `panic`. Sinais capturados são preparados
+depois dos handlers C e antes do `iret`, usando contexto salvo exclusivamente
+no kernel e o trampoline reservado em `0x00802FF0`.
 
 ## Serviços de aplicativos
 
@@ -232,8 +234,9 @@ Depois de memória, paging, TSS e processos essenciais, o kernel inicializa a
 App API e o dispatcher `int 0x80`. O gate começa restrito a DPL 0 e é elevado
 para DPL 3 somente quando a fronteira de modo usuário está pronta. A plataforma
 atual inclui arquivos, IPC, imagens `.ZAP`/`ZAPP`, foco de aplicativo externo
-e uma página de lançamento com argumentos. O Shell continua nativo; `echo` é a
-primeira migração ring 3 e mantém fallback nativo.
+e uma página de lançamento com argumentos. A App API 0.4 também oferece ações,
+máscaras, geração e retorno de sinais pelas syscalls 10-13. O Shell continua
+nativo; `echo` é a primeira migração ring 3 e mantém fallback nativo.
 
 Consulte [API de Aplicativos e Syscalls](../melhorias%20futuras/api%20de%20aplicativos%20e%20syscalls.md)
 para a ABI estável e [Roadmaps por Etapa](../roadmaps/README.md) para a ordem

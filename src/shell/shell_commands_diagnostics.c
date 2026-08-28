@@ -12,6 +12,7 @@
 #include "core/tls.h"
 #include "core/wait.h"
 #include "process/process.h"
+#include "process/signal.h"
 #include "drivers/ata.h"
 #include "drivers/idt.h"
 #include "drivers/speaker.h"
@@ -844,6 +845,7 @@ static void cmd_health_print_summary_app_store(void) {
 
 static void cmd_health_print_summary_kernel(void) {
     memory_heap_stats_t heap;
+    process_signal_stats_t signals;
 
     memory_get_heap_stats(&heap);
     video_print("  Kernel: proc=", 0x07);
@@ -871,6 +873,23 @@ static void cmd_health_print_summary_kernel(void) {
                     heap.valid ? 0x0A : 0x0E);
     }
     video_print("\n", 0x07);
+    if (process_signal_get_stats(&signals) == OK) {
+        video_print("  Sinais: enviados=", 0x07);
+        shell_command_print_num(signals.sent);
+        video_print(" entregues=", 0x08);
+        shell_command_print_num(signals.delivered);
+        video_print(" capturados=", 0x08);
+        shell_command_print_num(signals.caught);
+        video_print(" bloqueados/coalescidos=", 0x08);
+        shell_command_print_num(signals.blocked);
+        video_print("/", 0x08);
+        shell_command_print_num(signals.coalesced);
+        video_print(" falhas=", 0x08);
+        shell_command_print_num(signals.internal_failures);
+        video_print("/", 0x08);
+        shell_command_print_num(signals.frame_failures);
+        video_print("\n", 0x07);
+    }
     cmd_health_print_usb_hid();
 }
 
@@ -1293,6 +1312,24 @@ static void cmd_health_check_wait(int* issue_count) {
     }
 }
 
+static void cmd_health_check_signals(int* issue_count) {
+    process_signal_stats_t stats;
+    int result;
+
+    if (!issue_count) return;
+    result = process_signal_get_stats(&stats);
+    if (result != OK || process_signal_validate_state() != OK) {
+        cmd_health_check_print_query_failure(
+            "Sinais", result == OK ? ERR_STATE : result, issue_count);
+        return;
+    }
+    if (stats.invariant_failures || stats.internal_failures) {
+        cmd_health_check_print_named_state(
+            "Sinais", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
+            "falha interna ou estado inconsistente", issue_count);
+    }
+}
+
 static void cmd_health_check(void) {
     int issue_count = 0;
 
@@ -1307,6 +1344,7 @@ static void cmd_health_check(void) {
     cmd_health_check_irq(&issue_count);
     cmd_health_check_workqueue(&issue_count);
     cmd_health_check_wait(&issue_count);
+    cmd_health_check_signals(&issue_count);
     cmd_health_check_usb_hid(&issue_count);
     cmd_health_check_wifi(&issue_count);
     if (!issue_count) {
@@ -1889,6 +1927,133 @@ static void cmd_workq(const char* arguments) {
     }
     LOG_WARN_CODE("SHELL", ERR_INVALID, "Argumentos invalidos para workq");
     cmd_workq_usage();
+}
+
+static int cmd_signal_parse_uint(const char* text, uint32_t* output) {
+    uint32_t value = 0U;
+
+    if (!text || !output || !text[0]) return ERR_INVALID;
+    while (*text) {
+        uint32_t digit;
+
+        if (*text < '0' || *text > '9') return ERR_INVALID;
+        digit = (uint32_t)(*text - '0');
+        if (value > (0xFFFFFFFFU - digit) / 10U) return ERR_OVERFLOW;
+        value = value * 10U + digit;
+        text++;
+    }
+    *output = value;
+    return OK;
+}
+
+static int cmd_signal_parse_name(const char* text,
+                                 uint32_t* signal_number) {
+    char name[16];
+    uint32_t offset = 0U;
+
+    if (!text || !signal_number || !text[0]) {
+        return ERR_INVALID;
+    }
+    if (text[0] == '-') text++;
+    if (!text[0]) return ERR_INVALID;
+    if (*text >= '0' && *text <= '9') {
+        if (cmd_signal_parse_uint(text, signal_number) != OK) {
+            return ERR_INVALID;
+        }
+    } else {
+        while (text[offset] && offset + 1U < sizeof(name)) {
+            name[offset] = text[offset];
+            offset++;
+        }
+        if (text[offset]) return ERR_OVERFLOW;
+        name[offset] = '\0';
+        shell_command_uppercase(name);
+        text = name;
+        if (name[0] == 'S' && name[1] == 'I' && name[2] == 'G') {
+            text = name + 3;
+        }
+        if (kstrcmp(text, "INT") == 0) *signal_number = APP_SIGNAL_INT;
+        else if (kstrcmp(text, "KILL") == 0) *signal_number = APP_SIGNAL_KILL;
+        else if (kstrcmp(text, "SEGV") == 0) *signal_number = APP_SIGNAL_SEGV;
+        else if (kstrcmp(text, "TERM") == 0) *signal_number = APP_SIGNAL_TERM;
+        else if (kstrcmp(text, "CHLD") == 0) *signal_number = APP_SIGNAL_CHLD;
+        else return ERR_INVALID;
+    }
+    if (*signal_number != APP_SIGNAL_INT &&
+        *signal_number != APP_SIGNAL_KILL &&
+        *signal_number != APP_SIGNAL_SEGV &&
+        *signal_number != APP_SIGNAL_TERM &&
+        *signal_number != APP_SIGNAL_CHLD) return ERR_INVALID;
+    return OK;
+}
+
+static void cmd_kill(const char* arguments) {
+    char signal_text[16];
+    char pid_text[16];
+    process_t* target;
+    uint32_t signal_number;
+    uint32_t pid;
+    int result;
+
+    result = shell_command_read_two_args(arguments, signal_text,
+                                         sizeof(signal_text), pid_text,
+                                         sizeof(pid_text));
+    if (result == OK) {
+        result = cmd_signal_parse_name(signal_text, &signal_number);
+    }
+    if (result == OK) result = cmd_signal_parse_uint(pid_text, &pid);
+    target = result == OK ? process_get_by_pid(pid) : 0;
+    if (result != OK || !target || !process_is_user(target) ||
+        target->state == PROCESS_STATE_ZOMBIE) {
+        LOG_WARN_CODE("SHELL", ERR_INVALID,
+                      "Argumentos invalidos ou PID protegido para kill");
+        video_print("Uso: kill -2|-9|-11|-15|-17|INT|KILL|SEGV|TERM|CHLD PID\n",
+                    0x0E);
+        return;
+    }
+    result = process_signal_send(pid, signal_number);
+    if (result != OK) {
+        LOG_ERROR_CODE("SHELL", result, "Falha ao enviar sinal pelo Shell");
+        video_print("Erro: sinal nao entregue.\n", 0x0C);
+        return;
+    }
+    video_print("Sinal ", 0x0B);
+    video_print(process_signal_name(signal_number), 0x0E);
+    video_print(" enviado ao PID ", 0x07);
+    shell_command_print_num(pid);
+    video_print(".\n", 0x07);
+}
+
+static void cmd_sigtest_print(const char* label, uint8_t passed) {
+    video_print("  ", 0x07);
+    video_print(label, 0x07);
+    video_print(": ", 0x07);
+    video_print(passed ? "OK\n" : "ERRO\n", passed ? 0x0A : 0x0C);
+}
+
+static void cmd_sigtest(const char* arguments) {
+    process_signal_self_test_t test;
+    int result;
+
+    if (!shell_command_args_equal(arguments, "")) {
+        LOG_WARN_CODE("SHELL", ERR_INVALID,
+                      "Argumentos invalidos para sigtest");
+        video_print("Uso: sigtest\n", 0x0E);
+        return;
+    }
+    result = process_signal_self_test(&test);
+    video_print("Autoteste de sinais (fixture privada):\n", 0x0B);
+    cmd_sigtest_print("ciclo", test.lifecycle);
+    cmd_sigtest_print("acoes e captura", test.actions);
+    cmd_sigtest_print("bloqueio", test.blocking);
+    cmd_sigtest_print("coalescencia", test.coalescing);
+    cmd_sigtest_print("SIGKILL/SIGSEGV fatais", test.fatal_rules);
+    cmd_sigtest_print("SIGCHLD", test.child_notification);
+    cmd_sigtest_print("frame e trampoline", test.frame_rules);
+    cmd_sigtest_print("invariantes", test.invariants);
+    video_print("Resultado: ", 0x0B);
+    video_print(result == OK ? "OK\n" : "ERRO\n",
+                result == OK ? 0x0A : 0x0C);
 }
 
 static void cmd_timer_usage(void) {
@@ -4139,6 +4304,8 @@ SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_tls, cmd_tls)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_wait, cmd_wait)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_wqinfo, cmd_wqinfo)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_workq, cmd_workq)
+SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_kill, cmd_kill)
+SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_sigtest, cmd_sigtest)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_devices, cmd_devices)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_device_info, cmd_device_info)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_device_scan, cmd_device_scan)

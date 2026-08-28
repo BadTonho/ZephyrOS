@@ -284,6 +284,16 @@ void shell_report_app_loader_result(void) {
         video_print(" nao iniciou (codigo ", 0x07);
         shell_command_print_num(result.exit_code);
         video_print(").\n", 0x07);
+    } else if (result.termination_signal) {
+        video_print(result.termination_signal == APP_SIGNAL_SEGV ?
+                    "WARN" : "INFO",
+                    result.termination_signal == APP_SIGNAL_SEGV ?
+                    0x0E : 0x0A);
+        video_print("] Aplicativo ZAPP PID ", 0x07);
+        shell_command_print_num(result.pid);
+        video_print(" encerrado por ", 0x07);
+        video_print(process_signal_name(result.termination_signal), 0x0E);
+        video_print("; foco devolvido ao Shell.\n", 0x07);
     } else if (result.faulted) {
         video_print("WARN", 0x0E);
         video_print("] Aplicativo ZAPP PID ", 0x07);
@@ -366,6 +376,10 @@ void shell_runtime_handle_terminal_key(uint8_t scancode) {
     shell_input_event_t event = shell_input_handle_key(
         scancode, wm_is_active(), shell_checks_input_blocked());
     if (event == SHELL_INPUT_EVENT_COMMAND_READY) process_input();
+    if (event == SHELL_INPUT_EVENT_CANCELLED) {
+        shell_runtime_reset_input();
+        shell_print_prompt();
+    }
 }
 
 void shell_handle_key(uint8_t scancode) {

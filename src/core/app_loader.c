@@ -143,7 +143,8 @@ int app_loader_build_launch_info(const char* text, app_launch_info_t* launch) {
 static void app_loader_store_result(uint32_t pid, uint32_t exit_code,
                                     uint32_t faulted, uint32_t cancelled,
                                     uint32_t start_failed,
-                                    uint32_t focus_acquired) {
+                                    uint32_t focus_acquired,
+                                    uint32_t termination_signal) {
     app_loader_finished_result.pid = pid;
     app_loader_finished_result.exit_code = exit_code;
     app_loader_finished_result.faulted = faulted;
@@ -151,6 +152,7 @@ static void app_loader_store_result(uint32_t pid, uint32_t exit_code,
     app_loader_finished_result.start_failed = start_failed;
     app_loader_finished_result.focus_acquired = focus_acquired;
     app_loader_finished_result.generation = app_loader_operation_generation;
+    app_loader_finished_result.termination_signal = termination_signal;
     app_loader_result_pending = 1;
 }
 
@@ -177,7 +179,7 @@ static int app_loader_start_pending(void) {
             process_destroy(proc);
         }
         app_loader_pending_pid = 0;
-        app_loader_store_result(pid, (uint32_t)result, 0, 0, 1, 0);
+        app_loader_store_result(pid, (uint32_t)result, 0, 0, 1, 0, 0U);
         LOG_ERROR("APP_LOADER", "Falha ao iniciar aplicativo ZAPP pendente");
         return result;
     }
@@ -197,6 +199,7 @@ static int app_loader_reap_active(void) {
     uint32_t exit_code;
     uint32_t faulted;
     uint32_t cancelled;
+    uint32_t termination_signal;
 
     if (app_loader_active_pid == 0) return OK;
 
@@ -205,7 +208,7 @@ static int app_loader_reap_active(void) {
     if (!proc) {
         app_loader_active_pid = 0;
         app_loader_store_result(pid, ERR_STATE, 1, 0, 1,
-                                app_loader_focus_acquired);
+                                app_loader_focus_acquired, 0U);
         app_loader_focus_acquired = 0;
         LOG_ERROR("APP_LOADER", "Processo ZAPP ativo desapareceu");
         return ERR_STATE;
@@ -215,6 +218,7 @@ static int app_loader_reap_active(void) {
     exit_code = proc->exit_code;
     faulted = proc->faulted ? 1U : 0U;
     cancelled = exit_code == APP_EXIT_CANCELLED ? 1U : 0U;
+    termination_signal = proc->termination_signal;
     app_loader_release_process_resources(pid);
     process_destroy(proc);
     if (process_get_by_pid(pid)) {
@@ -224,7 +228,7 @@ static int app_loader_reap_active(void) {
 
     app_loader_active_pid = 0;
     app_loader_store_result(pid, exit_code, faulted, cancelled, 0,
-                            app_loader_focus_acquired);
+                            app_loader_focus_acquired, termination_signal);
     app_loader_focus_acquired = 0;
     LOG_DEBUG("APP_LOADER", "Processo ZAPP encerrado foi recolhido");
     return OK;
@@ -501,7 +505,7 @@ int app_loader_cancel_foreground(uint32_t exit_code) {
         app_loader_release_process_resources(pid);
         if (proc) process_destroy(proc);
         app_loader_store_result(pid, exit_code, 0,
-                                exit_code == APP_EXIT_CANCELLED, 0, 0);
+                                exit_code == APP_EXIT_CANCELLED, 0, 0, 0U);
     }
     LOG_DEBUG("APP_LOADER", "Aplicativo em primeiro plano cancelado");
     return OK;

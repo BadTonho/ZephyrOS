@@ -5,6 +5,7 @@
 #include "core/log.h"
 #include "core/errors.h"
 #include "process/process.h"
+#include "process/signal.h"
 
 
 #define KEYBOARD_QUEUE_SIZE 256U
@@ -29,6 +30,8 @@ static uint8_t input_warning_active;
 static keyboard_focus_cancel_filter_t focus_cancel_filter;
 static uint8_t keyboard_initialized;
 static uint8_t keyboard_ps2_extended;
+static uint8_t keyboard_ctrl_mask[2];
+static uint8_t keyboard_ctrl_c_latched[2];
 static volatile uint8_t keyboard_raw_queue[KEYBOARD_RAW_QUEUE_SIZE];
 static volatile uint8_t keyboard_raw_head;
 static volatile uint8_t keyboard_raw_tail;
@@ -326,8 +329,34 @@ static int keyboard_input_sink(const input_key_event_t* event) {
     uint8_t bytes[2];
     uint32_t count = 1U;
     int result;
+    uint32_t source;
+    uint8_t ctrl_active;
 
     if (!event) return ERR_NULL;
+    source = event->source == INPUT_SOURCE_USB_HID ? 1U : 0U;
+    if (event->usage == INPUT_USAGE_LEFT_CTRL) {
+        if (event->pressed) keyboard_ctrl_mask[source] |= 0x01U;
+        else keyboard_ctrl_mask[source] &= (uint8_t)~0x01U;
+    } else if (event->usage == INPUT_USAGE_RIGHT_CTRL) {
+        if (event->pressed) keyboard_ctrl_mask[source] |= 0x02U;
+        else keyboard_ctrl_mask[source] &= (uint8_t)~0x02U;
+    }
+    ctrl_active = keyboard_ctrl_mask[source] ||
+                  (event->modifiers & 0x11U);
+    if (event->usage == INPUT_USAGE_C && event->pressed && ctrl_active) {
+        process_t* target = process_get_by_pid(process_get_focus());
+
+        if (target && process_is_user(target) &&
+            process_signal_send(target->pid, APP_SIGNAL_INT) == OK) {
+            keyboard_ctrl_c_latched[source] = 1U;
+            return OK;
+        }
+    }
+    if (event->usage == INPUT_USAGE_C && !event->pressed &&
+        keyboard_ctrl_c_latched[source]) {
+        keyboard_ctrl_c_latched[source] = 0U;
+        return OK;
+    }
     result = keyboard_usage_scancode(event->usage, &scancode, &extended);
     if (result == ERR_UNAVAILABLE) return OK;
     if (result != OK) return result;
@@ -356,6 +385,10 @@ void keyboard_init(void) {
     input_warning_active = 0;
     focus_cancel_filter = 0;
     keyboard_ps2_extended = 0U;
+    keyboard_ctrl_mask[0] = 0U;
+    keyboard_ctrl_mask[1] = 0U;
+    keyboard_ctrl_c_latched[0] = 0U;
+    keyboard_ctrl_c_latched[1] = 0U;
     keyboard_raw_head = 0U;
     keyboard_raw_tail = 0U;
     keyboard_bottom_half_work.queued = 0U;

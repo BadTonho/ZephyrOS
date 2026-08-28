@@ -8,7 +8,8 @@ O ZephyrOS suporta **processos** (com espaço de memória próprio) e **threads*
 
 ```
 src/process/
-│   └── process.c         → Process manager + scheduler
+│   ├── process.c         → Process manager + scheduler
+│   └── signal.c          → sinais assíncronos de processos ring 3
 src/thread/
 │   └── thread.c          → Thread manager
 src/kernel/
@@ -66,6 +67,10 @@ typedef struct {
     uint32_t kernel_stack;           // Kernel stack
     uint32_t wait_ticks;             // Ticks para desbloquear
     uint32_t total_ticks;            // Ticks total rodando
+    uint32_t parent_pid;              // Pai ou PID 0
+    uint32_t pending_signals;         // Bitmap coalescido
+    uint32_t blocked_signals;         // Máscara bloqueada
+    app_signal_action_t signal_actions[18];
 } process_t;
 ```
 
@@ -193,7 +198,8 @@ typedef enum {
     WAIT_REASON_EVENT,
     WAIT_REASON_TIMEOUT,
     WAIT_REASON_CANCELLED,
-    WAIT_REASON_DEVICE_UNAVAILABLE
+    WAIT_REASON_DEVICE_UNAVAILABLE,
+    WAIT_REASON_SIGNAL
 } wait_reason_t;
 
 typedef int (*wait_condition_fn_t)(void* context, uint8_t* out_ready);
@@ -239,6 +245,12 @@ mas os canais continuam estaticos e fornecidos pelo consumidor. O scheduler
 continua aceitando `process_block()` e `thread_block()` para os consumidores
 legados; esperas R3 usam deadline e metadados de canal.
 
+`WAIT_REASON_SIGNAL` identifica a remoção de um processo da fila por um sinal
+entregável. A remoção usa a própria entrada intrusiva e ocorre exatamente uma
+vez. Um sinal bloqueado permanece pendente e não acorda a tarefa; um processo
+suspenso pelo loader, sem entrada vinculada a uma Wait Queue, também não é
+liberado prematuramente.
+
 O Shell expoe `wait status`, `wait list`, `wait check` e `wqinfo`. IPC, Editor,
 Explorer e Task Manager dormem quando a fila de mensagens esta vazia e sao
 acordados por `ipc_send()` depois da publicacao. Workers que publicam seu
@@ -250,6 +262,39 @@ sistema o sinaliza para progresso de rede, indice, timer e conclusao de
 processo, sem criar mensagens artificiais. `process_get_event_generation()`
 permite ao Shell rejeitar conclusoes de processos que pertencem a uma geracao
 anterior do job.
+
+---
+
+## Sinais assíncronos (SYNC4)
+
+`src/include/process/signal.h` define o contrato do núcleo de sinais para
+processos ring3. Cada processo possui pendências coalescidas por bitmap,
+máscara bloqueada, tabela de ações, contexto salvo no kernel e métricas. O
+registro aceita `SIGINT`, `SIGKILL`, `SIGSEGV`, `SIGTERM` e `SIGCHLD`.
+
+`SIGKILL` e `SIGSEGV` são fatais, não bloqueáveis e não capturáveis.
+`SIGCHLD` tem ação padrão de ignorar; os demais sinais capturáveis encerram o
+processo por padrão. Repetir um sinal que já está pendente não cria uma
+segunda entrega, apenas incrementa a coalescência. Sinais recebidos durante
+um handler aguardam o retorno, pois não existem handlers aninhados.
+
+No fim dos handlers C de exceção, syscall e IRQ, o kernel seleciona no máximo
+um sinal entregável antes do `iret`. Sinais fatais têm prioridade; depois é
+usado o menor número. Para uma ação capturada, o kernel salva o frame original
+em `process_t`, grava na stack ring3 o endereço do trampoline e o número do
+sinal e redireciona `EIP` ao handler validado dentro do código do ZAPP. Um
+`ret` do handler chega ao trampoline da página de lançamento, que executa a
+syscall `signal_return` e restaura o contexto original.
+
+O PID pai é registrado na criação. Ao entrar em `ZOMBIE`, o filho atualiza o
+último filho do pai e gera `SIGCHLD` uma única vez. O App Loader continua
+coletando processos; não existe `waitpid`. Quando o pai é destruído, seus
+filhos são reparentados para PID 0.
+
+As APIs públicas somente-leitura fornecem snapshots, métricas e
+`process_signal_validate_state()`. `regcheck full` consulta somente as
+invariantes; `health check` denuncia contexto salvo órfão ou vínculo inválido.
+`kill` restringe o destino a ring3 e `sigtest` executa a fixture privada.
 
 ---
 

@@ -15,8 +15,10 @@ SYNC2 esta concluida e validada com wait queues FIFO para IPC e sockets nos
 perfis QEMU padrao, USB HID, sem NIC e multi-NIC. SYNC3/R4 e a `Zephyr
 kworker` tambem estao concluidas e validadas; `DT100-002` registra o uso
 temporario de um processo ring0 ate a K5/v1.0.0.
+SYNC4 esta implementada com App API 0.4, entrega de sinais ring3, Ctrl+C,
+`kill` e `sigtest`, mas permanece aberta ate a matriz QEMU do usuario.
 
-## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A-EP9.4C validadas; SYNC1 concluída com a dívida técnica [DT100-001](docs/qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2) aceita para K5/v1.0.0; SYNC2 e SYNC3/R4 concluidas e validadas
+## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A-EP9.4C validadas; SYNC1 concluída com a dívida técnica [DT100-001](docs/qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2) aceita para K5/v1.0.0; SYNC2 e SYNC3/R4 concluidas e validadas; SYNC4 implementada e aguardando validação
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%
@@ -406,6 +408,12 @@ Evolução da plataforma:      [████████████████
 - [x] Comando `app argtest <texto>` para validação visual.
 - [x] Validado no QEMU: `echo`, `app argtest`, encerramento por `Enter` e `F12`,
   `appcheck`, `health`, `usertest`, interfaces existentes e os dois modos gráficos.
+
+### SYNC4 — sinais assíncronos ring 3 🚧
+
+- [x] App API `0.4`, syscalls 10-13, ações, máscaras e trampoline.
+- [x] `SIGINT`, `SIGKILL`, `SIGSEGV`, `SIGTERM`, `SIGCHLD`, Ctrl+C e `kill`.
+- [ ] Matriz funcional no QEMU e encerramento formal da SYNC4.
 
 ### Fase 6C — migração gradual de ferramentas nativas ✅
 

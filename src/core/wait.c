@@ -88,7 +88,8 @@ static int wait_reason_valid(wait_reason_t reason) {
     return reason == WAIT_REASON_EVENT ||
            reason == WAIT_REASON_TIMEOUT ||
            reason == WAIT_REASON_CANCELLED ||
-           reason == WAIT_REASON_DEVICE_UNAVAILABLE;
+           reason == WAIT_REASON_DEVICE_UNAVAILABLE ||
+           reason == WAIT_REASON_SIGNAL;
 }
 
 static int wait_target_valid(wait_target_type_t target) {
@@ -104,6 +105,8 @@ static void wait_note_reason_locked(wait_reason_t reason) {
         wait_service.stats.cancellation_wakes++;
     } else if (reason == WAIT_REASON_DEVICE_UNAVAILABLE) {
         wait_service.stats.unavailable_wakes++;
+    } else if (reason == WAIT_REASON_SIGNAL) {
+        wait_service.stats.signal_wakes++;
     }
 }
 
@@ -1066,6 +1069,7 @@ const char* wait_reason_name(wait_reason_t reason) {
     if (reason == WAIT_REASON_TIMEOUT) return "timeout";
     if (reason == WAIT_REASON_CANCELLED) return "cancelado";
     if (reason == WAIT_REASON_DEVICE_UNAVAILABLE) return "indisponivel";
+    if (reason == WAIT_REASON_SIGNAL) return "sinal";
     return "desconhecido";
 }
 

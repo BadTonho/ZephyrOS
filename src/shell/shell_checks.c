@@ -840,6 +840,7 @@ static int shell_regcheck_validate_services(void) {
         irq_deferred_validate_state() != OK ||
         workqueue_validate_state() != OK ||
         wait_validate_state() != OK ||
+        process_signal_validate_state() != OK ||
         rtc_validate_state() != OK || clock_validate_state() != OK ||
         tls_validate_state() != OK) {
         LOG_ERROR("SHELL", "RegCheck encontrou servico obrigatorio indisponivel");

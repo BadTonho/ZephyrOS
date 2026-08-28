@@ -110,6 +110,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/memory/compress.h` | `docs/06-memoria/memoria.md` |
 | `src/include/memory/paging.h` | `docs/06-memoria/memoria.md` |
 | `src/include/process/process.h` | `docs/07-processos/processos.md` |
+| `src/include/process/signal.h` | `docs/07-processos/processos.md` |
 | `src/include/process/thread.h` | `docs/07-processos/processos.md` |
 | `src/include/types.h` | `docs/02-arquitetura/arquitetura.md` |
 | `src/include/ui/desktop.h` | `docs/12-desktop/desktop.md` |
@@ -367,6 +368,14 @@ de `wait_event` avalia a condicao e captura sua geracao na mesma regiao com
 interrupcoes desabilitadas, antes do encadeamento atomico. O contrato canonico
 fica em `docs/07-processos/processos.md`; as APIs de processo/thread
 permanecem internas ao kernel e nao alteram a ABI ring 3.
+
+Desde a SYNC4, `src/include/process/signal.h` publica envio restrito a ring3,
+ações, máscaras, preparação/retorno de handler, snapshots, métricas,
+invariantes e fixture privada. `process_t` acrescenta pai, bitmaps, ações,
+contexto salvo e contadores. `wait.h` acrescenta, ao fim dos contratos, o
+motivo e a métrica `WAIT_REASON_SIGNAL`. A App API 0.4 acrescenta as syscalls
+10-13 e `app_signal_action_t`; o App Loader publica o sinal de término sem
+alterar os campos anteriores.
 
 Na integracao IPC da SYNC2, `process_t` conserva a ultima geracao consumida do
 seu canal. `ipc_wait()` considera pronta uma mensagem ou uma geracao nova, de
