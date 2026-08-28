@@ -2302,3 +2302,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   Foram adicionados logs de erro e aviso às funções novas do VFS e do parser
   de pipeline apontadas pelo gate. A revisão estática do diff permaneceu limpa;
   o `q3check` deve ser repetido pelo usuário.
+
+- VFS4: correção do include de memória após erro de compilação.
+  Concluída em: 2026-08-28 18:08 (America/Sao_Paulo).
+  `src/fs/vfs.c` passou a incluir `core/memory.h`, tornando explícitas as
+  declarações de `kmalloc` e `kfree` usadas pelo redirecionamento VFS.
+  A compilação deve ser repetida pelo usuário.
