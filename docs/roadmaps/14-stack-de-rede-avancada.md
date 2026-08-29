@@ -11,7 +11,7 @@ para todos os caminhos de driver, DMA e checksum.
 ## Resumo de progresso
 
 - [x] NET0 - Contrato de ownership, lifetime, cópia e conclusão de buffers.
-- [ ] NET1 - Estrutura de buffer de pacotes unificada (`sk_buff_t`) com cópia evitável.
+- [x] NET1 - Estrutura de buffer de pacotes unificada (`sk_buff_t`) com cópia evitável.
 - [ ] NET2 - Camada genérica de sockets (`AF_INET` e `AF_UNIX` para IPC local).
 - [ ] NET3 - Multiplexação de I/O não-bloqueante (`select()` / `poll()`).
 - [ ] NET4 - Roteamento avançado, tabela de conexões TCP e ferramentas de diagnóstico.
@@ -60,8 +60,8 @@ para todos os caminhos de driver, DMA e checksum.
 ## NET0 - Contrato de buffers e conclusões
 
 Estado da implementacao: contrato e runtime entregues e validados
-funcionalmente pelo usuario em 2026-08-29. O resumo acima foi marcado como
-[x]; NET1+ permanecem pendentes.
+funcionalmente pelo usuario em 2026-08-29. Os resumos acima foram marcados como
+[x]; NET2+ permanecem pendentes.
 
 ### Implementação
 
@@ -100,13 +100,13 @@ erro e cancelamento, sem depender da promessa de zero-copy total.
 
 ## NET1 - Estrutura de Buffer de Pacotes (sk_buff)
 
-Estado da implementacao: codigo integrado e aguardando os gates de build e a
-confirmacao funcional do usuario. O resumo NET1 permanece `[ ]` ate essa
-confirmacao.
+Estado da implementacao: codigo integrado e validado funcionalmente pelo
+usuario em 2026-08-29. O resumo NET1 foi marcado como `[x]`; NET2+ permanecem
+pendentes.
 
 ### Implementação
 
-- [ ] Definir a estrutura `sk_buff_t`:
+- [x] Definir a estrutura `sk_buff_t`:
   - `uint8_t* head;` (início do buffer físico)
   - `uint8_t* data;` (início do payload da camada atual)
   - `uint8_t* tail;` (fim do payload)
@@ -114,21 +114,21 @@ confirmacao.
   - `uint32_t len;`
   - `uint32_t refcount;`
   - `net_device_t* dev;` (handle opaco associado ao slot Ethernet)
-- [ ] Manter um `net_buffer_t` privado por skb como fonte unica de estado,
+- [x] Manter um `net_buffer_t` privado por skb como fonte unica de estado,
   owner, referencias e inventario.
-- [ ] Alocar objetos por SLAB, com storage interno de no maximo 2048 bytes e
+- [x] Alocar objetos por SLAB, com storage interno de no maximo 2048 bytes e
   sem `kmalloc` por pacote.
-- [ ] Implementar funções de manipulação de ponteiros:
+- [x] Implementar funções de manipulação de ponteiros:
   `sk_buff_t* alloc_skb(uint32_t size);`
   `void free_skb(sk_buff_t* skb);`
   `void* skb_put(sk_buff_t* skb, uint32_t len);`   (expande dados ao final)
   `void* skb_push(sk_buff_t* skb, uint32_t len);`  (adiciona cabeçalho ao início)
   `void* skb_pull(sk_buff_t* skb, uint32_t len);`  (remove cabeçalho do início)
-- [ ] Adaptar a recepção RX da Ethernet para operar sobre `sk_buff_t`, sem
+- [x] Adaptar a recepção RX da Ethernet para operar sobre `sk_buff_t`, sem
   alterar os callbacks `uint8_t*` dos drivers E1000 e RTL8139.
-- [ ] Adaptar TX e contabilizar cópias, conclusões, descartes e liberações; o
+- [x] Adaptar TX e contabilizar cópias, conclusões, descartes e liberações; o
   fallback permanece síncrono e baseado em cópia.
-- [ ] Validar operações de ponteiros, referências, conclusão única, descarte,
+- [x] Validar operações de ponteiros, referências, conclusão única, descarte,
   pool vazio, inventário e repetição dos diagnósticos.
 
 ### Critério de saída

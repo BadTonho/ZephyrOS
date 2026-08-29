@@ -11,6 +11,9 @@ segredos.
 
 Implementacao registrada em: 2026-08-29 20:21:31 (America/Sao_Paulo)
 
+Validacao funcional confirmada em: 2026-08-29 (horario nao informado na
+captura recebida)
+
 - `src/include/core/sk_buff.h` e `src/core/sk_buff.c` foram adicionados com
   pool SLAB, storage interno de 2048 bytes, geometria `head/data/tail/end`,
   referencias, conclusao, descarte e validacao sobre um `net_buffer_t` privado.
@@ -22,9 +25,18 @@ Implementacao registrada em: 2026-08-29 20:21:31 (America/Sao_Paulo)
 - O caminho continua sincrono e baseado em copia fallback. Nenhum driver
   transfere ownership de DMA; clones, fragmentos reais e zero-copy permanecem
   fora do NET1; `boot.asm` nao foi alterado.
-- A validacao executavel pelo usuario ainda esta pendente: `make q3check`,
-  `make clean && make`, `make run` e a matriz QEMU do NET1. O resumo do roadmap
-  permanece `[ ]` ate a confirmacao funcional.
+- `health check` inicial e final exibiram somente degradacoes ou recursos
+  opcionais desabilitados esperados; nao houve erro residual do SKB.
+- `net status` e `net check` mostraram `ativos=0`, pico 2, copias 4 e
+  descartes normais; o diagnostico agrupado terminou com `OK`.
+- `net socket check` terminou com todos os casos em `OK`.
+- `regcheck full` terminou com `RegCheck: OK` e o job cooperativo concluiu.
+- `skbstat` mostrou `ativos=0`, `alocados=5`, `liberados=5`, `concluidos=4`,
+  `descartes=1`, `erros=0`, `ultimo_erro=0`, `copias=4`, `bytes=1836`,
+  `clones=0` e `fragmentos=0`.
+- `appcheck compact` terminou com `resultado=OK` e falhas 0.
+- A matriz funcional do NET1 foi confirmada no QEMU; `boot.asm`, inventario de
+  NICs, callbacks e trafego real permaneceram inalterados.
 
 ## NET0 - contrato de ownership e lifetime de buffers
 
