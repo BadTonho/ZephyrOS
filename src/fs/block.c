@@ -962,13 +962,44 @@ int block_cancel(bio_request_t* request) {
     return ERR_NOT_FOUND;
 }
 
+static uint32_t block_divide_word(uint32_t word, uint32_t divisor,
+                                  uint32_t* remainder) {
+    uint32_t quotient = 0U;
+
+    for (uint32_t bit = 32U; bit > 0U; bit--) {
+        uint32_t carry = *remainder >> 31U;
+        uint32_t shifted = (*remainder << 1U) |
+                           ((word >> (bit - 1U)) & 1U);
+        if (carry || shifted >= divisor) {
+            *remainder = shifted - divisor;
+            quotient |= 1U << (bit - 1U);
+        } else {
+            *remainder = shifted;
+        }
+    }
+    return quotient;
+}
+
+static uint64_t block_divide_u64(uint64_t value, uint32_t divisor) {
+    uint32_t high = (uint32_t)(value >> 32U);
+    uint32_t low = (uint32_t)value;
+    uint32_t quotient_high;
+    uint32_t quotient_low;
+    uint32_t remainder = 0U;
+
+    if (!divisor) return 0U;
+    quotient_high = block_divide_word(high, divisor, &remainder);
+    quotient_low = block_divide_word(low, divisor, &remainder);
+    return ((uint64_t)quotient_high << 32U) | quotient_low;
+}
+
 static uint32_t block_rate(uint32_t sectors, uint32_t now,
                            uint32_t frequency) {
     uint32_t elapsed = now - block_stats_start_tick;
     uint64_t rate;
 
     if (!elapsed || !frequency) return 0U;
-    rate = ((uint64_t)sectors * frequency) / elapsed;
+    rate = block_divide_u64((uint64_t)sectors * frequency, elapsed);
     return rate > 0xFFFFFFFFULL ? 0xFFFFFFFFU : (uint32_t)rate;
 }
 

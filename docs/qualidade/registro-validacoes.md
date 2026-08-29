@@ -2670,3 +2670,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   callback unico e inventario preservado.
   O agente nao executou build, testes ou QEMU; a validacao funcional do BLK1 e
   a marcacao final no roadmap permanecem pendentes da confirmacao do usuario.
+
+- BLK1: correcao do link freestanding apos diagnostico do usuario.
+  Registrada em: 2026-08-29 14:54:48 -03:00 (America/Sao_Paulo).
+  `block_rate()` deixou de usar divisao direta de `uint64_t`, que gerava a
+  referencia ausente a `__udivdi3`; o calculo agora usa divisao por palavras
+  de 32 bits com a mesma saturacao da taxa. O agente nao executou build, testes
+  ou QEMU; a confirmacao da compilacao permanece pendente do usuario.
