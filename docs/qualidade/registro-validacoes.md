@@ -2706,3 +2706,13 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   comando fica em `shell_job_context_t.arguments`, enquanto `command` contem
   apenas o nome da definicao do job. O reconhecimento foi ajustado sem mudar
   o fluxo do `appcheck` detalhado; a validacao funcional deve ser repetida.
+
+- AppCheck compacto: validacao funcional confirmada pelo usuario no QEMU.
+  Horario exato nao informado.
+  `appcheck compact` executou a mesma suite e exibiu as oito fases como `OK`,
+  com `falhas=0` e `resultado=OK`. `appcheck compact extra` e
+  `appcheck invalido` foram rejeitados com `Uso: appcheck [compact]` sem
+  iniciar o job. `memcheck`, `schedcheck`, `regcheck full` e `health check`
+  tambem foram executados; os estados `DISABLED`/`DEGRADED` exibidos no
+  `health` correspondem aos componentes opcionais ausentes no perfil QEMU.
+  A funcionalidade foi validada pelo usuario.
