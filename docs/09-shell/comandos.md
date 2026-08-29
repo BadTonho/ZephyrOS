@@ -880,7 +880,9 @@ reconstrucao dos snapshots de Devices e Network, consultas por indice e ID,
 validacao das tabelas ACPI copiadas e coerencia entre ACPI, Power e S5. Os
 logs informativos da varredura sao silenciados temporariamente; o nivel
 anterior e restaurado antes das demais etapas e falhas reais continuam
-visiveis.
+visiveis. A modalidade `full` tambem valida a camada de bloco e executa o
+autoteste deterministico de BIO sem modificar o inventario de dispositivos;
+falhas aparecem como `camada_bloco` no resultado final.
 
 ```text
 zephyr> regcheck

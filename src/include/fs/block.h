@@ -7,21 +7,70 @@
 #define BLOCK_DEVICE_ID_SIZE 48U
 #define BLOCK_DEVICE_MODEL_SIZE 48U
 #define BLOCK_SECTOR_SIZE 512U
+#define BLOCK_MAX_TRANSFER_SECTORS 255U
+
+#define BLOCK_DEVICE_CAP_FLUSH 0x00000001U
+#define BLOCK_DEVICE_CAP_FUA 0x00000002U
+#define BLOCK_DEVICE_CAPABILITIES_SUPPORTED \
+    (BLOCK_DEVICE_CAP_FLUSH | BLOCK_DEVICE_CAP_FUA)
+
+#define BLOCK_BIO_FLAG_FUA 0x00000001U
+#define BLOCK_BIO_FLAGS_SUPPORTED BLOCK_BIO_FLAG_FUA
 
 typedef enum {
     BLOCK_PROVIDER_ATA = 0,
     BLOCK_PROVIDER_USB_MSC
 } block_provider_t;
 
+typedef enum {
+    BLOCK_OPERATION_READ = 0,
+    BLOCK_OPERATION_WRITE,
+    BLOCK_OPERATION_FLUSH
+} block_operation_t;
+
+typedef enum {
+    BLOCK_REQUEST_QUEUED = 0,
+    BLOCK_REQUEST_IN_FLIGHT,
+    BLOCK_REQUEST_COMPLETED,
+    BLOCK_REQUEST_CANCELLED,
+    BLOCK_REQUEST_ERROR
+} block_request_state_t;
+
 typedef int (*block_read_callback_t)(void* context, uint32_t lba,
                                      uint8_t count, uint8_t* buffer);
 typedef int (*block_write_callback_t)(void* context, uint32_t lba,
                                       uint8_t count, const uint8_t* buffer);
+typedef int (*block_flush_callback_t)(void* context);
+typedef int (*block_write_flags_callback_t)(void* context, uint32_t lba,
+                                             uint8_t count,
+                                             const uint8_t* buffer,
+                                             uint32_t flags);
+
+typedef struct bio_request bio_request_t;
+typedef void (*block_completion_callback_t)(bio_request_t* request,
+                                             void* context);
+
+struct bio_request {
+    const char* device_id;
+    uint32_t lba;
+    uint32_t sector_count;
+    void* buffer;
+    uint32_t buffer_bytes;
+    block_operation_t operation;
+    uint32_t flags;
+    block_completion_callback_t completion;
+    void* context;
+    block_request_state_t state;
+    uint32_t completed_sectors;
+    int status;
+};
 
 typedef struct {
     void* context;
     block_read_callback_t read;
     block_write_callback_t write;
+    block_flush_callback_t flush;
+    block_write_flags_callback_t write_flags;
 } block_ops_t;
 
 typedef struct {
@@ -36,6 +85,8 @@ typedef struct {
     uint32_t write_ops;
     int last_error;
     block_ops_t ops;
+    uint32_t max_transfer_sectors;
+    uint32_t capabilities;
 } block_device_t;
 
 int block_init(void);
@@ -48,6 +99,8 @@ int block_read(const char* id, uint32_t lba, uint8_t count,
                uint8_t* buffer);
 int block_write(const char* id, uint32_t lba, uint8_t count,
                 const uint8_t* buffer);
+int block_submit_sync(bio_request_t* request);
+int block_self_test(void);
 int block_validate_state(void);
 
 #endif

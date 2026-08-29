@@ -39,11 +39,13 @@ virtuais, permanece fora desta etapa.
   `bio_request_t`; somente a camada de bloco conhece filas, capacidades e o
   contrato do driver ATA ou USB.
 - **Separação de operações:** Um `bio_request_t` descreve a operação. A fila
-  pode agregá-lo em um `block_request_t`, que passa a ter ownership do buffer
-  até a conclusão e publica status, bytes/setores e erro.
+  poderá agregá-lo em um `block_request_t`. No BLK0, o adaptador retém o uso
+  do buffer até a conclusão, mas a alocação continua sob ownership do
+  chamador; status, setores concluídos e erro são publicados no BIO.
 - **Compatibilidade síncrona:** A API bloqueante atual usa um wrapper que
-  submete uma requisição, dorme em wait queue e aguarda a conclusão; ela não
-  acessa o driver diretamente.
+  submete uma requisição ao adaptador BLK0, que executa o callback atual e
+  aguarda a conclusão antes de retornar. A espera em wait queue fica para a
+  fila do BLK1; os chamadores não acessam o driver diretamente.
 - **Fusão conservadora:** A primeira política é FIFO com fusão somente de
   operações adjacentes compatíveis. Reordenação e elevator só entram após
   métricas e não podem alterar a semântica de conclusão.
@@ -68,25 +70,30 @@ virtuais, permanece fora desta etapa.
 
 ### Implementação
 
-- [ ] Definir `bio_request_t` como descrição de uma operação lógica, com
+- [x] Definir `bio_request_t` como descrição de uma operação lógica, com
   dispositivo, LBA, quantidade de setores, buffer, operação, flags, callback,
   contexto e status de conclusão.
-- [ ] Definir `block_request_t` como objeto interno da fila, podendo agrupar
-  BIOs compatíveis e mantendo ownership do buffer até a conclusão do driver.
-- [ ] Definir estados `QUEUED`, `IN_FLIGHT`, `COMPLETED`, `CANCELLED` e
-  `ERROR`, além de timeout, retry limitado, fila cheia e cancelamento.
-- [ ] Definir capacidades do dispositivo: tamanho lógico de setor, limite de
+- [x] Definir `block_request_t` como objeto interno do adaptador, mantendo o
+  uso do buffer até a conclusão sem liberar a memória do chamador; agregação
+  de BIOs fica para a fila BLK1.
+- [x] Definir estados `QUEUED`, `IN_FLIGHT`, `COMPLETED`, `CANCELLED` e
+  `ERROR`, documentando timeout propagado, retry limitado, fila cheia e
+  cancelamento efetivo como responsabilidades posteriores do BLK1.
+- [x] Definir capacidades do dispositivo: tamanho lógico de setor, limite de
   transferência, somente leitura, flush e FUA quando disponíveis.
-- [ ] Criar um wrapper `block_submit_sync()` para preservar os chamadores
+- [x] Criar um wrapper `block_submit_sync()` para preservar os chamadores
   bloqueantes sem permitir acesso direto ao driver.
-- [ ] Registrar no contrato que a conclusão pode ocorrer fora da ordem de
-  submissão e que o chamador deve consumir o status antes de liberar recursos.
+- [x] Registrar no contrato que a conclusão síncrona ocorre antes do retorno,
+  que a fila BLK1 poderá concluir fora da ordem de submissão e que o chamador
+  deve consumir o status antes de liberar recursos.
 
 ### Critério de saída
 
 O contrato documenta ownership, ciclo de vida, alinhamento, erros,
 cancelamento, timeout, conclusão e durabilidade, com um backend determinístico
-que permita testar esses estados sem depender do hardware.
+que permite testar esses estados sem depender do hardware. A implementação
+está presente; a validação funcional pelo usuário ainda é necessária para
+marcar o BLK0 como concluído no resumo.
 
 ### Comandos Shell / Diagnóstico
 

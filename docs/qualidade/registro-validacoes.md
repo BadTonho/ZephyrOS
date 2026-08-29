@@ -2613,3 +2613,16 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   ownership/lifetime, separação `/proc`/`/sys`, escopo seguro de ACPI e gates
   reproduzíveis para Rust. O Roadmap 09 não foi reaberto: R5-R9 permanecem como
   melhorias futuras mapeadas e não bloqueiam a BLK1.
+
+- BLK0: contrato de I/O e adaptador síncrono implementados.
+  Implementação registrada em: 2026-08-29 13:41:03 -03:00
+  (America/Sao_Paulo).
+  `bio_request_t`, estados de requisição, capacidades FLUSH/FUA, limite de
+  transferência, callbacks opcionais e `block_submit_sync()` foram adicionados
+  de forma compatível. `block_read()` e `block_write()` agora usam o mesmo
+  caminho de submissão; ATA e USB MSC continuam sem FLUSH/FUA. O backend
+  determinístico de `block_self_test()` cobre sucesso, erro, limites,
+  somente-leitura, capacidades indisponíveis, callback de conclusão e preserva
+  o inventário real. `regcheck full` passou a reportar `camada_bloco`.
+  O agente não executou build, testes ou QEMU; a validação funcional e a
+  marcação final do BLK0 permanecem pendentes da confirmação do usuário.

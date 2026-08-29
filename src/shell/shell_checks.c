@@ -6,6 +6,7 @@
 #include "fs/fs.h"
 #include "fs/vfs.h"
 #include "fs/storage.h"
+#include "fs/block.h"
 #include "fs/file_index.h"
 #include "core/memory.h"
 #include "core/timer.h"
@@ -189,6 +190,7 @@ typedef struct {
     int thread_result;
     int processes_result;
     int device_scan_result;
+    int block_result;
     int devices_result;
     int usb_result;
     int network_result;
@@ -1094,6 +1096,7 @@ static void shell_regcheck_reset(void) {
     shell_regcheck.thread_result = ERR_STATE;
     shell_regcheck.processes_result = ERR_STATE;
     shell_regcheck.device_scan_result = ERR_STATE;
+    shell_regcheck.block_result = ERR_STATE;
     shell_regcheck.devices_result = ERR_STATE;
     shell_regcheck.usb_result = ERR_STATE;
     shell_regcheck.network_result = ERR_STATE;
@@ -1375,7 +1378,7 @@ static int shell_regcheck_validate_usb(void) {
         status.hid_device_count > USB_HID_MAX_DEVICES ||
         status.hid_active_count > status.hid_device_count ||
         status.hub_support_active ||
-        status.hotplug_active || block_validate_state() != OK ||
+        status.hotplug_active ||
         usb_msc_validate_state() != OK || usb_hid_validate_state() != OK ||
         input_validate_state() != OK ||
         irq_deferred_validate_state() != OK ||
@@ -1671,6 +1674,10 @@ static void shell_regcheck_run_full_checks(void) {
     } else {
         shell_regcheck.devices_result = OK;
     }
+    shell_regcheck.block_result = block_validate_state();
+    if (shell_regcheck.block_result == OK) {
+        shell_regcheck.block_result = block_self_test();
+    }
     if (scan.wifi_result == OK || scan.wifi_result == ERR_OVERFLOW) {
         shell_regcheck.wifi_result = wifi_manager_validate_state();
     } else {
@@ -1806,6 +1813,7 @@ static int shell_regcheck_has_failures(void) {
     }
     if (shell_regcheck.full_mode &&
         (shell_regcheck.device_scan_result != OK ||
+         shell_regcheck.block_result != OK ||
          shell_regcheck.devices_result != OK ||
          shell_regcheck.usb_result != OK ||
          shell_regcheck.network_result != OK ||
@@ -1834,6 +1842,9 @@ static void shell_regcheck_print_failure(const char* label, int result) {
 static void shell_regcheck_finish(void) {
     int failed = shell_regcheck_has_failures();
 
+    if (shell_regcheck.full_mode && shell_regcheck.block_result == OK) {
+        video_print("camada_bloco OK\n", 0x0A);
+    }
     video_print("\nRegCheck: ", 0x0B);
     if (!failed) {
         video_print("OK\n", 0x0A);
@@ -1851,6 +1862,8 @@ static void shell_regcheck_finish(void) {
         if (shell_regcheck.full_mode) {
             shell_regcheck_print_failure("device_scan",
                                          shell_regcheck.device_scan_result);
+            shell_regcheck_print_failure("camada_bloco",
+                                         shell_regcheck.block_result);
             shell_regcheck_print_failure("devices",
                                          shell_regcheck.devices_result);
             shell_regcheck_print_failure("usb", shell_regcheck.usb_result);

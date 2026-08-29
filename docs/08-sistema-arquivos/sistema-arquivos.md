@@ -171,13 +171,43 @@ conecta boot e as fixtures nos slots IDE, e `make storage-fixtures-verify`
 compara tamanho e SHA-256 depois do QEMU. `storage check <id>` e somente
 leitura e verifica BPB, backup, FSInfo, FATs, cadeias e LFNs.
 
-## Camada de bloco e USB MSC (EP4.3)
+## Camada de bloco e USB MSC (EP4.3/BLK0)
 
 `block_device_t` e a fronteira comum entre o ATA legado e dispositivos USB
 Mass Storage. Cada provedor possui ID unico, modelo, capacidade em setores,
 setor fixo de 512 bytes, estado online, contadores de leitura/escrita e ultimo
-erro. A API valida callbacks, limites de LBA e capacidade antes de chamar o
-driver; escrita em um provedor somente-leitura retorna `ERR_UNAVAILABLE`.
+erro. Os campos append-only `max_transfer_sectors` e `capabilities` publicam o
+limite de transferencia e o suporte a FLUSH/FUA. A API valida callbacks,
+limites de LBA e capacidade antes de chamar o driver; escrita em um provedor
+somente-leitura retorna `ERR_UNAVAILABLE`.
+
+O BLK0 introduz `bio_request_t` como descricao de uma operacao logica e
+`block_submit_sync()` como adaptador bloqueante para a camada existente. Um
+BIO informa dispositivo, LBA, quantidade, buffer, tamanho declarado do buffer,
+operacao, flags, callback e contexto; a conclusao publica estado, erro e
+setores concluidos. Os estados observaveis sao `QUEUED`, `IN_FLIGHT`,
+`COMPLETED`, `CANCELLED` e `ERROR`, embora a fila e o cancelamento efetivo
+fiquem para o BLK1.
+
+O buffer permanece sob ownership do chamador e deve continuar valido ate a
+conclusao. A camada de bloco nao libera nem copia o buffer. A callback de
+conclusao e chamada uma vez depois do estado terminal no adaptador sincrono.
+`block_read()` e `block_write()` preservam suas assinaturas e passam pelo mesmo
+adaptador, mantendo contadores e `last_error`.
+
+Como o adaptador e bloqueante e os drivers atuais usam espera ativa com limite,
+`block_submit_sync()` so pode ser usado em contexto de processo ou worker; ele
+nao deve ser chamado a partir de IRQ. A fila, espera por wait queue,
+cancelamento efetivo e conclusao fora de ordem serao responsabilidades do
+BLK1.
+
+O adaptador retorna `ERR_NULL` para ponteiros ausentes, `ERR_INVALID` para
+formato ou flags invalidas, `ERR_OVERFLOW` para limites de transferencia,
+`ERR_DISK` para LBA invalido e `ERR_UNAVAILABLE` para operacao ou capacidade
+nao suportada. `ERR_TIMEOUT` e outros erros do driver sao propagados sem
+retry generico. ATA e USB MSC continuam sem FLUSH/FUA; o backend deterministico
+do autoteste exercita sucesso, erro, limite, somente-leitura e capacidades
+indisponiveis sem alterar o inventario real.
 
 Os IDs ATA permanecem `ata0` a `ata3`. Um MSC valido recebe um ID de bloco no
 formato `usb-ms-BB:DD.F-pN-aN-l0`, derivado do ID estavel da sessao UHCI. O
