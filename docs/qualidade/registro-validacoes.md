@@ -2416,3 +2416,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 - MM1: `vfs test` validado pelo usuario.
   Horario da execucao: nao informado na captura recebida.
   O teste retornou `VFS Test: OK`, `Casos aprovados: 20/20` e `Pipes: OK`.
+
+- MM1: rede Ethernet e diagnosticos pos-RX/TX validados pelo usuario.
+  Horario da execucao: nao informado nas capturas recebidas.
+  A interface `net-pci-00:03.0` confirmou TX Ethernet, `net check qemu`
+  retornou `OK` para ARP, IPv4, ICMP, polling e invariantes, e a consulta
+  Ethernet mostrou frames RX/TX aceitos sem descartes. `slabinfo` mostrou
+  `net_packet` em `0/8` ativos e sem falhas; `memcheck` e `regcheck full`
+  permaneceram em `OK`.
