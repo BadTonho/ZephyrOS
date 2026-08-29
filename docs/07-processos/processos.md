@@ -84,6 +84,15 @@ um processo nao altera o pai nem os irmaos. Descarte, encerramento e destruicao
 invalidam a tabela, e as invariantes globais recusam `cwd` vazio, nao absoluto
 ou pertencente a uma montagem removida.
 
+Desde a MM3, `process_t` acrescenta ao final os campos append-only
+`user_code_image`, `user_data_image`, `user_data_size` e `user_launch`. Os dois
+buffers pertencem ao processo e mantêm cópias kernel-owned do código e dos
+dados até o descarte ou a destruição; `user_launch` mantém a cópia persistente
+de `app_launch_info_t`. A criação suspensa de um processo ring 3 registra as
+VMAs sem alocar páginas físicas de usuário; o paging lazy materializa cada
+página no primeiro acesso e o ciclo de destruição libera os buffers e os frames
+residentes sem alterar as assinaturas de criação ou a ABI das aplicações.
+
 ### Criando um Processo
 
 ```c
