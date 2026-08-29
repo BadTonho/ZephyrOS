@@ -83,6 +83,49 @@ Se a implementação Rust não melhorar uma métrica relevante sem piorar outra,
 a versão C permanece válida. Nenhuma versão C deve ser removida apenas para
 forçar a adoção da linguagem.
 
+## Ordem otimizada de migração
+
+Para maximizar estabilidade e desempenho, a ordem prática recomendada é:
+
+1. `RUST0` e `RUST1`: congelar a base 1.0.0, validar o target i686 e criar a
+   fronteira C/Rust reproduzível;
+2. `RUST2`: migrar o parser e a validação do pipeline do Shell, mantendo o
+   executor, threads, pipes e VFS em C;
+3. `RUST3.1`: migrar lógica pura de `vfs_path.c`, validadores de pacotes,
+   manifestos, argumentos, estados de atualização e partes separáveis de
+   `file_index.c` e do catálogo de aplicativos;
+4. `RUST3.2`: extrair da `vma.c` somente o algoritmo puro de intervalos,
+   first-fit, ordenação, divisão e coalescência; PMM, paging e mapeamento de
+   páginas continuam em C;
+5. `RUST4`: criar wrappers de ownership para buffers de pipes, descritores,
+   `net_packet_t`, requisições de bloco e filas, sem alocação ou bloqueio em
+   IRQ e hot paths;
+6. `RUST5`: começar por inventário PCI, diagnósticos e um PHY ou driver simples,
+   mantendo o caminho C como fallback até a matriz completa;
+7. `RUST6`: disponibilizar o SDK Rust opcional para aplicativos ring 3, sem
+   alterar a ABI de syscalls ou os aplicativos C existentes.
+
+Essa ordem evita iniciar pelo núcleo do PMM, VMM, scheduler, troca de contexto,
+VFS de disco, USB complexo ou boot. Esses componentes só avançam quando as
+abstrações, métricas e mecanismos de rollback já estiverem comprovados.
+
+### Regras de otimização dos caminhos críticos
+
+- [ ] Não alocar dinamicamente em IRQ ou em hot paths sem uma justificativa e
+  uma medição específica.
+- [ ] Preferir pools fixos, buffers de capacidade conhecida e estruturas com
+  layout previsível quando latência e tamanho forem prioridades.
+- [ ] Não atravessar FFI com `Vec`, `Box`, slices ou tipos Rust que carreguem
+  ownership implícito; usar handles e contratos explícitos.
+- [ ] Usar `#[repr(C)]` somente nos tipos compartilhados e `#[repr(transparent)]`
+  para wrappers de handles quando isso preservar o ABI sem custo adicional.
+- [ ] Evitar generics excessivos, dispatch dinâmico e formatação pesada nos
+  caminhos críticos quando aumentarem o binário ou a latência medida.
+- [ ] Concentrar `unsafe` nos wrappers de hardware, FFI e ownership; a lógica
+  final deve consumir abstrações revisadas.
+- [ ] Comparar tamanho de código, acessos à memória, latência, throughput,
+  tempo de boot e consumo de PMM/heap antes de aceitar uma otimização.
+
 ## RUST0 - Base 1.0.0 e contratos congelados
 
 ### Objetivo

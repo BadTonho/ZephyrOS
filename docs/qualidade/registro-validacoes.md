@@ -2511,3 +2511,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   de alterar o boot somente com comunicação explícita e verificação dos 512
   bytes. Nenhum código Rust foi migrado e nenhum build foi executado pelo
   agente.
+
+- Roadmap 17: ordem de migração e regras de otimização detalhadas.
+  Concluída em: 2026-08-29 10:28 (America/Sao_Paulo).
+  Foram incluídos candidatos concretos do ZephyrOS (`vfs_path.c`,
+  validadores de pacotes, `file_index.c`, catálogo, algoritmo de intervalos
+  da `vma.c`, buffers/filas, PCI/PHY e SDK ring 3), além de restrições para
+  IRQ/hot paths, pools fixos, FFI, `unsafe`, layout e métricas. Nenhum código
+  Rust foi migrado e nenhum build foi executado pelo agente.
