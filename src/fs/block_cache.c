@@ -500,6 +500,7 @@ static uint32_t block_cache_divide_u64(uint32_t high, uint32_t low,
         uint32_t shifted = (remainder << 1U) |
                            ((high >> (bit - 1U)) & 1U);
 
+        remainder = shifted;
         if (carry || shifted >= divisor) {
             remainder = shifted - divisor;
         }
@@ -509,6 +510,7 @@ static uint32_t block_cache_divide_u64(uint32_t high, uint32_t low,
         uint32_t shifted = (remainder << 1U) |
                            ((low >> (bit - 1U)) & 1U);
 
+        remainder = shifted;
         if (carry || shifted >= divisor) {
             remainder = shifted - divisor;
             quotient |= 1U << (bit - 1U);

@@ -182,16 +182,19 @@ reproduzível; não há um percentual universal obrigatório.
 - [x] Adicionar `vfs_fsync()`, `vfs_sync()`, fachadas, syscalls append-only e o
   comando Shell `sync`, com validação de argumentos e propagação de erros.
 
-A implementação foi registrada; a confirmação funcional dos gates e do QEMU
-continua pendente. `block_submit_sync()` permanece no caminho físico direto,
-enquanto `block_write()` copia os dados para o cache e não retém ponteiros do
-chamador. Fechamento de descritor e saída de processo não fazem sync implícito.
+A implementação foi exercitada no QEMU, mas a confirmação final permanece
+pendente após a correção da métrica de acerto. `block_submit_sync()`
+permanece no caminho físico direto, enquanto `block_write()` copia os dados
+para o cache e não retém ponteiros do chamador. Fechamento de descritor e
+saída de processo não fazem sync implícito.
 
 ### Critério de saída
 
-Escritas em cache seguem o contrato de retorno escolhido e são consolidadas
-sem perder dados sujos; `sync`/`fsync` só concluem após o writeback e o flush
-exigidos pelo contrato, ou retornam o erro correspondente.
+Escritas em cache devem seguir o contrato de retorno escolhido e ser
+consolidadas sem perder dados sujos; `sync`/`fsync` devem concluir após o
+writeback e o flush exigidos pelo contrato, ou retornar o erro correspondente.
+A ausência de FLUSH no perfil ATA/QEMU deve ser publicada como `OK` degradado,
+conforme previsto.
 
 ### Comandos Shell / Diagnóstico
 
