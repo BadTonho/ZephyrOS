@@ -295,7 +295,7 @@ guard único, baseado no caminho ou no módulo:
 
 ---
 
-## Regra #6: Convenções de Structs
+## Regra #6: Convenções de Tipos e Structs
 
 ```c
 // Nome: snake_case com sufixo _t
@@ -315,10 +315,26 @@ void ata_free(ata_request_t* req);
 
 ### Regras
 
-- [ ] Structs: `snake_case_t` (ex: `process_t`, `fat12_entry_t`)
-- [ ] Enums: `snake_case_t` com valores `UPPER_SNAKE` (ex: `state_t { STATE_IDLE, STATE_RUNNING }`)
-- [ ] Typedef SEMPRE (ex: `typedef struct { ... } foo_t;`)
-- [ ] Ponteiros em parâmetros: primeiro argumento (ex: `func(dados, ...)`)
+- [ ] Tipos novos de domínio usam nomes `snake_case_t` (ex: `process_t`,
+      `fat12_entry_t`) e campos novos usam `snake_case`.
+- [ ] Structs públicas e tipos compartilhados devem preferir `typedef`; structs
+      locais podem ser anônimas quando isso melhorar a clareza.
+- [ ] Enums usam um tipo `snake_case_t` e valores `UPPER_SNAKE_CASE` (ex:
+      `state_t { STATE_IDLE, STATE_RUNNING }`).
+- [ ] Structs recursivas devem usar um nome de tag explícito para permitir
+      referências ao próprio tipo.
+- [ ] Funções que operam sobre um módulo ou tipo devem preferir o formato
+      `modulo_verbo()`; o objeto principal deve ser o primeiro parâmetro quando
+      isso tornar a API mais legível.
+- [ ] A ordem dos parâmetros deve priorizar entradas antes de saídas quando
+      isso for natural; callbacks, APIs externas e contratos existentes podem
+      seguir convenções diferentes.
+- [ ] Ownership, mutabilidade, validade e responsabilidade de liberação dos
+      ponteiros devem ser claros no nome, no contrato ou na documentação.
+- [ ] Código legado, ABI pública, callbacks e convenções de terceiros não devem
+      ser renomeados ou reordenados apenas para cumprir estilo.
+- [ ] Alterações em layout público, ABI, alinhamento ou uso de `packed` exigem
+      revisão dos consumidores e documentação da decisão.
 
 ---
 
