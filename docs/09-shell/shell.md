@@ -138,6 +138,14 @@ zephyr> _
 
 O prompt é verde (`0x0A`) e aparece após cada comando.
 
+### Diagnosticos de armazenamento
+
+Os comandos `blkstat`, `cachestat` e `cache clear` passam pela tabela unica do
+dispatcher e nao criam um caminho de entrada paralelo. `blkstat` observa a
+fila BLK1; `cachestat` observa o cache estatico BLK2 de 64 blocos; `cache clear`
+remove somente entradas limpas e elegiveis. Argumentos fora do contrato sao
+rejeitados pelo handler correspondente antes de qualquer mutacao.
+
 ---
 
 ## Tratamento de Teclas

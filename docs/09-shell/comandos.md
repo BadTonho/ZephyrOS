@@ -38,6 +38,8 @@ Comandos disponiveis:
   mouse     - Mostra status ou altera preferencias do mouse PS/2
   storage   - Lista, inspeciona e monta volumes ATA/USB somente-leitura
   blkstat   - Mostra a fila e metricas da camada de bloco
+  cachestat - Mostra metricas do cache de blocos
+  cache clear - Limpa entradas elegiveis do cache de blocos
   index     - Mostra, reconstrui, cancela ou valida o indice global
   search <termo> - Pesquisa nomes e caminhos em todos os volumes montados
   guitest   - Testa primitivas GUI 2D
@@ -346,6 +348,36 @@ concluidas, falhas e canceladas, quantidade de fusoes, setores lidos/escritos,
 taxas medias por segundo, ultimo erro e os contadores de leitura/escrita de
 cada dispositivo. A fila tem 32 entradas, usa a `Zephyr kworker` quando
 disponivel e continua acessivel pelo caminho sincrono durante a inicializacao.
+
+## `cachestat`
+
+Exibe as metricas cumulativas e o snapshot do cache de leitura BLK2. O comando
+aceita somente a forma sem argumentos; entradas extras exibem o uso e nao
+alteram contadores.
+
+```text
+zephyr> cachestat
+Cache: entradas=4/64 validas=4 memoria=32768 bytes
+Acessos: hits=12 misses=4 acerto=75% evitadas=12 fisicas=4 bypass=0
+Estado: evictions=0 invalidacoes=2 erros=0 lendo=0 sujas=0 writeback=0 fixadas=0 erro=0
+```
+
+O cache mantem 64 blocos de 512 bytes, usa hash e LRU estaticos e atende
+automaticamente leituras FAT/VFS e DevFS feitas por `block_read()`. Escritas
+invalidam a faixa antes da submissao e o BLK2 nao realiza writeback.
+
+## `cache clear`
+
+Remove entradas limpas e elegiveis do cache. Entradas em I/O, fixadas, sujas ou
+em writeback fazem a operacao ser recusada sem limpeza parcial.
+
+```text
+zephyr> cache clear
+Cache de blocos limpo.
+```
+
+Somente `cache clear` e aceito. `cache`, `cache clear extra` e outros
+argumentos exibem `Uso: cache clear` sem alterar estado.
 
 ## `usb storage`
 

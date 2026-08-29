@@ -6,6 +6,8 @@
 #include "core/timer.h"
 #include "core/workqueue.h"
 #include "drivers/ata.h"
+#include "fs/block.h"
+#include "fs/block_cache.h"
 
 static block_device_t block_devices[BLOCK_MAX_DEVICES];
 static uint32_t block_device_count;
@@ -279,6 +281,14 @@ static int block_queue_enqueue(bio_request_t* request, uint8_t asynchronous) {
     if (result != OK) {
         spinlock_release(&block_queue_lock);
         return block_request_reject(request, result);
+    }
+    if (request->operation == BLOCK_OPERATION_WRITE) {
+        result = block_cache_invalidate_range(
+            request->device_id, request->lba, request->sector_count);
+        if (result != OK) {
+            spinlock_release(&block_queue_lock);
+            return block_request_reject(request, result);
+        }
     }
     if (asynchronous && !block_work_ready) {
         spinlock_release(&block_queue_lock);
@@ -675,9 +685,16 @@ int block_init(void) {
     block_queue_count = 0U;
     block_active_count = 0U;
     block_dispatching = 0U;
+    block_work_ready = 0U;
     block_queue_stats.queue_capacity = BLOCK_QUEUE_CAPACITY;
     block_stats_start_tick = timer_get_ticks();
     block_initialized = 1U;
+    result = block_cache_init();
+    if (result != OK) {
+        block_initialized = 0U;
+        LOG_ERROR("BLK", "Falha ao inicializar cache de blocos");
+        return result;
+    }
     work_result = work_init(&block_work, "Block I/O", WORK_PRIORITY_NORMAL,
                             block_work_callback, 0);
     if (work_result != OK) {
@@ -702,6 +719,7 @@ int block_register(const block_device_t* descriptor) {
     uint32_t read_ops;
     uint32_t write_ops;
     int last_error;
+    int result;
 
     if (!descriptor || !block_text_valid(descriptor->id,
                                          BLOCK_DEVICE_ID_SIZE) ||
@@ -741,6 +759,12 @@ int block_register(const block_device_t* descriptor) {
             LOG_WARN("BLK", "Substituicao recusada com BIO pendente");
             return ERR_STATE;
         }
+        result = block_cache_invalidate_device(normalized.id);
+        if (result != OK) {
+            spinlock_release(&block_queue_lock);
+            LOG_WARN("BLK", "Substituicao recusada com cache ocupado");
+            return result;
+        }
         read_ops = block_devices[index].read_ops;
         write_ops = block_devices[index].write_ops;
         last_error = block_devices[index].last_error;
@@ -763,6 +787,7 @@ int block_register(const block_device_t* descriptor) {
 
 int block_unregister(const char* id) {
     int index;
+    int cache_result;
 
     if (!id) {
         LOG_ERROR("BLK", "ID nulo ao remover dispositivo de bloco");
@@ -783,6 +808,12 @@ int block_unregister(const char* id) {
         spinlock_release(&block_queue_lock);
         LOG_WARN("BLK", "Dispositivo de bloco nao encontrado");
         return ERR_NOT_FOUND;
+    }
+    cache_result = block_cache_invalidate_device(id);
+    if (cache_result != OK) {
+        spinlock_release(&block_queue_lock);
+        LOG_WARN("BLK", "Remocao recusada com cache ocupado");
+        return cache_result;
     }
     for (uint32_t current = (uint32_t)index;
          current + 1U < block_device_count; current++) {
@@ -1031,9 +1062,24 @@ int block_get_stats(block_queue_stats_t* out_stats) {
     return OK;
 }
 
+static int block_read_backend(const char* id, uint32_t lba, uint8_t count,
+                              uint8_t* buffer) {
+    bio_request_t request;
+
+    kmemset(&request, 0, sizeof(request));
+    request.device_id = id;
+    request.lba = lba;
+    request.sector_count = count;
+    request.buffer = buffer;
+    request.buffer_bytes = (uint32_t)count * BLOCK_SECTOR_SIZE;
+    request.operation = BLOCK_OPERATION_READ;
+    return block_submit_sync(&request);
+}
+
 int block_read(const char* id, uint32_t lba, uint8_t count,
                uint8_t* buffer) {
-    bio_request_t request;
+    block_device_t device;
+    int result;
 
     if (!id || !buffer || !count) {
         LOG_ERROR("BLK", "Argumento invalido na leitura de bloco");
@@ -1046,14 +1092,11 @@ int block_read(const char* id, uint32_t lba, uint8_t count,
     if (!block_text_terminated(id, BLOCK_DEVICE_ID_SIZE)) {
         return ERR_NOT_FOUND;
     }
-    kmemset(&request, 0, sizeof(request));
-    request.device_id = id;
-    request.lba = lba;
-    request.sector_count = count;
-    request.buffer = buffer;
-    request.buffer_bytes = (uint32_t)count * BLOCK_SECTOR_SIZE;
-    request.operation = BLOCK_OPERATION_READ;
-    return block_submit_sync(&request);
+    result = block_find(id, &device);
+    if (result != OK) return result;
+    return block_cache_read(&device, lba, count, buffer,
+                            (uint32_t)count * BLOCK_SECTOR_SIZE,
+                            block_read_backend);
 }
 
 int block_write(const char* id, uint32_t lba, uint8_t count,
@@ -1443,6 +1486,10 @@ int block_self_test(void) {
         LOG_ERROR("BLK", "Autoteste alterou o inventario de bloco");
         return ERR_STATE;
     }
+    if (block_cache_self_test() != OK) {
+        LOG_ERROR("BLK", "Autoteste do cache de blocos falhou");
+        return ERR_STATE;
+    }
     return OK;
 
 block_self_test_fail:
@@ -1546,5 +1593,5 @@ int block_validate_state(void) {
         return ERR_STATE;
     }
     spinlock_release(&block_queue_lock);
-    return OK;
+    return block_cache_validate_state();
 }

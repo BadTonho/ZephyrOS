@@ -549,6 +549,24 @@ e usam o dispatcher. A camada impede unregister ou substituicao enquanto
 houver requisicoes pendentes; se a workqueue nao estiver disponivel, o caminho
 sincrono permanece funcional e `block_submit()` retorna `ERR_UNAVAILABLE`.
 
+Desde o BLK2, `src/include/fs/block_cache.h` publica o cache de leitura de
+blocos. A capacidade e fixa em 64 entradas de `BLOCK_SECTOR_SIZE` bytes, sem
+`kmalloc`, bounce buffer ou ownership do buffer do chamador. A chave e
+`(device_id, lba, block_size)` e os estados sao `FREE`, `READING`, `VALID`,
+`DIRTY`, `WRITEBACK` e `ERROR`. `block_cache_read()` recebe um dispositivo,
+faixa, destino e backend BLK1; hits copiam da entrada valida e misses carregam
+o backend, publicando `VALID` somente depois da transferencia concluida.
+
+`block_cache_get_stats()` retorna capacidade, memoria reservada, ocupacao,
+estados, pins, hits, misses, leituras evitadas e fisicas, evictions,
+invalidacoes, bypasses, erros, taxa de acerto e ultimo erro. As APIs de
+limpeza e invalidacao falham com `ERR_STATE` sem remover parcialmente a
+operacao quando existe referencia, pin, leitura, entrada suja, writeback ou
+waiter correspondente. Escritas invalidam a faixa antes de serem enfileiradas;
+o cache nao realiza escrita antecipada nem writeback no BLK2. `cachestat` exige
+zero argumentos e `cache clear` exige exatamente `clear`; entradas invalidas
+somente exibem o uso.
+
 Desde a EP4.4, `src/include/core/input.h` define eventos HID Usage de teclado,
 eventos relativos de ponteiro, filas estaticas separadas, metricas e despacho
 para os consumidores PS/2 legados. O adaptador de teclado preserva as posicoes
