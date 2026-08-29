@@ -10,7 +10,7 @@ Este roadmap preserva a compatibilidade total com o Bitmap Allocator físico e o
 
 - [x] MM1 - Alocador SLAB/SLUB de objetos de tamanho fixo (`kmem_cache_t`).
 - [x] MM2 - Áreas de Memória Virtual do Processo (VMA - *Virtual Memory Areas*).
-- [ ] MM3 - Alocação sob Demanda (*Demand Paging*) e tratamento de Page Faults.
+- [x] MM3 - Alocação sob Demanda (*Demand Paging*) e tratamento de Page Faults.
 - [ ] MM4 - Métricas de fragmentação, zonas de memória e monitoramento em tempo real.
 
 ## Atalhos
@@ -118,22 +118,22 @@ e sua validação executável no QEMU foram concluídas pelo usuário.
 
 ## MM3 - Alocação sob Demanda (Demand Paging)
 
-Implementação preparada no código; a marcação como concluída permanece
-dependente da validação funcional do usuário no QEMU.
+Implementação e validação funcional concluídas no QEMU, conforme evidência
+fornecida pelo usuário.
 
 ### Implementação
 
-- [ ] Modificar o loader de aplicativos ring 3 para registrar as VMAs de código e dados sem alocar previamente todas as páginas físicas de uma só vez.
-- [ ] No tratador de exceção 14 (Page Fault ISR):
+- [x] Modificar o loader de aplicativos ring 3 para registrar as VMAs de código e dados sem alocar previamente todas as páginas físicas de uma só vez.
+- [x] No tratador de exceção 14 (Page Fault ISR):
   - Inspecionar o endereço de falta no registrador `CR2`.
   - Verificar se o endereço pertence a uma VMA válida com permissão correspondente.
   - Alocar uma página física livre do PMM e mapeá-la na Page Table do processo sob demanda.
   - Retornar da interrupção para continuar a execução do código de usuário.
-- [ ] Caso o endereço não pertença a nenhuma VMA válida, disparar `SIGSEGV` ou encerrar o processo ring 3 de forma isolada, registrando erro no log sem gerar panic no kernel.
+- [x] Caso o endereço não pertença a nenhuma VMA válida, disparar `SIGSEGV` ou encerrar o processo ring 3 de forma isolada, registrando erro no log sem gerar panic no kernel.
 
 ### Critério de saída
 
-Executáveis grandes são carregados quase instantaneamente consumindo apenas a quantidade de páginas físicas que realmente são executadas.
+Executáveis grandes são carregados quase instantaneamente consumindo apenas a quantidade de páginas físicas que realmente são executadas. O `appcheck` confirmou a reserva sem páginas na criação suspensa, faults válidas materializadas, faults inválidas isoladas e ausência de vazamentos após `munmap` e encerramento.
 
 ### Comandos Shell / Diagnóstico
 
