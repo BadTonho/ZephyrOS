@@ -201,6 +201,70 @@ static void paging_invalidate(uint32_t virtual_addr) {
     asm volatile("invlpg (%0)" : : "r"(virtual_addr) : "memory");
 }
 
+static int paging_table_is_empty(const page_table_t* table) {
+    if (!table) return 1;
+    for (uint32_t i = 0; i < PAGING_TABLE_ENTRIES; i++) {
+        if (table->entries[i].present) return 0;
+    }
+    return 1;
+}
+
+int paging_unmap_user_page_in_directory(page_directory_t* dir,
+                                        uint32_t virtual_addr) {
+    uint32_t table_idx;
+    uint32_t directory_entry;
+    uint32_t shared_entry;
+    page_table_t* table;
+    page_entry_t* page;
+    uint32_t physical;
+
+    if (!dir) {
+        LOG_ERROR("MEM", "Desmapeamento com diretorio nulo");
+        return ERR_NULL;
+    }
+    if (!paging_is_registered_user_directory(dir)) {
+        LOG_ERROR("MEM", "Desmapeamento fora de diretorio de usuario");
+        return ERR_STATE;
+    }
+    if ((virtual_addr % PAGE_SIZE) != 0 ||
+        virtual_addr < USER_SPACE_START || virtual_addr >= USER_SPACE_END) {
+        LOG_ERROR("MEM", "Endereco invalido no desmapeamento de usuario");
+        return ERR_INVALID;
+    }
+
+    table_idx = virtual_addr / (PAGE_SIZE * PAGING_TABLE_ENTRIES);
+    directory_entry = dir->entries[table_idx];
+    if (!(directory_entry & PAGING_FLAG_PRESENT) ||
+        !(directory_entry & PAGING_FLAG_USER)) {
+        LOG_ERROR("MEM", "Tabela de usuario ausente no desmapeamento");
+        return ERR_NOT_FOUND;
+    }
+    table = (page_table_t*)(directory_entry & 0xFFFFF000U);
+    page = &table->entries[(virtual_addr / PAGE_SIZE) % PAGING_TABLE_ENTRIES];
+    if (!page->present || !page->user) {
+        LOG_ERROR("MEM", "Pagina de usuario ausente no desmapeamento");
+        return ERR_NOT_FOUND;
+    }
+
+    physical = page->frame * PAGE_SIZE;
+    kmemset(page, 0, sizeof(*page));
+    if (dir == current_directory) paging_invalidate(virtual_addr);
+    pmm_free_page((void*)physical);
+    if (user_paging_stats.active_pages == 0) {
+        LOG_ERROR("MEM", "Contagem de paginas ativa inconsistente");
+    } else {
+        user_paging_stats.active_pages--;
+    }
+
+    shared_entry = kernel_directory ? kernel_directory->entries[table_idx] : 0;
+    if ((directory_entry & 0xFFFFF000U) !=
+        (shared_entry & 0xFFFFF000U) && paging_table_is_empty(table)) {
+        dir->entries[table_idx] = 0;
+        pmm_free_page(table);
+    }
+    return OK;
+}
+
 static int paging_map_framebuffer(vesa_mode_t* mode) {
     uint32_t fb_phys;
     uint32_t fb_size;

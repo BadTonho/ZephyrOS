@@ -2438,3 +2438,27 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   Após a confirmação do usuário de que os gates e comandos de validação da
   MM1 foram executados, a etapa foi marcada como concluída nos roadmaps. A
   próxima etapa de implementação é a MM2, de áreas de memória virtual.
+
+- MM2: áreas de memória virtual implementadas.
+  Concluída em: 2026-08-29 00:08 (America/Sao_Paulo).
+  Criados `vm_area_t`, a lista ordenada por processo e o registro automático
+  das regiões fixas de código, dados, lançamento e stack. `mmap` anônimo
+  privado usa first-fit, aloca e zera páginas imediatamente; `munmap` libera
+  frames, invalida a TLB quando necessário e suporta divisão de VMA. O paging
+  evita double free, atualiza `active_pages` e remove tabelas vazias.
+
+- MM2: App API 0.9, Shell e fixture ring 3 implementados.
+  Concluída em: 2026-08-29 00:08 (America/Sao_Paulo).
+  Syscalls 19 e 20, `vmamap <pid>`, aceitação de pacotes 0.3-0.9 e o
+  `appcheck` com alocação, escrita/leitura, arredondamento, erros, divisão,
+  regiões fixas e limpeza foram integrados. `git diff --check` não encontrou
+  erros; os gates `make q3check`, `make clean && make`, `make run`,
+  `appcheck`, `vmamap`, `memcheck`, `schedcheck`, `regcheck full` e
+  `health check` aguardam validação do usuário.
+
+- MM2: documentação complementar e revisão estática finais.
+  Concluída em: 2026-08-29 00:09 (America/Sao_Paulo).
+  Roadmap principal, índices, capítulos de memória/kernel, atalhos, contrato
+  público, App API, pacotes e Roadmap 11 foram alinhados ao contrato 0.9.
+  A revisão final com `git diff --check` permaneceu sem erros. Nenhum build,
+  teste executável ou QEMU foi realizado pelo agente.

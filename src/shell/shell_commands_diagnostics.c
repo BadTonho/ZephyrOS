@@ -4112,6 +4112,103 @@ static void cmd_slabtest(const char* args) {
     video_print(result == OK ? "OK\n" : "ERRO\n", result == OK ? 0x0A : 0x0C);
 }
 
+#define SHELL_VMAMAP_MAX_AREAS 64U
+
+static const char* cmd_vmamap_area_type(const vm_area_info_t* area) {
+    if (!area) return "INVALID";
+    if (area->start_addr == USER_CODE_BASE) return "CODE";
+    if (area->start_addr == USER_DATA_BASE) return "DATA";
+    if (area->start_addr == USER_LAUNCH_BASE) return "LAUNCH";
+    if (area->start_addr == USER_STACK_BASE) return "STACK";
+    if (area->flags & VM_ANONYMOUS) return "ANON";
+    return "OTHER";
+}
+
+static int cmd_vmamap_parse_pid(const char* args, uint32_t* pid_out) {
+    char token[12];
+    uint32_t value = 0U;
+
+    if (!pid_out) return ERR_NULL;
+    if (shell_command_read_single_arg(args, token, sizeof(token)) != OK) {
+        return ERR_INVALID;
+    }
+    for (uint32_t i = 0U; token[i]; i++) {
+        if (token[i] < '0' || token[i] > '9') return ERR_INVALID;
+        if (value > (MAX_PROCESSES - 1U) / 10U ||
+            value * 10U > MAX_PROCESSES - 1U -
+                (uint32_t)(token[i] - '0')) {
+            return ERR_OVERFLOW;
+        }
+        value = value * 10U + (uint32_t)(token[i] - '0');
+    }
+    *pid_out = value;
+    if (*pid_out == 0U) return ERR_INVALID;
+    return OK;
+}
+
+static void cmd_vmamap_print_permissions(uint32_t flags) {
+    video_print((flags & VM_READ) ? "R" : "-", 0x07);
+    video_print((flags & VM_WRITE) ? "W" : "-", 0x07);
+    video_print((flags & VM_EXEC) ? "X" : "-", 0x07);
+}
+
+static void cmd_vmamap(const char* args) {
+    vm_area_info_t areas[SHELL_VMAMAP_MAX_AREAS];
+    process_t* proc;
+    uint32_t pid;
+    uint32_t count = 0U;
+    int result;
+
+    result = cmd_vmamap_parse_pid(args, &pid);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "PID invalido no comando vmamap");
+        video_print("Uso: vmamap <pid>\n", 0x0C);
+        return;
+    }
+    proc = process_get_by_pid(pid);
+    if (!proc) {
+        LOG_ERROR("SHELL", "PID inexistente no comando vmamap");
+        video_print("Erro: PID nao encontrado.\n", 0x0C);
+        return;
+    }
+    if (!process_is_user(proc)) {
+        LOG_WARN("SHELL", "vmamap solicitado para processo sem espaco user");
+        video_print("Erro: processo sem mapa ring 3.\n", 0x0C);
+        return;
+    }
+    result = process_vma_copy(proc, areas, SHELL_VMAMAP_MAX_AREAS, &count);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Falha ao consultar mapa virtual");
+        video_print("Erro: mapa virtual indisponivel.\n", 0x0C);
+        return;
+    }
+    video_begin_update();
+    video_print("VMAMap PID=", 0x0B);
+    shell_command_print_num(pid);
+    video_print(" (", 0x08);
+    video_print(proc->name, 0x0F);
+    video_print("):\n", 0x08);
+    for (uint32_t i = 0U; i < count; i++) {
+        uint32_t size = areas[i].end_addr - areas[i].start_addr;
+
+        video_print("  ", 0x07);
+        video_print(cmd_vmamap_area_type(&areas[i]), 0x0B);
+        video_print(" ", 0x07);
+        video_print_permissions(areas[i].flags);
+        video_print(" 0x", 0x08);
+        shell_command_print_hex(areas[i].start_addr, 8U);
+        video_print("-0x", 0x08);
+        shell_command_print_hex(areas[i].end_addr, 8U);
+        video_print(" paginas=", 0x08);
+        shell_command_print_num(size / PAGE_SIZE);
+        video_print("\n", 0x07);
+    }
+    video_print("  total=", 0x08);
+    shell_command_print_num(count);
+    video_print(" VMA(s)\n", 0x07);
+    video_end_update();
+}
+
 int shell_diagnostics_run_memcheck(shell_memcheck_result_t* result_out) {
     memory_heap_stats_t heap_before;
     memory_heap_stats_t heap_after;
@@ -4645,6 +4742,7 @@ SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_kmetrics, cmd_kmetrics)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_memcheck, cmd_memcheck)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_slabinfo, cmd_slabinfo)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_slabtest, cmd_slabtest)
+SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_vmamap, cmd_vmamap)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_schedcheck, cmd_schedcheck)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_mouse, cmd_mouse)
 

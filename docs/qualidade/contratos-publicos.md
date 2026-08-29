@@ -437,6 +437,17 @@ nao altera a ABI ring 3 nem as assinaturas publicas de processo, thread ou VFS.
 inicializacao do scheduler cooperativo; a assinatura legada de `thread_init()`
 permanece intacta.
 
+Desde a MM2, `memory/vma.h` publica `vm_area_t`, as flags `VM_READ`,
+`VM_WRITE`, `VM_EXEC`, `VM_SHARED` e `VM_ANONYMOUS`, snapshots de VMA e as
+operacoes de registro, `mmap`, `munmap` e limpeza por processo. `process_t`
+acrescenta `vma_list` e `vma_count` ao final do layout. A imagem ring 3
+registra automaticamente codigo, dados, lancamento e stack; somente VMAs
+anonimas privadas podem ser criadas dinamicamente. A App API passa a versao
+0.9 e acrescenta `app_api_mmap()` e `app_api_munmap()`; `syscall.h` preserva
+os numeros anteriores e acrescenta 19 e 20. Pacotes 0.3 a 0.9 permanecem
+aceitos. READ/EXEC sao metadados nesta fase e WRITE controla o bit de escrita
+da Page Table.
+
 O cancelamento F12 de um ZAPP bloqueado em stdin usa os campos append-only
 `cancel_exit_code` e `cancel_pending` de `process_t`. `process_cancel_user()`
 acorda a wait queue e `process_apply_pending_cancel()` conclui o encerramento

@@ -52,6 +52,7 @@ extern void shell_dispatch_cmd_kmetrics(const char* arguments);
 extern void shell_dispatch_cmd_memcheck(const char* arguments);
 extern void shell_dispatch_cmd_slabinfo(const char* arguments);
 extern void shell_dispatch_cmd_slabtest(const char* arguments);
+extern void shell_dispatch_cmd_vmamap(const char* arguments);
 extern void shell_dispatch_cmd_schedcheck(const char* arguments);
 extern void shell_dispatch_cmd_q2check(const char* arguments);
 extern void shell_dispatch_cmd_regcheck(const char* arguments);
@@ -145,6 +146,7 @@ static const shell_dispatch_entry_t shell_dispatch_table[] = {
      SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"slabinfo", shell_dispatch_cmd_slabinfo, SHELL_DISPATCH_FLAG_NONE},
     {"slabtest", shell_dispatch_cmd_slabtest, SHELL_DISPATCH_FLAG_MAY_BLOCK},
+    {"vmamap", shell_dispatch_cmd_vmamap, SHELL_DISPATCH_FLAG_NONE},
     {"schedcheck", shell_dispatch_cmd_schedcheck,
      SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"q2check", shell_dispatch_cmd_q2check,

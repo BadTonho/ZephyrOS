@@ -4,7 +4,7 @@
 #include "types.h"
 
 #define APP_API_VERSION_MAJOR 0
-#define APP_API_VERSION_MINOR 8
+#define APP_API_VERSION_MINOR 9
 #define APP_API_MAX_TEXT_SIZE 1024
 #define APP_API_MAX_FILE_IO_SIZE 4096
 #define APP_API_TICKS_PER_SECOND 50
@@ -64,6 +64,12 @@
 
 #define APP_MESSAGE_KEYBOARD    1 /* data1 contem scancode PS/2 bruto */
 #define APP_MESSAGE_APP_REQUEST 2
+
+#define APP_MMAP_PROT_READ  0x01U
+#define APP_MMAP_PROT_WRITE 0x02U
+#define APP_MMAP_PROT_EXEC  0x04U
+#define APP_MMAP_FLAG_SHARED    0x08U
+#define APP_MMAP_FLAG_ANONYMOUS 0x10U
 
 typedef uint32_t app_handle_t;
 
@@ -142,6 +148,9 @@ int app_api_chdir(const char* path);
 int app_api_getcwd(char* path, uint32_t capacity);
 int app_api_message_send(uint32_t pid, const app_message_t* message);
 int app_api_message_receive(app_message_t* message);
+int app_api_mmap(uint32_t length, uint32_t protection, uint32_t flags,
+                 uint32_t* address_out);
+int app_api_munmap(uint32_t address, uint32_t length);
 int app_api_file_is_ready(void);
 int app_api_ipc_is_ready(void);
 

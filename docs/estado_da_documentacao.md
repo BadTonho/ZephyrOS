@@ -18,7 +18,7 @@ funcionalidade entregue.
 | Desktop e aplicativos nativos | Capitulos 12 e 13 | Interfaces Simple e Classic atuais; Modern reservado. |
 | Atualizacoes do sistema | [14 - Atualizacoes](14-atualizacoes/contrato-zupd-v1.md) | Contratos ZUPD v1, U1 a U5 e System Updater. |
 | App Store e pacotes | [App Store](13-aplicativos/app-store.md) e [Pacotes](13-aplicativos/pacotes.md) | Contratos AS1 a AS5 e pacotes ZPKG v1. |
-| App API e apps ring 3 | [API de Aplicativos e Syscalls](melhorias%20futuras/api%20de%20aplicativos%20e%20syscalls.md) | ABI 0.8, VFS, devfs, pipes, redirecionamento, ioctl, cwd, ZAPP, sinais, foco e limites. |
+| App API e apps ring 3 | [API de Aplicativos e Syscalls](melhorias%20futuras/api%20de%20aplicativos%20e%20syscalls.md) | ABI 0.9, VFS, devfs, pipes, redirecionamento, ioctl, cwd, ZAPP, sinais, VMA, foco e limites. |
 
 ## Estado tecnico documentado
 
@@ -34,6 +34,8 @@ funcionalidade entregue.
   pipes, redirecionamento, App API 0.8 e syscall 18; sua validação QEMU
   específica permanece pendente.
 - `echo`, `uptime` e `mem` executam em ring 3 com fallback nativo controlado.
+- A MM2 publica App API 0.9 com `mmap`/`munmap`, VMAs por processo e o
+  diagnóstico `vmamap`; os gates QEMU específicos ainda aguardam execução.
 - O subsistema de rede (S2.1 a S2.8) suporta Multi-NIC (E1000 e RTL8139), ARP,
   IPv4, ICMP Echo, UDP, DHCP, DNS, TCP cliente, sockets nativos e HTTP GET.
 - Atualizações do sistema (U1 a U5) fornecem verificação Ed25519/SHA-256,

@@ -86,6 +86,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `acpi` | `status` | Mostra tabelas, PM1, modo ACPI, `_S5_` e prontidao S5, sem executar transicoes. |
 | `power` | `status` | Mostra ativacao do modo, prontidao S5, desligamento fisico e fallback HLT. |
 | `memcheck` | - | Valida heap, coalescencia, PMM e diretorios ring 3 residuais. |
+| `vmamap` | `<pid>` | Lista faixas virtuais, paginas, tipo e permissoes de um processo ring 3. |
 | `schedcheck` | - | Valida os invariantes atuais do scheduler sem alterar processos. |
 | `q2check` | - | Executa o diagnóstico compacto da Q2 com duas falhas isoladas. |
 | `regcheck` | - | Valida health, processos, scheduler e memoria como job cooperativo; `F11`/`Esc` cancela. |
