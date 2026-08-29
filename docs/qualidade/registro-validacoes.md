@@ -2554,3 +2554,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   páginas, fault fora de VMA e limpeza de recursos. A marcação da MM3 no
   roadmap permanece pendente da validação funcional do usuário; nenhum build,
   teste ou QEMU foi executado pelo agente.
+
+- MM3: correção do gate `q3check` para contratos públicos.
+  Concluída em: 2026-08-29 11:23 (America/Sao_Paulo).
+  O catálogo passou a associar `src/include/memory/vma.h` a
+  `docs/06-memoria/memoria.md`, e `docs/07-processos/processos.md` passou a
+  documentar os campos append-only de `process_t` introduzidos pela MM3. A
+  execução do `make q3check` permanece sob responsabilidade do usuário.

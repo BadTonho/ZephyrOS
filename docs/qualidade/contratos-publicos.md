@@ -114,6 +114,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/memory/compress.h` | `docs/06-memoria/memoria.md` |
 | `src/include/memory/paging.h` | `docs/06-memoria/memoria.md` |
 | `src/include/memory/slab.h` | `docs/06-memoria/memoria.md` |
+| `src/include/memory/vma.h` | `docs/06-memoria/memoria.md` |
 | `src/include/process/process.h` | `docs/07-processos/processos.md` |
 | `src/include/process/signal.h` | `docs/07-processos/processos.md` |
 | `src/include/process/thread.h` | `docs/07-processos/processos.md` |
