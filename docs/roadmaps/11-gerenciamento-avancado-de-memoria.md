@@ -68,8 +68,9 @@ paging e permanecem reutilizáveis enquanto o cache existir. Processos, threads,
 arquivos, vnodes e pacotes Ethernet usam caches dedicados; stacks de processos e
 threads continuam no `kmalloc` por exigirem tamanho e guardas próprios.
 
-A validação executável da matriz MM1, dos perfis de rede e da regressão VFS4
-continua pendente dos gates e da execução no QEMU pelo usuário.
+A MM1 foi validada e encerrada conforme confirmação do usuário após a
+execução dos comandos e gates correspondentes. A MM2 é a próxima etapa do
+roadmap.
 
 ### Critério de saída
 
