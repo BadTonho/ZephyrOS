@@ -10,7 +10,7 @@ para todos os caminhos de driver, DMA e checksum.
 
 ## Resumo de progresso
 
-- [ ] NET0 - Contrato de ownership, lifetime, cópia e conclusão de buffers.
+- [x] NET0 - Contrato de ownership, lifetime, cópia e conclusão de buffers.
 - [ ] NET1 - Estrutura de buffer de pacotes unificada (`sk_buff_t`) com cópia evitável.
 - [ ] NET2 - Camada genérica de sockets (`AF_INET` e `AF_UNIX` para IPC local).
 - [ ] NET3 - Multiplexação de I/O não-bloqueante (`select()` / `poll()`).
@@ -59,9 +59,9 @@ para todos os caminhos de driver, DMA e checksum.
 
 ## NET0 - Contrato de buffers e conclusões
 
-Estado da implementacao: contrato e runtime entregues; validacao funcional
-pelos gates de build e pela matriz QEMU ainda pendente. O resumo acima
-permanece [ ] ate a confirmacao funcional do usuario.
+Estado da implementacao: contrato e runtime entregues e validados
+funcionalmente pelo usuario em 2026-08-29. O resumo acima foi marcado como
+[x]; NET1+ permanecem pendentes.
 
 ### Implementação
 
