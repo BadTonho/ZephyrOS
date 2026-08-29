@@ -14,7 +14,7 @@ virtuais, permanece fora desta etapa.
 
 - [x] BLK0 - Contrato de I/O, ownership, conclusão e durabilidade.
 - [x] BLK1 - Fila unificada de requisições de bloco (`block_device_t`, `bio_request_t` e `block_request_t`).
-- [ ] BLK2 - Cache de blocos de leitura com estados, referências e política LRU.
+- [x] BLK2 - Cache de blocos de leitura com estados, referências e política LRU.
 - [ ] BLK3 - Writeback de blocos modificados, flush e sincronização explícita.
 - [ ] BLK4 - Resiliência, integridade contra interrupção de energia e failpoint testing.
 
@@ -151,8 +151,9 @@ FAT/VFS foram validados funcionalmente pelo usuário no QEMU.
 
 ### Critério de saída
 
-Implementação BLK2 registrada; a confirmação funcional e a mudança do estado
-no resumo do roadmap permanecem pendentes da validação do usuário no QEMU.
+Implementação BLK2 registrada e confirmação funcional recebida no QEMU. O
+cache foi validado com os comandos de métricas, invalidação, limpeza,
+`regcheck full`, `appcheck compact` e `health check`.
 
 Leituras repetidas dos cenários definidos evitam transferências ao hardware sem
 violar coerência, eviction ou ownership. A avaliação compara hit rate,
