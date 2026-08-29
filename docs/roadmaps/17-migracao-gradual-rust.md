@@ -50,6 +50,39 @@ Rust não elimina a necessidade de `unsafe` em MMIO, portas de I/O, acesso a
 interrupções, DMA, troca de contexto e FFI. A segurança deve ser concentrada
 nas fronteiras e demonstrada por validação, não presumida pela linguagem.
 
+A integração seguirá três camadas com responsabilidades separadas:
+
+1. `bindings` e FFI: representação mínima dos contratos C e das estruturas
+   externas, sem espalhar acesso bruto pelo restante do código;
+2. helpers e abstrações: validação de ponteiros, tamanhos, ownership,
+   alinhamento, locks, erros e recursos, concentrando o `unsafe` revisado;
+3. módulos finais: lógica Rust que consome as abstrações e não acessa
+   diretamente bindings C quando uma abstração segura validada existir.
+
+Cada bloco `unsafe` deve possuir uma invariante verificável, uma fronteira
+pequena e uma revisão específica. Rust reduz classes de erros, mas não torna
+automaticamente seguro FFI, MMIO, DMA, Assembly, interrupções ou contratos de
+ownership vindos de C.
+
+## Critérios de decisão técnica
+
+Uma migração só avança quando houver benefício verificável para segurança de
+memória, estabilidade, desempenho, tamanho, manutenção ou clareza de
+invariantes. A adoção de Rust por si só não é critério suficiente.
+
+Cada etapa deve comparar, no mínimo:
+
+- tamanho do objeto e da imagem final;
+- uso de heap, PMM, SLAB e pico de memória;
+- tempo de boot e latência das operações afetadas;
+- resultado funcional, warnings, falhas injetadas e cobertura da matriz;
+- complexidade da fronteira C/Rust e custo de manutenção;
+- capacidade de rollback para a implementação anterior.
+
+Se a implementação Rust não melhorar uma métrica relevante sem piorar outra,
+a versão C permanece válida. Nenhuma versão C deve ser removida apenas para
+forçar a adoção da linguagem.
+
 ## RUST0 - Base 1.0.0 e contratos congelados
 
 ### Objetivo
@@ -83,20 +116,28 @@ partir de C.
 
 ### Trabalho
 
-- [ ] Fixar uma versão de `rustc`, `rust-src` e ferramentas auxiliares.
+- [ ] Fixar versões de `rustc`, `rust-src`, LLVM/bindgen e ferramentas
+  auxiliares em uma configuração reproduzível.
 - [ ] Definir um target Rust para o ambiente x86 de 32 bits do ZephyrOS, usando
   target nativo compatível quando suficiente ou um target personalizado quando
-  necessário.
+  necessário, validando ABI, calling convention, alinhamento e integração com
+  `i686-elf-gcc`.
 - [ ] Configurar `#![no_std]`, `panic_handler` e `panic=abort`.
 - [ ] Integrar a compilação do objeto Rust ao `Makefile`, sem substituir o
   linker ou a ABI existentes sem validação.
 - [ ] Definir convenções para `extern "C"`, `#[repr(C)]`, `#[no_mangle]`, tipos
   de largura fixa e retorno dos códigos de `core/errors.h`.
 - [ ] Proibir `std`, unwinding e dependências que exijam runtime hospedado.
-- [ ] Definir como Rust acessará `LOG_*`, `kmalloc`, `kfree`, locks, wait
-  queues e funções de vídeo sem duplicar implementações.
+- [ ] Definir como Rust acessará `LOG_*`, os allocators existentes (`kmalloc`,
+  `kmem_cache`, PMM, páginas e arenas), locks, wait queues e funções de vídeo
+  sem duplicar implementações.
+- [ ] Definir a camada `bindings` mínima, os helpers de FFI e as abstrações
+  seguras que os módulos Rust finais consumirão.
 - [ ] Definir a validação de ponteiros, tamanhos, alinhamento e posse antes de
   toda chamada recebida de C.
+- [ ] Definir uma política para `unsafe`, incluindo invariantes documentadas,
+  revisão dos blocos e proibição de acesso bruto aos bindings quando houver
+  abstração segura validada.
 - [ ] Adicionar um teste mínimo de link, chamada C/Rust e retorno de erro.
 
 ### Critério de saída
@@ -163,8 +204,9 @@ hardware.
 
 - [ ] Cada migração deve preservar a assinatura pública ou fornecer um wrapper
   C equivalente.
-- [ ] Cada etapa deve comparar tamanho do objeto, uso de heap, tempo de boot e
-  resultado funcional com a implementação anterior.
+- [ ] Cada etapa deve comparar tamanho do objeto e da imagem, uso de heap/PMM/
+  SLAB, pico de memória, tempo de boot, latência, warnings e resultado
+  funcional com a implementação anterior.
 - [ ] A versão C só poderá ser removida após a matriz de regressão e a
   confirmação de rollback da etapa.
 
@@ -189,17 +231,24 @@ começar pelos componentes que controlam a inicialização inteira do kernel.
   pontos de bloqueio e wakeup compatíveis com o kernel atual.
 - [ ] Wrappers seguros para slices de buffers, tamanhos e transferência de
   posse entre VFS, rede e Shell.
+- [ ] Wrappers de ownership para cada allocator e recurso, com criação,
+  empréstimo, transferência, destruição e invalidação de aliases explícitos.
 - [ ] Componentes de diagnóstico de SLAB e integridade, sem substituir o
   alocador `kmem_cache` antes de uma avaliação separada.
 
 ### Restrições
 
-- [ ] Não implementar um segundo alocador global em Rust.
+- [ ] Reutilizar os allocators existentes por meio de wrappers validados; não
+  implementar um segundo alocador global em Rust.
 - [ ] Não permitir que `Vec`, `Box` ou `alloc` atravessem a FFI sem contrato
   explícito de criação e destruição.
+- [ ] Usar o par correto de alocação e liberação para cada recurso; Rust não
+  deve liberar memória C, PMM ou páginas com uma API incompatível.
 - [ ] Não manter referências Rust após o objeto C ser liberado.
 - [ ] Usar locks e wait queues existentes através de wrappers validados.
 - [ ] Registrar toda falha de alocação, conversão, posse ou cancelamento.
+- [ ] Concentrar `unsafe` nos wrappers revisados e testar invariantes de
+  ownership, aliasing, alinhamento, tamanho e ciclo de vida.
 
 ### Critério de saída
 
@@ -220,6 +269,8 @@ acesso forem suficientes e houver uma matriz QEMU ou hardware reproduzível.
   DMA, como metadados PCI ou parte de um diagnóstico.
 - [ ] Criar wrappers para MMIO, portas de I/O, barreiras, IRQ, DMA e ownership
   de buffers.
+- [ ] Fazer os drivers consumirem abstrações de dispositivo e bus, evitando
+  bindings C diretos no código final sempre que houver wrapper validado.
 - [ ] Escolher um único driver experimental, mantendo o driver C como fallback
   até a validação completa.
 - [ ] Avaliar depois drivers de rede, USB e armazenamento, que dependem de
@@ -248,6 +299,11 @@ Esses módulos só serão migrados se houver benefício mensurável e um plano d
 rollback. A permanência em C é uma decisão válida quando a migração aumentar
 risco sem melhorar segurança, manutenção ou desempenho.
 
+Os módulos centrais permanecem em C durante as primeiras fases, mas podem
+receber wrappers Rust, diagnósticos e abstrações de ownership antes da
+migração da implementação. A camada segura não implica reescrever o núcleo
+nem substituir PMM, VMM, SLAB, scheduler ou ABI sem evidência independente.
+
 ### Rust para aplicativos
 
 - [ ] Criar um SDK Rust opcional para a App API já existente.
@@ -262,9 +318,9 @@ risco sem melhorar segurança, manutenção ou desempenho.
 
 | Área | Arquivos principais | Estratégia |
 |---|---|---|
-| Boot e entrada | `src/boot/*.asm`, `src/kernel/entry.asm`, `src/kernel/switch.asm`, `src/drivers/isr.asm`, `src/drivers/irq.asm` | Permanecem em Assembly; Rust não altera `src/boot/boot.asm`. |
+| Boot e entrada | `src/boot/*.asm`, `src/kernel/entry.asm`, `src/kernel/switch.asm`, `src/drivers/isr.asm`, `src/drivers/irq.asm` | Permanecem em Assembly por padrão; qualquer alteração no boot deve ser comunicada explicitamente, preservar/verificar os 512 bytes e ser documentada. |
 | Inicialização e panic | `src/kernel/kernel.c`, `src/kernel/panic.c` | Permanecem em C no início; Rust usa wrappers de log e erro. |
-| Memória | `src/memory/memory.c`, `paging.c`, `slab.c` | Última etapa; preservar PMM, VMM, heap e SLAB existentes. |
+| Memória | `src/memory/memory.c`, `paging.c`, `slab.c` | Implementação central por último; wrappers Rust de ownership, allocators e diagnósticos podem ser introduzidos antes, preservando PMM, VMM, heap e SLAB. |
 | Processos e threads | `src/process/*.c`, `src/thread/thread.c` | Última etapa; preservar assinaturas, scheduler, sinais e troca de contexto. |
 | VFS e armazenamento | `src/fs/*.c` | Migrar somente após validar ownership, descritores, FAT e rollback. |
 | Shell | `src/shell/shell_pipeline.c`, `shell_command_utils.c` | Primeiro alvo prático: parser e validação, separados do executor. |
@@ -282,17 +338,28 @@ risco sem melhorar segurança, manutenção ou desempenho.
 - Códigos de erro devem usar `core/errors.h`; `Result` fica restrito à
   implementação Rust ou a wrappers documentados.
 - Nenhum panic pode atravessar a fronteira C.
-- Toda posse de memória deve ter criador, consumidor e destrutor definidos.
+- Toda posse de memória e recurso deve ter criador, consumidor, destrutor e
+  allocator/liberador correspondente definidos.
+- A fronteira deve seguir `bindings C → helpers/abstrações seguras → módulos
+  Rust finais`; módulos finais não acessam bindings brutos sem justificativa.
+- Blocos `unsafe` devem ser pequenos, ter invariantes verificáveis e passar por
+  revisão específica de aliasing, alinhamento, validade e ciclo de vida.
 - Toda função pública deve registrar falhas observáveis conforme o contrato de
   logs do projeto.
 - ABI ring 3, syscalls, App API, formato ZAPP e descritores VFS permanecem
   compatíveis.
-- O bootloader, especialmente `src/boot/boot.asm`, não faz parte da migração.
+- O bootloader permanece Assembly por padrão; se uma alteração for necessária,
+  deve ser comunicada explicitamente ao usuário, preservar/verificar os 512
+  bytes e ser registrada na documentação da etapa.
 
 ## Validação por etapa
 
 - [ ] `rustcheck` valida toolchain, FFI, panic, alinhamento, ownership e
   limpeza.
+- [ ] Testes determinísticos e, quando aplicável, testes de propriedade no
+  host cobrem a lógica separável do kernel.
+- [ ] Cada migração publica a comparação de tamanho, memória, boot, latência,
+  warnings, estabilidade e rollback antes de remover a implementação C.
 - [ ] `q3check` e `make clean && make` são executados pelo usuário após cada
   alteração de build, header ou código.
 - [ ] A matriz QEMU funcional é repetida pelo usuário; o agente não executa
@@ -300,6 +367,8 @@ risco sem melhorar segurança, manutenção ou desempenho.
 - [ ] `health`, `memcheck`, `schedcheck`, `regcheck full`, `vfs test` e
   `pipetest` permanecem em `OK` quando aplicáveis.
 - [ ] Drivers e rede repetem os perfis QEMU já validados.
+- [ ] Se o bootloader for alterado, a imagem confirma o limite de 512 bytes e a
+  validação registra explicitamente o motivo, o escopo e o impacto da mudança.
 - [ ] O registro cronológico recebe a data e hora real de cada implementação e
   validação.
 - [ ] O diff de cada etapa é revisado para excluir `Makefile.local`, `build/`,
@@ -311,7 +380,11 @@ risco sem melhorar segurança, manutenção ou desempenho.
   ou interrupções.
 - O target freestanding de 32 bits e a integração com `i686-elf-gcc` podem
   exigir uma configuração própria e uma versão fixada do compilador.
-- `no_std` não fornece runtime, allocator ou coleções dinâmicas por padrão.
+- `no_std` não fornece runtime; coleções dinâmicas exigem um allocator do
+  kernel explicitamente integrado e não devem atravessar a FFI sem contrato.
+- O suporte Rust documentado pelo Linux para `x86` é voltado a `x86_64`; o
+  target freestanding i686 do ZephyrOS precisa de validação própria, sem
+  presumir compatibilidade da toolchain do Linux.
 - O kernel continuará dependendo de C e Assembly em partes de baixo nível.
 - Bibliotecas de terceiros, especialmente BearSSL, não serão reescritas sem
   roadmap e validação específicos.
@@ -338,3 +411,6 @@ risco sem melhorar segurança, manutenção ou desempenho.
 - [Targets personalizados do Rust](https://doc.rust-lang.org/nightly/rustc/targets/custom.html)
 - [Interoperabilidade C/Rust](https://doc.rust-lang.org/stable/embedded-book/interoperability/c-with-rust.html)
 - [Documentação Rust do Linux](https://docs.kernel.org/rust/quick-start.html)
+- [Abstrações e bindings Rust no Linux](https://docs.kernel.org/6.15/rust/general-information.html)
+- [Arquiteturas suportadas pelo Rust no Linux](https://docs.kernel.org/rust/arch-support.html)
+- [Projeto Rust for Linux e drivers de referência](https://rust-for-linux.com/rust-reference-drivers)

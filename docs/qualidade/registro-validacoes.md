@@ -2502,3 +2502,12 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `regcheck full`, `health check` e o caminho negativo de `vmamap`. A MM2 foi
   marcada como concluída nos roadmaps; a listagem positiva de um processo ring
   3 vivo não foi possível porque nenhum processo desse tipo permaneceu ativo.
+
+- Roadmap 17: critérios da migração gradual para Rust atualizados.
+  Concluída em: 2026-08-29 10:22 (America/Sao_Paulo).
+  Foram documentadas as camadas `bindings C → helpers/abstrações seguras →
+  módulos finais`, a política de `unsafe`, ownership e allocators existentes,
+  métricas objetivas, rollback, validação própria do target i686 e a permissão
+  de alterar o boot somente com comunicação explícita e verificação dos 512
+  bytes. Nenhum código Rust foi migrado e nenhum build foi executado pelo
+  agente.
