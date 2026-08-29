@@ -239,6 +239,21 @@ funcionais existentes permanecem compatíveis.
 
 O paging permite que cada processo tenha seu próprio espaço de endereçamento.
 
+## VMAs da MM2
+
+Cada processo ring 3 mantém uma lista ligada ordenada de `vm_area_t`. O loader
+registra as regiões fixas de código, dados, lançamento e stack. `mmap` escolhe
+o primeiro intervalo livre entre `USER_LAUNCH_BASE` e `USER_STACK_BASE`, aloca
+as páginas físicas imediatamente, zera cada página e aplica `VM_WRITE` ao bit
+de escrita da Page Table. `VM_READ` e `VM_EXEC` permanecem metadados enquanto o
+paging não possuir NX.
+
+`munmap` exige endereço alinhado e intervalo totalmente coberto por uma VMA
+anônima dinâmica. A operação libera frames, invalida a TLB quando necessário,
+remove tabelas vazias e pode dividir uma VMA no meio. As regiões fixas do
+loader não podem ser removidas por aplicativos. O Shell expõe o snapshot com
+`vmamap <pid>`.
+
 ### Conceito
 
 ```

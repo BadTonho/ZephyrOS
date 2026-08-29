@@ -130,6 +130,11 @@
 #define SHELL_MEMCHECK_BLOCK_A 96U
 #define SHELL_MEMCHECK_BLOCK_B 160U
 #define SHELL_MEMCHECK_BLOCK_C 224U
+#define SHELL_VMA_TEST_MULTI_LENGTH (PAGE_SIZE * 3U + 1U)
+#define SHELL_VMA_TEST_MULTI_OFFSET (sizeof(uint32_t))
+#define SHELL_VMA_TEST_SENTINEL_ONE 0x5A5A5A5AU
+#define SHELL_VMA_TEST_SENTINEL_MULTI 0xA5A5A5A5U
+#define SHELL_VMA_TEST_FAILURE_JUMPS 8U
 #define SHELL_REGCHECK_NON_ATA_DEVICE_COUNT 7U
 #define SHELL_REGCHECK_PCI_NETWORK_CLASS 0x02U
 #define SHELL_REGCHECK_ACPI_SDT_HEADER_SIZE 36U
@@ -291,6 +296,11 @@ static uint8_t appcheck_demo_verify[APP_IMAGE_MAX_FILE_SIZE];
 static int shell_waiting_user_test = 0;
 static uint32_t shell_appcheck_loader_pid = 0;
 static uint32_t shell_appcheck_migration_pid = 0;
+static uint32_t shell_appcheck_vma_pid = 0;
+static uint32_t shell_appcheck_vma_initial_pages = 0;
+static uint32_t shell_appcheck_vma_initial_directories = 0;
+static uint32_t shell_appcheck_vma_initial_users = 0;
+static uint32_t shell_appcheck_vma_initial_zombies = 0;
 static uint32_t shell_appcheck_user_count = 0;
 static uint32_t shell_appcheck_zombie_count = 0;
 static shell_builtin_app_t shell_appcheck_migration_app = SHELL_BUILTIN_APP_NONE;
@@ -348,6 +358,7 @@ static shell_job_step_result_t shell_checks_job_step(
                  shell_regcheck.state != SHELL_REGCHECK_IDLE ||
                  shell_appcheck_loader_pid != 0U ||
                  shell_appcheck_migration_pid != 0U ||
+                 shell_appcheck_vma_pid != 0U ||
                  shell_waiting_user_test;
         if (active) return SHELL_JOB_STEP_PENDING;
         context->last_error = ERR_TIMEOUT;
@@ -360,6 +371,7 @@ static shell_job_step_result_t shell_checks_job_step(
              shell_regcheck.state != SHELL_REGCHECK_IDLE ||
              shell_appcheck_loader_pid != 0U ||
              shell_appcheck_migration_pid != 0U ||
+             shell_appcheck_vma_pid != 0U ||
              shell_waiting_user_test;
     shell_job_set_phase(context, active ? "aguardando resultado" : "finalizado");
     if (active) return SHELL_JOB_STEP_PENDING;
@@ -390,6 +402,7 @@ static shell_job_step_result_t shell_checks_job_drain(
              shell_regcheck.state != SHELL_REGCHECK_IDLE ||
              shell_appcheck_loader_pid != 0U ||
              shell_appcheck_migration_pid != 0U ||
+             shell_appcheck_vma_pid != 0U ||
              shell_waiting_user_test;
     return active ? SHELL_JOB_STEP_PENDING : SHELL_JOB_STEP_COMPLETE;
 }
@@ -433,6 +446,15 @@ static int shell_demo_emit_jne(uint8_t* code, uint32_t* offset,
     return OK;
 }
 
+static uint32_t shell_demo_emit_jne_near(uint8_t* code, uint32_t* offset) {
+    uint32_t patch_offset = *offset + 2U;
+
+    code[(*offset)++] = 0x0FU;
+    code[(*offset)++] = 0x85U;
+    *offset += 4U;
+    return patch_offset;
+}
+
 static void shell_demo_emit_load_ebx(uint8_t* code, uint32_t* offset,
                                      uint32_t address) {
     code[(*offset)++] = 0x8BU;
@@ -452,6 +474,19 @@ static void shell_demo_emit_exit_on_error(uint8_t* code, uint32_t* offset) {
     code[(*offset)++] = 0xCDU;
     code[(*offset)++] = 0x80U;
     code[(*offset)++] = 0xF4U;
+}
+
+static void shell_demo_emit_syscall(uint8_t* code, uint32_t* offset) {
+    code[(*offset)++] = 0xCDU;
+    code[(*offset)++] = 0x80U;
+}
+
+static void shell_demo_emit_add_ebx(uint8_t* code, uint32_t* offset,
+                                    uint32_t value) {
+    code[(*offset)++] = 0x81U;
+    code[(*offset)++] = 0xC3U;
+    shell_demo_patch_u32(code, *offset, value);
+    *offset += 4U;
 }
 
 static void shell_remove_image(const char* path) {
@@ -525,6 +560,185 @@ static uint32_t shell_build_demo_image(void) {
     header.flags = APP_IMAGE_FLAGS_NONE;
     kmemcpy(appcheck_demo_image, &header, APP_IMAGE_HEADER_SIZE);
     return header.data_offset;
+}
+
+static uint32_t shell_build_vma_test_image(void) {
+    app_image_header_t header;
+    uint8_t* code = appcheck_demo_image + APP_IMAGE_HEADER_SIZE;
+    uint32_t failure_jumps[SHELL_VMA_TEST_FAILURE_JUMPS];
+    uint32_t failure_count = 0U;
+    uint32_t failure_offset;
+    uint32_t offset = 0U;
+
+    kmemset(appcheck_demo_image, 0, sizeof(appcheck_demo_image));
+
+    shell_demo_emit_mov(code, &offset, 0U, APP_SYSCALL_MMAP);
+    shell_demo_emit_mov(code, &offset, 3U, PAGE_SIZE);
+    shell_demo_emit_mov(code, &offset, 1U,
+                        APP_MMAP_PROT_READ | APP_MMAP_PROT_WRITE);
+    shell_demo_emit_mov(code, &offset, 2U, APP_MMAP_FLAG_ANONYMOUS);
+    shell_demo_emit_mov(code, &offset, 6U, USER_DATA_BASE);
+    shell_demo_emit_syscall(code, &offset);
+    shell_demo_emit_exit_on_error(code, &offset);
+    shell_demo_emit_load_ebx(code, &offset, USER_DATA_BASE);
+    shell_demo_emit_mov(code, &offset, 0U, SHELL_VMA_TEST_SENTINEL_ONE);
+    code[offset++] = 0x89U;
+    code[offset++] = 0x03U;
+    code[offset++] = 0x8BU;
+    code[offset++] = 0x03U;
+    code[offset++] = 0x3DU;
+    shell_demo_patch_u32(code, offset, SHELL_VMA_TEST_SENTINEL_ONE);
+    offset += 4U;
+    failure_jumps[failure_count++] =
+        shell_demo_emit_jne_near(code, &offset);
+
+    shell_demo_emit_mov(code, &offset, 0U, APP_SYSCALL_MMAP);
+    shell_demo_emit_mov(code, &offset, 3U, SHELL_VMA_TEST_MULTI_LENGTH);
+    shell_demo_emit_mov(code, &offset, 1U,
+                        APP_MMAP_PROT_READ | APP_MMAP_PROT_WRITE);
+    shell_demo_emit_mov(code, &offset, 2U, APP_MMAP_FLAG_ANONYMOUS);
+    shell_demo_emit_mov(code, &offset, 6U,
+                        USER_DATA_BASE + SHELL_VMA_TEST_MULTI_OFFSET);
+    shell_demo_emit_syscall(code, &offset);
+    shell_demo_emit_exit_on_error(code, &offset);
+    shell_demo_emit_load_ebx(code, &offset,
+                             USER_DATA_BASE + SHELL_VMA_TEST_MULTI_OFFSET);
+    shell_demo_emit_mov(code, &offset, 0U, SHELL_VMA_TEST_SENTINEL_MULTI);
+    code[offset++] = 0x89U;
+    code[offset++] = 0x03U;
+    code[offset++] = 0x8BU;
+    code[offset++] = 0x03U;
+    code[offset++] = 0x3DU;
+    shell_demo_patch_u32(code, offset, SHELL_VMA_TEST_SENTINEL_MULTI);
+    offset += 4U;
+    failure_jumps[failure_count++] =
+        shell_demo_emit_jne_near(code, &offset);
+
+    shell_demo_emit_mov(code, &offset, 0U, APP_SYSCALL_MMAP);
+    shell_demo_emit_mov(code, &offset, 3U, 0U);
+    shell_demo_emit_mov(code, &offset, 1U, APP_MMAP_PROT_READ);
+    shell_demo_emit_mov(code, &offset, 2U, APP_MMAP_FLAG_ANONYMOUS);
+    shell_demo_emit_mov(code, &offset, 6U, USER_DATA_BASE);
+    shell_demo_emit_syscall(code, &offset);
+    code[offset++] = 0x3DU;
+    shell_demo_patch_u32(code, offset, ERR_INVALID);
+    offset += 4U;
+    failure_jumps[failure_count++] =
+        shell_demo_emit_jne_near(code, &offset);
+
+    shell_demo_emit_mov(code, &offset, 0U, APP_SYSCALL_MMAP);
+    shell_demo_emit_mov(code, &offset, 3U, 0xFFFFF001U);
+    shell_demo_emit_mov(code, &offset, 1U, APP_MMAP_PROT_READ);
+    shell_demo_emit_mov(code, &offset, 2U, APP_MMAP_FLAG_ANONYMOUS);
+    shell_demo_emit_mov(code, &offset, 6U, USER_DATA_BASE);
+    shell_demo_emit_syscall(code, &offset);
+    code[offset++] = 0x3DU;
+    shell_demo_patch_u32(code, offset, ERR_OVERFLOW);
+    offset += 4U;
+    failure_jumps[failure_count++] =
+        shell_demo_emit_jne_near(code, &offset);
+
+    shell_demo_emit_mov(code, &offset, 0U, APP_SYSCALL_MMAP);
+    shell_demo_emit_mov(code, &offset, 3U, PAGE_SIZE);
+    shell_demo_emit_mov(code, &offset, 1U, APP_MMAP_PROT_READ);
+    shell_demo_emit_mov(code, &offset, 2U,
+                        APP_MMAP_FLAG_SHARED | APP_MMAP_FLAG_ANONYMOUS);
+    shell_demo_emit_mov(code, &offset, 6U, USER_DATA_BASE);
+    shell_demo_emit_syscall(code, &offset);
+    code[offset++] = 0x3DU;
+    shell_demo_patch_u32(code, offset, ERR_UNAVAILABLE);
+    offset += 4U;
+    failure_jumps[failure_count++] =
+        shell_demo_emit_jne_near(code, &offset);
+
+    shell_demo_emit_load_ebx(code, &offset,
+                             USER_DATA_BASE + SHELL_VMA_TEST_MULTI_OFFSET);
+    shell_demo_emit_add_ebx(code, &offset, PAGE_SIZE);
+    shell_demo_emit_mov(code, &offset, 0U, APP_SYSCALL_MUNMAP);
+    shell_demo_emit_mov(code, &offset, 1U, PAGE_SIZE);
+    shell_demo_emit_syscall(code, &offset);
+    shell_demo_emit_exit_on_error(code, &offset);
+
+    shell_demo_emit_load_ebx(code, &offset,
+                             USER_DATA_BASE + SHELL_VMA_TEST_MULTI_OFFSET);
+    shell_demo_emit_mov(code, &offset, 0U, APP_SYSCALL_MUNMAP);
+    shell_demo_emit_mov(code, &offset, 1U, PAGE_SIZE);
+    shell_demo_emit_syscall(code, &offset);
+    shell_demo_emit_exit_on_error(code, &offset);
+
+    shell_demo_emit_load_ebx(code, &offset,
+                             USER_DATA_BASE + SHELL_VMA_TEST_MULTI_OFFSET);
+    shell_demo_emit_add_ebx(code, &offset, PAGE_SIZE * 2U);
+    shell_demo_emit_mov(code, &offset, 0U, APP_SYSCALL_MUNMAP);
+    shell_demo_emit_mov(code, &offset, 1U, PAGE_SIZE * 2U);
+    shell_demo_emit_syscall(code, &offset);
+    shell_demo_emit_exit_on_error(code, &offset);
+
+    shell_demo_emit_load_ebx(code, &offset, USER_DATA_BASE);
+    shell_demo_emit_mov(code, &offset, 0U, APP_SYSCALL_MUNMAP);
+    shell_demo_emit_mov(code, &offset, 1U, PAGE_SIZE);
+    shell_demo_emit_syscall(code, &offset);
+    shell_demo_emit_exit_on_error(code, &offset);
+
+    shell_demo_emit_mov(code, &offset, 0U, APP_SYSCALL_MUNMAP);
+    shell_demo_emit_mov(code, &offset, 3U, 0U);
+    shell_demo_emit_mov(code, &offset, 1U, PAGE_SIZE);
+    shell_demo_emit_syscall(code, &offset);
+    code[offset++] = 0x3DU;
+    shell_demo_patch_u32(code, offset, ERR_INVALID);
+    offset += 4U;
+    failure_jumps[failure_count++] =
+        shell_demo_emit_jne_near(code, &offset);
+
+    shell_demo_emit_mov(code, &offset, 0U, APP_SYSCALL_MUNMAP);
+    shell_demo_emit_mov(code, &offset, 3U, USER_CODE_BASE);
+    shell_demo_emit_mov(code, &offset, 1U, 0U);
+    shell_demo_emit_syscall(code, &offset);
+    code[offset++] = 0x3DU;
+    shell_demo_patch_u32(code, offset, ERR_INVALID);
+    offset += 4U;
+    failure_jumps[failure_count++] =
+        shell_demo_emit_jne_near(code, &offset);
+
+    shell_demo_emit_mov(code, &offset, 0U, APP_SYSCALL_MUNMAP);
+    shell_demo_emit_mov(code, &offset, 3U, USER_CODE_BASE);
+    shell_demo_emit_mov(code, &offset, 1U, PAGE_SIZE);
+    shell_demo_emit_syscall(code, &offset);
+    code[offset++] = 0x3DU;
+    shell_demo_patch_u32(code, offset, ERR_INVALID);
+    offset += 4U;
+    failure_jumps[failure_count++] =
+        shell_demo_emit_jne_near(code, &offset);
+
+    shell_demo_emit_mov(code, &offset, 3U, APP_EXIT_SUCCESS);
+    shell_demo_emit_mov(code, &offset, 0U, APP_SYSCALL_PROCESS_EXIT);
+    shell_demo_emit_syscall(code, &offset);
+    code[offset++] = 0xF4U;
+
+    failure_offset = offset;
+    shell_demo_emit_mov(code, &offset, 3U, ERR_STATE);
+    shell_demo_emit_mov(code, &offset, 0U, APP_SYSCALL_PROCESS_EXIT);
+    shell_demo_emit_syscall(code, &offset);
+    code[offset++] = 0xF4U;
+    for (uint32_t i = 0U; i < failure_count; i++) {
+        int32_t relative = (int32_t)failure_offset -
+                           (int32_t)(failure_jumps[i] + 4U);
+        shell_demo_patch_u32(code, failure_jumps[i], (uint32_t)relative);
+    }
+
+    kmemcpy(header.magic, "ZAPP", 4);
+    header.version = APP_IMAGE_VERSION;
+    header.architecture = APP_IMAGE_ARCH_I386;
+    header.header_size = APP_IMAGE_HEADER_SIZE;
+    header.code_offset = APP_IMAGE_HEADER_SIZE;
+    header.code_size = offset;
+    header.data_offset = APP_IMAGE_HEADER_SIZE + offset;
+    header.data_size = SHELL_VMA_TEST_MULTI_OFFSET + sizeof(uint32_t);
+    header.entry_offset = 0U;
+    header.stack_size = APP_IMAGE_STACK_SIZE;
+    header.flags = APP_IMAGE_FLAGS_NONE;
+    kmemcpy(appcheck_demo_image, &header, APP_IMAGE_HEADER_SIZE);
+    return header.data_offset + header.data_size;
 }
 
 static uint32_t shell_build_input_test_image(uint8_t use_tty) {
@@ -1826,7 +2040,48 @@ static void shell_appcheck_finish_migration(const app_loader_result_t* result) {
         shell_appcheck_start_migration(SHELL_BUILTIN_APP_MEM) == OK) {
         return;
     }
+    if (completed_app == SHELL_BUILTIN_APP_MEM) {
+        paging_user_stats_t paging;
+        uint32_t image_size = shell_build_vma_test_image();
+        uint32_t pid = 0U;
+        int start_result;
+
+        paging_get_user_stats(&paging);
+        shell_appcheck_vma_initial_pages = paging.active_pages;
+        shell_appcheck_vma_initial_directories = paging.active_directories;
+        shell_appcheck_vma_initial_users = process_get_user_count();
+        shell_appcheck_vma_initial_zombies =
+            process_get_state_count(PROCESS_STATE_ZOMBIE);
+        start_result = app_loader_run_image("VMAMM2.ZAP", appcheck_demo_image,
+                                            image_size, 0, &pid);
+        cmd_appcheck_print_result("vma_ring3_inicio", start_result);
+        if (start_result == OK) {
+            shell_appcheck_vma_pid = pid;
+            return;
+        }
+    }
     if (!shell_job_is_active()) shell_runtime_finish_command();
+}
+
+static int shell_appcheck_vma_is_valid(const app_loader_result_t* result) {
+    paging_user_stats_t paging;
+
+    if (!result || result->start_failed || result->faulted ||
+        result->cancelled || result->exit_code != APP_EXIT_SUCCESS ||
+        !result->focus_acquired || result->pid == 0U) {
+        LOG_ERROR("SHELL", "Fixture VMA ring 3 terminou com falha");
+        return ERR_STATE;
+    }
+    paging_get_user_stats(&paging);
+    if (paging.active_pages != shell_appcheck_vma_initial_pages ||
+        paging.active_directories != shell_appcheck_vma_initial_directories ||
+        process_get_user_count() != shell_appcheck_vma_initial_users ||
+        process_get_state_count(PROCESS_STATE_ZOMBIE) !=
+            shell_appcheck_vma_initial_zombies) {
+        LOG_ERROR("SHELL", "Fixture VMA deixou recursos de paging residuais");
+        return ERR_STATE;
+    }
+    return OK;
 }
 
 static void cmd_appcheck_print_result(const char* label, int result) {
@@ -2419,6 +2674,11 @@ int shell_checks_handle_loader_result(const app_loader_result_t* result) {
             shell_runtime_reset_input();
             return 1;
         }
+        if (shell_appcheck_vma_pid == result->pid) {
+            shell_appcheck_vma_pid = 0;
+            shell_runtime_reset_input();
+            return 1;
+        }
     }
 
     if (shell_regcheck.state != SHELL_REGCHECK_IDLE) {
@@ -2445,6 +2705,14 @@ int shell_checks_handle_loader_result(const app_loader_result_t* result) {
 
     if (shell_appcheck_migration_pid == result->pid) {
         shell_appcheck_finish_migration(result);
+        return 1;
+    }
+
+    if (shell_appcheck_vma_pid == result->pid) {
+        appcheck_result = shell_appcheck_vma_is_valid(result);
+        cmd_appcheck_print_result("vma_ring3_conclusao", appcheck_result);
+        shell_appcheck_vma_pid = 0;
+        if (!shell_job_is_active()) shell_runtime_finish_command();
         return 1;
     }
 

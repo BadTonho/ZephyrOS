@@ -6,6 +6,7 @@
 #include "core/string.h"
 #include "core/timer.h"
 #include "core/video.h"
+#include "memory/vma.h"
 #include "process/process.h"
 
 static int app_api_ready = 0;
@@ -281,6 +282,37 @@ int app_api_message_receive(app_message_t* message) {
     message->data1 = ipc_message.data1;
     message->data2 = ipc_message.data2;
     return OK;
+}
+
+int app_api_mmap(uint32_t length, uint32_t protection, uint32_t flags,
+                 uint32_t* address_out) {
+    process_t* current;
+    int result = app_api_require_ready();
+
+    if (result != OK) return result;
+    if (!address_out) {
+        LOG_ERROR("APP_API", "Destino nulo no mmap");
+        return ERR_NULL;
+    }
+    current = process_get_current();
+    if (!current || !process_is_user(current)) {
+        LOG_ERROR("APP_API", "mmap solicitado fora de processo ring 3");
+        return ERR_STATE;
+    }
+    return process_vma_mmap(current, length, protection, flags, address_out);
+}
+
+int app_api_munmap(uint32_t address, uint32_t length) {
+    process_t* current;
+    int result = app_api_require_ready();
+
+    if (result != OK) return result;
+    current = process_get_current();
+    if (!current || !process_is_user(current)) {
+        LOG_ERROR("APP_API", "munmap solicitado fora de processo ring 3");
+        return ERR_STATE;
+    }
+    return process_vma_munmap(current, address, length);
 }
 
 int app_api_file_is_ready(void) {

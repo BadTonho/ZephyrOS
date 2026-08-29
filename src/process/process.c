@@ -527,6 +527,7 @@ static void process_discard_new_process(process_t* proc) {
     }
     if (proc->pid != 0) process_release_pid(proc->pid);
     process_stack_release(proc);
+    process_vma_release(proc);
     kmemset(proc, 0, sizeof(process_t));
     slot = process_slot_index(proc);
     if (slot >= 0) processes[slot] = 0;
@@ -1159,6 +1160,12 @@ static int process_user_initialize(process_t* proc, page_directory_t* dir,
     proc->context.user_entry = entry_point;
     proc->context.user_mode = 1;
     proc->user_code_size = code_size;
+    result = process_vma_register_image(proc, code_size);
+    if (result != OK) {
+        LOG_ERROR("PROC", "Falha ao registrar VMAs da imagem ring 3");
+        process_discard_new_process(proc);
+        return result;
+    }
     proc->user_test = diagnostic_test ? 1U : 0U;
     proc->state = start_suspended ? PROCESS_STATE_BLOCKED : PROCESS_STATE_READY;
     (void)process_stack_observe(proc, 0, 0U, 0U);
@@ -1580,6 +1587,7 @@ void process_destroy(process_t* proc) {
     process_signal_process_destroyed(pid);
     proc->state = PROCESS_STATE_UNUSED;
     process_stack_release(proc);
+    process_vma_release(proc);
     if (proc->page_directory && proc->context.user_mode) {
         paging_free_user_directory(proc->page_directory);
     }

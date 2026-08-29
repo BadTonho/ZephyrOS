@@ -3,8 +3,9 @@
 ## Resumo de Progresso
 
 Status: Fases 1 a 6D, SYNC4, VFS1 e VFS2 validadas no QEMU. A VFS4 eleva a
-App API para `0.8`, preserva as syscalls anteriores e acrescenta `pipe` no
-numero `18`; a implementacao aguarda os gates e a validacao QEMU do usuario.
+App API para `0.9`, preserva as syscalls anteriores e acrescenta `mmap` e
+`munmap` nos numeros `19` e `20`; a implementacao aguarda os gates e a
+validacao QEMU do usuario.
 
 Esta etapa preparara o ZephyrOS para executar aplicativos independentes do
 kernel. O objetivo nao e apenas criar mais comandos, mas definir uma fronteira
@@ -71,6 +72,8 @@ Os numeros atuais sao:
 | `16` | `getcwd` | `EBX`: buffer; `ECX`: capacidade |
 | `17` | `file_ioctl` | `EBX`: fd; `ECX`: request; `EDX`: argumento |
 | `18` | `pipe` | `EBX`: vetor de dois handles de saida |
+| `19` | `mmap` | `EBX`: tamanho; `ECX`: protecao; `EDX`: flags; `ESI`: endereco de saida |
+| `20` | `munmap` | `EBX`: endereco; `ECX`: tamanho |
 
 O vetor `int 0x80` inicia com gate `0x8E` (DPL 0) e passa para `0xEE` (DPL 3)
 depois que paging, TSS, Idle e os processos essenciais estao prontos. A ponte
@@ -122,7 +125,7 @@ e permissao.
 O contrato inicial esta disponivel para os modulos nativos do kernel por meio
 de `src/include/core/app_api.h` e `src/core/app_api.c`:
 
-- `app_api_get_version()` retorna a versao publica `0.8`;
+- `app_api_get_version()` retorna a versao publica `0.9`;
 - `app_api_console_write()` aceita texto ASCII validado de ate 1024 bytes;
 - `app_api_get_uptime()` retorna ticks e segundos desde o boot;
 - `app_api_get_memory_info()` retorna memoria e paginas disponiveis;
@@ -155,8 +158,8 @@ canonico terminado em NUL para um buffer validado. Cada processo inicia em
 
 Os caminhos universais `/`, `/mnt/boot` e `/mnt/<volume-id>` sao o formato
 preferencial. `system:`, `legacy:` e `<volume-id>:` permanecem compativeis.
-Pacotes novos declaram API 0.8; o loader continua aceitando 0.3, 0.4, 0.5,
-0.6 e 0.7.
+Pacotes novos declaram API 0.9; o loader continua aceitando 0.3, 0.4, 0.5,
+0.6, 0.7 e 0.8.
 
 ### Dispositivos da App API 0.7
 
@@ -181,6 +184,23 @@ antes de publicar os descritores. Leitores bloqueiam no pipe vazio, escritores
 no pipe cheio, EOF ocorre depois do ultimo escritor e `ERR_UNAVAILABLE` ocorre
 depois do ultimo leitor. Cancelamento e sinal durante a espera retornam `OK`
 com zero bytes.
+
+### VMAs da App API 0.9
+
+`app_api_mmap(uint32_t length, uint32_t protection, uint32_t flags,
+uint32_t* address_out)` escolhe um intervalo alinhado na faixa dinamica do
+processo e arredonda `length` para paginas inteiras. Os bits publicos de
+protecao sao `APP_MMAP_PROT_READ`, `APP_MMAP_PROT_WRITE` e
+`APP_MMAP_PROT_EXEC`; a unica flag aceita nesta etapa e
+`APP_MMAP_FLAG_ANONYMOUS`, sem backing de arquivo e sem `APP_MMAP_FLAG_SHARED`.
+O bit WRITE e aplicado a Page Table; READ e EXEC permanecem metadados porque o
+paging atual nao possui NX.
+
+`app_api_munmap(uint32_t address, uint32_t length)` exige endereco alinhado e
+aceita somente um intervalo totalmente coberto por uma VMA anonima dinamica.
+Pode remover um subintervalo, inclusive dividindo a VMA em duas. As regioes
+fixas do loader nao podem ser removidas. Na ABI ring 3, `mmap` usa `EBX`,
+`ECX`, `EDX` e `ESI`; `munmap` usa `EBX` e `ECX`.
 
 ### Contrato de console e ciclo de vida da Fase 6D
 

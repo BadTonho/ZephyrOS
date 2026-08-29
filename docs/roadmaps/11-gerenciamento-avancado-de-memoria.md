@@ -9,7 +9,7 @@ Este roadmap preserva a compatibilidade total com o Bitmap Allocator físico e o
 ## Resumo de progresso
 
 - [x] MM1 - Alocador SLAB/SLUB de objetos de tamanho fixo (`kmem_cache_t`).
-- [ ] MM2 - Áreas de Memória Virtual do Processo (VMA - *Virtual Memory Areas*).
+- [x] MM2 - Áreas de Memória Virtual do Processo (VMA - *Virtual Memory Areas*).
 - [ ] MM3 - Alocação sob Demanda (*Demand Paging*) e tratamento de Page Faults.
 - [ ] MM4 - Métricas de fragmentação, zonas de memória e monitoramento em tempo real.
 
@@ -69,8 +69,8 @@ arquivos, vnodes e pacotes Ethernet usam caches dedicados; stacks de processos e
 threads continuam no `kmalloc` por exigirem tamanho e guardas próprios.
 
 A MM1 foi validada e encerrada conforme confirmação do usuário após a
-execução dos comandos e gates correspondentes. A MM2 é a próxima etapa do
-roadmap.
+execução dos comandos e gates correspondentes. A MM2 foi implementada nesta
+etapa e aguarda a validação executável do usuário.
 
 ### Critério de saída
 
@@ -87,19 +87,26 @@ Criação e destruição de centenas de estruturas de processos e arquivos ocorr
 
 ### Implementação
 
-- [ ] Definir a estrutura `vm_area_t` contendo:
+- [x] Definir a estrutura `vm_area_t` contendo:
   - `uint32_t start_addr;`
   - `uint32_t end_addr;`
   - `uint32_t flags;` (`VM_READ`, `VM_WRITE`, `VM_EXEC`, `VM_SHARED`, `VM_ANONYMOUS`)
   - `struct file* file;` (para mapeamentos backed por arquivo)
   - `uint32_t offset;`
-- [ ] Adicionar lista ligada ordenada de VMAs na estrutura `process_t`.
-- [ ] Implementar a syscall `sys_mmap()` para alocação anônima de regiões virtuais contíguas.
-- [ ] Implementar a syscall `sys_munmap()` para liberação e invalidação de páginas virtuais associadas.
+- [x] Adicionar lista ligada ordenada de VMAs na estrutura `process_t`.
+- [x] Implementar a syscall `sys_mmap()` para alocação anônima de regiões virtuais contíguas.
+- [x] Implementar a syscall `sys_munmap()` para liberação e invalidação de páginas virtuais associadas.
 
 ### Critério de saída
 
-Processos conseguem alocar e mapear múltiplos segmentos virtuais com permissões granulares sem manipulação direta e manual de Page Tables.
+Processos conseguem alocar e mapear múltiplos segmentos virtuais com permissões granulares sem manipulação direta e manual de Page Tables. A implementação MM2 foi concluída; a validação executável no QEMU permanece sob responsabilidade do usuário.
+
+### Limitações aceitas nesta etapa
+
+- `mmap` aceita somente regiões anônimas privadas e escolhe o primeiro intervalo livre entre `USER_LAUNCH_BASE` e `USER_STACK_BASE`.
+- `VM_READ` e `VM_EXEC` permanecem metadados; somente `VM_WRITE` altera o bit de escrita do paging, pois o hardware atual não publica NX.
+- `VM_SHARED` e mapeamentos com backing de arquivo permanecem reservados para uma etapa posterior.
+- `munmap` exige endereço alinhado, arredonda o tamanho para páginas e recusa as regiões fixas do loader.
 
 ### Comandos Shell / Diagnóstico
 

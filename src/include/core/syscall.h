@@ -25,6 +25,8 @@
 #define APP_SYSCALL_GETCWD        16
 #define APP_SYSCALL_FILE_IOCTL    17
 #define APP_SYSCALL_PIPE          18
+#define APP_SYSCALL_MMAP          19
+#define APP_SYSCALL_MUNMAP        20
 #define APP_SYSCALL_INVALID       0xFFFFFFFFU
 
 int syscall_init(void);

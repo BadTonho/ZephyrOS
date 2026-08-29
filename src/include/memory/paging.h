@@ -64,6 +64,8 @@ int paging_map_page_in_directory(page_directory_t* dir,
                                  uint32_t virtual,
                                  uint32_t physical,
                                  uint32_t flags);
+int paging_unmap_user_page_in_directory(page_directory_t* dir,
+                                        uint32_t virtual_addr);
 
 page_directory_t* paging_create_directory(void);
 page_directory_t* paging_create_user_directory(void);

@@ -5,6 +5,7 @@
 #include "core/app_api.h"
 #include "core/wait.h"
 #include "memory/paging.h"
+#include "memory/vma.h"
 #include "memory/slab.h"
 #include "drivers/idt.h"
 #include "process/signal.h"
@@ -89,7 +90,7 @@ typedef struct {
     uint32_t user_mode;
 } __attribute__((packed)) process_context_t;
 
-typedef struct {
+typedef struct process {
     uint32_t pid;
     char name[PROCESS_NAME_LENGTH];
     process_state_t state;
@@ -147,6 +148,8 @@ typedef struct {
     uint32_t cancel_exit_code;
     uint8_t cancel_pending;
     vfs_fd_table_t fd_table;
+    vm_area_t* vma_list;
+    uint32_t vma_count;
 } process_t;
 
 typedef struct {

@@ -725,7 +725,7 @@ retornam `OK` com zero ou com os bytes ja transferidos.
 `app_files_pipe()`, `app_api_pipe()` e a syscall 18 publicam a mesma operacao
 para aplicativos. O caminho ring 3 valida o vetor de dois handles como uma
 faixa gravavel antes de criar o pipe. As syscalls anteriores permanecem
-inalteradas e a App API publica a versao 0.8.
+inalteradas e a App API publica a versao 0.9.
 
 O sink de redirecionamento usa `vfs_write_redirect()`, sem alterar a semantica
 integral de `vfs_write()`. `>` cria ou substitui o destino; `>>` le o conteudo

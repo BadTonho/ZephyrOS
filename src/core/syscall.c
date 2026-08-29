@@ -356,6 +356,33 @@ static int syscall_user_message_receive(const registers_t* regs) {
     return paging_copy_to_user((void*)regs->ebx, &message, sizeof(message));
 }
 
+static int syscall_user_mmap(const registers_t* regs) {
+    uint32_t address;
+    int result;
+
+    if (!regs->esi) {
+        LOG_ERROR("SYSCALL", "mmap recebeu destino nulo");
+        return ERR_NULL;
+    }
+    result = paging_validate_user_range(regs->esi, sizeof(address), 1);
+    if (result != OK) return result;
+    result = app_api_mmap(regs->ebx, regs->ecx, regs->edx, &address);
+    if (result != OK) return result;
+    result = paging_copy_to_user((void*)regs->esi, &address, sizeof(address));
+    if (result != OK) {
+        int rollback = app_api_munmap(address, regs->ebx);
+        if (rollback != OK) {
+            LOG_ERROR("SYSCALL", "Falha ao desfazer mmap sem saida valida");
+        }
+        LOG_ERROR("SYSCALL", "Falha ao publicar endereco do mmap");
+    }
+    return result;
+}
+
+static int syscall_user_munmap(const registers_t* regs) {
+    return app_api_munmap(regs->ebx, regs->ecx);
+}
+
 static int syscall_user_signal_action(const registers_t* regs) {
     app_signal_action_t action;
     app_signal_action_t old_action;
@@ -436,6 +463,10 @@ static int syscall_dispatch_user(registers_t* regs) {
             return syscall_user_message_send(regs);
         case APP_SYSCALL_MESSAGE_RECEIVE:
             return syscall_user_message_receive(regs);
+        case APP_SYSCALL_MMAP:
+            return syscall_user_mmap(regs);
+        case APP_SYSCALL_MUNMAP:
+            return syscall_user_munmap(regs);
         case APP_SYSCALL_SIGNAL_ACTION:
             return syscall_user_signal_action(regs);
         case APP_SYSCALL_SIGNAL_MASK:
@@ -503,6 +534,10 @@ static int syscall_dispatch(registers_t* regs) {
                                          (const app_message_t*)regs->ecx);
         case APP_SYSCALL_MESSAGE_RECEIVE:
             return app_api_message_receive((app_message_t*)regs->ebx);
+        case APP_SYSCALL_MMAP:
+        case APP_SYSCALL_MUNMAP:
+            LOG_WARN("SYSCALL", "mmap/munmap recusada para ring0");
+            return ERR_UNAVAILABLE;
         case APP_SYSCALL_SIGNAL_ACTION:
         case APP_SYSCALL_SIGNAL_MASK:
         case APP_SYSCALL_SIGNAL_RAISE:
