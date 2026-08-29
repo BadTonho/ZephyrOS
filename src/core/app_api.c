@@ -155,6 +155,24 @@ int app_api_file_close(app_handle_t handle) {
     return app_files_close(handle);
 }
 
+int app_api_file_fsync(app_handle_t handle) {
+    int result = app_api_require_ready();
+
+    if (result != OK) return result;
+    result = app_files_fsync(handle);
+    if (result != OK) LOG_ERROR("APP_API", "Fsync da fachada falhou");
+    return result;
+}
+
+int app_api_sync(void) {
+    int result = app_api_require_ready();
+
+    if (result != OK) return result;
+    result = app_files_sync();
+    if (result != OK) LOG_ERROR("APP_API", "Sync da fachada falhou");
+    return result;
+}
+
 int app_api_file_lseek(app_handle_t handle, int32_t offset, uint32_t whence,
                        uint32_t* position) {
     int result = app_api_require_ready();

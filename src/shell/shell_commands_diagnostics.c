@@ -7,6 +7,7 @@
 #include "fs/vfs.h"
 #include "fs/devfs.h"
 #include "fs/storage.h"
+#include "fs/block_cache.h"
 #include "fs/file_index.h"
 #include "core/memory.h"
 #include "core/timer.h"
@@ -1398,6 +1399,35 @@ static void cmd_health_check_vfs(int* issue_count) {
     }
 }
 
+static void cmd_health_check_block_cache(int* issue_count) {
+    block_cache_stats_t stats;
+    block_durability_status_t durability;
+    int result;
+
+    if (!issue_count) return;
+    result = block_cache_get_stats(&stats);
+    if (result != OK || block_cache_get_durability_status(&durability) != OK) {
+        cmd_health_check_print_query_failure(
+            "Block cache", result == OK ? ERR_STATE : result, issue_count);
+        return;
+    }
+    if (durability.state == BLOCK_DURABILITY_ERROR) {
+        cmd_health_check_print_named_state(
+            "Block cache", "ERROR", SHELL_HEALTH_CHECK_ERROR_COLOR,
+            "falha de writeback ou flush", issue_count);
+    } else if (durability.state == BLOCK_DURABILITY_DEGRADED) {
+        cmd_health_check_print_named_state(
+            "Block cache", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
+            "durabilidade sem flush fisico", issue_count);
+    }
+    if (stats.dirty_entries || stats.writeback_entries) {
+        cmd_health_check_print_named_state(
+            "Block cache", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
+            stats.writeback_entries ? "writeback em andamento" :
+            "blocos sujos aguardando writeback", issue_count);
+    }
+}
+
 static void cmd_health_check(void) {
     int issue_count = 0;
 
@@ -1414,6 +1444,7 @@ static void cmd_health_check(void) {
     cmd_health_check_wait(&issue_count);
     cmd_health_check_signals(&issue_count);
     cmd_health_check_vfs(&issue_count);
+    cmd_health_check_block_cache(&issue_count);
     cmd_health_check_usb_hid(&issue_count);
     cmd_health_check_wifi(&issue_count);
     if (!issue_count) {

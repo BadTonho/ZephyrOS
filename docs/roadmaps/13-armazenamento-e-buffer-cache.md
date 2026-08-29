@@ -171,16 +171,21 @@ reproduzível; não há um percentual universal obrigatório.
 
 ### Implementação
 
-- [ ] Marcar entradas sujas com lock, referência e faixa de bytes alterada;
-  escritas parciais devem preservar os bytes não modificados.
-- [ ] Criar `sync_buffers(block_device_t* dev)` para submeter writeback,
-  aguardar conclusões e devolver o primeiro erro observável.
-- [ ] Implementar flush periódico na workqueue com período configurável,
-  respeitando pressão de memória, pins e limite de requisições em voo.
-- [ ] Implementar flush de dispositivo e FUA quando a capacidade existir;
-  quando não existir, publicar a limitação no status de durabilidade.
-- [ ] Adicionar syscall e comando Shell `sync` somente com ABI append-only,
-  contrato de espera e propagação de erro documentados.
+- [x] Marcar entradas sujas com lock, referência, pin e faixa de bytes alterada;
+  escritas parciais preservam os bytes não modificados.
+- [x] Submeter writeback físico limitado, preservar dados e estado `DIRTY` após
+  erro, e expor `block_cache_sync_device()`/`block_cache_sync_all()`.
+- [x] Agendar writeback periódico na workqueue a cada 250 ticks, com orçamento
+  normal de 8 blocos e orçamento ampliado quando a ocupação suja é elevada.
+- [x] Implementar flush ATA quando IDENTIFY publica suporte; USB MSC permanece
+  sem FLUSH/FUA e a ausência de FLUSH publica durabilidade degradada.
+- [x] Adicionar `vfs_fsync()`, `vfs_sync()`, fachadas, syscalls append-only e o
+  comando Shell `sync`, com validação de argumentos e propagação de erros.
+
+A implementação foi registrada; a confirmação funcional dos gates e do QEMU
+continua pendente. `block_submit_sync()` permanece no caminho físico direto,
+enquanto `block_write()` copia os dados para o cache e não retém ponteiros do
+chamador. Fechamento de descritor e saída de processo não fazem sync implícito.
 
 ### Critério de saída
 
@@ -191,6 +196,10 @@ exigidos pelo contrato, ou retornam o erro correspondente.
 ### Comandos Shell / Diagnóstico
 
 - `sync`: sincroniza todos os buffers modificados com as mídias de armazenamento e aguarda confirmação.
+- `cachestat`: também mostra bytes sujos, tentativas/sucessos/falhas de
+  writeback, syncs, flushes e estado de durabilidade.
+- `fsync`: disponível pela VFS/API para arquivos regulares e dispositivos de
+  bloco; pipes e dispositivos sem persistência retornam `ERR_UNAVAILABLE`.
 
 ---
 

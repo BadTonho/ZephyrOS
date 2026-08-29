@@ -517,6 +517,7 @@ Todo acesso e limitado a LBA28.
 | READ | 0x20 | Ler setores |
 | WRITE | 0x30 | Escrever setores |
 | IDENTIFY | 0xEC | Identificar disco |
+| FLUSH CACHE | 0xE7 | Sincronizar cache interno quando suportado |
 
 ### Interrupcoes
 
@@ -525,6 +526,11 @@ canais. A transferencia PIO permanece sincronizada por polling com limites e
 tentativas finitas; ela nao promete I/O assincrono nem bloqueio de thread. A
 SYNC1 nao cria um Bottom-Half artificial para ATA; a fila assincrona pertence
 a BLK1/R6.
+
+Durante IDENTIFY, o driver registra o suporte ao bit FLUSH CACHE e a camada de
+bloco publica `BLOCK_DEVICE_CAP_FLUSH` somente quando o disco o confirma.
+`ata_flush_device()` emite `0xE7` e propaga timeout ou erro ATA. FUA nao e
+publicado nesta etapa; USB MSC continua sem FLUSH e FUA.
 
 ---
 

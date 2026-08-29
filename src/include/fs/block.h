@@ -135,6 +135,7 @@ int block_read(const char* id, uint32_t lba, uint8_t count,
 int block_write(const char* id, uint32_t lba, uint8_t count,
                 const uint8_t* buffer);
 int block_submit_sync(bio_request_t* request);
+int block_submit_physical_sync(bio_request_t* request);
 int block_submit(bio_request_t* request);
 int block_dispatch(uint32_t budget, uint32_t* out_processed);
 int block_cancel(bio_request_t* request);

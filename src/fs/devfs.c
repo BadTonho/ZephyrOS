@@ -6,6 +6,7 @@
 #include "core/spinlock.h"
 #include "core/string.h"
 #include "drivers/speaker.h"
+#include "fs/block_cache.h"
 
 #define DEVFS_HDA_BATCH_SECTORS 8U
 #define DEVFS_UINT32_MAX 0xFFFFFFFFU
@@ -55,26 +56,33 @@ static int devfs_unavailable_lseek(file_t* file, int32_t offset,
                                    uint32_t whence, uint32_t* position);
 static int devfs_unavailable_ioctl(file_t* file, uint32_t request,
                                    void* argument);
+static int devfs_unavailable_sync(file_t* file);
+static int devfs_hda_sync(file_t* file);
 
 static const file_operations_t devfs_null_operations = {
     devfs_generic_open, devfs_null_read, devfs_null_write,
-    devfs_generic_close, devfs_unavailable_lseek, devfs_unavailable_ioctl
+    devfs_generic_close, devfs_unavailable_lseek, devfs_unavailable_ioctl,
+    devfs_unavailable_sync
 };
 static const file_operations_t devfs_zero_operations = {
     devfs_generic_open, devfs_zero_read, devfs_null_write,
-    devfs_generic_close, devfs_unavailable_lseek, devfs_unavailable_ioctl
+    devfs_generic_close, devfs_unavailable_lseek, devfs_unavailable_ioctl,
+    devfs_unavailable_sync
 };
 static const file_operations_t devfs_tty_operations = {
     devfs_generic_open, vfs_stream_read, vfs_stream_write,
-    devfs_generic_close, devfs_unavailable_lseek, devfs_unavailable_ioctl
+    devfs_generic_close, devfs_unavailable_lseek, devfs_unavailable_ioctl,
+    devfs_unavailable_sync
 };
 static const file_operations_t devfs_speaker_operations = {
     devfs_generic_open, devfs_unavailable_read, devfs_speaker_write,
-    devfs_generic_close, devfs_unavailable_lseek, devfs_speaker_ioctl
+    devfs_generic_close, devfs_unavailable_lseek, devfs_speaker_ioctl,
+    devfs_unavailable_sync
 };
 static const file_operations_t devfs_hda_operations = {
     devfs_generic_open, devfs_hda_read, devfs_unavailable_write,
-    devfs_generic_close, devfs_hda_lseek, devfs_unavailable_ioctl
+    devfs_generic_close, devfs_hda_lseek, devfs_unavailable_ioctl,
+    devfs_hda_sync
 };
 
 static void devfs_copy_text(char* destination, uint32_t capacity,
@@ -546,6 +554,27 @@ static int devfs_unavailable_ioctl(file_t* file, uint32_t request,
     return ERR_UNAVAILABLE;
 }
 
+static int devfs_unavailable_sync(file_t* file) {
+    (void)file;
+    LOG_WARN("FS", "Sync nao suportado pelo dispositivo devfs");
+    return ERR_UNAVAILABLE;
+}
+
+static int devfs_hda_sync(file_t* file) {
+    devfs_file_context_t* context;
+
+    if (!file || !file->vnode) {
+        LOG_ERROR("FS", "Arquivo hda nulo no fsync");
+        return ERR_NULL;
+    }
+    context = (devfs_file_context_t*)file->vnode->private_data;
+    if (!context || !context->block_id[0]) {
+        LOG_ERROR("FS", "Contexto hda invalido no fsync");
+        return ERR_STATE;
+    }
+    return block_cache_sync_device(context->block_id);
+}
+
 int devfs_validate_state(void) {
     if (!devfs_ready || !devfs_metrics.initialized ||
         devfs_metrics.capacity != DEVFS_MAX_NODES ||
@@ -602,7 +631,8 @@ int devfs_self_test(devfs_test_result_t* result) {
             vfs_read(fd, devfs_test_buffer, sizeof(devfs_test_buffer),
                      &bytes) == OK && bytes == 0U &&
             vfs_write(fd, devfs_test_buffer, sizeof(devfs_test_buffer),
-                      &bytes) == OK && bytes == sizeof(devfs_test_buffer);
+                      &bytes) == OK && bytes == sizeof(devfs_test_buffer) &&
+            vfs_fsync(fd) == ERR_UNAVAILABLE;
         if (vfs_close(fd) != OK) result->null_device = 0U;
     }
     devfs_test_count(result, result->null_device);
@@ -641,6 +671,7 @@ int devfs_self_test(devfs_test_result_t* result) {
         result->block_device =
             vfs_read(fd, devfs_test_buffer, BLOCK_SECTOR_SIZE, &bytes) == OK &&
             bytes == BLOCK_SECTOR_SIZE &&
+            vfs_fsync(fd) == OK &&
             vfs_lseek(fd, 1, VFS_SEEK_SET, &position) == OK && position == 1U &&
             vfs_read(fd, devfs_test_buffer, 16U, &bytes) == OK && bytes == 16U &&
             vfs_lseek(fd, 0, VFS_SEEK_END, &position) == OK &&

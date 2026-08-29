@@ -849,6 +849,11 @@ int storage_refresh(void) {
         LOG_ERROR("FS", "Atualizacao de storage antes da inicializacao");
         return ERR_STATE;
     }
+    result = storage_sync_all();
+    if (result != OK) {
+        LOG_ERROR("FS", "Atualizacao recusada por falha de sincronizacao");
+        return result;
+    }
     LOG_INFO("FS", "Atualizando inventario de armazenamento");
     for (uint8_t index = 0U; index < storage_volume_count &&
          mounted_before < STORAGE_MAX_MOUNTS; index++) {
@@ -880,6 +885,41 @@ int storage_refresh(void) {
         storage_volumes[index].generation += storage_refresh_epoch;
     }
     return result;
+}
+
+int storage_sync_volume(const char* id) {
+    storage_volume_t volume;
+    int result;
+
+    if (!id) {
+        LOG_ERROR("FS", "ID nulo na sincronizacao de volume");
+        return ERR_NULL;
+    }
+    if (!storage_initialized) {
+        LOG_ERROR("FS", "Sincronizacao de volume antes da inicializacao");
+        return ERR_STATE;
+    }
+    result = storage_find_volume(id, &volume);
+    if (result != OK) {
+        LOG_ERROR("FS", "Volume nao encontrado na sincronizacao");
+        return result;
+    }
+    result = block_cache_sync_device(volume.disk_id);
+    if (result != OK) LOG_ERROR("FS", "Sync do volume falhou");
+    return result;
+}
+
+int storage_sync_all(void) {
+    if (!storage_initialized) {
+        LOG_ERROR("FS", "Sincronizacao global antes da inicializacao");
+        return ERR_STATE;
+    }
+    {
+        int result = block_cache_sync_all();
+
+        if (result != OK) LOG_ERROR("FS", "Sync global de storage falhou");
+        return result;
+    }
 }
 
 static int storage_read_fat_bytes(const storage_volume_t* volume,
@@ -2718,6 +2758,13 @@ int storage_unmount(const char* id) {
                            "registro interno de montagem ausente");
         spinlock_release(&storage_operation_lock);
         return ERR_STATE;
+    }
+    result = storage_sync_volume(volume->id);
+    if (result != OK) {
+        storage_log_volume(LOG_LEVEL_WARN, volume->id,
+                           "desmontagem recusada por falha de sincronizacao");
+        spinlock_release(&storage_operation_lock);
+        return result;
     }
     result = block_cache_invalidate_device(volume->disk_id);
     if (result != OK) {

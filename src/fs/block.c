@@ -1,12 +1,12 @@
 #include "fs/block.h"
 #include "core/errors.h"
 #include "core/log.h"
+#include "core/memory.h"
 #include "core/spinlock.h"
 #include "core/string.h"
 #include "core/timer.h"
 #include "core/workqueue.h"
 #include "drivers/ata.h"
-#include "fs/block.h"
 #include "fs/block_cache.h"
 
 static block_device_t block_devices[BLOCK_MAX_DEVICES];
@@ -27,7 +27,9 @@ static spinlock_t block_queue_lock;
 static block_queue_stats_t block_queue_stats;
 static uint32_t block_stats_start_tick;
 static work_struct_t block_work;
+static work_struct_t block_writeback_work;
 static uint8_t block_work_ready;
+static uint8_t block_writeback_work_ready;
 static uint8_t block_dispatching;
 static char block_active_device_id[BLOCK_DEVICE_ID_SIZE];
 static bio_request_t* block_active_bios[BLOCK_QUEUE_CAPACITY];
@@ -247,7 +249,8 @@ static void block_queue_remove_locked(uint32_t index) {
     block_queue_stats.queue_depth = block_queue_count;
 }
 
-static int block_queue_enqueue(bio_request_t* request, uint8_t asynchronous) {
+static int block_queue_enqueue(bio_request_t* request, uint8_t asynchronous,
+                               uint8_t invalidate_cache) {
     int index;
     int result;
 
@@ -282,7 +285,7 @@ static int block_queue_enqueue(bio_request_t* request, uint8_t asynchronous) {
         spinlock_release(&block_queue_lock);
         return block_request_reject(request, result);
     }
-    if (request->operation == BLOCK_OPERATION_WRITE) {
+    if (invalidate_cache && request->operation == BLOCK_OPERATION_WRITE) {
         result = block_cache_invalidate_range(
             request->device_id, request->lba, request->sector_count);
         if (result != OK) {
@@ -539,6 +542,41 @@ static int block_work_callback(void* context) {
     return block_dispatch(BLOCK_DISPATCH_BUDGET, &processed);
 }
 
+static int block_writeback_work_callback(void* context) {
+    block_cache_stats_t stats;
+    uint32_t budget = BLOCK_WRITEBACK_BUDGET;
+    uint32_t delay = BLOCK_WRITEBACK_PERIOD_TICKS;
+    uint32_t written = 0U;
+    uint8_t memory_pressure;
+    uint8_t dirty_pressure;
+    int result;
+
+    (void)context;
+    if (block_cache_get_stats(&stats) != OK) {
+        LOG_ERROR("BLK", "Metricas indisponiveis no writeback periodico");
+        return ERR_STATE;
+    }
+    memory_pressure = memory_get_free_pages() <
+                      BLOCK_WRITEBACK_PRESSURE_FREE_PAGES;
+    dirty_pressure = stats.dirty_entries * 100U >=
+                     BLOCK_CACHE_CAPACITY * BLOCK_WRITEBACK_PRESSURE_DIRTY_PERCENT;
+    if (memory_pressure || dirty_pressure) {
+        budget = BLOCK_CACHE_CAPACITY;
+    }
+    if ((memory_pressure || dirty_pressure) && stats.dirty_entries) {
+        delay = 1U;
+    }
+    result = block_cache_writeback_step(budget, &written);
+    if (result != OK) LOG_WARN("BLK", "Writeback periodico encontrou erro");
+    if (written) LOG_DEBUG("BLK", "Writeback periodico concluiu blocos");
+    result = schedule_delayed_work(&block_writeback_work, delay);
+    if (result != OK) {
+        LOG_WARN("BLK", "Writeback periodico nao foi reagendado");
+        return result;
+    }
+    return OK;
+}
+
 static int block_ata_submit(block_request_t* request) {
     uint8_t* slot;
     int result;
@@ -561,6 +599,8 @@ static int block_ata_submit(block_request_t* request) {
         result = ata_write_device_sectors(
             *slot, request->lba, (uint8_t)request->sector_count,
             (const uint8_t*)request->buffer);
+    } else if (request->operation == BLOCK_OPERATION_FLUSH) {
+        result = ata_flush_device(*slot);
     } else {
         LOG_WARN("BLK", "Operacao ATA sem suporte nesta etapa");
         return ERR_UNAVAILABLE;
@@ -622,7 +662,8 @@ static int block_ata_descriptor(const ata_device_t* ata,
     out_descriptor->ops.write = block_ata_write;
     out_descriptor->ops.submit = block_ata_submit;
     out_descriptor->max_transfer_sectors = BLOCK_MAX_TRANSFER_SECTORS;
-    out_descriptor->capabilities = 0U;
+    out_descriptor->capabilities = ata->flush_supported ?
+        BLOCK_DEVICE_CAP_FLUSH : 0U;
     block_ata_slots[ata->slot] = ata->slot;
     return OK;
 }
@@ -679,6 +720,7 @@ int block_init(void) {
     kmemset(block_queue, 0, sizeof(block_queue));
     kmemset(&block_queue_stats, 0, sizeof(block_queue_stats));
     kmemset(&block_work, 0, sizeof(block_work));
+    kmemset(&block_writeback_work, 0, sizeof(block_writeback_work));
     kmemset(block_active_bios, 0, sizeof(block_active_bios));
     block_active_device_id[0] = '\0';
     block_device_count = 0U;
@@ -686,6 +728,7 @@ int block_init(void) {
     block_active_count = 0U;
     block_dispatching = 0U;
     block_work_ready = 0U;
+    block_writeback_work_ready = 0U;
     block_queue_stats.queue_capacity = BLOCK_QUEUE_CAPACITY;
     block_stats_start_tick = timer_get_ticks();
     block_initialized = 1U;
@@ -703,11 +746,26 @@ int block_init(void) {
     } else {
         block_work_ready = 1U;
     }
+    work_result = work_init(&block_writeback_work, "Block writeback",
+                            WORK_PRIORITY_NORMAL,
+                            block_writeback_work_callback, 0);
+    if (work_result != OK) {
+        LOG_WARN("BLK", "Workqueue indisponivel para writeback periodico");
+    } else {
+        block_writeback_work_ready = 1U;
+    }
     result = block_register_ata_devices();
     if (result != OK) {
         block_initialized = 0U;
         LOG_ERROR("BLK", "Falha ao registrar dispositivos ATA");
         return result;
+    }
+    if (block_writeback_work_ready) {
+        result = schedule_delayed_work(&block_writeback_work,
+                                       BLOCK_WRITEBACK_PERIOD_TICKS);
+        if (result != OK) {
+            LOG_WARN("BLK", "Writeback periodico nao foi agendado");
+        }
     }
     LOG_INFO("BLK", "Camada de dispositivos de bloco inicializada");
     return OK;
@@ -753,10 +811,23 @@ int block_register(const block_device_t* descriptor) {
     }
     spinlock_acquire(&block_queue_lock);
     index = block_index(normalized.id);
+    if (index >= 0 && block_id_pending_locked(normalized.id)) {
+        spinlock_release(&block_queue_lock);
+        LOG_WARN("BLK", "Substituicao recusada com BIO pendente");
+        return ERR_STATE;
+    }
+    spinlock_release(&block_queue_lock);
     if (index >= 0) {
-        if (block_id_pending_locked(normalized.id)) {
+        result = block_cache_sync_device(normalized.id);
+        if (result != OK) {
+            LOG_WARN("BLK", "Substituicao recusada por falha de sync");
+            return result;
+        }
+        spinlock_acquire(&block_queue_lock);
+        index = block_index(normalized.id);
+        if (index < 0 || block_id_pending_locked(normalized.id)) {
             spinlock_release(&block_queue_lock);
-            LOG_WARN("BLK", "Substituicao recusada com BIO pendente");
+            LOG_WARN("BLK", "Substituicao recusada por estado concorrente");
             return ERR_STATE;
         }
         result = block_cache_invalidate_device(normalized.id);
@@ -775,6 +846,7 @@ int block_register(const block_device_t* descriptor) {
         spinlock_release(&block_queue_lock);
         return OK;
     }
+    spinlock_acquire(&block_queue_lock);
     if (block_device_count >= BLOCK_MAX_DEVICES) {
         spinlock_release(&block_queue_lock);
         LOG_ERROR("BLK", "Limite de dispositivos de bloco atingido");
@@ -807,6 +879,24 @@ int block_unregister(const char* id) {
     if (index < 0) {
         spinlock_release(&block_queue_lock);
         LOG_WARN("BLK", "Dispositivo de bloco nao encontrado");
+        return ERR_NOT_FOUND;
+    }
+    spinlock_release(&block_queue_lock);
+    cache_result = block_cache_sync_device(id);
+    if (cache_result != OK) {
+        LOG_WARN("BLK", "Remocao recusada por falha de sync");
+        return cache_result;
+    }
+    spinlock_acquire(&block_queue_lock);
+    if (block_queue_count || block_active_count) {
+        spinlock_release(&block_queue_lock);
+        LOG_WARN("BLK", "Remocao recusada com requisicoes pendentes");
+        return ERR_STATE;
+    }
+    index = block_index(id);
+    if (index < 0) {
+        spinlock_release(&block_queue_lock);
+        LOG_WARN("BLK", "Dispositivo de bloco desapareceu durante remocao");
         return ERR_NOT_FOUND;
     }
     cache_result = block_cache_invalidate_device(id);
@@ -933,14 +1023,14 @@ int block_dispatch(uint32_t budget, uint32_t* out_processed) {
 }
 
 int block_submit(bio_request_t* request) {
-    return block_queue_enqueue(request, 1U);
+    return block_queue_enqueue(request, 1U, 1U);
 }
 
 int block_submit_sync(bio_request_t* request) {
     uint32_t processed;
     int result;
 
-    result = block_queue_enqueue(request, 0U);
+    result = block_queue_enqueue(request, 0U, 1U);
     if (result != OK) return result;
     while (request->state == BLOCK_REQUEST_QUEUED ||
            request->state == BLOCK_REQUEST_IN_FLIGHT) {
@@ -951,6 +1041,30 @@ int block_submit_sync(bio_request_t* request) {
         }
         if (!processed) {
             LOG_ERROR("BLK", "BIO sincrono permaneceu pendente");
+            return ERR_STATE;
+        }
+    }
+    return request->status;
+}
+
+int block_submit_physical_sync(bio_request_t* request) {
+    uint32_t processed;
+    int result;
+
+    result = block_queue_enqueue(request, 0U, 0U);
+    if (result != OK) {
+        LOG_ERROR("BLK", "Submissao fisica sem cache recusada");
+        return result;
+    }
+    while (request->state == BLOCK_REQUEST_QUEUED ||
+           request->state == BLOCK_REQUEST_IN_FLIGHT) {
+        result = block_dispatch(BLOCK_DISPATCH_BUDGET, &processed);
+        if (result != OK) {
+            LOG_ERROR("BLK", "Despacho fisico sin cache falhou");
+            return result;
+        }
+        if (!processed) {
+            LOG_ERROR("BLK", "BIO fisico permaneceu pendente");
             return ERR_STATE;
         }
     }
@@ -1101,7 +1215,8 @@ int block_read(const char* id, uint32_t lba, uint8_t count,
 
 int block_write(const char* id, uint32_t lba, uint8_t count,
                 const uint8_t* buffer) {
-    bio_request_t request;
+    block_device_t device;
+    int result;
 
     if (!id || !buffer || !count) {
         LOG_ERROR("BLK", "Argumento invalido na escrita de bloco");
@@ -1114,14 +1229,10 @@ int block_write(const char* id, uint32_t lba, uint8_t count,
     if (!block_text_terminated(id, BLOCK_DEVICE_ID_SIZE)) {
         return ERR_NOT_FOUND;
     }
-    kmemset(&request, 0, sizeof(request));
-    request.device_id = id;
-    request.lba = lba;
-    request.sector_count = count;
-    request.buffer = (void*)buffer;
-    request.buffer_bytes = (uint32_t)count * BLOCK_SECTOR_SIZE;
-    request.operation = BLOCK_OPERATION_WRITE;
-    return block_submit_sync(&request);
+    result = block_find(id, &device);
+    if (result != OK) return result;
+    return block_cache_write(&device, lba, 0U, buffer,
+                             (uint32_t)count * BLOCK_SECTOR_SIZE);
 }
 
 static int block_self_test_submit(block_request_t* request) {

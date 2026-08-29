@@ -312,3 +312,23 @@ contam cada setor fisico, enquanto uma entrada sem vitima elegivel incrementa
 `bypasses` e continua diretamente pelo BLK1. `cachestat` e a interface de
 observacao; `cache clear` somente remove entradas limpas e elegiveis, sem
 writeback antecipado.
+
+## BLK3 - Writeback e durabilidade
+
+`dirty_bytes` e a soma das faixas alteradas nas entradas `DIRTY` e
+`WRITEBACK`; e um snapshot e pode ser menor que 512 bytes por entrada.
+`writeback_attempts`,
+`writeback_completed`, `writeback_failures` e `physical_writes` sao contadores
+cumulativos. O writeback periodico processa ate 8 blocos a cada 250 ticks;
+quando a ocupacao suja alcanca 75%, o orcamento pode usar toda a capacidade
+estatica do cache e o proximo ciclo e antecipado para o tick seguinte. Com
+menos de 32 paginas livres e blocos sujos, o ciclo tambem e antecipado. O
+ciclo periodico nao executa FLUSH.
+
+`sync_operations`, `flush_operations`, `flush_unavailable` e
+`degraded_syncs` registram sincronizacoes explicitas. `READY` significa que a
+ultima sincronizacao nao encontrou erro nem falta de FLUSH; `DEGRADED`
+significa que os dados foram gravados, mas o dispositivo nao confirmou FLUSH;
+`ERROR` preserva o primeiro erro de writeback ou FLUSH e a entrada suja para
+nova tentativa. `sync` global agrega os dispositivos registrados e
+`fsync(fd)` limita a operacao ao volume associado ao descritor.

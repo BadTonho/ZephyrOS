@@ -342,6 +342,7 @@ static void cmd_cachestat_print_usage(void) {
 
 static void cmd_cachestat(const char* args) {
     block_cache_stats_t stats;
+    block_durability_status_t durability;
 
     if (!shell_command_args_equal(args, "")) {
         LOG_WARN("SHELL", "Argumentos recusados no comando cachestat");
@@ -361,6 +362,29 @@ static void cmd_cachestat(const char* args) {
     video_print(" memoria=", 0x07);
     shell_command_print_num(stats.memory_bytes);
     video_print(" bytes\n", 0x07);
+    video_print("Dirty: bytes=", 0x07);
+    shell_command_print_num(stats.dirty_bytes);
+    video_print(" blocos=", 0x07);
+    shell_command_print_num(stats.dirty_entries);
+    video_print(" writeback_tentativas=", 0x07);
+    shell_command_print_num(stats.writeback_attempts);
+    video_print(" concluidos=", 0x07);
+    shell_command_print_num(stats.writeback_completed);
+    video_print(" falhas=", 0x07);
+    shell_command_print_num(stats.writeback_failures);
+    video_print(" fisicas=", 0x07);
+    shell_command_print_num(stats.physical_writes);
+    video_print(" syncs=", 0x07);
+    shell_command_print_num(stats.sync_operations);
+    video_print(" flushes=", 0x07);
+    shell_command_print_num(stats.flush_operations);
+    video_print(" sem_flush=", 0x07);
+    shell_command_print_num(stats.flush_unavailable);
+    video_print(" degradados=", 0x07);
+    shell_command_print_num(stats.degraded_syncs);
+    video_print(" ultimo_sync=", 0x07);
+    shell_command_print_num((uint32_t)stats.last_sync_error);
+    video_print("\n", 0x07);
     video_print("Acessos: hits=", 0x07);
     shell_command_print_num(stats.hits);
     video_print(" misses=", 0x07);
@@ -389,6 +413,16 @@ static void cmd_cachestat(const char* args) {
     shell_command_print_num(stats.pinned_entries);
     video_print(" erro=", 0x07);
     shell_command_print_num((uint32_t)stats.last_error);
+    if (block_cache_get_durability_status(&durability) == OK) {
+        video_print(" durabilidade=", 0x07);
+        if (durability.state == BLOCK_DURABILITY_READY) {
+            video_print("READY", 0x0A);
+        } else if (durability.state == BLOCK_DURABILITY_DEGRADED) {
+            video_print("DEGRADED", 0x0E);
+        } else {
+            video_print("ERROR", 0x0C);
+        }
+    }
     video_print("\n", 0x07);
 }
 
@@ -412,6 +446,48 @@ static void cmd_cache(const char* args) {
     video_print("Erro: limpeza do cache recusada (codigo ", 0x0C);
     shell_command_print_num((uint32_t)result);
     video_print(").\n", 0x0C);
+}
+
+static const char* cmd_sync_durability_name(
+    block_durability_state_t state) {
+    if (state == BLOCK_DURABILITY_READY) return "READY";
+    if (state == BLOCK_DURABILITY_DEGRADED) return "DEGRADED";
+    return "ERROR";
+}
+
+static void cmd_sync_print_usage(void) {
+    video_print("Uso: sync\n", 0x0C);
+}
+
+static void cmd_sync(const char* args) {
+    block_cache_stats_t stats;
+    block_durability_status_t durability;
+    int result;
+
+    if (!shell_command_args_equal(args, "")) {
+        LOG_WARN("SHELL", "Argumentos recusados no comando sync");
+        cmd_sync_print_usage();
+        return;
+    }
+    result = vfs_sync();
+    if (block_cache_get_stats(&stats) != OK ||
+        block_cache_get_durability_status(&durability) != OK) {
+        video_print("Erro: metricas de sync indisponiveis.\n", 0x0C);
+        return;
+    }
+    if (result != OK) {
+        video_print("Erro: sync falhou (codigo ", 0x0C);
+        shell_command_print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+        return;
+    }
+    video_print("Sync: writeback=", 0x0A);
+    shell_command_print_num(stats.writeback_completed);
+    video_print(" falhas=", 0x07);
+    shell_command_print_num(stats.writeback_failures);
+    video_print(" durabilidade=", 0x07);
+    video_print(cmd_sync_durability_name(durability.state), 0x0A);
+    video_print("\n", 0x07);
 }
 
 static int cmd_storage_read_token(const char** cursor, char* token,
@@ -1025,6 +1101,7 @@ SHELL_STORAGE_WRAP_ARGS(shell_dispatch_cmd_storage, cmd_storage)
 SHELL_STORAGE_WRAP_ARGS(shell_dispatch_cmd_blkstat, cmd_blkstat)
 SHELL_STORAGE_WRAP_ARGS(shell_dispatch_cmd_cachestat, cmd_cachestat)
 SHELL_STORAGE_WRAP_ARGS(shell_dispatch_cmd_cache, cmd_cache)
+SHELL_STORAGE_WRAP_ARGS(shell_dispatch_cmd_sync, cmd_sync)
 void shell_dispatch_cmd_index(const char* arguments) {
     if (shell_storage_start_job(arguments)) return;
     cmd_index(arguments);

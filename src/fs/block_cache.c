@@ -23,6 +23,8 @@ typedef struct {
     uint32_t pins;
     uint32_t generation;
     int status;
+    uint16_t dirty_first;
+    uint16_t dirty_end;
     uint32_t hash_next;
     uint32_t lru_previous;
     uint32_t lru_next;
@@ -44,8 +46,10 @@ typedef enum {
 typedef struct {
     uint32_t reads;
     uint32_t writes;
+    uint32_t flushes;
     uint8_t seed;
     int forced_result;
+    int forced_flush_result;
 } block_cache_test_context_t;
 
 static block_cache_entry_t block_cache_entries[BLOCK_CACHE_CAPACITY];
@@ -55,6 +59,10 @@ static block_cache_stats_t block_cache_stats;
 static uint32_t block_cache_lru_head;
 static uint32_t block_cache_lru_tail;
 static uint8_t block_cache_initialized;
+static uint8_t block_cache_sync_active;
+static block_durability_status_t block_cache_durability;
+
+static int block_cache_validate_identifier(const char* device_id);
 
 static void block_cache_copy_text(char* destination, uint32_t capacity,
                                   const char* source) {
@@ -178,7 +186,32 @@ static void block_cache_hash_insert_locked(uint32_t index) {
 }
 
 static int block_cache_lru_state(block_cache_state_t state) {
-    return state == BLOCK_CACHE_VALID || state == BLOCK_CACHE_ERROR;
+    return state == BLOCK_CACHE_VALID || state == BLOCK_CACHE_DIRTY ||
+           state == BLOCK_CACHE_ERROR;
+}
+
+static int block_cache_lru_linked_locked(uint32_t index) {
+    block_cache_entry_t* entry = &block_cache_entries[index];
+
+    return block_cache_lru_head == index || block_cache_lru_tail == index ||
+           entry->lru_previous != BLOCK_CACHE_INVALID_INDEX ||
+           entry->lru_next != BLOCK_CACHE_INVALID_INDEX;
+}
+
+static void block_cache_mark_dirty_locked(uint32_t index, uint32_t first,
+                                          uint32_t end) {
+    block_cache_entry_t* entry = &block_cache_entries[index];
+
+    if (entry->dirty_end == 0U || first < entry->dirty_first) {
+        entry->dirty_first = (uint16_t)first;
+    }
+    if (end > entry->dirty_end) entry->dirty_end = (uint16_t)end;
+    if (block_cache_lru_linked_locked(index)) {
+        block_cache_lru_remove_locked(index);
+    }
+    block_cache_lru_push_front_locked(index);
+    entry->state = BLOCK_CACHE_DIRTY;
+    entry->status = OK;
 }
 
 static void block_cache_release_locked(uint32_t index) {
@@ -196,6 +229,8 @@ static void block_cache_release_locked(uint32_t index) {
     entry->references = 0U;
     entry->pins = 0U;
     entry->status = ERR_STATE;
+    entry->dirty_first = 0U;
+    entry->dirty_end = 0U;
     entry->hash_next = BLOCK_CACHE_INVALID_INDEX;
     entry->lru_previous = BLOCK_CACHE_INVALID_INDEX;
     entry->lru_next = BLOCK_CACHE_INVALID_INDEX;
@@ -276,6 +311,8 @@ static uint32_t block_cache_reserve_run_locked(const char* device_id,
         entry->references = 0U;
         entry->pins = 0U;
         entry->status = ERR_STATE;
+        entry->dirty_first = 0U;
+        entry->dirty_end = 0U;
         entry->hash_next = BLOCK_CACHE_INVALID_INDEX;
         entry->lru_previous = BLOCK_CACHE_INVALID_INDEX;
         entry->lru_next = BLOCK_CACHE_INVALID_INDEX;
@@ -295,7 +332,8 @@ static int block_cache_wait_condition(void* context, uint8_t* out_ready) {
     }
     spinlock_acquire(&block_cache_lock);
     *out_ready = wait->entry->generation != wait->generation ||
-                 wait->entry->state != BLOCK_CACHE_READING;
+                 (wait->entry->state != BLOCK_CACHE_READING &&
+                  wait->entry->state != BLOCK_CACHE_WRITEBACK);
     spinlock_release(&block_cache_lock);
     return OK;
 }
@@ -353,12 +391,22 @@ static block_cache_lookup_result_t block_cache_lookup(
         *out_error = error;
         return BLOCK_CACHE_LOOKUP_ERROR;
     }
-    if (entry->state == BLOCK_CACHE_DIRTY ||
-        entry->state == BLOCK_CACHE_WRITEBACK) {
-        block_cache_stats.last_error = ERR_STATE;
+    if (entry->state == BLOCK_CACHE_WRITEBACK) {
+        *out_wait_entry = entry;
+        *out_generation = entry->generation;
         spinlock_release(&block_cache_lock);
-        *out_error = ERR_STATE;
-        return BLOCK_CACHE_LOOKUP_ERROR;
+        return BLOCK_CACHE_LOOKUP_WAIT;
+    }
+    if (entry->state == BLOCK_CACHE_DIRTY) {
+        entry->references++;
+        block_cache_lru_remove_locked(index);
+        block_cache_lru_push_front_locked(index);
+        block_cache_stats.hits++;
+        block_cache_stats.reads_avoided++;
+        kmemcpy(output, entry->data, BLOCK_CACHE_BLOCK_SIZE);
+        if (entry->references) entry->references--;
+        spinlock_release(&block_cache_lock);
+        return BLOCK_CACHE_LOOKUP_HIT;
     }
     if (entry->state != BLOCK_CACHE_VALID) {
         spinlock_release(&block_cache_lock);
@@ -545,6 +593,8 @@ int block_cache_init(void) {
     kmemset(&block_cache_stats, 0, sizeof(block_cache_stats));
     block_cache_lru_head = BLOCK_CACHE_INVALID_INDEX;
     block_cache_lru_tail = BLOCK_CACHE_INVALID_INDEX;
+    block_cache_sync_active = 0U;
+    kmemset(&block_cache_durability, 0, sizeof(block_cache_durability));
     for (uint32_t index = 0U; index < BLOCK_CACHE_HASH_BUCKETS; index++) {
         block_cache_buckets[index] = BLOCK_CACHE_INVALID_INDEX;
     }
@@ -567,6 +617,10 @@ int block_cache_init(void) {
     block_cache_stats.memory_bytes =
         BLOCK_CACHE_CAPACITY * BLOCK_CACHE_BLOCK_SIZE;
     block_cache_stats.last_error = OK;
+    block_cache_stats.last_sync_error = OK;
+    block_cache_stats.durability_state = BLOCK_DURABILITY_READY;
+    block_cache_durability.state = BLOCK_DURABILITY_READY;
+    block_cache_durability.last_error = OK;
     block_cache_initialized = 1U;
     LOG_INFO("BLKCACHE", "Cache de blocos inicializado");
     return OK;
@@ -658,6 +712,236 @@ int block_cache_read(const block_device_t* device, uint32_t lba,
     return OK;
 }
 
+static int block_cache_validate_write_device(const block_device_t* device,
+                                             uint32_t lba,
+                                             uint32_t byte_offset,
+                                             const uint8_t* buffer,
+                                             uint32_t size,
+                                             uint32_t* out_sectors) {
+    uint32_t total;
+    uint32_t sectors;
+
+    if (!device || !out_sectors) {
+        LOG_ERROR("BLKCACHE", "Destino nulo na validacao da escrita do cache");
+        return ERR_NULL;
+    }
+    if (!buffer) {
+        LOG_ERROR("BLKCACHE", "Buffer nulo na escrita do cache");
+        return ERR_NULL;
+    }
+    if (!size || byte_offset >= BLOCK_CACHE_BLOCK_SIZE) {
+        LOG_ERROR("BLKCACHE", "Faixa invalida na escrita do cache");
+        return ERR_INVALID;
+    }
+    if (byte_offset > 0xFFFFFFFFU - size) {
+        LOG_ERROR("BLKCACHE", "Overflow na faixa de escrita do cache");
+        return ERR_OVERFLOW;
+    }
+    total = byte_offset + size;
+    if (total > 0xFFFFFFFFU - (BLOCK_CACHE_BLOCK_SIZE - 1U)) {
+        LOG_ERROR("BLKCACHE", "Tamanho excede a faixa de escrita do cache");
+        return ERR_OVERFLOW;
+    }
+    sectors = (total + BLOCK_CACHE_BLOCK_SIZE - 1U) /
+              BLOCK_CACHE_BLOCK_SIZE;
+    if (!block_cache_text_terminated(device->id, BLOCK_DEVICE_ID_SIZE)) {
+        LOG_ERROR("BLKCACHE", "ID invalido na escrita do cache");
+        return ERR_INVALID;
+    }
+    if (device->sector_size != BLOCK_CACHE_BLOCK_SIZE ||
+        !device->sector_count || !device->max_transfer_sectors ||
+        device->max_transfer_sectors > BLOCK_MAX_TRANSFER_SECTORS) {
+        LOG_ERROR("BLKCACHE", "Geometria invalida na escrita do cache");
+        return ERR_STATE;
+    }
+    if (!device->online) {
+        LOG_WARN("BLKCACHE", "Dispositivo offline na escrita do cache");
+        return ERR_DISK;
+    }
+    if (device->read_only || (!device->ops.write && !device->ops.write_flags &&
+                              !device->ops.submit)) {
+        LOG_WARN("BLKCACHE", "Escrita recusada pelo dispositivo do cache");
+        return ERR_UNAVAILABLE;
+    }
+    if (lba >= device->sector_count || sectors > device->sector_count - lba) {
+        LOG_ERROR("BLKCACHE", "LBA fora dos limites na escrita do cache");
+        return ERR_DISK;
+    }
+    *out_sectors = sectors;
+    return OK;
+}
+
+static int block_cache_physical_read(const char* device_id, uint32_t lba,
+                                     uint8_t* buffer) {
+    bio_request_t request;
+
+    if (!device_id || !buffer) {
+        LOG_ERROR("BLKCACHE", "Argumento nulo na leitura fisica do cache");
+        return ERR_NULL;
+    }
+    kmemset(&request, 0, sizeof(request));
+    request.device_id = device_id;
+    request.lba = lba;
+    request.sector_count = 1U;
+    request.buffer = buffer;
+    request.buffer_bytes = BLOCK_CACHE_BLOCK_SIZE;
+    request.operation = BLOCK_OPERATION_READ;
+    {
+        int result = block_submit_physical_sync(&request);
+
+        if (result == OK) {
+            spinlock_acquire(&block_cache_lock);
+            block_cache_stats.physical_reads++;
+            spinlock_release(&block_cache_lock);
+        }
+        if (result != OK) LOG_ERROR("BLKCACHE", "Leitura fisica do cache falhou");
+        return result;
+    }
+}
+
+static void block_cache_wake_entry(block_cache_entry_t* entry) {
+    uint32_t woken = 0U;
+
+    if (!entry) {
+        LOG_ERROR("BLKCACHE", "Entrada nula ao acordar leitores");
+        return;
+    }
+    if (wake_up_all(&entry->waiters, &woken) != OK) {
+        LOG_WARN("BLKCACHE", "Falha ao acordar leitores do bloco sujo");
+    }
+}
+
+int block_cache_write(const block_device_t* device, uint32_t lba,
+                      uint32_t byte_offset, const uint8_t* buffer,
+                      uint32_t size) {
+    uint32_t sectors;
+    uint32_t position = 0U;
+    int result;
+
+    if (!block_cache_initialized) {
+        LOG_ERROR("BLKCACHE", "Escrita antes da inicializacao do cache");
+        return ERR_STATE;
+    }
+    result = block_cache_validate_write_device(device, lba, byte_offset,
+                                               buffer, size, &sectors);
+    if (result != OK) return result;
+    spinlock_acquire(&block_cache_lock);
+    if (block_cache_sync_active) {
+        spinlock_release(&block_cache_lock);
+        LOG_WARN("BLKCACHE", "Escrita recusada durante sincronizacao");
+        return ERR_STATE;
+    }
+    spinlock_release(&block_cache_lock);
+
+    for (uint32_t sector = 0U; sector < sectors; sector++) {
+        uint32_t current_lba = lba + sector;
+        uint32_t first = sector ? 0U : byte_offset;
+        uint32_t available = BLOCK_CACHE_BLOCK_SIZE - first;
+        uint32_t remaining = size - position;
+        uint32_t copied = remaining < available ? remaining : available;
+        uint32_t index;
+        block_cache_entry_t* entry;
+
+        for (;;) {
+            uint32_t generation = 0U;
+            block_cache_wait_context_t wait_context;
+            int wait = 0;
+
+            spinlock_acquire(&block_cache_lock);
+            if (block_cache_sync_active) {
+                spinlock_release(&block_cache_lock);
+                LOG_WARN("BLKCACHE", "Escrita recusada durante sincronizacao");
+                return ERR_STATE;
+            }
+            index = block_cache_find_locked(device->id, current_lba,
+                                            BLOCK_CACHE_BLOCK_SIZE);
+            if (index != BLOCK_CACHE_INVALID_INDEX) {
+                entry = &block_cache_entries[index];
+                if (entry->state == BLOCK_CACHE_READING ||
+                    entry->state == BLOCK_CACHE_WRITEBACK) {
+                    generation = entry->generation;
+                    wait_context.entry = entry;
+                    wait_context.generation = generation;
+                    wait = 1;
+                } else if (entry->state == BLOCK_CACHE_ERROR &&
+                           block_cache_entry_eligible(entry)) {
+                    block_cache_release_locked(index);
+                    index = BLOCK_CACHE_INVALID_INDEX;
+                } else if (entry->state == BLOCK_CACHE_VALID ||
+                           entry->state == BLOCK_CACHE_DIRTY) {
+                    kmemcpy(entry->data + first, buffer + position, copied);
+                    block_cache_mark_dirty_locked(index, first, first + copied);
+                    spinlock_release(&block_cache_lock);
+                    break;
+                } else {
+                    spinlock_release(&block_cache_lock);
+                    LOG_ERROR("BLKCACHE", "Estado invalido na escrita do cache");
+                    return ERR_STATE;
+                }
+            }
+            if (!wait && index == BLOCK_CACHE_INVALID_INDEX) {
+                uint32_t indexes[1];
+                if (block_cache_reserve_run_locked(device->id, current_lba,
+                                                   1U, indexes) != 1U) {
+                    spinlock_release(&block_cache_lock);
+                    LOG_WARN("BLKCACHE", "Cache sem entrada para escrita suja");
+                    return ERR_STATE;
+                }
+                index = indexes[0];
+                entry = &block_cache_entries[index];
+                entry->pins = 1U;
+                if (first == 0U && copied == BLOCK_CACHE_BLOCK_SIZE) {
+                    kmemcpy(entry->data, buffer + position,
+                            BLOCK_CACHE_BLOCK_SIZE);
+                    block_cache_mark_dirty_locked(index, 0U,
+                                                  BLOCK_CACHE_BLOCK_SIZE);
+                    entry->pins = 0U;
+                    spinlock_release(&block_cache_lock);
+                    block_cache_wake_entry(entry);
+                    break;
+                }
+                spinlock_release(&block_cache_lock);
+                {
+                    uint8_t old_sector[BLOCK_CACHE_BLOCK_SIZE];
+
+                    result = block_cache_physical_read(device->id, current_lba,
+                                                       old_sector);
+                    spinlock_acquire(&block_cache_lock);
+                    if (result == OK) {
+                        kmemcpy(entry->data, old_sector,
+                                BLOCK_CACHE_BLOCK_SIZE);
+                        kmemcpy(entry->data + first, buffer + position, copied);
+                        block_cache_mark_dirty_locked(index, first,
+                                                      first + copied);
+                        entry->pins = 0U;
+                        spinlock_release(&block_cache_lock);
+                        block_cache_wake_entry(entry);
+                        break;
+                    }
+                    block_cache_stats.errors++;
+                    block_cache_stats.last_error = result;
+                    block_cache_release_locked(index);
+                    spinlock_release(&block_cache_lock);
+                    block_cache_wake_entry(entry);
+                    LOG_ERROR("BLKCACHE", "Falha ao preparar escrita parcial");
+                    return result;
+                }
+            }
+            spinlock_release(&block_cache_lock);
+            if (wait) {
+                result = block_cache_wait_for_entry(wait_context.entry,
+                                                    wait_context.generation);
+                if (result != OK) {
+                    LOG_ERROR("BLKCACHE", "Espera por escrita do cache falhou");
+                    return result;
+                }
+            }
+        }
+        position += copied;
+    }
+    return OK;
+}
+
 int block_cache_get_stats(block_cache_stats_t* out_stats) {
     block_cache_stats_t snapshot;
     uint32_t requests;
@@ -678,6 +962,7 @@ int block_cache_get_stats(block_cache_stats_t* out_stats) {
     snapshot.dirty_entries = 0U;
     snapshot.writeback_entries = 0U;
     snapshot.pinned_entries = 0U;
+    snapshot.dirty_bytes = 0U;
     for (uint32_t index = 0U; index < BLOCK_CACHE_CAPACITY; index++) {
         block_cache_entry_t* entry = &block_cache_entries[index];
 
@@ -688,6 +973,10 @@ int block_cache_get_stats(block_cache_stats_t* out_stats) {
         if (entry->state == BLOCK_CACHE_WRITEBACK) {
             snapshot.writeback_entries++;
         }
+        if (entry->state == BLOCK_CACHE_DIRTY ||
+            entry->state == BLOCK_CACHE_WRITEBACK) {
+            snapshot.dirty_bytes += entry->dirty_end - entry->dirty_first;
+        }
         if (entry->pins) snapshot.pinned_entries++;
     }
     spinlock_release(&block_cache_lock);
@@ -695,6 +984,327 @@ int block_cache_get_stats(block_cache_stats_t* out_stats) {
     snapshot.hit_rate_percent = block_cache_percent(snapshot.hits, requests);
     *out_stats = snapshot;
     return OK;
+}
+
+int block_cache_get_durability_status(block_durability_status_t* out_status) {
+    if (!out_status) {
+        LOG_ERROR("BLKCACHE", "Destino nulo no estado de durabilidade");
+        return ERR_NULL;
+    }
+    if (!block_cache_initialized) {
+        LOG_ERROR("BLKCACHE", "Durabilidade consultada antes da inicializacao");
+        return ERR_STATE;
+    }
+    spinlock_acquire(&block_cache_lock);
+    *out_status = block_cache_durability;
+    spinlock_release(&block_cache_lock);
+    return OK;
+}
+
+static uint32_t block_cache_dirty_count_locked(const char* device_id,
+                                               uint8_t include_writeback) {
+    uint32_t count = 0U;
+
+    for (uint32_t index = 0U; index < BLOCK_CACHE_CAPACITY; index++) {
+        block_cache_entry_t* entry = &block_cache_entries[index];
+
+        if (entry->state == BLOCK_CACHE_DIRTY &&
+            (!device_id || block_cache_text_equal(entry->device_id,
+                                                  device_id))) {
+            count++;
+        }
+        if (include_writeback && entry->state == BLOCK_CACHE_WRITEBACK &&
+            (!device_id || block_cache_text_equal(entry->device_id,
+                                                  device_id))) {
+            count++;
+        }
+    }
+    return count;
+}
+
+static uint8_t block_cache_select_writeback_locked(const char* device_id,
+                                                   uint32_t* out_index) {
+    if (!out_index) {
+        LOG_ERROR("BLKCACHE", "Destino nulo na selecao de writeback");
+        return 0U;
+    }
+    for (uint32_t index = 0U; index < BLOCK_CACHE_CAPACITY; index++) {
+        block_cache_entry_t* entry = &block_cache_entries[index];
+
+        if (entry->state != BLOCK_CACHE_DIRTY || entry->references ||
+            entry->pins || (device_id &&
+                            !block_cache_text_equal(entry->device_id,
+                                                    device_id))) {
+            continue;
+        }
+        block_cache_lru_remove_locked(index);
+        entry->state = BLOCK_CACHE_WRITEBACK;
+        entry->references++;
+        entry->pins++;
+        *out_index = index;
+        return 1U;
+    }
+    return 0U;
+}
+
+static void block_cache_publish_durability_locked(
+    block_durability_state_t state, int error) {
+    block_cache_durability.state = state;
+    block_cache_durability.last_error = error;
+    block_cache_stats.durability_state = state;
+    block_cache_stats.last_sync_error = error;
+}
+
+static int block_cache_writeback_step_for_device(const char* device_id,
+                                                 uint32_t budget,
+                                                 uint32_t* out_written) {
+    uint32_t written = 0U;
+    int first_error = OK;
+
+    if (!out_written) {
+        LOG_ERROR("BLKCACHE", "Destino nulo no writeback do cache");
+        return ERR_NULL;
+    }
+    *out_written = 0U;
+    if (!block_cache_initialized) {
+        LOG_ERROR("BLKCACHE", "Writeback antes da inicializacao do cache");
+        return ERR_STATE;
+    }
+    if (!budget) {
+        LOG_ERROR("BLKCACHE", "Orcamento nulo no writeback do cache");
+        return ERR_INVALID;
+    }
+    while (written < budget) {
+        block_cache_entry_t* entry;
+        uint32_t index;
+        uint32_t lba;
+        char submitted_id[BLOCK_DEVICE_ID_SIZE];
+        uint8_t data[BLOCK_CACHE_BLOCK_SIZE];
+        bio_request_t request;
+        int result;
+
+        spinlock_acquire(&block_cache_lock);
+        if (!block_cache_select_writeback_locked(device_id, &index)) {
+            spinlock_release(&block_cache_lock);
+            break;
+        }
+        entry = &block_cache_entries[index];
+        lba = entry->lba;
+        block_cache_copy_text(submitted_id, BLOCK_DEVICE_ID_SIZE,
+                              entry->device_id);
+        kmemcpy(data, entry->data, BLOCK_CACHE_BLOCK_SIZE);
+        block_cache_stats.writeback_attempts++;
+        spinlock_release(&block_cache_lock);
+
+        kmemset(&request, 0, sizeof(request));
+        request.device_id = submitted_id;
+        request.lba = lba;
+        request.sector_count = 1U;
+        request.buffer = data;
+        request.buffer_bytes = BLOCK_CACHE_BLOCK_SIZE;
+        request.operation = BLOCK_OPERATION_WRITE;
+        result = block_submit_physical_sync(&request);
+
+        spinlock_acquire(&block_cache_lock);
+        if (result == OK) {
+            entry->state = BLOCK_CACHE_VALID;
+            entry->status = OK;
+            entry->dirty_first = 0U;
+            entry->dirty_end = 0U;
+            block_cache_stats.writeback_completed++;
+            block_cache_stats.physical_writes++;
+            written++;
+        } else {
+            entry->state = BLOCK_CACHE_DIRTY;
+            entry->status = result;
+            block_cache_stats.writeback_failures++;
+            block_cache_stats.errors++;
+            block_cache_stats.last_error = result;
+            block_cache_stats.last_sync_error = result;
+            first_error = result;
+        }
+        if (entry->pins) entry->pins--;
+        if (entry->references) entry->references--;
+        if (entry->state == BLOCK_CACHE_VALID ||
+            entry->state == BLOCK_CACHE_DIRTY) {
+            block_cache_lru_push_front_locked(index);
+        }
+        spinlock_release(&block_cache_lock);
+        block_cache_wake_entry(entry);
+        if (result != OK) {
+            LOG_ERROR("BLKCACHE", "Writeback fisico falhou");
+            break;
+        }
+    }
+    *out_written = written;
+    return first_error;
+}
+
+int block_cache_writeback_step(uint32_t budget, uint32_t* out_written) {
+    int result = block_cache_writeback_step_for_device(0, budget, out_written);
+
+    if (result != OK) LOG_ERROR("BLKCACHE", "Etapa de writeback falhou");
+    return result;
+}
+
+int block_cache_sync_device(const char* device_id) {
+    block_device_t device;
+    uint32_t dirty;
+    uint32_t written;
+    int result;
+
+    result = block_cache_validate_identifier(device_id);
+    if (result != OK) {
+        LOG_ERROR("BLKCACHE", "ID recusado no sync de dispositivo");
+        return result;
+    }
+    if (!block_cache_initialized) {
+        LOG_ERROR("BLKCACHE", "Sync de dispositivo antes da inicializacao");
+        return ERR_STATE;
+    }
+    result = block_find(device_id, &device);
+    if (result != OK) {
+        LOG_ERROR("BLKCACHE", "Dispositivo ausente durante sync");
+        return result;
+    }
+    if (!device.online) {
+        LOG_ERROR("BLKCACHE", "Dispositivo offline durante sync");
+        return ERR_DISK;
+    }
+    spinlock_acquire(&block_cache_lock);
+    if (block_cache_sync_active) {
+        spinlock_release(&block_cache_lock);
+        LOG_WARN("BLKCACHE", "Sync concorrente recusado");
+        return ERR_STATE;
+    }
+    block_cache_sync_active = 1U;
+    spinlock_release(&block_cache_lock);
+
+    for (;;) {
+        block_cache_entry_t* wait_entry = 0;
+        uint32_t wait_generation = 0U;
+
+        spinlock_acquire(&block_cache_lock);
+        dirty = block_cache_dirty_count_locked(device_id, 0U);
+        if (!dirty) {
+            for (uint32_t index = 0U; index < BLOCK_CACHE_CAPACITY; index++) {
+                block_cache_entry_t* entry = &block_cache_entries[index];
+
+                if (entry->state == BLOCK_CACHE_WRITEBACK &&
+                    block_cache_text_equal(entry->device_id, device_id)) {
+                    wait_entry = entry;
+                    wait_generation = entry->generation;
+                    break;
+                }
+            }
+            spinlock_release(&block_cache_lock);
+            if (wait_entry) {
+                result = block_cache_wait_for_entry(wait_entry,
+                                                    wait_generation);
+                if (result != OK) {
+                    LOG_ERROR("BLKCACHE", "Espera por writeback falhou");
+                    break;
+                }
+                continue;
+            }
+            result = OK;
+            break;
+        }
+        spinlock_release(&block_cache_lock);
+        result = block_cache_writeback_step_for_device(
+            device_id, BLOCK_CACHE_CAPACITY, &written);
+        if (result != OK || !written) {
+            if (result == OK) result = ERR_STATE;
+            break;
+        }
+    }
+    if (result == OK && (device.capabilities & BLOCK_DEVICE_CAP_FLUSH)) {
+        bio_request_t request;
+
+        kmemset(&request, 0, sizeof(request));
+        request.device_id = device.id;
+        request.operation = BLOCK_OPERATION_FLUSH;
+        spinlock_acquire(&block_cache_lock);
+        block_cache_stats.flush_operations++;
+        spinlock_release(&block_cache_lock);
+        result = block_submit_physical_sync(&request);
+        if (result != OK) LOG_ERROR("BLKCACHE", "Flush fisico falhou no sync");
+    }
+    spinlock_acquire(&block_cache_lock);
+    block_cache_sync_active = 0U;
+    block_cache_stats.sync_operations++;
+    block_cache_durability.devices_checked = 1U;
+    block_cache_durability.flush_supported =
+        (device.capabilities & BLOCK_DEVICE_CAP_FLUSH) ? 1U : 0U;
+    block_cache_durability.flush_unavailable = 0U;
+    if (result != OK) {
+        block_cache_publish_durability_locked(BLOCK_DURABILITY_ERROR, result);
+    } else if (!(device.capabilities & BLOCK_DEVICE_CAP_FLUSH)) {
+        block_cache_stats.flush_unavailable++;
+        block_cache_stats.degraded_syncs++;
+        block_cache_durability.flush_unavailable = 1U;
+        block_cache_publish_durability_locked(BLOCK_DURABILITY_DEGRADED,
+                                               OK);
+    } else {
+        block_cache_durability.flush_unavailable = 0U;
+        block_cache_publish_durability_locked(BLOCK_DURABILITY_READY, OK);
+    }
+    spinlock_release(&block_cache_lock);
+    if (result != OK) LOG_ERROR("BLKCACHE", "Sync de dispositivo falhou");
+    return result;
+}
+
+int block_cache_sync_all(void) {
+    block_durability_status_t aggregate;
+    uint32_t count;
+    int first_error = OK;
+
+    kmemset(&aggregate, 0, sizeof(aggregate));
+    aggregate.state = BLOCK_DURABILITY_READY;
+    aggregate.last_error = OK;
+    if (!block_cache_initialized) {
+        LOG_ERROR("BLKCACHE", "Sync global antes da inicializacao");
+        return ERR_STATE;
+    }
+    if (block_get_count(&count) != OK) {
+        LOG_ERROR("BLKCACHE", "Falha ao enumerar dispositivos no sync global");
+        return ERR_STATE;
+    }
+    for (uint32_t index = 0U; index < count; index++) {
+        block_device_t device;
+        block_durability_status_t current;
+        int result = block_get_at(index, &device);
+
+        if (result != OK) {
+            if (first_error == OK) first_error = result;
+            aggregate.state = BLOCK_DURABILITY_ERROR;
+            continue;
+        }
+        result = block_cache_sync_device(device.id);
+        if (result != OK && first_error == OK) first_error = result;
+        if (block_cache_get_durability_status(&current) != OK) {
+            if (first_error == OK) first_error = ERR_STATE;
+            aggregate.state = BLOCK_DURABILITY_ERROR;
+            continue;
+        }
+        aggregate.devices_checked++;
+        aggregate.flush_supported += current.flush_supported;
+        aggregate.flush_unavailable += current.flush_unavailable;
+        if (result != OK || current.state == BLOCK_DURABILITY_ERROR) {
+            aggregate.state = BLOCK_DURABILITY_ERROR;
+            aggregate.last_error = result != OK ? result : current.last_error;
+        } else if (current.state == BLOCK_DURABILITY_DEGRADED &&
+                   aggregate.state == BLOCK_DURABILITY_READY) {
+            aggregate.state = BLOCK_DURABILITY_DEGRADED;
+        }
+    }
+    spinlock_acquire(&block_cache_lock);
+    block_cache_durability = aggregate;
+    block_cache_stats.durability_state = aggregate.state;
+    block_cache_stats.last_sync_error = first_error;
+    spinlock_release(&block_cache_lock);
+    if (first_error != OK) LOG_ERROR("BLKCACHE", "Sync global falhou");
+    return first_error;
 }
 
 static int block_cache_validate_identifier(const char* device_id) {
@@ -750,7 +1360,10 @@ static int block_cache_invalidate(const char* device_id, uint32_t lba,
         LOG_ERROR("BLKCACHE", "Faixa invalida na invalidacao do cache");
         return count ? ERR_OVERFLOW : ERR_INVALID;
     }
-    if (!block_cache_initialized) return ERR_STATE;
+    if (!block_cache_initialized) {
+        LOG_ERROR("BLKCACHE", "Autoteste antes da inicializacao do cache");
+        return ERR_STATE;
+    }
     spinlock_acquire(&block_cache_lock);
     if (all_device) {
         for (uint32_t index = 0U; index < BLOCK_CACHE_CAPACITY; index++) {
@@ -758,7 +1371,8 @@ static int block_cache_invalidate(const char* device_id, uint32_t lba,
 
             if (entry->state != BLOCK_CACHE_FREE &&
                 block_cache_text_equal(entry->device_id, device_id) &&
-                !block_cache_entry_eligible(entry)) {
+                (!block_cache_entry_eligible(entry) ||
+                 entry->waiters.waiters)) {
                 spinlock_release(&block_cache_lock);
                 LOG_WARN("BLKCACHE", "Invalidacao recusada por entrada ocupada");
                 return ERR_STATE;
@@ -892,7 +1506,8 @@ int block_cache_validate_state(void) {
                 entry->hash_next != BLOCK_CACHE_INVALID_INDEX ||
                 entry->lru_previous != BLOCK_CACHE_INVALID_INDEX ||
                 entry->lru_next != BLOCK_CACHE_INVALID_INDEX ||
-                entry->references || entry->pins) {
+                entry->references || entry->pins || entry->dirty_first ||
+                entry->dirty_end) {
                 spinlock_release(&block_cache_lock);
                 LOG_ERROR("BLKCACHE", "Entrada livre contaminada no cache");
                 return ERR_STATE;
@@ -921,6 +1536,33 @@ int block_cache_validate_state(void) {
             LOG_ERROR("BLKCACHE", "Entrada nao elegivel entrou na LRU");
             return ERR_STATE;
         }
+        if ((entry->state == BLOCK_CACHE_DIRTY ||
+             entry->state == BLOCK_CACHE_WRITEBACK) &&
+            (entry->dirty_end <= entry->dirty_first ||
+             entry->dirty_end > BLOCK_CACHE_BLOCK_SIZE)) {
+            spinlock_release(&block_cache_lock);
+            LOG_ERROR("BLKCACHE", "Faixa suja invalida no cache");
+            return ERR_STATE;
+        }
+        if ((entry->state == BLOCK_CACHE_VALID ||
+             entry->state == BLOCK_CACHE_ERROR) &&
+            (entry->dirty_first || entry->dirty_end)) {
+            spinlock_release(&block_cache_lock);
+            LOG_ERROR("BLKCACHE", "Entrada limpa possui faixa suja");
+            return ERR_STATE;
+        }
+        if (entry->state == BLOCK_CACHE_WRITEBACK &&
+            (!entry->pins || !entry->references)) {
+            spinlock_release(&block_cache_lock);
+            LOG_ERROR("BLKCACHE", "Writeback sem referencia protegida");
+            return ERR_STATE;
+        }
+    }
+    if (block_cache_durability.state > BLOCK_DURABILITY_ERROR ||
+        block_cache_stats.durability_state > BLOCK_DURABILITY_ERROR) {
+        spinlock_release(&block_cache_lock);
+        LOG_ERROR("BLKCACHE", "Estado de durabilidade invalido");
+        return ERR_STATE;
     }
     spinlock_release(&block_cache_lock);
     return OK;
@@ -955,6 +1597,12 @@ static int block_cache_test_submit(block_request_t* request) {
             LOG_WARN("BLKCACHE", "Backend mock simulou erro de escrita");
             return context->forced_result;
         }
+    } else if (request->operation == BLOCK_OPERATION_FLUSH) {
+        context->flushes++;
+        if (context->forced_flush_result != OK) {
+            LOG_WARN("BLKCACHE", "Backend mock simulou erro de flush");
+            return context->forced_flush_result;
+        }
     }
     request->completed_sectors = request->sector_count;
     return OK;
@@ -976,6 +1624,7 @@ static void block_cache_test_device(block_device_t* device,
     device->ops.submit = block_cache_test_submit;
     context->seed = seed;
     context->forced_result = OK;
+    context->forced_flush_result = OK;
 }
 
 static int block_cache_test_inventory(char ids[][BLOCK_DEVICE_ID_SIZE],
@@ -1030,16 +1679,20 @@ int block_cache_self_test(void) {
     block_device_t device_a;
     block_device_t device_b;
     block_cache_stats_t stats;
+    uint32_t written;
     uint32_t initial_count;
     uint32_t reads_before;
     int result;
 
-    if (!block_cache_initialized) return ERR_STATE;
+    if (!block_cache_initialized) {
+        LOG_ERROR("BLKCACHE", "Autoteste antes da inicializacao do cache");
+        return ERR_STATE;
+    }
     if (block_cache_test_inventory(initial_ids, &initial_count) != OK) {
         LOG_ERROR("BLKCACHE", "Falha ao salvar inventario do autoteste");
         return ERR_STATE;
     }
-    if (block_cache_clear() != OK) {
+    if (block_cache_sync_all() != OK || block_cache_clear() != OK) {
         LOG_ERROR("BLKCACHE", "Cache ocupado antes do autoteste");
         return ERR_STATE;
     }
@@ -1116,16 +1769,51 @@ int block_cache_self_test(void) {
     if (block_read(device_a.id, 12U, 1U, first_buffer) != OK) {
         goto block_cache_self_test_fail;
     }
-    kmemset(write_buffer, 0x5A, sizeof(write_buffer));
-    if (block_write(device_a.id, 12U, 1U, write_buffer) != OK ||
-        block_read(device_a.id, 12U, 1U, first_buffer) != OK) {
+    write_buffer[0] = 0x5AU;
+    write_buffer[1] = 0x6BU;
+    write_buffer[2] = 0x7CU;
+    if (block_cache_write(&device_a, 12U, 10U, write_buffer, 3U) != OK ||
+        block_read(device_a.id, 12U, 1U, first_buffer) != OK ||
+        first_buffer[0] != (uint8_t)(BLOCK_CACHE_TEST_SEED_A + 12U) ||
+        first_buffer[10] != 0x5AU || first_buffer[12] != 0x7CU ||
+        context_a.writes != 0U) {
         goto block_cache_self_test_fail;
     }
-    if (context_a.reads < 2U || block_cache_get_stats(&stats) != OK ||
+    if (block_cache_writeback_step(1U, &written) != OK || written != 1U ||
+        context_a.writes != 1U || block_cache_get_stats(&stats) != OK ||
+        stats.dirty_entries != 0U || block_cache_validate_state() != OK) {
+        goto block_cache_self_test_fail;
+    }
+    kmemset(write_buffer, 0x5A, sizeof(write_buffer));
+    context_a.forced_result = ERR_TIMEOUT;
+    if (block_write(device_a.id, 13U, 1U, write_buffer) != OK ||
+        block_cache_writeback_step(1U, &written) != ERR_TIMEOUT ||
+        written != 0U || block_cache_get_stats(&stats) != OK ||
+        stats.dirty_entries == 0U) {
+        goto block_cache_self_test_fail;
+    }
+    context_a.forced_result = OK;
+    if (block_cache_sync_device(device_a.id) != OK ||
+        context_a.writes != 3U) {
+        goto block_cache_self_test_fail;
+    }
+    device_a.capabilities = BLOCK_DEVICE_CAP_FLUSH;
+    if (block_register(&device_a) != OK) goto block_cache_self_test_fail;
+    if (block_write(device_a.id, 14U, 1U, write_buffer) != OK) {
+        goto block_cache_self_test_fail;
+    }
+    context_a.forced_flush_result = ERR_TIMEOUT;
+    if (block_cache_sync_device(device_a.id) != ERR_TIMEOUT ||
+        context_a.flushes != 1U) {
+        goto block_cache_self_test_fail;
+    }
+    context_a.forced_flush_result = OK;
+    if (block_cache_get_stats(&stats) != OK ||
         stats.hits == 0U || stats.misses == 0U || stats.evictions == 0U ||
         stats.invalidations == 0U || block_cache_validate_state() != OK) {
         goto block_cache_self_test_fail;
     }
+    if (block_cache_sync_device(device_a.id) != OK) goto block_cache_self_test_fail;
     if (block_unregister(device_a.id) != OK ||
         block_unregister(device_b.id) != OK ||
         block_cache_clear() != OK ||
@@ -1136,6 +1824,9 @@ int block_cache_self_test(void) {
     return OK;
 
 block_cache_self_test_fail:
+    context_a.forced_result = OK;
+    context_a.forced_flush_result = OK;
+    (void)block_cache_sync_all();
     (void)block_unregister(device_a.id);
     (void)block_unregister(device_b.id);
     (void)block_cache_clear();

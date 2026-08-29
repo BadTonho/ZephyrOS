@@ -270,6 +270,22 @@ static int syscall_user_file_lseek(const registers_t* regs) {
     return paging_copy_to_user((void*)regs->esi, &position, sizeof(position));
 }
 
+static int syscall_user_file_fsync(const registers_t* regs) {
+    if (regs->ecx || regs->edx || regs->esi) {
+        LOG_ERROR("SYSCALL", "fsync recebeu argumentos excedentes");
+        return ERR_INVALID;
+    }
+    return app_api_file_fsync((app_handle_t)regs->ebx);
+}
+
+static int syscall_user_sync(const registers_t* regs) {
+    if (regs->ebx || regs->ecx || regs->edx || regs->esi) {
+        LOG_ERROR("SYSCALL", "sync recebeu argumentos excedentes");
+        return ERR_INVALID;
+    }
+    return app_api_sync();
+}
+
 static int syscall_user_file_ioctl(const registers_t* regs) {
     app_speaker_tone_t tone;
     int result;
@@ -451,6 +467,10 @@ static int syscall_dispatch_user(registers_t* regs) {
             return app_api_file_close((app_handle_t)regs->ebx);
         case APP_SYSCALL_FILE_LSEEK:
             return syscall_user_file_lseek(regs);
+        case APP_SYSCALL_FSYNC:
+            return syscall_user_file_fsync(regs);
+        case APP_SYSCALL_SYNC:
+            return syscall_user_sync(regs);
         case APP_SYSCALL_CHDIR:
             return syscall_user_chdir(regs);
         case APP_SYSCALL_GETCWD:
@@ -520,6 +540,18 @@ static int syscall_dispatch(registers_t* regs) {
             return app_api_file_lseek((app_handle_t)regs->ebx,
                                       (int32_t)regs->ecx, regs->edx,
                                       (uint32_t*)regs->esi);
+        case APP_SYSCALL_FSYNC:
+            if (regs->ecx || regs->edx || regs->esi) {
+                LOG_ERROR("SYSCALL", "fsync ring0 recebeu argumentos excedentes");
+                return ERR_INVALID;
+            }
+            return app_api_file_fsync((app_handle_t)regs->ebx);
+        case APP_SYSCALL_SYNC:
+            if (regs->ebx || regs->ecx || regs->edx || regs->esi) {
+                LOG_ERROR("SYSCALL", "sync ring0 recebeu argumentos excedentes");
+                return ERR_INVALID;
+            }
+            return app_api_sync();
         case APP_SYSCALL_CHDIR:
             return app_api_chdir((const char*)regs->ebx);
         case APP_SYSCALL_GETCWD:

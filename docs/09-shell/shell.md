@@ -140,11 +140,14 @@ O prompt é verde (`0x0A`) e aparece após cada comando.
 
 ### Diagnosticos de armazenamento
 
-Os comandos `blkstat`, `cachestat` e `cache clear` passam pela tabela unica do
-dispatcher e nao criam um caminho de entrada paralelo. `blkstat` observa a
-fila BLK1; `cachestat` observa o cache estatico BLK2 de 64 blocos; `cache clear`
-remove somente entradas limpas e elegiveis. Argumentos fora do contrato sao
-rejeitados pelo handler correspondente antes de qualquer mutacao.
+Os comandos `blkstat`, `cachestat`, `cache clear` e `sync` passam pela tabela
+unica do dispatcher e nao criam um caminho de entrada paralelo. `blkstat`
+observa a fila BLK1; `cachestat` observa o cache estatico BLK2/BLK3 de 64
+blocos; `cache clear` remove somente entradas limpas e elegiveis; `sync`
+sincroniza globalmente o writeback e publica a durabilidade. Argumentos fora
+do contrato sao rejeitados pelo handler correspondente antes de qualquer
+mutacao. A sincronizacao por descritor permanece na VFS (`vfs_fsync`) e nas
+syscalls de aplicacao.
 
 ---
 

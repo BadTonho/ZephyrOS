@@ -2735,3 +2735,12 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   fases com `falhas=0` e `resultado=OK`. O `health check` manteve apenas os
   estados opcionais `DISABLED`/`DEGRADED` já esperados no perfil QEMU.
   A confirmação funcional permite marcar o BLK2 como concluído no roadmap.
+
+- BLK3: implementacao de writeback e sincronizacao explicita registrada.
+  Implementada em: 2026-08-29 17:26:28 -03:00 (America/Sao_Paulo).
+  Foram adicionados escrita em cache com faixa parcial, estados dirty/writeback,
+  writeback periodico limitado, sincronizacao por dispositivo e global,
+  durabilidade READY/DEGRADED/ERROR, FLUSH CACHE condicional no ATA,
+  `vfs_fsync`, `vfs_sync`, syscalls 21/22 e o comando `sync`. O agente nao
+  executou build, testes ou QEMU; a validacao funcional e a confirmacao para
+  marcar o BLK3 no resumo do roadmap permanecem pendentes.

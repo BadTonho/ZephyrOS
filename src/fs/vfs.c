@@ -64,6 +64,7 @@ static int vfs_regular_read(file_t* file, void* buffer, uint32_t size,
 static int vfs_regular_write(file_t* file, const void* buffer, uint32_t size,
                              uint32_t* bytes_written);
 static int vfs_regular_close(file_t* file);
+static int vfs_regular_sync(file_t* file);
 static int vfs_regular_lseek(file_t* file, int32_t offset, uint32_t whence,
                              uint32_t* position);
 static int vfs_pipe_open(vnode_t* vnode, file_t* file);
@@ -84,25 +85,29 @@ static int vfs_unsupported_lseek(file_t* file, int32_t offset,
                                  uint32_t whence, uint32_t* position);
 static int vfs_unsupported_ioctl(file_t* file, uint32_t request,
                                  void* argument);
+static int vfs_unsupported_sync(file_t* file);
 
 static const file_operations_t vfs_regular_operations = {
     vfs_regular_open, vfs_regular_read, vfs_regular_write,
-    vfs_regular_close, vfs_regular_lseek, vfs_unsupported_ioctl
+    vfs_regular_close, vfs_regular_lseek, vfs_unsupported_ioctl,
+    vfs_regular_sync
 };
 
 static const file_operations_t vfs_stdin_operations = {
     vfs_unsupported_open, vfs_stream_read, vfs_unsupported_write,
-    vfs_unsupported_close, vfs_unsupported_lseek, vfs_unsupported_ioctl
+    vfs_unsupported_close, vfs_unsupported_lseek, vfs_unsupported_ioctl,
+    vfs_unsupported_sync
 };
 
 static const file_operations_t vfs_stdout_operations = {
     vfs_unsupported_open, vfs_unsupported_read, vfs_stream_write,
-    vfs_unsupported_close, vfs_unsupported_lseek, vfs_unsupported_ioctl
+    vfs_unsupported_close, vfs_unsupported_lseek, vfs_unsupported_ioctl,
+    vfs_unsupported_sync
 };
 
 static const file_operations_t vfs_pipe_operations = {
     vfs_pipe_open, vfs_pipe_read, vfs_pipe_write, vfs_pipe_close,
-    vfs_pipe_lseek, vfs_unsupported_ioctl
+    vfs_pipe_lseek, vfs_unsupported_ioctl, vfs_unsupported_sync
 };
 
 static void vfs_copy_text(char* destination, uint32_t capacity,
@@ -677,6 +682,12 @@ static int vfs_unsupported_ioctl(file_t* file, uint32_t request,
     return ERR_UNAVAILABLE;
 }
 
+static int vfs_unsupported_sync(file_t* file) {
+    (void)file;
+    LOG_WARN("FS", "Sync nao suportado pelo objeto VFS");
+    return ERR_UNAVAILABLE;
+}
+
 static int vfs_regular_open(vnode_t* vnode, file_t* file) {
     vfs_file_context_t* context;
 
@@ -745,6 +756,23 @@ static int vfs_regular_close(file_t* file) {
                           context->lookup.mount_generation);
     }
     return OK;
+}
+
+static int vfs_regular_sync(file_t* file) {
+    vfs_file_context_t* context;
+
+    if (!file || !file->vnode) {
+        LOG_ERROR("FS", "Arquivo nulo no fsync VFS");
+        return ERR_NULL;
+    }
+    context = (vfs_file_context_t*)file->vnode->private_data;
+    if (!context || vfs_mount_validate_reference(
+            context->lookup.mount_slot,
+            context->lookup.mount_generation) != OK) {
+        LOG_ERROR("FS", "Montagem invalida no fsync VFS");
+        return ERR_STATE;
+    }
+    return storage_sync_volume(context->lookup.volume_id);
 }
 
 static int vfs_seek_base(file_t* file, uint32_t whence, uint32_t* base) {
@@ -1418,6 +1446,37 @@ int vfs_close(int32_t fd) {
     return result;
 }
 
+int vfs_fsync(int32_t fd) {
+    file_t* file;
+    int result;
+
+    result = vfs_begin_operation(fd, &file);
+    if (result != OK) return result;
+    if (!file->vnode->operations->sync) {
+        result = ERR_UNAVAILABLE;
+    } else {
+        result = file->vnode->operations->sync(file);
+    }
+    vfs_end_operation(file);
+    spinlock_acquire(&vfs_lock);
+    if (result != OK) vfs_metrics.failures++;
+    spinlock_release(&vfs_lock);
+    if (result != OK) LOG_ERROR("FS", "Fsync VFS falhou");
+    return result;
+}
+
+int vfs_sync(void) {
+    int result;
+
+    if (!vfs_ready) {
+        LOG_ERROR("FS", "Sync global solicitado com VFS indisponivel");
+        return ERR_UNAVAILABLE;
+    }
+    result = storage_sync_all();
+    if (result != OK) LOG_ERROR("FS", "Sync global VFS falhou");
+    return result;
+}
+
 int vfs_lseek(int32_t fd, int32_t offset, uint32_t whence,
               uint32_t* position) {
     file_t* file;
@@ -1725,7 +1784,8 @@ static int vfs_test_write(file_t* file, const void* buffer, uint32_t size,
 
 static const file_operations_t vfs_test_operations = {
     vfs_unsupported_open, vfs_test_read, vfs_test_write,
-    vfs_unsupported_close, vfs_regular_lseek, vfs_unsupported_ioctl
+    vfs_unsupported_close, vfs_regular_lseek, vfs_unsupported_ioctl,
+    vfs_unsupported_sync
 };
 
 static void vfs_test_count(vfs_test_result_t* result, uint8_t passed) {

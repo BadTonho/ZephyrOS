@@ -71,6 +71,30 @@ int app_files_close(app_handle_t handle) {
     return vfs_close((int32_t)handle);
 }
 
+int app_files_fsync(app_handle_t handle) {
+    int result;
+
+    if (!app_files_is_ready()) {
+        LOG_ERROR("APP_FILES", "Fsync antes da inicializacao");
+        return ERR_STATE;
+    }
+    result = vfs_fsync((int32_t)handle);
+    if (result != OK) LOG_ERROR("APP_FILES", "Fsync VFS falhou");
+    return result;
+}
+
+int app_files_sync(void) {
+    int result;
+
+    if (!app_files_is_ready()) {
+        LOG_ERROR("APP_FILES", "Sync antes da inicializacao");
+        return ERR_STATE;
+    }
+    result = vfs_sync();
+    if (result != OK) LOG_ERROR("APP_FILES", "Sync VFS falhou");
+    return result;
+}
+
 int app_files_lseek(app_handle_t handle, int32_t offset, uint32_t whence,
                     uint32_t* position) {
     if (!app_files_is_ready()) {
