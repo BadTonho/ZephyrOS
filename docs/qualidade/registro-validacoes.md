@@ -2725,3 +2725,13 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   dispositivos mock. Escritas continuam diretas e não há writeback no BLK2.
   O agente não executou build, testes ou QEMU; a validação funcional e a
   confirmação para marcar o BLK2 no resumo do roadmap permanecem pendentes.
+
+- BLK2: validação funcional confirmada pelo usuário no QEMU.
+  Confirmada em: 2026-08-29 16:22:36 -03:00 (America/Sao_Paulo).
+  `cachestat teste`, `cache` e `cache clear extra` foram recusados com uso,
+  sem alteração indevida; `cache clear` removeu as 64 entradas elegíveis.
+  `storage check ata0p1` permaneceu consistente, `regcheck full` publicou
+  `camada_bloco OK` e `RegCheck: OK`, e `appcheck compact` concluiu as oito
+  fases com `falhas=0` e `resultado=OK`. O `health check` manteve apenas os
+  estados opcionais `DISABLED`/`DEGRADED` já esperados no perfil QEMU.
+  A confirmação funcional permite marcar o BLK2 como concluído no roadmap.
