@@ -53,6 +53,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/core/keyboard.h` | `docs/05-drivers/drivers.md` |
 | `src/include/core/log.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/memory.h` | `docs/04-kernel/kernel.md` |
+| `src/include/core/net_buffer.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/net_socket.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/network_manager.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/wifi_manager.h` | `docs/04-kernel/kernel.md` |
@@ -203,6 +204,14 @@ driver, interface L3, vinculo Ethernet e DHCP pendente. Os headers de E1000 e
 RTL8139 inicializam o dispositivo PCI exato; IDT oferece handlers
 compartilhados, ocorrencias e quantidade de handlers por linha, e PCI confirma
 I/O Space com Bus Mastering.
+
+No NET0, `src/include/core/net_buffer.h` define o descriptor estatico de
+buffers, seus owners, estados, referencias, geometria, conclusao e metricas.
+As transicoes invalidas retornam erros canonicos. `net_buffer_self_test()` usa
+fixtures privadas e restaura as metricas; a Ethernet mantem seus callbacks e
+o modelo de copia sincrona. Nenhum driver transfere ownership de DMA, e
+`sk_buff_t`, clones/fragmentos reais e zero-copy permanecem fora deste
+contrato.
 
 Desde a EP7.0, `src/include/core/wifi_manager.h` define um inventario somente-
 leitura para candidatos PCI de rede que nao sejam E1000 ou RTL8139. Na EP7.1B,

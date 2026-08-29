@@ -829,6 +829,13 @@ em modo classico e o dispositivo
 de validacao. Promiscuidade, multicast, VLAN e modo C+ nao fazem parte do
 contrato.
 
+No NET0, E1000 e RTL8139 continuam usando os callbacks Ethernet existentes
+com copia sincrona. O driver entrega ou consome os dados somente durante o
+callback; nenhum driver transfere ownership de DMA ao protocolo. A camada
+Ethernet associa um descriptor privado a cada RX/TX e conclui seu lifetime
+antes de reciclar o pacote. Nao ha garantia de zero-copy, clones reais,
+fragmentos reais ou `sk_buff_t` nesta etapa.
+
 ### Estrutura
 
 ```c

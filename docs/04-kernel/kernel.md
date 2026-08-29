@@ -661,6 +661,34 @@ S2.7 segue [RFC 9293](https://www.rfc-editor.org/rfc/rfc9293.html) para TCP,
 [RFC 6298](https://www.rfc-editor.org/rfc/rfc6298.html) para RTO e
 [RFC 9112](https://www.rfc-editor.org/rfc/rfc9112.html) para framing HTTP/1.1.
 
+### NET0: contrato de ownership e lifetime de buffers
+
+O runtime de buffers de rede e definido por `src/include/core/net_buffer.h` e
+implementado em `src/core/net_buffer.c`. Cada descriptor possui estado,
+owner (`DRIVER`, `ETHERNET`, `PROTOCOL` ou `SOCKET`), referencia, capacidade,
+headroom, length, tailroom, alinhamento e erro de conclusao. As transicoes
+permitidas sao:
+
+`ALLOCATED -> RX | QUEUED | IN_FLIGHT | DROPPED`,
+`RX -> QUEUED | IN_FLIGHT | DELIVERED | DROPPED`,
+`QUEUED -> IN_FLIGHT | DROPPED`, `IN_FLIGHT -> DELIVERED | DROPPED` e
+`DELIVERED | DROPPED -> FREED`. `FREED` e terminal e a ultima referencia
+somente pode ser liberada apos conclusao ou descarte.
+
+O rastreamento e estatico e limitado a 32 descriptors; nenhum ponteiro de
+payload externo e retido. A Ethernet integra o descriptor ao `net_packet_t`
+privado. RX e TX usam buffers emprestados e callbacks sincronos: os dados
+recebidos e enviados somente sao validos durante o callback. O
+driver nao transfere ownership de DMA no NET0. As copias feitas nas fronteiras
+Ethernet e das filas de socket sao medidas; clones, fragmentos, zero-copy,
+`sk_buff_t`, sockets genericos e `poll/select` permanecem em NET1+.
+
+`ethernet_validate_state()` inclui a validacao global dos buffers. O
+`net_buffer_self_test()` usa fixtures privadas e restaura suas metricas;
+`regcheck full` e `net check` o executam, enquanto `health check` denuncia
+buffers ativos, invariantes quebradas e erros residuais. `boot.asm` nao faz
+parte desta etapa.
+
 ## U2: criptografia e verificacao local ZUPD
 
 `src/include/core/version.h` centraliza a versao `0.1.0`, epoch `0` e o texto

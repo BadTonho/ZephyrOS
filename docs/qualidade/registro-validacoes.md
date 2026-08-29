@@ -7,6 +7,20 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## NET0 - contrato de ownership e lifetime de buffers
+
+Implementacao registrada em: 2026-08-29 19:43:14 (America/Sao_Paulo)
+
+- `net_buffer` foi adicionado com estados, owners, referencias, conclusao,
+  validacao, rastreamento estatico e metricas.
+- Ethernet e socket continuam com callbacks sincronos e copia; o descriptor
+  privado acompanha RX/TX sem transferencia de ownership de DMA.
+- `net check`, `regcheck full` e `health check` foram integrados sem criar
+  comando novo. `boot.asm` nao foi alterado.
+- Gates `make q3check`, `make clean && make`, `make run` e a matriz QEMU ainda
+  aguardam execucao e confirmacao funcional do usuario; nenhum resultado de
+  compilacao ou QEMU e afirmado por esta entrada.
+
 ## EP7.0 — Inventário e diagnóstico seguro de candidatos Wi-Fi
 
 Implementação concluída em: 2026-08-23 18:41:57 (America/Sao_Paulo)

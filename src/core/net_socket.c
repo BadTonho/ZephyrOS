@@ -2,6 +2,7 @@
 #include "core/errors.h"
 #include "core/ipv4.h"
 #include "core/log.h"
+#include "core/net_buffer.h"
 #include "core/string.h"
 #include "core/tcp.h"
 #include "core/timer.h"
@@ -259,6 +260,7 @@ static int net_socket_tcp_event(tcp_connection_handle_t handle,
             LOG_WARN("NET", "Ring RX do socket ficou cheio");
             return ERR_OVERFLOW;
         }
+        net_buffer_note_copy(length);
         net_socket_status.bytes_received_tcp += length;
         net_socket_wake((uint32_t)index, 0U);
     } else if (event == TCP_EVENT_EOF) {
@@ -287,6 +289,10 @@ int net_socket_init(void) {
         LOG_WARN("NET", "Sockets nativos ja estavam inicializados");
         LOG_INFO("NET", "Sockets nativos inicializados com sucesso");
         return OK;
+    }
+    if (net_buffer_init() != OK) {
+        LOG_ERROR("NET", "Contrato de buffers indisponivel para sockets");
+        return ERR_STATE;
     }
     if (tcp_get_status(&tcp) != OK || !tcp.initialized) {
         LOG_ERROR("NET", "TCP indisponivel para sockets nativos");
@@ -435,6 +441,7 @@ int net_socket_send(net_socket_handle_t handle, const uint8_t* data,
         net_sockets[index].tx_buffer, NET_SOCKET_TX_CAPACITY,
         &net_sockets[index].tx_tail, &net_sockets[index].tx_count,
         data, length);
+    if (*out_written) net_buffer_note_copy(*out_written);
     net_socket_status.bytes_queued_tx += *out_written;
     return OK;
 }
@@ -473,6 +480,7 @@ int net_socket_receive(net_socket_handle_t handle, uint8_t* buffer,
     *out_read = net_socket_ring_read(
         socket->rx_buffer, NET_SOCKET_RX_CAPACITY,
         &socket->rx_head, &socket->rx_count, buffer, capacity);
+    if (*out_read) net_buffer_note_copy(*out_read);
     net_socket_status.bytes_read += *out_read;
     if (socket->tcp_handle) {
         tcp_set_receive_window(
@@ -616,6 +624,7 @@ static int net_socket_drain(uint32_t index) {
                        NET_SOCKET_TX_CAPACITY);
         chunk[offset] = socket->tx_buffer[position];
     }
+    net_buffer_note_copy(length);
     result = tcp_send(socket->tcp_handle, chunk, length, &accepted);
     if (result != OK) {
         socket->state = NET_SOCKET_STATE_ERROR;
