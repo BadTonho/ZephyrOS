@@ -40,6 +40,7 @@ Comandos disponiveis:
   blkstat   - Mostra a fila e metricas da camada de bloco
   cachestat - Mostra metricas do cache de blocos
   cache clear - Limpa entradas elegiveis do cache de blocos
+  sync      - Sincroniza o writeback de todos os dispositivos
   index     - Mostra, reconstrui, cancela ou valida o indice global
   search <termo> - Pesquisa nomes e caminhos em todos os volumes montados
   guitest   - Testa primitivas GUI 2D
@@ -351,20 +352,25 @@ disponivel e continua acessivel pelo caminho sincrono durante a inicializacao.
 
 ## `cachestat`
 
-Exibe as metricas cumulativas e o snapshot do cache de leitura BLK2. O comando
-aceita somente a forma sem argumentos; entradas extras exibem o uso e nao
-alteram contadores.
+Exibe as metricas cumulativas e o snapshot do cache BLK2/BLK3. O comando aceita
+somente a forma sem argumentos; entradas extras exibem o uso e nao alteram
+contadores.
 
 ```text
 zephyr> cachestat
 Cache: entradas=4/64 validas=4 memoria=32768 bytes
 Acessos: hits=12 misses=4 acerto=75% evitadas=12 fisicas=4 bypass=0
+Dirty: bytes=0 blocos=0 tentativas=0 concluidas=0 falhas=0 fisicas=0
+Sync: operacoes=0 flushes=0 sem_flush=0 degradados=0 ultimo_sync=0 durabilidade=READY erro=0
 Estado: evictions=0 invalidacoes=2 erros=0 lendo=0 sujas=0 writeback=0 fixadas=0 erro=0
 ```
 
 O cache mantem 64 blocos de 512 bytes, usa hash e LRU estaticos e atende
-automaticamente leituras FAT/VFS e DevFS feitas por `block_read()`. Escritas
-invalidam a faixa antes da submissao e o BLK2 nao realiza writeback.
+automaticamente leituras FAT/VFS e DevFS feitas por `block_read()`. No BLK3,
+`block_write()` copia para o cache e marca os blocos como sujos; o writeback
+periodico e limitado e `sync`/`fsync` fazem a sincronizacao explicita. Erros
+mantem os dados sujos e a ausencia de FLUSH deixa a durabilidade em
+`DEGRADED`.
 
 ## `cache clear`
 
@@ -378,6 +384,23 @@ Cache de blocos limpo.
 
 Somente `cache clear` e aceito. `cache`, `cache clear extra` e outros
 argumentos exibem `Uso: cache clear` sem alterar estado.
+
+## `sync`
+
+Sincroniza globalmente os blocos sujos de todos os dispositivos. O comando
+aceita somente zero argumentos; `sync extra` exibe `Uso: sync` e nao altera o
+estado. A escrita fisica ocorre antes do retorno. Quando o dispositivo nao
+oferece FLUSH, o comando ainda retorna `OK`, mas informa durabilidade
+`DEGRADED`; erros de writeback ou FLUSH propagam o codigo canonico.
+
+```text
+zephyr> sync
+Sync: writeback=2 falhas=0 durabilidade=READY
+```
+
+`fsync` e a forma por descritor exposta pela VFS e pela syscall 21; `sync`
+global usa a syscall 22. Terminais, pipes, speaker e dispositivos sem persistencia retornam
+`ERR_UNAVAILABLE`.
 
 ## `usb storage`
 
@@ -445,7 +468,7 @@ Classic. O Settings usa a mesma API e volta visualmente ao valor anterior
 quando uma aplicação é recusada.
 
 ## `health [summary]`
-Exibe métricas detalhadas do kernel, estado do recovery, paginação, processos e saúde estrutural da arquitetura. Também mostra o componente `Update` e separa verificação local, aplicação, rollback e remoto. Aplicacao fica `READY` somente em FAT12 com estado persistente integro; rollback exige backup valido; remoto U5 permanece `DISABLED` sem degradar o verificador local.
+Exibe métricas detalhadas do kernel, estado do recovery, paginação, processos e saúde estrutural da arquitetura. Também mostra o componente `Update` e separa verificação local, aplicação, rollback e remoto. O diagnóstico acusa `Block cache` quando há durabilidade `DEGRADED`/`ERROR`, blocos sujos ou writeback em andamento. Aplicacao fica `READY` somente em FAT12 com estado persistente integro; rollback exige backup valido; remoto U5 permanece `DISABLED` sem degradar o verificador local.
 
 Use `Page Up`, `Page Down`, `Home` e `End` para consultar toda a saida quando
 o relatorio ocupar mais de uma tela.

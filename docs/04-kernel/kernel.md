@@ -299,11 +299,18 @@ forma controlada e aparecem no `health`; apenas `power_shutdown()` e terminal.
   hash por dispositivo/LBA/tamanho e LRU por indices. Hits evitam a leitura
   fisica; misses carregam pela fila BLK1, agrupam setores contiguos quando
   possivel e fazem bypass quando o cache esta cheio sem vitima elegivel.
-  Escritas invalidam a faixa antes da fila e nao usam writeback. A API publica
-  `block_cache_get_stats()`, `block_cache_clear()`, invalidacao por dispositivo
-  ou faixa, validacao e autoteste; `cachestat` e `cache clear` sao os comandos
-  observaveis. Entradas `READING`, fixadas, sujas ou em writeback nao podem ser
-  removidas; invalidacoes sao atomicas.
+  No BLK3, `block_write()` grava logicamente no cache com faixa suja e
+  `block_submit_sync()` continua sendo o caminho fisico direto. O writeback
+  periodico usa uma work item de 250 ticks, com limite de 8 blocos por ciclo;
+  `sync`/`fsync` drenam os blocos sujos e submetem FLUSH ATA quando o IDENTIFY
+  publica suporte. A ausencia de FLUSH e durabilidade `DEGRADED`; erros
+  preservam `DIRTY`. `block_cache_sync_device()` e
+  `block_cache_sync_all()` sao as APIs de sincronizacao, e
+  `block_cache_get_stats()` publica bytes sujos, tentativas, sucessos, falhas,
+  syncs, flushes e estado de durabilidade. `sync` e `fsync` sao explicitos;
+  close e saida de processo nao sincronizam automaticamente. Entradas
+  `READING`, fixadas, sujas ou em writeback nao podem ser removidas;
+  invalidacoes sao atomicas.
   `storage_refresh()` reconcilia esse registro depois de cada atualizacao USB
   sem duplicar discos ou volumes.
 

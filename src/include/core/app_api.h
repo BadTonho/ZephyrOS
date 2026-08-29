@@ -140,6 +140,8 @@ int app_api_file_read(app_handle_t handle, uint8_t* buffer,
 int app_api_file_write(app_handle_t handle, const uint8_t* buffer,
                        uint32_t size, uint32_t* bytes_written);
 int app_api_file_close(app_handle_t handle);
+int app_api_file_fsync(app_handle_t handle);
+int app_api_sync(void);
 int app_api_file_lseek(app_handle_t handle, int32_t offset, uint32_t whence,
                        uint32_t* position);
 int app_api_file_ioctl(app_handle_t handle, uint32_t request, void* argument);

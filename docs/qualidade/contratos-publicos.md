@@ -544,11 +544,18 @@ driver sao propagados sem retry generico.
 Os campos `max_transfer_sectors` e `capabilities`, os callbacks opcionais de
 FLUSH/escrita com flags e o callback de submissao foram acrescentados ao final
 das structs existentes para preservar o uso legado. O limite atual e 255
-setores por requisicao, o setor logico permanece em 512 bytes e ATA/USB MSC
-continuam sem FLUSH/FUA. `block_read()` e `block_write()` mantem as assinaturas
-e usam o dispatcher. A camada impede unregister ou substituicao enquanto
-houver requisicoes pendentes; se a workqueue nao estiver disponivel, o caminho
-sincrono permanece funcional e `block_submit()` retorna `ERR_UNAVAILABLE`.
+setores por requisicao, o setor logico permanece em 512 bytes e FUA continua
+indisponivel. ATA publica `BLOCK_DEVICE_CAP_FLUSH` somente quando o IDENTIFY
+confirma FLUSH CACHE; USB MSC permanece sem FLUSH/FUA. `block_read()` e
+`block_write()` mantem as assinaturas: o primeiro usa o cache e o segundo faz
+write-back. `block_submit_sync()` continua fisico direto; o caminho interno
+`block_submit_physical_sync()` permite ao writeback escrever a entrada em
+`WRITEBACK` sem invalidar a propria chave. Unregister, refresh e substituicao
+sincronizam o dispositivo antes de invalidar o cache e recusam a operacao se
+restar dado sujo ou houver erro; requisicoes pendentes tambem bloqueiam a
+transicao. Se a workqueue nao estiver disponivel, o caminho sincrono e
+`block_write()` continuam funcionais e `block_submit()` retorna
+`ERR_UNAVAILABLE`.
 
 Desde o BLK2, `src/include/fs/block_cache.h` publica o cache de leitura de
 blocos. A capacidade e fixa em 64 entradas de `BLOCK_SECTOR_SIZE` bytes, sem
@@ -560,13 +567,26 @@ o backend, publicando `VALID` somente depois da transferencia concluida.
 
 `block_cache_get_stats()` retorna capacidade, memoria reservada, ocupacao,
 estados, pins, hits, misses, leituras evitadas e fisicas, evictions,
-invalidacoes, bypasses, erros, taxa de acerto e ultimo erro. As APIs de
-limpeza e invalidacao falham com `ERR_STATE` sem remover parcialmente a
-operacao quando existe referencia, pin, leitura, entrada suja, writeback ou
-waiter correspondente. Escritas invalidam a faixa antes de serem enfileiradas;
-o cache nao realiza escrita antecipada nem writeback no BLK2. `cachestat` exige
+invalidacoes, bypasses, erros, bytes sujos, tentativas/sucessos/falhas de
+writeback, escritas fisicas, syncs, flushes, estado de durabilidade, taxa de
+acerto e ultimos erros. `block_cache_write()` aceita faixa de bytes, faz
+preload fisico em miss parcial e nao guarda o buffer externo. O writeback
+periodico e limitado a 8 blocos por ciclo; erros mantem a entrada `DIRTY`.
+`block_cache_sync_device()` e `block_cache_sync_all()` drenam dirty blocks e
+submetem FLUSH quando suportado. `block_cache_get_durability_status()` publica
+`READY`, `DEGRADED` ou `ERROR`. As APIs de limpeza e invalidacao falham com
+`ERR_STATE` sem remover parcialmente a operacao quando existe referencia, pin,
+leitura, entrada suja, writeback ou waiter correspondente. `cachestat` exige
 zero argumentos e `cache clear` exige exatamente `clear`; entradas invalidas
 somente exibem o uso.
+
+`src/include/fs/vfs.h` acrescenta o callback final `file_operations_t.sync`,
+`vfs_fsync(fd)` e `vfs_sync()`. Arquivos regulares sincronizam seu volume;
+`/dev/hda` sincroniza o dispositivo de bloco; pipes, terminal, speaker e
+objetos sem persistencia retornam `ERR_UNAVAILABLE`. `app_files.h` e
+`app_api.h` acrescentam as fachadas correspondentes. `syscall.h` anexa
+`APP_SYSCALL_FSYNC` (21) e `APP_SYSCALL_SYNC` (22), sem renumerar a ABI
+existente; ambas rejeitam argumentos excedentes com `ERR_INVALID`.
 
 Desde a EP4.4, `src/include/core/input.h` define eventos HID Usage de teclado,
 eventos relativos de ponteiro, filas estaticas separadas, metricas e despacho

@@ -59,6 +59,7 @@ typedef struct {
     int (*lseek)(file_t* file, int32_t offset, uint32_t whence,
                  uint32_t* position);
     int (*ioctl)(file_t* file, uint32_t request, void* argument);
+    int (*sync)(file_t* file);
 } file_operations_t;
 
 struct vfs_vnode {
@@ -195,6 +196,8 @@ int vfs_read(int32_t fd, void* buffer, uint32_t size,
 int vfs_write(int32_t fd, const void* buffer, uint32_t size,
               uint32_t* bytes_written);
 int vfs_close(int32_t fd);
+int vfs_fsync(int32_t fd);
+int vfs_sync(void);
 int vfs_lseek(int32_t fd, int32_t offset, uint32_t whence,
               uint32_t* position);
 int vfs_ioctl(int32_t fd, uint32_t request, void* argument);

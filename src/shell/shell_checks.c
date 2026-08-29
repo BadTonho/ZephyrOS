@@ -2473,6 +2473,9 @@ static void cmd_appcheck_files(void) {
                                             APP_SEEK_SET,
                                             (uint32_t)&position, 0);
             cmd_appcheck_print_result("file_lseek", result);
+            result = syscall_invoke_kernel(APP_SYSCALL_FSYNC,
+                                            handle, 0, 0, 0, 0);
+            cmd_appcheck_print_result("file_fsync", result);
             result = syscall_invoke_kernel(APP_SYSCALL_FILE_CLOSE,
                                             handle, 0, 0, 0, 0);
             cmd_appcheck_print_result("file_close", result);
@@ -2827,6 +2830,12 @@ static void cmd_appcheck(void) {
                                     0, 0, 0, 0, 0);
     cmd_appcheck_print_result_with_expectation("process_exit", result,
                                                ERR_UNAVAILABLE);
+    result = syscall_invoke_kernel(APP_SYSCALL_FSYNC,
+                                    APP_HANDLE_INVALID, 0, 0, 0, 0);
+    cmd_appcheck_print_result_with_expectation("fsync invalido", result,
+                                               ERR_INVALID);
+    result = syscall_invoke_kernel(APP_SYSCALL_SYNC, 0, 0, 0, 0, 0);
+    cmd_appcheck_print_result("sync global", result);
     shell_appcheck_set_phase(SHELL_APPCHECK_PHASE_FILES);
     cmd_appcheck_files();
     shell_appcheck_set_phase(SHELL_APPCHECK_PHASE_PIPES);

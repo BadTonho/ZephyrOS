@@ -221,6 +221,7 @@ static int ata_detect(uint8_t slot, uint16_t io, uint16_t ctrl,
 
     dev->signature = ident[0];
     dev->capabilities = ident[49];
+    dev->flush_supported = (ident[82] & (1U << 12)) != 0U;
     dev->sectors = ident[60] | ((uint32_t)ident[61] << 16);
     if (dev->sectors > ATA_LBA28_MAX_SECTORS) {
         dev->sectors = ATA_LBA28_MAX_SECTORS;
@@ -511,6 +512,43 @@ int ata_write_device_sectors(uint8_t slot, uint32_t lba, uint8_t count,
 
 int ata_write_sectors(uint32_t lba, uint8_t count, const uint8_t* buffer) {
     return ata_write_to_device(ata_get_device(), lba, count, buffer);
+}
+
+int ata_flush_device(uint8_t slot) {
+    ata_device_t* dev;
+    int result;
+
+    if (slot >= ATA_MAX_DEVICES) {
+        LOG_ERROR("ATA", "Slot invalido no flush ATA");
+        return ERR_INVALID;
+    }
+    if (!driver_initialized) {
+        LOG_ERROR("ATA", "Flush ATA antes da inicializacao");
+        return ERR_STATE;
+    }
+    dev = &devices[slot];
+    if (!dev->present) {
+        LOG_ERROR("ATA", "Dispositivo ausente no flush ATA");
+        return ERR_NOT_FOUND;
+    }
+    if (!dev->flush_supported) {
+        LOG_WARN("ATA", "Flush ATA nao suportado pelo dispositivo");
+        return ERR_UNAVAILABLE;
+    }
+    result = ata_prepare_transfer(dev, 0U);
+    if (result != OK) {
+        dev->last_error = result;
+        LOG_ERROR("ATA", "Disco nao ficou pronto para flush ATA");
+        return result;
+    }
+    outb(dev->base_port + ATA_REG_COMMAND, ATA_CMD_FLUSH);
+    result = ata_wait_write_complete(dev->base_port);
+    dev->last_error = result;
+    if (result != OK) {
+        LOG_ERROR("ATA", "Flush ATA falhou");
+        return result;
+    }
+    return OK;
 }
 
 int ata_get_device_counters(uint8_t slot, uint32_t* out_reads,

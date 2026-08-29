@@ -31,6 +31,7 @@
 #define ATA_CMD_READ   0x20
 #define ATA_CMD_WRITE  0x30
 #define ATA_CMD_IDENTIFY 0xEC
+#define ATA_CMD_FLUSH    0xE7
 #define ATA_WAIT_LIMIT 100000U
 
 typedef struct {
@@ -47,6 +48,7 @@ typedef struct {
     int      last_error;
     char     model[41];
     int      present;
+    uint8_t  flush_supported;
 } ata_device_t;
 
 int  ata_init(void);
@@ -59,6 +61,7 @@ int  ata_read_device_sectors(uint8_t slot, uint32_t lba, uint8_t count,
                              uint8_t* buffer);
 int  ata_write_device_sectors(uint8_t slot, uint32_t lba, uint8_t count,
                               const uint8_t* buffer);
+int  ata_flush_device(uint8_t slot);
 int  ata_get_device_counters(uint8_t slot, uint32_t* out_reads,
                              uint32_t* out_writes);
 

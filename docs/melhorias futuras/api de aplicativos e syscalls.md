@@ -74,6 +74,8 @@ Os numeros atuais sao:
 | `18` | `pipe` | `EBX`: vetor de dois handles de saida |
 | `19` | `mmap` | `EBX`: tamanho; `ECX`: protecao; `EDX`: flags; `ESI`: endereco de saida |
 | `20` | `munmap` | `EBX`: endereco; `ECX`: tamanho |
+| `21` | `fsync` | `EBX`: fd; demais argumentos devem ser zero |
+| `22` | `sync` | sem argumentos; registradores de argumentos devem ser zero |
 
 O vetor `int 0x80` inicia com gate `0x8E` (DPL 0) e passa para `0xEE` (DPL 3)
 depois que paging, TSS, Idle e os processos essenciais estao prontos. A ponte
@@ -201,6 +203,17 @@ aceita somente um intervalo totalmente coberto por uma VMA anonima dinamica.
 Pode remover um subintervalo, inclusive dividindo a VMA em duas. As regioes
 fixas do loader nao podem ser removidas. Na ABI ring 3, `mmap` usa `EBX`,
 `ECX`, `EDX` e `ESI`; `munmap` usa `EBX` e `ECX`.
+
+### Sincronizacao da App API no BLK3
+
+`app_api_file_fsync()` e a syscall `21` validam o handle e sincronizam o
+volume associado ao arquivo regular ou o dispositivo de bloco `/dev/hda`.
+Pipes, terminal, speaker e dispositivos sem persistencia retornam
+`ERR_UNAVAILABLE`. `app_api_sync()` e a syscall `22` sincronizam globalmente
+todos os dispositivos com dados sujos. As duas syscalls rejeitam argumentos
+excedentes com `ERR_INVALID`; a ausencia de FLUSH pode concluir com `OK` e
+durabilidade `DEGRADED`, enquanto erros de writeback ou FLUSH sao propagados.
+Fechamento de arquivo e saida de processo nao fazem sync automatico.
 
 ### Contrato de console e ciclo de vida da Fase 6D
 

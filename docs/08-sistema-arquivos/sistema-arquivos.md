@@ -235,13 +235,31 @@ contiguas podem ser agrupadas ate o limite publicado pelo dispositivo. Quando
 nao ha entrada elegivel, a leitura faz bypass direto sem falhar.
 
 As entradas publicam `FREE`, `READING`, `VALID`, `DIRTY`, `WRITEBACK` e `ERROR`.
-Referencias, pins e wait queues impedem eviction ou descarte durante uso. As
-escritas continuam diretas e invalidam a faixa antes da submissao; entradas
-ocupadas, sujas ou em I/O fazem a operacao retornar `ERR_STATE`. A invalidacao
-por faixa, dispositivo, desmontagem, refresh ou substituicao e atomica. O
-BLK2 nao faz writeback, nao grava dados no cache e nao implementa FLUSH/FUA.
-`cachestat` expoe hits, misses, leituras fisicas, LRU, invalidacoes, bypasses,
-erros e estados; `cache clear` remove somente entradas limpas e elegiveis.
+Referencias, pins e wait queues impedem eviction ou descarte durante uso. No
+BLK3, `block_write()` copia dados para o cache e retorna depois da aceitação
+logica; uma escrita parcial faz preload fisico somente do setor necessario e
+preserva os bytes nao alterados. Nenhum ponteiro do chamador e retido.
+
+O writeback periodico usa uma work item a cada 250 ticks, processando ate 8
+blocos por ciclo e sem FLUSH fisico. `block_cache_sync_device()` e
+`block_cache_sync_all()` processam todos os blocos sujos e, quando suportado,
+submetem FLUSH ao dispositivo. ATA detecta FLUSH CACHE durante IDENTIFY e
+publica `BLOCK_DEVICE_CAP_FLUSH`; USB MSC continua somente-leitura e sem
+FLUSH/FUA. A ausencia de FLUSH retorna `OK` com durabilidade `DEGRADED`, e
+erros de escrita ou FLUSH mantem os dados sujos e propagam o erro.
+
+Entradas sujas, fixadas ou em I/O nao podem ser removidas por `cache clear`,
+refresh, desmontagem, unregister ou substituicao. Essas operacoes sincronizam
+antes da invalidacao e recusam a transicao quando o writeback falha. `sync` e
+`fsync` sao explicitos; fechamento de descritor e saida de processo nao fazem
+sync automatico. `cachestat` expoe hits, misses, leituras fisicas, bytes sujos,
+writeback, syncs, flushes, durabilidade e estados; `cache clear` remove
+somente entradas limpas e elegiveis.
+
+`vfs_fsync()` sincroniza o volume de arquivos regulares e o dispositivo de
+bloco `/dev/hda`; pipes, terminal, speaker e demais objetos sem persistencia
+retornam `ERR_UNAVAILABLE`. `vfs_sync()` e as syscalls append-only
+`APP_SYSCALL_FSYNC`/`APP_SYSCALL_SYNC` fornecem as fachadas correspondentes.
 
 Os IDs ATA permanecem `ata0` a `ata3`. Um MSC valido recebe um ID de bloco no
 formato `usb-ms-BB:DD.F-pN-aN-l0`, derivado do ID estavel da sessao UHCI. O
