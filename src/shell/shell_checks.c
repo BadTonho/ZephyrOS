@@ -30,6 +30,7 @@
 #include "ui/filemanager.h"
 #include "ui/icons.h"
 #include "memory/paging.h"
+#include "memory/vma.h"
 #include "core/string.h"
 #include "core/errors.h"
 #include "core/input.h"
@@ -301,6 +302,8 @@ static uint32_t shell_appcheck_vma_initial_pages = 0;
 static uint32_t shell_appcheck_vma_initial_directories = 0;
 static uint32_t shell_appcheck_vma_initial_users = 0;
 static uint32_t shell_appcheck_vma_initial_zombies = 0;
+static page_fault_stats_t shell_appcheck_vma_initial_faults;
+static uint32_t shell_appcheck_fault_pid = 0;
 static uint32_t shell_appcheck_user_count = 0;
 static uint32_t shell_appcheck_zombie_count = 0;
 static shell_builtin_app_t shell_appcheck_migration_app = SHELL_BUILTIN_APP_NONE;
@@ -359,6 +362,7 @@ static shell_job_step_result_t shell_checks_job_step(
                  shell_appcheck_loader_pid != 0U ||
                  shell_appcheck_migration_pid != 0U ||
                  shell_appcheck_vma_pid != 0U ||
+                 shell_appcheck_fault_pid != 0U ||
                  shell_waiting_user_test;
         if (active) return SHELL_JOB_STEP_PENDING;
         context->last_error = ERR_TIMEOUT;
@@ -372,6 +376,7 @@ static shell_job_step_result_t shell_checks_job_step(
              shell_appcheck_loader_pid != 0U ||
              shell_appcheck_migration_pid != 0U ||
              shell_appcheck_vma_pid != 0U ||
+             shell_appcheck_fault_pid != 0U ||
              shell_waiting_user_test;
     shell_job_set_phase(context, active ? "aguardando resultado" : "finalizado");
     if (active) return SHELL_JOB_STEP_PENDING;
@@ -403,6 +408,7 @@ static shell_job_step_result_t shell_checks_job_drain(
              shell_appcheck_loader_pid != 0U ||
              shell_appcheck_migration_pid != 0U ||
              shell_appcheck_vma_pid != 0U ||
+             shell_appcheck_fault_pid != 0U ||
              shell_waiting_user_test;
     return active ? SHELL_JOB_STEP_PENDING : SHELL_JOB_STEP_COMPLETE;
 }
@@ -739,6 +745,32 @@ static uint32_t shell_build_vma_test_image(void) {
     header.flags = APP_IMAGE_FLAGS_NONE;
     kmemcpy(appcheck_demo_image, &header, APP_IMAGE_HEADER_SIZE);
     return header.data_offset + header.data_size;
+}
+
+static uint32_t shell_build_pagefault_fault_image(void) {
+    app_image_header_t header;
+    uint8_t* code = appcheck_demo_image + APP_IMAGE_HEADER_SIZE;
+    uint32_t offset = 0U;
+
+    kmemset(appcheck_demo_image, 0, sizeof(appcheck_demo_image));
+    shell_demo_emit_mov(code, &offset, 0U, VMA_USER_MMAP_START);
+    code[offset++] = 0x8BU;
+    code[offset++] = 0x00U;
+    code[offset++] = 0xF4U;
+
+    kmemcpy(header.magic, "ZAPP", 4);
+    header.version = APP_IMAGE_VERSION;
+    header.architecture = APP_IMAGE_ARCH_I386;
+    header.header_size = APP_IMAGE_HEADER_SIZE;
+    header.code_offset = APP_IMAGE_HEADER_SIZE;
+    header.code_size = offset;
+    header.data_offset = APP_IMAGE_HEADER_SIZE + offset;
+    header.data_size = 0U;
+    header.entry_offset = 0U;
+    header.stack_size = APP_IMAGE_STACK_SIZE;
+    header.flags = APP_IMAGE_FLAGS_NONE;
+    kmemcpy(appcheck_demo_image, &header, APP_IMAGE_HEADER_SIZE);
+    return header.data_offset;
 }
 
 static uint32_t shell_build_input_test_image(uint8_t use_tty) {
@@ -2042,6 +2074,7 @@ static void shell_appcheck_finish_migration(const app_loader_result_t* result) {
     }
     if (completed_app == SHELL_BUILTIN_APP_MEM) {
         paging_user_stats_t paging;
+        page_fault_stats_t faults;
         uint32_t image_size = shell_build_vma_test_image();
         uint32_t pid = 0U;
         int start_result;
@@ -2052,10 +2085,25 @@ static void shell_appcheck_finish_migration(const app_loader_result_t* result) {
         shell_appcheck_vma_initial_users = process_get_user_count();
         shell_appcheck_vma_initial_zombies =
             process_get_state_count(PROCESS_STATE_ZOMBIE);
-        start_result = app_loader_run_image("VMAMM2.ZAP", appcheck_demo_image,
+        if (process_vma_get_page_fault_stats(&faults) != OK) {
+            LOG_ERROR("SHELL", "Falha ao consultar page faults do appcheck");
+            faults.handled = 0U;
+            faults.invalid = 0U;
+        }
+        shell_appcheck_vma_initial_faults = faults;
+        start_result = app_loader_run_image("VMAMM3.ZAP", appcheck_demo_image,
                                             image_size, 0, &pid);
         cmd_appcheck_print_result("vma_ring3_inicio", start_result);
         if (start_result == OK) {
+            paging_user_stats_t after_create;
+
+            paging_get_user_stats(&after_create);
+            cmd_appcheck_print_result(
+                "vma_lazy_reserva",
+                after_create.active_pages == shell_appcheck_vma_initial_pages &&
+                after_create.active_directories ==
+                    shell_appcheck_vma_initial_directories + 1U ?
+                    OK : ERR_STATE);
             shell_appcheck_vma_pid = pid;
             return;
         }
@@ -2065,6 +2113,7 @@ static void shell_appcheck_finish_migration(const app_loader_result_t* result) {
 
 static int shell_appcheck_vma_is_valid(const app_loader_result_t* result) {
     paging_user_stats_t paging;
+    page_fault_stats_t faults;
 
     if (!result || result->start_failed || result->faulted ||
         result->cancelled || result->exit_code != APP_EXIT_SUCCESS ||
@@ -2079,6 +2128,42 @@ static int shell_appcheck_vma_is_valid(const app_loader_result_t* result) {
         process_get_state_count(PROCESS_STATE_ZOMBIE) !=
             shell_appcheck_vma_initial_zombies) {
         LOG_ERROR("SHELL", "Fixture VMA deixou recursos de paging residuais");
+        return ERR_STATE;
+    }
+    if (process_vma_get_page_fault_stats(&faults) != OK ||
+        faults.handled <= shell_appcheck_vma_initial_faults.handled ||
+        faults.invalid != shell_appcheck_vma_initial_faults.invalid) {
+        LOG_ERROR("SHELL", "Fixture VMA nao exercitou faults lazy esperadas");
+        return ERR_STATE;
+    }
+    return OK;
+}
+
+static int shell_appcheck_fault_is_valid(const app_loader_result_t* result) {
+    paging_user_stats_t paging;
+    page_fault_stats_t faults;
+
+    if (!result || !result->faulted || result->start_failed ||
+        result->cancelled ||
+        result->exit_code != APP_EXIT_FROM_SIGNAL(APP_SIGNAL_SEGV) ||
+        result->termination_signal != APP_SIGNAL_SEGV ||
+        !result->focus_acquired || result->pid == 0U) {
+        LOG_ERROR("SHELL", "Fixture de page fault invalida nao foi isolada");
+        return ERR_STATE;
+    }
+    paging_get_user_stats(&paging);
+    if (paging.active_pages != shell_appcheck_vma_initial_pages ||
+        paging.active_directories != shell_appcheck_vma_initial_directories ||
+        process_get_user_count() != shell_appcheck_vma_initial_users ||
+        process_get_state_count(PROCESS_STATE_ZOMBIE) !=
+            shell_appcheck_vma_initial_zombies) {
+        LOG_ERROR("SHELL", "Fixture de page fault deixou recursos residuais");
+        return ERR_STATE;
+    }
+    if (process_vma_get_page_fault_stats(&faults) != OK ||
+        faults.handled <= shell_appcheck_vma_initial_faults.handled ||
+        faults.invalid != shell_appcheck_vma_initial_faults.invalid + 1U) {
+        LOG_ERROR("SHELL", "Contadores de page fault invalidos divergiram");
         return ERR_STATE;
     }
     return OK;
@@ -2679,6 +2764,11 @@ int shell_checks_handle_loader_result(const app_loader_result_t* result) {
             shell_runtime_reset_input();
             return 1;
         }
+        if (shell_appcheck_fault_pid == result->pid) {
+            shell_appcheck_fault_pid = 0;
+            shell_runtime_reset_input();
+            return 1;
+        }
     }
 
     if (shell_regcheck.state != SHELL_REGCHECK_IDLE) {
@@ -2712,6 +2802,35 @@ int shell_checks_handle_loader_result(const app_loader_result_t* result) {
         appcheck_result = shell_appcheck_vma_is_valid(result);
         cmd_appcheck_print_result("vma_ring3_conclusao", appcheck_result);
         shell_appcheck_vma_pid = 0;
+        if (appcheck_result == OK) {
+            uint32_t image_size = shell_build_pagefault_fault_image();
+            uint32_t pid = 0U;
+            int start_result;
+
+            if (process_vma_get_page_fault_stats(
+                    &shell_appcheck_vma_initial_faults) != OK) {
+                LOG_ERROR("SHELL", "Falha ao preparar fixture de page fault");
+                shell_appcheck_vma_initial_faults.handled = 0U;
+                shell_appcheck_vma_initial_faults.invalid = 0U;
+            }
+            start_result = app_loader_run_image(
+                "MM3FAULT.ZAP", appcheck_demo_image, image_size, 0, &pid);
+            cmd_appcheck_print_result("pagefault_invalida_inicio",
+                                      start_result);
+            if (start_result == OK) {
+                shell_appcheck_fault_pid = pid;
+                return 1;
+            }
+        }
+        if (!shell_job_is_active()) shell_runtime_finish_command();
+        return 1;
+    }
+
+    if (shell_appcheck_fault_pid == result->pid) {
+        appcheck_result = shell_appcheck_fault_is_valid(result);
+        cmd_appcheck_print_result("pagefault_invalida_conclusao",
+                                  appcheck_result);
+        shell_appcheck_fault_pid = 0;
         if (!shell_job_is_active()) shell_runtime_finish_command();
         return 1;
     }
@@ -2733,7 +2852,9 @@ int shell_checks_start_job(const char* command) {
     active = shell_q2check.state != SHELL_Q2CHECK_IDLE ||
              shell_regcheck.state != SHELL_REGCHECK_IDLE ||
              shell_appcheck_loader_pid != 0U ||
-             shell_appcheck_migration_pid != 0U;
+             shell_appcheck_migration_pid != 0U ||
+             shell_appcheck_vma_pid != 0U ||
+             shell_appcheck_fault_pid != 0U;
     if (kstrcmp(command, "usertest") == 0) {
         active = active || shell_waiting_user_test;
     }

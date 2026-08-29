@@ -445,8 +445,20 @@ registra automaticamente codigo, dados, lancamento e stack; somente VMAs
 anonimas privadas podem ser criadas dinamicamente. A App API passa a versao
 0.9 e acrescenta `app_api_mmap()` e `app_api_munmap()`; `syscall.h` preserva
 os numeros anteriores e acrescenta 19 e 20. Pacotes 0.3 a 0.9 permanecem
-aceitos. READ/EXEC sao metadados nesta fase e WRITE controla o bit de escrita
-da Page Table.
+aceitos.
+
+Desde a MM3, os campos append-only `user_code_image`, `user_data_image`,
+`user_data_size` e `user_launch` de `process_t` mantêm o backing kernel-owned da
+imagem ring 3 e a cópia persistente de lançamento até a destruição do processo.
+Esses campos não alteram a ABI da App API nem das syscalls. As páginas de
+codigo, dados, lancamento, stack e `mmap` anonimo são materializadas sob
+demanda; `process_vma_ensure_page()` atende cópias de buffers válidos e
+`process_vma_handle_page_fault()` trata faults originadas em ring 3. O helper
+`process_vma_get_page_fault_stats()` publica `page_fault_stats_t`, com os
+contadores cumulativos `handled` e `invalid`. `munmap` libera somente páginas
+residentes e mantém a limpeza do metadado da VMA. READ, WRITE e EXEC são
+validados contra os flags da VMA; o bit WRITE continua sendo o único bit de
+proteção de página disponível no paging atual.
 
 O cancelamento F12 de um ZAPP bloqueado em stdin usa os campos append-only
 `cancel_exit_code` e `cancel_pending` de `process_t`. `process_cancel_user()`

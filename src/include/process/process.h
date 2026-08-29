@@ -150,6 +150,10 @@ typedef struct process {
     vfs_fd_table_t fd_table;
     vm_area_t* vma_list;
     uint32_t vma_count;
+    uint8_t* user_code_image;
+    uint8_t* user_data_image;
+    uint32_t user_data_size;
+    app_launch_info_t user_launch;
 } process_t;
 
 typedef struct {

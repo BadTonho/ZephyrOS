@@ -7,6 +7,8 @@
 #include "drivers/vesa.h"
 #include "core/string.h"
 #include "core/timer.h"
+#include "memory/vma.h"
+#include "process/process.h"
 
 page_directory_t* current_directory = 0;
 static page_directory_t* kernel_directory = 0;
@@ -28,6 +30,7 @@ static paging_user_stats_t user_paging_stats;
 static paging_boot_stats_t paging_boot_stats;
 
 static int paging_map_identity_range_fast(uint32_t start, uint32_t end);
+static void paging_invalidate(uint32_t virtual_addr);
 
 static int paging_user_directory_index(page_directory_t* dir) {
     if (!dir) return -1;
@@ -185,6 +188,7 @@ int paging_map_page_in_directory(page_directory_t* dir,
     page->rw = (flags & PAGING_FLAG_WRITE) ? 1 : 0;
     page->user = (flags & PAGING_FLAG_USER) ? 1 : 0;
     if (flags & PAGING_FLAG_USER) user_paging_stats.active_pages++;
+    if (dir == current_directory) paging_invalidate(virtual);
     return OK;
 }
 
@@ -593,6 +597,16 @@ int paging_validate_user_range(uint32_t address, uint32_t size, int write) {
          page_addr < end; page_addr += PAGE_SIZE) {
         page_entry_t* page = paging_get_page_in_directory(current_directory,
                                                            page_addr, 0);
+        if (!page || !page->present) {
+            process_t* current = process_get_current();
+            if (!current || !process_is_user(current) ||
+                process_vma_ensure_page(current, page_addr, write) != OK) {
+                LOG_WARN("MEM", "Pagina de usuario ausente");
+                return ERR_UNAVAILABLE;
+            }
+            page = paging_get_page_in_directory(current_directory,
+                                                page_addr, 0);
+        }
         if (!page || !page->present || !page->user ||
             (write && !page->rw)) {
             LOG_WARN("MEM", "Pagina de usuario sem permissao");

@@ -23,10 +23,22 @@ static int user_syscall_enabled = 0;
 static void idt_panic_exception(registers_t* regs);
 
 static void idt_user_exception_handler(registers_t* regs) {
-    if (regs && ((regs->cs & 0x03U) == 0x03U) &&
-        process_handle_user_exception(regs) == OK) {
-        if (process_prepare_user_termination(regs) == OK) return;
-        LOG_ERROR("IDT", "Falha ao preparar retorno seguro de processo usuario");
+    process_t* current;
+    int result;
+
+    if (regs && ((regs->cs & 0x03U) == 0x03U)) {
+        result = process_handle_user_exception(regs);
+        if (result == OK) {
+            current = process_get_current();
+            if (current && current->state == PROCESS_STATE_RUNNING) return;
+            if (current && current->state == PROCESS_STATE_ZOMBIE &&
+                process_prepare_user_termination(regs) == OK) {
+                return;
+            }
+            LOG_ERROR("IDT", "Estado invalido apos excecao de usuario");
+        } else {
+            LOG_ERROR("IDT", "Falha ao tratar excecao de usuario");
+        }
     }
 
     LOG_ERROR("IDT", "Excecao fatal originada no kernel");

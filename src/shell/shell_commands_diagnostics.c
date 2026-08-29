@@ -32,6 +32,7 @@
 #include "ui/filemanager.h"
 #include "ui/icons.h"
 #include "memory/paging.h"
+#include "memory/vma.h"
 #include "memory/slab.h"
 #include "core/string.h"
 #include "core/errors.h"
@@ -4112,6 +4113,28 @@ static void cmd_slabtest(const char* args) {
     video_print(result == OK ? "OK\n" : "ERRO\n", result == OK ? 0x0A : 0x0C);
 }
 
+static void cmd_pagefault(const char* args) {
+    page_fault_stats_t stats;
+    int result;
+
+    if (!args || !shell_command_args_equal(args, "status")) {
+        LOG_WARN("SHELL", "Argumentos invalidos no pagefault");
+        video_print("Uso: pagefault status\n", 0x0C);
+        return;
+    }
+    result = process_vma_get_page_fault_stats(&stats);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Falha ao consultar estatisticas de page fault");
+        video_print("PageFault indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("PageFault: tratadas=", 0x0B);
+    shell_command_print_num(stats.handled);
+    video_print(" invalidas=", 0x08);
+    shell_command_print_num(stats.invalid);
+    video_print("\n", 0x07);
+}
+
 #define SHELL_VMAMAP_MAX_AREAS 64U
 
 static const char* cmd_vmamap_area_type(const vm_area_info_t* area) {
@@ -4742,6 +4765,7 @@ SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_kmetrics, cmd_kmetrics)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_memcheck, cmd_memcheck)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_slabinfo, cmd_slabinfo)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_slabtest, cmd_slabtest)
+SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_pagefault, cmd_pagefault)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_vmamap, cmd_vmamap)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_schedcheck, cmd_schedcheck)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_mouse, cmd_mouse)

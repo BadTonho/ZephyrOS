@@ -10,6 +10,13 @@
 #define VMA_IMAGE_FLAGS_STACK (VM_READ | VM_WRITE | VM_ANONYMOUS)
 #define VMA_PROTECTION_MASK (VM_READ | VM_WRITE | VM_EXEC)
 #define VMA_FLAGS_MASK (VM_SHARED | VM_ANONYMOUS)
+#define VMA_PAGE_FAULT_PRESENT 0x01U
+#define VMA_PAGE_FAULT_WRITE 0x02U
+#define VMA_PAGE_FAULT_USER 0x04U
+#define VMA_PAGE_FAULT_RESERVED 0x08U
+#define VMA_PAGE_FAULT_INSTRUCTION 0x10U
+
+static page_fault_stats_t page_fault_stats;
 
 static int process_vma_is_current_user(const process_t* proc) {
     if (!proc) {
@@ -22,6 +29,10 @@ static int process_vma_is_current_user(const process_t* proc) {
     }
     if (!proc->page_directory) {
         LOG_ERROR("MEM", "Processo ring 3 sem diretorio para VMA");
+        return ERR_STATE;
+    }
+    if (proc->page_directory != paging_get_current_directory()) {
+        LOG_ERROR("MEM", "Diretorio da VMA nao esta ativo");
         return ERR_STATE;
     }
     return OK;
@@ -129,30 +140,18 @@ static int process_vma_unmap_pages(process_t* proc, uint32_t start_addr,
                                    uint32_t end_addr) {
     for (uint32_t address = start_addr; address < end_addr;
          address += PAGE_SIZE) {
+        page_entry_t* page = paging_get_page_in_directory(
+            proc->page_directory, address, 0);
+        if (!page || !page->present) continue;
+        if (!page->user) {
+            LOG_ERROR("MEM", "Pagina supervisora encontrada na VMA");
+            return ERR_STATE;
+        }
         int result = paging_unmap_user_page_in_directory(
             proc->page_directory, address);
         if (result != OK) {
             LOG_ERROR("MEM", "Falha ao desmapear pagina de VMA");
             return result;
-        }
-    }
-    return OK;
-}
-
-static int process_vma_validate_pages(const process_t* proc,
-                                      uint32_t start_addr,
-                                      uint32_t end_addr) {
-    if (!proc || !proc->page_directory) {
-        LOG_ERROR("MEM", "Processo invalido ao validar paginas de VMA");
-        return ERR_STATE;
-    }
-    for (uint32_t address = start_addr; address < end_addr;
-         address += PAGE_SIZE) {
-        page_entry_t* page = paging_get_page_in_directory(
-            proc->page_directory, address, 0);
-        if (!page || !page->present || !page->user) {
-            LOG_ERROR("MEM", "Pagina ausente na VMA a desmapear");
-            return ERR_STATE;
         }
     }
     return OK;
@@ -177,6 +176,208 @@ static vm_area_t* process_vma_find_containing(process_t* proc,
     }
     if (previous_out) *previous_out = 0;
     return 0;
+}
+
+static vm_area_t* process_vma_find_page(process_t* proc,
+                                        uint32_t page_addr) {
+    vm_area_t* area = proc ? proc->vma_list : 0;
+
+    while (area) {
+        if (page_addr >= area->start_addr && page_addr < area->end_addr) {
+            return area;
+        }
+        if (area->start_addr > page_addr) break;
+        area = area->next;
+    }
+    return 0;
+}
+
+static int process_vma_access_allowed(const vm_area_t* area, int write,
+                                      int instruction) {
+    if (!area || (write != 0 && write != 1) ||
+        (instruction != 0 && instruction != 1)) {
+        return 0;
+    }
+    if (write) return (area->flags & VM_WRITE) != 0;
+    if (instruction) return (area->flags & VM_EXEC) != 0;
+    return (area->flags & VM_READ) != 0;
+}
+
+static int process_vma_populate_page(const process_t* proc,
+                                     const vm_area_t* area,
+                                     uint32_t page_addr, void* physical) {
+    if (!proc || !area || !physical) {
+        LOG_ERROR("MEM", "Parametros invalidos ao preencher pagina VMA");
+        return ERR_NULL;
+    }
+
+    kmemset(physical, 0, PAGE_SIZE);
+    if (area->start_addr == USER_CODE_BASE) {
+        if (!proc->user_code_image || proc->user_code_size > PAGE_SIZE) {
+            LOG_ERROR("MEM", "Backing de codigo ring 3 invalido");
+            return ERR_STATE;
+        }
+        kmemcpy(physical, proc->user_code_image, proc->user_code_size);
+    } else if (area->start_addr == USER_DATA_BASE) {
+        if (proc->user_data_size > PAGE_SIZE ||
+            (proc->user_data_size && !proc->user_data_image)) {
+            LOG_ERROR("MEM", "Backing de dados ring 3 invalido");
+            return ERR_STATE;
+        }
+        if (proc->user_data_size) {
+            kmemcpy(physical, proc->user_data_image,
+                    proc->user_data_size);
+        }
+    } else if (area->start_addr == USER_LAUNCH_BASE) {
+        if (sizeof(app_launch_info_t) > PAGE_SIZE) {
+            LOG_ERROR("MEM", "Estrutura de lancamento excede uma pagina");
+            return ERR_OVERFLOW;
+        }
+        kmemcpy(physical, &proc->user_launch, sizeof(app_launch_info_t));
+    }
+    (void)page_addr;
+    return OK;
+}
+
+static int process_vma_materialize_page(process_t* proc,
+                                        const vm_area_t* area,
+                                        uint32_t page_addr, int write,
+                                        int instruction) {
+    page_entry_t* page;
+    void* physical;
+    uint32_t paging_flags;
+    int result;
+
+    page = paging_get_page_in_directory(proc->page_directory, page_addr, 0);
+    if (page && page->present) {
+        if (!page->user || (write && !page->rw)) return ERR_UNAVAILABLE;
+        return OK;
+    }
+    if (!process_vma_access_allowed(area, write, instruction)) {
+        return ERR_UNAVAILABLE;
+    }
+
+    physical = pmm_alloc_page();
+    if (!physical) {
+        LOG_ERROR("MEM", "Falha ao alocar pagina de usuario sob demanda");
+        return ERR_MEM;
+    }
+    result = process_vma_populate_page(proc, area, page_addr, physical);
+    if (result != OK) {
+        pmm_free_page(physical);
+        return result;
+    }
+
+    paging_flags = PAGING_FLAG_PRESENT | PAGING_FLAG_USER;
+    if (area->flags & VM_WRITE) paging_flags |= PAGING_FLAG_WRITE;
+    result = paging_map_page_in_directory(proc->page_directory, page_addr,
+                                           (uint32_t)physical,
+                                           paging_flags);
+    if (result != OK) {
+        pmm_free_page(physical);
+        LOG_ERROR("MEM", "Falha ao mapear pagina de usuario sob demanda");
+        return result;
+    }
+    return OK;
+}
+
+static int process_vma_page_fault_failure(int result, const char* message) {
+    page_fault_stats.invalid++;
+    if (result == ERR_MEM) LOG_ERROR("MEM", message);
+    else LOG_WARN("MEM", message);
+    return result;
+}
+
+int process_vma_ensure_page(struct process* proc, uint32_t address,
+                            int write) {
+    uint32_t page_addr;
+    vm_area_t* area;
+    int result;
+
+    result = process_vma_is_current_user((const process_t*)proc);
+    if (result != OK) return result;
+    if (write != 0 && write != 1) {
+        LOG_ERROR("MEM", "Modo de escrita invalido ao garantir pagina VMA");
+        return ERR_INVALID;
+    }
+    if (address < USER_SPACE_START || address >= USER_SPACE_END) {
+        LOG_WARN("MEM", "Endereco fora do espaco user ao garantir pagina");
+        return ERR_INVALID;
+    }
+    page_addr = address & ~(PAGE_SIZE - 1U);
+    area = process_vma_find_page((process_t*)proc, page_addr);
+    if (!area) {
+        LOG_WARN("MEM", "Endereco sem VMA ao garantir pagina user");
+        return ERR_UNAVAILABLE;
+    }
+    return process_vma_materialize_page((process_t*)proc, area, page_addr,
+                                        write, 0);
+}
+
+int process_vma_handle_page_fault(struct process* proc,
+                                  uint32_t fault_address,
+                                  uint32_t fault_error) {
+    uint32_t page_addr;
+    vm_area_t* area;
+    page_entry_t* page;
+    int write;
+    int instruction;
+    int result;
+
+    result = process_vma_is_current_user((const process_t*)proc);
+    if (result != OK) {
+        return process_vma_page_fault_failure(result,
+                                              "Page fault sem processo user valido");
+    }
+    if (!(fault_error & VMA_PAGE_FAULT_USER) ||
+        (fault_error & VMA_PAGE_FAULT_RESERVED) ||
+        fault_address < USER_SPACE_START ||
+        fault_address >= USER_SPACE_END) {
+        return process_vma_page_fault_failure(ERR_INVALID,
+                                              "Page fault fora do contrato user");
+    }
+
+    page_addr = fault_address & ~(PAGE_SIZE - 1U);
+    area = process_vma_find_page((process_t*)proc, page_addr);
+    if (!area) {
+        return process_vma_page_fault_failure(ERR_NOT_FOUND,
+                                              "Page fault sem VMA correspondente");
+    }
+    page = paging_get_page_in_directory(proc->page_directory, page_addr, 0);
+    if ((fault_error & VMA_PAGE_FAULT_PRESENT) ||
+        (page && page->present)) {
+        return process_vma_page_fault_failure(ERR_INVALID,
+                                              "Page fault em pagina ja presente");
+    }
+
+    write = (fault_error & VMA_PAGE_FAULT_WRITE) != 0;
+    instruction = (fault_error & VMA_PAGE_FAULT_INSTRUCTION) != 0;
+    if (write && instruction) {
+        return process_vma_page_fault_failure(ERR_INVALID,
+                                              "Page fault com acesso ambiguo");
+    }
+    if (!process_vma_access_allowed(area, write, instruction)) {
+        return process_vma_page_fault_failure(ERR_INVALID,
+                                              "Permissao insuficiente na VMA");
+    }
+
+    result = process_vma_materialize_page((process_t*)proc, area, page_addr,
+                                          write, instruction);
+    if (result != OK) {
+        return process_vma_page_fault_failure(result,
+                                              "Falha ao resolver page fault user");
+    }
+    page_fault_stats.handled++;
+    return OK;
+}
+
+int process_vma_get_page_fault_stats(page_fault_stats_t* stats) {
+    if (!stats) {
+        LOG_ERROR("MEM", "Destino nulo ao consultar page faults");
+        return ERR_NULL;
+    }
+    *stats = page_fault_stats;
+    return OK;
 }
 
 int process_vma_register_image(process_t* proc, uint32_t code_size) {
@@ -219,7 +420,6 @@ int process_vma_mmap(process_t* proc, uint32_t length,
     uint32_t rounded_length;
     uint32_t address;
     uint32_t end_addr;
-    uint32_t paging_flags;
     vm_area_t* area;
     int result;
 
@@ -248,34 +448,8 @@ int process_vma_mmap(process_t* proc, uint32_t length,
     end_addr = address + rounded_length;
     area = process_vma_create(address, end_addr, protection | flags);
     if (!area) return ERR_MEM;
-
-    paging_flags = PAGING_FLAG_PRESENT | PAGING_FLAG_USER;
-    if (protection & VM_WRITE) paging_flags |= PAGING_FLAG_WRITE;
-    for (uint32_t page_addr = address; page_addr < end_addr;
-         page_addr += PAGE_SIZE) {
-        void* physical = pmm_alloc_page();
-        if (!physical) {
-            LOG_ERROR("MEM", "Falha ao alocar pagina anonima de VMA");
-            process_vma_unmap_pages(proc, address, page_addr);
-            kfree(area);
-            return ERR_MEM;
-        }
-        kmemset(physical, 0, PAGE_SIZE);
-        result = paging_map_page_in_directory(proc->page_directory,
-                                               page_addr,
-                                               (uint32_t)physical,
-                                               paging_flags);
-        if (result != OK) {
-            LOG_ERROR("MEM", "Falha ao mapear pagina anonima de VMA");
-            pmm_free_page(physical);
-            process_vma_unmap_pages(proc, address, page_addr);
-            kfree(area);
-            return result;
-        }
-    }
     result = process_vma_insert_sorted(proc, area);
     if (result != OK) {
-        process_vma_unmap_pages(proc, address, end_addr);
         kfree(area);
         return result;
     }
@@ -312,8 +486,6 @@ int process_vma_munmap(process_t* proc, uint32_t address, uint32_t length) {
         LOG_ERROR("MEM", "Munmap fora de uma VMA anonima dinamica");
         return ERR_INVALID;
     }
-    result = process_vma_validate_pages(proc, address, end_addr);
-    if (result != OK) return result;
     right_area = 0;
     if (address > area->start_addr && end_addr < area->end_addr) {
         right_area = process_vma_create(end_addr, area->end_addr,
