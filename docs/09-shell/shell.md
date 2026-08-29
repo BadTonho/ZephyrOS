@@ -169,6 +169,15 @@ residual; copias e descartes normais permanecem informativos. O caminho atual
 usa callbacks sincronos e copia, sem transferencia de ownership de DMA e sem
 garantia de zero-copy.
 
+### Diagnosticos NET1
+
+`skbstat` e um comando sem argumentos para consultar o inventario cumulativo de
+`sk_buff_t`: ativos, pico, alocacoes, liberacoes, conclusoes, descartes, erros,
+copias, bytes copiados, clones reservados e fragmentos reservados. `net check`
+e `regcheck full` executam `skb_self_test()` e devem retornar com pool vazio,
+inventario de NICs inalterado e sem estado residual. A entrega continua baseada
+em callbacks sincronos e copia fallback; `boot.asm` nao e alterado.
+
 ---
 
 ## Tratamento de Teclas

@@ -2,8 +2,8 @@
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/net_buffer.h"
+#include "core/sk_buff.h"
 #include "core/string.h"
-#include "memory/slab.h"
 
 #define ETHERNET_DESTINATION_OFFSET 0U
 #define ETHERNET_SOURCE_OFFSET 6U
@@ -22,17 +22,10 @@ typedef struct {
     ethernet_interface_status_t status;
 } ethernet_slot_t;
 
-typedef struct {
-    net_buffer_t buffer;
-    uint16_t length;
-    uint8_t data[ETHERNET_MAX_FRAME_SIZE];
-} net_packet_t;
-
 static ethernet_slot_t ethernet_slots[ETHERNET_INTERFACE_CAPACITY];
 static ethernet_status_t ethernet_status;
 static ethernet_protocol_entry_t
     ethernet_handlers[ETHERNET_PROTOCOL_HANDLER_CAPACITY];
-static kmem_cache_t* ethernet_packet_cache;
 static uint8_t ethernet_poll_cursor;
 
 static uint8_t ethernet_text_equal(const char* first,
@@ -184,9 +177,9 @@ static int ethernet_dispatch_frame(
 }
 
 static int ethernet_process_frame(ethernet_slot_t* slot,
-                                  net_packet_t* packet) {
+                                  const sk_buff_t* packet) {
     const uint8_t* frame = packet->data;
-    uint16_t length = packet->length;
+    uint16_t length = (uint16_t)packet->len;
     ethernet_destination_t destination_type;
     uint16_t ethertype;
     int result;
@@ -194,21 +187,18 @@ static int ethernet_process_frame(ethernet_slot_t* slot,
     if (length < ETHERNET_HEADER_SIZE || length > ETHERNET_MAX_FRAME_SIZE) {
         slot->status.rx_invalid++;
         LOG_DEBUG("NET", "Frame Ethernet com tamanho invalido descartado");
-        return net_buffer_complete(&packet->buffer, ERR_INVALID,
-                                    NET_BUFFER_OWNER_NONE);
+        return ERR_INVALID;
     }
     destination_type = ethernet_classify_destination(
         slot, frame + ETHERNET_DESTINATION_OFFSET);
     if (destination_type == ETHERNET_DESTINATION_UNKNOWN) {
         slot->status.rx_filtered++;
-        return net_buffer_complete(&packet->buffer, ERR_NOT_FOUND,
-                                    NET_BUFFER_OWNER_NONE);
+        return ERR_NOT_FOUND;
     }
     if (!ethernet_source_is_valid(frame + ETHERNET_SOURCE_OFFSET)) {
         slot->status.rx_invalid++;
         LOG_DEBUG("NET", "Frame Ethernet com origem invalida descartado");
-        return net_buffer_complete(&packet->buffer, ERR_INVALID,
-                                    NET_BUFFER_OWNER_NONE);
+        return ERR_INVALID;
     }
     ethertype = (uint16_t)(
         ((uint16_t)frame[ETHERNET_TYPE_OFFSET] << 8U) |
@@ -216,22 +206,20 @@ static int ethernet_process_frame(ethernet_slot_t* slot,
     if (ethertype < ETHERNET_TYPE_MINIMUM) {
         slot->status.rx_invalid++;
         LOG_DEBUG("NET", "Frame sem cabecalho Ethernet II descartado");
-        return net_buffer_complete(&packet->buffer, ERR_INVALID,
-                                    NET_BUFFER_OWNER_NONE);
+        return ERR_INVALID;
     }
     ethernet_record_frame(slot, frame, length, destination_type);
     result = ethernet_dispatch_frame(slot, frame, length, ethertype,
                                      destination_type);
-    return net_buffer_complete(&packet->buffer, result,
-                               result == OK ? NET_BUFFER_OWNER_PROTOCOL :
-                               NET_BUFFER_OWNER_NONE);
+    return result;
 }
 
 static uint16_t ethernet_build_frame(
-    net_packet_t* packet, const ethernet_slot_t* slot,
+    sk_buff_t* packet, const ethernet_slot_t* slot,
     const uint8_t* destination,
     uint16_t ethertype, const uint8_t* payload, uint16_t payload_length) {
     uint16_t frame_length = ETHERNET_HEADER_SIZE + payload_length;
+    uint8_t* frame;
 
     if (!packet || !slot || !destination) {
         LOG_ERROR("NET", "Parametros invalidos ao montar frame Ethernet");
@@ -240,18 +228,19 @@ static uint16_t ethernet_build_frame(
     if (frame_length < ETHERNET_MIN_FRAME_SIZE) {
         frame_length = ETHERNET_MIN_FRAME_SIZE;
     }
-    kmemset(packet->data, 0, frame_length);
-    kmemcpy(packet->data + ETHERNET_DESTINATION_OFFSET,
+    frame = (uint8_t*)skb_put(packet, frame_length);
+    if (!frame) return 0U;
+    kmemset(frame, 0, frame_length);
+    kmemcpy(frame + ETHERNET_DESTINATION_OFFSET,
             destination, ETHERNET_MAC_ADDRESS_SIZE);
-    kmemcpy(packet->data + ETHERNET_SOURCE_OFFSET,
+    kmemcpy(frame + ETHERNET_SOURCE_OFFSET,
             slot->interface.mac_address, ETHERNET_MAC_ADDRESS_SIZE);
-    packet->data[ETHERNET_TYPE_OFFSET] = (uint8_t)(ethertype >> 8U);
-    packet->data[ETHERNET_TYPE_OFFSET + 1U] = (uint8_t)ethertype;
+    frame[ETHERNET_TYPE_OFFSET] = (uint8_t)(ethertype >> 8U);
+    frame[ETHERNET_TYPE_OFFSET + 1U] = (uint8_t)ethertype;
     if (payload_length) {
-        kmemcpy(packet->data + ETHERNET_HEADER_SIZE,
+        kmemcpy(frame + ETHERNET_HEADER_SIZE,
                 payload, payload_length);
     }
-    packet->length = frame_length;
     return frame_length;
 }
 
@@ -262,19 +251,13 @@ int ethernet_init(void) {
         LOG_INFO("NET", "Camada Ethernet inicializada com sucesso");
         return OK;
     }
-    if (net_buffer_init() != OK) {
-        LOG_ERROR("NET", "Falha ao inicializar contrato de buffers");
+    if (skb_init() != OK) {
+        LOG_ERROR("NET", "Falha ao inicializar runtime de sk_buff");
         return ERR_STATE;
     }
     kmemset(ethernet_slots, 0, sizeof(ethernet_slots));
     kmemset(&ethernet_status, 0, sizeof(ethernet_status));
     kmemset(ethernet_handlers, 0, sizeof(ethernet_handlers));
-    ethernet_packet_cache = kmem_cache_create("net_packet",
-                                               sizeof(net_packet_t), 16U);
-    if (!ethernet_packet_cache) {
-        LOG_ERROR("NET", "Falha ao criar cache de pacotes Ethernet");
-        return ERR_MEM;
-    }
     ethernet_poll_cursor = 0;
     ethernet_status.initialized = 1;
     ethernet_status.last_error = OK;
@@ -365,7 +348,7 @@ int ethernet_register_handler(uint16_t ethertype,
 
 static int ethernet_poll_slot(ethernet_slot_t* slot,
                               uint8_t* out_received) {
-    net_packet_t* packet;
+    sk_buff_t* packet;
     uint8_t pending = 0;
     uint16_t length = 0;
     int result;
@@ -377,54 +360,44 @@ static int ethernet_poll_slot(ethernet_slot_t* slot,
         slot->interface.driver_context, &pending);
     if (result != OK) goto failed;
     if (!pending) return OK;
-    packet = (net_packet_t*)kmem_cache_alloc(ethernet_packet_cache);
+    packet = alloc_skb(SK_BUFF_STORAGE_SIZE);
     if (!packet) {
         LOG_ERROR("NET", "Falha ao alocar pacote RX Ethernet");
         result = ERR_MEM;
         goto failed;
     }
-    kmemset(packet, 0, sizeof(*packet));
-    result = net_buffer_begin(&packet->buffer, sizeof(packet->data), 0U, 1U,
-                              NET_BUFFER_OWNER_ETHERNET);
+    packet->dev = (net_device_t*)slot;
+    result = skb_transition(packet, NET_BUFFER_STATE_RX,
+                            NET_BUFFER_OWNER_ETHERNET);
     if (result != OK) {
-        kmem_cache_free(ethernet_packet_cache, packet);
-        goto failed;
-    }
-    result = net_buffer_transition(&packet->buffer, NET_BUFFER_STATE_RX,
-                                   NET_BUFFER_OWNER_ETHERNET);
-    if (result != OK) {
-        net_buffer_complete(&packet->buffer, result, NET_BUFFER_OWNER_NONE);
-        net_buffer_release(&packet->buffer);
-        kmem_cache_free(ethernet_packet_cache, packet);
+        skb_complete(packet, result, NET_BUFFER_OWNER_NONE);
+        free_skb(packet);
         goto failed;
     }
     slot->status.polls++;
     result = slot->interface.receive_frame(
         slot->interface.driver_context, packet->data,
-        sizeof(packet->data), &length, out_received);
+        ETHERNET_MAX_FRAME_SIZE, &length, out_received);
     if (result != OK) {
-        net_buffer_complete(&packet->buffer, result, NET_BUFFER_OWNER_NONE);
-        net_buffer_release(&packet->buffer);
-        kmem_cache_free(ethernet_packet_cache, packet);
+        skb_complete(packet, result, NET_BUFFER_OWNER_NONE);
+        free_skb(packet);
         goto failed;
     }
     if (!*out_received) {
-        net_buffer_complete(&packet->buffer, ERR_NOT_FOUND,
-                            NET_BUFFER_OWNER_NONE);
-        net_buffer_release(&packet->buffer);
-        kmem_cache_free(ethernet_packet_cache, packet);
+        skb_complete(packet, ERR_NOT_FOUND, NET_BUFFER_OWNER_NONE);
+        free_skb(packet);
         slot->status.last_error = OK;
         return OK;
     }
-    packet->length = length;
-    result = net_buffer_set_length(&packet->buffer, length);
+    result = skb_put(packet, length) ? OK : ERR_OVERFLOW;
     if (result == OK) result = net_buffer_note_copy(length);
     if (result == OK) result = ethernet_process_frame(slot, packet);
-    if (result != OK) {
-        net_buffer_complete(&packet->buffer, result, NET_BUFFER_OWNER_NONE);
+    if (skb_complete(packet, result,
+                     result == OK ? NET_BUFFER_OWNER_PROTOCOL :
+                     NET_BUFFER_OWNER_NONE) != OK && result == OK) {
+        result = ERR_STATE;
     }
-    net_buffer_release(&packet->buffer);
-    kmem_cache_free(ethernet_packet_cache, packet);
+    free_skb(packet);
     if (result != OK) goto failed;
     slot->status.last_error = OK;
     return OK;
@@ -483,7 +456,7 @@ int ethernet_send(const char* interface_id, const uint8_t* destination,
                   uint16_t ethertype, const uint8_t* payload,
                   uint16_t payload_length) {
     ethernet_slot_t* slot;
-    net_packet_t* packet;
+    sk_buff_t* packet;
     uint16_t frame_length;
     int result;
 
@@ -506,50 +479,35 @@ int ethernet_send(const char* interface_id, const uint8_t* destination,
         LOG_ERROR("NET", "Interface Ethernet de transmissao ausente");
         return ERR_NOT_FOUND;
     }
-    packet = (net_packet_t*)kmem_cache_alloc(ethernet_packet_cache);
+    packet = alloc_skb(SK_BUFF_STORAGE_SIZE);
     if (!packet) {
         LOG_ERROR("NET", "Falha ao alocar pacote TX Ethernet");
         return ERR_MEM;
     }
-    kmemset(packet, 0, sizeof(*packet));
-    result = net_buffer_begin(&packet->buffer, sizeof(packet->data), 0U, 1U,
-                              NET_BUFFER_OWNER_ETHERNET);
-    if (result != OK) {
-        kmem_cache_free(ethernet_packet_cache, packet);
-        return result;
-    }
+    packet->dev = (net_device_t*)slot;
     frame_length = ethernet_build_frame(packet, slot, destination, ethertype,
                                         payload, payload_length);
     if (!frame_length) {
-        net_buffer_complete(&packet->buffer, ERR_INVALID,
-                            NET_BUFFER_OWNER_NONE);
-        net_buffer_release(&packet->buffer);
-        kmem_cache_free(ethernet_packet_cache, packet);
+        skb_complete(packet, ERR_INVALID, NET_BUFFER_OWNER_NONE);
+        free_skb(packet);
         return ERR_INVALID;
     }
-    result = net_buffer_set_length(&packet->buffer, frame_length);
-    if (result == OK && payload_length) {
-        result = net_buffer_note_copy(payload_length);
-    }
-    if (result == OK) result = net_buffer_transition(
-        &packet->buffer, NET_BUFFER_STATE_IN_FLIGHT,
-        NET_BUFFER_OWNER_DRIVER);
+    result = payload_length ? net_buffer_note_copy(payload_length) : OK;
+    if (result == OK) result = skb_transition(
+        packet, NET_BUFFER_STATE_IN_FLIGHT, NET_BUFFER_OWNER_DRIVER);
     if (result != OK) {
-        net_buffer_complete(&packet->buffer, result, NET_BUFFER_OWNER_NONE);
-        net_buffer_release(&packet->buffer);
-        kmem_cache_free(ethernet_packet_cache, packet);
+        skb_complete(packet, result, NET_BUFFER_OWNER_NONE);
+        free_skb(packet);
         return result;
     }
     result = slot->interface.send_frame(
         slot->interface.driver_context, packet->data, frame_length);
-    if (net_buffer_complete(&packet->buffer, result,
-                            NET_BUFFER_OWNER_NONE) != OK) {
+    if (skb_complete(packet, result, NET_BUFFER_OWNER_NONE) != OK) {
         if (result == OK) result = ERR_STATE;
     }
-    if (net_buffer_release(&packet->buffer) != OK && result == OK) {
+    if (skb_release(packet) != OK && result == OK) {
         result = ERR_STATE;
     }
-    kmem_cache_free(ethernet_packet_cache, packet);
     if (result != OK) {
         slot->status.last_error = result;
         LOG_ERROR("NET", "Falha ao transmitir pela interface Ethernet");
@@ -650,8 +608,8 @@ int ethernet_validate_state(void) {
         LOG_ERROR("NET", "Contadores do registro Ethernet incoerentes");
         return ERR_STATE;
     }
-    if (net_buffer_validate_state() != OK) {
-        LOG_ERROR("NET", "Estado de buffers Ethernet inconsistente");
+    if (skb_validate_state() != OK) {
+        LOG_ERROR("NET", "Estado de sk_buff Ethernet inconsistente");
         return ERR_STATE;
     }
     return OK;

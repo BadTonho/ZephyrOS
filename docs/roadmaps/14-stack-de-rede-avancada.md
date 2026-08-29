@@ -79,16 +79,17 @@ somente e liberada depois de DELIVERED ou DROPPED; FREED e terminal. Clones e
 fragmentos possuem contadores reservados, sem implementar compartilhamento de
 dados nesta etapa.
 
-Ethernet usa o descriptor no net_packet_t privado: RX percorre
-ALLOCATED -> RX -> DELIVERED/DROPPED -> FREED e TX percorre
-ALLOCATED -> IN_FLIGHT -> DELIVERED/DROPPED -> FREED. Os callbacks dos
-drivers continuam sincronos e os dados emprestados somente sao validos durante
-o callback; as copias nas fronteiras Ethernet e socket sao contabilizadas.
+No NET0, o descriptor era privado da camada Ethernet. A implementacao do NET1
+substitui esse detalhe por `sk_buff_t`, preservando os mesmos ciclos RX/TX:
+RX percorre `ALLOCATED -> RX -> DELIVERED/DROPPED -> FREED` e TX percorre
+`ALLOCATED -> IN_FLIGHT -> DELIVERED/DROPPED -> FREED`. Os callbacks dos
+drivers continuam sincronos, com buffers emprestados validos somente durante o
+callback; as copias nas fronteiras Ethernet e socket sao contabilizadas.
 
-regcheck full e net check executam o self-test privado e restauram suas
-metricas. health check verifica invariantes, buffers ativos e erros residuais.
-Nao ha novo comando, transferencia de ownership de DMA, sk_buff_t, zero-copy
-garantido, poll/select ou alteracao de boot.asm.
+`regcheck full` e `net check` executam os self-tests privados e restauram suas
+metricas. `health check` verifica invariantes, buffers ativos e erros residuais.
+Nao ha transferencia de ownership de DMA, zero-copy garantido, clones ou
+fragmentos reais nesta etapa, nem alteracao de `boot.asm`.
 
 ### Critério de saída
 
@@ -99,6 +100,10 @@ erro e cancelamento, sem depender da promessa de zero-copy total.
 
 ## NET1 - Estrutura de Buffer de Pacotes (sk_buff)
 
+Estado da implementacao: codigo integrado e aguardando os gates de build e a
+confirmacao funcional do usuario. O resumo NET1 permanece `[ ]` ate essa
+confirmacao.
+
 ### Implementação
 
 - [ ] Definir a estrutura `sk_buff_t`:
@@ -108,28 +113,35 @@ erro e cancelamento, sem depender da promessa de zero-copy total.
   - `uint8_t* end;`  (fim do buffer físico)
   - `uint32_t len;`
   - `uint32_t refcount;`
-  - `net_device_t* dev;`
+  - `net_device_t* dev;` (handle opaco associado ao slot Ethernet)
+- [ ] Manter um `net_buffer_t` privado por skb como fonte unica de estado,
+  owner, referencias e inventario.
+- [ ] Alocar objetos por SLAB, com storage interno de no maximo 2048 bytes e
+  sem `kmalloc` por pacote.
 - [ ] Implementar funções de manipulação de ponteiros:
   `sk_buff_t* alloc_skb(uint32_t size);`
   `void free_skb(sk_buff_t* skb);`
   `void* skb_put(sk_buff_t* skb, uint32_t len);`   (expande dados ao final)
   `void* skb_push(sk_buff_t* skb, uint32_t len);`  (adiciona cabeçalho ao início)
   `void* skb_pull(sk_buff_t* skb, uint32_t len);`  (remove cabeçalho do início)
-- [ ] Adaptar a recepção RX dos drivers E1000 e RTL8139 para entregar
-  `sk_buff_t` diretamente, preservando o fallback de cópia quando DMA ou
-  alinhamento não permitirem a transferência do ownership.
-- [ ] Adaptar TX e contabilizar cópias, clones e liberações para comparar o
-  caminho novo com a implementação existente.
+- [ ] Adaptar a recepção RX da Ethernet para operar sobre `sk_buff_t`, sem
+  alterar os callbacks `uint8_t*` dos drivers E1000 e RTL8139.
+- [ ] Adaptar TX e contabilizar cópias, conclusões, descartes e liberações; o
+  fallback permanece síncrono e baseado em cópia.
+- [ ] Validar operações de ponteiros, referências, conclusão única, descarte,
+  pool vazio, inventário e repetição dos diagnósticos.
 
 ### Critério de saída
 
-Pacotes trafegam entre as camadas sem cópia de cabeçalhos quando a invariante
-de ownership permitir; cópias inevitáveis são contabilizadas, justificadas e
-não deixam buffers vivos após a conclusão.
+Pacotes usam a estrutura unificada durante o callback síncrono, com geometria
+`head/data/tail/end` validada e cópias inevitáveis contabilizadas. Não há
+ownership DMA transferido, zero-copy real, clones ou fragmentos reais no NET1,
+e não permanecem buffers vivos após os diagnósticos.
 
 ### Comandos Shell / Diagnóstico
 
-- `skbstat`: exibe o total de `sk_buff` alocados, em trânsito e liberados.
+- `skbstat`: exibe buffers ativos, pico, alocações, liberações, conclusões,
+  descartes, cópias, clones reservados, fragmentos reservados e erros.
 
 ---
 

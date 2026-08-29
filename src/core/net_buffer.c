@@ -218,21 +218,54 @@ int net_buffer_begin(net_buffer_t* buffer, uint32_t capacity,
     return OK;
 }
 
-int net_buffer_set_length(net_buffer_t* buffer, uint32_t length) {
-    int result;
+static int net_buffer_set_layout_locked(net_buffer_t* buffer,
+                                        uint32_t headroom,
+                                        uint32_t length) {
+    int result = net_buffer_check_active_locked(buffer);
 
-    spinlock_acquire(&net_buffer_lock);
-    result = net_buffer_check_active_locked(buffer);
     if (result == OK && (buffer->state == NET_BUFFER_STATE_DELIVERED ||
                          buffer->state == NET_BUFFER_STATE_DROPPED)) {
         result = ERR_STATE;
     }
-    if (result == OK && length > buffer->capacity - buffer->headroom) {
+    if (result == OK && headroom > buffer->capacity) result = ERR_OVERFLOW;
+    if (result == OK && length > buffer->capacity - headroom) {
         result = ERR_OVERFLOW;
     }
     if (result == OK) {
+        buffer->headroom = headroom;
         buffer->length = length;
-        buffer->tailroom = buffer->capacity - buffer->headroom - length;
+        buffer->tailroom = buffer->capacity - headroom - length;
+    } else {
+        net_buffer_fail_locked(result, 0);
+        if (!net_buffer_testing) {
+            LOG_WARN("NETBUF", "Geometria de buffer recusada");
+        }
+    }
+    return result;
+}
+
+int net_buffer_set_layout(net_buffer_t* buffer, uint32_t headroom,
+                          uint32_t length) {
+    int result;
+
+    spinlock_acquire(&net_buffer_lock);
+    result = net_buffer_set_layout_locked(buffer, headroom, length);
+    spinlock_release(&net_buffer_lock);
+    if (result != OK && !net_buffer_testing) {
+        LOG_WARN("NETBUF", "Geometria invalida no buffer");
+    }
+    return result;
+}
+
+int net_buffer_set_length(net_buffer_t* buffer, uint32_t length) {
+    uint32_t headroom = 0U;
+    int result;
+
+    spinlock_acquire(&net_buffer_lock);
+    result = net_buffer_check_active_locked(buffer);
+    if (result == OK) {
+        headroom = buffer->headroom;
+        result = net_buffer_set_layout_locked(buffer, headroom, length);
     } else {
         net_buffer_fail_locked(result, 0);
     }
@@ -406,6 +439,32 @@ int net_buffer_get_stats(net_buffer_stats_t* out_stats) {
     *out_stats = net_buffer_stats;
     spinlock_release(&net_buffer_lock);
     return OK;
+}
+
+int net_buffer_restore_stats(const net_buffer_stats_t* saved_stats) {
+    int result = OK;
+
+    if (!saved_stats) {
+        LOG_ERROR("NETBUF", "Snapshot nulo ao restaurar estatisticas");
+        return ERR_NULL;
+    }
+    spinlock_acquire(&net_buffer_lock);
+    for (uint32_t index = 0U; index < NET_BUFFER_TRACKING_CAPACITY; index++) {
+        if (net_buffer_registry[index]) {
+            result = ERR_STATE;
+            break;
+        }
+    }
+    if (result == OK && (!saved_stats->initialized ||
+                         saved_stats->active_buffers ||
+                         saved_stats->frees > saved_stats->allocations ||
+                         saved_stats->peak_buffers < saved_stats->active_buffers)) {
+        result = ERR_STATE;
+    }
+    if (result == OK) net_buffer_stats = *saved_stats;
+    spinlock_release(&net_buffer_lock);
+    if (result != OK) LOG_ERROR("NETBUF", "Snapshot de estatisticas invalido");
+    return result;
 }
 
 static int net_buffer_validate_entry_locked(const net_buffer_t* buffer) {

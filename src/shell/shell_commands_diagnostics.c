@@ -56,6 +56,7 @@
 #include "core/ipv4.h"
 #include "core/icmp.h"
 #include "core/net_buffer.h"
+#include "core/sk_buff.h"
 #include "core/net_socket.h"
 #include "core/tcp.h"
 #include "core/udp.h"
@@ -1431,22 +1432,25 @@ static void cmd_health_check_block_cache(int* issue_count) {
 
 static void cmd_health_check_net_buffers(int* issue_count) {
     net_buffer_stats_t stats;
+    sk_buff_stats_t skb_stats;
     int result;
 
     if (!issue_count) return;
     result = net_buffer_get_stats(&stats);
-    if (result != OK || net_buffer_validate_state() != OK) {
+    if (result != OK || skb_get_stats(&skb_stats) != OK ||
+        net_buffer_validate_state() != OK || skb_validate_state() != OK) {
         cmd_health_check_print_query_failure(
             "Network buffers", result == OK ? ERR_STATE : result,
             issue_count);
         return;
     }
-    if (stats.active_buffers) {
+    if (stats.active_buffers || skb_stats.active_buffers) {
         cmd_health_check_print_named_state(
             "Network buffers", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
             "buffers residuais em estado nao terminal", issue_count);
     } else if (stats.invalid_transitions ||
-               stats.duplicate_completions || stats.last_error != OK) {
+               stats.duplicate_completions || stats.last_error != OK ||
+               skb_stats.invalid_operations || skb_stats.last_error != OK) {
         cmd_health_check_print_named_state(
             "Network buffers", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
             "transicao, conclusao ou erro residual", issue_count);

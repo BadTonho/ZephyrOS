@@ -60,6 +60,8 @@ int net_buffer_init(void);
 int net_buffer_begin(net_buffer_t* buffer, uint32_t capacity,
                      uint32_t headroom, uint32_t alignment,
                      net_buffer_owner_t owner);
+int net_buffer_set_layout(net_buffer_t* buffer, uint32_t headroom,
+                          uint32_t length);
 int net_buffer_set_length(net_buffer_t* buffer, uint32_t length);
 int net_buffer_transition(net_buffer_t* buffer,
                           net_buffer_state_t next_state,
@@ -72,6 +74,7 @@ int net_buffer_note_copy(uint32_t bytes);
 int net_buffer_note_clone(void);
 int net_buffer_note_fragment(void);
 int net_buffer_get_stats(net_buffer_stats_t* out_stats);
+int net_buffer_restore_stats(const net_buffer_stats_t* saved_stats);
 int net_buffer_validate_state(void);
 int net_buffer_self_test(void);
 
