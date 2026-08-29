@@ -133,14 +133,24 @@ panic("MOD: Erro fatal");
 
 ## Regra #3: Inicialização de Módulos
 
-Toda função `xxx_init()` nova ou modificada DEVE:
-1. Logar `LOG_INFO` antes de iniciar
-2. Logar `LOG_INFO` após sucesso
-3. Logar `LOG_ERROR` e retornar/panic em falha
+Toda função `xxx_init()` nova ou modificada DEVE definir claramente o estado
+que publica e o contrato para sucesso, degradação e falha.
 
-Funções legadas que já retornam `void` não devem ter sua assinatura alterada
-somente por esta regra. Nesses casos, a falha deve ser registrada e o módulo
-deve publicar estado degradado ou indisponível quando aplicável.
+- Inicializações relevantes devem registrar o início e a conclusão com
+  `LOG_INFO`, quando isso ajudar a acompanhar o ciclo de vida do módulo;
+- uma inicialização bem-sucedida deve publicar o estado `READY` ou equivalente;
+- falhas devem usar a severidade adequada e seguir o contrato da função:
+  retornar erro quando recuperáveis, publicar `DEGRADED`/`UNAVAILABLE` quando
+  o módulo opcional puder continuar indisponível, ou chamar `panic()` somente
+  quando a falha violar uma invariante essencial do sistema;
+- funções legadas que retornam `void` não devem ter sua assinatura alterada
+  somente por esta regra; nesses casos, a falha deve ser registrada e o estado
+  publicado deve deixar a indisponibilidade explícita;
+- inicializações idempotentes, chamadas repetidas e wrappers simples não
+  devem gerar logs duplicados ou ruído desnecessário; podem usar `LOG_DEBUG`
+  ou omitir um novo log quando o estado já estiver publicado;
+- dependências devem ser verificadas pela camada que possui contexto para
+  decidir se a falha é fatal, recuperável ou apenas uma degradação opcional.
 
 ---
 
