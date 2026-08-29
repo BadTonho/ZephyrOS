@@ -513,106 +513,153 @@ consultar `src/include/core/keyboard.h` e o dispatcher atual do Shell.
 
 ---
 
-## Regra #10: Build e Makefile
+## Regra #10: Integração de Build e Makefile
 
-Ao adicionar novo arquivo `.c`:
+O Makefile deve descrever de forma reproduzível como cada fonte, objeto,
+ferramenta e imagem participa dos alvos do projeto. A estrutura exata pode
+variar por módulo, fornecedor, fonte gerada ou ferramenta de build, desde que
+as dependências permaneçam explícitas e verificáveis.
 
-1. Adicionar variáveis no topo do Makefile:
-```makefile
-# Arquivos - Novo Modulo
-NOVO_C = src/novo/novo.c
-NOVO_OBJ = build/novo.o
-```
+### Requisitos
 
-2. Adicionar regra de compilação:
-```makefile
-$(NOVO_OBJ): $(NOVO_C)
-	@if not exist build mkdir build
-	$(GCC) $(CFLAGS) -c $< -o $@
-```
+- [ ] Ao adicionar ou remover uma fonte, atualizar o grupo de variáveis, a
+      regra de compilação e o agregador de objetos ou alvo equivalente usado
+      pelo módulo.
+- [ ] Usar os compiladores, assemblers, flags, linker e convenções de ABI já
+      definidos pelo projeto; não criar uma cadeia paralela sem documentar o
+      motivo e o impacto.
+- [ ] Usar variáveis do Makefile para caminhos e ferramentas. Configurações
+      específicas da máquina devem ficar em `Makefile.local`, que não é
+      versionado.
+- [ ] Criar diretórios de saída pelo mecanismo compatível com o shell e os
+      alvos do projeto; não exigir um comando literal quando outra regra
+      equivalente for necessária para um subdiretório, fornecedor ou host.
+- [ ] Manter dependências de headers, fontes geradas, bibliotecas, imagens,
+      etapas de link, limpeza e alvos de validação quando forem afetados.
+- [ ] Garantir que o objeto novo não fique órfão nem seja incluído duas vezes,
+      e que a ordem de link e o layout das imagens permaneçam intencionais.
+- [ ] Ao integrar outra linguagem, preservar os contratos de ABI, símbolos,
+      calling convention, alinhamento, linker e tratamento de erros; a nova
+      cadeia não deve substituir silenciosamente o fluxo existente.
+- [ ] Não incluir caminhos pessoais, segredos, ferramentas locais ou artefatos
+      de build no Makefile versionado.
 
-3. Adicionar ao `OBJS`:
-```makefile
-OBJS = ... $(NOVO_OBJ)
-```
-
-### Regras
-
-- [ ] NOME_DO_OBJ = `build/nome.o`
-- [ ] SEMPRE usar `@if not exist build mkdir build`
-- [ ] Usar `$(GCC) $(CFLAGS)` para C, `$(NASM) -f elf32` para ASM
-- [ ] Adicionar ao final da lista `OBJS`
+O agente não executa o build, testes ou QEMU; essa validação segue a Regra
+#14. A alteração só deve ser considerada pronta para abrir no QEMU depois que
+o usuário confirmar os pré-requisitos operacionais para aquela versão.
 
 ---
 
-## Regra #11: Documentação
+## Regra #11: Documentação e Contratos
 
-### Arquivos que DEVEM existir
+A documentação deve acompanhar as decisões arquiteturais, contratos públicos,
+limitações, critérios de validação e o estado real do projeto. Roadmaps,
+documentos técnicos e registros cronológicos têm finalidades diferentes e não
+devem ser usados como cópias uns dos outros.
+
+### Documentos canônicos
+
+Devem permanecer disponíveis os documentos-base do projeto:
 
 | Arquivo | Conteúdo |
 |---------|----------|
-| `AGENTS.md` | Regras para agentes de IA (este arquivo) |
+| `AGENTS.md` | Regras operacionais para agentes de IA |
 | `ROADMAP.md` | Roadmap geral do projeto |
-| `docs/indice.md` | Índice de toda documentação |
+| `docs/indice.md` | Índice da documentação |
 | `docs/regras.md` | Regras detalhadas de código |
-| `docs/roadmaps/*.md` | Roadmaps das fases e features planejadas |
-| `docs/melhorias futuras/*.md` | Ideias e melhorias ainda não priorizadas |
+| `docs/roadmaps/` | Roadmaps de fases e funcionalidades priorizadas |
+| `docs/melhorias futuras/` | Propostas ainda não priorizadas |
 
-### Ao criar nova feature
+### Requisitos de documentação
 
-- [ ] Criar roadmap em `docs/roadmaps/nome.md` para feature priorizada
-- [ ] Usar `docs/melhorias futuras/nome.md` para proposta ainda não priorizada
-- [ ] Seguir formato: Resumo de Progresso → Atalhos → Fases → Limitações → Referências
-- [ ] Atualizar `docs/indice.md` se necessário
-- [ ] Atualizar `ROADMAP.md` se for fase principal
+- [ ] Criar ou atualizar um roadmap quando uma feature for priorizada; usar
+      `docs/melhorias futuras/` enquanto ela ainda for apenas uma proposta.
+- [ ] Organizar roadmaps por escopo, requisitos, fases, checklists,
+      limitações, critérios de saída e referências.
+- [ ] Registrar decisões, invariantes, ABI, layouts, ownership, limitações e
+      justificativas técnicas no documento canônico do módulo, não em
+      comentários extensos no código.
+- [ ] Atualizar `docs/indice.md` e `ROADMAP.md` somente quando a nova
+      documentação alterar o índice ou o roadmap geral.
+- [ ] Atualizar `docs/qualidade/contratos-publicos.md` quando um contrato
+      público, header, syscall, ABI ou layout compartilhado mudar.
+- [ ] Atualizar `docs/qualidade/metricas.md` quando a alteração for uma
+      otimização ou quando a decisão depender de comparação mensurável.
+- [ ] Registrar implementação, correção, diagnóstico e validação concluídos
+      em `docs/qualidade/registro-validacoes.md`, conforme a Regra #18.
+- [ ] Registrar em `docs/qualidade/dividas-tecnicas-v1.0.0.md` somente as
+      limitações aceitas explicitamente como dívida para a v1.0.0, conforme a
+      Regra #20.
 
 ---
 
-## Regra #12: Não Quebrar o Build
+## Regra #12: Qualidade, Compatibilidade e Validação
 
-- [ ] NUNCA commitar código que não compila
+- [ ] Não declarar que uma alteração compila, foi testada ou está pronta para
+      QEMU sem evidência correspondente ou confirmação do usuário.
 - [ ] Para alterações de código, tratar `make q3check` e depois
-      `make clean && make` como pré-requisitos para abrir/testar a versão
-      alterada no QEMU e antes de commitar; não reapresentá-los como pendência
-      funcional depois de confirmados para a mesma versão
+      `make clean && make` como pré-requisitos para abrir ou testar a versão
+      alterada no QEMU e para um commit; depois de confirmados para a mesma
+      versão, não reapresentá-los como pendência funcional da etapa.
 - [ ] A validação executável pertence ao usuário; o agente não deve executar
-      build, testes ou QEMU neste projeto
-- [ ] Warnings novos devem ser revisados; warnings existentes devem ser documentados quando não puderem ser corrigidos na etapa atual
-- [ ] Se adicionar header, verificar se não quebra outros arquivos
-- [ ] Se modificar struct, verificar todas as funções que usam ela
-- [ ] NUNCA mudar assinatura de função sem atualizar todos os chamadores
+      build, testes ou QEMU neste projeto, conforme a Regra #14.
+- [ ] Revisar warnings novos. Warnings existentes que não puderem ser
+      corrigidos na etapa devem ser identificados e documentados, sem
+      classificá-los automaticamente como falha nova.
+- [ ] Ao adicionar ou alterar um header, verificar dependências diretas,
+      include guards e impacto nos consumidores.
+- [ ] Ao modificar uma struct, enum, assinatura, layout ou contrato, revisar
+      todos os consumidores, chamadores, pontos de serialização e fronteiras
+      de ABI afetados.
+- [ ] Não alterar uma assinatura ou contrato público sem atualizar os
+      chamadores, a documentação e a validação correspondentes.
+- [ ] Preservar o comportamento existente fora do escopo e registrar qualquer
+      incompatibilidade intencional, migração ou rollback necessário.
 
 ---
 
 ## Checklist Geral
 
-Antes de commitar:
-1. [ ] Se houve alteração de código, o usuário validou o build e os warnings novos foram revisados?
-2. [ ] Toda função de erro tem `LOG_ERROR`?
-3. [ ] Toda init tem `LOG_INFO`?
-4. [ ] Sem magic numbers?
-5. [ ] Funções novas respeitam preferencialmente 100 linhas e 4 níveis de aninhamento?
-6. [ ] Arquivo no diretório correto?
-7. [ ] Header com include guard?
-8. [ ] Makefile atualizado (se novo .c)?
-9. [ ] O build foi solicitado ao usuário quando a alteração exigia validação de compilação?
-10. [ ] Não quebrei nenhuma função existente?
-11. [ ] Revisei o diff staged e confirmei que ele contém apenas a alteração pretendida?
-12. [ ] Confirmei que não há senhas, tokens, chaves privadas ou credenciais?
-13. [ ] Confirmei que não há caminhos pessoais, configurações locais ou arquivos de backup?
-14. [ ] Confirmei que `.mailmap`, `Makefile.local`, `build/` e artefatos locais não estão staged?
-15. [ ] Se um header público mudou, atualizei seu documento canônico listado em `docs/qualidade/contratos-publicos.md`?
-16. [ ] Se a mudança é uma otimização, registrei a comparação antes/depois em `docs/qualidade/metricas.md`?
+Antes de entregar uma alteração ou preparar um commit:
+1. [ ] Escopo, proprietário, impacto e arquivos envolvidos estão claros?
+2. [ ] Contratos de erro, logs e estados seguem as Regras #1, #2 e #3 quando aplicáveis?
+3. [ ] Ownership, alinhamento, lifetime e liberação seguem a Regra #7?
+4. [ ] Funções novas respeitam preferencialmente 100 linhas e 4 níveis de aninhamento, sem refatoração artificial?
+5. [ ] Arquivos, headers e dependências estão organizados conforme as Regras #4 e #5?
+6. [ ] Structs, enums, assinaturas, chamadores e fronteiras de ABI foram revisados?
+7. [ ] Valores fixos têm contrato ou constante apropriada, sem magic numbers evitáveis?
+8. [ ] Makefile e alvos afetados foram atualizados conforme a Regra #10?
+9. [ ] A documentação canônica, métricas, contratos públicos e dívidas foram atualizados quando aplicável?
+10. [ ] Existe uma validação executável ou observável adequada à funcionalidade?
+11. [ ] O usuário recebeu os pré-requisitos de build e validação quando a alteração exige QEMU?
+12. [ ] O agente não executou build, testes ou QEMU, conforme a Regra #14?
+13. [ ] Warnings novos e limitações conhecidas foram identificados sem confundir estado não validado com sucesso?
+14. [ ] `git status --short` e os diffs dos arquivos alterados foram revisados?
+15. [ ] Se houver commit, o diff staged e o `git diff --cached --check` foram revisados conforme a Regra #16?
+16. [ ] Se houver commit, não existem segredos, dados pessoais, caminhos locais, backups ou artefatos indevidos nos arquivos envolvidos?
+17. [ ] A etapa concluída foi registrada em `docs/qualidade/registro-validacoes.md` com horário conforme a Regra #18?
 
 ---
 
-## Regra #13: Comandos Shell para Novas Funcionalidades
+## Regra #13: Validação de Novas Funcionalidades
 
-Funcionalidades executáveis voltadas ao usuário DEVEM ter um comando Shell ou
-diagnóstico equivalente para testar, inspecionar ou executar a capacidade.
-Camadas internas, helpers, callbacks e mudanças somente de infraestrutura
-podem ser validados por `health`, `regcheck`, testes determinísticos ou comandos
-já existentes, sem criar um comando artificial para cada função.
+Funcionalidades executáveis ou observáveis voltadas ao usuário DEVEM ter um
+caminho de validação adequado: comando Shell, diagnóstico, fluxo de interface,
+teste determinístico ou outro mecanismo já existente que permita observar o
+resultado e as falhas relevantes.
+
+- [ ] Preferir um comando ou diagnóstico existente quando ele cobrir a
+      capacidade; adicionar um novo somente quando isso melhorar a observação,
+      execução ou reprodução do comportamento.
+- [ ] Quando aplicável, validar sucesso, entrada inválida, falha de recurso,
+      cancelamento, limpeza e repetição da operação.
+- [ ] Diagnósticos destrutivos ou testes que alterem estado devem declarar esse
+      efeito e restaurar os recursos utilizados quando possível.
+- [ ] Interfaces gráficas podem usar o fluxo de cena, aplicativo hospedado ou
+      matriz de validação correspondente, sem criar um comando artificial.
+- [ ] Camadas internas, helpers, callbacks e mudanças somente de infraestrutura
+      podem ser validados por `health`, `regcheck`, testes determinísticos ou
+      comandos já existentes.
 
 ---
 
@@ -622,22 +669,27 @@ O agente de IA **NUNCA** deve executar comandos de build via terminal (`make`, `
 
 ---
 
-## Regra #15: Modos de Interface (Simple / Classic / Modern)
+## Regra #15: Política de Modos de Interface
 
-- **Simple**: TUI original baseada em `video.c`, preservada somente como fallback
-  operacional para falha de VESA/backbuffer. Fica congelada: recebe correções
-  críticas, mas não novas funcionalidades nem regressão visual completa.
+- **Simple**: TUI original baseada em `video.c`, preservada como fallback
+  operacional para falha de VESA/backbuffer. Recebe correções críticas e
+  ajustes necessários para preservar o fallback, mas não é o alvo padrão de
+  novas funcionalidades.
 - **Classic**: GUI VESA atual baseada em `gui.c`/`gui.h`. É a interface
-  principal, recebe as novas funcionalidades e concentra a matriz obrigatória
-  de testes de Desktop, Taskbar, Window Manager e aplicativos hospedados.
+  principal para novos aplicativos e funcionalidades gráficas e concentra a
+  matriz de testes de Desktop, Taskbar, Window Manager e aplicativos hospedados.
 - **Modern**: nome reservado para a futura interface realmente moderna. Não
   deve ser oferecido como modo selecionável enquanto essa implementação não
   existir.
 
-Novos aplicativos e interfaces DEVEM priorizar o modo Classic gráfico. O modo
-Simple permanece como fallback operacional e não é critério obrigatório de
-validação das fases. Ele só deve ser testado quando a alteração tocar
-diretamente o fallback Simple, o vídeo ou o teclado.
+- [ ] Novos aplicativos e interfaces gráficas priorizam o modo Classic.
+- [ ] Mudanças sem impacto de interface não devem ser forçadas a uma camada
+      visual apenas para satisfazer esta regra.
+- [ ] O modo Simple só precisa ser validado quando a alteração tocar
+      diretamente o fallback, vídeo, teclado ou código compartilhado que possa
+      afetá-lo.
+- [ ] Alterações de código compartilhado devem preservar a operação segura do
+      Simple quando esse caminho continuar sendo necessário.
 
 ---
 

@@ -2533,3 +2533,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   dispatcher, separação de responsabilidades, modos Simple/Classic, cenas,
   `shell_job`, cancelamento, reentrada, restauração de contexto, limpeza e
   validação, preservando a organização atual do Shell.
+
+- AGENTS.md: regras #10, #11, #12, #13 e #15 revisadas.
+  Concluída em: 2026-08-29 10:40 (America/Sao_Paulo).
+  O Makefile passou a ser tratado por integração reproduzível e não por
+  template rígido; a documentação foi separada por finalidade; qualidade,
+  compatibilidade e checklist foram alinhados à validação executável do
+  usuário; a Regra #13 passou a aceitar caminhos observáveis existentes; e a
+  política Simple/Classic/Modern foi delimitada ao escopo de interface.
