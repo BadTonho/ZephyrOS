@@ -2,7 +2,7 @@
 
 Leia este arquivo no início de toda sessão. Siga estas regras SEMPRE.
 
-lembre o usuario de atualizaro agents,
+lembre o usuario de atualizar o agents,
 
 ---
 
