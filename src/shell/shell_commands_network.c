@@ -44,6 +44,7 @@
 #include "core/ipv4.h"
 #include "core/icmp.h"
 #include "core/net_buffer.h"
+#include "core/sk_buff.h"
 #include "core/net_socket.h"
 #include "core/tcp.h"
 #include "core/udp.h"
@@ -630,6 +631,7 @@ int shell_network_validate_for_checks(void) {
     if (result != OK ||
         ethernet_get_status(&ethernet) != OK ||
         ethernet_validate_state() != OK ||
+        skb_self_test() != OK ||
         net_buffer_self_test() != OK ||
         dhcp_get_status(&dhcp) != OK ||
         network_manager_get_count(&count) != OK) {
@@ -726,9 +728,11 @@ static network_link_state_t cmd_net_get_link_state(uint32_t count) {
 static void cmd_net_status(void) {
     network_manager_status_t status;
     net_buffer_stats_t buffers;
+    sk_buff_stats_t skb_buffers;
     const recovery_component_t* health;
     network_link_state_t link;
     int buffer_result;
+    int skb_result;
 
     if (network_manager_get_status(&status) != OK) {
         LOG_ERROR("SHELL", "Estado de rede indisponivel");
@@ -742,6 +746,7 @@ static void cmd_net_status(void) {
         return;
     }
     buffer_result = net_buffer_get_stats(&buffers);
+    skb_result = skb_get_stats(&skb_buffers);
 
     video_print("Rede:\n  Servico: ", 0x0B);
     video_print(recovery_state_name(health->state),
@@ -771,14 +776,14 @@ static void cmd_net_status(void) {
     video_print(status.ethernet_available ?
                 "DISPONIVEL" : "INDISPONIVEL",
                 status.ethernet_available ? 0x0A : 0x0E);
-    video_print("\n  Buffers NET0: ", 0x07);
-    if (buffer_result != OK) {
+    video_print("\n  Buffers SKB: ", 0x07);
+    if (buffer_result != OK || skb_result != OK) {
         video_print("INDISPONIVEL", 0x0E);
     } else {
         video_print("ativos=", 0x08);
-        shell_command_print_num(buffers.active_buffers);
+        shell_command_print_num(skb_buffers.active_buffers);
         video_print(" pico=", 0x08);
-        shell_command_print_num(buffers.peak_buffers);
+        shell_command_print_num(skb_buffers.peak_buffers);
         video_print(" copias=", 0x08);
         shell_command_print_num(buffers.copies);
         video_print(" descartes=", 0x08);
@@ -858,6 +863,48 @@ static void cmd_net_print_mac(const uint8_t* mac_address) {
         if (index) video_print(":", 0x08);
         shell_command_print_hex(mac_address[index], 2U);
     }
+}
+
+static void cmd_skbstat(const char* args) {
+    sk_buff_stats_t skb_stats;
+    net_buffer_stats_t buffer_stats;
+
+    if (!shell_command_args_equal(args, "")) {
+        LOG_WARN("SHELL", "Uso invalido de skbstat");
+        video_print("Uso: skbstat\n", 0x0C);
+        return;
+    }
+    if (skb_get_stats(&skb_stats) != OK ||
+        net_buffer_get_stats(&buffer_stats) != OK) {
+        LOG_ERROR("SHELL", "Estado de sk_buff indisponivel");
+        video_print("skbstat indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("SKB: ativos=", 0x0B);
+    shell_command_print_num(skb_stats.active_buffers);
+    video_print(" pico=", 0x07);
+    shell_command_print_num(skb_stats.peak_buffers);
+    video_print(" alocados=", 0x07);
+    shell_command_print_num(skb_stats.allocations);
+    video_print(" liberados=", 0x07);
+    shell_command_print_num(skb_stats.frees);
+    video_print(" concluidos=", 0x07);
+    shell_command_print_num(skb_stats.completions);
+    video_print(" descartes=", 0x07);
+    shell_command_print_num(skb_stats.drops);
+    video_print(" erros=", 0x07);
+    shell_command_print_num(skb_stats.invalid_operations);
+    video_print(" ultimo_erro=", 0x07);
+    shell_command_print_num((uint32_t)skb_stats.last_error);
+    video_print("\n  copias=", 0x07);
+    shell_command_print_num(buffer_stats.copies);
+    video_print(" bytes=", 0x07);
+    shell_command_print_num(buffer_stats.copied_bytes);
+    video_print(" clones=", 0x07);
+    shell_command_print_num(buffer_stats.clones);
+    video_print(" fragmentos=", 0x07);
+    shell_command_print_num(buffer_stats.fragments);
+    video_print("\n", 0x07);
 }
 
 static int cmd_net_print_interface(const network_interface_info_t* info) {
@@ -4561,6 +4608,8 @@ int shell_network_start_job(const char* command, const char* arguments) {
 
 #define SHELL_NETWORK_WRAP_ARGS(adapter, handler) \
     void adapter(const char* arguments) { handler(arguments); }
+
+SHELL_NETWORK_WRAP_ARGS(shell_dispatch_cmd_skbstat, cmd_skbstat)
 
 void shell_dispatch_cmd_net(const char* arguments) {
     if (shell_network_start_job("net", arguments)) return;

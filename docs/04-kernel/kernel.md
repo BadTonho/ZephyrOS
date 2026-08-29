@@ -676,18 +676,26 @@ permitidas sao:
 somente pode ser liberada apos conclusao ou descarte.
 
 O rastreamento e estatico e limitado a 32 descriptors; nenhum ponteiro de
-payload externo e retido. A Ethernet integra o descriptor ao `net_packet_t`
-privado. RX e TX usam buffers emprestados e callbacks sincronos: os dados
-recebidos e enviados somente sao validos durante o callback. O
-driver nao transfere ownership de DMA no NET0. As copias feitas nas fronteiras
-Ethernet e das filas de socket sao medidas; clones, fragmentos, zero-copy,
-`sk_buff_t`, sockets genericos e `poll/select` permanecem em NET1+.
+payload externo e retido. No NET1, a Ethernet integra o descriptor ao
+`sk_buff_t`, que mantem um `net_buffer_t` privado como fonte unica de estado,
+owner, referencias e inventario. Os objetos sao obtidos do SLAB, com storage
+interno de no maximo 2048 bytes e sem `kmalloc` por pacote. RX e TX usam
+buffers emprestados e callbacks sincronos: os dados recebidos e enviados
+somente sao validos durante o callback. Nenhum driver transfere ownership de
+DMA; a copia fallback e contabilizada. Clones, fragmentos reais, zero-copy,
+sockets genericos e `poll/select` permanecem fora do NET1.
 
 `ethernet_validate_state()` inclui a validacao global dos buffers. O
 `net_buffer_self_test()` usa fixtures privadas e restaura suas metricas;
 `regcheck full` e `net check` o executam, enquanto `health check` denuncia
 buffers ativos, invariantes quebradas e erros residuais. `boot.asm` nao faz
 parte desta etapa.
+
+O NET1 acrescenta `skb_self_test()` ao mesmo fluxo de validacao. `skbstat`
+expoe alocacoes, liberacoes, conclusoes, descartes, copias, clones e
+fragmentos reservados. O caminho continua sincrono e baseado em copia, sem
+transferencia de ownership de DMA ou garantia de zero-copy real. `boot.asm`
+nao foi alterado.
 
 ## U2: criptografia e verificacao local ZUPD
 
@@ -955,7 +963,7 @@ mantem ate 16 caches, 128 slabs globais e 128 objetos por slab, com listas
 `full`, `partial` e `empty`, bitmap e freelist.
 
 Processos, threads, arquivos e vnodes usam caches dedicados. A Ethernet usa
-`net_packet_t` interno para os frames RX/TX; buffers especificos dos protocolos
+`sk_buff_t` interno para os frames RX/TX; buffers especificos dos protocolos
 nao fazem parte da migracao. Stacks continuam em `kmalloc` por exigirem tamanho
 e guardas proprios. Falhas de criacao de cache desabilitam o consumidor e sao
 registradas; liberacoes invalidas, double free e destruicao ocupada sao

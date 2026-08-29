@@ -7,6 +7,25 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## NET1 - estrutura unificada sk_buff_t
+
+Implementacao registrada em: 2026-08-29 20:21:31 (America/Sao_Paulo)
+
+- `src/include/core/sk_buff.h` e `src/core/sk_buff.c` foram adicionados com
+  pool SLAB, storage interno de 2048 bytes, geometria `head/data/tail/end`,
+  referencias, conclusao, descarte e validacao sobre um `net_buffer_t` privado.
+- Ethernet foi migrada do descriptor `net_packet_t` privado para `sk_buff_t`
+  sem alterar `ethernet.h`, callbacks dos drivers, `net_socket.h` ou ABI.
+- `skb_self_test()` cobre limites de ponteiros, transicoes, retencao,
+  conclusao unica, timeout, descarte e limpeza; `skbstat` foi adicionado ao
+  dispatcher sem alterar trafego ou inventario de NICs.
+- O caminho continua sincrono e baseado em copia fallback. Nenhum driver
+  transfere ownership de DMA; clones, fragmentos reais e zero-copy permanecem
+  fora do NET1; `boot.asm` nao foi alterado.
+- A validacao executavel pelo usuario ainda esta pendente: `make q3check`,
+  `make clean && make`, `make run` e a matriz QEMU do NET1. O resumo do roadmap
+  permanece `[ ]` ate a confirmacao funcional.
+
 ## NET0 - contrato de ownership e lifetime de buffers
 
 Validacao funcional confirmada em: 2026-08-29 19:55:10 (America/Sao_Paulo)

@@ -54,6 +54,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/core/log.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/memory.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/net_buffer.h` | `docs/04-kernel/kernel.md` |
+| `src/include/core/sk_buff.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/net_socket.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/network_manager.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/wifi_manager.h` | `docs/04-kernel/kernel.md` |
@@ -205,13 +206,14 @@ RTL8139 inicializam o dispositivo PCI exato; IDT oferece handlers
 compartilhados, ocorrencias e quantidade de handlers por linha, e PCI confirma
 I/O Space com Bus Mastering.
 
-No NET0, `src/include/core/net_buffer.h` define o descriptor estatico de
-buffers, seus owners, estados, referencias, geometria, conclusao e metricas.
-As transicoes invalidas retornam erros canonicos. `net_buffer_self_test()` usa
-fixtures privadas e restaura as metricas; a Ethernet mantem seus callbacks e
-o modelo de copia sincrona. Nenhum driver transfere ownership de DMA, e
-`sk_buff_t`, clones/fragmentos reais e zero-copy permanecem fora deste
-contrato.
+No NET1, `src/include/core/net_buffer.h` continua definindo o lifetime e
+`src/include/core/sk_buff.h` define a estrutura unificada, suas operacoes de
+geometria, referencias, conclusao e metricas. As transicoes invalidas retornam
+erros canonicos. `skb_self_test()` usa fixtures privadas e restaura as
+metricas; a Ethernet mantem callbacks sincronos e o modelo de copia fallback.
+Nenhum driver transfere ownership de DMA. Clones, fragmentos reais e zero-copy
+permanecem fora deste contrato; `dev` e um handle opaco e `boot.asm` nao e
+alterado.
 
 Desde a EP7.0, `src/include/core/wifi_manager.h` define um inventario somente-
 leitura para candidatos PCI de rede que nao sejam E1000 ou RTL8139. Na EP7.1B,
@@ -442,7 +444,8 @@ consultas de estatisticas, verificacao de posse, validacao global e autoteste.
 objetos ativos. Os metadados dos caches sao estaticos; as paginas dos slabs
 sao obtidas e devolvidas ao PMM. A migracao das tabelas internas para ponteiros
 nao altera a ABI ring 3 nem as assinaturas publicas de processo, thread ou VFS.
-`net_packet_t` permanece interno a Ethernet. `shell_runtime.h` acrescenta
+A Ethernet usa `sk_buff_t` neste NET1 sem expor um novo `net_device` publico.
+`shell_runtime.h` acrescenta
 `slab_integrity` ao resultado interno de `memcheck`.
 `thread.h` acrescenta `thread_is_ready()` para publicar o estado de
 inicializacao do scheduler cooperativo; a assinatura legada de `thread_init()`

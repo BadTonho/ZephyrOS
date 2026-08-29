@@ -54,6 +54,7 @@ Comandos disponiveis:
   device-info <id> - Exibe detalhes de um dispositivo inventariado
   device-scan - Refaz a varredura PCI/USB e atualiza o inventario
   net status - Exibe o estado observavel da rede
+  skbstat   - Exibe o inventario e as metricas dos sk_buff
   net devices - Lista controladores de rede PCI
   net info <id> - Exibe detalhes de uma interface inventariada
   net ethernet <id> - Inspeciona recepcao Ethernet L2
@@ -635,7 +636,7 @@ zephyr> net check qemu multi net-pci-00-03.0 net-pci-00-04.0
 ```
 
 `net status` separa inventario, controladores reconhecidos, drivers ativos,
-erros de driver, interface L3, link, protocolos e o resumo NET0 de buffers
+erros de driver, interface L3, link, protocolos e o resumo NET1 de buffers SKB
 ativos, pico, copias e descartes. `net devices` lista IDs
 estaveis, modelo, estado e marca `[L3]`/`[DHCP]`. `net info <id>` mostra
 vinculo Ethernet, papel L3, aquisicao DHCP, MAC, contadores, fila RX, erro do
@@ -662,6 +663,13 @@ conclusoes e descartes. `health check` verifica o estado global, buffers ativos
 e erros residuais. As metricas de copias, pico, descartes, clones reservados e
 fragmentos reservados sao apenas informativas; a entrega atual continua
 sincrona e baseada em copia.
+
+`skbstat` nao aceita argumentos e mostra ativos, pico, alocacoes, liberacoes,
+conclusoes, descartes, erros, copias, bytes copiados, clones reservados e
+fragmentos reservados. O comando e somente diagnostico e nao cria trafego nem
+altera o inventario de NICs. `net check` e `regcheck full` executam tambem
+`skb_self_test()`; os callbacks continuam sincronos, com copia fallback e sem
+transferencia de ownership DMA.
 
 `net arp config <id> <ip-local>` continua disponivel para diagnosticos da
 camada ARP. Repetir a mesma configuracao preserva cache e contadores. Se uma

@@ -349,18 +349,21 @@ inalterado e fila vazia. Ausencia de FLUSH aumenta as metricas degradadas do
 BLK3, mas nao e falha do BLK4; erro de FLUSH publica `ERROR` e impede o
 desligamento normal.
 
-## NET0 - Buffers de rede
+## NET0/NET1 - Buffers de rede
 
 `net_buffer_stats_t` publica `active_buffers`, `peak_buffers`, `allocations`,
 `frees`, `delivered`, `dropped`, `copies`, `copied_bytes`, `clones`,
 `fragments`, `invalid_transitions`, `duplicate_completions`,
-`ref_acquires`, `ref_releases` e `last_error`. Os campos instantaneos de
-buffers ativos e o pico permitem verificar ausencia de residuos depois de
-`net check` e `regcheck full`.
+`ref_acquires`, `ref_releases` e `last_error`. `sk_buff_stats_t` acrescenta
+ativos, pico, alocacoes, liberacoes, conclusoes, descartes, operacoes invalidas
+e ultimo erro para a camada unificada. Os campos instantaneos de buffers
+ativos e o pico permitem verificar ausencia de residuos depois de `net check`,
+`regcheck full` e `skbstat`.
 
-As copias atualmente medidas sao as fronteiras de entrada/saida Ethernet e
-as filas de socket. `clones` e `fragments` permanecem contadores reservados e
-nao representam operacoes reais antes do NET1. Descartes e copias normais sao
-informativos; transicoes invalidas, conclusoes duplicadas, erro residual ou
-buffer ativo sao condicoes de diagnostico. Nao ha alegacao de zero-copy nem
+As copias medidas sao as fronteiras de entrada/saida Ethernet e as filas de
+socket; o NET1 mantem o caminho síncrono e baseado em copia fallback. `clones`
+e `fragments` permanecem contadores reservados e nao representam operacoes
+reais. Descartes e copias normais sao informativos; transicoes invalidas,
+conclusoes duplicadas, erro residual ou buffer ativo sao condicoes de
+diagnostico. Nao ha alegacao de ownership DMA transferido, zero-copy real ou
 comparacao de desempenho nesta etapa.
