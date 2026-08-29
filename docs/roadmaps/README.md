@@ -141,7 +141,8 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
 MM1 do Roadmap 11 esta implementada e validada pelo usuario, com caches
 SLAB/SLUB, migracao de processos, threads, objetos VFS e pacotes Ethernet, e
 os diagnosticos `slabinfo`/`slabtest`. MM2, de areas de memoria virtual, esta
-implementada e aguarda a validacao executavel do usuario.
+implementada e validada pelo usuario com App API 0.9, `mmap`/`munmap`,
+`appcheck`, `memcheck`, `schedcheck`, `regcheck full` e `vmamap`.
 
 ## K4 validada
 
