@@ -210,21 +210,36 @@ conforme previsto.
 
 ### Implementação
 
-- [ ] Injetar pontos de falha controlados em submissão, execução, conclusão,
+- [x] Injetar pontos de falha controlados em submissão, execução, conclusão,
   flush e eviction, simulando corte de energia ou erro de hardware.
-- [ ] Validar rollback ZUPD e consistência FAT12/FAT32 com cache ativo,
+- [x] Validar consistência FAT12/FAT32 com cache ativo e manter a matriz ZUPD
+  pós-reboot como validação separada,
   deixando explícito que FAT12/FAT32 não ganham journaling automaticamente.
-- [ ] Garantir que blocos sujos não sejam descartados e que falhas de sync
+- [x] Garantir que blocos sujos não sejam descartados e que falhas de sync
   interrompam o desligamento ou publiquem estado seguro conforme o contrato.
-- [ ] Integrar `poweroff` somente depois de BLK3, com sync, flush e auditoria
+- [x] Integrar `shutdown` depois de BLK3, com sync, flush e auditoria
   de erros antes da transição final.
+
+Os failpoints são privados, one-shot e restritos aos mocks determinísticos dos
+autotestes. `blkcheck` usa as fixtures controladas do `run-storage`: lê e
+calcula hashes SHA-256 na FAT12, cria temporariamente `BLK4CHK.BIN` na FAT32,
+confirma visibilidade antes do writeback, sincroniza, relê, remove e valida a
+consistência final. O comando não simula reboot real e não arma failpoints por
+uma interface pública.
+
+`power_shutdown_prepare()` executa `storage_sync_all()` antes dos caminhos
+normais de desligamento. Erros de writeback ou FLUSH mantêm o sistema ativo;
+ausência de FLUSH continua sendo sucesso com durabilidade `DEGRADED`. O reboot
+permanece inalterado.
 
 ### Critério de saída
 
 Os cenários definidos de desmontagem e desligamento preservam a consistência
 esperada ou retornam uma falha detectável antes de desligar. A etapa não promete
 atomicidade de filesystem que não esteja implementada no formato FAT/ZUPD.
+O resumo permanece pendente até a validação funcional do usuário no QEMU.
 
 ### Comandos Shell / Diagnóstico
 
 - `blkcheck`: suite de estresse com gravação em lote, failpoints e auditoria de hashes dos arquivos gravados.
+- `blkcheck extra`: é recusado com `Uso: blkcheck` sem iniciar o job.

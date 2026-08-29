@@ -21,6 +21,7 @@
 #include "core/recovery.h"
 #include "core/errors.h"
 #include "core/power.h"
+#include "apps/shell_command_utils.h"
 #include "ui/gui.h"
 #include "ui/display.h"
 
@@ -965,6 +966,8 @@ static void taskmgr_redraw_after_menu_close(void) {
 }
 
 static void taskmgr_handle_taskbar_action(int result) {
+    int prepare_result;
+
     switch (result) {
         case 2:
             taskmgr_close();
@@ -985,6 +988,14 @@ static void taskmgr_handle_taskbar_action(int result) {
             power_reboot();
             break;
         case 6:
+            prepare_result = power_shutdown_prepare();
+            if (prepare_result != OK) {
+                video_print("Desligamento recusado: sync falhou (codigo ",
+                            0x0C);
+                shell_command_print_num((uint32_t)prepare_result);
+                video_print(").\n", 0x0C);
+                break;
+            }
             taskmgr_close();
             power_shutdown();
             break;
@@ -2179,6 +2190,8 @@ void taskmgr_gui_update(void) {
 }
 
 static void taskmgr_gui_handle_taskbar_action(int result) {
+    int prepare_result;
+
     switch (result) {
         case 2: taskmgr_close(); shell_handle_app_request(IPC_APP_OPEN_SHELL); break;
         case 3: taskmgr_close(); shell_handle_app_request(IPC_APP_OPEN_EXPLORER); break;
@@ -2188,6 +2201,14 @@ static void taskmgr_gui_handle_taskbar_action(int result) {
             power_reboot();
             break;
         case 6:
+            prepare_result = power_shutdown_prepare();
+            if (prepare_result != OK) {
+                video_print("Desligamento recusado: sync falhou (codigo ",
+                            0x0C);
+                shell_command_print_num((uint32_t)prepare_result);
+                video_print(").\n", 0x0C);
+                break;
+            }
             taskmgr_close();
             power_shutdown();
             break;

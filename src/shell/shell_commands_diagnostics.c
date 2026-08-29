@@ -1414,7 +1414,7 @@ static void cmd_health_check_block_cache(int* issue_count) {
     if (durability.state == BLOCK_DURABILITY_ERROR) {
         cmd_health_check_print_named_state(
             "Block cache", "ERROR", SHELL_HEALTH_CHECK_ERROR_COLOR,
-            "falha de writeback ou flush", issue_count);
+            "desligamento seguro indisponivel: writeback/flush", issue_count);
     } else if (durability.state == BLOCK_DURABILITY_DEGRADED) {
         cmd_health_check_print_named_state(
             "Block cache", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
@@ -1424,7 +1424,7 @@ static void cmd_health_check_block_cache(int* issue_count) {
         cmd_health_check_print_named_state(
             "Block cache", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
             stats.writeback_entries ? "writeback em andamento" :
-            "blocos sujos aguardando writeback", issue_count);
+            "blocos sujos; desligamento aguardara sync", issue_count);
     }
 }
 

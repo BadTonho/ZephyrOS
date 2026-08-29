@@ -332,3 +332,19 @@ significa que os dados foram gravados, mas o dispositivo nao confirmou FLUSH;
 `ERROR` preserva o primeiro erro de writeback ou FLUSH e a entrada suja para
 nova tentativa. `sync` global agrega os dispositivos registrados e
 `fsync(fd)` limita a operacao ao volume associado ao descritor.
+
+## BLK4 - Resiliencia e failpoints
+
+Os failpoints nao criam contadores publicos nem alteram a ABI de metricas.
+Durante os autotestes, falhas esperadas continuam incrementando os contadores
+cumulativos `failed`, `errors` e `writeback_failures`; o aceite observa que
+`queue_depth`, `in_flight`, `dirty_entries`, `writeback_entries`, pins e o
+ultimo erro residual estejam limpos ao final da drenagem.
+
+`blkcheck` compara `physical_writes` antes e depois da criacao de
+`BLK4CHK.BIN`: o valor deve permanecer inalterado antes do `sync` e crescer
+quando o writeback explicito e executado. A consistencia dos dados e medida
+por SHA-256 antes e depois do sync. As fases tambem exigem inventario de bloco
+inalterado e fila vazia. Ausencia de FLUSH aumenta as metricas degradadas do
+BLK3, mas nao e falha do BLK4; erro de FLUSH publica `ERROR` e impede o
+desligamento normal.

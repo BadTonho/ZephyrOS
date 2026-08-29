@@ -45,6 +45,7 @@
 #include "fs/storage.h"
 #include "fs/file_index.h"
 #include "apps/shell.h"
+#include "apps/shell_command_utils.h"
 #include "apps/shell_job.h"
 #include "drivers/speaker.h"
 #include "process/thread.h"
@@ -295,6 +296,19 @@ static int kernel_handle_taskbar_mouse(mouse_event_t* evt) {
                          "Nd"((uint16_t)0x64));
             break;
         case 6:
+            {
+                int prepare_result = power_shutdown_prepare();
+
+                if (prepare_result != OK) {
+                    LOG_ERROR_CODE("KERNEL", prepare_result,
+                                   "Desligamento recusado por sync falho");
+                    video_print(
+                        "Desligamento recusado: sync falhou (codigo ", 0x0C);
+                    shell_command_print_num((uint32_t)prepare_result);
+                    video_print(").\n", 0x0C);
+                    break;
+                }
+            }
             power_shutdown();
             break;
         case 7:

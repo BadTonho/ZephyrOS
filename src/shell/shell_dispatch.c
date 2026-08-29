@@ -58,6 +58,7 @@ extern void shell_dispatch_cmd_schedcheck(const char* arguments);
 extern void shell_dispatch_cmd_q2check(const char* arguments);
 extern void shell_dispatch_cmd_regcheck(const char* arguments);
 extern void shell_dispatch_cmd_appcheck(const char* arguments);
+extern void shell_dispatch_cmd_blkcheck(const char* arguments);
 extern void shell_dispatch_cmd_pkg(const char* arguments);
 extern void shell_dispatch_cmd_store(const char* arguments);
 extern void shell_dispatch_cmd_update(const char* arguments);
@@ -160,6 +161,8 @@ static const shell_dispatch_entry_t shell_dispatch_table[] = {
     {"regcheck", shell_dispatch_cmd_regcheck,
      SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_COOPERATIVE},
     {"appcheck", shell_dispatch_cmd_appcheck,
+     SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_COOPERATIVE},
+    {"blkcheck", shell_dispatch_cmd_blkcheck,
      SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_COOPERATIVE},
     {"pkg", shell_dispatch_cmd_pkg,
      SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_COOPERATIVE},

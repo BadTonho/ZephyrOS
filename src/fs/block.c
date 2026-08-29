@@ -45,6 +45,61 @@ typedef struct {
     int forced_result;
 } block_self_test_context_t;
 
+typedef enum {
+    BLOCK_FAILPOINT_NONE = 0,
+    BLOCK_FAILPOINT_SUBMIT,
+    BLOCK_FAILPOINT_EXECUTE,
+    BLOCK_FAILPOINT_COMPLETE,
+    BLOCK_FAILPOINT_FLUSH
+} block_failpoint_stage_t;
+
+typedef struct {
+    block_failpoint_stage_t stage;
+    uint32_t occurrence;
+    int forced_result;
+    uint8_t armed;
+    char device_id[BLOCK_DEVICE_ID_SIZE];
+} block_failpoint_t;
+
+static block_failpoint_t block_failpoint;
+
+static void block_copy_text(char* destination, uint32_t capacity,
+                            const char* source);
+static int block_text_equal(const char* left, const char* right);
+
+static void block_failpoint_clear(void) {
+    kmemset(&block_failpoint, 0, sizeof(block_failpoint));
+}
+
+static void block_failpoint_arm(block_failpoint_stage_t stage,
+                                const char* device_id,
+                                uint32_t occurrence, int forced_result) {
+    block_failpoint_clear();
+    block_failpoint.stage = stage;
+    block_failpoint.occurrence = occurrence ? occurrence : 1U;
+    block_failpoint.forced_result = forced_result;
+    block_failpoint.armed = 1U;
+    block_copy_text(block_failpoint.device_id, BLOCK_DEVICE_ID_SIZE,
+                    device_id);
+}
+
+static uint8_t block_failpoint_consume(block_failpoint_stage_t stage,
+                                       const char* device_id,
+                                       int* out_result) {
+    if (!out_result || !block_failpoint.armed ||
+        block_failpoint.stage != stage ||
+        !block_text_equal(block_failpoint.device_id, device_id)) {
+        return 0U;
+    }
+    if (block_failpoint.occurrence > 1U) {
+        block_failpoint.occurrence--;
+        return 0U;
+    }
+    *out_result = block_failpoint.forced_result;
+    block_failpoint_clear();
+    return 1U;
+}
+
 #define BLOCK_SELF_TEST_SECTOR_COUNT 128U
 #define BLOCK_SELF_TEST_MAX_TRANSFER 8U
 #define BLOCK_SELF_TEST_LBA 2U
@@ -293,6 +348,12 @@ static int block_queue_enqueue(bio_request_t* request, uint8_t asynchronous,
             return block_request_reject(request, result);
         }
     }
+    if (block_failpoint_consume(BLOCK_FAILPOINT_SUBMIT, request->device_id,
+                                &result)) {
+        spinlock_release(&block_queue_lock);
+        LOG_WARN("BLK", "Failpoint de submissao acionado");
+        return block_request_reject(request, result);
+    }
     if (asynchronous && !block_work_ready) {
         spinlock_release(&block_queue_lock);
         LOG_WARN("BLK", "Submissao assincrona indisponivel sem workqueue");
@@ -480,6 +541,10 @@ static int block_dispatch_one(uint8_t* out_had_work) {
     block_request_t physical;
     block_device_t* device;
     uint32_t batch_count = 0U;
+    int forced_result = OK;
+    uint8_t fail_execute = 0U;
+    uint8_t fail_complete = 0U;
+    uint8_t fail_flush = 0U;
     int result;
 
     if (!out_had_work) {
@@ -529,7 +594,29 @@ static int block_dispatch_one(uint8_t* out_had_work) {
         physical.sector_count += batch[index].bio->sector_count;
         physical.buffer_bytes += bytes;
     }
-    result = block_driver_submit(device, &physical);
+    fail_execute = block_failpoint_consume(BLOCK_FAILPOINT_EXECUTE,
+                                           physical.device_id,
+                                           &forced_result);
+    if (physical.operation == BLOCK_OPERATION_FLUSH) {
+        fail_flush = block_failpoint_consume(BLOCK_FAILPOINT_FLUSH,
+                                             physical.device_id,
+                                             &forced_result);
+    }
+    if (fail_execute || fail_flush) {
+        physical.status = forced_result;
+        physical.completed_sectors = 0U;
+        result = forced_result;
+        LOG_WARN("BLK", "Failpoint de execucao/flush acionado");
+    } else {
+        result = block_driver_submit(device, &physical);
+    }
+    if (block_failpoint_consume(BLOCK_FAILPOINT_COMPLETE,
+                                physical.device_id, &forced_result)) {
+        physical.status = forced_result;
+        physical.completed_sectors = 0U;
+        result = forced_result;
+        LOG_WARN("BLK", "Failpoint de conclusao acionado");
+    }
     if (result != OK && physical.status == OK) physical.status = result;
     block_complete_batch(device, batch, batch_count, &physical);
     return OK;
@@ -729,6 +816,7 @@ int block_init(void) {
     block_dispatching = 0U;
     block_work_ready = 0U;
     block_writeback_work_ready = 0U;
+    block_failpoint_clear();
     block_queue_stats.queue_capacity = BLOCK_QUEUE_CAPACITY;
     block_stats_start_tick = timer_get_ticks();
     block_initialized = 1U;
@@ -1313,6 +1401,7 @@ int block_self_test(void) {
     uint32_t processed;
     int result;
 
+    block_failpoint_clear();
     if (!block_initialized || block_validate_state() != OK) {
         LOG_ERROR("BLK", "Autoteste de BIO antes da camada estar pronta");
         return ERR_STATE;
@@ -1448,6 +1537,77 @@ int block_self_test(void) {
         goto block_self_test_fail;
     }
     context.forced_result = OK;
+
+    block_failpoint_arm(BLOCK_FAILPOINT_SUBMIT, mock.id, 1U, ERR_DISK);
+    kmemset(&context, 0, sizeof(context));
+    block_self_test_prepare(&request, &context);
+    request.lba = BLOCK_SELF_TEST_LBA;
+    request.sector_count = 1U;
+    request.buffer = buffer;
+    request.buffer_bytes = BLOCK_SECTOR_SIZE;
+    result = block_submit_sync(&request);
+    if (result != ERR_DISK || context.submit_calls != 0U ||
+        context.completion_calls != 1U ||
+        block_self_test_expect(&request, BLOCK_REQUEST_ERROR, ERR_DISK, 0U) !=
+            OK) {
+        LOG_ERROR("BLK", "Failpoint de submissao falhou");
+        goto block_self_test_fail;
+    }
+
+    block_failpoint_arm(BLOCK_FAILPOINT_EXECUTE, mock.id, 1U, ERR_TIMEOUT);
+    kmemset(&context, 0, sizeof(context));
+    block_self_test_prepare(&request, &context);
+    request.lba = BLOCK_SELF_TEST_LBA;
+    request.sector_count = 1U;
+    request.buffer = buffer;
+    request.buffer_bytes = BLOCK_SECTOR_SIZE;
+    result = block_submit_sync(&request);
+    if (result != ERR_TIMEOUT || context.submit_calls != 0U ||
+        context.completion_calls != 1U ||
+        block_self_test_expect(&request, BLOCK_REQUEST_ERROR, ERR_TIMEOUT, 0U) !=
+            OK) {
+        LOG_ERROR("BLK", "Failpoint de execucao falhou");
+        goto block_self_test_fail;
+    }
+
+    block_failpoint_arm(BLOCK_FAILPOINT_COMPLETE, mock.id, 1U, ERR_DISK);
+    kmemset(&context, 0, sizeof(context));
+    block_self_test_prepare(&request, &context);
+    request.lba = BLOCK_SELF_TEST_LBA;
+    request.sector_count = 1U;
+    request.buffer = buffer;
+    request.buffer_bytes = BLOCK_SECTOR_SIZE;
+    result = block_submit_sync(&request);
+    if (result != ERR_DISK || context.submit_calls != 1U ||
+        context.completion_calls != 1U ||
+        block_self_test_expect(&request, BLOCK_REQUEST_ERROR, ERR_DISK, 0U) !=
+            OK) {
+        LOG_ERROR("BLK", "Failpoint de conclusao falhou");
+        goto block_self_test_fail;
+    }
+
+    mock.capabilities = BLOCK_DEVICE_CAP_FLUSH;
+    if (block_register(&mock) != OK) {
+        LOG_ERROR("BLK", "Falha ao habilitar flush no autoteste");
+        goto block_self_test_fail;
+    }
+    block_failpoint_arm(BLOCK_FAILPOINT_FLUSH, mock.id, 1U, ERR_TIMEOUT);
+    kmemset(&context, 0, sizeof(context));
+    block_self_test_prepare(&request, &context);
+    request.operation = BLOCK_OPERATION_FLUSH;
+    result = block_submit_sync(&request);
+    if (result != ERR_TIMEOUT || context.submit_calls != 0U ||
+        context.completion_calls != 1U ||
+        block_self_test_expect(&request, BLOCK_REQUEST_ERROR, ERR_TIMEOUT, 0U) !=
+            OK) {
+        LOG_ERROR("BLK", "Failpoint de flush falhou");
+        goto block_self_test_fail;
+    }
+    mock.capabilities = 0U;
+    if (block_register(&mock) != OK) {
+        LOG_ERROR("BLK", "Falha ao restaurar flush do autoteste");
+        goto block_self_test_fail;
+    }
 
     if (block_work_ready) {
         bio_request_t first;
@@ -1595,21 +1755,26 @@ int block_self_test(void) {
     if (result != OK || block_device_count != initial_device_count ||
         block_validate_state() != OK) {
         LOG_ERROR("BLK", "Autoteste alterou o inventario de bloco");
+        block_failpoint_clear();
         return ERR_STATE;
     }
     if (block_cache_self_test() != OK) {
         LOG_ERROR("BLK", "Autoteste do cache de blocos falhou");
+        block_failpoint_clear();
         return ERR_STATE;
     }
+    block_failpoint_clear();
     return OK;
 
 block_self_test_fail:
+    block_failpoint_clear();
     (void)block_unregister(mock.id);
     return ERR_STATE;
 }
 
 int block_validate_state(void) {
-    if (!block_initialized || block_device_count > BLOCK_MAX_DEVICES) {
+    if (!block_initialized || block_device_count > BLOCK_MAX_DEVICES ||
+        block_failpoint.armed) {
         LOG_ERROR("BLK", "Estado da camada de bloco invalido");
         return ERR_STATE;
     }

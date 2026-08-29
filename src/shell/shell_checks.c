@@ -7,6 +7,7 @@
 #include "fs/vfs.h"
 #include "fs/storage.h"
 #include "fs/block.h"
+#include "fs/block_cache.h"
 #include "fs/file_index.h"
 #include "core/memory.h"
 #include "core/timer.h"
@@ -34,6 +35,7 @@
 #include "memory/vma.h"
 #include "core/string.h"
 #include "core/errors.h"
+#include "core/crypto.h"
 #include "core/input.h"
 #include "core/irq_deferred.h"
 #include "core/workqueue.h"
@@ -145,6 +147,14 @@
 #define SHELL_APPCHECK_PHASE_COUNT 8U
 #define SHELL_APPCHECK_MAX_FAILURES 16U
 #define SHELL_APPCHECK_FAILURE_LABEL_SIZE 40U
+#define SHELL_BLKCHECK_PHASE_COUNT 6U
+#define SHELL_BLKCHECK_FAILURE_LABEL_SIZE 48U
+#define SHELL_BLKCHECK_FILE_NAME "BLK4CHK.BIN"
+#define SHELL_BLKCHECK_FILE_SIZE (4U * BLOCK_SECTOR_SIZE)
+#define SHELL_BLKCHECK_FAT12_VOLUME "ata1p1"
+#define SHELL_BLKCHECK_FAT32_VOLUME "ata1p4"
+#define SHELL_BLKCHECK_README "README.TXT"
+#define SHELL_BLKCHECK_SAMPLE "DOCS/SAMPLE.TXT"
 
 typedef enum {
     SHELL_Q2CHECK_IDLE = 0,
@@ -193,6 +203,34 @@ typedef struct {
     uint32_t stored_failure_count;
     shell_appcheck_failure_t failures[SHELL_APPCHECK_MAX_FAILURES];
 } shell_appcheck_summary_t;
+
+typedef enum {
+    SHELL_BLKCHECK_PHASE_BASELINE = 0,
+    SHELL_BLKCHECK_PHASE_FAILPOINTS,
+    SHELL_BLKCHECK_PHASE_CACHE,
+    SHELL_BLKCHECK_PHASE_FAT12,
+    SHELL_BLKCHECK_PHASE_FAT32,
+    SHELL_BLKCHECK_PHASE_SHUTDOWN,
+    SHELL_BLKCHECK_PHASE_INVALID
+} shell_blkcheck_phase_t;
+
+typedef struct {
+    shell_blkcheck_phase_t phase;
+    uint8_t phase_ok[SHELL_BLKCHECK_PHASE_COUNT];
+    uint8_t active;
+    uint8_t scratch_created;
+    uint8_t cleanup_pending;
+    uint8_t fat32_step;
+    uint32_t failure_count;
+    char failure[SHELL_BLKCHECK_FAILURE_LABEL_SIZE];
+    int result;
+    uint32_t baseline_count;
+    char baseline_ids[BLOCK_MAX_DEVICES][BLOCK_DEVICE_ID_SIZE];
+    uint32_t physical_writes_before;
+    uint8_t expected_hash[CRYPTO_SHA256_SIZE];
+    uint8_t fat12_readme_hash[CRYPTO_SHA256_SIZE];
+    uint8_t fat12_sample_hash[CRYPTO_SHA256_SIZE];
+} shell_blkcheck_t;
 
 typedef struct {
     uint32_t initial_focus;
@@ -353,9 +391,34 @@ static app_launch_info_t appcheck_launch_info;
 
 static shell_q2check_t shell_q2check;
 static shell_regcheck_t shell_regcheck;
+static shell_blkcheck_t shell_blkcheck;
+static uint8_t shell_blkcheck_data[SHELL_BLKCHECK_FILE_SIZE];
+static uint8_t shell_blkcheck_verify[SHELL_BLKCHECK_FILE_SIZE];
+static storage_dir_entry_t shell_blkcheck_entries[STORAGE_MAX_DIR_ENTRIES];
+static storage_long_dir_entry_t
+    shell_blkcheck_long_entries[STORAGE_MAX_DIR_ENTRIES];
+static const uint8_t shell_blkcheck_expected_readme[CRYPTO_SHA256_SIZE] = {
+    0x89U, 0x1CU, 0x24U, 0x79U, 0x0BU, 0x39U, 0x90U, 0xBFU,
+    0x87U, 0xBDU, 0xE8U, 0xBEU, 0xFCU, 0x0CU, 0x0CU, 0x3EU,
+    0x35U, 0xB7U, 0x94U, 0x21U, 0xF7U, 0x36U, 0x09U, 0xBCU,
+    0x2FU, 0xA0U, 0x75U, 0x23U, 0x64U, 0xF8U, 0x28U, 0x4AU
+};
+static const uint8_t shell_blkcheck_expected_sample[CRYPTO_SHA256_SIZE] = {
+    0xFAU, 0x44U, 0x20U, 0x22U, 0xFAU, 0x67U, 0x92U, 0x42U,
+    0xB0U, 0x8DU, 0x63U, 0xB1U, 0x42U, 0x14U, 0xD0U, 0x00U,
+    0x99U, 0x66U, 0xF6U, 0x04U, 0xCBU, 0xD0U, 0xC4U, 0x0EU,
+    0x0BU, 0x77U, 0x66U, 0x13U, 0x7BU, 0x92U, 0x83U, 0x0EU
+};
 
 static void shell_regcheck_reset(void);
 static shell_job_step_result_t shell_regcheck_prepare_step(
+    shell_job_context_t* context);
+static shell_job_step_result_t shell_blkcheck_job_step(
+    shell_job_context_t* context);
+static int shell_blkcheck_job_cancel(shell_job_context_t* context);
+static void shell_blkcheck_job_finish(shell_job_context_t* context,
+                                      shell_job_state_t state, int result);
+static shell_job_step_result_t shell_blkcheck_job_drain(
     shell_job_context_t* context);
 
 static const char* shell_appcheck_phase_name(shell_appcheck_phase_t phase) {
@@ -500,6 +563,479 @@ static void cmd_appcheck_print_expected_result(const char* label, int actual,
 static void cmd_appcheck_print_result_with_expectation(const char* label,
                                                         int actual,
                                                         int expected);
+
+static const char* shell_blkcheck_phase_name(shell_blkcheck_phase_t phase) {
+    switch (phase) {
+        case SHELL_BLKCHECK_PHASE_BASELINE: return "baseline";
+        case SHELL_BLKCHECK_PHASE_FAILPOINTS: return "failpoints";
+        case SHELL_BLKCHECK_PHASE_CACHE: return "cache";
+        case SHELL_BLKCHECK_PHASE_FAT12: return "FAT12";
+        case SHELL_BLKCHECK_PHASE_FAT32: return "FAT32";
+        case SHELL_BLKCHECK_PHASE_SHUTDOWN: return "shutdown";
+        default: return "desconhecida";
+    }
+}
+
+static const char* shell_blkcheck_case_name(shell_blkcheck_phase_t phase) {
+    switch (phase) {
+        case SHELL_BLKCHECK_PHASE_BASELINE: return "fixtures/inventario";
+        case SHELL_BLKCHECK_PHASE_FAILPOINTS: return "injecao one-shot";
+        case SHELL_BLKCHECK_PHASE_CACHE: return "hash/LRU/dirty";
+        case SHELL_BLKCHECK_PHASE_FAT12: return "listagem/leitura/hash";
+        case SHELL_BLKCHECK_PHASE_FAT32: return "writeback/sync/limpeza";
+        case SHELL_BLKCHECK_PHASE_SHUTDOWN: return "sync seguro";
+        default: return "estado";
+    }
+}
+
+static void shell_blkcheck_copy_failure(const char* source) {
+    uint32_t index = 0U;
+
+    if (!source) source = "desconhecido";
+    while (source[index] && index + 1U < SHELL_BLKCHECK_FAILURE_LABEL_SIZE) {
+        shell_blkcheck.failure[index] = source[index];
+        index++;
+    }
+    shell_blkcheck.failure[index] = '\0';
+}
+
+static void shell_blkcheck_fail(const char* label, int result) {
+    if (!shell_blkcheck.failure_count) shell_blkcheck_copy_failure(label);
+    shell_blkcheck.failure_count++;
+    shell_blkcheck.result = result;
+}
+
+static void shell_blkcheck_copy_id(char* destination, const char* source) {
+    uint32_t index = 0U;
+
+    if (!destination) return;
+    if (!source) source = "";
+    while (source[index] && index + 1U < BLOCK_DEVICE_ID_SIZE) {
+        destination[index] = source[index];
+        index++;
+    }
+    destination[index] = '\0';
+}
+
+static int shell_blkcheck_save_inventory(void) {
+    uint32_t count;
+
+    if (block_get_count(&count) != OK || count > BLOCK_MAX_DEVICES) {
+        LOG_ERROR("SHELL", "Falha ao salvar inventario do BLKCheck");
+        return ERR_STATE;
+    }
+    for (uint32_t index = 0U; index < count; index++) {
+        block_device_t device;
+
+        if (block_get_at(index, &device) != OK) {
+            LOG_ERROR("SHELL", "Falha ao copiar inventario do BLKCheck");
+            return ERR_STATE;
+        }
+        shell_blkcheck_copy_id(shell_blkcheck.baseline_ids[index], device.id);
+    }
+    shell_blkcheck.baseline_count = count;
+    return OK;
+}
+
+static int shell_blkcheck_inventory_unchanged(void) {
+    uint32_t count;
+
+    if (block_get_count(&count) != OK || count != shell_blkcheck.baseline_count) {
+        LOG_ERROR("SHELL", "Inventario mudou durante o BLKCheck");
+        return ERR_STATE;
+    }
+    for (uint32_t index = 0U; index < count; index++) {
+        block_device_t device;
+
+        if (block_get_at(index, &device) != OK) {
+            LOG_ERROR("SHELL", "Falha ao reler inventario do BLKCheck");
+            return ERR_STATE;
+        }
+        if (kstrcmp(shell_blkcheck.baseline_ids[index], device.id) != 0) {
+            LOG_ERROR("SHELL", "ID mudou durante o BLKCheck");
+            return ERR_STATE;
+        }
+    }
+    return OK;
+}
+
+static int shell_blkcheck_hash_file(const char* volume_id, const char* path,
+                                    uint8_t* buffer, uint32_t capacity,
+                                    uint8_t hash[CRYPTO_SHA256_SIZE],
+                                    uint32_t* out_size) {
+    uint32_t size;
+    uint32_t read_size;
+    int result;
+
+    if (!volume_id || !path || !buffer || !hash || !out_size) {
+        LOG_ERROR("SHELL", "Argumento nulo no hash do BLKCheck");
+        return ERR_NULL;
+    }
+    result = storage_get_file_info(volume_id, path, &size, 0);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Arquivo conhecido ausente no BLKCheck");
+        return result;
+    }
+    if (!size || size > capacity) {
+        LOG_ERROR("SHELL", "Arquivo excede o buffer do BLKCheck");
+        return ERR_OVERFLOW;
+    }
+    result = storage_read_file_range(volume_id, path, 0U, buffer, size,
+                                     &read_size);
+    if (result != OK || read_size != size) {
+        LOG_ERROR("SHELL", "Falha ao ler arquivo do BLKCheck");
+        return result == OK ? ERR_DISK : result;
+    }
+    result = crypto_sha256(buffer, size, hash);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Falha ao calcular hash do BLKCheck");
+        return result;
+    }
+    *out_size = size;
+    return OK;
+}
+
+static int shell_blkcheck_validate_fixture(void) {
+    storage_volume_t fat12;
+    storage_volume_t fat32;
+    uint32_t count;
+    int result;
+
+    result = storage_find_volume(SHELL_BLKCHECK_FAT12_VOLUME, &fat12);
+    if (result != OK || fat12.fs_type != STORAGE_FS_FAT12 || !fat12.mounted) {
+        LOG_WARN("SHELL", "Fixture FAT12 do BLKCheck indisponivel");
+        return ERR_UNAVAILABLE;
+    }
+    result = storage_find_volume(SHELL_BLKCHECK_FAT32_VOLUME, &fat32);
+    if (result != OK || fat32.fs_type != STORAGE_FS_FAT32 || !fat32.mounted) {
+        LOG_WARN("SHELL", "Fixture FAT32 do BLKCheck indisponivel");
+        return ERR_UNAVAILABLE;
+    }
+    result = storage_list_dir_long(
+        SHELL_BLKCHECK_FAT32_VOLUME, "", shell_blkcheck_long_entries,
+        STORAGE_MAX_DIR_ENTRIES, &count);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Falha ao listar fixture FAT32 do BLKCheck");
+        return result;
+    }
+    for (uint32_t index = 0U; index < count; index++) {
+        if (kstrcmp(shell_blkcheck_long_entries[index].name,
+                    SHELL_BLKCHECK_FILE_NAME) == 0 ||
+            kstrcmp(shell_blkcheck_long_entries[index].short_name,
+                    SHELL_BLKCHECK_FILE_NAME) == 0) {
+            LOG_WARN("SHELL", "Arquivo reservado do BLKCheck ja existe");
+            return ERR_STATE;
+        }
+    }
+    return OK;
+}
+
+static int shell_blkcheck_fat12(void) {
+    uint32_t count;
+    uint32_t readme_size;
+    uint32_t sample_size;
+    uint32_t repeat_size;
+    uint8_t repeat_hash[CRYPTO_SHA256_SIZE];
+    int result;
+
+    result = storage_list_dir(SHELL_BLKCHECK_FAT12_VOLUME, "",
+                              shell_blkcheck_entries, STORAGE_MAX_DIR_ENTRIES,
+                              &count);
+    if (result != OK || count < 2U) {
+        LOG_ERROR("SHELL", "Listagem FAT12 do BLKCheck falhou");
+        return result == OK ? ERR_STATE : result;
+    }
+    result = shell_blkcheck_hash_file(
+        SHELL_BLKCHECK_FAT12_VOLUME, SHELL_BLKCHECK_README,
+        shell_blkcheck_verify, sizeof(shell_blkcheck_verify),
+        shell_blkcheck.fat12_readme_hash, &readme_size);
+    if (result != OK) return result;
+    result = shell_blkcheck_hash_file(
+        SHELL_BLKCHECK_FAT12_VOLUME, SHELL_BLKCHECK_SAMPLE,
+        shell_blkcheck_verify, sizeof(shell_blkcheck_verify),
+        shell_blkcheck.fat12_sample_hash, &sample_size);
+    if (result != OK) return result;
+    if (!crypto_equal(shell_blkcheck.fat12_readme_hash,
+                      shell_blkcheck_expected_readme, CRYPTO_SHA256_SIZE) ||
+        !crypto_equal(shell_blkcheck.fat12_sample_hash,
+                      shell_blkcheck_expected_sample, CRYPTO_SHA256_SIZE)) {
+        LOG_ERROR("SHELL", "Fixture FAT12 nao corresponde ao hash conhecido");
+        return ERR_STATE;
+    }
+    result = shell_blkcheck_hash_file(
+        SHELL_BLKCHECK_FAT12_VOLUME, SHELL_BLKCHECK_README,
+        shell_blkcheck_verify, sizeof(shell_blkcheck_verify), repeat_hash,
+        &repeat_size);
+    if (result != OK || readme_size != repeat_size ||
+        !crypto_equal(shell_blkcheck.fat12_readme_hash, repeat_hash,
+                      CRYPTO_SHA256_SIZE) || !sample_size) {
+        LOG_ERROR("SHELL", "Hash FAT12 do BLKCheck divergente");
+        return result == OK ? ERR_STATE : result;
+    }
+    result = shell_blkcheck_hash_file(
+        SHELL_BLKCHECK_FAT12_VOLUME, SHELL_BLKCHECK_SAMPLE,
+        shell_blkcheck_verify, sizeof(shell_blkcheck_verify), repeat_hash,
+        &repeat_size);
+    if (result != OK || sample_size != repeat_size ||
+        !crypto_equal(shell_blkcheck.fat12_sample_hash, repeat_hash,
+                      CRYPTO_SHA256_SIZE)) {
+        LOG_ERROR("SHELL", "Hash do arquivo interno FAT12 divergente");
+        return result == OK ? ERR_STATE : result;
+    }
+    return OK;
+}
+
+static int shell_blkcheck_fat32_step(void) {
+    block_cache_stats_t stats;
+    uint8_t actual_hash[CRYPTO_SHA256_SIZE];
+    uint32_t size;
+    int result;
+
+    if (shell_blkcheck.fat32_step == 0U) {
+        if (block_cache_get_stats(&stats) != OK) {
+            LOG_ERROR("SHELL", "Metricas fisicas indisponiveis no BLKCheck");
+            return ERR_STATE;
+        }
+        shell_blkcheck.physical_writes_before = stats.physical_writes;
+        for (uint32_t index = 0U; index < SHELL_BLKCHECK_FILE_SIZE; index++) {
+            shell_blkcheck_data[index] = (uint8_t)((index * 37U + 11U) & 0xFFU);
+        }
+        result = crypto_sha256(shell_blkcheck_data, SHELL_BLKCHECK_FILE_SIZE,
+                               shell_blkcheck.expected_hash);
+        if (result == OK) {
+            result = storage_write_file(
+                SHELL_BLKCHECK_FAT32_VOLUME, SHELL_BLKCHECK_FILE_NAME,
+                shell_blkcheck_data, SHELL_BLKCHECK_FILE_SIZE, 0x20U);
+        }
+        if (result != OK) {
+            LOG_ERROR("SHELL", "Escrita FAT32 do BLKCheck falhou");
+            return result;
+        }
+        shell_blkcheck.scratch_created = 1U;
+        shell_blkcheck.fat32_step = 1U;
+    }
+    if (shell_blkcheck.fat32_step == 1U) {
+        result = shell_blkcheck_hash_file(
+            SHELL_BLKCHECK_FAT32_VOLUME, SHELL_BLKCHECK_FILE_NAME,
+            shell_blkcheck_verify, sizeof(shell_blkcheck_verify), actual_hash,
+            &size);
+        if (block_cache_get_stats(&stats) != OK ||
+            stats.physical_writes != shell_blkcheck.physical_writes_before ||
+            result != OK || size != SHELL_BLKCHECK_FILE_SIZE ||
+            !crypto_equal(actual_hash, shell_blkcheck.expected_hash,
+                          CRYPTO_SHA256_SIZE)) {
+            LOG_ERROR("SHELL", "Writeback antecipado no BLKCheck");
+            return result == OK ? ERR_STATE : result;
+        }
+        shell_blkcheck.fat32_step = 2U;
+        return OK;
+    }
+    if (shell_blkcheck.fat32_step == 2U) {
+        result = storage_sync_volume(SHELL_BLKCHECK_FAT32_VOLUME);
+        if (result == OK) result = block_cache_get_stats(&stats);
+        if (result != OK ||
+            stats.physical_writes <= shell_blkcheck.physical_writes_before) {
+            LOG_ERROR("SHELL", "Sync FAT32 do BLKCheck falhou");
+            return result == OK ? ERR_STATE : result;
+        }
+        shell_blkcheck.fat32_step = 3U;
+        return OK;
+    }
+    if (shell_blkcheck.fat32_step == 3U) {
+        result = shell_blkcheck_hash_file(
+            SHELL_BLKCHECK_FAT32_VOLUME, SHELL_BLKCHECK_FILE_NAME,
+            shell_blkcheck_verify, sizeof(shell_blkcheck_verify), actual_hash,
+            &size);
+        if (result != OK || size != SHELL_BLKCHECK_FILE_SIZE ||
+            !crypto_equal(actual_hash, shell_blkcheck.expected_hash,
+                          CRYPTO_SHA256_SIZE)) {
+            LOG_ERROR("SHELL", "Hash FAT32 do BLKCheck divergente");
+            return result == OK ? ERR_STATE : result;
+        }
+        shell_blkcheck.fat32_step = 4U;
+        return OK;
+    }
+    if (shell_blkcheck.fat32_step == 4U) {
+        result = storage_delete_file(SHELL_BLKCHECK_FAT32_VOLUME,
+                                     SHELL_BLKCHECK_FILE_NAME);
+        if (result != OK) {
+            LOG_ERROR("SHELL", "Limpeza FAT32 do BLKCheck falhou");
+            return result;
+        }
+        shell_blkcheck.scratch_created = 0U;
+        shell_blkcheck.cleanup_pending = 1U;
+        shell_blkcheck.fat32_step = 5U;
+        return OK;
+    }
+    if (shell_blkcheck.fat32_step == 5U) {
+        result = storage_sync_volume(SHELL_BLKCHECK_FAT32_VOLUME);
+        if (result != OK) {
+            LOG_ERROR("SHELL", "Sync final FAT32 do BLKCheck falhou");
+            return result;
+        }
+        shell_blkcheck.cleanup_pending = 0U;
+        shell_blkcheck.fat32_step = 6U;
+        return OK;
+    }
+    result = storage_check(SHELL_BLKCHECK_FAT32_VOLUME);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Consistencia FAT32 do BLKCheck falhou");
+    } else {
+        shell_blkcheck.fat32_step = 7U;
+    }
+    return result;
+}
+
+static int shell_blkcheck_cleanup(void) {
+    int result;
+
+    if (shell_blkcheck.scratch_created) {
+        result = storage_delete_file(SHELL_BLKCHECK_FAT32_VOLUME,
+                                     SHELL_BLKCHECK_FILE_NAME);
+        if (result != OK) {
+            LOG_ERROR("SHELL", "Falha ao remover scratch durante drenagem");
+            return result;
+        }
+        shell_blkcheck.scratch_created = 0U;
+        shell_blkcheck.cleanup_pending = 1U;
+    }
+    if (shell_blkcheck.cleanup_pending) {
+        result = storage_sync_volume(SHELL_BLKCHECK_FAT32_VOLUME);
+        if (result != OK) {
+            LOG_ERROR("SHELL", "Falha ao sincronizar scratch na drenagem");
+            return result;
+        }
+        shell_blkcheck.cleanup_pending = 0U;
+    }
+    return OK;
+}
+
+static shell_job_step_result_t shell_blkcheck_job_step(
+    shell_job_context_t* context) {
+    int result = OK;
+
+    if (!context) {
+        LOG_ERROR("SHELL", "Contexto nulo no job BLKCheck");
+        return SHELL_JOB_STEP_FAILED;
+    }
+    if (context->cancel_requested) {
+        context->last_error = ERR_CANCELLED;
+        return SHELL_JOB_STEP_CANCELLED;
+    }
+    shell_job_set_phase(context,
+                        shell_blkcheck_phase_name(shell_blkcheck.phase));
+    switch (shell_blkcheck.phase) {
+        case SHELL_BLKCHECK_PHASE_BASELINE:
+            result = shell_blkcheck_save_inventory();
+            if (result == OK) result = shell_blkcheck_validate_fixture();
+            break;
+        case SHELL_BLKCHECK_PHASE_FAILPOINTS:
+            result = block_self_test();
+            break;
+        case SHELL_BLKCHECK_PHASE_CACHE:
+            result = block_cache_validate_state();
+            break;
+        case SHELL_BLKCHECK_PHASE_FAT12:
+            result = shell_blkcheck_fat12();
+            break;
+        case SHELL_BLKCHECK_PHASE_FAT32:
+            result = shell_blkcheck_fat32_step();
+            if (result == OK && shell_blkcheck.fat32_step < 7U) {
+                return SHELL_JOB_STEP_PENDING;
+            }
+            break;
+        case SHELL_BLKCHECK_PHASE_SHUTDOWN:
+            result = power_shutdown_prepare();
+            if (result == OK) {
+                block_cache_stats_t stats;
+                block_queue_stats_t queue;
+
+                result = block_cache_get_stats(&stats);
+                if (result == OK && (stats.dirty_entries ||
+                                     stats.writeback_entries)) result = ERR_STATE;
+                if (result == OK) result = block_get_stats(&queue);
+                if (result == OK && (queue.queue_depth || queue.in_flight)) {
+                    result = ERR_STATE;
+                }
+                if (result == OK) result = shell_blkcheck_inventory_unchanged();
+            }
+            break;
+        default:
+            result = ERR_STATE;
+            break;
+    }
+    if (result != OK) {
+        int cleanup_result;
+
+        shell_blkcheck_fail(shell_blkcheck_case_name(shell_blkcheck.phase),
+                            result);
+        cleanup_result = shell_blkcheck_cleanup();
+        if (cleanup_result != OK) {
+            shell_blkcheck.result = cleanup_result;
+            result = cleanup_result;
+        }
+        context->last_error = result;
+        return SHELL_JOB_STEP_FAILED;
+    }
+    shell_blkcheck.phase_ok[shell_blkcheck.phase] = 1U;
+    if (shell_blkcheck.phase == SHELL_BLKCHECK_PHASE_SHUTDOWN) {
+        context->last_error = OK;
+        return SHELL_JOB_STEP_COMPLETE;
+    }
+    shell_blkcheck.phase++;
+    shell_blkcheck.fat32_step = 0U;
+    return SHELL_JOB_STEP_PENDING;
+}
+
+static int shell_blkcheck_job_cancel(shell_job_context_t* context) {
+    (void)context;
+    shell_blkcheck.result = ERR_CANCELLED;
+    return OK;
+}
+
+static void shell_blkcheck_job_finish(shell_job_context_t* context,
+                                      shell_job_state_t state, int result) {
+    (void)context;
+    shell_blkcheck.active = 0U;
+    if (state == SHELL_JOB_STATE_SUCCEEDED && result == OK &&
+        !shell_blkcheck.failure_count) {
+        video_print("BLKCheck:\n", 0x0B);
+        for (uint32_t index = 0U; index < SHELL_BLKCHECK_PHASE_COUNT; index++) {
+            video_print("  ", 0x07);
+            video_print(shell_blkcheck_phase_name(
+                            (shell_blkcheck_phase_t)index), 0x07);
+            video_print(" OK\n", 0x0A);
+        }
+        video_print("  resultado OK\n", 0x0A);
+        return;
+    }
+    video_print("BLKCheck: ", 0x0C);
+    video_print(shell_blkcheck_phase_name(shell_blkcheck.phase), 0x0C);
+    video_print(" ", 0x07);
+    video_print(shell_blkcheck.failure[0] ? shell_blkcheck.failure :
+                                             "cancelado", 0x0C);
+    video_print(" codigo=", 0x07);
+    shell_command_print_num((uint32_t)(shell_blkcheck.result == OK ?
+                                       result : shell_blkcheck.result));
+    video_print("\n", 0x0C);
+}
+
+static shell_job_step_result_t shell_blkcheck_job_drain(
+    shell_job_context_t* context) {
+    int result = shell_blkcheck_cleanup();
+
+    if (result != OK) {
+        if (context) context->last_error = result;
+        return SHELL_JOB_STEP_FAILED;
+    }
+    return SHELL_JOB_STEP_COMPLETE;
+}
+
+static const shell_job_definition_t shell_blkcheck_job_definition = {
+    "blkcheck", SHELL_JOB_KIND_CHECK, shell_blkcheck_job_step,
+    shell_blkcheck_job_cancel, shell_blkcheck_job_finish,
+    shell_blkcheck_job_drain
+};
 
 static int shell_regcheck_is_preparing(void) {
     return shell_regcheck.state >= SHELL_REGCHECK_PREPARE_FULL &&
@@ -3186,6 +3722,37 @@ void shell_dispatch_cmd_appcheck(const char* arguments) {
     }
     shell_checks_start_job(command);
 }
+
+void shell_dispatch_cmd_blkcheck(const char* arguments) {
+    int result;
+
+    if (!shell_command_args_equal(arguments, "")) {
+        LOG_WARN("SHELL", "Uso invalido de blkcheck");
+        video_print("Uso: blkcheck\n", 0x0C);
+        return;
+    }
+    if (shell_job_is_active() || shell_blkcheck.active ||
+        app_loader_is_foreground_active() || process_get_user_count() != 0U ||
+        process_get_state_count(PROCESS_STATE_ZOMBIE) != 0U) {
+        LOG_WARN("SHELL", "BLKCheck recusado com operacao concorrente");
+        video_print("BLKCheck indisponivel: aguarde a operacao atual.\n",
+                    0x0E);
+        return;
+    }
+    kmemset(&shell_blkcheck, 0, sizeof(shell_blkcheck));
+    shell_blkcheck.phase = SHELL_BLKCHECK_PHASE_BASELINE;
+    shell_blkcheck.result = OK;
+    shell_blkcheck.active = 1U;
+    result = shell_job_start(&shell_blkcheck_job_definition, "blkcheck");
+    if (result != OK) {
+        shell_blkcheck.active = 0U;
+        LOG_WARN("SHELL", "Job BLKCheck nao foi iniciado");
+        video_print("BLKCheck indisponivel (codigo ", 0x0C);
+        shell_command_print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+    }
+}
+
 void shell_dispatch_cmd_usertest(const char* arguments) {
     cmd_usertest(arguments);
     shell_checks_start_job("usertest");
