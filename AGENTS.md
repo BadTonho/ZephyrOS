@@ -265,26 +265,33 @@ documentação técnica quando não for evidente.
 
 ## Regra #5: Headers e Include Guards
 
-Todo `.h` DEVE ter include guard:
+Todo `.h` DEVE poder ser incluído várias vezes com segurança e ter um include
+guard único, baseado no caminho ou no módulo:
 
 ```c
 #ifndef MODULO_H
 #define MODULO_H
 
-#include "types.h"
-
-// Declarações aqui
+/* Declarações aqui */
 
 #endif
 ```
 
 ### Regras de include
 
-- [ ] Sempre incluir `types.h` primeiro se precisar de tipos
-- [ ] Usar aspas para headers do projeto: `#include "core/log.h"`
-- [ ] NÃO incluir `.c` em outros `.c`
-- [ ] Headers DEVEM ser auto-contidos (incluir tudo que precisam)
-- [ ] NÃO incluir headers desnecessários (minimizar dependências)
+- [ ] Incluir `types.h` quando o header usar tipos definidos nele; a ordem não
+      deve ser fixa quando as dependências reais exigirem outra organização.
+- [ ] Usar aspas para headers do projeto: `#include "core/log.h"`.
+- [ ] Em um `.c`, incluir primeiro o header correspondente, quando existir, para
+      detectar dependências ausentes; os demais includes seguem as dependências
+      reais e a clareza do módulo.
+- [ ] NUNCA incluir `.c` em outro arquivo.
+- [ ] Headers DEVEM ser autocontidos e incluir diretamente tudo que precisam
+      para compilar, sem depender de includes transitivos.
+- [ ] Usar declarações antecipadas quando apenas ponteiros ou referências
+      incompletas forem necessários, reduzindo dependências desnecessárias.
+- [ ] NÃO incluir headers sem uso direto; dependências devem ser mantidas
+      mínimas e justificadas pelo contrato do header.
 
 ---
 
