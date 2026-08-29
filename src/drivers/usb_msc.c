@@ -385,6 +385,8 @@ static int msc_prepare_record(usb_msc_record_t* record,
     block.ops.context = record;
     block.ops.read = msc_block_read;
     block.ops.write = 0;
+    block.max_transfer_sectors = BLOCK_MAX_TRANSFER_SECTORS;
+    block.capabilities = 0U;
     kmemcpy(block.id, record->info.block_id, BLOCK_DEVICE_ID_SIZE);
     kmemcpy(block.model, record->info.product, USB_MSC_PRODUCT_SIZE);
     return block_register(&block);

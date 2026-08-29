@@ -284,8 +284,12 @@ forma controlada e aparecem no `health`; apenas `power_shutdown()` e terminal.
   leitura de `block_device_t` e deixa a montagem FAT para `storage mount`.
 - `block`: registra estaticamente provedores ATA e USB MSC, preserva os IDs ATA
   legados, valida callbacks/LBA/setor de 512 bytes e recusa escrita em
-  provedores somente-leitura. `storage_refresh()` reconcilia esse registro
-  depois de cada atualizacao USB sem duplicar discos ou volumes.
+  provedores somente-leitura. Desde o BLK0, `block_submit_sync()` recebe BIOs,
+  publica estados de requisicao e encaminha a operacao ao callback do
+  dispositivo; `block_read()` e `block_write()` continuam como wrappers
+  compativeis. O buffer pertence ao chamador e a callback de conclusao e
+  executada uma vez no estado terminal. `storage_refresh()` reconcilia esse
+  registro depois de cada atualizacao USB sem duplicar discos ou volumes.
 
 Os headers `core/device_manager.h` e `core/power.h` definem as estruturas de
 snapshot e status. O snapshot de dispositivos guarda somente metadados;

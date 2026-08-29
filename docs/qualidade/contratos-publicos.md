@@ -517,6 +517,22 @@ sessao UHCI no formato `usb-ms-BB:DD.F-pN-aN-l0`; `run-usb` continua apenas
 com teclado e `run-usb-msc` acrescenta a fixture `storage-valid.img` em modo
 somente-leitura.
 
+Desde o BLK0, `block.h` tambem publica `block_operation_t`,
+`block_request_state_t`, `bio_request_t`, `block_submit_sync()` e
+`block_self_test()`. O BIO usa um ID de dispositivo emprestado, LBA,
+quantidade de setores, buffer emprestado, tamanho declarado, operacao, flags,
+callback e contexto; a camada escreve estado, status e setores concluidos sem
+assumir a liberacao do buffer. A callback de conclusao ocorre uma vez depois
+de `COMPLETED` ou `ERROR` no adaptador sincrono. Os campos
+`max_transfer_sectors` e `capabilities`, e os callbacks opcionais de FLUSH e
+escrita com flags, foram acrescentados ao final das structs existentes para
+preservar o uso legado. O limite atual e 255 setores por requisicao, o setor
+logico permanece em 512 bytes e ATA/USB MSC ainda nao anunciam FLUSH ou FUA.
+`block_read()` e `block_write()` mantem as assinaturas e usam o mesmo caminho
+de submissao. `block_submit_sync()` e bloqueante e nao pode ser chamado em
+contexto de IRQ. A fila, o cancelamento efetivo e retry generico pertencem ao
+BLK1; `ERR_TIMEOUT` e os demais erros do driver sao propagados.
+
 Desde a EP4.4, `src/include/core/input.h` define eventos HID Usage de teclado,
 eventos relativos de ponteiro, filas estaticas separadas, metricas e despacho
 para os consumidores PS/2 legados. O adaptador de teclado preserva as posicoes
