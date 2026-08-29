@@ -91,13 +91,21 @@ static uint8_t net_buffer_transition_allowed(net_buffer_state_t current,
 }
 
 static int net_buffer_check_active_locked(const net_buffer_t* buffer) {
-    if (!buffer) return ERR_NULL;
-    if (!net_buffer_stats.initialized) return ERR_STATE;
-    if (net_buffer_find_locked(buffer) < 0) return ERR_INVALID;
-    if (!buffer->refcount || buffer->state == NET_BUFFER_STATE_FREED) {
-        return ERR_STATE;
+    int result = OK;
+
+    if (!buffer) {
+        result = ERR_NULL;
+    } else if (!net_buffer_stats.initialized) {
+        result = ERR_STATE;
+    } else if (net_buffer_find_locked(buffer) < 0) {
+        result = ERR_INVALID;
+    } else if (!buffer->refcount || buffer->state == NET_BUFFER_STATE_FREED) {
+        result = ERR_STATE;
     }
-    return OK;
+    if (result != OK && !net_buffer_testing) {
+        LOG_WARN("NETBUF", "Buffer nao esta ativo");
+    }
+    return result;
 }
 
 static int net_buffer_complete_locked(net_buffer_t* buffer, int result,
@@ -246,7 +254,9 @@ int net_buffer_transition(net_buffer_t* buffer,
         spinlock_acquire(&net_buffer_lock);
         net_buffer_fail_locked(ERR_INVALID, 0);
         spinlock_release(&net_buffer_lock);
-        net_buffer_log_failure("Transicao ou owner invalido", ERR_INVALID);
+        if (!net_buffer_testing) {
+            LOG_WARN("NETBUF", "Transicao ou owner invalido");
+        }
         return ERR_INVALID;
     }
     spinlock_acquire(&net_buffer_lock);
@@ -399,19 +409,22 @@ int net_buffer_get_stats(net_buffer_stats_t* out_stats) {
 }
 
 static int net_buffer_validate_entry_locked(const net_buffer_t* buffer) {
+    int result = OK;
+
     if (!buffer || !buffer->refcount ||
         !net_buffer_state_owner_valid(buffer->state, buffer->owner)) {
-        return ERR_STATE;
+        result = ERR_STATE;
+    } else if (buffer->state < NET_BUFFER_STATE_ALLOCATED ||
+               buffer->state > NET_BUFFER_STATE_DROPPED ||
+               !buffer->capacity || buffer->headroom > buffer->capacity ||
+               buffer->length > buffer->capacity - buffer->headroom ||
+               buffer->tailroom !=
+                   buffer->capacity - buffer->headroom - buffer->length ||
+               !net_buffer_alignment_valid(buffer->alignment)) {
+        result = ERR_STATE;
     }
-    if (buffer->state < NET_BUFFER_STATE_ALLOCATED ||
-        buffer->state > NET_BUFFER_STATE_DROPPED ||
-        !buffer->capacity || buffer->headroom > buffer->capacity ||
-        buffer->length > buffer->capacity - buffer->headroom ||
-        buffer->tailroom != buffer->capacity - buffer->headroom - buffer->length ||
-        !net_buffer_alignment_valid(buffer->alignment)) {
-        return ERR_STATE;
-    }
-    return OK;
+    if (result != OK) LOG_ERROR("NETBUF", "Entrada de buffer invalida");
+    return result;
 }
 
 int net_buffer_validate_state(void) {
@@ -455,13 +468,15 @@ static int net_buffer_test_delivered(void) {
     kmemset(&fixture, 0, sizeof(fixture));
     result = net_buffer_begin(&fixture, 1518U, 32U, 1U,
                               NET_BUFFER_OWNER_ETHERNET);
-    if (result != OK) return result;
-    if (net_buffer_release(&fixture) != ERR_STATE) return ERR_STATE;
-    if (net_buffer_transition(&fixture, NET_BUFFER_STATE_DELIVERED,
-                              NET_BUFFER_OWNER_NONE) != ERR_INVALID) {
-        return ERR_STATE;
+    if (result == OK && net_buffer_release(&fixture) != ERR_STATE) {
+        result = ERR_STATE;
     }
-    result = net_buffer_set_length(&fixture, 128U);
+    if (result == OK && net_buffer_transition(
+            &fixture, NET_BUFFER_STATE_DELIVERED,
+            NET_BUFFER_OWNER_NONE) != ERR_INVALID) {
+        result = ERR_STATE;
+    }
+    if (result == OK) result = net_buffer_set_length(&fixture, 128U);
     if (result == OK) result = net_buffer_transition(
         &fixture, NET_BUFFER_STATE_RX, NET_BUFFER_OWNER_ETHERNET);
     if (result == OK) result = net_buffer_transition(
@@ -481,6 +496,7 @@ static int net_buffer_test_delivered(void) {
                          net_buffer_validate_state() != OK)) {
         result = ERR_STATE;
     }
+    if (result != OK) LOG_ERROR("NETBUF", "Fixture de entrega falhou");
     return result;
 }
 
