@@ -15,7 +15,7 @@ virtuais, permanece fora desta etapa.
 - [x] BLK0 - Contrato de I/O, ownership, conclusão e durabilidade.
 - [x] BLK1 - Fila unificada de requisições de bloco (`block_device_t`, `bio_request_t` e `block_request_t`).
 - [x] BLK2 - Cache de blocos de leitura com estados, referências e política LRU.
-- [ ] BLK3 - Writeback de blocos modificados, flush e sincronização explícita.
+- [x] BLK3 - Writeback de blocos modificados, flush e sincronização explícita.
 - [ ] BLK4 - Resiliência, integridade contra interrupção de energia e failpoint testing.
 
 ## Atalhos
@@ -182,18 +182,18 @@ reproduzível; não há um percentual universal obrigatório.
 - [x] Adicionar `vfs_fsync()`, `vfs_sync()`, fachadas, syscalls append-only e o
   comando Shell `sync`, com validação de argumentos e propagação de erros.
 
-A implementação foi exercitada no QEMU, mas a confirmação final permanece
-pendente após a correção da métrica de acerto. `block_submit_sync()`
+A implementação foi confirmada funcionalmente no QEMU após a correção da
+métrica de acerto. `block_submit_sync()`
 permanece no caminho físico direto, enquanto `block_write()` copia os dados
 para o cache e não retém ponteiros do chamador. Fechamento de descritor e
 saída de processo não fazem sync implícito.
 
 ### Critério de saída
 
-Escritas em cache devem seguir o contrato de retorno escolhido e ser
-consolidadas sem perder dados sujos; `sync`/`fsync` devem concluir após o
-writeback e o flush exigidos pelo contrato, ou retornar o erro correspondente.
-A ausência de FLUSH no perfil ATA/QEMU deve ser publicada como `OK` degradado,
+Escritas em cache seguiram o contrato de retorno escolhido e foram
+consolidadas sem perder dados sujos; `sync`/`fsync` concluíram após o
+writeback e o flush exigidos pelo contrato, ou retornaram o erro correspondente.
+A ausência de FLUSH no perfil ATA/QEMU foi publicada como `OK` degradado,
 conforme previsto.
 
 ### Comandos Shell / Diagnóstico
