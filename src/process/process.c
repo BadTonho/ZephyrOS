@@ -514,6 +514,21 @@ static void process_initialize_pid_pool(void) {
     }
 }
 
+static void process_release_user_image(process_t* proc) {
+    if (!proc) return;
+    if (proc->user_code_image) {
+        kfree(proc->user_code_image);
+        proc->user_code_image = 0;
+    }
+    if (proc->user_data_image) {
+        kfree(proc->user_data_image);
+        proc->user_data_image = 0;
+    }
+    proc->user_code_size = 0;
+    proc->user_data_size = 0;
+    kmemset(&proc->user_launch, 0, sizeof(proc->user_launch));
+}
+
 static void process_discard_new_process(process_t* proc) {
     int slot;
 
@@ -528,6 +543,7 @@ static void process_discard_new_process(process_t* proc) {
     if (proc->pid != 0) process_release_pid(proc->pid);
     process_stack_release(proc);
     process_vma_release(proc);
+    process_release_user_image(proc);
     kmemset(proc, 0, sizeof(process_t));
     slot = process_slot_index(proc);
     if (slot >= 0) processes[slot] = 0;
@@ -974,97 +990,36 @@ static int process_user_reap_previous_test(void) {
     return OK;
 }
 
-static int process_user_map_image(page_directory_t* dir) {
-    uint32_t code_phys;
-    uint32_t data_phys;
-    uint32_t launch_phys;
-    uint32_t stack_phys;
-    int code_mapped = 0;
-    int data_mapped = 0;
-    int launch_mapped = 0;
-    int stack_mapped = 0;
-
-    if (!dir) {
-        LOG_ERROR("PROC", "Diretorio nulo para imagem ring 3");
-        return ERR_NULL;
-    }
-    code_phys = (uint32_t)pmm_alloc_page();
-    data_phys = (uint32_t)pmm_alloc_page();
-    launch_phys = (uint32_t)pmm_alloc_page();
-    stack_phys = (uint32_t)pmm_alloc_page();
-    if (!code_phys || !data_phys || !launch_phys || !stack_phys) {
-        if (code_phys) pmm_free_page((void*)code_phys);
-        if (data_phys) pmm_free_page((void*)data_phys);
-        if (launch_phys) pmm_free_page((void*)launch_phys);
-        if (stack_phys) pmm_free_page((void*)stack_phys);
-        LOG_ERROR("PROC", "Memoria insuficiente para paginas ring 3");
-        return ERR_MEM;
-    }
-
-    code_mapped = paging_map_page_in_directory(
-        dir, USER_CODE_BASE, code_phys,
-        PAGING_FLAG_PRESENT | PAGING_FLAG_USER) == OK;
-    data_mapped = paging_map_page_in_directory(
-        dir, USER_DATA_BASE, data_phys,
-        PAGING_FLAG_PRESENT | PAGING_FLAG_WRITE | PAGING_FLAG_USER) == OK;
-    launch_mapped = paging_map_page_in_directory(
-        dir, USER_LAUNCH_BASE, launch_phys,
-        PAGING_FLAG_PRESENT | PAGING_FLAG_WRITE | PAGING_FLAG_USER) == OK;
-    stack_mapped = paging_map_page_in_directory(
-        dir, USER_STACK_BASE, stack_phys,
-        PAGING_FLAG_PRESENT | PAGING_FLAG_WRITE | PAGING_FLAG_USER) == OK;
-
-    if (!code_mapped || !data_mapped || !launch_mapped || !stack_mapped) {
-        if (!code_mapped) pmm_free_page((void*)code_phys);
-        if (!data_mapped) pmm_free_page((void*)data_phys);
-        if (!launch_mapped) pmm_free_page((void*)launch_phys);
-        if (!stack_mapped) pmm_free_page((void*)stack_phys);
-        LOG_ERROR("PROC", "Falha ao mapear imagem do teste ring 3");
-        return ERR_MEM;
-    }
-    return OK;
-}
-
-static int process_user_load_image(page_directory_t* dir,
-                                   page_directory_t* kernel_dir,
-                                   const uint8_t* code,
-                                   uint32_t code_size,
-                                   const uint8_t* data,
-                                   uint32_t data_size,
-                                   const app_launch_info_t* launch) {
-    int result = OK;
-
-    if (!dir || !kernel_dir || !code || code_size == 0 ||
-        code_size > PAGE_SIZE || data_size > PAGE_SIZE ||
-        (data_size > 0 && !data) || !launch) {
-        LOG_ERROR("PROC", "Imagem ring 3 invalida para carregamento");
+static int process_store_user_image(process_t* proc,
+                                    const uint8_t* code,
+                                    uint32_t code_size,
+                                    const uint8_t* data,
+                                    uint32_t data_size,
+                                    const app_launch_info_t* launch) {
+    if (!proc || !code || code_size == 0 || code_size > PAGE_SIZE ||
+        data_size > PAGE_SIZE || (data_size > 0 && !data) || !launch) {
+        LOG_ERROR("PROC", "Imagem ring 3 invalida para armazenamento");
         return ERR_INVALID;
     }
 
-    asm volatile("cli");
-    paging_switch_directory(dir);
-    kmemset((void*)USER_CODE_BASE, 0, PAGE_SIZE);
-    kmemset((void*)USER_DATA_BASE, 0, PAGE_SIZE);
-    kmemset((void*)USER_LAUNCH_BASE, 0, PAGE_SIZE);
-    kmemset((void*)USER_STACK_BASE, 0, PAGE_SIZE);
-    kmemcpy((void*)USER_CODE_BASE, code, code_size);
+    proc->user_code_image = (uint8_t*)kmalloc(code_size);
+    if (!proc->user_code_image) {
+        LOG_ERROR("PROC", "Falha ao armazenar codigo ring 3");
+        return ERR_MEM;
+    }
+    kmemcpy(proc->user_code_image, code, code_size);
     if (data_size > 0) {
-        kmemcpy((void*)USER_DATA_BASE, data, data_size);
-    }
-    kmemcpy((void*)USER_LAUNCH_BASE, launch, sizeof(app_launch_info_t));
-
-    /* A imagem pode ter vindo de uma fonte externa. Antes de torna-la
-       escalonavel, confirma que a pagina de codigo recebeu todos os bytes. */
-    for (uint32_t i = 0; i < code_size; i++) {
-        if (((uint8_t*)USER_CODE_BASE)[i] != code[i]) {
-            LOG_ERROR("PROC", "Falha ao verificar copia da imagem ring 3");
-            result = ERR_STATE;
-            break;
+        proc->user_data_image = (uint8_t*)kmalloc(data_size);
+        if (!proc->user_data_image) {
+            LOG_ERROR("PROC", "Falha ao armazenar dados ring 3");
+            process_release_user_image(proc);
+            return ERR_MEM;
         }
+        kmemcpy(proc->user_data_image, data, data_size);
     }
-    paging_switch_directory(kernel_dir);
-    asm volatile("sti");
-    return result;
+    proc->user_data_size = data_size;
+    kmemcpy(&proc->user_launch, launch, sizeof(proc->user_launch));
+    return OK;
 }
 
 static int process_user_validate_launch(const app_launch_info_t* launch) {
@@ -1092,6 +1047,10 @@ static int process_user_initialize(process_t* proc, page_directory_t* dir,
                                    const char* name,
                                    uint32_t entry_offset,
                                    uint32_t code_size,
+                                   const uint8_t* code,
+                                   const uint8_t* data,
+                                   uint32_t data_size,
+                                   const app_launch_info_t* launch,
                                    int diagnostic_test,
                                    int start_suspended) {
     uint32_t stack_ptr;
@@ -1160,6 +1119,12 @@ static int process_user_initialize(process_t* proc, page_directory_t* dir,
     proc->context.user_entry = entry_point;
     proc->context.user_mode = 1;
     proc->user_code_size = code_size;
+    result = process_store_user_image(proc, code, code_size, data, data_size,
+                                      launch);
+    if (result != OK) {
+        process_discard_new_process(proc);
+        return result;
+    }
     result = process_vma_register_image(proc, code_size);
     if (result != OK) {
         LOG_ERROR("PROC", "Falha ao registrar VMAs da imagem ring 3");
@@ -1188,7 +1153,6 @@ static int process_create_user_image_internal(const char* name,
                                               uint32_t* pid_out) {
     process_t* proc = 0;
     page_directory_t* dir;
-    page_directory_t* kernel_dir;
     int result;
 
     if (!process_available || !process_cache) {
@@ -1228,28 +1192,15 @@ static int process_create_user_image_internal(const char* name,
         return ERR_MEM;
     }
 
-    kernel_dir = paging_get_current_directory();
     dir = paging_create_user_directory();
     if (!dir) {
         LOG_ERROR("PROC", "Falha ao criar espaco do teste ring 3");
         process_discard_new_process(proc);
         return ERR_MEM;
     }
-    result = process_user_map_image(dir);
-    if (result != OK) {
-        paging_free_user_directory(dir);
-        process_discard_new_process(proc);
-        return result;
-    }
-    result = process_user_load_image(dir, kernel_dir, code, code_size,
-                                     data, data_size, launch);
-    if (result != OK) {
-        paging_free_user_directory(dir);
-        process_discard_new_process(proc);
-        return result;
-    }
     result = process_user_initialize(proc, dir, name,
-                                     entry_offset, code_size, diagnostic_test,
+                                     entry_offset, code_size, code, data,
+                                     data_size, launch, diagnostic_test,
                                      start_suspended);
     if (result != OK) {
         paging_free_user_directory(dir);
@@ -1450,6 +1401,10 @@ int process_handle_user_exception(registers_t* regs) {
     }
     if (regs->int_no == 14) {
         asm volatile("mov %%cr2, %0" : "=r"(fault_address));
+        if (process_vma_handle_page_fault(current_process, fault_address,
+                                          regs->err_code) == OK) {
+            return OK;
+        }
     } else {
         fault_address = regs->eip;
     }
@@ -1588,6 +1543,7 @@ void process_destroy(process_t* proc) {
     proc->state = PROCESS_STATE_UNUSED;
     process_stack_release(proc);
     process_vma_release(proc);
+    process_release_user_image(proc);
     if (proc->page_directory && proc->context.user_mode) {
         paging_free_user_directory(proc->page_directory);
     }

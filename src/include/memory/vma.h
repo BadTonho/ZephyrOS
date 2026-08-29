@@ -33,12 +33,23 @@ typedef struct {
     uint32_t offset;
 } vm_area_info_t;
 
+typedef struct {
+    uint32_t handled;
+    uint32_t invalid;
+} page_fault_stats_t;
+
 int process_vma_register_image(struct process* proc, uint32_t code_size);
 int process_vma_mmap(struct process* proc, uint32_t length,
                      uint32_t protection, uint32_t flags,
                      uint32_t* address_out);
 int process_vma_munmap(struct process* proc, uint32_t address,
                        uint32_t length);
+int process_vma_ensure_page(struct process* proc, uint32_t address,
+                            int write);
+int process_vma_handle_page_fault(struct process* proc,
+                                  uint32_t fault_address,
+                                  uint32_t fault_error);
+int process_vma_get_page_fault_stats(page_fault_stats_t* stats);
 int process_vma_copy(const struct process* proc, vm_area_info_t* output,
                      uint32_t capacity, uint32_t* out_count);
 void process_vma_release(struct process* proc);

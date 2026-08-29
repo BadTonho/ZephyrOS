@@ -2541,3 +2541,16 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   compatibilidade e checklist foram alinhados à validação executável do
   usuário; a Regra #13 passou a aceitar caminhos observáveis existentes; e a
   política Simple/Classic/Modern foi delimitada ao escopo de interface.
+
+- MM3: implementação de demand paging e page faults para VMAs ring 3.
+  Concluída em: 2026-08-29 11:16 (America/Sao_Paulo).
+  O loader passou a preservar backing kernel-owned de código, dados e
+  lançamento, sem alocar páginas de usuário na criação suspensa. VMAs fixas e
+  `mmap` anônimo são materializados no primeiro acesso; cópias de buffers de
+  usuário materializam páginas lazy; `munmap` libera somente páginas
+  residentes; faults válidas retornam ao usuário e faults inválidas isolam o
+  processo com `SIGSEGV`. Foram adicionados contadores cumulativos, o comando
+  `pagefault status` e fixtures MM3 ao `appcheck`, incluindo reserva sem
+  páginas, fault fora de VMA e limpeza de recursos. A marcação da MM3 no
+  roadmap permanece pendente da validação funcional do usuário; nenhum build,
+  teste ou QEMU foi executado pelo agente.

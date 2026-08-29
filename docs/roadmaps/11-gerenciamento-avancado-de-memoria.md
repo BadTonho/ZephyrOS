@@ -118,6 +118,9 @@ e sua validação executável no QEMU foram concluídas pelo usuário.
 
 ## MM3 - Alocação sob Demanda (Demand Paging)
 
+Implementação preparada no código; a marcação como concluída permanece
+dependente da validação funcional do usuário no QEMU.
+
 ### Implementação
 
 - [ ] Modificar o loader de aplicativos ring 3 para registrar as VMAs de código e dados sem alocar previamente todas as páginas físicas de uma só vez.

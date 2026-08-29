@@ -239,20 +239,30 @@ funcionais existentes permanecem compatíveis.
 
 O paging permite que cada processo tenha seu próprio espaço de endereçamento.
 
-## VMAs da MM2
+## VMAs e paginação sob demanda da MM3
 
 Cada processo ring 3 mantém uma lista ligada ordenada de `vm_area_t`. O loader
-registra as regiões fixas de código, dados, lançamento e stack. `mmap` escolhe
-o primeiro intervalo livre entre `USER_LAUNCH_BASE` e `USER_STACK_BASE`, aloca
-as páginas físicas imediatamente, zera cada página e aplica `VM_WRITE` ao bit
-de escrita da Page Table. `VM_READ` e `VM_EXEC` permanecem metadados enquanto o
-paging não possuir NX.
+registra as regiões fixas de código, dados, lançamento e stack sem alocar
+páginas físicas de usuário. `mmap` escolhe o primeiro intervalo livre entre
+`USER_LAUNCH_BASE` e `USER_STACK_BASE` e registra uma VMA anônima igualmente
+lazy. O primeiro acesso válido localiza a VMA pelo `CR2`, valida leitura,
+escrita ou execução, aloca uma página física zerada, copia o backing da imagem
+quando necessário e aplica `PRESENT`, `USER` e `WRITE` na Page Table.
 
-`munmap` exige endereço alinhado e intervalo totalmente coberto por uma VMA
-anônima dinâmica. A operação libera frames, invalida a TLB quando necessário,
-remove tabelas vazias e pode dividir uma VMA no meio. As regiões fixas do
-loader não podem ser removidas por aplicativos. O Shell expõe o snapshot com
-`vmamap <pid>`.
+As cópias kernel→usuário e usuário→kernel também materializam a página lazy
+antes de acessar um buffer válido. `munmap` exige endereço alinhado e intervalo
+totalmente coberto por uma VMA anônima dinâmica; libera somente frames já
+residentes, invalida a TLB quando necessário, remove tabelas vazias e pode
+dividir uma VMA no meio. As regiões fixas do loader não podem ser removidas por
+aplicativos. O Shell expõe o snapshot com `vmamap <pid>` e os contadores
+cumulativos de faults com `pagefault status`.
+
+Falhas de página fora de uma VMA, com permissão incompatível, erro reservado ou
+tentativa de escrita em página somente leitura não causam panic no kernel. O
+processo ring 3 é isolado por `SIGSEGV`, enquanto faults resolvidas retornam ao
+fluxo interrompido. Os limites atuais de código, dados e stack permanecem em
+uma página de 4 KiB; mapeamentos compartilhados e file-backed continuam fora
+do escopo.
 
 ### Conceito
 

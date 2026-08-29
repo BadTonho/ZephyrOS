@@ -74,6 +74,7 @@ Comandos disponiveis:
   power status - Mostra prontidao ACPI S5 e fallback HLT
   kmetrics  - Mostra linha-base manual de metricas do kernel
   memcheck  - Valida heap, PMM e diretorios de usuario
+  pagefault status - Mostra faults de pagina tratadas e invalidas
   schedcheck - Valida invariantes do scheduler
   q2check   - Executa diagnostico compacto da Q2
   regcheck [full] - F11 cancela nos modos normal e full
@@ -718,6 +719,16 @@ altera a saida global de `mem` ou da App API.
 
 ```text
 zephyr> memcheck
+```
+
+## `pagefault status`
+
+Exibe os contadores cumulativos desde a inicializacao para faults de pagina
+ring 3 resolvidas sob demanda e faults invalidas isoladas por `SIGSEGV`. O
+comando nao altera os contadores e aceita somente o subcomando `status`.
+
+```text
+zephyr> pagefault status
 ```
 
 ## `schedcheck`

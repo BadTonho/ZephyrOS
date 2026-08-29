@@ -303,6 +303,7 @@ static void cmd_help(void) {
     video_print("  mem      - Mostra informacoes de memoria\n", 0x07);
     video_print("  slabinfo - Mostra caches SLAB\n", 0x07);
     video_print("  slabtest - Valida alocador SLAB\n", 0x07);
+    video_print("  pagefault status - Mostra faults de pagina\n", 0x07);
     video_print("  vmamap <pid> - Mostra mapa virtual do processo\n", 0x07);
     video_print("  procs    - Mostra processos ativos\n", 0x07);
     video_print("  stack status|check - Diagnostica stacks dos processos\n", 0x07);
