@@ -338,28 +338,53 @@ void ata_free(ata_request_t* req);
 
 ---
 
-## Regra #7: Gerenciamento de Memória
+## Regra #7: Gerenciamento de Memória e Ownership
+
+Toda alocação ou aquisição de recurso deve ter um proprietário claro, um ciclo
+de vida definido e o par correto de liberação. O allocator deve ser escolhido
+conforme o tipo do recurso, tamanho, alinhamento, duração, contexto de execução
+e requisitos de desempenho.
 
 ```c
-// Alocar
 void* ptr = kmalloc(size);
-if (!ptr) { LOG_ERROR("MOD", "Falha ao alocar memoria"); return ERR_MEM; }
+if (!ptr) {
+    LOG_ERROR("MOD", "Falha ao alocar memoria");
+    return ERR_MEM;
+}
 
-// Liberar
+/* uso do recurso */
+
 kfree(ptr);
-ptr = NULL; // sempre nullar após free
+ptr = NULL; /* recomendado enquanto o ponteiro continuar vivo */
 ```
 
 ### Regras
 
-- [ ] SEMPRE verificar se `kmalloc` retornou NULL
+- [ ] Verificar toda indicação de falha do allocator antes de usar o recurso;
+      em caminhos fatais, registrar o erro e seguir o contrato de falha do
+      módulo.
+- [ ] Escolher o par correspondente ao recurso: por exemplo,
+      `kmalloc`/`kfree`, cache de objetos, PMM, páginas ou arenas não devem ser
+      misturados sem um contrato explícito.
+- [ ] Validar tamanho, overflow, alinhamento, quantidade e contexto antes da
+      alocação quando esses valores puderem ser inválidos.
 - [ ] Toda alocação deve ter um proprietário claramente definido e uma
-      liberação em todos os caminhos de saída aplicáveis
-- [ ] Não liberar memória estática, global, emprestada ou cuja posse tenha
-      sido transferida
-- [ ] Não usar memória após `kfree` e não liberar o mesmo bloco duas vezes
-- [ ] Usar `kmalloc_aligned()` quando precisar de alinhamento de página
-- [ ] NÃO vazar memória — cada `malloc` tem um `free`
+      liberação, transferência ou retenção documentada em todos os caminhos de
+      saída aplicáveis.
+- [ ] Não liberar memória estática, global, emprestada ou cuja posse tenha sido
+      transferida; `kfree` não deve ser usado em recursos de outro allocator.
+- [ ] Nunca usar memória após sua liberação, liberar o mesmo recurso duas vezes
+      ou manter aliases ativos sem considerar a validade do objeto.
+- [ ] Atribuir `NULL` a ponteiros próprios ainda vivos após a liberação é
+      recomendado, mas não deve ser aplicado artificialmente a variáveis que já
+      saem de escopo; aliases e handles também devem ser invalidados quando
+      necessário.
+- [ ] Usar `kmalloc_aligned()` ou outro allocator apropriado somente quando o
+      contrato exigir alinhamento específico, como alinhamento de página.
+- [ ] Não usar `malloc`/`free` da biblioteca padrão em código freestanding; cada
+      recurso obtido deve usar a API de gerenciamento correspondente.
+- [ ] Não vazar recursos: cada aquisição deve ter uma liberação ou transferência
+      de ownership verificável.
 
 ---
 
