@@ -9,6 +9,17 @@ segredos.
 
 ## NET0 - contrato de ownership e lifetime de buffers
 
+Validacao funcional confirmada em: 2026-08-29 19:55:10 (America/Sao_Paulo)
+
+- `net status` exibiu `ativos=0`, pico 2, copias 4 e descartes normais.
+- `net socket check` terminou com todos os casos em `OK`.
+- `net check` terminou com `invariantes: OK` e o job cooperativo concluiu.
+- `regcheck full` terminou com `RegCheck: OK`.
+- O `health check` final nao reportou residuos ou falhas de buffers NET0;
+  as degradacoes restantes sao componentes opcionais esperados.
+- A matriz funcional do NET0 foi confirmada no QEMU; `boot.asm`, inventario
+  de NICs, sockets e trafego real permaneceram inalterados.
+
 Implementacao registrada em: 2026-08-29 19:43:14 (America/Sao_Paulo)
 
 - `net_buffer` foi adicionado com estados, owners, referencias, conclusao,
@@ -17,9 +28,8 @@ Implementacao registrada em: 2026-08-29 19:43:14 (America/Sao_Paulo)
   privado acompanha RX/TX sem transferencia de ownership de DMA.
 - `net check`, `regcheck full` e `health check` foram integrados sem criar
   comando novo. `boot.asm` nao foi alterado.
-- Gates `make q3check`, `make clean && make`, `make run` e a matriz QEMU ainda
-  aguardam execucao e confirmacao funcional do usuario; nenhum resultado de
-  compilacao ou QEMU e afirmado por esta entrada.
+- A validacao funcional posterior, incluindo a matriz QEMU, esta registrada na
+  entrada NET0 acima; o agente nao executou compilacao ou QEMU.
 
 ## EP7.0 — Inventário e diagnóstico seguro de candidatos Wi-Fi
 
