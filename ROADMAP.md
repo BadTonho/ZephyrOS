@@ -832,6 +832,7 @@ kernel, interface e novos serviços:
 | 14 | [`docs/roadmaps/14-stack-de-rede-avancada.md`](docs/roadmaps/14-stack-de-rede-avancada.md) | Socket buffers sk_buff zero-copy, sockets AF_UNIX/AF_INET e select/poll. |
 | 15 | [`docs/roadmaps/15-introspeccao-e-pseudo-fs.md`](docs/roadmaps/15-introspeccao-e-pseudo-fs.md) | Pseudo-filesystems /proc e /sys para diagnósticos, processos e hardware. |
 | 16 | [`docs/roadmaps/16-energia-e-acpi-avancado.md`](docs/roadmaps/16-energia-e-acpi-avancado.md) | Loop de CPU idle com HLT, parser ACPI (FADT/MADT), poweroff e reboot. |
+| 17 | [`docs/roadmaps/17-migracao-gradual-rust.md`](docs/roadmaps/17-migracao-gradual-rust.md) | Migração gradual para um kernel híbrido C/Rust/Assembly após a versão 1.0.0. |
 
 Os numeros 06 e 07 identificam os documentos, nao uma barreira de conclusao
 integral. A ordem executavel compartilhada e **AS1-AS2 -> MV0-MV3 -> AS3 ->

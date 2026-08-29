@@ -168,6 +168,7 @@ correcao da ordem de apresentacao.
 14. [14 - Stack de Rede Avancada](14-stack-de-rede-avancada.md)
 15. [15 - Introspeccao e Pseudo-Filesystems](15-introspeccao-e-pseudo-fs.md)
 16. [16 - Energia e ACPI Avancado](16-energia-e-acpi-avancado.md)
+17. [17 - Migracao gradual do ZephyrOS para Rust](17-migracao-gradual-rust.md)
 
 Os numeros 06 e 07 mantem a organizacao documental, mas sua execucao e
 intercalada nesta ordem:
