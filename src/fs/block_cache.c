@@ -289,7 +289,10 @@ static uint32_t block_cache_reserve_run_locked(const char* device_id,
 static int block_cache_wait_condition(void* context, uint8_t* out_ready) {
     block_cache_wait_context_t* wait = (block_cache_wait_context_t*)context;
 
-    if (!wait || !wait->entry || !out_ready) return ERR_NULL;
+    if (!wait || !wait->entry || !out_ready) {
+        LOG_ERROR("BLKCACHE", "Contexto invalido na condicao de espera");
+        return ERR_NULL;
+    }
     spinlock_acquire(&block_cache_lock);
     *out_ready = wait->entry->generation != wait->generation ||
                  wait->entry->state != BLOCK_CACHE_READING;
@@ -305,10 +308,20 @@ static int block_cache_wait_for_entry(block_cache_entry_t* entry,
 
     context.entry = entry;
     context.generation = generation;
+    if (!entry) {
+        LOG_ERROR("BLKCACHE", "Entrada nula na espera do cache");
+        return ERR_NULL;
+    }
     result = wait_event(&entry->waiters, block_cache_wait_condition,
                         &context, &reason);
-    if (result != OK) return result;
-    if (reason != WAIT_REASON_EVENT) return ERR_STATE;
+    if (result != OK) {
+        LOG_WARN("BLKCACHE", "Espera do cache retornou erro");
+        return result;
+    }
+    if (reason != WAIT_REASON_EVENT) {
+        LOG_WARN("BLKCACHE", "Espera do cache terminou sem evento");
+        return ERR_STATE;
+    }
     return OK;
 }
 
@@ -476,24 +489,50 @@ static int block_cache_validate_device(const block_device_t* device,
                                        uint32_t buffer_bytes) {
     uint32_t required;
 
-    if (!device) return ERR_NULL;
+    if (!device) {
+        LOG_ERROR("BLKCACHE", "Dispositivo nulo na validacao do cache");
+        return ERR_NULL;
+    }
     if (!block_cache_text_terminated(device->id, BLOCK_DEVICE_ID_SIZE)) {
+        LOG_ERROR("BLKCACHE", "ID invalido na validacao do cache");
         return ERR_INVALID;
     }
     if (device->sector_size != BLOCK_CACHE_BLOCK_SIZE ||
         !device->sector_count || !device->max_transfer_sectors ||
         device->max_transfer_sectors > BLOCK_MAX_TRANSFER_SECTORS) {
+        LOG_ERROR("BLKCACHE", "Geometria invalida na validacao do cache");
         return ERR_STATE;
     }
-    if (!device->online) return ERR_DISK;
-    if (!count) return ERR_INVALID;
-    if (count > device->max_transfer_sectors) return ERR_OVERFLOW;
-    if (count > 0xFFFFFFFFU / BLOCK_CACHE_BLOCK_SIZE) return ERR_OVERFLOW;
+    if (!device->online) {
+        LOG_WARN("BLKCACHE", "Dispositivo offline na leitura do cache");
+        return ERR_DISK;
+    }
+    if (!count) {
+        LOG_ERROR("BLKCACHE", "Quantidade nula na leitura do cache");
+        return ERR_INVALID;
+    }
+    if (count > device->max_transfer_sectors) {
+        LOG_ERROR("BLKCACHE", "Quantidade excede limite do cache");
+        return ERR_OVERFLOW;
+    }
+    if (count > 0xFFFFFFFFU / BLOCK_CACHE_BLOCK_SIZE) {
+        LOG_ERROR("BLKCACHE", "Tamanho excede limite do cache");
+        return ERR_OVERFLOW;
+    }
     required = (uint32_t)count * BLOCK_CACHE_BLOCK_SIZE;
-    if (buffer_bytes < required) return ERR_INVALID;
+    if (buffer_bytes < required) {
+        LOG_ERROR("BLKCACHE", "Buffer menor que a leitura do cache");
+        return ERR_INVALID;
+    }
     if (lba >= device->sector_count ||
-        count > device->sector_count - lba) return ERR_DISK;
-    if (!device->ops.read && !device->ops.submit) return ERR_STATE;
+        count > device->sector_count - lba) {
+        LOG_ERROR("BLKCACHE", "LBA fora dos limites do cache");
+        return ERR_DISK;
+    }
+    if (!device->ops.read && !device->ops.submit) {
+        LOG_ERROR("BLKCACHE", "Backend ausente na leitura do cache");
+        return ERR_STATE;
+    }
     return OK;
 }
 
@@ -659,8 +698,12 @@ int block_cache_get_stats(block_cache_stats_t* out_stats) {
 }
 
 static int block_cache_validate_identifier(const char* device_id) {
-    if (!device_id) return ERR_NULL;
+    if (!device_id) {
+        LOG_ERROR("BLKCACHE", "ID nulo na invalidacao do cache");
+        return ERR_NULL;
+    }
     if (!block_cache_text_terminated(device_id, BLOCK_DEVICE_ID_SIZE)) {
+        LOG_ERROR("BLKCACHE", "ID nao terminado na invalidacao do cache");
         return ERR_INVALID;
     }
     return OK;
@@ -886,11 +929,17 @@ int block_cache_validate_state(void) {
 static int block_cache_test_submit(block_request_t* request) {
     block_cache_test_context_t* context;
 
-    if (!request || !request->device_context) return ERR_NULL;
+    if (!request || !request->device_context) {
+        LOG_ERROR("BLKCACHE", "Requisicao invalida no backend mock");
+        return ERR_NULL;
+    }
     context = (block_cache_test_context_t*)request->device_context;
     if (request->operation == BLOCK_OPERATION_READ) {
         context->reads++;
-        if (context->forced_result != OK) return context->forced_result;
+        if (context->forced_result != OK) {
+            LOG_WARN("BLKCACHE", "Backend mock simulou erro de leitura");
+            return context->forced_result;
+        }
         for (uint32_t sector = 0U; sector < request->sector_count; sector++) {
             uint8_t* output = (uint8_t*)request->buffer +
                               sector * BLOCK_CACHE_BLOCK_SIZE;
@@ -902,7 +951,10 @@ static int block_cache_test_submit(block_request_t* request) {
         }
     } else if (request->operation == BLOCK_OPERATION_WRITE) {
         context->writes++;
-        if (context->forced_result != OK) return context->forced_result;
+        if (context->forced_result != OK) {
+            LOG_WARN("BLKCACHE", "Backend mock simulou erro de escrita");
+            return context->forced_result;
+        }
     }
     request->completed_sectors = request->sector_count;
     return OK;
@@ -931,11 +983,17 @@ static int block_cache_test_inventory(char ids[][BLOCK_DEVICE_ID_SIZE],
     uint32_t count;
 
     if (!ids || !out_count || block_get_count(&count) != OK ||
-        count > BLOCK_MAX_DEVICES) return ERR_STATE;
+        count > BLOCK_MAX_DEVICES) {
+        LOG_ERROR("BLKCACHE", "Falha ao obter inventario para o autoteste");
+        return ERR_STATE;
+    }
     for (uint32_t index = 0U; index < count; index++) {
         block_device_t device;
 
-        if (block_get_at(index, &device) != OK) return ERR_STATE;
+        if (block_get_at(index, &device) != OK) {
+            LOG_ERROR("BLKCACHE", "Falha ao copiar inventario para o autoteste");
+            return ERR_STATE;
+        }
         block_cache_copy_text(ids[index], BLOCK_DEVICE_ID_SIZE, device.id);
     }
     *out_count = count;
@@ -947,6 +1005,7 @@ static int block_cache_test_inventory_unchanged(
     uint32_t current_count;
 
     if (block_get_count(&current_count) != OK || current_count != count) {
+        LOG_ERROR("BLKCACHE", "Quantidade do inventario mudou no autoteste");
         return ERR_STATE;
     }
     for (uint32_t index = 0U; index < count; index++) {
@@ -954,6 +1013,7 @@ static int block_cache_test_inventory_unchanged(
 
         if (block_get_at(index, &device) != OK ||
             !block_cache_text_equal(ids[index], device.id)) {
+            LOG_ERROR("BLKCACHE", "ID do inventario mudou no autoteste");
             return ERR_STATE;
         }
     }
