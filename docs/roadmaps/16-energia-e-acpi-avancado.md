@@ -2,12 +2,17 @@
 
 ## Objetivo
 
-Consolidar o subsistema de gerenciamento de energia e controle de hardware do ZephyrOS através do padrão ACPI (*Advanced Configuration and Power Interface*), incorporando economia de energia em tempo ocioso (CPU Idle com loop seguro de instrução `hlt`), descoberta detalhada de topologia de hardware via tabelas ACPI e desligamento (*poweroff*) e reinicialização (*reboot*) limpos e determinísticos.
+Consolidar o subsistema de gerenciamento de energia e controle de hardware do
+ZephyrOS através de capacidades ACPI observadas e contratos seguros de idle,
+desligamento e reinicialização. A etapa separa descoberta/validação de tabelas,
+execução de métodos AML, política de idle e transição final de energia; nenhum
+fallback específico de emulador será tratado como comportamento universal.
 
 ## Resumo de progresso
 
-- [ ] PWR1 - Loop de CPU Idle com economia de energia via instrução `hlt`.
-- [ ] PWR2 - Parser completo de tabelas ACPI (RSDP, RSDT, XSDT, FADT, MADT).
+- [ ] PWR0 - Contrato de capacidades, estados e ordem de desligamento.
+- [ ] PWR1 - Idle arquitetural seguro com economia de energia via `hlt`.
+- [ ] PWR2 - Descoberta e validação de tabelas ACPI (RSDP, RSDT, XSDT, FADT, MADT).
 - [ ] PWR3 - Desligamento e reinicialização determinísticos por hardware.
 - [ ] PWR4 - Notificação ordenada de encerramento do sistema para drivers e apps.
 
@@ -15,7 +20,7 @@ Consolidar o subsistema de gerenciamento de energia e controle de hardware do Ze
 
 - [Roadmap 05 - Sistema e Ecossistema](05-sistema-e-ecossistema.md)
 - [Roadmap 12 - Concorrencia e Sincronizacao](12-concorrencia-e-sincronizacao.md)
-- [Roadmap 13 - Armazenamento e Buffer Cache](13-armazenamento-e-buffer-cache.md)
+- [Roadmap 13 - Armazenamento, Block Layer e Cache de Blocos](13-armazenamento-e-buffer-cache.md)
 - [Índice dos Roadmaps](README.md)
 - [Índice da Documentação](../indice.md)
 
@@ -28,17 +33,45 @@ Consolidar o subsistema de gerenciamento de energia e controle de hardware do Ze
 
 ## Princípios de engenharia
 
-- **Economia Total de Ciclos Ociosos:** Quando nenhuma thread estiver pronta para executar (`READY`), a CPU deve entrar em estado de baixo consumo com `hlt` aguardando a próxima interrupção.
-- **Múltiplos Vetores de Encerramento:** Se o método ACPI S5 falhar, o sistema deve acionar vetores de fallback ordenados (portas de emulador, APM, fallback de controle).
-- **Reinicialização Segura (*Reboot*):** O reboot deve tentar o registrador ACPI Reset, o controlador de teclado 8042 e, em último caso, um Triple Fault controlado.
-- **Flush Antes do Desligamento:** Nenhum comando de desligamento desativa a máquina antes de descarregar os caches de disco (`sync`) e desmontar volumes.
+- **Idle seguro:** Quando nenhuma thread estiver pronta, a arquitetura entra em
+  idle com `hlt` apenas após uma verificação protegida contra a janela entre a
+  decisão e a interrupção. O caminho deve contabilizar idle e acordar por IRQ.
+- **Capacidades observadas:** ACPI, APM, controlador 8042 e outros fallbacks
+  só podem ser usados quando sua capacidade tiver sido detectada e validada.
+- **Reinicialização segura:** O reboot tenta o reset ACPI anunciado, depois o
+  controlador 8042 e, em último caso, um Triple Fault controlado; portas
+  privadas de QEMU/Bochs/VirtualBox não são uma API genérica.
+- **Flush antes do desligamento:** Nenhum comando desativa a máquina antes de
+  concluir o contrato de sync/flush do Roadmap 13 e publicar falhas de escrita.
 
 ## Ordem de dependência
 
-1. PWR1 - Tarefa Idle com `hlt` e métricas de tempo de CPU ociosa.
-2. PWR2 - Parser de tabelas ACPI FADT, MADT e detecção de APIC.
-3. PWR3 - Rotinas de desligamento físico e reinicialização segura.
-4. PWR4 - Protocolo de notificação e desmontagem prévia.
+1. PWR0 - Contratos de capacidades, estados e ordem de transição.
+2. PWR1 - Tarefa Idle com `hlt` e métricas de tempo de CPU ociosa.
+3. PWR2 - Descoberta de tabelas ACPI FADT, MADT e detecção de APIC.
+4. PWR3 - Rotinas de desligamento físico e reinicialização segura.
+5. PWR4 - Protocolo de notificação e desmontagem prévia.
+
+---
+
+## PWR0 - Contrato de energia e transições
+
+### Implementação
+
+- [ ] Definir estados `UNKNOWN`, `DISCOVERING`, `READY`, `DEGRADED` e
+  `UNAVAILABLE`, com capacidades publicadas sem executar escrita especulativa
+  em hardware.
+- [ ] Definir ordem, ownership, timeout, cancelamento e resultado das
+  notificações de drivers, filesystem, workqueues, processos e CPU.
+- [ ] Definir que desligamento e reboot são operações irreversíveis, com
+  confirmação de pré-condições e registro de cada fallback tentado.
+- [ ] Separar descoberta de tabelas ACPI, interpretação AML e uso de métodos de
+  energia; um parser de cabeçalhos não será chamado de ACPI completo.
+
+### Critério de saída
+
+Cada capacidade de energia possui estado observável, pré-condição, fallback e
+erro público, sem desligar ou reiniciar quando o contrato não estiver pronto.
 
 ---
 
@@ -54,7 +87,10 @@ Consolidar o subsistema de gerenciamento de energia e controle de hardware do Ze
   }
   ```
 - [ ] Contabilizar o tempo gasto na `idle_task` para calcular a porcentagem real de uso de CPU do sistema (`100% - idle%`).
-- [ ] Garantir que interrupções de hardware (timer, teclado, rede) acordem a CPU imediatamente sem latência adicional.
+- [ ] Garantir que interrupções de hardware (timer, teclado, rede) acordem a
+  CPU sem perder eventos na janela entre a verificação e o `hlt`.
+- [ ] Se o sistema continuar unicore, manter uma única tarefa idle; não criar
+  uma abstração SMP sem necessidade real.
 
 ### Critério de saída
 
@@ -66,18 +102,23 @@ O uso de CPU no computador host (ou processo do QEMU) cai para próximo de 0-1% 
 
 ---
 
-## PWR2 - Parser de Tabelas ACPI (FADT, MADT, DSDT)
+## PWR2 - Descoberta e Validação de Tabelas ACPI
 
 ### Implementação
 
 - [ ] Localizar e validar a assinatura da RSDP (Root System Description Pointer) nos primeiros 1MB de memória física ou na EBDA.
 - [ ] Mapear e validar o cabeçalho da RSDT / XSDT verificando checksums de 8 bits.
 - [ ] Mapear a tabela FADT (Fixed ACPI Description Table) para obter as portas `PM1a_CNT_BLK`, `PM1b_CNT_BLK`, `SMI_CMD` e o valor `SLP_TYPa` para o estado S5 (Soft Off).
-- [ ] Mapear a tabela MADT (Multiple APIC Description Table) para identificar quantidade de cores da CPU e controladores I/O APIC.
+- [ ] Mapear a tabela MADT (Multiple APIC Description Table) para identificar
+  quantidade de cores da CPU e controladores I/O APIC.
+- [ ] Manter a interpretação de AML/DSDT fora do critério desta etapa, salvo se
+  uma capacidade de energia depender explicitamente dela; nesse caso, criar
+  uma etapa própria para o interpretador e seu isolamento.
 
 ### Critério de saída
 
-O sistema lista com sucesso todas as tabelas ACPI disponíveis com seus respectivos endereços físicos e status de checksum.
+O sistema lista as tabelas ACPI encontradas com endereços, comprimentos,
+revisões e checksums válidos, distinguindo descoberta de execução de métodos.
 
 ### Comandos Shell / Diagnóstico
 
@@ -90,9 +131,9 @@ O sistema lista com sucesso todas as tabelas ACPI disponíveis com seus respecti
 ### Implementação
 
 - [ ] Implementar a função `int acpi_poweroff(void)` que grava a sequência de sleep correspondente ao estado S5 no registrador PM1 Control.
-- [ ] Implementar os fallbacks de desligamento para virtualizadores:
-  - Porta QEMU / Bochs: `outw(0x604, 0x2000)` ou `outw(0xB004, 0x2000)`.
-  - Porta VirtualBox: `outw(0x4004, 0x3400)`.
+- [ ] Implementar fallbacks somente quando a capacidade for detectada e
+  documentada; não usar portas privadas de QEMU, Bochs ou VirtualBox como
+  caminho genérico do kernel.
 - [ ] Implementar a função `int system_reboot(void)`:
   - 1ª tentativa: Registrador `RESET_REG` informado na tabela ACPI FADT.
   - 2ª tentativa: Pulso de reset no pino do controlador de teclado PS/2 (porta 0x64, comando 0xFE).
@@ -116,14 +157,18 @@ Comandos `poweroff` e `reboot` desligam ou reiniciam o computador/emulador de fo
 - [ ] Criar a cadeia de notificação de desligamento do kernel (*reboot notifier chain*).
 - [ ] Ao receber solicitação de desligamento:
   1. Enviar sinal `SIGTERM` / notificação para aplicativos em execução;
-  2. Executar `sync` de todos os buffers e mídias de armazenamento;
+  2. Executar o sync/flush do Roadmap 13 e aguardar a confirmação de
+     durabilidade;
   3. Desmontar todos os volumes montados no VFS;
   4. Desativar periféricos de áudio, rede e vídeo;
-  5. Acionar o vetor de desligamento por hardware.
+  5. Acionar o vetor de desligamento por hardware somente se as etapas
+     anteriores concluírem sem erro não recuperado.
 
 ### Critério de saída
 
-O sistema encerra ordenadamente todos os serviços sem perda de dados ou estado inconsistente em disco.
+O sistema encerra ordenadamente os serviços e detecta falhas de sync/flush
+antes da transição irreversível, sem prometer atomicidade que o filesystem não
+implemente.
 
 ### Comandos Shell / Diagnóstico
 

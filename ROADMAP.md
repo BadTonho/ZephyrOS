@@ -17,7 +17,8 @@ kworker` tambem estao concluidas e validadas; `DT100-002` registra o uso
 temporario de um processo ring0 ate a K5/v1.0.0.
 SYNC4 esta concluida e validada com App API 0.4, entrega de sinais ring3,
 Ctrl+C, `kill` e `sigtest`; o Shell e o perfil USB HID permaneceram
-responsivos. R5 continua pendente no Roadmap 09.
+responsivos. As melhorias futuras R5-R9 do Roadmap 09 permanecem registradas
+sem bloquear as frentes atuais.
 
 VFS1 esta concluida e validada com App API 0.5, descritores por processo,
 stdio e `file_lseek` na syscall 14. As matrizes do QEMU padrao e do perfil USB
@@ -39,9 +40,13 @@ MM1 do Roadmap 11 esta implementada e validada pelo usuario, com caches
 SLAB/SLUB estaticos, migracao de processos, threads, objetos VFS e pacotes
 Ethernet, alem dos diagnosticos `slabinfo` e `slabtest`. A MM2 de VMA esta
 implementada e validada pelo usuario com App API 0.9, `mmap`/`munmap`,
-`appcheck`, `memcheck`, `schedcheck`, `regcheck full` e `vmamap`.
+`appcheck`, `memcheck`, `schedcheck`, `regcheck full` e `vmamap`. MM3 de
+paginação sob demanda e MM4 de metricas fisicas e monitoramento tambem foram
+implementadas e validadas pelo usuario. A proxima frente de armazenamento deve
+começar pelo contrato BLK0 antes da fila BLK1; o cache de blocos permanece
+separado de um page cache completo.
 
-## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A-EP9.4C validadas; SYNC1 concluída com a dívida técnica [DT100-001](docs/qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2) aceita para K5/v1.0.0; SYNC2, SYNC3/R4, SYNC4, VFS1, VFS2, VFS3 e MM1 concluídas e validadas; R5 permanece pendente no Roadmap 09
+## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A-EP9.4C validadas; SYNC1 concluída com a dívida técnica [DT100-001](docs/qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2) aceita para K5/v1.0.0; SYNC2, SYNC3/R4, SYNC4, VFS1, VFS2, VFS3, MM1, MM2, MM3 e MM4 concluídas e validadas; R5-R9 do Roadmap 09 permanecem como melhorias futuras
 
 ```
 Núcleo original (Fases 1–9): [████████████████████████████████████████████] 100%

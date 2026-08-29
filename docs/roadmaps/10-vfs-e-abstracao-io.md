@@ -18,7 +18,7 @@ Este roadmap estabelece uma arquitetura própria, modular, segura e limpa para o
 
 - [Roadmap 08 - Evolucao da Plataforma](08-evolucao-da-plataforma.md)
 - [Roadmap 09 - Funcionalidades aplicáveis](09-funcionalidades-aplicaveis.md)
-- [Roadmap 13 - Armazenamento e Buffer Cache](13-armazenamento-e-buffer-cache.md)
+- [Roadmap 13 - Armazenamento, Block Layer e Cache de Blocos](13-armazenamento-e-buffer-cache.md)
 - [Roadmap 15 - Introspeccao e Pseudo-Filesystems](15-introspeccao-e-pseudo-fs.md)
 - [Índice dos Roadmaps](README.md)
 - [Índice da Documentação](../indice.md)

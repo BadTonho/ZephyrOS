@@ -13,7 +13,7 @@ Implementar padrões modernos de concorrência, sincronização e tratamento ass
 - [x] SYNC2 - Primitivas de Espera sem Espera Ocupada: concluida e validada.
 - [x] SYNC3 - Filas de Trabalho do Kernel (concluida e validada).
 - [x] SYNC4 - Sistema de Sinais Assíncronos implementado e validado pelo
-  usuário; R5 permanece pendente no Roadmap 09.
+  usuário; as melhorias futuras R5-R9 do Roadmap 09 não bloqueiam o roadmap.
 
 ## Atalhos
 
@@ -307,7 +307,8 @@ nao e quitada por esta execucao isolada sem o sintoma.
 
 O App Loader continua sendo o coletor de processos ring3; SYNC4 não cria
 `waitpid`. `src/boot/boot.asm`, `src/boot/stage2.asm` e as rotinas Assembly de
-interrupção permanecem inalteradas. R5 continua pendente no Roadmap 09.
+interrupção permanecem inalteradas. As melhorias futuras R5-R9 do Roadmap 09
+não bloqueiam o Roadmap 12.
 
 ### Critério de saída
 

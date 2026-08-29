@@ -1,14 +1,21 @@
-# Roadmap 13 - Armazenamento e Buffer Cache
+# Roadmap 13 - Armazenamento, Block Layer e Cache de Blocos
 
 ## Objetivo
 
-Implementar uma camada de abstração de dispositivos de bloco (*Block Layer*) e um sistema de cache de leitura e escrita (*Buffer Cache / Page Cache*) no ZephyrOS, otimizando o acesso a discos ATA e mídias USB Mass Storage através do agrupamento de requisições contíguas e sincronização controlada de blocos modificados (*dirty pages*).
+Implementar uma camada de abstração de dispositivos de bloco (*Block Layer*) e
+um cache de blocos limitado no ZephyrOS, desacoplando FAT/VFS dos drivers ATA e
+USB Mass Storage. A etapa deve separar a operação lógica (`bio_request_t`) da
+requisição enfileirada que o driver executa, preservar a compatibilidade das
+operações síncronas atuais e definir durabilidade antes de habilitar escrita em
+cache. Um page cache completo, compartilhado por arquivos e baseado em páginas
+virtuais, permanece fora desta etapa.
 
 ## Resumo de progresso
 
-- [ ] BLK1 - Fila unificada de requisições de bloco (`block_device_t` e `bio_request_t`).
-- [ ] BLK2 - Buffer Cache de leitura em memória com política de substituição LRU.
-- [ ] BLK3 - Escrita em cache com marcação de blocos modificados (*dirty*) e flush assíncrono (`sync`).
+- [ ] BLK0 - Contrato de I/O, ownership, conclusão e durabilidade.
+- [ ] BLK1 - Fila unificada de requisições de bloco (`block_device_t`, `bio_request_t` e `block_request_t`).
+- [ ] BLK2 - Cache de blocos de leitura com estados, referências e política LRU.
+- [ ] BLK3 - Writeback de blocos modificados, flush e sincronização explícita.
 - [ ] BLK4 - Resiliência, integridade contra interrupção de energia e failpoint testing.
 
 ## Atalhos
@@ -28,17 +35,63 @@ Implementar uma camada de abstração de dispositivos de bloco (*Block Layer*) e
 
 ## Princípios de engenharia
 
-- **Desacoplamento de Hardware:** Filesystems requisitam leitura/escrita de blocos através da camada de bloco genérica, sem saber se a mídia física é ATA PIO, ATA DMA ou USB.
-- **Fusão de Setores (*Request Merging*):** Requisições consecutivas de leitura ou escrita para setores adjacentes são combinadas em uma única transferência de hardware.
-- **Escrita Segura com Confirmação:** Operações críticas do sistema (metadados de filesystem, atualização do sistema) podem requisitar gravação direta síncrona (*write-through / O_SYNC*).
-- **Sem Vaza-Vaza de Memória:** O Buffer Cache opera com limite fixo configurável de memória (ex: 512KB a 2MB), descartando blocos limpos antigos quando a memória estiver cheia.
+- **Desacoplamento de Hardware:** Filesystems requisitam I/O lógico através de
+  `bio_request_t`; somente a camada de bloco conhece filas, capacidades e o
+  contrato do driver ATA ou USB.
+- **Separação de operações:** Um `bio_request_t` descreve a operação. A fila
+  pode agregá-lo em um `block_request_t`, que passa a ter ownership do buffer
+  até a conclusão e publica status, bytes/setores e erro.
+- **Compatibilidade síncrona:** A API bloqueante atual usa um wrapper que
+  submete uma requisição, dorme em wait queue e aguarda a conclusão; ela não
+  acessa o driver diretamente.
+- **Fusão conservadora:** A primeira política é FIFO com fusão somente de
+  operações adjacentes compatíveis. Reordenação e elevator só entram após
+  métricas e não podem alterar a semântica de conclusão.
+- **Cache limitado:** O cache de blocos tem orçamento fixo, estados explícitos,
+  referências/pins e não descarta entradas sujas ou em I/O. Cache de blocos não
+  é tratado como page cache nesta etapa.
+- **Durabilidade explícita:** `sync`/`fsync` só retornam sucesso após as
+  gravações e o flush suportado pelo dispositivo; erros de writeback não são
+  ocultados.
 
 ## Ordem de dependência
 
-1. BLK1 - Estruturas de dispositivo de bloco e fila de requisições.
-2. BLK2 - Buffer Cache de leitura e algoritmo de cache LRU.
-3. BLK3 - Marcação de blocos dirty e thread de sincronização `sync`.
-4. BLK4 - Testes de integridade, desligamento forçado e failpoint recovery.
+1. BLK0 - Contratos de I/O, ownership e durabilidade.
+2. BLK1 - Estruturas de dispositivo de bloco e fila de requisições.
+3. BLK2 - Cache de blocos de leitura e algoritmo de cache LRU.
+4. BLK3 - Writeback, flush e sincronização explícita.
+5. BLK4 - Testes de integridade, desligamento forçado e failpoint recovery.
+
+---
+
+## BLK0 - Contrato de I/O e durabilidade
+
+### Implementação
+
+- [ ] Definir `bio_request_t` como descrição de uma operação lógica, com
+  dispositivo, LBA, quantidade de setores, buffer, operação, flags, callback,
+  contexto e status de conclusão.
+- [ ] Definir `block_request_t` como objeto interno da fila, podendo agrupar
+  BIOs compatíveis e mantendo ownership do buffer até a conclusão do driver.
+- [ ] Definir estados `QUEUED`, `IN_FLIGHT`, `COMPLETED`, `CANCELLED` e
+  `ERROR`, além de timeout, retry limitado, fila cheia e cancelamento.
+- [ ] Definir capacidades do dispositivo: tamanho lógico de setor, limite de
+  transferência, somente leitura, flush e FUA quando disponíveis.
+- [ ] Criar um wrapper `block_submit_sync()` para preservar os chamadores
+  bloqueantes sem permitir acesso direto ao driver.
+- [ ] Registrar no contrato que a conclusão pode ocorrer fora da ordem de
+  submissão e que o chamador deve consumir o status antes de liberar recursos.
+
+### Critério de saída
+
+O contrato documenta ownership, ciclo de vida, alinhamento, erros,
+cancelamento, timeout, conclusão e durabilidade, com um backend determinístico
+que permita testar esses estados sem depender do hardware.
+
+### Comandos Shell / Diagnóstico
+
+- A validação inicial usa os diagnósticos existentes; `blkstat` só será
+  publicado quando a fila BLK1 registrar dispositivos reais.
 
 ---
 
@@ -46,18 +99,24 @@ Implementar uma camada de abstração de dispositivos de bloco (*Block Layer*) e
 
 ### Implementação
 
-- [ ] Definir a estrutura `block_device_t`:
-  - `const char* name;`
-  - `uint32_t sector_size;`
-  - `uint32_t total_sectors;`
-  - `int (*submit_bio)(struct block_device*, struct bio_request*);`
-- [ ] Implementar a estrutura de requisição de I/O `bio_request_t` contendo LBA inicial, contagem de setores, buffer e callback de conclusão.
-- [ ] Implementar algoritmo de ordenação de fila (elevador simples / FIFO) para reduzir saltos desnecessários de leitura.
-- [ ] Migrar o driver ATA PIO existente para o contrato de `block_device_t`.
+- [ ] Definir `block_device_t` com identidade, setor lógico, capacidade,
+  limites de transferência, flags de capacidade e callback de submissão de
+  `block_request_t` para o driver.
+- [ ] Implementar a fila limitada e o dispatcher que transforma BIOs em
+  requisições, rejeitando overflow com erro canônico e sem vazamento.
+- [ ] Implementar FIFO com fusão apenas de setores adjacentes compatíveis;
+  deixar elevator e reordenação como otimizações posteriores mensuráveis.
+- [ ] Migrar o driver ATA PIO existente para o contrato de `block_device_t`
+  sem mudar as assinaturas públicas do VFS ou das syscalls.
+- [ ] Adaptar USB Mass Storage somente depois de validar as capacidades e o
+  ciclo de conclusão do dispositivo ATA.
 
 ### Critério de saída
 
-Todas as operações de I/O de baixo nível passam pela fila de requisições com rastreabilidade completa de setores lidos e gravados.
+Todas as operações de I/O de baixo nível passam pela fila de requisições, com
+rastreabilidade de setores, status de conclusão, timeout e ownership do buffer.
+Os chamadores síncronos continuam funcionando através do wrapper definido em
+BLK0.
 
 ### Comandos Shell / Diagnóstico
 
@@ -65,18 +124,28 @@ Todas as operações de I/O de baixo nível passam pela fila de requisições co
 
 ---
 
-## BLK2 - Buffer Cache de Leitura com LRU
+## BLK2 - Cache de Blocos de Leitura com LRU
 
 ### Implementação
 
-- [ ] Criar a tabela de hash indexada por `(device_id, lba)` para busca $O(1)$ de blocos em memória.
-- [ ] Manter lista duplamente ligada LRU (*Least Recently Used*) de buffers livres e ocupados.
-- [ ] Interceptar leituras do VFS/FAT: se o bloco já estiver em cache (*cache hit*), copiar da RAM instantaneamente sem acessar o hardware.
-- [ ] Se houver *cache miss*, alocar um slot no buffer, carregar do disco e inserir no topo da lista LRU.
+- [ ] Criar a tabela de hash indexada por `(device_id, lba, block_size)` para
+  busca $O(1)$ e evitar colisões semânticas entre setores e blocos de filesystem.
+- [ ] Manter estados `FREE`, `READING`, `VALID`, `DIRTY`, `WRITEBACK` e
+  `ERROR`, além de referência/pin para impedir eviction durante uso ou I/O.
+- [ ] Manter lista LRU de entradas elegíveis para eviction, sem remover
+  buffers sujos, fixados ou em voo.
+- [ ] Interceptar primeiro leituras FAT/VFS; em *cache hit*, copiar da RAM, e
+  em *cache miss*, carregar o bloco pela BLK1 e acordar os waiters.
+- [ ] Manter invalidação explícita por dispositivo, faixa e desmontagem.
+- [ ] Registrar que este cache de blocos não substitui o page cache baseado em
+  páginas/folios, que fica para uma etapa futura se houver necessidade.
 
 ### Critério de saída
 
-Leituras consecutivas de arquivos ou diretórios já visitados ocorrem sem acionar interrupções ou transferências no controlador ATA, atingindo mais de 80% de *cache hit* em benchmarks normais.
+Leituras repetidas dos cenários definidos evitam transferências ao hardware sem
+violar coerência, eviction ou ownership. A avaliação compara hit rate,
+leituras evitadas, latência e memória usada contra uma linha de base
+reproduzível; não há um percentual universal obrigatório.
 
 ### Comandos Shell / Diagnóstico
 
@@ -85,18 +154,26 @@ Leituras consecutivas de arquivos ou diretórios já visitados ocorrem sem acion
 
 ---
 
-## BLK3 - Dirty Page Writeback e Sincronização
+## BLK3 - Writeback de Blocos e Sincronização
 
 ### Implementação
 
-- [ ] Suportar gravação em cache marcando o buffer com o estado `BUF_DIRTY`.
-- [ ] Criar a função do kernel `int sync_buffers(block_device_t* dev)` que varre e grava todos os blocos alterados no disco.
-- [ ] Integrar a rotina de flush periódico na fila de trabalho (*Workqueue* do Roadmap 12) executando a cada 5 ou 10 segundos.
-- [ ] Implementar a syscall e comando Shell `sync` para forçar a gravação imediata de todos os dados pendentes.
+- [ ] Marcar entradas sujas com lock, referência e faixa de bytes alterada;
+  escritas parciais devem preservar os bytes não modificados.
+- [ ] Criar `sync_buffers(block_device_t* dev)` para submeter writeback,
+  aguardar conclusões e devolver o primeiro erro observável.
+- [ ] Implementar flush periódico na workqueue com período configurável,
+  respeitando pressão de memória, pins e limite de requisições em voo.
+- [ ] Implementar flush de dispositivo e FUA quando a capacidade existir;
+  quando não existir, publicar a limitação no status de durabilidade.
+- [ ] Adicionar syscall e comando Shell `sync` somente com ABI append-only,
+  contrato de espera e propagação de erro documentados.
 
 ### Critério de saída
 
-Escritas de arquivos pequenos retornam instantaneamente para o aplicativo e são consolidadas no disco de forma ordenada pelo worker em background.
+Escritas em cache seguem o contrato de retorno escolhido e são consolidadas
+sem perder dados sujos; `sync`/`fsync` só concluem após o writeback e o flush
+exigidos pelo contrato, ou retornam o erro correspondente.
 
 ### Comandos Shell / Diagnóstico
 
@@ -108,13 +185,20 @@ Escritas de arquivos pequenos retornam instantaneamente para o aplicativo e são
 
 ### Implementação
 
-- [ ] Injetar pontos de falha controlados (*failpoints*) simulando corte de energia ou erro de hardware durante gravação de blocos.
-- [ ] Validar que o rollback de atualizações ZUPD e a recuperação de consistência FAT12/FAT32 funcionam corretamente com o cache ativo.
-- [ ] Garantir que o comando de desligamento (`poweroff` do Roadmap 16) execute `sync` automático antes de desligar a CPU.
+- [ ] Injetar pontos de falha controlados em submissão, execução, conclusão,
+  flush e eviction, simulando corte de energia ou erro de hardware.
+- [ ] Validar rollback ZUPD e consistência FAT12/FAT32 com cache ativo,
+  deixando explícito que FAT12/FAT32 não ganham journaling automaticamente.
+- [ ] Garantir que blocos sujos não sejam descartados e que falhas de sync
+  interrompam o desligamento ou publiquem estado seguro conforme o contrato.
+- [ ] Integrar `poweroff` somente depois de BLK3, com sync, flush e auditoria
+  de erros antes da transição final.
 
 ### Critério de saída
 
-Nenhum dado é corrompido em cenários de desmontagem de volume ou desligamento controlado do sistema operacional.
+Os cenários definidos de desmontagem e desligamento preservam a consistência
+esperada ou retornam uma falha detectável antes de desligar. A etapa não promete
+atomicidade de filesystem que não esteja implementada no formato FAT/ZUPD.
 
 ### Comandos Shell / Diagnóstico
 
