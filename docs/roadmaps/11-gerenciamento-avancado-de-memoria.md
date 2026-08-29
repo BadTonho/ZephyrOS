@@ -11,7 +11,7 @@ Este roadmap preserva a compatibilidade total com o Bitmap Allocator físico e o
 - [x] MM1 - Alocador SLAB/SLUB de objetos de tamanho fixo (`kmem_cache_t`).
 - [x] MM2 - Áreas de Memória Virtual do Processo (VMA - *Virtual Memory Areas*).
 - [x] MM3 - Alocação sob Demanda (*Demand Paging*) e tratamento de Page Faults.
-- [ ] MM4 - Métricas de fragmentação, zonas de memória e monitoramento em tempo real.
+- [x] MM4 - Métricas de fragmentação, zonas de memória e monitoramento em tempo real.
 
 ## Atalhos
 
@@ -143,15 +143,15 @@ Executáveis grandes são carregados quase instantaneamente consumindo apenas a 
 
 ## MM4 - Métricas de fragmentação e monitoramento
 
-A implementação de código e documentação desta etapa está preparada. O item
-permanece pendente até a confirmação funcional do usuário no QEMU, conforme a
-matriz de validação registrada abaixo.
+Implementação e validação funcional concluídas no QEMU, conforme confirmação
+do usuário. O refinamento visual da disposição dos campos do Task Manager fica
+registrado como melhoria futura, sem alterar os contratos ou as métricas.
 
 ### Implementação
 
-- [ ] Calcular índice de fragmentação da memória física (blocos contíguos livres vs páginas isoladas).
-- [ ] Mapear as estatísticas de memória em categorias claras: Kernel, Heap, SLAB, Processos, Buffers e Livre.
-- [ ] Expor as métricas através da camada de diagnóstico e integrar à interface gráfica (Task Manager Classic/Modern).
+- [x] Calcular índice de fragmentação da memória física (blocos contíguos livres vs páginas isoladas).
+- [x] Mapear as estatísticas de memória em categorias claras: Kernel, Heap, SLAB, Processos, Buffers e Livre.
+- [x] Expor as métricas através da camada de diagnóstico e integrar à interface gráfica do Task Manager Classic.
 
 ### Critério de saída
 
@@ -163,5 +163,12 @@ O sistema fornece diagnóstico preciso da alocação de memória em tempo real s
 - Repetir `mem detailed`, testar argumentos inválidos e verificar a soma das
   categorias, a estabilidade dos contadores e a fragmentação física.
 - Executar `memcheck`, `slabtest`, `appcheck`, `usertest`, `usertest fault`,
-  cenários `mmap`/`munmap`, Task Manager Simple/Classic, `schedcheck`,
-  `regcheck full` e `health check`.
+  `pagefault status`, `schedcheck`, `regcheck full` e `health check`.
+  O `appcheck` cobre os cenários `mmap`/`munmap`; no modo Classic, `taskmgr`
+  valida a aba Memoria e o snapshot das métricas MM4.
+
+### Melhoria futura
+
+O layout funcional da aba Memoria foi validado no Classic. Ajustes de
+espaçamento e refinamento visual dos campos ATA e das zonas podem ser feitos
+em uma etapa posterior.
