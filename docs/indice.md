@@ -102,3 +102,4 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [14 - Stack de Rede Avançada](roadmaps/14-stack-de-rede-avancada.md) | Socket buffers sk_buff zero-copy, sockets AF_UNIX/AF_INET e select/poll |
 | [15 - Introspecção e Pseudo-Filesystems](roadmaps/15-introspeccao-e-pseudo-fs.md) | Pseudo-filesystems /proc e /sys para diagnósticos, processos e hardware |
 | [16 - Energia e ACPI Avançado](roadmaps/16-energia-e-acpi-avancado.md) | Loop de CPU idle com HLT, parser ACPI (FADT/MADT), poweroff e reboot |
+| [17 - Migração gradual do ZephyrOS para Rust](roadmaps/17-migracao-gradual-rust.md) | Adoção incremental de Rust após a versão 1.0.0, com kernel híbrido C/Rust/Assembly |

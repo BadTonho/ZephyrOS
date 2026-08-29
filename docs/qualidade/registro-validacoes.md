@@ -2424,3 +2424,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   Ethernet mostrou frames RX/TX aceitos sem descartes. `slabinfo` mostrou
   `net_packet` em `0/8` ativos e sem falhas; `memcheck` e `regcheck full`
   permaneceram em `OK`.
+
+- Roadmap 17: migração gradual do ZephyrOS para Rust documentada.
+  Concluída em: 2026-08-28 22:51 (America/Sao_Paulo).
+  Criado o roadmap independente `17-migracao-gradual-rust.md`, com marco
+  pós-1.0.0, fases RUST0-RUST7, mapa de módulos candidatos, contrato C/Rust,
+  ordem de migração, critérios de validação e componentes que permanecem em
+  C/Assembly. Os índices e o roadmap geral receberam somente referências para
+  o novo documento; o Roadmap 11 não foi alterado.
