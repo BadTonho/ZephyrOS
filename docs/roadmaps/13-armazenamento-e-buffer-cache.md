@@ -16,7 +16,7 @@ virtuais, permanece fora desta etapa.
 - [x] BLK1 - Fila unificada de requisições de bloco (`block_device_t`, `bio_request_t` e `block_request_t`).
 - [x] BLK2 - Cache de blocos de leitura com estados, referências e política LRU.
 - [x] BLK3 - Writeback de blocos modificados, flush e sincronização explícita.
-- [ ] BLK4 - Resiliência, integridade contra interrupção de energia e failpoint testing.
+- [x] BLK4 - Resiliência, integridade contra interrupção de energia e failpoint testing.
 
 ## Atalhos
 

@@ -2776,4 +2776,13 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   ate a validacao FAT12, que rejeitou um SHA-256 incorreto no diagnostico; a
   constante foi corrigida para os bytes realmente gerados por
   `tools/storage_fixtures.py`, cujo marcador e `ata1p1`, nao o label
-  `EP2FAT12A`. A confirmacao funcional completa do BLK4 permanece pendente.
+  `EP2FAT12A`. A confirmacao funcional completa do BLK4 permanecia pendente
+  naquele ponto da investigacao.
+
+- BLK4: validacao funcional confirmada pelo usuario no QEMU.
+  Confirmada em: 2026-08-29 19:12:33 -03:00 (America/Sao_Paulo).
+  O `blkcheck` concluiu novamente com `baseline OK`, `failpoints OK`,
+  `cache OK`, `FAT12 OK`, `FAT32 OK`, `shutdown OK` e `resultado OK`.
+  O usuario confirmou que a segunda execucao nao travou o sistema. A etapa
+  BLK4 foi marcada como concluida no resumo do roadmap; a matriz ZUPD de
+  recuperacao pos-reboot continua sendo validacao separada.
