@@ -35,11 +35,15 @@ comandos, mas não executa build, testes ou QEMU neste projeto.
 
 ---
 
-## Regra #0: NÃO MEXER NO BOOT
+## Regra #0: Comunicar alterações no boot
 
-NÃO edite, otimize, reduza ou modifique `src/boot/boot.asm` sem perguntar ao usuário primeiro. O boot sector tem limites rígidos (512 bytes)
-
-caso for necessario mexer no boot, tem que ser comunicado ao usuario, e é de extrema importancia avisar ao usuario que tem que ser mudado o bootloader, nao precisa pular nem ignorar isso
+É permitido editar, otimizar, reduzir ou modificar `src/boot/boot.asm` quando
+isso fizer parte do escopo da tarefa. Antes da alteração, o agente DEVE
+comunicar explicitamente ao usuário que o bootloader será modificado,
+informando o motivo, o escopo e o impacto esperado. O boot sector possui o
+limite rígido de 512 bytes, que deve ser preservado e verificado após a
+alteração. A mudança no bootloader não deve ser silenciosa nem omitida da
+validação e da documentação da etapa.
 
 ---
 
