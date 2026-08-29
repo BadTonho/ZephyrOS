@@ -519,19 +519,35 @@ somente-leitura.
 
 Desde o BLK0, `block.h` tambem publica `block_operation_t`,
 `block_request_state_t`, `bio_request_t`, `block_submit_sync()` e
-`block_self_test()`. O BIO usa um ID de dispositivo emprestado, LBA,
-quantidade de setores, buffer emprestado, tamanho declarado, operacao, flags,
-callback e contexto; a camada escreve estado, status e setores concluidos sem
-assumir a liberacao do buffer. A callback de conclusao ocorre uma vez depois
-de `COMPLETED` ou `ERROR` no adaptador sincrono. Os campos
-`max_transfer_sectors` e `capabilities`, e os callbacks opcionais de FLUSH e
-escrita com flags, foram acrescentados ao final das structs existentes para
-preservar o uso legado. O limite atual e 255 setores por requisicao, o setor
-logico permanece em 512 bytes e ATA/USB MSC ainda nao anunciam FLUSH ou FUA.
-`block_read()` e `block_write()` mantem as assinaturas e usam o mesmo caminho
-de submissao. `block_submit_sync()` e bloqueante e nao pode ser chamado em
-contexto de IRQ. A fila, o cancelamento efetivo e retry generico pertencem ao
-BLK1; `ERR_TIMEOUT` e os demais erros do driver sao propagados.
+`block_self_test()`. No BLK1, `block_request_t` tornou-se o contrato publico
+da requisicao fisica entregue ao driver, e `block_submit_callback_t` foi
+acrescentado ao final de `block_ops_t`; os callbacks legados permanecem como
+fallback. O BIO usa um ID de dispositivo emprestado, LBA, quantidade de
+setores, buffer emprestado, tamanho declarado, operacao, flags, callback e
+contexto; a camada escreve estado, status e setores concluidos sem assumir a
+liberacao do buffer. A callback de conclusao ocorre uma vez depois do estado
+terminal, inclusive quando BIOs sao fundidos.
+
+`block_submit()` e a API assincrona e retorna com o BIO em `QUEUED`. A fila
+FIFO tem capacidade fixa de 32 entradas, nao aloca memoria dinamica e copia o
+ID do dispositivo para o slot; o chamador deve manter ID e buffer validos ate
+a conclusao. `block_submit_sync()` usa a mesma fila e drena o dispatcher ate
+o estado terminal. `block_cancel()` aceita somente BIOs enfileirados, marca
+`CANCELLED`/`ERR_CANCELLED` e retorna `ERR_STATE` para um BIO em voo.
+`block_dispatch()` preserva a ordem e funde somente operacoes do mesmo
+dispositivo, flags, LBA adjacente e buffers contiguos, sem bounce buffer,
+reordenacao ou fusao de FLUSH. `block_get_stats()` publica profundidade, pico,
+requisicoes, fusoes, setores e taxas medias; `ERR_TIMEOUT` e demais erros do
+driver sao propagados sem retry generico.
+
+Os campos `max_transfer_sectors` e `capabilities`, os callbacks opcionais de
+FLUSH/escrita com flags e o callback de submissao foram acrescentados ao final
+das structs existentes para preservar o uso legado. O limite atual e 255
+setores por requisicao, o setor logico permanece em 512 bytes e ATA/USB MSC
+continuam sem FLUSH/FUA. `block_read()` e `block_write()` mantem as assinaturas
+e usam o dispatcher. A camada impede unregister ou substituicao enquanto
+houver requisicoes pendentes; se a workqueue nao estiver disponivel, o caminho
+sincrono permanece funcional e `block_submit()` retorna `ERR_UNAVAILABLE`.
 
 Desde a EP4.4, `src/include/core/input.h` define eventos HID Usage de teclado,
 eventos relativos de ponteiro, filas estaticas separadas, metricas e despacho

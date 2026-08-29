@@ -37,6 +37,7 @@ Comandos disponiveis:
   edit      - Editor de texto (edit ARQUIVO.TXT)
   mouse     - Mostra status ou altera preferencias do mouse PS/2
   storage   - Lista, inspeciona e monta volumes ATA/USB somente-leitura
+  blkstat   - Mostra a fila e metricas da camada de bloco
   index     - Mostra, reconstrui, cancela ou valida o indice global
   search <termo> - Pesquisa nomes e caminhos em todos os volumes montados
   guitest   - Testa primitivas GUI 2D
@@ -330,6 +331,21 @@ O mesmo comando lista discos USB MSC. O disco USB usa o ID
 `usb-ms-BB:DD.F-pN-aN-l0raw` ou o sufixo `p1` a `p4`. A topologia ATA
 slot/canal/master/slave nao e exibida para USB. A descoberta e automatica,
 mas a montagem continua sob demanda e somente-leitura.
+
+## `blkstat`
+
+Exibe o snapshot da fila FIFO da camada de bloco. O comando aceita somente a
+forma sem argumentos; entradas extras exibem o uso e nao alteram estado.
+
+```text
+zephyr> blkstat
+```
+
+O resultado mostra profundidade/capacidade, pico, requisicoes submetidas,
+concluidas, falhas e canceladas, quantidade de fusoes, setores lidos/escritos,
+taxas medias por segundo, ultimo erro e os contadores de leitura/escrita de
+cada dispositivo. A fila tem 32 entradas, usa a `Zephyr kworker` quando
+disponivel e continua acessivel pelo caminho sincrono durante a inicializacao.
 
 ## `usb storage`
 

@@ -319,6 +319,7 @@ static void cmd_help(void) {
     video_print("  stats    - Mostra estatisticas de compressao\n", 0x07);
     video_print("  mouse    - Status e preferencias do mouse PS/2\n", 0x07);
     video_print("  storage  - Lista, inspeciona e monta volumes\n", 0x07);
+    video_print("  blkstat  - Mostra a fila e metricas de bloco\n", 0x07);
     video_print("  index status|rebuild|cancel|check - Controla o indice\n",
                 0x07);
     video_print("  search <termo> - Pesquisa nomes e caminhos globais\n", 0x07);

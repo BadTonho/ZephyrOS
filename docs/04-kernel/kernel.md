@@ -288,8 +288,15 @@ forma controlada e aparecem no `health`; apenas `power_shutdown()` e terminal.
   publica estados de requisicao e encaminha a operacao ao callback do
   dispositivo; `block_read()` e `block_write()` continuam como wrappers
   compativeis. O buffer pertence ao chamador e a callback de conclusao e
-  executada uma vez no estado terminal. `storage_refresh()` reconcilia esse
-  registro depois de cada atualizacao USB sem duplicar discos ou volumes.
+  executada uma vez no estado terminal. No BLK1, `block_submit()` publica a
+  fila FIFO estatica de 32 entradas, a `Zephyr kworker` despacha fora do lock e
+  a fusao e limitada a BIOs adjacentes com buffers contiguos. O cancelamento
+  remove apenas entradas enfileiradas; `block_get_stats()` e `blkstat` expoem
+  profundidade, pico, fusoes, taxas e contadores por dispositivo. O codigo
+  canonico `ERR_CANCELLED` foi acrescentado ao final de `errors.h`, sem
+  renumerar os erros existentes.
+  `storage_refresh()` reconcilia esse registro depois de cada atualizacao USB
+  sem duplicar discos ou volumes.
 
 Os headers `core/device_manager.h` e `core/power.h` definem as estruturas de
 snapshot e status. O snapshot de dispositivos guarda somente metadados;

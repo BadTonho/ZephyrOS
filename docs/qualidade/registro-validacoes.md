@@ -2658,3 +2658,15 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `appcheck` pertencem às fixtures negativas esperadas; os estados opcionais
   `DISABLED`/`DEGRADED` do hardware ausente no QEMU não afetam o BLK0. O BLK0
   foi marcado como concluído; a próxima etapa é o BLK1.
+
+- BLK1: implementacao da fila unificada de requisicoes de bloco.
+  Registrada em: 2026-08-29 14:32:37 -03:00 (America/Sao_Paulo).
+  A camada agora possui fila FIFO estatica de 32 entradas, submissao
+  assincrona/sincrona, despacho pelo `Zephyr kworker`, cancelamento de BIOs
+  enfileirados, fusao conservadora de buffers contiguos, metricas cumulativas e
+  o comando `blkstat`. ATA e USB MSC publicam o callback fisico novo, mantendo
+  os callbacks legados e sem anunciar FLUSH/FUA. `regcheck` foi ampliado no
+  autoteste da camada para FIFO, fusao, overflow, cancelamento, erro propagado,
+  callback unico e inventario preservado.
+  O agente nao executou build, testes ou QEMU; a validacao funcional do BLK1 e
+  a marcacao final no roadmap permanecem pendentes da confirmacao do usuario.

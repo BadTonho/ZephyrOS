@@ -3,6 +3,7 @@
 #include "core/log.h"
 #include "core/string.h"
 #include "drivers/uhci.h"
+#include "fs/block.h"
 
 #define USB_MSC_CLASS 0x08U
 #define USB_MSC_SUBCLASS_SCSI 0x06U
@@ -342,6 +343,26 @@ static int msc_block_read(void* context, uint32_t lba, uint8_t count,
     return OK;
 }
 
+static int msc_block_submit(block_request_t* request) {
+    usb_msc_record_t* record;
+    int result;
+
+    if (!request || !request->device_context) {
+        LOG_ERROR("MSC", "Requisicao fisica MSC invalida");
+        return ERR_NULL;
+    }
+    if (request->operation != BLOCK_OPERATION_READ || request->flags != 0U) {
+        LOG_WARN("MSC", "Operacao MSC sem suporte na fila de bloco");
+        return ERR_UNAVAILABLE;
+    }
+    record = (usb_msc_record_t*)request->device_context;
+    result = msc_block_read(record, request->lba,
+                            (uint8_t)request->sector_count,
+                            (uint8_t*)request->buffer);
+    if (result == OK) request->completed_sectors = request->sector_count;
+    return result;
+}
+
 static int msc_prepare_record(usb_msc_record_t* record,
                               const usb_device_info_t* device) {
     block_device_t block;
@@ -384,6 +405,7 @@ static int msc_prepare_record(usb_msc_record_t* record,
     block.last_error = OK;
     block.ops.context = record;
     block.ops.read = msc_block_read;
+    block.ops.submit = msc_block_submit;
     block.ops.write = 0;
     block.max_transfer_sectors = BLOCK_MAX_TRANSFER_SECTORS;
     block.capabilities = 0U;
