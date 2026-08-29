@@ -79,7 +79,7 @@ Comandos disponiveis:
   schedcheck - Valida invariantes do scheduler
   q2check   - Executa diagnostico compacto da Q2
   regcheck [full] - F11 cancela nos modos normal e full
-  appcheck  - Testa API, arquivos, IPC e carregador ZAPP
+  appcheck [compact] - Testa API, arquivos, IPC e carregador ZAPP
   vfs [status|test] - Inspeciona descritores e operacoes unificadas de I/O
   devcheck  - Valida os dispositivos registrados no devfs
   mount     - Lista o namespace e as montagens VFS
@@ -823,6 +823,30 @@ uptime, memória e validação de argumentos.
 ```
 zephyr> appcheck
 ```
+
+Para a rotina diaria, `appcheck compact` executa todos os mesmos testes e
+mostra somente o estado das fases, as falhas inesperadas e o resultado final:
+
+```text
+zephyr> appcheck compact
+AppCheck compacto:
+  api OK
+  arquivos OK
+  pipes OK
+  caminhos OK
+  dispositivos OK
+  ipc OK
+  loader OK
+  vma/pagefault OK
+  falhas=0
+  resultado=OK
+```
+
+O `appcheck` sem argumentos continua sendo a forma detalhada. A variante
+compacta nao pula testes nem altera a limpeza, o foco ou o cancelamento do job.
+`appcheck compact extra` e qualquer outro argumento sao rejeitados com
+`Uso: appcheck [compact]`, sem iniciar o diagnostico. A linha produzida pela
+propria syscall `console_write` continua visivel porque faz parte do teste.
 
 Na Fase 3, o `appcheck` tambem valida handles de arquivo, leitura
 sequencial, handles invalidos, envio/recebimento IPC, PID inexistente e

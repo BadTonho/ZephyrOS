@@ -419,3 +419,12 @@ processo System disponivel para drenar entrada. Os testes Q2, RegCheck e
 AppCheck associam resultados do App Loader a geracao do job. Cenas interativas
 como Editor, Player, Task Manager e Window Manager permanecem fora deste
 executor.
+
+O comando `appcheck` preserva a saida detalhada para diagnostico manual.
+`appcheck compact` reutiliza a mesma suite e o mesmo job cooperativo, mas
+acumula o resultado por fase (`api`, `arquivos`, `pipes`, `caminhos`,
+`dispositivos`, `ipc`, `loader` e `vma/pagefault`). Ao final, mostra somente
+as fases, a quantidade de falhas e os casos inesperados. Fixtures negativas e
+indisponibilidade real de filesystem ou loader nao sao classificadas como
+falhas. Argumentos diferentes de `compact` sao rejeitados antes de qualquer
+teste.

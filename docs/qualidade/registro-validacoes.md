@@ -2690,3 +2690,12 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   foram executados; as falhas exibidas pertencem as fixtures negativas e aos
   componentes opcionais indisponiveis no QEMU. O BLK1 foi marcado como
   concluido no roadmap.
+
+- AppCheck compacto: implementacao registrada.
+  Implementada em: 2026-08-29 15:18:16 -03:00 (America/Sao_Paulo).
+  Foi adicionado `appcheck compact` ao dispatcher existente, com a mesma suite
+  do `appcheck` detalhado, resumo por fase, classificacao das fixtures
+  negativas, falhas reais limitadas por nome/codigo e preservacao do job
+  cooperativo, cancelamento, foco e limpeza. `appcheck` sem argumentos manteve
+  a saida legada. A validacao funcional nos gates e no QEMU permanece pendente
+  da execucao e confirmacao do usuario.
