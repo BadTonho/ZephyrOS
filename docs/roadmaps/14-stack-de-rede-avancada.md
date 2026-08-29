@@ -59,15 +59,36 @@ para todos os caminhos de driver, DMA e checksum.
 
 ## NET0 - Contrato de buffers e conclusões
 
+Estado da implementacao: contrato e runtime entregues; validacao funcional
+pelos gates de build e pela matriz QEMU ainda pendente. O resumo acima
+permanece [ ] ate a confirmacao funcional do usuario.
+
 ### Implementação
 
-- [ ] Definir estados de buffer (`ALLOCATED`, `RX`, `QUEUED`, `IN_FLIGHT`,
+- [x] Definir estados de buffer (`ALLOCATED`, `RX`, `QUEUED`, `IN_FLIGHT`,
   `DELIVERED`, `DROPPED` e `FREED`) e a transição permitida entre eles.
-- [ ] Definir ownership, contagem de referências, clones, fragmentos,
+- [x] Definir ownership, contagem de referências, clones, fragmentos,
   alinhamento, headroom, tailroom e limites de tamanho.
-- [ ] Definir quem conclui RX/TX, como o erro chega ao socket e como timeout,
+- [x] Definir quem conclui RX/TX, como o erro chega ao socket e como timeout,
   cancelamento e fila cheia liberam o buffer exatamente uma vez.
-- [ ] Criar contadores de cópia, clone, fragmentação, drop e pico de buffers.
+- [x] Criar contadores de cópia, clone, fragmentação, drop e pico de buffers.
+
+O runtime de src/include/core/net_buffer.h e estatico, limitado a 32
+descritores, e nao retém ponteiros de payload externos. A ultima referencia
+somente e liberada depois de DELIVERED ou DROPPED; FREED e terminal. Clones e
+fragmentos possuem contadores reservados, sem implementar compartilhamento de
+dados nesta etapa.
+
+Ethernet usa o descriptor no net_packet_t privado: RX percorre
+ALLOCATED -> RX -> DELIVERED/DROPPED -> FREED e TX percorre
+ALLOCATED -> IN_FLIGHT -> DELIVERED/DROPPED -> FREED. Os callbacks dos
+drivers continuam sincronos e os dados emprestados somente sao validos durante
+o callback; as copias nas fronteiras Ethernet e socket sao contabilizadas.
+
+regcheck full e net check executam o self-test privado e restauram suas
+metricas. health check verifica invariantes, buffers ativos e erros residuais.
+Nao ha novo comando, transferencia de ownership de DMA, sk_buff_t, zero-copy
+garantido, poll/select ou alteracao de boot.asm.
 
 ### Critério de saída
 

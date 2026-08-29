@@ -159,6 +159,16 @@ sincroniza a FAT32 antes do retorno unico ao prompt; sem as fixtures
 controladas, o comando informa indisponibilidade e nao usa o volume padrao do
 usuario.
 
+### Diagnosticos NET0
+
+O contrato de buffers de rede nao adiciona comando ao dispatcher. `net check`
+e `regcheck full` executam o self-test privado de ownership, lifetime,
+transicoes, referencias e conclusoes RX/TX. `health check` consulta o estado
+global e denuncia somente buffers ativos, invariantes quebradas ou erro
+residual; copias e descartes normais permanecem informativos. O caminho atual
+usa callbacks sincronos e copia, sem transferencia de ownership de DMA e sem
+garantia de zero-copy.
+
 ---
 
 ## Tratamento de Teclas

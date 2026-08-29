@@ -55,6 +55,7 @@
 #include "core/http.h"
 #include "core/ipv4.h"
 #include "core/icmp.h"
+#include "core/net_buffer.h"
 #include "core/net_socket.h"
 #include "core/tcp.h"
 #include "core/udp.h"
@@ -1428,6 +1429,30 @@ static void cmd_health_check_block_cache(int* issue_count) {
     }
 }
 
+static void cmd_health_check_net_buffers(int* issue_count) {
+    net_buffer_stats_t stats;
+    int result;
+
+    if (!issue_count) return;
+    result = net_buffer_get_stats(&stats);
+    if (result != OK || net_buffer_validate_state() != OK) {
+        cmd_health_check_print_query_failure(
+            "Network buffers", result == OK ? ERR_STATE : result,
+            issue_count);
+        return;
+    }
+    if (stats.active_buffers) {
+        cmd_health_check_print_named_state(
+            "Network buffers", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
+            "buffers residuais em estado nao terminal", issue_count);
+    } else if (stats.invalid_transitions ||
+               stats.duplicate_completions || stats.last_error != OK) {
+        cmd_health_check_print_named_state(
+            "Network buffers", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
+            "transicao, conclusao ou erro residual", issue_count);
+    }
+}
+
 static void cmd_health_check(void) {
     int issue_count = 0;
 
@@ -1445,6 +1470,7 @@ static void cmd_health_check(void) {
     cmd_health_check_signals(&issue_count);
     cmd_health_check_vfs(&issue_count);
     cmd_health_check_block_cache(&issue_count);
+    cmd_health_check_net_buffers(&issue_count);
     cmd_health_check_usb_hid(&issue_count);
     cmd_health_check_wifi(&issue_count);
     if (!issue_count) {

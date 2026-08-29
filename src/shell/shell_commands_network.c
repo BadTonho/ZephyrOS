@@ -43,6 +43,7 @@
 #include "core/http.h"
 #include "core/ipv4.h"
 #include "core/icmp.h"
+#include "core/net_buffer.h"
 #include "core/net_socket.h"
 #include "core/tcp.h"
 #include "core/udp.h"
@@ -629,6 +630,7 @@ int shell_network_validate_for_checks(void) {
     if (result != OK ||
         ethernet_get_status(&ethernet) != OK ||
         ethernet_validate_state() != OK ||
+        net_buffer_self_test() != OK ||
         dhcp_get_status(&dhcp) != OK ||
         network_manager_get_count(&count) != OK) {
         LOG_ERROR("SHELL", "RegCheck nao consultou estado Network");
@@ -723,8 +725,10 @@ static network_link_state_t cmd_net_get_link_state(uint32_t count) {
 
 static void cmd_net_status(void) {
     network_manager_status_t status;
+    net_buffer_stats_t buffers;
     const recovery_component_t* health;
     network_link_state_t link;
+    int buffer_result;
 
     if (network_manager_get_status(&status) != OK) {
         LOG_ERROR("SHELL", "Estado de rede indisponivel");
@@ -737,6 +741,7 @@ static void cmd_net_status(void) {
         video_print("Erro: health de rede indisponivel.\n", 0x0C);
         return;
     }
+    buffer_result = net_buffer_get_stats(&buffers);
 
     video_print("Rede:\n  Servico: ", 0x0B);
     video_print(recovery_state_name(health->state),
@@ -766,6 +771,19 @@ static void cmd_net_status(void) {
     video_print(status.ethernet_available ?
                 "DISPONIVEL" : "INDISPONIVEL",
                 status.ethernet_available ? 0x0A : 0x0E);
+    video_print("\n  Buffers NET0: ", 0x07);
+    if (buffer_result != OK) {
+        video_print("INDISPONIVEL", 0x0E);
+    } else {
+        video_print("ativos=", 0x08);
+        shell_command_print_num(buffers.active_buffers);
+        video_print(" pico=", 0x08);
+        shell_command_print_num(buffers.peak_buffers);
+        video_print(" copias=", 0x08);
+        shell_command_print_num(buffers.copies);
+        video_print(" descartes=", 0x08);
+        shell_command_print_num(buffers.dropped);
+    }
     video_print("\n  ARP: ", 0x07);
     if (!status.arp_available) {
         video_print("INDISPONIVEL", 0x0E);

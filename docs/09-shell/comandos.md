@@ -635,7 +635,8 @@ zephyr> net check qemu multi net-pci-00-03.0 net-pci-00-04.0
 ```
 
 `net status` separa inventario, controladores reconhecidos, drivers ativos,
-erros de driver, interface L3, link e protocolos. `net devices` lista IDs
+erros de driver, interface L3, link, protocolos e o resumo NET0 de buffers
+ativos, pico, copias e descartes. `net devices` lista IDs
 estaveis, modelo, estado e marca `[L3]`/`[DHCP]`. `net info <id>` mostra
 vinculo Ethernet, papel L3, aquisicao DHCP, MAC, contadores, fila RX, erro do
 driver, PCI, IRQ e BAR0-BAR5. A forma `net-pci-BB-DD.F` tambem e aceita.
@@ -654,6 +655,13 @@ automaticamente no boot. Sem NIC ativa, com link indisponivel, ID desconhecido
 ou sintaxe invalida, o Shell retorna erro controlado. O mesmo comando atende
 RTL8139; sem NIC, os comandos seguem utilizaveis e mostram inventario vazio.
 `regcheck full` consulta o registro sem resetar drivers ou a camada Ethernet.
+
+O NET0 nao cria comando adicional: `net check` e `regcheck full` executam o
+self-test privado de buffers de rede, cobrindo transicoes, referencias,
+conclusoes e descartes. `health check` verifica o estado global, buffers ativos
+e erros residuais. As metricas de copias, pico, descartes, clones reservados e
+fragmentos reservados sao apenas informativas; a entrega atual continua
+sincrona e baseada em copia.
 
 `net arp config <id> <ip-local>` continua disponivel para diagnosticos da
 camada ARP. Repetir a mesma configuracao preserva cache e contadores. Se uma

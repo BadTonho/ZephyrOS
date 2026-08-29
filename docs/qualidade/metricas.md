@@ -348,3 +348,19 @@ por SHA-256 antes e depois do sync. As fases tambem exigem inventario de bloco
 inalterado e fila vazia. Ausencia de FLUSH aumenta as metricas degradadas do
 BLK3, mas nao e falha do BLK4; erro de FLUSH publica `ERROR` e impede o
 desligamento normal.
+
+## NET0 - Buffers de rede
+
+`net_buffer_stats_t` publica `active_buffers`, `peak_buffers`, `allocations`,
+`frees`, `delivered`, `dropped`, `copies`, `copied_bytes`, `clones`,
+`fragments`, `invalid_transitions`, `duplicate_completions`,
+`ref_acquires`, `ref_releases` e `last_error`. Os campos instantaneos de
+buffers ativos e o pico permitem verificar ausencia de residuos depois de
+`net check` e `regcheck full`.
+
+As copias atualmente medidas sao as fronteiras de entrada/saida Ethernet e
+as filas de socket. `clones` e `fragments` permanecem contadores reservados e
+nao representam operacoes reais antes do NET1. Descartes e copias normais sao
+informativos; transicoes invalidas, conclusoes duplicadas, erro residual ou
+buffer ativo sao condicoes de diagnostico. Nao ha alegacao de zero-copy nem
+comparacao de desempenho nesta etapa.
