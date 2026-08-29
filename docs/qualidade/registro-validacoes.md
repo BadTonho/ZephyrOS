@@ -2768,3 +2768,12 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   matriz ZUPD pos-reboot permanece separada. O agente nao executou build,
   testes ou QEMU. A validacao funcional e a marcacao final do BLK4 no resumo
   do roadmap permanecem pendentes da confirmacao do usuario.
+
+- BLK4: correcao do diagnostico apos a primeira matriz funcional.
+  Identificada em: 2026-08-29 19:05:02 -03:00 (America/Sao_Paulo).
+  A montagem automatica das fixtures foi confirmada pelo usuario: `ata1p1`
+  ficou FAT12 somente-leitura e `ata1p4` FAT32 gravavel. A execucao avancou
+  ate a validacao FAT12, que rejeitou um SHA-256 incorreto no diagnostico; a
+  constante foi corrigida para os bytes realmente gerados por
+  `tools/storage_fixtures.py`, cujo marcador e `ata1p1`, nao o label
+  `EP2FAT12A`. A confirmacao funcional completa do BLK4 permanece pendente.
