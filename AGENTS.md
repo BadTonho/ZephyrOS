@@ -202,7 +202,7 @@ que publica e o contrato para sucesso, degradação e falha.
 
 ## Regra #4: Organização de Diretórios
 
-Novos arquivos DEVEM seguir esta estrutura:
+Novos arquivos DEVEM respeitar os limites arquiteturais desta estrutura:
 
 ```
 src/
@@ -234,19 +234,32 @@ src/
 
 ### Regras
 
-A árvore acima é a referência de organização, não uma lista fechada de arquivos.
-Novos arquivos devem seguir a separação por responsabilidade e o diretório do
-módulo correspondente.
+A árvore acima é uma referência de organização, não uma lista fechada nem uma
+estrutura imutável de arquivos. Cada arquivo novo deve ter um proprietário
+arquitetural claro e ficar no subsistema que possui sua responsabilidade
+principal.
+
+É permitido criar subdiretórios, dividir módulos maiores em vários arquivos e
+manter arquivos legados onde já estão quando uma migração não trouxer benefício
+claro. Funcionalidades transversais devem ser atribuídas ao subsistema que
+coordena seu contrato principal, evitando cópias ou localização arbitrária.
+Uma reorganização que atravesse limites de módulos deve ser justificada na
+documentação técnica quando não for evidente.
 
 - [ ] Drivers de hardware → `src/drivers/`
 - [ ] Serviços do kernel → `src/core/`
 - [ ] Apps do shell → `src/shell/`
 - [ ] Headers → `src/include/<modulo>/`
+- [ ] Todo arquivo novo possui um subsistema proprietário e uma responsabilidade
+      principal identificável.
+- [ ] Código novo segue o diretório da responsabilidade principal, sem exigir
+      uma árvore adicional quando o módulo ainda for pequeno.
 - [ ] NÃO misturar drivers com apps
 - [ ] NÃO criar arquivos na raiz de `src/`
-- [ ] Submódulos novos DEVEM permanecer pequenos quando possível; módulos
-      maiores podem ter mais arquivos quando isso melhorar a separação e a
-      manutenção. Exceções devem ser justificadas na documentação técnica.
+- [ ] Submódulos novos devem permanecer pequenos quando possível; módulos
+      maiores podem ter mais arquivos ou subdiretórios quando isso melhorar a
+      separação e a manutenção. Exceções devem ser justificadas na documentação
+      técnica.
 
 ---
 
