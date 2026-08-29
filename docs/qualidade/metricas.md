@@ -291,5 +291,6 @@ BIOs enfileirados observado. A capacidade e fixa em 32 entradas. O dispatcher
 mantem FIFO e somente funde BIOs com mesmo dispositivo, operacao e flags, LBA
 adjacente, buffers contiguos e limite de transferencia respeitado. Nao ha
 reordenacao, bounce buffer ou fusao de FLUSH. `blkstat` e o caminho observavel
-para comparar snapshots; a validacao funcional BLK1 permanece pendente da
-execucao do usuario no QEMU.
+para comparar snapshots. Na validacao funcional no QEMU, a fila terminou
+vazia, o pico observado foi 32, houve uma fusao e 33 cancelamentos do
+autoteste, sem alteracao do inventario real.

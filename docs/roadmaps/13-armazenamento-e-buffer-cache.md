@@ -13,7 +13,7 @@ virtuais, permanece fora desta etapa.
 ## Resumo de progresso
 
 - [x] BLK0 - Contrato de I/O, ownership, conclusão e durabilidade.
-- [ ] BLK1 - Fila unificada de requisições de bloco (`block_device_t`, `bio_request_t` e `block_request_t`).
+- [x] BLK1 - Fila unificada de requisições de bloco (`block_device_t`, `bio_request_t` e `block_request_t`).
 - [ ] BLK2 - Cache de blocos de leitura com estados, referências e política LRU.
 - [ ] BLK3 - Writeback de blocos modificados, flush e sincronização explícita.
 - [ ] BLK4 - Resiliência, integridade contra interrupção de energia e failpoint testing.
@@ -123,8 +123,8 @@ etapa é o BLK1.
 Todas as operações de I/O de baixo nível passam pela fila de requisições, com
 rastreabilidade de setores, status de conclusão, timeout e ownership do buffer.
 Os chamadores síncronos continuam funcionando através do wrapper definido em
-BLK0. A implementação está concluída no código, mas o aceite funcional da
-fila, da fusão e do `blkstat` permanece pendente da validação do usuário.
+BLK0. A fila, a fusão, o `blkstat`, o autoteste da camada e a compatibilidade
+FAT/VFS foram validados funcionalmente pelo usuário no QEMU.
 
 ### Comandos Shell / Diagnóstico
 
