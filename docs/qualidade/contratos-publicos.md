@@ -102,6 +102,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/drivers/vesa.h` | `docs/05-drivers/drivers.md` |
 | `src/include/fs/bmp.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/block.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
+| `src/include/fs/block_cache.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/devfs.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/fat12.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/fat32.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
