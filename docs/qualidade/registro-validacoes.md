@@ -2432,3 +2432,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   ordem de migração, critérios de validação e componentes que permanecem em
   C/Assembly. Os índices e o roadmap geral receberam somente referências para
   o novo documento; o Roadmap 11 não foi alterado.
+
+- MM1: encerramento formal da etapa confirmado pelo usuário.
+  Concluída em: 2026-08-28 22:58 (America/Sao_Paulo).
+  Após a confirmação do usuário de que os gates e comandos de validação da
+  MM1 foram executados, a etapa foi marcada como concluída nos roadmaps. A
+  próxima etapa de implementação é a MM2, de áreas de memória virtual.
