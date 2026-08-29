@@ -35,7 +35,8 @@ funcionalidade entregue.
   específica permanece pendente.
 - `echo`, `uptime` e `mem` executam em ring 3 com fallback nativo controlado.
 - A MM2 publica App API 0.9 com `mmap`/`munmap`, VMAs por processo e o
-  diagnóstico `vmamap`; os gates QEMU específicos ainda aguardam execução.
+  diagnóstico `vmamap`; a implementação e a validação QEMU específica foram
+  concluídas pelo usuário.
 - O subsistema de rede (S2.1 a S2.8) suporta Multi-NIC (E1000 e RTL8139), ARP,
   IPv4, ICMP Echo, UDP, DHCP, DNS, TCP cliente, sockets nativos e HTTP GET.
 - Atualizações do sistema (U1 a U5) fornecem verificação Ed25519/SHA-256,

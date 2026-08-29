@@ -2469,3 +2469,36 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `cmd_vmamap_print_permissions`, eliminando a declaração implícita e o
   warning de função não utilizada. A recompilação permanece sob
   responsabilidade do usuário; nenhum build foi executado pelo agente.
+
+- MM2: inicialização da imagem no QEMU confirmada pelo usuário.
+  Concluída em: 2026-08-29 09:56 (America/Sao_Paulo).
+  Após a correção de compilação do `vmamap`, o usuário informou que o sistema
+  abriu normalmente com `make run` e alcançou o Shell. Os testes funcionais
+  específicos da MM2 permanecem em execução.
+
+- MM2: validação funcional QEMU apresentada pelo usuário.
+  Horário exato não informado.
+  `appcheck` confirmou `vma_ring3_inicio` e `vma_ring3_conclusao` com `OK`,
+  incluindo os casos negativos de tamanho, overflow, flags e intervalos
+  inválidos. `memcheck`, `schedcheck` e `regcheck full` terminaram com `OK`.
+  `health check` exibiu apenas estados `DISABLED` ou `DEGRADED` esperados do
+  perfil QEMU, sem falha relacionada à memória virtual.
+
+- MM2: inspeção manual do `vmamap` tentada pelo usuário.
+  Horário exato não informado.
+  `procs` mostrou somente os PIDs 0 a 6, todos pertencentes a processos do
+  sistema ou ao Shell, sem processo ring 3 ativo para fornecer um mapa VMA.
+  A inspeção positiva do comando permanece pendente; o caminho negativo pode
+  ser exercitado com um PID de processo sem espaço ring 3.
+
+- MM2: caminho negativo do `vmamap` validado pelo usuário.
+  Horário exato não informado.
+  `vmamap 4` recusou corretamente o PID do Shell com a mensagem
+  `Erro: processo sem mapa ring 3.`
+
+- MM2: etapa encerrada após validação funcional no QEMU.
+  Concluída em: 2026-08-29 10:02 (America/Sao_Paulo).
+  O usuário confirmou `make run`, `appcheck`, `memcheck`, `schedcheck`,
+  `regcheck full`, `health check` e o caminho negativo de `vmamap`. A MM2 foi
+  marcada como concluída nos roadmaps; a listagem positiva de um processo ring
+  3 vivo não foi possível porque nenhum processo desse tipo permaneceu ativo.
