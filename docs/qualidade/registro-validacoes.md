@@ -2404,3 +2404,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `process_t**`. O loop de ordenacao recebeu tipos sem signedness conflitante
   e o helper grafico nao utilizado foi removido. A revisao estatica nao foi
   substituida por novo build; a compilacao deve ser repetida pelo usuario.
+
+- MM1: regressao do `vfs test` corrigida.
+  Concluída em: 2026-08-28 22:23 (America/Sao_Paulo).
+  A tabela de descritores isolada usada pelo autoteste agora e explicitamente
+  zerada antes de `vfs_fd_table_init()`, mantendo a protecao contra
+  reinicializacao de tabelas ja ativas sem interpretar lixo de stack como
+  estado valido. O `git diff --check` permaneceu sem erros; o autoteste deve
+  ser repetido pelo usuario.

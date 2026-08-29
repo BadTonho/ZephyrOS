@@ -1757,7 +1757,7 @@ int vfs_self_test(vfs_test_result_t* result) {
     static const uint8_t test_data[VFS_TEST_DATA_SIZE] =
         {'Z', 'E', 'P', 'H', 'Y', 'R', 'O', 'S'};
     vfs_test_context_t context = {test_data, VFS_TEST_DATA_SIZE};
-    vfs_fd_table_t isolated;
+    vfs_fd_table_t isolated = {0};
     vfs_fd_table_t* table;
     file_t* file = 0;
     vnode_t* vnode = 0;
