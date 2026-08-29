@@ -43,7 +43,7 @@ implementada e validada pelo usuario com App API 0.9, `mmap`/`munmap`,
 `appcheck`, `memcheck`, `schedcheck`, `regcheck full` e `vmamap`. MM3 de
 paginação sob demanda e MM4 de metricas fisicas e monitoramento tambem foram
 implementadas e validadas pelo usuario. O BLK0 de armazenamento foi implementado
-e validado; o BLK1 foi implementado e aguarda validacao funcional. O cache de
+e validado; o BLK1 foi implementado e validado funcionalmente. O cache de
 blocos permanece separado
 de um page cache completo.
 

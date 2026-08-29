@@ -2677,3 +2677,16 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   referencia ausente a `__udivdi3`; o calculo agora usa divisao por palavras
   de 32 bits com a mesma saturacao da taxa. O agente nao executou build, testes
   ou QEMU; a confirmacao da compilacao permanece pendente do usuario.
+
+- BLK1: validacao funcional concluida pelo usuario no QEMU.
+  Concluida em: 2026-08-29 15:01:30 -03:00 (America/Sao_Paulo).
+  `blkstat teste` recusou os argumentos e exibiu o uso. Antes do `regcheck`,
+  `blkstat` mostrou fila 0/32, sem falhas ou cancelamentos. O `regcheck full`
+  exibiu `camada_bloco OK` e `RegCheck: OK`. Depois do autoteste, `blkstat`
+  mostrou fila 0/32, pico 32, voo 0, 33 cancelamentos, uma fusao e ultimo
+  erro 10 (`ERR_CANCELLED`), com os contadores consistentes. `storage list`
+  manteve dois discos e dois volumes montados; `storage check ata0p1`
+  confirmou `Volume FAT32 consistente`. `appcheck` e `health check` tambem
+  foram executados; as falhas exibidas pertencem as fixtures negativas e aos
+  componentes opcionais indisponiveis no QEMU. O BLK1 foi marcado como
+  concluido no roadmap.
