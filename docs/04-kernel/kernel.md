@@ -311,6 +311,12 @@ forma controlada e aparecem no `health`; apenas `power_shutdown()` e terminal.
   close e saida de processo nao sincronizam automaticamente. Entradas
   `READING`, fixadas, sujas ou em writeback nao podem ser removidas;
   invalidacoes sao atomicas.
+  No BLK4, failpoints privados e one-shot cobrem submissao, execucao,
+  conclusao, FLUSH, eviction e writeback abortado. Os autotestes confirmam
+  callback unico, fila drenada, hash/LRU e pins integros, dados sujos ainda
+  legiveis e retry somente por nova sincronizacao. `blkcheck` coordena essas
+  verificacoes com as fixtures FAT12/FAT32 controladas, sem expor uma API de
+  injecao ao restante do kernel.
   `storage_refresh()` reconcilia esse registro depois de cada atualizacao USB
   sem duplicar discos ou volumes.
 
@@ -365,8 +371,14 @@ bloqueada. Shell, kernel, Menu Iniciar Simple/Classic e Task Manager usam esse
 mesmo servico; nao existem mais loops locais de shutdown nem escrita na porta
 privada `0xB004` do QEMU.
 
-O servico nao altera processos ou filesystem e nao implementa flush,
-desmontagem, suspensao ou hibernacao. `power_shutdown()` nunca retorna;
+Desde o BLK4, os caminhos normais chamam `power_shutdown_prepare()` antes da
+primitiva terminal. A preparacao executa `storage_sync_all()`, aceita a
+durabilidade degradada por ausencia de FLUSH e retorna o erro de writeback ou
+FLUSH sem desligar. Shell, Task Manager e barra do sistema permanecem ativos
+quando essa preparacao falha; `health check` torna o estado seguro observavel.
+
+O servico nao altera processos e nao implementa desmontagem, suspensao ou
+hibernacao. `power_shutdown()` nunca retorna;
 `acpi_enter_s5()` retorna apenas quando sua pre-validacao impede qualquer
 escrita no hardware.
 

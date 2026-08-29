@@ -417,6 +417,7 @@ static void cmd_help(void) {
     video_print("  app argtest <texto> - Testa argumentos em aplicativo ring 3\n", 0x07);
     video_print("  usertest - Executa teste isolado em ring 3\n", 0x07);
     video_print("             usertest fault | falha controlada\n", 0x08);
+    video_print("  blkcheck - Testa failpoints, cache e fixtures FAT\n", 0x07);
     video_print("  play     - Toca arquivo WAV\n", 0x07);
     video_print("  view     - Exibe imagem BMP\n", 0x07);
     video_print("  icons    - Mostra estado dos icones BMP\n", 0x07);
@@ -857,9 +858,19 @@ void shell_core_reboot(void) {
 }
 
 void shell_core_shutdown(const char* args) {
+    int result;
+
     if (args && *args) {
         LOG_WARN("SHELL", "Uso invalido de shutdown");
         video_print("Uso: shutdown\n", 0x0C);
+        return;
+    }
+    result = power_shutdown_prepare();
+    if (result != OK) {
+        video_print("Desligamento recusado: sincronizacao falhou (codigo ",
+                    0x0C);
+        shell_command_print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
         return;
     }
     video_print("Desligando...\n", 0x0E);

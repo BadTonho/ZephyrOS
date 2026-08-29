@@ -256,6 +256,21 @@ sync automatico. `cachestat` expoe hits, misses, leituras fisicas, bytes sujos,
 writeback, syncs, flushes, durabilidade e estados; `cache clear` remove
 somente entradas limpas e elegiveis.
 
+O BLK4 acrescenta failpoints privados, one-shot e direcionados aos mocks de
+autoteste. Submissao, execucao, conclusao, FLUSH, eviction e writeback podem
+retornar `ERR_DISK` ou `ERR_TIMEOUT` na ocorrencia armada. A conclusao continua
+unica, falha de eviction faz bypass sem perder a vitima, e writeback abortado
+republica `DIRTY` com os mesmos dados; nao existe retry generico automatico.
+Um novo `sync` e a operacao que tenta novamente.
+
+`blkcheck` exige as fixtures `ata1p1` FAT12 e `ata1p4` FAT32 do
+`run-storage`. FAT12 e validada sem escrita por listagem, leitura e SHA-256. A
+FAT32 usa exclusivamente `BLK4CHK.BIN`, recusa um arquivo preexistente,
+confirma a leitura pelo cache antes do writeback, sincroniza, rele, compara o
+hash, remove e sincroniza novamente. O comando nao executa reboot real e nao
+adiciona journaling aos formatos FAT; a recuperacao pos-reboot ZUPD permanece
+em sua matriz propria.
+
 `vfs_fsync()` sincroniza o volume de arquivos regulares e o dispositivo de
 bloco `/dev/hda`; pipes, terminal, speaker e demais objetos sem persistencia
 retornam `ERR_UNAVAILABLE`. `vfs_sync()` e as syscalls append-only

@@ -40,5 +40,6 @@ int power_get_status(power_status_t* out_status);
 int power_reboot(void);
 void power_shutdown(void) __attribute__((noreturn));
 const char* power_capability_name(power_capability_t capability);
+int power_shutdown_prepare(void);
 
 #endif

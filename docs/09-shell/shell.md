@@ -61,7 +61,7 @@ src/shell/
 |-- shell_commands_storage.c    storage, index e search
 |-- shell_commands_diagnostics.c health, log, timers e diagnosticos
 |-- shell_commands_network.c    net, ping, nslookup e http
-|-- shell_checks.c              q2check, regcheck, appcheck e usertest
+|-- shell_checks.c              q2check, regcheck, appcheck, blkcheck e usertest
 |-- shell_commands_packages.c   pkg, store, update e pkgcheck
 |-- shell_commands_apps.c       apps, cenas e aplicativos nativos
 |-- shell_hosted.c              terminal hospedado no Window Manager
@@ -140,7 +140,7 @@ O prompt é verde (`0x0A`) e aparece após cada comando.
 
 ### Diagnosticos de armazenamento
 
-Os comandos `blkstat`, `cachestat`, `cache clear` e `sync` passam pela tabela
+Os comandos `blkstat`, `cachestat`, `cache clear`, `sync` e `blkcheck` passam pela tabela
 unica do dispatcher e nao criam um caminho de entrada paralelo. `blkstat`
 observa a fila BLK1; `cachestat` observa o cache estatico BLK2/BLK3 de 64
 blocos; `cache clear` remove somente entradas limpas e elegiveis; `sync`
@@ -148,6 +148,13 @@ sincroniza globalmente o writeback e publica a durabilidade. Argumentos fora
 do contrato sao rejeitados pelo handler correspondente antes de qualquer
 mutacao. A sincronizacao por descritor permanece na VFS (`vfs_fsync`) e nas
 syscalls de aplicacao.
+
+`blkcheck` usa o mesmo executor cooperativo dos diagnosticos, bloqueia a
+entrada e aceita cancelamento por F12/Esc. Suas fases exercitam os failpoints
+privados da camada de bloco/cache e as fixtures FAT12/FAT32 do `run-storage`.
+A drenagem remove `BLK4CHK.BIN` e sincroniza a FAT32 antes do retorno unico ao
+prompt; sem as fixtures controladas, o comando informa indisponibilidade e nao
+usa o volume padrao do usuario.
 
 ---
 

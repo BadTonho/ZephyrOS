@@ -4,6 +4,7 @@
 #include "drivers/acpi.h"
 #include "drivers/ac97.h"
 #include "drivers/speaker.h"
+#include "fs/storage.h"
 
 #define POWER_KBC_STATUS_PORT 0x64U
 #define POWER_KBC_INPUT_FULL 0x02U
@@ -127,6 +128,23 @@ int power_reboot(void) {
     }
     LOG_ERROR("POWER", "Controlador ocupado ao solicitar reinicio");
     return ERR_TIMEOUT;
+}
+
+int power_shutdown_prepare(void) {
+    int result;
+
+    if (!power_initialized) {
+        LOG_ERROR("POWER", "Preparacao de desligamento antes da inicializacao");
+        return ERR_STATE;
+    }
+    result = storage_sync_all();
+    if (result != OK) {
+        LOG_ERROR_CODE("POWER", result,
+                       "Desligamento recusado por falha de sincronizacao");
+        return result;
+    }
+    LOG_INFO("POWER", "Sincronizacao concluida antes do desligamento");
+    return OK;
 }
 
 void power_shutdown(void) {

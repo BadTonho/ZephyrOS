@@ -52,6 +52,19 @@ typedef struct {
     int forced_flush_result;
 } block_cache_test_context_t;
 
+typedef enum {
+    BLOCK_CACHE_FAILPOINT_NONE = 0,
+    BLOCK_CACHE_FAILPOINT_EVICTION,
+    BLOCK_CACHE_FAILPOINT_WRITEBACK
+} block_cache_failpoint_stage_t;
+
+typedef struct {
+    block_cache_failpoint_stage_t stage;
+    uint32_t occurrence;
+    int forced_result;
+    uint8_t armed;
+} block_cache_failpoint_t;
+
 static block_cache_entry_t block_cache_entries[BLOCK_CACHE_CAPACITY];
 static uint32_t block_cache_buckets[BLOCK_CACHE_HASH_BUCKETS];
 static spinlock_t block_cache_lock;
@@ -61,8 +74,38 @@ static uint32_t block_cache_lru_tail;
 static uint8_t block_cache_initialized;
 static uint8_t block_cache_sync_active;
 static block_durability_status_t block_cache_durability;
+static block_cache_failpoint_t block_cache_failpoint;
 
 static int block_cache_validate_identifier(const char* device_id);
+
+static void block_cache_failpoint_clear(void) {
+    kmemset(&block_cache_failpoint, 0, sizeof(block_cache_failpoint));
+}
+
+static void block_cache_failpoint_arm(block_cache_failpoint_stage_t stage,
+                                      uint32_t occurrence,
+                                      int forced_result) {
+    block_cache_failpoint_clear();
+    block_cache_failpoint.stage = stage;
+    block_cache_failpoint.occurrence = occurrence ? occurrence : 1U;
+    block_cache_failpoint.forced_result = forced_result;
+    block_cache_failpoint.armed = 1U;
+}
+
+static uint8_t block_cache_failpoint_consume_locked(
+    block_cache_failpoint_stage_t stage, int* out_result) {
+    if (!out_result || !block_cache_failpoint.armed ||
+        block_cache_failpoint.stage != stage) {
+        return 0U;
+    }
+    if (block_cache_failpoint.occurrence > 1U) {
+        block_cache_failpoint.occurrence--;
+        return 0U;
+    }
+    *out_result = block_cache_failpoint.forced_result;
+    block_cache_failpoint_clear();
+    return 1U;
+}
 
 static void block_cache_copy_text(char* destination, uint32_t capacity,
                                   const char* source) {
@@ -261,8 +304,15 @@ static int block_cache_entry_eligible(const block_cache_entry_t* entry) {
 }
 
 static uint32_t block_cache_choose_victim_locked(void) {
+    int forced_result;
+
     for (uint32_t index = 0U; index < BLOCK_CACHE_CAPACITY; index++) {
         if (block_cache_entries[index].state == BLOCK_CACHE_FREE) return index;
+    }
+    if (block_cache_failpoint_consume_locked(BLOCK_CACHE_FAILPOINT_EVICTION,
+                                             &forced_result)) {
+        (void)forced_result;
+        return BLOCK_CACHE_INVALID_INDEX;
     }
     for (uint32_t index = block_cache_lru_tail;
          index != BLOCK_CACHE_INVALID_INDEX;
@@ -596,6 +646,7 @@ int block_cache_init(void) {
     block_cache_lru_head = BLOCK_CACHE_INVALID_INDEX;
     block_cache_lru_tail = BLOCK_CACHE_INVALID_INDEX;
     block_cache_sync_active = 0U;
+    block_cache_failpoint_clear();
     kmemset(&block_cache_durability, 0, sizeof(block_cache_durability));
     for (uint32_t index = 0U; index < BLOCK_CACHE_HASH_BUCKETS; index++) {
         block_cache_buckets[index] = BLOCK_CACHE_INVALID_INDEX;
@@ -1083,6 +1134,7 @@ static int block_cache_writeback_step_for_device(const char* device_id,
         char submitted_id[BLOCK_DEVICE_ID_SIZE];
         uint8_t data[BLOCK_CACHE_BLOCK_SIZE];
         bio_request_t request;
+        int forced_result = OK;
         int result;
 
         spinlock_acquire(&block_cache_lock);
@@ -1105,7 +1157,15 @@ static int block_cache_writeback_step_for_device(const char* device_id,
         request.buffer = data;
         request.buffer_bytes = BLOCK_CACHE_BLOCK_SIZE;
         request.operation = BLOCK_OPERATION_WRITE;
-        result = block_submit_physical_sync(&request);
+        spinlock_acquire(&block_cache_lock);
+        if (block_cache_failpoint_consume_locked(
+                BLOCK_CACHE_FAILPOINT_WRITEBACK, &forced_result)) {
+            result = forced_result;
+        } else {
+            result = OK;
+        }
+        spinlock_release(&block_cache_lock);
+        if (result == OK) result = block_submit_physical_sync(&request);
 
         spinlock_acquire(&block_cache_lock);
         if (result == OK) {
@@ -1422,6 +1482,11 @@ int block_cache_validate_state(void) {
         return ERR_STATE;
     }
     spinlock_acquire(&block_cache_lock);
+    if (block_cache_failpoint.armed) {
+        spinlock_release(&block_cache_lock);
+        LOG_ERROR("BLKCACHE", "Failpoint residual no cache de blocos");
+        return ERR_STATE;
+    }
     kmemset(hash_seen, 0, sizeof(hash_seen));
     kmemset(lru_seen, 0, sizeof(lru_seen));
     for (uint32_t bucket = 0U; bucket < BLOCK_CACHE_HASH_BUCKETS; bucket++) {
@@ -1690,6 +1755,7 @@ int block_cache_self_test(void) {
         LOG_ERROR("BLKCACHE", "Autoteste antes da inicializacao do cache");
         return ERR_STATE;
     }
+    block_cache_failpoint_clear();
     if (block_cache_test_inventory(initial_ids, &initial_count) != OK) {
         LOG_ERROR("BLKCACHE", "Falha ao salvar inventario do autoteste");
         return ERR_STATE;
@@ -1759,10 +1825,36 @@ int block_cache_self_test(void) {
         block_cache_get_stats(&stats) != OK || stats.bypasses == 0U) {
         goto block_cache_self_test_fail;
     }
+    block_cache_failpoint_arm(BLOCK_CACHE_FAILPOINT_EVICTION, 1U, ERR_DISK);
+    reads_before = context_a.reads;
+    if (block_read(device_a.id, BLOCK_CACHE_CAPACITY + 2U, 1U,
+                   first_buffer) != OK || context_a.reads != reads_before + 1U ||
+        block_read(device_a.id, 0U, 1U, first_buffer) != OK ||
+        context_a.reads != reads_before + 1U) {
+        LOG_ERROR("BLKCACHE", "Failpoint de eviction perdeu dados");
+        goto block_cache_self_test_fail;
+    }
     if (block_cache_clear() != OK) goto block_cache_self_test_fail;
     context_a.forced_result = ERR_TIMEOUT;
     result = block_read(device_a.id, 90U, 1U, first_buffer);
     context_a.forced_result = OK;
+    kmemset(write_buffer, 0xC3, sizeof(write_buffer));
+    block_cache_failpoint_arm(BLOCK_CACHE_FAILPOINT_WRITEBACK, 1U, ERR_DISK);
+    if (block_write(device_a.id, 15U, 1U, write_buffer) != OK ||
+        block_cache_writeback_step(1U, &written) != ERR_DISK ||
+        written != 0U || block_cache_get_stats(&stats) != OK ||
+        stats.dirty_entries == 0U || context_a.writes != 0U ||
+        block_read(device_a.id, 15U, 1U, first_buffer) != OK ||
+        first_buffer[0] != 0xC3U) {
+        LOG_ERROR("BLKCACHE", "Failpoint de writeback perdeu dirty");
+        goto block_cache_self_test_fail;
+    }
+    if (block_cache_sync_device(device_a.id) != OK ||
+        context_a.writes != 1U) {
+        LOG_ERROR("BLKCACHE", "Retry explicito de writeback falhou");
+        goto block_cache_self_test_fail;
+    }
+    context_a.writes = 0U;
     if (result != ERR_TIMEOUT ||
         block_read(device_a.id, 90U, 1U, first_buffer) != OK) {
         goto block_cache_self_test_fail;
@@ -1821,11 +1913,18 @@ int block_cache_self_test(void) {
         block_cache_clear() != OK ||
         block_cache_test_inventory_unchanged(initial_ids, initial_count) != OK) {
         LOG_ERROR("BLKCACHE", "Autoteste alterou o inventario real");
+        block_cache_failpoint_clear();
         return ERR_STATE;
     }
+    spinlock_acquire(&block_cache_lock);
+    block_cache_stats.last_error = OK;
+    block_cache_stats.last_sync_error = OK;
+    spinlock_release(&block_cache_lock);
+    block_cache_failpoint_clear();
     return OK;
 
 block_cache_self_test_fail:
+    block_cache_failpoint_clear();
     context_a.forced_result = OK;
     context_a.forced_flush_result = OK;
     (void)block_cache_sync_all();

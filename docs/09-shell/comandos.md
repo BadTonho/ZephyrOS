@@ -41,6 +41,7 @@ Comandos disponiveis:
   cachestat - Mostra metricas do cache de blocos
   cache clear - Limpa entradas elegiveis do cache de blocos
   sync      - Sincroniza o writeback de todos os dispositivos
+  blkcheck  - Valida failpoints, cache e fixtures FAT controladas
   index     - Mostra, reconstrui, cancela ou valida o indice global
   search <termo> - Pesquisa nomes e caminhos em todos os volumes montados
   guitest   - Testa primitivas GUI 2D
@@ -280,7 +281,10 @@ Reinicia o computador.
 
 ## `shutdown`
 
-Executa imediatamente o servico terminal `power_shutdown()`. Quando
+Executa `power_shutdown_prepare()` antes do servico terminal
+`power_shutdown()`. A preparacao sincroniza todos os dispositivos e recusa o
+desligamento quando writeback ou FLUSH falham. Ausencia de FLUSH fisico e
+aceita como `OK` com durabilidade `DEGRADED`. Quando
 `power status` informa `Transicao S5 ACPI: PRONTA`, o kernel adquire o modo
 ACPI se necessario e solicita o desligamento fisico por PM1. Se S5 nao for
 seguro ou estiver indisponivel, o fallback `CLI+HLT` para a CPU e mantem a
@@ -401,6 +405,35 @@ Sync: writeback=2 falhas=0 durabilidade=READY
 `fsync` e a forma por descritor exposta pela VFS e pela syscall 21; `sync`
 global usa a syscall 22. Terminais, pipes, speaker e dispositivos sem persistencia retornam
 `ERR_UNAVAILABLE`.
+
+## `blkcheck`
+
+Executa o diagnostico cooperativo BLK4. Aceita somente zero argumentos;
+`blkcheck extra` exibe `Uso: blkcheck` sem iniciar job ou alterar estado.
+F12/Esc solicita cancelamento e a drenagem remove o arquivo temporario antes
+de devolver o prompt.
+
+```text
+zephyr> blkcheck
+BLKCheck:
+  baseline OK
+  failpoints OK
+  cache OK
+  FAT12 OK
+  FAT32 OK
+  shutdown OK
+  resultado OK
+```
+
+O comando exige as fixtures controladas do `make run-storage`: usa `ata1p1`
+somente para listagem, leitura e SHA-256; em `ata1p4`, recusa executar se
+`BLK4CHK.BIN` ja existir, grava um padrao deterministico no cache, confirma
+que nao houve writeback antecipado, sincroniza, rele e compara o hash, remove
+o arquivo e sincroniza novamente. O volume padrao do usuario nao e alterado.
+
+Os failpoints sao privados e one-shot; nao existe comando para arma-los.
+`blkcheck` nao simula reboot real, nao adiciona journaling a FAT12/FAT32 e nao
+substitui a matriz ZUPD de recuperacao pos-reboot.
 
 ## `usb storage`
 

@@ -580,6 +580,14 @@ leitura, entrada suja, writeback ou waiter correspondente. `cachestat` exige
 zero argumentos e `cache clear` exige exatamente `clear`; entradas invalidas
 somente exibem o uso.
 
+No BLK4, os controladores de failpoint permanecem privados a `block.c` e
+`block_cache.c`; nenhum simbolo foi acrescentado aos headers publicos para
+arma-los. Cada injecao e one-shot, possui ocorrencia e codigo forcados e e
+limpa em sucesso, erro ou cancelamento. `block_self_test()` e
+`block_cache_self_test()` exercitam submissao, execucao, conclusao, FLUSH,
+eviction e writeback abortado, preservando callback unico, fila vazia,
+inventario, hash/LRU, pins e dados `DIRTY` legiveis ate um novo sync.
+
 `src/include/fs/vfs.h` acrescenta o callback final `file_operations_t.sync`,
 `vfs_fsync(fd)` e `vfs_sync()`. Arquivos regulares sincronizam seu volume;
 `/dev/hda` sincroniza o dispositivo de bloco; pipes, terminal, speaker e
@@ -654,3 +662,10 @@ exige controles v2 redundantes e equivalentes imediatamente antes do reboot.
 `power.h` acrescenta `power_reboot()`, usado por Shell, Settings, Task Manager
 e System Updater. `updater.h` preserva sua API; a aba Sistema e seus estados
 continuam privados ao aplicativo Classic.
+
+No BLK4, `power.h` acrescenta ao final `power_shutdown_prepare()`. A funcao
+executa `storage_sync_all()` e retorna `OK` quando o writeback termina,
+inclusive no estado degradado por ausencia de FLUSH. Erros de escrita ou
+FLUSH sao propagados e impedem que os caminhos normais chamem a primitiva
+terminal `power_shutdown()`. `power_shutdown()` permanece `void`, `noreturn`
+e com o mesmo contrato; `power_reboot()` nao foi alterado.

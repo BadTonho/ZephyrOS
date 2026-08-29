@@ -2751,3 +2751,18 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `acerto=99%`; o `health check` reportou somente a degradacao esperada de
   durabilidade sem flush fisico. A confirmacao funcional permite marcar o
   BLK3 como concluido no roadmap.
+
+- BLK4: implementacao de resiliencia, failpoints e desligamento seguro.
+  Implementada em: 2026-08-29 18:17:42 -03:00 (America/Sao_Paulo).
+  Foram adicionados failpoints privados one-shot para submissao, execucao,
+  conclusao, FLUSH, eviction e writeback, com autotestes de callback unico,
+  fila drenada, hash/LRU, pins, preservacao de `DIRTY`, retry por novo sync e
+  inventario inalterado. O comando cooperativo `blkcheck` usa apenas as
+  fixtures `ata1p1`/`ata1p4` do `run-storage`, valida SHA-256 e remove
+  `BLK4CHK.BIN` inclusive na drenagem de cancelamento. Os caminhos normais de
+  shutdown agora exigem `power_shutdown_prepare()`; erro de writeback/FLUSH
+  mantem o sistema ativo e ausencia de FLUSH continua `OK` degradado. Nao foi
+  adicionado journaling, reboot simulado ou interface publica de failpoint; a
+  matriz ZUPD pos-reboot permanece separada. O agente nao executou build,
+  testes ou QEMU. A validacao funcional e a marcacao final do BLK4 no resumo
+  do roadmap permanecem pendentes da confirmacao do usuario.
