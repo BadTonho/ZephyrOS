@@ -17,6 +17,7 @@ typedef struct {
     int pmm_guards;
     int user_directories;
     int slab_integrity;
+    int memory_metrics;
 } shell_memcheck_result_t;
 
 typedef struct {

@@ -429,10 +429,14 @@ static int uhci_validate_pci(const pci_device_t* pci, uint16_t* out_io) {
 }
 
 static int uhci_allocate_dma(uhci_controller_t* controller) {
-    controller->frame_list = (uint32_t*)pmm_alloc_page();
-    controller->queue_head = (uhci_qh_t*)pmm_alloc_page();
-    controller->td_pool = (uhci_td_t*)pmm_alloc_page();
-    controller->buffer_pool = (uint8_t*)pmm_alloc_page();
+    controller->frame_list = (uint32_t*)pmm_alloc_page_in_zone(
+        MEMORY_ZONE_BUFFER);
+    controller->queue_head = (uhci_qh_t*)pmm_alloc_page_in_zone(
+        MEMORY_ZONE_BUFFER);
+    controller->td_pool = (uhci_td_t*)pmm_alloc_page_in_zone(
+        MEMORY_ZONE_BUFFER);
+    controller->buffer_pool = (uint8_t*)pmm_alloc_page_in_zone(
+        MEMORY_ZONE_BUFFER);
     if (!controller->frame_list || !controller->queue_head ||
         !controller->td_pool || !controller->buffer_pool) {
         LOG_ERROR("UHCI", "Falha ao alocar estruturas DMA UHCI");

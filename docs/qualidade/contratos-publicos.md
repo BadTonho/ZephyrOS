@@ -461,6 +461,23 @@ residentes e mantém a limpeza do metadado da VMA. READ, WRITE e EXEC são
 validados contra os flags da VMA; o bit WRITE continua sendo o único bit de
 proteção de página disponível no paging atual.
 
+Desde a MM4, `src/include/core/memory.h` publica `memory_zone_t` com as zonas
+exclusivas `KERNEL`, `HEAP`, `SLAB`, `PROCESS`, `BUFFER` e `FREE`, além de
+`memory_detailed_stats_t` e `memory_get_detailed_stats()`. As novas funções
+`pmm_alloc_page_in_zone()` e `pmm_alloc_pages_in_zone()` classificam páginas
+físicas; `pmm_alloc_page()` e `pmm_alloc_pages()` permanecem wrappers legados
+para `KERNEL`. A consulta retorna `OK` e um snapshot consistente, `ERR_NULL`
+para destino nulo ou `ERR_STATE` quando o PMM não está pronto ou o metadata
+está inconsistente. A struct publica total por zona, runs livres, maior run,
+páginas isoladas, percentual de fragmentação e flags `initialized`/`valid`.
+Páginas reservadas não podem ser liberadas, e uma rejeição não altera os
+contadores do PMM.
+
+`shell_memcheck_result_t` acrescenta `memory_metrics` ao final do layout; o
+campo valida a soma das zonas e a estabilidade do snapshot antes/depois do
+teste de heap. O acréscimo é append-only e não altera `shell.h`, a ABI ring 3
+ou as assinaturas de syscalls.
+
 O cancelamento F12 de um ZAPP bloqueado em stdin usa os campos append-only
 `cancel_exit_code` e `cancel_pending` de `process_t`. `process_cancel_user()`
 acorda a wait queue e `process_apply_pending_cancel()` conclui o encerramento

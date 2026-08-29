@@ -19,7 +19,7 @@ Comandos disponiveis:
   ls [caminho] - Lista um diretorio pelo namespace VFS
   cat <caminho> - Exibe ate 4095 bytes pela VFS
   echo      - Exibe texto
-  mem       - Mostra informacoes de memoria
+  mem [detailed] - Mostra informacoes de memoria
   procs     - Mostra processos ativos
   threads   - Mostra threads ativas
   threadtest - Valida troca cooperativa de threads
@@ -73,7 +73,7 @@ Comandos disponiveis:
   acpi status - Exibe tabelas, PM1, modo ACPI e `_S5_`
   power status - Mostra prontidao ACPI S5 e fallback HLT
   kmetrics  - Mostra linha-base manual de metricas do kernel
-  memcheck  - Valida heap, PMM e diretorios de usuario
+  memcheck  - Valida heap, PMM, metricas MM4 e diretorios de usuario
   pagefault status - Mostra faults de pagina tratadas e invalidas
   schedcheck - Valida invariantes do scheduler
   q2check   - Executa diagnostico compacto da Q2
@@ -97,6 +97,23 @@ Comandos disponiveis:
   usertest  - Executa teste isolado em ring 3
   reboot    - Reinicia o sistema
   shutdown  - Desliga por ACPI ou usa fallback HLT
+```
+
+## `mem [detailed]`
+
+Sem argumentos, `mem` preserva o resumo legado com total, memoria livre e
+memoria usada. `mem detailed` consulta as metricas fisicas MM4 e mostra a
+quantidade de paginas e KB em `KERNEL`, `HEAP`, `SLAB`, `PROCESS`, `BUFFER` e
+`FREE`, alem de runs livres, maior run, paginas isoladas e fragmentacao. A
+fragmentacao do PMM e calculada fora do caminho de IRQ/page fault.
+
+Argumentos diferentes de `detailed` sao rejeitados sem alterar o estado.
+
+```text
+zephyr> mem
+zephyr> mem detailed
+zephyr> mem invalid
+Uso: mem [detailed]
 ```
 
 ## `clear`
@@ -713,9 +730,9 @@ os libera em ordem que exige coalescencia; a capacidade, quantidade de blocos
 e maior bloco livre devem voltar exatamente a linha-base.
 
 A saida contem somente `OK`/`ERRO` para `heap_integridade`, `coalescencia`,
-`pmm_guardas`, `diretorios_user` e `resultado`. Argumentos adicionais sao
-recusados com `Uso: memcheck`. O comando nao mede memoria por processo nem
-altera a saida global de `mem` ou da App API.
+`pmm_guardas`, `diretorios_user`, `slab_integridade`, `memoria_detalhada` e
+`resultado`. Argumentos adicionais sao recusados com `Uso: memcheck`. O
+comando nao altera a saida global de `mem` ou da App API.
 
 ```text
 zephyr> memcheck

@@ -203,12 +203,18 @@ Gerenciador de tarefas com monitoramento de processos, CPU, memória e threads.
 | Aba | Conteúdo |
 |-----|----------|
 | Processos | PID, nome, estado, TCK%, tipo, tempo, espera e painel de detalhes |
-| Memória | Total, usada, livre, páginas, percentual e informações ATA quando disponíveis |
+| Memória | Total, usada, livre, páginas, zonas MM4, maior run, páginas isoladas, fragmentação e resumo ATA |
 | Threads | Estado, espera, EIP, ESP e stack sem desreferenciar endereços |
 
 O comando `taskmgr` abre deliberadamente a TUI para diagnóstico. O Desktop e
 a taskbar, no modo classic, abrem uma janela gráfica própria com as mesmas
 fontes de dados, botões de janela e arraste pela barra de título.
+
+A aba Memória mantém o resumo global e acrescenta um snapshot das zonas
+físicas `KERNEL`, `HEAP`, `SLAB`, `PROCESS`, `BUFFER` e `FREE`, além de runs
+livres, maior run, páginas isoladas e fragmentação. A coleta detalhada é
+atualizada no máximo uma vez por segundo; Simple e Classic usam o mesmo
+contrato e não executam a varredura em IRQ ou page fault.
 
 ### Layout
 

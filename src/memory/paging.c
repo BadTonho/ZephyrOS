@@ -111,7 +111,9 @@ page_entry_t* paging_get_page_in_directory(page_directory_t* dir,
 
     if (!create) return 0;
 
-    page_table_t* table = (page_table_t*)pmm_alloc_page();
+    memory_zone_t zone = paging_is_registered_user_directory(dir) ?
+                         MEMORY_ZONE_PROCESS : MEMORY_ZONE_KERNEL;
+    page_table_t* table = (page_table_t*)pmm_alloc_page_in_zone(zone);
     if (!table) {
         LOG_ERROR("MEM", "Falha ao alocar tabela de paginas");
         return 0;
@@ -487,7 +489,7 @@ page_directory_t* paging_create_user_directory(void) {
         return 0;
     }
 
-    dir = paging_create_directory();
+    dir = (page_directory_t*)pmm_alloc_page_in_zone(MEMORY_ZONE_PROCESS);
     if (!dir) return 0;
 
     /* As tabelas do kernel sao compartilhadas, mas continuam supervisor. */

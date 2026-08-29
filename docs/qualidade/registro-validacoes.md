@@ -2577,3 +2577,15 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   Concluída em: 2026-08-29 11:32 (America/Sao_Paulo).
   O usuário informou que executou `make q3check` após as correções de contrato
   e o resultado terminou sem erros.
+
+- MM4: implementação de métricas de fragmentação física, zonas exclusivas e
+  monitoramento no Shell, `memcheck` e Task Manager.
+  Implementação registrada em: 2026-08-29 12:08:02 -03:00
+  (America/Sao_Paulo).
+  O PMM passou a classificar ownership por página para `KERNEL`, `HEAP`,
+  `SLAB`, `PROCESS`, `BUFFER` e `FREE`, com contagem de runs livres, maior
+  run, páginas isoladas e fragmentação por maior bloco. `mem detailed`,
+  `memcheck` e as abas de memória Simple/Classic foram integrados; o Task
+  Manager limita a coleta a um snapshot por segundo. Contratos e documentação
+  canônica foram atualizados. A MM4 continua pendente da execução funcional
+  pelo usuário; o agente não executou build, testes ou QEMU.

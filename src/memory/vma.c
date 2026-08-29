@@ -1,5 +1,6 @@
 #include "memory/vma.h"
 #include "process/process.h"
+#include "core/memory.h"
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/string.h"
@@ -257,7 +258,7 @@ static int process_vma_materialize_page(process_t* proc,
         return ERR_UNAVAILABLE;
     }
 
-    physical = pmm_alloc_page();
+    physical = pmm_alloc_page_in_zone(MEMORY_ZONE_PROCESS);
     if (!physical) {
         LOG_ERROR("MEM", "Falha ao alocar pagina de usuario sob demanda");
         return ERR_MEM;

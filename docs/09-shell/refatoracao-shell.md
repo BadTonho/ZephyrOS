@@ -341,3 +341,17 @@ os objetos `thread_t` do scheduler interno sao obtidos do cache `thread`.
 verifica alinhamento, reutilizacao, transicoes de estado, liberacoes invalidas
 e devolucao de paginas ao PMM. `health`, `memcheck` e `schedcheck` publicam a
 integridade do alocador sem alterar a ABI do Shell.
+
+## Integracao MM4
+
+O comando `mem` preserva o resumo legado sem argumentos e aceita somente
+`detailed` como argumento adicional. `mem detailed` consulta as zonas fisicas,
+runs livres, maior run, paginas isoladas e fragmentacao por meio de
+`memory_get_detailed_stats()`. Argumentos invalidos sao rejeitados sem alterar
+estado.
+
+`memcheck` compara os snapshots MM4 antes e depois do teste de heap e publica
+`memoria_detalhada` junto com os demais resultados. O campo correspondente em
+`shell_memcheck_result_t` foi acrescentado ao final da struct para preservar o
+layout anterior. O Task Manager consulta a mesma API por snapshot cacheado, com
+intervalo minimo de um segundo.
