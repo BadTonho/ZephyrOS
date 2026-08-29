@@ -2561,3 +2561,19 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `docs/06-memoria/memoria.md`, e `docs/07-processos/processos.md` passou a
   documentar os campos append-only de `process_t` introduzidos pela MM3. A
   execução do `make q3check` permanece sob responsabilidade do usuário.
+
+- MM3: validação funcional confirmada pelo usuário no QEMU.
+  Concluída em: 2026-08-29 11:31 (America/Sao_Paulo).
+  As capturas registraram `pagefault status` inicial com `tratadas=0` e
+  `invalidas=0`; `appcheck` confirmou `vma_lazy_reserva`, materialização de
+  faults válidas, fault fora de VMA isolada e limpeza, todos com `OK`. Em
+  seguida, `usertest` terminou com sucesso, `usertest fault` foi isolado, e os
+  contadores chegaram a `tratadas=11` e `invalidas=2`. `memcheck`,
+  `schedcheck` e `regcheck full` também terminaram com `OK`. `health check`
+  manteve apenas estados de hardware/serviços degradados ou desabilitados e
+  registrou uma saturação independente do pipeline de entrada do mouse.
+
+- MM3: gate `q3check` confirmado pelo usuário.
+  Concluída em: 2026-08-29 11:32 (America/Sao_Paulo).
+  O usuário informou que executou `make q3check` após as correções de contrato
+  e o resultado terminou sem erros.
