@@ -222,7 +222,9 @@ conforme previsto.
 
 Os failpoints são privados, one-shot e restritos aos mocks determinísticos dos
 autotestes. `blkcheck` usa as fixtures controladas do `run-storage`: lê e
-calcula hashes SHA-256 na FAT12, cria temporariamente `BLK4CHK.BIN` na FAT32,
+calcula hashes SHA-256 na FAT12 e cria temporariamente `BLK4CHK.BIN` na
+FAT32. As fixtures sao montadas automaticamente quando necessario e mantidas
+apos sucesso para a matriz de verificacao; o volume padrao nao e tocado.
 confirma visibilidade antes do writeback, sincroniza, relê, remove e valida a
 consistência final. O comando não simula reboot real e não arma failpoints por
 uma interface pública.

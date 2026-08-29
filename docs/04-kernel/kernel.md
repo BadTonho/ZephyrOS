@@ -316,7 +316,8 @@ forma controlada e aparecem no `health`; apenas `power_shutdown()` e terminal.
   callback unico, fila drenada, hash/LRU e pins integros, dados sujos ainda
   legiveis e retry somente por nova sincronizacao. `blkcheck` coordena essas
   verificacoes com as fixtures FAT12/FAT32 controladas, sem expor uma API de
-  injecao ao restante do kernel.
+  injecao ao restante do kernel. Montagens FAT32 externas refletem a capacidade
+  de escrita do provedor ATA; FAT12 e USB permanecem somente-leitura.
   `storage_refresh()` reconcilia esse registro depois de cada atualizacao USB
   sem duplicar discos ou volumes.
 

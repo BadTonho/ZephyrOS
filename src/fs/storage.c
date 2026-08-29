@@ -2715,14 +2715,17 @@ int storage_mount(const char* id) {
     mount->volume_index = index;
     spinlock_acquire(&storage_registry_lock);
     volume->mounted = 1;
-    volume->read_only = 1;
+    volume->read_only = (block.read_only ||
+                         volume->fs_type != STORAGE_FS_FAT32) ? 1U : 0U;
     volume->state = STORAGE_VOLUME_MOUNTED;
     volume->last_error = OK;
     volume->generation++;
     storage_mounted_count++;
     spinlock_release(&storage_registry_lock);
     storage_log_volume(LOG_LEVEL_INFO, volume->id,
-                       "montado em modo somente-leitura");
+                       volume->read_only ?
+                       "montado em modo somente-leitura" :
+                       "montado em modo gravavel");
     spinlock_release(&storage_operation_lock);
     return OK;
 }

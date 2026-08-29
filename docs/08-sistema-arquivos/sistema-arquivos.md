@@ -98,7 +98,8 @@ MBR usa `ataNraw`; as quatro entradas primarias MBR usam `ataNp1` a
 os mesmos sufixos de volume. O volume de boot e fixo e nao pode ser
 desmontado. O FAT32 com label `ZEPHYROS` e montado automaticamente, fixado e
 gravavel quando o provedor permite escrita. Volumes externos continuam
-desmontados e somente-leitura por padrao.
+desmontados por padrao; FAT12 e USB permanecem somente-leitura, enquanto FAT32
+ATA pode ser gravavel quando o provedor permite escrita.
 
 ```c
 int storage_get_status(storage_status_t* out_status);
@@ -264,12 +265,16 @@ republica `DIRTY` com os mesmos dados; nao existe retry generico automatico.
 Um novo `sync` e a operacao que tenta novamente.
 
 `blkcheck` exige as fixtures `ata1p1` FAT12 e `ata1p4` FAT32 do
-`run-storage`. FAT12 e validada sem escrita por listagem, leitura e SHA-256. A
-FAT32 usa exclusivamente `BLK4CHK.BIN`, recusa um arquivo preexistente,
-confirma a leitura pelo cache antes do writeback, sincroniza, rele, compara o
-hash, remove e sincroniza novamente. O comando nao executa reboot real e nao
-adiciona journaling aos formatos FAT; a recuperacao pos-reboot ZUPD permanece
-em sua matriz propria.
+`run-storage`. Se estiverem apenas detectadas, o comando monta essas duas
+fixtures controladas; elas permanecem montadas apos sucesso para permitir a
+verificacao seguinte e nao alteram o volume padrao. FAT12 e validada sem
+escrita por listagem, leitura e SHA-256. A FAT32 usa exclusivamente
+`BLK4CHK.BIN`, recusa um arquivo preexistente, confirma a leitura pelo cache
+antes do writeback, sincroniza, rele, compara o hash, remove e sincroniza
+novamente. O acesso gravavel acompanha a capacidade do disco ATA; um disco
+realmente somente leitura torna a fase FAT32 indisponivel. O comando nao
+executa reboot real e nao adiciona journaling aos formatos FAT; a recuperacao
+pos-reboot ZUPD permanece em sua matriz propria.
 
 `vfs_fsync()` sincroniza o volume de arquivos regulares e o dispositivo de
 bloco `/dev/hda`; pipes, terminal, speaker e demais objetos sem persistencia

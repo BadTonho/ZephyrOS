@@ -695,22 +695,51 @@ static int shell_blkcheck_hash_file(const char* volume_id, const char* path,
     return OK;
 }
 
+static int shell_blkcheck_prepare_fixture(const char* id,
+                                           storage_fs_type_t expected_fs,
+                                           uint8_t writable) {
+    storage_volume_t volume;
+    int result;
+
+    result = storage_find_volume(id, &volume);
+    if (result != OK || volume.fs_type != expected_fs) {
+        LOG_WARN("SHELL", "Fixture do BLKCheck indisponivel");
+        return ERR_UNAVAILABLE;
+    }
+    if (volume.state == STORAGE_VOLUME_INVALID ||
+        volume.state == STORAGE_VOLUME_UNSUPPORTED) {
+        LOG_WARN("SHELL", "Fixture do BLKCheck rejeitada pelo filesystem");
+        return ERR_UNAVAILABLE;
+    }
+    if (!volume.mounted) {
+        result = storage_mount(id);
+        if (result != OK) {
+            LOG_WARN("SHELL", "Montagem da fixture do BLKCheck falhou");
+            return result;
+        }
+    }
+    result = storage_find_volume(id, &volume);
+    if (result != OK || !volume.mounted) {
+        LOG_ERROR("SHELL", "Fixture do BLKCheck nao foi montada");
+        return ERR_STATE;
+    }
+    if (writable && volume.read_only) {
+        LOG_WARN("SHELL", "Fixture FAT32 do BLKCheck somente leitura");
+        return ERR_UNAVAILABLE;
+    }
+    return OK;
+}
+
 static int shell_blkcheck_validate_fixture(void) {
-    storage_volume_t fat12;
-    storage_volume_t fat32;
     uint32_t count;
     int result;
 
-    result = storage_find_volume(SHELL_BLKCHECK_FAT12_VOLUME, &fat12);
-    if (result != OK || fat12.fs_type != STORAGE_FS_FAT12 || !fat12.mounted) {
-        LOG_WARN("SHELL", "Fixture FAT12 do BLKCheck indisponivel");
-        return ERR_UNAVAILABLE;
-    }
-    result = storage_find_volume(SHELL_BLKCHECK_FAT32_VOLUME, &fat32);
-    if (result != OK || fat32.fs_type != STORAGE_FS_FAT32 || !fat32.mounted) {
-        LOG_WARN("SHELL", "Fixture FAT32 do BLKCheck indisponivel");
-        return ERR_UNAVAILABLE;
-    }
+    result = shell_blkcheck_prepare_fixture(
+        SHELL_BLKCHECK_FAT12_VOLUME, STORAGE_FS_FAT12, 0U);
+    if (result != OK) return result;
+    result = shell_blkcheck_prepare_fixture(
+        SHELL_BLKCHECK_FAT32_VOLUME, STORAGE_FS_FAT32, 1U);
+    if (result != OK) return result;
     result = storage_list_dir_long(
         SHELL_BLKCHECK_FAT32_VOLUME, "", shell_blkcheck_long_entries,
         STORAGE_MAX_DIR_ENTRIES, &count);
