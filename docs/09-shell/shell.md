@@ -152,9 +152,12 @@ syscalls de aplicacao.
 `blkcheck` usa o mesmo executor cooperativo dos diagnosticos, bloqueia a
 entrada e aceita cancelamento por F12/Esc. Suas fases exercitam os failpoints
 privados da camada de bloco/cache e as fixtures FAT12/FAT32 do `run-storage`.
-A drenagem remove `BLK4CHK.BIN` e sincroniza a FAT32 antes do retorno unico ao
-prompt; sem as fixtures controladas, o comando informa indisponibilidade e nao
-usa o volume padrao do usuario.
+Quando necessario, o comando monta automaticamente somente essas fixtures
+controladas; depois de uma execucao bem-sucedida elas permanecem montadas para
+os comandos de verificacao da matriz. A drenagem remove `BLK4CHK.BIN` e
+sincroniza a FAT32 antes do retorno unico ao prompt; sem as fixtures
+controladas, o comando informa indisponibilidade e nao usa o volume padrao do
+usuario.
 
 ---
 

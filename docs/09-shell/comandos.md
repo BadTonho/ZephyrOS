@@ -337,7 +337,8 @@ O mesmo comando lista discos USB MSC. O disco USB usa o ID
 `usb-ms-BB:DD.F-pN-aN-l0`; seus volumes seguem o formato
 `usb-ms-BB:DD.F-pN-aN-l0raw` ou o sufixo `p1` a `p4`. A topologia ATA
 slot/canal/master/slave nao e exibida para USB. A descoberta e automatica,
-mas a montagem continua sob demanda e somente-leitura.
+mas a montagem continua sob demanda; FAT12 e USB sao somente-leitura, enquanto
+FAT32 ATA pode ser gravavel quando o provedor permite escrita.
 
 ## `blkstat`
 
@@ -425,11 +426,15 @@ BLKCheck:
   resultado OK
 ```
 
-O comando exige as fixtures controladas do `make run-storage`: usa `ata1p1`
-somente para listagem, leitura e SHA-256; em `ata1p4`, recusa executar se
-`BLK4CHK.BIN` ja existir, grava um padrao deterministico no cache, confirma
-que nao houve writeback antecipado, sincroniza, rele e compara o hash, remove
-o arquivo e sincroniza novamente. O volume padrao do usuario nao e alterado.
+O comando exige as fixtures controladas do `make run-storage`. Se `ata1p1` e
+`ata1p4` estiverem apenas detectadas, `blkcheck` monta esses dois volumes
+controlados automaticamente; apos sucesso, as montagens permanecem disponiveis
+para `storage check ata1p4`. Usa `ata1p1` somente para listagem, leitura e
+SHA-256; em `ata1p4`, recusa executar se `BLK4CHK.BIN` ja existir, grava um
+padrao deterministico no cache, confirma que nao houve writeback antecipado,
+sincroniza, rele e compara o hash, remove o arquivo e sincroniza novamente.
+O volume padrao do usuario nao e alterado. Se a fixture FAT32 for realmente
+somente leitura, a indisponibilidade e informada sem tentar escrever.
 
 Os failpoints sao privados e one-shot; nao existe comando para arma-los.
 `blkcheck` nao simula reboot real, nao adiciona journaling a FAT12/FAT32 e nao

@@ -336,7 +336,7 @@ Desde a EP2, `src/include/drivers/ata.h` expoe quatro slots ATA, leitura e
 escrita direcionadas e snapshots/contadores por dispositivo, preservando a
 API global do disco legado. `src/include/fs/storage.h` define o inventario estatico de
 discos e volumes, montagens, leitura direcionada, consulta de espaco livre,
-escrita FAT32 do volume de sistema, cursores LFN, aliases 8.3, transacoes
+escrita FAT32 de volumes gravaveis, cursores LFN, aliases 8.3, transacoes
 atomicas, streaming, renomeacao, exclusao e `storage_check` somente leitura.
 Os tipos novos foram
 anexados ao final das estruturas publicas existentes. `RECOVERY_COMPONENT_STORAGE`

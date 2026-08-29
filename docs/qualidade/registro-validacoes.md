@@ -2758,8 +2758,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   conclusao, FLUSH, eviction e writeback, com autotestes de callback unico,
   fila drenada, hash/LRU, pins, preservacao de `DIRTY`, retry por novo sync e
   inventario inalterado. O comando cooperativo `blkcheck` usa apenas as
-  fixtures `ata1p1`/`ata1p4` do `run-storage`, valida SHA-256 e remove
-  `BLK4CHK.BIN` inclusive na drenagem de cancelamento. Os caminhos normais de
+  fixtures `ata1p1`/`ata1p4` do `run-storage`, monta-as quando necessario,
+  valida SHA-256 e remove `BLK4CHK.BIN` inclusive na drenagem de cancelamento.
+  As montagens controladas permanecem disponiveis apos sucesso para a matriz
+  `storage check`; os caminhos normais de
   shutdown agora exigem `power_shutdown_prepare()`; erro de writeback/FLUSH
   mantem o sistema ativo e ausencia de FLUSH continua `OK` degradado. Nao foi
   adicionado journaling, reboot simulado ou interface publica de failpoint; a
