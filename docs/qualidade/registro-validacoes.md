@@ -2462,3 +2462,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   público, App API, pacotes e Roadmap 11 foram alinhados ao contrato 0.9.
   A revisão final com `git diff --check` permaneceu sem erros. Nenhum build,
   teste executável ou QEMU foi realizado pelo agente.
+
+- MM2: correção de compilação do comando `vmamap`.
+  Concluída em: 2026-08-29 09:51 (America/Sao_Paulo).
+  A chamada do helper de impressão de permissões foi alinhada ao símbolo
+  `cmd_vmamap_print_permissions`, eliminando a declaração implícita e o
+  warning de função não utilizada. A recompilação permanece sob
+  responsabilidade do usuário; nenhum build foi executado pelo agente.

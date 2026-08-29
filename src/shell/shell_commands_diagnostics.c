@@ -4194,7 +4194,7 @@ static void cmd_vmamap(const char* args) {
         video_print("  ", 0x07);
         video_print(cmd_vmamap_area_type(&areas[i]), 0x0B);
         video_print(" ", 0x07);
-        video_print_permissions(areas[i].flags);
+        cmd_vmamap_print_permissions(areas[i].flags);
         video_print(" 0x", 0x08);
         shell_command_print_hex(areas[i].start_addr, 8U);
         video_print("-0x", 0x08);
