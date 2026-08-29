@@ -2526,3 +2526,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   estados, capacidades, rollback de inicialização, contratos de erro,
   ownership, IRQ/DMA, concorrência, timeouts, fallback e uso restrito de
   `panic`, preservando compatibilidade com drivers legados.
+
+- AGENTS.md: Regra #9 revisada para um contrato flexível de módulos do Shell.
+  Concluída em: 2026-08-29 10:35 (America/Sao_Paulo).
+  O template obrigatório foi substituído por requisitos de integração,
+  dispatcher, separação de responsabilidades, modos Simple/Classic, cenas,
+  `shell_job`, cancelamento, reentrada, restauração de contexto, limpeza e
+  validação, preservando a organização atual do Shell.

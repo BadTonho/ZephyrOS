@@ -438,56 +438,54 @@ chamadores e a documentação correspondente.
 
 ---
 
-## Regra #9: Estrutura de um Módulo Shell
+## Regra #9: Contrato de um Módulo do Shell
 
-```c
-// src/shell/nomemodulo.c
-#include "apps/shell.h"
-#include "core/log.h"
-#include "core/video.h"
+Um módulo do Shell pode ser um comando de terminal, diagnóstico, aplicativo
+gráfico, cena hospedada, adaptador de domínio ou operação cooperativa. O
+contrato deve se adaptar ao tipo de módulo; não é obrigatório implementar
+`modulo_open()`, `modulo_close()`, `modulo_draw()` e
+`modulo_handle_key()` em todos os casos.
 
-static int modulo_active = 0;
+### Requisitos do módulo Shell
 
-void modulo_open(void) {
-    if (modulo_active) return;
-    modulo_active = 1;
-
-    modulo_draw();
-    LOG_INFO("SHELL", "Modulo aberto");
-}
-
-void modulo_close(void) {
-    modulo_active = 0;
-    video_clear();
-    taskbar_draw();
-    LOG_INFO("SHELL", "Modulo fechado");
-}
-
-void modulo_draw(void) {
-    video_clear();
-    // desenha interface...
-}
-
-void modulo_handle_key(uint8_t scancode) {
-    switch (scancode) {
-        case KEY_ESC: modulo_close(); break;
-        case KEY_UP:   modulo_navigate(-1); break;
-        case KEY_DOWN: modulo_navigate(1); break;
-        // ...
-    }
-}
-```
-
-### Checklist do módulo shell
-
-- [ ] `modulo_open()` — abre módulo
-- [ ] `modulo_close()` — fecha e restaura estado
-- [ ] `modulo_draw()` — desenha interface
-- [ ] `modulo_handle_key()` — trata input
-- [ ] Usar o fluxo de teclado/IPC e as APIs declaradas nos headers atuais
-- [ ] Chamar `taskbar_draw()` ao fechar
-- [ ] Comando registrado na tabela de `src/shell/shell_dispatch.c`
-- [ ] Adaptador e handler mantidos no modulo de dominio correspondente
+- [ ] Definir a responsabilidade, o estado, o ciclo de vida e a forma de
+      integração do módulo, quando esses conceitos forem aplicáveis.
+- [ ] Escolher a camada correta: comandos devem passar pelo dispatcher;
+      apresentação, entrada, domínio e operações demoradas devem permanecer
+      separados conforme a organização atual do Shell.
+- [ ] Registrar comandos na tabela única de `src/shell/shell_dispatch.c`, com
+      as flags corretas para bloqueio, cena, cancelamento ou demais políticas
+      suportadas pelo dispatcher.
+- [ ] Manter o adaptador e o handler no arquivo de domínio correspondente;
+      não concentrar novos comandos, parsing ou estado de domínio em
+      `shell.c`.
+- [ ] Usar o fluxo existente de teclado, mouse, IPC, terminal, cenas e
+      `shell_runtime`; não inventar callbacks, funções de teclado ou atalhos
+      paralelos.
+- [ ] Separar parsing, validação de argumentos, apresentação, execução e
+      efeitos de domínio; handlers não devem duplicar a política de prompt.
+- [ ] Respeitar o modo de interface em uso. Novas interfaces devem priorizar
+      Classic, enquanto Simple permanece como fallback conforme a Regra #15.
+- [ ] Ao abrir, fechar, suspender ou restaurar uma cena, preservar somente o
+      contexto que o módulo realmente assumiu e usar as APIs apropriadas. Não
+      chamar `video_clear()` ou `taskbar_draw()` de forma universal.
+- [ ] Para operações demoradas, marcar o comando com a política adequada e
+      usar `shell_job` ou o mecanismo cooperativo correspondente; não bloquear
+      o roteamento de entrada nem deixar o prompt suspenso em caminhos de erro.
+- [ ] Definir cancelamento, reentrada e chamadas fora de ordem quando o
+      módulo puder receber eventos assíncronos ou ser aberto mais de uma vez.
+- [ ] Liberar jobs, buffers, handlers, recursos visuais e estado temporário em
+      todos os caminhos de saída aplicáveis, restaurando o contexto anterior
+      quando necessário.
+- [ ] Tratar falhas e entradas inválidas conforme as Regras #1 e #2,
+      informando o usuário pelo canal apropriado e evitando logs duplicados ou
+      ruído em operações normais.
+- [ ] Preservar as assinaturas públicas de `src/include/apps/shell.h` e usar
+      os headers e contratos existentes; alterações de ABI exigem revisão e
+      documentação próprias.
+- [ ] Oferecer validação por comando Shell, diagnóstico, `health`,
+      `regcheck` ou teste determinístico quando a funcionalidade for
+      executável ou observável pelo usuário.
 
 ### Organizacao atual do Shell
 
