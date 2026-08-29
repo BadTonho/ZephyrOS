@@ -86,6 +86,7 @@ extern void shell_dispatch_cmd_compress(const char* arguments);
 extern void shell_dispatch_cmd_stats(const char* arguments);
 extern void shell_dispatch_cmd_edit(const char* arguments);
 extern void shell_dispatch_cmd_storage(const char* arguments);
+extern void shell_dispatch_cmd_blkstat(const char* arguments);
 extern void shell_dispatch_cmd_index(const char* arguments);
 extern void shell_dispatch_cmd_search(const char* arguments);
 extern void shell_dispatch_cmd_mouse(const char* arguments);
@@ -204,6 +205,7 @@ static const shell_dispatch_entry_t shell_dispatch_table[] = {
      SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_OPENS_SCENE},
     {"storage", shell_dispatch_cmd_storage,
      SHELL_DISPATCH_FLAG_MAY_BLOCK},
+    {"blkstat", shell_dispatch_cmd_blkstat, SHELL_DISPATCH_FLAG_NONE},
     {"index", shell_dispatch_cmd_index,
      SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_COOPERATIVE},
     {"search", shell_dispatch_cmd_search, SHELL_DISPATCH_FLAG_MAY_BLOCK},

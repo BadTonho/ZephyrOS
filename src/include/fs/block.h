@@ -8,6 +8,8 @@
 #define BLOCK_DEVICE_MODEL_SIZE 48U
 #define BLOCK_SECTOR_SIZE 512U
 #define BLOCK_MAX_TRANSFER_SECTORS 255U
+#define BLOCK_QUEUE_CAPACITY 32U
+#define BLOCK_DISPATCH_BUDGET 8U
 
 #define BLOCK_DEVICE_CAP_FLUSH 0x00000001U
 #define BLOCK_DEVICE_CAP_FUA 0x00000002U
@@ -47,8 +49,10 @@ typedef int (*block_write_flags_callback_t)(void* context, uint32_t lba,
                                              uint32_t flags);
 
 typedef struct bio_request bio_request_t;
+typedef struct block_request block_request_t;
 typedef void (*block_completion_callback_t)(bio_request_t* request,
                                              void* context);
+typedef int (*block_submit_callback_t)(block_request_t* request);
 
 struct bio_request {
     const char* device_id;
@@ -65,12 +69,26 @@ struct bio_request {
     int status;
 };
 
+struct block_request {
+    const char* device_id;
+    void* device_context;
+    uint32_t lba;
+    uint32_t sector_count;
+    void* buffer;
+    uint32_t buffer_bytes;
+    block_operation_t operation;
+    uint32_t flags;
+    uint32_t completed_sectors;
+    int status;
+};
+
 typedef struct {
     void* context;
     block_read_callback_t read;
     block_write_callback_t write;
     block_flush_callback_t flush;
     block_write_flags_callback_t write_flags;
+    block_submit_callback_t submit;
 } block_ops_t;
 
 typedef struct {
@@ -89,6 +107,23 @@ typedef struct {
     uint32_t capabilities;
 } block_device_t;
 
+typedef struct {
+    uint32_t queue_capacity;
+    uint32_t queue_depth;
+    uint32_t in_flight;
+    uint32_t peak_depth;
+    uint32_t submitted;
+    uint32_t completed;
+    uint32_t failed;
+    uint32_t cancelled;
+    uint32_t merged;
+    uint32_t read_sectors;
+    uint32_t write_sectors;
+    uint32_t read_sectors_per_second;
+    uint32_t write_sectors_per_second;
+    int last_error;
+} block_queue_stats_t;
+
 int block_init(void);
 int block_register(const block_device_t* descriptor);
 int block_unregister(const char* id);
@@ -100,6 +135,10 @@ int block_read(const char* id, uint32_t lba, uint8_t count,
 int block_write(const char* id, uint32_t lba, uint8_t count,
                 const uint8_t* buffer);
 int block_submit_sync(bio_request_t* request);
+int block_submit(bio_request_t* request);
+int block_dispatch(uint32_t budget, uint32_t* out_processed);
+int block_cancel(bio_request_t* request);
+int block_get_stats(block_queue_stats_t* out_stats);
 int block_self_test(void);
 int block_validate_state(void);
 

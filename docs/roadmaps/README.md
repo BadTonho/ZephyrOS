@@ -146,7 +146,8 @@ implementada e validada pelo usuario com App API 0.9, `mmap`/`munmap`,
 `appcheck`, `memcheck`, `schedcheck`, `regcheck full` e `vmamap`. MM3, de
 paginação sob demanda, e MM4, de metricas fisicas e monitoramento, tambem
 foram implementadas e validadas pelo usuario. O BLK0 do Roadmap 13 foi
-implementado e validado; a proxima etapa e a fila BLK1. O cache de blocos
+implementado e validado; o BLK1 foi implementado e aguarda validacao funcional.
+O cache de blocos
 permanece separado de um page cache completo.
 
 ## K4 validada

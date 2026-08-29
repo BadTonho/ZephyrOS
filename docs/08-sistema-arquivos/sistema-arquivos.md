@@ -171,7 +171,7 @@ conecta boot e as fixtures nos slots IDE, e `make storage-fixtures-verify`
 compara tamanho e SHA-256 depois do QEMU. `storage check <id>` e somente
 leitura e verifica BPB, backup, FSInfo, FATs, cadeias e LFNs.
 
-## Camada de bloco e USB MSC (EP4.3/BLK0)
+## Camada de bloco e USB MSC (EP4.3/BLK0/BLK1)
 
 `block_device_t` e a fronteira comum entre o ATA legado e dispositivos USB
 Mass Storage. Cada provedor possui ID unico, modelo, capacidade em setores,
@@ -208,6 +208,24 @@ nao suportada. `ERR_TIMEOUT` e outros erros do driver sao propagados sem
 retry generico. ATA e USB MSC continuam sem FLUSH/FUA; o backend deterministico
 do autoteste exercita sucesso, erro, limite, somente-leitura e capacidades
 indisponiveis sem alterar o inventario real.
+
+O BLK1 acrescenta uma fila FIFO estatica de 32 entradas, protegida por
+spinlock, e o dispatcher executado pela `Zephyr kworker`. `block_submit()`
+retorna com o BIO em `QUEUED`; `block_submit_sync()` usa a mesma fila e drena
+ate o estado terminal. `block_cancel()` remove somente BIOs ainda enfileirados,
+publicando `ERR_CANCELLED`; um BIO em voo retorna `ERR_STATE`. O dispositivo nao
+pode ser removido ou substituido enquanto houver requisicoes pendentes.
+
+O dispatcher preserva a ordem e funde somente BIOs do mesmo dispositivo,
+operacao e flags, com LBA e buffers contiguos e dentro do limite do dispositivo.
+FLUSH nunca e fundido e nenhum buffer de bounce e criado. O callback de
+conclusao ocorre exatamente uma vez depois do estado e dos setores concluidos;
+erros do driver, inclusive `ERR_TIMEOUT`, sao propagados sem retry generico.
+`block_get_stats()` publica profundidade, pico, fusoes, conclusoes, falhas,
+cancelamentos, setores e taxas medias sob demanda. `blkstat` exibe essas
+metricas e os contadores por dispositivo. Se a workqueue estiver indisponivel,
+o caminho sincrono continua funcional e submissao assincrona retorna
+`ERR_UNAVAILABLE`.
 
 Os IDs ATA permanecem `ata0` a `ata3`. Um MSC valido recebe um ID de bloco no
 formato `usb-ms-BB:DD.F-pN-aN-l0`, derivado do ID estavel da sessao UHCI. O

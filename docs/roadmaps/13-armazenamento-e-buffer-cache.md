@@ -84,8 +84,8 @@ virtuais, permanece fora desta etapa.
 - [x] Criar um wrapper `block_submit_sync()` para preservar os chamadores
   bloqueantes sem permitir acesso direto ao driver.
 - [x] Registrar no contrato que a conclusão síncrona ocorre antes do retorno,
-  que a fila BLK1 poderá concluir fora da ordem de submissão e que o chamador
-  deve consumir o status antes de liberar recursos.
+  que a fila BLK1 preserva FIFO nesta etapa e que o chamador deve consumir o
+  status antes de liberar recursos.
 
 ### Critério de saída
 
@@ -97,8 +97,8 @@ etapa é o BLK1.
 
 ### Comandos Shell / Diagnóstico
 
-- A validação inicial usa os diagnósticos existentes; `blkstat` só será
-  publicado quando a fila BLK1 registrar dispositivos reais.
+- A validação do BLK0 usa os diagnósticos existentes; o `blkstat` pertence ao
+  BLK1 e já está publicado para a validação da fila e dos dispositivos reais.
 
 ---
 
@@ -106,16 +106,16 @@ etapa é o BLK1.
 
 ### Implementação
 
-- [ ] Definir `block_device_t` com identidade, setor lógico, capacidade,
+- [x] Definir `block_device_t` com identidade, setor lógico, capacidade,
   limites de transferência, flags de capacidade e callback de submissão de
   `block_request_t` para o driver.
-- [ ] Implementar a fila limitada e o dispatcher que transforma BIOs em
+- [x] Implementar a fila limitada e o dispatcher que transforma BIOs em
   requisições, rejeitando overflow com erro canônico e sem vazamento.
-- [ ] Implementar FIFO com fusão apenas de setores adjacentes compatíveis;
+- [x] Implementar FIFO com fusão apenas de setores adjacentes compatíveis;
   deixar elevator e reordenação como otimizações posteriores mensuráveis.
-- [ ] Migrar o driver ATA PIO existente para o contrato de `block_device_t`
+- [x] Migrar o driver ATA PIO existente para o contrato de `block_device_t`
   sem mudar as assinaturas públicas do VFS ou das syscalls.
-- [ ] Adaptar USB Mass Storage somente depois de validar as capacidades e o
+- [x] Adaptar USB Mass Storage somente depois de validar as capacidades e o
   ciclo de conclusão do dispositivo ATA.
 
 ### Critério de saída
@@ -123,11 +123,13 @@ etapa é o BLK1.
 Todas as operações de I/O de baixo nível passam pela fila de requisições, com
 rastreabilidade de setores, status de conclusão, timeout e ownership do buffer.
 Os chamadores síncronos continuam funcionando através do wrapper definido em
-BLK0.
+BLK0. A implementação está concluída no código, mas o aceite funcional da
+fila, da fusão e do `blkstat` permanece pendente da validação do usuário.
 
 ### Comandos Shell / Diagnóstico
 
-- `blkstat`: exibe os dispositivos de bloco registrados, taxa de transferência, setores lidos/gravados e tamanho da fila.
+- `blkstat`: exibe os dispositivos de bloco registrados, taxa de transferência,
+  setores lidos/gravados, tamanho da fila, pico, fusões e estados cumulativos.
 
 ---
 

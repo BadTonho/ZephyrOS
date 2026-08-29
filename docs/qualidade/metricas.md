@@ -275,3 +275,21 @@ mantem o ultimo snapshot por no maximo um segundo entre atualizacoes; IRQs e
 page faults nao executam a coleta. A validacao funcional MM4 permanece
 pendente da execucao do usuario no QEMU, portanto esta secao registra o
 contrato e nao declara valores observados.
+
+## BLK1 - Fila de requisicoes de bloco
+
+O BLK1 mede a fila em um snapshot cumulativo desde `block_init()`. `submitted`,
+`completed`, `failed` e `cancelled` contam BIOs aceitos ou concluidos pela
+camada; `merged` conta os BIOs adicionais absorvidos por uma requisicao fisica.
+`read_sectors` e `write_sectors` contam setores realmente reportados como
+concluidos pelo driver, inclusive conclucoes parciais antes de um erro. As
+taxas medias sao calculadas sob demanda desde o inicio da camada, usando a
+frequencia do timer, e valem zero quando ainda nao decorreu um tick.
+
+`queue_depth` e `in_flight` sao instantaneos; `peak_depth` e o maior numero de
+BIOs enfileirados observado. A capacidade e fixa em 32 entradas. O dispatcher
+mantem FIFO e somente funde BIOs com mesmo dispositivo, operacao e flags, LBA
+adjacente, buffers contiguos e limite de transferencia respeitado. Nao ha
+reordenacao, bounce buffer ou fusao de FLUSH. `blkstat` e o caminho observavel
+para comparar snapshots; a validacao funcional BLK1 permanece pendente da
+execucao do usuario no QEMU.

@@ -43,7 +43,8 @@ implementada e validada pelo usuario com App API 0.9, `mmap`/`munmap`,
 `appcheck`, `memcheck`, `schedcheck`, `regcheck full` e `vmamap`. MM3 de
 paginação sob demanda e MM4 de metricas fisicas e monitoramento tambem foram
 implementadas e validadas pelo usuario. O BLK0 de armazenamento foi implementado
-e validado; a proxima etapa e a fila BLK1. O cache de blocos permanece separado
+e validado; o BLK1 foi implementado e aguarda validacao funcional. O cache de
+blocos permanece separado
 de um page cache completo.
 
 ## Progresso Geral: Fase 7, K1-K4, UI1-UI7, S2.8, U1-U5 e EP1-EP5 validadas; EP6.0-EP6.4 validadas no QEMU; EP7.0 encerrada e EP7.1B de EHCI/transporte implementada; continuação do Wi-Fi pausada até hardware real; EP9.2A-EP9.4C validadas; SYNC1 concluída com a dívida técnica [DT100-001](docs/qualidade/dividas-tecnicas-v1.0.0.md#dt100-001---regcheck-full-e-entrada-ps2) aceita para K5/v1.0.0; SYNC2, SYNC3/R4, SYNC4, VFS1, VFS2, VFS3, MM1, MM2, MM3 e MM4 concluídas e validadas; R5-R9 do Roadmap 09 permanecem como melhorias futuras

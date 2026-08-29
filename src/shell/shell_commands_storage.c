@@ -5,6 +5,7 @@
 #include "core/video.h"
 #include "core/keyboard.h"
 #include "fs/fs.h"
+#include "fs/block.h"
 #include "fs/storage.h"
 #include "fs/vfs.h"
 #include "fs/file_index.h"
@@ -267,6 +268,71 @@ static shell_index_workspace_t shell_index_workspace;
 static void cmd_storage_print_usage(void) {
     video_print("Uso: storage list | storage info <id> | ", 0x0C);
     video_print("storage mount <id> | storage unmount <id> | storage check <id>\n", 0x0C);
+}
+
+static void cmd_blkstat_print_usage(void) {
+    video_print("Uso: blkstat\n", 0x0C);
+}
+
+static void cmd_blkstat(const char* args) {
+    block_queue_stats_t stats;
+    uint32_t device_count;
+
+    if (!shell_command_args_equal(args, "")) {
+        LOG_WARN("SHELL", "Argumentos recusados no comando blkstat");
+        cmd_blkstat_print_usage();
+        return;
+    }
+    if (block_get_stats(&stats) != OK ||
+        block_get_count(&device_count) != OK) {
+        video_print("Metricas da camada de bloco indisponiveis.\n", 0x0C);
+        return;
+    }
+    video_print("Block: fila=", 0x0B);
+    shell_command_print_num(stats.queue_depth);
+    video_print("/", 0x07);
+    shell_command_print_num(stats.queue_capacity);
+    video_print(" pico=", 0x07);
+    shell_command_print_num(stats.peak_depth);
+    video_print(" voo=", 0x07);
+    shell_command_print_num(stats.in_flight);
+    video_print("\nRequisicoes: submetidas=", 0x07);
+    shell_command_print_num(stats.submitted);
+    video_print(" concluidas=", 0x07);
+    shell_command_print_num(stats.completed);
+    video_print(" falhas=", 0x07);
+    shell_command_print_num(stats.failed);
+    video_print(" canceladas=", 0x07);
+    shell_command_print_num(stats.cancelled);
+    video_print(" fusoes=", 0x07);
+    shell_command_print_num(stats.merged);
+    video_print("\nSetores: leitura=", 0x07);
+    shell_command_print_num(stats.read_sectors);
+    video_print(" (", 0x08);
+    shell_command_print_num(stats.read_sectors_per_second);
+    video_print("/s) escrita=", 0x08);
+    shell_command_print_num(stats.write_sectors);
+    video_print(" (", 0x08);
+    shell_command_print_num(stats.write_sectors_per_second);
+    video_print("/s) erro=", 0x08);
+    shell_command_print_num((uint32_t)stats.last_error);
+    video_print("\nDispositivos:\n", 0x0B);
+    for (uint32_t index = 0U; index < device_count; index++) {
+        block_device_t device;
+
+        if (block_get_at(index, &device) != OK) continue;
+        video_print("  ", 0x07);
+        video_print(device.id, 0x07);
+        video_print(" modelo=", 0x08);
+        video_print(device.model, 0x08);
+        video_print(" leitura=", 0x08);
+        shell_command_print_num(device.read_ops);
+        video_print(" escrita=", 0x08);
+        shell_command_print_num(device.write_ops);
+        video_print(" erro=", 0x08);
+        shell_command_print_num((uint32_t)device.last_error);
+        video_print(device.read_only ? " ro\n" : " rw\n", 0x08);
+    }
 }
 
 static int cmd_storage_read_token(const char** cursor, char* token,
@@ -877,6 +943,7 @@ int shell_storage_start_job(const char* arguments) {
     void adapter(const char* arguments) { handler(arguments); }
 
 SHELL_STORAGE_WRAP_ARGS(shell_dispatch_cmd_storage, cmd_storage)
+SHELL_STORAGE_WRAP_ARGS(shell_dispatch_cmd_blkstat, cmd_blkstat)
 void shell_dispatch_cmd_index(const char* arguments) {
     if (shell_storage_start_job(arguments)) return;
     cmd_index(arguments);

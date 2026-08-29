@@ -13,5 +13,6 @@
 #define ERR_STATE       7
 #define ERR_TIMEOUT     8
 #define ERR_UNAVAILABLE 9
+#define ERR_CANCELLED   10
 
 #endif
