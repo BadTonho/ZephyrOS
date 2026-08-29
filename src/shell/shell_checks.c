@@ -484,7 +484,7 @@ static void shell_appcheck_summary_finish(int terminal_result) {
 static int shell_appcheck_is_compact_job(
     const shell_job_context_t* context) {
     return shell_appcheck_summary.compact && context &&
-           kstrcmp(context->command, "appcheck compact") == 0;
+           kstrcmp(context->arguments, "appcheck compact") == 0;
 }
 
 static int shell_appcheck_has_pending_work(void) {

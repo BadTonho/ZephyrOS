@@ -2699,3 +2699,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   cooperativo, cancelamento, foco e limpeza. `appcheck` sem argumentos manteve
   a saida legada. A validacao funcional nos gates e no QEMU permanece pendente
   da execucao e confirmacao do usuario.
+
+- AppCheck compacto: correcao da finalizacao assincrona.
+  Corrigida em: 2026-08-29 15:28:00 -03:00 (America/Sao_Paulo).
+  O resumo nao aparecia apos a execucao assincrona porque a identificacao do
+  comando fica em `shell_job_context_t.arguments`, enquanto `command` contem
+  apenas o nome da definicao do job. O reconhecimento foi ajustado sem mudar
+  o fluxo do `appcheck` detalhado; a validacao funcional deve ser repetida.
