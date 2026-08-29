@@ -2589,3 +2589,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   Manager limita a coleta a um snapshot por segundo. Contratos e documentação
   canônica foram atualizados. A MM4 continua pendente da execução funcional
   pelo usuário; o agente não executou build, testes ou QEMU.
+
+- MM4: ajuste visual da aba Memória do Task Manager Classic.
+  Correção registrada em: 2026-08-29 12:25:10 -03:00
+  (America/Sao_Paulo).
+  A fragmentação foi reposicionada para não sobrepor o resumo ATA e o
+  framebuffer na largura padrão da janela. A validação funcional da captura
+  corrigida permanece pendente do usuário.

@@ -1663,6 +1663,11 @@ static void taskmgr_gui_draw_memory(void) {
 
     if (taskmgr_memory_stats_valid) {
         gui_draw_text((uint32_t)x, (uint32_t)(y + 196), "Zonas KB", GUI_COLOR_TEXT);
+        gui_draw_text((uint32_t)(x + 324), (uint32_t)(y + 196), "Frag:", GUI_COLOR_TEXT);
+        taskmgr_gui_draw_num(x + 374, y + 196,
+                             taskmgr_memory_stats.fragmentation_percent,
+                             GUI_COLOR_TEXT);
+        gui_draw_text((uint32_t)(x + 406), (uint32_t)(y + 196), "%", GUI_COLOR_TEXT);
         gui_draw_text((uint32_t)x, (uint32_t)(y + 220), "Kernel:", GUI_COLOR_TEXT);
         taskmgr_gui_draw_num(x + 96, y + 220,
                              taskmgr_memory_stats.zone_pages[MEMORY_ZONE_KERNEL] *
@@ -1696,10 +1701,6 @@ static void taskmgr_gui_draw_memory(void) {
         gui_draw_text((uint32_t)(x + 324), (uint32_t)(y + 268), "Iso:", GUI_COLOR_TEXT);
         taskmgr_gui_draw_num(x + 372, y + 268,
                              taskmgr_memory_stats.isolated_free_pages, GUI_COLOR_TEXT);
-        gui_draw_text((uint32_t)(x + 444), (uint32_t)(y + 268), "Frag:", GUI_COLOR_TEXT);
-        taskmgr_gui_draw_num(x + 504, y + 268,
-                             taskmgr_memory_stats.fragmentation_percent, GUI_COLOR_TEXT);
-        gui_draw_text((uint32_t)(x + 536), (uint32_t)(y + 268), "%", GUI_COLOR_TEXT);
     } else {
         gui_draw_text((uint32_t)x, (uint32_t)(y + 196),
                       "Metricas MM4 indisponiveis", GUI_COLOR_TEXT);
