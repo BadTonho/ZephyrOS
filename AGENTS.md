@@ -47,27 +47,38 @@ validação e da documentação da etapa.
 
 ---
 
-## Regra #1: Log de Erros
+## Regra #1: Logs de Erros e Eventos Relevantes
 
 Toda falha observável em API pública, inicialização, operação de hardware,
-I/O, alocação ou validação DEVE ter log.
+I/O, alocação ou validação DEVE ser registrada em log com a severidade
+adequada.
 
-Helpers internos podem apenas propagar o erro quando o chamador registrar o
-contexto final, evitando logs duplicados e excesso de ruído.
+O log deve ser feito pela camada que possui contexto suficiente para explicar
+a operação, a causa e o impacto. Não é necessário registrar o mesmo erro em
+cada camada: helpers internos podem propagar o erro, deixando o chamador
+responsável pelo registro final e evitando duplicidade e excesso de ruído.
+
+Rejeições esperadas, entradas inválidas, recursos opcionais indisponíveis e
+fixtures negativas continuam visíveis no contrato de retorno e nos
+diagnósticos, mas podem usar `LOG_WARN` ou `LOG_DEBUG` quando não representarem
+uma falha inesperada do sistema. Falhas reais devem usar `LOG_ERROR`.
 
 ```c
 #include "core/log.h"
 
-// Na inicialização:
 LOG_INFO("MODULO", "Inicializado com sucesso");
-
-// Na falha:
 LOG_ERROR("MODULO", "Falha ao ler disco");
 LOG_WARN("MODULO", "Memoria baixa, continuando...");
 LOG_DEBUG("MODULO", "Variavel x = 5");
 ```
 
-Módulos: `BOOT`, `LOG`, `IDT`, `KBD`, `TIMER`, `MEM`, `ATA`, `VESA`, `FAT12`, `FAT32`, `AC97`, `PCI`, `UHCI`, `USB`, `MSC`, `BLOCK`, `STORAGE`, `THRD`, `SHELL`, `WM`, `PROC`, `FS`, `DESKTOP`, `MOUSE`, `IPC`, `GUI`, `STRING`
+Tags devem identificar de forma estável o módulo ou subsistema responsável;
+esta regra não depende de uma lista fechada de módulos. O registro não deve
+expor senhas, tokens, chaves, dados pessoais ou buffers sensíveis.
+
+Em interrupções, hot paths e loops frequentes, o logging não deve bloquear nem
+gerar ruído excessivo; quando necessário, registrar de forma limitada,
+agrupar eventos ou encaminhar o diagnóstico para processamento posterior.
 
 ---
 
