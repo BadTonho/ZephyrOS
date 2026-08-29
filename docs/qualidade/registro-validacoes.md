@@ -2596,3 +2596,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   A fragmentação foi reposicionada para não sobrepor o resumo ATA e o
   framebuffer na largura padrão da janela. A validação funcional da captura
   corrigida permanece pendente do usuário.
+
+- MM4: validação funcional confirmada pelo usuário no QEMU.
+  Concluída em: 2026-08-29 12:30:54 -03:00 (America/Sao_Paulo).
+  As capturas confirmaram a soma das zonas, `memoria_detalhada OK`, os
+  diagnósticos de SLAB, aplicações, processos de usuário, scheduler e registro,
+  além da aba Memoria do Task Manager Classic com zonas, runs, maior bloco,
+  páginas isoladas, fragmentação e gráficos. O refinamento visual de
+  espaçamento permanece aceito como melhoria futura.
