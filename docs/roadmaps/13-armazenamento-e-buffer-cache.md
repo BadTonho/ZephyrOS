@@ -12,7 +12,7 @@ virtuais, permanece fora desta etapa.
 
 ## Resumo de progresso
 
-- [ ] BLK0 - Contrato de I/O, ownership, conclusão e durabilidade.
+- [x] BLK0 - Contrato de I/O, ownership, conclusão e durabilidade.
 - [ ] BLK1 - Fila unificada de requisições de bloco (`block_device_t`, `bio_request_t` e `block_request_t`).
 - [ ] BLK2 - Cache de blocos de leitura com estados, referências e política LRU.
 - [ ] BLK3 - Writeback de blocos modificados, flush e sincronização explícita.
@@ -91,9 +91,9 @@ virtuais, permanece fora desta etapa.
 
 O contrato documenta ownership, ciclo de vida, alinhamento, erros,
 cancelamento, timeout, conclusão e durabilidade, com um backend determinístico
-que permite testar esses estados sem depender do hardware. A implementação
-está presente; a validação funcional pelo usuário ainda é necessária para
-marcar o BLK0 como concluído no resumo.
+que permite testar esses estados sem depender do hardware. A implementação foi
+validada funcionalmente pelo usuário no QEMU; o BLK0 está concluído e a próxima
+etapa é o BLK1.
 
 ### Comandos Shell / Diagnóstico
 

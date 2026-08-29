@@ -2626,3 +2626,35 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   o inventário real. `regcheck full` passou a reportar `camada_bloco`.
   O agente não executou build, testes ou QEMU; a validação funcional e a
   marcação final do BLK0 permanecem pendentes da confirmação do usuário.
+
+- BLK0: evidência parcial de validação enviada pelo usuário no QEMU.
+  Concluída em: 2026-08-29 13:58:10 -03:00 (America/Sao_Paulo).
+  `regcheck full` reportou `camada_bloco OK` e `RegCheck: OK`, incluindo as
+  rejeições esperadas de limites, LBA inválido, FLUSH/FUA indisponíveis,
+  somente-leitura e erro propagado. `storage list` confirmou o dispositivo ATA
+  e os volumes FAT12/FAT32 montados, sem erro no inventário real. A captura não
+  incluiu `storage check`, `appcheck` ou `health check`; portanto, esses
+  comandos não são declarados como validados e a marcação final do BLK0 fica
+  pendente.
+
+- Correção do estado de aceite do BLK0.
+  Registrada em: 2026-08-29 14:00:35 -03:00 (America/Sao_Paulo).
+  Os IDs para a próxima validação são `ata0raw` e `ata0p1`. O Roadmap 13 foi
+  mantido pendente até a execução dos comandos de aceite restantes e o envio
+  dos respectivos resultados pelo usuário.
+
+- BLK0: verificação de volumes confirmada parcialmente pelo usuário no QEMU.
+  Concluída em: 2026-08-29 14:01:39 -03:00 (America/Sao_Paulo).
+  `storage check ata0p1` retornou `Volume FAT32 consistente.`. A rejeição de
+  `storage check ata0raw` foi esperada, pois o diagnóstico exige um volume
+  FAT32 montado e `ata0raw` é o volume FAT12 legado. O aceite final do BLK0
+  permanece pendente dos demais comandos da matriz.
+
+- BLK0: validação funcional concluída pelo usuário no QEMU.
+  Concluída em: 2026-08-29 14:02:55 -03:00 (America/Sao_Paulo).
+  Além de `regcheck full` com `camada_bloco OK` e `RegCheck: OK`, o usuário
+  confirmou `storage list`, `storage check ata0p1` com `Volume FAT32 consistente`,
+  `appcheck` concluído e `health check` executado. As mensagens de erro do
+  `appcheck` pertencem às fixtures negativas esperadas; os estados opcionais
+  `DISABLED`/`DEGRADED` do hardware ausente no QEMU não afetam o BLK0. O BLK0
+  foi marcado como concluído; a próxima etapa é o BLK1.
