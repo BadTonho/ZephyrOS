@@ -2604,3 +2604,12 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   além da aba Memoria do Task Manager Classic com zonas, runs, maior bloco,
   páginas isoladas, fragmentação e gráficos. O refinamento visual de
   espaçamento permanece aceito como melhoria futura.
+
+- Revisão dos roadmaps futuros após a conclusão da MM4.
+  Registrada em: 2026-08-29 12:50:06 -03:00 (America/Sao_Paulo).
+  O Roadmap 13 passou a começar por BLK0, separando BIO, requisição enfileirada,
+  ownership, conclusão e durabilidade; o cache de blocos foi separado de um
+  page cache completo. Os Roadmaps 14, 15, 16 e 17 receberam contratos de
+  ownership/lifetime, separação `/proc`/`/sys`, escopo seguro de ACPI e gates
+  reproduzíveis para Rust. O Roadmap 09 não foi reaberto: R5-R9 permanecem como
+  melhorias futuras mapeadas e não bloqueiam a BLK1.

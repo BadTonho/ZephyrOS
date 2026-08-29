@@ -23,7 +23,8 @@ Roadmaps 10, 11, 12 ou de qualquer outra etapa existente.
 - [ ] RUST7 - Consolidação do kernel híbrido e decisão de novas migrações.
 
 Estado atual: planejado para depois da versão 1.0.0. Nenhuma migração Rust
-foi iniciada por este roadmap.
+foi iniciada por este roadmap. RUST0 só pode começar após a base escolhida da
+1.0.0 estar reproduzível, validada e com rollback preservado.
 
 ## Atalhos
 
@@ -144,6 +145,8 @@ migração.
   compilação.
 - [ ] Criar uma branch ou marco de referência da versão 1.0.0 antes da primeira
   alteração Rust.
+- [ ] Registrar explicitamente quais pendências não bloqueiam a base congelada
+  e quais devem ser resolvidas antes de abrir uma migração.
 
 ### Critério de saída
 
@@ -160,7 +163,8 @@ partir de C.
 ### Trabalho
 
 - [ ] Fixar versões de `rustc`, `rust-src`, LLVM/bindgen e ferramentas
-  auxiliares em uma configuração reproduzível.
+  auxiliares em uma configuração reproduzível (`rust-toolchain` e lockfiles
+  quando aplicável).
 - [ ] Definir um target Rust para o ambiente x86 de 32 bits do ZephyrOS, usando
   target nativo compatível quando suficiente ou um target personalizado quando
   necessário, validando ABI, calling convention, alinhamento e integração com
@@ -168,6 +172,9 @@ partir de C.
 - [ ] Configurar `#![no_std]`, `panic_handler` e `panic=abort`.
 - [ ] Integrar a compilação do objeto Rust ao `Makefile`, sem substituir o
   linker ou a ABI existentes sem validação.
+- [ ] Fixar flags de compilação, linker, layout de seções, símbolos esperados e
+  estratégia de panic para que C, Rust e Assembly produzam uma imagem
+  reproduzível.
 - [ ] Definir convenções para `extern "C"`, `#[repr(C)]`, `#[no_mangle]`, tipos
   de largura fixa e retorno dos códigos de `core/errors.h`.
 - [ ] Proibir `std`, unwinding e dependências que exijam runtime hospedado.
@@ -181,7 +188,8 @@ partir de C.
 - [ ] Definir uma política para `unsafe`, incluindo invariantes documentadas,
   revisão dos blocos e proibição de acesso bruto aos bindings quando houver
   abstração segura validada.
-- [ ] Adicionar um teste mínimo de link, chamada C/Rust e retorno de erro.
+- [ ] Adicionar um teste mínimo de link, chamada C/Rust, retorno de erro e
+  confirmação de que nenhum panic/unwind atravessa a fronteira C.
 
 ### Critério de saída
 

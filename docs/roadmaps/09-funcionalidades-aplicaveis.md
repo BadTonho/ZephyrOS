@@ -202,13 +202,21 @@ limitação foi aceita como
 [`DT100-002`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-002---kworker-como-processo-ring0)
 e será quitada pela K5 antes da v1.0.0.
 
-## R5 - Modelo unificado de dispositivos (Mapeado para Roadmap 15)
+## R5 - Modelo unificado de dispositivos (Melhoria futura mapeada para Roadmap 15)
 
-O modelo hierárquico e ciclo de vida de dispositivos (`DISCOVERED`, `READY`, `DEGRADED`, `DISABLED`) foi consolidado no [Roadmap 15 - Introspeccao e Pseudo-Filesystems](15-introspeccao-e-pseudo-fs.md#proc3---mapeamento-de-sys-para-hardware), integrando a árvore de barramentos e periféricos com o pseudo-filesystem `/sys`.
+O escopo já realizado do Roadmap 09 não será reaberto. Refinamentos futuros
+do modelo hierárquico e do ciclo de vida (`DISCOVERED`, `READY`, `DEGRADED`,
+`DISABLED`) poderão ser consolidados no [Roadmap 15 - Introspeccao e
+Pseudo-Filesystems](15-introspeccao-e-pseudo-fs.md#proc3---mapeamento-de-sys-para-hardware),
+sem bloquear a BLK1 nem duplicar estados por driver.
 
-## R6 - Fila de requisições de bloco (Mapeada para Roadmap 13)
+## R6 - Fila de requisições de bloco (Melhoria futura mapeada para Roadmap 13)
 
-A fila unificada de requisições de bloco para ATA e USB foi integrada diretamente à arquitetura da Block Layer no [Roadmap 13 - Armazenamento e Buffer Cache](13-armazenamento-e-buffer-cache.md#blk1---fila-unificada-de-requisicoes-de-bloco), conectando o agendamento de I/O ao Buffer Cache com dirty pages.
+O escopo já realizado do Roadmap 09 não será reaberto. A evolução futura da
+fila de requisições para ATA e USB está descrita no [Roadmap 13 -
+Armazenamento, Block Layer e Cache de Blocos](13-armazenamento-e-buffer-cache.md#blk0---contrato-de-io-e-durabilidade),
+começando pelo contrato BLK0 e seguindo para BLK1. Cache e dirty writeback
+continuam fora de R6.
 
 ## R7 - Cache de caminhos e resolução de nomes (Mapeado para Roadmap 10)
 
@@ -266,5 +274,6 @@ make run
 ## Estado
 
 Roadmap próprio do ZephyrOS, criado para orientar melhorias incrementais sem
-substituir a arquitetura existente. R0, R1, R2, R3 e R4 estão concluídas e
-validadas; R5-R9 ainda não foram implementadas.
+substituir a arquitetura existente. O escopo executado do Roadmap 09 foi
+concluído e validado; R5-R9 ficam registrados como melhorias futuras mapeadas
+para outros roadmaps e não bloqueiam a próxima frente de armazenamento.

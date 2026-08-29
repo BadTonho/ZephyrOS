@@ -129,7 +129,8 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
   [`DT100-002`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-002---kworker-como-processo-ring0).
   A SYNC4 esta implementada e validada com sinais ring3, App API 0.4, Ctrl+C,
   `kill` e `sigtest`; a linha parcial do Shell foi limpa por Ctrl+C e o perfil
-  USB HID permaneceu responsivo. R5 continua pendente no Roadmap 09.
+  USB HID permaneceu responsivo. As melhorias futuras R5-R9 do Roadmap 09
+  permanecem registradas sem bloquear as frentes atuais.
   A VFS1 esta concluida e validada com App API 0.5, descritores por processo,
   stdio e syscall 14 nos perfis QEMU padrao e USB HID. A VFS2 esta validada
   com App API 0.6, montagens e cwd. A VFS3 esta concluida e validada com App API
@@ -142,7 +143,11 @@ MM1 do Roadmap 11 esta implementada e validada pelo usuario, com caches
 SLAB/SLUB, migracao de processos, threads, objetos VFS e pacotes Ethernet, e
 os diagnosticos `slabinfo`/`slabtest`. MM2, de areas de memoria virtual, esta
 implementada e validada pelo usuario com App API 0.9, `mmap`/`munmap`,
-`appcheck`, `memcheck`, `schedcheck`, `regcheck full` e `vmamap`.
+`appcheck`, `memcheck`, `schedcheck`, `regcheck full` e `vmamap`. MM3, de
+paginação sob demanda, e MM4, de metricas fisicas e monitoramento, tambem
+foram implementadas e validadas pelo usuario. O Roadmap 13 sera iniciado pelo
+contrato BLK0 antes da fila BLK1; o cache de blocos permanece separado de um
+page cache completo.
 
 ## K4 validada
 
@@ -165,7 +170,7 @@ correcao da ordem de apresentacao.
 10. [10 - VFS e Abstracao de I/O](10-vfs-e-abstracao-io.md)
 11. [11 - Gerenciamento Avancado de Memoria](11-gerenciamento-avancado-de-memoria.md)
 12. [12 - Concorrencia e Sincronizacao](12-concorrencia-e-sincronizacao.md)
-13. [13 - Armazenamento e Buffer Cache](13-armazenamento-e-buffer-cache.md)
+13. [13 - Armazenamento, Block Layer e Cache de Blocos](13-armazenamento-e-buffer-cache.md)
 14. [14 - Stack de Rede Avancada](14-stack-de-rede-avancada.md)
 15. [15 - Introspeccao e Pseudo-Filesystems](15-introspeccao-e-pseudo-fs.md)
 16. [16 - Energia e ACPI Avancado](16-energia-e-acpi-avancado.md)
