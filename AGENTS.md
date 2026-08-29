@@ -82,31 +82,48 @@ agrupar eventos ou encaminhar o diagnóstico para processamento posterior.
 
 ---
 
-## Regra #2: Tratamento de Erros
+## Regra #2: Contratos e Tratamento de Erros
 
-Funções que falham retornam código de erro:
+Toda API pública ou operação nova que possa falhar DEVE declarar claramente
+como informa sucesso e falha. O formato deve ser adequado à API:
+
+- operações do kernel e APIs públicas que já usam códigos devem preferir
+  `int` com os valores canônicos de `src/include/core/errors.h`;
+- funções que retornam ponteiros podem usar `NULL` para falha quando esse for
+  o contrato estabelecido;
+- funções predicativas podem usar `bool` quando só houver sucesso ou falha
+  sem motivo detalhado;
+- estruturas de resultado podem ser usadas quando a operação precisar
+  retornar dados e estado simultaneamente;
+- assinaturas legadas `void` não devem ser alteradas somente para introduzir
+  um código de erro; nesses casos, a falha deve ser registrada e o módulo
+  deve publicar estado degradado ou indisponível quando aplicável;
+- syscalls e fronteiras de ABI devem preservar o contrato numérico e traduzir
+  falhas internas para códigos públicos estáveis.
+
+Os códigos canônicos ficam em `src/include/core/errors.h`. Novos códigos só
+devem ser adicionados quando forem semanticamente reutilizáveis, documentados
+nesse contrato e usados pelos chamadores apropriados; nunca devem ser
+redefinidos localmente. Helpers internos podem propagar a falha sem registrar
+novamente quando a camada chamadora possuir o contexto final.
+
+Toda falha deve liberar ou transferir corretamente os recursos que a operação
+possui, sem vazamentos, uso após liberação ou double free. Assinaturas
+públicas existentes devem ser preservadas, atualizando todos os chamadores
+quando uma alteração for realmente necessária.
+
+Exemplo para uma operação com código canônico:
 
 ```c
-#define OK           0
-#define ERR_NULL     1
-#define ERR_MEM      2
-#define ERR_DISK     3
-#define ERR_NOT_FOUND 4
-#define ERR_OVERFLOW  5
-
 int funcao(void) {
-    if (!ptr) { LOG_ERROR("MOD", "Null pointer"); return ERR_NULL; }
+    if (!ptr) { LOG_ERROR("MOD", "Ponteiro nulo"); return ERR_NULL; }
     if (falha) { LOG_ERROR("MOD", "Operacao falhou"); return ERR_DISK; }
     return OK;
 }
 ```
 
-Os códigos canônicos ficam em `src/include/core/errors.h`; novos códigos não
-devem ser redefinidos localmente sem atualizar esse contrato. Assinaturas
-públicas existentes devem ser preservadas, atualizando todos os chamadores
-quando uma alteração for realmente necessária.
-
 Para erros fatais que derrubam o sistema:
+
 ```c
 LOG_ERROR("MOD", "Erro fatal");
 panic("MOD: Erro fatal");
