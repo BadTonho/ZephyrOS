@@ -19,6 +19,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `cat` | `<caminho>` | Exibe até 4095 bytes de arquivo pela VFS. |
 | `echo` | `<texto>` | Imprime texto por ZAPP ring 3, com fallback nativo seguro. |
 | `mem` | - | Exibe o uso da memória RAM (total, livre, usada). |
+| `mem` | `detailed` | Exibe as zonas físicas, runs livres, páginas isoladas e fragmentação MM4. |
 | `procs` | - | Lista os processos ativos no sistema. |
 | `threads` | - | Lista as threads ativas do sistema. |
 | `threadtest` | - | Valida a troca cooperativa de contexto entre duas threads temporarias. |
@@ -85,7 +86,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `ping` | `<ip> [1-10]` | Executa ICMP Echo e entrega eventos e resumo em uma chamada. |
 | `acpi` | `status` | Mostra tabelas, PM1, modo ACPI, `_S5_` e prontidao S5, sem executar transicoes. |
 | `power` | `status` | Mostra ativacao do modo, prontidao S5, desligamento fisico e fallback HLT. |
-| `memcheck` | - | Valida heap, coalescencia, PMM e diretorios ring 3 residuais. |
+| `memcheck` | - | Valida heap, coalescencia, PMM, métricas MM4 e diretorios ring 3 residuais. |
 | `vmamap` | `<pid>` | Lista faixas virtuais, paginas, tipo e permissoes de um processo ring 3. |
 | `schedcheck` | - | Valida os invariantes atuais do scheduler sem alterar processos. |
 | `q2check` | - | Executa o diagnóstico compacto da Q2 com duas falhas isoladas. |

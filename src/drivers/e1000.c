@@ -197,11 +197,15 @@ static void e1000_release_dma(e1000_device_t* device) {
 
 static int e1000_allocate_dma(e1000_device_t* device) {
     device->rx_ring =
-        (volatile e1000_rx_descriptor_t*)pmm_alloc_page();
+        (volatile e1000_rx_descriptor_t*)pmm_alloc_page_in_zone(
+            MEMORY_ZONE_BUFFER);
     device->tx_ring =
-        (volatile e1000_tx_descriptor_t*)pmm_alloc_page();
-    device->rx_buffers = (uint8_t*)pmm_alloc_pages(E1000_BUFFER_PAGES);
-    device->tx_buffers = (uint8_t*)pmm_alloc_pages(E1000_BUFFER_PAGES);
+        (volatile e1000_tx_descriptor_t*)pmm_alloc_page_in_zone(
+            MEMORY_ZONE_BUFFER);
+    device->rx_buffers = (uint8_t*)pmm_alloc_pages_in_zone(
+        E1000_BUFFER_PAGES, MEMORY_ZONE_BUFFER);
+    device->tx_buffers = (uint8_t*)pmm_alloc_pages_in_zone(
+        E1000_BUFFER_PAGES, MEMORY_ZONE_BUFFER);
     if (!device->rx_ring || !device->tx_ring ||
         !device->rx_buffers || !device->tx_buffers) {
         LOG_ERROR("E1000", "Falha ao alocar memoria DMA");

@@ -855,13 +855,28 @@ ocupados, maior bloco livre, fragmentacao externa, falhas de alocacao e
 rejeicoes de `kfree`. A inspecao valida limites, encadeamento e metadados
 antes de percorrer o heap; corrupcao produz diagnostico controlado, sem seguir
 um ciclo invalido. `memory_get_pmm_stats()` separa paginas entregues pelo PMM,
-falhas de alocacao e liberacoes rejeitadas. Memoria por processo continua fora
-do contrato ate haver atribuicao confiavel para todas as alocacoes.
+falhas de alocacao e liberacoes rejeitadas.
+
+Na MM4, `memory_zone_t` e `memory_detailed_stats_t` publicam a contabilidade
+exclusiva das paginas fisicas em `KERNEL`, `HEAP`, `SLAB`, `PROCESS`, `BUFFER` e
+`FREE`. `pmm_alloc_page_in_zone()` e `pmm_alloc_pages_in_zone()` classificam
+novas alocacoes; `pmm_alloc_page()` e `pmm_alloc_pages()` continuam wrappers
+compativeis para alocacoes genericas do kernel. O metadata de ownership usa a
+janela de bitmap do PMM, e liberacoes de paginas reservadas sao rejeitadas sem
+alterar os contadores.
+
+`memory_get_detailed_stats()` retorna `OK` com soma das zonas, runs livres,
+maior run, paginas livres isoladas e fragmentacao fisica. A fragmentacao e
+`((free_pages - largest_free_run) * 100) / free_pages`, ou zero sem paginas
+livres; a fragmentacao interna do heap permanece separada. A consulta percorre
+o metadata sob demanda. O Task Manager usa um snapshot com no maximo uma
+atualizacao por segundo, e nenhum caminho de IRQ ou page fault executa essa
+varredura.
 
 `health` preserva todos os blocos existentes e acrescenta fragmentacao,
 rejeicoes do PMM e diretorios/paginas de usuario ativos. Esses campos sao
-diagnosticos internos; `mem` e a App API continuam mostrando apenas memoria
-global.
+diagnosticos internos; `mem` continua mostrando o resumo legado e `mem detailed`
+mostra as categorias MM4. A App API permanece com o resumo global.
 
 ## MM1: caches SLAB/SLUB
 

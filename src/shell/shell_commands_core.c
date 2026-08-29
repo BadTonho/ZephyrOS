@@ -300,7 +300,7 @@ static void cmd_help(void) {
     video_print("  pwd      - Exibe o diretorio atual\n", 0x07);
     video_print("  cd       - Altera o diretorio atual\n", 0x07);
     video_print("  echo     - Exibe texto\n", 0x07);
-    video_print("  mem      - Mostra informacoes de memoria\n", 0x07);
+    video_print("  mem [detailed] - Mostra informacoes de memoria\n", 0x07);
     video_print("  slabinfo - Mostra caches SLAB\n", 0x07);
     video_print("  slabtest - Valida alocador SLAB\n", 0x07);
     video_print("  pagefault status - Mostra faults de pagina\n", 0x07);
@@ -377,7 +377,7 @@ static void cmd_help(void) {
                 0x07);
     video_print("  devcheck - Valida dispositivos do devfs\n", 0x07);
     video_print("  kmetrics - Mostra linha-base de metricas do kernel\n", 0x07);
-    video_print("  memcheck - Valida heap, PMM e diretorios de usuario\n", 0x07);
+    video_print("  memcheck - Valida heap, PMM, metricas MM4 e diretorios de usuario\n", 0x07);
     video_print("  schedcheck - Valida invariantes do scheduler\n", 0x07);
     video_print("  q2check  - Executa diagnostico compacto da Q2\n", 0x07);
     video_print("  regcheck [full] - F11 cancela nos modos normal e full\n",
@@ -554,6 +554,62 @@ static void cmd_mem_native(void) {
     video_print("  Usada: ", 0x07);
     shell_command_print_num(memory_get_used() / 1024);
     video_print(" KB\n", 0x07);
+}
+
+static void cmd_mem_detailed_print_zone(const char* label,
+                                        const memory_detailed_stats_t* stats,
+                                        memory_zone_t zone) {
+    if (!label || !stats || zone >= MEMORY_ZONE_COUNT) return;
+    video_print("  ", 0x07);
+    video_print(label, 0x07);
+    video_print(": ", 0x08);
+    shell_command_print_num(stats->zone_pages[zone] * (PAGE_SIZE / 1024U));
+    video_print(" KB (", 0x08);
+    shell_command_print_num(stats->zone_pages[zone]);
+    video_print(" paginas)\n", 0x08);
+}
+
+static void cmd_mem_detailed(void) {
+    memory_detailed_stats_t detailed;
+    memory_heap_stats_t heap;
+    int result;
+
+    result = memory_get_detailed_stats(&detailed);
+    if (result != OK) {
+        video_print("Memoria detalhada indisponivel.\n", 0x0C);
+        return;
+    }
+    memory_get_heap_stats(&heap);
+    video_begin_update();
+    video_print("Memoria detalhada:\n", 0x0B);
+    video_print("  Total: ", 0x07);
+    shell_command_print_num(detailed.total_pages * (PAGE_SIZE / 1024U));
+    video_print(" KB (", 0x08);
+    shell_command_print_num(detailed.total_pages);
+    video_print(" paginas)\n", 0x08);
+    cmd_mem_detailed_print_zone("Kernel", &detailed, MEMORY_ZONE_KERNEL);
+    cmd_mem_detailed_print_zone("Heap", &detailed, MEMORY_ZONE_HEAP);
+    cmd_mem_detailed_print_zone("SLAB", &detailed, MEMORY_ZONE_SLAB);
+    cmd_mem_detailed_print_zone("Processos", &detailed, MEMORY_ZONE_PROCESS);
+    cmd_mem_detailed_print_zone("Buffers", &detailed, MEMORY_ZONE_BUFFER);
+    cmd_mem_detailed_print_zone("Livre PMM", &detailed, MEMORY_ZONE_FREE);
+    video_print("  Heap interno: usado=", 0x07);
+    shell_command_print_num(heap.used_bytes / 1024U);
+    video_print(" KB livre=", 0x08);
+    shell_command_print_num(heap.free_bytes / 1024U);
+    video_print(" KB frag=", 0x08);
+    shell_command_print_num(heap.fragmentation_percent);
+    video_print("%\n", 0x08);
+    video_print("  PMM: runs=", 0x07);
+    shell_command_print_num(detailed.free_runs);
+    video_print(" maior=", 0x08);
+    shell_command_print_num(detailed.largest_free_run);
+    video_print(" isoladas=", 0x08);
+    shell_command_print_num(detailed.isolated_free_pages);
+    video_print(" frag=", 0x08);
+    shell_command_print_num(detailed.fragmentation_percent);
+    video_print("%\n", 0x08);
+    video_end_update();
 }
 
 static void cmd_procs(void) {
@@ -738,8 +794,17 @@ static void cmd_run_migrated_builtin(shell_builtin_app_t app) {
     video_print(").\n", 0x0C);
 }
 
-static void cmd_mem(void) {
-    cmd_run_migrated_builtin(SHELL_BUILTIN_APP_MEM);
+static void cmd_mem(const char* arguments) {
+    if (!arguments || !*arguments) {
+        cmd_run_migrated_builtin(SHELL_BUILTIN_APP_MEM);
+        return;
+    }
+    if (shell_command_args_equal(arguments, "detailed")) {
+        cmd_mem_detailed();
+        return;
+    }
+    LOG_WARN("SHELL", "Argumentos invalidos no mem");
+    video_print("Uso: mem [detailed]\n", 0x0C);
 }
 
 static void cmd_uptime(void) {
@@ -858,7 +923,7 @@ SHELL_CORE_WRAP_NO_ARGS(shell_dispatch_cmd_clear, cmd_clear)
 SHELL_CORE_WRAP_ARGS(shell_dispatch_cmd_ls, cmd_ls)
 SHELL_CORE_WRAP_ARGS(shell_dispatch_cmd_cat, cmd_cat)
 SHELL_CORE_WRAP_ARGS(shell_dispatch_cmd_echo, cmd_echo)
-SHELL_CORE_WRAP_NO_ARGS(shell_dispatch_cmd_mem, cmd_mem)
+SHELL_CORE_WRAP_ARGS(shell_dispatch_cmd_mem, cmd_mem)
 SHELL_CORE_WRAP_NO_ARGS(shell_dispatch_cmd_procs, cmd_procs)
 SHELL_CORE_WRAP_ARGS(shell_dispatch_cmd_stack, cmd_stack)
 SHELL_CORE_WRAP_NO_ARGS(shell_dispatch_cmd_threads, cmd_threads)

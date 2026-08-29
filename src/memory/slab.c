@@ -171,7 +171,8 @@ static int slab_prepare_record(kmem_cache_t* cache) {
         LOG_ERROR("MEM", "Limite global de slabs atingido");
         return ERR_UNAVAILABLE;
     }
-    memory = pmm_alloc_pages(cache->slab_pages);
+    memory = pmm_alloc_pages_in_zone(cache->slab_pages,
+                                     MEMORY_ZONE_SLAB);
     if (!memory) {
         LOG_ERROR("MEM", "Falha ao reservar paginas para slab");
         return ERR_MEM;

@@ -3,6 +3,7 @@
 #include "core/keyboard.h"
 #include "core/timer.h"
 #include "core/memory.h"
+#include "core/string.h"
 #include "process/process.h"
 #include "process/signal.h"
 #include "process/thread.h"
@@ -85,6 +86,7 @@
 #define TSKMGR_GUI_LIST_MIN_WIDTH TSKMGR_GUI_PX(450)
 #define TSKMGR_GUI_DETAIL_GAP TSKMGR_GUI_PX(8)
 #define TSKMGR_GUI_HISTORY_SAMPLES 60U
+#define TSKMGR_MEMORY_STATS_TICKS 50U
 
 static int is_open = 0;
 static int selected_tab = 0;
@@ -101,6 +103,9 @@ static uint8_t taskmgr_memory_history[TSKMGR_GUI_HISTORY_SAMPLES] = {0};
 static uint8_t taskmgr_load_history[TSKMGR_GUI_HISTORY_SAMPLES] = {0};
 static uint32_t taskmgr_history_head = 0;
 static uint32_t taskmgr_history_count = 0;
+static memory_detailed_stats_t taskmgr_memory_stats;
+static uint32_t taskmgr_memory_stats_tick = 0;
+static uint8_t taskmgr_memory_stats_valid = 0;
 
 static int gui_open = 0;
 static int gui_minimized = 0;
@@ -144,6 +149,7 @@ static int taskmgr_get_work_area(tb_rect_t* work_area);
 static void taskmgr_clamp_window(void);
 static void taskmgr_gui_reset_history(void);
 static void taskmgr_gui_sample_history(void);
+static void taskmgr_update_memory_stats(void);
 static void taskmgr_gui_draw_surface(int x, int y, int width, int height,
                                      uint32_t background, uint32_t border);
 static void taskmgr_gui_draw_history_graph(int x, int y, int width, int height,
@@ -205,6 +211,18 @@ static void taskmgr_gui_reset_history(void) {
     }
     taskmgr_history_head = 0;
     taskmgr_history_count = 0;
+}
+
+static void taskmgr_update_memory_stats(void) {
+    uint32_t now = timer_get_ticks();
+
+    if (taskmgr_memory_stats_valid &&
+        now - taskmgr_memory_stats_tick < TSKMGR_MEMORY_STATS_TICKS) {
+        return;
+    }
+    taskmgr_memory_stats_tick = now;
+    taskmgr_memory_stats_valid =
+        memory_get_detailed_stats(&taskmgr_memory_stats) == OK;
 }
 
 static uint32_t taskmgr_gui_aggregate_load(void) {
@@ -291,6 +309,9 @@ void taskmgr_init(void) {
     gui_last_metrics_tick = 0;
     gui_redraw_pending = 0;
     taskmgr_hosted = 0;
+    taskmgr_memory_stats_tick = 0;
+    taskmgr_memory_stats_valid = 0;
+    kmemset(&taskmgr_memory_stats, 0, sizeof(taskmgr_memory_stats));
     taskmgr_gui_reset_history();
 }
 
@@ -712,6 +733,8 @@ static void draw_memory(void) {
     uint32_t used_pct = taskmgr_percent(used, total);
     ata_device_t* device = ata_get_device();
 
+    taskmgr_update_memory_stats();
+
     print_at(start_x, start_y, "Uso de Memoria", COLOR_HEADER);
     draw_hline(start_x, start_y + 1, TSKMGR_WIDTH - 4, COLOR_BORDER);
 
@@ -745,39 +768,73 @@ static void draw_memory(void) {
     print_at(start_x + 48, start_y + 11, "Livres", COLOR_TEXT);
     print_num_at(start_x + 55, start_y + 11, free_pages, COLOR_BAR_FG);
 
-    print_at(start_x, start_y + 13, "ATA:", COLOR_HEADER);
-    print_at(start_x + 6, start_y + 13, "R", COLOR_TEXT);
-    print_num_at(start_x + 8, start_y + 13, ata_get_read_ops(), COLOR_HIGHLIGHT);
-    print_at(start_x + 20, start_y + 13, "W", COLOR_TEXT);
-    print_num_at(start_x + 22, start_y + 13, ata_get_write_ops(), COLOR_HIGHLIGHT);
-    print_at(start_x + 38, start_y + 13, "Estado", COLOR_TEXT);
-    print_at(start_x + 45, start_y + 13,
+    if (taskmgr_memory_stats_valid) {
+        print_at(start_x, start_y + 13, "Kernel:", COLOR_HEADER);
+        print_num_at(start_x + 8, start_y + 13,
+                     taskmgr_memory_stats.zone_pages[MEMORY_ZONE_KERNEL] *
+                     (PAGE_SIZE / 1024U), COLOR_TEXT);
+        print_at(start_x + 20, start_y + 13, "Heap:", COLOR_HEADER);
+        print_num_at(start_x + 26, start_y + 13,
+                     taskmgr_memory_stats.zone_pages[MEMORY_ZONE_HEAP] *
+                     (PAGE_SIZE / 1024U), COLOR_TEXT);
+        print_at(start_x + 38, start_y + 13, "SLAB:", COLOR_HEADER);
+        print_num_at(start_x + 44, start_y + 13,
+                     taskmgr_memory_stats.zone_pages[MEMORY_ZONE_SLAB] *
+                     (PAGE_SIZE / 1024U), COLOR_TEXT);
+        print_at(start_x, start_y + 14, "Process:", COLOR_HEADER);
+        print_num_at(start_x + 9, start_y + 14,
+                     taskmgr_memory_stats.zone_pages[MEMORY_ZONE_PROCESS] *
+                     (PAGE_SIZE / 1024U), COLOR_TEXT);
+        print_at(start_x + 25, start_y + 14, "Buffer:", COLOR_HEADER);
+        print_num_at(start_x + 33, start_y + 14,
+                     taskmgr_memory_stats.zone_pages[MEMORY_ZONE_BUFFER] *
+                     (PAGE_SIZE / 1024U), COLOR_TEXT);
+        print_at(start_x + 45, start_y + 14, "Livre:", COLOR_HEADER);
+        print_num_at(start_x + 52, start_y + 14,
+                     taskmgr_memory_stats.zone_pages[MEMORY_ZONE_FREE] *
+                     (PAGE_SIZE / 1024U), COLOR_BAR_FG);
+        print_at(start_x, start_y + 15, "Runs:", COLOR_HEADER);
+        print_num_at(start_x + 6, start_y + 15,
+                     taskmgr_memory_stats.free_runs, COLOR_TEXT);
+        print_at(start_x + 18, start_y + 15, "Maior:", COLOR_HEADER);
+        print_num_at(start_x + 25, start_y + 15,
+                     taskmgr_memory_stats.largest_free_run, COLOR_TEXT);
+        print_at(start_x + 39, start_y + 15, "Iso:", COLOR_HEADER);
+        print_num_at(start_x + 44, start_y + 15,
+                     taskmgr_memory_stats.isolated_free_pages, COLOR_TEXT);
+        print_at(start_x + 57, start_y + 15, "F:", COLOR_HEADER);
+        print_num_at(start_x + 60, start_y + 15,
+                     taskmgr_memory_stats.fragmentation_percent, COLOR_TEXT);
+        print_at(start_x + 63, start_y + 15, "%", COLOR_TEXT);
+    } else {
+        print_at(start_x, start_y + 13, "Metricas MM4 indisponiveis", COLOR_DEAD);
+    }
+
+    print_at(start_x, start_y + 12, "ATA:", COLOR_HEADER);
+    print_at(start_x + 6, start_y + 12, "R", COLOR_TEXT);
+    print_num_at(start_x + 8, start_y + 12, ata_get_read_ops(), COLOR_HIGHLIGHT);
+    print_at(start_x + 20, start_y + 12, "W", COLOR_TEXT);
+    print_num_at(start_x + 22, start_y + 12, ata_get_write_ops(), COLOR_HIGHLIGHT);
+    print_at(start_x + 38, start_y + 12, "Estado", COLOR_TEXT);
+    print_at(start_x + 45, start_y + 12,
              device && device->present ? "READY" : "N/D", COLOR_HIGHLIGHT);
-
-    print_at(start_x, start_y + 14, "Modelo:", COLOR_TEXT);
+    print_at(start_x, start_y + 16, "Modelo:", COLOR_TEXT);
     if (device && device->present) {
-        char model[31];
-        int i = 0;
-        while (device->model[i] && i < 30) {
-            model[i] = device->model[i];
-            i++;
-        }
-        model[i] = '\0';
-        print_at(start_x + 8, start_y + 14, model, COLOR_TEXT);
+        char model[21];
+        taskmgr_gui_copy_text(model, sizeof(model), device->model);
+        print_at(start_x + 8, start_y + 16, model, COLOR_TEXT);
     } else {
-        print_at(start_x + 8, start_y + 14, "N/D", COLOR_DEAD);
+        print_at(start_x + 8, start_y + 16, "N/D", COLOR_DEAD);
     }
-
-    print_at(start_x, start_y + 15, "Setor ATA:", COLOR_TEXT);
+    print_at(start_x + 45, start_y + 16, "Set:", COLOR_TEXT);
     if (device && device->present) {
-        print_num_at(start_x + 11, start_y + 15, device->sectors, COLOR_HIGHLIGHT);
+        print_num_at(start_x + 50, start_y + 16, device->sectors, COLOR_HIGHLIGHT);
     } else {
-        print_at(start_x + 11, start_y + 15, "N/D", COLOR_DEAD);
+        print_at(start_x + 50, start_y + 16, "N/D", COLOR_DEAD);
     }
-    print_at(start_x + 35, start_y + 15, "Pagina: 4 KB", COLOR_TEXT);
 
     if (!total) {
-        print_at(start_x, start_y + 16, "Metricas de memoria indisponiveis", COLOR_DEAD);
+        print_at(start_x, start_y + 12, "Metricas de memoria indisponiveis", COLOR_DEAD);
     }
 }
 
@@ -1574,6 +1631,8 @@ static void taskmgr_gui_draw_memory(void) {
     uint32_t bar_color = used_percent > 80 ? 0x00D65A5AU :
                          (used_percent > 60 ? 0x00E0A850U : 0x005FBF7FU);
 
+    taskmgr_update_memory_stats();
+
     taskmgr_gui_draw_surface(panel_x, panel_y, panel_width, panel_height,
                              GUI_MODERN_COLOR_WINDOW,
                              GUI_MODERN_COLOR_BORDER_INACTIVE);
@@ -1602,24 +1661,71 @@ static void taskmgr_gui_draw_memory(void) {
     taskmgr_gui_draw_num(x + 380, y + 176, PAGE_SIZE, GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 420), (uint32_t)(y + 176), "bytes", GUI_COLOR_TEXT);
 
-    gui_draw_text((uint32_t)x, (uint32_t)(y + 196), "Disco ATA", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)x, (uint32_t)(y + 220), "Leituras:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 120, y + 220, ata_get_read_ops(), GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 260), (uint32_t)(y + 220), "Escritas:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 380, y + 220, ata_get_write_ops(), GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)x, (uint32_t)(y + 248), "Modelo:", GUI_COLOR_TEXT);
-    if (device && device->present) {
-        char model[12];
-        taskmgr_gui_copy_text(model, sizeof(model), device->model);
-        gui_draw_text((uint32_t)(x + 120), (uint32_t)(y + 248), model, GUI_COLOR_TEXT);
+    if (taskmgr_memory_stats_valid) {
+        gui_draw_text((uint32_t)x, (uint32_t)(y + 196), "Zonas KB", GUI_COLOR_TEXT);
+        gui_draw_text((uint32_t)x, (uint32_t)(y + 220), "Kernel:", GUI_COLOR_TEXT);
+        taskmgr_gui_draw_num(x + 96, y + 220,
+                             taskmgr_memory_stats.zone_pages[MEMORY_ZONE_KERNEL] *
+                             (PAGE_SIZE / 1024U), GUI_COLOR_TEXT);
+        gui_draw_text((uint32_t)(x + 176), (uint32_t)(y + 220), "Heap:", GUI_COLOR_TEXT);
+        taskmgr_gui_draw_num(x + 244, y + 220,
+                             taskmgr_memory_stats.zone_pages[MEMORY_ZONE_HEAP] *
+                             (PAGE_SIZE / 1024U), GUI_COLOR_TEXT);
+        gui_draw_text((uint32_t)(x + 324), (uint32_t)(y + 220), "SLAB:", GUI_COLOR_TEXT);
+        taskmgr_gui_draw_num(x + 400, y + 220,
+                             taskmgr_memory_stats.zone_pages[MEMORY_ZONE_SLAB] *
+                             (PAGE_SIZE / 1024U), GUI_COLOR_TEXT);
+        gui_draw_text((uint32_t)x, (uint32_t)(y + 244), "Processos:", GUI_COLOR_TEXT);
+        taskmgr_gui_draw_num(x + 96, y + 244,
+                             taskmgr_memory_stats.zone_pages[MEMORY_ZONE_PROCESS] *
+                             (PAGE_SIZE / 1024U), GUI_COLOR_TEXT);
+        gui_draw_text((uint32_t)(x + 176), (uint32_t)(y + 244), "Buffers:", GUI_COLOR_TEXT);
+        taskmgr_gui_draw_num(x + 244, y + 244,
+                             taskmgr_memory_stats.zone_pages[MEMORY_ZONE_BUFFER] *
+                             (PAGE_SIZE / 1024U), GUI_COLOR_TEXT);
+        gui_draw_text((uint32_t)(x + 324), (uint32_t)(y + 244), "Livre:", GUI_COLOR_TEXT);
+        taskmgr_gui_draw_num(x + 400, y + 244,
+                             taskmgr_memory_stats.zone_pages[MEMORY_ZONE_FREE] *
+                             (PAGE_SIZE / 1024U), GUI_COLOR_TEXT);
+        gui_draw_text((uint32_t)x, (uint32_t)(y + 268), "PMM runs:", GUI_COLOR_TEXT);
+        taskmgr_gui_draw_num(x + 96, y + 268,
+                             taskmgr_memory_stats.free_runs, GUI_COLOR_TEXT);
+        gui_draw_text((uint32_t)(x + 176), (uint32_t)(y + 268), "Maior:", GUI_COLOR_TEXT);
+        taskmgr_gui_draw_num(x + 244, y + 268,
+                             taskmgr_memory_stats.largest_free_run, GUI_COLOR_TEXT);
+        gui_draw_text((uint32_t)(x + 324), (uint32_t)(y + 268), "Iso:", GUI_COLOR_TEXT);
+        taskmgr_gui_draw_num(x + 372, y + 268,
+                             taskmgr_memory_stats.isolated_free_pages, GUI_COLOR_TEXT);
+        gui_draw_text((uint32_t)(x + 444), (uint32_t)(y + 268), "Frag:", GUI_COLOR_TEXT);
+        taskmgr_gui_draw_num(x + 504, y + 268,
+                             taskmgr_memory_stats.fragmentation_percent, GUI_COLOR_TEXT);
+        gui_draw_text((uint32_t)(x + 536), (uint32_t)(y + 268), "%", GUI_COLOR_TEXT);
     } else {
-        gui_draw_text((uint32_t)(x + 120), (uint32_t)(y + 248), "N/D", 0x00D65A5AU);
+        gui_draw_text((uint32_t)x, (uint32_t)(y + 196),
+                      "Metricas MM4 indisponiveis", GUI_COLOR_TEXT);
     }
-    gui_draw_text((uint32_t)(x + 260), (uint32_t)(y + 248), "Setores:", GUI_COLOR_TEXT);
+
+    gui_draw_text((uint32_t)(x + 460), (uint32_t)(y + 196), "Disco ATA", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 460), (uint32_t)(y + 220), "R:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 484, y + 220, ata_get_read_ops(), GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 550), (uint32_t)(y + 220), "W:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 574, y + 220, ata_get_write_ops(), GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 460), (uint32_t)(y + 244), "Estado:", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 530), (uint32_t)(y + 244),
+                  device && device->present ? "READY" : "N/D", GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 460), (uint32_t)(y + 268), "Modelo:", GUI_COLOR_TEXT);
     if (device && device->present) {
-        taskmgr_gui_draw_num(x + 380, y + 248, device->sectors, GUI_COLOR_TEXT);
+        char model[9];
+        taskmgr_gui_copy_text(model, sizeof(model), device->model);
+        gui_draw_text((uint32_t)(x + 530), (uint32_t)(y + 268), model, GUI_COLOR_TEXT);
     } else {
-        gui_draw_text((uint32_t)(x + 380), (uint32_t)(y + 248), "N/D", 0x00D65A5AU);
+        gui_draw_text((uint32_t)(x + 530), (uint32_t)(y + 268), "N/D", GUI_COLOR_TEXT);
+    }
+    gui_draw_text((uint32_t)(x + 600), (uint32_t)(y + 268), "Set:", GUI_COLOR_TEXT);
+    if (device && device->present) {
+        taskmgr_gui_draw_num(x + 644, y + 268, device->sectors, GUI_COLOR_TEXT);
+    } else {
+        gui_draw_text((uint32_t)(x + 644), (uint32_t)(y + 268), "N/D", GUI_COLOR_TEXT);
     }
     if (!total) {
         gui_draw_text((uint32_t)(x + 196), (uint32_t)(y + 34),

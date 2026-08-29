@@ -4060,6 +4060,46 @@ static int shell_memcheck_same_layout(const memory_heap_stats_t* before,
            before->fragmentation_percent == after->fragmentation_percent;
 }
 
+static int shell_memcheck_same_memory_metrics(
+    const memory_detailed_stats_t* before,
+    const memory_detailed_stats_t* after) {
+    if (!before || !after || before->total_pages != after->total_pages ||
+        before->free_runs != after->free_runs ||
+        before->largest_free_run != after->largest_free_run ||
+        before->isolated_free_pages != after->isolated_free_pages ||
+        before->fragmentation_percent != after->fragmentation_percent ||
+        before->initialized != after->initialized ||
+        before->valid != after->valid) {
+        return 0;
+    }
+    for (memory_zone_t zone = MEMORY_ZONE_KERNEL;
+         zone < MEMORY_ZONE_COUNT; zone++) {
+        if (before->zone_pages[zone] != after->zone_pages[zone]) return 0;
+    }
+    return 1;
+}
+
+static int shell_memcheck_valid_memory_metrics(
+    const memory_detailed_stats_t* detailed,
+    const memory_pmm_stats_t* pmm) {
+    uint32_t zone_sum = 0U;
+
+    if (!detailed || !pmm || !detailed->initialized || !detailed->valid ||
+        !pmm->initialized || pmm->owned_pages > detailed->total_pages ||
+        detailed->fragmentation_percent > 100U ||
+        detailed->largest_free_run > detailed->zone_pages[MEMORY_ZONE_FREE] ||
+        detailed->isolated_free_pages > detailed->free_runs ||
+        detailed->free_runs > detailed->zone_pages[MEMORY_ZONE_FREE]) {
+        return 0;
+    }
+    for (memory_zone_t zone = MEMORY_ZONE_KERNEL;
+         zone < MEMORY_ZONE_COUNT; zone++) {
+        zone_sum += detailed->zone_pages[zone];
+    }
+    return zone_sum == detailed->total_pages &&
+           detailed->zone_pages[MEMORY_ZONE_FREE] == memory_get_free_pages();
+}
+
 static void cmd_memcheck_print_result(const char* label, int passed) {
     video_print("  ", 0x07);
     video_print(label, 0x07);
@@ -4237,8 +4277,12 @@ int shell_diagnostics_run_memcheck(shell_memcheck_result_t* result_out) {
     memory_heap_stats_t heap_after;
     memory_pmm_stats_t pmm_before;
     memory_pmm_stats_t pmm_after;
+    memory_detailed_stats_t memory_before;
+    memory_detailed_stats_t memory_after;
     paging_user_stats_t paging_before;
     paging_user_stats_t paging_after;
+    int memory_before_result;
+    int memory_after_result;
     void* block_a = 0;
     void* block_b = 0;
     void* block_c = 0;
@@ -4250,6 +4294,7 @@ int shell_diagnostics_run_memcheck(shell_memcheck_result_t* result_out) {
 
     memory_get_heap_stats(&heap_before);
     memory_get_pmm_stats(&pmm_before);
+    memory_before_result = memory_get_detailed_stats(&memory_before);
     paging_get_user_stats(&paging_before);
 
     block_a = kmalloc(SHELL_MEMCHECK_BLOCK_A);
@@ -4261,6 +4306,7 @@ int shell_diagnostics_run_memcheck(shell_memcheck_result_t* result_out) {
 
     memory_get_heap_stats(&heap_after);
     memory_get_pmm_stats(&pmm_after);
+    memory_after_result = memory_get_detailed_stats(&memory_after);
     paging_get_user_stats(&paging_after);
 
     result_out->heap_integrity = heap_before.initialized && heap_before.valid &&
@@ -4278,10 +4324,18 @@ int shell_diagnostics_run_memcheck(shell_memcheck_result_t* result_out) {
                                    paging_after.active_directories == 0 &&
                                    paging_after.active_pages == 0;
     result_out->slab_integrity = kmem_cache_validate() == OK;
+    result_out->memory_metrics = memory_before_result == OK &&
+                                 memory_after_result == OK &&
+                                 shell_memcheck_valid_memory_metrics(
+                                     &memory_before, &pmm_before) &&
+                                 shell_memcheck_valid_memory_metrics(
+                                     &memory_after, &pmm_after) &&
+                                 shell_memcheck_same_memory_metrics(
+                                     &memory_before, &memory_after);
 
     if (!result_out->heap_integrity || !result_out->coalescence ||
         !result_out->pmm_guards || !result_out->user_directories ||
-        !result_out->slab_integrity) {
+        !result_out->slab_integrity || !result_out->memory_metrics) {
         LOG_ERROR("SHELL", "MemCheck detectou falha de integridade");
         return ERR_STATE;
     }
@@ -4315,6 +4369,7 @@ static void cmd_memcheck(const char* args) {
     cmd_memcheck_print_result("pmm_guardas", result.pmm_guards);
     cmd_memcheck_print_result("diretorios_user", result.user_directories);
     cmd_memcheck_print_result("slab_integridade", result.slab_integrity);
+    cmd_memcheck_print_result("memoria_detalhada", result.memory_metrics);
     cmd_memcheck_print_result("resultado", run_result == OK);
     video_end_update();
 }

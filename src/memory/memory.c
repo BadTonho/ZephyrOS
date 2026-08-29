@@ -3,6 +3,7 @@
 #include "core/panic.h"
 #include "core/log.h"
 #include "core/string.h"
+#include "core/errors.h"
 #include "memory/paging.h"
 
 static memory_info_t mem_info;
@@ -14,6 +15,25 @@ static uint32_t pmm_invalid_frees = 0;
 static uint32_t heap_allocation_failures = 0;
 static uint32_t heap_invalid_frees = 0;
 static uint32_t heap_double_frees = 0;
+
+#define PMM_ZONE_TAG_BITS 3U
+#define PMM_ZONE_TAG_MASK 0x07U
+#define PMM_ZONE_TAG_FREE 0U
+#define PMM_ZONE_TAG_RESERVED_KERNEL 1U
+#define PMM_ZONE_TAG_RESERVED_HEAP 2U
+#define PMM_ZONE_TAG_KERNEL 3U
+#define PMM_ZONE_TAG_SLAB 4U
+#define PMM_ZONE_TAG_PROCESS 5U
+#define PMM_ZONE_TAG_BUFFER 6U
+
+#define PMM_ZONE_STORAGE_BITS(total_pages) \
+    ((total_pages) * PMM_ZONE_TAG_BITS)
+
+#define PMM_ZONE_STORAGE_BYTES(total_pages) \
+    ((PMM_ZONE_STORAGE_BITS(total_pages) + 7U) / 8U)
+
+#define PMM_ZONE_STORAGE_CAPACITY \
+    (PMM_BITMAP_STORAGE_END - PMM_BITMAP_STORAGE_START)
 
 /* O E820 pode retirar ate 128 KiB do topo dos 32 MiB para firmware/ACPI. */
 #define FIRMWARE_TOP_RESERVE 0x00020000U
@@ -48,6 +68,95 @@ static uint32_t heap_double_frees = 0;
 
 static uint32_t align_up(uint32_t value, uint32_t alignment) {
     return (value + alignment - 1) & ~(alignment - 1);
+}
+
+static uint8_t pmm_get_page_tag(uint32_t page) {
+    uint32_t bit_offset = page * PMM_ZONE_TAG_BITS;
+    uint32_t byte_offset = bit_offset / 8U;
+    uint32_t shift = bit_offset % 8U;
+    uint16_t value = pmm_owner_bitmap[byte_offset];
+
+    if (shift > 5U) {
+        value |= (uint16_t)pmm_owner_bitmap[byte_offset + 1U] << 8U;
+    }
+    return (uint8_t)((value >> shift) & PMM_ZONE_TAG_MASK);
+}
+
+static void pmm_set_page_tag(uint32_t page, uint8_t tag) {
+    uint32_t bit_offset = page * PMM_ZONE_TAG_BITS;
+    uint32_t byte_offset = bit_offset / 8U;
+    uint32_t shift = bit_offset % 8U;
+    uint16_t value = pmm_owner_bitmap[byte_offset];
+    uint16_t mask = (uint16_t)PMM_ZONE_TAG_MASK << shift;
+
+    if (shift > 5U) {
+        value |= (uint16_t)pmm_owner_bitmap[byte_offset + 1U] << 8U;
+    }
+    value = (uint16_t)((value & ~mask) |
+                       ((uint16_t)(tag & PMM_ZONE_TAG_MASK) << shift));
+    pmm_owner_bitmap[byte_offset] = (uint8_t)value;
+    if (shift > 5U) {
+        pmm_owner_bitmap[byte_offset + 1U] = (uint8_t)(value >> 8U);
+    }
+}
+
+static memory_zone_t pmm_tag_to_zone(uint8_t tag) {
+    switch (tag) {
+        case PMM_ZONE_TAG_RESERVED_KERNEL:
+        case PMM_ZONE_TAG_KERNEL:
+            return MEMORY_ZONE_KERNEL;
+        case PMM_ZONE_TAG_RESERVED_HEAP:
+            return MEMORY_ZONE_HEAP;
+        case PMM_ZONE_TAG_SLAB:
+            return MEMORY_ZONE_SLAB;
+        case PMM_ZONE_TAG_PROCESS:
+            return MEMORY_ZONE_PROCESS;
+        case PMM_ZONE_TAG_BUFFER:
+            return MEMORY_ZONE_BUFFER;
+        case PMM_ZONE_TAG_FREE:
+            return MEMORY_ZONE_FREE;
+        default:
+            return MEMORY_ZONE_COUNT;
+    }
+}
+
+static uint8_t pmm_zone_to_tag(memory_zone_t zone) {
+    switch (zone) {
+        case MEMORY_ZONE_KERNEL: return PMM_ZONE_TAG_KERNEL;
+        case MEMORY_ZONE_SLAB: return PMM_ZONE_TAG_SLAB;
+        case MEMORY_ZONE_PROCESS: return PMM_ZONE_TAG_PROCESS;
+        case MEMORY_ZONE_BUFFER: return PMM_ZONE_TAG_BUFFER;
+        default: return PMM_ZONE_TAG_FREE;
+    }
+}
+
+static int pmm_zone_is_allocatable(memory_zone_t zone) {
+    return zone == MEMORY_ZONE_KERNEL || zone == MEMORY_ZONE_SLAB ||
+           zone == MEMORY_ZONE_PROCESS || zone == MEMORY_ZONE_BUFFER;
+}
+
+static int pmm_page_is_owned(uint32_t page) {
+    uint8_t tag = pmm_get_page_tag(page);
+
+    return tag >= PMM_ZONE_TAG_KERNEL && tag <= PMM_ZONE_TAG_BUFFER;
+}
+
+static void memory_initialize_page_zones(void) {
+    uint32_t heap_start_page = HEAP_START / PAGE_SIZE;
+    uint32_t heap_end_page = (HEAP_START + HEAP_SIZE) / PAGE_SIZE;
+
+    for (uint32_t page = 0U; page < mem_info.total_pages; page++) {
+        uint8_t tag = (mem_info.bitmap[page / 8U] &
+                       (1U << (page % 8U))) ?
+                      PMM_ZONE_TAG_RESERVED_KERNEL : PMM_ZONE_TAG_FREE;
+        pmm_set_page_tag(page, tag);
+    }
+    if (heap_end_page > mem_info.total_pages) {
+        heap_end_page = mem_info.total_pages;
+    }
+    for (uint32_t page = heap_start_page; page < heap_end_page; page++) {
+        pmm_set_page_tag(page, PMM_ZONE_TAG_RESERVED_HEAP);
+    }
 }
 
 static int memory_range_is_usable(uint32_t start, uint32_t end,
@@ -128,7 +237,7 @@ static void memory_recount(void) {
 
 void memory_init(uint32_t mmap_addr) {
     uint32_t mmap_count;
-    uint32_t bitmap_capacity;
+    uint32_t zone_storage_size;
 
     LOG_INFO("MEM", "Iniciando mapa de memoria");
     if (!mmap_addr) {
@@ -168,9 +277,10 @@ void memory_init(uint32_t mmap_addr) {
 
     mem_info.bitmap_size = align_up((mem_info.total_pages + 7U) / 8U,
                                     PAGE_SIZE);
-    bitmap_capacity = (PMM_BITMAP_STORAGE_END -
-                       PMM_BITMAP_STORAGE_START) / 2U;
-    if (mem_info.bitmap_size > bitmap_capacity) {
+    zone_storage_size = align_up(PMM_ZONE_STORAGE_BYTES(mem_info.total_pages),
+                                 PAGE_SIZE);
+    if (mem_info.bitmap_size > PMM_ZONE_STORAGE_CAPACITY ||
+        zone_storage_size > PMM_ZONE_STORAGE_CAPACITY - mem_info.bitmap_size) {
         LOG_ERROR("MEM", "Espaco insuficiente para os bitmaps do PMM");
         panic_memory("Bitmaps do PMM excedem a memoria baixa", mmap_count,
                      mem_info.total_memory, 0, 0);
@@ -179,11 +289,12 @@ void memory_init(uint32_t mmap_addr) {
 
     mem_info.bitmap = (uint8_t*)PMM_BITMAP_STORAGE_START;
     pmm_owner_bitmap = mem_info.bitmap + mem_info.bitmap_size;
-    pmm_owner_bitmap_size = mem_info.bitmap_size;
+    pmm_owner_bitmap_size = zone_storage_size;
     kmemset(mem_info.bitmap, 0xFF, mem_info.bitmap_size);
     kmemset(pmm_owner_bitmap, 0, pmm_owner_bitmap_size);
     memory_mark_usable(mmap_count);
     memory_reserve_range(0, PHYSICAL_IDENTITY_START);
+    memory_initialize_page_zones();
     memory_recount();
     if (mem_info.free_pages == 0) {
         LOG_ERROR("MEM", "Mapa E820 sem paginas livres mapeaveis");
@@ -203,32 +314,19 @@ void memory_init(uint32_t mmap_addr) {
 
 static int pmm_is_ready(void) {
     return mem_info.bitmap != 0 && pmm_owner_bitmap != 0 &&
-           pmm_owner_bitmap_size == mem_info.bitmap_size;
+           pmm_owner_bitmap_size != 0;
 }
 
 static int pmm_page_is_free(uint32_t page) {
     return !(mem_info.bitmap[page / 8] & (1U << (page % 8)));
 }
 
-static int pmm_page_is_owned(uint32_t page) {
-    return pmm_owner_bitmap[page / 8] & (1U << (page % 8));
-}
-
-static void pmm_set_page_owned(uint32_t page, int owned) {
-    uint8_t bit = (uint8_t)(1U << (page % 8));
-
-    if (owned) {
-        pmm_owner_bitmap[page / 8] |= bit;
-    } else {
-        pmm_owner_bitmap[page / 8] &= (uint8_t)~bit;
-    }
-}
-
-static void pmm_claim_pages(uint32_t first_page, uint32_t count) {
+static void pmm_claim_pages(uint32_t first_page, uint32_t count,
+                            uint8_t tag) {
     for (uint32_t i = 0; i < count; i++) {
         uint32_t page = first_page + i;
         mem_info.bitmap[page / 8] |= (1U << (page % 8));
-        pmm_set_page_owned(page, 1);
+        pmm_set_page_tag(page, tag);
     }
     pmm_owned_pages += count;
     mem_info.free_pages -= count;
@@ -265,7 +363,8 @@ static int pmm_validate_release(void* addr, uint32_t count) {
         return 0;
     }
     for (uint32_t i = 0; i < count; i++) {
-        if (!pmm_page_is_owned(first_page + i)) {
+        if (!pmm_page_is_owned(first_page + i) ||
+            pmm_page_is_free(first_page + i)) {
             LOG_ERROR("MEM", "Liberacao de pagina nao pertencente ao PMM");
             pmm_invalid_frees++;
             return 0;
@@ -278,7 +377,7 @@ static void pmm_release_pages(uint32_t first_page, uint32_t count) {
     for (uint32_t i = 0; i < count; i++) {
         uint32_t page = first_page + i;
         mem_info.bitmap[page / 8] &= (uint8_t)~(1U << (page % 8));
-        pmm_set_page_owned(page, 0);
+        pmm_set_page_tag(page, PMM_ZONE_TAG_FREE);
     }
     pmm_owned_pages -= count;
     mem_info.free_pages += count;
@@ -286,34 +385,16 @@ static void pmm_release_pages(uint32_t first_page, uint32_t count) {
     mem_info.free_memory += count * PAGE_SIZE;
 }
 
-void* pmm_alloc_page(void) {
+void* pmm_alloc_pages_in_zone(uint32_t count, memory_zone_t zone) {
+    uint8_t tag;
+
     if (!pmm_is_ready()) {
         LOG_ERROR("MEM", "PMM indisponivel para alocar pagina");
         pmm_allocation_failures++;
         return 0;
     }
-    for (uint32_t i = 0; i < mem_info.total_pages; i++) {
-        if (pmm_page_is_free(i)) {
-            pmm_claim_pages(i, 1);
-            return (void*)(i * PAGE_SIZE);
-        }
-    }
-    LOG_ERROR("MEM", "PMM sem pagina livre");
-    pmm_allocation_failures++;
-    return 0;
-}
-
-void pmm_free_page(void* addr) {
-    uint32_t page;
-
-    if (!pmm_validate_release(addr, 1)) return;
-    page = (uint32_t)addr / PAGE_SIZE;
-    pmm_release_pages(page, 1);
-}
-
-void* pmm_alloc_pages(uint32_t count) {
-    if (!pmm_is_ready()) {
-        LOG_ERROR("MEM", "PMM indisponivel para alocar paginas");
+    if (!pmm_zone_is_allocatable(zone)) {
+        LOG_ERROR("MEM", "Zona invalida para alocacao PMM");
         pmm_allocation_failures++;
         return 0;
     }
@@ -332,7 +413,8 @@ void* pmm_alloc_pages(uint32_t count) {
             }
         }
         if (found) {
-            pmm_claim_pages(i, count);
+            tag = pmm_zone_to_tag(zone);
+            pmm_claim_pages(i, count, tag);
             return (void*)(i * PAGE_SIZE);
         }
     }
@@ -340,6 +422,26 @@ void* pmm_alloc_pages(uint32_t count) {
     LOG_ERROR("MEM", "PMM sem intervalo contiguo livre");
     pmm_allocation_failures++;
     return 0;
+}
+
+void* pmm_alloc_page_in_zone(memory_zone_t zone) {
+    return pmm_alloc_pages_in_zone(1U, zone);
+}
+
+void* pmm_alloc_page(void) {
+    return pmm_alloc_page_in_zone(MEMORY_ZONE_KERNEL);
+}
+
+void* pmm_alloc_pages(uint32_t count) {
+    return pmm_alloc_pages_in_zone(count, MEMORY_ZONE_KERNEL);
+}
+
+void pmm_free_page(void* addr) {
+    uint32_t page;
+
+    if (!pmm_validate_release(addr, 1)) return;
+    page = (uint32_t)addr / PAGE_SIZE;
+    pmm_release_pages(page, 1);
 }
 
 void pmm_free_pages(void* addr, uint32_t count) {
@@ -742,4 +844,74 @@ void memory_get_pmm_stats(memory_pmm_stats_t* stats) {
     stats->owned_pages = pmm_owned_pages;
     stats->allocation_failures = pmm_allocation_failures;
     stats->invalid_frees = pmm_invalid_frees;
+}
+
+static void memory_record_free_run(memory_detailed_stats_t* stats,
+                                   uint32_t run_length) {
+    if (!stats || run_length == 0U) return;
+    stats->free_runs++;
+    if (run_length == 1U) stats->isolated_free_pages++;
+    if (run_length > stats->largest_free_run) {
+        stats->largest_free_run = run_length;
+    }
+}
+
+int memory_get_detailed_stats(memory_detailed_stats_t* stats) {
+    uint32_t free_run = 0U;
+    uint32_t dynamic_pages = 0U;
+    uint32_t zone_sum = 0U;
+
+    if (!stats) {
+        LOG_ERROR("MEM", "Destino nulo nas estatisticas detalhadas");
+        return ERR_NULL;
+    }
+    kmemset(stats, 0, sizeof(memory_detailed_stats_t));
+    stats->initialized = pmm_is_ready() ? 1U : 0U;
+    if (!stats->initialized) {
+        LOG_ERROR("MEM", "PMM indisponivel nas estatisticas detalhadas");
+        return ERR_STATE;
+    }
+
+    stats->total_pages = mem_info.total_pages;
+    for (uint32_t page = 0U; page < mem_info.total_pages; page++) {
+        uint8_t tag = pmm_get_page_tag(page);
+        memory_zone_t zone = pmm_tag_to_zone(tag);
+        int free_page = pmm_page_is_free(page);
+
+        if (zone >= MEMORY_ZONE_COUNT ||
+            (free_page && zone != MEMORY_ZONE_FREE) ||
+            (!free_page && zone == MEMORY_ZONE_FREE)) {
+            LOG_ERROR("MEM", "Ownership do PMM inconsistente");
+            return ERR_STATE;
+        }
+        stats->zone_pages[zone]++;
+        if (tag >= PMM_ZONE_TAG_KERNEL && tag <= PMM_ZONE_TAG_BUFFER) {
+            dynamic_pages++;
+        }
+        if (free_page) {
+            free_run++;
+        } else {
+            memory_record_free_run(stats, free_run);
+            free_run = 0U;
+        }
+    }
+    memory_record_free_run(stats, free_run);
+
+    for (memory_zone_t zone = MEMORY_ZONE_KERNEL;
+         zone < MEMORY_ZONE_COUNT; zone++) {
+        zone_sum += stats->zone_pages[zone];
+    }
+    if (stats->zone_pages[MEMORY_ZONE_FREE] != mem_info.free_pages ||
+        dynamic_pages != pmm_owned_pages || zone_sum != stats->total_pages) {
+        LOG_ERROR("MEM", "Soma das zonas do PMM inconsistente");
+        return ERR_STATE;
+    }
+    if (stats->zone_pages[MEMORY_ZONE_FREE] != 0U) {
+        stats->fragmentation_percent =
+            ((stats->zone_pages[MEMORY_ZONE_FREE] -
+              stats->largest_free_run) * 100U) /
+            stats->zone_pages[MEMORY_ZONE_FREE];
+    }
+    stats->valid = 1U;
+    return OK;
 }

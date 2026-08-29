@@ -280,9 +280,11 @@ static void rtl8139_release_dma(rtl8139_device_t* device) {
 
 static int rtl8139_allocate_dma(rtl8139_device_t* device) {
     device->rx_buffer =
-        (uint8_t*)pmm_alloc_pages(RTL8139_RX_BUFFER_PAGES);
+        (uint8_t*)pmm_alloc_pages_in_zone(RTL8139_RX_BUFFER_PAGES,
+                                          MEMORY_ZONE_BUFFER);
     device->tx_buffers =
-        (uint8_t*)pmm_alloc_pages(RTL8139_TX_BUFFER_PAGES);
+        (uint8_t*)pmm_alloc_pages_in_zone(RTL8139_TX_BUFFER_PAGES,
+                                          MEMORY_ZONE_BUFFER);
     if (!device->rx_buffer || !device->tx_buffers) {
         LOG_ERROR("RTL8139", "Falha ao alocar memoria DMA");
         rtl8139_release_dma(device);

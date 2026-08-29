@@ -368,7 +368,8 @@ static int ehci_map_mmio(ehci_controller_t* controller, uint32_t base) {
 
 static int ehci_allocate_dma(ehci_controller_t* controller) {
     if (!controller) return ERR_NULL;
-    controller->dma_pool = (uint8_t*)pmm_alloc_pages(EHCI_DMA_PAGE_COUNT);
+    controller->dma_pool = (uint8_t*)pmm_alloc_pages_in_zone(
+        EHCI_DMA_PAGE_COUNT, MEMORY_ZONE_BUFFER);
     if (!controller->dma_pool) {
         LOG_ERROR("EHCI", "Falha ao alocar estruturas DMA EHCI");
         return ERR_MEM;

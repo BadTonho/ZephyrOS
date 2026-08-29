@@ -68,11 +68,34 @@ typedef struct {
     uint8_t initialized;
 } memory_pmm_stats_t;
 
+typedef enum {
+    MEMORY_ZONE_KERNEL = 0,
+    MEMORY_ZONE_HEAP,
+    MEMORY_ZONE_SLAB,
+    MEMORY_ZONE_PROCESS,
+    MEMORY_ZONE_BUFFER,
+    MEMORY_ZONE_FREE,
+    MEMORY_ZONE_COUNT
+} memory_zone_t;
+
+typedef struct {
+    uint32_t total_pages;
+    uint32_t zone_pages[MEMORY_ZONE_COUNT];
+    uint32_t free_runs;
+    uint32_t largest_free_run;
+    uint32_t isolated_free_pages;
+    uint32_t fragmentation_percent;
+    uint8_t initialized;
+    uint8_t valid;
+} memory_detailed_stats_t;
+
 void memory_init(uint32_t mmap_addr);
 void* pmm_alloc_page(void);
 void pmm_free_page(void* addr);
 void* pmm_alloc_pages(uint32_t count);
 void pmm_free_pages(void* addr, uint32_t count);
+void* pmm_alloc_page_in_zone(memory_zone_t zone);
+void* pmm_alloc_pages_in_zone(uint32_t count, memory_zone_t zone);
 
 void* kmalloc(uint32_t size);
 void* kmalloc_aligned(uint32_t size);
@@ -86,5 +109,6 @@ uint32_t memory_get_free_pages(void);
 uint32_t memory_get_mmap_entries(void);
 void memory_get_heap_stats(memory_heap_stats_t* stats);
 void memory_get_pmm_stats(memory_pmm_stats_t* stats);
+int memory_get_detailed_stats(memory_detailed_stats_t* stats);
 
 #endif

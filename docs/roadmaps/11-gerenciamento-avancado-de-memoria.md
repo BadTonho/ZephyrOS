@@ -143,6 +143,10 @@ Executáveis grandes são carregados quase instantaneamente consumindo apenas a 
 
 ## MM4 - Métricas de fragmentação e monitoramento
 
+A implementação de código e documentação desta etapa está preparada. O item
+permanece pendente até a confirmação funcional do usuário no QEMU, conforme a
+matriz de validação registrada abaixo.
+
 ### Implementação
 
 - [ ] Calcular índice de fragmentação da memória física (blocos contíguos livres vs páginas isoladas).
@@ -156,3 +160,8 @@ O sistema fornece diagnóstico preciso da alocação de memória em tempo real s
 ### Comandos Shell / Diagnóstico
 
 - `mem detailed`: relatório completo da divisão da memória entre kernel, processos, caches e blocos físicos livres.
+- Repetir `mem detailed`, testar argumentos inválidos e verificar a soma das
+  categorias, a estabilidade dos contadores e a fragmentação física.
+- Executar `memcheck`, `slabtest`, `appcheck`, `usertest`, `usertest fault`,
+  cenários `mmap`/`munmap`, Task Manager Simple/Classic, `schedcheck`,
+  `regcheck full` e `health check`.

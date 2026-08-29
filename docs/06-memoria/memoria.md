@@ -50,6 +50,38 @@ typedef struct {
 
 O alocador usa um **bitmap** para rastrear quais páginas estão livres ou ocupadas.
 
+## Metricas fisicas MM4
+
+O PMM mantem uma tag de ownership por pagina em sua janela de metadata. As
+categorias sao exclusivas e somam exatamente `total_pages`:
+
+| Zona | Conteudo |
+|------|----------|
+| `KERNEL` | Paginas reservadas do kernel, diretorios e tabelas supervisoras e alocacoes genericas do PMM |
+| `HEAP` | Faixa fisica fixa de 4 MiB do heap; buffers obtidos por `kmalloc()` continuam nesta zona |
+| `SLAB` | Paginas de backing dos caches SLAB |
+| `PROCESS` | Diretorios/tabelas de usuario e frames residentes ring 3 |
+| `BUFFER` | Paginas de buffers DMA dos drivers |
+| `FREE` | Paginas livres entregaveis pelo PMM |
+
+`pmm_alloc_page_in_zone()` e `pmm_alloc_pages_in_zone()` recebem a zona da
+alocacao. As funcoes legadas `pmm_alloc_page()` e `pmm_alloc_pages()` usam
+`KERNEL`. `pmm_free_page()` e `pmm_free_pages()` recusam paginas reservadas ou
+que nao pertencam ao PMM e preservam `free_pages`, `used_memory` e
+`owned_pages` quando a liberacao e rejeitada.
+
+`memory_get_detailed_stats()` calcula sob demanda `free_runs`,
+`largest_free_run`, `isolated_free_pages` e `fragmentation_percent`. Runs
+livres de uma pagina entram em `isolated_free_pages`; a fragmentacao fisica e
+`((free_pages - largest_free_run) * 100) / free_pages`, com resultado zero
+quando nao ha paginas livres. A fragmentacao interna do heap e publicada
+separadamente por `memory_get_heap_stats()`.
+
+`mem detailed` exibe as zonas em KB e paginas, o resumo interno do heap e os
+runs do PMM. O Task Manager reutiliza um snapshot cacheado por no maximo um
+segundo nas abas de memoria Simple e Classic. A coleta nao e chamada por IRQ,
+page fault ou outro caminho de alta frequencia.
+
 ### Conceito
 
 Cada página (4 KB) é representada por 1 bit:
@@ -216,7 +248,8 @@ um ciclo corrompido.
 
 `kmem_cache_init()` registra os metadados estáticos dos caches. Cada cache pode
 usar até 128 slabs globais, com páginas de 4 KiB obtidas por
-`pmm_alloc_pages()` somente depois de `paging_init()`. O registro suporta até
+`pmm_alloc_pages_in_zone(..., MEMORY_ZONE_SLAB)` somente depois de
+`paging_init()`. O registro suporta até
 16 caches e cada slab comporta pelo menos oito e no máximo 128 objetos.
 
 `kmem_cache_create()` valida tamanho e alinhamento potência de dois até

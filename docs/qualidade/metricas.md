@@ -251,3 +251,27 @@ nao um alvo numerico nesta etapa.
 | K3-B ring 3 | `kmetrics reset`; `app inputtest`; `F12`; `kmetrics`; `memcheck`. | Concluido: diretorios e paginas de usuario retornaram a zero apos coleta. |
 | K3-C regressao | `app outputtest`; `q2check`; `usertest fault`; `appcheck`; `threadtest`; `memcheck`. | Concluido: sem panic, ZAPP ou zumbi residual; falhas deliberadas permaneceram controladas. |
 | K3-D interfaces | Nos modos simple e classic, abrir/fechar Desktop, Explorer, Settings e Task Manager; `memcheck`; `kmetrics`; `schedcheck`. | Concluido: interfaces e diagnosticos preservados nos dois modos. |
+
+## MM4 - Metricas de fragmentacao e monitoramento
+
+MM4 nao e uma otimizacao; o ganho de desempenho permanece `N/D`. O contrato
+observavel separa as paginas fisicas em seis categorias exclusivas: `KERNEL`,
+`HEAP`, `SLAB`, `PROCESS`, `BUFFER` e `FREE`. A soma das categorias deve ser
+igual a `total_pages`, e `FREE` deve coincidir com o contador global de paginas
+livres do PMM.
+
+O indice de fragmentacao fisica usa o maior run livre:
+
+```text
+((free_pages - largest_free_run) * 100) / free_pages
+```
+
+O resultado e zero quando nao ha paginas livres. `isolated_free_pages` conta
+runs livres de exatamente uma pagina. A fragmentacao interna do heap continua
+sendo medida separadamente por `memory_get_heap_stats()`.
+
+`memory_get_detailed_stats()` faz uma varredura sob demanda. O Task Manager
+mantem o ultimo snapshot por no maximo um segundo entre atualizacoes; IRQs e
+page faults nao executam a coleta. A validacao funcional MM4 permanece
+pendente da execucao do usuario no QEMU, portanto esta secao registra o
+contrato e nao declara valores observados.
