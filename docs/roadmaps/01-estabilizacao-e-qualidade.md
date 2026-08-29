@@ -87,6 +87,13 @@ E regressao qualquer erro em caminho valido, divergencia em uma verificacao
 comparada, arquivo temporario remanescente, foco ou limpeza ausentes,
 `KERNEL PANIC`, travamento ou prompt ausente/duplicado.
 
+`appcheck compact` executa a mesma matriz e resume as fases `api`, `arquivos`,
+`pipes`, `caminhos`, `dispositivos`, `ipc`, `loader` e `vma/pagefault`. Ele
+oculta sucessos individuais e lista apenas falhas reais com seus codigos;
+`INDISPONIVEL` indica somente filesystem ou loader que ja estejam indisponiveis
+no sistema. `appcheck` sem argumentos continua reservado para a saida
+detalhada.
+
 ### Gatilhos para recursos opcionais
 
 Quando uma mudanca tocar uma das dependencias abaixo, execute tambem uma

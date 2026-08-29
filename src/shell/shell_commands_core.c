@@ -383,7 +383,8 @@ static void cmd_help(void) {
     video_print("  q2check  - Executa diagnostico compacto da Q2\n", 0x07);
     video_print("  regcheck [full] - F11 cancela nos modos normal e full\n",
                 0x07);
-    video_print("  appcheck - Testa API, arquivos, IPC e loader\n", 0x07);
+    video_print("  appcheck [compact] - Testa API, arquivos, IPC e loader\n",
+                0x07);
     video_print("  pkg      - Gerencia pacotes .ZPK locais\n", 0x07);
     video_print("             pkg list | info | verify | install | remove\n", 0x08);
     video_print("  store    - Consulta e gerencia a App Store local\n", 0x07);

@@ -142,6 +142,9 @@
 #define SHELL_REGCHECK_ACPI_SDT_HEADER_SIZE 36U
 #define SHELL_REGCHECK_ACPI_MAX_TABLE_SIZE (1024U * 1024U)
 #define SHELL_REGCHECK_ACPI_MAX_ROOT_ENTRIES 256U
+#define SHELL_APPCHECK_PHASE_COUNT 8U
+#define SHELL_APPCHECK_MAX_FAILURES 16U
+#define SHELL_APPCHECK_FAILURE_LABEL_SIZE 40U
 
 typedef enum {
     SHELL_Q2CHECK_IDLE = 0,
@@ -160,6 +163,36 @@ typedef enum {
     SHELL_REGCHECK_WAIT_DEMO,
     SHELL_REGCHECK_WAIT_CANCEL
 } shell_regcheck_state_t;
+
+typedef enum {
+    SHELL_APPCHECK_PHASE_API = 0,
+    SHELL_APPCHECK_PHASE_FILES,
+    SHELL_APPCHECK_PHASE_PIPES,
+    SHELL_APPCHECK_PHASE_PATHS,
+    SHELL_APPCHECK_PHASE_DEVICES,
+    SHELL_APPCHECK_PHASE_IPC,
+    SHELL_APPCHECK_PHASE_LOADER,
+    SHELL_APPCHECK_PHASE_VMA,
+    SHELL_APPCHECK_PHASE_INVALID
+} shell_appcheck_phase_t;
+
+typedef struct {
+    char label[SHELL_APPCHECK_FAILURE_LABEL_SIZE];
+    int actual;
+    int expected;
+} shell_appcheck_failure_t;
+
+typedef struct {
+    uint8_t compact;
+    uint8_t summary_printed;
+    uint8_t phase_seen[SHELL_APPCHECK_PHASE_COUNT];
+    uint8_t phase_unavailable[SHELL_APPCHECK_PHASE_COUNT];
+    uint8_t phase_failed[SHELL_APPCHECK_PHASE_COUNT];
+    shell_appcheck_phase_t phase;
+    uint32_t failure_count;
+    uint32_t stored_failure_count;
+    shell_appcheck_failure_t failures[SHELL_APPCHECK_MAX_FAILURES];
+} shell_appcheck_summary_t;
 
 typedef struct {
     uint32_t initial_focus;
@@ -313,6 +346,7 @@ static uint32_t shell_user_test_pid = 0;
 static uint8_t shell_checks_cancel_requested = 0;
 static uint8_t shell_checks_cancel_started = 0;
 static uint32_t shell_checks_job_generation = 0U;
+static shell_appcheck_summary_t shell_appcheck_summary;
 
 static char appcheck_oversized_args[APP_LAUNCH_MAX_TEXT + 1U];
 static app_launch_info_t appcheck_launch_info;
@@ -323,6 +357,149 @@ static shell_regcheck_t shell_regcheck;
 static void shell_regcheck_reset(void);
 static shell_job_step_result_t shell_regcheck_prepare_step(
     shell_job_context_t* context);
+
+static const char* shell_appcheck_phase_name(shell_appcheck_phase_t phase) {
+    switch (phase) {
+        case SHELL_APPCHECK_PHASE_API: return "api";
+        case SHELL_APPCHECK_PHASE_FILES: return "arquivos";
+        case SHELL_APPCHECK_PHASE_PIPES: return "pipes";
+        case SHELL_APPCHECK_PHASE_PATHS: return "caminhos";
+        case SHELL_APPCHECK_PHASE_DEVICES: return "dispositivos";
+        case SHELL_APPCHECK_PHASE_IPC: return "ipc";
+        case SHELL_APPCHECK_PHASE_LOADER: return "loader";
+        case SHELL_APPCHECK_PHASE_VMA: return "vma/pagefault";
+        default: return "desconhecida";
+    }
+}
+
+static void shell_appcheck_summary_reset(uint8_t compact) {
+    kmemset(&shell_appcheck_summary, 0, sizeof(shell_appcheck_summary));
+    shell_appcheck_summary.compact = compact;
+    shell_appcheck_summary.phase = SHELL_APPCHECK_PHASE_API;
+}
+
+static void shell_appcheck_set_phase(shell_appcheck_phase_t phase) {
+    if (phase < SHELL_APPCHECK_PHASE_COUNT) {
+        shell_appcheck_summary.phase = phase;
+    }
+}
+
+static void shell_appcheck_copy_failure_label(char* destination,
+                                               const char* source) {
+    uint32_t index = 0U;
+
+    if (!destination) return;
+    if (!source) source = "desconhecido";
+    while (source[index] && index + 1U < SHELL_APPCHECK_FAILURE_LABEL_SIZE) {
+        destination[index] = source[index];
+        index++;
+    }
+    destination[index] = '\0';
+}
+
+static void shell_appcheck_record_result(const char* label, int actual,
+                                         int expected, uint8_t unavailable) {
+    shell_appcheck_failure_t* failure;
+
+    if (!shell_appcheck_summary.compact ||
+        shell_appcheck_summary.phase >= SHELL_APPCHECK_PHASE_COUNT) {
+        return;
+    }
+    shell_appcheck_summary.phase_seen[shell_appcheck_summary.phase] = 1U;
+    if (unavailable && actual == expected) {
+        shell_appcheck_summary.phase_unavailable[shell_appcheck_summary.phase] =
+            1U;
+        return;
+    }
+    if (actual == expected) return;
+
+    shell_appcheck_summary.phase_failed[shell_appcheck_summary.phase] = 1U;
+    shell_appcheck_summary.failure_count++;
+    if (shell_appcheck_summary.stored_failure_count >=
+        SHELL_APPCHECK_MAX_FAILURES) {
+        return;
+    }
+    failure = &shell_appcheck_summary.failures[
+        shell_appcheck_summary.stored_failure_count++];
+    shell_appcheck_copy_failure_label(failure->label, label);
+    failure->actual = actual;
+    failure->expected = expected;
+}
+
+static void shell_appcheck_print_summary(int terminal_result) {
+    shell_appcheck_phase_t phase;
+    int summary_result;
+
+    if (!shell_appcheck_summary.compact ||
+        shell_appcheck_summary.summary_printed) {
+        return;
+    }
+    shell_appcheck_summary.summary_printed = 1U;
+    video_print("AppCheck compacto:\n", 0x0B);
+    for (phase = SHELL_APPCHECK_PHASE_API;
+         phase < SHELL_APPCHECK_PHASE_COUNT; phase++) {
+        video_print("  ", 0x07);
+        video_print(shell_appcheck_phase_name(phase), 0x07);
+        if (!shell_appcheck_summary.phase_seen[phase]) {
+            video_print(" PENDENTE\n", 0x0E);
+        } else if (shell_appcheck_summary.phase_failed[phase]) {
+            video_print(" ERRO\n", 0x0C);
+        } else if (shell_appcheck_summary.phase_unavailable[phase]) {
+            video_print(" INDISPONIVEL\n", 0x0E);
+        } else {
+            video_print(" OK\n", 0x0A);
+        }
+    }
+    video_print("  falhas=", 0x07);
+    shell_command_print_num(shell_appcheck_summary.failure_count);
+    video_print("\n", 0x07);
+    for (uint32_t index = 0U;
+         index < shell_appcheck_summary.stored_failure_count; index++) {
+        shell_appcheck_failure_t* failure =
+            &shell_appcheck_summary.failures[index];
+        video_print("    ", 0x07);
+        video_print(failure->label, 0x0C);
+        video_print(" retorno=", 0x08);
+        shell_command_print_num((uint32_t)failure->actual);
+        video_print(" esperado=", 0x08);
+        shell_command_print_num((uint32_t)failure->expected);
+        video_print("\n", 0x0C);
+    }
+    summary_result = terminal_result != OK ||
+                     shell_appcheck_summary.failure_count != 0U;
+    video_print("  resultado=", 0x07);
+    if (terminal_result == ERR_CANCELLED) {
+        video_print("CANCELADO\n", 0x0E);
+    } else {
+        video_print(summary_result ? "ERRO\n" : "OK\n",
+                    summary_result ? 0x0C : 0x0A);
+    }
+}
+
+static void shell_appcheck_summary_finish(int terminal_result) {
+    shell_appcheck_print_summary(terminal_result);
+    shell_appcheck_summary.compact = 0U;
+}
+
+static int shell_appcheck_is_compact_job(
+    const shell_job_context_t* context) {
+    return shell_appcheck_summary.compact && context &&
+           kstrcmp(context->command, "appcheck compact") == 0;
+}
+
+static int shell_appcheck_has_pending_work(void) {
+    return shell_appcheck_loader_pid != 0U ||
+           shell_appcheck_migration_pid != 0U ||
+           shell_appcheck_vma_pid != 0U ||
+           shell_appcheck_fault_pid != 0U;
+}
+
+static void cmd_appcheck_print_result(const char* label, int result);
+static void cmd_appcheck_print_expected_result(const char* label, int actual,
+                                               int expected);
+static void cmd_appcheck_print_result_with_expectation(const char* label,
+                                                        int actual,
+                                                        int expected);
 
 static int shell_regcheck_is_preparing(void) {
     return shell_regcheck.state >= SHELL_REGCHECK_PREPARE_FULL &&
@@ -388,7 +565,6 @@ static shell_job_step_result_t shell_checks_job_step(
 
 static void shell_checks_job_finish(shell_job_context_t* context,
                                     shell_job_state_t state, int result) {
-    (void)context;
     shell_checks_cancel_requested = 0;
     shell_checks_cancel_started = 0;
     if (state == SHELL_JOB_STATE_CANCELLED) {
@@ -397,6 +573,10 @@ static void shell_checks_job_finish(shell_job_context_t* context,
         video_print("Diagnostico cooperativo terminou com erro; codigo=", 0x0C);
         shell_command_print_num((uint32_t)result);
         video_print("\n", 0x0C);
+    }
+    if (shell_appcheck_is_compact_job(context)) {
+        shell_appcheck_summary_finish(state == SHELL_JOB_STATE_CANCELLED ?
+                                      ERR_CANCELLED : result);
     }
 }
 
@@ -419,10 +599,6 @@ static const shell_job_definition_t shell_checks_job_definition = {
     "checks", SHELL_JOB_KIND_CHECK, shell_checks_job_step, NULL,
     shell_checks_job_finish, shell_checks_job_drain
 };
-
-static void cmd_appcheck_print_result(const char* label, int result);
-static void cmd_appcheck_print_expected_result(const char* label, int actual,
-                                               int expected);
 
 static const char app_input_test_message[] =
     "Entrada ZAPP ativa: Enter encerra; Ctrl+C interrompe; F12 cancela.\n";
@@ -2092,6 +2268,7 @@ static void shell_appcheck_finish_migration(const app_loader_result_t* result) {
         uint32_t pid = 0U;
         int start_result;
 
+        shell_appcheck_set_phase(SHELL_APPCHECK_PHASE_VMA);
         paging_get_user_stats(&paging);
         shell_appcheck_vma_initial_pages = paging.active_pages;
         shell_appcheck_vma_initial_directories = paging.active_directories;
@@ -2182,7 +2359,26 @@ static int shell_appcheck_fault_is_valid(const app_loader_result_t* result) {
     return OK;
 }
 
+static uint8_t shell_appcheck_label_is_unavailable(const char* label) {
+    if (kstrcmp(label, "file_service_indisponivel") == 0) {
+        return fs_get_type() == FS_TYPE_NONE ? 1U : 0U;
+    }
+    if (kstrcmp(label, "loader_indisponivel") == 0) {
+        return app_loader_is_ready() ? 0U : 1U;
+    }
+    return 0U;
+}
+
 static void cmd_appcheck_print_result(const char* label, int result) {
+    uint8_t optional_unavailable;
+
+    if (shell_appcheck_summary.compact) {
+        optional_unavailable = shell_appcheck_label_is_unavailable(label);
+        shell_appcheck_record_result(
+            label, result, optional_unavailable ? ERR_UNAVAILABLE : OK,
+            optional_unavailable);
+        return;
+    }
     video_print("  ", 0x07);
     video_print(label, 0x07);
     video_print(" retorno=", 0x08);
@@ -2194,6 +2390,12 @@ static void cmd_appcheck_print_expected_result(const char* label, int actual,
                                                int expected) {
     int passed = actual == expected;
 
+    if (shell_appcheck_summary.compact) {
+        shell_appcheck_record_result(
+            label, actual, expected,
+            shell_appcheck_label_is_unavailable(label));
+        return;
+    }
     video_print("  ", 0x07);
     video_print(label, 0x07);
     video_print(" retorno=", 0x08);
@@ -2201,6 +2403,18 @@ static void cmd_appcheck_print_expected_result(const char* label, int actual,
     video_print(" esperado=", 0x08);
     shell_command_print_num((uint32_t)expected);
     video_print(passed ? " OK\n" : " ERRO\n", passed ? 0x0A : 0x0C);
+}
+
+static void cmd_appcheck_print_result_with_expectation(const char* label,
+                                                        int actual,
+                                                        int expected) {
+    if (shell_appcheck_summary.compact) {
+        shell_appcheck_record_result(
+            label, actual, expected,
+            shell_appcheck_label_is_unavailable(label));
+        return;
+    }
+    cmd_appcheck_print_result(label, actual);
 }
 
 static void cmd_appcheck_files(void) {
@@ -2243,7 +2457,7 @@ static void cmd_appcheck_files(void) {
                                             sizeof(buffer),
                                             (uint32_t)&bytes_read, 0);
             cmd_appcheck_print_result("file_read", result);
-            if (result == OK) {
+            if (result == OK && !shell_appcheck_summary.compact) {
                 video_print("    bytes=", 0x08);
                 shell_command_print_num(bytes_read);
                 video_print("\n", 0x07);
@@ -2264,33 +2478,40 @@ static void cmd_appcheck_files(void) {
             cmd_appcheck_print_result("file_close", result);
             result = syscall_invoke_kernel(APP_SYSCALL_FILE_CLOSE,
                                             handle, 0, 0, 0, 0);
-            cmd_appcheck_print_result("file_close_expirado", result);
+            cmd_appcheck_print_result_with_expectation("file_close_expirado",
+                                                       result, ERR_INVALID);
         }
     } else {
-        cmd_appcheck_print_result("file_open_sem_arquivo", ERR_NOT_FOUND);
+        cmd_appcheck_print_result_with_expectation("file_open_sem_arquivo",
+                                                   ERR_NOT_FOUND,
+                                                   ERR_NOT_FOUND);
     }
 
     result = syscall_invoke_kernel(APP_SYSCALL_FILE_OPEN,
                                     (uint32_t)"ZZZZZZZ9.NOF",
                                     APP_FILE_MODE_READ,
                                     (uint32_t)&handle, 0, 0);
-    cmd_appcheck_print_result("file_open_inexistente", result);
+    cmd_appcheck_print_result_with_expectation("file_open_inexistente", result,
+                                               ERR_NOT_FOUND);
 
     result = syscall_invoke_kernel(APP_SYSCALL_FILE_READ,
                                     APP_HANDLE_INVALID, (uint32_t)buffer,
                                     APP_API_MAX_FILE_IO_SIZE + 1,
                                     (uint32_t)&bytes_read, 0);
-    cmd_appcheck_print_result("file_read_grande", result);
+    cmd_appcheck_print_result_with_expectation("file_read_grande", result,
+                                               ERR_OVERFLOW);
 
     result = syscall_invoke_kernel(APP_SYSCALL_FILE_READ,
                                     APP_HANDLE_INVALID, 0, 1,
                                     (uint32_t)&bytes_read, 0);
-    cmd_appcheck_print_result("file_read_handle_invalido", result);
+    cmd_appcheck_print_result_with_expectation("file_read_handle_invalido",
+                                               result, ERR_NULL);
 
     result = syscall_invoke_kernel(APP_SYSCALL_FILE_WRITE,
                                     APP_HANDLE_INVALID, 0, 1,
                                     (uint32_t)&written, 0);
-    cmd_appcheck_print_result("file_write_nulo", result);
+    cmd_appcheck_print_result_with_expectation("file_write_nulo", result,
+                                               ERR_NULL);
 }
 
 static void cmd_appcheck_pipes(void) {
@@ -2384,17 +2605,20 @@ static void cmd_appcheck_ipc(void) {
     result = syscall_invoke_kernel(APP_SYSCALL_MESSAGE_SEND,
                                     0xFFFFFFFFU, (uint32_t)&message,
                                     0, 0, 0);
-    cmd_appcheck_print_result("message_pid_invalido", result);
+    cmd_appcheck_print_result_with_expectation("message_pid_invalido", result,
+                                               ERR_NOT_FOUND);
 
     result = syscall_invoke_kernel(APP_SYSCALL_MESSAGE_SEND,
                                     current_pid, 0, 0, 0, 0);
-    cmd_appcheck_print_result("message_nula", result);
+    cmd_appcheck_print_result_with_expectation("message_nula", result,
+                                               ERR_NULL);
 
     message.type = 0;
     result = syscall_invoke_kernel(APP_SYSCALL_MESSAGE_SEND,
                                     current_pid, (uint32_t)&message,
                                     0, 0, 0);
-    cmd_appcheck_print_result("message_tipo_invalido", result);
+    cmd_appcheck_print_result_with_expectation("message_tipo_invalido", result,
+                                               ERR_INVALID);
 }
 
 static void cmd_appcheck_launch(void) {
@@ -2423,11 +2647,13 @@ static void cmd_appcheck_launch(void) {
 
     result = app_loader_build_launch_info(too_many_args,
                                           &appcheck_launch_info);
-    cmd_appcheck_print_result("loader_argumentos_excesso", result);
+    cmd_appcheck_print_result_with_expectation("loader_argumentos_excesso",
+                                               result, ERR_OVERFLOW);
 
     result = app_loader_build_launch_info(appcheck_oversized_args,
                                           &appcheck_launch_info);
-    cmd_appcheck_print_result("loader_argumentos_grandes", result);
+    cmd_appcheck_print_result_with_expectation("loader_argumentos_grandes",
+                                               result, ERR_OVERFLOW);
 }
 
 static void cmd_appcheck_loader(void) {
@@ -2446,7 +2672,8 @@ static void cmd_appcheck_loader(void) {
     kmemcpy(appcheck_demo_image, &header, APP_IMAGE_HEADER_SIZE);
     result = app_loader_validate_image(appcheck_demo_image, image_size,
                                        &header);
-    cmd_appcheck_print_result("loader_entry_invalida", result);
+    cmd_appcheck_print_result_with_expectation("loader_entry_invalida", result,
+                                               ERR_INVALID);
 
     shell_build_demo_image();
     kmemcpy(&header, appcheck_demo_image, APP_IMAGE_HEADER_SIZE);
@@ -2454,7 +2681,8 @@ static void cmd_appcheck_loader(void) {
     kmemcpy(appcheck_demo_image, &header, APP_IMAGE_HEADER_SIZE);
     result = app_loader_validate_image(appcheck_demo_image, image_size,
                                        &header);
-    cmd_appcheck_print_result("loader_flags_invalidas", result);
+    cmd_appcheck_print_result_with_expectation("loader_flags_invalidas", result,
+                                               ERR_INVALID);
 
     shell_build_demo_image();
     kmemcpy(&header, appcheck_demo_image, APP_IMAGE_HEADER_SIZE);
@@ -2462,16 +2690,20 @@ static void cmd_appcheck_loader(void) {
     kmemcpy(appcheck_demo_image, &header, APP_IMAGE_HEADER_SIZE);
     result = app_loader_validate_image(appcheck_demo_image, image_size,
                                        &header);
-    cmd_appcheck_print_result("loader_codigo_grande", result);
+    cmd_appcheck_print_result_with_expectation("loader_codigo_grande", result,
+                                               ERR_OVERFLOW);
 
     shell_build_demo_image();
     result = app_loader_validate_image(appcheck_demo_image,
                                        APP_IMAGE_HEADER_SIZE - 1U,
                                        &header);
-    cmd_appcheck_print_result("loader_cabecalho_curto", result);
+    cmd_appcheck_print_result_with_expectation("loader_cabecalho_curto", result,
+                                               ERR_INVALID);
 
     if (!app_loader_is_ready()) {
-        cmd_appcheck_print_result("loader_indisponivel", ERR_UNAVAILABLE);
+        cmd_appcheck_print_result_with_expectation("loader_indisponivel",
+                                                   ERR_UNAVAILABLE,
+                                                   ERR_UNAVAILABLE);
         return;
     }
 
@@ -2495,9 +2727,11 @@ static void cmd_appcheck_loader(void) {
             cmd_appcheck_print_result("loader_demo_execucao", result);
             if (result == OK) {
                 shell_appcheck_loader_pid = pid;
-                video_print("    pid=", 0x08);
-                shell_command_print_num(pid);
-                video_print(" assincrono\n", 0x07);
+                if (!shell_appcheck_summary.compact) {
+                    video_print("    pid=", 0x08);
+                    shell_command_print_num(pid);
+                    video_print(" assincrono\n", 0x07);
+                }
                 result = app_builtin_run_uptime(&migrated_pid);
                 cmd_appcheck_print_expected_result(
                     "migracao_uptime_concorrente", result, ERR_STATE);
@@ -2528,11 +2762,14 @@ static void cmd_appcheck(void) {
     kmemset(appcheck_oversized_text, 'A', sizeof(appcheck_oversized_text));
     kmemset(appcheck_oversized_args, 'A', APP_LAUNCH_MAX_TEXT);
     appcheck_oversized_args[APP_LAUNCH_MAX_TEXT] = '\0';
-    video_print("Teste da API de aplicativos:\n", 0x0B);
+    shell_appcheck_set_phase(SHELL_APPCHECK_PHASE_API);
+    if (!shell_appcheck_summary.compact) {
+        video_print("Teste da API de aplicativos:\n", 0x0B);
+    }
 
     result = app_api_get_version(&version);
     cmd_appcheck_print_result("get_version", result);
-    if (result == OK) {
+    if (result == OK && !shell_appcheck_summary.compact) {
         video_print("    versao=", 0x08);
         shell_command_print_num(version.major);
         video_print(".", 0x08);
@@ -2548,7 +2785,7 @@ static void cmd_appcheck(void) {
     result = syscall_invoke_kernel(APP_SYSCALL_UPTIME,
                                     (uint32_t)&uptime, 0, 0, 0, 0);
     cmd_appcheck_print_result("get_uptime", result);
-    if (result == OK) {
+    if (result == OK && !shell_appcheck_summary.compact) {
         video_print("    ticks=", 0x08);
         shell_command_print_num(uptime.ticks);
         video_print(" segundos=", 0x08);
@@ -2559,7 +2796,7 @@ static void cmd_appcheck(void) {
     result = syscall_invoke_kernel(APP_SYSCALL_MEMORY_INFO,
                                     (uint32_t)&memory, 0, 0, 0, 0);
     cmd_appcheck_print_result("get_memory_info", result);
-    if (result == OK) {
+    if (result == OK && !shell_appcheck_summary.compact) {
         video_print("    total_kb=", 0x08);
         shell_command_print_num(memory.total_bytes / 1024);
         video_print(" livre_kb=", 0x08);
@@ -2570,26 +2807,37 @@ static void cmd_appcheck(void) {
     }
 
     result = syscall_invoke_kernel(APP_SYSCALL_INVALID, 0, 0, 0, 0, 0);
-    cmd_appcheck_print_result("numero invalido", result);
+    cmd_appcheck_print_result_with_expectation("numero invalido", result,
+                                               ERR_INVALID);
     result = syscall_invoke_kernel(APP_SYSCALL_UPTIME, 0, 0, 0, 0, 0);
-    cmd_appcheck_print_result("uptime nulo", result);
+    cmd_appcheck_print_result_with_expectation("uptime nulo", result,
+                                               ERR_NULL);
     result = syscall_invoke_kernel(APP_SYSCALL_MEMORY_INFO, 0, 0, 0, 0, 0);
     cmd_appcheck_print_expected_result("memory_info nulo", result, ERR_NULL);
     result = syscall_invoke_kernel(APP_SYSCALL_CONSOLE_WRITE,
                                     (uint32_t)"", 0, 0, 0, 0);
-    cmd_appcheck_print_result("console_write vazio", result);
+    cmd_appcheck_print_result_with_expectation("console_write vazio", result,
+                                               ERR_INVALID);
     result = syscall_invoke_kernel(APP_SYSCALL_CONSOLE_WRITE,
                                     (uint32_t)appcheck_oversized_text,
                                     sizeof(appcheck_oversized_text), 0, 0, 0);
-    cmd_appcheck_print_result("console_write grande", result);
+    cmd_appcheck_print_result_with_expectation("console_write grande", result,
+                                               ERR_OVERFLOW);
     result = syscall_invoke_kernel(APP_SYSCALL_PROCESS_EXIT,
                                     0, 0, 0, 0, 0);
-    cmd_appcheck_print_result("process_exit", result);
+    cmd_appcheck_print_result_with_expectation("process_exit", result,
+                                               ERR_UNAVAILABLE);
+    shell_appcheck_set_phase(SHELL_APPCHECK_PHASE_FILES);
     cmd_appcheck_files();
+    shell_appcheck_set_phase(SHELL_APPCHECK_PHASE_PIPES);
     cmd_appcheck_pipes();
+    shell_appcheck_set_phase(SHELL_APPCHECK_PHASE_PATHS);
     cmd_appcheck_paths();
+    shell_appcheck_set_phase(SHELL_APPCHECK_PHASE_DEVICES);
     cmd_appcheck_devices();
+    shell_appcheck_set_phase(SHELL_APPCHECK_PHASE_IPC);
     cmd_appcheck_ipc();
+    shell_appcheck_set_phase(SHELL_APPCHECK_PHASE_LOADER);
     cmd_appcheck_launch();
     cmd_appcheck_loader();
 }
@@ -2859,6 +3107,7 @@ int shell_checks_start_job(const char* command) {
          kstrcmp(command, "regcheck") != 0 &&
          kstrcmp(command, "regcheck full") != 0 &&
          kstrcmp(command, "appcheck") != 0 &&
+         kstrcmp(command, "appcheck compact") != 0 &&
          kstrcmp(command, "usertest") != 0)) {
         return 0;
     }
@@ -2908,9 +3157,25 @@ void shell_dispatch_cmd_regcheck(const char* arguments) {
 }
 
 void shell_dispatch_cmd_appcheck(const char* arguments) {
-    (void)arguments;
+    uint8_t compact = 0U;
+    const char* command = "appcheck";
+
+    if (arguments && *arguments) {
+        if (!shell_command_args_equal(arguments, "compact")) {
+            LOG_WARN("SHELL", "Uso invalido de appcheck");
+            video_print("Uso: appcheck [compact]\n", 0x0C);
+            return;
+        }
+        compact = 1U;
+        command = "appcheck compact";
+    }
+    shell_appcheck_summary_reset(compact);
     cmd_appcheck();
-    shell_checks_start_job("appcheck");
+    if (compact && !shell_appcheck_has_pending_work()) {
+        shell_appcheck_summary_finish(OK);
+        return;
+    }
+    shell_checks_start_job(command);
 }
 void shell_dispatch_cmd_usertest(const char* arguments) {
     cmd_usertest(arguments);
