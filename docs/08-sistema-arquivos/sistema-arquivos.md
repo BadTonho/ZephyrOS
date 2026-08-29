@@ -171,7 +171,7 @@ conecta boot e as fixtures nos slots IDE, e `make storage-fixtures-verify`
 compara tamanho e SHA-256 depois do QEMU. `storage check <id>` e somente
 leitura e verifica BPB, backup, FSInfo, FATs, cadeias e LFNs.
 
-## Camada de bloco e USB MSC (EP4.3/BLK0/BLK1)
+## Camada de bloco e USB MSC (EP4.3/BLK0/BLK1/BLK2)
 
 `block_device_t` e a fronteira comum entre o ATA legado e dispositivos USB
 Mass Storage. Cada provedor possui ID unico, modelo, capacidade em setores,
@@ -226,6 +226,22 @@ cancelamentos, setores e taxas medias sob demanda. `blkstat` exibe essas
 metricas e os contadores por dispositivo. Se a workqueue estiver indisponivel,
 o caminho sincrono continua funcional e submissao assincrona retorna
 `ERR_UNAVAILABLE`.
+
+O BLK2 acrescenta `block_cache.c` como cache de leitura estatico com 64 blocos
+de 512 bytes, 64 buckets de hash e lista LRU por indices. A chave inclui ID do
+dispositivo, LBA e tamanho do bloco. Leituras de FAT, VFS e DevFS passam por
+`block_read()`: hits copiam da RAM, misses carregam pela fila BLK1 e leituras
+contiguas podem ser agrupadas ate o limite publicado pelo dispositivo. Quando
+nao ha entrada elegivel, a leitura faz bypass direto sem falhar.
+
+As entradas publicam `FREE`, `READING`, `VALID`, `DIRTY`, `WRITEBACK` e `ERROR`.
+Referencias, pins e wait queues impedem eviction ou descarte durante uso. As
+escritas continuam diretas e invalidam a faixa antes da submissao; entradas
+ocupadas, sujas ou em I/O fazem a operacao retornar `ERR_STATE`. A invalidacao
+por faixa, dispositivo, desmontagem, refresh ou substituicao e atomica. O
+BLK2 nao faz writeback, nao grava dados no cache e nao implementa FLUSH/FUA.
+`cachestat` expoe hits, misses, leituras fisicas, LRU, invalidacoes, bypasses,
+erros e estados; `cache clear` remove somente entradas limpas e elegiveis.
 
 Os IDs ATA permanecem `ata0` a `ata3`. Um MSC valido recebe um ID de bloco no
 formato `usb-ms-BB:DD.F-pN-aN-l0`, derivado do ID estavel da sessao UHCI. O

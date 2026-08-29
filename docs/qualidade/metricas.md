@@ -294,3 +294,21 @@ reordenacao, bounce buffer ou fusao de FLUSH. `blkstat` e o caminho observavel
 para comparar snapshots. Na validacao funcional no QEMU, a fila terminou
 vazia, o pico observado foi 32, houve uma fusao e 33 cancelamentos do
 autoteste, sem alteracao do inventario real.
+
+## BLK2 - Cache de leitura de blocos
+
+O cache reserva estaticamente 64 blocos de 512 bytes, totalizando 32 KiB de
+dados, e usa 64 buckets de hash com LRU por indices. `hits` e `misses` sao
+contadores cumulativos de consultas; `reads_avoided` conta setores atendidos
+por hits e `physical_reads` conta setores enviados ao backend. A taxa de
+acerto e calculada sob demanda como `hits * 100 / (hits + misses)` e vale zero
+quando ainda nao ha acessos.
+
+`entries`, `valid_entries`, `reading_entries`, `dirty_entries`,
+`writeback_entries` e `pinned_entries` sao um snapshot instantaneo. As
+metricas `evictions`, `invalidations`, `bypasses` e `errors` sao cumulativas;
+`last_error` preserva o ultimo erro publicado pelo cache. Leituras agrupadas
+contam cada setor fisico, enquanto uma entrada sem vitima elegivel incrementa
+`bypasses` e continua diretamente pelo BLK1. `cachestat` e a interface de
+observacao; `cache clear` somente remove entradas limpas e elegiveis, sem
+writeback antecipado.

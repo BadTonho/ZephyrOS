@@ -6,6 +6,7 @@
 #include "core/keyboard.h"
 #include "fs/fs.h"
 #include "fs/block.h"
+#include "fs/block_cache.h"
 #include "fs/storage.h"
 #include "fs/vfs.h"
 #include "fs/file_index.h"
@@ -333,6 +334,84 @@ static void cmd_blkstat(const char* args) {
         shell_command_print_num((uint32_t)device.last_error);
         video_print(device.read_only ? " ro\n" : " rw\n", 0x08);
     }
+}
+
+static void cmd_cachestat_print_usage(void) {
+    video_print("Uso: cachestat\n", 0x0C);
+}
+
+static void cmd_cachestat(const char* args) {
+    block_cache_stats_t stats;
+
+    if (!shell_command_args_equal(args, "")) {
+        LOG_WARN("SHELL", "Argumentos recusados no comando cachestat");
+        cmd_cachestat_print_usage();
+        return;
+    }
+    if (block_cache_get_stats(&stats) != OK) {
+        video_print("Metricas do cache de blocos indisponiveis.\n", 0x0C);
+        return;
+    }
+    video_print("Cache: entradas=", 0x0B);
+    shell_command_print_num(stats.entries);
+    video_print("/", 0x07);
+    shell_command_print_num(stats.capacity);
+    video_print(" validas=", 0x07);
+    shell_command_print_num(stats.valid_entries);
+    video_print(" memoria=", 0x07);
+    shell_command_print_num(stats.memory_bytes);
+    video_print(" bytes\n", 0x07);
+    video_print("Acessos: hits=", 0x07);
+    shell_command_print_num(stats.hits);
+    video_print(" misses=", 0x07);
+    shell_command_print_num(stats.misses);
+    video_print(" acerto=", 0x07);
+    shell_command_print_num(stats.hit_rate_percent);
+    video_print("% evitadas=", 0x07);
+    shell_command_print_num(stats.reads_avoided);
+    video_print(" fisicas=", 0x07);
+    shell_command_print_num(stats.physical_reads);
+    video_print(" bypass=", 0x07);
+    shell_command_print_num(stats.bypasses);
+    video_print("\nEstado: evictions=", 0x07);
+    shell_command_print_num(stats.evictions);
+    video_print(" invalidacoes=", 0x07);
+    shell_command_print_num(stats.invalidations);
+    video_print(" erros=", 0x07);
+    shell_command_print_num(stats.errors);
+    video_print(" lendo=", 0x07);
+    shell_command_print_num(stats.reading_entries);
+    video_print(" sujas=", 0x07);
+    shell_command_print_num(stats.dirty_entries);
+    video_print(" writeback=", 0x07);
+    shell_command_print_num(stats.writeback_entries);
+    video_print(" fixadas=", 0x07);
+    shell_command_print_num(stats.pinned_entries);
+    video_print(" erro=", 0x07);
+    shell_command_print_num((uint32_t)stats.last_error);
+    video_print("\n", 0x07);
+}
+
+static void cmd_cache_print_usage(void) {
+    video_print("Uso: cache clear\n", 0x0C);
+}
+
+static void cmd_cache(const char* args) {
+    int result;
+
+    if (!shell_command_args_equal(args, "clear")) {
+        LOG_WARN("SHELL", "Uso invalido do comando cache");
+        cmd_cache_print_usage();
+        return;
+    }
+    result = block_cache_clear();
+    if (result == OK) {
+        video_print("Cache de blocos limpo.\n", 0x0A);
+        return;
+    }
+    video_print("Erro: limpeza do cache recusada (codigo ", 0x0C);
+    shell_command_print_num((uint32_t)result);
+    video_print(").\n", 0x0C);
 }
 
 static int cmd_storage_read_token(const char** cursor, char* token,
@@ -944,6 +1023,8 @@ int shell_storage_start_job(const char* arguments) {
 
 SHELL_STORAGE_WRAP_ARGS(shell_dispatch_cmd_storage, cmd_storage)
 SHELL_STORAGE_WRAP_ARGS(shell_dispatch_cmd_blkstat, cmd_blkstat)
+SHELL_STORAGE_WRAP_ARGS(shell_dispatch_cmd_cachestat, cmd_cachestat)
+SHELL_STORAGE_WRAP_ARGS(shell_dispatch_cmd_cache, cmd_cache)
 void shell_dispatch_cmd_index(const char* arguments) {
     if (shell_storage_start_job(arguments)) return;
     cmd_index(arguments);

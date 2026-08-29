@@ -2716,3 +2716,12 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   tambem foram executados; os estados `DISABLED`/`DEGRADED` exibidos no
   `health` correspondem aos componentes opcionais ausentes no perfil QEMU.
   A funcionalidade foi validada pelo usuario.
+
+- BLK2: implementação do cache estático de leitura registrada.
+  Implementada em: 2026-08-29 16:02:27 -03:00 (America/Sao_Paulo).
+  Foram adicionados 64 blocos de 512 bytes, hash, LRU, estados de entrada,
+  wait queues, invalidação atômica, bypass sem vítima elegível, integração ao
+  `block_read()`, estatísticas, `cachestat`, `cache clear` e autoteste com
+  dispositivos mock. Escritas continuam diretas e não há writeback no BLK2.
+  O agente não executou build, testes ou QEMU; a validação funcional e a
+  confirmação para marcar o BLK2 no resumo do roadmap permanecem pendentes.

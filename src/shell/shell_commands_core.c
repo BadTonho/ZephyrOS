@@ -320,6 +320,8 @@ static void cmd_help(void) {
     video_print("  mouse    - Status e preferencias do mouse PS/2\n", 0x07);
     video_print("  storage  - Lista, inspeciona e monta volumes\n", 0x07);
     video_print("  blkstat  - Mostra a fila e metricas de bloco\n", 0x07);
+    video_print("  cachestat - Mostra metricas do cache de blocos\n", 0x07);
+    video_print("  cache clear - Limpa entradas do cache de blocos\n", 0x07);
     video_print("  index status|rebuild|cancel|check - Controla o indice\n",
                 0x07);
     video_print("  search <termo> - Pesquisa nomes e caminhos globais\n", 0x07);

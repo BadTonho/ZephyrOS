@@ -1,4 +1,5 @@
 #include "fs/storage.h"
+#include "fs/block_cache.h"
 #include "fs/fs.h"
 #include "drivers/ata.h"
 #include "core/errors.h"
@@ -752,9 +753,15 @@ static int storage_auto_mount_system(void) {
 int storage_init(void) {
     char boot_disk_id[STORAGE_DISK_ID_SIZE];
     uint32_t block_count = 0U;
+    int cache_result;
     int block_result;
 
     LOG_INFO("FS", "Inicializando inventario de armazenamento");
+    cache_result = block_cache_clear();
+    if (cache_result != OK) {
+        LOG_ERROR("FS", "Cache de blocos ocupado durante inventario");
+        return cache_result;
+    }
     spinlock_init(&storage_registry_lock);
     spinlock_init(&storage_operation_lock);
     kmemset(storage_disks, 0, sizeof(storage_disks));
@@ -2684,6 +2691,7 @@ int storage_unmount(const char* id) {
     storage_mount_t* mount;
     storage_volume_t* volume;
     int index;
+    int result;
 
     if (!id) {
         LOG_ERROR("FS", "ID nulo na desmontagem");
@@ -2710,6 +2718,13 @@ int storage_unmount(const char* id) {
                            "registro interno de montagem ausente");
         spinlock_release(&storage_operation_lock);
         return ERR_STATE;
+    }
+    result = block_cache_invalidate_device(volume->disk_id);
+    if (result != OK) {
+        storage_log_volume(LOG_LEVEL_WARN, volume->id,
+                           "desmontagem recusada por cache ocupado");
+        spinlock_release(&storage_operation_lock);
+        return result;
     }
     spinlock_acquire(&storage_registry_lock);
     kmemset(mount, 0, sizeof(*mount));

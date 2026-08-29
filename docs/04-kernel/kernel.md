@@ -295,6 +295,15 @@ forma controlada e aparecem no `health`; apenas `power_shutdown()` e terminal.
   profundidade, pico, fusoes, taxas e contadores por dispositivo. O codigo
   canonico `ERR_CANCELLED` foi acrescentado ao final de `errors.h`, sem
   renumerar os erros existentes.
+  No BLK2, `block_read()` usa o cache estatico de 64 blocos de 512 bytes com
+  hash por dispositivo/LBA/tamanho e LRU por indices. Hits evitam a leitura
+  fisica; misses carregam pela fila BLK1, agrupam setores contiguos quando
+  possivel e fazem bypass quando o cache esta cheio sem vitima elegivel.
+  Escritas invalidam a faixa antes da fila e nao usam writeback. A API publica
+  `block_cache_get_stats()`, `block_cache_clear()`, invalidacao por dispositivo
+  ou faixa, validacao e autoteste; `cachestat` e `cache clear` sao os comandos
+  observaveis. Entradas `READING`, fixadas, sujas ou em writeback nao podem ser
+  removidas; invalidacoes sao atomicas.
   `storage_refresh()` reconcilia esse registro depois de cada atualizacao USB
   sem duplicar discos ou volumes.
 

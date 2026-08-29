@@ -137,19 +137,22 @@ FAT/VFS foram validados funcionalmente pelo usuário no QEMU.
 
 ### Implementação
 
-- [ ] Criar a tabela de hash indexada por `(device_id, lba, block_size)` para
+- [x] Criar a tabela de hash indexada por `(device_id, lba, block_size)` para
   busca $O(1)$ e evitar colisões semânticas entre setores e blocos de filesystem.
-- [ ] Manter estados `FREE`, `READING`, `VALID`, `DIRTY`, `WRITEBACK` e
+- [x] Manter estados `FREE`, `READING`, `VALID`, `DIRTY`, `WRITEBACK` e
   `ERROR`, além de referência/pin para impedir eviction durante uso ou I/O.
-- [ ] Manter lista LRU de entradas elegíveis para eviction, sem remover
+- [x] Manter lista LRU de entradas elegíveis para eviction, sem remover
   buffers sujos, fixados ou em voo.
-- [ ] Interceptar primeiro leituras FAT/VFS; em *cache hit*, copiar da RAM, e
+- [x] Interceptar primeiro leituras FAT/VFS; em *cache hit*, copiar da RAM, e
   em *cache miss*, carregar o bloco pela BLK1 e acordar os waiters.
-- [ ] Manter invalidação explícita por dispositivo, faixa e desmontagem.
-- [ ] Registrar que este cache de blocos não substitui o page cache baseado em
+- [x] Manter invalidação explícita por dispositivo, faixa e desmontagem.
+- [x] Registrar que este cache de blocos não substitui o page cache baseado em
   páginas/folios, que fica para uma etapa futura se houver necessidade.
 
 ### Critério de saída
+
+Implementação BLK2 registrada; a confirmação funcional e a mudança do estado
+no resumo do roadmap permanecem pendentes da validação do usuário no QEMU.
 
 Leituras repetidas dos cenários definidos evitam transferências ao hardware sem
 violar coerência, eviction ou ownership. A avaliação compara hit rate,
