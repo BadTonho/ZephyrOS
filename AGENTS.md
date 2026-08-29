@@ -386,62 +386,55 @@ ptr = NULL; /* recomendado enquanto o ponteiro continuar vivo */
 
 ---
 
-## Regra #8: Estrutura de um Driver
+## Regra #8: Contrato de um Driver
 
-```c
-// src/drivers/nomedriver.c
-#include "drivers/nomedriver.h"
-#include "core/errors.h"
-#include "core/log.h"
-#include "core/panic.h"
+Drivers são módulos orientados a hardware. A regra define um contrato mínimo,
+mas não exige que todos tenham a mesma estrutura interna, o mesmo estado ou a
+mesma assinatura de função.
 
-// Variáveis estáticas do driver
-static int driver_initialized = 0;
+### Requisitos do driver
 
-// Inicialização
-int driver_init(void) {
-    LOG_INFO("DRIVER", "Inicializando...");
-
-    if (hardware_falhou) {
-        LOG_ERROR("DRIVER", "Hardware nao encontrado!");
-        return ERR_NOT_FOUND;
-    }
-
-    driver_initialized = 1;
-    LOG_INFO("DRIVER", "Inicializado com sucesso");
-    return OK;
-}
-
-// Funções públicas
-int driver_read(uint32_t addr, uint8_t* buf, int size) {
-    if (!driver_initialized) {
-        LOG_ERROR("DRIVER", "Driver nao inicializado");
-        return ERR_NOT_FOUND;
-    }
-    if (!buf) {
-        LOG_ERROR("DRIVER", "Buffer nulo");
-        return ERR_NULL;
-    }
-
-    // implementação...
-
-    return OK;
-}
-```
-
-### Checklist do driver
-
-- [ ] Header com include guard em `src/include/drivers/`
-- [ ] Variável `static int initialized` para controle
-- [ ] `LOG_INFO` no início e fim da init
-- [ ] `LOG_ERROR` em toda falha
-- [ ] Verificar `initialized` em toda função pública
-- [ ] Verificar ponteiros nulos
-- [ ] Retornar código de erro
+- [ ] Definir o proprietário, o ciclo de vida e os estados relevantes do
+      hardware, como não inicializado, sondando, pronto, degradado,
+      indisponível ou em encerramento, quando aplicável.
+- [ ] Usar o modelo de estado adequado ao recurso: um estado global, uma
+      estrutura de status, um estado por dispositivo ou um estado por
+      controlador. Não é obrigatório criar uma variável `initialized` global.
+- [ ] Declarar as capacidades, dependências, recursos e limitações do driver
+      no contrato público ou na documentação técnica do módulo.
+- [ ] Tornar a inicialização idempotente quando isso for compatível com o
+      hardware; rejeitar ou tratar explicitamente chamadas fora de ordem.
+- [ ] Registrar o início, o sucesso, a falha ou o estado degradado da
+      inicialização conforme as Regras #1 e #3.
+- [ ] Se a inicialização falhar depois de adquirir recursos, desfazer os
+      recursos já adquiridos ou publicar um estado seguro e indisponível.
+- [ ] Validar ponteiros, tamanhos, intervalos, handles, capacidades e estado
+      somente quando forem pertinentes à operação e ao contrato da API.
+- [ ] Escolher o retorno adequado à operação: código de `errors.h`, booleano,
+      contagem, resultado estruturado ou `void` com estado publicado. Não
+      forçar `int` onde ele não representa corretamente o contrato.
+- [ ] Definir ownership e liberação de portas, MMIO, IRQs, DMA, buffers,
+      descritores, locks, filas e work items, respeitando a Regra #7.
+- [ ] Impedir uso antes do estado pronto, double release, acesso concorrente
+      sem sincronização e reconfiguração enquanto o recurso estiver em uso.
+- [ ] Respeitar o contexto de execução: não bloquear, alocar dinamicamente,
+      aguardar sem limite ou gerar log pesado em IRQ e hot paths; transferir o
+      trabalho para contexto adiável quando necessário.
+- [ ] Usar timeouts, limites de tentativa, confirmação de estado e tratamento
+      de reset quando a operação de hardware puder ficar pendente.
+- [ ] Usar `panic` somente para invariantes fatais do kernel; hardware ausente,
+      opcional ou indisponível deve resultar em erro, estado degradado ou
+      indisponível quando for possível continuar.
+- [ ] Manter o caminho de fallback ou o estado degradado quando a arquitetura
+      do sistema exigir continuidade sem aquele hardware.
+- [ ] Manter o header público no diretório do módulo, com include guard e
+      dependências diretas, sem incluir arquivos `.c`.
 
 Drivers legados que já possuem uma função de inicialização `void` devem
-preservar sua assinatura; nesse caso, registrar a falha e publicar o estado
-indisponível ou degradado.
+preservar sua assinatura, registrar a falha e publicar estado indisponível ou
+degradado. Funções públicas legadas também não devem ser remodeladas apenas
+para se encaixar neste modelo; alterações de contrato exigem atualizar os
+chamadores e a documentação correspondente.
 
 ---
 
