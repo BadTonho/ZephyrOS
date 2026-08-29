@@ -2519,3 +2519,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   da `vma.c`, buffers/filas, PCI/PHY e SDK ring 3), além de restrições para
   IRQ/hot paths, pools fixos, FFI, `unsafe`, layout e métricas. Nenhum código
   Rust foi migrado e nenhum build foi executado pelo agente.
+
+- AGENTS.md: Regra #8 revisada para um contrato flexível de drivers.
+  Concluída em: 2026-08-29 10:31 (America/Sao_Paulo).
+  O modelo obrigatório foi substituído por requisitos de ciclo de vida,
+  estados, capacidades, rollback de inicialização, contratos de erro,
+  ownership, IRQ/DMA, concorrência, timeouts, fallback e uso restrito de
+  `panic`, preservando compatibilidade com drivers legados.
