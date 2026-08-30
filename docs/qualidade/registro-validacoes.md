@@ -3030,5 +3030,14 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   raiz virtual, `mount`, lookup, `chdir`, listagem e Makefile foram atualizados.
   Não houve alteração de `boot.asm`, `stage2.asm`, App API, syscalls ou
   persistência. O agente não executou build, testes ou QEMU; a confirmação
-  funcional do usuário ainda é necessária antes de marcar PROC3 como concluído
-  no resumo do roadmap.
+  funcional do usuário foi recebida posteriormente.
+
+- PROC3: validação funcional confirmada pelo usuário em QEMU em 2026-08-30
+  (horário não informado). `mount` exibiu `/sys -> sysfs` como `SYSFS` e
+  somente leitura; `ls /`, `ls /sys`, `ls /sys/bus`,
+  `ls /sys/bus/pci/devices`, `ls /sys/class/net` e `ls /sys/class/block`
+  confirmaram a raiz e os inventários ordenados de PCI, rede e bloco.
+  `RegCheck: OK` e `health check` concluíram sem falha de VFS. A tentativa de
+  `ls /sys/power/state` aplicou listagem de diretório a um arquivo regular e
+  retornou o erro esperado; a leitura correta é `cat /sys/power/state`.
+  O PROC3 foi marcado como concluído no roadmap.

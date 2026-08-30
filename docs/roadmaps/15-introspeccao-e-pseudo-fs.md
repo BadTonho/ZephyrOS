@@ -14,7 +14,7 @@ proprietárias.
 - [x] PROC0 - Contrato de leitura, snapshot, lifetime e ABI textual.
 - [x] PROC1 - Infraestrutura de geração dinâmica de pseudo-arquivos em RAM.
 - [x] PROC2 - Mapeamento de `/proc` para métricas globais e processos por PID.
-- [ ] PROC3 - Mapeamento de `/sys` para árvore de dispositivos, barramentos e drivers.
+- [x] PROC3 - Mapeamento de `/sys` para árvore de dispositivos, barramentos e drivers.
 - [ ] PROC4 - Migração do Task Manager, Device Manager e utilitários Shell para `/proc`.
 
 ## Atalhos
@@ -269,9 +269,12 @@ Storage.
 ### Critério de saída
 
 A árvore `/sys` permite navegar pela topologia de hardware como uma hierarquia
-de diretórios, com atributos legíveis por `ls` e `cat`. A implementação está
-pronta para validação; o PROC3 só será marcado como concluído no resumo após a
-confirmação funcional do usuário no QEMU.
+de diretórios, com atributos legíveis por `ls` e `cat`. A validação funcional
+foi confirmada no QEMU: `mount` exibiu `/sys` como `SYSFS` e somente leitura;
+`ls` confirmou a raiz, a hierarquia PCI e as classes de rede e bloco; e
+`regcheck full`/`health check` concluíram sem falha de VFS. O nó
+`/sys/power/state` é um arquivo regular e deve ser lido com `cat`, não com
+`ls`.
 
 ### Comandos Shell / Diagnóstico
 
