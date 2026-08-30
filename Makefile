@@ -444,6 +444,9 @@ SHELL_JOB_OBJ = build/shell_job.o
 TASKMGR_C = src/shell/taskmanager.c
 TASKMGR_OBJ = build/taskmanager.o
 
+SHELL_INTROSPECTION_C = src/shell/shell_introspection.c
+SHELL_INTROSPECTION_OBJ = build/shell_introspection.o
+
 MEDIAPLAYER_C = src/shell/mediaplayer.c
 MEDIAPLAYER_OBJ = build/mediaplayer.o
 
@@ -574,7 +577,7 @@ OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(INPUT_OBJ) $(IRQ_DEF
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(UHCI_OBJ) $(EHCI_OBJ) $(USB_TRANSPORT_OBJ) $(USB_MSC_OBJ) $(USB_HID_OBJ) $(RTL8811CU_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) $(RNG_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(VMA_OBJ) $(COMPRESS_OBJ) \
-       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(VFS_OBJ) $(VFS_PATH_OBJ) $(DEVFS_OBJ) $(PROCFS_OBJ) $(SYSFS_OBJ) $(BLOCK_OBJ) $(BLOCK_CACHE_OBJ) $(STORAGE_OBJ) $(FILE_INDEX_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(SIGNAL_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(UPDATER_OBJ) $(APPSTORE_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ) $(APP_REMOTE_OBJ) $(DEVICE_MANAGER_OBJ) $(USB_MANAGER_OBJ) $(NETWORK_MANAGER_OBJ) $(WIFI_MANAGER_OBJ) $(POWER_OBJ) $(NET_BUFFER_OBJ) $(SK_BUFF_OBJ) $(SOCKET_OBJ) $(ETHERNET_OBJ) $(ARP_OBJ) $(IPV4_OBJ) $(ICMP_OBJ) $(UDP_OBJ) $(DHCP_OBJ) $(DNS_OBJ) $(TCP_OBJ) $(NET_SOCKET_OBJ) $(HTTP_OBJ) $(APP_CATALOG_OBJ) $(DISPLAY_OBJ) $(SHELL_INPUT_OBJ) $(SHELL_DISPATCH_OBJ) $(SHELL_COMMAND_UTILS_OBJ) $(SHELL_PIPELINE_OBJ) $(SHELL_COMMANDS_VFS_OBJ) $(SHELL_COMMANDS_CORE_OBJ) $(SHELL_COMMANDS_STORAGE_OBJ) $(SHELL_COMMANDS_DIAGNOSTICS_OBJ) $(SHELL_COMMANDS_NETWORK_OBJ) $(SHELL_COMMANDS_WIFI_OBJ) $(SHELL_CHECKS_OBJ) $(SHELL_COMMANDS_PACKAGES_OBJ) $(SHELL_COMMANDS_APPS_OBJ) $(SHELL_HOSTED_OBJ) $(SHELL_JOB_OBJ) $(RTC_OBJ) $(CLOCK_OBJ) $(TLS_OBJ) $(TLS_CLIENT_OBJ) $(SLAB_OBJ)
+       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(VFS_OBJ) $(VFS_PATH_OBJ) $(DEVFS_OBJ) $(PROCFS_OBJ) $(SYSFS_OBJ) $(BLOCK_OBJ) $(BLOCK_CACHE_OBJ) $(STORAGE_OBJ) $(FILE_INDEX_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(SIGNAL_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(SHELL_INTROSPECTION_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(UPDATER_OBJ) $(APPSTORE_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ) $(APP_REMOTE_OBJ) $(DEVICE_MANAGER_OBJ) $(USB_MANAGER_OBJ) $(NETWORK_MANAGER_OBJ) $(WIFI_MANAGER_OBJ) $(POWER_OBJ) $(NET_BUFFER_OBJ) $(SK_BUFF_OBJ) $(SOCKET_OBJ) $(ETHERNET_OBJ) $(ARP_OBJ) $(IPV4_OBJ) $(ICMP_OBJ) $(UDP_OBJ) $(DHCP_OBJ) $(DNS_OBJ) $(TCP_OBJ) $(NET_SOCKET_OBJ) $(HTTP_OBJ) $(APP_CATALOG_OBJ) $(DISPLAY_OBJ) $(SHELL_INPUT_OBJ) $(SHELL_DISPATCH_OBJ) $(SHELL_COMMAND_UTILS_OBJ) $(SHELL_PIPELINE_OBJ) $(SHELL_COMMANDS_VFS_OBJ) $(SHELL_COMMANDS_CORE_OBJ) $(SHELL_COMMANDS_STORAGE_OBJ) $(SHELL_COMMANDS_DIAGNOSTICS_OBJ) $(SHELL_COMMANDS_NETWORK_OBJ) $(SHELL_COMMANDS_WIFI_OBJ) $(SHELL_CHECKS_OBJ) $(SHELL_COMMANDS_PACKAGES_OBJ) $(SHELL_COMMANDS_APPS_OBJ) $(SHELL_HOSTED_OBJ) $(SHELL_JOB_OBJ) $(RTC_OBJ) $(CLOCK_OBJ) $(TLS_OBJ) $(TLS_CLIENT_OBJ) $(SLAB_OBJ)
 
 OBJS += $(ROUTE_OBJ)
 
@@ -1076,7 +1079,7 @@ $(SHELL_COMMANDS_STORAGE_OBJ): $(SHELL_COMMANDS_STORAGE_C) src/include/apps/shel
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(SHELL_COMMANDS_DIAGNOSTICS_OBJ): $(SHELL_COMMANDS_DIAGNOSTICS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_runtime.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/clock.h src/include/core/tls.h src/include/core/wifi_manager.h src/include/fs/vfs.h src/include/drivers/idt.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h src/include/process/process.h src/include/memory/slab.h src/include/memory/vma.h
+$(SHELL_COMMANDS_DIAGNOSTICS_OBJ): $(SHELL_COMMANDS_DIAGNOSTICS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_introspection.h src/include/apps/shell_runtime.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/clock.h src/include/core/tls.h src/include/core/wifi_manager.h src/include/fs/vfs.h src/include/drivers/idt.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h src/include/process/process.h src/include/memory/slab.h src/include/memory/vma.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1108,7 +1111,11 @@ $(SHELL_JOB_OBJ): $(SHELL_JOB_C) src/include/apps/shell_job.h src/include/apps/s
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(TASKMGR_OBJ): $(TASKMGR_C)
+$(TASKMGR_OBJ): $(TASKMGR_C) src/include/apps/shell_introspection.h src/include/fs/vfs.h src/include/process/process.h
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_INTROSPECTION_OBJ): $(SHELL_INTROSPECTION_C) src/include/apps/shell_introspection.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/fs/vfs.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

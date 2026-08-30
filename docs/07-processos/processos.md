@@ -105,6 +105,19 @@ residentes e imagens de codigo/dados; VMAs reservadas nao contam como
 residentes. A copia de VMA valida PID e geracao e retorna `ERR_AGAIN` quando a
 identidade muda durante a captura.
 
+### Consumidores PROC4
+
+O Task Manager Classic passou a consumir `/proc/<pid>/status` por meio da VFS,
+mantendo apenas uma matriz de valores e a identidade `pid + generation` por
+linha. A lista é repetida uma vez quando há churn; processos que permanecem
+instáveis não entram na atualização corrente. O cálculo de CPU usa diferenças
+de `total_ticks` somente quando PID e geração coincidem.
+
+As ações do Classic revalidam a geração antes de consultar ou sinalizar o
+processo atual. O caminho Simple, a aba de threads e as estruturas internas de
+processos permanecem inalterados. Campos de contexto e ponteiros internos não
+são exportados pela visão Classic migrada.
+
 ### Criando um Processo
 
 ```c

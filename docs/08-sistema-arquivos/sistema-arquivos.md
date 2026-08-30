@@ -942,6 +942,32 @@ formato ASCII, seek, EOF, somente leitura e ausência de buffers ou referências
 residuais. A validação funcional observável usa `ls /sys`, as classes, os
 atributos disponíveis e `cat /sys/power/state`.
 
+## PROC4 - Consumidores de procfs e sysfs
+
+O Task Manager Classic lê `/proc` exclusivamente pela VFS. A lista é obtida
+em ordem numérica, cada status é copiado para uma matriz privada e a identidade
+de uma linha é `pid + generation`. A atualização repete a enumeração uma vez
+quando há churn; uma captura ainda instável é ignorada naquela atualização.
+As ações de reinício e término revalidam PID e geração antes de consultar o
+processo atual. O fallback Simple e a aba de threads continuam usando o caminho
+interno legado.
+
+A aba de memória usa os campos de `/proc/meminfo`. Detalhes que não existem no
+ABI textual, como EIP, ESP, CR3, page directory e ponteiros de stack, não são
+exibidos no Classic migrado. Nenhum `process_t*`, descritor ou buffer de
+snapshot é mantido entre eventos da interface.
+
+Os comandos `devices` e `device-info` leem atributos dos nós `/sys` para PCI,
+rede e bloco, fechando cada snapshot antes de retornar. IDs `pci-*`, `net-*`
+e blocos nativos são resolvidos sem manter ponteiros para os inventários. PS/2,
+PIT, VGA, VESA, AC97 e speaker continuam usando o snapshot legado quando não
+possuem nó correspondente em sysfs.
+
+`proccheck` executa a validação agregada de diretórios e arquivos regulares dos
+dois namespaces, incluindo ASCII, EOF, ausência de escrita e caminhos
+inválidos. A migração não cria `/proc/sys`, não altera a App API, syscalls,
+layouts binários ou o bootloader.
+
 ## Pipes anonimos e redirecionamento VFS4
 
 `vfs_pipe()` cria dois descritores no processo atual: `fds[0]` somente para

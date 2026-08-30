@@ -355,3 +355,16 @@ estado.
 `shell_memcheck_result_t` foi acrescentado ao final da struct para preservar o
 layout anterior. O Task Manager consulta a mesma API por snapshot cacheado, com
 intervalo minimo de um segundo.
+
+## Integracao PROC4
+
+`shell_introspection.h` define o adaptador interno de leitura dos pseudo-
+filesystems. Ele usa somente `open`, leituras parciais ate EOF e `close` da VFS;
+nao retém descritores, ponteiros de providers ou buffers entre chamadas. O
+leitor rejeita NUL, CR, ANSI e bytes fora de ASCII, e o parser preserva valores
+com espacos nas linhas `<chave> <valor>\n`.
+
+O Task Manager Classic usa esse adaptador para `/proc/<pid>/status` e
+`/proc/meminfo`; Simple permanece no caminho legado. `devices`, `device-info`
+e `proccheck` tambem sao consumidores de snapshots e nao alteram as
+assinaturas de `shell.h`, App API ou syscalls.

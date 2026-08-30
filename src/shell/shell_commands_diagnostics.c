@@ -82,6 +82,7 @@
 #include "drivers/rtc.h"
 #include "ui/display.h"
 #include "apps/shell_command_utils.h"
+#include "apps/shell_introspection.h"
 #include "apps/shell_runtime.h"
 
 #define SHELL_Q2CHECK_FAULT_RUNS 2U
@@ -142,6 +143,11 @@
 #define SHELL_REGCHECK_ACPI_SDT_HEADER_SIZE 36U
 #define SHELL_REGCHECK_ACPI_MAX_TABLE_SIZE (1024U * 1024U)
 #define SHELL_REGCHECK_ACPI_MAX_ROOT_ENTRIES 256U
+#define SHELL_INTROSPECTION_READ_SIZE 4096U
+
+static vfs_dir_entry_t shell_introspection_dir_entries[VFS_MAX_DIR_ENTRIES];
+static vfs_dir_entry_t shell_introspection_child_entries[VFS_MAX_DIR_ENTRIES];
+static uint8_t shell_introspection_read_buffer[SHELL_INTROSPECTION_READ_SIZE];
 
 typedef enum {
     SHELL_Q2CHECK_IDLE = 0,
@@ -2812,8 +2818,154 @@ static uint8_t cmd_device_status_color(device_status_t status) {
     return 0x08;
 }
 
+static int cmd_sysfs_append(char* path, uint32_t capacity, uint32_t* length,
+                            const char* text) {
+    uint32_t text_length;
+
+    if (!path || !length || !text) {
+        LOG_WARN("SHELL", "Destino invalido ao montar caminho sysfs");
+        return ERR_NULL;
+    }
+    text_length = kstrlen(text);
+    if (*length > capacity || text_length >= capacity - *length) {
+        LOG_WARN("SHELL", "Caminho sysfs excedeu o limite");
+        return ERR_OVERFLOW;
+    }
+    for (uint32_t index = 0U; index < text_length; index++) {
+        path[*length + index] = text[index];
+    }
+    *length += text_length;
+    path[*length] = '\0';
+    return OK;
+}
+
+static int cmd_sysfs_path_for_device(const device_info_t* info,
+                                     const device_text_t* text,
+                                     char* path, uint32_t capacity) {
+    uint32_t length = 0U;
+    int result;
+
+    if (!info || !text || !path || capacity == 0U) {
+        LOG_WARN("SHELL", "Argumento invalido ao resolver caminho sysfs");
+        return ERR_NULL;
+    }
+    path[0] = '\0';
+    if (info->kind == DEVICE_KIND_PCI) {
+        result = cmd_sysfs_append(path, capacity, &length,
+                                  "/sys/bus/pci/devices/");
+        if (result == OK) result = cmd_sysfs_append(path, capacity, &length,
+                                                     text->id + 4);
+        return result;
+    }
+    if (info->kind == DEVICE_KIND_ATA_PRIMARY) {
+        result = cmd_sysfs_append(path, capacity, &length,
+                                  "/sys/class/block/");
+        if (result == OK) result = cmd_sysfs_append(path, capacity, &length,
+                                                     text->id);
+        return result;
+    }
+    return ERR_NOT_FOUND;
+}
+
+static int cmd_sysfs_path_for_id(const char* id, char* path, uint32_t capacity) {
+    uint32_t length = 0U;
+    const char* prefix;
+
+    if (!id || !path || capacity == 0U) {
+        LOG_WARN("SHELL", "Argumento invalido ao resolver ID sysfs");
+        return ERR_NULL;
+    }
+    path[0] = '\0';
+    if (id[0] == 'n' && id[1] == 'e' && id[2] == 't' && id[3] == '-') {
+        if (!id[4]) {
+            LOG_WARN("SHELL", "ID de rede sysfs sem identificador");
+            return ERR_INVALID;
+        }
+        prefix = "/sys/class/net/";
+        return cmd_sysfs_append(path, capacity, &length, prefix) == OK ?
+               cmd_sysfs_append(path, capacity, &length, id) : ERR_OVERFLOW;
+    }
+    if (id[0] == 'p' && id[1] == 'c' && id[2] == 'i' && id[3] == '-') {
+        if (!id[4]) {
+            LOG_WARN("SHELL", "ID PCI sysfs sem identificador");
+            return ERR_INVALID;
+        }
+        prefix = "/sys/bus/pci/devices/";
+        if (cmd_sysfs_append(path, capacity, &length, prefix) != OK) {
+            return ERR_OVERFLOW;
+        }
+        return cmd_sysfs_append(path, capacity, &length, id + 4);
+    }
+    if (id[0] != 'a' || id[1] != 't' || id[2] != 'a') {
+        return ERR_NOT_FOUND;
+    }
+    if (!id[3]) {
+        LOG_WARN("SHELL", "ID de bloco sysfs sem identificador");
+        return ERR_INVALID;
+    }
+    prefix = "/sys/class/block/";
+    if (cmd_sysfs_append(path, capacity, &length, prefix) != OK) {
+        return ERR_OVERFLOW;
+    }
+    return cmd_sysfs_append(path, capacity, &length, id);
+}
+
+static int cmd_sysfs_read_snapshot(const char* path, uint8_t* buffer,
+                                   uint32_t capacity, uint32_t* out_size) {
+    int result = shell_introspection_read_file(path, buffer, capacity, out_size);
+
+    if (result == ERR_NOT_FOUND) return result;
+    if (result != OK) {
+        LOG_WARN("SHELL", "Snapshot sysfs indisponivel para o dispositivo");
+    }
+    return result;
+}
+
+static int cmd_sysfs_has_node(const char* path) {
+    uint32_t count = 0U;
+
+    return vfs_list_dir(path, shell_introspection_dir_entries,
+                        VFS_MAX_DIR_ENTRIES, &count);
+}
+
+static int cmd_sysfs_print_device(const char* path) {
+    uint32_t entry_count = 0U;
+    int result;
+
+    result = vfs_list_dir(path, shell_introspection_dir_entries,
+                          VFS_MAX_DIR_ENTRIES, &entry_count);
+    if (result != OK) return result;
+    for (uint32_t index = 0U; index < entry_count; index++) {
+        char attribute_path[VFS_MAX_PATH];
+        uint32_t length = 0U;
+        uint32_t size = 0U;
+
+        if (shell_introspection_dir_entries[index].type != VFS_NODE_REGULAR) {
+            continue;
+        }
+        if (cmd_sysfs_append(attribute_path, sizeof(attribute_path), &length,
+                             path) != OK ||
+            cmd_sysfs_append(attribute_path, sizeof(attribute_path), &length,
+                             "/") != OK ||
+            cmd_sysfs_append(attribute_path, sizeof(attribute_path), &length,
+                             shell_introspection_dir_entries[index].name) != OK) {
+            LOG_WARN("SHELL", "Caminho de atributo sysfs excedeu o limite");
+            return ERR_OVERFLOW;
+        }
+        result = cmd_sysfs_read_snapshot(attribute_path,
+                                          shell_introspection_read_buffer,
+                                          sizeof(shell_introspection_read_buffer) - 1U,
+                                          &size);
+        if (result != OK) return result;
+        shell_introspection_read_buffer[size] = '\0';
+        video_print((const char*)shell_introspection_read_buffer, 0x07);
+    }
+    return OK;
+}
+
 static int cmd_devices_print_entry(const device_info_t* info, int verbose) {
     device_text_t text;
+    char sysfs_path[VFS_MAX_PATH];
     int result;
 
     if (!info) {
@@ -2835,6 +2987,11 @@ static int cmd_devices_print_entry(const device_info_t* info, int verbose) {
     video_print(text.type, 0x07);
     video_print("  ", 0x07);
     video_print(text.name, 0x07);
+    if (cmd_sysfs_path_for_device(info, &text, sysfs_path,
+                                  sizeof(sysfs_path)) == OK &&
+        cmd_sysfs_has_node(sysfs_path) == OK) {
+        video_print("  sysfs=OK", 0x0A);
+    }
     video_print("\n", 0x07);
     if (!verbose) return OK;
 
@@ -2853,6 +3010,14 @@ static int cmd_devices_print_entry(const device_info_t* info, int verbose) {
     video_print("\n    ", 0x08);
     video_print(text.detail, 0x07);
     video_print("\n", 0x07);
+    if (cmd_sysfs_path_for_device(info, &text, sysfs_path,
+                                  sizeof(sysfs_path)) == OK &&
+        cmd_sysfs_has_node(sysfs_path) == OK) {
+        video_print("    sysfs:\n", 0x08);
+        if (cmd_sysfs_print_device(sysfs_path) != OK) {
+            LOG_WARN("SHELL", "Atributos sysfs desapareceram durante a leitura");
+        }
+    }
     return OK;
 }
 
@@ -2891,6 +3056,7 @@ static void cmd_devices(const char* args) {
 
 static void cmd_device_info(const char* args) {
     char id[DEVICE_ID_SIZE];
+    char sysfs_path[VFS_MAX_PATH];
     device_info_t info;
     device_text_t text;
     int result = shell_command_read_single_arg(args, id, sizeof(id));
@@ -2899,6 +3065,15 @@ static void cmd_device_info(const char* args) {
         LOG_WARN("SHELL", "Uso invalido de device-info");
         video_print("Uso: device-info <id>\n", 0x0C);
         return;
+    }
+    if (cmd_sysfs_path_for_id(id, sysfs_path, sizeof(sysfs_path)) == OK &&
+        cmd_sysfs_has_node(sysfs_path) == OK) {
+        video_print("Dispositivo (sysfs):\n", 0x0B);
+        video_print("  Caminho: ", 0x07);
+        video_print(sysfs_path, 0x0B);
+        video_print("\n  Atributos:\n", 0x07);
+        if (cmd_sysfs_print_device(sysfs_path) == OK) return;
+        LOG_WARN("SHELL", "Leitura sysfs falhou; usando inventario legado");
     }
     result = device_manager_find(id, &info);
     if (result == ERR_NOT_FOUND) {
@@ -2952,6 +3127,245 @@ static void cmd_device_info(const char* args) {
         shell_command_print_num(info.capacity_sectors);
     }
     video_print("\n", 0x07);
+}
+
+static int cmd_proccheck_read(const char* path, const char* key) {
+    char value[SHELL_INTROSPECTION_MAX_VALUE];
+    uint32_t size = 0U;
+    int result = shell_introspection_read_file(
+        path, shell_introspection_read_buffer,
+        sizeof(shell_introspection_read_buffer), &size);
+
+    if (result != OK) return result;
+    if (key) return shell_introspection_find_value(shell_introspection_read_buffer,
+                                                   size, key, value,
+                                                   sizeof(value));
+    return OK;
+}
+
+static int cmd_proccheck_pid_path(char* path, uint32_t capacity,
+                                  uint32_t pid, const char* suffix) {
+    uint32_t length = 0U;
+
+    if (cmd_sysfs_append(path, capacity, &length, "/proc/") != OK) {
+        LOG_WARN("SHELL", "Caminho proccheck excedeu o limite");
+        return ERR_OVERFLOW;
+    }
+    {
+        char digits[11];
+        uint32_t count = 0U;
+        do {
+            digits[count++] = (char)('0' + pid % 10U);
+            pid /= 10U;
+        } while (pid && count < sizeof(digits));
+        while (count) {
+            char digit[2] = {digits[--count], '\0'};
+            if (cmd_sysfs_append(path, capacity, &length, digit) != OK) {
+                LOG_WARN("SHELL", "PID excedeu o caminho proccheck");
+                return ERR_OVERFLOW;
+            }
+        }
+    }
+    return cmd_sysfs_append(path, capacity, &length, suffix);
+}
+
+static int cmd_proccheck_directory(const char* path) {
+    uint32_t count = 0U;
+
+    return vfs_list_dir(path, shell_introspection_dir_entries,
+                        VFS_MAX_DIR_ENTRIES, &count);
+}
+
+static int cmd_proccheck_cursor(void) {
+    int32_t fd = VFS_FD_INVALID;
+    uint8_t byte = 0U;
+    uint32_t bytes = 0U;
+    uint32_t position = 0U;
+    int result = vfs_open("/proc/uptime", VFS_MODE_READ, &fd);
+
+    if (result == OK) result = vfs_read(fd, &byte, 1U, &bytes);
+    if (result == OK && !bytes) result = ERR_STATE;
+    if (result == OK) result = vfs_lseek(fd, 0, VFS_SEEK_END, &position);
+    if (result == OK) result = vfs_read(fd, &byte, 1U, &bytes);
+    if (result == OK && bytes) result = ERR_STATE;
+    if (result == OK) result = vfs_lseek(fd, 0, VFS_SEEK_SET, &position);
+    if (result == OK) result = vfs_read(fd, &byte, 1U, &bytes);
+    if (fd != VFS_FD_INVALID && vfs_close(fd) != OK && result == OK) {
+        result = ERR_STATE;
+    }
+    if (result != OK) {
+        LOG_WARN("SHELL", "Cursor ou EOF invalido no proccheck");
+    }
+    return result;
+}
+
+static int cmd_proccheck_sysfs_attributes(const char* root) {
+    uint32_t entry_count = 0U;
+
+    if (vfs_list_dir(root, shell_introspection_dir_entries,
+                     VFS_MAX_DIR_ENTRIES, &entry_count) != OK) {
+        LOG_WARN("SHELL", "Hierarquia sysfs indisponivel no proccheck");
+        return ERR_STATE;
+    }
+    for (uint32_t index = 0U; index < entry_count; index++) {
+        char node_path[VFS_MAX_PATH];
+        uint32_t length = 0U;
+        uint32_t child_count = 0U;
+
+        if (shell_introspection_dir_entries[index].type != VFS_NODE_DIRECTORY) {
+            continue;
+        }
+        if (cmd_sysfs_append(node_path, sizeof(node_path), &length, root) != OK ||
+            cmd_sysfs_append(node_path, sizeof(node_path), &length, "/") != OK ||
+            cmd_sysfs_append(node_path, sizeof(node_path), &length,
+                             shell_introspection_dir_entries[index].name) != OK ||
+            vfs_list_dir(node_path, shell_introspection_child_entries,
+                         VFS_MAX_DIR_ENTRIES, &child_count) != OK) {
+            return ERR_STATE;
+        }
+        for (uint32_t child = 0U; child < child_count; child++) {
+            uint32_t child_length = length;
+
+            if (shell_introspection_child_entries[child].type != VFS_NODE_REGULAR) {
+                continue;
+            }
+            if (cmd_sysfs_append(node_path, sizeof(node_path), &child_length,
+                                 "/") != OK ||
+                cmd_sysfs_append(node_path, sizeof(node_path), &child_length,
+                                 shell_introspection_child_entries[child].name) != OK ||
+                cmd_proccheck_read(
+                    node_path,
+                    shell_introspection_child_entries[child].name) != OK) {
+                LOG_WARN("SHELL", "Atributo sysfs falhou no proccheck");
+                return ERR_STATE;
+            }
+        }
+    }
+    return OK;
+}
+
+static int cmd_proccheck(void) {
+    static const char* global_files[] = {
+        "/proc/uptime", "/proc/meminfo", "/proc/cpuinfo",
+        "/proc/version", "/proc/cmdline", "/sys/power/state"
+    };
+    static const char* global_keys[] = {
+        "uptime_ticks", "total_bytes", "processor", "version", "cmdline",
+        "state"
+    };
+    static const char* directories[] = {
+        "/proc", "/sys", "/sys/bus", "/sys/bus/pci",
+        "/sys/bus/pci/devices", "/sys/class", "/sys/class/net",
+        "/sys/class/block", "/sys/power"
+    };
+    uint32_t entry_count = 0U;
+    uint32_t passed = 0U;
+    uint32_t total = 0U;
+    uint8_t negative_ok = 1U;
+    int result = OK;
+
+    for (uint32_t index = 0U; index < sizeof(directories) /
+         sizeof(directories[0]); index++) {
+        total++;
+        if (cmd_proccheck_directory(directories[index]) == OK) passed++;
+        else result = ERR_STATE;
+    }
+    for (uint32_t index = 0U; index < sizeof(global_files) /
+         sizeof(global_files[0]); index++) {
+        total++;
+        if (cmd_proccheck_read(global_files[index], global_keys[index]) == OK) {
+            passed++;
+        }
+        else result = ERR_STATE;
+    }
+    for (uint32_t index = 0U; index < 3U; index++) {
+        static const char* const roots[] = {
+            "/sys/bus/pci/devices", "/sys/class/net", "/sys/class/block"
+        };
+
+        total++;
+        if (cmd_proccheck_sysfs_attributes(roots[index]) == OK) passed++;
+        else result = ERR_STATE;
+    }
+    total++;
+    if (cmd_proccheck_cursor() == OK) passed++;
+    else result = ERR_STATE;
+    if (vfs_list_dir("/proc", shell_introspection_dir_entries,
+                     VFS_MAX_DIR_ENTRIES,
+                     &entry_count) != OK) {
+        result = ERR_STATE;
+    } else {
+        for (uint32_t index = 0U; index < entry_count; index++) {
+            uint32_t pid;
+            char path[VFS_MAX_PATH];
+
+            if (!shell_introspection_dir_entries[index].name[0] ||
+                shell_introspection_dir_entries[index].name[0] < '0' ||
+                shell_introspection_dir_entries[index].name[0] > '9' ||
+                shell_introspection_parse_u32(
+                    shell_introspection_dir_entries[index].name, &pid) != OK) {
+                continue;
+            }
+            total++;
+            if (cmd_proccheck_pid_path(path, sizeof(path), pid, "/status") == OK &&
+                cmd_proccheck_read(path, "pid") == OK) passed++;
+            else result = ERR_STATE;
+            total++;
+            if (cmd_proccheck_pid_path(path, sizeof(path), pid, "/cmdline") == OK &&
+                cmd_proccheck_read(path, "cmdline") == OK) passed++;
+            else result = ERR_STATE;
+            total++;
+            if (cmd_proccheck_pid_path(path, sizeof(path), pid, "/maps") == OK &&
+                cmd_proccheck_read(path, 0) == OK) passed++;
+            else result = ERR_STATE;
+        }
+    }
+    {
+        static const char* const absent_paths[] = {
+            "/proc/__missing__", "/sys/class/net/__missing__",
+            "/sys/bus/pci/devices/ff:ff.f"
+        };
+
+        for (uint32_t index = 0U; index < sizeof(absent_paths) /
+             sizeof(absent_paths[0]); index++) {
+            total++;
+            if (cmd_proccheck_directory(absent_paths[index]) == ERR_NOT_FOUND) {
+                passed++;
+            } else {
+                result = ERR_STATE;
+            }
+        }
+    }
+    total++;
+    if (vfs_list_dir("/proc/uptime", shell_introspection_dir_entries,
+                     VFS_MAX_DIR_ENTRIES,
+                     &entry_count) != ERR_INVALID) {
+        negative_ok = 0U;
+        result = ERR_STATE;
+    } else passed++;
+    total++;
+    {
+        int32_t fd = VFS_FD_INVALID;
+        if (vfs_open("/proc/uptime", VFS_MODE_WRITE, &fd) != ERR_UNAVAILABLE) {
+            if (fd != VFS_FD_INVALID) (void)vfs_close(fd);
+            negative_ok = 0U;
+            result = ERR_STATE;
+        } else {
+            passed++;
+        }
+    }
+    video_print("PROC4 introspeccao: ", 0x0B);
+    video_print(result == OK && negative_ok ? "OK" : "ERRO",
+                result == OK && negative_ok ? 0x0A : 0x0C);
+    video_print(" testes=", 0x07);
+    shell_command_print_num(total);
+    video_print(" aprovados=", 0x07);
+    shell_command_print_num(passed);
+    video_print("\n", 0x07);
+    if (result != OK || !negative_ok) {
+        LOG_ERROR("SHELL", "proccheck detectou falha em procfs/sysfs");
+    }
+    return result == OK && negative_ok ? OK : ERR_STATE;
 }
 
 static uint8_t cmd_usb_recovery_color(recovery_state_t state) {
@@ -4908,6 +5322,16 @@ SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_kill, cmd_kill)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_sigtest, cmd_sigtest)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_vfs, cmd_vfs)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_devcheck, cmd_devcheck)
+void shell_dispatch_cmd_proccheck(const char* arguments) {
+    if (arguments && arguments[0]) {
+        LOG_WARN("SHELL", "Uso invalido de proccheck");
+        video_print("Uso: proccheck\n", 0x0C);
+        return;
+    }
+    if (cmd_proccheck() != OK) {
+        video_print("Erro: proccheck falhou.\n", 0x0C);
+    }
+}
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_mount, cmd_mount)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_pwd, cmd_pwd)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_cd, cmd_cd)

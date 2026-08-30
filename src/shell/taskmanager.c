@@ -22,6 +22,8 @@
 #include "core/errors.h"
 #include "core/power.h"
 #include "apps/shell_command_utils.h"
+#include "apps/shell_introspection.h"
+#include "fs/vfs.h"
 #include "ui/gui.h"
 #include "ui/display.h"
 
@@ -88,6 +90,32 @@
 #define TSKMGR_GUI_DETAIL_GAP TSKMGR_GUI_PX(8)
 #define TSKMGR_GUI_HISTORY_SAMPLES 60U
 #define TSKMGR_MEMORY_STATS_TICKS 50U
+#define TSKMGR_PROC_READ_BUFFER 4096U
+
+typedef struct {
+    uint32_t pid;
+    uint32_t generation;
+    uint32_t parent_pid;
+    uint32_t threads;
+    uint32_t total_ticks;
+    uint32_t wait_ticks;
+    uint32_t memory_bytes;
+    uint32_t resident_pages;
+    uint32_t image_bytes;
+    uint32_t exit_code;
+    uint32_t faulted;
+    uint32_t cpu_usage;
+    process_state_t state;
+    uint8_t user_mode;
+    char name[PROCESS_NAME_LENGTH];
+} taskmgr_process_view_t;
+
+typedef struct {
+    uint32_t pid;
+    uint32_t generation;
+    uint32_t total_ticks;
+    uint8_t used;
+} taskmgr_cpu_sample_t;
 
 static int is_open = 0;
 static int selected_tab = 0;
@@ -96,6 +124,7 @@ static int scroll_offset = 0;
 static int sort_column = 0;
 static int show_properties = 0;
 static int prop_pid = 0;
+static uint32_t prop_generation = 0U;
 
 static uint32_t last_tick_sample = 0;
 static uint32_t last_process_ticks[64] = {0};
@@ -107,6 +136,19 @@ static uint32_t taskmgr_history_count = 0;
 static memory_detailed_stats_t taskmgr_memory_stats;
 static uint32_t taskmgr_memory_stats_tick = 0;
 static uint8_t taskmgr_memory_stats_valid = 0;
+static taskmgr_process_view_t taskmgr_gui_process_views[MAX_PROCESSES];
+static taskmgr_process_view_t taskmgr_gui_capture_views[MAX_PROCESSES];
+static vfs_dir_entry_t taskmgr_gui_proc_entries[VFS_MAX_DIR_ENTRIES];
+static uint32_t taskmgr_gui_process_view_count = 0U;
+static taskmgr_cpu_sample_t taskmgr_gui_cpu_samples[MAX_PROCESSES];
+static uint32_t taskmgr_gui_cpu_tick = 0U;
+static uint32_t taskmgr_gui_mem_total = 0U;
+static uint32_t taskmgr_gui_mem_free = 0U;
+static uint32_t taskmgr_gui_mem_used = 0U;
+static uint32_t taskmgr_gui_mem_buffers = 0U;
+static uint32_t taskmgr_gui_mem_slab = 0U;
+static uint8_t taskmgr_gui_mem_valid = 0U;
+static uint8_t taskmgr_gui_proc_read_buffer[TSKMGR_PROC_READ_BUFFER];
 
 static int gui_open = 0;
 static int gui_minimized = 0;
@@ -151,6 +193,11 @@ static void taskmgr_clamp_window(void);
 static void taskmgr_gui_reset_history(void);
 static void taskmgr_gui_sample_history(void);
 static void taskmgr_update_memory_stats(void);
+static int taskmgr_gui_refresh_process_views(void);
+static int taskmgr_gui_refresh_memory_view(void);
+static int taskmgr_gui_find_process_view(int row, taskmgr_process_view_t* output);
+static int taskmgr_gui_find_process_view_by_pid(uint32_t pid,
+                                                taskmgr_process_view_t* output);
 static void taskmgr_gui_draw_surface(int x, int y, int width, int height,
                                      uint32_t background, uint32_t border);
 static void taskmgr_gui_draw_history_graph(int x, int y, int width, int height,
@@ -226,20 +273,366 @@ static void taskmgr_update_memory_stats(void) {
         memory_get_detailed_stats(&taskmgr_memory_stats) == OK;
 }
 
+static int taskmgr_gui_append_text(char* destination, uint32_t capacity,
+                                   uint32_t* length, const char* source) {
+    uint32_t source_length;
+
+    if (!destination || !length || !source) {
+        LOG_WARN("TSKMGR", "Destino invalido ao montar caminho procfs");
+        return ERR_NULL;
+    }
+    source_length = kstrlen(source);
+    if (*length > capacity || source_length >= capacity - *length) {
+        LOG_WARN("TSKMGR", "Caminho procfs excedeu o limite");
+        return ERR_OVERFLOW;
+    }
+    for (uint32_t index = 0U; index < source_length; index++) {
+        destination[*length + index] = source[index];
+    }
+    *length += source_length;
+    destination[*length] = '\0';
+    return OK;
+}
+
+static int taskmgr_gui_append_number(char* destination, uint32_t capacity,
+                                     uint32_t* length, uint32_t value) {
+    char digits[11];
+    uint32_t digit_count = 0U;
+
+    do {
+        digits[digit_count++] = (char)('0' + value % 10U);
+        value /= 10U;
+    } while (value && digit_count < sizeof(digits));
+    while (digit_count) {
+        char digit[2] = {digits[--digit_count], '\0'};
+        int result = taskmgr_gui_append_text(destination, capacity, length, digit);
+        if (result != OK) return result;
+    }
+    return OK;
+}
+
+static int taskmgr_gui_build_proc_path(char* path, uint32_t capacity,
+                                       uint32_t pid, const char* suffix) {
+    uint32_t length = 0U;
+    int result;
+
+    if (!path || !suffix || capacity == 0U) {
+        LOG_WARN("TSKMGR", "Argumento invalido ao montar caminho procfs");
+        return ERR_NULL;
+    }
+    path[0] = '\0';
+    result = taskmgr_gui_append_text(path, capacity, &length, "/proc/");
+    if (result == OK) result = taskmgr_gui_append_number(path, capacity,
+                                                           &length, pid);
+    if (result == OK) result = taskmgr_gui_append_text(path, capacity,
+                                                         &length, suffix);
+    return result;
+}
+
+static int taskmgr_gui_read_status_value(const uint8_t* buffer, uint32_t size,
+                                         const char* key, uint32_t* output) {
+    char value[SHELL_INTROSPECTION_MAX_VALUE];
+    int result = shell_introspection_find_value(buffer, size, key, value,
+                                                sizeof(value));
+
+    if (result != OK) return result;
+    return shell_introspection_parse_u32(value, output);
+}
+
+static int taskmgr_gui_parse_state(const char* value, process_state_t* state) {
+    if (!value || !state) {
+        LOG_WARN("TSKMGR", "Estado procfs sem destino valido");
+        return ERR_NULL;
+    }
+    if (kstrcmp(value, "unused") == 0) *state = PROCESS_STATE_UNUSED;
+    else if (kstrcmp(value, "ready") == 0) *state = PROCESS_STATE_READY;
+    else if (kstrcmp(value, "running") == 0) *state = PROCESS_STATE_RUNNING;
+    else if (kstrcmp(value, "blocked") == 0) *state = PROCESS_STATE_BLOCKED;
+    else if (kstrcmp(value, "zombie") == 0) *state = PROCESS_STATE_ZOMBIE;
+    else {
+        LOG_WARN("TSKMGR", "Estado procfs desconhecido");
+        return ERR_INVALID;
+    }
+    return OK;
+}
+
+static int taskmgr_gui_decimal_name(const char* text) {
+    uint32_t length;
+
+    if (!text || !text[0]) return 0;
+    length = kstrlen(text);
+    for (uint32_t index = 0U; index < length; index++) {
+        if (text[index] < '0' || text[index] > '9') return 0;
+    }
+    return 1;
+}
+
+static int taskmgr_gui_parse_status(const uint8_t* buffer, uint32_t size,
+                                    taskmgr_process_view_t* view) {
+    char value[SHELL_INTROSPECTION_MAX_VALUE];
+    int result;
+
+    if (!buffer || !view) {
+        LOG_WARN("TSKMGR", "Status procfs sem destino valido");
+        return ERR_NULL;
+    }
+    result = taskmgr_gui_read_status_value(buffer, size, "pid", &view->pid);
+    if (result != OK) return result;
+    result = taskmgr_gui_read_status_value(buffer, size, "generation",
+                                            &view->generation);
+    if (result != OK) return result;
+    result = shell_introspection_find_value(buffer, size, "name", value,
+                                            sizeof(value));
+    if (result != OK) return result;
+    taskmgr_gui_copy_text(view->name, sizeof(view->name), value);
+    result = shell_introspection_find_value(buffer, size, "state", value,
+                                            sizeof(value));
+    if (result != OK) return result;
+    result = taskmgr_gui_parse_state(value, &view->state);
+    if (result != OK) return result;
+    result = taskmgr_gui_read_status_value(buffer, size, "ppid", &view->parent_pid);
+    if (result == OK) result = taskmgr_gui_read_status_value(buffer, size,
+                                                               "threads",
+                                                               &view->threads);
+    if (result == OK) result = taskmgr_gui_read_status_value(buffer, size,
+                                                               "total_ticks",
+                                                               &view->total_ticks);
+    if (result == OK) result = taskmgr_gui_read_status_value(buffer, size,
+                                                               "wait_ticks",
+                                                               &view->wait_ticks);
+    if (result == OK) result = taskmgr_gui_read_status_value(buffer, size,
+                                                               "memory_bytes",
+                                                               &view->memory_bytes);
+    if (result == OK) result = taskmgr_gui_read_status_value(buffer, size,
+                                                               "resident_pages",
+                                                               &view->resident_pages);
+    if (result == OK) result = taskmgr_gui_read_status_value(buffer, size,
+                                                               "image_bytes",
+                                                               &view->image_bytes);
+    if (result == OK) result = taskmgr_gui_read_status_value(buffer, size,
+                                                               "exit_code",
+                                                               &view->exit_code);
+    if (result == OK) result = taskmgr_gui_read_status_value(buffer, size,
+                                                               "faulted",
+                                                               &view->faulted);
+    if (result != OK) return result;
+    result = shell_introspection_find_value(buffer, size, "user", value,
+                                            sizeof(value));
+    if (result != OK) return result;
+    if (kstrcmp(value, "ring3") == 0) view->user_mode = 1U;
+    else if (kstrcmp(value, "kernel") == 0) view->user_mode = 0U;
+    else {
+        LOG_WARN("TSKMGR", "Modo de usuario procfs desconhecido");
+        return ERR_INVALID;
+    }
+    view->cpu_usage = 0U;
+    return OK;
+}
+
+static int taskmgr_gui_collect_process_views_once(
+    taskmgr_process_view_t* views, uint32_t capacity, uint32_t* out_count) {
+    uint32_t entry_count = 0U;
+    uint32_t count = 0U;
+    uint8_t unstable = 0U;
+    int result;
+
+    if (!views || !out_count || capacity == 0U) {
+        LOG_WARN("TSKMGR", "Destino invalido para snapshot de processos");
+        return ERR_NULL;
+    }
+    result = vfs_list_dir("/proc", taskmgr_gui_proc_entries,
+                          VFS_MAX_DIR_ENTRIES,
+                          &entry_count);
+    if (result != OK) return result;
+    for (uint32_t index = 0U; index < entry_count; index++) {
+        uint32_t pid;
+        char path[VFS_MAX_PATH];
+        uint32_t size = 0U;
+        taskmgr_process_view_t view;
+
+        if (!taskmgr_gui_decimal_name(taskmgr_gui_proc_entries[index].name) ||
+            shell_introspection_parse_u32(taskmgr_gui_proc_entries[index].name,
+                                          &pid) != OK) {
+            continue;
+        }
+        if (count >= capacity) {
+            LOG_WARN("TSKMGR", "Snapshot de processos excedeu a capacidade");
+            return ERR_OVERFLOW;
+        }
+        result = taskmgr_gui_build_proc_path(path, sizeof(path), pid,
+                                             "/status");
+        if (result == OK) result = shell_introspection_read_file(
+            path, taskmgr_gui_proc_read_buffer,
+            sizeof(taskmgr_gui_proc_read_buffer), &size);
+        if (result == ERR_NOT_FOUND || result == ERR_AGAIN) {
+            unstable = 1U;
+            continue;
+        }
+        if (result != OK) return result;
+        result = taskmgr_gui_parse_status(taskmgr_gui_proc_read_buffer, size,
+                                          &view);
+        if (result != OK) return result;
+        if (view.pid != pid) {
+            unstable = 1U;
+            continue;
+        }
+        views[count++] = view;
+    }
+    for (uint32_t index = 1U; index < count; index++) {
+        taskmgr_process_view_t key = views[index];
+        uint32_t position = index;
+        while (position > 0U && views[position - 1U].pid > key.pid) {
+            views[position] = views[position - 1U];
+            position--;
+        }
+        views[position] = key;
+    }
+    *out_count = count;
+    return unstable ? ERR_AGAIN : OK;
+}
+
+static int taskmgr_gui_refresh_process_views(void) {
+    uint32_t count = 0U;
+    uint32_t now = timer_get_ticks();
+    uint32_t delta = now - taskmgr_gui_cpu_tick;
+    int result = taskmgr_gui_collect_process_views_once(
+        taskmgr_gui_capture_views, MAX_PROCESSES, &count);
+
+    if (result == ERR_AGAIN) {
+        result = taskmgr_gui_collect_process_views_once(
+            taskmgr_gui_capture_views, MAX_PROCESSES, &count);
+    }
+    if (result != OK) {
+        taskmgr_gui_process_view_count = 0U;
+        LOG_WARN("TSKMGR", "Snapshot de processos via procfs indisponivel");
+        return result;
+    }
+    for (uint32_t index = 0U; index < count; index++) {
+        for (uint32_t sample = 0U; sample < MAX_PROCESSES; sample++) {
+            if (taskmgr_gui_cpu_samples[sample].used &&
+                taskmgr_gui_cpu_samples[sample].pid ==
+                taskmgr_gui_capture_views[index].pid &&
+                taskmgr_gui_cpu_samples[sample].generation ==
+                taskmgr_gui_capture_views[index].generation) {
+                uint32_t delta_ticks = taskmgr_gui_capture_views[index].total_ticks -
+                                       taskmgr_gui_cpu_samples[sample].total_ticks;
+                taskmgr_gui_capture_views[index].cpu_usage =
+                    delta ? (delta_ticks * 100U) / delta : 0U;
+                if (taskmgr_gui_capture_views[index].cpu_usage > 100U) {
+                    taskmgr_gui_capture_views[index].cpu_usage = 100U;
+                }
+                break;
+            }
+        }
+        taskmgr_gui_process_views[index] = taskmgr_gui_capture_views[index];
+    }
+    for (uint32_t index = 0U; index < MAX_PROCESSES; index++) {
+        taskmgr_gui_cpu_samples[index].used = 0U;
+    }
+    for (uint32_t index = 0U; index < count; index++) {
+        taskmgr_gui_cpu_samples[index].pid = taskmgr_gui_capture_views[index].pid;
+        taskmgr_gui_cpu_samples[index].generation =
+            taskmgr_gui_capture_views[index].generation;
+        taskmgr_gui_cpu_samples[index].total_ticks =
+            taskmgr_gui_capture_views[index].total_ticks;
+        taskmgr_gui_cpu_samples[index].used = 1U;
+    }
+    taskmgr_gui_process_view_count = count;
+    for (uint32_t index = 1U; index < count; index++) {
+        taskmgr_process_view_t key = taskmgr_gui_process_views[index];
+        uint32_t position = index;
+        while (position > 0U) {
+            taskmgr_process_view_t* left =
+                &taskmgr_gui_process_views[position - 1U];
+            int swap = 0;
+
+            if (sort_column == 0) swap = left->pid > key.pid;
+            else if (sort_column == 1) swap = kstrcmp(left->name, key.name) > 0;
+            else if (sort_column == 2) swap = left->state > key.state;
+            else if (sort_column == 3) swap = left->cpu_usage < key.cpu_usage;
+            if (!swap) break;
+            taskmgr_gui_process_views[position] = *left;
+            position--;
+        }
+        taskmgr_gui_process_views[position] = key;
+    }
+    taskmgr_gui_cpu_tick = now;
+    return OK;
+}
+
+static int taskmgr_gui_refresh_memory_view(void) {
+    uint32_t size = 0U;
+    char value[SHELL_INTROSPECTION_MAX_VALUE];
+    int result = shell_introspection_read_file(
+        "/proc/meminfo", taskmgr_gui_proc_read_buffer,
+        sizeof(taskmgr_gui_proc_read_buffer), &size);
+
+    if (result != OK) {
+        taskmgr_gui_mem_valid = 0U;
+        return result;
+    }
+    result = shell_introspection_find_value(taskmgr_gui_proc_read_buffer, size,
+                                            "total_bytes", value, sizeof(value));
+    if (result == OK) result = shell_introspection_parse_u32(value,
+                                                               &taskmgr_gui_mem_total);
+    if (result == OK) result = shell_introspection_find_value(
+        taskmgr_gui_proc_read_buffer, size, "free_bytes", value, sizeof(value));
+    if (result == OK) result = shell_introspection_parse_u32(value,
+                                                               &taskmgr_gui_mem_free);
+    if (result == OK) result = shell_introspection_find_value(
+        taskmgr_gui_proc_read_buffer, size, "used_bytes", value, sizeof(value));
+    if (result == OK) result = shell_introspection_parse_u32(value,
+                                                               &taskmgr_gui_mem_used);
+    if (result == OK) result = shell_introspection_find_value(
+        taskmgr_gui_proc_read_buffer, size, "buffers_bytes", value, sizeof(value));
+    if (result == OK) result = shell_introspection_parse_u32(value,
+                                                               &taskmgr_gui_mem_buffers);
+    if (result == OK) result = shell_introspection_find_value(
+        taskmgr_gui_proc_read_buffer, size, "slab_bytes", value, sizeof(value));
+    if (result == OK) result = shell_introspection_parse_u32(value,
+                                                               &taskmgr_gui_mem_slab);
+    taskmgr_gui_mem_valid = result == OK;
+    return result;
+}
+
+static int taskmgr_gui_find_process_view(int row,
+                                         taskmgr_process_view_t* output) {
+    if (!output || row < 0 || (uint32_t)row >= taskmgr_gui_process_view_count) {
+        LOG_WARN("TSKMGR", "Linha de processo nao encontrada");
+        return ERR_NOT_FOUND;
+    }
+    *output = taskmgr_gui_process_views[row];
+    return OK;
+}
+
+static int taskmgr_gui_find_process_view_by_pid(uint32_t pid,
+                                                taskmgr_process_view_t* output) {
+    if (!output) {
+        LOG_WARN("TSKMGR", "Destino invalido para processo selecionado");
+        return ERR_NULL;
+    }
+    for (uint32_t index = 0U; index < taskmgr_gui_process_view_count; index++) {
+        if (taskmgr_gui_process_views[index].pid == pid) {
+            *output = taskmgr_gui_process_views[index];
+            return OK;
+        }
+    }
+    LOG_WARN("TSKMGR", "Processo selecionado nao encontrado");
+    return ERR_NOT_FOUND;
+}
+
 static uint32_t taskmgr_gui_aggregate_load(void) {
     uint32_t total = 0;
 
-    for (int index = 0; index < MAX_PROCESSES; index++) {
-        if (processes[index]) {
-            total += tick_usage[index];
-        }
+    for (uint32_t index = 0U; index < taskmgr_gui_process_view_count; index++) {
+        total += taskmgr_gui_process_views[index].cpu_usage;
     }
     return total > 100U ? 100U : total;
 }
 
 static void taskmgr_gui_sample_history(void) {
-    uint32_t memory_percent = taskmgr_percent(memory_get_used(),
-                                               memory_get_total());
+    uint32_t memory_percent = taskmgr_gui_mem_valid ?
+        taskmgr_percent(taskmgr_gui_mem_used, taskmgr_gui_mem_total) : 0U;
 
     taskmgr_memory_history[taskmgr_history_head] = (uint8_t)memory_percent;
     taskmgr_load_history[taskmgr_history_head] =
@@ -1276,55 +1669,6 @@ static int taskmgr_gui_process_visible_rows(void) {
     return rows;
 }
 
-static int taskmgr_collect_processes(int* process_indexes) {
-    int count = 0;
-
-    for (int i = 0; i < MAX_PROCESSES; i++) {
-        if (processes[i]) {
-            process_indexes[count++] = i;
-        }
-    }
-
-    for (int i = 1; i < count; i++) {
-        int key = process_indexes[i];
-        int j = i - 1;
-        while (j >= 0) {
-            int left = process_indexes[j];
-            int swap = 0;
-            if (sort_column == 0) swap = processes[left]->pid > processes[key]->pid;
-            if (sort_column == 1) {
-                int k = 0;
-                while (processes[left]->name[k] && processes[key]->name[k] &&
-                       processes[left]->name[k] == processes[key]->name[k]) k++;
-                swap = processes[left]->name[k] > processes[key]->name[k];
-            }
-            if (sort_column == 2) swap = processes[left]->state > processes[key]->state;
-            if (sort_column == 3) swap = tick_usage[left] < tick_usage[key];
-            if (!swap) break;
-            process_indexes[j + 1] = process_indexes[j];
-            j--;
-        }
-        process_indexes[j + 1] = key;
-    }
-    return count;
-}
-
-static process_t* taskmgr_find_process_by_row(int row) {
-    int indexes[MAX_PROCESSES];
-    int count = taskmgr_collect_processes(indexes);
-    if (row < 0 || row >= count) return 0;
-    return processes[indexes[row]];
-}
-
-static process_t* taskmgr_find_process_by_pid(int pid) {
-    for (int i = 0; i < MAX_PROCESSES; i++) {
-        if (processes[i] && processes[i]->pid == (uint32_t)pid) {
-            return processes[i];
-        }
-    }
-    return 0;
-}
-
 static thread_t* taskmgr_find_thread_by_row(int row) {
     int current_row = 0;
     for (int i = 0; i < MAX_THREADS; i++) {
@@ -1382,7 +1726,8 @@ static void taskmgr_gui_draw_tabs(void) {
     }
 }
 
-static void taskmgr_gui_draw_process_details(process_t* process, int x, int y,
+static void taskmgr_gui_draw_process_details(
+    const taskmgr_process_view_t* view, int x, int y,
                                              int width, int height) {
     char name[19];
     int right_x = x + width / 2;
@@ -1391,41 +1736,41 @@ static void taskmgr_gui_draw_process_details(process_t* process, int x, int y,
                              GUI_MODERN_COLOR_BORDER_INACTIVE);
     gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 8),
                   "Detalhes selecionados", GUI_MODERN_COLOR_TEXT);
-    if (!process) {
+    if (!view) {
         gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 38),
                       "Nenhum processo", GUI_MODERN_COLOR_BORDER_INACTIVE);
         return;
     }
-    taskmgr_gui_copy_text(name, sizeof(name), process->name);
+    taskmgr_gui_copy_text(name, sizeof(name), view->name);
     if (width < TSKMGR_GUI_PX(400)) name[8] = '\0';
 
     if (height < 130) {
         gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 32), "PID:", GUI_COLOR_TEXT);
-        taskmgr_gui_draw_num(x + 48, y + 32, process->pid, GUI_COLOR_TEXT);
+        taskmgr_gui_draw_num(x + 48, y + 32, view->pid, GUI_COLOR_TEXT);
         gui_draw_text((uint32_t)right_x, (uint32_t)(y + 32),
                       "TCK:", GUI_COLOR_TEXT);
         taskmgr_gui_draw_num(right_x + TSKMGR_GUI_PX(40), y + 32,
-                             taskmgr_process_tick_usage(process), GUI_COLOR_TEXT);
+                             view->cpu_usage, GUI_COLOR_TEXT);
         gui_draw_text((uint32_t)(right_x + TSKMGR_GUI_PX(64)),
                       (uint32_t)(y + 32), "%", GUI_COLOR_TEXT);
         gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 56), "Nome:", GUI_COLOR_TEXT);
         gui_draw_text((uint32_t)(x + 48), (uint32_t)(y + 56), name, GUI_COLOR_TEXT);
         gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 80), "Estado:", GUI_COLOR_TEXT);
         gui_draw_text((uint32_t)(x + 66), (uint32_t)(y + 80),
-                      taskmgr_process_state_name(process->state), GUI_COLOR_TEXT);
+                      taskmgr_process_state_name(view->state), GUI_COLOR_TEXT);
         gui_draw_text((uint32_t)right_x, (uint32_t)(y + 80),
                       "Wait:", GUI_COLOR_TEXT);
         taskmgr_gui_draw_num(right_x + TSKMGR_GUI_PX(48), y + 80,
-                             process->wait_ticks, GUI_COLOR_TEXT);
+                             view->wait_ticks, GUI_COLOR_TEXT);
         return;
     }
 
     gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 34), "PID:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 48, y + 34, process->pid, GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 48, y + 34, view->pid, GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)right_x, (uint32_t)(y + 34),
                   "TCK:", GUI_COLOR_TEXT);
     taskmgr_gui_draw_num(right_x + TSKMGR_GUI_PX(40), y + 34,
-                         taskmgr_process_tick_usage(process), GUI_COLOR_TEXT);
+                         view->cpu_usage, GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(right_x + TSKMGR_GUI_PX(64)),
                   (uint32_t)(y + 34), "%", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 58), "Nome:", GUI_COLOR_TEXT);
@@ -1434,46 +1779,41 @@ static void taskmgr_gui_draw_process_details(process_t* process, int x, int y,
                   "Tipo:", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(right_x + TSKMGR_GUI_PX(40)),
                   (uint32_t)(y + 58),
-                  taskmgr_process_type(process), GUI_COLOR_TEXT);
+                  view->user_mode ? "ring3" : "kernel", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 82), "Estado:", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 66), (uint32_t)(y + 82),
-                  taskmgr_process_state_name(process->state), GUI_COLOR_TEXT);
+                  taskmgr_process_state_name(view->state), GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)right_x, (uint32_t)(y + 82),
                   "Wait:", GUI_COLOR_TEXT);
     taskmgr_gui_draw_num(right_x + TSKMGR_GUI_PX(48), y + 82,
-                         process->wait_ticks, GUI_COLOR_TEXT);
+                         view->wait_ticks, GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 106), "Tipo:", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 50), (uint32_t)(y + 106),
-                  taskmgr_process_type(process), GUI_COLOR_TEXT);
+                  view->user_mode ? "ring3" : "kernel", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)right_x, (uint32_t)(y + 106),
                   "Tempo:", GUI_COLOR_TEXT);
     taskmgr_gui_draw_num(right_x + TSKMGR_GUI_PX(56), y + 106,
-                         process->total_ticks / TSKMGR_TICKS_PER_SECOND,
+                         view->total_ticks / TSKMGR_TICKS_PER_SECOND,
                          GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(right_x + TSKMGR_GUI_PX(80)),
                   (uint32_t)(y + 106), "s", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 130), "Ticks:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 56, y + 130, process->total_ticks, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)right_x, (uint32_t)(y + 130),
-                  "Prox:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(right_x + TSKMGR_GUI_PX(48), y + 130,
-                         process->next_pid, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 154), "EIP:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_hex(x + 50, y + 154, process->context.eip, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 178), "ESP:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_hex(x + 50, y + 178, process->context.esp, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 202), "CR3:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_hex(x + 50, y + 202, process->context.cr3, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 226), "Stk:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_hex(x + 50, y + 226, process->kernel_stack_top, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 250), "Page dir:", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 82), (uint32_t)(y + 250),
-                  process->page_directory ? "OK" : "N/D", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 56, y + 130, view->total_ticks, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 154), "Memoria:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 72, y + 154, view->memory_bytes, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 178), "Paginas:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 72, y + 178, view->resident_pages, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 180), (uint32_t)(y + 178), "Imagem:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 242, y + 178, view->image_bytes, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 10), (uint32_t)(y + 202), "Geracao:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 72, y + 202, view->generation, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 180), (uint32_t)(y + 202), "Falhou:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 242, y + 202, view->faulted, GUI_COLOR_TEXT);
 }
 
 static void taskmgr_gui_draw_processes(void) {
-    int indexes[MAX_PROCESSES];
-    int count = taskmgr_collect_processes(indexes);
+    int count = taskmgr_gui_refresh_process_views() == OK ?
+                (int)taskmgr_gui_process_view_count : 0;
     int x = gui_x + TSKMGR_GUI_MARGIN;
     int y = gui_y + TSKMGR_GUI_CONTENT_TOP;
     int width = gui_width - (TSKMGR_GUI_MARGIN * 2);
@@ -1488,8 +1828,15 @@ static void taskmgr_gui_draw_processes(void) {
     uint32_t zombie;
     uint32_t tick_sum = 0;
 
-    taskmgr_count_process_states(&ready, &running, &blocked, &zombie);
-    for (int i = 0; i < count; i++) tick_sum += tick_usage[indexes[i]];
+    ready = running = blocked = zombie = 0U;
+    for (int i = 0; i < count; i++) {
+        taskmgr_process_view_t* view = &taskmgr_gui_process_views[i];
+        if (view->state == PROCESS_STATE_READY) ready++;
+        else if (view->state == PROCESS_STATE_RUNNING) running++;
+        else if (view->state == PROCESS_STATE_BLOCKED) blocked++;
+        else if (view->state == PROCESS_STATE_ZOMBIE) zombie++;
+        tick_sum += view->cpu_usage;
+    }
     if (selected_row >= count) selected_row = count ? count - 1 : 0;
     if (selected_row < scroll_offset) scroll_offset = selected_row;
     if (selected_row >= scroll_offset + taskmgr_gui_process_visible_rows()) {
@@ -1559,14 +1906,15 @@ static void taskmgr_gui_draw_processes(void) {
     for (int row = 0; row < taskmgr_gui_process_visible_rows() &&
          scroll_offset + row < count; row++) {
         int absolute_row = scroll_offset + row;
-        process_t* process = processes[indexes[absolute_row]];
+        taskmgr_process_view_t* view =
+            &taskmgr_gui_process_views[absolute_row];
         int row_y = list_y + TSKMGR_GUI_LIST_HEADER_HEIGHT +
                     row * TSKMGR_GUI_ROW_HEIGHT;
         uint32_t text_color = absolute_row == selected_row ? GUI_COLOR_TEXT_W : GUI_COLOR_TEXT;
-        uint32_t seconds = process->total_ticks / TSKMGR_TICKS_PER_SECOND;
+        uint32_t seconds = view->total_ticks / TSKMGR_TICKS_PER_SECOND;
         char name[14];
         uint32_t state_color = absolute_row == selected_row ? GUI_COLOR_TEXT_W :
-                               taskmgr_gui_state_color(process->state);
+                               taskmgr_gui_state_color(view->state);
 
         if (absolute_row == selected_row) {
             taskmgr_gui_draw_surface(x + TSKMGR_GUI_PX(5), row_y,
@@ -1574,26 +1922,27 @@ static void taskmgr_gui_draw_processes(void) {
                                      TSKMGR_GUI_ROW_HEIGHT,
                                      GUI_MODERN_COLOR_HOVER,
                                      GUI_MODERN_COLOR_ACCENT);
-            prop_pid = (int)process->pid;
+            prop_pid = (int)view->pid;
+            prop_generation = view->generation;
         }
 
-        taskmgr_gui_copy_text(name, sizeof(name), process->name);
+        taskmgr_gui_copy_text(name, sizeof(name), view->name);
         taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(10),
                              row_y + TSKMGR_GUI_PX(4),
-                             process->pid, text_color);
+                             view->pid, text_color);
         gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(56)),
                       (uint32_t)(row_y + TSKMGR_GUI_PX(4)), name, text_color);
         gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(170)),
                       (uint32_t)(row_y + TSKMGR_GUI_PX(4)),
-                      taskmgr_process_state_name(process->state), state_color);
+                      taskmgr_process_state_name(view->state), state_color);
         taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(260),
                              row_y + TSKMGR_GUI_PX(4),
-                             tick_usage[indexes[absolute_row]], text_color);
+                             view->cpu_usage, text_color);
         gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(284)),
                       (uint32_t)(row_y + TSKMGR_GUI_PX(4)), "%", text_color);
         gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(310)),
                       (uint32_t)(row_y + TSKMGR_GUI_PX(4)),
-                      taskmgr_process_type(process), text_color);
+                      view->user_mode ? "ring3" : "kernel", text_color);
         taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(370),
                              row_y + TSKMGR_GUI_PX(4), seconds, text_color);
         gui_draw_text((uint32_t)(x + TSKMGR_GUI_PX(370) +
@@ -1601,7 +1950,7 @@ static void taskmgr_gui_draw_processes(void) {
                       (uint32_t)(row_y + TSKMGR_GUI_PX(4)), "s", text_color);
         taskmgr_gui_draw_num(x + TSKMGR_GUI_PX(440),
                              row_y + TSKMGR_GUI_PX(4),
-                             process->wait_ticks, text_color);
+                             view->wait_ticks, text_color);
     }
 
     if (!count) {
@@ -1610,7 +1959,10 @@ static void taskmgr_gui_draw_processes(void) {
                       "Nenhum processo ativo", GUI_COLOR_TEXT);
     }
 
-    process_t* selected = taskmgr_find_process_by_row(selected_row);
+    taskmgr_process_view_t selected_view;
+    taskmgr_process_view_t* selected =
+        taskmgr_gui_find_process_view(selected_row, &selected_view) == OK ?
+        &selected_view : 0;
     if (taskmgr_gui_has_side_details()) {
         taskmgr_gui_draw_process_details(selected, detail_x, list_y,
                                          TSKMGR_GUI_DETAIL_WIDTH, list_height);
@@ -1625,13 +1977,13 @@ static void taskmgr_gui_draw_processes(void) {
 }
 
 static void taskmgr_gui_draw_memory(void) {
-    uint32_t total = memory_get_total();
-    uint32_t used = memory_get_used();
-    uint32_t free_memory = memory_get_free();
+    uint32_t total;
+    uint32_t used;
+    uint32_t free_memory;
     uint32_t total_pages = memory_get_total_pages();
     uint32_t free_pages = memory_get_free_pages();
     uint32_t used_pages = taskmgr_pages_used(total_pages, free_pages);
-    uint32_t used_percent = taskmgr_percent(used, total);
+    uint32_t used_percent;
     ata_device_t* device = ata_get_device();
     int panel_x = gui_x + TSKMGR_GUI_MARGIN;
     int panel_y = gui_y + TSKMGR_GUI_CONTENT_TOP;
@@ -1639,9 +1991,15 @@ static void taskmgr_gui_draw_memory(void) {
     int panel_height = gui_height - TSKMGR_GUI_PANEL_BOTTOM;
     int x = panel_x + TSKMGR_GUI_PX(18);
     int y = gui_y + TSKMGR_GUI_CONTENT_TOP + TSKMGR_GUI_PX(14);
-    uint32_t bar_color = used_percent > 80 ? 0x00D65A5AU :
-                         (used_percent > 60 ? 0x00E0A850U : 0x005FBF7FU);
+    uint32_t bar_color;
 
+    (void)taskmgr_gui_refresh_memory_view();
+    total = taskmgr_gui_mem_valid ? taskmgr_gui_mem_total : 0U;
+    used = taskmgr_gui_mem_valid ? taskmgr_gui_mem_used : 0U;
+    free_memory = taskmgr_gui_mem_valid ? taskmgr_gui_mem_free : 0U;
+    used_percent = taskmgr_percent(used, total);
+    bar_color = used_percent > 80 ? 0x00D65A5AU :
+                (used_percent > 60 ? 0x00E0A850U : 0x005FBF7FU);
     taskmgr_update_memory_stats();
 
     taskmgr_gui_draw_surface(panel_x, panel_y, panel_width, panel_height,
@@ -1689,16 +2047,14 @@ static void taskmgr_gui_draw_memory(void) {
                              (PAGE_SIZE / 1024U), GUI_COLOR_TEXT);
         gui_draw_text((uint32_t)(x + 324), (uint32_t)(y + 220), "SLAB:", GUI_COLOR_TEXT);
         taskmgr_gui_draw_num(x + 400, y + 220,
-                             taskmgr_memory_stats.zone_pages[MEMORY_ZONE_SLAB] *
-                             (PAGE_SIZE / 1024U), GUI_COLOR_TEXT);
+                             taskmgr_gui_mem_slab / 1024U, GUI_COLOR_TEXT);
         gui_draw_text((uint32_t)x, (uint32_t)(y + 244), "Processos:", GUI_COLOR_TEXT);
         taskmgr_gui_draw_num(x + 96, y + 244,
                              taskmgr_memory_stats.zone_pages[MEMORY_ZONE_PROCESS] *
                              (PAGE_SIZE / 1024U), GUI_COLOR_TEXT);
         gui_draw_text((uint32_t)(x + 176), (uint32_t)(y + 244), "Buffers:", GUI_COLOR_TEXT);
         taskmgr_gui_draw_num(x + 244, y + 244,
-                             taskmgr_memory_stats.zone_pages[MEMORY_ZONE_BUFFER] *
-                             (PAGE_SIZE / 1024U), GUI_COLOR_TEXT);
+                             taskmgr_gui_mem_buffers / 1024U, GUI_COLOR_TEXT);
         gui_draw_text((uint32_t)(x + 324), (uint32_t)(y + 244), "Livre:", GUI_COLOR_TEXT);
         taskmgr_gui_draw_num(x + 400, y + 244,
                              taskmgr_memory_stats.zone_pages[MEMORY_ZONE_FREE] *
@@ -1881,7 +2237,7 @@ static void taskmgr_gui_draw_threads(void) {
 }
 
 static void taskmgr_gui_draw_properties(void) {
-    process_t* process = taskmgr_find_process_by_pid(prop_pid);
+    taskmgr_process_view_t process;
     int width = TSKMGR_GUI_PX(500);
     int height = TSKMGR_GUI_PX(300);
     int x = gui_x + (gui_width - width) / 2;
@@ -1896,7 +2252,8 @@ static void taskmgr_gui_draw_properties(void) {
         y = gui_y + (gui_height - height) / 2;
     }
 
-    if (!process) {
+    if (taskmgr_gui_find_process_view_by_pid((uint32_t)prop_pid, &process) != OK ||
+        process.generation != prop_generation) {
         show_properties = 0;
         return;
     }
@@ -1907,41 +2264,40 @@ static void taskmgr_gui_draw_properties(void) {
                   (uint32_t)(y + TSKMGR_GUI_PX(14)),
                   "Propriedades do processo", GUI_MODERN_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 18), (uint32_t)(y + 42), "PID:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 104, y + 42, process->pid, GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 104, y + 42, process.pid, GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 270), (uint32_t)(y + 42), "Tipo:", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 350), (uint32_t)(y + 42),
-                  taskmgr_process_type(process), GUI_COLOR_TEXT);
+                  process.user_mode ? "ring3" : "kernel", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 18), (uint32_t)(y + 72), "Nome:", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 104), (uint32_t)(y + 72), process->name, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 104), (uint32_t)(y + 72), process.name, GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 18), (uint32_t)(y + 102), "Estado:", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 104), (uint32_t)(y + 102),
-                  taskmgr_process_state_name(process->state), GUI_COLOR_TEXT);
+                  taskmgr_process_state_name(process.state), GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 270), (uint32_t)(y + 102), "Espera:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 350, y + 102, process->wait_ticks, GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 350, y + 102, process.wait_ticks, GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 18), (uint32_t)(y + 132), "TCK:", GUI_COLOR_TEXT);
     taskmgr_gui_draw_num(x + 104, y + 132,
-                         taskmgr_process_tick_usage(process), GUI_COLOR_TEXT);
+                         process.cpu_usage, GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 128), (uint32_t)(y + 132), "%", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 270), (uint32_t)(y + 132), "Tempo:", GUI_COLOR_TEXT);
     taskmgr_gui_draw_num(x + 350, y + 132,
-                         process->total_ticks / TSKMGR_TICKS_PER_SECOND,
+                         process.total_ticks / TSKMGR_TICKS_PER_SECOND,
                          GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 374), (uint32_t)(y + 132), "s", GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 18), (uint32_t)(y + 162), "Ticks:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 104, y + 162, process->total_ticks, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 270), (uint32_t)(y + 162), "Prox PID:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_num(x + 350, y + 162, process->next_pid, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 18), (uint32_t)(y + 192), "EIP:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_hex(x + 104, y + 192, process->context.eip, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 270), (uint32_t)(y + 192), "ESP:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_hex(x + 350, y + 192, process->context.esp, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 18), (uint32_t)(y + 222), "CR3:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_hex(x + 104, y + 222, process->context.cr3, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 270), (uint32_t)(y + 222), "KStack:", GUI_COLOR_TEXT);
-    taskmgr_gui_draw_hex(x + 350, y + 222, process->kernel_stack_top, GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 18), (uint32_t)(y + 252), "Page dir:", GUI_COLOR_TEXT);
-    gui_draw_text((uint32_t)(x + 104), (uint32_t)(y + 252),
-                  process->page_directory ? "OK" : "N/D", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 104, y + 162, process.total_ticks, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 270), (uint32_t)(y + 162), "Geracao:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 350, y + 162, process.generation, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 18), (uint32_t)(y + 192), "Memoria:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 104, y + 192, process.memory_bytes, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 270), (uint32_t)(y + 192), "Paginas:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 350, y + 192, process.resident_pages, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 18), (uint32_t)(y + 222), "Imagem:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 104, y + 222, process.image_bytes, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 270), (uint32_t)(y + 222), "Falhou:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 350, y + 222, process.faulted, GUI_COLOR_TEXT);
+    gui_draw_text((uint32_t)(x + 18), (uint32_t)(y + 252), "Saida:", GUI_COLOR_TEXT);
+    taskmgr_gui_draw_num(x + 104, y + 252, process.exit_code, GUI_COLOR_TEXT);
     gui_draw_text((uint32_t)(x + 18), (uint32_t)(y + 276),
                   "Enter ou Esc fecha esta janela", GUI_COLOR_TEXT);
 }
@@ -2119,7 +2475,8 @@ int taskmgr_open_gui(void) {
     scroll_offset = 0;
     show_properties = 0;
     taskmgr_gui_reset_history();
-    taskmgr_update_cpu_metrics();
+    (void)taskmgr_gui_refresh_process_views();
+    (void)taskmgr_gui_refresh_memory_view();
     taskmgr_gui_sample_history();
     gui_last_tick = timer_get_ticks();
     gui_last_metrics_tick = gui_last_tick;
@@ -2173,7 +2530,8 @@ void taskmgr_gui_update(void) {
 
     if (now - gui_last_metrics_tick >= TSKMGR_METRICS_TICKS) {
         gui_last_metrics_tick = now;
-        taskmgr_update_cpu_metrics();
+        (void)taskmgr_gui_refresh_process_views();
+        (void)taskmgr_gui_refresh_memory_view();
         taskmgr_gui_sample_history();
         redraw = 1;
     }
@@ -2228,23 +2586,34 @@ static void taskmgr_gui_handle_taskbar_action(int result) {
 }
 
 static void taskmgr_gui_restart_selected(void) {
-    process_t* process = taskmgr_find_process_by_row(selected_row);
-    if (!process || process->pid <= 2) return;
-    if ((process->name[0] == 'E' && process->name[1] == 'x' && process->name[2] == 'p') ||
-        (process->name[0] == 'T' && process->name[1] == 'a' && process->name[2] == 's')) {
+    taskmgr_process_view_t view;
+    process_t* process;
+
+    if (taskmgr_gui_refresh_process_views() != OK ||
+        taskmgr_gui_find_process_view(selected_row, &view) != OK ||
+        view.pid <= 2U) return;
+    process = process_get_by_pid(view.pid);
+    if (!process || process->event_generation != view.generation) return;
+    if ((view.name[0] == 'E' && view.name[1] == 'x' && view.name[2] == 'p') ||
+        (view.name[0] == 'T' && view.name[1] == 'a' && view.name[2] == 's')) {
         process_destroy(process);
         LOG_INFO("TSKMGR", "Processo selecionado destruido para reinicio");
     }
 }
 
 static void taskmgr_gui_delete_selected(void) {
-    process_t* process = taskmgr_find_process_by_row(selected_row);
-    if (!process) return;
+    taskmgr_process_view_t view;
+    process_t* process;
+
+    if (taskmgr_gui_refresh_process_views() != OK ||
+        taskmgr_gui_find_process_view(selected_row, &view) != OK) return;
+    process = process_get_by_pid(view.pid);
+    if (!process || process->event_generation != view.generation) return;
     if (!process_is_user(process)) {
         LOG_WARN("SHELL", "Task Manager protegeu processo nativo");
         return;
     }
-    if (process_signal_send(process->pid, APP_SIGNAL_KILL) != OK) {
+    if (process_signal_send(view.pid, APP_SIGNAL_KILL) != OK) {
         LOG_WARN("SHELL", "SIGKILL recusado pelo Task Manager");
         return;
     }
@@ -2255,7 +2624,7 @@ void taskmgr_gui_handle_key(uint8_t scancode) {
     int config_result;
     int taskbar_result;
     int count;
-    int process_indexes[MAX_PROCESSES];
+    taskmgr_process_view_t view;
 
     if (!gui_open) return;
     if (!taskmgr_hosted) {
@@ -2293,7 +2662,10 @@ void taskmgr_gui_handle_key(uint8_t scancode) {
         return;
     }
     if (scancode == 0x1C && selected_tab == 0) {
-        if (taskmgr_find_process_by_row(selected_row)) {
+        if (taskmgr_gui_refresh_process_views() == OK &&
+            taskmgr_gui_find_process_view(selected_row, &view) == OK) {
+            prop_pid = (int)view.pid;
+            prop_generation = view.generation;
             show_properties = 1;
             taskmgr_gui_draw();
         }
@@ -2315,7 +2687,8 @@ void taskmgr_gui_handle_key(uint8_t scancode) {
     }
     if (scancode == 0x48 || scancode == 0x50) {
         if (selected_tab == 0) {
-            count = taskmgr_collect_processes(process_indexes);
+            count = taskmgr_gui_refresh_process_views() == OK ?
+                    (int)taskmgr_gui_process_view_count : 0;
         } else {
             count = selected_tab == 2 ? (int)thread_get_count() : 1;
         }
@@ -2330,13 +2703,14 @@ static int taskmgr_gui_hit(int x, int y, int left, int top, int width, int heigh
 }
 
 static int taskmgr_gui_scroll_selected(int delta) {
-    int indexes[MAX_PROCESSES];
     int count;
     int visible_rows;
     int previous = selected_row;
+    taskmgr_process_view_t view;
 
     if (selected_tab == 0) {
-        count = taskmgr_collect_processes(indexes);
+        count = taskmgr_gui_refresh_process_views() == OK ?
+                (int)taskmgr_gui_process_view_count : 0;
         visible_rows = taskmgr_gui_process_visible_rows();
     } else if (selected_tab == 2) {
         count = (int)thread_get_count();
@@ -2365,8 +2739,10 @@ static int taskmgr_gui_scroll_selected(int delta) {
     if (scroll_offset > count - visible_rows) {
         scroll_offset = count > visible_rows ? count - visible_rows : 0;
     }
-    if (selected_tab == 0 && taskmgr_find_process_by_row(selected_row)) {
-        prop_pid = taskmgr_find_process_by_row(selected_row)->pid;
+    if (selected_tab == 0 &&
+        taskmgr_gui_find_process_view(selected_row, &view) == OK) {
+        prop_pid = (int)view.pid;
+        prop_generation = view.generation;
     }
     return 1;
 }
@@ -2402,6 +2778,7 @@ int taskmgr_gui_handle_mouse(mouse_event_t* event) {
     int maximize_x;
     int minimize_x;
     int process_list_width;
+    taskmgr_process_view_t view;
 
     if (!event) {
         LOG_ERROR("TSKMGR", "Evento de mouse nulo");
@@ -2513,7 +2890,11 @@ int taskmgr_gui_handle_mouse(mouse_event_t* event) {
                   TSKMGR_GUI_ROW_HEIGHT;
         if (row < 0) return 1;
         selected_row = scroll_offset + row;
-        if (taskmgr_find_process_by_row(selected_row)) prop_pid = taskmgr_find_process_by_row(selected_row)->pid;
+        if (taskmgr_gui_refresh_process_views() == OK &&
+            taskmgr_gui_find_process_view(selected_row, &view) == OK) {
+            prop_pid = (int)view.pid;
+            prop_generation = view.generation;
+        }
         taskmgr_gui_draw();
         return 1;
     }

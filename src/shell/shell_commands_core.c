@@ -344,6 +344,7 @@ static void cmd_help(void) {
     video_print("  wqinfo   - Lista filas de espera e ordem FIFO\n", 0x07);
     video_print("  devices  - Lista inventario de hardware (-v para detalhes)\n", 0x07);
     video_print("  device-info <id> - Mostra detalhes de um dispositivo\n", 0x07);
+    video_print("  proccheck - Valida os pseudo-filesystems /proc e /sys\n", 0x07);
     video_print("  device-scan - Refaz varredura PCI, USB e rede\n", 0x07);
     video_print("  usb status|list|ports|devices|storage|hid - Inspeciona USB\n", 0x07);
     video_print("  usb device <id> - Mostra detalhes de um controlador USB\n",
