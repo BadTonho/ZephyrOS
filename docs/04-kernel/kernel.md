@@ -518,8 +518,10 @@ estado operacional como se nada tivesse ocorrido.
 notificadores, SIGTERM/SIGKILL, processos recolhidos, volumes desmontados,
 falhas opcionais, estado de quiescencia, commit iniciado e degradacao. Esses
 campos sao diagnosticos internos append-only; nao formam ABI binaria, syscall
-ou App API nova. A implementacao PWR4 aguarda confirmacao funcional do usuario
-e permanece pendente no resumo do Roadmap 16.
+ou App API nova. A implementacao PWR4 foi confirmada funcionalmente pelo
+usuario no QEMU: `poweroff` e `shutdown -h now` encerraram o sistema, e
+`shutdown -r now` reiniciou com retorno ao Shell. O resumo da etapa esta
+concluido no Roadmap 16.
 
 ## Servicos S2.1-S2.8: Multi-NIC, Ethernet e pilha TCP/IP
 

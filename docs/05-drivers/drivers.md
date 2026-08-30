@@ -824,8 +824,9 @@ O ponto irreversivel continua sendo exclusivo de `acpi_poweroff()` ou de um
 metodo de reboot validado. Parar um periferico local nao e commit de energia.
 Se a transacao falhar antes desse ponto, o coordenador tenta reabrir seus
 gates; essa recuperacao e best-effort e nao promete restaurar hardware que ja
-tenha sido desativado. A implementacao PWR4 aguarda a validacao funcional do
-usuario.
+tenha sido desativado. A implementacao PWR4 foi validada funcionalmente pelo
+usuario no QEMU; `poweroff` e `shutdown -h now` encerraram o sistema e
+`shutdown -r now` retornou ao Shell.
 
 ---
 

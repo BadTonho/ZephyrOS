@@ -14,7 +14,7 @@ fallback específico de emulador será tratado como comportamento universal.
 - [ ] PWR1 - Idle arquitetural seguro com economia de energia via `hlt`.
 - [x] PWR2 - Descoberta e validação de tabelas ACPI (RSDP, RSDT, XSDT, FADT, MADT).
 - [x] PWR3 - Desligamento e reinicialização determinísticos por hardware.
-- [ ] PWR4 - Notificação ordenada de encerramento do sistema para drivers e apps.
+- [x] PWR4 - Notificação ordenada de encerramento do sistema para drivers e apps.
 
 ## Atalhos
 
@@ -240,15 +240,19 @@ enquanto `reboot` tenta RESET_REG, PS/2 e triple fault nessa ordem.
   irreversível; falha posterior não limpa a transação como se nada tivesse
   ocorrido.
 
-O código de PWR4 está implementado, mas o resumo permanece `[ ]` até a
-confirmação funcional do usuário no QEMU. Essa pendência não declara build,
-`q3check` ou validação funcional concluídos.
+O código de PWR4 foi confirmado funcionalmente pelo usuário no QEMU em
+2026-08-30. `poweroff` e `shutdown -h now` encerraram o sistema, enquanto
+`shutdown -r now` reiniciou e retornou ao Shell. Após o reboot, `power status`,
+`regcheck full` e `health check` foram executados; o `regcheck` permaneceu OK
+e o `health check` exibiu somente capacidades opcionais já desabilitadas ou
+degradadas. O resumo PWR4 está concluído; o agente não executou build,
+`q3check` ou QEMU.
 
 ### Implementação
 
 Os itens executáveis estão detalhados em “Estado da implementação” acima.
-Esta subseção mantém a descrição histórica da fase e não substitui a
-confirmação funcional exigida pelo critério de saída.
+Esta subseção mantém a descrição histórica da fase e a confirmação funcional
+registrada acima atende ao critério de saída.
 
 ### Critério de saída
 

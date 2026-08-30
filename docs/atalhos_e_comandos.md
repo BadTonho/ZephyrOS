@@ -161,8 +161,9 @@ sync com prazo pertence ao PWR3.
 o reboot. A operacao notifica ring3 com SIGTERM/SIGKILL, sincroniza Storage,
 quiesce workqueue/VFS e perifericos e so entao usa S5 ou os metodos de reset.
 Falhas antes do commit retornam erro; depois da primeira escrita de energia a
-transacao permanece terminal. O resumo PWR4 ainda aguarda validacao funcional
-do usuario.
+transacao permanece terminal. O usuario confirmou funcionalmente no QEMU que
+`poweroff` e `shutdown -h now` encerram o sistema e que `shutdown -r now`
+reinicia com retorno ao Shell.
 
 ## PWR1 - Idle e uso de CPU
 
