@@ -15,7 +15,7 @@ proprietárias.
 - [x] PROC1 - Infraestrutura de geração dinâmica de pseudo-arquivos em RAM.
 - [x] PROC2 - Mapeamento de `/proc` para métricas globais e processos por PID.
 - [x] PROC3 - Mapeamento de `/sys` para árvore de dispositivos, barramentos e drivers.
-- [ ] PROC4 - Migração do Task Manager, Device Manager e utilitários Shell para `/proc`.
+- [x] PROC4 - Migração do Task Manager, Device Manager e utilitários Shell para `/proc`.
 
 ## Atalhos
 
@@ -327,8 +327,9 @@ descritor ou buffer do provider permanece no Shell depois da leitura.
 As ferramentas gráficas e de terminal funcionam de forma desacoplada das
 estruturas internas, consumindo snapshots textuais estáveis e liberando
 referências mesmo quando processos ou dispositivos mudam durante a leitura.
-O código desta etapa está implementado; o resumo PROC4 somente será marcado
-como concluído após a confirmação funcional do usuário no QEMU.
+A confirmação funcional do usuário no QEMU foi recebida: `proccheck` concluiu
+45 de 45 testes, `regcheck full` retornou `RegCheck: OK` e `health check` não
+apresentou falha relacionada a procfs ou sysfs. O resumo PROC4 está concluído.
 
 ### Comandos Shell / Diagnóstico
 

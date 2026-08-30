@@ -3054,8 +3054,15 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   atributos ASCII, EOF, caminhos invalidos e rejeicao de escrita. O Makefile,
   ajuda e documentacao foram atualizados. Nao houve alteracao de App API,
   syscalls, layouts binarios, persistencia, `boot.asm` ou `stage2.asm`.
-  A validacao funcional de PROC4 ainda depende dos gates e da confirmacao do
-  usuario no QEMU; o resumo do roadmap permanece pendente.
+  A validacao funcional de PROC4 foi confirmada pelo usuario em QEMU em
+  2026-08-30 (horario nao informado). `proccheck` concluiu `testes=45
+  aprovados=45`; os avisos exibidos correspondem as fixtures negativas de
+  caminho ausente, atributo ausente, listagem de arquivo e abertura com
+  escrita, incluindo a rejeicao esperada registrada pela VFS. Em conjunto
+  com a validacao anterior de `taskmgr` e `devices`, a integracao funcional
+  foi aceita. `RegCheck: OK` e `health check` concluiram sem falha relacionada
+  a procfs/sysfs. O PROC4 foi marcado como concluido no roadmap; `/proc/sys/`
+  permanece reservado para etapa futura.
 
 - Infraestrutura do layout legado corrigida em: 2026-08-30 (horario nao
   informado). O build havia produzido `kernel.bin` com 1.806.190 bytes,
