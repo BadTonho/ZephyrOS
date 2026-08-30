@@ -2564,7 +2564,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 
 - Roadmap 17: migração gradual do ZephyrOS para Rust documentada.
   Concluída em: 2026-08-28 22:51 (America/Sao_Paulo).
-  Criado o roadmap independente `17-migracao-gradual-rust.md`, com marco
+  Criado o roadmap independente `pos-1.0.0-migracao-rust.md`, com marco
   pós-1.0.0, fases RUST0-RUST7, mapa de módulos candidatos, contrato C/Rust,
   ordem de migração, critérios de validação e componentes que permanecem em
   C/Assembly. Os índices e o roadmap geral receberam somente referências para

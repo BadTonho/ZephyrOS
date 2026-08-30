@@ -102,7 +102,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [14 - Stack de Rede Avançada](roadmaps/feitos/14-stack-de-rede-avancada.md) | Socket buffers sk_buff zero-copy, sockets AF_UNIX/AF_INET e select/poll |
 | [15 - Introspecção e Pseudo-Filesystems](roadmaps/feitos/15-introspeccao-e-pseudo-fs.md) | Pseudo-filesystems /proc e /sys para diagnósticos, processos e hardware |
 | [16 - Energia e ACPI Avançado](roadmaps/feitos/16-energia-e-acpi-avancado.md) | Loop de CPU idle com HLT, parser ACPI (FADT/MADT), poweroff e reboot |
-| [Pós-1.0.0 — Migração gradual do ZephyrOS para Rust](roadmaps/17-migracao-gradual-rust.md) | Adoção incremental de Rust após a versão 1.0.0, com kernel híbrido C/Rust/Assembly |
+| [Pós-1.0.0 — Migração gradual do ZephyrOS para Rust](roadmaps/pos-1.0.0-migracao-rust.md) | Adoção incremental de Rust após a versão 1.0.0, com kernel híbrido C/Rust/Assembly |
 | [Escopo da versão 1.0.0](roadmaps/escopo-v1.0.0.md) | Capacidades obrigatórias, ordem de execução e recursos pós-1.0 |
 | [18 - Estabilização e release da versão 1.0.0](roadmaps/18-estabilizacao-e-release-v1.0.md) | Linha de base, liveness do Shell, regressão e preparação da release |
 | [19 - Segurança e isolamento](roadmaps/19-seguranca-e-isolamento-v1.0.md) | Fronteiras ring 3, syscalls, processos, pacotes e recursos |

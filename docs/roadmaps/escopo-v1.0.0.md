@@ -153,7 +153,7 @@ um sistema operacional geral.
 4. [Roadmap 21 — Compatibilidade e matriz de hardware](21-compatibilidade-e-matriz-de-hardware.md).
 5. [Roadmap 22 — Desempenho e dívidas da 1.0.0](22-desempenho-e-dividas-v1.0.md).
 6. Validação final, congelamento da ABI e publicação da base 1.0.0.
-7. [Pós-1.0.0 — Migração gradual para Rust](17-migracao-gradual-rust.md).
+7. [Pós-1.0.0 — Migração gradual para Rust](pos-1.0.0-migracao-rust.md).
 
 A etapa pós-1.0.0 de Rust não é uma etapa de preparação da 1.0.0. Ela só começa depois do
 item 6.
