@@ -12,7 +12,7 @@ proprietárias.
 ## Resumo de progresso
 
 - [x] PROC0 - Contrato de leitura, snapshot, lifetime e ABI textual.
-- [ ] PROC1 - Infraestrutura de geração dinâmica de pseudo-arquivos em RAM.
+- [x] PROC1 - Infraestrutura de geração dinâmica de pseudo-arquivos em RAM.
 - [ ] PROC2 - Mapeamento de `/proc` para métricas globais e processos por PID.
 - [ ] PROC3 - Mapeamento de `/sys` para árvore de dispositivos, barramentos e drivers.
 - [ ] PROC4 - Migração do Task Manager, Device Manager e utilitários Shell para `/proc`.
@@ -151,14 +151,15 @@ referências e buffers mesmo em erro, cancelamento ou remoção do objeto.
 
 ### Critério de saída
 
-O comando `ls /proc` deve listar `uptime` e `cat /proc/uptime` deve retornar
-texto ASCII válido com EOF e liberação corretos. A implementação está pronta;
-a conclusão do PROC1 depende da confirmação funcional do usuário após o build e
-o QEMU. `/sys` permanece reservado ao PROC3.
+O comando `ls /proc` lista `uptime` e `cat /proc/uptime` retorna texto ASCII
+válido com snapshots distintos, EOF e liberação corretos. A confirmação
+funcional no QEMU foi recebida; `regcheck full` e `health check` também
+concluíram sem falha de VFS. `/sys` permanece reservado ao PROC3.
 
 ### Comandos Shell / Diagnóstico
 
-- `mount | grep proc`: confirma a montagem correta do `procfs`.
+- `mount`: confirma a montagem correta do `procfs` (o pipeline do Shell ainda
+  não é suportado).
 - `ls /proc`: confirma a enumeração determinística do primeiro nó.
 - `cat /proc/uptime`: confirma o snapshot textual e o cursor VFS.
 
