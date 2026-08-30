@@ -747,6 +747,27 @@ hibernacao continuam indisponiveis. A implementacao nao usa a porta privada
 e o contrato de
 [objetos de estado do sistema](https://uefi.org/htmlspecs/ACPI_Spec_6_4_html/07_Power_and_Performance_Mgmt/oem-supplied-system-level-control-methods.html).
 
+### Fronteira PWR0 entre ACPI e o coordenador de energia
+
+O PWR0 separa tres responsabilidades que nao devem ser confundidas:
+
+1. descoberta e validacao de RSDP, RSDT/XSDT, FADT e demais tabelas;
+2. interpretacao de AML, quando uma etapa futura fornecer um interpretador
+   isolado e validado;
+3. uso de um metodo de energia pelo coordenador `power`.
+
+O driver ACPI somente publica snapshots e capacidades que puder confirmar.
+Ele nao habilita uma transicao por causa da existencia de um cabecalho, nao
+retorna ponteiros de tabelas ao consumidor e nao escolhe a politica de ordem,
+cancelamento ou timeout da transacao de desligamento/reboot.
+
+Para a coordenacao futura, apenas metodos observados como validos podem ser
+selecionados. A ausencia ou ambiguidade de um metodo publica
+`unavailable`/`DEGRADED`; nao autoriza escrita especulativa nem uma porta
+especifica de emulador. Os orcamentos da transacao sao definidos pelo PWR0 em
+ticks PIT de 50 Hz; limites internos de leitura do firmware continuam sendo
+detalhes do driver e nao substituem esses orcamentos.
+
 ---
 
 ## PCI (`pci.c`)

@@ -119,8 +119,8 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `app` | `argtest <texto>` | Exibe argumentos recebidos por uma imagem ZAPP interna. |
 | `usertest` | `fault` opcional | Executa e valida o primeiro processo isolado em ring 3. |
 | `guimode` | `simple/classic` | Alterna globalmente entre interface TUI (modo texto) e VESA (gráfica). |
-| `reboot` | - | Reinicia imediatamente o sistema operacional. |
-| `shutdown`| - | Desliga por ACPI S5 quando seguro; caso contrario usa `CLI+HLT`. |
+| `reboot` | - | Solicita reinicializacao; a transacao comum de energia sera aplicada nas etapas PWR1-PWR4. |
+| `shutdown`| - | Solicita desligamento; usa ACPI S5 quando seguro e fallback `CLI+HLT` quando disponivel. |
 
 ## PROC5 - Controles de runtime
 
@@ -136,6 +136,21 @@ cat /proc/sys/kernel/buffer_log_level
 
 A escrita e restrita a processos nativos/ring0 e e validada pelo `proccheck`.
 Os demais nos de `procfs` e todo o `sysfs` continuam somente leitura.
+
+## PWR0 - Observabilidade de energia
+
+Nao ha comando ou atalho novo nesta etapa. Os diagnósticos existentes sao:
+
+```text
+acpi status
+power status
+```
+
+`acpi status` informa descoberta, validacao, modo ACPI, PM1 e prontidao S5.
+`power status` informa o estado do servico, as capacidades individuais e os
+fallbacks conhecidos. PWR0 apenas congela o contrato documental de estados,
+ordem, ownership, orcamentos e ponto irreversivel; a execucao da transacao
+fica para PWR1-PWR4.
 
 ## Scroll do Shell
 

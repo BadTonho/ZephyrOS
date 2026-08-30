@@ -920,3 +920,36 @@ fora do primeiro conjunto. `procfs_self_test()`, `vfs_self_test()` e
 `proccheck` cobrem listagem, leitura, escrita válida, rejeições, rollback,
 snapshot, reset e limpeza. A confirmação funcional no QEMU ainda é pendente;
 ela será registrada antes de marcar PROC5 como concluído no roadmap.
+
+## PWR0 - Contrato de energia e ACPI
+
+O PWR0 é uma etapa somente documental. Não foram alterados `src/`, headers,
+Makefile, App API, syscalls, layouts binários, `boot.asm`, `stage2.asm` ou as
+transições reais de energia. O contrato prepara PWR1-PWR4 e preserva as
+assinaturas existentes de `power.h` e `acpi.h`.
+
+O serviço de energia possui os estados `UNKNOWN`, `DISCOVERING`, `READY`,
+`DEGRADED` e `UNAVAILABLE`, distintos dos estados ACPI S0-S5. Cada capacidade
+publica seu próprio estado, pré-condição, fallback e erro. `READY` indica que
+o coordenador está utilizável; não é uma promessa de desligamento físico ou
+de reboot por hardware.
+
+`shutdown` e `reboot` compartilham uma transação com a ordem
+`admission -> notification -> sync/flush -> quiescence -> hardware commit ->
+terminal`. O alvo é fixado na admissão. Os orçamentos são PIT de 50 Hz, sem
+empréstimo entre fases: 250 ticks (5 s) para notificação, 1500 (30 s) para
+sync/flush, 250 (5 s) para quiescência e 100 (2 s) para commit, com total de
+2100 ticks (42 s).
+
+O coordenador possui transação, prazos, cancelamento e resultado; cada
+participante possui seus recursos e deve ser idempotente. Cancelamento e
+rollback são permitidos somente antes do commit. A primeira escrita ou
+comando de hardware inicia a região irreversível. Os erros canônicos são
+`ERR_STATE`, `ERR_UNAVAILABLE`, `ERR_TIMEOUT`, `ERR_CANCELLED`, `ERR_AGAIN` e
+`ERR_INVALID`; a camada com contexto registra fase, falha e fallback.
+
+Descoberta/validação ACPI, interpretação AML e uso de métodos permanecem
+separados. Somente capacidades detectadas e validadas podem ser usadas, e
+portas privadas de QEMU, Bochs ou VirtualBox não são fallback genérico.
+`power status` e `acpi status` continuam sendo a observação pública, sem
+novo comando, layout binário ou ABI de aplicativo nesta etapa.
