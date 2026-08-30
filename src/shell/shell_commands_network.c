@@ -46,6 +46,7 @@
 #include "core/net_buffer.h"
 #include "core/sk_buff.h"
 #include "core/net_socket.h"
+#include "core/socket.h"
 #include "core/tcp.h"
 #include "core/udp.h"
 #include "core/network_manager.h"
@@ -109,6 +110,8 @@
 #define APP_INPUT_TEST_PATH "INPUT.ZAP"
 #define APP_INPUT_EVENT_OFFSET 128U
 #define APP_INPUT_EVENT_DATA1_OFFSET (APP_INPUT_EVENT_OFFSET + 4U)
+
+static void cmd_net_print_ipv4(uint32_t ip_address);
 #define SHELL_APP_OUTPUTTEST_FAILURE_CODE 1U
 #define SHELL_Q2CHECK_FIRST_FAULT_INDEX 0U
 #define SHELL_Q2CHECK_SECOND_FAULT_INDEX 1U
@@ -620,6 +623,7 @@ int shell_network_validate_for_checks(void) {
     network_manager_status_t status;
     ethernet_status_t ethernet;
     dhcp_status_t dhcp;
+    socket_self_test_result_t generic_socket_test;
     uint32_t count = 0;
     uint32_t recognized = 0;
     uint32_t active = 0;
@@ -633,6 +637,8 @@ int shell_network_validate_for_checks(void) {
         ethernet_validate_state() != OK ||
         skb_self_test() != OK ||
         net_buffer_self_test() != OK ||
+        socket_self_test(&generic_socket_test) != OK ||
+        generic_socket_test.failed != 0U ||
         dhcp_get_status(&dhcp) != OK ||
         network_manager_get_count(&count) != OK) {
         LOG_ERROR("SHELL", "RegCheck nao consultou estado Network");
@@ -729,10 +735,12 @@ static void cmd_net_status(void) {
     network_manager_status_t status;
     net_buffer_stats_t buffers;
     sk_buff_stats_t skb_buffers;
+    socket_status_t generic_sockets;
     const recovery_component_t* health;
     network_link_state_t link;
     int buffer_result;
     int skb_result;
+    int generic_socket_result;
 
     if (network_manager_get_status(&status) != OK) {
         LOG_ERROR("SHELL", "Estado de rede indisponivel");
@@ -747,6 +755,7 @@ static void cmd_net_status(void) {
     }
     buffer_result = net_buffer_get_stats(&buffers);
     skb_result = skb_get_stats(&skb_buffers);
+    generic_socket_result = socket_get_status(&generic_sockets);
 
     video_print("Rede:\n  Servico: ", 0x0B);
     video_print(recovery_state_name(health->state),
@@ -846,6 +855,15 @@ static void cmd_net_status(void) {
                 status.sockets_available ? 0x0A : 0x0E);
     video_print("  Ativos: ", 0x07);
     shell_command_print_num(status.socket_count);
+    video_print("\n  Sockets genericos: ", 0x07);
+    if (generic_socket_result != OK || !generic_sockets.initialized) {
+        video_print("INDISPONIVEL", 0x0E);
+    } else {
+        video_print("DISPONIVEL  Ativos: ", 0x0A);
+        shell_command_print_num(generic_sockets.active_count);
+        video_print("/", 0x07);
+        shell_command_print_num(SOCKET_CAPACITY);
+    }
     video_print("\n  HTTP: ", 0x07);
     video_print(status.http_available ? "DISPONIVEL" : "INDISPONIVEL",
                 status.http_available ? 0x0A : 0x0E);
@@ -2631,7 +2649,9 @@ static void cmd_net_socket_check_case(const char* name, uint8_t passed) {
 
 static void cmd_net_socket_check(void) {
     net_socket_self_test_result_t test;
+    socket_self_test_result_t generic_test;
     int result = net_socket_self_test(&test);
+    int generic_result = socket_self_test(&generic_test);
 
     video_print("Autoteste de sockets e filas privadas:\n", 0x0B);
     cmd_net_socket_check_case("ciclo", test.lifecycle);
@@ -2642,9 +2662,65 @@ static void cmd_net_socket_check(void) {
     cmd_net_socket_check_case("timeout", test.timeout);
     cmd_net_socket_check_case("cancelamento", test.cancellation);
     cmd_net_socket_check_case("invariantes", test.invariants);
+    cmd_net_socket_check_case("socket generico", generic_result == OK &&
+                              generic_test.failed == 0U);
     video_print("Resultado: ", 0x0B);
-    video_print(result == OK ? "OK\n" : "ERRO\n",
-                result == OK ? 0x0A : 0x0C);
+    video_print(result == OK && generic_result == OK ? "OK\n" : "ERRO\n",
+                result == OK && generic_result == OK ? 0x0A : 0x0C);
+}
+
+static void cmd_sockstat(const char* args) {
+    socket_status_t status;
+    uint8_t any = 0U;
+
+    if (!shell_command_args_equal(args, "")) {
+        LOG_WARN("SHELL", "Uso invalido de sockstat");
+        video_print("Uso: sockstat\n", 0x0C);
+        return;
+    }
+    if (socket_get_status(&status) != OK || !status.initialized) {
+        LOG_ERROR("SHELL", "Estado de sockets genericos indisponivel");
+        video_print("sockstat indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("Sockets genericos:\n", 0x0B);
+    for (uint32_t index = 0U; index < SOCKET_CAPACITY; index++) {
+        socket_info_t info;
+
+        if (socket_get_info(index, &info) != OK || !info.used) continue;
+        any = 1U;
+        video_print("  FD=", 0x07);
+        shell_command_print_num((uint32_t)info.fd);
+        video_print(" PID=", 0x07);
+        shell_command_print_num(info.owner_pid);
+        video_print(" ", 0x07);
+        video_print(socket_family_name(info.family), 0x0B);
+        video_print("/STREAM ", 0x07);
+        video_print(socket_state_name(info.state),
+                    info.state == SOCKET_STATE_CONNECTED ? 0x0A :
+                    info.state == SOCKET_STATE_ERROR ? 0x0C : 0x0E);
+        video_print(" rx/tx=", 0x07);
+        shell_command_print_num(info.rx_queued);
+        video_print("/", 0x07);
+        shell_command_print_num(info.tx_queued);
+        video_print(" flags=", 0x07);
+        video_print((info.flags & SOCKET_FLAG_NONBLOCK) ?
+                    "NONBLOCK" : "BLOCK", 0x08);
+        video_print(" erro=", 0x07);
+        shell_command_print_num((uint32_t)info.last_error);
+        if (info.family == SOCKET_FAMILY_UNIX) {
+            video_print(" path=", 0x07);
+            video_print(info.local.value.local.path[0] ?
+                        info.local.value.local.path : "N/D", 0x08);
+        } else {
+            video_print(" destino=", 0x07);
+            cmd_net_print_ipv4(info.remote.value.ipv4.address);
+            video_print(":", 0x07);
+            shell_command_print_num(info.remote.value.ipv4.port);
+        }
+        video_print("\n", 0x07);
+    }
+    if (!any) video_print("  Vazia.\n", 0x08);
 }
 
 static void cmd_net_socket(const char* args) {
@@ -4610,6 +4686,7 @@ int shell_network_start_job(const char* command, const char* arguments) {
     void adapter(const char* arguments) { handler(arguments); }
 
 SHELL_NETWORK_WRAP_ARGS(shell_dispatch_cmd_skbstat, cmd_skbstat)
+SHELL_NETWORK_WRAP_ARGS(shell_dispatch_cmd_sockstat, cmd_sockstat)
 
 void shell_dispatch_cmd_net(const char* arguments) {
     if (shell_network_start_job("net", arguments)) return;

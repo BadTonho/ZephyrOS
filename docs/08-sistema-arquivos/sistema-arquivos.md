@@ -836,6 +836,20 @@ somente em FAT32 gravavel e limita a saida acumulada a 64 KiB. FAT12, volume
 somente leitura, diretorio, caminho invalido e excedente retornam erro sem
 alterar o destino.
 
+### Sockets como nos VFS (NET2)
+
+`VFS_NODE_SOCKET` e a ponte interna `vfs_open_socket()` associam um socket
+privado a um `file_t` e a um descritor real da tabela do processo. `vfs_read`,
+`vfs_write` e `vfs_close` encaminham para os adaptadores do socket; `lseek` e
+`fsync` retornam `ERR_UNAVAILABLE`. O fechamento normal da VFS encerra o
+socket, e `vfs_fd_table_release()` repete esse caminho no encerramento do
+processo. Nao ha heranca automatica de FDs entre processos nesta etapa.
+
+Os vnodes de socket nao pertencem ao namespace FAT/DevFS e nao retêm payloads
+externos. `vfs_validate_state()` verifica o tipo, contexto privado e tabela
+de operacoes; a validacao complementar de peers, filas e lifetime SKB fica em
+`socket_validate_state()`. `boot.asm` nao foi alterado.
+
 ---
 
 ## BMP (`bmp.c`)

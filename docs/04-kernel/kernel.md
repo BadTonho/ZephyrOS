@@ -697,6 +697,38 @@ fragmentos reservados. O caminho continua sincrono e baseado em copia, sem
 transferencia de ownership de DMA ou garantia de zero-copy real. `boot.asm`
 nao foi alterado.
 
+### NET2: camada generica de sockets e AF_UNIX
+
+`src/include/core/socket.h` acrescenta sockets genericos sobre a VFS, sem
+novo syscall ou alteracao da ABI ring 3. `socket_create()` cria um descritor
+VFS real do tipo `VFS_NODE_SOCKET`; o fechamento usa o caminho normal da VFS e
+o encerramento do processo continua passando por `vfs_fd_table_release()`.
+`lseek` e `fsync` retornam `ERR_UNAVAILABLE` para sockets.
+
+`AF_UNIX/SOCK_STREAM` usa um listener por caminho, backlog limitado e pares
+cliente/servidor com `bind`, `listen`, `connect` e `accept`. Cada direcao tem
+fila limitada por buffers e bytes. O payload e copiado para `sk_buff_t` de
+ate 2048 bytes, com fragmentacao em buffers independentes quando necessario;
+leitura parcial preserva o buffer na fila. A sequencia de ownership e
+`ALLOCATED -> QUEUED -> DELIVERED -> FREED`, com descarte para fila cheia ou
+fechamento.
+
+`AF_INET/SOCK_STREAM` adapta o cliente TCP ativo de `net_socket`; `bind`,
+`listen` e `accept` passivos IPv4 permanecem indisponiveis. UDP, TCP passivo,
+`poll/select`, `socketpair`, datagramas UNIX, clones, fragmentos
+compartilhados, zero-copy e transferencia de ownership DMA continuam fora da
+NET2. O caminho permanece sincrono e baseado em copia, e ponteiros de drivers
+continuam validos somente durante seus callbacks.
+
+Sockets bloqueiam por padrao e liberam locks antes de esperar. O modo
+`SOCKET_FLAG_NONBLOCK`, ou `socket_set_nonblocking()`, retorna `ERR_AGAIN`
+quando nao ha progresso; cancelamento de espera retorna `ERR_CANCELLED`.
+`socket_validate_state()` verifica o vinculo entre objetos privados, FDs,
+filas, peers e o lifetime SKB. `socket_self_test()` e executado por `net
+check`, `regcheck full` e `health check`; `sockstat` lista os FDs genericos,
+proprietarios, estados, caminhos/destinos, filas, flags e erros. `boot.asm`
+nao foi alterado.
+
 ## U2: criptografia e verificacao local ZUPD
 
 `src/include/core/version.h` centraliza a versao `0.1.0`, epoch `0` e o texto

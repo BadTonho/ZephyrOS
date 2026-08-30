@@ -69,6 +69,9 @@ static net_socket_event_mask_t net_socket_entry_events(
     if (!socket || !socket->active) return NET_SOCKET_EVENT_CLOSED;
     if (socket->state == NET_SOCKET_STATE_CONNECTED) {
         events |= NET_SOCKET_EVENT_CONNECTED;
+        if (socket->tx_count < NET_SOCKET_TX_CAPACITY) {
+            events |= NET_SOCKET_EVENT_WRITABLE;
+        }
     }
     if (socket->rx_count) events |= NET_SOCKET_EVENT_READABLE;
     if (socket->eof || socket->state == NET_SOCKET_STATE_EOF) {
@@ -248,6 +251,8 @@ static int net_socket_tcp_event(tcp_connection_handle_t handle,
         socket->state = NET_SOCKET_STATE_CONNECTED;
         net_socket_status.connects++;
         net_socket_wake((uint32_t)index, 1U);
+    } else if (event == TCP_EVENT_WRITABLE) {
+        net_socket_wake((uint32_t)index, 0U);
     } else if (event == TCP_EVENT_DATA) {
         uint16_t free_space = NET_SOCKET_RX_CAPACITY - socket->rx_count;
 
@@ -639,6 +644,7 @@ static int net_socket_drain(uint32_t index) {
                    NET_SOCKET_TX_CAPACITY);
     socket->tx_count -= accepted;
     net_socket_status.bytes_sent_tcp += accepted;
+    if (accepted) net_socket_wake(index, 0U);
     return OK;
 }
 

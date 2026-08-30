@@ -58,6 +58,7 @@
 #include "core/net_buffer.h"
 #include "core/sk_buff.h"
 #include "core/net_socket.h"
+#include "core/socket.h"
 #include "core/tcp.h"
 #include "core/udp.h"
 #include "core/network_manager.h"
@@ -1457,6 +1458,35 @@ static void cmd_health_check_net_buffers(int* issue_count) {
     }
 }
 
+static void cmd_health_check_sockets(int* issue_count) {
+    socket_status_t status;
+    socket_self_test_result_t test;
+    int result;
+
+    if (!issue_count) return;
+    result = socket_get_status(&status);
+    if (result == ERR_STATE || result == ERR_UNAVAILABLE) return;
+    if (result != OK || !status.initialized) {
+        cmd_health_check_print_query_failure(
+            "Sockets genericos", result == OK ? ERR_STATE : result,
+            issue_count);
+        return;
+    }
+    result = socket_validate_state();
+    if (result != OK || socket_self_test(&test) != OK || test.failed != 0U) {
+        cmd_health_check_print_query_failure(
+            "Sockets genericos", result == OK ? ERR_STATE : result,
+            issue_count);
+        return;
+    }
+    if (status.active_count || status.last_error != OK || status.failures) {
+        cmd_health_check_print_named_state(
+            "Sockets genericos", "DEGRADED", SHELL_HEALTH_CHECK_WARN_COLOR,
+            status.active_count ? "sockets ativos" :
+            "erro residual no runtime de sockets", issue_count);
+    }
+}
+
 static void cmd_health_check(void) {
     int issue_count = 0;
 
@@ -1475,6 +1505,7 @@ static void cmd_health_check(void) {
     cmd_health_check_vfs(&issue_count);
     cmd_health_check_block_cache(&issue_count);
     cmd_health_check_net_buffers(&issue_count);
+    cmd_health_check_sockets(&issue_count);
     cmd_health_check_usb_hid(&issue_count);
     cmd_health_check_wifi(&issue_count);
     if (!issue_count) {
@@ -4620,6 +4651,7 @@ static const char* cmd_vfs_node_name(vfs_node_type_t type) {
     if (type == VFS_NODE_CHAR_DEVICE) return "CHAR";
     if (type == VFS_NODE_BLOCK_DEVICE) return "BLOCK";
     if (type == VFS_NODE_PIPE) return "PIPE";
+    if (type == VFS_NODE_SOCKET) return "SOCKET";
     if (type == VFS_NODE_TEST) return "TEST";
     return "NONE";
 }

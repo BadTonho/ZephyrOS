@@ -178,6 +178,22 @@ e `regcheck full` executam `skb_self_test()` e devem retornar com pool vazio,
 inventario de NICs inalterado e sem estado residual. A entrega continua baseada
 em callbacks sincronos e copia fallback; `boot.asm` nao e alterado.
 
+### Diagnosticos NET2
+
+`sockstat` lista os sockets genericos abertos com FD VFS, PID proprietario,
+familia, tipo, estado, caminho UNIX ou destino IPv4, filas RX/TX, flags de
+bloqueio e ultimo erro. `net socket check`, `net check`, `regcheck full` e
+`health check` executam ou validam o self-test da camada generica. A fixture
+NET2 cobre criacao, mapeamento VFS, bind/listen/connect/accept AF_UNIX,
+leitura parcial, fila cheia, EOF, entradas invalidas, `ERR_AGAIN`,
+cancelamento da espera e limpeza de FDs e SKBs.
+
+A camada e somente de kernel/VFS: nao cria syscall nem wrapper de App API.
+Sockets bloqueiam por padrao; AF_INET e apenas cliente TCP ativo sobre o
+backend legado. O transporte local copia payloads para SKBs independentes de
+ate 2048 bytes, sem fragmentos compartilhados, clones, zero-copy real ou
+transferencia de ownership DMA. `boot.asm` nao foi alterado.
+
 ---
 
 ## Tratamento de Teclas

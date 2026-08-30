@@ -55,6 +55,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/core/memory.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/net_buffer.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/sk_buff.h` | `docs/04-kernel/kernel.md` |
+| `src/include/core/socket.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/net_socket.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/network_manager.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/wifi_manager.h` | `docs/04-kernel/kernel.md` |
@@ -505,6 +506,24 @@ Desde a SYNC2, `src/include/core/net_socket.h` acrescenta mascaras de eventos,
 `net_socket_wait()`, waiters por socket e metricas/autoteste de espera sem
 alterar `net_socket_receive()`. O contrato canonico permanece em
 `docs/04-kernel/kernel.md`.
+
+Desde a NET2, `src/include/core/socket.h` publica a camada generica de
+sockets sobre descritores VFS. `AF_UNIX/SOCK_STREAM` oferece namespace global
+de caminhos, `bind`, `listen`, `accept`, `connect`, filas locais limitadas e
+EOF no fechamento do peer. `AF_INET/SOCK_STREAM` adapta somente o cliente TCP
+ativo legado; `listen` e `accept` passivos IPv4 retornam `ERR_UNAVAILABLE`.
+Sockets sao bloqueantes por padrao e aceitam `SOCKET_FLAG_NONBLOCK`, cujo
+progresso ausente retorna `ERR_AGAIN`. Nao ha syscall nova, alteracao da ABI
+ring 3, heranca automatica de FDs, `poll/select`, UDP generico, `socketpair`,
+datagramas UNIX ou ownership DMA transferido.
+
+Cada socket ocupa um descritor VFS real com `VFS_NODE_SOCKET` e adaptadores de
+leitura, escrita, fechamento, `lseek` e `fsync`. As filas UNIX usam
+`sk_buff_t` com storage interno de 2048 bytes; mensagens maiores sao
+fragmentadas em buffers independentes apenas para transportar a stream e os
+payloads sao copiados. Clones, fragmentos compartilhados e zero-copy real
+permanecem fora da NET2. `sockstat` e `socket_self_test()` expõem o estado e
+validam limpeza, sem alterar o inventario de NICs ou o trafego legado.
 
 Desde a EP4.2, `src/include/core/usb_manager.h` define o inventario limitado a
 oito controladores USB, runtime UHCI/EHCI, estados/motivos por porta,

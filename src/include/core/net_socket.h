@@ -16,11 +16,13 @@ typedef uint32_t net_socket_event_mask_t;
 #define NET_SOCKET_EVENT_EOF (1U << 2U)
 #define NET_SOCKET_EVENT_ERROR (1U << 3U)
 #define NET_SOCKET_EVENT_CLOSED (1U << 4U)
+#define NET_SOCKET_EVENT_WRITABLE (1U << 5U)
 #define NET_SOCKET_EVENT_ALL (NET_SOCKET_EVENT_CONNECTED | \
                               NET_SOCKET_EVENT_READABLE | \
                               NET_SOCKET_EVENT_EOF | \
                               NET_SOCKET_EVENT_ERROR | \
-                              NET_SOCKET_EVENT_CLOSED)
+                              NET_SOCKET_EVENT_CLOSED | \
+                              NET_SOCKET_EVENT_WRITABLE)
 
 typedef enum {
     NET_SOCKET_TYPE_STREAM = 1

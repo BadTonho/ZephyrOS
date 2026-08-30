@@ -10,6 +10,7 @@
 #include "core/log.h"
 #include "core/net_socket.h"
 #include "core/recovery.h"
+#include "core/socket.h"
 #include "core/string.h"
 #include "core/tcp.h"
 #include "core/timer.h"
@@ -813,6 +814,11 @@ static int network_start_sockets(void) {
     net_socket_status_t status;
     int result;
 
+    result = socket_init();
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao iniciar camada generica de sockets");
+        return result;
+    }
     if (!network_status.tcp_available) return OK;
     result = net_socket_get_status(&status);
     if (result != OK) {
