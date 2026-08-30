@@ -1,5 +1,6 @@
 #include "fs/vfs_internal.h"
 #include "fs/devfs.h"
+#include "fs/procfs.h"
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/spinlock.h"
@@ -294,6 +295,18 @@ static void vfs_devfs_mount_fill(vfs_mount_info_t* info) {
     vfs_path_copy(info->volume_id, STORAGE_ID_SIZE, "devfs");
 }
 
+static void vfs_procfs_mount_fill(vfs_mount_info_t* info) {
+    kmemset(info, 0, sizeof(*info));
+    info->used = 1U;
+    info->slot = VFS_MAX_STORAGE_MOUNTS + 1U;
+    info->generation = 1U;
+    info->pinned = 1U;
+    info->read_only = 1U;
+    info->kind = VFS_MOUNT_PROCFS;
+    vfs_path_copy(info->mount_point, VFS_MAX_PATH, "/proc");
+    vfs_path_copy(info->volume_id, STORAGE_ID_SIZE, "procfs");
+}
+
 static int vfs_desired_add(vfs_mount_info_t* desired, uint32_t* count,
                            const storage_volume_t* volume,
                            const char* mount_point) {
@@ -311,6 +324,8 @@ int vfs_path_init(void) {
     kmemset(vfs_mount_table, 0, sizeof(vfs_mount_table));
     vfs_devfs_mount_fill(
         &vfs_mount_table[VFS_MAX_STORAGE_MOUNTS].info);
+    vfs_procfs_mount_fill(
+        &vfs_mount_table[VFS_MAX_STORAGE_MOUNTS + 1U].info);
     vfs_lookup_count = 0U;
     vfs_chdir_count = 0U;
     vfs_path_ready = 1U;
@@ -347,6 +362,7 @@ int vfs_refresh_mounts(void) {
     kmemset(updated, 0, sizeof(updated));
     kmemset(placed, 0, sizeof(placed));
     vfs_devfs_mount_fill(&desired[desired_count++]);
+    vfs_procfs_mount_fill(&desired[desired_count++]);
     while (volume_count < storage_status.mounted_count) {
         if (storage_get_mounted_at((uint8_t)volume_count,
                                    &volumes[volume_count]) != OK) {
@@ -468,6 +484,9 @@ static int vfs_resolve_canonical(const char* canonical, uint32_t mode,
     if (result->mount_kind == VFS_MOUNT_DEVFS) {
         return devfs_lookup(canonical, result);
     }
+    if (result->mount_kind == VFS_MOUNT_PROCFS) {
+        return procfs_lookup(canonical, result);
+    }
     mount_length = kstrlen(result->mount_point);
     if (vfs_path_equal(canonical, result->mount_point)) {
         result->type = VFS_NODE_DIRECTORY;
@@ -549,6 +568,11 @@ static int vfs_resolve_directory(const char* path, char* canonical,
             spinlock_release(&vfs_mount_lock);
             return vfs_path_fail(ERR_INVALID,
                                  "No devfs nao e diretorio");
+        }
+        if (mount->kind == VFS_MOUNT_PROCFS) {
+            spinlock_release(&vfs_mount_lock);
+            return vfs_path_fail(ERR_INVALID,
+                                 "No procfs nao e diretorio");
         }
     }
     spinlock_release(&vfs_mount_lock);
@@ -712,6 +736,9 @@ int vfs_list_dir(const char* path, vfs_dir_entry_t* entries,
     if (vfs_path_equal(lookup.canonical_path, "/dev")) {
         return devfs_list(entries, capacity, out_count);
     }
+    if (vfs_path_equal(lookup.canonical_path, "/proc")) {
+        return procfs_list(entries, capacity, out_count);
+    }
     if (vfs_path_equal(lookup.canonical_path, "/mnt")) {
         return vfs_list_mnt(entries, capacity, out_count);
     }
@@ -739,6 +766,9 @@ int vfs_list_dir(const char* path, vfs_dir_entry_t* entries,
         result = vfs_dir_add_virtual(entries, capacity, &count, "mnt");
         if (result == OK) {
             result = vfs_dir_add_virtual(entries, capacity, &count, "dev");
+        }
+        if (result == OK) {
+            result = vfs_dir_add_virtual(entries, capacity, &count, "proc");
         }
         if (result != OK) return result;
     }
@@ -895,6 +925,7 @@ void vfs_path_get_metrics(uint32_t* capacity, uint32_t* active,
 int vfs_path_validate_state(void) {
     uint8_t root_found = 0U;
     uint8_t devfs_found = 0U;
+    uint8_t procfs_found = 0U;
     char normalized[VFS_MAX_PATH];
 
     if (!vfs_path_ready) {
@@ -925,6 +956,15 @@ int vfs_path_validate_state(void) {
                 return vfs_path_fail(ERR_STATE, "Montagem devfs inconsistente");
             }
             devfs_found = 1U;
+        } else if (info->kind == VFS_MOUNT_PROCFS) {
+            if (info->fs_type != STORAGE_FS_NONE || !info->pinned ||
+                !info->read_only ||
+                !vfs_path_equal(info->mount_point, "/proc") ||
+                !vfs_path_equal(info->volume_id, "procfs")) {
+                spinlock_release(&vfs_mount_lock);
+                return vfs_path_fail(ERR_STATE, "Montagem procfs inconsistente");
+            }
+            procfs_found = 1U;
         } else if (info->kind != VFS_MOUNT_STORAGE ||
                    info->fs_type == STORAGE_FS_NONE) {
             spinlock_release(&vfs_mount_lock);
@@ -962,5 +1002,5 @@ int vfs_path_validate_state(void) {
         }
     }
     spinlock_release(&vfs_mount_lock);
-    return root_found && devfs_found ? OK : ERR_NOT_FOUND;
+    return root_found && devfs_found && procfs_found ? OK : ERR_NOT_FOUND;
 }

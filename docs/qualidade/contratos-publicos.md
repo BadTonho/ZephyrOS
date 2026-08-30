@@ -109,6 +109,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/fs/block.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/block_cache.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/devfs.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
+| `src/include/fs/procfs.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/fat12.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/fat32.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/file_index.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
@@ -787,3 +788,21 @@ e identificadores estaveis em `/sys`. Escrita ou operacao nao suportada retorna
 `ERR_UNAVAILABLE`; caminho ou cursor invalido retorna `ERR_INVALID` e falta de
 memoria retorna `ERR_MEM`. Os formatos especificos de `/proc` e `/sys` serao
 acrescentados em PROC2 e PROC3 sem quebrar essa gramatica.
+
+## PROC1 - Procfs no namespace VFS
+
+`src/include/fs/procfs.h` publica o contrato interno do primeiro pseudo-
+filesystem: `proc_entry_t`, callbacks de leitura com retorno de erro separado
+de `out_len`, callback de escrita reservado, contexto de snapshot e resultado
+do autoteste. A tabela inicial possui somente `uptime`, gerado como
+`uptime_ticks <decimal>\n` e `frequency_hz <decimal>\n`.
+
+`VFS_MOUNT_PROCFS` foi anexado ao enum de montagens, sem renumerar os valores
+anteriores. A montagem fixa `procfs` em `/proc` e pinned, somente leitura e
+nao desmontavel; os arquivos continuam usando `VFS_NODE_REGULAR`. O buffer
+de ate 16 KiB pertence ao contexto privado do arquivo, e imutavel ate
+`close()` e nao cria layout binario para aplicativos.
+
+O campo `procfs` foi acrescentado ao final de `vfs_test_result_t`. Nao houve
+alteracao de App API, syscalls, `file_operations_t` ou bootloader nesta etapa;
+as operacoes continuam acessiveis somente pelas APIs VFS ja existentes.

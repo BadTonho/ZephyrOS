@@ -1,0 +1,56 @@
+#ifndef PROCFS_H
+#define PROCFS_H
+
+#include "types.h"
+#include "fs/vfs.h"
+
+#define PROCFS_MAX_SNAPSHOT_SIZE (16U * 1024U)
+
+typedef int (*procfs_read_callback_t)(char* buffer, uint32_t capacity,
+                                      uint32_t* out_len, void* data);
+typedef int (*procfs_write_callback_t)(const char* buffer, uint32_t len,
+                                       void* data);
+
+typedef struct {
+    const char* name;
+    uint32_t mode;
+    procfs_read_callback_t read_proc;
+    procfs_write_callback_t write_proc;
+    void* data;
+} proc_entry_t;
+
+typedef struct {
+    uint8_t* snapshot;
+    uint32_t snapshot_size;
+    uint32_t entry_index;
+    uint32_t mount_slot;
+    uint32_t mount_generation;
+    uint8_t mount_acquired;
+} procfs_file_context_t;
+
+typedef struct {
+    uint8_t registry;
+    uint8_t lookup;
+    uint8_t listing;
+    uint8_t read;
+    uint8_t permissions;
+    uint8_t seek_eof;
+    uint8_t callback_errors;
+    uint8_t cleanup;
+    uint8_t invariants;
+    uint32_t passed;
+    uint32_t total;
+} procfs_test_result_t;
+
+int procfs_init(void);
+int procfs_is_ready(void);
+int procfs_lookup(const char* canonical_path, vfs_lookup_result_t* result);
+int procfs_open_file(const vfs_lookup_result_t* lookup, uint32_t mode,
+                     vnode_t* vnode, file_t* file,
+                     procfs_file_context_t* context);
+int procfs_list(vfs_dir_entry_t* entries, uint32_t capacity,
+                uint32_t* out_count);
+int procfs_validate_state(void);
+int procfs_self_test(procfs_test_result_t* result);
+
+#endif

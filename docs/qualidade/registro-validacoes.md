@@ -2979,3 +2979,13 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   verificacoes, e `python tools/vendor_terminus.py --check` confirmou fontes e
   dados gerados validos. A validacao funcional de `ls /proc`, `cat /proc/...`
   e montagem permanece reservada ao PROC1.
+
+- PROC1: infraestrutura inicial de procfs integrada ao VFS. Implementada em:
+  2026-08-30 (horario nao informado). Foi criado o provider `procfs` com o
+  no `/proc/uptime`, snapshots imutaveis de 16 KiB, cursor, EOF, seek,
+  rejeicao de escrita, montagem pinned e listagem pela VFS. O autoteste foi
+  incorporado ao `vfs_self_test()` e o Makefile, contratos, comandos e roadmap
+  foram atualizados. O `boot.asm`, `stage2.asm`, App API e syscalls nao foram
+  alterados. O agente nao executou build, testes ou QEMU; a confirmacao de
+  `make q3check`, build, QEMU e dos comandos `/proc` permanece pendente do
+  usuario.

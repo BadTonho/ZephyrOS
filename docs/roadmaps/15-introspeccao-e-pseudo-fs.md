@@ -134,24 +134,33 @@ referências e buffers mesmo em erro, cancelamento ou remoção do objeto.
 
 ### Implementação
 
-- [ ] Criar o driver de filesystem `procfs` que implementa a interface `file_operations_t` do VFS.
-- [ ] Implementar a estrutura `proc_entry_t` contendo:
-  - `const char* name;`
-  - `uint32_t mode;`
-  - `int (*read_proc)(char* buffer, uint32_t max_len, void* data);`
-  - `int (*write_proc)(const char* buffer, uint32_t len, void* data);` (opcional, somente para nós de controle autorizados)
-- [ ] Montar o pseudo-filesystem automaticamente no ponto de montagem `/proc` durante o boot.
-- [ ] Implementar leitura com offset, EOF, limite de buffer e referência ao
-  entry/snapshot durante toda a operação.
+- [x] Criar `procfs.c` e `procfs.h`, com `proc_entry_t`, callback de leitura
+  com `out_len`, callback de escrita reservado e entry `uptime` somente leitura.
+- [x] Montar automaticamente o procfs pinned e somente leitura em `/proc`, sem
+  consumir volumes Storage e preservando o slot do devfs.
+- [x] Implementar `/proc/uptime` com as linhas `uptime_ticks` e
+  `frequency_hz`, em ASCII e ordem fixa.
+- [x] Implementar snapshot imutável de até 16 KiB por abertura, ownership no
+  contexto privado do `file_t`, leitura parcial, EOF, `lseek()` e liberação em
+  sucesso e erro.
+- [x] Encaminhar lookup, abertura, listagem, leitura, fechamento e seek pelo
+  VFS, mantendo arquivos procfs como `VFS_NODE_REGULAR`.
+- [x] Integrar `procfs_self_test()` ao autoteste VFS, incluindo escrita
+  recusada, callback com erro/excedente, seek inválido, snapshot imutável e
+  ausência de recursos residuais.
 
 ### Critério de saída
 
-O comando `ls /proc` lista os nós virtuais disponíveis e a leitura de nós
-simples retorna texto formatado dinamicamente, com EOF e liberação corretos.
+O comando `ls /proc` deve listar `uptime` e `cat /proc/uptime` deve retornar
+texto ASCII válido com EOF e liberação corretos. A implementação está pronta;
+a conclusão do PROC1 depende da confirmação funcional do usuário após o build e
+o QEMU. `/sys` permanece reservado ao PROC3.
 
 ### Comandos Shell / Diagnóstico
 
 - `mount | grep proc`: confirma a montagem correta do `procfs`.
+- `ls /proc`: confirma a enumeração determinística do primeiro nó.
+- `cat /proc/uptime`: confirma o snapshot textual e o cursor VFS.
 
 ---
 
@@ -162,7 +171,8 @@ simples retorna texto formatado dinamicamente, com EOF e liberação corretos.
 - [ ] Implementar os nós de sistema em `/proc`:
   - `/proc/meminfo`: memória total, livre, usada, SLAB e buffers de disco.
   - `/proc/cpuinfo`: identificador do processador, flags e frequência estimada.
-  - `/proc/uptime`: segundos de atividade e tempo gasto em modo idle.
+  - Expandir `/proc/uptime` com segundos de atividade e tempo gasto em modo
+    idle; o PROC1 já publica ticks e frequência.
   - `/proc/version`: versão do ZephyrOS, data de compilação e compilador utilizado.
   - `/proc/cmdline`: argumentos passados pelo bootloader ao kernel.
 - [ ] Implementar diretórios dinâmicos para cada processo ativo (`/proc/<pid>/`):
