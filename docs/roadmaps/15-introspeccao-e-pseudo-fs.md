@@ -343,8 +343,9 @@ apresentou falha relacionada a procfs ou sysfs. O resumo PROC4 está concluído.
 
 ### Estado da etapa
 
-PROC5 está implementado no provider `procfs`; a confirmação funcional no QEMU
-continua pendente antes de marcar a etapa como concluída no resumo. `/proc/sys`
+PROC5 está implementado no provider `procfs`, e a matriz funcional no QEMU foi
+confirmada pelo usuário. O resumo permanece pendente apenas até a confirmação
+do `make q3check` após a correção dos logs dos helpers de escrita. `/proc/sys`
 e `/proc/sys/kernel` são diretórios determinísticos, e os dois controles de
 log são arquivos regulares com leitura pública e escrita restrita a processos
 nativos/ring0. Não foram alterados App API, syscalls, processos, bootloader ou
@@ -439,7 +440,8 @@ ou preservado em qualquer caminho de erro.
   operações VFS existentes, sem syscall nova;
 - [x] estender `proccheck` ou o autoteste VFS com sucesso, rejeições, rollback,
   concorrência, snapshot antigo e ausência de recursos residuais;
-- [x] documentar a implementação e a validação funcional pendente.
+- [x] documentar a implementação e a validação funcional apresentada pelo
+  usuário.
 
 ### Critério de saída
 
@@ -448,3 +450,12 @@ e validação no QEMU. A matriz funcional deverá confirmar listagem determinís
 de `/proc/sys`, leitura dos valores padrão, atualização válida, rejeição de
 entrada inválida, preservação do valor anterior após erro, bloqueio de escrita
 sem privilégio, snapshots imutáveis e ausência de persistência após reboot.
+
+### Validação funcional apresentada
+
+No QEMU, `proccheck` terminou com `testes=51 aprovados=51`, `regcheck full`
+retornou `RegCheck: OK` e `health check` não apresentou falha relacionada ao
+PROC5. Os avisos e erros exibidos durante `proccheck` pertencem às fixtures
+negativas de privilégio, valores inválidos, caminhos ausentes e escritas
+rejeitadas. A confirmação do `make q3check` após a correção dos logs ainda deve
+ser registrada antes de marcar o PROC5 no resumo.
