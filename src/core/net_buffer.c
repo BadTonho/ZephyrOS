@@ -119,6 +119,7 @@ static int net_buffer_complete_locked(net_buffer_t* buffer, int result,
     }
     if (result == OK) {
         if (buffer->state != NET_BUFFER_STATE_RX &&
+            buffer->state != NET_BUFFER_STATE_QUEUED &&
             buffer->state != NET_BUFFER_STATE_IN_FLIGHT) {
             return net_buffer_fail_locked(ERR_STATE, 0);
         }

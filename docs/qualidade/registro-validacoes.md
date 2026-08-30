@@ -2865,3 +2865,13 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   O usuario confirmou que a segunda execucao nao travou o sistema. A etapa
   BLK4 foi marcada como concluida no resumo do roadmap; a matriz ZUPD de
   recuperacao pos-reboot continua sendo validacao separada.
+
+- NET2: correcao do autoteste de sockets genericos apos a primeira matriz
+  funcional. Identificada em: 2026-08-29 21:45:59 -03:00
+  (America/Sao_Paulo). A conclusao de SKB retirado da fila UNIX aceitava
+  apenas `RX` e `IN_FLIGHT`, embora a entrega local use `QUEUED`; isso
+  recusava a conclusao, impedia a liberacao e deixava um buffer ativo.
+  O caminho agora aceita `QUEUED -> DELIVERED`, e o fixture usa
+  `SOCKET_QUEUE_BYTES` em vez de `sizeof` de um ponteiro para exercitar
+  fragmentacao, fila cheia e descarte no fechamento. O agente nao executou
+  build, testes ou QEMU; a nova matriz funcional permanece pendente.
