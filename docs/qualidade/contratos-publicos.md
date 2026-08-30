@@ -882,3 +882,41 @@ bloco e retornam ao inventario legado quando nao existe um no correspondente.
 `proccheck` publica somente um resultado agregado. PROC4 nao altera
 `taskmanager.h`, App API, syscalls, layouts binarios, persistencia,
 `boot.asm` ou `stage2.asm`, e nao habilita escrita em `/proc/sys`.
+
+## PROC5 - Controles de runtime em /proc/sys
+
+PROC5 permanece em planejamento documental. Nenhum header novo, syscall, App
+API ou layout binario e publicado nesta etapa, e o comportamento atual de
+`procfs`/`sysfs` continua somente leitura. A futura escrita sera exclusiva de
+controles nomeados em uma tabela estatica do `procfs`; nao existira escrita
+generica em estruturas do kernel nem qualquer escrita em `/sys`.
+
+O conjunto inicial planejado e:
+
+```text
+/proc/sys/kernel/console_log_level
+/proc/sys/kernel/buffer_log_level
+```
+
+Os valores validos sao os tokens estaveis `error`, `warn`, `info` e `debug`,
+espelhando as operacoes ja existentes do subsistema de log. A leitura
+continuara obedecendo a ABI textual do PROC0, com uma linha ASCII por arquivo,
+snapshot imutavel de ate 16 KiB, `file_t.offset`, EOF e `lseek`. A abertura em
+modo de leitura sera publica; a abertura e a escrita exigirao um gate de
+privilegio explicito. Sem uma identidade de execucao verificavel, o provider
+devera manter a escrita indisponivel e retornar `ERR_UNAVAILABLE`.
+
+Uma escrita aceitará exatamente um token valido e `LF` opcional. A entrada
+sera validada completamente antes de um commit atomico; falhas preservarao o
+valor anterior, e o sucesso retornara toda a carga em `bytes_written`. Os
+valores serao mantidos somente em RAM. Uma abertura existente conservara o
+snapshot antigo, enquanto uma nova abertura observara o valor atualizado.
+
+O contrato de erros de PROC5 e: caminho ou valor invalido em `ERR_INVALID`, nó
+ausente em `ERR_NOT_FOUND`, entrada excedente em `ERR_OVERFLOW`, falta de
+memoria em `ERR_MEM`, mudanca concorrente em `ERR_AGAIN` e escrita nao
+autorizada, `ioctl`, `sync` ou acesso a diretorio em `ERR_UNAVAILABLE`.
+Scheduler, forwarding IPv4, energia, memoria e parametros de processos ficam
+fora do primeiro conjunto. A implementacao devera adicionar autotestes de
+validacao, rollback, concorrencia, snapshot, reset e limpeza, sem alterar as
+assinaturas da App API ou das syscalls.
