@@ -27,6 +27,27 @@ src/fs/
 
 ---
 
+### Procfs PROC2
+
+O VFS monta automaticamente o pseudo-filesystem somente leitura `procfs` em
+`/proc`. A montagem e pinned, nao consome Storage e nao pode ser desmontada.
+Os nos globais seguem a ordem `uptime`, `meminfo`, `cpuinfo`, `version` e
+`cmdline`; diretorios PID sao enumerados numericamente e listam `status`,
+`cmdline` e `maps`.
+
+Cada `open()` gera um snapshot ASCII de ate 16 KiB, pertencente ao contexto do
+`file_t`. `read()` usa `file_t.offset`, aceita blocos parciais e retorna zero
+no EOF; `lseek()` aceita `SET`, `CUR` e `END` dentro do snapshot. Nenhuma
+leitura retem ponteiro de processo, VMA ou tabela interna. Assim, remocao e
+reutilizacao de PID nao invalidam descritores ja abertos; uma nova abertura
+valida a geracao composta e retorna `ERR_NOT_FOUND` quando o no nao existe.
+
+`/proc/uptime`, `/proc/meminfo`, `/proc/cpuinfo`, `/proc/version`,
+`/proc/cmdline`, `/proc/<pid>/status`, `/proc/<pid>/cmdline` e
+`/proc/<pid>/maps` sao publicos e nao gravaveis. Erros de serializacao,
+memoria e churn de VMAs retornam `ERR_OVERFLOW`, `ERR_MEM` e `ERR_AGAIN`,
+sem truncamento ou referencia residual.
+
 ## ATA Driver (`ata.c`)
 
 ### O que é ATA?

@@ -957,7 +957,7 @@ $(SLAB_OBJ): $(SLAB_C) src/include/memory/slab.h src/include/core/errors.h src/i
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(PAGING_OBJ): $(PAGING_C)
+$(PAGING_OBJ): $(PAGING_C) src/include/memory/paging.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -993,7 +993,7 @@ $(DEVFS_OBJ): $(DEVFS_C) src/include/fs/devfs.h src/include/fs/vfs.h src/include
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(PROCFS_OBJ): $(PROCFS_C) src/include/fs/procfs.h src/include/fs/vfs.h src/include/fs/vfs_internal.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/spinlock.h src/include/core/string.h src/include/core/timer.h
+$(PROCFS_OBJ): $(PROCFS_C) src/include/fs/procfs.h src/include/fs/vfs.h src/include/fs/vfs_internal.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/spinlock.h src/include/core/string.h src/include/core/timer.h src/include/core/version.h src/include/fs/block_cache.h src/include/memory/slab.h src/include/memory/paging.h src/include/memory/vma.h src/include/process/process.h src/include/process/thread.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1021,7 +1021,7 @@ $(BMP_OBJ): $(BMP_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(PROCESS_OBJ): $(PROCESS_C) src/include/process/process.h src/include/process/thread.h src/include/memory/slab.h src/include/memory/vma.h
+$(PROCESS_OBJ): $(PROCESS_C) src/include/process/process.h src/include/process/thread.h src/include/memory/slab.h src/include/memory/vma.h src/include/memory/paging.h src/include/core/app_api.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

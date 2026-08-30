@@ -167,30 +167,51 @@ concluíram sem falha de VFS. `/sys` permanece reservado ao PROC3.
 
 ## PROC2 - Mapeamento de /proc para Sistema e Processos
 
+Implementacao PROC2 concluida no codigo, aguardando a confirmacao funcional
+do usuario para marcar o resumo como concluido. O procfs agora publica os
+cinco nos globais `uptime`, `meminfo`, `cpuinfo`, `version` e `cmdline`, seguidos
+por PIDs numericos crescentes. Cada diretorio PID lista `status`, `cmdline` e
+`maps`, mantendo a ABI ASCII, snapshots imutaveis de ate 16 KiB e acesso
+publico somente leitura.
+
+`process_t` recebeu uma geracao de identidade append-only. As APIs de snapshot
+copiam status, argumentos de lancamento e VMAs sem ponteiros; a enumeracao
+inclui Idle, processos nativos, ring 3 e zombies ate o reaping. A captura de
+VMAs valida a geracao e tenta novamente uma vez, retornando `ERR_AGAIN` se o
+churn persistir. A memoria publicada soma stack de kernel, paginas residentes
+de usuario e imagens de codigo/dados.
+
 ### Implementação
 
-- [ ] Implementar os nós de sistema em `/proc`:
+- [x] Implementar os nós de sistema em `/proc`:
   - `/proc/meminfo`: memória total, livre, usada, SLAB e buffers de disco.
   - `/proc/cpuinfo`: identificador do processador, flags e frequência estimada.
   - Expandir `/proc/uptime` com segundos de atividade e tempo gasto em modo
     idle; o PROC1 já publica ticks e frequência.
   - `/proc/version`: versão do ZephyrOS, data de compilação e compilador utilizado.
   - `/proc/cmdline`: argumentos passados pelo bootloader ao kernel.
-- [ ] Implementar diretórios dinâmicos para cada processo ativo (`/proc/<pid>/`):
+- [x] Implementar diretórios dinâmicos para cada processo registrado (`/proc/<pid>/`):
   - `/proc/<pid>/status`: nome, estado, PPID, threads e uso de memória.
   - `/proc/<pid>/cmdline`: comando e argumentos que iniciaram o processo.
   - `/proc/<pid>/maps`: lista de VMAs e regiões de memória mapeadas.
-- [ ] Definir permissões mínimas para informações de outros processos e
-  impedir que um PID reutilizado seja confundido com o processo anterior.
+- [x] Definir acesso público somente leitura e impedir que um PID reutilizado
+  seja confundido com o processo anterior por meio de geração de identidade.
 
 ### Critério de saída
 
-Comandos como `cat /proc/meminfo` e `cat /proc/1/status` exibem dados precisos e atualizados em tempo real.
+Comandos como `cat /proc/meminfo`, `cat /proc/cpuinfo`, `cat /proc/0/status`
+e `cat /proc/0/maps` devem exibir dados precisos em snapshots imutáveis, com
+PIDs ordenados e gerações distintas na reutilização. O critério funcional
+permanece pendente até a confirmação do usuário.
 
 ### Comandos Shell / Diagnóstico
 
 - `cat /proc/meminfo`: inspeciona o estado global de memória.
 - `cat /proc/<pid>/status`: inspeciona os atributos de um processo específico.
+- `cat /proc/cpuinfo`, `cat /proc/version` e `cat /proc/cmdline`: inspecionam
+  os nós globais adicionais.
+- `ls /proc/<pid>`, `cat /proc/<pid>/cmdline` e `cat /proc/<pid>/maps`:
+  inspecionam os nós dinâmicos de um PID listado.
 
 ---
 

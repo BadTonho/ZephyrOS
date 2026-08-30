@@ -806,3 +806,24 @@ de ate 16 KiB pertence ao contexto privado do arquivo, e imutavel ate
 O campo `procfs` foi acrescentado ao final de `vfs_test_result_t`. Nao houve
 alteracao de App API, syscalls, `file_operations_t` ou bootloader nesta etapa;
 as operacoes continuam acessiveis somente pelas APIs VFS ja existentes.
+
+## PROC2 - Nos globais e processos em /proc
+
+O `procfs` publica os nos globais `uptime`, `meminfo`, `cpuinfo`, `version` e
+`cmdline` nessa ordem, seguidos por diretorios de todos os processos
+registrados em ordem crescente de PID. Cada diretorio lista `status`,
+`cmdline` e `maps`. Os formatos seguem a ABI textual ASCII do PROC0, com
+contadores decimais, enderecos de VMA hexadecimais e estados textuais.
+
+`process_t.event_generation` foi anexado ao layout existente e recebe uma
+identidade monotonicamente crescente a cada criacao. `process_snapshot_t` e
+as APIs `process_snapshot_copy()`, `process_snapshot_list()` e
+`process_snapshot_copy_vmas()` sao contratos internos sem ponteiros retidos
+pelo procfs. A captura de VMAs valida PID e geracao, repete uma vez e retorna
+`ERR_AGAIN` se o processo continuar mudando. `memory_bytes` soma stack de
+kernel, paginas residentes de usuario e imagens de codigo/dados.
+
+O contexto de cada arquivo continua dono de um snapshot de no maximo 16 KiB;
+`read`, EOF e `lseek` operam sobre esse buffer imutavel. O acesso e publico e
+somente leitura; nao foram adicionados layouts binarios para aplicativos,
+syscalls, App API, persistencia ou alteracoes no bootloader.

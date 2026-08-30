@@ -570,9 +570,17 @@ static int vfs_resolve_directory(const char* path, char* canonical,
                                  "No devfs nao e diretorio");
         }
         if (mount->kind == VFS_MOUNT_PROCFS) {
+            vfs_lookup_result_t procfs_lookup_result;
+            int procfs_result;
+
             spinlock_release(&vfs_mount_lock);
-            return vfs_path_fail(ERR_INVALID,
-                                 "No procfs nao e diretorio");
+            procfs_result = procfs_lookup(canonical, &procfs_lookup_result);
+            if (procfs_result != OK) return procfs_result;
+            if (procfs_lookup_result.type != VFS_NODE_DIRECTORY) {
+                return vfs_path_fail(ERR_INVALID,
+                                     "No procfs nao e diretorio");
+            }
+            return OK;
         }
     }
     spinlock_release(&vfs_mount_lock);
@@ -736,8 +744,9 @@ int vfs_list_dir(const char* path, vfs_dir_entry_t* entries,
     if (vfs_path_equal(lookup.canonical_path, "/dev")) {
         return devfs_list(entries, capacity, out_count);
     }
-    if (vfs_path_equal(lookup.canonical_path, "/proc")) {
-        return procfs_list(entries, capacity, out_count);
+    if (lookup.mount_kind == VFS_MOUNT_PROCFS) {
+        return procfs_list_path(lookup.canonical_path, entries, capacity,
+                                out_count);
     }
     if (vfs_path_equal(lookup.canonical_path, "/mnt")) {
         return vfs_list_mnt(entries, capacity, out_count);

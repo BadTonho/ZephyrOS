@@ -93,6 +93,18 @@ VMAs sem alocar páginas físicas de usuário; o paging lazy materializa cada
 página no primeiro acesso e o ciclo de destruição libera os buffers e os frames
 residentes sem alterar as assinaturas de criação ou a ABI das aplicações.
 
+### Snapshot de introspeccao PROC2
+
+`process_t` acrescenta ao final `event_generation`, uma geracao monotonicamente
+crescente que nao e reutilizada junto com o PID. As APIs
+`process_snapshot_copy()`, `process_snapshot_list()` e
+`process_snapshot_copy_vmas()` retornam copias sem ponteiros para o procfs.
+Elas incluem Idle/PID 0, processos nativos, processos ring 3 e zombies ainda
+nao reapados. A memoria publicada soma stack de kernel, paginas de usuario
+residentes e imagens de codigo/dados; VMAs reservadas nao contam como
+residentes. A copia de VMA valida PID e geracao e retorna `ERR_AGAIN` quando a
+identidade muda durante a captura.
+
 ### Criando um Processo
 
 ```c
