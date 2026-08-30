@@ -2,6 +2,11 @@
 
 Sistema operacional em C + Assembly (x86), do zero.
 
+O próximo ciclo é a preparação da versão 1.0.0 pelos Roadmaps 18–22:
+estabilização e release, segurança e isolamento, integridade do Storage,
+compatibilidade de hardware e desempenho mensurável. O Roadmap 17, de Rust,
+continua planejado para depois da base 1.0.0 e não deve preceder esse ciclo.
+
 ---
 
 EP9.0A, EP9.1, EP9.2A e EP9.4A implementadas e validadas pelo usuário; a

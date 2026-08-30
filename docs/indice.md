@@ -86,20 +86,25 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [Validação EP6.3 Runtime](qualidade/validacao-ep63-runtime.md) | Procedimento host e QEMU para fixtures, Releases A/B, rollback e auditoria do runtime v2 |
 | [Validação do stage2 LBA](qualidade/validacao-stage2-lba.md) | Gates, tamanhos e cenários QEMU para EDD/LBA e fallback CHS |
 | [Roadmaps por Etapa](roadmaps/README.md) | Ordem executável das próximas frentes do projeto |
-| [01 - Estabilização e Qualidade](roadmaps/01-estabilizacao-e-qualidade.md) | Regressão, diagnósticos e fallbacks |
-| [02 - Plataforma de Aplicativos](roadmaps/02-plataforma-de-aplicativos.md) | Migração gradual, ZAPP e pacotes |
-| [03 - Kernel e Desempenho](roadmaps/03-kernel-e-desempenho.md) | Métricas, scheduler, memória e otimização segura |
-| [04 - Interface e Experiência](roadmaps/04-interface-e-experiencia.md) | GUI Classic, taskbar, WM e interação |
-| [05 - Sistema e Ecossistema](roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e apps |
-| [06 - App Store](roadmaps/06-app-store.md) | Catalogo local ZPKG, ciclo de vida e repositorio remoto autenticado |
-| [07 - Modernização Visual](roadmaps/07-modernizacao-visual.md) | Escala acessível, visual flat/dark e desempenho VESA mensurável |
-| [08 - Evolução da Plataforma](roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.4 implementadas; EP7.0 encerrada; EP7.1B implementada; EP9.0A, EP9.1 e EP9.4A implementadas e validadas |
-| [09 - Funcionalidades aplicáveis](roadmaps/09-funcionalidades-aplicaveis.md) | Logs, timers, espera, work queue, dispositivos, I/O, cache e scheduler |
-| [10 - VFS e Abstração de I/O](roadmaps/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, montagens, /dev/ e pipes |
-| [11 - Gerenciamento Avançado de Memória](roadmaps/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging |
-| [12 - Concorrência e Sincronização](roadmaps/12-concorrencia-e-sincronizacao.md) | Top-Half/Bottom-Half, wait queues, workqueues e sinais assíncronos |
-| [13 - Armazenamento e Buffer Cache](roadmaps/13-armazenamento-e-buffer-cache.md) | Block layer, fila de requisições, buffer cache LRU e sincronização sync |
-| [14 - Stack de Rede Avançada](roadmaps/14-stack-de-rede-avancada.md) | Socket buffers sk_buff zero-copy, sockets AF_UNIX/AF_INET e select/poll |
-| [15 - Introspecção e Pseudo-Filesystems](roadmaps/15-introspeccao-e-pseudo-fs.md) | Pseudo-filesystems /proc e /sys para diagnósticos, processos e hardware |
-| [16 - Energia e ACPI Avançado](roadmaps/16-energia-e-acpi-avancado.md) | Loop de CPU idle com HLT, parser ACPI (FADT/MADT), poweroff e reboot |
+| [01 - Estabilização e Qualidade](roadmaps/feitos/01-estabilizacao-e-qualidade.md) | Regressão, diagnósticos e fallbacks |
+| [02 - Plataforma de Aplicativos](roadmaps/feitos/02-plataforma-de-aplicativos.md) | Migração gradual, ZAPP e pacotes |
+| [03 - Kernel e Desempenho](roadmaps/feitos/03-kernel-e-desempenho.md) | Métricas, scheduler, memória e otimização segura |
+| [04 - Interface e Experiência](roadmaps/feitos/04-interface-e-experiencia.md) | GUI Classic, taskbar, WM e interação |
+| [05 - Sistema e Ecossistema](roadmaps/feitos/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e apps |
+| [06 - App Store](roadmaps/feitos/06-app-store.md) | Catalogo local ZPKG, ciclo de vida e repositorio remoto autenticado |
+| [07 - Modernização Visual](roadmaps/feitos/07-modernizacao-visual.md) | Escala acessível, visual flat/dark e desempenho VESA mensurável |
+| [08 - Evolução da Plataforma](roadmaps/feitos/08-evolucao-da-plataforma.md) | EP1-EP6.4 implementadas; EP7.0 encerrada; EP7.1B implementada; EP9.0A, EP9.1 e EP9.4A implementadas e validadas |
+| [09 - Funcionalidades aplicáveis](roadmaps/feitos/09-funcionalidades-aplicaveis.md) | Logs, timers, espera, work queue, dispositivos, I/O, cache e scheduler |
+| [10 - VFS e Abstração de I/O](roadmaps/feitos/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, montagens, /dev/ e pipes |
+| [11 - Gerenciamento Avançado de Memória](roadmaps/feitos/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging |
+| [12 - Concorrência e Sincronização](roadmaps/feitos/12-concorrencia-e-sincronizacao.md) | Top-Half/Bottom-Half, wait queues, workqueues e sinais assíncronos |
+| [13 - Armazenamento e Buffer Cache](roadmaps/feitos/13-armazenamento-e-buffer-cache.md) | Block layer, fila de requisições, buffer cache LRU e sincronização sync |
+| [14 - Stack de Rede Avançada](roadmaps/feitos/14-stack-de-rede-avancada.md) | Socket buffers sk_buff zero-copy, sockets AF_UNIX/AF_INET e select/poll |
+| [15 - Introspecção e Pseudo-Filesystems](roadmaps/feitos/15-introspeccao-e-pseudo-fs.md) | Pseudo-filesystems /proc e /sys para diagnósticos, processos e hardware |
+| [16 - Energia e ACPI Avançado](roadmaps/feitos/16-energia-e-acpi-avancado.md) | Loop de CPU idle com HLT, parser ACPI (FADT/MADT), poweroff e reboot |
 | [17 - Migração gradual do ZephyrOS para Rust](roadmaps/17-migracao-gradual-rust.md) | Adoção incremental de Rust após a versão 1.0.0, com kernel híbrido C/Rust/Assembly |
+| [18 - Estabilização e release da versão 1.0.0](roadmaps/18-estabilizacao-e-release-v1.0.md) | Linha de base, liveness do Shell, regressão e preparação da release |
+| [19 - Segurança e isolamento](roadmaps/19-seguranca-e-isolamento-v1.0.md) | Fronteiras ring 3, syscalls, processos, pacotes e recursos |
+| [20 - Integridade e recuperação do Storage](roadmaps/20-integridade-e-recuperacao-do-storage.md) | VFS, FAT, cache, sync, consistência e recuperação |
+| [21 - Compatibilidade e matriz de hardware](roadmaps/21-compatibilidade-e-matriz-de-hardware.md) | Perfis suportados, fallbacks, drivers e diagnósticos |
+| [22 - Desempenho e dívidas da 1.0.0](roadmaps/22-desempenho-e-dividas-v1.0.md) | Medição, responsividade, Idle e quitação das dívidas técnicas |
