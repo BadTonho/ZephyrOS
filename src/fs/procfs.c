@@ -1483,12 +1483,26 @@ static int procfs_test_write_path(const char* path, const void* buffer,
     uint32_t written = 0U;
     int result;
 
-    if (!path || (size && !buffer)) return ERR_NULL;
+    if (!path || (size && !buffer)) {
+        LOG_WARN("PROCFS", "Entrada invalida no helper de escrita");
+        return ERR_NULL;
+    }
     result = vfs_open(path, VFS_MODE_WRITE, &fd);
-    if (result != OK) return result;
+    if (result != OK) {
+        LOG_WARN("PROCFS", "Abertura falhou no helper de escrita");
+        return result;
+    }
     result = vfs_write(fd, buffer, size, &written);
-    if (result == OK && written != size) result = ERR_STATE;
-    if (vfs_close(fd) != OK && result == OK) result = ERR_STATE;
+    if (result == OK && written != size) {
+        LOG_ERROR("PROCFS", "Escrita parcial no helper de escrita");
+        result = ERR_STATE;
+    } else if (result != OK) {
+        LOG_WARN("PROCFS", "Escrita rejeitada no helper de escrita");
+    }
+    if (vfs_close(fd) != OK) {
+        LOG_ERROR("PROCFS", "Fechamento falhou no helper de escrita");
+        if (result == OK) result = ERR_STATE;
+    }
     return result;
 }
 

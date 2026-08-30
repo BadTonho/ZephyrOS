@@ -3206,12 +3206,26 @@ static int cmd_proccheck_write(const char* path, const char* value,
     uint32_t written = 0U;
     int result;
 
-    if (!path || !value) return ERR_NULL;
+    if (!path || !value) {
+        LOG_WARN("SHELL", "Entrada invalida no proccheck de escrita");
+        return ERR_NULL;
+    }
     result = vfs_open(path, VFS_MODE_WRITE, &fd);
-    if (result != OK) return result;
+    if (result != OK) {
+        LOG_WARN("SHELL", "Abertura falhou no proccheck de escrita");
+        return result;
+    }
     result = vfs_write(fd, value, size, &written);
-    if (result == OK && written != size) result = ERR_STATE;
-    if (vfs_close(fd) != OK && result == OK) result = ERR_STATE;
+    if (result == OK && written != size) {
+        LOG_ERROR("SHELL", "Escrita parcial no proccheck");
+        result = ERR_STATE;
+    } else if (result != OK) {
+        LOG_WARN("SHELL", "Escrita rejeitada no proccheck");
+    }
+    if (vfs_close(fd) != OK) {
+        LOG_ERROR("SHELL", "Fechamento falhou no proccheck");
+        if (result == OK) result = ERR_STATE;
+    }
     return result;
 }
 
