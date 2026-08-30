@@ -13,7 +13,7 @@ para todos os caminhos de driver, DMA e checksum.
 - [x] NET0 - Contrato de ownership, lifetime, cópia e conclusão de buffers.
 - [x] NET1 - Estrutura de buffer de pacotes unificada (`sk_buff_t`) com cópia evitável.
 - [x] NET2 - Camada genérica de sockets (`AF_INET` e `AF_UNIX` para IPC local).
-- [ ] NET3 - Multiplexação de I/O não-bloqueante (`select()` / `poll()`).
+- [x] NET3 - Multiplexação de I/O não-bloqueante (`select()` / `poll()`).
 - [ ] NET4 - Roteamento avançado, tabela de conexões TCP e ferramentas de diagnóstico.
 
 ## Atalhos
@@ -61,7 +61,7 @@ para todos os caminhos de driver, DMA e checksum.
 
 Estado da implementacao: contrato e runtime entregues e validados
 funcionalmente pelo usuario em 2026-08-29. Os resumos acima foram marcados como
-  [x]; NET3+ permanecem pendentes.
+  [x]; NET4 permanece pendente.
 
 ### Implementação
 
@@ -101,7 +101,7 @@ erro e cancelamento, sem depender da promessa de zero-copy total.
 ## NET1 - Estrutura de Buffer de Pacotes (sk_buff)
 
 Estado da implementacao: codigo integrado e validado funcionalmente pelo
-usuario em 2026-08-29. O resumo NET1 foi marcado como `[x]`; NET3+ permanecem
+usuario em 2026-08-29. O resumo NET1 foi marcado como `[x]`; NET4 permanece
 pendentes.
 
 ### Implementação
@@ -148,7 +148,7 @@ e não permanecem buffers vivos após os diagnósticos.
 ## NET2 - Camada Genérica de Sockets e AF_UNIX
 
 Estado da implementacao: codigo integrado e validado funcionalmente pelo
-usuario em 2026-08-29. O resumo NET2 foi marcado como `[x]`; NET3+ permanecem
+usuario em 2026-08-29. O resumo NET2 foi marcado como `[x]`; NET4 permanece
 pendentes.
 
 ### Implementação
@@ -193,9 +193,9 @@ Aplicativos criam e comunicam através de sockets locais e remotos utilizando a 
 
 ### Implementação
 
-Estado da implementacao NET3: codigo integrado; validacao funcional pendente.
-O resumo NET3 somente sera marcado como concluido apos a confirmacao do
-usuario.
+Estado da implementacao NET3: codigo integrado e validado funcionalmente pelo
+usuario em 2026-08-30. O resumo NET3 esta marcado como `[x]`; NET4 permanece
+pendente.
 
 - [x] Implementar a syscall `poll()` com máscaras de leitura, escrita, erro e
   hangup, timeout e retorno por descritor.
