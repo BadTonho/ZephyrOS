@@ -12,7 +12,7 @@ fallback específico de emulador será tratado como comportamento universal.
 
 - [x] PWR0 - Contrato de capacidades, estados e ordem de desligamento.
 - [ ] PWR1 - Idle arquitetural seguro com economia de energia via `hlt`.
-- [ ] PWR2 - Descoberta e validação de tabelas ACPI (RSDP, RSDT, XSDT, FADT, MADT).
+- [x] PWR2 - Descoberta e validação de tabelas ACPI (RSDP, RSDT, XSDT, FADT, MADT).
 - [ ] PWR3 - Desligamento e reinicialização determinísticos por hardware.
 - [ ] PWR4 - Notificação ordenada de encerramento do sistema para drivers e apps.
 
@@ -167,7 +167,10 @@ revisões e checksums válidos, distinguindo descoberta de execução de método
 `acpi tables` publica RSDP, a raiz, todas as SDTs copiadas e o resumo MADT. As
 consultas `acpi_get_madt_info()`, `acpi_get_madt_entry_count()` e
 `acpi_get_madt_entry_at()` retornam somente cópias sem referências físicas.
-O resumo PWR2 permanece pendente até a confirmação funcional do usuário.
+O usuário confirmou a validação funcional no QEMU: RSDP, RSDT, FACP, APIC,
+HPET, WAET e DSDT foram listadas com `checksum=OK`, sem tabelas inválidas ou
+ignoradas; o MADT reportou 1 processador, 1 Local APIC e 1 I/O APIC. `RegCheck`
+terminou em `OK`.
 
 ### Comandos Shell / Diagnóstico
 
