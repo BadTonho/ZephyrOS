@@ -554,7 +554,23 @@ O IPv4 aceita `255.255.255.255` somente em frame Ethernet broadcast e somente
 para UDP. `ipv4_send_limited_broadcast(interface_id, ...)` aceita origem zero
 durante a aquisicao DHCP ou o endereco local durante rebinding, sem criar
 entrada ARP.
-Unicast, roteamento, ICMP e filtros da S2.5 permanecem inalterados.
+Unicast, ICMP e filtros da S2.5 permanecem inalterados; o roteamento agora
+consulta a tabela limitada da NET4.
+
+Na NET4, `route.h` mantem em RAM uma tabela de ate 16 rotas IPv4. Cada entrada
+usa rede canonica, mascara contigua `/0` a `/32`, gateway unicast opcional e
+ID de interface; o lookup escolhe o maior prefixo correspondente. A rota
+direta usa gateway zero, `route_reset()` restaura as rotas da configuracao
+IPv4 atual e `route_validate_state()` verifica contagem, duplicidade e campos.
+`ipv4_send()` consulta essa tabela antes do ARP, mas rejeita rotas para uma
+interface diferente da L3 ativa porque o forwarding multi-NIC permanece fora
+da etapa.
+
+`TCP_STATE_LISTEN` foi anexado ao final do enum TCP para preservar a ABI
+numerica; `tcp_state_name()` o torna legivel, embora o TCP passivo ainda
+retorne `ERR_UNAVAILABLE`. O `netstat` agrega a tabela de conexoes TCP, os
+sockets `AF_UNIX` da camada generica e os contadores RX/TX, erros e descartes
+publicados por `network_manager`.
 
 O cliente DHCP usa UDP 68/67 e os estados `SELECTING`, `REQUESTING`, `BOUND`,
 `RENEWING` e `REBINDING`, alem dos estados terminais e de aplicacao. Discover

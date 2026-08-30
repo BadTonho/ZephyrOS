@@ -2936,3 +2936,17 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `selecttest` retornou `Resultado: OK` em todos os cenarios, incluindo
   cancelamento por sinal e ausencia de waiter VFS residual. O `regcheck full`
   tambem retornou `RegCheck: OK`. O `boot.asm` nao foi alterado.
+
+- NET4: implementacao de rotas IPv4, `netstat` e monitoramento agregado.
+  Implementada em: 2026-08-30 08:47:04 -03:00 (America/Sao_Paulo). Foi criada
+  a tabela em RAM de 16 entradas com validacao, rota direta/default,
+  longest-prefix match, exclusao, reset e autoteste deterministico. `ipv4_send()`
+  passou a consultar a tabela e rejeita rotas de interfaces diferentes da L3
+  atual. `TCP_STATE_LISTEN` foi anexado ao enum, e `netstat` passou a agregar
+  TCP, `AF_UNIX` e contadores por interface. `route_validate_state()` foi
+  integrado ao recovery de Network e ao `regcheck full`; `net check`, ajuda,
+  dispatcher, Makefile e documentacao foram atualizados. O `boot.asm`, a App
+  API, syscalls e persistencia em disco nao foram alterados. O agente nao
+  executou build, testes ou QEMU; `make q3check`, `make clean && make`,
+  `make run` e a matriz funcional NET4 permanecem pendentes da confirmacao do
+  usuario.

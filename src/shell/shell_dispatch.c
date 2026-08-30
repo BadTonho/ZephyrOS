@@ -45,6 +45,8 @@ extern void shell_dispatch_cmd_net(const char* arguments);
 extern void shell_dispatch_cmd_skbstat(const char* arguments);
 extern void shell_dispatch_cmd_sockstat(const char* arguments);
 extern void shell_dispatch_cmd_selecttest(const char* arguments);
+extern void shell_dispatch_cmd_netstat(const char* arguments);
+extern void shell_dispatch_cmd_route(const char* arguments);
 extern void shell_dispatch_cmd_wifi(const char* arguments);
 extern void shell_dispatch_cmd_ping(const char* arguments);
 extern void shell_dispatch_cmd_nslookup(const char* arguments);
@@ -145,6 +147,8 @@ static const shell_dispatch_entry_t shell_dispatch_table[] = {
     {"sockstat", shell_dispatch_cmd_sockstat, SHELL_DISPATCH_FLAG_NONE},
     {"selecttest", shell_dispatch_cmd_selecttest,
      SHELL_DISPATCH_FLAG_MAY_BLOCK},
+    {"netstat", shell_dispatch_cmd_netstat, SHELL_DISPATCH_FLAG_NONE},
+    {"route", shell_dispatch_cmd_route, SHELL_DISPATCH_FLAG_NONE},
     {"wifi", shell_dispatch_cmd_wifi, SHELL_DISPATCH_FLAG_NONE},
     {"ping", shell_dispatch_cmd_ping,
      SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_COOPERATIVE},

@@ -23,7 +23,8 @@ typedef enum {
     TCP_STATE_CLOSE_WAIT,
     TCP_STATE_LAST_ACK,
     TCP_STATE_TIME_WAIT,
-    TCP_STATE_FAILED
+    TCP_STATE_FAILED,
+    TCP_STATE_LISTEN
 } tcp_state_t;
 
 typedef enum {

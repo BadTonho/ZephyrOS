@@ -62,6 +62,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/core/panic.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/power.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/poll.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
+| `src/include/core/route.h` | `docs/roadmaps/14-stack-de-rede-avancada.md` |
 | `src/include/core/recovery.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/spinlock.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/string.h` | `docs/04-kernel/kernel.md` |
@@ -736,3 +737,25 @@ waiter no canal global e nao conserva `file_t` nem locks durante a espera.
 da ABI. A fronteira ring 3 valida ranges, copia arrays e request, verifica
 overflow e somente publica resultados depois de uma operacao concluida.
 Nenhuma syscall de criacao de socket foi adicionada.
+
+## NET4 - Rotas IPv4 e diagnostico agregado
+
+`src/include/core/route.h` publica uma tabela estatica de 16 entradas com
+`network`, `subnet_mask`, `prefix_length`, `gateway` e `interface_id`. As
+mascaras aceitas vao de `/0` a `/32`; redes devem ser canonicas, gateways
+devem ser unicast quando presentes e a interface nao pode ser vazia. A tabela
+vive somente em RAM, suporta rota direta com gateway `0.0.0.0`, rota default,
+duplicidade rejeitada, exclusao, reset da configuracao IPv4 atual e lookup por
+longest-prefix match. `route_status_t` expoe contagem, lookups, matches,
+misses, alteracoes e ultimo erro; `route_validate_state()` e
+`route_self_test()` verificam as invariantes sem deixar entradas residuais.
+
+`ipv4_send()` consulta a tabela antes de resolver ARP. A rota selecionada deve
+apontar para a interface L3 atual; encaminhamento entre NICs permanece fora da
+NET4 e nao e implementado pelo comando `route`.
+
+`TCP_STATE_LISTEN` foi anexado ao final de `tcp_state_t`, preservando os valores
+anteriores. `tcp_state_name()` o apresenta como `LISTEN`, mas o TCP passivo
+continua indisponivel nesta etapa. O comando `netstat` agrega conexoes da
+visao TCP, sockets `AF_UNIX` da tabela generica e contadores RX/TX, erros e
+descartes de cada interface, sem duplicar conexoes `AF_INET`.

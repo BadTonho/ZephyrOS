@@ -3,6 +3,7 @@
 #include "core/errors.h"
 #include "core/ethernet.h"
 #include "core/log.h"
+#include "core/route.h"
 #include "core/string.h"
 
 #define IPV4_ETHERTYPE 0x0800U
@@ -345,6 +346,8 @@ static int ipv4_select_next_hop(uint32_t destination_ip,
                                 uint8_t* out_via_gateway) {
     uint32_t network = ipv4_status.local_ip & ipv4_status.subnet_mask;
     uint32_t broadcast = network | ~ipv4_status.subnet_mask;
+    route_match_t match;
+    int result;
 
     if (!out_next_hop || !out_via_gateway) {
         LOG_ERROR("NET", "Destino nulo ao selecionar rota IPv4");
@@ -356,17 +359,18 @@ static int ipv4_select_next_hop(uint32_t destination_ip,
         LOG_ERROR("NET", "Destino IPv4 invalido para transmissao");
         return ERR_INVALID;
     }
-    *out_via_gateway = 0;
-    if ((destination_ip & ipv4_status.subnet_mask) == network) {
-        *out_next_hop = destination_ip;
-        return OK;
-    }
-    if (!ipv4_status.gateway) {
-        LOG_WARN("NET", "Destino IPv4 externo sem gateway");
+    result = route_lookup(destination_ip, &match);
+    if (result == ERR_NOT_FOUND) {
+        LOG_WARN("NET", "Destino IPv4 sem rota correspondente");
         return ERR_UNAVAILABLE;
     }
-    *out_next_hop = ipv4_status.gateway;
-    *out_via_gateway = 1;
+    if (result != OK) return result;
+    if (kstrcmp(match.entry.interface_id, ipv4_status.interface_id) != 0) {
+        LOG_WARN("NET", "Rota IPv4 aponta para interface nao suportada");
+        return ERR_UNAVAILABLE;
+    }
+    *out_next_hop = match.next_hop;
+    *out_via_gateway = match.via_gateway;
     return OK;
 }
 
@@ -381,6 +385,12 @@ int ipv4_init(void) {
     }
     kmemset(&ipv4_status, 0, sizeof(ipv4_status));
     kmemset(ipv4_handlers, 0, sizeof(ipv4_handlers));
+    result = route_init();
+    if (result != OK) {
+        ipv4_status.last_error = result;
+        LOG_ERROR("NET", "Falha ao iniciar tabela de rotas");
+        return result;
+    }
     result = ethernet_register_handler(IPV4_ETHERTYPE, ipv4_handle_frame);
     if (result != OK) {
         ipv4_status.last_error = result;
@@ -434,6 +444,11 @@ int ipv4_configure(const char* interface_id, const uint8_t* local_mac,
         LOG_ERROR("NET", "Falha ao limpar ARP na configuracao IPv4");
         return result;
     }
+    result = route_set_base(local_ip, subnet_mask, gateway, validated_id);
+    if (result != OK) {
+        LOG_ERROR("NET", "Falha ao configurar rotas base IPv4");
+        return result;
+    }
     next_generation = ipv4_status.configuration_generation + 1U;
     handler_count = ipv4_status.handler_count;
     kmemset(&ipv4_status, 0, sizeof(ipv4_status));
@@ -458,6 +473,10 @@ int ipv4_unconfigure(void) {
 
     if (!ipv4_status.initialized) {
         LOG_ERROR("NET", "Remocao IPv4 antes da inicializacao");
+        return ERR_STATE;
+    }
+    if (route_clear() != OK) {
+        LOG_ERROR("NET", "Falha ao limpar rotas na remocao IPv4");
         return ERR_STATE;
     }
     next_generation = ipv4_status.configuration_generation + 1U;
@@ -680,6 +699,10 @@ int ipv4_validate_state(void) {
             return ERR_STATE;
         }
         return OK;
+    }
+    if (route_validate_state() != OK) {
+        LOG_ERROR("NET", "Tabela de rotas invalida no estado IPv4");
+        return ERR_STATE;
     }
     if (!ipv4_status.next_identification ||
         ipv4_status.handler_count > IPV4_PROTOCOL_HANDLER_CAPACITY) {

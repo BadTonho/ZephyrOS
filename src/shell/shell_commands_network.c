@@ -49,6 +49,7 @@
 #include "core/net_socket.h"
 #include "core/socket.h"
 #include "core/poll.h"
+#include "core/route.h"
 #include "core/tcp.h"
 #include "core/udp.h"
 #include "core/network_manager.h"
@@ -662,6 +663,20 @@ static int shell_regcheck_validate_network_summary(
     return OK;
 }
 
+static int shell_regcheck_validate_routes(
+    const network_manager_status_t* status) {
+    route_self_test_result_t test;
+
+    if (!status) return ERR_NULL;
+    if (!status->ipv4_available) return OK;
+    if (route_validate_state() != OK ||
+        route_self_test(&test) != OK || test.failed != 0U) {
+        LOG_ERROR("SHELL", "RegCheck Full detectou rotas IPv4 invalidas");
+        return ERR_STATE;
+    }
+    return OK;
+}
+
 int shell_network_validate_for_checks(void) {
     network_manager_status_t status;
     ethernet_status_t ethernet;
@@ -743,6 +758,8 @@ int shell_network_validate_for_checks(void) {
     result = shell_regcheck_validate_arp(&status);
     if (result != OK) return result;
     result = shell_regcheck_validate_ipv4_icmp(&status);
+    if (result != OK) return result;
+    result = shell_regcheck_validate_routes(&status);
     if (result != OK) return result;
     result = shell_regcheck_validate_udp_dhcp_dns(&status);
     if (result != OK) return result;
@@ -1299,6 +1316,248 @@ static void cmd_net_print_ipv4(uint32_t ip_address) {
     shell_command_print_num((ip_address >> 8U) & SHELL_IPV4_OCTET_MAX);
     video_print(".", 0x07);
     shell_command_print_num(ip_address & SHELL_IPV4_OCTET_MAX);
+}
+
+static int cmd_route_validate_interface(const char* id,
+                                        ipv4_status_t* out_ipv4) {
+    network_interface_info_t info;
+    network_interface_text_t text;
+    ipv4_status_t ipv4;
+    int result;
+
+    if (!id) {
+        LOG_WARN("SHELL", "Interface nula na rota");
+        return ERR_NULL;
+    }
+    result = ipv4_get_status(&ipv4);
+    if (result != OK || !ipv4.configured) return ERR_UNAVAILABLE;
+    result = network_manager_find(id, &info);
+    if (result != OK) return result;
+    if (info.state != NETWORK_INTERFACE_ACTIVE) return ERR_UNAVAILABLE;
+    result = network_manager_format_text(&info, &text);
+    if (result != OK || kstrcmp(text.id, ipv4.interface_id) != 0) {
+        return ERR_UNAVAILABLE;
+    }
+    if (out_ipv4) *out_ipv4 = ipv4;
+    return OK;
+}
+
+static int cmd_route_validate_gateway(const ipv4_status_t* ipv4,
+                                      uint32_t gateway) {
+    uint32_t network;
+    uint32_t broadcast;
+
+    if (!ipv4 || !ipv4->configured) {
+        LOG_WARN("SHELL", "IPv4 indisponivel para validar gateway");
+        return ERR_INVALID;
+    }
+    if (!gateway) return OK;
+    if (!ipv4_address_is_unicast(gateway)) return ERR_INVALID;
+    network = ipv4->local_ip & ipv4->subnet_mask;
+    broadcast = network | ~ipv4->subnet_mask;
+    if ((gateway & ipv4->subnet_mask) != network ||
+        gateway == ipv4->local_ip || gateway == network ||
+        gateway == broadcast) return ERR_INVALID;
+    return OK;
+}
+
+static void cmd_route_print_entry(const route_entry_t* entry) {
+    if (!entry) return;
+    video_print("  ", 0x07);
+    cmd_net_print_ipv4(entry->network);
+    video_print("/", 0x07);
+    shell_command_print_num(entry->prefix_length);
+    video_print(" via=", 0x07);
+    if (entry->gateway) cmd_net_print_ipv4(entry->gateway);
+    else video_print("direct", 0x07);
+    video_print(" dev=", 0x07);
+    video_print(entry->interface_id, 0x07);
+    video_print("\n", 0x07);
+}
+
+static void cmd_route_table(void) {
+    route_status_t status;
+    uint8_t any = 0U;
+
+    if (route_get_status(&status) != OK) {
+        LOG_ERROR("SHELL", "Tabela de rotas indisponivel");
+        video_print("Tabela de rotas indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("Tabela de rotas IPv4:\n", 0x0B);
+    for (uint32_t index = 0U; index < ROUTE_TABLE_CAPACITY; index++) {
+        route_entry_t entry;
+
+        if (route_get_entry(index, &entry) != OK || !entry.used) continue;
+        any = 1U;
+        cmd_route_print_entry(&entry);
+    }
+    if (!any) video_print("  Vazia.\n", 0x08);
+    video_print("  Entradas: ", 0x07);
+    shell_command_print_num(status.entry_count);
+    video_print("/", 0x07);
+    shell_command_print_num(ROUTE_TABLE_CAPACITY);
+    video_print(" lookups/matches/misses: ", 0x07);
+    shell_command_print_num(status.lookups);
+    video_print("/", 0x07);
+    shell_command_print_num(status.matches);
+    video_print("/", 0x07);
+    shell_command_print_num(status.misses);
+    video_print("\n", 0x07);
+}
+
+static void cmd_route_print_result(const char* operation, int result) {
+    video_print(operation, result == OK ? 0x0A : 0x0C);
+    video_print(result == OK ? " OK\n" : " falhou (codigo ",
+                result == OK ? 0x0A : 0x0C);
+    if (result != OK) {
+        shell_command_print_num((uint32_t)result);
+        video_print(").\n", 0x0C);
+    }
+}
+
+static void cmd_route_add(const char* args) {
+    char network_text[SHELL_IPV4_TEXT_SIZE];
+    char mask_text[SHELL_IPV4_TEXT_SIZE];
+    char gateway_text[SHELL_IPV4_TEXT_SIZE];
+    char interface_id[NETWORK_INTERFACE_ID_SIZE];
+    ipv4_status_t ipv4;
+    uint32_t network = 0U;
+    uint32_t subnet_mask = 0U;
+    uint32_t gateway = 0U;
+    int result = shell_command_read_four_args(
+        args, network_text, sizeof(network_text), mask_text,
+        sizeof(mask_text), gateway_text, sizeof(gateway_text),
+        interface_id, sizeof(interface_id));
+
+    if (result == OK) result = cmd_net_parse_ipv4(network_text, &network);
+    if (result == OK) result = cmd_net_parse_ipv4(mask_text, &subnet_mask);
+    if (result == OK) result = cmd_net_parse_ipv4(gateway_text, &gateway);
+    if (result == OK) result = cmd_route_validate_interface(interface_id,
+                                                              &ipv4);
+    if (result == OK) {
+        kmemcpy(interface_id, ipv4.interface_id, sizeof(interface_id));
+    }
+    if (result == OK && gateway) {
+        result = cmd_route_validate_gateway(&ipv4, gateway);
+    }
+    if (result == OK) {
+        result = route_add(network, subnet_mask, gateway, interface_id);
+    }
+    if (result != OK) {
+        LOG_WARN("SHELL", "Uso ou rota invalida em route add");
+        video_print("Uso: route add <rede> <mascara> <gateway> <interface>\n",
+                    0x0C);
+        return;
+    }
+    cmd_route_print_result("Rota adicionada", result);
+}
+
+static void cmd_route_delete(const char* args) {
+    char network_text[SHELL_IPV4_TEXT_SIZE];
+    char mask_text[SHELL_IPV4_TEXT_SIZE];
+    uint32_t network = 0U;
+    uint32_t subnet_mask = 0U;
+    int result = shell_command_read_two_args(
+        args, network_text, sizeof(network_text), mask_text,
+        sizeof(mask_text));
+
+    if (result == OK) result = cmd_net_parse_ipv4(network_text, &network);
+    if (result == OK) result = cmd_net_parse_ipv4(mask_text, &subnet_mask);
+    if (result == OK) result = route_delete(network, subnet_mask);
+    if (result != OK) {
+        LOG_WARN("SHELL", "Uso ou rota invalida em route del");
+        video_print("Uso: route del <rede> <mascara>\n", 0x0C);
+        return;
+    }
+    cmd_route_print_result("Rota removida", result);
+}
+
+static void cmd_route_default(const char* args) {
+    char gateway_text[SHELL_IPV4_TEXT_SIZE];
+    char interface_id[NETWORK_INTERFACE_ID_SIZE];
+    ipv4_status_t ipv4;
+    uint32_t gateway = 0U;
+    int result = shell_command_read_two_args(
+        args, gateway_text, sizeof(gateway_text), interface_id,
+        sizeof(interface_id));
+
+    if (result == OK) result = cmd_net_parse_ipv4(gateway_text, &gateway);
+    if (result == OK) result = cmd_route_validate_interface(interface_id,
+                                                              &ipv4);
+    if (result == OK) {
+        kmemcpy(interface_id, ipv4.interface_id, sizeof(interface_id));
+    }
+    if (result == OK) result = cmd_route_validate_gateway(&ipv4, gateway);
+    if (result == OK) result = route_set_default(gateway, interface_id);
+    if (result != OK) {
+        LOG_WARN("SHELL", "Uso ou gateway invalido em route default");
+        video_print("Uso: route default <gateway> <interface>\n", 0x0C);
+        return;
+    }
+    cmd_route_print_result("Rota padrao atualizada", result);
+}
+
+static void cmd_route_check_case(const char* name, uint8_t passed) {
+    video_print("  ", 0x07);
+    video_print(name, 0x07);
+    video_print(": ", 0x07);
+    video_print(passed ? "OK\n" : "ERRO\n", passed ? 0x0A : 0x0C);
+}
+
+static void cmd_route_check(void) {
+    route_self_test_result_t test;
+    int result = route_self_test(&test);
+
+    video_print("Autoteste de rotas IPv4:\n", 0x0B);
+    cmd_route_check_case("ciclo", test.lifecycle);
+    cmd_route_check_case("rota direta", test.direct_route);
+    cmd_route_check_case("rota padrao", test.default_route);
+    cmd_route_check_case("longest-prefix", test.longest_prefix);
+    cmd_route_check_case("exclusao", test.delete_route);
+    cmd_route_check_case("duplicidade", test.duplicate_route);
+    cmd_route_check_case("tabela cheia", test.overflow);
+    cmd_route_check_case("entradas invalidas", test.invalid_input);
+    cmd_route_check_case("reset", test.reset);
+    cmd_route_check_case("invariantes", test.invariants);
+    video_print("Resultado: ", 0x0B);
+    video_print(result == OK && test.failed == 0U ? "OK\n" : "ERRO\n",
+                result == OK && test.failed == 0U ? 0x0A : 0x0C);
+}
+
+static void cmd_route(const char* args) {
+    const char* add_args = shell_command_match_subcommand(args, "add");
+    const char* delete_args = shell_command_match_subcommand(args, "del");
+    const char* default_args =
+        shell_command_match_subcommand(args, "default");
+
+    if (shell_command_args_equal(args, "")) {
+        cmd_route_table();
+        return;
+    }
+    if (shell_command_args_equal(args, "reset")) {
+        cmd_route_print_result("Rotas restauradas", route_reset());
+        return;
+    }
+    if (shell_command_args_equal(args, "check")) {
+        cmd_route_check();
+        return;
+    }
+    if (add_args) {
+        cmd_route_add(add_args);
+        return;
+    }
+    if (delete_args) {
+        cmd_route_delete(delete_args);
+        return;
+    }
+    if (default_args) {
+        cmd_route_default(default_args);
+        return;
+    }
+    LOG_WARN("SHELL", "Uso invalido de route");
+    video_print("Uso: route | route add ... | route del ... | "
+                "route default ... | route reset | route check\n", 0x0C);
 }
 
 static void cmd_net_arp_config(const char* args) {
@@ -2681,6 +2940,157 @@ static void cmd_net_socket_table(void) {
         video_print("\n", 0x07);
     }
     if (!any) video_print("  Vazia.\n", 0x08);
+}
+
+static void cmd_netstat_tcp(void) {
+    ipv4_status_t ipv4;
+    tcp_status_t tcp;
+    uint8_t any = 0U;
+
+    if (tcp_get_status(&tcp) != OK) {
+        LOG_ERROR("SHELL", "Estado TCP indisponivel em netstat");
+        video_print("TCP: indisponivel.\n", 0x0C);
+        return;
+    }
+    if (ipv4_get_status(&ipv4) != OK) kmemset(&ipv4, 0, sizeof(ipv4));
+    video_print("TCP (visao de conexoes):\n", 0x0B);
+    video_print("  segmentos rx/tx=", 0x07);
+    shell_command_print_num(tcp.segments_rx);
+    video_print("/", 0x07);
+    shell_command_print_num(tcp.segments_tx);
+    video_print(" bytes rx/tx=", 0x07);
+    shell_command_print_num(tcp.bytes_rx);
+    video_print("/", 0x07);
+    shell_command_print_num(tcp.bytes_tx);
+    video_print(" rst rx/tx=", 0x07);
+    shell_command_print_num(tcp.resets_rx);
+    video_print("/", 0x07);
+    shell_command_print_num(tcp.resets_tx);
+    video_print(" erros=", 0x07);
+    shell_command_print_num(tcp.rx_invalid + tcp.rx_checksum_errors +
+                            tcp.callback_errors);
+    video_print("\n", 0x07);
+    for (uint32_t index = 0U; index < TCP_CONNECTION_CAPACITY; index++) {
+        tcp_connection_info_t info;
+
+        if (tcp_get_connection_info(index, &info) != OK || !info.used) {
+            continue;
+        }
+        any = 1U;
+        video_print("  ", 0x07);
+        video_print(tcp_state_name(info.state),
+                    info.state == TCP_STATE_ESTABLISHED ? 0x0A :
+                    info.state == TCP_STATE_FAILED ? 0x0C : 0x0E);
+        video_print(" local=", 0x07);
+        cmd_net_print_ipv4(ipv4.configured ? ipv4.local_ip : 0U);
+        video_print(":", 0x07);
+        shell_command_print_num(info.local_port);
+        video_print(" remote=", 0x07);
+        cmd_net_print_ipv4(info.remote_ip);
+        video_print(":", 0x07);
+        shell_command_print_num(info.remote_port);
+        video_print(" pendente=", 0x07);
+        shell_command_print_num(info.pending_length);
+        video_print(" erro=", 0x07);
+        shell_command_print_num((uint32_t)info.last_error);
+        video_print("\n", 0x07);
+    }
+    if (!any) video_print("  Vazia.\n", 0x08);
+}
+
+static void cmd_netstat_unix(void) {
+    uint8_t any = 0U;
+
+    video_print("Sockets AF_UNIX:\n", 0x0B);
+    for (uint32_t index = 0U; index < SOCKET_CAPACITY; index++) {
+        socket_info_t info;
+
+        if (socket_get_info(index, &info) != OK || !info.used ||
+            info.family != SOCKET_FAMILY_UNIX) {
+            continue;
+        }
+        any = 1U;
+        video_print("  fd=", 0x07);
+        shell_command_print_num((uint32_t)info.fd);
+        video_print(" ", 0x07);
+        video_print(socket_state_name(info.state),
+                    info.state == SOCKET_STATE_CONNECTED ? 0x0A :
+                    info.state == SOCKET_STATE_ERROR ? 0x0C : 0x0E);
+        video_print(" local=", 0x07);
+        video_print(info.local.value.local.path[0] ?
+                    info.local.value.local.path : "N/D", 0x08);
+        video_print(" remote=", 0x07);
+        video_print(info.remote.value.local.path[0] ?
+                    info.remote.value.local.path : "N/D", 0x08);
+        video_print(" rx/tx=", 0x07);
+        shell_command_print_num(info.rx_queued);
+        video_print("/", 0x07);
+        shell_command_print_num(info.tx_queued);
+        video_print(" pendente=", 0x07);
+        shell_command_print_num(info.pending);
+        video_print(" erro=", 0x07);
+        shell_command_print_num((uint32_t)info.last_error);
+        video_print("\n", 0x07);
+    }
+    if (!any) video_print("  Vazia.\n", 0x08);
+}
+
+static void cmd_netstat_interfaces(void) {
+    uint32_t count = 0U;
+    uint8_t any = 0U;
+
+    video_print("Interfaces e pacotes:\n", 0x0B);
+    if (network_manager_get_count(&count) != OK) {
+        LOG_ERROR("SHELL", "Interfaces indisponiveis em netstat");
+        video_print("  Indisponivel.\n", 0x0C);
+        return;
+    }
+    for (uint32_t index = 0U; index < count; index++) {
+        network_interface_info_t info;
+        network_interface_text_t text;
+
+        if (network_manager_get_interface(index, &info) != OK ||
+            network_manager_format_text(&info, &text) != OK) {
+            LOG_ERROR("SHELL", "Falha ao consultar interface em netstat");
+            video_print("  Entrada indisponivel.\n", 0x0C);
+            continue;
+        }
+        any = 1U;
+        video_print("  ", 0x07);
+        video_print(text.id, 0x0B);
+        video_print(" state=", 0x07);
+        video_print(network_manager_interface_state_name(info.state),
+                    cmd_network_state_color(info.state));
+        video_print(" link=", 0x07);
+        video_print(network_manager_link_state_name(info.link),
+                    info.link == NETWORK_LINK_UP ? 0x0A : 0x0E);
+        video_print(" rx/tx=", 0x07);
+        shell_command_print_num(info.rx_packets);
+        video_print("/", 0x07);
+        shell_command_print_num(info.tx_packets);
+        video_print(" erros=", 0x07);
+        shell_command_print_num(info.rx_errors);
+        video_print("/", 0x07);
+        shell_command_print_num(info.tx_errors);
+        video_print(" descartes=", 0x07);
+        shell_command_print_num(info.rx_dropped);
+        video_print(" fila=", 0x07);
+        shell_command_print_num(info.rx_queue_depth);
+        video_print("\n", 0x07);
+    }
+    if (!any) video_print("  Vazia.\n", 0x08);
+}
+
+static void cmd_netstat(const char* args) {
+    if (!shell_command_args_equal(args, "")) {
+        LOG_WARN("SHELL", "Uso invalido de netstat");
+        video_print("Uso: netstat\n", 0x0C);
+        return;
+    }
+    video_print("=== Diagnostico agregado NET4 ===\n", 0x0B);
+    cmd_netstat_tcp();
+    cmd_netstat_unix();
+    cmd_netstat_interfaces();
 }
 
 static void cmd_net_socket_check_case(const char* name, uint8_t passed) {
@@ -4097,42 +4507,54 @@ static void cmd_net_check(const char* args) {
     video_end_update();
 
     video_begin_update();
-    video_print(has_interface ? "\n[7] UDP\n" : "\n[5] UDP\n", 0x0B);
+    video_print(has_interface ? "\n[7] Rotas IPv4\n" :
+                                "\n[5] Rotas IPv4\n", 0x0B);
+    cmd_route_table();
+    video_end_update();
+
+    video_begin_update();
+    video_print(has_interface ? "\n[8] UDP\n" : "\n[6] UDP\n", 0x0B);
     cmd_net_udp_status();
     video_end_update();
 
     video_begin_update();
-    video_print(has_interface ? "\n[8] DHCP\n" : "\n[6] DHCP\n", 0x0B);
+    video_print(has_interface ? "\n[9] DHCP\n" : "\n[7] DHCP\n", 0x0B);
     cmd_net_dhcp_status();
     video_end_update();
 
     video_begin_update();
-    video_print(has_interface ? "\n[9] DNS\n" : "\n[7] DNS\n", 0x0B);
+    video_print(has_interface ? "\n[10] DNS\n" : "\n[8] DNS\n", 0x0B);
     cmd_net_dns_status();
     cmd_net_dns_table();
     video_end_update();
 
     video_begin_update();
-    video_print(has_interface ? "\n[10] TCP\n" : "\n[8] TCP\n", 0x0B);
+    video_print(has_interface ? "\n[11] TCP\n" : "\n[9] TCP\n", 0x0B);
     cmd_net_tcp_status();
     video_end_update();
 
     video_begin_update();
-    video_print(has_interface ? "\n[11] Sockets\n" :
-                                "\n[9] Sockets\n", 0x0B);
+    video_print(has_interface ? "\n[12] Sockets\n" :
+                                "\n[10] Sockets\n", 0x0B);
     cmd_net_socket_status();
     cmd_net_socket_table();
     video_end_update();
 
     video_begin_update();
-    video_print(has_interface ? "\n[12] HTTP\n" :
-                                "\n[10] HTTP\n", 0x0B);
+    video_print(has_interface ? "\n[13] Netstat\n" :
+                                "\n[11] Netstat\n", 0x0B);
+    cmd_netstat("");
+    video_end_update();
+
+    video_begin_update();
+    video_print(has_interface ? "\n[14] HTTP\n" :
+                                "\n[12] HTTP\n", 0x0B);
     cmd_http_status();
     video_end_update();
 
     video_begin_update();
-    video_print(has_interface ? "\n[13] Invariantes: " :
-                                "\n[11] Invariantes: ", 0x0B);
+    video_print(has_interface ? "\n[15] Invariantes: " :
+                                "\n[13] Invariantes: ", 0x0B);
     result = shell_network_validate_for_checks();
     video_print(result == OK ? "OK\n" : "ERRO\n",
                 result == OK ? 0x0A : 0x0C);
@@ -4251,11 +4673,13 @@ typedef enum {
     SHELL_NETWORK_CHECK_STAGE_ETHERNET,
     SHELL_NETWORK_CHECK_STAGE_ARP,
     SHELL_NETWORK_CHECK_STAGE_IPV4_ICMP,
+    SHELL_NETWORK_CHECK_STAGE_ROUTES,
     SHELL_NETWORK_CHECK_STAGE_UDP,
     SHELL_NETWORK_CHECK_STAGE_DHCP,
     SHELL_NETWORK_CHECK_STAGE_DNS,
     SHELL_NETWORK_CHECK_STAGE_TCP,
     SHELL_NETWORK_CHECK_STAGE_SOCKETS,
+    SHELL_NETWORK_CHECK_STAGE_NETSTAT,
     SHELL_NETWORK_CHECK_STAGE_HTTP,
     SHELL_NETWORK_CHECK_STAGE_INVARIANTS,
     SHELL_NETWORK_CHECK_STAGE_DONE
@@ -4335,11 +4759,13 @@ static const char* shell_network_job_check_stage_name(
         case SHELL_NETWORK_CHECK_STAGE_ETHERNET: return "ethernet";
         case SHELL_NETWORK_CHECK_STAGE_ARP: return "arp";
         case SHELL_NETWORK_CHECK_STAGE_IPV4_ICMP: return "ipv4-icmp";
+        case SHELL_NETWORK_CHECK_STAGE_ROUTES: return "rotas";
         case SHELL_NETWORK_CHECK_STAGE_UDP: return "udp";
         case SHELL_NETWORK_CHECK_STAGE_DHCP: return "dhcp";
         case SHELL_NETWORK_CHECK_STAGE_DNS: return "dns";
         case SHELL_NETWORK_CHECK_STAGE_TCP: return "tcp";
         case SHELL_NETWORK_CHECK_STAGE_SOCKETS: return "sockets";
+        case SHELL_NETWORK_CHECK_STAGE_NETSTAT: return "netstat";
         case SHELL_NETWORK_CHECK_STAGE_HTTP: return "http";
         case SHELL_NETWORK_CHECK_STAGE_INVARIANTS: return "invariantes";
         default: return "concluindo";
@@ -4398,41 +4824,51 @@ static int shell_network_job_check_emit_stage(
                         "\n[6] IPv4 e ICMP\n" : "\n[4] IPv4 e ICMP\n", 0x0B);
             cmd_net_ipv4_status();
             break;
+        case SHELL_NETWORK_CHECK_STAGE_ROUTES:
+            video_print(shell_network_job.check_has_interface ?
+                        "\n[7] Rotas IPv4\n" : "\n[5] Rotas IPv4\n", 0x0B);
+            cmd_route_table();
+            break;
         case SHELL_NETWORK_CHECK_STAGE_UDP:
-            video_print(shell_network_job.check_has_interface ? "\n[7] UDP\n" :
-                        "\n[5] UDP\n", 0x0B);
+            video_print(shell_network_job.check_has_interface ? "\n[8] UDP\n" :
+                        "\n[6] UDP\n", 0x0B);
             cmd_net_udp_status();
             break;
         case SHELL_NETWORK_CHECK_STAGE_DHCP:
-            video_print(shell_network_job.check_has_interface ? "\n[8] DHCP\n" :
-                        "\n[6] DHCP\n", 0x0B);
+            video_print(shell_network_job.check_has_interface ? "\n[9] DHCP\n" :
+                        "\n[7] DHCP\n", 0x0B);
             cmd_net_dhcp_status();
             break;
         case SHELL_NETWORK_CHECK_STAGE_DNS:
-            video_print(shell_network_job.check_has_interface ? "\n[9] DNS\n" :
-                        "\n[7] DNS\n", 0x0B);
+            video_print(shell_network_job.check_has_interface ? "\n[10] DNS\n" :
+                        "\n[8] DNS\n", 0x0B);
             cmd_net_dns_status();
             cmd_net_dns_table();
             break;
         case SHELL_NETWORK_CHECK_STAGE_TCP:
-            video_print(shell_network_job.check_has_interface ? "\n[10] TCP\n" :
-                        "\n[8] TCP\n", 0x0B);
+            video_print(shell_network_job.check_has_interface ? "\n[11] TCP\n" :
+                        "\n[9] TCP\n", 0x0B);
             cmd_net_tcp_status();
             break;
         case SHELL_NETWORK_CHECK_STAGE_SOCKETS:
             video_print(shell_network_job.check_has_interface ?
-                        "\n[11] Sockets\n" : "\n[9] Sockets\n", 0x0B);
+                        "\n[12] Sockets\n" : "\n[10] Sockets\n", 0x0B);
             cmd_net_socket_status();
             cmd_net_socket_table();
             break;
+        case SHELL_NETWORK_CHECK_STAGE_NETSTAT:
+            video_print(shell_network_job.check_has_interface ?
+                        "\n[13] Netstat\n" : "\n[11] Netstat\n", 0x0B);
+            cmd_netstat("");
+            break;
         case SHELL_NETWORK_CHECK_STAGE_HTTP:
-            video_print(shell_network_job.check_has_interface ? "\n[12] HTTP\n" :
-                        "\n[10] HTTP\n", 0x0B);
+            video_print(shell_network_job.check_has_interface ? "\n[14] HTTP\n" :
+                        "\n[12] HTTP\n", 0x0B);
             cmd_http_status();
             break;
         case SHELL_NETWORK_CHECK_STAGE_INVARIANTS:
             video_print(shell_network_job.check_has_interface ?
-                        "\n[13] Invariantes: " : "\n[11] Invariantes: ",
+                        "\n[15] Invariantes: " : "\n[13] Invariantes: ",
                         0x0B);
             result = shell_network_validate_for_checks();
             video_print(result == OK ? "OK\n" : "ERRO\n",
@@ -4792,7 +5228,7 @@ static int shell_network_job_prepare_check(const char* arguments) {
     shell_network_job.check_mode = SHELL_NETWORK_CHECK_MODE_REPORT;
     shell_network_job.check_stage = SHELL_NETWORK_CHECK_STAGE_GENERAL;
     shell_network_job.check_total = shell_network_job.check_has_interface ?
-                                    13U : 11U;
+                                    15U : 13U;
     return OK;
 }
 
@@ -4983,6 +5419,8 @@ int shell_network_start_job(const char* command, const char* arguments) {
 SHELL_NETWORK_WRAP_ARGS(shell_dispatch_cmd_skbstat, cmd_skbstat)
 SHELL_NETWORK_WRAP_ARGS(shell_dispatch_cmd_sockstat, cmd_sockstat)
 SHELL_NETWORK_WRAP_ARGS(shell_dispatch_cmd_selecttest, cmd_selecttest)
+SHELL_NETWORK_WRAP_ARGS(shell_dispatch_cmd_netstat, cmd_netstat)
+SHELL_NETWORK_WRAP_ARGS(shell_dispatch_cmd_route, cmd_route)
 
 void shell_dispatch_cmd_net(const char* arguments) {
     if (shell_network_start_job("net", arguments)) return;

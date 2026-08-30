@@ -879,6 +879,12 @@ persistencia, IPv6, VLAN, promiscuidade, multicast e modo RTL8139 C+.
 
 ---
 
+9. **Forwarding IPv4 multi-NIC** - A NET4 seleciona rotas em RAM por
+   longest-prefix, mas o envio continua restrito a interface L3 ativa. Uma
+   evolucao futura deve encaminhar pacotes entre interfaces, aplicar regras
+   de TTL/checksum e expor estatisticas por salto, sem permitir forwarding
+   acidental.
+
 ## Referências
 
 - `src/drivers/pci.c` — PCI bus enumeration (137 linhas)

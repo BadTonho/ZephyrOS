@@ -298,6 +298,10 @@ static void cmd_help(void) {
     video_print("  pipetest - Testa pipes e backpressure\n", 0x07);
     video_print("  selecttest - Testa poll/select em stdin, pipe e sockets\n",
                 0x07);
+    video_print("  netstat - Mostra conexoes, sockets UNIX e interfaces\n",
+                0x07);
+    video_print("  route - Consulta e configura rotas IPv4 em memoria\n",
+                0x07);
     video_print("  mount    - Lista montagens VFS\n", 0x07);
     video_print("  pwd      - Exibe o diretorio atual\n", 0x07);
     video_print("  cd       - Altera o diretorio atual\n", 0x07);

@@ -222,11 +222,21 @@ medidos nos cenários definidos.
 
 ## NET4 - Diagnósticos e Monitoramento de Conexões
 
+Estado da implementacao NET4: codigo integrado; validacao funcional do usuario
+pendente. O resumo NET4 permanece `[ ]` ate a execucao da matriz definida no
+criterio de saida.
+
 ### Implementação
 
-- [ ] Rastrear o estado de todas as conexões TCP (`CLOSED`, `LISTEN`, `SYN_SENT`, `ESTABLISHED`, `FIN_WAIT`, `TIME_WAIT`).
-- [ ] Implementar tabela de rotas simples (gateway padrão, rotas locais de sub-rede).
-- [ ] Integrar estatísticas de pacotes transmitidos/recebidos por interface de rede.
+- [x] Rastrear o estado de todas as conexões TCP (`CLOSED`, `LISTEN`, `SYN_SENT`, `ESTABLISHED`, `FIN_WAIT`, `TIME_WAIT`) na visão agregada `netstat`, preservando o enum append-only.
+- [x] Implementar tabela de rotas simples em RAM, com gateway padrão, rotas locais de sub-rede, longest-prefix match, reset e limite de 16 entradas.
+- [x] Integrar estatísticas de pacotes transmitidos/recebidos, erros e descartes por interface de rede.
+- [x] Adicionar autoteste determinístico de rotas e integrar invariantes ao `net check`, `regcheck full` e `health`.
+- [x] Registrar `route` e `netstat` no dispatcher central, ajuda do Shell, Makefile e contratos públicos.
+
+O forwarding IPv4 entre interfaces, persistência das rotas e criação passiva
+de sockets TCP permanecem fora da NET4. Rotas para interfaces diferentes da
+L3 atual são recusadas pelo comando e reportadas como indisponiveis no envio.
 
 ### Critério de saída
 
@@ -234,5 +244,5 @@ O sistema expõe visibilidade completa da rede para administradores e ferramenta
 
 ### Comandos Shell / Diagnóstico
 
-- `netstat`: exibe tabela completa de conexões ativas, portas em escuta e estado dos sockets.
-- `route`: visualiza e configura a tabela de roteamento de pacotes IPv4.
+- `netstat`: exibe conexões TCP, sockets `AF_UNIX` e estatísticas das interfaces.
+- `route`: visualiza e configura a tabela de roteamento de pacotes IPv4 em RAM.
