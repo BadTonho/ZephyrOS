@@ -2915,3 +2915,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   usem a tabela correta mesmo durante a troca para o Idle. O `boot.asm` nao
   foi alterado. O agente nao executou build, testes ou QEMU; a confirmacao
   funcional continua pendente.
+
+- NET3: contrato documental de `thread_t` sincronizado apos `q3check`.
+  Corrigido em: 2026-08-30 00:06:42 -03:00 (America/Sao_Paulo). O gate
+  reportou somente a ausencia da referencia a `src/include/process/thread.h`
+  em `docs/07-processos/processos.md`; o campo `owner_pid` e sua semantica de
+  operacoes VFS durante o bloqueio do processo foram documentados. A
+  validacao funcional NET3 permanece pendente.

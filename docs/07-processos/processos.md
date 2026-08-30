@@ -380,6 +380,7 @@ typedef struct {
     uint32_t eip;             // Instruction pointer
     void (*entry)(void);      // Função de entrada
     uint32_t wait_ticks;      // Ticks para desbloquear
+    uint32_t owner_pid;       // PID do processo criador
 } thread_t;
 ```
 
@@ -393,6 +394,11 @@ thread_t* t = thread_create("minha_thread", thread_function);
 Esse limite cobre workers que atravessam VFS, Storage e FAT/LFN, como os
 estagios do pipeline do Shell, sem alterar a ABI dos processos ou das
 aplicacoes ring 3.
+
+Threads criadas em contexto de processo registram o PID proprietario. Quando
+um worker continua executando durante o bloqueio do processo criador, suas
+operacoes VFS usam a tabela de descritores desse processo, mesmo que o
+scheduler de processos esteja executando outro contexto.
 
 Desde a MM1, a tabela interna de processos armazena ponteiros para objetos
 obtidos do cache `process`; a tabela interna de threads usa o cache `thread`.
