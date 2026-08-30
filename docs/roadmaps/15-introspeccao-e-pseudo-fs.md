@@ -293,19 +293,42 @@ foi confirmada no QEMU: `mount` exibiu `/sys` como `SYSFS` e somente leitura;
 
 ### Implementação
 
-- [ ] Atualizar o Task Manager Classic para obter a lista de processos lendo
-  `/proc/<pid>/status`, preservando o fallback Simple sem forçar uma nova
-  matriz visual.
-- [ ] Atualizar o Device Manager para preencher a interface gráfica a partir dos nós em `/sys`.
+- [x] Criar o adaptador interno do Shell para ler snapshots por VFS, com
+  leituras parciais, EOF, validação ASCII e parser de atributos.
+- [x] Atualizar o Task Manager Classic para obter a lista de processos lendo
+  `/proc/<pid>/status` e a memória lendo `/proc/meminfo`; o fallback Simple e
+  a aba de threads permanecem no caminho interno existente.
+- [x] Atualizar `devices` e `device-info` para consultar `/sys` em PCI,
+  rede e bloco, mantendo fallback para dispositivos legados sem nó sysfs.
+- [x] Adicionar `proccheck` ao dispatcher para validar os namespaces e os
+  snapshots públicos sem alterar inventários ou processos.
+- [x] Manter layouts binários, `taskmanager.h`, App API, syscalls e bootloader
+  inalterados; não foi criada uma GUI de Device Manager inexistente no repo.
 - [ ] Reservar alteração de parâmetros do kernel via escrita em nós de
   `/proc/sys/` para uma etapa posterior, com permissões, validação e ABI
   próprios; não habilitar escrita genérica em PROC4.
+
+### Contrato de integração
+
+O Classic consome somente cópias dos campos publicados por `procfs`. Cada
+linha de processo é identificada por `pid + generation`; uma atualização com
+churn repete a enumeração uma vez e descarta a captura instável. Ações de
+terminação e reinício revalidam essa identidade antes de consultar o processo
+atual. EIP, ESP, CR3, page directory e ponteiros de stack não fazem parte da
+visão Classic migrada.
+
+Os comandos `devices` e `device-info` consomem atributos de snapshots `sysfs`
+para PCI, interfaces `net-*` e blocos. O inventário legado continua sendo a
+fonte de fallback para PS/2, PIT, VGA, VESA, AC97 e speaker. Nenhum ponteiro,
+descritor ou buffer do provider permanece no Shell depois da leitura.
 
 ### Critério de saída
 
 As ferramentas gráficas e de terminal funcionam de forma desacoplada das
 estruturas internas, consumindo snapshots textuais estáveis e liberando
 referências mesmo quando processos ou dispositivos mudam durante a leitura.
+O código desta etapa está implementado; o resumo PROC4 somente será marcado
+como concluído após a confirmação funcional do usuário no QEMU.
 
 ### Comandos Shell / Diagnóstico
 

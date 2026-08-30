@@ -63,6 +63,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `kmetrics` | `[reset]` | Mostra ou inicia a janela manual de métricas K1. |
 | `devices` | `[-v]` | Lista o inventario nativo de hardware; `-v` inclui localizacao, IRQ e IDs PCI. |
 | `device-info` | `<id>` | Mostra os detalhes de um dispositivo listado por `devices`. |
+| `proccheck` | - | Valida os snapshots publicos de `/proc` e `/sys`. |
 | `device-scan` | - | Refaz somente a varredura PCI e atualiza o inventario sem reinicializar drivers. |
 | `usb` | `status|list|device <id>|ports|devices|storage` | Inspeciona controladores UHCI/EHCI, portas raiz, dispositivos e MSC. |
 | `net` | `status` | Mostra inventario, drivers ativos, link, RX/TX e IPv4. |

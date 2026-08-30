@@ -27,6 +27,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/apps/shell_runtime.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/apps/shell_job.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/apps/shell_pipeline.h` | `docs/09-shell/refatoracao-shell.md` |
+| `src/include/apps/shell_introspection.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/apps/taskmanager.h` | `docs/13-aplicativos/aplicativos.md` |
 | `src/include/core/app_api.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/app_catalog.h` | `docs/13-aplicativos/app-store.md` |
@@ -861,3 +862,21 @@ seguem o contrato PROC0. Excesso retorna `ERR_OVERFLOW`, caminho invalido
 e escrita, `ioctl` ou `sync` `ERR_UNAVAILABLE`. A remocao posterior do
 hardware nao invalida um snapshot ja aberto. A geracao interna do inventario
 fica preparada para atualizacoes futuras, sem hotplug ou rescan nesta etapa.
+
+## PROC4 - Consumidores de introspeccao
+
+`src/include/apps/shell_introspection.h` e um contrato interno do Shell para
+ler arquivos procfs/sysfs somente pela VFS. O adaptador executa leituras
+parciais ate EOF, fecha o descritor em todos os caminhos, rejeita NUL, CR,
+ANSI e bytes fora de ASCII, e interpreta linhas `<chave> <valor>\n` sem
+reter buffers ou descritores.
+
+O Task Manager Classic usa copias de `/proc/<pid>/status` e `/proc/meminfo`.
+Sua linha visual e identificada por `pid + generation`, e a revalidacao ocorre
+antes de uma acao sobre o processo. O fallback Simple e a aba de threads nao
+mudam. `devices` e `device-info` usam snapshots de `/sys` para PCI, rede e
+bloco e retornam ao inventario legado quando nao existe um no correspondente.
+
+`proccheck` publica somente um resultado agregado. PROC4 nao altera
+`taskmanager.h`, App API, syscalls, layouts binarios, persistencia,
+`boot.asm` ou `stage2.asm`, e nao habilita escrita em `/proc/sys`.

@@ -34,6 +34,7 @@ extern void shell_dispatch_cmd_kill(const char* arguments);
 extern void shell_dispatch_cmd_sigtest(const char* arguments);
 extern void shell_dispatch_cmd_vfs(const char* arguments);
 extern void shell_dispatch_cmd_devcheck(const char* arguments);
+extern void shell_dispatch_cmd_proccheck(const char* arguments);
 extern void shell_dispatch_cmd_mount(const char* arguments);
 extern void shell_dispatch_cmd_pwd(const char* arguments);
 extern void shell_dispatch_cmd_cd(const char* arguments);
@@ -132,6 +133,8 @@ static const shell_dispatch_entry_t shell_dispatch_table[] = {
     {"sigtest", shell_dispatch_cmd_sigtest, SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"vfs", shell_dispatch_cmd_vfs, SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"devcheck", shell_dispatch_cmd_devcheck, SHELL_DISPATCH_FLAG_MAY_BLOCK},
+    {"proccheck", shell_dispatch_cmd_proccheck,
+     SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"mount", shell_dispatch_cmd_mount, SHELL_DISPATCH_FLAG_NONE},
     {"pwd", shell_dispatch_cmd_pwd, SHELL_DISPATCH_FLAG_NONE},
     {"cd", shell_dispatch_cmd_cd, SHELL_DISPATCH_FLAG_MAY_BLOCK},

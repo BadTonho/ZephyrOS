@@ -3041,3 +3041,18 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `ls /sys/power/state` aplicou listagem de diretório a um arquivo regular e
   retornou o erro esperado; a leitura correta é `cat /sys/power/state`.
   O PROC3 foi marcado como concluído no roadmap.
+
+- PROC4: integracao dos consumidores nativos com procfs/sysfs implementada em
+  2026-08-30 (horario nao informado). Foi criado o adaptador interno de
+  snapshots do Shell em `src/shell/shell_introspection.c`; o Task Manager
+  Classic passou a ler status de processos e memoria pela VFS, preservando o
+  fallback Simple e a aba de threads. `devices` e `device-info` passaram a
+  consultar nos PCI, rede e bloco em `/sys`, com fallback legado para hardware
+  sem representacao no pseudo-filesystem.
+
+  O comando `proccheck` foi registrado no dispatcher para validar a hierarquia,
+  atributos ASCII, EOF, caminhos invalidos e rejeicao de escrita. O Makefile,
+  ajuda e documentacao foram atualizados. Nao houve alteracao de App API,
+  syscalls, layouts binarios, persistencia, `boot.asm` ou `stage2.asm`.
+  A validacao funcional de PROC4 ainda depende dos gates e da confirmacao do
+  usuario no QEMU; o resumo do roadmap permanece pendente.
