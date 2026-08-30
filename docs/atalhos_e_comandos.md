@@ -122,6 +122,13 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `reboot` | - | Reinicia imediatamente o sistema operacional. |
 | `shutdown`| - | Desliga por ACPI S5 quando seguro; caso contrario usa `CLI+HLT`. |
 
+## PROC5 (planejamento)
+
+Nao ha comando ou atalho novo nesta etapa. A futura escrita controlada em
+`/proc/sys` usara as operacoes VFS existentes e somente sera exposta depois da
+implementacao do gate de privilegio, da validacao atomica e dos testes de
+rollback. Ate la, `procfs` e `sysfs` continuam somente leitura.
+
 ## Scroll do Shell
 
 - **Shift + tecla**: produz maiusculas e os simbolos da fileira numerica e

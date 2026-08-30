@@ -968,6 +968,44 @@ dois namespaces, incluindo ASCII, EOF, ausência de escrita e caminhos
 inválidos. A migração não cria `/proc/sys`, não altera a App API, syscalls,
 layouts binários ou o bootloader.
 
+## PROC5 - Controles de runtime em /proc/sys
+
+PROC5 está documentado, mas ainda não implementado. Até a conclusão da etapa,
+`/proc/sys` não é montado nem listado e todos os nós atuais de `/proc` e `/sys`
+continuam somente leitura. A futura extensão ficará dentro do provider
+`procfs`; não haverá um provider genérico de escrita nem escrita em `/sys`.
+
+O primeiro conjunto previsto é:
+
+```text
+/proc/sys
+/proc/sys/kernel
+/proc/sys/kernel/console_log_level
+/proc/sys/kernel/buffer_log_level
+```
+
+Os controles refletem os níveis já suportados pelo subsistema de log e aceitam
+somente `error`, `warn`, `info` e `debug`. Cada arquivo lerá uma linha ASCII
+com sua chave e o valor efetivo. A abertura com leitura continuará capturando
+um snapshot imutável de até 16 KiB; `offset`, leituras parciais, EOF e `lseek`
+seguem o contrato PROC0.
+
+A escrita será uma transação de valor único: ASCII sem `NUL`, `CR`, ANSI ou
+bytes fora de ASCII, com um token válido e `LF` opcional. A entrada será
+validada por inteiro antes do commit; erro não altera o valor anterior e não
+haverá truncamento. O gate de privilégio será definido antes do código. Sem
+identidade de execução verificável, a escrita permanecerá indisponível e
+retornará `ERR_UNAVAILABLE`, mesmo que o caminho seja conhecido. Aberturas já
+existentes manterão seu snapshot; novas aberturas observarão o valor novo.
+
+Os valores ficam somente em RAM e retornam aos padrões após reinicialização ou
+reset do provider. Caminhos e valores inválidos retornam `ERR_INVALID`, nós
+ausentes retornam `ERR_NOT_FOUND`, entradas acima do limite retornam
+`ERR_OVERFLOW`, falta de memória retorna `ERR_MEM` e mudanças concorrentes
+retornam `ERR_AGAIN`. `ioctl`, `sync` e escrita em diretórios continuam em
+`ERR_UNAVAILABLE`. Scheduler, forwarding IPv4, energia, memória e parâmetros
+de processos não fazem parte do primeiro conjunto.
+
 ## Pipes anonimos e redirecionamento VFS4
 
 `vfs_pipe()` cria dois descritores no processo atual: `fds[0]` somente para

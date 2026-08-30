@@ -3064,6 +3064,17 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   a procfs/sysfs. O PROC4 foi marcado como concluido no roadmap; `/proc/sys/`
   permanece reservado para etapa futura.
 
+- PROC5: contrato documental criado em 2026-08-30 (horario nao informado).
+  A etapa define a futura superficie controlada `/proc/sys`, inicialmente
+  para `kernel/console_log_level` e `kernel/buffer_log_level`, com valores
+  `error`, `warn`, `info` e `debug`. O contrato fixa leitura por snapshot,
+  escrita como transacao de valor unico, validacao ASCII, commit atomico,
+  preservacao do valor anterior em erro, ausencia de persistencia e gate de
+  privilegio explicito. Scheduler, forwarding IPv4, energia, memoria e
+  parametros de processos permanecem fora do primeiro conjunto. Nenhum
+  codigo, header, Makefile, syscall, App API ou comportamento de escrita foi
+  alterado; a implementacao e a validacao funcional ficam pendentes.
+
 - Infraestrutura do layout legado corrigida em: 2026-08-30 (horario nao
   informado). O build havia produzido `kernel.bin` com 1.806.190 bytes,
   equivalentes a 3.528 setores, ultrapassando a janela anterior entre os

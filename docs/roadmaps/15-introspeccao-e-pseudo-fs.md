@@ -16,6 +16,7 @@ proprietárias.
 - [x] PROC2 - Mapeamento de `/proc` para métricas globais e processos por PID.
 - [x] PROC3 - Mapeamento de `/sys` para árvore de dispositivos, barramentos e drivers.
 - [x] PROC4 - Migração do Task Manager, Device Manager e utilitários Shell para `/proc`.
+- [ ] PROC5 - Controles de runtime explícitos e seguros em `/proc/sys`.
 
 ## Atalhos
 
@@ -55,6 +56,7 @@ proprietárias.
 3. PROC2 - Nós globais e subdiretórios de processos em `/proc`.
 4. PROC3 - Nós de hardware e drivers em `/sys`.
 5. PROC4 - Atualização gradual de ferramentas para leitura dos pseudo-arquivos.
+6. PROC5 - Controles de runtime com escrita validada e política de privilégio.
 
 ---
 
@@ -304,9 +306,9 @@ foi confirmada no QEMU: `mount` exibiu `/sys` como `SYSFS` e somente leitura;
   snapshots públicos sem alterar inventários ou processos.
 - [x] Manter layouts binários, `taskmanager.h`, App API, syscalls e bootloader
   inalterados; não foi criada uma GUI de Device Manager inexistente no repo.
-- [ ] Reservar alteração de parâmetros do kernel via escrita em nós de
-  `/proc/sys/` para uma etapa posterior, com permissões, validação e ABI
-  próprios; não habilitar escrita genérica em PROC4.
+- [x] Reservar a alteração de parâmetros do kernel via escrita em nós de
+  `/proc/sys/` para o PROC5, com permissões, validação e ABI próprios; não
+  habilitar escrita genérica em PROC4.
 
 ### Contrato de integração
 
@@ -334,3 +336,117 @@ apresentou falha relacionada a procfs ou sysfs. O resumo PROC4 está concluído.
 ### Comandos Shell / Diagnóstico
 
 - `proccheck`: suite de validação de leitura e formatação de todos os nós de `/proc` e `/sys`.
+
+---
+
+## PROC5 - Controles de runtime em /proc/sys
+
+### Estado da etapa
+
+PROC5 está especificado somente em documentação. Nenhum nó novo, abertura com
+escrita, header, syscall, App API, alteração de processo, alteração de
+bootloader ou mudança no Makefile faz parte desta entrega documental. Até a
+implementação ser aprovada e concluída, `/proc/sys` não é publicado e os nós
+existentes de `/proc` e `/sys` continuam somente leitura.
+
+### Objetivo e limites
+
+O PROC5 deverá criar uma superfície pequena e explicitamente registrada para
+alterar políticas de runtime em RAM. Ele não será um mecanismo genérico para
+escrever qualquer endereço ou estrutura do kernel, nem uma forma de persistir
+configuração em disco.
+
+O primeiro conjunto planejado usará estado já existente do subsistema de log:
+
+```text
+/proc/sys
+/proc/sys/kernel
+/proc/sys/kernel/console_log_level
+/proc/sys/kernel/buffer_log_level
+```
+
+Os dois arquivos publicarão os tokens `error`, `warn`, `info` e `debug`. A
+leitura usará uma única linha ASCII com a chave completa e o valor efetivo:
+
+```text
+console_log_level info
+buffer_log_level debug
+```
+
+O escalonamento, o encaminhamento IPv4, a energia, a persistência, limites de
+memória e parâmetros de processos ficam fora do primeiro conjunto. Em
+particular, `user_quantum_ticks` não será tratado como gravável enquanto o
+estado do scheduler continuar sendo uma constante de compilação; forwarding
+IPv4 continua fora do escopo enquanto não existir encaminhamento multi-NIC.
+
+### Contrato de abertura e escrita
+
+- `/proc/sys` e `/proc/sys/kernel` serão diretórios públicos e somente leitura.
+- Os dois arquivos de controle serão regulares; a leitura continuará usando
+  snapshots imutáveis de até 16 KiB, `file_t.offset`, EOF e `lseek` do PROC0.
+- A abertura com `VFS_MODE_READ` será pública. A abertura com escrita exigirá
+  o gate de privilégio definido pelo provider; chamadas sem autorização
+  retornarão `ERR_UNAVAILABLE`.
+- A carga de escrita será ASCII, sem `NUL`, `CR`, ANSI ou bytes fora de ASCII,
+  contendo exatamente um token permitido e um `LF` opcional. Espaços extras,
+  múltiplos valores e tokens desconhecidos retornarão `ERR_INVALID`.
+- O limite de entrada será pequeno e fixo, suficiente para o maior token. Uma
+  carga acima desse limite retornará `ERR_OVERFLOW`; nenhuma entrada será
+  truncada.
+- Cada escrita será validada completamente antes do commit. O valor anterior
+  permanecerá intacto em qualquer falha; sucesso consumirá toda a carga e
+  retornará seu tamanho em `bytes_written`.
+- A escrita não será persistida. Reinicialização ou reset explícito do provider
+  restaurará os valores padrão documentados para cada controle.
+- O snapshot de uma abertura não será atualizado por uma escrita concorrente:
+  novas aberturas observarão o novo valor, enquanto uma abertura já existente
+  continuará observando o conteúdo capturado na abertura.
+
+### Concorrência, privilégio e erros
+
+O provider deverá copiar e validar a entrada fora da seção crítica e proteger
+somente o commit do valor e a leitura do estado compartilhado. Nenhum lock do
+VFS será mantido durante callbacks ou logs. A política de privilégio deverá
+ser explícita antes do código: como o sistema ainda não publica UID/GID, o
+acesso de escrita não poderá ser inferido apenas pelo caminho; a implementação
+deverá usar a identidade de execução já disponível ou manter a escrita
+indisponível até existir um gate verificável.
+
+O contrato de retorno será:
+
+| Situação | Código |
+|---|---|
+| caminho ou cursor inválido | `ERR_INVALID` |
+| nó ou controle ausente | `ERR_NOT_FOUND` |
+| valor malformado ou fora do intervalo | `ERR_INVALID` |
+| escrita sem privilégio ou em diretório | `ERR_UNAVAILABLE` |
+| operação VFS não suportada, `ioctl` ou `sync` | `ERR_UNAVAILABLE` |
+| entrada acima do limite | `ERR_OVERFLOW` |
+| falha de snapshot ou memória temporária | `ERR_MEM` |
+| mudança concorrente antes do commit | `ERR_AGAIN` |
+
+Toda falha observável será registrada pela camada com contexto suficiente,
+sem duplicar logs em VFS, provider e Shell. O valor anterior será restaurado
+ou preservado em qualquer caminho de erro.
+
+### Implementação prevista
+
+- [ ] congelar o gate de privilégio e os valores padrão em contrato próprio;
+- [ ] adicionar a tabela estática de controles, sem nomes dinâmicos;
+- [ ] implementar leitura, validação, commit atômico, reset e geração do
+  registry sem reter ponteiros para o estado do kernel;
+- [ ] preservar a separação entre `/proc` e `/sys`; nenhum atributo de energia
+  ou hardware será tornado gravável por PROC5;
+- [ ] integrar abertura, `read`, `write`, `close`, `lseek`, `ls` e `cat` pelas
+  operações VFS existentes, sem syscall nova;
+- [ ] estender `proccheck` ou o autoteste VFS com sucesso, rejeições, rollback,
+  concorrência, snapshot antigo e ausência de recursos residuais;
+- [ ] documentar a validação funcional depois que o código for implementado.
+
+### Critério de saída
+
+PROC5 só poderá ser marcado como concluído após `make q3check`, build completo
+e validação no QEMU. A matriz funcional deverá confirmar listagem determinística
+de `/proc/sys`, leitura dos valores padrão, atualização válida, rejeição de
+entrada inválida, preservação do valor anterior após erro, bloqueio de escrita
+sem privilégio, snapshots imutáveis e ausência de persistência após reboot.
