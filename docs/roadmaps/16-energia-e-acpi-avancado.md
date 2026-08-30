@@ -13,7 +13,7 @@ fallback específico de emulador será tratado como comportamento universal.
 - [x] PWR0 - Contrato de capacidades, estados e ordem de desligamento.
 - [ ] PWR1 - Idle arquitetural seguro com economia de energia via `hlt`.
 - [x] PWR2 - Descoberta e validação de tabelas ACPI (RSDP, RSDT, XSDT, FADT, MADT).
-- [ ] PWR3 - Desligamento e reinicialização determinísticos por hardware.
+- [x] PWR3 - Desligamento e reinicialização determinísticos por hardware.
 - [ ] PWR4 - Notificação ordenada de encerramento do sistema para drivers e apps.
 
 ## Atalhos
@@ -203,10 +203,11 @@ terminou em `OK`.
 
 ### Critério de saída
 
-Implementação concluída e pendente de confirmação funcional no QEMU. Os
-comandos `poweroff` e `reboot` usam uma transação única; `poweroff` exige S5
-validado, enquanto `reboot` tenta RESET_REG, PS/2 e triple fault nessa ordem.
-O resumo PWR3 permanece pendente até o usuário confirmar a matriz funcional.
+Implementação concluída e confirmada funcionalmente no QEMU. O usuário
+confirmou o reboot com retorno ao Shell, verificou `power status`, `regcheck
+full` e `health check`, e confirmou que `poweroff` encerra o QEMU. Os comandos
+`poweroff` e `reboot` usam uma transação única; `poweroff` exige S5 validado,
+enquanto `reboot` tenta RESET_REG, PS/2 e triple fault nessa ordem.
 
 ### Comandos Shell / Diagnóstico
 
