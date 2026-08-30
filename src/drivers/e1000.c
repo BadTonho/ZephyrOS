@@ -407,6 +407,7 @@ static int e1000_receive_frame(void* driver_context, uint8_t* data,
                                uint16_t capacity, uint16_t* out_length,
                                uint8_t* out_received);
 static int e1000_service_pending(void* driver_context);
+static int e1000_quiesce(void* driver_context);
 static void e1000_poll_rx_descriptors(e1000_device_t* device);
 static void e1000_bottom_half(void* context);
 
@@ -428,6 +429,16 @@ static int e1000_fill_interface(
     out_interface->rx_pending = e1000_has_pending_rx;
     out_interface->receive_frame = e1000_receive_frame;
     out_interface->send_frame = e1000_send_frame;
+    out_interface->quiesce = e1000_quiesce;
+    return OK;
+}
+
+static int e1000_quiesce(void* driver_context) {
+    if (!driver_context) {
+        LOG_ERROR("E1000", "Contexto nulo na quiescencia");
+        return ERR_NULL;
+    }
+    e1000_disable_hardware((e1000_device_t*)driver_context);
     return OK;
 }
 

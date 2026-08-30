@@ -129,6 +129,8 @@ typedef struct {
 int network_manager_init(void);
 int network_manager_refresh(void);
 int network_manager_poll(uint32_t* out_processed);
+int network_manager_quiesce(void);
+int network_manager_set_quiescing(uint8_t active);
 int network_manager_get_status(network_manager_status_t* out_status);
 int network_manager_get_count(uint32_t* out_count);
 int network_manager_get_interface(uint32_t index,

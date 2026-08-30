@@ -52,6 +52,7 @@ static uint32_t user_test_result_pid = 0;
 static uint32_t user_test_result_faulted = 0;
 static uint32_t process_event_generation = 0;
 static uint32_t process_identity_generation = 0;
+static uint8_t process_power_quiescing = 0U;
 static const app_launch_info_t process_empty_launch = {
     .abi_version = APP_LAUNCH_ABI_VERSION
 };
@@ -578,6 +579,7 @@ void process_init(void) {
     user_test_result_faulted = 0;
     process_event_generation = 0;
     process_identity_generation = 0;
+    process_power_quiescing = 0U;
     for (int i = 0; i < MAX_PROCESSES; i++) processes[i] = 0;
     process_cache = kmem_cache_create("process", sizeof(process_t), 16U);
     if (!process_cache) {
@@ -718,6 +720,10 @@ static process_t* process_create_internal(const char* name,
                                           uint32_t stack_size) {
     process_t* proc = 0;
 
+    if (process_power_quiescing) {
+        LOG_WARN("PROC", "Criacao de processo recusada durante quiescencia");
+        return 0;
+    }
     if (!process_available || !process_cache) {
         LOG_ERROR("PROC", "Cache de processos indisponivel");
         return 0;
@@ -1029,6 +1035,160 @@ int process_reap_finished_user(void) {
     return OK;
 }
 
+int process_power_set_quiescing(uint8_t active) {
+    process_power_quiescing = active ? 1U : 0U;
+    return OK;
+}
+
+static int process_power_snapshot_users(process_snapshot_t* snapshots,
+                                        uint32_t* out_count) {
+    int result = process_snapshot_list(snapshots, MAX_PROCESSES, out_count);
+
+    if (result != OK) {
+        LOG_ERROR_CODE("PROC", result,
+                       "Falha ao capturar usuarios para encerramento");
+    }
+    return result;
+}
+
+static uint8_t process_power_has_active_users(
+    const process_snapshot_t* snapshots, uint32_t count) {
+    for (uint32_t index = 0U; index < count; index++) {
+        if (snapshots[index].user_mode &&
+            snapshots[index].state != PROCESS_STATE_ZOMBIE) return 1U;
+    }
+    return 0U;
+}
+
+static uint8_t process_power_snapshot_matches(
+    const process_snapshot_t* snapshot) {
+    uint32_t flags;
+    uint8_t matches = 0U;
+
+    if (!snapshot) return 0U;
+    flags = process_wait_irq_save();
+    for (uint32_t index = 0U; index < MAX_PROCESSES; index++) {
+        process_t* proc = processes[index];
+
+        if (proc && proc->state != PROCESS_STATE_UNUSED &&
+            proc->pid == snapshot->pid) {
+            matches = proc->event_generation == snapshot->generation &&
+                      proc->context.user_mode;
+            break;
+        }
+    }
+    process_wait_irq_restore(flags);
+    return matches;
+}
+
+static int process_power_send_signal(const process_snapshot_t* snapshots,
+                                     uint32_t count, uint32_t signal,
+                                     uint32_t* out_sent) {
+    uint32_t sent = 0U;
+
+    for (uint32_t index = 0U; index < count; index++) {
+        int result;
+
+        if (!snapshots[index].user_mode ||
+            snapshots[index].state == PROCESS_STATE_ZOMBIE) continue;
+        if (!process_power_snapshot_matches(&snapshots[index])) continue;
+        result = process_signal_send(snapshots[index].pid, signal);
+        if (result == ERR_NOT_FOUND) continue;
+        if (result != OK) {
+            LOG_ERROR_CODE("PROC", result,
+                           "Falha ao sinalizar usuario no encerramento");
+            return result;
+        }
+        sent++;
+    }
+    if (out_sent) *out_sent = sent;
+    return OK;
+}
+
+static int process_power_reap_users(uint32_t* out_reaped) {
+    uint32_t reaped = 0U;
+
+    for (uint32_t index = 0U; index < MAX_PROCESSES; index++) {
+        process_t* proc = processes[index];
+        uint32_t pid;
+
+        if (!proc || !proc->context.user_mode ||
+            proc->state != PROCESS_STATE_ZOMBIE) continue;
+        if (proc == current_process) {
+            LOG_ERROR("PROC", "Processo ring 3 atual impede reaping de energia");
+            return ERR_STATE;
+        }
+        pid = proc->pid;
+        process_destroy(proc);
+        if (process_get_by_pid(pid)) {
+            LOG_ERROR("PROC", "Processo zombie permaneceu apos reaping");
+            return ERR_STATE;
+        }
+        reaped++;
+    }
+    user_test_result_pending = 0;
+    user_test_result_pid = 0U;
+    user_test_result_faulted = 0U;
+    if (out_reaped) *out_reaped = reaped;
+    return OK;
+}
+
+int process_power_shutdown_users(uint32_t deadline_tick,
+                                 uint32_t* out_sigterm,
+                                 uint32_t* out_sigkill,
+                                 uint32_t* out_reaped) {
+    process_snapshot_t snapshots[MAX_PROCESSES];
+    uint32_t count = 0U;
+    uint32_t sent_term = 0U;
+    uint32_t sent_kill = 0U;
+    uint32_t reaped = 0U;
+    int result;
+
+    if (!out_sigterm || !out_sigkill || !out_reaped) {
+        LOG_ERROR("PROC", "Destino nulo no encerramento de usuarios");
+        return ERR_NULL;
+    }
+    *out_sigterm = 0U;
+    *out_sigkill = 0U;
+    *out_reaped = 0U;
+    if (!process_power_quiescing) {
+        LOG_ERROR("PROC", "Encerramento de usuarios sem gate de energia");
+        return ERR_STATE;
+    }
+    result = process_power_snapshot_users(snapshots, &count);
+    if (result != OK) return result;
+    result = process_power_send_signal(snapshots, count, APP_SIGNAL_TERM,
+                                       &sent_term);
+    if (result != OK) return result;
+    while ((int32_t)(timer_get_ticks() - deadline_tick) < 0) {
+        result = process_power_snapshot_users(snapshots, &count);
+        if (result != OK) return result;
+        if (!process_power_has_active_users(snapshots, count)) break;
+        if (!process_get_current() || process_get_current_pid() == 0U) {
+            LOG_ERROR("PROC", "Nao ha contexto para aguardar SIGTERM");
+            return ERR_STATE;
+        }
+        process_block(1U);
+    }
+    result = process_power_snapshot_users(snapshots, &count);
+    if (result != OK) return result;
+    result = process_power_send_signal(snapshots, count, APP_SIGNAL_KILL,
+                                       &sent_kill);
+    if (result != OK) return result;
+    result = process_power_reap_users(&reaped);
+    if (result != OK) return result;
+    result = process_power_snapshot_users(snapshots, &count);
+    if (result != OK) return result;
+    if (process_power_has_active_users(snapshots, count)) {
+        LOG_ERROR("PROC", "Usuario sobreviveu ao encerramento");
+        return ERR_STATE;
+    }
+    *out_sigterm = sent_term;
+    *out_sigkill = sent_kill;
+    *out_reaped = reaped;
+    return OK;
+}
+
 static int process_user_reap_previous_test(void) {
     int result = process_reap_finished_user();
 
@@ -1214,6 +1374,10 @@ static int process_create_user_image_internal(const char* name,
     page_directory_t* dir;
     int result;
 
+    if (process_power_quiescing) {
+        LOG_WARN("PROC", "Criacao ring3 recusada durante quiescencia");
+        return ERR_UNAVAILABLE;
+    }
     if (!process_available || !process_cache) {
         LOG_ERROR("PROC", "Cache de processos indisponivel para ring 3");
         return ERR_UNAVAILABLE;
@@ -1345,8 +1509,13 @@ uint32_t process_get_user_count(void) {
 }
 
 int process_start_user(uint32_t pid) {
-    process_t* proc = process_get_by_pid(pid);
+    process_t* proc;
 
+    if (process_power_quiescing) {
+        LOG_WARN("PROC", "Inicio ring3 recusado durante quiescencia");
+        return ERR_UNAVAILABLE;
+    }
+    proc = process_get_by_pid(pid);
     if (!proc || !process_is_user(proc)) {
         LOG_ERROR("PROC", "PID invalido ao iniciar processo ring 3");
         return ERR_NOT_FOUND;

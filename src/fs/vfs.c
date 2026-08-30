@@ -68,6 +68,7 @@ static kmem_cache_t* vfs_vnode_cache = 0;
 static spinlock_t vfs_lock;
 static vfs_status_t vfs_metrics;
 static int vfs_ready;
+static uint8_t vfs_power_quiescing;
 static wait_channel_t vfs_poll_channel;
 
 static int vfs_regular_open(vnode_t* vnode, file_t* file);
@@ -1068,6 +1069,7 @@ int vfs_init(void) {
     kmemset(vfs_stdio_nodes, 0, sizeof(vfs_stdio_nodes));
     kmemset(&vfs_poll_channel, 0, sizeof(vfs_poll_channel));
     kmemset(&vfs_metrics, 0, sizeof(vfs_metrics));
+    vfs_power_quiescing = 0U;
     vfs_file_cache = kmem_cache_create("vfs_file", sizeof(file_t), 8U);
     vfs_vnode_cache = kmem_cache_create("vfs_vnode", sizeof(vnode_t), 8U);
     if (!vfs_file_cache || !vfs_vnode_cache) {
@@ -1264,6 +1266,10 @@ int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
         LOG_ERROR("FS", "Abertura solicitada com VFS indisponivel");
         return ERR_UNAVAILABLE;
     }
+    if (vfs_power_quiescing) {
+        LOG_WARN("FS", "Abertura VFS recusada durante quiescencia");
+        return ERR_UNAVAILABLE;
+    }
     if (!path || !fd_out) {
         LOG_ERROR("FS", "Argumento nulo na abertura VFS");
         return ERR_NULL;
@@ -1391,6 +1397,10 @@ int vfs_pipe(int32_t fds[2]) {
         LOG_ERROR("FS", "Pipe solicitado com VFS indisponivel");
         return ERR_UNAVAILABLE;
     }
+    if (vfs_power_quiescing) {
+        LOG_WARN("FS", "Pipe recusado durante quiescencia");
+        return ERR_UNAVAILABLE;
+    }
     result = vfs_get_current_table(&table);
     if (result != OK) return result;
     result = vfs_find_free_fd_pair(table, &read_fd, &write_fd);
@@ -1480,6 +1490,10 @@ int vfs_write_redirect(const char* path, const uint8_t* data, uint32_t size,
 
     if (!vfs_ready) {
         LOG_ERROR("FS", "Redirecionamento solicitado com VFS indisponivel");
+        return ERR_UNAVAILABLE;
+    }
+    if (vfs_power_quiescing) {
+        LOG_WARN("FS", "Redirecionamento recusado durante quiescencia");
         return ERR_UNAVAILABLE;
     }
     if (!path || (size > 0U && !data)) {
@@ -1586,6 +1600,10 @@ int vfs_read(int32_t fd, void* buffer, uint32_t size,
         return ERR_NULL;
     }
     *bytes_read = 0U;
+    if (vfs_power_quiescing) {
+        LOG_WARN("FS", "Leitura VFS recusada durante quiescencia");
+        return ERR_UNAVAILABLE;
+    }
     if (size > APP_API_MAX_FILE_IO_SIZE) {
         LOG_ERROR("FS", "Leitura VFS excede o limite");
         return ERR_OVERFLOW;
@@ -1620,6 +1638,10 @@ int vfs_write(int32_t fd, const void* buffer, uint32_t size,
         return ERR_NULL;
     }
     *bytes_written = 0U;
+    if (vfs_power_quiescing) {
+        LOG_WARN("FS", "Escrita VFS recusada durante quiescencia");
+        return ERR_UNAVAILABLE;
+    }
     if (size > APP_API_MAX_FILE_IO_SIZE) {
         LOG_ERROR("FS", "Escrita VFS excede o limite");
         return ERR_OVERFLOW;
@@ -1670,6 +1692,10 @@ int vfs_poll(pollfd_t* fds, uint32_t count, uint32_t timeout_ticks,
         return ERR_NULL;
     }
     *out_ready = 0U;
+    if (vfs_power_quiescing) {
+        LOG_WARN("FS", "Poll VFS recusado durante quiescencia");
+        return ERR_UNAVAILABLE;
+    }
     if (count > POLL_MAX_FDS) {
         LOG_ERROR("FS", "Quantidade de descritores excede poll VFS");
         return ERR_OVERFLOW;
@@ -1814,6 +1840,10 @@ int vfs_fsync(int32_t fd) {
     file_t* file;
     int result;
 
+    if (vfs_power_quiescing) {
+        LOG_WARN("FS", "Fsync VFS recusado durante quiescencia");
+        return ERR_UNAVAILABLE;
+    }
     result = vfs_begin_operation(fd, &file);
     if (result != OK) return result;
     if (!file->vnode->operations->sync) {
@@ -1836,9 +1866,26 @@ int vfs_sync(void) {
         LOG_ERROR("FS", "Sync global solicitado com VFS indisponivel");
         return ERR_UNAVAILABLE;
     }
+    if (vfs_power_quiescing) {
+        LOG_WARN("FS", "Sync VFS normal recusado durante quiescencia");
+        return ERR_UNAVAILABLE;
+    }
     result = storage_sync_all();
     if (result != OK) LOG_ERROR("FS", "Sync global VFS falhou");
     return result;
+}
+
+int vfs_power_set_quiescing(uint8_t active) {
+    if (!vfs_ready) {
+        LOG_ERROR("FS", "Gate VFS antes da inicializacao");
+        return ERR_STATE;
+    }
+    vfs_power_quiescing = active ? 1U : 0U;
+    return OK;
+}
+
+int vfs_power_is_quiescing(void) {
+    return vfs_power_quiescing ? 1 : 0;
 }
 
 int vfs_lseek(int32_t fd, int32_t offset, uint32_t whence,
@@ -1851,6 +1898,10 @@ int vfs_lseek(int32_t fd, int32_t offset, uint32_t whence,
         return ERR_NULL;
     }
     *position = 0U;
+    if (vfs_power_quiescing) {
+        LOG_WARN("FS", "Lseek VFS recusado durante quiescencia");
+        return ERR_UNAVAILABLE;
+    }
     result = vfs_begin_operation(fd, &file);
     if (result != OK) return result;
     result = file->vnode->operations->lseek(file, offset, whence, position);
@@ -1865,7 +1916,13 @@ int vfs_lseek(int32_t fd, int32_t offset, uint32_t whence,
 
 int vfs_ioctl(int32_t fd, uint32_t request, void* argument) {
     file_t* file;
-    int result = vfs_begin_operation(fd, &file);
+    int result;
+
+    if (vfs_power_quiescing) {
+        LOG_WARN("FS", "Ioctl VFS recusado durante quiescencia");
+        return ERR_UNAVAILABLE;
+    }
+    result = vfs_begin_operation(fd, &file);
 
     if (result != OK) return result;
     result = file->vnode->operations->ioctl(file, request, argument);
@@ -1976,6 +2033,10 @@ int vfs_open_socket(void* private_data, const file_operations_t* operations,
 
     if (!vfs_ready) {
         LOG_ERROR("FS", "Socket solicitado com VFS indisponivel");
+        return ERR_UNAVAILABLE;
+    }
+    if (vfs_power_quiescing) {
+        LOG_WARN("FS", "Socket recusado durante quiescencia");
         return ERR_UNAVAILABLE;
     }
     if (!private_data || !operations || !path || !fd_out) {

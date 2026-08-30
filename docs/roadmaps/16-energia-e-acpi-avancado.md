@@ -212,24 +212,43 @@ enquanto `reboot` tenta RESET_REG, PS/2 e triple fault nessa ordem.
 ### Comandos Shell / Diagnóstico
 
 - `poweroff`: executa sync/flush com prazo e solicita S5 ACPI validado.
-- `shutdown`: alias compatível de `poweroff`, sem opções PWR4.
+- `shutdown`: alias compatível de `poweroff`; as opções PWR4 são descritas
+  na seção seguinte.
 - `reboot`: executa sync/flush com prazo e tenta os métodos de reset seguros.
 
 ---
 
 ## PWR4 - Notificação de Encerramento do Sistema
 
+### Estado da implementação
+
+- [x] Cadeia interna estática com seis participantes em ordem determinística:
+  processos ring3, workqueue/serviços nativos, VFS/Storage, áudio, rede e
+  vídeo. O registro ocorre somente no bootstrap e rejeita callback nulo,
+  duplicado, tardio ou acima da capacidade.
+- [x] Transação comum `admission -> notification -> sync/flush -> quiescence
+  -> hardware commit -> terminal`, preservando os orçamentos PWR0 de
+  250/1500/250/100 ticks.
+- [x] Admissão ring3 bloqueada, SIGTERM, espera limitada, SIGKILL e reaping
+  de zombies. Processos ring0 não são destruídos à força.
+- [x] Novas operações VFS e trabalhos da workqueue são bloqueados; Storage é
+  sincronizado uma vez e somente volumes não-pinned são desmontados. Volumes
+  ocupados abortam antes do commit.
+- [x] Áudio, Ethernet e VESA possuem quiescência best-effort; VGA textual é
+  preservado para diagnóstico. Ausência opcional degrada a transação.
+- [x] O primeiro comando de reset ou escrita de energia é marcado como
+  irreversível; falha posterior não limpa a transação como se nada tivesse
+  ocorrido.
+
+O código de PWR4 está implementado, mas o resumo permanece `[ ]` até a
+confirmação funcional do usuário no QEMU. Essa pendência não declara build,
+`q3check` ou validação funcional concluídos.
+
 ### Implementação
 
-- [ ] Criar a cadeia de notificação de desligamento do kernel (*reboot notifier chain*).
-- [ ] Ao receber solicitação de desligamento:
-  1. Enviar sinal `SIGTERM` / notificação para aplicativos em execução;
-  2. Executar o sync/flush do Roadmap 13 e aguardar a confirmação de
-     durabilidade;
-  3. Desmontar todos os volumes montados no VFS;
-  4. Desativar periféricos de áudio, rede e vídeo;
-  5. Acionar o vetor de desligamento por hardware somente se as etapas
-     anteriores concluírem sem erro não recuperado.
+Os itens executáveis estão detalhados em “Estado da implementação” acima.
+Esta subseção mantém a descrição histórica da fase e não substitui a
+confirmação funcional exigida pelo critério de saída.
 
 ### Critério de saída
 
@@ -239,5 +258,7 @@ implemente.
 
 ### Comandos Shell / Diagnóstico
 
-- `shutdown -h now`: encerramento com notificação completa.
-- `shutdown -r now`: reinicialização com notificação completa.
+- `poweroff`: encerramento completo com notificação e quiescência.
+- `reboot`: reinicialização completa com notificação e quiescência.
+- `shutdown` ou `shutdown -h now`: alias compatível de `poweroff`.
+- `shutdown -r now`: alias compatível de `reboot`.

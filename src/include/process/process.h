@@ -237,6 +237,11 @@ int process_cancel_user_test(uint32_t pid, uint32_t exit_code);
 int process_start_user(uint32_t pid);
 void process_destroy(process_t* proc);
 int process_reap_finished_user(void);
+int process_power_set_quiescing(uint8_t active);
+int process_power_shutdown_users(uint32_t deadline_tick,
+                                 uint32_t* out_sigterm,
+                                 uint32_t* out_sigkill,
+                                 uint32_t* out_reaped);
 process_t* process_get_current(void);
 uint32_t process_get_count(void);
 process_t* process_get_by_pid(uint32_t pid);

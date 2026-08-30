@@ -2735,7 +2735,7 @@ int storage_mount(const char* id) {
     return OK;
 }
 
-int storage_unmount(const char* id) {
+static int storage_unmount_internal(const char* id, uint8_t already_synced) {
     storage_mount_t* mount;
     storage_volume_t* volume;
     int index;
@@ -2767,12 +2767,14 @@ int storage_unmount(const char* id) {
         spinlock_release(&storage_operation_lock);
         return ERR_STATE;
     }
-    result = storage_sync_volume(volume->id);
-    if (result != OK) {
-        storage_log_volume(LOG_LEVEL_WARN, volume->id,
-                           "desmontagem recusada por falha de sincronizacao");
-        spinlock_release(&storage_operation_lock);
-        return result;
+    if (!already_synced) {
+        result = storage_sync_volume(volume->id);
+        if (result != OK) {
+            storage_log_volume(LOG_LEVEL_WARN, volume->id,
+                               "desmontagem recusada por falha de sincronizacao");
+            spinlock_release(&storage_operation_lock);
+            return result;
+        }
     }
     result = block_cache_invalidate_device(volume->disk_id);
     if (result != OK) {
@@ -2791,6 +2793,14 @@ int storage_unmount(const char* id) {
     storage_log_volume(LOG_LEVEL_INFO, volume->id, "volume desmontado");
     spinlock_release(&storage_operation_lock);
     return OK;
+}
+
+int storage_unmount(const char* id) {
+    return storage_unmount_internal(id, 0U);
+}
+
+int storage_unmount_after_sync(const char* id) {
+    return storage_unmount_internal(id, 1U);
 }
 
 int storage_list_dir(const char* id, const char* path,

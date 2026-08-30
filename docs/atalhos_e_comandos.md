@@ -121,8 +121,8 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `usertest` | `fault` opcional | Executa e valida o primeiro processo isolado em ring 3. |
 | `guimode` | `simple/classic` | Alterna globalmente entre interface TUI (modo texto) e VESA (gráfica). |
 | `reboot` | - | Solicita reinicializacao pela transacao comum: RESET_REG, PS/2 e triple fault. |
-| `poweroff` | - | Solicita desligamento com sync/flush e S5 ACPI validado. |
-| `shutdown`| - | Alias de `poweroff`; nao aceita as opcoes reservadas ao PWR4. |
+| `poweroff` | - | Solicita desligamento ordenado com notificacao, quiescencia e S5 ACPI. |
+| `shutdown`| `-h now` ou `-r now` | Alias compativel de `poweroff` ou `reboot`; sem argumentos tambem desliga. |
 
 ## PROC5 - Controles de runtime
 
@@ -154,13 +154,15 @@ fallbacks conhecidos. PWR0 congela o contrato documental de estados, ordem,
 ownership, orcamentos e ponto irreversivel; a execucao do poweroff/reboot e do
 sync com prazo pertence ao PWR3.
 
-## PWR3 - Desligamento e reboot
+## PWR3/PWR4 - Desligamento e reboot
 
-`poweroff` e a entrada canonica de desligamento e `shutdown` e seu alias. A
-operacao exige S5 ACPI validado, executa sync/flush com prazo e retorna erro
-antes do commit quando a preparacao falha. `reboot` compartilha a preparacao e
-tenta RESET_REG ACPI, reset PS/2 pelo driver e triple fault. Opcoes
-`shutdown -h now` e `shutdown -r now` permanecem reservadas ao PWR4.
+`poweroff` e a entrada canonica de desligamento. `shutdown` sem argumentos ou
+`shutdown -h now` chamam o mesmo caminho; `reboot` e `shutdown -r now` chamam
+o reboot. A operacao notifica ring3 com SIGTERM/SIGKILL, sincroniza Storage,
+quiesce workqueue/VFS e perifericos e so entao usa S5 ou os metodos de reset.
+Falhas antes do commit retornam erro; depois da primeira escrita de energia a
+transacao permanece terminal. O resumo PWR4 ainda aguarda validacao funcional
+do usuario.
 
 ## PWR1 - Idle e uso de CPU
 

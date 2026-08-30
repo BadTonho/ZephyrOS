@@ -35,6 +35,7 @@ static network_interface_info_t
     network_interfaces[NETWORK_MANAGER_MAX_INTERFACES];
 static network_manager_status_t network_status;
 static int network_manager_initialized = 0;
+static uint8_t network_manager_quiescing;
 static uint32_t network_last_protocol_tick;
 static uint8_t network_has_protocol_tick;
 static network_ipv4_source_t network_ipv4_source;
@@ -490,6 +491,7 @@ static int network_build_snapshot(void) {
 
     kmemset(network_interfaces, 0, sizeof(network_interfaces));
     kmemset(&network_status, 0, sizeof(network_status));
+    network_manager_quiescing = 0U;
     network_status.initialized = network_manager_initialized ? 1U : 0U;
     network_status.last_error = ERR_NOT_FOUND;
     if (network_get_protocol_status(
@@ -1397,6 +1399,7 @@ int network_manager_poll(uint32_t* out_processed) {
         return ERR_NULL;
     }
     *out_processed = 0;
+    if (network_manager_quiescing) return ERR_UNAVAILABLE;
     if (!network_manager_initialized) {
         LOG_ERROR("NET", "Recepcao antes da inicializacao de rede");
         return ERR_STATE;
@@ -1483,6 +1486,34 @@ int network_manager_poll(uint32_t* out_processed) {
         network_status.last_error = OK;
     }
     return OK;
+}
+
+int network_manager_set_quiescing(uint8_t active) {
+    int result;
+
+    if (!network_manager_initialized) {
+        LOG_ERROR("NET", "Gate de rede antes da inicializacao");
+        return ERR_STATE;
+    }
+    network_manager_quiescing = active ? 1U : 0U;
+    result = ethernet_set_quiescing(active);
+    if (result != OK && result != ERR_STATE) return result;
+    return OK;
+}
+
+int network_manager_quiesce(void) {
+    int result;
+
+    if (!network_manager_initialized) {
+        LOG_WARN("NET", "Rede opcional indisponivel na quiescencia");
+        return ERR_UNAVAILABLE;
+    }
+    network_manager_quiescing = 1U;
+    result = ethernet_quiesce();
+    if (result != OK && result != ERR_UNAVAILABLE) {
+        LOG_ERROR_CODE("NET", result, "Quiescencia da rede falhou");
+    }
+    return result;
 }
 
 int network_manager_get_status(network_manager_status_t* out_status) {

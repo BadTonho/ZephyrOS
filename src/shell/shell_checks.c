@@ -60,6 +60,7 @@
 #include "core/network_manager.h"
 #include "core/wifi_manager.h"
 #include "core/power.h"
+#include "core/power_notifier.h"
 #include "core/app_api.h"
 #include "core/app_catalog.h"
 #include "core/app_builtin.h"
@@ -2486,6 +2487,14 @@ static int shell_regcheck_validate_power(void) {
              acpi_power.reset_register_valid) ||
         status.reboot_ps2_available != keyboard_controller_reset_available() ||
         !status.reboot_triple_fault_available ||
+        power_notifier_validate_state() != OK ||
+        status.notifiers_registered != POWER_NOTIFIER_CAPACITY ||
+        status.notifiers_completed > status.notifiers_registered * 2U ||
+        status.transaction_target > POWER_TRANSACTION_TARGET_REBOOT ||
+        status.quiescence_state > POWER_QUIESCENCE_COMPLETE ||
+        (status.transaction_phase == POWER_TRANSACTION_IDLE &&
+         status.commit_started) ||
+        (status.transaction_degraded && !status.optional_failures) ||
         status.service_state < POWER_SERVICE_UNKNOWN ||
         status.service_state > POWER_SERVICE_UNAVAILABLE ||
         status.transaction_phase != POWER_TRANSACTION_IDLE ||

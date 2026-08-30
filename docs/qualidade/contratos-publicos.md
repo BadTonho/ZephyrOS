@@ -62,6 +62,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/core/wifi_manager.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/panic.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/power.h` | `docs/04-kernel/kernel.md` |
+| `src/include/core/power_notifier.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/poll.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/route.h` | `docs/roadmaps/14-stack-de-rede-avancada.md` |
 | `src/include/core/recovery.h` | `docs/04-kernel/kernel.md` |
@@ -1033,3 +1034,31 @@ de reset diretamente. `power_status_t` publica as capacidades dos tres
 metodos, `service_state`, `transaction_phase` e `last_error`. Nao foram
 criados novos layouts binarios para aplicativos, syscalls, App API ou
 alteracoes em `taskmanager.h`, `boot.asm` ou `stage2.asm`.
+
+## PWR4 - Notificacao e encerramento ordenado
+
+O PWR4 usa uma cadeia interna estatica de seis participantes, registrada
+somente durante o bootstrap e em ordem fixa: processos ring3;
+workqueue/servicos nativos; VFS/Storage; audio; rede; video. Nao existe
+registro durante runtime. Os callbacks recebem somente um prazo absoluto e
+nao podem reter ponteiros de processos, volumes ou drivers.
+
+`poweroff`, `reboot` e `shutdown` executam
+`admission -> notification -> sync/flush -> quiescence -> hardware commit ->
+terminal`. A notificacao fecha novos lancamentos ring3, envia SIGTERM, aguarda
+250 ticks PIT, envia SIGKILL e recolhe zombies. O sync usa uma unica chamada
+com prazo; a quiescencia bloqueia novas operacoes VFS e trabalhos, desmonta
+somente Storage nao-pinned e recusa volumes ocupados com `ERR_STATE`.
+
+Ausencia de audio, rede ou video e degradacao opcional (`ERR_UNAVAILABLE`).
+Falha real, timeout ou estado inconsistente aborta antes do commit. A primeira
+escrita ou comando de reset e irreversivel; apos ela, o estado permanece
+terminal e nao ha rollback operacional completo. Falhas anteriores podem
+deixar processos encerrados ou perifericos parados.
+
+Os campos append-only de `power_status_t` registram alvo, notificadores,
+SIGTERM, SIGKILL, reaping, desmontagens, falhas opcionais, quiescencia,
+commit e degradacao. Sao observabilidade interna: nao alteram App API,
+syscalls, layouts binarios, `taskmanager.h`, `boot.asm` ou `stage2.asm`.
+O PWR4 esta implementado, mas a validacao funcional no QEMU ainda depende da
+confirmacao do usuario.
