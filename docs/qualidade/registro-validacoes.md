@@ -3225,7 +3225,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   alteracao em App API, syscalls, layouts binarios, `taskmanager.h`,
   `boot.asm` ou `stage2.asm`.
 
-  A validacao `make q3check`, o build completo e a execucao no QEMU nao foram
-  realizados pelo agente. A confirmacao funcional do reboot, poweroff,
-  `shutdown -h now`, `shutdown -r now`, `regcheck full` e `health check` ainda
-  depende do usuario; o resumo PWR4 permanece pendente no Roadmap 16.
+  O agente nao executou `make q3check`, o build completo ou o QEMU. Em
+  2026-08-30, o usuario confirmou funcionalmente no QEMU que `poweroff` e
+  `shutdown -h now` encerraram o sistema e que `shutdown -r now` reiniciou com
+  retorno ao Shell. Depois do reboot, `power status`, `regcheck full` e
+  `health check` foram executados; o `regcheck` permaneceu OK e o `health`
+  exibiu somente capacidades opcionais ja desabilitadas ou degradadas. O
+  resumo PWR4 foi marcado como concluido no Roadmap 16.

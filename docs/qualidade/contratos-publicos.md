@@ -1060,5 +1060,7 @@ Os campos append-only de `power_status_t` registram alvo, notificadores,
 SIGTERM, SIGKILL, reaping, desmontagens, falhas opcionais, quiescencia,
 commit e degradacao. Sao observabilidade interna: nao alteram App API,
 syscalls, layouts binarios, `taskmanager.h`, `boot.asm` ou `stage2.asm`.
-O PWR4 esta implementado, mas a validacao funcional no QEMU ainda depende da
-confirmacao do usuario.
+O PWR4 foi confirmado funcionalmente pelo usuario no QEMU. `poweroff` e
+`shutdown -h now` encerraram o sistema, e `shutdown -r now` reiniciou com
+retorno ao Shell. Nao houve alteracao em App API, syscalls, layouts binarios,
+`taskmanager.h`, `boot.asm` ou `stage2.asm`.
