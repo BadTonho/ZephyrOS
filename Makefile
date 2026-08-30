@@ -840,7 +840,7 @@ $(HTTP_OBJ): $(HTTP_C) src/include/core/http.h src/include/core/tls_client.h src
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(POWER_OBJ): $(POWER_C) src/include/core/power.h src/include/core/errors.h src/include/core/keyboard.h src/include/core/log.h src/include/core/memory.h src/include/core/timer.h src/include/drivers/ac97.h src/include/drivers/acpi.h src/include/drivers/idt.h src/include/drivers/speaker.h src/include/fs/storage.h
+$(POWER_OBJ): $(POWER_C) src/include/core/power.h src/include/core/errors.h src/include/core/keyboard.h src/include/core/log.h src/include/core/string.h src/include/core/timer.h src/include/drivers/ac97.h src/include/drivers/acpi.h src/include/drivers/idt.h src/include/drivers/speaker.h src/include/fs/storage.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

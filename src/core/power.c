@@ -2,7 +2,7 @@
 #include "core/errors.h"
 #include "core/keyboard.h"
 #include "core/log.h"
-#include "core/memory.h"
+#include "core/string.h"
 #include "core/timer.h"
 #include "drivers/ac97.h"
 #include "drivers/acpi.h"
