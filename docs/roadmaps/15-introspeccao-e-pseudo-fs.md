@@ -13,7 +13,7 @@ proprietárias.
 
 - [x] PROC0 - Contrato de leitura, snapshot, lifetime e ABI textual.
 - [x] PROC1 - Infraestrutura de geração dinâmica de pseudo-arquivos em RAM.
-- [ ] PROC2 - Mapeamento de `/proc` para métricas globais e processos por PID.
+- [x] PROC2 - Mapeamento de `/proc` para métricas globais e processos por PID.
 - [ ] PROC3 - Mapeamento de `/sys` para árvore de dispositivos, barramentos e drivers.
 - [ ] PROC4 - Migração do Task Manager, Device Manager e utilitários Shell para `/proc`.
 
@@ -167,8 +167,7 @@ concluíram sem falha de VFS. `/sys` permanece reservado ao PROC3.
 
 ## PROC2 - Mapeamento de /proc para Sistema e Processos
 
-Implementacao PROC2 concluida no codigo, aguardando a confirmacao funcional
-do usuario para marcar o resumo como concluido. O procfs agora publica os
+PROC2 concluido no codigo e validado funcionalmente pelo usuario. O procfs publica os
 cinco nos globais `uptime`, `meminfo`, `cpuinfo`, `version` e `cmdline`, seguidos
 por PIDs numericos crescentes. Cada diretorio PID lista `status`, `cmdline` e
 `maps`, mantendo a ABI ASCII, snapshots imutaveis de ate 16 KiB e acesso
@@ -200,9 +199,9 @@ de usuario e imagens de codigo/dados.
 ### Critério de saída
 
 Comandos como `cat /proc/meminfo`, `cat /proc/cpuinfo`, `cat /proc/0/status`
-e `cat /proc/0/maps` devem exibir dados precisos em snapshots imutáveis, com
-PIDs ordenados e gerações distintas na reutilização. O critério funcional
-permanece pendente até a confirmação do usuário.
+e `cat /proc/0/maps` exibiram dados precisos em snapshots imutáveis, com PIDs
+ordenados e geração publicada no status. A confirmação funcional foi recebida
+em QEMU; `/sys` permanece reservado ao PROC3.
 
 ### Comandos Shell / Diagnóstico
 

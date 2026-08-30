@@ -3008,4 +3008,14 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   Makefile, VFS, contratos, documentacao de processos e comandos foram
   atualizados. `boot.asm`, `stage2.asm`, App API, syscalls e persistencia nao
   foram alterados. O agente nao executou build, testes ou QEMU; a confirmacao
-  funcional do PROC2 permanece pendente do usuario.
+  funcional foi registrada na entrada seguinte.
+
+- PROC2: validacao funcional apresentada pelo usuario em QEMU; horario da
+  captura nao informado. `ls /proc` listou os nos globais na ordem contratada e
+  os PIDs `0` a `6`. As leituras de `uptime`, `meminfo`, `cpuinfo`, `version`,
+  `cmdline`, `/proc/0/status`, `/proc/0/cmdline` e `/proc/0/maps` retornaram
+  snapshots ASCII; o mapa de Idle permaneceu vazio conforme o contrato.
+  `RegCheck: OK` foi confirmado. `health check` concluiu sem falha de VFS; os
+  estados `DISABLED`/`DEGRADED` exibidos pertencem a componentes opcionais já
+  indisponíveis no perfil executado. O PROC2 foi marcado como concluído no
+  roadmap; `/sys` permanece reservado ao PROC3.
