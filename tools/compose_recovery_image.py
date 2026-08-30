@@ -1,4 +1,4 @@
-"""Monta o layout legado sem mover o FAT32 nem alterar boot.asm."""
+"""Monta o layout legado com janelas separadas para kernel e recovery."""
 
 from __future__ import annotations
 
@@ -29,6 +29,9 @@ def main() -> int:
     loader = Path(args.loader).read_bytes()
     if len(boot) != SECTOR_SIZE or not stage2 or not kernel or not loader:
         raise ValueError("artefato legado invalido")
+    if (args.kernel_lba < 0 or args.loader_lba <= args.kernel_lba or
+            args.fat32_start_lba <= args.loader_lba):
+        raise ValueError("ordem do layout legado invalida")
     pre_kernel = boot + stage2
     if math.ceil(len(pre_kernel) / SECTOR_SIZE) > args.kernel_lba:
         raise ValueError("stage2 invade o LBA fixo do kernel legado")

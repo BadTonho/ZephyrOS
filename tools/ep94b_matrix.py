@@ -4,7 +4,7 @@ import argparse
 import struct
 from pathlib import Path
 
-from packager import fat32_geometry, inject_fat32_bytes
+from packager import HYBRID_FAT32_START_LBA, fat32_geometry, inject_fat32_bytes
 from system_slots_matrix import cache_record, slot_record, state_record
 
 
@@ -54,7 +54,8 @@ def main() -> int:
     parser.add_argument("--handoff-invalid", required=True)
     parser.add_argument("--returning-boot", required=True)
     parser.add_argument("--output", required=True)
-    parser.add_argument("--fat32-start-lba", type=int, default=4096)
+    parser.add_argument("--fat32-start-lba", type=int,
+                        default=HYBRID_FAT32_START_LBA)
     args = parser.parse_args()
 
     source = Path(args.base_image)

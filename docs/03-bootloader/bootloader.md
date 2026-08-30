@@ -196,7 +196,7 @@ seguinte, sem ciclo automatico.
 ### Cadeia FAT32 autenticada EP9.4B
 
 O bootstrap BIOS, o shim que fornece o gateway e o recovery verifier continuam
-fixos antes do LBA 4096. O caminho operacional usa ZSYS `boot_abi=2`: depois da
+fixos antes do LBA 8192. O caminho operacional usa ZSYS `boot_abi=2`: depois da
 verificacao integral, o loader relê e copia boot para `0x7C00`, stage2 para
 `0x5000` e kernel para `0x00100000`, recalculando o hash de cada regiao
 carregada. Nenhum componente FAT32 executa antes dessa segunda verificacao.
@@ -208,9 +208,10 @@ cadeia retornar, o verifier limpa o handoff, registra `BOOT_FAILED` quando
 existir uma tentativa persistida e oferece anterior ou kernel legado. ABI 1
 continua usando a ponte direta ao kernel.
 
-A imagem tem 256 MiB, mas os LBAs fixos permanecem: kernel legado em 64,
-verifier em 3584 e FAT32 em 4096. O setor `boot.asm` nao e substituido pelo
-componente boot do ZSYS; ele continua sendo parte da raiz fixa.
+A imagem tem 256 MiB, com kernel legado no LBA 64, recovery loader no LBA 6144
+e FAT32 no LBA 8192. As janelas do kernel e do loader nao se sobrepoem. O setor
+`boot.asm` nao e substituido pelo componente boot do ZSYS; ele continua sendo
+parte da raiz fixa.
 
 ## Layout da Memória
 

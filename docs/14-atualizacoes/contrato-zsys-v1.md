@@ -376,7 +376,9 @@ rollback. Slots ABI 1 e ABI 2 podem coexistir e ser usados como ativo,
 anterior ou candidato.
 
 O setor BIOS, o stage2 shim, o verifier e o kernel legado permanecem na area
-fixa anterior ao LBA 4096. A cadeia operacional vem do FAT32, mas essa area
+fixa anterior ao LBA 8192. A geometria vigente mantem o kernel legado no LBA
+64, o recovery loader no LBA 6144 e o FAT32 no LBA 8192, com janelas sem
+sobreposicao. A cadeia operacional vem do FAT32, mas essa area
 imutavel continua sendo a raiz de confianca e o fallback offline. Atualizar o
 verifier exige reconstruucao ou reinstalacao controlada da imagem; ZSYS nunca
 o substitui.
