@@ -1,4 +1,4 @@
-# Roadmap 22 — Desempenho mensurável e quitação de dívidas da 1.0.0
+# Roadmap 23 — Desempenho, validação e dívidas da 1.0.0
 
 ## Estado
 
@@ -29,13 +29,15 @@ RDTSC/PMU só será usado quando a fonte for validada. Percentuais de ticks não
 
 ## Dependências
 
-- [Roadmap 18](18-estabilizacao-e-release-v1.0.md) para a linha de base;
-- [Roadmap 19](19-seguranca-e-isolamento-v1.0.md) para não otimizar removendo
+- [Roadmap 18](18-kernel-processos-e-userland-v1.0.md) para a linha de base;
+- [Roadmap 19](19-abi-seguranca-e-permissoes-v1.0.md) para não otimizar removendo
   validações de segurança;
-- [Roadmap 20](20-integridade-e-recuperacao-do-storage.md) para os limites de
+- [Roadmap 20](20-vfs-storage-e-atualizacao-v1.0.md) para os limites de
   I/O e cache;
-- [Roadmap 21](21-compatibilidade-e-matriz-de-hardware.md) para os perfis
+- [Roadmap 21](21-hardware-rede-e-energia-v1.0.md) para os perfis
   comparáveis;
+- [Roadmap 22](22-shell-interface-e-aplicativos-v1.0.md) para a experiência
+  observável e a liveness dos aplicativos;
 - Roadmaps 03, 09, 11, 12 e 14;
 - [Dívidas técnicas da v1.0.0](../qualidade/dividas-tecnicas-v1.0.0.md).
 

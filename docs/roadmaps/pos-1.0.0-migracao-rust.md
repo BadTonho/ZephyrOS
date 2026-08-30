@@ -26,7 +26,7 @@ Estado atual: planejado para depois da versão 1.0.0. Nenhuma migração Rust
 foi iniciada por este roadmap. RUST0 só pode começar após a base escolhida da
 1.0.0 estar reproduzível, validada e com rollback preservado.
 
-A base de entrada será formada pelos Roadmaps 18 a 22. Esta etapa só será
+A base de entrada será formada pelos Roadmaps 18 a 24. Esta etapa só será
 reaberto depois que estabilização, segurança, Storage, compatibilidade de
 hardware e desempenho tiverem critérios de saída aceitos.
 
@@ -39,7 +39,7 @@ hardware e desempenho tiverem critérios de saída aceitos.
 - [Contratos públicos](../qualidade/contratos-publicos.md)
 - [Dívidas técnicas da v1.0.0](../qualidade/dividas-tecnicas-v1.0.0.md)
 - [Registro de validações](../qualidade/registro-validacoes.md)
-- [Ciclo de preparação da 1.0.0](18-estabilizacao-e-release-v1.0.md)
+- [Escopo e critérios da versão 1.0.0](escopo-v1.0.0.md)
 
 ## Decisão arquitetural
 

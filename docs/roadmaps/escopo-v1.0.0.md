@@ -3,12 +3,12 @@
 ## Finalidade
 
 Este documento define o que significa entregar o ZephyrOS 1.0.0. Ele não é
-uma etapa de implementação nem substitui os Roadmaps 18–22. Sua função é
+uma etapa de implementação nem substitui os Roadmaps 18–24. Sua função é
 separar as capacidades básicas obrigatórias das expansões que podem ser
 realizadas depois da primeira versão estável.
 
 A etapa pós-1.0.0 de migração gradual para Rust só poderá começar depois que este
-escopo for atendido, os Roadmaps 18–22 forem encerrados e a base C/Assembly
+escopo for atendido, os Roadmaps 18–24 forem encerrados e a base C/Assembly
 estiver congelada.
 
 ## Definição da 1.0.0
@@ -52,7 +52,8 @@ protótipos, fixtures ou comportamento não documentado.
 
 - [ ] Syscalls e App API possuem números, tipos, erros e ownership definidos.
 - [ ] Ponteiros, tamanhos, alinhamento, ranges e handles são validados.
-- [ ] ABI ring 3 e layouts binários são congelados antes do Rust 17.
+- [ ] ABI ring 3 e layouts binários são congelados antes da etapa
+  pós-1.0.0 de Rust.
 - [ ] Mudanças futuras exigem versão ou extensão explícita, nunca alteração
   silenciosa do contrato.
 - [ ] `appcheck`, `memcheck`, `schedcheck` e diagnósticos relacionados passam
@@ -178,19 +179,25 @@ infraestrutura empresarial. Entretanto, sem identidade e permissões, a versão
 deve ser descrita honestamente como uma edição single-user técnica, e não como
 um sistema operacional geral.
 
-## Ordem de execução
+## Roadmaps executáveis e ordem de execução
 
-1. [Roadmap 18 — Estabilização e release](18-estabilizacao-e-release-v1.0.md).
-2. [Roadmap 19 — Segurança e isolamento](19-seguranca-e-isolamento-v1.0.md),
+O escopo acima é dividido nas frentes abaixo. Cada roadmap possui fases,
+contratos, critérios de saída e matriz de validação próprios; o escopo só é
+considerado atendido quando as capacidades correspondentes forem confirmadas.
+
+1. [Roadmap 18 — Kernel, processos e userland básico](18-kernel-processos-e-userland-v1.0.md).
+2. [Roadmap 19 — ABI, segurança e permissões](19-abi-seguranca-e-permissoes-v1.0.md),
    incluindo a decisão sobre identidade e permissões mínimas.
-3. [Roadmap 20 — Integridade e recuperação do Storage](20-integridade-e-recuperacao-do-storage.md).
-4. [Roadmap 21 — Compatibilidade e matriz de hardware](21-compatibilidade-e-matriz-de-hardware.md).
-5. [Roadmap 22 — Desempenho e dívidas da 1.0.0](22-desempenho-e-dividas-v1.0.md).
-6. Validação final, congelamento da ABI e publicação da base 1.0.0.
-7. [Pós-1.0.0 — Migração gradual para Rust](pos-1.0.0-migracao-rust.md).
+3. [Roadmap 20 — VFS, Storage e atualização do sistema](20-vfs-storage-e-atualizacao-v1.0.md).
+4. [Roadmap 21 — Hardware, rede e energia](21-hardware-rede-e-energia-v1.0.md).
+5. [Roadmap 22 — Shell, interface e aplicativos](22-shell-interface-e-aplicativos-v1.0.md).
+6. [Roadmap 23 — Desempenho, validação e dívidas](23-desempenho-e-dividas-v1.0.md).
+7. [Roadmap 24 — Release e aceitação da 1.0.0](24-release-e-aceitacao-v1.0.md).
+8. [Pós-1.0.0 — Migração gradual para Rust](pos-1.0.0-migracao-rust.md),
+   somente depois da publicação da base 1.0.0.
 
-A etapa pós-1.0.0 de Rust não é uma etapa de preparação da 1.0.0. Ela só começa depois do
-item 6.
+A etapa pós-1.0.0 de Rust não é uma etapa de preparação da 1.0.0. Ela só começa
+depois do Roadmap 24 e da publicação da base 1.0.0.
 
 ## Pode ficar para depois da 1.0.0
 
