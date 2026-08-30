@@ -901,6 +901,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     video_print(buf, 0x07);
     video_print(" MB livres\n", 0x07);
 
+    wait_init();
     if (app_api_init() != OK) {
         LOG_ERROR("KERNEL", "Falha ao inicializar API de aplicativos");
     }
@@ -936,7 +937,6 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Iniciando processos...\n", 0x08);
     tss_init();
-    wait_init();
     process_init();
     process_bootstrap_idle();
     if (!process_get_current()) {
