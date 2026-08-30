@@ -390,6 +390,58 @@ espera de forma limitada o controlador 8042 aceitar comandos e envia `0xFE`.
 Timeout ou retorno inesperado sao registrados e devolvidos ao chamador, que
 permanece responsavel por preservar seu estado e apresentar o diagnostico.
 
+## Contrato PWR0: coordenacao de energia
+
+O PWR0 congela o contrato de coordenacao para as etapas seguintes sem alterar
+as assinaturas atuais de `power.h`, a implementacao de `power_shutdown()` ou a
+sequencia de hardware ja existente. O estado do servico e separado dos
+estados ACPI S0-S5:
+
+- `UNKNOWN`: o servico ainda nao publicou um diagnostico;
+- `DISCOVERING`: dependencias e capacidades estao sendo observadas;
+- `READY`: o coordenador esta utilizavel e conhece seus fallbacks seguros;
+- `DEGRADED`: o coordenador funciona, mas alguma capacidade depende de
+  fallback ou esta indisponivel;
+- `UNAVAILABLE`: nenhuma operacao segura pode ser admitida.
+
+Cada capacidade publica individualmente `available`, `simulated` ou
+`unavailable`, com pre-condicao, fallback e erro canonico. `READY` nao promete
+desligamento fisico: a ausencia de ACPI valido, `_S5_`, RESET_REG ou outro
+metodo confirmado permanece explicita no diagnostico.
+
+`shutdown` e `reboot` usam uma transacao comum, cujo alvo e fixado na
+admissao:
+
+1. `admission`: valida estado, capacidade, ausencia de outra transacao e
+   pre-condicoes;
+2. `notification`: notifica aplicativos, processos e drivers participantes;
+3. `sync/flush`: conclui o writeback e publica qualquer falha de durabilidade;
+4. `quiescence`: para novas atividades de filesystem, workqueues, processos,
+   drivers e CPU conforme os contratos de cada participante;
+5. `hardware commit`: executa somente o metodo detectado e validado;
+6. `terminal`: confirma a transicao ou usa o fallback terminal seguro.
+
+Os orcamentos sao expressos em ticks PIT de 50 Hz e nao podem ser emprestados
+entre fases: notificacao, 250 ticks (5 s); sync/flush, 1500 ticks (30 s);
+quiescencia, 250 ticks (5 s); commit de hardware, 100 ticks (2 s). O limite
+total e 2100 ticks (42 s). Timeout antes do commit aborta a transacao e
+preserva o estado operacional; depois da primeira escrita ou comando de
+hardware nao existe cancelamento nem retorno a um estado ativo.
+
+O coordenador possui a transacao, o cursor de fase, os prazos, o cancelamento
+e o resultado. Cada participante possui seus proprios recursos e deve tornar
+preparacao, quiescencia e liberacao idempotentes. Nenhum participante pode
+reter ponteiros de outro subsistema depois do callback. Falhas sao propagadas
+com `ERR_STATE`, `ERR_UNAVAILABLE`, `ERR_TIMEOUT`, `ERR_CANCELLED`,
+`ERR_AGAIN` ou `ERR_INVALID`, conforme a causa, e a camada com contexto final
+registra a fase, o erro e o fallback sem gerar ruido repetitivo.
+
+O PWR0 separa descoberta/validacao ACPI, interpretacao AML e execucao de
+metodos. O driver ACPI fornece snapshots validados; um parser de cabecalhos
+nao e um interpretador AML e nenhuma porta privada de QEMU, Bochs ou
+VirtualBox pode ser usada como fallback generico. A implementacao efetiva da
+transacao, idle, metodos de hardware e notificacoes pertence a PWR1-PWR4.
+
 ## Servicos S2.1-S2.8: Multi-NIC, Ethernet e pilha TCP/IP
 
 `network_manager` filtra por copia o snapshot PCI e mantem ate quatro

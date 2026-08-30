@@ -10,7 +10,7 @@ fallback específico de emulador será tratado como comportamento universal.
 
 ## Resumo de progresso
 
-- [ ] PWR0 - Contrato de capacidades, estados e ordem de desligamento.
+- [x] PWR0 - Contrato de capacidades, estados e ordem de desligamento.
 - [ ] PWR1 - Idle arquitetural seguro com economia de energia via `hlt`.
 - [ ] PWR2 - Descoberta e validação de tabelas ACPI (RSDP, RSDT, XSDT, FADT, MADT).
 - [ ] PWR3 - Desligamento e reinicialização determinísticos por hardware.
@@ -58,20 +58,43 @@ fallback específico de emulador será tratado como comportamento universal.
 
 ### Implementação
 
-- [ ] Definir estados `UNKNOWN`, `DISCOVERING`, `READY`, `DEGRADED` e
-  `UNAVAILABLE`, com capacidades publicadas sem executar escrita especulativa
-  em hardware.
-- [ ] Definir ordem, ownership, timeout, cancelamento e resultado das
-  notificações de drivers, filesystem, workqueues, processos e CPU.
-- [ ] Definir que desligamento e reboot são operações irreversíveis, com
-  confirmação de pré-condições e registro de cada fallback tentado.
-- [ ] Separar descoberta de tabelas ACPI, interpretação AML e uso de métodos de
-  energia; um parser de cabeçalhos não será chamado de ACPI completo.
+- [x] Definir os estados do serviço `UNKNOWN`, `DISCOVERING`, `READY`,
+  `DEGRADED` e `UNAVAILABLE`, separados dos estados ACPI S0-S5. O coordenador
+  publica capacidades observadas sem executar escrita especulativa em
+  hardware; a indisponibilidade de uma capacidade não invalida o diagnóstico
+  das demais.
+- [x] Definir uma transação única para `shutdown` e `reboot`, com a ordem
+  `admission -> notification -> sync/flush -> quiescence -> hardware commit ->
+  terminal`. O alvo da operação é fixado na admissão e somente o método
+  terminal muda entre desligamento e reinicialização.
+- [x] Fixar orçamentos em ticks PIT de 50 Hz, sem empréstimo entre fases:
+  notificação em 250 ticks (5 s), sync/flush em 1500 ticks (30 s),
+  quiescência em 250 ticks (5 s), commit de hardware em 100 ticks (2 s) e
+  orçamento total de 2100 ticks (42 s).
+- [x] Definir ownership, cancelamento e resultado. O coordenador possui a
+  transação, os prazos e o estado; cada participante possui seus recursos e
+  deve preparar, confirmar e liberar de forma idempotente. O cancelamento só
+  é aceito antes do commit; depois da primeira escrita ou comando de hardware
+  a operação é irreversível.
+- [x] Definir que desligamento e reboot exigem pré-condições verificadas e
+  registram cada falha ou fallback. Antes do commit, uma falha retorna ao
+  estado operacional anterior; depois do commit, somente um caminho terminal
+  seguro pode ser usado.
+- [x] Separar descoberta e validação de tabelas ACPI, interpretação AML e uso
+  de métodos de energia. O parser de cabeçalhos não será chamado de ACPI
+  completo e nenhum método não validado será executado.
+- [x] Fixar os erros canônicos `ERR_STATE`, `ERR_UNAVAILABLE`, `ERR_TIMEOUT`,
+  `ERR_CANCELLED`, `ERR_AGAIN` e `ERR_INVALID`, além de logging limitado por
+  fase, falha e fallback.
 
 ### Critério de saída
 
 Cada capacidade de energia possui estado observável, pré-condição, fallback e
 erro público, sem desligar ou reiniciar quando o contrato não estiver pronto.
+O PWR0 é documental: a aplicação dos estados, orçamentos, notificações,
+quiescência e transições físicas pertence às etapas PWR1-PWR4. Os comandos
+`power status` e `acpi status` continuam sendo os mecanismos de observabilidade
+sem criar comando, syscall, App API ou ABI binária nova.
 
 ---
 

@@ -3112,3 +3112,26 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   caminhos ausentes e escritas rejeitadas. A confirmacao do `make q3check` e do
   build completo apos a correcao dos logs ainda deve ser registrada antes de
   marcar PROC5 como concluido no roadmap.
+
+- PWR0: contrato documental de energia e ACPI definido em 2026-08-30.
+  O Roadmap 16 agora fixa os estados do servico `UNKNOWN`, `DISCOVERING`,
+  `READY`, `DEGRADED` e `UNAVAILABLE`, separados dos estados ACPI S0-S5, e
+  define capacidades individuais com pre-condicao, fallback e erro publico.
+  `shutdown` e `reboot` compartilham a transacao
+  `admission -> notification -> sync/flush -> quiescence -> hardware commit ->
+  terminal`; o alvo e fixado na admissao e a primeira escrita ou comando de
+  hardware inicia a regiao irreversivel.
+
+  Foram congelados orcamentos PIT de 50 Hz, sem emprestimo entre fases:
+  notificacao 250 ticks (5 s), sync/flush 1500 (30 s), quiescencia 250 (5 s),
+  commit 100 (2 s) e total 2100 ticks (42 s). O coordenador possui a
+  transacao, prazos, cancelamento e resultado; participantes possuem seus
+  proprios recursos e devem ser idempotentes. Descoberta/validacao ACPI,
+  interpretacao AML e uso de metodos permanecem separados, sem portas privadas
+  de emuladores como fallback generico.
+
+  PWR0 nao alterou `src/`, headers, Makefile, App API, syscalls, layouts
+  binarios, `boot.asm`, `stage2.asm` ou transicoes reais de energia. A etapa
+  foi validada por revisao cruzada dos documentos canonicos e `git diff --check`;
+  nao houve build, teste ou QEMU. A implementacao dos estados, orcamentos,
+  idle, metodos de hardware e notificacoes permanece nos PWR1-PWR4.
