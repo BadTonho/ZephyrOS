@@ -2,6 +2,7 @@
 #define APP_API_H
 
 #include "types.h"
+#include "core/poll.h"
 
 #define APP_API_VERSION_MAJOR 0
 #define APP_API_VERSION_MINOR 9
@@ -139,6 +140,11 @@ int app_api_file_read(app_handle_t handle, uint8_t* buffer,
                       uint32_t size, uint32_t* bytes_read);
 int app_api_file_write(app_handle_t handle, const uint8_t* buffer,
                        uint32_t size, uint32_t* bytes_written);
+int app_api_poll(pollfd_t* fds, uint32_t count, uint32_t timeout_ticks,
+                 uint32_t* out_ready);
+int app_api_select(uint32_t nfds, fd_set_t* readfds, fd_set_t* writefds,
+                   fd_set_t* exceptfds, uint32_t timeout_ticks,
+                   uint32_t* out_ready);
 int app_api_file_close(app_handle_t handle);
 int app_api_file_fsync(app_handle_t handle);
 int app_api_sync(void);

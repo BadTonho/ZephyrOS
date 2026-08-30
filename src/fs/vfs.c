@@ -44,6 +44,12 @@ typedef struct vfs_pipe {
     uint8_t used;
 } pipe_t;
 
+typedef struct {
+    pollfd_t* fds;
+    uint32_t count;
+    uint32_t ready_count;
+} vfs_poll_wait_context_t;
+
 static file_t* vfs_file_pool[VFS_MAX_OPEN_FILES];
 static vnode_t* vfs_vnode_pool[VFS_MAX_OPEN_FILES];
 static vfs_file_context_t vfs_file_contexts[VFS_MAX_OPEN_FILES];
@@ -57,6 +63,7 @@ static kmem_cache_t* vfs_vnode_cache = 0;
 static spinlock_t vfs_lock;
 static vfs_status_t vfs_metrics;
 static int vfs_ready;
+static wait_channel_t vfs_poll_channel;
 
 static int vfs_regular_open(vnode_t* vnode, file_t* file);
 static int vfs_regular_read(file_t* file, void* buffer, uint32_t size,
@@ -86,28 +93,43 @@ static int vfs_unsupported_lseek(file_t* file, int32_t offset,
 static int vfs_unsupported_ioctl(file_t* file, uint32_t request,
                                  void* argument);
 static int vfs_unsupported_sync(file_t* file);
+static int vfs_unsupported_poll(file_t* file, uint32_t events,
+                                uint32_t* revents);
+static int vfs_regular_poll(file_t* file, uint32_t events,
+                            uint32_t* revents);
+static int vfs_pipe_poll(file_t* file, uint32_t events,
+                         uint32_t* revents);
+static int vfs_test_poll(file_t* file, uint32_t events,
+                         uint32_t* revents);
+static int vfs_poll_default(file_t* file, uint32_t events,
+                            uint32_t* revents);
+static int vfs_poll_begin_operation(int32_t fd, file_t** file_out);
+static int vfs_poll_scan(pollfd_t* fds, uint32_t count,
+                         uint32_t* out_ready);
+static int vfs_poll_wait_condition(void* context, uint8_t* out_ready);
 
 static const file_operations_t vfs_regular_operations = {
     vfs_regular_open, vfs_regular_read, vfs_regular_write,
     vfs_regular_close, vfs_regular_lseek, vfs_unsupported_ioctl,
-    vfs_regular_sync
+    vfs_regular_sync, vfs_regular_poll
 };
 
 static const file_operations_t vfs_stdin_operations = {
     vfs_unsupported_open, vfs_stream_read, vfs_unsupported_write,
     vfs_unsupported_close, vfs_unsupported_lseek, vfs_unsupported_ioctl,
-    vfs_unsupported_sync
+    vfs_unsupported_sync, vfs_stream_poll
 };
 
 static const file_operations_t vfs_stdout_operations = {
     vfs_unsupported_open, vfs_unsupported_read, vfs_stream_write,
     vfs_unsupported_close, vfs_unsupported_lseek, vfs_unsupported_ioctl,
-    vfs_unsupported_sync
+    vfs_unsupported_sync, vfs_stream_poll
 };
 
 static const file_operations_t vfs_pipe_operations = {
     vfs_pipe_open, vfs_pipe_read, vfs_pipe_write, vfs_pipe_close,
-    vfs_pipe_lseek, vfs_unsupported_ioctl, vfs_unsupported_sync
+    vfs_pipe_lseek, vfs_unsupported_ioctl, vfs_unsupported_sync,
+    vfs_pipe_poll
 };
 
 static void vfs_copy_text(char* destination, uint32_t capacity,
@@ -120,6 +142,56 @@ static void vfs_copy_text(char* destination, uint32_t capacity,
         index++;
     }
     destination[index] = '\0';
+}
+
+static int vfs_unsupported_poll(file_t* file, uint32_t events,
+                                uint32_t* revents) {
+    (void)file;
+    (void)events;
+    if (!revents) return ERR_NULL;
+    *revents = POLLERR;
+    return OK;
+}
+
+int vfs_stream_poll(file_t* file, uint32_t events, uint32_t* revents) {
+    (void)events;
+    if (!file || !revents) return ERR_NULL;
+    *revents = 0U;
+    if (file->mode & VFS_MODE_READ) {
+        if (ipc_current_has_pending()) *revents |= POLLIN;
+    }
+    if (file->mode & VFS_MODE_WRITE) *revents |= POLLOUT;
+    return OK;
+}
+
+static int vfs_regular_poll(file_t* file, uint32_t events,
+                            uint32_t* revents) {
+    (void)events;
+    if (!file || !revents) return ERR_NULL;
+    *revents = 0U;
+    if (file->mode & VFS_MODE_READ) *revents |= POLLIN;
+    if (file->mode & VFS_MODE_WRITE) *revents |= POLLOUT;
+    return OK;
+}
+
+static int vfs_test_poll(file_t* file, uint32_t events,
+                         uint32_t* revents) {
+    return vfs_regular_poll(file, events, revents);
+}
+
+static int vfs_poll_default(file_t* file, uint32_t events,
+                            uint32_t* revents) {
+    if (!file || !file->vnode || !revents) return ERR_NULL;
+    if (file->vnode->type == VFS_NODE_STDIN ||
+        file->vnode->type == VFS_NODE_STDOUT ||
+        file->vnode->type == VFS_NODE_STDERR) {
+        return vfs_stream_poll(file, events, revents);
+    }
+    if (file->vnode->type == VFS_NODE_REGULAR ||
+        file->vnode->type == VFS_NODE_TEST) {
+        return vfs_regular_poll(file, events, revents);
+    }
+    return vfs_unsupported_poll(file, events, revents);
 }
 
 static int vfs_mode_valid(uint32_t mode) {
@@ -373,6 +445,29 @@ static pipe_t* vfs_pipe_from_file(file_t* file,
     return context->pipe;
 }
 
+static int vfs_pipe_poll(file_t* file, uint32_t events,
+                         uint32_t* revents) {
+    vfs_file_context_t* context;
+    pipe_t* pipe;
+
+    (void)events;
+    if (!file || !revents) return ERR_NULL;
+    *revents = 0U;
+    pipe = vfs_pipe_from_file(file, &context);
+    if (!pipe || !context) return ERR_STATE;
+    spinlock_acquire(&pipe->lock);
+    if (context->pipe_reader) {
+        if (pipe->bytes) *revents |= POLLIN;
+        if (!pipe->writers) *revents |= POLLHUP;
+    }
+    if (context->pipe_writer) {
+        if (!pipe->readers) *revents |= POLLERR;
+        else if (pipe->bytes < VFS_PIPE_BUFFER_SIZE) *revents |= POLLOUT;
+    }
+    spinlock_release(&pipe->lock);
+    return OK;
+}
+
 static int vfs_pipe_read_ready(void* context, uint8_t* out_ready) {
     pipe_t* pipe = (pipe_t*)context;
 
@@ -431,6 +526,7 @@ static void vfs_pipe_wake_readers(pipe_t* pipe) {
     if (!pipe || wake_up_all(&pipe->read_channel, &woken) != OK) {
         LOG_ERROR("FS", "Falha ao acordar leitores do pipe");
     }
+    (void)vfs_poll_notify();
 }
 
 static void vfs_pipe_wake_writers(pipe_t* pipe) {
@@ -439,6 +535,7 @@ static void vfs_pipe_wake_writers(pipe_t* pipe) {
     if (!pipe || wake_up_all(&pipe->write_channel, &woken) != OK) {
         LOG_ERROR("FS", "Falha ao acordar escritores do pipe");
     }
+    (void)vfs_poll_notify();
 }
 
 static int vfs_pipe_open(vnode_t* vnode, file_t* file) {
@@ -634,6 +731,90 @@ static void vfs_end_operation(file_t* file) {
     spinlock_acquire(&vfs_lock);
     file->active_operations = 0U;
     spinlock_release(&vfs_lock);
+}
+
+static int vfs_poll_begin_operation(int32_t fd, file_t** file_out) {
+    vfs_fd_table_t* table;
+    file_t* file;
+    int result;
+
+    if (!file_out) return ERR_NULL;
+    *file_out = 0;
+    if (!vfs_ready) return ERR_UNAVAILABLE;
+    if (fd < 0 || (uint32_t)fd >= VFS_MAX_FDS) return ERR_INVALID;
+    result = vfs_get_current_table(&table);
+    if (result != OK) return result;
+    spinlock_acquire(&vfs_lock);
+    file = table->entries[fd];
+    if (!file || !file->used || !file->vnode ||
+        !file->vnode->operations) {
+        spinlock_release(&vfs_lock);
+        return ERR_INVALID;
+    }
+    if (file->active_operations != 0U) {
+        spinlock_release(&vfs_lock);
+        return ERR_STATE;
+    }
+    file->active_operations = 1U;
+    *file_out = file;
+    spinlock_release(&vfs_lock);
+    return OK;
+}
+
+static int vfs_poll_scan(pollfd_t* fds, uint32_t count,
+                         uint32_t* out_ready) {
+    uint32_t ready = 0U;
+
+    if (!out_ready || (count && !fds)) return ERR_NULL;
+    for (uint32_t index = 0U; index < count; index++) {
+        file_t* file = 0;
+        uint32_t observed = 0U;
+        int result;
+
+        fds[index].revents = 0U;
+        if (fds[index].fd < 0 ||
+            (uint32_t)fds[index].fd >= VFS_MAX_FDS) {
+            fds[index].revents = POLLNVAL;
+            ready++;
+            continue;
+        }
+        result = vfs_poll_begin_operation(fds[index].fd, &file);
+        if (result == ERR_INVALID) {
+            fds[index].revents = POLLNVAL;
+            ready++;
+            continue;
+        }
+        if (result == ERR_STATE) continue;
+        if (result != OK) return result;
+        result = file->vnode->operations->poll ?
+                 file->vnode->operations->poll(file, fds[index].events,
+                                                &observed) :
+                 vfs_poll_default(file, fds[index].events, &observed);
+        vfs_end_operation(file);
+        if (result != OK) {
+            LOG_ERROR("FS", "Falha ao consultar readiness VFS");
+            return result;
+        }
+        fds[index].revents = observed &
+            (fds[index].events | POLLERR | POLLHUP | POLLNVAL);
+        if (fds[index].revents) ready++;
+    }
+    *out_ready = ready;
+    return OK;
+}
+
+static int vfs_poll_wait_condition(void* context, uint8_t* out_ready) {
+    vfs_poll_wait_context_t* wait = (vfs_poll_wait_context_t*)context;
+    int result;
+
+    if (!wait || !out_ready) {
+        LOG_ERROR("FS", "Contexto nulo na espera de poll VFS");
+        return ERR_NULL;
+    }
+    result = vfs_poll_scan(wait->fds, wait->count, &wait->ready_count);
+    if (result != OK) return result;
+    *out_ready = wait->ready_count != 0U;
+    return OK;
 }
 
 static int vfs_unsupported_open(vnode_t* vnode, file_t* file) {
@@ -871,6 +1052,7 @@ int vfs_init(void) {
     kmemset(vfs_file_contexts, 0, sizeof(vfs_file_contexts));
     kmemset(vfs_pipe_pool, 0, sizeof(vfs_pipe_pool));
     kmemset(vfs_stdio_nodes, 0, sizeof(vfs_stdio_nodes));
+    kmemset(&vfs_poll_channel, 0, sizeof(vfs_poll_channel));
     kmemset(&vfs_metrics, 0, sizeof(vfs_metrics));
     vfs_file_cache = kmem_cache_create("vfs_file", sizeof(file_t), 8U);
     vfs_vnode_cache = kmem_cache_create("vfs_vnode", sizeof(vnode_t), 8U);
@@ -892,6 +1074,14 @@ int vfs_init(void) {
     }
     if (devfs_init() != OK) {
         LOG_ERROR("FS", "Falha ao inicializar devfs");
+        kmem_cache_destroy(vfs_file_cache);
+        kmem_cache_destroy(vfs_vnode_cache);
+        vfs_file_cache = 0;
+        vfs_vnode_cache = 0;
+        return ERR_STATE;
+    }
+    if (wait_channel_init(&vfs_poll_channel, "VFS-poll") != OK) {
+        LOG_ERROR("FS", "Falha ao inicializar canal global de poll");
         kmem_cache_destroy(vfs_file_cache);
         kmem_cache_destroy(vfs_vnode_cache);
         vfs_file_cache = 0;
@@ -1411,6 +1601,135 @@ int vfs_write(int32_t fd, const void* buffer, uint32_t size,
     return result;
 }
 
+int vfs_poll_notify(void) {
+    uint32_t woken = 0U;
+    int result;
+
+    if (!vfs_ready || !vfs_poll_channel.initialized) {
+        return ERR_UNAVAILABLE;
+    }
+    result = wake_up_all(&vfs_poll_channel, &woken);
+    if (result != OK) {
+        LOG_ERROR("FS", "Falha ao notificar pollers VFS");
+    }
+    return result;
+}
+
+int vfs_poll(pollfd_t* fds, uint32_t count, uint32_t timeout_ticks,
+             uint32_t* out_ready) {
+    vfs_poll_wait_context_t context;
+    wait_reason_t reason = WAIT_REASON_NONE;
+    int result;
+
+    if (!out_ready || (count && !fds)) {
+        LOG_ERROR("FS", "Argumentos invalidos em poll VFS");
+        return ERR_NULL;
+    }
+    *out_ready = 0U;
+    if (count > POLL_MAX_FDS) {
+        LOG_ERROR("FS", "Quantidade de descritores excede poll VFS");
+        return ERR_OVERFLOW;
+    }
+    if (timeout_ticks != POLL_TIMEOUT_INFINITE &&
+        timeout_ticks > WAIT_MAX_TIMEOUT_TICKS) {
+        LOG_ERROR("FS", "Timeout excede o limite de poll VFS");
+        return ERR_INVALID;
+    }
+    for (uint32_t index = 0U; index < count; index++) {
+        if (fds[index].events & ~POLL_SUPPORTED_EVENTS) {
+            LOG_ERROR("FS", "Mascara invalida em poll VFS");
+            return ERR_INVALID;
+        }
+    }
+    if (!vfs_ready || !vfs_poll_channel.initialized) {
+        LOG_ERROR("FS", "Poll solicitado antes da inicializacao VFS");
+        return ERR_STATE;
+    }
+    context.fds = fds;
+    context.count = count;
+    context.ready_count = 0U;
+    result = wait_event_timeout(&vfs_poll_channel,
+                                vfs_poll_wait_condition, &context,
+                                timeout_ticks, &reason);
+    if (result != OK) {
+        LOG_ERROR("FS", "Espera de poll VFS falhou");
+        return result;
+    }
+    if (reason == WAIT_REASON_CANCELLED || reason == WAIT_REASON_SIGNAL) {
+        return ERR_CANCELLED;
+    }
+    if (reason == WAIT_REASON_DEVICE_UNAVAILABLE) return ERR_UNAVAILABLE;
+    if (reason != WAIT_REASON_EVENT && reason != WAIT_REASON_TIMEOUT) {
+        LOG_ERROR("FS", "Motivo invalido na espera de poll VFS");
+        return ERR_STATE;
+    }
+    *out_ready = context.ready_count;
+    return OK;
+}
+
+int vfs_select(uint32_t nfds, fd_set_t* readfds, fd_set_t* writefds,
+               fd_set_t* exceptfds, uint32_t timeout_ticks,
+               uint32_t* out_ready) {
+    pollfd_t fds[POLL_MAX_FDS];
+    uint32_t count = 0U;
+    uint32_t ready = 0U;
+    int result;
+
+    if (!out_ready) {
+        LOG_ERROR("FS", "Destino nulo em select VFS");
+        return ERR_NULL;
+    }
+    *out_ready = 0U;
+    if (nfds > POLL_MAX_FDS) {
+        LOG_ERROR("FS", "Quantidade de descritores excede select VFS");
+        return ERR_OVERFLOW;
+    }
+    kmemset(fds, 0, sizeof(fds));
+    for (uint32_t fd = 0U; fd < nfds; fd++) {
+        uint32_t events = 0U;
+
+        if (readfds && FD_ISSET((int32_t)fd, readfds)) events |= POLLIN;
+        if (writefds && FD_ISSET((int32_t)fd, writefds)) events |= POLLOUT;
+        if (exceptfds && FD_ISSET((int32_t)fd, exceptfds)) {
+            events |= POLLERR | POLLHUP;
+        }
+        if (!events) continue;
+        fds[count].fd = (int32_t)fd;
+        fds[count].events = events;
+        count++;
+    }
+    result = vfs_poll(fds, count, timeout_ticks, &ready);
+    if (result != OK) return result;
+    for (uint32_t index = 0U; index < count; index++) {
+        if (fds[index].revents & POLLNVAL) {
+            if (readfds) FD_ZERO(readfds);
+            if (writefds) FD_ZERO(writefds);
+            if (exceptfds) FD_ZERO(exceptfds);
+            LOG_WARN("FS", "Descritor invalido rejeitado por select VFS");
+            return ERR_INVALID;
+        }
+    }
+    if (readfds) FD_ZERO(readfds);
+    if (writefds) FD_ZERO(writefds);
+    if (exceptfds) FD_ZERO(exceptfds);
+    for (uint32_t index = 0U; index < count; index++) {
+        uint32_t revents = fds[index].revents;
+
+        if (readfds && (revents & (POLLIN | POLLHUP))) {
+            FD_SET(fds[index].fd, readfds);
+        }
+        if (writefds && (revents & POLLOUT)) {
+            FD_SET(fds[index].fd, writefds);
+        }
+        if (exceptfds && (revents & (POLLERR | POLLHUP))) {
+            FD_SET(fds[index].fd, exceptfds);
+        }
+        if (revents) ready++;
+    }
+    *out_ready = ready;
+    return OK;
+}
+
 int vfs_close(int32_t fd) {
     vfs_fd_table_t* table;
     file_t* file;
@@ -1436,6 +1755,7 @@ int vfs_close(int32_t fd) {
     }
     table->entries[fd] = 0;
     spinlock_release(&vfs_lock);
+    (void)vfs_poll_notify();
     result = file->vnode->operations->close(file);
     if (!file->persistent) vfs_release_file(file);
     spinlock_acquire(&vfs_lock);
@@ -1676,6 +1996,10 @@ int vfs_validate_state(void) {
         LOG_ERROR("FS", "Validacao VFS solicitada antes da inicializacao");
         return ERR_UNAVAILABLE;
     }
+    if (!vfs_poll_channel.initialized || !vfs_poll_channel.available) {
+        LOG_ERROR("FS", "Canal global de poll VFS indisponivel");
+        return ERR_STATE;
+    }
     if (kmem_cache_validate() != OK || vfs_path_validate_state() != OK) {
         LOG_ERROR("FS", "Invariantes dos objetos VFS invalidas");
         return ERR_STATE;
@@ -1863,7 +2187,7 @@ static int vfs_test_write(file_t* file, const void* buffer, uint32_t size,
 static const file_operations_t vfs_test_operations = {
     vfs_unsupported_open, vfs_test_read, vfs_test_write,
     vfs_unsupported_close, vfs_regular_lseek, vfs_unsupported_ioctl,
-    vfs_unsupported_sync
+    vfs_unsupported_sync, vfs_test_poll
 };
 
 static void vfs_test_count(vfs_test_result_t* result, uint8_t passed) {

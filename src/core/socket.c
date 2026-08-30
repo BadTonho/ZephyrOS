@@ -3,6 +3,7 @@
 #include "core/ipv4.h"
 #include "core/log.h"
 #include "core/net_socket.h"
+#include "core/poll.h"
 #include "core/sk_buff.h"
 #include "core/spinlock.h"
 #include "core/string.h"
@@ -81,6 +82,8 @@ static int socket_vfs_read(file_t* file, void* buffer, uint32_t size,
                            uint32_t* bytes_read);
 static int socket_vfs_write(file_t* file, const void* buffer, uint32_t size,
                             uint32_t* bytes_written);
+static int socket_vfs_poll(file_t* file, uint32_t events,
+                           uint32_t* revents);
 static int socket_vfs_close(file_t* file);
 static int socket_vfs_lseek(file_t* file, int32_t offset, uint32_t whence,
                             uint32_t* position);
@@ -89,7 +92,7 @@ static int socket_vfs_sync(file_t* file);
 
 static const file_operations_t socket_vfs_operations = {
     socket_vfs_open, socket_vfs_read, socket_vfs_write, socket_vfs_close,
-    socket_vfs_lseek, socket_vfs_ioctl, socket_vfs_sync
+    socket_vfs_lseek, socket_vfs_ioctl, socket_vfs_sync, socket_vfs_poll
 };
 
 static void socket_record_failure_locked(int result) {
@@ -221,6 +224,7 @@ static void socket_wake(socket_t* socket) {
     if (!socket || wake_up_all(&socket->wait_queue, &woken) != OK) {
         if (!socket_testing) LOG_ERROR("SOCKET", "Falha ao acordar socket");
     }
+    (void)vfs_poll_notify();
 }
 
 static int socket_wait_condition(void* context, uint8_t* out_ready) {
@@ -1188,6 +1192,89 @@ static int socket_vfs_open(vnode_t* vnode, file_t* file) {
         return ERR_STATE;
     }
     return OK;
+}
+
+static int socket_poll_revents(socket_t* socket, uint32_t* revents) {
+    socket_state_t state;
+    socket_t* peer;
+    net_socket_handle_t tcp_handle;
+    net_socket_info_t tcp_info;
+    int result;
+
+    if (!socket || !revents) return ERR_NULL;
+    *revents = 0U;
+    spinlock_acquire(&socket_lock);
+    if (!socket->used) {
+        *revents = POLLHUP;
+        spinlock_release(&socket_lock);
+        return OK;
+    }
+    state = socket->state;
+    peer = socket->peer;
+    tcp_handle = socket->tcp_handle;
+    if (socket->family == SOCKET_FAMILY_UNIX) {
+        if (state == SOCKET_STATE_ERROR) *revents |= POLLERR;
+        if (state == SOCKET_STATE_EOF || state == SOCKET_STATE_CLOSED) {
+            if (socket->rx.count) *revents |= POLLIN;
+            *revents |= POLLHUP;
+        }
+        if (state == SOCKET_STATE_LISTENING && socket->pending_count) {
+            *revents |= POLLIN;
+        }
+        if (state == SOCKET_STATE_CONNECTED) {
+            if (socket->rx.count) *revents |= POLLIN;
+            if (!peer || !peer->used) {
+                *revents |= POLLHUP | POLLERR;
+            } else if (peer->rx.bytes < SOCKET_QUEUE_BYTES &&
+                       peer->rx.count < SOCKET_QUEUE_CAPACITY) {
+                *revents |= POLLOUT;
+            }
+        }
+        spinlock_release(&socket_lock);
+        return OK;
+    }
+    if (state == SOCKET_STATE_ERROR) *revents |= POLLERR;
+    spinlock_release(&socket_lock);
+    if (!tcp_handle) {
+        *revents |= POLLHUP;
+        return OK;
+    }
+    result = net_socket_get_handle_info(tcp_handle, &tcp_info);
+    if (result != OK || !tcp_info.used) {
+        *revents |= POLLHUP;
+        return OK;
+    }
+    if (tcp_info.state == NET_SOCKET_STATE_CONNECTED) {
+        if (tcp_info.rx_queued) *revents |= POLLIN;
+        if (tcp_info.tx_queued < NET_SOCKET_TX_CAPACITY) {
+            *revents |= POLLOUT;
+        }
+    } else if (tcp_info.state == NET_SOCKET_STATE_EOF) {
+        if (tcp_info.rx_queued) *revents |= POLLIN;
+        *revents |= POLLHUP;
+    } else if (tcp_info.state == NET_SOCKET_STATE_ERROR) {
+        *revents |= POLLERR;
+    } else if (tcp_info.state == NET_SOCKET_STATE_CLOSING) {
+        *revents |= POLLHUP;
+    }
+    return OK;
+}
+
+static int socket_vfs_poll(file_t* file, uint32_t events,
+                           uint32_t* revents) {
+    socket_t* socket;
+
+    (void)events;
+    if (!file || !file->vnode || !revents) {
+        LOG_ERROR("SOCKET", "Contexto nulo no readiness VFS de socket");
+        return ERR_NULL;
+    }
+    socket = (socket_t*)file->vnode->private_data;
+    if (!socket) {
+        LOG_ERROR("SOCKET", "Socket ausente no readiness VFS");
+        return ERR_STATE;
+    }
+    return socket_poll_revents(socket, revents);
 }
 
 static int socket_vfs_read(file_t* file, void* buffer, uint32_t size,

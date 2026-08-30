@@ -296,6 +296,8 @@ static void cmd_help(void) {
     video_print("  cat      - Exibe conteudo de arquivo\n", 0x07);
     video_print("  grep <texto> - Filtra linhas de um pipeline\n", 0x07);
     video_print("  pipetest - Testa pipes e backpressure\n", 0x07);
+    video_print("  selecttest - Testa poll/select em stdin, pipe e sockets\n",
+                0x07);
     video_print("  mount    - Lista montagens VFS\n", 0x07);
     video_print("  pwd      - Exibe o diretorio atual\n", 0x07);
     video_print("  cd       - Altera o diretorio atual\n", 0x07);

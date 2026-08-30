@@ -6,6 +6,7 @@
 #include "core/string.h"
 #include "core/tcp.h"
 #include "core/timer.h"
+#include "fs/vfs.h"
 
 #define NET_SOCKET_HANDLE_SLOT_MASK 0xFFU
 #define NET_SOCKET_HANDLE_GENERATION_SHIFT 8U
@@ -111,6 +112,7 @@ static int net_socket_wake(uint32_t index, uint8_t all) {
         net_socket_status.wait_failures++;
         LOG_ERROR("NET", "Falha ao acordar espera de socket");
     }
+    (void)vfs_poll_notify();
     return result;
 }
 
@@ -172,6 +174,7 @@ static void net_socket_release(uint32_t index) {
     int result;
 
     if (!net_sockets[index].active) return;
+    (void)vfs_poll_notify();
     result = wait_channel_set_available(&net_sockets[index].wait_queue, 0U);
     if (result != OK) {
         net_socket_status.wait_failures++;

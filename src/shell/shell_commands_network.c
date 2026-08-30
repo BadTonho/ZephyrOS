@@ -5,6 +5,7 @@
 #include "core/video.h"
 #include "core/keyboard.h"
 #include "fs/fs.h"
+#include "fs/vfs.h"
 #include "fs/storage.h"
 #include "fs/file_index.h"
 #include "core/memory.h"
@@ -47,6 +48,7 @@
 #include "core/sk_buff.h"
 #include "core/net_socket.h"
 #include "core/socket.h"
+#include "core/poll.h"
 #include "core/tcp.h"
 #include "core/udp.h"
 #include "core/network_manager.h"
@@ -85,6 +87,10 @@
 #define SHELL_NET_QEMU_SUBNET_MASK 0xFFFFFF00U
 #define SHELL_NET_CHECK_WAIT_SECONDS 5U
 #define SHELL_NET_CHECK_EXPECTED_ATTEMPTS 3U
+#define SHELL_SELECTTEST_SOCKET_PATH "net3-select"
+#define SHELL_SELECTTEST_PAYLOAD_SIZE 1U
+#define SHELL_SELECTTEST_FINITE_TIMEOUT_TICKS 1U
+#define SHELL_SELECTTEST_ASYNC_TIMEOUT_TICKS 4U
 #define SHELL_PING_WAIT_EXTRA_SECONDS 5U
 #define SHELL_DHCP_WAIT_SECONDS 20U
 #define SHELL_DNS_WAIT_SECONDS 20U
@@ -127,6 +133,44 @@ static void cmd_net_print_ipv4(uint32_t ip_address);
 #define SHELL_REGCHECK_ACPI_MAX_ROOT_ENTRIES 256U
 
 static uint8_t shell_network_job_inner_failed;
+static wait_info_t shell_selecttest_wait_records[MAX_PROCESSES + MAX_THREADS];
+static process_t* shell_selecttest_cancel_process;
+static thread_t* shell_selecttest_cancel_thread;
+static int shell_selecttest_worker_result;
+static int32_t shell_selecttest_close_fd;
+
+static void shell_selecttest_join_worker(thread_t* worker) {
+    if (!worker) return;
+    while (worker->state != THREAD_FINISHED) thread_yield();
+    thread_destroy(worker);
+}
+
+static void shell_selecttest_cancel_worker(void) {
+    int result = ERR_STATE;
+
+    thread_block(1U);
+    if (shell_selecttest_cancel_thread &&
+        shell_selecttest_cancel_thread->wait_active &&
+        shell_selecttest_cancel_thread->wait_entry.linked) {
+        result = wait_queue_remove(&shell_selecttest_cancel_thread->wait_entry,
+                                   WAIT_REASON_SIGNAL);
+    } else if (shell_selecttest_cancel_process &&
+               shell_selecttest_cancel_process->wait_active &&
+               shell_selecttest_cancel_process->wait_entry.linked) {
+        result = wait_queue_remove(&shell_selecttest_cancel_process->wait_entry,
+                                   WAIT_REASON_SIGNAL);
+    }
+    shell_selecttest_worker_result = result;
+}
+
+static void shell_selecttest_close_worker(void) {
+    int result;
+
+    thread_block(1U);
+    result = shell_selecttest_close_fd == VFS_FD_INVALID ? ERR_INVALID :
+             vfs_close(shell_selecttest_close_fd);
+    shell_selecttest_worker_result = result;
+}
 
 static int shell_network_job_block_tick(void) {
     if (shell_job_is_active()) {
@@ -2669,6 +2713,258 @@ static void cmd_net_socket_check(void) {
                 result == OK && generic_result == OK ? 0x0A : 0x0C);
 }
 
+static int shell_selecttest_open_socket(int32_t* listener_fd,
+                                        int32_t* client_fd,
+                                        int32_t* server_fd) {
+    socket_address_t address;
+    int result;
+
+    if (!listener_fd || !client_fd || !server_fd) return ERR_NULL;
+    *listener_fd = VFS_FD_INVALID;
+    *client_fd = VFS_FD_INVALID;
+    *server_fd = VFS_FD_INVALID;
+    kmemset(&address, 0, sizeof(address));
+    address.family = SOCKET_FAMILY_UNIX;
+    kmemcpy(address.value.local.path, SHELL_SELECTTEST_SOCKET_PATH,
+            sizeof(SHELL_SELECTTEST_SOCKET_PATH));
+    result = socket_create(SOCKET_FAMILY_UNIX, SOCKET_TYPE_STREAM,
+                           SOCKET_FLAG_NONBLOCK, listener_fd);
+    if (result != OK) return result;
+    result = socket_bind(*listener_fd, &address);
+    if (result == OK) result = socket_listen(*listener_fd,
+                                              SOCKET_UNIX_BACKLOG_MAX);
+    if (result == OK) {
+        result = socket_create(SOCKET_FAMILY_UNIX, SOCKET_TYPE_STREAM,
+                               SOCKET_FLAG_NONBLOCK, client_fd);
+    }
+    if (result == OK) result = socket_connect(*client_fd, &address);
+    if (result == OK) result = socket_accept(*listener_fd, server_fd);
+    if (result != OK) {
+        if (*server_fd != VFS_FD_INVALID) socket_close(*server_fd);
+        if (*client_fd != VFS_FD_INVALID) socket_close(*client_fd);
+        if (*listener_fd != VFS_FD_INVALID) socket_close(*listener_fd);
+        *server_fd = VFS_FD_INVALID;
+        *client_fd = VFS_FD_INVALID;
+        *listener_fd = VFS_FD_INVALID;
+    }
+    return result;
+}
+
+static int shell_selecttest_no_waiters(void) {
+    uint32_t count = 0U;
+
+    if (wait_queue_copy_waiters(shell_selecttest_wait_records,
+                                MAX_PROCESSES + MAX_THREADS,
+                                &count) != OK) {
+        return ERR_STATE;
+    }
+    for (uint32_t index = 0U; index < count; index++) {
+        if (kstrcmp(shell_selecttest_wait_records[index].channel_owner,
+                   "VFS-poll") == 0) {
+            return ERR_STATE;
+        }
+    }
+    return OK;
+}
+
+static void cmd_selecttest(const char* args) {
+    int32_t pipe_fds[2] = {VFS_FD_INVALID, VFS_FD_INVALID};
+    int32_t empty_fds[2] = {VFS_FD_INVALID, VFS_FD_INVALID};
+    int32_t listener_fd = VFS_FD_INVALID;
+    int32_t client_fd = VFS_FD_INVALID;
+    int32_t server_fd = VFS_FD_INVALID;
+    net_socket_self_test_result_t tcp_test;
+    pollfd_t poll_fd;
+    fd_set_t readfds;
+    ipc_msg_t keyboard_message;
+    uint8_t byte = 'x';
+    uint32_t bytes = 0U;
+    uint32_t ready = 0U;
+    int32_t tcp_fd = VFS_FD_INVALID;
+    int32_t closed_fd = VFS_FD_INVALID;
+    thread_t* worker = 0;
+    int poll_result;
+    int pipe_result;
+    int result;
+    int tcp_result;
+    uint8_t simultaneous = 0U;
+    uint8_t write_ready = 0U;
+    uint8_t pipe_error = 0U;
+    uint8_t immediate = 0U;
+    uint8_t finite = 0U;
+    uint8_t invalid = 0U;
+    uint8_t eof = 0U;
+    uint8_t tcp_ready = 0U;
+    uint8_t cancellation = 0U;
+    uint8_t no_waiters = 0U;
+    uint8_t stdin_expected;
+    uint8_t stdin_injected = 0U;
+    uint8_t overall;
+
+    if (!shell_command_args_equal(args, "")) {
+        LOG_WARN("SHELL", "Uso invalido de selecttest");
+        video_print("Uso: selecttest\n", 0x0C);
+        return;
+    }
+    shell_selecttest_cancel_process = 0;
+    shell_selecttest_cancel_thread = 0;
+    shell_selecttest_worker_result = ERR_STATE;
+    shell_selecttest_close_fd = VFS_FD_INVALID;
+    kmemset(&tcp_test, 0, sizeof(tcp_test));
+    stdin_expected = ipc_current_has_pending();
+    if (!stdin_expected) {
+        keyboard_message.type = IPC_MSG_KEYBOARD;
+        keyboard_message.data1 = 0U;
+        keyboard_message.data2 = 0U;
+        stdin_injected = ipc_send(process_get_current_pid(),
+                                   &keyboard_message) != 0;
+        stdin_expected = stdin_injected;
+    }
+    result = vfs_pipe(pipe_fds);
+    if (result == OK) result = shell_selecttest_open_socket(
+        &listener_fd, &client_fd, &server_fd);
+    if (result == OK && socket_create(SOCKET_FAMILY_INET,
+                                      SOCKET_TYPE_STREAM,
+                                      SOCKET_FLAG_NONBLOCK, &tcp_fd) != OK) {
+        result = ERR_UNAVAILABLE;
+    }
+    if (result == OK) result = vfs_write(
+        pipe_fds[1], &byte, SHELL_SELECTTEST_PAYLOAD_SIZE, &bytes);
+    if (result == OK) result = socket_send(
+        client_fd, &byte, SHELL_SELECTTEST_PAYLOAD_SIZE, &bytes);
+    FD_ZERO(&readfds);
+    FD_SET(VFS_FD_STDIN, &readfds);
+    FD_SET(pipe_fds[0], &readfds);
+    FD_SET(server_fd, &readfds);
+    FD_SET(tcp_fd, &readfds);
+    result = result == OK ? vfs_select(POLL_MAX_FDS, &readfds, 0, 0,
+                                       POLL_TIMEOUT_IMMEDIATE, &ready) : result;
+    simultaneous = result == OK && ready >= 2U &&
+                   stdin_expected && FD_ISSET(VFS_FD_STDIN, &readfds) &&
+                   FD_ISSET(pipe_fds[0], &readfds) &&
+                   FD_ISSET(server_fd, &readfds) &&
+                   tcp_fd != VFS_FD_INVALID;
+    if (stdin_injected) ipc_receive(&keyboard_message);
+    poll_fd.fd = pipe_fds[1];
+    poll_fd.events = POLLOUT;
+    poll_fd.revents = 0U;
+    result = result == OK ? vfs_poll(&poll_fd, 1U,
+                                     POLL_TIMEOUT_IMMEDIATE, &ready) : result;
+    write_ready = result == OK && ready == 1U &&
+                  (poll_fd.revents & POLLOUT) != 0U;
+    if (pipe_fds[0] != VFS_FD_INVALID) {
+        vfs_read(pipe_fds[0], &byte, SHELL_SELECTTEST_PAYLOAD_SIZE, &bytes);
+    }
+    if (pipe_fds[0] != VFS_FD_INVALID && pipe_fds[1] != VFS_FD_INVALID) {
+        pipe_result = vfs_close(pipe_fds[0]);
+        if (pipe_result == OK) {
+            pipe_fds[0] = VFS_FD_INVALID;
+            poll_fd.fd = pipe_fds[1];
+            poll_fd.events = POLLOUT;
+            poll_fd.revents = 0U;
+            pipe_result = vfs_poll(&poll_fd, 1U,
+                                   POLL_TIMEOUT_IMMEDIATE, &ready);
+            pipe_error = pipe_result == OK && ready == 1U &&
+                         (poll_fd.revents & POLLERR) != 0U;
+        }
+    }
+    result = vfs_pipe(empty_fds);
+    if (result == OK) {
+        poll_fd.fd = empty_fds[0];
+        poll_fd.events = POLLIN;
+        poll_fd.revents = 0U;
+        result = vfs_poll(&poll_fd, 1U, POLL_TIMEOUT_IMMEDIATE, &ready);
+        immediate = result == OK && ready == 0U && poll_fd.revents == 0U;
+        result = vfs_poll(&poll_fd, 1U,
+                          SHELL_SELECTTEST_FINITE_TIMEOUT_TICKS, &ready);
+        finite = result == OK && ready == 0U && poll_fd.revents == 0U;
+
+        shell_selecttest_cancel_process = process_get_current();
+        shell_selecttest_cancel_thread = thread_get_current();
+        shell_selecttest_worker_result = ERR_STATE;
+        worker = thread_create("SelectCancel", shell_selecttest_cancel_worker);
+        poll_fd.revents = 0U;
+        poll_result = worker ?
+            vfs_poll(&poll_fd, 1U, SHELL_SELECTTEST_ASYNC_TIMEOUT_TICKS,
+                     &ready) : ERR_MEM;
+        shell_selecttest_join_worker(worker);
+        worker = 0;
+        cancellation = poll_result == ERR_CANCELLED &&
+                       shell_selecttest_worker_result == OK;
+        shell_selecttest_cancel_process = 0;
+        shell_selecttest_cancel_thread = 0;
+
+        closed_fd = empty_fds[1];
+        shell_selecttest_close_fd = empty_fds[1];
+        shell_selecttest_worker_result = ERR_STATE;
+        worker = thread_create("SelectClose", shell_selecttest_close_worker);
+        poll_fd.revents = 0U;
+        poll_result = worker ?
+            vfs_poll(&poll_fd, 1U, SHELL_SELECTTEST_ASYNC_TIMEOUT_TICKS,
+                     &ready) : ERR_MEM;
+        shell_selecttest_join_worker(worker);
+        worker = 0;
+        if (shell_selecttest_worker_result == OK) {
+            empty_fds[1] = VFS_FD_INVALID;
+            eof = poll_result == OK && ready == 1U &&
+                  (poll_fd.revents & POLLHUP) != 0U;
+        }
+        shell_selecttest_close_fd = VFS_FD_INVALID;
+    }
+    poll_fd.fd = VFS_FD_INVALID;
+    poll_fd.events = POLLIN;
+    poll_fd.revents = 0U;
+    result = vfs_poll(&poll_fd, 1U, POLL_TIMEOUT_IMMEDIATE, &ready);
+    invalid = result == OK && ready == 1U &&
+              (poll_fd.revents & POLLNVAL) != 0U;
+    FD_ZERO(&readfds);
+    if (closed_fd != VFS_FD_INVALID) {
+        FD_SET(closed_fd, &readfds);
+        result = vfs_select(POLL_MAX_FDS, &readfds, 0, 0,
+                            POLL_TIMEOUT_IMMEDIATE, &ready);
+        invalid = invalid && result == ERR_INVALID && readfds.bits == 0U;
+    } else {
+        invalid = 0U;
+    }
+    tcp_result = net_socket_self_test(&tcp_test);
+    if (tcp_fd != VFS_FD_INVALID) {
+        poll_fd.fd = tcp_fd;
+        poll_fd.events = POLLIN | POLLOUT;
+        poll_fd.revents = 0U;
+        result = vfs_poll(&poll_fd, 1U, POLL_TIMEOUT_IMMEDIATE, &ready);
+        tcp_ready = tcp_result == OK && tcp_test.event_mapping &&
+                    result == OK && ready == 0U && poll_fd.revents == 0U;
+        socket_close(tcp_fd);
+        tcp_fd = VFS_FD_INVALID;
+    }
+    if (empty_fds[0] != VFS_FD_INVALID) {
+        vfs_close(empty_fds[0]);
+        empty_fds[0] = VFS_FD_INVALID;
+    }
+    if (server_fd != VFS_FD_INVALID) socket_close(server_fd);
+    if (client_fd != VFS_FD_INVALID) socket_close(client_fd);
+    if (listener_fd != VFS_FD_INVALID) socket_close(listener_fd);
+    if (pipe_fds[0] != VFS_FD_INVALID) vfs_close(pipe_fds[0]);
+    if (pipe_fds[1] != VFS_FD_INVALID) vfs_close(pipe_fds[1]);
+    no_waiters = shell_selecttest_no_waiters() == OK;
+    overall = simultaneous && write_ready && immediate && finite && invalid &&
+              pipe_error && eof && tcp_ready && cancellation && no_waiters;
+    video_print("Autoteste NET3 poll/select:\n", 0x0B);
+    cmd_net_socket_check_case("stdin/pipe/socket simultaneos", simultaneous);
+    cmd_net_socket_check_case("pipe gravavel", write_ready);
+    cmd_net_socket_check_case("POLLERR sem leitores", pipe_error);
+    cmd_net_socket_check_case("timeout imediato", immediate);
+    cmd_net_socket_check_case("timeout finito sem busy-wait", finite);
+    cmd_net_socket_check_case("FD invalido e traducao select", invalid);
+    cmd_net_socket_check_case("EOF/HUP por fechamento durante espera", eof);
+    cmd_net_socket_check_case("readiness do adaptador TCP", tcp_ready);
+    cmd_net_socket_check_case("cancelamento por sinal", cancellation);
+    cmd_net_socket_check_case("nenhum waiter VFS residual", no_waiters);
+    if (!overall) LOG_ERROR("SHELL", "Autoteste NET3 poll/select falhou");
+    video_print("Resultado: ", 0x0B);
+    video_print(overall ? "OK\n" : "ERRO\n", overall ? 0x0A : 0x0C);
+}
+
 static void cmd_sockstat(const char* args) {
     socket_status_t status;
     uint8_t any = 0U;
@@ -4687,6 +4983,7 @@ int shell_network_start_job(const char* command, const char* arguments) {
 
 SHELL_NETWORK_WRAP_ARGS(shell_dispatch_cmd_skbstat, cmd_skbstat)
 SHELL_NETWORK_WRAP_ARGS(shell_dispatch_cmd_sockstat, cmd_sockstat)
+SHELL_NETWORK_WRAP_ARGS(shell_dispatch_cmd_selecttest, cmd_selecttest)
 
 void shell_dispatch_cmd_net(const char* arguments) {
     if (shell_network_start_job("net", arguments)) return;

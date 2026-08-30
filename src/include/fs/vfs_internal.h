@@ -17,6 +17,7 @@ int vfs_stream_read(file_t* file, void* buffer, uint32_t size,
                     uint32_t* bytes_read);
 int vfs_stream_write(file_t* file, const void* buffer, uint32_t size,
                      uint32_t* bytes_written);
+int vfs_stream_poll(file_t* file, uint32_t events, uint32_t* revents);
 int vfs_open_socket(void* private_data, const file_operations_t* operations,
                     uint32_t mode, const char* path, int32_t* fd_out);
 

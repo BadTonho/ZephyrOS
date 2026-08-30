@@ -2884,3 +2884,13 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   endereço, conclusão e liberação recusados pertencem às fixtures negativas
   deliberadas; não houve socket ou buffer residual. O resumo NET2 foi marcado
   como concluído no roadmap. `NET3+` permanecem pendentes.
+
+- NET3: implementacao de `poll()`/`select()` sobre a VFS registrada.
+  Implementada em: 2026-08-29 23:17:25 -03:00 (America/Sao_Paulo).
+  Foram adicionados o contrato `poll.h`, readiness append-only em
+  `file_operations_t`, canal global `VFS-poll`, notificacoes de pipe, socket,
+  TCP e IPC, wrappers da App API, syscalls 23/24, copia segura ring 3,
+  `selecttest`, dependencias do Makefile e os contratos/metricas NET3. O
+  `boot.asm` nao foi alterado. O agente nao executou build, testes ou QEMU;
+  `make q3check`, `make clean && make`, `make run` e a matriz funcional NET3
+  permanecem pendentes da confirmacao do usuario.

@@ -62,27 +62,27 @@ static int devfs_hda_sync(file_t* file);
 static const file_operations_t devfs_null_operations = {
     devfs_generic_open, devfs_null_read, devfs_null_write,
     devfs_generic_close, devfs_unavailable_lseek, devfs_unavailable_ioctl,
-    devfs_unavailable_sync
+    devfs_unavailable_sync, 0
 };
 static const file_operations_t devfs_zero_operations = {
     devfs_generic_open, devfs_zero_read, devfs_null_write,
     devfs_generic_close, devfs_unavailable_lseek, devfs_unavailable_ioctl,
-    devfs_unavailable_sync
+    devfs_unavailable_sync, 0
 };
 static const file_operations_t devfs_tty_operations = {
     devfs_generic_open, vfs_stream_read, vfs_stream_write,
     devfs_generic_close, devfs_unavailable_lseek, devfs_unavailable_ioctl,
-    devfs_unavailable_sync
+    devfs_unavailable_sync, vfs_stream_poll
 };
 static const file_operations_t devfs_speaker_operations = {
     devfs_generic_open, devfs_unavailable_read, devfs_speaker_write,
     devfs_generic_close, devfs_unavailable_lseek, devfs_speaker_ioctl,
-    devfs_unavailable_sync
+    devfs_unavailable_sync, 0
 };
 static const file_operations_t devfs_hda_operations = {
     devfs_generic_open, devfs_hda_read, devfs_unavailable_write,
     devfs_generic_close, devfs_hda_lseek, devfs_unavailable_ioctl,
-    devfs_hda_sync
+    devfs_hda_sync, 0
 };
 
 static void devfs_copy_text(char* destination, uint32_t capacity,

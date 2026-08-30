@@ -215,6 +215,22 @@ excedentes com `ERR_INVALID`; a ausencia de FLUSH pode concluir com `OK` e
 durabilidade `DEGRADED`, enquanto erros de writeback ou FLUSH sao propagados.
 Fechamento de arquivo e saida de processo nao fazem sync automatico.
 
+### Multiplexacao de I/O da App API no NET3
+
+`app_api_poll()` e `app_api_select()` reutilizam os descritores da VFS e
+timeouts em ticks. `pollfd_t` possui `fd`, `events` e `revents`; `fd_set_t`
+possui 32 bits e usa as macros `FD_ZERO`, `FD_SET`, `FD_CLR` e `FD_ISSET`.
+O limite e 32 descritores. `select_request_t` agrupa `nfds`, os tres conjuntos,
+`set_mask`, timeout e `ready_count` para a syscall 24; assim a ABI continua
+com no maximo cinco argumentos de registradores.
+
+`APP_SYSCALL_POLL` e `APP_SYSCALL_SELECT` ocupam os numeros 23 e 24, sem
+renumerar as syscalls anteriores. A entrada ring 3 copia e valida os arrays,
+o request e os destinos de saida antes de chamar a App API. FDs invalidos
+retornam `POLLNVAL` em `poll()` e `ERR_INVALID` em `select()`; timeout sem
+eventos retorna `OK` com zero. Criacao de sockets por syscall continua fora do
+escopo do NET3.
+
 ### Contrato de console e ciclo de vida da Fase 6D
 
 `console_write` permanece sincrona: cada chamada aceita de 1 a 1024 bytes

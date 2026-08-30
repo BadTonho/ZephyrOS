@@ -781,7 +781,7 @@ $(SK_BUFF_OBJ): $(SK_BUFF_C) src/include/core/sk_buff.h src/include/core/net_buf
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(SOCKET_OBJ): $(SOCKET_C) src/include/core/socket.h src/include/core/net_socket.h src/include/core/net_buffer.h src/include/core/sk_buff.h src/include/core/errors.h src/include/core/ipv4.h src/include/core/log.h src/include/core/spinlock.h src/include/core/string.h src/include/core/wait.h src/include/fs/vfs.h src/include/fs/vfs_internal.h src/include/process/process.h src/include/memory/slab.h
+$(SOCKET_OBJ): $(SOCKET_C) src/include/core/socket.h src/include/core/poll.h src/include/core/net_socket.h src/include/core/net_buffer.h src/include/core/sk_buff.h src/include/core/errors.h src/include/core/ipv4.h src/include/core/log.h src/include/core/spinlock.h src/include/core/string.h src/include/core/wait.h src/include/fs/vfs.h src/include/fs/vfs_internal.h src/include/process/process.h src/include/memory/slab.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -813,7 +813,7 @@ $(TCP_OBJ): $(TCP_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(NET_SOCKET_OBJ): $(NET_SOCKET_C) src/include/core/net_buffer.h
+$(NET_SOCKET_OBJ): $(NET_SOCKET_C) src/include/core/net_buffer.h src/include/fs/vfs.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -829,11 +829,11 @@ $(STRING_OBJ): $(STRING_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(APP_API_OBJ): $(APP_API_C) src/include/core/app_api.h src/include/core/app_files.h src/include/memory/vma.h
+$(APP_API_OBJ): $(APP_API_C) src/include/core/app_api.h src/include/core/app_files.h src/include/core/poll.h src/include/memory/vma.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(APP_FILES_OBJ): $(APP_FILES_C) src/include/core/app_files.h src/include/core/app_api.h src/include/fs/vfs.h
+$(APP_FILES_OBJ): $(APP_FILES_C) src/include/core/app_files.h src/include/core/app_api.h src/include/core/poll.h src/include/fs/vfs.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -853,7 +853,7 @@ $(APP_CATALOG_OBJ): $(APP_CATALOG_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(SYSCALL_OBJ): $(SYSCALL_C) src/include/core/syscall.h src/include/core/app_api.h src/include/core/app_files.h src/include/memory/paging.h src/include/memory/vma.h
+$(SYSCALL_OBJ): $(SYSCALL_C) src/include/core/syscall.h src/include/core/app_api.h src/include/core/app_files.h src/include/core/poll.h src/include/memory/paging.h src/include/memory/vma.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -969,7 +969,7 @@ $(FS_OBJ): $(FS_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(VFS_OBJ): $(VFS_C) src/include/fs/vfs.h src/include/fs/vfs_internal.h src/include/fs/devfs.h src/include/fs/storage.h src/include/process/process.h src/include/core/app_api.h src/include/core/wait.h src/include/memory/slab.h
+$(VFS_OBJ): $(VFS_C) src/include/fs/vfs.h src/include/core/poll.h src/include/fs/vfs_internal.h src/include/fs/devfs.h src/include/fs/storage.h src/include/process/process.h src/include/core/app_api.h src/include/core/wait.h src/include/memory/slab.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1013,7 +1013,7 @@ $(SIGNAL_OBJ): $(SIGNAL_C) src/include/process/signal.h src/include/process/proc
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(IPC_OBJ): $(IPC_C)
+$(IPC_OBJ): $(IPC_C) src/include/process/process.h src/include/core/poll.h src/include/fs/vfs.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1057,7 +1057,7 @@ $(SHELL_COMMANDS_DIAGNOSTICS_OBJ): $(SHELL_COMMANDS_DIAGNOSTICS_C) src/include/a
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(SHELL_COMMANDS_NETWORK_OBJ): $(SHELL_COMMANDS_NETWORK_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h
+$(SHELL_COMMANDS_NETWORK_OBJ): $(SHELL_COMMANDS_NETWORK_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/poll.h src/include/core/wait.h src/include/fs/vfs.h src/include/process/process.h src/include/process/thread.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

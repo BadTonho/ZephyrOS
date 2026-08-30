@@ -1,6 +1,7 @@
 #include "core/app_files.h"
 #include "core/errors.h"
 #include "core/log.h"
+#include "core/poll.h"
 #include "fs/vfs.h"
 
 static int app_files_ready;
@@ -61,6 +62,26 @@ int app_files_write(app_handle_t handle, const uint8_t* buffer,
         return ERR_STATE;
     }
     return vfs_write((int32_t)handle, buffer, size, bytes_written);
+}
+
+int app_files_poll(pollfd_t* fds, uint32_t count, uint32_t timeout_ticks,
+                   uint32_t* out_ready) {
+    if (!app_files_is_ready()) {
+        LOG_ERROR("APP_FILES", "Poll antes da inicializacao");
+        return ERR_STATE;
+    }
+    return vfs_poll(fds, count, timeout_ticks, out_ready);
+}
+
+int app_files_select(uint32_t nfds, fd_set_t* readfds, fd_set_t* writefds,
+                     fd_set_t* exceptfds, uint32_t timeout_ticks,
+                     uint32_t* out_ready) {
+    if (!app_files_is_ready()) {
+        LOG_ERROR("APP_FILES", "Select antes da inicializacao");
+        return ERR_STATE;
+    }
+    return vfs_select(nfds, readfds, writefds, exceptfds,
+                      timeout_ticks, out_ready);
 }
 
 int app_files_close(app_handle_t handle) {

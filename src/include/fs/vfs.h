@@ -2,6 +2,7 @@
 #define VFS_H
 
 #include "types.h"
+#include "core/poll.h"
 #include "fs/storage.h"
 
 #define VFS_MAX_FDS 32U
@@ -61,6 +62,7 @@ typedef struct {
                  uint32_t* position);
     int (*ioctl)(file_t* file, uint32_t request, void* argument);
     int (*sync)(file_t* file);
+    int (*poll)(file_t* file, uint32_t events, uint32_t* revents);
 } file_operations_t;
 
 struct vfs_vnode {
@@ -196,6 +198,12 @@ int vfs_read(int32_t fd, void* buffer, uint32_t size,
              uint32_t* bytes_read);
 int vfs_write(int32_t fd, const void* buffer, uint32_t size,
               uint32_t* bytes_written);
+int vfs_poll(pollfd_t* fds, uint32_t count, uint32_t timeout_ticks,
+             uint32_t* out_ready);
+int vfs_select(uint32_t nfds, fd_set_t* readfds, fd_set_t* writefds,
+               fd_set_t* exceptfds, uint32_t timeout_ticks,
+               uint32_t* out_ready);
+int vfs_poll_notify(void);
 int vfs_close(int32_t fd);
 int vfs_fsync(int32_t fd);
 int vfs_sync(void);
