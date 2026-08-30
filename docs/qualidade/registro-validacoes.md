@@ -2905,3 +2905,13 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   preservando o registro do canal. O `boot.asm` nao foi alterado. O agente nao
   executou build, testes ou QEMU; os pre-requisitos operacionais e a matriz
   funcional NET3 continuam pendentes.
+
+- NET3: correcao do wakeup de `poll()` durante execucao cooperativa.
+  Implementada em: 2026-08-30 00:05:08 -03:00 (America/Sao_Paulo). O
+  `selecttest` usa workers cooperativos para cancelar uma espera e fechar um
+  pipe enquanto o processo Shell bloqueia em `poll()`. O yield de processo
+  agora tambem oferece uma oportunidade ao scheduler de threads, e cada
+  thread registra o PID do processo criador para que operacoes VFS do worker
+  usem a tabela correta mesmo durante a troca para o Idle. O `boot.asm` nao
+  foi alterado. O agente nao executou build, testes ou QEMU; a confirmacao
+  funcional continua pendente.

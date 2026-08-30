@@ -8,6 +8,7 @@
 #include "core/string.h"
 #include "core/syscall.h"
 #include "drivers/tss.h"
+#include "process/thread.h"
 
 #define PROCESS_DEFAULT_EFLAGS 0x202U
 #define PROCESS_PID_POOL_SIZE (MAX_PROCESSES - 1U)
@@ -1833,6 +1834,7 @@ void process_yield(void) {
     }
 
     scheduler_cooperative_yields++;
+    thread_yield();
     scheduler_yield_internal();
 }
 
