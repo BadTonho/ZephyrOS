@@ -3325,11 +3325,15 @@ static int cmd_proccheck(void) {
             "/proc/__missing__", "/sys/class/net/__missing__",
             "/sys/bus/pci/devices/ff:ff.f"
         };
+        static const int expected_results[] = {
+            ERR_INVALID, ERR_NOT_FOUND, ERR_NOT_FOUND
+        };
 
         for (uint32_t index = 0U; index < sizeof(absent_paths) /
              sizeof(absent_paths[0]); index++) {
             total++;
-            if (cmd_proccheck_directory(absent_paths[index]) == ERR_NOT_FOUND) {
+            if (cmd_proccheck_directory(absent_paths[index]) ==
+                expected_results[index]) {
                 passed++;
             } else {
                 result = ERR_STATE;
