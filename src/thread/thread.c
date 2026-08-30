@@ -385,6 +385,7 @@ int thread_run_self_test(void) {
         return ERR_MEM;
     }
 
+    last_scheduled_idx = MAX_THREADS - 1;
     thread_yield();
     for (uint32_t i = 0; i < THREAD_TEST_TRACE_SIZE; i++) {
         char expected = (i & 1U) == 0 ? 'A' : 'B';

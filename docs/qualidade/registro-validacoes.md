@@ -2922,3 +2922,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   em `docs/07-processos/processos.md`; o campo `owner_pid` e sua semantica de
   operacoes VFS durante o bloqueio do processo foram documentados. A
   validacao funcional NET3 permanece pendente.
+
+- NET3: correcao dos fixtures de cancelamento e autoteste cooperativo.
+  Implementada em: 2026-08-30 00:14:08 -03:00 (America/Sao_Paulo). O worker de cancelamento
+  agora remove a espera imediatamente apos o processo entrar no canal VFS,
+  evitando que o timeout vença antes do sinal sintetico. O autoteste de
+  threads reinicia o cursor do scheduler antes de verificar a alternancia
+  A/B, evitando depender do slot usado pelos workers anteriores. O agente nao
+  executou build, testes ou QEMU; a confirmacao funcional permanece pendente.

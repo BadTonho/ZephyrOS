@@ -148,7 +148,6 @@ static void shell_selecttest_join_worker(thread_t* worker) {
 static void shell_selecttest_cancel_worker(void) {
     int result = ERR_STATE;
 
-    thread_block(1U);
     if (shell_selecttest_cancel_thread &&
         shell_selecttest_cancel_thread->wait_active &&
         shell_selecttest_cancel_thread->wait_entry.linked) {
