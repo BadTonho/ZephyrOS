@@ -2883,7 +2883,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `ativos=0`, `alocados=14`, `liberados=14` e `erros=0`. Os logs de FD,
   endereço, conclusão e liberação recusados pertencem às fixtures negativas
   deliberadas; não houve socket ou buffer residual. O resumo NET2 foi marcado
-  como concluído no roadmap. `NET3+` permanecem pendentes.
+  como concluído no roadmap. `NET4` permanece pendente.
 
 - NET3: implementacao de `poll()`/`select()` sobre a VFS registrada.
   Implementada em: 2026-08-29 23:17:25 -03:00 (America/Sao_Paulo).
@@ -2930,3 +2930,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   threads reinicia o cursor do scheduler antes de verificar a alternancia
   A/B, evitando depender do slot usado pelos workers anteriores. O agente nao
   executou build, testes ou QEMU; a confirmacao funcional permanece pendente.
+
+- NET3: validacao funcional confirmada pelo usuario.
+  Confirmada em: 2026-08-30 00:20:36 -03:00 (America/Sao_Paulo). O comando
+  `selecttest` retornou `Resultado: OK` em todos os cenarios, incluindo
+  cancelamento por sinal e ausencia de waiter VFS residual. O `regcheck full`
+  tambem retornou `RegCheck: OK`. O `boot.asm` nao foi alterado.
