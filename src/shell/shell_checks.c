@@ -144,6 +144,9 @@
 #define SHELL_REGCHECK_ACPI_SDT_HEADER_SIZE 36U
 #define SHELL_REGCHECK_ACPI_MAX_TABLE_SIZE (1024U * 1024U)
 #define SHELL_REGCHECK_ACPI_MAX_ROOT_ENTRIES 256U
+#define SHELL_REGCHECK_ACPI_RSDP_V1_LENGTH 20U
+#define SHELL_REGCHECK_ACPI_RSDP_V2_LENGTH 36U
+#define SHELL_REGCHECK_ACPI_MAX_RSDP_LENGTH 4096U
 #define SHELL_APPCHECK_PHASE_COUNT 8U
 #define SHELL_APPCHECK_MAX_FAILURES 16U
 #define SHELL_APPCHECK_FAILURE_LABEL_SIZE 40U
@@ -2208,11 +2211,37 @@ static int shell_regcheck_valid_acpi_table(
     if (!table || table->signature[4] != '\0' ||
         !table->physical_address ||
         table->length < SHELL_REGCHECK_ACPI_SDT_HEADER_SIZE ||
-        table->length > SHELL_REGCHECK_ACPI_MAX_TABLE_SIZE) {
+        table->length > SHELL_REGCHECK_ACPI_MAX_TABLE_SIZE ||
+        !table->checksum_valid) {
         return 0;
     }
     for (uint32_t index = 0; index < 4U; index++) {
         if (!table->signature[index]) return 0;
+    }
+    return 1;
+}
+
+static uint32_t shell_regcheck_acpi_read_u32(const uint8_t* bytes) {
+    return (uint32_t)bytes[0] |
+           ((uint32_t)bytes[1] << 8) |
+           ((uint32_t)bytes[2] << 16) |
+           ((uint32_t)bytes[3] << 24);
+}
+
+static int shell_regcheck_valid_acpi_madt_entry(
+    const acpi_madt_entry_t* entry) {
+    if (!entry || entry->length < ACPI_MADT_ENTRY_HEADER_LENGTH ||
+        entry->length > ACPI_MADT_MAX_ENTRY_LENGTH ||
+        entry->raw[0] != entry->type || entry->raw[1] != entry->length) {
+        return 0;
+    }
+    if ((entry->type == ACPI_MADT_TYPE_LOCAL_APIC &&
+         entry->length < ACPI_MADT_LOCAL_APIC_MIN_LENGTH) ||
+        (entry->type == ACPI_MADT_TYPE_IO_APIC &&
+         entry->length < ACPI_MADT_IO_APIC_MIN_LENGTH) ||
+        (entry->type == ACPI_MADT_TYPE_LOCAL_X2APIC &&
+         entry->length < ACPI_MADT_LOCAL_X2APIC_MIN_LENGTH)) {
+        return 0;
     }
     return 1;
 }
@@ -2275,22 +2304,44 @@ static int shell_regcheck_validate_acpi_recovery(
 static int shell_regcheck_validate_acpi(void) {
     acpi_status_t status;
     acpi_power_info_t power;
+    acpi_madt_info_t madt;
     uint32_t table_count = 0;
+    uint32_t madt_count = 0;
     int result = acpi_get_status(&status);
 
     if (result != OK || acpi_get_power_info(&power) != OK ||
         acpi_get_table_count(&table_count) != OK ||
+        acpi_get_madt_info(&madt) != OK ||
+        acpi_get_madt_entry_count(&madt_count) != OK ||
         !status.initialized || table_count != status.table_count ||
         table_count > ACPI_MAX_TABLES ||
+        madt_count != madt.entry_count ||
+        madt_count > ACPI_MAX_MADT_ENTRIES ||
+        !madt.initialized ||
         status.root_entry_count > SHELL_REGCHECK_ACPI_MAX_ROOT_ENTRIES ||
         status.root_kind > ACPI_ROOT_XSDT ||
         (status.available &&
          (status.root_kind == ACPI_ROOT_NONE ||
-          !status.rsdp_address || !status.root_address)) ||
+          !status.rsdp_address || !status.root_address ||
+          !status.rsdp_checksum_valid ||
+          ((status.revision < 2U &&
+            status.rsdp_length != SHELL_REGCHECK_ACPI_RSDP_V1_LENGTH) ||
+           (status.revision >= 2U &&
+            (status.rsdp_length < SHELL_REGCHECK_ACPI_RSDP_V2_LENGTH ||
+             status.rsdp_length > SHELL_REGCHECK_ACPI_MAX_RSDP_LENGTH))) ||
+          !table_count)) ||
+        (!status.available &&
+         (status.rsdp_length || status.rsdp_checksum_valid)) ||
         (!status.available && status.root_kind != ACPI_ROOT_NONE) ||
         (status.fadt_present != (status.fadt_address != 0)) ||
         (status.dsdt_present != (status.dsdt_address != 0)) ||
-        (status.facs_present != (status.facs_address != 0))) {
+        (status.facs_present != (status.facs_address != 0)) ||
+        (status.madt_present != (status.madt_address != 0)) ||
+        (madt.present != status.madt_present) ||
+        (!madt.present &&
+         (madt.physical_address || madt.length || madt.entry_count ||
+          madt.skipped_entries || madt.local_apic_count ||
+          madt.enabled_processor_count || madt.io_apic_count))) {
         LOG_ERROR("SHELL", "RegCheck Full detectou estado ACPI invalido");
         return result == OK ? ERR_STATE : result;
     }
@@ -2301,6 +2352,72 @@ static int shell_regcheck_validate_acpi(void) {
         if (result != OK || !shell_regcheck_valid_acpi_table(&table)) {
             LOG_ERROR("SHELL", "RegCheck Full detectou tabela ACPI invalida");
             return result == OK ? ERR_STATE : result;
+        }
+        for (uint32_t previous = 0; previous < index; previous++) {
+            acpi_table_info_t prior;
+
+            result = acpi_get_table_at(previous, &prior);
+            if (result != OK ||
+                prior.physical_address == table.physical_address) {
+                LOG_ERROR("SHELL", "RegCheck Full detectou tabela ACPI duplicada");
+                return result == OK ? ERR_STATE : result;
+            }
+        }
+        if (index == 0U &&
+            (table.physical_address != status.root_address ||
+             (status.root_kind == ACPI_ROOT_RSDT &&
+              !shell_command_args_equal(table.signature, "RSDT")) ||
+             (status.root_kind == ACPI_ROOT_XSDT &&
+              !shell_command_args_equal(table.signature, "XSDT")))) {
+            LOG_ERROR("SHELL", "RegCheck Full detectou ordem da raiz ACPI invalida");
+            return ERR_STATE;
+        }
+    }
+    if (madt.present &&
+        (madt.length < ACPI_MADT_HEADER_LENGTH ||
+         madt.length > SHELL_REGCHECK_ACPI_MAX_TABLE_SIZE ||
+         madt.physical_address != status.madt_address ||
+         madt.local_apic_count > madt.entry_count ||
+         madt.enabled_processor_count > madt.local_apic_count ||
+         madt.io_apic_count > madt.entry_count)) {
+        LOG_ERROR("SHELL", "RegCheck Full detectou resumo MADT invalido");
+        return ERR_STATE;
+    }
+    {
+        uint32_t local_apic_count = 0;
+        uint32_t enabled_processor_count = 0;
+        uint32_t io_apic_count = 0;
+
+        for (uint32_t index = 0; index < madt_count; index++) {
+            acpi_madt_entry_t entry;
+
+            result = acpi_get_madt_entry_at(index, &entry);
+            if (result != OK ||
+                !shell_regcheck_valid_acpi_madt_entry(&entry)) {
+                LOG_ERROR("SHELL", "RegCheck Full detectou entrada MADT invalida");
+                return result == OK ? ERR_STATE : result;
+            }
+            if (entry.type == ACPI_MADT_TYPE_LOCAL_APIC ||
+                entry.type == ACPI_MADT_TYPE_LOCAL_X2APIC) {
+                uint32_t flags = entry.type == ACPI_MADT_TYPE_LOCAL_APIC ?
+                    shell_regcheck_acpi_read_u32(
+                        entry.raw + ACPI_MADT_LOCAL_APIC_ENTRY_FLAGS_OFFSET) :
+                    shell_regcheck_acpi_read_u32(
+                        entry.raw + ACPI_MADT_LOCAL_X2APIC_ENTRY_FLAGS_OFFSET);
+
+                local_apic_count++;
+                if (flags & ACPI_MADT_PROCESSOR_ENABLED) {
+                    enabled_processor_count++;
+                }
+            } else if (entry.type == ACPI_MADT_TYPE_IO_APIC) {
+                io_apic_count++;
+            }
+        }
+        if (local_apic_count != madt.local_apic_count ||
+            enabled_processor_count != madt.enabled_processor_count ||
+            io_apic_count != madt.io_apic_count) {
+            LOG_ERROR("SHELL", "RegCheck Full detectou contagem MADT incoerente");
+            return ERR_STATE;
         }
     }
     result = shell_regcheck_validate_acpi_power(&status, &power);

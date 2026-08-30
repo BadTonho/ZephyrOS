@@ -707,6 +707,29 @@ o driver zera essa referencia e as consultas `acpi_get_status()`,
 metadados. Nenhum ponteiro fisico e dereferenciado depois que o paging entra
 em operacao.
 
+Na PWR2, a RSDP publica comprimento e checksum valido no snapshot. A raiz
+selecionada tambem e copiada para o inventario, sempre antes das entradas
+listadas por RSDT/XSDT. Cada `acpi_table_info_t` armazenado passou por validacao
+de endereco, comprimento e checksum; por isso `checksum_valid` e verdadeiro em
+todo item retornado. O inventario elimina duplicatas por endereco e preserva
+no maximo `ACPI_MAX_TABLES` SDTs. Entradas excedentes continuam contabilizadas
+como ignoradas e degradam o estado sem truncar silenciosamente a tabela.
+
+A MADT e capturada como snapshot separado. `acpi_madt_info_t` informa endereco,
+comprimento, revisao, endereco/flags do Local APIC, entradas armazenadas,
+processadores habilitados, APICs locais, I/O APICs e entradas ignoradas.
+`acpi_madt_entry_t` copia tipo, comprimento e ate 255 bytes de cada entrada;
+`acpi_get_madt_info()`, `acpi_get_madt_entry_count()` e
+`acpi_get_madt_entry_at()` nunca devolvem ponteiros para firmware. Tipos 0, 1
+e 9 sao validados com seus comprimentos minimos; tipos desconhecidos com
+comprimento valido sao preservados para consumidores futuros. A primeira MADT
+valida na ordem da raiz e a fonte canonica do resumo; outras geram aviso.
+
+A ausencia de MADT deixa a capacidade de APIC indisponivel, sem invalidar uma
+raiz ACPI valida. Uma MADT malformada ou excedente marca o snapshot como
+parcial. Toda leitura fisica ocorre somente durante `acpi_init()` com o mapa
+E820 disponivel; depois disso, apenas os snapshots sao consultados.
+
 Na S1.3, `acpi_register_t` normaliza os campos GAS e legados da FADT. O
 snapshot `acpi_power_info_t`, consultado por copia com
 `acpi_get_power_info()`, registra:

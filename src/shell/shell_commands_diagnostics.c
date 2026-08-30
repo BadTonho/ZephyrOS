@@ -4344,14 +4344,113 @@ static void cmd_acpi_print_power(const acpi_power_info_t* info) {
     video_print("\n", 0x07);
 }
 
+static void cmd_acpi_print_snapshot_table(uint32_t index,
+                                          const acpi_table_info_t* table) {
+    video_print("  [", 0x07);
+    shell_command_print_num(index);
+    video_print("] ", 0x07);
+    video_print(table->signature, 0x0B);
+    video_print(" addr=0x", 0x07);
+    shell_command_print_hex(table->physical_address, 8U);
+    video_print(" length=", 0x07);
+    shell_command_print_num(table->length);
+    video_print(" revision=", 0x07);
+    shell_command_print_num(table->revision);
+    video_print(" checksum=", 0x07);
+    video_print(table->checksum_valid ? "OK" : "INVALIDO",
+                table->checksum_valid ? 0x0A : 0x0C);
+    video_print("\n", 0x07);
+}
+
+static void cmd_acpi_tables(void) {
+    acpi_status_t status;
+    acpi_madt_info_t madt;
+    uint32_t table_count;
+
+    if (acpi_get_status(&status) != OK) {
+        LOG_ERROR("SHELL", "Diagnostico ACPI indisponivel");
+        video_print("Erro: diagnostico ACPI indisponivel.\n", 0x0C);
+        return;
+    }
+    video_print("ACPI tables:\n", 0x0B);
+    if (!status.available) {
+        video_print("  Estado: INDISPONIVEL\n", 0x0E);
+        video_print("  RSDP: nao encontrada\n", 0x08);
+        video_print("  Invalidas=", 0x07);
+        shell_command_print_num(status.malformed_tables);
+        video_print(" ignoradas=", 0x07);
+        shell_command_print_num(status.skipped_tables);
+        video_print("\n", 0x07);
+        return;
+    }
+    video_print("  RSDP addr=0x", 0x07);
+    shell_command_print_hex(status.rsdp_address, 8U);
+    video_print(" length=", 0x07);
+    shell_command_print_num(status.rsdp_length);
+    video_print(" revision=", 0x07);
+    shell_command_print_num(status.revision);
+    video_print(" checksum=", 0x07);
+    video_print(status.rsdp_checksum_valid ? "OK" : "INVALIDO",
+                status.rsdp_checksum_valid ? 0x0A : 0x0C);
+    video_print("\n  Root ", 0x07);
+    video_print(acpi_root_kind_name(status.root_kind), 0x0B);
+    video_print(" em 0x", 0x07);
+    shell_command_print_hex(status.root_address, 8U);
+    video_print("\n", 0x07);
+    if (acpi_get_table_count(&table_count) != OK) {
+        LOG_ERROR("SHELL", "Falha ao consultar tabelas ACPI");
+        video_print("  Falha ao consultar inventario\n", 0x0C);
+        return;
+    }
+    for (uint32_t index = 0; index < table_count; index++) {
+        acpi_table_info_t table;
+
+        if (acpi_get_table_at(index, &table) != OK) {
+            LOG_ERROR("SHELL", "Falha ao copiar tabela ACPI");
+            video_print("  Falha ao copiar tabela\n", 0x0C);
+            return;
+        }
+        cmd_acpi_print_snapshot_table(index, &table);
+    }
+    if (acpi_get_madt_info(&madt) != OK) {
+        LOG_ERROR("SHELL", "Falha ao consultar resumo MADT");
+        video_print("  MADT: consulta indisponivel\n", 0x0E);
+    } else if (!madt.present) {
+        video_print("  MADT: nao encontrada\n", 0x0E);
+    } else {
+        video_print("  MADT addr=0x", 0x07);
+        shell_command_print_hex(madt.physical_address, 8U);
+        video_print(" entries=", 0x07);
+        shell_command_print_num(madt.entry_count);
+        video_print(" processors=", 0x07);
+        shell_command_print_num(madt.enabled_processor_count);
+        video_print(" local_apic=", 0x07);
+        shell_command_print_num(madt.local_apic_count);
+        video_print(" io_apic=", 0x07);
+        shell_command_print_num(madt.io_apic_count);
+        video_print(" skipped=", 0x07);
+        shell_command_print_num(madt.skipped_entries);
+        video_print("\n", 0x07);
+    }
+    video_print("  Invalidas=", 0x07);
+    shell_command_print_num(status.malformed_tables);
+    video_print(" ignoradas=", 0x07);
+    shell_command_print_num(status.skipped_tables);
+    video_print("\n", 0x07);
+}
+
 static void cmd_acpi(const char* args) {
     acpi_status_t status;
     acpi_power_info_t power_info;
     int power_info_result;
 
+    if (shell_command_args_equal(args, "tables")) {
+        cmd_acpi_tables();
+        return;
+    }
     if (!shell_command_args_equal(args, "status")) {
         LOG_WARN("SHELL", "Uso invalido de acpi");
-        video_print("Uso: acpi status\n", 0x0C);
+        video_print("Uso: acpi status|tables\n", 0x0C);
         return;
     }
     if (acpi_get_status(&status) != OK) {
@@ -4392,6 +4491,8 @@ static void cmd_acpi(const char* args) {
                              status.dsdt_address);
         cmd_acpi_print_table("FACS", status.facs_present,
                              status.facs_address);
+        cmd_acpi_print_table("MADT", status.madt_present,
+                             status.madt_address);
     }
     video_print("  Invalidas=", 0x07);
     shell_command_print_num(status.malformed_tables);

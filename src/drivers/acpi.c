@@ -12,6 +12,9 @@
 #define ACPI_RSDP_XSDT_OFFSET 24U
 #define ACPI_SDT_HEADER_LENGTH 36U
 #define ACPI_SDT_LENGTH_OFFSET 4U
+#define ACPI_MADT_LOCAL_APIC_FLAGS_OFFSET 40U
+#define ACPI_MADT_ENTRY_TYPE_OFFSET 0U
+#define ACPI_MADT_ENTRY_LENGTH_OFFSET 1U
 #define ACPI_FACS_MIN_LENGTH 64U
 #define ACPI_MAX_TABLE_LENGTH 0x00100000U
 #define ACPI_MAX_ROOT_ENTRIES 256U
@@ -94,6 +97,8 @@ typedef struct {
 static acpi_status_t acpi_status;
 static acpi_power_info_t acpi_power_info;
 static acpi_table_info_t acpi_tables[ACPI_MAX_TABLES];
+static acpi_madt_info_t acpi_madt_info;
+static acpi_madt_entry_t acpi_madt_entries[ACPI_MAX_MADT_ENTRIES];
 static const mmap_entry_t* acpi_memory_map = 0;
 static uint32_t acpi_memory_map_count = 0;
 static uint32_t acpi_anomaly_logs = 0;
@@ -222,7 +227,11 @@ static const acpi_rsdp_v1_t* acpi_find_rsdp_range(uint32_t start,
             acpi_note_partial(ERR_INVALID);
             continue;
         }
-        if (rsdp->revision < 2U) return rsdp;
+        if (rsdp->revision < 2U) {
+            acpi_status.rsdp_length = ACPI_RSDP_V1_LENGTH;
+            acpi_status.rsdp_checksum_valid = 1;
+            return rsdp;
+        }
         if (!acpi_range_in_memory_map(address, ACPI_RSDP_V2_LENGTH)) {
             acpi_status.malformed_tables++;
             acpi_note_partial(ERR_INVALID);
@@ -237,6 +246,8 @@ static const acpi_rsdp_v1_t* acpi_find_rsdp_range(uint32_t start,
             acpi_note_partial(ERR_INVALID);
             continue;
         }
+        acpi_status.rsdp_length = length;
+        acpi_status.rsdp_checksum_valid = 1;
         return rsdp;
     }
     return 0;
@@ -314,6 +325,108 @@ static void acpi_store_table(uint32_t address,
     table->length = acpi_read_u32((const uint8_t*)header +
                                   ACPI_SDT_LENGTH_OFFSET);
     table->revision = header->revision;
+    table->checksum_valid = 1;
+}
+
+static int acpi_madt_entry_length_valid(uint8_t type, uint8_t length) {
+    if (length < ACPI_MADT_ENTRY_HEADER_LENGTH) return 0;
+    if (type == ACPI_MADT_TYPE_LOCAL_APIC &&
+        length < ACPI_MADT_LOCAL_APIC_MIN_LENGTH) return 0;
+    if (type == ACPI_MADT_TYPE_IO_APIC &&
+        length < ACPI_MADT_IO_APIC_MIN_LENGTH) return 0;
+    if (type == ACPI_MADT_TYPE_LOCAL_X2APIC &&
+        length < ACPI_MADT_LOCAL_X2APIC_MIN_LENGTH) return 0;
+    return 1;
+}
+
+static void acpi_madt_count_entry(const acpi_madt_entry_t* entry) {
+    uint32_t flags;
+
+    if (entry->type == ACPI_MADT_TYPE_IO_APIC) {
+        acpi_madt_info.io_apic_count++;
+        return;
+    }
+    if (entry->type != ACPI_MADT_TYPE_LOCAL_APIC &&
+        entry->type != ACPI_MADT_TYPE_LOCAL_X2APIC) return;
+
+    acpi_madt_info.local_apic_count++;
+    flags = entry->type == ACPI_MADT_TYPE_LOCAL_APIC ?
+            acpi_read_u32(entry->raw +
+                          ACPI_MADT_LOCAL_APIC_ENTRY_FLAGS_OFFSET) :
+            acpi_read_u32(entry->raw +
+                          ACPI_MADT_LOCAL_X2APIC_ENTRY_FLAGS_OFFSET);
+    if (flags & ACPI_MADT_PROCESSOR_ENABLED) {
+        acpi_madt_info.enabled_processor_count++;
+    }
+}
+
+static int acpi_parse_madt(uint32_t address,
+                           const acpi_sdt_header_t* madt) {
+    const uint8_t* bytes = (const uint8_t*)madt;
+    uint32_t length = acpi_read_u32(bytes + ACPI_SDT_LENGTH_OFFSET);
+    uint32_t cursor = ACPI_MADT_HEADER_LENGTH;
+    int result = OK;
+
+    acpi_madt_info.present = 1;
+    acpi_madt_info.physical_address = address;
+    acpi_madt_info.length = length;
+    acpi_madt_info.revision = madt->revision;
+    if (length < ACPI_MADT_HEADER_LENGTH) {
+        acpi_madt_info.skipped_entries++;
+        acpi_note_partial(ERR_INVALID);
+        acpi_log_anomaly("MADT menor que o cabecalho obrigatorio");
+        LOG_WARN("ACPI", "MADT rejeitada por comprimento minimo");
+        return ERR_INVALID;
+    }
+    acpi_madt_info.local_apic_address = acpi_read_u32(bytes + 36U);
+    acpi_madt_info.flags = acpi_read_u32(bytes +
+                                         ACPI_MADT_LOCAL_APIC_FLAGS_OFFSET);
+    while (cursor < length) {
+        uint32_t remaining = length - cursor;
+        uint8_t type;
+        uint8_t entry_length;
+        acpi_madt_entry_t* entry;
+
+        if (remaining < ACPI_MADT_ENTRY_HEADER_LENGTH) {
+            acpi_madt_info.skipped_entries++;
+            acpi_note_partial(ERR_INVALID);
+            acpi_log_anomaly("MADT possui bytes residuais invalidos");
+            return ERR_INVALID;
+        }
+        type = bytes[cursor + ACPI_MADT_ENTRY_TYPE_OFFSET];
+        entry_length = bytes[cursor + ACPI_MADT_ENTRY_LENGTH_OFFSET];
+        if (entry_length > remaining || entry_length <
+            ACPI_MADT_ENTRY_HEADER_LENGTH) {
+            acpi_madt_info.skipped_entries++;
+            acpi_note_partial(ERR_INVALID);
+            acpi_log_anomaly("Entrada MADT possui comprimento invalido");
+            return ERR_INVALID;
+        }
+        if (!acpi_madt_entry_length_valid(type, entry_length)) {
+            acpi_madt_info.skipped_entries++;
+            acpi_note_partial(ERR_INVALID);
+            acpi_log_anomaly("Entrada MADT possui comprimento insuficiente");
+            result = ERR_INVALID;
+            cursor += entry_length;
+            continue;
+        }
+        if (acpi_madt_info.entry_count >= ACPI_MAX_MADT_ENTRIES) {
+            acpi_madt_info.skipped_entries++;
+            acpi_note_partial(ERR_OVERFLOW);
+            cursor += entry_length;
+            continue;
+        }
+        entry = &acpi_madt_entries[acpi_madt_info.entry_count++];
+        kmemset(entry, 0, sizeof(*entry));
+        entry->type = type;
+        entry->length = entry_length;
+        for (uint32_t index = 0; index < entry_length; index++) {
+            entry->raw[index] = bytes[cursor + index];
+        }
+        acpi_madt_count_entry(entry);
+        cursor += entry_length;
+    }
+    return result;
 }
 
 static int acpi_select_root(const acpi_rsdp_v1_t* rsdp,
@@ -391,6 +504,23 @@ static void acpi_parse_root(const acpi_sdt_header_t* root,
         if (!*out_fadt_address &&
             acpi_signature_equal(table->signature, "FACP", 4U)) {
             *out_fadt_address = (uint32_t)physical;
+        }
+        if (acpi_signature_equal(table->signature, "APIC", 4U)) {
+            if (!acpi_status.madt_present) {
+                int madt_result;
+
+                kmemset(&acpi_madt_info, 0, sizeof(acpi_madt_info));
+                madt_result = acpi_parse_madt((uint32_t)physical, table);
+                if (madt_result == OK) {
+                    acpi_status.madt_present = 1;
+                    acpi_status.madt_address = (uint32_t)physical;
+                } else {
+                    acpi_status.malformed_tables++;
+                    kmemset(&acpi_madt_info, 0, sizeof(acpi_madt_info));
+                }
+            } else {
+                acpi_log_anomaly("Mais de uma tabela MADT foi encontrada");
+            }
         }
         acpi_store_table((uint32_t)physical, table);
     }
@@ -915,6 +1045,7 @@ static int acpi_finish_init(uint32_t start_ticks, int result) {
     acpi_status.scan_ticks = timer_get_ticks() - start_ticks;
     acpi_status.initialized = 1;
     acpi_power_info.initialized = 1;
+    acpi_madt_info.initialized = 1;
     acpi_initialized = 1;
     acpi_memory_map = 0;
     acpi_memory_map_count = 0;
@@ -944,7 +1075,9 @@ int acpi_init(const mmap_entry_t* memory_map, uint32_t entry_count) {
     }
     kmemset(&acpi_status, 0, sizeof(acpi_status));
     kmemset(&acpi_power_info, 0, sizeof(acpi_power_info));
+    kmemset(&acpi_madt_info, 0, sizeof(acpi_madt_info));
     kmemset(acpi_tables, 0, sizeof(acpi_tables));
+    kmemset(acpi_madt_entries, 0, sizeof(acpi_madt_entries));
     acpi_anomaly_logs = 0;
     acpi_init_result = OK;
     if (!memory_map) {
@@ -972,6 +1105,7 @@ int acpi_init(const mmap_entry_t* memory_map, uint32_t entry_count) {
     root_result = acpi_select_root(rsdp, &root);
     if (root_result != OK) return acpi_finish_init(start_ticks, root_result);
     acpi_status.available = 1;
+    acpi_store_table(acpi_status.root_address, root);
     acpi_parse_root(root, &fadt_address);
     if (fadt_address) {
         const acpi_sdt_header_t* fadt =
@@ -1107,6 +1241,49 @@ int acpi_find_table(const char signature[4], uint32_t occurrence,
     }
     LOG_WARN("ACPI", "Tabela solicitada nao encontrada");
     return ERR_NOT_FOUND;
+}
+
+int acpi_get_madt_info(acpi_madt_info_t* out_info) {
+    if (!out_info) {
+        LOG_ERROR("ACPI", "Destino nulo ao consultar MADT");
+        return ERR_NULL;
+    }
+    if (!acpi_initialized) {
+        LOG_ERROR("ACPI", "MADT consultado antes da inicializacao");
+        return ERR_STATE;
+    }
+    *out_info = acpi_madt_info;
+    return OK;
+}
+
+int acpi_get_madt_entry_count(uint32_t* out_count) {
+    if (!out_count) {
+        LOG_ERROR("ACPI", "Destino nulo ao consultar entradas MADT");
+        return ERR_NULL;
+    }
+    if (!acpi_initialized) {
+        LOG_ERROR("ACPI", "Entradas MADT consultadas antes da inicializacao");
+        return ERR_STATE;
+    }
+    *out_count = acpi_madt_info.entry_count;
+    return OK;
+}
+
+int acpi_get_madt_entry_at(uint32_t index, acpi_madt_entry_t* out_entry) {
+    if (!out_entry) {
+        LOG_ERROR("ACPI", "Destino nulo ao consultar entrada MADT");
+        return ERR_NULL;
+    }
+    if (!acpi_initialized) {
+        LOG_ERROR("ACPI", "Entrada MADT consultada antes da inicializacao");
+        return ERR_STATE;
+    }
+    if (index >= acpi_madt_info.entry_count) {
+        LOG_WARN("ACPI", "Indice de entrada MADT inexistente");
+        return ERR_NOT_FOUND;
+    }
+    *out_entry = acpi_madt_entries[index];
+    return OK;
 }
 
 const char* acpi_root_kind_name(acpi_root_kind_t kind) {

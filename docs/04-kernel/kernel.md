@@ -363,6 +363,21 @@ fisicos, cria um snapshot estatico e descarta essa referencia antes da
 ativacao do paging. Isso preserva o layout High Memory e evita mapear EBDA,
 BIOS ou tabelas de firmware no espaco virtual permanente.
 
+Na PWR2, o snapshot inclui a RSDP validada, a raiz RSDT/XSDT e as SDTs aceitas
+na ordem publicada pela raiz. Cada item informa endereco, comprimento, revisao
+e checksum valido. A MADT e copiada para um inventario limitado a 64 entradas;
+as consultas devolvem somente `acpi_madt_info_t` e `acpi_madt_entry_t` por
+valor, sem ponteiros para firmware. A contagem separa entradas Local APIC,
+processadores habilitados e I/O APICs, enquanto tipos desconhecidos validos sao
+preservados como bytes copiados.
+
+Essa descoberta nao executa AML, nao escreve PM1 ou qualquer outro registrador
+e nao habilita APIC/SMP. Ausencia de MADT deixa a capacidade de APIC
+indisponivel; uma MADT malformada torna o inventario parcial. `acpi tables`
+apresenta o inventario para diagnostico, e `regcheck full` valida limites,
+checksums, ordem, duplicatas e contagens. As transicoes reais continuam
+reservadas a PWR3.
+
 O componente `ACPI` do `health` fica `READY` com raiz, FADT e DSDT validas,
 `DEGRADED` quando existe apenas um inventario parcial e `DISABLED` quando nao
 ha raiz utilizavel. `Power` continua `READY` em todos esses cenarios porque

@@ -952,7 +952,7 @@ $(AC97_OBJ): $(AC97_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(ACPI_OBJ): $(ACPI_C)
+$(ACPI_OBJ): $(ACPI_C) src/include/drivers/acpi.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1080,7 +1080,7 @@ $(SHELL_COMMANDS_STORAGE_OBJ): $(SHELL_COMMANDS_STORAGE_C) src/include/apps/shel
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(SHELL_COMMANDS_DIAGNOSTICS_OBJ): $(SHELL_COMMANDS_DIAGNOSTICS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_introspection.h src/include/apps/shell_runtime.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/clock.h src/include/core/tls.h src/include/core/wifi_manager.h src/include/core/log.h src/include/fs/vfs.h src/include/fs/procfs.h src/include/drivers/idt.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h src/include/process/process.h src/include/memory/slab.h src/include/memory/vma.h
+$(SHELL_COMMANDS_DIAGNOSTICS_OBJ): $(SHELL_COMMANDS_DIAGNOSTICS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_introspection.h src/include/apps/shell_runtime.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/clock.h src/include/core/tls.h src/include/core/wifi_manager.h src/include/core/log.h src/include/fs/vfs.h src/include/fs/procfs.h src/include/drivers/idt.h src/include/drivers/acpi.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h src/include/process/process.h src/include/memory/slab.h src/include/memory/vma.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1092,7 +1092,7 @@ $(SHELL_COMMANDS_WIFI_OBJ): $(SHELL_COMMANDS_WIFI_C) src/include/apps/shell_comm
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(SHELL_CHECKS_OBJ): $(SHELL_CHECKS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/keyboard.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/clock.h src/include/core/tls.h src/include/core/wifi_manager.h src/include/drivers/idt.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h src/include/process/process.h src/include/memory/vma.h
+$(SHELL_CHECKS_OBJ): $(SHELL_CHECKS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/keyboard.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/clock.h src/include/core/tls.h src/include/core/wifi_manager.h src/include/drivers/idt.h src/include/drivers/acpi.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h src/include/process/process.h src/include/memory/vma.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
