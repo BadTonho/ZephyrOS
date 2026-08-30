@@ -11,8 +11,9 @@ segredos.
 
 Implementação registrada em: 2026-08-30 (horário não informado).
 
-Validação funcional: pendente da execução dos gates de build e da matriz QEMU
-pelo usuário. O resumo PWR2 permanece `[ ]` no roadmap.
+Validação funcional confirmada pelo usuário em 2026-08-30, após execução no
+QEMU de `acpi status`, `acpi tables`, `regcheck full` e `health check`. O
+resumo PWR2 foi marcado `[x]` no roadmap.
 
 - O snapshot ACPI agora registra RSDP v1/v2, a raiz RSDT/XSDT e as SDTs válidas
   na ordem da raiz, com comprimento, revisão, endereço e checksum confirmado.
@@ -25,6 +26,9 @@ pelo usuário. O resumo PWR2 permanece `[ ]` no roadmap.
   habilitadas, APICs locais e I/O APICs.
 - `acpi tables` foi adicionado ao comando ACPI existente. `regcheck full`
   valida os novos campos, a ordem, duplicatas, limites e contagens MADT.
+- A saída confirmou RSDP, RSDT, FACP, APIC, HPET, WAET e DSDT com
+  `checksum=OK`, zero tabelas inválidas/ignoradas e MADT com 1 processador,
+  1 Local APIC e 1 I/O APIC. `RegCheck` terminou em `OK`.
 - AML adicional, escrita em PM1, habilitação de APIC/SMP e transições de
   energia permanecem fora do PWR2 e reservados para etapas posteriores.
 - Não houve alteração de App API, syscalls, layouts de aplicativo, `boot.asm`
