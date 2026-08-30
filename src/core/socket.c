@@ -1726,20 +1726,21 @@ int socket_self_test(socket_self_test_result_t* out_result) {
             sent == sizeof(message) &&
             socket_recv(server_fd, buffer, 3U, &read, &eof) == OK &&
             read == 3U && !eof &&
-            socket_recv(server_fd, buffer, sizeof(buffer), &read, &eof) == OK &&
+            socket_recv(server_fd, buffer, SOCKET_QUEUE_BYTES, &read, &eof) == OK &&
             read == sizeof(message) - 3U;
         socket_test_count(out_result, out_result->stream_io);
-        kmemset(buffer, 'x', sizeof(buffer));
+        kmemset(buffer, 'x', SOCKET_QUEUE_BYTES);
         out_result->nonblocking = nonblocking_set &&
             socket_recv(server_fd, buffer, 1U, &read, &eof) == ERR_AGAIN;
         socket_test_count(out_result, out_result->nonblocking);
-        result = socket_send(client_fd, buffer, sizeof(buffer), &filled_sent);
+        result = socket_send(client_fd, buffer, SOCKET_QUEUE_BYTES,
+                             &filled_sent);
         out_result->queue_full = result == OK &&
-            filled_sent == sizeof(buffer) &&
+            filled_sent == SOCKET_QUEUE_BYTES &&
             socket_send(client_fd, buffer, 1U, &sent) == ERR_AGAIN &&
             sent == 0U;
         socket_test_count(out_result, out_result->queue_full);
-        if (result == OK && filled_sent == sizeof(buffer)) {
+        if (result == OK && filled_sent == SOCKET_QUEUE_BYTES) {
             result = socket_close(server_fd);
             server_fd = VFS_FD_INVALID;
             out_result->eof = result == OK &&
