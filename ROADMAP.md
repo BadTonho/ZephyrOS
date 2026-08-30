@@ -2,7 +2,9 @@
 
 Sistema operacional em C + Assembly (x86), do zero.
 
-O próximo ciclo é a preparação da versão 1.0.0 pelos Roadmaps 18–22:
+O escopo de aceitação da versão 1.0.0 está em
+[`docs/roadmaps/escopo-v1.0.0.md`](docs/roadmaps/escopo-v1.0.0.md). O próximo
+ciclo é a preparação dessa versão pelos Roadmaps 18–22:
 estabilização e release, segurança e isolamento, integridade do Storage,
 compatibilidade de hardware e desempenho mensurável. O Roadmap 17, de Rust,
 continua planejado para depois da base 1.0.0 e não deve preceder esse ciclo.
