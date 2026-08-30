@@ -75,7 +75,7 @@ canonica da funcionalidade, nao nesta memoria geral.
 O alvo `system-fixtures` gera uma matriz compacta assinada usando a chave
 privada indicada por `SYSTEM_PRIVATE_KEY` em `Makefile.local`. A chave privada
 permanece fora do repositorio. A imagem de fixture e hibrida: FAT12 legado no
-inicio e FAT32 `ZEPHYROS` a partir do LBA 4096. Os arquivos usam a extensao
+inicio e FAT32 `ZEPHYROS` a partir do LBA 8192. Os arquivos usam a extensao
 `.ZSYS` no FAT32.
 
 Cada fixture e gravada em uma imagem propria dentro de

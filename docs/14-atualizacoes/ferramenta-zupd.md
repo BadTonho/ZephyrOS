@@ -543,6 +543,14 @@ clusters, sincronizam as duas FATs e publicam a entrada LFN/8.3 por último.
 `storage check <id>` é somente leitura. Journaling, filesystem nativo e boot
 direto pelo FAT32 permanecem etapas posteriores.
 
+### Layout vigente da imagem hibrida
+
+A imagem principal atual permanece com 256 MiB e usa o FAT12 legado no inicio,
+o kernel legado no LBA 64, o recovery loader no LBA 6144 e o FAT32 `ZEPHYROS`
+no LBA 8192. O espaco entre as janelas evita que o crescimento do kernel ou
+do loader sobrescreva outra regiao; os exemplos EP9.4A acima permanecem
+referencia historica para imagens antigas com FAT32 no LBA 4096.
+
 ## Referencias
 
 - [cryptography 49.0.0](https://cryptography.io/_/downloads/en/49.0.0/pdf/)

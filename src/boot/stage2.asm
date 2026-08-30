@@ -5,11 +5,15 @@ KERNEL_OFFSET    equ 0x00100000
 KERNEL_LIMIT     equ 0x00800000
 RECOVERY_LOADER_OFFSET equ 0x00900000
 RECOVERY_LOADER_LIMIT equ 0x00A00000
-LEGACY_KERNEL_LBA equ 64
-%ifndef RECOVERY_LOADER_LBA
-%define RECOVERY_LOADER_LBA 3584
+%ifndef LEGACY_KERNEL_LBA
+%define LEGACY_KERNEL_LBA 64
 %endif
-FAT32_START_LBA equ 4096
+%ifndef RECOVERY_LOADER_LBA
+%define RECOVERY_LOADER_LBA 6144
+%endif
+%ifndef FAT32_START_LBA
+%define FAT32_START_LBA 8192
+%endif
 KERNEL_STACK_TOP equ 0x0009F000
 STAGE2_LOAD      equ 0x5000
 STAGE2_INFO      equ 0x4FFE
@@ -87,6 +91,18 @@ GDT_DATA16_SEL   equ 0x20
 
 %if KERNEL_BYTES <= 0 || KERNEL_BYTES > (KERNEL_SECTORS * SECTOR_SIZE)
     %error "tamanho do kernel legado invalido"
+%endif
+
+%if RECOVERY_LOADER_LBA <= LEGACY_KERNEL_LBA
+    %error "recovery loader deve ficar depois do kernel legado"
+%endif
+
+%if KERNEL_SECTORS > (RECOVERY_LOADER_LBA - LEGACY_KERNEL_LBA)
+    %error "kernel legado invade a janela do recovery loader"
+%endif
+
+%if FAT32_START_LBA <= RECOVERY_LOADER_LBA
+    %error "FAT32 deve ficar depois do recovery loader"
 %endif
 
 %if RECOVERY_LOADER_SECTORS > ((RECOVERY_LOADER_LIMIT - RECOVERY_LOADER_OFFSET) / SECTOR_SIZE) || RECOVERY_LOADER_SECTORS > (FAT32_START_LBA - RECOVERY_LOADER_LBA)

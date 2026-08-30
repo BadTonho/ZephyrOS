@@ -3056,3 +3056,14 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   syscalls, layouts binarios, persistencia, `boot.asm` ou `stage2.asm`.
   A validacao funcional de PROC4 ainda depende dos gates e da confirmacao do
   usuario no QEMU; o resumo do roadmap permanece pendente.
+
+- Infraestrutura do layout legado corrigida em: 2026-08-30 (horario nao
+  informado). O build havia produzido `kernel.bin` com 1.806.190 bytes,
+  equivalentes a 3.528 setores, ultrapassando a janela anterior entre os
+  LBAs 64 e 3584 em oito setores. O layout atual reserva kernel no LBA 64,
+  recovery loader no LBA 6144 e FAT32 no LBA 8192; `stage2`, Makefile,
+  compositor, empacotador e matrizes EP9.4 foram sincronizados. O `stage2`
+  agora rejeita antecipadamente um kernel que atravesse a janela do loader,
+  enquanto o compositor mantem a validacao de sobreposicao. `boot.asm`, App
+  API e syscalls permanecem inalterados. A repeticao de `make q3check`, do
+  build completo e a confirmacao funcional no QEMU permanecem pendentes.

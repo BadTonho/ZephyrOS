@@ -107,7 +107,7 @@ int ata_read_sectors(uint32_t lba, uint8_t count, uint8_t* buffer) {
 
 Storage e a camada orientada a volume sobre ATA/USB. O artefato principal
 `build\\zephyros.img` e hibrido: preserva o FAT12 bruto para boot e recuperacao
-e publica um volume FAT32 `ZEPHYROS` iniciado no LBA 4096. O FAT12 continua
+e publica um volume FAT32 `ZEPHYROS` iniciado no LBA 8192. O FAT12 continua
 disponivel por `legacy:/`; caminhos sem prefixo usam o FAT32 do sistema quando
 ele estiver montado. O registro suporta ate `BLOCK_MAX_DEVICES` discos, 16
 volumes e quatro montagens simultaneas contando boot e sistema. Getters

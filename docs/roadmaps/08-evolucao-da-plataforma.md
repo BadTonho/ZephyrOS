@@ -949,8 +949,11 @@ dessas migracoes sem substituir a raiz fixa de recuperacao.
 
 - [x] Manter o bootstrap BIOS, shim, verifier e kernel legado na area fixa;
   executar boot, stage2 e kernel operacionais autenticados do ZSYS FAT32.
-- [x] Expandir a imagem para 256 MiB, manter o FAT32 no LBA 4096 e usar quatro
+- [x] Expandir a imagem para 256 MiB, manter o FAT32 no LBA 8192 e usar quatro
   setores por cluster, duas FATs, FSInfo e backup do BPB.
+- [x] Reposicionar o recovery loader para o LBA 6144 e reservar janelas sem
+  sobreposicao para kernel legado, loader e FAT32; a repeticao dos gates e a
+  confirmacao funcional da nova imagem permanecem pendentes.
 - [x] Adicionar `boot_abi=2` com handoff privado para a cadeia protegida e
   preservar leitura e boot de slots `boot_abi=1`.
 - [x] Preservar estado v2, `ZSBH`, confirmacao pelo kernel, rollback e fallback

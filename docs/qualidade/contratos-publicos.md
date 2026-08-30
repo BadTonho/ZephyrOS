@@ -673,10 +673,12 @@ permanece inalterado.
 
 Desde a EP9.4B, `build\zephyros.img` usa uma imagem híbrida de 256 MiB: o FAT12
 bruto continua no início para boot e recuperação e o FAT32 `ZEPHYROS` começa
-no LBA 4096. `fs.h` roteia caminhos sem prefixo e `system:/` para o volume de
+no LBA 8192. O kernel legado fica no LBA 64 e o recovery loader no LBA 6144,
+com janelas sem sobreposicao. `fs.h` roteia caminhos sem prefixo e `system:/` para o volume de
 sistema quando montado, preserva `legacy:/` para o FAT12 e não faz fallback
-silencioso. Nenhuma API altera `boot.asm`, `stage2`, slots, staging, reboot ou
-journaling nesta etapa.
+silencioso. A correcao de layout atualiza somente constantes e validacoes do
+`stage2` e do empacotador; nao altera App API, syscalls, slots, staging, reboot
+ou journaling. `boot.asm` permanece inalterado.
 
 EP9.2A adiciona somente contratos privados de boot: o recovery loader fixo
 seleciona `ZSI*.STA`, grava tentativa/rollback in-place na copia redundante ja

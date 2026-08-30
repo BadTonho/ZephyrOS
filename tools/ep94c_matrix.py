@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 
 from ep94b_matrix import validate_geometry
-from packager import inject_fat32_bytes
+from packager import HYBRID_FAT32_START_LBA, inject_fat32_bytes
 from system_slots_matrix import (
     CONTROL_HASH_OFFSET,
     CONTROL_SIZE,
@@ -91,7 +91,8 @@ def main() -> int:
     parser.add_argument("--candidate", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--fixtures-dir", required=True)
-    parser.add_argument("--fat32-start-lba", type=int, default=4096)
+    parser.add_argument("--fat32-start-lba", type=int,
+                        default=HYBRID_FAT32_START_LBA)
     args = parser.parse_args()
 
     output = Path(args.output)
