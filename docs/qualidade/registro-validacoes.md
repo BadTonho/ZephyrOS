@@ -2894,3 +2894,14 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `boot.asm` nao foi alterado. O agente nao executou build, testes ou QEMU;
   `make q3check`, `make clean && make`, `make run` e a matriz funcional NET3
   permanecem pendentes da confirmacao do usuario.
+
+- NET3: correcao da ordem de inicializacao apos panic no bootstrap.
+  Identificada e corrigida em: 2026-08-29 23:52:34 -03:00
+  (America/Sao_Paulo). O novo canal global `VFS-poll` era registrado durante
+  `vfs_init()`, mas o servico de espera ainda nao havia executado `wait_init()`;
+  por isso a VFS ficava indisponivel e a criacao do processo Idle falhava ao
+  inicializar seus descritores. `wait_init()` passou a ocorrer antes de
+  `app_api_init()` e deixou de ser repetido antes do bootstrap de processos,
+  preservando o registro do canal. O `boot.asm` nao foi alterado. O agente nao
+  executou build, testes ou QEMU; os pre-requisitos operacionais e a matriz
+  funcional NET3 continuam pendentes.
