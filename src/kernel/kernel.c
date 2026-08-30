@@ -612,7 +612,7 @@ void system_process_main(void) {
         kernel_retry_shell_request();
         taskbar_update_clock();
         wm_update_cpu_stats();
-        process_yield();
+        process_block(1U);
     }
 }
 
@@ -663,7 +663,7 @@ void shell_process_main(void) {
 void desktop_process_main(void) {
     /* A cena inicial e desenhada pelo kernel apos o boot completo. */
     while (1) {
-        process_yield();
+        process_block(1U);
     }
 }
 
@@ -1398,6 +1398,11 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     desktop_draw();
     video_end_update();
 
+    if (!kernel_service_fallback && process_start_scheduler() != OK) {
+        kernel_service_fallback = 1;
+        LOG_ERROR("KERNEL", "Scheduler nao assumiu o contexto inicial");
+    }
+
     while (1) {
         if (kernel_service_fallback) {
             kernel_dispatch_async_work();
@@ -1412,7 +1417,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
             taskbar_update_clock();
             wm_update_cpu_stats();
         }
+        asm volatile("sti\n\thlt" : : : "memory");
         process_yield();
-        asm volatile("hlt");
     }
 }

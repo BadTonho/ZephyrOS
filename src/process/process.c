@@ -39,6 +39,11 @@ static uint32_t scheduler_context_switches = 0;
 static uint32_t scheduler_cooperative_yields = 0;
 static uint32_t scheduler_user_preemptions = 0;
 static uint32_t scheduler_idle_fallbacks = 0;
+static uint32_t scheduler_idle_ticks = 0;
+static uint32_t scheduler_active_ticks = 0;
+static process_context_t scheduler_bootstrap_context;
+
+static process_t* scheduler_find_next_ready(void);
 static int last_user_fault_valid = 0;
 static process_user_fault_summary_t last_user_fault;
 static uint32_t user_fault_count = 0;
@@ -479,7 +484,7 @@ static void process_copy_wait_text(char* destination, uint32_t capacity,
 
 static void process_idle_main(void) {
     while (1) {
-        asm volatile("hlt");
+        asm volatile("sti\n\thlt" : : : "memory");
         process_yield();
     }
 }
@@ -664,6 +669,48 @@ void process_bootstrap_idle(void) {
     process_count = 1;
     process_signal_process_created(proc->pid, 0U);
     LOG_INFO("PROC", "Processo Idle inicializado");
+}
+
+int process_start_scheduler(void) {
+    uint32_t flags;
+    process_t* idle = processes[0];
+    process_t* next;
+
+    if (!idle || idle->pid != 0U || idle->state != PROCESS_STATE_RUNNING ||
+        !idle->kernel_stack_top || !idle->page_directory) {
+        LOG_ERROR("PROC", "Contexto inicial do Idle invalido");
+        return ERR_STATE;
+    }
+    flags = process_wait_irq_save();
+    next = scheduler_find_next_ready();
+    if (!next) {
+        process_stack_verify_or_panic(idle);
+        current_process = idle;
+        tss_set_kernel_stack(idle->kernel_stack_top);
+        if (idle->page_directory &&
+            idle->page_directory != paging_get_current_directory()) {
+            paging_switch_directory(idle->page_directory);
+        }
+        process_context_switch(&scheduler_bootstrap_context,
+                               &idle->context);
+        process_wait_irq_restore(flags);
+        LOG_ERROR("PROC", "Handoff inicial para o Idle retornou");
+        return ERR_STATE;
+    }
+
+    process_stack_verify_or_panic(next);
+    idle->state = PROCESS_STATE_READY;
+    next->state = PROCESS_STATE_RUNNING;
+    current_process = next;
+    if (next->kernel_stack_top) tss_set_kernel_stack(next->kernel_stack_top);
+    if (next->page_directory &&
+        next->page_directory != paging_get_current_directory()) {
+        paging_switch_directory(next->page_directory);
+    }
+    process_context_switch(&scheduler_bootstrap_context, &next->context);
+    process_wait_irq_restore(flags);
+    LOG_ERROR("PROC", "Handoff inicial do scheduler retornou");
+    return ERR_STATE;
 }
 
 static process_t* process_create_internal(const char* name,
@@ -2218,6 +2265,10 @@ void scheduler_init(void) {
     scheduler_cooperative_yields = 0;
     scheduler_user_preemptions = 0;
     scheduler_idle_fallbacks = 0;
+    scheduler_idle_ticks = 0;
+    scheduler_active_ticks = 0;
+    kmemset(&scheduler_bootstrap_context, 0,
+            sizeof(scheduler_bootstrap_context));
     LOG_INFO("PROC", "Scheduler round-robin inicializado");
 }
 
@@ -2251,20 +2302,31 @@ void scheduler_tick(void) {
         }
     }
 
+    if (current_process->pid == 0U) {
+        scheduler_idle_ticks++;
+    } else {
+        scheduler_active_ticks++;
+    }
     current_process->total_ticks++;
 }
 
 void scheduler_get_stats(scheduler_stats_t* stats) {
+    uint32_t flags;
+
     if (!stats) {
         LOG_ERROR("PROC", "Destino nulo ao consultar metricas do scheduler");
         return;
     }
 
+    flags = process_wait_irq_save();
     stats->context_switches = scheduler_context_switches;
     stats->cooperative_yields = scheduler_cooperative_yields;
     stats->user_preemptions = scheduler_user_preemptions;
     stats->idle_fallbacks = scheduler_idle_fallbacks;
     stats->user_quantum_ticks = SCHEDULER_USER_QUANTUM_TICKS;
+    stats->idle_ticks = scheduler_idle_ticks;
+    stats->active_ticks = scheduler_active_ticks;
+    process_wait_irq_restore(flags);
 }
 
 static uint32_t scheduler_validate_pid_table(void) {
@@ -2314,6 +2376,7 @@ static uint32_t scheduler_validate_states(void) {
 }
 
 int scheduler_validate_invariants(scheduler_validation_t* validation) {
+    uint32_t flags;
     process_t* idle = processes[0];
     process_stack_validation_t stack_validation;
     int stack_result;
@@ -2324,6 +2387,7 @@ int scheduler_validate_invariants(scheduler_validation_t* validation) {
     }
 
     kmemset(validation, 0, sizeof(scheduler_validation_t));
+    flags = process_wait_irq_save();
     validation->current_valid = process_pointer_valid(current_process) &&
                                 current_process->state == PROCESS_STATE_RUNNING &&
                                 process_get_state_count(PROCESS_STATE_RUNNING) == 1;
@@ -2339,6 +2403,10 @@ int scheduler_validate_invariants(scheduler_validation_t* validation) {
                                     stack_validation.valid == process_count &&
                                     stack_validation.low_water == 0U &&
                                     stack_validation.corrupted == 0U;
+    validation->idle_accounting_valid = idle &&
+                                        scheduler_idle_ticks ==
+                                        idle->total_ticks;
+    process_wait_irq_restore(flags);
 
     if (!validation->current_valid) LOG_ERROR("PROC", "Invariante do processo atual violada");
     if (!validation->idle_valid) LOG_ERROR("PROC", "Invariante do Idle violada");
@@ -2346,9 +2414,11 @@ int scheduler_validate_invariants(scheduler_validation_t* validation) {
     if (!validation->state_table_valid) LOG_ERROR("PROC", "Invariante dos estados violada");
     if (!validation->slab_table_valid) LOG_ERROR("PROC", "Invariante dos caches SLAB violada");
     if (!validation->stack_table_valid) LOG_ERROR("PROC", "Invariante das stacks violada");
+    if (!validation->idle_accounting_valid) LOG_ERROR("PROC", "Contabilidade do Idle inconsistente");
     if (!validation->current_valid || !validation->idle_valid ||
         !validation->pid_table_valid || !validation->state_table_valid ||
-        !validation->slab_table_valid || !validation->stack_table_valid) {
+        !validation->slab_table_valid || !validation->stack_table_valid ||
+        !validation->idle_accounting_valid) {
         return stack_result == OK ? ERR_STATE : stack_result;
     }
 

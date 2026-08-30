@@ -55,6 +55,7 @@ extern void shell_dispatch_cmd_http(const char* arguments);
 extern void shell_dispatch_cmd_acpi(const char* arguments);
 extern void shell_dispatch_cmd_power(const char* arguments);
 extern void shell_dispatch_cmd_kmetrics(const char* arguments);
+extern void shell_dispatch_cmd_cpu_usage(const char* arguments);
 extern void shell_dispatch_cmd_memcheck(const char* arguments);
 extern void shell_dispatch_cmd_slabinfo(const char* arguments);
 extern void shell_dispatch_cmd_slabtest(const char* arguments);
@@ -162,6 +163,7 @@ static const shell_dispatch_entry_t shell_dispatch_table[] = {
     {"acpi", shell_dispatch_cmd_acpi, SHELL_DISPATCH_FLAG_NONE},
     {"power", shell_dispatch_cmd_power, SHELL_DISPATCH_FLAG_NONE},
     {"kmetrics", shell_dispatch_cmd_kmetrics, SHELL_DISPATCH_FLAG_NONE},
+    {"cpu", shell_dispatch_cmd_cpu_usage, SHELL_DISPATCH_FLAG_NONE},
     {"memcheck", shell_dispatch_cmd_memcheck,
      SHELL_DISPATCH_FLAG_MAY_BLOCK},
     {"slabinfo", shell_dispatch_cmd_slabinfo, SHELL_DISPATCH_FLAG_NONE},

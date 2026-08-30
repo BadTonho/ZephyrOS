@@ -7,6 +7,29 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## PWR1 - Idle arquitetural com HLT
+
+Implementacao registrada em: 2026-08-30 (horario nao informado).
+
+Validacao funcional: pendente da execucao dos gates de build e da matriz QEMU
+pelo usuario. O resumo PWR1 permanece `[ ]` no roadmap.
+
+- O PID 0 passou a ser o unico Idle real do kernel unicore, fora do
+  round-robin. O handoff inicial usa contexto de bootstrap separado para
+  preservar a stack propria do Idle.
+- O Idle usa `sti; hlt` seguido de `process_yield()`, e System/Desktop usam
+  bloqueio temporizado para evitar polling ativo. O caminho degradado do
+  `kernel_main` tambem usa a sequencia protegida.
+- `scheduler_stats_t` recebeu `idle_ticks` e `active_ticks` em extensao
+  append-only; `schedcheck` e `regcheck full` validam a correspondencia entre
+  `idle_ticks` e `total_ticks` do PID 0.
+- `cpu usage` mostra a janela acumulada e `cpu usage reset` captura linha-base
+  privada sem alterar contadores. `kmetrics` publica os deltas dos novos
+  campos.
+- Nao houve alteracao de App API, syscalls, layouts binarios, `boot.asm`,
+  `stage2.asm`, paging, `thread_t` ou quantum de ring 3. O agente nao
+  executou build, testes ou QEMU.
+
 ## NET2 - camada generica de sockets e AF_UNIX
 
 Implementacao registrada em: 2026-08-29 21:32:35 (America/Sao_Paulo)

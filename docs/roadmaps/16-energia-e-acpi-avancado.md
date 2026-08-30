@@ -102,26 +102,38 @@ sem criar comando, syscall, App API ou ABI binária nova.
 
 ### Implementação
 
-- [ ] Criar a thread especial do kernel `idle_task` com a menor prioridade possível do scheduler.
-- [ ] No corpo da `idle_task`, executar um loop seguro:
+- [x] Consolidar o PID 0 como o único contexto Idle do kernel unicore, fora do
+  round-robin e escolhido somente quando não houver processo normal `READY`.
+- [x] Iniciar o scheduler por um contexto de bootstrap separado, carregando a
+  stack e o contexto próprios do PID 0 sem sobrescrevê-los com a stack do
+  `kernel_main`.
+- [x] No corpo do Idle, executar um loop seguro:
   ```c
   while (1) {
       asm volatile ("sti; hlt");
+      process_yield();
   }
   ```
-- [ ] Contabilizar o tempo gasto na `idle_task` para calcular a porcentagem real de uso de CPU do sistema (`100% - idle%`).
-- [ ] Garantir que interrupções de hardware (timer, teclado, rede) acordem a
-  CPU sem perder eventos na janela entre a verificação e o `hlt`.
-- [ ] Se o sistema continuar unicore, manter uma única tarefa idle; não criar
-  uma abstração SMP sem necessidade real.
+- [x] Contabilizar ticks `idle_ticks` e `active_ticks` no scheduler, mantendo
+  `idle_ticks` igual ao `total_ticks` do PID 0 e protegendo snapshots contra
+  atualização concorrente do PIT.
+- [x] Usar bloqueio temporizado nos loops cooperativos de System e Desktop;
+  timer, teclado, rede, IPC e workqueue continuam acordando seus consumidores.
+- [x] Manter uma única tarefa Idle no sistema unicore e preservar o loop
+  degradado do `kernel_main` com `sti; hlt` quando System não puder ser criado.
+- [x] Expor `cpu usage` e `cpu usage reset`, além dos deltas no `kmetrics`,
+  sem alterar contadores do kernel no reset.
 
 ### Critério de saída
 
-O uso de CPU no computador host (ou processo do QEMU) cai para próximo de 0-1% quando o ZephyrOS estiver aguardando interação do usuário no Shell ou Desktop.
+O código PWR1 está implementado. A queda de uso do host/QEMU para próximo de
+0-1% quando o ZephyrOS aguarda interação ainda deve ser medida pelo usuário no
+mesmo cenário antes de marcar o resumo PWR1 como concluído.
 
 ### Comandos Shell / Diagnóstico
 
-- `cpu usage`: exibe porcentagem de CPU ativa vs tempo ocioso (*idle time*).
+- `cpu usage`: exibe ticks e porcentagens de CPU ativa versus tempo ocioso.
+- `cpu usage reset`: captura uma linha-base privada para a próxima consulta.
 
 ---
 

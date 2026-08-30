@@ -953,3 +953,29 @@ separados. Somente capacidades detectadas e validadas podem ser usadas, e
 portas privadas de QEMU, Bochs ou VirtualBox não são fallback genérico.
 `power status` e `acpi status` continuam sendo a observação pública, sem
 novo comando, layout binário ou ABI de aplicativo nesta etapa.
+
+## PWR1 - Idle e metricas de residencia
+
+O PWR1 usa o processo PID 0 existente como o unico Idle do kernel unicore. O
+PID 0 fica fora do round-robin e e escolhido somente quando nenhum processo
+normal esta `READY`. O handoff inicial usa um contexto de bootstrap separado,
+preservando a stack propria do Idle; `boot.asm`, `stage2.asm`, syscalls, App
+API e layouts binarios permanecem inalterados.
+
+O Idle executa `sti; hlt` e depois `process_yield()`. System e Desktop usam
+bloqueio temporizado em vez de polling ativo; o caminho degradado do
+`kernel_main` tambem usa `sti; hlt` quando System nao pode ser criado.
+
+`scheduler_stats_t` mantem o layout existente por extensao append-only:
+`idle_ticks` e `active_ticks` sao acrescentados depois de
+`user_quantum_ticks`. O scheduler incrementa exatamente um contador por tick
+do PIT e `scheduler_get_stats()` copia a estrutura com interrupcoes
+protegidas. A invariante `idle_ticks == processes[0].total_ticks` e publicada
+por `idle_accounting_valid` em `scheduler_validation_t` e validada por
+`schedcheck` e `regcheck full`.
+
+`cpu usage` e `cpu usage reset` sao comandos do Shell, nao uma nova fronteira
+de ABI. O reset captura uma linha-base privada e nao zera contadores do
+kernel. As porcentagens representam residencia do scheduler baseada no PIT;
+nao representam CPU fisica, consumo eletrico ou RDTSC/PMU. Nenhuma assinatura
+da App API, syscall, `taskmanager.h` ou ABI binaria foi criada.

@@ -186,12 +186,14 @@ Quando um processo é criado, sua pilha é preparada assim:
 
 ## Scheduler
 
-### Round-Robin com Idle de fallback
+### Round-Robin com Idle arquitetural
 
 O scheduler percorre os PIDs normais em ordem circular e escolhe o primeiro
 processo `READY` depois do ultimo selecionado. O PID 0 (`System Idle`) fica
 fora dessa rotacao: ele so e escolhido quando nao ha nenhum processo normal
-pronto. Assim, o Idle preserva a continuidade do kernel sem disputar uma
+pronto. O bootstrap transfere o controle por um contexto separado para a stack
+propria do PID 0; a stack do `kernel_main` nunca e salva como se fosse a stack
+do Idle. Assim, o Idle preserva a continuidade do kernel sem disputar uma
 fatia com trabalho real.
 
 ### Preempção e yield
@@ -228,10 +230,18 @@ void scheduler_tick(void) {
 ```
 
 `process_yield()` continua sendo a cessao cooperativa usada por processos
-nativos, pelo Idle e pelos caminhos de bloqueio. Prioridades, quantum maior e
-mudancas na relacao processo/thread foram avaliados na K2 e adiados: a linha
-base K1 nao mostrou requisito funcional ou gargalo que justificasse alterar a
-politica simples atual.
+nativos, pelo Idle e pelos caminhos de bloqueio. O Idle executa `sti; hlt` antes
+de ceder, fechando a janela de corrida entre a verificacao de trabalho e a
+espera; o timer e as demais IRQs acordam a CPU sem polling ativo. System e
+Desktop bloqueiam por um tick depois de cada ciclo de servico quando nao ha
+trabalho imediato.
+
+O scheduler soma `idle_ticks` quando o PID 0 esta em execucao e `active_ticks`
+para os demais processos. A contagem de Idle e mantida igual ao
+`total_ticks` do PID 0. `cpu usage` mostra os deltas desde o boot ou desde
+`cpu usage reset`, sem confundir essa residencia de scheduler com medicao
+eletrica ou com RDTSC/PMU. Prioridades, quantum maior e mudancas na relacao
+processo/thread continuam fora do PWR1.
 
 ---
 
@@ -454,17 +464,21 @@ Timer IRQ → scheduler_tick()
             → troca CR3 e retorna ao contexto salvo
 ```
 
-## Metricas e invariantes K1/K2
+## Metricas e invariantes K1/K2/PWR1
 
 `scheduler_get_stats()` informa contadores acumulados de trocas reais de
 contexto, yields cooperativos, preempcoes de ring 3 e fallbacks para o Idle,
-alem do quantum atual de usuario (1 tick). `kmetrics` mostra os deltas desses
-contadores na janela desde o boot ou o ultimo reset.
+alem do quantum atual de usuario (1 tick). Os campos append-only
+`idle_ticks` e `active_ticks` registram a residencia baseada no PIT.
+`kmetrics` mostra os deltas desses contadores na janela desde o boot ou o
+ultimo reset; `cpu usage` calcula as porcentagens sem dividir quando a janela
+nao tem ticks.
 
-`scheduler_validate_invariants()` apenas consulta a tabela de processos. Ele
-valida processo atual, Idle, unicidade e contagem dos PIDs, e estados de
-bloqueio/zumbi; um processo ring 3 suspenso pelo loader pode permanecer
-`BLOCKED` com espera zero. A funcao retorna `OK`, `ERR_NULL` ou `ERR_STATE` e
+`scheduler_validate_invariants()` consulta o estado protegido do scheduler e
+suas estruturas de processos. Ele valida processo atual, Idle, unicidade e
+contagem dos PIDs, estados de bloqueio/zumbi e `idle_accounting_valid`; um
+processo ring 3 suspenso pelo loader pode permanecer `BLOCKED` com espera zero.
+A funcao retorna `OK`, `ERR_NULL` ou `ERR_STATE` e
 nunca tenta reparar uma inconsistencia. O comando Shell `schedcheck` apresenta
 esse resultado de forma compacta.
 

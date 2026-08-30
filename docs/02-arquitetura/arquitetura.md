@@ -65,7 +65,7 @@ paging_init()       → Paginação ativa e mapas identity-mapped
 vesa_init_backbuffer() → Backbuffer alocado para double-buffering
 tss_init()          → Kernel stack configurado no TSS
 process_init()      → Gerenciador de processos pronto
-process_bootstrap_idle() → Processo Idle disponível como fallback
+process_bootstrap_idle() → Processo PID 0 Idle preparado para o scheduler
 ipc_init()          → Filas de mensagens e foco prontos
 thread_init()       → Gerenciador de threads pronto
 block_init()        → Registro de dispositivos de bloco (ATA e USB MSC)
