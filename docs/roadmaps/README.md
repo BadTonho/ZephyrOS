@@ -11,7 +11,7 @@ backlog pós-1.0.
 ## Estado de referencia
 
 O ciclo de preparação da versão 1.0.0 será composto pelos Roadmaps 18 a 22.
-O Roadmap 17, de migração gradual para Rust, permanece reservado para depois
+A etapa pós-1.0.0 de migração gradual para Rust permanece reservada para depois
 da base 1.0.0 e não deve ser iniciado antes do fechamento desse ciclo.
 
 - Base original (boot, memoria, processos, filesystem, Shell e desktop):
@@ -183,7 +183,7 @@ correcao da ordem de apresentacao.
 14. [14 - Stack de Rede Avancada](feitos/14-stack-de-rede-avancada.md)
 15. [15 - Introspeccao e Pseudo-Filesystems](feitos/15-introspeccao-e-pseudo-fs.md)
 16. [16 - Energia e ACPI Avancado](feitos/16-energia-e-acpi-avancado.md)
-17. [17 - Migracao gradual do ZephyrOS para Rust](17-migracao-gradual-rust.md)
+17. [Pós-1.0.0 - Migração gradual do ZephyrOS para Rust](17-migracao-gradual-rust.md)
 
 ## Ordem de execução da versão 1.0.0
 
@@ -192,7 +192,7 @@ correcao da ordem de apresentacao.
 3. [20 - Integridade e recuperação do Storage](20-integridade-e-recuperacao-do-storage.md)
 4. [21 - Compatibilidade e matriz de hardware](21-compatibilidade-e-matriz-de-hardware.md)
 5. [22 - Desempenho mensurável e dívidas da 1.0.0](22-desempenho-e-dividas-v1.0.md)
-6. [17 - Migração gradual para Rust](17-migracao-gradual-rust.md), somente após a base 1.0.0.
+6. [Pós-1.0.0 - Migração gradual para Rust](17-migracao-gradual-rust.md), somente após a base 1.0.0.
 
 Os numeros 06 e 07 mantem a organizacao documental, mas sua execucao e
 intercalada nesta ordem:

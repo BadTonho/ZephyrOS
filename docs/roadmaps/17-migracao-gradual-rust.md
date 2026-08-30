@@ -1,4 +1,4 @@
-# Roadmap 17 - Migração gradual do ZephyrOS para Rust
+# Roadmap pós-1.0.0 — Migração gradual do ZephyrOS para Rust
 
 ## Objetivo
 
@@ -26,7 +26,7 @@ Estado atual: planejado para depois da versão 1.0.0. Nenhuma migração Rust
 foi iniciada por este roadmap. RUST0 só pode começar após a base escolhida da
 1.0.0 estar reproduzível, validada e com rollback preservado.
 
-A base de entrada será formada pelos Roadmaps 18 a 22. O Roadmap 17 só será
+A base de entrada será formada pelos Roadmaps 18 a 22. Esta etapa só será
 reaberto depois que estabilização, segurança, Storage, compatibilidade de
 hardware e desempenho tiverem critérios de saída aceitos.
 
@@ -448,7 +448,7 @@ nem substituir PMM, VMM, SLAB, scheduler ou ABI sem evidência independente.
   encerrar uma etapa deve ser aprovada e registrada em
   `docs/qualidade/dividas-tecnicas-v1.0.0.md`.
 
-## Critério de conclusão do Roadmap 17
+## Critério de conclusão da etapa pós-1.0.0
 
 - [ ] A versão 1.0.0 permanece reproduzível e compatível.
 - [ ] Pelo menos um módulo Rust integrado ao kernel passa a matriz funcional.
