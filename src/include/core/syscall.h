@@ -29,6 +29,8 @@
 #define APP_SYSCALL_MUNMAP        20
 #define APP_SYSCALL_FSYNC         21
 #define APP_SYSCALL_SYNC          22
+#define APP_SYSCALL_POLL          23
+#define APP_SYSCALL_SELECT        24
 #define APP_SYSCALL_INVALID       0xFFFFFFFFU
 
 int syscall_init(void);

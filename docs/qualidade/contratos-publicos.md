@@ -61,6 +61,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/core/wifi_manager.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/panic.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/power.h` | `docs/04-kernel/kernel.md` |
+| `src/include/core/poll.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/recovery.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/spinlock.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/string.h` | `docs/04-kernel/kernel.md` |
@@ -700,3 +701,34 @@ inclusive no estado degradado por ausencia de FLUSH. Erros de escrita ou
 FLUSH sao propagados e impedem que os caminhos normais chamem a primitiva
 terminal `power_shutdown()`. `power_shutdown()` permanece `void`, `noreturn`
 e com o mesmo contrato; `power_reboot()` nao foi alterado.
+
+## NET3 - Multiplexacao VFS com poll/select
+
+`src/include/core/poll.h` acrescenta `pollfd_t` com layout fixo de tres campos
+de 32 bits (`fd`, `events`, `revents`) e `fd_set_t` de 32 bits. O limite de
+`poll()` e `select()` e `POLL_MAX_FDS` (32); os timeouts sao expressos em ticks,
+com zero imediato e `WAIT_TIMEOUT_INFINITE` infinito. As mascaras publicas sao
+`POLLIN`, `POLLOUT`, `POLLERR`, `POLLHUP` e `POLLNVAL`, e as macros `FD_ZERO`,
+`FD_SET`, `FD_CLR` e `FD_ISSET` ignoram descritores fora desse limite.
+
+`file_operations_t.poll` foi anexado depois de `sync`, preservando o layout
+anterior dos campos existentes. A VFS consulta stdin/TTY, arquivos regulares,
+pipes e sockets genericos; operacoes sem readiness publicado retornam
+`POLLERR`. Pipes publicam dados/EOF, espaco/fechamento do leitor e usam o
+canal global `VFS-poll`. Sockets AF_UNIX e AF_INET traduzem filas, estado,
+erro, fechamento e capacidade TCP para as mesmas mascaras.
+
+`vfs_poll()` limpa e reconstroi `revents` a cada varredura, aceita zero
+descritores como espera temporizada, retorna `POLLNVAL` por entrada invalida,
+`ERR_OVERFLOW` acima de 32 entradas, `OK` com zero eventos no timeout e
+`ERR_CANCELLED` para sinal/cancelamento. O bloqueio registra somente um
+waiter no canal global e nao conserva `file_t` nem locks durante a espera.
+`vfs_select()` usa o mesmo caminho e traduz `POLLNVAL` para `ERR_INVALID`.
+
+`app_api.h` e `app_files.h` acrescentam as fachadas `app_api_poll()` e
+`app_api_select()`. A App API permanece 0.9. `APP_SYSCALL_POLL` e
+`APP_SYSCALL_SELECT` sao anexadas como syscalls 23 e 24; `select` recebe um
+`select_request_t` por ponteiro para preservar o limite de cinco argumentos
+da ABI. A fronteira ring 3 valida ranges, copia arrays e request, verifica
+overflow e somente publica resultados depois de uma operacao concluida.
+Nenhuma syscall de criacao de socket foi adicionada.

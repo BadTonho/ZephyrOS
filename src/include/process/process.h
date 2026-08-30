@@ -259,6 +259,7 @@ int scheduler_validate_invariants(scheduler_validation_t* validation);
 
 int ipc_send(uint32_t pid, ipc_msg_t* msg);
 int ipc_receive(ipc_msg_t* msg);
+int ipc_current_has_pending(void);
 int ipc_wait(uint32_t timeout_ticks, wait_reason_t* out_reason);
 void ipc_get_stats(ipc_stats_t* stats);
 uint32_t ipc_get_pending_count(void);

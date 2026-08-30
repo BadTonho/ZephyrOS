@@ -1,5 +1,6 @@
 #include "core/syscall.h"
 #include "core/app_api.h"
+#include "core/poll.h"
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/string.h"
@@ -254,6 +255,93 @@ static int syscall_user_file_write(const registers_t* regs) {
     return result;
 }
 
+static int syscall_user_poll(const registers_t* regs) {
+    pollfd_t fds[POLL_MAX_FDS];
+    uint32_t ready = 0U;
+    uint32_t bytes;
+    int result;
+
+    if (regs->ecx > POLL_MAX_FDS) {
+        LOG_ERROR("SYSCALL", "poll excedeu a capacidade de descritores");
+        return ERR_OVERFLOW;
+    }
+    if (regs->ecx && !regs->ebx) {
+        LOG_ERROR("SYSCALL", "poll recebeu array nulo");
+        return ERR_NULL;
+    }
+    if (!regs->esi) {
+        LOG_ERROR("SYSCALL", "poll recebeu destino nulo");
+        return ERR_NULL;
+    }
+    if (regs->edi) {
+        LOG_ERROR("SYSCALL", "poll recebeu argumento excedente");
+        return ERR_INVALID;
+    }
+    bytes = regs->ecx * (uint32_t)sizeof(pollfd_t);
+    if (bytes) {
+        result = paging_validate_user_range(regs->ebx, bytes, 1);
+        if (result != OK) return result;
+        result = paging_copy_from_user(fds, (const void*)regs->ebx, bytes);
+        if (result != OK) return result;
+    }
+    result = paging_validate_user_range(regs->esi, sizeof(ready), 1);
+    if (result != OK) return result;
+    result = app_api_poll(fds, regs->ecx, regs->edx, &ready);
+    if (result != OK) return result;
+    if (bytes) {
+        result = paging_copy_to_user((void*)regs->ebx, fds, bytes);
+        if (result != OK) return result;
+    }
+    return paging_copy_to_user((void*)regs->esi, &ready, sizeof(ready));
+}
+
+static int syscall_select_request(select_request_t* request) {
+    fd_set_t* readfds = 0;
+    fd_set_t* writefds = 0;
+    fd_set_t* exceptfds = 0;
+
+    if (!request) {
+        LOG_ERROR("SYSCALL", "select recebeu requisicao nula");
+        return ERR_NULL;
+    }
+    if ((request->set_mask & ~SELECT_SET_ALL) != 0U) {
+        LOG_ERROR("SYSCALL", "select recebeu mascara invalida");
+        return ERR_INVALID;
+    }
+    if (request->set_mask & SELECT_SET_READ) readfds = &request->readfds;
+    if (request->set_mask & SELECT_SET_WRITE) {
+        writefds = &request->writefds;
+    }
+    if (request->set_mask & SELECT_SET_EXCEPT) {
+        exceptfds = &request->exceptfds;
+    }
+    request->ready_count = 0U;
+    return app_api_select(request->nfds, readfds, writefds, exceptfds,
+                          request->timeout_ticks, &request->ready_count);
+}
+
+static int syscall_user_select(const registers_t* regs) {
+    select_request_t request;
+    int result;
+
+    if (!regs->ebx) {
+        LOG_ERROR("SYSCALL", "select recebeu requisicao nula");
+        return ERR_NULL;
+    }
+    if (regs->ecx || regs->edx || regs->esi || regs->edi) {
+        LOG_ERROR("SYSCALL", "select recebeu argumentos excedentes");
+        return ERR_INVALID;
+    }
+    result = paging_validate_user_range(regs->ebx, sizeof(request), 1);
+    if (result != OK) return result;
+    result = paging_copy_from_user(&request, (const void*)regs->ebx,
+                                   sizeof(request));
+    if (result != OK) return result;
+    result = syscall_select_request(&request);
+    if (result != OK) return result;
+    return paging_copy_to_user((void*)regs->ebx, &request, sizeof(request));
+}
+
 static int syscall_user_file_lseek(const registers_t* regs) {
     uint32_t position = 0U;
     int result;
@@ -463,6 +551,10 @@ static int syscall_dispatch_user(registers_t* regs) {
             return syscall_user_file_read(regs);
         case APP_SYSCALL_FILE_WRITE:
             return syscall_user_file_write(regs);
+        case APP_SYSCALL_POLL:
+            return syscall_user_poll(regs);
+        case APP_SYSCALL_SELECT:
+            return syscall_user_select(regs);
         case APP_SYSCALL_FILE_CLOSE:
             return app_api_file_close((app_handle_t)regs->ebx);
         case APP_SYSCALL_FILE_LSEEK:
@@ -534,6 +626,19 @@ static int syscall_dispatch(registers_t* regs) {
             return app_api_file_write((app_handle_t)regs->ebx,
                                       (const uint8_t*)regs->ecx, regs->edx,
                                       (uint32_t*)regs->esi);
+        case APP_SYSCALL_POLL:
+            if (regs->edi) {
+                LOG_ERROR("SYSCALL", "poll ring0 recebeu argumentos excedentes");
+                return ERR_INVALID;
+            }
+            return app_api_poll((pollfd_t*)regs->ebx, regs->ecx, regs->edx,
+                                (uint32_t*)regs->esi);
+        case APP_SYSCALL_SELECT:
+            if (regs->ecx || regs->edx || regs->esi || regs->edi) {
+                LOG_ERROR("SYSCALL", "select ring0 recebeu argumentos excedentes");
+                return ERR_INVALID;
+            }
+            return syscall_select_request((select_request_t*)regs->ebx);
         case APP_SYSCALL_FILE_CLOSE:
             return app_api_file_close((app_handle_t)regs->ebx);
         case APP_SYSCALL_FILE_LSEEK:

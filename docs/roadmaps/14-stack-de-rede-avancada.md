@@ -193,15 +193,19 @@ Aplicativos criam e comunicam através de sockets locais e remotos utilizando a 
 
 ### Implementação
 
-- [ ] Implementar a syscall `poll()` com máscaras de leitura, escrita, erro e
+Estado da implementacao NET3: codigo integrado; validacao funcional pendente.
+O resumo NET3 somente sera marcado como concluido apos a confirmacao do
+usuario.
+
+- [x] Implementar a syscall `poll()` com máscaras de leitura, escrita, erro e
   hangup, timeout e retorno por descritor.
-- [ ] Integrar `poll()` com wait queues: registrar o waiter, liberar o lock
+- [x] Integrar `poll()` com wait queues: registrar o waiter, liberar o lock
   antes de dormir, acordar após mudança de readiness e revalidar a condição.
-- [ ] Implementar `select()` como camada de compatibilidade, preservando
+- [x] Implementar `select()` como camada de compatibilidade, preservando
   `fd_set`, suas macros e o contrato público existente.
-- [ ] Garantir cancelamento por sinal, fechamento concorrente e retorno de
+- [x] Garantir cancelamento por sinal, fechamento concorrente e retorno de
   erro sem waiter ou referência residual.
-- [ ] Deixar `epoll` fora desta etapa até que `poll()` e o lifetime das filas
+- [x] Deixar `epoll` fora desta etapa até que `poll()` e o lifetime das filas
   estejam estáveis.
 
 ### Critério de saída

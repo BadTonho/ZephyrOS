@@ -97,6 +97,7 @@ int ipc_send(uint32_t pid, ipc_msg_t* msg) {
     if (wake_up(&target->ipc_wait_channel, &woken) != OK) {
         LOG_WARN("IPC", "Falha ao acordar consumidor IPC");
     }
+    (void)vfs_poll_notify();
     return 1;
 }
 
@@ -131,6 +132,17 @@ int ipc_receive(ipc_msg_t* msg) {
     ipc_stats.received++;
     spinlock_release(&ipc_lock);
     return 1;
+}
+
+int ipc_current_has_pending(void) {
+    process_t* current = process_get_current();
+    int pending;
+
+    if (!ipc_ready || !current) return 0;
+    spinlock_acquire(&ipc_lock);
+    pending = current->msg_head != current->msg_tail;
+    spinlock_release(&ipc_lock);
+    return pending;
 }
 
 int ipc_wait(uint32_t timeout_ticks, wait_reason_t* out_reason) {

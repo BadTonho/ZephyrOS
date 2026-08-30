@@ -387,3 +387,19 @@ compartilhados e zero-copy real nao sao medidos nesta etapa.
 inventario de NICs, sockets legados, drivers ou trafego. Falhas de invariantes,
 FD residual, fila ou erro residual sao diagnosticas; `ERR_AGAIN` e descartes
 normais de backpressure sao resultados observaveis, nao falhas do sistema.
+
+## NET3 - Espera multiplexada
+
+NET3 nao cria um contador paralelo ao servico de espera. A observacao usa
+`wait_get_stats()` antes e depois de `selecttest`, alem de
+`wait_queue_copy_waiters()` ao final. O delta deve mostrar chamadas de espera,
+wakeups por evento e timeouts; cancelamentos aparecem quando a matriz executa
+um cancelamento por sinal ou pela infraestrutura de espera. Busy-waiting nao e
+aceito: o teste finito deve bloquear no canal `VFS-poll` e terminar sem evento,
+enquanto escrita, leitura, fechamento de pipe, evento de socket ou mensagem IPC
+devem acordar uma nova varredura.
+
+O criterio de limpeza e nao haver `wait_info_t` com `channel_owner` igual a
+`VFS-poll` depois de cada retorno, sem ponteiro de `file_t` retido e sem lock
+de VFS, pipe ou socket durante o bloqueio. A validacao funcional e os valores
+observados permanecem pendentes ate a execucao do usuario no QEMU.

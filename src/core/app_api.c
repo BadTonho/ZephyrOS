@@ -3,6 +3,7 @@
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/memory.h"
+#include "core/poll.h"
 #include "core/string.h"
 #include "core/timer.h"
 #include "core/video.h"
@@ -146,6 +147,24 @@ int app_api_file_write(app_handle_t handle, const uint8_t* buffer,
 
     if (result != OK) return result;
     return app_files_write(handle, buffer, size, bytes_written);
+}
+
+int app_api_poll(pollfd_t* fds, uint32_t count, uint32_t timeout_ticks,
+                 uint32_t* out_ready) {
+    int result = app_api_require_ready();
+
+    if (result != OK) return result;
+    return app_files_poll(fds, count, timeout_ticks, out_ready);
+}
+
+int app_api_select(uint32_t nfds, fd_set_t* readfds, fd_set_t* writefds,
+                   fd_set_t* exceptfds, uint32_t timeout_ticks,
+                   uint32_t* out_ready) {
+    int result = app_api_require_ready();
+
+    if (result != OK) return result;
+    return app_files_select(nfds, readfds, writefds, exceptfds,
+                            timeout_ticks, out_ready);
 }
 
 int app_api_file_close(app_handle_t handle) {
