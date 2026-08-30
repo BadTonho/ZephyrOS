@@ -3247,3 +3247,20 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   alterado. Esta foi uma alteração documental: não houve build, teste
   executável ou QEMU, e nenhum roadmap foi marcado como concluído por causa
   desta reorganização.
+
+- Roadmaps 18–24: melhorias arquiteturais incorporadas em 2026-08-30 (horário
+  não informado). A revisão passou a tratar segurança como requisito
+  transversal, incluiu supervisor mínimo de serviços, credenciais e limites
+  por processo, reforçou a semântica de PID/reaper e delimitou o userland de
+  execução do Shell e da GUI.
+
+  O Roadmap 20 agora separa backend e frontend da atualização do sistema e
+  exige slots A/B ou equivalente, confirmação de boot, limite de tentativas,
+  compatibilidade entre kernel/recovery/bootloader/filesystem e rollback. O
+  Roadmap 21 recebeu ciclo de vida pai/filho de dispositivos, e os Roadmaps
+  22–24 receberam estados de atualização, validação contínua e critérios de
+  release para identidade, serviços e recuperação.
+
+  Esta foi uma atualização documental baseada em revisão arquitetural; não
+  houve build, teste executável ou QEMU. Os Roadmaps 01–16 permaneceram
+  inalterados.

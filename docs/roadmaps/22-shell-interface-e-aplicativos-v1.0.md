@@ -21,7 +21,8 @@ prompt de forma determinística em todos os caminhos.
 - Explorer, Task Manager, Settings, Desktop, Window Manager e Taskbar;
 - fallback Simple/Classic e saída VGA/VESA;
 - loader, pacotes, instalação, execução, atualização e rollback de aplicativos;
-- atualização remota do sistema em conjunto com o Roadmap 20;
+- apresentação da atualização remota do sistema, enquanto o Roadmap 20 mantém
+  o backend de staging, ativação e rollback;
 - acessibilidade mínima por teclado, mouse e entrada USB suportada.
 
 Não fazem parte da 1.0.0 Snap avançado, áreas de trabalho virtuais, TUI
@@ -60,6 +61,8 @@ ou ferramentas de programação.
   duplicados.
 - [ ] Garantir que diagnósticos somente leitura não alterem inventários,
   processos, volumes ou hardware.
+- [ ] Exibir o estado do supervisor de serviços e permitir diagnóstico de
+  serviços `STARTING`, `READY`, `FAILED` e `STOPPED`.
 - [ ] Documentar comandos suportados, limites, fallbacks e exemplos de erro.
 
 ### SHELL3 — Arquivos e administração
@@ -68,6 +71,8 @@ ou ferramentas de programação.
   mount, unmount, busca e índice global.
 - [ ] Integrar abertura de arquivos, pipes, redirecionamento e `grep` sem
   deixar FDs ou jobs residuais.
+- [ ] Exibir erros de permissão separadamente de caminho inexistente,
+  filesystem indisponível ou dispositivo ausente.
 - [ ] Validar Explorer Simple/Classic, teclado, mouse, seleção, confirmação,
   fallback e retorno ao Shell.
 - [ ] Validar Task Manager com snapshots de `/proc`, ações por PID +
@@ -90,11 +95,16 @@ ou ferramentas de programação.
 ### SHELL5 — Atualização do sistema
 
 - [ ] Expor no Shell e Settings o estado da atualização do sistema: versão
-  atual, candidata, download, validação, aplicação, rollback e erro.
+  atual, candidata, progresso, erro, tentativa de boot e confirmação de estado
+  saudável.
 - [ ] Permitir consulta e download remoto somente de manifesto e artefato
   autenticados.
 - [ ] Não sobrescrever o sistema em execução; delegar staging, commit e
   recuperação ao contrato do Roadmap 20.
+- [ ] Exibir explicitamente os estados `CHECK`, `DOWNLOAD`, `STAGE`, `PENDING`,
+  `REBOOT`, `GOOD` e `ROLLBACK`, sem confundir aplicação com sistema.
+- [ ] Exigir confirmação da ativação quando a política da atualização não for
+  automática e manter o fallback offline.
 - [ ] Garantir retorno ao prompt após falha de rede, falta de espaço,
   cancelamento ou reboot necessário.
 - [ ] Validar que a versão anterior permaneça inicializável após falha de
@@ -119,6 +129,8 @@ ou ferramentas de programação.
 - Handlers não armazenam ponteiros de processos, drivers ou VFS entre eventos.
 - Operações demoradas usam jobs e cancelamento existentes; não bloqueiam o
   roteamento da entrada.
+- A interface não acessa diretamente processos, drivers, volumes ou slots de
+  atualização; usa os serviços e contratos de seus roadmaps proprietários.
 - Shell, cenas e aplicativos liberam seus recursos em sucesso, erro e
   cancelamento.
 - App API, syscalls, formatos de pacotes e contratos de erro só mudam por

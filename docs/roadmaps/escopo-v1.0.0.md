@@ -39,6 +39,10 @@ protótipos, fixtures ou comportamento não documentado.
 - [ ] Idle arquitetural sem busy-wait desnecessário.
 - [ ] Contadores e diagnósticos de memória e scheduler consistentes.
 - [ ] Nenhuma falha de serviço deixa o sistema sem caminho de recuperação.
+- [ ] Existe um supervisor mínimo para iniciar, monitorar, reiniciar ou marcar
+  como indisponíveis os serviços nativos.
+- [ ] Limites de processos, memória, descritores, filas e argumentos são
+  definidos e observáveis.
 
 ### 3. Processos e execução de aplicativos
 
@@ -47,6 +51,10 @@ protótipos, fixtures ou comportamento não documentado.
 - [ ] PID e generation revalidados em ações, callbacks e snapshots.
 - [ ] IPC, pipes, sockets e threads sem handles, buffers ou callbacks residuais.
 - [ ] Falhas de aplicativos não derrubam o kernel nem deixam o Shell preso.
+- [ ] Relações pai/filho, espera, status de saída, órfãos e reaper principal
+  possuem semântica definida.
+- [ ] Um PID reutilizado nunca redireciona um descritor, snapshot ou ação para
+  outro processo.
 
 ### 4. App API e syscalls
 
@@ -73,6 +81,10 @@ protótipos, fixtures ou comportamento não documentado.
   recuperáveis.
 - [ ] Volumes ocupados e volumes pinned são tratados sem fechar handles à
   força.
+- [ ] A hierarquia mínima de uso (`/etc`, `/var`, `/run`, `/home` e `/tmp`) e
+  suas políticas de persistência são definidas.
+- [ ] `rename`, `sync`, `flush` e escrita durável possuem semântica explícita
+  diante de queda de energia ou falha do dispositivo.
 
 ### 6. Entrada, vídeo e áudio
 
@@ -115,6 +127,8 @@ protótipos, fixtures ou comportamento não documentado.
 - [ ] Falhas de atualização preservam o estado anterior ou deixam recuperação
   explícita.
 - [ ] O Shell continua sendo fallback operacional dos aplicativos visuais.
+- [ ] O sistema mantém uma versão ativa e uma versão candidata separadas,
+  sem sobrescrever o sistema em execução.
 
 ### 9.1 Atualização do sistema pela internet
 
@@ -133,6 +147,10 @@ exercitar um artefato completo de sistema.
   de recuperação antes do commit.
 - [ ] Aplicar kernel, arquivos de sistema e componentes autorizados de forma
   transacional, preservando o bootloader e o layout da imagem.
+- [ ] Usar slots A/B ou mecanismo equivalente com marcador de tentativa,
+  confirmação de boot saudável e rollback automático limitado.
+- [ ] Validar compatibilidade mínima entre kernel, recovery, bootloader,
+  filesystem e componentes do artefato.
 - [ ] Ativar a nova versão somente depois de todas as validações locais
   concluírem com sucesso.
 - [ ] Manter a versão anterior disponível para rollback automático se o boot,
@@ -195,6 +213,10 @@ considerado atendido quando as capacidades correspondentes forem confirmadas.
 7. [Roadmap 24 — Release e aceitação da 1.0.0](24-release-e-aceitacao-v1.0.md).
 8. [Pós-1.0.0 — Migração gradual para Rust](pos-1.0.0-migracao-rust.md),
    somente depois da publicação da base 1.0.0.
+
+A segurança do Roadmap 19 é transversal: seus gates devem ser aplicados
+durante a implementação de processos, syscalls, VFS, dispositivos, Shell e
+atualização, e não apenas depois que o Roadmap 18 terminar.
 
 A etapa pós-1.0.0 de Rust não é uma etapa de preparação da 1.0.0. Ela só começa
 depois do Roadmap 24 e da publicação da base 1.0.0.

@@ -13,6 +13,10 @@ Garantir um kernel unicore capaz de inicializar, gerenciar memória, executar
 processos isolados, encaminhar eventos, encerrar tarefas e recuperar-se de
 falhas sem perder o controle do sistema.
 
+Neste roadmap, `userland básico` significa a base de execução dos processos e
+serviços nativos. Shell, GUI e aplicativos de uso final permanecem organizados
+no Roadmap 22.
+
 ## Escopo
 
 - entrada do kernel, exceções, IRQs, PIT e estado de interrupções;
@@ -20,6 +24,9 @@ falhas sem perder o controle do sistema.
 - PID, generation, scheduler, Idle, processos ring 0/ring 3 e threads;
 - criação, bloqueio, sinais, zombie, reaping e encerramento;
 - IPC, pipes, sockets, filas de espera e workqueue;
+- supervisor mínimo de serviços nativos, dependências de inicialização,
+  estados de falha e recuperação;
+- limites de processos, memória, descritores, filas e argumentos;
 - cópia segura entre userland e kernel;
 - métricas e diagnósticos do ciclo de execução.
 
@@ -55,6 +62,10 @@ quantum ou migração para Rust nesta etapa.
   processo.
 - [ ] Definir limites de heap, páginas, argumentos, stacks e alocações de cada
   processo.
+- [ ] Definir política para falta de memória, encerramento por limite e
+  diagnóstico do processo que exceder recursos.
+- [ ] Confirmar que endereços e objetos privados do kernel não sejam publicados
+  em interfaces de processo ou diagnósticos.
 - [ ] Repetir `memcheck` depois de criação, falha, encerramento e reutilização
   de PID.
 
@@ -75,8 +86,12 @@ quantum ou migração para Rust nesta etapa.
 
 - [ ] Validar criação, execução, bloqueio, suspensão, retomada, término,
   zombie, reaping e falha de processo.
+- [ ] Definir semântica de pai/filho, `wait`, status de saída, órfãos e reaper
+  principal.
 - [ ] Revalidar PID + generation em ações administrativas, callbacks e eventos
   atrasados.
+- [ ] Garantir que descritores, snapshots e ações abertas não sejam
+  redirecionados para outro processo após reutilização de PID.
 - [ ] Impedir criação acima do limite e retornar erro sem deixar slot, stack ou
   página residual.
 - [ ] Preservar ring 0 para serviços nativos e ring 3 para aplicativos, com
@@ -90,6 +105,12 @@ quantum ou migração para Rust nesta etapa.
   cancelamento, timeout, fechamento e consumidor ausente.
 - [ ] Garantir ownership explícito de mensagens, buffers, FDs e callbacks.
 - [ ] Impedir que um processo encerrado receba dados ou callbacks pendentes.
+- [ ] Definir o supervisor dos serviços nativos, sem confundi-lo com o PID 0
+  Idle, com estados `STARTING`, `READY`, `FAILED` e `STOPPED`.
+- [ ] Ordenar inicialização, dependências, encerramento e reativação de
+  serviços sem deixar o Shell sem caminho de recuperação.
+- [ ] Recolher órfãos e publicar falhas de serviços sem manter ponteiros
+  persistentes para processos encerrados.
 - [ ] Fazer System, Shell, Desktop e kworker bloquearem quando não houver
   trabalho imediato.
 - [ ] Validar que uma falha de serviço não deixe o sistema sem Shell ou saída
@@ -101,6 +122,8 @@ quantum ou migração para Rust nesta etapa.
   kernel sem alterar o estado produtivo dos testes.
 - [ ] Validar pressão de processos, memória, filas, IRQs e interrupções.
 - [ ] Confirmar limpeza após ciclos repetidos de aplicativos e serviços.
+- [ ] Exercitar falha, reinício, degradação e modo de recuperação do supervisor
+  de serviços.
 - [ ] Registrar falhas na camada que possui contexto e usar os códigos
   canônicos de `errors.h`.
 - [ ] Produzir uma matriz de comportamento para boot normal, falha de serviço,
@@ -109,6 +132,10 @@ quantum ou migração para Rust nesta etapa.
 ## Contratos
 
 - Nenhum ponteiro privado do kernel atravessa o userland.
+- O supervisor de serviços possui identidade e ciclo de vida distintos do PID 0
+  Idle.
+- Processos possuem limites e credenciais que podem ser verificados pelo
+  Roadmap 19 sem expor estruturas privadas.
 - Toda aquisição possui owner e liberação ou transferência verificável.
 - Toda entrada externa tem validação de tamanho, range, alinhamento e estado.
 - Falhas recuperáveis retornam erro; invariantes fatais usam o mecanismo de
@@ -121,6 +148,8 @@ quantum ou migração para Rust nesta etapa.
 - Processos ring 3 não acessam memória, recursos ou callbacks de outro processo.
 - Não existem resíduos conhecidos após ciclos de execução e encerramento.
 - O Idle reduz trabalho ativo sem perda de wakeups ou eventos.
+- Uma falha de serviço é isolada, diagnosticada e recuperável sem perder o
+  supervisor ou a saída textual.
 - Diagnósticos e métricas concordam com o estado real do scheduler e da memória.
 
 ## Validação do usuário

@@ -13,6 +13,12 @@ Evitar corrupção silenciosa e garantir que uma operação interrompida termine
 como concluída, desfeita ou explicitamente recuperável, com ownership claro de
 blocos, buffers, volumes, descritores e transações.
 
+O Roadmap 20 possui o backend da atualização do sistema: armazenamento de
+artefatos, staging, ativação, confirmação e rollback. O Roadmap 21 fornece as
+capacidades de rede, energia e hardware; o Roadmap 22 fornece os comandos e a
+interface. Nenhuma dessas camadas poderá sobrescrever diretamente o sistema
+em execução.
+
 ## Escopo
 
 - invariantes do Block Layer, cache, filas, ATA, USB MSC, FAT12 e FAT32;
@@ -24,7 +30,7 @@ blocos, buffers, volumes, descritores e transações.
   inacessíveis;
 - integração segura com `poweroff`, `reboot`, Updater e operações do Shell;
 - atualização do próprio sistema pela internet, com staging, assinatura,
-  preflight, ativação transacional e rollback.
+  preflight, ativação transacional, confirmação de boot e rollback.
 
 Formatação inteligente, migração para outro filesystem, compressão de disco,
 swap e recuperação automática destrutiva ficam fora desta frente.
@@ -51,6 +57,8 @@ swap e recuperação automática destrutiva ficam fora desta frente.
   concluída.
 - [ ] Integrar contadores de erro e último erro ao diagnóstico sem logging em
   cada setor.
+- [ ] Manter uma separação explícita entre superblock/volume, inode/entrada,
+  descritor aberto, cache e dispositivo físico.
 
 ### STO2 — Sync, flush e transações
 
@@ -62,6 +70,10 @@ swap e recuperação automática destrutiva ficam fora desta frente.
   operações compostas.
 - [ ] Preservar a versão anterior quando preflight, capacidade, escrita ou
   confirmação falharem.
+- [ ] Definir a diferença entre escrita aceita, `sync`, `flush`, durabilidade
+  confirmada e recuperação após queda de energia.
+- [ ] Garantir que `rename` e substituição de metadados não deixem uma entrada
+  parcialmente publicada após uma falha.
 - [ ] Testar timeout, erro ATA, erro USB MSC, cancelamento e reinicialização no
   meio de cada fase.
 
@@ -75,6 +87,8 @@ swap e recuperação automática destrutiva ficam fora desta frente.
   `/sys` conforme seus contratos.
 - [ ] Confirmar que handles, CWD, caches, filas e referências ao volume sejam
   invalidados ou transferidos sem uso após liberação.
+- [ ] Definir a hierarquia mínima persistente e temporária (`/etc`, `/var`,
+  `/run`, `/home` e `/tmp`) e quais volumes podem hospedá-la.
 - [ ] Repetir mount/unmount, perda de dispositivo e ausência de Storage sem
   referências residuais.
 
@@ -101,16 +115,25 @@ swap e recuperação automática destrutiva ficam fora desta frente.
   área de staging sem sobrescrever a versão em execução.
 - [ ] Verificar espaço, integridade do Storage, energia disponível e capacidade
   de recuperação antes do commit.
+- [ ] Manter slots A/B ou mecanismo equivalente com versão ativa e candidata
+  fisicamente separadas.
+- [ ] Registrar tentativa de boot, estado `pending`, confirmação `good`,
+  limite de tentativas e rollback automático para a versão anterior.
 - [ ] Ativar a versão nova de forma transacional, preservando bootloader e
-  layout da imagem, com a versão anterior disponível para rollback.
+  layout da imagem, somente após a gravação integral e a validação local.
+- [ ] Validar compatibilidade mínima entre kernel, recovery, bootloader,
+  filesystem e componentes do artefato.
 - [ ] Recuperar interrupções por falha de rede, falta de espaço,
   reinicialização, queda de energia ou erro de escrita.
 - [ ] Publicar estado, progresso, versão candidata, erro e resultado no Shell,
-  Settings e diagnósticos, mantendo o prompt utilizável.
+  Settings e diagnósticos por um contrato de estado, mantendo o prompt
+  utilizável.
 - [ ] Manter fallback para atualização local/offline quando o servidor remoto
   estiver indisponível.
 - [ ] Rejeitar manifestos, imagens e componentes não assinados, truncados,
   incompatíveis ou fora da política de atualização.
+- [ ] Definir rotação, revogação e expiração da confiança usada para validar
+  futuras atualizações, sem aceitar chave remota arbitrária.
 
 ### STO6 — Recuperação
 
@@ -122,6 +145,8 @@ swap e recuperação automática destrutiva ficam fora desta frente.
   recuperação da consistência FAT geral.
 - [ ] Garantir rollback limpo para transações do Updater e operações normais do
   Storage.
+- [ ] Recuperar uma atualização que morreu entre staging, ativação, primeiro
+  boot e confirmação de estado saudável.
 - [ ] Expor motivo e limite da recuperação em `health` e diagnósticos.
 
 ### STO7 — Matriz de falhas
@@ -142,6 +167,8 @@ swap e recuperação automática destrutiva ficam fora desta frente.
 - Falhas antes do commit preservam o estado anterior ou publicam recuperação
   necessária; nenhuma falha é tratada como sucesso silencioso.
 - Sync não é duplicado em caminhos de encerramento, update ou desmontagem.
+- Uma atualização nunca destrói a única cópia inicializável do sistema antes
+  de existir uma candidata validada e um caminho de rollback.
 - Verificação e recuperação não quebram volumes pinned nem pseudo-filesystems.
 - A matriz de falhas termina sem leaks, double free, handles obsoletos ou
   referências a dispositivos desaparecidos.

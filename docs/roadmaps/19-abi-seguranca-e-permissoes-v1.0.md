@@ -6,6 +6,10 @@ Planejado. Esta frente endurece as fronteiras já existentes entre kernel,
 processos ring 3, VFS, dispositivos e pacotes. Ela não cria um sistema
 multiusuário completo nem altera silenciosamente a ABI de aplicativos.
 
+Embora seja numerada depois do Roadmap 18, esta frente é transversal: seus
+gates devem ser aplicados durante a implementação de memória, processos,
+syscalls, VFS, dispositivos, Shell e atualização.
+
 ## Objetivo
 
 Garantir que um aplicativo, uma entrada externa ou um pacote inválido não
@@ -48,6 +52,8 @@ rede e políticas empresariais continuam fora do escopo.
 - [ ] Confirmar que nenhum ponteiro de kernel, objeto privado ou endereço de
   hardware atravessa a ABI.
 - [ ] Documentar quais capacidades continuam indisponíveis em processos ring3.
+- [ ] Fixar o modelo mínimo de identidade: root, usuário comum, UID, GID,
+  grupos e credenciais herdadas na criação do processo.
 
 ### SEC2 — Auditoria de memória e syscalls
 
@@ -58,6 +64,8 @@ rede e políticas empresariais continuam fora do escopo.
   após page fault.
 - [ ] Revisar descritores, `lseek`, `ioctl`, pipes, sinais, IPC e sockets para
   handles obsoletos, double close e uso após liberação.
+- [ ] Executar a decisão de permissão no `open` e revalidar operações sensíveis
+  com as credenciais associadas ao processo e ao descritor.
 - [ ] Confirmar que falhas preservam ownership e retornam somente códigos
   definidos em `errors.h`.
 
@@ -88,6 +96,10 @@ rede e políticas empresariais continuam fora do escopo.
 
 - [ ] Definir a tabela de capacidades para arquivos, dispositivos, rede,
   energia e diagnósticos.
+- [ ] Definir bits de leitura, escrita e execução para o proprietário, grupo e
+  demais usuários, incluindo a política de criação e herança de arquivos.
+- [ ] Definir limites por processo para memória, descritores, processos filhos,
+  filas e tamanho de argumentos.
 - [ ] Manter `/proc` somente leitura, `/sys` somente leitura e `/proc/sys`
   gravável apenas pelo contexto nativo previsto no contrato.
 - [ ] Rejeitar escrita, `ioctl`, sync ou redirecionamento quando o tipo do nó
@@ -117,6 +129,8 @@ rede e políticas empresariais continuam fora do escopo.
   buffers, callbacks ou locks residuais.
 - O conjunto de contratos públicos está congelado e documenta qualquer
   capacidade deliberadamente ausente.
+- A identidade mínima e as permissões básicas são verificadas em processos,
+  VFS, dispositivos, energia e pacotes.
 - A matriz negativa passa sem panic, corrupção silenciosa ou alteração não
   autorizada de estado.
 

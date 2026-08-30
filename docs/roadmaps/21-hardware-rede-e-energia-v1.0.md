@@ -19,6 +19,8 @@ timeouts e critérios de suporte.
 - perfis QEMU e hardware real disponível para validação;
 - ausência e falha de ACPI, PCI, ATA, USB, NIC, áudio, VESA, VGA, teclado e
   mouse;
+- modelo mínimo de dispositivo com relação pai/filho, bus, classe, driver e
+  ciclo de vida;
 - diagnósticos `health`, `devices`, `device-scan`, `acpi`, `net`, `usb` e
   `power`;
 - timeouts, confirmação de capacidade e fallback seguro.
@@ -45,6 +47,8 @@ dinâmico de drivers ficam fora da matriz base, salvo uma decisão explícita.
   VESA, sem áudio e sem Storage adicional.
 - [ ] Registrar, por perfil, hardware detectado, driver ativo, capacidade,
   fallback, erro esperado e diagnóstico observável.
+- [ ] Separar hardware apenas inventariado de hardware com driver inicializado
+  e validado funcionalmente.
 - [ ] Separar “não presente”, “não suportado”, “falhou ao inicializar” e
   “desabilitado por política”.
 - [ ] Definir quais cenários são obrigatórios para a 1.0.0 e quais dependem de
@@ -55,12 +59,16 @@ dinâmico de drivers ficam fora da matriz base, salvo uma decisão explícita.
 
 - [ ] Documentar a ordem de probe, reset, habilitação, registro e publicação
   de cada driver.
+- [ ] Definir a relação entre dispositivo pai, bus, classe e driver, além dos
+  pontos de `probe`, `remove`, `shutdown` e quiescência.
 - [ ] Confirmar que recursos adquiridos sejam liberados ou publicados como
   degradados quando uma etapa posterior falhar.
 - [ ] Validar IRQ compartilhada, EOI, DMA de 32 bits, alinhamento, buffers e
   limites de polling.
 - [ ] Rejeitar chamadas antes de READY, durante quiescência ou depois de
   encerramento.
+- [ ] Garantir que a remoção ou falha de um dispositivo invalide handles,
+  callbacks e buffers sem deixar referências para o objeto físico.
 - [ ] Evitar alocação, bloqueio e logging pesado em IRQ e hot paths.
 
 ### HW3 — Entrada, vídeo e áudio
@@ -97,6 +105,8 @@ dinâmico de drivers ficam fora da matriz base, salvo uma decisão explícita.
 - [ ] Exercitar `poweroff`, `reboot`, quiescência e retorno de erro antes do
   commit.
 - [ ] Confirmar que nenhum fallback dependa de porta privada de emulador.
+- [ ] Publicar hora monotônica e hora civil do relógio/RTC quando a fonte
+  estiver ausente, inválida ou ainda não sincronizada.
 
 ### HW6 — Diagnóstico e suporte
 
@@ -114,7 +124,11 @@ dinâmico de drivers ficam fora da matriz base, salvo uma decisão explícita.
 - Ausência ou falha de hardware opcional nunca causa panic, loop infinito ou
   espera sem limite.
 - Cada recurso tem owner, estado, timeout, liberação e diagnóstico definidos.
+- Cada dispositivo tem relação de dependência e ciclo de vida definidos,
+  inclusive no caminho de falha e encerramento.
 - A matriz diferencia capacidade validada de capacidade apenas inventariada.
+- A relação pai/filho e o ciclo de vida dos dispositivos permanecem válidos
+  durante probe, falha, quiescência e encerramento.
 - A lista de hardware suportado da 1.0.0 é reproduzível e não promete testes
   que não foram executados.
 

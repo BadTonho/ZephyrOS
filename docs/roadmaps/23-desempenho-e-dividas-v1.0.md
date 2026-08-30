@@ -41,6 +41,13 @@ RDTSC/PMU só será usado quando a fonte for validada. Percentuais de ticks não
 - Roadmaps 03, 09, 11, 12 e 14;
 - [Dívidas técnicas da v1.0.0](../qualidade/dividas-tecnicas-v1.0.0.md).
 
+## Regra transversal de validação
+
+Cada roadmap deve validar sucesso, erro, timeout, cancelamento, repetição,
+ausência de recurso e limpeza antes de entregar sua implementação ao Roadmap
+23. Esta frente consolida as medições e otimizações, mas não posterga os gates
+de segurança, memória, processos, VFS, hardware ou Shell para a release.
+
 ## Fases
 
 ### PERF1 — Instrumentação sem mudança de comportamento
@@ -53,6 +60,8 @@ RDTSC/PMU só será usado quando a fonte for validada. Percentuais de ticks não
   utilização da VM.
 - [ ] Publicar linha-base de memória, tamanho da imagem, latência e filas sem
   alterar o fluxo produtivo.
+- [ ] Incluir no baseline o supervisor de serviços, limites por processo,
+  permissões, atualização A/B e recuperação de boot quando aplicável.
 - [ ] Garantir que diagnósticos não gerem logging por tick ou perturbem o
   cenário medido de forma significativa.
 
@@ -74,7 +83,10 @@ RDTSC/PMU só será usado quando a fonte for validada. Percentuais de ticks não
 - [ ] Confirmar que `sti; hlt` não tenha janela de corrida nem busy-wait e que
   System/Desktop bloqueiem quando não houver trabalho.
 - [ ] Decidir, com métricas, a integração de `thread_t` e `kworker` para quitar
-  `DT100-002`, mantendo rollback para a implementação atual.
+  `DT100-002`, mantendo rollback para a implementação atual e sem transformar
+  um segundo scheduler em requisito automático da 1.0.0.
+- [ ] Registrar decisão explícita caso o modelo atual de kworker seja mantido
+  como suficiente para a versão, com impacto e limite documentados.
 - [ ] Não alterar quantum, prioridade, ABI ou identidade do PID 0 sem um
   contrato próprio e validação completa.
 - [ ] Confirmar que entrada, timer, rede e workqueue acordem consumidores sem
@@ -118,6 +130,8 @@ RDTSC/PMU só será usado quando a fonte for validada. Percentuais de ticks não
 
 - As duas dívidas técnicas estão quitadas ou possuem aceite explícito renovado
   com impacto e prazo, sem serem escondidas no percentual da versão.
+- Todos os Roadmaps 18–22 possuem evidência própria de sucesso, falha,
+  repetição e limpeza; o Roadmap 23 não substitui esses gates.
 - A entrada intensa não produz perdas ou overflow no cenário definido.
 - O Idle reduz trabalho ativo mensurável sem comprometer wakeups ou
   responsividade.
