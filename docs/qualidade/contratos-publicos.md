@@ -759,3 +759,31 @@ anteriores. `tcp_state_name()` o apresenta como `LISTEN`, mas o TCP passivo
 continua indisponivel nesta etapa. O comando `netstat` agrega conexoes da
 visao TCP, sockets `AF_UNIX` da tabela generica e contadores RX/TX, erros e
 descartes de cada interface, sem duplicar conexoes `AF_INET`.
+
+## PROC0 - ABI textual de introspeccao
+
+O PROC0 define o contrato comum dos futuros pseudo-filesystems `/proc` e
+`/sys`, sem criar header, syscall, App API ou layout binario. O acesso sera
+feito pelas operacoes VFS existentes e os nos iniciais serao publicos e
+somente leitura; permissoes por usuario, UID/GID e controles de energia ficam
+fora desta etapa.
+
+O conteudo usa ASCII e linhas `<chave> <valor>\n`, com chaves estaveis sem
+espacos, sem `NUL`, `CR`, ANSI ou locale; o terminador e `LF`, nunca `CRLF`.
+Contadores sao decimais, hardware e mascaras sao hexadecimais, IPv4 usa
+notacao pontuada e estados usam tokens estaveis. Chaves repetidas representam
+registros multiplos em ordem documentada pelo no.
+
+Cada abertura captura um snapshot imutavel de no maximo 16 KiB, pertencente ao
+`file_t` ate `close()`. O `file_t.offset` e o cursor; `read()` entrega partes
+do snapshot e retorna `OK` com zero bytes no EOF; `lseek()` opera dentro dos
+limites. Excesso retorna `ERR_OVERFLOW` sem truncamento. A remocao de um
+processo ou dispositivo nao invalida o snapshot aberto; novas aberturas usam
+PID/event-generation ou identificador/generation e retornam `ERR_NOT_FOUND`
+quando o no nao existe.
+
+A enumeracao e deterministica: nos fixos em ordem contratual, PIDs crescentes
+e identificadores estaveis em `/sys`. Escrita ou operacao nao suportada retorna
+`ERR_UNAVAILABLE`; caminho ou cursor invalido retorna `ERR_INVALID` e falta de
+memoria retorna `ERR_MEM`. Os formatos especificos de `/proc` e `/sys` serao
+acrescentados em PROC2 e PROC3 sem quebrar essa gramatica.
