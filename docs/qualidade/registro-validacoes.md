@@ -2963,3 +2963,13 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   retornou `RegCheck: OK` e `health check` concluiu sem falha de rede
   observavel. Os avisos dos casos negativos do autoteste de rotas foram
   mantidos como diagnosticos esperados.
+
+- PROC0: contrato de introspeccao e ABI textual documentado. Implementado em:
+  2026-08-30 09:48:38 -03:00 (America/Sao_Paulo). Foram congelados os
+  namespaces `/proc` e `/sys`, a gramatica ASCII por linhas, snapshots por
+  abertura de 16 KiB, cursor/EOF, ownership pelo `file_t`, identidade por
+  geracao, ordenacao deterministica, acesso publico somente leitura e codigos
+  de erro. Nenhum arquivo de `src/`, Makefile, boot, App API, syscall ou
+  catalogo de headers foi alterado. O agente nao executou build, testes ou
+  QEMU; `make q3check` deve ser executado pelo usuario para validar os
+  documentos.

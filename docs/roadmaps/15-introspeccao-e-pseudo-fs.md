@@ -11,7 +11,7 @@ proprietárias.
 
 ## Resumo de progresso
 
-- [ ] PROC0 - Contrato de leitura, snapshot, lifetime e ABI textual.
+- [x] PROC0 - Contrato de leitura, snapshot, lifetime e ABI textual.
 - [ ] PROC1 - Infraestrutura de geração dinâmica de pseudo-arquivos em RAM.
 - [ ] PROC2 - Mapeamento de `/proc` para métricas globais e processos por PID.
 - [ ] PROC3 - Mapeamento de `/sys` para árvore de dispositivos, barramentos e drivers.
@@ -62,14 +62,66 @@ proprietárias.
 
 ### Implementação
 
-- [ ] Definir ownership, lifetime, permissões, snapshot e cursor por abertura
+- [x] Definir ownership, lifetime, permissões, snapshot e cursor por abertura
   para cada entrada dinâmica.
-- [ ] Definir formato, unidades, limites, erro, offset, EOF e comportamento
+- [x] Definir formato, unidades, limites, erro, offset, EOF e comportamento
   diante de processo/dispositivo removido durante a leitura.
-- [ ] Separar desde o contrato os namespaces `/proc` e `/sys`, evitando uma
+- [x] Separar desde o contrato os namespaces `/proc` e `/sys`, evitando uma
   API genérica que esconda diferenças de ciclo de vida.
-- [ ] Definir que nós de controle graváveis são opt-in e não fazem parte da
+- [x] Definir que nós de controle graváveis são opt-in e não fazem parte da
   primeira entrega somente leitura.
+
+### Contrato congelado
+
+PROC0 é documental. Nenhum código, header, syscall, App API ou alteração de
+Makefile é necessário nesta etapa. O PROC1 deverá implementar o contrato
+usando a VFS existente, sem expor `vnode_t`, `file_t`, ponteiros de objetos ou
+layouts binários aos consumidores.
+
+Os namespaces têm responsabilidades independentes:
+
+- `/proc` publica relatórios agregados do sistema e diretórios dinâmicos por
+  processo. Os nós planejados são `meminfo`, `cpuinfo`, `uptime`, `version`,
+  `cmdline`, `<pid>/status`, `<pid>/cmdline` e `<pid>/maps`.
+- `/sys` publica a topologia de objetos e atributos pequenos, incluindo
+  `bus/pci/devices`, `class/net`, `class/block` e `power/state`. Interfaces de
+  permissões por usuário, UID/GID e controles de energia ficam fora do PROC0;
+  `power/state` será somente leitura nesta etapa.
+
+O conteúdo dos nós é uma sequência de linhas ASCII no formato
+`<chave> <valor>\n`. As chaves usam minúsculas, dígitos, `_`, `-`, `/` e `.`;
+uma linha possui exatamente um separador ASCII entre a chave e o valor. Os
+valores não contêm `NUL`, `LF`, `CR`, sequências ANSI ou texto dependente de
+locale; a serialização usa `LF` e nunca `CRLF`. Contadores usam decimal,
+máscaras e identificadores de hardware usam hexadecimal, IPv4 usa notação
+pontuada e estados usam tokens estáveis. Chaves repetidas representam
+registros múltiplos e mantêm a ordem documentada pelo nó. Os formatos
+específicos de cada nó serão detalhados em PROC2 e PROC3, sem alterar essa
+gramática comum.
+
+Cada abertura de nó captura um snapshot imutável com no máximo
+`PROCFS_MAX_SNAPSHOT_SIZE`, definido contratualmente como 16 KiB. O snapshot
+pertence ao `file_t` até `close()` e o `file_t.offset` é o cursor da leitura.
+`read()` pode retornar blocos parciais, retorna `OK` com zero bytes no EOF e
+`lseek()` aceita `SET`, `CUR` e `END` somente dentro de `[0, tamanho]`. Se a
+serialização exceder 16 KiB, a abertura falha com `ERR_OVERFLOW`; não há
+truncamento nem mistura de gerações. A listagem de diretório é um snapshot da
+chamada `vfs_list_dir()` e não mantém ponteiros depois do retorno.
+
+O snapshot é construído por cópia e não conserva referência direta a processo,
+dispositivo, montagem ou tabela interna. A identidade capturada combina
+`pid` com `process_event_generation` para processos e identificador estável
+com geração para dispositivos. Se o objeto desaparecer depois da abertura,
+o descritor continua válido até o fim do snapshot; uma nova abertura retorna
+`ERR_NOT_FOUND`, evitando confundir um PID reutilizado com o processo anterior.
+
+A enumeração é determinística: os nós fixos de `/proc` seguem a ordem do
+contrato, os PIDs são crescentes, os nós de cada processo seguem ordem fixa e
+`/sys` usa a hierarquia documentada com identificadores estáveis. Todos os
+nós iniciais são públicos e somente leitura; abertura com escrita e operação
+não suportada retornam `ERR_UNAVAILABLE`. Os demais erros estáveis são
+`ERR_INVALID` para caminho ou cursor inválido, `ERR_NOT_FOUND` para nó ausente,
+`ERR_OVERFLOW` para snapshot acima do limite e `ERR_MEM` para falta de memória.
 
 ### Critério de saída
 

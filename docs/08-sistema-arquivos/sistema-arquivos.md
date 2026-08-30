@@ -814,6 +814,43 @@ as entradas reais com `mnt` e `dev` sem duplicatas; `/mnt` lista os pontos de
 montagem e `/dev` lista o registro do devfs. O Shell usa essa API em
 `ls [caminho]`; `cat` abre, lê até 4095 bytes e fecha pela VFS.
 
+## PROC0 - Contrato de pseudo-filesystems
+
+O PROC0 congela o contrato documental que o futuro `procfs` e `sysfs` deverão
+seguir. A primeira implementação será somente leitura e reutilizará as
+operações VFS existentes; não haverá novo descritor, syscall, App API ou
+layout binário para consumidores.
+
+`/proc` é reservado a relatórios do sistema e processos; `/sys` é reservado
+a objetos, barramentos, dispositivos, interfaces de rede, blocos e atributos
+de energia. A separação evita que um relatório composto de `/proc` seja
+confundido com um atributo de objeto de `/sys`. A primeira árvore não possui
+nós graváveis, incluindo controles de energia; permissões por usuário e
+UID/GID também ficam fora do PROC0.
+
+O conteúdo é ASCII, sem `NUL`, `CR`, ANSI ou locale, e usa uma linha por
+atributo: `<chave> <valor>\n`; o terminador é `LF`, nunca `CRLF`. Chaves são
+estáveis e não possuem espaços; contadores são decimais, valores de hardware
+são hexadecimais, IPv4 é pontuado e estados são tokens documentados. Uma
+chave pode repetir-se para registros múltiplos, sempre na ordem publicada
+pelo nó.
+
+Cada arquivo virtual captura seu conteúdo na abertura em um snapshot de no
+máximo 16 KiB. O buffer pertence ao `file_t` e é liberado no fechamento; o
+descritor não conserva ponteiros para processos, dispositivos ou montagens.
+`file_t.offset` é o cursor, `read()` retorna partes do snapshot até EOF e
+EOF retorna `OK` com zero bytes. `lseek()` aceita `SET`, `CUR` e `END` dentro
+dos limites do snapshot. Serialização acima de 16 KiB retorna
+`ERR_OVERFLOW`, sem truncamento.
+
+Processos são identificados por PID e `process_event_generation`; dispositivos
+usam identificador estável e geração. A remoção concorrente não invalida um
+snapshot já aberto, enquanto uma nova abertura retorna `ERR_NOT_FOUND`. A
+listagem por `vfs_list_dir()` é copiada durante a chamada e segue ordem
+determinística: nós fixos, PIDs crescentes e identificadores estáveis.
+Escrita ou operação não suportada retorna `ERR_UNAVAILABLE`; caminhos e
+cursores inválidos retornam `ERR_INVALID`; falta de memória retorna `ERR_MEM`.
+
 ## Pipes anonimos e redirecionamento VFS4
 
 `vfs_pipe()` cria dois descritores no processo atual: `fds[0]` somente para
