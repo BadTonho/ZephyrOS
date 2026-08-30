@@ -6,13 +6,36 @@
 #include "core/spinlock.h"
 #include "core/string.h"
 #include "core/timer.h"
+#include "core/version.h"
+#include "fs/block_cache.h"
+#include "memory/slab.h"
+#include "process/process.h"
+
+#define PROCFS_GLOBAL_COUNT 5U
+#define PROCFS_PID_TEXT_SIZE 11U
+#define PROCFS_CPU_VENDOR_SIZE 13U
+#define PROCFS_CPU_BRAND_SIZE 49U
+
+typedef enum {
+    PROCFS_GLOBAL_UPTIME = 0,
+    PROCFS_GLOBAL_MEMINFO,
+    PROCFS_GLOBAL_CPUINFO,
+    PROCFS_GLOBAL_VERSION,
+    PROCFS_GLOBAL_CMDLINE
+} procfs_global_kind_t;
 
 typedef struct {
     proc_entry_t entry;
     uint32_t index;
 } procfs_entry_snapshot_t;
 
-static int procfs_uptime_read(char* buffer, uint32_t capacity,
+typedef struct {
+    procfs_node_kind_t kind;
+    uint32_t entry_index;
+    uint32_t pid;
+} procfs_node_ref_t;
+
+static int procfs_global_read(char* buffer, uint32_t capacity,
                               uint32_t* out_len, void* data);
 static int procfs_open(vnode_t* vnode, file_t* file);
 static int procfs_read(file_t* file, void* buffer, uint32_t size,
@@ -27,9 +50,26 @@ static int procfs_sync(file_t* file);
 static int procfs_poll(file_t* file, uint32_t events, uint32_t* revents);
 static int procfs_render_snapshot(const proc_entry_t* entry,
                                   procfs_file_context_t* context);
+static int procfs_render_process(const procfs_node_ref_t* node,
+                                 procfs_file_context_t* context);
+
+static uint32_t procfs_global_uptime = PROCFS_GLOBAL_UPTIME;
+static uint32_t procfs_global_meminfo = PROCFS_GLOBAL_MEMINFO;
+static uint32_t procfs_global_cpuinfo = PROCFS_GLOBAL_CPUINFO;
+static uint32_t procfs_global_version = PROCFS_GLOBAL_VERSION;
+static uint32_t procfs_global_cmdline = PROCFS_GLOBAL_CMDLINE;
 
 static const proc_entry_t procfs_entries[] = {
-    {"uptime", VFS_MODE_READ, procfs_uptime_read, 0, 0}
+    {"uptime", VFS_MODE_READ, procfs_global_read, 0,
+     (void*)&procfs_global_uptime},
+    {"meminfo", VFS_MODE_READ, procfs_global_read, 0,
+     (void*)&procfs_global_meminfo},
+    {"cpuinfo", VFS_MODE_READ, procfs_global_read, 0,
+     (void*)&procfs_global_cpuinfo},
+    {"version", VFS_MODE_READ, procfs_global_read, 0,
+     (void*)&procfs_global_version},
+    {"cmdline", VFS_MODE_READ, procfs_global_read, 0,
+     (void*)&procfs_global_cmdline}
 };
 
 static const file_operations_t procfs_operations = {
@@ -51,19 +91,12 @@ static void procfs_copy_text(char* destination, uint32_t capacity,
     uint32_t index = 0U;
 
     if (!destination || !capacity) return;
-    while (source && source[index] && index + 1U < capacity) {
+    if (!source) source = "";
+    while (source[index] && index + 1U < capacity) {
         destination[index] = source[index];
         index++;
     }
     destination[index] = '\0';
-}
-
-static int procfs_path_is_root(const char* path) {
-    return path && kstrcmp(path, "/proc") == 0;
-}
-
-static int procfs_path_is_uptime(const char* path) {
-    return path && kstrcmp(path, "/proc/uptime") == 0;
 }
 
 static int procfs_append_char(char* buffer, uint32_t capacity,
@@ -116,69 +149,448 @@ static int procfs_append_decimal(char* buffer, uint32_t capacity,
     return OK;
 }
 
-static int procfs_uptime_read(char* buffer, uint32_t capacity,
-                              uint32_t* out_len, void* data) {
-    uint32_t length = 0U;
+static int procfs_append_hex(char* buffer, uint32_t capacity,
+                             uint32_t* length, uint32_t value) {
+    static const char digits[] = "0123456789abcdef";
     int result;
 
-    (void)data;
+    result = procfs_append_text(buffer, capacity, length, "0x");
+    for (int shift = 28; result == OK && shift >= 0; shift -= 4) {
+        result = procfs_append_char(buffer, capacity, length,
+                                    digits[(value >> shift) & 0x0FU]);
+    }
+    return result;
+}
+
+static int procfs_append_line_decimal(char* buffer, uint32_t capacity,
+                                      uint32_t* length, const char* key,
+                                      uint32_t value) {
+    int result = procfs_append_text(buffer, capacity, length, key);
+
+    if (result == OK) result = procfs_append_char(buffer, capacity, length,
+                                                   ' ');
+    if (result == OK) result = procfs_append_decimal(buffer, capacity, length,
+                                                     value);
+    if (result == OK) result = procfs_append_char(buffer, capacity, length,
+                                                   '\n');
+    return result;
+}
+
+static int procfs_append_line_hex(char* buffer, uint32_t capacity,
+                                  uint32_t* length, const char* key,
+                                  uint32_t value) {
+    int result = procfs_append_text(buffer, capacity, length, key);
+
+    if (result == OK) result = procfs_append_char(buffer, capacity, length,
+                                                   ' ');
+    if (result == OK) result = procfs_append_hex(buffer, capacity, length,
+                                                 value);
+    if (result == OK) result = procfs_append_char(buffer, capacity, length,
+                                                   '\n');
+    return result;
+}
+
+static int procfs_append_line_text(char* buffer, uint32_t capacity,
+                                   uint32_t* length, const char* key,
+                                   const char* value) {
+    int result = procfs_append_text(buffer, capacity, length, key);
+
+    if (result == OK) result = procfs_append_char(buffer, capacity, length,
+                                                   ' ');
+    if (result == OK && value) {
+        for (uint32_t index = 0U; value[index] && result == OK; index++) {
+            char value_char = value[index];
+
+            if ((uint8_t)value_char < 0x20U || value_char == 0x7FU) {
+                value_char = '?';
+            }
+            result = procfs_append_char(buffer, capacity, length, value_char);
+        }
+    }
+    if (result == OK) result = procfs_append_char(buffer, capacity, length,
+                                                   '\n');
+    return result;
+}
+
+static int procfs_uptime_read(char* buffer, uint32_t capacity,
+                              uint32_t* out_len) {
+    process_snapshot_t idle;
+    uint32_t frequency;
+    uint32_t ticks;
+    int result;
+
     if (!buffer || !out_len) {
         LOG_ERROR("PROCFS", "Destino nulo no callback de uptime");
         return ERR_NULL;
     }
     *out_len = 0U;
-    if (!timer_get_frequency()) {
+    frequency = timer_get_frequency();
+    if (!frequency) {
         LOG_WARN("PROCFS", "Frequencia do timer indisponivel");
         return ERR_UNAVAILABLE;
     }
-    result = procfs_append_text(buffer, capacity, &length, "uptime_ticks ");
-    if (result == OK) {
-        result = procfs_append_decimal(buffer, capacity, &length,
-                                       timer_get_ticks());
-    }
-    if (result == OK) result = procfs_append_char(buffer, capacity, &length,
-                                                   '\n');
-    if (result == OK) result = procfs_append_text(buffer, capacity, &length,
-                                                   "frequency_hz ");
-    if (result == OK) {
-        result = procfs_append_decimal(buffer, capacity, &length,
-                                       timer_get_frequency());
-    }
-    if (result == OK) result = procfs_append_char(buffer, capacity, &length,
-                                                   '\n');
-    if (result == OK) *out_len = length;
+    result = process_snapshot_copy(0U, &idle);
+    if (result != OK) return result;
+    ticks = timer_get_ticks();
+    result = procfs_append_line_decimal(buffer, capacity, out_len,
+                                        "uptime_ticks", ticks);
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, out_len, "frequency_hz", frequency);
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, out_len, "uptime_seconds", ticks / frequency);
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, out_len, "idle_ticks", idle.total_ticks);
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, out_len, "idle_seconds", idle.total_ticks / frequency);
     return result;
+}
+
+static int procfs_meminfo_read(char* buffer, uint32_t capacity,
+                               uint32_t* out_len) {
+    kmem_slab_stats_t slab;
+    block_cache_stats_t cache;
+    uint32_t slab_bytes;
+    int result;
+
+    if (!buffer || !out_len) {
+        LOG_ERROR("PROCFS", "Destino nulo no callback de meminfo");
+        return ERR_NULL;
+    }
+    kmem_cache_get_stats(&slab);
+    result = block_cache_get_stats(&cache);
+    if (result != OK) {
+        LOG_ERROR("PROCFS", "Falha ao consultar cache de blocos");
+        return result;
+    }
+    if (slab.pages > 0xFFFFFFFFU / PAGE_SIZE) {
+        LOG_ERROR("PROCFS", "Slab excedeu memoria publicada");
+        return ERR_OVERFLOW;
+    }
+    slab_bytes = slab.pages * PAGE_SIZE;
+    *out_len = 0U;
+    result = procfs_append_line_decimal(buffer, capacity, out_len,
+                                        "total_bytes", memory_get_total());
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, out_len, "free_bytes", memory_get_free());
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, out_len, "used_bytes", memory_get_used());
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, out_len, "slab_bytes", slab_bytes);
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, out_len, "buffers_bytes", cache.memory_bytes);
+    return result;
+}
+
+static int procfs_cpuid_supported(void) {
+    uint32_t original;
+    uint32_t toggled;
+    uint32_t current;
+
+    asm volatile("pushfl\n\tpopl %0" : "=r"(original));
+    toggled = original ^ (1U << 21U);
+    asm volatile("pushl %0\n\tpopfl" : : "r"(toggled) : "cc");
+    asm volatile("pushfl\n\tpopl %0" : "=r"(current));
+    asm volatile("pushl %0\n\tpopfl" : : "r"(original) : "cc");
+    return ((current ^ original) & (1U << 21U)) != 0U;
+}
+
+static void procfs_cpuid(uint32_t leaf, uint32_t subleaf, uint32_t* eax,
+                         uint32_t* ebx, uint32_t* ecx, uint32_t* edx) {
+    asm volatile("cpuid"
+                 : "=a"(*eax), "=b"(*ebx), "=c"(*ecx), "=d"(*edx)
+                 : "a"(leaf), "c"(subleaf));
+}
+
+static int procfs_cpuinfo_read(char* buffer, uint32_t capacity,
+                               uint32_t* out_len) {
+    static const char* const edx_flag_names[] = {
+        "fpu", "vme", "de", "pse", "tsc", "msr", "pae", "mce",
+        "cx8", "apic", "reserved10", "sep", "mtrr", "pge", "mca",
+        "cmov", "pat", "pse36", "psn", "clfsh", "ds", "acpi", "mmx",
+        "fxsr", "sse", "sse2", "ss", "ht", "tm", "ia64", "pbe",
+        "reserved31"
+    };
+    static const char* const ecx_flag_names[] = {
+        "sse3", "pclmulqdq", "dtes64", "monitor", "ds_cpl", "vmx",
+        "smx", "est", "tm2", "ssse3", "cnxt_id", "sdbg", "fma", "cx16",
+        "xtpr", "pdcm"
+    };
+    uint32_t max_leaf = 0U;
+    uint32_t max_extended = 0U;
+    uint32_t eax = 0U;
+    uint32_t ebx = 0U;
+    uint32_t ecx = 0U;
+    uint32_t edx = 0U;
+    uint32_t cpu_eax = 0U;
+    uint32_t cpu_ecx = 0U;
+    uint32_t cpu_edx = 0U;
+    uint32_t length = 0U;
+    uint32_t frequency_hz = 0U;
+    char vendor[PROCFS_CPU_VENDOR_SIZE];
+    char brand[PROCFS_CPU_BRAND_SIZE];
+    uint32_t brand_words[12];
+    int result;
+
+    if (!buffer || !out_len) {
+        LOG_ERROR("PROCFS", "Destino nulo no callback de cpuinfo");
+        return ERR_NULL;
+    }
+    *out_len = 0U;
+    kmemset(vendor, 0, sizeof(vendor));
+    kmemset(brand, 0, sizeof(brand));
+    kmemset(brand_words, 0, sizeof(brand_words));
+    if (procfs_cpuid_supported()) {
+        procfs_cpuid(0U, 0U, &max_leaf, &ebx, &ecx, &edx);
+        kmemcpy(vendor, &ebx, sizeof(ebx));
+        kmemcpy(vendor + 4U, &edx, sizeof(edx));
+        kmemcpy(vendor + 8U, &ecx, sizeof(ecx));
+        if (max_leaf >= 1U) {
+            procfs_cpuid(1U, 0U, &eax, &ebx, &ecx, &edx);
+            cpu_eax = eax;
+            cpu_ecx = ecx;
+            cpu_edx = edx;
+        }
+        procfs_cpuid(0x80000000U, 0U, &max_extended, &ebx, &ecx, &edx);
+        if (max_extended >= 0x80000004U) {
+            procfs_cpuid(0x80000002U, 0U, &brand_words[0], &brand_words[1],
+                         &brand_words[2], &brand_words[3]);
+            procfs_cpuid(0x80000003U, 0U, &brand_words[4], &brand_words[5],
+                         &brand_words[6], &brand_words[7]);
+            procfs_cpuid(0x80000004U, 0U, &brand_words[8], &brand_words[9],
+                         &brand_words[10], &brand_words[11]);
+            kmemcpy(brand, brand_words, sizeof(brand_words));
+            brand[sizeof(brand) - 1U] = '\0';
+        }
+        if (max_leaf >= 0x16U) {
+            uint32_t base_mhz;
+
+            procfs_cpuid(0x16U, 0U, &base_mhz, &ebx, &ecx, &edx);
+            if (base_mhz && base_mhz <= 0xFFFFFFFFU / 1000000U) {
+                frequency_hz = base_mhz * 1000000U;
+            }
+        }
+    }
+    if (!vendor[0]) procfs_copy_text(vendor, sizeof(vendor), "unknown");
+    if (!brand[0]) procfs_copy_text(brand, sizeof(brand), vendor);
+    result = procfs_append_line_decimal(buffer, capacity, &length,
+                                        "processor", 0U);
+    if (result == OK) result = procfs_append_line_text(
+        buffer, capacity, &length, "vendor_id", vendor);
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, &length, "cpu_family", (cpu_eax >> 8) & 0x0FU);
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, &length, "model", (cpu_eax >> 4) & 0x0FU);
+    if (result == OK) result = procfs_append_line_text(
+        buffer, capacity, &length, "model_name", brand);
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, &length, "stepping", cpu_eax & 0x0FU);
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, &length, "frequency_hz", frequency_hz);
+    if (result == OK) {
+        uint32_t flags_present = 0U;
+
+        result = procfs_append_text(buffer, capacity, &length, "flags ");
+        for (uint32_t bit = 0U; result == OK && bit < 32U; bit++) {
+            if (cpu_edx & (1U << bit)) {
+                result = procfs_append_text(buffer, capacity, &length,
+                                            edx_flag_names[bit]);
+                if (result == OK) result = procfs_append_char(
+                    buffer, capacity, &length, ' ');
+                flags_present = 1U;
+            }
+        }
+        for (uint32_t bit = 0U; result == OK && bit < 16U; bit++) {
+            if (cpu_ecx & (1U << bit)) {
+                result = procfs_append_text(buffer, capacity, &length,
+                                            ecx_flag_names[bit]);
+                if (result == OK) result = procfs_append_char(
+                    buffer, capacity, &length, ' ');
+                flags_present = 1U;
+            }
+        }
+        if (result == OK && !flags_present) result = procfs_append_text(
+            buffer, capacity, &length, "none");
+        if (result == OK) result = procfs_append_char(buffer, capacity,
+                                                       &length, '\n');
+    }
+    *out_len = length;
+    return result;
+}
+
+static int procfs_version_read(char* buffer, uint32_t capacity,
+                               uint32_t* out_len) {
+    uint32_t length = 0U;
+    int result;
+
+    if (!buffer || !out_len) {
+        LOG_ERROR("PROCFS", "Destino nulo no callback de version");
+        return ERR_NULL;
+    }
+    result = procfs_append_line_text(buffer, capacity, &length, "version",
+                                     ZEPHYROS_VERSION_TEXT);
+    if (result == OK) result = procfs_append_line_text(
+        buffer, capacity, &length, "build_date", __DATE__);
+    if (result == OK) result = procfs_append_line_text(
+        buffer, capacity, &length, "build_time", __TIME__);
+    if (result == OK) result = procfs_append_line_text(
+        buffer, capacity, &length, "compiler", __VERSION__);
+    *out_len = length;
+    return result;
+}
+
+static int procfs_cmdline_read(char* buffer, uint32_t capacity,
+                               uint32_t* out_len) {
+    if (!buffer || !out_len) {
+        LOG_ERROR("PROCFS", "Destino nulo no callback de cmdline");
+        return ERR_NULL;
+    }
+    *out_len = 0U;
+    return procfs_append_line_text(buffer, capacity, out_len, "cmdline", "");
+}
+
+static int procfs_global_read(char* buffer, uint32_t capacity,
+                              uint32_t* out_len, void* data) {
+    uint32_t kind;
+
+    if (!data) {
+        LOG_ERROR("PROCFS", "Contexto ausente no callback global");
+        return ERR_NULL;
+    }
+    kind = *(uint32_t*)data;
+    if (kind == PROCFS_GLOBAL_UPTIME) return procfs_uptime_read(
+        buffer, capacity, out_len);
+    if (kind == PROCFS_GLOBAL_MEMINFO) return procfs_meminfo_read(
+        buffer, capacity, out_len);
+    if (kind == PROCFS_GLOBAL_CPUINFO) return procfs_cpuinfo_read(
+        buffer, capacity, out_len);
+    if (kind == PROCFS_GLOBAL_VERSION) return procfs_version_read(
+        buffer, capacity, out_len);
+    if (kind == PROCFS_GLOBAL_CMDLINE) return procfs_cmdline_read(
+        buffer, capacity, out_len);
+    LOG_ERROR("PROCFS", "Tipo de node global invalido");
+    return ERR_INVALID;
+}
+
+static int procfs_parse_pid(const char* text, uint32_t length,
+                            uint32_t* pid) {
+    uint32_t value = 0U;
+
+    if (!text || !pid || !length || length >= PROCFS_PID_TEXT_SIZE) {
+        LOG_WARN("PROCFS", "Texto de PID invalido");
+        return ERR_INVALID;
+    }
+    for (uint32_t index = 0U; index < length; index++) {
+        if (text[index] < '0' || text[index] > '9') {
+            LOG_WARN("PROCFS", "Digito invalido em PID procfs");
+            return ERR_INVALID;
+        }
+        if (value > (0xFFFFFFFFU - (uint32_t)(text[index] - '0')) / 10U) {
+            LOG_WARN("PROCFS", "PID procfs excedeu limite");
+            return ERR_OVERFLOW;
+        }
+        value = value * 10U + (uint32_t)(text[index] - '0');
+    }
+    *pid = value;
+    return OK;
+}
+
+static int procfs_parse_path(const char* canonical_path,
+                             procfs_node_ref_t* node) {
+    const char* suffix;
+    const char* separator = 0;
+    uint32_t pid_length;
+    process_snapshot_t process;
+    int result;
+
+    if (!canonical_path || !node) {
+        LOG_ERROR("PROCFS", "Argumento nulo ao interpretar caminho procfs");
+        return ERR_NULL;
+    }
+    kmemset(node, 0, sizeof(*node));
+    if (kstrlen(canonical_path) < 6U || canonical_path[0] != '/' ||
+        canonical_path[1] != 'p' || canonical_path[2] != 'r' ||
+        canonical_path[3] != 'o' || canonical_path[4] != 'c' ||
+        canonical_path[5] != '/') {
+        LOG_WARN("PROCFS", "Prefixo de caminho procfs invalido");
+        return ERR_INVALID;
+    }
+    suffix = canonical_path + 6U;
+    if (kstrcmp(canonical_path, "/proc") == 0) return ERR_INVALID;
+    if (kstrcmp(canonical_path, "/proc/uptime") == 0) {
+        node->kind = PROCFS_NODE_GLOBAL;
+        node->entry_index = PROCFS_GLOBAL_UPTIME;
+        return OK;
+    }
+    if (kstrcmp(canonical_path, "/proc/meminfo") == 0) {
+        node->kind = PROCFS_NODE_GLOBAL;
+        node->entry_index = PROCFS_GLOBAL_MEMINFO;
+        return OK;
+    }
+    if (kstrcmp(canonical_path, "/proc/cpuinfo") == 0) {
+        node->kind = PROCFS_NODE_GLOBAL;
+        node->entry_index = PROCFS_GLOBAL_CPUINFO;
+        return OK;
+    }
+    if (kstrcmp(canonical_path, "/proc/version") == 0) {
+        node->kind = PROCFS_NODE_GLOBAL;
+        node->entry_index = PROCFS_GLOBAL_VERSION;
+        return OK;
+    }
+    if (kstrcmp(canonical_path, "/proc/cmdline") == 0) {
+        node->kind = PROCFS_NODE_GLOBAL;
+        node->entry_index = PROCFS_GLOBAL_CMDLINE;
+        return OK;
+    }
+    for (uint32_t index = 0U; suffix[index]; index++) {
+        if (suffix[index] == '/') {
+            separator = suffix + index;
+            break;
+        }
+    }
+    pid_length = separator ? (uint32_t)(separator - suffix) : kstrlen(suffix);
+    result = procfs_parse_pid(suffix, pid_length, &node->pid);
+    if (result != OK) return result;
+    result = process_snapshot_copy(node->pid, &process);
+    if (result != OK) return result;
+    if (!separator) {
+        node->kind = PROCFS_NODE_PROCESS_DIRECTORY;
+        return OK;
+    }
+    if (!separator[1]) return ERR_INVALID;
+    if (kstrcmp(separator + 1U, "status") == 0) {
+        node->kind = PROCFS_NODE_PROCESS_STATUS;
+    } else if (kstrcmp(separator + 1U, "cmdline") == 0) {
+        node->kind = PROCFS_NODE_PROCESS_CMDLINE;
+    } else if (kstrcmp(separator + 1U, "maps") == 0) {
+        node->kind = PROCFS_NODE_PROCESS_MAPS;
+    } else {
+        return ERR_NOT_FOUND;
+    }
+    return OK;
 }
 
 static int procfs_entry_find(const char* canonical_path,
                              procfs_entry_snapshot_t* snapshot) {
-    uint32_t index;
+    procfs_node_ref_t node;
+    int result;
 
     if (!canonical_path || !snapshot) {
         LOG_ERROR("PROCFS", "Argumento nulo no lookup procfs");
         return ERR_NULL;
     }
-    if (!procfs_path_is_uptime(canonical_path)) {
-        LOG_WARN("PROCFS", "Entrada procfs inexistente");
-        return ERR_NOT_FOUND;
-    }
+    result = procfs_parse_path(canonical_path, &node);
+    if (result != OK || node.kind != PROCFS_NODE_GLOBAL ||
+        node.entry_index >= PROCFS_GLOBAL_COUNT) return ERR_NOT_FOUND;
     spinlock_acquire(&procfs_lock);
     if (!procfs_ready) {
         spinlock_release(&procfs_lock);
         LOG_ERROR("PROCFS", "Lookup procfs antes da inicializacao");
         return ERR_STATE;
     }
-    for (index = 0U; index < sizeof(procfs_entries) / sizeof(procfs_entries[0]);
-         index++) {
-        if (kstrcmp(procfs_entries[index].name, "uptime") == 0) {
-            snapshot->entry = procfs_entries[index];
-            snapshot->index = index;
-            spinlock_release(&procfs_lock);
-            return OK;
-        }
-    }
+    snapshot->entry = procfs_entries[node.entry_index];
+    snapshot->index = node.entry_index;
     spinlock_release(&procfs_lock);
-    return ERR_NOT_FOUND;
+    return OK;
 }
 
 int procfs_init(void) {
@@ -197,7 +609,7 @@ int procfs_is_ready(void) {
 }
 
 int procfs_lookup(const char* canonical_path, vfs_lookup_result_t* result) {
-    procfs_entry_snapshot_t snapshot;
+    procfs_node_ref_t node;
     int status;
 
     if (!canonical_path || !result) {
@@ -208,7 +620,7 @@ int procfs_lookup(const char* canonical_path, vfs_lookup_result_t* result) {
         LOG_ERROR("PROCFS", "Lookup publico procfs antes da inicializacao");
         return ERR_STATE;
     }
-    if (procfs_path_is_root(canonical_path)) {
+    if (kstrcmp(canonical_path, "/proc") == 0) {
         result->type = VFS_NODE_DIRECTORY;
         result->size = 0U;
         result->attributes = 0U;
@@ -216,13 +628,15 @@ int procfs_lookup(const char* canonical_path, vfs_lookup_result_t* result) {
         result->relative_path[0] = '\0';
         return OK;
     }
-    status = procfs_entry_find(canonical_path, &snapshot);
+    status = procfs_parse_path(canonical_path, &node);
     if (status != OK) return status;
-    result->type = VFS_NODE_REGULAR;
     result->size = 0U;
     result->attributes = 0U;
     result->read_only = 1U;
-    procfs_copy_text(result->relative_path, VFS_MAX_PATH, "uptime");
+    procfs_copy_text(result->relative_path, VFS_MAX_PATH,
+                     canonical_path + 6U);
+    result->type = node.kind == PROCFS_NODE_PROCESS_DIRECTORY ?
+                   VFS_NODE_DIRECTORY : VFS_NODE_REGULAR;
     return OK;
 }
 
@@ -258,10 +672,144 @@ static int procfs_render_snapshot(const proc_entry_t* entry,
     return OK;
 }
 
+static int procfs_render_process_status(const process_snapshot_t* process,
+                                        char* buffer, uint32_t capacity,
+                                        uint32_t* length) {
+    static const char* const states[] = {
+        "unused", "ready", "running", "blocked", "zombie"
+    };
+    const char* state = "unknown";
+    int result;
+
+    if (process->state <= PROCESS_STATE_ZOMBIE) state = states[process->state];
+    result = procfs_append_line_decimal(buffer, capacity, length, "pid",
+                                        process->pid);
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, length, "generation", process->generation);
+    if (result == OK) result = procfs_append_line_text(
+        buffer, capacity, length, "name", process->name);
+    if (result == OK) result = procfs_append_line_text(
+        buffer, capacity, length, "state", state);
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, length, "ppid", process->parent_pid);
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, length, "threads", process->threads);
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, length, "total_ticks", process->total_ticks);
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, length, "wait_ticks", process->wait_ticks);
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, length, "memory_bytes", process->memory_bytes);
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resident_pages", process->resident_pages);
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, length, "image_bytes", process->image_bytes);
+    if (result == OK) result = procfs_append_line_text(
+        buffer, capacity, length, "user",
+        process->user_mode ? "ring3" : "kernel");
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, length, "exit_code", process->exit_code);
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, length, "faulted", process->faulted);
+    return result;
+}
+
+static int procfs_render_process(const procfs_node_ref_t* node,
+                                 procfs_file_context_t* context) {
+    process_snapshot_t process;
+    uint32_t length = 0U;
+    int result;
+
+    if (!node || !context || !context->snapshot) {
+        LOG_ERROR("PROCFS", "Contexto invalido ao renderizar processo");
+        return ERR_NULL;
+    }
+    result = process_snapshot_copy(node->pid, &process);
+    if (result != OK) return result == ERR_NOT_FOUND ? ERR_AGAIN : result;
+    context->process_pid = process.pid;
+    context->process_generation = process.generation;
+    if (node->kind == PROCFS_NODE_PROCESS_STATUS) {
+        result = procfs_render_process_status(&process,
+                                              (char*)context->snapshot,
+                                              PROCFS_MAX_SNAPSHOT_SIZE,
+                                              &length);
+        context->snapshot_size = length;
+        return result;
+    }
+    if (node->kind == PROCFS_NODE_PROCESS_CMDLINE) {
+        const char* value = process.user_mode ? process.user_launch.raw_args :
+                             process.name;
+
+        result = procfs_append_line_text((char*)context->snapshot,
+                                         PROCFS_MAX_SNAPSHOT_SIZE, &length,
+                                         "cmdline", value);
+        context->snapshot_size = length;
+        return result;
+    }
+    if (node->kind == PROCFS_NODE_PROCESS_MAPS) {
+        vm_area_info_t* areas = 0;
+        uint32_t area_count = 0U;
+        uint8_t captured = 0U;
+
+        for (uint32_t attempt = 0U; attempt < 2U && !captured; attempt++) {
+            result = process_snapshot_copy(node->pid, &process);
+            if (result != OK) break;
+            context->process_generation = process.generation;
+            area_count = process.vma_count;
+            if (area_count > 0U) {
+                if (area_count > 0xFFFFFFFFU / sizeof(vm_area_info_t)) {
+                    result = ERR_OVERFLOW;
+                    break;
+                }
+                areas = (vm_area_info_t*)kmalloc(
+                    area_count * sizeof(vm_area_info_t));
+                if (!areas) {
+                    result = ERR_MEM;
+                    break;
+                }
+            }
+            result = process_snapshot_copy_vmas(node->pid,
+                                                process.generation, areas,
+                                                area_count, &area_count);
+            if (result == ERR_AGAIN) {
+                if (areas) kfree(areas);
+                areas = 0;
+                continue;
+            }
+            if (result != OK) break;
+            captured = 1U;
+        }
+        if (result == OK && captured) {
+            for (uint32_t index = 0U; index < area_count && result == OK;
+                 index++) {
+                result = procfs_append_line_hex(
+                    (char*)context->snapshot, PROCFS_MAX_SNAPSHOT_SIZE,
+                    &length, "vma_start", areas[index].start_addr);
+                if (result == OK) result = procfs_append_line_hex(
+                    (char*)context->snapshot, PROCFS_MAX_SNAPSHOT_SIZE,
+                    &length, "vma_end", areas[index].end_addr);
+                if (result == OK) result = procfs_append_line_hex(
+                    (char*)context->snapshot, PROCFS_MAX_SNAPSHOT_SIZE,
+                    &length, "vma_flags", areas[index].flags);
+                if (result == OK) result = procfs_append_line_hex(
+                    (char*)context->snapshot, PROCFS_MAX_SNAPSHOT_SIZE,
+                    &length, "vma_offset", areas[index].offset);
+            }
+        }
+        if (areas) kfree(areas);
+        if (result == ERR_NOT_FOUND) return ERR_AGAIN;
+        if (result != OK) return result;
+        context->snapshot_size = length;
+        return OK;
+    }
+    return ERR_INVALID;
+}
+
 int procfs_open_file(const vfs_lookup_result_t* lookup, uint32_t mode,
                      vnode_t* vnode, file_t* file,
                      procfs_file_context_t* context) {
-    procfs_entry_snapshot_t snapshot;
+    procfs_entry_snapshot_t entry;
+    procfs_node_ref_t node;
     int result;
 
     if (!lookup || !vnode || !file || !context) {
@@ -276,18 +824,40 @@ int procfs_open_file(const vfs_lookup_result_t* lookup, uint32_t mode,
         LOG_WARN("PROCFS", "Abertura procfs com escrita recusada");
         return ERR_UNAVAILABLE;
     }
-    result = procfs_entry_find(lookup->canonical_path, &snapshot);
-    if (result != OK) return result;
-    if (!(snapshot.entry.mode & VFS_MODE_READ)) {
-        LOG_WARN("PROCFS", "Entry procfs sem permissao de leitura");
-        return ERR_UNAVAILABLE;
+    result = procfs_parse_path(lookup->canonical_path, &node);
+    if (result != OK || node.kind == PROCFS_NODE_PROCESS_DIRECTORY) {
+        return result == OK ? ERR_INVALID : result;
     }
-    result = procfs_render_snapshot(&snapshot.entry, context);
+    kmemset(context, 0, sizeof(*context));
+    context->node_kind = node.kind;
+    context->process_pid = node.pid;
+    if (node.kind == PROCFS_NODE_GLOBAL) {
+        result = procfs_entry_find(lookup->canonical_path, &entry);
+        if (result == OK) {
+            result = procfs_render_snapshot(&entry.entry, context);
+        }
+    } else {
+        context->snapshot = (uint8_t*)kmalloc(PROCFS_MAX_SNAPSHOT_SIZE);
+        if (!context->snapshot) {
+            LOG_ERROR("PROCFS", "Falha ao alocar snapshot de processo");
+            return ERR_MEM;
+        }
+        result = procfs_render_process(&node, context);
+        if (result != OK) {
+            kfree(context->snapshot);
+            context->snapshot = 0;
+            context->snapshot_size = 0U;
+        } else {
+            spinlock_acquire(&procfs_lock);
+            procfs_active_snapshots++;
+            spinlock_release(&procfs_lock);
+        }
+    }
     if (result != OK) {
         LOG_ERROR("PROCFS", "Falha ao gerar snapshot procfs");
         return result;
     }
-    context->entry_index = snapshot.index;
+    context->entry_index = node.entry_index;
     context->mount_slot = lookup->mount_slot;
     context->mount_generation = lookup->mount_generation;
     context->mount_acquired = 1U;
@@ -300,27 +870,123 @@ int procfs_open_file(const vfs_lookup_result_t* lookup, uint32_t mode,
     return OK;
 }
 
-int procfs_list(vfs_dir_entry_t* entries, uint32_t capacity,
-                uint32_t* out_count) {
-    if (!entries || !out_count) {
+static int procfs_pid_name(char* output, uint32_t capacity, uint32_t pid) {
+    uint32_t length = 0U;
+
+    if (!output || !capacity) {
+        LOG_ERROR("PROCFS", "Destino invalido para nome de PID");
+        return ERR_NULL;
+    }
+    if (procfs_append_decimal(output, capacity, &length, pid) != OK) {
+        LOG_WARN("PROCFS", "Nome de PID excedeu capacidade");
+        return ERR_OVERFLOW;
+    }
+    if (length >= capacity) {
+        LOG_WARN("PROCFS", "Nome de PID sem terminador");
+        return ERR_OVERFLOW;
+    }
+    output[length] = '\0';
+    return OK;
+}
+
+static int procfs_build_pid_path(char* output, uint32_t capacity,
+                                 uint32_t pid, const char* leaf) {
+    uint32_t length = 0U;
+
+    if (!output || !capacity || !leaf) {
+        LOG_ERROR("PROCFS", "Destino invalido para caminho de PID");
+        return ERR_NULL;
+    }
+    if (procfs_append_text(output, capacity, &length, "/proc/") != OK ||
+        procfs_append_decimal(output, capacity, &length, pid) != OK ||
+        procfs_append_char(output, capacity, &length, '/') != OK ||
+        procfs_append_text(output, capacity, &length, leaf) != OK ||
+        length >= capacity) {
+        LOG_WARN("PROCFS", "Caminho de PID excedeu capacidade");
+        return ERR_OVERFLOW;
+    }
+    output[length] = '\0';
+    return OK;
+}
+
+int procfs_list_path(const char* canonical_path, vfs_dir_entry_t* entries,
+                     uint32_t capacity, uint32_t* out_count) {
+    process_snapshot_t* snapshots = 0;
+    uint32_t process_total = 0U;
+    uint32_t count = 0U;
+    procfs_node_ref_t node;
+    int result;
+
+    if (!canonical_path || !entries || !out_count) {
         LOG_ERROR("PROCFS", "Destino nulo na listagem procfs");
         return ERR_NULL;
     }
     *out_count = 0U;
-    if (!capacity) {
-        LOG_ERROR("PROCFS", "Capacidade nula na listagem procfs");
-        return ERR_OVERFLOW;
-    }
+    if (!capacity) return ERR_OVERFLOW;
     if (!procfs_ready) {
         LOG_ERROR("PROCFS", "Listagem procfs antes da inicializacao");
         return ERR_STATE;
     }
-    kmemset(&entries[0], 0, sizeof(entries[0]));
-    procfs_copy_text(entries[0].name, sizeof(entries[0].name), "uptime");
-    entries[0].type = VFS_NODE_REGULAR;
-    entries[0].size = 0U;
-    *out_count = 1U;
+    if (kstrcmp(canonical_path, "/proc") == 0) {
+        if (capacity < PROCFS_GLOBAL_COUNT) return ERR_OVERFLOW;
+        snapshots = (process_snapshot_t*)kmalloc(
+            MAX_PROCESSES * sizeof(process_snapshot_t));
+        if (!snapshots) {
+            LOG_ERROR("PROCFS", "Falha ao alocar lista de processos");
+            return ERR_MEM;
+        }
+        result = process_snapshot_list(snapshots, MAX_PROCESSES,
+                                       &process_total);
+        if (result != OK) {
+            kfree(snapshots);
+            return result;
+        }
+        if (PROCFS_GLOBAL_COUNT + process_total > capacity) {
+            kfree(snapshots);
+            LOG_WARN("PROCFS", "Listagem procfs excedeu capacidade");
+            return ERR_OVERFLOW;
+        }
+        for (uint32_t index = 0U; index < PROCFS_GLOBAL_COUNT; index++) {
+            kmemset(&entries[count], 0, sizeof(entries[count]));
+            procfs_copy_text(entries[count].name, sizeof(entries[count].name),
+                             procfs_entries[index].name);
+            entries[count].type = VFS_NODE_REGULAR;
+            count++;
+        }
+        for (uint32_t index = 0U; index < process_total; index++) {
+            kmemset(&entries[count], 0, sizeof(entries[count]));
+            result = procfs_pid_name(entries[count].name,
+                                     sizeof(entries[count].name),
+                                     snapshots[index].pid);
+            if (result != OK) break;
+            entries[count].type = VFS_NODE_DIRECTORY;
+            count++;
+        }
+        kfree(snapshots);
+        if (result != OK) return result;
+        *out_count = count;
+        return OK;
+    }
+    result = procfs_parse_path(canonical_path, &node);
+    if (result != OK) return result;
+    if (node.kind != PROCFS_NODE_PROCESS_DIRECTORY) return ERR_INVALID;
+    if (capacity < 3U) return ERR_OVERFLOW;
+    for (uint32_t index = 0U; index < 3U; index++) {
+        static const char* const names[] = {"status", "cmdline", "maps"};
+
+        kmemset(&entries[count], 0, sizeof(entries[count]));
+        procfs_copy_text(entries[count].name, sizeof(entries[count].name),
+                         names[index]);
+        entries[count].type = VFS_NODE_REGULAR;
+        count++;
+    }
+    *out_count = count;
     return OK;
+}
+
+int procfs_list(vfs_dir_entry_t* entries, uint32_t capacity,
+                uint32_t* out_count) {
+    return procfs_list_path("/proc", entries, capacity, out_count);
 }
 
 static int procfs_read(file_t* file, void* buffer, uint32_t size,
@@ -333,10 +999,7 @@ static int procfs_read(file_t* file, void* buffer, uint32_t size,
         return ERR_NULL;
     }
     *bytes_read = 0U;
-    if (!(file->mode & VFS_MODE_READ)) {
-        LOG_WARN("PROCFS", "Leitura procfs recusada pelo modo");
-        return ERR_UNAVAILABLE;
-    }
+    if (!(file->mode & VFS_MODE_READ)) return ERR_UNAVAILABLE;
     if (size && !buffer) {
         LOG_ERROR("PROCFS", "Buffer nulo na leitura procfs");
         return ERR_NULL;
@@ -414,40 +1077,22 @@ static int procfs_lseek(file_t* file, int32_t offset, uint32_t whence,
         return ERR_NULL;
     }
     *position = 0U;
-    if (file->mode != VFS_MODE_READ) {
-        LOG_WARN("PROCFS", "Seek procfs recusado pelo modo");
-        return ERR_UNAVAILABLE;
-    }
     context = (procfs_file_context_t*)file->vnode->private_data;
-    if (!context || !context->snapshot) {
-        LOG_ERROR("PROCFS", "Snapshot procfs invalido no seek");
-        return ERR_STATE;
-    }
+    if (!context || !context->snapshot) return ERR_STATE;
     if (whence == VFS_SEEK_SET) base = 0U;
     else if (whence == VFS_SEEK_CUR) base = file->offset;
     else if (whence == VFS_SEEK_END) base = context->snapshot_size;
-    else {
-        LOG_WARN("PROCFS", "Origem de seek procfs invalida");
-        return ERR_INVALID;
-    }
+    else return ERR_INVALID;
     if (offset < 0) {
         uint32_t magnitude = (uint32_t)(-(offset + 1)) + 1U;
-        if (magnitude > base) {
-            LOG_WARN("PROCFS", "Seek procfs antes do inicio");
-            return ERR_INVALID;
-        }
+
+        if (magnitude > base) return ERR_INVALID;
         target = base - magnitude;
     } else {
-        if (base > 0xFFFFFFFFU - (uint32_t)offset) {
-            LOG_WARN("PROCFS", "Seek procfs excedeu o cursor");
-            return ERR_OVERFLOW;
-        }
+        if (base > 0xFFFFFFFFU - (uint32_t)offset) return ERR_OVERFLOW;
         target = base + (uint32_t)offset;
     }
-    if (target > context->snapshot_size) {
-        LOG_WARN("PROCFS", "Seek procfs depois do snapshot");
-        return ERR_INVALID;
-    }
+    if (target > context->snapshot_size) return ERR_INVALID;
     file->offset = target;
     *position = target;
     return OK;
@@ -496,49 +1141,110 @@ static int procfs_overflow_callback(char* buffer, uint32_t capacity,
     return OK;
 }
 
-static int procfs_compare_snapshot(const uint8_t* first, const uint8_t* second,
-                                   uint32_t length) {
-    uint32_t index;
+static void procfs_test_process_entry(void) {
+    while (1) process_yield();
+}
 
-    if (!first || !second) return 0;
-    for (index = 0U; index < length; index++) {
-        if (first[index] != second[index]) return 0;
+static int procfs_buffer_valid(const uint8_t* buffer, uint32_t size) {
+    if (!buffer) return 0;
+    for (uint32_t index = 0U; index < size; index++) {
+        if (buffer[index] == 0U || buffer[index] == '\r' ||
+            buffer[index] == 0x1BU) return 0;
     }
     return 1;
 }
 
+static int procfs_buffer_contains(const uint8_t* buffer, uint32_t size,
+                                  const char* text) {
+    uint32_t text_length;
+
+    if (!buffer || !text) return 0;
+    text_length = kstrlen(text);
+    if (!text_length || text_length > size) return 0;
+    for (uint32_t index = 0U; index + text_length <= size; index++) {
+        uint32_t offset = 0U;
+
+        while (offset < text_length &&
+               buffer[index + offset] == (uint8_t)text[offset]) offset++;
+        if (offset == text_length) return 1;
+    }
+    return 0;
+}
+
+static int procfs_test_read_path(const char* path, uint8_t* buffer,
+                                 uint32_t capacity, uint32_t* out_size) {
+    int32_t fd = VFS_FD_INVALID;
+    uint32_t total = 0U;
+    uint32_t bytes = 0U;
+    int result;
+
+    if (!path || !buffer || !out_size || !capacity) {
+        LOG_ERROR("PROCFS", "Argumento invalido no autoteste de leitura");
+        return ERR_NULL;
+    }
+    *out_size = 0U;
+    result = vfs_open(path, VFS_MODE_READ, &fd);
+    if (result != OK) return result;
+    do {
+        result = vfs_read(fd, buffer + total, capacity - total, &bytes);
+        if (result != OK) break;
+        total += bytes;
+    } while (bytes && total < capacity);
+    if (vfs_close(fd) != OK) result = ERR_STATE;
+    if (result == OK) *out_size = total;
+    return result;
+}
+
 int procfs_validate_state(void) {
     uint32_t active;
-    uint32_t entry_count = sizeof(procfs_entries) / sizeof(procfs_entries[0]);
 
     spinlock_acquire(&procfs_lock);
     active = procfs_active_snapshots;
-    if (!procfs_ready || active > VFS_MAX_OPEN_FILES || entry_count != 1U ||
-        !procfs_entries[0].name ||
-        kstrcmp(procfs_entries[0].name, "uptime") != 0 ||
-        procfs_entries[0].mode != VFS_MODE_READ ||
-        !procfs_entries[0].read_proc || procfs_entries[0].write_proc) {
+    if (!procfs_ready || active > VFS_MAX_OPEN_FILES ||
+        sizeof(procfs_entries) / sizeof(procfs_entries[0]) !=
+        PROCFS_GLOBAL_COUNT) {
         spinlock_release(&procfs_lock);
         LOG_ERROR("PROCFS", "Invariantes procfs invalidas");
         return ERR_STATE;
+    }
+    for (uint32_t index = 0U; index < PROCFS_GLOBAL_COUNT; index++) {
+        if (!procfs_entries[index].name || procfs_entries[index].mode !=
+            VFS_MODE_READ || !procfs_entries[index].read_proc ||
+            procfs_entries[index].write_proc) {
+            spinlock_release(&procfs_lock);
+            LOG_ERROR("PROCFS", "Entry procfs invalido");
+            return ERR_STATE;
+        }
     }
     spinlock_release(&procfs_lock);
     return OK;
 }
 
 int procfs_self_test(procfs_test_result_t* result) {
-    vfs_lookup_result_t lookup;
+    static const char* const global_names[] = {
+        "uptime", "meminfo", "cpuinfo", "version", "cmdline"
+    };
     vfs_dir_entry_t entries[VFS_MAX_DIR_ENTRIES];
-    uint8_t first[128];
-    uint8_t second[128];
+    vfs_lookup_result_t lookup;
+    uint8_t first[512];
+    uint8_t second[512];
     procfs_file_context_t context;
     proc_entry_t error_entry;
     proc_entry_t overflow_entry;
+    process_t* temporary = 0;
+    process_t* reused = 0;
     uint32_t count = 0U;
     uint32_t bytes = 0U;
+    uint32_t second_bytes = 0U;
     uint32_t position = 0U;
     uint32_t before_active;
+    uint32_t temporary_pid = 0U;
+    uint32_t temporary_generation = 0U;
+    char temporary_status_path[VFS_MAX_PATH];
+    char temporary_cmdline_path[VFS_MAX_PATH];
+    char temporary_maps_path[VFS_MAX_PATH];
     uint8_t close_ok = 1U;
+    uint8_t temporary_nodes = 0U;
     int32_t fd = VFS_FD_INVALID;
     int result_code;
 
@@ -553,13 +1259,53 @@ int procfs_self_test(procfs_test_result_t* result) {
     result->lookup = vfs_lookup("/proc", &lookup) == OK &&
                      lookup.type == VFS_NODE_DIRECTORY &&
                      vfs_lookup("/proc/uptime", &lookup) == OK &&
-                     lookup.type == VFS_NODE_REGULAR &&
-                     vfs_lookup("/proc/missing", &lookup) == ERR_NOT_FOUND;
+                     lookup.type == VFS_NODE_REGULAR;
     procfs_test_count(result, result->lookup);
     result->listing = vfs_list_dir("/proc", entries, VFS_MAX_DIR_ENTRIES,
-                                   &count) == OK && count == 1U &&
-                      kstrcmp(entries[0].name, "uptime") == 0;
+                                   &count) == OK && count >= PROCFS_GLOBAL_COUNT;
+    for (uint32_t index = 0U; result->listing && index < PROCFS_GLOBAL_COUNT;
+         index++) {
+        result->listing = kstrcmp(entries[index].name, global_names[index]) == 0;
+    }
+    {
+        uint32_t previous_pid = 0U;
+        uint8_t first_pid = 1U;
+
+        for (uint32_t index = PROCFS_GLOBAL_COUNT;
+             result->listing && index < count; index++) {
+            uint32_t pid;
+            int pid_result = procfs_parse_pid(
+                entries[index].name, kstrlen(entries[index].name), &pid);
+
+            result->listing = pid_result == OK && (first_pid ||
+                             pid > previous_pid);
+            previous_pid = pid;
+            first_pid = 0U;
+        }
+    }
     procfs_test_count(result, result->listing);
+
+    result->global_nodes = 1U;
+    result->format = 1U;
+    for (uint32_t index = 0U; index < PROCFS_GLOBAL_COUNT; index++) {
+        char path[VFS_MAX_PATH];
+        uint32_t length = 0U;
+
+        procfs_copy_text(path, sizeof(path), "/proc/");
+        while (global_names[index][length] && length + 7U < sizeof(path)) {
+            path[6U + length] = global_names[index][length];
+            length++;
+        }
+        path[6U + length] = '\0';
+        result_code = procfs_test_read_path(path, first, sizeof(first),
+                                            &bytes);
+        result->global_nodes = result->global_nodes && result_code == OK;
+        result->format = result->format && result_code == OK &&
+                         procfs_buffer_valid(first, bytes);
+    }
+    procfs_test_count(result, result->global_nodes);
+    procfs_test_count(result, result->format);
+
     spinlock_acquire(&procfs_lock);
     before_active = procfs_active_snapshots;
     spinlock_release(&procfs_lock);
@@ -568,13 +1314,12 @@ int procfs_self_test(procfs_test_result_t* result) {
         result_code = vfs_read(fd, first, 8U, &bytes);
         result->read = result_code == OK && bytes > 0U;
         result_code = vfs_lseek(fd, 0, VFS_SEEK_SET, &position);
-        if (result_code == OK) {
-            result_code = vfs_read(fd, second, sizeof(second), &bytes);
-        }
+        if (result_code == OK) result_code = vfs_read(fd, first, sizeof(first),
+                                                       &bytes);
         result->read = result->read && result_code == OK && bytes > 0U;
         result->seek_eof = vfs_lseek(fd, 0, VFS_SEEK_END, &position) == OK &&
-                           vfs_read(fd, first, sizeof(first), &bytes) == OK &&
-                           bytes == 0U &&
+                           vfs_read(fd, first, sizeof(first), &second_bytes) ==
+                           OK && second_bytes == 0U &&
                            vfs_lseek(fd, 1, VFS_SEEK_END, &position) ==
                            ERR_INVALID &&
                            vfs_lseek(fd, -1, VFS_SEEK_SET, &position) ==
@@ -583,13 +1328,16 @@ int procfs_self_test(procfs_test_result_t* result) {
             vfs_read(fd, first, sizeof(first), &bytes) != OK) {
             result->read = 0U;
         }
-        result->read = result->read && bytes > 0U;
         if (vfs_lseek(fd, 0, VFS_SEEK_SET, &position) != OK ||
-            vfs_read(fd, second, bytes, &count) != OK || count != bytes) {
+            vfs_read(fd, second, bytes, &second_bytes) != OK ||
+            second_bytes != bytes || !procfs_buffer_valid(first, bytes)) {
             result->read = 0U;
         }
-        result->read = result->read && procfs_compare_snapshot(first, second,
-                                                                bytes);
+        result->read = result->read && procfs_buffer_valid(second, second_bytes) &&
+                       procfs_buffer_contains(second, second_bytes,
+                                              "uptime_ticks ") &&
+                       procfs_buffer_contains(second, second_bytes,
+                                              "idle_seconds ");
         if (vfs_close(fd) != OK) close_ok = 0U;
         fd = VFS_FD_INVALID;
     }
@@ -599,6 +1347,52 @@ int procfs_self_test(procfs_test_result_t* result) {
     result->permissions = vfs_open("/proc/uptime", VFS_MODE_WRITE, &fd) ==
                           ERR_UNAVAILABLE && fd == VFS_FD_INVALID;
     procfs_test_count(result, result->permissions);
+
+    result->process_nodes = vfs_lookup("/proc/0/status", &lookup) == OK &&
+                            vfs_lookup("/proc/0/cmdline", &lookup) == OK &&
+                            vfs_lookup("/proc/0/maps", &lookup) == OK;
+    procfs_test_count(result, result->process_nodes);
+    result->process_listing = vfs_list_dir("/proc/0", entries,
+                                           VFS_MAX_DIR_ENTRIES, &count) == OK &&
+                              count == 3U &&
+                              kstrcmp(entries[0].name, "status") == 0 &&
+                              kstrcmp(entries[1].name, "cmdline") == 0 &&
+                              kstrcmp(entries[2].name, "maps") == 0;
+    procfs_test_count(result, result->process_listing);
+
+    temporary = process_create("procfs-test", procfs_test_process_entry);
+    if (temporary) {
+        temporary_pid = temporary->pid;
+        temporary_generation = temporary->event_generation;
+        temporary_nodes =
+            procfs_build_pid_path(temporary_status_path,
+                                  sizeof(temporary_status_path), temporary_pid,
+                                  "status") == OK &&
+            procfs_build_pid_path(temporary_cmdline_path,
+                                  sizeof(temporary_cmdline_path), temporary_pid,
+                                  "cmdline") == OK &&
+            procfs_build_pid_path(temporary_maps_path,
+                                  sizeof(temporary_maps_path), temporary_pid,
+                                  "maps") == OK &&
+            procfs_test_read_path(temporary_status_path, first, sizeof(first),
+                                  &bytes) == OK &&
+            procfs_buffer_contains(first, bytes, "pid ") &&
+            procfs_test_read_path(temporary_cmdline_path, first, sizeof(first),
+                                  &bytes) == OK &&
+            procfs_buffer_contains(first, bytes, "cmdline procfs-test") &&
+            procfs_test_read_path(temporary_maps_path, first, sizeof(first),
+                                  &bytes) == OK && bytes == 0U;
+        process_destroy(temporary);
+        temporary = 0;
+        reused = process_create("procfs-reused", procfs_test_process_entry);
+        result->generation = reused && reused->pid == temporary_pid &&
+                             reused->event_generation != temporary_generation;
+        if (reused) process_destroy(reused);
+        reused = 0;
+    }
+    procfs_test_count(result, temporary_nodes);
+    procfs_test_count(result, result->generation);
+
     error_entry.name = "error";
     error_entry.mode = VFS_MODE_READ;
     error_entry.read_proc = procfs_error_callback;
@@ -615,11 +1409,14 @@ int procfs_self_test(procfs_test_result_t* result) {
                               ERR_OVERFLOW && context.snapshot == 0;
     procfs_test_count(result, result->callback_errors);
     spinlock_acquire(&procfs_lock);
-    result->cleanup = close_ok && procfs_active_snapshots == before_active;
+    result->cleanup = close_ok && procfs_active_snapshots == before_active &&
+                      temporary == 0 && reused == 0;
     spinlock_release(&procfs_lock);
     procfs_test_count(result, result->cleanup);
     result->invariants = procfs_validate_state() == OK;
     procfs_test_count(result, result->invariants);
     if (fd != VFS_FD_INVALID) (void)vfs_close(fd);
+    if (temporary) process_destroy(temporary);
+    if (reused) process_destroy(reused);
     return result->passed == result->total ? OK : ERR_STATE;
 }

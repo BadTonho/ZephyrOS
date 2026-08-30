@@ -46,6 +46,7 @@ static int user_test_result_pending = 0;
 static uint32_t user_test_result_pid = 0;
 static uint32_t user_test_result_faulted = 0;
 static uint32_t process_event_generation = 0;
+static uint32_t process_identity_generation = 0;
 static const app_launch_info_t process_empty_launch = {
     .abi_version = APP_LAUNCH_ABI_VERSION
 };
@@ -515,6 +516,12 @@ static void process_initialize_pid_pool(void) {
     }
 }
 
+static uint32_t process_next_identity_generation(void) {
+    process_identity_generation++;
+    if (!process_identity_generation) process_identity_generation = 1U;
+    return process_identity_generation;
+}
+
 static void process_release_user_image(process_t* proc) {
     if (!proc) return;
     if (proc->user_code_image) {
@@ -565,6 +572,7 @@ void process_init(void) {
     user_test_result_pid = 0;
     user_test_result_faulted = 0;
     process_event_generation = 0;
+    process_identity_generation = 0;
     for (int i = 0; i < MAX_PROCESSES; i++) processes[i] = 0;
     process_cache = kmem_cache_create("process", sizeof(process_t), 16U);
     if (!process_cache) {
@@ -597,6 +605,7 @@ void process_bootstrap_idle(void) {
     processes[0] = proc;
     kmemset(proc, 0, sizeof(process_t));
     proc->pid = 0;
+    proc->event_generation = process_next_identity_generation();
     
     const char* name = "System Idle";
     int i = 0;
@@ -729,6 +738,7 @@ static process_t* process_create_internal(const char* name,
         process_discard_new_process(proc);
         return 0;
     }
+    proc->event_generation = process_next_identity_generation();
     /* O processo permanece invisivel ao scheduler ate o contexto estar pronto. */
     proc->total_ticks = 0;
     proc->wait_ticks = 0;
@@ -1072,6 +1082,7 @@ static int process_user_initialize(process_t* proc, page_directory_t* dir,
         process_discard_new_process(proc);
         return ERR_MEM;
     }
+    proc->event_generation = process_next_identity_generation();
     while (name[i] && i < PROCESS_NAME_LENGTH - 1) {
         proc->name[i] = name[i];
         i++;
@@ -1750,6 +1761,203 @@ uint32_t process_get_current_pid(void) {
 
 uint32_t process_get_event_generation(void) {
     return process_event_generation;
+}
+
+static int process_snapshot_fill_locked(const process_t* proc,
+                                        process_snapshot_t* output) {
+    uint32_t resident_pages = 0U;
+    uint32_t image_bytes;
+    uint32_t memory_bytes;
+    int result;
+
+    if (!proc || !output) return ERR_NULL;
+    kmemset(output, 0, sizeof(*output));
+    output->pid = proc->pid;
+    output->generation = proc->event_generation;
+    process_stack_copy_name(output->name, proc->name);
+    output->state = proc->state;
+    output->parent_pid = proc->parent_pid;
+    output->threads = thread_get_count_by_owner(proc->pid);
+    output->total_ticks = proc->total_ticks;
+    output->wait_ticks = proc->wait_ticks;
+    output->exit_code = proc->exit_code;
+    output->faulted = proc->faulted;
+    output->user_mode = proc->context.user_mode;
+    output->vma_count = proc->vma_count;
+    output->user_launch = proc->user_launch;
+
+    if (proc->context.user_mode) {
+        result = paging_get_user_page_count(proc->page_directory,
+                                            &resident_pages);
+        if (result != OK) return result;
+    }
+    output->resident_pages = resident_pages;
+    if (resident_pages > 0xFFFFFFFFU / PAGE_SIZE) {
+        LOG_ERROR("PROC", "Paginas residentes excederam memoria publicada");
+        return ERR_OVERFLOW;
+    }
+    if (proc->user_code_size > 0xFFFFFFFFU - proc->user_data_size) {
+        LOG_ERROR("PROC", "Imagem de processo excedeu memoria publicada");
+        return ERR_OVERFLOW;
+    }
+    image_bytes = proc->user_code_size + proc->user_data_size;
+    memory_bytes = resident_pages * PAGE_SIZE;
+    if (proc->kernel_stack_size > 0xFFFFFFFFU - memory_bytes) {
+        LOG_ERROR("PROC", "Stack excedeu memoria publicada");
+        return ERR_OVERFLOW;
+    }
+    memory_bytes += proc->kernel_stack_size;
+    if (image_bytes > 0xFFFFFFFFU - memory_bytes) {
+        LOG_ERROR("PROC", "Imagem excedeu memoria publicada");
+        return ERR_OVERFLOW;
+    }
+    output->image_bytes = image_bytes;
+    output->memory_bytes = memory_bytes + image_bytes;
+    return OK;
+}
+
+int process_snapshot_copy(uint32_t pid, process_snapshot_t* output) {
+    uint32_t flags;
+    process_t* proc = 0;
+    int result = ERR_NOT_FOUND;
+
+    if (!output) {
+        LOG_ERROR("PROC", "Destino nulo ao copiar snapshot de processo");
+        return ERR_NULL;
+    }
+    flags = process_wait_irq_save();
+    for (uint32_t index = 0U; index < MAX_PROCESSES; index++) {
+        if (processes[index] && processes[index]->state != PROCESS_STATE_UNUSED &&
+            processes[index]->pid == pid) {
+            proc = processes[index];
+            break;
+        }
+    }
+    if (proc) result = process_snapshot_fill_locked(proc, output);
+    process_wait_irq_restore(flags);
+    if (result == ERR_NOT_FOUND) {
+        LOG_WARN("PROC", "PID ausente ao copiar snapshot de processo");
+    } else if (result != OK) {
+        LOG_ERROR("PROC", "Falha ao copiar snapshot de processo");
+    }
+    return result;
+}
+
+int process_snapshot_list(process_snapshot_t* output, uint32_t capacity,
+                          uint32_t* out_count) {
+    uint32_t flags;
+    uint32_t count = 0U;
+    int result = OK;
+
+    if (!out_count || (capacity && !output)) {
+        LOG_ERROR("PROC", "Destino invalido ao listar snapshots");
+        return ERR_NULL;
+    }
+    *out_count = 0U;
+    flags = process_wait_irq_save();
+    if (process_count > capacity) {
+        *out_count = process_count;
+        process_wait_irq_restore(flags);
+        LOG_WARN("PROC", "Capacidade insuficiente para snapshots");
+        return ERR_OVERFLOW;
+    }
+    for (uint32_t index = 0U; index < MAX_PROCESSES; index++) {
+        if (!processes[index] ||
+            processes[index]->state == PROCESS_STATE_UNUSED) continue;
+        if (count >= capacity) {
+            *out_count = count;
+            process_wait_irq_restore(flags);
+            LOG_WARN("PROC", "Capacidade insuficiente para snapshots");
+            return ERR_OVERFLOW;
+        }
+        result = process_snapshot_fill_locked(processes[index],
+                                              &output[count]);
+        if (result != OK) break;
+        count++;
+    }
+    process_wait_irq_restore(flags);
+    if (result != OK) {
+        LOG_ERROR("PROC", "Falha ao listar snapshots de processos");
+        return result;
+    }
+    for (uint32_t index = 1U; index < count; index++) {
+        process_snapshot_t current = output[index];
+        uint32_t position = index;
+
+        while (position > 0U &&
+               output[position - 1U].pid > current.pid) {
+            output[position] = output[position - 1U];
+            position--;
+        }
+        output[position] = current;
+    }
+    *out_count = count;
+    return OK;
+}
+
+int process_snapshot_copy_vmas(uint32_t pid, uint32_t generation,
+                               vm_area_info_t* output, uint32_t capacity,
+                               uint32_t* out_count) {
+    uint32_t flags;
+    process_t* proc = 0;
+    vm_area_t* area;
+    uint32_t count;
+
+    if (!out_count || (capacity && !output)) {
+        LOG_ERROR("PROC", "Destino invalido ao copiar VMAs");
+        return ERR_NULL;
+    }
+    *out_count = 0U;
+    flags = process_wait_irq_save();
+    for (uint32_t index = 0U; index < MAX_PROCESSES; index++) {
+        if (processes[index] && processes[index]->state != PROCESS_STATE_UNUSED &&
+            processes[index]->pid == pid) {
+            proc = processes[index];
+            break;
+        }
+    }
+    if (!proc) {
+        process_wait_irq_restore(flags);
+        LOG_WARN("PROC", "PID ausente ao copiar VMAs");
+        return ERR_NOT_FOUND;
+    }
+    if (proc->event_generation != generation) {
+        process_wait_irq_restore(flags);
+        LOG_WARN("PROC", "Geracao mudou ao copiar VMAs");
+        return ERR_AGAIN;
+    }
+    count = proc->vma_count;
+    *out_count = count;
+    if (count > capacity) {
+        process_wait_irq_restore(flags);
+        LOG_WARN("PROC", "Capacidade insuficiente para VMAs");
+        return ERR_OVERFLOW;
+    }
+    if (count && !output) {
+        process_wait_irq_restore(flags);
+        LOG_ERROR("PROC", "Destino nulo para VMAs existentes");
+        return ERR_NULL;
+    }
+    area = proc->vma_list;
+    for (uint32_t index = 0U; index < count; index++) {
+        if (!area) {
+            process_wait_irq_restore(flags);
+            LOG_ERROR("PROC", "Lista de VMAs inconsistente");
+            return ERR_STATE;
+        }
+        output[index].start_addr = area->start_addr;
+        output[index].end_addr = area->end_addr;
+        output[index].flags = area->flags;
+        output[index].offset = area->offset;
+        area = area->next;
+    }
+    if (proc->event_generation != generation) {
+        process_wait_irq_restore(flags);
+        LOG_WARN("PROC", "Geracao mudou apos copiar VMAs");
+        return ERR_AGAIN;
+    }
+    process_wait_irq_restore(flags);
+    return OK;
 }
 
 uint32_t process_get_state_count(process_state_t state) {

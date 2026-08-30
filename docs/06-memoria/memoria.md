@@ -503,3 +503,10 @@ uint8_t* decompressed = kmalloc(src_size);
 uint32_t out_size;
 decompress_data(compressed, dst_size, decompressed, &out_size);
 ```
+
+### Consulta de paginas residentes para PROC2
+
+`paging_get_user_page_count()` percorre somente as entradas de usuario de um
+diretorio de paginas e retorna a quantidade de paginas presentes. A consulta
+e somente leitura e usada pela captura protegida de `process_snapshot_t`; ela
+nao materializa VMAs reservadas nem altera os contadores globais do paging.

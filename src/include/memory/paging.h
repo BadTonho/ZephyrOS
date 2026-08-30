@@ -73,6 +73,7 @@ void paging_free_directory(page_directory_t* dir);
 void paging_free_user_directory(page_directory_t* dir);
 void paging_get_user_stats(paging_user_stats_t* stats);
 int paging_get_boot_stats(paging_boot_stats_t* stats);
+int paging_get_user_page_count(page_directory_t* dir, uint32_t* out_count);
 
 int paging_validate_user_range(uint32_t address, uint32_t size, int write);
 int paging_copy_from_user(void* destination, const void* source,

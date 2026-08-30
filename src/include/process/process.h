@@ -154,7 +154,27 @@ typedef struct process {
     uint8_t* user_data_image;
     uint32_t user_data_size;
     app_launch_info_t user_launch;
+    uint32_t event_generation;
 } process_t;
+
+typedef struct {
+    uint32_t pid;
+    uint32_t generation;
+    char name[PROCESS_NAME_LENGTH];
+    process_state_t state;
+    uint32_t parent_pid;
+    uint32_t threads;
+    uint32_t total_ticks;
+    uint32_t wait_ticks;
+    uint32_t memory_bytes;
+    uint32_t resident_pages;
+    uint32_t image_bytes;
+    uint32_t exit_code;
+    uint32_t faulted;
+    uint32_t user_mode;
+    uint32_t vma_count;
+    app_launch_info_t user_launch;
+} process_snapshot_t;
 
 typedef struct {
     uint32_t pid;
@@ -235,6 +255,12 @@ int process_prepare_user_termination(registers_t* regs);
 int process_apply_pending_cancel(registers_t* regs);
 void process_finish_user_termination(void);
 int process_take_user_test_result(uint32_t* pid, uint32_t* faulted);
+int process_snapshot_copy(uint32_t pid, process_snapshot_t* output);
+int process_snapshot_list(process_snapshot_t* output, uint32_t capacity,
+                          uint32_t* out_count);
+int process_snapshot_copy_vmas(uint32_t pid, uint32_t generation,
+                               vm_area_info_t* output, uint32_t capacity,
+                               uint32_t* out_count);
 
 void process_yield(void);
 void process_block(uint32_t ticks);

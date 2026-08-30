@@ -2998,3 +2998,14 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `mount | grep proc` foi recusada porque pipelines ainda nao sao suportados
   pelo Shell; a montagem foi confirmada diretamente por `mount`. O PROC1 foi
   marcado como concluido no roadmap; `/sys` permanece reservado ao PROC3.
+
+- PROC2: implementacao dos nos globais e processos em `/proc`. Implementada
+  em: 2026-08-30 11:18:09 (America/Sao_Paulo). O procfs passou a publicar os cinco
+  nos globais, diretorios PID ordenados, `status`, `cmdline` e `maps`, mantendo
+  snapshots ASCII imutaveis de 16 KiB e leitura somente. O gerenciador de
+  processos passou a fornecer geracao append-only, snapshots sem ponteiros,
+  copia de VMAs com retry por geracao e contagem de paginas residentes. O
+  Makefile, VFS, contratos, documentacao de processos e comandos foram
+  atualizados. `boot.asm`, `stage2.asm`, App API, syscalls e persistencia nao
+  foram alterados. O agente nao executou build, testes ou QEMU; a confirmacao
+  funcional do PROC2 permanece pendente do usuario.

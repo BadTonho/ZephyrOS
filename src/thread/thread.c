@@ -584,6 +584,17 @@ uint32_t thread_get_count(void) {
     return thread_count;
 }
 
+uint32_t thread_get_count_by_owner(uint32_t owner_pid) {
+    uint32_t count = 0U;
+
+    for (uint32_t index = 0U; index < MAX_THREADS; index++) {
+        if (threads[index] && threads[index]->owner_pid == owner_pid) {
+            count++;
+        }
+    }
+    return count;
+}
+
 void thread_scheduler_tick(void) {
     uint32_t now;
 

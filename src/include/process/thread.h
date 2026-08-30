@@ -54,6 +54,7 @@ int thread_copy_waiters(wait_info_t* output, uint32_t max_entries,
 thread_t* thread_get_current(void);
 thread_t* thread_get_by_id(uint32_t id);
 uint32_t thread_get_count(void);
+uint32_t thread_get_count_by_owner(uint32_t owner_pid);
 void thread_scheduler_tick(void);
 thread_t* thread_schedule_next(void);
 int thread_run_self_test(void);

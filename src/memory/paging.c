@@ -481,6 +481,53 @@ int paging_is_ready(void) {
     return paging_initialized && current_directory != 0;
 }
 
+int paging_get_user_page_count(page_directory_t* dir, uint32_t* out_count) {
+    uint32_t count = 0U;
+
+    if (!dir || !out_count) {
+        LOG_ERROR("MEM", "Destino invalido ao contar paginas de usuario");
+        return ERR_NULL;
+    }
+    if (!paging_is_ready()) {
+        LOG_ERROR("MEM", "Paging indisponivel ao contar paginas de usuario");
+        return ERR_STATE;
+    }
+    if (dir != kernel_directory && !paging_is_registered_user_directory(dir)) {
+        LOG_ERROR("MEM", "Diretorio desconhecido ao contar paginas de usuario");
+        return ERR_STATE;
+    }
+    for (uint32_t table_index = 0U; table_index < PAGING_TABLE_ENTRIES;
+         table_index++) {
+        uint32_t directory_entry = dir->entries[table_index];
+        uint32_t shared_entry = kernel_directory ?
+                                kernel_directory->entries[table_index] : 0U;
+
+        if (!(directory_entry & PAGING_FLAG_PRESENT) ||
+            (directory_entry & 0xFFFFF000U) ==
+            (shared_entry & 0xFFFFF000U)) {
+            continue;
+        }
+        if (!(directory_entry & PAGING_FLAG_USER)) continue;
+        page_table_t* table =
+            (page_table_t*)(directory_entry & 0xFFFFF000U);
+
+        for (uint32_t page_index = 0U; page_index < PAGING_TABLE_ENTRIES;
+             page_index++) {
+            page_entry_t* page = &table->entries[page_index];
+
+            if (page->present && page->user) {
+                if (count == 0xFFFFFFFFU) {
+                    LOG_ERROR("MEM", "Contagem de paginas excedeu limite");
+                    return ERR_OVERFLOW;
+                }
+                count++;
+            }
+        }
+    }
+    *out_count = count;
+    return OK;
+}
+
 page_directory_t* paging_create_user_directory(void) {
     page_directory_t* dir;
 
