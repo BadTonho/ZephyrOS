@@ -2973,3 +2973,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   catalogo de headers foi alterado. O agente nao executou build, testes ou
   QEMU; `make q3check` deve ser executado pelo usuario para validar os
   documentos.
+
+- PROC0: gate documental confirmado pelo usuario. Confirmado em: 2026-08-30
+  (horario nao informado). `make q3check` retornou `resultado OK` em todas as
+  verificacoes, e `python tools/vendor_terminus.py --check` confirmou fontes e
+  dados gerados validos. A validacao funcional de `ls /proc`, `cat /proc/...`
+  e montagem permanece reservada ao PROC1.
