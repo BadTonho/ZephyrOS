@@ -979,3 +979,31 @@ de ABI. O reset captura uma linha-base privada e nao zera contadores do
 kernel. As porcentagens representam residencia do scheduler baseada no PIT;
 nao representam CPU fisica, consumo eletrico ou RDTSC/PMU. Nenhuma assinatura
 da App API, syscall, `taskmanager.h` ou ABI binaria foi criada.
+
+## PWR2 - Snapshot e inventario ACPI
+
+O PWR2 amplia o contrato interno do driver `acpi` sem criar syscall, App API
+ou formato binario para aplicativos. `acpi_table_info_t` e `acpi_status_t`
+recebem campos somente ao final das estruturas; consumidores existentes mantem
+os campos anteriores. Cada SDT retornada por `acpi_get_table_at()` ou
+`acpi_find_table()` possui endereco, comprimento, revisao e
+`checksum_valid=1`, pois tabelas invalidas nao entram no snapshot.
+
+O snapshot registra RSDP v1/v2, a raiz escolhida e as SDTs validas na ordem da
+RSDT/XSDT, com limite de `ACPI_MAX_TABLES` e eliminacao de duplicatas por
+endereco. Enderecos acima de 32 bits, regioes fora do mapa E820, comprimentos
+invalidos e checksums incorretos sao rejeitados ou contabilizados como
+ignorados; o estado parcial permanece observavel.
+
+`acpi_madt_info_t` e `acpi_madt_entry_t` sao snapshots sem ponteiros. O driver
+mantem no maximo `ACPI_MAX_MADT_ENTRIES` entradas; cada entrada copia tipo,
+comprimento e ate `ACPI_MADT_MAX_ENTRY_LENGTH` bytes. As consultas
+`acpi_get_madt_info()`, `acpi_get_madt_entry_count()` e
+`acpi_get_madt_entry_at()` retornam copias e podem ser usadas depois que o
+mapa E820 foi descartado. A primeira MADT valida na ordem da raiz e a fonte
+canonica do resumo; tipos desconhecidos validos sao preservados, sem serem
+interpretados.
+
+PWR2 somente descobre e valida firmware. `acpi tables` lista o snapshot e os
+checksums, sem executar AML, alterar PM1, habilitar APIC/SMP ou iniciar uma
+transicao. A escrita de energia continua exclusiva das etapas PWR3/PWR4.

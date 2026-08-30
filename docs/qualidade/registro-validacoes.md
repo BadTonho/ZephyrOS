@@ -7,6 +7,29 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## PWR2 - Descoberta e validação ACPI
+
+Implementação registrada em: 2026-08-30 (horário não informado).
+
+Validação funcional: pendente da execução dos gates de build e da matriz QEMU
+pelo usuário. O resumo PWR2 permanece `[ ]` no roadmap.
+
+- O snapshot ACPI agora registra RSDP v1/v2, a raiz RSDT/XSDT e as SDTs válidas
+  na ordem da raiz, com comprimento, revisão, endereço e checksum confirmado.
+- A tabela raiz passou a fazer parte do inventário e duplicatas por endereço
+  são eliminadas. Endereços acima de 32 bits, limites E820 inválidos,
+  comprimentos incorretos e checksums quebrados continuam sendo rejeitados ou
+  contabilizados como ignorados.
+- A MADT é copiada para `acpi_madt_info_t` e `acpi_madt_entry_t`, sem ponteiros
+  persistentes para firmware, com limite de 64 entradas e contagem de CPUs
+  habilitadas, APICs locais e I/O APICs.
+- `acpi tables` foi adicionado ao comando ACPI existente. `regcheck full`
+  valida os novos campos, a ordem, duplicatas, limites e contagens MADT.
+- AML adicional, escrita em PM1, habilitação de APIC/SMP e transições de
+  energia permanecem fora do PWR2 e reservados para etapas posteriores.
+- Não houve alteração de App API, syscalls, layouts de aplicativo, `boot.asm`
+  ou `stage2.asm`. O agente não executou build, testes ou QEMU.
+
 ## PWR1 - Idle arquitetural com HLT
 
 Implementacao registrada em: 2026-08-30 (horario nao informado).

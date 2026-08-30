@@ -86,7 +86,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `http` | `get <url>|status` | Executa HTTP GET limitado ou inspeciona a sessao. |
 | `nslookup` | `<dominio>` | Resolve um registro DNS A cooperativamente. |
 | `ping` | `<ip> [1-10]` | Executa ICMP Echo e entrega eventos e resumo em uma chamada. |
-| `acpi` | `status` | Mostra tabelas, PM1, modo ACPI, `_S5_` e prontidao S5, sem executar transicoes. |
+| `acpi` | `status|tables` | Mostra estado ACPI ou lista RSDP, raiz, SDTs e resumo MADT sem executar transicoes. |
 | `power` | `status` | Mostra ativacao do modo, prontidao S5, desligamento fisico e fallback HLT. |
 | `memcheck` | - | Valida heap, coalescencia, PMM, métricas MM4 e diretorios ring 3 residuais. |
 | `vmamap` | `<pid>` | Lista faixas virtuais, paginas, tipo e permissoes de um processo ring 3. |
@@ -165,6 +165,19 @@ ticks ativos, ticks ociosos e percentuais baseados no PIT de 50 Hz. O PID 0 e
 o Idle real e usa `sti; hlt` quando nao ha processo normal pronto. A metrica
 nao e CPU fisica, consumo eletrico ou RDTSC/PMU, e a medicao do host/QEMU
 continua sendo uma validacao especifica do usuario.
+
+## PWR2 - Inventario de tabelas ACPI
+
+```text
+acpi status
+acpi tables
+```
+
+`acpi tables` lista RSDP, RSDT/XSDT e as SDTs copiadas com endereco,
+comprimento, revisao e checksum validado. Tambem mostra o resumo da MADT,
+incluindo CPUs habilitadas, APICs locais, I/O APICs e entradas ignoradas. A
+consulta e somente leitura: nao executa AML, nao escreve registradores e nao
+habilita APIC ou SMP.
 
 ## Scroll do Shell
 

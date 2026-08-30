@@ -143,19 +143,31 @@ mesmo cenário antes de marcar o resumo PWR1 como concluído.
 
 ### Implementação
 
-- [ ] Localizar e validar a assinatura da RSDP (Root System Description Pointer) nos primeiros 1MB de memória física ou na EBDA.
-- [ ] Mapear e validar o cabeçalho da RSDT / XSDT verificando checksums de 8 bits.
-- [ ] Mapear a tabela FADT (Fixed ACPI Description Table) para obter as portas `PM1a_CNT_BLK`, `PM1b_CNT_BLK`, `SMI_CMD` e o valor `SLP_TYPa` para o estado S5 (Soft Off).
-- [ ] Mapear a tabela MADT (Multiple APIC Description Table) para identificar
-  quantidade de cores da CPU e controladores I/O APIC.
-- [ ] Manter a interpretação de AML/DSDT fora do critério desta etapa, salvo se
-  uma capacidade de energia depender explicitamente dela; nesse caso, criar
-  uma etapa própria para o interpretador e seu isolamento.
+- [x] Localizar e validar a assinatura da RSDP (Root System Description Pointer)
+  na EBDA ou nos primeiros 1MB de memória física, validando comprimento e
+  checksums v1/v2.
+- [x] Mapear e validar a RSDT/XSDT verificando limites, endereços físicos,
+  comprimento e checksum de 8 bits; preferir XSDT e usar RSDT como fallback.
+- [x] Registrar a raiz selecionada e as SDTs válidas em snapshot estático,
+  preservando a ordem da raiz, eliminando duplicatas e limitando o inventário a
+  `ACPI_MAX_TABLES`.
+- [x] Manter o snapshot da FADT com PM1a, PM1b, `SMI_CMD`, campos de energia e
+  `_S5_`, sem executar métodos ou escrever em hardware durante a descoberta.
+- [x] Mapear a MADT e copiar suas entradas sem ponteiros persistentes, com
+  limite de 64 entradas, contagem de CPUs habilitadas, APICs locais e I/O APICs.
+  Entradas desconhecidas válidas são preservadas como bytes copiados.
+- [x] Manter a interpretação AML/DSDT fora do escopo novo desta etapa. O
+  reconhecedor `_S5_` já existente permanece limitado e isolado; nenhum método
+  AML adicional é interpretado ou executado.
 
 ### Critério de saída
 
 O sistema lista as tabelas ACPI encontradas com endereços, comprimentos,
 revisões e checksums válidos, distinguindo descoberta de execução de métodos.
+`acpi tables` publica RSDP, a raiz, todas as SDTs copiadas e o resumo MADT. As
+consultas `acpi_get_madt_info()`, `acpi_get_madt_entry_count()` e
+`acpi_get_madt_entry_at()` retornam somente cópias sem referências físicas.
+O resumo PWR2 permanece pendente até a confirmação funcional do usuário.
 
 ### Comandos Shell / Diagnóstico
 
