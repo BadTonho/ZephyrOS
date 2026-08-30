@@ -2948,9 +2948,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   integrado ao recovery de Network e ao `regcheck full`; `net check`, ajuda,
   dispatcher, Makefile e documentacao foram atualizados. O `boot.asm`, a App
   API, syscalls e persistencia em disco nao foram alterados. O agente nao
-  executou build, testes ou QEMU; `make q3check`, `make clean && make`,
-  `make run` e a matriz funcional NET4 permanecem pendentes da confirmacao do
-  usuario.
+  executou build, testes ou QEMU; a confirmacao funcional registrada abaixo
+  foi fornecida pelo usuario.
 
 - NET4: correcao do autoteste da rota padrao. Corrigida em: 2026-08-30,
   apos a validacao funcional do usuario. O fixture usava `10.0.0.0/8` como
@@ -2958,3 +2957,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `route_set_default()` com `0.0.0.0/0`, mantendo a verificacao de
   longest-prefix e duplicidade. A nova validacao funcional ainda deve ser
   confirmada pelo usuario.
+
+- NET4: validacao funcional confirmada pelo usuario. Confirmada em:
+  2026-08-30. `route check` retornou `Resultado: OK`, `regcheck full`
+  retornou `RegCheck: OK` e `health check` concluiu sem falha de rede
+  observavel. Os avisos dos casos negativos do autoteste de rotas foram
+  mantidos como diagnosticos esperados.
