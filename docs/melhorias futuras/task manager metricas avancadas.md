@@ -2,7 +2,8 @@
 
 ## Resumo de Progresso
 
-- [ ] Medir memoria utilizada por processo.
+- [x] Medir memoria utilizada por processo na visao Classic via
+  `/proc/<pid>/status`; a visao Simple permanece no caminho interno legado.
 - [ ] Registrar prioridade e quantum de cada processo.
 - [ ] Associar cada thread ao processo proprietario.
 - [ ] Exibir PID pai e arvore de processos.
@@ -40,7 +41,9 @@ simulados pela interface.
 ## Limitacoes
 
 - Esta etapa nao altera `process_t`, `thread_t` ou o scheduler.
-- Nao ha memoria por processo disponivel sem integrar o Task Manager ao paging.
+- A visao Classic ja exibe `memory_bytes` publicado por `/proc`; memoria
+  residente/virtual detalhada e historico completo ainda dependem de evolucao
+  do contrato.
 - Nao ha relacao thread-processo disponivel no modelo atual.
 - Os graficos historicos dependem de um buffer de amostras controlado.
 

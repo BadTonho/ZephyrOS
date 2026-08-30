@@ -2,6 +2,20 @@
 
 > **Arquitetura:** As funções core (comandos shell: `net`, `ifconfig`, `ping`, `wget`, `ftp`) são nativas do sistema. A interface visual (TUI com painel de rede, firewall) é um app opcional distribuído pelo [Gerenciador de Aplicativos](gerenciador%20de%20aplicativos.md).
 
+## Estado atual consolidado
+
+- [x] S2.1-S2.8: inventário seguro, E1000, Ethernet, ARP, IPv4/ICMP,
+  UDP/DHCP/DNS, TCP/HTTP, multi-NIC e RTL8139 foram implementados e
+  validados conforme o registro desta frente.
+- [x] Comandos `net`, `ifconfig`, `ping`, `wget`, `ftp`, diagnósticos e
+  integração com `devices`/`device-info` estão disponíveis conforme as
+  capacidades detectadas.
+- [ ] IPv6, múltiplas rotas/IP simultâneos, hot-plug, persistência, VLAN,
+  promiscuidade, multicast e shutdown completo da NIC continuam pendentes.
+
+O quadro legado de 356 itens abaixo é mantido como inventário histórico; não
+representa o percentual das etapas S2.1-S2.8 já entregues.
+
 ## Resumo de Progresso
 
 | Fase | Total | Feito | Parcial | Restante |

@@ -1,5 +1,25 @@
 # Roadmap — Gerenciador de Energia
 
+## Estado atual consolidado
+
+- [x] PWR0: contrato de estados, fases, prazos e ponto irreversível.
+- [x] PWR1: implementação do Idle com `sti; hlt`, `cpu usage` e contabilidade
+  de ticks; permanece pendente somente a medição final de uso do host para
+  fechar o critério documental do resumo do Roadmap 16.
+- [x] PWR2: descoberta e validação de RSDP, RSDT/XSDT, FADT e MADT por
+  snapshots, com `acpi tables`.
+- [x] PWR3: desligamento S5 e reinicialização coordenada com RESET_REG, PS/2 e
+  triple fault como fallback arquitetural.
+- [x] PWR4: notificação, SIGTERM/SIGKILL, reaping, sync único e quiescência;
+  `poweroff`, `shutdown -h now` e `shutdown -r now` foram confirmados pelo
+  usuário no QEMU.
+- [ ] Suspensão S1-S4, hibernação, bateria, GPE, thermal zones e políticas de
+  energia continuam fora do escopo implementado.
+
+Os blocos S1.1-S1.4 abaixo preservam o histórico de cada incremento. Quando
+uma descrição antiga divergir do estado atual, prevalecem este resumo e o
+Roadmap 16 concluído.
+
 > Visão geral do desenvolvimento dividida em **5 fases**.
 > `✅` = Implementado | `🟡` = Parcial | `⬜` = Não implementado
 
@@ -271,7 +291,8 @@
 ### 24. ACPI (fundação para tudo)
 - ✅ Mapa E820 usado para validar todos os intervalos fisicos consultados.
 - ✅ Descoberta e validacao de RSDP/RSDT/XSDT.
-- 🟡 FADT e DSDT validadas; SSDT apenas inventariada, sem interpretar AML.
+- ✅ RSDP, RSDT/XSDT, FADT, DSDT, FACS, HPET, WAET e MADT validadas por
+  snapshot; AML continua fora do escopo.
 - ⬜ Driver ACPI completo.
 - ✅ Registos PM1a/PM1b inventariados, observados e usados no desligamento S5.
 - ⬜ GPE (General Purpose Events) handlers.
@@ -279,8 +300,9 @@
 - ⬜ ACPI thermal zones.
 
 ### 25. Comandos de shell existentes
-- ✅ Comando `reboot`. *(shell.c:280-285 — outb 0xFE, 0x64)*
-- ✅ Comando `shutdown` centralizado em `power_shutdown()`, com S5 ou HLT.
+- ✅ Comando `reboot`. *(O comando usa o coordenador `power`.)*
+- ✅ Comando `shutdown` centralizado no coordenador `power`, com commit S5
+  quando validado e erro explícito antes do commit quando indisponível.
 - ✅ Reiniciar via Menu Iniciar. *(taskbar.c:441)*
 - ✅ Desligar via Menu Iniciar. *(taskbar.c:442)*
 - ✅ Reiniciar via Settings. *(settings.c:103-104)*
@@ -338,12 +360,12 @@ esses dados sem quebrar o fallback validado pela S1.3.
 - [x] `acpi_enter_s5()` repete a validacao, adquire o modo por `SMI_CMD`
   quando necessario e confirma `SCI_EN` com limite fixo.
 - [x] `SLP_TYP` e `SLP_EN` sao escritos em PM1a antes de PM1b, preservando os
-  demais bits; apos a primeira escrita, o caminho termina em S5 ou HLT.
+  demais bits; apos a primeira escrita, o caminho termina em S5.
 - [x] Shell, kernel, Menu Iniciar e Task Manager usam `power_shutdown()`.
 - [x] PC Speaker e AC97 sao parados em best effort e a porta privada `0xB004`
   do QEMU foi removida.
-- [x] Sem ACPI seguro, S5 permanece simulado e o fallback terminal e
-  `CLI+HLT`, sem panic.
+- [x] Sem S5 validado, a operacao retorna indisponibilidade antes de escrever
+  no hardware; nao ha fallback silencioso para `CLI+HLT`.
 - [x] Validacao manual concluida no QEMU padrao com `health`, ACPI/Power,
   memoria, scheduler, dispositivos, re-scan PCI, regressao, entrada ZAPP,
   sintaxe invalida e encerramento fisico da VM pelo Shell.
@@ -371,8 +393,8 @@ hibernacao e bateria permanecem fora do escopo.
 | Funcionalidade | Local | Descrição |
 |----------------|-------|-----------|
 | HLT (idle CPU) | kernel.c:202 | CPU para entre interrupções |
-| Reboot | shell.c:280-285, taskbar.c:441, settings.c:103 | `outb(0xFE, 0x64)` |
-| Shutdown S5 | core/power.c, drivers/acpi.c | ACPI PM1 quando pronto; `CLI+HLT` como fallback |
+| Reboot | `core/power.c`, `drivers/acpi.c`, driver PS/2 | Coordenador PWR3/PWR4; sem escrita direta pelo Shell |
+| Shutdown S5 | core/power.c, drivers/acpi.c | ACPI PM1 quando pronto; sem `CLI+HLT` silencioso após falha |
 | AC97 power-down | ac97.c:61-66 | Desliga codec de áudio |
 | PIT Timer 50Hz | timer.c:10-17 | Único temporizador |
 | ACPI S5 | acpi.c | Snapshot, prontidao fechada, aquisicao de modo e transicao PM1 |
@@ -383,7 +405,8 @@ hibernacao e bateria permanecem fora do escopo.
 
 - **ACPI limitado**: somente S5 por PM1 System I/O; AML generico, `_PTS`, SCI, GPE, MMIO, suspensao e hibernacao nao sao executados.
 - **Sem bateria**: O sistema foi concebido para QEMU (desktop), sem leitura de bateria.
-- **Fallback de shutdown**: sem um contrato S5 seguro, `CLI+HLT` para a CPU e mantém a máquina ligada.
+- **Falha de shutdown**: sem S5 validado, o coordenador retorna erro antes do
+  commit e mantém o sistema ativo; não há `CLI+HLT` silencioso.
 - **Sem USB**: Não existe driver USB, logo não há suspensão seletiva.
 - **Sem CPU frequency scaling**: Não há leitura de MSR nem alteração de frequência.
 - **HLT = C1 apenas**: O único estado de baixo consumo da CPU é o C1 (halt).

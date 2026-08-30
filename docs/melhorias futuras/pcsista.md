@@ -434,8 +434,8 @@
 | Temperatura CPU | Nenhum | Sem sensor de temperatura |
 | GPU monitoring | Nenhum | Sem detecção de GPU |
 | VRAM | Nenhum | Sem acesso a memória de vídeo |
-| Disk I/O stats | Nenhum | ATA driver sem contadores |
-| Network | Nenhum | Sem stack de rede |
+| Disk I/O stats | Parcial | O inventário e contadores de bloco existem, mas não há série histórica dedicada ao PCSista |
+| Network | Parcial | A stack de rede existe, mas ainda não há métricas agregadas integradas ao PCSista |
 | Swap | Nenhum | Sem sistema de swap |
 | Performance counters | Nenhum | Sem uso de PMC/PMU |
 | Overlay transparency | Limitado | VGA text mode sem alpha blending |

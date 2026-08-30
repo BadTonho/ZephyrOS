@@ -41,7 +41,7 @@
 - ✅ Nome do computador. *(settings.c usa o texto centralizado "ZephyrOS v0.1.0")*
 - ✅ Informações de memória. *(settings.c:97-98 — total/livre/usado em KB)*
 - ✅ Lista de processos ativos. *(settings.c:100-101 — lista com PID/nome/estado)*
-- ✅ Reiniciar o computador. *(settings.c:103-104 — outb 0xFE, 0x64)*
+- ✅ Reiniciar o computador. *(Settings usa o coordenador `power`.)*
 - ⬜ Escolher o monitor principal.
 - ⬜ Organizar vários monitores.
 - ⬜ Duplicar ou estender a imagem.

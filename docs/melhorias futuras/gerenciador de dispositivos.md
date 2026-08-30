@@ -17,6 +17,16 @@
 A interface TUI, hotplug, drivers dinamicos e operacoes de ativacao permanecem
 fora desta entrega inicial.
 
+## Estado atual consolidado
+
+- [x] O inventario nativo e os comandos `devices`, `devices -v`, `device-info`
+  e `device-scan` estao implementados e validados.
+- [x] PCI, rede e blocos possuem representacao por snapshot em `/sys`; o
+  Shell usa sysfs quando o no correspondente existe e preserva fallback
+  legado para os dispositivos sem no.
+- [ ] Interface visual do Device Manager, hotplug, ativacao/desativacao e
+  drivers dinamicos continuam pendentes.
+
 ## Resumo de Progresso
 
 | Fase | Total | Feito | Parcial | Restante |
@@ -267,11 +277,11 @@ fora desta entrega inicial.
 
 ### 2.5 Integração com Shell
 
-- [ ] Comando `devices` — listar todos os dispositivos
-- [ ] Comando `devices -v` — modo verboso (detalhes completos)
+- [x] Comando `devices` — listar todos os dispositivos
+- [x] Comando `devices -v` — modo verboso (detalhes completos)
 - [ ] Comando `devices -c <categoria>` — filtrar por categoria
-- [ ] Comando `device-info <id>` — mostrar detalhes de um dispositivo
-- [ ] Comando `device-scan` — re-escanear hardware
+- [x] Comando `device-info <id>` — mostrar detalhes de um dispositivo
+- [x] Comando `device-scan` — re-escanear hardware
 - [ ] Comando `device-disable <id>` — desativar dispositivo
 - [ ] Comando `device-enable <id>` — ativar dispositivo
 
@@ -486,7 +496,7 @@ fora desta entrega inicial.
 | Drivers dinâmicos | Nenhum | Sistema monolítico, drivers compilados no kernel |
 | Hotplug | Nenhum | Hardware detectado apenas no boot |
 | Mouse | Nenhum | Driver de mouse não existe |
-| Rede | Nenhum | Sem stack de rede |
+| Rede | Parcial | Network Manager e protocolos básicos existem; exportação remota do Device Manager não |
 | USB | Nenhum | Sem suporte USB |
 | ACPI | Parcial | Snapshot S1.2 de tabelas, sem AML, PM, SCI ou GPE |
 | Máximo de categorias | 12 | Definido na interface TUI |
@@ -502,9 +512,12 @@ fora desta entrega inicial.
 
 3. **Sem hotplug** — O hardware é detectado uma vez no boot. Não há suporte a conexão/desconexão de dispositivos em tempo de execução.
 
-4. **Sem mouse** — O sistema funciona apenas com teclado PS/2. A interface TUI deve ser totalmente navegável por teclado.
+4. **Interface visual pendente** — O inventário nativo e seus comandos são
+   navegáveis por texto; uma TUI com interação de mouse ainda não foi criada.
 
-5. **Sem rede** — Não há stack de rede. ZephyrOS Update, drivers online e exportação remota não são possíveis.
+5. **Rede sem integração remota do Device Manager** — A stack de rede existe,
+   mas atualização de drivers e exportação remota ainda não fazem parte deste
+   módulo.
 
 6. **Adaptação do conceito** — O documento original descreve o Device Manager do ZephyrOS. Para o ZephyrOS, o conceito é adaptado para um gerenciador de dispositivos que mostra o hardware detectado e permite operações básicas.
 
