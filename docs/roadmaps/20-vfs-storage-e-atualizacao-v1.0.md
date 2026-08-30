@@ -1,4 +1,4 @@
-# Roadmap 20 — Integridade e recuperação do Storage
+# Roadmap 20 — VFS, Storage e atualização do sistema da 1.0.0
 
 ## Estado
 
@@ -22,15 +22,17 @@ blocos, buffers, volumes, descritores e transações.
 - recuperação de transações interrompidas e limpeza de estado temporário;
 - limites, overflow, clusters inválidos, cadeias circulares e setores
   inacessíveis;
-- integração segura com `poweroff`, `reboot`, Updater e operações do Shell.
+- integração segura com `poweroff`, `reboot`, Updater e operações do Shell;
+- atualização do próprio sistema pela internet, com staging, assinatura,
+  preflight, ativação transacional e rollback.
 
 Formatação inteligente, migração para outro filesystem, compressão de disco,
 swap e recuperação automática destrutiva ficam fora desta frente.
 
 ## Dependências
 
-- [Roadmap 18](18-estabilizacao-e-release-v1.0.md) para os gates de release;
-- [Roadmap 19](19-seguranca-e-isolamento-v1.0.md) para ownership e fronteiras;
+- [Roadmap 18](18-kernel-processos-e-userland-v1.0.md) para os gates de base;
+- [Roadmap 19](19-abi-seguranca-e-permissoes-v1.0.md) para ownership e fronteiras;
 - Roadmaps 10 e 13 para VFS, Block Layer e buffer cache;
 - contratos de Storage, FAT, VFS e atualizações em `docs/08-sistema-arquivos/`
   e `docs/14-atualizacoes/`.
@@ -89,7 +91,28 @@ swap e recuperação automática destrutiva ficam fora desta frente.
 - [ ] Adicionar fixtures pequenas, grandes, vazias, corrompidas e de volume
   ausente.
 
-### STO5 — Recuperação
+### STO5 — Atualização do sistema
+
+- [ ] Consultar manifesto remoto autenticado por HTTPS ou pelo transporte
+  remoto já validado pelo projeto.
+- [ ] Validar assinatura, hash, tamanho, versão, arquitetura, compatibilidade,
+  dependências e política de downgrade antes de escrever no destino.
+- [ ] Baixar kernel, arquivos de sistema e componentes autorizados para uma
+  área de staging sem sobrescrever a versão em execução.
+- [ ] Verificar espaço, integridade do Storage, energia disponível e capacidade
+  de recuperação antes do commit.
+- [ ] Ativar a versão nova de forma transacional, preservando bootloader e
+  layout da imagem, com a versão anterior disponível para rollback.
+- [ ] Recuperar interrupções por falha de rede, falta de espaço,
+  reinicialização, queda de energia ou erro de escrita.
+- [ ] Publicar estado, progresso, versão candidata, erro e resultado no Shell,
+  Settings e diagnósticos, mantendo o prompt utilizável.
+- [ ] Manter fallback para atualização local/offline quando o servidor remoto
+  estiver indisponível.
+- [ ] Rejeitar manifestos, imagens e componentes não assinados, truncados,
+  incompatíveis ou fora da política de atualização.
+
+### STO6 — Recuperação
 
 - [ ] Definir como estados temporários são identificados após boot, falha ou
   cancelamento.
@@ -101,7 +124,7 @@ swap e recuperação automática destrutiva ficam fora desta frente.
   Storage.
 - [ ] Expor motivo e limite da recuperação em `health` e diagnósticos.
 
-### STO6 — Matriz de falhas
+### STO7 — Matriz de falhas
 
 - [ ] Validar FAT12 e FAT32 com ATA PIO, volumes adicionais e USB MSC.
 - [ ] Validar leitura, escrita, exclusão, rename, diretórios, índice global,

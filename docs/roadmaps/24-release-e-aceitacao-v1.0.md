@@ -1,4 +1,4 @@
-# Roadmap 18 — Estabilização e release da versão 1.0.0
+# Roadmap 24 — Release e aceitação da versão 1.0.0
 
 ## Estado
 
@@ -30,7 +30,14 @@ antivírus ou carregamento dinâmico de módulos.
 
 ## Dependências
 
-- Roadmaps 01–17 mantidos como base funcional;
+- Roadmaps 01–16 concluídos e Roadmaps 18–23 encerrados como base da
+  aceitação;
+- [Roadmap 18 — Kernel, processos e userland](18-kernel-processos-e-userland-v1.0.md),
+  [19 — ABI, segurança e permissões](19-abi-seguranca-e-permissoes-v1.0.md),
+  [20 — VFS, Storage e atualização](20-vfs-storage-e-atualizacao-v1.0.md),
+  [21 — Hardware, rede e energia](21-hardware-rede-e-energia-v1.0.md),
+  [22 — Shell, interface e aplicativos](22-shell-interface-e-aplicativos-v1.0.md)
+  e [23 — Desempenho e validação](23-desempenho-e-dividas-v1.0.md);
 - [Dívidas técnicas da v1.0.0](../qualidade/dividas-tecnicas-v1.0.0.md).
 
 ## Fases

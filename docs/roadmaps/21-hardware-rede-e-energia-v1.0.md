@@ -1,4 +1,4 @@
-# Roadmap 21 — Compatibilidade e matriz de hardware
+# Roadmap 21 — Hardware, rede e energia da 1.0.0
 
 ## Estado
 
@@ -29,10 +29,10 @@ dinâmico de drivers ficam fora da matriz base, salvo uma decisão explícita.
 
 ## Dependências
 
-- [Roadmap 18](18-estabilizacao-e-release-v1.0.md) para a matriz de release;
-- [Roadmap 19](19-seguranca-e-isolamento-v1.0.md) para ownership e validação de
+- [Roadmap 18](18-kernel-processos-e-userland-v1.0.md) para a matriz de base;
+- [Roadmap 19](19-abi-seguranca-e-permissoes-v1.0.md) para ownership e validação de
   entradas;
-- [Roadmap 20](20-integridade-e-recuperacao-do-storage.md) para ATA, USB MSC,
+- [Roadmap 20](20-vfs-storage-e-atualizacao-v1.0.md) para ATA, USB MSC,
   volumes e falhas de I/O;
 - Roadmaps 05, 14, 15 e 16 para contratos de dispositivos, rede, pseudo-FS e
   energia.

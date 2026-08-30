@@ -4,9 +4,10 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 O escopo de aceitação da versão 1.0.0 está em
 [`docs/roadmaps/escopo-v1.0.0.md`](docs/roadmaps/escopo-v1.0.0.md). O próximo
-ciclo é a preparação dessa versão pelos Roadmaps 18–22:
-estabilização e release, segurança e isolamento, integridade do Storage,
-compatibilidade de hardware e desempenho mensurável. A etapa pós-1.0.0 de Rust
+ciclo é a preparação dessa versão pelos Roadmaps 18–24:
+kernel, processos e userland; ABI, segurança e permissões; VFS, Storage e
+atualização; hardware, rede e energia; Shell, interface e aplicativos;
+desempenho e validação; e release da versão. A etapa pós-1.0.0 de Rust
 continua planejada para depois da base 1.0.0 e não deve preceder esse ciclo.
 
 ---
@@ -830,22 +831,29 @@ kernel, interface e novos serviços:
 
 | Ordem | Documento | Objetivo |
 |-------|-----------|----------|
-| 1 | [`docs/roadmaps/01-estabilizacao-e-qualidade.md`](docs/roadmaps/01-estabilizacao-e-qualidade.md) | Regressão, diagnóstico e fallbacks antes de novas migrações. |
-| 2 | [`docs/roadmaps/02-plataforma-de-aplicativos.md`](docs/roadmaps/02-plataforma-de-aplicativos.md) | Fase 7, pacotes locais, ZAPP e distribuicao. |
-| 3 | [`docs/roadmaps/03-kernel-e-desempenho.md`](docs/roadmaps/03-kernel-e-desempenho.md) | Métricas, scheduler, memória e otimização baseada em evidências. |
-| 4 | [`docs/roadmaps/04-interface-e-experiencia.md`](docs/roadmaps/04-interface-e-experiencia.md) | Taskbar, Window Manager, ícones e interação gráfica. |
-| 5 | [`docs/roadmaps/05-sistema-e-ecossistema.md`](docs/roadmaps/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e ecossistema. |
-| 6 | [`docs/roadmaps/06-app-store.md`](docs/roadmaps/06-app-store.md) | Catalogo local, ciclo de vida, App Store Modern e distribuicao futura. |
-| 7 | [`docs/roadmaps/07-modernizacao-visual.md`](docs/roadmaps/07-modernizacao-visual.md) | Escala acessivel, visual flat/dark e desempenho VESA mensuravel; MV4 funcionalmente validado, comparacao historica N/D. |
-| 8 | [`docs/roadmaps/08-evolucao-da-plataforma.md`](docs/roadmaps/08-evolucao-da-plataforma.md) | EP1-EP6.4 implementadas; EP7.0 encerrada; EP7.1B de EHCI/transporte RTL8811CU implementada; EP9.0A-EP9.4C implementadas e validadas. |
-| 9 | [`docs/roadmaps/09-funcionalidades-aplicaveis.md`](docs/roadmaps/09-funcionalidades-aplicaveis.md) | Separação visual/funcional, perfil de distribuição, logs, timers, espera, work queue, dispositivos, I/O, cache e métricas do scheduler. |
-| 10 | [`docs/roadmaps/10-vfs-e-abstracao-io.md`](docs/roadmaps/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, pontos de montagem, dispositivos /dev/ e pipes. |
-| 11 | [`docs/roadmaps/11-gerenciamento-avancado-de-memoria.md`](docs/roadmaps/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging. |
-| 12 | [`docs/roadmaps/12-concorrencia-e-sincronizacao.md`](docs/roadmaps/12-concorrencia-e-sincronizacao.md) | Top-Half/Bottom-Half, wait queues, kernel workqueues e sinais assíncronos. |
-| 13 | [`docs/roadmaps/13-armazenamento-e-buffer-cache.md`](docs/roadmaps/13-armazenamento-e-buffer-cache.md) | Block layer, fila de requisições, buffer cache LRU e sincronização sync. |
-| 14 | [`docs/roadmaps/14-stack-de-rede-avancada.md`](docs/roadmaps/14-stack-de-rede-avancada.md) | Socket buffers sk_buff zero-copy, sockets AF_UNIX/AF_INET e select/poll. |
-| 15 | [`docs/roadmaps/15-introspeccao-e-pseudo-fs.md`](docs/roadmaps/15-introspeccao-e-pseudo-fs.md) | Pseudo-filesystems /proc e /sys para diagnósticos, processos e hardware. |
-| 16 | [`docs/roadmaps/16-energia-e-acpi-avancado.md`](docs/roadmaps/16-energia-e-acpi-avancado.md) | Loop de CPU idle com HLT, parser ACPI (FADT/MADT), poweroff e reboot. |
+| 1 | [`docs/roadmaps/feitos/01-estabilizacao-e-qualidade.md`](docs/roadmaps/feitos/01-estabilizacao-e-qualidade.md) | Regressão, diagnóstico e fallbacks antes de novas migrações. |
+| 2 | [`docs/roadmaps/feitos/02-plataforma-de-aplicativos.md`](docs/roadmaps/feitos/02-plataforma-de-aplicativos.md) | Fase 7, pacotes locais, ZAPP e distribuicao. |
+| 3 | [`docs/roadmaps/feitos/03-kernel-e-desempenho.md`](docs/roadmaps/feitos/03-kernel-e-desempenho.md) | Métricas, scheduler, memória e otimização baseada em evidências. |
+| 4 | [`docs/roadmaps/feitos/04-interface-e-experiencia.md`](docs/roadmaps/feitos/04-interface-e-experiencia.md) | Taskbar, Window Manager, ícones e interação gráfica. |
+| 5 | [`docs/roadmaps/feitos/05-sistema-e-ecossistema.md`](docs/roadmaps/feitos/05-sistema-e-ecossistema.md) | Dispositivos, energia, rede, atualizações e ecossistema. |
+| 6 | [`docs/roadmaps/feitos/06-app-store.md`](docs/roadmaps/feitos/06-app-store.md) | Catalogo local, ciclo de vida, App Store Modern e distribuicao futura. |
+| 7 | [`docs/roadmaps/feitos/07-modernizacao-visual.md`](docs/roadmaps/feitos/07-modernizacao-visual.md) | Escala acessivel, visual flat/dark e desempenho VESA mensuravel; MV4 funcionalmente validado, comparacao historica N/D. |
+| 8 | [`docs/roadmaps/feitos/08-evolucao-da-plataforma.md`](docs/roadmaps/feitos/08-evolucao-da-plataforma.md) | EP1-EP6.4 implementadas; EP7.0 encerrada; EP7.1B de EHCI/transporte RTL8811CU implementada; EP9.0A-EP9.4C implementadas e validadas. |
+| 9 | [`docs/roadmaps/feitos/09-funcionalidades-aplicaveis.md`](docs/roadmaps/feitos/09-funcionalidades-aplicaveis.md) | Separação visual/funcional, perfil de distribuição, logs, timers, espera, work queue, dispositivos, I/O, cache e métricas do scheduler. |
+| 10 | [`docs/roadmaps/feitos/10-vfs-e-abstracao-io.md`](docs/roadmaps/feitos/10-vfs-e-abstracao-io.md) | VFS, descritores de arquivos, pontos de montagem, dispositivos /dev/ e pipes. |
+| 11 | [`docs/roadmaps/feitos/11-gerenciamento-avancado-de-memoria.md`](docs/roadmaps/feitos/11-gerenciamento-avancado-de-memoria.md) | Alocador SLAB/SLUB kmem_cache, áreas virtuais VMA e demand paging. |
+| 12 | [`docs/roadmaps/feitos/12-concorrencia-e-sincronizacao.md`](docs/roadmaps/feitos/12-concorrencia-e-sincronizacao.md) | Top-Half/Bottom-Half, wait queues, kernel workqueues e sinais assíncronos. |
+| 13 | [`docs/roadmaps/feitos/13-armazenamento-e-buffer-cache.md`](docs/roadmaps/feitos/13-armazenamento-e-buffer-cache.md) | Block layer, fila de requisições, buffer cache LRU e sincronização sync. |
+| 14 | [`docs/roadmaps/feitos/14-stack-de-rede-avancada.md`](docs/roadmaps/feitos/14-stack-de-rede-avancada.md) | Socket buffers sk_buff zero-copy, sockets AF_UNIX/AF_INET e select/poll. |
+| 15 | [`docs/roadmaps/feitos/15-introspeccao-e-pseudo-fs.md`](docs/roadmaps/feitos/15-introspeccao-e-pseudo-fs.md) | Pseudo-filesystems /proc e /sys para diagnósticos, processos e hardware. |
+| 16 | [`docs/roadmaps/feitos/16-energia-e-acpi-avancado.md`](docs/roadmaps/feitos/16-energia-e-acpi-avancado.md) | Loop de CPU idle com HLT, parser ACPI (FADT/MADT), poweroff e reboot. |
+| 18 | [`docs/roadmaps/18-kernel-processos-e-userland-v1.0.md`](docs/roadmaps/18-kernel-processos-e-userland-v1.0.md) | Kernel, memória, processos, IPC e userland básico da 1.0.0. |
+| 19 | [`docs/roadmaps/19-abi-seguranca-e-permissoes-v1.0.md`](docs/roadmaps/19-abi-seguranca-e-permissoes-v1.0.md) | ABI, isolamento, permissões mínimas, capacidades e confiança de pacotes. |
+| 20 | [`docs/roadmaps/20-vfs-storage-e-atualizacao-v1.0.md`](docs/roadmaps/20-vfs-storage-e-atualizacao-v1.0.md) | VFS, Storage, recuperação, atualização online e rollback. |
+| 21 | [`docs/roadmaps/21-hardware-rede-e-energia-v1.0.md`](docs/roadmaps/21-hardware-rede-e-energia-v1.0.md) | Hardware suportado, rede, energia, perfis e fallbacks. |
+| 22 | [`docs/roadmaps/22-shell-interface-e-aplicativos-v1.0.md`](docs/roadmaps/22-shell-interface-e-aplicativos-v1.0.md) | Shell, interface, aplicativos e experiência básica. |
+| 23 | [`docs/roadmaps/23-desempenho-e-dividas-v1.0.md`](docs/roadmaps/23-desempenho-e-dividas-v1.0.md) | Desempenho mensurável, validação e dívidas técnicas. |
+| 24 | [`docs/roadmaps/24-release-e-aceitacao-v1.0.md`](docs/roadmaps/24-release-e-aceitacao-v1.0.md) | Congelamento, aceitação e publicação da versão 1.0.0. |
 | Pós-1.0.0 | [`docs/roadmaps/pos-1.0.0-migracao-rust.md`](docs/roadmaps/pos-1.0.0-migracao-rust.md) | Migração gradual para um kernel híbrido C/Rust/Assembly após a versão 1.0.0. |
 
 Os numeros 06 e 07 identificam os documentos, nao uma barreira de conclusao

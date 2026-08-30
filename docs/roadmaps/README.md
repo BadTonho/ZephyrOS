@@ -10,9 +10,9 @@ backlog pós-1.0.
 
 ## Estado de referencia
 
-O ciclo de preparação da versão 1.0.0 será composto pelos Roadmaps 18 a 22.
+O ciclo de preparação da versão 1.0.0 será composto pelos Roadmaps 18 a 24.
 A etapa pós-1.0.0 de migração gradual para Rust permanece reservada para depois
-da base 1.0.0 e não deve ser iniciado antes do fechamento desse ciclo.
+da base 1.0.0 e não deve ser iniciada antes do fechamento desse ciclo.
 
 - Base original (boot, memoria, processos, filesystem, Shell e desktop):
   validada no QEMU.
@@ -187,12 +187,14 @@ correcao da ordem de apresentacao.
 
 ## Ordem de execução da versão 1.0.0
 
-1. [18 - Estabilização e release da versão 1.0.0](18-estabilizacao-e-release-v1.0.md)
-2. [19 - Segurança e isolamento](19-seguranca-e-isolamento-v1.0.md)
-3. [20 - Integridade e recuperação do Storage](20-integridade-e-recuperacao-do-storage.md)
-4. [21 - Compatibilidade e matriz de hardware](21-compatibilidade-e-matriz-de-hardware.md)
-5. [22 - Desempenho mensurável e dívidas da 1.0.0](22-desempenho-e-dividas-v1.0.md)
-6. [Pós-1.0.0 - Migração gradual para Rust](pos-1.0.0-migracao-rust.md), somente após a base 1.0.0.
+1. [18 - Kernel, processos e userland básico](18-kernel-processos-e-userland-v1.0.md)
+2. [19 - ABI, segurança e permissões](19-abi-seguranca-e-permissoes-v1.0.md)
+3. [20 - VFS, Storage e atualização do sistema](20-vfs-storage-e-atualizacao-v1.0.md)
+4. [21 - Hardware, rede e energia](21-hardware-rede-e-energia-v1.0.md)
+5. [22 - Shell, interface e aplicativos](22-shell-interface-e-aplicativos-v1.0.md)
+6. [23 - Desempenho, validação e dívidas](23-desempenho-e-dividas-v1.0.md)
+7. [24 - Release e aceitação da versão 1.0.0](24-release-e-aceitacao-v1.0.md)
+8. [Pós-1.0.0 - Migração gradual para Rust](pos-1.0.0-migracao-rust.md), somente após a base 1.0.0.
 
 Os numeros 06 e 07 mantem a organizacao documental, mas sua execucao e
 intercalada nesta ordem:

@@ -1,4 +1,4 @@
-# Roadmap 19 — Segurança e isolamento para a versão 1.0.0
+# Roadmap 19 — ABI, segurança e permissões da versão 1.0.0
 
 ## Estado
 
@@ -19,17 +19,19 @@ processo ou transformar uma falha recuperável em falha global.
 - separação efetiva entre ring 3 e ring 0, paging e ciclo de vida do processo;
 - ownership de descritores, pipes, IPC, sinais, filas, VMA e buffers;
 - confiança, versão, assinatura e preflight de pacotes ZPKG/ZAPP/ZUPD;
+- identidade mínima de usuário/grupo, proprietário e permissões básicas;
 - política mínima de acesso a caminhos, dispositivos, `/proc`, `/sys` e
   operações destrutivas;
 - testes negativos, falhas injetadas, encerramento e limpeza.
 
-Contas, UID/GID, ACL completa, sandbox de rede e permissões por aplicativo são
-decisões separadas. Se forem indispensáveis para a 1.0.0, deverão receber um
-contrato versionado antes do congelamento da ABI.
+Uma identidade mínima de usuário/grupo e permissões básicas fazem parte desta
+frente quando forem necessárias para que a 1.0.0 seja apresentada como um
+sistema de uso geral básico. ACL completa, domínio multiusuário, sandbox de
+rede e políticas empresariais continuam fora do escopo.
 
 ## Dependências
 
-- [Roadmap 18](18-estabilizacao-e-release-v1.0.md) para a linha de base e
+- [Roadmap 18](18-kernel-processos-e-userland-v1.0.md) para a linha de base e
   reprodutibilidade;
 - contratos atuais em `docs/qualidade/contratos-publicos.md` e `errors.h`.
 
@@ -120,9 +122,9 @@ contrato versionado antes do congelamento da ABI.
 
 ## Fora do escopo
 
-Antivírus, rootkit detection, criptografia geral de arquivos, contas de
-usuário, ACL completa, sandbox de rede e secure boot não serão simulados para
-preencher este roadmap. Eles podem ser priorizados depois da 1.0.0.
+Antivírus, rootkit detection, criptografia geral de arquivos, contas
+multiusuário, ACL completa, sandbox de rede e secure boot não serão simulados
+para preencher este roadmap. Eles podem ser priorizados depois da 1.0.0.
 
 ## Validação do usuário
 

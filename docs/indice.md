@@ -102,10 +102,12 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [14 - Stack de Rede Avançada](roadmaps/feitos/14-stack-de-rede-avancada.md) | Socket buffers sk_buff zero-copy, sockets AF_UNIX/AF_INET e select/poll |
 | [15 - Introspecção e Pseudo-Filesystems](roadmaps/feitos/15-introspeccao-e-pseudo-fs.md) | Pseudo-filesystems /proc e /sys para diagnósticos, processos e hardware |
 | [16 - Energia e ACPI Avançado](roadmaps/feitos/16-energia-e-acpi-avancado.md) | Loop de CPU idle com HLT, parser ACPI (FADT/MADT), poweroff e reboot |
-| [Pós-1.0.0 — Migração gradual do ZephyrOS para Rust](roadmaps/pos-1.0.0-migracao-rust.md) | Adoção incremental de Rust após a versão 1.0.0, com kernel híbrido C/Rust/Assembly |
 | [Escopo da versão 1.0.0](roadmaps/escopo-v1.0.0.md) | Capacidades obrigatórias, ordem de execução e recursos pós-1.0 |
-| [18 - Estabilização e release da versão 1.0.0](roadmaps/18-estabilizacao-e-release-v1.0.md) | Linha de base, liveness do Shell, regressão e preparação da release |
-| [19 - Segurança e isolamento](roadmaps/19-seguranca-e-isolamento-v1.0.md) | Fronteiras ring 3, syscalls, processos, pacotes e recursos |
-| [20 - Integridade e recuperação do Storage](roadmaps/20-integridade-e-recuperacao-do-storage.md) | VFS, FAT, cache, sync, consistência e recuperação |
-| [21 - Compatibilidade e matriz de hardware](roadmaps/21-compatibilidade-e-matriz-de-hardware.md) | Perfis suportados, fallbacks, drivers e diagnósticos |
-| [22 - Desempenho e dívidas da 1.0.0](roadmaps/22-desempenho-e-dividas-v1.0.md) | Medição, responsividade, Idle e quitação das dívidas técnicas |
+| [18 - Kernel, processos e userland básico](roadmaps/18-kernel-processos-e-userland-v1.0.md) | Base de execução, memória, processos, IPC e serviços nativos |
+| [19 - ABI, segurança e permissões](roadmaps/19-abi-seguranca-e-permissoes-v1.0.md) | Isolamento, contratos, capacidades, pacotes e permissões mínimas |
+| [20 - VFS, Storage e atualização do sistema](roadmaps/20-vfs-storage-e-atualizacao-v1.0.md) | Integridade, recuperação, atualização online e rollback |
+| [21 - Hardware, rede e energia](roadmaps/21-hardware-rede-e-energia-v1.0.md) | Perfis suportados, fallbacks, drivers, rede e energia |
+| [22 - Shell, interface e aplicativos](roadmaps/22-shell-interface-e-aplicativos-v1.0.md) | Prompt, comandos, GUI, aplicativos, pacotes e experiência básica |
+| [23 - Desempenho, validação e dívidas](roadmaps/23-desempenho-e-dividas-v1.0.md) | Medição, responsividade, Idle e quitação das dívidas técnicas |
+| [24 - Release e aceitação da versão 1.0.0](roadmaps/24-release-e-aceitacao-v1.0.md) | Congelamento, matriz final, artefatos e publicação |
+| [Pós-1.0.0 — Migração gradual do ZephyrOS para Rust](roadmaps/pos-1.0.0-migracao-rust.md) | Adoção incremental de Rust após a versão 1.0.0, com kernel híbrido C/Rust/Assembly |

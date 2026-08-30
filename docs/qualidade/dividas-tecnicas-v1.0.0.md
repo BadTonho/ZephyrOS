@@ -28,15 +28,15 @@ uma etapa.
 
 | ID | Estado | Origem | Responsavel | Alvo |
 |---|---|---|---|---|
-| `DT100-001` | ACEITA | SYNC1 | Roadmap 22 / PERF2 | v1.0.0 |
-| `DT100-002` | ACEITA | SYNC3 / R4 | Roadmap 22 / PERF3 | v1.0.0 |
+| `DT100-001` | ACEITA | SYNC1 | Roadmap 23 / PERF2 | v1.0.0 |
+| `DT100-002` | ACEITA | SYNC3 / R4 | Roadmap 23 / PERF3 | v1.0.0 |
 
 ## DT100-001 - RegCheck full e entrada PS/2
 
 - **Estado:** `ACEITA`.
 - **Aceita em:** 2026-08-27 00:19 (America/Sao_Paulo).
 - **Origem:** SYNC1 - Top-Half e Bottom-Half de interrupcoes.
-- **Responsavel:** [Roadmap 22 - PERF2](../roadmaps/22-desempenho-e-dividas-v1.0.md#perf2--entrada-e-responsividade).
+- **Responsavel:** [Roadmap 23 - PERF2](../roadmaps/23-desempenho-e-dividas-v1.0.md#perf2--entrada-e-responsividade).
 - **Versao limite:** v1.0.0.
 
 ### Motivo da aceitacao
@@ -111,7 +111,7 @@ validacao final e seu horario devem ser registrados em
 - **Estado:** `ACEITA`.
 - **Aceita em:** 2026-08-27 17:09 (America/Sao_Paulo).
 - **Origem:** SYNC3 / R4 - Kernel Workqueues.
-- **Responsavel:** [Roadmap 22 - PERF3](../roadmaps/22-desempenho-e-dividas-v1.0.md#perf3--scheduler-idle-e-kworker).
+- **Responsavel:** [Roadmap 23 - PERF3](../roadmaps/23-desempenho-e-dividas-v1.0.md#perf3--scheduler-idle-e-kworker).
 - **Versao limite:** v1.0.0.
 
 ### Motivo da aceitacao

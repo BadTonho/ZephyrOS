@@ -3232,3 +3232,18 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `health check` foram executados; o `regcheck` permaneceu OK e o `health`
   exibiu somente capacidades opcionais ja desabilitadas ou degradadas. O
   resumo PWR4 foi marcado como concluido no Roadmap 16.
+
+- Escopo v1.0.0: decomposição em roadmaps executáveis registrada em
+  2026-08-30 (horário não informado). O escopo foi alinhado à sequência
+  `18` Kernel/processos/userland, `19` ABI/segurança/permissões, `20`
+  VFS/Storage/atualização, `21` hardware/rede/energia, `22`
+  Shell/interface/aplicativos, `23` desempenho/validação e `24` release e
+  aceitação. A atualização do próprio sistema pela internet passou a ter uma
+  fase explícita no Roadmap 20, com manifesto autenticado, staging,
+  transação, rollback e fallback offline.
+
+  Os índices, links e dependências foram atualizados; a etapa pós-1.0.0 de
+  Rust permanece depois do Roadmap 24. Nenhum roadmap 16 ou anterior foi
+  alterado. Esta foi uma alteração documental: não houve build, teste
+  executável ou QEMU, e nenhum roadmap foi marcado como concluído por causa
+  desta reorganização.
