@@ -298,6 +298,8 @@ static wait_info_t shell_wait_records[MAX_PROCESSES + MAX_THREADS];
 static wait_queue_info_t shell_wait_queues[WAIT_QUEUE_REGISTRY_CAPACITY];
 static work_info_t shell_work_records[WORKQUEUE_CAPACITY];
 static shell_kmetrics_baseline_t shell_kmetrics_baseline;
+static scheduler_stats_t shell_cpu_usage_baseline;
+static uint8_t shell_cpu_usage_baseline_valid;
 static vfs_descriptor_info_t shell_vfs_descriptors[VFS_MAX_FDS];
 static vfs_mount_info_t shell_vfs_mounts[VFS_MAX_MOUNTS];
 
@@ -4438,6 +4440,13 @@ static void cmd_kmetrics_print_scheduler(
     video_print(" quantum_user=", 0x08);
     shell_command_print_num(current->scheduler.user_quantum_ticks);
     video_print(" tick\n", 0x07);
+    video_print("             idle_ticks=", 0x08);
+    shell_command_print_num(shell_kmetrics_delta(current->scheduler.idle_ticks,
+                                   baseline->scheduler.idle_ticks));
+    video_print(" active_ticks=", 0x08);
+    shell_command_print_num(shell_kmetrics_delta(current->scheduler.active_ticks,
+                                   baseline->scheduler.active_ticks));
+    video_print("\n", 0x07);
 }
 
 static void cmd_kmetrics_print_queues(
@@ -4628,6 +4637,69 @@ static void cmd_kmetrics(const char* args) {
     cmd_kmetrics_print_queues(&current, baseline);
     cmd_kmetrics_print_memory(&current, baseline);
     cmd_kmetrics_print_vesa(&current, baseline);
+    video_end_update();
+}
+
+static void cmd_cpu_usage(const char* args) {
+    scheduler_stats_t current;
+    uint32_t baseline_idle = 0U;
+    uint32_t baseline_active = 0U;
+    uint32_t idle_ticks;
+    uint32_t active_ticks;
+    uint64_t total_ticks;
+    uint32_t idle_percent = 0U;
+    uint32_t active_percent = 0U;
+
+    if (!args) {
+        LOG_ERROR("SHELL", "Argumentos nulos para cpu usage");
+        return;
+    }
+    if (shell_command_args_equal(args, "usage reset")) {
+        scheduler_get_stats(&shell_cpu_usage_baseline);
+        shell_cpu_usage_baseline_valid = 1U;
+        video_print("Linha-base de CPU capturada.\n", 0x0A);
+        return;
+    }
+    if (!shell_command_args_equal(args, "usage")) {
+        LOG_WARN_CODE("SHELL", ERR_INVALID,
+                      "Argumentos invalidos para cpu usage");
+        video_print("Uso: cpu usage [reset]\n", 0x0C);
+        return;
+    }
+
+    scheduler_get_stats(&current);
+    if (shell_cpu_usage_baseline_valid) {
+        baseline_idle = shell_cpu_usage_baseline.idle_ticks;
+        baseline_active = shell_cpu_usage_baseline.active_ticks;
+    }
+    idle_ticks = current.idle_ticks - baseline_idle;
+    active_ticks = current.active_ticks - baseline_active;
+    total_ticks = (uint64_t)idle_ticks + (uint64_t)active_ticks;
+    if (total_ticks) {
+        idle_percent = (uint32_t)(((uint64_t)idle_ticks * 100ULL) /
+                                  total_ticks);
+        active_percent = (uint32_t)(((uint64_t)active_ticks * 100ULL) /
+                                    total_ticks);
+    }
+
+    video_begin_update();
+    video_print("CPU usage (PIT):\n", 0x0B);
+    video_print("  ticks_ativos=", 0x07);
+    shell_command_print_num(active_ticks);
+    video_print(" ticks_idle=", 0x08);
+    shell_command_print_num(idle_ticks);
+    video_print(" ticks_total=", 0x08);
+    cmd_diagnostics_print_u64(total_ticks);
+    video_print("\n", 0x07);
+    if (!total_ticks) {
+        video_print("  percentual_ativo=N/D percentual_idle=N/D\n", 0x08);
+    } else {
+        video_print("  percentual_ativo=", 0x07);
+        shell_command_print_num(active_percent);
+        video_print("% percentual_idle=", 0x08);
+        shell_command_print_num(idle_percent);
+        video_print("%\n", 0x07);
+    }
     video_end_update();
 }
 
@@ -4981,6 +5053,8 @@ static void cmd_schedcheck(const char* args) {
     cmd_schedcheck_print_result("estados", validation.state_table_valid);
     cmd_schedcheck_print_result("tabela_slab", validation.slab_table_valid);
     cmd_schedcheck_print_result("stacks", validation.stack_table_valid);
+    cmd_schedcheck_print_result("contabilidade_idle",
+                               validation.idle_accounting_valid);
     cmd_schedcheck_print_result("resultado", result == OK);
     video_end_update();
 }
@@ -5345,6 +5419,8 @@ static void cmd_vfs(const char* args) {
 
 void shell_diagnostics_reset(void) {
     kmemset(&shell_kmetrics_baseline, 0, sizeof(shell_kmetrics_baseline));
+    kmemset(&shell_cpu_usage_baseline, 0, sizeof(shell_cpu_usage_baseline));
+    shell_cpu_usage_baseline_valid = 0U;
 }
 
 void shell_diagnostics_print_usb_fixture_report(void) {
@@ -5419,6 +5495,7 @@ SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_usb, cmd_usb)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_acpi, cmd_acpi)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_power, cmd_power)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_kmetrics, cmd_kmetrics)
+SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_cpu_usage, cmd_cpu_usage)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_memcheck, cmd_memcheck)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_slabinfo, cmd_slabinfo)
 SHELL_DIAGNOSTICS_WRAP_ARGS(shell_dispatch_cmd_slabtest, cmd_slabtest)

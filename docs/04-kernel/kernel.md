@@ -210,6 +210,34 @@ context_switch:
     ret                    ; Retorna ao contexto salvo
 ```
 
+## PWR1: Idle arquitetural e contabilidade PIT
+
+O sistema unicore possui um único Idle, o processo PID 0. Ele fica fora do
+round-robin e só é escolhido quando não há processo normal `READY`. Depois da
+inicialização dos serviços, o kernel transfere o controle por um contexto de
+bootstrap separado; o contexto e a stack preparados para o PID 0 não são
+substituídos pelo contexto da stack de `kernel_main`.
+
+O corpo do Idle executa `sti; hlt` e depois `process_yield()`. A instrução
+`sti` imediatamente anterior ao `hlt` fecha a janela de corrida entre a
+decisão de dormir e a chegada de uma IRQ. Timer, teclado, rede, IPC e
+workqueue continuam usando seus mecanismos existentes para acordar processos.
+O caminho degradado que mantém serviços no `kernel_main` também usa
+`sti; hlt`; ele só é usado quando a criação do processo System falha.
+
+`scheduler_stats_t` preserva seus campos existentes e acrescenta, ao final,
+`idle_ticks` e `active_ticks`. O PIT incrementa exatamente um deles por tick e
+incrementa `total_ticks` do processo corrente. `idle_ticks` deve permanecer
+igual ao `total_ticks` do PID 0; `schedcheck` e `regcheck full` validam essa
+invariante. `scheduler_get_stats()` copia os contadores com interrupções
+protegidas e não registra logs no caminho de cada tick.
+
+System e Desktop bloqueiam por um tick após o ciclo cooperativo quando não há
+trabalho imediato, evitando loops ativos. `cpu usage` mostra a janela
+acumulada desde o boot e `cpu usage reset` salva somente uma linha-base privada
+do Shell. A porcentagem é uma estimativa de residência do scheduler baseada no
+PIT de 50 Hz, não uma medição elétrica nem uma leitura RDTSC/PMU.
+
 ## Isolamento ring 3
 
 O kernel possui segmentos de usuario em `0x1B` (codigo) e `0x23` (dados).

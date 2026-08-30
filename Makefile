@@ -643,7 +643,7 @@ $(ENTRY_OBJ): $(ENTRY_SRC)
 	@if not exist build mkdir build
 	$(NASM) -f elf32 $< -o $@
 
-$(KERNEL_OBJ): $(KERNEL_C) src/include/apps/shell_job.h src/include/core/keyboard.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/ethernet.h src/include/core/clock.h src/include/core/tls.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/core/update_remote_system.h src/include/drivers/rtc.h src/include/process/thread.h src/include/memory/slab.h
+$(KERNEL_OBJ): $(KERNEL_C) src/include/apps/shell_job.h src/include/core/keyboard.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/ethernet.h src/include/core/clock.h src/include/core/tls.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/core/update_remote_system.h src/include/drivers/rtc.h src/include/process/process.h src/include/process/thread.h src/include/memory/slab.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

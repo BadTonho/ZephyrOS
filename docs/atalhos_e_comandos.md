@@ -61,6 +61,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `update system` | `status|check|fetch|verify|apply|cancel|slots` | Consulta, baixa em cache próprio, prepara ou cancela uma imagem ZSYS; a ativação exige `reboot`. |
 | `update runtime` | `test fail-after <1-16>` | Arma uma interrupcao one-shot para validar recuperacao do runtime v2. |
 | `kmetrics` | `[reset]` | Mostra ou inicia a janela manual de métricas K1. |
+| `cpu` | `usage [reset]` | Mostra a residência PIT ativa/ociosa; `reset` captura linha-base privada. |
 | `devices` | `[-v]` | Lista o inventario nativo de hardware; `-v` inclui localizacao, IRQ e IDs PCI. |
 | `device-info` | `<id>` | Mostra os detalhes de um dispositivo listado por `devices`. |
 | `proccheck` | - | Valida os snapshots publicos de `/proc` e `/sys`. |
@@ -151,6 +152,19 @@ power status
 fallbacks conhecidos. PWR0 apenas congela o contrato documental de estados,
 ordem, ownership, orcamentos e ponto irreversivel; a execucao da transacao
 fica para PWR1-PWR4.
+
+## PWR1 - Idle e uso de CPU
+
+```text
+cpu usage reset
+cpu usage
+```
+
+O primeiro comando captura uma linha-base privada do Shell; o segundo mostra
+ticks ativos, ticks ociosos e percentuais baseados no PIT de 50 Hz. O PID 0 e
+o Idle real e usa `sti; hlt` quando nao ha processo normal pronto. A metrica
+nao e CPU fisica, consumo eletrico ou RDTSC/PMU, e a medicao do host/QEMU
+continua sendo uma validacao especifica do usuario.
 
 ## Scroll do Shell
 

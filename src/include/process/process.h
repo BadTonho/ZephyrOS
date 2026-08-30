@@ -61,6 +61,8 @@ typedef struct {
     uint32_t user_preemptions;
     uint32_t idle_fallbacks;
     uint32_t user_quantum_ticks;
+    uint32_t idle_ticks;
+    uint32_t active_ticks;
 } scheduler_stats_t;
 
 typedef struct {
@@ -70,6 +72,7 @@ typedef struct {
     uint32_t state_table_valid;
     uint32_t stack_table_valid;
     uint32_t slab_table_valid;
+    uint32_t idle_accounting_valid;
 } scheduler_validation_t;
 
 typedef enum {
@@ -206,6 +209,7 @@ typedef struct {
 
 void process_init(void);
 void process_bootstrap_idle(void);
+int process_start_scheduler(void);
 process_t* process_create(const char* name, void (*entry_point)());
 process_t* process_create_with_stack_size(const char* name,
                                           void (*entry_point)(),

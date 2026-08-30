@@ -16,7 +16,41 @@ mudanca; nao crie uma entrada artificial.
 - Conclusao: ganho, empate ou regressao.
 - Impacto: contratos preservados, riscos e validacao executada.
 
+## PWR1 - Contabilidade de Idle
+
+O PWR1 introduz `idle_ticks` e `active_ticks` em `scheduler_stats_t` como
+contadores acumulados baseados no PIT de 50 Hz. A soma representa os ticks
+observados desde o boot, com aritmetica de delta de 32 bits para preservar o
+comportamento apos wraparound. `cpu usage reset` captura uma linha-base
+privada do Shell; nao altera o scheduler nem as metricas do kernel.
+
+`idle_ticks` mede a residencia do PID 0 no scheduler e deve coincidir com
+`processes[0].total_ticks`. A porcentagem publicada por `cpu usage` e uma
+estimativa de tempo ativo/ocioso do scheduler, distinta do `TCK%` historico
+do Task Manager e da CPU real por RDTSC/PMU, que continua `N/D`. Janelas sem
+ticks exibem `N/D` em vez de dividir por zero.
+
+A comparacao do consumo do processo QEMU e do host ainda depende da medicao
+do usuario; este documento nao infere ganho sem valores pareados no mesmo
+cenario.
+
 ## Registros
+
+### 2026-08-30 - PWR1, Idle arquitetural com HLT
+
+- Cenario QEMU: manter Shell/Desktop ociosos, executar `cpu usage reset`,
+  aguardar uma janela PIT e executar `cpu usage`; repetir com uma carga curta.
+- Metrica observavel: `idle_ticks`, `active_ticks`, percentuais publicados,
+  responsividade das IRQs e uso do processo QEMU no host.
+- Antes: kernel_main, System e Desktop mantinham caminhos cooperativos com
+  yields e `hlt` separado; nenhuma contabilidade de Idle estava publicada.
+- Depois: o PID 0 possui handoff e stack próprios, o Idle usa `sti; hlt`, os
+  serviços bloqueiam por tick e o scheduler publica os contadores. Valores
+  pareados do host/QEMU ainda são N/D até a execução do usuário.
+- Conclusao: implementação registrada; validação funcional e comparação de
+  consumo pendentes dos gates e da medição QEMU do usuário.
+- Impacto: não houve alteração em App API, syscalls, bootloader, paging,
+  `thread_t` ou quantum de ring 3.
 
 ### 2026-08-26 - EP9.4B, publicacao FAT32 da imagem de 256 MiB
 

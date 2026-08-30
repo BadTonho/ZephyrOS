@@ -388,6 +388,7 @@ static void cmd_help(void) {
                 0x07);
     video_print("  devcheck - Valida dispositivos do devfs\n", 0x07);
     video_print("  kmetrics - Mostra linha-base de metricas do kernel\n", 0x07);
+    video_print("  cpu usage [reset] - Mostra ticks ativos e ociosos\n", 0x07);
     video_print("  memcheck - Valida heap, PMM, metricas MM4 e diretorios de usuario\n", 0x07);
     video_print("  schedcheck - Valida invariantes do scheduler\n", 0x07);
     video_print("  q2check  - Executa diagnostico compacto da Q2\n", 0x07);
