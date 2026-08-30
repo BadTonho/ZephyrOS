@@ -837,6 +837,14 @@ de no maximo 2048 bytes, e conclui seu lifetime antes de reciclar o pacote.
 `dev` e um handle opaco do slot Ethernet. Nao ha garantia de zero-copy, clones
 reais ou fragmentos reais nesta etapa.
 
+Na NET2, a camada generica `socket_t` continua consumindo o backend TCP
+cliente e os callbacks Ethernet sem alterar os drivers. Nenhum driver entrega
+ownership de DMA, e os sockets genericos nao retêm ponteiros de payload dos
+callbacks. A fronteira usa copia síncrona; filas AF_UNIX recebem copias em
+`sk_buff_t` de storage interno limitado a 2048 bytes. Clones, fragmentos
+compartilhados, zero-copy real e qualquer mudança em `boot.asm` permanecem
+fora desta etapa.
+
 ### Estrutura
 
 ```c

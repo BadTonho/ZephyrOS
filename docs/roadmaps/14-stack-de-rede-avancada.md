@@ -151,6 +151,24 @@ e não permanecem buffers vivos após os diagnósticos.
 
 - [ ] Criar a estrutura `socket_t` com operações `socket_ops_t` (`bind`, `connect`, `listen`, `accept`, `send`, `recv`).
 - [ ] Mapear sockets na tabela de descritores de arquivos do processo (`fd`).
+- [ ] Implementacao preparada para validacao funcional: `socket_t` permanece
+  privado em `src/core/socket.c`, os objetos usam FDs reais `VFS_NODE_SOCKET` e
+  `AF_UNIX/SOCK_STREAM` usa namespace global, backlog limitado e filas
+  `sk_buff_t` com copia.
+- [ ] `AF_INET/SOCK_STREAM` adapta somente o cliente TCP ativo legado; o
+  caminho bloqueante libera locks antes da espera e
+  `SOCKET_FLAG_NONBLOCK` retorna `ERR_AGAIN` sem progresso.
+- [ ] `sockstat`, `socket_self_test()`, `net check`, `regcheck full` e
+  `health check` foram integrados; a fixture cobre lifecycle, FD VFS,
+  bind duplicado, connect/listen/accept, leitura parcial, fila cheia, EOF,
+  entradas invalidas, cancelamento e limpeza.
+- [ ] Nao ha syscall, wrapper de App API, `poll/select`, `socketpair`,
+  datagramas UNIX ou ownership DMA transferido. Mensagens longas usam buffers
+  independentes de ate 2048 bytes; clones, fragmentos compartilhados e
+  zero-copy real permanecem fora da NET2. `boot.asm` nao foi alterado.
+
+O resumo NET2 continua `[ ]` ate a confirmacao funcional do usuario apos os
+gates de build e a matriz QEMU previstos nesta etapa.
 - [ ] Implementar a família de endereços `AF_UNIX` (ou `AF_LOCAL`) para IPC
   entre processos no mesmo sistema através de filas e buffers locais.
 - [ ] Integrar a família `AF_INET` existente à camada genérica sem quebrar
@@ -164,7 +182,8 @@ Aplicativos criam e comunicam através de sockets locais e remotos utilizando a 
 
 ### Comandos Shell / Diagnóstico
 
-- `sockstat`: lista todos os sockets abertos no sistema, tipo (`STREAM`/`DGRAM`), família (`INET`/`UNIX`) e processo proprietário.
+- `sockstat`: lista sockets `STREAM` `AF_UNIX`/`AF_INET`, seus descritores
+  VFS e o processo proprietário; datagramas permanecem fora da NET2.
 
 ---
 

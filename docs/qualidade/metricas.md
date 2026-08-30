@@ -367,3 +367,23 @@ reais. Descartes e copias normais sao informativos; transicoes invalidas,
 conclusoes duplicadas, erro residual ou buffer ativo sao condicoes de
 diagnostico. Nao ha alegacao de ownership DMA transferido, zero-copy real ou
 comparacao de desempenho nesta etapa.
+
+## NET2 - Sockets genericos e filas AF_UNIX
+
+`socket_status_t` publica sockets ativos e pico, criacoes, fechamentos,
+binds, conexoes, accepts, envios, recebimentos, bytes transferidos,
+descartes por fila, FDs obsoletos e falhas. `socket_get_info()` fornece a
+visao por entrada para `sockstat`, incluindo familia, estado, caminho ou
+destino, filas e modo nao bloqueante.
+
+As filas AF_UNIX usam `sk_buff_t` de ate 2048 bytes e limite conjunto de oito
+buffers/4096 bytes por direcao. `net_buffer_stats_t` e `sk_buff_stats_t`
+contabilizam as copias de entrada e saida, o pico, descartes e a ausencia de
+buffers ativos depois do autoteste. Fragmentacao de mensagens longas cria
+buffers independentes apenas para transporte de stream; clones, fragmentos
+compartilhados e zero-copy real nao sao medidos nesta etapa.
+
+`socket_self_test()` restaura as metricas do proprio runtime e nao altera o
+inventario de NICs, sockets legados, drivers ou trafego. Falhas de invariantes,
+FD residual, fila ou erro residual sao diagnosticas; `ERR_AGAIN` e descartes
+normais de backpressure sao resultados observaveis, nao falhas do sistema.

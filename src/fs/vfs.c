@@ -1601,6 +1601,73 @@ int vfs_copy_descriptors(vfs_descriptor_info_t* output,
     return OK;
 }
 
+int vfs_open_socket(void* private_data, const file_operations_t* operations,
+                    uint32_t mode, const char* path, int32_t* fd_out) {
+    vfs_fd_table_t* table;
+    file_t* file = 0;
+    vnode_t* vnode = 0;
+    uint32_t length;
+    int fd;
+    int result;
+
+    if (!vfs_ready) {
+        LOG_ERROR("FS", "Socket solicitado com VFS indisponivel");
+        return ERR_UNAVAILABLE;
+    }
+    if (!private_data || !operations || !path || !fd_out) {
+        LOG_ERROR("FS", "Argumento nulo na abertura de socket VFS");
+        return ERR_NULL;
+    }
+    *fd_out = VFS_FD_INVALID;
+    length = kstrlen(path);
+    if (!length) {
+        LOG_ERROR("FS", "Nome vazio na abertura de socket VFS");
+        return ERR_INVALID;
+    }
+    if (length >= VFS_MAX_PATH) {
+        LOG_ERROR("FS", "Nome de socket excede o limite da VFS");
+        return ERR_OVERFLOW;
+    }
+    if (!vfs_mode_valid(mode)) {
+        LOG_ERROR("FS", "Modo invalido na abertura de socket VFS");
+        return ERR_INVALID;
+    }
+    result = vfs_get_current_table(&table);
+    if (result != OK) return result;
+    fd = vfs_find_free_fd(table);
+    if (fd == VFS_FD_INVALID) {
+        LOG_WARN("FS", "Tabela de descritores cheia para socket VFS");
+        return ERR_UNAVAILABLE;
+    }
+    result = vfs_allocate_file(&file, &vnode, VFS_FILE_RESERVED);
+    if (result != OK) return result;
+    vnode->type = VFS_NODE_SOCKET;
+    vnode->operations = operations;
+    vnode->private_data = private_data;
+    vfs_copy_text(vnode->path, VFS_MAX_PATH, path);
+    file->mode = mode;
+    result = operations->open ? operations->open(vnode, file) : OK;
+    if (result != OK) {
+        vfs_release_file(file);
+        LOG_ERROR("FS", "Falha ao abrir socket pela VFS");
+        return result;
+    }
+    spinlock_acquire(&vfs_lock);
+    if (table->entries[fd]) {
+        spinlock_release(&vfs_lock);
+        if (operations->close) operations->close(file);
+        vfs_release_file(file);
+        LOG_ERROR("FS", "Descritor escolhido para socket foi ocupado");
+        return ERR_STATE;
+    }
+    file->used = VFS_FILE_ACTIVE;
+    table->entries[fd] = file;
+    vfs_metrics.opens++;
+    spinlock_release(&vfs_lock);
+    *fd_out = fd;
+    return OK;
+}
+
 int vfs_validate_state(void) {
     uint32_t process_index;
     uint32_t fd;
@@ -1678,6 +1745,17 @@ int vfs_validate_state(void) {
                     spinlock_release(&vfs_lock);
                     return ERR_STATE;
                 }
+            }
+            if (file->vnode->type == VFS_NODE_SOCKET &&
+                (!file->vnode->private_data ||
+                 !file->vnode->operations->open ||
+                 !file->vnode->operations->read ||
+                 !file->vnode->operations->write ||
+                 !file->vnode->operations->close ||
+                 !file->vnode->operations->lseek ||
+                 !file->vnode->operations->sync)) {
+                spinlock_release(&vfs_lock);
+                return ERR_STATE;
             }
         }
     }

@@ -7,6 +7,30 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## NET2 - camada generica de sockets e AF_UNIX
+
+Implementacao registrada em: 2026-08-29 21:32:35 (America/Sao_Paulo)
+
+Validacao funcional: pendente da execucao dos gates de build e da matriz QEMU
+pelo usuario. O resumo NET2 permanece `[ ]` no roadmap.
+
+- `socket_t` e `socket_ops_t` foram adicionados com layout privado e FDs VFS
+  reais do tipo `VFS_NODE_SOCKET`; `ERR_AGAIN` foi incluido no contrato
+  canonico sem criar syscall ou alterar a ABI ring 3.
+- `AF_UNIX/SOCK_STREAM` recebeu namespace global de caminhos, bind/listen,
+  connect/accept, backlog limitado, filas bidirecionais de `sk_buff_t`, EOF,
+  backpressure e fechamento do peer. Mensagens longas usam buffers
+  independentes de ate 2048 bytes.
+- `AF_INET/SOCK_STREAM` adapta somente o cliente TCP ativo legado. UDP,
+  TCP passivo, poll/select, socketpair, datagramas UNIX, clones, fragmentos
+  compartilhados, zero-copy real e ownership DMA permanecem fora da NET2.
+- `sockstat`, `socket_self_test()`, `net check`, `regcheck full` e `health
+  check` foram integrados para observar FDs, filas, erros, invariantes e
+  limpeza. O self-test usa fixtures privadas e restaura as metricas do
+  runtime de sockets.
+- O caminho continua sincrono e baseado em copia; drivers, callbacks Ethernet,
+  inventario de NICs e `boot.asm` nao foram alterados.
+
 ## NET1 - estrutura unificada sk_buff_t
 
 Implementacao registrada em: 2026-08-29 20:21:31 (America/Sao_Paulo)

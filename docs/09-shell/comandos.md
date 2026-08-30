@@ -55,6 +55,7 @@ Comandos disponiveis:
   device-scan - Refaz a varredura PCI/USB e atualiza o inventario
   net status - Exibe o estado observavel da rede
   skbstat   - Exibe o inventario e as metricas dos sk_buff
+  sockstat  - Lista sockets genericos e seus descritores VFS
   net devices - Lista controladores de rede PCI
   net info <id> - Exibe detalhes de uma interface inventariada
   net ethernet <id> - Inspeciona recepcao Ethernet L2
@@ -623,6 +624,7 @@ zephyr> net tcp status
 zephyr> net tcp connect example.com 80
 zephyr> net socket status
 zephyr> net socket table
+zephyr> sockstat
 zephyr> nslookup example.com
 zephyr> ping 10.0.2.2
 zephyr> ping example.com 1
@@ -723,6 +725,18 @@ socket reservado.
 `net socket status` mostra capacidade, operacoes e bytes das filas nativas.
 `net socket table` lista handle, estado, destino, porta local e ocupacao
 TX/RX. Handles possuem geracao; uma referencia antiga e recusada.
+
+`sockstat` lista os sockets genericos com FD VFS, PID proprietario, familia,
+tipo, estado, caminho UNIX ou destino IPv4, ocupacao RX/TX, modo de bloqueio e
+ultimo erro. A tabela nao cria trafego e deve ficar vazia depois dos
+diagnosticos.
+
+Na NET2, `AF_UNIX/SOCK_STREAM` usa `bind`, `listen`, `connect` e `accept` com
+filas locais limitadas e copia para `sk_buff_t`; `AF_INET/SOCK_STREAM` e
+somente cliente TCP ativo sobre o backend legado. Sockets bloqueiam por
+padrao; o modo nao bloqueante retorna `ERR_AGAIN` sem progresso. Nao ha
+syscall nova, `poll/select`, `socketpair`, datagramas UNIX ou ownership DMA
+transferido.
 
 `http get <url>` aceita somente `http://host[:porta]/caminho`, aguarda DNS,
 TCP e resposta sem bloquear o processo de sistema, e mostra status, tamanhos
