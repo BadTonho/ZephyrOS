@@ -115,6 +115,40 @@ protótipos, fixtures ou comportamento não documentado.
   explícita.
 - [ ] O Shell continua sendo fallback operacional dos aplicativos visuais.
 
+### 9.1 Atualização do sistema pela internet
+
+A 1.0.0 deve permitir atualizar o próprio sistema operacional pela internet,
+separadamente da atualização de aplicativos. A base U1–U5 e o transporte
+remoto já documentados podem ser reutilizados, mas a validação final deve
+exercitar um artefato completo de sistema.
+
+- [ ] Consultar um manifesto remoto autenticado por HTTPS ou transporte
+  equivalente já validado pelo sistema.
+- [ ] Validar assinatura, hash, tamanho, versão, arquitetura, compatibilidade,
+  dependências e política de downgrade antes de aplicar o artefato.
+- [ ] Baixar o sistema para uma área de staging sem sobrescrever o sistema em
+  execução.
+- [ ] Verificar espaço, integridade do Storage, estado da energia e capacidade
+  de recuperação antes do commit.
+- [ ] Aplicar kernel, arquivos de sistema e componentes autorizados de forma
+  transacional, preservando o bootloader e o layout da imagem.
+- [ ] Ativar a nova versão somente depois de todas as validações locais
+  concluírem com sucesso.
+- [ ] Manter a versão anterior disponível para rollback automático se o boot,
+  recovery ou diagnóstico pós-atualização falhar.
+- [ ] Recuperar uma atualização interrompida por erro de rede, falta de
+  espaço, reinicialização, queda de energia ou falha de escrita.
+- [ ] Expor estado, versão atual, versão candidata, progresso, erro e
+  resultado por Shell, Settings e diagnóstico, sem deixar o prompt preso.
+- [ ] Permitir fallback para uma atualização local/offline quando a internet
+  ou o servidor remoto estiverem indisponíveis.
+- [ ] Rejeitar manifesto, imagem ou componente não assinado, incompatível,
+  truncado ou fora da política de atualização.
+
+Esta capacidade não autoriza atualização silenciosa do bootloader, alteração
+de layouts binários ou execução de código remoto sem assinatura e preflight
+compatíveis com o contrato da 1.0.0.
+
 ### 10. Diagnóstico e release
 
 - [ ] `health`, `regcheck full`, `memcheck`, `schedcheck`, `proccheck` e os
