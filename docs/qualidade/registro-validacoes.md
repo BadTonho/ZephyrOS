@@ -11,8 +11,10 @@ segredos.
 
 Implementacao registrada em: 2026-08-30 (horario nao informado).
 
-Validacao funcional: pendente da execucao dos gates de build e da matriz QEMU
-pelo usuario. O resumo PWR1 permanece `[ ]` no roadmap.
+Validacao funcional principal confirmada pelo usuario em 2026-08-30, com
+execucao no QEMU de `cpu usage reset`, `cpu usage`, `schedcheck`, `regcheck
+full` e `health check`. O resumo PWR1 permanece `[ ]` no roadmap porque a
+medicao pareada do uso do processo QEMU/host ainda nao foi registrada.
 
 - O PID 0 passou a ser o unico Idle real do kernel unicore, fora do
   round-robin. O handoff inicial usa contexto de bootstrap separado para
@@ -26,6 +28,11 @@ pelo usuario. O resumo PWR1 permanece `[ ]` no roadmap.
 - `cpu usage` mostra a janela acumulada e `cpu usage reset` captura linha-base
   privada sem alterar contadores. `kmetrics` publica os deltas dos novos
   campos.
+- A janela apos o reset reportou `ticks_ativos=4`, `ticks_idle=145`,
+  `ticks_total=149`, `percentual_ativo=2%` e `percentual_idle=97%`.
+- `schedcheck` confirmou `contabilidade_idle=OK` e `resultado=OK`; `RegCheck`
+  tambem terminou em `OK`. O `health check` manteve apenas estados opcionais
+  ja conhecidos, sem falha nova do PWR1.
 - Nao houve alteracao de App API, syscalls, layouts binarios, `boot.asm`,
   `stage2.asm`, paging, `thread_t` ou quantum de ring 3. O agente nao
   executou build, testes ou QEMU.

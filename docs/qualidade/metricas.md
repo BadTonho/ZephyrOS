@@ -45,10 +45,12 @@ cenario.
 - Antes: kernel_main, System e Desktop mantinham caminhos cooperativos com
   yields e `hlt` separado; nenhuma contabilidade de Idle estava publicada.
 - Depois: o PID 0 possui handoff e stack próprios, o Idle usa `sti; hlt`, os
-  serviços bloqueiam por tick e o scheduler publica os contadores. Valores
-  pareados do host/QEMU ainda são N/D até a execução do usuário.
-- Conclusao: implementação registrada; validação funcional e comparação de
-  consumo pendentes dos gates e da medição QEMU do usuário.
+  serviços bloqueiam por tick e o scheduler publica os contadores. A janela
+  medida após o reset reportou `ticks_ativos=4`, `ticks_idle=145`,
+  `ticks_total=149`, `percentual_ativo=2%` e `percentual_idle=97%`.
+- Conclusao: a validação funcional do scheduler foi confirmada pelo usuário;
+  a comparação de consumo do processo QEMU/host permanece N/D até uma
+  medição pareada no mesmo cenário.
 - Impacto: não houve alteração em App API, syscalls, bootloader, paging,
   `thread_t` ou quantum de ring 3.
 

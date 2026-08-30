@@ -126,8 +126,10 @@ sem criar comando, syscall, App API ou ABI binária nova.
 
 ### Critério de saída
 
-O código PWR1 está implementado. A queda de uso do host/QEMU para próximo de
-0-1% quando o ZephyrOS aguarda interação ainda deve ser medida pelo usuário no
+A funcionalidade do scheduler PWR1 foi confirmada pelo usuário: a janela após
+`cpu usage reset` reportou 4 ticks ativos, 145 ociosos e `schedcheck` confirmou
+`contabilidade_idle=OK`. A queda de uso do host/QEMU para próximo de 0-1%
+quando o ZephyrOS aguarda interação ainda deve ser medida pelo usuário no
 mesmo cenário antes de marcar o resumo PWR1 como concluído.
 
 ### Comandos Shell / Diagnóstico
