@@ -3101,5 +3101,14 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   antigo, reset e limpeza; `proccheck` cobre os caminhos e a rejeicao de
   escrita em `/sys`. Nao houve alteracao de App API, syscalls, layouts
   binarios, `taskmanager.h`, `sysfs`, bootloader ou persistencia. A execucao de
-  `make q3check`, build completo e a confirmacao funcional no QEMU permanecem
-  pendentes antes de marcar PROC5 como concluido no roadmap.
+  `make q3check` e do build completo permanecem pendentes de confirmacao apos
+  a correcao dos logs dos helpers de escrita.
+
+- PROC5: validacao funcional confirmada pelo usuario no QEMU em 2026-08-30
+  (horario nao informado). `proccheck` terminou com `testes=51 aprovados=51`,
+  `regcheck full` retornou `RegCheck: OK` e `health check` nao apresentou
+  falha relacionada ao PROC5. Os avisos e erros exibidos durante o
+  `proccheck` pertencem as fixtures negativas de privilegio, valores invalidos,
+  caminhos ausentes e escritas rejeitadas. A confirmacao do `make q3check` e do
+  build completo apos a correcao dos logs ainda deve ser registrada antes de
+  marcar PROC5 como concluido no roadmap.
