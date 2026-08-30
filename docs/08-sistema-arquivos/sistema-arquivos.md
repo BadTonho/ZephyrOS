@@ -851,6 +851,28 @@ determinística: nós fixos, PIDs crescentes e identificadores estáveis.
 Escrita ou operação não suportada retorna `ERR_UNAVAILABLE`; caminhos e
 cursores inválidos retornam `ERR_INVALID`; falta de memória retorna `ERR_MEM`.
 
+## PROC1 - Procfs integrado ao VFS
+
+O VFS monta automaticamente o volume lógico `procfs` em `/proc` como uma
+montagem pinned, fixa, somente leitura e sem uso de Storage. O slot do devfs é
+preservado e `/sys` continua reservado para uma etapa posterior. A raiz lista
+`proc` junto de `mnt` e `dev`; `ls /proc` lista o registro fixo `uptime`.
+
+`src/fs/procfs.c` implementa `file_operations_t` para nós representados como
+`VFS_NODE_REGULAR`. A abertura de `/proc/uptime` executa o callback uma única
+vez, aloca um buffer de `PROCFS_MAX_SNAPSHOT_SIZE` (16 KiB), publica o tamanho
+gerado e associa o snapshot ao contexto privado do `file_t`. O callback usa
+retorno de erro e `uint32_t* out_len`; escrita, `ioctl` e `sync` retornam
+`ERR_UNAVAILABLE`.
+
+O snapshot não mantém ponteiros para timer, processos ou dispositivos. O
+`file_t.offset` é o cursor, `read()` aceita blocos parciais e retorna `OK` com
+zero bytes no EOF, e `lseek()` aceita `SET`, `CUR` e `END` dentro do intervalo
+capturado. Excesso retorna `ERR_OVERFLOW` sem truncamento; erro de callback ou
+alocação libera o buffer antes de retornar. O fechamento libera o snapshot e a
+referência da montagem. O autoteste `procfs_self_test()` é executado pelo
+`vfs_self_test()` e verifica que não sobram buffers ou referências.
+
 ## Pipes anonimos e redirecionamento VFS4
 
 `vfs_pipe()` cria dois descritores no processo atual: `fds[0]` somente para
