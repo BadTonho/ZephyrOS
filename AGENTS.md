@@ -4,6 +4,32 @@ Leia este arquivo no início de toda sessão. Siga estas regras SEMPRE.
 
 ---
 
+## Objetivo do projeto
+
+O objetivo do ZephyrOS é construir o melhor sistema possível, priorizando
+correção, segurança, robustez, manutenibilidade, desempenho e coerência
+arquitetural. Esta é uma orientação de produto e contexto para as decisões do
+agente, não uma regra que substitua o escopo ou a autorização de cada tarefa.
+
+## Regra #21: Recomendações pela melhor opção técnica
+
+Quando o usuário perguntar qual é a melhor opção, melhor arquitetura, melhor
+solução ou equivalente, o agente DEVE recomendar a opção tecnicamente superior
+para o objetivo informado, independentemente de ela se encaixar facilmente no
+estado atual do projeto. A recomendação deve considerar correção, segurança,
+robustez, manutenção, desempenho, compatibilidade e custo total de evolução.
+
+Se a melhor opção exigir migração, refatoração ou mudança de contrato, o agente
+deve informar o impacto, os riscos e o caminho de adoção. Uma alternativa mais
+fácil ou compatível pode ser apresentada separadamente, mas não deve substituir
+a recomendação principal apenas por ser mais conveniente para o código atual.
+
+Esta regra não autoriza alterações fora do escopo pedido: a recomendação e a
+implementação continuam limitadas à autorização do usuário e às demais regras
+deste arquivo.
+
+---
+
 ## Build e validação
 
 Os comandos abaixo são referências para execução pelo usuário. Eles são
