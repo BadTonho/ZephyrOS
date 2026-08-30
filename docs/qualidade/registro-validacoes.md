@@ -3207,3 +3207,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   testes ou QEMU. A confirmacao funcional pelo usuario e os gates
   `make q3check`, build completo e `make run` permanecem pendentes antes de
   marcar PWR3 como concluido no Roadmap 16.
+
+- PWR3: validacao funcional confirmada pelo usuario em
+  2026-08-30T18:27:18-03:00. Apos `make q3check`, build completo e `make run`,
+  o reboot retornou ao Shell; `power status`, `regcheck full` e `health check`
+  foram executados sem falha relacionada ao PWR3. Em execucao separada,
+  `poweroff` encerrou o QEMU, confirmando o commit ACPI S5. O resumo PWR3 foi
+  marcado como concluido no Roadmap 16. Nenhuma App API, syscall, layout
+  binario ou bootloader foi alterado.
