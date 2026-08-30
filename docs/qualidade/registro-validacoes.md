@@ -2989,3 +2989,12 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   alterados. O agente nao executou build, testes ou QEMU; a confirmacao de
   `make q3check`, build, QEMU e dos comandos `/proc` permanece pendente do
   usuario.
+
+- PROC1: validacao funcional confirmada pelo usuario. Confirmada em:
+  2026-08-30 (horario nao informado). `mount` exibiu `/proc -> procfs` em
+  modo `RO`, `ls /proc` listou `uptime` e duas execucoes de `cat /proc/uptime`
+  produziram snapshots ASCII com ticks diferentes. `regcheck full` retornou
+  `RegCheck: OK` e `health check` concluiu sem falha de VFS. A tentativa de
+  `mount | grep proc` foi recusada porque pipelines ainda nao sao suportados
+  pelo Shell; a montagem foi confirmada diretamente por `mount`. O PROC1 foi
+  marcado como concluido no roadmap; `/sys` permanece reservado ao PROC3.
