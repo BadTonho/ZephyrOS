@@ -1489,6 +1489,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
 
 - SYNC1: otimização de `regcheck full` adiada para a v1.0.0 por decisão do
   usuario.
+
   Registrada em: 2026-08-27 00:17 (America/Sao_Paulo).
   A lentidão, a atualização temporariamente interrompida do cursor e o
   overflow PS/2 sob estresse permanecem limitações conhecidas. O Roadmap 03
@@ -2950,3 +2951,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   executou build, testes ou QEMU; `make q3check`, `make clean && make`,
   `make run` e a matriz funcional NET4 permanecem pendentes da confirmacao do
   usuario.
+
+- NET4: correcao do autoteste da rota padrao. Corrigida em: 2026-08-30,
+  apos a validacao funcional do usuario. O fixture usava `10.0.0.0/8` como
+  se fosse rota default e consultava um destino fora dessa rede; agora usa
+  `route_set_default()` com `0.0.0.0/0`, mantendo a verificacao de
+  longest-prefix e duplicidade. A nova validacao funcional ainda deve ser
+  confirmada pelo usuario.

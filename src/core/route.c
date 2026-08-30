@@ -431,8 +431,7 @@ int route_self_test(route_self_test_result_t* out_result) {
     route_base_valid = 0U;
     out_result->lifecycle = route_validate_state() == OK;
     route_test_count(out_result, out_result->lifecycle);
-    result = route_add(0x0A000000U, 0xFF000000U, 0x0A000001U,
-                       "net-pci-00:03.0");
+    result = route_set_default(0x0A000001U, "net-pci-00:03.0");
     out_result->default_route = result == OK;
     result = route_add(0x0A010000U, 0xFFFF0000U, 0U,
                        "net-pci-00:03.0");
@@ -447,7 +446,7 @@ int route_self_test(route_self_test_result_t* out_result) {
         result == OK && match.via_gateway && match.next_hop == 0x0A000001U;
     route_test_count(out_result, out_result->default_route);
     out_result->duplicate_route = route_add(
-        0x0A000000U, 0xFF000000U, 0x0A000001U,
+        0x00000000U, 0x00000000U, 0x0A000001U,
         "net-pci-00:03.0") == ERR_STATE;
     route_test_count(out_result, out_result->duplicate_route);
     invalid_mask = route_add(
