@@ -3064,8 +3064,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   a procfs/sysfs. O PROC4 foi marcado como concluido no roadmap; `/proc/sys/`
   permanece reservado para etapa futura.
 
-- PROC5: contrato documental criado em 2026-08-30 (horario nao informado).
-  A etapa define a futura superficie controlada `/proc/sys`, inicialmente
+- PROC5: contrato documental inicial criado em 2026-08-30 (horario nao
+  informado). O registro inicial definiu a futura superficie controlada
+  `/proc/sys`, inicialmente
   para `kernel/console_log_level` e `kernel/buffer_log_level`, com valores
   `error`, `warn`, `info` e `debug`. O contrato fixa leitura por snapshot,
   escrita como transacao de valor unico, validacao ASCII, commit atomico,
@@ -3073,7 +3074,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   privilegio explicito. Scheduler, forwarding IPv4, energia, memoria e
   parametros de processos permanecem fora do primeiro conjunto. Nenhum
   codigo, header, Makefile, syscall, App API ou comportamento de escrita foi
-  alterado; a implementacao e a validacao funcional ficam pendentes.
+  alterado naquele registro; a implementacao foi registrada posteriormente
+  abaixo.
 
 - Infraestrutura do layout legado corrigida em: 2026-08-30 (horario nao
   informado). O build havia produzido `kernel.bin` com 1.806.190 bytes,
@@ -3083,5 +3085,21 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   compositor, empacotador e matrizes EP9.4 foram sincronizados. O `stage2`
   agora rejeita antecipadamente um kernel que atravesse a janela do loader,
   enquanto o compositor mantem a validacao de sobreposicao. `boot.asm`, App
-  API e syscalls permanecem inalterados. A repeticao de `make q3check`, do
-  build completo e a confirmacao funcional no QEMU permanecem pendentes.
+   API e syscalls permanecem inalterados. A repeticao de `make q3check`, do
+   build completo e a confirmacao funcional no QEMU permanecem pendentes.
+
+- PROC5: controles de runtime em `/proc/sys` implementados em 2026-08-30
+  (horario nao informado). O provider `procfs` agora publica `sys/kernel` e os
+  controles `console_log_level` e `buffer_log_level`, com snapshots imutaveis,
+  escrita validada por token, commit pelo backend de log, regra de dependencia
+  console/buffer e reset para `info/info`. O gate aceita somente processos
+  nativos/ring0; processos ring3, nos antigos de `/proc`, todo `/sys`,
+  diretorios, `ioctl`, `sync`, entradas invalidas e overflow sao rejeitados
+  conforme os codigos documentados.
+
+  `procfs_self_test()` cobre listagem, leitura, escrita, rollback, snapshot
+  antigo, reset e limpeza; `proccheck` cobre os caminhos e a rejeicao de
+  escrita em `/sys`. Nao houve alteracao de App API, syscalls, layouts
+  binarios, `taskmanager.h`, `sysfs`, bootloader ou persistencia. A execucao de
+  `make q3check`, build completo e a confirmacao funcional no QEMU permanecem
+  pendentes antes de marcar PROC5 como concluido no roadmap.

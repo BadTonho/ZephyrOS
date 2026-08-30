@@ -343,11 +343,12 @@ apresentou falha relacionada a procfs ou sysfs. O resumo PROC4 está concluído.
 
 ### Estado da etapa
 
-PROC5 está especificado somente em documentação. Nenhum nó novo, abertura com
-escrita, header, syscall, App API, alteração de processo, alteração de
-bootloader ou mudança no Makefile faz parte desta entrega documental. Até a
-implementação ser aprovada e concluída, `/proc/sys` não é publicado e os nós
-existentes de `/proc` e `/sys` continuam somente leitura.
+PROC5 está implementado no provider `procfs`; a confirmação funcional no QEMU
+continua pendente antes de marcar a etapa como concluída no resumo. `/proc/sys`
+e `/proc/sys/kernel` são diretórios determinísticos, e os dois controles de
+log são arquivos regulares com leitura pública e escrita restrita a processos
+nativos/ring0. Não foram alterados App API, syscalls, processos, bootloader ou
+persistência.
 
 ### Objetivo e limites
 
@@ -356,7 +357,7 @@ alterar políticas de runtime em RAM. Ele não será um mecanismo genérico para
 escrever qualquer endereço ou estrutura do kernel, nem uma forma de persistir
 configuração em disco.
 
-O primeiro conjunto planejado usará estado já existente do subsistema de log:
+O primeiro conjunto implementado usa estado já existente do subsistema de log:
 
 ```text
 /proc/sys
@@ -381,36 +382,33 @@ IPv4 continua fora do escopo enquanto não existir encaminhamento multi-NIC.
 
 ### Contrato de abertura e escrita
 
-- `/proc/sys` e `/proc/sys/kernel` serão diretórios públicos e somente leitura.
-- Os dois arquivos de controle serão regulares; a leitura continuará usando
+- `/proc/sys` e `/proc/sys/kernel` são diretórios públicos e somente leitura.
+- Os dois arquivos de controle são regulares; a leitura continua usando
   snapshots imutáveis de até 16 KiB, `file_t.offset`, EOF e `lseek` do PROC0.
-- A abertura com `VFS_MODE_READ` será pública. A abertura com escrita exigirá
-  o gate de privilégio definido pelo provider; chamadas sem autorização
-  retornarão `ERR_UNAVAILABLE`.
-- A carga de escrita será ASCII, sem `NUL`, `CR`, ANSI ou bytes fora de ASCII,
+- A abertura com `VFS_MODE_READ` é pública. A abertura com escrita exige o gate
+  de processo nativo/ring0; chamadas sem autorização retornam `ERR_UNAVAILABLE`.
+- A carga de escrita é ASCII, sem `NUL`, `CR`, ANSI ou bytes fora de ASCII,
   contendo exatamente um token permitido e um `LF` opcional. Espaços extras,
   múltiplos valores e tokens desconhecidos retornarão `ERR_INVALID`.
-- O limite de entrada será pequeno e fixo, suficiente para o maior token. Uma
-  carga acima desse limite retornará `ERR_OVERFLOW`; nenhuma entrada será
+- O limite de entrada é `PROCFS_SYS_CONTROL_MAX_INPUT` (16 bytes). Uma carga
+  acima desse limite retorna `ERR_OVERFLOW`; nenhuma entrada será
   truncada.
-- Cada escrita será validada completamente antes do commit. O valor anterior
-  permanecerá intacto em qualquer falha; sucesso consumirá toda a carga e
-  retornará seu tamanho em `bytes_written`.
-- A escrita não será persistida. Reinicialização ou reset explícito do provider
-  restaurará os valores padrão documentados para cada controle.
-- O snapshot de uma abertura não será atualizado por uma escrita concorrente:
-  novas aberturas observarão o novo valor, enquanto uma abertura já existente
-  continuará observando o conteúdo capturado na abertura.
+- Cada escrita é validada completamente antes do commit. O valor anterior
+  permanece intacto em qualquer falha; sucesso consome toda a carga e retorna
+  seu tamanho em `bytes_written`.
+- A escrita não é persistida. Reinicialização ou `procfs_reset_controls()` restaura
+  os valores padrão `info/info`.
+- O snapshot de uma abertura não é atualizado por uma escrita concorrente:
+  novas aberturas observam o novo valor, enquanto uma abertura já existente
+  continua observando o conteúdo capturado na abertura.
 
 ### Concorrência, privilégio e erros
 
-O provider deverá copiar e validar a entrada fora da seção crítica e proteger
-somente o commit do valor e a leitura do estado compartilhado. Nenhum lock do
-VFS será mantido durante callbacks ou logs. A política de privilégio deverá
-ser explícita antes do código: como o sistema ainda não publica UID/GID, o
-acesso de escrita não poderá ser inferido apenas pelo caminho; a implementação
-deverá usar a identidade de execução já disponível ou manter a escrita
-indisponível até existir um gate verificável.
+O provider copia e valida a entrada fora da seção crítica e protege somente o
+commit do valor e a leitura do estado compartilhado. Nenhum lock do VFS é
+mantido durante callbacks ou logs. Como o sistema ainda não publica UID/GID, o
+gate usa `process_get_current()` e `process_is_user()`: processos nativos/ring0
+podem escrever e processos ring3 recebem `ERR_UNAVAILABLE`.
 
 O contrato de retorno será:
 
@@ -429,19 +427,19 @@ Toda falha observável será registrada pela camada com contexto suficiente,
 sem duplicar logs em VFS, provider e Shell. O valor anterior será restaurado
 ou preservado em qualquer caminho de erro.
 
-### Implementação prevista
+### Implementação realizada
 
-- [ ] congelar o gate de privilégio e os valores padrão em contrato próprio;
-- [ ] adicionar a tabela estática de controles, sem nomes dinâmicos;
-- [ ] implementar leitura, validação, commit atômico, reset e geração do
+- [x] congelar o gate de privilégio e os valores padrão em contrato próprio;
+- [x] adicionar a tabela estática de controles, sem nomes dinâmicos;
+- [x] implementar leitura, validação, commit atômico, reset e geração do
   registry sem reter ponteiros para o estado do kernel;
-- [ ] preservar a separação entre `/proc` e `/sys`; nenhum atributo de energia
+- [x] preservar a separação entre `/proc` e `/sys`; nenhum atributo de energia
   ou hardware será tornado gravável por PROC5;
-- [ ] integrar abertura, `read`, `write`, `close`, `lseek`, `ls` e `cat` pelas
+- [x] integrar abertura, `read`, `write`, `close`, `lseek`, `ls` e `cat` pelas
   operações VFS existentes, sem syscall nova;
-- [ ] estender `proccheck` ou o autoteste VFS com sucesso, rejeições, rollback,
+- [x] estender `proccheck` ou o autoteste VFS com sucesso, rejeições, rollback,
   concorrência, snapshot antigo e ausência de recursos residuais;
-- [ ] documentar a validação funcional depois que o código for implementado.
+- [x] documentar a implementação e a validação funcional pendente.
 
 ### Critério de saída
 

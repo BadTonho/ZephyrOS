@@ -5,6 +5,7 @@
 #include "fs/vfs.h"
 
 #define PROCFS_MAX_SNAPSHOT_SIZE (16U * 1024U)
+#define PROCFS_SYS_CONTROL_MAX_INPUT 16U
 
 typedef int (*procfs_read_callback_t)(char* buffer, uint32_t capacity,
                                       uint32_t* out_len, void* data);
@@ -16,7 +17,10 @@ typedef enum {
     PROCFS_NODE_PROCESS_DIRECTORY,
     PROCFS_NODE_PROCESS_STATUS,
     PROCFS_NODE_PROCESS_CMDLINE,
-    PROCFS_NODE_PROCESS_MAPS
+    PROCFS_NODE_PROCESS_MAPS,
+    PROCFS_NODE_SYS_DIRECTORY,
+    PROCFS_NODE_SYS_KERNEL_DIRECTORY,
+    PROCFS_NODE_SYS_CONTROL
 } procfs_node_kind_t;
 
 typedef struct {
@@ -37,6 +41,7 @@ typedef struct {
     procfs_node_kind_t node_kind;
     uint32_t process_pid;
     uint32_t process_generation;
+    uint32_t control_index;
 } procfs_file_context_t;
 
 typedef struct {
@@ -56,6 +61,12 @@ typedef struct {
     uint8_t generation;
     uint32_t passed;
     uint32_t total;
+    uint8_t control_nodes;
+    uint8_t control_read;
+    uint8_t control_write;
+    uint8_t control_rollback;
+    uint8_t control_privilege;
+    uint8_t control_reset;
 } procfs_test_result_t;
 
 int procfs_init(void);
@@ -68,6 +79,7 @@ int procfs_list(vfs_dir_entry_t* entries, uint32_t capacity,
                 uint32_t* out_count);
 int procfs_list_path(const char* canonical_path, vfs_dir_entry_t* entries,
                      uint32_t capacity, uint32_t* out_count);
+int procfs_reset_controls(void);
 int procfs_validate_state(void);
 int procfs_self_test(procfs_test_result_t* result);
 
