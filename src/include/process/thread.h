@@ -33,6 +33,7 @@ typedef struct {
     wait_reason_t wait_reason;
     uint8_t wait_deadline_active;
     uint8_t wait_active;
+    uint32_t owner_pid;
 } thread_t;
 
 void thread_init(void);

@@ -151,6 +151,10 @@ O contrato de `src/include/process/thread.h` reserva quatro paginas (16 KiB)
 para cada stack de `thread_create()`. A capacidade cobre workers cooperativos
 que percorrem VFS, Storage e FAT/LFN, inclusive o pipeline do Shell, sem
 alterar a ABI dos processos ou das aplicações ring 3.
+Threads criadas em contexto de processo registram tambem o PID proprietario;
+operacoes VFS executadas pelo worker continuam usando a tabela de descritores
+desse processo quando o scheduler de processos estiver executando outro
+contexto.
 
 Os contratos de `src/include/core/memory.h` e `src/include/memory/paging.h`
 incluem, desde a K3, estatisticas seguras do heap/PMM e do ciclo de vida de

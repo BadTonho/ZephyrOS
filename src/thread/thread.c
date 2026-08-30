@@ -1,4 +1,5 @@
 #include "process/thread.h"
+#include "process/process.h"
 #include "core/memory.h"
 #include "core/log.h"
 #include "core/errors.h"
@@ -215,6 +216,7 @@ int thread_is_ready(void) {
 
 thread_t* thread_create(const char* name, void (*entry)(void)) {
     thread_t* thread = 0;
+    process_t* owner;
     int name_index = 0;
 
     if (!thread_initialized) {
@@ -240,6 +242,8 @@ thread_t* thread_create(const char* name, void (*entry)(void)) {
     }
 
     kmemset(thread, 0, sizeof(thread_t));
+    owner = process_get_current();
+    thread->owner_pid = owner ? owner->pid : 0U;
     while (name[name_index] && name_index < THREAD_NAME_LENGTH - 1) {
         thread->name[name_index] = name[name_index];
         name_index++;

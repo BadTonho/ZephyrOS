@@ -12,6 +12,7 @@
 #include "core/wait.h"
 #include "memory/slab.h"
 #include "process/process.h"
+#include "process/thread.h"
 
 #define VFS_TEST_DATA_SIZE 8U
 #define VFS_FILE_ACTIVE 1U
@@ -234,9 +235,18 @@ static int vfs_initialize_stdio_nodes(void) {
 
 static int vfs_get_current_table(vfs_fd_table_t** table_out) {
     process_t* current;
+    thread_t* current_thread = thread_get_current();
 
     if (!table_out) return ERR_NULL;
-    current = process_get_current();
+    if (current_thread && current_thread->owner_pid) {
+        current = process_get_by_pid(current_thread->owner_pid);
+        if (!current) {
+            LOG_ERROR("FS", "Processo proprietario da thread nao encontrado");
+            return ERR_NOT_FOUND;
+        }
+    } else {
+        current = process_get_current();
+    }
     if (!current) {
         LOG_ERROR("FS", "Operacao VFS sem processo atual");
         return ERR_STATE;

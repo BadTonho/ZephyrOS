@@ -969,7 +969,7 @@ $(FS_OBJ): $(FS_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(VFS_OBJ): $(VFS_C) src/include/fs/vfs.h src/include/core/poll.h src/include/fs/vfs_internal.h src/include/fs/devfs.h src/include/fs/storage.h src/include/process/process.h src/include/core/app_api.h src/include/core/wait.h src/include/memory/slab.h
+$(VFS_OBJ): $(VFS_C) src/include/fs/vfs.h src/include/core/poll.h src/include/fs/vfs_internal.h src/include/fs/devfs.h src/include/fs/storage.h src/include/process/process.h src/include/process/thread.h src/include/core/app_api.h src/include/core/wait.h src/include/memory/slab.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1005,7 +1005,7 @@ $(BMP_OBJ): $(BMP_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(PROCESS_OBJ): $(PROCESS_C) src/include/process/process.h src/include/memory/slab.h src/include/memory/vma.h
+$(PROCESS_OBJ): $(PROCESS_C) src/include/process/process.h src/include/process/thread.h src/include/memory/slab.h src/include/memory/vma.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1017,7 +1017,7 @@ $(IPC_OBJ): $(IPC_C) src/include/process/process.h src/include/core/poll.h src/i
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(THREAD_OBJ): $(THREAD_C) src/include/process/thread.h src/include/memory/slab.h
+$(THREAD_OBJ): $(THREAD_C) src/include/process/thread.h src/include/process/process.h src/include/memory/slab.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
