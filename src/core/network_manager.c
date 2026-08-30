@@ -9,6 +9,7 @@
 #include "core/ipv4.h"
 #include "core/log.h"
 #include "core/net_socket.h"
+#include "core/route.h"
 #include "core/recovery.h"
 #include "core/socket.h"
 #include "core/string.h"
@@ -895,6 +896,12 @@ static void network_sync_recovery(int result) {
         state = RECOVERY_STATE_DEGRADED;
         error = network_status.last_error;
         message = "Protocolo IPv4 indisponivel";
+    } else if (network_status.active_count &&
+               network_status.ipv4_available &&
+               route_validate_state() != OK) {
+        state = RECOVERY_STATE_DEGRADED;
+        error = ERR_STATE;
+        message = "Tabela de rotas invalida";
     } else if (network_status.active_count &&
                !network_status.icmp_available) {
         state = RECOVERY_STATE_DEGRADED;

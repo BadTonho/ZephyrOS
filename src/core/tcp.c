@@ -1277,7 +1277,7 @@ int tcp_validate_state(void) {
             !connection->local_port || !connection->remote_port ||
             !ipv4_address_is_unicast(connection->remote_ip) ||
             connection->state == TCP_STATE_CLOSED ||
-            connection->state > TCP_STATE_FAILED ||
+            connection->state > TCP_STATE_LISTEN ||
             connection->pending_length > TCP_LOCAL_MSS ||
             connection->local_window >
                 TCP_DEFAULT_RECEIVE_WINDOW ||
@@ -1321,5 +1321,6 @@ const char* tcp_state_name(tcp_state_t state) {
     if (state == TCP_STATE_LAST_ACK) return "LAST_ACK";
     if (state == TCP_STATE_TIME_WAIT) return "TIME_WAIT";
     if (state == TCP_STATE_FAILED) return "FAILED";
+    if (state == TCP_STATE_LISTEN) return "LISTEN";
     return "DESCONHECIDO";
 }

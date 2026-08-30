@@ -205,6 +205,9 @@ ARP_OBJ = build/arp.o
 IPV4_C = src/core/ipv4.c
 IPV4_OBJ = build/ipv4.o
 
+ROUTE_C = src/core/route.c
+ROUTE_OBJ = build/route.o
+
 ICMP_C = src/core/icmp.c
 ICMP_OBJ = build/icmp.o
 
@@ -567,6 +570,8 @@ OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(INPUT_OBJ) $(IRQ_DEF
        $(MEMORY_OBJ) $(PAGING_OBJ) $(VMA_OBJ) $(COMPRESS_OBJ) \
        $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(VFS_OBJ) $(VFS_PATH_OBJ) $(DEVFS_OBJ) $(BLOCK_OBJ) $(BLOCK_CACHE_OBJ) $(STORAGE_OBJ) $(FILE_INDEX_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(SIGNAL_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(UPDATER_OBJ) $(APPSTORE_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ) $(APP_REMOTE_OBJ) $(DEVICE_MANAGER_OBJ) $(USB_MANAGER_OBJ) $(NETWORK_MANAGER_OBJ) $(WIFI_MANAGER_OBJ) $(POWER_OBJ) $(NET_BUFFER_OBJ) $(SK_BUFF_OBJ) $(SOCKET_OBJ) $(ETHERNET_OBJ) $(ARP_OBJ) $(IPV4_OBJ) $(ICMP_OBJ) $(UDP_OBJ) $(DHCP_OBJ) $(DNS_OBJ) $(TCP_OBJ) $(NET_SOCKET_OBJ) $(HTTP_OBJ) $(APP_CATALOG_OBJ) $(DISPLAY_OBJ) $(SHELL_INPUT_OBJ) $(SHELL_DISPATCH_OBJ) $(SHELL_COMMAND_UTILS_OBJ) $(SHELL_PIPELINE_OBJ) $(SHELL_COMMANDS_VFS_OBJ) $(SHELL_COMMANDS_CORE_OBJ) $(SHELL_COMMANDS_STORAGE_OBJ) $(SHELL_COMMANDS_DIAGNOSTICS_OBJ) $(SHELL_COMMANDS_NETWORK_OBJ) $(SHELL_COMMANDS_WIFI_OBJ) $(SHELL_CHECKS_OBJ) $(SHELL_COMMANDS_PACKAGES_OBJ) $(SHELL_COMMANDS_APPS_OBJ) $(SHELL_HOSTED_OBJ) $(SHELL_JOB_OBJ) $(RTC_OBJ) $(CLOCK_OBJ) $(TLS_OBJ) $(TLS_CLIENT_OBJ) $(SLAB_OBJ)
 
+OBJS += $(ROUTE_OBJ)
+
 # Targets
 all: $(OS_IMG)
 
@@ -761,7 +766,7 @@ $(RTL8811CU_OBJ): $(RTL8811CU_C) src/include/drivers/rtl8811cu.h src/include/cor
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(NETWORK_MANAGER_OBJ): $(NETWORK_MANAGER_C) src/include/core/network_manager.h src/include/core/usb_manager.h src/include/drivers/rtl8811cu.h src/include/core/socket.h
+$(NETWORK_MANAGER_OBJ): $(NETWORK_MANAGER_C) src/include/core/network_manager.h src/include/core/usb_manager.h src/include/drivers/rtl8811cu.h src/include/core/socket.h src/include/core/route.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -789,7 +794,11 @@ $(ARP_OBJ): $(ARP_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(IPV4_OBJ): $(IPV4_C)
+$(IPV4_OBJ): $(IPV4_C) src/include/core/route.h
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(ROUTE_OBJ): $(ROUTE_C) src/include/core/route.h src/include/core/ipv4.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -809,7 +818,7 @@ $(DNS_OBJ): $(DNS_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(TCP_OBJ): $(TCP_C)
+$(TCP_OBJ): $(TCP_C) src/include/core/tcp.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1057,7 +1066,7 @@ $(SHELL_COMMANDS_DIAGNOSTICS_OBJ): $(SHELL_COMMANDS_DIAGNOSTICS_C) src/include/a
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(SHELL_COMMANDS_NETWORK_OBJ): $(SHELL_COMMANDS_NETWORK_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/poll.h src/include/core/wait.h src/include/fs/vfs.h src/include/process/process.h src/include/process/thread.h
+$(SHELL_COMMANDS_NETWORK_OBJ): $(SHELL_COMMANDS_NETWORK_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/poll.h src/include/core/route.h src/include/core/wait.h src/include/fs/vfs.h src/include/process/process.h src/include/process/thread.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

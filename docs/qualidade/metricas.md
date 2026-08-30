@@ -403,3 +403,18 @@ O criterio de limpeza e nao haver `wait_info_t` com `channel_owner` igual a
 `VFS-poll` depois de cada retorno, sem ponteiro de `file_t` retido e sem lock
 de VFS, pipe ou socket durante o bloqueio. A validacao funcional e os valores
 observados permanecem pendentes ate a execucao do usuario no QEMU.
+
+## NET4 - Rotas e monitoramento de rede
+
+`route_status_t` mede `entry_count`, capacidade fixa, lookups, matches, misses,
+adicoes, exclusoes, substituicoes e `last_error`. O autoteste `route check`
+deve restaurar a tabela e as metricas observaveis antes de retornar. A
+selecao e verificada por um destino coberto por rota direta, uma rota mais
+especifica e a rota default; a unidade do prefixo e bits de mascara IPv4.
+
+`netstat` consulta os snapshots existentes de `network_manager`: por interface,
+`rx_packets`, `tx_packets`, `rx_errors`, `tx_errors`, `rx_dropped` e
+`rx_queue_depth`. A verificacao deve comparar esses campos com o diagnostico
+Ethernet da mesma interface, sem somar novamente a visao TCP ou os sockets
+AF_UNIX. O encaminhamento multi-NIC nao possui metrica nesta etapa porque
+permanece explicitamente fora da implementacao.
