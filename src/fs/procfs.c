@@ -12,9 +12,11 @@
 #include "process/process.h"
 
 #define PROCFS_GLOBAL_COUNT 5U
+#define PROCFS_SYS_CONTROL_COUNT 2U
 #define PROCFS_PID_TEXT_SIZE 11U
 #define PROCFS_CPU_VENDOR_SIZE 13U
 #define PROCFS_CPU_BRAND_SIZE 49U
+#define PROCFS_DEFAULT_LOG_LEVEL LOG_LEVEL_INFO
 
 typedef enum {
     PROCFS_GLOBAL_UPTIME = 0,
@@ -24,6 +26,11 @@ typedef enum {
     PROCFS_GLOBAL_CMDLINE
 } procfs_global_kind_t;
 
+typedef enum {
+    PROCFS_CONTROL_CONSOLE_LOG_LEVEL = 0,
+    PROCFS_CONTROL_BUFFER_LOG_LEVEL
+} procfs_control_kind_t;
+
 typedef struct {
     proc_entry_t entry;
     uint32_t index;
@@ -32,6 +39,7 @@ typedef struct {
 typedef struct {
     procfs_node_kind_t kind;
     uint32_t entry_index;
+    uint32_t control_index;
     uint32_t pid;
 } procfs_node_ref_t;
 
@@ -52,12 +60,18 @@ static int procfs_render_snapshot(const proc_entry_t* entry,
                                   procfs_file_context_t* context);
 static int procfs_render_process(const procfs_node_ref_t* node,
                                  procfs_file_context_t* context);
+static int procfs_control_read(char* buffer, uint32_t capacity,
+                               uint32_t* out_len, void* data);
+static int procfs_control_write(const char* buffer, uint32_t len,
+                                void* data);
 
 static uint32_t procfs_global_uptime = PROCFS_GLOBAL_UPTIME;
 static uint32_t procfs_global_meminfo = PROCFS_GLOBAL_MEMINFO;
 static uint32_t procfs_global_cpuinfo = PROCFS_GLOBAL_CPUINFO;
 static uint32_t procfs_global_version = PROCFS_GLOBAL_VERSION;
 static uint32_t procfs_global_cmdline = PROCFS_GLOBAL_CMDLINE;
+static uint32_t procfs_control_console = PROCFS_CONTROL_CONSOLE_LOG_LEVEL;
+static uint32_t procfs_control_buffer = PROCFS_CONTROL_BUFFER_LOG_LEVEL;
 
 static const proc_entry_t procfs_entries[] = {
     {"uptime", VFS_MODE_READ, procfs_global_read, 0,
@@ -70,6 +84,13 @@ static const proc_entry_t procfs_entries[] = {
      (void*)&procfs_global_version},
     {"cmdline", VFS_MODE_READ, procfs_global_read, 0,
      (void*)&procfs_global_cmdline}
+};
+
+static const proc_entry_t procfs_control_entries[] = {
+    {"console_log_level", VFS_MODE_READ_WRITE, procfs_control_read,
+     procfs_control_write, (void*)&procfs_control_console},
+    {"buffer_log_level", VFS_MODE_READ_WRITE, procfs_control_read,
+     procfs_control_write, (void*)&procfs_control_buffer}
 };
 
 static const file_operations_t procfs_operations = {
@@ -471,6 +492,130 @@ static int procfs_global_read(char* buffer, uint32_t capacity,
     return ERR_INVALID;
 }
 
+static const char* procfs_log_level_name(log_level_t level) {
+    static const char* const names[] = {
+        "error", "warn", "info", "debug"
+    };
+
+    if ((uint32_t)level >= sizeof(names) / sizeof(names[0])) return "unknown";
+    return names[level];
+}
+
+static int procfs_control_get(uint32_t control, log_level_t* level) {
+    if (!level || control >= PROCFS_SYS_CONTROL_COUNT) {
+        LOG_ERROR("PROCFS", "Controle de log invalido na leitura");
+        return ERR_INVALID;
+    }
+    if (control == PROCFS_CONTROL_CONSOLE_LOG_LEVEL) {
+        *level = log_get_console_level();
+    } else {
+        *level = log_get_buffer_level();
+    }
+    if ((uint32_t)*level > (uint32_t)LOG_LEVEL_DEBUG) {
+        LOG_ERROR("PROCFS", "Nivel de log inconsistente no controle");
+        return ERR_STATE;
+    }
+    return OK;
+}
+
+static int procfs_control_set(uint32_t control, log_level_t level) {
+    if (control >= PROCFS_SYS_CONTROL_COUNT) {
+        LOG_ERROR("PROCFS", "Controle de log invalido na escrita");
+        return ERR_INVALID;
+    }
+    if (control == PROCFS_CONTROL_CONSOLE_LOG_LEVEL) {
+        return log_set_console_level(level);
+    }
+    return log_set_buffer_level(level);
+}
+
+static int procfs_control_parse_level(const char* buffer, uint32_t len,
+                                      log_level_t* level) {
+    static const char* const names[] = {
+        "error", "warn", "info", "debug"
+    };
+    char token[PROCFS_SYS_CONTROL_MAX_INPUT];
+    uint32_t token_length = 0U;
+
+    if (!level || (len && !buffer)) {
+        LOG_ERROR("PROCFS", "Entrada nula no controle de log");
+        return ERR_NULL;
+    }
+    if (!len) {
+        LOG_WARN("PROCFS", "Valor vazio no controle de log");
+        return ERR_INVALID;
+    }
+    if (len > PROCFS_SYS_CONTROL_MAX_INPUT) {
+        LOG_WARN("PROCFS", "Valor do controle de log excedeu o limite");
+        return ERR_OVERFLOW;
+    }
+    for (uint32_t index = 0U; index < len; index++) {
+        uint8_t value = (uint8_t)buffer[index];
+
+        if (value == '\n') {
+            if (index + 1U != len) {
+                LOG_WARN("PROCFS", "Valor do controle possui linhas extras");
+                return ERR_INVALID;
+            }
+            continue;
+        }
+        if (value == '\r' || value == 0x1BU || value < 0x20U ||
+            value > 0x7FU || token_length + 1U >= sizeof(token)) {
+            LOG_WARN("PROCFS", "Valor do controle de log invalido");
+            return ERR_INVALID;
+        }
+        token[token_length++] = (char)value;
+    }
+    if (!token_length) {
+        LOG_WARN("PROCFS", "Token vazio no controle de log");
+        return ERR_INVALID;
+    }
+    token[token_length] = '\0';
+    for (uint32_t index = 0U; index < sizeof(names) / sizeof(names[0]);
+         index++) {
+        if (kstrcmp(token, names[index]) == 0) {
+            *level = (log_level_t)index;
+            return OK;
+        }
+    }
+    LOG_WARN("PROCFS", "Token desconhecido no controle de log");
+    return ERR_INVALID;
+}
+
+static int procfs_control_read(char* buffer, uint32_t capacity,
+                               uint32_t* out_len, void* data) {
+    uint32_t control;
+    log_level_t level;
+    int result;
+
+    if (!data) {
+        LOG_ERROR("PROCFS", "Contexto ausente no callback de controle");
+        return ERR_NULL;
+    }
+    control = *(uint32_t*)data;
+    result = procfs_control_get(control, &level);
+    if (result != OK) return result;
+    return procfs_append_line_text(buffer, capacity, out_len,
+                                   procfs_control_entries[control].name,
+                                   procfs_log_level_name(level));
+}
+
+static int procfs_control_write(const char* buffer, uint32_t len,
+                                void* data) {
+    uint32_t control;
+    log_level_t level;
+    int result;
+
+    if (!data) {
+        LOG_ERROR("PROCFS", "Contexto ausente na escrita de controle");
+        return ERR_NULL;
+    }
+    control = *(uint32_t*)data;
+    result = procfs_control_parse_level(buffer, len, &level);
+    if (result != OK) return result;
+    return procfs_control_set(control, level);
+}
+
 static int procfs_parse_pid(const char* text, uint32_t length,
                             uint32_t* pid) {
     uint32_t value = 0U;
@@ -498,6 +643,7 @@ static int procfs_parse_path(const char* canonical_path,
                              procfs_node_ref_t* node) {
     const char* suffix;
     const char* separator = 0;
+    uint32_t canonical_length;
     uint32_t pid_length;
     process_snapshot_t process;
     int result;
@@ -507,7 +653,8 @@ static int procfs_parse_path(const char* canonical_path,
         return ERR_NULL;
     }
     kmemset(node, 0, sizeof(*node));
-    if (kstrlen(canonical_path) < 6U || canonical_path[0] != '/' ||
+    canonical_length = kstrlen(canonical_path);
+    if (canonical_length < 6U || canonical_path[0] != '/' ||
         canonical_path[1] != 'p' || canonical_path[2] != 'r' ||
         canonical_path[3] != 'o' || canonical_path[4] != 'c' ||
         canonical_path[5] != '/') {
@@ -540,6 +687,32 @@ static int procfs_parse_path(const char* canonical_path,
         node->kind = PROCFS_NODE_GLOBAL;
         node->entry_index = PROCFS_GLOBAL_CMDLINE;
         return OK;
+    }
+    if (kstrcmp(canonical_path, "/proc/sys") == 0) {
+        node->kind = PROCFS_NODE_SYS_DIRECTORY;
+        return OK;
+    }
+    if (kstrcmp(canonical_path, "/proc/sys/kernel") == 0) {
+        node->kind = PROCFS_NODE_SYS_KERNEL_DIRECTORY;
+        return OK;
+    }
+    if (kstrcmp(canonical_path, "/proc/sys/kernel/console_log_level") == 0) {
+        node->kind = PROCFS_NODE_SYS_CONTROL;
+        node->control_index = PROCFS_CONTROL_CONSOLE_LOG_LEVEL;
+        return OK;
+    }
+    if (kstrcmp(canonical_path, "/proc/sys/kernel/buffer_log_level") == 0) {
+        node->kind = PROCFS_NODE_SYS_CONTROL;
+        node->control_index = PROCFS_CONTROL_BUFFER_LOG_LEVEL;
+        return OK;
+    }
+    if (canonical_length >= 9U && canonical_path[0] == '/' &&
+        canonical_path[1] == 'p' && canonical_path[2] == 'r' &&
+        canonical_path[3] == 'o' && canonical_path[4] == 'c' &&
+        canonical_path[5] == '/' && canonical_path[6] == 's' &&
+        canonical_path[7] == 'y' && canonical_path[8] == 's' &&
+        (canonical_length == 9U || canonical_path[9] == '/')) {
+        return canonical_length == 10U ? ERR_INVALID : ERR_NOT_FOUND;
     }
     for (uint32_t index = 0U; suffix[index]; index++) {
         if (suffix[index] == '/') {
@@ -600,12 +773,21 @@ int procfs_init(void) {
     procfs_active_snapshots = 0U;
     procfs_ready = 1U;
     spinlock_release(&procfs_lock);
-    LOG_INFO("PROCFS", "Procfs inicializado em modo somente leitura");
+    LOG_INFO("PROCFS", "Procfs inicializado com controles de runtime");
     return OK;
 }
 
 int procfs_is_ready(void) {
     return procfs_ready;
+}
+
+int procfs_reset_controls(void) {
+    if (!procfs_ready) {
+        LOG_ERROR("PROCFS", "Reset procfs antes da inicializacao");
+        return ERR_STATE;
+    }
+    log_set_level(PROCFS_DEFAULT_LOG_LEVEL);
+    return OK;
 }
 
 int procfs_lookup(const char* canonical_path, vfs_lookup_result_t* result) {
@@ -632,10 +814,12 @@ int procfs_lookup(const char* canonical_path, vfs_lookup_result_t* result) {
     if (status != OK) return status;
     result->size = 0U;
     result->attributes = 0U;
-    result->read_only = 1U;
+    result->read_only = node.kind == PROCFS_NODE_SYS_CONTROL ? 0U : 1U;
     procfs_copy_text(result->relative_path, VFS_MAX_PATH,
                      canonical_path + 6U);
-    result->type = node.kind == PROCFS_NODE_PROCESS_DIRECTORY ?
+    result->type = node.kind == PROCFS_NODE_PROCESS_DIRECTORY ||
+                   node.kind == PROCFS_NODE_SYS_DIRECTORY ||
+                   node.kind == PROCFS_NODE_SYS_KERNEL_DIRECTORY ?
                    VFS_NODE_DIRECTORY : VFS_NODE_REGULAR;
     return OK;
 }
@@ -805,6 +989,20 @@ static int procfs_render_process(const procfs_node_ref_t* node,
     return ERR_INVALID;
 }
 
+static int procfs_write_allowed(void) {
+    process_t* process = process_get_current();
+
+    if (!process) {
+        LOG_ERROR("PROCFS", "Processo atual ausente na escrita procfs");
+        return ERR_STATE;
+    }
+    if (process_is_user(process)) {
+        LOG_WARN("PROCFS", "Escrita procfs recusada para processo ring3");
+        return ERR_UNAVAILABLE;
+    }
+    return OK;
+}
+
 int procfs_open_file(const vfs_lookup_result_t* lookup, uint32_t mode,
                      vnode_t* vnode, file_t* file,
                      procfs_file_context_t* context) {
@@ -820,22 +1018,45 @@ int procfs_open_file(const vfs_lookup_result_t* lookup, uint32_t mode,
         LOG_ERROR("PROCFS", "Montagem invalida na abertura procfs");
         return ERR_INVALID;
     }
-    if (mode != VFS_MODE_READ) {
+    result = procfs_parse_path(lookup->canonical_path, &node);
+    if (result != OK) return result;
+    if (node.kind == PROCFS_NODE_PROCESS_DIRECTORY ||
+        node.kind == PROCFS_NODE_SYS_DIRECTORY ||
+        node.kind == PROCFS_NODE_SYS_KERNEL_DIRECTORY) {
+        return ERR_INVALID;
+    }
+    if (node.kind != PROCFS_NODE_SYS_CONTROL && mode != VFS_MODE_READ) {
         LOG_WARN("PROCFS", "Abertura procfs com escrita recusada");
         return ERR_UNAVAILABLE;
     }
-    result = procfs_parse_path(lookup->canonical_path, &node);
-    if (result != OK || node.kind == PROCFS_NODE_PROCESS_DIRECTORY) {
-        return result == OK ? ERR_INVALID : result;
+    if (node.kind == PROCFS_NODE_SYS_CONTROL && (mode & VFS_MODE_WRITE)) {
+        result = procfs_write_allowed();
+        if (result != OK) return result;
+    }
+    if (node.kind != PROCFS_NODE_GLOBAL &&
+        node.kind != PROCFS_NODE_SYS_CONTROL &&
+        node.kind != PROCFS_NODE_PROCESS_STATUS &&
+        node.kind != PROCFS_NODE_PROCESS_CMDLINE &&
+        node.kind != PROCFS_NODE_PROCESS_MAPS) {
+        LOG_ERROR("PROCFS", "Tipo de node invalido na abertura procfs");
+        return ERR_INVALID;
     }
     kmemset(context, 0, sizeof(*context));
     context->node_kind = node.kind;
     context->process_pid = node.pid;
+    context->control_index = node.control_index;
     if (node.kind == PROCFS_NODE_GLOBAL) {
         result = procfs_entry_find(lookup->canonical_path, &entry);
         if (result == OK) {
             result = procfs_render_snapshot(&entry.entry, context);
         }
+    } else if (node.kind == PROCFS_NODE_SYS_CONTROL) {
+        if (node.control_index >= PROCFS_SYS_CONTROL_COUNT) {
+            LOG_ERROR("PROCFS", "Controle procfs fora da tabela");
+            return ERR_STATE;
+        }
+        result = procfs_render_snapshot(
+            &procfs_control_entries[node.control_index], context);
     } else {
         context->snapshot = (uint8_t*)kmalloc(PROCFS_MAX_SNAPSHOT_SIZE);
         if (!context->snapshot) {
@@ -928,7 +1149,7 @@ int procfs_list_path(const char* canonical_path, vfs_dir_entry_t* entries,
         return ERR_STATE;
     }
     if (kstrcmp(canonical_path, "/proc") == 0) {
-        if (capacity < PROCFS_GLOBAL_COUNT) return ERR_OVERFLOW;
+        if (capacity < PROCFS_GLOBAL_COUNT + 1U) return ERR_OVERFLOW;
         snapshots = (process_snapshot_t*)kmalloc(
             MAX_PROCESSES * sizeof(process_snapshot_t));
         if (!snapshots) {
@@ -941,7 +1162,7 @@ int procfs_list_path(const char* canonical_path, vfs_dir_entry_t* entries,
             kfree(snapshots);
             return result;
         }
-        if (PROCFS_GLOBAL_COUNT + process_total > capacity) {
+        if (PROCFS_GLOBAL_COUNT + 1U + process_total > capacity) {
             kfree(snapshots);
             LOG_WARN("PROCFS", "Listagem procfs excedeu capacidade");
             return ERR_OVERFLOW;
@@ -953,6 +1174,11 @@ int procfs_list_path(const char* canonical_path, vfs_dir_entry_t* entries,
             entries[count].type = VFS_NODE_REGULAR;
             count++;
         }
+        kmemset(&entries[count], 0, sizeof(entries[count]));
+        procfs_copy_text(entries[count].name, sizeof(entries[count].name),
+                         "sys");
+        entries[count].type = VFS_NODE_DIRECTORY;
+        count++;
         for (uint32_t index = 0U; index < process_total; index++) {
             kmemset(&entries[count], 0, sizeof(entries[count]));
             result = procfs_pid_name(entries[count].name,
@@ -965,6 +1191,25 @@ int procfs_list_path(const char* canonical_path, vfs_dir_entry_t* entries,
         kfree(snapshots);
         if (result != OK) return result;
         *out_count = count;
+        return OK;
+    }
+    if (kstrcmp(canonical_path, "/proc/sys") == 0) {
+        if (capacity < 1U) return ERR_OVERFLOW;
+        kmemset(&entries[0], 0, sizeof(entries[0]));
+        procfs_copy_text(entries[0].name, sizeof(entries[0].name), "kernel");
+        entries[0].type = VFS_NODE_DIRECTORY;
+        *out_count = 1U;
+        return OK;
+    }
+    if (kstrcmp(canonical_path, "/proc/sys/kernel") == 0) {
+        if (capacity < PROCFS_SYS_CONTROL_COUNT) return ERR_OVERFLOW;
+        for (uint32_t index = 0U; index < PROCFS_SYS_CONTROL_COUNT; index++) {
+            kmemset(&entries[index], 0, sizeof(entries[index]));
+            procfs_copy_text(entries[index].name, sizeof(entries[index].name),
+                             procfs_control_entries[index].name);
+            entries[index].type = VFS_NODE_REGULAR;
+        }
+        *out_count = PROCFS_SYS_CONTROL_COUNT;
         return OK;
     }
     result = procfs_parse_path(canonical_path, &node);
@@ -1019,16 +1264,51 @@ static int procfs_read(file_t* file, void* buffer, uint32_t size,
 
 static int procfs_write(file_t* file, const void* buffer, uint32_t size,
                         uint32_t* bytes_written) {
-    (void)file;
-    (void)buffer;
-    (void)size;
+    procfs_file_context_t* context;
+    const proc_entry_t* entry;
+    int result;
+
+    if (!file || !file->vnode) {
+        LOG_ERROR("PROCFS", "Arquivo nulo na escrita procfs");
+        return ERR_NULL;
+    }
     if (!bytes_written) {
         LOG_ERROR("PROCFS", "Contador nulo na escrita procfs");
         return ERR_NULL;
     }
     *bytes_written = 0U;
-    LOG_WARN("PROCFS", "Escrita procfs recusada");
-    return ERR_UNAVAILABLE;
+    if (!(file->mode & VFS_MODE_WRITE)) return ERR_UNAVAILABLE;
+    if (size && !buffer) {
+        LOG_ERROR("PROCFS", "Buffer nulo na escrita procfs");
+        return ERR_NULL;
+    }
+    context = (procfs_file_context_t*)file->vnode->private_data;
+    if (!context || !context->snapshot ||
+        context->snapshot_size > PROCFS_MAX_SNAPSHOT_SIZE) {
+        LOG_ERROR("PROCFS", "Contexto invalido na escrita procfs");
+        return ERR_STATE;
+    }
+    if (context->node_kind != PROCFS_NODE_SYS_CONTROL ||
+        context->control_index >= PROCFS_SYS_CONTROL_COUNT) {
+        LOG_WARN("PROCFS", "Escrita procfs recusada para no somente leitura");
+        return ERR_UNAVAILABLE;
+    }
+    result = procfs_write_allowed();
+    if (result != OK) return result;
+    if (file->offset != 0U) {
+        LOG_WARN("PROCFS", "Escrita procfs fora do inicio recusada");
+        return ERR_INVALID;
+    }
+    entry = &procfs_control_entries[context->control_index];
+    if (!entry->write_proc) {
+        LOG_ERROR("PROCFS", "Callback de escrita procfs ausente");
+        return ERR_UNAVAILABLE;
+    }
+    result = entry->write_proc((const char*)buffer, size, entry->data);
+    if (result != OK) return result;
+    file->offset = 0U;
+    *bytes_written = size;
+    return OK;
 }
 
 static int procfs_open(vnode_t* vnode, file_t* file) {
@@ -1077,6 +1357,7 @@ static int procfs_lseek(file_t* file, int32_t offset, uint32_t whence,
         return ERR_NULL;
     }
     *position = 0U;
+    if (!(file->mode & VFS_MODE_READ)) return ERR_UNAVAILABLE;
     context = (procfs_file_context_t*)file->vnode->private_data;
     if (!context || !context->snapshot) return ERR_STATE;
     if (whence == VFS_SEEK_SET) base = 0U;
@@ -1149,7 +1430,8 @@ static int procfs_buffer_valid(const uint8_t* buffer, uint32_t size) {
     if (!buffer) return 0;
     for (uint32_t index = 0U; index < size; index++) {
         if (buffer[index] == 0U || buffer[index] == '\r' ||
-            buffer[index] == 0x1BU) return 0;
+            buffer[index] == 0x1BU || buffer[index] > 0x7FU ||
+            (buffer[index] < 0x20U && buffer[index] != '\n')) return 0;
     }
     return 1;
 }
@@ -1195,6 +1477,21 @@ static int procfs_test_read_path(const char* path, uint8_t* buffer,
     return result;
 }
 
+static int procfs_test_write_path(const char* path, const void* buffer,
+                                  uint32_t size) {
+    int32_t fd = VFS_FD_INVALID;
+    uint32_t written = 0U;
+    int result;
+
+    if (!path || (size && !buffer)) return ERR_NULL;
+    result = vfs_open(path, VFS_MODE_WRITE, &fd);
+    if (result != OK) return result;
+    result = vfs_write(fd, buffer, size, &written);
+    if (result == OK && written != size) result = ERR_STATE;
+    if (vfs_close(fd) != OK && result == OK) result = ERR_STATE;
+    return result;
+}
+
 int procfs_validate_state(void) {
     uint32_t active;
 
@@ -1202,7 +1499,9 @@ int procfs_validate_state(void) {
     active = procfs_active_snapshots;
     if (!procfs_ready || active > VFS_MAX_OPEN_FILES ||
         sizeof(procfs_entries) / sizeof(procfs_entries[0]) !=
-        PROCFS_GLOBAL_COUNT) {
+        PROCFS_GLOBAL_COUNT ||
+        sizeof(procfs_control_entries) / sizeof(procfs_control_entries[0]) !=
+        PROCFS_SYS_CONTROL_COUNT) {
         spinlock_release(&procfs_lock);
         LOG_ERROR("PROCFS", "Invariantes procfs invalidas");
         return ERR_STATE;
@@ -1213,6 +1512,17 @@ int procfs_validate_state(void) {
             procfs_entries[index].write_proc) {
             spinlock_release(&procfs_lock);
             LOG_ERROR("PROCFS", "Entry procfs invalido");
+            return ERR_STATE;
+        }
+    }
+    for (uint32_t index = 0U; index < PROCFS_SYS_CONTROL_COUNT; index++) {
+        const proc_entry_t* entry = &procfs_control_entries[index];
+
+        if (!entry->name || entry->mode != VFS_MODE_READ_WRITE ||
+            !entry->read_proc || !entry->write_proc || !entry->data ||
+            *(uint32_t*)entry->data != index) {
+            spinlock_release(&procfs_lock);
+            LOG_ERROR("PROCFS", "Controle procfs invalido");
             return ERR_STATE;
         }
     }
@@ -1243,8 +1553,13 @@ int procfs_self_test(procfs_test_result_t* result) {
     char temporary_status_path[VFS_MAX_PATH];
     char temporary_cmdline_path[VFS_MAX_PATH];
     char temporary_maps_path[VFS_MAX_PATH];
+    char control_overflow[PROCFS_SYS_CONTROL_MAX_INPUT + 1U];
+    const char invalid_nul[] = {'i', 'n', 'f', 'o', '\0'};
+    log_level_t original_console_level;
+    log_level_t original_buffer_level;
     uint8_t close_ok = 1U;
     uint8_t temporary_nodes = 0U;
+    int32_t control_fd = VFS_FD_INVALID;
     int32_t fd = VFS_FD_INVALID;
     int result_code;
 
@@ -1262,16 +1577,20 @@ int procfs_self_test(procfs_test_result_t* result) {
                      lookup.type == VFS_NODE_REGULAR;
     procfs_test_count(result, result->lookup);
     result->listing = vfs_list_dir("/proc", entries, VFS_MAX_DIR_ENTRIES,
-                                   &count) == OK && count >= PROCFS_GLOBAL_COUNT;
+                                   &count) == OK &&
+                      count >= PROCFS_GLOBAL_COUNT + 1U;
     for (uint32_t index = 0U; result->listing && index < PROCFS_GLOBAL_COUNT;
          index++) {
         result->listing = kstrcmp(entries[index].name, global_names[index]) == 0;
     }
+    result->listing = result->listing &&
+                      kstrcmp(entries[PROCFS_GLOBAL_COUNT].name, "sys") == 0 &&
+                      entries[PROCFS_GLOBAL_COUNT].type == VFS_NODE_DIRECTORY;
     {
         uint32_t previous_pid = 0U;
         uint8_t first_pid = 1U;
 
-        for (uint32_t index = PROCFS_GLOBAL_COUNT;
+        for (uint32_t index = PROCFS_GLOBAL_COUNT + 1U;
              result->listing && index < count; index++) {
             uint32_t pid;
             int pid_result = procfs_parse_pid(
@@ -1348,6 +1667,105 @@ int procfs_self_test(procfs_test_result_t* result) {
                           ERR_UNAVAILABLE && fd == VFS_FD_INVALID;
     procfs_test_count(result, result->permissions);
 
+    original_console_level = log_get_console_level();
+    original_buffer_level = log_get_buffer_level();
+    result->control_nodes = vfs_lookup("/proc/sys", &lookup) == OK &&
+                            lookup.type == VFS_NODE_DIRECTORY &&
+                            vfs_lookup("/proc/sys/kernel", &lookup) == OK &&
+                            lookup.type == VFS_NODE_DIRECTORY &&
+                            vfs_lookup("/proc/sys/kernel/console_log_level",
+                                       &lookup) == OK &&
+                            lookup.type == VFS_NODE_REGULAR &&
+                            !lookup.read_only &&
+                            vfs_list_dir("/proc/sys", entries,
+                                         VFS_MAX_DIR_ENTRIES, &count) == OK &&
+                            count == 1U &&
+                            kstrcmp(entries[0].name, "kernel") == 0 &&
+                            vfs_list_dir("/proc/sys/kernel", entries,
+                                         VFS_MAX_DIR_ENTRIES, &count) == OK &&
+                            count == PROCFS_SYS_CONTROL_COUNT &&
+                            kstrcmp(entries[0].name, "console_log_level") == 0 &&
+                            kstrcmp(entries[1].name, "buffer_log_level") == 0;
+    procfs_test_count(result, result->control_nodes);
+
+    result->control_read = procfs_reset_controls() == OK &&
+                           procfs_test_read_path(
+                               "/proc/sys/kernel/console_log_level", first,
+                               sizeof(first), &bytes) == OK &&
+                           procfs_buffer_valid(first, bytes) &&
+                           procfs_buffer_contains(first, bytes,
+                                                  "console_log_level info\n") &&
+                           procfs_test_read_path(
+                               "/proc/sys/kernel/buffer_log_level", first,
+                               sizeof(first), &bytes) == OK &&
+                           procfs_buffer_valid(first, bytes) &&
+                           procfs_buffer_contains(first, bytes,
+                                                  "buffer_log_level info\n");
+    procfs_test_count(result, result->control_read);
+
+    result->control_privilege = procfs_write_allowed() == OK &&
+                                process_get_current() != 0 &&
+                                !process_is_user(process_get_current());
+    procfs_test_count(result, result->control_privilege);
+
+    result->control_write = procfs_test_write_path(
+                                "/proc/sys/kernel/buffer_log_level",
+                                "debug", 5U) == OK &&
+                            procfs_test_write_path(
+                                "/proc/sys/kernel/console_log_level",
+                                "debug\n", 6U) == OK &&
+                            procfs_test_read_path(
+                                "/proc/sys/kernel/console_log_level", first,
+                                sizeof(first), &bytes) == OK &&
+                            procfs_buffer_contains(first, bytes,
+                                                   "console_log_level debug\n");
+    procfs_test_count(result, result->control_write);
+
+    kmemset(control_overflow, 'x', sizeof(control_overflow));
+    result->control_rollback =
+        procfs_reset_controls() == OK &&
+        vfs_open("/proc/sys/kernel/console_log_level", VFS_MODE_READ,
+                 &control_fd) == OK &&
+        procfs_test_write_path("/proc/sys/kernel/buffer_log_level",
+                               "debug\n", 6U) == OK &&
+        procfs_test_write_path("/proc/sys/kernel/console_log_level",
+                               "debug\n", 6U) == OK &&
+        procfs_test_write_path("/proc/sys/kernel/buffer_log_level",
+                               "error\n", 6U) == ERR_INVALID &&
+        procfs_test_write_path("/proc/sys/kernel/buffer_log_level",
+                               "invalid\n", 8U) == ERR_INVALID &&
+        procfs_test_write_path("/proc/sys/kernel/buffer_log_level",
+                               "info\r\n", 6U) == ERR_INVALID &&
+        procfs_test_write_path("/proc/sys/kernel/buffer_log_level",
+                               "info extra\n", 11U) == ERR_INVALID &&
+        procfs_test_write_path("/proc/sys/kernel/buffer_log_level",
+                               "info\nwarn", 9U) == ERR_INVALID &&
+        procfs_test_write_path("/proc/sys/kernel/buffer_log_level",
+                               invalid_nul, sizeof(invalid_nul)) == ERR_INVALID &&
+        procfs_test_write_path("/proc/sys/kernel/buffer_log_level",
+                               control_overflow, sizeof(control_overflow)) ==
+            ERR_OVERFLOW &&
+        vfs_read(control_fd, first, sizeof(first), &bytes) == OK &&
+        procfs_buffer_contains(first, bytes, "console_log_level info\n");
+    if (control_fd != VFS_FD_INVALID) {
+        if (vfs_close(control_fd) != OK) result->control_rollback = 0U;
+        control_fd = VFS_FD_INVALID;
+    }
+    procfs_test_count(result, result->control_rollback);
+
+    result->control_reset = procfs_reset_controls() == OK &&
+                            procfs_test_read_path(
+                                "/proc/sys/kernel/console_log_level", first,
+                                sizeof(first), &bytes) == OK &&
+                            procfs_buffer_contains(first, bytes,
+                                                   "console_log_level info\n") &&
+                            procfs_test_read_path(
+                                "/proc/sys/kernel/buffer_log_level", first,
+                                sizeof(first), &bytes) == OK &&
+                            procfs_buffer_contains(first, bytes,
+                                                   "buffer_log_level info\n");
+    procfs_test_count(result, result->control_reset);
+
     result->process_nodes = vfs_lookup("/proc/0/status", &lookup) == OK &&
                             vfs_lookup("/proc/0/cmdline", &lookup) == OK &&
                             vfs_lookup("/proc/0/maps", &lookup) == OK;
@@ -1408,6 +1826,8 @@ int procfs_self_test(procfs_test_result_t* result) {
                               procfs_render_snapshot(&overflow_entry, &context) ==
                               ERR_OVERFLOW && context.snapshot == 0;
     procfs_test_count(result, result->callback_errors);
+    log_set_level(original_buffer_level);
+    if (log_set_console_level(original_console_level) != OK) close_ok = 0U;
     spinlock_acquire(&procfs_lock);
     result->cleanup = close_ok && procfs_active_snapshots == before_active &&
                       temporary == 0 && reused == 0;

@@ -122,12 +122,20 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `reboot` | - | Reinicia imediatamente o sistema operacional. |
 | `shutdown`| - | Desliga por ACPI S5 quando seguro; caso contrario usa `CLI+HLT`. |
 
-## PROC5 (planejamento)
+## PROC5 - Controles de runtime
 
-Nao ha comando ou atalho novo nesta etapa. A futura escrita controlada em
-`/proc/sys` usara as operacoes VFS existentes e somente sera exposta depois da
-implementacao do gate de privilegio, da validacao atomica e dos testes de
-rollback. Ate la, `procfs` e `sysfs` continuam somente leitura.
+Nao ha comando ou atalho novo nesta etapa. A leitura dos controles usa as
+operacoes VFS existentes:
+
+```text
+ls /proc/sys
+ls /proc/sys/kernel
+cat /proc/sys/kernel/console_log_level
+cat /proc/sys/kernel/buffer_log_level
+```
+
+A escrita e restrita a processos nativos/ring0 e e validada pelo `proccheck`.
+Os demais nos de `procfs` e todo o `sysfs` continuam somente leitura.
 
 ## Scroll do Shell
 

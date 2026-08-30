@@ -885,38 +885,38 @@ bloco e retornam ao inventario legado quando nao existe um no correspondente.
 
 ## PROC5 - Controles de runtime em /proc/sys
 
-PROC5 permanece em planejamento documental. Nenhum header novo, syscall, App
-API ou layout binario e publicado nesta etapa, e o comportamento atual de
-`procfs`/`sysfs` continua somente leitura. A futura escrita sera exclusiva de
-controles nomeados em uma tabela estatica do `procfs`; nao existira escrita
-generica em estruturas do kernel nem qualquer escrita em `/sys`.
+PROC5 está implementado no provider `procfs`. Nenhuma syscall, App API ou
+layout binário foi criado, e a escrita continua exclusiva de controles nomeados
+em tabela estática; não existe escrita genérica em estruturas do kernel nem
+qualquer escrita em `/sys`.
 
-O conjunto inicial planejado e:
+O conjunto inicial implementado é:
 
 ```text
 /proc/sys/kernel/console_log_level
 /proc/sys/kernel/buffer_log_level
 ```
 
-Os valores validos sao os tokens estaveis `error`, `warn`, `info` e `debug`,
-espelhando as operacoes ja existentes do subsistema de log. A leitura
-continuara obedecendo a ABI textual do PROC0, com uma linha ASCII por arquivo,
-snapshot imutavel de ate 16 KiB, `file_t.offset`, EOF e `lseek`. A abertura em
-modo de leitura sera publica; a abertura e a escrita exigirao um gate de
-privilegio explicito. Sem uma identidade de execucao verificavel, o provider
-devera manter a escrita indisponivel e retornar `ERR_UNAVAILABLE`.
+Os valores válidos são os tokens estáveis `error`, `warn`, `info` e `debug`,
+espelhando as operações já existentes do subsistema de log. A leitura obedece à
+ABI textual do PROC0, com uma linha ASCII por arquivo, snapshot imutável de até
+16 KiB, `file_t.offset`, EOF e `lseek`. A abertura em modo de leitura é pública;
+a abertura e a escrita exigem o gate de processo nativo/ring0. Processos ring3
+recebem `ERR_UNAVAILABLE`.
 
-Uma escrita aceitará exatamente um token valido e `LF` opcional. A entrada
-sera validada completamente antes de um commit atomico; falhas preservarao o
-valor anterior, e o sucesso retornara toda a carga em `bytes_written`. Os
-valores serao mantidos somente em RAM. Uma abertura existente conservara o
-snapshot antigo, enquanto uma nova abertura observara o valor atualizado.
+Uma escrita aceita exatamente um token válido e `LF` opcional. A entrada é
+validada completamente antes de um commit atômico; falhas preservam o valor
+anterior, e o sucesso retorna toda a carga em `bytes_written`. Os valores são
+mantidos somente em RAM. Uma abertura existente conserva o snapshot antigo,
+enquanto uma nova abertura observa o valor atualizado. O console não pode ser
+mais detalhado que o buffer; a regra é aplicada pelo backend de log.
 
 O contrato de erros de PROC5 e: caminho ou valor invalido em `ERR_INVALID`, nó
 ausente em `ERR_NOT_FOUND`, entrada excedente em `ERR_OVERFLOW`, falta de
 memoria em `ERR_MEM`, mudanca concorrente em `ERR_AGAIN` e escrita nao
 autorizada, `ioctl`, `sync` ou acesso a diretorio em `ERR_UNAVAILABLE`.
-Scheduler, forwarding IPv4, energia, memoria e parametros de processos ficam
-fora do primeiro conjunto. A implementacao devera adicionar autotestes de
-validacao, rollback, concorrencia, snapshot, reset e limpeza, sem alterar as
-assinaturas da App API ou das syscalls.
+Scheduler, forwarding IPv4, energia, memória e parâmetros de processos ficam
+fora do primeiro conjunto. `procfs_self_test()`, `vfs_self_test()` e
+`proccheck` cobrem listagem, leitura, escrita válida, rejeições, rollback,
+snapshot, reset e limpeza. A confirmação funcional no QEMU ainda é pendente;
+ela será registrada antes de marcar PROC5 como concluído no roadmap.

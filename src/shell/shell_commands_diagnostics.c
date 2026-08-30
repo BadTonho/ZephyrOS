@@ -6,6 +6,7 @@
 #include "fs/fs.h"
 #include "fs/vfs.h"
 #include "fs/devfs.h"
+#include "fs/procfs.h"
 #include "fs/storage.h"
 #include "fs/block_cache.h"
 #include "fs/file_index.h"
@@ -3199,6 +3200,45 @@ static int cmd_proccheck_cursor(void) {
     return result;
 }
 
+static int cmd_proccheck_write(const char* path, const char* value,
+                               uint32_t size) {
+    int32_t fd = VFS_FD_INVALID;
+    uint32_t written = 0U;
+    int result;
+
+    if (!path || !value) return ERR_NULL;
+    result = vfs_open(path, VFS_MODE_WRITE, &fd);
+    if (result != OK) return result;
+    result = vfs_write(fd, value, size, &written);
+    if (result == OK && written != size) result = ERR_STATE;
+    if (vfs_close(fd) != OK && result == OK) result = ERR_STATE;
+    return result;
+}
+
+static int cmd_proccheck_controls(void) {
+    log_level_t original_console = log_get_console_level();
+    log_level_t original_buffer = log_get_buffer_level();
+    int result = procfs_reset_controls();
+
+    if (result == OK) result = cmd_proccheck_write(
+        "/proc/sys/kernel/buffer_log_level", "debug\n", 6U);
+    if (result == OK) result = cmd_proccheck_write(
+        "/proc/sys/kernel/console_log_level", "debug\n", 6U);
+    if (result == OK) result = cmd_proccheck_read(
+        "/proc/sys/kernel/console_log_level", "console_log_level");
+    if (result == OK && cmd_proccheck_write(
+            "/proc/sys/kernel/buffer_log_level", "error\n", 6U) !=
+            ERR_INVALID) {
+        result = ERR_STATE;
+    }
+    if (procfs_reset_controls() != OK && result == OK) result = ERR_STATE;
+    log_set_level(original_buffer);
+    if (log_set_console_level(original_console) != OK && result == OK) {
+        result = ERR_STATE;
+    }
+    return result;
+}
+
 static int cmd_proccheck_sysfs_attributes(const char* root) {
     uint32_t entry_count = 0U;
 
@@ -3247,14 +3287,17 @@ static int cmd_proccheck_sysfs_attributes(const char* root) {
 static int cmd_proccheck(void) {
     static const char* global_files[] = {
         "/proc/uptime", "/proc/meminfo", "/proc/cpuinfo",
-        "/proc/version", "/proc/cmdline", "/sys/power/state"
+        "/proc/version", "/proc/cmdline",
+        "/proc/sys/kernel/console_log_level",
+        "/proc/sys/kernel/buffer_log_level", "/sys/power/state"
     };
     static const char* global_keys[] = {
         "uptime_ticks", "total_bytes", "processor", "version", "cmdline",
-        "state"
+        "console_log_level", "buffer_log_level", "state"
     };
     static const char* directories[] = {
-        "/proc", "/sys", "/sys/bus", "/sys/bus/pci",
+        "/proc", "/proc/sys", "/proc/sys/kernel", "/sys", "/sys/bus",
+        "/sys/bus/pci",
         "/sys/bus/pci/devices", "/sys/class", "/sys/class/net",
         "/sys/class/block", "/sys/power"
     };
@@ -3289,6 +3332,9 @@ static int cmd_proccheck(void) {
     }
     total++;
     if (cmd_proccheck_cursor() == OK) passed++;
+    else result = ERR_STATE;
+    total++;
+    if (cmd_proccheck_controls() == OK) passed++;
     else result = ERR_STATE;
     if (vfs_list_dir("/proc", shell_introspection_dir_entries,
                      VFS_MAX_DIR_ENTRIES,
@@ -3358,7 +3404,20 @@ static int cmd_proccheck(void) {
             passed++;
         }
     }
-    video_print("PROC4 introspeccao: ", 0x0B);
+    total++;
+    {
+        int32_t fd = VFS_FD_INVALID;
+
+        if (vfs_open("/sys/power/state", VFS_MODE_WRITE, &fd) !=
+            ERR_UNAVAILABLE) {
+            if (fd != VFS_FD_INVALID) (void)vfs_close(fd);
+            negative_ok = 0U;
+            result = ERR_STATE;
+        } else {
+            passed++;
+        }
+    }
+    video_print("PROC5 introspeccao: ", 0x0B);
     video_print(result == OK && negative_ok ? "OK" : "ERRO",
                 result == OK && negative_ok ? 0x0A : 0x0C);
     video_print(" testes=", 0x07);
