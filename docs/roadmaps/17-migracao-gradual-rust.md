@@ -26,15 +26,20 @@ Estado atual: planejado para depois da versão 1.0.0. Nenhuma migração Rust
 foi iniciada por este roadmap. RUST0 só pode começar após a base escolhida da
 1.0.0 estar reproduzível, validada e com rollback preservado.
 
+A base de entrada será formada pelos Roadmaps 18 a 22. O Roadmap 17 só será
+reaberto depois que estabilização, segurança, Storage, compatibilidade de
+hardware e desempenho tiverem critérios de saída aceitos.
+
 ## Atalhos
 
-- [Roadmap 03 - Kernel e Desempenho](03-kernel-e-desempenho.md)
-- [Roadmap 09 - Funcionalidades aplicáveis](09-funcionalidades-aplicaveis.md)
-- [Roadmap 11 - Gerenciamento Avançado de Memória](11-gerenciamento-avancado-de-memoria.md)
-- [Roadmap 12 - Concorrência e Sincronização](12-concorrencia-e-sincronizacao.md)
+- [Roadmap 03 - Kernel e Desempenho](feitos/03-kernel-e-desempenho.md)
+- [Roadmap 09 - Funcionalidades aplicáveis](feitos/09-funcionalidades-aplicaveis.md)
+- [Roadmap 11 - Gerenciamento Avançado de Memória](feitos/11-gerenciamento-avancado-de-memoria.md)
+- [Roadmap 12 - Concorrência e Sincronização](feitos/12-concorrencia-e-sincronizacao.md)
 - [Contratos públicos](../qualidade/contratos-publicos.md)
 - [Dívidas técnicas da v1.0.0](../qualidade/dividas-tecnicas-v1.0.0.md)
 - [Registro de validações](../qualidade/registro-validacoes.md)
+- [Ciclo de preparação da 1.0.0](18-estabilizacao-e-release-v1.0.md)
 
 ## Decisão arquitetural
 

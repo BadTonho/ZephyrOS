@@ -6,6 +6,10 @@ os documentos daqui definem ordem, limites e criterios de saida de cada frente.
 
 ## Estado de referencia
 
+O ciclo de preparação da versão 1.0.0 será composto pelos Roadmaps 18 a 22.
+O Roadmap 17, de migração gradual para Rust, permanece reservado para depois
+da base 1.0.0 e não deve ser iniciado antes do fechamento desse ciclo.
+
 - Base original (boot, memoria, processos, filesystem, Shell e desktop):
   validada no QEMU.
 - Plataforma de aplicativos: Fases 1 a 7 validadas, incluindo processos ring
@@ -159,23 +163,32 @@ correcao da ordem de apresentacao.
 
 ## Ordem sugerida
 
-1. [01 - Estabilizacao e qualidade](01-estabilizacao-e-qualidade.md)
-2. [02 - Plataforma de aplicativos](02-plataforma-de-aplicativos.md)
-3. [03 - Kernel e desempenho](03-kernel-e-desempenho.md)
-4. [04 - Interface e experiencia](04-interface-e-experiencia.md)
-5. [05 - Sistema e ecossistema](05-sistema-e-ecossistema.md)
-6. [06 - App Store](06-app-store.md)
-7. [07 - Modernizacao Visual](07-modernizacao-visual.md)
-8. [08 - Evolucao da Plataforma](08-evolucao-da-plataforma.md)
-9. [09 - Funcionalidades aplicaveis](09-funcionalidades-aplicaveis.md)
-10. [10 - VFS e Abstracao de I/O](10-vfs-e-abstracao-io.md)
-11. [11 - Gerenciamento Avancado de Memoria](11-gerenciamento-avancado-de-memoria.md)
-12. [12 - Concorrencia e Sincronizacao](12-concorrencia-e-sincronizacao.md)
-13. [13 - Armazenamento, Block Layer e Cache de Blocos](13-armazenamento-e-buffer-cache.md)
-14. [14 - Stack de Rede Avancada](14-stack-de-rede-avancada.md)
-15. [15 - Introspeccao e Pseudo-Filesystems](15-introspeccao-e-pseudo-fs.md)
-16. [16 - Energia e ACPI Avancado](16-energia-e-acpi-avancado.md)
+1. [01 - Estabilizacao e qualidade](feitos/01-estabilizacao-e-qualidade.md)
+2. [02 - Plataforma de aplicativos](feitos/02-plataforma-de-aplicativos.md)
+3. [03 - Kernel e desempenho](feitos/03-kernel-e-desempenho.md)
+4. [04 - Interface e experiencia](feitos/04-interface-e-experiencia.md)
+5. [05 - Sistema e ecossistema](feitos/05-sistema-e-ecossistema.md)
+6. [06 - App Store](feitos/06-app-store.md)
+7. [07 - Modernizacao Visual](feitos/07-modernizacao-visual.md)
+8. [08 - Evolucao da Plataforma](feitos/08-evolucao-da-plataforma.md)
+9. [09 - Funcionalidades aplicaveis](feitos/09-funcionalidades-aplicaveis.md)
+10. [10 - VFS e Abstracao de I/O](feitos/10-vfs-e-abstracao-io.md)
+11. [11 - Gerenciamento Avancado de Memoria](feitos/11-gerenciamento-avancado-de-memoria.md)
+12. [12 - Concorrencia e Sincronizacao](feitos/12-concorrencia-e-sincronizacao.md)
+13. [13 - Armazenamento, Block Layer e Cache de Blocos](feitos/13-armazenamento-e-buffer-cache.md)
+14. [14 - Stack de Rede Avancada](feitos/14-stack-de-rede-avancada.md)
+15. [15 - Introspeccao e Pseudo-Filesystems](feitos/15-introspeccao-e-pseudo-fs.md)
+16. [16 - Energia e ACPI Avancado](feitos/16-energia-e-acpi-avancado.md)
 17. [17 - Migracao gradual do ZephyrOS para Rust](17-migracao-gradual-rust.md)
+
+## Ordem de execução da versão 1.0.0
+
+1. [18 - Estabilização e release da versão 1.0.0](18-estabilizacao-e-release-v1.0.md)
+2. [19 - Segurança e isolamento](19-seguranca-e-isolamento-v1.0.md)
+3. [20 - Integridade e recuperação do Storage](20-integridade-e-recuperacao-do-storage.md)
+4. [21 - Compatibilidade e matriz de hardware](21-compatibilidade-e-matriz-de-hardware.md)
+5. [22 - Desempenho mensurável e dívidas da 1.0.0](22-desempenho-e-dividas-v1.0.md)
+6. [17 - Migração gradual para Rust](17-migracao-gradual-rust.md), somente após a base 1.0.0.
 
 Os numeros 06 e 07 mantem a organizacao documental, mas sua execucao e
 intercalada nesta ordem:
