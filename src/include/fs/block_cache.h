@@ -84,7 +84,10 @@ int block_cache_get_stats(block_cache_stats_t* out_stats);
 int block_cache_get_durability_status(block_durability_status_t* out_status);
 int block_cache_writeback_step(uint32_t budget, uint32_t* out_written);
 int block_cache_sync_device(const char* device_id);
+int block_cache_sync_device_until(const char* device_id,
+                                  uint32_t deadline_tick);
 int block_cache_sync_all(void);
+int block_cache_sync_all_until(uint32_t deadline_tick);
 int block_cache_clear(void);
 int block_cache_invalidate_device(const char* device_id);
 int block_cache_invalidate_range(const char* device_id, uint32_t lba,

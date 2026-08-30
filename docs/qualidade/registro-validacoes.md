@@ -3192,3 +3192,18 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   foi validada por revisao cruzada dos documentos canonicos e `git diff --check`;
   nao houve build, teste ou QEMU. A implementacao dos estados, orcamentos,
   idle, metodos de hardware e notificacoes permanece nos PWR1-PWR4.
+
+- PWR3: implementacao do desligamento e reboot deterministicos
+  registrada em 2026-08-30T18:04:04-03:00. O driver ACPI passou a publicar o
+  snapshot append-only de `RESET_REG` e as operacoes `acpi_reset()` e
+  `acpi_poweroff()`; o coordenador `power` passou a aplicar a transacao comum
+  com prazos PIT, sync/flush limitado, quiescencia de audio e ultimo erro.
+  `system_reboot()` tenta RESET_REG, PS/2 pelo driver e triple fault nessa
+  ordem; `poweroff` e a entrada canonica e `shutdown` permanece alias.
+
+  A barra, Shell e Task Manager deixaram de escrever diretamente o reset; nao
+  houve alteracao de App API, syscalls, layouts binarios, bootloader ou
+  `stage2.asm`. A implementacao ainda nao foi validada pelo agente com build,
+  testes ou QEMU. A confirmacao funcional pelo usuario e os gates
+  `make q3check`, build completo e `make run` permanecem pendentes antes de
+  marcar PWR3 como concluido no Roadmap 16.

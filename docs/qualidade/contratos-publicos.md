@@ -167,10 +167,12 @@ diretorios de usuario. Seus detalhes tecnicos permanecem em
 Desde a EP9.2A, `memory.h` tambem delimita a pagina supervisor-only do contexto
 de boot em `0x2000–0x2FFF`; nenhuma assinatura publica foi alterada.
 
-Desde a S1.4, `src/include/drivers/acpi.h` inclui os indicadores
-`mode_enable_available` e `s5_transition_ready`, alem da operacao terminal
-`acpi_enter_s5()`. `src/include/core/power.h` expoe os indicadores derivados e
-centraliza todos os caminhos de desligamento em `power_shutdown()`. Os
+Desde o PWR3, `src/include/drivers/acpi.h` inclui os indicadores
+`mode_enable_available`, `s5_transition_ready` e o snapshot append-only de
+`RESET_REG`, alem das operacoes `acpi_poweroff()` e `acpi_reset()`;
+`acpi_enter_s5()` permanece como wrapper. `src/include/core/power.h` expoe os
+indicadores derivados, estados da transacao e capacidades de reboot, e
+centraliza os caminhos em `power_shutdown_request()` e `system_reboot()`. Os
 contratos canonicos permanecem, respectivamente, em
 `docs/05-drivers/drivers.md` e `docs/04-kernel/kernel.md`.
 
@@ -706,11 +708,12 @@ e System Updater. `updater.h` preserva sua API; a aba Sistema e seus estados
 continuam privados ao aplicativo Classic.
 
 No BLK4, `power.h` acrescenta ao final `power_shutdown_prepare()`. A funcao
-executa `storage_sync_all()` e retorna `OK` quando o writeback termina,
-inclusive no estado degradado por ausencia de FLUSH. Erros de escrita ou
-FLUSH sao propagados e impedem que os caminhos normais chamem a primitiva
-terminal `power_shutdown()`. `power_shutdown()` permanece `void`, `noreturn`
-e com o mesmo contrato; `power_reboot()` nao foi alterado.
+executa `storage_sync_all()` e permanece disponivel para diagnosticos. No
+PWR3, os caminhos normais usam `power_shutdown_request()` e
+`system_reboot()`; `power_reboot()` permanece wrapper compativel. O simbolo
+legado `power_shutdown()` continua `void`: retorna somente quando a solicitacao
+foi recusada antes do commit e nao retorna no caminho terminal. O contrato de
+energia continua sem ABI binaria para aplicativos.
 
 ## NET3 - Multiplexacao VFS com poll/select
 
@@ -1007,3 +1010,26 @@ interpretados.
 PWR2 somente descobre e valida firmware. `acpi tables` lista o snapshot e os
 checksums, sem executar AML, alterar PM1, habilitar APIC/SMP ou iniciar uma
 transicao. A escrita de energia continua exclusiva das etapas PWR3/PWR4.
+
+## PWR3 - Desligamento e reinicializacao
+
+O PWR3 amplia `acpi_power_info_t` e `power_status_t` somente por campos
+append-only. O snapshot de `RESET_REG` contem GAS, valor, presenca e validade;
+somente System I/O de 8 bits, sem offset e representavel no i386 pode ser
+usado. `acpi_poweroff()` e `system_reboot()` sao as operacoes canonicas;
+`acpi_enter_s5()` e `power_reboot()` permanecem wrappers compativeis.
+
+`power_shutdown_request()` e `poweroff`/`shutdown` executam a transacao comum
+com os limites PIT de PWR0. O coordenador possui estado, fase, prazos e ultimo
+erro; o sync/flush usa `storage_sync_all_until()` e nao mantem lock do VFS
+durante a operacao. Falha antes do commit retorna `ERR_STATE`,
+`ERR_UNAVAILABLE`, `ERR_TIMEOUT` ou outro codigo canonico e deixa o sistema
+ativo. Apos a primeira escrita de hardware, o caminho nao tenta voltar ao
+estado operacional.
+
+O reboot tenta RESET_REG ACPI, o reset PS/2 encapsulado pelo driver e, por
+ultimo, triple fault com IDT nula. Nenhum consumidor do Shell escreve portas
+de reset diretamente. `power_status_t` publica as capacidades dos tres
+metodos, `service_state`, `transaction_phase` e `last_error`. Nao foram
+criados novos layouts binarios para aplicativos, syscalls, App API ou
+alteracoes em `taskmanager.h`, `boot.asm` ou `stage2.asm`.

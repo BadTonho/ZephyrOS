@@ -1377,20 +1377,23 @@ static void taskmgr_handle_taskbar_action(int result) {
             taskmgr_redraw_after_menu_close();
             break;
         case 5:
-            taskmgr_close();
-            power_reboot();
+            prepare_result = power_reboot();
+            if (prepare_result != OK) {
+                video_print("Reinicio recusado (codigo ", 0x0C);
+                shell_command_print_num((uint32_t)prepare_result);
+                video_print(").\n", 0x0C);
+            }
             break;
         case 6:
-            prepare_result = power_shutdown_prepare();
+            prepare_result = power_shutdown_request();
             if (prepare_result != OK) {
-                video_print("Desligamento recusado: sync falhou (codigo ",
+                video_print("Desligamento recusado (codigo ",
                             0x0C);
                 shell_command_print_num((uint32_t)prepare_result);
                 video_print(").\n", 0x0C);
                 break;
             }
             taskmgr_close();
-            power_shutdown();
             break;
         case 7:
             taskmgr_close();
@@ -2555,20 +2558,23 @@ static void taskmgr_gui_handle_taskbar_action(int result) {
         case 3: taskmgr_close(); shell_handle_app_request(IPC_APP_OPEN_EXPLORER); break;
         case 4: taskmgr_gui_restore(); break;
         case 5:
-            taskmgr_close();
-            power_reboot();
+            prepare_result = power_reboot();
+            if (prepare_result != OK) {
+                video_print("Reinicio recusado (codigo ", 0x0C);
+                shell_command_print_num((uint32_t)prepare_result);
+                video_print(").\n", 0x0C);
+            }
             break;
         case 6:
-            prepare_result = power_shutdown_prepare();
+            prepare_result = power_shutdown_request();
             if (prepare_result != OK) {
-                video_print("Desligamento recusado: sync falhou (codigo ",
+                video_print("Desligamento recusado (codigo ",
                             0x0C);
                 shell_command_print_num((uint32_t)prepare_result);
                 video_print(").\n", 0x0C);
                 break;
             }
             taskmgr_close();
-            power_shutdown();
             break;
         case 7: taskmgr_close(); shell_handle_app_request(IPC_APP_OPEN_DESKTOP); break;
         case 8: taskmgr_close(); shell_handle_app_request(IPC_APP_OPEN_SETTINGS); break;

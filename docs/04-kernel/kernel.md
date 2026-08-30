@@ -277,7 +277,7 @@ das próximas migrações.
 
 O kernel inicializa PCI antes do AC97 e, depois dos drivers, cria os servicos
 de dispositivos e energia. Suas consultas sao somente de leitura, falham de
-forma controlada e aparecem no `health`; apenas `power_shutdown()` e terminal.
+forma controlada e aparecem no `health`; `power_shutdown_request()` e a entrada terminal do coordenador.
 
 - `device_manager`: mantem um snapshot estatico de PCI, ATA, AC97, PS/2, PIT,
   VGA, VESA e PC Speaker. Nao reinicializa drivers, nao grava no disco e nao
@@ -285,8 +285,8 @@ forma controlada e aparecem no `health`; apenas `power_shutdown()` e terminal.
   `ata0` a `ata3`; `ata-primary` continua como alias do primeiro disco legado.
 - `power`: informa as capacidades reais do sistema atual. S0 e idle HLT/C1
   estao disponiveis; S1-S4 permanecem indisponiveis. S5 fica disponivel
-  somente quando o snapshot ACPI atende ao contrato seguro da S1.4; nos
-  demais casos, `shutdown` usa o fallback terminal HLT.
+  somente quando o snapshot ACPI atende ao contrato seguro do PWR3; nos
+  demais casos, `poweroff` retorna `ERR_UNAVAILABLE` e preserva o sistema.
 
 - `usb_manager`: apos `pci_init()` cria o inventario dos controladores PCI de
   classe `0x0C`, subclasse `0x03`. ProgIF `0x00` e UHCI, `0x20` e EHCI e os
@@ -375,13 +375,13 @@ Essa descoberta nao executa AML, nao escreve PM1 ou qualquer outro registrador
 e nao habilita APIC/SMP. Ausencia de MADT deixa a capacidade de APIC
 indisponivel; uma MADT malformada torna o inventario parcial. `acpi tables`
 apresenta o inventario para diagnostico, e `regcheck full` valida limites,
-checksums, ordem, duplicatas e contagens. As transicoes reais continuam
-reservadas a PWR3.
+checksums, ordem, duplicatas e contagens. As transicoes reais sao coordenadas
+pelo PWR3.
 
 O componente `ACPI` do `health` fica `READY` com raiz, FADT e DSDT validas,
 `DEGRADED` quando existe apenas um inventario parcial e `DISABLED` quando nao
-ha raiz utilizavel. `Power` continua `READY` em todos esses cenarios porque
-seu diagnostico ainda informa S0/HLT e as limitacoes reais. Os campos
+ha raiz utilizavel. `Power` publica `READY` quando S5 esta validado e
+`DEGRADED` quando somente reboot ou idle permanecem disponiveis. Os campos
 `acpi_power_tables_available` e `acpi_partial` nao habilitam transicoes.
 
 ## Servico S1.3: preparacao observavel do S5
@@ -398,46 +398,45 @@ kernel: S5 continua `POWER_CAPABILITY_SIMULATED` e `hardware_poweroff`
 continua `POWER_CAPABILITY_UNAVAILABLE`.
 
 As regras do `health` nao mudam. A ausencia de PM1 ou `_S5_` nao degrada uma
-raiz ACPI valida, e o componente `Power` permanece `READY` por ser um servico
-diagnostico com fallback.
+raiz ACPI valida, mas deixa o coordenador de energia em estado `DEGRADED`.
 
-## Servico S1.4: desligamento fisico ACPI S5
+## Servico PWR3: desligamento e reinicializacao
 
 `power_status_t` acrescenta `acpi_mode_enable_available` e
 `acpi_s5_transition_ready`. Quando a transicao esta pronta, S5 e
 `hardware_poweroff` passam a `POWER_CAPABILITY_AVAILABLE`; sem esse contrato,
 S5 permanece simulado e o desligamento fisico permanece indisponivel.
 
-`power_shutdown()` e a unica operacao terminal de desligamento. Ela para PC
-Speaker e AC97 em best effort, tenta `acpi_enter_s5()` apenas quando a
-capacidade consolidada esta pronta e termina em `CLI+HLT` se a tentativa for
-bloqueada. Shell, kernel, Menu Iniciar Simple/Classic e Task Manager usam esse
-mesmo servico; nao existem mais loops locais de shutdown nem escrita na porta
-privada `0xB004` do QEMU.
+`power_shutdown_request()` e a entrada canonica de desligamento; `poweroff` e
+`shutdown` chegam a ela. A transacao executa admissao, notificacao reservada,
+sync/flush limitado, quiescencia best effort de PC Speaker/AC97, commit de
+hardware e estado terminal. `storage_sync_all_until()` aplica o orcamento de
+1500 ticks entre operacoes de writeback/flush. Falhas antes do commit retornam
+o codigo canonico, liberam a transacao e mantem o sistema ativo. Nao existe
+fallback silencioso para `CLI+HLT` quando S5 nao esta validado.
 
-Desde o BLK4, os caminhos normais chamam `power_shutdown_prepare()` antes da
-primitiva terminal. A preparacao executa `storage_sync_all()`, aceita a
-durabilidade degradada por ausencia de FLUSH e retorna o erro de writeback ou
-FLUSH sem desligar. Shell, Task Manager e barra do sistema permanecem ativos
-quando essa preparacao falha; `health check` torna o estado seguro observavel.
+`acpi_poweroff()` repete a validacao do snapshot antes de qualquer escrita,
+preserva `acpi_enter_s5()` como wrapper e, depois do primeiro comando de
+hardware, permanece em estado terminal mesmo que o firmware nao desligue.
+O snapshot `acpi_power_info_t` inclui `RESET_REG`, seu valor e sua validade;
+somente GAS System I/O de 8 bits compativel com i386 pode ser usado.
 
-O servico nao altera processos e nao implementa desmontagem, suspensao ou
-hibernacao. `power_shutdown()` nunca retorna;
-`acpi_enter_s5()` retorna apenas quando sua pre-validacao impede qualquer
-escrita no hardware.
+`system_reboot()` e a entrada canonica de reboot, com `power_reboot()` como
+wrapper. A ordem de metodos e RESET_REG ACPI, operacao do driver PS/2 com
+polling limitado e, por ultimo, triple fault com IDT nula. Um metodo que
+retorna inesperadamente e registrado antes da tentativa seguinte. O triple
+fault nao usa portas privadas de emuladores.
 
-`power_reboot()` centraliza o reset antes duplicado no Shell, Settings e no
-Task Manager.
-A operacao exige o servico inicializado e a capacidade de reboot disponivel,
-espera de forma limitada o controlador 8042 aceitar comandos e envia `0xFE`.
-Timeout ou retorno inesperado sao registrados e devolvidos ao chamador, que
-permanece responsavel por preservar seu estado e apresentar o diagnostico.
+O coordenador publica `service_state`, `transaction_phase`, `last_error` e as
+capacidades de reset no `power_status_t`. O PWR3 nao desmonta volumes, envia
+notificacoes completas, encerra processos ou implementa `shutdown -h now` e
+`shutdown -r now`; essas responsabilidades continuam reservadas ao PWR4.
 
 ## Contrato PWR0: coordenacao de energia
 
-O PWR0 congela o contrato de coordenacao para as etapas seguintes sem alterar
-as assinaturas atuais de `power.h`, a implementacao de `power_shutdown()` ou a
-sequencia de hardware ja existente. O estado do servico e separado dos
+O PWR0 congela o contrato de coordenacao que o PWR3 agora implementa sem
+alterar a App API, syscalls, layouts binarios ou bootloader. O estado do
+servico e separado dos
 estados ACPI S0-S5:
 
 - `UNKNOWN`: o servico ainda nao publicou um diagnostico;
@@ -462,7 +461,8 @@ admissao:
 4. `quiescence`: para novas atividades de filesystem, workqueues, processos,
    drivers e CPU conforme os contratos de cada participante;
 5. `hardware commit`: executa somente o metodo detectado e validado;
-6. `terminal`: confirma a transicao ou usa o fallback terminal seguro.
+6. `terminal`: confirma a transicao; no reboot, triple fault e o ultimo
+   metodo arquitetural. Poweroff sem S5 validado e recusado antes do commit.
 
 Os orcamentos sao expressos em ticks PIT de 50 Hz e nao podem ser emprestados
 entre fases: notificacao, 250 ticks (5 s); sync/flush, 1500 ticks (30 s);
@@ -482,8 +482,9 @@ registra a fase, o erro e o fallback sem gerar ruido repetitivo.
 O PWR0 separa descoberta/validacao ACPI, interpretacao AML e execucao de
 metodos. O driver ACPI fornece snapshots validados; um parser de cabecalhos
 nao e um interpretador AML e nenhuma porta privada de QEMU, Bochs ou
-VirtualBox pode ser usada como fallback generico. A implementacao efetiva da
-transacao, idle, metodos de hardware e notificacoes pertence a PWR1-PWR4.
+VirtualBox pode ser usada como fallback generico. O PWR3 implementa a
+transacao, S5 e os metodos de reboot; notificacoes completas, desmontagem e
+encerramento ordenado de processos permanecem no PWR4.
 
 ## Servicos S2.1-S2.8: Multi-NIC, Ethernet e pilha TCP/IP
 

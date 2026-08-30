@@ -40,12 +40,16 @@
 #define ACPI_FADT_POWER_FIELDS_END 90U
 #define ACPI_FADT_FLAGS_OFFSET 112U
 #define ACPI_FADT_FLAGS_END 116U
+#define ACPI_FADT_RESET_REGISTER_OFFSET 116U
+#define ACPI_FADT_RESET_VALUE_OFFSET 128U
+#define ACPI_FADT_RESET_FIELDS_END 129U
 #define ACPI_FADT_X_PM1A_CONTROL_OFFSET 172U
 #define ACPI_FADT_X_PM1B_CONTROL_OFFSET 184U
 #define ACPI_FADT_X_PM1A_CONTROL_END 184U
 #define ACPI_FADT_X_PM1B_CONTROL_END 196U
 #define ACPI_FADT_HW_REDUCED_FLAG (1U << 20)
 #define ACPI_GAS_ACCESS_UNDEFINED 0U
+#define ACPI_GAS_ACCESS_BYTE 1U
 #define ACPI_GAS_ACCESS_WORD 2U
 #define ACPI_PM1_CONTROL_MIN_WIDTH 16U
 #define ACPI_PM1_SCI_ENABLE 0x0001U
@@ -55,6 +59,7 @@
 #define ACPI_IO_WORD_MAX_PORT 0xFFFEU
 #define ACPI_IO_BYTE_MAX_PORT 0xFFFFU
 #define ACPI_MODE_ENABLE_POLL_LIMIT 1000000U
+#define ACPI_RESET_RETURN_POLL_LIMIT 1000000U
 #define ACPI_AML_NAME_OP 0x08U
 #define ACPI_AML_ROOT_PREFIX 0x5CU
 #define ACPI_AML_PACKAGE_OP 0x12U
@@ -618,6 +623,36 @@ static int acpi_pm_register_readable(const acpi_register_t* reg,
            reg->access_size == ACPI_GAS_ACCESS_WORD;
 }
 
+static int acpi_reset_register_valid(const acpi_register_t* reg) {
+    if (!reg || reg->address_space_id != ACPI_ADDRESS_SPACE_SYSTEM_IO ||
+        !reg->address || reg->address > ACPI_IO_BYTE_MAX_PORT ||
+        reg->register_bit_width != 8U || reg->register_bit_offset != 0U) {
+        return 0;
+    }
+    return reg->access_size == ACPI_GAS_ACCESS_UNDEFINED ||
+           reg->access_size == ACPI_GAS_ACCESS_BYTE;
+}
+
+static void acpi_parse_fadt_reset(const uint8_t* fadt, uint32_t length) {
+    acpi_register_t reset_register;
+
+    kmemset(&acpi_power_info.reset_register, 0,
+            sizeof(acpi_power_info.reset_register));
+    acpi_power_info.reset_register_present = 0U;
+    acpi_power_info.reset_register_valid = 0U;
+    acpi_power_info.reset_value = 0U;
+    if (length < ACPI_FADT_RESET_FIELDS_END) return;
+    acpi_read_gas(fadt + ACPI_FADT_RESET_REGISTER_OFFSET, &reset_register);
+    acpi_power_info.reset_register = reset_register;
+    acpi_power_info.reset_value = fadt[ACPI_FADT_RESET_VALUE_OFFSET];
+    acpi_power_info.reset_register_present = 1U;
+    if (!acpi_reset_register_valid(&reset_register)) {
+        acpi_log_anomaly("RESET_REG ACPI invalido para i386");
+        return;
+    }
+    acpi_power_info.reset_register_valid = 1U;
+}
+
 static void acpi_observe_pm1_mode(void) {
     uint8_t pm1a_enabled;
     uint8_t pm1b_enabled;
@@ -685,6 +720,7 @@ static void acpi_parse_fadt_power(const uint8_t* fadt, uint32_t length) {
     acpi_power_info.pm1b_readable =
         acpi_pm_register_readable(&acpi_power_info.pm1b_control,
                                   acpi_power_info.pm1b_present);
+    acpi_parse_fadt_reset(fadt, length);
     if (acpi_power_info.hardware_reduced) {
         acpi_power_info.pm1a_readable = 0;
         acpi_power_info.pm1b_readable = 0;
@@ -938,7 +974,7 @@ static void acpi_enable_mode_or_halt(void) {
         }
         asm volatile("nop");
     }
-    LOG_ERROR("ACPI", "Timeout ao adquirir modo ACPI; usando HLT");
+    LOG_ERROR("ACPI", "Timeout ao adquirir modo ACPI; estado terminal");
     acpi_halt_forever();
 }
 
@@ -1144,7 +1180,28 @@ int acpi_get_power_info(acpi_power_info_t* out_info) {
     return OK;
 }
 
-int acpi_enter_s5(void) {
+int acpi_reset(void) {
+    if (!acpi_initialized) {
+        LOG_ERROR("ACPI", "RESET_REG solicitado antes da inicializacao");
+        return ERR_STATE;
+    }
+    if (!acpi_power_info.reset_register_present ||
+        !acpi_power_info.reset_register_valid) {
+        LOG_WARN("ACPI", "RESET_REG ACPI indisponivel para i386");
+        return ERR_UNAVAILABLE;
+    }
+    LOG_INFO("ACPI", "Solicitando reinicio pelo RESET_REG ACPI");
+    asm volatile("cli" : : : "memory");
+    acpi_outb((uint16_t)acpi_power_info.reset_register.address,
+              acpi_power_info.reset_value);
+    for (uint32_t i = 0; i < ACPI_RESET_RETURN_POLL_LIMIT; i++) {
+        asm volatile("pause");
+    }
+    LOG_ERROR("ACPI", "RESET_REG ACPI retornou sem reiniciar");
+    return ERR_TIMEOUT;
+}
+
+int acpi_poweroff(void) {
     uint16_t pm1a_value = 0;
     uint16_t pm1b_value = 0;
     uint16_t sleep_a;
@@ -1170,7 +1227,7 @@ int acpi_enter_s5(void) {
     if (current_mode == ACPI_MODE_DISABLED) acpi_enable_mode_or_halt();
     current_mode = acpi_read_current_mode(&pm1a_value, &pm1b_value);
     if (current_mode != ACPI_MODE_ENABLED) {
-        LOG_ERROR("ACPI", "Modo ACPI nao confirmado; usando HLT");
+        LOG_ERROR("ACPI", "Modo ACPI nao confirmado apos comando; estado terminal");
         acpi_halt_forever();
     }
 
@@ -1185,8 +1242,12 @@ int acpi_enter_s5(void) {
     if (acpi_power_info.pm1b_present) {
         acpi_outw((uint16_t)acpi_power_info.pm1b_control.address, sleep_b);
     }
-    LOG_ERROR("ACPI", "Firmware nao concluiu S5; usando HLT");
+    LOG_ERROR("ACPI", "Firmware nao concluiu S5; estado terminal");
     acpi_halt_forever();
+}
+
+int acpi_enter_s5(void) {
+    return acpi_poweroff();
 }
 
 int acpi_get_table_count(uint32_t* out_count) {

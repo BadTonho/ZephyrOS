@@ -80,6 +80,7 @@ extern void shell_dispatch_cmd_display(const char* arguments);
 extern void shell_dispatch_cmd_explorer(const char* arguments);
 extern void shell_dispatch_cmd_reboot(const char* arguments);
 extern void shell_dispatch_cmd_shutdown(const char* arguments);
+extern void shell_dispatch_cmd_poweroff(const char* arguments);
 extern void shell_dispatch_cmd_guitest(const char* arguments);
 extern void shell_dispatch_cmd_taskmgr(const char* arguments);
 extern void shell_dispatch_cmd_taskcfg(const char* arguments);
@@ -204,6 +205,7 @@ static const shell_dispatch_entry_t shell_dispatch_table[] = {
      SHELL_DISPATCH_FLAG_OPENS_SCENE},
     {"reboot", shell_dispatch_cmd_reboot, SHELL_DISPATCH_FLAG_NONE},
     {"shutdown", shell_dispatch_cmd_shutdown, SHELL_DISPATCH_FLAG_NONE},
+    {"poweroff", shell_dispatch_cmd_poweroff, SHELL_DISPATCH_FLAG_NONE},
     {"guitest", shell_dispatch_cmd_guitest,
      SHELL_DISPATCH_FLAG_MAY_BLOCK | SHELL_DISPATCH_FLAG_OPENS_SCENE},
     {"taskmgr", shell_dispatch_cmd_taskmgr,

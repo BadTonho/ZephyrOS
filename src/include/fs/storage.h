@@ -147,6 +147,7 @@ int storage_init(void);
 int storage_refresh(void);
 int storage_sync_volume(const char* id);
 int storage_sync_all(void);
+int storage_sync_all_until(uint32_t deadline_tick);
 int storage_get_status(storage_status_t* out_status);
 int storage_get_disk_at(uint8_t index, storage_disk_t* out_disk);
 int storage_find_disk(const char* id, storage_disk_t* out_disk);

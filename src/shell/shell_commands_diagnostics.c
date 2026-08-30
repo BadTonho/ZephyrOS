@@ -4208,10 +4208,27 @@ static void cmd_power(const char* args) {
     video_print(power_capability_name(status.hardware_poweroff),
                 status.hardware_poweroff == POWER_CAPABILITY_AVAILABLE ?
                 0x0A : 0x0E);
-    video_print("\n  Reboot (controlador de teclado): ", 0x07);
-    video_print(power_capability_name(status.reboot), 0x0A);
-    video_print("\n  Fallback sem S5 ACPI: HLT; a maquina permanece ligada.\n",
-                0x08);
+    video_print("\n  Reboot (coordenador): ", 0x07);
+    video_print(power_capability_name(status.reboot),
+                status.reboot == POWER_CAPABILITY_AVAILABLE ?
+                0x0A : 0x0E);
+    video_print("\n  Servico: ", 0x07);
+    video_print(power_service_state_name(status.service_state), 0x0B);
+    video_print("\n  Fase: ", 0x07);
+    video_print(power_transaction_phase_name(status.transaction_phase), 0x0B);
+    video_print("\n  Ultimo erro: ", 0x07);
+    shell_command_print_num((uint32_t)status.last_error);
+    video_print("\n  RESET_REG: ", 0x07);
+    video_print(status.reboot_acpi_reset_available ?
+                "DISPONIVEL" : "INDISPONIVEL",
+                status.reboot_acpi_reset_available ? 0x0A : 0x0E);
+    video_print("\n  Reset PS/2: ", 0x07);
+    video_print(status.reboot_ps2_available ? "DISPONIVEL" : "INDISPONIVEL",
+                status.reboot_ps2_available ? 0x0A : 0x0E);
+    video_print("\n  Triple fault: ", 0x07);
+    video_print(status.reboot_triple_fault_available ?
+                "DISPONIVEL\n" : "INDISPONIVEL\n",
+                status.reboot_triple_fault_available ? 0x0A : 0x0E);
 }
 
 static void cmd_acpi_print_table(const char* name, uint8_t present,
@@ -4341,6 +4358,17 @@ static void cmd_acpi_print_power(const acpi_power_info_t* info) {
     video_print("\n  Transicao S5: ", 0x07);
     video_print(info->s5_transition_ready ? "PRONTA" : "INDISPONIVEL",
                 info->s5_transition_ready ? 0x0A : 0x0E);
+    video_print("\n  RESET_REG: ", 0x07);
+    if (info->reset_register_present) {
+        video_print(info->reset_register_valid ? "VALIDO" : "INVALIDO",
+                    info->reset_register_valid ? 0x0A : 0x0E);
+        video_print(" addr=0x", 0x07);
+        shell_command_print_hex((uint32_t)info->reset_register.address, 8U);
+        video_print(" valor=0x", 0x07);
+        shell_command_print_hex(info->reset_value, 2U);
+    } else {
+        video_print("AUSENTE", 0x0E);
+    }
     video_print("\n", 0x07);
 }
 

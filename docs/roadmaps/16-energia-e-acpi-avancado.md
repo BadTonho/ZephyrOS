@@ -182,23 +182,37 @@ terminou em `OK`.
 
 ### Implementação
 
-- [ ] Implementar a função `int acpi_poweroff(void)` que grava a sequência de sleep correspondente ao estado S5 no registrador PM1 Control.
-- [ ] Implementar fallbacks somente quando a capacidade for detectada e
+- [x] Implementar a função `int acpi_poweroff(void)` que valida o snapshot ACPI e grava a sequência de sleep correspondente ao estado S5 no registrador PM1 Control. `acpi_enter_s5()` permanece como wrapper compatível.
+- [x] Implementar fallbacks somente quando a capacidade for detectada e
   documentada; não usar portas privadas de QEMU, Bochs ou VirtualBox como
   caminho genérico do kernel.
-- [ ] Implementar a função `int system_reboot(void)`:
+- [x] Implementar a função `int system_reboot(void)`:
   - 1ª tentativa: Registrador `RESET_REG` informado na tabela ACPI FADT.
-  - 2ª tentativa: Pulso de reset no pino do controlador de teclado PS/2 (porta 0x64, comando 0xFE).
-  - 3ª tentativa: Carga de IDT nula (`lidt`) e disparo de interrupção forçada (Triple Fault).
+  - 2ª tentativa: operação limitada do driver do controlador de teclado PS/2
+    (porta 0x64, comando 0xFE), sem escrita pelo Shell.
+  - 3ª tentativa: carga de IDT nula (`lidt`) e disparo de interrupção forçada
+    (Triple Fault).
+- [x] Integrar o coordenador comum de transação com admissão, notificação,
+  sync/flush, quiescência, commit de hardware e estado terminal. Os limites
+  PIT do PWR0 são aplicados sem empréstimo entre fases.
+- [x] Fazer `poweroff` ser a entrada canônica de desligamento e preservar
+  `shutdown` como alias. Falhas anteriores ao commit retornam código e deixam
+  o sistema ativo; depois da primeira escrita, o caminho permanece terminal.
+- [x] Encaminhar Shell, barra, Settings, Task Manager e Updater para o serviço
+  `power`, sem escrita direta de reset por consumidores.
 
 ### Critério de saída
 
-Comandos `poweroff` e `reboot` desligam ou reiniciam o computador/emulador de forma imediata e limpa.
+Implementação concluída e pendente de confirmação funcional no QEMU. Os
+comandos `poweroff` e `reboot` usam uma transação única; `poweroff` exige S5
+validado, enquanto `reboot` tenta RESET_REG, PS/2 e triple fault nessa ordem.
+O resumo PWR3 permanece pendente até o usuário confirmar a matriz funcional.
 
 ### Comandos Shell / Diagnóstico
 
-- `poweroff`: executa flush de disco e desliga a máquina.
-- `reboot`: executa flush de disco e reinicia o computador.
+- `poweroff`: executa sync/flush com prazo e solicita S5 ACPI validado.
+- `shutdown`: alias compatível de `poweroff`, sem opções PWR4.
+- `reboot`: executa sync/flush com prazo e tenta os métodos de reset seguros.
 
 ---
 

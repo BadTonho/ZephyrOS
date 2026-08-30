@@ -16,6 +16,10 @@
 #define KEYBOARD_SCANCODE_ABNT2_SEMICOLON 0x35U
 #define KEYBOARD_SCANCODE_ISO_EXTRA 0x56U
 #define KEYBOARD_SCANCODE_ABNT2_SLASH 0x73U
+#define KEYBOARD_CONTROLLER_STATUS_PORT 0x64U
+#define KEYBOARD_CONTROLLER_INPUT_FULL 0x02U
+#define KEYBOARD_CONTROLLER_RESET_COMMAND 0xFEU
+#define KEYBOARD_CONTROLLER_WAIT_LIMIT 1000000U
 
 static volatile uint8_t event_queue[KEYBOARD_QUEUE_SIZE];
 static volatile uint8_t queue_head;
@@ -53,6 +57,10 @@ static uint8_t inb(uint16_t port) {
     uint8_t result;
     asm volatile("inb %1, %0" : "=a"(result) : "Nd"(port));
     return result;
+}
+
+static void outb(uint16_t port, uint8_t value) {
+    asm volatile("outb %0, %1" : : "a"(value), "Nd"(port));
 }
 
 static const char scancode_table[128] = {
@@ -416,6 +424,34 @@ void keyboard_set_focus_cancel_filter(keyboard_focus_cancel_filter_t filter) {
         return;
     }
     focus_cancel_filter = filter;
+}
+
+uint8_t keyboard_controller_reset_available(void) {
+    return keyboard_initialized ? 1U : 0U;
+}
+
+int keyboard_controller_reset(void) {
+    if (!keyboard_initialized) {
+        LOG_WARN("KBD", "Reset PS/2 solicitado antes da inicializacao");
+        return ERR_UNAVAILABLE;
+    }
+    for (uint32_t count = 0U; count < KEYBOARD_CONTROLLER_WAIT_LIMIT;
+         count++) {
+        if (!(inb(KEYBOARD_CONTROLLER_STATUS_PORT) &
+              KEYBOARD_CONTROLLER_INPUT_FULL)) {
+            asm volatile("cli" : : : "memory");
+            outb(KEYBOARD_CONTROLLER_STATUS_PORT,
+                 KEYBOARD_CONTROLLER_RESET_COMMAND);
+            for (uint32_t wait = 0U; wait < KEYBOARD_CONTROLLER_WAIT_LIMIT;
+                 wait++) {
+                asm volatile("pause");
+            }
+            LOG_ERROR("KBD", "Controlador PS/2 retornou apos reset");
+            return ERR_TIMEOUT;
+        }
+    }
+    LOG_ERROR("KBD", "Controlador PS/2 ocupado durante reset");
+    return ERR_TIMEOUT;
 }
 
 void keyboard_handler(registers_t* regs) {

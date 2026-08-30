@@ -87,7 +87,7 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `nslookup` | `<dominio>` | Resolve um registro DNS A cooperativamente. |
 | `ping` | `<ip> [1-10]` | Executa ICMP Echo e entrega eventos e resumo em uma chamada. |
 | `acpi` | `status|tables` | Mostra estado ACPI ou lista RSDP, raiz, SDTs e resumo MADT sem executar transicoes. |
-| `power` | `status` | Mostra ativacao do modo, prontidao S5, desligamento fisico e fallback HLT. |
+| `power` | `status` | Mostra estado, fase, erro, S5 e capacidades RESET_REG, PS/2 e triple fault. |
 | `memcheck` | - | Valida heap, coalescencia, PMM, métricas MM4 e diretorios ring 3 residuais. |
 | `vmamap` | `<pid>` | Lista faixas virtuais, paginas, tipo e permissoes de um processo ring 3. |
 | `schedcheck` | - | Valida os invariantes atuais do scheduler sem alterar processos. |
@@ -120,8 +120,9 @@ Os comandos a seguir podem ser digitados na janela de terminal interativo (`shel
 | `app` | `argtest <texto>` | Exibe argumentos recebidos por uma imagem ZAPP interna. |
 | `usertest` | `fault` opcional | Executa e valida o primeiro processo isolado em ring 3. |
 | `guimode` | `simple/classic` | Alterna globalmente entre interface TUI (modo texto) e VESA (gráfica). |
-| `reboot` | - | Solicita reinicializacao; a transacao comum de energia sera aplicada nas etapas PWR1-PWR4. |
-| `shutdown`| - | Solicita desligamento; usa ACPI S5 quando seguro e fallback `CLI+HLT` quando disponivel. |
+| `reboot` | - | Solicita reinicializacao pela transacao comum: RESET_REG, PS/2 e triple fault. |
+| `poweroff` | - | Solicita desligamento com sync/flush e S5 ACPI validado. |
+| `shutdown`| - | Alias de `poweroff`; nao aceita as opcoes reservadas ao PWR4. |
 
 ## PROC5 - Controles de runtime
 
@@ -149,9 +150,17 @@ power status
 
 `acpi status` informa descoberta, validacao, modo ACPI, PM1 e prontidao S5.
 `power status` informa o estado do servico, as capacidades individuais e os
-fallbacks conhecidos. PWR0 apenas congela o contrato documental de estados,
-ordem, ownership, orcamentos e ponto irreversivel; a execucao da transacao
-fica para PWR1-PWR4.
+fallbacks conhecidos. PWR0 congela o contrato documental de estados, ordem,
+ownership, orcamentos e ponto irreversivel; a execucao do poweroff/reboot e do
+sync com prazo pertence ao PWR3.
+
+## PWR3 - Desligamento e reboot
+
+`poweroff` e a entrada canonica de desligamento e `shutdown` e seu alias. A
+operacao exige S5 ACPI validado, executa sync/flush com prazo e retorna erro
+antes do commit quando a preparacao falha. `reboot` compartilha a preparacao e
+tenta RESET_REG ACPI, reset PS/2 pelo driver e triple fault. Opcoes
+`shutdown -h now` e `shutdown -r now` permanecem reservadas ao PWR4.
 
 ## PWR1 - Idle e uso de CPU
 

@@ -270,6 +270,14 @@ publica `BLOCK_DEVICE_CAP_FLUSH`; USB MSC continua somente-leitura e sem
 FLUSH/FUA. A ausencia de FLUSH retorna `OK` com durabilidade `DEGRADED`, e
 erros de escrita ou FLUSH mantem os dados sujos e propagam o erro.
 
+O PWR3 tambem expoe `block_cache_sync_device_until()` e
+`block_cache_sync_all_until()`. Essas fachadas recebem um deadline absoluto em
+ticks e verificam o prazo entre reservas, writebacks e espera por I/O; uma
+operacao fisica ja em voo nao e interrompida. `storage_sync_all_until()` usa
+as mesmas regras e retorna `ERR_TIMEOUT` antes de o coordenador entrar no
+commit de hardware. Em todo timeout ou erro, o marcador de sync e os pins sao
+liberados e os dados sujos permanecem no estado apropriado para nova tentativa.
+
 Entradas sujas, fixadas ou em I/O nao podem ser removidas por `cache clear`,
 refresh, desmontagem, unregister ou substituicao. Essas operacoes sincronizam
 antes da invalidacao e recusam a transicao quando o writeback falha. `sync` e

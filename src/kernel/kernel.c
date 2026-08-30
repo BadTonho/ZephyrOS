@@ -292,24 +292,24 @@ static int kernel_handle_taskbar_mouse(mouse_event_t* evt) {
         case 3: kernel_request_shell_app(IPC_APP_OPEN_EXPLORER); break;
         case 4: kernel_request_shell_app(IPC_APP_OPEN_TASKMANAGER_GUI); break;
         case 5:
-            asm volatile("outb %0, %1" : : "a"((uint8_t)0xFE),
-                         "Nd"((uint16_t)0x64));
+            if (power_reboot() != OK) {
+                LOG_ERROR("KERNEL", "Reinicio recusado pela barra");
+            }
             break;
         case 6:
             {
-                int prepare_result = power_shutdown_prepare();
+                int shutdown_result = power_shutdown_request();
 
-                if (prepare_result != OK) {
-                    LOG_ERROR_CODE("KERNEL", prepare_result,
-                                   "Desligamento recusado por sync falho");
+                if (shutdown_result != OK) {
+                    LOG_ERROR_CODE("KERNEL", shutdown_result,
+                                   "Desligamento recusado pela barra");
                     video_print(
-                        "Desligamento recusado: sync falhou (codigo ", 0x0C);
-                    shell_command_print_num((uint32_t)prepare_result);
+                        "Desligamento recusado (codigo ", 0x0C);
+                    shell_command_print_num((uint32_t)shutdown_result);
                     video_print(").\n", 0x0C);
                     break;
                 }
             }
-            power_shutdown();
             break;
         case 7:
             if (hosted_workspace) wm_set_active(0);
