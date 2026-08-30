@@ -83,6 +83,7 @@
 #include "apps/shell_job.h"
 
 #define SHELL_Q2CHECK_FAULT_RUNS 2U
+#define SHELL_ACPI_IO_MAX_PORT 0xFFFFU
 #define SHELL_HOSTED_DEFAULT_CONTENT_WIDTH 880
 #define SHELL_HOSTED_DEFAULT_CONTENT_HEIGHT 560
 #define SHELL_HOSTED_FRAME_WIDTH 4
@@ -2255,6 +2256,23 @@ static int shell_regcheck_validate_acpi_power(
         (power->s5_state == ACPI_S5_DECLARED &&
          (power->s5_candidates != 1U ||
           power->s5_type_a > 7U || power->s5_type_b > 7U)) ||
+        (!power->reset_register_present &&
+         (power->reset_register_valid || power->reset_value ||
+          power->reset_register.address_space_id ||
+          power->reset_register.register_bit_width ||
+          power->reset_register.register_bit_offset ||
+          power->reset_register.access_size ||
+          power->reset_register.address)) ||
+        (power->reset_register_valid &&
+         (!power->reset_register_present ||
+          power->reset_register.address_space_id !=
+              ACPI_ADDRESS_SPACE_SYSTEM_IO ||
+          !power->reset_register.address ||
+          power->reset_register.address > SHELL_ACPI_IO_MAX_PORT ||
+          power->reset_register.register_bit_width != 8U ||
+          power->reset_register.register_bit_offset != 0U ||
+          (power->reset_register.access_size != 0U &&
+           power->reset_register.access_size != 1U))) ||
         (!status->available &&
          (power->fadt_power_fields_present ||
           power->s5_transition_ready))) {
@@ -2463,6 +2481,15 @@ static int shell_regcheck_validate_power(void) {
             acpi_power.mode_enable_available ||
         status.acpi_s5_transition_ready !=
             acpi_power.s5_transition_ready ||
+        status.reboot_acpi_reset_available !=
+            (acpi_power.reset_register_present &&
+             acpi_power.reset_register_valid) ||
+        status.reboot_ps2_available != keyboard_controller_reset_available() ||
+        !status.reboot_triple_fault_available ||
+        status.service_state < POWER_SERVICE_UNKNOWN ||
+        status.service_state > POWER_SERVICE_UNAVAILABLE ||
+        status.transaction_phase != POWER_TRANSACTION_IDLE ||
+        status.last_error < OK || status.last_error > ERR_CANCELLED ||
         component->state != RECOVERY_STATE_READY) {
         LOG_ERROR("SHELL", "RegCheck Full detectou contrato Power invalido");
         return ERR_STATE;
@@ -2476,6 +2503,12 @@ static int shell_regcheck_validate_power(void) {
     } else if (status.states[POWER_STATE_S5] != POWER_CAPABILITY_SIMULATED ||
                status.hardware_poweroff != POWER_CAPABILITY_UNAVAILABLE) {
         LOG_ERROR("SHELL", "RegCheck Full detectou fallback Power incoerente");
+        return ERR_STATE;
+    }
+    if (status.service_state !=
+        (status.hardware_poweroff == POWER_CAPABILITY_AVAILABLE ?
+         POWER_SERVICE_READY : POWER_SERVICE_DEGRADED)) {
+        LOG_ERROR("SHELL", "RegCheck Full detectou estado do servico invalido");
         return ERR_STATE;
     }
     return OK;

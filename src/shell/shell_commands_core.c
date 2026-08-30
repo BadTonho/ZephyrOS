@@ -873,16 +873,13 @@ void shell_core_shutdown(const char* args) {
         video_print("Uso: shutdown\n", 0x0C);
         return;
     }
-    result = power_shutdown_prepare();
+    video_print("Desligando...\n", 0x0E);
+    result = power_shutdown_request();
     if (result != OK) {
-        video_print("Desligamento recusado: sincronizacao falhou (codigo ",
-                    0x0C);
+        video_print("Desligamento recusado (codigo ", 0x0C);
         shell_command_print_num((uint32_t)result);
         video_print(").\n", 0x0C);
-        return;
     }
-    video_print("Desligando...\n", 0x0E);
-    power_shutdown();
 }
 
 static void cmd_threadtest(void) {
@@ -962,6 +959,10 @@ void shell_dispatch_cmd_reboot(const char* arguments) {
 }
 
 void shell_dispatch_cmd_shutdown(const char* arguments) {
+    shell_core_shutdown(arguments);
+}
+
+void shell_dispatch_cmd_poweroff(const char* arguments) {
     shell_core_shutdown(arguments);
 }
 

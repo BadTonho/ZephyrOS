@@ -7,6 +7,7 @@
 #include "core/memory.h"
 #include "core/spinlock.h"
 #include "core/string.h"
+#include "core/wait.h"
 
 #define STORAGE_MBR_SIGNATURE_OFFSET 510U
 #define STORAGE_MBR_TABLE_OFFSET 446U
@@ -909,17 +910,21 @@ int storage_sync_volume(const char* id) {
     return result;
 }
 
-int storage_sync_all(void) {
+int storage_sync_all_until(uint32_t deadline_tick) {
     if (!storage_initialized) {
         LOG_ERROR("FS", "Sincronizacao global antes da inicializacao");
         return ERR_STATE;
     }
     {
-        int result = block_cache_sync_all();
+        int result = block_cache_sync_all_until(deadline_tick);
 
         if (result != OK) LOG_ERROR("FS", "Sync global de storage falhou");
         return result;
     }
+}
+
+int storage_sync_all(void) {
+    return storage_sync_all_until(WAIT_TIMEOUT_INFINITE);
 }
 
 static int storage_read_fat_bytes(const storage_volume_t* volume,

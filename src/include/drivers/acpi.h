@@ -132,11 +132,17 @@ typedef struct {
     uint8_t mode_enable_available;
     uint8_t s5_transition_ready;
     uint32_t s5_candidates;
+    acpi_register_t reset_register;
+    uint8_t reset_register_present;
+    uint8_t reset_register_valid;
+    uint8_t reset_value;
 } acpi_power_info_t;
 
 int acpi_init(const mmap_entry_t* memory_map, uint32_t entry_count);
 int acpi_get_status(acpi_status_t* out_status);
 int acpi_get_power_info(acpi_power_info_t* out_info);
+int acpi_reset(void);
+int acpi_poweroff(void);
 int acpi_enter_s5(void);
 int acpi_get_table_count(uint32_t* out_count);
 int acpi_get_table_at(uint32_t index, acpi_table_info_t* out_table);

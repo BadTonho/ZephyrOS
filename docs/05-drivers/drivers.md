@@ -171,6 +171,14 @@ fisica `;/:` e e convertido para o scancode `0x35`; a tecla brasileira `/ ?`
 usa o Usage `Keyboard International1` (`0x87`) e e convertida para o scancode
 ABNT2 `0x73`. O Usage `0x64` permanece reservado para a tecla ISO `\\|`.
 
+No PWR3, `keyboard_controller_reset_available()` publica se o driver esta
+inicializado para operar o controlador 8042. `keyboard_controller_reset()`
+aguarda de forma limitada o bit de entrada livre e envia o comando `0xFE` pela
+porta `0x64`. A escrita fica encapsulada no driver, nao e feita pelo Shell e
+retorna `ERR_TIMEOUT` se o controlador nao reiniciar. Depois da escrita, o
+driver nao reativa interrupcoes nem tenta um fallback local; o coordenador
+`power` decide o proximo metodo terminal.
+
 ### Metricas
 
 `keyboard_metrics_t` informa ocupacao atual e capacidade da fila, descartes,
@@ -690,8 +698,8 @@ sincronizado.
 
 ## ACPI (`acpi.c`)
 
-O driver ACPI cria nas S1.2 e S1.3 um snapshot de leitura antes do paging. Na
-S1.4, esse snapshot tambem controla uma unica operacao terminal de S5. A
+O driver ACPI cria nas S1.2 e S1.3 um snapshot de leitura antes do paging. No
+PWR3, esse snapshot tambem controla uma unica operacao terminal de S5. A
 inicializacao ocorre depois do mapa E820, pois as regioes da EBDA e do BIOS
 ainda estao identity-mapped nesse ponto. A busca cobre o primeiro KiB da EBDA
 e `0xE0000-0xFFFFF`, sempre em enderecos alinhados a 16 bytes.
@@ -750,18 +758,24 @@ O reconhecedor AML e limitado a `Name(_S5_, Package(...))`: valida
 malformacao ou mais de uma declaracao valida fecham a capacidade de forma
 segura. SSDTs e AML generico nao sao interpretados.
 
-Na S1.4, `mode_enable_available` informa se o modo ACPI pode ser adquirido por
+No PWR3, `mode_enable_available` informa se o modo ACPI pode ser adquirido por
 `SMI_CMD` e `s5_transition_ready` consolida todas as pre-condicoes de
 seguranca. S5 so fica pronto com snapshot completo, FADT/DSDT validas,
 plataforma nao hardware-reduced, PM1a e PM1b opcional em System I/O de 16
 bits, uma unica declaracao `_S5_` valida e modo ACPI habilitado ou ativavel.
 
-`acpi_enter_s5()` repete essas validacoes antes da primeira escrita. Se
-`SCI_EN` estiver limpo, desabilita interrupcoes, escreve `ACPI_ENABLE` em
-`SMI_CMD` e limita a espera por confirmacao a 1.000.000 leituras. Em seguida
-preserva os outros bits de PM1, substitui apenas `SLP_TYP`, define `SLP_EN` e
-escreve PM1a antes de PM1b. A funcao retorna erro somente quando nenhuma
-escrita ocorreu; depois da primeira escrita, qualquer falha termina em HLT.
+O snapshot `acpi_power_info_t` copia `RESET_REG`, seu valor, presenca e
+validade. O GAS do reset somente e aceito como System I/O de 8 bits, sem
+offset, em endereco representavel no i386. `acpi_reset()` usa esse snapshot e
+retorna `ERR_UNAVAILABLE` sem escrever quando a capacidade nao foi validada.
+
+`acpi_poweroff()` repete as validacoes antes da primeira escrita. Se `SCI_EN`
+estiver limpo, desabilita interrupcoes, escreve `ACPI_ENABLE` em `SMI_CMD` e
+limita a espera por confirmacao. Em seguida preserva os outros bits de PM1,
+substitui apenas `SLP_TYP`, define `SLP_EN` e escreve PM1a antes de PM1b.
+`acpi_enter_s5()` permanece como wrapper compatível. Depois do primeiro
+comando de hardware, qualquer falha termina em estado terminal; nao ha
+fallback silencioso para `CLI+HLT` antes do commit.
 
 MMIO, hardware-reduced ACPI, AML generico, `_PTS`, SCI, GPE, suspensao e
 hibernacao continuam indisponiveis. A implementacao nao usa a porta privada

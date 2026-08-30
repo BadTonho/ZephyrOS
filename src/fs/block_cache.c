@@ -2,6 +2,7 @@
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/spinlock.h"
+#include "core/timer.h"
 #include "core/string.h"
 #include "core/wait.h"
 
@@ -388,10 +389,18 @@ static int block_cache_wait_condition(void* context, uint8_t* out_ready) {
     return OK;
 }
 
+static int block_cache_deadline_expired(uint32_t deadline_tick) {
+    if (deadline_tick == WAIT_TIMEOUT_INFINITE) return 0;
+    return (int32_t)(timer_get_ticks() - deadline_tick) >= 0;
+}
+
 static int block_cache_wait_for_entry(block_cache_entry_t* entry,
-                                      uint32_t generation) {
+                                      uint32_t generation,
+                                      uint32_t deadline_tick) {
     block_cache_wait_context_t context;
     wait_reason_t reason;
+    uint32_t remaining;
+    uint32_t timeout;
     int result;
 
     context.entry = entry;
@@ -400,16 +409,26 @@ static int block_cache_wait_for_entry(block_cache_entry_t* entry,
         LOG_ERROR("BLKCACHE", "Entrada nula na espera do cache");
         return ERR_NULL;
     }
-    result = wait_event(&entry->waiters, block_cache_wait_condition,
-                        &context, &reason);
+    if (wait_deadline_remaining(deadline_tick, &remaining) != OK) {
+        LOG_ERROR("BLKCACHE", "Prazo invalido na espera do cache");
+        return ERR_INVALID;
+    }
+    timeout = deadline_tick == WAIT_TIMEOUT_INFINITE ?
+              WAIT_TIMEOUT_INFINITE : remaining;
+    if (!timeout && deadline_tick != WAIT_TIMEOUT_INFINITE) {
+        LOG_WARN("BLKCACHE", "Prazo expirado antes da espera do cache");
+        return ERR_TIMEOUT;
+    }
+    result = wait_event_timeout(&entry->waiters, block_cache_wait_condition,
+                                &context, timeout, &reason);
     if (result != OK) {
         LOG_WARN("BLKCACHE", "Espera do cache retornou erro");
         return result;
     }
-    if (reason != WAIT_REASON_EVENT) {
-        LOG_WARN("BLKCACHE", "Espera do cache terminou sem evento");
-        return ERR_STATE;
-    }
+    if (reason == WAIT_REASON_TIMEOUT) return ERR_TIMEOUT;
+    if (reason == WAIT_REASON_CANCELLED) return ERR_CANCELLED;
+    if (reason == WAIT_REASON_DEVICE_UNAVAILABLE) return ERR_UNAVAILABLE;
+    if (reason != WAIT_REASON_EVENT) return ERR_STATE;
     return OK;
 }
 
@@ -713,7 +732,8 @@ int block_cache_read(const block_device_t* device, uint32_t lba,
             continue;
         }
         if (lookup == BLOCK_CACHE_LOOKUP_WAIT) {
-            result = block_cache_wait_for_entry(wait_entry, wait_generation);
+            result = block_cache_wait_for_entry(wait_entry, wait_generation,
+                                                WAIT_TIMEOUT_INFINITE);
             if (result != OK) {
                 LOG_ERROR("BLKCACHE", "Espera por leitura do cache falhou");
                 return result;
@@ -982,8 +1002,9 @@ int block_cache_write(const block_device_t* device, uint32_t lba,
             }
             spinlock_release(&block_cache_lock);
             if (wait) {
-                result = block_cache_wait_for_entry(wait_context.entry,
-                                                    wait_context.generation);
+                result = block_cache_wait_for_entry(
+                    wait_context.entry, wait_context.generation,
+                    WAIT_TIMEOUT_INFINITE);
                 if (result != OK) {
                     LOG_ERROR("BLKCACHE", "Espera por escrita do cache falhou");
                     return result;
@@ -1108,9 +1129,9 @@ static void block_cache_publish_durability_locked(
     block_cache_stats.last_sync_error = error;
 }
 
-static int block_cache_writeback_step_for_device(const char* device_id,
-                                                 uint32_t budget,
-                                                 uint32_t* out_written) {
+static int block_cache_writeback_step_for_device_until(
+    const char* device_id, uint32_t budget, uint32_t* out_written,
+    uint32_t deadline_tick) {
     uint32_t written = 0U;
     int first_error = OK;
 
@@ -1136,6 +1157,12 @@ static int block_cache_writeback_step_for_device(const char* device_id,
         bio_request_t request;
         int forced_result = OK;
         int result;
+
+        if (block_cache_deadline_expired(deadline_tick)) {
+            LOG_WARN("BLKCACHE", "Prazo expirado antes do writeback");
+            *out_written = written;
+            return ERR_TIMEOUT;
+        }
 
         spinlock_acquire(&block_cache_lock);
         if (!block_cache_select_writeback_locked(device_id, &index)) {
@@ -1202,6 +1229,13 @@ static int block_cache_writeback_step_for_device(const char* device_id,
     return first_error;
 }
 
+static int block_cache_writeback_step_for_device(const char* device_id,
+                                                 uint32_t budget,
+                                                 uint32_t* out_written) {
+    return block_cache_writeback_step_for_device_until(
+        device_id, budget, out_written, WAIT_TIMEOUT_INFINITE);
+}
+
 int block_cache_writeback_step(uint32_t budget, uint32_t* out_written) {
     int result = block_cache_writeback_step_for_device(0, budget, out_written);
 
@@ -1209,7 +1243,8 @@ int block_cache_writeback_step(uint32_t budget, uint32_t* out_written) {
     return result;
 }
 
-int block_cache_sync_device(const char* device_id) {
+int block_cache_sync_device_until(const char* device_id,
+                                  uint32_t deadline_tick) {
     block_device_t device;
     uint32_t dirty;
     uint32_t written;
@@ -1232,6 +1267,10 @@ int block_cache_sync_device(const char* device_id) {
     if (!device.online) {
         LOG_ERROR("BLKCACHE", "Dispositivo offline durante sync");
         return ERR_DISK;
+    }
+    if (block_cache_deadline_expired(deadline_tick)) {
+        LOG_WARN("BLKCACHE", "Prazo expirado antes do sync de dispositivo");
+        return ERR_TIMEOUT;
     }
     spinlock_acquire(&block_cache_lock);
     if (block_cache_sync_active) {
@@ -1262,7 +1301,8 @@ int block_cache_sync_device(const char* device_id) {
             spinlock_release(&block_cache_lock);
             if (wait_entry) {
                 result = block_cache_wait_for_entry(wait_entry,
-                                                    wait_generation);
+                                                    wait_generation,
+                                                    deadline_tick);
                 if (result != OK) {
                     LOG_ERROR("BLKCACHE", "Espera por writeback falhou");
                     break;
@@ -1273,12 +1313,15 @@ int block_cache_sync_device(const char* device_id) {
             break;
         }
         spinlock_release(&block_cache_lock);
-        result = block_cache_writeback_step_for_device(
-            device_id, BLOCK_CACHE_CAPACITY, &written);
+        result = block_cache_writeback_step_for_device_until(
+            device_id, BLOCK_CACHE_CAPACITY, &written, deadline_tick);
         if (result != OK || !written) {
             if (result == OK) result = ERR_STATE;
             break;
         }
+    }
+    if (result == OK && block_cache_deadline_expired(deadline_tick)) {
+        result = ERR_TIMEOUT;
     }
     if (result == OK && (device.capabilities & BLOCK_DEVICE_CAP_FLUSH)) {
         bio_request_t request;
@@ -1291,6 +1334,10 @@ int block_cache_sync_device(const char* device_id) {
         spinlock_release(&block_cache_lock);
         result = block_submit_physical_sync(&request);
         if (result != OK) LOG_ERROR("BLKCACHE", "Flush fisico falhou no sync");
+        if (result == OK && block_cache_deadline_expired(deadline_tick)) {
+            LOG_WARN("BLKCACHE", "Prazo expirou apos o flush fisico");
+            result = ERR_TIMEOUT;
+        }
     }
     spinlock_acquire(&block_cache_lock);
     block_cache_sync_active = 0U;
@@ -1316,7 +1363,11 @@ int block_cache_sync_device(const char* device_id) {
     return result;
 }
 
-int block_cache_sync_all(void) {
+int block_cache_sync_device(const char* device_id) {
+    return block_cache_sync_device_until(device_id, WAIT_TIMEOUT_INFINITE);
+}
+
+int block_cache_sync_all_until(uint32_t deadline_tick) {
     block_durability_status_t aggregate;
     uint32_t count;
     int first_error = OK;
@@ -1337,12 +1388,19 @@ int block_cache_sync_all(void) {
         block_durability_status_t current;
         int result = block_get_at(index, &device);
 
+        if (block_cache_deadline_expired(deadline_tick)) {
+            if (first_error == OK) first_error = ERR_TIMEOUT;
+            aggregate.state = BLOCK_DURABILITY_ERROR;
+            aggregate.last_error = ERR_TIMEOUT;
+            break;
+        }
+
         if (result != OK) {
             if (first_error == OK) first_error = result;
             aggregate.state = BLOCK_DURABILITY_ERROR;
             continue;
         }
-        result = block_cache_sync_device(device.id);
+        result = block_cache_sync_device_until(device.id, deadline_tick);
         if (result != OK && first_error == OK) first_error = result;
         if (block_cache_get_durability_status(&current) != OK) {
             if (first_error == OK) first_error = ERR_STATE;
@@ -1367,6 +1425,10 @@ int block_cache_sync_all(void) {
     spinlock_release(&block_cache_lock);
     if (first_error != OK) LOG_ERROR("BLKCACHE", "Sync global falhou");
     return first_error;
+}
+
+int block_cache_sync_all(void) {
+    return block_cache_sync_all_until(WAIT_TIMEOUT_INFINITE);
 }
 
 static int block_cache_validate_identifier(const char* device_id) {

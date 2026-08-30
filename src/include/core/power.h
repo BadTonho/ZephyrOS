@@ -19,6 +19,24 @@ typedef enum {
     POWER_CAPABILITY_UNAVAILABLE
 } power_capability_t;
 
+typedef enum {
+    POWER_SERVICE_UNKNOWN = 0,
+    POWER_SERVICE_DISCOVERING,
+    POWER_SERVICE_READY,
+    POWER_SERVICE_DEGRADED,
+    POWER_SERVICE_UNAVAILABLE
+} power_service_state_t;
+
+typedef enum {
+    POWER_TRANSACTION_IDLE = 0,
+    POWER_TRANSACTION_ADMISSION,
+    POWER_TRANSACTION_NOTIFICATION,
+    POWER_TRANSACTION_SYNC_FLUSH,
+    POWER_TRANSACTION_QUIESCENCE,
+    POWER_TRANSACTION_HARDWARE_COMMIT,
+    POWER_TRANSACTION_TERMINAL
+} power_transaction_phase_t;
+
 typedef struct {
     power_capability_t states[POWER_STATE_COUNT];
     power_capability_t cpu_idle;
@@ -33,13 +51,23 @@ typedef struct {
     uint8_t acpi_s5_declared;
     uint8_t acpi_mode_enable_available;
     uint8_t acpi_s5_transition_ready;
+    power_service_state_t service_state;
+    power_transaction_phase_t transaction_phase;
+    int last_error;
+    uint8_t reboot_acpi_reset_available;
+    uint8_t reboot_ps2_available;
+    uint8_t reboot_triple_fault_available;
 } power_status_t;
 
 int power_init(void);
 int power_get_status(power_status_t* out_status);
+int system_reboot(void);
 int power_reboot(void);
-void power_shutdown(void) __attribute__((noreturn));
+int power_shutdown_request(void);
+void power_shutdown(void);
 const char* power_capability_name(power_capability_t capability);
+const char* power_service_state_name(power_service_state_t state);
+const char* power_transaction_phase_name(power_transaction_phase_t phase);
 int power_shutdown_prepare(void);
 
 #endif
