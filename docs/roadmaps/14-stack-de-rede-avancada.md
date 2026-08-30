@@ -12,7 +12,7 @@ para todos os caminhos de driver, DMA e checksum.
 
 - [x] NET0 - Contrato de ownership, lifetime, cópia e conclusão de buffers.
 - [x] NET1 - Estrutura de buffer de pacotes unificada (`sk_buff_t`) com cópia evitável.
-- [ ] NET2 - Camada genérica de sockets (`AF_INET` e `AF_UNIX` para IPC local).
+- [x] NET2 - Camada genérica de sockets (`AF_INET` e `AF_UNIX` para IPC local).
 - [ ] NET3 - Multiplexação de I/O não-bloqueante (`select()` / `poll()`).
 - [ ] NET4 - Roteamento avançado, tabela de conexões TCP e ferramentas de diagnóstico.
 
@@ -61,7 +61,7 @@ para todos os caminhos de driver, DMA e checksum.
 
 Estado da implementacao: contrato e runtime entregues e validados
 funcionalmente pelo usuario em 2026-08-29. Os resumos acima foram marcados como
-[x]; NET2+ permanecem pendentes.
+  [x]; NET3+ permanecem pendentes.
 
 ### Implementação
 
@@ -101,7 +101,7 @@ erro e cancelamento, sem depender da promessa de zero-copy total.
 ## NET1 - Estrutura de Buffer de Pacotes (sk_buff)
 
 Estado da implementacao: codigo integrado e validado funcionalmente pelo
-usuario em 2026-08-29. O resumo NET1 foi marcado como `[x]`; NET2+ permanecem
+usuario em 2026-08-29. O resumo NET1 foi marcado como `[x]`; NET3+ permanecem
 pendentes.
 
 ### Implementação
@@ -147,33 +147,35 @@ e não permanecem buffers vivos após os diagnósticos.
 
 ## NET2 - Camada Genérica de Sockets e AF_UNIX
 
+Estado da implementacao: codigo integrado e validado funcionalmente pelo
+usuario em 2026-08-29. O resumo NET2 foi marcado como `[x]`; NET3+ permanecem
+pendentes.
+
 ### Implementação
 
-- [ ] Criar a estrutura `socket_t` com operações `socket_ops_t` (`bind`, `connect`, `listen`, `accept`, `send`, `recv`).
-- [ ] Mapear sockets na tabela de descritores de arquivos do processo (`fd`).
-- [ ] Implementacao preparada para validacao funcional: `socket_t` permanece
+- [x] Criar a estrutura `socket_t` com operações `socket_ops_t` (`bind`, `connect`, `listen`, `accept`, `send`, `recv`).
+- [x] Mapear sockets na tabela de descritores de arquivos do processo (`fd`).
+- [x] Implementacao preparada para validacao funcional: `socket_t` permanece
   privado em `src/core/socket.c`, os objetos usam FDs reais `VFS_NODE_SOCKET` e
   `AF_UNIX/SOCK_STREAM` usa namespace global, backlog limitado e filas
   `sk_buff_t` com copia.
-- [ ] `AF_INET/SOCK_STREAM` adapta somente o cliente TCP ativo legado; o
+- [x] `AF_INET/SOCK_STREAM` adapta somente o cliente TCP ativo legado; o
   caminho bloqueante libera locks antes da espera e
   `SOCKET_FLAG_NONBLOCK` retorna `ERR_AGAIN` sem progresso.
-- [ ] `sockstat`, `socket_self_test()`, `net check`, `regcheck full` e
+- [x] `sockstat`, `socket_self_test()`, `net check`, `regcheck full` e
   `health check` foram integrados; a fixture cobre lifecycle, FD VFS,
   bind duplicado, connect/listen/accept, leitura parcial, fila cheia, EOF,
   entradas invalidas, cancelamento e limpeza.
-- [ ] Nao ha syscall, wrapper de App API, `poll/select`, `socketpair`,
+- [x] Nao ha syscall, wrapper de App API, `poll/select`, `socketpair`,
   datagramas UNIX ou ownership DMA transferido. Mensagens longas usam buffers
   independentes de ate 2048 bytes; clones, fragmentos compartilhados e
   zero-copy real permanecem fora da NET2. `boot.asm` nao foi alterado.
 
-O resumo NET2 continua `[ ]` ate a confirmacao funcional do usuario apos os
-gates de build e a matriz QEMU previstos nesta etapa.
-- [ ] Implementar a família de endereços `AF_UNIX` (ou `AF_LOCAL`) para IPC
+- [x] Implementar a família de endereços `AF_UNIX` (ou `AF_LOCAL`) para IPC
   entre processos no mesmo sistema através de filas e buffers locais.
-- [ ] Integrar a família `AF_INET` existente à camada genérica sem quebrar
+- [x] Integrar a família `AF_INET` existente à camada genérica sem quebrar
   sockets, TCP, UDP, HTTP ou os diagnósticos já validados.
-- [ ] Definir bloqueio, não-bloqueio, fechamento concorrente e ownership dos
+- [x] Definir bloqueio, não-bloqueio, fechamento concorrente e ownership dos
   buffers entre socket e fila.
 
 ### Critério de saída

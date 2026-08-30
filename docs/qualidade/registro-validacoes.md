@@ -2875,3 +2875,12 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `SOCKET_QUEUE_BYTES` em vez de `sizeof` de um ponteiro para exercitar
   fragmentacao, fila cheia e descarte no fechamento. O agente nao executou
   build, testes ou QEMU; a nova matriz funcional permanece pendente.
+
+- NET2: validação funcional confirmada pelo usuário no QEMU.
+  Confirmada em: 2026-08-29 22:45:09 -03:00 (America/Sao_Paulo).
+  `net socket check` concluiu com todos os casos `OK`, `net check` terminou
+  `OK`, `regcheck full` publicou `RegCheck: OK` e `skbstat` confirmou
+  `ativos=0`, `alocados=14`, `liberados=14` e `erros=0`. Os logs de FD,
+  endereço, conclusão e liberação recusados pertencem às fixtures negativas
+  deliberadas; não houve socket ou buffer residual. O resumo NET2 foi marcado
+  como concluído no roadmap. `NET3+` permanecem pendentes.
