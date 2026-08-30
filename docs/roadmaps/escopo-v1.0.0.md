@@ -7,7 +7,7 @@ uma etapa de implementação nem substitui os Roadmaps 18–22. Sua função é
 separar as capacidades básicas obrigatórias das expansões que podem ser
 realizadas depois da primeira versão estável.
 
-O Roadmap 17, de migração gradual para Rust, só poderá começar depois que este
+A etapa pós-1.0.0 de migração gradual para Rust só poderá começar depois que este
 escopo for atendido, os Roadmaps 18–22 forem encerrados e a base C/Assembly
 estiver congelada.
 
@@ -153,9 +153,9 @@ um sistema operacional geral.
 4. [Roadmap 21 — Compatibilidade e matriz de hardware](21-compatibilidade-e-matriz-de-hardware.md).
 5. [Roadmap 22 — Desempenho e dívidas da 1.0.0](22-desempenho-e-dividas-v1.0.md).
 6. Validação final, congelamento da ABI e publicação da base 1.0.0.
-7. [Roadmap 17 — Migração gradual para Rust](17-migracao-gradual-rust.md).
+7. [Pós-1.0.0 — Migração gradual para Rust](17-migracao-gradual-rust.md).
 
-O Roadmap 17 não é uma etapa de preparação da 1.0.0. Ele só começa depois do
+A etapa pós-1.0.0 de Rust não é uma etapa de preparação da 1.0.0. Ela só começa depois do
 item 6.
 
 ## Pode ficar para depois da 1.0.0
@@ -189,7 +189,7 @@ A versão 1.0.0 só deve ser declarada quando:
 - as dívidas técnicas aceitas tiverem sido quitadas ou formalmente reavaliadas;
 - ABI, syscalls, formatos, limitações e procedimento de rollback estiverem
   congelados e documentados;
-- o Roadmap 17 continuar fechado até esse momento.
+- a etapa pós-1.0.0 de Rust continuar fechada até esse momento.
 
 Este documento é uma decisão de escopo. Ele não declara nenhuma capacidade
 como implementada e não substitui a confirmação funcional do usuário.
