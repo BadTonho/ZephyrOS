@@ -3,6 +3,17 @@
 > Visão geral do desenvolvimento dividida em **5 fases**.
 > `✅` = Implementado | `🟡` = Parcial | `⬜` = Não implementado
 
+## Estado atual consolidado
+
+- [x] A visao Classic do Task Manager enumera processos por `/proc`, le
+  `/proc/<pid>/status` e usa PID + generation para identidade segura.
+- [x] A visao Classic le `/proc/meminfo` e exibe memoria por processo quando o
+  snapshot publica `memory_bytes`; a visao Simple permanece inalterada.
+- [x] CPU, estado, espera, tempo, PID pai, threads e geracao sao obtidos por
+  snapshots, sem manter `process_t *` entre eventos.
+- [ ] Arvore de processos, prioridade, afinidade, historico completo e demais
+  recursos administrativos continuam pendentes.
+
 ---
 
 ## Fase 1 — Processos Básicos
@@ -18,7 +29,7 @@
 - ✅ Consumo de CPU. *(taskmanager.c:217-230 — cálculo por ticks, cores dinâmicas)*
 - ✅ Consumo de memória RAM. *(taskmanager.c:254-300 — aba Memória com total/usado/livre)*
 - ✅ Uso do disco. *(taskmanager.c:380 - leitura de operacoes do ATA)*
-- ❌ Uso da rede. *(Limitacao: Sem driver de rede)*
+- ⬜ Uso da rede por processo. *(A stack de rede existe, mas ainda não publica métricas associadas a cada processo)*
 - ❌ Uso da GPU. *(Limitacao: Sem suporte a aceleracao de hardware/GPU)*
 - ❌ Mecanismo da GPU utilizado. *(Limitacao: Sem hardware GPU)*
 - ⬜ Consumo de energia e tendência de consumo.
@@ -176,7 +187,7 @@
 - ⬜ Número da sessão.
 - ✅ Consumo de CPU. *(taskmanager.c:217-230 — cálculo por processo)*
 - ✅ Tempo acumulado de CPU. *(taskmanager.c:232-235 — total_ticks / 50 em segundos)*
-- ⬜ Memória utilizada por processo.
+- ✅ Memória utilizada por processo na visão Classic via `/proc/<pid>/status`.
 - ⬜ Arquitetura (32 ou 64 bits).
 - ⬜ Descrição do programa.
 - ⬜ Linha de comando usada para iniciar.
@@ -352,8 +363,9 @@
 ## Limitações Técnicas Conhecidas
 
 - **Scheduler round-robin simples**: Sem suporte a prioridades — todos os processos recebem a mesma fatia de CPU.
-- **Sem campos de memória por processo**: O `process_t` não rastreia uso de RAM individual.
+- **Memória por processo limitada**: a visão Classic usa `memory_bytes` do
+  snapshot de `/proc`; não há ainda residente/virtual detalhada no contrato.
 - **Máximo 64 processos**: `MAX_PROCESSES = 64` definido em `process.h`.
 - **Timer a 50 Hz**: Cálculo de CPU baseado em ticks do PIT, não em medição real de clock.
-- **Sem drivers de rede/GPU**: Monitoramento desses recursos impossível sem hardware support.
+- **Métricas de rede/GPU por processo**: ainda não há contadores associados a cada processo; a stack de rede e o inventário de hardware existem.
 - **Single-user**: Sem conceito de usuários, sessões ou permissões.

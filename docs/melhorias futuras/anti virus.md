@@ -2,6 +2,18 @@
 
 > **Distribuição:** Este aplicativo é distribuído como pacote `.zephyrosapp` através do [Gerenciador de Aplicativos](gerenciador%20de%20aplicativos.md). Não é compilado no kernel padrão.
 
+## Estado atual consolidado
+
+- [x] Infraestrutura de processo: criação, encerramento e isolamento básico em
+  ring 3 já estão disponíveis no kernel.
+- [x] Integração com o Gerenciador de Aplicativos, pacotes `.zephyrosapp` e
+  atualização assinada do catálogo já foi implementada nas etapas AS1-AS5.
+- [ ] Motor de antivírus: hashes, assinaturas, heurísticas, quarentena,
+  monitoramento em tempo real, integridade do boot e interface TUI continuam
+  propostas futuras.
+- [ ] Atualização de assinaturas pela rede e sandbox de rede ainda não estão
+  implementadas.
+
 ## Resumo de Progresso
 
 | Fase | Total | Feito | Parcial | Restante |
@@ -579,22 +591,22 @@
 | Máximo de watch entries | 16 | Monitor de mudanças |
 | Scan speed | ~100 arquivos/s | Limitado por I/O de disco |
 | Hash de 128-bit | MD5 | Sem SHA-256 (muito lento para bare-metal) |
-| Sem rede | Nenhum | Atualização manual de assinaturas |
+| Rede para atualização de assinaturas | ⬜ | A stack existe, mas o antivírus ainda não possui cliente de atualização |
 | Sem criptografia | Nenhum | Sem cifra de arquivos em quarantena |
-| Sem sandbox real | Limitado | Todos os processos em Ring 0 |
+| Sandbox real | Parcial | Processos nativos usam ring 3; o sandbox específico do antivírus não existe |
 | Sem detecção de rootkit | Nenhum | Sem acesso a hardware profundo |
 | Sem behavior monitoring | Básico | Apenas regras estáticas |
-| Sem sandbox de rede | Nenhum | Sem stack de rede |
+| Sandbox de rede | ⬜ | Ainda não há política de rede por processo |
 
 ---
 
 ## Notas de Implementação
 
-1. **Sem rede** — O ZephyrOS não possui stack de rede. Atualizações de assinaturas devem ser manuais (usuário baixa no PC e copia para pendrive).
+1. **Rede ainda não integrada ao antivírus** — A stack de rede do sistema já existe, mas atualização de assinaturas e sandbox de rede continuam fora do escopo.
 
 2. **MD5 em vez de SHA-256** — SHA-256 é mais seguro mas requer mais computação. A implementação atual usa MD5 por custo computacional; para uso real, a verificação deve migrar para SHA-256 ou assinatura digital.
 
-3. **Sem Ring 3** — Todos os processos rodam em Ring 0 (kernel mode). Não há separação real de privilégios. O sandbox é apenas lógico, não enforced pelo hardware.
+3. **Isolamento parcial** — Aplicativos nativos podem executar em ring 3 com paging e encerramento isolado. O antivírus ainda não possui sandbox própria nem política de permissões por processo.
 
 4. **Scan por hash** — O scan atual compara MD5 do arquivo inteiro com assinaturas conhecidas. Não há scan por padrões dentro do arquivo (signature-based detection would require pattern matching).
 

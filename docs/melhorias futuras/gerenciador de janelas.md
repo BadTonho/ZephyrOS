@@ -318,7 +318,7 @@
 
 - **VGA Text Mode 80x25**: Sem suporte a sombras, transparência, animações ou DPI.
 - **Máximo 16 janelas**: `WM_MAX_WINDOWS = 16` definido em `wm.h`.
-- **Sem mouse**: Arrasto e redimensionamento apenas por API programática.
+- **Interação de mouse**: arrasto e redimensionamento básicos já estão disponíveis; gestos avançados e integração completa continuam planejados.
 - **Sem composição**: Renderização direta em `0xB8000`, repaint completo a cada alteração.
 - **Sem multi-monitor**: Apenas um display VGA/VESA.
 - **Nomes limitados**: Título da janela truncado a 32 caracteres.

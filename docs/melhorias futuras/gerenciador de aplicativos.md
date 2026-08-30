@@ -32,8 +32,9 @@ da App Store e não reutiliza a confiança ZUPD.
 > `app inputtest` cria uma imagem temporaria para diagnostico. A Fase 7 da
 > plataforma agora entrega a fundacao local `ZPKG` v1: um `.zephyrosapp` com
 > uma imagem ZAPP, manifesto e CRC32 pode ser injetado como `ID.ZPK`,
-> instalado por `pkg` e executado pelo loader. Loja, GUI, atualizacoes,
-> assinatura, permissoes e SDK continuam planejados nas fases abaixo.
+> instalado por `pkg` e executado pelo loader. AS1-AS5 entregaram catalogo,
+> GUI Modern, atualizacoes locais/remotas e assinatura do catalogo; permissoes
+> detalhadas, multiplos arquivos e SDK continuam planejados.
 
 > **Decisao de interface:** Modern e a matriz obrigatoria da App Store; Shell
 > e o fallback operacional completo. Simple permanece secundario e nao
@@ -520,9 +521,13 @@ Estes aplicativos são distribuídos através da Loja de Aplicativos. Apenas a i
 
 1. **Sem carregamento dinâmico** — O ZephyrOS não suporta ELF loading ou carregamento dinâmico de módulos. Aplicativos precisam ser compilados estaticamente ou usar um mecanismo simples de loading (copiar binário para endereço fixo e pular para ele).
 
-2. **Sem processos isolados** — Aplicativos rodam no mesmo espaço de memória do kernel. Um bug em um aplicativo pode derrubar todo o sistema.
+2. **Isolamento parcial** — Aplicativos ZAPP executam em ring 3 com paging e
+   encerramento isolado para falhas de usuario. Ainda nao existe uma politica
+   completa de permissoes ou sandbox por aplicativo.
 
-3. **Sem rede** — O ZephyrOS não possui stack de rede. A loja de aplicativos funciona apenas com repositório local (pacotes já no disco). Para download automático, seria necessário implementar driver de NIC + TCP/IP.
+3. **Rede integrada, sem permissao por aplicativo** — O ZephyrOS possui
+   Ethernet, IPv4, DHCP, DNS, TCP e HTTP; a App Store usa o transporte remoto
+   validado de AS5. Controle fino de acesso por aplicativo ainda nao existe.
 
 4. **Memória limitada** — Aplicativos devem ser pequenos (máx 64KB recomendado) devido à memória limitada do sistema.
 
