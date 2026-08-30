@@ -4,6 +4,10 @@ Este diretorio separa o planejamento do ZephyrOS por frentes de trabalho. O
 arquivo [ROADMAP.md](../../ROADMAP.md) continua sendo o mapa geral do projeto;
 os documentos daqui definem ordem, limites e criterios de saida de cada frente.
 
+O [Escopo e critérios da versão 1.0.0](escopo-v1.0.0.md) é a fonte de decisão
+do que é obrigatório antes da migração para Rust e do que pode permanecer no
+backlog pós-1.0.
+
 ## Estado de referencia
 
 O ciclo de preparação da versão 1.0.0 será composto pelos Roadmaps 18 a 22.
