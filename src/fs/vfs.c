@@ -4,6 +4,7 @@
 #include "fs/storage.h"
 #include "fs/devfs.h"
 #include "fs/procfs.h"
+#include "fs/sysfs.h"
 #include "core/app_api.h"
 #include "core/errors.h"
 #include "core/log.h"
@@ -28,6 +29,7 @@ typedef struct {
     vfs_lookup_result_t lookup;
     devfs_file_context_t device;
     procfs_file_context_t procfs;
+    sysfs_file_context_t sysfs;
     struct vfs_pipe* pipe;
     uint8_t pipe_reader;
     uint8_t pipe_writer;
@@ -1100,6 +1102,14 @@ int vfs_init(void) {
         vfs_vnode_cache = 0;
         return ERR_STATE;
     }
+    if (sysfs_init() != OK) {
+        LOG_ERROR("FS", "Falha ao inicializar sysfs");
+        kmem_cache_destroy(vfs_file_cache);
+        kmem_cache_destroy(vfs_vnode_cache);
+        vfs_file_cache = 0;
+        vfs_vnode_cache = 0;
+        return ERR_STATE;
+    }
     if (wait_channel_init(&vfs_poll_channel, "VFS-poll") != OK) {
         LOG_ERROR("FS", "Falha ao inicializar canal global de poll");
         kmem_cache_destroy(vfs_file_cache);
@@ -1310,6 +1320,13 @@ int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
         file->mode = mode;
         result = procfs_open_file(&context->lookup, mode, vnode, file,
                                   &context->procfs);
+    } else if (context->lookup.mount_kind == VFS_MOUNT_SYSFS) {
+        vnode->private_data = &context->sysfs;
+        vfs_copy_text(vnode->path, VFS_MAX_PATH,
+                      context->lookup.canonical_path);
+        file->mode = mode;
+        result = sysfs_open_file(&context->lookup, mode, vnode, file,
+                                 &context->sysfs);
     } else if (context->lookup.type == VFS_NODE_REGULAR) {
         vnode->type = VFS_NODE_REGULAR;
         vnode->operations = &vfs_regular_operations;
@@ -2080,6 +2097,15 @@ int vfs_validate_state(void) {
                         spinlock_release(&vfs_lock);
                         return ERR_STATE;
                     }
+                } else if (vfs_file_contexts[pool_index].lookup.mount_kind ==
+                           VFS_MOUNT_SYSFS) {
+                    if (file->vnode->private_data !=
+                            &vfs_file_contexts[pool_index].sysfs ||
+                        !vfs_file_contexts[pool_index].sysfs.snapshot ||
+                        !vfs_file_contexts[pool_index].sysfs.mount_acquired) {
+                        spinlock_release(&vfs_lock);
+                        return ERR_STATE;
+                    }
                 } else if (file->vnode->private_data !=
                            &vfs_file_contexts[pool_index]) {
                     spinlock_release(&vfs_lock);
@@ -2192,7 +2218,8 @@ int vfs_validate_state(void) {
         }
     }
     spinlock_release(&vfs_lock);
-    if (devfs_validate_state() != OK || procfs_validate_state() != OK) {
+    if (devfs_validate_state() != OK || procfs_validate_state() != OK ||
+        sysfs_validate_state() != OK) {
         return ERR_STATE;
     }
     return OK;
@@ -2279,6 +2306,7 @@ int vfs_self_test(vfs_test_result_t* result) {
     uint32_t dir_count = 0U;
     devfs_test_result_t device_result;
     procfs_test_result_t procfs_result;
+    sysfs_test_result_t sysfs_result;
 
     if (!result) {
         LOG_ERROR("FS", "Destino de autoteste VFS nulo");
@@ -2447,7 +2475,7 @@ int vfs_self_test(vfs_test_result_t* result) {
             vfs_list_dir("/", vfs_test_dir_entries, VFS_MAX_DIR_ENTRIES,
                          &dir_count) == OK &&
             vfs_test_dir_has("mnt") && vfs_test_dir_has("dev") &&
-            vfs_test_dir_has("proc");
+            vfs_test_dir_has("proc") && vfs_test_dir_has("sys");
     }
     vfs_test_count(result, result->directory_listing);
     result->devices = devfs_self_test(&device_result) == OK;
@@ -2517,6 +2545,8 @@ int vfs_self_test(vfs_test_result_t* result) {
     vfs_test_count(result, result->pipes);
     result->procfs = procfs_self_test(&procfs_result) == OK;
     vfs_test_count(result, result->procfs);
+    result->sysfs = sysfs_self_test(&sysfs_result) == OK;
+    vfs_test_count(result, result->sysfs);
     {
         int32_t speaker_fd = VFS_FD_INVALID;
         int ioctl_result = vfs_open("/dev/speaker", VFS_MODE_WRITE,

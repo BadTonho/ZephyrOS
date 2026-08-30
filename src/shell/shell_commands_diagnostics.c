@@ -4753,6 +4753,7 @@ static void cmd_mount(const char* args) {
         video_print(" tipo=", 0x08);
         video_print(mount->kind == VFS_MOUNT_DEVFS ? "DEVFS" :
                     mount->kind == VFS_MOUNT_PROCFS ? "PROCFS" :
+                    mount->kind == VFS_MOUNT_SYSFS ? "SYSFS" :
                     storage_fs_name(mount->fs_type), 0x07);
         video_print(" acesso=", 0x08);
         video_print(mount->read_only ? "RO" : "RW", 0x07);
@@ -4810,6 +4811,9 @@ static void cmd_vfs_test(void) {
     video_print("\n  Procfs: ", 0x07);
     video_print(result.procfs ? "OK" : "ERRO",
                 result.procfs ? 0x0A : 0x0C);
+    video_print("\n  Sysfs: ", 0x07);
+    video_print(result.sysfs ? "OK" : "ERRO",
+                result.sysfs ? 0x0A : 0x0C);
     video_print("\n", 0x07);
 }
 

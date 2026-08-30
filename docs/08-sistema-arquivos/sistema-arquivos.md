@@ -894,6 +894,54 @@ alocação libera o buffer antes de retornar. O fechamento libera o snapshot e a
 referência da montagem. O autoteste `procfs_self_test()` é executado pelo
 `vfs_self_test()` e verifica que não sobram buffers ou referências.
 
+## PROC3 - Sysfs integrado ao VFS
+
+O VFS monta automaticamente o volume lógico `sysfs` em `/sys`. Essa montagem
+é pinned, fixa, pública, somente leitura, usa `STORAGE_FS_NONE` e não depende
+de um volume Storage. O provider está em `src/fs/sysfs.c`, separado do
+`procfs`, e os arquivos de atributo continuam representados como
+`VFS_NODE_REGULAR`. A raiz virtual lista `sys` junto com `mnt`, `dev` e
+`proc`; `mount` exibe o tipo `SYSFS`.
+
+A árvore fixa é `/sys/bus/pci/devices`, `/sys/class/net`,
+`/sys/class/block` e `/sys/power/state`, com os diretórios intermediários
+`bus`, `pci`, `devices`, `class`, `net`, `block` e `power`. A raiz lista
+`bus`, `class`, `power`; `bus` lista `pci`; `bus/pci` lista `devices`; e
+`class` lista `net`, `block`. PCI usa identificadores `BB:DD.F` ordenados por
+bus/device/function. Interfaces usam os IDs produzidos por
+`network_manager_format_text()` e blocos usam `block_device_t.id`; ambos são
+ordenados lexicograficamente. Classes sem hardware ficam vazias e não há
+placeholders.
+
+Cada diretório de dispositivo lista arquivos de atributo em ordem fixa. PCI
+publica `bus`, `device`, `function`, `vendor_id`, `device_id`, `class`,
+`subclass`, `prog_if`, `revision`, `irq`, `bar0` a `bar5` e `present`. Rede
+publica identidade, transporte, estado, dados PCI/USB, MAC, estado L3 e
+estatísticas de pacotes. Blocos publicam identidade, modelo, provider,
+setores, capacidade, modo, operações e capacidades. A capacidade é calculada
+com verificação de overflow. `/sys/power/state` publica `state S0` até
+`state S5`, `cpu_idle`, `hardware_poweroff` e `reboot`, usando os tokens
+`available`, `simulated` e `unavailable`.
+
+Todos os arquivos são snapshots ASCII de no máximo 16 KiB, capturados durante
+`open()` por cópia dos inventários PCI, rede e blocos e do status de energia.
+O contexto privado do `file_t` contém somente o buffer, o cursor implícito em
+`file_t.offset`, montagem, tipo, identificador e geração; não retém ponteiros
+para dispositivos. `read()` suporta leituras parciais e EOF com zero bytes,
+e `lseek()` aceita `SET`, `CUR` e `END` dentro do snapshot. O fechamento libera
+o buffer e a referência da montagem. Escrita, `ioctl` e `sync` retornam
+`ERR_UNAVAILABLE`; caminhos inválidos, dispositivos ausentes, overflow e
+falha de memória retornam respectivamente `ERR_INVALID`, `ERR_NOT_FOUND`,
+`ERR_OVERFLOW` e `ERR_MEM`.
+
+O provider mantém uma geração interna do inventário para futuras atualizações,
+sem hotplug ou rescan nesta etapa. Se o hardware desaparecer depois da
+abertura, o snapshot continua válido; uma nova abertura procura o ID novamente.
+`sysfs_validate_state()` e `sysfs_self_test()` verificam montagem, ordenação,
+formato ASCII, seek, EOF, somente leitura e ausência de buffers ou referências
+residuais. A validação funcional observável usa `ls /sys`, as classes, os
+atributos disponíveis e `cat /sys/power/state`.
+
 ## Pipes anonimos e redirecionamento VFS4
 
 `vfs_pipe()` cria dois descritores no processo atual: `fds[0]` somente para

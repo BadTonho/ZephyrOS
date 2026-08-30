@@ -218,24 +218,71 @@ em QEMU; `/sys` permanece reservado ao PROC3.
 
 ### Implementação
 
-- [ ] Criar o ponto de montagem `/sys` com o driver `sysfs`.
-- [ ] Mapear a árvore de barramentos e dispositivos:
-  - `/sys/bus/pci/devices/`: dispositivos PCI descobertos com Vendor ID, Device ID e classe.
-  - `/sys/class/net/`: interfaces de rede registradas (`eth0`, `eth1`) e seus endereços MAC.
-  - `/sys/class/block/`: discos e mídias de armazenamento (`hda`, `sda`).
+- [x] Criar o ponto de montagem `/sys` com o provider separado `sysfs`.
+- [x] Mapear a hierarquia fixa de barramentos, classes e energia:
+  - `/sys/bus/pci/devices/`: dispositivos PCI descobertos em ordem `BB:DD.F`.
+  - `/sys/class/net/`: interfaces ordenadas pelo identificador nativo e seus atributos.
+  - `/sys/class/block/`: discos e mídias ordenados por `block_device_t.id`.
   - `/sys/power/state`: controle e leitura dos estados de energia disponíveis.
-- [ ] Associar cada diretório a um objeto proprietário e cada atributo a um
+- [x] Associar cada diretório a um objeto proprietário e cada atributo a um
   valor textual pequeno, com remoção segura quando o dispositivo desaparecer.
-- [ ] Manter os atributos de `/sys` separados dos relatórios compostos de
+- [x] Manter os atributos de `/sys` separados dos relatórios compostos de
   `/proc`; controles de energia só serão graváveis após contrato próprio.
+
+### Contrato PROC3
+
+O provider `sysfs` é separado do `procfs` e monta automaticamente o volume
+lógico `sysfs` em `/sys`. A montagem é pinned, não desmontável, pública,
+somente leitura, usa `STORAGE_FS_NONE` e não consome Storage. A raiz virtual
+do VFS lista `sys` junto com `mnt`, `dev` e `proc`.
+
+A hierarquia publicada é fixa e segue esta ordem: `bus`, `class`, `power` na
+raiz; `pci` em `bus`; `devices` em `bus/pci`; `net` e `block` em `class`; e
+`state` em `power`. Dispositivos PCI são ordenados por bus/device/function;
+interfaces e blocos são ordenados lexicograficamente pelo identificador
+estável. Hardware ausente não cria placeholders.
+
+Cada atributo é um arquivo regular com uma linha ASCII no formato
+`<atributo> <valor>\n`. PCI, rede, blocos e energia publicam os atributos
+definidos no contrato PROC3; números são decimais, hardware e BARs usam
+hexadecimal minúsculo com `0x`, MAC usa hexadecimal, erros são decimais com
+sinal e estados usam tokens estáveis. `/sys/power/state` publica as linhas
+repetidas `state S0` até `state S5`, seguidas por `cpu_idle`,
+`hardware_poweroff` e `reboot`.
+
+A abertura copia o inventário e captura um snapshot imutável de até 16 KiB no
+contexto privado do `file_t`; nenhum ponteiro para `pci_device_t`,
+`network_interface_info_t` ou `block_device_t` permanece no descritor. O
+`file_t.offset` é o cursor, `read()` admite blocos parciais e EOF retorna
+`OK` com zero bytes. `lseek()` aceita `SET`, `CUR` e `END` dentro do snapshot.
+Excesso retorna `ERR_OVERFLOW`, caminho ou cursor inválido retorna
+`ERR_INVALID`, dispositivo ausente retorna `ERR_NOT_FOUND`, falta de memória
+retorna `ERR_MEM` e escrita, `ioctl` ou `sync` retornam `ERR_UNAVAILABLE`.
+
+O provider mantém uma geração interna do inventário para futuras atualizações;
+PROC3 não adiciona hotplug ou rescan. A remoção posterior não invalida um
+snapshot já aberto. `sysfs_validate_state()` verifica a geração, o limite de
+snapshots ativos e a montagem VFS; `sysfs_self_test()` verifica também
+formato ASCII, ausência de referências residuais e funcionamento sem volumes
+Storage.
 
 ### Critério de saída
 
-A árvore `/sys` permite navegar pela topologia de hardware do computador como se fosse uma hierarquia de diretórios.
+A árvore `/sys` permite navegar pela topologia de hardware como uma hierarquia
+de diretórios, com atributos legíveis por `ls` e `cat`. A implementação está
+pronta para validação; o PROC3 só será marcado como concluído no resumo após a
+confirmação funcional do usuário no QEMU.
 
 ### Comandos Shell / Diagnóstico
 
 - `ls /sys/bus/pci/devices`: lista todos os dispositivos conectados ao barramento PCI.
+- `mount`: confirma `/sys -> sysfs` como montagem `SYSFS`, `RO` e pinned.
+- `ls /sys`, `ls /sys/bus`, `ls /sys/bus/pci`, `ls /sys/bus/pci/devices`:
+  validam a ordem da hierarquia PCI.
+- `ls /sys/class`, `ls /sys/class/net`, `ls /sys/class/block`: validam classes
+  vazias ou inventários disponíveis em ordem determinística.
+- `cat /sys/power/state`: valida o snapshot textual das capacidades de energia.
+- `regcheck full` e `health check`: validam invariantes VFS e sysfs.
 
 ---
 

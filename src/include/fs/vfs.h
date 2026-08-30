@@ -9,11 +9,11 @@
 #define VFS_MAX_OPEN_FILES 32U
 #define VFS_MAX_PATH 256U
 #define VFS_MAX_STORAGE_MOUNTS STORAGE_MAX_MOUNTS
-#define VFS_MAX_MOUNTS (VFS_MAX_STORAGE_MOUNTS + 2U)
+#define VFS_MAX_MOUNTS (VFS_MAX_STORAGE_MOUNTS + 3U)
 #define VFS_MAX_PROCFS_ENTRIES 69U
 #define VFS_MAX_DIR_ENTRIES \
-    ((STORAGE_MAX_DIR_ENTRIES + 3U) > VFS_MAX_PROCFS_ENTRIES ? \
-     (STORAGE_MAX_DIR_ENTRIES + 3U) : VFS_MAX_PROCFS_ENTRIES)
+    ((STORAGE_MAX_DIR_ENTRIES + 4U) > VFS_MAX_PROCFS_ENTRIES ? \
+     (STORAGE_MAX_DIR_ENTRIES + 4U) : VFS_MAX_PROCFS_ENTRIES)
 #define VFS_MAX_PIPES 8U
 #define VFS_PIPE_BUFFER_SIZE 4096U
 #define VFS_REDIRECT_MAX_SIZE (64U * 1024U)
@@ -49,7 +49,8 @@ typedef enum {
 typedef enum {
     VFS_MOUNT_STORAGE = 0,
     VFS_MOUNT_DEVFS,
-    VFS_MOUNT_PROCFS
+    VFS_MOUNT_PROCFS,
+    VFS_MOUNT_SYSFS
 } vfs_mount_kind_t;
 
 typedef struct vfs_vnode vnode_t;
@@ -189,6 +190,7 @@ typedef struct {
     uint8_t ioctl;
     uint8_t pipes;
     uint8_t procfs;
+    uint8_t sysfs;
 } vfs_test_result_t;
 
 int vfs_init(void);
