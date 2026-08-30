@@ -139,6 +139,9 @@
 #define SHELL_MEMCHECK_BLOCK_A 96U
 #define SHELL_MEMCHECK_BLOCK_B 160U
 #define SHELL_MEMCHECK_BLOCK_C 224U
+#define SHELL_CPU_USAGE_PERCENT_SCALE 100U
+#define SHELL_CPU_USAGE_MAX_PRODUCT \
+    (0xFFFFFFFFU / SHELL_CPU_USAGE_PERCENT_SCALE)
 #define SHELL_REGCHECK_NON_ATA_DEVICE_COUNT 7U
 #define SHELL_REGCHECK_PCI_NETWORK_CLASS 0x02U
 #define SHELL_REGCHECK_ACPI_SDT_HEADER_SIZE 36U
@@ -2409,6 +2412,23 @@ static void cmd_diagnostics_print_u64(uint64_t value) {
     }
 }
 
+static uint32_t shell_cpu_usage_percent(uint32_t value, uint32_t other) {
+    uint32_t total = value + other;
+
+    if (total < value) {
+        value >>= 1U;
+        other >>= 1U;
+        total = value + other;
+    }
+    while (total > SHELL_CPU_USAGE_MAX_PRODUCT) {
+        value >>= 1U;
+        other >>= 1U;
+        total = value + other;
+    }
+    if (!total) return 0U;
+    return (value * SHELL_CPU_USAGE_PERCENT_SCALE) / total;
+}
+
 static void cmd_diagnostics_print_test(const char* name, uint8_t passed) {
     video_print("  ", 0x07);
     video_print(name, 0x07);
@@ -4676,10 +4696,8 @@ static void cmd_cpu_usage(const char* args) {
     active_ticks = current.active_ticks - baseline_active;
     total_ticks = (uint64_t)idle_ticks + (uint64_t)active_ticks;
     if (total_ticks) {
-        idle_percent = (uint32_t)(((uint64_t)idle_ticks * 100ULL) /
-                                  total_ticks);
-        active_percent = (uint32_t)(((uint64_t)active_ticks * 100ULL) /
-                                    total_ticks);
+        idle_percent = shell_cpu_usage_percent(idle_ticks, active_ticks);
+        active_percent = shell_cpu_usage_percent(active_ticks, idle_ticks);
     }
 
     video_begin_update();
