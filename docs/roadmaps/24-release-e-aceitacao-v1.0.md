@@ -54,6 +54,8 @@ antivírus ou carregamento dinâmico de módulos.
   pessoais ou ferramentas implícitas.
 - [ ] Definir os artefatos que podem ser distribuídos e os que são apenas
   intermediários de validação.
+- [ ] Fixar a matriz de compatibilidade entre kernel, recovery, bootloader,
+  filesystem, pacotes e slots A/B da atualização.
 
 ### RLS2 — Liveness do Shell e dos jobs
 
@@ -77,6 +79,10 @@ antivírus ou carregamento dinâmico de módulos.
 - [ ] Confirmar que locks e interrupções são restaurados em todos os retornos.
 - [ ] Integrar falhas relevantes ao log da camada que possui o contexto, sem
   produzir logging pesado em IRQ ou hot path.
+- [ ] Confirmar que credenciais, permissões, limites e estados do supervisor
+  sejam publicados de forma reproduzível nos diagnósticos.
+- [ ] Confirmar que atualização interrompida, boot não confirmado e rollback
+  não deixem a única imagem inicializável inutilizada.
 - [ ] Manter `health`, `regcheck`, `memcheck`, `schedcheck`, `proccheck` e os
   diagnósticos de rede/ACPI coerentes depois de ciclos repetidos.
 
@@ -88,6 +94,8 @@ antivírus ou carregamento dinâmico de módulos.
   Desktop, WM e Updater.
 - [ ] Testar comandos que terminam normalmente, falham antes do commit,
   cancelam e deixam recursos ocupados.
+- [ ] Testar atualização online e offline, falta de rede, falta de espaço,
+  falha de escrita, queda durante staging e rollback após boot não saudável.
 - [ ] Confirmar fallback de vídeo, teclado, rede, áudio e armazenamento sem
   travamento ou tela sem prompt.
 - [ ] Registrar diferenças entre cobertura validada e cobertura complementar.
@@ -98,6 +106,8 @@ antivírus ou carregamento dinâmico de módulos.
 - [ ] Atualizar documentação, contratos, índice, roadmap geral e registro de
   validações com evidência e horário real.
 - [ ] Definir procedimento de rollback para a última imagem aprovada.
+- [ ] Definir o marcador de versão saudável, o limite de tentativas de boot e
+  o procedimento de recuperação da candidata.
 - [ ] Publicar a matriz de suporte e as limitações aceitas da 1.0.0.
 
 ## Contratos e invariantes
@@ -119,6 +129,10 @@ antivírus ou carregamento dinâmico de módulos.
   operação.
 - A matriz suportada termina com diagnósticos sem falhas novas, sem recursos
   residuais e com os fallbacks documentados.
+- A identidade mínima, as permissões, o supervisor de serviços e os limites
+  por processo estão validados nos perfis suportados.
+- A atualização do sistema possui versão candidata, confirmação de boot e
+  rollback reproduzível sem destruir a única imagem inicializável.
 - A imagem pode ser identificada, reproduzida e revertida.
 - Todas as pendências aceitas estão associadas a uma dívida técnica ou a um
   backlog pós-1.0, nunca ocultas em um percentual agregado.
