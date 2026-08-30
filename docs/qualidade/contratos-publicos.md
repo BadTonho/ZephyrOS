@@ -110,6 +110,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/fs/block_cache.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/devfs.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/procfs.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
+| `src/include/fs/sysfs.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/fat12.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/fat32.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/file_index.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
@@ -827,3 +828,36 @@ O contexto de cada arquivo continua dono de um snapshot de no maximo 16 KiB;
 `read`, EOF e `lseek` operam sobre esse buffer imutavel. O acesso e publico e
 somente leitura; nao foram adicionados layouts binarios para aplicativos,
 syscalls, App API, persistencia ou alteracoes no bootloader.
+
+## PROC3 - Sysfs integrado ao VFS
+
+`src/include/fs/sysfs.h` publica o contrato interno do provider separado
+`sysfs`: lookup, abertura, listagem, validacao e autoteste, alem do contexto de
+snapshot e do resultado append-only do VFS. O contexto contem apenas o buffer,
+tipo, identificador, geracao e referencia da montagem; nao retém ponteiros para
+`pci_device_t`, `network_interface_info_t` ou `block_device_t`.
+
+`VFS_MOUNT_SYSFS` foi anexado ao enum de montagens sem renumerar os valores
+anteriores. A montagem `sysfs` em `/sys` e pinned, publica, somente leitura,
+usa `STORAGE_FS_NONE` e nao e desmontavel. Os nos sao `VFS_NODE_DIRECTORY` ou
+`VFS_NODE_REGULAR`; nao foi criada uma nova classe de vnode, syscall ou App API.
+O campo `sysfs` foi acrescentado ao final de `vfs_test_result_t`.
+
+A hierarquia fixa inclui `bus/pci/devices`, `class/net`, `class/block` e
+`power/state`. A raiz lista `bus`, `class`, `power`; PCI e ordenado por
+`bus/device/function`; rede usa os IDs de `network_manager_format_text()`;
+blocos usam `block_device_t.id`; classes sem inventario ficam vazias. Cada
+atributo e um arquivo ASCII de uma linha no formato `<atributo> <valor>\n`.
+PCI, rede, blocos e energia publicam os atributos definidos no contrato PROC3,
+com numeros decimais, valores de hardware em hexadecimal minúsculo com `0x`,
+MAC hexadecimal e tokens de estado estaveis. `/sys/power/state` usa linhas
+repetidas `state S0` ate `state S5`, seguidas por `cpu_idle`,
+`hardware_poweroff` e `reboot`.
+
+Cada abertura copia os inventarios e captura um snapshot imutavel de no maximo
+16 KiB. `file_t.offset` e o cursor; leituras parciais, EOF e `lseek(SET/CUR/END)`
+seguem o contrato PROC0. Excesso retorna `ERR_OVERFLOW`, caminho invalido
+`ERR_INVALID`, dispositivo ausente `ERR_NOT_FOUND`, falta de memoria `ERR_MEM`
+e escrita, `ioctl` ou `sync` `ERR_UNAVAILABLE`. A remocao posterior do
+hardware nao invalida um snapshot ja aberto. A geracao interna do inventario
+fica preparada para atualizacoes futuras, sem hotplug ou rescan nesta etapa.

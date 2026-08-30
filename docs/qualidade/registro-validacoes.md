@@ -3019,3 +3019,16 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   estados `DISABLED`/`DEGRADED` exibidos pertencem a componentes opcionais já
   indisponíveis no perfil executado. O PROC2 foi marcado como concluído no
   roadmap; `/sys` permanece reservado ao PROC3.
+
+- PROC3: provider sysfs integrado ao VFS. Implementado em: 2026-08-30
+  (horário não informado).
+  Foram criados `src/fs/sysfs.c` e `src/include/fs/sysfs.h`, com montagem
+  automática pinned em `/sys`, hierarquia fixa de PCI, rede, blocos e energia,
+  atributos ASCII somente leitura, snapshots de até 16 KiB, cursor, EOF,
+  `lseek`, cópia dos inventários, validação de capacidade e limpeza em erro e
+  fechamento. O `vfs_self_test()` recebeu o resultado append-only `sysfs`, e a
+  raiz virtual, `mount`, lookup, `chdir`, listagem e Makefile foram atualizados.
+  Não houve alteração de `boot.asm`, `stage2.asm`, App API, syscalls ou
+  persistência. O agente não executou build, testes ou QEMU; a confirmação
+  funcional do usuário ainda é necessária antes de marcar PROC3 como concluído
+  no resumo do roadmap.
