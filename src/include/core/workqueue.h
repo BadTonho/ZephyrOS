@@ -147,6 +147,8 @@ int workqueue_get_stats(workqueue_stats_t* out_stats);
 int workqueue_validate_state(void);
 int workqueue_self_test(workqueue_self_test_result_t* out_result);
 int workqueue_probe_worker(uint32_t timeout_ticks);
+int workqueue_power_quiesce_until(uint32_t deadline_tick);
+int workqueue_power_set_quiescing(uint8_t active);
 const char* workqueue_priority_name(work_priority_t priority);
 const char* workqueue_state_name(work_state_t state);
 const char* workqueue_context_name(work_context_t context);

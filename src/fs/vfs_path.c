@@ -6,6 +6,7 @@
 #include "core/log.h"
 #include "core/spinlock.h"
 #include "core/string.h"
+#include "core/timer.h"
 #include "process/process.h"
 
 typedef struct {
@@ -548,6 +549,10 @@ int vfs_resolve_open_path(const char* path, uint32_t mode,
 }
 
 int vfs_lookup(const char* path, vfs_lookup_result_t* result) {
+    if (vfs_power_is_quiescing()) {
+        return vfs_path_fail(ERR_UNAVAILABLE,
+                             "Lookup VFS recusado durante quiescencia");
+    }
     return vfs_resolve_open_path(path, VFS_MODE_READ, result);
 }
 
@@ -639,6 +644,10 @@ int vfs_chdir(const char* path) {
     uint32_t mount_generation;
     int result;
 
+    if (vfs_power_is_quiescing()) {
+        return vfs_path_fail(ERR_UNAVAILABLE,
+                             "Chdir VFS recusado durante quiescencia");
+    }
     if (!path) {
         LOG_ERROR("FS", "Caminho nulo em chdir VFS");
         return ERR_NULL;
@@ -666,6 +675,10 @@ int vfs_getcwd(char* path, uint32_t capacity) {
     process_t* current;
     uint32_t length;
 
+    if (vfs_power_is_quiescing()) {
+        return vfs_path_fail(ERR_UNAVAILABLE,
+                             "Getcwd VFS recusado durante quiescencia");
+    }
     if (!path) return vfs_path_fail(ERR_NULL, "Destino de getcwd nulo");
     current = process_get_current();
     if (!current || !current->fd_table.initialized) {
@@ -759,6 +772,10 @@ int vfs_list_dir(const char* path, vfs_dir_entry_t* entries,
     uint8_t done = 0U;
     int result;
 
+    if (vfs_power_is_quiescing()) {
+        return vfs_path_fail(ERR_UNAVAILABLE,
+                             "Listagem VFS recusada durante quiescencia");
+    }
     if (!path || !entries || !out_count) {
         LOG_ERROR("FS", "Listagem VFS recebeu argumento nulo");
         return ERR_NULL;
@@ -914,6 +931,10 @@ int vfs_copy_mounts(vfs_mount_info_t* output, uint32_t capacity,
 int vfs_mount_volume(const char* volume_id) {
     int result;
 
+    if (vfs_power_is_quiescing()) {
+        return vfs_path_fail(ERR_UNAVAILABLE,
+                             "Montagem VFS recusada durante quiescencia");
+    }
     if (!volume_id) return ERR_NULL;
     result = storage_mount(volume_id);
     if (result != OK) return result;
@@ -931,6 +952,10 @@ int vfs_unmount_volume(const char* volume_id) {
     int index;
     int result;
 
+    if (vfs_power_is_quiescing()) {
+        return vfs_path_fail(ERR_UNAVAILABLE,
+                             "Desmontagem VFS recusada durante quiescencia");
+    }
     if (!volume_id) return ERR_NULL;
     spinlock_acquire(&vfs_mount_lock);
     index = vfs_find_mount_by_volume_unlocked(volume_id);
@@ -953,6 +978,42 @@ int vfs_unmount_volume(const char* volume_id) {
     if (result != OK) return result;
     result = vfs_refresh_mounts();
     return result == ERR_NOT_FOUND ? OK : result;
+}
+
+int vfs_power_unmount_storage_until(uint32_t deadline_tick,
+                                    uint32_t* out_count) {
+    vfs_mount_info_t mounts[VFS_MAX_MOUNTS];
+    uint32_t mount_count = 0U;
+    uint32_t unmounted = 0U;
+    int result;
+
+    if (!out_count) {
+        LOG_ERROR("FS", "Destino nulo ao desmontar storage de energia");
+        return ERR_NULL;
+    }
+    *out_count = 0U;
+    result = vfs_copy_mounts(mounts, VFS_MAX_MOUNTS, &mount_count);
+    if (result != OK) return result;
+    for (uint32_t index = 0U; index < mount_count; index++) {
+        if ((int32_t)(timer_get_ticks() - deadline_tick) >= 0) {
+            LOG_WARN("FS", "Desmontagem de storage excedeu o prazo");
+            return ERR_TIMEOUT;
+        }
+        if (mounts[index].kind != VFS_MOUNT_STORAGE || mounts[index].pinned) {
+            continue;
+        }
+        if (mounts[index].open_files || mounts[index].cwd_references) {
+            LOG_WARN("FS", "Volume de storage ocupado durante encerramento");
+            return ERR_STATE;
+        }
+        result = storage_unmount_after_sync(mounts[index].volume_id);
+        if (result != OK) return result;
+        result = vfs_refresh_mounts();
+        if (result != OK && result != ERR_NOT_FOUND) return result;
+        unmounted++;
+    }
+    *out_count = unmounted;
+    return OK;
 }
 
 void vfs_path_get_metrics(uint32_t* capacity, uint32_t* active,

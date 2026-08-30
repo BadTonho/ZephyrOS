@@ -156,6 +156,7 @@ int storage_get_mounted_at(uint8_t index, storage_volume_t* out_volume);
 int storage_find_volume(const char* id, storage_volume_t* out_volume);
 int storage_mount(const char* id);
 int storage_unmount(const char* id);
+int storage_unmount_after_sync(const char* id);
 int storage_list_dir(const char* id, const char* path,
                      storage_dir_entry_t* entries, uint32_t capacity,
                      uint32_t* out_count);

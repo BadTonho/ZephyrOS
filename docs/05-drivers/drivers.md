@@ -805,6 +805,28 @@ especifica de emulador. Os orcamentos da transacao sao definidos pelo PWR0 em
 ticks PIT de 50 Hz; limites internos de leitura do firmware continuam sendo
 detalhes do driver e nao substituem esses orcamentos.
 
+### Participacao dos drivers no PWR4
+
+O coordenador PWR4 chama callbacks de quiescencia em ordem deterministica e
+com prazo absoluto. O callback nao recebe nem armazena ponteiros persistentes
+para inventarios de outro modulo. Ausencia de audio, rede ou video e
+`ERR_UNAVAILABLE` opcional e publica degradacao; falha real ou timeout retorna
+erro ao coordenador antes do commit.
+
+O audio encerra `speaker` e AC97 quando disponiveis. A rede recebe o gate pelo
+`network_manager` e pela camada Ethernet, interrompendo polling, TX/RX e
+callbacks dos drivers; E1000 e RTL8139 desligam o hardware por seus callbacks
+proprietarios. O video desativa o backbuffer/VESA e preserva a superficie VGA
+textual para mensagens finais. O driver nao executa reset de plataforma nem
+usa portas privadas de emuladores.
+
+O ponto irreversivel continua sendo exclusivo de `acpi_poweroff()` ou de um
+metodo de reboot validado. Parar um periferico local nao e commit de energia.
+Se a transacao falhar antes desse ponto, o coordenador tenta reabrir seus
+gates; essa recuperacao e best-effort e nao promete restaurar hardware que ja
+tenha sido desativado. A implementacao PWR4 aguarda a validacao funcional do
+usuario.
+
 ---
 
 ## PCI (`pci.c`)

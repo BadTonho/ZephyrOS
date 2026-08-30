@@ -486,6 +486,41 @@ VirtualBox pode ser usada como fallback generico. O PWR3 implementa a
 transacao, S5 e os metodos de reboot; notificacoes completas, desmontagem e
 encerramento ordenado de processos permanecem no PWR4.
 
+## Servico PWR4: notificacao e encerramento ordenado
+
+O PWR4 executa `poweroff`, `reboot` e os formatos aceitos de `shutdown` pela
+mesma transacao de PWR0. A cadeia interna e estatica, registrada somente no
+bootstrap e preserva esta ordem: processos ring3; workqueue e servicos
+nativos; VFS/Storage; audio; rede; video. Cada participante recebe somente um
+prazo absoluto e nao retem ponteiros de outro subsistema.
+
+Na fase `notification`, o coordenador fecha a admissao de novos lancamentos
+ring3, envia `SIGTERM`, aguarda no maximo 250 ticks e envia `SIGKILL` aos
+sobreviventes. Depois recolhe zombies, inclusive processos de teste.
+Processos ring0 nao sao destruidos a forca; permanecem sujeitos a
+quiescencia. Se um usuario ativo persistir, a transacao aborta com
+`ERR_TIMEOUT` ou `ERR_STATE` antes do commit.
+
+Na fase `sync/flush`, `storage_sync_all_until()` e executado uma unica vez.
+Na quiescencia, novas operacoes normais do VFS e novos trabalhos da workqueue
+sao recusados; somente volumes Storage nao-pinned sao desmontados. Um volume
+com arquivo aberto, operacao ativa ou CWD apontando para ele retorna
+`ERR_STATE`. `/`, `/dev`, `/proc` e `/sys` continuam montados quando pinned.
+
+Audio, Ethernet e VESA sao parados best-effort. A ausencia desses recursos
+opcionais registra degradacao e nao impede o commit; falha real, timeout ou
+volume ocupado impede a transicao. O VGA textual permanece disponivel para
+diagnostico. A primeira escrita ou comando de reset inicia a regiao
+irreversivel; apos esse ponto nenhum caminho limpa a transacao ou retorna ao
+estado operacional como se nada tivesse ocorrido.
+
+`power_status_t` publica, ao final da estrutura, alvo, contadores de
+notificadores, SIGTERM/SIGKILL, processos recolhidos, volumes desmontados,
+falhas opcionais, estado de quiescencia, commit iniciado e degradacao. Esses
+campos sao diagnosticos internos append-only; nao formam ABI binaria, syscall
+ou App API nova. A implementacao PWR4 aguarda confirmacao funcional do usuario
+e permanece pendente no resumo do Roadmap 16.
+
 ## Servicos S2.1-S2.8: Multi-NIC, Ethernet e pilha TCP/IP
 
 `network_manager` filtra por copia o snapshot PCI e mantem ate quatro

@@ -232,6 +232,9 @@ HTTP_OBJ = build/http.o
 POWER_C = src/core/power.c
 POWER_OBJ = build/power.o
 
+POWER_NOTIFIER_C = src/core/power_notifier.c
+POWER_NOTIFIER_OBJ = build/power_notifier.o
+
 STRING_C = src/core/string.c
 STRING_OBJ = build/string.o
 
@@ -581,6 +584,7 @@ OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(INPUT_OBJ) $(IRQ_DEF
        $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(VFS_OBJ) $(VFS_PATH_OBJ) $(DEVFS_OBJ) $(PROCFS_OBJ) $(SYSFS_OBJ) $(BLOCK_OBJ) $(BLOCK_CACHE_OBJ) $(STORAGE_OBJ) $(FILE_INDEX_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(SIGNAL_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(SHELL_INTROSPECTION_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(UPDATER_OBJ) $(APPSTORE_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ) $(APP_REMOTE_OBJ) $(DEVICE_MANAGER_OBJ) $(USB_MANAGER_OBJ) $(NETWORK_MANAGER_OBJ) $(WIFI_MANAGER_OBJ) $(POWER_OBJ) $(NET_BUFFER_OBJ) $(SK_BUFF_OBJ) $(SOCKET_OBJ) $(ETHERNET_OBJ) $(ARP_OBJ) $(IPV4_OBJ) $(ICMP_OBJ) $(UDP_OBJ) $(DHCP_OBJ) $(DNS_OBJ) $(TCP_OBJ) $(NET_SOCKET_OBJ) $(HTTP_OBJ) $(APP_CATALOG_OBJ) $(DISPLAY_OBJ) $(SHELL_INPUT_OBJ) $(SHELL_DISPATCH_OBJ) $(SHELL_COMMAND_UTILS_OBJ) $(SHELL_PIPELINE_OBJ) $(SHELL_COMMANDS_VFS_OBJ) $(SHELL_COMMANDS_CORE_OBJ) $(SHELL_COMMANDS_STORAGE_OBJ) $(SHELL_COMMANDS_DIAGNOSTICS_OBJ) $(SHELL_COMMANDS_NETWORK_OBJ) $(SHELL_COMMANDS_WIFI_OBJ) $(SHELL_CHECKS_OBJ) $(SHELL_COMMANDS_PACKAGES_OBJ) $(SHELL_COMMANDS_APPS_OBJ) $(SHELL_HOSTED_OBJ) $(SHELL_JOB_OBJ) $(RTC_OBJ) $(CLOCK_OBJ) $(TLS_OBJ) $(TLS_CLIENT_OBJ) $(SLAB_OBJ)
 
 OBJS += $(ROUTE_OBJ)
+OBJS += $(POWER_NOTIFIER_OBJ)
 
 # Targets
 all: $(OS_IMG)
@@ -772,11 +776,11 @@ $(USB_HID_OBJ): $(USB_HID_C) src/include/drivers/usb_hid.h src/include/core/inpu
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(RTL8811CU_OBJ): $(RTL8811CU_C) src/include/drivers/rtl8811cu.h src/include/core/usb_manager.h src/include/core/usb_transport.h src/include/core/ethernet.h src/include/fs/fs.h
+$(RTL8811CU_OBJ): $(RTL8811CU_C) src/include/drivers/rtl8811cu.h src/include/core/usb_manager.h src/include/core/usb_transport.h src/include/core/ethernet.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/fs/fs.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(NETWORK_MANAGER_OBJ): $(NETWORK_MANAGER_C) src/include/core/network_manager.h src/include/core/usb_manager.h src/include/drivers/rtl8811cu.h src/include/core/socket.h src/include/core/route.h
+$(NETWORK_MANAGER_OBJ): $(NETWORK_MANAGER_C) src/include/core/network_manager.h src/include/core/ethernet.h src/include/core/usb_manager.h src/include/drivers/rtl8811cu.h src/include/core/socket.h src/include/core/route.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -840,7 +844,11 @@ $(HTTP_OBJ): $(HTTP_C) src/include/core/http.h src/include/core/tls_client.h src
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(POWER_OBJ): $(POWER_C) src/include/core/power.h src/include/core/errors.h src/include/core/keyboard.h src/include/core/log.h src/include/core/string.h src/include/core/timer.h src/include/drivers/ac97.h src/include/drivers/acpi.h src/include/drivers/idt.h src/include/drivers/speaker.h src/include/fs/storage.h
+$(POWER_OBJ): $(POWER_C) src/include/core/power.h src/include/core/power_notifier.h src/include/core/errors.h src/include/core/keyboard.h src/include/core/log.h src/include/core/network_manager.h src/include/core/string.h src/include/core/timer.h src/include/core/video.h src/include/core/workqueue.h src/include/drivers/ac97.h src/include/drivers/acpi.h src/include/drivers/idt.h src/include/drivers/speaker.h src/include/fs/storage.h src/include/fs/vfs.h src/include/process/process.h
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(POWER_NOTIFIER_OBJ): $(POWER_NOTIFIER_C) src/include/core/power_notifier.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/timer.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -880,7 +888,7 @@ $(SWITCH_OBJ): $(SWITCH_ASM)
 	@if not exist build mkdir build
 	$(NASM) -f elf32 $< -o $@
 
-$(VIDEO_OBJ): $(VIDEO_C)
+$(VIDEO_OBJ): $(VIDEO_C) src/include/core/video.h src/include/drivers/vesa.h src/include/core/errors.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -992,7 +1000,7 @@ $(VFS_OBJ): $(VFS_C) src/include/fs/vfs.h src/include/core/poll.h src/include/fs
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(VFS_PATH_OBJ): $(VFS_PATH_C) src/include/fs/vfs.h src/include/fs/vfs_internal.h src/include/fs/devfs.h src/include/fs/procfs.h src/include/fs/sysfs.h src/include/fs/storage.h src/include/process/process.h
+$(VFS_PATH_OBJ): $(VFS_PATH_C) src/include/fs/vfs.h src/include/fs/vfs_internal.h src/include/fs/devfs.h src/include/fs/procfs.h src/include/fs/sysfs.h src/include/fs/storage.h src/include/process/process.h src/include/core/timer.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1032,7 +1040,7 @@ $(BMP_OBJ): $(BMP_C)
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(PROCESS_OBJ): $(PROCESS_C) src/include/process/process.h src/include/process/thread.h src/include/memory/slab.h src/include/memory/vma.h src/include/memory/paging.h src/include/core/app_api.h
+$(PROCESS_OBJ): $(PROCESS_C) src/include/process/process.h src/include/process/thread.h src/include/memory/slab.h src/include/memory/vma.h src/include/memory/paging.h src/include/core/app_api.h src/include/core/timer.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1092,7 +1100,7 @@ $(SHELL_COMMANDS_WIFI_OBJ): $(SHELL_COMMANDS_WIFI_C) src/include/apps/shell_comm
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(SHELL_CHECKS_OBJ): $(SHELL_CHECKS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/keyboard.h src/include/core/power.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/clock.h src/include/core/tls.h src/include/core/wifi_manager.h src/include/drivers/idt.h src/include/drivers/acpi.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h src/include/process/process.h src/include/memory/vma.h
+$(SHELL_CHECKS_OBJ): $(SHELL_CHECKS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/keyboard.h src/include/core/power.h src/include/core/power_notifier.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/clock.h src/include/core/tls.h src/include/core/wifi_manager.h src/include/drivers/idt.h src/include/drivers/acpi.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h src/include/process/process.h src/include/memory/vma.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 

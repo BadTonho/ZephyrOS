@@ -37,6 +37,19 @@ typedef enum {
     POWER_TRANSACTION_TERMINAL
 } power_transaction_phase_t;
 
+typedef enum {
+    POWER_TRANSACTION_TARGET_NONE = 0,
+    POWER_TRANSACTION_TARGET_SHUTDOWN,
+    POWER_TRANSACTION_TARGET_REBOOT
+} power_transaction_target_t;
+
+typedef enum {
+    POWER_QUIESCENCE_UNKNOWN = 0,
+    POWER_QUIESCENCE_READY,
+    POWER_QUIESCENCE_DEGRADED,
+    POWER_QUIESCENCE_COMPLETE
+} power_quiescence_state_t;
+
 typedef struct {
     power_capability_t states[POWER_STATE_COUNT];
     power_capability_t cpu_idle;
@@ -57,6 +70,17 @@ typedef struct {
     uint8_t reboot_acpi_reset_available;
     uint8_t reboot_ps2_available;
     uint8_t reboot_triple_fault_available;
+    power_transaction_target_t transaction_target;
+    uint32_t notifiers_registered;
+    uint32_t notifiers_completed;
+    uint32_t sigterm_sent;
+    uint32_t sigkill_sent;
+    uint32_t processes_reaped;
+    uint32_t volumes_unmounted;
+    uint32_t optional_failures;
+    power_quiescence_state_t quiescence_state;
+    uint8_t commit_started;
+    uint8_t transaction_degraded;
 } power_status_t;
 
 int power_init(void);
@@ -68,6 +92,8 @@ void power_shutdown(void);
 const char* power_capability_name(power_capability_t capability);
 const char* power_service_state_name(power_service_state_t state);
 const char* power_transaction_phase_name(power_transaction_phase_t phase);
+const char* power_transaction_target_name(power_transaction_target_t target);
+const char* power_quiescence_state_name(power_quiescence_state_t state);
 int power_shutdown_prepare(void);
 
 #endif

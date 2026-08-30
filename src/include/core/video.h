@@ -32,6 +32,7 @@
 
 void video_init(void);
 void video_disable_framebuffer(void);
+int video_power_quiesce(void);
 void video_clear(void);
 void video_put_char(char c, uint8_t color);
 void video_print(const char* str, uint8_t color);

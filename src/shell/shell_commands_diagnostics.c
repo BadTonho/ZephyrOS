@@ -4229,6 +4229,31 @@ static void cmd_power(const char* args) {
     video_print(status.reboot_triple_fault_available ?
                 "DISPONIVEL\n" : "INDISPONIVEL\n",
                 status.reboot_triple_fault_available ? 0x0A : 0x0E);
+    video_print("  Alvo da transacao: ", 0x07);
+    video_print(power_transaction_target_name(status.transaction_target),
+                0x0B);
+    video_print("\n  Notificadores: ", 0x07);
+    shell_command_print_num(status.notifiers_completed);
+    video_print("/", 0x08);
+    shell_command_print_num(status.notifiers_registered);
+    video_print("\n  SIGTERM: ", 0x07);
+    shell_command_print_num(status.sigterm_sent);
+    video_print("  SIGKILL: ", 0x07);
+    shell_command_print_num(status.sigkill_sent);
+    video_print("  Recolhidos: ", 0x07);
+    shell_command_print_num(status.processes_reaped);
+    video_print("\n  Volumes desmontados: ", 0x07);
+    shell_command_print_num(status.volumes_unmounted);
+    video_print("\n  Falhas opcionais: ", 0x07);
+    shell_command_print_num(status.optional_failures);
+    video_print("\n  Quiescencia: ", 0x07);
+    video_print(power_quiescence_state_name(status.quiescence_state), 0x0B);
+    video_print("\n  Commit iniciado: ", 0x07);
+    video_print(status.commit_started ? "SIM" : "NAO",
+                status.commit_started ? 0x0C : 0x0A);
+    video_print("\n  Transacao degradada: ", 0x07);
+    video_print(status.transaction_degraded ? "SIM\n" : "NAO\n",
+                status.transaction_degraded ? 0x0E : 0x0A);
 }
 
 static void cmd_acpi_print_table(const char* name, uint8_t present,

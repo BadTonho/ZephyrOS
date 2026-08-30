@@ -1018,6 +1018,22 @@ retornam `ERR_AGAIN`. `ioctl`, `sync` e escrita em diretórios continuam em
 `ERR_UNAVAILABLE`. Scheduler, forwarding IPv4, energia, memória e parâmetros
 de processos não fazem parte do primeiro conjunto.
 
+## PWR4 - VFS e Storage no encerramento ordenado
+
+Durante a transacao PWR4, o coordenador bloqueia novas aberturas, escritas,
+listagens, mudancas de diretorio e sincronizacoes normais pela VFS. O
+`storage_sync_all_until()` e executado uma unica vez com o deadline da fase;
+depois dele, `vfs_power_unmount_storage_until()` desmonta somente volumes
+Storage nao-pinned. `/`, `/dev`, `/proc` e `/sys` permanecem montados.
+
+Volumes com arquivo aberto, operacao ativa ou `cwd` referenciando a montagem
+recusam a desmontagem com `ERR_STATE`. A API publica
+`storage_unmount_after_sync()` mantem a compatibilidade de
+`storage_unmount()`, mas permite ao coordenador evitar writeback duplicado.
+Falhas anteriores ao commit liberam os gates quando possivel; nenhuma API de
+VFS, Storage ou App API nova altera layouts binarios ou permite escrita em
+pseudo-filesystems.
+
 ## Pipes anonimos e redirecionamento VFS4
 
 `vfs_pipe()` cria dois descritores no processo atual: `fds[0]` somente para

@@ -38,6 +38,7 @@ typedef int (*ethernet_send_frame_fn)(
 typedef int (*ethernet_rx_pending_fn)(
     void* driver_context, uint8_t* out_pending);
 typedef int (*ethernet_service_pending_fn)(void* driver_context);
+typedef int (*ethernet_quiesce_fn)(void* driver_context);
 
 typedef enum {
     ETHERNET_DESTINATION_UNKNOWN = 0,
@@ -68,6 +69,7 @@ typedef struct {
     ethernet_rx_pending_fn rx_pending;
     ethernet_receive_frame_fn receive_frame;
     ethernet_send_frame_fn send_frame;
+    ethernet_quiesce_fn quiesce;
 } ethernet_interface_t;
 
 typedef struct {
@@ -118,5 +120,7 @@ int ethernet_get_status(ethernet_status_t* out_status);
 int ethernet_get_interface_status(
     const char* interface_id, ethernet_interface_status_t* out_status);
 int ethernet_validate_state(void);
+int ethernet_quiesce(void);
+int ethernet_set_quiescing(uint8_t active);
 
 #endif

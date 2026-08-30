@@ -12,6 +12,12 @@
 static rtl8811cu_status_t rtl8811cu_status;
 static uint8_t rtl8811cu_initialized;
 
+static int rtl8811cu_quiesce(void* driver_context) {
+    (void)driver_context;
+    LOG_WARN("RTL8811CU", "Quiescencia indisponivel sem driver ativo");
+    return ERR_UNAVAILABLE;
+}
+
 static uint16_t rtl8811cu_read_le16(const uint8_t* data) {
     return (uint16_t)data[0] | ((uint16_t)data[1] << 8);
 }
@@ -212,6 +218,7 @@ static void rtl8811cu_prepare_interface(ethernet_interface_t* out_interface) {
     out_interface->rx_pending = rtl8811cu_rx_pending;
     out_interface->receive_frame = rtl8811cu_receive_frame;
     out_interface->send_frame = rtl8811cu_send_frame;
+    out_interface->quiesce = rtl8811cu_quiesce;
 }
 
 int rtl8811cu_init(const usb_device_info_t* device,

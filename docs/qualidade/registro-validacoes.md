@@ -3215,3 +3215,17 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `poweroff` encerrou o QEMU, confirmando o commit ACPI S5. O resumo PWR3 foi
   marcado como concluido no Roadmap 16. Nenhuma App API, syscall, layout
   binario ou bootloader foi alterado.
+
+- PWR4: implementacao da notificacao e encerramento ordenado registrada em
+  2026-08-30 (horario nao informado). O coordenador passou a usar uma cadeia
+  estatica de processos ring3, workqueue, VFS/Storage, audio, rede e video;
+  executa SIGTERM/SIGKILL, reaping, sync unico, bloqueio de novas operacoes,
+  desmontagem de volumes nao-pinned e quiescencia best-effort antes do
+  commit. `poweroff`, `reboot` e `shutdown` usam a transacao comum; nao houve
+  alteracao em App API, syscalls, layouts binarios, `taskmanager.h`,
+  `boot.asm` ou `stage2.asm`.
+
+  A validacao `make q3check`, o build completo e a execucao no QEMU nao foram
+  realizados pelo agente. A confirmacao funcional do reboot, poweroff,
+  `shutdown -h now`, `shutdown -r now`, `regcheck full` e `health check` ainda
+  depende do usuario; o resumo PWR4 permanece pendente no Roadmap 16.

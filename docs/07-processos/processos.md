@@ -443,6 +443,27 @@ destruicao. As stacks continuam no `kmalloc`, com canarios e limites proprios.
 `thread_is_ready()` permite ao kernel publicar falha de criacao do cache sem
 confundir scheduler vazio com scheduler indisponivel.
 
+### Encerramento ordenado PWR4
+
+Durante `poweroff`, `reboot` ou `shutdown`, o coordenador fecha a admissao de
+novos processos ring3 e trabalha somente com snapshots de PID. Cada entrada
+e revalidada por seu estado atual; nenhum `process_t*` atravessa a fronteira
+do callback de energia. O processo nativo que coordena a operacao nao e
+destruido.
+
+Os usuarios recebem `SIGTERM` na fase de notificacao. O coordenador aguarda
+ate 250 ticks PIT, envia `SIGKILL` aos sobreviventes e recolhe os zombies,
+inclusive o processo reservado por testes. Se ainda houver usuario ativo,
+retorna `ERR_TIMEOUT` ou `ERR_STATE` antes do commit. Uma falha posterior
+pode deixar processos ja encerrados, pois o PWR4 nao promete rollback completo
+do sistema.
+
+`process_power_set_quiescing()` e
+`process_power_shutdown_users()` sao contratos internos do coordenador. Eles
+nao alteram App API, syscalls, `taskmanager.h` ou o formato das imagens ring3;
+somente impedem criacao/inicio durante a transacao e publicam contadores de
+SIGTERM, SIGKILL e reaping em `power_status_t`.
+
 ---
 
 ## Context Switch

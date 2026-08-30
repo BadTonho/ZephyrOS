@@ -735,6 +735,17 @@ void video_disable_framebuffer(void) {
     update_cursor();
 }
 
+int video_power_quiesce(void) {
+    if (!vesa_has_backbuffer()) {
+        video_disable_framebuffer();
+        LOG_WARN("VIDEO", "Framebuffer VESA opcional indisponivel");
+        return ERR_UNAVAILABLE;
+    }
+    vesa_disable();
+    video_disable_framebuffer();
+    return OK;
+}
+
 void video_clear(void) {
     spinlock_acquire(&video_lock);
     clear_visual_buffer_locked();

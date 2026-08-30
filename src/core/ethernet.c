@@ -27,6 +27,7 @@ static ethernet_status_t ethernet_status;
 static ethernet_protocol_entry_t
     ethernet_handlers[ETHERNET_PROTOCOL_HANDLER_CAPACITY];
 static uint8_t ethernet_poll_cursor;
+static uint8_t ethernet_quiescing;
 
 static uint8_t ethernet_text_equal(const char* first,
                                    const char* second) {
@@ -259,6 +260,7 @@ int ethernet_init(void) {
     kmemset(&ethernet_status, 0, sizeof(ethernet_status));
     kmemset(ethernet_handlers, 0, sizeof(ethernet_handlers));
     ethernet_poll_cursor = 0;
+    ethernet_quiescing = 0U;
     ethernet_status.initialized = 1;
     ethernet_status.last_error = OK;
     LOG_INFO("NET", "Camada Ethernet inicializada com sucesso");
@@ -277,7 +279,7 @@ int ethernet_attach_interface(const ethernet_interface_t* interface) {
         !interface->driver_context || !interface->get_driver_status ||
         !interface->service_pending || !interface->rx_pending ||
         !interface->receive_frame ||
-        !interface->send_frame) {
+        !interface->send_frame || !interface->quiesce) {
         LOG_ERROR("NET", "Interface invalida para camada Ethernet");
         return interface ? ERR_INVALID : ERR_NULL;
     }
@@ -419,6 +421,7 @@ int ethernet_poll(uint32_t budget, uint32_t* out_processed) {
         return ERR_NULL;
     }
     *out_processed = 0;
+    if (ethernet_quiescing) return ERR_UNAVAILABLE;
     if (!ethernet_status.initialized) {
         LOG_ERROR("NET", "Polling Ethernet antes da inicializacao");
         return ERR_STATE;
@@ -464,6 +467,7 @@ int ethernet_send(const char* interface_id, const uint8_t* destination,
         LOG_ERROR("NET", "Transmissao Ethernet antes da inicializacao");
         return ERR_STATE;
     }
+    if (ethernet_quiescing) return ERR_UNAVAILABLE;
     if (!interface_id || !destination || (payload_length && !payload)) {
         LOG_ERROR("NET", "Argumento nulo para transmissao Ethernet");
         return ERR_NULL;
@@ -517,6 +521,42 @@ int ethernet_send(const char* interface_id, const uint8_t* destination,
     slot->status.last_error = OK;
     ethernet_status.tx_frames++;
     ethernet_status.last_error = OK;
+    return OK;
+}
+
+int ethernet_quiesce(void) {
+    int first_error = OK;
+
+    if (!ethernet_status.initialized) {
+        LOG_WARN("NET", "Ethernet opcional indisponivel na quiescencia");
+        return ERR_UNAVAILABLE;
+    }
+    if (!ethernet_status.interface_count) {
+        LOG_WARN("NET", "Nenhuma interface Ethernet disponivel na quiescencia");
+        return ERR_UNAVAILABLE;
+    }
+    ethernet_quiescing = 1U;
+    for (uint32_t index = 0U; index < ETHERNET_INTERFACE_CAPACITY; index++) {
+        int result;
+
+        if (!ethernet_slots[index].status.attached) continue;
+        result = ethernet_slots[index].interface.quiesce(
+            ethernet_slots[index].interface.driver_context);
+        if (result != OK && first_error == OK) first_error = result;
+    }
+    if (first_error != OK) {
+        LOG_ERROR_CODE("NET", first_error,
+                       "Falha ao colocar Ethernet em quiescencia");
+    }
+    return first_error;
+}
+
+int ethernet_set_quiescing(uint8_t active) {
+    if (!ethernet_status.initialized) {
+        LOG_ERROR("NET", "Gate Ethernet antes da inicializacao");
+        return ERR_STATE;
+    }
+    ethernet_quiescing = active ? 1U : 0U;
     return OK;
 }
 
@@ -578,7 +618,7 @@ int ethernet_validate_state(void) {
             !slot->interface.get_driver_status ||
             !slot->interface.rx_pending ||
             !slot->interface.receive_frame ||
-            !slot->interface.send_frame) {
+            !slot->interface.send_frame || !slot->interface.quiesce) {
             LOG_ERROR("NET", "Registro Ethernet contem interface invalida");
             return ERR_STATE;
         }

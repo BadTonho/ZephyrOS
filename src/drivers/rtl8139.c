@@ -416,6 +416,7 @@ static int rtl8139_receive_frame(void* driver_context, uint8_t* data,
                                  uint16_t* out_length,
                                  uint8_t* out_received);
 static int rtl8139_service_pending(void* driver_context);
+static int rtl8139_quiesce(void* driver_context);
 static void rtl8139_bottom_half(void* context);
 
 static int rtl8139_fill_interface(
@@ -436,6 +437,16 @@ static int rtl8139_fill_interface(
     out_interface->rx_pending = rtl8139_has_pending_rx;
     out_interface->receive_frame = rtl8139_receive_frame;
     out_interface->send_frame = rtl8139_send_frame;
+    out_interface->quiesce = rtl8139_quiesce;
+    return OK;
+}
+
+static int rtl8139_quiesce(void* driver_context) {
+    if (!driver_context) {
+        LOG_ERROR("RTL8139", "Contexto nulo na quiescencia");
+        return ERR_NULL;
+    }
+    rtl8139_disable_hardware((rtl8139_device_t*)driver_context);
     return OK;
 }
 

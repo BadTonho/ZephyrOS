@@ -228,6 +228,10 @@ int vfs_chdir(const char* path);
 int vfs_getcwd(char* path, uint32_t capacity);
 int vfs_mount_volume(const char* volume_id);
 int vfs_unmount_volume(const char* volume_id);
+int vfs_power_set_quiescing(uint8_t active);
+int vfs_power_is_quiescing(void);
+int vfs_power_unmount_storage_until(uint32_t deadline_tick,
+                                    uint32_t* out_count);
 int vfs_copy_mounts(vfs_mount_info_t* output, uint32_t capacity,
                     uint32_t* out_count);
 int vfs_get_status(vfs_status_t* status);

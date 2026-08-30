@@ -34,6 +34,7 @@
 #include "ui/gui.h"
 #include "apps/guitest.h"
 #include "core/recovery.h"
+#include "core/power.h"
 #include "core/device_manager.h"
 #include "core/usb_manager.h"
 #include "drivers/usb_msc.h"
@@ -433,7 +434,8 @@ static void cmd_help(void) {
     video_print("  edit     - Editor de texto\n", 0x07);
     video_print("             edit (novo) | edit arquivo.txt\n", 0x08);
     video_print("  reboot   - Reinicia o sistema\n", 0x07);
-    video_print("  shutdown - Desliga por ACPI ou usa fallback HLT\n", 0x07);
+    video_print("  shutdown [-h now|-r now] - Encerra o sistema\n", 0x07);
+    video_print("  poweroff - Desliga o sistema\n", 0x07);
     video_print("  guitest [modern] - Testa primitivas GUI 2D\n", 0x07);
     video_end_update();
 }
@@ -867,16 +869,20 @@ void shell_core_reboot(void) {
 
 void shell_core_shutdown(const char* args) {
     int result;
+    uint8_t reboot = 0U;
 
-    if (args && *args) {
+    if (args && *args && kstrcmp(args, "-h now") != 0 &&
+        kstrcmp(args, "-r now") != 0) {
         LOG_WARN("SHELL", "Uso invalido de shutdown");
-        video_print("Uso: shutdown\n", 0x0C);
+        video_print("Uso: shutdown [-h now|-r now]\n", 0x0C);
         return;
     }
-    video_print("Desligando...\n", 0x0E);
-    result = power_shutdown_request();
+    if (args && kstrcmp(args, "-r now") == 0) reboot = 1U;
+    video_print(reboot ? "Reiniciando...\n" : "Desligando...\n", 0x0E);
+    result = reboot ? system_reboot() : power_shutdown_request();
     if (result != OK) {
-        video_print("Desligamento recusado (codigo ", 0x0C);
+        video_print(reboot ? "Reinicio recusado (codigo " :
+                    "Desligamento recusado (codigo ", 0x0C);
         shell_command_print_num((uint32_t)result);
         video_print(").\n", 0x0C);
     }
@@ -954,7 +960,11 @@ SHELL_CORE_WRAP_ARGS(shell_dispatch_cmd_beep, cmd_beep)
 SHELL_CORE_WRAP_NO_ARGS(shell_dispatch_cmd_melody, cmd_melody)
 
 void shell_dispatch_cmd_reboot(const char* arguments) {
-    (void)arguments;
+    if (arguments && *arguments) {
+        LOG_WARN("SHELL", "Uso invalido de reboot");
+        video_print("Uso: reboot\n", 0x0C);
+        return;
+    }
     shell_core_reboot();
 }
 
@@ -963,7 +973,12 @@ void shell_dispatch_cmd_shutdown(const char* arguments) {
 }
 
 void shell_dispatch_cmd_poweroff(const char* arguments) {
-    shell_core_shutdown(arguments);
+    if (arguments && *arguments) {
+        LOG_WARN("SHELL", "Uso invalido de poweroff");
+        video_print("Uso: poweroff\n", 0x0C);
+        return;
+    }
+    shell_core_shutdown("");
 }
 
 void shell_dispatch_cmd_compress(const char* arguments) {

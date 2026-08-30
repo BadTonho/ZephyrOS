@@ -24,6 +24,7 @@ typedef struct {
     uint32_t probe_generation;
     uint32_t probe_pid;
     uint8_t probe_interrupts_enabled;
+    uint8_t power_quiescing;
     workqueue_stats_t stats;
 } workqueue_service_t;
 
@@ -226,6 +227,10 @@ static int workqueue_register_on(workqueue_service_t* service,
         workqueue_irq_restore(flags);
         return workqueue_internal_result(ERR_STATE);
     }
+    if (service == &workqueue_service && service->power_quiescing) {
+        workqueue_irq_restore(flags);
+        return workqueue_internal_result(ERR_UNAVAILABLE);
+    }
     for (slot = 0U; slot < WORKQUEUE_CAPACITY; slot++) {
         if (service->registry[slot] == work) {
             workqueue_irq_restore(flags);
@@ -294,6 +299,9 @@ static int workqueue_schedule_on(workqueue_service_t* service,
         work->registry_slot >= WORKQUEUE_CAPACITY ||
         service->registry[work->registry_slot] != work) {
         return workqueue_internal_result(ERR_STATE);
+    }
+    if (service == &workqueue_service && service->power_quiescing) {
+        return workqueue_internal_result(ERR_UNAVAILABLE);
     }
     if (delay_ticks > WORKQUEUE_MAX_DELAY_TICKS) {
         return workqueue_internal_result(ERR_INVALID);
@@ -725,6 +733,54 @@ int workqueue_init(void) {
     return OK;
 }
 
+int workqueue_power_set_quiescing(uint8_t active) {
+    uint32_t flags;
+
+    if (!workqueue_service.stats.initialized) {
+        LOG_ERROR("KERNEL", "Gate da workqueue antes da inicializacao");
+        return ERR_STATE;
+    }
+    flags = workqueue_irq_save();
+    workqueue_service.power_quiescing = active ? 1U : 0U;
+    workqueue_irq_restore(flags);
+    return OK;
+}
+
+int workqueue_power_quiesce_until(uint32_t deadline_tick) {
+    uint32_t flags;
+
+    if (!workqueue_service.stats.initialized) {
+        LOG_ERROR("KERNEL", "Quiescencia da workqueue antes da inicializacao");
+        return ERR_STATE;
+    }
+    if ((int32_t)(timer_get_ticks() - deadline_tick) >= 0) {
+        LOG_WARN("KERNEL", "Quiescencia da workqueue fora do prazo");
+        return ERR_TIMEOUT;
+    }
+    flags = workqueue_irq_save();
+    workqueue_service.power_quiescing = 1U;
+    if (workqueue_service.stats.running) {
+        workqueue_irq_restore(flags);
+        LOG_ERROR("KERNEL", "Workqueue possui callback em execucao");
+        return ERR_STATE;
+    }
+    for (uint32_t index = 0U; index < WORKQUEUE_CAPACITY; index++) {
+        work_struct_t* work = workqueue_service.registry[index];
+
+        if (!work) continue;
+        if (work->state == WORK_STATE_READY ||
+            work->state == WORK_STATE_DELAYED) {
+            workqueue_list_remove(&workqueue_service, work);
+            work->state = WORK_STATE_IDLE;
+        }
+        work->rerun_requested = 0U;
+        work->rerun_delayed = 0U;
+        work->cancel_requested = 0U;
+    }
+    workqueue_irq_restore(flags);
+    return OK;
+}
+
 int work_init(work_struct_t* work, const char* owner,
               work_priority_t priority,
               work_func_t callback, void* context) {
@@ -820,6 +876,10 @@ int workqueue_dispatch(uint32_t high_budget, uint32_t normal_budget,
     if (!workqueue_service.stats.initialized) {
         LOG_ERROR("KERNEL", "Despacho antes da inicializacao da workqueue");
         return ERR_STATE;
+    }
+    if (workqueue_service.power_quiescing) {
+        *out_executed = 0U;
+        return OK;
     }
     current_pid = process_get_current_pid();
     flags = workqueue_irq_save();
