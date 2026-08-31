@@ -615,7 +615,8 @@ void system_process_main(void) {
         kernel_retry_shell_request();
         taskbar_update_clock();
         wm_update_cpu_stats();
-        process_block(1U);
+        if (test_protocol_is_active()) process_yield();
+        else process_block(1U);
     }
 }
 

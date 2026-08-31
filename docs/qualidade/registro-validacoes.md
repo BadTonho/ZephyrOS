@@ -3332,3 +3332,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   somente comandos de build, testes ou QEMU explicitamente autorizados pelo
   usuário na conversa; sem autorização, a revisão permanece estática. A
   alteração não modifica código, ABI, bootloader ou comportamento do sistema.
+
+- TST2: validação executada pelo agente em 2026-08-30 23:49
+  (America/Sao_Paulo). `make q3check` passou; `make clean` e `make` passaram,
+  com warnings de compilação; `make test-qemu` falhou com
+  `termination=watchdog` e `cause=guest_sem_heartbeat`. O guest publicou
+  `READY`, mas não publicou `HEARTBEAT`, `BEGIN` ou `PASS` antes do watchdog.
+  O relatório foi preservado em
+  `build/test-results/qemu-20260831T024935Z-22908/`. TST2 permanece pendente.
