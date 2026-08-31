@@ -650,15 +650,28 @@ int kmem_cache_self_test(void) {
     uint32_t index;
     uint32_t allocated = 0U;
     uint8_t external = 0U;
+    uint32_t allocation_failures_before;
+    uint32_t invalid_frees_before;
+    uint32_t double_frees_before;
     int result;
 
     if (!paging_is_ready()) {
         LOG_ERROR("MEM", "Autoteste SLAB solicitado antes do paging");
         return ERR_STATE;
     }
+    allocation_failures_before = global_allocation_failures;
+    invalid_frees_before = global_invalid_frees;
+    double_frees_before = global_double_frees;
     memory_get_pmm_stats(&pmm_before);
     cache = kmem_cache_create("slabtest", sizeof(uint32_t), 16U);
-    if (!cache) return ERR_UNAVAILABLE;
+    if (!cache) {
+        global_allocation_failures = allocation_failures_before;
+        global_invalid_frees = invalid_frees_before;
+        global_double_frees = double_frees_before;
+        LOG_ERROR_CODE("MEM", ERR_UNAVAILABLE,
+                       "Autoteste SLAB nao criou cache temporario");
+        return ERR_UNAVAILABLE;
+    }
     for (index = 0U; index < KMEM_SLAB_TEST_OBJECTS; index++) {
         objects[index] = kmem_cache_alloc(cache);
         if (!objects[index]) break;
@@ -707,6 +720,9 @@ int kmem_cache_self_test(void) {
         result = ERR_STATE;
     }
     if (kmem_cache_validate() != OK) result = ERR_STATE;
+    global_allocation_failures = allocation_failures_before;
+    global_invalid_frees = invalid_frees_before;
+    global_double_frees = double_frees_before;
     if (result != OK) LOG_ERROR("MEM", "Autoteste SLAB falhou");
     else LOG_INFO("MEM", "Autoteste SLAB concluido");
     return result;

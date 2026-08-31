@@ -388,6 +388,40 @@ automaticamente o diretorio do runtime no ambiente do teste. O smoke QEMU
 produziu `READY`, `HEARTBEAT`, `BEGIN` e `PASS` nessa ordem, sem erros de
 protocolo.
 
+## Implementação atual da TST4.1
+
+A primeira camada da TST4 adiciona um harness interno em
+`src/core/kernel_tests.c`, acionado exclusivamente pelo caso ZTEST
+`qemu:tst4:memory-slab`. O caso captura invariantes do heap, PMM, memória
+detalhada e SLAB antes e depois do autoteste, executa os caminhos negativos
+existentes do SLAB e exige que páginas, inventários e contadores retornem ao
+estado anterior.
+
+O novo alvo `make test-tst4-qemu` usa o runner existente com uma única
+iteração. O boot normal não inicia autotestes, e nenhuma dependência do Shell,
+do bootloader ou da ABI pública foi adicionada. A cobertura de scheduler,
+processos, VFS, rede, drivers, energia e demais subsistemas continua pendente
+para as próximas camadas da TST4/TST5 até haver testes específicos e evidência.
+
+Validação concluída em 2026-08-31: `make test-qemu-selftest`, `make q3check`,
+`make clean`, `make`, `make test-tst4-qemu` e `make catalog-test` passaram.
+O artefato aprovado é
+`build/test-results/qemu-20260831T170423Z-15384/`; a primeira falha
+diagnóstica foi preservada em `build/test-results/qemu-20260831T165009Z-21628/`.
+
+#### TST4.1 — Memória e SLAB
+
+- [x] Harness interno acionado por `RUN` explícito, sem dependência do Shell ou
+  alteração do boot normal.
+- [x] Caso agregado `qemu:tst4:memory-slab` com uma única iteração e timeout
+  próprio no runner.
+- [x] Invariantes de heap, PMM, memória detalhada e SLAB verificadas antes e
+  depois do caso.
+- [x] Cache temporário, páginas e contadores diagnósticos restaurados após os
+  caminhos negativos do autoteste SLAB.
+- [x] Execução QEMU produziu `READY`, `HEARTBEAT`, `BEGIN` e `PASS`, sem erros
+  de protocolo, com artefatos preservados.
+
 ## Fora do escopo
 
 - vincular o testador à versão 1.0.0 ou a uma release específica;

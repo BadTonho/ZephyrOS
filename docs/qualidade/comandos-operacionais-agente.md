@@ -447,6 +447,38 @@ TST3 host-only, gates de qualidade, build limpo e somente entao o QEMU. A
 TST3 cobre nesta camada strings, compressao, empacotamento e atualizacao; VFS,
 paging, processos, drivers e energia permanecem nas fases posteriores.
 
+## TST4.1: autoteste de memoria e SLAB no kernel
+
+A primeira camada da TST4 nao usa Shell nem inicia testes durante o boot. O
+caso agregado `qemu:tst4:memory-slab` e acionado uma unica vez por `RUN`
+explicito no protocolo ZTEST depois de `READY`. O alvo focado usa o modo
+`stress` com `--iterations 1`; nao ha repeticao automatica do caso apos falha.
+
+Depois dos gates da alteracao, execute:
+
+```text
+make test-qemu-selftest
+make q3check
+make clean
+make
+make test-tst4-qemu
+make catalog-test
+```
+
+O autoteste registra fases `preconditions`, `memory-before`, `slab-self-test`,
+`memory-after` e `postconditions`. O resultado esperado no QEMU e
+`READY -> HEARTBEAT -> BEGIN -> PASS`. Uma falha publica a fase no serial/log
+do guest e o codigo canonico no evento `FAIL`.
+
+Cada execucao cria um diretorio novo em `build/test-results/<run-id>/`, com
+`manifest.json`, `serial.log`, `qemu.stdout.log`, `qemu.stderr.log` e
+`result.json`. O runner encerra o QEMU via QMP e aplica timeout de boot,
+heartbeat e caso; nenhum autoteste pode aguardar indefinidamente.
+
+O caso cobre apenas as invariantes atuais de heap, PMM, memoria detalhada,
+paging pronto e SLAB. Scheduler, processos, VFS, rede, drivers, energia e
+demais subsistemas permanecem fora desta primeira camada.
+
 ## Comandos no Shell
 
 Para orientar comandos do sistema, consultar primeiro `comandos.md` e os
