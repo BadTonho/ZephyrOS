@@ -1548,10 +1548,10 @@ int procfs_self_test(procfs_test_result_t* result) {
     static const char* const global_names[] = {
         "uptime", "meminfo", "cpuinfo", "version", "cmdline"
     };
-    vfs_dir_entry_t entries[VFS_MAX_DIR_ENTRIES];
+    static vfs_dir_entry_t entries[VFS_MAX_DIR_ENTRIES];
     vfs_lookup_result_t lookup;
-    uint8_t first[512];
-    uint8_t second[512];
+    static uint8_t first[512];
+    static uint8_t second[512];
     procfs_file_context_t context;
     proc_entry_t error_entry;
     proc_entry_t overflow_entry;
@@ -1564,10 +1564,10 @@ int procfs_self_test(procfs_test_result_t* result) {
     uint32_t before_active;
     uint32_t temporary_pid = 0U;
     uint32_t temporary_generation = 0U;
-    char temporary_status_path[VFS_MAX_PATH];
-    char temporary_cmdline_path[VFS_MAX_PATH];
-    char temporary_maps_path[VFS_MAX_PATH];
-    char control_overflow[PROCFS_SYS_CONTROL_MAX_INPUT + 1U];
+    static char temporary_status_path[VFS_MAX_PATH];
+    static char temporary_cmdline_path[VFS_MAX_PATH];
+    static char temporary_maps_path[VFS_MAX_PATH];
+    static char control_overflow[PROCFS_SYS_CONTROL_MAX_INPUT + 1U];
     const char invalid_nul[] = {'i', 'n', 'f', 'o', '\0'};
     log_level_t original_console_level;
     log_level_t original_buffer_level;
@@ -1621,7 +1621,7 @@ int procfs_self_test(procfs_test_result_t* result) {
     result->global_nodes = 1U;
     result->format = 1U;
     for (uint32_t index = 0U; index < PROCFS_GLOBAL_COUNT; index++) {
-        char path[VFS_MAX_PATH];
+        static char path[VFS_MAX_PATH];
         uint32_t length = 0U;
 
         procfs_copy_text(path, sizeof(path), "/proc/");

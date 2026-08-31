@@ -13,6 +13,18 @@ static uint8_t protocol_initialized;
 static uint8_t protocol_boot_ready;
 static uint8_t protocol_emit_error_logged;
 
+static int protocol_test_progress(void* context) {
+    uint32_t current_tick = timer_get_ticks();
+    int result;
+
+    (void)context;
+    result = test_protocol_core_set_ticks(&protocol_core, current_tick);
+    if (result != OK) return result;
+    result = test_protocol_core_poll(&protocol_core, current_tick);
+    serial_flush(SERIAL_TX_FLUSH_BUDGET);
+    return result;
+}
+
 static uint32_t protocol_length(const char* text) {
     uint32_t length = 0U;
 
@@ -66,10 +78,18 @@ static int protocol_run_case(void* context, const char* case_id,
                              uint32_t seed) {
     static const char boot_case[] = "qemu:tst2:boot-ready";
     static const char memory_slab_case[] = "qemu:tst4:memory-slab";
+    static const char paging_vma_case[] = "qemu:tst4:paging-vma";
+    static const char execution_case[] = "qemu:tst4:execution";
+    static const char storage_vfs_case[] = "qemu:tst4:storage-vfs";
+    static const char network_case[] = "qemu:tst4:network";
+    static const char platform_case[] = "qemu:tst4:platform";
+    kernel_tests_runtime_t runtime;
 
     (void)context;
     (void)iteration;
     (void)seed;
+    runtime.progress = protocol_test_progress;
+    runtime.context = 0;
     if (protocol_token_equals(case_id, case_length, boot_case)) {
         if (protocol_boot_ready) return OK;
         LOG_WARN("TEST", "Caso de boot solicitado antes do estado READY");
@@ -80,7 +100,27 @@ static int protocol_run_case(void* context, const char* case_id,
             LOG_WARN("TEST", "Autoteste de memoria solicitado antes do READY");
             return ERR_STATE;
         }
-        return kernel_tests_run_memory_slab();
+        return kernel_tests_run_memory_slab_with_runtime(&runtime);
+    }
+    if (protocol_token_equals(case_id, case_length, paging_vma_case)) {
+        if (!protocol_boot_ready) return ERR_STATE;
+        return kernel_tests_run_paging_vma(&runtime);
+    }
+    if (protocol_token_equals(case_id, case_length, execution_case)) {
+        if (!protocol_boot_ready) return ERR_STATE;
+        return kernel_tests_run_execution(&runtime);
+    }
+    if (protocol_token_equals(case_id, case_length, storage_vfs_case)) {
+        if (!protocol_boot_ready) return ERR_STATE;
+        return kernel_tests_run_storage_vfs(&runtime);
+    }
+    if (protocol_token_equals(case_id, case_length, network_case)) {
+        if (!protocol_boot_ready) return ERR_STATE;
+        return kernel_tests_run_network(&runtime);
+    }
+    if (protocol_token_equals(case_id, case_length, platform_case)) {
+        if (!protocol_boot_ready) return ERR_STATE;
+        return kernel_tests_run_platform(&runtime);
     }
     return ERR_NOT_FOUND;
 }

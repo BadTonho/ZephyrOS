@@ -17,6 +17,7 @@
 #define SYSFS_POWER_STATE_COUNT 6U
 #define SYSFS_PATH_PREFIX_SIZE 5U
 #define SYSFS_UINT32_MAX 0xFFFFFFFFU
+#define SYSFS_TEST_BUFFER_SIZE 512U
 
 typedef struct {
     sysfs_node_kind_t kind;
@@ -1365,10 +1366,10 @@ static int sysfs_buffer_contains(const uint8_t* buffer, uint32_t size,
 
 int sysfs_self_test(sysfs_test_result_t* result) {
     static const char* const root_names[] = {"bus", "class", "power"};
-    vfs_dir_entry_t entries[VFS_MAX_DIR_ENTRIES];
+    static vfs_dir_entry_t entries[VFS_MAX_DIR_ENTRIES];
     vfs_lookup_result_t lookup;
-    uint8_t first[64];
-    uint8_t second[64];
+    static uint8_t first[SYSFS_TEST_BUFFER_SIZE];
+    static uint8_t second[SYSFS_TEST_BUFFER_SIZE];
     uint32_t count = 0U;
     uint32_t bytes = 0U;
     uint32_t second_bytes = 0U;

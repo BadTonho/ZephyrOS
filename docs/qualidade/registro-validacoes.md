@@ -3441,3 +3441,33 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `protocol_errors=[]`, `qemu_exit_code=0` e manifesto, serial, stdout,
   stderr e result preservados. O build exibiu apenas warnings preexistentes
   em outros modulos; boot.asm e stage2.asm nao foram alterados.
+
+- TST4.2-TST4.6: implementacao concluida em 2026-08-31 15:31
+  (America/Sao_Paulo). Foram adicionados os harnesses internos independentes
+  de paging/VMA, execution, storage/VFS, network e platform, o callback de
+  progresso/heartbeat e os cinco alvos QEMU com uma unica iteracao e sem retry
+  automatico. Nao houve alteracao de bootloader, headers publicos, ABI, Shell
+  ou protocolo ZTEST. Os fixtures procfs/sysfs passaram a usar buffers estaticos
+  com capacidade adequada para evitar pressao de stack durante os autotestes.
+
+  A primeira execucao de platform foi preservada em
+  `build/test-results/qemu-20260831T182201Z-3328/` como `FAIL`/`ERR_STATE` na
+  validacao do inventario Wi-Fi ainda nao inicializado. O harness foi ajustado
+  para seguir a inicializacao sob demanda existente e validar o estado
+  publicado; a execucao posterior passou.
+
+- TST4.2-TST4.6: validacao final executada em 2026-08-31 15:31
+  (America/Sao_Paulo), na ordem `make test-qemu-selftest`, `make q3check`,
+  `make clean`, `make`, `make test-tst4-qemu`,
+  `make test-tst4-qemu-paging-vma`, `make test-tst4-qemu-execution`,
+  `make test-tst4-qemu-storage-vfs`, `make test-tst4-qemu-network`,
+  `make test-tst4-qemu-platform` e `make catalog-test`. Todos passaram.
+
+  Os casos produziram `READY -> HEARTBEAT -> BEGIN -> PASS`, sem erros de
+  protocolo, com timeout limitado e artefatos preservados nos diretorios:
+  `qemu-20260831T182652Z-11896`, `qemu-20260831T182717Z-6764`,
+  `qemu-20260831T182742Z-18396`, `qemu-20260831T182807Z-19232`,
+  `qemu-20260831T182845Z-20608` e `qemu-20260831T182911Z-20368`.
+  O catalogo e a visao renderizada foram validados com 6780 superficies e
+  7 casos. A TST4 foi marcada como concluida; TST5, TST6 e TST7 permanecem
+  pendentes.

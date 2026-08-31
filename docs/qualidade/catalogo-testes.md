@@ -4,15 +4,15 @@
 
 ## Resumo
 
-- Superfícies ativas: **6732**
-- Casos de teste: **2**
+- Superfícies ativas: **6780**
+- Casos de teste: **7**
 - Superfícies aposentadas: **18**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1410 |
 | `asm_entry` | 101 |
-| `c_function` | 5101 |
+| `c_function` | 5149 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
@@ -21,11 +21,11 @@
 | `BLOCKED` | 0 |
 | `COVERED` | 17 |
 | `MANUAL` | 0 |
-| `PENDING` | 6715 |
+| `PENDING` | 6763 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 2 |
+| `AUTOMATED` | 7 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -37,7 +37,7 @@
 | `apps` | 128 |
 | `appstore` | 83 |
 | `boot` | 129 |
-| `core` | 2510 |
+| `core` | 2557 |
 | `desktop` | 39 |
 | `drivers` | 870 |
 | `filemanager` | 92 |
@@ -45,7 +45,7 @@
 | `gui` | 28 |
 | `icons` | 13 |
 | `kernel` | 40 |
-| `memory` | 153 |
+| `memory` | 154 |
 | `process` | 239 |
 | `settings` | 55 |
 | `shell` | 1054 |
@@ -2492,8 +2492,54 @@
 | `c:src/core/irq_deferred.c:irq_deferred_work_init` | `src/core/irq_deferred.c` | `irq_deferred_work_init` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests.c:kernel_tests_capture_memory` | `src/core/kernel_tests.c` | `kernel_tests_capture_memory` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests.c:kernel_tests_check_snapshot` | `src/core/kernel_tests.c` | `kernel_tests_check_snapshot` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests.c:kernel_tests_phase_result` | `src/core/kernel_tests.c` | `kernel_tests_phase_result` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests.c:kernel_tests_progress` | `src/core/kernel_tests.c` | `kernel_tests_progress` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests.c:kernel_tests_run_memory_slab` | `src/core/kernel_tests.c` | `kernel_tests_run_memory_slab` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests.c:kernel_tests_run_memory_slab_with_runtime` | `src/core/kernel_tests.c` | `kernel_tests_run_memory_slab_with_runtime` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests.c:kernel_tests_same_memory_state` | `src/core/kernel_tests.c` | `kernel_tests_same_memory_state` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_execution.c:execution_check_ipc` | `src/core/kernel_tests_execution.c` | `execution_check_ipc` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_execution.c:execution_check_processes` | `src/core/kernel_tests_execution.c` | `execution_check_processes` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_execution.c:execution_check_signal` | `src/core/kernel_tests_execution.c` | `execution_check_signal` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_execution.c:execution_check_threads` | `src/core/kernel_tests_execution.c` | `execution_check_threads` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_execution.c:execution_check_wait` | `src/core/kernel_tests_execution.c` | `execution_check_wait` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_execution.c:execution_check_workqueue` | `src/core/kernel_tests_execution.c` | `execution_check_workqueue` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_execution.c:kernel_tests_run_execution` | `src/core/kernel_tests_execution.c` | `kernel_tests_run_execution` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_network.c:kernel_tests_run_network` | `src/core/kernel_tests_network.c` | `kernel_tests_run_network` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_network.c:network_check_net_socket` | `src/core/kernel_tests_network.c` | `network_check_net_socket` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_network.c:network_check_route` | `src/core/kernel_tests_network.c` | `network_check_route` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_network.c:network_check_socket` | `src/core/kernel_tests_network.c` | `network_check_socket` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_network.c:network_check_tls` | `src/core/kernel_tests_network.c` | `network_check_tls` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_network.c:network_check_validators` | `src/core/kernel_tests_network.c` | `network_check_validators` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_paging.c:kernel_tests_run_paging_vma` | `src/core/kernel_tests_paging.c` | `kernel_tests_run_paging_vma` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_paging.c:paging_build_fixture` | `src/core/kernel_tests_paging.c` | `paging_build_fixture` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_paging.c:paging_emit_compare_eax` | `src/core/kernel_tests_paging.c` | `paging_emit_compare_eax` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_paging.c:paging_emit_exit` | `src/core/kernel_tests_paging.c` | `paging_emit_exit` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_paging.c:paging_emit_expected_mmap` | `src/core/kernel_tests_paging.c` | `paging_emit_expected_mmap` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_paging.c:paging_emit_expected_munmap` | `src/core/kernel_tests_paging.c` | `paging_emit_expected_munmap` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_paging.c:paging_emit_jne` | `src/core/kernel_tests_paging.c` | `paging_emit_jne` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_paging.c:paging_emit_load_ebx` | `src/core/kernel_tests_paging.c` | `paging_emit_load_ebx` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_paging.c:paging_emit_mov` | `src/core/kernel_tests_paging.c` | `paging_emit_mov` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_paging.c:paging_emit_syscall` | `src/core/kernel_tests_paging.c` | `paging_emit_syscall` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_paging.c:paging_validate_fixture_baseline` | `src/core/kernel_tests_paging.c` | `paging_validate_fixture_baseline` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_paging.c:paging_wait_fixture` | `src/core/kernel_tests_paging.c` | `paging_wait_fixture` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_platform.c:kernel_tests_run_platform` | `src/core/kernel_tests_platform.c` | `kernel_tests_run_platform` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_platform.c:platform_check_acpi_power` | `src/core/kernel_tests_platform.c` | `platform_check_acpi_power` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_platform.c:platform_check_clock` | `src/core/kernel_tests_platform.c` | `platform_check_clock` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_platform.c:platform_check_devices` | `src/core/kernel_tests_platform.c` | `platform_check_devices` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_platform.c:platform_check_irq` | `src/core/kernel_tests_platform.c` | `platform_check_irq` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_platform.c:platform_check_log` | `src/core/kernel_tests_platform.c` | `platform_check_log` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_platform.c:platform_check_optional_devices` | `src/core/kernel_tests_platform.c` | `platform_check_optional_devices` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_platform.c:platform_check_rtc` | `src/core/kernel_tests_platform.c` | `platform_check_rtc` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_platform.c:platform_check_timer` | `src/core/kernel_tests_platform.c` | `platform_check_timer` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_storage.c:kernel_tests_run_storage_vfs` | `src/core/kernel_tests_storage.c` | `kernel_tests_run_storage_vfs` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_storage.c:storage_check_devfs` | `src/core/kernel_tests_storage.c` | `storage_check_devfs` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_storage.c:storage_check_equal` | `src/core/kernel_tests_storage.c` | `storage_check_equal` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_storage.c:storage_check_heap` | `src/core/kernel_tests_storage.c` | `storage_check_heap` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_storage.c:storage_check_inventory` | `src/core/kernel_tests_storage.c` | `storage_check_inventory` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_storage.c:storage_check_procfs` | `src/core/kernel_tests_storage.c` | `storage_check_procfs` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_storage.c:storage_check_sysfs` | `src/core/kernel_tests_storage.c` | `storage_check_sysfs` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_storage.c:storage_check_sysfs_flag` | `src/core/kernel_tests_storage.c` | `storage_check_sysfs_flag` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_storage.c:storage_check_vfs` | `src/core/kernel_tests_storage.c` | `storage_check_vfs` | `core` | `PENDING` | 0 |
 | `c:src/core/log.c:log_append_char` | `src/core/log.c` | `log_append_char` | `core` | `PENDING` | 0 |
 | `c:src/core/log.c:log_append_text` | `src/core/log.c` | `log_append_text` | `core` | `PENDING` | 0 |
 | `c:src/core/log.c:log_clear_buffer` | `src/core/log.c` | `log_clear_buffer` | `core` | `PENDING` | 0 |
@@ -2906,6 +2952,7 @@
 | `c:src/core/test_protocol.c:protocol_length` | `src/core/test_protocol.c` | `protocol_length` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:protocol_receive` | `src/core/test_protocol.c` | `protocol_receive` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:protocol_run_case` | `src/core/test_protocol.c` | `protocol_run_case` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_test_progress` | `src/core/test_protocol.c` | `protocol_test_progress` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:protocol_token_equals` | `src/core/test_protocol.c` | `protocol_token_equals` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:test_protocol_init` | `src/core/test_protocol.c` | `test_protocol_init` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:test_protocol_is_active` | `src/core/test_protocol.c` | `test_protocol_is_active` | `core` | `PENDING` | 0 |
@@ -5269,6 +5316,7 @@
 | `c:src/memory/slab.c:slab_power_of_two` | `src/memory/slab.c` | `slab_power_of_two` | `memory` | `PENDING` | 0 |
 | `c:src/memory/slab.c:slab_prepare_record` | `src/memory/slab.c` | `slab_prepare_record` | `memory` | `PENDING` | 0 |
 | `c:src/memory/slab.c:slab_set_bit` | `src/memory/slab.c` | `slab_set_bit` | `memory` | `PENDING` | 0 |
+| `c:src/memory/slab.c:slab_test_progress` | `src/memory/slab.c` | `slab_test_progress` | `memory` | `PENDING` | 0 |
 | `c:src/memory/slab.c:slab_validate_list` | `src/memory/slab.c` | `slab_validate_list` | `memory` | `PENDING` | 0 |
 | `c:src/memory/slab.c:slab_validate_slab` | `src/memory/slab.c` | `slab_validate_slab` | `memory` | `PENDING` | 0 |
 | `c:src/memory/vma.c:process_vma_access_allowed` | `src/memory/vma.c` | `process_vma_access_allowed` | `memory` | `PENDING` | 0 |
@@ -6819,7 +6867,12 @@
 | ID | Executor | Perfil | Caso guest | Status | Timeout | Heartbeat | Isolamento | Proprietario | Camada | Pre-condicoes | Acao | Resultado esperado | Erros | Efeitos | Limpeza |
 |---|---|---|---|---|---:|---:|---|---|---|---|---|---|---|---|---|
 | `qemu:tst2:boot-ready` | `qemu` | `smoke` | `qemu:tst2:boot-ready` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e o executavel qemu-system-i386 esta disponivel | iniciar o guest em snapshot, enviar HELLO e executar o caso de boot apos READY | o guest publica READY, HEARTBEAT e PASS para o caso solicitado | PANIC, TIMEOUT, ausencia de heartbeat, erro de protocolo ou encerramento inesperado do QEMU | cria um processo QEMU e artefatos temporarios da execucao | encerrar o QEMU via QMP e preservar o relatorio, serial e logs da execucao |
+| `qemu:tst4:execution` | `qemu` | `smoke` | `qemu:tst4:execution` | `AUTOMATED` | 60 | 10 | `snapshot` | `quality` | `qemu` | processos, threads, IPC, wait e workqueue estao READY | executar um unico autoteste interno apos READY | todos os resultados estruturados passam e nenhum estado residual permanece | falha de resultado, invariante, fila, contador, timeout, protocolo ou QEMU | cria somente objetos temporarios dos self-tests existentes | cada self-test desfaz seus objetos e o harness valida as filas finais |
 | `qemu:tst4:memory-slab` | `qemu` | `smoke` | `qemu:tst4:memory-slab` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e paging, PMM, heap e SLAB estao READY | iniciar o guest em snapshot e enviar um unico RUN apos READY | o guest publica READY, HEARTBEAT, BEGIN e PASS, preservando o estado de memoria | falha de pre-condicao, invariante, contador, pagina, protocolo, heartbeat ou QEMU | cria um processo QEMU e recursos temporarios de memoria do autoteste | encerrar o QEMU via QMP e preservar manifesto, serial, logs e resultado |
+| `qemu:tst4:network` | `qemu` | `smoke` | `qemu:tst4:network` | `AUTOMATED` | 60 | 10 | `snapshot` | `quality` | `qemu` | camadas de rede e validadores internos estao READY | executar self-tests sem conexao externa, interface real ou hardware adicional | validadores passam e buffers, sockets e rotas retornam ao baseline | falha de protocolo, crypto, TLS, invariante, cleanup, timeout ou QEMU | cria somente buffers, sockets e fixtures internos temporarios | liberar objetos temporarios e validar estados finais das camadas |
+| `qemu:tst4:paging-vma` | `qemu` | `smoke` | `qemu:tst4:paging-vma` | `AUTOMATED` | 60 | 10 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e paging e syscalls ring 3 estao READY | iniciar o guest em snapshot e executar um unico fixture ring 3 apos READY | o fixture valida mmap, munmap, materializacao lazy e finaliza com estado restaurado | falha de pre-condicao, retorno canonico inesperado, page fault, timeout, protocolo ou QEMU | cria apenas o processo e as paginas temporarias do fixture ring 3 | cancelar, coletar e validar o fixture antes de publicar FAIL |
+| `qemu:tst4:platform` | `qemu` | `smoke` | `qemu:tst4:platform` | `AUTOMATED` | 60 | 10 | `snapshot` | `quality` | `qemu` | servicos de plataforma e inventarios publicam estado coerente | executar validadores e self-tests sem reset, poweroff, reboot ou escrita de energia | servicos passam; hardware ausente permanece explicitamente indisponivel ou degradado | estado inconsistente, retorno inesperado, timeout, protocolo ou QEMU | somente leitura de estado e fixtures internas dos modulos | confirmar ausencia de transacao de energia e validar estados finais |
+| `qemu:tst4:storage-vfs` | `qemu` | `smoke` | `qemu:tst4:storage-vfs` | `AUTOMATED` | 60 | 10 | `snapshot` | `quality` | `qemu` | VFS, storage, block, cache e file index estao READY | executar um unico autoteste com backends simulados e somente leitura destrutiva | self-tests passam e filas, cache, descritores, mounts e tabelas retornam ao baseline | falha de backend, resultado, invariante, cleanup, timeout, protocolo ou QEMU | usa apenas fixtures e backends simulados do kernel | validar inventario, filas e estados publicados antes de encerrar |
 
 ## Superfícies sem caso associado
 
@@ -9236,7 +9289,53 @@
 - `c:src/core/irq_deferred.c:irq_deferred_work_init`
 - `c:src/core/kernel_tests.c:kernel_tests_capture_memory`
 - `c:src/core/kernel_tests.c:kernel_tests_check_snapshot`
+- `c:src/core/kernel_tests.c:kernel_tests_phase_result`
+- `c:src/core/kernel_tests.c:kernel_tests_progress`
+- `c:src/core/kernel_tests.c:kernel_tests_run_memory_slab_with_runtime`
 - `c:src/core/kernel_tests.c:kernel_tests_same_memory_state`
+- `c:src/core/kernel_tests_execution.c:execution_check_ipc`
+- `c:src/core/kernel_tests_execution.c:execution_check_processes`
+- `c:src/core/kernel_tests_execution.c:execution_check_signal`
+- `c:src/core/kernel_tests_execution.c:execution_check_threads`
+- `c:src/core/kernel_tests_execution.c:execution_check_wait`
+- `c:src/core/kernel_tests_execution.c:execution_check_workqueue`
+- `c:src/core/kernel_tests_execution.c:kernel_tests_run_execution`
+- `c:src/core/kernel_tests_network.c:kernel_tests_run_network`
+- `c:src/core/kernel_tests_network.c:network_check_net_socket`
+- `c:src/core/kernel_tests_network.c:network_check_route`
+- `c:src/core/kernel_tests_network.c:network_check_socket`
+- `c:src/core/kernel_tests_network.c:network_check_tls`
+- `c:src/core/kernel_tests_network.c:network_check_validators`
+- `c:src/core/kernel_tests_paging.c:kernel_tests_run_paging_vma`
+- `c:src/core/kernel_tests_paging.c:paging_build_fixture`
+- `c:src/core/kernel_tests_paging.c:paging_emit_compare_eax`
+- `c:src/core/kernel_tests_paging.c:paging_emit_exit`
+- `c:src/core/kernel_tests_paging.c:paging_emit_expected_mmap`
+- `c:src/core/kernel_tests_paging.c:paging_emit_expected_munmap`
+- `c:src/core/kernel_tests_paging.c:paging_emit_jne`
+- `c:src/core/kernel_tests_paging.c:paging_emit_load_ebx`
+- `c:src/core/kernel_tests_paging.c:paging_emit_mov`
+- `c:src/core/kernel_tests_paging.c:paging_emit_syscall`
+- `c:src/core/kernel_tests_paging.c:paging_validate_fixture_baseline`
+- `c:src/core/kernel_tests_paging.c:paging_wait_fixture`
+- `c:src/core/kernel_tests_platform.c:kernel_tests_run_platform`
+- `c:src/core/kernel_tests_platform.c:platform_check_acpi_power`
+- `c:src/core/kernel_tests_platform.c:platform_check_clock`
+- `c:src/core/kernel_tests_platform.c:platform_check_devices`
+- `c:src/core/kernel_tests_platform.c:platform_check_irq`
+- `c:src/core/kernel_tests_platform.c:platform_check_log`
+- `c:src/core/kernel_tests_platform.c:platform_check_optional_devices`
+- `c:src/core/kernel_tests_platform.c:platform_check_rtc`
+- `c:src/core/kernel_tests_platform.c:platform_check_timer`
+- `c:src/core/kernel_tests_storage.c:kernel_tests_run_storage_vfs`
+- `c:src/core/kernel_tests_storage.c:storage_check_devfs`
+- `c:src/core/kernel_tests_storage.c:storage_check_equal`
+- `c:src/core/kernel_tests_storage.c:storage_check_heap`
+- `c:src/core/kernel_tests_storage.c:storage_check_inventory`
+- `c:src/core/kernel_tests_storage.c:storage_check_procfs`
+- `c:src/core/kernel_tests_storage.c:storage_check_sysfs`
+- `c:src/core/kernel_tests_storage.c:storage_check_sysfs_flag`
+- `c:src/core/kernel_tests_storage.c:storage_check_vfs`
 - `c:src/core/log.c:log_append_char`
 - `c:src/core/log.c:log_append_text`
 - `c:src/core/log.c:log_clear_buffer`
@@ -9649,6 +9748,7 @@
 - `c:src/core/test_protocol.c:protocol_length`
 - `c:src/core/test_protocol.c:protocol_receive`
 - `c:src/core/test_protocol.c:protocol_run_case`
+- `c:src/core/test_protocol.c:protocol_test_progress`
 - `c:src/core/test_protocol.c:protocol_token_equals`
 - `c:src/core/test_protocol.c:test_protocol_init`
 - `c:src/core/test_protocol.c:test_protocol_is_active`
@@ -12004,6 +12104,7 @@
 - `c:src/memory/slab.c:slab_power_of_two`
 - `c:src/memory/slab.c:slab_prepare_record`
 - `c:src/memory/slab.c:slab_set_bit`
+- `c:src/memory/slab.c:slab_test_progress`
 - `c:src/memory/slab.c:slab_validate_list`
 - `c:src/memory/slab.c:slab_validate_slab`
 - `c:src/memory/vma.c:process_vma_access_allowed`

@@ -2,9 +2,8 @@
 
 ## Estado
 
-TST1, TST2 e a primeira camada da TST3 foram implementados e validados em
-strict e sanitize. A infraestrutura permanece permanente e independente da
-toolchain instalada localmente.
+TST1, TST2, TST3 e TST4 foram implementados e validados. A infraestrutura
+permanece permanente e independente da toolchain instalada localmente.
 Esta é uma infraestrutura permanente de qualidade do ZephyrOS,
 independente de versão, linguagem, release ou migração tecnológica. Ela deve
 ser utilizada durante todo o desenvolvimento para detectar regressões assim
@@ -12,8 +11,8 @@ que uma função nova ou uma alteração de código quebrar um comportamento
 existente.
 
 O catálogo canônico, o sincronizador e a visão Markdown foram criados e
-validados pelo alvo host-only `make catalog-test`. As fases TST4 em diante
-continuam planejadas.
+validados pelo alvo host-only `make catalog-test`. TST5, TST6 e TST7 continuam
+planejadas para as camadas black-box, hardware/stress e regressao continua.
 
 ## Objetivo
 
@@ -161,20 +160,20 @@ catálogo.
 
 ### TST4 — Autotestes determinísticos no kernel
 
-- [ ] Executar autotestes somente depois que a lógica correspondente possuir
+- [x] Executar autotestes somente depois que a lógica correspondente possuir
   cobertura host-only ou uma justificativa documentada para a dependência do
   kernel.
-- [ ] Integrar testes de memória, paging, SLAB, scheduler, processos, sinais,
+- [x] Integrar testes de memória, paging, SLAB, scheduler, processos, sinais,
   IPC, threads, filas, VFS, descritores, Storage, rede, ACPI, energia e
   dispositivos.
-- [ ] Exercitar sucesso, `ERR_INVALID`, `ERR_UNAVAILABLE`, `ERR_TIMEOUT`,
+- [x] Exercitar sucesso, `ERR_INVALID`, `ERR_UNAVAILABLE`, `ERR_TIMEOUT`,
   `ERR_AGAIN`, `ERR_MEM`, falha de hardware e chamadas fora de ordem quando
   fizerem parte do contrato.
-- [ ] Validar invariantes antes e depois de cada caso, incluindo locks,
+- [x] Validar invariantes antes e depois de cada caso, incluindo locks,
   interrupções, filas, referências, buffers, descritores e processos.
-- [ ] Restaurar estado global e inventários após fixtures negativas ou publicar
+- [x] Restaurar estado global e inventários após fixtures negativas ou publicar
   claramente a alteração quando o caso for deliberadamente destrutivo.
-- [ ] Proibir escrita real de energia, destruição de dados e alteração de
+- [x] Proibir escrita real de energia, destruição de dados e alteração de
   hardware nos testes que puderem usar backend falso.
 
 ### TST5 — Testes black-box e integração no QEMU
@@ -399,9 +398,8 @@ estado anterior.
 
 O novo alvo `make test-tst4-qemu` usa o runner existente com uma única
 iteração. O boot normal não inicia autotestes, e nenhuma dependência do Shell,
-do bootloader ou da ABI pública foi adicionada. A cobertura de scheduler,
-processos, VFS, rede, drivers, energia e demais subsistemas continua pendente
-para as próximas camadas da TST4/TST5 até haver testes específicos e evidência.
+do bootloader ou da ABI pública foi adicionada. As demais áreas possuem casos
+independentes descritos na conclusão da TST4 abaixo.
 
 Validação concluída em 2026-08-31: `make test-qemu-selftest`, `make q3check`,
 `make clean`, `make`, `make test-tst4-qemu` e `make catalog-test` passaram.
@@ -421,6 +419,67 @@ diagnóstica foi preservada em `build/test-results/qemu-20260831T165009Z-21628/`
   caminhos negativos do autoteste SLAB.
 - [x] Execução QEMU produziu `READY`, `HEARTBEAT`, `BEGIN` e `PASS`, sem erros
   de protocolo, com artefatos preservados.
+
+## Implementação atual da TST4.2–TST4.6
+
+A TST4 foi completada com cinco casos independentes acionados exclusivamente
+por `RUN`: `qemu:tst4:paging-vma`, `qemu:tst4:execution`,
+`qemu:tst4:storage-vfs`, `qemu:tst4:network` e `qemu:tst4:platform`.
+O harness foi dividido por domínio em fontes internas de `src/core`, mantendo
+`kernel_tests.h` interno e sem alterar headers públicos, ABI, bootloader,
+Shell ou o protocolo ZTEST.
+
+Cada caso usa fases com código canônico, falha rápida e limpeza antes do
+`FAIL`. O callback de progresso emite heartbeat durante operações longas e
+não aceita outro `RUN`. O caso de paging usa um fixture ring 3 estático com
+`mmap`, `munmap`, materialização lazy, acessos válidos, entradas negativas,
+timeout limitado, cancelamento e reaping. Execution cobre threads, scheduler,
+sinais, wait queues, workqueue e IPC. Storage/VFS cobre block, cache,
+file-index, VFS, descritores, pipes e filesystems virtuais. Network cobre
+buffers, sockets, rotas, validadores de protocolos, crypto e TLS. Platform
+cobre log, timer, clock, IRQ deferred, input, energia, inventário de
+dispositivos, ACPI, RTC, RNG, USB, Wi-Fi e IDT.
+
+Os alvos `test-tst4-qemu-paging-vma`, `test-tst4-qemu-execution`,
+`test-tst4-qemu-storage-vfs`, `test-tst4-qemu-network` e
+`test-tst4-qemu-platform` usam `stress --iterations 1`, timeout próprio e
+nenhum retry automático. Hardware opcional ausente é aceito somente quando o
+módulo publica estado coerente de indisponibilidade/degradação; nenhum caso
+faz escrita destrutiva, reset, reboot, poweroff ou conexão externa.
+
+Validação final concluída em 2026-08-31 (America/São_Paulo), nesta ordem:
+`make test-qemu-selftest`, `make q3check`, `make clean`, `make`,
+`make test-tst4-qemu`, `make test-tst4-qemu-paging-vma`,
+`make test-tst4-qemu-execution`, `make test-tst4-qemu-storage-vfs`,
+`make test-tst4-qemu-network`, `make test-tst4-qemu-platform` e
+`make catalog-test`. Todos passaram com `READY → HEARTBEAT → BEGIN → PASS`,
+`protocol_errors=[]` e terminação dentro do timeout. Os artefatos aprovados
+foram, respectivamente, `qemu-20260831T182652Z-11896`,
+`qemu-20260831T182717Z-6764`, `qemu-20260831T182742Z-18396`,
+`qemu-20260831T182807Z-19232`, `qemu-20260831T182845Z-20608` e
+`qemu-20260831T182911Z-20368` em `build/test-results/`.
+
+#### TST4.2–TST4.6 — Casos restantes
+
+- [x] Paging/VMA com fixture ring 3, validações negativas, limite de ticks e
+  restauração de processos, páginas, VMAs e page faults.
+- [x] Execution com self-test de threads, scheduler, sinais, filas,
+  workqueue, IPC e ausência de resíduos.
+- [x] Storage/VFS com block/cache, file index, VFS, descritores, pipes,
+  mounts, devfs, procfs e sysfs, sem escrita real destrutiva.
+- [x] Network com buffers, sockets, rotas, validadores de protocolos, crypto
+  e TLS, sem rede externa.
+- [x] Platform com serviços de base, inventários, ACPI/energia e dispositivos
+  opcionais, sem efeitos reais de energia ou hardware.
+- [x] Cada caso preservou `manifest.json`, `serial.log`, `qemu.stdout.log`,
+  `qemu.stderr.log` e `result.json`.
+- [x] O catálogo foi sincronizado e a visão renderizada; `make catalog-test`
+  validou 6780 superfícies e 7 casos.
+
+TST4 está concluída para as camadas memory/SLAB, paging/VMA, execution,
+storage/VFS, network e platform. TST5, TST6 e TST7 permanecem pendentes por
+serem camadas posteriores de integração black-box, matriz de hardware/stress e
+regressão contínua.
 
 ## Fora do escopo
 
