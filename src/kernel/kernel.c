@@ -73,6 +73,7 @@
 #define KERNEL_DEFERRED_DISPATCH_BUDGET 8U
 #define KWORKER_PROCESS_STACK_SIZE (KERNEL_STACK_SIZE * 4U)
 #define SYSTEM_PROCESS_STACK_SIZE (KERNEL_STACK_SIZE * 4U)
+#define TEST_PROTOCOL_PROCESS_STACK_SIZE (KERNEL_STACK_SIZE * 4U)
 #define SHELL_PROCESS_STACK_SIZE (KERNEL_STACK_SIZE * 4U)
 
 static int kernel_service_fallback = 0;
@@ -80,6 +81,7 @@ static int kernel_network_poll_enabled = 1;
 static int kernel_usb_poll_enabled = 1;
 static int kernel_deferred_enabled = 1;
 static int kernel_workqueue_enabled = 0;
+static int kernel_test_protocol_process_enabled = 0;
 static uint32_t kernel_shell_pid = 0;
 static volatile uint32_t kernel_pending_shell_request = 0;
 static uint32_t kernel_last_process_event_generation = 0;
@@ -601,9 +603,21 @@ static void kernel_dispatch_async_work(void) {
     }
 }
 
-void system_process_main(void) {
+static void test_protocol_process_main(void) {
     while (1) {
         test_protocol_poll();
+        if (test_protocol_is_active()) process_yield();
+        else process_block(1U);
+    }
+}
+
+void system_process_main(void) {
+    while (1) {
+        if (!kernel_test_protocol_process_enabled) test_protocol_poll();
+        if (test_protocol_is_active()) {
+            process_yield();
+            continue;
+        }
         kernel_dispatch_async_work();
         kernel_dispatch_input_work();
         kernel_poll_usb();
@@ -785,6 +799,8 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     video_print("[..] Carregando interrupcoes...\n", 0x08);
     idt_init();
     video_print("[OK] IDT configurada\n", 0x07);
+
+    LOG_WARN("KERNEL", "Recepcao IRQ do COM1 temporariamente desabilitada para diagnostico");
 
     video_print("[..] Iniciando nucleo de entrada...\n", 0x08);
     if (input_init() != OK) {
@@ -1350,6 +1366,15 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
                                "Processo System falhou; servicos no loop do kernel");
     }
 
+    process_t* test_protocol_process = process_create_with_stack_size(
+        "Zephyr Test Protocol", test_protocol_process_main,
+        TEST_PROTOCOL_PROCESS_STACK_SIZE);
+    if (test_protocol_process) {
+        kernel_test_protocol_process_enabled = 1;
+    } else {
+        LOG_WARN("KERNEL", "Processo do protocolo ZTEST indisponivel");
+    }
+
     process_t* shell_process = process_create_with_stack_size(
         "Shell", shell_process_main, SHELL_PROCESS_STACK_SIZE);
     if (shell_process) {
@@ -1413,7 +1438,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     while (1) {
         if (kernel_service_fallback) {
-            test_protocol_poll();
+            if (!kernel_test_protocol_process_enabled) test_protocol_poll();
             kernel_dispatch_async_work();
             kernel_dispatch_input_work();
             kernel_poll_usb();

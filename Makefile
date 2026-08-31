@@ -916,7 +916,7 @@ $(IDT_OBJ): $(IDT_C) src/include/drivers/idt.h src/include/core/test_protocol.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(SERIAL_OBJ): $(SERIAL_C) src/include/drivers/serial.h src/include/core/log.h
+$(SERIAL_OBJ): $(SERIAL_C) src/include/drivers/serial.h src/include/drivers/idt.h src/include/core/errors.h src/include/core/log.h src/include/core/timer.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
