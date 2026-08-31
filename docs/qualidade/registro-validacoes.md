@@ -3421,3 +3421,23 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   com `READY`, `HEARTBEAT`, `BEGIN` e `PASS` nessa ordem, sem erros de
   protocolo. Artefatos preservados em
   `build/test-results/qemu-20260831T162545Z-25364/`.
+
+- TST4.1: implementacao e validacao executadas em 2026-08-31 14:05
+  (America/Sao_Paulo). Foi adicionado o harness interno
+  `src/core/kernel_tests.c`, o caso ZTEST `qemu:tst4:memory-slab`, a integracao
+  no Makefile e a cobertura especifica no catalogo. `kmem_cache_self_test`
+  passou a restaurar seus contadores diagnosticos apos os caminhos negativos.
+  `make test-qemu-selftest`, `make q3check`, `make clean`, `make`,
+  `make test-tst4-qemu` e `make catalog-test` passaram.
+
+  A primeira execucao do caso foi preservada em
+  `build/test-results/qemu-20260831T165009Z-21628/` e terminou com
+  `FAIL`/`ERR_STATE` na relacao inicial de paginas do PMM. O diagnostico mostrou
+  que paginas reservadas do kernel/heap nao devem ser somadas a
+  `pmm_owned_pages`; o harness foi ajustado para respeitar esse contrato.
+  A execucao aprovada foi preservada em
+  `build/test-results/qemu-20260831T170423Z-15384/`, com uma iteracao,
+  `READY -> HEARTBEAT -> BEGIN -> PASS`, `last_state=PASS`,
+  `protocol_errors=[]`, `qemu_exit_code=0` e manifesto, serial, stdout,
+  stderr e result preservados. O build exibiu apenas warnings preexistentes
+  em outros modulos; boot.asm e stage2.asm nao foram alterados.

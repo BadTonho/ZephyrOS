@@ -3,6 +3,7 @@
 #include "core/log.h"
 #include "core/timer.h"
 #include "drivers/serial.h"
+#include "kernel_tests.h"
 #include "test_protocol_core.h"
 
 #define TEST_PROTOCOL_RX_BUDGET 32U
@@ -64,6 +65,7 @@ static int protocol_run_case(void* context, const char* case_id,
                              uint32_t case_length, uint32_t iteration,
                              uint32_t seed) {
     static const char boot_case[] = "qemu:tst2:boot-ready";
+    static const char memory_slab_case[] = "qemu:tst4:memory-slab";
 
     (void)context;
     (void)iteration;
@@ -72,6 +74,13 @@ static int protocol_run_case(void* context, const char* case_id,
         if (protocol_boot_ready) return OK;
         LOG_WARN("TEST", "Caso de boot solicitado antes do estado READY");
         return ERR_AGAIN;
+    }
+    if (protocol_token_equals(case_id, case_length, memory_slab_case)) {
+        if (!protocol_boot_ready) {
+            LOG_WARN("TEST", "Autoteste de memoria solicitado antes do READY");
+            return ERR_STATE;
+        }
+        return kernel_tests_run_memory_slab();
     }
     return ERR_NOT_FOUND;
 }

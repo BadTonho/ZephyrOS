@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **6713**
-- Casos de teste: **1**
-- Superfícies aposentadas: **0**
+- Superfícies ativas: **6732**
+- Casos de teste: **2**
+- Superfícies aposentadas: **18**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1409 |
+| `api_function` | 1410 |
 | `asm_entry` | 101 |
-| `c_function` | 5083 |
+| `c_function` | 5101 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 0 |
+| `COVERED` | 17 |
 | `MANUAL` | 0 |
-| `PENDING` | 6713 |
+| `PENDING` | 6715 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 1 |
+| `AUTOMATED` | 2 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -37,14 +37,14 @@
 | `apps` | 128 |
 | `appstore` | 83 |
 | `boot` | 129 |
-| `core` | 2494 |
+| `core` | 2510 |
 | `desktop` | 39 |
-| `drivers` | 868 |
+| `drivers` | 870 |
 | `filemanager` | 92 |
 | `fs` | 932 |
 | `gui` | 28 |
 | `icons` | 13 |
-| `kernel` | 39 |
+| `kernel` | 40 |
 | `memory` | 153 |
 | `process` | 239 |
 | `settings` | 55 |
@@ -433,12 +433,12 @@
 | `api:src/include/core/log.h:log_set_level` | `src/include/core/log.h` | `log_set_level` | `core` | `PENDING` | 0 |
 | `api:src/include/core/log.h:log_to_buffer` | `src/include/core/log.h` | `log_to_buffer` | `core` | `PENDING` | 0 |
 | `api:src/include/core/memory.h:kfree` | `src/include/core/memory.h` | `kfree` | `core` | `PENDING` | 0 |
-| `api:src/include/core/memory.h:memory_get_detailed_stats` | `src/include/core/memory.h` | `memory_get_detailed_stats` | `core` | `PENDING` | 0 |
+| `api:src/include/core/memory.h:memory_get_detailed_stats` | `src/include/core/memory.h` | `memory_get_detailed_stats` | `core` | `COVERED` | 1 |
 | `api:src/include/core/memory.h:memory_get_free` | `src/include/core/memory.h` | `memory_get_free` | `core` | `PENDING` | 0 |
-| `api:src/include/core/memory.h:memory_get_free_pages` | `src/include/core/memory.h` | `memory_get_free_pages` | `core` | `PENDING` | 0 |
-| `api:src/include/core/memory.h:memory_get_heap_stats` | `src/include/core/memory.h` | `memory_get_heap_stats` | `core` | `PENDING` | 0 |
+| `api:src/include/core/memory.h:memory_get_free_pages` | `src/include/core/memory.h` | `memory_get_free_pages` | `core` | `COVERED` | 1 |
+| `api:src/include/core/memory.h:memory_get_heap_stats` | `src/include/core/memory.h` | `memory_get_heap_stats` | `core` | `COVERED` | 1 |
 | `api:src/include/core/memory.h:memory_get_mmap_entries` | `src/include/core/memory.h` | `memory_get_mmap_entries` | `core` | `PENDING` | 0 |
-| `api:src/include/core/memory.h:memory_get_pmm_stats` | `src/include/core/memory.h` | `memory_get_pmm_stats` | `core` | `PENDING` | 0 |
+| `api:src/include/core/memory.h:memory_get_pmm_stats` | `src/include/core/memory.h` | `memory_get_pmm_stats` | `core` | `COVERED` | 1 |
 | `api:src/include/core/memory.h:memory_get_total` | `src/include/core/memory.h` | `memory_get_total` | `core` | `PENDING` | 0 |
 | `api:src/include/core/memory.h:memory_get_total_pages` | `src/include/core/memory.h` | `memory_get_total_pages` | `core` | `PENDING` | 0 |
 | `api:src/include/core/memory.h:memory_get_used` | `src/include/core/memory.h` | `memory_get_used` | `core` | `PENDING` | 0 |
@@ -852,6 +852,7 @@
 | `api:src/include/drivers/idt.h:idt_register_handler` | `src/include/drivers/idt.h` | `idt_register_handler` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/idt.h:idt_register_shared_irq_handler` | `src/include/drivers/idt.h` | `idt_register_shared_irq_handler` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/idt.h:idt_set_gate` | `src/include/drivers/idt.h` | `idt_set_gate` | `drivers` | `PENDING` | 0 |
+| `api:src/include/drivers/idt.h:idt_unmask_irq` | `src/include/drivers/idt.h` | `idt_unmask_irq` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/idt.h:idt_validate_irq_state` | `src/include/drivers/idt.h` | `idt_validate_irq_state` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/mouse.h:mouse_get_buttons` | `src/include/drivers/mouse.h` | `mouse_get_buttons` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/mouse.h:mouse_get_config` | `src/include/drivers/mouse.h` | `mouse_get_config` | `drivers` | `PENDING` | 0 |
@@ -1221,7 +1222,7 @@
 | `api:src/include/memory/paging.h:paging_get_user_page_count` | `src/include/memory/paging.h` | `paging_get_user_page_count` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/paging.h:paging_get_user_stats` | `src/include/memory/paging.h` | `paging_get_user_stats` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/paging.h:paging_init` | `src/include/memory/paging.h` | `paging_init` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/paging.h:paging_is_ready` | `src/include/memory/paging.h` | `paging_is_ready` | `memory` | `PENDING` | 0 |
+| `api:src/include/memory/paging.h:paging_is_ready` | `src/include/memory/paging.h` | `paging_is_ready` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/paging.h:paging_map_page` | `src/include/memory/paging.h` | `paging_map_page` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/paging.h:paging_map_page_in_directory` | `src/include/memory/paging.h` | `paging_map_page_in_directory` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/paging.h:paging_switch_directory` | `src/include/memory/paging.h` | `paging_switch_directory` | `memory` | `PENDING` | 0 |
@@ -1232,11 +1233,11 @@
 | `api:src/include/memory/slab.h:kmem_cache_get_count` | `src/include/memory/slab.h` | `kmem_cache_get_count` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/slab.h:kmem_cache_get_info` | `src/include/memory/slab.h` | `kmem_cache_get_info` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/slab.h:kmem_cache_get_info_at` | `src/include/memory/slab.h` | `kmem_cache_get_info_at` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/slab.h:kmem_cache_get_stats` | `src/include/memory/slab.h` | `kmem_cache_get_stats` | `memory` | `PENDING` | 0 |
+| `api:src/include/memory/slab.h:kmem_cache_get_stats` | `src/include/memory/slab.h` | `kmem_cache_get_stats` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/slab.h:kmem_cache_init` | `src/include/memory/slab.h` | `kmem_cache_init` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/slab.h:kmem_cache_owns` | `src/include/memory/slab.h` | `kmem_cache_owns` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/slab.h:kmem_cache_self_test` | `src/include/memory/slab.h` | `kmem_cache_self_test` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/slab.h:kmem_cache_validate` | `src/include/memory/slab.h` | `kmem_cache_validate` | `memory` | `PENDING` | 0 |
+| `api:src/include/memory/slab.h:kmem_cache_self_test` | `src/include/memory/slab.h` | `kmem_cache_self_test` | `memory` | `COVERED` | 1 |
+| `api:src/include/memory/slab.h:kmem_cache_validate` | `src/include/memory/slab.h` | `kmem_cache_validate` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/vma.h:process_vma_copy` | `src/include/memory/vma.h` | `process_vma_copy` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/vma.h:process_vma_ensure_page` | `src/include/memory/vma.h` | `process_vma_ensure_page` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/vma.h:process_vma_get_page_fault_stats` | `src/include/memory/vma.h` | `process_vma_get_page_fault_stats` | `memory` | `PENDING` | 0 |
@@ -2489,6 +2490,10 @@
 | `c:src/core/irq_deferred.c:irq_deferred_validate_service` | `src/core/irq_deferred.c` | `irq_deferred_validate_service` | `core` | `PENDING` | 0 |
 | `c:src/core/irq_deferred.c:irq_deferred_validate_state` | `src/core/irq_deferred.c` | `irq_deferred_validate_state` | `core` | `PENDING` | 0 |
 | `c:src/core/irq_deferred.c:irq_deferred_work_init` | `src/core/irq_deferred.c` | `irq_deferred_work_init` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests.c:kernel_tests_capture_memory` | `src/core/kernel_tests.c` | `kernel_tests_capture_memory` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests.c:kernel_tests_check_snapshot` | `src/core/kernel_tests.c` | `kernel_tests_check_snapshot` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests.c:kernel_tests_run_memory_slab` | `src/core/kernel_tests.c` | `kernel_tests_run_memory_slab` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests.c:kernel_tests_same_memory_state` | `src/core/kernel_tests.c` | `kernel_tests_same_memory_state` | `core` | `PENDING` | 0 |
 | `c:src/core/log.c:log_append_char` | `src/core/log.c` | `log_append_char` | `core` | `PENDING` | 0 |
 | `c:src/core/log.c:log_append_text` | `src/core/log.c` | `log_append_text` | `core` | `PENDING` | 0 |
 | `c:src/core/log.c:log_clear_buffer` | `src/core/log.c` | `log_clear_buffer` | `core` | `PENDING` | 0 |
@@ -2897,33 +2902,45 @@
 | `c:src/core/tcp.c:tcp_validate_state` | `src/core/tcp.c` | `tcp_validate_state` | `core` | `PENDING` | 0 |
 | `c:src/core/tcp.c:tcp_write_u16` | `src/core/tcp.c` | `tcp_write_u16` | `core` | `PENDING` | 0 |
 | `c:src/core/tcp.c:tcp_write_u32` | `src/core/tcp.c` | `tcp_write_u32` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_append_hex` | `src/core/test_protocol.c` | `protocol_append_hex` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_append_span` | `src/core/test_protocol.c` | `protocol_append_span` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_append_text` | `src/core/test_protocol.c` | `protocol_append_text` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_append_uint` | `src/core/test_protocol.c` | `protocol_append_uint` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_boot_case` | `src/core/test_protocol.c` | `protocol_boot_case` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_crc32` | `src/core/test_protocol.c` | `protocol_crc32` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_emit_case` | `src/core/test_protocol.c` | `protocol_emit_case` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_emit_heartbeat` | `src/core/test_protocol.c` | `protocol_emit_heartbeat` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_emit_prefix` | `src/core/test_protocol.c` | `protocol_emit_prefix` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_emit_simple` | `src/core/test_protocol.c` | `protocol_emit_simple` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_field` | `src/core/test_protocol.c` | `protocol_field` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_fields_valid` | `src/core/test_protocol.c` | `protocol_fields_valid` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_frame_crc_valid` | `src/core/test_protocol.c` | `protocol_frame_crc_valid` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_handle_frame` | `src/core/test_protocol.c` | `protocol_handle_frame` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_parse_hex` | `src/core/test_protocol.c` | `protocol_parse_hex` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_parse_uint` | `src/core/test_protocol.c` | `protocol_parse_uint` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_prefix_valid` | `src/core/test_protocol.c` | `protocol_prefix_valid` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_emit_event` | `src/core/test_protocol.c` | `protocol_emit_event` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_length` | `src/core/test_protocol.c` | `protocol_length` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:protocol_receive` | `src/core/test_protocol.c` | `protocol_receive` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:protocol_run_case` | `src/core/test_protocol.c` | `protocol_run_case` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:protocol_token_equals` | `src/core/test_protocol.c` | `protocol_token_equals` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_token_valid` | `src/core/test_protocol.c` | `protocol_token_valid` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:test_protocol_init` | `src/core/test_protocol.c` | `test_protocol_init` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:test_protocol_is_active` | `src/core/test_protocol.c` | `test_protocol_is_active` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:test_protocol_panic` | `src/core/test_protocol.c` | `test_protocol_panic` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:test_protocol_poll` | `src/core/test_protocol.c` | `test_protocol_poll` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:test_protocol_set_boot_ready` | `src/core/test_protocol.c` | `test_protocol_set_boot_ready` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:test_protocol_timeout` | `src/core/test_protocol.c` | `test_protocol_timeout` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_append_hex` | `src/core/test_protocol_core.c` | `core_append_hex` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_append_text` | `src/core/test_protocol_core.c` | `core_append_text` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_append_uint` | `src/core/test_protocol_core.c` | `core_append_uint` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_copy` | `src/core/test_protocol_core.c` | `core_copy` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_copy_reason` | `src/core/test_protocol_core.c` | `core_copy_reason` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_crc32` | `src/core/test_protocol_core.c` | `core_crc32` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_emit_case` | `src/core/test_protocol_core.c` | `core_emit_case` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_emit_event` | `src/core/test_protocol_core.c` | `core_emit_event` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_emit_simple` | `src/core/test_protocol_core.c` | `core_emit_simple` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_field` | `src/core/test_protocol_core.c` | `core_field` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_fields_valid` | `src/core/test_protocol_core.c` | `core_fields_valid` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_frame_crc_valid` | `src/core/test_protocol_core.c` | `core_frame_crc_valid` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_handle_frame` | `src/core/test_protocol_core.c` | `core_handle_frame` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_length` | `src/core/test_protocol_core.c` | `core_length` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_parse_hex` | `src/core/test_protocol_core.c` | `core_parse_hex` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_parse_uint` | `src/core/test_protocol_core.c` | `core_parse_uint` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_prefix_valid` | `src/core/test_protocol_core.c` | `core_prefix_valid` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_token_equals` | `src/core/test_protocol_core.c` | `core_token_equals` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_token_valid` | `src/core/test_protocol_core.c` | `core_token_valid` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_zero` | `src/core/test_protocol_core.c` | `core_zero` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:test_protocol_core_emit` | `src/core/test_protocol_core.c` | `test_protocol_core_emit` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:test_protocol_core_feed_byte` | `src/core/test_protocol_core.c` | `test_protocol_core_feed_byte` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:test_protocol_core_format_event` | `src/core/test_protocol_core.c` | `test_protocol_core_format_event` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:test_protocol_core_init` | `src/core/test_protocol_core.c` | `test_protocol_core_init` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:test_protocol_core_is_active` | `src/core/test_protocol_core.c` | `test_protocol_core_is_active` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:test_protocol_core_poll` | `src/core/test_protocol_core.c` | `test_protocol_core_poll` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:test_protocol_core_set_boot_ready` | `src/core/test_protocol_core.c` | `test_protocol_core_set_boot_ready` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:test_protocol_core_set_ticks` | `src/core/test_protocol_core.c` | `test_protocol_core_set_ticks` | `core` | `PENDING` | 0 |
 | `c:src/core/tls.c:tls_capability_available` | `src/core/tls.c` | `tls_capability_available` | `core` | `PENDING` | 0 |
 | `c:src/core/tls.c:tls_get_policy` | `src/core/tls.c` | `tls_get_policy` | `core` | `PENDING` | 0 |
 | `c:src/core/tls.c:tls_get_status` | `src/core/tls.c` | `tls_get_status` | `core` | `PENDING` | 0 |
@@ -3843,6 +3860,7 @@
 | `c:src/drivers/idt.c:idt_register_handler` | `src/drivers/idt.c` | `idt_register_handler` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/idt.c:idt_register_shared_irq_handler` | `src/drivers/idt.c` | `idt_register_shared_irq_handler` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/idt.c:idt_set_gate` | `src/drivers/idt.c` | `idt_set_gate` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/idt.c:idt_unmask_irq` | `src/drivers/idt.c` | `idt_unmask_irq` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/idt.c:idt_user_exception_handler` | `src/drivers/idt.c` | `idt_user_exception_handler` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/idt.c:idt_validate_irq_state` | `src/drivers/idt.c` | `idt_validate_irq_state` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/idt.c:inb` | `src/drivers/idt.c` | `inb` | `drivers` | `PENDING` | 0 |
@@ -5150,6 +5168,7 @@
 | `c:src/kernel/kernel.c:kernel_workqueue_init` | `src/kernel/kernel.c` | `kernel_workqueue_init` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/kernel.c:shell_process_main` | `src/kernel/kernel.c` | `shell_process_main` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/kernel.c:system_process_main` | `src/kernel/kernel.c` | `system_process_main` | `kernel` | `PENDING` | 0 |
+| `c:src/kernel/kernel.c:test_protocol_process_main` | `src/kernel/kernel.c` | `test_protocol_process_main` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/panic.c:panic` | `src/kernel/panic.c` | `panic` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/panic.c:panic_draw_header` | `src/kernel/panic.c` | `panic_draw_header` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/panic.c:panic_halt` | `src/kernel/panic.c` | `panic_halt` | `kernel` | `PENDING` | 0 |
@@ -5175,12 +5194,12 @@
 | `c:src/memory/memory.c:heap_range_contains` | `src/memory/memory.c` | `heap_range_contains` | `memory` | `PENDING` | 0 |
 | `c:src/memory/memory.c:kfree` | `src/memory/memory.c` | `kfree` | `memory` | `PENDING` | 0 |
 | `c:src/memory/memory.c:memory_find_total` | `src/memory/memory.c` | `memory_find_total` | `memory` | `PENDING` | 0 |
-| `c:src/memory/memory.c:memory_get_detailed_stats` | `src/memory/memory.c` | `memory_get_detailed_stats` | `memory` | `PENDING` | 0 |
+| `c:src/memory/memory.c:memory_get_detailed_stats` | `src/memory/memory.c` | `memory_get_detailed_stats` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:memory_get_free` | `src/memory/memory.c` | `memory_get_free` | `memory` | `PENDING` | 0 |
-| `c:src/memory/memory.c:memory_get_free_pages` | `src/memory/memory.c` | `memory_get_free_pages` | `memory` | `PENDING` | 0 |
-| `c:src/memory/memory.c:memory_get_heap_stats` | `src/memory/memory.c` | `memory_get_heap_stats` | `memory` | `PENDING` | 0 |
+| `c:src/memory/memory.c:memory_get_free_pages` | `src/memory/memory.c` | `memory_get_free_pages` | `memory` | `COVERED` | 1 |
+| `c:src/memory/memory.c:memory_get_heap_stats` | `src/memory/memory.c` | `memory_get_heap_stats` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:memory_get_mmap_entries` | `src/memory/memory.c` | `memory_get_mmap_entries` | `memory` | `PENDING` | 0 |
-| `c:src/memory/memory.c:memory_get_pmm_stats` | `src/memory/memory.c` | `memory_get_pmm_stats` | `memory` | `PENDING` | 0 |
+| `c:src/memory/memory.c:memory_get_pmm_stats` | `src/memory/memory.c` | `memory_get_pmm_stats` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:memory_get_total` | `src/memory/memory.c` | `memory_get_total` | `memory` | `PENDING` | 0 |
 | `c:src/memory/memory.c:memory_get_total_pages` | `src/memory/memory.c` | `memory_get_total_pages` | `memory` | `PENDING` | 0 |
 | `c:src/memory/memory.c:memory_get_used` | `src/memory/memory.c` | `memory_get_used` | `memory` | `PENDING` | 0 |
@@ -5214,7 +5233,7 @@
 | `c:src/memory/paging.c:paging_get_user_stats` | `src/memory/paging.c` | `paging_get_user_stats` | `memory` | `PENDING` | 0 |
 | `c:src/memory/paging.c:paging_init` | `src/memory/paging.c` | `paging_init` | `memory` | `PENDING` | 0 |
 | `c:src/memory/paging.c:paging_invalidate` | `src/memory/paging.c` | `paging_invalidate` | `memory` | `PENDING` | 0 |
-| `c:src/memory/paging.c:paging_is_ready` | `src/memory/paging.c` | `paging_is_ready` | `memory` | `PENDING` | 0 |
+| `c:src/memory/paging.c:paging_is_ready` | `src/memory/paging.c` | `paging_is_ready` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_is_registered_user_directory` | `src/memory/paging.c` | `paging_is_registered_user_directory` | `memory` | `PENDING` | 0 |
 | `c:src/memory/paging.c:paging_map_framebuffer` | `src/memory/paging.c` | `paging_map_framebuffer` | `memory` | `PENDING` | 0 |
 | `c:src/memory/paging.c:paging_map_identity_range_fast` | `src/memory/paging.c` | `paging_map_identity_range_fast` | `memory` | `PENDING` | 0 |
@@ -5232,11 +5251,11 @@
 | `c:src/memory/slab.c:kmem_cache_get_count` | `src/memory/slab.c` | `kmem_cache_get_count` | `memory` | `PENDING` | 0 |
 | `c:src/memory/slab.c:kmem_cache_get_info` | `src/memory/slab.c` | `kmem_cache_get_info` | `memory` | `PENDING` | 0 |
 | `c:src/memory/slab.c:kmem_cache_get_info_at` | `src/memory/slab.c` | `kmem_cache_get_info_at` | `memory` | `PENDING` | 0 |
-| `c:src/memory/slab.c:kmem_cache_get_stats` | `src/memory/slab.c` | `kmem_cache_get_stats` | `memory` | `PENDING` | 0 |
+| `c:src/memory/slab.c:kmem_cache_get_stats` | `src/memory/slab.c` | `kmem_cache_get_stats` | `memory` | `COVERED` | 1 |
 | `c:src/memory/slab.c:kmem_cache_init` | `src/memory/slab.c` | `kmem_cache_init` | `memory` | `PENDING` | 0 |
 | `c:src/memory/slab.c:kmem_cache_owns` | `src/memory/slab.c` | `kmem_cache_owns` | `memory` | `PENDING` | 0 |
-| `c:src/memory/slab.c:kmem_cache_self_test` | `src/memory/slab.c` | `kmem_cache_self_test` | `memory` | `PENDING` | 0 |
-| `c:src/memory/slab.c:kmem_cache_validate` | `src/memory/slab.c` | `kmem_cache_validate` | `memory` | `PENDING` | 0 |
+| `c:src/memory/slab.c:kmem_cache_self_test` | `src/memory/slab.c` | `kmem_cache_self_test` | `memory` | `COVERED` | 1 |
+| `c:src/memory/slab.c:kmem_cache_validate` | `src/memory/slab.c` | `kmem_cache_validate` | `memory` | `COVERED` | 1 |
 | `c:src/memory/slab.c:slab_align_up` | `src/memory/slab.c` | `slab_align_up` | `memory` | `PENDING` | 0 |
 | `c:src/memory/slab.c:slab_bit_is_set` | `src/memory/slab.c` | `slab_bit_is_set` | `memory` | `PENDING` | 0 |
 | `c:src/memory/slab.c:slab_cache_registered` | `src/memory/slab.c` | `slab_cache_registered` | `memory` | `PENDING` | 0 |
@@ -6800,6 +6819,7 @@
 | ID | Executor | Perfil | Caso guest | Status | Timeout | Heartbeat | Isolamento | Proprietario | Camada | Pre-condicoes | Acao | Resultado esperado | Erros | Efeitos | Limpeza |
 |---|---|---|---|---|---:|---:|---|---|---|---|---|---|---|---|---|
 | `qemu:tst2:boot-ready` | `qemu` | `smoke` | `qemu:tst2:boot-ready` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e o executavel qemu-system-i386 esta disponivel | iniciar o guest em snapshot, enviar HELLO e executar o caso de boot apos READY | o guest publica READY, HEARTBEAT e PASS para o caso solicitado | PANIC, TIMEOUT, ausencia de heartbeat, erro de protocolo ou encerramento inesperado do QEMU | cria um processo QEMU e artefatos temporarios da execucao | encerrar o QEMU via QMP e preservar o relatorio, serial e logs da execucao |
+| `qemu:tst4:memory-slab` | `qemu` | `smoke` | `qemu:tst4:memory-slab` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e paging, PMM, heap e SLAB estao READY | iniciar o guest em snapshot e enviar um unico RUN apos READY | o guest publica READY, HEARTBEAT, BEGIN e PASS, preservando o estado de memoria | falha de pre-condicao, invariante, contador, pagina, protocolo, heartbeat ou QEMU | cria um processo QEMU e recursos temporarios de memoria do autoteste | encerrar o QEMU via QMP e preservar manifesto, serial, logs e resultado |
 
 ## Superfícies sem caso associado
 
@@ -7175,12 +7195,8 @@
 - `api:src/include/core/log.h:log_set_level`
 - `api:src/include/core/log.h:log_to_buffer`
 - `api:src/include/core/memory.h:kfree`
-- `api:src/include/core/memory.h:memory_get_detailed_stats`
 - `api:src/include/core/memory.h:memory_get_free`
-- `api:src/include/core/memory.h:memory_get_free_pages`
-- `api:src/include/core/memory.h:memory_get_heap_stats`
 - `api:src/include/core/memory.h:memory_get_mmap_entries`
-- `api:src/include/core/memory.h:memory_get_pmm_stats`
 - `api:src/include/core/memory.h:memory_get_total`
 - `api:src/include/core/memory.h:memory_get_total_pages`
 - `api:src/include/core/memory.h:memory_get_used`
@@ -7594,6 +7610,7 @@
 - `api:src/include/drivers/idt.h:idt_register_handler`
 - `api:src/include/drivers/idt.h:idt_register_shared_irq_handler`
 - `api:src/include/drivers/idt.h:idt_set_gate`
+- `api:src/include/drivers/idt.h:idt_unmask_irq`
 - `api:src/include/drivers/idt.h:idt_validate_irq_state`
 - `api:src/include/drivers/mouse.h:mouse_get_buttons`
 - `api:src/include/drivers/mouse.h:mouse_get_config`
@@ -7963,7 +7980,6 @@
 - `api:src/include/memory/paging.h:paging_get_user_page_count`
 - `api:src/include/memory/paging.h:paging_get_user_stats`
 - `api:src/include/memory/paging.h:paging_init`
-- `api:src/include/memory/paging.h:paging_is_ready`
 - `api:src/include/memory/paging.h:paging_map_page`
 - `api:src/include/memory/paging.h:paging_map_page_in_directory`
 - `api:src/include/memory/paging.h:paging_switch_directory`
@@ -7974,11 +7990,8 @@
 - `api:src/include/memory/slab.h:kmem_cache_get_count`
 - `api:src/include/memory/slab.h:kmem_cache_get_info`
 - `api:src/include/memory/slab.h:kmem_cache_get_info_at`
-- `api:src/include/memory/slab.h:kmem_cache_get_stats`
 - `api:src/include/memory/slab.h:kmem_cache_init`
 - `api:src/include/memory/slab.h:kmem_cache_owns`
-- `api:src/include/memory/slab.h:kmem_cache_self_test`
-- `api:src/include/memory/slab.h:kmem_cache_validate`
 - `api:src/include/memory/vma.h:process_vma_copy`
 - `api:src/include/memory/vma.h:process_vma_ensure_page`
 - `api:src/include/memory/vma.h:process_vma_get_page_fault_stats`
@@ -9221,6 +9234,9 @@
 - `c:src/core/irq_deferred.c:irq_deferred_validate_service`
 - `c:src/core/irq_deferred.c:irq_deferred_validate_state`
 - `c:src/core/irq_deferred.c:irq_deferred_work_init`
+- `c:src/core/kernel_tests.c:kernel_tests_capture_memory`
+- `c:src/core/kernel_tests.c:kernel_tests_check_snapshot`
+- `c:src/core/kernel_tests.c:kernel_tests_same_memory_state`
 - `c:src/core/log.c:log_append_char`
 - `c:src/core/log.c:log_append_text`
 - `c:src/core/log.c:log_clear_buffer`
@@ -9629,33 +9645,45 @@
 - `c:src/core/tcp.c:tcp_validate_state`
 - `c:src/core/tcp.c:tcp_write_u16`
 - `c:src/core/tcp.c:tcp_write_u32`
-- `c:src/core/test_protocol.c:protocol_append_hex`
-- `c:src/core/test_protocol.c:protocol_append_span`
-- `c:src/core/test_protocol.c:protocol_append_text`
-- `c:src/core/test_protocol.c:protocol_append_uint`
-- `c:src/core/test_protocol.c:protocol_boot_case`
-- `c:src/core/test_protocol.c:protocol_crc32`
-- `c:src/core/test_protocol.c:protocol_emit_case`
-- `c:src/core/test_protocol.c:protocol_emit_heartbeat`
-- `c:src/core/test_protocol.c:protocol_emit_prefix`
-- `c:src/core/test_protocol.c:protocol_emit_simple`
-- `c:src/core/test_protocol.c:protocol_field`
-- `c:src/core/test_protocol.c:protocol_fields_valid`
-- `c:src/core/test_protocol.c:protocol_frame_crc_valid`
-- `c:src/core/test_protocol.c:protocol_handle_frame`
-- `c:src/core/test_protocol.c:protocol_parse_hex`
-- `c:src/core/test_protocol.c:protocol_parse_uint`
-- `c:src/core/test_protocol.c:protocol_prefix_valid`
+- `c:src/core/test_protocol.c:protocol_emit_event`
+- `c:src/core/test_protocol.c:protocol_length`
 - `c:src/core/test_protocol.c:protocol_receive`
 - `c:src/core/test_protocol.c:protocol_run_case`
 - `c:src/core/test_protocol.c:protocol_token_equals`
-- `c:src/core/test_protocol.c:protocol_token_valid`
 - `c:src/core/test_protocol.c:test_protocol_init`
 - `c:src/core/test_protocol.c:test_protocol_is_active`
 - `c:src/core/test_protocol.c:test_protocol_panic`
 - `c:src/core/test_protocol.c:test_protocol_poll`
 - `c:src/core/test_protocol.c:test_protocol_set_boot_ready`
 - `c:src/core/test_protocol.c:test_protocol_timeout`
+- `c:src/core/test_protocol_core.c:core_append_hex`
+- `c:src/core/test_protocol_core.c:core_append_text`
+- `c:src/core/test_protocol_core.c:core_append_uint`
+- `c:src/core/test_protocol_core.c:core_copy`
+- `c:src/core/test_protocol_core.c:core_copy_reason`
+- `c:src/core/test_protocol_core.c:core_crc32`
+- `c:src/core/test_protocol_core.c:core_emit_case`
+- `c:src/core/test_protocol_core.c:core_emit_event`
+- `c:src/core/test_protocol_core.c:core_emit_simple`
+- `c:src/core/test_protocol_core.c:core_field`
+- `c:src/core/test_protocol_core.c:core_fields_valid`
+- `c:src/core/test_protocol_core.c:core_frame_crc_valid`
+- `c:src/core/test_protocol_core.c:core_handle_frame`
+- `c:src/core/test_protocol_core.c:core_length`
+- `c:src/core/test_protocol_core.c:core_parse_hex`
+- `c:src/core/test_protocol_core.c:core_parse_uint`
+- `c:src/core/test_protocol_core.c:core_prefix_valid`
+- `c:src/core/test_protocol_core.c:core_token_equals`
+- `c:src/core/test_protocol_core.c:core_token_valid`
+- `c:src/core/test_protocol_core.c:core_zero`
+- `c:src/core/test_protocol_core.c:test_protocol_core_emit`
+- `c:src/core/test_protocol_core.c:test_protocol_core_feed_byte`
+- `c:src/core/test_protocol_core.c:test_protocol_core_format_event`
+- `c:src/core/test_protocol_core.c:test_protocol_core_init`
+- `c:src/core/test_protocol_core.c:test_protocol_core_is_active`
+- `c:src/core/test_protocol_core.c:test_protocol_core_poll`
+- `c:src/core/test_protocol_core.c:test_protocol_core_set_boot_ready`
+- `c:src/core/test_protocol_core.c:test_protocol_core_set_ticks`
 - `c:src/core/tls.c:tls_capability_available`
 - `c:src/core/tls.c:tls_get_policy`
 - `c:src/core/tls.c:tls_get_status`
@@ -10575,6 +10603,7 @@
 - `c:src/drivers/idt.c:idt_register_handler`
 - `c:src/drivers/idt.c:idt_register_shared_irq_handler`
 - `c:src/drivers/idt.c:idt_set_gate`
+- `c:src/drivers/idt.c:idt_unmask_irq`
 - `c:src/drivers/idt.c:idt_user_exception_handler`
 - `c:src/drivers/idt.c:idt_validate_irq_state`
 - `c:src/drivers/idt.c:inb`
@@ -11882,6 +11911,7 @@
 - `c:src/kernel/kernel.c:kernel_workqueue_init`
 - `c:src/kernel/kernel.c:shell_process_main`
 - `c:src/kernel/kernel.c:system_process_main`
+- `c:src/kernel/kernel.c:test_protocol_process_main`
 - `c:src/kernel/panic.c:panic`
 - `c:src/kernel/panic.c:panic_draw_header`
 - `c:src/kernel/panic.c:panic_halt`
@@ -11907,12 +11937,8 @@
 - `c:src/memory/memory.c:heap_range_contains`
 - `c:src/memory/memory.c:kfree`
 - `c:src/memory/memory.c:memory_find_total`
-- `c:src/memory/memory.c:memory_get_detailed_stats`
 - `c:src/memory/memory.c:memory_get_free`
-- `c:src/memory/memory.c:memory_get_free_pages`
-- `c:src/memory/memory.c:memory_get_heap_stats`
 - `c:src/memory/memory.c:memory_get_mmap_entries`
-- `c:src/memory/memory.c:memory_get_pmm_stats`
 - `c:src/memory/memory.c:memory_get_total`
 - `c:src/memory/memory.c:memory_get_total_pages`
 - `c:src/memory/memory.c:memory_get_used`
@@ -11946,7 +11972,6 @@
 - `c:src/memory/paging.c:paging_get_user_stats`
 - `c:src/memory/paging.c:paging_init`
 - `c:src/memory/paging.c:paging_invalidate`
-- `c:src/memory/paging.c:paging_is_ready`
 - `c:src/memory/paging.c:paging_is_registered_user_directory`
 - `c:src/memory/paging.c:paging_map_framebuffer`
 - `c:src/memory/paging.c:paging_map_identity_range_fast`
@@ -11964,11 +11989,8 @@
 - `c:src/memory/slab.c:kmem_cache_get_count`
 - `c:src/memory/slab.c:kmem_cache_get_info`
 - `c:src/memory/slab.c:kmem_cache_get_info_at`
-- `c:src/memory/slab.c:kmem_cache_get_stats`
 - `c:src/memory/slab.c:kmem_cache_init`
 - `c:src/memory/slab.c:kmem_cache_owns`
-- `c:src/memory/slab.c:kmem_cache_self_test`
-- `c:src/memory/slab.c:kmem_cache_validate`
 - `c:src/memory/slab.c:slab_align_up`
 - `c:src/memory/slab.c:slab_bit_is_set`
 - `c:src/memory/slab.c:slab_cache_registered`
@@ -13519,4 +13541,21 @@
 
 ## Aposentadas
 
-Nenhuma.
+- `c:src/core/test_protocol.c:protocol_append_hex` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/core/test_protocol.c:protocol_append_span` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/core/test_protocol.c:protocol_append_text` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/core/test_protocol.c:protocol_append_uint` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/core/test_protocol.c:protocol_boot_case` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/core/test_protocol.c:protocol_crc32` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/core/test_protocol.c:protocol_emit_case` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/core/test_protocol.c:protocol_emit_heartbeat` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/core/test_protocol.c:protocol_emit_prefix` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/core/test_protocol.c:protocol_emit_simple` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/core/test_protocol.c:protocol_field` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/core/test_protocol.c:protocol_fields_valid` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/core/test_protocol.c:protocol_frame_crc_valid` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/core/test_protocol.c:protocol_handle_frame` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/core/test_protocol.c:protocol_parse_hex` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/core/test_protocol.c:protocol_parse_uint` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/core/test_protocol.c:protocol_prefix_valid` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/core/test_protocol.c:protocol_token_valid` — surface ausente na fonte atual; confirmar remocao ou renomeacao
