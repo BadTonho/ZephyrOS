@@ -4,15 +4,15 @@
 
 ## Resumo
 
-- Superfícies ativas: **6661**
-- Casos de teste: **0**
+- Superfícies ativas: **6713**
+- Casos de teste: **1**
 - Superfícies aposentadas: **0**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1398 |
+| `api_function` | 1409 |
 | `asm_entry` | 101 |
-| `c_function` | 5042 |
+| `c_function` | 5083 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
@@ -21,7 +21,14 @@
 | `BLOCKED` | 0 |
 | `COVERED` | 0 |
 | `MANUAL` | 0 |
-| `PENDING` | 6661 |
+| `PENDING` | 6713 |
+
+| Casos | Quantidade |
+|---|---:|
+| `AUTOMATED` | 1 |
+| `BLOCKED` | 0 |
+| `MANUAL` | 0 |
+| `PENDING` | 0 |
 
 ### Por subsistema
 
@@ -30,9 +37,9 @@
 | `apps` | 128 |
 | `appstore` | 83 |
 | `boot` | 129 |
-| `core` | 2460 |
+| `core` | 2494 |
 | `desktop` | 39 |
-| `drivers` | 850 |
+| `drivers` | 868 |
 | `filemanager` | 92 |
 | `fs` | 932 |
 | `gui` | 28 |
@@ -569,6 +576,12 @@
 | `api:src/include/core/tcp.h:tcp_send` | `src/include/core/tcp.h` | `tcp_send` | `core` | `PENDING` | 0 |
 | `api:src/include/core/tcp.h:tcp_set_receive_window` | `src/include/core/tcp.h` | `tcp_set_receive_window` | `core` | `PENDING` | 0 |
 | `api:src/include/core/tcp.h:tcp_validate_state` | `src/include/core/tcp.h` | `tcp_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/test_protocol.h:test_protocol_init` | `src/include/core/test_protocol.h` | `test_protocol_init` | `core` | `PENDING` | 0 |
+| `api:src/include/core/test_protocol.h:test_protocol_is_active` | `src/include/core/test_protocol.h` | `test_protocol_is_active` | `core` | `PENDING` | 0 |
+| `api:src/include/core/test_protocol.h:test_protocol_panic` | `src/include/core/test_protocol.h` | `test_protocol_panic` | `core` | `PENDING` | 0 |
+| `api:src/include/core/test_protocol.h:test_protocol_poll` | `src/include/core/test_protocol.h` | `test_protocol_poll` | `core` | `PENDING` | 0 |
+| `api:src/include/core/test_protocol.h:test_protocol_set_boot_ready` | `src/include/core/test_protocol.h` | `test_protocol_set_boot_ready` | `core` | `PENDING` | 0 |
+| `api:src/include/core/test_protocol.h:test_protocol_timeout` | `src/include/core/test_protocol.h` | `test_protocol_timeout` | `core` | `PENDING` | 0 |
 | `api:src/include/core/timer.h:timer_cancel` | `src/include/core/timer.h` | `timer_cancel` | `core` | `PENDING` | 0 |
 | `api:src/include/core/timer.h:timer_copy_active` | `src/include/core/timer.h` | `timer_copy_active` | `core` | `PENDING` | 0 |
 | `api:src/include/core/timer.h:timer_create` | `src/include/core/timer.h` | `timer_create` | `core` | `PENDING` | 0 |
@@ -878,6 +891,11 @@
 | `api:src/include/drivers/rtl8811cu.h:rtl8811cu_probe` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_probe` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/rtl8811cu.h:rtl8811cu_scan` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_scan` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/rtl8811cu.h:rtl8811cu_validate_state` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_validate_state` | `drivers` | `PENDING` | 0 |
+| `api:src/include/drivers/serial.h:serial_flush` | `src/include/drivers/serial.h` | `serial_flush` | `drivers` | `PENDING` | 0 |
+| `api:src/include/drivers/serial.h:serial_init` | `src/include/drivers/serial.h` | `serial_init` | `drivers` | `PENDING` | 0 |
+| `api:src/include/drivers/serial.h:serial_is_ready` | `src/include/drivers/serial.h` | `serial_is_ready` | `drivers` | `PENDING` | 0 |
+| `api:src/include/drivers/serial.h:serial_read_byte` | `src/include/drivers/serial.h` | `serial_read_byte` | `drivers` | `PENDING` | 0 |
+| `api:src/include/drivers/serial.h:serial_write_text` | `src/include/drivers/serial.h` | `serial_write_text` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/speaker.h:speaker_beep` | `src/include/drivers/speaker.h` | `speaker_beep` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/speaker.h:speaker_init` | `src/include/drivers/speaker.h` | `speaker_init` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/speaker.h:speaker_off` | `src/include/drivers/speaker.h` | `speaker_off` | `drivers` | `PENDING` | 0 |
@@ -2513,6 +2531,7 @@
 | `c:src/core/log.c:log_test_text_serialization` | `src/core/log.c` | `log_test_text_serialization` | `core` | `PENDING` | 0 |
 | `c:src/core/log.c:log_test_wrap_and_overwrite` | `src/core/log.c` | `log_test_wrap_and_overwrite` | `core` | `PENDING` | 0 |
 | `c:src/core/log.c:log_to_buffer` | `src/core/log.c` | `log_to_buffer` | `core` | `PENDING` | 0 |
+| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `PENDING` | 0 |
 | `c:src/core/net_buffer.c:net_buffer_alignment_valid` | `src/core/net_buffer.c` | `net_buffer_alignment_valid` | `core` | `PENDING` | 0 |
 | `c:src/core/net_buffer.c:net_buffer_begin` | `src/core/net_buffer.c` | `net_buffer_begin` | `core` | `PENDING` | 0 |
 | `c:src/core/net_buffer.c:net_buffer_check_active_locked` | `src/core/net_buffer.c` | `net_buffer_check_active_locked` | `core` | `PENDING` | 0 |
@@ -2878,6 +2897,33 @@
 | `c:src/core/tcp.c:tcp_validate_state` | `src/core/tcp.c` | `tcp_validate_state` | `core` | `PENDING` | 0 |
 | `c:src/core/tcp.c:tcp_write_u16` | `src/core/tcp.c` | `tcp_write_u16` | `core` | `PENDING` | 0 |
 | `c:src/core/tcp.c:tcp_write_u32` | `src/core/tcp.c` | `tcp_write_u32` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_append_hex` | `src/core/test_protocol.c` | `protocol_append_hex` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_append_span` | `src/core/test_protocol.c` | `protocol_append_span` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_append_text` | `src/core/test_protocol.c` | `protocol_append_text` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_append_uint` | `src/core/test_protocol.c` | `protocol_append_uint` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_boot_case` | `src/core/test_protocol.c` | `protocol_boot_case` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_crc32` | `src/core/test_protocol.c` | `protocol_crc32` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_emit_case` | `src/core/test_protocol.c` | `protocol_emit_case` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_emit_heartbeat` | `src/core/test_protocol.c` | `protocol_emit_heartbeat` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_emit_prefix` | `src/core/test_protocol.c` | `protocol_emit_prefix` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_emit_simple` | `src/core/test_protocol.c` | `protocol_emit_simple` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_field` | `src/core/test_protocol.c` | `protocol_field` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_fields_valid` | `src/core/test_protocol.c` | `protocol_fields_valid` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_frame_crc_valid` | `src/core/test_protocol.c` | `protocol_frame_crc_valid` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_handle_frame` | `src/core/test_protocol.c` | `protocol_handle_frame` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_parse_hex` | `src/core/test_protocol.c` | `protocol_parse_hex` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_parse_uint` | `src/core/test_protocol.c` | `protocol_parse_uint` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_prefix_valid` | `src/core/test_protocol.c` | `protocol_prefix_valid` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_receive` | `src/core/test_protocol.c` | `protocol_receive` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_run_case` | `src/core/test_protocol.c` | `protocol_run_case` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_token_equals` | `src/core/test_protocol.c` | `protocol_token_equals` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_token_valid` | `src/core/test_protocol.c` | `protocol_token_valid` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:test_protocol_init` | `src/core/test_protocol.c` | `test_protocol_init` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:test_protocol_is_active` | `src/core/test_protocol.c` | `test_protocol_is_active` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:test_protocol_panic` | `src/core/test_protocol.c` | `test_protocol_panic` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:test_protocol_poll` | `src/core/test_protocol.c` | `test_protocol_poll` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:test_protocol_set_boot_ready` | `src/core/test_protocol.c` | `test_protocol_set_boot_ready` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:test_protocol_timeout` | `src/core/test_protocol.c` | `test_protocol_timeout` | `core` | `PENDING` | 0 |
 | `c:src/core/tls.c:tls_capability_available` | `src/core/tls.c` | `tls_capability_available` | `core` | `PENDING` | 0 |
 | `c:src/core/tls.c:tls_get_policy` | `src/core/tls.c` | `tls_get_policy` | `core` | `PENDING` | 0 |
 | `c:src/core/tls.c:tls_get_status` | `src/core/tls.c` | `tls_get_status` | `core` | `PENDING` | 0 |
@@ -3955,6 +4001,19 @@
 | `c:src/drivers/rtl8811cu.c:rtl8811cu_send_frame` | `src/drivers/rtl8811cu.c` | `rtl8811cu_send_frame` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8811cu.c:rtl8811cu_service_pending` | `src/drivers/rtl8811cu.c` | `rtl8811cu_service_pending` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8811cu.c:rtl8811cu_validate_state` | `src/drivers/rtl8811cu.c` | `rtl8811cu_validate_state` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/serial.c:serial_byte_allowed` | `src/drivers/serial.c` | `serial_byte_allowed` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/serial.c:serial_flush` | `src/drivers/serial.c` | `serial_flush` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/serial.c:serial_flush_locked` | `src/drivers/serial.c` | `serial_flush_locked` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/serial.c:serial_inb` | `src/drivers/serial.c` | `serial_inb` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/serial.c:serial_init` | `src/drivers/serial.c` | `serial_init` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/serial.c:serial_is_ready` | `src/drivers/serial.c` | `serial_is_ready` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/serial.c:serial_next_index` | `src/drivers/serial.c` | `serial_next_index` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/serial.c:serial_outb` | `src/drivers/serial.c` | `serial_outb` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/serial.c:serial_prepare_byte` | `src/drivers/serial.c` | `serial_prepare_byte` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/serial.c:serial_read_byte` | `src/drivers/serial.c` | `serial_read_byte` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/serial.c:serial_restore_interrupts` | `src/drivers/serial.c` | `serial_restore_interrupts` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/serial.c:serial_suspend_interrupts` | `src/drivers/serial.c` | `serial_suspend_interrupts` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/serial.c:serial_write_text` | `src/drivers/serial.c` | `serial_write_text` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/speaker.c:inb` | `src/drivers/speaker.c` | `inb` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/speaker.c:outb` | `src/drivers/speaker.c` | `outb` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/speaker.c:speaker_beep` | `src/drivers/speaker.c` | `speaker_beep` | `drivers` | `PENDING` | 0 |
@@ -6738,7 +6797,9 @@
 
 ## Casos
 
-Nenhum caso de teste foi associado ainda; as superfícies permanecem `PENDING`.
+| ID | Executor | Perfil | Caso guest | Status | Timeout | Heartbeat | Isolamento | Proprietario | Camada | Pre-condicoes | Acao | Resultado esperado | Erros | Efeitos | Limpeza |
+|---|---|---|---|---|---:|---:|---|---|---|---|---|---|---|---|---|
+| `qemu:tst2:boot-ready` | `qemu` | `smoke` | `qemu:tst2:boot-ready` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e o executavel qemu-system-i386 esta disponivel | iniciar o guest em snapshot, enviar HELLO e executar o caso de boot apos READY | o guest publica READY, HEARTBEAT e PASS para o caso solicitado | PANIC, TIMEOUT, ausencia de heartbeat, erro de protocolo ou encerramento inesperado do QEMU | cria um processo QEMU e artefatos temporarios da execucao | encerrar o QEMU via QMP e preservar o relatorio, serial e logs da execucao |
 
 ## Superfícies sem caso associado
 
@@ -7257,6 +7318,12 @@ Nenhum caso de teste foi associado ainda; as superfícies permanecem `PENDING`.
 - `api:src/include/core/tcp.h:tcp_send`
 - `api:src/include/core/tcp.h:tcp_set_receive_window`
 - `api:src/include/core/tcp.h:tcp_validate_state`
+- `api:src/include/core/test_protocol.h:test_protocol_init`
+- `api:src/include/core/test_protocol.h:test_protocol_is_active`
+- `api:src/include/core/test_protocol.h:test_protocol_panic`
+- `api:src/include/core/test_protocol.h:test_protocol_poll`
+- `api:src/include/core/test_protocol.h:test_protocol_set_boot_ready`
+- `api:src/include/core/test_protocol.h:test_protocol_timeout`
 - `api:src/include/core/timer.h:timer_cancel`
 - `api:src/include/core/timer.h:timer_copy_active`
 - `api:src/include/core/timer.h:timer_create`
@@ -7566,6 +7633,11 @@ Nenhum caso de teste foi associado ainda; as superfícies permanecem `PENDING`.
 - `api:src/include/drivers/rtl8811cu.h:rtl8811cu_probe`
 - `api:src/include/drivers/rtl8811cu.h:rtl8811cu_scan`
 - `api:src/include/drivers/rtl8811cu.h:rtl8811cu_validate_state`
+- `api:src/include/drivers/serial.h:serial_flush`
+- `api:src/include/drivers/serial.h:serial_init`
+- `api:src/include/drivers/serial.h:serial_is_ready`
+- `api:src/include/drivers/serial.h:serial_read_byte`
+- `api:src/include/drivers/serial.h:serial_write_text`
 - `api:src/include/drivers/speaker.h:speaker_beep`
 - `api:src/include/drivers/speaker.h:speaker_init`
 - `api:src/include/drivers/speaker.h:speaker_off`
@@ -9191,6 +9263,7 @@ Nenhum caso de teste foi associado ainda; as superfícies permanecem `PENDING`.
 - `c:src/core/log.c:log_test_text_serialization`
 - `c:src/core/log.c:log_test_wrap_and_overwrite`
 - `c:src/core/log.c:log_to_buffer`
+- `c:src/core/log.c:log_write_serial`
 - `c:src/core/net_buffer.c:net_buffer_alignment_valid`
 - `c:src/core/net_buffer.c:net_buffer_begin`
 - `c:src/core/net_buffer.c:net_buffer_check_active_locked`
@@ -9556,6 +9629,33 @@ Nenhum caso de teste foi associado ainda; as superfícies permanecem `PENDING`.
 - `c:src/core/tcp.c:tcp_validate_state`
 - `c:src/core/tcp.c:tcp_write_u16`
 - `c:src/core/tcp.c:tcp_write_u32`
+- `c:src/core/test_protocol.c:protocol_append_hex`
+- `c:src/core/test_protocol.c:protocol_append_span`
+- `c:src/core/test_protocol.c:protocol_append_text`
+- `c:src/core/test_protocol.c:protocol_append_uint`
+- `c:src/core/test_protocol.c:protocol_boot_case`
+- `c:src/core/test_protocol.c:protocol_crc32`
+- `c:src/core/test_protocol.c:protocol_emit_case`
+- `c:src/core/test_protocol.c:protocol_emit_heartbeat`
+- `c:src/core/test_protocol.c:protocol_emit_prefix`
+- `c:src/core/test_protocol.c:protocol_emit_simple`
+- `c:src/core/test_protocol.c:protocol_field`
+- `c:src/core/test_protocol.c:protocol_fields_valid`
+- `c:src/core/test_protocol.c:protocol_frame_crc_valid`
+- `c:src/core/test_protocol.c:protocol_handle_frame`
+- `c:src/core/test_protocol.c:protocol_parse_hex`
+- `c:src/core/test_protocol.c:protocol_parse_uint`
+- `c:src/core/test_protocol.c:protocol_prefix_valid`
+- `c:src/core/test_protocol.c:protocol_receive`
+- `c:src/core/test_protocol.c:protocol_run_case`
+- `c:src/core/test_protocol.c:protocol_token_equals`
+- `c:src/core/test_protocol.c:protocol_token_valid`
+- `c:src/core/test_protocol.c:test_protocol_init`
+- `c:src/core/test_protocol.c:test_protocol_is_active`
+- `c:src/core/test_protocol.c:test_protocol_panic`
+- `c:src/core/test_protocol.c:test_protocol_poll`
+- `c:src/core/test_protocol.c:test_protocol_set_boot_ready`
+- `c:src/core/test_protocol.c:test_protocol_timeout`
 - `c:src/core/tls.c:tls_capability_available`
 - `c:src/core/tls.c:tls_get_policy`
 - `c:src/core/tls.c:tls_get_status`
@@ -10633,6 +10733,19 @@ Nenhum caso de teste foi associado ainda; as superfícies permanecem `PENDING`.
 - `c:src/drivers/rtl8811cu.c:rtl8811cu_send_frame`
 - `c:src/drivers/rtl8811cu.c:rtl8811cu_service_pending`
 - `c:src/drivers/rtl8811cu.c:rtl8811cu_validate_state`
+- `c:src/drivers/serial.c:serial_byte_allowed`
+- `c:src/drivers/serial.c:serial_flush`
+- `c:src/drivers/serial.c:serial_flush_locked`
+- `c:src/drivers/serial.c:serial_inb`
+- `c:src/drivers/serial.c:serial_init`
+- `c:src/drivers/serial.c:serial_is_ready`
+- `c:src/drivers/serial.c:serial_next_index`
+- `c:src/drivers/serial.c:serial_outb`
+- `c:src/drivers/serial.c:serial_prepare_byte`
+- `c:src/drivers/serial.c:serial_read_byte`
+- `c:src/drivers/serial.c:serial_restore_interrupts`
+- `c:src/drivers/serial.c:serial_suspend_interrupts`
+- `c:src/drivers/serial.c:serial_write_text`
 - `c:src/drivers/speaker.c:inb`
 - `c:src/drivers/speaker.c:outb`
 - `c:src/drivers/speaker.c:speaker_beep`

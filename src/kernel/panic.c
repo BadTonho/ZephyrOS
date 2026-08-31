@@ -1,4 +1,5 @@
 #include "core/panic.h"
+#include "core/test_protocol.h"
 #include "core/video.h"
 
 static void panic_draw_header(void) {
@@ -35,6 +36,7 @@ static void panic_print_metric(const char* label, uint32_t value) {
 }
 
 void panic(const char* message) {
+    test_protocol_panic(message ? message : "ERR_STATE");
     panic_draw_header();
     video_set_color(VGA_COLOR_WHITE, VGA_COLOR_RED);
     video_print("\nO kernel encontrou um erro fatal:\n\n", 0x4F);
@@ -52,6 +54,7 @@ void panic(const char* message) {
 void panic_memory(const char* message, uint32_t mmap_entries,
                   uint32_t total_memory, uint32_t free_memory,
                   uint32_t free_pages) {
+    test_protocol_panic(message ? message : "ERR_MEM");
     panic_draw_header();
     video_set_color(VGA_COLOR_WHITE, VGA_COLOR_RED);
     video_print("\nFalha durante a inicializacao da memoria:\n\n", 0x4F);

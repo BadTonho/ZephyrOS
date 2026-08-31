@@ -1126,3 +1126,18 @@ int usb_msc_read_sectors(uint32_t msc_index, uint32_t lba, uint32_t count,
 uint32_t usb_msc_get_count(uint32_t* out_count);
 int usb_msc_get_at(uint32_t index, usb_msc_info_t* out_info);
 ```
+
+## Canal serial interno do testador (TST2)
+
+`serial.c` inicializa o COM1 em 115200 8N1, sem IRQ e sem espera bloqueante.
+O driver possui fila TX limitada e flush com orcamento; bytes NUL, CR,
+controles e fora de ASCII imprimivel sao descartados. A leitura e polling e
+nao retém descritores, buffers externos ou estado do QEMU.
+
+O agente `test_protocol.c` usa esse canal somente depois de um `HELLO` valido
+com versao, sequencia e CRC corretos. Sem handshake, o agente permanece inerte;
+o boot normal e a saida VGA continuam independentes do runner. Os marcadores
+`READY`, `HEARTBEAT`, `BEGIN`, `PASS`, `FAIL`, `BLOCKED`, `PANIC` e `TIMEOUT`
+seguem o protocolo `ZTEST/1`; cada `HEARTBEAT` carrega os ticks atuais do PIT.
+Este contrato e interno e nao altera App API,
+syscalls, ABI, layouts, `boot.asm` ou `stage2.asm`.

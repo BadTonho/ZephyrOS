@@ -2,7 +2,7 @@
 
 ## Estado
 
-TST1 concluído; TST2 em diante permanece planejado. Esta é uma infraestrutura permanente de qualidade do ZephyrOS,
+TST1 concluído; TST2 está implementado e aguarda validação funcional. Esta é uma infraestrutura permanente de qualidade do ZephyrOS,
 independente de versão, linguagem, release ou migração tecnológica. Ela deve
 ser utilizada durante todo o desenvolvimento para detectar regressões assim
 que uma função nova ou uma alteração de código quebrar um comportamento
@@ -257,6 +257,30 @@ Cada execução deve registrar data, versão dos fontes, checksum da imagem,
 perfil, fixture, resultado agregado e arquivos de diagnóstico. A validação
 manual continuará necessária para interfaces gráficas, dispositivos físicos e
 qualquer caso que o QEMU não reproduza fielmente.
+
+## Implementacao atual do TST2
+
+A infraestrutura inicial do TST2 foi implementada e permanece pendente de
+validacao funcional no QEMU pelo usuario. O canal machine-readable e COM1;
+QMP e usado somente para `query-status`, parada e encerramento externos.
+`boot.asm` e `stage2.asm` permanecem inalterados.
+
+- `src/drivers/serial.c` fornece polling COM1, fila TX limitada, filtro ASCII
+  e flush sem IRQ ou espera bloqueante.
+- `src/core/test_protocol.c` permanece inerte ate `HELLO` com versao, sequencia
+  e CRC validos e publica `READY`, `HEARTBEAT`, `BEGIN`, `PASS`, `FAIL`,
+  `BLOCKED`, `PANIC` e `TIMEOUT`.
+- `tools/qemu_test_runner.py` inicia somente imagem existente com `-snapshot`,
+  captura serial/stdout/stderr, aplica timeouts e watchdog e aceita `run` e
+  `stress` com iteracoes, duracao ou `--until-failure`.
+- `build/test-results/<run-id>/` preserva manifesto, checksum, seed, fixture,
+  iteracao e `result.json`, separando `status` de `termination`.
+- O caso inicial `qemu:tst2:boot-ready` e os alvos `test-qemu` e
+  `test-qemu-selftest` foram adicionados sem dependencia de build.
+
+A validacao pendente deve confirmar self-test host-only, boot, handshake,
+`READY`, `HEARTBEAT`, `PASS`, watchdog, artefatos e estresse no QEMU antes de
+marcar TST2 como concluido.
 
 ## Fora do escopo
 

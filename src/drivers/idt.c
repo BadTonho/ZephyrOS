@@ -3,6 +3,7 @@
 #include "core/panic.h"
 #include "core/log.h"
 #include "core/errors.h"
+#include "core/test_protocol.h"
 #include "drivers/tss.h"
 #include "process/process.h"
 #include "process/signal.h"
@@ -403,6 +404,7 @@ static void idt_print_uint32(uint32_t value) {
 static void idt_panic_exception(registers_t* regs) {
     uint32_t fault_address = 0U;
 
+    test_protocol_panic("exception");
     video_clear();
     video_set_color(VGA_COLOR_WHITE, VGA_COLOR_RED);
     video_print("========================================\n", 0x4F);
