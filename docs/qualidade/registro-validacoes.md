@@ -3326,3 +3326,9 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   em `boot_ready_timeout` sem frames ZTEST; não houve `PANIC` nem erro de
   protocolo registrado. O agente não executou build, testes ou QEMU após a
   correção.
+
+- Política operacional do agente atualizada em 2026-08-30 23:45
+  (America/Sao_Paulo). O `AGENTS.md` agora permite que o agente execute
+  somente comandos de build, testes ou QEMU explicitamente autorizados pelo
+  usuário na conversa; sem autorização, a revisão permanece estática. A
+  alteração não modifica código, ABI, bootloader ou comportamento do sistema.

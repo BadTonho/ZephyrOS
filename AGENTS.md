@@ -54,8 +54,10 @@ como testes funcionais pendentes da fase; deve listar apenas a matriz de
 validação específica da funcionalidade.
 
 As ferramentas devem ser encontradas pelo `PATH` ou configuradas em
-`Makefile.local`, que não é versionado. O agente pode revisar o Makefile e os
-comandos, mas não executa build, testes ou QEMU neste projeto.
+`Makefile.local`, que não é versionado. Por padrão, o usuário executa build,
+testes e QEMU. O agente só pode executar esses comandos quando o usuário
+autorizar explicitamente a execução na conversa; sem essa autorização, o
+agente deve apenas revisar o Makefile, os comandos e os artefatos.
 
 ---
 
@@ -627,8 +629,9 @@ Devem permanecer disponíveis os documentos-base do projeto:
       `make clean && make` como pré-requisitos para abrir ou testar a versão
       alterada no QEMU e para um commit; depois de confirmados para a mesma
       versão, não reapresentá-los como pendência funcional da etapa.
-- [ ] A validação executável pertence ao usuário; o agente não deve executar
-      build, testes ou QEMU neste projeto, conforme a Regra #14.
+- [ ] A validação executável pertence ao usuário por padrão; o agente só pode
+      executar build, testes ou QEMU após autorização explícita, conforme a
+      Regra #14.
 - [ ] Revisar warnings novos. Warnings existentes que não puderem ser
       corrigidos na etapa devem ser identificados e documentados, sem
       classificá-los automaticamente como falha nova.
@@ -658,7 +661,8 @@ Antes de entregar uma alteração ou preparar um commit:
 9. [ ] A documentação canônica, métricas, contratos públicos e dívidas foram atualizados quando aplicável?
 10. [ ] Existe uma validação executável ou observável adequada à funcionalidade?
 11. [ ] O usuário recebeu os pré-requisitos de build e validação quando a alteração exige QEMU?
-12. [ ] O agente não executou build, testes ou QEMU, conforme a Regra #14?
+12. [ ] Se o agente executou build, testes ou QEMU, havia autorização explícita
+    do usuário conforme a Regra #14?
 13. [ ] Warnings novos e limitações conhecidas foram identificados sem confundir estado não validado com sucesso?
 14. [ ] `git status --short` e os diffs dos arquivos alterados foram revisados?
 15. [ ] Se houver commit, o diff staged e o `git diff --cached --check` foram revisados conforme a Regra #16?
@@ -691,7 +695,13 @@ resultado e as falhas relevantes.
 
 ## Regra #14: Execução de Build
 
-O agente de IA **NUNCA** deve executar comandos de build via terminal (`make`, `make clean`, `make run`, etc). O usuário será o único responsável por rodar o build e testar o sistema no emulador. Apenas instrua o usuário a executar o build quando o código estiver pronto.
+Por padrão, o agente de IA não executa comandos de build, testes ou QEMU via
+terminal (`make`, `make clean`, `make run`, `make test-qemu`, etc.). O usuário
+é o responsável por essa validação. Se o usuário autorizar explicitamente a
+execução na conversa, o agente poderá executar somente os comandos autorizados,
+respeitando os gates, os limites do escopo e as regras de segurança. A
+autorização não permite alterar App API, syscalls, ABI, bootloader ou outros
+arquivos fora do escopo do comando.
 
 ---
 
