@@ -39,12 +39,38 @@ def executable(value: str) -> str | None:
     return shutil.which(candidate)
 
 
-def command_environment(compiler: str | None) -> dict[str, str]:
+def command_environment(
+    compiler: str | None,
+    sanitizer: bool = False,
+    timeout: int = DEFAULT_TIMEOUT,
+) -> dict[str, str]:
     environment = os.environ.copy()
     if compiler:
         parent = Path(compiler).parent
+        path_entries = []
         if parent != Path('.'):
-            environment["PATH"] = str(parent) + os.pathsep + environment.get("PATH", "")
+            path_entries.append(str(parent))
+        if sanitizer:
+            try:
+                resource = subprocess.run(
+                    [compiler, "-print-resource-dir"],
+                    cwd=ROOT,
+                    env=environment,
+                    capture_output=True,
+                    text=True,
+                    timeout=timeout,
+                    check=False,
+                )
+            except (OSError, subprocess.TimeoutExpired):
+                resource = None
+            if resource and resource.returncode == 0:
+                runtime_directory = Path(resource.stdout.strip()) / "lib" / "windows"
+                if runtime_directory.is_dir():
+                    path_entries.insert(0, str(runtime_directory))
+        if path_entries:
+            environment["PATH"] = os.pathsep.join(
+                path_entries + [environment.get("PATH", "")]
+            )
     return environment
 
 
@@ -125,7 +151,11 @@ def sanitizer_runtime_available(compiler: str, timeout: int) -> tuple[bool, dict
             "-o",
             str(binary),
         ]
-        result = run_process(command, command_environment(compiler), timeout)
+        result = run_process(
+            command,
+            command_environment(compiler, sanitizer=True, timeout=timeout),
+            timeout,
+        )
         return result["status"] == "PASS", result
 
 
@@ -233,7 +263,7 @@ def main() -> int:
     binary.parent.mkdir(parents=True, exist_ok=True)
     compile_result = run_process(
         compile_command(compiler, binary, sanitize),
-        command_environment(compiler),
+        command_environment(compiler, sanitizer=sanitize, timeout=arguments.timeout),
         arguments.timeout,
     )
     result["steps"].append(compile_result)
@@ -241,7 +271,11 @@ def main() -> int:
         result["status"] = compile_result["status"]
         result["cause"] = "falha compilando teste C" if compile_result["status"] == "FAIL" else "teste C excedeu timeout"
     else:
-        c_result = run_process([str(binary)], command_environment(compiler), arguments.timeout)
+        c_result = run_process(
+            [str(binary)],
+            command_environment(compiler, sanitizer=sanitize, timeout=arguments.timeout),
+            arguments.timeout,
+        )
         result["steps"].append(c_result)
         if c_result["status"] != "PASS":
             result["status"] = c_result["status"]
