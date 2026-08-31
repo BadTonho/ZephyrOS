@@ -25,6 +25,40 @@ internos necessários ao kernel usarão um perfil controlado, fixtures e
 backends falsos, sem alterar o comportamento normal de boot ou depender de
 hardware específico.
 
+## Estratégia de validação em camadas
+
+O testador seguirá uma estratégia progressiva, inspirada na separação entre
+testes internos rápidos, testes de interfaces e testes de integração usada em
+projetos de kernels maduros. Cada camada terá uma responsabilidade própria e
+um critério de parada; uma falha em uma camada impedirá o avanço para a camada
+seguinte até que sua causa seja classificada.
+
+```text
+TST2: infraestrutura do executor e protocolo
+        ↓
+TST3: lógica independente de hardware no host
+        ↓
+TST4: autotestes controlados dentro do kernel
+        ↓
+TST5: integração black-box no QEMU
+        ↓
+TST6/TST7: matriz, estresse e regressão contínua
+```
+
+Testes host-only validarão primeiro parsers, checksums, máquinas de estado,
+filas, limites, relatórios e o próprio protocolo do executor usando stubs e
+backends falsos. Autotestes no kernel validarão invariantes e integrações que
+dependem do ambiente freestanding, mas continuarão determinísticos e
+controlados. O QEMU será reservado para boot, hardware virtualizado e fluxos
+que realmente exigem a integração completa.
+
+O resultado `TIMEOUT` deverá identificar o último estado observável do caso,
+como `BOOT`, `READY`, `RUN_RECEIVED`, `BEGIN` ou `PASS`. Ausência de heartbeat
+será tratada como evidência de falta de progresso, não como diagnóstico
+automático da causa. O executor deverá preservar os artefatos e encerrar a
+execução contaminada, sem repetir indefinidamente o mesmo cenário sem nova
+hipótese ou informação diagnóstica.
+
 ## Escopo
 
 - catálogo único de testes, contratos, pré-condições, resultados e limpeza;
@@ -86,6 +120,12 @@ catálogo.
 
 ### TST2 — Executor e protocolo de resultados
 
+- [ ] Testar o executor e o protocolo fora do QEMU com transporte, relógio e
+  resultados falsos antes de depender da comunicação com o guest.
+- [ ] Manter a máquina de estados, o parser e a codificação do protocolo
+  separáveis do driver serial sempre que isso for compatível com o contrato.
+- [ ] Tratar `qemu:tst2:boot-ready` como smoke test da infraestrutura do TST2,
+  e não como cobertura funcional do sistema inteiro.
 - [ ] Criar um executor no host que prepare a imagem, inicie o guest, aguarde
   o boot, envie ações e aplique timeout por caso e por suíte.
 - [ ] Capturar console serial, logs do guest, estado de saída do QEMU e
@@ -103,6 +143,8 @@ catálogo.
 
 ### TST3 — Testes unitários e de lógica no host
 
+- [ ] Criar a primeira suíte host-only do protocolo TST2 e do executor, com
+  transporte falso, entradas parciais, saídas capturadas e estados de erro.
 - [ ] Testar parsers, formatadores, checksums, conversões, limites, overflow,
   manifestos, seleção de versões e regras de atualização.
 - [ ] Testar caminhos de erro com stubs de memória, disco, rede, relógio,
@@ -114,6 +156,9 @@ catálogo.
 
 ### TST4 — Autotestes determinísticos no kernel
 
+- [ ] Executar autotestes somente depois que a lógica correspondente possuir
+  cobertura host-only ou uma justificativa documentada para a dependência do
+  kernel.
 - [ ] Integrar testes de memória, paging, SLAB, scheduler, processos, sinais,
   IPC, threads, filas, VFS, descritores, Storage, rede, ACPI, energia e
   dispositivos.
@@ -129,6 +174,10 @@ catálogo.
 
 ### TST5 — Testes black-box e integração no QEMU
 
+- [ ] Executar os casos no QEMU somente depois da validação host-only do
+  executor, do protocolo e dos componentes diretamente envolvidos.
+- [ ] Começar cada nova integração com um caso mínimo e estados de progresso
+  explícitos, antes de adicionar a suíte completa ou cenários de estresse.
 - [ ] Validar boot, montagem, Shell, comandos, diagnósticos, aplicativos,
   processos, rede, atualização, reboot, poweroff e recuperação.
 - [ ] Executar os casos somente depois do marcador de boot e manter um
@@ -248,10 +297,21 @@ Cada execução deverá poder ser repetida com a mesma imagem, fixture e seed.
 
 ## Validação
 
-Durante a implementação, o usuário executará os gates atuais do projeto e as
-suítes novas do executor. Os nomes finais dos alvos e comandos serão definidos
-quando o executor existir; não se deve tratar exemplos deste documento como
-comandos já disponíveis.
+Durante a implementação, a validação seguirá esta ordem:
+
+1. validação do catálogo e dos testes host-only;
+2. autotestes determinísticos do kernel, quando aplicáveis;
+3. gates de qualidade e build da versão testada;
+4. smoke test mínimo no QEMU;
+5. integração, matriz, estresse e regressão.
+
+Uma falha host-only ou de autoteste bloqueará a execução QEMU correspondente.
+Uma falha QEMU deverá ser encerrada pelo timeout do estado ou do caso e
+classificada como falha de contrato, guest, transporte, executor ou ambiente;
+o mesmo comando não deverá ser repetido indefinidamente sem alteração da
+hipótese ou dos dados coletados. Os nomes finais dos alvos e comandos serão
+definidos quando cada executor existir; não se deve tratar exemplos deste
+documento como comandos já disponíveis.
 
 Cada execução deve registrar data, versão dos fontes, checksum da imagem,
 perfil, fixture, resultado agregado e arquivos de diagnóstico. A validação
@@ -278,9 +338,14 @@ QMP e usado somente para `query-status`, parada e encerramento externos.
 - O caso inicial `qemu:tst2:boot-ready` e os alvos `test-qemu` e
   `test-qemu-selftest` foram adicionados sem dependencia de build.
 
-A validacao pendente deve confirmar self-test host-only, boot, handshake,
-`READY`, `HEARTBEAT`, `PASS`, watchdog, artefatos e estresse no QEMU antes de
-marcar TST2 como concluido.
+A validacao pendente deve primeiro confirmar, em ambiente host-only, o
+protocolo, o executor, os estados de resultado e os artefatos. Depois deve
+confirmar no QEMU apenas o smoke test de boot e handshake, seguido de
+`READY`, `HEARTBEAT` e `PASS` com progresso por estado. Watchdog, timeout,
+fixtures e estresse entram somente depois que o caminho minimo estiver
+reproduzivel. TST2 so sera concluido quando sua infraestrutura estiver
+validada; a cobertura funcional dos subsistemas continuara nas fases TST3 a
+TST7.
 
 ## Fora do escopo
 
