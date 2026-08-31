@@ -23,6 +23,12 @@ TST4_QEMU_HEARTBEAT_TIMEOUT ?= 60
 TST5_QEMU_BOOT_TIMEOUT ?= 60
 TST5_QEMU_CASE_TIMEOUT ?= 120
 TST5_QEMU_HEARTBEAT_TIMEOUT ?= 20
+TST6_QEMU_BOOT_TIMEOUT ?= 60
+TST6_QEMU_CASE_TIMEOUT ?= 120
+TST6_QEMU_HEARTBEAT_TIMEOUT ?= 60
+TST6_QEMU_STRESS_ITERATIONS ?= 8
+TST6_QEMU_STRESS_DURATION ?= 300
+TST6_QEMU_NETWORK ?= user,model=e1000,restrict=on
 QEMU_BOOT_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=bootdisk -device ide-hd,drive=bootdisk,bus=ide.0,unit=0,bootindex=1
 QEMU_STAGE2_LBA_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=stage2lbadisk -device ide-hd,drive=stage2lbadisk,bootindex=1
 QEMU_STAGE2_CHS_DISK_ARGS ?= -drive file=$(STAGE2_CHS_IMG),format=raw,if=floppy,index=0 -drive file=$(OS_IMG),format=raw,if=none,id=stage2chssystem -device ide-hd,drive=stage2chssystem,cyls=80,heads=2,secs=18 -boot order=a
@@ -108,6 +114,9 @@ KERNEL_TESTS_PLATFORM_OBJ = build/kernel_tests_platform.o
 
 KERNEL_TESTS_BLACKBOX_C = src/core/kernel_tests_blackbox.c
 KERNEL_TESTS_BLACKBOX_OBJ = build/kernel_tests_blackbox.o
+
+KERNEL_TESTS_TST6_C = src/core/kernel_tests_tst6.c
+KERNEL_TESTS_TST6_OBJ = build/kernel_tests_tst6.o
 
 INPUT_C = src/core/input.c
 INPUT_OBJ = build/input.o
@@ -616,7 +625,7 @@ STORE_AS5_FIXTURES_DIR = docs\fixtures\apps\store-as5
 STORE_AS5_PUBLIC = config\app-store-test-public.json
 
 # Todas as variáveis de objetos
-OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(TEST_PROTOCOL_CORE_OBJ) $(TEST_PROTOCOL_OBJ) $(KERNEL_TESTS_OBJ) $(KERNEL_TESTS_PAGING_OBJ) $(KERNEL_TESTS_EXECUTION_OBJ) $(KERNEL_TESTS_STORAGE_OBJ) $(KERNEL_TESTS_NETWORK_OBJ) $(KERNEL_TESTS_PLATFORM_OBJ) $(KERNEL_TESTS_BLACKBOX_OBJ) $(INPUT_OBJ) $(IRQ_DEFERRED_OBJ) $(WAIT_OBJ) $(WORKQUEUE_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(BEARSSL_COMPAT_OBJ) $(BEARSSL_OBJ) $(UPDATE_OBJ) $(UPDATE_SYSTEM_OBJ) $(UPDATE_SYSTEM_SLOTS_OBJ) $(UPDATE_REMOTE_SYSTEM_OBJ) $(UPDATE_REMOTE_OBJ) $(UPDATE_REMOTE_RELEASE_OBJ) $(UPDATE_REMOTE_GITHUB_OBJ) $(UPDATE_RUNTIME_OBJ) $(UPDATE_REMOTE_RUNTIME_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
+OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(TEST_PROTOCOL_CORE_OBJ) $(TEST_PROTOCOL_OBJ) $(KERNEL_TESTS_OBJ) $(KERNEL_TESTS_PAGING_OBJ) $(KERNEL_TESTS_EXECUTION_OBJ) $(KERNEL_TESTS_STORAGE_OBJ) $(KERNEL_TESTS_NETWORK_OBJ) $(KERNEL_TESTS_PLATFORM_OBJ) $(KERNEL_TESTS_BLACKBOX_OBJ) $(KERNEL_TESTS_TST6_OBJ) $(INPUT_OBJ) $(IRQ_DEFERRED_OBJ) $(WAIT_OBJ) $(WORKQUEUE_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(BEARSSL_COMPAT_OBJ) $(BEARSSL_OBJ) $(UPDATE_OBJ) $(UPDATE_SYSTEM_OBJ) $(UPDATE_SYSTEM_SLOTS_OBJ) $(UPDATE_REMOTE_SYSTEM_OBJ) $(UPDATE_REMOTE_OBJ) $(UPDATE_REMOTE_RELEASE_OBJ) $(UPDATE_REMOTE_GITHUB_OBJ) $(UPDATE_RUNTIME_OBJ) $(UPDATE_REMOTE_RUNTIME_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(SERIAL_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(UHCI_OBJ) $(EHCI_OBJ) $(USB_TRANSPORT_OBJ) $(USB_MSC_OBJ) $(USB_HID_OBJ) $(RTL8811CU_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) $(RNG_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(VMA_OBJ) $(COMPRESS_OBJ) \
@@ -732,6 +741,10 @@ $(KERNEL_TESTS_PLATFORM_OBJ): $(KERNEL_TESTS_PLATFORM_C) src/core/kernel_tests.h
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(KERNEL_TESTS_BLACKBOX_OBJ): $(KERNEL_TESTS_BLACKBOX_C) src/core/kernel_tests.h src/core/video_test.h src/include/core/errors.h src/include/core/log.h src/include/core/timer.h src/include/process/process.h src/include/core/video.h src/include/ui/desktop.h
+	@if not exist build mkdir build
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(KERNEL_TESTS_TST6_OBJ): $(KERNEL_TESTS_TST6_C) src/core/kernel_tests.h src/include/core/app_package.h src/include/core/errors.h src/include/core/log.h src/include/core/update_runtime.h src/include/memory/paging.h src/include/process/process.h
 	@if not exist build mkdir build
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1494,6 +1507,89 @@ test-tst5-qemu-poweroff: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
 	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
 	python tools\qemu_test_runner.py stress --case qemu:tst5:poweroff --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
 
+test-tst6-host: tools\tst6_host_runner.py tests\unit\test_tst6_runner.py tools\qemu_test_runner.py
+	python tools\tst6_host_runner.py
+
+test-tst6-qemu-matrix-baseline: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:matrix:baseline --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
+
+test-tst6-qemu-matrix-minimal: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:matrix:minimal --iterations 1 --qemu-profile minimal --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-matrix-network: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:matrix:network --iterations 1 --qemu-profile network --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
+
+test-tst6-qemu-matrix-usb-hid: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:matrix:usb-hid --iterations 1 --qemu-profile usb-hid --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-matrix-usb-storage: $(OS_IMG) $(STORAGE_FIXTURES_STAMP) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:matrix:usb-storage --iterations 1 --qemu-profile usb-storage --storage-image "$(STORAGE_VALID_IMG)" --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-matrix-audio: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:matrix:audio --iterations 1 --qemu-profile audio --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-matrix-display: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:matrix:display --iterations 1 --qemu-profile display --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-matrix-pci: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:matrix:pci --iterations 1 --qemu-profile pci --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-stress-kernel: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:stress:kernel --iterations "$(TST6_QEMU_STRESS_ITERATIONS)" --suite-timeout "$(TST6_QEMU_STRESS_DURATION)" --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
+
+test-tst6-qemu-stress-storage: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:stress:storage --iterations "$(TST6_QEMU_STRESS_ITERATIONS)" --suite-timeout "$(TST6_QEMU_STRESS_DURATION)" --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-stress-network: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:stress:network --iterations "$(TST6_QEMU_STRESS_ITERATIONS)" --suite-timeout "$(TST6_QEMU_STRESS_DURATION)" --qemu-profile network --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
+
+test-tst6-qemu-stress-apps: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:stress:apps --iterations "$(TST6_QEMU_STRESS_ITERATIONS)" --suite-timeout "$(TST6_QEMU_STRESS_DURATION)" --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-fault-memory: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:fault:memory --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-fault-block: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:fault:block --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-fault-block-cache: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:fault:block-cache --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-fault-package: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:fault:package --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-fault-update: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:fault:update --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-fault-network: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:fault:network --iterations 1 --qemu-profile network --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
+
+test-tst6-qemu-fault-process: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:fault:process --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-fault-recovery: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:fault:recovery --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
 test-tst2-host: tools\tst2_host_runner.py tests\unit\test_protocol_core.c tests\unit\test_qemu_test_runner.py src\core\test_protocol_core.c src\core\test_protocol_core.h
 	python tools\tst2_host_runner.py --cc "$(HOST_CC)"
 
@@ -1576,3 +1672,4 @@ clean:
 .PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-system-fixture run-system-slots-fixture run-system-slots-matrix run-system-update-matrix ep94b-fixtures ep94b-matrix run-ep94b-matrix ep94c-matrix run-ep94c-matrix run-recovery-menu-vga run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures system-slots-fixtures system-slots-matrix debug q3check catalog-test test-qemu test-qemu-selftest test-tst2-host test-tst3-host test-tst3-sanitize test-tst4-qemu q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
 .PHONY: test-tst4-qemu-paging-vma test-tst4-qemu-execution test-tst4-qemu-storage-vfs test-tst4-qemu-network test-tst4-qemu-platform
 .PHONY: test-tst5-host test-tst5-qemu-shell test-tst5-qemu-input test-tst5-qemu-apps test-tst5-qemu-processes test-tst5-qemu-storage test-tst5-qemu-network test-tst5-qemu-update-recovery test-tst5-qemu-reboot test-tst5-qemu-poweroff
+.PHONY: test-tst6-host test-tst6-qemu-matrix-baseline test-tst6-qemu-matrix-minimal test-tst6-qemu-matrix-network test-tst6-qemu-matrix-usb-hid test-tst6-qemu-matrix-usb-storage test-tst6-qemu-matrix-audio test-tst6-qemu-matrix-display test-tst6-qemu-matrix-pci test-tst6-qemu-stress-kernel test-tst6-qemu-stress-storage test-tst6-qemu-stress-network test-tst6-qemu-stress-apps test-tst6-qemu-fault-memory test-tst6-qemu-fault-block test-tst6-qemu-fault-block-cache test-tst6-qemu-fault-package test-tst6-qemu-fault-update test-tst6-qemu-fault-network test-tst6-qemu-fault-process test-tst6-qemu-fault-recovery

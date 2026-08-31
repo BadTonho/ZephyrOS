@@ -66,6 +66,45 @@ REPORT_TERMINATIONS = {
     "completed", "panic", "timeout", "qemu_exit", "watchdog", "interrupted",
     "precondition", "catalog_error",
 }
+QEMU_PROFILE_NAMES = {
+    "baseline", "minimal", "network", "usb-hid", "usb-storage", "audio",
+    "display", "pci",
+}
+QEMU_PROFILE_CAPABILITIES = {
+    "baseline": ["acpi", "pci", "vga", "network-e1000"],
+    "minimal": ["pci", "vga"],
+    "network": ["pci", "network-e1000"],
+    "usb-hid": ["usb", "usb-hid"],
+    "usb-storage": ["usb", "usb-hid", "usb-storage-readonly"],
+    "audio": ["pci", "audio-ac97"],
+    "display": ["pci", "vga-cirrus"],
+    "pci": ["pci", "pci-extra"],
+}
+QEMU_PROFILE_ARGS = {
+    "baseline": [],
+    "minimal": ["-machine", "pc,acpi=off"],
+    "network": [],
+    "usb-hid": [
+        "-device", "piix3-usb-uhci,id=tst6usb",
+        "-device", "usb-kbd,bus=tst6usb.0",
+        "-device", "usb-mouse,bus=tst6usb.0",
+    ],
+    "usb-storage": [
+        "-device", "piix3-usb-uhci,id=tst6usb",
+        "-device", "usb-kbd,bus=tst6usb.0",
+        "-device", "usb-mouse,bus=tst6usb.0",
+    ],
+    "audio": [
+        "-audiodev", "driver=none,id=tst6audio",
+        "-device", "AC97,audiodev=tst6audio",
+    ],
+    "display": ["-vga", "cirrus"],
+    "pci": ["-device", "virtio-rng-pci,id=tst6rng"],
+}
+TST6_MAX_ITERATIONS = 1000
+TST6_MAX_DURATION_SECONDS = 600.0
+TST6_DEFAULT_ITERATIONS = 100
+TST6_DEFAULT_DURATION_SECONDS = 300.0
 INPUT_SCRIPT_MAX_STEPS = 128
 INPUT_TEXT_MAX_LENGTH = 160
 INPUT_KEYS_MAX_COUNT = 4
@@ -150,6 +189,16 @@ def utc_run_id() -> str:
 
 def token_valid(value: str) -> bool:
     return bool(value) and all(char in FRAME_ALLOWED for char in value)
+
+
+def validate_qemu_profile(name: str) -> None:
+    if name not in QEMU_PROFILE_NAMES:
+        raise RunnerError(f"perfil_qemu_invalido:{name}", "catalog_error", True)
+
+
+def qemu_profile_capabilities(name: str) -> list[str]:
+    validate_qemu_profile(name)
+    return list(QEMU_PROFILE_CAPABILITIES[name])
 
 
 def frame_crc(prefix: str) -> int:
@@ -271,6 +320,21 @@ def validate_case_for_runner(case: dict[str, Any]) -> None:
                           "catalog_error", True)
     if not token_valid(case["guest_case"]):
         raise RunnerError(f"guest_case_invalido:{identifier}",
+                          "catalog_error", True)
+    qemu_profile = case.get("qemu_profile", "baseline")
+    if not isinstance(qemu_profile, str):
+        raise RunnerError(f"perfil_qemu_invalido:{identifier}",
+                          "catalog_error", True)
+    validate_qemu_profile(qemu_profile)
+    capabilities = case.get("required_capabilities", [])
+    if not isinstance(capabilities, list) or any(
+            not isinstance(capability, str) or not token_valid(capability)
+            for capability in capabilities):
+        raise RunnerError(f"capacidades_invalidas:{identifier}",
+                          "catalog_error", True)
+    if not set(capabilities).issubset(
+            set(qemu_profile_capabilities(qemu_profile))):
+        raise RunnerError(f"capacidade_nao_publicada:{identifier}",
                           "catalog_error", True)
     for field in ("timeout_seconds", "heartbeat_timeout_seconds"):
         value = case.get(field)
@@ -508,6 +572,7 @@ class QemuSession:
         self.qmp_events: list[dict[str, Any]] = []
         self.input_trace: list[dict[str, Any]] = []
         self.diagnostics: list[str] = []
+        self.observed_capabilities: list[str] = []
         self.allow_qemu_exit = False
         self.stdout_thread: Any = None
         self.stderr_thread: Any = None
@@ -515,6 +580,8 @@ class QemuSession:
     def command(self) -> list[str]:
         qemu = self.arguments.qemu or os.environ.get("QEMU", "qemu-system-i386")
         image = str(self.image)
+        qemu_profile = getattr(self.arguments, "qemu_profile", "baseline")
+        validate_qemu_profile(qemu_profile)
         command = [qemu]
         command.extend(["-cpu", self.arguments.cpu])
         if self.arguments.snapshot:
@@ -529,6 +596,17 @@ class QemuSession:
             "-serial", f"tcp:127.0.0.1:{self.serial_port},server=on,wait=on",
             "-qmp", f"tcp:127.0.0.1:{self.qmp_port},server=on,wait=off",
         ])
+        command.extend(QEMU_PROFILE_ARGS[qemu_profile])
+        if qemu_profile == "usb-storage":
+            storage_image = resolve_path(
+                getattr(self.arguments, "storage_image", None),
+                Path("build/storage-valid.img"),
+            )
+            command.extend([
+                "-drive", f"if=none,id=tst6stick,format=raw,"
+                f"file={storage_image},readonly=on",
+                "-device", "usb-storage,bus=tst6usb.0,drive=tst6stick",
+            ])
         command.extend(self.arguments.qemu_arg or [])
         return command
 
@@ -544,6 +622,18 @@ class QemuSession:
     def start(self) -> None:
         if not self.image.is_file():
             raise RunnerError(f"imagem_ausente:{self.image}", "precondition", True)
+        qemu_profile = getattr(self.arguments, "qemu_profile", "baseline")
+        validate_qemu_profile(qemu_profile)
+        if qemu_profile == "usb-storage":
+            storage_image = resolve_path(
+                getattr(self.arguments, "storage_image", None),
+                Path("build/storage-valid.img"),
+            )
+            if not storage_image.is_file():
+                raise RunnerError(
+                    f"fixture_storage_ausente:{storage_image}",
+                    "precondition", True,
+                )
         qemu = self.command()[0]
         if not Path(qemu).is_file() and shutil.which(qemu) is None:
             raise RunnerError(f"qemu_ausente:{qemu}", "precondition", True)
@@ -731,6 +821,12 @@ class QemuSession:
                      not event["ticks"].isdigit()):
                 self.protocol_errors.append("heartbeat_guest_invalido")
                 continue
+            capabilities = event.get("capabilities")
+            if capabilities:
+                self.observed_capabilities = [
+                    item for item in capabilities.split(",")
+                    if token_valid(item)
+                ]
             self.guest_sequence = int(event["seq"])
             self.events.append(event)
             self.progress.record(event)
@@ -965,20 +1061,39 @@ def validate_arguments(arguments: argparse.Namespace) -> None:
     if arguments.boot_timeout <= 0 or arguments.case_timeout <= 0 or \
             arguments.suite_timeout <= 0 or arguments.heartbeat_timeout <= 0:
         raise RunnerError("timeout_invalido", "catalog_error", True)
+    if arguments.boot_timeout > TST6_MAX_DURATION_SECONDS or \
+            arguments.case_timeout > TST6_MAX_DURATION_SECONDS or \
+            arguments.suite_timeout > TST6_MAX_DURATION_SECONDS:
+        raise RunnerError("timeout_excede_teto", "catalog_error", True)
     if arguments.seed is not None and not 0 <= arguments.seed <= 0xFFFFFFFF:
         raise RunnerError("seed_invalida", "catalog_error", True)
     if arguments.command != "stress":
         return
-    limiters = sum(value is not None for value in
-                   (arguments.iterations, arguments.duration))
-    if arguments.until_failure:
-        limiters += 1
-    if limiters != 1:
+    iterations = getattr(arguments, "iterations", None)
+    duration = getattr(arguments, "duration", None)
+    max_iterations = getattr(arguments, "max_iterations", None)
+    until_failure = bool(getattr(arguments, "until_failure", False))
+    if until_failure:
+        if iterations is not None or (max_iterations is None and duration is None):
+            raise RunnerError("stress_requer_teto_until_failure",
+                              "catalog_error", True)
+    elif max_iterations is not None:
+        raise RunnerError("max_iteracoes_requer_until_failure",
+                          "catalog_error", True)
+    elif (iterations is None) == (duration is None):
         raise RunnerError("stress_requer_um_limite", "catalog_error", True)
-    if arguments.iterations is not None and arguments.iterations <= 0:
+    if iterations is not None and iterations <= 0:
         raise RunnerError("iteracoes_invalidas", "catalog_error", True)
-    if arguments.duration is not None and arguments.duration <= 0:
+    if max_iterations is not None and max_iterations <= 0:
+        raise RunnerError("max_iteracoes_invalidas", "catalog_error", True)
+    if duration is not None and duration <= 0:
         raise RunnerError("duracao_invalida", "catalog_error", True)
+    if iterations is not None and iterations > TST6_MAX_ITERATIONS:
+        raise RunnerError("iteracoes_excedem_teto", "catalog_error", True)
+    if max_iterations is not None and max_iterations > TST6_MAX_ITERATIONS:
+        raise RunnerError("max_iteracoes_excedem_teto", "catalog_error", True)
+    if duration is not None and duration > TST6_MAX_DURATION_SECONDS:
+        raise RunnerError("duracao_excede_teto", "catalog_error", True)
 
 
 def initialize_artifacts(path: Path) -> None:
@@ -1012,6 +1127,24 @@ def run_execution(arguments: argparse.Namespace) -> int:
             selected = [select_case(catalog, arguments.case)]
         for case in selected:
             validate_case_for_runner(case)
+        qemu_profile = getattr(arguments, "qemu_profile", "baseline")
+        validate_qemu_profile(qemu_profile)
+        available_capabilities = set(qemu_profile_capabilities(qemu_profile))
+        for case in selected:
+            case_profile = case.get("qemu_profile", "baseline")
+            if case_profile != qemu_profile:
+                raise RunnerError(
+                    f"perfil_qemu_divergente:{case['id']}:"
+                    f"{case_profile}!={qemu_profile}",
+                    "catalog_error", True,
+                )
+            required = set(case.get("required_capabilities", []))
+            if not required.issubset(available_capabilities):
+                missing = ",".join(sorted(required - available_capabilities))
+                raise RunnerError(
+                    f"capacidade_nao_publicada:{case['id']}:{missing}",
+                    "catalog_error", True,
+                )
         if not image.is_file():
             raise RunnerError(f"imagem_ausente:{image}", "precondition", True)
         image_hash = sha256_file(image)
@@ -1023,6 +1156,10 @@ def run_execution(arguments: argparse.Namespace) -> int:
             "image_sha256": image_hash,
             "catalog": str(catalog_path),
             "profile": arguments.profile,
+            "qemu_profile": qemu_profile,
+            "profile_capabilities": qemu_profile_capabilities(qemu_profile),
+            "capabilities_expected": qemu_profile_capabilities(qemu_profile),
+            "capabilities_observed": [],
             "fixture": arguments.fixture,
             "seed": seed,
             "command": session.command(),
@@ -1030,6 +1167,9 @@ def run_execution(arguments: argparse.Namespace) -> int:
             "cases": [{
                 "id": str(case["id"]),
                 "guest_case": str(case["guest_case"]),
+                "qemu_profile": str(case.get("qemu_profile", "baseline")),
+                "required_capabilities": list(
+                    case.get("required_capabilities", [])),
                 "interaction": case.get("interaction"),
             } for case in selected],
         }
@@ -1038,7 +1178,17 @@ def run_execution(arguments: argparse.Namespace) -> int:
         wait_for_ready(session, run_id)
         session.capture_screenshot("ready")
         stress_started = time.monotonic()
-        suite_deadline = time.monotonic() + arguments.suite_timeout if arguments.command == "run" else None
+        if arguments.command == "run":
+            suite_deadline = time.monotonic() + arguments.suite_timeout
+            stress_deadline = None
+        else:
+            suite_deadline = None
+            requested_duration = getattr(arguments, "duration", None)
+            stress_deadline = stress_started + min(
+                requested_duration or TST6_MAX_DURATION_SECONDS,
+                arguments.suite_timeout,
+                TST6_MAX_DURATION_SECONDS,
+            )
         iteration = 0
         while True:
             if arguments.command == "run":
@@ -1047,17 +1197,23 @@ def run_execution(arguments: argparse.Namespace) -> int:
                 case = selected[iteration]
                 case_iteration = 0
             else:
-                if arguments.iterations and iteration >= arguments.iterations:
+                iteration_limit = arguments.iterations or getattr(
+                    arguments, "max_iterations", None)
+                if iteration_limit and iteration >= iteration_limit:
                     break
-                if arguments.duration and time.monotonic() - stress_started >= arguments.duration:
+                if getattr(arguments, "duration", None) and \
+                        time.monotonic() - stress_started >= arguments.duration:
                     break
                 case = selected[0]
                 case_iteration = iteration
             if suite_deadline and time.monotonic() >= suite_deadline:
                 raise RunnerError("suite_timeout", "timeout")
+            if stress_deadline and time.monotonic() >= stress_deadline:
+                raise RunnerError("stress_teto_tempo", "timeout")
             case_id = str(case.get("guest_case", case["id"]))
             event = wait_for_case(
-                session, case_id, case_iteration, seed,
+                session, case_id, case_iteration,
+                (seed + case_iteration * 2654435761) & 0xFFFFFFFF,
                 case_timeout(case, arguments.case_timeout),
                 float(case.get("heartbeat_timeout_seconds",
                                arguments.heartbeat_timeout)),
@@ -1094,6 +1250,12 @@ def run_execution(arguments: argparse.Namespace) -> int:
         error = failure
     finally:
         exit_code = session.stop() if session else None
+        manifest_path = artifact_dir / "manifest.json"
+        if manifest_path.is_file():
+            manifest_data = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest_data["capabilities_observed"] = (
+                session.observed_capabilities if session else [])
+            write_json(manifest_path, manifest_data)
         status, termination, cause = result_status(cases, error)
         report = {
             "schema": "zephyros-test-result-v1",
@@ -1102,8 +1264,20 @@ def run_execution(arguments: argparse.Namespace) -> int:
             "termination": termination,
             "cause": cause,
             "profile": arguments.profile,
+            "qemu_profile": getattr(arguments, "qemu_profile", "baseline"),
+            "profile_capabilities": qemu_profile_capabilities(
+                getattr(arguments, "qemu_profile", "baseline")),
+            "capabilities_expected": qemu_profile_capabilities(
+                getattr(arguments, "qemu_profile", "baseline")),
             "fixture": arguments.fixture,
             "seed": seed,
+            "limits": {
+                "iterations": getattr(arguments, "iterations", None),
+                "max_iterations": getattr(arguments, "max_iterations", None),
+                "duration_seconds": getattr(arguments, "duration", None),
+                "max_iterations_allowed": TST6_MAX_ITERATIONS,
+                "max_duration_seconds": TST6_MAX_DURATION_SECONDS,
+            },
             "iteration_completed": len(cases),
             "duration_seconds": round(time.monotonic() - started, 6),
             "image": str(image),
@@ -1114,6 +1288,8 @@ def run_execution(arguments: argparse.Namespace) -> int:
             "last_state": session.progress.state if session else None,
             "last_event": session.progress.last_event if session else None,
             "progress_history": session.progress.history if session else [],
+            "capabilities_observed": session.observed_capabilities
+            if session else [],
             "input_trace": session.input_trace if session else [],
             "qmp_events": session.qmp_events if session else [],
             "diagnostics": session.diagnostics if session else [],
@@ -1207,7 +1383,9 @@ def parser() -> argparse.ArgumentParser:
         subparser.add_argument("--qemu")
         subparser.add_argument("--qemu-arg", action="append")
         subparser.add_argument("--cpu", default="max")
+        subparser.add_argument("--qemu-profile", default="baseline")
         subparser.add_argument("--network", default="user,model=e1000")
+        subparser.add_argument("--storage-image")
         subparser.add_argument("--no-snapshot", dest="snapshot", action="store_false")
         subparser.set_defaults(snapshot=True)
         subparser.add_argument("--fixture")
@@ -1220,6 +1398,7 @@ def parser() -> argparse.ArgumentParser:
         if name == "stress":
             subparser.add_argument("--case")
             subparser.add_argument("--iterations", type=int)
+            subparser.add_argument("--max-iterations", type=int)
             subparser.add_argument("--duration", type=float)
             subparser.add_argument("--until-failure", action="store_true")
     return command_parser

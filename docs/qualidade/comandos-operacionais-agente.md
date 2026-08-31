@@ -512,8 +512,9 @@ caso automaticamente e preserva `manifest.json`, `serial.log`,
 
 Validacao final da TST4.2-TST4.6 em 2026-08-31: os cinco alvos passaram na
 imagem gerada por `make clean` seguido de `make`; `make test-qemu-selftest`,
-`make q3check` e `make catalog-test` tambem passaram. TST5, TST6 e TST7 ainda
-exigem suas proprias matrizes black-box, hardware/stress e regressao continua.
+`make q3check` e `make catalog-test` tambem passaram. TST5 e a camada QEMU da
+TST6 possuem procedimentos e evidencias proprios abaixo; TST7 continua
+reservada a regressao continua.
 
 ## TST5: testes black-box e integracao completa no QEMU
 
@@ -565,6 +566,65 @@ do guest, Shell ou aplicacao como `FAIL`. Em ambos os casos preserva
 `input.log`, `qmp-events.log`, screenshots disponiveis e `result.json` em
 `build/test-results/<run-id>/`. Reboot exige novo handshake apos `RESET`; o
 poweroff exige `SHUTDOWN` ou a saida esperada da instancia.
+
+## TST6: matriz, estresse e falhas controladas
+
+A TST6 usa casos QEMU independentes, sempre em `-snapshot`, sem retry
+automatico e sem alvo agregado. O runner aceita somente os perfis
+`baseline`, `minimal`, `network`, `usb-hid`, `usb-storage`, `audio`, `display`
+e `pci`. Os perfis de rede usam `user,model=e1000,restrict=on`, sem
+encaminhamento para a rede externa; armazenamento USB usa fixture raw
+somente leitura.
+
+Depois de alterar o kernel, o runner ou o Makefile, execute:
+
+```text
+make test-qemu-selftest
+make test-tst6-host
+make q3check
+make clean
+make
+```
+
+Os limites globais do runner sao 1.000 iteracoes e 600 segundos. Os alvos de
+estresse usam oito iteracoes e `TST6_QEMU_STRESS_DURATION` (padrao de 300
+segundos); os alvos de matriz e falha usam uma iteracao. O heartbeat padrao dos
+alvos TST6 e 60 segundos por caso para acomodar autotestes longos, sem remover
+o timeout de caso de 120 segundos.
+
+Execute cada alvo individualmente:
+
+```text
+make test-tst6-qemu-matrix-baseline
+make test-tst6-qemu-matrix-minimal
+make test-tst6-qemu-matrix-network
+make test-tst6-qemu-matrix-usb-hid
+make test-tst6-qemu-matrix-usb-storage
+make test-tst6-qemu-matrix-audio
+make test-tst6-qemu-matrix-display
+make test-tst6-qemu-matrix-pci
+make test-tst6-qemu-stress-kernel
+make test-tst6-qemu-stress-storage
+make test-tst6-qemu-stress-network
+make test-tst6-qemu-stress-apps
+make test-tst6-qemu-fault-memory
+make test-tst6-qemu-fault-block
+make test-tst6-qemu-fault-block-cache
+make test-tst6-qemu-fault-package
+make test-tst6-qemu-fault-update
+make test-tst6-qemu-fault-network
+make test-tst6-qemu-fault-process
+make test-tst6-qemu-fault-recovery
+make catalog-test
+```
+
+Cada execucao deve produzir `READY -> HEARTBEAT -> BEGIN -> PASS` ou um
+resultado identificavel `FAIL`/`BLOCKED`. O runner preserva em
+`build/test-results/<run-id>/` o `manifest.json`, `serial.log`,
+`qemu.stdout.log`, `qemu.stderr.log`, `input.log`, `qmp-events.log`,
+screenshots disponiveis e `result.json`, incluindo perfil, capacidades,
+seed, fase, primeiro erro e iteracao. Hardware fisico nao e validado por
+esses alvos e permanece `BLOCKED` ate existir equipamento e evidencia real.
 
 ## Comandos no Shell
 

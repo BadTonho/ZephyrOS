@@ -26,6 +26,8 @@ int kernel_tests_run_platform(const kernel_tests_runtime_t* runtime);
 int kernel_tests_run_tst5_blackbox(const kernel_tests_runtime_t* runtime,
                                    const char* case_id,
                                    uint32_t case_length);
+int kernel_tests_run_tst6(const kernel_tests_runtime_t* runtime,
+                          const char* case_id, uint32_t case_length);
 int kernel_tests_progress(const kernel_tests_runtime_t* runtime);
 int kernel_tests_phase_result(const char* phase, int result);
 int kernel_tests_report_phase(const kernel_tests_runtime_t* runtime,
