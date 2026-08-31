@@ -10,7 +10,11 @@ backlog pós-1.0.
 
 ## Estado de referencia
 
-O ciclo de preparação da versão 1.0.0 será composto pelos Roadmaps 18 a 24.
+O Roadmap 17 é a infraestrutura permanente de testes e regressão do sistema.
+Ele não pertence a uma versão específica e deve ser executado durante todas as
+frentes, inclusive depois da versão 1.0.0 e durante qualquer migração de
+linguagem. O ciclo de preparação da versão 1.0.0 será composto pelos Roadmaps
+18 a 24.
 A etapa pós-1.0.0 de migração gradual para Rust permanece reservada para depois
 da base 1.0.0 e não deve ser iniciada antes do fechamento desse ciclo.
 
@@ -183,6 +187,7 @@ correcao da ordem de apresentacao.
 14. [14 - Stack de Rede Avancada](feitos/14-stack-de-rede-avancada.md)
 15. [15 - Introspeccao e Pseudo-Filesystems](feitos/15-introspeccao-e-pseudo-fs.md)
 16. [16 - Energia e ACPI Avancado](feitos/16-energia-e-acpi-avancado.md)
+- [17 - Testador completo e regressão do sistema](17-testador-completo-e-regressao.md)
 - [Pós-1.0.0 - Migração gradual do ZephyrOS para Rust](pos-1.0.0-migracao-rust.md)
 
 ## Ordem de execução da versão 1.0.0

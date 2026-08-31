@@ -4,7 +4,8 @@ Sistema operacional em C + Assembly (x86), do zero.
 
 O escopo de aceitação da versão 1.0.0 está em
 [`docs/roadmaps/escopo-v1.0.0.md`](docs/roadmaps/escopo-v1.0.0.md). O próximo
-ciclo é a preparação dessa versão pelos Roadmaps 18–24:
+ciclo é a preparação dessa versão pelos Roadmaps 18–24, acompanhados pelo
+testador permanente do [Roadmap 17](docs/roadmaps/17-testador-completo-e-regressao.md):
 kernel, processos e userland; ABI, segurança e permissões; VFS, Storage e
 atualização; hardware, rede e energia; Shell, interface e aplicativos;
 desempenho e validação; e release da versão. A etapa pós-1.0.0 de Rust
@@ -847,6 +848,7 @@ kernel, interface e novos serviços:
 | 14 | [`docs/roadmaps/feitos/14-stack-de-rede-avancada.md`](docs/roadmaps/feitos/14-stack-de-rede-avancada.md) | Socket buffers sk_buff zero-copy, sockets AF_UNIX/AF_INET e select/poll. |
 | 15 | [`docs/roadmaps/feitos/15-introspeccao-e-pseudo-fs.md`](docs/roadmaps/feitos/15-introspeccao-e-pseudo-fs.md) | Pseudo-filesystems /proc e /sys para diagnósticos, processos e hardware. |
 | 16 | [`docs/roadmaps/feitos/16-energia-e-acpi-avancado.md`](docs/roadmaps/feitos/16-energia-e-acpi-avancado.md) | Loop de CPU idle com HLT, parser ACPI (FADT/MADT), poweroff e reboot. |
+| 17 | [`docs/roadmaps/17-testador-completo-e-regressao.md`](docs/roadmaps/17-testador-completo-e-regressao.md) | Testador completo e regressão permanente do sistema. |
 | 18 | [`docs/roadmaps/18-kernel-processos-e-userland-v1.0.md`](docs/roadmaps/18-kernel-processos-e-userland-v1.0.md) | Kernel, memória, processos, IPC e userland básico da 1.0.0. |
 | 19 | [`docs/roadmaps/19-abi-seguranca-e-permissoes-v1.0.md`](docs/roadmaps/19-abi-seguranca-e-permissoes-v1.0.md) | ABI, isolamento, permissões mínimas, capacidades e confiança de pacotes. |
 | 20 | [`docs/roadmaps/20-vfs-storage-e-atualizacao-v1.0.md`](docs/roadmaps/20-vfs-storage-e-atualizacao-v1.0.md) | VFS, Storage, recuperação, atualização online e rollback. |
