@@ -3274,3 +3274,24 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   A frente é independente de qualquer versão, release ou reorganização interna.
   Esta criação foi documental; não houve implementação do executor,
   build, teste executável ou QEMU.
+
+- TST1: catálogo completo de funções e casos de teste implementado em
+  2026-08-30 (horário não informado). `tests/catalog.json` passou a ser a
+  fonte canônica das superfícies C, Assembly/boot, APIs de headers, comandos
+  do dispatcher e syscalls. `tools/test_catalog.py` fornece `scan`, `sync`,
+  `validate`, `render` e `check-rendered`; novas superfícies entram como
+  `PENDING` e superfícies removidas são aposentadas com motivo obrigatório.
+  `docs/qualidade/catalogo-testes.md` é gerado deterministicamente e o alvo
+  host-only `make catalog-test` foi integrado ao Makefile.
+
+  A implementação não altera App API, syscalls, ABI, bootloader ou o
+  comportamento do sistema. O agente não executou build, testes do projeto ou
+  QEMU; a validação host-only do catálogo e a marcação formal de TST1 como
+  concluído permanecem pendentes da execução do usuário.
+
+- TST1: escopo do testador ampliado em 2026-08-30 (horário não informado) para
+  incluir explicitamente execução pós-boot no QEMU, captura serial, heartbeat,
+  watchdog, testes `stress`/`soak`, modo `--until-failure`, seed e iteração
+  reproduzíveis, além da preservação dos artefatos da primeira falha. O
+  catálogo continua sendo somente a base de inventário; executor runtime e
+  estresse permanecem planejados para TST2, TST4, TST5 e TST6.

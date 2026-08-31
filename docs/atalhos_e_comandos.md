@@ -2,6 +2,10 @@
 
 Este documento consolida todos os comandos de Shell e atalhos de teclado (e interações de mouse) disponíveis em todo o ecossistema do ZephyrOS.
 
+O alvo host-only `make catalog-test` valida o catálogo permanente de funções,
+APIs, Assembly, syscalls, comandos e casos de teste; ele não é um comando do
+Shell e não inicia o QEMU.
+
 ---
 
 ## 💻 1. Comandos do Shell (Terminal)
