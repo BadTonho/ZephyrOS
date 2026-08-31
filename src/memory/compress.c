@@ -93,7 +93,7 @@ int compress_data(const uint8_t* src, uint32_t src_size, uint8_t* dst,
             flags |= (1 << flag_pos);
 
             for (uint32_t k = 0; k < best_len; k++) {
-                compress_ring[r] = src[si + k];
+                compress_ring[r] = src[si];
                 r = (r + 1) & (COMPRESS_LZSS_N - 1);
                 si++;
             }

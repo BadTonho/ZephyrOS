@@ -2,8 +2,9 @@
 
 ## Estado
 
-TST1 e TST2 concluídos; a primeira camada da TST3 foi implementada e validada,
-mas a execução sanitizada permanece bloqueada pelo runtime da toolchain local.
+TST1, TST2 e a primeira camada da TST3 foram implementados e validados em
+strict e sanitize. A infraestrutura permanece permanente e independente da
+toolchain instalada localmente.
 Esta é uma infraestrutura permanente de qualidade do ZephyrOS,
 independente de versão, linguagem, release ou migração tecnológica. Ela deve
 ser utilizada durante todo o desenvolvimento para detectar regressões assim
@@ -11,7 +12,7 @@ que uma função nova ou uma alteração de código quebrar um comportamento
 existente.
 
 O catálogo canônico, o sincronizador e a visão Markdown foram criados e
-validados pelo alvo host-only `make catalog-test`. As fases TST3 em diante
+validados pelo alvo host-only `make catalog-test`. As fases TST4 em diante
 continuam planejadas.
 
 ## Objetivo
@@ -152,9 +153,9 @@ catálogo.
 - [x] Testar caminhos de erro aplicáveis à camada host-only, incluindo buffers
   insuficientes, streams truncados, corrupção, arquivos ausentes e caminhos
   inseguros; VFS, paging, processos, drivers e energia ficam para TST4/TST5.
-- [ ] Usar ASan/UBSan com Clang/LLVM nos módulos host-testáveis; o alvo
-  `make test-tst3-sanitize` identificou `BLOCKED` porque o pacote MSYS2
-  UCRT64 instalado não fornece o runtime `libclang_rt.asan` necessário.
+- [x] Usar ASan/UBSan com Clang/LLVM nos módulos host-testáveis; o alvo
+  `make test-tst3-sanitize` passou com a toolchain LLVM oficial contendo os
+  runtimes ASan/UBSan.
 - [x] Manter os testes independentes de tempo real, endereço fixo e ordem
   acidental de execução, com timeout máximo no runner.
 
@@ -379,12 +380,13 @@ anel LZSS entre compressao e descompressao. O descompressor tambem rejeita um
 grupo de flags vazio apos o inicio, mantendo o stream de entrada vazia como
 `0x00`.
 
-Validacao executada em 2026-08-31: `make test-tst3-host`, `make package-test`,
-`make update-test`, `make q3check`, `make clean`, `make` e um unico
-`make test-qemu` passaram. O alvo sanitizado retornou `BLOCKED`: o Clang 22
-foi instalado no MSYS2 UCRT64, mas o pacote nao contem os runtimes/import
-libs `libclang_rt.asan` necessarios. Por isso, a TST3 permanece pendente ate
-que uma toolchain Clang/LLVM com ASan/UBSan compativel seja disponibilizada.
+Validacao executada em 2026-08-31: `make test-tst3-host`,
+`make test-tst3-sanitize`, `make package-test`, `make update-test`,
+`make q3check`, `make clean`, `make` e um unico `make test-qemu` passaram.
+O sanitize usou LLVM 22.1.8 instalado fora do repositorio; o runner inclui
+automaticamente o diretorio do runtime no ambiente do teste. O smoke QEMU
+produziu `READY`, `HEARTBEAT`, `BEGIN` e `PASS` nessa ordem, sem erros de
+protocolo.
 
 ## Fora do escopo
 

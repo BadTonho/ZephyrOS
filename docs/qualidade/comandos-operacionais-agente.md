@@ -417,6 +417,14 @@ compilador host e independente do cross-compiler do kernel. Configure `HOST_CC`
 e, para a verificacao sanitizada, `HOST_SANITIZE_CC` em `Makefile.local` ou no
 `PATH`.
 
+No Windows, se o pacote MSYS2 UCRT64 nao fornecer os runtimes ASan/UBSan, use
+o instalador oficial do LLVM fora do repositorio e aponte `HOST_SANITIZE_CC`
+para `<LLVM_DIR>\bin\clang.exe` em `Makefile.local`. O runner consulta o
+diretorio de recursos do Clang e adiciona automaticamente
+`lib\clang\<versao>\lib\windows` ao ambiente do teste. Nao copie runtimes para
+o repositorio nem use fallback silencioso; ausencia do compilador ou runtime
+retorna `BLOCKED`/2.
+
 ```text
 make test-tst3-host
 make test-tst3-sanitize

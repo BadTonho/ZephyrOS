@@ -3402,3 +3402,22 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `HEARTBEAT`, `BEGIN` e `PASS` nessa ordem, `protocol_errors=[]`,
   `last_state=PASS` e `last_event=PASS`. Artefatos preservados em
   `build/test-results/qemu-20260831T153609Z-24084/`.
+
+- TST3: o runtime sanitizador foi disponibilizado em 2026-08-31
+  13:25 (America/Sao_Paulo) com o instalador oficial LLVM 22.1.8 fora do
+  repositorio. O `tools/tst3_host_runner.py` passou a localizar o diretorio
+  de recursos do Clang e inclui-lo no `PATH` dos binarios instrumentados. O
+  alvo `make test-tst3-sanitize` passou com ASan/UBSan; o diagnostico anterior
+  `BLOCKED` do pacote MSYS2 UCRT64 foi preservado como historico.
+
+- TST3: durante a execucao sanitizada, o ASan encontrou e permitiu corrigir um
+  overflow no fixture de strings e uma leitura fora do limite em
+  `compress_data`: o loop de match incrementava `si` e ainda somava `k` ao
+  indice de origem. A correcao foi validada com `make test-tst3-host` e
+  `make test-tst3-sanitize`, ambos com `PASS`.
+
+- TST3: validacao final em 2026-08-31 com `make package-test`, `make update-test`
+  e o smoke QEMU unico apos a correcao. O caso `qemu:tst2:boot-ready` passou
+  com `READY`, `HEARTBEAT`, `BEGIN` e `PASS` nessa ordem, sem erros de
+  protocolo. Artefatos preservados em
+  `build/test-results/qemu-20260831T162545Z-25364/`.

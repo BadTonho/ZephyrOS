@@ -50,8 +50,8 @@ static int round_trip(const uint8_t* source, uint32_t source_size) {
 }
 
 static int test_strings(void) {
-    static uint8_t destination[8];
     static const char text[] = "ZephyrOS";
+    static uint8_t destination[sizeof(text)];
 
     kmemset(destination, 0xA5, sizeof(destination));
     if (expect(destination[0] == 0xA5 && destination[7] == 0xA5)) return 1;
