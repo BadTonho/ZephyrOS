@@ -2,16 +2,15 @@
 
 ## Estado
 
-Em validacao host-only do TST1. Esta é uma infraestrutura permanente de qualidade do ZephyrOS,
+TST1 concluído; TST2 em diante permanece planejado. Esta é uma infraestrutura permanente de qualidade do ZephyrOS,
 independente de versão, linguagem, release ou migração tecnológica. Ela deve
 ser utilizada durante todo o desenvolvimento para detectar regressões assim
 que uma função nova ou uma alteração de código quebrar um comportamento
 existente.
 
-O catálogo canônico, o sincronizador e a visão Markdown já foram criados. A
-conclusão formal do TST1 permanece pendente até a execução pelo usuário do
-alvo host-only `make catalog-test`; as fases TST2 em diante continuam
-planejadas.
+O catálogo canônico, o sincronizador e a visão Markdown foram criados e
+validados pelo alvo host-only `make catalog-test`. As fases TST2 em diante
+continuam planejadas.
 
 ## Objetivo
 
@@ -68,16 +67,22 @@ descobre e sincroniza superfícies sem usar linhas como identidade, e
 superfícies novas como `PENDING` e aposenta superfícies removidas com motivo;
 nenhuma cobertura foi declarada automaticamente.
 
-- [ ] Inventariar APIs públicas, syscalls, comandos, diagnósticos, drivers,
+- [x] Inventariar APIs públicas, syscalls, comandos, diagnósticos, drivers,
   processos nativos, aplicativos e transições de estado.
-- [ ] Definir um identificador estável, proprietário, nível, pré-condições,
+- [x] Definir um identificador estável, proprietário, nível, pré-condições,
   ação, resultado esperado, erros possíveis, efeitos persistentes e limpeza
   para cada caso.
-- [ ] Separar testes `smoke`, `subsystem`, `integration`, `matrix` e `full`.
-- [ ] Registrar explicitamente casos positivos, negativos, indisponíveis,
+- [x] Separar testes `smoke`, `subsystem`, `integration`, `matrix` e `full`.
+- [x] Registrar explicitamente casos positivos, negativos, indisponíveis,
   concorrentes, repetidos, cancelados e interrompidos.
-- [ ] Bloquear a conclusão de uma função quando seu contrato não possuir teste
+- [x] Bloquear a conclusão de uma função quando seu contrato não possuir teste
   ou justificativa documentada para `SKIP`.
+
+Validação TST1 concluída em 2026-08-30 pelo usuário: `make catalog-test`
+reportou catálogo válido e visão válida, com 6.661 superfícies e 0 casos.
+As superfícies permanecem `PENDING` até a implementação dos executores e dos
+casos de comportamento; isso não invalida a conclusão da infraestrutura do
+catálogo.
 
 ### TST2 — Executor e protocolo de resultados
 
