@@ -20,6 +20,7 @@
 #define KEYBOARD_CONTROLLER_INPUT_FULL 0x02U
 #define KEYBOARD_CONTROLLER_RESET_COMMAND 0xFEU
 #define KEYBOARD_CONTROLLER_WAIT_LIMIT 1000000U
+#define KEYBOARD_IRQ_LINE 1U
 
 static volatile uint8_t event_queue[KEYBOARD_QUEUE_SIZE];
 static volatile uint8_t queue_head;
@@ -412,6 +413,10 @@ void keyboard_init(void) {
     }
     if (idt_register_handler(33, keyboard_handler) != OK) {
         LOG_ERROR("KBD", "Falha ao registrar IRQ do teclado");
+        return;
+    }
+    if (idt_unmask_irq(KEYBOARD_IRQ_LINE) != OK) {
+        LOG_ERROR("KBD", "Falha ao habilitar IRQ do teclado");
         return;
     }
     keyboard_initialized = 1;

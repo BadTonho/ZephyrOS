@@ -34,6 +34,8 @@ SUITE_TIMEOUT_DEFAULT = 300.0
 QMP_TIMEOUT = 2.0
 QEMU_TERMINATE_TIMEOUT = 3.0
 HELLO_RETRY_INTERVAL = 0.5
+QMP_KEY_HOLD_TIME_MS = 20
+QMP_KEY_GAP_SECONDS = 0.025
 FRAME_ALLOWED = set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-.:")
 EVENT_TERMINAL = {"PASS", "FAIL", "SKIP", "BLOCKED"}
 EVENT_FATAL = {"PANIC", "TIMEOUT"}
@@ -46,6 +48,10 @@ PROGRESS_READY = "READY"
 PROGRESS_RUN_SENT = "RUN_SENT"
 PROGRESS_BEGIN = "BEGIN"
 PROGRESS_RUNNING = "RUNNING"
+PROGRESS_INPUT_SENT = "INPUT_SENT"
+PROGRESS_OBSERVING = "OBSERVING"
+PROGRESS_RESTART_WAIT = "RESTART_WAIT"
+PROGRESS_SHUTDOWN_WAIT = "SHUTDOWN_WAIT"
 PROGRESS_PASS = "PASS"
 PROGRESS_FAIL = "FAIL"
 PROGRESS_SKIP = "SKIP"
@@ -59,6 +65,28 @@ PROGRESS_TERMINAL = {
 REPORT_TERMINATIONS = {
     "completed", "panic", "timeout", "qemu_exit", "watchdog", "interrupted",
     "precondition", "catalog_error",
+}
+INPUT_SCRIPT_MAX_STEPS = 128
+INPUT_TEXT_MAX_LENGTH = 160
+INPUT_KEYS_MAX_COUNT = 4
+INPUT_WAIT_MAX_SECONDS = 10.0
+INPUT_TEXT_CHARACTERS = set(
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 _-./"
+)
+INPUT_KEY_NAMES = {
+    "enter", "esc", "backspace", "tab", "up", "down", "left", "right",
+    "home", "end", "pageup", "pagedown", "ctrl", "shift", "alt",
+    "meta_l",
+    "c", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9",
+    "f10", "f11", "f12",
+}
+QMP_KEY_NAMES = {
+    "enter": "ret", "esc": "esc", "backspace": "backspace", "tab": "tab",
+    "up": "up", "down": "down", "left": "left", "right": "right",
+    "home": "home", "end": "end", "pageup": "pgup", "pagedown": "pgdn",
+    "ctrl": "ctrl", "shift": "shift", "alt": "alt", "c": "c",
+    "meta_l": "meta_l",
+    **{f"f{index}": f"f{index}" for index in range(1, 13)},
 }
 
 
@@ -249,6 +277,70 @@ def validate_case_for_runner(case: dict[str, Any]) -> None:
         if not isinstance(value, (int, float)) or isinstance(value, bool) or value <= 0:
             raise RunnerError(f"caso_{field}_invalido:{identifier}",
                               "catalog_error", True)
+    validate_interaction(case.get("interaction"), identifier)
+
+
+def validate_input_step(step: Any, identifier: str) -> None:
+    if not isinstance(step, dict) or step.get("op") not in {
+            "key", "keys", "text", "wait"}:
+        raise RunnerError(f"script_entrada_invalido:{identifier}",
+                          "catalog_error", True)
+    operation = step["op"]
+    if operation == "wait":
+        value = step.get("seconds")
+        if (not isinstance(value, (int, float)) or isinstance(value, bool) or
+                value <= 0 or value > INPUT_WAIT_MAX_SECONDS):
+            raise RunnerError(f"espera_entrada_invalida:{identifier}",
+                              "catalog_error", True)
+        return
+    if operation == "text":
+        value = step.get("text")
+        if not isinstance(value, str) or not value or len(value) > INPUT_TEXT_MAX_LENGTH:
+            raise RunnerError(f"texto_entrada_invalido:{identifier}",
+                              "catalog_error", True)
+        if any(character not in INPUT_TEXT_CHARACTERS for character in value):
+            raise RunnerError(f"caractere_entrada_invalido:{identifier}",
+                              "catalog_error", True)
+        return
+    if operation == "key":
+        keys = [step.get("key")]
+    else:
+        keys = step.get("keys")
+        if not isinstance(keys, list) or not 0 < len(keys) <= INPUT_KEYS_MAX_COUNT:
+            raise RunnerError(f"teclas_entrada_invalidas:{identifier}",
+                              "catalog_error", True)
+    if any(not isinstance(key, str) or key not in INPUT_KEY_NAMES for key in keys):
+        raise RunnerError(f"tecla_entrada_invalida:{identifier}",
+                          "catalog_error", True)
+
+
+def validate_interaction(interaction: Any, identifier: str) -> None:
+    if interaction is None:
+        return
+    if not isinstance(interaction, dict) or interaction.get("mode") != "qmp-keyboard":
+        raise RunnerError(f"interacao_invalida:{identifier}", "catalog_error", True)
+    steps = interaction.get("steps")
+    if not isinstance(steps, list) or not steps or len(steps) > INPUT_SCRIPT_MAX_STEPS:
+        raise RunnerError(f"script_entrada_invalido:{identifier}",
+                          "catalog_error", True)
+    for step in steps:
+        validate_input_step(step, identifier)
+    post_action = interaction.get("post_action")
+    if not isinstance(post_action, dict) or post_action.get("type") not in {
+            "none", "reboot", "poweroff"}:
+        raise RunnerError(f"pos_acao_invalida:{identifier}", "catalog_error", True)
+    if "timeout_seconds" in post_action and (
+            not isinstance(post_action["timeout_seconds"], (int, float)) or
+            isinstance(post_action["timeout_seconds"], bool) or
+            post_action["timeout_seconds"] <= 0):
+        raise RunnerError(f"timeout_pos_acao_invalido:{identifier}",
+                          "catalog_error", True)
+    post_steps = post_action.get("steps", [])
+    if not isinstance(post_steps, list) or len(post_steps) > INPUT_SCRIPT_MAX_STEPS:
+        raise RunnerError(f"script_pos_acao_invalido:{identifier}",
+                          "catalog_error", True)
+    for step in post_steps:
+        validate_input_step(step, identifier)
 
 
 def free_port() -> int:
@@ -265,6 +357,7 @@ class QmpClient:
         self.socket: socket.socket | None = None
         self.buffer = ""
         self.command_id = 0
+        self.event_queue: list[dict[str, Any]] = []
 
     def connect(self, deadline: float) -> None:
         while time.monotonic() < deadline:
@@ -272,7 +365,7 @@ class QmpClient:
                 self.socket = socket.create_connection(("127.0.0.1", self.port), timeout=0.5)
                 self.socket.settimeout(0.25)
                 self._next_message(deadline)
-                self.command("qmp_capabilities", deadline)
+                self.command("qmp_capabilities", deadline=deadline)
                 return
             except (OSError, TimeoutError, ValueError, RunnerError):
                 self.close()
@@ -287,6 +380,9 @@ class QmpClient:
                 data = self.socket.recv(4096)
             except socket.timeout:
                 continue
+            except OSError as error:
+                raise RunnerError("qmp_conexao_interrompida", "qmp_error",
+                                  True) from error
             if not data:
                 raise RunnerError("qmp_encerrado", "qmp_error", True)
             self.buffer += data.decode("utf-8", errors="replace")
@@ -302,17 +398,23 @@ class QmpClient:
                     message, consumed = decoder.raw_decode(text)
                     self.buffer = text[consumed:]
                     if isinstance(message, dict):
+                        if "event" in message:
+                            self.event_queue.append(message)
+                            continue
                         return message
                 except JSONDecodeError:
                     pass
             self._receive(deadline)
         raise RunnerError("qmp_mensagem_invalida", "qmp_error", True)
 
-    def command(self, name: str, deadline: float | None = None) -> dict[str, Any]:
+    def command(self, name: str, arguments: dict[str, Any] | None = None,
+                deadline: float | None = None) -> dict[str, Any]:
         if not self.socket:
             raise RunnerError("qmp_fechado", "qmp_error", True)
         self.command_id += 1
         payload = {"execute": name, "id": self.command_id}
+        if arguments is not None:
+            payload["arguments"] = arguments
         try:
             self.socket.sendall((json.dumps(payload) + "\r\n").encode("ascii"))
         except OSError as error:
@@ -323,9 +425,53 @@ class QmpClient:
             if message.get("id") != self.command_id:
                 continue
             if "error" in message:
+                detail = message.get("error")
+                if isinstance(detail, dict):
+                    error_class = str(detail.get("class", "unknown"))
+                    description = str(detail.get("desc", "unknown"))
+                    raise RunnerError(
+                        f"qmp_{name}_erro:{error_class}:{description}",
+                        "qmp_error", True)
                 raise RunnerError(f"qmp_{name}_erro", "qmp_error", True)
             return message
         raise RunnerError(f"qmp_{name}_timeout", "qmp_timeout", True)
+
+    def poll_events(self) -> list[dict[str, Any]]:
+        if not self.socket:
+            return []
+        previous_timeout = self.socket.gettimeout()
+        self.socket.settimeout(0.0)
+        try:
+            while True:
+                try:
+                    data = self.socket.recv(4096)
+                except (BlockingIOError, socket.timeout):
+                    break
+                except OSError:
+                    self.close()
+                    break
+                if not data:
+                    break
+                self.buffer += data.decode("utf-8", errors="replace")
+        finally:
+            if self.socket:
+                self.socket.settimeout(previous_timeout)
+        decoder = json.JSONDecoder()
+        while True:
+            text = self.buffer.lstrip()
+            if not text:
+                self.buffer = text
+                break
+            try:
+                message, consumed = decoder.raw_decode(text)
+            except JSONDecodeError:
+                break
+            self.buffer = text[consumed:]
+            if isinstance(message, dict) and "event" in message:
+                self.event_queue.append(message)
+        events = list(self.event_queue)
+        self.event_queue.clear()
+        return events
 
     def close(self) -> None:
         if self.socket:
@@ -335,6 +481,7 @@ class QmpClient:
                 pass
         self.socket = None
         self.buffer = ""
+        self.event_queue.clear()
 
 
 class QemuSession:
@@ -358,6 +505,10 @@ class QemuSession:
         self.guest_sequence = 0
         self.run_id: str | None = None
         self.qmp_status: dict[str, Any] | None = None
+        self.qmp_events: list[dict[str, Any]] = []
+        self.input_trace: list[dict[str, Any]] = []
+        self.diagnostics: list[str] = []
+        self.allow_qemu_exit = False
         self.stdout_thread: Any = None
         self.stderr_thread: Any = None
 
@@ -452,6 +603,94 @@ class QemuSession:
         except OSError as error:
             raise RunnerError(f"serial_escrita:{error}", "serial_error") from error
 
+    def poll_qmp_events(self) -> list[dict[str, Any]]:
+        events = self.qmp.poll_events()
+        if events:
+            self.qmp_events.extend(events)
+            with (self.artifact_dir / "qmp-events.log").open(
+                    "a", encoding="utf-8") as output:
+                for event in events:
+                    output.write(json.dumps(event, ensure_ascii=False) + "\n")
+        return events
+
+    def _record_input(self, entry: dict[str, Any]) -> None:
+        entry = dict(entry)
+        entry["time"] = round(time.monotonic(), 6)
+        self.input_trace.append(entry)
+        with (self.artifact_dir / "input.log").open(
+                "a", encoding="utf-8") as output:
+            output.write(json.dumps(entry, ensure_ascii=False) + "\n")
+
+    def _send_qmp_keys(self, qmp_keys: list[str]) -> None:
+        self.qmp.command("send-key", {
+            "keys": [{"type": "qcode", "data": key} for key in qmp_keys],
+            "hold-time": QMP_KEY_HOLD_TIME_MS,
+        })
+        time.sleep(QMP_KEY_GAP_SECONDS)
+
+    def send_key(self, key: str) -> None:
+        qmp_key = QMP_KEY_NAMES[key]
+        self._send_qmp_keys([qmp_key])
+        self._record_input({"op": "key", "key": key, "qmp_key": qmp_key})
+
+    def send_keys(self, keys: list[str]) -> None:
+        qmp_keys = [QMP_KEY_NAMES[key] for key in keys]
+        self._send_qmp_keys(qmp_keys)
+        self._record_input({"op": "keys", "keys": list(keys),
+                            "qmp_keys": qmp_keys})
+
+    def send_text(self, value: str) -> None:
+        self._record_input({"op": "text", "text": value})
+        for character in value:
+            if character == " ":
+                keys = ["spc"]
+            elif character == "-":
+                keys = ["minus"]
+            elif character == ".":
+                keys = ["dot"]
+            elif character == "/":
+                keys = ["slash"]
+            elif character.isupper():
+                keys = ["shift", character.lower()]
+            else:
+                keys = [character]
+            self._send_qmp_keys(keys)
+
+    def execute_input_step(self, step: dict[str, Any]) -> None:
+        if step["op"] == "key":
+            self.send_key(step["key"])
+        elif step["op"] == "keys":
+            self.send_keys(step["keys"])
+        elif step["op"] == "text":
+            self.send_text(step["text"])
+        else:
+            deadline = time.monotonic() + float(step["seconds"])
+            while time.monotonic() < deadline:
+                self.pump()
+                remaining = deadline - time.monotonic()
+                if remaining > 0:
+                    time.sleep(min(0.05, remaining))
+
+    def execute_interaction(self, interaction: dict[str, Any]) -> None:
+        for step in interaction.get("steps", []):
+            self.execute_input_step(step)
+
+    def capture_screenshot(self, label: str) -> Path | None:
+        path = self.artifact_dir / f"screenshot-{label}.ppm"
+        try:
+            self.qmp.command("screendump", {"filename": str(path)})
+        except RunnerError as error:
+            self.diagnostics.append(f"screenshot:{label}:{error.cause}")
+            return None
+        return path
+
+    def reset_protocol(self) -> None:
+        self.serial_buffer.clear()
+        self.events.clear()
+        self.host_sequence = 0
+        self.guest_sequence = 0
+        self.last_heartbeat = None
+
     def _read_serial(self) -> None:
         if not self.serial:
             return
@@ -503,8 +742,9 @@ class QemuSession:
 
     def pump(self) -> list[dict[str, str]]:
         count = len(self.events)
+        self.poll_qmp_events()
         self._read_serial()
-        if self.process and self.process.poll() is not None:
+        if self.process and self.process.poll() is not None and not self.allow_qemu_exit:
             if len(self.events) == count:
                 raise RunnerError("qemu_encerrou", "qemu_exit")
         new_events = self.events[count:]
@@ -558,7 +798,10 @@ def case_timeout(case: dict[str, Any], default: float) -> float:
     return float(value) if isinstance(value, (int, float)) and value > 0 else default
 
 
-def wait_for_ready(session: QemuSession, run_id: str) -> None:
+def wait_for_ready(session: QemuSession, run_id: str,
+                   reset_protocol: bool = False) -> None:
+    if reset_protocol:
+        session.reset_protocol()
     session.run_id = run_id
     session.progress.mark_state(PROGRESS_HELLO)
     hello_sequence = session.host_sequence + 1
@@ -594,7 +837,8 @@ def wait_for_ready(session: QemuSession, run_id: str) -> None:
 
 
 def wait_for_case(session: QemuSession, case_id: str, iteration: int,
-                  seed: int, timeout: float, heartbeat_timeout: float) -> dict[str, str]:
+                  seed: int, timeout: float, heartbeat_timeout: float,
+                  case: dict[str, Any] | None = None) -> dict[str, str]:
     session.progress.mark_state(PROGRESS_RUN_SENT)
     session.send([
         ("cmd", "RUN"), ("case", case_id), ("iteration", str(iteration)),
@@ -619,6 +863,12 @@ def wait_for_case(session: QemuSession, case_id: str, iteration: int,
                 begun = True
                 session.progress.mark_state(PROGRESS_RUNNING)
                 heartbeat_reference = time.monotonic()
+                if case and case.get("interaction"):
+                    session.progress.mark_state(PROGRESS_INPUT_SENT)
+                    session.execute_interaction(case["interaction"])
+                    session.capture_screenshot("after-input")
+                    heartbeat_reference = time.monotonic()
+                    session.progress.mark_state(PROGRESS_OBSERVING)
                 continue
             if event.get("event") == "HEARTBEAT" and begun:
                 heartbeat_reference = time.monotonic()
@@ -640,6 +890,55 @@ def wait_for_case(session: QemuSession, case_id: str, iteration: int,
         time.sleep(0.01)
     raise RunnerError(
         f"case_timeout:{case_id}:state={session.progress.state}", "timeout")
+
+
+def wait_for_restart(session: QemuSession, run_id: str,
+                     timeout: float) -> dict[str, Any]:
+    deadline = time.monotonic() + timeout
+    session.progress.mark_state(PROGRESS_RESTART_WAIT)
+    while time.monotonic() < deadline:
+        for event in session.poll_qmp_events():
+            if event.get("event") == "RESET":
+                wait_for_ready(session, run_id, reset_protocol=True)
+                return {"status": "PASS", "event": "RESET",
+                        "handshake": "HELLO_READY_HEARTBEAT"}
+        if session.process and session.process.poll() is not None:
+            raise RunnerError("reboot_qemu_exit", "qemu_exit")
+        time.sleep(0.01)
+    raise RunnerError("reboot_event_timeout", "timeout")
+
+
+def wait_for_poweroff(session: QemuSession, timeout: float) -> dict[str, Any]:
+    deadline = time.monotonic() + timeout
+    session.progress.mark_state(PROGRESS_SHUTDOWN_WAIT)
+    session.allow_qemu_exit = True
+    while time.monotonic() < deadline:
+        for event in session.poll_qmp_events():
+            if event.get("event") == "SHUTDOWN":
+                return {"status": "PASS", "event": "SHUTDOWN"}
+        if session.process and session.process.poll() is not None:
+            return {"status": "PASS", "event": "QEMU_EXIT"}
+        time.sleep(0.01)
+    raise RunnerError("poweroff_shutdown_timeout", "timeout")
+
+
+def run_post_action(session: QemuSession, case: dict[str, Any],
+                    run_id: str) -> dict[str, Any] | None:
+    interaction = case.get("interaction")
+    if not interaction:
+        return None
+    action = interaction["post_action"]
+    action_type = action["type"]
+    if action_type == "none":
+        return {"status": "PASS", "event": "NONE"}
+    session.capture_screenshot(f"before-{action_type}")
+    for step in action.get("steps", []):
+        session.execute_input_step(step)
+    lifecycle_timeout = float(action.get(
+        "timeout_seconds", case_timeout(case, CASE_TIMEOUT_DEFAULT)))
+    if action_type == "reboot":
+        return wait_for_restart(session, run_id, lifecycle_timeout)
+    return wait_for_poweroff(session, lifecycle_timeout)
 
 
 def result_status(cases: list[dict[str, Any]], error: RunnerError | None) -> tuple[str, str, str]:
@@ -683,7 +982,8 @@ def validate_arguments(arguments: argparse.Namespace) -> None:
 
 
 def initialize_artifacts(path: Path) -> None:
-    for name in ("serial.log", "qemu.stdout.log", "qemu.stderr.log"):
+    for name in ("serial.log", "qemu.stdout.log", "qemu.stderr.log",
+                 "input.log", "qmp-events.log"):
         (path / name).touch()
 
 
@@ -727,10 +1027,16 @@ def run_execution(arguments: argparse.Namespace) -> int:
             "seed": seed,
             "command": session.command(),
             "snapshot": bool(arguments.snapshot),
+            "cases": [{
+                "id": str(case["id"]),
+                "guest_case": str(case["guest_case"]),
+                "interaction": case.get("interaction"),
+            } for case in selected],
         }
         write_json(artifact_dir / "manifest.json", manifest)
         session.start()
         wait_for_ready(session, run_id)
+        session.capture_screenshot("ready")
         stress_started = time.monotonic()
         suite_deadline = time.monotonic() + arguments.suite_timeout if arguments.command == "run" else None
         iteration = 0
@@ -755,10 +1061,27 @@ def run_execution(arguments: argparse.Namespace) -> int:
                 case_timeout(case, arguments.case_timeout),
                 float(case.get("heartbeat_timeout_seconds",
                                arguments.heartbeat_timeout)),
+                case,
             )
             case_result = dict(event)
             case_result["catalog_case"] = str(case["id"])
             case_result["status"] = event.get("event", "BLOCKED")
+            if case_result["status"] != "PASS":
+                session.capture_screenshot(f"case-{iteration}-failure")
+            try:
+                lifecycle = None
+                if case_result["status"] == "PASS":
+                    lifecycle = run_post_action(session, case, run_id)
+            except RunnerError as failure:
+                case_result["status"] = "BLOCKED" if failure.blocked else "FAIL"
+                case_result["lifecycle"] = {
+                    "status": case_result["status"], "cause": failure.cause,
+                }
+                cases.append(case_result)
+                iteration += 1
+                raise
+            if lifecycle:
+                case_result["lifecycle"] = lifecycle
             cases.append(case_result)
             iteration += 1
             if case_result["status"] in {"FAIL", "BLOCKED"}:
@@ -791,12 +1114,19 @@ def run_execution(arguments: argparse.Namespace) -> int:
             "last_state": session.progress.state if session else None,
             "last_event": session.progress.last_event if session else None,
             "progress_history": session.progress.history if session else [],
+            "input_trace": session.input_trace if session else [],
+            "qmp_events": session.qmp_events if session else [],
+            "diagnostics": session.diagnostics if session else [],
             "cases": cases,
             "artifacts": {
                 "manifest": "manifest.json",
                 "serial": "serial.log",
                 "stdout": "qemu.stdout.log",
                 "stderr": "qemu.stderr.log",
+                "input": "input.log",
+                "qmp_events": "qmp-events.log",
+                "screenshots": [path.name for path in artifact_dir.glob(
+                    "screenshot-*.ppm")],
             },
         }
         write_json(artifact_dir / "result.json", report)

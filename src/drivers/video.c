@@ -1,5 +1,6 @@
 #include "core/video.h"
 #include "core/spinlock.h"
+#include "../core/video_test.h"
 #include "drivers/vesa.h"
 #include "drivers/font.h"
 #include "drivers/mouse.h"
@@ -50,6 +51,7 @@ static uint32_t terminal_hosted_view_offset = 0;
 static uint32_t terminal_output_batch_depth = 0;
 static uint8_t terminal_output_batch_redraw = 0;
 static uint8_t terminal_output_batch_hosted_dirty = 0;
+static uint32_t terminal_generation = 0;
 
 static void terminal_append_number(char* text, int* pos, uint32_t value);
 
@@ -710,6 +712,7 @@ void video_init(void) {
 
     clear_visual_buffer_locked();
     terminal_reset_locked();
+    terminal_generation = 0;
     terminal_hosted = 0;
     terminal_hosted_dirty = 0;
     terminal_hosted_columns = 0;
@@ -749,6 +752,7 @@ int video_power_quiesce(void) {
 void video_clear(void) {
     spinlock_acquire(&video_lock);
     clear_visual_buffer_locked();
+    terminal_generation++;
     cursor_x = 0;
     cursor_y = 0;
 
@@ -810,6 +814,7 @@ void video_put_char(char c, uint8_t color) {
 
     spinlock_acquire(&video_lock);
     if (terminal_active) {
+        terminal_generation++;
         terminal_output_batched = terminal_output_batch_depth != 0U;
         if (terminal_hosted && !terminal_output_batched) {
             hosted_old_visible = terminal_hosted_cursor_pixel_locked(
@@ -1066,6 +1071,7 @@ int video_terminal_is_active(void) {
 
 void video_terminal_clear(void) {
     spinlock_acquire(&video_lock);
+    terminal_generation++;
     terminal_reset_locked();
     terminal_view_offset = 0;
     if (terminal_hosted) {
@@ -1203,6 +1209,61 @@ void video_terminal_set_hosted(int hosted) {
 
 int video_terminal_is_hosted(void) {
     return terminal_hosted ? 1 : 0;
+}
+
+int video_test_copy_terminal(char* output, uint32_t capacity,
+                             video_test_terminal_info_t* info) {
+    uint32_t length = 0U;
+    uint32_t maximum_lines;
+    uint32_t first_line;
+
+    if (!output || !info || capacity == 0U) {
+        LOG_ERROR("VIDEO", "Snapshot de terminal recebeu destino invalido");
+        return ERR_INVALID;
+    }
+    spinlock_acquire(&video_lock);
+    info->generation = terminal_generation;
+    info->line_count = terminal_line_count;
+    info->cursor_x = (uint32_t)terminal_cursor_x;
+    info->active = terminal_active;
+    info->hosted = terminal_hosted;
+    info->truncated = 0U;
+    output[0] = '\0';
+    maximum_lines = capacity / (SCREEN_COLS + 1U);
+    if (maximum_lines == 0U) {
+        LOG_ERROR("VIDEO", "Capacidade insuficiente para snapshot de terminal");
+        spinlock_release(&video_lock);
+        return ERR_OVERFLOW;
+    }
+    first_line = terminal_line_count > maximum_lines ?
+                 terminal_line_count - maximum_lines : 0U;
+    if (first_line != 0U) info->truncated = 1U;
+    for (uint32_t logical_line = first_line;
+         logical_line < terminal_line_count; logical_line++) {
+        uint32_t physical_line = terminal_physical_line(logical_line);
+        uint32_t source = physical_line * SCREEN_COLS;
+        int line_length = terminal_line_length_locked(logical_line);
+
+        for (int column = 0; column < line_length; column++) {
+            if (length + 1U >= capacity) {
+                info->truncated = 1U;
+                output[length] = '\0';
+                spinlock_release(&video_lock);
+                return OK;
+            }
+            output[length++] = terminal_text[source + (uint32_t)column];
+        }
+        if (length + 1U >= capacity) {
+            info->truncated = 1U;
+            output[length] = '\0';
+            spinlock_release(&video_lock);
+            return OK;
+        }
+        output[length++] = '\n';
+    }
+    output[length] = '\0';
+    spinlock_release(&video_lock);
+    return OK;
 }
 
 int video_terminal_draw(int x, int y, int width, int height) {

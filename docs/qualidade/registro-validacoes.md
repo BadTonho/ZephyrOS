@@ -3471,3 +3471,41 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   O catalogo e a visao renderizada foram validados com 6780 superficies e
   7 casos. A TST4 foi marcada como concluida; TST5, TST6 e TST7 permanecem
   pendentes.
+
+- TST5: implementacao da primeira camada black-box concluida em 2026-08-31
+  (America/Sao_Paulo). Foram adicionados o observador interno do terminal,
+  o harness `kernel_tests_blackbox.c`, a injecao de teclado QMP com allowlist,
+  rastreamento de entradas, estados de reboot/poweroff e nove casos QEMU
+  independentes. Nao houve alteracao de bootloader, headers publicos, ABI ou
+  eventos ZTEST.
+
+- TST5: validacao preliminar executada em 2026-08-31. `make test-tst5-host`,
+  `python tools/qemu_test_runner.py --self-test`, `make q3check`, `make clean`,
+  `make` e `make catalog-test` passaram. O catalogo foi sincronizado e
+  renderizado com 6.792 superficies e 16 casos. A matriz dos nove alvos QEMU
+  ainda nao foi executada; portanto a TST5 permanece pendente de evidencia
+  funcional e nao e declarada concluida.
+
+- TST5: validacao final executada em 2026-08-31 (America/Sao_Paulo), com
+  `make test-qemu-selftest`, `make test-tst5-host`, `make q3check`, `make clean`,
+  `make`, os nove alvos QEMU independentes e `make catalog-test`. Todos os
+  alvos passaram com uma iteracao e sem retry automatico. As execucoes finais
+  foram preservadas em:
+  `build/test-results/qemu-20260831T201040Z-25328/`,
+  `qemu-20260831T201118Z-21540/`, `qemu-20260831T201816Z-10320/`,
+  `qemu-20260831T201851Z-6320/`, `qemu-20260831T201917Z-2608/`,
+  `qemu-20260831T201945Z-11812/`, `qemu-20260831T202011Z-23024/`,
+  `qemu-20260831T202300Z-14868/` e
+  `qemu-20260831T202446Z-20756/`. Cada caso produziu
+  `READY -> HEARTBEAT -> BEGIN -> PASS`; reboot registrou `RESET` e novo
+  `HELLO -> READY -> HEARTBEAT`, e poweroff registrou `SHUTDOWN`. Cada
+  diretorio contem manifesto, serial, stdout/stderr do QEMU, entrada, eventos
+  QMP, screenshots e `result.json`, sem processos QEMU residuais.
+
+- TST5: durante a primeira tentativa funcional, foi identificado e corrigido
+  o processamento de entrada suspenso enquanto o protocolo ZTEST estava ativo;
+  `system_process_main()` agora drena a fila de teclado antes de ceder a CPU.
+  O runner tambem passou a tratar desconexao QMP normal durante poweroff e a
+  aceitar esperas declarativas limitadas para transicoes de cenas. A TST5 foi
+  marcada como validada para os nove casos previstos; TST6 e TST7 permanecem
+  pendentes.

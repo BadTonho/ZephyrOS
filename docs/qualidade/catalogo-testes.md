@@ -4,15 +4,15 @@
 
 ## Resumo
 
-- Superfícies ativas: **6780**
-- Casos de teste: **7**
+- Superfícies ativas: **6792**
+- Casos de teste: **16**
 - Superfícies aposentadas: **18**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1410 |
 | `asm_entry` | 101 |
-| `c_function` | 5149 |
+| `c_function` | 5161 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
@@ -21,11 +21,11 @@
 | `BLOCKED` | 0 |
 | `COVERED` | 17 |
 | `MANUAL` | 0 |
-| `PENDING` | 6763 |
+| `PENDING` | 6775 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 7 |
+| `AUTOMATED` | 16 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -37,9 +37,9 @@
 | `apps` | 128 |
 | `appstore` | 83 |
 | `boot` | 129 |
-| `core` | 2557 |
+| `core` | 2568 |
 | `desktop` | 39 |
-| `drivers` | 870 |
+| `drivers` | 871 |
 | `filemanager` | 92 |
 | `fs` | 932 |
 | `gui` | 28 |
@@ -2494,9 +2494,17 @@
 | `c:src/core/kernel_tests.c:kernel_tests_check_snapshot` | `src/core/kernel_tests.c` | `kernel_tests_check_snapshot` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests.c:kernel_tests_phase_result` | `src/core/kernel_tests.c` | `kernel_tests_phase_result` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests.c:kernel_tests_progress` | `src/core/kernel_tests.c` | `kernel_tests_progress` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests.c:kernel_tests_report_phase` | `src/core/kernel_tests.c` | `kernel_tests_report_phase` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests.c:kernel_tests_run_memory_slab` | `src/core/kernel_tests.c` | `kernel_tests_run_memory_slab` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests.c:kernel_tests_run_memory_slab_with_runtime` | `src/core/kernel_tests.c` | `kernel_tests_run_memory_slab_with_runtime` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests.c:kernel_tests_same_memory_state` | `src/core/kernel_tests.c` | `kernel_tests_same_memory_state` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_contains` | `src/core/kernel_tests_blackbox.c` | `blackbox_contains` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_equals` | `src/core/kernel_tests_blackbox.c` | `blackbox_equals` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_length` | `src/core/kernel_tests_blackbox.c` | `blackbox_length` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_report` | `src/core/kernel_tests_blackbox.c` | `blackbox_report` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_snapshot` | `src/core/kernel_tests_blackbox.c` | `blackbox_snapshot` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_wait_for_marker` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox` | `src/core/kernel_tests_blackbox.c` | `kernel_tests_run_tst5_blackbox` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_execution.c:execution_check_ipc` | `src/core/kernel_tests_execution.c` | `execution_check_ipc` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_execution.c:execution_check_processes` | `src/core/kernel_tests_execution.c` | `execution_check_processes` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_execution.c:execution_check_signal` | `src/core/kernel_tests_execution.c` | `execution_check_signal` | `core` | `PENDING` | 0 |
@@ -2948,9 +2956,11 @@
 | `c:src/core/tcp.c:tcp_validate_state` | `src/core/tcp.c` | `tcp_validate_state` | `core` | `PENDING` | 0 |
 | `c:src/core/tcp.c:tcp_write_u16` | `src/core/tcp.c` | `tcp_write_u16` | `core` | `PENDING` | 0 |
 | `c:src/core/tcp.c:tcp_write_u32` | `src/core/tcp.c` | `tcp_write_u32` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_copy_text` | `src/core/test_protocol.c` | `protocol_copy_text` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:protocol_emit_event` | `src/core/test_protocol.c` | `protocol_emit_event` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:protocol_length` | `src/core/test_protocol.c` | `protocol_length` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:protocol_receive` | `src/core/test_protocol.c` | `protocol_receive` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_report_phase` | `src/core/test_protocol.c` | `protocol_report_phase` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:protocol_run_case` | `src/core/test_protocol.c` | `protocol_run_case` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:protocol_test_progress` | `src/core/test_protocol.c` | `protocol_test_progress` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:protocol_token_equals` | `src/core/test_protocol.c` | `protocol_token_equals` | `core` | `PENDING` | 0 |
@@ -2987,6 +2997,7 @@
 | `c:src/core/test_protocol_core.c:test_protocol_core_is_active` | `src/core/test_protocol_core.c` | `test_protocol_core_is_active` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol_core.c:test_protocol_core_poll` | `src/core/test_protocol_core.c` | `test_protocol_core_poll` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol_core.c:test_protocol_core_set_boot_ready` | `src/core/test_protocol_core.c` | `test_protocol_core_set_boot_ready` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:test_protocol_core_set_case_reason` | `src/core/test_protocol_core.c` | `test_protocol_core_set_case_reason` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol_core.c:test_protocol_core_set_ticks` | `src/core/test_protocol_core.c` | `test_protocol_core_set_ticks` | `core` | `PENDING` | 0 |
 | `c:src/core/tls.c:tls_capability_available` | `src/core/tls.c` | `tls_capability_available` | `core` | `PENDING` | 0 |
 | `c:src/core/tls.c:tls_get_policy` | `src/core/tls.c` | `tls_get_policy` | `core` | `PENDING` | 0 |
@@ -4367,6 +4378,7 @@
 | `c:src/drivers/video.c:video_terminal_set_hosted` | `src/drivers/video.c` | `video_terminal_set_hosted` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/video.c:video_terminal_suspend` | `src/drivers/video.c` | `video_terminal_suspend` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/video.c:video_terminal_take_hosted_dirty` | `src/drivers/video.c` | `video_terminal_take_hosted_dirty` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/video.c:video_test_copy_terminal` | `src/drivers/video.c` | `video_test_copy_terminal` | `drivers` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_block_read_only_mutation` | `src/filemanager/filemanager.c` | `fm_block_read_only_mutation` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_boot_directory_exists` | `src/filemanager/filemanager.c` | `fm_boot_directory_exists` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_build_display_path` | `src/filemanager/filemanager.c` | `fm_build_display_path` | `filemanager` | `PENDING` | 0 |
@@ -6873,6 +6885,15 @@
 | `qemu:tst4:paging-vma` | `qemu` | `smoke` | `qemu:tst4:paging-vma` | `AUTOMATED` | 60 | 10 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e paging e syscalls ring 3 estao READY | iniciar o guest em snapshot e executar um unico fixture ring 3 apos READY | o fixture valida mmap, munmap, materializacao lazy e finaliza com estado restaurado | falha de pre-condicao, retorno canonico inesperado, page fault, timeout, protocolo ou QEMU | cria apenas o processo e as paginas temporarias do fixture ring 3 | cancelar, coletar e validar o fixture antes de publicar FAIL |
 | `qemu:tst4:platform` | `qemu` | `smoke` | `qemu:tst4:platform` | `AUTOMATED` | 60 | 10 | `snapshot` | `quality` | `qemu` | servicos de plataforma e inventarios publicam estado coerente | executar validadores e self-tests sem reset, poweroff, reboot ou escrita de energia | servicos passam; hardware ausente permanece explicitamente indisponivel ou degradado | estado inconsistente, retorno inesperado, timeout, protocolo ou QEMU | somente leitura de estado e fixtures internas dos modulos | confirmar ausencia de transacao de energia e validar estados finais |
 | `qemu:tst4:storage-vfs` | `qemu` | `smoke` | `qemu:tst4:storage-vfs` | `AUTOMATED` | 60 | 10 | `snapshot` | `quality` | `qemu` | VFS, storage, block, cache e file index estao READY | executar um unico autoteste com backends simulados e somente leitura destrutiva | self-tests passam e filas, cache, descritores, mounts e tabelas retornam ao baseline | falha de backend, resultado, invariante, cleanup, timeout, protocolo ou QEMU | usa apenas fixtures e backends simulados do kernel | validar inventario, filas e estados publicados antes de encerrar |
+| `qemu:tst5:apps` | `qemu` | `smoke` | `qemu:tst5:apps` | `AUTOMATED` | 90 | 15 | `snapshot` | `quality` | `qemu` | imagem pronta, teclado virtual e observer interno disponiveis | abrir settings, taskmgr e explorer por comandos externos e retornar ao prompt | o caminho de entrada abre e fecha as cenas e o marcador final retorna ao terminal | cena presa, prompt ausente, observer sem mudanca, timeout, protocolo ou QEMU | somente cenas e estado de UI em snapshot | fechar a cena ativa e encerrar o QEMU preservando evidencias |
+| `qemu:tst5:input` | `qemu` | `smoke` | `qemu:tst5:input` | `AUTOMATED` | 60 | 15 | `snapshot` | `quality` | `qemu` | imagem pronta, fila de teclado e Shell inicializados | enviar texto, backspace, historico e Ctrl-C por QMP | o terminal recebe a entrada e publica o marcador depois da recuperacao do prompt | texto incorreto, cancelamento perdido, prompt preso, timeout, protocolo ou QEMU | altera somente buffer e historico de comandos no snapshot | encerrar o QEMU e preservar o script e os logs |
+| `qemu:tst5:network` | `qemu` | `smoke` | `qemu:tst5:network` | `AUTOMATED` | 90 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta e QEMU configurado com rede isolada | consultar status, rotas e sockets sem conexao externa | o Shell responde e a ausencia de interface permanece coerente e observavel | conexao externa, estado incoerente, prompt preso, timeout, protocolo ou QEMU | somente consultas e estado temporario de rede no snapshot | encerrar o QEMU sem tocar na rede do hospedeiro |
+| `qemu:tst5:poweroff` | `qemu` | `smoke` | `qemu:tst5:poweroff` | `AUTOMATED` | 60 | 15 | `snapshot` | `quality` | `qemu` | QEMU isolado e suporte de poweroff do guest disponivel | confirmar caminho do Shell e enviar poweroff somente apos PASS | o caso publica PASS e QMP observa SHUTDOWN ou a saida esperada do QEMU | poweroff antes do PASS, reset inesperado, timeout, protocolo ou QEMU | encerra somente a instancia QEMU em snapshot | fechar sockets e preservar logs mesmo apos a saida do guest |
+| `qemu:tst5:processes` | `qemu` | `smoke` | `qemu:tst5:processes` | `AUTOMATED` | 75 | 15 | `snapshot` | `quality` | `qemu` | processos, threads, scheduler e Shell estao READY | consultar processos e threads por teclado externo | os diagnosticos terminam e o marcador confirma o retorno ao prompt | processo residual, diagnostico preso, timeout, protocolo ou QEMU | somente consultas de estado do guest em snapshot | encerrar o QEMU e preservar historico de entrada |
+| `qemu:tst5:reboot` | `qemu` | `smoke` | `qemu:tst5:reboot` | `AUTOMATED` | 90 | 15 | `snapshot` | `quality` | `qemu` | QEMU isolado e caminho de reboot do guest disponivel | confirmar o terminal, enviar reboot apos PASS e aguardar novo HELLO/READY | QMP publica RESET e uma segunda sessao publica READY e HEARTBEAT | reset prematuro, handshake ausente, timeout, protocolo ou QEMU | reinicia somente a instancia QEMU em snapshot | encerrar a segunda sessao via QMP e preservar as duas fases |
+| `qemu:tst5:shell` | `qemu` | `smoke` | `qemu:tst5:shell` | `AUTOMATED` | 60 | 15 | `snapshot` | `quality` | `qemu` | imagem pronta, teclado virtual e Shell inicializados | abrir o Shell com Enter e enviar comandos somente leitura por QMP | o observer confirma texto gerado pelo caminho real de entrada e retorno ao prompt | dispatcher ausente, entrada perdida, prompt preso, timeout, protocolo ou QEMU | somente texto e estado de diagnostico no snapshot | encerrar o QEMU e preservar script, serial, QMP e resultado |
+| `qemu:tst5:storage` | `qemu` | `smoke` | `qemu:tst5:storage` | `AUTOMATED` | 90 | 15 | `snapshot` | `quality` | `qemu` | VFS e filesystems virtuais estao READY | consultar cwd, mounts e procfs sem escrita destrutiva | leituras terminam, descritores sao liberados e o marcador volta ao prompt | escrita inesperada, descritor residual, mount preso, timeout, protocolo ou QEMU | somente leituras no armazenamento da imagem em snapshot | encerrar o QEMU sem modificar a imagem base |
+| `qemu:tst5:update-recovery` | `qemu` | `smoke` | `qemu:tst5:update-recovery` | `AUTOMATED` | 90 | 20 | `snapshot` | `quality` | `qemu` | fixture de atualizacao somente leitura e Shell estao disponiveis | consultar o updater, cancelar a operacao e verificar retorno ao prompt | a operacao nao grava a imagem base e a recuperacao publica o marcador final | staging destrutivo, rollback ausente, estado residual, timeout, protocolo ou QEMU | fixture e snapshot isolados, sem escrita no hospedeiro | descartar o snapshot e preservar manifestos e logs |
 
 ## Superfícies sem caso associado
 
@@ -9291,8 +9312,16 @@
 - `c:src/core/kernel_tests.c:kernel_tests_check_snapshot`
 - `c:src/core/kernel_tests.c:kernel_tests_phase_result`
 - `c:src/core/kernel_tests.c:kernel_tests_progress`
+- `c:src/core/kernel_tests.c:kernel_tests_report_phase`
 - `c:src/core/kernel_tests.c:kernel_tests_run_memory_slab_with_runtime`
 - `c:src/core/kernel_tests.c:kernel_tests_same_memory_state`
+- `c:src/core/kernel_tests_blackbox.c:blackbox_contains`
+- `c:src/core/kernel_tests_blackbox.c:blackbox_equals`
+- `c:src/core/kernel_tests_blackbox.c:blackbox_length`
+- `c:src/core/kernel_tests_blackbox.c:blackbox_report`
+- `c:src/core/kernel_tests_blackbox.c:blackbox_snapshot`
+- `c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker`
+- `c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox`
 - `c:src/core/kernel_tests_execution.c:execution_check_ipc`
 - `c:src/core/kernel_tests_execution.c:execution_check_processes`
 - `c:src/core/kernel_tests_execution.c:execution_check_signal`
@@ -9744,9 +9773,11 @@
 - `c:src/core/tcp.c:tcp_validate_state`
 - `c:src/core/tcp.c:tcp_write_u16`
 - `c:src/core/tcp.c:tcp_write_u32`
+- `c:src/core/test_protocol.c:protocol_copy_text`
 - `c:src/core/test_protocol.c:protocol_emit_event`
 - `c:src/core/test_protocol.c:protocol_length`
 - `c:src/core/test_protocol.c:protocol_receive`
+- `c:src/core/test_protocol.c:protocol_report_phase`
 - `c:src/core/test_protocol.c:protocol_run_case`
 - `c:src/core/test_protocol.c:protocol_test_progress`
 - `c:src/core/test_protocol.c:protocol_token_equals`
@@ -9783,6 +9814,7 @@
 - `c:src/core/test_protocol_core.c:test_protocol_core_is_active`
 - `c:src/core/test_protocol_core.c:test_protocol_core_poll`
 - `c:src/core/test_protocol_core.c:test_protocol_core_set_boot_ready`
+- `c:src/core/test_protocol_core.c:test_protocol_core_set_case_reason`
 - `c:src/core/test_protocol_core.c:test_protocol_core_set_ticks`
 - `c:src/core/tls.c:tls_capability_available`
 - `c:src/core/tls.c:tls_get_policy`
@@ -11163,6 +11195,7 @@
 - `c:src/drivers/video.c:video_terminal_set_hosted`
 - `c:src/drivers/video.c:video_terminal_suspend`
 - `c:src/drivers/video.c:video_terminal_take_hosted_dirty`
+- `c:src/drivers/video.c:video_test_copy_terminal`
 - `c:src/filemanager/filemanager.c:fm_block_read_only_mutation`
 - `c:src/filemanager/filemanager.c:fm_boot_directory_exists`
 - `c:src/filemanager/filemanager.c:fm_build_display_path`

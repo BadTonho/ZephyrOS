@@ -515,6 +515,57 @@ imagem gerada por `make clean` seguido de `make`; `make test-qemu-selftest`,
 `make q3check` e `make catalog-test` tambem passaram. TST5, TST6 e TST7 ainda
 exigem suas proprias matrizes black-box, hardware/stress e regressao continua.
 
+## TST5: testes black-box e integracao completa no QEMU
+
+O host injeta teclado somente pelo QMP. Os scripts de entrada ficam no
+catalogo, passam por allowlist e sao registrados em `input.log`; o host nao
+chama o Shell diretamente. Cada caso usa `--iterations 1`, imagem em
+`-snapshot` e timeout limitado, sem retry automatico. Reboot e poweroff afetam
+somente a instancia QEMU isolada.
+
+Depois de alterar o kernel ou o runner, execute os gates nesta ordem:
+
+```text
+make test-qemu-selftest
+make test-tst5-host
+make q3check
+make clean
+make
+make test-tst5-qemu-shell
+make test-tst5-qemu-input
+make test-tst5-qemu-apps
+make test-tst5-qemu-processes
+make test-tst5-qemu-storage
+make test-tst5-qemu-network
+make test-tst5-qemu-update-recovery
+make test-tst5-qemu-reboot
+make test-tst5-qemu-poweroff
+make catalog-test
+```
+
+Os alvos de rede e atualizacao usam `--network none`; o caso de atualizacao
+usa a fixture declarada no catalogo. Os nove casos sao:
+
+```text
+qemu:tst5:shell
+qemu:tst5:input
+qemu:tst5:apps
+qemu:tst5:processes
+qemu:tst5:storage
+qemu:tst5:network
+qemu:tst5:update-recovery
+qemu:tst5:reboot
+qemu:tst5:poweroff
+```
+
+O resultado esperado e `READY -> HEARTBEAT -> BEGIN -> PASS`. O runner
+classifica infraestrutura, imagem, QEMU ou protocolo como `BLOCKED`, e falha
+do guest, Shell ou aplicacao como `FAIL`. Em ambos os casos preserva
+`manifest.json`, `serial.log`, `qemu.stdout.log`, `qemu.stderr.log`,
+`input.log`, `qmp-events.log`, screenshots disponiveis e `result.json` em
+`build/test-results/<run-id>/`. Reboot exige novo handshake apos `RESET`; o
+poweroff exige `SHUTDOWN` ou a saida esperada da instancia.
+
 ## Comandos no Shell
 
 Para orientar comandos do sistema, consultar primeiro `comandos.md` e os

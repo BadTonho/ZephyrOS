@@ -448,6 +448,7 @@ static int core_handle_frame(test_protocol_core_t* core, char* frame,
             return core->busy ? ERR_AGAIN : ERR_INVALID;
         }
         core->busy = 1U;
+        core->case_reason[0] = '\0';
         core_emit_case(core, TEST_PROTOCOL_EVENT_BEGIN, case_value, case_length,
                        iteration, seed, 0);
         result = core->callbacks.run_case ?
@@ -456,7 +457,9 @@ static int core_handle_frame(test_protocol_core_t* core, char* frame,
                  ERR_UNAVAILABLE;
         core_emit_case(core, result == OK ? TEST_PROTOCOL_EVENT_PASS :
                        TEST_PROTOCOL_EVENT_FAIL, case_value, case_length,
-                       iteration, seed, result == OK ? 0 : core_error_name(result));
+                       iteration, seed, result == OK ? 0 :
+                       (core->case_reason[0] ? core->case_reason :
+                        core_error_name(result)));
         core->busy = 0U;
         return result;
     }
@@ -531,6 +534,14 @@ int test_protocol_core_set_boot_ready(test_protocol_core_t* core) {
     if (!core) return ERR_NULL;
     if (!core->initialized) return ERR_STATE;
     core->boot_ready = 1U;
+    return OK;
+}
+
+int test_protocol_core_set_case_reason(test_protocol_core_t* core,
+                                       const char* reason) {
+    if (!core || !reason) return ERR_NULL;
+    if (!core->initialized) return ERR_STATE;
+    core_copy_reason(core->case_reason, reason);
     return OK;
 }
 
