@@ -13,6 +13,9 @@
 #define TEST_PROTOCOL_DECIMAL_BASE 10U
 #define TEST_PROTOCOL_CRC_POLYNOMIAL 0xEDB88320U
 #define TEST_PROTOCOL_MAX_FIELDS 16U
+#define TEST_PROTOCOL_TX_RETRY_LIMIT 64U
+#define TEST_PROTOCOL_TX_TIMEOUT_TICKS 500U
+#define TEST_PROTOCOL_DEBUG_PORT 0xE9U
 
 static uint8_t protocol_initialized;
 static uint8_t protocol_session;
@@ -26,6 +29,12 @@ static uint32_t protocol_last_heartbeat;
 static uint32_t protocol_rx_length;
 static char protocol_run[TEST_PROTOCOL_RUN_CAPACITY];
 static char protocol_rx[TEST_PROTOCOL_FRAME_CAPACITY];
+
+static __attribute__((noinline)) void protocol_debug_serial_char(uint8_t value) {
+    uint16_t port = TEST_PROTOCOL_DEBUG_PORT;
+
+    asm volatile("outb %0, %1" : : "a"(value), "Nd"(port));
+}
 
 static uint32_t protocol_append_text(char* output, uint32_t length,
                                      const char* text) {
@@ -294,7 +303,8 @@ static int protocol_frame_crc_valid(const char* frame, uint32_t length) {
 
 static uint32_t protocol_emit_prefix(char* prefix, uint32_t length) {
     uint32_t crc;
-    uint32_t written;
+    uint32_t written = 0U;
+    uint32_t attempts = 0U;
 
     if (!prefix || length > TEST_PROTOCOL_FRAME_CAPACITY - 14U) return 0U;
     crc = protocol_crc32(prefix, length);
@@ -305,8 +315,19 @@ static uint32_t protocol_emit_prefix(char* prefix, uint32_t length) {
     prefix[length + 4U] = '=';
     length = protocol_append_hex(prefix, length + 5U, crc);
     prefix[length++] = '\n';
-    written = serial_write_text(prefix, length);
-    serial_flush(SERIAL_TX_CAPACITY);
+    while (written < length && attempts++ < TEST_PROTOCOL_TX_RETRY_LIMIT) {
+        uint32_t accepted = serial_write_text(prefix + written,
+                                              length - written);
+
+        written += accepted;
+        serial_flush(SERIAL_TX_CAPACITY);
+        if (!accepted) continue;
+    }
+    if (written == length &&
+        serial_flush_blocking(TEST_PROTOCOL_TX_TIMEOUT_TICKS) != OK) {
+        written = 0U;
+    }
+    protocol_debug_serial_char(written == length ? 'A' : 'X');
     return written == length ? length : 0U;
 }
 
@@ -395,11 +416,15 @@ static int protocol_run_case(const char* case_id, uint32_t length,
         return 1;
     }
     if (protocol_token_equals(case_id, length, "qemu:tst2:boot-ready")) {
+        protocol_debug_serial_char('B');
         protocol_emit_case("BEGIN", case_id, length, iteration, seed, 0);
+        protocol_debug_serial_char('b');
         result = protocol_boot_case();
+        protocol_debug_serial_char('P');
         protocol_emit_case(result == OK ? "PASS" : "FAIL", case_id, length,
                            iteration, seed, result == OK ? 0 :
                            protocol_error_name(result));
+        protocol_debug_serial_char('p');
         return 1;
     }
     protocol_emit_case("BLOCKED", case_id, length, iteration, seed,
@@ -423,8 +448,17 @@ static int protocol_handle_frame(char* frame, uint32_t length) {
     }
     if (!protocol_field(frame, "cmd", &command, &command_length) ||
         !protocol_field(frame, "seq", &value, &value_length) ||
-        !protocol_parse_uint(value, value_length, &sequence) ||
-        sequence != protocol_host_sequence + 1U) {
+        !protocol_parse_uint(value, value_length, &sequence)) {
+        if (protocol_session) protocol_emit_simple("BLOCKED", "ERR_AGAIN");
+        return 0;
+    }
+    if (protocol_session && sequence == protocol_host_sequence &&
+        protocol_token_equals(command, command_length, "HELLO") &&
+        protocol_field(frame, "run", &value, &value_length) &&
+        protocol_token_equals(value, value_length, protocol_run)) {
+        return 1;
+    }
+    if (sequence != protocol_host_sequence + 1U) {
         if (protocol_session) protocol_emit_simple("BLOCKED", "ERR_AGAIN");
         return 0;
     }
@@ -485,7 +519,9 @@ static int protocol_handle_frame(char* frame, uint32_t length) {
             return 0;
         }
         protocol_busy = 1U;
+        protocol_debug_serial_char('R');
         protocol_run_case(case_value, case_length, iteration, seed);
+        protocol_debug_serial_char('E');
         protocol_busy = 0U;
         return 1;
     }

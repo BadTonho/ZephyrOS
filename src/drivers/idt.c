@@ -10,6 +10,9 @@
 
 #define SYSCALL_VECTOR 0x80
 #define IRQ_VECTOR_BASE 32U
+#define PIC_MASTER_DATA_PORT 0x21U
+#define PIC_SLAVE_DATA_PORT 0xA1U
+#define EFLAGS_INTERRUPT_ENABLE (1U << 9U)
 
 idt_entry_t idt[256];
 idt_ptr_t idt_ptr;
@@ -129,23 +132,23 @@ void idt_set_gate(uint8_t num, uint32_t base, uint16_t selector, uint8_t flags) 
 static void pic_remap(void) {
     uint8_t a1, a2;
 
-    a1 = inb(0x21);
-    a2 = 0xA1;
+    a1 = inb(PIC_MASTER_DATA_PORT);
+    a2 = inb(PIC_SLAVE_DATA_PORT);
 
     outb(0x20, 0x11);
     outb(0xA0, 0x11);
 
-    outb(0x21, 0x20);
-    outb(0xA1, 0x28);
+    outb(PIC_MASTER_DATA_PORT, 0x20);
+    outb(PIC_SLAVE_DATA_PORT, 0x28);
 
-    outb(0x21, 0x04);
-    outb(0xA1, 0x02);
+    outb(PIC_MASTER_DATA_PORT, 0x04);
+    outb(PIC_SLAVE_DATA_PORT, 0x02);
 
-    outb(0x21, 0x01);
-    outb(0xA1, 0x01);
+    outb(PIC_MASTER_DATA_PORT, 0x01);
+    outb(PIC_SLAVE_DATA_PORT, 0x01);
 
-    outb(0x21, a1);
-    outb(0xA1, a2);
+    outb(PIC_MASTER_DATA_PORT, a1);
+    outb(PIC_SLAVE_DATA_PORT, a2);
 }
 
 void idt_init(void) {
@@ -270,6 +273,29 @@ int idt_register_shared_irq_handler(uint8_t irq_line,
     }
     shared_irq_handlers[irq_line][count] = handler;
     shared_irq_handler_counts[irq_line] = count + 1U;
+    return OK;
+}
+
+int idt_unmask_irq(uint8_t irq_line) {
+    uint32_t flags;
+    uint16_t port;
+    uint8_t bit;
+    uint8_t mask;
+
+    if (!idt_ready) {
+        LOG_ERROR("IDT", "Tentativa de habilitar IRQ antes da IDT");
+        return ERR_STATE;
+    }
+    if (irq_line >= IDT_IRQ_LINE_COUNT) {
+        LOG_ERROR("IDT", "Linha IRQ invalida ao habilitar interrupcao");
+        return ERR_INVALID;
+    }
+    asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
+    port = irq_line < 8U ? PIC_MASTER_DATA_PORT : PIC_SLAVE_DATA_PORT;
+    bit = (uint8_t)(1U << (irq_line % 8U));
+    mask = inb(port);
+    outb(port, (uint8_t)(mask & (uint8_t)~bit));
+    if (flags & EFLAGS_INTERRUPT_ENABLE) asm volatile("sti" : : : "memory");
     return OK;
 }
 

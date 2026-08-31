@@ -13,6 +13,7 @@
 #define TIMER_PIC_COMMAND_PORT 0x20U
 #define TIMER_PIC_EOI 0x20U
 #define TIMER_IRQ_VECTOR 32U
+#define TIMER_IRQ_LINE 0U
 #define TIMER_EFLAGS_INTERRUPT_ENABLE (1U << 9U)
 #define TIMER_HANDLE_SLOT_MASK 0xFFU
 #define TIMER_HANDLE_GENERATION_SHIFT 8U
@@ -619,6 +620,12 @@ int timer_init(uint32_t frequency) {
     if (result != OK) {
         timer_restore_interrupts(flags);
         LOG_ERROR_CODE("TIMER", result, "Falha ao registrar IRQ do timer");
+        return result;
+    }
+    result = idt_unmask_irq(TIMER_IRQ_LINE);
+    if (result != OK) {
+        timer_restore_interrupts(flags);
+        LOG_ERROR_CODE("TIMER", result, "Falha ao habilitar IRQ do timer");
         return result;
     }
     timer_service_initialize(&timer_service, timer_owners,

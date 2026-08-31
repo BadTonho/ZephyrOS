@@ -40,6 +40,7 @@ void idt_set_gate(uint8_t num, uint32_t base, uint16_t selector, uint8_t flags);
 int idt_register_handler(uint8_t n, isr_handler_t handler);
 int idt_register_shared_irq_handler(uint8_t irq_line,
                                     isr_handler_t handler);
+int idt_unmask_irq(uint8_t irq_line);
 int idt_get_shared_irq_handler_count(uint8_t irq_line,
                                      uint8_t* out_count);
 int idt_get_irq_status(uint8_t irq_line, idt_irq_status_t* out_status);

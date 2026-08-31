@@ -658,6 +658,10 @@ autoteste privado. Na SYNC3, acrescenta um notificador append-only que agenda
 a drenagem pela `Zephyr kworker`. `src/include/drivers/idt.h` publica
 ocorrencias e quantidade
 de handlers das 16 linhas PIC por snapshot somente-leitura.
+O mesmo header publica `idt_unmask_irq()`, que valida o estado da IDT e
+remove a mascara de uma linha PIC atomica, preservando o estado global de
+interrupcoes. O driver que assume uma IRQ deve habilita-la durante sua
+inicializacao; a falha retorna `ERR_STATE` ou `ERR_INVALID`.
 `src/include/drivers/uhci.h` acrescenta o contrato de
 Interrupt IN persistente, callback diferido, cancelamento e diagnostico
 explicito de portas degradadas; o UHCI reserva TDs, buffers e fases periodicas

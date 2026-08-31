@@ -2213,6 +2213,10 @@ process_t* scheduler_schedule(void) {
     process_t* idle = processes[0];
 
     if (next) return next;
+    if (current_process && current_process->pid != 0U &&
+        current_process->state == PROCESS_STATE_RUNNING) {
+        return current_process;
+    }
     if (idle && (idle->state == PROCESS_STATE_READY ||
         idle->state == PROCESS_STATE_RUNNING)) {
         scheduler_idle_fallbacks++;
@@ -2226,7 +2230,8 @@ process_t* scheduler_schedule(void) {
 static void scheduler_yield_internal(void) {
     process_t* next = scheduler_schedule();
 
-    if (!next || next == current_process) return;
+    if (!next) return;
+    if (next == current_process) return;
 
     process_t* prev = current_process;
     process_stack_verify_or_panic(prev);

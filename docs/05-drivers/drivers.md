@@ -90,6 +90,9 @@ EOI ao PIC. E1000 e RTL8139 usam essa tabela e cada handler percorre as suas
 instancias associadas a linha. `idt_get_irq_status()` fornece snapshot
 somente-leitura das ocorrencias e da quantidade total de handlers por linha;
 `idt_validate_irq_state()` verifica os limites da tabela compartilhada.
+`idt_unmask_irq()` habilita uma linha PIC validada, preservando o estado
+anterior das interrupcoes; o driver que registra uma IRQ deve remove-la da
+mascara durante a inicializacao.
 
 ---
 
@@ -1129,9 +1132,10 @@ int usb_msc_get_at(uint32_t index, usb_msc_info_t* out_info);
 
 ## Canal serial interno do testador (TST2)
 
-`serial.c` inicializa o COM1 em 115200 8N1, sem IRQ e sem espera bloqueante.
-O driver possui fila TX limitada e flush com orcamento; bytes NUL, CR,
-controles e fora de ASCII imprimivel sao descartados. A leitura e polling e
+`serial.c` inicializa o COM1 em 115200 8N1, com recepcao por IRQ4 e fallback
+de polling sem espera bloqueante. O driver possui filas RX/TX limitadas e
+flush com orcamento; bytes NUL, CR, controles e fora de ASCII imprimivel sao
+descartados pelo consumidor do protocolo. A leitura nao bloqueia e
 nao retém descritores, buffers externos ou estado do QEMU.
 
 O agente `test_protocol.c` usa esse canal somente depois de um `HELLO` valido
