@@ -3295,3 +3295,10 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   reproduzíveis, além da preservação dos artefatos da primeira falha. O
   catálogo continua sendo somente a base de inventário; executor runtime e
   estresse permanecem planejados para TST2, TST4, TST5 e TST6.
+
+- TST1: validação host-only confirmada pelo usuário em 2026-08-30. `make
+  catalog-test` validou o schema e o inventário (`Catalogo valido: 6661
+  superficies, 0 casos`) e confirmou a correspondência determinística da
+  visão (`Catalogo e visao validos: 6661 superficies, 0 casos`). O TST1 foi
+  marcado como concluído no Roadmap 17; as superfícies continuam `PENDING`
+  até os executores e casos de comportamento das fases seguintes.
