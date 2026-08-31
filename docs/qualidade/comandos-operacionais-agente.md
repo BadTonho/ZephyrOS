@@ -381,6 +381,26 @@ A primeira remove a entrada MBR da particao; a segunda invalida o BPB do LBA
 Execute primeiro `storage volumes` quando o diagnostico de volume for
 necessario; o ID de `storage check` deve ser copiado literalmente dessa saida.
 
+## TST2: executor QEMU
+
+O runner host-only de TST2 trabalha sobre uma imagem ja compilada e exige
+`build/zephyros.img` presente; ele nao dispara `make`. Os comandos disponiveis
+apos a implementacao sao:
+
+```text
+make test-qemu-selftest
+make test-qemu
+python tools/qemu_test_runner.py run --image build/zephyros.img --profile smoke
+python tools/qemu_test_runner.py stress --image build/zephyros.img --case qemu:tst2:boot-ready --iterations 10
+python tools/qemu_test_runner.py stress --image build/zephyros.img --case qemu:tst2:boot-ready --duration 60
+python tools/qemu_test_runner.py stress --image build/zephyros.img --case qemu:tst2:boot-ready --until-failure
+```
+
+O modo indefinido requer `Ctrl+C`. Cada execucao cria um diretorio novo em
+`build/test-results/<run-id>/`, preservando manifesto, checksum, serial e
+logs do QEMU. A confirmacao de TST2 continua pendente ate o usuario executar
+os gates operacionais e o smoke test no QEMU.
+
 ## Comandos no Shell
 
 Para orientar comandos do sistema, consultar primeiro `comandos.md` e os

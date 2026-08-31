@@ -12,6 +12,7 @@
 #include "core/irq_deferred.h"
 #include "core/workqueue.h"
 #include "core/power.h"
+#include "core/test_protocol.h"
 #include "core/recovery.h"
 #include "core/app_api.h"
 #include "core/app_catalog.h"
@@ -53,6 +54,7 @@
 #include "drivers/font.h"
 #include "drivers/ac97.h"
 #include "drivers/acpi.h"
+#include "drivers/serial.h"
 #include "drivers/rtc.h"
 #include "ui/taskbar.h"
 #include "ui/desktop.h"
@@ -601,6 +603,7 @@ static void kernel_dispatch_async_work(void) {
 
 void system_process_main(void) {
     while (1) {
+        test_protocol_poll();
         kernel_dispatch_async_work();
         kernel_dispatch_input_work();
         kernel_poll_usb();
@@ -710,6 +713,8 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     font_init();
     video_init();
     log_init();
+    serial_init();
+    test_protocol_init();
     recovery_init();
 
     vesa_mode_t* vmode = vesa_get_mode();
@@ -1398,6 +1403,8 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     desktop_draw();
     video_end_update();
 
+    test_protocol_set_boot_ready();
+
     if (!kernel_service_fallback && process_start_scheduler() != OK) {
         kernel_service_fallback = 1;
         LOG_ERROR("KERNEL", "Scheduler nao assumiu o contexto inicial");
@@ -1405,6 +1412,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     while (1) {
         if (kernel_service_fallback) {
+            test_protocol_poll();
             kernel_dispatch_async_work();
             kernel_dispatch_input_work();
             kernel_poll_usb();

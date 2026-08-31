@@ -3302,3 +3302,14 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   visão (`Catalogo e visao validos: 6661 superficies, 0 casos`). O TST1 foi
   marcado como concluído no Roadmap 17; as superfícies continuam `PENDING`
   até os executores e casos de comportamento das fases seguintes.
+
+- TST2: infraestrutura do executor QEMU e protocolo ZTEST implementada em
+  2026-08-30 23:11 (America/Sao_Paulo). Foram adicionados o driver interno
+  COM1, o agente inerte no boot normal, o runner host-only com QMP externo,
+  watchdog, stress, `--until-failure`, `-snapshot` e artefatos reproduziveis.
+  O caso inicial `qemu:tst2:boot-ready` foi registrado no catalogo, junto dos
+  alvos `test-qemu` e `test-qemu-selftest`.
+
+  O agente nao executou build, testes ou QEMU. TST2 permanece pendente da
+  confirmacao funcional do usuario; `boot.asm`, `stage2.asm`, App API,
+  syscalls, ABI e layouts binarios nao foram alterados.

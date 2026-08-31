@@ -15,6 +15,12 @@ O contrato de `core/video.h` mantém o scrollback textual estático e fixa sua
 capacidade em 500 linhas; `video_print()` agrupa a apresentação de saída longa
 sem alterar suas assinaturas públicas.
 
+O TST2 acrescenta `serial.h` e `test_protocol.h` como contratos internos do
+driver COM1 e do agente de testes. Eles nao criam App API, syscall, ABI ou
+layout binario. O runner host-only conversa por COM1, usa QMP somente para
+controle externo e preserva os artefatos de cada execucao em um diretorio
+novo; o handshake e inerte no boot normal ate a validacao de `HELLO`.
+
 | Header publico | Documento canonico |
 |---|---|
 | `src/include/apps/editor.h` | `docs/13-aplicativos/aplicativos.md` |
@@ -68,6 +74,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/core/recovery.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/spinlock.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/string.h` | `docs/04-kernel/kernel.md` |
+| `src/include/core/test_protocol.h` | `docs/roadmaps/17-testador-completo-e-regressao.md` |
 | `src/include/core/syscall.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/tcp.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/timer.h` | `docs/05-drivers/drivers.md` |
@@ -104,6 +111,7 @@ sem alterar suas assinaturas públicas.
 | `src/include/drivers/rtl8139.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/rtl8811cu.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/rtc.h` | `docs/14-atualizacoes/distribuicao-remota.md` |
+| `src/include/drivers/serial.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/speaker.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/tss.h` | `docs/05-drivers/drivers.md` |
 | `src/include/drivers/vesa.h` | `docs/05-drivers/drivers.md` |

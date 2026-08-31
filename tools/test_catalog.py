@@ -19,6 +19,8 @@ SCHEMA = "zephyros-test-catalog-v1"
 EXCLUDED_SOURCE_PARTS = {"vendor", "build", "generated"}
 SURFACE_STATUSES = {"PENDING", "COVERED", "MANUAL", "BLOCKED"}
 CASE_STATUSES = {"PENDING", "AUTOMATED", "MANUAL", "BLOCKED"}
+CASE_EXECUTORS = {"host", "kernel", "qemu"}
+CASE_ISOLATIONS = {"snapshot", "fixture"}
 START_LABELS = {"start", "_start"}
 ASM_DATA_DIRECTIVES = {
     "db", "dw", "dd", "dq", "dt", "do", "dy", "dz", "resb", "resw",
@@ -569,6 +571,23 @@ def validate_catalog(catalog: dict[str, Any], root: Path, strict: bool = False) 
                       "expected", "errors", "effects", "cleanup"):
             if not isinstance(item.get(field), str):
                 errors.append(f"caso {identifier} sem campo textual {field}")
+        if item.get("executor") not in CASE_EXECUTORS:
+            errors.append(f"executor de caso invalido: {identifier}")
+        if not isinstance(item.get("profile"), str) or not item["profile"]:
+            errors.append(f"perfil de caso invalido: {identifier}")
+        if not isinstance(item.get("parameters"), dict):
+            errors.append(f"parameters invalido: {identifier}")
+        for field in ("timeout_seconds", "heartbeat_timeout_seconds"):
+            value = item.get(field)
+            if not isinstance(value, (int, float)) or isinstance(value, bool) or value <= 0:
+                errors.append(f"{field} invalido: {identifier}")
+        if item.get("isolation") not in CASE_ISOLATIONS:
+            errors.append(f"isolamento de caso invalido: {identifier}")
+        if item.get("executor") == "qemu":
+            if not isinstance(item.get("guest_case"), str) or not item["guest_case"]:
+                errors.append(f"guest_case ausente: {identifier}")
+            elif not re.fullmatch(r"[A-Za-z0-9_.:-]+", item["guest_case"]):
+                errors.append(f"guest_case invalido: {identifier}")
         if not isinstance(item.get("surface_ids", []), list):
             errors.append(f"surface_ids invalido: {identifier}")
     for item in surfaces:
@@ -646,6 +665,8 @@ def summarize(catalog: dict[str, Any]) -> dict[str, int]:
     counter = Counter(item.get("kind", "unknown") for item in catalog.get("surfaces", []))
     counter.update(f"status:{item.get('status', 'unknown')}"
                    for item in catalog.get("surfaces", []))
+    counter.update(f"case_status:{item.get('status', 'unknown')}"
+                   for item in catalog.get("cases", []))
     counter["cases"] = len(catalog.get("cases", []))
     counter["retired"] = len(catalog.get("retired", []))
     return dict(counter)
@@ -667,13 +688,18 @@ def render_catalog(catalog: dict[str, Any]) -> str:
         "| Tipo | Quantidade |",
         "|---|---:|",
     ]
-    kinds = sorted(key for key in summary if not key.startswith("status:")
-                   and key not in {"cases", "retired"})
+    kinds = sorted(key for key in summary
+                   if not key.startswith("status:") and
+                   not key.startswith("case_status:") and
+                   key not in {"cases", "retired"})
     for kind in kinds:
         lines.append(f"| `{kind}` | {summary[kind]} |")
     lines.extend(["", "| Cobertura | Quantidade |", "|---|---:|"])
     for status in sorted(SURFACE_STATUSES):
         lines.append(f"| `{status}` | {summary.get(f'status:{status}', 0)} |")
+    lines.extend(["", "| Casos | Quantidade |", "|---|---:|"])
+    for status in sorted(CASE_STATUSES):
+        lines.append(f"| `{status}` | {summary.get(f'case_status:{status}', 0)} |")
     owners = Counter(item.get("owner", "unknown") for item in catalog.get("surfaces", []))
     lines.extend(["", "### Por subsistema", "", "| Proprietario | Superficies |", "|---|---:|"])
     for owner in sorted(owners):
@@ -697,12 +723,14 @@ def render_catalog(catalog: dict[str, Any]) -> str:
     if not catalog.get("cases"):
         lines.append("Nenhum caso de teste foi associado ainda; as superfícies permanecem `PENDING`.")
     else:
-        lines.extend(["| ID | Proprietario | Camada | Status | Pre-condicoes | Acao | Resultado esperado | Erros | Efeitos | Limpeza |", "|---|---|---|---|---|---|---|---|---|---|"])
+        lines.extend(["| ID | Executor | Perfil | Caso guest | Status | Timeout | Heartbeat | Isolamento | Proprietario | Camada | Pre-condicoes | Acao | Resultado esperado | Erros | Efeitos | Limpeza |", "|---|---|---|---|---|---:|---:|---|---|---|---|---|---|---|---|---|"])
         for case in catalog["cases"]:
             values = {key: str(case[key]).replace("|", "\\|").replace("\n", " ")
-                      for key in ("id", "owner", "layer", "status", "preconditions",
+                      for key in ("id", "executor", "profile", "guest_case", "status",
+                                  "timeout_seconds", "heartbeat_timeout_seconds",
+                                  "isolation", "owner", "layer", "preconditions",
                                   "action", "expected", "errors", "effects", "cleanup")}
-            lines.append("| `{id}` | `{owner}` | `{layer}` | `{status}` | {preconditions} | {action} | {expected} | {errors} | {effects} | {cleanup} |".format(**values))
+            lines.append("| `{id}` | `{executor}` | `{profile}` | `{guest_case}` | `{status}` | {timeout_seconds} | {heartbeat_timeout_seconds} | `{isolation}` | `{owner}` | `{layer}` | {preconditions} | {action} | {expected} | {errors} | {effects} | {cleanup} |".format(**values))
     lines.extend(["", "## Superfícies sem caso associado", ""])
     uncovered = [item for item in catalog.get("surfaces", []) if not item.get("case_ids")]
     if not uncovered:

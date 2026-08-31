@@ -6,6 +6,23 @@ O alvo host-only `make catalog-test` valida o catálogo permanente de funções,
 APIs, Assembly, syscalls, comandos e casos de teste; ele não é um comando do
 Shell e não inicia o QEMU.
 
+## Executor QEMU do testador (TST2)
+
+O executor externo exige `build/zephyros.img` ja existente e nao compila o
+kernel. `make test-qemu` executa o perfil `smoke`; para estresse, use o runner
+com um caso automatizado do catalogo:
+
+```text
+make test-qemu
+python tools/qemu_test_runner.py stress --image build/zephyros.img --case qemu:tst2:boot-ready --iterations 10
+python tools/qemu_test_runner.py stress --image build/zephyros.img --case qemu:tst2:boot-ready --duration 60
+python tools/qemu_test_runner.py stress --image build/zephyros.img --case qemu:tst2:boot-ready --until-failure
+```
+
+O canal machine-readable e COM1; QMP serve apenas para controle. Os artefatos
+ficam em `build/test-results/<run-id>/`. Uma execucao interrompida por
+`Ctrl+C` fica `BLOCKED` com `termination=interrupted`.
+
 ---
 
 ## 💻 1. Comandos do Shell (Terminal)

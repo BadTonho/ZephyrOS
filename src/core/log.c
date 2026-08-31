@@ -3,6 +3,7 @@
 #include "core/string.h"
 #include "core/timer.h"
 #include "core/video.h"
+#include "drivers/serial.h"
 
 #define LOG_EFLAGS_INTERRUPT_ENABLE 0x200U
 #define LOG_PRIVATE_TEST_CAPACITY 4U
@@ -290,6 +291,37 @@ static void log_print_colored(log_level_t level, const char* message,
     video_newline();
 }
 
+static void log_write_serial(log_level_t level, const char* module,
+                             const char* message) {
+    char output[LOG_MODULE_CAPACITY + LOG_MESSAGE_CAPACITY + 16U];
+    uint32_t length = 0U;
+    const char* label;
+    uint32_t label_length;
+    uint32_t module_length;
+    uint32_t message_length;
+
+    if (!serial_is_ready() || !module || !message ||
+        !log_level_is_valid(level)) return;
+    label = level_labels[level];
+    label_length = kstrlen(label);
+    module_length = kstrlen(module);
+    message_length = kstrlen(message);
+    if (label_length + module_length + message_length + 8U >=
+        sizeof(output)) return;
+    output[length++] = '[';
+    kmemcpy(output + length, label, label_length);
+    length += label_length;
+    output[length++] = ']';
+    output[length++] = ' ';
+    kmemcpy(output + length, module, module_length);
+    length += module_length;
+    output[length++] = ' ';
+    kmemcpy(output + length, message, message_length);
+    length += message_length;
+    output[length++] = '\n';
+    serial_write_text(output, length);
+}
+
 static void log_submit(log_level_t level, const char* module,
                        const char* message, uint8_t has_error_code,
                        int32_t error_code, int allow_console) {
@@ -317,6 +349,7 @@ static void log_submit(log_level_t level, const char* module,
                 LOG_MESSAGE_CAPACITY);
     }
     log_restore_interrupts(interrupt_flags);
+    log_write_serial(level, module, message);
     if (print_console) {
         log_print_colored(level, console_message, result.occurrences,
                           print_summary);
