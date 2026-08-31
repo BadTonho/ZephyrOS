@@ -1362,7 +1362,7 @@ catalog-test: tools\test_catalog.py tests\catalog.json docs\qualidade\catalogo-t
 
 test-qemu: tools\qemu_test_runner.py tests\catalog.json
 	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
-	python tools\qemu_test_runner.py run --image "$(OS_IMG)" --catalog tests\catalog.json --qemu "$(QEMU)" --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+	python tools\qemu_test_runner.py run --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
 
 test-qemu-selftest: tools\qemu_test_runner.py
 	python tools\qemu_test_runner.py --self-test
