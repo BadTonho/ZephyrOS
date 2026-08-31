@@ -3318,3 +3318,11 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   (America/Sao_Paulo). O `Makefile.local` já fornece o caminho do executável
   QEMU entre aspas; o alvo deixou de acrescentar aspas externas duplicadas.
   O agente não executou build, testes ou QEMU após a correção.
+
+- Correção do handshake inicial do TST2 registrada em 2026-08-30 23:38
+  (America/Sao_Paulo). O runner passou a retransmitir `HELLO` com a mesma
+  sequência até receber `READY`, cobrindo a janela entre a conexão TCP do
+  COM1 e a inicialização do UART pelo guest. A execução do usuário terminou
+  em `boot_ready_timeout` sem frames ZTEST; não houve `PANIC` nem erro de
+  protocolo registrado. O agente não executou build, testes ou QEMU após a
+  correção.

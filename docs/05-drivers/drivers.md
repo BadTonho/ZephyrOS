@@ -1139,5 +1139,8 @@ com versao, sequencia e CRC corretos. Sem handshake, o agente permanece inerte;
 o boot normal e a saida VGA continuam independentes do runner. Os marcadores
 `READY`, `HEARTBEAT`, `BEGIN`, `PASS`, `FAIL`, `BLOCKED`, `PANIC` e `TIMEOUT`
 seguem o protocolo `ZTEST/1`; cada `HEARTBEAT` carrega os ticks atuais do PIT.
+O runner pode retransmitir `HELLO` com a mesma sequência durante a inicialização
+para cobrir a janela anterior ao preparo do UART; a sequência só avança após o
+handshake ser aceito.
 Este contrato e interno e nao altera App API,
 syscalls, ABI, layouts, `boot.asm` ou `stage2.asm`.
