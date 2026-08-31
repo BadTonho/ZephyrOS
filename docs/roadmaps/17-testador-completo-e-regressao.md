@@ -2,11 +2,16 @@
 
 ## Estado
 
-Planejado. Esta é uma infraestrutura permanente de qualidade do ZephyrOS,
+Em validacao host-only do TST1. Esta é uma infraestrutura permanente de qualidade do ZephyrOS,
 independente de versão, linguagem, release ou migração tecnológica. Ela deve
 ser utilizada durante todo o desenvolvimento para detectar regressões assim
 que uma função nova ou uma alteração de código quebrar um comportamento
 existente.
+
+O catálogo canônico, o sincronizador e a visão Markdown já foram criados. A
+conclusão formal do TST1 permanece pendente até a execução pelo usuário do
+alvo host-only `make catalog-test`; as fases TST2 em diante continuam
+planejadas.
 
 ## Objetivo
 
@@ -57,6 +62,12 @@ implementação do componente testado.
 
 ### TST1 — Catálogo de contratos e casos
 
+Implementação inicial: `tests/catalog.json` é a fonte canônica, `tools/test_catalog.py`
+descobre e sincroniza superfícies sem usar linhas como identidade, e
+`docs/qualidade/catalogo-testes.md` é uma visão gerada. A sincronização cria
+superfícies novas como `PENDING` e aposenta superfícies removidas com motivo;
+nenhuma cobertura foi declarada automaticamente.
+
 - [ ] Inventariar APIs públicas, syscalls, comandos, diagnósticos, drivers,
   processos nativos, aplicativos e transições de estado.
 - [ ] Definir um identificador estável, proprietário, nível, pré-condições,
@@ -75,9 +86,10 @@ implementação do componente testado.
 - [ ] Capturar console serial, logs do guest, estado de saída do QEMU e
   artefatos auxiliares sem depender de screenshots.
 - [ ] Definir marcadores estáveis de início, fim, aprovação, falha, salto e
-  bloqueio, separados da apresentação humana do Shell.
+  bloqueio, `PANIC` e `TIMEOUT`, separados da apresentação humana do Shell.
 - [ ] Emitir relatório agregado com `PASS`, `FAIL`, `SKIP` e `BLOCKED`, causa,
-  duração, versão da imagem e identificação da fixture.
+  duração, versão da imagem, identificação da fixture, seed e iteração quando
+  o caso for de estresse.
 - [ ] Garantir que QMP ou o monitor sejam usados somente como controle externo
   do teste; nenhum fallback do ZephyrOS dependerá de porta privada do
   emulador.
@@ -114,6 +126,8 @@ implementação do componente testado.
 
 - [ ] Validar boot, montagem, Shell, comandos, diagnósticos, aplicativos,
   processos, rede, atualização, reboot, poweroff e recuperação.
+- [ ] Executar os casos somente depois do marcador de boot e manter um
+  heartbeat do guest durante operações longas.
 - [ ] Verificar que cada operação termina com sucesso, erro, cancelamento,
   timeout ou recurso indisponível sem deixar o prompt, foco ou cena presos.
 - [ ] Repetir ciclos de criação/término, abertura/fechamento, mount/unmount,
@@ -123,7 +137,7 @@ implementação do componente testado.
 - [ ] Conservar console.log, relatório, imagem usada e identificação do caso
   para reproduzir cada falha.
 
-### TST6 — Matriz de hardware, falhas e recuperação
+### TST6 — Matriz de hardware, estresse, falhas e recuperação
 
 - [ ] Executar perfis Simple e Classic.
 - [ ] Executar perfis com e sem ACPI, NIC, USB HID, VESA, áudio, Storage
@@ -131,6 +145,17 @@ implementação do componente testado.
 - [ ] Exercitar falta de memória, falta de espaço, erro de leitura/escrita,
   pacote inválido, manifesto inválido, rede interrompida, dispositivo ausente
   e operação concorrente.
+- [ ] Criar suítes `stress` e `soak` para executar o sistema já inicializado,
+  com limite configurável de iterações ou duração e modo planejado
+  `--until-failure` para continuar até a primeira falha observável.
+- [ ] Misturar operações seguras em ciclos repetidos, como criação/término de
+  processos, alocação/liberação, I/O VFS, filas, sockets e abertura/fechamento
+  de aplicativos, sem destruir dados ou executar poweroff no perfil completo.
+- [ ] Registrar heartbeat, watchdog, seed reproduzível, caso, perfil e número
+  da iteração; ao primeiro `FAIL`, `PANIC` ou `TIMEOUT`, preservar o contexto e
+  interromper a suíte contaminada.
+- [ ] Permitir interrupção externa de uma execução indefinida e aplicar um
+  timeout máximo do host para detectar guest congelado ou sem heartbeat.
 - [ ] Testar criação, término, zombie, reaping, reutilização de PID e
   revalidação de handles, snapshots e callbacks.
 - [ ] Testar interrupção durante staging, boot não saudável, rollback e
@@ -160,6 +185,7 @@ Os artefatos devem permanecer separados por responsabilidade:
 - `tests/unit/`: testes host de lógica pura e stubs;
 - `tests/kernel/`: casos e fixtures dos autotestes internos;
 - `tests/qemu/`: suítes black-box e matriz de perfis;
+- `tests/stress/`: cenários de estresse, soak, seeds e políticas de parada;
 - `tests/fixtures/`: imagens, dados e falhas reproduzíveis;
 - `tools/`: executor host e conversores de relatório;
 - `docs/qualidade/`: catálogo, cobertura, procedimentos e evidências.
@@ -168,10 +194,19 @@ O nome e o formato dos arquivos podem mudar durante a implementação, mas o
 executor deve possuir uma fonte de verdade para os casos e não duplicar
 expectativas em scripts independentes.
 
+Os perfis de estresse serão separados em `smoke`, `stress` e `soak`. O perfil
+`stress` terá limite padrão para uso contínuo em desenvolvimento; o modo
+`--until-failure` será explícito e dependerá de watchdog e controle externo.
+Cada execução deverá poder ser repetida com a mesma imagem, fixture e seed.
+
 ## Contratos e invariantes
 
 - O resultado de um teste será determinado pelo contrato observado, não por
   um atraso arbitrário ou por uma tela visual.
+- Uma execução longa deverá distinguir progresso, ausência de heartbeat,
+  timeout, panic, falha de contrato e encerramento solicitado pelo usuário.
+- Uma falha de estresse deverá conservar seed, iteração, perfil, imagem,
+  fixture e console serial suficientes para reproduzir o caso.
 - Testes serão idempotentes quando o recurso permitir e declararão seu efeito
   quando não forem.
 - Falhas esperadas devem ser verificadas pelo código de erro e pelo estado
@@ -193,6 +228,11 @@ expectativas em scripts independentes.
   seu contrato.
 - A matriz de hardware e os casos ausentes ou degradados são identificados
   sem confundir `SKIP` com `PASS`.
+- O sistema consegue executar uma suíte de estresse após o boot, interrompê-la
+  na primeira falha reproduzível ou no limite configurado e detectar guest sem
+  heartbeat.
+- Toda falha de estresse gera um relatório reproduzível com seed e iteração,
+  sem depender de screenshot.
 - Cada regressão corrigida possui um teste permanente.
 - Uma falha pode ser reproduzida a partir do relatório, da imagem/fixture e
   da versão registrada.
