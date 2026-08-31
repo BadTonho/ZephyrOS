@@ -1132,11 +1132,13 @@ int usb_msc_get_at(uint32_t index, usb_msc_info_t* out_info);
 
 ## Canal serial interno do testador (TST2)
 
-`serial.c` inicializa o COM1 em 115200 8N1, com recepcao por IRQ4 e fallback
-de polling sem espera bloqueante. O driver possui filas RX/TX limitadas e
-flush com orcamento; bytes NUL, CR, controles e fora de ASCII imprimivel sao
-descartados pelo consumidor do protocolo. A leitura nao bloqueia e
-nao retém descritores, buffers externos ou estado do QEMU.
+`serial.c` inicializa o COM1 em 115200 8N1 e usa polling para a recepcao, sem
+habilitar IRQ4. A saida usa fila TX limitada e flush com orcamento; o agente
+ZTEST envia frames completos para essa fila e o processo dedicado continua
+fazendo o flush cooperativamente enquanto a sessao estiver ativa. Bytes NUL,
+CR, controles e fora de ASCII imprimivel sao descartados pelo consumidor do
+protocolo. A leitura nao bloqueia e nao retém descritores, buffers externos ou
+estado do QEMU.
 
 O agente `test_protocol.c` usa esse canal somente depois de um `HELLO` valido
 com versao, sequencia e CRC corretos. Sem handshake, o agente permanece inerte;
