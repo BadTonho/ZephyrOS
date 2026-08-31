@@ -874,6 +874,8 @@ def validate_manifest(data: dict[str, Any], directory: Path) -> tuple[Version, V
         if not isinstance(item["source"], str) or not item["source"]:
             raise UpdateError("source deve ser um caminho textual")
         source = (directory / item["source"]).resolve()
+        if not is_within(source, directory.resolve()):
+            raise UpdateError("source do manifesto sai do diretorio permitido")
         try:
             payload = source.read_bytes()
         except OSError as error:

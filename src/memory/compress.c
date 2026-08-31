@@ -4,6 +4,8 @@
 #include "core/errors.h"
 #include "core/string.h"
 
+#define COMPRESS_UINT32_MAX 0xFFFFFFFFU
+
 static compress_stats_t stats;
 static uint8_t enabled = 0;
 static uint8_t compress_ring[COMPRESS_LZSS_N];
@@ -11,6 +13,7 @@ static uint8_t decompress_ring[COMPRESS_LZSS_N];
 
 void compress_init(void) {
     kmemset(&stats, 0, sizeof(compress_stats_t));
+    enabled = 0;
     stats.enabled = 0;
 }
 
@@ -33,7 +36,11 @@ compress_stats_t* compress_get_stats(void) {
 }
 
 uint32_t compress_get_max_size(uint32_t original_size) {
-    return original_size + (original_size / 8) + 64;
+    uint32_t overhead = (original_size / 8) + 64;
+    if (original_size > COMPRESS_UINT32_MAX - overhead) {
+        return COMPRESS_UINT32_MAX;
+    }
+    return original_size + overhead;
 }
 
 int compress_data(const uint8_t* src, uint32_t src_size, uint8_t* dst,
@@ -58,24 +65,29 @@ int compress_data(const uint8_t* src, uint32_t src_size, uint8_t* dst,
         uint32_t best_len = 0;
         uint32_t best_pos = 0;
 
-        if (si >= COMPRESS_LZSS_F) {
-            uint32_t search_start = (si >= COMPRESS_LZSS_N) ? (si - COMPRESS_LZSS_N + 1) : 0;
-            for (uint32_t j = search_start; j < si; j++) {
+        if (si >= COMPRESS_LZSS_THRESHOLD) {
+            uint32_t search_start = (si >= COMPRESS_LZSS_N) ?
+                (si - COMPRESS_LZSS_N) : 0;
+            for (uint32_t j = si; j > search_start; j--) {
+                uint32_t candidate = j - 1;
                 uint32_t len = 0;
-                while (len < COMPRESS_LZSS_F && si + len < src_size) {
-                    if (compress_ring[(j + len) % COMPRESS_LZSS_N] != src[si + len]) break;
+                while (len < COMPRESS_LZSS_F - 1 &&
+                       candidate + len < si && si + len < src_size) {
+                    if (src[candidate + len] != src[si + len]) break;
                     len++;
                 }
                 if (len > best_len && len >= COMPRESS_LZSS_THRESHOLD) {
                     best_len = len;
-                    best_pos = j;
+                    best_pos = candidate;
+                    if (best_len == COMPRESS_LZSS_F - 1) break;
                 }
             }
         }
 
         if (best_len >= COMPRESS_LZSS_THRESHOLD) {
             if (di + 2 > dst_capacity) return ERR_OVERFLOW;
-            uint16_t pos = (si - best_pos) & (COMPRESS_LZSS_N - 1);
+            uint16_t pos = (COMPRESS_LZSS_N - COMPRESS_LZSS_F + best_pos) &
+                           (COMPRESS_LZSS_N - 1);
             dst[di++] = (uint8_t)(pos & 0xFF);
             dst[di++] = (uint8_t)(((pos >> 8) & 0x0F) | ((best_len - COMPRESS_LZSS_THRESHOLD) << 4));
             flags |= (1 << flag_pos);
@@ -134,6 +146,10 @@ int decompress_data(const uint8_t* src, uint32_t src_size, uint8_t* dst,
 
     while (si < src_size) {
         uint8_t flags = src[si++];
+        if (si == src_size) {
+            if (src_size == 1 && di == 0 && flags == 0) break;
+            return ERR_INVALID;
+        }
         for (int bit = 0; bit < 8 && si < src_size; bit++) {
             if (flags & (1 << bit)) {
                 if (si + 1 >= src_size) return ERR_INVALID;

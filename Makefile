@@ -11,6 +11,7 @@ NASM ?= nasm
 GCC ?= i686-elf-gcc
 LD ?= i686-elf-ld
 HOST_CC ?= cc
+HOST_SANITIZE_CC ?= clang
 QEMU ?= qemu-system-i386
 QEMU_CPU_ARGS ?= -cpu max
 QEMU_NET_ARGS ?= -nic user,model=e1000
@@ -1377,6 +1378,12 @@ test-qemu-selftest: tools\qemu_test_runner.py
 test-tst2-host: tools\tst2_host_runner.py tests\unit\test_protocol_core.c tests\unit\test_qemu_test_runner.py src\core\test_protocol_core.c src\core\test_protocol_core.h
 	python tools\tst2_host_runner.py --cc "$(HOST_CC)"
 
+test-tst3-host: tools\tst3_host_runner.py tests\unit\test_string_compress.c tests\unit\test_packager.py tests\unit\test_updater.py src\core\string.c src\memory\compress.c
+	python tools\tst3_host_runner.py --mode strict --cc "$(HOST_CC)"
+
+test-tst3-sanitize: tools\tst3_host_runner.py tests\unit\test_string_compress.c src\core\string.c src\memory\compress.c
+	python tools\tst3_host_runner.py --mode sanitize --sanitize-cc "$(HOST_SANITIZE_CC)"
+
 q3check-test:
 	python tools\q3check.py --self-test
 
@@ -1447,4 +1454,4 @@ store-as5-serve: store-as5-test
 clean:
 	rmdir /s /q build
 
-.PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-system-fixture run-system-slots-fixture run-system-slots-matrix run-system-update-matrix ep94b-fixtures ep94b-matrix run-ep94b-matrix ep94c-matrix run-ep94c-matrix run-recovery-menu-vga run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures system-slots-fixtures system-slots-matrix debug q3check catalog-test test-qemu test-qemu-selftest test-tst2-host q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
+.PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-system-fixture run-system-slots-fixture run-system-slots-matrix run-system-update-matrix ep94b-fixtures ep94b-matrix run-ep94b-matrix ep94c-matrix run-ep94c-matrix run-recovery-menu-vga run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures system-slots-fixtures system-slots-matrix debug q3check catalog-test test-qemu test-qemu-selftest test-tst2-host test-tst3-host test-tst3-sanitize q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean

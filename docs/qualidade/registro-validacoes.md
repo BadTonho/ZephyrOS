@@ -3368,3 +3368,37 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `qemu.stderr.log` e `result.json`. O build exibiu warnings preexistentes em
   outros módulos, sem warning novo no protocolo TST2. `boot.asm` e `stage2.asm`
   permaneceram inalterados.
+
+- TST3: implementacao da primeira camada host-only concluida em 2026-08-31
+  12:36 (America/Sao_Paulo). Foram adicionados os testes Python formais de
+  `tools/packager.py` e `tools/updater.py`, o teste C host-only de
+  `src/core/string.c` e `src/memory/compress.c`, e o runner separado
+  `tools/tst3_host_runner.py`. O Makefile ganhou `test-tst3-host` e
+  `test-tst3-sanitize`; `test-tst2-host` foi restringido ao conjunto TST2.
+  Os testes usam fixtures temporarias, buffers estaticos, stub de
+  `video_print()` e timeout por subprocesso.
+
+- TST3: a suite strict passou em 2026-08-31 (America/Sao_Paulo) com
+  `make test-tst3-host`: compilacao C com `HOST_CC`, 11 testes Python de
+  packager, 11 testes Python de updater, `packager.py selftest` e
+  `updater.py selftest` terminaram com `PASS`/`OK`. O alvo sanitizado foi
+  executado na mesma validacao e retornou `BLOCKED` de forma explicita: o
+  Clang 22 do MSYS2 UCRT64 foi instalado, mas o pacote nao fornece os import
+  libs `libclang_rt.asan_dynamic`/UBSan necessarios para link. O diagnostico
+  completo foi preservado em `build/test-results/tst3-host/sanitize/`; a
+  execucao strict posterior ficou preservada em `build/test-results/tst3-host/strict/`.
+
+- TST3: a correcao de `compress.c` foi validada em 2026-08-31. `compress_init`
+  agora reseta tambem o estado global de habilitacao; o tamanho maximo satura
+  em `uint32_t`; o compressor usa a mesma coordenada absoluta do anel LZSS
+  que o descompressor; e streams com grupo de flags vazio apos o inicio sao
+  rejeitados, sem invalidar a codificacao de entrada vazia. `make package-test`,
+  `make update-test` e `make q3check` passaram; `make clean` seguido de `make`
+  passou com warnings preexistentes em outros modulos.
+
+- TST3: smoke QEMU unico executado em 2026-08-31 12:36 (America/Sao_Paulo)
+  apos os gates, conforme a alteracao em `compress.c`. `make test-qemu`
+  passou com o caso existente `qemu:tst2:boot-ready`, frames `READY`,
+  `HEARTBEAT`, `BEGIN` e `PASS` nessa ordem, `protocol_errors=[]`,
+  `last_state=PASS` e `last_event=PASS`. Artefatos preservados em
+  `build/test-results/qemu-20260831T153609Z-24084/`.

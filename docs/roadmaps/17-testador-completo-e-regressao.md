@@ -2,7 +2,9 @@
 
 ## Estado
 
-TST1 e TST2 concluídos; TST3 em diante permanecem planejados. Esta é uma infraestrutura permanente de qualidade do ZephyrOS,
+TST1 e TST2 concluídos; a primeira camada da TST3 foi implementada e validada,
+mas a execução sanitizada permanece bloqueada pelo runtime da toolchain local.
+Esta é uma infraestrutura permanente de qualidade do ZephyrOS,
 independente de versão, linguagem, release ou migração tecnológica. Ela deve
 ser utilizada durante todo o desenvolvimento para detectar regressões assim
 que uma função nova ou uma alteração de código quebrar um comportamento
@@ -141,18 +143,20 @@ catálogo.
 - [x] Isolar cada caso com imagem, fixture ou estado inicial restaurável para
   evitar contaminação entre testes.
 
-### TST3 — Testes unitários e de lógica no host
+### TST3 — Suíte host-only de lógica e limites
 
-- [ ] Criar a primeira suíte host-only do protocolo TST2 e do executor, com
-  transporte falso, entradas parciais, saídas capturadas e estados de erro.
-- [ ] Testar parsers, formatadores, checksums, conversões, limites, overflow,
-  manifestos, seleção de versões e regras de atualização.
-- [ ] Testar caminhos de erro com stubs de memória, disco, rede, relógio,
-  energia e hardware.
-- [ ] Usar sanitizadores, análise estática ou ferramentas equivalentes nos
-  módulos que puderem ser compilados fora do ambiente freestanding.
-- [ ] Manter os testes independentes de tempo real, endereço fixo e ordem
-  acidental de execução.
+- [x] Criar a suíte host-only da TST3 para strings, compressão, packager e
+  updater, com buffers estáticos, fixtures temporárias e entradas negativas.
+- [x] Testar parsers, formatadores, checksums, conversões, limites, overflow,
+  manifestos, seleção de versões, hashes, assinaturas e regras de atualização.
+- [x] Testar caminhos de erro aplicáveis à camada host-only, incluindo buffers
+  insuficientes, streams truncados, corrupção, arquivos ausentes e caminhos
+  inseguros; VFS, paging, processos, drivers e energia ficam para TST4/TST5.
+- [ ] Usar ASan/UBSan com Clang/LLVM nos módulos host-testáveis; o alvo
+  `make test-tst3-sanitize` identificou `BLOCKED` porque o pacote MSYS2
+  UCRT64 instalado não fornece o runtime `libclang_rt.asan` necessário.
+- [x] Manter os testes independentes de tempo real, endereço fixo e ordem
+  acidental de execução, com timeout máximo no runner.
 
 ### TST4 — Autotestes determinísticos no kernel
 
@@ -349,6 +353,38 @@ do runner e o build limpo também passaram. No QEMU, o smoke test produziu
 `READY`, `HEARTBEAT`, `BEGIN` e `PASS` nessa ordem, sem erros de protocolo, e
 preservou manifesto, serial, logs do QEMU e relatório. TST2 está concluído;
 a cobertura funcional dos subsistemas continuará nas fases TST3 a TST7.
+
+## Implementacao atual da TST3
+
+A primeira camada host-only da TST3 foi implementada sem adicionar casos ao
+catalogo QEMU. `tests/unit/test_packager.py` e `test_updater.py` cobrem
+manifestos, versoes, dependencias, aliases FAT12/FAT32, CRC, corrupcao,
+hashes, assinaturas, compatibilidade, rollback e caminhos inseguros. O teste C
+`test_string_compress.c` cobre `string.c`, round-trip LZSS, janela, buffers
+insuficientes, streams truncados, tokens invalidos, overflow, estatisticas e
+reinicializacao.
+
+`tools/tst3_host_runner.py` separa strict e sanitize, aplica timeout por
+subprocesso, resolve `HOST_CC`/`HOST_SANITIZE_CC` e grava manifesto, resultado
+e logs em `build/test-results/tst3-host/`. Os alvos `test-tst3-host` e
+`test-tst3-sanitize` foram adicionados ao Makefile; `test-tst2-host` continua
+restrito aos testes TST2.
+
+Cada modo preserva tambem uma copia em
+`build/test-results/tst3-host/strict/` ou `build/test-results/tst3-host/sanitize/`.
+
+A correcao necessaria em `compress.c` reseta o estado global de habilitacao em
+`compress_init()`, satura o calculo do tamanho maximo e alinha as posicoes do
+anel LZSS entre compressao e descompressao. O descompressor tambem rejeita um
+grupo de flags vazio apos o inicio, mantendo o stream de entrada vazia como
+`0x00`.
+
+Validacao executada em 2026-08-31: `make test-tst3-host`, `make package-test`,
+`make update-test`, `make q3check`, `make clean`, `make` e um unico
+`make test-qemu` passaram. O alvo sanitizado retornou `BLOCKED`: o Clang 22
+foi instalado no MSYS2 UCRT64, mas o pacote nao contem os runtimes/import
+libs `libclang_rt.asan` necessarios. Por isso, a TST3 permanece pendente ate
+que uma toolchain Clang/LLVM com ASan/UBSan compativel seja disponibilizada.
 
 ## Fora do escopo
 

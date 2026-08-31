@@ -88,7 +88,7 @@ def main() -> int:
         return 1
     python_result = run_command([
         sys.executable, "-m", "unittest", "discover",
-        "-s", str(ROOT / "tests" / "unit"), "-p", "test_*.py"],
+        "-s", str(ROOT / "tests" / "unit"), "-p", "test_qemu_test_runner.py"],
         command_environment(compiler))
     if python_result != 0:
         print("TST2 host: ERRO nos testes Python do runner", file=sys.stderr)
