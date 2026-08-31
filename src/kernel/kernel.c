@@ -615,6 +615,7 @@ void system_process_main(void) {
     while (1) {
         if (!kernel_test_protocol_process_enabled) test_protocol_poll();
         if (test_protocol_is_active()) {
+            kernel_dispatch_input_work();
             process_yield();
             continue;
         }

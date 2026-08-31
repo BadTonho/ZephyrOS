@@ -12,6 +12,62 @@ static test_protocol_core_t protocol_core;
 static uint8_t protocol_initialized;
 static uint8_t protocol_boot_ready;
 static uint8_t protocol_emit_error_logged;
+static char protocol_case_reason[TEST_PROTOCOL_CASE_CAPACITY];
+
+static uint32_t protocol_length(const char* text);
+
+static const char* protocol_error_name(int result) {
+    if (result == ERR_NULL) return "ERR_NULL";
+    if (result == ERR_MEM) return "ERR_MEM";
+    if (result == ERR_DISK) return "ERR_DISK";
+    if (result == ERR_NOT_FOUND) return "ERR_NOT_FOUND";
+    if (result == ERR_OVERFLOW) return "ERR_OVERFLOW";
+    if (result == ERR_INVALID) return "ERR_INVALID";
+    if (result == ERR_STATE) return "ERR_STATE";
+    if (result == ERR_TIMEOUT) return "ERR_TIMEOUT";
+    if (result == ERR_UNAVAILABLE) return "ERR_UNAVAILABLE";
+    if (result == ERR_CANCELLED) return "ERR_CANCELLED";
+    if (result == ERR_AGAIN) return "ERR_AGAIN";
+    return "ERR_UNKNOWN";
+}
+
+static void protocol_copy_text(char* destination, uint32_t capacity,
+                               const char* text) {
+    uint32_t length = 0U;
+
+    if (!destination || capacity == 0U) return;
+    if (!text) text = "ERR_STATE";
+    while (text[length] && length + 1U < capacity) {
+        destination[length] = text[length];
+        length++;
+    }
+    destination[length] = '\0';
+}
+
+static void protocol_report_phase(void* context, const char* phase,
+                                  int result) {
+    uint32_t phase_length;
+    uint32_t error_length;
+
+    (void)context;
+    if (result == OK || protocol_case_reason[0] || !phase) return;
+    phase_length = protocol_length(phase);
+    error_length = protocol_length(protocol_error_name(result));
+    if (phase_length + 1U + error_length >= sizeof(protocol_case_reason)) {
+        protocol_copy_text(protocol_case_reason, sizeof(protocol_case_reason),
+                           "terminal:ERR_OVERFLOW");
+        (void)test_protocol_core_set_case_reason(&protocol_core,
+                                                 protocol_case_reason);
+        return;
+    }
+    protocol_copy_text(protocol_case_reason, sizeof(protocol_case_reason), phase);
+    protocol_case_reason[phase_length] = '-';
+    protocol_copy_text(protocol_case_reason + phase_length + 1U,
+                       sizeof(protocol_case_reason) - phase_length - 1U,
+                       protocol_error_name(result));
+    (void)test_protocol_core_set_case_reason(&protocol_core,
+                                             protocol_case_reason);
+}
 
 static int protocol_test_progress(void* context) {
     uint32_t current_tick = timer_get_ticks();
@@ -83,6 +139,7 @@ static int protocol_run_case(void* context, const char* case_id,
     static const char storage_vfs_case[] = "qemu:tst4:storage-vfs";
     static const char network_case[] = "qemu:tst4:network";
     static const char platform_case[] = "qemu:tst4:platform";
+    static const char tst5_prefix[] = "qemu:tst5:";
     kernel_tests_runtime_t runtime;
 
     (void)context;
@@ -90,6 +147,8 @@ static int protocol_run_case(void* context, const char* case_id,
     (void)seed;
     runtime.progress = protocol_test_progress;
     runtime.context = 0;
+    runtime.report_phase = protocol_report_phase;
+    protocol_case_reason[0] = '\0';
     if (protocol_token_equals(case_id, case_length, boot_case)) {
         if (protocol_boot_ready) return OK;
         LOG_WARN("TEST", "Caso de boot solicitado antes do estado READY");
@@ -122,6 +181,11 @@ static int protocol_run_case(void* context, const char* case_id,
         if (!protocol_boot_ready) return ERR_STATE;
         return kernel_tests_run_platform(&runtime);
     }
+    if (case_length > protocol_length(tst5_prefix) &&
+        protocol_token_equals(case_id, protocol_length(tst5_prefix), tst5_prefix)) {
+        if (!protocol_boot_ready) return ERR_STATE;
+        return kernel_tests_run_tst5_blackbox(&runtime, case_id, case_length);
+    }
     return ERR_NOT_FOUND;
 }
 
@@ -151,6 +215,7 @@ int test_protocol_init(void) {
     protocol_initialized = 1U;
     protocol_boot_ready = 0U;
     protocol_emit_error_logged = 0U;
+    protocol_case_reason[0] = '\0';
     return OK;
 }
 

@@ -11,8 +11,9 @@ que uma função nova ou uma alteração de código quebrar um comportamento
 existente.
 
 O catálogo canônico, o sincronizador e a visão Markdown foram criados e
-validados pelo alvo host-only `make catalog-test`. TST5, TST6 e TST7 continuam
-planejadas para as camadas black-box, hardware/stress e regressao continua.
+validados pelo alvo host-only `make catalog-test`. A primeira camada da TST5
+foi implementada e validada no QEMU; TST6 e TST7 continuam planejadas para
+hardware/stress e regressao continua.
 
 ## Objetivo
 
@@ -480,6 +481,50 @@ TST4 está concluída para as camadas memory/SLAB, paging/VMA, execution,
 storage/VFS, network e platform. TST5, TST6 e TST7 permanecem pendentes por
 serem camadas posteriores de integração black-box, matriz de hardware/stress e
 regressão contínua.
+
+## Implementacao atual da TST5
+
+A primeira camada da TST5 foi implementada com nove casos QEMU independentes:
+Shell, input, apps, processes, storage, network, update-recovery, reboot e
+poweroff. O runner injeta somente scripts validados por allowlist atraves do
+QMP, registra cada entrada em `input.log`, acompanha os estados
+`INPUT_SENT`, `OBSERVING`, `RESTART_WAIT` e `SHUTDOWN_WAIT`, e preserva eventos
+QMP, screenshots e diagnosticos junto do resultado.
+
+O guest possui um observador interno do terminal em `src/core/video_test.h` e
+`src/drivers/video.c`. O snapshot copia texto, geracao, cursor e estado sob o
+lock do video, sem alterar `video.h`; o harness interno
+`src/core/kernel_tests_blackbox.c` usa ticks, `process_yield()` e timeout
+limitado para confirmar o marcador produzido pelo caminho real de teclado,
+input, IPC, Shell e dispatcher. O protocolo publico continua com os eventos
+`READY`, `HEARTBEAT`, `BEGIN`, `PASS` e `FAIL`.
+
+Os casos de reboot e poweroff so executam a acao posterior depois de `PASS`.
+Reboot exige evento QMP `RESET` seguido de novo `HELLO -> READY -> HEARTBEAT`;
+poweroff aceita `SHUTDOWN` ou a saida esperada da instancia QEMU isolada. Cada
+execucao preserva `manifest.json`, `serial.log`, logs do QEMU, `input.log`,
+`qmp-events.log`, screenshots disponiveis e `result.json`.
+
+Validacoes executadas para esta implementacao: `make test-tst5-host`,
+`python tools/qemu_test_runner.py --self-test`, `make q3check`, `make clean`,
+`make`, os nove alvos QEMU e `make catalog-test`, com 6.792 superficies e 16
+casos no catalogo. As nove execucoes produziram `READY -> HEARTBEAT -> BEGIN
+-> PASS`; reboot confirmou `RESET` e novo handshake, e poweroff confirmou
+`SHUTDOWN`. A camada TST5 descrita neste roadmap esta validada.
+
+### TST5 — Checklist de saida
+
+- [x] Runner separado com allowlist de entrada, rastreamento e estados de
+  progresso, sem retry automatico.
+- [x] Observador interno do terminal com copia sob lock e deadlines por ticks.
+- [x] Nove casos independentes no catalogo e alvos Makefile com uma iteracao.
+- [x] Host-only, self-test do runner, q3check, build limpo e catalogo validados.
+- [x] Shell, input, apps, processes, storage, network e update-recovery passam
+  no QEMU com `READY -> HEARTBEAT -> BEGIN -> PASS`.
+- [x] Reboot confirma `RESET` e novo handshake; poweroff confirma `SHUTDOWN` ou
+  saida esperada do QEMU.
+- [x] Artefatos e causas de falha foram conferidos em cada uma das nove
+  execucoes.
 
 ## Fora do escopo
 

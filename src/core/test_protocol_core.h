@@ -57,6 +57,7 @@ typedef struct {
     uint32_t current_ticks;
     uint32_t rx_length;
     char run[TEST_PROTOCOL_RUN_CAPACITY];
+    char case_reason[TEST_PROTOCOL_CASE_CAPACITY];
     char rx[TEST_PROTOCOL_FRAME_CAPACITY];
     test_protocol_core_callbacks_t callbacks;
 } test_protocol_core_t;
@@ -67,6 +68,8 @@ int test_protocol_core_feed_byte(test_protocol_core_t* core, uint8_t byte);
 int test_protocol_core_poll(test_protocol_core_t* core, uint32_t ticks);
 int test_protocol_core_set_ticks(test_protocol_core_t* core, uint32_t ticks);
 int test_protocol_core_set_boot_ready(test_protocol_core_t* core);
+int test_protocol_core_set_case_reason(test_protocol_core_t* core,
+                                        const char* reason);
 int test_protocol_core_emit(test_protocol_core_t* core,
                             test_protocol_event_type_t type,
                             const char* reason);

@@ -43651,6 +43651,24 @@
       "tags": []
     },
     {
+      "id": "c:src/core/kernel_tests.c:kernel_tests_report_phase",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests.c",
+      "symbol": "kernel_tests_report_phase",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/core/kernel_tests.c:kernel_tests_run_memory_slab",
       "kind": "c_function",
       "source": "src/core/kernel_tests.c",
@@ -43698,6 +43716,132 @@
       "source": "src/core/kernel_tests.c",
       "symbol": "kernel_tests_same_memory_state",
       "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_contains",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_contains",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_equals",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_equals",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_length",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_length",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_report",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_report",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_snapshot",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_snapshot",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_wait_for_marker",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "kernel_tests_run_tst5_blackbox",
+      "linkage": "external",
       "owner": "core",
       "layer": "kernel-source",
       "preconditions": "definir no caso de teste associado",
@@ -51829,6 +51973,24 @@
       "tags": []
     },
     {
+      "id": "c:src/core/test_protocol.c:protocol_copy_text",
+      "kind": "c_function",
+      "source": "src/core/test_protocol.c",
+      "symbol": "protocol_copy_text",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/core/test_protocol.c:protocol_emit_event",
       "kind": "c_function",
       "source": "src/core/test_protocol.c",
@@ -51869,6 +52031,24 @@
       "kind": "c_function",
       "source": "src/core/test_protocol.c",
       "symbol": "protocol_receive",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/core/test_protocol.c:protocol_report_phase",
+      "kind": "c_function",
+      "source": "src/core/test_protocol.c",
+      "symbol": "protocol_report_phase",
       "linkage": "static",
       "owner": "core",
       "layer": "kernel-source",
@@ -52517,6 +52697,24 @@
       "kind": "c_function",
       "source": "src/core/test_protocol_core.c",
       "symbol": "test_protocol_core_set_boot_ready",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/core/test_protocol_core.c:test_protocol_core_set_case_reason",
+      "kind": "c_function",
+      "source": "src/core/test_protocol_core.c",
+      "symbol": "test_protocol_core_set_case_reason",
       "linkage": "external",
       "owner": "core",
       "layer": "kernel-source",
@@ -77357,6 +77555,24 @@
       "kind": "c_function",
       "source": "src/drivers/video.c",
       "symbol": "video_terminal_take_hosted_dirty",
+      "linkage": "external",
+      "owner": "drivers",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/drivers/video.c:video_test_copy_terminal",
+      "kind": "c_function",
+      "source": "src/drivers/video.c",
+      "symbol": "video_test_copy_terminal",
       "linkage": "external",
       "owner": "drivers",
       "layer": "kernel-source",
@@ -122596,6 +122812,816 @@
         "storage",
         "vfs"
       ]
+    },
+    {
+      "id": "qemu:tst5:apps",
+      "scenario": "Caminho black-box de abertura e fechamento de aplicacoes",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:apps",
+      "timeout_seconds": 90,
+      "heartbeat_timeout_seconds": 15,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "input": "qmp-keyboard",
+        "postcondition": "shell-recovered"
+      },
+      "preconditions": "imagem pronta, teclado virtual e observer interno disponiveis",
+      "action": "abrir settings, taskmgr e explorer por comandos externos e retornar ao prompt",
+      "expected": "o caminho de entrada abre e fecha as cenas e o marcador final retorna ao terminal",
+      "errors": "cena presa, prompt ausente, observer sem mudanca, timeout, protocolo ou QEMU",
+      "effects": "somente cenas e estado de UI em snapshot",
+      "cleanup": "fechar a cena ativa e encerrar o QEMU preservando evidencias",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox",
+        "c:src/drivers/video.c:video_test_copy_terminal",
+        "api:src/include/core/video.h:video_terminal_is_active"
+      ],
+      "tags": [
+        "qemu",
+        "smoke",
+        "tst5",
+        "apps"
+      ],
+      "interaction": {
+        "mode": "qmp-keyboard",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "settings"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "alt",
+              "f4"
+            ]
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "taskmgr"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "alt",
+              "f4"
+            ]
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "explorer"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "alt",
+              "f4"
+            ]
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "echo tst5-apps"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
+    },
+    {
+      "id": "qemu:tst5:input",
+      "scenario": "Caminho black-box de edicao, historico, cancelamento e recuperacao",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:input",
+      "timeout_seconds": 60,
+      "heartbeat_timeout_seconds": 15,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "input": "qmp-keyboard",
+        "postcondition": "prompt-recovered"
+      },
+      "preconditions": "imagem pronta, fila de teclado e Shell inicializados",
+      "action": "enviar texto, backspace, historico e Ctrl-C por QMP",
+      "expected": "o terminal recebe a entrada e publica o marcador depois da recuperacao do prompt",
+      "errors": "texto incorreto, cancelamento perdido, prompt preso, timeout, protocolo ou QEMU",
+      "effects": "altera somente buffer e historico de comandos no snapshot",
+      "cleanup": "encerrar o QEMU e preservar o script e os logs",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox",
+        "c:src/drivers/video.c:video_test_copy_terminal",
+        "api:src/include/core/video.h:video_terminal_is_active",
+        "api:src/include/process/process.h:process_yield"
+      ],
+      "tags": [
+        "qemu",
+        "smoke",
+        "tst5",
+        "input"
+      ],
+      "interaction": {
+        "mode": "qmp-keyboard",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "echx"
+          },
+          {
+            "op": "key",
+            "key": "backspace"
+          },
+          {
+            "op": "text",
+            "text": "o tst5-input"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "key",
+            "key": "up"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "ctrl",
+              "c"
+            ]
+          },
+          {
+            "op": "text",
+            "text": "echo tst5-input"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
+    },
+    {
+      "id": "qemu:tst5:network",
+      "scenario": "Caminho black-box offline de rede e estados indisponiveis",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:network",
+      "timeout_seconds": 90,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "input": "qmp-keyboard",
+        "network": "none",
+        "postcondition": "network-state-coherent"
+      },
+      "preconditions": "imagem pronta e QEMU configurado com rede isolada",
+      "action": "consultar status, rotas e sockets sem conexao externa",
+      "expected": "o Shell responde e a ausencia de interface permanece coerente e observavel",
+      "errors": "conexao externa, estado incoerente, prompt preso, timeout, protocolo ou QEMU",
+      "effects": "somente consultas e estado temporario de rede no snapshot",
+      "cleanup": "encerrar o QEMU sem tocar na rede do hospedeiro",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox",
+        "c:src/drivers/video.c:video_test_copy_terminal",
+        "api:src/include/core/video.h:video_terminal_is_active",
+        "api:src/include/core/input.h:input_publish_key"
+      ],
+      "tags": [
+        "qemu",
+        "smoke",
+        "tst5",
+        "network",
+        "offline"
+      ],
+      "interaction": {
+        "mode": "qmp-keyboard",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "netstat"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "route"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "sockstat"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "echo tst5-network"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
+    },
+    {
+      "id": "qemu:tst5:poweroff",
+      "scenario": "Caminho black-box de poweroff isolado no QEMU",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:poweroff",
+      "timeout_seconds": 60,
+      "heartbeat_timeout_seconds": 15,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "input": "qmp-keyboard",
+        "postcondition": "qmp-shutdown"
+      },
+      "preconditions": "QEMU isolado e suporte de poweroff do guest disponivel",
+      "action": "confirmar caminho do Shell e enviar poweroff somente apos PASS",
+      "expected": "o caso publica PASS e QMP observa SHUTDOWN ou a saida esperada do QEMU",
+      "errors": "poweroff antes do PASS, reset inesperado, timeout, protocolo ou QEMU",
+      "effects": "encerra somente a instancia QEMU em snapshot",
+      "cleanup": "fechar sockets e preservar logs mesmo apos a saida do guest",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox",
+        "c:src/drivers/video.c:video_test_copy_terminal",
+        "api:src/include/core/power.h:power_shutdown"
+      ],
+      "tags": [
+        "qemu",
+        "smoke",
+        "tst5",
+        "poweroff",
+        "lifecycle"
+      ],
+      "interaction": {
+        "mode": "qmp-keyboard",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "echo tst5-poweroff"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "poweroff",
+          "steps": [
+            {
+              "op": "wait",
+              "seconds": 2
+            },
+            {
+              "op": "text",
+              "text": "poweroff"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            }
+          ],
+          "timeout_seconds": 30
+        }
+      }
+    },
+    {
+      "id": "qemu:tst5:processes",
+      "scenario": "Caminho black-box de diagnosticos de processos e threads",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:processes",
+      "timeout_seconds": 75,
+      "heartbeat_timeout_seconds": 15,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "input": "qmp-keyboard",
+        "postcondition": "prompt-recovered"
+      },
+      "preconditions": "processos, threads, scheduler e Shell estao READY",
+      "action": "consultar processos e threads por teclado externo",
+      "expected": "os diagnosticos terminam e o marcador confirma o retorno ao prompt",
+      "errors": "processo residual, diagnostico preso, timeout, protocolo ou QEMU",
+      "effects": "somente consultas de estado do guest em snapshot",
+      "cleanup": "encerrar o QEMU e preservar historico de entrada",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox",
+        "c:src/drivers/video.c:video_test_copy_terminal",
+        "api:src/include/process/process.h:process_yield",
+        "api:src/include/core/video.h:video_terminal_is_active"
+      ],
+      "tags": [
+        "qemu",
+        "smoke",
+        "tst5",
+        "processes"
+      ],
+      "interaction": {
+        "mode": "qmp-keyboard",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "procs"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "threads"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "echo tst5-processes"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
+    },
+    {
+      "id": "qemu:tst5:reboot",
+      "scenario": "Caminho black-box de reboot e novo handshake ZTEST",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:reboot",
+      "timeout_seconds": 90,
+      "heartbeat_timeout_seconds": 15,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "input": "qmp-keyboard",
+        "postcondition": "qmp-reset-and-ready"
+      },
+      "preconditions": "QEMU isolado e caminho de reboot do guest disponivel",
+      "action": "confirmar o terminal, enviar reboot apos PASS e aguardar novo HELLO/READY",
+      "expected": "QMP publica RESET e uma segunda sessao publica READY e HEARTBEAT",
+      "errors": "reset prematuro, handshake ausente, timeout, protocolo ou QEMU",
+      "effects": "reinicia somente a instancia QEMU em snapshot",
+      "cleanup": "encerrar a segunda sessao via QMP e preservar as duas fases",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox",
+        "c:src/drivers/video.c:video_test_copy_terminal",
+        "api:src/include/core/power.h:power_reboot",
+        "api:src/include/core/test_protocol.h:test_protocol_set_boot_ready"
+      ],
+      "tags": [
+        "qemu",
+        "smoke",
+        "tst5",
+        "reboot",
+        "lifecycle"
+      ],
+      "interaction": {
+        "mode": "qmp-keyboard",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "echo tst5-reboot"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "reboot",
+          "steps": [
+            {
+              "op": "wait",
+              "seconds": 2
+            },
+            {
+              "op": "text",
+              "text": "reboot"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            }
+          ],
+          "timeout_seconds": 45
+        }
+      }
+    },
+    {
+      "id": "qemu:tst5:shell",
+      "scenario": "Caminho black-box de teclado, Shell e dispatcher",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:shell",
+      "timeout_seconds": 60,
+      "heartbeat_timeout_seconds": 15,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "input": "qmp-keyboard",
+        "postcondition": "prompt-recovered"
+      },
+      "preconditions": "imagem pronta, teclado virtual e Shell inicializados",
+      "action": "abrir o Shell com Enter e enviar comandos somente leitura por QMP",
+      "expected": "o observer confirma texto gerado pelo caminho real de entrada e retorno ao prompt",
+      "errors": "dispatcher ausente, entrada perdida, prompt preso, timeout, protocolo ou QEMU",
+      "effects": "somente texto e estado de diagnostico no snapshot",
+      "cleanup": "encerrar o QEMU e preservar script, serial, QMP e resultado",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox",
+        "c:src/drivers/video.c:video_test_copy_terminal",
+        "api:src/include/core/video.h:video_terminal_is_active",
+        "api:src/include/process/process.h:process_yield"
+      ],
+      "tags": [
+        "qemu",
+        "smoke",
+        "tst5",
+        "shell"
+      ],
+      "interaction": {
+        "mode": "qmp-keyboard",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "echo tst5-shell"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "uptime"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "echo tst5-shell"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
+    },
+    {
+      "id": "qemu:tst5:storage",
+      "scenario": "Caminho black-box de VFS, mounts, procfs e descritores",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:storage",
+      "timeout_seconds": 90,
+      "heartbeat_timeout_seconds": 15,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "input": "qmp-keyboard",
+        "fixture": "readonly",
+        "postcondition": "storage-state-preserved"
+      },
+      "preconditions": "VFS e filesystems virtuais estao READY",
+      "action": "consultar cwd, mounts e procfs sem escrita destrutiva",
+      "expected": "leituras terminam, descritores sao liberados e o marcador volta ao prompt",
+      "errors": "escrita inesperada, descritor residual, mount preso, timeout, protocolo ou QEMU",
+      "effects": "somente leituras no armazenamento da imagem em snapshot",
+      "cleanup": "encerrar o QEMU sem modificar a imagem base",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox",
+        "c:src/drivers/video.c:video_test_copy_terminal",
+        "api:src/include/core/video.h:video_terminal_is_active",
+        "api:src/include/process/process.h:process_yield"
+      ],
+      "tags": [
+        "qemu",
+        "smoke",
+        "tst5",
+        "storage"
+      ],
+      "interaction": {
+        "mode": "qmp-keyboard",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "pwd"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "mount"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "ls"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "echo tst5-storage"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
+    },
+    {
+      "id": "qemu:tst5:update-recovery",
+      "scenario": "Caminho black-box de verificacao, cancelamento e recuperacao de atualizacao",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:update-recovery",
+      "timeout_seconds": 90,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "input": "qmp-keyboard",
+        "fixture": "readonly-update",
+        "postcondition": "update-recovered"
+      },
+      "preconditions": "fixture de atualizacao somente leitura e Shell estao disponiveis",
+      "action": "consultar o updater, cancelar a operacao e verificar retorno ao prompt",
+      "expected": "a operacao nao grava a imagem base e a recuperacao publica o marcador final",
+      "errors": "staging destrutivo, rollback ausente, estado residual, timeout, protocolo ou QEMU",
+      "effects": "fixture e snapshot isolados, sem escrita no hospedeiro",
+      "cleanup": "descartar o snapshot e preservar manifestos e logs",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox",
+        "c:src/drivers/video.c:video_test_copy_terminal",
+        "api:src/include/core/video.h:video_terminal_is_active",
+        "api:src/include/process/process.h:process_yield"
+      ],
+      "tags": [
+        "qemu",
+        "smoke",
+        "tst5",
+        "update",
+        "recovery"
+      ],
+      "interaction": {
+        "mode": "qmp-keyboard",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "update"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "key",
+            "key": "esc"
+          },
+          {
+            "op": "text",
+            "text": "echo tst5-update"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
     }
   ],
   "retired": [

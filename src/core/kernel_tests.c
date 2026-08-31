@@ -28,6 +28,16 @@ int kernel_tests_phase_result(const char* phase, int result) {
     return result;
 }
 
+int kernel_tests_report_phase(const kernel_tests_runtime_t* runtime,
+                              const char* phase, int result) {
+    int reported = kernel_tests_phase_result(phase, result);
+
+    if (runtime && runtime->report_phase) {
+        runtime->report_phase(runtime->context, phase, reported);
+    }
+    return reported;
+}
+
 typedef struct {
     memory_heap_stats_t heap;
     memory_pmm_stats_t pmm;
