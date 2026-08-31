@@ -2562,7 +2562,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `net_packet` em `0/8` ativos e sem falhas; `memcheck` e `regcheck full`
   permaneceram em `OK`.
 
-- Roadmap 17: migração gradual do ZephyrOS para Rust documentada.
+- Antigo Roadmap 17: migração gradual do ZephyrOS para Rust documentada.
   Concluída em: 2026-08-28 22:51 (America/Sao_Paulo).
   Criado o roadmap independente `pos-1.0.0-migracao-rust.md`, com marco
   pós-1.0.0, fases RUST0-RUST7, mapa de módulos candidatos, contrato C/Rust,
@@ -2640,7 +2640,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   marcada como concluída nos roadmaps; a listagem positiva de um processo ring
   3 vivo não foi possível porque nenhum processo desse tipo permaneceu ativo.
 
-- Roadmap 17: critérios da migração gradual para Rust atualizados.
+- Antigo Roadmap 17: critérios da migração gradual para Rust atualizados.
   Concluída em: 2026-08-29 10:22 (America/Sao_Paulo).
   Foram documentadas as camadas `bindings C → helpers/abstrações seguras →
   módulos finais`, a política de `unsafe`, ownership e allocators existentes,
@@ -2649,7 +2649,7 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   bytes. Nenhum código Rust foi migrado e nenhum build foi executado pelo
   agente.
 
-- Roadmap 17: ordem de migração e regras de otimização detalhadas.
+- Antigo Roadmap 17: ordem de migração e regras de otimização detalhadas.
   Concluída em: 2026-08-29 10:28 (America/Sao_Paulo).
   Foram incluídos candidatos concretos do ZephyrOS (`vfs_path.c`,
   validadores de pacotes, `file_index.c`, catálogo, algoritmo de intervalos
@@ -3264,3 +3264,13 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   Esta foi uma atualização documental baseada em revisão arquitetural; não
   houve build, teste executável ou QEMU. Os Roadmaps 01–16 permaneceram
   inalterados.
+
+- Roadmap 17: infraestrutura permanente de teste completo e regressão criada
+  em 2026-08-30 (horário não informado). O documento define catálogo de
+  contratos, testes unitários no host, autotestes do kernel, executor externo
+  de QEMU, protocolo de resultados, fixtures de falha, matriz de hardware,
+  recuperação, limpeza e cobertura por estado/erro/contrato.
+
+  A frente é independente de qualquer versão, release ou reorganização interna.
+  Esta criação foi documental; não houve implementação do executor,
+  build, teste executável ou QEMU.

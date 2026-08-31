@@ -102,6 +102,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [14 - Stack de Rede Avançada](roadmaps/feitos/14-stack-de-rede-avancada.md) | Socket buffers sk_buff zero-copy, sockets AF_UNIX/AF_INET e select/poll |
 | [15 - Introspecção e Pseudo-Filesystems](roadmaps/feitos/15-introspeccao-e-pseudo-fs.md) | Pseudo-filesystems /proc e /sys para diagnósticos, processos e hardware |
 | [16 - Energia e ACPI Avançado](roadmaps/feitos/16-energia-e-acpi-avancado.md) | Loop de CPU idle com HLT, parser ACPI (FADT/MADT), poweroff e reboot |
+| [17 - Testador completo e regressão do sistema](roadmaps/17-testador-completo-e-regressao.md) | Testes unitários, autotestes, QEMU, matriz de hardware e regressão contínua |
 | [Escopo da versão 1.0.0](roadmaps/escopo-v1.0.0.md) | Capacidades obrigatórias, ordem de execução e recursos pós-1.0 |
 | [18 - Kernel, processos e userland básico](roadmaps/18-kernel-processos-e-userland-v1.0.md) | Base de execução, memória, processos, IPC e serviços nativos |
 | [19 - ABI, segurança e permissões](roadmaps/19-abi-seguranca-e-permissoes-v1.0.md) | Isolamento, contratos, capacidades, pacotes e permissões mínimas |
