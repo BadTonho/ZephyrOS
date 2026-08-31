@@ -179,22 +179,31 @@ catálogo.
 
 ### TST5 — Testes black-box e integração no QEMU
 
-- [ ] Executar os casos no QEMU somente depois da validação host-only do
+- A primeira camada prevista para esta fase está concluída e é detalhada em
+  `Implementação atual da TST5` e no checklist de saída abaixo. Os itens que
+  continuam sem marcação representam cobertura adicional além dessa camada e
+  não devem ser confundidos com falhas da implementação validada.
+
+- [x] Executar os casos no QEMU somente depois da validação host-only do
   executor, do protocolo e dos componentes diretamente envolvidos.
-- [ ] Começar cada nova integração com um caso mínimo e estados de progresso
+- [x] Começar cada nova integração com um caso mínimo e estados de progresso
   explícitos, antes de adicionar a suíte completa ou cenários de estresse.
-- [ ] Validar boot, montagem, Shell, comandos, diagnósticos, aplicativos,
+- [x] Validar boot, montagem, Shell, comandos, diagnósticos, aplicativos,
   processos, rede, atualização, reboot, poweroff e recuperação.
-- [ ] Executar os casos somente depois do marcador de boot e manter um
+- [x] Executar os casos somente depois do marcador de boot e manter um
   heartbeat do guest durante operações longas.
-- [ ] Verificar que cada operação termina com sucesso, erro, cancelamento,
+- [x] Verificar que cada operação termina com sucesso, erro, cancelamento,
   timeout ou recurso indisponível sem deixar o prompt, foco ou cena presos.
 - [ ] Repetir ciclos de criação/término, abertura/fechamento, mount/unmount,
   atualização/rollback e entrada/saída.
 - [ ] Comparar invariantes e estados publicados, não somente textos que
   contenham contadores voláteis, PID, ticks ou endereços.
-- [ ] Conservar console.log, relatório, imagem usada e identificação do caso
+- [x] Conservar console.log, relatório, imagem usada e identificação do caso
   para reproduzir cada falha.
+
+Os dois itens sem marcação são objetivos de aprofundamento para a matriz e o
+estresse da TST6, ou para incrementos posteriores de observação estruturada;
+eles não fazem parte do aceite dos nove casos independentes desta camada TST5.
 
 ### TST6 — Matriz de hardware, estresse, falhas e recuperação
 
