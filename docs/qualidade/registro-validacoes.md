@@ -3313,3 +3313,8 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   O agente nao executou build, testes ou QEMU. TST2 permanece pendente da
   confirmacao funcional do usuario; `boot.asm`, `stage2.asm`, App API,
   syscalls, ABI e layouts binarios nao foram alterados.
+
+- Correção do alvo `test-qemu` registrada em 2026-08-30 23:29
+  (America/Sao_Paulo). O `Makefile.local` já fornece o caminho do executável
+  QEMU entre aspas; o alvo deixou de acrescentar aspas externas duplicadas.
+  O agente não executou build, testes ou QEMU após a correção.
