@@ -33,6 +33,7 @@ CASE_TIMEOUT_DEFAULT = 30.0
 SUITE_TIMEOUT_DEFAULT = 300.0
 QMP_TIMEOUT = 2.0
 QEMU_TERMINATE_TIMEOUT = 3.0
+HELLO_RETRY_INTERVAL = 0.5
 FRAME_ALLOWED = set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-.:")
 EVENT_TERMINAL = {"PASS", "FAIL", "SKIP", "BLOCKED"}
 EVENT_FATAL = {"PANIC", "TIMEOUT"}
@@ -391,9 +392,14 @@ class QemuSession:
         if not self.serial:
             raise RunnerError("serial_fechado", "serial_error", True)
         fields = list(fields)
-        if not any(key == "seq" for key, _ in fields):
+        sequence = next((value for key, value in fields if key == "seq"), None)
+        if sequence is None:
             self.host_sequence += 1
             fields.append(("seq", str(self.host_sequence)))
+        else:
+            if not sequence.isdigit() or int(sequence) > 0xFFFFFFFF:
+                raise RunnerError("sequencia_host_invalida", "protocol_error", True)
+            self.host_sequence = int(sequence)
         try:
             self.serial.sendall(build_frame(fields))
         except OSError as error:
@@ -506,8 +512,12 @@ def case_timeout(case: dict[str, Any], default: float) -> float:
 
 def wait_for_ready(session: QemuSession, run_id: str) -> None:
     session.run_id = run_id
-    session.send([("cmd", "HELLO"), ("run", run_id)])
+    hello_sequence = session.host_sequence + 1
+    hello = [("cmd", "HELLO"), ("run", run_id),
+             ("seq", str(hello_sequence))]
+    session.send(hello)
     deadline = time.monotonic() + session.arguments.boot_timeout
+    retry_at = time.monotonic() + HELLO_RETRY_INTERVAL
     while time.monotonic() < deadline:
         for event in session.pump():
             if event.get("event") == "READY" and event.get("run") == run_id:
@@ -515,6 +525,9 @@ def wait_for_ready(session: QemuSession, run_id: str) -> None:
             if event.get("event") in EVENT_FATAL:
                 termination = "panic" if event.get("event") == "PANIC" else "timeout"
                 raise RunnerError("guest_fatal_no_boot", termination)
+        if time.monotonic() >= retry_at:
+            session.send(hello)
+            retry_at = time.monotonic() + HELLO_RETRY_INTERVAL
         time.sleep(0.01)
     raise RunnerError("boot_ready_timeout", "timeout")
 
