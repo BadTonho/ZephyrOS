@@ -3509,3 +3509,43 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   aceitar esperas declarativas limitadas para transicoes de cenas. A TST5 foi
   marcada como validada para os nove casos previstos; TST6 e TST7 permanecem
   pendentes.
+
+- TST6: implementacao e validacao final executadas em 2026-08-31 19:06
+  (America/Sao_Paulo). Foram adicionados o runner host-only com perfis QEMU
+  allowlisted, seeds reproduziveis, limites de 1.000 iteracoes e 600 segundos,
+  os perfis isolados em snapshot, o harness interno `kernel_tests_tst6.c`, os
+  20 casos independentes no catalogo e os alvos Makefile correspondentes. Nao
+  houve alteracao de bootloader, headers publicos, ABI ou protocolo ZTEST.
+
+  Passaram `make test-qemu-selftest`, `make test-tst6-host`, `make q3check`,
+  `make clean`, `make`, `make catalog-test` e os 20 alvos QEMU individuais.
+  Os quatro casos de estresse passaram com oito iteracoes. As execucoes finais
+  produziram `READY -> HEARTBEAT -> BEGIN -> PASS`, e cada diretorio preservou
+  `manifest.json`, `serial.log`, `qemu.stdout.log`, `qemu.stderr.log`,
+  `input.log`, `qmp-events.log`, screenshots disponiveis e `result.json`.
+  A verificacao automatica confirmou 20/20 resultados com `status=PASS`,
+  `last_state=PASS`, ordem inicial de eventos valida e nenhum processo QEMU
+  residual.
+
+  Os artefatos finais foram preservados em:
+  `qemu-20260831T215120Z-25500`, `qemu-20260831T215153Z-19048`,
+  `qemu-20260831T215214Z-15972`, `qemu-20260831T215236Z-20676`,
+  `qemu-20260831T215307Z-19148`, `qemu-20260831T215342Z-8276`,
+  `qemu-20260831T215404Z-11068`, `qemu-20260831T215426Z-16792`,
+  `qemu-20260831T215457Z-3356`, `qemu-20260831T215539Z-20680`,
+  `qemu-20260831T215826Z-14544`, `qemu-20260831T215903Z-4840`,
+  `qemu-20260831T215951Z-6784`, `qemu-20260831T220204Z-1652`,
+  `qemu-20260831T220244Z-8928`, `qemu-20260831T220319Z-14620`,
+  `qemu-20260831T220341Z-13476`, `qemu-20260831T220411Z-24812`,
+  `qemu-20260831T220432Z-1984` e `qemu-20260831T220454Z-6432`, todos sob
+  `build/test-results/`.
+
+  Durante a rodada final, `fault:block` atingiu o watchdog com 20 segundos
+  enquanto o autoteste de storage ainda estava executando; o resultado
+  `qemu-20260831T220013Z-12660` foi preservado como diagnostico. O padrao
+  TST6 foi ajustado para 60 segundos e a repeticao passou em
+  `qemu-20260831T220204Z-1652`. A rede dos perfis network foi executada com
+  backend QEMU user-mode restrito (`restrict=on`), sem encaminhamento externo.
+  Package/update validaram os contratos de failpoint e indisponibilidade da
+  imagem FAT32; uma mutacao transacional real permanece dependente de fixture
+  FAT12 mutavel. Hardware fisico continua `BLOCKED` por ausencia de equipamento.

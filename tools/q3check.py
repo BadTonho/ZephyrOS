@@ -28,7 +28,7 @@ FUNCTION_RE = re.compile(
     r"(?m)^[ \t]*(?:static\s+)?(?:inline\s+)?int\s+"
     r"([A-Za-z_][A-Za-z0-9_]*)\s*\([^;{}]*\)\s*\{"
 )
-LOG_RE = re.compile(r"\bLOG_(?:ERROR|WARN)\s*\(")
+LOG_RE = re.compile(r"\bLOG_(?:ERROR|WARN)(?:_CODE)?\s*\(")
 CATALOG_ROW_RE = re.compile(r"^\|\s*`([^`]+)`\s*\|\s*`([^`]+)`\s*\|")
 METRIC_RECORD_RE = re.compile(r"(?m)^### (\d{4}-\d{2}-\d{2} - .+)$")
 METRIC_FIELDS = (

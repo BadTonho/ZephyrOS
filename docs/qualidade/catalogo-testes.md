@@ -4,15 +4,15 @@
 
 ## Resumo
 
-- Superfícies ativas: **6792**
-- Casos de teste: **16**
+- Superfícies ativas: **6808**
+- Casos de teste: **36**
 - Superfícies aposentadas: **18**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1410 |
 | `asm_entry` | 101 |
-| `c_function` | 5161 |
+| `c_function` | 5177 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
@@ -21,11 +21,11 @@
 | `BLOCKED` | 0 |
 | `COVERED` | 17 |
 | `MANUAL` | 0 |
-| `PENDING` | 6775 |
+| `PENDING` | 6791 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 16 |
+| `AUTOMATED` | 36 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -37,7 +37,7 @@
 | `apps` | 128 |
 | `appstore` | 83 |
 | `boot` | 129 |
-| `core` | 2568 |
+| `core` | 2584 |
 | `desktop` | 39 |
 | `drivers` | 871 |
 | `filemanager` | 92 |
@@ -2548,6 +2548,22 @@
 | `c:src/core/kernel_tests_storage.c:storage_check_sysfs` | `src/core/kernel_tests_storage.c` | `storage_check_sysfs` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_storage.c:storage_check_sysfs_flag` | `src/core/kernel_tests_storage.c` | `storage_check_sysfs_flag` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_storage.c:storage_check_vfs` | `src/core/kernel_tests_storage.c` | `storage_check_vfs` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_tst6.c:kernel_tests_run_tst6` | `src/core/kernel_tests_tst6.c` | `kernel_tests_run_tst6` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_tst6.c:tst6_check_ready` | `src/core/kernel_tests_tst6.c` | `tst6_check_ready` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_tst6.c:tst6_equals` | `src/core/kernel_tests_tst6.c` | `tst6_equals` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_tst6.c:tst6_length` | `src/core/kernel_tests_tst6.c` | `tst6_length` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_tst6.c:tst6_package_failure_contract` | `src/core/kernel_tests_tst6.c` | `tst6_package_failure_contract` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_tst6.c:tst6_run_domain` | `src/core/kernel_tests_tst6.c` | `tst6_run_domain` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_tst6.c:tst6_run_execution` | `src/core/kernel_tests_tst6.c` | `tst6_run_execution` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_tst6.c:tst6_run_fault` | `src/core/kernel_tests_tst6.c` | `tst6_run_fault` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_tst6.c:tst6_run_matrix` | `src/core/kernel_tests_tst6.c` | `tst6_run_matrix` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_tst6.c:tst6_run_memory` | `src/core/kernel_tests_tst6.c` | `tst6_run_memory` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_tst6.c:tst6_run_network` | `src/core/kernel_tests_tst6.c` | `tst6_run_network` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_tst6.c:tst6_run_platform` | `src/core/kernel_tests_tst6.c` | `tst6_run_platform` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_tst6.c:tst6_run_storage` | `src/core/kernel_tests_tst6.c` | `tst6_run_storage` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_tst6.c:tst6_run_stress` | `src/core/kernel_tests_tst6.c` | `tst6_run_stress` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_tst6.c:tst6_suffix` | `src/core/kernel_tests_tst6.c` | `tst6_suffix` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_tst6.c:tst6_update_failure_contract` | `src/core/kernel_tests_tst6.c` | `tst6_update_failure_contract` | `core` | `PENDING` | 0 |
 | `c:src/core/log.c:log_append_char` | `src/core/log.c` | `log_append_char` | `core` | `PENDING` | 0 |
 | `c:src/core/log.c:log_append_text` | `src/core/log.c` | `log_append_text` | `core` | `PENDING` | 0 |
 | `c:src/core/log.c:log_clear_buffer` | `src/core/log.c` | `log_clear_buffer` | `core` | `PENDING` | 0 |
@@ -6894,6 +6910,26 @@
 | `qemu:tst5:shell` | `qemu` | `smoke` | `qemu:tst5:shell` | `AUTOMATED` | 60 | 15 | `snapshot` | `quality` | `qemu` | imagem pronta, teclado virtual e Shell inicializados | abrir o Shell com Enter e enviar comandos somente leitura por QMP | o observer confirma texto gerado pelo caminho real de entrada e retorno ao prompt | dispatcher ausente, entrada perdida, prompt preso, timeout, protocolo ou QEMU | somente texto e estado de diagnostico no snapshot | encerrar o QEMU e preservar script, serial, QMP e resultado |
 | `qemu:tst5:storage` | `qemu` | `smoke` | `qemu:tst5:storage` | `AUTOMATED` | 90 | 15 | `snapshot` | `quality` | `qemu` | VFS e filesystems virtuais estao READY | consultar cwd, mounts e procfs sem escrita destrutiva | leituras terminam, descritores sao liberados e o marcador volta ao prompt | escrita inesperada, descritor residual, mount preso, timeout, protocolo ou QEMU | somente leituras no armazenamento da imagem em snapshot | encerrar o QEMU sem modificar a imagem base |
 | `qemu:tst5:update-recovery` | `qemu` | `smoke` | `qemu:tst5:update-recovery` | `AUTOMATED` | 90 | 20 | `snapshot` | `quality` | `qemu` | fixture de atualizacao somente leitura e Shell estao disponiveis | consultar o updater, cancelar a operacao e verificar retorno ao prompt | a operacao nao grava a imagem base e a recuperacao publica o marcador final | staging destrutivo, rollback ausente, estado residual, timeout, protocolo ou QEMU | fixture e snapshot isolados, sem escrita no hospedeiro | descartar o snapshot e preservar manifestos e logs |
+| `qemu:tst6:fault:block` | `qemu` | `tst6` | `qemu:tst6:fault:block` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | block e seus failpoints internos estao disponiveis | executar o caso TST6 uma vez no perfil baseline | a falha controlada retorna o erro esperado e o armazenamento permanece utilizavel | falha inesperada, recurso residual, timeout, protocolo ou QEMU | somente estado temporario do backend simulado em snapshot | limpar o failpoint e validar filas, locks e cache antes do encerramento |
+| `qemu:tst6:fault:block-cache` | `qemu` | `tst6` | `qemu:tst6:fault:block-cache` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | block-cache e seus failpoints internos estao disponiveis | executar o caso TST6 uma vez no perfil baseline | a falha controlada retorna o erro esperado e o cache volta ao estado saudavel | falha inesperada, recurso residual, timeout, protocolo ou QEMU | somente entradas temporarias do cache simulado em snapshot | limpar o failpoint e validar filas, locks e entradas do cache |
+| `qemu:tst6:fault:memory` | `qemu` | `tst6` | `qemu:tst6:fault:memory` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | paging, heap, PMM e SLAB estao READY | executar o autoteste de memoria e os caminhos negativos controlados | a falha esperada e limpa sem alterar invariantes estaveis | pagina presa, contador residual, overflow, timeout, protocolo ou QEMU | alocacoes temporarias de memoria do autoteste em snapshot | devolver paginas, destruir caches temporarios e validar contadores |
+| `qemu:tst6:fault:network` | `qemu` | `tst6` | `qemu:tst6:fault:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e validadores de rede estao disponiveis | executar os validadores offline e os caminhos de falha de rede | a falha esperada retorna o erro canonico e todos os objetos sao liberados | conexao externa, estado incoerente, vazamento, timeout, protocolo ou QEMU | buffers, sockets e rotas temporarios no snapshot | fechar sockets, limpar filas e confirmar estado offline coerente |
+| `qemu:tst6:fault:package` | `qemu` | `tst6` | `qemu:tst6:fault:package` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | App Store e seu estado de diagnostico estao READY | validar o armamento invalido do failpoint e o retorno ao estado normal | ERR_INVALID e publicado para armamento invalido e uma consulta posterior passa | mutacao residual, erro incorreto, timeout, protocolo ou QEMU | somente diagnostico e fixture de pacote em snapshot | confirmar que nenhuma mutacao ou transacao ficou pendente |
+| `qemu:tst6:fault:process` | `qemu` | `tst6` | `qemu:tst6:fault:process` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | processos, threads, filas e IPC estao READY | executar falha controlada do caminho de processo e depois o self-test normal | o processo e recursos associados sao coletados sem residuos | thread presa, waiter residual, estado incoerente, timeout, protocolo ou QEMU | objetos temporarios de processo e IPC em snapshot | cancelar, coletar e validar processos, threads, filas e mensagens |
+| `qemu:tst6:fault:recovery` | `qemu` | `tst6` | `qemu:tst6:fault:recovery` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage e rotinas de recuperacao estao READY | executar a sequencia de falha, limpeza e operacao normal posterior | a recuperacao termina com estado saudavel e sem recurso residual | rollback incompleto, lock preso, estado residual, timeout, protocolo ou QEMU | fixtures temporarios no snapshot isolado | confirmar o estado baseline antes de encerrar a instancia |
+| `qemu:tst6:fault:update` | `qemu` | `tst6` | `qemu:tst6:fault:update` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | runtime de atualizacao e seu journal estao READY | validar o armamento invalido do failpoint e consultar o estado recuperado | ERR_INVALID e publicado para armamento invalido e transaction_pending permanece falso | journal residual, rollback incompleto, timeout, protocolo ou QEMU | fixture de atualizacao somente no snapshot | confirmar que journal, rollback e transacao permanecem limpos |
+| `qemu:tst6:matrix:audio` | `qemu` | `tst6` | `qemu:tst6:matrix:audio` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece AC97 com backend de audio nulo | validar o estado publicado de audio e os servicos de plataforma | audio disponivel ou degradado de forma coerente e sem tocar hardware real | estado publicado incoerente, reset, poweroff, timeout, protocolo ou QEMU | apenas inventario e estado de driver no snapshot | validar que nenhum recurso de audio ficou reservado |
+| `qemu:tst6:matrix:baseline` | `qemu` | `tst6` | `qemu:tst6:matrix:baseline` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU baseline fornece ACPI, PCI, VGA e NIC E1000 isolada | validar a matriz completa de capacidades publicadas pelo guest | capacidades esperadas estao coerentes e nenhuma fila ou recurso sobra | capacidade ausente, estado incoerente, timeout, protocolo ou QEMU | somente inventario e validadores internos em snapshot | encerrar a instancia e preservar todos os artefatos |
+| `qemu:tst6:matrix:display` | `qemu` | `tst6` | `qemu:tst6:matrix:display` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece VGA Cirrus sem framebuffer real | validar display, fallback e estado de plataforma | o caminho suportado ou degradado e publicado sem falha inconsistente | video indisponivel sem estado coerente, timeout, protocolo ou QEMU | somente estado de video no snapshot | liberar o estado temporario de display |
+| `qemu:tst6:matrix:minimal` | `qemu` | `tst6` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU inicia sem ACPI e sem NIC | validar os estados ausentes e degradados do perfil minimo | recursos opcionais ausentes publicam ERR_UNAVAILABLE de forma coerente | ausencia confundida com sucesso, estado incoerente, timeout, protocolo ou QEMU | somente estados de capacidade no snapshot | encerrar o guest sem recursos residuais |
+| `qemu:tst6:matrix:network` | `qemu` | `tst6` | `qemu:tst6:matrix:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 presente com backend user-mode sem encaminhamento | validar buffers, sockets, rotas e estados offline | a interface e a pilha publicam estado coerente sem conexao externa | conexao externa, estado incoerente, vazamento, timeout, protocolo ou QEMU | somente buffers e estruturas de rede temporarias | fechar sockets e devolver buffers e rotas ao estado inicial |
+| `qemu:tst6:matrix:pci` | `qemu` | `tst6` | `qemu:tst6:matrix:pci` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | inventario PCI e dispositivo virtual esperado estao disponiveis | validar inventario e estados dos dispositivos sem acesso externo | o inventario e consistente e recursos temporarios sao liberados | dispositivo duplicado, inventario incoerente, timeout, protocolo ou QEMU | somente leitura do inventario PCI | encerrar a instancia e preservar o inventario observado |
+| `qemu:tst6:matrix:usb-hid` | `qemu` | `tst6` | `qemu:tst6:matrix:usb-hid` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | controladora USB e dispositivos HID virtuais estao presentes | validar inventario e estados de input USB sem Shell | HID e publicado como pronto ou degradado de forma coerente | fila presa, estado incoerente, timeout, protocolo ou QEMU | somente estado de input no snapshot | drenar filas e encerrar a controladora virtual |
+| `qemu:tst6:matrix:usb-storage` | `qemu` | `tst6` | `qemu:tst6:matrix:usb-storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | fixture de armazenamento e controladora USB somente leitura existem | validar storage, block-cache e inventario do dispositivo USB | leituras passam, escritas destrutivas nao ocorrem e o estado retorna ao baseline | escrita real, fixture ausente, cache residual, timeout, protocolo ou QEMU | fixture raw somente leitura anexado ao snapshot | desmontar o dispositivo e preservar logs e manifesto |
+| `qemu:tst6:stress:apps` | `qemu` | `tst6` | `qemu:tst6:stress:apps` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | Shell hospedado e estados de processo estao READY | repetir o ciclo de aplicacoes com teto explicito de iteracoes | cada ciclo termina, restaura a cena e nao deixa threads ou filas | falha na primeira iteracao, recurso residual, timeout, protocolo ou QEMU | somente cenas e objetos temporarios no snapshot | fechar cenas, coletar processos e preservar o primeiro erro |
+| `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
+| `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
+| `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 
 ## Superfícies sem caso associado
 
@@ -9365,6 +9401,22 @@
 - `c:src/core/kernel_tests_storage.c:storage_check_sysfs`
 - `c:src/core/kernel_tests_storage.c:storage_check_sysfs_flag`
 - `c:src/core/kernel_tests_storage.c:storage_check_vfs`
+- `c:src/core/kernel_tests_tst6.c:kernel_tests_run_tst6`
+- `c:src/core/kernel_tests_tst6.c:tst6_check_ready`
+- `c:src/core/kernel_tests_tst6.c:tst6_equals`
+- `c:src/core/kernel_tests_tst6.c:tst6_length`
+- `c:src/core/kernel_tests_tst6.c:tst6_package_failure_contract`
+- `c:src/core/kernel_tests_tst6.c:tst6_run_domain`
+- `c:src/core/kernel_tests_tst6.c:tst6_run_execution`
+- `c:src/core/kernel_tests_tst6.c:tst6_run_fault`
+- `c:src/core/kernel_tests_tst6.c:tst6_run_matrix`
+- `c:src/core/kernel_tests_tst6.c:tst6_run_memory`
+- `c:src/core/kernel_tests_tst6.c:tst6_run_network`
+- `c:src/core/kernel_tests_tst6.c:tst6_run_platform`
+- `c:src/core/kernel_tests_tst6.c:tst6_run_storage`
+- `c:src/core/kernel_tests_tst6.c:tst6_run_stress`
+- `c:src/core/kernel_tests_tst6.c:tst6_suffix`
+- `c:src/core/kernel_tests_tst6.c:tst6_update_failure_contract`
 - `c:src/core/log.c:log_append_char`
 - `c:src/core/log.c:log_append_text`
 - `c:src/core/log.c:log_clear_buffer`

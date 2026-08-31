@@ -140,6 +140,7 @@ static int protocol_run_case(void* context, const char* case_id,
     static const char network_case[] = "qemu:tst4:network";
     static const char platform_case[] = "qemu:tst4:platform";
     static const char tst5_prefix[] = "qemu:tst5:";
+    static const char tst6_prefix[] = "qemu:tst6:";
     kernel_tests_runtime_t runtime;
 
     (void)context;
@@ -185,6 +186,11 @@ static int protocol_run_case(void* context, const char* case_id,
         protocol_token_equals(case_id, protocol_length(tst5_prefix), tst5_prefix)) {
         if (!protocol_boot_ready) return ERR_STATE;
         return kernel_tests_run_tst5_blackbox(&runtime, case_id, case_length);
+    }
+    if (case_length > protocol_length(tst6_prefix) &&
+        protocol_token_equals(case_id, protocol_length(tst6_prefix), tst6_prefix)) {
+        if (!protocol_boot_ready) return ERR_STATE;
+        return kernel_tests_run_tst6(&runtime, case_id, case_length);
     }
     return ERR_NOT_FOUND;
 }

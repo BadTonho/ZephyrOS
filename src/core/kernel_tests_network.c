@@ -146,31 +146,45 @@ int kernel_tests_run_network(const kernel_tests_runtime_t* runtime) {
     if (result != OK) {
         return kernel_tests_phase_result("fase=network-net-buffer", result);
     }
+    result = kernel_tests_progress(runtime);
+    if (result != OK) return result;
     result = skb_self_test();
     if (result == OK) result = skb_validate_state();
     if (result != OK) {
         return kernel_tests_phase_result("fase=network-skb", result);
     }
+    result = kernel_tests_progress(runtime);
+    if (result != OK) return result;
     result = network_check_socket();
     if (result != OK) {
         return kernel_tests_phase_result("fase=network-socket", result);
     }
+    result = kernel_tests_progress(runtime);
+    if (result != OK) return result;
     result = network_check_net_socket();
     if (result != OK) {
         return kernel_tests_phase_result("fase=network-net-socket", result);
     }
+    result = kernel_tests_progress(runtime);
+    if (result != OK) return result;
     result = network_check_route();
     if (result != OK) {
         return kernel_tests_phase_result("fase=network-route", result);
     }
+    result = kernel_tests_progress(runtime);
+    if (result != OK) return result;
     result = crypto_self_test();
     if (result != OK) {
         return kernel_tests_phase_result("fase=network-crypto", result);
     }
+    result = kernel_tests_progress(runtime);
+    if (result != OK) return result;
     result = network_check_tls();
     if (result != OK) {
         return kernel_tests_phase_result("fase=network-tls", result);
     }
+    result = kernel_tests_progress(runtime);
+    if (result != OK) return result;
     result = network_check_validators();
     if (result != OK) {
         return kernel_tests_phase_result("fase=network-validators", result);

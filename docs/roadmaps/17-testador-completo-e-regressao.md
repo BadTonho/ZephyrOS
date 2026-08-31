@@ -11,9 +11,10 @@ que uma função nova ou uma alteração de código quebrar um comportamento
 existente.
 
 O catálogo canônico, o sincronizador e a visão Markdown foram criados e
-validados pelo alvo host-only `make catalog-test`. A primeira camada da TST5
-foi implementada e validada no QEMU; TST6 e TST7 continuam planejadas para
-hardware/stress e regressao continua.
+validados pelo alvo host-only `make catalog-test`. A TST5 e a camada QEMU da
+TST6 foram implementadas e validadas; TST7 continua planejada para regressao
+continua. Hardware físico permanece `BLOCKED` enquanto não houver equipamento
+e evidência correspondente.
 
 ## Objetivo
 
@@ -205,31 +206,14 @@ Os dois itens sem marcação são objetivos de aprofundamento para a matriz e o
 estresse da TST6, ou para incrementos posteriores de observação estruturada;
 eles não fazem parte do aceite dos nove casos independentes desta camada TST5.
 
-### TST6 — Matriz de hardware, estresse, falhas e recuperação
+### TST6 — Status consolidado
 
-- [ ] Executar perfis Simple e Classic.
-- [ ] Executar perfis com e sem ACPI, NIC, USB HID, VESA, áudio, Storage
-  adicional e dispositivos PCI opcionais.
-- [ ] Exercitar falta de memória, falta de espaço, erro de leitura/escrita,
-  pacote inválido, manifesto inválido, rede interrompida, dispositivo ausente
-  e operação concorrente.
-- [ ] Criar suítes `stress` e `soak` para executar o sistema já inicializado,
-  com limite configurável de iterações ou duração e modo planejado
-  `--until-failure` para continuar até a primeira falha observável.
-- [ ] Misturar operações seguras em ciclos repetidos, como criação/término de
-  processos, alocação/liberação, I/O VFS, filas, sockets e abertura/fechamento
-  de aplicativos, sem destruir dados ou executar poweroff no perfil completo.
-- [ ] Registrar heartbeat, watchdog, seed reproduzível, caso, perfil e número
-  da iteração; ao primeiro `FAIL`, `PANIC` ou `TIMEOUT`, preservar o contexto e
-  interromper a suíte contaminada.
-- [ ] Permitir interrupção externa de uma execução indefinida e aplicar um
-  timeout máximo do host para detectar guest congelado ou sem heartbeat.
-- [ ] Testar criação, término, zombie, reaping, reutilização de PID e
-  revalidação de handles, snapshots e callbacks.
-- [ ] Testar interrupção durante staging, boot não saudável, rollback e
-  recuperação sem destruir a única cópia válida.
-- [ ] Manter uma lista explícita do que é suportado, complementar ou
-  `BLOCKED` por ausência de hardware real.
+A camada TST6 prevista para o ambiente QEMU está concluída: matriz de perfis,
+estresse limitado e falhas controladas foram executados nos 20 casos
+independentes. O checklist canônico de saída e as evidências estão em
+`## Implementacao atual da TST6`, abaixo. Hardware físico permanece
+explicitamente `BLOCKED` por ausência de equipamento e não é contado como
+validação QEMU.
 
 ### TST7 — Regressão contínua e cobertura
 
@@ -487,9 +471,9 @@ foram, respectivamente, `qemu-20260831T182652Z-11896`,
   validou 6780 superfícies e 7 casos.
 
 TST4 está concluída para as camadas memory/SLAB, paging/VMA, execution,
-storage/VFS, network e platform. TST5, TST6 e TST7 permanecem pendentes por
-serem camadas posteriores de integração black-box, matriz de hardware/stress e
-regressão contínua.
+storage/VFS, network e platform. TST5 e a camada QEMU da TST6 foram validadas
+nas seções abaixo; TST7 permanece pendente por ser a camada de regressão
+contínua.
 
 ## Implementacao atual da TST5
 
@@ -534,6 +518,73 @@ casos no catalogo. As nove execucoes produziram `READY -> HEARTBEAT -> BEGIN
   saida esperada do QEMU.
 - [x] Artefatos e causas de falha foram conferidos em cada uma das nove
   execucoes.
+
+## Implementacao atual da TST6
+
+A TST6 foi implementada em 20 casos QEMU independentes, sem alvo agregado,
+retry automático ou loop sem teto. O runner `tools/qemu_test_runner.py` agora
+usa perfis QEMU allowlisted (`baseline`, `minimal`, `network`, `usb-hid`,
+`usb-storage`, `audio`, `display` e `pci`), snapshot por execução, seed
+reproduzível, rastreamento de fase/eventos QMP/capacidades e artefatos
+completos. `--until-failure` exige `--max-iterations` ou `--duration`; toda
+execução respeita no máximo 1.000 iterações e 600 segundos. Os alvos de
+estresse usam oito iterações e teto de suíte configurável, com padrão de
+300 segundos.
+
+O harness interno `src/core/kernel_tests_tst6.c` integra os domínios já
+testáveis do kernel, interrompe no primeiro erro e registra fase/código antes
+da publicação do resultado. Os failpoints one-shot existentes de block e
+block-cache são exercitados sem alterar o boot normal. Os casos de pacote e
+runtime validam o armamento inválido e o contrato de estado indisponível
+quando a imagem FAT32 não oferece transação mutável; a imagem usada nesta
+execução não permite declarar uma mutação transacional real como coberta.
+Nenhum header público, ABI, bootloader ou evento ZTEST foi alterado.
+
+Os casos implementados são:
+
+```text
+qemu:tst6:matrix:baseline       qemu:tst6:matrix:minimal
+qemu:tst6:matrix:network       qemu:tst6:matrix:usb-hid
+qemu:tst6:matrix:usb-storage   qemu:tst6:matrix:audio
+qemu:tst6:matrix:display       qemu:tst6:matrix:pci
+qemu:tst6:stress:kernel        qemu:tst6:stress:storage
+qemu:tst6:stress:network       qemu:tst6:stress:apps
+qemu:tst6:fault:memory         qemu:tst6:fault:block
+qemu:tst6:fault:block-cache    qemu:tst6:fault:package
+qemu:tst6:fault:update         qemu:tst6:fault:network
+qemu:tst6:fault:process        qemu:tst6:fault:recovery
+```
+
+Validação executada em 2026-08-31 (America/Sao_Paulo): `make test-qemu-selftest`,
+`make test-tst6-host`, `make q3check`, `make clean`, `make`, os 20 alvos acima
+executados individualmente e `make catalog-test`. Os 20 casos produziram
+`READY -> HEARTBEAT -> BEGIN -> PASS`; as execuções preservaram manifesto,
+serial, stdout/stderr do QEMU, eventos QMP, screenshots disponíveis e
+`result.json`. A tentativa inicial de `matrix:network` falhou pelo watchdog
+de 20 segundos e foi preservada; o heartbeat específico da família de rede
+foi ajustado para 60 segundos, e a repetição passou. A primeira configuração
+do estresse de storage atingiu o teto de 60 segundos depois de quatro
+iterações aprovadas; o teto foi corrigido para 300 segundos e as oito
+iterações passaram. Na rodada final, `fault:block` também revelou que o alvo
+estava passando 20 segundos explicitamente; o padrão TST6 foi ajustado para 60
+segundos e a repetição passou. O diagnóstico original foi preservado.
+
+### TST6 — Checklist de saída
+
+- [x] Runner host-only com perfis allowlisted, seeds, limites, classificação
+  `PASS`/`FAIL`/`BLOCKED` e artefatos por execução.
+- [x] Oito perfis QEMU de matriz executados em snapshot, sem acesso externo,
+  escrita real, reset físico ou efeito no hospedeiro.
+- [x] Quatro casos de estresse executados com oito iterações, teto de suíte e
+  parada na primeira falha.
+- [x] Oito casos de falha controlada/recuperação executados individualmente,
+  incluindo memory, block, block-cache, package, update, network, process e
+  recovery.
+- [x] `make test-tst6-host`, self-test do runner, `q3check`, build limpo e
+  `catalog-test` passaram.
+- [x] Todos os 20 casos QEMU produziram `READY -> HEARTBEAT -> BEGIN -> PASS`.
+- [x] Hardware físico permanece explicitamente `BLOCKED`; não foi simulado
+  como validado.
 
 ## Fora do escopo
 
