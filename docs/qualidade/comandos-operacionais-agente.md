@@ -407,8 +407,37 @@ python tools/qemu_test_runner.py stress --image build/zephyros.img --case qemu:t
 
 O modo indefinido requer `Ctrl+C`. Cada execucao cria um diretorio novo em
 `build/test-results/<run-id>/`, preservando manifesto, checksum, serial e
-logs do QEMU. A confirmacao de TST2 continua pendente ate o usuario executar
-os gates operacionais e o smoke test no QEMU.
+logs do QEMU. A infraestrutura TST2 ja foi validada; para alteracoes novas,
+repita os gates operacionais e o smoke test somente apos a validacao host-only.
+
+## TST3: suite host-only de logica e limites
+
+Os testes da TST3 nao usam hardware, QEMU, allocator real ou tempo real. O
+compilador host e independente do cross-compiler do kernel. Configure `HOST_CC`
+e, para a verificacao sanitizada, `HOST_SANITIZE_CC` em `Makefile.local` ou no
+`PATH`.
+
+```text
+make test-tst3-host
+make test-tst3-sanitize
+make package-test
+make update-test
+```
+
+`test-tst3-host` compila strings e compressao com `-std=c11 -Wall -Wextra
+-Werror`, executa os testes Python formais de packager/updater e roda os
+self-tests existentes. `test-tst3-sanitize` usa Clang/LLVM com ASan/UBSan e
+nao faz fallback para outro compilador. O resultado fica em
+`build/test-results/tst3-host/manifest.json` e `result.json`, com logs dos
+subprocessos; `PASS` retorna 0, `FAIL` retorna 1 e dependencia ausente ou
+runtime sanitizador indisponivel retorna `BLOCKED`/2.
+Cada modo tambem preserva uma copia em `build/test-results/tst3-host/strict/`
+ou `build/test-results/tst3-host/sanitize/`.
+
+O fluxo recomendado para uma alteracao que toque o kernel continua sendo:
+TST3 host-only, gates de qualidade, build limpo e somente entao o QEMU. A
+TST3 cobre nesta camada strings, compressao, empacotamento e atualizacao; VFS,
+paging, processos, drivers e energia permanecem nas fases posteriores.
 
 ## Comandos no Shell
 
