@@ -800,8 +800,6 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     idt_init();
     video_print("[OK] IDT configurada\n", 0x07);
 
-    LOG_WARN("KERNEL", "Recepcao IRQ do COM1 temporariamente desabilitada para diagnostico");
-
     video_print("[..] Iniciando nucleo de entrada...\n", 0x08);
     if (input_init() != OK) {
         LOG_ERROR("KERNEL", "Falha ao inicializar nucleo de entrada");
