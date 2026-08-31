@@ -475,9 +475,45 @@ Cada execucao cria um diretorio novo em `build/test-results/<run-id>/`, com
 `result.json`. O runner encerra o QEMU via QMP e aplica timeout de boot,
 heartbeat e caso; nenhum autoteste pode aguardar indefinidamente.
 
-O caso cobre apenas as invariantes atuais de heap, PMM, memoria detalhada,
-paging pronto e SLAB. Scheduler, processos, VFS, rede, drivers, energia e
-demais subsistemas permanecem fora desta primeira camada.
+O caso cobre as invariantes atuais de heap, PMM, memoria detalhada, paging
+pronto e SLAB. As demais areas possuem casos independentes na camada TST4.2-
+TST4.6.
+
+## TST4.2-TST4.6: autotestes restantes do kernel
+
+Os cinco casos seguintes tambem sao acionados somente por `RUN`, sem Shell,
+bootloader ou conexao de rede real. Cada alvo executa exatamente uma iteracao
+com timeout de boot, caso e heartbeat configuraveis por
+`TST4_QEMU_BOOT_TIMEOUT`, `TST4_QEMU_CASE_TIMEOUT` e
+`TST4_QEMU_HEARTBEAT_TIMEOUT` no `Makefile.local` ou na linha de comando.
+
+```text
+make test-tst4-qemu-paging-vma
+make test-tst4-qemu-execution
+make test-tst4-qemu-storage-vfs
+make test-tst4-qemu-network
+make test-tst4-qemu-platform
+```
+
+O caso `paging-vma` usa fixture ring 3 estatico, `mmap`/`munmap`, faults
+lazy, erros negativos, cancelamento e reaping limitado. `execution` cobre
+threads, scheduler, sinais, wait queues, workqueue e IPC. `storage-vfs`
+exercita block/cache, file index, VFS, descritores, pipes, mounts, devfs,
+procfs e sysfs sem escrita destrutiva. `network` usa somente backends locais
+para buffers, sockets, rotas, protocolos, crypto e TLS. `platform` valida os
+servicos, inventarios, ACPI/energia e dispositivos opcionais sem reset,
+reboot ou poweroff.
+
+A sequencia esperada e `READY -> HEARTBEAT -> BEGIN -> PASS`. Em caso de
+falha, o evento identifica a fase e o codigo canonico. O runner nao repete o
+caso automaticamente e preserva `manifest.json`, `serial.log`,
+`qemu.stdout.log`, `qemu.stderr.log` e `result.json` em
+`build/test-results/<run-id>/`.
+
+Validacao final da TST4.2-TST4.6 em 2026-08-31: os cinco alvos passaram na
+imagem gerada por `make clean` seguido de `make`; `make test-qemu-selftest`,
+`make q3check` e `make catalog-test` tambem passaram. TST5, TST6 e TST7 ainda
+exigem suas proprias matrizes black-box, hardware/stress e regressao continua.
 
 ## Comandos no Shell
 

@@ -5,6 +5,7 @@
 #include "core/spinlock.h"
 #include "core/string.h"
 #include "memory/paging.h"
+#include "../core/kernel_tests.h"
 
 #define KMEM_SLAB_STATE_EMPTY 0U
 #define KMEM_SLAB_STATE_PARTIAL 1U
@@ -13,6 +14,7 @@
 #define KMEM_SLAB_BITMAP_WORDS \
     ((KMEM_SLAB_MAX_OBJECTS + 31U) / 32U)
 #define KMEM_SLAB_TEST_OBJECTS 256U
+#define KMEM_SLAB_TEST_PROGRESS_INTERVAL 16U
 
 typedef struct {
     kmem_cache_t* owner;
@@ -57,6 +59,11 @@ static uint32_t global_allocation_failures;
 static uint32_t global_invalid_frees;
 static uint32_t global_double_frees;
 static uint8_t slab_initialized;
+
+static int slab_test_progress(void) {
+    if (!kernel_tests_active_runtime) return OK;
+    return kernel_tests_progress(kernel_tests_active_runtime);
+}
 
 static void slab_copy_text(char* destination, uint32_t capacity,
                            const char* source) {
@@ -653,6 +660,7 @@ int kmem_cache_self_test(void) {
     uint32_t allocation_failures_before;
     uint32_t invalid_frees_before;
     uint32_t double_frees_before;
+    int progress_result = OK;
     int result;
 
     if (!paging_is_ready()) {
@@ -677,8 +685,12 @@ int kmem_cache_self_test(void) {
         if (!objects[index]) break;
         allocated++;
         if (((uint32_t)objects[index] & 15U) != 0U) external = 1U;
+        if (index % KMEM_SLAB_TEST_PROGRESS_INTERVAL == 0U) {
+            if (progress_result == OK) progress_result = slab_test_progress();
+        }
     }
     result = allocated == KMEM_SLAB_TEST_OBJECTS && !external ? OK : ERR_STATE;
+    if (progress_result != OK) result = progress_result;
     if (kmem_cache_get_info(cache, &info) != OK ||
         info.active_objects != allocated || info.capacity < allocated ||
         info.active_objects != info.capacity || info.slabs < 2U) {
@@ -686,6 +698,10 @@ int kmem_cache_self_test(void) {
     }
     for (index = 0U; index < allocated; index += 2U) {
         kmem_cache_free(cache, objects[index]);
+        if (index % KMEM_SLAB_TEST_PROGRESS_INTERVAL == 0U) {
+            if (progress_result == OK) progress_result = slab_test_progress();
+            if (progress_result != OK) result = progress_result;
+        }
     }
     if (kmem_cache_get_info(cache, &info) != OK ||
         info.active_objects != allocated / 2U ||
@@ -695,6 +711,10 @@ int kmem_cache_self_test(void) {
     for (index = 0U; index < allocated; index += 2U) {
         objects[index] = kmem_cache_alloc(cache);
         if (!objects[index]) result = ERR_STATE;
+        if (index % KMEM_SLAB_TEST_PROGRESS_INTERVAL == 0U) {
+            if (progress_result == OK) progress_result = slab_test_progress();
+            if (progress_result != OK) result = progress_result;
+        }
     }
     if (allocated > 0U) {
         uint32_t value = 0U;
@@ -708,8 +728,13 @@ int kmem_cache_self_test(void) {
             result = ERR_STATE;
         }
     }
-    for (index = 1U; index < allocated; index++) kmem_cache_free(cache,
-                                                                   objects[index]);
+    for (index = 1U; index < allocated; index++) {
+        kmem_cache_free(cache, objects[index]);
+        if (index % KMEM_SLAB_TEST_PROGRESS_INTERVAL == 0U) {
+            if (progress_result == OK) progress_result = slab_test_progress();
+            if (progress_result != OK) result = progress_result;
+        }
+    }
     if (kmem_cache_get_info(cache, &info) != OK || info.active_objects != 0U) {
         result = ERR_STATE;
     }

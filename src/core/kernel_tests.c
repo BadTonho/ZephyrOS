@@ -7,6 +7,27 @@
 
 #define KERNEL_TEST_TAG "TST4"
 
+const kernel_tests_runtime_t* kernel_tests_active_runtime;
+
+int kernel_tests_progress(const kernel_tests_runtime_t* runtime) {
+    if (!runtime || !runtime->progress) return OK;
+    return runtime->progress(runtime->context);
+}
+
+int kernel_tests_phase_result(const char* phase, int result) {
+    if (!phase) {
+        LOG_ERROR(KERNEL_TEST_TAG, "fase nula");
+        LOG_ERROR_CODE(KERNEL_TEST_TAG, ERR_NULL, "fase nula");
+        return ERR_NULL;
+    }
+    if (result != OK) {
+        LOG_ERROR_CODE(KERNEL_TEST_TAG, result, phase);
+    } else {
+        LOG_INFO(KERNEL_TEST_TAG, phase);
+    }
+    return result;
+}
+
 typedef struct {
     memory_heap_stats_t heap;
     memory_pmm_stats_t pmm;
@@ -136,7 +157,8 @@ static int kernel_tests_same_memory_state(
     return OK;
 }
 
-int kernel_tests_run_memory_slab(void) {
+int kernel_tests_run_memory_slab_with_runtime(
+    const kernel_tests_runtime_t* runtime) {
     kernel_tests_memory_snapshot_t before;
     kernel_tests_memory_snapshot_t after;
     int result;
@@ -146,6 +168,8 @@ int kernel_tests_run_memory_slab(void) {
         LOG_ERROR(KERNEL_TEST_TAG, "fase=preconditions codigo=ERR_STATE");
         return ERR_STATE;
     }
+    result = kernel_tests_progress(runtime);
+    if (result != OK) return result;
     result = kernel_tests_capture_memory(&before);
     if (result != OK) {
         LOG_ERROR_CODE(KERNEL_TEST_TAG, result, "fase=memory-before falhou");
@@ -159,12 +183,16 @@ int kernel_tests_run_memory_slab(void) {
         return result;
     }
     LOG_INFO(KERNEL_TEST_TAG, "fase=slab-self-test inicio");
+    kernel_tests_active_runtime = runtime;
     result = kmem_cache_self_test();
+    kernel_tests_active_runtime = 0;
     if (result != OK) {
         LOG_ERROR_CODE(KERNEL_TEST_TAG, result, "fase=slab-self-test falhou");
         return result;
     }
     LOG_INFO(KERNEL_TEST_TAG, "fase=slab-self-test PASS");
+    result = kernel_tests_progress(runtime);
+    if (result != OK) return result;
 
     result = kernel_tests_capture_memory(&after);
     if (result != OK) {
@@ -183,4 +211,8 @@ int kernel_tests_run_memory_slab(void) {
     }
     LOG_INFO(KERNEL_TEST_TAG, "fase=postconditions PASS");
     return OK;
+}
+
+int kernel_tests_run_memory_slab(void) {
+    return kernel_tests_run_memory_slab_with_runtime(0);
 }
