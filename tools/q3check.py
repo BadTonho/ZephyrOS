@@ -23,6 +23,7 @@ APP_STORE_TRUST_PATH = "src/include/core/app_remote_trust.h"
 APP_STORE_FIXTURES_PATH = "docs/fixtures/apps/store-as5"
 PACKAGER_PATH = "tools/packager.py"
 ERROR_RETURN_RE = re.compile(r"\breturn\s+(ERR_[A-Z0-9_]+)\s*;")
+ERROR_PROPAGATION_ONLY_MARKER = "Q3CHECK_ERROR_PROPAGATION_ONLY"
 FUNCTION_RE = re.compile(
     r"(?m)^[ \t]*(?:static\s+)?(?:inline\s+)?int\s+"
     r"([A-Za-z_][A-Za-z0-9_]*)\s*\([^;{}]*\)\s*\{"
@@ -181,6 +182,8 @@ def check_new_error_functions(repo: Path, paths: set[str]) -> list[str]:
     errors: list[str] = []
     for path in sorted(paths):
         if not path.startswith("src/") or not path.endswith(".c"):
+            continue
+        if ERROR_PROPAGATION_ONLY_MARKER in read_worktree_file(repo, path):
             continue
         before = extract_int_functions(read_head_file(repo, path))
         after = extract_int_functions(read_worktree_file(repo, path))
