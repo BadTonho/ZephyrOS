@@ -2,14 +2,14 @@
 
 ## Estado
 
-TST1 concluído; TST2 está implementado e aguarda validação funcional. Esta é uma infraestrutura permanente de qualidade do ZephyrOS,
+TST1 e TST2 concluídos; TST3 em diante permanecem planejados. Esta é uma infraestrutura permanente de qualidade do ZephyrOS,
 independente de versão, linguagem, release ou migração tecnológica. Ela deve
 ser utilizada durante todo o desenvolvimento para detectar regressões assim
 que uma função nova ou uma alteração de código quebrar um comportamento
 existente.
 
 O catálogo canônico, o sincronizador e a visão Markdown foram criados e
-validados pelo alvo host-only `make catalog-test`. As fases TST2 em diante
+validados pelo alvo host-only `make catalog-test`. As fases TST3 em diante
 continuam planejadas.
 
 ## Objetivo
@@ -53,7 +53,7 @@ controlados. O QEMU será reservado para boot, hardware virtualizado e fluxos
 que realmente exigem a integração completa.
 
 O resultado `TIMEOUT` deverá identificar o último estado observável do caso,
-como `BOOT`, `READY`, `RUN_RECEIVED`, `BEGIN` ou `PASS`. Ausência de heartbeat
+como `BOOT`, `READY`, `RUN_SENT`, `BEGIN` ou `PASS`. Ausência de heartbeat
 será tratada como evidência de falta de progresso, não como diagnóstico
 automático da causa. O executor deverá preservar os artefatos e encerrar a
 execução contaminada, sem repetir indefinidamente o mesmo cenário sem nova
@@ -120,25 +120,25 @@ catálogo.
 
 ### TST2 — Executor e protocolo de resultados
 
-- [ ] Testar o executor e o protocolo fora do QEMU com transporte, relógio e
+- [x] Testar o executor e o protocolo fora do QEMU com transporte, relógio e
   resultados falsos antes de depender da comunicação com o guest.
-- [ ] Manter a máquina de estados, o parser e a codificação do protocolo
+- [x] Manter a máquina de estados, o parser e a codificação do protocolo
   separáveis do driver serial sempre que isso for compatível com o contrato.
-- [ ] Tratar `qemu:tst2:boot-ready` como smoke test da infraestrutura do TST2,
+- [x] Tratar `qemu:tst2:boot-ready` como smoke test da infraestrutura do TST2,
   e não como cobertura funcional do sistema inteiro.
-- [ ] Criar um executor no host que prepare a imagem, inicie o guest, aguarde
+- [x] Criar um executor no host que prepare a imagem, inicie o guest, aguarde
   o boot, envie ações e aplique timeout por caso e por suíte.
-- [ ] Capturar console serial, logs do guest, estado de saída do QEMU e
+- [x] Capturar console serial, logs do guest, estado de saída do QEMU e
   artefatos auxiliares sem depender de screenshots.
-- [ ] Definir marcadores estáveis de início, fim, aprovação, falha, salto e
+- [x] Definir marcadores estáveis de início, fim, aprovação, falha, salto e
   bloqueio, `PANIC` e `TIMEOUT`, separados da apresentação humana do Shell.
-- [ ] Emitir relatório agregado com `PASS`, `FAIL`, `SKIP` e `BLOCKED`, causa,
+- [x] Emitir relatório agregado com `PASS`, `FAIL`, `SKIP` e `BLOCKED`, causa,
   duração, versão da imagem, identificação da fixture, seed e iteração quando
   o caso for de estresse.
-- [ ] Garantir que QMP ou o monitor sejam usados somente como controle externo
+- [x] Garantir que QMP ou o monitor sejam usados somente como controle externo
   do teste; nenhum fallback do ZephyrOS dependerá de porta privada do
   emulador.
-- [ ] Isolar cada caso com imagem, fixture ou estado inicial restaurável para
+- [x] Isolar cada caso com imagem, fixture ou estado inicial restaurável para
   evitar contaminação entre testes.
 
 ### TST3 — Testes unitários e de lógica no host
@@ -320,32 +320,35 @@ qualquer caso que o QEMU não reproduza fielmente.
 
 ## Implementacao atual do TST2
 
-A infraestrutura inicial do TST2 foi implementada e permanece pendente de
-validacao funcional no QEMU pelo usuario. O canal machine-readable e COM1;
+A infraestrutura do TST2 foi implementada e validada em host e no QEMU. O
+canal machine-readable e COM1;
 QMP e usado somente para `query-status`, parada e encerramento externos.
 `boot.asm` e `stage2.asm` permanecem inalterados.
 
 - `src/drivers/serial.c` fornece polling COM1, fila TX limitada, filtro ASCII
   e flush sem IRQ ou espera bloqueante.
-- `src/core/test_protocol.c` permanece inerte ate `HELLO` com versao, sequencia
-  e CRC validos e publica `READY`, `HEARTBEAT`, `BEGIN`, `PASS`, `FAIL`,
-  `BLOCKED`, `PANIC` e `TIMEOUT`.
+- `src/core/test_protocol_core.c` concentra o parser incremental, CRC,
+  sequencias, comandos e eventos sem depender de hardware; `src/core/test_protocol.c`
+  permanece como adaptador COM1/timer e publica `READY`, `HEARTBEAT`, `BEGIN`,
+  `PASS`, `FAIL`, `BLOCKED`, `PANIC` e `TIMEOUT`.
+- `tests/unit/test_protocol_core.c`, `tests/unit/test_qemu_test_runner.py` e
+  `tools/tst2_host_runner.py` fornecem o gate host-only com `HOST_CC`, usando
+  transporte, relogio e executor falsos.
 - `tools/qemu_test_runner.py` inicia somente imagem existente com `-snapshot`,
-  captura serial/stdout/stderr, aplica timeouts e watchdog e aceita `run` e
-  `stress` com iteracoes, duracao ou `--until-failure`.
+  captura serial/stdout/stderr, aplica timeouts e watchdog somente apos `BEGIN`,
+  registra estados de progresso e aceita `run` e `stress` com iteracoes,
+  duracao ou `--until-failure`.
 - `build/test-results/<run-id>/` preserva manifesto, checksum, seed, fixture,
   iteracao e `result.json`, separando `status` de `termination`.
-- O caso inicial `qemu:tst2:boot-ready` e os alvos `test-qemu` e
-  `test-qemu-selftest` foram adicionados sem dependencia de build.
+- O caso inicial `qemu:tst2:boot-ready` e os alvos `test-tst2-host`, `test-qemu`
+  e `test-qemu-selftest` foram adicionados; o primeiro usa compilador nativo
+  configurado por `HOST_CC`, separado do cross-compiler do kernel.
 
-A validacao pendente deve primeiro confirmar, em ambiente host-only, o
-protocolo, o executor, os estados de resultado e os artefatos. Depois deve
-confirmar no QEMU apenas o smoke test de boot e handshake, seguido de
-`READY`, `HEARTBEAT` e `PASS` com progresso por estado. Watchdog, timeout,
-fixtures e estresse entram somente depois que o caminho minimo estiver
-reproduzivel. TST2 so sera concluido quando sua infraestrutura estiver
-validada; a cobertura funcional dos subsistemas continuara nas fases TST3 a
-TST7.
+A validação host-only confirmou o núcleo e o executor; `q3check`, o self-test
+do runner e o build limpo também passaram. No QEMU, o smoke test produziu
+`READY`, `HEARTBEAT`, `BEGIN` e `PASS` nessa ordem, sem erros de protocolo, e
+preservou manifesto, serial, logs do QEMU e relatório. TST2 está concluído;
+a cobertura funcional dos subsistemas continuará nas fases TST3 a TST7.
 
 ## Fora do escopo
 

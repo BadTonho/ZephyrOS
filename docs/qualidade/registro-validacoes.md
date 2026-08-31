@@ -3340,3 +3340,31 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `READY`, mas não publicou `HEARTBEAT`, `BEGIN` ou `PASS` antes do watchdog.
   O relatório foi preservado em
   `build/test-results/qemu-20260831T024935Z-22908/`. TST2 permanece pendente.
+
+- TST2: núcleo puro do protocolo, suíte host-only e diagnóstico de progresso
+  concluídos em 2026-08-31 (America/Sao_Paulo). `src/core/test_protocol_core.c`
+  passou a concentrar parser incremental, CRC, sequências, comandos e eventos;
+  `src/core/test_protocol.c` ficou como adaptador de COM1 e timer, mantendo a
+  API pública existente. O alvo `make test-tst2-host` usa `HOST_CC` configurado
+  em `Makefile.local`, separado do cross-compiler freestanding do kernel, e
+  executou 5 testes C e 11 testes Python com resultado `OK`.
+
+  A primeira execução do smoke test terminou sem erro agregado, mas o relatório
+  mostrou `READY -> BEGIN -> PASS` sem heartbeat. A causa foi o término imediato
+  do caso antes do intervalo periódico do guest. O runner passou a enviar
+  `PING` depois de `READY` e a exigir o heartbeat correspondente; o teste Python
+  também cobre a falha artificial de heartbeat após `BEGIN` com estado
+  identificável.
+
+- TST2: validação final executada pelo agente em 2026-08-31 (America/Sao_Paulo).
+  `make test-tst2-host`, `make q3check`, `make q3check-test`, `make clean`,
+  `make` e `make test-qemu` passaram. O smoke test único produziu no artefato
+  `build/test-results/qemu-20260831T150004Z-9904/` os frames `READY seq=1`,
+  `HEARTBEAT seq=2 ticks=237`, `BEGIN seq=3` e `PASS seq=4`, nessa ordem;
+  `result.json` registrou `status=PASS`, `termination=completed`,
+  `last_state=PASS` e `protocol_errors=[]`.
+
+  A execução preservou `manifest.json`, `serial.log`, `qemu.stdout.log`,
+  `qemu.stderr.log` e `result.json`. O build exibiu warnings preexistentes em
+  outros módulos, sem warning novo no protocolo TST2. `boot.asm` e `stage2.asm`
+  permaneceram inalterados.

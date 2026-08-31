@@ -383,6 +383,15 @@ necessario; o ID de `storage check` deve ser copiado literalmente dessa saida.
 
 ## TST2: executor QEMU
 
+Antes de executar o QEMU, valide a infraestrutura host-only. O alvo compila o
+núcleo C do protocolo com `HOST_CC` e executa os testes Python do runner. O
+compilador host não é o cross-compiler usado pelo kernel; configure `HOST_CC`
+no `Makefile.local` ou no `PATH`.
+
+```text
+make test-tst2-host
+```
+
 O runner host-only de TST2 trabalha sobre uma imagem ja compilada e exige
 `build/zephyros.img` presente; ele nao dispara `make`. Os comandos disponiveis
 apos a implementacao sao:

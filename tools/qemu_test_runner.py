@@ -39,8 +39,26 @@ EVENT_TERMINAL = {"PASS", "FAIL", "SKIP", "BLOCKED"}
 EVENT_FATAL = {"PANIC", "TIMEOUT"}
 EVENT_NAMES = {"READY", "HEARTBEAT", "BEGIN", "PASS", "FAIL", "SKIP",
                "BLOCKED", "PANIC", "TIMEOUT"}
+PROGRESS_HISTORY_LIMIT = 32
+PROGRESS_BOOT = "BOOT"
+PROGRESS_HELLO = "HELLO"
+PROGRESS_READY = "READY"
+PROGRESS_RUN_SENT = "RUN_SENT"
+PROGRESS_BEGIN = "BEGIN"
+PROGRESS_RUNNING = "RUNNING"
+PROGRESS_PASS = "PASS"
+PROGRESS_FAIL = "FAIL"
+PROGRESS_SKIP = "SKIP"
+PROGRESS_BLOCKED = "BLOCKED"
+PROGRESS_PANIC = "PANIC"
+PROGRESS_TIMEOUT = "TIMEOUT"
+PROGRESS_TERMINAL = {
+    PROGRESS_PASS, PROGRESS_FAIL, PROGRESS_SKIP, PROGRESS_BLOCKED,
+    PROGRESS_PANIC, PROGRESS_TIMEOUT,
+}
 REPORT_TERMINATIONS = {
     "completed", "panic", "timeout", "qemu_exit", "watchdog", "interrupted",
+    "precondition", "catalog_error",
 }
 
 
@@ -52,6 +70,34 @@ class RunnerError(Exception):
         self.cause = cause
         self.termination = termination
         self.blocked = blocked
+
+
+class ProgressTracker:
+    """Mantem o ultimo estado observavel sem depender do QEMU."""
+
+    def __init__(self) -> None:
+        self.state = PROGRESS_BOOT
+        self.last_event: str | None = None
+        self.history: list[dict[str, str]] = []
+
+    def mark_state(self, state: str) -> None:
+        self.state = state
+
+    def record(self, event: dict[str, str]) -> None:
+        event_name = event.get("event")
+        self.last_event = event_name
+        if event_name == "READY":
+            self.state = PROGRESS_READY
+        elif event_name == "BEGIN":
+            self.state = PROGRESS_BEGIN
+        elif event_name == "HEARTBEAT" and self.state in {
+                PROGRESS_BEGIN, PROGRESS_RUNNING}:
+            self.state = PROGRESS_RUNNING
+        elif event_name in PROGRESS_TERMINAL:
+            self.state = event_name
+        self.history.append(dict(event))
+        if len(self.history) > PROGRESS_HISTORY_LIMIT:
+            del self.history[:-PROGRESS_HISTORY_LIMIT]
 
 
 def resolve_path(value: str | None, default: Path) -> Path:
@@ -306,7 +352,8 @@ class QemuSession:
         self.serial_buffer = bytearray()
         self.protocol_errors: list[str] = []
         self.events: list[dict[str, str]] = []
-        self.last_heartbeat = time.monotonic()
+        self.progress = ProgressTracker()
+        self.last_heartbeat: float | None = None
         self.host_sequence = 0
         self.guest_sequence = 0
         self.run_id: str | None = None
@@ -447,6 +494,7 @@ class QemuSession:
                 continue
             self.guest_sequence = int(event["seq"])
             self.events.append(event)
+            self.progress.record(event)
             if event.get("event") == "HEARTBEAT":
                 self.last_heartbeat = time.monotonic()
         if len(self.serial_buffer) > PROTOCOL_MAX_FRAME:
@@ -512,39 +560,56 @@ def case_timeout(case: dict[str, Any], default: float) -> float:
 
 def wait_for_ready(session: QemuSession, run_id: str) -> None:
     session.run_id = run_id
+    session.progress.mark_state(PROGRESS_HELLO)
     hello_sequence = session.host_sequence + 1
     hello = [("cmd", "HELLO"), ("run", run_id),
              ("seq", str(hello_sequence))]
     session.send(hello)
     deadline = time.monotonic() + session.arguments.boot_timeout
     retry_at = time.monotonic() + HELLO_RETRY_INTERVAL
+    ready_seen = False
+    heartbeat_requested = False
     while time.monotonic() < deadline:
         for event in session.pump():
             if event.get("event") == "READY" and event.get("run") == run_id:
+                ready_seen = True
+                if not heartbeat_requested:
+                    session.send([("cmd", "PING")])
+                    heartbeat_requested = True
+                continue
+            if heartbeat_requested and event.get("event") == "HEARTBEAT":
                 return
             if event.get("event") in EVENT_FATAL:
                 termination = "panic" if event.get("event") == "PANIC" else "timeout"
                 raise RunnerError("guest_fatal_no_boot", termination)
-        if time.monotonic() >= retry_at:
+        if not ready_seen and time.monotonic() >= retry_at:
             session.send(hello)
             retry_at = time.monotonic() + HELLO_RETRY_INTERVAL
         time.sleep(0.01)
-    raise RunnerError("boot_ready_timeout", "timeout")
+    if ready_seen:
+        raise RunnerError(
+            f"boot_heartbeat_timeout:state={session.progress.state}", "timeout")
+    raise RunnerError(
+        f"boot_ready_timeout:state={session.progress.state}", "timeout")
 
 
 def wait_for_case(session: QemuSession, case_id: str, iteration: int,
                   seed: int, timeout: float, heartbeat_timeout: float) -> dict[str, str]:
+    session.progress.mark_state(PROGRESS_RUN_SENT)
     session.send([
         ("cmd", "RUN"), ("case", case_id), ("iteration", str(iteration)),
         ("seed", str(seed)),
     ])
     deadline = time.monotonic() + timeout
     begun = False
+    heartbeat_reference: float | None = None
     while time.monotonic() < deadline:
         for event in session.pump():
             if event.get("event") in EVENT_FATAL:
                 termination = "panic" if event.get("event") == "PANIC" else "timeout"
-                raise RunnerError(event.get("reason", "guest_fatal"), termination)
+                raise RunnerError(
+                    f"{event.get('reason', 'guest_fatal')}:state={session.progress.state}",
+                    termination)
             if event.get("event") == "BEGIN":
                 if event.get("case") != case_id or \
                         event.get("iteration") != str(iteration) or \
@@ -552,7 +617,11 @@ def wait_for_case(session: QemuSession, case_id: str, iteration: int,
                     session.protocol_errors.append("begin_guest_invalido")
                     continue
                 begun = True
+                session.progress.mark_state(PROGRESS_RUNNING)
+                heartbeat_reference = time.monotonic()
                 continue
+            if event.get("event") == "HEARTBEAT" and begun:
+                heartbeat_reference = time.monotonic()
             if event.get("event") not in EVENT_TERMINAL:
                 continue
             if event.get("case") != case_id:
@@ -560,12 +629,17 @@ def wait_for_case(session: QemuSession, case_id: str, iteration: int,
             if event.get("event") in {"PASS", "FAIL", "SKIP"} and not begun:
                 session.protocol_errors.append("terminal_sem_begin_guest")
                 continue
+            session.progress.mark_state(event.get("event", PROGRESS_BLOCKED))
             return event
-        if heartbeat_expired(session.last_heartbeat, time.monotonic(),
-                             heartbeat_timeout):
-            raise RunnerError("guest_sem_heartbeat", "watchdog")
+        if begun and heartbeat_reference is not None and \
+                heartbeat_expired(heartbeat_reference, time.monotonic(),
+                                  heartbeat_timeout):
+            raise RunnerError(
+                f"guest_sem_heartbeat:state={session.progress.state}",
+                "watchdog")
         time.sleep(0.01)
-    raise RunnerError(f"case_timeout:{case_id}", "timeout")
+    raise RunnerError(
+        f"case_timeout:{case_id}:state={session.progress.state}", "timeout")
 
 
 def result_status(cases: list[dict[str, Any]], error: RunnerError | None) -> tuple[str, str, str]:
@@ -714,6 +788,9 @@ def run_execution(arguments: argparse.Namespace) -> int:
             "qemu_exit_code": exit_code,
             "qmp_status": session.qmp_status if session else None,
             "protocol_errors": session.protocol_errors if session else [],
+            "last_state": session.progress.state if session else None,
+            "last_event": session.progress.last_event if session else None,
+            "progress_history": session.progress.history if session else [],
             "cases": cases,
             "artifacts": {
                 "manifest": "manifest.json",
